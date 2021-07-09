@@ -6,7 +6,10 @@ trigger:
    include:
      - main
 
-pr: none
+pr:
+  branches:
+    include:
+      - main
   
 variables:
     system.debug: true
@@ -22,6 +25,7 @@ stages:
     displayName: Build Job
     steps:
     - task: SonarCloudPrepare@1
+      displayName: 'SonarCloud: Prepare analysis configuration'
       inputs:
         SonarCloud: 'sonarcloud'
         organization: 'simnova'
@@ -42,10 +46,13 @@ stages:
           REACT_APP_AAD_REDIRECT_URI: $(REACT_APP_AAD_REDIRECT_URI)
           REACT_APP_AAD_SCOPES: $(REACT_APP_AAD_SCOPES)
     - task: SonarCloudAnalyze@1
+      displayName: 'SonarCloud: Run analysis'
     - task: SonarCloudPublish@1
+      displayName: 'SounarCloud: Publish results on build summary'
       inputs:
         pollingTimeoutSec: '300'
     - task: PublishBuildArtifacts@1
+      condition: and(succeeded(), ne(variables['Build.Reason'], 'PullRequest'))
       inputs:
         PathtoPublish: '$(Build.ArtifactStagingDirectory)'
         ArtifactName: 'www'
@@ -54,6 +61,7 @@ stages:
 - stage: deploy_qa_stage
   dependsOn: build_stage
   displayName: Deploy QA Stage
+  condition: and(succeeded(), ne(variables['Build.Reason'], 'PullRequest'))
   jobs:
   - deployment: deploy_qa_job
     displayName: Deploy QA Job
@@ -74,6 +82,7 @@ stages:
 - stage: deploy_prod_stage
   dependsOn: deploy_qa_stage
   displayName: Deploy Prod Stage
+  condition: and(succeeded(), ne(variables['Build.Reason'], 'PullRequest'))
   jobs:
   - deployment: deploy_prod_job
     displayName: Deploy Prod Job

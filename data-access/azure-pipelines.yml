@@ -11,7 +11,10 @@ trigger:
    include:
      - main
 
-pr: none
+pr:
+  branches:
+    include:
+      - main
   
 variables:
 
@@ -83,6 +86,7 @@ stages:
       
     - task: ArchiveFiles@2
       displayName: 'Archive files'
+      condition: and(succeeded(), ne(variables['Build.Reason'], 'PullRequest'))
       inputs:
         rootFolderOrFile: '$(System.DefaultWorkingDirectory)/data-access'
         includeRootFolder: false
@@ -91,12 +95,13 @@ stages:
         replaceExistingArchive: true
 
     - upload: $(Build.ArtifactStagingDirectory)/$(Build.BuildId).zip
+      condition: and(succeeded(), ne(variables['Build.Reason'], 'PullRequest'))
       artifact: drop
 
 - stage: Deploy
   displayName: Deploy stage
   dependsOn: Build
-  condition: succeeded()
+  condition: and(succeeded(), ne(variables['Build.Reason'], 'PullRequest'))
   jobs:
   - deployment: Deploy
     displayName: Deploy

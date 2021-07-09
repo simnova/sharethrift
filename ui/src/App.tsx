@@ -12,6 +12,13 @@ const GET_SERVER_TIME = gql`
     getServerTime
   }
 `;
+/* hoping for sonarlint break
+interface CreateAccountDetails {
+  firstName: string | undefined,
+  lastName: string | undefined,
+  description: string | undefined
+}
+*/
 
 function App() {
   const { login, logout, getAuthToken, getAuthResult, isLoggedIn } = useMsal();
@@ -81,7 +88,7 @@ function App() {
           >
             Get Auth Result
           </button>
-          <button onClick={() => getServerTime()}>Get Server Time</button>
+          <button onClick={() => getServerTime()}>Click to get Server Time</button>
         </p>
         <HelloWorld />
         <a
