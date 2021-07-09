@@ -124,6 +124,7 @@
         <DataUri>urn:com:microsoft:aad:b2c:elements:contract:unifiedssp:2.1.4</DataUri>
         <Metadata>
           <Item Key="DisplayName">Signin and Signup</Item>
+          <Item Key="setting.forgotPasswordLinkLocation">AfterInput</Item>
         </Metadata>
         <LocalizedResourcesReferences MergeBehavior="Prepend">
           <LocalizedResourcesReference Language="en"
