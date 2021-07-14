@@ -130,7 +130,6 @@
           <LocalizedResourcesReference Language="en"
             LocalizedResourcesReferenceId="api.signuporsignin.en" />
         </LocalizedResourcesReferences>
-
       </ContentDefinition>
       <ContentDefinition Id="api.signuporsignin-username">
         <LoadUri>{Settings:LoginURL}</LoadUri>
@@ -145,7 +144,7 @@
         </LocalizedResourcesReferences>
 
       </ContentDefinition>
-      
+
       <ContentDefinition Id="api.selfasserted">
         <LoadUri>~/tenant/templates/AzureBlue/selfAsserted.cshtml</LoadUri>
         <RecoveryUri>~/common/default_page_error.html</RecoveryUri>
@@ -155,7 +154,7 @@
         </Metadata>
         <LocalizedResourcesReferences MergeBehavior="Prepend">
           <LocalizedResourcesReference Language="en"
-            LocalizedResourcesReferenceId="api.localaccountsignup.en" />
+            LocalizedResourcesReferenceId="api.selfasserted.en" />
         </LocalizedResourcesReferences>
       </ContentDefinition>
       <ContentDefinition Id="api.selfasserted.profileupdate">
@@ -173,6 +172,10 @@
         <Metadata>
           <Item Key="DisplayName">Local account sign up page</Item>
         </Metadata>
+        <LocalizedResourcesReferences MergeBehavior="Prepend">
+          <LocalizedResourcesReference Language="en"
+            LocalizedResourcesReferenceId="api.localaccountsignup.en" />
+        </LocalizedResourcesReferences>
       </ContentDefinition>
       <ContentDefinition Id="api.localaccountpasswordreset">
         <LoadUri>~/tenant/templates/AzureBlue/selfAsserted.cshtml</LoadUri>
@@ -189,10 +192,34 @@
         MergeBehavior="Append">
         <SupportedLanguage>en</SupportedLanguage>
       </SupportedLanguages>
-      <LocalizedResources Id="api.localaccountsignup.en">
+      <LocalizedResources Id="api.selfasserted.en">
         <LocalizedStrings>
           <LocalizedString ElementType="UxElement"
-            StringId="ver_intro_msg">Your OTP is expired. You need to verify your email again to be able to use your account.</LocalizedString>
+            StringId="ver_intro_msg">Your verification code has expired. Please enter your e-mail address again and click Send Verification Code to receive a new code.</LocalizedString>
+        </LocalizedStrings>
+      </LocalizedResources>
+      <LocalizedResources Id="api.localaccountsignup.en">
+        <LocalizedStrings>
+          <LocalizedString ElementType="ClaimType"
+            ElementId="email"
+            StringId="DisplayName">E-mail Address</LocalizedString>
+          <LocalizedString ElementType="ClaimType"
+            ElementId="email"
+            StringId="UserHelpText">E-mail address that can be used to contact you.</LocalizedString>
+          <LocalizedString ElementType="UxElement"
+            StringId="ver_but_send">Send Verification Code</LocalizedString>
+          <LocalizedString ElementType="UxElement"
+            StringId="button_continue">Create Password</LocalizedString>
+          <LocalizedString ElementType="UxElement"
+            StringId="ver_but_verify">Verify Code</LocalizedString>
+          <LocalizedString ElementType="UxElement"
+            StringId="ver_but_resend">Send New Code</LocalizedString>
+          <LocalizedString ElementType="UxElement"
+            StringId="ver_input">Verification Code</LocalizedString>
+          <LocalizedString ElementType="UxElement"
+            StringId="ver_fail_retry">The code is incorrect. Please try entering the code again or click Send New Code to request a new verification code. </LocalizedString>
+          <LocalizedString ElementType="UxElement"
+            StringId="ver_success_msg">Your e-mail address is confirmed. Please create a password to continue. Your password must be between 8 and 16 characters and contain three out of four of the following: lowercase characters, uppercase characters, digits (0-9), and symbols.</LocalizedString>
         </LocalizedStrings>
       </LocalizedResources>
       <LocalizedResources Id="api.signuporsignin.en">
@@ -201,14 +228,17 @@
             StringId="createaccount_one_link">Register now</LocalizedString>
           <LocalizedString ElementType="UxElement"
             StringId="local_intro_generic">Sign in with your email</LocalizedString>
+
         </LocalizedStrings>
       </LocalizedResources>
       <LocalizedResources Id="api.signuporsignin-username.en">
         <LocalizedStrings>
           <LocalizedString ElementType="UxElement"
             StringId="local_intro_generic">Sign in with your EMSWP Username &amp; Password</LocalizedString>
-          <LocalizedString ElementType="ErrorMessage" StringId="UserMessageIfClaimsPrincipalDoesNotExist">The username or password provided in the request are invalid.</LocalizedString>
-          <LocalizedString ElementType="ErrorMessage" StringId="UserMessageIfInvalidPassword">The username or password provided in the request are invalid.</LocalizedString>
+          <LocalizedString ElementType="ErrorMessage"
+            StringId="UserMessageIfClaimsPrincipalDoesNotExist">The username or password provided in the request are invalid.</LocalizedString>
+          <LocalizedString ElementType="ErrorMessage"
+            StringId="UserMessageIfInvalidPassword">The username or password provided in the request are invalid.</LocalizedString>
         </LocalizedStrings>
       </LocalizedResources>
     </Localization>
@@ -426,7 +456,9 @@
             <OutputClaim ClaimTypeReferenceId="physicianAccountVerified" />
             <OutputClaim ClaimTypeReferenceId="objectId" />
             <OutputClaim ClaimTypeReferenceId="bodyData" />
-            <OutputClaim ClaimTypeReferenceId="isNewUser" DefaultValue="true" AlwaysUseDefaultValue="true"/>
+            <OutputClaim ClaimTypeReferenceId="isNewUser"
+              DefaultValue="true"
+              AlwaysUseDefaultValue="true"/>
             <!--<OutputClaim ClaimTypeReferenceId="displayName"/>
             <OutputClaim ClaimTypeReferenceId="givenName"/>
             <OutputClaim ClaimTypeReferenceId="surName"/>-->
@@ -842,12 +874,13 @@
         <OrchestrationStep Order="5"
           Type="ClaimsExchange">
           <Preconditions>
-            <Precondition Type="ClaimsExist" ExecuteActionsIf="false">
+            <Precondition Type="ClaimsExist"
+              ExecuteActionsIf="false">
               <Value>isNewUser</Value>
               <Action>SkipThisOrchestrationStep</Action>
             </Precondition>
           </Preconditions>
-          <ClaimsExchanges> 
+          <ClaimsExchanges>
             <ClaimsExchange Id="SaveNewUserOID"
               TechnicalProfileReferenceId="REST-SaveNewUserOID" />
           </ClaimsExchanges>
