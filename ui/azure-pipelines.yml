@@ -13,9 +13,24 @@ pr:
   
 variables:
     system.debug: true
+    npm_config_cache: $(Pipeline.Workspace)/.npm
+    SONAR_USER_HOME: $(Pipeline.Workspace)/.sonar
 
 pool:
   vmImage: 'ubuntu-latest'
+
+resources:
+  repositories:
+    - repository: templates
+      type: github
+      name: ECFMG/azure-pipelines-yaml
+      ref: 'refs/heads/main'
+      endpoint: 'simnova (1)'
+    - repository: templates2
+      type: github
+      name: microsoft/azure-pipelines-yaml
+      ref: 'refs/heads/master'
+      endpoint: 'simnova (1)'
 
 stages:
 - stage: build_stage
@@ -24,6 +39,15 @@ stages:
   - job: build_job
     displayName: Build Job
     steps:
+
+    - task: Cache@2
+      inputs:
+        key: 'sonarcloud | "$(Agent.OS)"'
+        restoreKeys: |
+            sonarcloud | "$(Agent.OS)"
+        path: $(SONAR_USER_HOME)/cache
+      displayName: Cache SonarCloud
+
     - task: SonarCloudPrepare@1
       displayName: 'SonarCloud: Prepare analysis configuration'
       inputs:
@@ -34,17 +58,21 @@ stages:
         cliProjectKey: 'sharethrift-ui'
         cliProjectName: 'sharethrift-ui'
         cliSources: './ui/src'
-    - template: ./build-pipeline/npm-build.yml
+    - template: ./templates/cra-npm-build.yml@templates
       parameters:
         buildPath: 'ui'
         archivePath: 'ui/build'
         archiveName: 'prod'
+        npmConfigCache: $(npm_config_cache)
         buildEnvSettings:
           INLINE_RUNTIME_CHUNK: 'false'
           REACT_APP_AAD_APP_CLIENTID: $(REACT_APP_AAD_APP_CLIENTID)
           REACT_APP_AAD_DIRECTORY_TENANTID: $(REACT_APP_AAD_DIRECTORY_TENANTID)
           REACT_APP_AAD_REDIRECT_URI: $(REACT_APP_AAD_REDIRECT_URI)
           REACT_APP_AAD_SCOPES: $(REACT_APP_AAD_SCOPES)
+
+
+          
     - task: SonarCloudAnalyze@1
       displayName: 'SonarCloud: Run analysis'
     - task: SonarCloudPublish@1
@@ -70,7 +98,7 @@ stages:
       runOnce:    #rolling, canary are the other strategies that are supported
         deploy:
           steps:
-          - template: ./build-pipeline/deploy.yml
+          - template: ./templates/blob-cdn-website-deploy.yml@templates
             parameters:
               subscription: $(azureSubscription)
               destinationBlobContainer: 'sharethriftqa'
