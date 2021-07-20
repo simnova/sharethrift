@@ -49,7 +49,7 @@
         </DefaultPartnerClaimTypes>
       </ClaimType>
       <ClaimType Id="originalLogInEmail">
-        <DisplayName>Body Data</DisplayName>
+        <DisplayName>Original Email</DisplayName>
         <DataType>string</DataType>
         <DefaultPartnerClaimTypes>
           <Protocol Name="OAuth2"
@@ -207,7 +207,11 @@
             ElementId="email"
             StringId="UserHelpText">E-mail address that can be used to contact you.</LocalizedString>
           <LocalizedString ElementType="UxElement"
+            StringId="ver_intro_msg">Your e-mail address needs to be verified before you can register an account. The e-mail address that you use must be the same one that you provided to the individual you will be evaluating. Enter that e-mail address below and click Send Verification Code.</LocalizedString>
+          <LocalizedString ElementType="UxElement"
             StringId="ver_but_send">Send Verification Code</LocalizedString>
+          <LocalizedString ElementType="UxElement"
+            StringId="ver_info_msg">A verification code has been sent to the e-mail address entered below. Please retrieve the code and enter it in the Verification Code area below, then click Verify Code.</LocalizedString>
           <LocalizedString ElementType="UxElement"
             StringId="button_continue">Create Password</LocalizedString>
           <LocalizedString ElementType="UxElement"
@@ -671,7 +675,7 @@
           <UseTechnicalProfileForSessionManagement ReferenceId="SM-Noop" />
         </TechnicalProfile>
         <TechnicalProfile Id="REST-SaveNewUserOID">
-          <DisplayName>Check if OTP expired</DisplayName>
+          <DisplayName>Save new user OID</DisplayName>
           <Protocol Name="Proprietary"
             Handler="Web.TPEngine.Providers.RestfulProvider, Web.TPEngine, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null" />
           <Metadata>
