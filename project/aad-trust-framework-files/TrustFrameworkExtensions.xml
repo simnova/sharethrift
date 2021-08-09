@@ -196,6 +196,9 @@
         <LocalizedStrings>
           <LocalizedString ElementType="UxElement"
             StringId="ver_intro_msg">Your verification code has expired. Please enter your e-mail address again and click Send Verification Code to receive a new code.</LocalizedString>
+          <LocalizedString ElementType="DisplayControl" 
+            ElementId="emailVerificationControl" 
+            StringId="but_send_code">Send Verification Code</LocalizedString>
         </LocalizedStrings>
       </LocalizedResources>
       <LocalizedResources Id="api.localaccountsignup.en">
@@ -219,11 +222,15 @@
           <LocalizedString ElementType="UxElement"
             StringId="ver_but_resend">Send New Code</LocalizedString>
           <LocalizedString ElementType="UxElement"
+            StringId="ver_but_edit">Change E-mail Address</LocalizedString>
+          <LocalizedString ElementType="UxElement"
             StringId="ver_input">Verification Code</LocalizedString>
           <LocalizedString ElementType="UxElement"
             StringId="ver_fail_retry">The code is incorrect. Please try entering the code again or click Send New Code to request a new verification code. </LocalizedString>
           <LocalizedString ElementType="UxElement"
-            StringId="ver_success_msg">Your e-mail address is confirmed. Please create a password to continue. Your password must be between 8 and 16 characters and contain three out of four of the following: lowercase characters, uppercase characters, digits (0-9), and symbols.</LocalizedString>
+            StringId="ver_success_msg">Your e-mail address is confirmed. Please create a password to continue. Your password must be between 8 and 16 characters and contain 3 out of 4 of the following: lowercase characters, uppercase characters, digits (0-9), and symbols.</LocalizedString>
+          <LocalizedString ElementType="UxElement"
+            StringId="ver_fail_code_expired">Your verification code has expired. Please click Send New Code to receive a new code.</LocalizedString>
         </LocalizedStrings>
       </LocalizedResources>
       <LocalizedResources Id="api.signuporsignin.en">
@@ -231,8 +238,10 @@
           <LocalizedString ElementType="UxElement"
             StringId="createaccount_one_link">Register now</LocalizedString>
           <LocalizedString ElementType="UxElement"
-            StringId="local_intro_generic">Sign in with your email</LocalizedString>
-
+            StringId="local_intro_generic">Please sign in using your e-mail address</LocalizedString>
+          <LocalizedString ElementType="ClaimType"
+            ElementId="signInName"
+            StringId="DisplayName">E-mail address</LocalizedString>
         </LocalizedStrings>
       </LocalizedResources>
       <LocalizedResources Id="api.signuporsignin-username.en">
@@ -255,7 +264,7 @@
           <InputClaim ClaimTypeReferenceId="email"
             DefaultValue="{Claim:originalLogInEmail}"/>
           <InputClaim ClaimTypeReferenceId="labelAboveEmail"
-            DefaultValue="Your OTP is expired. You need to verify your email again to be able to use your account."/>
+            DefaultValue="Your verification code has expired. Please click Send Verification Code to receive a new code."/>
         </InputClaims>
         <DisplayClaims>
           <DisplayClaim ClaimTypeReferenceId="labelAboveEmail" />
