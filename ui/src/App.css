@@ -1,4 +1,134 @@
 @import "~antd/dist/antd.css";
+@import "./styles/font-alegreya.css";
+@import "./styles/font-alegreya-sans.css";
+@import "./styles/font-merriweather.css";
+@import "./styles/font-quattrocento.css";
+
+:root {
+  /* brand colors */
+  --color-brand-primary:#3C5959;
+  --color-brand-secondary:#400101;
+
+  /* neutral colors */
+  --color-background-default:#F9F7F0;
+  --color-background-1:#DEDBCE;
+
+  --color-foreground-default:#5E5B51;
+  --color-foreground-1:#C4BEA9;
+  --color-foreground-2:#DED7BF;
+
+  /* secondary colors */
+  --color-action-foreground:#3F5F76;
+  --color-action-disabled:#95B1C6;
+  --color-action-hover:#324B5D;
+  --color-action-pressed:#243642;
+
+  --color-secondary-action-foreground:#F2EAD0;
+  --color-secondary-action-disabled:#FBF8EF;
+  --color-secondary-action-hover:#C0A235;
+  --color-secondary-action-pressed:#A0872C;
+
+  --color-red-foreground:#8C3503;
+  --color-yellow-foreground:#A66124;
+  --color-green-foreground:#3F8176;
+  --color-no-action-foreground:#B1B8AB;
+
+  /* fonts */
+  --font-stack-title:Quattrocento,serif;
+  --font-stack-subtitle:Merriweather,serif;
+  --font-stack-heading:Alegreya,serif;
+  --font-stack-subheading:Alegreya Sans,sans-serif;
+  --font-stack-body:Alegreya Sans,Helvetica Neue,Helvetica,Arial,sans-serif;
+
+  --font-weight-regular:400;
+  --font-weight-semi-bold:500;
+  --font-weight-bold:700;
+}
+
+/* body */
+body {
+  font-family: var(--font-stack-body);
+  font-weight: var(--font-weight-regular);
+  color: var(--color-foreground-default);
+  font-size: 14px;
+  line-height: 20px;
+
+  /* fix for fonts */
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+body .semi-bold {
+  font-weight: var(--font-weight-semi-bold);
+}
+body .bold {
+  font-weight: var(--font-weight-bold);
+}
+
+/* titles */
+.title-1, .title-2, .title-3 {
+  font-family: var(--font-stack-title);
+  font-weight: var(--font-weight-regular);
+  color: var(--color-brand-primary);
+}
+.title-1 {
+  font-size: 50px;
+  line-height: 50px;
+}
+.title-2 {
+  font-size: 44px;
+  line-height: 46px;
+}
+.title-3 {
+  font-size: 36px;
+  line-height: 40px;
+}
+
+/* headings */
+
+h1, h2, h3, h4, h5, h6, .h1, .h2, .h3, .h4, .h5, .h6 {
+  color: var(--color-brand-secondary);
+}
+
+h1, h2, .h1, .h2 {
+  font-family: var( --font-stack-subtitle);
+  font-weight: var(--font-weight-regular);
+}
+h3, h5, .h3, .h5 {
+  font-family: var(--font-stack-heading);
+  font-weight: var(--font-weight-regular);
+}
+h4, h6, .h4, .h6 {
+  font-family: var(--font-stack-subheading);
+  font-weight: var(--font-weight-semi-regular);
+}
+h1, .h1 {
+  font-size: 30px;
+  line-height: 38px;
+}
+h2, .h2 {
+  font-size: 26px;
+  line-height: 36px;
+}
+h3, .h3 {
+  font-size: 24px;
+  line-height: 32px;
+}
+h4, .h4 {
+  font-size: 22px;
+  line-height: 28px;
+}
+h5, .h5 {
+  font-size: 20px;
+  line-height: 26px;
+}
+h6, .h6 {
+  font-size: 18px;
+  line-height: 24px;
+}
+
+
+
+
 
 .App {
   text-align: center;

@@ -1,0 +1,32 @@
+.label-common-style {
+  border-radius: 20px;
+  display: inline-block;
+  padding: 4px 25px;
+  color: var(--color-background-default);
+  vertical-align: middle;
+}
+
+.default, .request-submitted, .pickup-arranged, .listing-submitted {
+  background-color: var(--color-action-foreground);
+}
+.listing-draft {
+  background-color: var(--color-secondary-action-foreground);
+  color: var(--color-action-background);
+}
+.request-accepted, .listing-posted, .request-received {
+  background-color: var(--color-green-foreground);
+}
+.return-pending, .update-needed{
+  background-color: var(--color-yellow-foreground);
+}
+.listing-paused {
+  background-color: var(--color-action-disabled);
+}
+.request-complete {
+  background-color: var(--color-no-action-foreground);
+}
+
+.icon {
+  vertical-align: middle;
+  margin-right: 8px;
+}

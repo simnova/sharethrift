@@ -1,0 +1,56 @@
+import { Meta, ColorPalette, ColorItem } from '@storybook/addon-docs/blocks';
+
+<Meta title="Documentation/Core/Colors" />
+
+# Colors
+
+.
+
+See Storybook's [official documentation](https://storybook.js.org/docs/basics/color) for more information.
+
+example:
+  [Source Code](https://github.com/storybookjs/storybook/blob/next/lib/components/src/blocks/ColorPalette.stories.tsx) 
+  |
+  [Demo](https://5a375b97f4b14f0020b0cda3-bkzghozwss.chromatic.com/?path=/story/docs-colorpalette--named-colors)
+
+## Brand Colors
+
+<ColorPalette>
+  <ColorItem title="Primary" subtitle="brand-primary" colors={{'--color-brand-primary':'#3C5959'}} />
+  <ColorItem title="Secondary" subtitle="brand-secondary" colors={{'--color-brand-secondary':'#400101'}} />
+</ColorPalette>
+
+## Neutral Colors
+
+<ColorPalette>
+  <ColorItem title="Default Background" subtitle="default-background" colors={{'--color-background-default':'#F9F7F0'}} />
+  <ColorItem title="Background 1" subtitle="background-1" colors={{'--color-background-1':'#DEDBCE'}} />
+  <ColorItem title="Default Foreground" subtitle="default-foreground" colors={{'--color-foreground-default':'#5E5B51'}} />
+  <ColorItem title="Foreground 1" subtitle="foreground-1" colors={{'--color-foreground-1':'#C4BEA9'}} />
+  <ColorItem title="Foreground 2" subtitle="foreground-2" colors={{'--color-foreground-2:':'#DED7BF'}} />
+</ColorPalette>
+
+## Secondary Colors
+
+<ColorPalette>
+  <ColorItem 
+    title="Action" 
+    subtitle="Primary use for buttons" 
+    colors={{
+      '--color-action-disabled': '#95B1C6',
+      '--color-action-foreground': '#3F5F76',
+      '--color-action-hover': '#324B5D',
+      '--color-action-pressed': '#243642',
+    }} names={['disabled','foreground','hover','pressed']} />
+  <ColorItem title="Secondary Action" 
+    subtitle="Secondary buttons" 
+    colors={{
+      '--color-secondary-action-disabled':'#FBF8EF',
+      '--color-secondary-action-foreground':'#F2EAD0',
+      '--color-secondary-action-hover':'#C0A235',
+      '--color-secondary-action-pressed':'#A0872C'}} />
+  <ColorItem title="Red" subtitle="Errors" colors={{'--color-red-foreground"':'#8C3503'}} />
+  <ColorItem title="Yellow" subtitle="Warnings" colors={{'--color-yellow-foreground':'#A66124'}} />
+  <ColorItem title="Green" subtitle="Success" colors={{'--color-green-foreground':'#3F8176'}} />
+  <ColorItem title="No Action" subtitle="No Action Available" colors={{'--color-no-action-foreground':'#B1B8AB'}} />
+</ColorPalette>

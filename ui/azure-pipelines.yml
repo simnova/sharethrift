@@ -58,6 +58,7 @@ stages:
         cliProjectKey: 'sharethrift-ui'
         cliProjectName: 'sharethrift-ui'
         cliSources: './ui/src'
+        
     - template: ./templates/cra-npm-build.yml@templates
       parameters:
         buildPath: 'ui'
