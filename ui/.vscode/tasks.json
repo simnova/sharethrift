@@ -16,7 +16,7 @@
 		{
 			"type": "typescript",
 			"label": "typescript build",
-			"tsconfig":"tsconfig.json",
+			"tsconfig": "tsconfig.json",
 			"dependsOn": "npm install",
 		},
 		{
@@ -24,11 +24,38 @@
 			"label": "npm build",
 			"command": "npm run build",
 			"dependsOn": "npm install",
-		  },
-		  {
+		},
+		{
 			"type": "shell",
 			"label": "npm install",
-			"command": "npm install" 
-		  },
+			"command": "npm install"
+		},
+		{
+      "label": "kill-terminal",
+      "type": "process",
+      "command": "${command:workbench.action.terminal.kill}"
+    },
+		{
+			"type": "shell",
+			"command": "npx start-storybook -p 8081 -s public",
+			"dependsOn": "npm install",
+			"label": "storybook",
+			"group": {
+				"kind": "test",
+				"isDefault": true
+			},
+			"isBackground": true, // This prevents the launch.json to wait for the completion of the task
+			"problemMatcher": {
+				"owner": "custom", // This is not needed but, required by the problemMatcher Object
+				"pattern": {
+					"regexp": "^$" // This is not needed but, required by the problemMatcher Object
+				},
+				"background": {
+					"activeOnStart": true,
+					"beginsPattern": ".*storybook\/react*", // Signals the begin of the Task
+					"endsPattern": ".*Storybook.*started.*" // Signals that now the initialization of the task is complete
+				}
+			}
+		},
 	]
 }

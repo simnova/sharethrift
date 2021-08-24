@@ -14,6 +14,19 @@
         "runtimeExecutable": "${workspaceRoot}/node_modules/.bin/react-scripts",
         "skipFiles": ["<node_internals>/**"],
         "type": "pwa-node"
+      },
+      {
+        "type": "pwa-node",
+        "request": "launch",
+        "name": "Launch Storybook",
+        "url": "http://localhost:8081",
+        "webRoot": "${workspaceFolder}/src",
+        "preLaunchTask": "storybook",
+        "postDebugTask": "kill-terminal",
+        "sourceMaps": true,
+        "sourceMapPathOverrides": {
+          "webpack://./src/*": "${webRoot}/*"
+        },
       }
     ]
   }

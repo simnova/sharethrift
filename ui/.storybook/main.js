@@ -24,7 +24,7 @@ module.exports = {
     webkit: await playwright["webkit"].launch(),
   };
   setConfig({
-    storybookEndpoint: `http://localhost:6006/`,
+    storybookEndpoint: `http://localhost:8081/`,
     getPage: async (browserType, options) => {
       const page = await browser[browserType].newPage(options);
       return page;

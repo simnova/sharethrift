@@ -18,9 +18,6 @@ pr:
   
 variables:
 
-  # Azure Resource Manager connection created during pipeline creation
-  azureSubscription: '5c39f733-98b0-4191-82f4-9c124a4df205'
-
   # Function app name
   functionAppName: 'data-access'
  
@@ -115,16 +112,18 @@ stages:
           - task: AzureFunctionApp@1
             displayName: 'Azure Functions App Deploy: data-access'
             inputs:
-              azureSubscription: '$(azureSubscription)'
+              azureSubscription: 'ShareThrift'
               appType: functionAppLinux
               appName: $(functionAppName)
               package: '$(Pipeline.Workspace)/drop/$(Build.BuildId).zip'
               deploymentMethod: 'runFromPackage'
+              runtimeStack: 'NODE|14'
           - task: AzureFunctionApp@1
             displayName: 'Azure Functions App Deploy: data-access-west'
             inputs:
-              azureSubscription: 'Visual Studio Enterprise(1)(1e23aa72-fb0d-424b-a48c-0de4916aee72)'
+              azureSubscription: 'ShareThrift'
               appType: 'functionAppLinux'
               appName: 'data-access-west'
               package: '$(Pipeline.Workspace)/drop/$(Build.BuildId).zip'
               deploymentMethod: 'runFromPackage'
+              runtimeStack: 'NODE|14'
