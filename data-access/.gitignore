@@ -37,7 +37,7 @@ ENV/
 env.bak/
 venv.bak/
 
-# Byte-compiled / optimized / DLL files
+# Byte-compiled / optimized / DLL file(s)
 __pycache__/
 *.py[cod]
 *$py.class
