@@ -6,6 +6,7 @@ import HelloWorld from "./components/helloWorld";
 import { AuthenticationResult } from "@azure/msal-browser";
 import { gql, useMutation } from "@apollo/client";
 import moment from "moment";
+import { Header} from "./components/header";
 
 const GET_SERVER_TIME = gql`
   mutation {
@@ -56,6 +57,7 @@ function App() {
 
   return (
     <div className="App">
+      <Header isLoggedIn={false} />
       <header className="App-header">
         <img src={logo} className="App-logo" alt="logo" />
 
@@ -91,14 +93,7 @@ function App() {
           <button onClick={() => getServerTime()}>Click to get Server Time</button>
         </p>
         <HelloWorld />
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
+       
         <div>server time: {serverTime}</div>
         <div>token expireation time: {expirationTime}</div>
       </header>
