@@ -65,17 +65,14 @@ stages:
       displayName: 'Install: func tools - latest'
 
     # Cache NPM packages to speed up build process.
-#    - task: Cache@2
-#      displayName: 'Cache: NPM Packages'
-#      condition: and(succeeded(), ne(variables['Build.Reason'], 'PullRequest'))
-#      inputs:
-#        key: 'npm | "$(Agent.OS)" | $(Build.SourcesDirectory)/data-access/package-lock.json'
-#        restoreKeys: |
-#            npm | "$(Agent.OS)"
-#        path: $(npm_config_cache)
-
-
-
+    - task: Cache@2
+      displayName: 'Cache: NPM Packages'
+      condition: and(succeeded(), ne(variables['Build.Reason'], 'PullRequest'))
+      inputs:
+        key: 'npm | "$(Agent.OS)" | $(Build.SourcesDirectory)/data-access/package-lock.json'
+        restoreKeys: |
+            npm | "$(Agent.OS)"
+        path: $(npm_config_cache)
 
     # Build project and run tests
     - task: Bash@3
@@ -84,10 +81,9 @@ stages:
         targetType: 'inline'
         script: |
           export NODE_OPTIONS=--max_old_space_size=16384
-          npm install
-          npm run build:production
-          npm i -D ts-jest
+          npm ci
           npm run test:ci
+          npm run build:production
         workingDirectory: 'data-access'
 
     # Cache SonarCloud downloaded assets to speed up build process.
