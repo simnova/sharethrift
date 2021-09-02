@@ -49,24 +49,24 @@ stages:
 
     # Remove all other code that comes from mon-repo except what is necessary for this project.
     - task: DeleteFiles@1
-      displayName: 'Remove unrelated code'
+      displayName: 'Files: Remove unrelated code'
       inputs:
         contents: |
           ./!(data-access){*,/**}
 
     # Ensure the correct version of Node is installed.
     - task: NodeTool@0
-      displayName: 'Install LTS Node.js'
+      displayName: 'Install: Node.js - LTS'
       inputs:
         versionSpec: '14.x'
 
     # Ensure the correct version of function tools are installed.
     - task: FuncToolsInstaller@0
-      displayName: 'Install func tools - latest'
+      displayName: 'Install: func tools - latest'
 
     # Cache NPM packages to speed up build process.
     - task: Cache@2
-      displayName: 'Cache NPM Packages'
+      displayName: 'Cache: NPM Packages'
       condition: ne(variables['Build.Reason'], 'PullRequest')
       inputs:
         key: 'npm | "$(Agent.OS)" | $(Build.SourcesDirectory)/data-access/package-lock.json'
@@ -76,7 +76,7 @@ stages:
 
     # Cache SonarCloud downloaded assets to speed up build process.
     - task: Cache@2
-      displayName: 'Cache SonarCloud'
+      displayName: 'Cache: SonarCloud'
       inputs:
         key: 'sonarcloud | "$(Agent.OS)"'
         restoreKeys: |
@@ -121,7 +121,7 @@ stages:
       
     # Package compiled assets into artifact
     - task: ArchiveFiles@2
-      displayName: 'Prepare Artifact'
+      displayName: 'Artifact: Prepare'
       condition: and(succeeded(), ne(variables['Build.Reason'], 'PullRequest'))
       inputs:
         rootFolderOrFile: '$(System.DefaultWorkingDirectory)/data-access'
@@ -132,7 +132,7 @@ stages:
 
     # Upload artifact as build result    
     - publish: $(Build.ArtifactStagingDirectory)/$(Build.BuildId).zip
-      displayName: 'Publish Artifact'
+      displayName: 'Artifact: Publish'
       condition: and(succeeded(), ne(variables['Build.Reason'], 'PullRequest'))
       artifact: drop
 
@@ -151,7 +151,7 @@ stages:
         deploy:
           steps:            
           - task: AzureFunctionApp@1
-            displayName: 'Azure Functions App Deploy: data-access'
+            displayName: 'Azure Functions App Deploy: $(functionApp1Name)'
             inputs:
               azureSubscription: 'ShareThrift'
               appType: functionAppLinux
@@ -160,7 +160,7 @@ stages:
               deploymentMethod: 'runFromPackage'
               runtimeStack: 'NODE|14'
           - task: AzureFunctionApp@1
-            displayName: 'Azure Functions App Deploy: data-access-west'
+            displayName: 'Azure Functions App Deploy: $(functionApp2Name)'
             inputs:
               azureSubscription: 'ShareThrift'
               appType: 'functionAppLinux'
