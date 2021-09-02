@@ -1,6 +1,7 @@
 // jest.config.js
 
 module.exports = {
+    roots: ["<rootDir>/."],
     preset: 'ts-jest',
     testEnvironment: 'node',
     testMatch: ['**/**/*.test.ts'],
