@@ -8,6 +8,7 @@ var log = (function () {
     main.info = info;
 
     return main;
+    
 })();
 
 test('should return http status 401 when authentication fails', async () => {
