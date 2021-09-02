@@ -6,13 +6,15 @@ const httpTrigger: AzureFunction = async function (
 ): Promise<void> {
   context.log("HTTP trigger function processed a request.");
 
+
+  
   var authorization = req.headers["authorization"] || "";
   var token = authorization.split(/\s+/).pop() || ""; // and the encoded auth token
   var auth = Buffer.from(token, "base64").toString(); // convert from base64
   var parts = auth.split(/:/); // split on colon
   var username = parts[0];
   var password = parts[1];
-  
+
 
   if (
     username !== process.env["BASIC_AUTH_USERNAME"] ||
