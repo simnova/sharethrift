@@ -61,13 +61,12 @@ stages:
         versionSpec: '14.x'
 
     # Ensure the correct version of function tools are installed.
-    - task: FuncToolsInstaller@0
-      displayName: 'Install: func tools - latest'
+    #- task: FuncToolsInstaller@0
+    #  displayName: 'Install: func tools - latest'
 
     # Cache NPM packages to speed up build process.
     - task: Cache@2
       displayName: 'Cache: NPM Packages'
-      condition: ne(variables['Build.Reason'], 'PullRequest')
       inputs:
         key: 'npm | "$(Agent.OS)" | $(Build.SourcesDirectory)/data-access/package-lock.json'
         restoreKeys: |
