@@ -104,7 +104,7 @@ stages:
         targetType: 'inline'
         script: |
           export NODE_OPTIONS=--max_old_space_size=16384
-          npm ci
+          npm i
           npm run build:production
           npm run test:ci
         workingDirectory: 'data-access'
