@@ -74,6 +74,7 @@ stages:
         script: |
           npm install
           npm run build:production
+          npm run test:ci
         workingDirectory: 'data-access'
 
     - task: SonarCloudAnalyze@1
