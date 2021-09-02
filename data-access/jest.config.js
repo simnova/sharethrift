@@ -7,9 +7,10 @@ module.exports = {
     coverageReporters: ['json', 'lcov'],
     coverageDirectory: 'coverage',
     collectCoverageFrom: [
-        "**/*.{js,jsx}",
+        "**/*.{js,jsx,ts}",
         "!**/node_modules/**",
-        "!**/vendor/**"
+        "!**/vendor/**",
+        "!**/dist/**"
       ]
 }
 

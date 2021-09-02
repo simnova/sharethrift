@@ -56,26 +56,6 @@ function enableConsoleLogging (context) {
 }
 //})();
 
-// referenced from https://jeffmagnusson.com/post/graphql-apollo-server-plugins-in-typescript
-const appInsightsPlugin = <ApolloServerPlugin & GraphQLRequestListener>{
-  // Fires whenever a GraphQL request is received from a client.
-  requestDidStart(
-    requestContext: GraphQLRequestContext
-  ): GraphQLRequestListener | void {
-    appInsightsClient.trackMetric({ name: "apollo-query", value: 1 });
-    return this;
-  },
-  // Fires for graph exceptions
-  didEncounterErrors: function (requestContext: GraphQLRequestContext) {
-    appInsightsClient.trackMetric({ name: "apollo-error", value: 1 });
-    appInsightsClient.trackException({ exception: new Error("Apollo Error") });
-    /*
-    appInsightsClient.trackException({
-      exception: { category: "Apollo Error", details: requestContext.errors },
-    });
-    */
-  },
-};
 
 const getPlaygroundSetting = () => {
   if (process.env.APOLLO_PLAYGROUND_VISIBLE === "true") {
@@ -92,7 +72,7 @@ const server = new ApolloServer({
   typeDefs,
   resolvers,
   playground: { endpoint: process.env.APOLLO_PLAYGROUND_ENDPOINT },
-  plugins: [appInsightsPlugin],
+
   context: async (request) => {
     var [user, validated] = await MsalAuth.VerifyAccessToken(request);
     return { user, validated };
