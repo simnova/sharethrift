@@ -66,7 +66,7 @@ stages:
 
     # Cache NPM packages to speed up build process.
     - task: Cache@2
-      displayName: 'Cache: NPM Packages'
+      displayName: 'NPM: Restore Cache'
       inputs:
         key: 'npm | "$(Agent.OS)" | $(Build.SourcesDirectory)/data-access/package-lock.json'
         restoreKeys: |
@@ -87,7 +87,7 @@ stages:
 
     # Cache SonarCloud downloaded assets to speed up build process.
     - task: Cache@2
-      displayName: 'Cache: SonarCloud'
+      displayName: 'SonarCloud: Restore Cache'
       inputs:
         key: 'sonarcloud | "$(Agent.OS)"'
         restoreKeys: |
@@ -114,7 +114,7 @@ stages:
 
     # SonarCloud: Publish analysis results and wait until completion
     - task: SonarCloudPublish@1
-      displayName: 'SounarCloud: Publish results on build summary'
+      displayName: 'SonarCloud: Publish results on build summary'
       inputs:
         pollingTimeoutSec: '300'      
       
