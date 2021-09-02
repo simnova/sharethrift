@@ -71,8 +71,6 @@ const getPlaygroundSetting = () => {
 const server = new ApolloServer({
   typeDefs,
   resolvers,
-  playground: { endpoint: process.env.APOLLO_PLAYGROUND_ENDPOINT },
-
   context: async (request) => {
     var [user, validated] = await MsalAuth.VerifyAccessToken(request);
     return { user, validated };
