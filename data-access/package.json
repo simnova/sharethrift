@@ -9,7 +9,7 @@
     "prestart": "npm run build && func extensions install",
     "start:host": "func start --verbose",
     "start": "npm-run-all --parallel start:host watch",
-    "test:ci": "jest --watchAll=false",
+    "test:ci": "jest --watchAll=false --coverage=true",
     "test": "jest --watch"
   },
   "description": "",

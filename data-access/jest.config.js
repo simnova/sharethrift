@@ -6,6 +6,11 @@ module.exports = {
     testMatch: ['**/**/*.test.ts'],
     coverageReporters: ['json', 'lcov'],
     coverageDirectory: 'coverage',
+    collectCoverageFrom: [
+        "**/*.{js,jsx}",
+        "!**/node_modules/**",
+        "!**/vendor/**"
+      ]
 }
 
 process.env = Object.assign(process.env, {    

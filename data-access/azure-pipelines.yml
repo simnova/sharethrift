@@ -28,7 +28,7 @@ variables:
   vmImageName: 'ubuntu-latest'
 
   system.debug: true
-  
+
 stages:
 - stage: Build
   displayName: Build stage
@@ -66,6 +66,8 @@ stages:
         cliProjectKey: 'sharethrift-data-access'
         cliProjectName: 'sharethrift-data-access'
         cliSources: './data-access'
+        extraProperties: |
+          sonar.javascript.lcov.reportPaths=$(System.DefaultWorkingDirectory)/data-access/coverage/lcov.info
 
     - task: Bash@3
       displayName: 'Prepare binaries'
