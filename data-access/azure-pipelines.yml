@@ -19,7 +19,8 @@ pr:
 variables:
 
   # Function app name
-  functionAppName: 'data-access'
+  functionApp1Name: 'data-access'
+  functionApp2Name: 'data-access-west'
  
   # Environment name
   environmentName: 'data-access'
@@ -28,6 +29,13 @@ variables:
   vmImageName: 'ubuntu-latest'
 
   system.debug: true
+  npm_config_cache: $(Pipeline.Workspace)/.npm
+  SONAR_USER_HOME: $(Pipeline.Workspace)/.sonar
+
+pool:
+  # Ensure OS we build on is same as what we run the function on.
+  vmImage: 'ubuntu-latest'
+
 
 stages:
 - stage: Build
@@ -36,28 +44,48 @@ stages:
   - job: Build
     displayName: Build
     pool:
-      vmImage: $(vmImageName)
-      
+      vmImage: $(vmImageName)      
     steps:
+
+    # Remove all other code that comes from mon-repo except what is necessary for this project.
+    - task: DeleteFiles@1
+      displayName: 'Remove unrelated code'
+      inputs:
+        contents: |
+          ./!(data-access){*,/**}
+
+    # Ensure the correct version of Node is installed.
     - task: NodeTool@0
+      displayName: 'Install LTS Node.js'
       inputs:
-        versionSpec: '12.x'
-      displayName: 'Install Node.js'
+        versionSpec: '14.x'
 
-
-
+    # Ensure the correct version of function tools are installed.
     - task: FuncToolsInstaller@0
+      displayName: 'Install func tools - latest'
+
+    # Cache NPM packages to speed up build process.
+    - task: Cache@2
+      displayName: 'Cache NPM Packages'
+      condition: ne(variables['Build.Reason'], 'PullRequest')
       inputs:
-        version: '3.0.2931'
+        key: 'npm | "$(Agent.OS)" | $(Build.SourcesDirectory)/data-access/package-lock.json'
+        restoreKeys: |
+            npm | "$(Agent.OS)"
+        path: $(npm_config_cache)
 
-    - script: |
-        if [ -f extensions.csproj ]
-        then
-            dotnet build extensions.csproj --runtime ubuntu.16.04-x64 --output ./bin
-        fi
-      displayName: 'Build extensions'
+    # Cache SonarCloud downloaded assets to speed up build process.
+    - task: Cache@2
+      displayName: 'Cache SonarCloud'
+      inputs:
+        key: 'sonarcloud | "$(Agent.OS)"'
+        restoreKeys: |
+          sonarcloud | "$(Agent.OS)"
+        path: $(SONAR_USER_HOME)/cache
 
+    # Set up SonarCloud
     - task: SonarCloudPrepare@1
+      displayName: 'SonarCloud: Prepare analysis configuration'
       inputs:
         SonarCloud: 'sonarcloud'
         organization: 'simnova'
@@ -69,23 +97,31 @@ stages:
         extraProperties: |
           sonar.javascript.lcov.reportPaths=$(System.DefaultWorkingDirectory)/data-access/coverage/lcov.info
 
+    # Build project and run tests
     - task: Bash@3
-      displayName: 'Prepare binaries'
+      displayName: 'NPM: Prepare binaries and run tests'
       inputs:
         targetType: 'inline'
         script: |
+          export NODE_OPTIONS=--max_old_space_size=16384
           npm install
           npm run build:production
           npm run test:ci
         workingDirectory: 'data-access'
 
+    # SonarCloud: Analyze code and code coverage
     - task: SonarCloudAnalyze@1
+      displayName: 'SonarCloud: Run analysis'
+
+    # SonarCloud: Publish analysis results and wait until completion
     - task: SonarCloudPublish@1
+      displayName: 'SounarCloud: Publish results on build summary'
       inputs:
         pollingTimeoutSec: '300'      
       
+    # Package compiled assets into artifact
     - task: ArchiveFiles@2
-      displayName: 'Archive files'
+      displayName: 'Prepare Artifact'
       condition: and(succeeded(), ne(variables['Build.Reason'], 'PullRequest'))
       inputs:
         rootFolderOrFile: '$(System.DefaultWorkingDirectory)/data-access'
@@ -94,7 +130,9 @@ stages:
         archiveFile: $(Build.ArtifactStagingDirectory)/$(Build.BuildId).zip
         replaceExistingArchive: true
 
-    - upload: $(Build.ArtifactStagingDirectory)/$(Build.BuildId).zip
+    # Upload artifact as build result    
+    - publish: $(Build.ArtifactStagingDirectory)/$(Build.BuildId).zip
+      displayName: 'Publish Artifact'
       condition: and(succeeded(), ne(variables['Build.Reason'], 'PullRequest'))
       artifact: drop
 
@@ -117,7 +155,7 @@ stages:
             inputs:
               azureSubscription: 'ShareThrift'
               appType: functionAppLinux
-              appName: $(functionAppName)
+              appName: $(functionApp1Name)
               package: '$(Pipeline.Workspace)/drop/$(Build.BuildId).zip'
               deploymentMethod: 'runFromPackage'
               runtimeStack: 'NODE|14'
@@ -126,7 +164,7 @@ stages:
             inputs:
               azureSubscription: 'ShareThrift'
               appType: 'functionAppLinux'
-              appName: 'data-access-west'
+              appName: $(functionApp2Name)
               package: '$(Pipeline.Workspace)/drop/$(Build.BuildId).zip'
               deploymentMethod: 'runFromPackage'
               runtimeStack: 'NODE|14'
