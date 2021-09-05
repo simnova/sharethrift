@@ -3,11 +3,11 @@ import {
   GraphQLScalarType,
   GraphQLScalarTypeConfig,
 } from "graphql";
-import { CategoryModel } from "./shared/data-sources/cosmos-db/models/category";
-import { ListingModel } from "./shared/data-sources/cosmos-db/models/listing";
-import { LocationModel } from "./shared/data-sources/cosmos-db/models/location";
-import { PointModel } from "./shared/data-sources/cosmos-db/models/point";
-import { UserModel } from "./shared/data-sources/cosmos-db/models/user";
+import { CategoryType } from "../shared/data-sources/cosmos-db/models/category";
+import { ListingType } from "../shared/data-sources/cosmos-db/models/listing";
+import { LocationType } from "../shared/data-sources/cosmos-db/models/location";
+import { PointType } from "../shared/data-sources/cosmos-db/models/point";
+import { UserType } from "../shared/data-sources/cosmos-db/models/user";
 import { Context } from "./context";
 export type Maybe<T> = T | null;
 export type Exact<T extends { [key: string]: unknown }> = {
@@ -187,26 +187,26 @@ export type DirectiveResolverFn<
 
 /** Mapping between all available schema types and the resolvers types */
 export type ResolversTypes = {
-  Category: ResolverTypeWrapper<CategoryModel>;
+  Category: ResolverTypeWrapper<CategoryType>;
   ID: ResolverTypeWrapper<Scalars["ID"]>;
   String: ResolverTypeWrapper<Scalars["String"]>;
   Date: ResolverTypeWrapper<Scalars["Date"]>;
   Mutation: ResolverTypeWrapper<{}>;
   Query: ResolverTypeWrapper<{}>;
-  User: ResolverTypeWrapper<UserModel>;
+  User: ResolverTypeWrapper<UserType>;
   UserUpdateInput: UserUpdateInput;
   Boolean: ResolverTypeWrapper<Scalars["Boolean"]>;
 };
 
 /** Mapping between all available schema types and the resolvers parents */
 export type ResolversParentTypes = {
-  Category: CategoryModel;
+  Category: CategoryType;
   ID: Scalars["ID"];
   String: Scalars["String"];
   Date: Scalars["Date"];
   Mutation: {};
   Query: {};
-  User: UserModel;
+  User: UserType;
   UserUpdateInput: UserUpdateInput;
   Boolean: Scalars["Boolean"];
 };

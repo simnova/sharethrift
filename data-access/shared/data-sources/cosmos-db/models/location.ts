@@ -1,10 +1,10 @@
 import { Schema, model, Model } from 'mongoose';
 import * as Point from './point';
 
-export interface Location {
+export interface LocationType {
   _id: string;
   schemaVersion: string,
-  position: Point.Point;
+  position: Point.PointType;
   address: {
     streetNumber: string;
     streetName: string;
@@ -23,7 +23,7 @@ export interface Location {
   }
 }
 
-export const LocationModel = model<Location>('Location', new Schema<Location, Model<Location>, Location>(
+export const LocationModel = model<LocationType>('Location', new Schema<LocationType, Model<LocationType>, LocationType>(
   {
     schemaVersion: {
       type: String,

@@ -6,11 +6,11 @@ generates:
     config:
       contextType: "./context#Context"
       mappers:
-        Category: ./shared/data-sources/cosmos-db/models/category#CategoryModel
-        Listing: ./shared/data-sources/cosmos-db/models/listing#ListingModel
-        Location: ./shared/data-sources/cosmos-db/models/location#LocationModel
-        Point: ./shared/data-sources/cosmos-db/models/point#PointModel
-        User: ./shared/data-sources/cosmos-db/models/user#UserModel
+        Category: ../shared/data-sources/cosmos-db/models/category#CategoryType
+        Listing: ../shared/data-sources/cosmos-db/models/listing#ListingType
+        Location: ../shared/data-sources/cosmos-db/models/location#LocationType
+        Point: ../shared/data-sources/cosmos-db/models/point#PointType
+        User: ../shared/data-sources/cosmos-db/models/user#UserType
     plugins:
       - "typescript"
       - "typescript-resolvers"

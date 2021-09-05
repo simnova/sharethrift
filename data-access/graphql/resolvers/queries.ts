@@ -6,8 +6,8 @@ const Query =
     getCategories.Query;
 
 
-
-
 export default {
     Query
 }
+
+/* THIS FILE NO LONGER NEEDED */

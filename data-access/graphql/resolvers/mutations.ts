@@ -1,9 +1,10 @@
-import Account_create from './mutations/account_create';
+import {UpdateUser} from './mutations/update-user';
 
-const Mutation = {
-    ...Account_create
-}
+const Mutation = 
+    UpdateUser.Mutation;
 
 export default {
     Mutation
 }
+
+/* THIS FILE NO LONGER NEEDED */

@@ -6,8 +6,11 @@ import { GraphQLFileLoader } from '@graphql-tools/graphql-file-loader';
 const schema = loadSchemaSync('./graphql/!(schema)**/*.graphql', { 
   loaders: [
       new GraphQLFileLoader()
-  ]
+  ],
+
 });
+
+
 
 const serverConfig = () => {
   return {

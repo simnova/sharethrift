@@ -2,18 +2,18 @@ import { Schema, model, Model, PopulatedDoc } from 'mongoose';
 
 export const ModelName = 'Category';
 
-export interface Category {
+export interface CategoryType {
   _id: string;
   schemaVersion: string;
   name: string;
-  parentId: PopulatedDoc<Category>;
-  childrenIds: PopulatedDoc<Category>[];
+  parentId: PopulatedDoc<CategoryType>;
+  childrenIds: PopulatedDoc<CategoryType>[];
   path:string;
   createdAt: Date;
   updatedAt: Date;
 }
 
-export const CategoryModel = model<Category>(ModelName,new Schema<Category, Model<Category>, Category>(
+export const CategoryModel = model<CategoryType>(ModelName,new Schema<CategoryType, Model<CategoryType>, CategoryType>(
   {
     schemaVersion: {
       type: String,

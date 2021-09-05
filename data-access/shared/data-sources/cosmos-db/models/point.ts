@@ -4,7 +4,7 @@ import { Schema, model, Model } from 'mongoose';
  * @description
  * Point model - used to store lat/long coordinates
  */
-export interface Point {
+export interface PointType {
   _id: string;
   schemaVersion: string;
   type: string;
@@ -15,7 +15,7 @@ export interface Point {
   coordinates: number[];
 }
 
-export const PointModel = model<Point>('Point', new Schema<Point, Model<Point>, Point>(
+export const PointModel = model<PointType>('Point', new Schema<PointType, Model<PointType>, PointType>(
   {
     schemaVersion: {
       type: String,

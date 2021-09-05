@@ -1,6 +1,6 @@
 import { Schema, model, Model } from 'mongoose';
 
-export interface User {
+export interface UserType {
   _id: string;
   schemaVersion: string;
   firstName: string;
@@ -10,7 +10,7 @@ export interface User {
   updatedAt: Date;
 }
 
-export const UserModel = model<User>('User', new Schema<User, Model<User>, User>(
+export const UserModel = model<UserType>('User', new Schema<UserType, Model<UserType>, UserType>(
   {
     schemaVersion: {
       type: String,
