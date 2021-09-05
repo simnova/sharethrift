@@ -1,9 +1,8 @@
-type User {
+type Category {
   _id: ID!
   schemaVersion: String
-  firstName: String
-  lastName: String
-  email: String
+  name: String
+  path:String
   createdAt: Date
   updatedAt: Date
 }

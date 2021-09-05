@@ -1,8 +1,12 @@
-import hello from './queryies/hello';
+import { getUser } from './queryies/get-user';
+import { getCategories } from './queryies/get-categories';
 
-const Query = {
-    ...hello
-}
+const Query = 
+    getUser.Query &&
+    getCategories.Query;
+
+
+
 
 export default {
     Query

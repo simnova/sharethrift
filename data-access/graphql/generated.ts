@@ -8,7 +8,7 @@ import { ListingModel } from "./shared/data-sources/cosmos-db/models/listing";
 import { LocationModel } from "./shared/data-sources/cosmos-db/models/location";
 import { PointModel } from "./shared/data-sources/cosmos-db/models/point";
 import { UserModel } from "./shared/data-sources/cosmos-db/models/user";
-import { Context } from "./graphql/context";
+import { Context } from "./context";
 export type Maybe<T> = T | null;
 export type Exact<T extends { [key: string]: unknown }> = {
   [K in keyof T]: T[K];
@@ -31,6 +31,16 @@ export type Scalars = {
   Date: any;
 };
 
+export type Category = {
+  __typename?: "Category";
+  _id: Scalars["ID"];
+  schemaVersion?: Maybe<Scalars["String"]>;
+  name?: Maybe<Scalars["String"]>;
+  path?: Maybe<Scalars["String"]>;
+  createdAt?: Maybe<Scalars["Date"]>;
+  updatedAt?: Maybe<Scalars["Date"]>;
+};
+
 export type Mutation = {
   __typename?: "Mutation";
   _empty?: Maybe<Scalars["String"]>;
@@ -44,6 +54,7 @@ export type MutationUpdateUserArgs = {
 export type Query = {
   __typename?: "Query";
   _empty?: Maybe<Scalars["String"]>;
+  getCategories?: Maybe<Array<Maybe<Category>>>;
   getUser?: Maybe<User>;
 };
 
@@ -176,11 +187,12 @@ export type DirectiveResolverFn<
 
 /** Mapping between all available schema types and the resolvers types */
 export type ResolversTypes = {
+  Category: ResolverTypeWrapper<CategoryModel>;
+  ID: ResolverTypeWrapper<Scalars["ID"]>;
+  String: ResolverTypeWrapper<Scalars["String"]>;
   Date: ResolverTypeWrapper<Scalars["Date"]>;
   Mutation: ResolverTypeWrapper<{}>;
-  String: ResolverTypeWrapper<Scalars["String"]>;
   Query: ResolverTypeWrapper<{}>;
-  ID: ResolverTypeWrapper<Scalars["ID"]>;
   User: ResolverTypeWrapper<UserModel>;
   UserUpdateInput: UserUpdateInput;
   Boolean: ResolverTypeWrapper<Scalars["Boolean"]>;
@@ -188,14 +200,32 @@ export type ResolversTypes = {
 
 /** Mapping between all available schema types and the resolvers parents */
 export type ResolversParentTypes = {
+  Category: CategoryModel;
+  ID: Scalars["ID"];
+  String: Scalars["String"];
   Date: Scalars["Date"];
   Mutation: {};
-  String: Scalars["String"];
   Query: {};
-  ID: Scalars["ID"];
   User: UserModel;
   UserUpdateInput: UserUpdateInput;
   Boolean: Scalars["Boolean"];
+};
+
+export type CategoryResolvers<
+  ContextType = Context,
+  ParentType extends ResolversParentTypes["Category"] = ResolversParentTypes["Category"]
+> = {
+  _id?: Resolver<ResolversTypes["ID"], ParentType, ContextType>;
+  schemaVersion?: Resolver<
+    Maybe<ResolversTypes["String"]>,
+    ParentType,
+    ContextType
+  >;
+  name?: Resolver<Maybe<ResolversTypes["String"]>, ParentType, ContextType>;
+  path?: Resolver<Maybe<ResolversTypes["String"]>, ParentType, ContextType>;
+  createdAt?: Resolver<Maybe<ResolversTypes["Date"]>, ParentType, ContextType>;
+  updatedAt?: Resolver<Maybe<ResolversTypes["Date"]>, ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
 export interface DateScalarConfig
@@ -221,6 +251,11 @@ export type QueryResolvers<
   ParentType extends ResolversParentTypes["Query"] = ResolversParentTypes["Query"]
 > = {
   _empty?: Resolver<Maybe<ResolversTypes["String"]>, ParentType, ContextType>;
+  getCategories?: Resolver<
+    Maybe<Array<Maybe<ResolversTypes["Category"]>>>,
+    ParentType,
+    ContextType
+  >;
   getUser?: Resolver<
     Maybe<ResolversTypes["User"]>,
     ParentType,
@@ -252,6 +287,7 @@ export type UserResolvers<
 };
 
 export type Resolvers<ContextType = Context> = {
+  Category?: CategoryResolvers<ContextType>;
   Date?: GraphQLScalarType;
   Mutation?: MutationResolvers<ContextType>;
   Query?: QueryResolvers<ContextType>;

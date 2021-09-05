@@ -17,6 +17,16 @@ export type Scalars = {
   Date: any;
 };
 
+export type Category = {
+  __typename?: "Category";
+  _id: Scalars["ID"];
+  schemaVersion?: Maybe<Scalars["String"]>;
+  name?: Maybe<Scalars["String"]>;
+  path?: Maybe<Scalars["String"]>;
+  createdAt?: Maybe<Scalars["Date"]>;
+  updatedAt?: Maybe<Scalars["Date"]>;
+};
+
 export type Mutation = {
   __typename?: "Mutation";
   _empty?: Maybe<Scalars["String"]>;
@@ -30,6 +40,7 @@ export type MutationUpdateUserArgs = {
 export type Query = {
   __typename?: "Query";
   _empty?: Maybe<Scalars["String"]>;
+  getCategories?: Maybe<Array<Maybe<Category>>>;
   getUser?: Maybe<User>;
 };
 
@@ -53,6 +64,16 @@ export type UserUpdateInput = {
   firstName?: Maybe<Scalars["String"]>;
   lastName?: Maybe<Scalars["String"]>;
   email?: Maybe<Scalars["String"]>;
+};
+
+export type CategoryFieldsFragment = {
+  __typename?: "Category";
+  _id: string;
+  schemaVersion?: Maybe<string>;
+  name?: Maybe<string>;
+  path?: Maybe<string>;
+  createdAt?: Maybe<any>;
+  updatedAt?: Maybe<any>;
 };
 
 export type UserFieldsFragment = {
@@ -102,6 +123,30 @@ export type GetUserQuery = {
   }>;
 };
 
+export const CategoryFieldsFragmentDoc = {
+  kind: "Document",
+  definitions: [
+    {
+      kind: "FragmentDefinition",
+      name: { kind: "Name", value: "CategoryFields" },
+      typeCondition: {
+        kind: "NamedType",
+        name: { kind: "Name", value: "Category" },
+      },
+      selectionSet: {
+        kind: "SelectionSet",
+        selections: [
+          { kind: "Field", name: { kind: "Name", value: "_id" } },
+          { kind: "Field", name: { kind: "Name", value: "schemaVersion" } },
+          { kind: "Field", name: { kind: "Name", value: "name" } },
+          { kind: "Field", name: { kind: "Name", value: "path" } },
+          { kind: "Field", name: { kind: "Name", value: "createdAt" } },
+          { kind: "Field", name: { kind: "Name", value: "updatedAt" } },
+        ],
+      },
+    },
+  ],
+} as unknown as DocumentNode<CategoryFieldsFragment, unknown>;
 export const UserFieldsFragmentDoc = {
   kind: "Document",
   definitions: [

@@ -4,7 +4,7 @@ documents: "./graphql/schema/*(queries-documents|mutations-documents)**/**.graph
 generates:
   graphql/generated.ts:
     config:
-      contextType: "./graphql/context#Context"
+      contextType: "./context#Context"
       mappers:
         Category: ./shared/data-sources/cosmos-db/models/category#CategoryModel
         Listing: ./shared/data-sources/cosmos-db/models/listing#ListingModel

@@ -3,7 +3,6 @@ import { HttpRequest, Context } from "@azure/functions";
 import { loadSchemaSync } from '@graphql-tools/load';
 import { GraphQLFileLoader } from '@graphql-tools/graphql-file-loader';
 
-
 const schema = loadSchemaSync('./graphql/!(schema)**/*.graphql', { 
   loaders: [
       new GraphQLFileLoader()
@@ -13,6 +12,9 @@ const schema = loadSchemaSync('./graphql/!(schema)**/*.graphql', {
 const serverConfig = () => {
   return {
     schema: schema,
+    dataSources: () => ({
+
+    }),
     playground: { endpoint: "/api/graphql" }
   }
 }
