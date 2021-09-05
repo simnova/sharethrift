@@ -1,0 +1,3 @@
+extend type Query {
+  getUser(id: ID!): User
+}

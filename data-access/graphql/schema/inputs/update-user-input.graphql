@@ -1,0 +1,6 @@
+input UserUpdateInput {
+  id: ID!
+  firstName: String
+  lastName: String
+  email: String
+}

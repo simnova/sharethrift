@@ -1,0 +1,10 @@
+scalar Date
+type User {
+  _id: ID!
+  schemaVersion: String
+  firstName: String
+  lastName: String
+  email: String
+  createdAt: Date
+  updatedAt: Date
+}

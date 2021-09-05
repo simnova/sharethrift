@@ -1,0 +1,16 @@
+type Listing {
+ _id: ID!;
+  schemaVersion: String;
+  owner: User.User;
+  title: String;
+  description: String;
+  primaryCategory: Category;
+  photos: [
+    _id: ID!,
+    order: Number,
+    documentId: String
+  ];
+  location: Location;
+  updatedAt: Date;
+  createdAt: Date;
+}

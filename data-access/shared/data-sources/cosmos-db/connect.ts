@@ -1,12 +1,9 @@
 import mongoose from 'mongoose';
 
 async function connect() {
+    if(!process.env.COSMOSDB || process.env.COSMOSDB.length === 0) throw new Error("CosmosDB connection string not found.");
     try {
-        await mongoose.connect("mongodb://"+process.env.COSMOSDB_HOST+":"+process.env.COSMOSDB_PORT+"/"+process.env.COSMOSDB_DBNAME+"?ssl=true&replicaSet=globaldb&retryWrites=false", {
-            auth: {
-                user: process.env.COSMODDB_USER,
-                password: process.env.COSMOSDB_PASSWORD
-            },
+        await mongoose.connect(process.env.COSMOSDB, {
             useNewUrlParser: true, 
             useUnifiedTopology: true,
             useFindAndModify: false,

@@ -1,0 +1,32 @@
+overwrite: true
+schema: "./graphql/schema/*(!(queries-documents|mutations-documents)**|*)/*.graphql"
+documents: "./graphql/schema/*(queries-documents|mutations-documents)**/**.graphql"
+generates:
+  graphql/generated.ts:
+    config:
+      contextType: "./graphql/context#Context"
+      mappers:
+        Category: ./shared/data-sources/cosmos-db/models/category#CategoryModel
+        Listing: ./shared/data-sources/cosmos-db/models/listing#ListingModel
+        Location: ./shared/data-sources/cosmos-db/models/location#LocationModel
+        Point: ./shared/data-sources/cosmos-db/models/point#PointModel
+        User: ./shared/data-sources/cosmos-db/models/user#UserModel
+    plugins:
+      - "typescript"
+      - "typescript-resolvers"
+  ./graphql.schema.json:
+    plugins:
+      - "introspection"
+
+  ../ui/src/generated.tsx:
+    config:
+      withHooks: true
+      withHOC: false
+      withComponent: false
+    plugins:
+      - "typescript"
+      - "typescript-operations"
+      - "typed-document-node"
+hooks:
+  afterAllFileWrite:
+    - npx prettier --write
