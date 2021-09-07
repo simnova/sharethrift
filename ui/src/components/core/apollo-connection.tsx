@@ -26,7 +26,7 @@ const ApolloConnection: FC<any> = () => {
   });
 
   const httpLink = createHttpLink({
-    uri: `${process.env.REACT_APP_FUNCTION_ENDPOINT}/api/graphql`,
+    uri: `${process.env.REACT_APP_FUNCTION_ENDPOINT}`,
   });
 
   const client = new ApolloClient({
