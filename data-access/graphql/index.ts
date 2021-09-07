@@ -3,7 +3,9 @@ import connect from "../shared/data-sources/cosmos-db/connect";
 import Apollo from './init/apollo';
 
 (async () => {
+  console.log("before");
   await connect();
+  console.log("after");
 })();
 
 export default (context: Context, req: HttpRequest) => {

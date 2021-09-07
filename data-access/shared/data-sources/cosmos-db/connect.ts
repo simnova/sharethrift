@@ -7,6 +7,8 @@ async function connect() {
             useNewUrlParser: true, 
             useUnifiedTopology: true,
             useFindAndModify: false,
+            tlsInsecure: true, //only for developent
+            dbName: process.env.COSMOSDB_DBNAME || 'sharethrift',
             poolSize: Number(process.env.COSMOSDB_POOL_SIZE)
         }).then(() => console.log(`🗄️ Successfully connected Mongoose to ${mongoose.connection.name} 🗄️`));
     } catch (error) {

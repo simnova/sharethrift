@@ -1,4 +1,5 @@
 import { Resolvers } from '../../generated';
+import {parseFields} from '../../../shared/util/graphql-mongo-fields';
 
 export const getCategories : Resolvers = {
   Query: {

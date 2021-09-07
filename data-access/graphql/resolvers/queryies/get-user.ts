@@ -1,4 +1,5 @@
 import { Resolvers } from '../../generated';
+import {parseFields} from 'graphql-mongo-fields';
 
 export const getUser : Resolvers = {
 
