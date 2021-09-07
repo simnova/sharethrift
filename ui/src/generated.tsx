@@ -14,6 +14,7 @@ export type Scalars = {
   Boolean: boolean;
   Int: number;
   Float: number;
+  /** Date is required to enable the use of  Date objects in the database. Do not remove othwerwise you will get an error. */
   Date: any;
 };
 
@@ -33,6 +34,7 @@ export type CreateUserInput = {
   email?: Maybe<Scalars["String"]>;
 };
 
+/**  Base Mutation Type definition - all mutations will be defined in separate files extending this type  */
 export type Mutation = {
   __typename?: "Mutation";
   _empty?: Maybe<Scalars["String"]>;
@@ -40,14 +42,17 @@ export type Mutation = {
   updateUser?: Maybe<User>;
 };
 
+/**  Base Mutation Type definition - all mutations will be defined in separate files extending this type  */
 export type MutationCreateUserArgs = {
   input: CreateUserInput;
 };
 
+/**  Base Mutation Type definition - all mutations will be defined in separate files extending this type  */
 export type MutationUpdateUserArgs = {
   input: UserUpdateInput;
 };
 
+/**  Base Query Type definition - , all mutations will be defined in separate files extending this type  */
 export type Query = {
   __typename?: "Query";
   _empty?: Maybe<Scalars["String"]>;
@@ -55,6 +60,7 @@ export type Query = {
   getUser?: Maybe<User>;
 };
 
+/**  Base Query Type definition - , all mutations will be defined in separate files extending this type  */
 export type QueryGetUserArgs = {
   id: Scalars["ID"];
 };

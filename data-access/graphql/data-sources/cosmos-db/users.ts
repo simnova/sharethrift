@@ -5,12 +5,11 @@ import {Context} from '../../context';
 export default class Users extends MongoDataSource<User.UserType, Context> {
   
   getUser(userId : string): Promise<User.UserType> {
-    console.log("hello world!!!!!!")
     return this.findOneById(userId);
   }
 
   createUser(firstName: string, lastName: string, email:string): Promise<User.UserType> {
-    console.log("hello world22!!!!!!")
+    
     return this.collection.insertOne( 
       { 
         firstName: firstName,

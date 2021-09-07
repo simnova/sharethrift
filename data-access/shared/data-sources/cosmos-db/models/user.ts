@@ -39,3 +39,4 @@ export const UserModel = model<UserType>('User', new Schema<UserType, Model<User
   }
 ));
 
+export type UserModelType = typeof UserModel

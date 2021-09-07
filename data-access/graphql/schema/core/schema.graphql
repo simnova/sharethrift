@@ -1,12 +1,15 @@
+""" Core schema """
 schema {
   query: Query
   mutation: Mutation
 }
 
+""" Base Mutation Type definition - all mutations will be defined in separate files extending this type """
 type Mutation {
     _empty:String
 }
 
+""" Base Query Type definition - , all mutations will be defined in separate files extending this type """
 type Query {
     _empty:String
 }

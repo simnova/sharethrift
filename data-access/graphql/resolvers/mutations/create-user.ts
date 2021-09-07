@@ -1,4 +1,5 @@
 import { Resolvers } from '../../generated';
+import { updateUser } from './update-user';
 
 export const createUser : Resolvers = {
   Mutation: {
