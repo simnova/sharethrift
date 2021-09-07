@@ -1,5 +1,5 @@
 import { HttpRequest, Context } from '@azure/functions';
-import connect from "../shared/data-sources/cosmos-db/connect";
+import connect from '../shared/data-sources/cosmos-db/connect';
 import Apollo from './init/apollo';
 
 (async () => {

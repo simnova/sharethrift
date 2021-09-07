@@ -27,10 +27,21 @@ export type Category = {
   updatedAt?: Maybe<Scalars["Date"]>;
 };
 
+export type CreateUserInput = {
+  firstName?: Maybe<Scalars["String"]>;
+  lastName?: Maybe<Scalars["String"]>;
+  email?: Maybe<Scalars["String"]>;
+};
+
 export type Mutation = {
   __typename?: "Mutation";
   _empty?: Maybe<Scalars["String"]>;
+  createUser?: Maybe<User>;
   updateUser?: Maybe<User>;
+};
+
+export type MutationCreateUserArgs = {
+  input: CreateUserInput;
 };
 
 export type MutationUpdateUserArgs = {

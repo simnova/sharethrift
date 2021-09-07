@@ -2,8 +2,9 @@ import mongoose from 'mongoose';
 
 async function connect() {
     if(!process.env.COSMOSDB || process.env.COSMOSDB.length === 0) throw new Error("CosmosDB connection string not found.");
+
     try {
-        await mongoose.connect(process.env.COSMOSDB, {
+        await mongoose.connect(`${process.env.COSMOSDB}&retrywrites=false`, {
             useNewUrlParser: true, 
             useUnifiedTopology: true,
             useFindAndModify: false,

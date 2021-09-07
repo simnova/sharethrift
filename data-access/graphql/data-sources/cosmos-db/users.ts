@@ -3,8 +3,21 @@ import * as User from '../../../shared/data-sources/cosmos-db/models/user';
 import {Context} from '../../context';
 
 export default class Users extends MongoDataSource<User.UserType, Context> {
+  
   getUser(userId : string): Promise<User.UserType> {
+    console.log("hello world!!!!!!")
     return this.findOneById(userId);
+  }
+
+  createUser(firstName: string, lastName: string, email:string): Promise<User.UserType> {
+    console.log("hello world22!!!!!!")
+    return this.collection.insertOne( 
+      { 
+        firstName: firstName,
+        lastName: lastName,
+        email: email
+      }
+    ).then((result) => this.findOneById(result.insertedId));
   }
 
   updateUser(userId:string, firstName: string, lastName: string, email:string): Promise<User.UserType> {

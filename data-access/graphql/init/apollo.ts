@@ -1,35 +1,30 @@
-import { ApolloServer } from "apollo-server-azure-functions";
+import { ApolloServer } from 'apollo-server-azure-functions';
 import { HttpRequest, Context } from "@azure/functions";
 import { loadSchemaSync } from '@graphql-tools/load';
+import { addResolversToSchema } from '@graphql-tools/schema';
 import { GraphQLFileLoader } from '@graphql-tools/graphql-file-loader';
-import { CosmosDB } from "../data-sources/cosmos-db";
+import { CosmosDB } from '../data-sources/cosmos-db';
+import { resolvers } from '../resolvers';
 
-const schema = loadSchemaSync('./graphql/*(schema)**/*.graphql', { 
+const schema = loadSchemaSync('./graphql/schema/**/*.graphql', { 
   loaders: [
       new GraphQLFileLoader()
-  ],
-
+  ]
 });
 
 const serverConfig = () => {
   return {
-    schema: schema,
-    dataSources: () => (
-      CosmosDB &&
-      {
-      
-      }),
+    schema: addResolversToSchema(schema,resolvers),
+    dataSources: () => ({
+      ...CosmosDB,
+    }),
     playground: { endpoint: "/api/graphql" }
   }
 }
 
-
-
 const server = new ApolloServer({
   ...serverConfig()
 });
-
-
 
 const graphqlHandler = (context: Context, req: HttpRequest) => {
   const graphqlHandlerObj = server.createHandler({

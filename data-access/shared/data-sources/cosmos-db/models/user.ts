@@ -2,12 +2,12 @@ import { Schema, model, Model } from 'mongoose';
 
 export interface UserType {
   _id: string;
-  schemaVersion: string;
+  schemaVersion?: string;
   firstName: string;
   lastName: string;
   email: string;
-  createdAt: Date;
-  updatedAt: Date;
+  createdAt?: Date;
+  updatedAt?: Date;
 }
 
 export const UserModel = model<UserType>('User', new Schema<UserType, Model<UserType>, UserType>(
@@ -15,6 +15,7 @@ export const UserModel = model<UserType>('User', new Schema<UserType, Model<User
     schemaVersion: {
       type: String,
       default: '1.0.0',
+      required: false,
     },
     firstName: {
       type: String,

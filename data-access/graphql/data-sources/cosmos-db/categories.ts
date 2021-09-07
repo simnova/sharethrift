@@ -1,5 +1,4 @@
 import { MongoDataSource } from 'apollo-datasource-mongodb';
-import { FindOneOptions, WithoutProjection } from 'mongodb';
 import * as Category from '../../../shared/data-sources/cosmos-db/models/category';
 import {Context} from '../../context';
 
