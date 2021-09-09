@@ -1,0 +1,4 @@
+fragment UserMinimalFields on User {
+  firstName
+  lastName
+}

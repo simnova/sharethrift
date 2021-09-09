@@ -104,6 +104,12 @@ export type UserFieldsFragment = {
   updatedAt?: Maybe<any>;
 };
 
+export type UserMinimalFieldsFragment = {
+  __typename?: "User";
+  firstName?: Maybe<string>;
+  lastName?: Maybe<string>;
+};
+
 export type UpdateUserMutationVariables = Exact<{
   input: UserUpdateInput;
 }>;
@@ -130,13 +136,8 @@ export type GetUserQuery = {
   __typename?: "Query";
   getUser?: Maybe<{
     __typename?: "User";
-    _id: string;
-    schemaVersion?: Maybe<string>;
     firstName?: Maybe<string>;
     lastName?: Maybe<string>;
-    email?: Maybe<string>;
-    createdAt?: Maybe<any>;
-    updatedAt?: Maybe<any>;
   }>;
 };
 
@@ -189,6 +190,26 @@ export const UserFieldsFragmentDoc = {
     },
   ],
 } as unknown as DocumentNode<UserFieldsFragment, unknown>;
+export const UserMinimalFieldsFragmentDoc = {
+  kind: "Document",
+  definitions: [
+    {
+      kind: "FragmentDefinition",
+      name: { kind: "Name", value: "UserMinimalFields" },
+      typeCondition: {
+        kind: "NamedType",
+        name: { kind: "Name", value: "User" },
+      },
+      selectionSet: {
+        kind: "SelectionSet",
+        selections: [
+          { kind: "Field", name: { kind: "Name", value: "firstName" } },
+          { kind: "Field", name: { kind: "Name", value: "lastName" } },
+        ],
+      },
+    },
+  ],
+} as unknown as DocumentNode<UserMinimalFieldsFragment, unknown>;
 export const UpdateUserDocument = {
   kind: "Document",
   definitions: [
@@ -285,7 +306,7 @@ export const GetUserDocument = {
               selections: [
                 {
                   kind: "FragmentSpread",
-                  name: { kind: "Name", value: "UserFields" },
+                  name: { kind: "Name", value: "UserMinimalFields" },
                 },
               ],
             },
@@ -293,6 +314,6 @@ export const GetUserDocument = {
         ],
       },
     },
-    ...UserFieldsFragmentDoc.definitions,
+    ...UserMinimalFieldsFragmentDoc.definitions,
   ],
 } as unknown as DocumentNode<GetUserQuery, GetUserQueryVariables>;
