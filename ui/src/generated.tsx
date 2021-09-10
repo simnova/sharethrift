@@ -3,10 +3,12 @@ export type Maybe<T> = T | null;
 export type Exact<T extends { [key: string]: unknown }> = {
   [K in keyof T]: T[K];
 };
-export type MakeOptional<T, K extends keyof T> = Omit<T, K> &
-  { [SubKey in K]?: Maybe<T[SubKey]> };
-export type MakeMaybe<T, K extends keyof T> = Omit<T, K> &
-  { [SubKey in K]: Maybe<T[SubKey]> };
+export type MakeOptional<T, K extends keyof T> = Omit<T, K> & {
+  [SubKey in K]?: Maybe<T[SubKey]>;
+};
+export type MakeMaybe<T, K extends keyof T> = Omit<T, K> & {
+  [SubKey in K]: Maybe<T[SubKey]>;
+};
 /** All built-in and custom scalars, mapped to their actual values */
 export type Scalars = {
   ID: string;
@@ -58,6 +60,7 @@ export type Query = {
   _empty?: Maybe<Scalars["String"]>;
   getCategories?: Maybe<Array<Maybe<Category>>>;
   getUser?: Maybe<User>;
+  getUsers?: Maybe<Array<Maybe<User>>>;
 };
 
 /**  Base Query Type definition - , all mutations will be defined in separate files extending this type  */
@@ -83,43 +86,42 @@ export type UserUpdateInput = {
   email?: Maybe<Scalars["String"]>;
 };
 
-export type CategoryFieldsFragment = {
-  __typename?: "Category";
-  _id: string;
-  schemaVersion?: Maybe<string>;
-  name?: Maybe<string>;
-  path?: Maybe<string>;
-  createdAt?: Maybe<any>;
-  updatedAt?: Maybe<any>;
-};
-
-export type UserFieldsFragment = {
-  __typename?: "User";
-  _id: string;
-  schemaVersion?: Maybe<string>;
-  firstName?: Maybe<string>;
-  lastName?: Maybe<string>;
-  email?: Maybe<string>;
-  createdAt?: Maybe<any>;
-  updatedAt?: Maybe<any>;
-};
-
-export type UserMinimalFieldsFragment = {
+export type UserListItemFieldsFragment = {
   __typename?: "User";
   firstName?: Maybe<string>;
   lastName?: Maybe<string>;
 };
 
-export type UpdateUserMutationVariables = Exact<{
-  input: UserUpdateInput;
+export type UserListGetUsersQueryVariables = Exact<{ [key: string]: never }>;
+
+export type UserListGetUsersQuery = {
+  __typename?: "Query";
+  getUsers?: Maybe<
+    Array<
+      Maybe<{
+        __typename?: "User";
+        firstName?: Maybe<string>;
+        lastName?: Maybe<string>;
+        _id: string;
+      }>
+    >
+  >;
+};
+
+export type UserListGetUsersFieldsFragment = {
+  __typename?: "User";
+  _id: string;
+};
+
+export type UserProfileQueryVariables = Exact<{
+  userId: Scalars["ID"];
 }>;
 
-export type UpdateUserMutation = {
-  __typename?: "Mutation";
-  updateUser?: Maybe<{
+export type UserProfileQuery = {
+  __typename?: "Query";
+  getUser?: Maybe<{
     __typename?: "User";
     _id: string;
-    schemaVersion?: Maybe<string>;
     firstName?: Maybe<string>;
     lastName?: Maybe<string>;
     email?: Maybe<string>;
@@ -128,49 +130,59 @@ export type UpdateUserMutation = {
   }>;
 };
 
-export type GetUserQueryVariables = Exact<{
-  userId: Scalars["ID"];
-}>;
-
-export type GetUserQuery = {
-  __typename?: "Query";
-  getUser?: Maybe<{
-    __typename?: "User";
-    firstName?: Maybe<string>;
-    lastName?: Maybe<string>;
-  }>;
+export type UserProfileFieldsFragment = {
+  __typename?: "User";
+  _id: string;
+  firstName?: Maybe<string>;
+  lastName?: Maybe<string>;
+  email?: Maybe<string>;
+  createdAt?: Maybe<any>;
+  updatedAt?: Maybe<any>;
 };
 
-export const CategoryFieldsFragmentDoc = {
+export const UserListItemFieldsFragmentDoc = {
   kind: "Document",
   definitions: [
     {
       kind: "FragmentDefinition",
-      name: { kind: "Name", value: "CategoryFields" },
+      name: { kind: "Name", value: "UserListItemFields" },
       typeCondition: {
         kind: "NamedType",
-        name: { kind: "Name", value: "Category" },
+        name: { kind: "Name", value: "User" },
       },
       selectionSet: {
         kind: "SelectionSet",
         selections: [
-          { kind: "Field", name: { kind: "Name", value: "_id" } },
-          { kind: "Field", name: { kind: "Name", value: "schemaVersion" } },
-          { kind: "Field", name: { kind: "Name", value: "name" } },
-          { kind: "Field", name: { kind: "Name", value: "path" } },
-          { kind: "Field", name: { kind: "Name", value: "createdAt" } },
-          { kind: "Field", name: { kind: "Name", value: "updatedAt" } },
+          { kind: "Field", name: { kind: "Name", value: "firstName" } },
+          { kind: "Field", name: { kind: "Name", value: "lastName" } },
         ],
       },
     },
   ],
-} as unknown as DocumentNode<CategoryFieldsFragment, unknown>;
-export const UserFieldsFragmentDoc = {
+} as unknown as DocumentNode<UserListItemFieldsFragment, unknown>;
+export const UserListGetUsersFieldsFragmentDoc = {
   kind: "Document",
   definitions: [
     {
       kind: "FragmentDefinition",
-      name: { kind: "Name", value: "UserFields" },
+      name: { kind: "Name", value: "UserListGetUsersFields" },
+      typeCondition: {
+        kind: "NamedType",
+        name: { kind: "Name", value: "User" },
+      },
+      selectionSet: {
+        kind: "SelectionSet",
+        selections: [{ kind: "Field", name: { kind: "Name", value: "_id" } }],
+      },
+    },
+  ],
+} as unknown as DocumentNode<UserListGetUsersFieldsFragment, unknown>;
+export const UserProfileFieldsFragmentDoc = {
+  kind: "Document",
+  definitions: [
+    {
+      kind: "FragmentDefinition",
+      name: { kind: "Name", value: "UserProfileFields" },
       typeCondition: {
         kind: "NamedType",
         name: { kind: "Name", value: "User" },
@@ -179,7 +191,6 @@ export const UserFieldsFragmentDoc = {
         kind: "SelectionSet",
         selections: [
           { kind: "Field", name: { kind: "Name", value: "_id" } },
-          { kind: "Field", name: { kind: "Name", value: "schemaVersion" } },
           { kind: "Field", name: { kind: "Name", value: "firstName" } },
           { kind: "Field", name: { kind: "Name", value: "lastName" } },
           { kind: "Field", name: { kind: "Name", value: "email" } },
@@ -189,72 +200,30 @@ export const UserFieldsFragmentDoc = {
       },
     },
   ],
-} as unknown as DocumentNode<UserFieldsFragment, unknown>;
-export const UserMinimalFieldsFragmentDoc = {
-  kind: "Document",
-  definitions: [
-    {
-      kind: "FragmentDefinition",
-      name: { kind: "Name", value: "UserMinimalFields" },
-      typeCondition: {
-        kind: "NamedType",
-        name: { kind: "Name", value: "User" },
-      },
-      selectionSet: {
-        kind: "SelectionSet",
-        selections: [
-          { kind: "Field", name: { kind: "Name", value: "firstName" } },
-          { kind: "Field", name: { kind: "Name", value: "lastName" } },
-        ],
-      },
-    },
-  ],
-} as unknown as DocumentNode<UserMinimalFieldsFragment, unknown>;
-export const UpdateUserDocument = {
+} as unknown as DocumentNode<UserProfileFieldsFragment, unknown>;
+export const UserListGetUsersDocument = {
   kind: "Document",
   definitions: [
     {
       kind: "OperationDefinition",
-      operation: "mutation",
-      name: { kind: "Name", value: "updateUser" },
-      variableDefinitions: [
-        {
-          kind: "VariableDefinition",
-          variable: {
-            kind: "Variable",
-            name: { kind: "Name", value: "input" },
-          },
-          type: {
-            kind: "NonNullType",
-            type: {
-              kind: "NamedType",
-              name: { kind: "Name", value: "UserUpdateInput" },
-            },
-          },
-        },
-      ],
+      operation: "query",
+      name: { kind: "Name", value: "UserListGetUsers" },
       selectionSet: {
         kind: "SelectionSet",
         selections: [
           {
             kind: "Field",
-            name: { kind: "Name", value: "updateUser" },
-            arguments: [
-              {
-                kind: "Argument",
-                name: { kind: "Name", value: "input" },
-                value: {
-                  kind: "Variable",
-                  name: { kind: "Name", value: "input" },
-                },
-              },
-            ],
+            name: { kind: "Name", value: "getUsers" },
             selectionSet: {
               kind: "SelectionSet",
               selections: [
                 {
                   kind: "FragmentSpread",
-                  name: { kind: "Name", value: "UserFields" },
+                  name: { kind: "Name", value: "UserListItemFields" },
+                },
+                {
+                  kind: "FragmentSpread",
+                  name: { kind: "Name", value: "UserListGetUsersFields" },
                 },
               ],
             },
@@ -262,16 +231,20 @@ export const UpdateUserDocument = {
         ],
       },
     },
-    ...UserFieldsFragmentDoc.definitions,
+    ...UserListItemFieldsFragmentDoc.definitions,
+    ...UserListGetUsersFieldsFragmentDoc.definitions,
   ],
-} as unknown as DocumentNode<UpdateUserMutation, UpdateUserMutationVariables>;
-export const GetUserDocument = {
+} as unknown as DocumentNode<
+  UserListGetUsersQuery,
+  UserListGetUsersQueryVariables
+>;
+export const UserProfileDocument = {
   kind: "Document",
   definitions: [
     {
       kind: "OperationDefinition",
       operation: "query",
-      name: { kind: "Name", value: "getUser" },
+      name: { kind: "Name", value: "UserProfile" },
       variableDefinitions: [
         {
           kind: "VariableDefinition",
@@ -306,7 +279,7 @@ export const GetUserDocument = {
               selections: [
                 {
                   kind: "FragmentSpread",
-                  name: { kind: "Name", value: "UserMinimalFields" },
+                  name: { kind: "Name", value: "UserProfileFields" },
                 },
               ],
             },
@@ -314,6 +287,6 @@ export const GetUserDocument = {
         ],
       },
     },
-    ...UserMinimalFieldsFragmentDoc.definitions,
+    ...UserProfileFieldsFragmentDoc.definitions,
   ],
-} as unknown as DocumentNode<GetUserQuery, GetUserQueryVariables>;
+} as unknown as DocumentNode<UserProfileQuery, UserProfileQueryVariables>;

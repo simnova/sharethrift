@@ -3,24 +3,24 @@ import * as Category  from './category';
 import * as Location from './location';
 import * as User from './user';
 
-export interface ListingType {
+export interface Listing {
   _id: string;
   schemaVersion: string;
-  owner: User.UserType;
+  owner: User.User;
   title: string;
   description: string;
-  primaryCategory: PopulatedDoc<Category.CategoryType>;
+  primaryCategory: PopulatedDoc<Category.Category>;
   photos: [
     _id: string,
     order: number,
     documentId: string
   ];
-  location: PopulatedDoc<Location.LocationType>;
+  location: PopulatedDoc<Location.Location>;
   updatedAt: Date;
   createdAt: Date;
 }
 
-export const ListingModel = model<ListingType>('Listing',new Schema<ListingType, Model<ListingType>, ListingType>(
+export const ListingModel = model<Listing>('Listing',new Schema<Listing, Model<Listing>, Listing>(
   {
     schemaVersion: {
       type: String,

@@ -1,5 +1,0 @@
-query getUser($userId: ID!) {
-  getUser(id: $userId) {
-    ...UserMinimalFields
-  }
-}

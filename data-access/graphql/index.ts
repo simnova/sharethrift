@@ -8,6 +8,17 @@ import Apollo from './init/apollo';
   console.log("after");
 })();
 
+function enableConsoleLogging (context) {
+  if (context) {
+    const originalLogger = console.log;
+    console.log = function () {
+      context.log(...arguments);
+      originalLogger(...arguments);
+    };
+  }
+}
+
 export default (context: Context, req: HttpRequest) => {
+  enableConsoleLogging(context);
   return Apollo.graphqlHandler(context, req);
 };

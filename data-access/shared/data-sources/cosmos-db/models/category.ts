@@ -1,19 +1,19 @@
-import { Schema, model, Model, PopulatedDoc } from 'mongoose';
+import { Schema, model, Model, PopulatedDoc, Document } from 'mongoose';
 
 export const ModelName = 'Category';
 
-export interface CategoryType {
+export interface Category extends Document {
   _id: string;
   schemaVersion: string;
   name: string;
-  parentId: PopulatedDoc<CategoryType>;
-  childrenIds: PopulatedDoc<CategoryType>[];
+  parentId: PopulatedDoc<Category>;
+  childrenIds: PopulatedDoc<Category>[];
   path:string;
   createdAt: Date;
   updatedAt: Date;
 }
 
-export const CategoryModel = model<CategoryType>(ModelName,new Schema<CategoryType, Model<CategoryType>, CategoryType>(
+export const CategoryModel = model<Category>(ModelName,new Schema<Category, Model<Category>, Category>(
   {
     schemaVersion: {
       type: String,
@@ -45,3 +45,5 @@ export const CategoryModel = model<CategoryType>(ModelName,new Schema<CategoryTy
     collection: 'categories',
   }
 ));
+
+export type CategoryModelType = typeof CategoryModel;

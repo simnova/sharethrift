@@ -1,16 +1,16 @@
 overwrite: true
-schema: "./graphql/schema/*(!(queries-documents|mutations-documents)**|*)/*.graphql"
-documents: "./graphql/schema/*(queries-documents|mutations-documents)**/**.graphql"
+schema: "./graphql/resolvers/**/**.graphql"
+documents: "../ui/src/components/**/**.graphql"
 generates:
   graphql/generated.ts:
     config:
       contextType: "./context#Context"
       mappers:
-        Category: ../shared/data-sources/cosmos-db/models/category#CategoryType
-        Listing: ../shared/data-sources/cosmos-db/models/listing#ListingType
-        Location: ../shared/data-sources/cosmos-db/models/location#LocationType
-        Point: ../shared/data-sources/cosmos-db/models/point#PointType
-        User: ../shared/data-sources/cosmos-db/models/user#UserType
+        Category: ./resolvers/types/category#CategoryType
+        Listing: ./resolvers/types/listing#ListingType
+        Location: ./resolvers/types/location#LocationType
+        Point: ./resolvers/types/point#PointType
+        User: ./resolvers/types/user#UserType
     plugins:
       - "typescript"
       - "typescript-resolvers"

@@ -3,24 +3,25 @@ import {
   GraphQLScalarType,
   GraphQLScalarTypeConfig,
 } from "graphql";
-import { CategoryType } from "../shared/data-sources/cosmos-db/models/category";
-import { ListingType } from "../shared/data-sources/cosmos-db/models/listing";
-import { LocationType } from "../shared/data-sources/cosmos-db/models/location";
-import { PointType } from "../shared/data-sources/cosmos-db/models/point";
-import { UserType } from "../shared/data-sources/cosmos-db/models/user";
+import { CategoryType } from "./resolvers/types/category";
+import { ListingType } from "./resolvers/types/listing";
+import { LocationType } from "./resolvers/types/location";
+import { PointType } from "./resolvers/types/point";
+import { UserType } from "./resolvers/types/user";
 import { Context } from "./context";
 export type Maybe<T> = T | null;
 export type Exact<T extends { [key: string]: unknown }> = {
   [K in keyof T]: T[K];
 };
-export type MakeOptional<T, K extends keyof T> = Omit<T, K> &
-  { [SubKey in K]?: Maybe<T[SubKey]> };
-export type MakeMaybe<T, K extends keyof T> = Omit<T, K> &
-  { [SubKey in K]: Maybe<T[SubKey]> };
+export type MakeOptional<T, K extends keyof T> = Omit<T, K> & {
+  [SubKey in K]?: Maybe<T[SubKey]>;
+};
+export type MakeMaybe<T, K extends keyof T> = Omit<T, K> & {
+  [SubKey in K]: Maybe<T[SubKey]>;
+};
 export type RequireFields<T, K extends keyof T> = {
   [X in Exclude<keyof T, K>]?: T[X];
-} &
-  { [P in K]-?: NonNullable<T[P]> };
+} & { [P in K]-?: NonNullable<T[P]> };
 /** All built-in and custom scalars, mapped to their actual values */
 export type Scalars = {
   ID: string;
@@ -72,6 +73,7 @@ export type Query = {
   _empty?: Maybe<Scalars["String"]>;
   getCategories?: Maybe<Array<Maybe<Category>>>;
   getUser?: Maybe<User>;
+  getUsers?: Maybe<Array<Maybe<User>>>;
 };
 
 /**  Base Query Type definition - , all mutations will be defined in separate files extending this type  */
@@ -286,6 +288,11 @@ export type QueryResolvers<
     ParentType,
     ContextType,
     RequireFields<QueryGetUserArgs, "id">
+  >;
+  getUsers?: Resolver<
+    Maybe<Array<Maybe<ResolversTypes["User"]>>>,
+    ParentType,
+    ContextType
   >;
 };
 
