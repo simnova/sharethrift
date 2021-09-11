@@ -5,6 +5,7 @@ import { Header} from "./components/header";
 import { Users } from "./components/users";
 
 import { Layout } from 'antd';
+import { CategoryCreate } from "./components/category-create";
 const {  Content } = Layout;
 
 
@@ -14,7 +15,7 @@ function App() {
       <Header isLoggedIn={false} />
         <Content>
 
-        
+          <CategoryCreate />
           <Users />
         </Content>
       </Layout>

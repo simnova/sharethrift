@@ -5,7 +5,8 @@ import {Context} from '../../context';
 export default class Users extends MongoDataSource<User.User, Context> {
   
   async getUser(userId : string): Promise<User.User> {
-    return await this.findOneById(userId);
+  
+    return await this?.findOneById(userId);
   }
 
   async getUsers(): Promise<User.User[]> {
@@ -15,12 +16,18 @@ export default class Users extends MongoDataSource<User.User, Context> {
   }
 
   async createUser(firstName: string, lastName: string, email:string): Promise<User.User> {
-    var user = new User.UserModel({
+    return this.model.create({
+      firstName: firstName,
+      lastName: lastName,
+      email: email,
+    });
+    /*
+    return this.model.collection.insertOne({
       firstName: firstName,
       lastName: lastName,
       email: email
-    });
-    return await user.save();
+    }).then((result) => {return this.findOneById(result.insertedId)});
+    */
   }
 
   async updateUser(userId:string, firstName: string, lastName: string, email:string): Promise<User.User> {

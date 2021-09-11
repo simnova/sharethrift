@@ -2,7 +2,8 @@ type Category {
   _id: ID!
   schemaVersion: String
   name: String
-  path:String
+  parentId: Category
+  childrenIds: [Category]
   createdAt: Date
   updatedAt: Date
 }

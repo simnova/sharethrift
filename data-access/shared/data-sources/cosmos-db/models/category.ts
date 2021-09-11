@@ -1,17 +1,14 @@
 import { Schema, model, Model, PopulatedDoc, Document } from 'mongoose';
+import { Base } from './base';
 
 export const ModelName = 'Category';
 
-export interface Category extends Document {
-  _id: string;
-  schemaVersion: string;
+export interface Category extends Base {
   name: string;
-  parentId: PopulatedDoc<Category>;
-  childrenIds: PopulatedDoc<Category>[];
-  path:string;
-  createdAt: Date;
-  updatedAt: Date;
-}
+  path: string;
+  parentId: Category;
+  childrenIds: Category[];
+};
 
 export const CategoryModel = model<Category>(ModelName,new Schema<Category, Model<Category>, Category>(
   {
@@ -23,26 +20,21 @@ export const CategoryModel = model<Category>(ModelName,new Schema<Category, Mode
       type: String,
       required: true,
     },
+    path: {
+      type: String,
+    },
     parentId: {
       type: Schema.Types.ObjectId,
-      ref: ModelName,
-      required: false,
+      ref: 'Category'
     },
     childrenIds: [{
       type: Schema.Types.ObjectId,
-      ref: ModelName,
-      required: false,
-      index: true,
-    }],
-    path: {
-      type: String,
-      required: true
-    },
+      ref: 'Category'
+    }]
   },
   {
     timestamps: true, 
-    versionKey: true, 
-    collection: 'categories',
+    versionKey: 'version',    
   }
 ));
 

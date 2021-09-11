@@ -1,4 +1,4 @@
-import { ICosmosDbDataSource, CosmosDBType} from './data-sources/cosmos-db';
+import { CosmosDBType} from './data-sources/cosmos-db';
 
 export type Context = {
   authToken: string;

@@ -10,6 +10,8 @@ import {
 import { setContext } from "@apollo/client/link/context";
 import { useMsal } from "../msal-react-lite";
 
+import { BatchHttpLink } from "@apollo/client/link/batch-http";
+
 
 
 const ApolloConnection: FC<any> = () => {
@@ -24,10 +26,17 @@ const ApolloConnection: FC<any> = () => {
       },
     };
   });
-
+  /*
   const httpLink = createHttpLink({
     uri: `${process.env.REACT_APP_FUNCTION_ENDPOINT}`,
   });
+  */
+  const httpLink = new BatchHttpLink({ 
+    uri: `${process.env.REACT_APP_FUNCTION_ENDPOINT}`,
+    batchMax: 5, // No more than 5 operations per batch
+    batchInterval: 50 // Wait no more than 20ms after first batched operation
+  });
+
 
   const client = new ApolloClient({
     link: from([withToken, httpLink]),

@@ -2,11 +2,11 @@ import { Resolvers } from '../../generated';
 import * as GraphQL from '../types/category';
 import * as Mongoose from '../../../shared/data-sources/cosmos-db/models/category';
 
-export const getCategories : Resolvers = {
-  Query: {
-    getCategories : async (parent, args, context, info) => {
-      var categoryDto = await context.dataSources.categoryAPI.getCategories()
-      return categoryDto.map(convertCategoryDtoToCategoryType);
+export const createCategory : Resolvers = {
+  Mutation: {  
+    createCategory: async (parent, args, context, info) => {
+      var categoryDto = await context.dataSources.categoryAPI.createCategory(args.category);
+      return convertCategoryDtoToCategoryType(categoryDto);
     }
   }  
 }

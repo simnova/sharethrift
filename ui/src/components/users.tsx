@@ -2,6 +2,7 @@ import { FC,useState } from 'react';
 import React from 'react';
 import { UserList } from './user-list';
 import { UserProfile } from './user-profile';
+import { UserProfileDetail } from './user-profile-detail';
 import { Row, Col, Divider } from 'antd';
 
 export const Users: FC<any> = 
@@ -15,7 +16,11 @@ export const Users: FC<any> =
         <UserList itemSelected={(userId:string) => setSearchUserId(userId)} /> 
       </Col>
       <Col span={12}>
-        <UserProfile userId={searchUserId} />   
+        Normal:
+        <UserProfile userId={searchUserId} /> 
+        <br/>
+        Detail:  
+        <UserProfileDetail userId={searchUserId} />   
       </Col>
     </Row>
   </>

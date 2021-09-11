@@ -1,8 +1,9 @@
 import { FC,useState } from 'react';
 import { useQuery, gql } from "@apollo/client";
-import { UserProfileDocument, UserProfileQueryVariables, UserProfileFieldsFragment } from '../generated';
+import { UserProfileDetailDocument, UserProfileDetailQueryVariables, UserProfileDetailFieldsFragment } from '../generated';
 import React from 'react';
 import PropTypes, { InferProps } from 'prop-types';
+import moment from 'moment';
 
 const ComponentPropTypes = {
   userId: PropTypes.string,
@@ -14,11 +15,11 @@ export interface ComponentProp {
 
 export type ComponentProps = InferProps<typeof ComponentPropTypes> & ComponentProp;
 
-export const UserProfile: FC<ComponentProps> = ({
+export const UserProfileDetail: FC<ComponentProps> = ({
   userId,
 }) => {
-  type results =  {getUser:UserProfileFieldsFragment};
-  const { loading, error, data} = useQuery<results,UserProfileQueryVariables>(UserProfileDocument,{
+  type results =  {getUser:UserProfileDetailFieldsFragment};
+  const { loading, error, data} = useQuery<results,UserProfileDetailQueryVariables>(UserProfileDetailDocument,{
     variables: {
       userId: userId
     }
@@ -46,7 +47,9 @@ export const UserProfile: FC<ComponentProps> = ({
     <div>
       <div>ID: {data.getUser._id}</div>
       <div>First Name: {data.getUser.firstName}</div>
-      <div>Last Name: {data.getUser.lastName}</div>
+      <div>Email: {data.getUser.email}</div>
+      <div>Created At: {moment(data.getUser.createdAt).format('MMMM Do YYYY, h:mm:ss a')}</div>
+      <div>Updated At: {moment(data.getUser.updatedAt).format('MMMM Do YYYY, h:mm:ss a')}</div>
     </div>
   </>
   

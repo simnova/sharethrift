@@ -1,0 +1,13 @@
+query UserProfileDetail($userId: ID!) {
+  getUser(id: $userId) {
+    ...UserProfileDetailFields
+  }
+}
+
+fragment UserProfileDetailFields on User {
+  _id
+  firstName
+  email
+  createdAt
+  updatedAt
+}

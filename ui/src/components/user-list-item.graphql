@@ -1,4 +1,5 @@
 fragment UserListItemFields on User {
+  _id
   firstName
   lastName
 }

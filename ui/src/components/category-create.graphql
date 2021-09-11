@@ -1,0 +1,5 @@
+mutation CategoryCreate( $category: CategoryDetail!) {
+  createCategory(category: $category) {
+    name
+  }
+}

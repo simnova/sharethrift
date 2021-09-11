@@ -8,7 +8,4 @@ fragment UserProfileFields on User {
   _id
   firstName
   lastName
-  email
-  createdAt
-  updatedAt
 }

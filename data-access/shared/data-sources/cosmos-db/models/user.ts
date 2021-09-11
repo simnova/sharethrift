@@ -1,18 +1,10 @@
-import { Schema, model, Model, Document } from 'mongoose';
+import { Schema, model, Model } from 'mongoose';
+import { Base } from './base';
 
-/**
- * This _should not_ extend document, but because of this issue we're stuck: https://github.com/GraphQLGuide/apollo-datasource-mongodb/issues/78
- * 
- * Can also change type to "any" in the data source but loose type safety
- */
-export interface User extends Document {
-  _id: string;
-  schemaVersion?: string;
+export interface User extends Base {
   firstName: string;
   lastName: string;
   email: string;
-  createdAt?: Date;
-  updatedAt?: Date;
 }
 
 export const UserModel = model<User>('User', new Schema<User, Model<User>, User>(
@@ -39,8 +31,7 @@ export const UserModel = model<User>('User', new Schema<User, Model<User>, User>
   },
   {
     timestamps: true, 
-    versionKey: true, 
-    collection: 'users',
+    versionKey: 'version', 
   }
 ));
 

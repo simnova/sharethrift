@@ -38,9 +38,14 @@ export type Category = {
   _id: Scalars["ID"];
   schemaVersion?: Maybe<Scalars["String"]>;
   name?: Maybe<Scalars["String"]>;
-  path?: Maybe<Scalars["String"]>;
+  parentId?: Maybe<Category>;
+  childrenIds?: Maybe<Array<Maybe<Category>>>;
   createdAt?: Maybe<Scalars["Date"]>;
   updatedAt?: Maybe<Scalars["Date"]>;
+};
+
+export type CategoryDetail = {
+  name?: Maybe<Scalars["String"]>;
 };
 
 export type CreateUserInput = {
@@ -53,8 +58,14 @@ export type CreateUserInput = {
 export type Mutation = {
   __typename?: "Mutation";
   _empty?: Maybe<Scalars["String"]>;
+  createCategory?: Maybe<Category>;
   createUser?: Maybe<User>;
   updateUser?: Maybe<User>;
+};
+
+/**  Base Mutation Type definition - all mutations will be defined in separate files extending this type  */
+export type MutationCreateCategoryArgs = {
+  category: CategoryDetail;
 };
 
 /**  Base Mutation Type definition - all mutations will be defined in separate files extending this type  */
@@ -209,6 +220,7 @@ export type ResolversTypes = {
   Category: ResolverTypeWrapper<CategoryType>;
   ID: ResolverTypeWrapper<Scalars["ID"]>;
   String: ResolverTypeWrapper<Scalars["String"]>;
+  CategoryDetail: CategoryDetail;
   CreateUserInput: CreateUserInput;
   Date: ResolverTypeWrapper<Scalars["Date"]>;
   Mutation: ResolverTypeWrapper<{}>;
@@ -223,6 +235,7 @@ export type ResolversParentTypes = {
   Category: CategoryType;
   ID: Scalars["ID"];
   String: Scalars["String"];
+  CategoryDetail: CategoryDetail;
   CreateUserInput: CreateUserInput;
   Date: Scalars["Date"];
   Mutation: {};
@@ -243,7 +256,16 @@ export type CategoryResolvers<
     ContextType
   >;
   name?: Resolver<Maybe<ResolversTypes["String"]>, ParentType, ContextType>;
-  path?: Resolver<Maybe<ResolversTypes["String"]>, ParentType, ContextType>;
+  parentId?: Resolver<
+    Maybe<ResolversTypes["Category"]>,
+    ParentType,
+    ContextType
+  >;
+  childrenIds?: Resolver<
+    Maybe<Array<Maybe<ResolversTypes["Category"]>>>,
+    ParentType,
+    ContextType
+  >;
   createdAt?: Resolver<Maybe<ResolversTypes["Date"]>, ParentType, ContextType>;
   updatedAt?: Resolver<Maybe<ResolversTypes["Date"]>, ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
@@ -259,6 +281,12 @@ export type MutationResolvers<
   ParentType extends ResolversParentTypes["Mutation"] = ResolversParentTypes["Mutation"]
 > = {
   _empty?: Resolver<Maybe<ResolversTypes["String"]>, ParentType, ContextType>;
+  createCategory?: Resolver<
+    Maybe<ResolversTypes["Category"]>,
+    ParentType,
+    ContextType,
+    RequireFields<MutationCreateCategoryArgs, "category">
+  >;
   createUser?: Resolver<
     Maybe<ResolversTypes["User"]>,
     ParentType,
