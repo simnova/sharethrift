@@ -20,9 +20,9 @@ export type Scalars = {
   Date: any;
 };
 
-export type Category = {
+export type Category = MongoBase & {
   __typename?: "Category";
-  _id: Scalars["ID"];
+  id: Scalars["ID"];
   schemaVersion?: Maybe<Scalars["String"]>;
   name?: Maybe<Scalars["String"]>;
   parentId?: Maybe<Category>;
@@ -39,6 +39,13 @@ export type CreateUserInput = {
   firstName?: Maybe<Scalars["String"]>;
   lastName?: Maybe<Scalars["String"]>;
   email?: Maybe<Scalars["String"]>;
+};
+
+export type MongoBase = {
+  id: Scalars["ID"];
+  schemaVersion?: Maybe<Scalars["String"]>;
+  createdAt?: Maybe<Scalars["Date"]>;
+  updatedAt?: Maybe<Scalars["Date"]>;
 };
 
 /**  Base Mutation Type definition - all mutations will be defined in separate files extending this type  */
@@ -79,9 +86,9 @@ export type QueryGetUserArgs = {
   id: Scalars["ID"];
 };
 
-export type User = {
+export type User = MongoBase & {
   __typename?: "User";
-  _id: Scalars["ID"];
+  id: Scalars["ID"];
   schemaVersion?: Maybe<Scalars["String"]>;
   firstName?: Maybe<Scalars["String"]>;
   lastName?: Maybe<Scalars["String"]>;
@@ -108,7 +115,7 @@ export type CategoryCreateMutation = {
 
 export type UserListItemFieldsFragment = {
   __typename?: "User";
-  _id: string;
+  id: string;
   firstName?: Maybe<string>;
   lastName?: Maybe<string>;
 };
@@ -121,7 +128,7 @@ export type UserListGetUsersQuery = {
     Array<
       Maybe<{
         __typename?: "User";
-        _id: string;
+        id: string;
         firstName?: Maybe<string>;
         lastName?: Maybe<string>;
       }>
@@ -131,7 +138,7 @@ export type UserListGetUsersQuery = {
 
 export type UserListGetUsersFieldsFragment = {
   __typename?: "User";
-  _id: string;
+  id: string;
 };
 
 export type UserProfileDetailQueryVariables = Exact<{
@@ -142,7 +149,7 @@ export type UserProfileDetailQuery = {
   __typename?: "Query";
   getUser?: Maybe<{
     __typename?: "User";
-    _id: string;
+    id: string;
     firstName?: Maybe<string>;
     email?: Maybe<string>;
     createdAt?: Maybe<any>;
@@ -152,7 +159,7 @@ export type UserProfileDetailQuery = {
 
 export type UserProfileDetailFieldsFragment = {
   __typename?: "User";
-  _id: string;
+  id: string;
   firstName?: Maybe<string>;
   email?: Maybe<string>;
   createdAt?: Maybe<any>;
@@ -167,7 +174,7 @@ export type UserProfileQuery = {
   __typename?: "Query";
   getUser?: Maybe<{
     __typename?: "User";
-    _id: string;
+    id: string;
     firstName?: Maybe<string>;
     lastName?: Maybe<string>;
   }>;
@@ -175,7 +182,7 @@ export type UserProfileQuery = {
 
 export type UserProfileFieldsFragment = {
   __typename?: "User";
-  _id: string;
+  id: string;
   firstName?: Maybe<string>;
   lastName?: Maybe<string>;
 };
@@ -193,7 +200,7 @@ export const UserListItemFieldsFragmentDoc = {
       selectionSet: {
         kind: "SelectionSet",
         selections: [
-          { kind: "Field", name: { kind: "Name", value: "_id" } },
+          { kind: "Field", name: { kind: "Name", value: "id" } },
           { kind: "Field", name: { kind: "Name", value: "firstName" } },
           { kind: "Field", name: { kind: "Name", value: "lastName" } },
         ],
@@ -213,7 +220,7 @@ export const UserListGetUsersFieldsFragmentDoc = {
       },
       selectionSet: {
         kind: "SelectionSet",
-        selections: [{ kind: "Field", name: { kind: "Name", value: "_id" } }],
+        selections: [{ kind: "Field", name: { kind: "Name", value: "id" } }],
       },
     },
   ],
@@ -231,7 +238,7 @@ export const UserProfileDetailFieldsFragmentDoc = {
       selectionSet: {
         kind: "SelectionSet",
         selections: [
-          { kind: "Field", name: { kind: "Name", value: "_id" } },
+          { kind: "Field", name: { kind: "Name", value: "id" } },
           { kind: "Field", name: { kind: "Name", value: "firstName" } },
           { kind: "Field", name: { kind: "Name", value: "email" } },
           { kind: "Field", name: { kind: "Name", value: "createdAt" } },
@@ -254,7 +261,7 @@ export const UserProfileFieldsFragmentDoc = {
       selectionSet: {
         kind: "SelectionSet",
         selections: [
-          { kind: "Field", name: { kind: "Name", value: "_id" } },
+          { kind: "Field", name: { kind: "Name", value: "id" } },
           { kind: "Field", name: { kind: "Name", value: "firstName" } },
           { kind: "Field", name: { kind: "Name", value: "lastName" } },
         ],

@@ -5,7 +5,7 @@ query UserProfileDetail($userId: ID!) {
 }
 
 fragment UserProfileDetailFields on User {
-  _id
+  id
   firstName
   email
   createdAt

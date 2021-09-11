@@ -1,4 +1,4 @@
-import {  Document } from 'mongoose';
+import {  Document, SchemaOptions } from 'mongoose';
 
 /**
  * This _should not_ extend document, but because of this issue we're stuck: https://github.com/GraphQLGuide/apollo-datasource-mongodb/issues/78
@@ -12,4 +12,9 @@ export interface Base extends Document{
   createdAt?: Date;
   updatedAt?: Date;
   version: number;
+}
+
+export const BaseOptions : SchemaOptions = {
+  timestamps: true, 
+  versionKey: 'version', 
 }

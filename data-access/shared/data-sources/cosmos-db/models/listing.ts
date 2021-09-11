@@ -1,11 +1,10 @@
 import { Schema, model, Model, PopulatedDoc } from 'mongoose';
+import { Base, BaseOptions} from './interfaces/base';
 import * as Category  from './category';
 import * as Location from './location';
 import * as User from './user';
 
-export interface Listing {
-  _id: string;
-  schemaVersion: string;
+export interface Listing extends Base {
   owner: User.User;
   title: string;
   description: string;
@@ -16,8 +15,6 @@ export interface Listing {
     documentId: string
   ];
   location: PopulatedDoc<Location.Location>;
-  updatedAt: Date;
-  createdAt: Date;
 }
 
 export const ListingModel = model<Listing>('Listing',new Schema<Listing, Model<Listing>, Listing>(
@@ -59,8 +56,6 @@ export const ListingModel = model<Listing>('Listing',new Schema<Listing, Model<L
     location: Location.LocationModel.schema,
   },
   {
-    timestamps: true, 
-    versionKey: true, 
-    collection: 'listings',
+    ...BaseOptions,
   }
 ));

@@ -45,7 +45,7 @@ export const UserProfileDetail: FC<ComponentProps> = ({
 
   return <>
     <div>
-      <div>ID: {data.getUser._id}</div>
+      <div>ID: {data.getUser.id}</div>
       <div>First Name: {data.getUser.firstName}</div>
       <div>Email: {data.getUser.email}</div>
       <div>Created At: {moment(data.getUser.createdAt).format('MMMM Do YYYY, h:mm:ss a')}</div>

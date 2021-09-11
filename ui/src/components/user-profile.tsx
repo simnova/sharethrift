@@ -44,7 +44,7 @@ export const UserProfile: FC<ComponentProps> = ({
 
   return <>
     <div>
-      <div>ID: {data.getUser._id}</div>
+      <div>ID: {data.getUser.id}</div>
       <div>First Name: {data.getUser.firstName}</div>
       <div>Last Name: {data.getUser.lastName}</div>
     </div>

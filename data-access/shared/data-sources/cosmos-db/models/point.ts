@@ -1,12 +1,12 @@
 import { Schema, model, Model } from 'mongoose';
+import { Base, BaseOptions} from './interfaces/base';
+
 
 /**
  * @description
  * Point model - used to store lat/long coordinates
  */
-export interface Point {
-  _id: string;
-  schemaVersion: string;
+export interface Point extends Base {
   type: string;
   /**
    * @description
@@ -32,9 +32,7 @@ export const PointModel = model<Point>('Point', new Schema<Point, Model<Point>, 
     }
   },
   {
-    timestamps: true, 
-    versionKey: true, 
-    collection: 'points',
+    ...BaseOptions,
   }
 ));
 

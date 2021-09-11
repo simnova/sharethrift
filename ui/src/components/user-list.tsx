@@ -49,7 +49,7 @@ export const UserList: FC<ComponentProps> = ({
     {
       data.getUsers.map((user) => {
         let temp = user as UserListItemFieldsFragment;
-        return <UserListItem key={user._id} {...temp} onClick={() => {itemSelected(user._id)}} />
+        return <UserListItem key={user.id} {...temp} onClick={() => {itemSelected(user.id)}} />
       })
     }
     </div>

@@ -1,9 +1,0 @@
-fragment UserFields on User {
-  _id
-  schemaVersion
-  firstName
-  lastName
-  email
-  createdAt
-  updatedAt
-}

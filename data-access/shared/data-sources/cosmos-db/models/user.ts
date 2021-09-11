@@ -1,5 +1,5 @@
 import { Schema, model, Model } from 'mongoose';
-import { Base } from './base';
+import { Base, BaseOptions} from './interfaces/base';
 
 export interface User extends Base {
   firstName: string;
@@ -30,9 +30,6 @@ export const UserModel = model<User>('User', new Schema<User, Model<User>, User>
     }
   },
   {
-    timestamps: true, 
-    versionKey: 'version', 
+    ...BaseOptions 
   }
 ));
-
-export type UserModelType = typeof UserModel;

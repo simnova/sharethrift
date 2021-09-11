@@ -33,9 +33,9 @@ export type Scalars = {
   Date: any;
 };
 
-export type Category = {
+export type Category = MongoBase & {
   __typename?: "Category";
-  _id: Scalars["ID"];
+  id: Scalars["ID"];
   schemaVersion?: Maybe<Scalars["String"]>;
   name?: Maybe<Scalars["String"]>;
   parentId?: Maybe<Category>;
@@ -52,6 +52,13 @@ export type CreateUserInput = {
   firstName?: Maybe<Scalars["String"]>;
   lastName?: Maybe<Scalars["String"]>;
   email?: Maybe<Scalars["String"]>;
+};
+
+export type MongoBase = {
+  id: Scalars["ID"];
+  schemaVersion?: Maybe<Scalars["String"]>;
+  createdAt?: Maybe<Scalars["Date"]>;
+  updatedAt?: Maybe<Scalars["Date"]>;
 };
 
 /**  Base Mutation Type definition - all mutations will be defined in separate files extending this type  */
@@ -92,9 +99,9 @@ export type QueryGetUserArgs = {
   id: Scalars["ID"];
 };
 
-export type User = {
+export type User = MongoBase & {
   __typename?: "User";
-  _id: Scalars["ID"];
+  id: Scalars["ID"];
   schemaVersion?: Maybe<Scalars["String"]>;
   firstName?: Maybe<Scalars["String"]>;
   lastName?: Maybe<Scalars["String"]>;
@@ -223,6 +230,7 @@ export type ResolversTypes = {
   CategoryDetail: CategoryDetail;
   CreateUserInput: CreateUserInput;
   Date: ResolverTypeWrapper<Scalars["Date"]>;
+  MongoBase: ResolversTypes["Category"] | ResolversTypes["User"];
   Mutation: ResolverTypeWrapper<{}>;
   Query: ResolverTypeWrapper<{}>;
   User: ResolverTypeWrapper<UserType>;
@@ -238,6 +246,7 @@ export type ResolversParentTypes = {
   CategoryDetail: CategoryDetail;
   CreateUserInput: CreateUserInput;
   Date: Scalars["Date"];
+  MongoBase: ResolversParentTypes["Category"] | ResolversParentTypes["User"];
   Mutation: {};
   Query: {};
   User: UserType;
@@ -249,7 +258,7 @@ export type CategoryResolvers<
   ContextType = Context,
   ParentType extends ResolversParentTypes["Category"] = ResolversParentTypes["Category"]
 > = {
-  _id?: Resolver<ResolversTypes["ID"], ParentType, ContextType>;
+  id?: Resolver<ResolversTypes["ID"], ParentType, ContextType>;
   schemaVersion?: Resolver<
     Maybe<ResolversTypes["String"]>,
     ParentType,
@@ -275,6 +284,21 @@ export interface DateScalarConfig
   extends GraphQLScalarTypeConfig<ResolversTypes["Date"], any> {
   name: "Date";
 }
+
+export type MongoBaseResolvers<
+  ContextType = Context,
+  ParentType extends ResolversParentTypes["MongoBase"] = ResolversParentTypes["MongoBase"]
+> = {
+  __resolveType: TypeResolveFn<"Category" | "User", ParentType, ContextType>;
+  id?: Resolver<ResolversTypes["ID"], ParentType, ContextType>;
+  schemaVersion?: Resolver<
+    Maybe<ResolversTypes["String"]>,
+    ParentType,
+    ContextType
+  >;
+  createdAt?: Resolver<Maybe<ResolversTypes["Date"]>, ParentType, ContextType>;
+  updatedAt?: Resolver<Maybe<ResolversTypes["Date"]>, ParentType, ContextType>;
+};
 
 export type MutationResolvers<
   ContextType = Context,
@@ -328,7 +352,7 @@ export type UserResolvers<
   ContextType = Context,
   ParentType extends ResolversParentTypes["User"] = ResolversParentTypes["User"]
 > = {
-  _id?: Resolver<ResolversTypes["ID"], ParentType, ContextType>;
+  id?: Resolver<ResolversTypes["ID"], ParentType, ContextType>;
   schemaVersion?: Resolver<
     Maybe<ResolversTypes["String"]>,
     ParentType,
@@ -349,6 +373,7 @@ export type UserResolvers<
 export type Resolvers<ContextType = Context> = {
   Category?: CategoryResolvers<ContextType>;
   Date?: GraphQLScalarType;
+  MongoBase?: MongoBaseResolvers<ContextType>;
   Mutation?: MutationResolvers<ContextType>;
   Query?: QueryResolvers<ContextType>;
   User?: UserResolvers<ContextType>;

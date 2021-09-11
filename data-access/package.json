@@ -31,6 +31,9 @@
     "typescript": "^4.4.2"
   },
   "dependencies": {
+    "@automapper/classes": "^6.1.4",
+    "@automapper/core": "^6.1.4",
+    "@automapper/types": "^6.1.4",
     "@graphql-tools/graphql-file-loader": "^7.1.0",
     "@graphql-tools/load": "^7.2.0",
     "@graphql-tools/schema": "^8.2.0",
@@ -45,6 +48,7 @@
     "jose": "^2.0.5",
     "mongoose": "^5.13.8",
     "openid-client": "^4.2.0",
-    "ramda": "^0.27.1"
+    "ramda": "^0.27.1",
+    "reflect-metadata": "^0.1.13"
   }
 }

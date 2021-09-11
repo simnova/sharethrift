@@ -1,5 +1,5 @@
 import { Schema, model, Model, PopulatedDoc, Document } from 'mongoose';
-import { Base } from './base';
+import { Base, BaseOptions } from './interfaces/base';
 
 export const ModelName = 'Category';
 
@@ -33,9 +33,6 @@ export const CategoryModel = model<Category>(ModelName,new Schema<Category, Mode
     }]
   },
   {
-    timestamps: true, 
-    versionKey: 'version',    
+    ...BaseOptions 
   }
 ));
-
-export type CategoryModelType = typeof CategoryModel;

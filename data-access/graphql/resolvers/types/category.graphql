@@ -1,5 +1,5 @@
-type Category {
-  _id: ID!
+type Category implements MongoBase {
+  id: ID!
   schemaVersion: String
   name: String
   parentId: Category

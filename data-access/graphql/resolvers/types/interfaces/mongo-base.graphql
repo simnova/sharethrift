@@ -1,0 +1,6 @@
+interface MongoBase {
+  id: ID!
+  schemaVersion: String
+  createdAt: Date
+  updatedAt: Date
+}

@@ -1,9 +1,8 @@
 import { Schema, model, Model } from 'mongoose';
+import { Base, BaseOptions} from './interfaces/base';
 import * as Point from './point';
 
-export interface Location {
-  _id: string;
-  schemaVersion: string,
+export interface Location extends Base {
   position: Point.Point;
   address: {
     streetNumber: string;
@@ -90,8 +89,6 @@ export const LocationModel = model<Location>('Location', new Schema<Location, Mo
     },
   },
   {
-    timestamps: true, 
-    versionKey: true, 
-    collection: 'locations',
+    ...BaseOptions,
   }
 ));

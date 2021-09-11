@@ -6,5 +6,5 @@ query UserListGetUsers {
 }
 
 fragment UserListGetUsersFields on User {
-  _id
+  id
 }

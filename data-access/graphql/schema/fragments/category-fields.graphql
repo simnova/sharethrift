@@ -1,8 +1,0 @@
-fragment CategoryFields on Category {
-  _id
-  schemaVersion
-  name
-  path
-  createdAt
-  updatedAt
-}
