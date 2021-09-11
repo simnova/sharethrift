@@ -1,5 +1,5 @@
 query UserProfileDetail($userId: ID!) {
-  getUser(id: $userId) {
+  user(id: $userId) {
     ...UserProfileDetailFields
   }
 }

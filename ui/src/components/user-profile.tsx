@@ -17,7 +17,7 @@ export type ComponentProps = InferProps<typeof ComponentPropTypes> & ComponentPr
 export const UserProfile: FC<ComponentProps> = ({
   userId,
 }) => {
-  type results =  {getUser:UserProfileFieldsFragment};
+  type results =  {user:UserProfileFieldsFragment};
   const { loading, error, data} = useQuery<results,UserProfileQueryVariables>(UserProfileDocument,{
     variables: {
       userId: userId
@@ -44,9 +44,9 @@ export const UserProfile: FC<ComponentProps> = ({
 
   return <>
     <div>
-      <div>ID: {data.getUser.id}</div>
-      <div>First Name: {data.getUser.firstName}</div>
-      <div>Last Name: {data.getUser.lastName}</div>
+      <div>ID: {data.user.id}</div>
+      <div>First Name: {data.user.firstName}</div>
+      <div>Last Name: {data.user.lastName}</div>
     </div>
   </>
   

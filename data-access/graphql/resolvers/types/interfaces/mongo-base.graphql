@@ -1,6 +1,6 @@
 interface MongoBase {
-  id: ID!
+  id: ObjectID!
   schemaVersion: String
-  createdAt: Date
-  updatedAt: Date
+  createdAt: DateTime
+  updatedAt: DateTime
 }

@@ -1,9 +1,9 @@
-import { getUser } from './get-user';
-import { getUsers } from './get-users';
-import { getCategories } from './get-categories';
+import { user } from './user';
+import { users } from './users';
+import { categories } from './categories';
 
 export const queries = {
-    ...getUser.Query,
-    ...getUsers.Query,
-    ...getCategories.Query
+    ...user.Query,
+    ...users.Query,
+    ...categories.Query
 };

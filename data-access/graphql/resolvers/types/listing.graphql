@@ -1,16 +1,16 @@
 type Listing {
-  _id: ID!
+  _id: ObjectID!
   schemaVersion: String
   owner: User.User
   title: String
   description: String
   primaryCategory: Category
   photos: [
-    _id: ID!
+    _id: ObjectID!
     order: Number
     documentId: String
   ];
   location: Location
-  updatedAt: Date
-  createdAt: Date
+  updatedAt: DateTime
+  createdAt: DateTime
 }

@@ -1,5 +1,5 @@
 input UserUpdateInput {
-  id: ID!
+  id: ObjectID!
   firstName: String
   lastName: String
   email: String

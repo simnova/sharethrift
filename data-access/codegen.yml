@@ -1,5 +1,7 @@
 overwrite: true
-schema: "./graphql/resolvers/**/**.graphql"
+schema: 
+  - "./graphql/resolvers/core/graphql-tools-scalars.ts"
+  - "./graphql/resolvers/**/**.graphql"
 documents: "../ui/src/components/**/**.graphql"
 generates:
   graphql/generated.ts:
@@ -11,6 +13,59 @@ generates:
         Location: ./resolvers/types/location#LocationType
         Point: ./resolvers/types/point#PointType
         User: ./resolvers/types/user#UserType
+      scalars:
+        BigInt: any;
+        Byte: any;
+        Currency: any;
+        Date: Date;
+        DateTime: any;
+        Duration: any;
+        EmailAddress: string;
+        GUID: string;
+        HSL: any;
+        HSLA: any;
+        HexColorCode: any;
+        Hexadecimal: any;
+        IBAN: any;
+        IPv4: any;
+        IPv6: any;
+        ISBN: any;
+        ISO8601Duration: any;
+        JSON: any;
+        JSONObject: any;
+        JWT: any;
+        Latitude: any;
+        LocalDate: any;
+        LocalEndTime: any;
+        LocalTime: any;
+        Long: any;
+        Longitude: any;
+        MAC: any;
+        NegativeFloat: any;
+        NegativeInt: any;
+        NonEmptyString: any;
+        NonNegativeFloat: any;
+        NonNegativeInt: any;
+        NonPositiveFloat: any;
+        NonPositiveInt: any;
+        ObjectID: any;
+        PhoneNumber: any;
+        Port: any;
+        PositiveFloat: any;
+        PositiveInt: any;
+        PostalCode: any;
+        RGB: any;
+        RGBA: any;
+        SafeInt: any;
+        Time: any;
+        Timestamp: any;
+        URL: any;
+        USCurrency: any;
+        UUID: any;
+        UnsignedFloat: any;
+        UnsignedInt: any;
+        UtcOffset: any;
+        Void: any;
     plugins:
       - "typescript"
       - "typescript-resolvers"

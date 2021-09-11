@@ -20,7 +20,7 @@ export const UserList: FC<ComponentProps> = ({
   itemSelected
 }) => {
 
-  type results = {getUsers:[UserListGetUsersFieldsFragment & UserListItemFieldsFragment]};
+  type results = {users:[UserListGetUsersFieldsFragment & UserListItemFieldsFragment]};
   const { loading, error, data} = useQuery<results,UserListGetUsersQueryVariables>(UserListGetUsersDocument,{
     variables: {
     }
@@ -47,7 +47,7 @@ export const UserList: FC<ComponentProps> = ({
   return <>
     <div>
     {
-      data.getUsers.map((user) => {
+      data.users.map((user) => {
         let temp = user as UserListItemFieldsFragment;
         return <UserListItem key={user.id} {...temp} onClick={() => {itemSelected(user.id)}} />
       })

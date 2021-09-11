@@ -1,19 +1,39 @@
 import { ApolloServer } from 'apollo-server-azure-functions';
 import { HttpRequest, Context } from "@azure/functions";
 import { loadSchemaSync } from '@graphql-tools/load';
-import { addResolversToSchema } from '@graphql-tools/schema';
+import { addResolversToSchema, mergeSchemas } from '@graphql-tools/schema';
 import { CosmosDB } from '../data-sources/cosmos-db';
 import { resolvers } from '../resolvers';
 import { JsonFileLoader } from '@graphql-tools/json-file-loader';
-
+import * as Scalars from 'graphql-scalars';
+import { makeExecutableSchema } from '@graphql-tools/schema';
+import { stitchSchemas } from '@graphql-tools/stitch';
 
 const schema = loadSchemaSync('./graphql.schema.json', {
   loaders: [new JsonFileLoader()],
 });
 
+const appSchema = addResolversToSchema(schema,resolvers)
+
+const scalarSchema = makeExecutableSchema({
+  typeDefs:[
+    ...Scalars.typeDefs,
+  ],
+  resolvers:{
+    ...Scalars.resolvers,
+  }
+});
+
+export const combinedSchema = stitchSchemas({
+  subschemas: [
+    appSchema,
+    scalarSchema,
+  ]
+});
+
 const serverConfig = () => {
   return {
-    schema: addResolversToSchema(schema,resolvers),
+    schema:combinedSchema,
     dataSources: () => ({
       ...CosmosDB,
     }),

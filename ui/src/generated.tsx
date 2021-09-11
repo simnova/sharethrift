@@ -16,19 +16,69 @@ export type Scalars = {
   Boolean: boolean;
   Int: number;
   Float: number;
-  /** Date is required to enable the use of  Date objects in the database. Do not remove othwerwise you will get an error. */
+  BigInt: any;
+  Byte: any;
+  Currency: any;
   Date: any;
+  DateTime: any;
+  Duration: any;
+  EmailAddress: any;
+  GUID: any;
+  HSL: any;
+  HSLA: any;
+  HexColorCode: any;
+  Hexadecimal: any;
+  IBAN: any;
+  IPv4: any;
+  IPv6: any;
+  ISBN: any;
+  ISO8601Duration: any;
+  JSON: any;
+  JSONObject: any;
+  JWT: any;
+  Latitude: any;
+  LocalDate: any;
+  LocalEndTime: any;
+  LocalTime: any;
+  Long: any;
+  Longitude: any;
+  MAC: any;
+  NegativeFloat: any;
+  NegativeInt: any;
+  NonEmptyString: any;
+  NonNegativeFloat: any;
+  NonNegativeInt: any;
+  NonPositiveFloat: any;
+  NonPositiveInt: any;
+  ObjectID: any;
+  PhoneNumber: any;
+  Port: any;
+  PositiveFloat: any;
+  PositiveInt: any;
+  PostalCode: any;
+  RGB: any;
+  RGBA: any;
+  SafeInt: any;
+  Time: any;
+  Timestamp: any;
+  URL: any;
+  USCurrency: any;
+  UUID: any;
+  UnsignedFloat: any;
+  UnsignedInt: any;
+  UtcOffset: any;
+  Void: any;
 };
 
 export type Category = MongoBase & {
   __typename?: "Category";
-  id: Scalars["ID"];
+  id: Scalars["ObjectID"];
   schemaVersion?: Maybe<Scalars["String"]>;
   name?: Maybe<Scalars["String"]>;
   parentId?: Maybe<Category>;
   childrenIds?: Maybe<Array<Maybe<Category>>>;
-  createdAt?: Maybe<Scalars["Date"]>;
-  updatedAt?: Maybe<Scalars["Date"]>;
+  createdAt?: Maybe<Scalars["DateTime"]>;
+  updatedAt?: Maybe<Scalars["DateTime"]>;
 };
 
 export type CategoryDetail = {
@@ -42,10 +92,10 @@ export type CreateUserInput = {
 };
 
 export type MongoBase = {
-  id: Scalars["ID"];
+  id: Scalars["ObjectID"];
   schemaVersion?: Maybe<Scalars["String"]>;
-  createdAt?: Maybe<Scalars["Date"]>;
-  updatedAt?: Maybe<Scalars["Date"]>;
+  createdAt?: Maybe<Scalars["DateTime"]>;
+  updatedAt?: Maybe<Scalars["DateTime"]>;
 };
 
 /**  Base Mutation Type definition - all mutations will be defined in separate files extending this type  */
@@ -76,29 +126,29 @@ export type MutationUpdateUserArgs = {
 export type Query = {
   __typename?: "Query";
   _empty?: Maybe<Scalars["String"]>;
-  getCategories?: Maybe<Array<Maybe<Category>>>;
-  getUser?: Maybe<User>;
-  getUsers?: Maybe<Array<Maybe<User>>>;
+  categories?: Maybe<Array<Maybe<Category>>>;
+  user?: Maybe<User>;
+  users?: Maybe<Array<Maybe<User>>>;
 };
 
 /**  Base Query Type definition - , all mutations will be defined in separate files extending this type  */
-export type QueryGetUserArgs = {
+export type QueryUserArgs = {
   id: Scalars["ID"];
 };
 
 export type User = MongoBase & {
   __typename?: "User";
-  id: Scalars["ID"];
+  id: Scalars["ObjectID"];
   schemaVersion?: Maybe<Scalars["String"]>;
   firstName?: Maybe<Scalars["String"]>;
   lastName?: Maybe<Scalars["String"]>;
-  email?: Maybe<Scalars["String"]>;
-  createdAt?: Maybe<Scalars["Date"]>;
-  updatedAt?: Maybe<Scalars["Date"]>;
+  email?: Maybe<Scalars["EmailAddress"]>;
+  createdAt?: Maybe<Scalars["DateTime"]>;
+  updatedAt?: Maybe<Scalars["DateTime"]>;
 };
 
 export type UserUpdateInput = {
-  id: Scalars["ID"];
+  id: Scalars["ObjectID"];
   firstName?: Maybe<Scalars["String"]>;
   lastName?: Maybe<Scalars["String"]>;
   email?: Maybe<Scalars["String"]>;
@@ -115,7 +165,7 @@ export type CategoryCreateMutation = {
 
 export type UserListItemFieldsFragment = {
   __typename?: "User";
-  id: string;
+  id: any;
   firstName?: Maybe<string>;
   lastName?: Maybe<string>;
 };
@@ -124,11 +174,11 @@ export type UserListGetUsersQueryVariables = Exact<{ [key: string]: never }>;
 
 export type UserListGetUsersQuery = {
   __typename?: "Query";
-  getUsers?: Maybe<
+  users?: Maybe<
     Array<
       Maybe<{
         __typename?: "User";
-        id: string;
+        id: any;
         firstName?: Maybe<string>;
         lastName?: Maybe<string>;
       }>
@@ -136,10 +186,7 @@ export type UserListGetUsersQuery = {
   >;
 };
 
-export type UserListGetUsersFieldsFragment = {
-  __typename?: "User";
-  id: string;
-};
+export type UserListGetUsersFieldsFragment = { __typename?: "User"; id: any };
 
 export type UserProfileDetailQueryVariables = Exact<{
   userId: Scalars["ID"];
@@ -147,11 +194,11 @@ export type UserProfileDetailQueryVariables = Exact<{
 
 export type UserProfileDetailQuery = {
   __typename?: "Query";
-  getUser?: Maybe<{
+  user?: Maybe<{
     __typename?: "User";
-    id: string;
+    id: any;
     firstName?: Maybe<string>;
-    email?: Maybe<string>;
+    email?: Maybe<any>;
     createdAt?: Maybe<any>;
     updatedAt?: Maybe<any>;
   }>;
@@ -159,9 +206,9 @@ export type UserProfileDetailQuery = {
 
 export type UserProfileDetailFieldsFragment = {
   __typename?: "User";
-  id: string;
+  id: any;
   firstName?: Maybe<string>;
-  email?: Maybe<string>;
+  email?: Maybe<any>;
   createdAt?: Maybe<any>;
   updatedAt?: Maybe<any>;
 };
@@ -172,9 +219,9 @@ export type UserProfileQueryVariables = Exact<{
 
 export type UserProfileQuery = {
   __typename?: "Query";
-  getUser?: Maybe<{
+  user?: Maybe<{
     __typename?: "User";
-    id: string;
+    id: any;
     firstName?: Maybe<string>;
     lastName?: Maybe<string>;
   }>;
@@ -182,7 +229,7 @@ export type UserProfileQuery = {
 
 export type UserProfileFieldsFragment = {
   __typename?: "User";
-  id: string;
+  id: any;
   firstName?: Maybe<string>;
   lastName?: Maybe<string>;
 };
@@ -335,7 +382,7 @@ export const UserListGetUsersDocument = {
         selections: [
           {
             kind: "Field",
-            name: { kind: "Name", value: "getUsers" },
+            name: { kind: "Name", value: "users" },
             selectionSet: {
               kind: "SelectionSet",
               selections: [
@@ -385,7 +432,7 @@ export const UserProfileDetailDocument = {
         selections: [
           {
             kind: "Field",
-            name: { kind: "Name", value: "getUser" },
+            name: { kind: "Name", value: "user" },
             arguments: [
               {
                 kind: "Argument",
@@ -440,7 +487,7 @@ export const UserProfileDocument = {
         selections: [
           {
             kind: "Field",
-            name: { kind: "Name", value: "getUser" },
+            name: { kind: "Name", value: "user" },
             arguments: [
               {
                 kind: "Argument",

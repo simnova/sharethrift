@@ -1,4 +1,3 @@
 """
 Date is required to enable the use of  Date objects in the database. Do not remove othwerwise you will get an error.
 """
-scalar Date
