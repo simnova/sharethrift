@@ -1,5 +1,8 @@
+""" New user values """
 input CreateUserInput {
   firstName: String
   lastName: String
-  email: String
+
+  """Must be a valid email address"""
+  email: EmailAddress
 }

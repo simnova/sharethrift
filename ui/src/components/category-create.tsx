@@ -1,15 +1,13 @@
-import { FC,useState } from 'react';
-import { useQuery, gql, useMutation } from "@apollo/client";
-import {CategoryCreateDocument, CategoryCreateMutation, CategoryCreateMutationVariables,  UserProfileDocument, UserProfileQueryVariables, UserProfileFieldsFragment } from '../generated';
-import React from 'react';
-import PropTypes, { InferProps } from 'prop-types';
+import React, { FC } from 'react';
+import { useMutation } from "@apollo/client";
+import {CategoryCreateDocument} from '../generated';
 
 
 export const CategoryCreate: FC<any> = ({
 }) => {
   let input: HTMLInputElement | null = null;
   let path: HTMLInputElement | null = null;
-  const [addCategory, { data, loading, error }] = useMutation<CategoryCreateMutation,CategoryCreateMutationVariables>(CategoryCreateDocument);
+  const [addCategory, { data, loading, error }] = useMutation(CategoryCreateDocument);
 
   if(error){
     return <>

@@ -1,6 +1,6 @@
-import { FC,useState } from 'react';
-import { useQuery, gql } from "@apollo/client";
-import { UserListGetUsersDocument, UserListGetUsersQueryVariables, UserListGetUsersFieldsFragment, UserListItemFieldsFragment } from '../generated';
+import { FC } from 'react';
+import { useQuery } from "@apollo/client";
+import { UserListGetUsersDocument, UserListItemFieldsFragment } from '../generated';
 
 import React from 'react';
 import { UserListItem } from './user-list-item';
@@ -20,8 +20,7 @@ export const UserList: FC<ComponentProps> = ({
   itemSelected
 }) => {
 
-  type results = {users:[UserListGetUsersFieldsFragment & UserListItemFieldsFragment]};
-  const { loading, error, data} = useQuery<results,UserListGetUsersQueryVariables>(UserListGetUsersDocument,{
+  const { loading, error, data} = useQuery(UserListGetUsersDocument,{
     variables: {
     }
   })
@@ -38,7 +37,7 @@ export const UserList: FC<ComponentProps> = ({
     </>
   } 
 
-  if (typeof data === 'undefined' ) {
+  if (typeof data === 'undefined' || typeof data.users === 'undefined' || data.users === null ) {
     return <>
       <div>No Data...</div>
     </>
@@ -48,12 +47,12 @@ export const UserList: FC<ComponentProps> = ({
     <div>
     {
       data.users.map((user) => {
-        let temp = user as UserListItemFieldsFragment;
-        return <UserListItem key={user.id} {...temp} onClick={() => {itemSelected(user.id)}} />
+        if (user !== null) {
+          return <UserListItem key={user.id} {...(user as UserListItemFieldsFragment)} onClick={() => {itemSelected(user.id)}} />
+        }
       })
     }
     </div>
-
   </>
 
 }

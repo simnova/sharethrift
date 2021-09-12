@@ -85,25 +85,32 @@ export type CategoryDetail = {
   name?: Maybe<Scalars["String"]>;
 };
 
+/**  New user values  */
 export type CreateUserInput = {
   firstName?: Maybe<Scalars["String"]>;
   lastName?: Maybe<Scalars["String"]>;
-  email?: Maybe<Scalars["String"]>;
+  /** Must be a valid email address */
+  email?: Maybe<Scalars["EmailAddress"]>;
 };
 
+/** Base type for all models in mongo. */
 export type MongoBase = {
+  /** The ID of the object. */
   id: Scalars["ObjectID"];
   schemaVersion?: Maybe<Scalars["String"]>;
   createdAt?: Maybe<Scalars["DateTime"]>;
+  /** Automatically generated timestamp, updated on every save. */
   updatedAt?: Maybe<Scalars["DateTime"]>;
 };
 
 /**  Base Mutation Type definition - all mutations will be defined in separate files extending this type  */
 export type Mutation = {
   __typename?: "Mutation";
+  /** IGNORE: Dummy field necessary for the Mutation type to be valid */
   _empty?: Maybe<Scalars["String"]>;
   createCategory?: Maybe<Category>;
   createUser?: Maybe<User>;
+  /** Allows the user to update their profile */
   updateUser?: Maybe<User>;
 };
 
@@ -125,6 +132,7 @@ export type MutationUpdateUserArgs = {
 /**  Base Query Type definition - , all mutations will be defined in separate files extending this type  */
 export type Query = {
   __typename?: "Query";
+  /** IGNORE: Dummy field necessary for the Query type to be valid */
   _empty?: Maybe<Scalars["String"]>;
   categories?: Maybe<Array<Maybe<Category>>>;
   user?: Maybe<User>;

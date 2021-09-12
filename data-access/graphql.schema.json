@@ -173,7 +173,7 @@
       {
         "kind": "INPUT_OBJECT",
         "name": "CreateUserInput",
-        "description": null,
+        "description": " New user values ",
         "fields": null,
         "inputFields": [
           {
@@ -202,10 +202,10 @@
           },
           {
             "name": "email",
-            "description": null,
+            "description": "Must be a valid email address",
             "type": {
               "kind": "SCALAR",
-              "name": "String",
+              "name": "EmailAddress",
               "ofType": null
             },
             "defaultValue": null,
@@ -470,11 +470,11 @@
       {
         "kind": "INTERFACE",
         "name": "MongoBase",
-        "description": null,
+        "description": "Base type for all models in mongo.",
         "fields": [
           {
             "name": "id",
-            "description": null,
+            "description": "The ID of the object.",
             "args": [],
             "type": {
               "kind": "NON_NULL",
@@ -514,7 +514,7 @@
           },
           {
             "name": "updatedAt",
-            "description": null,
+            "description": "Automatically generated timestamp, updated on every save.",
             "args": [],
             "type": {
               "kind": "SCALAR",
@@ -548,7 +548,7 @@
         "fields": [
           {
             "name": "_empty",
-            "description": null,
+            "description": "IGNORE: Dummy field necessary for the Mutation type to be valid",
             "args": [],
             "type": {
               "kind": "SCALAR",
@@ -618,7 +618,7 @@
           },
           {
             "name": "updateUser",
-            "description": null,
+            "description": "Allows the user to update their profile",
             "args": [
               {
                 "name": "input",
@@ -788,7 +788,7 @@
         "fields": [
           {
             "name": "_empty",
-            "description": null,
+            "description": "IGNORE: Dummy field necessary for the Query type to be valid",
             "args": [],
             "type": {
               "kind": "SCALAR",

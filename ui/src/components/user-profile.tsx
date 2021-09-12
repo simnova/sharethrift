@@ -1,8 +1,8 @@
-import { FC,useState } from 'react';
-import { useQuery, gql } from "@apollo/client";
-import { UserProfileDocument, UserProfileQueryVariables, UserProfileFieldsFragment } from '../generated';
+import { FC } from 'react';
+import { useQuery } from "@apollo/client";
 import React from 'react';
 import PropTypes, { InferProps } from 'prop-types';
+import { UserProfileDocument } from '../generated';
 
 const ComponentPropTypes = {
   userId: PropTypes.string,
@@ -17,8 +17,7 @@ export type ComponentProps = InferProps<typeof ComponentPropTypes> & ComponentPr
 export const UserProfile: FC<ComponentProps> = ({
   userId,
 }) => {
-  type results =  {user:UserProfileFieldsFragment};
-  const { loading, error, data} = useQuery<results,UserProfileQueryVariables>(UserProfileDocument,{
+  const { loading, error, data} = useQuery(UserProfileDocument,{
     variables: {
       userId: userId
     }
@@ -36,7 +35,7 @@ export const UserProfile: FC<ComponentProps> = ({
     </>
   } 
 
-  if (typeof data === 'undefined' ) {
+  if (typeof data === 'undefined' || typeof data.user === 'undefined' || data.user === null)  {
     return <>     
       <div>No Data...</div>
     </>
