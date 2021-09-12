@@ -1,8 +1,7 @@
-import { FC } from 'react';
+import React, { FC } from 'react';
+import PropTypes, { InferProps } from 'prop-types';
 import { useQuery } from "@apollo/client";
 import { UserProfileDetailDocument } from '../generated';
-import React from 'react';
-import PropTypes, { InferProps } from 'prop-types';
 import moment from 'moment';
 
 const ComponentPropTypes = {
