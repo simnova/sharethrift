@@ -1,0 +1,11 @@
+query UserSelectionUsers {
+  users {
+    ...UserSelectionFields
+  }
+}
+
+fragment UserSelectionFields on User {
+  id
+  firstName
+  lastName
+}

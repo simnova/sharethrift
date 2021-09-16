@@ -1,16 +1,17 @@
-import { Schema, model, Model, PopulatedDoc } from 'mongoose';
+import { Schema, model, Model, PopulatedDoc, ObjectId } from 'mongoose';
 import { Base, BaseOptions} from './interfaces/base';
 import * as Category  from './category';
 import * as Location from './location';
 import * as User from './user';
+import { Options } from 'apollo-datasource-mongodb';
 
 export interface Listing extends Base {
-  owner: User.User;
+  owner: User.User | ObjectId;
   title: string;
   description: string;
-  primaryCategory: PopulatedDoc<Category.Category>;
+  primaryCategory: PopulatedDoc<Category.Category> | ObjectId;
   photos: [
-    _id: string,
+    id: string,
     order: number,
     documentId: string
   ];
@@ -43,7 +44,6 @@ export const ListingModel = model<Listing>('Listing',new Schema<Listing, Model<L
       index: true,
     },
     photos: [{
-      _id: true,
       order: {
         type: Number,
         required: true,

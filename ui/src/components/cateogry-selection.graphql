@@ -1,0 +1,14 @@
+query CategorySelectionCategories {
+  categories {
+    ...CategorySelectionCategoryFields
+  }
+}
+
+fragment CategorySelectionCategoryFields on Category {
+  id
+  schemaVersion
+  createdAt
+  updatedAt
+
+  name
+}

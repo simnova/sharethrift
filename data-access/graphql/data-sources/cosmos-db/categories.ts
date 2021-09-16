@@ -5,6 +5,11 @@ import {Context} from '../../context';
 import {CategoryDetail} from '../../generated';
 
 export default class Categories extends MongoDataSource<Category.Category, Context> {
+
+  async getCategory(categoryId : string): Promise<Category.Category> {
+    return await this?.findOneById(categoryId);
+  }
+
   async getCategories(): Promise<Category.Category[]> {
     return this.model
       .find({})
@@ -12,11 +17,10 @@ export default class Categories extends MongoDataSource<Category.Category, Conte
   }
 
   createCategory(categoryDetail:CategoryDetail): Promise<Category.Category> {
-    
     var category = new this.model(
       {name: categoryDetail.name,}
     );
-    
     return category.save();
   }
+  
 }

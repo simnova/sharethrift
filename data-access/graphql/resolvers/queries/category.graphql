@@ -1,0 +1,3 @@
+extend type Query {
+  category(id: ID!): Category
+}

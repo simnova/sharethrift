@@ -1,8 +1,6 @@
 import * as Point from './point';
 
 export interface LocationType {
-  _id: string;
-  schemaVersion: string,
   position: Point.PointType;
   address: {
     streetNumber: string;

@@ -1,6 +1,6 @@
-export interface PointType {
-  _id: string;
-  schemaVersion: string;
+import {MongoBase} from './interfaces/mongo-base';
+
+export interface PointType extends MongoBase {
   type: string;
   /**
    * @description

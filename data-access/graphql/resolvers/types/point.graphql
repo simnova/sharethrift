@@ -1,0 +1,9 @@
+type Point implements MongoBase {
+  type: String
+  coordinates: [Float]
+  
+  id: ObjectID!
+  schemaVersion: String
+  createdAt: DateTime
+  updatedAt: DateTime
+}

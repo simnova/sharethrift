@@ -5,8 +5,7 @@ import {Context} from '../../context';
 export default class Users extends MongoDataSource<User.User, Context> {
   
   async getUser(userId : string): Promise<User.User> {
-  
-    return await this?.findOneById(userId);
+    return await this.findOneById(userId);
   }
 
   async getUsers(): Promise<User.User[]> {

@@ -8,6 +8,7 @@ import { JsonFileLoader } from '@graphql-tools/json-file-loader';
 import * as Scalars from 'graphql-scalars';
 import { makeExecutableSchema } from '@graphql-tools/schema';
 import { stitchSchemas } from '@graphql-tools/stitch';
+import connect from '../../shared/data-sources/cosmos-db/connect';
 
 const schema = loadSchemaSync('./graphql.schema.json', {
   loaders: [new JsonFileLoader()],
@@ -37,11 +38,19 @@ const serverConfig = () => {
     dataSources: () => ({
       ...CosmosDB,
     }),
-    playground: { endpoint: "/api/graphql" }
+    playground: { endpoint: "/api/graphql" },
+    plugins:[
+      {
+        async serverWillStart() {
+          console.log('Server starting up!');
+          connect();
+        },
+      }
+    ]
   }
 }
 
-const server = new ApolloServer({
+export const server = new ApolloServer({
   ...serverConfig()
 });
 
@@ -52,7 +61,7 @@ const graphqlHandler = (context: Context, req: HttpRequest) => {
       credentials: true,
     },
   })
-
+  
   // https://github.com/Azure/azure-functions-host/issues/6013
   req.headers["x-ms-privatelink-id"] = ""
   // apollo-server only reads this specific string

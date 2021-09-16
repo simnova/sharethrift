@@ -1,0 +1,5 @@
+mutation ListingCreate( $listing: ListingDetail!) {
+  createListing(listing: $listing) {
+    title
+  }
+}

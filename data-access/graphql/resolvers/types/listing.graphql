@@ -1,16 +1,14 @@
-type Listing {
-  _id: ObjectID!
-  schemaVersion: String
-  owner: User.User
+type Listing implements MongoBase {
+  owner: User
   title: String
   description: String
-  primaryCategory: Category
-  photos: [
-    _id: ObjectID!
-    order: Number
-    documentId: String
-  ];
+  primaryCategory: Category 
+  photos: [Photo]
   location: Location
+
+  id: ObjectID!
+  schemaVersion: String
   updatedAt: DateTime
   createdAt: DateTime
 }
+

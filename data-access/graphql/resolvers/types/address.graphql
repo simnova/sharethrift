@@ -1,0 +1,16 @@
+type Address {
+    streetNumber: String
+    streetName: String
+    municipality: String
+    municipalitySubdivision: String
+    countrySecondarySubdivision: String
+    countryTertiarySubdivision: String
+    countrySubdivision: String
+    countrySubdivisionName: String
+    postalCode: String
+    extendedPostalCode: String
+    countryCode: String
+    country: String
+    countryCodeISO3: String
+    freeformAddress: String
+}

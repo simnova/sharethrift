@@ -1,8 +1,9 @@
-import {queries} from './queries/';
-import {mutations} from './mutations/';
 import {Resolvers} from '../generated';
 
-export const resolvers: Resolvers = {
-    Query: queries,
-    Mutation: mutations
-};
+import path  from 'path';
+import { mergeResolvers } from '@graphql-tools/merge';
+import { loadFilesSync } from '@graphql-tools/load-files';
+
+const resolversArray = loadFilesSync(path.join(__dirname, "./**/*.resolvers.*"));
+
+export const resolvers: Resolvers = mergeResolvers(resolversArray);

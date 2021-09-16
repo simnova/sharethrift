@@ -1,9 +1,10 @@
 type Category implements MongoBase {
-  id: ObjectID!
-  schemaVersion: String
   name: String
   parentId: Category
   childrenIds: [Category]
+
+  id: ObjectID!
+  schemaVersion: String
   createdAt: DateTime
   updatedAt: DateTime
 }

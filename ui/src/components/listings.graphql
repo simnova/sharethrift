@@ -1,0 +1,28 @@
+query ListingsListings {
+  listings {
+    ...ListingsFields
+  }
+}
+
+fragment ListingsFields on Listing {
+  id
+  owner {
+    id
+    firstName
+    lastName
+  }
+  title
+  description
+  primaryCategory {
+    name
+  }
+  photos {
+    order
+    documentId
+  }
+  location {
+    address {
+      freeformAddress
+    }
+  }
+}

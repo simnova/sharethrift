@@ -1,0 +1,6 @@
+input ListingDetail {
+  owner: ObjectID
+  title: String
+  description: String
+  primaryCategory: ObjectID
+}
