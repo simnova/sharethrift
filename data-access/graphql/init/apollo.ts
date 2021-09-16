@@ -11,6 +11,7 @@ import { stitchSchemas } from '@graphql-tools/stitch';
 import connect from '../../shared/data-sources/cosmos-db/connect';
 import { GraphQLServiceContext } from 'apollo-server-types';
 import responseCachePlugin from 'apollo-server-plugin-response-cache';
+import mongoose from 'mongoose';
 
 
 const schema = loadSchemaSync('./graphql.schema.json', {
@@ -65,6 +66,17 @@ const serverConfig = () => {
       ...CosmosDB,
     }),
     playground: { endpoint: "/api/graphql" },
+    healthCheckPath: "/api/graphql/healthcheck",
+    async onHealthCheck() {
+      // doesn't work yet 
+      // https://github.com/apollographql/apollo-server/pull/5270
+      var mongoConnected = mongoose.connection.readyState === 1;
+      if(mongoConnected) {
+        return;
+      } else {
+        throw new Error("MongoDB is not connected");
+      }
+    },
     plugins:[
       {
         async serverWillStart(service: GraphQLServiceContext) {
