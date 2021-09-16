@@ -3,16 +3,19 @@ import { isValidObjectId, ObjectId } from 'mongoose';
 import { Resolvers } from '../../generated';
 import { ConvertDtoToGraph } from '../mappings/user';
 import { UserType } from '../types/User';
+import { CacheHint, CacheScope } from 'apollo-server-types';
 
 const user : Resolvers = {
   Query: {      
     user : async (parent, args, context, info)  => {
+      info.cacheControl.setCacheHint({ maxAge: 60,scope: CacheScope.Public });
       console.log(`Resolver>Query>user ${args.id}`)
       return ConvertDtoToGraph(await context.dataSources.userAPI.getUser(args.id)) as UserType;
     }
   },
   Listing: {
     owner: async (parent, args, context, info) => {
+      info.cacheControl.setCacheHint({ maxAge: 60,scope: CacheScope.Public });
       console.log("Resolver>Listing>owner")
       if(isValidObjectId(parent.owner)){
         console.log("Resolver>Listing>owner provided ObjectId : looking up User")

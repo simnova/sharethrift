@@ -8,20 +8,14 @@
       }
     },
     "logLevel": {
-      "default": "Information",
+      "default": "Error",
       "Host.Results": "Error",
       "Function": "Error",
-      "Function.graphql": "Trace",
+      "Function.graphql": "Error",
       "Function.graphql.User": "Trace",
-      "Host.Aggegator":"Error",
-      "console": "Trace"
-    },
-
-    
+      "Host.Aggegator":"Error"
+    }
   },
-
-
-
   "extensionBundle": {
     "id": "Microsoft.Azure.Functions.ExtensionBundle",
     "version": "[1.*, 2.0.0)"

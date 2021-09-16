@@ -33,8 +33,8 @@ const ApolloConnection: FC<any> = () => {
   */
   const httpLink = new BatchHttpLink({ 
     uri: `${process.env.REACT_APP_FUNCTION_ENDPOINT}`,
-    batchMax: 5, // No more than 5 operations per batch
-    batchInterval: 50 // Wait no more than 20ms after first batched operation
+    batchMax: 15, // No more than 15 operations per batch
+    batchInterval: 50 // Wait no more than 50ms after first batched operation
   });
 
 

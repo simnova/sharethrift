@@ -19,3 +19,4 @@ type Query {
     """
     _empty:String
 }
+

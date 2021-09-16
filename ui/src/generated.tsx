@@ -114,6 +114,7 @@ export type CreateUserInput = {
 export type Listing = MongoBase & {
   __typename?: "Listing";
   owner?: Maybe<User>;
+  /**  THIS CACHE CONTROL ISN'T WORKING */
   title?: Maybe<Scalars["String"]>;
   description?: Maybe<Scalars["String"]>;
   primaryCategory?: Maybe<Category>;

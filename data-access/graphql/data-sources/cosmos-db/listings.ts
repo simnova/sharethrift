@@ -6,9 +6,7 @@ import {ListingDetail} from '../../generated';
 export default class Listings extends MongoDataSource<Listing.Listing, Context> {
 
   async getListing(listingId : string): Promise<Listing.Listing> {
-    var result = await this?.findOneById(listingId);
-    console.log("getListing", result);
-    return result;
+    return await this?.findOneById(listingId);
   }
 
   async getListings(): Promise<Listing.Listing[]> {
