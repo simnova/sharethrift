@@ -20,3 +20,15 @@ type Query {
     _empty:String
 }
 
+""" Required to enable Apollo Cache Control """
+enum CacheControlScope {
+  PUBLIC
+  PRIVATE
+}
+
+""" Required to enable Apollo Cache Control """
+directive @cacheControl(
+  maxAge: Int
+  scope: CacheControlScope
+  inheritMaxAge: Boolean
+) on FIELD_DEFINITION | OBJECT | INTERFACE | UNION

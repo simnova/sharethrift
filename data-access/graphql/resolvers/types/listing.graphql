@@ -2,9 +2,9 @@ type Listing implements MongoBase {
   owner: User @cacheControl(maxAge: 30) """ THIS CACHE CONTROL ISN'T WORKING"""
   title: String
   description: String
-  primaryCategory: Category
-  photos: [Photo]
-  location: Location
+  primaryCategory: Category @cacheControl(maxAge: 30)
+  photos: [Photo] @cacheControl(maxAge: 30)
+  location: Location @cacheControl(maxAge: 30)
 
   id: ObjectID!
   schemaVersion: String

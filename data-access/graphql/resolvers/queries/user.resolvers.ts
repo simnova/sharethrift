@@ -3,7 +3,7 @@ import { isValidObjectId, ObjectId } from 'mongoose';
 import { Resolvers } from '../../generated';
 import { ConvertDtoToGraph } from '../mappings/user';
 import { UserType } from '../types/User';
-import { CacheHint, CacheScope } from 'apollo-server-types';
+import { CacheScope } from 'apollo-server-types';
 
 const user : Resolvers = {
   Query: {      

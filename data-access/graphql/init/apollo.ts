@@ -35,7 +35,7 @@ const CacheControl = gql`
 const scalarSchema = makeExecutableSchema({
   typeDefs:[
     ...Scalars.typeDefs,
-    CacheControl
+    //CacheControl
   ],
   resolvers:{
     ...Scalars.resolvers,

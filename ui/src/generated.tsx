@@ -88,6 +88,12 @@ export type Address = {
   freeformAddress?: Maybe<Scalars["String"]>;
 };
 
+/**  Required to enable Apollo Cache Control  */
+export enum CacheControlScope {
+  Public = "PUBLIC",
+  Private = "PRIVATE",
+}
+
 export type Category = MongoBase & {
   __typename?: "Category";
   name?: Maybe<Scalars["String"]>;

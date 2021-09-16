@@ -101,6 +101,12 @@ export type Address = {
   freeformAddress?: Maybe<Scalars["String"]>;
 };
 
+/**  Required to enable Apollo Cache Control  */
+export enum CacheControlScope {
+  Public = "PUBLIC",
+  Private = "PRIVATE",
+}
+
 export type Category = MongoBase & {
   __typename?: "Category";
   name?: Maybe<Scalars["String"]>;
@@ -375,6 +381,7 @@ export type ResolversTypes = ResolversObject<{
   String: ResolverTypeWrapper<Scalars["String"]>;
   BigInt: ResolverTypeWrapper<Scalars["BigInt"]>;
   Byte: ResolverTypeWrapper<Scalars["Byte"]>;
+  CacheControlScope: CacheControlScope;
   Category: ResolverTypeWrapper<CategoryType>;
   CategoryDetail: CategoryDetail;
   CreateUserInput: CreateUserInput;
@@ -528,6 +535,19 @@ export type ResolversParentTypes = ResolversObject<{
   Void: Scalars["Void"];
   Boolean: Scalars["Boolean"];
 }>;
+
+export type CacheControlDirectiveArgs = {
+  maxAge?: Maybe<Scalars["Int"]>;
+  scope?: Maybe<CacheControlScope>;
+  inheritMaxAge?: Maybe<Scalars["Boolean"]>;
+};
+
+export type CacheControlDirectiveResolver<
+  Result,
+  Parent,
+  ContextType = Context,
+  Args = CacheControlDirectiveArgs
+> = DirectiveResolverFn<Result, Parent, ContextType, Args>;
 
 export type AddressResolvers<
   ContextType = Context,
@@ -1204,4 +1224,8 @@ export type Resolvers<ContextType = Context> = ResolversObject<{
   User?: UserResolvers<ContextType>;
   UtcOffset?: GraphQLScalarType;
   Void?: GraphQLScalarType;
+}>;
+
+export type DirectiveResolvers<ContextType = Context> = ResolversObject<{
+  cacheControl?: CacheControlDirectiveResolver<any, any, ContextType>;
 }>;
