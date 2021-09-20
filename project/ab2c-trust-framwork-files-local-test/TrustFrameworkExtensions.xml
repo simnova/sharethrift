@@ -1,0 +1,192 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<TrustFrameworkPolicy 
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+  xmlns:xsd="http://www.w3.org/2001/XMLSchema" 
+  xmlns="http://schemas.microsoft.com/online/cpim/schemas/2013/06" 
+  PolicySchemaVersion="0.3.0.0" 
+  TenantId="sharethriftb2cdev.onmicrosoft.com" 
+  PolicyId="B2C_1A_TrustFrameworkExtensions" 
+  PublicPolicyUri="http://yourtenant.onmicrosoft.com/B2C_1A_TrustFrameworkExtensions">
+  
+  <BasePolicy>
+    <TenantId>sharethriftb2cdev.onmicrosoft.com</TenantId>
+    <PolicyId>B2C_1A_TrustFrameworkBase</PolicyId>
+  </BasePolicy>
+  <BuildingBlocks>
+    <ClaimsSchema>
+      <ClaimType Id="bodyData">
+        <DisplayName>Body Data</DisplayName>
+        <DataType>string</DataType>
+        <DefaultPartnerClaimTypes>
+          <Protocol Name="OAuth2"
+            PartnerClaimType="bodyData" />
+          <Protocol Name="OpenIdConnect"
+            PartnerClaimType="bodyData" />
+          <Protocol Name="SAML2"
+            PartnerClaimType="http://schemas.microsoft.com/identity/claims/bodyData" />
+        </DefaultPartnerClaimTypes>
+      </ClaimType>
+      <ClaimType Id="callRestAPI">
+        <DisplayName>Call Rest API</DisplayName>
+        <DataType>boolean</DataType>
+        <DefaultPartnerClaimTypes>
+          <Protocol Name="OAuth2"
+            PartnerClaimType="callRestAPI" />
+          <Protocol Name="OpenIdConnect"
+            PartnerClaimType="callRestAPI" />
+          <Protocol Name="SAML2"
+            PartnerClaimType="http://schemas.microsoft.com/identity/claims/callRestAPI" />
+        </DefaultPartnerClaimTypes>
+      </ClaimType>
+    </ClaimsSchema>
+  </BuildingBlocks>
+
+  <ClaimsProviders>
+    <ClaimsProvider>
+      <DisplayName>Local Account SignIn</DisplayName>
+      <TechnicalProfiles>
+        <TechnicalProfile Id="login-NonInteractive">
+          <Metadata>
+            <Item Key="client_id">03bea842-61de-47c9-bde6-c93a454e6b9e</Item>
+            <Item Key="IdTokenAudience">16db103f-97af-4e56-9d6b-7d9336ca9abe</Item>
+          </Metadata>
+          <InputClaims>
+            <InputClaim ClaimTypeReferenceId="client_id" DefaultValue="03bea842-61de-47c9-bde6-c93a454e6b9e" />
+            <InputClaim ClaimTypeReferenceId="resource_id" PartnerClaimType="resource" DefaultValue="16db103f-97af-4e56-9d6b-7d9336ca9abe" />
+          </InputClaims>
+        </TechnicalProfile>
+        <!-- This technical profile uses a validation technical profile to authenticate the user. -->
+        <TechnicalProfile Id="SelfAsserted-LocalAccountSignin-Email">
+          <DisplayName>Local Account Signin</DisplayName>
+          <Protocol Name="Proprietary" Handler="Web.TPEngine.Providers.SelfAssertedAttributeProvider, Web.TPEngine, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null" />
+          <Metadata>
+            <Item Key="SignUpTarget">SignUpWithLogonEmailExchange</Item>
+            <Item Key="setting.operatingMode">Email</Item>
+            <Item Key="ContentDefinitionReferenceId">api.selfasserted</Item>
+          </Metadata>
+          <IncludeInSso>false</IncludeInSso>
+          <InputClaims>
+            <InputClaim ClaimTypeReferenceId="signInName" />
+          </InputClaims>
+          <OutputClaims>
+            <OutputClaim ClaimTypeReferenceId="signInName" Required="true" />
+            <OutputClaim ClaimTypeReferenceId="password" Required="true" />
+            <OutputClaim ClaimTypeReferenceId="objectId" />
+            <OutputClaim ClaimTypeReferenceId="authenticationSource" />
+          </OutputClaims>
+          <ValidationTechnicalProfiles>
+            <ValidationTechnicalProfile ReferenceId="login-NonInteractive" />
+            <ValidationTechnicalProfile ReferenceId="REST-SignIn" />
+          </ValidationTechnicalProfiles>
+          <UseTechnicalProfileForSessionManagement ReferenceId="SM-AAD" />
+        </TechnicalProfile>
+      </TechnicalProfiles>
+    </ClaimsProvider>
+
+    <ClaimsProvider>
+      <DisplayName>REST APIs</DisplayName>
+      <TechnicalProfiles>
+        <TechnicalProfile Id="REST-SignIn">
+          <DisplayName>Retrieve EMSWP role/school data</DisplayName>
+          <Protocol Name="Proprietary"
+            Handler="Web.TPEngine.Providers.RestfulProvider, Web.TPEngine, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null" />
+          <Metadata>
+            <Item Key="ServiceUrl">https://data.pathways-qa.ecfmg.org/api/B2CProfileLookup/logIn</Item>
+            <Item Key="AuthenticationType">Basic</Item>
+            <Item Key="SendClaimsIn">Body</Item>
+            <Item Key="AllowInsecureAuthInProduction">false</Item>
+          </Metadata>
+          <CryptographicKeys>
+            <Key Id="BasicAuthenticationUsername"
+              StorageReferenceId="B2C_1A_RestApiUsername" />
+            <Key Id="BasicAuthenticationPassword"
+              StorageReferenceId="B2C_1A_RestApiPassword" />
+          </CryptographicKeys>
+          <InputClaims>
+            <InputClaim ClaimTypeReferenceId="objectId"
+              PartnerClaimType="oid" />
+            <InputClaim ClaimTypeReferenceId="signInName"
+              PartnerClaimType="signInNames.userName" />
+          </InputClaims>
+          <OutputClaims>
+            <OutputClaim ClaimTypeReferenceId="email" />
+            <OutputClaim ClaimTypeReferenceId="displayName"
+              PartnerClaimType="displayName" />
+            <OutputClaim ClaimTypeReferenceId="givenName"
+              PartnerClaimType="givenName" />
+            <OutputClaim ClaimTypeReferenceId="surname"
+              PartnerClaimType="surname" />
+            <OutputClaim ClaimTypeReferenceId="bodyData" />
+            <OutputClaim ClaimTypeReferenceId="callRestAPI" />
+          </OutputClaims>
+          <UseTechnicalProfileForSessionManagement ReferenceId="SM-Noop" />
+        </TechnicalProfile>
+      </TechnicalProfiles>
+    </ClaimsProvider>
+  </ClaimsProviders>
+
+  <UserJourneys>
+    <UserJourney Id="SignUpOrSignIn-v2">
+      <OrchestrationSteps>
+        <OrchestrationStep Order="1"
+          Type="CombinedSignInAndSignUp"
+          ContentDefinitionReferenceId="api.signuporsignin">
+          <ClaimsProviderSelections>
+            <ClaimsProviderSelection ValidationClaimsExchangeId="LocalAccountSigninEmailExchange" />
+          </ClaimsProviderSelections>
+          <ClaimsExchanges>
+            <ClaimsExchange Id="LocalAccountSigninEmailExchange"
+              TechnicalProfileReferenceId="SelfAsserted-LocalAccountSignin-Email" />
+          </ClaimsExchanges>
+        </OrchestrationStep>
+
+        <OrchestrationStep Order="2"
+          Type="ClaimsExchange">
+          <Preconditions>
+            <Precondition Type="ClaimsExist"
+              ExecuteActionsIf="true">
+              <Value>objectId</Value>
+              <Action>SkipThisOrchestrationStep</Action>
+            </Precondition>
+          </Preconditions>
+          <ClaimsExchanges>
+            <ClaimsExchange Id="SignUpWithLogonEmailExchange"
+              TechnicalProfileReferenceId="LocalAccountSignUpWithLogonEmail" />
+          </ClaimsExchanges>
+        </OrchestrationStep>
+
+        <!-- This step reads any user attributes that we may not have received when in the token. -->
+        <OrchestrationStep Order="3"
+          Type="ClaimsExchange">
+          <ClaimsExchanges>
+            <ClaimsExchange Id="AADUserReadWithObjectId"
+              TechnicalProfileReferenceId="AAD-UserReadUsingObjectId" />
+          </ClaimsExchanges>
+        </OrchestrationStep>
+
+        <OrchestrationStep Order="4"
+          Type="ClaimsExchange">
+          <Preconditions>
+            <Precondition Type="ClaimEquals"
+              ExecuteActionsIf="true">
+              <Value>callRestAPI</Value>
+              <Value>False</Value>
+              <Action>SkipThisOrchestrationStep</Action>
+            </Precondition>
+          </Preconditions>
+          <ClaimsExchanges>
+            <ClaimsExchange Id="RESTGetProfile"
+              TechnicalProfileReferenceId="REST-SignIn" />
+          </ClaimsExchanges>
+        </OrchestrationStep>
+
+        <OrchestrationStep Order="5"
+          Type="SendClaims"
+          CpimIssuerTechnicalProfileReferenceId="JwtIssuer" />
+
+      </OrchestrationSteps>
+      <ClientDefinition ReferenceId="DefaultWeb" />
+    </UserJourney>
+	</UserJourneys>
+
+</TrustFrameworkPolicy>

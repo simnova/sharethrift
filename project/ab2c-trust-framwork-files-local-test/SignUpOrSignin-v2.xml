@@ -1,0 +1,25 @@
+﻿<TrustFrameworkPolicy xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns="http://schemas.microsoft.com/online/cpim/schemas/2013/06" PolicySchemaVersion="0.3.0.0" TenantId="sharethriftb2cdev.onmicrosoft.com" PolicyId="B2C_1A_signup_signin_v2" PublicPolicyUri="http://sharethriftb2cdev.onmicrosoft.com/B2C_1A_signup_signin_v2" TenantObjectId="961394d2-0a14-4946-9913-6eb4944419af">
+  <BasePolicy>
+    <TenantId>sharethriftb2cdev.onmicrosoft.com</TenantId>
+    <PolicyId>B2C_1A_TrustFrameworkExtensions</PolicyId>
+  </BasePolicy>
+  <RelyingParty>
+    <DefaultUserJourney ReferenceId="SignUpOrSignIn-v2" />
+    <UserJourneyBehaviors>
+      <JourneyInsights TelemetryEngine="ApplicationInsights" InstrumentationKey="95c3d0e3-d463-4a8d-a496-f22e9806bb8b" DeveloperMode="false" ClientEnabled="false" ServerEnabled="true" TelemetryVersion="1.0.0" />
+    </UserJourneyBehaviors>
+    <TechnicalProfile Id="PolicyProfile">
+      <DisplayName>PolicyProfile</DisplayName>
+      <Protocol Name="OpenIdConnect" />
+      <OutputClaims>
+        <OutputClaim ClaimTypeReferenceId="displayName" />
+        <OutputClaim ClaimTypeReferenceId="givenName" />
+        <OutputClaim ClaimTypeReferenceId="surname" />
+        <OutputClaim ClaimTypeReferenceId="email" />
+        <OutputClaim ClaimTypeReferenceId="objectId" PartnerClaimType="sub" />
+        <OutputClaim ClaimTypeReferenceId="tenantId" AlwaysUseDefaultValue="true" DefaultValue="{Policy:TenantObjectId}" />
+      </OutputClaims>
+      <SubjectNamingInfo ClaimType="sub" />
+    </TechnicalProfile>
+  </RelyingParty>
+</TrustFrameworkPolicy>
