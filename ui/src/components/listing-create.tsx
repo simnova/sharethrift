@@ -32,7 +32,7 @@ export const ListingCreate: FC<any> = ({
         onSubmit={e => {
           e.preventDefault();
           addListing({ variables: { 
-            listing : {
+            input : {
               title: title?.value,
               description: description?.value,
               primaryCategory: category,

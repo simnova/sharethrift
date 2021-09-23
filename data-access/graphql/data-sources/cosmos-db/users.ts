@@ -20,13 +20,6 @@ export default class Users extends MongoDataSource<User.User, Context> {
       lastName: lastName,
       email: email,
     });
-    /*
-    return this.model.collection.insertOne({
-      firstName: firstName,
-      lastName: lastName,
-      email: email
-    }).then((result) => {return this.findOneById(result.insertedId)});
-    */
   }
 
   async updateUser(userId:string, firstName: string, lastName: string, email:string): Promise<User.User> {

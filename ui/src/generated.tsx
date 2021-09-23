@@ -109,6 +109,11 @@ export type CategoryDetail = {
   name?: Maybe<Scalars["String"]>;
 };
 
+export type CreateListingPayload = {
+  __typename?: "CreateListingPayload";
+  listing?: Maybe<Listing>;
+};
+
 /**  New user values  */
 export type CreateUserInput = {
   firstName?: Maybe<Scalars["String"]>;
@@ -117,10 +122,10 @@ export type CreateUserInput = {
   email?: Maybe<Scalars["EmailAddress"]>;
 };
 
+/**  https://www.apollographql.com/blog/graphql/basics/designing-graphql-mutations/  */
 export type Listing = MongoBase & {
   __typename?: "Listing";
   owner?: Maybe<User>;
-  /**  THIS CACHE CONTROL ISN'T WORKING */
   title?: Maybe<Scalars["String"]>;
   description?: Maybe<Scalars["String"]>;
   primaryCategory?: Maybe<Category>;
@@ -165,7 +170,7 @@ export type Mutation = {
   /** IGNORE: Dummy field necessary for the Mutation type to be valid */
   _empty?: Maybe<Scalars["String"]>;
   createCategory?: Maybe<Category>;
-  createListing?: Maybe<Listing>;
+  createListing?: Maybe<CreateListingPayload>;
   createUser?: Maybe<User>;
   /** Allows the user to update their profile */
   updateUser?: Maybe<User>;
@@ -178,7 +183,7 @@ export type MutationCreateCategoryArgs = {
 
 /**  Base Mutation Type definition - all mutations will be defined in separate files extending this type  */
 export type MutationCreateListingArgs = {
-  listing: ListingDetail;
+  input: ListingDetail;
 };
 
 /**  Base Mutation Type definition - all mutations will be defined in separate files extending this type  */
@@ -293,12 +298,15 @@ export type CategorySelectionCategoryFieldsFragment = {
 };
 
 export type ListingCreateMutationVariables = Exact<{
-  listing: ListingDetail;
+  input: ListingDetail;
 }>;
 
 export type ListingCreateMutation = {
   __typename?: "Mutation";
-  createListing?: Maybe<{ __typename?: "Listing"; title?: Maybe<string> }>;
+  createListing?: Maybe<{
+    __typename?: "CreateListingPayload";
+    listing?: Maybe<{ __typename?: "Listing"; title?: Maybe<string> }>;
+  }>;
 };
 
 export type ListingsListingsQueryVariables = Exact<{ [key: string]: never }>;
@@ -770,7 +778,7 @@ export const ListingCreateDocument = {
           kind: "VariableDefinition",
           variable: {
             kind: "Variable",
-            name: { kind: "Name", value: "listing" },
+            name: { kind: "Name", value: "input" },
           },
           type: {
             kind: "NonNullType",
@@ -790,17 +798,26 @@ export const ListingCreateDocument = {
             arguments: [
               {
                 kind: "Argument",
-                name: { kind: "Name", value: "listing" },
+                name: { kind: "Name", value: "input" },
                 value: {
                   kind: "Variable",
-                  name: { kind: "Name", value: "listing" },
+                  name: { kind: "Name", value: "input" },
                 },
               },
             ],
             selectionSet: {
               kind: "SelectionSet",
               selections: [
-                { kind: "Field", name: { kind: "Name", value: "title" } },
+                {
+                  kind: "Field",
+                  name: { kind: "Name", value: "listing" },
+                  selectionSet: {
+                    kind: "SelectionSet",
+                    selections: [
+                      { kind: "Field", name: { kind: "Name", value: "title" } },
+                    ],
+                  },
+                },
               ],
             },
           },

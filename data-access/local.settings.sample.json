@@ -1,0 +1,14 @@
+{
+  "IsEncrypted": false,
+  "Values": {
+    "FUNCTIONS_WORKER_RUNTIME": "node",
+    "COSMOSDB" : "mongodb://<<your connect string>>",
+    "COSMOSDB_POOL_SIZE": "10",
+    "NODE_ENV": "development",
+    "COSMOSDB_DBNAME": "sharethrift"
+  },
+  "Host": {
+    "LocalHttpPort": 7071,
+    "CORS": "*"
+  }
+}

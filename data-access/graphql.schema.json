@@ -373,6 +373,29 @@
         "possibleTypes": null
       },
       {
+        "kind": "OBJECT",
+        "name": "CreateListingPayload",
+        "description": null,
+        "fields": [
+          {
+            "name": "listing",
+            "description": null,
+            "args": [],
+            "type": {
+              "kind": "OBJECT",
+              "name": "Listing",
+              "ofType": null
+            },
+            "isDeprecated": false,
+            "deprecationReason": null
+          }
+        ],
+        "inputFields": null,
+        "interfaces": [],
+        "enumValues": null,
+        "possibleTypes": null
+      },
+      {
         "kind": "INPUT_OBJECT",
         "name": "CreateUserInput",
         "description": " New user values ",
@@ -612,7 +635,7 @@
       {
         "kind": "OBJECT",
         "name": "Listing",
-        "description": null,
+        "description": " https://www.apollographql.com/blog/graphql/basics/designing-graphql-mutations/ ",
         "fields": [
           {
             "name": "owner",
@@ -628,7 +651,7 @@
           },
           {
             "name": "title",
-            "description": " THIS CACHE CONTROL ISN'T WORKING",
+            "description": null,
             "args": [],
             "type": {
               "kind": "SCALAR",
@@ -1106,7 +1129,7 @@
             "description": null,
             "args": [
               {
-                "name": "listing",
+                "name": "input",
                 "description": null,
                 "type": {
                   "kind": "NON_NULL",
@@ -1124,7 +1147,7 @@
             ],
             "type": {
               "kind": "OBJECT",
-              "name": "Listing",
+              "name": "CreateListingPayload",
               "ofType": null
             },
             "isDeprecated": false,
@@ -2855,7 +2878,7 @@
     ],
     "directives": [
       {
-        "name": "cacheControl",
+        "name": "cacheControl22",
         "description": " Required to enable Apollo Cache Control ",
         "isRepeatable": false,
         "locations": ["FIELD_DEFINITION", "OBJECT", "INTERFACE", "UNION"],

@@ -1,3 +1,0 @@
-extend type Mutation {
-  createListing(listing: ListingDetail!): Listing
-}

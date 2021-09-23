@@ -1,63 +1,21 @@
 import { ApolloServer, gql } from 'apollo-server-azure-functions';
 import { HttpRequest, Context } from "@azure/functions";
-import { loadSchemaSync } from '@graphql-tools/load';
-import { addResolversToSchema, mergeSchemas } from '@graphql-tools/schema';
 import { CosmosDB } from '../data-sources/cosmos-db';
-import { resolvers } from '../resolvers';
-import { JsonFileLoader } from '@graphql-tools/json-file-loader';
-import * as Scalars from 'graphql-scalars';
-import { makeExecutableSchema } from '@graphql-tools/schema';
-import { stitchSchemas } from '@graphql-tools/stitch';
 import connect from '../../shared/data-sources/cosmos-db/connect';
 import { GraphQLServiceContext } from 'apollo-server-types';
 import responseCachePlugin from 'apollo-server-plugin-response-cache';
 import mongoose from 'mongoose';
+import { PortalTokenValidation } from './extensions/portal-token-validation';
+import { combinedSchema } from './extensions/schema-builder';
 
 
-const schema = loadSchemaSync('./graphql.schema.json', {
-  loaders: [new JsonFileLoader()],
-});
+let Portals = new Map<string,string>([
+  ["PublicPortal","PUBLIC_PORTAL"],
+  ["AdminPortal","ADMIN_PORTAL"],
+]);
 
-const appSchema = addResolversToSchema(schema,resolvers)
-
-const CacheControl = gql`
-  enum CacheControlScope {
-    PUBLIC
-    PRIVATE
-  }
-
-  directive @cacheControl(
-    maxAge: Int
-    scope: CacheControlScope
-    inheritMaxAge: Boolean
-  ) on FIELD_DEFINITION | OBJECT | INTERFACE | UNION
-`;
-
-const scalarSchema = makeExecutableSchema({
-  typeDefs:[
-    ...Scalars.typeDefs,
-    //CacheControl
-  ],
-  resolvers:{
-    ...Scalars.resolvers,
-  }
-});
-/*
-export const combinedSchema = stitchSchemas({
-  subschemas: [
-    appSchema,
-    scalarSchema,
-  ]
-});
-*/
-
-export const combinedSchema = mergeSchemas({
-  schemas: [
-    appSchema,
-    scalarSchema,
-  ]
-});
-
+var portalTokenExtractor = new PortalTokenValidation(Portals,5000)
+  
 
 const serverConfig = () => {
   return {
@@ -65,6 +23,18 @@ const serverConfig = () => {
     dataSources: () => ({
       ...CosmosDB,
     }),
+    context: (req:HttpRequest) => {
+      /*
+      let bearerToken = utils.ExtractBearerToken(req);
+      if(bearerToken){
+        return {
+          ...portalTokenExtractor.GetVerifiedUser(bearerToken),
+        }
+      }
+      */
+      
+      
+    },
     playground: { endpoint: "/api/graphql" },
     healthCheckPath: "/api/graphql/healthcheck",
     async onHealthCheck() {
@@ -82,6 +52,7 @@ const serverConfig = () => {
         async serverWillStart(service: GraphQLServiceContext) {
           console.log('Apollo Server Starting');
           connect();
+         // portalTokenExtractor.Start();
         },
       },
       responseCachePlugin()

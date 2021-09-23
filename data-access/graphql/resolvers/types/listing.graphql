@@ -1,10 +1,13 @@
+""" https://www.apollographql.com/blog/graphql/basics/designing-graphql-mutations/ """
+
+
 type Listing implements MongoBase {
-  owner: User @cacheControl(maxAge: 30) """ THIS CACHE CONTROL ISN'T WORKING"""
+  owner: User
   title: String
   description: String
-  primaryCategory: Category @cacheControl(maxAge: 30)
-  photos: [Photo] @cacheControl(maxAge: 30)
-  location: Location @cacheControl(maxAge: 30)
+  primaryCategory: Category
+  photos: [Photo]
+  location: Location
 
   id: ObjectID!
   schemaVersion: String
@@ -12,3 +15,14 @@ type Listing implements MongoBase {
   createdAt: DateTime
 }
 
+extend type Query {
+  listing(id: ID!): Listing 
+  listings: [Listing]
+}
+
+extend type Mutation {
+  createListing(input: ListingDetail!): CreateListingPayload
+}
+type CreateListingPayload {
+  listing: Listing
+}

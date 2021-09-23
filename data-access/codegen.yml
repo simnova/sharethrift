@@ -11,6 +11,7 @@ generates:
       mappers:
         Category: ./resolvers/types/category#CategoryType
         Listing: ./resolvers/types/listing#ListingType
+        CreateListingPayload: ./resolvers/types/create-listing-payload#CreateListingPayloadType
         Location: ./resolvers/types/location#LocationType
         Point: ./resolvers/types/point#PointType
         User: ./resolvers/types/user#UserType

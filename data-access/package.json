@@ -52,7 +52,7 @@
     "graphql-scalars": "^1.10.1",
     "jose": "^2.0.5",
     "mongoose": "^5.13.8",
-    "openid-client": "^4.2.0",
+    "openid-client": "^4.8.0",
     "ramda": "^0.27.1",
     "reflect-metadata": "^0.1.13"
   }

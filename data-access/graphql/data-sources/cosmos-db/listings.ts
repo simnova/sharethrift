@@ -6,15 +6,19 @@ import {ListingDetail} from '../../generated';
 export default class Listings extends MongoDataSource<Listing.Listing, Context> {
 
   async getListing(listingId : string): Promise<Listing.Listing> {
+    console.log(`ListingAPI:getListing:${listingId}`);
     return await this?.findOneById(listingId);
   }
-
+  
   async getListings(): Promise<Listing.Listing[]> {
-    
-    return this.model
+    console.log(`ListingAPI:listings`);
+    var result = this.model
       .find({})
-//      .populate('primaryCategory')
+      .populate('owner')
+    ///  .populate('primaryCategory')
       .exec();
+    console.log(JSON.stringify(await result));
+    return result;
   }
 
   createListing(listingDetail:ListingDetail): Promise<Listing.Listing> {

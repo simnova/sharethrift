@@ -27,7 +27,7 @@ enum CacheControlScope {
 }
 
 """ Required to enable Apollo Cache Control """
-directive @cacheControl(
+directive @cacheControl22(
   maxAge: Int
   scope: CacheControlScope
   inheritMaxAge: Boolean

@@ -5,6 +5,7 @@ import {
 } from "graphql";
 import { CategoryType } from "./resolvers/types/category";
 import { ListingType } from "./resolvers/types/listing";
+import { CreateListingPayloadType } from "./resolvers/types/create-listing-payload";
 import { LocationType } from "./resolvers/types/location";
 import { PointType } from "./resolvers/types/point";
 import { UserType } from "./resolvers/types/user";
@@ -122,6 +123,11 @@ export type CategoryDetail = {
   name?: Maybe<Scalars["String"]>;
 };
 
+export type CreateListingPayload = {
+  __typename?: "CreateListingPayload";
+  listing?: Maybe<Listing>;
+};
+
 /**  New user values  */
 export type CreateUserInput = {
   firstName?: Maybe<Scalars["String"]>;
@@ -130,10 +136,10 @@ export type CreateUserInput = {
   email?: Maybe<Scalars["EmailAddress"]>;
 };
 
+/**  https://www.apollographql.com/blog/graphql/basics/designing-graphql-mutations/  */
 export type Listing = MongoBase & {
   __typename?: "Listing";
   owner?: Maybe<User>;
-  /**  THIS CACHE CONTROL ISN'T WORKING */
   title?: Maybe<Scalars["String"]>;
   description?: Maybe<Scalars["String"]>;
   primaryCategory?: Maybe<Category>;
@@ -178,7 +184,7 @@ export type Mutation = {
   /** IGNORE: Dummy field necessary for the Mutation type to be valid */
   _empty?: Maybe<Scalars["String"]>;
   createCategory?: Maybe<Category>;
-  createListing?: Maybe<Listing>;
+  createListing?: Maybe<CreateListingPayload>;
   createUser?: Maybe<User>;
   /** Allows the user to update their profile */
   updateUser?: Maybe<User>;
@@ -191,7 +197,7 @@ export type MutationCreateCategoryArgs = {
 
 /**  Base Mutation Type definition - all mutations will be defined in separate files extending this type  */
 export type MutationCreateListingArgs = {
-  listing: ListingDetail;
+  input: ListingDetail;
 };
 
 /**  Base Mutation Type definition - all mutations will be defined in separate files extending this type  */
@@ -384,6 +390,7 @@ export type ResolversTypes = ResolversObject<{
   CacheControlScope: CacheControlScope;
   Category: ResolverTypeWrapper<CategoryType>;
   CategoryDetail: CategoryDetail;
+  CreateListingPayload: ResolverTypeWrapper<CreateListingPayloadType>;
   CreateUserInput: CreateUserInput;
   Currency: ResolverTypeWrapper<Scalars["Currency"]>;
   Date: ResolverTypeWrapper<Scalars["Date"]>;
@@ -464,6 +471,7 @@ export type ResolversParentTypes = ResolversObject<{
   Byte: Scalars["Byte"];
   Category: CategoryType;
   CategoryDetail: CategoryDetail;
+  CreateListingPayload: CreateListingPayloadType;
   CreateUserInput: CreateUserInput;
   Currency: Scalars["Currency"];
   Date: Scalars["Date"];
@@ -536,17 +544,17 @@ export type ResolversParentTypes = ResolversObject<{
   Boolean: Scalars["Boolean"];
 }>;
 
-export type CacheControlDirectiveArgs = {
+export type CacheControl22DirectiveArgs = {
   maxAge?: Maybe<Scalars["Int"]>;
   scope?: Maybe<CacheControlScope>;
   inheritMaxAge?: Maybe<Scalars["Boolean"]>;
 };
 
-export type CacheControlDirectiveResolver<
+export type CacheControl22DirectiveResolver<
   Result,
   Parent,
   ContextType = Context,
-  Args = CacheControlDirectiveArgs
+  Args = CacheControl22DirectiveArgs
 > = DirectiveResolverFn<Result, Parent, ContextType, Args>;
 
 export type AddressResolvers<
@@ -663,6 +671,14 @@ export type CategoryResolvers<
     ParentType,
     ContextType
   >;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+}>;
+
+export type CreateListingPayloadResolvers<
+  ContextType = Context,
+  ParentType extends ResolversParentTypes["CreateListingPayload"] = ResolversParentTypes["CreateListingPayload"]
+> = ResolversObject<{
+  listing?: Resolver<Maybe<ResolversTypes["Listing"]>, ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 }>;
 
@@ -900,10 +916,10 @@ export type MutationResolvers<
     RequireFields<MutationCreateCategoryArgs, "category">
   >;
   createListing?: Resolver<
-    Maybe<ResolversTypes["Listing"]>,
+    Maybe<ResolversTypes["CreateListingPayload"]>,
     ParentType,
     ContextType,
-    RequireFields<MutationCreateListingArgs, "listing">
+    RequireFields<MutationCreateListingArgs, "input">
   >;
   createUser?: Resolver<
     Maybe<ResolversTypes["User"]>,
@@ -1166,6 +1182,7 @@ export type Resolvers<ContextType = Context> = ResolversObject<{
   BigInt?: GraphQLScalarType;
   Byte?: GraphQLScalarType;
   Category?: CategoryResolvers<ContextType>;
+  CreateListingPayload?: CreateListingPayloadResolvers<ContextType>;
   Currency?: GraphQLScalarType;
   Date?: GraphQLScalarType;
   DateTime?: GraphQLScalarType;
@@ -1227,5 +1244,5 @@ export type Resolvers<ContextType = Context> = ResolversObject<{
 }>;
 
 export type DirectiveResolvers<ContextType = Context> = ResolversObject<{
-  cacheControl?: CacheControlDirectiveResolver<any, any, ContextType>;
+  cacheControl22?: CacheControl22DirectiveResolver<any, any, ContextType>;
 }>;
