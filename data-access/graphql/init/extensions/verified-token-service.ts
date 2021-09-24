@@ -1,8 +1,9 @@
 import { JWT, JWKS } from "jose";
 import { Issuer } from "openid-client";
 
-export type TokenIssuer = {
+export type OpenIdConfig = {
   issuerUrl:string;
+  oidcEndpoint:string;
   audience: any;
   /**
    * The number of seconds to allow the current time to be off from the token's, 
@@ -14,13 +15,19 @@ export type TokenIssuer = {
 }
 
 export class VerifiedTokenService  {
-  tokenIssuers: Map<string,TokenIssuer>;
+  openIdConfigs: Map<string,OpenIdConfig>;
   refreshInterval:number;
   keyStoreCollection:  Map<string,JWKS.KeyStore>;
   timerInstance:NodeJS.Timer;
 
-  constructor(tokenIssuers:Map<string,TokenIssuer>, refreshInterval:number) {
-    this.tokenIssuers = tokenIssuers;
+  /**
+   * @param refreshInterval The number of seconds to wait between refreshing the keystore, defaults to 5 minutes
+   * @param openIdConfigs A map of key to OpenIdConfig, when a JWT is verified, the matching key is returned with the verified JWT
+   **/
+  constructor(openIdConfigs:Map<string,OpenIdConfig>, refreshInterval:number = 1000*60*5) {
+    if(!openIdConfigs) {throw new Error("openIdConfigs is required");}
+    this.keyStoreCollection = new Map<string,JWKS.KeyStore>();
+    this.openIdConfigs = openIdConfigs;
     this.refreshInterval = refreshInterval;
   }
 
@@ -41,18 +48,19 @@ export class VerifiedTokenService  {
   }
 
   /**
-   * For each issuer, either create a new keystore or refresh the existing one.
+   * For each OIDC Endpoint, either create a new keystore or refresh the existing one.
    * Keys in the keystore expire over time, so it is important to refresh the keystore periodically
    */
   async refreshCollection() {
-    for(let tokenIssuer of  [...this.tokenIssuers.keys()]) {
-      if(!this.keyStoreCollection.has(tokenIssuer) || !this.keyStoreCollection.get(tokenIssuer)) {
-        let newKeyStore = await this.getKeyStore(this.tokenIssuers.get(tokenIssuer).issuerUrl);
+    if(!this.openIdConfigs){return}
+    for(let configKey of  [...this.openIdConfigs.keys()]) {
+      if(!this.keyStoreCollection.has(configKey) || !this.keyStoreCollection.get(configKey)) {
+        let newKeyStore = await this.getKeyStore(this.openIdConfigs.get(configKey).oidcEndpoint);
         if(newKeyStore) {
-          if(this.keyStoreCollection.has(tokenIssuer)) {
-            this.keyStoreCollection.delete(tokenIssuer); // remove old keystore if it exists
+          if(this.keyStoreCollection.has(configKey)) {
+            this.keyStoreCollection.delete(configKey); // remove old keystore if it exists
           };
-          this.keyStoreCollection.set(tokenIssuer, newKeyStore); //Update keystore with new one or add it if it doesn't exist
+          this.keyStoreCollection.set(configKey, newKeyStore); //Update keystore with new one or add it if it doesn't exist
         }
       } 
     }
@@ -60,25 +68,26 @@ export class VerifiedTokenService  {
 
   async getKeyStore(issuerUrl:string) : Promise<JWKS.KeyStore> {
     let issuer = await Issuer.discover(issuerUrl);
-    return await issuer.keystore(true);
+    return issuer.keystore(true);
   }
 
-  public GetVerifiedJwt(bearerToken:string, issuerKey:string) : any {
+  public GetVerifiedJwt(bearerToken:string, configKey:string) : any {
     if(!this.timerInstance) {
       throw new Error("ContextUserFromMsal not started");
     }
-    if(!this.keyStoreCollection.has(issuerKey)) {
+    if(!this.keyStoreCollection.has(configKey)) {
       throw new Error("Invalid issuer key");
     }
-    let issuer = this.tokenIssuers.get(issuerKey);
+    let openIdConfig = this.openIdConfigs.get(configKey);
+    console.log(`Issurer: ${JSON.stringify(openIdConfig)}`);
     return JWT.verify(
       bearerToken,
-      this.keyStoreCollection.get(issuerKey), 
+      this.keyStoreCollection.get(configKey), 
       {
-        audience: issuer.audience,
-        issuer: issuer.issuerUrl,
-        ignoreNbf: issuer.ignoreNbf??true,
-        clockTolerance: issuer.clockTolerance?? "5 minutes",
+        audience: openIdConfig.audience,
+        issuer: openIdConfig.issuerUrl,
+        ignoreNbf: openIdConfig.ignoreNbf??true,
+        clockTolerance: openIdConfig.clockTolerance?? "5 minutes",
       });
   }
 

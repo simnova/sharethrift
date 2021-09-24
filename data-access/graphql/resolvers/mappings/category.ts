@@ -19,5 +19,5 @@ var convertDtoObjectToGraph = (dto: DTO.Category):Graph.CategoryType => {
   result.childrenIds = dto.childrenIds?.map(child => ConvertDtoToGraph(child));
   result.createdAt = dto.createdAt;
   result.updatedAt = dto.updatedAt;
-return result;
+  return result;
 }

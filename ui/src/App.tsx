@@ -1,30 +1,41 @@
-import React, { useState } from "react";
-import logo from "./logo.svg";
+import React from "react";
 import "./App.css";
-import { Header} from "./components/header";
-import { Users } from "./components/users";
-
-import { Layout } from 'antd';
-import { CategoryCreate } from "./components/category-create";
-import { ListingCreate } from "./components/listing-create";
-import { Listings } from "./components/listings";
-const {  Content } = Layout;
-
+import { Switch, Route } from 'react-router-dom';
+import { Account } from "./components/layouts/account";
+import { Admin } from "./components/layouts/admin";
+import Main from './components/layouts/main';
+import ApolloConnection from './components/core/apollo-connection';
+import RequireMsal from './components/require-msal';
 
 function App() {
 
   return (
-      <Layout>
-      <Header isLoggedIn={false} />
-        <Content>
-          <CategoryCreate />
-          <Users />
-          <div>
-            <ListingCreate />
-          </div>
-          <Listings/>
-        </Content>
-      </Layout>
+    <Switch>
+        <Route exact path="/login">
+        </Route>
+        <Route path="/account">
+          <RequireMsal identifier="account">
+            <ApolloConnection AuthenticationIdentifier="account">
+              <Account />
+            </ApolloConnection>
+            
+          </RequireMsal>
+        </Route>
+        <Route path="/admin">
+          <RequireMsal identifier="admin">
+            <ApolloConnection AuthenticationIdentifier="admin">
+              <Admin />
+            </ApolloConnection>
+          </RequireMsal>
+        </Route>
+        <Route exact path="/">
+          <ApolloConnection>
+            <Main/>
+          </ApolloConnection>
+        </Route>
+      </Switch>
+   
+    
   );
 }
 

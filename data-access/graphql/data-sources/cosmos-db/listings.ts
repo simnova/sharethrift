@@ -7,7 +7,7 @@ export default class Listings extends MongoDataSource<Listing.Listing, Context> 
 
   async getListing(listingId : string): Promise<Listing.Listing> {
     console.log(`ListingAPI:getListing:${listingId}`);
-    return await this?.findOneById(listingId);
+    return this?.findOneById(listingId);
   }
   
   async getListings(): Promise<Listing.Listing[]> {
@@ -27,4 +27,5 @@ export default class Listings extends MongoDataSource<Listing.Listing, Context> 
     );
     return listing.save();
   }
+  
 }

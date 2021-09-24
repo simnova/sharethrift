@@ -7,33 +7,32 @@ import responseCachePlugin from 'apollo-server-plugin-response-cache';
 import mongoose from 'mongoose';
 import { PortalTokenValidation } from './extensions/portal-token-validation';
 import { combinedSchema } from './extensions/schema-builder';
-
+import * as util  from './extensions/util';
 
 let Portals = new Map<string,string>([
-  ["PublicPortal","PUBLIC_PORTAL"],
-  ["AdminPortal","ADMIN_PORTAL"],
+  ["AccountPortal","ACCOUNT_PORTAL"]
 ]);
 
-var portalTokenExtractor = new PortalTokenValidation(Portals,5000)
+var portalTokenExtractor = new PortalTokenValidation(Portals,1000*60*5)
   
-
 const serverConfig = () => {
   return {
     schema:combinedSchema,
     dataSources: () => ({
       ...CosmosDB,
     }),
-    context: (req:HttpRequest) => {
-      /*
-      let bearerToken = utils.ExtractBearerToken(req);
+    context: (req:any) => {
+      let bearerToken = util.ExtractBearerToken(req.request);
+     
       if(bearerToken){
-        return {
-          ...portalTokenExtractor.GetVerifiedUser(bearerToken),
+        var verifiedUser = portalTokenExtractor.GetVerifiedUser(bearerToken);
+        console.log(`Verfied User: ${JSON.stringify(verifiedUser)}`);
+        if(verifiedUser){
+          return {
+            VerifedUser:verifiedUser
+          }
         }
       }
-      */
-      
-      
     },
     playground: { endpoint: "/api/graphql" },
     healthCheckPath: "/api/graphql/healthcheck",
@@ -52,7 +51,7 @@ const serverConfig = () => {
         async serverWillStart(service: GraphQLServiceContext) {
           console.log('Apollo Server Starting');
           connect();
-         // portalTokenExtractor.Start();
+          portalTokenExtractor.Start();
         },
       },
       responseCachePlugin()
@@ -72,19 +71,9 @@ const graphqlHandler = (context: Context, req: HttpRequest) => {
     },
   })
   
-  // https://github.com/Azure/azure-functions-host/issues/6013
-  req.headers["x-ms-privatelink-id"] = ""
-  // apollo-server only reads this specific string
-
-  /*
-  req.headers["Access-Control-Request-Headers"] =
-    req.headers["Access-Control-Request-Headers"] ||
-    req.headers["access-control-request-headers"]
-  */
-    req.headers['server'] = null;
-  //  req.headers['Access-Control-Allow-Methods'] = 'GET, POST, OPTIONS, PUT, HEAD, DELETE, PATCH';
-  
-    return graphqlHandlerObj(context, req)
+  req.headers["x-ms-privatelink-id"] = "" // https://github.com/Azure/azure-functions-host/issues/6013
+  req.headers['server'] = null;
+  return graphqlHandlerObj(context, req)
 }
 
 export default {

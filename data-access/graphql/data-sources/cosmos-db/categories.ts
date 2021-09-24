@@ -7,7 +7,7 @@ import {CategoryDetail} from '../../generated';
 export default class Categories extends MongoDataSource<Category.Category, Context> {
 
   async getCategory(categoryId : string): Promise<Category.Category> {
-    return await this?.findOneById(categoryId);
+    return this?.findOneById(categoryId);
   }
 
   async getCategories(): Promise<Category.Category[]> {

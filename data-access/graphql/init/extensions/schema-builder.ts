@@ -1,10 +1,8 @@
 import { loadSchemaSync } from '@graphql-tools/load';
-import { addResolversToSchema, mergeSchemas } from '@graphql-tools/schema';
+import { addResolversToSchema, mergeSchemas, makeExecutableSchema } from '@graphql-tools/schema';
 import { resolvers } from '../../resolvers';
 import { JsonFileLoader } from '@graphql-tools/json-file-loader';
 import * as Scalars from 'graphql-scalars';
-import { makeExecutableSchema } from '@graphql-tools/schema';
-
 
 const schema = loadSchemaSync('./graphql.schema.json', {
   loaders: [new JsonFileLoader()],

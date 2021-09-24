@@ -1,6 +1,9 @@
 import { CosmosDBType} from './data-sources/cosmos-db';
 
 export type Context = {
-  authToken: string;
+  VerifedUser: {
+    VerifiedJWT: any;
+    OpenIdConfigKey: string;
+  };
   dataSources: CosmosDBType;
 }
