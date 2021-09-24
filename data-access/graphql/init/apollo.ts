@@ -13,7 +13,7 @@ let Portals = new Map<string,string>([
   ["AccountPortal","ACCOUNT_PORTAL"]
 ]);
 
-var portalTokenExtractor = new PortalTokenValidation(Portals,1000*60*5)
+var portalTokenExtractor = new PortalTokenValidation(Portals)
   
 const serverConfig = () => {
   return {
@@ -26,7 +26,6 @@ const serverConfig = () => {
      
       if(bearerToken){
         var verifiedUser = portalTokenExtractor.GetVerifiedUser(bearerToken);
-        console.log(`Verfied User: ${JSON.stringify(verifiedUser)}`);
         if(verifiedUser){
           return {
             VerifedUser:verifiedUser
