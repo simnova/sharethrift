@@ -75,7 +75,6 @@ export class VerifiedTokenService  {
   
   async getKeyStore(issuerUrl:string) : Promise<{keyStore: JWKS.KeyStore, issuerUrl: string}> {
     let issuer = await Issuer.discover(issuerUrl);
-   
     return {keyStore: await issuer.keystore(true),issuerUrl: issuer.metadata.issuer};
   }
 
@@ -87,7 +86,6 @@ export class VerifiedTokenService  {
       throw new Error("Invalid OpenIdConfig Key");
     }
     let openIdConfig = this.openIdConfigs.get(configKey);
-    console.log(`Issurer: ${JSON.stringify(openIdConfig)}`);
     return JWT.verify(
       bearerToken,
       this.keyStoreCollection.get(configKey).keyStore, 
