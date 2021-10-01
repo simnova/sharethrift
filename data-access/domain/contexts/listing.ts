@@ -49,6 +49,7 @@ export class Listing  implements Domain, ListingDetails, AggregateRoot {
       throw new Error("Photo already exists");
     }
     throw new Error("Method not implemented.");
+    //Add DomainEvent - photoAdded
   }
 
   requestRemovePhoto(id: string, user: Passport){

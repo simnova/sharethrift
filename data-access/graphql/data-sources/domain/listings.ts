@@ -9,6 +9,7 @@ export default class Listings extends DomainDataSource<Listing, MongoListingRepo
     this.repository.update(listing as Listing);
   }
   async addListing(listing: ListingDetail) : Promise<Listing> {
+    //If there are conversions between GraphQL Types and domain types, it should happen here
     return this.repository.add(listing as Listing);
   }
   

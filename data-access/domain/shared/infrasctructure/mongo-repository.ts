@@ -13,8 +13,7 @@ export interface MongoTypePair<MongoType,MongoModel extends Model<MongoType,{},{
 */
 
 export abstract class MongoRepository<MongoType, DomainType extends Domain> implements Repository<DomainType> {
-
-  constructor(private model : Model<MongoType>, private typeConverter:TypeConverter<MongoType,DomainType>) {
+  constructor(protected model : Model<MongoType>, private typeConverter:TypeConverter<MongoType,DomainType>) {
     this.model = model;
   }
   async get(id: string): Promise<DomainType> {
