@@ -57,19 +57,15 @@ export class VerifiedTokenService  {
    * Keys in the keystore expire over time, so it is important to refresh the keystore periodically
    */
   async refreshCollection() {
-    console.log("Refreshing Keystore Collection");
     if(!this.openIdConfigs){return}
     for(let configKey of  [...this.openIdConfigs.keys()]) {
-      //if(!this.keyStoreCollection.has(configKey) || !this.keyStoreCollection.get(configKey)) {
-        let newKeyStore = await this.getKeyStore(this.openIdConfigs.get(configKey).oidcEndpoint);
-        if(newKeyStore) {
-          if(this.keyStoreCollection.has(configKey)) {
-            this.keyStoreCollection.delete(configKey); // remove old keystore if it exists
-          }
-          this.keyStoreCollection.set(configKey, newKeyStore); //Update keystore with new one or add it if it doesn't exist
-          console.log(`Updated keystore for ${configKey}`);
+      let newKeyStore = await this.getKeyStore(this.openIdConfigs.get(configKey).oidcEndpoint);
+      if(newKeyStore) {
+        if(this.keyStoreCollection.has(configKey)) {
+          this.keyStoreCollection.delete(configKey); // remove old keystore if it exists
         }
-      //} 
+        this.keyStoreCollection.set(configKey, newKeyStore); //Update keystore with new one or add it if it doesn't exist
+      }
     }
   }
   
@@ -94,7 +90,8 @@ export class VerifiedTokenService  {
         issuer: this.keyStoreCollection.get(configKey).issuerUrl,
         ignoreNbf: openIdConfig.ignoreNbf??true,
         clockTolerance: openIdConfig.clockTolerance?? "5 minutes",
-      });
+      }
+    );
   }
 
 }

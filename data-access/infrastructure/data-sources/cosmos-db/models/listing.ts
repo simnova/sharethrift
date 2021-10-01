@@ -3,18 +3,19 @@ import { Base, BaseOptions} from './interfaces/base';
 import * as Category  from './category';
 import * as Location from './location';
 import * as User from './user';
-import { Options } from 'apollo-datasource-mongodb';
+
+export interface Photo {
+  id: string,
+  order: number,
+  documentId: string
+}
 
 export interface Listing extends Base {
   owner: User.User | ObjectId;
   title: string;
   description: string;
   primaryCategory: PopulatedDoc<Category.Category> | ObjectId;
-  photos: [
-    id: string,
-    order: number,
-    documentId: string
-  ];
+  photos: Photo[];
   location: PopulatedDoc<Location.Location>;
 }
 

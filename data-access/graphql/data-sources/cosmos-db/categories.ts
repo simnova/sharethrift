@@ -1,6 +1,6 @@
 import { MongoDataSource } from 'apollo-datasource-mongodb';
 import { Document } from 'mongoose';
-import * as Category from '../../../shared/data-sources/cosmos-db/models/category';
+import * as Category from '../../../infrastructure/data-sources/cosmos-db/models/category';
 import {Context} from '../../context';
 import {CategoryDetail} from '../../generated';
 

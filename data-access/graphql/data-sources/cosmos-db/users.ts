@@ -1,5 +1,5 @@
 import { MongoDataSource } from 'apollo-datasource-mongodb';
-import * as User from '../../../shared/data-sources/cosmos-db/models/user';
+import * as User from '../../../infrastructure/data-sources/cosmos-db/models/user';
 import {Context} from '../../context';
 
 export default class Users extends MongoDataSource<User.User, Context> {

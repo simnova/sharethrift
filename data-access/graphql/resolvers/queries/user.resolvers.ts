@@ -14,7 +14,8 @@ const user : Resolvers = {
       }
     //  info.cacheControl.setCacheHint({ maxAge: 60,scope: CacheScope.Public });
       console.log(`Resolver>Query>user ${args.id}`)
-      return ConvertDtoToGraph(await context.dataSources.userAPI.getUser(args.id)) as UserType;
+      var userDto = await context.dataSources.userAPI.findOneById(args.id)
+      return ConvertDtoToGraph(userDto) as UserType;
     }
   },
    

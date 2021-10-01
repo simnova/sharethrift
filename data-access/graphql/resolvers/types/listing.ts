@@ -9,10 +9,10 @@ export interface ListingType extends MongoBase{
   title: string;
   description: string;
   primaryCategory: Category.CategoryType | ObjectId;
-  photos: [
-    id: string,
+  photos: 
+    {id: string,
     order: number,
-    documentId: string
-  ];
+    documentId: string}[]
+  ;
   location: Location.LocationType;
 }

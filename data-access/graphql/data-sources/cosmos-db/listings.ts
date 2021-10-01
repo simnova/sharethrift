@@ -1,5 +1,5 @@
 import { MongoDataSource } from 'apollo-datasource-mongodb';
-import * as Listing from '../../../shared/data-sources/cosmos-db/models/listing';
+import * as Listing from '../../../infrastructure/data-sources/cosmos-db/models/listing';
 import {Context} from '../../context';
 import {ListingDetail} from '../../generated';
 

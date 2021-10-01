@@ -1,11 +1,12 @@
-import * as DTO from '../../../shared/data-sources/cosmos-db/models/listing';
+import * as DTO from '../../../infrastructure/data-sources/cosmos-db/models/listing';
 
-import { User as UserDto } from '../../../shared/data-sources/cosmos-db/models/user';
-import { Category as CategoryDto } from '../../../shared/data-sources/cosmos-db/models/category';
+import { User as UserDto } from '../../../infrastructure/data-sources/cosmos-db/models/user';
+import { Category as CategoryDto } from '../../../infrastructure/data-sources/cosmos-db/models/category';
 
 import * as Graph from '../types/Listing';
 import * as User from './user';
 import * as Category from './category';
+import * as Domain from '../../../domain/contexts/listing';
 
 export const ConvertDtoToGraph = (dto: DTO.Listing) : Graph.ListingType => {
   return {
@@ -21,3 +22,19 @@ export const ConvertDtoToGraph = (dto: DTO.Listing) : Graph.ListingType => {
     createdAt: dto.createdAt
   }
 }
+
+export const ConvertDomainToGraph = (domain: Domain.Listing) : Graph.ListingType => {
+  return {
+    id: domain.id,
+    schemaVersion: domain.schemaVersion,
+    owner: User.ConvertDomainToGraph(domain.owner),
+    title: domain.title,
+    description: domain.description,
+    primaryCategory: Category.ConvertDomainToGraph(domain.primaryCategory),
+    photos: domain.photos,
+    location: domain.location,
+    updatedAt: domain.updatedAt,
+    createdAt: domain.createdAt
+  }
+}
+

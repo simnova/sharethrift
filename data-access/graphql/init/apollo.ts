@@ -1,13 +1,16 @@
 import { ApolloServer, gql } from 'apollo-server-azure-functions';
 import { HttpRequest, Context } from "@azure/functions";
 import { CosmosDB } from '../data-sources/cosmos-db';
-import connect from '../../shared/data-sources/cosmos-db/connect';
+import connect from '../../infrastructure/data-sources/cosmos-db/connect';
 import { GraphQLServiceContext } from 'apollo-server-types';
 import responseCachePlugin from 'apollo-server-plugin-response-cache';
 import mongoose from 'mongoose';
 import { PortalTokenValidation } from './extensions/portal-token-validation';
 import { combinedSchema } from './extensions/schema-builder';
 import * as util  from './extensions/util';
+import { Domain } from '../data-sources/domain';
+
+
 
 let Portals = new Map<string,string>([
   ["AccountPortal","ACCOUNT_PORTAL"]
@@ -20,6 +23,7 @@ const serverConfig = () => {
     schema:combinedSchema,
     dataSources: () => ({
       ...CosmosDB,
+      ...Domain
     }),
     context: (req:any) => {
       let bearerToken = util.ExtractBearerToken(req.request);
@@ -38,6 +42,7 @@ const serverConfig = () => {
     async onHealthCheck() {
       // doesn't work yet 
       // https://github.com/apollographql/apollo-server/pull/5270
+      // https://github.com/apollographql/apollo-server/pull/5003
       var mongoConnected = mongoose.connection.readyState === 1;
       if(mongoConnected) {
         return;
@@ -56,7 +61,7 @@ const serverConfig = () => {
       responseCachePlugin()
     ]
   }
-}
+};
 
 export const server = new ApolloServer({
   ...serverConfig()

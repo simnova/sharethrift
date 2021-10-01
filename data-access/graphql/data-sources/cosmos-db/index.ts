@@ -1,6 +1,6 @@
-import { UserModel } from '../../../shared/data-sources/cosmos-db/models/user';
-import { CategoryModel } from '../../../shared/data-sources/cosmos-db/models/category';
-import { ListingModel } from '../../../shared/data-sources/cosmos-db/models/listing';
+import { UserModel } from '../../../infrastructure/data-sources/cosmos-db/models/user';
+import { CategoryModel } from '../../../infrastructure/data-sources/cosmos-db/models/category';
+import { ListingModel } from '../../../infrastructure/data-sources/cosmos-db/models/listing';
 import Users from './users';
 import Categories from './categories';
 import Listings from './listings';

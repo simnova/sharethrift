@@ -1,5 +1,5 @@
 import { Resolvers } from '../../generated';
-import { ConvertDtoToGraph } from '../mappings/listing';
+import { ConvertDomainToGraph, ConvertDtoToGraph } from '../mappings/listing';
 import { CacheScope } from 'apollo-server-types';
 import { ListingType } from './listing';
 import { UserType } from './user';
@@ -7,13 +7,15 @@ import { isValidObjectId } from 'mongoose';
 
 import { ConvertDtoToGraph as UserConverter } from '../mappings/user';
 
+import { Listing } from '../../../infrastructure/data-sources/cosmos-db/models/listing';
+
 const listing : Resolvers = {
   Listing: {
     owner: async (parent : ListingType, args, context, info) => {
     //  info.cacheControl.setCacheHint({ maxAge: 60,scope: CacheScope.Public });
       console.log("Resolver>Listing>owner")
      
-      if(isValidObjectId(parent.owner)){
+      if(parent.owner !==null && isValidObjectId(parent.owner)){
         console.log("Resolver>Listing>owner provided ObjectId : looking up User")
         return UserConverter(await context.dataSources.userAPI.getUser(parent.owner.toString())) as UserType;
       }
@@ -39,7 +41,9 @@ const listing : Resolvers = {
   },
   Mutation: {  
     createListing: async (parent, args, context, info) => {
-      return {listing: ConvertDtoToGraph(await context.dataSources.listingAPI.createListing(args.input))};
+      var newListing = await context.dataSources.listingDomainAPI.addListing(args.input);
+      return {listing: ConvertDomainToGraph(newListing )};
+     // return {listing: ConvertDtoToGraph(await context.dataSources.listingAPI.createListing(args.input))};
     }
 
   }   
