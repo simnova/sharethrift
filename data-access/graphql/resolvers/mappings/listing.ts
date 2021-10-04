@@ -6,7 +6,7 @@ import { Category as CategoryDto } from '../../../infrastructure/data-sources/co
 import * as Graph from '../types/Listing';
 import * as User from './user';
 import * as Category from './category';
-import * as Domain from '../../../domain/contexts/listing';
+import * as Domain from '../../../domain/contexts/listing-aggregate';
 
 export const ConvertDtoToGraph = (dto: DTO.Listing) : Graph.ListingType => {
   return {

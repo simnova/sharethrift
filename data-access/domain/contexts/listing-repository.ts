@@ -1,4 +1,4 @@
-import {Listing} from './listing';
+import {Listing} from './listing-aggregate';
 import { Repository } from '../shared/repository';
 
 export interface ListingRepository extends Repository<Listing> {

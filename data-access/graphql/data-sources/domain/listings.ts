@@ -1,4 +1,4 @@
-import { Listing } from '../../../domain/contexts/listing';
+import { Listing } from '../../../domain/contexts/listing-aggregate';
 import { MongoListingRepository } from '../../../domain/infrastructure/persistance/mongo-listing-repository';
 import {Context} from '../../context';
 import { ListingDetail } from '../../generated';

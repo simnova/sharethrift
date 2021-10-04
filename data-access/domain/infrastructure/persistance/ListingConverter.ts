@@ -1,4 +1,4 @@
-import { Listing as ListingDO } from "../../contexts/listing";
+import { Listing as ListingDO } from "../../contexts/listing-aggregate";
 import { Listing, ListingModel } from "../../../infrastructure/data-sources/cosmos-db/models/listing";
 import { User } from "../../../infrastructure/data-sources/cosmos-db/models/user";
 import { TypeConverter } from "../../shared/infrasctructure/mongo-repository";
