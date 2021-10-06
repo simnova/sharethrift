@@ -11,7 +11,7 @@ export interface PhotoDetails {
   readonly id: string;
   readonly order: number;
   readonly documentId: string;
-  readonly isMarkedForDeletion: boolean ;
+  readonly isMarkedForDeletion?: boolean;
 }
 
 export class NewPhoto {

@@ -1,3 +1,3 @@
 export interface Domain {
-    id: string;
+    get id(): string;
 }

@@ -1,29 +1,37 @@
 import { Repository } from "../repository";
-import { Domain } from "../domain";
-import { Model } from "mongoose";
-/*
-import { Model as MongooseModel } from "mongoose";
+import { AggregateRoot } from "../aggregate-root";
+import { Model, ClientSession,Document } from "mongoose";
 
-export type MongoTypePair<T,U = MongooseModel<T,{},{}>>
-
-export interface MongoTypePair<MongoType,MongoModel extends Model<MongoType,{},{}>> { 
-  type: MongoType;
-  model: MongoModel;
-}
-*/
-
-export abstract class MongoRepository<MongoType, DomainType extends Domain> implements Repository<DomainType> {
-  constructor(protected model : Model<MongoType>, private typeConverter:TypeConverter<MongoType,DomainType>) {
-    this.model = model;
-  }
+export abstract class MongoRepository<MongoType,PropType,DomainType extends AggregateRoot<PropType>> implements Repository<DomainType> {
+  constructor(
+    protected model : Model<MongoType>, 
+    protected typeConverter:TypeConverter<Document<MongoType>,DomainType>, 
+    protected session:ClientSession) {}
+  
   async get(id: string): Promise<DomainType> {
-    return this.typeConverter.toDomain(await this.model.findById(id).exec());
+    return this.typeConverter.toDomain(await this.model.findById(id,null,{session:this.session}).exec());
   }
-  async update(item: DomainType): Promise<void> {
-    this.model.updateOne({_id: item.id as any}, this.typeConverter.toMongo(item)).exec();
+
+  async save(item: DomainType): Promise<DomainType> {
+   return this.typeConverter.toDomain(await this.typeConverter.toMongo(item).save({session:this.session}));
   }
-  async add(item: DomainType): Promise<DomainType> {
-    return this.typeConverter.toDomain(await this.model.create(this.typeConverter.toMongo(item)));
+
+  static create<MongoType,PropType, DomainType extends AggregateRoot<PropType>, RepoType extends MongoRepository<MongoType,PropType,DomainType>>(
+    model: Model<MongoType>, 
+    typeConverter:TypeConverter<Document<MongoType>,DomainType>, 
+    session:ClientSession,
+    repoClass: new(model:Model<MongoType>,typeConverter:TypeConverter<Document<MongoType>,DomainType>,session:ClientSession) =>RepoType ): RepoType {
+      return new repoClass(model,typeConverter,session);
+  }
+}
+
+export class MongoFactory{
+  static create<MongoType,PropType, DomainType extends AggregateRoot<PropType>, RepoType extends MongoRepository<MongoType,PropType,DomainType>>(
+    model: Model<MongoType>, 
+    typeConverter:TypeConverter<Document<MongoType>,DomainType>, 
+    session:ClientSession,
+    repoClass: new(model:Model<MongoType>,typeConverter:TypeConverter<Document<MongoType>,DomainType>,session:ClientSession) =>RepoType ): RepoType {
+      return new repoClass(model,typeConverter,session);
   }
 }
 

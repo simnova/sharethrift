@@ -4,7 +4,7 @@ export class Email {
   private constructor(value: string) {
     this.value = value;
   }
-
+/*
   public static create(value: string): Email |  {
     return new Email(value);
   }
@@ -12,4 +12,5 @@ export class Email {
   public getValue(): string {
     return this.value;
   }
+  */
 }

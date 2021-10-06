@@ -1,35 +1,51 @@
-import { Listing as ListingDO } from "../../contexts/listing-aggregate";
-import { Listing, ListingModel } from "../../../infrastructure/data-sources/cosmos-db/models/listing";
+import {  Listing as ListingDO, ListingProps } from "../../contexts/listing";
+import { Listing } from "../../../infrastructure/data-sources/cosmos-db/models/listing";
 import { User } from "../../../infrastructure/data-sources/cosmos-db/models/user";
 import { TypeConverter } from "../../shared/infrasctructure/mongo-repository";
-import { isValidObjectId } from "mongoose";
-import { UserConverter } from "./UserConverter";
-import { PhotoConverter } from "./PhotoConverter";
+import { Location } from "../../contexts/location";
+import { Photo as PhotoDO } from "../../contexts/photo";
+import { User as UserDO } from "../../contexts/user";
+import { Category as CategoryDO } from "../../contexts/category";
+import { isValidObjectId, Document } from "mongoose";
 
 
-export class ListingConverter implements TypeConverter<Listing, ListingDO> {
-  private userConverter = new UserConverter();
-  private photoConverter = new PhotoConverter();
-  toDomain(mongoType: Listing): ListingDO {
-    return new ListingDO({
-      id: mongoType.id,
-      owner: isValidObjectId(mongoType.owner) ? null : this.userConverter.toDomain(mongoType.owner as User),
-      title: mongoType.title,
-      description: mongoType.description,
-      primaryCategory: mongoType.primaryCategory,
-      photos: mongoType.photos?.map(photo => this.photoConverter.toDomain(photo)),
-      location: mongoType.location
-    });
+export class ListingConverter implements TypeConverter<Document<Listing>, ListingDO<DomainAdapter>> {
+  toDomain(mongoType: Listing): ListingDO<DomainAdapter> {
+    return new ListingDO(new DomainAdapter(mongoType))
   }
-  toMongo(domainType: ListingDO): Listing {
-    return new ListingModel({
-      id: domainType.id,
-      owner: this.userConverter.toMongo(domainType.owner),
-      title: domainType.title,
-      description: domainType.description,
-      primaryCategory: domainType.primaryCategory,
-      photos:   domainType.photos?.filter(photo => photo.isMarkedForDeletion === false).map(photo => this.photoConverter.toMongo(photo)),
-      location: null //domainType.location
-    });
+  toMongo(domainType: ListingDO<DomainAdapter>): Listing {
+    return domainType.props;
+  }
+}
+
+export class DomainAdapter extends Document<Listing> implements Listing, ListingProps {
+  props:Listing;
+  id?:string;
+  title: string;
+  description: string;
+  location: Location;
+  photos: PhotoDO[];
+  owner: any;
+  primaryCategory: CategoryDO;
+  createdAt: Date;
+  updatedAt: Date;
+  schemaVersion: string;
+  version:number;
+
+  
+  public constructor(model:Listing) {
+    super(model);
+    this.props = model;
+    this.id = model.id;
+    this.title = model.title;
+    this.description = model.description;
+    this.primaryCategory = model.primaryCategory;
+    this.photos = undefined;
+    this.owner = isValidObjectId(model.owner.toString()) ? null : new UserDO(model.owner as User);
+    this.location = model.location;
+    this.createdAt = model.createdAt;
+    this.updatedAt = model.updatedAt;
+    this.schemaVersion = model.schemaVersion;
+    this.version = model.version;
   }
 }
