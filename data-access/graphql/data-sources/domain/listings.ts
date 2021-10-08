@@ -12,7 +12,7 @@ type RepoType = MongoListingRepository<PropType>;
 export default class Listings extends DomainDataSource<Context,Listing,PropType,DomainType,RepoType> {
   updateListing(listing: ListingDetail) {
     this.withTransaction(async (repo) => {
-      let domainObject =await repo.get("somide");
+      let domainObject =await repo.get('someid');
       domainObject.requestUpdateDescription(listing.description);
       repo.save(domainObject);
     });

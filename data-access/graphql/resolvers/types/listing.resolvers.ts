@@ -41,6 +41,7 @@ const listing : Resolvers = {
   Mutation: {  
     createListing: async (parent, args, context, info) => {
       var newListing = await context.dataSources.listingDomainAPI.addListing(args.input);
+      
       return  {listing: newListing};
     
      // return {listing: ConvertDtoToGraph(await context.dataSources.listingAPI.createListing(args.input))};
