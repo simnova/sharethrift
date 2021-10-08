@@ -1,9 +1,9 @@
-import { Listing as ListingDO, ListingProps } from "../../contexts/listing";
-import { ListingRepository } from "../../contexts/listing-repository";
-import {Listing, ListingModel}from "../../../infrastructure/data-sources/cosmos-db/models/listing";
-import { MongoRepository,TypeConverter } from "../../shared/infrasctructure/mongo-repository";
+import { Listing as ListingDO, ListingProps } from "../../../contexts/listing";
+import { ListingRepository } from "../../../contexts/listing-repository";
+import { Listing, ListingModel }from "../../../../infrastructure/data-sources/cosmos-db/models/listing";
+import { MongoRepository } from "../mongo-repository";
+import { TypeConverter } from "../../../shared/type-converter";
 import { ClientSession } from "mongoose";
-import { DomainAdapter } from "./ListingConverter";
 export class MongoListingRepository<PropType extends ListingProps> extends MongoRepository<Listing,PropType,ListingDO<PropType>> implements ListingRepository<PropType> {
   constructor(
     modelType: typeof ListingModel, 
@@ -12,10 +12,9 @@ export class MongoListingRepository<PropType extends ListingProps> extends Mongo
   ) {
     super(modelType,typeConverter,session);
   }
+
   getNewInstance(): ListingDO<PropType> {
-    var listing = new ListingModel();
-    var listingDA = new DomainAdapter(listing);
-    return this.typeConverter.toDomain(listingDA);
+    return this.typeConverter.toDomain(new ListingModel());
   }
 
   async delete(id: string): Promise<void> {

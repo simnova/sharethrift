@@ -1,23 +1,22 @@
-import { Resolvers } from '../../generated';
-import { ConvertDomainToGraph, ConvertDtoToGraph } from '../mappings/listing';
+import { Resolvers, CreateListingPayload, Listing } from '../../generated';
 import { CacheScope } from 'apollo-server-types';
-import { ListingType } from './listing';
+//import { ListingType } from './listing';
 import { UserType } from './user';
 import { isValidObjectId } from 'mongoose';
+import { ListingEntityReference } from '../../../domain/contexts/listing';
 
-import { ConvertDtoToGraph as UserConverter } from '../mappings/user';
 
-import { Listing } from '../../../infrastructure/data-sources/cosmos-db/models/listing';
+//import { Listing } from '../../../infrastructure/data-sources/cosmos-db/models/listing';
 
 const listing : Resolvers = {
   Listing: {
-    owner: async (parent : ListingType, args, context, info) => {
+    owner: async (parent : ListingEntityReference, args, context, info) => {
     //  info.cacheControl.setCacheHint({ maxAge: 60,scope: CacheScope.Public });
       console.log("Resolver>Listing>owner")
      
       if(parent.owner !==null && isValidObjectId(parent.owner)){
         console.log("Resolver>Listing>owner provided ObjectId : looking up User")
-        return UserConverter(await context.dataSources.userAPI.getUser(parent.owner.toString())) as UserType;
+        return context.dataSources.userAPI.getUser(parent.owner.toString());
       }
       else {
         console.log("Resolver>Listing>owner provided User Object : returning User Object")
@@ -30,19 +29,20 @@ const listing : Resolvers = {
     listing : async (parent, args, context, info)  => {
       info.cacheControl.setCacheHint({ maxAge: 60,scope: CacheScope.Public });
       console.log(`Resolver>Query>listing ${args.id}`)
-      return ConvertDtoToGraph(await context.dataSources.listingAPI.getListing(args.id));
+      return context.dataSources.listingAPI.getListing(args.id);
     },
   
     listings : async (parent, args, context, info) => {
       console.log(`Resolver>Query>listings`)
-      return (await context.dataSources.listingAPI.getListings()).map(ConvertDtoToGraph);
+      return context.dataSources.listingAPI.getListings();
     }
 
   },
   Mutation: {  
     createListing: async (parent, args, context, info) => {
       var newListing = await context.dataSources.listingDomainAPI.addListing(args.input);
-      return {listing: ConvertDomainToGraph(newListing )};
+      return  {listing: newListing};
+    
      // return {listing: ConvertDtoToGraph(await context.dataSources.listingAPI.createListing(args.input))};
     }
 

@@ -1,7 +1,8 @@
-import { PersistanceUnitOfWork } from "../unit-of-work";
-import { AggregateRoot } from "../aggregate-root";
+import { PersistanceUnitOfWork } from "../../shared/unit-of-work";
+import { AggregateRoot } from "../../shared/aggregate-root";
 import mongoose, {ClientSession,Model,Document} from 'mongoose';
-import { MongoRepository, TypeConverter } from "./mongo-repository";
+import { MongoRepository } from "./mongo-repository";
+import { TypeConverter } from "../../shared/type-converter";
 
 export class MongoUnitOfWork<MongoType,PropType,DomainType extends AggregateRoot<PropType>, RepoType extends MongoRepository<MongoType,PropType,DomainType>  > extends PersistanceUnitOfWork<PropType,DomainType,RepoType> {
   withTransaction(func: (repository: RepoType) => Promise<void>): Promise<void> {

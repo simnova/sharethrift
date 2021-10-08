@@ -1,6 +1,7 @@
 import * as Point from './point';
 
 export interface LocationType {
+  id: string;
   position: Point.PointType;
   address: {
     streetNumber: string;

@@ -1,6 +1,7 @@
-import { Repository } from "../repository";
-import { AggregateRoot } from "../aggregate-root";
+import { Repository } from "../../shared/repository";
+import { AggregateRoot } from "../../shared/aggregate-root";
 import { Model, ClientSession,Document } from "mongoose";
+import { TypeConverter } from "../../shared/type-converter";
 
 export abstract class MongoRepository<MongoType,PropType,DomainType extends AggregateRoot<PropType>> implements Repository<DomainType> {
   constructor(
@@ -33,9 +34,4 @@ export class MongoFactory{
     repoClass: new(model:Model<MongoType>,typeConverter:TypeConverter<Document<MongoType>,DomainType>,session:ClientSession) =>RepoType ): RepoType {
       return new repoClass(model,typeConverter,session);
   }
-}
-
-export interface TypeConverter<MongoType, DomainType> {
-  toDomain(mongoType: MongoType): DomainType;
-  toMongo(domainType: DomainType): MongoType;
 }

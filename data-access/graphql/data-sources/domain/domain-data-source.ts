@@ -1,11 +1,7 @@
 import { DataSource,DataSourceConfig } from 'apollo-datasource';
-import { MongoUnitOfWork } from '../../../domain/shared/infrasctructure/mongo-unit-of-work';
-import { MongoRepository } from '../../../domain/shared/infrasctructure/mongo-repository';
-
-import { Context } from '../../context';
-import { Repository } from '../../../domain/shared/repository';
+import { MongoUnitOfWork } from '../../../domain/infrastructure/persistance/mongo-unit-of-work';
+import { MongoRepository } from '../../../domain/infrastructure/persistance/mongo-repository';
 import { AggregateRoot } from '../../../domain/shared/aggregate-root';
-
 
 export class DomainDataSource<Context,MongoType,PropType,DomainType extends AggregateRoot<PropType>, RepoType extends MongoRepository<MongoType,PropType,DomainType>> extends DataSource<Context> {
   private context: Context;
@@ -21,5 +17,4 @@ export class DomainDataSource<Context,MongoType,PropType,DomainType extends Aggr
   public initialize(config: DataSourceConfig<Context>): void {
     this.context = config.context;
   }
-
 }

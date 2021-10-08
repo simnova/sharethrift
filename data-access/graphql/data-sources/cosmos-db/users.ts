@@ -1,19 +1,22 @@
 import { MongoDataSource } from 'apollo-datasource-mongodb';
 import * as User from '../../../infrastructure/data-sources/cosmos-db/models/user';
 import {Context} from '../../context';
+import { UserDomainAdapter } from '../../../domain/infrastructure/persistance/adapters/user-domain-adapter';
+import { UserEntityReference } from '../../../domain/contexts/user';
 
 export default class Users extends MongoDataSource<User.User, Context> {
   
-  async getUser(userId : string): Promise<User.User> {
-    return await this.findOneById(userId);
+  async getUser(userId : string): Promise<UserEntityReference> {
+    return new UserDomainAdapter(await this.findOneById(userId));
   }
 
-  async getUsers(): Promise<User.User[]> {
-    return this.model
+  async getUsers(): Promise<UserEntityReference[]> {
+    return (await this.model
       .find({})
-      .exec();
+      .exec())
+      .map((user: User.User) => new UserDomainAdapter(user));
   }
-
+/*
   async createUser(firstName: string, lastName: string, email:string): Promise<User.User> {
     return this.model.create({
       firstName: firstName,
@@ -39,5 +42,5 @@ export default class Users extends MongoDataSource<User.User, Context> {
         () => this.findOneById(userId)
       );
   }
-  
+  */
 }

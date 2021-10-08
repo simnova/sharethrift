@@ -3,12 +3,11 @@ import {
   GraphQLScalarType,
   GraphQLScalarTypeConfig,
 } from "graphql";
-import { CategoryType } from "./resolvers/types/category";
-import { ListingType } from "./resolvers/types/listing";
-import { CreateListingPayloadType } from "./resolvers/types/create-listing-payload";
-import { LocationType } from "./resolvers/types/location";
+import { CategoryEntityReference } from "../domain/contexts/category";
+import { ListingEntityReference } from "../domain/contexts/listing";
+import { LocationEntityReference } from "../domain/contexts/location";
 import { PointType } from "./resolvers/types/point";
-import { UserType } from "./resolvers/types/user";
+import { UserEntityReference } from "../domain/contexts/user";
 import { Context } from "./context";
 export type Maybe<T> = T | null;
 export type Exact<T extends { [key: string]: unknown }> = {
@@ -20,6 +19,7 @@ export type MakeOptional<T, K extends keyof T> = Omit<T, K> & {
 export type MakeMaybe<T, K extends keyof T> = Omit<T, K> & {
   [SubKey in K]: Maybe<T[SubKey]>;
 };
+export type Omit<T, K extends keyof T> = Pick<T, Exclude<keyof T, K>>;
 export type RequireFields<T, K extends keyof T> = {
   [X in Exclude<keyof T, K>]?: T[X];
 } & { [P in K]-?: NonNullable<T[P]> };
@@ -388,9 +388,13 @@ export type ResolversTypes = ResolversObject<{
   BigInt: ResolverTypeWrapper<Scalars["BigInt"]>;
   Byte: ResolverTypeWrapper<Scalars["Byte"]>;
   CacheControlScope: CacheControlScope;
-  Category: ResolverTypeWrapper<CategoryType>;
+  Category: ResolverTypeWrapper<CategoryEntityReference>;
   CategoryDetail: CategoryDetail;
-  CreateListingPayload: ResolverTypeWrapper<CreateListingPayloadType>;
+  CreateListingPayload: ResolverTypeWrapper<
+    Omit<CreateListingPayload, "listing"> & {
+      listing?: Maybe<ResolversTypes["Listing"]>;
+    }
+  >;
   CreateUserInput: CreateUserInput;
   Currency: ResolverTypeWrapper<Scalars["Currency"]>;
   Date: ResolverTypeWrapper<Scalars["Date"]>;
@@ -411,12 +415,12 @@ export type ResolversTypes = ResolversObject<{
   JSONObject: ResolverTypeWrapper<Scalars["JSONObject"]>;
   JWT: ResolverTypeWrapper<Scalars["JWT"]>;
   Latitude: ResolverTypeWrapper<Scalars["Latitude"]>;
-  Listing: ResolverTypeWrapper<ListingType>;
+  Listing: ResolverTypeWrapper<ListingEntityReference>;
   ListingDetail: ListingDetail;
   LocalDate: ResolverTypeWrapper<Scalars["LocalDate"]>;
   LocalEndTime: ResolverTypeWrapper<Scalars["LocalEndTime"]>;
   LocalTime: ResolverTypeWrapper<Scalars["LocalTime"]>;
-  Location: ResolverTypeWrapper<LocationType>;
+  Location: ResolverTypeWrapper<LocationEntityReference>;
   Long: ResolverTypeWrapper<Scalars["Long"]>;
   Longitude: ResolverTypeWrapper<Scalars["Longitude"]>;
   MAC: ResolverTypeWrapper<Scalars["MAC"]>;
@@ -456,7 +460,7 @@ export type ResolversTypes = ResolversObject<{
   UUID: ResolverTypeWrapper<Scalars["UUID"]>;
   UnsignedFloat: ResolverTypeWrapper<Scalars["UnsignedFloat"]>;
   UnsignedInt: ResolverTypeWrapper<Scalars["UnsignedInt"]>;
-  User: ResolverTypeWrapper<UserType>;
+  User: ResolverTypeWrapper<UserEntityReference>;
   UserUpdateInput: UserUpdateInput;
   UtcOffset: ResolverTypeWrapper<Scalars["UtcOffset"]>;
   Void: ResolverTypeWrapper<Scalars["Void"]>;
@@ -469,9 +473,11 @@ export type ResolversParentTypes = ResolversObject<{
   String: Scalars["String"];
   BigInt: Scalars["BigInt"];
   Byte: Scalars["Byte"];
-  Category: CategoryType;
+  Category: CategoryEntityReference;
   CategoryDetail: CategoryDetail;
-  CreateListingPayload: CreateListingPayloadType;
+  CreateListingPayload: Omit<CreateListingPayload, "listing"> & {
+    listing?: Maybe<ResolversParentTypes["Listing"]>;
+  };
   CreateUserInput: CreateUserInput;
   Currency: Scalars["Currency"];
   Date: Scalars["Date"];
@@ -492,12 +498,12 @@ export type ResolversParentTypes = ResolversObject<{
   JSONObject: Scalars["JSONObject"];
   JWT: Scalars["JWT"];
   Latitude: Scalars["Latitude"];
-  Listing: ListingType;
+  Listing: ListingEntityReference;
   ListingDetail: ListingDetail;
   LocalDate: Scalars["LocalDate"];
   LocalEndTime: Scalars["LocalEndTime"];
   LocalTime: Scalars["LocalTime"];
-  Location: LocationType;
+  Location: LocationEntityReference;
   Long: Scalars["Long"];
   Longitude: Scalars["Longitude"];
   MAC: Scalars["MAC"];
@@ -537,7 +543,7 @@ export type ResolversParentTypes = ResolversObject<{
   UUID: Scalars["UUID"];
   UnsignedFloat: Scalars["UnsignedFloat"];
   UnsignedInt: Scalars["UnsignedInt"];
-  User: UserType;
+  User: UserEntityReference;
   UserUpdateInput: UserUpdateInput;
   UtcOffset: Scalars["UtcOffset"];
   Void: Scalars["Void"];

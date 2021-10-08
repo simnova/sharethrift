@@ -1,12 +1,12 @@
-import { Listing as ListingDO, ListingProps } from '../../../domain/contexts/listing';
-import {DomainAdapter}from '../../../domain/infrastructure/persistance/ListingConverter';
-import { MongoListingRepository } from '../../../domain/infrastructure/persistance/mongo-listing-repository';
+import { Listing as ListingDO, ListingProps, ListingEntityReference } from '../../../domain/contexts/listing';
+import {ListingDomainAdapter}from '../../../domain/infrastructure/persistance/adapters/listing-domain-adapter';
+import { MongoListingRepository } from '../../../domain/infrastructure/persistance/repositories/mongo-listing-repository';
 import {Context} from '../../context';
 import { ListingDetail } from '../../generated';
 import { DomainDataSource } from './domain-data-source';
 import { Listing } from '../../../infrastructure/data-sources/cosmos-db/models/listing';
 
-type PropType = DomainAdapter;
+type PropType = ListingDomainAdapter;
 type DomainType = ListingDO<PropType>;
 type RepoType = MongoListingRepository<PropType>;
 export default class Listings extends DomainDataSource<Context,Listing,PropType,DomainType,RepoType> {
@@ -17,7 +17,7 @@ export default class Listings extends DomainDataSource<Context,Listing,PropType,
       repo.save(domainObject);
     });
   }
-  async addListing(listing: ListingDetail) : Promise<ListingDO<ListingProps>> {
+  async addListing(listing: ListingDetail) : Promise<ListingEntityReference> {
     //If there are conversions between GraphQL Types and domain types, it should happen here
     var result : ListingDO<ListingProps>;
     await this.withTransaction(async (repo) => {
