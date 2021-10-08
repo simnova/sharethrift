@@ -1,11 +1,11 @@
-import { ListingConverter } from '../../../domain/infrastructure/persistance/repositories/listing-converter';
+import { ListingConverter } from '../../../domain/infrastructure/persistance/repositories/mongo-listing-converter';
 import { MongoListingRepository } from '../../../domain/infrastructure/persistance/repositories/mongo-listing-repository';
 import { ListingModel } from '../../../infrastructure/data-sources/cosmos-db/models/listing';
-import { CategoryConverter } from '../../../domain/infrastructure/persistance/repositories/category-converter';
+import { CategoryConverter } from '../../../domain/infrastructure/persistance/repositories/mongo-category-converter';
 import { MongoCategoryRepository } from '../../../domain/infrastructure/persistance/repositories/mongo-category-repository';
 import { CategoryModel } from '../../../infrastructure/data-sources/cosmos-db/models/category';
 
-import { UserConverter } from '../../../domain/infrastructure/persistance/repositories/user-converter';
+import { UserConverter } from '../../../domain/infrastructure/persistance/repositories/mongo-user-converter';
 import { MongoUserRepository } from '../../../domain/infrastructure/persistance/repositories/mongo-user-repository';
 import { UserModel } from '../../../infrastructure/data-sources/cosmos-db/models/user';
 

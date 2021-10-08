@@ -7,7 +7,7 @@ import { UserProps } from "../../../contexts/user";
 import { CategoryProps } from "../../../contexts/category";
 import { isValidObjectId } from "mongoose";
 import { UserDomainAdapter } from "./user-domain-adapter";
-import { MongooseDomainAdapater } from "./mongoose-domain-adapter";
+import { MongooseDomainAdapater } from "../mongo-domain-adapter";
 import { PhotoDomainAdapter } from "./photo-domain-adapter";
 import { CategoryDomainAdapter } from "./category-domain-adapter";
 import { LocationDomainAdapter } from "./location-domain-adapter";

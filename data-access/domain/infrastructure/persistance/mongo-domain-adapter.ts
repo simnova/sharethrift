@@ -1,4 +1,4 @@
-import { Base } from "../../../../infrastructure/data-sources/cosmos-db/models/interfaces/base";
+import { Base } from "../../../infrastructure/data-sources/cosmos-db/models/interfaces/base";
 
 export abstract class MongooseDomainAdapater<T extends Base> {
   constructor(public readonly props: T) { }

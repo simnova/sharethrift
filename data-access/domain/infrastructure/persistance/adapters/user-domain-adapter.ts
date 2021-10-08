@@ -1,6 +1,6 @@
 import { User } from "../../../../infrastructure/data-sources/cosmos-db/models/user";
 import { UserProps } from "../../../contexts/user";
-import { MongooseDomainAdapater } from "./mongoose-domain-adapter";
+import { MongooseDomainAdapater } from "../mongo-domain-adapter";
 
 export class UserDomainAdapter extends MongooseDomainAdapater<User> implements UserProps {
   constructor( props: User) { super(props); }
