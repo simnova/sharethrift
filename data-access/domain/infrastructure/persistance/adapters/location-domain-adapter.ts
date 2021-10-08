@@ -5,6 +5,7 @@ import { MongooseDomainAdapater } from "../mongo-domain-adapter";
 export class LocationDomainAdapter extends MongooseDomainAdapater<Location> implements LocationProps {
   constructor(props: Location) {super(props);}
   get position(){
+    if(!this.props || !this.props.position) return null;
     return{
       get type(){return this.props.position.type},
       set type(value){this.props.position.type = value},
@@ -13,6 +14,7 @@ export class LocationDomainAdapter extends MongooseDomainAdapater<Location> impl
     }
   }
   get address() {
+    if(!this.props || !this.props.address) return null;
     return {
       get streetNumber(): string { return this.props.address.streetNumber; },
       set streetNumber(value: string) { this.props.address.streetNumber = value; },

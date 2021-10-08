@@ -4,6 +4,9 @@ export class Location extends Entity<LocationProps> implements LocationEntityRef
   constructor(props: LocationProps) { super(props); }
   get id(): string {return this.props.id;}
   get position() { 
+    if(! this.props.position) {
+      return undefined;
+    }
     return {
       get type(): string { return this.props.position.type;},
       get coordinates(): number[] { return this.props.position.coordinates;}
@@ -11,6 +14,9 @@ export class Location extends Entity<LocationProps> implements LocationEntityRef
   }
 
   get address() {
+    if(! this.props.address) {
+      return undefined;
+    }
     return {
       get streetNumber(): string { return this.props.address.streetNumber; },
       get streetName(): string { return this.props.address.streetName; },
@@ -32,11 +38,11 @@ export class Location extends Entity<LocationProps> implements LocationEntityRef
 
 export interface LocationEntityReference {
   readonly id: string;
-  readonly position:  {
+  readonly position?:  {
     readonly type: string;
     readonly coordinates: number[];
   } 
-  readonly address: {
+  readonly address?: {
     readonly streetNumber: string;
     readonly streetName: string;
     readonly municipality: string;
@@ -51,7 +57,7 @@ export interface LocationEntityReference {
     readonly country: string;
     readonly countryCodeISO3: string;
     readonly freeformAddress: string;
-  }
+  };
 }
 
 export interface LocationProps {

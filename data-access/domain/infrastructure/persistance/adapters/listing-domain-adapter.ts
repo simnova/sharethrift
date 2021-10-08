@@ -25,7 +25,7 @@ export class ListingDomainAdapter extends MongooseDomainAdapater<Listing> implem
   set version(value: number) {this.props.version = value;}
 
   get owner(): UserProps {
-    if (!isValidObjectId(this.props.owner.toString())) {
+    if (!this.props.owner || !isValidObjectId(this.props.owner.toString())) {
       return undefined;
     }
     return new UserDomainAdapter(this.props.owner as User);

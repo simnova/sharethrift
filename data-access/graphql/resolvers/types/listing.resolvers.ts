@@ -14,7 +14,7 @@ const listing : Resolvers = {
     //  info.cacheControl.setCacheHint({ maxAge: 60,scope: CacheScope.Public });
       console.log("Resolver>Listing>owner")
      
-      if(parent.owner !==null && isValidObjectId(parent.owner)){
+      if(parent.owner && isValidObjectId(parent.owner)){
         console.log("Resolver>Listing>owner provided ObjectId : looking up User")
         return context.dataSources.userAPI.getUser(parent.owner.toString());
       }

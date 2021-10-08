@@ -21,6 +21,9 @@ export class Category<props extends CategoryProps> extends AggregateRoot<props> 
   get updatedAt(): Date {return this.props.updatedAt;}
   get createdAt(): Date {return this.props.createdAt;}
   get schemaVersion(): string {return this.props.schemaVersion;}
+
+  set name(name: string) {this.props.name = name;}
+  set path(path: string) {this.props.path = path;}
 }
 
 export interface CategoryEntityReference {

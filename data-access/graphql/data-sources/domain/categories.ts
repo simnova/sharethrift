@@ -22,6 +22,7 @@ export default class Categorys extends DomainDataSource<Context,Category,PropTyp
     var result : CategoryEntityReference;
     await this.withTransaction(async (repo) => {
       var domainObject = repo.getNewInstance();
+      domainObject.name = category.name;
     //  domainObject.requestUpdateDescription(category.description);
       result = await repo.save(domainObject);
     });

@@ -11,12 +11,12 @@ export interface Photo {
 }
 
 export interface Listing extends Base {
-  owner: User.User | ObjectId;
+  owner?: User.User | ObjectId;
   title: string;
   description: string;
-  primaryCategory: PopulatedDoc<Category.Category> | ObjectId;
-  photos: Photo[];
-  location: PopulatedDoc<Location.Location>;
+  primaryCategory?: PopulatedDoc<Category.Category> | ObjectId;
+  photos?: Photo[];
+  location?: PopulatedDoc<Location.Location>;
 }
 
 export const ListingModel = model<Listing>('Listing',new Schema<Listing, Model<Listing>, Listing>(

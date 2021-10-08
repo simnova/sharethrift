@@ -1,7 +1,7 @@
 import { AggregateRoot } from "../shared/aggregate-root";
 import { Category, CategoryEntityReference, CategoryProps } from "./category";
 import { Passport } from "./identity-and-access";
-import { LocationEntityReference, LocationProps } from "./location";
+import { Location, LocationEntityReference, LocationProps } from "./location";
 import { Photo, PhotoProps, PhotoEntityReference } from "./photo";
 import { User, UserProps, UserEntityReference } from "./user";
 
@@ -23,7 +23,7 @@ export class Listing<props extends ListingProps> extends AggregateRoot<props> im
   get id(): string {return this.props.id;}
   get title(): string {return this.props.title;}
   get description(): string {return this.props.description;}
-  get location(): LocationEntityReference {return this.props.location;}
+  get location(): LocationEntityReference {return new Location(this.props.location);}
   get photos(): PhotoEntityReference[] { return this.props.photos.map(photo=>new Photo(photo));} //should be REadOnyArray<PhotoEntityReference> but gen has issues
   get owner(): UserEntityReference { return new User(this.props.owner);}
   get primaryCategory(): CategoryEntityReference { return new Category(this.props.primaryCategory);}
@@ -66,10 +66,10 @@ export interface ListingEntityReference {
   readonly id: string;
   readonly title: string;
   readonly description: string;
-  readonly location: LocationEntityReference;
-  readonly photos: PhotoEntityReference[];
-  readonly owner: UserEntityReference | string;
-  readonly primaryCategory: CategoryEntityReference;
+  readonly location?: LocationEntityReference;
+  readonly photos?: PhotoEntityReference[];
+  readonly owner?: UserEntityReference | string;
+  readonly primaryCategory?: CategoryEntityReference;
   readonly createdAt: Date;
   readonly updatedAt: Date;
   readonly schemaVersion: string;
