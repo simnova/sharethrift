@@ -38,6 +38,9 @@ export class Listing<props extends ListingProps> extends AggregateRoot<props> im
   get createdAt(): Date {return this.props.createdAt;}
   get schemaVersion(): string {return this.props.schemaVersion;}
 
+  //Somthing to consider: https://lostechies.com/jimmybogard/2007/10/24/entity-validation-with-visitors-and-extension-methods/
+  // This would allow us to validate the listing before publishing it, using external services.. e.g. check if the user has too many listings alraedy, (e.g. business rule of user can have at max 15 listings)
+
   requestUpdateDescription(description: string){
     this.props.description=description;
   }
