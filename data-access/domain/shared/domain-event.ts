@@ -6,6 +6,7 @@ export interface CustomDomainEvent<T> extends DomainEvent {
   set payload(payload: T);
 }
 
+
 export function staticImplements<T>() {
   return <U extends T>(constructor: U) => {return constructor};
 }
@@ -26,4 +27,15 @@ export abstract class DomainEventBase implements DomainEvent {
     
     
  
+}
+
+export abstract class CustomDomainEventImpl<T> extends DomainEventBase implements CustomDomainEvent<T> {
+  private _payload: T;
+  constructor(eventId:string, aggregateId: string ) {super(eventId, aggregateId)}
+  get payload(): T {
+    return this._payload;
+  }
+  set payload(payload: T) {
+    this._payload = payload;
+  }
 }
