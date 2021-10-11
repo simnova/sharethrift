@@ -2,8 +2,9 @@ import { DataSource,DataSourceConfig } from 'apollo-datasource';
 import { MongoUnitOfWork } from '../../../domain/infrastructure/persistance/mongo-unit-of-work';
 import { MongoRepository } from '../../../domain/infrastructure/persistance/mongo-repository';
 import { AggregateRoot } from '../../../domain/shared/aggregate-root';
+import { EntityProps } from '../../../domain/shared/entity';
 
-export class DomainDataSource<Context,MongoType,PropType,DomainType extends AggregateRoot<PropType>, RepoType extends MongoRepository<MongoType,PropType,DomainType>> extends DataSource<Context> {
+export class DomainDataSource<Context,MongoType,PropType extends EntityProps,DomainType extends AggregateRoot<PropType>, RepoType extends MongoRepository<MongoType,PropType,DomainType>> extends DataSource<Context> {
   private context: Context;
 
   constructor(private unitOfWork: MongoUnitOfWork<MongoType,PropType,DomainType,RepoType>) {

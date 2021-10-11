@@ -1,5 +1,7 @@
 {
   "compilerOptions": {
+    "experimentalDecorators": true, // need npm i reflect-metadata --save
+    "emitDecoratorMetadata": true,
     "module": "CommonJS", //ESNext",
     "target":  "ES6", // "ESNext",
     "outDir": "dist",

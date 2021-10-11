@@ -6,8 +6,7 @@
       "command": "host start",
       "problemMatcher": "$func-watch",
       "isBackground": true,
-      "dependsOn": "npm build",
-    
+      "dependsOn": "npm build"
     },
     {
       "type": "shell",
@@ -27,6 +26,13 @@
       "command": "npm prune --production",
       "dependsOn": "npm build",
       "problemMatcher": []
+    },
+    {
+      "type": "npm",
+      "command": "npm run start",
+      "problemMatcher": [],
+      "label": "npm: start",
+      "detail": "  npm-run-all --parallel start:host watch"
     }
   ]
 }

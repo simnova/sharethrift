@@ -1,0 +1,22 @@
+export interface EventBus {
+    publish(event: Event): void;
+    subscribe(eventType: string, callback: (event: Event) => void): void;
+}
+
+export class EventBusImpl implements EventBus {
+    private eventSubscribers: { [eventType: string]: Array<(event: Event) => void> } = {};
+
+    public publish(event: Event): void {
+        const eventType = event.constructor.name;
+        if (this.eventSubscribers[eventType]) {
+            this.eventSubscribers[eventType].forEach(callback => callback(event));
+        }
+    }
+
+    public subscribe(eventType: string, callback: (event: Event) => void): void {
+        if (!this.eventSubscribers[eventType]) {
+            this.eventSubscribers[eventType] = [];
+        }
+        this.eventSubscribers[eventType].push(callback);
+    }
+}

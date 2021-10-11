@@ -1,9 +1,14 @@
 import { AggregateRoot } from "../shared/aggregate-root";
+import { DomainEvent } from "../shared/domain-event";
 import { Category, CategoryEntityReference, CategoryProps } from "./category";
 import { Passport } from "./identity-and-access";
 import { Location, LocationEntityReference, LocationProps } from "./location";
 import { Photo, PhotoProps, PhotoEntityReference } from "./photo";
 import { User, UserProps, UserEntityReference } from "./user";
+import  { ListingPhotoAddedEvent } from "../events/listing-photo-added";
+import {ListingPublishedEvent, ListingPublishedProps} from "../events/listing-published";
+import { EntityProps } from "../shared/entity";
+import { CategoryDomainAdapter } from "../infrastructure/persistance/adapters/category-domain-adapter";
 
 export interface ListingProps {
   id: string;
@@ -17,7 +22,9 @@ export interface ListingProps {
   updatedAt: Date;
   schemaVersion: string;
 }
+
 export class Listing<props extends ListingProps> extends AggregateRoot<props> implements ListingEntityReference {
+
   constructor(props: props) {super(props);}
 
   get id(): string {return this.props.id;}
@@ -44,12 +51,21 @@ export class Listing<props extends ListingProps> extends AggregateRoot<props> im
     if(this.props.photos.find(photo=>photo.documentId == documentId)){
       throw new Error("Photo already exists");
     }
-
-    this.props.photos.push(Photo.create({
+    var newPhoto = Photo.create({
       documentId: documentId,
       order: this.props.photos.length + 1,
-    }));
-
+    });
+    this.props.photos.push(newPhoto);
+    this.addDomainEvent(ListingPhotoAddedEvent,newPhoto);
+  }
+  requestPublish(){
+    this.addDomainEvent(ListingPublishedEvent,{listingId: this.props.id});
+  }
+  requestAddOwner(owner:UserProps){
+    this.props.owner = owner;
+  }
+  requestAddCategory(category: CategoryProps) {
+    this.props.primaryCategory = category;
   }
 
   requestRemovePhoto(id: string, user: Passport){

@@ -4,13 +4,15 @@ import { Category, CategoryModel }from "../../../../infrastructure/data-sources/
 import { MongoRepository } from "../mongo-repository";
 import { TypeConverter } from "../../../shared/type-converter";
 import { ClientSession } from "mongoose";
+import { EventBus } from "../../../shared/event-bus";
 export class MongoCategoryRepository<PropType extends CategoryProps> extends MongoRepository<Category,PropType,CategoryDO<PropType>> implements CategoryRepository<PropType> {
   constructor(
+    eventBus: EventBus,
     modelType: typeof CategoryModel, 
     typeConverter: TypeConverter<Category, CategoryDO<PropType>>,
     session: ClientSession
   ) {
-    super(modelType,typeConverter,session);
+    super(eventBus,modelType,typeConverter,session);
   }
 
   getNewInstance(): CategoryDO<PropType> {

@@ -1,0 +1,37 @@
+import EventEmitter from "events";
+import { PhotoAddedEvent } from "../../contexts/listing";
+import { OnPhotoAdded } from "../../events/on-photo-added";
+
+
+export class Publisher extends EventEmitter {
+    constructor() {
+        super();
+    }
+    public publish(event: PhotoAddedEvent) {
+        this.emit("screen-photo", event);
+    }
+  
+  public subscribe<event,eventHandler>(event: event) {
+    this.on("screen-photo", event => {
+        console.log(event);
+    }
+  }
+
+  public unsubscribe(event: PhotoAddedEvent) {
+    this.removeListener("screen-photo", event => {
+        console.log(event);
+    }
+  }
+  public registerSubscribers() {
+    var screenPhoto = new OnPhotoAdded(event => {
+      console.log(`screen photo1 event: ${event}`);
+    }).register(event => {
+      console.log(`screen photo2 event: ${event}`);
+    });
+    this.subscribe(screenPhoto);
+  }
+
+
+
+
+}

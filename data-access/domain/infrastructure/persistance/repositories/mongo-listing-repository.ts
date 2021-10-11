@@ -3,18 +3,22 @@ import { ListingRepository } from "../../../contexts/listing-repository";
 import { Listing, ListingModel }from "../../../../infrastructure/data-sources/cosmos-db/models/listing";
 import { MongoRepository } from "../mongo-repository";
 import { TypeConverter } from "../../../shared/type-converter";
-import { ClientSession } from "mongoose";
+import { ClientSession, ObjectId } from "mongoose";
+import { EventBus } from "../../../shared/event-bus";
 export class MongoListingRepository<PropType extends ListingProps> extends MongoRepository<Listing,PropType,ListingDO<PropType>> implements ListingRepository<PropType> {
   constructor(
+    eventBus: EventBus,
     modelType: typeof ListingModel, 
     typeConverter: TypeConverter<Listing, ListingDO<PropType>>,
     session: ClientSession
   ) {
-    super(modelType,typeConverter,session);
+    super(eventBus, modelType,typeConverter,session);
   }
 
   getNewInstance(): ListingDO<PropType> {
-    return this.typeConverter.toDomain(new ListingModel());
+    var newListing = new ListingModel();
+    newListing.id = "";
+    return this.typeConverter.toDomain(newListing);
   }
 
   async delete(id: string): Promise<void> {

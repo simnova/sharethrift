@@ -9,6 +9,7 @@ import { PortalTokenValidation } from './extensions/portal-token-validation';
 import { combinedSchema } from './extensions/schema-builder';
 import * as util  from './extensions/util';
 import { Domain } from '../data-sources/domain';
+import * as EventHandlers from '../../domain/infrastructure/event-handlers/index'
 
 
 
@@ -56,6 +57,7 @@ const serverConfig = () => {
           console.log('Apollo Server Starting');
           connect();
           portalTokenExtractor.Start();
+          EventHandlers.RegisterListingPublishedEmailHandler();
         },
       },
       responseCachePlugin()

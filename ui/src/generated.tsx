@@ -138,6 +138,7 @@ export type Listing = MongoBase & {
 };
 
 export type ListingDetail = {
+  id?: Maybe<Scalars["ObjectID"]>;
   owner?: Maybe<Scalars["ObjectID"]>;
   title?: Maybe<Scalars["String"]>;
   description?: Maybe<Scalars["String"]>;

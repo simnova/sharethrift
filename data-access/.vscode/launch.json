@@ -2,11 +2,32 @@
   "version": "0.2.0",
   "configurations": [
     {
+      "name": "Launch via NPM",
+      "request": "launch",
+      "runtimeArgs": [
+        "run-script",
+        "debug"
+      ],
+      "runtimeExecutable": "npm",
+      "skipFiles": [
+        "<node_internals>/**"
+      ],
+      "type": "pwa-node"
+    },
+    
+    {
       "name": "Attach to Node Functions",
       "type": "node",
       "request": "attach",
       "port": 9230,
       "preLaunchTask": "func: host start"
+    },
+    {
+      "name": "Post Attach to Node Functions",
+      "type": "node",
+      "request": "attach",
+      "port": 9230,
+      "preLaunchTask": "npm: start"
     }
   ]
 }

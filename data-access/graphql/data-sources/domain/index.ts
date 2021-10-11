@@ -14,10 +14,12 @@ import Listings from './listings';
 import Categories from './categories';
 import Users from './users';
 
+import { NodeEventBus } from '../../../domain/infrastructure/events/node-event-bus';
+
 export const Domain  = {
-  listingDomainAPI: new Listings(new MongoUnitOfWork(ListingModel, new ListingConverter(), MongoListingRepository)),
-  categoryDomainAPI: new Categories(new MongoUnitOfWork(CategoryModel, new CategoryConverter(), MongoCategoryRepository)),
-  userDomainAPI: new Users(new MongoUnitOfWork(UserModel, new UserConverter(), MongoUserRepository))
+  listingDomainAPI: new Listings(new MongoUnitOfWork(NodeEventBus,ListingModel, new ListingConverter(), MongoListingRepository)),
+  categoryDomainAPI: new Categories(new MongoUnitOfWork(NodeEventBus,CategoryModel, new CategoryConverter(), MongoCategoryRepository)),
+  userDomainAPI: new Users(new MongoUnitOfWork(NodeEventBus, UserModel, new UserConverter(), MongoUserRepository))
 }
 
 export type DomainType = typeof Domain;
