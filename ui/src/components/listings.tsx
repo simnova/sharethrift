@@ -3,13 +3,8 @@ import { useQuery } from "@apollo/client";
 import { ListingsListingsDocument } from '../generated';
 
 import React from 'react';
-import { UserListItem } from './user-list-item';
-import PropTypes, { InferProps } from 'prop-types';
 
-
-export const Listings: FC<any> = ({
-  
-}) => {
+export const Listings: FC<any> = () => {
 
   const { loading, error, data} = useQuery(ListingsListingsDocument,{
     variables: {

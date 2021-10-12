@@ -3,8 +3,7 @@ import { useMutation } from "@apollo/client";
 import {CategoryCreateDocument} from '../generated';
 
 
-export const CategoryCreate: FC<any> = ({
-}) => {
+export const CategoryCreate: FC<any> = () => {
   let input: HTMLInputElement | null = null;
   let path: HTMLInputElement | null = null;
   const [addCategory, { data, loading, error }] = useMutation(CategoryCreateDocument);

@@ -5,8 +5,7 @@ import { CategorySelection } from './category-selection';
 import { UserSelection } from './user-selection';
 
 
-export const ListingCreate: FC<any> = ({
-}) => {
+export const ListingCreate: FC<any> = () => {
   const [category, setCategory] = useState("");
   const [user, setUser] = useState("");
   let title: HTMLInputElement | null = null;
