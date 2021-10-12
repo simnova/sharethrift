@@ -1,6 +1,6 @@
-import * as User from './User';
-import * as Category from './Category';
-import * as Location from './Location';
+import * as User from './user';
+import * as Category from './category';
+import * as Location from './location';
 import {MongoBase} from './interfaces/mongo-base';
 import { ObjectId } from 'mongoose';
 
