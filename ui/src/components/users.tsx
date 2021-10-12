@@ -1,9 +1,8 @@
-import { FC,useState } from 'react';
-import React from 'react';
+import React,{ FC, useState } from 'react';
 import { UserList } from './user-list';
 import { UserProfile } from './user-profile';
 import { UserProfileDetail } from './user-profile-detail';
-import { Row, Col, Divider } from 'antd';
+import { Row, Col } from 'antd';
 
 export const Users: FC<any> = 
   ({props:any}) => {
