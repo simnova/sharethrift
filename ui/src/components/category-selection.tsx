@@ -1,8 +1,6 @@
-import { FC } from 'react';
+import React, { FC } from 'react';
 import { useQuery } from "@apollo/client";
 import { CategorySelectionCategoriesDocument } from '../generated';
-
-import React from 'react';
 import PropTypes, { InferProps } from 'prop-types';
 
 

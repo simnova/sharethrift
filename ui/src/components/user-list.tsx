@@ -1,8 +1,6 @@
-import { FC } from 'react';
+import React, { FC } from 'react';
 import { useQuery } from "@apollo/client";
 import { UserListGetUsersDocument, UserListItemFieldsFragment } from '../generated';
-
-import React from 'react';
 import { UserListItem } from './user-list-item';
 import PropTypes, { InferProps } from 'prop-types';
 

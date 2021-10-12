@@ -15,7 +15,6 @@ async function connect() {
         }).then(() => console.log(`🗄️ Successfully connected Mongoose to ${mongoose.connection.name} 🗄️`));
 
         if(process.env.NODE_ENV === "development"){
-            mongoose.set('debug', true);
             mongoose.set('debug', {shell: true});
         }
     } catch (error) {

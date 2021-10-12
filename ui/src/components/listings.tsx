@@ -1,8 +1,6 @@
-import { FC } from 'react';
+import React, { FC } from 'react';
 import { useQuery } from "@apollo/client";
 import { ListingsListingsDocument } from '../generated';
-
-import React from 'react';
 
 export const Listings: FC<any> = () => {
 

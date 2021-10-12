@@ -5,7 +5,6 @@ import {CategoryCreateDocument} from '../generated';
 
 export const CategoryCreate: FC<any> = () => {
   let input: HTMLInputElement | null = null;
-  let path: HTMLInputElement | null = null;
   const [addCategory, { data, loading, error }] = useMutation(CategoryCreateDocument);
 
   if(error){
@@ -28,27 +27,19 @@ export const CategoryCreate: FC<any> = () => {
           e.preventDefault();
           addCategory({ variables: { 
             category : {
-              name: input?.value,
-
+              name: input?.value
             }
           } 
           });
         }}
       >
-        Name:
+        Category Name:
         <input
           ref={node => {
             input = node;
           }}
         />
         <br/>
-        Path:
-        <input
-          ref={node => {
-            path = node;
-          }}
-          
-        />
         <button type="submit">Add Category</button>
       </form>
     </div>

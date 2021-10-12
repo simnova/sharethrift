@@ -1,6 +1,5 @@
-import { FC } from 'react';
+import React, { FC } from 'react';
 import { UserListItemFieldsFragment } from '../generated';
-import React from 'react';
 
 export interface ComponentProp {
   onClick: () => void;
