@@ -6,10 +6,9 @@ query ListingsListings {
 
 fragment ListingsFields on Listing {
   id
-  owner {
+  account {
     id
-    firstName
-    lastName
+    name
   }
   title
   description

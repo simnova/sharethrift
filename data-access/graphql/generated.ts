@@ -3,11 +3,11 @@ import {
   GraphQLScalarType,
   GraphQLScalarTypeConfig,
 } from "graphql";
-import { CategoryEntityReference } from "../domain/contexts/category";
-import { ListingEntityReference } from "../domain/contexts/listing";
-import { LocationEntityReference } from "../domain/contexts/location";
+import { CategoryEntityReference } from "../domain/contexts/listing/category";
+import { ListingEntityReference } from "../domain/contexts/listing/listing";
+import { LocationEntityReference } from "../domain/contexts/listing/location";
 import { PointType } from "./resolvers/types/point";
-import { UserEntityReference } from "../domain/contexts/user";
+import { UserEntityReference } from "../domain/contexts/user/user";
 import { Context } from "./context";
 export type Maybe<T> = T | null;
 export type Exact<T extends { [key: string]: unknown }> = {
@@ -84,6 +84,22 @@ export type Scalars = {
   Void: any;
 };
 
+export type Account = MongoBase & {
+  __typename?: "Account";
+  name?: Maybe<Scalars["String"]>;
+  roles?: Maybe<Array<Maybe<Role>>>;
+  contacts?: Maybe<Array<Maybe<Contact>>>;
+  id: Scalars["ObjectID"];
+  schemaVersion?: Maybe<Scalars["String"]>;
+  updatedAt?: Maybe<Scalars["DateTime"]>;
+  createdAt?: Maybe<Scalars["DateTime"]>;
+};
+
+export type AccountPermissions = {
+  __typename?: "AccountPermissions";
+  canManageRolesAndPermissions: Scalars["Boolean"];
+};
+
 export type Address = {
   __typename?: "Address";
   streetNumber?: Maybe<Scalars["String"]>;
@@ -123,6 +139,17 @@ export type CategoryDetail = {
   name?: Maybe<Scalars["String"]>;
 };
 
+export type Contact = {
+  __typename?: "Contact";
+  firstName: Scalars["String"];
+  lastName?: Maybe<Scalars["String"]>;
+  role?: Maybe<Role>;
+  user?: Maybe<User>;
+  id: Scalars["ObjectID"];
+  updatedAt?: Maybe<Scalars["DateTime"]>;
+  createdAt?: Maybe<Scalars["DateTime"]>;
+};
+
 export type CreateListingPayload = {
   __typename?: "CreateListingPayload";
   listing?: Maybe<Listing>;
@@ -139,7 +166,7 @@ export type CreateUserInput = {
 /**  https://www.apollographql.com/blog/graphql/basics/designing-graphql-mutations/  */
 export type Listing = MongoBase & {
   __typename?: "Listing";
-  owner?: Maybe<User>;
+  account?: Maybe<Account>;
   title?: Maybe<Scalars["String"]>;
   description?: Maybe<Scalars["String"]>;
   primaryCategory?: Maybe<Category>;
@@ -157,6 +184,11 @@ export type ListingDetail = {
   title?: Maybe<Scalars["String"]>;
   description?: Maybe<Scalars["String"]>;
   primaryCategory?: Maybe<Scalars["ObjectID"]>;
+};
+
+export type ListingPermissions = {
+  __typename?: "ListingPermissions";
+  canManageListings: Scalars["Boolean"];
 };
 
 export type Location = MongoBase & {
@@ -211,6 +243,12 @@ export type MutationUpdateUserArgs = {
   input: UserUpdateInput;
 };
 
+export type Permissions = {
+  __typename?: "Permissions";
+  listingPermissions: ListingPermissions;
+  accountPermissions: AccountPermissions;
+};
+
 export type Photo = {
   __typename?: "Photo";
   id: Scalars["ObjectID"];
@@ -254,6 +292,16 @@ export type QueryListingArgs = {
 /**  Base Query Type definition - , all mutations will be defined in separate files extending this type  */
 export type QueryUserArgs = {
   id: Scalars["ID"];
+};
+
+export type Role = {
+  __typename?: "Role";
+  roleName: Scalars["String"];
+  isDefault: Scalars["Boolean"];
+  permissions: Permissions;
+  id: Scalars["ObjectID"];
+  updatedAt?: Maybe<Scalars["DateTime"]>;
+  createdAt?: Maybe<Scalars["DateTime"]>;
 };
 
 export type User = MongoBase & {
@@ -384,13 +432,23 @@ export type DirectiveResolverFn<
 
 /** Mapping between all available schema types and the resolvers types */
 export type ResolversTypes = ResolversObject<{
-  Address: ResolverTypeWrapper<Address>;
+  Account: ResolverTypeWrapper<
+    Omit<Account, "contacts"> & {
+      contacts?: Maybe<Array<Maybe<ResolversTypes["Contact"]>>>;
+    }
+  >;
   String: ResolverTypeWrapper<Scalars["String"]>;
+  AccountPermissions: ResolverTypeWrapper<AccountPermissions>;
+  Boolean: ResolverTypeWrapper<Scalars["Boolean"]>;
+  Address: ResolverTypeWrapper<Address>;
   BigInt: ResolverTypeWrapper<Scalars["BigInt"]>;
   Byte: ResolverTypeWrapper<Scalars["Byte"]>;
   CacheControlScope: CacheControlScope;
   Category: ResolverTypeWrapper<CategoryEntityReference>;
   CategoryDetail: CategoryDetail;
+  Contact: ResolverTypeWrapper<
+    Omit<Contact, "user"> & { user?: Maybe<ResolversTypes["User"]> }
+  >;
   CreateListingPayload: ResolverTypeWrapper<
     Omit<CreateListingPayload, "listing"> & {
       listing?: Maybe<ResolversTypes["Listing"]>;
@@ -418,6 +476,7 @@ export type ResolversTypes = ResolversObject<{
   Latitude: ResolverTypeWrapper<Scalars["Latitude"]>;
   Listing: ResolverTypeWrapper<ListingEntityReference>;
   ListingDetail: ListingDetail;
+  ListingPermissions: ResolverTypeWrapper<ListingPermissions>;
   LocalDate: ResolverTypeWrapper<Scalars["LocalDate"]>;
   LocalEndTime: ResolverTypeWrapper<Scalars["LocalEndTime"]>;
   LocalTime: ResolverTypeWrapper<Scalars["LocalTime"]>;
@@ -426,6 +485,7 @@ export type ResolversTypes = ResolversObject<{
   Longitude: ResolverTypeWrapper<Scalars["Longitude"]>;
   MAC: ResolverTypeWrapper<Scalars["MAC"]>;
   MongoBase:
+    | ResolversTypes["Account"]
     | ResolversTypes["Category"]
     | ResolversTypes["Listing"]
     | ResolversTypes["Location"]
@@ -440,6 +500,7 @@ export type ResolversTypes = ResolversObject<{
   NonPositiveFloat: ResolverTypeWrapper<Scalars["NonPositiveFloat"]>;
   NonPositiveInt: ResolverTypeWrapper<Scalars["NonPositiveInt"]>;
   ObjectID: ResolverTypeWrapper<Scalars["ObjectID"]>;
+  Permissions: ResolverTypeWrapper<Permissions>;
   PhoneNumber: ResolverTypeWrapper<Scalars["PhoneNumber"]>;
   Photo: ResolverTypeWrapper<Photo>;
   Int: ResolverTypeWrapper<Scalars["Int"]>;
@@ -453,6 +514,7 @@ export type ResolversTypes = ResolversObject<{
   ID: ResolverTypeWrapper<Scalars["ID"]>;
   RGB: ResolverTypeWrapper<Scalars["RGB"]>;
   RGBA: ResolverTypeWrapper<Scalars["RGBA"]>;
+  Role: ResolverTypeWrapper<Role>;
   SafeInt: ResolverTypeWrapper<Scalars["SafeInt"]>;
   Time: ResolverTypeWrapper<Scalars["Time"]>;
   Timestamp: ResolverTypeWrapper<Scalars["Timestamp"]>;
@@ -465,17 +527,24 @@ export type ResolversTypes = ResolversObject<{
   UserUpdateInput: UserUpdateInput;
   UtcOffset: ResolverTypeWrapper<Scalars["UtcOffset"]>;
   Void: ResolverTypeWrapper<Scalars["Void"]>;
-  Boolean: ResolverTypeWrapper<Scalars["Boolean"]>;
 }>;
 
 /** Mapping between all available schema types and the resolvers parents */
 export type ResolversParentTypes = ResolversObject<{
-  Address: Address;
+  Account: Omit<Account, "contacts"> & {
+    contacts?: Maybe<Array<Maybe<ResolversParentTypes["Contact"]>>>;
+  };
   String: Scalars["String"];
+  AccountPermissions: AccountPermissions;
+  Boolean: Scalars["Boolean"];
+  Address: Address;
   BigInt: Scalars["BigInt"];
   Byte: Scalars["Byte"];
   Category: CategoryEntityReference;
   CategoryDetail: CategoryDetail;
+  Contact: Omit<Contact, "user"> & {
+    user?: Maybe<ResolversParentTypes["User"]>;
+  };
   CreateListingPayload: Omit<CreateListingPayload, "listing"> & {
     listing?: Maybe<ResolversParentTypes["Listing"]>;
   };
@@ -501,6 +570,7 @@ export type ResolversParentTypes = ResolversObject<{
   Latitude: Scalars["Latitude"];
   Listing: ListingEntityReference;
   ListingDetail: ListingDetail;
+  ListingPermissions: ListingPermissions;
   LocalDate: Scalars["LocalDate"];
   LocalEndTime: Scalars["LocalEndTime"];
   LocalTime: Scalars["LocalTime"];
@@ -509,6 +579,7 @@ export type ResolversParentTypes = ResolversObject<{
   Longitude: Scalars["Longitude"];
   MAC: Scalars["MAC"];
   MongoBase:
+    | ResolversParentTypes["Account"]
     | ResolversParentTypes["Category"]
     | ResolversParentTypes["Listing"]
     | ResolversParentTypes["Location"]
@@ -523,6 +594,7 @@ export type ResolversParentTypes = ResolversObject<{
   NonPositiveFloat: Scalars["NonPositiveFloat"];
   NonPositiveInt: Scalars["NonPositiveInt"];
   ObjectID: Scalars["ObjectID"];
+  Permissions: Permissions;
   PhoneNumber: Scalars["PhoneNumber"];
   Photo: Photo;
   Int: Scalars["Int"];
@@ -536,6 +608,7 @@ export type ResolversParentTypes = ResolversObject<{
   ID: Scalars["ID"];
   RGB: Scalars["RGB"];
   RGBA: Scalars["RGBA"];
+  Role: Role;
   SafeInt: Scalars["SafeInt"];
   Time: Scalars["Time"];
   Timestamp: Scalars["Timestamp"];
@@ -548,7 +621,6 @@ export type ResolversParentTypes = ResolversObject<{
   UserUpdateInput: UserUpdateInput;
   UtcOffset: Scalars["UtcOffset"];
   Void: Scalars["Void"];
-  Boolean: Scalars["Boolean"];
 }>;
 
 export type CacheControl22DirectiveArgs = {
@@ -563,6 +635,52 @@ export type CacheControl22DirectiveResolver<
   ContextType = Context,
   Args = CacheControl22DirectiveArgs
 > = DirectiveResolverFn<Result, Parent, ContextType, Args>;
+
+export type AccountResolvers<
+  ContextType = Context,
+  ParentType extends ResolversParentTypes["Account"] = ResolversParentTypes["Account"]
+> = ResolversObject<{
+  name?: Resolver<Maybe<ResolversTypes["String"]>, ParentType, ContextType>;
+  roles?: Resolver<
+    Maybe<Array<Maybe<ResolversTypes["Role"]>>>,
+    ParentType,
+    ContextType
+  >;
+  contacts?: Resolver<
+    Maybe<Array<Maybe<ResolversTypes["Contact"]>>>,
+    ParentType,
+    ContextType
+  >;
+  id?: Resolver<ResolversTypes["ObjectID"], ParentType, ContextType>;
+  schemaVersion?: Resolver<
+    Maybe<ResolversTypes["String"]>,
+    ParentType,
+    ContextType
+  >;
+  updatedAt?: Resolver<
+    Maybe<ResolversTypes["DateTime"]>,
+    ParentType,
+    ContextType
+  >;
+  createdAt?: Resolver<
+    Maybe<ResolversTypes["DateTime"]>,
+    ParentType,
+    ContextType
+  >;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+}>;
+
+export type AccountPermissionsResolvers<
+  ContextType = Context,
+  ParentType extends ResolversParentTypes["AccountPermissions"] = ResolversParentTypes["AccountPermissions"]
+> = ResolversObject<{
+  canManageRolesAndPermissions?: Resolver<
+    ResolversTypes["Boolean"],
+    ParentType,
+    ContextType
+  >;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+}>;
 
 export type AddressResolvers<
   ContextType = Context,
@@ -681,6 +799,28 @@ export type CategoryResolvers<
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 }>;
 
+export type ContactResolvers<
+  ContextType = Context,
+  ParentType extends ResolversParentTypes["Contact"] = ResolversParentTypes["Contact"]
+> = ResolversObject<{
+  firstName?: Resolver<ResolversTypes["String"], ParentType, ContextType>;
+  lastName?: Resolver<Maybe<ResolversTypes["String"]>, ParentType, ContextType>;
+  role?: Resolver<Maybe<ResolversTypes["Role"]>, ParentType, ContextType>;
+  user?: Resolver<Maybe<ResolversTypes["User"]>, ParentType, ContextType>;
+  id?: Resolver<ResolversTypes["ObjectID"], ParentType, ContextType>;
+  updatedAt?: Resolver<
+    Maybe<ResolversTypes["DateTime"]>,
+    ParentType,
+    ContextType
+  >;
+  createdAt?: Resolver<
+    Maybe<ResolversTypes["DateTime"]>,
+    ParentType,
+    ContextType
+  >;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+}>;
+
 export type CreateListingPayloadResolvers<
   ContextType = Context,
   ParentType extends ResolversParentTypes["CreateListingPayload"] = ResolversParentTypes["CreateListingPayload"]
@@ -788,7 +928,7 @@ export type ListingResolvers<
   ContextType = Context,
   ParentType extends ResolversParentTypes["Listing"] = ResolversParentTypes["Listing"]
 > = ResolversObject<{
-  owner?: Resolver<Maybe<ResolversTypes["User"]>, ParentType, ContextType>;
+  account?: Resolver<Maybe<ResolversTypes["Account"]>, ParentType, ContextType>;
   title?: Resolver<Maybe<ResolversTypes["String"]>, ParentType, ContextType>;
   description?: Resolver<
     Maybe<ResolversTypes["String"]>,
@@ -823,6 +963,18 @@ export type ListingResolvers<
   >;
   createdAt?: Resolver<
     Maybe<ResolversTypes["DateTime"]>,
+    ParentType,
+    ContextType
+  >;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+}>;
+
+export type ListingPermissionsResolvers<
+  ContextType = Context,
+  ParentType extends ResolversParentTypes["ListingPermissions"] = ResolversParentTypes["ListingPermissions"]
+> = ResolversObject<{
+  canManageListings?: Resolver<
+    ResolversTypes["Boolean"],
     ParentType,
     ContextType
   >;
@@ -889,7 +1041,7 @@ export type MongoBaseResolvers<
   ParentType extends ResolversParentTypes["MongoBase"] = ResolversParentTypes["MongoBase"]
 > = ResolversObject<{
   __resolveType: TypeResolveFn<
-    "Category" | "Listing" | "Location" | "Point" | "User",
+    "Account" | "Category" | "Listing" | "Location" | "Point" | "User",
     ParentType,
     ContextType
   >;
@@ -981,6 +1133,23 @@ export interface ObjectIdScalarConfig
   extends GraphQLScalarTypeConfig<ResolversTypes["ObjectID"], any> {
   name: "ObjectID";
 }
+
+export type PermissionsResolvers<
+  ContextType = Context,
+  ParentType extends ResolversParentTypes["Permissions"] = ResolversParentTypes["Permissions"]
+> = ResolversObject<{
+  listingPermissions?: Resolver<
+    ResolversTypes["ListingPermissions"],
+    ParentType,
+    ContextType
+  >;
+  accountPermissions?: Resolver<
+    ResolversTypes["AccountPermissions"],
+    ParentType,
+    ContextType
+  >;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+}>;
 
 export interface PhoneNumberScalarConfig
   extends GraphQLScalarTypeConfig<ResolversTypes["PhoneNumber"], any> {
@@ -1100,6 +1269,31 @@ export interface RgbaScalarConfig
   name: "RGBA";
 }
 
+export type RoleResolvers<
+  ContextType = Context,
+  ParentType extends ResolversParentTypes["Role"] = ResolversParentTypes["Role"]
+> = ResolversObject<{
+  roleName?: Resolver<ResolversTypes["String"], ParentType, ContextType>;
+  isDefault?: Resolver<ResolversTypes["Boolean"], ParentType, ContextType>;
+  permissions?: Resolver<
+    ResolversTypes["Permissions"],
+    ParentType,
+    ContextType
+  >;
+  id?: Resolver<ResolversTypes["ObjectID"], ParentType, ContextType>;
+  updatedAt?: Resolver<
+    Maybe<ResolversTypes["DateTime"]>,
+    ParentType,
+    ContextType
+  >;
+  createdAt?: Resolver<
+    Maybe<ResolversTypes["DateTime"]>,
+    ParentType,
+    ContextType
+  >;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+}>;
+
 export interface SafeIntScalarConfig
   extends GraphQLScalarTypeConfig<ResolversTypes["SafeInt"], any> {
   name: "SafeInt";
@@ -1185,10 +1379,13 @@ export interface VoidScalarConfig
 }
 
 export type Resolvers<ContextType = Context> = ResolversObject<{
+  Account?: AccountResolvers<ContextType>;
+  AccountPermissions?: AccountPermissionsResolvers<ContextType>;
   Address?: AddressResolvers<ContextType>;
   BigInt?: GraphQLScalarType;
   Byte?: GraphQLScalarType;
   Category?: CategoryResolvers<ContextType>;
+  Contact?: ContactResolvers<ContextType>;
   CreateListingPayload?: CreateListingPayloadResolvers<ContextType>;
   Currency?: GraphQLScalarType;
   Date?: GraphQLScalarType;
@@ -1210,6 +1407,7 @@ export type Resolvers<ContextType = Context> = ResolversObject<{
   JWT?: GraphQLScalarType;
   Latitude?: GraphQLScalarType;
   Listing?: ListingResolvers<ContextType>;
+  ListingPermissions?: ListingPermissionsResolvers<ContextType>;
   LocalDate?: GraphQLScalarType;
   LocalEndTime?: GraphQLScalarType;
   LocalTime?: GraphQLScalarType;
@@ -1227,6 +1425,7 @@ export type Resolvers<ContextType = Context> = ResolversObject<{
   NonPositiveFloat?: GraphQLScalarType;
   NonPositiveInt?: GraphQLScalarType;
   ObjectID?: GraphQLScalarType;
+  Permissions?: PermissionsResolvers<ContextType>;
   PhoneNumber?: GraphQLScalarType;
   Photo?: PhotoResolvers<ContextType>;
   Point?: PointResolvers<ContextType>;
@@ -1237,6 +1436,7 @@ export type Resolvers<ContextType = Context> = ResolversObject<{
   Query?: QueryResolvers<ContextType>;
   RGB?: GraphQLScalarType;
   RGBA?: GraphQLScalarType;
+  Role?: RoleResolvers<ContextType>;
   SafeInt?: GraphQLScalarType;
   Time?: GraphQLScalarType;
   Timestamp?: GraphQLScalarType;

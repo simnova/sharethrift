@@ -1,4 +1,4 @@
-import { Listing as ListingDO, ListingEntityReference } from '../../../domain/contexts/listing';
+import { Listing as ListingDO, ListingEntityReference } from '../../../domain/contexts/listing/listing';
 import {ListingDomainAdapter}from '../../../domain/infrastructure/persistance/adapters/listing-domain-adapter';
 import { MongoListingRepository } from '../../../domain/infrastructure/persistance/repositories/mongo-listing-repository';
 import {Context} from '../../context';
@@ -24,9 +24,17 @@ export default class Listings extends DomainDataSource<Context,Listing,PropType,
   }
   async addListing(listing: ListingDetail) : Promise<ListingEntityReference> {
     //If there are conversions between GraphQL Types and domain types, it should happen here
+    
+    var userExternalId = this.context.VerifedUser.VerifiedJWT.oid;
+    var user =  await UserModel.findOne({externalId: userExternalId}).exec();
+
+    
+
+
     var result : ListingEntityReference //: ListingDO<ListingProps>;
 
-    var user = await UserModel.findById(listing.owner).exec();
+    //var user = await UserModel.findById(listing.owner).exec();
+    
     var userAdapter = new UserDomainAdapter(user);
 
     var category = await CategoryModel.findById(listing.primaryCategory).exec();
@@ -34,7 +42,7 @@ export default class Listings extends DomainDataSource<Context,Listing,PropType,
 
     await this.withTransaction(async (repo) => {
       var domainObject = repo.getNewInstance();
-      domainObject.requestAddOwner(userAdapter);
+      //domainObject.requestAddOwner(userAdapter);
       domainObject.requestAddCategory(categoryAdapter);
       domainObject.requestUpdateDescription(listing.description);
       domainObject.requestPublish();

@@ -1,0 +1,37 @@
+type Role {
+  roleName: String!
+  isDefault: Boolean!
+  permissions: Permissions!
+
+  id: ObjectID!
+  updatedAt: DateTime
+  createdAt: DateTime
+}
+
+type Permissions {
+  listingPermissions: ListingPermissions!
+  accountPermissions: AccountPermissions!
+}
+
+type AccountPermissions {
+  canManageRolesAndPermissions: Boolean!
+}
+type ListingPermissions {
+  canManageListings: Boolean!
+}
+
+
+
+
+
+
+type Account implements MongoBase {
+  name: String
+  roles: [Role]
+  contacts: [Contact]
+
+  id: ObjectID!
+  schemaVersion: String
+  updatedAt: DateTime
+  createdAt: DateTime
+}

@@ -1,4 +1,4 @@
-import { Entity } from '../shared/entity';
+import { Entity } from '../../shared/entity';
 
 export class Location extends Entity<LocationProps> implements LocationEntityReference {
   constructor(props: LocationProps) { super(props); }

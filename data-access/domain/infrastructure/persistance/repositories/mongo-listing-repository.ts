@@ -1,5 +1,5 @@
-import { Listing as ListingDO, ListingProps } from "../../../contexts/listing";
-import { ListingRepository } from "../../../contexts/listing-repository";
+import { Listing as ListingDO, ListingProps } from "../../../contexts/listing/listing";
+import { ListingRepository } from "../../../contexts/listing/listing-repository";
 import { Listing, ListingModel }from "../../../../infrastructure/data-sources/cosmos-db/models/listing";
 import { MongoRepositoryBase } from "../mongo-repository";
 import { TypeConverter } from "../../../shared/type-converter";

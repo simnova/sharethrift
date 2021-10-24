@@ -1,4 +1,4 @@
-import { Category as CategoryDO, CategoryEntityReference, CategoryProps } from '../../../domain/contexts/category';
+import { Category as CategoryDO, CategoryEntityReference, CategoryProps } from '../../../domain/contexts/listing/category';
 import {CategoryDomainAdapter}from '../../../domain/infrastructure/persistance/adapters/category-domain-adapter';
 import { MongoCategoryRepository } from '../../../domain/infrastructure/persistance/repositories/mongo-category-repository';
 import {Context} from '../../context';

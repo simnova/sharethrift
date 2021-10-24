@@ -9,11 +9,11 @@ generates:
       contextType: "./context#Context"
       useIndexSignature: true
       mappers:
-        Category: ../domain/contexts/category#CategoryEntityReference
-        Listing: ../domain/contexts/listing#ListingEntityReference
-        Location: ../domain/contexts/location#LocationEntityReference
+        Category: ../domain/contexts/listing/category#CategoryEntityReference
+        Listing: ../domain/contexts/listing/listing#ListingEntityReference
+        Location: ../domain/contexts/listing/location#LocationEntityReference
         Point: ./resolvers/types/point#PointType
-        User: ../domain/contexts/user#UserEntityReference
+        User: ../domain/contexts/user/user#UserEntityReference
       scalars:
         BigInt: any
         Byte: any

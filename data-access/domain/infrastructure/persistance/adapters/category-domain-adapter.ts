@@ -1,5 +1,5 @@
 import { Category } from "../../../../infrastructure/data-sources/cosmos-db/models/category";
-import { CategoryProps } from "../../../contexts/category";
+import { CategoryProps } from "../../../contexts/listing/category";
 import { MongooseDomainAdapater } from "../mongo-domain-adapter";
 
 export class CategoryDomainAdapter extends MongooseDomainAdapater<Category> implements CategoryProps {

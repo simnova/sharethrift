@@ -1,5 +1,5 @@
 import { Location } from "../../../../infrastructure/data-sources/cosmos-db/models/location";
-import { LocationProps } from "../../../contexts/location";
+import { LocationProps } from "../../../contexts/listing/location";
 import { MongooseDomainAdapater } from "../mongo-domain-adapter";
 
 export class LocationDomainAdapter extends MongooseDomainAdapater<Location> implements LocationProps {

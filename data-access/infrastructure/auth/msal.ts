@@ -1,5 +1,5 @@
 import { Issuer, Client } from 'openid-client';
-import {JWT} from 'jose';
+import {jwtVerify,createRemoteJWKSet} from 'jose';
 
 var verifyAccessToken = async (context) : Promise<[object, boolean]>  => {
   let token = context.request.headers["authorization"];
@@ -13,12 +13,13 @@ var verifyAccessToken = async (context) : Promise<[object, boolean]>  => {
     tenantId: process.env.AAD_TOKEN_TENANT_ID
   };
 
-  const issuer = await Issuer.discover(settings.openIdConfigUrl);
-  const keyStore = await issuer.keystore();
-
-  var results = JWT.verify(
+  //const issuer = await Issuer.discover(settings.openIdConfigUrl);
+  //const keyStore = await issuer.keystore();
+  const JWKS = createRemoteJWKSet(new URL(settings.openIdConfigUrl))
+  
+  var results = await jwtVerify(
     token,
-    keyStore, 
+    JWKS,
     {
       audience: settings.audience,//`api://uiapi.pathways.ecfmg.org`,
       issuer: `https://login.microsoftonline.com/${settings.tenantId}/v2.0`
@@ -29,10 +30,12 @@ var verifyAccessToken = async (context) : Promise<[object, boolean]>  => {
         //if you only want to accept local AAD Accounts use: `https://login.microsoftonline.com/${settings.tenantId}/v2.0`
     }
   );
+  var x = results.payload.oid
   
   return [
     {
-      "authToken": results,
+      "authToken": results.payload,
+      "userId": results.payload.oid
     },
     true
   ];

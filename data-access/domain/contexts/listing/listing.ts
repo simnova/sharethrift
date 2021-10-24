@@ -1,19 +1,20 @@
-import { AggregateRoot } from "../shared/aggregate-root";
+import { AggregateRoot } from "../../shared/aggregate-root";
 import { Category, CategoryEntityReference, CategoryProps } from "./category";
-import { Passport } from "./identity-and-access";
+import { Passport } from "../iam/passport";
 import { Location, LocationEntityReference, LocationProps } from "./location";
 import { Photo, PhotoProps, PhotoEntityReference } from "./photo";
-import { User, UserProps, UserEntityReference } from "./user";
-import  { ListingPhotoAddedEvent } from "../events/listing-photo-added";
-import {ListingPublishedEvent} from "../events/listing-published";
+import  { ListingPhotoAddedEvent } from "../../events/listing-photo-added";
+import {ListingPublishedEvent} from "../../events/listing-published";
+import { EntityProps } from "../../shared/entity";
+import { AccountEntityReference } from "../account/account";
 
-export interface ListingProps {
+export interface ListingProps extends EntityProps {
   id: string;
   title: string;
   description: string;
   location: LocationProps;
   photos: PhotoProps[];
-  owner: UserProps;
+  account: AccountEntityReference;
   primaryCategory: CategoryProps;
   createdAt: Date;
   updatedAt: Date;
@@ -22,15 +23,16 @@ export interface ListingProps {
 }
 
 export class Listing<props extends ListingProps> extends AggregateRoot<props> implements ListingEntityReference {
-
-  constructor(props: props) {super(props);}
+  constructor(props: props) { super(props); }
+  
 
   get id(): string {return this.props.id;}
   get title(): string {return this.props.title;}
   get description(): string {return this.props.description;}
   get location(): LocationEntityReference {return new Location(this.props.location);}
   get photos(): PhotoEntityReference[] { return this.props.photos.map(photo=>new Photo(photo));} //should be REadOnyArray<PhotoEntityReference> but gen has issues
-  get owner(): UserEntityReference { return new User(this.props.owner);}
+//  get owner(): UserEntityReference { return new User(this.props.owner);}
+  get account(): AccountEntityReference { return (this.props.account);}
   get primaryCategory(): CategoryEntityReference { return new Category(this.props.primaryCategory);}
   get updatedAt(): Date {return this.props.updatedAt;}
   get createdAt(): Date {return this.props.createdAt;}
@@ -41,6 +43,7 @@ export class Listing<props extends ListingProps> extends AggregateRoot<props> im
 
   requestUpdateDescription(description: string){
     this.props.description=description;
+    
   }
 
   requestAddPhoto(documentId:string, user:Passport){
@@ -61,18 +64,23 @@ export class Listing<props extends ListingProps> extends AggregateRoot<props> im
   }
 
   async requestPublish(){
-    /*
+    
     var publishedQuantity = await this.props.usersCurrentPublishedListingQuantity();
     if(publishedQuantity > 5){
       throw new Error("Listing is not valid");
     }
-    */
-    this.addDomainEvent(ListingPublishedEvent,{listingId: this.props.id});
-    this.addIntegrationEvent(ListingPublishedEvent,{listingId: this.props.id});
+    else{
+      this.addDomainEvent(ListingPublishedEvent,{listingId: this.props.id});
+      this.addIntegrationEvent(ListingPublishedEvent,{listingId: this.props.id});
+    }
+
   }
   
-  requestAddOwner(owner:UserProps){
-    this.props.owner = owner;
+  requestAddAccount(account:AccountEntityReference){
+    if(this.props.account){
+      throw new Error("Account already exists");
+    }
+    this.props.account = account;
   }
   requestAddCategory(category: CategoryProps) {
     this.props.primaryCategory = category;
@@ -94,9 +102,13 @@ export interface ListingEntityReference {
   readonly description: string;
   readonly location?: LocationEntityReference;
   readonly photos?: PhotoEntityReference[];
-  readonly owner?: UserEntityReference | string;
+  readonly account: AccountEntityReference;
   readonly primaryCategory?: CategoryEntityReference;
   readonly createdAt: Date;
   readonly updatedAt: Date;
   readonly schemaVersion: string;
 }
+
+export interface ListingPermissions {
+  canManageListings: boolean;
+} 

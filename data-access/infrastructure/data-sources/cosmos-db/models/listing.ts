@@ -3,6 +3,7 @@ import { Base, BaseOptions} from './interfaces/base';
 import * as Category  from './category';
 import * as Location from './location';
 import * as User from './user';
+import * as Account from './account'
 
 export interface Photo {
   id: string,
@@ -11,7 +12,7 @@ export interface Photo {
 }
 
 export interface Listing extends Base {
-  owner?: User.User | ObjectId;
+  account: Account.Account | ObjectId;
   title: string;
   description: string;
   primaryCategory?: PopulatedDoc<Category.Category> | ObjectId;
@@ -25,9 +26,9 @@ export const ListingModel = model<Listing>('Listing',new Schema<Listing, Model<L
       type: String,
       default: '1.0.0',
     },
-    owner: {
+    account: {
       type: Schema.Types.ObjectId,
-      ref: User.UserModel.modelName,
+      ref: Account.AccountModel.modelName,
       required: true,
     },
     title: {

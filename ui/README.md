@@ -1,3 +1,12 @@
+
+# Calendar https://mobiscroll.com/pricing
+# Uploaading https://github.com/transloadit/uppy
+# Editor https://ckeditor.com/ckeditor-5/
+# Kanban https://github.com/atlassian/react-beautiful-dnd
+# Charting https://github.com/alibaba/BizCharts
+
+
+
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
 
 ## Available Scripts

@@ -1,4 +1,5 @@
-import { JWT, JWKS } from "jose";
+import { jwtVerify, createRemoteJWKSet,  JWSHeaderParameters, FlattenedJWSInput } from "jose";
+import { GetKeyFunction } from "jose/dist/types/types";
 import { Issuer } from "openid-client";
 
 export type OpenIdConfig = {
@@ -16,7 +17,7 @@ export type OpenIdConfig = {
 export class VerifiedTokenService  {
   openIdConfigs: Map<string,OpenIdConfig>;
   refreshInterval:number;
-  keyStoreCollection:  Map<string,{keyStore: JWKS.KeyStore, issuerUrl: string}>;
+  keyStoreCollection:  Map<string,{keyStore: GetKeyFunction<JWSHeaderParameters, FlattenedJWSInput>, issuerUrl: string}>;
   timerInstance:NodeJS.Timer;
 
   /**
@@ -25,7 +26,7 @@ export class VerifiedTokenService  {
    **/
   constructor(openIdConfigs:Map<string,OpenIdConfig>, refreshInterval:number = 1000*60*5) {
     if(!openIdConfigs) {throw new Error("openIdConfigs is required");}
-    this.keyStoreCollection = new Map<string,{keyStore: JWKS.KeyStore, issuerUrl: string}>();
+    this.keyStoreCollection = new Map<string,{keyStore: GetKeyFunction<JWSHeaderParameters, FlattenedJWSInput>, issuerUrl: string}>();
     this.openIdConfigs = openIdConfigs;
     this.refreshInterval = refreshInterval;
   }
@@ -59,7 +60,10 @@ export class VerifiedTokenService  {
   async refreshCollection() {
     if(!this.openIdConfigs){return}
     for(let configKey of  [...this.openIdConfigs.keys()]) {
-      let newKeyStore = await this.getKeyStore(this.openIdConfigs.get(configKey).oidcEndpoint);
+      let newKeyStore = {
+        keyStore: createRemoteJWKSet(new URL(this.openIdConfigs.get(configKey).oidcEndpoint)),
+        issuerUrl:  this.openIdConfigs.get(configKey).issuerUrl
+      }
       if(newKeyStore) {
         if(this.keyStoreCollection.has(configKey)) {
           this.keyStoreCollection.delete(configKey); // remove old keystore if it exists
@@ -69,10 +73,7 @@ export class VerifiedTokenService  {
     }
   }
   
-  async getKeyStore(issuerUrl:string) : Promise<{keyStore: JWKS.KeyStore, issuerUrl: string}> {
-    let issuer = await Issuer.discover(issuerUrl);
-    return {keyStore: await issuer.keystore(true),issuerUrl: issuer.metadata.issuer};
-  }
+
 
   public GetVerifiedJwt(bearerToken:string, configKey:string) : any {
     if(!this.timerInstance) {
@@ -82,13 +83,13 @@ export class VerifiedTokenService  {
       throw new Error("Invalid OpenIdConfig Key");
     }
     let openIdConfig = this.openIdConfigs.get(configKey);
-    return JWT.verify(
+    return jwtVerify(
       bearerToken,
       this.keyStoreCollection.get(configKey).keyStore, 
       {
         audience: openIdConfig.audience,
-        issuer: this.keyStoreCollection.get(configKey).issuerUrl,
-        ignoreNbf: openIdConfig.ignoreNbf??true,
+        issuer: openIdConfig.issuerUrl,
+        //ignoreNbf: openIdConfig.ignoreNbf??true,
         clockTolerance: openIdConfig.clockTolerance?? "5 minutes",
       }
     );

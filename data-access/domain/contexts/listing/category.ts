@@ -1,4 +1,4 @@
-import { AggregateRoot } from '../shared/aggregate-root';
+import { AggregateRoot } from '../../shared/aggregate-root';
 
 export interface CategoryProps {
   id:string;

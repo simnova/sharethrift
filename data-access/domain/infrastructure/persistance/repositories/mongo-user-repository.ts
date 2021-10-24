@@ -1,5 +1,5 @@
-import { User as UserDO, UserProps } from "../../../contexts/user";
-import { UserRepository } from "../../../contexts/user-repository";
+import { User as UserDO, UserProps } from "../../../contexts/user/user";
+import { UserRepository } from "../../../contexts/user/user-repository";
 import { User, UserModel }from "../../../../infrastructure/data-sources/cosmos-db/models/user";
 import { MongoRepositoryBase } from "../mongo-repository";
 import { TypeConverter } from "../../../shared/type-converter";
@@ -13,6 +13,10 @@ export class MongoUserRepository<PropType extends UserProps> extends MongoReposi
     session: ClientSession
   ) {
     super(eventBus,modelType,typeConverter,session);
+  }
+  async getByExternalId(externalId: string): Promise<UserDO<PropType>> {
+    var user = await this.model.findOne({ externalId: externalId }).exec();
+    return this.typeConverter.toDomain(user);
   }
 
   getNewInstance(): UserDO<PropType> {

@@ -1,0 +1,10 @@
+type Contact{
+  firstName: String!
+  lastName: String
+  role:Role
+  user:User
+
+  id: ObjectID!
+  updatedAt: DateTime
+  createdAt: DateTime
+}

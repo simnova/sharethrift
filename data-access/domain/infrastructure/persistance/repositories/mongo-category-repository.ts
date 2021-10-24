@@ -1,5 +1,5 @@
-import { Category as CategoryDO, CategoryProps } from "../../../contexts/category";
-import { CategoryRepository } from "../../../contexts/category-repository";
+import { Category as CategoryDO, CategoryProps } from "../../../contexts/listing/category";
+import { CategoryRepository } from "../../../contexts/listing/category-repository";
 import { Category, CategoryModel }from "../../../../infrastructure/data-sources/cosmos-db/models/category";
 import { MongoRepositoryBase } from "../mongo-repository";
 import { TypeConverter } from "../../../shared/type-converter";

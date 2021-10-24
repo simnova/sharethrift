@@ -1,4 +1,4 @@
-import { User as UserDO, UserEntityReference } from '../../../domain/contexts/user';
+import { User as UserDO, UserEntityReference } from '../../../domain/contexts/user/user';
 import {UserDomainAdapter}from '../../../domain/infrastructure/persistance/adapters/user-domain-adapter';
 import { MongoUserRepository } from '../../../domain/infrastructure/persistance/repositories/mongo-user-repository';
 import {Context} from '../../context';

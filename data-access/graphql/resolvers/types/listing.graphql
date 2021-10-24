@@ -2,7 +2,7 @@
 
 
 type Listing implements MongoBase {
-  owner: User
+  account: Account
   title: String
   description: String
   primaryCategory: Category

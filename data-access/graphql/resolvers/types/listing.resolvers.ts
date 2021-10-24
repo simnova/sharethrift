@@ -1,26 +1,24 @@
-import { Resolvers, CreateListingPayload, Listing } from '../../generated';
+import { Resolvers} from '../../generated';
 import { CacheScope } from 'apollo-server-types';
-//import { ListingType } from './listing';
-import { UserType } from './user';
 import { isValidObjectId } from 'mongoose';
-import { ListingEntityReference } from '../../../domain/contexts/listing';
+import { ListingEntityReference } from '../../../domain/contexts/listing/listing';
 
 
 //import { Listing } from '../../../infrastructure/data-sources/cosmos-db/models/listing';
 
 const listing : Resolvers = {
   Listing: {
-    owner: async (parent : ListingEntityReference, args, context, info) => {
+    account: async (parent : ListingEntityReference, args, context, info) => {
     //  info.cacheControl.setCacheHint({ maxAge: 60,scope: CacheScope.Public });
       console.log("Resolver>Listing>owner")
      
-      if(parent.owner && isValidObjectId(parent.owner)){
-        console.log("Resolver>Listing>owner provided ObjectId : looking up User")
-        return context.dataSources.userAPI.getUser(parent.owner.toString());
+      if(parent.account && isValidObjectId(parent.account)){
+        console.log("Resolver>Listing>account provided ObjectId : looking up Account")
+        return context.dataSources.accountAPI.getAccount(parent.account.toString());
       }
       else {
-        console.log("Resolver>Listing>owner provided User Object : returning User Object")
-        return parent.owner as UserType;
+        console.log("Resolver>Listing>account provided Account Object : returning Account Object")
+        return parent.account;
       }
     }
   },

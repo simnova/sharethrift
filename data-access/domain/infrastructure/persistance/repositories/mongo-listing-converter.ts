@@ -1,4 +1,4 @@
-import { Listing as ListingDO } from "../../../contexts/listing";
+import { Listing as ListingDO } from "../../../contexts/listing/listing";
 import { Listing } from "../../../../infrastructure/data-sources/cosmos-db/models/listing";
 import { TypeConverter } from "../../../shared/type-converter";
 import { ListingDomainAdapter } from "../adapters/listing-domain-adapter";

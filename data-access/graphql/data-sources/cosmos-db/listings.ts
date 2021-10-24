@@ -2,7 +2,7 @@ import { MongoDataSource } from 'apollo-datasource-mongodb';
 import * as Listing from '../../../infrastructure/data-sources/cosmos-db/models/listing';
 import {Context} from '../../context';
 import { ListingDomainAdapter } from '../../../domain/infrastructure/persistance/adapters/listing-domain-adapter';
-import { ListingEntityReference } from '../../../domain/contexts/listing';
+import { ListingEntityReference } from '../../../domain/contexts/listing/listing';
 
 export default class Listings extends MongoDataSource<Listing.Listing, Context> {
 

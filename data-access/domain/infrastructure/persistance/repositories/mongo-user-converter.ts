@@ -1,4 +1,4 @@
-import { User as UserDO } from "../../../contexts/user";
+import { User as UserDO } from "../../../contexts/user/user";
 import { User } from "../../../../infrastructure/data-sources/cosmos-db/models/user";
 import { TypeConverter } from "../../../shared/type-converter";
 import { UserDomainAdapter } from "../adapters/user-domain-adapter";

@@ -1,4 +1,4 @@
-import { Entity } from '../shared/entity';
+import { Entity } from '../../shared/entity';
 export class Photo extends Entity<PhotoProps> implements PhotoEntityReference {
   constructor(props: PhotoProps) { super(props); }
 
