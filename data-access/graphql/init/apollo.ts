@@ -9,7 +9,7 @@ import { PortalTokenValidation } from './extensions/portal-token-validation';
 import { combinedSchema } from './extensions/schema-builder';
 import * as util  from './extensions/util';
 import { Domain } from '../data-sources/domain';
-import * as EventHandlers from '../../domain/infrastructure/event-handlers/index'
+import RegisterHandlers from '../../domain/infrastructure/event-handlers/index'
 
 
 
@@ -59,11 +59,7 @@ const serverConfig = () => {
           connect();
           portalTokenExtractor.Start();
       
-
-          EventHandlers.RegisterListingPublishedEmailHandler();
-          EventHandlers.RegisterListingPublishedDomainEventHandler();
-          EventHandlers.RegisterListingPublishedSendFaxHandler();
-          EventHandlers.ResisterUserCreatedCreateAccountHandler();
+          RegisterHandlers();
         },
       },
       responseCachePlugin()

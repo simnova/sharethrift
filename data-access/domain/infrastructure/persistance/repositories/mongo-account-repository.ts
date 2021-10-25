@@ -23,12 +23,11 @@ export class MongoAccountRepository<PropType extends AccountProps> extends Mongo
 
   getNewInstance(userId: string): AccountDO<PropType> {
     var newAccountProps: AnyKeys<Account> = {
+      name: userId,
       contacts: [{
-        user: {
-          id: userId
-        }
+        firstName: userId,
+        user: userId
       }],
-      name: userId
     }
     var newAccountDoc = new AccountModel(newAccountProps);
     console.log(`getNewInstance:newAccountDOc=${JSON.stringify(newAccountDoc)}`);
