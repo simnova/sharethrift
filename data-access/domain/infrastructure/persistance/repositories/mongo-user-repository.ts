@@ -28,7 +28,9 @@ export class MongoUserRepository<PropType extends UserProps> extends MongoReposi
     }
     var newUserDoc = new UserModel(newUserProps);
     console.log(`getNewInstance:newUserDoc=${JSON.stringify(newUserDoc)}`);
-    return this.typeConverter.toDomain(newUserDoc);
+    var domainObject = this.typeConverter.toDomain(newUserDoc);
+    domainObject.MarkAsNew();
+    return domainObject;
   }
 
   async delete(id: string): Promise<void> {

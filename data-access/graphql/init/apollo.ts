@@ -13,6 +13,7 @@ import * as EventHandlers from '../../domain/infrastructure/event-handlers/index
 
 
 
+
 let Portals = new Map<string,string>([
   ["AccountPortal","ACCOUNT_PORTAL"]
 ]);
@@ -57,9 +58,12 @@ const serverConfig = () => {
           console.log('Apollo Server Starting');
           connect();
           portalTokenExtractor.Start();
+      
+
           EventHandlers.RegisterListingPublishedEmailHandler();
           EventHandlers.RegisterListingPublishedDomainEventHandler();
           EventHandlers.RegisterListingPublishedSendFaxHandler();
+          EventHandlers.ResisterUserCreatedCreateAccountHandler();
         },
       },
       responseCachePlugin()

@@ -1,3 +1,4 @@
+import { UserCreatedEvent } from '../../events/user-created';
 import { AggregateRoot } from '../../shared/aggregate-root';
 
 export interface UserProps {
@@ -19,6 +20,9 @@ export class User<props extends UserProps> extends AggregateRoot<props> implemen
   get updatedAt(): Date {return this.props.updatedAt;}
   get createdAt(): Date {return this.props.createdAt;}
   get schemaVersion(): string {return this.props.schemaVersion;}
+  public MarkAsNew(): void {
+    this.addIntegrationEvent(UserCreatedEvent,{userId: this.props.id});
+  }
 }
 
 export interface UserEntityReference {
