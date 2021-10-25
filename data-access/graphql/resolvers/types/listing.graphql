@@ -23,6 +23,66 @@ extend type Query {
 extend type Mutation {
   createListing(input: ListingDetail!): CreateListingPayload
 }
+
 type CreateListingPayload {
   listing: Listing
+}
+input ListingDetail {
+  id: ObjectID
+  owner: ObjectID
+  title: String
+  description: String
+  primaryCategory: ObjectID
+}
+type Category implements MongoBase {
+  name: String
+  parentId: Category
+  childrenIds: [Category]
+
+  id: ObjectID!
+  schemaVersion: String
+  createdAt: DateTime
+  updatedAt: DateTime
+}
+
+type Photo {
+  id: ObjectID!
+  order: Int
+  documentId: String
+}
+
+type Location implements MongoBase {
+  position: Point
+  address: Address
+  id: ObjectID!
+  schemaVersion: String
+  createdAt: DateTime
+  updatedAt: DateTime
+}
+
+type Point implements MongoBase {
+  type: String
+  coordinates: [Float]
+  
+  id: ObjectID!
+  schemaVersion: String
+  createdAt: DateTime
+  updatedAt: DateTime
+}
+
+type Address {
+  streetNumber: String
+  streetName: String
+  municipality: String
+  municipalitySubdivision: String
+  countrySecondarySubdivision: String
+  countryTertiarySubdivision: String
+  countrySubdivision: String
+  countrySubdivisionName: String
+  postalCode: String
+  extendedPostalCode: String
+  countryCode: String
+  country: String
+  countryCodeISO3: String
+  freeformAddress: String
 }

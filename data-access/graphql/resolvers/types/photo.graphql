@@ -1,5 +1,0 @@
-type Photo {
-  id: ObjectID!
-  order: Int
-  documentId: String
-}

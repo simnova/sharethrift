@@ -1,8 +1,0 @@
-""" New user values """
-input CreateUserInput {
-  firstName: String
-  lastName: String
-
-  """Must be a valid email address"""
-  email: EmailAddress
-}

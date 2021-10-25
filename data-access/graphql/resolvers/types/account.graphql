@@ -1,7 +1,29 @@
+type Account implements MongoBase {
+  name: String
+  roles: [Role]
+  contacts: [Contact]
+
+  id: ObjectID!
+  schemaVersion: String
+  updatedAt: DateTime
+  createdAt: DateTime
+}
+
 type Role {
   roleName: String!
   isDefault: Boolean!
   permissions: Permissions!
+
+  id: ObjectID!
+  updatedAt: DateTime
+  createdAt: DateTime
+}
+
+type Contact{
+  firstName: String!
+  lastName: String
+  role:Role
+  user:User
 
   id: ObjectID!
   updatedAt: DateTime
@@ -16,22 +38,7 @@ type Permissions {
 type AccountPermissions {
   canManageRolesAndPermissions: Boolean!
 }
+
 type ListingPermissions {
   canManageListings: Boolean!
-}
-
-
-
-
-
-
-type Account implements MongoBase {
-  name: String
-  roles: [Role]
-  contacts: [Contact]
-
-  id: ObjectID!
-  schemaVersion: String
-  updatedAt: DateTime
-  createdAt: DateTime
 }

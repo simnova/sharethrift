@@ -1,0 +1,7 @@
+mutation UserCreate {
+  createUser {
+    id,
+    firstName,
+    lastName
+  }
+}

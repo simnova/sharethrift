@@ -6,7 +6,6 @@ import {
 import { CategoryEntityReference } from "../domain/contexts/listing/category";
 import { ListingEntityReference } from "../domain/contexts/listing/listing";
 import { LocationEntityReference } from "../domain/contexts/listing/location";
-import { PointType } from "./resolvers/types/point";
 import { UserEntityReference } from "../domain/contexts/user/user";
 import { Context } from "./context";
 export type Maybe<T> = T | null;
@@ -155,14 +154,6 @@ export type CreateListingPayload = {
   listing?: Maybe<Listing>;
 };
 
-/**  New user values  */
-export type CreateUserInput = {
-  firstName?: Maybe<Scalars["String"]>;
-  lastName?: Maybe<Scalars["String"]>;
-  /** Must be a valid email address */
-  email?: Maybe<Scalars["EmailAddress"]>;
-};
-
 /**  https://www.apollographql.com/blog/graphql/basics/designing-graphql-mutations/  */
 export type Listing = MongoBase & {
   __typename?: "Listing";
@@ -231,11 +222,6 @@ export type MutationCreateCategoryArgs = {
 /**  Base Mutation Type definition - all mutations will be defined in separate files extending this type  */
 export type MutationCreateListingArgs = {
   input: ListingDetail;
-};
-
-/**  Base Mutation Type definition - all mutations will be defined in separate files extending this type  */
-export type MutationCreateUserArgs = {
-  input: CreateUserInput;
 };
 
 /**  Base Mutation Type definition - all mutations will be defined in separate files extending this type  */
@@ -454,7 +440,6 @@ export type ResolversTypes = ResolversObject<{
       listing?: Maybe<ResolversTypes["Listing"]>;
     }
   >;
-  CreateUserInput: CreateUserInput;
   Currency: ResolverTypeWrapper<Scalars["Currency"]>;
   Date: ResolverTypeWrapper<Scalars["Date"]>;
   DateTime: ResolverTypeWrapper<Scalars["DateTime"]>;
@@ -504,7 +489,7 @@ export type ResolversTypes = ResolversObject<{
   PhoneNumber: ResolverTypeWrapper<Scalars["PhoneNumber"]>;
   Photo: ResolverTypeWrapper<Photo>;
   Int: ResolverTypeWrapper<Scalars["Int"]>;
-  Point: ResolverTypeWrapper<PointType>;
+  Point: ResolverTypeWrapper<Point>;
   Float: ResolverTypeWrapper<Scalars["Float"]>;
   Port: ResolverTypeWrapper<Scalars["Port"]>;
   PositiveFloat: ResolverTypeWrapper<Scalars["PositiveFloat"]>;
@@ -548,7 +533,6 @@ export type ResolversParentTypes = ResolversObject<{
   CreateListingPayload: Omit<CreateListingPayload, "listing"> & {
     listing?: Maybe<ResolversParentTypes["Listing"]>;
   };
-  CreateUserInput: CreateUserInput;
   Currency: Scalars["Currency"];
   Date: Scalars["Date"];
   DateTime: Scalars["DateTime"];
@@ -598,7 +582,7 @@ export type ResolversParentTypes = ResolversObject<{
   PhoneNumber: Scalars["PhoneNumber"];
   Photo: Photo;
   Int: Scalars["Int"];
-  Point: PointType;
+  Point: Point;
   Float: Scalars["Float"];
   Port: Scalars["Port"];
   PositiveFloat: Scalars["PositiveFloat"];
@@ -1080,12 +1064,7 @@ export type MutationResolvers<
     ContextType,
     RequireFields<MutationCreateListingArgs, "input">
   >;
-  createUser?: Resolver<
-    Maybe<ResolversTypes["User"]>,
-    ParentType,
-    ContextType,
-    RequireFields<MutationCreateUserArgs, "input">
-  >;
+  createUser?: Resolver<Maybe<ResolversTypes["User"]>, ParentType, ContextType>;
   updateUser?: Resolver<
     Maybe<ResolversTypes["User"]>,
     ParentType,

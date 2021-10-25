@@ -1,6 +1,0 @@
-extend type Mutation {
-  """
-  Allows the user to update their profile
-  """
-  updateUser(input: UserUpdateInput!): User
-}

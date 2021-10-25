@@ -3,7 +3,7 @@ import { UserRepository } from "../../../contexts/user/user-repository";
 import { User, UserModel }from "../../../../infrastructure/data-sources/cosmos-db/models/user";
 import { MongoRepositoryBase } from "../mongo-repository";
 import { TypeConverter } from "../../../shared/type-converter";
-import { ClientSession } from "mongoose";
+import { AnyKeys, ClientSession } from "mongoose";
 import { EventBus } from "../../../shared/event-bus";
 export class MongoUserRepository<PropType extends UserProps> extends MongoRepositoryBase<User,PropType,UserDO<PropType>> implements UserRepository<PropType> {
   constructor(
@@ -19,8 +19,16 @@ export class MongoUserRepository<PropType extends UserProps> extends MongoReposi
     return this.typeConverter.toDomain(user);
   }
 
-  getNewInstance(): UserDO<PropType> {
-    return this.typeConverter.toDomain(new UserModel());
+  getNewInstance(externalId:string, firstName:string, lastName:string, email:string): UserDO<PropType> {
+    var newUserProps: AnyKeys<User> = {
+      externalId: externalId,
+      firstName: firstName,
+      lastName: lastName,
+      email: email,
+    }
+    var newUserDoc = new UserModel(newUserProps);
+    console.log(`getNewInstance:newUserDoc=${JSON.stringify(newUserDoc)}`);
+    return this.typeConverter.toDomain(newUserDoc);
   }
 
   async delete(id: string): Promise<void> {

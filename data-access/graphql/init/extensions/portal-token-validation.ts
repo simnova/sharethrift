@@ -2,16 +2,16 @@ import { OpenIdConfig, VerifiedTokenService } from "./verified-token-service";
 
  export class PortalTokenValidation {
   private tokenVerifier: VerifiedTokenService;
-  
   private tokenSettings: Map<string,OpenIdConfig>;
   
   /**
    * @param refreshInterval The number of seconds to wait between refreshing the keystore, defaults to 5 minutes
    * @param openIdConfigs A map of key and enviornment variable prefix, when a JWT is verified, the matching key is returned with the verified JWT
    * 
-   * Expects to have 2 environment variables set:
+   * Expects to have 3 environment variables set:
    * - [prefix]_OIDC_ENDPOINT
    * - [prefix]_OIDC_AUDIENCE  
+   * - [prefix]_OIDC_ISSUER
    **/
   constructor(portal: Map<string, string>, refreshInterval: number  = 1000*60*5) {
     this.tokenSettings = new Map<string,OpenIdConfig>();
@@ -22,6 +22,7 @@ import { OpenIdConfig, VerifiedTokenService } from "./verified-token-service";
         {
           oidcEndpoint: this.tryGetConfigValue(envPrefix + '_OIDC_ENDPOINT'),    
           audience: this.tryGetConfigValue(envPrefix + '_OIDC_AUDIENCE'),
+          issuerUrl: this.tryGetConfigValue(envPrefix + '_OIDC_ISSUER')
         } as OpenIdConfig
       );
     }
@@ -40,12 +41,13 @@ import { OpenIdConfig, VerifiedTokenService } from "./verified-token-service";
     this.tokenVerifier.Start();
   }
 
-  public GetVerifiedUser (bearerToken:string): {VerifiedJWT:any,OpenIdConfigKey:string}|null {
-    for(let [openIdConfigKey] of this.tokenSettings){
-      let verifedJWT = this.tokenVerifier.GetVerifiedJwt(bearerToken,openIdConfigKey);
+  public async GetVerifiedUser (bearerToken:string): Promise<{VerifiedJWT:any,OpenIdConfigKey:string}|null>{ 
+    for await(let [openIdConfigKey] of this.tokenSettings){
+      let verifedJWT = await this.tokenVerifier.GetVerifiedJwt(bearerToken,openIdConfigKey);
+      console.log(`for ${openIdConfigKey} with bearerToken: ${bearerToken} verifiedJWT: ${JSON.stringify(verifedJWT)}`)
       if(verifedJWT){
         return {
-          VerifiedJWT:verifedJWT,
+          VerifiedJWT:verifedJWT.payload,
           OpenIdConfigKey:openIdConfigKey
         }
       }

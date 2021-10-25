@@ -141,14 +141,6 @@ export type CreateListingPayload = {
   listing?: Maybe<Listing>;
 };
 
-/**  New user values  */
-export type CreateUserInput = {
-  firstName?: Maybe<Scalars["String"]>;
-  lastName?: Maybe<Scalars["String"]>;
-  /** Must be a valid email address */
-  email?: Maybe<Scalars["EmailAddress"]>;
-};
-
 /**  https://www.apollographql.com/blog/graphql/basics/designing-graphql-mutations/  */
 export type Listing = MongoBase & {
   __typename?: "Listing";
@@ -217,11 +209,6 @@ export type MutationCreateCategoryArgs = {
 /**  Base Mutation Type definition - all mutations will be defined in separate files extending this type  */
 export type MutationCreateListingArgs = {
   input: ListingDetail;
-};
-
-/**  Base Mutation Type definition - all mutations will be defined in separate files extending this type  */
-export type MutationCreateUserArgs = {
-  input: CreateUserInput;
 };
 
 /**  Base Mutation Type definition - all mutations will be defined in separate files extending this type  */
@@ -421,6 +408,18 @@ export type ListingsFieldsFragment = {
       __typename?: "Address";
       freeformAddress?: Maybe<string>;
     }>;
+  }>;
+};
+
+export type UserCreateMutationVariables = Exact<{ [key: string]: never }>;
+
+export type UserCreateMutation = {
+  __typename?: "Mutation";
+  createUser?: Maybe<{
+    __typename?: "User";
+    id: any;
+    firstName?: Maybe<string>;
+    lastName?: Maybe<string>;
   }>;
 };
 
@@ -903,6 +902,33 @@ export const ListingsListingsDocument = {
   ListingsListingsQuery,
   ListingsListingsQueryVariables
 >;
+export const UserCreateDocument = {
+  kind: "Document",
+  definitions: [
+    {
+      kind: "OperationDefinition",
+      operation: "mutation",
+      name: { kind: "Name", value: "UserCreate" },
+      selectionSet: {
+        kind: "SelectionSet",
+        selections: [
+          {
+            kind: "Field",
+            name: { kind: "Name", value: "createUser" },
+            selectionSet: {
+              kind: "SelectionSet",
+              selections: [
+                { kind: "Field", name: { kind: "Name", value: "id" } },
+                { kind: "Field", name: { kind: "Name", value: "firstName" } },
+                { kind: "Field", name: { kind: "Name", value: "lastName" } },
+              ],
+            },
+          },
+        ],
+      },
+    },
+  ],
+} as unknown as DocumentNode<UserCreateMutation, UserCreateMutationVariables>;
 export const UserListGetUsersDocument = {
   kind: "Document",
   definitions: [

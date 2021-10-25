@@ -2,7 +2,7 @@ import { User as UserDO, UserEntityReference } from '../../../domain/contexts/us
 import {UserDomainAdapter}from '../../../domain/infrastructure/persistance/adapters/user-domain-adapter';
 import { MongoUserRepository } from '../../../domain/infrastructure/persistance/repositories/mongo-user-repository';
 import {Context} from '../../context';
-import { UserUpdateInput, CreateUserInput } from '../../generated';
+import { UserUpdateInput } from '../../generated';
 import { DomainDataSource } from './domain-data-source';
 import { User } from '../../../infrastructure/data-sources/cosmos-db/models/user';
 
@@ -20,14 +20,34 @@ export default class Users extends DomainDataSource<Context,User,PropType,Domain
     });
     return result;
   }
-  async addUser(user: CreateUserInput) : Promise<UserEntityReference> {
-    //If there are conversions between GraphQL Types and domain types, it should happen here
-    var result : UserEntityReference;
+  async addUser() : Promise<UserEntityReference> {
+    if(this.context.VerifedUser.OpenIdConfigKey !== 'AccountPortal') {
+      throw new Error('Unauthorized');
+    }
+    
+    var userExternalId = this.context.VerifedUser.VerifiedJWT.sub;
+    var userFirstName = this.context.VerifedUser.VerifiedJWT.given_name;
+    var userLastName = this.context.VerifedUser.VerifiedJWT.family_name;
+    var userEmail = this.context.VerifedUser.VerifiedJWT.email;
+
+    var userToReturn : UserEntityReference;
     await this.withTransaction(async (repo) => {
-      var domainObject = repo.getNewInstance();
-    //  domainObject.requestUpdateDescription(user.description);
-      result = await repo.save(domainObject);
+      let userExists = await repo.getByExternalId(userExternalId);
+      if(userExists) {
+        userToReturn = userExists;
+      }else{
+        var newUser = repo.getNewInstance(
+          userExternalId,
+          userFirstName,
+          userLastName,
+          userEmail
+        );
+        console.log(`New user - presave: ${JSON.stringify(newUser)}}`);
+        userToReturn = await repo.save(newUser);
+      }
+
+
     });
-    return result;
+    return userToReturn;
   }
 }

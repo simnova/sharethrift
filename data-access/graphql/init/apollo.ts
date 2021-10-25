@@ -26,11 +26,11 @@ const serverConfig = () => {
       ...CosmosDB,
       ...Domain
     }),
-    context: (req:any) => {
+    context: async (req:any) => {
       let bearerToken = util.ExtractBearerToken(req.request);
      
       if(bearerToken){
-        var verifiedUser = portalTokenExtractor.GetVerifiedUser(bearerToken);
+        var verifiedUser = await portalTokenExtractor.GetVerifiedUser(bearerToken);
         if(verifiedUser){
           return {
             VerifedUser:verifiedUser

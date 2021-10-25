@@ -1,8 +1,0 @@
-type Location implements MongoBase {
-  position: Point
-  address: Address
-  id: ObjectID!
-  schemaVersion: String
-  createdAt: DateTime
-  updatedAt: DateTime
-}

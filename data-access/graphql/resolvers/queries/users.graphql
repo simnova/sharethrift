@@ -1,3 +1,0 @@
-extend type Query {
-  users: [User] @cacheControl(maxAge: 90)
-}

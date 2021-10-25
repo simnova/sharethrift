@@ -1,5 +1,5 @@
 import { jwtVerify, createRemoteJWKSet,  JWSHeaderParameters, FlattenedJWSInput } from "jose";
-import { GetKeyFunction } from "jose/dist/types/types";
+import { GetKeyFunction, JWTVerifyResult, ResolvedKey } from "jose/dist/types/types";
 import { Issuer } from "openid-client";
 
 export type OpenIdConfig = {
@@ -75,7 +75,7 @@ export class VerifiedTokenService  {
   
 
 
-  public GetVerifiedJwt(bearerToken:string, configKey:string) : any {
+  public async GetVerifiedJwt(bearerToken:string, configKey:string) : Promise<JWTVerifyResult & ResolvedKey> {
     if(!this.timerInstance) {
       throw new Error("ContextUserFromMsal not started");
     }
@@ -85,7 +85,8 @@ export class VerifiedTokenService  {
     let openIdConfig = this.openIdConfigs.get(configKey);
     return jwtVerify(
       bearerToken,
-      this.keyStoreCollection.get(configKey).keyStore, 
+      this.keyStoreCollection.get(configKey).keyStore,
+     // createRemoteJWKSet(new URL(this.openIdConfigs.get(configKey).oidcEndpoint)), 
       {
         audience: openIdConfig.audience,
         issuer: openIdConfig.issuerUrl,
