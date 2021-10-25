@@ -9,8 +9,8 @@ import { CategoryConverter } from '../persistance/repositories/mongo-category-co
 import { MongoCategoryRepository } from '../persistance/repositories/mongo-category-repository';
 
 export default () => { NodeEventBus.register(UserCreatedEvent, async (payload) => {
-  
-  console.log(`UserCreated Create User's Account: ${JSON.stringify(payload)} and UserId: ${payload.userId}`);
+
+  console.log(`UserCreatedEvent -> CreateCategory Handler - Called with Payload: ${JSON.stringify(payload)} and UserId: ${payload.userId}`);
   var uow  = new MongoUnitOfWork(InProcEventBus,NodeEventBus, CategoryModel, new CategoryConverter(), MongoCategoryRepository)
   uow.withTransaction(async(repo) => {
     var newCategory = repo.getNewInstance();

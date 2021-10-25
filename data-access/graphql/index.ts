@@ -19,6 +19,6 @@ function enableConsoleLogging (context: Context) {
 }
 
 export default (context: Context, req: HttpRequest) => {
-  enableConsoleLogging(context);
+ // enableConsoleLogging(context);
   return Apollo.graphqlHandler(context, req);
 }

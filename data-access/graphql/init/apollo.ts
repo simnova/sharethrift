@@ -56,7 +56,7 @@ const serverConfig = () => {
       {
         async serverWillStart(service: GraphQLServiceContext) {
           console.log('Apollo Server Starting');
-          connect();
+          await connect();
           portalTokenExtractor.Start();
       
           RegisterHandlers();

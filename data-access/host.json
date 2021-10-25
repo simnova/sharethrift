@@ -8,10 +8,10 @@
       }
     },
     "logLevel": {
-      "default": "Error",
+      "default": "Trace",
       "Host.Results": "Error",
-      "Function": "Error",
-      "Function.graphql": "Error",
+      "Function": "Trace",
+      "Function.graphql": "Trace",
       "Function.graphql.User": "Trace",
       "Host.Aggegator":"Error"
     }
