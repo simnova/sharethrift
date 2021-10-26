@@ -40,11 +40,11 @@ async function connect() {
     mongoose.connection.on('reconnectFailed', (err) => {
         console.error('reconnectFailed', err);
     });
-    
+    /*
     setInterval(() => {
         console.log(mongoose.connection.readyState)
     }, 2000);
-
+    */
 
     //mongoose.set('useCreateIndex', true); //Prevents deprecation warning
     if(!process.env.COSMOSDB || process.env.COSMOSDB.length === 0) throw new Error("CosmosDB connection string not found.");

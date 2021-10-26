@@ -7,7 +7,7 @@ import { EntityProps } from "../../shared/entity";
 import { EventBus } from "../../shared/event-bus";
 import { DomainEvent } from "../../shared/domain-event";
 
-export class MongoUnitOfWork<MongoType,PropType extends EntityProps, DomainType  extends AggregateRoot<PropType>, RepoType extends MongoRepositoryBase<MongoType,PropType,DomainType>  > extends PersistanceUnitOfWork<PropType,DomainType,RepoType> {
+export class MongoUnitOfWork<MongoType,PropType extends EntityProps, DomainType  extends AggregateRoot<PropType>, RepoType extends MongoRepositoryBase<MongoType,PropType,DomainType> > extends PersistanceUnitOfWork<PropType,DomainType,RepoType> {
   async withTransaction(func: (repository: RepoType) => Promise<void>): Promise<void> {
       var repoEvents: DomainEvent[] = [];
       console.log('withTransaction');

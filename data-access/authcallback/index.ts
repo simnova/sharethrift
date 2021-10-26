@@ -50,7 +50,7 @@ const httpTrigger: AzureFunction = async function (
 
   // get domain of email address
   const domain = req.body.email.split("@")[1];
-  const allowedDomains = ["fabrikam.com", "farbicam.com"];
+  const allowedDomains = ["fabrikam.com", "farbicam.com","simnova.com"];
 
   // Check that the domain of the email is from a specific other tenant
   if (allowedDomains.includes(domain.toLowerCase())) {
