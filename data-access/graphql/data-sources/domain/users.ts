@@ -11,6 +11,7 @@ type DomainType = UserDO<PropType>;
 type RepoType = MongoUserRepository<PropType>;
 
 export class Users extends DomainDataSource<Context,User,PropType,DomainType,RepoType> {
+
   async updateUser(user: UserUpdateInput) : Promise<User> {
     if(this.context.VerifiedUser.OpenIdConfigKey !== 'AccountPortal') {
       throw new Error('Unauthorized');
@@ -27,6 +28,7 @@ export class Users extends DomainDataSource<Context,User,PropType,DomainType,Rep
     });
     return result;
   }
+
   async addUser() : Promise<User> {
     if(this.context.VerifiedUser.OpenIdConfigKey !== 'AccountPortal') {
       throw new Error('Unauthorized');
@@ -47,12 +49,14 @@ export class Users extends DomainDataSource<Context,User,PropType,DomainType,Rep
         var newUser = repo.getNewInstance(
           userExternalId,
           userFirstName,
-          userLastName,
-          userEmail
-        );
+          userLastName);
+        if(userEmail) {
+          newUser.setEmail(userEmail);
+        }
         userToReturn = userConverter.toMongo(await repo.save(newUser));
       }
     });
     return userToReturn;
   }
+  
 }

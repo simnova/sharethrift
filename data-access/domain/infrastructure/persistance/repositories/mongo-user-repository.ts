@@ -20,9 +20,9 @@ export class MongoUserRepository<PropType extends UserProps> extends MongoReposi
     return this.typeConverter.toDomain(user);
   }
 
-  getNewInstance(externalId:string, firstName:string, lastName:string, email:string): UserDO<PropType> {
+  getNewInstance(externalId:string, firstName:string, lastName:string): UserDO<PropType> {
     var adapter = this.typeConverter.toAdapter(new this.model());
-    return UserDO.getNewUser(adapter, externalId, firstName, lastName, email);
+    return UserDO.getNewUser(adapter, externalId, firstName, lastName);
   }
 
   async delete(id: string): Promise<void> {
