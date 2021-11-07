@@ -7,7 +7,7 @@ type Account implements MongoBase {
   schemaVersion: String
   updatedAt: DateTime
   createdAt: DateTime
-}
+} 
 
 extend type Query {
   accounts: [Account]

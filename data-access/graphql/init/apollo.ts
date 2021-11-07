@@ -10,16 +10,22 @@ import { combinedSchema } from './extensions/schema-builder';
 import * as util  from './extensions/util';
 import RegisterHandlers from '../../domain/infrastructure/event-handlers/index'
 import { Context as ApolloContext } from '../context';
+import { applyMiddleware } from 'graphql-middleware'
+import { permissions } from '../resolvers/index';
 
 let Portals = new Map<string,string>([
   ["AccountPortal","ACCOUNT_PORTAL"]
 ]);
 
+
+console.log('Creating Apollo Server', JSON.stringify(permissions));
+var scuredSchema = applyMiddleware(combinedSchema,permissions);
+
 var portalTokenExtractor = new PortalTokenValidation(Portals)
   
 const serverConfig = () => {
   return {
-    schema:combinedSchema,
+    schema:scuredSchema,
     dataSources: () => ({
       ...DataSources
     }),

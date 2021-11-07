@@ -9,9 +9,13 @@ export class Accounts extends MongoDataSource<Account, Context> {
   }
 
   async getAccounts(): Promise<Account[]> {
-    return this.model
-      .find({})
-      .exec();
+    var userExternalId = this.context.VerifiedUser.VerifiedJWT.sub;
+    var user = await this.context.dataSources.userAPI.getByExternalId(userExternalId);
+    return this.model.find({'contacts.user': user._id}).exec(); //findByFields does not support deep queries
+  }
+
+  async getAllAccounts(): Promise<Account[]> {
+    return this.findByFields({});
   }
   
 }
