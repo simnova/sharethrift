@@ -9,6 +9,8 @@ import { ClientSession } from "mongoose";
 import { EventBus } from "../../../shared/event-bus";
 import { UserConverter } from "../adapters/user-domain-adapter";
 
+import { UserConverter } from "../adapters/user-domain-adapter";
+
 export class MongoAccountRepository<PropType extends AccountProps> extends MongoRepositoryBase<Account,PropType,AccountDO<PropType>> implements AccountRepository<PropType> {
   constructor(
     eventBus: EventBus,
