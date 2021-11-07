@@ -158,7 +158,7 @@ export type Listing = MongoBase & {
 
 export type ListingDetail = {
   id?: Maybe<Scalars["ObjectID"]>;
-  owner?: Maybe<Scalars["ObjectID"]>;
+  account?: Maybe<Scalars["ObjectID"]>;
   title?: Maybe<Scalars["String"]>;
   description?: Maybe<Scalars["String"]>;
   primaryCategory?: Maybe<Scalars["ObjectID"]>;
@@ -197,6 +197,7 @@ export type Mutation = {
   createCategory?: Maybe<Category>;
   createListing?: Maybe<CreateListingPayload>;
   createUser?: Maybe<User>;
+  updateCategory?: Maybe<Category>;
   /** Allows the user to update their profile */
   updateUser?: Maybe<User>;
 };
@@ -209,6 +210,11 @@ export type MutationCreateCategoryArgs = {
 /**  Base Mutation Type definition - all mutations will be defined in separate files extending this type  */
 export type MutationCreateListingArgs = {
   input: ListingDetail;
+};
+
+/**  Base Mutation Type definition - all mutations will be defined in separate files extending this type  */
+export type MutationUpdateCategoryArgs = {
+  category: UpdateCategory;
 };
 
 /**  Base Mutation Type definition - all mutations will be defined in separate files extending this type  */
@@ -244,6 +250,7 @@ export type Query = {
   __typename?: "Query";
   /** IGNORE: Dummy field necessary for the Query type to be valid */
   _empty?: Maybe<Scalars["String"]>;
+  accounts?: Maybe<Array<Maybe<Account>>>;
   categories?: Maybe<Array<Maybe<Category>>>;
   category?: Maybe<Category>;
   listing?: Maybe<Listing>;
@@ -277,6 +284,11 @@ export type Role = {
   createdAt?: Maybe<Scalars["DateTime"]>;
 };
 
+export type UpdateCategory = {
+  id: Scalars["ID"];
+  name?: Maybe<Scalars["String"]>;
+};
+
 export type User = MongoBase & {
   __typename?: "User";
   firstName?: Maybe<Scalars["String"]>;
@@ -293,6 +305,35 @@ export type UserUpdateInput = {
   firstName?: Maybe<Scalars["String"]>;
   lastName?: Maybe<Scalars["String"]>;
   email?: Maybe<Scalars["String"]>;
+};
+
+export type AccountSelectionAccountsQueryVariables = Exact<{
+  [key: string]: never;
+}>;
+
+export type AccountSelectionAccountsQuery = {
+  __typename?: "Query";
+  accounts?: Maybe<
+    Array<
+      Maybe<{
+        __typename?: "Account";
+        id: any;
+        schemaVersion?: Maybe<string>;
+        createdAt?: Maybe<any>;
+        updatedAt?: Maybe<any>;
+        name?: Maybe<string>;
+      }>
+    >
+  >;
+};
+
+export type AccountSelectionAccountFieldsFragment = {
+  __typename?: "Account";
+  id: any;
+  schemaVersion?: Maybe<string>;
+  createdAt?: Maybe<any>;
+  updatedAt?: Maybe<any>;
+  name?: Maybe<string>;
 };
 
 export type CategoryCreateMutationVariables = Exact<{
@@ -494,29 +535,29 @@ export type UserProfileFieldsFragment = {
   lastName?: Maybe<string>;
 };
 
-export type UserSelectionUsersQueryVariables = Exact<{ [key: string]: never }>;
-
-export type UserSelectionUsersQuery = {
-  __typename?: "Query";
-  users?: Maybe<
-    Array<
-      Maybe<{
-        __typename?: "User";
-        id: any;
-        firstName?: Maybe<string>;
-        lastName?: Maybe<string>;
-      }>
-    >
-  >;
-};
-
-export type UserSelectionFieldsFragment = {
-  __typename?: "User";
-  id: any;
-  firstName?: Maybe<string>;
-  lastName?: Maybe<string>;
-};
-
+export const AccountSelectionAccountFieldsFragmentDoc = {
+  kind: "Document",
+  definitions: [
+    {
+      kind: "FragmentDefinition",
+      name: { kind: "Name", value: "AccountSelectionAccountFields" },
+      typeCondition: {
+        kind: "NamedType",
+        name: { kind: "Name", value: "Account" },
+      },
+      selectionSet: {
+        kind: "SelectionSet",
+        selections: [
+          { kind: "Field", name: { kind: "Name", value: "id" } },
+          { kind: "Field", name: { kind: "Name", value: "schemaVersion" } },
+          { kind: "Field", name: { kind: "Name", value: "createdAt" } },
+          { kind: "Field", name: { kind: "Name", value: "updatedAt" } },
+          { kind: "Field", name: { kind: "Name", value: "name" } },
+        ],
+      },
+    },
+  ],
+} as unknown as DocumentNode<AccountSelectionAccountFieldsFragment, unknown>;
 export const CategorySelectionCategoryFieldsFragmentDoc = {
   kind: "Document",
   definitions: [
@@ -697,27 +738,41 @@ export const UserProfileFieldsFragmentDoc = {
     },
   ],
 } as unknown as DocumentNode<UserProfileFieldsFragment, unknown>;
-export const UserSelectionFieldsFragmentDoc = {
+export const AccountSelectionAccountsDocument = {
   kind: "Document",
   definitions: [
     {
-      kind: "FragmentDefinition",
-      name: { kind: "Name", value: "UserSelectionFields" },
-      typeCondition: {
-        kind: "NamedType",
-        name: { kind: "Name", value: "User" },
-      },
+      kind: "OperationDefinition",
+      operation: "query",
+      name: { kind: "Name", value: "AccountSelectionAccounts" },
       selectionSet: {
         kind: "SelectionSet",
         selections: [
-          { kind: "Field", name: { kind: "Name", value: "id" } },
-          { kind: "Field", name: { kind: "Name", value: "firstName" } },
-          { kind: "Field", name: { kind: "Name", value: "lastName" } },
+          {
+            kind: "Field",
+            name: { kind: "Name", value: "accounts" },
+            selectionSet: {
+              kind: "SelectionSet",
+              selections: [
+                {
+                  kind: "FragmentSpread",
+                  name: {
+                    kind: "Name",
+                    value: "AccountSelectionAccountFields",
+                  },
+                },
+              ],
+            },
+          },
         ],
       },
     },
+    ...AccountSelectionAccountFieldsFragmentDoc.definitions,
   ],
-} as unknown as DocumentNode<UserSelectionFieldsFragment, unknown>;
+} as unknown as DocumentNode<
+  AccountSelectionAccountsQuery,
+  AccountSelectionAccountsQueryVariables
+>;
 export const CategoryCreateDocument = {
   kind: "Document",
   definitions: [
@@ -1073,35 +1128,3 @@ export const UserProfileDocument = {
     ...UserProfileFieldsFragmentDoc.definitions,
   ],
 } as unknown as DocumentNode<UserProfileQuery, UserProfileQueryVariables>;
-export const UserSelectionUsersDocument = {
-  kind: "Document",
-  definitions: [
-    {
-      kind: "OperationDefinition",
-      operation: "query",
-      name: { kind: "Name", value: "UserSelectionUsers" },
-      selectionSet: {
-        kind: "SelectionSet",
-        selections: [
-          {
-            kind: "Field",
-            name: { kind: "Name", value: "users" },
-            selectionSet: {
-              kind: "SelectionSet",
-              selections: [
-                {
-                  kind: "FragmentSpread",
-                  name: { kind: "Name", value: "UserSelectionFields" },
-                },
-              ],
-            },
-          },
-        ],
-      },
-    },
-    ...UserSelectionFieldsFragmentDoc.definitions,
-  ],
-} as unknown as DocumentNode<
-  UserSelectionUsersQuery,
-  UserSelectionUsersQueryVariables
->;

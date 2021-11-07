@@ -25,7 +25,7 @@ export class ListingDomainAdapter extends MongooseDomainAdapater<Listing> implem
   constructor(props: Listing) { super(props); }
   
   public usersCurrentPublishedListingQuantity = async () => {
-    if(!this.owner || !this.owner.id){ 
+    if(!this.account || !this.account.id){ 
       return 0;
     }
     return ListingModel.countDocuments({"account.id": this.account.id}).exec();    
@@ -44,12 +44,16 @@ export class ListingDomainAdapter extends MongooseDomainAdapater<Listing> implem
     if (!this.props.account || !mongoose.isValidObjectId(this.props.account.toString())) {
       return undefined;
     }
+    if(mongoose.isValidObjectId(this.props.account.toString())){
+//      await this.props.populate('listings.account');
+      //this.props.description.
+    }
     return new AccountDomainAdapter(this.props.account as Account);
   }
-  set owner(value: UserProps) {
+  set account(value: AccountProps) {
     if (value) {
       // @ts-ignore: TS2348 - ignores bug in mongoose types
-      this.props.owner = mongoose.Types.ObjectId(value.id);
+      this.props.account = mongoose.Types.ObjectId(value.id);
     }
   }
   
@@ -57,8 +61,25 @@ export class ListingDomainAdapter extends MongooseDomainAdapater<Listing> implem
     return this.props.photos.map((photo) => new PhotoDomainAdapter(photo));
   }
 
-  get location(): LocationProps { return new LocationDomainAdapter(this.props.location); }
-  get primaryCategory(): CategoryProps { return new CategoryDomainAdapter(this.props.primaryCategory); }
+   get location(): LocationProps { 
+    if(!this.props.location){ 
+      return null;
+    }
+    console.log('listing.location - prepopulate', JSON.stringify(this.props.location));
+//    (async() => { await this.props.populate('listing.location'); })();
+//    console.log('listing.location - postpopulate', JSON.stringify(this.props.location));
+    return new LocationDomainAdapter(this.props.location); 
+  }
+  get primaryCategory(): CategoryProps { 
+    if(!this.props.primaryCategory){ 
+      return null;
+    }
+    console.log('listing.primaryCategory - prepopulate', JSON.stringify(this.props.primaryCategory));
+//    (async() => { await this.props.populate('listing.primaryCategory'); })();
+//    console.log('listing.primaryCategory - postpopulate', JSON.stringify(this.props.primaryCategory));
+
+    return new CategoryDomainAdapter(this.props.primaryCategory); 
+  }
   set primaryCategory(value: CategoryProps) {
     if (value) {
       // @ts-ignore: TS2348 - ignores bug in mongoose types

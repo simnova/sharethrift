@@ -1,43 +1,47 @@
 import { ApolloServer, CreateHandlerOptions, gql } from 'apollo-server-azure-functions';
 import { HttpRequest, Context } from "@azure/functions";
-import { CosmosDB } from '../data-sources/cosmos-db';
-import connect from '../../infrastructure/data-sources/cosmos-db/connect';
+import { DataSources } from '../data-sources/';
+import { connect } from '../../infrastructure/data-sources/cosmos-db/connect';
 import { GraphQLServiceContext } from 'apollo-server-types';
 import responseCachePlugin from 'apollo-server-plugin-response-cache';
 import mongoose from 'mongoose';
 import { PortalTokenValidation } from './extensions/portal-token-validation';
 import { combinedSchema } from './extensions/schema-builder';
 import * as util  from './extensions/util';
-import { Domain } from '../data-sources/domain';
 import RegisterHandlers from '../../domain/infrastructure/event-handlers/index'
-
-
-
+import { Context as ApolloContext } from '../context';
+import { applyMiddleware } from 'graphql-middleware'
+import { permissions } from '../resolvers/index';
 
 let Portals = new Map<string,string>([
   ["AccountPortal","ACCOUNT_PORTAL"]
 ]);
 
+
+console.log('Creating Apollo Server', JSON.stringify(permissions));
+var scuredSchema = applyMiddleware(combinedSchema,permissions);
+
 var portalTokenExtractor = new PortalTokenValidation(Portals)
   
 const serverConfig = () => {
   return {
-    schema:combinedSchema,
+    schema:scuredSchema,
     dataSources: () => ({
-      ...CosmosDB,
-      ...Domain
+      ...DataSources
     }),
     context: async (req:any) => {
       let bearerToken = util.ExtractBearerToken(req.request);
-     
+      var context:Partial<ApolloContext> ={};
+      
       if(bearerToken){
         var verifiedUser = await portalTokenExtractor.GetVerifiedUser(bearerToken);
+        console.log('Decorating context with verifed user:',JSON.stringify(verifiedUser));
         if(verifiedUser){
-          return {
-            VerifedUser:verifiedUser
-          }
+          context.VerifiedUser = verifiedUser
+          console.log('context value is now:', JSON.stringify(context));
         }
       }
+      return context;
     },
     playground: { endpoint: "/api/graphql" },
     healthCheckPath: "/api/graphql/healthcheck",

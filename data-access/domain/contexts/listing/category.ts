@@ -24,6 +24,7 @@ export class Category<props extends CategoryProps> extends AggregateRoot<props> 
 
   set name(name: string) {this.props.name = name;}
   set path(path: string) {this.props.path = path;}
+
 }
 
 export interface CategoryEntityReference {

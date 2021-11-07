@@ -1,13 +1,14 @@
 import { MongooseDomainAdapater } from "../mongo-domain-adapter";
-import { Account, Contact,  AccountPermissions, Role, ListingPermissions, Permissions } from "../../../../infrastructure/data-sources/cosmos-db/models/account";
+import { Account, Contact, AccountPermissions, Role, ListingPermissions, Permissions } from "../../../../infrastructure/data-sources/cosmos-db/models/account";
 import { Account as AccountDO, AccountProps } from "../../../contexts/account/account";
-import { RoleProps } from "../../../contexts/account/role";
-import { ContactProps } from "../../../contexts/account/contact";
+import { Role as RoleDO, RoleProps } from "../../../contexts/account/role";
+import { Contact as ContactDO, ContactProps } from "../../../contexts/account/contact";
 import { PermissionsProps } from "../../../contexts/account/permissions";
 import { ListingPermissionsProps } from "../../../contexts/account/listing-permissions";
 import { AccountPermissionsProps } from "../../../contexts/account/account-permissions";
 import { UserDomainAdapter } from "./user-domain-adapter";
 import { User, UserEntityReference, UserProps } from "../../../contexts/user/user";
+import mongoose from "mongoose";
 
 import { MongoTypeConverter } from "../mongo-type-converter";
 export class AccountConverter extends MongoTypeConverter<Account,AccountDomainAdapter,AccountDO<AccountDomainAdapter>> {
@@ -61,23 +62,60 @@ class ContactDomainAdapter implements ContactProps{
   public get lastName(): string { return this.props.lastName; }
   public set lastName(value: string) { this.props.lastName = value; }
   public get role(): RoleProps {  return this.props.role ? new RoleAdapter(this.props.role) : undefined; }
- 
-  public get user(): UserEntityReference { return this.props.user ? new User(new UserDomainAdapter(this.props.user)) : undefined;}
-  addUser<props extends UserProps>(user: User<props>): void {
-    this.props.user.set(user.props);
+  public addRole<props extends RoleProps>(role: RoleDO<props>): void {
+    this.props.set('role',role.props.id);
+  }
+  public get user(): UserEntityReference { 
+    return this.props.user ? new User(new UserDomainAdapter(this.props.user)) : undefined;
+  }
+  public addUser<props extends UserProps>(user: User<props>): void {
+    this.props.set('user', user.props.id);
   }
   public get createdAt(): Date { return this.props.createdAt; }
   public set createdAt(value: Date) { this.props.createdAt = value; }
   public get updatedAt(): Date { return this.props.updatedAt; }
   public set updatedAt(value: Date) { this.props.updatedAt = value; }
+  
 }
 
 export class AccountDomainAdapter extends MongooseDomainAdapater<Account> implements AccountProps {
   constructor(props: Account) { super(props); }
+  
 
   public get name(): string { return this.props.name; }
   public set name(value: string) { this.props.name = value; }
 
-  public get contacts(): ContactProps[] { return this.props.contacts.map(c => new ContactDomainAdapter(c)); }
-  public get roles(): RoleProps[] { return this.props.roles.map(r => new RoleAdapter(r)); }
+  public async contacts(): Promise<ContactProps[]> { 
+    await this.props.populate('contacts.user');
+
+    return this.props.contacts.map(c => new ContactDomainAdapter(c)); 
+  }
+  public getNewContact(): ContactProps {
+    if(!this.props.contacts) {
+      this.props.contacts = new mongoose.Types.DocumentArray<Contact>([]);
+    }
+    
+    //var newContact = (new mongoose.Types.DocumentArray<Contact>([{_id: new mongoose.Types.ObjectId()}])).shift();
+    //return new ContactDomainAdapter(newContact);
+    return new ContactDomainAdapter(this.props.contacts.create({_id: new mongoose.Types.ObjectId()}));
+  }
+  public addContact<props extends ContactProps>(contact: ContactDO<props>): void {
+    this.props.contacts.push(contact.props);
+  }
+
+  public get roles(): RoleProps[] { 
+    return this.props.roles.map(r => new RoleAdapter(r)); 
+  }
+  public getNewRole(): RoleProps {
+    if(!this.props.roles) {
+      this.props.roles = new mongoose.Types.DocumentArray<Role>([]);
+    }
+    //var newRole = (new mongoose.Types.DocumentArray<Role>([{_id: new mongoose.Types.ObjectId()}])).shift();
+    //return new RoleAdapter(newRole);
+    return new RoleAdapter(this.props.roles.create({_id: new mongoose.Types.ObjectId()}));
+  }
+  addRole<props extends RoleProps>(role: RoleDO<props>): void {
+    this.props.roles.push(role.props);
+  }
+
 }

@@ -1,30 +1,32 @@
-import { Category as CategoryDO, CategoryEntityReference } from '../../../domain/contexts/listing/category';
-import {CategoryDomainAdapter}from '../../../domain/infrastructure/persistance/adapters/category-domain-adapter';
+import { Category as CategoryDO } from '../../../domain/contexts/listing/category';
+import {CategoryDomainAdapter, CategoryConverter}from '../../../domain/infrastructure/persistance/adapters/category-domain-adapter';
 import { MongoCategoryRepository } from '../../../domain/infrastructure/persistance/repositories/mongo-category-repository';
 import {Context} from '../../context';
-import { CategoryDetail } from '../../generated';
+import { CategoryDetail, UpdateCategory } from '../../generated';
 import { DomainDataSource } from './domain-data-source';
 import { Category } from '../../../infrastructure/data-sources/cosmos-db/models/category';
 
 type PropType = CategoryDomainAdapter;
 type DomainType = CategoryDO<PropType>;
 type RepoType = MongoCategoryRepository<PropType>;
-export default class Categorys extends DomainDataSource<Context,Category,PropType,DomainType,RepoType> {
-  async updateCategory(category: CategoryDetail) {
+
+export class Categories extends DomainDataSource<Context,Category,PropType,DomainType,RepoType> {
+
+  async updateCategory(category: UpdateCategory): Promise<Category> {
+    var result : Category;
     this.withTransaction(async (repo) => {
-      let domainObject =await repo.get("somide");
-      //.(category.description);
-      repo.save(domainObject);
+      let domainObject =await repo.get(category.id);
+      result = (new CategoryConverter()).toMongo(await repo.save(domainObject));
     });
+    return result;
   }
-  async addCategory(category: CategoryDetail) : Promise<CategoryEntityReference> {
-    //If there are conversions between GraphQL Types and domain types, it should happen here
-    var result : CategoryEntityReference;
+
+  async addCategory(category: CategoryDetail) : Promise<Category> {
+    var result : Category;
     await this.withTransaction(async (repo) => {
       var domainObject = repo.getNewInstance();
       domainObject.name = category.name;
-    //  domainObject.requestUpdateDescription(category.description);
-      result = await repo.save(domainObject);
+      result = (new CategoryConverter()).toMongo(await repo.save(domainObject));
     });
     return result;
   }

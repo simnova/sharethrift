@@ -12,6 +12,8 @@ export class UserDomainAdapter extends MongooseDomainAdapater<User> implements U
   constructor(props: User) { super(props); }
 
   get externalId() {return this.props.externalId;}
+  set externalId(externalId: string) {this.props.externalId = externalId;}
+  
 
   get firstName() {return this.props.firstName;}
   set firstName(firstName: string) {this.props.firstName = firstName;}

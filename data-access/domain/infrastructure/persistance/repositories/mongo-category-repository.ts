@@ -5,6 +5,7 @@ import { MongoRepositoryBase } from "../mongo-repository";
 import { TypeConverter } from "../../../shared/type-converter";
 import { ClientSession } from "mongoose";
 import { EventBus } from "../../../shared/event-bus";
+
 export class MongoCategoryRepository<PropType extends CategoryProps> extends MongoRepositoryBase<Category,PropType,CategoryDO<PropType>> implements CategoryRepository<PropType> {
   constructor(
     eventBus: EventBus,

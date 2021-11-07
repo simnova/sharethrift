@@ -1,11 +1,10 @@
 """ https://www.apollographql.com/blog/graphql/basics/designing-graphql-mutations/ """
 
-
 type Listing implements MongoBase {
-  account: Account
+  account: Account 
   title: String
   description: String
-  primaryCategory: Category
+  primaryCategory: Category 
   photos: [Photo]
   location: Location
 
@@ -27,22 +26,13 @@ extend type Mutation {
 type CreateListingPayload {
   listing: Listing
 }
+
 input ListingDetail {
   id: ObjectID
-  owner: ObjectID
+  account: ObjectID
   title: String
   description: String
   primaryCategory: ObjectID
-}
-type Category implements MongoBase {
-  name: String
-  parentId: Category
-  childrenIds: [Category]
-
-  id: ObjectID!
-  schemaVersion: String
-  createdAt: DateTime
-  updatedAt: DateTime
 }
 
 type Photo {

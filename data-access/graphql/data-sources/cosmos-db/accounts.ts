@@ -1,20 +1,21 @@
 import { MongoDataSource } from 'apollo-datasource-mongodb';
-import * as Account from '../../../infrastructure/data-sources/cosmos-db/models/account';
-import {Context} from '../../context';
-import { AccountConverter } from '../../../domain/infrastructure/persistance/adapters/account-domain-adapter';
-import { AccountEntityReference } from '../../../domain/contexts/account/account';
+import { Account } from '../../../infrastructure/data-sources/cosmos-db/models/account';
+import { Context } from '../../context';
 
-export default class Accounts extends MongoDataSource<Account.Account, Context> {
+export class Accounts extends MongoDataSource<Account, Context> {
   
-  async getAccount(accountId : string): Promise<AccountEntityReference> {
-    return (new AccountConverter).toDomain(await this.findOneById(accountId));
+  async getAccount(accountId : string): Promise<Account> {
+    return this.findOneById(accountId);
   }
 
-  async getAccounts(): Promise<AccountEntityReference[]> {
-    return (await this.model
-      .find({})
-      .exec())
-      .map((account: Account.Account) => (new AccountConverter).toDomain(account));
+  async getAccounts(): Promise<Account[]> {
+    var userExternalId = this.context.VerifiedUser.VerifiedJWT.sub;
+    var user = await this.context.dataSources.userAPI.getByExternalId(userExternalId);
+    return this.model.find({'contacts.user': user._id}).exec(); //findByFields does not support deep queries
+  }
+
+  async getAllAccounts(): Promise<Account[]> {
+    return this.findByFields({});
   }
   
 }

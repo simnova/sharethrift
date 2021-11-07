@@ -1,10 +1,9 @@
-import { CosmosDBType} from './data-sources/cosmos-db';
-import { DomainType } from './data-sources/domain';
+import { DataSourcesType } from './data-sources';
 
 export type Context = {
-  VerifedUser: {
+  VerifiedUser: {
     VerifiedJWT: any;
     OpenIdConfigKey: string;
   };
-  dataSources: CosmosDBType & DomainType;
+  dataSources: DataSourcesType;
 }

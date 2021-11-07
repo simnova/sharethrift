@@ -9,7 +9,9 @@ export default () => { NodeEventBus.register(UserCreatedEvent, async (payload) =
   await CategoryUnitOfWork.withTransaction(async(repo) => {
     var newCategory = repo.getNewInstance();
     newCategory.name = payload.userId;
+    console.log(`UserCreatedEvent -> CreateCategory Handler - Creating Category: ${JSON.stringify(newCategory)}`);
     repo.save(newCategory);
+    console.log(`UserCreatedEvent -> CreateCategory Handler - Category Created: ${JSON.stringify(newCategory)}`);
   });
 
 })};

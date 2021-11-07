@@ -5,6 +5,9 @@ import { MongoRepositoryBase } from "../mongo-repository";
 import { TypeConverter } from "../../../shared/type-converter";
 import { ClientSession } from "mongoose";
 import { EventBus } from "../../../shared/event-bus";
+import { MongoUserRepository } from "./mongo-user-repository";
+import { Passport } from "../../../contexts/iam/passport";
+import { AccountEntityReference } from "../../../contexts/account/account";
 
 export class MongoListingRepository<PropType extends ListingProps> extends MongoRepositoryBase<Listing,PropType,ListingDO<PropType>> implements ListingRepository<PropType> {
   constructor(
@@ -16,10 +19,9 @@ export class MongoListingRepository<PropType extends ListingProps> extends Mongo
     super(eventBus, modelType,typeConverter,session);
   }
 
-  getNewInstance(): ListingDO<PropType> {
-    var newListing = new ListingModel();
-    newListing.id = "";
-    return this.typeConverter.toDomain(newListing);
+  async getNewInstance(account:AccountEntityReference, passport:Passport): Promise<ListingDO<PropType>> {
+    var newListing = this.typeConverter.toAdapter(new ListingModel());
+    return ListingDO.getNewListing(newListing, account, passport);
   }
 
   async delete(id: string): Promise<void> {

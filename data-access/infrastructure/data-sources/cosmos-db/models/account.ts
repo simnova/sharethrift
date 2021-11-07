@@ -1,4 +1,5 @@
-import { Schema, model, Model, PopulatedDoc, ObjectId } from 'mongoose';
+import mongoose, { Schema, model, Model, ObjectId, Document,PopulatedDoc } from 'mongoose';
+
 import { Base, BaseOptions } from './interfaces/base';
 import * as User from "./user";
 
@@ -16,7 +17,7 @@ export interface Permissions {
   accountPermissions: AccountPermissions;
 }
 
-export interface Role {
+export interface Role extends Document {
   id: ObjectId;
   roleName: string;
   isDefault: boolean;
@@ -25,20 +26,21 @@ export interface Role {
   updatedAt:Date;
 }
 
-export interface Contact {
+export interface Contact extends Document {
   id:ObjectId;
   firstName:string;
   lastName?:string;
   role?:Role;
-  user?:User.User;
+
+  user:PopulatedDoc<User.User> | ObjectId;
   createdAt:Date;
   updatedAt:Date;
 }
 
 export interface Account extends Base {
   name: string;
-  contacts: Contact[];
-  roles: Role[];
+  contacts: mongoose.Types.DocumentArray<Contact>
+  roles: mongoose.Types.DocumentArray<Role>;
 }
 
 export const AccountModel = model<Account>('Account',new Schema<Account, Model<Account>, Account>(

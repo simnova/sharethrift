@@ -7,6 +7,7 @@ import { MongoRepositoryBase } from "../mongo-repository";
 import { TypeConverter } from "../../../shared/type-converter";
 import { ClientSession } from "mongoose";
 import { EventBus } from "../../../shared/event-bus";
+import { UserConverter } from "../adapters/user-domain-adapter";
 
 import { UserConverter } from "../adapters/user-domain-adapter";
 
@@ -28,7 +29,7 @@ export class MongoAccountRepository<PropType extends AccountProps> extends Mongo
   async getNewInstance(userId: string): Promise<AccountDO<PropType>> {
     var user = (new UserConverter).toDomain(await UserModel.findById(userId).exec());
     var adapter = this.typeConverter.toAdapter(new this.model());
-    return AccountDO.CreateInitialAccountForNewUser(user, adapter);   
+    return AccountDO.CreateInitialAccountForNewUser(adapter,user);   
   }
 
   async delete(id: string): Promise<void> {

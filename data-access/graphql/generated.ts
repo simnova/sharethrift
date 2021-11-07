@@ -3,10 +3,6 @@ import {
   GraphQLScalarType,
   GraphQLScalarTypeConfig,
 } from "graphql";
-import { CategoryEntityReference } from "../domain/contexts/listing/category";
-import { ListingEntityReference } from "../domain/contexts/listing/listing";
-import { LocationEntityReference } from "../domain/contexts/listing/location";
-import { UserEntityReference } from "../domain/contexts/user/user";
 import { Context } from "./context";
 export type Maybe<T> = T | null;
 export type Exact<T extends { [key: string]: unknown }> = {
@@ -18,7 +14,6 @@ export type MakeOptional<T, K extends keyof T> = Omit<T, K> & {
 export type MakeMaybe<T, K extends keyof T> = Omit<T, K> & {
   [SubKey in K]: Maybe<T[SubKey]>;
 };
-export type Omit<T, K extends keyof T> = Pick<T, Exclude<keyof T, K>>;
 export type RequireFields<T, K extends keyof T> = {
   [X in Exclude<keyof T, K>]?: T[X];
 } & { [P in K]-?: NonNullable<T[P]> };
@@ -171,7 +166,7 @@ export type Listing = MongoBase & {
 
 export type ListingDetail = {
   id?: Maybe<Scalars["ObjectID"]>;
-  owner?: Maybe<Scalars["ObjectID"]>;
+  account?: Maybe<Scalars["ObjectID"]>;
   title?: Maybe<Scalars["String"]>;
   description?: Maybe<Scalars["String"]>;
   primaryCategory?: Maybe<Scalars["ObjectID"]>;
@@ -210,6 +205,7 @@ export type Mutation = {
   createCategory?: Maybe<Category>;
   createListing?: Maybe<CreateListingPayload>;
   createUser?: Maybe<User>;
+  updateCategory?: Maybe<Category>;
   /** Allows the user to update their profile */
   updateUser?: Maybe<User>;
 };
@@ -222,6 +218,11 @@ export type MutationCreateCategoryArgs = {
 /**  Base Mutation Type definition - all mutations will be defined in separate files extending this type  */
 export type MutationCreateListingArgs = {
   input: ListingDetail;
+};
+
+/**  Base Mutation Type definition - all mutations will be defined in separate files extending this type  */
+export type MutationUpdateCategoryArgs = {
+  category: UpdateCategory;
 };
 
 /**  Base Mutation Type definition - all mutations will be defined in separate files extending this type  */
@@ -257,6 +258,7 @@ export type Query = {
   __typename?: "Query";
   /** IGNORE: Dummy field necessary for the Query type to be valid */
   _empty?: Maybe<Scalars["String"]>;
+  accounts?: Maybe<Array<Maybe<Account>>>;
   categories?: Maybe<Array<Maybe<Category>>>;
   category?: Maybe<Category>;
   listing?: Maybe<Listing>;
@@ -288,6 +290,11 @@ export type Role = {
   id: Scalars["ObjectID"];
   updatedAt?: Maybe<Scalars["DateTime"]>;
   createdAt?: Maybe<Scalars["DateTime"]>;
+};
+
+export type UpdateCategory = {
+  id: Scalars["ID"];
+  name?: Maybe<Scalars["String"]>;
 };
 
 export type User = MongoBase & {
@@ -418,11 +425,7 @@ export type DirectiveResolverFn<
 
 /** Mapping between all available schema types and the resolvers types */
 export type ResolversTypes = ResolversObject<{
-  Account: ResolverTypeWrapper<
-    Omit<Account, "contacts"> & {
-      contacts?: Maybe<Array<Maybe<ResolversTypes["Contact"]>>>;
-    }
-  >;
+  Account: ResolverTypeWrapper<Account>;
   String: ResolverTypeWrapper<Scalars["String"]>;
   AccountPermissions: ResolverTypeWrapper<AccountPermissions>;
   Boolean: ResolverTypeWrapper<Scalars["Boolean"]>;
@@ -430,16 +433,10 @@ export type ResolversTypes = ResolversObject<{
   BigInt: ResolverTypeWrapper<Scalars["BigInt"]>;
   Byte: ResolverTypeWrapper<Scalars["Byte"]>;
   CacheControlScope: CacheControlScope;
-  Category: ResolverTypeWrapper<CategoryEntityReference>;
+  Category: ResolverTypeWrapper<Category>;
   CategoryDetail: CategoryDetail;
-  Contact: ResolverTypeWrapper<
-    Omit<Contact, "user"> & { user?: Maybe<ResolversTypes["User"]> }
-  >;
-  CreateListingPayload: ResolverTypeWrapper<
-    Omit<CreateListingPayload, "listing"> & {
-      listing?: Maybe<ResolversTypes["Listing"]>;
-    }
-  >;
+  Contact: ResolverTypeWrapper<Contact>;
+  CreateListingPayload: ResolverTypeWrapper<CreateListingPayload>;
   Currency: ResolverTypeWrapper<Scalars["Currency"]>;
   Date: ResolverTypeWrapper<Scalars["Date"]>;
   DateTime: ResolverTypeWrapper<Scalars["DateTime"]>;
@@ -459,13 +456,13 @@ export type ResolversTypes = ResolversObject<{
   JSONObject: ResolverTypeWrapper<Scalars["JSONObject"]>;
   JWT: ResolverTypeWrapper<Scalars["JWT"]>;
   Latitude: ResolverTypeWrapper<Scalars["Latitude"]>;
-  Listing: ResolverTypeWrapper<ListingEntityReference>;
+  Listing: ResolverTypeWrapper<Listing>;
   ListingDetail: ListingDetail;
   ListingPermissions: ResolverTypeWrapper<ListingPermissions>;
   LocalDate: ResolverTypeWrapper<Scalars["LocalDate"]>;
   LocalEndTime: ResolverTypeWrapper<Scalars["LocalEndTime"]>;
   LocalTime: ResolverTypeWrapper<Scalars["LocalTime"]>;
-  Location: ResolverTypeWrapper<LocationEntityReference>;
+  Location: ResolverTypeWrapper<Location>;
   Long: ResolverTypeWrapper<Scalars["Long"]>;
   Longitude: ResolverTypeWrapper<Scalars["Longitude"]>;
   MAC: ResolverTypeWrapper<Scalars["MAC"]>;
@@ -508,7 +505,8 @@ export type ResolversTypes = ResolversObject<{
   UUID: ResolverTypeWrapper<Scalars["UUID"]>;
   UnsignedFloat: ResolverTypeWrapper<Scalars["UnsignedFloat"]>;
   UnsignedInt: ResolverTypeWrapper<Scalars["UnsignedInt"]>;
-  User: ResolverTypeWrapper<UserEntityReference>;
+  UpdateCategory: UpdateCategory;
+  User: ResolverTypeWrapper<User>;
   UserUpdateInput: UserUpdateInput;
   UtcOffset: ResolverTypeWrapper<Scalars["UtcOffset"]>;
   Void: ResolverTypeWrapper<Scalars["Void"]>;
@@ -516,23 +514,17 @@ export type ResolversTypes = ResolversObject<{
 
 /** Mapping between all available schema types and the resolvers parents */
 export type ResolversParentTypes = ResolversObject<{
-  Account: Omit<Account, "contacts"> & {
-    contacts?: Maybe<Array<Maybe<ResolversParentTypes["Contact"]>>>;
-  };
+  Account: Account;
   String: Scalars["String"];
   AccountPermissions: AccountPermissions;
   Boolean: Scalars["Boolean"];
   Address: Address;
   BigInt: Scalars["BigInt"];
   Byte: Scalars["Byte"];
-  Category: CategoryEntityReference;
+  Category: Category;
   CategoryDetail: CategoryDetail;
-  Contact: Omit<Contact, "user"> & {
-    user?: Maybe<ResolversParentTypes["User"]>;
-  };
-  CreateListingPayload: Omit<CreateListingPayload, "listing"> & {
-    listing?: Maybe<ResolversParentTypes["Listing"]>;
-  };
+  Contact: Contact;
+  CreateListingPayload: CreateListingPayload;
   Currency: Scalars["Currency"];
   Date: Scalars["Date"];
   DateTime: Scalars["DateTime"];
@@ -552,13 +544,13 @@ export type ResolversParentTypes = ResolversObject<{
   JSONObject: Scalars["JSONObject"];
   JWT: Scalars["JWT"];
   Latitude: Scalars["Latitude"];
-  Listing: ListingEntityReference;
+  Listing: Listing;
   ListingDetail: ListingDetail;
   ListingPermissions: ListingPermissions;
   LocalDate: Scalars["LocalDate"];
   LocalEndTime: Scalars["LocalEndTime"];
   LocalTime: Scalars["LocalTime"];
-  Location: LocationEntityReference;
+  Location: Location;
   Long: Scalars["Long"];
   Longitude: Scalars["Longitude"];
   MAC: Scalars["MAC"];
@@ -601,7 +593,8 @@ export type ResolversParentTypes = ResolversObject<{
   UUID: Scalars["UUID"];
   UnsignedFloat: Scalars["UnsignedFloat"];
   UnsignedInt: Scalars["UnsignedInt"];
-  User: UserEntityReference;
+  UpdateCategory: UpdateCategory;
+  User: User;
   UserUpdateInput: UserUpdateInput;
   UtcOffset: Scalars["UtcOffset"];
   Void: Scalars["Void"];
@@ -1065,6 +1058,12 @@ export type MutationResolvers<
     RequireFields<MutationCreateListingArgs, "input">
   >;
   createUser?: Resolver<Maybe<ResolversTypes["User"]>, ParentType, ContextType>;
+  updateCategory?: Resolver<
+    Maybe<ResolversTypes["Category"]>,
+    ParentType,
+    ContextType,
+    RequireFields<MutationUpdateCategoryArgs, "category">
+  >;
   updateUser?: Resolver<
     Maybe<ResolversTypes["User"]>,
     ParentType,
@@ -1203,6 +1202,11 @@ export type QueryResolvers<
   ParentType extends ResolversParentTypes["Query"] = ResolversParentTypes["Query"]
 > = ResolversObject<{
   _empty?: Resolver<Maybe<ResolversTypes["String"]>, ParentType, ContextType>;
+  accounts?: Resolver<
+    Maybe<Array<Maybe<ResolversTypes["Account"]>>>,
+    ParentType,
+    ContextType
+  >;
   categories?: Resolver<
     Maybe<Array<Maybe<ResolversTypes["Category"]>>>,
     ParentType,

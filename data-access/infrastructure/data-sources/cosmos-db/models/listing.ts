@@ -2,7 +2,6 @@ import { Schema, model, Model, PopulatedDoc, ObjectId } from 'mongoose';
 import { Base, BaseOptions} from './interfaces/base';
 import * as Category  from './category';
 import * as Location from './location';
-import * as User from './user';
 import * as Account from './account'
 
 export interface Photo {

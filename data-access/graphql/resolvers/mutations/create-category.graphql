@@ -1,3 +1,0 @@
-extend type Mutation {
-  createCategory(category: CategoryDetail!): Category
-}

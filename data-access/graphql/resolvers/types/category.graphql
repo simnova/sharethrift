@@ -1,0 +1,29 @@
+type Category implements MongoBase {
+  name: String
+  parentId: Category
+  childrenIds: [Category]
+
+  id: ObjectID!
+  schemaVersion: String
+  createdAt: DateTime
+  updatedAt: DateTime
+}
+
+extend type Query {
+  category(id: ID!): Category
+  categories: [Category]
+}
+
+extend type Mutation {
+  createCategory(category: CategoryDetail!): Category
+  updateCategory(category: UpdateCategory!): Category
+}
+
+input CategoryDetail {
+  name: String
+}
+
+input UpdateCategory {
+  id: ID!
+  name: String
+}

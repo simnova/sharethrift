@@ -8,11 +8,7 @@ generates:
     config:
       contextType: "./context#Context"
       useIndexSignature: true
-      mappers:
-        Category: ../domain/contexts/listing/category#CategoryEntityReference
-        Listing: ../domain/contexts/listing/listing#ListingEntityReference
-        Location: ../domain/contexts/listing/location#LocationEntityReference
-        User: ../domain/contexts/user/user#UserEntityReference
+
       scalars:
         BigInt: any
         Byte: any

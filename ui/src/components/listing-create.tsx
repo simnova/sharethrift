@@ -1,13 +1,13 @@
 import React, { FC, useState } from 'react';
 import { useMutation } from "@apollo/client";
-import {ListingCreateDocument} from '../generated';
+import {ListingCreateDocument, ListingDetail} from '../generated';
 import { CategorySelection } from './category-selection';
-import { UserSelection } from './user-selection';
+import { AccountSelection } from './account-selection';
 
 
 export const ListingCreate: FC<any> = () => {
   const [category, setCategory] = useState("");
-  const [user, setUser] = useState("");
+  const [account, setAccount] = useState("");
   let title: HTMLInputElement | null = null;
   let description: HTMLInputElement | null = null;
   const [addListing, { data, loading, error }] = useMutation(ListingCreateDocument);
@@ -35,8 +35,8 @@ export const ListingCreate: FC<any> = () => {
               title: title?.value,
               description: description?.value,
               primaryCategory: category,
-              owner: user
-            }
+              account: account
+            } as ListingDetail
           } 
           });
         }}
@@ -44,9 +44,10 @@ export const ListingCreate: FC<any> = () => {
         Category:
         <CategorySelection itemSelected={setCategory} /><br/>
         
-        User:
-        <UserSelection itemSelected={setUser} /><br/>
-
+       
+        Account:
+        <AccountSelection itemSelected={setAccount} /><br/>
+       
         
         Title:
         <input

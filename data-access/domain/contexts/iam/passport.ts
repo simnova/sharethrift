@@ -1,11 +1,11 @@
-import { Account } from "../account/account";
-import { Listing } from "../listing/listing";
-import { User } from "../user/user";
-import { AccountVisa, AccountVisaImpl } from "./account-visa";
-import { ListingVisa, ListingVisaImpl } from "./listing-visa";
+import { Account } from '../account/account';
+import { Listing } from '../listing/listing';
+import { User } from '../user/user';
+import { AccountVisa, AccountVisaImpl } from './account-visa';
+import { ListingVisa, ListingVisaImpl } from './listing-visa';
 
 export interface Visa{
-  determineIf(func:((permissions) => boolean)) :  boolean ;
+  determineIf(func:((permissions) => boolean)) :  Promise<boolean> ;
 }
 
 export interface Passport {

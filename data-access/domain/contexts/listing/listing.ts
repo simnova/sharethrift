@@ -31,7 +31,6 @@ export class Listing<props extends ListingProps> extends AggregateRoot<props> im
   get description(): string {return this.props.description;}
   get location(): LocationEntityReference {return new Location(this.props.location);}
   get photos(): PhotoEntityReference[] { return this.props.photos.map(photo=>new Photo(photo));} //should be REadOnyArray<PhotoEntityReference> but gen has issues
-//  get owner(): UserEntityReference { return new User(this.props.owner);}
   get account(): AccountEntityReference { return (this.props.account);}
   get primaryCategory(): CategoryEntityReference { return new Category(this.props.primaryCategory);}
   get updatedAt(): Date {return this.props.updatedAt;}
@@ -41,9 +40,19 @@ export class Listing<props extends ListingProps> extends AggregateRoot<props> im
   //Somthing to consider: https://lostechies.com/jimmybogard/2007/10/24/entity-validation-with-visitors-and-extension-methods/
   // This would allow us to validate the listing before publishing it, using external services.. e.g. check if the user has too many listings alraedy, (e.g. business rule of user can have at max 15 listings)
 
+  static async getNewListing<newPropType extends ListingProps>(props:newPropType,account: AccountEntityReference, passport:Passport): Promise<Listing<newPropType>> {
+    
+    var listing = new Listing(props);
+    listing.requestAddAccount(account);
+    if(!passport.forListing(listing).determineIf((permissions) => permissions.canManageListings)) {
+      throw new Error('Cannot add listing');
+    }
+    return listing;
+  }
+
+
   requestUpdateDescription(description: string){
     this.props.description=description;
-    
   }
 
   requestAddPhoto(documentId:string, user:Passport){
@@ -76,12 +85,13 @@ export class Listing<props extends ListingProps> extends AggregateRoot<props> im
 
   }
   
-  requestAddAccount(account:AccountEntityReference){
+  private requestAddAccount(account:AccountEntityReference){
     if(this.props.account){
       throw new Error("Account already exists");
     }
     this.props.account = account;
   }
+
   requestAddCategory(category: CategoryProps) {
     this.props.primaryCategory = category;
   }

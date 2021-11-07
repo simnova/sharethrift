@@ -14,14 +14,15 @@ export class MongoUserRepository<PropType extends UserProps> extends MongoReposi
   ) {
     super(eventBus,modelType,typeConverter,session);
   }
+  
   async getByExternalId(externalId: string): Promise<UserDO<PropType>> {
     var user = await this.model.findOne({ externalId: externalId }).exec();
     return this.typeConverter.toDomain(user);
   }
 
-  getNewInstance(externalId:string, firstName:string, lastName:string, email:string): UserDO<PropType> {
-    var model = new this.model();
-    return UserDO.getNewUser(this.typeConverter.toAdapter(model), externalId, firstName, lastName, email);
+  getNewInstance(externalId:string, firstName:string, lastName:string): UserDO<PropType> {
+    var adapter = this.typeConverter.toAdapter(new this.model());
+    return UserDO.getNewUser(adapter, externalId, firstName, lastName);
   }
 
   async delete(id: string): Promise<void> {

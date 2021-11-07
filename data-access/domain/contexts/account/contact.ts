@@ -1,19 +1,20 @@
 import { Entity, EntityProps } from '../../shared/entity';
 import { User, UserEntityReference, UserProps } from '../user/user';
-import { RoleEntityReference, RoleProps} from './role';
+import { Role, RoleEntityReference, RoleProps} from './role';
 
 export interface ContactProps extends EntityProps {
   firstName: string;
   lastName: string;
   role: RoleProps;
+  addRole<props extends RoleProps>(props: Role<props>): void;
   readonly user: UserEntityReference;
   addUser<props extends UserProps>(user: User<props>):void
   createdAt: Date;
   updatedAt: Date;
 }
 
-export class Contact extends Entity<ContactProps> implements ContactEntityReference {
-  constructor(props: ContactProps) {
+export class Contact<props extends ContactProps> extends Entity<ContactProps> implements ContactEntityReference {
+  constructor(props: props) {
     super(props);
   }
   get id(): string { return this.props.id; }

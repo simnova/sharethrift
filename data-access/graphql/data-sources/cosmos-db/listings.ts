@@ -1,25 +1,21 @@
 import { MongoDataSource } from 'apollo-datasource-mongodb';
-import * as Listing from '../../../infrastructure/data-sources/cosmos-db/models/listing';
-import {Context} from '../../context';
-import { ListingDomainAdapter } from '../../../domain/infrastructure/persistance/adapters/listing-domain-adapter';
-import { ListingEntityReference } from '../../../domain/contexts/listing/listing';
+import { Listing } from '../../../infrastructure/data-sources/cosmos-db/models/listing';
+import { Context } from '../../context';
 
-export default class Listings extends MongoDataSource<Listing.Listing, Context> {
+export class Listings extends MongoDataSource<Listing, Context> {
 
-  async getListing(listingId : string): Promise<ListingEntityReference> {
+  async getListing(listingId : string): Promise<Listing> {
     console.log(`ListingAPI:getListing:${listingId}`);
-    return new ListingDomainAdapter(await this.findOneById(listingId));
+    return this.findOneById(listingId);
   }
   
-  async getListings(): Promise<ListingEntityReference[]> {
+  async getListings(): Promise<Listing[]> {
+    var userExternalId = this.context.VerifiedUser.VerifiedJWT.sub;
+    var user = await this.context.dataSources.userAPI.getByExternalId(userExternalId);
     console.log(`ListingAPI:listings`);
-    var result = (await this.model
+    return this.model
       .find({})
-      .populate('owner')
-    ///  .populate('primaryCategory')
-      .exec()).map(listing => new ListingDomainAdapter(listing));
-    console.log(JSON.stringify(result));
-    return result;
+      .exec();
   }
   
 }
