@@ -1,7 +1,8 @@
 import { Entity, EntityProps } from "./entity";
 
-export interface PropArray<propType extends EntityProps, domainType extends Entity<propType>> {
+export interface PropArray<propType extends EntityProps> {
   get items(): ReadonlyArray<propType>;
-  addItem(item: domainType): void;
-  removeItem(item: domainType): void;
+  addItem(item: propType): void;
+  getNewItem(): propType;
+  removeItem(item: propType): void;
 }

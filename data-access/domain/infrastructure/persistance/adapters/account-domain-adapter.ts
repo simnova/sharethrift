@@ -101,21 +101,5 @@ export class AccountDomainAdapter extends MongooseDomainAdapater<Account> implem
     this.props.contacts.push(contact.props);
   }
 
-  public roles = new MongoosePropArray<RoleProps, RoleDO<RoleProps>, Role>(this.props.roles, RoleAdapter);
-
-  /*
-  public get roles(): RoleProps[] { 
-    return this.props.roles.map(r => new RoleAdapter(r)); 
-  }
-  public getNewRole(): RoleProps {
-    if(!this.props.roles) {
-      this.props.roles = new mongoose.Types.DocumentArray<Role>([]);
-    }
-    return new RoleAdapter(this.props.roles.create({_id: new mongoose.Types.ObjectId()}));
-  }
-  addRole<props extends RoleProps>(role: RoleDO<props>): void {
-    this.props.roles.push(role.props);
-  }
-  */
-
+  public roles = new MongoosePropArray(this.props.roles, RoleAdapter);
 }

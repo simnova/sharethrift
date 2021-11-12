@@ -43,7 +43,8 @@ class DraftStatusDomainAdapter implements DraftStatusProps {
 
 
 class DraftDomainAdapter implements DraftProps {
-  constructor(public readonly props: ListingDraft) { }
+  constructor(public readonly props: ListingDraft) {}
+  public get id(): string { return this.props.id.valueOf() as string; }
     
   get title(): string {return this.props.title;}
   set title(value: string) {this.props.title = value;}
@@ -51,7 +52,7 @@ class DraftDomainAdapter implements DraftProps {
   get description(): string {return this.props.description;}
   set description(value: string) {this.props.description = value;}
 
-  public statusHistory = new MongoosePropArray<DraftStatusProps, DraftStatusDO, ListingStatus>(this.props.statusHistory, DraftStatusDomainAdapter);
+  public statusHistory = new MongoosePropArray(this.props.statusHistory, DraftStatusDomainAdapter);
 /*
   get statusHistory(): DraftStatusProps[] {return this.props.statusHistory.map((status) => new DraftStatusDomainAdapter(status));}
   public addStatus(status: DraftStatusDO): void {

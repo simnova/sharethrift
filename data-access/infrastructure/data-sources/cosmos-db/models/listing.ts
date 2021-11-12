@@ -28,7 +28,7 @@ export interface ListingStatus extends EmbeddedBase {
   statusDetail: string;
 }
 
-export interface ListingDraft extends ListingBase {
+export interface ListingDraft extends ListingBase, EmbeddedBase {
 }
 
 export const ListingModel = model<Listing>('Listing',new Schema<Listing, Model<Listing>, Listing>(

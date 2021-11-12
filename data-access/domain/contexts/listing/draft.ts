@@ -24,7 +24,7 @@ export interface DraftProps extends DraftPropValues {
   removePhoto: (photo: PhotoProps) => void;
   primaryCategory: CategoryProps;
 
-  statusHistory: PropArray<DraftStatusProps, DraftStatus>;
+  statusHistory: PropArray<DraftStatusProps>;
 //  statusHistory: ReadonlyArray<DraftStatusProps>;
 //  getNewStatus: () => DraftStatusProps;
 //  addStatus: (status: DraftStatusProps) => void;
@@ -61,7 +61,7 @@ export class Draft extends Entity<DraftProps> implements DraftEntityReference {
       currentStatus = DraftStatusCodes.Draft;
     }
     else{
-      var orderedStatusHistory = [...this.props.statusHistory.getItems].sort((a,b)=>a.dateCreated.getTime()-b.dateCreated.getTime());
+      var orderedStatusHistory = [...this.props.statusHistory.items].sort((a,b)=>a.dateCreated.getTime()-b.dateCreated.getTime());
       currentStatus = orderedStatusHistory[0].statusCode ?? DraftStatusCodes.Draft;
     }
     return currentStatus;
@@ -74,9 +74,9 @@ export class Draft extends Entity<DraftProps> implements DraftEntityReference {
       throw new Error(`Invalid status transition from ${currentStatus} to ${newStatus.statusCode}`);
     }
     
-    var statusProps = this.props.getNewStatus();
+    var statusProps = this.props.statusHistory.getNewItem();
     var status = DraftStatus.create(statusProps,newStatus);
-    this.props.addStatus(status);
+    this.props.statusHistory.addItem(status);
   }
 
   requestUpdateDescription(description: string){

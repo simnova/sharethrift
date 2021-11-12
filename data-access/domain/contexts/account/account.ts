@@ -19,7 +19,7 @@ export interface AccountProps extends AccountPropValues, EntityProps {
   getNewContact(): ContactProps;
   addContact<props extends ContactProps>(contact: Contact<props>):void;
 
-  roles: PropArray<RoleProps, Role<RoleProps>>;
+  roles: PropArray<RoleProps>;
 //  getNewRole(): RoleProps;
 //  addRole<props extends RoleProps>(role: Role<props>):void
 }
@@ -40,7 +40,7 @@ export class Account<props extends AccountProps> extends AggregateRoot<props> im
   get createdAt(): Date {return this.props.createdAt;}
   get schemaVersion(): string {return this.props.schemaVersion;}
   public async contacts(): Promise<ContactEntityReference[]>  { return (await this.props.contacts()).map(contact => new Contact(contact)); }
-  get roles(): RoleEntityReference[] { return this.props.roles.map(role => new Role(role)); }
+  get roles(): RoleEntityReference[] { return this.props.roles.items.map(role => new Role(role)); }
 
   static async CreateInitialAccountForNewUser<newPropType extends AccountProps, userProps extends UserProps>(props:newPropType,newUser:User<userProps>): Promise<Account<newPropType>> {
     props.name = newUser.id;
@@ -49,7 +49,7 @@ export class Account<props extends AccountProps> extends AggregateRoot<props> im
     account.addDefaultRoles();
     account.addContact(newUser);
     console.log('after-adding-contact', JSON.stringify(account));
-    await account.assignRoleToContact(account.props.roles.find(x => x.roleName === adminRoleName), (await account.props.contacts())[0]);
+    await account.assignRoleToContact(account.props.roles.items.find(x => x.roleName === adminRoleName), (await account.props.contacts())[0]);
     console.log('after-assigning-role', JSON.stringify(account));
     account.markAsNew();
     account.addIntegrationEvent(AccountCreatedEvent,{accountId: account.id, userId: newUser.id});
@@ -67,7 +67,7 @@ export class Account<props extends AccountProps> extends AggregateRoot<props> im
   }
 
   private async assignRoleToContact(role: RoleProps, contact: ContactProps): Promise<void> {
-    var verifiedRole = this.props.roles.find(x => x.id === role.id);
+    var verifiedRole = this.props.roles.items.find(x => x.id === role.id);
     if(!verifiedRole) {
       console.log('role-not-found', this.props.roles, role);
       throw new Error('Role does not exist');
@@ -84,7 +84,7 @@ export class Account<props extends AccountProps> extends AggregateRoot<props> im
   }
 
   private addDefaultRoles(): void {
-    var roleProps =this.props.getNewRole();
+    var roleProps =this.props.roles.getNewItem();
     console.log('add-default-roles');
     var newRoleProps ={
       roleName: adminRoleName,
@@ -100,7 +100,7 @@ export class Account<props extends AccountProps> extends AggregateRoot<props> im
     } as Partial<RoleProps>;
     var meredProps = {...roleProps, ...newRoleProps};
     var role = new Role(meredProps);
-    this.props.addRole(role);
+    this.props.roles.addItem(role);
     console.log('add-default-roles-done', this.props.roles);
   }
 
@@ -112,10 +112,10 @@ export class Account<props extends AccountProps> extends AggregateRoot<props> im
     if(!passport.forAcccount(this).determineIf((permissions) => permissions.canManageRolesAndPermissions)) {
       throw new Error('Cannot delete role');
     }
-    if(!this.props.roles.includes(roleToDelete)) {
+    if(!this.props.roles.items.includes(roleToDelete)) {
       throw new Error('Role to delete does not exist');
     }
-    if(!this.props.roles.includes(roleToAssignTo)) {
+    if(!this.props.roles.items.includes(roleToAssignTo)) {
       throw new Error('Role to assign to does not exist');
     }
     if(roleToDelete.isDefault) {
@@ -126,7 +126,7 @@ export class Account<props extends AccountProps> extends AggregateRoot<props> im
         contact.role = roleToAssignTo;
       }
     });
-    this.props.roles.splice(this.props.roles.indexOf(roleToDelete), 1);
+    this.props.roles.removeItem(roleToDelete);
   }
   
 }
