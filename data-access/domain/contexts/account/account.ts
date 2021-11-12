@@ -1,22 +1,32 @@
+import { AccountCreatedEvent } from '../../events/account-created';
 import { AggregateRoot } from '../../shared/aggregate-root';
 import { EntityProps } from '../../shared/entity';
+import { PropArray } from '../../shared/prop-array';
 import { Passport } from '../iam/passport';
 import { User, UserProps } from '../user/user';
 import { Contact, ContactEntityReference, ContactProps } from './contact';
 import { RoleProps, RoleEntityReference, Role } from './role';
 
-export interface AccountProps extends EntityProps {
+export interface AccountPropValues extends EntityProps {
   name: string;
-  contacts(): Promise<ContactProps[]>;
-  getNewContact(): ContactProps;
-  addContact<props extends ContactProps>(contact: Contact<props>):void;
-  roles: RoleProps[];
-  getNewRole(): RoleProps;
-  addRole<props extends RoleProps>(role: Role<props>):void
-
+  handle: string;
   createdAt: Date;
   updatedAt: Date;
   schemaVersion: string;
+}
+export interface AccountProps extends AccountPropValues, EntityProps {
+  contacts(): Promise<ReadonlyArray<ContactProps>>;
+  getNewContact(): ContactProps;
+  addContact<props extends ContactProps>(contact: Contact<props>):void;
+
+  roles: PropArray<RoleProps, Role<RoleProps>>;
+//  getNewRole(): RoleProps;
+//  addRole<props extends RoleProps>(role: Role<props>):void
+}
+
+export interface AccountEntityReference extends Readonly<AccountPropValues> {
+  readonly contacts: () => Promise<ContactEntityReference[]>;
+  readonly roles: RoleEntityReference[];
 }
 
 const adminRoleName = "Administrator";
@@ -25,10 +35,12 @@ export class Account<props extends AccountProps> extends AggregateRoot<props> im
   constructor(props: props) { super(props); }
 
   get name(): string {return this.props.name;}
+  get handle(): string {return this.props.handle;}
   get updatedAt(): Date {return this.props.updatedAt;}
   get createdAt(): Date {return this.props.createdAt;}
   get schemaVersion(): string {return this.props.schemaVersion;}
-  public async contacts(): Promise<ContactEntityReference[]>  {return (await this.props.contacts()).map(contact => new Contact(contact));}
+  public async contacts(): Promise<ContactEntityReference[]>  { return (await this.props.contacts()).map(contact => new Contact(contact)); }
+  get roles(): RoleEntityReference[] { return this.props.roles.map(role => new Role(role)); }
 
   static async CreateInitialAccountForNewUser<newPropType extends AccountProps, userProps extends UserProps>(props:newPropType,newUser:User<userProps>): Promise<Account<newPropType>> {
     props.name = newUser.id;
@@ -40,6 +52,8 @@ export class Account<props extends AccountProps> extends AggregateRoot<props> im
     await account.assignRoleToContact(account.props.roles.find(x => x.roleName === adminRoleName), (await account.props.contacts())[0]);
     console.log('after-assigning-role', JSON.stringify(account));
     account.markAsNew();
+    account.addIntegrationEvent(AccountCreatedEvent,{accountId: account.id, userId: newUser.id});
+
     return account;
   }
 
@@ -117,13 +131,7 @@ export class Account<props extends AccountProps> extends AggregateRoot<props> im
   
 }
 
-export interface AccountEntityReference extends Readonly<EntityProps> {
-  readonly name: string;
-  readonly updatedAt: Date;
-  readonly createdAt: Date;
-  readonly schemaVersion: string;
-  readonly contacts: () => Promise<ContactEntityReference[]>;
-}
+
 
 export interface AccountPermissions {
   canManageRolesAndPermissions: boolean;
