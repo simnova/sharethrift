@@ -101,7 +101,7 @@ export class Account<props extends AccountProps> extends AggregateRoot<props> im
     var meredProps = {...roleProps, ...newRoleProps};
     var role = new Role(meredProps);
     this.props.roles.addItem(role);
-    console.log('add-default-roles-done', this.props.roles);
+    console.log('add-default-roles-done2', this.props.roles.items);
   }
 
   private markAsNew(): void {

@@ -4,7 +4,7 @@ import * as ListingVO from './listing-value-objects';
 export interface DraftStatusProps extends EntityProps {
   statusCode: string;
   statusDetail: string;
-  dateCreated: Date;
+  createdAt: Date;
 }
 
 export interface DraftStatusEntityReference extends Readonly<DraftStatusProps> {}
@@ -26,7 +26,7 @@ export class DraftStatus extends Entity<DraftStatusProps> implements DraftStatus
 
   get statusCode(): string {return this.props.statusCode;}
   get statusDetail(): string {return this.props.statusDetail;}
-  get dateCreated(): Date {return this.props.dateCreated;}
+  get createdAt(): Date {return this.props.createdAt;}
 
   public static create(props: DraftStatusProps, status: NewStatus): DraftStatus {
     var newStatus = new DraftStatus(props);

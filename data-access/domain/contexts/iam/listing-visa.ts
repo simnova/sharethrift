@@ -7,7 +7,8 @@ export class ListingVisaImpl<root extends Listing<any>> implements ListingVisa{
   }
 
   async determineIf (func:((permissions:ListingPermissions) => boolean)) :  Promise<boolean> {
-    var contact = (await this.root.account.contacts()).find(c => c.id === this.user.id);
+    var account = await this.root.account();
+    var contact = (await account.contacts()).find(c => c.id === this.user.id);
     var permissions =  contact.role.permissions.listingPermissions;
     return func(permissions);
   }

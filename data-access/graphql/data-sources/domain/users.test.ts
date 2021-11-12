@@ -11,7 +11,7 @@ test('create new user', async () => {
     context: {
       VerifiedUser: {
         VerifiedJWT: {
-          sub:'external-system-user-id',
+          sub:'dbbf0c6e-8d13-4152-8041-897f89ff86ac',
           given_name:'external-system-user-name',
           family_name:'external-system-user-family-name',
           email:'external-system-user-email@host.com',

@@ -17,13 +17,27 @@ export interface ListingProps extends EntityProps {
   description: string;
   location: LocationProps;
   photos: PhotoProps[];
-  account: AccountEntityReference;
+  getAccount(): Promise<AccountEntityReference>;
+  setAccount(account: AccountEntityReference): void;
   primaryCategory: CategoryProps;
   createdAt: Date;
   updatedAt: Date;
   schemaVersion: string;  
   usersCurrentPublishedListingQuantity: () => Promise<number>;
 }
+export interface ListingEntityReference {
+  readonly id: string;
+  readonly title: string;
+  readonly description: string;
+  readonly location?: LocationEntityReference;
+  readonly photos?: PhotoEntityReference[];
+  account(): Promise<AccountEntityReference>;
+  readonly primaryCategory?: CategoryEntityReference;
+  readonly createdAt: Date;
+  readonly updatedAt: Date;
+  readonly schemaVersion: string;
+}
+
 
 export class Listing<props extends ListingProps> extends AggregateRoot<props> implements ListingEntityReference {
   constructor(props: props) { super(props); }
@@ -34,7 +48,7 @@ export class Listing<props extends ListingProps> extends AggregateRoot<props> im
   get description(): string {return this.props.description;}
   get location(): LocationEntityReference {return new Location(this.props.location);}
   get photos(): PhotoEntityReference[] { return this.props.photos.map(photo=>new Photo(photo));} //should be REadOnyArray<PhotoEntityReference> but gen has issues
-  get account(): AccountEntityReference { return (this.props.account);}
+  async account(): Promise<AccountEntityReference> { return this.props.getAccount();}
   get primaryCategory(): CategoryEntityReference { return new Category(this.props.primaryCategory);}
   get updatedAt(): Date {return this.props.updatedAt;}
   get createdAt(): Date {return this.props.createdAt;}
@@ -87,11 +101,12 @@ export class Listing<props extends ListingProps> extends AggregateRoot<props> im
 
   }
   
-  private requestAddAccount(account:AccountEntityReference){
-    if(this.props.account){
+  private  async requestAddAccount(account:AccountEntityReference){
+    var existingAccount = await this.props.getAccount();
+    if(existingAccount){
       throw new Error("Account already exists");
     }
-    this.props.account = account;
+    this.props.setAccount(account);
   }
 
   requestAddCategory(category: CategoryProps) {
@@ -106,19 +121,6 @@ export class Listing<props extends ListingProps> extends AggregateRoot<props> im
     this.props.photos.splice(this.props.photos.indexOf(photoToRemove),1);
   }
 
-}
-
-export interface ListingEntityReference {
-  readonly id: string;
-  readonly title: string;
-  readonly description: string;
-  readonly location?: LocationEntityReference;
-  readonly photos?: PhotoEntityReference[];
-  readonly account: AccountEntityReference;
-  readonly primaryCategory?: CategoryEntityReference;
-  readonly createdAt: Date;
-  readonly updatedAt: Date;
-  readonly schemaVersion: string;
 }
 
 export interface ListingPermissions {

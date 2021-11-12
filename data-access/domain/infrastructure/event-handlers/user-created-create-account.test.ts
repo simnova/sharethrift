@@ -18,10 +18,10 @@ test('should create account', async () => {
     context: {
       VerifiedUser: {
         VerifiedJWT: {
-          sub:'external-system-user-id',
+          sub:'eb37868b-790a-4ded-9b2a-11ae0cd86c1e',
           given_name:'external-system-user-name',
           family_name:'external-system-user-family-name',
-          email:'external-system-user-email@host.com',
+          email:'external-system-user-email22@host.com',
         },
         OpenIdConfigKey: 'AccountPortal'
       }

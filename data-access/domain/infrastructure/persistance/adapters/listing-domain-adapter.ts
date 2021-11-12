@@ -4,7 +4,7 @@ import { Account } from "../../../../infrastructure/data-sources/cosmos-db/model
 import { LocationProps } from "../../../contexts/listing/location";
 import { Photo as PhotoDO, PhotoProps } from "../../../contexts/listing/photo";
 import { UserProps } from "../../../contexts/user/user";
-import { AccountProps } from "../../../contexts/account/account";
+import { Account as AccountDO, AccountProps, AccountEntityReference } from "../../../contexts/account/account";
 import { CategoryProps } from "../../../contexts/listing/category";
 import mongoose from "mongoose";
 import { MongooseDomainAdapater, MongoosePropArray } from "../mongo-domain-adapter";
@@ -36,8 +36,8 @@ class DraftStatusDomainAdapter implements DraftStatusProps {
   get statusDetail(): string {return this.props.statusDetail};
   set statusDetail(value: string) {this.props.statusDetail = value};
 
-  get dateCreated(): Date {return this.props.dateCreated};
-  set dateCreated(value: Date) {this.props.dateCreated = value};
+  get createdAt(): Date {return this.props.createdAt};
+  set createdAt(value: Date) {this.props.createdAt = value};
 }
 
 
@@ -53,27 +53,7 @@ class DraftDomainAdapter implements DraftProps {
   set description(value: string) {this.props.description = value;}
 
   public statusHistory = new MongoosePropArray(this.props.statusHistory, DraftStatusDomainAdapter);
-/*
-  get statusHistory(): DraftStatusProps[] {return this.props.statusHistory.map((status) => new DraftStatusDomainAdapter(status));}
-  public addStatus(status: DraftStatusDO): void {
-    this.props.statusHistory.push(status.props);
-  }
-  public getNewStatus(): DraftStatusProps {
-    return new DraftStatusDomainAdapter(this.props.statusHistory.create({_id: new mongoose.Types.ObjectId()}));
-  }
-  */
-
-  get photos(): PhotoProps[] { return this.props.photos.map((photo) => new PhotoDomainAdapter(photo));}
-  public addPhoto(photo: PhotoDO): void {
-    this.props.photos.push(photo.props);
-  }
-  removePhoto(photo: PhotoDO): void {
-    this.props.photos.pull(photo.props);
-  }
-
-  public getNewPhoto(): PhotoProps {
-    return new PhotoDomainAdapter(this.props.photos.create({_id: new mongoose.Types.ObjectId()}));
-  }
+  public photos = new MongoosePropArray(this.props.photos, PhotoDomainAdapter);
 
   get location(): LocationProps { 
     if(!this.props.location){ 
@@ -107,10 +87,16 @@ export class ListingDomainAdapter extends MongooseDomainAdapater<Listing> implem
   constructor(props: Listing) { super(props); }
   
   public usersCurrentPublishedListingQuantity = async () => {
-    if(!this.account || !this.account.id){ 
+    if(!this.props.account){ 
       return 0;
     }
-    return ListingModel.countDocuments({"account.id": this.account.id}).exec();    
+    var accountId:string;
+    if(!mongoose.isValidObjectId(this.props.account.toString())){
+      accountId = this.props.account.toString();
+    }else{  
+      accountId = ((this.props.account) as Account).id;
+    }
+    return ListingModel.countDocuments({"account.id": accountId}).exec();    
   }
 
   get draft(): DraftProps {
@@ -120,6 +106,10 @@ export class ListingDomainAdapter extends MongooseDomainAdapater<Listing> implem
     return new DraftDomainAdapter(this.props.draft);
   }
   getNewDraft(): DraftProps {
+    return this.props.get('draft') as DraftProps;
+   }
+      
+ 
 
 
   get title(): string {return this.props.title;}
@@ -131,17 +121,16 @@ export class ListingDomainAdapter extends MongooseDomainAdapater<Listing> implem
   get version(): number {return this.props.version;}
   set version(value: number) {this.props.version = value;}
 
-  get account(): AccountProps {
-    if (!this.props.account || !mongoose.isValidObjectId(this.props.account.toString())) {
+  async getAccount(): Promise<AccountEntityReference>{
+    if (!this.props.account) {
       return undefined;
     }
     if(mongoose.isValidObjectId(this.props.account.toString())){
-//      await this.props.populate('listings.account');
-      //this.props.description.
+      await this.props.populate('listings.account');
     }
-    return new AccountDomainAdapter(this.props.account as Account);
+    return (new AccountDO(new AccountDomainAdapter(this.props.account as Account)));
   }
-  set account(value: AccountProps) {
+  public setAccount(value: AccountEntityReference):void {
     if (value) {
       // @ts-ignore: TS2348 - ignores bug in mongoose types
       this.props.account = mongoose.Types.ObjectId(value.id);
@@ -156,19 +145,12 @@ export class ListingDomainAdapter extends MongooseDomainAdapater<Listing> implem
     if(!this.props.location){ 
       return null;
     }
-    console.log('listing.location - prepopulate', JSON.stringify(this.props.location));
-//    (async() => { await this.props.populate('listing.location'); })();
-//    console.log('listing.location - postpopulate', JSON.stringify(this.props.location));
     return new LocationDomainAdapter(this.props.location); 
   }
   get primaryCategory(): CategoryProps { 
     if(!this.props.primaryCategory){ 
       return null;
     }
-    console.log('listing.primaryCategory - prepopulate', JSON.stringify(this.props.primaryCategory));
-//    (async() => { await this.props.populate('listing.primaryCategory'); })();
-//    console.log('listing.primaryCategory - postpopulate', JSON.stringify(this.props.primaryCategory));
-
     return new CategoryDomainAdapter(this.props.primaryCategory); 
   }
   set primaryCategory(value: CategoryProps) {

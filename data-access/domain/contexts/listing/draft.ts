@@ -18,12 +18,9 @@ export interface DraftPropValues extends EntityProps {
 
 export interface DraftProps extends DraftPropValues {
   location: LocationProps;
-  photos: ReadonlyArray<PhotoProps>;
-  getNewPhoto: () => PhotoProps;
-  addPhoto: (photo: PhotoProps) => void;
-  removePhoto: (photo: PhotoProps) => void;
+ 
   primaryCategory: CategoryProps;
-
+  photos: PropArray<PhotoProps>;
   statusHistory: PropArray<DraftStatusProps>;
 //  statusHistory: ReadonlyArray<DraftStatusProps>;
 //  getNewStatus: () => DraftStatusProps;
@@ -44,7 +41,7 @@ export class Draft extends Entity<DraftProps> implements DraftEntityReference {
   get title(): string {return this.props.title;}
   get description(): string {return this.props.description;}
   get location(): LocationEntityReference {return new Location(this.props.location);}
-  get photos(): PhotoEntityReference[] { return this.props.photos.map(photo=>new Photo(photo));} //should be REadOnyArray<PhotoEntityReference> but gen has issues
+  get photos(): PhotoEntityReference[] { return this.props.photos.items.map(photo=>new Photo(photo));} //should be REadOnyArray<PhotoEntityReference> but gen has issues
   get statusHistory(): DraftStatusEntityReference[] { return this.props.statusHistory.items.map(status => new DraftStatus(status));}
   get primaryCategory(): CategoryEntityReference { return new Category(this.props.primaryCategory);}
 
@@ -61,7 +58,7 @@ export class Draft extends Entity<DraftProps> implements DraftEntityReference {
       currentStatus = DraftStatusCodes.Draft;
     }
     else{
-      var orderedStatusHistory = [...this.props.statusHistory.items].sort((a,b)=>a.dateCreated.getTime()-b.dateCreated.getTime());
+      var orderedStatusHistory = [...this.props.statusHistory.items].sort((a,b)=>a.createdAt.getTime()-b.createdAt.getTime());
       currentStatus = orderedStatusHistory[0].statusCode ?? DraftStatusCodes.Draft;
     }
     return currentStatus;
@@ -85,19 +82,19 @@ export class Draft extends Entity<DraftProps> implements DraftEntityReference {
 
   requestAddPhoto(documentId:string, user:Passport){
 
-    if(this.props.photos.length>=5){
+    if(this.props.photos.items.length>=5){
       throw new Error("Max 5 photos allowed");
     }
 
-    if(this.props.photos.find(photo=>photo.documentId == documentId)){
+    if(this.props.photos.items.find(photo=>photo.documentId == documentId)){
       throw new Error("Photo already exists");
     }
 
     var newPhoto = Photo.create({
       documentId: documentId,
-      order: this.props.photos.length + 1,
+      order: this.props.photos.items.length + 1,
     });
-    this.props.addPhoto(newPhoto);
+    this.props.photos.addItem(newPhoto);
     this.root.addDomainEvent(ListingPhotoAddedEvent,newPhoto);
   }
 
@@ -119,11 +116,11 @@ export class Draft extends Entity<DraftProps> implements DraftEntityReference {
   }
 
   requestRemovePhoto(id: string, user: Passport){
-    var photoToRemove = this.props.photos.find(photo=>photo.id==id);
+    var photoToRemove = this.props.photos.items.find(photo=>photo.id==id);
     if(typeof photoToRemove=="undefined"){
       throw new Error("Photo not found");
     }
-    this.props.removePhoto(photoToRemove);
+    this.props.photos.removeItem(photoToRemove);
   }
 
 }
