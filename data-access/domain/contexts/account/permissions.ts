@@ -8,6 +8,8 @@ export interface PermissionsProps extends EntityProps {
   accountPermissions: AccountPermissionsProps;
 }
 
+export interface PermissionsEntityReference extends Readonly<PermissionsProps> {}
+
 export class Permissions extends Entity<PermissionsProps> implements PermissionsEntityReference {
   get listingPermissions(): ListingPermissions {
     return new ListingPermissions(this.props.listingPermissions);
@@ -15,7 +17,4 @@ export class Permissions extends Entity<PermissionsProps> implements Permissions
   get accountPermissions(): AccountPermissions {
     return new AccountPermissions(this.props.accountPermissions);
   }
-}
-
-export interface PermissionsEntityReference extends Readonly<PermissionsProps> {
 }

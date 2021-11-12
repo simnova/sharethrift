@@ -16,6 +16,10 @@ import {  Document, SchemaOptions } from 'mongoose';
 export interface Base extends Document,MongoBase  {
 }
 
+
+export interface EmbeddedBase extends Document, Omit<MongoBase, 'schemaVersion'> {
+}
+
 export const BaseOptions : SchemaOptions = {
   timestamps: true, 
   versionKey: 'version', 

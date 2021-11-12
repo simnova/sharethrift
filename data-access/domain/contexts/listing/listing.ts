@@ -7,9 +7,12 @@ import  { ListingPhotoAddedEvent } from "../../events/listing-photo-added";
 import {ListingPublishedEvent} from "../../events/listing-published";
 import { EntityProps } from "../../shared/entity";
 import { AccountEntityReference } from "../account/account";
+import { Draft, DraftProps } from "./draft";
 
 export interface ListingProps extends EntityProps {
   id: string;
+  draft: DraftProps;
+  getNewDraft(): DraftProps;
   title: string;
   description: string;
   location: LocationProps;
@@ -25,7 +28,7 @@ export interface ListingProps extends EntityProps {
 export class Listing<props extends ListingProps> extends AggregateRoot<props> implements ListingEntityReference {
   constructor(props: props) { super(props); }
   
-
+  get draft(): Draft {return new Draft(this.props.draft ?? this.props.getNewDraft(), this);}
   get id(): string {return this.props.id;}
   get title(): string {return this.props.title;}
   get description(): string {return this.props.description;}
@@ -49,7 +52,6 @@ export class Listing<props extends ListingProps> extends AggregateRoot<props> im
     }
     return listing;
   }
-
 
   requestUpdateDescription(description: string){
     this.props.description=description;

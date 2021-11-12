@@ -9,7 +9,7 @@ export class LastName extends VOString({trim:true, maxLength:500}) {}
 const EMAIL_PATTERN = /^[a-zA-Z0-9.!#$%&'*+\/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$/;
 export class Email extends VOString({
   trim: true,
-  maxLength: 256,
+  maxLength: 254,
   pattern: EMAIL_PATTERN
 }){}
 

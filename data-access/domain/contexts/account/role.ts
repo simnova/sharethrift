@@ -9,6 +9,10 @@ export interface RoleProps extends EntityProps {
   updatedAt: Date;
 }
 
+export interface RoleEntityReference extends Readonly<Omit<RoleProps,'permissions'>>{
+  readonly permissions: PermissionsEntityReference;
+}
+
 export class Role<props extends RoleProps> extends Entity<RoleProps> implements RoleEntityReference{
   constructor(props: props) { super(props); }
   get roleName(): string { return this.props.roleName; }
@@ -23,12 +27,4 @@ export class Role<props extends RoleProps> extends Entity<RoleProps> implements 
     role.props.isDefault = isDefault;
     return role
   }
-}
-
-export interface RoleEntityReference extends Readonly<EntityProps>{
-  readonly roleName: string;
-  readonly isDefault: boolean;
-  readonly permissions: PermissionsEntityReference;
-  readonly createdAt: Date;
-  readonly updatedAt: Date;
 }

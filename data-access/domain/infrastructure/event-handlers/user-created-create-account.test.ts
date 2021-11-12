@@ -8,6 +8,7 @@ import { UserCreatedEvent } from '../../events/user-created';
 import { AccountModel } from '../../../infrastructure/data-sources/cosmos-db/models/account';
 import { AccountUnitOfWork } from '../persistance/repositories';
 import { AccountConverter } from '../persistance/adapters/account-domain-adapter';
+import mongoose from 'mongoose';
 
 
 test('should create account', async () => {
@@ -43,6 +44,16 @@ test('should create account', async () => {
       console.log(`UserCreatedEvent -> CreateAccount Handler - Created new Account: ${JSON.stringify(newAccount)}`);
     }
   });
+
+  var requestCharge:any = {};
+
+  mongoose.connection.db.command({ getLastRequestStatistics: 1 }, function(err, result) {
+    if(result){
+      requestCharge = result['RequestCharge'];
+    }
+  });
+
+  console.log(`RequestCharge:`,JSON.stringify(requestCharge));
 
   //assert
  // var accounts = await AccountModel.find({});

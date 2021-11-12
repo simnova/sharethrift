@@ -13,6 +13,10 @@ export interface ContactProps extends EntityProps {
   updatedAt: Date;
 }
 
+export interface ContactEntityReference extends Readonly<Omit<ContactProps,'role' | 'addRole' | 'addUser'>> {
+  readonly role: RoleEntityReference;
+}
+
 export class Contact<props extends ContactProps> extends Entity<ContactProps> implements ContactEntityReference {
   constructor(props: props) {
     super(props);
@@ -24,13 +28,4 @@ export class Contact<props extends ContactProps> extends Entity<ContactProps> im
   get user(): UserEntityReference { return this.props.user; }
   get createdAt(): Date { return this.props.createdAt; }
   get updatedAt(): Date { return this.props.updatedAt; }
-}
-
-export interface ContactEntityReference extends Readonly<EntityProps> {
-  readonly firstName: string;
-  readonly lastName: string;
-  readonly role: RoleEntityReference;
-  readonly user: UserEntityReference;
-  readonly createdAt: Date;
-  readonly updatedAt: Date;
 }
