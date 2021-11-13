@@ -53,7 +53,7 @@ export const connect = async () => {
   //mongoose.set('useCreateIndex', true); //Prevents deprecation warning
   if(!process.env.COSMOSDB || process.env.COSMOSDB.length === 0) throw new Error("CosmosDB connection string not found.");
   if(!process.env.COSMOSDB_DBNAME || process.env.COSMOSDB_DBNAME.length === 0) throw new Error("CosmosDB name not found.");
-  var connectionString = `${process.env.COSMOSDB}/admin&ssl=true&retrywrites=false`
+  var connectionString = `${process.env.COSMOSDB}/admin?ssl=true&retrywrites=false`
   console.log(`Connecting to CosmosDB: ${connectionString}`);
   try {
     await mongoose.connect(connectionString, {

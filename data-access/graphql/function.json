@@ -5,6 +5,7 @@
       "type": "httpTrigger",
       "direction": "in",
       "name": "req",
+      "route": "graphql/{*segments}",
       "methods": ["get", "post", "options", "put", "head", "delete", "patch"]
     },
     {

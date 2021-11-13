@@ -1,4 +1,4 @@
-import Apollo, {server} from './init/apollo';
+import {ApolloServerRequestHandler} from './init/apollo';
 import { HttpRequest, Context } from "@azure/functions";
 
 
@@ -18,7 +18,13 @@ function enableConsoleLogging (context: Context) {
   }
 }
 
+
+var apolloServerRequestHandler = new ApolloServerRequestHandler(
+  new Map<string,string>([
+    ["AccountPortal","ACCOUNT_PORTAL"]
+  ])
+);
 export default (context: Context, req: HttpRequest) => {
  // enableConsoleLogging(context);
-  return Apollo.graphqlHandler(context, req);
+ return apolloServerRequestHandler.handleRequests(context, req);
 }
