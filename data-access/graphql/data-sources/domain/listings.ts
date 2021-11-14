@@ -20,9 +20,9 @@ export class Listings extends DomainDataSource<Context,Listing,PropType,DomainTy
       throw new Error('Unauthorized');
     }
 
-    var result : ListingDO<ListingDomainAdapter>;
+    let result : ListingDO<ListingDomainAdapter>;
     await this.withTransaction(async (repo) => {
-      let domainObject =await repo.get(listing.id);
+      let domainObject = await repo.get(listing.id);
       domainObject.requestUpdateDescription(listing.description);
       result = await repo.save(domainObject);
     });
@@ -34,17 +34,17 @@ export class Listings extends DomainDataSource<Context,Listing,PropType,DomainTy
       throw new Error('Unauthorized');
     }
 
-    var userExternalId = this.context.VerifiedUser.VerifiedJWT.oid;
-    var passport = new PassportImpl(
+    let userExternalId = this.context.VerifiedUser.VerifiedJWT.oid;
+    let passport = new PassportImpl(
       (new UserConverter()).toDomain(await this.context.dataSources.userAPI.getByExternalId(userExternalId)),
     )
-    var account = (new AccountConverter()).toDomain(await this.context.dataSources.accountAPI.getAccount(listing.account));
-    var category = await this.context.dataSources.categoryAPI.getCategory(listing.primaryCategory);
+    let account = (new AccountConverter()).toDomain(await this.context.dataSources.accountAPI.getAccount(listing.account));
+    let category = await this.context.dataSources.categoryAPI.getCategory(listing.primaryCategory);
 
-    var categoryAdapter = new CategoryDomainAdapter(category);
-    var result : ListingDO<ListingDomainAdapter>;
+    let categoryAdapter = new CategoryDomainAdapter(category);
+    let result : ListingDO<ListingDomainAdapter>;
     await this.withTransaction(async (repo) => {
-      var domainObject = await repo.getNewInstance(account,passport);
+      let domainObject = await repo.getNewInstance(account,passport);
       domainObject.requestAddCategory(categoryAdapter);
       domainObject.requestUpdateDescription(listing.description);
       result = await repo.save(domainObject);

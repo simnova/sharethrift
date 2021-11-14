@@ -53,26 +53,26 @@ export class Draft extends Entity<DraftProps> implements DraftEntityReference {
   ]);
 
   private getCurrentStatus():string {
-    var currentStatus:string;
+    let currentStatus:string;
     if(!this.props.statusHistory || this.props.statusHistory.items.length==0){
       currentStatus = DraftStatusCodes.Draft;
     }
     else{
-      var orderedStatusHistory = [...this.props.statusHistory.items].sort((a,b)=>a.createdAt.getTime()-b.createdAt.getTime());
+      let orderedStatusHistory = [...this.props.statusHistory.items].sort((a,b)=>a.createdAt.getTime()-b.createdAt.getTime());
       currentStatus = orderedStatusHistory[0].statusCode ?? DraftStatusCodes.Draft;
     }
     return currentStatus;
   }
   
   addStatusUpdate(newStatus: NewStatus){
-    var currentStatus = this.getCurrentStatus();
+    let currentStatus = this.getCurrentStatus();
    
     if(!this.validStatusTransitions.get(currentStatus).includes(newStatus.statusCode.valueOf())){
       throw new Error(`Invalid status transition from ${currentStatus} to ${newStatus.statusCode}`);
     }
     
-    var statusProps = this.props.statusHistory.getNewItem();
-    var status = DraftStatus.create(statusProps,newStatus);
+    let statusProps = this.props.statusHistory.getNewItem();
+    let status = DraftStatus.create(statusProps,newStatus);
     this.props.statusHistory.addItem(status);
   }
 
@@ -90,7 +90,7 @@ export class Draft extends Entity<DraftProps> implements DraftEntityReference {
       throw new Error("Photo already exists");
     }
 
-    var newPhoto = Photo.create({
+    let newPhoto = Photo.create({
       documentId: documentId,
       order: this.props.photos.items.length + 1,
     });
@@ -100,7 +100,7 @@ export class Draft extends Entity<DraftProps> implements DraftEntityReference {
 
   async requestPublish(){
     
-    var publishedQuantity = 5 //;await this.props.usersCurrentPublishedListingQuantity();
+    let publishedQuantity = 5 //;await this.props.usersCurrentPublishedListingQuantity();
     if(publishedQuantity > 5){
       throw new Error("Listing is not valid");
     }
@@ -116,7 +116,7 @@ export class Draft extends Entity<DraftProps> implements DraftEntityReference {
   }
 
   requestRemovePhoto(id: string, user: Passport){
-    var photoToRemove = this.props.photos.items.find(photo=>photo.id==id);
+    let photoToRemove = this.props.photos.items.find(photo=>photo.id==id);
     if(typeof photoToRemove=="undefined"){
       throw new Error("Photo not found");
     }

@@ -24,7 +24,7 @@ test('create new user', async () => {
 //  RegisterHandlers();
   Domain.userDomainAPI.initialize(dataSourceConfigContext);
   //act
-  var user = await Domain.userDomainAPI.addUser();
+  let user = await Domain.userDomainAPI.addUser();
   //assert
 //  var account = await AccountModel.findOne({'contacts.user.id':user.id}).exec();
 //  console.log('account', JSON.stringify(account));

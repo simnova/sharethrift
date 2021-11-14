@@ -31,14 +31,14 @@ test('should create account', async () => {
   
 
   await connect();
-  var user = await Domain.userDomainAPI.addUser();
+  let user = await Domain.userDomainAPI.addUser();
   ResisterUserCreatedCreateAccountHandler();
 
   //act
   await AccountUnitOfWork.withTransaction(async (repo) => {
-    var accounts = await repo.getByUserId(user.id);
+    let accounts = await repo.getByUserId(user.id);
     if(!accounts || accounts.length == 0) {
-      var newAccount = await repo.getNewInstance(user.id);
+      let newAccount = await repo.getNewInstance(user.id);
       console.log(`UserCreatedEvent -> CreateAccount Handler - Creating new Account: ${JSON.stringify(newAccount)}`);
       await repo.save(newAccount);
       console.log(`UserCreatedEvent -> CreateAccount Handler - Created new Account: ${JSON.stringify(newAccount)}`);

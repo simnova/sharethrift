@@ -1,5 +1,5 @@
 import { Listing as ListingDO, ListingProps } from "../../../contexts/listing/listing";
-import { Listing ,ListingModel, ListingDraft, ListingStatus} from "../../../../infrastructure/data-sources/cosmos-db/models/listing";
+import { Listing ,ListingModel, ListingDraft, ListingStatus } from "../../../../infrastructure/data-sources/cosmos-db/models/listing";
 import { Account } from "../../../../infrastructure/data-sources/cosmos-db/models/account";
 import { LocationProps } from "../../../contexts/listing/location";
 import { Photo as PhotoDO, PhotoProps } from "../../../contexts/listing/photo";
@@ -90,7 +90,7 @@ export class ListingDomainAdapter extends MongooseDomainAdapater<Listing> implem
     if(!this.props.account){ 
       return 0;
     }
-    var accountId:string;
+    let accountId:string;
     if(!mongoose.isValidObjectId(this.props.account.toString())){
       accountId = this.props.account.toString();
     }else{  
@@ -107,11 +107,8 @@ export class ListingDomainAdapter extends MongooseDomainAdapater<Listing> implem
   }
   getNewDraft(): DraftProps {
     return this.props.get('draft') as DraftProps;
-   }
+  }
       
- 
-
-
   get title(): string {return this.props.title;}
   set title(value: string) {this.props.title = value;}
 

@@ -1,7 +1,6 @@
 import { Schema, model, Model } from 'mongoose';
 import { Base, BaseOptions} from './interfaces/base';
 
-
 /**
  * @description
  * Point model - used to store lat/long coordinates
@@ -35,4 +34,3 @@ export const PointModel = model<Point>('Point', new Schema<Point, Model<Point>, 
     ...BaseOptions,
   }
 ));
-

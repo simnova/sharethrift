@@ -37,4 +37,3 @@ export interface CategoryEntityReference {
   readonly updatedAt: Date;
   readonly schemaVersion: string;
 }
-

@@ -44,7 +44,7 @@ export class Account<props extends AccountProps> extends AggregateRoot<props> im
 
   static async CreateInitialAccountForNewUser<newPropType extends AccountProps, userProps extends UserProps>(props:newPropType,newUser:User<userProps>): Promise<Account<newPropType>> {
     props.name = newUser.id;
-    var account = new Account(props);
+    let account = new Account(props);
 
     account.addDefaultRoles();
     account.addContact(newUser);
@@ -59,7 +59,7 @@ export class Account<props extends AccountProps> extends AggregateRoot<props> im
 
   private async addContact<userProps extends UserProps>(newUser:User<userProps>): Promise<void> {
     this.props.addContact(new Contact(this.props.getNewContact()));
-    var contactProps = (await this.props.contacts())[0];
+    let contactProps = (await this.props.contacts())[0];
     contactProps.firstName = newUser.firstName;
     contactProps.lastName = newUser.lastName;
     contactProps.addUser(newUser);
@@ -67,12 +67,12 @@ export class Account<props extends AccountProps> extends AggregateRoot<props> im
   }
 
   private async assignRoleToContact(role: RoleProps, contact: ContactProps): Promise<void> {
-    var verifiedRole = this.props.roles.items.find(x => x.id === role.id);
+    let verifiedRole = this.props.roles.items.find(x => x.id === role.id);
     if(!verifiedRole) {
       console.log('role-not-found', this.props.roles, role);
       throw new Error('Role does not exist');
     }
-    var verifiedAccountContact = (await this.props.contacts()).find(x => x.id === contact.id);
+    let verifiedAccountContact = (await this.props.contacts()).find(x => x.id === contact.id);
     if(!verifiedAccountContact) {
       console.log('contact-not-found', this.props.contacts, contact);
       throw new Error('Contact does not exist');
@@ -84,9 +84,9 @@ export class Account<props extends AccountProps> extends AggregateRoot<props> im
   }
 
   private addDefaultRoles(): void {
-    var roleProps =this.props.roles.getNewItem();
+    let roleProps =this.props.roles.getNewItem();
     console.log('add-default-roles');
-    var newRoleProps ={
+    let newRoleProps ={
       roleName: adminRoleName,
       isDefault: true,
       permissions: {
@@ -98,8 +98,8 @@ export class Account<props extends AccountProps> extends AggregateRoot<props> im
         } 
       }
     } as Partial<RoleProps>;
-    var meredProps = {...roleProps, ...newRoleProps};
-    var role = new Role(meredProps);
+    let meredProps = {...roleProps, ...newRoleProps};
+    let role = new Role(meredProps);
     this.props.roles.addItem(role);
     console.log('add-default-roles-done2', this.props.roles.items);
   }
@@ -130,8 +130,6 @@ export class Account<props extends AccountProps> extends AggregateRoot<props> im
   }
   
 }
-
-
 
 export interface AccountPermissions {
   canManageRolesAndPermissions: boolean;

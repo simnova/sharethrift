@@ -17,7 +17,7 @@ var verifyAccessToken = async (context) : Promise<[object, boolean]>  => {
   //const keyStore = await issuer.keystore();
   const JWKS = createRemoteJWKSet(new URL(settings.openIdConfigUrl))
   
-  var results = await jwtVerify(
+  let results = await jwtVerify(
     token,
     JWKS,
     {
@@ -30,7 +30,6 @@ var verifyAccessToken = async (context) : Promise<[object, boolean]>  => {
         //if you only want to accept local AAD Accounts use: `https://login.microsoftonline.com/${settings.tenantId}/v2.0`
     }
   );
-  var x = results.payload.oid
   
   return [
     {

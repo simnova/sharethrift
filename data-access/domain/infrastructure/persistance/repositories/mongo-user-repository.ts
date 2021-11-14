@@ -16,12 +16,12 @@ export class MongoUserRepository<PropType extends UserProps> extends MongoReposi
   }
   
   async getByExternalId(externalId: string): Promise<UserDO<PropType>> {
-    var user = await this.model.findOne({ externalId: externalId }).exec();
+    let user = await this.model.findOne({ externalId: externalId }).exec();
     return this.typeConverter.toDomain(user);
   }
 
   getNewInstance(externalId:string, firstName:string, lastName:string): UserDO<PropType> {
-    var adapter = this.typeConverter.toAdapter(new this.model());
+    let adapter = this.typeConverter.toAdapter(new this.model());
     return UserDO.getNewUser(adapter, externalId, firstName, lastName);
   }
 

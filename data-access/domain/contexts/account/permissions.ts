@@ -1,5 +1,4 @@
 import { Entity, EntityProps } from "../../shared/entity";
-
 import { ListingPermissions, ListingPermissionsProps } from "./listing-permissions";
 import { AccountPermissions, AccountPermissionsProps } from "./account-permissions";
 

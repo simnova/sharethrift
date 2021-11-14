@@ -29,7 +29,7 @@ export class DraftStatus extends Entity<DraftStatusProps> implements DraftStatus
   get createdAt(): Date {return this.props.createdAt;}
 
   public static create(props: DraftStatusProps, status: NewStatus): DraftStatus {
-    var newStatus = new DraftStatus(props);
+    let newStatus = new DraftStatus(props);
     newStatus.setCode(status.statusCode);
     newStatus.setDetail(status.statusDetail);
     return newStatus;

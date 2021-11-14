@@ -20,13 +20,13 @@ export class MongoAccountRepository<PropType extends AccountProps> extends Mongo
   }
   
   async getByUserId(userId: string): Promise<AccountDO<PropType>[]> {
-    var accounts = await this.model.find({ "contacts.user.id": userId }).exec();
+    let accounts = await this.model.find({ "contacts.user.id": userId }).exec();
     return accounts.map((account) => this.typeConverter.toDomain(account));
   }
 
   async getNewInstance(userId: string): Promise<AccountDO<PropType>> {
-    var user = (new UserConverter).toDomain(await UserModel.findById(userId).exec());
-    var adapter = this.typeConverter.toAdapter(new this.model());
+    let user = (new UserConverter).toDomain(await UserModel.findById(userId).exec());
+    let adapter = this.typeConverter.toAdapter(new this.model());
     return AccountDO.CreateInitialAccountForNewUser(adapter,user);   
   }
 

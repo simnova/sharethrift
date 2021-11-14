@@ -5,7 +5,7 @@ import {default as ResisterUserCreatedCreateAccountHandler} from './user-created
 import {default as ResisterUserCreatedCreateCategoryHandler} from './user-created-create-category';
 
 
-var  RegisterHandlers = () => {
+var RegisterHandlers = () => {
     // Register all event handlers
     RegisterListingPublishedEmailHandler();
     RegisterListingPublishedDomainEventHandler();

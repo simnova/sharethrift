@@ -93,7 +93,7 @@ export class VerifiedTokenService  {
         //ignoreNbf: openIdConfig.ignoreNbf??true,
         clockTolerance: openIdConfig.clockTolerance?? "5 minutes",
       }
-    );
+    )
   }
 
 }

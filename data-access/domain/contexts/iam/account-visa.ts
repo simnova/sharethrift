@@ -6,8 +6,8 @@ export class AccountVisaImpl<root extends Account<any>> implements AccountVisa {
   constructor(private root: root,  private user: User<any>) {
   }  
   async determineIf(func:((permissions:AccountPermissions) => boolean)) :  Promise<boolean> {
-    var contact = (await this.root.contacts()).find(c => c.id === this.user.id);
-    var accountPermissions =  contact.role.permissions.accountPermissions;
+    let contact = (await this.root.contacts()).find(c => c.id === this.user.id);
+    let accountPermissions =  contact.role.permissions.accountPermissions;
     return func(accountPermissions);
   }
 }

@@ -10,8 +10,8 @@ export class Listings extends MongoDataSource<Listing, Context> {
   }
   
   async getListings(): Promise<Listing[]> {
-    var userExternalId = this.context.VerifiedUser.VerifiedJWT.sub;
-    var user = await this.context.dataSources.userAPI.getByExternalId(userExternalId);
+    let userExternalId = this.context.VerifiedUser.VerifiedJWT.sub;
+    let user = await this.context.dataSources.userAPI.getByExternalId(userExternalId);
     console.log(`ListingAPI:listings`);
     return this.model
       .find({})

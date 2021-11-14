@@ -5,7 +5,7 @@ import { Context } from '../../context';
 export class Categories extends MongoDataSource<Category, Context> {
 
   async getCategory(categoryId : string): Promise<Category> {
-    return  this.findOneById(categoryId);
+    return this.findOneById(categoryId);
   }
   
   async getCategories(): Promise<Category[]> {

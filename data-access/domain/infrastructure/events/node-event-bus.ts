@@ -3,19 +3,19 @@ import { CustomDomainEvent, DomainEvent } from "../../shared/domain-event";
 import { EventBus } from "../../shared/event-bus";
 
 class BroadCaster {
-    private eventEmitter: EventEmitter;
+  private eventEmitter: EventEmitter;
 
-    constructor() {
-        this.eventEmitter = new EventEmitter();
-    }
+  constructor() {
+    this.eventEmitter = new EventEmitter();
+  }
 
-    public broadcast(event: string, data: any) {
-        this.eventEmitter.emit(event, data);
-    }
+  public broadcast(event: string, data: any) {
+    this.eventEmitter.emit(event, data);
+  }
 
-    public on(event: string, listener: any) {
-        this.eventEmitter.on(event, listener);
-    }
+  public on(event: string, listener: any) {
+    this.eventEmitter.on(event, listener);
+  }
 }
 
 class NodeEventBusImpl implements EventBus {

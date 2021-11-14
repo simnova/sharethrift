@@ -20,7 +20,7 @@ export class MongoListingRepository<PropType extends ListingProps> extends Mongo
   }
 
   async getNewInstance(account:AccountEntityReference, passport:Passport): Promise<ListingDO<PropType>> {
-    var newListing = this.typeConverter.toAdapter(new ListingModel());
+    let newListing = this.typeConverter.toAdapter(new ListingModel());
     return ListingDO.getNewListing(newListing, account, passport);
   }
 

@@ -3,8 +3,8 @@ import { Category, CategoryEntityReference, CategoryProps } from "./category";
 import { Passport } from "../iam/passport";
 import { Location, LocationEntityReference, LocationProps } from "./location";
 import { Photo, PhotoProps, PhotoEntityReference } from "./photo";
-import  { ListingPhotoAddedEvent } from "../../events/listing-photo-added";
-import {ListingPublishedEvent} from "../../events/listing-published";
+import { ListingPhotoAddedEvent } from "../../events/listing-photo-added";
+import {ListingPublishedEvent } from "../../events/listing-published";
 import { EntityProps } from "../../shared/entity";
 import { AccountEntityReference } from "../account/account";
 import { Draft, DraftProps } from "./draft";
@@ -58,8 +58,7 @@ export class Listing<props extends ListingProps> extends AggregateRoot<props> im
   // This would allow us to validate the listing before publishing it, using external services.. e.g. check if the user has too many listings alraedy, (e.g. business rule of user can have at max 15 listings)
 
   static async getNewListing<newPropType extends ListingProps>(props:newPropType,account: AccountEntityReference, passport:Passport): Promise<Listing<newPropType>> {
-    
-    var listing = new Listing(props);
+    let listing = new Listing(props);
     listing.requestAddAccount(account);
     if(!passport.forListing(listing).determineIf((permissions) => permissions.canManageListings)) {
       throw new Error('Cannot add listing');
@@ -80,7 +79,7 @@ export class Listing<props extends ListingProps> extends AggregateRoot<props> im
     if(this.props.photos.find(photo=>photo.documentId == documentId)){
       throw new Error("Photo already exists");
     }
-    var newPhoto = Photo.create({
+    let newPhoto = Photo.create({
       documentId: documentId,
       order: this.props.photos.length + 1,
     });
@@ -90,7 +89,7 @@ export class Listing<props extends ListingProps> extends AggregateRoot<props> im
 
   async requestPublish(){
     
-    var publishedQuantity = await this.props.usersCurrentPublishedListingQuantity();
+    let publishedQuantity = await this.props.usersCurrentPublishedListingQuantity();
     if(publishedQuantity > 5){
       throw new Error("Listing is not valid");
     }
@@ -102,7 +101,7 @@ export class Listing<props extends ListingProps> extends AggregateRoot<props> im
   }
   
   private  async requestAddAccount(account:AccountEntityReference){
-    var existingAccount = await this.props.getAccount();
+    let existingAccount = await this.props.getAccount();
     if(existingAccount){
       throw new Error("Account already exists");
     }
@@ -114,7 +113,7 @@ export class Listing<props extends ListingProps> extends AggregateRoot<props> im
   }
 
   requestRemovePhoto(id: string, user: Passport){
-    var photoToRemove = this.props.photos.find(photo=>photo.id==id);
+    let photoToRemove = this.props.photos.find(photo=>photo.id==id);
     if(typeof photoToRemove=="undefined"){
       throw new Error("Photo not found");
     }

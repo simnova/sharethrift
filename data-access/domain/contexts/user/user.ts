@@ -27,11 +27,9 @@ export class User<props extends UserProps> extends AggregateRoot<props> implemen
   get createdAt(): Date {return this.props.createdAt;}
   get schemaVersion(): string {return this.props.schemaVersion;}
 
-
-
   public static getNewUser<props extends UserProps> (newprops:props,externalId:string,firstName:string,lastName:string): User<props> {
     newprops.externalId = externalId;
-    var user = new User(newprops);
+    let user = new User(newprops);
     user.setExternalId(externalId);
     user.setFirstName(firstName);
     user.setLastName(lastName);
