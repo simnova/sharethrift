@@ -1,6 +1,7 @@
 import React, { FC } from 'react';
 import { useQuery } from "@apollo/client";
 import { ListingsListingsDocument } from '../generated';
+import { ListingDraft } from './listing-draft';
 
 export const Listings: FC<any> = () => {
 
@@ -34,7 +35,10 @@ export const Listings: FC<any> = () => {
         if (listing !== null) {
           return <div key={listing.id}>
             Detail for Listing: {listing.title}<br/>
-            {JSON.stringify(listing)}
+            {JSON.stringify(listing)}<br/>
+            <hr />
+            <ListingDraft {...listing} />
+
           </div>
         }
       })

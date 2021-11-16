@@ -8,6 +8,8 @@ type Listing implements MongoBase {
   photos: [Photo]
   location: Location
 
+  draft: Draft 
+
   id: ObjectID!
   schemaVersion: String
   updatedAt: DateTime
@@ -21,10 +23,19 @@ extend type Query {
 
 extend type Mutation {
   createListing(input: ListingDetail!): CreateListingPayload
+  updateDraft(input: ListingDraft!) : Listing
+  publishDraft(id: ID!) : Listing
 }
 
 type CreateListingPayload {
   listing: Listing
+}
+
+input ListingDraft {
+  id: ID
+  title: String
+  description: String
+  primaryCategory: ObjectID
 }
 
 input ListingDetail {
@@ -75,4 +86,17 @@ type Address {
   country: String
   countryCodeISO3: String
   freeformAddress: String
+}
+
+type Draft {
+  title: String
+  description: String
+  primaryCategory: Category
+  statusHistory: [DraftStatus]  
+}
+
+type DraftStatus {
+  statusCode: String
+  statusDetail: String
+  createdAt: DateTime
 }

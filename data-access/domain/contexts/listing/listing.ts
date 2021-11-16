@@ -8,6 +8,7 @@ import {ListingPublishedEvent } from "../../events/listing-published";
 import { EntityProps } from "../../shared/entity";
 import { AccountEntityReference } from "../account/account";
 import { Draft, DraftProps } from "./draft";
+import { ListingDraftPublishRequestedEvent } from "../../events/listing-draft-publish-requested";
 
 export interface ListingProps extends EntityProps {
   id: string;
@@ -87,17 +88,19 @@ export class Listing<props extends ListingProps> extends AggregateRoot<props> im
     this.addDomainEvent(ListingPhotoAddedEvent,newPhoto);
   }
 
-  async requestPublish(){
-    
-    let publishedQuantity = await this.props.usersCurrentPublishedListingQuantity();
-    if(publishedQuantity > 5){
-      throw new Error("Listing is not valid");
-    }
-    else{
-      this.addDomainEvent(ListingPublishedEvent,{listingId: this.props.id});
-      this.addIntegrationEvent(ListingPublishedEvent,{listingId: this.props.id});
-    }
+  publishApprovedDraft(){
+    this.props.title = this.props.draft.title;
+    this.props.description = this.props.draft.description;
+    this.props.location = this.props.draft.location;
+    this.props.photos.length = 0;
+    this.props.photos.push(...this.props.draft.photos.items);
+    this.props.primaryCategory = this.props.draft.primaryCategory;
+    this.addIntegrationEvent(ListingPublishedEvent,{listingId: this.props.id});
+  }
 
+  async requestPublish(){
+    this.draft.requestPublish();
+    this.addIntegrationEvent(ListingDraftPublishRequestedEvent,{listingId: this.props.id});
   }
   
   private  async requestAddAccount(account:AccountEntityReference){

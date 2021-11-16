@@ -12,8 +12,24 @@ fragment ListingsFields on Listing {
   }
   title
   description
+  createdAt
   primaryCategory {
+    id
     name
+  }
+  draft {
+    title
+    description
+    statusHistory {
+      statusCode
+      statusDetail
+      createdAt
+
+    }
+    primaryCategory {
+      id
+      name
+    }
   }
   photos {
     order

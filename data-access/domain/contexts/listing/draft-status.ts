@@ -17,8 +17,7 @@ export const DraftStatusCodes = {
 }
 
 export class NewStatus {
-  readonly statusCode: ListingVO.DraftStatusCode;
-  readonly statusDetail: ListingVO.StatusDetail;
+  constructor(public readonly statusCode: ListingVO.DraftStatusCode, public readonly statusDetail: ListingVO.StatusDetail = "") {}
 }
 
 export class DraftStatus extends Entity<DraftStatusProps> implements DraftStatusEntityReference {

@@ -10,6 +10,7 @@ import { AccountEntityReference } from "../account/account";
 import { DraftStatus, DraftStatusProps, NewStatus, DraftStatusCodes, DraftStatusEntityReference } from "./draft-status";
 import { Listing } from "./listing";
 import { PropArray } from "../../shared/prop-array";
+import { ListingDraftPublishRequestedEvent } from "../../events/listing-draft-publish-requested";
 
 export interface DraftPropValues extends EntityProps {
   title: string;
@@ -75,12 +76,25 @@ export class Draft extends Entity<DraftProps> implements DraftEntityReference {
     let status = DraftStatus.create(statusProps,newStatus);
     this.props.statusHistory.addItem(status);
   }
+  requestUpdateTitle(title: string) {
+    if(this.getCurrentStatus()!=DraftStatusCodes.Draft){
+      throw new Error("Cannot update title unless in draft status");
+    }
+    this.props.title = title;
+  }
 
   requestUpdateDescription(description: string){
+    if(this.getCurrentStatus()!=DraftStatusCodes.Draft){
+      throw new Error("Cannot update description unless in draft status");
+    }
+
     this.props.description=description;
   }
 
   requestAddPhoto(documentId:string, user:Passport){
+    if(this.getCurrentStatus()!=DraftStatusCodes.Draft){
+      throw new Error("Cannot update photos unless in draft status");
+    }
 
     if(this.props.photos.items.length>=5){
       throw new Error("Max 5 photos allowed");
@@ -98,24 +112,39 @@ export class Draft extends Entity<DraftProps> implements DraftEntityReference {
     this.root.addDomainEvent(ListingPhotoAddedEvent,newPhoto);
   }
 
-  async requestPublish(){
+  async rejectPublish(rejectionReason: string){
+    this.addStatusUpdate(new NewStatus(DraftStatusCodes.Rejected, rejectionReason));
+  }
+  async appovePublish(){
+    this.addStatusUpdate(new NewStatus(DraftStatusCodes.Approved));
+  }
+  
+
+  async requestPublish(){ 
+    this.addStatusUpdate(new NewStatus(DraftStatusCodes.Pending, "Draft publish requested"));
+    
     
     let publishedQuantity = 5 //;await this.props.usersCurrentPublishedListingQuantity();
     if(publishedQuantity > 5){
       throw new Error("Listing is not valid");
     }
-    else{
-      this.root.addDomainEvent(ListingPublishedEvent,{listingId: this.props.id});
-      this.root.addIntegrationEvent(ListingPublishedEvent,{listingId: this.props.id});
-    }
+  
 
   }
   
   requestAddCategory(category: CategoryProps) {
+    if(this.getCurrentStatus()!=DraftStatusCodes.Draft){
+      throw new Error("Cannot update category unless in draft status");
+    }
+
     this.props.primaryCategory = category;
   }
 
   requestRemovePhoto(id: string, user: Passport){
+    if(this.getCurrentStatus()!=DraftStatusCodes.Draft){
+      throw new Error("Cannot remote photos unless in draft status");
+    }
+
     let photoToRemove = this.props.photos.items.find(photo=>photo.id==id);
     if(typeof photoToRemove=="undefined"){
       throw new Error("Photo not found");
