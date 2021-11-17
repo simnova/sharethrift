@@ -137,7 +137,7 @@ export type Contact = {
   __typename?: "Contact";
   firstName: Scalars["String"];
   lastName?: Maybe<Scalars["String"]>;
-  role?: Maybe<Role>;
+  role: Scalars["ObjectID"];
   user?: Maybe<User>;
   id: Scalars["ObjectID"];
   updatedAt?: Maybe<Scalars["DateTime"]>;
@@ -823,7 +823,7 @@ export type ContactResolvers<
 > = ResolversObject<{
   firstName?: Resolver<ResolversTypes["String"], ParentType, ContextType>;
   lastName?: Resolver<Maybe<ResolversTypes["String"]>, ParentType, ContextType>;
-  role?: Resolver<Maybe<ResolversTypes["Role"]>, ParentType, ContextType>;
+  role?: Resolver<ResolversTypes["ObjectID"], ParentType, ContextType>;
   user?: Resolver<Maybe<ResolversTypes["User"]>, ParentType, ContextType>;
   id?: Resolver<ResolversTypes["ObjectID"], ParentType, ContextType>;
   updatedAt?: Resolver<

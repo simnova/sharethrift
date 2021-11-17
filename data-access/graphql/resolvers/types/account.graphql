@@ -26,7 +26,7 @@ type Role {
 type Contact{
   firstName: String!
   lastName: String
-  role:Role
+  role:ObjectID!
   user:User
 
   id: ObjectID!

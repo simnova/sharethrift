@@ -77,7 +77,7 @@ export class Account<props extends AccountProps> extends AggregateRoot<props> im
       console.log('contact-not-found', this.props.contacts, contact);
       throw new Error('Contact does not exist');
     }
-    if(verifiedAccountContact.role && verifiedAccountContact.role.id === role.id) {
+    if(verifiedAccountContact.roleId && verifiedAccountContact.roleId === role.id) {
       throw new Error('Contact already has role');
     }
     verifiedAccountContact.addRole(new Role(verifiedRole));
@@ -122,8 +122,8 @@ export class Account<props extends AccountProps> extends AggregateRoot<props> im
       throw new Error('Cannot delete default role');
     }
     (await this.props.contacts()).forEach(contact => {
-      if(contact.role.id === roleToDelete.id) {
-        contact.role = roleToAssignTo;
+      if(contact.roleId === roleToDelete.id) {
+        contact.addRole(roleToAssignTo);
       }
     });
     this.props.roles.removeItem(roleToDelete);

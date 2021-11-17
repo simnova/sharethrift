@@ -24,7 +24,6 @@ const ApolloConnection: FC<any> = (props) => {
   const withToken = setContext(async (_, { headers }) => {
     if(hasAuth){
       const token = await getAuthToken(props.AuthenticationIdentifier);
-      debugger;
       return {
         headers: {
           ...headers,
@@ -58,7 +57,7 @@ const ApolloConnection: FC<any> = (props) => {
         try{  // will throw exception if not connected
           await client.resetStore(); //clear Apollo cache when user logs off
         } catch(err){
-          if(err.message !== 'Failed to fetch'){
+          if(err instanceof Error && err.message !== 'Failed to fetch'){
             console.error("Apollo Reset error",err);
           }
         }

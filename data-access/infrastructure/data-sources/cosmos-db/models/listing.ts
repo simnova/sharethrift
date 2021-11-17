@@ -72,7 +72,7 @@ export const ListingModel = model<Listing>('Listing',new Schema<Listing, Model<L
         statusDetail: {
           type: String,
           required: false},
-        dateCreated: {
+        createdAt: {
           type: Date,
           default: Date.now
         }

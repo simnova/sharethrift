@@ -18,7 +18,7 @@ export interface MongooseDomainAdapaterType<T extends Base> extends EntityProps 
 export class MongoosePropArray<propType extends EntityProps, docType extends mongoose.Document> implements PropArray<propType> {
   constructor( private docArray:mongoose.Types.DocumentArray<docType> ,private adapter:new(doc:docType)=>propType) {}
   addItem(item: propType): void {
-    this.docArray.push(item['props']);
+    this.docArray.push(item['props']['props']);
   }
   removeItem(item: propType): void {
     this.docArray.pull(item['props']);

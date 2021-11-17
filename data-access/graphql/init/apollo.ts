@@ -1,4 +1,4 @@
-import { ApolloServer, CreateHandlerOptions, gql } from 'apollo-server-azure-functions';
+import { ApolloServer, CreateHandlerOptions } from 'apollo-server-azure-functions';
 import { HttpRequest, Context } from "@azure/functions";
 import { DataSources } from '../data-sources/';
 import { connect } from '../../infrastructure/data-sources/cosmos-db/connect';
@@ -13,6 +13,10 @@ import { Context as ApolloContext } from '../context';
 import { applyMiddleware } from 'graphql-middleware'
 import { permissions } from '../resolvers/index';
 import { GraphQLSchemaWithFragmentReplacements } from 'graphql-middleware/dist/types';
+
+import {
+  GraphQLRequestContext,
+} from "apollo-server-plugin-base"
 
 export class ApolloServerRequestHandler {
     
@@ -39,6 +43,9 @@ export class ApolloServerRequestHandler {
     //  playground: { endpoint: "/api/graphql/playground" },
       plugins:[
         {
+          async didEncounterErrors (requestContext: GraphQLRequestContext) {
+            console.error('Apollo Server encounterd error:', requestContext.errors);
+          },
           async serverWillStart(service: GraphQLServiceContext) {
             console.log('Apollo Server Starting');
             await connect();
@@ -63,6 +70,7 @@ export class ApolloServerRequestHandler {
   private readonly graphqlHandlerObj:any;
 
   constructor(portals:Map<string,string>){
+    console.log(' -=-=-=-=-=-=-=-=-= INITALIZING APOLLO -=-=-=-=-=-=-=-=-=')
     const scuredSchema:GraphQLSchemaWithFragmentReplacements = applyMiddleware(combinedSchema,permissions);
     const portalTokenExtractor:PortalTokenValidation = new PortalTokenValidation(portals);
 

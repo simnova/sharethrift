@@ -10,16 +10,18 @@ export default () => { NodeEventBus.register(ListingDraftPublishRequestedEvent, 
   await ListingUnitOfWork.withTransaction(async (repo) => {
 
     let listing = await repo.get(payload.listingId);
-
+    console.log(`ListingDraftPublishRequestedEvent -> Auto Review Handler - Listing: ${JSON.stringify(listing)}`);
+    console.log(`ListingDraftPublishRequestedEvent -> Auto Review Handler - Listing.draft.title: ${listing.draft.title}`);
+    console.log(`ListingDraftPublishRequestedEvent -> Auto Review Handler - Listing.draft.description: ${listing.draft.description}`);
     let contentModerator = new ContentModerator();
-    let titleResult = await contentModerator.moderateText(listing.title, ModeratedContentType.PlainText);
-    let descriptionResult = await contentModerator.moderateText(listing.description, ModeratedContentType.PlainText);
+    let titleResult = await contentModerator.moderateText(listing.draft.title, ModeratedContentType.PlainText);
+    let descriptionResult = await contentModerator.moderateText(listing.draft.description, ModeratedContentType.PlainText);
 
     if(!titleResult.IsApproved || !descriptionResult.IsApproved) {
       var rejectionReason =  `Title: ${titleResult.IsApproved ? 'Approved' : 'Rejected'} - Description: ${descriptionResult.IsApproved ? 'Approved' : 'Rejected'}`;
       listing.draft.rejectPublish(rejectionReason);
     } else {
-      listing.draft.appovePublish();
+      await listing.publishApprovedDraft();
     }
 
     await repo.save(listing);

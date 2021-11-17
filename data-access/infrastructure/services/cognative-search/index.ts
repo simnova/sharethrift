@@ -28,11 +28,8 @@ export class CognativeSearch {
       console.log(`Index ${indexName} already exists`);
       return index;
     }).catch(err => {
-      if(err.code === 'IndexNotFound'){
-        console.log(`Index ${indexName} does not exist, creating it...`);
-        return this.client.createIndex(indexDefinition);
-      }
-      throw err;
+      console.log(`Index ${indexName} does not exist error ${JSON.stringify(err)} thrown, creating it...`);
+      return this.client.createIndex(indexDefinition);
     });
     this.searchClients.set(indexName, this.client.getSearchClient(indexName));
   }

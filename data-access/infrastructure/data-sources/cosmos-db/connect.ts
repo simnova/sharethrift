@@ -53,7 +53,16 @@ export const connect = async () => {
   //mongoose.set('useCreateIndex', true); //Prevents deprecation warning
   if(!process.env.COSMOSDB || process.env.COSMOSDB.length === 0) throw new Error("CosmosDB connection string not found.");
   if(!process.env.COSMOSDB_DBNAME || process.env.COSMOSDB_DBNAME.length === 0) throw new Error("CosmosDB name not found.");
-  const connectionString = `${process.env.COSMOSDB}/admin?ssl=true&retrywrites=false`
+
+  let connectionString:string;
+  if(process.env.NODE_ENV === "test") {
+    connectionString = `${process.env.COSMOSDB}/admin?ssl=true&retrywrites=false`;
+    console.log("Connecting to CosmosDB in test mode");
+  } else {
+    connectionString =`${process.env.COSMOSDB}/?ssl=true&replicaSet=globaldb&retrywrites=false&appName=@sharethrift@`;
+    console.log("Connecting to CosmosDB in Dev / Prod Mode");
+  }
+  
   console.log(`Connecting to CosmosDB: ${connectionString}`);
   try {
     await mongoose.connect(connectionString, {
@@ -61,14 +70,14 @@ export const connect = async () => {
       //  useUnifiedTopology: true,
       //  useFindAndModify: false,
       useUnifiedTopology: true,
-      tlsInsecure: process.env.NODE_ENV === "development", //only true for local developent - required for Azure Cosmos DB emulator
+      tlsInsecure: (process.env.NODE_ENV === "development" || process.env.NODE_ENV === "test"), //only true for local developent - required for Azure Cosmos DB emulator
       dbName: process.env.COSMOSDB_DBNAME,
       keepAlive: true, 
       keepAliveInitialDelay: 300000
       //   poolSize: Number(process.env.COSMOSDB_POOL_SIZE)
     } as mongoose.ConnectOptions).then(() => console.log(`🗄️ Successfully connected Mongoose to ${mongoose.connection.name} 🗄️`));
 
-    if(process.env.NODE_ENV === "development"){
+    if(process.env.NODE_ENV === "development" || process.env.NODE_ENV === "test"){
       mongoose.set('debug', {shell: true});
     }
   } catch (error) {

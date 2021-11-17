@@ -32,15 +32,20 @@ export class ContentModerator {
   }
   
   moderateText(textToModerate:string, contentType: ModeratedContentType):Promise<ModerationResult>{
+    console.log(`Moderating text: ${textToModerate}`);
     return this.client
       .textModeration
       .screenText(contentType, textToModerate, {
-        language: "en",
+        language: "eng",
         autocorrect: false,
-        pII: false
+        pII: false,
+        classify: true
+
       })
       .then(result => {
+        console.log(`Moderation result: ${JSON.stringify(result)}`);
         return {
+          
           IsApproved: !result.classification.reviewRecommended
           }
       });

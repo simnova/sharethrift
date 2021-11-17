@@ -26,7 +26,7 @@ export interface Role extends EmbeddedBase {
 export interface Contact extends EmbeddedBase {
   firstName:string;
   lastName?:string;
-  role?:Role;
+  role?:ObjectId;
   user:PopulatedDoc<User.User> | ObjectId;
 }
 
@@ -45,7 +45,7 @@ export const AccountModel = model<Account>('Account',new Schema<Account, Model<A
     contacts: [{
       firstName: { type: String, required: true },
       lastName: { type: String, required: false },
-      role: { type: Schema.Types.ObjectId, ref: 'Role', required: false },
+      role: { type: Schema.Types.ObjectId, required: false },
       user: { type: Schema.Types.ObjectId, ref: User.UserModel.modelName, required: false, index: true, unique: true },
       createdAt: { type: Date, default: Date.now },
       updatedAt: { type: Date, default: Date.now }

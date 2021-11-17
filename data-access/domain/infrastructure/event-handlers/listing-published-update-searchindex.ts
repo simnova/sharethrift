@@ -1,11 +1,11 @@
 import { NodeEventBus } from '../events/node-event-bus';
 import { ListingPublishedEvent } from '../../events/listing-published';
-import { ListingIndexDocument, listingIndexSpec } from './listing-published-update-serachindex-format';
+import { ListingIndexDocument, listingIndexSpec } from './listing-published-update-searchindex-format';
 import { CognativeSearch } from '../../../infrastructure/services/cognative-search';
 import { ListingUnitOfWork } from '../persistance/repositories';
 
 export default () => { NodeEventBus.register(ListingPublishedEvent, async (payload) => {
-  console.log(`ListingPublishedEvent Send Email Integration: ${JSON.stringify(payload)} and ListingId: ${payload.listingId}`);
+  console.log(`ListingPublishedEvent Search Index Integration: ${JSON.stringify(payload)} and ListingId: ${payload.listingId}`);
 
   await ListingUnitOfWork.withTransaction(async (repo) => {
 

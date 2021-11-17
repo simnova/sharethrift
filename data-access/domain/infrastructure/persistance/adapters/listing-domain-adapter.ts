@@ -123,14 +123,16 @@ export class ListingDomainAdapter extends MongooseDomainAdapater<Listing> implem
       return undefined;
     }
     if(mongoose.isValidObjectId(this.props.account.toString())){
-      await this.props.populate('listings.account');
+      await this.props.populate('account');
     }
     return (new AccountDO(new AccountDomainAdapter(this.props.account as Account)));
   }
-  public setAccount(value: AccountEntityReference):void {
+  public async setAccount(value: AccountEntityReference):Promise<void> {
     if (value) {
       // @ts-ignore: TS2348 - ignores bug in mongoose types
       this.props.account = mongoose.Types.ObjectId(value.id);
+      await this.props.populate('account');
+      console.log('listing.account - postpopulate', JSON.stringify(this.props.account));
     }
   }
   

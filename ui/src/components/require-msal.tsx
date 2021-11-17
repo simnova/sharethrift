@@ -11,7 +11,6 @@ const RequireMsal:any = (params:any) => {
       // IIFE to make async code work in a non-async Functional Component
       if (!isRendered.current) {
         var authResult = await getAuthResult(params.identifier);
-        debugger;
         console.log(`authResult:${JSON.stringify(authResult)}`);
         setIsAuthenticated(authResult ? true : false);
       }

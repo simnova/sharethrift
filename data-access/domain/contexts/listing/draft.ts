@@ -59,7 +59,21 @@ export class Draft extends Entity<DraftProps> implements DraftEntityReference {
       currentStatus = DraftStatusCodes.Draft;
     }
     else{
-      let orderedStatusHistory = [...this.props.statusHistory.items].sort((a,b)=>a.createdAt.getTime()-b.createdAt.getTime());
+      let orderedStatusHistory = [...this.props.statusHistory.items];
+      orderedStatusHistory.sort((a,b)=>
+        {
+          let aTime = a.createdAt.getTime();
+          let bTime = b.createdAt.getTime();
+          if(bTime > aTime){
+            return 1;
+          }else if(bTime < aTime){
+            return -1;
+          }else{
+            return 0;
+          }
+          // sort dates descending
+      
+      });
       currentStatus = orderedStatusHistory[0].statusCode ?? DraftStatusCodes.Draft;
     }
     return currentStatus;
@@ -74,6 +88,7 @@ export class Draft extends Entity<DraftProps> implements DraftEntityReference {
     
     let statusProps = this.props.statusHistory.getNewItem();
     let status = DraftStatus.create(statusProps,newStatus);
+    console.log('-=-=-=--=+==--=-= ADDDING NEW STATUS ', JSON.stringify(status));
     this.props.statusHistory.addItem(status);
   }
   requestUpdateTitle(title: string) {
@@ -120,7 +135,7 @@ export class Draft extends Entity<DraftProps> implements DraftEntityReference {
   }
   
 
-  async requestPublish(){ 
+  async requestPublish() : Promise<void>{ 
     this.addStatusUpdate(new NewStatus(DraftStatusCodes.Pending, "Draft publish requested"));
     
     

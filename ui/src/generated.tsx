@@ -129,7 +129,7 @@ export type Contact = {
   __typename?: "Contact";
   firstName: Scalars["String"];
   lastName?: Maybe<Scalars["String"]>;
-  role?: Maybe<Role>;
+  role: Scalars["ObjectID"];
   user?: Maybe<User>;
   id: Scalars["ObjectID"];
   updatedAt?: Maybe<Scalars["DateTime"]>;

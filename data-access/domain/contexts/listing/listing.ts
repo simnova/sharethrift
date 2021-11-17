@@ -19,7 +19,7 @@ export interface ListingProps extends EntityProps {
   location: LocationProps;
   photos: PhotoProps[];
   getAccount(): Promise<AccountEntityReference>;
-  setAccount(account: AccountEntityReference): void;
+  setAccount(account: AccountEntityReference): Promise<void>;
   primaryCategory: CategoryProps;
   createdAt: Date;
   updatedAt: Date;
@@ -60,7 +60,7 @@ export class Listing<props extends ListingProps> extends AggregateRoot<props> im
 
   static async getNewListing<newPropType extends ListingProps>(props:newPropType,account: AccountEntityReference, passport:Passport): Promise<Listing<newPropType>> {
     let listing = new Listing(props);
-    listing.requestAddAccount(account);
+    await listing.requestAddAccount(account);
     if(!passport.forListing(listing).determineIf((permissions) => permissions.canManageListings)) {
       throw new Error('Cannot add listing');
     }
@@ -88,18 +88,19 @@ export class Listing<props extends ListingProps> extends AggregateRoot<props> im
     this.addDomainEvent(ListingPhotoAddedEvent,newPhoto);
   }
 
-  publishApprovedDraft(){
+  async publishApprovedDraft(){
+    await this.draft.appovePublish();
     this.props.title = this.props.draft.title;
     this.props.description = this.props.draft.description;
-    this.props.location = this.props.draft.location;
-    this.props.photos.length = 0;
-    this.props.photos.push(...this.props.draft.photos.items);
-    this.props.primaryCategory = this.props.draft.primaryCategory;
+    //this.props.location = this.props.draft.location;
+    //this.props.photos.length = 0;
+    //this.props.photos.push(...this.props.draft.photos.items);
+   // this.props.primaryCategory = this.props.draft.primaryCategory;
     this.addIntegrationEvent(ListingPublishedEvent,{listingId: this.props.id});
   }
 
   async requestPublish(){
-    this.draft.requestPublish();
+    await this.draft.requestPublish();
     this.addIntegrationEvent(ListingDraftPublishRequestedEvent,{listingId: this.props.id});
   }
   
