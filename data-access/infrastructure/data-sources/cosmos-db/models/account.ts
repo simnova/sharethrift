@@ -1,7 +1,6 @@
 import mongoose, { Schema, model, Model, ObjectId, Document,PopulatedDoc } from 'mongoose';
-
 import { Base, BaseOptions, EmbeddedBase } from './interfaces/base';
-import * as User from "./user";
+import * as User from './user';
 
 export interface ListingPermissions {
   id: ObjectId;

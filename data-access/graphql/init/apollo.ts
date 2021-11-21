@@ -1,5 +1,5 @@
 import { ApolloServer, CreateHandlerOptions } from 'apollo-server-azure-functions';
-import { HttpRequest, Context } from "@azure/functions";
+import { HttpRequest, Context } from '@azure/functions';
 import { DataSources } from '../data-sources/';
 import { connect } from '../../infrastructure/data-sources/cosmos-db/connect';
 import { GraphQLServiceContext } from 'apollo-server-types';
@@ -16,7 +16,7 @@ import { GraphQLSchemaWithFragmentReplacements } from 'graphql-middleware/dist/t
 
 import {
   GraphQLRequestContext,
-} from "apollo-server-plugin-base"
+} from 'apollo-server-plugin-base'
 
 export class ApolloServerRequestHandler {
     
@@ -40,7 +40,7 @@ export class ApolloServerRequestHandler {
         }
         return context;
       },
-    //  playground: { endpoint: "/api/graphql/playground" },
+    //  playground: { endpoint: '/api/graphql/playground' },
       plugins:[
         {
           async didEncounterErrors (requestContext: GraphQLRequestContext) {
@@ -62,7 +62,7 @@ export class ApolloServerRequestHandler {
 
 
   public handleRequests(context: Context, req: HttpRequest){
-    req.headers["x-ms-privatelink-id"] = "" // https://github.com/Azure/azure-functions-host/issues/6013
+    req.headers['x-ms-privatelink-id'] = '' // https://github.com/Azure/azure-functions-host/issues/6013
     req.headers['server'] = null;
     return this.graphqlHandlerObj(context, req)
   }
@@ -92,7 +92,7 @@ export class ApolloServerRequestHandler {
         if(mongoConnected) {
           return;
         } else {
-          throw new Error("MongoDB is not connected");
+          throw new Error('MongoDB is not connected');
         }
       },
     } as CreateHandlerOptions)

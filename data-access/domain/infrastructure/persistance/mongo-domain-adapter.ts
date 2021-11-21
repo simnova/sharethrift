@@ -1,8 +1,7 @@
-import { Base } from "../../../infrastructure/data-sources/cosmos-db/models/interfaces/base";
-import { EntityProps } from "../../shared/entity";
-import { PropArray } from "../../shared/prop-array";
-import mongoose from "mongoose";
-import { time } from "console";
+import { Base } from '../../../infrastructure/data-sources/cosmos-db/models/interfaces/base';
+import { EntityProps } from '../../shared/entity';
+import { PropArray } from '../../shared/prop-array';
+import mongoose from 'mongoose';
 
 export abstract class MongooseDomainAdapater<T extends Base> implements MongooseDomainAdapaterType<T>{
   constructor(public readonly props: T) { }

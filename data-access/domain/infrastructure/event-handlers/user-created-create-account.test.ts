@@ -3,13 +3,10 @@ import { Domain } from '../../../graphql/data-sources/domain';
 import { connect } from '../../../infrastructure/data-sources/cosmos-db/connect';
 import { DataSourceConfig } from 'apollo-datasource';
 import {default as ResisterUserCreatedCreateAccountHandler} from './user-created-create-account';
-import { NodeEventBus } from '../events/node-event-bus';
-import { UserCreatedEvent } from '../../events/user-created';
 import { AccountModel } from '../../../infrastructure/data-sources/cosmos-db/models/account';
 import { AccountUnitOfWork } from '../persistance/repositories';
 import { AccountConverter } from '../persistance/adapters/account-domain-adapter';
 import mongoose from 'mongoose';
-
 
 test('should create account', async () => {
   
@@ -29,7 +26,6 @@ test('should create account', async () => {
   } as DataSourceConfig<Context>;
   Domain.userDomainAPI.initialize(dataSourceConfigContext);
   
-
   await connect();
   let user = await Domain.userDomainAPI.addUser();
   ResisterUserCreatedCreateAccountHandler();

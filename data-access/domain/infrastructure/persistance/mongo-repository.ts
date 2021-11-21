@@ -1,10 +1,10 @@
-import { Repository } from "../../shared/repository";
-import { AggregateRoot } from "../../shared/aggregate-root";
-import { Model, ClientSession,Document } from "mongoose";
-import { TypeConverter } from "../../shared/type-converter";
-import { EntityProps } from "../../shared/entity";
-import { EventBus } from "../../shared/event-bus";
-import { DomainEvent } from "../../shared/domain-event";
+import { Repository } from '../../shared/repository';
+import { AggregateRoot } from '../../shared/aggregate-root';
+import { Model, ClientSession,Document } from 'mongoose';
+import { TypeConverter } from '../../shared/type-converter';
+import { EntityProps } from '../../shared/entity';
+import { EventBus } from '../../shared/event-bus';
+import { DomainEvent } from '../../shared/domain-event';
 
 export abstract class MongoRepositoryBase<MongoType extends Document,PropType extends EntityProps,DomainType extends AggregateRoot<PropType>> implements Repository<DomainType> {
   protected itemsInTransaction:DomainType[] = [];
@@ -20,7 +20,7 @@ export abstract class MongoRepositoryBase<MongoType extends Document,PropType ex
 
   async save(item: DomainType): Promise<DomainType> {
    
-    console.log("saving item");
+    console.log('saving item');
     for await (let event of item.getDomainEvents()) {
       console.log(`Repo dispatching DomainEvent : ${JSON.stringify(event)}`);
       await this.eventBus.dispatch(event as any,event['payload'])

@@ -1,16 +1,16 @@
-import { MongooseDomainAdapater, MongoosePropArray } from "../mongo-domain-adapter";
-import { Account, Contact, AccountPermissions, Role, ListingPermissions, Permissions } from "../../../../infrastructure/data-sources/cosmos-db/models/account";
-import { Account as AccountDO, AccountProps } from "../../../contexts/account/account";
-import { Role as RoleDO, RoleEntityReference, RoleProps } from "../../../contexts/account/role";
-import { Contact as ContactDO, ContactProps } from "../../../contexts/account/contact";
-import { PermissionsProps } from "../../../contexts/account/permissions";
-import { ListingPermissionsProps } from "../../../contexts/account/listing-permissions";
-import { AccountPermissionsProps } from "../../../contexts/account/account-permissions";
-import { UserDomainAdapter } from "./user-domain-adapter";
-import { User, UserEntityReference, UserProps } from "../../../contexts/user/user";
-import mongoose from "mongoose";
+import { MongooseDomainAdapater, MongoosePropArray } from '../mongo-domain-adapter';
+import { Account, Contact, AccountPermissions, Role, ListingPermissions, Permissions } from '../../../../infrastructure/data-sources/cosmos-db/models/account';
+import { Account as AccountDO, AccountProps } from '../../../contexts/account/account';
+import { Role as RoleDO, RoleEntityReference, RoleProps } from '../../../contexts/account/role';
+import { Contact as ContactDO, ContactProps } from '../../../contexts/account/contact';
+import { PermissionsProps } from '../../../contexts/account/permissions';
+import { ListingPermissionsProps } from '../../../contexts/account/listing-permissions';
+import { AccountPermissionsProps } from '../../../contexts/account/account-permissions';
+import { UserDomainAdapter } from './user-domain-adapter';
+import { User, UserEntityReference, UserProps } from '../../../contexts/user/user';
+import mongoose from 'mongoose';
 
-import { MongoTypeConverter } from "../mongo-type-converter";
+import { MongoTypeConverter } from '../mongo-type-converter';
 export class AccountConverter extends MongoTypeConverter<Account,AccountDomainAdapter,AccountDO<AccountDomainAdapter>> {
   constructor() {
     super(AccountDomainAdapter, AccountDO);

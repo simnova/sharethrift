@@ -1,5 +1,5 @@
-import { CosmosDB, CosmosDBType } from "./cosmos-db";
-import {Domain, DomainType} from "./domain";
+import { CosmosDB, CosmosDBType } from './cosmos-db';
+import {Domain, DomainType} from './domain';
 
 export const DataSources = {
   ...CosmosDB,

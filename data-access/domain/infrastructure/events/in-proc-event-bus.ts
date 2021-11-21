@@ -1,7 +1,6 @@
 import { EventBus } from "../../shared/event-bus";
 import { CustomDomainEvent, DomainEvent } from "../../shared/domain-event";
 
-
 class InProcEventBusImpl implements EventBus {
   private eventSubscribers: { [eventType: string]: Array<(rawpayload: string) => Promise<void>> } = {};
   private static instance: InProcEventBusImpl;

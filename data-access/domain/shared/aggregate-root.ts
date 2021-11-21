@@ -1,5 +1,5 @@
-import { Entity,EntityProps } from "./entity";
-import { CustomDomainEvent, DomainEvent } from "./domain-event";
+import { Entity,EntityProps } from './entity';
+import { CustomDomainEvent, DomainEvent } from './domain-event';
 
 export interface RootEventRegistry {
   addDomainEvent<EventProps,T extends CustomDomainEvent<EventProps>>(event:new (aggregateId: string) => T,props:T['payload'] );

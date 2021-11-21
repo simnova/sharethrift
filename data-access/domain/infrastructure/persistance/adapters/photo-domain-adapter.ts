@@ -1,5 +1,5 @@
-import { Photo } from "../../../../infrastructure/data-sources/cosmos-db/models/listing";
-import { PhotoProps } from "../../../contexts/listing/photo";
+import { Photo } from '../../../../infrastructure/data-sources/cosmos-db/models/listing';
+import { PhotoProps } from '../../../contexts/listing/photo';
 
 export class PhotoDomainAdapter implements PhotoProps {
   constructor(public readonly props: Photo) { }

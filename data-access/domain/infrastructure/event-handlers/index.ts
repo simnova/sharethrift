@@ -6,8 +6,6 @@ import {default as ResisterUserCreatedCreateCategoryHandler} from './user-create
 import {default as RegisterListingPublishedUpdateSearchIndexHandler} from './listing-published-update-searchindex';
 import {default as RegisterListingDraftPublishRequestedAutoReviewHandler } from './listing-draft-publish-requested-auto-review';
 
-
-
 var RegisterHandlers = () => {
     // Register all event handlers
     RegisterListingPublishedEmailHandler();

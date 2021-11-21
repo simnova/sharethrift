@@ -1,8 +1,8 @@
-import { Category } from "../../../../infrastructure/data-sources/cosmos-db/models/category";
-import { Category as CategoryDO, CategoryProps } from "../../../contexts/listing/category";
-import { MongooseDomainAdapater, MongoosePropArray } from "../mongo-domain-adapter";
+import { Category } from '../../../../infrastructure/data-sources/cosmos-db/models/category';
+import { Category as CategoryDO, CategoryProps } from '../../../contexts/listing/category';
+import { MongooseDomainAdapater, MongoosePropArray } from '../mongo-domain-adapter';
 
-import { MongoTypeConverter } from "../mongo-type-converter";
+import { MongoTypeConverter } from '../mongo-type-converter';
 
 export class CategoryConverter extends MongoTypeConverter<Category,CategoryDomainAdapter,CategoryDO<CategoryDomainAdapter>> {
   constructor() {

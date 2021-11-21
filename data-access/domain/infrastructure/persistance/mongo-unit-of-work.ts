@@ -1,11 +1,11 @@
-import { PersistanceUnitOfWork } from "../../shared/unit-of-work";
-import { AggregateRoot } from "../../shared/aggregate-root";
-import mongoose, {ClientSession,Model,Document} from 'mongoose';
-import { MongoRepositoryBase } from "./mongo-repository";
-import { TypeConverter } from "../../shared/type-converter";
-import { EntityProps } from "../../shared/entity";
-import { EventBus } from "../../shared/event-bus";
-import { DomainEvent } from "../../shared/domain-event";
+import { PersistanceUnitOfWork } from '../../shared/unit-of-work';
+import { AggregateRoot } from '../../shared/aggregate-root';
+import mongoose, { ClientSession,Model,Document } from 'mongoose';
+import { MongoRepositoryBase } from './mongo-repository';
+import { TypeConverter } from '../../shared/type-converter';
+import { EntityProps } from '../../shared/entity';
+import { EventBus } from '../../shared/event-bus';
+import { DomainEvent } from '../../shared/domain-event';
 
 export class MongoUnitOfWork<MongoType extends Document,PropType extends EntityProps, DomainType  extends AggregateRoot<PropType>, RepoType extends MongoRepositoryBase<MongoType,PropType,DomainType> > extends PersistanceUnitOfWork<PropType,DomainType,RepoType> {
   async withTransaction(func: (repository: RepoType) => Promise<void>): Promise<void> {

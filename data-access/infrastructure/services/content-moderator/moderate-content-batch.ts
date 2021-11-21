@@ -1,4 +1,4 @@
-import {ContentModerator, ModeratedContentType} from './index';
+import { ContentModerator, ModeratedContentType } from './index';
 
 export interface ModerationResult {
   batchApproved: boolean;

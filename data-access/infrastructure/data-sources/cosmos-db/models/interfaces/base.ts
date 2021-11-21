@@ -1,4 +1,4 @@
-import {  Document, SchemaOptions } from 'mongoose';
+import { Document, SchemaOptions } from 'mongoose';
 
  export interface MongoBase {
   id?: any;

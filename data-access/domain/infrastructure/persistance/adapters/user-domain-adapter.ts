@@ -1,7 +1,7 @@
-import { User } from "../../../../infrastructure/data-sources/cosmos-db/models/user";
-import { User as UserDO, UserProps } from "../../../contexts/user/user";
-import { MongooseDomainAdapater } from "../mongo-domain-adapter";
-import { MongoTypeConverter } from "../mongo-type-converter";
+import { User } from '../../../../infrastructure/data-sources/cosmos-db/models/user';
+import { User as UserDO, UserProps } from '../../../contexts/user/user';
+import { MongooseDomainAdapater } from '../mongo-domain-adapter';
+import { MongoTypeConverter } from '../mongo-type-converter';
 
 export class UserConverter extends MongoTypeConverter<User,UserDomainAdapter,UserDO<UserDomainAdapter>> {
   constructor() {

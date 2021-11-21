@@ -1,5 +1,5 @@
-import { CustomDomainEvent, DomainEvent } from "./domain-event";
-import { HandleEvent } from "./handle-event";
+import { CustomDomainEvent, DomainEvent } from './domain-event';
+import { HandleEvent } from './handle-event';
 
 export interface EventBus {
   dispatch<T extends DomainEvent>(event: new(...args:any) => T, data: any): Promise<void>;

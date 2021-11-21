@@ -1,6 +1,6 @@
-import EventEmitter from "events";
-import { CustomDomainEvent, DomainEvent } from "../../shared/domain-event";
-import { EventBus } from "../../shared/event-bus";
+import EventEmitter from 'events';
+import { CustomDomainEvent, DomainEvent } from '../../shared/domain-event';
+import { EventBus } from '../../shared/event-bus';
 
 class BroadCaster {
   private eventEmitter: EventEmitter;

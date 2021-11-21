@@ -1,6 +1,4 @@
-import { SearchIndexClient, SearchClient, AzureKeyCredential, odata, SearchIndex } from '@azure/search-documents';
-
-
+import { SearchIndexClient, SearchClient, AzureKeyCredential, SearchIndex } from '@azure/search-documents';
 
 export class CognativeSearch {
   private readonly searchKeyEnvVar = 'SEARCH_API_KEY';

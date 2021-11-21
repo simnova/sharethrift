@@ -1,22 +1,22 @@
-import { Listing as ListingDO, ListingProps } from "../../../contexts/listing/listing";
-import { Listing ,ListingModel, ListingDraft, ListingStatus } from "../../../../infrastructure/data-sources/cosmos-db/models/listing";
-import { Account } from "../../../../infrastructure/data-sources/cosmos-db/models/account";
-import { LocationProps } from "../../../contexts/listing/location";
-import { Photo as PhotoDO, PhotoProps } from "../../../contexts/listing/photo";
-import { UserProps } from "../../../contexts/user/user";
-import { Account as AccountDO, AccountProps, AccountEntityReference } from "../../../contexts/account/account";
-import { CategoryProps } from "../../../contexts/listing/category";
-import mongoose from "mongoose";
-import { MongooseDomainAdapater, MongoosePropArray } from "../mongo-domain-adapter";
-import { PhotoDomainAdapter } from "./photo-domain-adapter";
-import { CategoryDomainAdapter } from "./category-domain-adapter";
-import { LocationDomainAdapter } from "./location-domain-adapter";
-import { AccountDomainAdapter } from "./account-domain-adapter";
+import { Listing as ListingDO, ListingProps } from '../../../contexts/listing/listing';
+import { Listing ,ListingModel, ListingDraft, ListingStatus } from '../../../../infrastructure/data-sources/cosmos-db/models/listing';
+import { Account } from '../../../../infrastructure/data-sources/cosmos-db/models/account';
+import { LocationProps } from '../../../contexts/listing/location';
+import { Photo as PhotoDO, PhotoProps } from '../../../contexts/listing/photo';
+import { UserProps } from '../../../contexts/user/user';
+import { Account as AccountDO, AccountProps, AccountEntityReference } from '../../../contexts/account/account';
+import { CategoryProps } from '../../../contexts/listing/category';
+import mongoose from 'mongoose';
+import { MongooseDomainAdapater, MongoosePropArray } from '../mongo-domain-adapter';
+import { PhotoDomainAdapter } from './photo-domain-adapter';
+import { CategoryDomainAdapter } from './category-domain-adapter';
+import { LocationDomainAdapter } from './location-domain-adapter';
+import { AccountDomainAdapter } from './account-domain-adapter';
 
-import { MongoTypeConverter } from "../mongo-type-converter";
-import {  DraftProps } from "../../../contexts/listing/draft";
-import { DraftStatus as DraftStatusDO, DraftStatusProps } from "../../../contexts/listing/draft-status";
-import { Entity, EntityProps } from "../../../shared/entity";
+import { MongoTypeConverter } from '../mongo-type-converter';
+import {  DraftProps } from '../../../contexts/listing/draft';
+import { DraftStatus as DraftStatusDO, DraftStatusProps } from '../../../contexts/listing/draft-status';
+import { Entity, EntityProps } from '../../../shared/entity';
 
 export class ListingConverter extends MongoTypeConverter<Listing,ListingDomainAdapter,ListingDO<ListingDomainAdapter>> {
   constructor() {
@@ -97,7 +97,7 @@ export class ListingDomainAdapter extends MongooseDomainAdapater<Listing> implem
     }else{  
       accountId = ((this.props.account) as Account).id;
     }
-    return ListingModel.countDocuments({"account.id": accountId}).exec();    
+    return ListingModel.countDocuments({'account.id': accountId}).exec();    
   }
 
   get draft(): DraftProps {
