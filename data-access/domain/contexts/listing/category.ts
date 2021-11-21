@@ -1,11 +1,12 @@
 import { AggregateRoot } from '../../shared/aggregate-root';
+import { PropArray } from '../../shared/prop-array';
 
 export interface CategoryProps {
   id:string;
   name: string;
   path: string;
   parentId: CategoryProps;
-  childrenIds: CategoryProps[];
+  childrenIds: PropArray<CategoryProps>;
   createdAt: Date;
   updatedAt: Date;
   schemaVersion: string;
@@ -17,14 +18,21 @@ export class Category<props extends CategoryProps> extends AggregateRoot<props> 
   get name(): string {return this.props.name;}
   get path(): string {return this.props.path;}
   get parentId(): CategoryEntityReference {return new Category(this.props.parentId)}
-  get childrenIds(): CategoryEntityReference[] {return this.props.childrenIds.map((category) => new Category(category));}
+  get childrenIds(): CategoryEntityReference[] {return this.props.childrenIds.items.map((category) => new Category(category));}
   get updatedAt(): Date {return this.props.updatedAt;}
   get createdAt(): Date {return this.props.createdAt;}
   get schemaVersion(): string {return this.props.schemaVersion;}
 
   set name(name: string) {this.props.name = name;}
-  set path(path: string) {this.props.path = path;}
 
+  setParentId(parentId: CategoryProps) {
+    this.props.parentId = parentId;  
+    this.props.path = parentId.path ? parentId.path + '/' + this.id : this.id;
+  }
+  addChildId(childId: CategoryProps) {
+    console.log('addChildId',JSON.stringify(childId));
+    this.props.childrenIds.addItem(childId);
+  }
 }
 
 export interface CategoryEntityReference {

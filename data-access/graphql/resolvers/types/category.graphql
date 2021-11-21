@@ -20,6 +20,7 @@ extend type Mutation {
 }
 
 input CategoryDetail {
+  parentId: String
   name: String
 }
 

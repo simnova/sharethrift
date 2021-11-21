@@ -1,6 +1,6 @@
 import { Category } from "../../../../infrastructure/data-sources/cosmos-db/models/category";
 import { Category as CategoryDO, CategoryProps } from "../../../contexts/listing/category";
-import { MongooseDomainAdapater } from "../mongo-domain-adapter";
+import { MongooseDomainAdapater, MongoosePropArray } from "../mongo-domain-adapter";
 
 import { MongoTypeConverter } from "../mongo-type-converter";
 
@@ -22,6 +22,5 @@ export class CategoryDomainAdapter extends MongooseDomainAdapater<Category> impl
   get parentId(): CategoryDomainAdapter { return new CategoryDomainAdapter(this.props.parentId); }
   set parentId(value: CategoryDomainAdapter) { this.props.parentId = value.props; }
 
-  get childrenIds(): CategoryDomainAdapter[] { return this.props.childrenIds.map((child) => new CategoryDomainAdapter(child)); }
-  set childrenIds(value: CategoryDomainAdapter[]) { this.props.childrenIds = value.map(x => x.props); }
+  public childrenIds = new MongoosePropArray(this.props.childrenIds, CategoryDomainAdapter);
 }

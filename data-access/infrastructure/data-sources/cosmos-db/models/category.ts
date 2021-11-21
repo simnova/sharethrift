@@ -1,4 +1,4 @@
-import { Schema, model, Model, PopulatedDoc, Document } from 'mongoose';
+import mongoose, { Schema, model, Model } from 'mongoose';
 import { Base, BaseOptions } from './interfaces/base';
 
 export const ModelName = 'Category';
@@ -7,8 +7,8 @@ export interface Category extends Base {
   name: string;
   path: string;
   parentId: Category;
-  childrenIds: Category[];
-};
+  childrenIds: mongoose.Types.DocumentArray<Category>;
+}
 
 export const CategoryModel = model<Category>(ModelName,new Schema<Category, Model<Category>, Category>(
   {

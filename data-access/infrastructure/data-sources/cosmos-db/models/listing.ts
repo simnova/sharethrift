@@ -12,6 +12,7 @@ export interface Photo extends EmbeddedBase {
 interface ListingBase {
   title: string;
   description: string;
+  tags: string[];
   primaryCategory?: PopulatedDoc<Category.Category> | ObjectId;
   photos?: mongoose.Types.DocumentArray<Photo>;
   location?: PopulatedDoc<Location.Location>;
@@ -40,6 +41,10 @@ export const ListingModel = model<Listing>('Listing',new Schema<Listing, Model<L
     draft: {
       title: {
         type: String,
+        required: false,
+      },
+      tags: {
+        type: [String],
         required: false,
       },
       description: {
@@ -89,6 +94,10 @@ export const ListingModel = model<Listing>('Listing',new Schema<Listing, Model<L
     },
     description: {
       type: String,
+      required: false,
+    },
+    tags: {
+      type: [String],
       required: false,
     },
     primaryCategory: {

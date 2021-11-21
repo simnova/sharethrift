@@ -40,8 +40,6 @@ class DraftStatusDomainAdapter implements DraftStatusProps {
   set createdAt(value: Date) {this.props.createdAt = value};
 }
 
-
-
 class DraftDomainAdapter implements DraftProps {
   constructor(public readonly props: ListingDraft) {}
   public get id(): string { return this.props.id.valueOf() as string; }
@@ -51,6 +49,9 @@ class DraftDomainAdapter implements DraftProps {
 
   get description(): string {return this.props.description;}
   set description(value: string) {this.props.description = value;}
+
+  get tags(): string[] {return this.props.tags;}
+  set tags(value: string[]) {this.props.tags = value;}
 
   public statusHistory = new MongoosePropArray(this.props.statusHistory, DraftStatusDomainAdapter);
   public photos = new MongoosePropArray(this.props.photos, PhotoDomainAdapter);
@@ -114,6 +115,9 @@ export class ListingDomainAdapter extends MongooseDomainAdapater<Listing> implem
 
   get description(): string {return this.props.description;}
   set description(value: string) {this.props.description = value;}
+
+  get tags(): string[] {return this.props.tags;}
+  set tags(value: string[]) {this.props.tags = value;}
   
   get version(): number {return this.props.version;}
   set version(value: number) {this.props.version = value;}

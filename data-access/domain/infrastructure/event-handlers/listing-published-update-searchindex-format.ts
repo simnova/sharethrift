@@ -6,7 +6,8 @@ export const listingIndexSpec = {
     { name: "id", type: "Edm.String", searchable: false, key: true },
     { name: "title", type: "Edm.String", searchable: true, filterable: false, sortable: true, facetable: false },
     { name: "description", type: "Edm.String", searchable: true, filterable: false, sortable: false, facetable: false, analyzerName: "en.microsoft" },
-    { name: "primaryCategory", type: "Edm.String", searchable: true, filterable: true, retrievable: true, sortable: true, facetable: true }
+    { name: "primaryCategory", type: "Edm.String", searchable: true, filterable: true, retrievable: true, sortable: true, facetable: true },
+    { name: "tags", type: "Collection(Edm.String)", searchable: true, filterable: true, retrievable: false, sortable: false, facetable: true }
   ]
 } as SearchIndex;
 
@@ -15,4 +16,5 @@ export interface ListingIndexDocument  {
   title: string;
   description: string;
   primaryCategory: string;
+  tags: string[];
 }

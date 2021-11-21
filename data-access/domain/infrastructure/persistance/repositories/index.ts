@@ -6,7 +6,7 @@ import { AccountModel } from '../../../../infrastructure/data-sources/cosmos-db/
 import { AccountConverter } from '../adapters/account-domain-adapter';
 import { MongoAccountRepository } from './mongo-account-repository';
 
-import { CategoryModel } from '../../../../infrastructure/data-sources/cosmos-db/models/category';
+import { Category, CategoryModel } from '../../../../infrastructure/data-sources/cosmos-db/models/category';
 import { CategoryConverter } from '../adapters/category-domain-adapter';
 import { MongoCategoryRepository } from './mongo-category-repository';
 

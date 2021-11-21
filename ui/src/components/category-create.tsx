@@ -1,11 +1,12 @@
-import React, { FC } from 'react';
+import React, { FC, useState } from 'react';
 import { useMutation } from "@apollo/client";
 import {CategoryCreateDocument} from '../generated';
-
+import { CategorySelection } from './category-selection';
 
 export const CategoryCreate: FC<any> = () => {
   let input: HTMLInputElement | null = null;
   const [addCategory, { data, loading, error }] = useMutation(CategoryCreateDocument);
+  const [category, setCategory] = useState('');
 
   if(error){
     return <>
@@ -27,6 +28,7 @@ export const CategoryCreate: FC<any> = () => {
           e.preventDefault();
           addCategory({ variables: { 
             category : {
+              parentId: category,
               name: input?.value
             }
           } 
@@ -40,6 +42,8 @@ export const CategoryCreate: FC<any> = () => {
           }}
         />
         <br/>
+        Parent Category:
+        <CategorySelection itemSelected={setCategory} /><br/>
         <button type="submit">Add Category</button>
       </form>
     </div>

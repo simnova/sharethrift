@@ -35,7 +35,12 @@ class NodeEventBusImpl implements EventBus {
     console.log(`Registering node event handler for: ${event.name}`);
     this.broadcaster.on(event.name, async (rawpayload:string) => {
       console.log(`Received node event ${event.name} with data ${rawpayload}`);
-      await func(JSON.parse(rawpayload));
+      try{
+        await func(JSON.parse(rawpayload));
+      } catch(e) {
+        console.error(`Error handling node event ${event.name} with data ${rawpayload}`);
+        console.error(e);
+      }
     });
   }
 

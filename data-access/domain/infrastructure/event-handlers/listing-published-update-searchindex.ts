@@ -14,7 +14,8 @@ export default () => { NodeEventBus.register(ListingPublishedEvent, async (paylo
       id: listing.id,
       title: listing.title,
       description: listing.description,
-      primaryCategory: listing.primaryCategory.name
+      primaryCategory: listing.primaryCategory.name,
+      tags: listing.tags
     };
     let cognativeSearch = new CognativeSearch();
     await cognativeSearch.createIndexIfNotExists(listingIndexSpec.name, listingIndexSpec);

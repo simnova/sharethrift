@@ -4,6 +4,7 @@ type Listing implements MongoBase {
   account: Account 
   title: String
   description: String
+  tags: [String]
   primaryCategory: Category 
   photos: [Photo]
   location: Location
@@ -35,6 +36,7 @@ input ListingDraft {
   id: ID
   title: String
   description: String
+  tags: [String]
   primaryCategory: ObjectID
 }
 
@@ -91,6 +93,7 @@ type Address {
 type Draft {
   title: String
   description: String
+  tags: [String]
   primaryCategory: Category
   statusHistory: [DraftStatus]  
 }

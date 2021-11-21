@@ -9,7 +9,7 @@ import { UserConverter } from '../../../domain/infrastructure/persistance/adapte
 import { CategoryDomainAdapter } from '../../../domain/infrastructure/persistance/adapters/category-domain-adapter';
 import { AccountConverter } from '../../../domain/infrastructure/persistance/adapters/account-domain-adapter';
 import { PassportImpl } from '../../../domain/contexts/iam/passport';
-import { ObjectId } from 'mongoose';
+import { Tags } from '../../../domain/contexts/listing/listing-value-objects';
 
 type PropType = ListingDomainAdapter;
 type DomainType = ListingDO<PropType>;
@@ -38,9 +38,10 @@ export class Listings extends DomainDataSource<Context,Listing,PropType,DomainTy
     let result : ListingDO<ListingDomainAdapter>;
     await this.withTransaction(async (repo) => {
       let domainObject = await repo.get(draft.id);
+
       domainObject.draft.requestUpdateTitle(draft.title);
       domainObject.draft.requestUpdateDescription(draft.description);
-     // domainObject.draft.requestAddCategory(draft.category);
+      domainObject.draft.requestUpdateTags(new Tags(draft.tags));
 
       result = await repo.save(domainObject);
     });
@@ -55,7 +56,7 @@ export class Listings extends DomainDataSource<Context,Listing,PropType,DomainTy
     let result : ListingDO<ListingDomainAdapter>;
     await this.withTransaction(async (repo) => {
       let domainObject = await repo.get(id);
-      domainObject.requestPublish()//.requestPublish();
+      domainObject.requestPublish();
       result = await repo.save(domainObject);
     });
     return (new ListingConverter()).toMongo(result);

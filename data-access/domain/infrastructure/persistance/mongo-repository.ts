@@ -6,12 +6,12 @@ import { EntityProps } from "../../shared/entity";
 import { EventBus } from "../../shared/event-bus";
 import { DomainEvent } from "../../shared/domain-event";
 
-export abstract class MongoRepositoryBase<MongoType,PropType extends EntityProps,DomainType extends AggregateRoot<PropType>> implements Repository<DomainType> {
+export abstract class MongoRepositoryBase<MongoType extends Document,PropType extends EntityProps,DomainType extends AggregateRoot<PropType>> implements Repository<DomainType> {
   protected itemsInTransaction:DomainType[] = [];
   constructor(
     protected eventBus: EventBus,
     protected model : Model<MongoType>, 
-    protected typeConverter:TypeConverter<Document<MongoType>,DomainType,PropType>, 
+    public typeConverter:TypeConverter<MongoType,DomainType,PropType>, 
     protected session:ClientSession) {}
   
   async get(id: string): Promise<DomainType> {
@@ -27,7 +27,12 @@ export abstract class MongoRepositoryBase<MongoType,PropType extends EntityProps
     }
     item.clearDomainEvents();
     this.itemsInTransaction.push(item);
-    return this.typeConverter.toDomain(await this.typeConverter.toMongo(item).save({session:this.session}));
+    try {
+      return this.typeConverter.toDomain(await this.typeConverter.toMongo(item).save({session:this.session}));
+    } catch (error) {
+      console.log(`Error saving item : ${error}`);
+      throw error;
+    }
   }
 
   async getIntegrationEvents(): Promise<DomainEvent[]> {
@@ -38,16 +43,16 @@ export abstract class MongoRepositoryBase<MongoType,PropType extends EntityProps
     return integrationEventsGroup.reduce((acc,curr) => acc.concat(curr),[]);
   }
 
-  static create<MongoType,PropType extends EntityProps, DomainType extends AggregateRoot<PropType>, RepoType extends MongoRepositoryBase<MongoType,PropType,DomainType>>(
+  static create<MongoType extends Document,PropType extends EntityProps, DomainType extends AggregateRoot<PropType>, RepoType extends MongoRepositoryBase<MongoType,PropType,DomainType>>(
     bus: EventBus,
     model: Model<MongoType>, 
-    typeConverter:TypeConverter<Document<MongoType>,DomainType,PropType>, 
+    typeConverter:TypeConverter<MongoType,DomainType,PropType>, 
     session:ClientSession,
-    repoClass: new(bus:EventBus,model:Model<MongoType>,typeConverter:TypeConverter<Document<MongoType>,DomainType,PropType>,session:ClientSession) =>RepoType ): RepoType {
+    repoClass: new(bus:EventBus,model:Model<MongoType>,typeConverter:TypeConverter<MongoType,DomainType,PropType>,session:ClientSession) =>RepoType ): RepoType {
       return new repoClass(bus,model,typeConverter,session);
   }
 }
-
+/*
 export class MongoFactory{
   static create<MongoType,PropType extends EntityProps, DomainType extends AggregateRoot<PropType>, RepoType extends MongoRepositoryBase<MongoType,PropType,DomainType>>(
     bus: EventBus,
@@ -58,3 +63,4 @@ export class MongoFactory{
       return new repoClass(bus,model,typeConverter,session);
   }
 }
+*/

@@ -122,6 +122,7 @@ export type Category = MongoBase & {
 };
 
 export type CategoryDetail = {
+  parentId?: Maybe<Scalars["String"]>;
   name?: Maybe<Scalars["String"]>;
 };
 
@@ -145,6 +146,7 @@ export type Draft = {
   __typename?: "Draft";
   title?: Maybe<Scalars["String"]>;
   description?: Maybe<Scalars["String"]>;
+  tags?: Maybe<Array<Maybe<Scalars["String"]>>>;
   primaryCategory?: Maybe<Category>;
   statusHistory?: Maybe<Array<Maybe<DraftStatus>>>;
 };
@@ -162,6 +164,7 @@ export type Listing = MongoBase & {
   account?: Maybe<Account>;
   title?: Maybe<Scalars["String"]>;
   description?: Maybe<Scalars["String"]>;
+  tags?: Maybe<Array<Maybe<Scalars["String"]>>>;
   primaryCategory?: Maybe<Category>;
   photos?: Maybe<Array<Maybe<Photo>>>;
   location?: Maybe<Location>;
@@ -184,6 +187,7 @@ export type ListingDraft = {
   id?: Maybe<Scalars["ID"]>;
   title?: Maybe<Scalars["String"]>;
   description?: Maybe<Scalars["String"]>;
+  tags?: Maybe<Array<Maybe<Scalars["String"]>>>;
   primaryCategory?: Maybe<Scalars["ObjectID"]>;
 };
 
@@ -450,6 +454,7 @@ export type ListingsListingsQuery = {
         id: any;
         title?: Maybe<string>;
         description?: Maybe<string>;
+        tags?: Maybe<Array<Maybe<string>>>;
         createdAt?: Maybe<any>;
         account?: Maybe<{
           __typename?: "Account";
@@ -465,6 +470,7 @@ export type ListingsListingsQuery = {
           __typename?: "Draft";
           title?: Maybe<string>;
           description?: Maybe<string>;
+          tags?: Maybe<Array<Maybe<string>>>;
           statusHistory?: Maybe<
             Array<
               Maybe<{
@@ -507,6 +513,7 @@ export type ListingsFieldsFragment = {
   id: any;
   title?: Maybe<string>;
   description?: Maybe<string>;
+  tags?: Maybe<Array<Maybe<string>>>;
   createdAt?: Maybe<any>;
   account?: Maybe<{ __typename?: "Account"; id: any; name?: Maybe<string> }>;
   primaryCategory?: Maybe<{
@@ -518,6 +525,7 @@ export type ListingsFieldsFragment = {
     __typename?: "Draft";
     title?: Maybe<string>;
     description?: Maybe<string>;
+    tags?: Maybe<Array<Maybe<string>>>;
     statusHistory?: Maybe<
       Array<
         Maybe<{
@@ -708,6 +716,7 @@ export const ListingsFieldsFragmentDoc = {
           },
           { kind: "Field", name: { kind: "Name", value: "title" } },
           { kind: "Field", name: { kind: "Name", value: "description" } },
+          { kind: "Field", name: { kind: "Name", value: "tags" } },
           { kind: "Field", name: { kind: "Name", value: "createdAt" } },
           {
             kind: "Field",
@@ -728,6 +737,7 @@ export const ListingsFieldsFragmentDoc = {
               selections: [
                 { kind: "Field", name: { kind: "Name", value: "title" } },
                 { kind: "Field", name: { kind: "Name", value: "description" } },
+                { kind: "Field", name: { kind: "Name", value: "tags" } },
                 {
                   kind: "Field",
                   name: { kind: "Name", value: "statusHistory" },

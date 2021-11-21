@@ -15,7 +15,11 @@ export abstract class MongoTypeConverter<MongooseModelType extends Base,DomainPr
     if(!mongoType) { return null;}
     return new this.domainObject(this.toAdapter(mongoType));
   }
-  toAdapter(mongoType: MongooseModelType): DomainPropInterface {
-    return new this.adapter(mongoType);
+  toAdapter(mongoType: MongooseModelType | DomainType): DomainPropInterface {
+    if(mongoType instanceof this.domainObject) {
+      return mongoType.props;
+    }
+    return new this.adapter(mongoType as MongooseModelType);
   }
+
 }

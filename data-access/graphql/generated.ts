@@ -130,6 +130,7 @@ export type Category = MongoBase & {
 };
 
 export type CategoryDetail = {
+  parentId?: Maybe<Scalars["String"]>;
   name?: Maybe<Scalars["String"]>;
 };
 
@@ -153,6 +154,7 @@ export type Draft = {
   __typename?: "Draft";
   title?: Maybe<Scalars["String"]>;
   description?: Maybe<Scalars["String"]>;
+  tags?: Maybe<Array<Maybe<Scalars["String"]>>>;
   primaryCategory?: Maybe<Category>;
   statusHistory?: Maybe<Array<Maybe<DraftStatus>>>;
 };
@@ -170,6 +172,7 @@ export type Listing = MongoBase & {
   account?: Maybe<Account>;
   title?: Maybe<Scalars["String"]>;
   description?: Maybe<Scalars["String"]>;
+  tags?: Maybe<Array<Maybe<Scalars["String"]>>>;
   primaryCategory?: Maybe<Category>;
   photos?: Maybe<Array<Maybe<Photo>>>;
   location?: Maybe<Location>;
@@ -192,6 +195,7 @@ export type ListingDraft = {
   id?: Maybe<Scalars["ID"]>;
   title?: Maybe<Scalars["String"]>;
   description?: Maybe<Scalars["String"]>;
+  tags?: Maybe<Array<Maybe<Scalars["String"]>>>;
   primaryCategory?: Maybe<Scalars["ObjectID"]>;
 };
 
@@ -872,6 +876,11 @@ export type DraftResolvers<
     ParentType,
     ContextType
   >;
+  tags?: Resolver<
+    Maybe<Array<Maybe<ResolversTypes["String"]>>>,
+    ParentType,
+    ContextType
+  >;
   primaryCategory?: Resolver<
     Maybe<ResolversTypes["Category"]>,
     ParentType,
@@ -995,6 +1004,11 @@ export type ListingResolvers<
   title?: Resolver<Maybe<ResolversTypes["String"]>, ParentType, ContextType>;
   description?: Resolver<
     Maybe<ResolversTypes["String"]>,
+    ParentType,
+    ContextType
+  >;
+  tags?: Resolver<
+    Maybe<Array<Maybe<ResolversTypes["String"]>>>,
     ParentType,
     ContextType
   >;

@@ -16,6 +16,7 @@ export interface ListingProps extends EntityProps {
   getNewDraft(): DraftProps;
   title: string;
   description: string;
+  tags: string[];
   location: LocationProps;
   photos: PhotoProps[];
   getAccount(): Promise<AccountEntityReference>;
@@ -26,10 +27,12 @@ export interface ListingProps extends EntityProps {
   schemaVersion: string;  
   usersCurrentPublishedListingQuantity: () => Promise<number>;
 }
+
 export interface ListingEntityReference {
   readonly id: string;
   readonly title: string;
   readonly description: string;
+  readonly tags: string[];
   readonly location?: LocationEntityReference;
   readonly photos?: PhotoEntityReference[];
   account(): Promise<AccountEntityReference>;
@@ -47,6 +50,7 @@ export class Listing<props extends ListingProps> extends AggregateRoot<props> im
   get id(): string {return this.props.id;}
   get title(): string {return this.props.title;}
   get description(): string {return this.props.description;}
+  get tags(): string[] {return this.props.tags;}
   get location(): LocationEntityReference {return new Location(this.props.location);}
   get photos(): PhotoEntityReference[] { return this.props.photos.map(photo=>new Photo(photo));} //should be REadOnyArray<PhotoEntityReference> but gen has issues
   async account(): Promise<AccountEntityReference> { return this.props.getAccount();}
@@ -54,9 +58,6 @@ export class Listing<props extends ListingProps> extends AggregateRoot<props> im
   get updatedAt(): Date {return this.props.updatedAt;}
   get createdAt(): Date {return this.props.createdAt;}
   get schemaVersion(): string {return this.props.schemaVersion;}
-
-  //Somthing to consider: https://lostechies.com/jimmybogard/2007/10/24/entity-validation-with-visitors-and-extension-methods/
-  // This would allow us to validate the listing before publishing it, using external services.. e.g. check if the user has too many listings alraedy, (e.g. business rule of user can have at max 15 listings)
 
   static async getNewListing<newPropType extends ListingProps>(props:newPropType,account: AccountEntityReference, passport:Passport): Promise<Listing<newPropType>> {
     let listing = new Listing(props);
@@ -80,6 +81,7 @@ export class Listing<props extends ListingProps> extends AggregateRoot<props> im
     if(this.props.photos.find(photo=>photo.documentId == documentId)){
       throw new Error("Photo already exists");
     }
+
     let newPhoto = Photo.create({
       documentId: documentId,
       order: this.props.photos.length + 1,
@@ -92,6 +94,7 @@ export class Listing<props extends ListingProps> extends AggregateRoot<props> im
     await this.draft.appovePublish();
     this.props.title = this.props.draft.title;
     this.props.description = this.props.draft.description;
+    this.props.tags = this.draft.tags;
     //this.props.location = this.props.draft.location;
     //this.props.photos.length = 0;
     //this.props.photos.push(...this.props.draft.photos.items);
