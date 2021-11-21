@@ -1,7 +1,7 @@
 import { NodeEventBus } from '../events/node-event-bus';
 import { ListingDraftPublishRequestedEvent } from '../../events/listing-draft-publish-requested';
 import { ListingUnitOfWork } from '../persistance/repositories';
-import { ContentModerator, ModeratedContentType } from '../../../infrastructure/services/content-moderator';
+import { moderateContentBatch } from '../../../infrastructure/services/content-moderator/moderate-content-batch';
 
 export default () => { NodeEventBus.register(ListingDraftPublishRequestedEvent, async (payload) => {
 
@@ -14,18 +14,7 @@ export default () => { NodeEventBus.register(ListingDraftPublishRequestedEvent, 
       throw new Error(`ListingDraftPublishRequestedEvent -> Auto Review Handler - Listing with Id: ${payload.listingId} not found`);
     }
 
-    let moderateContent = async (contentWithKeys:Map<string,string>): Promise<[boolean,string]> => {
-      let contentModerator = new ContentModerator();
-      for(let key in contentWithKeys) {
-        let result = await contentModerator.moderateText(contentWithKeys[key], ModeratedContentType.PlainText);
-        if(!result.IsApproved) {
-          return [false, key];
-        }
-      }
-      return [true, ''];
-    } 
-
-    let moderationOutcome = await moderateContent(
+    let moderationOutcome = await moderateContentBatch(
       new Map([
         ['title', listing.draft.title],
         ['description', listing.draft.description],
@@ -33,8 +22,8 @@ export default () => { NodeEventBus.register(ListingDraftPublishRequestedEvent, 
       ])
     );
 
-    if(!moderationOutcome[0]) {
-      listing.draft.rejectPublish(`Please review your draft, the ${moderationOutcome[1]} contain content that is inappropriate.`);
+    if(!moderationOutcome.batchApproved) {
+      listing.draft.rejectPublish(`Please review your draft, the ${moderationOutcome.failedKey} contain content that is inappropriate.`);
     } else {
       await listing.publishApprovedDraft();
     }
