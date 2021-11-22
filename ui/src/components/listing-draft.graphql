@@ -1,0 +1,11 @@
+mutation ListingDraftUpdateDraft( $input: ListingDraft!) {
+  updateDraft(input: $input) {
+    title
+  }
+}
+
+mutation ListingDraftPublishDraft($id: ID!) {
+  publishDraft(id: $id) {
+    title
+  }
+}

@@ -122,6 +122,7 @@ export type Category = MongoBase & {
 };
 
 export type CategoryDetail = {
+  parentId?: Maybe<Scalars["String"]>;
   name?: Maybe<Scalars["String"]>;
 };
 
@@ -129,7 +130,7 @@ export type Contact = {
   __typename?: "Contact";
   firstName: Scalars["String"];
   lastName?: Maybe<Scalars["String"]>;
-  role?: Maybe<Role>;
+  role: Scalars["ObjectID"];
   user?: Maybe<User>;
   id: Scalars["ObjectID"];
   updatedAt?: Maybe<Scalars["DateTime"]>;
@@ -141,15 +142,33 @@ export type CreateListingPayload = {
   listing?: Maybe<Listing>;
 };
 
+export type Draft = {
+  __typename?: "Draft";
+  title?: Maybe<Scalars["String"]>;
+  description?: Maybe<Scalars["String"]>;
+  tags?: Maybe<Array<Maybe<Scalars["String"]>>>;
+  primaryCategory?: Maybe<Category>;
+  statusHistory?: Maybe<Array<Maybe<DraftStatus>>>;
+};
+
+export type DraftStatus = {
+  __typename?: "DraftStatus";
+  statusCode?: Maybe<Scalars["String"]>;
+  statusDetail?: Maybe<Scalars["String"]>;
+  createdAt?: Maybe<Scalars["DateTime"]>;
+};
+
 /**  https://www.apollographql.com/blog/graphql/basics/designing-graphql-mutations/  */
 export type Listing = MongoBase & {
   __typename?: "Listing";
   account?: Maybe<Account>;
   title?: Maybe<Scalars["String"]>;
   description?: Maybe<Scalars["String"]>;
+  tags?: Maybe<Array<Maybe<Scalars["String"]>>>;
   primaryCategory?: Maybe<Category>;
   photos?: Maybe<Array<Maybe<Photo>>>;
   location?: Maybe<Location>;
+  draft?: Maybe<Draft>;
   id: Scalars["ObjectID"];
   schemaVersion?: Maybe<Scalars["String"]>;
   updatedAt?: Maybe<Scalars["DateTime"]>;
@@ -161,6 +180,14 @@ export type ListingDetail = {
   account?: Maybe<Scalars["ObjectID"]>;
   title?: Maybe<Scalars["String"]>;
   description?: Maybe<Scalars["String"]>;
+  primaryCategory?: Maybe<Scalars["ObjectID"]>;
+};
+
+export type ListingDraft = {
+  id?: Maybe<Scalars["ID"]>;
+  title?: Maybe<Scalars["String"]>;
+  description?: Maybe<Scalars["String"]>;
+  tags?: Maybe<Array<Maybe<Scalars["String"]>>>;
   primaryCategory?: Maybe<Scalars["ObjectID"]>;
 };
 
@@ -197,7 +224,9 @@ export type Mutation = {
   createCategory?: Maybe<Category>;
   createListing?: Maybe<CreateListingPayload>;
   createUser?: Maybe<User>;
+  publishDraft?: Maybe<Listing>;
   updateCategory?: Maybe<Category>;
+  updateDraft?: Maybe<Listing>;
   /** Allows the user to update their profile */
   updateUser?: Maybe<User>;
 };
@@ -213,8 +242,18 @@ export type MutationCreateListingArgs = {
 };
 
 /**  Base Mutation Type definition - all mutations will be defined in separate files extending this type  */
+export type MutationPublishDraftArgs = {
+  id: Scalars["ID"];
+};
+
+/**  Base Mutation Type definition - all mutations will be defined in separate files extending this type  */
 export type MutationUpdateCategoryArgs = {
   category: UpdateCategory;
+};
+
+/**  Base Mutation Type definition - all mutations will be defined in separate files extending this type  */
+export type MutationUpdateDraftArgs = {
+  input: ListingDraft;
 };
 
 /**  Base Mutation Type definition - all mutations will be defined in separate files extending this type  */
@@ -386,6 +425,24 @@ export type ListingCreateMutation = {
   }>;
 };
 
+export type ListingDraftUpdateDraftMutationVariables = Exact<{
+  input: ListingDraft;
+}>;
+
+export type ListingDraftUpdateDraftMutation = {
+  __typename?: "Mutation";
+  updateDraft?: Maybe<{ __typename?: "Listing"; title?: Maybe<string> }>;
+};
+
+export type ListingDraftPublishDraftMutationVariables = Exact<{
+  id: Scalars["ID"];
+}>;
+
+export type ListingDraftPublishDraftMutation = {
+  __typename?: "Mutation";
+  publishDraft?: Maybe<{ __typename?: "Listing"; title?: Maybe<string> }>;
+};
+
 export type ListingsListingsQueryVariables = Exact<{ [key: string]: never }>;
 
 export type ListingsListingsQuery = {
@@ -397,6 +454,8 @@ export type ListingsListingsQuery = {
         id: any;
         title?: Maybe<string>;
         description?: Maybe<string>;
+        tags?: Maybe<Array<Maybe<string>>>;
+        createdAt?: Maybe<any>;
         account?: Maybe<{
           __typename?: "Account";
           id: any;
@@ -404,7 +463,29 @@ export type ListingsListingsQuery = {
         }>;
         primaryCategory?: Maybe<{
           __typename?: "Category";
+          id: any;
           name?: Maybe<string>;
+        }>;
+        draft?: Maybe<{
+          __typename?: "Draft";
+          title?: Maybe<string>;
+          description?: Maybe<string>;
+          tags?: Maybe<Array<Maybe<string>>>;
+          statusHistory?: Maybe<
+            Array<
+              Maybe<{
+                __typename?: "DraftStatus";
+                statusCode?: Maybe<string>;
+                statusDetail?: Maybe<string>;
+                createdAt?: Maybe<any>;
+              }>
+            >
+          >;
+          primaryCategory?: Maybe<{
+            __typename?: "Category";
+            id: any;
+            name?: Maybe<string>;
+          }>;
         }>;
         photos?: Maybe<
           Array<
@@ -432,8 +513,35 @@ export type ListingsFieldsFragment = {
   id: any;
   title?: Maybe<string>;
   description?: Maybe<string>;
+  tags?: Maybe<Array<Maybe<string>>>;
+  createdAt?: Maybe<any>;
   account?: Maybe<{ __typename?: "Account"; id: any; name?: Maybe<string> }>;
-  primaryCategory?: Maybe<{ __typename?: "Category"; name?: Maybe<string> }>;
+  primaryCategory?: Maybe<{
+    __typename?: "Category";
+    id: any;
+    name?: Maybe<string>;
+  }>;
+  draft?: Maybe<{
+    __typename?: "Draft";
+    title?: Maybe<string>;
+    description?: Maybe<string>;
+    tags?: Maybe<Array<Maybe<string>>>;
+    statusHistory?: Maybe<
+      Array<
+        Maybe<{
+          __typename?: "DraftStatus";
+          statusCode?: Maybe<string>;
+          statusDetail?: Maybe<string>;
+          createdAt?: Maybe<any>;
+        }>
+      >
+    >;
+    primaryCategory?: Maybe<{
+      __typename?: "Category";
+      id: any;
+      name?: Maybe<string>;
+    }>;
+  }>;
   photos?: Maybe<
     Array<
       Maybe<{
@@ -608,13 +716,60 @@ export const ListingsFieldsFragmentDoc = {
           },
           { kind: "Field", name: { kind: "Name", value: "title" } },
           { kind: "Field", name: { kind: "Name", value: "description" } },
+          { kind: "Field", name: { kind: "Name", value: "tags" } },
+          { kind: "Field", name: { kind: "Name", value: "createdAt" } },
           {
             kind: "Field",
             name: { kind: "Name", value: "primaryCategory" },
             selectionSet: {
               kind: "SelectionSet",
               selections: [
+                { kind: "Field", name: { kind: "Name", value: "id" } },
                 { kind: "Field", name: { kind: "Name", value: "name" } },
+              ],
+            },
+          },
+          {
+            kind: "Field",
+            name: { kind: "Name", value: "draft" },
+            selectionSet: {
+              kind: "SelectionSet",
+              selections: [
+                { kind: "Field", name: { kind: "Name", value: "title" } },
+                { kind: "Field", name: { kind: "Name", value: "description" } },
+                { kind: "Field", name: { kind: "Name", value: "tags" } },
+                {
+                  kind: "Field",
+                  name: { kind: "Name", value: "statusHistory" },
+                  selectionSet: {
+                    kind: "SelectionSet",
+                    selections: [
+                      {
+                        kind: "Field",
+                        name: { kind: "Name", value: "statusCode" },
+                      },
+                      {
+                        kind: "Field",
+                        name: { kind: "Name", value: "statusDetail" },
+                      },
+                      {
+                        kind: "Field",
+                        name: { kind: "Name", value: "createdAt" },
+                      },
+                    ],
+                  },
+                },
+                {
+                  kind: "Field",
+                  name: { kind: "Name", value: "primaryCategory" },
+                  selectionSet: {
+                    kind: "SelectionSet",
+                    selections: [
+                      { kind: "Field", name: { kind: "Name", value: "id" } },
+                      { kind: "Field", name: { kind: "Name", value: "name" } },
+                    ],
+                  },
+                },
               ],
             },
           },
@@ -924,6 +1079,108 @@ export const ListingCreateDocument = {
 } as unknown as DocumentNode<
   ListingCreateMutation,
   ListingCreateMutationVariables
+>;
+export const ListingDraftUpdateDraftDocument = {
+  kind: "Document",
+  definitions: [
+    {
+      kind: "OperationDefinition",
+      operation: "mutation",
+      name: { kind: "Name", value: "ListingDraftUpdateDraft" },
+      variableDefinitions: [
+        {
+          kind: "VariableDefinition",
+          variable: {
+            kind: "Variable",
+            name: { kind: "Name", value: "input" },
+          },
+          type: {
+            kind: "NonNullType",
+            type: {
+              kind: "NamedType",
+              name: { kind: "Name", value: "ListingDraft" },
+            },
+          },
+        },
+      ],
+      selectionSet: {
+        kind: "SelectionSet",
+        selections: [
+          {
+            kind: "Field",
+            name: { kind: "Name", value: "updateDraft" },
+            arguments: [
+              {
+                kind: "Argument",
+                name: { kind: "Name", value: "input" },
+                value: {
+                  kind: "Variable",
+                  name: { kind: "Name", value: "input" },
+                },
+              },
+            ],
+            selectionSet: {
+              kind: "SelectionSet",
+              selections: [
+                { kind: "Field", name: { kind: "Name", value: "title" } },
+              ],
+            },
+          },
+        ],
+      },
+    },
+  ],
+} as unknown as DocumentNode<
+  ListingDraftUpdateDraftMutation,
+  ListingDraftUpdateDraftMutationVariables
+>;
+export const ListingDraftPublishDraftDocument = {
+  kind: "Document",
+  definitions: [
+    {
+      kind: "OperationDefinition",
+      operation: "mutation",
+      name: { kind: "Name", value: "ListingDraftPublishDraft" },
+      variableDefinitions: [
+        {
+          kind: "VariableDefinition",
+          variable: { kind: "Variable", name: { kind: "Name", value: "id" } },
+          type: {
+            kind: "NonNullType",
+            type: { kind: "NamedType", name: { kind: "Name", value: "ID" } },
+          },
+        },
+      ],
+      selectionSet: {
+        kind: "SelectionSet",
+        selections: [
+          {
+            kind: "Field",
+            name: { kind: "Name", value: "publishDraft" },
+            arguments: [
+              {
+                kind: "Argument",
+                name: { kind: "Name", value: "id" },
+                value: {
+                  kind: "Variable",
+                  name: { kind: "Name", value: "id" },
+                },
+              },
+            ],
+            selectionSet: {
+              kind: "SelectionSet",
+              selections: [
+                { kind: "Field", name: { kind: "Name", value: "title" } },
+              ],
+            },
+          },
+        ],
+      },
+    },
+  ],
+} as unknown as DocumentNode<
+  ListingDraftPublishDraftMutation,
+  ListingDraftPublishDraftMutationVariables
 >;
 export const ListingsListingsDocument = {
   kind: "Document",

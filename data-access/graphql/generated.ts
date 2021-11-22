@@ -130,6 +130,7 @@ export type Category = MongoBase & {
 };
 
 export type CategoryDetail = {
+  parentId?: Maybe<Scalars["String"]>;
   name?: Maybe<Scalars["String"]>;
 };
 
@@ -137,7 +138,7 @@ export type Contact = {
   __typename?: "Contact";
   firstName: Scalars["String"];
   lastName?: Maybe<Scalars["String"]>;
-  role?: Maybe<Role>;
+  role: Scalars["ObjectID"];
   user?: Maybe<User>;
   id: Scalars["ObjectID"];
   updatedAt?: Maybe<Scalars["DateTime"]>;
@@ -149,15 +150,33 @@ export type CreateListingPayload = {
   listing?: Maybe<Listing>;
 };
 
+export type Draft = {
+  __typename?: "Draft";
+  title?: Maybe<Scalars["String"]>;
+  description?: Maybe<Scalars["String"]>;
+  tags?: Maybe<Array<Maybe<Scalars["String"]>>>;
+  primaryCategory?: Maybe<Category>;
+  statusHistory?: Maybe<Array<Maybe<DraftStatus>>>;
+};
+
+export type DraftStatus = {
+  __typename?: "DraftStatus";
+  statusCode?: Maybe<Scalars["String"]>;
+  statusDetail?: Maybe<Scalars["String"]>;
+  createdAt?: Maybe<Scalars["DateTime"]>;
+};
+
 /**  https://www.apollographql.com/blog/graphql/basics/designing-graphql-mutations/  */
 export type Listing = MongoBase & {
   __typename?: "Listing";
   account?: Maybe<Account>;
   title?: Maybe<Scalars["String"]>;
   description?: Maybe<Scalars["String"]>;
+  tags?: Maybe<Array<Maybe<Scalars["String"]>>>;
   primaryCategory?: Maybe<Category>;
   photos?: Maybe<Array<Maybe<Photo>>>;
   location?: Maybe<Location>;
+  draft?: Maybe<Draft>;
   id: Scalars["ObjectID"];
   schemaVersion?: Maybe<Scalars["String"]>;
   updatedAt?: Maybe<Scalars["DateTime"]>;
@@ -169,6 +188,14 @@ export type ListingDetail = {
   account?: Maybe<Scalars["ObjectID"]>;
   title?: Maybe<Scalars["String"]>;
   description?: Maybe<Scalars["String"]>;
+  primaryCategory?: Maybe<Scalars["ObjectID"]>;
+};
+
+export type ListingDraft = {
+  id?: Maybe<Scalars["ID"]>;
+  title?: Maybe<Scalars["String"]>;
+  description?: Maybe<Scalars["String"]>;
+  tags?: Maybe<Array<Maybe<Scalars["String"]>>>;
   primaryCategory?: Maybe<Scalars["ObjectID"]>;
 };
 
@@ -205,7 +232,9 @@ export type Mutation = {
   createCategory?: Maybe<Category>;
   createListing?: Maybe<CreateListingPayload>;
   createUser?: Maybe<User>;
+  publishDraft?: Maybe<Listing>;
   updateCategory?: Maybe<Category>;
+  updateDraft?: Maybe<Listing>;
   /** Allows the user to update their profile */
   updateUser?: Maybe<User>;
 };
@@ -221,8 +250,18 @@ export type MutationCreateListingArgs = {
 };
 
 /**  Base Mutation Type definition - all mutations will be defined in separate files extending this type  */
+export type MutationPublishDraftArgs = {
+  id: Scalars["ID"];
+};
+
+/**  Base Mutation Type definition - all mutations will be defined in separate files extending this type  */
 export type MutationUpdateCategoryArgs = {
   category: UpdateCategory;
+};
+
+/**  Base Mutation Type definition - all mutations will be defined in separate files extending this type  */
+export type MutationUpdateDraftArgs = {
+  input: ListingDraft;
 };
 
 /**  Base Mutation Type definition - all mutations will be defined in separate files extending this type  */
@@ -440,6 +479,8 @@ export type ResolversTypes = ResolversObject<{
   Currency: ResolverTypeWrapper<Scalars["Currency"]>;
   Date: ResolverTypeWrapper<Scalars["Date"]>;
   DateTime: ResolverTypeWrapper<Scalars["DateTime"]>;
+  Draft: ResolverTypeWrapper<Draft>;
+  DraftStatus: ResolverTypeWrapper<DraftStatus>;
   Duration: ResolverTypeWrapper<Scalars["Duration"]>;
   EmailAddress: ResolverTypeWrapper<Scalars["EmailAddress"]>;
   GUID: ResolverTypeWrapper<Scalars["GUID"]>;
@@ -458,6 +499,8 @@ export type ResolversTypes = ResolversObject<{
   Latitude: ResolverTypeWrapper<Scalars["Latitude"]>;
   Listing: ResolverTypeWrapper<Listing>;
   ListingDetail: ListingDetail;
+  ListingDraft: ListingDraft;
+  ID: ResolverTypeWrapper<Scalars["ID"]>;
   ListingPermissions: ResolverTypeWrapper<ListingPermissions>;
   LocalDate: ResolverTypeWrapper<Scalars["LocalDate"]>;
   LocalEndTime: ResolverTypeWrapper<Scalars["LocalEndTime"]>;
@@ -493,7 +536,6 @@ export type ResolversTypes = ResolversObject<{
   PositiveInt: ResolverTypeWrapper<Scalars["PositiveInt"]>;
   PostalCode: ResolverTypeWrapper<Scalars["PostalCode"]>;
   Query: ResolverTypeWrapper<{}>;
-  ID: ResolverTypeWrapper<Scalars["ID"]>;
   RGB: ResolverTypeWrapper<Scalars["RGB"]>;
   RGBA: ResolverTypeWrapper<Scalars["RGBA"]>;
   Role: ResolverTypeWrapper<Role>;
@@ -528,6 +570,8 @@ export type ResolversParentTypes = ResolversObject<{
   Currency: Scalars["Currency"];
   Date: Scalars["Date"];
   DateTime: Scalars["DateTime"];
+  Draft: Draft;
+  DraftStatus: DraftStatus;
   Duration: Scalars["Duration"];
   EmailAddress: Scalars["EmailAddress"];
   GUID: Scalars["GUID"];
@@ -546,6 +590,8 @@ export type ResolversParentTypes = ResolversObject<{
   Latitude: Scalars["Latitude"];
   Listing: Listing;
   ListingDetail: ListingDetail;
+  ListingDraft: ListingDraft;
+  ID: Scalars["ID"];
   ListingPermissions: ListingPermissions;
   LocalDate: Scalars["LocalDate"];
   LocalEndTime: Scalars["LocalEndTime"];
@@ -581,7 +627,6 @@ export type ResolversParentTypes = ResolversObject<{
   PositiveInt: Scalars["PositiveInt"];
   PostalCode: Scalars["PostalCode"];
   Query: {};
-  ID: Scalars["ID"];
   RGB: Scalars["RGB"];
   RGBA: Scalars["RGBA"];
   Role: Role;
@@ -782,7 +827,7 @@ export type ContactResolvers<
 > = ResolversObject<{
   firstName?: Resolver<ResolversTypes["String"], ParentType, ContextType>;
   lastName?: Resolver<Maybe<ResolversTypes["String"]>, ParentType, ContextType>;
-  role?: Resolver<Maybe<ResolversTypes["Role"]>, ParentType, ContextType>;
+  role?: Resolver<ResolversTypes["ObjectID"], ParentType, ContextType>;
   user?: Resolver<Maybe<ResolversTypes["User"]>, ParentType, ContextType>;
   id?: Resolver<ResolversTypes["ObjectID"], ParentType, ContextType>;
   updatedAt?: Resolver<
@@ -820,6 +865,56 @@ export interface DateTimeScalarConfig
   extends GraphQLScalarTypeConfig<ResolversTypes["DateTime"], any> {
   name: "DateTime";
 }
+
+export type DraftResolvers<
+  ContextType = Context,
+  ParentType extends ResolversParentTypes["Draft"] = ResolversParentTypes["Draft"]
+> = ResolversObject<{
+  title?: Resolver<Maybe<ResolversTypes["String"]>, ParentType, ContextType>;
+  description?: Resolver<
+    Maybe<ResolversTypes["String"]>,
+    ParentType,
+    ContextType
+  >;
+  tags?: Resolver<
+    Maybe<Array<Maybe<ResolversTypes["String"]>>>,
+    ParentType,
+    ContextType
+  >;
+  primaryCategory?: Resolver<
+    Maybe<ResolversTypes["Category"]>,
+    ParentType,
+    ContextType
+  >;
+  statusHistory?: Resolver<
+    Maybe<Array<Maybe<ResolversTypes["DraftStatus"]>>>,
+    ParentType,
+    ContextType
+  >;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+}>;
+
+export type DraftStatusResolvers<
+  ContextType = Context,
+  ParentType extends ResolversParentTypes["DraftStatus"] = ResolversParentTypes["DraftStatus"]
+> = ResolversObject<{
+  statusCode?: Resolver<
+    Maybe<ResolversTypes["String"]>,
+    ParentType,
+    ContextType
+  >;
+  statusDetail?: Resolver<
+    Maybe<ResolversTypes["String"]>,
+    ParentType,
+    ContextType
+  >;
+  createdAt?: Resolver<
+    Maybe<ResolversTypes["DateTime"]>,
+    ParentType,
+    ContextType
+  >;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+}>;
 
 export interface DurationScalarConfig
   extends GraphQLScalarTypeConfig<ResolversTypes["Duration"], any> {
@@ -912,6 +1007,11 @@ export type ListingResolvers<
     ParentType,
     ContextType
   >;
+  tags?: Resolver<
+    Maybe<Array<Maybe<ResolversTypes["String"]>>>,
+    ParentType,
+    ContextType
+  >;
   primaryCategory?: Resolver<
     Maybe<ResolversTypes["Category"]>,
     ParentType,
@@ -927,6 +1027,7 @@ export type ListingResolvers<
     ParentType,
     ContextType
   >;
+  draft?: Resolver<Maybe<ResolversTypes["Draft"]>, ParentType, ContextType>;
   id?: Resolver<ResolversTypes["ObjectID"], ParentType, ContextType>;
   schemaVersion?: Resolver<
     Maybe<ResolversTypes["String"]>,
@@ -1058,11 +1159,23 @@ export type MutationResolvers<
     RequireFields<MutationCreateListingArgs, "input">
   >;
   createUser?: Resolver<Maybe<ResolversTypes["User"]>, ParentType, ContextType>;
+  publishDraft?: Resolver<
+    Maybe<ResolversTypes["Listing"]>,
+    ParentType,
+    ContextType,
+    RequireFields<MutationPublishDraftArgs, "id">
+  >;
   updateCategory?: Resolver<
     Maybe<ResolversTypes["Category"]>,
     ParentType,
     ContextType,
     RequireFields<MutationUpdateCategoryArgs, "category">
+  >;
+  updateDraft?: Resolver<
+    Maybe<ResolversTypes["Listing"]>,
+    ParentType,
+    ContextType,
+    RequireFields<MutationUpdateDraftArgs, "input">
   >;
   updateUser?: Resolver<
     Maybe<ResolversTypes["User"]>,
@@ -1373,6 +1486,8 @@ export type Resolvers<ContextType = Context> = ResolversObject<{
   Currency?: GraphQLScalarType;
   Date?: GraphQLScalarType;
   DateTime?: GraphQLScalarType;
+  Draft?: DraftResolvers<ContextType>;
+  DraftStatus?: DraftStatusResolvers<ContextType>;
   Duration?: GraphQLScalarType;
   EmailAddress?: GraphQLScalarType;
   GUID?: GraphQLScalarType;

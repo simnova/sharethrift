@@ -17,7 +17,7 @@ export class Users extends DomainDataSource<Context,User,PropType,DomainType,Rep
       throw new Error('Unauthorized');
     }
 
-    var result : User;
+    let result : User;
     await this.withTransaction(async (repo) => {
       let domainObject = await repo.get(user.id);
       if(!domainObject || domainObject.externalId !== this.context.VerifiedUser.VerifiedJWT.sub) {
@@ -34,19 +34,19 @@ export class Users extends DomainDataSource<Context,User,PropType,DomainType,Rep
       throw new Error('Unauthorized');
     }
     
-    var userExternalId = this.context.VerifiedUser.VerifiedJWT.sub;
-    var userFirstName = this.context.VerifiedUser.VerifiedJWT.given_name;
-    var userLastName = this.context.VerifiedUser.VerifiedJWT.family_name;
-    var userEmail = this.context.VerifiedUser.VerifiedJWT.email;
+    let userExternalId = this.context.VerifiedUser.VerifiedJWT.sub;
+    let userFirstName = this.context.VerifiedUser.VerifiedJWT.given_name;
+    let userLastName = this.context.VerifiedUser.VerifiedJWT.family_name;
+    let userEmail = this.context.VerifiedUser.VerifiedJWT.email;
 
-    var userToReturn : User;
+    let userToReturn : User;
     await this.withTransaction(async (repo) => {
-      var userConverter = new UserConverter();
+      let userConverter = new UserConverter();
       let userExists = await repo.getByExternalId(userExternalId);
       if(userExists) {
         userToReturn = userConverter.toMongo(userExists);
       }else{
-        var newUser = repo.getNewInstance(
+        let newUser = repo.getNewInstance(
           userExternalId,
           userFirstName,
           userLastName);

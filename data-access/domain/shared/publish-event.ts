@@ -1,4 +1,4 @@
-import { EventBus } from "./event-bus";
+import { EventBus } from './event-bus';
 
 export interface PublishEvent<T> {
   publish( eventToPublish:T);
@@ -9,8 +9,7 @@ export class EventPublisher implements PublishEvent<any> {
   }
 
   publish(eventToPublish:any) {
-    throw new Error("Method not implemented.");
+    throw new Error('Method not implemented.');
     //this.eventBus.dispatch(eventToPublish);
-  }
-  
+  }  
 }

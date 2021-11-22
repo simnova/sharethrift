@@ -11,7 +11,7 @@ test('create new user', async () => {
     context: {
       VerifiedUser: {
         VerifiedJWT: {
-          sub:'external-system-user-id',
+          sub:'dbbf0c6e-8d13-4152-8041-897f89ff86ac',
           given_name:'external-system-user-name',
           family_name:'external-system-user-family-name',
           email:'external-system-user-email@host.com',
@@ -24,7 +24,7 @@ test('create new user', async () => {
 //  RegisterHandlers();
   Domain.userDomainAPI.initialize(dataSourceConfigContext);
   //act
-  var user = await Domain.userDomainAPI.addUser();
+  let user = await Domain.userDomainAPI.addUser();
   //assert
 //  var account = await AccountModel.findOne({'contacts.user.id':user.id}).exec();
 //  console.log('account', JSON.stringify(account));

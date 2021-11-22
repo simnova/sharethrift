@@ -3,8 +3,9 @@ import { MongoUnitOfWork } from '../../../domain/infrastructure/persistance/mong
 import { MongoRepositoryBase } from '../../../domain/infrastructure/persistance/mongo-repository';
 import { AggregateRoot } from '../../../domain/shared/aggregate-root';
 import { EntityProps } from '../../../domain/shared/entity';
+import { Document } from 'mongoose';
 
-export class DomainDataSource<Context,MongoType,PropType extends EntityProps,DomainType extends AggregateRoot<PropType>, RepoType extends MongoRepositoryBase<MongoType,PropType,DomainType>> extends DataSource<Context> {
+export class DomainDataSource<Context,MongoType extends Document,PropType extends EntityProps,DomainType extends AggregateRoot<PropType>, RepoType extends MongoRepositoryBase<MongoType,PropType,DomainType>> extends DataSource<Context> {
   private _context: Context;
   
   constructor(private unitOfWork: MongoUnitOfWork<MongoType,PropType,DomainType,RepoType>) { super();}

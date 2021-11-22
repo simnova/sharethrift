@@ -13,7 +13,7 @@ type RepoType = MongoCategoryRepository<PropType>;
 export class Categories extends DomainDataSource<Context,Category,PropType,DomainType,RepoType> {
 
   async updateCategory(category: UpdateCategory): Promise<Category> {
-    var result : Category;
+    let result : Category;
     this.withTransaction(async (repo) => {
       let domainObject =await repo.get(category.id);
       result = (new CategoryConverter()).toMongo(await repo.save(domainObject));
@@ -22,11 +22,20 @@ export class Categories extends DomainDataSource<Context,Category,PropType,Domai
   }
 
   async addCategory(category: CategoryDetail) : Promise<Category> {
-    var result : Category;
+    let result : Category;
     await this.withTransaction(async (repo) => {
-      var domainObject = repo.getNewInstance();
+      
+      const domainObject = repo.getNewInstance();
       domainObject.name = category.name;
-      result = (new CategoryConverter()).toMongo(await repo.save(domainObject));
+      if(category.parentId) {
+        let parent = await repo.get(category.parentId);
+        domainObject.setParentId(repo.typeConverter.toAdapter(parent));
+        result = repo.typeConverter.toMongo(await repo.save(domainObject));
+        parent.addChildId(repo.typeConverter.toAdapter(domainObject));
+        await repo.save(parent);
+      } else {
+        result = repo.typeConverter.toMongo(await repo.save(domainObject));
+      }
     });
     return result;
   }

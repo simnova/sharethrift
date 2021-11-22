@@ -1,7 +1,6 @@
 import mongoose, { Schema, model, Model, ObjectId, Document,PopulatedDoc } from 'mongoose';
-
-import { Base, BaseOptions } from './interfaces/base';
-import * as User from "./user";
+import { Base, BaseOptions, EmbeddedBase } from './interfaces/base';
+import * as User from './user';
 
 export interface ListingPermissions {
   id: ObjectId;
@@ -17,28 +16,22 @@ export interface Permissions {
   accountPermissions: AccountPermissions;
 }
 
-export interface Role extends Document {
-  id: ObjectId;
+export interface Role extends EmbeddedBase {
   roleName: string;
   isDefault: boolean;
   permissions: Permissions;
-  createdAt:Date;
-  updatedAt:Date;
 }
 
-export interface Contact extends Document {
-  id:ObjectId;
+export interface Contact extends EmbeddedBase {
   firstName:string;
   lastName?:string;
-  role?:Role;
-
+  role?:ObjectId;
   user:PopulatedDoc<User.User> | ObjectId;
-  createdAt:Date;
-  updatedAt:Date;
 }
 
 export interface Account extends Base {
   name: string;
+  handle: string;
   contacts: mongoose.Types.DocumentArray<Contact>
   roles: mongoose.Types.DocumentArray<Role>;
 }
@@ -46,12 +39,13 @@ export interface Account extends Base {
 export const AccountModel = model<Account>('Account',new Schema<Account, Model<Account>, Account>(
   {
     schemaVersion: { type: String, default: '1.0.0' },
-    name: { type: String, required: true, unique: true, index: true },
+    name: { type: String, required: true },
+    handle: { type: String, required: false, unique: true },
     contacts: [{
       firstName: { type: String, required: true },
       lastName: { type: String, required: false },
-      role: { type: Schema.Types.ObjectId, ref: 'Role', required: false },
-      user: { type: Schema.Types.ObjectId, ref: User.UserModel.modelName, required: false },
+      role: { type: Schema.Types.ObjectId, required: false },
+      user: { type: Schema.Types.ObjectId, ref: User.UserModel.modelName, required: false, index: true, unique: true },
       createdAt: { type: Date, default: Date.now },
       updatedAt: { type: Date, default: Date.now }
     }],

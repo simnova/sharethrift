@@ -1,10 +1,11 @@
-import { User as UserDO, UserProps } from "../../../../domain/contexts/user/user";
-import { UserRepository } from "../../../contexts/user/user-repository";
-import { User, UserModel }from "../../../../infrastructure/data-sources/cosmos-db/models/user";
-import { MongoRepositoryBase } from "../mongo-repository";
-import { TypeConverter } from "../../../shared/type-converter";
-import { ClientSession } from "mongoose";
-import { EventBus } from "../../../shared/event-bus";
+import { User as UserDO, UserProps } from '../../../../domain/contexts/user/user';
+import { UserRepository } from '../../../contexts/user/user-repository';
+import { User, UserModel }from '../../../../infrastructure/data-sources/cosmos-db/models/user';
+import { MongoRepositoryBase } from '../mongo-repository';
+import { TypeConverter } from '../../../shared/type-converter';
+import { ClientSession } from 'mongoose';
+import { EventBus } from '../../../shared/event-bus';
+
 export class MongoUserRepository<PropType extends UserProps> extends MongoRepositoryBase<User,PropType,UserDO<PropType>> implements UserRepository<PropType> {
   constructor(
     eventBus: EventBus,
@@ -16,12 +17,12 @@ export class MongoUserRepository<PropType extends UserProps> extends MongoReposi
   }
   
   async getByExternalId(externalId: string): Promise<UserDO<PropType>> {
-    var user = await this.model.findOne({ externalId: externalId }).exec();
+    let user = await this.model.findOne({ externalId: externalId }).exec();
     return this.typeConverter.toDomain(user);
   }
 
   getNewInstance(externalId:string, firstName:string, lastName:string): UserDO<PropType> {
-    var adapter = this.typeConverter.toAdapter(new this.model());
+    let adapter = this.typeConverter.toAdapter(new this.model());
     return UserDO.getNewUser(adapter, externalId, firstName, lastName);
   }
 

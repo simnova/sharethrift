@@ -1,4 +1,4 @@
-import {  Document, SchemaOptions } from 'mongoose';
+import { Document, SchemaOptions } from 'mongoose';
 
  export interface MongoBase {
   id?: any;
@@ -14,6 +14,9 @@ import {  Document, SchemaOptions } from 'mongoose';
  * Can also change type to "any" in the data source but loose type safety
  */
 export interface Base extends Document,MongoBase  {
+}
+
+export interface EmbeddedBase extends Document, Omit<MongoBase, 'schemaVersion'> {
 }
 
 export const BaseOptions : SchemaOptions = {

@@ -1,6 +1,6 @@
-import { jwtVerify, createRemoteJWKSet,  JWSHeaderParameters, FlattenedJWSInput } from "jose";
-import { GetKeyFunction, JWTVerifyResult, ResolvedKey } from "jose/dist/types/types";
-import { Issuer } from "openid-client";
+import { jwtVerify, createRemoteJWKSet,  JWSHeaderParameters, FlattenedJWSInput } from 'jose';
+import { GetKeyFunction, JWTVerifyResult, ResolvedKey } from 'jose/dist/types/types';
+import { Issuer } from 'openid-client';
 
 export type OpenIdConfig = {
   issuerUrl:string;
@@ -25,7 +25,7 @@ export class VerifiedTokenService  {
    * @param refreshInterval The number of seconds to wait between refreshing the keystore, defaults to 5 minutes
    **/
   constructor(openIdConfigs:Map<string,OpenIdConfig>, refreshInterval:number = 1000*60*5) {
-    if(!openIdConfigs) {throw new Error("openIdConfigs is required");}
+    if(!openIdConfigs) {throw new Error('openIdConfigs is required');}
     this.keyStoreCollection = new Map<string,{keyStore: GetKeyFunction<JWSHeaderParameters, FlattenedJWSInput>, issuerUrl: string}>();
     this.openIdConfigs = openIdConfigs;
     this.refreshInterval = refreshInterval;
@@ -37,7 +37,7 @@ export class VerifiedTokenService  {
    * 
    **/
   public Start() {
-    console.log("Starting VerifiedTokenService");
+    console.log('Starting VerifiedTokenService');
     if(this.timerInstance) {
       return; // already running
     }
@@ -77,10 +77,10 @@ export class VerifiedTokenService  {
 
   public async GetVerifiedJwt(bearerToken:string, configKey:string) : Promise<JWTVerifyResult & ResolvedKey> {
     if(!this.timerInstance) {
-      throw new Error("ContextUserFromMsal not started");
+      throw new Error('ContextUserFromMsal not started');
     }
     if(!this.keyStoreCollection.has(configKey)) {
-      throw new Error("Invalid OpenIdConfig Key");
+      throw new Error('Invalid OpenIdConfig Key');
     }
     let openIdConfig = this.openIdConfigs.get(configKey);
     return jwtVerify(
@@ -91,9 +91,9 @@ export class VerifiedTokenService  {
         audience: openIdConfig.audience,
         issuer: openIdConfig.issuerUrl,
         //ignoreNbf: openIdConfig.ignoreNbf??true,
-        clockTolerance: openIdConfig.clockTolerance?? "5 minutes",
+        clockTolerance: openIdConfig.clockTolerance?? '5 minutes',
       }
-    );
+    )
   }
 
 }

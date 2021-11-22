@@ -74,7 +74,6 @@
     "@storybook/react": "^6.3.7",
     "@storybook/theming": "^6.3.7",
     "chromatic": "^5.9.2",
-    "storybook-addon-playwright": "^4.6.4",
     "storybook-zeplin": "^1.5.1"
   }
 }

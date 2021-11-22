@@ -1,6 +1,5 @@
 import { Schema, model, Model } from 'mongoose';
-import { Base, BaseOptions} from './interfaces/base';
-
+import { Base, BaseOptions } from './interfaces/base';
 
 /**
  * @description
@@ -35,4 +34,3 @@ export const PointModel = model<Point>('Point', new Schema<Point, Model<Point>, 
     ...BaseOptions,
   }
 ));
-

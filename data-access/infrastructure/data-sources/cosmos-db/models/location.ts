@@ -1,5 +1,5 @@
 import { Schema, model, Model } from 'mongoose';
-import { Base, BaseOptions} from './interfaces/base';
+import { Base, BaseOptions } from './interfaces/base';
 import * as Point from './point';
 
 export interface Location extends Base {

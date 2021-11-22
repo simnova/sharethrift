@@ -1,11 +1,16 @@
-import { Entity,EntityProps } from "./entity";
-import { CustomDomainEvent, DomainEvent } from "./domain-event";
+import { Entity,EntityProps } from './entity';
+import { CustomDomainEvent, DomainEvent } from './domain-event';
 
-export abstract class AggregateRoot<PropType extends EntityProps> extends Entity<PropType>  {
+export interface RootEventRegistry {
+  addDomainEvent<EventProps,T extends CustomDomainEvent<EventProps>>(event:new (aggregateId: string) => T,props:T['payload'] );
+  addIntegrationEvent<EventProps,T extends CustomDomainEvent<EventProps>>(event:new (aggregateId: string) => T,props:T['payload'] );
+}
+
+export abstract class AggregateRoot<PropType extends EntityProps> extends Entity<PropType> implements RootEventRegistry {
   
   private domainEvents: DomainEvent[] = [];
-  protected addDomainEvent<EventProps,T extends CustomDomainEvent<EventProps>>(event:new (aggregateId: string) => T,props:T['payload'] ) {
-    var eventToAdd = new event(this.props.id);
+  public addDomainEvent<EventProps,T extends CustomDomainEvent<EventProps>>(event:new (aggregateId: string) => T,props:T['payload'] ) {
+    let eventToAdd = new event(this.props.id);
     eventToAdd.payload = props;    
     this.domainEvents.push(eventToAdd);
   }
@@ -17,8 +22,8 @@ export abstract class AggregateRoot<PropType extends EntityProps> extends Entity
   }
 
   private integrationEvents: DomainEvent[] = [];
-  protected addIntegrationEvent<EventProps,T extends CustomDomainEvent<EventProps>>(event:new (aggregateId: string) => T,props:T['payload'] ) {
-    var eventToAdd = new event(this.props.id);
+  public addIntegrationEvent<EventProps,T extends CustomDomainEvent<EventProps>>(event:new (aggregateId: string) => T,props:T['payload'] ) {
+    let eventToAdd = new event(this.props.id);
     eventToAdd.payload = props;    
     this.integrationEvents.push(eventToAdd);
   }

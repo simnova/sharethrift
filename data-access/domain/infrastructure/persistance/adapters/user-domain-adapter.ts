@@ -1,7 +1,7 @@
-import { User } from "../../../../infrastructure/data-sources/cosmos-db/models/user";
-import { User as UserDO, UserProps } from "../../../contexts/user/user";
-import { MongooseDomainAdapater } from "../mongo-domain-adapter";
-import { MongoTypeConverter } from "../mongo-type-converter";
+import { User } from '../../../../infrastructure/data-sources/cosmos-db/models/user';
+import { User as UserDO, UserProps } from '../../../contexts/user/user';
+import { MongooseDomainAdapater } from '../mongo-domain-adapter';
+import { MongoTypeConverter } from '../mongo-type-converter';
 
 export class UserConverter extends MongoTypeConverter<User,UserDomainAdapter,UserDO<UserDomainAdapter>> {
   constructor() {
@@ -13,7 +13,6 @@ export class UserDomainAdapter extends MongooseDomainAdapater<User> implements U
 
   get externalId() {return this.props.externalId;}
   set externalId(externalId: string) {this.props.externalId = externalId;}
-  
 
   get firstName() {return this.props.firstName;}
   set firstName(firstName: string) {this.props.firstName = firstName;}

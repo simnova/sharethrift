@@ -1,6 +1,6 @@
 import { Resolvers, Listing, Account, Category, CreateListingPayload} from '../../generated';
 import { CacheScope } from 'apollo-server-types';
-import { isValidObjectId } from 'mongoose';
+import mongoose, { isValidObjectId } from 'mongoose';
 
 const listing : Resolvers = {
   Listing: {
@@ -46,8 +46,13 @@ const listing : Resolvers = {
     createListing: async (parent, args, context, info) => {
       var newListing = (await context.dataSources.listingDomainAPI.addListing(args.input)) as Listing ;
       return  {listing: newListing} as CreateListingPayload;
+    },
+    updateDraft: async (parent, args, context, info) => {
+      return (await context.dataSources.listingDomainAPI.updateDraft(args.input)) as Listing ;
+    },
+    publishDraft: async (parent, args, context, info) => {
+      return (await context.dataSources.listingDomainAPI.publishDraft(args.id)) as Listing;
     }
-
   }   
 }
 export default listing;

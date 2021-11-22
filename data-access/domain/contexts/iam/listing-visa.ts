@@ -1,4 +1,4 @@
-import {ListingPermissions, Listing } from '../listing/listing';
+import { ListingPermissions, Listing } from '../listing/listing';
 import { User } from '../user/user';
 import { Visa } from './passport';
 
@@ -7,8 +7,12 @@ export class ListingVisaImpl<root extends Listing<any>> implements ListingVisa{
   }
 
   async determineIf (func:((permissions:ListingPermissions) => boolean)) :  Promise<boolean> {
-    var contact = (await this.root.account.contacts()).find(c => c.id === this.user.id);
-    var permissions =  contact.role.permissions.listingPermissions;
+    let account = await this.root.account();
+    let contact = (await account.contacts()).find(c => c.user.id === this.user.id);
+    console.log('contact for listingVista found', JSON.stringify(contact));
+    let roleId = contact.roleId
+    let permissions =   account.roles.find((role) => role.id === roleId ).permissions.listingPermissions;
+    console.log('contact\'s listing permissions found', JSON.stringify(permissions));
     return func(permissions);
   }
 }

@@ -3,7 +3,7 @@ import graphqlFields from 'graphql-fields'
 import R, { map } from 'ramda';  
 
 var getFields = (info: GraphQLResolveInfo) => {
-  var x = graphqlFields(info);
+  let x = graphqlFields(info);
   return graphqlFields(info);
 }
 

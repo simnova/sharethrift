@@ -1,7 +1,6 @@
 import { EventBus } from "../../shared/event-bus";
 import { CustomDomainEvent, DomainEvent } from "../../shared/domain-event";
 
-
 class InProcEventBusImpl implements EventBus {
   private eventSubscribers: { [eventType: string]: Array<(rawpayload: string) => Promise<void>> } = {};
   private static instance: InProcEventBusImpl;
@@ -27,11 +26,11 @@ class InProcEventBusImpl implements EventBus {
   }
 
   public static getInstance(): InProcEventBusImpl {
-      if (!this.instance) {
-          this.instance = new this();
-      }
-      return this.instance;
+    if (!this.instance) {
+      this.instance = new this();
     }
+    return this.instance;
+  }
 }
 
 export const InProcEventBus = InProcEventBusImpl.getInstance();

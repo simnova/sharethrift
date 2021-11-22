@@ -13,6 +13,8 @@ export interface UserProps extends EntityProps {
   schemaVersion: string;
 }
 
+export interface UserEntityReference extends Readonly<UserProps> {}
+
 export class User<props extends UserProps> extends AggregateRoot<props> implements UserEntityReference  {
   constructor(props: props) { super(props); }
 
@@ -25,18 +27,18 @@ export class User<props extends UserProps> extends AggregateRoot<props> implemen
   get createdAt(): Date {return this.props.createdAt;}
   get schemaVersion(): string {return this.props.schemaVersion;}
 
-  private MarkAsNew(): void {
-    this.addIntegrationEvent(UserCreatedEvent,{userId: this.props.id});
-  }
-
   public static getNewUser<props extends UserProps> (newprops:props,externalId:string,firstName:string,lastName:string): User<props> {
     newprops.externalId = externalId;
-    var user = new User(newprops);
+    let user = new User(newprops);
     user.setExternalId(externalId);
     user.setFirstName(firstName);
     user.setLastName(lastName);
     user.MarkAsNew();
     return user;
+  }
+
+  private MarkAsNew(): void {
+    this.addIntegrationEvent(UserCreatedEvent,{userId: this.props.id});
   }
 
   public setFirstName(firstName:ValueObjects.FirstName): void {
@@ -55,15 +57,4 @@ export class User<props extends UserProps> extends AggregateRoot<props> implemen
     this.props.externalId = externalId.valueOf();
   }
 
-}
-
-export interface UserEntityReference {
-  readonly id: string;
-  readonly externalId: string;
-  readonly firstName: string;
-  readonly lastName: string;
-  readonly email: string;
-  readonly createdAt?: Date;
-  readonly updatedAt?: Date;
-  readonly schemaVersion?: string;
 }

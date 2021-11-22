@@ -1,4 +1,4 @@
-import { OpenIdConfig, VerifiedTokenService } from "./verified-token-service";
+import { OpenIdConfig, VerifiedTokenService } from './verified-token-service';
 
  export class PortalTokenValidation {
   private tokenVerifier: VerifiedTokenService;
