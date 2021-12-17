@@ -59,11 +59,9 @@ export class ApolloServerRequestHandler {
     }
   };
 
-
-
   public handleRequests(context: Context, req: HttpRequest){
-    req.headers['x-ms-privatelink-id'] = '' // https://github.com/Azure/azure-functions-host/issues/6013
-    req.headers['server'] = null;
+    req.headers['x-ms-privatelink-id'] = ''; // https://github.com/Azure/azure-functions-host/issues/6013
+    req.headers['server'] = null; //hide microsoft server header
     return this.graphqlHandlerObj(context, req)
   }
   
@@ -83,11 +81,12 @@ export class ApolloServerRequestHandler {
         origin: true,
         credentials: true,
       },
+
+      // health check enpoint is: https://<function-name>.azurewebsites.net/api/graphql/.well-known/apollo/server-health
       onHealthCheck: async (): Promise<any> => {
         // doesn't work yet 
         // https://github.com/apollographql/apollo-server/pull/5270
         // https://github.com/apollographql/apollo-server/pull/5003
-        console.log('Health check');
         let mongoConnected = mongoose.connection.readyState === 1;
         if(mongoConnected) {
           return;
