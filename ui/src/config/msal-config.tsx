@@ -8,6 +8,7 @@ import {
   MsalProviderConfigMap,
 } from '../components/msal-react-lite/msal-provider';
 
+
 const admin_clientId = process.env.REACT_APP_AAD_APP_ADMIN_CLIENTID ?? 'missing-client-id';
 const account_clientId = process.env.REACT_APP_AAD_APP_ACCOUNT_CLIENTID ?? 'missing-client-id';
 //var tenantId =process.env.REACT_APP_AAD_DIRECTORY_TENANTID ?? "missing-tenant-id";
@@ -57,8 +58,8 @@ var loggerOptions = {
   },
 }
 
-var accountConfig: MsalProviderPopupConfig = {
-  type: ConfigType.Popup,
+var accountConfig: MsalProviderRedirectConfig = {
+  type: ConfigType.Redirect,
   msalConfig: {
     auth: {
       clientId: account_clientId,
@@ -74,7 +75,7 @@ var accountConfig: MsalProviderPopupConfig = {
     scopes: account_scopes,
   },
   endSessionRequestConfig: {},
-  loginRequestConfig: {
+  redirectRequestConfig: {
     scopes: account_scopes,
   },
 };

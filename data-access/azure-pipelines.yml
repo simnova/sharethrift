@@ -19,8 +19,8 @@ pr:
 variables:
 
   # Function app name
-  functionApp1Name: 'data-access'
-  functionApp2Name: 'data-access-west'
+  functionApp1Name: 'data-access-east2'
+  functionApp2Name: 'data-access-west3'
  
   # Environment name
   environmentName: 'data-access'
@@ -58,7 +58,7 @@ stages:
     - task: NodeTool@0
       displayName: 'Install: Node.js - LTS'
       inputs:
-        versionSpec: '14.x'
+        versionSpec: '16.x'
 
     # Ensure the correct version of function tools are installed.
     - task: FuncToolsInstaller@0
@@ -157,7 +157,7 @@ stages:
               appName: $(functionApp1Name)
               package: '$(Pipeline.Workspace)/drop/$(Build.BuildId).zip'
               deploymentMethod: 'runFromPackage'
-              runtimeStack: 'NODE|14'
+              runtimeStack: 'NODE|16'
           - task: AzureFunctionApp@1
             displayName: 'Azure Functions App Deploy: $(functionApp2Name)'
             inputs:
@@ -166,4 +166,4 @@ stages:
               appName: $(functionApp2Name)
               package: '$(Pipeline.Workspace)/drop/$(Build.BuildId).zip'
               deploymentMethod: 'runFromPackage'
-              runtimeStack: 'NODE|14'
+              runtimeStack: 'NODE|16'
