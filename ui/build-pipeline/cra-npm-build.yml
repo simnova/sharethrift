@@ -1,0 +1,61 @@
+parameters:
+- name: npmVersion
+  displayName: 'The verion of NPM to install, defaults, to 14.x (current LTS'
+  type: string
+  default: '14.x'
+- name: npmConfigCache
+  displayName: 'The location of the npmCache, should be set as a variable'
+  type: string
+  default: '14.x'
+- name: buildPath
+  displayName: 'The path to where your source code is, useful to set if mono-repo, defaults to /src'
+  type: string
+  default: src
+- name: archivePath
+  displayName: 'The path where zip file output will be placed'
+  type: string
+- name: archiveName
+  displayName: 'The the name zip file (without .zip at end)'
+  type: string
+- name: buildEnvSettings
+  displayName: 'ENV Settings to be injected during npm build'
+  type: object
+
+
+steps:
+
+# Ensure the LTS version of Node is installed
+- task: NodeTool@0
+  inputs:
+    versionSpec: '${{parameters.npmVersion}}'
+  displayName: 'Install Node.js'
+
+# Cache NPM packages to speed up build process
+- task: Cache@2
+  inputs:
+    key: 'npm | "$(Agent.OS)" | $(Build.SourcesDirectory)/${{parameters.buildPath}}/package-lock.json'
+    restoreKeys: |
+        npm | "$(Agent.OS)"
+    path: $(Pipeline.Workspace)/.npm
+  displayName: Cache npm
+
+# Build the project, ensuring envrionment variables are baked in.
+- task: Bash@3
+  displayName: 'npm install and build'
+  inputs:
+    targetType: 'inline'
+    script: |
+      npm ci
+      npm run-script build
+    workingDirectory: '$(Build.SourcesDirectory)/${{parameters.buildPath}}'
+  env: 
+    ${{parameters.buildEnvSettings}}
+
+# Add the files to be deployed to a zip archive to be used later as part of deployment
+- task: ArchiveFiles@2
+  inputs:
+    rootFolderOrFile: '$(Build.SourcesDirectory)/${{parameters.archivePath}}'
+    includeRootFolder: false
+    archiveType: 'zip'
+    archiveFile: '$(Build.ArtifactStagingDirectory)/$(Build.BuildId)-${{parameters.archiveName}}.zip'
+    replaceExistingArchive: true

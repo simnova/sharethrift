@@ -39,6 +39,7 @@
     "@azure/ms-rest-azure-js": "^2.1.0",
     "@azure/search-documents": "^11.2.1",
     "@graphql-tools/graphql-file-loader": "^7.1.0",
+    "@graphql-tools/json-file-loader": "^7.3.4",
     "@graphql-tools/load": "^7.2.0",
     "@graphql-tools/load-files": "^6.4.0",
     "@graphql-tools/schema": "^8.2.0",
