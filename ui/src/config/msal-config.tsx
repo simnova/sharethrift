@@ -11,16 +11,17 @@ import {
 
 const admin_clientId = process.env.REACT_APP_AAD_APP_ADMIN_CLIENTID ?? 'missing-client-id';
 const account_clientId = process.env.REACT_APP_AAD_APP_ACCOUNT_CLIENTID ?? 'missing-client-id';
-//var tenantId =process.env.REACT_APP_AAD_DIRECTORY_TENANTID ?? "missing-tenant-id";
-const redirectUri = process.env.REACT_APP_AAD_REDIRECT_URI ?? 'missing-redirect-uri';
+
+const admin_authority =process.env.REACT_APP_ADMIN_AUTHORITY ?? 'missing-redirect-authority';
+const account_authority = process.env.REACT_APP_ACCOUNT_AUTHORITY ?? 'missing-passwordless-authority';
+
 const admin_scopes = process.env.REACT_APP_AAD_ADMIN_SCOPES?.split('|') ?? ['missing-scopes'];
 const account_scopes = process.env.REACT_APP_AAD_ACCOUNT_SCOPES?.split('|') ?? ['missing-scopes'];
 
-
-
 const knownAuthorities = process.env.REACT_APP_AAD_KNOWN_AUTHORITIES ?? 'missing-known-authorities';
-const admin_authority =process.env.REACT_APP_ADMIN_AUTHORITY ?? 'missing-redirect-authority';
-const account_authority = process.env.REACT_APP_ACCOUNT_AUTHORITY ?? 'missing-passwordless-authority';
+const redirectUri = process.env.REACT_APP_AAD_REDIRECT_URI ?? 'missing-redirect-uri';
+//var tenantId =process.env.REACT_APP_AAD_DIRECTORY_TENANTID ?? "missing-tenant-id";
+
 
 //login.windows-ppe.net
 //login.windows.net/
