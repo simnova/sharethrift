@@ -9,17 +9,25 @@ import {
 } from '../components/msal-react-lite/msal-provider';
 
 
+// confirmed Azure AD B2C > Identity Experience Framework > [App Registration] > Application (client) ID
 const admin_clientId = process.env.REACT_APP_AAD_APP_ADMIN_CLIENTID ?? 'missing-client-id';
 const account_clientId = process.env.REACT_APP_AAD_ACCOUNT_CLIENTID ?? 'missing-client-id';
 
+// B2C -> https://${tenantId}.b2clogin.com/${tenantId}.onmicrosoft.com/${customPolicyName}
 const admin_authority =process.env.REACT_APP_ADMIN_AUTHORITY ?? 'missing-redirect-authority';
 const account_authority = process.env.REACT_APP_AAD_ACCOUNT_AUTHORITY ?? 'missing-passwordless-authority';
 
+// "openid" is the default scope for B2C
 const admin_scopes = process.env.REACT_APP_AAD_ADMIN_SCOPES?.split('|') ?? ['missing-scopes'];
 const account_scopes = process.env.REACT_APP_AAD_ACCOUNT_SCOPES?.split('|') ?? ['missing-scopes'];
 
+// B2C -> https://${tenantId}.b2clogin.com/${tenantId}.onmicrosoft.com/oauth2/v2.0/authorize?p=${customPolicyName}
 const knownAuthorities = process.env.REACT_APP_AAD_KNOWN_AUTHORITIES ?? 'missing-known-authorities';
+
+// the URL of where the user will be redirected to after login
 const redirectUri = process.env.REACT_APP_AAD_REDIRECT_URI ?? 'missing-redirect-uri';
+
+
 //var tenantId =process.env.REACT_APP_AAD_DIRECTORY_TENANTID ?? "missing-tenant-id";
 
 
