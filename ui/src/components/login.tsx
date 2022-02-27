@@ -1,10 +1,8 @@
 import React, { FC } from 'react';
 import { Row, Col, Button } from 'antd';
 import { useMsal } from '../components/msal-react-lite';
-import { RouteComponentProps } from "react-router";
-import { withRouter } from 'react-router-dom';
 
-const Login: FC<RouteComponentProps | any> = (props) => {
+const Login: FC<any> = (props) => {
   const {login,getAuthToken} = useMsal();
 
   const loginAction = async (loginType:string) => {
@@ -33,4 +31,4 @@ const Login: FC<RouteComponentProps | any> = (props) => {
   )
 }
 
-export default withRouter(Login);
+export default Login;

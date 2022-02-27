@@ -2,7 +2,7 @@ import RequireAuth from './require-auth';
 import React, { useEffect, useState, useRef } from "react";
 import { useMsal } from './msal-react-lite';
 
-const RequireMsal:any = (params:any) => {
+const RequireMsal:React.FC<any> = (params:any) => {
   const { getAuthResult } = useMsal();
   const [isAuthenticated, setIsAuthenticated] = useState<boolean>();
   let isRendered = useRef(false); //Used to make Async code not get called on every render.

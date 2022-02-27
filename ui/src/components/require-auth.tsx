@@ -1,13 +1,14 @@
-import { Redirect } from 'react-router-dom';
-import React from 'react';
 
- const RequireAuth:any = (params:any) => {
-    console.log(`params.isAuthenticated :${params.isAuthenticated }`);
-    console.log(params);
-    if(typeof params.isAuthenticated === 'undefined'){
-        //still loading
-        return <div>Checking Authentication...</div>
-    }
-    return (params.isAuthenticated === true ?  (params.children): (<Redirect to='/' />) );
+import React, {useEffect} from 'react';
+import {useNavigate} from 'react-router-dom'
+
+const RequireAuth:any = (params:any) => {
+   let navigate = useNavigate();
+   useEffect(() => {
+      if (typeof params.isAuthenticated !== 'undefined' && !params.isAuthenticated) {
+         navigate('/');
+      }
+    }, [params.isAuthenticated]);
+    return <div>Checking Authentication...</div>
 }
 export default RequireAuth;
