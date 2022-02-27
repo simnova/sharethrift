@@ -63,7 +63,7 @@ export class MsalApp {
   public async handleRedirectResult (
     authResult: msal.AuthenticationResult | null
   )  {
-    if (!authResult) {
+    if (!authResult && authResult !== null) {
       //may be called from loginTokenPopup or on a page load
       authResult = (await this.getAuthResult()) ?? null;
     }
@@ -105,8 +105,9 @@ export class MsalApp {
     return (await this.getAuthResult(providedHomeAccountId))?.accessToken;
   }
 
-  public async getAuthResult  (
-    providedHomeAccountId?: string
+  private getAuthResults(
+    providedHomeAccountId?: string,
+    isSilent:boolean=false
   ): Promise<msal.AuthenticationResult | undefined>  {
 
     var fullSilentRequestConfig = this.getFullSilentRequestConfig(
@@ -116,27 +117,42 @@ export class MsalApp {
 
     if (!fullSilentRequestConfig) {
       this.isLoggedIn = false;
-      return;
+      return Promise.resolve(undefined);
     }
 
     if (this.usePopup) {
       var popupConfig = this.config as MsalProviderPopupConfig;
       return this.authTokenPopup(
         fullSilentRequestConfig,
-        popupConfig.loginRequestConfig
+        popupConfig.loginRequestConfig,
+        true
       );
     } else {
       var redirectConfig = this.config as MsalProviderRedirectConfig;
       return this.authTokenRedirect(
         fullSilentRequestConfig,
-        redirectConfig?.redirectRequestConfig
+        redirectConfig?.redirectRequestConfig,
+        true
       );
     }
   }
 
+  public async getAuthResult  (
+    providedHomeAccountId?: string
+  ): Promise<msal.AuthenticationResult | undefined>  {
+    return this.getAuthResults(providedHomeAccountId);
+  }
+
+  public async getSilentAuthResult  (
+    providedHomeAccountId?: string
+  ): Promise<msal.AuthenticationResult | undefined>  {
+    return this.getAuthResults(providedHomeAccountId, true);
+  }
+
   private async authTokenPopup  (
     silentRequest: msal.SilentRequest,
-    loginRequestConfig?: msal.PopupRequest | undefined
+    loginRequestConfig?: msal.PopupRequest | undefined,
+    isSilent:boolean=false
   ): Promise<msal.AuthenticationResult | undefined>  {
     var authResult: msal.AuthenticationResult;
     try {
@@ -145,7 +161,7 @@ export class MsalApp {
       this.isLoggedIn = true;
       return authResult;
     } catch (err) {
-      if (err instanceof msal.InteractionRequiredAuthError) {
+      if (err instanceof msal.InteractionRequiredAuthError && !isSilent) {
         console.log('logged in2');
         authResult = await this.msalInstance.acquireTokenPopup(silentRequest);
         this.isLoggedIn = true;
@@ -157,15 +173,18 @@ export class MsalApp {
 
   private async authTokenRedirect (
     silentRequest: msal.SilentRequest,
-    redirectRequestConfig?: msal.RedirectRequest | undefined
+    redirectRequestConfig?: msal.RedirectRequest | undefined,
+    isSilent:boolean=false
   ): Promise<msal.AuthenticationResult | undefined>  {
     try {
       var authResult = await this.msalInstance.acquireTokenSilent(silentRequest);
+      console.log('logged in1a');
       this.homeAccountId = authResult.account?.homeAccountId;
       this.isLoggedIn = true;
       return authResult;
     } catch (err) {
-      if (err instanceof msal.InteractionRequiredAuthError) {
+      if (err instanceof msal.InteractionRequiredAuthError && !isSilent) {
+        console.log('logged in2a');
         this.isLoggedIn = false;
         await this.msalInstance.acquireTokenRedirect(silentRequest);
       }

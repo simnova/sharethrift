@@ -105,6 +105,7 @@ const MsalProvider: FC<MsalProps> =  (props: MsalProps): JSX.Element => {
       value={{
         getAuthToken:  (identifier:string|undefined) =>  findInstance(identifier)?.getAuthToken() ?? new Promise<undefined>(() => {return undefined}),
         getAuthResult: (identifier:string|undefined) => findInstance(identifier)?.getAuthResult() ?? new Promise<undefined>(() => {return undefined}),
+        getSilentAuthResult: (identifier:string|undefined) => findInstance(identifier)?.getSilentAuthResult() ?? new Promise<undefined>(() => {return undefined}),
         getIsLoggedIn: (identifier:string|undefined) => findInstance(identifier)?.IsLoggedIn ?? false,
         logout: (identifier:string|undefined) => findInstance(identifier)?.logout() ?? new Promise<void>(() => {return}),
         login:  (identifier:string|undefined) => findInstance(identifier)?.login() ?? new Promise<undefined>(() => {return undefined}),

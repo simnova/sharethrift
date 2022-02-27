@@ -4,6 +4,7 @@ import * as msal from "@azure/msal-browser";
 export interface MsalContextInterface {
   getAuthToken:  (identifier:string|undefined) => Promise<string|undefined>, 
   getAuthResult: (identifier:string|undefined) => Promise<msal.AuthenticationResult|undefined>,
+  getSilentAuthResult: (identifier:string|undefined) => Promise<msal.AuthenticationResult|undefined>,
   getIsLoggedIn: (identifier:string|undefined) => boolean,
   logout:        (identifier:string|undefined) => Promise<void>;
   login:         (identifier:string|undefined) => Promise<msal.AuthenticationResult|undefined>;
@@ -16,6 +17,7 @@ const stub = (): never => {
 const initialContext = {
   getAuthToken:   stub,
   getAuthResult:  stub,
+  getSilentAuthResult:  stub,
   getIsLoggedIn:  stub,
   logout:         stub,
   login:          stub,
