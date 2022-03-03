@@ -8,7 +8,7 @@ import { ListingPermissionsProps } from '../../../contexts/account/listing-permi
 import { AccountPermissionsProps } from '../../../contexts/account/account-permissions';
 import { UserDomainAdapter } from './user-domain-adapter';
 import { User, UserEntityReference, UserProps } from '../../../contexts/user/user';
-import mongoose from 'mongoose';
+import mongoose, { Mongoose } from 'mongoose';
 
 import { MongoTypeConverter } from '../mongo-type-converter';
 export class AccountConverter extends MongoTypeConverter<Account,AccountDomainAdapter,AccountDO<AccountDomainAdapter>> {
@@ -53,6 +53,12 @@ class RoleAdapter implements RoleProps{
   public get updatedAt(): Date { return this.props.updatedAt; }
   public set updatedAt(value: Date) { this.props.updatedAt = value; }
 }
+const getValueOfId = (idField: mongoose.Schema.Types.ObjectId|undefined):string|undefined => {
+  if(idField) {
+    return idField.valueOf() as string;
+  }
+  return undefined;
+}
 
 class ContactDomainAdapter implements ContactProps{
   constructor(public readonly props: Contact) { }
@@ -61,7 +67,7 @@ class ContactDomainAdapter implements ContactProps{
   public set firstName(value: string) { this.props.firstName = value; }
   public get lastName(): string { return this.props.lastName; }
   public set lastName(value: string) { this.props.lastName = value; }
-  public get roleId(): string { return this.props.role.valueOf() as string; }
+  public get roleId(): string { return getValueOfId(this.props.role); }
   //public get role(): RoleProps {  return this.props.role ? new RoleAdapter(this.props.role) : undefined; }
   public addRole(role: RoleEntityReference): void {
     this.props.set('role',role.id);

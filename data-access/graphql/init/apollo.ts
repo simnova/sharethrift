@@ -46,6 +46,7 @@ export class ApolloServerRequestHandler {
           async didEncounterErrors (requestContext: GraphQLRequestContext) {
             console.error('Apollo Server encounterd error:', requestContext.errors);
           },
+          sessionId: (requestContext: GraphQLRequestContext) => (requestContext.request.http.headers.get('authorization') || null),
           async serverWillStart(service: GraphQLServiceContext) {
             console.log('Apollo Server Starting');
             await connect();
@@ -84,7 +85,7 @@ export class ApolloServerRequestHandler {
 
       // health check enpoint is: https://<function-name>.azurewebsites.net/api/graphql/.well-known/apollo/server-health
       onHealthCheck: async (): Promise<any> => {
-        // doesn't work yet 
+        // customizing URL doesn't work yet 
         // https://github.com/apollographql/apollo-server/pull/5270
         // https://github.com/apollographql/apollo-server/pull/5003
         let mongoConnected = mongoose.connection.readyState === 1;
