@@ -292,6 +292,7 @@ export type Query = {
   accounts?: Maybe<Array<Maybe<Account>>>;
   categories?: Maybe<Array<Maybe<Category>>>;
   category?: Maybe<Category>;
+  currentUser?: Maybe<User>;
   listing?: Maybe<Listing>;
   listings?: Maybe<Array<Maybe<Listing>>>;
   user?: Maybe<User>;
@@ -560,6 +561,27 @@ export type ListingsFieldsFragment = {
   }>;
 };
 
+export type LoggedInUserContainerCurrentUserQueryQueryVariables = Exact<{
+  [key: string]: never;
+}>;
+
+export type LoggedInUserContainerCurrentUserQueryQuery = {
+  __typename?: "Query";
+  currentUser?: Maybe<{
+    __typename?: "User";
+    id: any;
+    firstName?: Maybe<string>;
+    lastName?: Maybe<string>;
+  }>;
+};
+
+export type LoggedInUserContainerCurrentUserFieldsFragment = {
+  __typename?: "User";
+  id: any;
+  firstName?: Maybe<string>;
+  lastName?: Maybe<string>;
+};
+
 export type UserCreateMutationVariables = Exact<{ [key: string]: never }>;
 
 export type UserCreateMutation = {
@@ -811,6 +833,30 @@ export const ListingsFieldsFragmentDoc = {
     },
   ],
 } as unknown as DocumentNode<ListingsFieldsFragment, unknown>;
+export const LoggedInUserContainerCurrentUserFieldsFragmentDoc = {
+  kind: "Document",
+  definitions: [
+    {
+      kind: "FragmentDefinition",
+      name: { kind: "Name", value: "LoggedInUserContainerCurrentUserFields" },
+      typeCondition: {
+        kind: "NamedType",
+        name: { kind: "Name", value: "User" },
+      },
+      selectionSet: {
+        kind: "SelectionSet",
+        selections: [
+          { kind: "Field", name: { kind: "Name", value: "id" } },
+          { kind: "Field", name: { kind: "Name", value: "firstName" } },
+          { kind: "Field", name: { kind: "Name", value: "lastName" } },
+        ],
+      },
+    },
+  ],
+} as unknown as DocumentNode<
+  LoggedInUserContainerCurrentUserFieldsFragment,
+  unknown
+>;
 export const UserListItemFieldsFragmentDoc = {
   kind: "Document",
   definitions: [
@@ -1213,6 +1259,38 @@ export const ListingsListingsDocument = {
 } as unknown as DocumentNode<
   ListingsListingsQuery,
   ListingsListingsQueryVariables
+>;
+export const LoggedInUserContainerCurrentUserQueryDocument = {
+  kind: "Document",
+  definitions: [
+    {
+      kind: "OperationDefinition",
+      operation: "query",
+      name: { kind: "Name", value: "LoggedInUserContainerCurrentUserQuery" },
+      selectionSet: {
+        kind: "SelectionSet",
+        selections: [
+          {
+            kind: "Field",
+            name: { kind: "Name", value: "currentUser" },
+            selectionSet: {
+              kind: "SelectionSet",
+              selections: [
+                {
+                  kind: "FragmentSpread",
+                  name: { kind: "Name", value: "UserProfileFields" },
+                },
+              ],
+            },
+          },
+        ],
+      },
+    },
+    ...UserProfileFieldsFragmentDoc.definitions,
+  ],
+} as unknown as DocumentNode<
+  LoggedInUserContainerCurrentUserQueryQuery,
+  LoggedInUserContainerCurrentUserQueryQueryVariables
 >;
 export const UserCreateDocument = {
   kind: "Document",

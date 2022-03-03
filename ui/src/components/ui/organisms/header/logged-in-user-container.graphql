@@ -1,0 +1,11 @@
+query LoggedInUserContainerCurrentUserQuery {
+  currentUser {
+    ...UserProfileFields
+  }
+}
+
+fragment LoggedInUserContainerCurrentUserFields on User {
+  id
+  firstName
+  lastName
+}

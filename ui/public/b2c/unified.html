@@ -1,0 +1,235 @@
+
+<!DOCTYPE html>
+<html>
+<head>
+    
+    <title>Sign up or sign in</title>
+
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link href="https://ajax.aspnetcdn.com/ajax/bootstrap/3.3.5/css/bootstrap.min.css" rel="stylesheet" type="text/css" />
+    <style id="common">
+        @font-face {
+            font-family: 'SegoeUI';
+            src: url(https://sharethrift.z20.web.core.windows.net/b2c/fonts/segoeui.WOFF);
+            font-weight: normal;
+        }
+        @font-face {
+            font-family: 'SegoeUI';
+            src: url(https://sharethrift.z20.web.core.windows.net/b2c/fonts/segoeui_bold.WOFF);
+            font-weight: bold;
+        }
+        #AmazonExchange {
+          background-image: url(https://sharethrift.z20.web.core.windows.net/b2c/idp_logos/colored/amazon.svg);
+        }
+        #AmazonExchange:hover {
+          background-image: url(https://sharethrift.z20.web.core.windows.net/b2c/idp_logos/white/amazon.svg);
+        }
+        #FacebookExchange {
+          background-image: url(https://sharethrift.z20.web.core.windows.net/b2c/idp_logos/colored/facebook.svg);
+        }
+        #FacebookExchange:hover {
+          background-image: url(https://sharethrift.z20.web.core.windows.net/b2c/idp_logos/white/facebook.svg);
+        }
+        #GitHubExchange {
+          background-image: url(https://sharethrift.z20.web.core.windows.net/b2c/idp_logos/colored/github.svg);
+        }
+        #GitHubExchange:hover {
+          background-image: url(https://sharethrift.z20.web.core.windows.net/b2c/idp_logos/white/github.svg);
+        }
+        #AppleExchange,#AppleManagedExchange {
+          background-image: url(https://sharethrift.z20.web.core.windows.net/b2c/idp_logos/colored/apple.svg);
+        }
+        #AppleExchange:hover,#AppleManagedExchange:hover {
+          background-image: url(https://sharethrift.z20.web.core.windows.net/b2c/idp_logos/white/apple.svg);
+        }
+        #GoogleExchange {
+          background-image: url(https://sharethrift.z20.web.core.windows.net/b2c/idp_logos/colored/google.svg);
+        }
+        #GoogleExchange:hover {
+          background-image: url(https://sharethrift.z20.web.core.windows.net/b2c/idp_logos/white/google.svg);
+        }
+        #LinkedInExchange {
+          background-image: url(https://sharethrift.z20.web.core.windows.net/b2c/idp_logos/colored/linkedin.svg);
+        }
+        #LinkedInExchange:hover {
+          background-image: url(https://sharethrift.z20.web.core.windows.net/b2c/idp_logos/white/linkedin.svg);
+        }
+        #MicrosoftAccountExchange {
+          background-image: url(https://sharethrift.z20.web.core.windows.net/b2c/idp_logos/colored/microsoft.svg);
+        }
+        #MicrosoftAccountExchange:hover {
+          background-image: url(https://sharethrift.z20.web.core.windows.net/b2c/idp_logos/white/microsoft.svg);
+        }
+        #QQExchange {
+          background-image: url(https://sharethrift.z20.web.core.windows.net/b2c/idp_logos/colored/qq.svg);
+        }
+        #QQExchange:hover {
+          background-image: url(https://sharethrift.z20.web.core.windows.net/b2c/idp_logos/white/qq.svg);
+        }
+        #TwitterExchange {
+          background-image: url(https://sharethrift.z20.web.core.windows.net/b2c/idp_logos/colored/twitter.svg);
+        }
+        #TwitterExchange:hover {
+          background-image: url(https://sharethrift.z20.web.core.windows.net/b2c/idp_logos/white/twitter.svg);
+        }
+        #WeChatExchange {
+          background-image: url(https://sharethrift.z20.web.core.windows.net/b2c/idp_logos/colored/wechat.svg);
+        }
+        #WeChatExchange:hover {
+          background-image: url(https://sharethrift.z20.web.core.windows.net/b2c/idp_logos/white/wechat.svg);
+        }
+        #WeiboExchange {
+          background-image: url(https://sharethrift.z20.web.core.windows.net/b2c/idp_logos/colored/weibo.svg);
+        }
+        #WeiboExchange:hover {
+          background-image: url(https://sharethrift.z20.web.core.windows.net/b2c/idp_logos/white/weibo.svg);
+        }
+        .buttons #cancel:before {
+            content: url(https://sharethrift.z20.web.core.windows.net/b2c/images/left-arrow.svg);
+        }
+    </style>
+    <style id="idpselector">
+        #SignInWithLogonNameExchange, #SignUpWithLogonEmailExchange, #SignUpWithLogonNameExchange {
+            background-image: url(https://sharethrift.z20.web.core.windows.net/b2c/idp_logos/colored/local.svg);
+        }
+        #SignInWithLogonNameExchange:hover, #SignUpWithLogonEmailExchange:hover, #SignUpWithLogonNameExchange:hover {
+            background-image: url(https://sharethrift.z20.web.core.windows.net/b2c/idp_logos/white/local.svg);
+        }
+        #SignUpWithLogonEmailExchange.text-link {
+            background-image: none;
+            background-color: transparent !important;
+        }
+        #SignUpWithLogonEmailExchange.text-link:hover {
+            background-image: none;
+            background-color: transparent !important;
+        }
+
+    </style>
+    <link href="https://sharethrift.z20.web.core.windows.net/b2c/page.css" rel="stylesheet" type="text/css" />
+    <link href="https://sharethrift.z20.web.core.windows.net/b2c/container.css" rel="stylesheet" type="text/css" />
+
+    <style>
+      .localAccount .create {
+        display: none;
+      }
+      .unified_container .row .panel-default .intro h2 {
+          font-size: 20px;
+      }
+      .unified_container .row .panel-default #api .localAccount .entry .buttons {
+        margin:0;
+      }
+      .unified_container .row .panel-default #api .buttons button#next{
+        width: 100%;
+      }
+      .unified_container .row .panel-default #api .localAccount .entry .entry-item #password {
+        margin: 0;
+      }
+
+
+      .unified_container .create-account-button {
+        background-image: none;
+        background-color: #3F5F76;
+        border: none;
+        border-radius: 0.5rem;
+        cursor: pointer;
+        display: inline-block;
+        font-size: 1em;
+        font-weight: 400;
+        height: inherit;
+        line-height: 1.3333333;
+        margin-top: 2rem;
+        margin-right: 0;
+        margin-bottom: 1.2rem;
+        margin-left: 0;
+        padding: 10px 16px;
+        text-align: center;
+        touch-action: manipulation;
+        user-select: none;
+        vertical-align: middle;
+        white-space: nowrap;
+        width: inherit;
+        -moz-user-select: none;
+        -ms-touch-action: manipulation;
+        -ms-user-select: none;
+        -webkit-user-select: none;
+        color: #fff;
+        width: 63%;
+        box-shadow: 0 0 30px 0 #dae1f7;
+        text-decoration: none;
+      }
+
+      .unified_container .create-account-button:hover {
+        box-shadow: none;
+        background-color: #49708b;
+        color: #fff;
+      }
+
+    </style>
+</head>
+<body>
+    <div id="background_branding_container" data-tenant-branding-background-color="false">
+     <!-- <img data-tenant-branding-background="true" src="https://sharethrift.z20.web.core.windows.net/b2c/backgrounds/1-1.png" alt="Illustration"/> -->
+    </div>
+    <div class="container  unified_container " role="presentation">
+        <div class="row">
+            <div class="col-lg-6">
+              <h1>Log In or Sign Up!</h1>
+                <div class="panel panel-default">
+                    <div class="panel-body">
+                        <div id="api" role="main">
+                        </div>
+                      <div class="intro text-left">
+                        <h2>Create Account</h2>
+                        <a class='create-account-button' style="width:100%" href="https://sharethriftb2c.b2clogin.com/sharethriftb2c.onmicrosoft.com/oauth2/v2.0/authorize?p=B2C_1A_SIGNUP_SIGNIN_WITH-SIGN-UP-DEEP-LINK&client_id=95019a5a-8e95-4a18-ae60-17c9611a90b0&nonce=defaultNonce&redirect_uri=http%3A%2F%2Flocalhost%3A3000&scope=openid&response_type=id_token&option=signup" class="btn btn-default btn-lg" id="cancel">Register Now</a>
+                      </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+    <script defer>
+      const hrTemplate = data => `
+        <div><hr class="hr-text" data-content="${data.text}"></div>
+      `;
+
+
+
+      const htmlToElements = (html) => {
+        console.log(html);
+          var template = document.createElement('template');
+          template.innerHTML = html;
+          return template.content;
+      }
+      
+      window.$(function() {
+        
+        var html = hrTemplate({text:'or'}).trim();
+        document.querySelector('.claims-provider-list-buttons').after(htmlToElements(html));
+        var forgotPassword = document.querySelector('#forgotPassword');
+        forgotPassword.innerText = 'Forgot Password?';
+
+        var forgotPasswordContainer = document.createElement('div');
+        forgotPasswordContainer.classList.add('forgot-password-container');
+        forgotPasswordContainer.classList.add('text-right');
+
+        forgotPasswordContainer.appendChild(forgotPassword)
+
+        document.querySelector('.localAccount').after(forgotPasswordContainer);
+        document.querySelector('#forgotPassword').after(htmlToElements(html));
+        
+        
+     //   $(html).insertAfter('.claims-provider-list-buttons social');
+
+
+          console.log( "ready!" );
+      });
+      window.$( window ).on( "load", function() {
+        console.log( "window loaded" );
+      });
+    </script>
+</body>
+</html>

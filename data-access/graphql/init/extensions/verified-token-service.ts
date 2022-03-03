@@ -12,6 +12,7 @@ export type OpenIdConfig = {
    */
   clockTolerance?: string;
   ignoreNbf?: boolean;
+  keyUrl: string;
 }
 
 export class VerifiedTokenService  {
@@ -83,17 +84,26 @@ export class VerifiedTokenService  {
       throw new Error('Invalid OpenIdConfig Key');
     }
     let openIdConfig = this.openIdConfigs.get(configKey);
-    return jwtVerify(
-      bearerToken,
-      this.keyStoreCollection.get(configKey).keyStore,
-     // createRemoteJWKSet(new URL(this.openIdConfigs.get(configKey).oidcEndpoint)), 
-      {
-        audience: openIdConfig.audience,
-        issuer: openIdConfig.issuerUrl,
-        //ignoreNbf: openIdConfig.ignoreNbf??true,
-        clockTolerance: openIdConfig.clockTolerance?? '5 minutes',
-      }
-    )
+    try {
+      console.log('Verifying JWT');
+      var result = await jwtVerify(
+        bearerToken,
+      // this.keyStoreCollection.get(configKey).keyStore,
+        createRemoteJWKSet(new URL(this.openIdConfigs.get(configKey).keyUrl)), 
+        {
+          audience: openIdConfig.audience,
+          issuer: openIdConfig.issuerUrl,
+          //ignoreNbf: openIdConfig.ignoreNbf??true,
+          clockTolerance: openIdConfig.clockTolerance?? '5 minutes',
+        }
+      )
+      console.log('JWT Verified',result);
+      return result;
+    } catch (error) {
+      console.log(error);
+      return null
+    }
+    
   }
 
 }

@@ -300,6 +300,7 @@ export type Query = {
   accounts?: Maybe<Array<Maybe<Account>>>;
   categories?: Maybe<Array<Maybe<Category>>>;
   category?: Maybe<Category>;
+  currentUser?: Maybe<User>;
   listing?: Maybe<Listing>;
   listings?: Maybe<Array<Maybe<Listing>>>;
   user?: Maybe<User>;
@@ -1330,6 +1331,11 @@ export type QueryResolvers<
     ParentType,
     ContextType,
     RequireFields<QueryCategoryArgs, "id">
+  >;
+  currentUser?: Resolver<
+    Maybe<ResolversTypes["User"]>,
+    ParentType,
+    ContextType
   >;
   listing?: Resolver<
     Maybe<ResolversTypes["Listing"]>,

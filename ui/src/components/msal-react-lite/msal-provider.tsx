@@ -108,7 +108,8 @@ const MsalProvider: FC<MsalProps> =  (props: MsalProps): JSX.Element => {
         getSilentAuthResult: (identifier:string|undefined) => findInstance(identifier)?.getSilentAuthResult() ?? new Promise<undefined>(() => {return undefined}),
         getIsLoggedIn: (identifier:string|undefined) => findInstance(identifier)?.IsLoggedIn ?? false,
         logout: (identifier:string|undefined) => findInstance(identifier)?.logout() ?? new Promise<void>(() => {return}),
-        login:  (identifier:string|undefined) => findInstance(identifier)?.login() ?? new Promise<undefined>(() => {return undefined}),
+        login:  (identifier:string|undefined,params?:Map<string,string>) => findInstance(identifier)?.login(params) ?? new Promise<undefined>(() => {return undefined}),
+        registerCallback: (identifier:string|undefined,callback:(isLoggedIn:boolean) => void) => findInstance(identifier)?.registerCallback(callback) ?? new Promise<void>(() => {return}),
       }}
     >
       {props.children}

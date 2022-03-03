@@ -30,8 +30,9 @@ export class Users extends DomainDataSource<Context,User,PropType,DomainType,Rep
   }
 
   async addUser() : Promise<User> {
+    console.log(`addUser`,this.context.VerifiedUser);
     if(this.context.VerifiedUser.OpenIdConfigKey !== 'AccountPortal') {
-      throw new Error('Unauthorized');
+      throw new Error('Unauthorized 99');
     }
     
     let userExternalId = this.context.VerifiedUser.VerifiedJWT.sub;

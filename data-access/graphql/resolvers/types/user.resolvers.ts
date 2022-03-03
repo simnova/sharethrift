@@ -12,6 +12,24 @@ const user : Resolvers = {
       console.log(`Resolver>Query>user ${args.id}`)
       return (await context.dataSources.userAPI.getUser(args.id)) as User;
     },
+    currentUser : async (parent, args, context, info)  => {
+      if(context.VerifiedUser){
+        console.log(`user found in context with JWT: ${JSON.stringify(context.VerifiedUser.VerifiedJWT)}`)
+      }else
+      {
+        console.log(`user not found in context`)
+        return undefined;
+      }
+      info.cacheControl.setCacheHint({ maxAge: 60,scope: CacheScope.Private });
+      var userDTO: User;
+      try {
+        userDTO = (await context.dataSources.userDomainAPI.addUser()) as User;
+      } catch (error) {
+        console.log(`Error getting/creating user: ${error}`)
+      }
+      
+      return userDTO;
+    },
     users : async (parent, args, context, info) => {
       info.cacheControl.setCacheHint({ maxAge: 60,scope: CacheScope.Public }); //this works, but doesn't work when setting it with a directive 
       console.log(`Resolver>Query>users`)

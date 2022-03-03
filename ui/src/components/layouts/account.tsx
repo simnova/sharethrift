@@ -1,4 +1,4 @@
-import React, { FC } from 'react';
+import React from 'react';
 import { Layout } from 'antd';
 import { Header } from '../header';
 import { CategoryCreate } from '../../components/category-create';
@@ -9,10 +9,10 @@ import { UserCreate } from '../user-create';
 
 const { Content } = Layout;
 
-export const Account: FC = () => {
+export const Account: React.FC = () => {
   return (
     <>
-      <h1>Account</h1>
+    
       <Layout>
         <Header isLoggedIn={false} />
         <Content>

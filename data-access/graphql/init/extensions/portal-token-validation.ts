@@ -12,6 +12,7 @@ import { OpenIdConfig, VerifiedTokenService } from './verified-token-service';
    * - [prefix]_OIDC_ENDPOINT
    * - [prefix]_OIDC_AUDIENCE  
    * - [prefix]_OIDC_ISSUER
+   * - [prefix]_KEYS
    **/
   constructor(portal: Map<string, string>, refreshInterval: number  = 1000*60*5) {
     this.tokenSettings = new Map<string,OpenIdConfig>();
@@ -22,7 +23,8 @@ import { OpenIdConfig, VerifiedTokenService } from './verified-token-service';
         {
           oidcEndpoint: this.tryGetConfigValue(envPrefix + '_OIDC_ENDPOINT'),    
           audience: this.tryGetConfigValue(envPrefix + '_OIDC_AUDIENCE'),
-          issuerUrl: this.tryGetConfigValue(envPrefix + '_OIDC_ISSUER')
+          issuerUrl: this.tryGetConfigValue(envPrefix + '_OIDC_ISSUER'),
+          keyUrl: this.tryGetConfigValue(envPrefix + '_KEYS')
         } as OpenIdConfig
       );
     }

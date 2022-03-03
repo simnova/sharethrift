@@ -2212,6 +2212,18 @@
             "deprecationReason": null
           },
           {
+            "name": "currentUser",
+            "description": null,
+            "args": [],
+            "type": {
+              "kind": "OBJECT",
+              "name": "User",
+              "ofType": null
+            },
+            "isDeprecated": false,
+            "deprecationReason": null
+          },
+          {
             "name": "listing",
             "description": null,
             "args": [

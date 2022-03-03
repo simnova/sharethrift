@@ -17,12 +17,16 @@ const defaultPermissions = shield<Resolvers,Context>({
 {
   fallbackRule: allow,
   fallbackError: async (thrownThing, parent, args, context, info) => {
+    console.log(`Shield Error: ${thrownThing}`)
     if (thrownThing instanceof ApolloError) {
       // expected errors
+      console.error(thrownThing)
+      console.log(JSON.stringify(thrownThing));
       return thrownThing
     } else if (thrownThing instanceof Error) {
       // unexpected errors
       console.error(thrownThing)
+      console.log(JSON.stringify(thrownThing));
 //      await Sentry.report(thrownThing)
       return new ApolloError('Internal server error1', 'ERR_INTERNAL_SERVER')
     } else {

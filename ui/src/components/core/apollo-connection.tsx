@@ -17,17 +17,17 @@ export interface AuthProps {
 
 const ApolloConnection: FC<any> = (props) => {
 
-  const { getAuthToken, getIsLoggedIn } = useMsal();
+  const { getAuthToken,getSilentAuthResult, getIsLoggedIn } = useMsal();
 
   const hasAuth = props.AuthenticationIdentifier !== null && typeof props.AuthenticationIdentifier !== "undefined";
   
   const withToken = setContext(async (_, { headers }) => {
     if(hasAuth){
-      const token = await getAuthToken(props.AuthenticationIdentifier);
+      const token = await getSilentAuthResult(props.AuthenticationIdentifier);
       return {
         headers: {
           ...headers,
-          Authorization: token ? `Bearer ${token}` : null,
+          Authorization: token ? `Bearer ${token.accessToken}` : null,
         },
       };
     }else {

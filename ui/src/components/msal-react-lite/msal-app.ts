@@ -1,6 +1,8 @@
 import {  MsalProviderPopupConfig, MsalProviderRedirectConfig } from '.';
 import * as msal from '@azure/msal-browser';
 import { ConfigType } from './msal-provider';
+import { StringDict } from '@azure/msal-common';
+
 
 export class MsalApp {
 
@@ -9,9 +11,19 @@ export class MsalApp {
   private usePopup : boolean;
   private homeAccountId : string |undefined;
   private isLoggedIn : boolean = false;
+  private setLoginState: (isLoggedIn: boolean) => void = () => {};
+
+  
+  public registerCallback = (callback:(isLoggedIn: boolean)=>void) => {
+    this.setLoginState = callback;
+  }
+
+
+
 
   get IsLoggedIn() : boolean{
-    console.log("getting logged in value");
+    this.isLoggedIn = this.msalInstance.getAllAccounts().length > 0 ;
+    console.log("getting logged in value:",this.isLoggedIn);
     return this.isLoggedIn;
   }
   get MsalInstance() : msal.PublicClientApplication{
@@ -24,12 +36,22 @@ export class MsalApp {
     this.usePopup = config.type === ConfigType.Popup;
   }
   
-  public async login() {
+  public async login(params?:Map<string,string>) {
+    var queryParams:StringDict = {};
+   
+    if(params){
+      params.forEach((value,key)=>{
+        queryParams[key] = value;
+      });
+    }
+
     if (this.usePopup) {
       var popupConfig = this.config as MsalProviderPopupConfig;
+      popupConfig.loginRequestConfig!.extraQueryParameters = queryParams;
       return this.loginPopup(popupConfig.loginRequestConfig);
     } else {
       var redirectConfig = this.config as MsalProviderRedirectConfig;
+      redirectConfig.redirectRequestConfig!.extraQueryParameters = queryParams;
       await this.loginRedirect(redirectConfig?.redirectRequestConfig);
       return undefined;
     }
@@ -45,6 +67,7 @@ export class MsalApp {
     } catch (err) {
       console.error("Login error", err);
       this.isLoggedIn = false;
+      this.setLoginState(false);
       return undefined;
     }
   }
@@ -83,7 +106,7 @@ export class MsalApp {
     providedHomeAccountId?: string
   ): msal.AccountInfo | undefined  {
     let usedHomeAccountId = providedHomeAccountId ?? this.homeAccountId;
-    if (!usedHomeAccountId) return undefined;
+    if (!usedHomeAccountId) return this.msalInstance.getAllAccounts()[0];
     return this.msalInstance.getAccountByHomeId(usedHomeAccountId) ?? undefined;
   }
 
@@ -159,12 +182,14 @@ export class MsalApp {
       authResult = await this.msalInstance.acquireTokenSilent(silentRequest);
       console.log('logged in1');
       this.isLoggedIn = true;
+      this.setLoginState(true);
       return authResult;
     } catch (err) {
       if (err instanceof msal.InteractionRequiredAuthError && !isSilent) {
         console.log('logged in2');
         authResult = await this.msalInstance.acquireTokenPopup(silentRequest);
         this.isLoggedIn = true;
+        this.setLoginState(true)
         return authResult;
       }
       return undefined;
@@ -181,11 +206,13 @@ export class MsalApp {
       console.log('logged in1a');
       this.homeAccountId = authResult.account?.homeAccountId;
       this.isLoggedIn = true;
+      this.setLoginState(true);
       return authResult;
     } catch (err) {
       if (err instanceof msal.InteractionRequiredAuthError && !isSilent) {
         console.log('logged in2a');
         this.isLoggedIn = false;
+        this.setLoginState(false);
         await this.msalInstance.acquireTokenRedirect(silentRequest);
       }
       return undefined;
@@ -202,6 +229,7 @@ export class MsalApp {
     }else{
       await this.msalInstance.logoutRedirect(this.config.endSessionRequestConfig)
     }
+    this.setLoginState(false);
     this.isLoggedIn = false;
   }
 

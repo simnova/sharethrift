@@ -43,6 +43,28 @@ module.exports = {
 
     config.module.rules.push(
       {
+        test: /\.(png|woff|woff2|eot|ttf|svg)$/,
+        use: [
+          {
+            loader: 'file-loader',
+            options: {
+              name: '[path][name].[ext]',
+              outputPath: 'src/fonts/'
+            }
+          }
+        ],
+        include: path.resolve(__dirname, '../src/xxx'),
+      },
+
+      {
+        test: /\.css$/,
+        use: [
+          'postcss-loader',
+          'style-loader',
+        ],
+        include: path.resolve(__dirname, '../src/xxx'),
+      },
+      {
         test: /\.less$/,
         use: [
           { loader: 'style-loader' },

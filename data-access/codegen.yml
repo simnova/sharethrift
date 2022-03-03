@@ -2,7 +2,9 @@ overwrite: true
 schema: 
   - "./graphql/resolvers/core/graphql-tools-scalars.ts"
   - "./graphql/resolvers/**/**.graphql"
-documents: "../ui/src/components/**/**.graphql"
+documents: 
+  - "../ui/src/**/**.graphql"
+  
 generates:
   graphql/generated.ts:
     config:

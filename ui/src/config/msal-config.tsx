@@ -74,7 +74,7 @@ var accountConfig: MsalProviderRedirectConfig = {
       clientId: account_clientId,
       authority: account_authority,
       knownAuthorities: [knownAuthorities],
-      redirectUri: redirectUri,
+      redirectUri: redirectUri,      
     },
     system: {
       loggerOptions: loggerOptions
