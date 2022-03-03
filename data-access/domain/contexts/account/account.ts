@@ -36,6 +36,7 @@ export class Account<props extends AccountProps> extends AggregateRoot<props> im
 
   get name(): string {return this.props.name;}
   get handle(): string {return this.props.handle;}
+  set handle(value: string) {this.props.handle = value;}
   get updatedAt(): Date {return this.props.updatedAt;}
   get createdAt(): Date {return this.props.createdAt;}
   get schemaVersion(): string {return this.props.schemaVersion;}
@@ -44,8 +45,8 @@ export class Account<props extends AccountProps> extends AggregateRoot<props> im
 
   static async CreateInitialAccountForNewUser<newPropType extends AccountProps, userProps extends UserProps>(props:newPropType,newUser:User<userProps>): Promise<Account<newPropType>> {
     props.name = newUser.id;
+    props.handle = newUser.id;
     let account = new Account(props);
-
     account.addDefaultRoles();
     account.addContact(newUser);
     console.log('after-adding-contact', JSON.stringify(account));

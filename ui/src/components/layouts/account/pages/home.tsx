@@ -1,15 +1,15 @@
 import React from 'react';
 import { Layout } from 'antd';
-import { Header } from '../header';
-import { CategoryCreate } from '../../components/category-create';
-import { Users } from '../../components/users';
-import { ListingCreate } from '../listing-create';
-import { Listings } from '../../components/listings';
-import { UserCreate } from '../user-create';
+import { Header } from '../../../header';
+import { CategoryCreate } from '../../../../components/category-create';
+import { Users } from '../../../../components/users';
+import { ListingCreate } from '../../../listing-create';
+import { Listings } from '../../../../components/listings';
+import { UserCreate } from '../../../user-create';
 
 const { Content } = Layout;
 
-export const Account: React.FC = () => {
+export const Home: React.FC = () => {
   return (
     <>
     

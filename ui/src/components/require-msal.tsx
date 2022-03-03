@@ -1,26 +1,14 @@
 import RequireAuth from './require-auth';
-import React, { useEffect, useState, useRef } from "react";
+import React, { useEffect, useState } from "react";
 import { useMsal } from './msal-react-lite';
 
 const RequireMsal:React.FC<any> = (params:any) => {
-  const { getSilentAuthResult } = useMsal();
-  const [isAuthenticated, setIsAuthenticated] = useState<boolean>();
-  let isRendered = useRef(false); //Used to make Async code not get called on every render.
-  useEffect(() => {
-    (async () => {
-      // IIFE to make async code work in a non-async Functional Component
-      if (!isRendered.current) {
-        //var authResult = await getSilentAuthResult(params.identifier);
-        //console.log(`authResult:${JSON.stringify(authResult)}`);
-        var authResult = false
-        setIsAuthenticated(authResult ? true : false);
-      }
-    })();
+  const { getIsLoggedIn, registerCallback } = useMsal();
+  const [isAuthenticated, setIsAuthenticated] = useState<boolean>(getIsLoggedIn(params.identifier));
 
-    return () => {
-      isRendered.current = true;
-    };
-  }, [isAuthenticated]); // eslint-disable-line react-hooks/exhaustive-deps
+  useEffect(() => {
+    registerCallback(params.identifier, setIsAuthenticated)
+  }, [params.identifier,registerCallback]);
   
   return(
     <RequireAuth isAuthenticated={isAuthenticated}>{params.children}</RequireAuth>

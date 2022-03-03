@@ -4,7 +4,7 @@ import { Routes, Route } from "react-router-dom";
 import ApolloConnection from './components/core/apollo-connection';
 import RequireMsal from './components/require-msal';
 
-import { Account } from "./components/layouts/account";
+import { Account } from "./components/layouts/account/";
 import { Admin } from "./components/layouts/admin";
 import { Public } from './components/layouts/public/';
 import { Home } from './components/layouts/public/pages/home';
@@ -37,7 +37,7 @@ function App() {
     <>
       <Routes>
         <Route path="/account/*" element={accountPage} />
-        <Route path="/admin/*" element={adminPage} />
+        <Route path="/admin" element={adminPage} />
         <Route path="/" element={mainPage}>
           <Route path="/" element={Home} />
         </Route> 
