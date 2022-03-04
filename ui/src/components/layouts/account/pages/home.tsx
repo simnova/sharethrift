@@ -1,21 +1,24 @@
 import React from 'react';
 import { Layout } from 'antd';
-import { Header } from '../../../header';
+import { Header as CustomHeader } from '../../../header';
 import { CategoryCreate } from '../../../../components/category-create';
 import { Users } from '../../../../components/users';
 import { ListingCreate } from '../../../listing-create';
 import { Listings } from '../../../../components/listings';
 import { UserCreate } from '../../../user-create';
+import { SubPageLayout } from '../sub-page-layout';
 
-const { Content } = Layout;
+
+const { Content,Header } = Layout;
 
 export const Home: React.FC = () => {
   return (
     <>
-    
-      <Layout>
-        <Header isLoggedIn={false} />
-        <Content>
+      <SubPageLayout
+        fixedHeader={true}
+        header={<Header title='sample data'/>}
+      >
+        <CustomHeader isLoggedIn={false} />
           <h3>Categories</h3>
           <h6>Create Category </h6>
           <CategoryCreate />
@@ -34,8 +37,9 @@ export const Home: React.FC = () => {
           </div>
           <h6>All Listings</h6>
           <Listings/>
-        </Content>
-      </Layout>
+      </SubPageLayout>
+    
+      
     </>
   );
 }

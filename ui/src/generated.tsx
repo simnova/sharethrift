@@ -414,6 +414,50 @@ export type CategorySelectionCategoryFieldsFragment = {
   name?: Maybe<string>;
 };
 
+export type ProfileContainerUserQueryVariables = Exact<{
+  [key: string]: never;
+}>;
+
+export type ProfileContainerUserQuery = {
+  __typename?: "Query";
+  currentUser?: Maybe<{
+    __typename?: "User";
+    id: any;
+    firstName?: Maybe<string>;
+    lastName?: Maybe<string>;
+    email?: Maybe<any>;
+    createdAt?: Maybe<any>;
+    updatedAt?: Maybe<any>;
+  }>;
+};
+
+export type ProfileContainerUserUpdateMutationVariables = Exact<{
+  input: UserUpdateInput;
+}>;
+
+export type ProfileContainerUserUpdateMutation = {
+  __typename?: "Mutation";
+  updateUser?: Maybe<{
+    __typename?: "User";
+    id: any;
+    firstName?: Maybe<string>;
+    lastName?: Maybe<string>;
+    email?: Maybe<any>;
+    createdAt?: Maybe<any>;
+    updatedAt?: Maybe<any>;
+  }>;
+};
+
+export type ProfileContainerUserFieldsFragment = {
+  __typename?: "User";
+  id: any;
+  firstName?: Maybe<string>;
+  lastName?: Maybe<string>;
+  email?: Maybe<any>;
+  createdAt?: Maybe<any>;
+  updatedAt?: Maybe<any>;
+};
+
 export type ListingCreateMutationVariables = Exact<{
   input: ListingDetail;
 }>;
@@ -711,6 +755,30 @@ export const CategorySelectionCategoryFieldsFragmentDoc = {
     },
   ],
 } as unknown as DocumentNode<CategorySelectionCategoryFieldsFragment, unknown>;
+export const ProfileContainerUserFieldsFragmentDoc = {
+  kind: "Document",
+  definitions: [
+    {
+      kind: "FragmentDefinition",
+      name: { kind: "Name", value: "ProfileContainerUserFields" },
+      typeCondition: {
+        kind: "NamedType",
+        name: { kind: "Name", value: "User" },
+      },
+      selectionSet: {
+        kind: "SelectionSet",
+        selections: [
+          { kind: "Field", name: { kind: "Name", value: "id" } },
+          { kind: "Field", name: { kind: "Name", value: "firstName" } },
+          { kind: "Field", name: { kind: "Name", value: "lastName" } },
+          { kind: "Field", name: { kind: "Name", value: "email" } },
+          { kind: "Field", name: { kind: "Name", value: "createdAt" } },
+          { kind: "Field", name: { kind: "Name", value: "updatedAt" } },
+        ],
+      },
+    },
+  ],
+} as unknown as DocumentNode<ProfileContainerUserFieldsFragment, unknown>;
 export const ListingsFieldsFragmentDoc = {
   kind: "Document",
   definitions: [
@@ -1062,6 +1130,96 @@ export const CategorySelectionCategoriesDocument = {
 } as unknown as DocumentNode<
   CategorySelectionCategoriesQuery,
   CategorySelectionCategoriesQueryVariables
+>;
+export const ProfileContainerUserDocument = {
+  kind: "Document",
+  definitions: [
+    {
+      kind: "OperationDefinition",
+      operation: "query",
+      name: { kind: "Name", value: "ProfileContainerUser" },
+      selectionSet: {
+        kind: "SelectionSet",
+        selections: [
+          {
+            kind: "Field",
+            name: { kind: "Name", value: "currentUser" },
+            selectionSet: {
+              kind: "SelectionSet",
+              selections: [
+                {
+                  kind: "FragmentSpread",
+                  name: { kind: "Name", value: "ProfileContainerUserFields" },
+                },
+              ],
+            },
+          },
+        ],
+      },
+    },
+    ...ProfileContainerUserFieldsFragmentDoc.definitions,
+  ],
+} as unknown as DocumentNode<
+  ProfileContainerUserQuery,
+  ProfileContainerUserQueryVariables
+>;
+export const ProfileContainerUserUpdateDocument = {
+  kind: "Document",
+  definitions: [
+    {
+      kind: "OperationDefinition",
+      operation: "mutation",
+      name: { kind: "Name", value: "ProfileContainerUserUpdate" },
+      variableDefinitions: [
+        {
+          kind: "VariableDefinition",
+          variable: {
+            kind: "Variable",
+            name: { kind: "Name", value: "input" },
+          },
+          type: {
+            kind: "NonNullType",
+            type: {
+              kind: "NamedType",
+              name: { kind: "Name", value: "UserUpdateInput" },
+            },
+          },
+        },
+      ],
+      selectionSet: {
+        kind: "SelectionSet",
+        selections: [
+          {
+            kind: "Field",
+            name: { kind: "Name", value: "updateUser" },
+            arguments: [
+              {
+                kind: "Argument",
+                name: { kind: "Name", value: "input" },
+                value: {
+                  kind: "Variable",
+                  name: { kind: "Name", value: "input" },
+                },
+              },
+            ],
+            selectionSet: {
+              kind: "SelectionSet",
+              selections: [
+                {
+                  kind: "FragmentSpread",
+                  name: { kind: "Name", value: "ProfileContainerUserFields" },
+                },
+              ],
+            },
+          },
+        ],
+      },
+    },
+    ...ProfileContainerUserFieldsFragmentDoc.definitions,
+  ],
+} as unknown as DocumentNode<
+  ProfileContainerUserUpdateMutation,
+  ProfileContainerUserUpdateMutationVariables
 >;
 export const ListingCreateDocument = {
   kind: "Document",

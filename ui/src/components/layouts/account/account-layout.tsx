@@ -1,30 +1,24 @@
-import React from "react";
-import { Link, Outlet } from "react-router-dom"
-import { Layout, Menu } from 'antd';
+import React, { useState } from 'react';
+import { Outlet } from 'react-router-dom';
+import { Layout } from 'antd';
 import './account-layout.css';
-import {
-  AppstoreOutlined,
-  BarChartOutlined,
-  CloudOutlined,
-  ShopOutlined,
-  TeamOutlined,
-  UserOutlined,
-  UploadOutlined,
-  VideoCameraOutlined,
-} from '@ant-design/icons';
-import { MenuComponent } from "./components/menu-component";
 
-const { Header, Content, Footer, Sider } = Layout;
+import { MenuComponent } from './components/menu-component';
 
+const { Footer, Sider } = Layout;
 
 export const AccountLayout: React.FC<any> = (props) => {
+  const [collapsed, setCollapsed] = useState(false);
   return (
-    <Layout hasSider>
-      <Sider
+    <Layout hasSider style={{ minHeight: '100vh' }}>
+        <Sider
+        collapsible
+        collapsed={collapsed}
+        onCollapse={() => setCollapsed(!collapsed)}
         style={{
           overflow: 'auto',
           height: '100vh',
-          position: 'fixed',
+          position: 'relative',
           left: 0,
           top: 0,
           bottom: 0,
@@ -33,16 +27,10 @@ export const AccountLayout: React.FC<any> = (props) => {
         <div className="logo" />
         <MenuComponent pageLayouts={props.pageLayouts} />
       </Sider>
-      <Layout className="site-layout" style={{ marginLeft: 200 }}>
-        <Header className="site-layout-background" style={{ padding: 0 }}>
-          <h1>Admin</h1>
-        </Header>
-        <Content style={{ margin: '24px 16px 0', overflow: 'initial' }}>
-          <div className="site-layout-background" style={{ padding: 24, textAlign: 'center' }}>
-            <Outlet/>
-          </div>
-        </Content>
-        <Footer style={{ textAlign: 'center' }}>Open Source</Footer>
+      
+      <Layout className="site-layout" style={{display:'flex',flexDirection:'column',flex:'1 auto', overflowY:'scroll', height:'100vh'}}>
+
+        <Outlet/>
       </Layout>
     </Layout>  
   )

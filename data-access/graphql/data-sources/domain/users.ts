@@ -2,9 +2,10 @@ import { User as UserDO } from '../../../domain/contexts/user/user';
 import { UserConverter, UserDomainAdapter }from '../../../domain/infrastructure/persistance/adapters/user-domain-adapter';
 import { MongoUserRepository } from '../../../domain/infrastructure/persistance/repositories/mongo-user-repository';
 import { Context } from '../../context';
-import { UserUpdateInput } from '../../generated';
+import { UserUpdateInput, UserProfileUpdateInput } from '../../generated';
 import { DomainDataSource } from './domain-data-source';
 import { User } from '../../../infrastructure/data-sources/cosmos-db/models/user';
+import { report } from 'process';
 
 type PropType = UserDomainAdapter;
 type DomainType = UserDO<PropType>;
@@ -24,10 +25,12 @@ export class Users extends DomainDataSource<Context,User,PropType,DomainType,Rep
         throw new Error('Unauthorized');
       }
       domainObject.setFirstName(user.firstName);
+      domainObject.setLastName(user.lastName);
       result = (new UserConverter()).toMongo(await repo.save(domainObject));
     });
     return result;
   }
+  
 
   async addUser() : Promise<User> {
     console.log(`addUser`,this.context.VerifiedUser);

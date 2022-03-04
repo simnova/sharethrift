@@ -1,0 +1,19 @@
+query ProfileContainerUser {
+  currentUser {
+    ...ProfileContainerUserFields
+  }
+}
+mutation ProfileContainerUserUpdate($input: UserUpdateInput!) {
+  updateUser(input: $input) {
+    ...ProfileContainerUserFields
+  }
+}
+
+fragment ProfileContainerUserFields on User {
+  id
+  firstName
+  lastName
+  email
+  createdAt
+  updatedAt
+}
