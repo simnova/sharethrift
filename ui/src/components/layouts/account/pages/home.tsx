@@ -1,5 +1,5 @@
 import React from 'react';
-import { Layout } from 'antd';
+import { Layout, PageHeader } from 'antd';
 import { Header as CustomHeader } from '../../../header';
 import { CategoryCreate } from '../../../../components/category-create';
 import { Users } from '../../../../components/users';
@@ -16,7 +16,7 @@ export const Home: React.FC = () => {
     <>
       <SubPageLayout
         fixedHeader={true}
-        header={<Header title='sample data'/>}
+        header={<PageHeader title='sample data'/>}
       >
         <CustomHeader isLoggedIn={false} />
           <h3>Categories</h3>

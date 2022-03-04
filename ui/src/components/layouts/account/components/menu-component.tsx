@@ -38,7 +38,7 @@ export const MenuComponent = ({ pageLayouts , ...props } : TextProp) => {
     const matchedPages = matchRoutes(pageLayouts,location)
     const matchedIds = matchedPages ? matchedPages.map((x:any) => x.route.id.toString()) : [];
     return (
-      <Menu theme="dark" mode="inline" defaultSelectedKeys={matchedIds}>
+      <Menu theme="light" mode="inline" defaultSelectedKeys={matchedIds}>
         <Menu.Item key="home" icon={root.icon}>
           <Link to={root.path.replace('*','')}>{root.title}</Link>
         </Menu.Item>
