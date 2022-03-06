@@ -73,6 +73,7 @@ export type Scalars = {
 export type Account = MongoBase & {
   __typename?: "Account";
   name?: Maybe<Scalars["String"]>;
+  handle?: Maybe<Scalars["String"]>;
   roles?: Maybe<Array<Maybe<Role>>>;
   contacts?: Maybe<Array<Maybe<Contact>>>;
   id: Scalars["ObjectID"];
@@ -84,6 +85,12 @@ export type Account = MongoBase & {
 export type AccountPermissions = {
   __typename?: "AccountPermissions";
   canManageRolesAndPermissions: Scalars["Boolean"];
+};
+
+export type AccountUpdateInput = {
+  id: Scalars["ObjectID"];
+  name?: Maybe<Scalars["String"]>;
+  handle?: Maybe<Scalars["String"]>;
 };
 
 export type Address = {
@@ -130,7 +137,7 @@ export type Contact = {
   __typename?: "Contact";
   firstName: Scalars["String"];
   lastName?: Maybe<Scalars["String"]>;
-  role: Scalars["ObjectID"];
+  role?: Maybe<Role>;
   user?: Maybe<User>;
   id: Scalars["ObjectID"];
   updatedAt?: Maybe<Scalars["DateTime"]>;
@@ -225,6 +232,7 @@ export type Mutation = {
   createListing?: Maybe<CreateListingPayload>;
   createUser?: Maybe<User>;
   publishDraft?: Maybe<Listing>;
+  updateAccount?: Maybe<Account>;
   updateCategory?: Maybe<Category>;
   updateDraft?: Maybe<Listing>;
   /** Allows the user to update their profile */
@@ -244,6 +252,11 @@ export type MutationCreateListingArgs = {
 /**  Base Mutation Type definition - all mutations will be defined in separate files extending this type  */
 export type MutationPublishDraftArgs = {
   id: Scalars["ID"];
+};
+
+/**  Base Mutation Type definition - all mutations will be defined in separate files extending this type  */
+export type MutationUpdateAccountArgs = {
+  input: AccountUpdateInput;
 };
 
 /**  Base Mutation Type definition - all mutations will be defined in separate files extending this type  */
@@ -289,6 +302,8 @@ export type Query = {
   __typename?: "Query";
   /** IGNORE: Dummy field necessary for the Query type to be valid */
   _empty?: Maybe<Scalars["String"]>;
+  account?: Maybe<Account>;
+  accountGetByHandle?: Maybe<Account>;
   accounts?: Maybe<Array<Maybe<Account>>>;
   categories?: Maybe<Array<Maybe<Category>>>;
   category?: Maybe<Category>;
@@ -297,6 +312,16 @@ export type Query = {
   listings?: Maybe<Array<Maybe<Listing>>>;
   user?: Maybe<User>;
   users?: Maybe<Array<Maybe<User>>>;
+};
+
+/**  Base Query Type definition - , all mutations will be defined in separate files extending this type  */
+export type QueryAccountArgs = {
+  id: Scalars["ID"];
+};
+
+/**  Base Query Type definition - , all mutations will be defined in separate files extending this type  */
+export type QueryAccountGetByHandleArgs = {
+  handle: Scalars["String"];
 };
 
 /**  Base Query Type definition - , all mutations will be defined in separate files extending this type  */
@@ -412,6 +437,207 @@ export type CategorySelectionCategoryFieldsFragment = {
   createdAt?: Maybe<any>;
   updatedAt?: Maybe<any>;
   name?: Maybe<string>;
+};
+
+export type AccountMenuAccountsQueryVariables = Exact<{ [key: string]: never }>;
+
+export type AccountMenuAccountsQuery = {
+  __typename?: "Query";
+  accounts?: Maybe<
+    Array<
+      Maybe<{
+        __typename?: "Account";
+        id: any;
+        schemaVersion?: Maybe<string>;
+        createdAt?: Maybe<any>;
+        updatedAt?: Maybe<any>;
+        handle?: Maybe<string>;
+        name?: Maybe<string>;
+      }>
+    >
+  >;
+};
+
+export type AccountMenuAccountFieldsFragment = {
+  __typename?: "Account";
+  id: any;
+  schemaVersion?: Maybe<string>;
+  createdAt?: Maybe<any>;
+  updatedAt?: Maybe<any>;
+  handle?: Maybe<string>;
+  name?: Maybe<string>;
+};
+
+export type AccountSettingsContactsContainerAccountGetByHandleQueryVariables =
+  Exact<{
+    handle: Scalars["String"];
+  }>;
+
+export type AccountSettingsContactsContainerAccountGetByHandleQuery = {
+  __typename?: "Query";
+  accountGetByHandle?: Maybe<{
+    __typename?: "Account";
+    id: any;
+    schemaVersion?: Maybe<string>;
+    createdAt?: Maybe<any>;
+    updatedAt?: Maybe<any>;
+    handle?: Maybe<string>;
+    name?: Maybe<string>;
+    contacts?: Maybe<
+      Array<
+        Maybe<{
+          __typename?: "Contact";
+          firstName: string;
+          lastName?: Maybe<string>;
+          id: any;
+          updatedAt?: Maybe<any>;
+          createdAt?: Maybe<any>;
+          role?: Maybe<{ __typename?: "Role"; id: any; roleName: string }>;
+          user?: Maybe<{ __typename?: "User"; id: any }>;
+        }>
+      >
+    >;
+  }>;
+};
+
+export type AccountSettingsContactsContainerAccountGetByHandleFieldsFragment = {
+  __typename?: "Account";
+  id: any;
+  schemaVersion?: Maybe<string>;
+  createdAt?: Maybe<any>;
+  updatedAt?: Maybe<any>;
+  handle?: Maybe<string>;
+  name?: Maybe<string>;
+  contacts?: Maybe<
+    Array<
+      Maybe<{
+        __typename?: "Contact";
+        firstName: string;
+        lastName?: Maybe<string>;
+        id: any;
+        updatedAt?: Maybe<any>;
+        createdAt?: Maybe<any>;
+        role?: Maybe<{ __typename?: "Role"; id: any; roleName: string }>;
+        user?: Maybe<{ __typename?: "User"; id: any }>;
+      }>
+    >
+  >;
+};
+
+export type AccountSettingsGeneralContainerAccountGetByHandleQueryVariables =
+  Exact<{
+    handle: Scalars["String"];
+  }>;
+
+export type AccountSettingsGeneralContainerAccountGetByHandleQuery = {
+  __typename?: "Query";
+  accountGetByHandle?: Maybe<{
+    __typename?: "Account";
+    id: any;
+    schemaVersion?: Maybe<string>;
+    createdAt?: Maybe<any>;
+    updatedAt?: Maybe<any>;
+    handle?: Maybe<string>;
+    name?: Maybe<string>;
+  }>;
+};
+
+export type AccountSettingsGeneralContainerUpdateAccountMutationVariables =
+  Exact<{
+    input: AccountUpdateInput;
+  }>;
+
+export type AccountSettingsGeneralContainerUpdateAccountMutation = {
+  __typename?: "Mutation";
+  updateAccount?: Maybe<{
+    __typename?: "Account";
+    id: any;
+    schemaVersion?: Maybe<string>;
+    createdAt?: Maybe<any>;
+    updatedAt?: Maybe<any>;
+    handle?: Maybe<string>;
+    name?: Maybe<string>;
+  }>;
+};
+
+export type AccountSettingsGeneralContainerAccountFieldsFragment = {
+  __typename?: "Account";
+  id: any;
+  schemaVersion?: Maybe<string>;
+  createdAt?: Maybe<any>;
+  updatedAt?: Maybe<any>;
+  handle?: Maybe<string>;
+  name?: Maybe<string>;
+};
+
+export type AccountSettingsRolesContainerAccountGetByHandleQueryVariables =
+  Exact<{
+    handle: Scalars["String"];
+  }>;
+
+export type AccountSettingsRolesContainerAccountGetByHandleQuery = {
+  __typename?: "Query";
+  accountGetByHandle?: Maybe<{
+    __typename?: "Account";
+    id: any;
+    schemaVersion?: Maybe<string>;
+    createdAt?: Maybe<any>;
+    updatedAt?: Maybe<any>;
+    handle?: Maybe<string>;
+    name?: Maybe<string>;
+    roles?: Maybe<
+      Array<
+        Maybe<{
+          __typename?: "Role";
+          id: any;
+          roleName: string;
+          isDefault: boolean;
+          permissions: {
+            __typename?: "Permissions";
+            listingPermissions: {
+              __typename?: "ListingPermissions";
+              canManageListings: boolean;
+            };
+            accountPermissions: {
+              __typename?: "AccountPermissions";
+              canManageRolesAndPermissions: boolean;
+            };
+          };
+        }>
+      >
+    >;
+  }>;
+};
+
+export type AccountSettingsRolesContainerAccountGetByHandleFieldsFragment = {
+  __typename?: "Account";
+  id: any;
+  schemaVersion?: Maybe<string>;
+  createdAt?: Maybe<any>;
+  updatedAt?: Maybe<any>;
+  handle?: Maybe<string>;
+  name?: Maybe<string>;
+  roles?: Maybe<
+    Array<
+      Maybe<{
+        __typename?: "Role";
+        id: any;
+        roleName: string;
+        isDefault: boolean;
+        permissions: {
+          __typename?: "Permissions";
+          listingPermissions: {
+            __typename?: "ListingPermissions";
+            canManageListings: boolean;
+          };
+          accountPermissions: {
+            __typename?: "AccountPermissions";
+            canManageRolesAndPermissions: boolean;
+          };
+        };
+      }>
+    >
+  >;
 };
 
 export type ProfileContainerUserQueryVariables = Exact<{
@@ -755,6 +981,213 @@ export const CategorySelectionCategoryFieldsFragmentDoc = {
     },
   ],
 } as unknown as DocumentNode<CategorySelectionCategoryFieldsFragment, unknown>;
+export const AccountMenuAccountFieldsFragmentDoc = {
+  kind: "Document",
+  definitions: [
+    {
+      kind: "FragmentDefinition",
+      name: { kind: "Name", value: "AccountMenuAccountFields" },
+      typeCondition: {
+        kind: "NamedType",
+        name: { kind: "Name", value: "Account" },
+      },
+      selectionSet: {
+        kind: "SelectionSet",
+        selections: [
+          { kind: "Field", name: { kind: "Name", value: "id" } },
+          { kind: "Field", name: { kind: "Name", value: "schemaVersion" } },
+          { kind: "Field", name: { kind: "Name", value: "createdAt" } },
+          { kind: "Field", name: { kind: "Name", value: "updatedAt" } },
+          { kind: "Field", name: { kind: "Name", value: "handle" } },
+          { kind: "Field", name: { kind: "Name", value: "name" } },
+        ],
+      },
+    },
+  ],
+} as unknown as DocumentNode<AccountMenuAccountFieldsFragment, unknown>;
+export const AccountSettingsContactsContainerAccountGetByHandleFieldsFragmentDoc =
+  {
+    kind: "Document",
+    definitions: [
+      {
+        kind: "FragmentDefinition",
+        name: {
+          kind: "Name",
+          value: "AccountSettingsContactsContainerAccountGetByHandleFields",
+        },
+        typeCondition: {
+          kind: "NamedType",
+          name: { kind: "Name", value: "Account" },
+        },
+        selectionSet: {
+          kind: "SelectionSet",
+          selections: [
+            { kind: "Field", name: { kind: "Name", value: "id" } },
+            { kind: "Field", name: { kind: "Name", value: "schemaVersion" } },
+            { kind: "Field", name: { kind: "Name", value: "createdAt" } },
+            { kind: "Field", name: { kind: "Name", value: "updatedAt" } },
+            { kind: "Field", name: { kind: "Name", value: "handle" } },
+            { kind: "Field", name: { kind: "Name", value: "name" } },
+            {
+              kind: "Field",
+              name: { kind: "Name", value: "contacts" },
+              selectionSet: {
+                kind: "SelectionSet",
+                selections: [
+                  { kind: "Field", name: { kind: "Name", value: "firstName" } },
+                  { kind: "Field", name: { kind: "Name", value: "lastName" } },
+                  {
+                    kind: "Field",
+                    name: { kind: "Name", value: "role" },
+                    selectionSet: {
+                      kind: "SelectionSet",
+                      selections: [
+                        { kind: "Field", name: { kind: "Name", value: "id" } },
+                        {
+                          kind: "Field",
+                          name: { kind: "Name", value: "roleName" },
+                        },
+                      ],
+                    },
+                  },
+                  {
+                    kind: "Field",
+                    name: { kind: "Name", value: "user" },
+                    selectionSet: {
+                      kind: "SelectionSet",
+                      selections: [
+                        { kind: "Field", name: { kind: "Name", value: "id" } },
+                      ],
+                    },
+                  },
+                  { kind: "Field", name: { kind: "Name", value: "id" } },
+                  { kind: "Field", name: { kind: "Name", value: "updatedAt" } },
+                  { kind: "Field", name: { kind: "Name", value: "createdAt" } },
+                ],
+              },
+            },
+          ],
+        },
+      },
+    ],
+  } as unknown as DocumentNode<
+    AccountSettingsContactsContainerAccountGetByHandleFieldsFragment,
+    unknown
+  >;
+export const AccountSettingsGeneralContainerAccountFieldsFragmentDoc = {
+  kind: "Document",
+  definitions: [
+    {
+      kind: "FragmentDefinition",
+      name: {
+        kind: "Name",
+        value: "AccountSettingsGeneralContainerAccountFields",
+      },
+      typeCondition: {
+        kind: "NamedType",
+        name: { kind: "Name", value: "Account" },
+      },
+      selectionSet: {
+        kind: "SelectionSet",
+        selections: [
+          { kind: "Field", name: { kind: "Name", value: "id" } },
+          { kind: "Field", name: { kind: "Name", value: "schemaVersion" } },
+          { kind: "Field", name: { kind: "Name", value: "createdAt" } },
+          { kind: "Field", name: { kind: "Name", value: "updatedAt" } },
+          { kind: "Field", name: { kind: "Name", value: "handle" } },
+          { kind: "Field", name: { kind: "Name", value: "name" } },
+        ],
+      },
+    },
+  ],
+} as unknown as DocumentNode<
+  AccountSettingsGeneralContainerAccountFieldsFragment,
+  unknown
+>;
+export const AccountSettingsRolesContainerAccountGetByHandleFieldsFragmentDoc =
+  {
+    kind: "Document",
+    definitions: [
+      {
+        kind: "FragmentDefinition",
+        name: {
+          kind: "Name",
+          value: "AccountSettingsRolesContainerAccountGetByHandleFields",
+        },
+        typeCondition: {
+          kind: "NamedType",
+          name: { kind: "Name", value: "Account" },
+        },
+        selectionSet: {
+          kind: "SelectionSet",
+          selections: [
+            { kind: "Field", name: { kind: "Name", value: "id" } },
+            { kind: "Field", name: { kind: "Name", value: "schemaVersion" } },
+            { kind: "Field", name: { kind: "Name", value: "createdAt" } },
+            { kind: "Field", name: { kind: "Name", value: "updatedAt" } },
+            { kind: "Field", name: { kind: "Name", value: "handle" } },
+            { kind: "Field", name: { kind: "Name", value: "name" } },
+            {
+              kind: "Field",
+              name: { kind: "Name", value: "roles" },
+              selectionSet: {
+                kind: "SelectionSet",
+                selections: [
+                  { kind: "Field", name: { kind: "Name", value: "id" } },
+                  { kind: "Field", name: { kind: "Name", value: "roleName" } },
+                  { kind: "Field", name: { kind: "Name", value: "isDefault" } },
+                  {
+                    kind: "Field",
+                    name: { kind: "Name", value: "permissions" },
+                    selectionSet: {
+                      kind: "SelectionSet",
+                      selections: [
+                        {
+                          kind: "Field",
+                          name: { kind: "Name", value: "listingPermissions" },
+                          selectionSet: {
+                            kind: "SelectionSet",
+                            selections: [
+                              {
+                                kind: "Field",
+                                name: {
+                                  kind: "Name",
+                                  value: "canManageListings",
+                                },
+                              },
+                            ],
+                          },
+                        },
+                        {
+                          kind: "Field",
+                          name: { kind: "Name", value: "accountPermissions" },
+                          selectionSet: {
+                            kind: "SelectionSet",
+                            selections: [
+                              {
+                                kind: "Field",
+                                name: {
+                                  kind: "Name",
+                                  value: "canManageRolesAndPermissions",
+                                },
+                              },
+                            ],
+                          },
+                        },
+                      ],
+                    },
+                  },
+                ],
+              },
+            },
+          ],
+        },
+      },
+    ],
+  } as unknown as DocumentNode<
+    AccountSettingsRolesContainerAccountGetByHandleFieldsFragment,
+    unknown
+  >;
 export const ProfileContainerUserFieldsFragmentDoc = {
   kind: "Document",
   definitions: [
@@ -1130,6 +1563,290 @@ export const CategorySelectionCategoriesDocument = {
 } as unknown as DocumentNode<
   CategorySelectionCategoriesQuery,
   CategorySelectionCategoriesQueryVariables
+>;
+export const AccountMenuAccountsDocument = {
+  kind: "Document",
+  definitions: [
+    {
+      kind: "OperationDefinition",
+      operation: "query",
+      name: { kind: "Name", value: "AccountMenuAccounts" },
+      selectionSet: {
+        kind: "SelectionSet",
+        selections: [
+          {
+            kind: "Field",
+            name: { kind: "Name", value: "accounts" },
+            selectionSet: {
+              kind: "SelectionSet",
+              selections: [
+                {
+                  kind: "FragmentSpread",
+                  name: { kind: "Name", value: "AccountMenuAccountFields" },
+                },
+              ],
+            },
+          },
+        ],
+      },
+    },
+    ...AccountMenuAccountFieldsFragmentDoc.definitions,
+  ],
+} as unknown as DocumentNode<
+  AccountMenuAccountsQuery,
+  AccountMenuAccountsQueryVariables
+>;
+export const AccountSettingsContactsContainerAccountGetByHandleDocument = {
+  kind: "Document",
+  definitions: [
+    {
+      kind: "OperationDefinition",
+      operation: "query",
+      name: {
+        kind: "Name",
+        value: "AccountSettingsContactsContainerAccountGetByHandle",
+      },
+      variableDefinitions: [
+        {
+          kind: "VariableDefinition",
+          variable: {
+            kind: "Variable",
+            name: { kind: "Name", value: "handle" },
+          },
+          type: {
+            kind: "NonNullType",
+            type: {
+              kind: "NamedType",
+              name: { kind: "Name", value: "String" },
+            },
+          },
+        },
+      ],
+      selectionSet: {
+        kind: "SelectionSet",
+        selections: [
+          {
+            kind: "Field",
+            name: { kind: "Name", value: "accountGetByHandle" },
+            arguments: [
+              {
+                kind: "Argument",
+                name: { kind: "Name", value: "handle" },
+                value: {
+                  kind: "Variable",
+                  name: { kind: "Name", value: "handle" },
+                },
+              },
+            ],
+            selectionSet: {
+              kind: "SelectionSet",
+              selections: [
+                {
+                  kind: "FragmentSpread",
+                  name: {
+                    kind: "Name",
+                    value:
+                      "AccountSettingsContactsContainerAccountGetByHandleFields",
+                  },
+                },
+              ],
+            },
+          },
+        ],
+      },
+    },
+    ...AccountSettingsContactsContainerAccountGetByHandleFieldsFragmentDoc.definitions,
+  ],
+} as unknown as DocumentNode<
+  AccountSettingsContactsContainerAccountGetByHandleQuery,
+  AccountSettingsContactsContainerAccountGetByHandleQueryVariables
+>;
+export const AccountSettingsGeneralContainerAccountGetByHandleDocument = {
+  kind: "Document",
+  definitions: [
+    {
+      kind: "OperationDefinition",
+      operation: "query",
+      name: {
+        kind: "Name",
+        value: "AccountSettingsGeneralContainerAccountGetByHandle",
+      },
+      variableDefinitions: [
+        {
+          kind: "VariableDefinition",
+          variable: {
+            kind: "Variable",
+            name: { kind: "Name", value: "handle" },
+          },
+          type: {
+            kind: "NonNullType",
+            type: {
+              kind: "NamedType",
+              name: { kind: "Name", value: "String" },
+            },
+          },
+        },
+      ],
+      selectionSet: {
+        kind: "SelectionSet",
+        selections: [
+          {
+            kind: "Field",
+            name: { kind: "Name", value: "accountGetByHandle" },
+            arguments: [
+              {
+                kind: "Argument",
+                name: { kind: "Name", value: "handle" },
+                value: {
+                  kind: "Variable",
+                  name: { kind: "Name", value: "handle" },
+                },
+              },
+            ],
+            selectionSet: {
+              kind: "SelectionSet",
+              selections: [
+                {
+                  kind: "FragmentSpread",
+                  name: { kind: "Name", value: "AccountMenuAccountFields" },
+                },
+              ],
+            },
+          },
+        ],
+      },
+    },
+    ...AccountMenuAccountFieldsFragmentDoc.definitions,
+  ],
+} as unknown as DocumentNode<
+  AccountSettingsGeneralContainerAccountGetByHandleQuery,
+  AccountSettingsGeneralContainerAccountGetByHandleQueryVariables
+>;
+export const AccountSettingsGeneralContainerUpdateAccountDocument = {
+  kind: "Document",
+  definitions: [
+    {
+      kind: "OperationDefinition",
+      operation: "mutation",
+      name: {
+        kind: "Name",
+        value: "AccountSettingsGeneralContainerUpdateAccount",
+      },
+      variableDefinitions: [
+        {
+          kind: "VariableDefinition",
+          variable: {
+            kind: "Variable",
+            name: { kind: "Name", value: "input" },
+          },
+          type: {
+            kind: "NonNullType",
+            type: {
+              kind: "NamedType",
+              name: { kind: "Name", value: "AccountUpdateInput" },
+            },
+          },
+        },
+      ],
+      selectionSet: {
+        kind: "SelectionSet",
+        selections: [
+          {
+            kind: "Field",
+            name: { kind: "Name", value: "updateAccount" },
+            arguments: [
+              {
+                kind: "Argument",
+                name: { kind: "Name", value: "input" },
+                value: {
+                  kind: "Variable",
+                  name: { kind: "Name", value: "input" },
+                },
+              },
+            ],
+            selectionSet: {
+              kind: "SelectionSet",
+              selections: [
+                {
+                  kind: "FragmentSpread",
+                  name: { kind: "Name", value: "AccountMenuAccountFields" },
+                },
+              ],
+            },
+          },
+        ],
+      },
+    },
+    ...AccountMenuAccountFieldsFragmentDoc.definitions,
+  ],
+} as unknown as DocumentNode<
+  AccountSettingsGeneralContainerUpdateAccountMutation,
+  AccountSettingsGeneralContainerUpdateAccountMutationVariables
+>;
+export const AccountSettingsRolesContainerAccountGetByHandleDocument = {
+  kind: "Document",
+  definitions: [
+    {
+      kind: "OperationDefinition",
+      operation: "query",
+      name: {
+        kind: "Name",
+        value: "AccountSettingsRolesContainerAccountGetByHandle",
+      },
+      variableDefinitions: [
+        {
+          kind: "VariableDefinition",
+          variable: {
+            kind: "Variable",
+            name: { kind: "Name", value: "handle" },
+          },
+          type: {
+            kind: "NonNullType",
+            type: {
+              kind: "NamedType",
+              name: { kind: "Name", value: "String" },
+            },
+          },
+        },
+      ],
+      selectionSet: {
+        kind: "SelectionSet",
+        selections: [
+          {
+            kind: "Field",
+            name: { kind: "Name", value: "accountGetByHandle" },
+            arguments: [
+              {
+                kind: "Argument",
+                name: { kind: "Name", value: "handle" },
+                value: {
+                  kind: "Variable",
+                  name: { kind: "Name", value: "handle" },
+                },
+              },
+            ],
+            selectionSet: {
+              kind: "SelectionSet",
+              selections: [
+                {
+                  kind: "FragmentSpread",
+                  name: {
+                    kind: "Name",
+                    value:
+                      "AccountSettingsRolesContainerAccountGetByHandleFields",
+                  },
+                },
+              ],
+            },
+          },
+        ],
+      },
+    },
+    ...AccountSettingsRolesContainerAccountGetByHandleFieldsFragmentDoc.definitions,
+  ],
+} as unknown as DocumentNode<
+  AccountSettingsRolesContainerAccountGetByHandleQuery,
+  AccountSettingsRolesContainerAccountGetByHandleQueryVariables
 >;
 export const ProfileContainerUserDocument = {
   kind: "Document",

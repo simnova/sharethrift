@@ -1,0 +1,28 @@
+query AccountSettingsContactsContainerAccountGetByHandle($handle: String!) {
+  accountGetByHandle(handle: $handle) {
+    ...AccountSettingsContactsContainerAccountGetByHandleFields
+  }
+}
+
+fragment AccountSettingsContactsContainerAccountGetByHandleFields on Account {
+  id
+  schemaVersion
+  createdAt
+  updatedAt
+  handle
+  name
+  contacts {
+    firstName
+    lastName
+    role {
+      id
+      roleName
+    }
+    user {
+      id
+    }
+    id
+    updatedAt
+    createdAt
+  }
+}

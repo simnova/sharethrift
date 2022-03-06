@@ -1,15 +1,22 @@
-import { Link, useLocation, matchRoutes } from 'react-router-dom';
-import { Menu } from 'antd';
+import { Link, useLocation, matchRoutes, useParams, generatePath } from 'react-router-dom';
+import { Menu, MenuTheme} from 'antd';
+import { MenuMode } from 'rc-menu/lib/interface';
 
 const { SubMenu } = Menu;
 
 interface TextProp {
   pageLayouts: any;
+  theme: MenuTheme | undefined;
+  mode: MenuMode | undefined;
 }
 
 export const MenuComponent = ({ pageLayouts , ...props } : TextProp) => {
-
+  const params = useParams();
   const location = useLocation();
+
+  const createPath = (path:string):string => {
+    return generatePath(path.replace('*',''),params)
+  }
 
   const buildMenu = (parentId:string) => {
     const children = pageLayouts.filter((x:any) => x.parent === parentId);
@@ -21,13 +28,13 @@ export const MenuComponent = ({ pageLayouts , ...props } : TextProp) => {
         (grandChildren && grandChildren.length > 0 )? 
           <SubMenu key={child.id} title={child.title}>
             <Menu.Item key={`${child.id}-link`} icon={child.icon}>
-              <Link to={child.path.replace('*','')}>{child.title} - {child.id}</Link>
+              <Link to={createPath(child.path)}>{child.title} - {child.id}</Link>
             </Menu.Item>
             {buildMenu(child.id)}
           </SubMenu> 
         :  
         <Menu.Item key={child.id} icon={child.icon}>
-          <Link to={child.path.replace('*','')}>{child.title} - {child.id}</Link>
+          <Link to={createPath(child.path)}>{child.title} - {child.id}</Link>
         </Menu.Item>
       )
     });
@@ -38,9 +45,9 @@ export const MenuComponent = ({ pageLayouts , ...props } : TextProp) => {
     const matchedPages = matchRoutes(pageLayouts,location)
     const matchedIds = matchedPages ? matchedPages.map((x:any) => x.route.id.toString()) : [];
     return (
-      <Menu theme="light" mode="inline" defaultSelectedKeys={matchedIds}>
+      <Menu theme={props.theme} mode={props.mode} defaultSelectedKeys={matchedIds}>
         <Menu.Item key="home" icon={root.icon}>
-          <Link to={root.path.replace('*','')}>{root.title}</Link>
+          <Link to={createPath(root.path)}>{root.title}</Link>
         </Menu.Item>
         {buildMenu(root.id)}
       </Menu>

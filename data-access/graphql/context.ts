@@ -6,4 +6,5 @@ export type Context = {
     OpenIdConfigKey: string;
   };
   dataSources: DataSourcesType;
+  executionContext: any;
 }

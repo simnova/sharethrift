@@ -39,6 +39,7 @@ export class ApolloServerRequestHandler {
             console.log('context value is now:', JSON.stringify(context));
           }
         }
+        context.executionContext = {};
         return context;
       },
     //  playground: { endpoint: '/api/graphql/playground' },
@@ -47,7 +48,6 @@ export class ApolloServerRequestHandler {
           async didEncounterErrors (requestContext: GraphQLRequestContext) {
             console.error('Apollo Server encounterd error:', requestContext.errors);
           },
-          sessionId: (requestContext: GraphQLRequestContext) => (requestContext.request.http.headers.get('authorization') || null),
           async serverWillStart(service: GraphQLServiceContext) {
             console.log('Apollo Server Starting');
             await connect();
@@ -56,7 +56,9 @@ export class ApolloServerRequestHandler {
             RegisterHandlers();
           },
         },
-        responseCachePlugin()
+        responseCachePlugin({
+          sessionId: (requestContext: GraphQLRequestContext) => (requestContext.request.http.headers.get('authorization') || null),
+        })
       ]
     }
   };

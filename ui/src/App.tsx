@@ -36,7 +36,7 @@ function App() {
   return (
     <>
       <Routes>
-        <Route path="/account/*" element={accountPage} />
+        <Route path="/account/:handle/*" element={accountPage} />
         <Route path="/admin" element={adminPage} />
         <Route path="/" element={mainPage}>
           <Route path="/" element={Home} />

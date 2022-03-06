@@ -1,0 +1,20 @@
+query AccountSettingsGeneralContainerAccountGetByHandle($handle: String!) {
+  accountGetByHandle(handle: $handle) {
+    ...AccountMenuAccountFields
+  }
+}
+
+mutation AccountSettingsGeneralContainerUpdateAccount($input: AccountUpdateInput!) {
+  updateAccount(input: $input) {
+    ...AccountMenuAccountFields
+  }
+}
+
+fragment AccountSettingsGeneralContainerAccountFields on Account {
+  id
+  schemaVersion
+  createdAt
+  updatedAt
+  handle
+  name
+}

@@ -39,8 +39,17 @@ export interface Account extends Base {
 export const AccountModel = model<Account>('Account',new Schema<Account, Model<Account>, Account>(
   {
     schemaVersion: { type: String, default: '1.0.0' },
-    name: { type: String, required: true },
-    handle: { type: String, required: false, unique: true },
+    name: { 
+      type: String, 
+      required: true,
+      maxlength: 200,
+    },
+    handle: { 
+      type: String, 
+      required: false, 
+      unique: true,
+      maxlength: 50,
+    },
     contacts: [{
       firstName: { type: String, required: true },
       lastName: { type: String, required: false },

@@ -1,5 +1,6 @@
 type Account implements MongoBase {
   name: String
+  handle: String
   roles: [Role]
   contacts: [Contact]
 
@@ -11,6 +12,16 @@ type Account implements MongoBase {
 
 extend type Query {
   accounts: [Account]
+  account(id: ID!): Account
+  accountGetByHandle(handle: String!): Account
+}
+extend type Mutation {
+  updateAccount(input:AccountUpdateInput!): Account
+}
+input AccountUpdateInput {
+  id: ObjectID!
+  name: String
+  handle: String
 }
 
 type Role {
@@ -26,7 +37,7 @@ type Role {
 type Contact{
   firstName: String!
   lastName: String
-  role:ObjectID!
+  role:Role
   user:User
 
   id: ObjectID!

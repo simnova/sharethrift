@@ -2,7 +2,7 @@ import { User as UserDO } from '../../../domain/contexts/user/user';
 import { UserConverter, UserDomainAdapter }from '../../../domain/infrastructure/persistance/adapters/user-domain-adapter';
 import { MongoUserRepository } from '../../../domain/infrastructure/persistance/repositories/mongo-user-repository';
 import { Context } from '../../context';
-import { UserUpdateInput, UserProfileUpdateInput } from '../../generated';
+import { UserUpdateInput } from '../../generated';
 import { DomainDataSource } from './domain-data-source';
 import { User } from '../../../infrastructure/data-sources/cosmos-db/models/user';
 import { report } from 'process';

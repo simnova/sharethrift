@@ -1,0 +1,28 @@
+query AccountSettingsRolesContainerAccountGetByHandle($handle: String!) {
+  accountGetByHandle(handle: $handle) {
+    ...AccountSettingsRolesContainerAccountGetByHandleFields
+  }
+}
+
+fragment AccountSettingsRolesContainerAccountGetByHandleFields on Account {
+  id
+  schemaVersion
+  createdAt
+  updatedAt
+  handle
+  name
+  roles {
+    id
+    roleName
+    isDefault
+    permissions {
+      listingPermissions {
+        canManageListings
+      }
+      accountPermissions {
+        canManageRolesAndPermissions
+      }
+    }
+
+  }
+}

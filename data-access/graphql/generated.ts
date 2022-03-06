@@ -81,6 +81,7 @@ export type Scalars = {
 export type Account = MongoBase & {
   __typename?: "Account";
   name?: Maybe<Scalars["String"]>;
+  handle?: Maybe<Scalars["String"]>;
   roles?: Maybe<Array<Maybe<Role>>>;
   contacts?: Maybe<Array<Maybe<Contact>>>;
   id: Scalars["ObjectID"];
@@ -92,6 +93,12 @@ export type Account = MongoBase & {
 export type AccountPermissions = {
   __typename?: "AccountPermissions";
   canManageRolesAndPermissions: Scalars["Boolean"];
+};
+
+export type AccountUpdateInput = {
+  id: Scalars["ObjectID"];
+  name?: Maybe<Scalars["String"]>;
+  handle?: Maybe<Scalars["String"]>;
 };
 
 export type Address = {
@@ -138,7 +145,7 @@ export type Contact = {
   __typename?: "Contact";
   firstName: Scalars["String"];
   lastName?: Maybe<Scalars["String"]>;
-  role: Scalars["ObjectID"];
+  role?: Maybe<Role>;
   user?: Maybe<User>;
   id: Scalars["ObjectID"];
   updatedAt?: Maybe<Scalars["DateTime"]>;
@@ -233,6 +240,7 @@ export type Mutation = {
   createListing?: Maybe<CreateListingPayload>;
   createUser?: Maybe<User>;
   publishDraft?: Maybe<Listing>;
+  updateAccount?: Maybe<Account>;
   updateCategory?: Maybe<Category>;
   updateDraft?: Maybe<Listing>;
   /** Allows the user to update their profile */
@@ -252,6 +260,11 @@ export type MutationCreateListingArgs = {
 /**  Base Mutation Type definition - all mutations will be defined in separate files extending this type  */
 export type MutationPublishDraftArgs = {
   id: Scalars["ID"];
+};
+
+/**  Base Mutation Type definition - all mutations will be defined in separate files extending this type  */
+export type MutationUpdateAccountArgs = {
+  input: AccountUpdateInput;
 };
 
 /**  Base Mutation Type definition - all mutations will be defined in separate files extending this type  */
@@ -297,6 +310,8 @@ export type Query = {
   __typename?: "Query";
   /** IGNORE: Dummy field necessary for the Query type to be valid */
   _empty?: Maybe<Scalars["String"]>;
+  account?: Maybe<Account>;
+  accountGetByHandle?: Maybe<Account>;
   accounts?: Maybe<Array<Maybe<Account>>>;
   categories?: Maybe<Array<Maybe<Category>>>;
   category?: Maybe<Category>;
@@ -305,6 +320,16 @@ export type Query = {
   listings?: Maybe<Array<Maybe<Listing>>>;
   user?: Maybe<User>;
   users?: Maybe<Array<Maybe<User>>>;
+};
+
+/**  Base Query Type definition - , all mutations will be defined in separate files extending this type  */
+export type QueryAccountArgs = {
+  id: Scalars["ID"];
+};
+
+/**  Base Query Type definition - , all mutations will be defined in separate files extending this type  */
+export type QueryAccountGetByHandleArgs = {
+  handle: Scalars["String"];
 };
 
 /**  Base Query Type definition - , all mutations will be defined in separate files extending this type  */
@@ -469,6 +494,7 @@ export type ResolversTypes = ResolversObject<{
   String: ResolverTypeWrapper<Scalars["String"]>;
   AccountPermissions: ResolverTypeWrapper<AccountPermissions>;
   Boolean: ResolverTypeWrapper<Scalars["Boolean"]>;
+  AccountUpdateInput: AccountUpdateInput;
   Address: ResolverTypeWrapper<Address>;
   BigInt: ResolverTypeWrapper<Scalars["BigInt"]>;
   Byte: ResolverTypeWrapper<Scalars["Byte"]>;
@@ -561,6 +587,7 @@ export type ResolversParentTypes = ResolversObject<{
   String: Scalars["String"];
   AccountPermissions: AccountPermissions;
   Boolean: Scalars["Boolean"];
+  AccountUpdateInput: AccountUpdateInput;
   Address: Address;
   BigInt: Scalars["BigInt"];
   Byte: Scalars["Byte"];
@@ -664,6 +691,7 @@ export type AccountResolvers<
   ParentType extends ResolversParentTypes["Account"] = ResolversParentTypes["Account"]
 > = ResolversObject<{
   name?: Resolver<Maybe<ResolversTypes["String"]>, ParentType, ContextType>;
+  handle?: Resolver<Maybe<ResolversTypes["String"]>, ParentType, ContextType>;
   roles?: Resolver<
     Maybe<Array<Maybe<ResolversTypes["Role"]>>>,
     ParentType,
@@ -828,7 +856,7 @@ export type ContactResolvers<
 > = ResolversObject<{
   firstName?: Resolver<ResolversTypes["String"], ParentType, ContextType>;
   lastName?: Resolver<Maybe<ResolversTypes["String"]>, ParentType, ContextType>;
-  role?: Resolver<ResolversTypes["ObjectID"], ParentType, ContextType>;
+  role?: Resolver<Maybe<ResolversTypes["Role"]>, ParentType, ContextType>;
   user?: Resolver<Maybe<ResolversTypes["User"]>, ParentType, ContextType>;
   id?: Resolver<ResolversTypes["ObjectID"], ParentType, ContextType>;
   updatedAt?: Resolver<
@@ -1166,6 +1194,12 @@ export type MutationResolvers<
     ContextType,
     RequireFields<MutationPublishDraftArgs, "id">
   >;
+  updateAccount?: Resolver<
+    Maybe<ResolversTypes["Account"]>,
+    ParentType,
+    ContextType,
+    RequireFields<MutationUpdateAccountArgs, "input">
+  >;
   updateCategory?: Resolver<
     Maybe<ResolversTypes["Category"]>,
     ParentType,
@@ -1316,6 +1350,18 @@ export type QueryResolvers<
   ParentType extends ResolversParentTypes["Query"] = ResolversParentTypes["Query"]
 > = ResolversObject<{
   _empty?: Resolver<Maybe<ResolversTypes["String"]>, ParentType, ContextType>;
+  account?: Resolver<
+    Maybe<ResolversTypes["Account"]>,
+    ParentType,
+    ContextType,
+    RequireFields<QueryAccountArgs, "id">
+  >;
+  accountGetByHandle?: Resolver<
+    Maybe<ResolversTypes["Account"]>,
+    ParentType,
+    ContextType,
+    RequireFields<QueryAccountGetByHandleArgs, "handle">
+  >;
   accounts?: Resolver<
     Maybe<Array<Maybe<ResolversTypes["Account"]>>>,
     ParentType,

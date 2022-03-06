@@ -3,6 +3,7 @@ query ProfileContainerUser {
     ...ProfileContainerUserFields
   }
 }
+
 mutation ProfileContainerUserUpdate($input: UserUpdateInput!) {
   updateUser(input: $input) {
     ...ProfileContainerUserFields

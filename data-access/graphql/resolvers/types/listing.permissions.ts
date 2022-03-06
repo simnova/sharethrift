@@ -1,7 +1,7 @@
 import { shield, allow } from 'graphql-shield';
 import * as permissions from '../../middleware/permission-middleware';
 
-const accountPermissions = shield({
+const listingPermissions = shield({
   Listing: allow,
  
   Query: {
@@ -15,4 +15,4 @@ const accountPermissions = shield({
   }
 });
 
-export default accountPermissions;
+export default listingPermissions;

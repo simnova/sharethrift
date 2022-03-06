@@ -6,6 +6,7 @@ import { Passport } from '../iam/passport';
 import { User, UserProps } from '../user/user';
 import { Contact, ContactEntityReference, ContactProps } from './contact';
 import { RoleProps, RoleEntityReference, Role } from './role';
+import * as ValueObjects from './account-value-objects';
 
 export interface AccountPropValues extends EntityProps {
   name: string;
@@ -56,6 +57,14 @@ export class Account<props extends AccountProps> extends AggregateRoot<props> im
     account.addIntegrationEvent(AccountCreatedEvent,{accountId: account.id, userId: newUser.id});
 
     return account;
+  }
+
+  public setHandle(handle: ValueObjects.Handle): void {
+    this.props.handle = handle.valueOf();
+    //todo verify handle is unique
+  }
+  public setName(name: ValueObjects.Name): void {
+    this.props.name = name.valueOf();
   }
 
   private async addContact<userProps extends UserProps>(newUser:User<userProps>): Promise<void> {

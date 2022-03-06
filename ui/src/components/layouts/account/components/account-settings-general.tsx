@@ -1,12 +1,12 @@
+import React from 'react';
 import { Form,Input,Button,Descriptions } from 'antd';
 import PropTypes from 'prop-types';
 
 const ComponentPropTypes = {
   data: PropTypes.shape({
     id: PropTypes.string.isRequired,
-    email: PropTypes.string.isRequired,
-    firstName: PropTypes.string.isRequired,
-    lastName: PropTypes.string.isRequired,
+    name: PropTypes.string.isRequired,
+    handle: PropTypes.string.isRequired,
     createdAt: PropTypes.string.isRequired,
     updatedAt: PropTypes.string,
   }),
@@ -16,37 +16,32 @@ const ComponentPropTypes = {
 interface ComponentPropInterface {
   data: {
     id: string;
-    email: string;
-    firstName: string;
-    lastName: string;
+    name: string;
+    handle: string;
     createdAt: string;
     updatedAt: string;
   }
   onSave: (data: {
     id: string;
-    email: string;
-    firstName: string;
-    lastName: string;
+    name: string;
+    handle: string;
     createdAt: string;
     updatedAt: string;
   }) => void;
 }
 
-export type ProfilePropTypes = PropTypes.InferProps<typeof ComponentPropTypes> & ComponentPropInterface;
+export type AccountSettingsGeneralPropTypes = PropTypes.InferProps<typeof ComponentPropTypes> & ComponentPropInterface;
 
-export const Profile: React.FC<any> = (props) => {
+export const AccountSettingsGeneral: React.FC<AccountSettingsGeneralPropTypes> = (props) => {
   const [form] = Form.useForm();
-  
   return (
     <>
-      <h1>Profile</h1>
-      <Descriptions title="User Info" size={'small'} layout={'vertical'}>
+      <Descriptions title="Account Info" size={'small'} layout={'vertical'}>
         <Descriptions.Item label="Id">{props.data.id}</Descriptions.Item>
-        <Descriptions.Item label="Email">{props.data.email}</Descriptions.Item>
         <Descriptions.Item label="Created At">{props.data.createdAt}</Descriptions.Item>
         <Descriptions.Item label="Updated At">{props.data.updatedAt}</Descriptions.Item>
       </Descriptions>
-      <Form 
+      <Form
         layout="vertical"
         form={form}
         initialValues={props.data}
@@ -54,23 +49,23 @@ export const Profile: React.FC<any> = (props) => {
           props.onSave(values);
         }}
         >
-        <Form.Item 
-          name="firstName"
-          label="First Name"
+        <Form.Item
+          name="name"
+          label="Name"
           rules={[
-            { required: true, message: 'Please input your first name!' }
+            { required: true, message: 'Please input your name!' },
           ]}
-          >
-          <Input placeholder="First Name" maxLength={500} />
+        >
+          <Input placeholder='Name' maxLength={200} />
         </Form.Item>
-        <Form.Item 
-          name="lastName"
-          label="Last Name"
+        <Form.Item
+          name="handle"
+          label="Handle"
           rules={[
-            { required: true, message: 'Please input your last name!' }
+            { required: true, message: 'Please input your handle!' },
           ]}
-          >
-          <Input placeholder="Last Name" maxLength={500}/>
+        >
+          <Input placeholder='Handle' maxLength={50} />
         </Form.Item>
         <Button type="primary" htmlType="submit" value={'save'}>
           Save

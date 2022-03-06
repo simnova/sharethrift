@@ -7,6 +7,10 @@ export class Accounts extends MongoDataSource<Account, Context> {
   async getAccount(accountId : string): Promise<Account> {
     return this.findOneById(accountId);
   }
+  
+  async getAccountByHandle(handle : string): Promise<Account> {
+    return (await this.findByFields({handle: handle}))[0];
+  }
 
   async getAccounts(): Promise<Account[]> {
     let userExternalId = this.context.VerifiedUser.VerifiedJWT.sub;

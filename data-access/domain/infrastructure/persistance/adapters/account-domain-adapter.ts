@@ -92,7 +92,7 @@ export class AccountDomainAdapter extends MongooseDomainAdapater<Account> implem
   public set name(value: string) { this.props.name = value; }
 
   public get handle(): string { return this.props.handle; }
-  public set handle(value: string) { this.props.handle = value; }
+  public set handle(handle: string) { this.props.handle = handle; }
 
   public async contacts(): Promise<ContactProps[]> { 
     await this.props.populate('contacts.user');

@@ -3,17 +3,19 @@ import { Routes, Route, Link, useLocation, matchRoutes } from 'react-router-dom'
 import { Col, Menu, Row,  Layout, PageHeader } from 'antd';
 import { BookOutlined, SettingOutlined } from '@ant-design/icons';
 
-import { Grandchild1 } from './grandchild1';
-import { Grandchild2 } from './grandchild2';
+import { General } from './settings-general';
+import { Contacts } from './settings-contacts';
+import { Roles } from './settings-roles';
 
 const { Header, Content } = Layout;
 
-export const Child1: React.FC<any> = (props) => {
+export const Settings: React.FC<any> = (props) => {
   const location = useLocation();
 
   const pages = [
-    {id:1, path:'account/simple/1/grandchild1', title:'GrandChild1', icon:<BookOutlined />},
-    {id:2, path:'account/simple/1/grandchild2', title:'GrandChild2', icon:<SettingOutlined />},
+    {id:1, path:'account/:handle/settings/', title:'General', icon:<BookOutlined />},
+    {id:2, path:'account/:handle/settings/contacts', title:'Contacts', icon:<SettingOutlined />},
+    {id:3, path:'account/:handle/settings/roles', title:'Roles', icon:<SettingOutlined />},
   ]
 
   var matchedPages = matchRoutes(pages,location)
@@ -23,7 +25,7 @@ export const Child1: React.FC<any> = (props) => {
     <>
       <Header className="site-layout-background" style={{ padding: 0 }}>
         <PageHeader
-        title="Child1"
+        title="Account Settings"
         />
       </Header>
       <Content style={{ margin: '24px 16px 0', overflow: 'initial' }}>
@@ -33,17 +35,21 @@ export const Child1: React.FC<any> = (props) => {
             <Col span={6}>
             <Menu mode="inline" selectedKeys={matchedIds}>
               <Menu.Item key="1">
-                <Link to="grandchild1">Grandchild 1</Link>
+                <Link to="">General</Link>
               </Menu.Item>
               <Menu.Item key="2">
-                <Link to="grandchild2">Grandchild 2</Link>
+                <Link to="contacts">Contacts</Link>
+              </Menu.Item>
+              <Menu.Item key="3">
+                <Link to="roles">Roles</Link>
               </Menu.Item>
             </Menu>
             </Col>
-            <Col span={18}>
+            <Col span={18} style={{paddingLeft:'24px'}}>
               <Routes>
-                <Route path="/grandchild1" element={<Grandchild1 />} />
-                <Route path="/grandchild2" element={<Grandchild2 />} />
+                <Route path="" element={<General />} />
+                <Route path="/contacts" element={<Contacts />} />
+                <Route path="/roles" element={<Roles />} />
               </Routes>
             </Col>
           </Row>
