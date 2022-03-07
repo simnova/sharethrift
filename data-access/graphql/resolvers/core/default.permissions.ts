@@ -3,8 +3,14 @@ import { shield, deny, allow } from 'graphql-shield';
 import { Context } from '../../context';
 import { Resolvers } from '../../generated';
 
-const defaultPermissions = shield<Resolvers,Context>({
+const defaultPermissions = shield({
   Location: {
+    "*": allow,
+  },
+  Listing: {
+    "*": allow,
+  },
+  Category: {
     "*": allow,
   },
   Query: {
@@ -15,6 +21,8 @@ const defaultPermissions = shield<Resolvers,Context>({
   }
 },
 {
+  allowExternalErrors: true,
+  debug:true,
   fallbackRule: allow,
   fallbackError: async (thrownThing, parent, args, context, info) => {
     console.log(`Shield Error: ${thrownThing}`)

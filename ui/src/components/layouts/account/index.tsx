@@ -4,22 +4,27 @@ import { Home } from './pages/home';
 import { Routes, Route, useParams } from "react-router-dom";
 import { Simple } from './pages/simple';
 import { Settings } from './pages/settings';
+import { Listings } from './pages/listings';
 import { Child2 } from './pages/child2';
-import { Child3 } from './pages/child3';
 import { ProfileContainer } from './pages/profile-container';
 
-import { HomeOutlined, MailOutlined, AppstoreOutlined, SettingOutlined } from '@ant-design/icons';
+import { HomeOutlined, MailOutlined, AppstoreOutlined, SettingOutlined , BarsOutlined, IdcardOutlined} from '@ant-design/icons';
 
 export const Account: React.FC<any> = (props) => {
 
   const pageLayouts = [
     {path : '/account/:handle/', title : 'Home', icon : <HomeOutlined />, id:'ROOT'},
-    {path : '/account/:handle/simple', title : 'Simple', icon : <MailOutlined /> , id:1, parent: 'ROOT'},
-    {path : '/account/:handle/settings/*', title : 'Settings', icon : <AppstoreOutlined /> , id:2, parent: 1},
-    {path : '/account/:handle/simple/2', title : 'Child 2', icon : <SettingOutlined /> , id:3, parent: 1},
-    {path : '/account/:handle/simple/3', title : 'Child 3', icon : <SettingOutlined /> , id:4, parent: 1},
+    {path : '/account/:handle/simple', title : 'Profile', icon : <IdcardOutlined /> , id:1, parent: 'ROOT'},
+    {path : '/account/:handle/settings/*', title : 'Account', icon : <SettingOutlined /> , id:2, parent: 'ROOT'},
+    {path : '/account/:handle/listings/*', title : 'Listings', icon : <BarsOutlined /> , id:3, parent: 'ROOT'},
+
   ]
 
+  /*
+      {path : '/account/:handle/simple/2', title : 'Child 2', icon : <SettingOutlined /> , id:3, parent: 1},
+    {path : '/account/:handle/simple/3', title : 'Child 3', icon : <SettingOutlined /> , id:4, parent: 1},
+  */
+  
   return (
     <>
       <Routes>
@@ -28,7 +33,7 @@ export const Account: React.FC<any> = (props) => {
           <Route path="/simple" element={<ProfileContainer />} />
           <Route path="/settings/*" element={<Settings />} />
           <Route path="/simple/2" element={<Child2 />} />
-          <Route path="/simple/3" element={<Child3 />} />
+          <Route path="/listings/*" element={<Listings />} />
         </Route>
       </Routes>
     </>

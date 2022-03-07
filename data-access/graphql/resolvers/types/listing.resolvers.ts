@@ -17,15 +17,37 @@ const listing : Resolvers = {
       return parent.account;
     },
     primaryCategory : async (parent, args, context, info)  => {
+      if(!parent.primaryCategory ){
+        return null;
+      }
       console.log("Resolver>Listing>primaryCategory")
       if(isValidObjectId(parent.primaryCategory.toString())){
         console.log("Resolver>Listing>primaryCategory provided ObjectId : looking up Category")
         return (await context.dataSources.categoryAPI.getCategory(parent.primaryCategory.toString()) as Category);
       }
-      console.log("Resolver>Listing>owner provided Category Object : returning Category Object", JSON.stringify(parent.primaryCategory));
+      console.log("Resolver>Listing>primaryCategory provided Category Object : returning Category Object")
+      console.log("Resolver>Listing>owner provided Category Object : returning Category Object", JSON.stringify(parent.primaryCategory??""));
       return parent.primaryCategory;
     }
+
+    
      
+  },
+  Draft: {
+    primaryCategory : async (parent, args, context, info)  => {
+      console.log('Resolver>Draft>primaryCategory')
+      if(!parent.primaryCategory ){
+        return null;
+      }
+      console.log("Resolver>Listing>primaryCategory")
+      if(isValidObjectId(parent.primaryCategory.toString())){
+        console.log("Resolver>Listing>primaryCategory provided ObjectId : looking up Category")
+        return (await context.dataSources.categoryAPI.getCategory(parent.primaryCategory.toString()) as Category);
+      }
+      console.log("Resolver>Listing>primaryCategory provided Category Object : returning Category Object")
+      console.log("Resolver>Listing>owner provided Category Object : returning Category Object", JSON.stringify(parent.primaryCategory??""));
+      return parent.primaryCategory;
+    }
   },
   Query: {    
 
@@ -38,10 +60,30 @@ const listing : Resolvers = {
     listings : async (parent, args, context, info) => {
       console.log(`Resolver>Query>listings`)
       return (await context.dataSources.listingAPI.getListings()) as Listing[];
+    },
+
+    listingsForAccount : async (parent, args, context, info) => {
+      return (await context.dataSources.listingAPI.getListingsForAccount(args.accountId)) as Listing[];
+    },
+    listingsByAccountHandle : async (parent, args, context, info) => {
+      var result: Listing[] = [];
+      try {
+        result = (await context.dataSources.listingAPI.getListingsByAccountHandle(args.handle)) as Listing[];
+        
+      } catch (error) {
+        console.log(error);
+        
+      }
+      console.log(`Resolver>Query>listingsByAccountHandle ${args.handle}`)
+      return result
     }
 
   },
   Mutation: {  
+    createNewListing: async (parent, args, context, info) => {
+      var newListing = (await context.dataSources.listingDomainAPI.addNewListing(args.input)) as Listing ;
+      return  {listing: newListing} as CreateListingPayload;
+    },
 
     createListing: async (parent, args, context, info) => {
       var newListing = (await context.dataSources.listingDomainAPI.addListing(args.input)) as Listing ;

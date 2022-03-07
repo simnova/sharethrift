@@ -1,7 +1,7 @@
 import React from 'react';
 import { Routes, Route, Link, useLocation, matchRoutes } from 'react-router-dom';
 import { Col, Menu, Row,  Layout, PageHeader } from 'antd';
-import { BookOutlined, SettingOutlined } from '@ant-design/icons';
+import { BookOutlined, SettingOutlined, UserOutlined, TeamOutlined, SafetyOutlined, ProfileOutlined, IdcardOutlined } from '@ant-design/icons';
 
 import { General } from './settings-general';
 import { Contacts } from './settings-contacts';
@@ -34,13 +34,13 @@ export const Settings: React.FC<any> = (props) => {
           <Row>
             <Col span={6}>
             <Menu mode="inline" selectedKeys={matchedIds}>
-              <Menu.Item key="1">
+              <Menu.Item key="1" icon={<ProfileOutlined />}>
                 <Link to="">General</Link>
               </Menu.Item>
-              <Menu.Item key="2">
+              <Menu.Item key="2" icon={<TeamOutlined />}>
                 <Link to="contacts">Contacts</Link>
               </Menu.Item>
-              <Menu.Item key="3">
+              <Menu.Item key="3" icon={<SafetyOutlined />}>
                 <Link to="roles">Roles</Link>
               </Menu.Item>
             </Menu>

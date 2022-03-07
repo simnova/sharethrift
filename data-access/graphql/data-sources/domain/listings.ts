@@ -2,7 +2,7 @@ import { Listing as ListingDO } from '../../../domain/contexts/listing/listing';
 import {ListingConverter, ListingDomainAdapter}from '../../../domain/infrastructure/persistance/adapters/listing-domain-adapter';
 import { MongoListingRepository } from '../../../domain/infrastructure/persistance/repositories/mongo-listing-repository';
 import {Context} from '../../context';
-import { ListingDetail, ListingDraft } from '../../generated';
+import { ListingDetail, ListingDraft, ListingNewDraft } from '../../generated';
 import { DomainDataSource } from './domain-data-source';
 import { Listing } from '../../../infrastructure/data-sources/cosmos-db/models/listing';
 import { UserConverter } from '../../../domain/infrastructure/persistance/adapters/user-domain-adapter';
@@ -57,6 +57,29 @@ export class Listings extends DomainDataSource<Context,Listing,PropType,DomainTy
     await this.withTransaction(async (repo) => {
       let domainObject = await repo.get(id);
       domainObject.requestPublish();
+      result = await repo.save(domainObject);
+    });
+    return (new ListingConverter()).toMongo(result);
+  }
+  async addNewListing(listing: ListingNewDraft) : Promise<Listing> {
+    if(this.context.VerifiedUser.OpenIdConfigKey !== 'AccountPortal') {
+      throw new Error('Unauthorized');
+    }
+    console.log('domainAPI> addNewListing');
+    let userExternalId = this.context.VerifiedUser.VerifiedJWT.sub;
+    let passport = new PassportImpl(
+      (new UserConverter()).toDomain(await this.context.dataSources.userAPI.getByExternalId(userExternalId)),
+    )
+    let account = (new AccountConverter()).toDomain(await this.context.dataSources.accountAPI.getAccountByHandle(listing.accountHandle));
+    let category = await this.context.dataSources.categoryAPI.getCategory(listing.primaryCategory);
+
+    let categoryAdapter = new CategoryDomainAdapter(category);
+    let result : ListingDO<ListingDomainAdapter>;
+    await this.withTransaction(async (repo) => {
+      let domainObject = await repo.getNewInstance(account,passport);
+      domainObject.draft.requestAddCategory(categoryAdapter);
+      domainObject.draft.requestUpdateTitle(listing.title);
+      domainObject.draft.requestUpdateDescription(listing.description);
       result = await repo.save(domainObject);
     });
     return (new ListingConverter()).toMongo(result);

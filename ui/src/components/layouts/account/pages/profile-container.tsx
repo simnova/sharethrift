@@ -29,7 +29,6 @@ export const ProfileContainer: React.FC<any> = () => {
 
   return <>
     <SubPageLayout header={<PageHeader title="Profile" />}>
-        <h1>Profile Container</h1>
         {content()}
     </SubPageLayout>
   </>

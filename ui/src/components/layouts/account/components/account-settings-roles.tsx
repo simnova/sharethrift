@@ -18,7 +18,6 @@ export const AccountSettingsRoles: React.FC<any> = (props) => {
     
   ]
   return (<>
-  {JSON.stringify(props)}
   <Table columns={columns} dataSource={props.data} />
 
   <RoleSettings data={props.data[0]}  />

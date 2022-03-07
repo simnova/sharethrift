@@ -10,6 +10,8 @@ import { AccountEntityReference } from "../account/account";
 import { Draft, DraftProps } from "./draft";
 import { ListingDraftPublishRequestedEvent } from "../../events/listing-draft-publish-requested";
 
+import { DraftStatusCodes, NewStatus } from "./draft-status";
+
 export interface ListingProps extends EntityProps {
   id: string;
   draft: DraftProps;
@@ -61,11 +63,19 @@ export class Listing<props extends ListingProps> extends AggregateRoot<props> im
 
   static async getNewListing<newPropType extends ListingProps>(props:newPropType,account: AccountEntityReference, passport:Passport): Promise<Listing<newPropType>> {
     let listing = new Listing(props);
+    props.getNewDraft();
+    
     await listing.requestAddAccount(account);
+   // listing.draft.addStatusUpdate(new NewStatus(DraftStatusCodes.Draft,"Listing created"));
+    
     if(!passport.forListing(listing).determineIf((permissions) => permissions.canManageListings)) {
       throw new Error('Cannot add listing');
     }
     return listing;
+  }
+
+  requestUpdateTitle(title: string){
+    this.props.title=title;
   }
 
   requestUpdateDescription(description: string){

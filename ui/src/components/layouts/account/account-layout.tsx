@@ -57,7 +57,6 @@ export const AccountLayout: React.FC<any> = (props) => {
       >
         <div className="logo" />
 
-        {params.handle}
         <MenuComponent pageLayouts={props.pageLayouts}  theme="light" mode="inline" />
       </Sider>
       

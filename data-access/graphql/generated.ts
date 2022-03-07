@@ -206,6 +206,13 @@ export type ListingDraft = {
   primaryCategory?: Maybe<Scalars["ObjectID"]>;
 };
 
+export type ListingNewDraft = {
+  accountHandle: Scalars["String"];
+  title?: Maybe<Scalars["String"]>;
+  description?: Maybe<Scalars["String"]>;
+  primaryCategory?: Maybe<Scalars["ObjectID"]>;
+};
+
 export type ListingPermissions = {
   __typename?: "ListingPermissions";
   canManageListings: Scalars["Boolean"];
@@ -238,6 +245,7 @@ export type Mutation = {
   _empty?: Maybe<Scalars["String"]>;
   createCategory?: Maybe<Category>;
   createListing?: Maybe<CreateListingPayload>;
+  createNewListing?: Maybe<CreateListingPayload>;
   createUser?: Maybe<User>;
   publishDraft?: Maybe<Listing>;
   updateAccount?: Maybe<Account>;
@@ -255,6 +263,11 @@ export type MutationCreateCategoryArgs = {
 /**  Base Mutation Type definition - all mutations will be defined in separate files extending this type  */
 export type MutationCreateListingArgs = {
   input: ListingDetail;
+};
+
+/**  Base Mutation Type definition - all mutations will be defined in separate files extending this type  */
+export type MutationCreateNewListingArgs = {
+  input: ListingNewDraft;
 };
 
 /**  Base Mutation Type definition - all mutations will be defined in separate files extending this type  */
@@ -318,6 +331,8 @@ export type Query = {
   currentUser?: Maybe<User>;
   listing?: Maybe<Listing>;
   listings?: Maybe<Array<Maybe<Listing>>>;
+  listingsByAccountHandle?: Maybe<Array<Maybe<Listing>>>;
+  listingsForAccount?: Maybe<Array<Maybe<Listing>>>;
   user?: Maybe<User>;
   users?: Maybe<Array<Maybe<User>>>;
 };
@@ -340,6 +355,16 @@ export type QueryCategoryArgs = {
 /**  Base Query Type definition - , all mutations will be defined in separate files extending this type  */
 export type QueryListingArgs = {
   id: Scalars["ID"];
+};
+
+/**  Base Query Type definition - , all mutations will be defined in separate files extending this type  */
+export type QueryListingsByAccountHandleArgs = {
+  handle: Scalars["String"];
+};
+
+/**  Base Query Type definition - , all mutations will be defined in separate files extending this type  */
+export type QueryListingsForAccountArgs = {
+  accountId: Scalars["ID"];
 };
 
 /**  Base Query Type definition - , all mutations will be defined in separate files extending this type  */
@@ -528,6 +553,7 @@ export type ResolversTypes = ResolversObject<{
   ListingDetail: ListingDetail;
   ListingDraft: ListingDraft;
   ID: ResolverTypeWrapper<Scalars["ID"]>;
+  ListingNewDraft: ListingNewDraft;
   ListingPermissions: ResolverTypeWrapper<ListingPermissions>;
   LocalDate: ResolverTypeWrapper<Scalars["LocalDate"]>;
   LocalEndTime: ResolverTypeWrapper<Scalars["LocalEndTime"]>;
@@ -620,6 +646,7 @@ export type ResolversParentTypes = ResolversObject<{
   ListingDetail: ListingDetail;
   ListingDraft: ListingDraft;
   ID: Scalars["ID"];
+  ListingNewDraft: ListingNewDraft;
   ListingPermissions: ListingPermissions;
   LocalDate: Scalars["LocalDate"];
   LocalEndTime: Scalars["LocalEndTime"];
@@ -1187,6 +1214,12 @@ export type MutationResolvers<
     ContextType,
     RequireFields<MutationCreateListingArgs, "input">
   >;
+  createNewListing?: Resolver<
+    Maybe<ResolversTypes["CreateListingPayload"]>,
+    ParentType,
+    ContextType,
+    RequireFields<MutationCreateNewListingArgs, "input">
+  >;
   createUser?: Resolver<Maybe<ResolversTypes["User"]>, ParentType, ContextType>;
   publishDraft?: Resolver<
     Maybe<ResolversTypes["Listing"]>,
@@ -1393,6 +1426,18 @@ export type QueryResolvers<
     Maybe<Array<Maybe<ResolversTypes["Listing"]>>>,
     ParentType,
     ContextType
+  >;
+  listingsByAccountHandle?: Resolver<
+    Maybe<Array<Maybe<ResolversTypes["Listing"]>>>,
+    ParentType,
+    ContextType,
+    RequireFields<QueryListingsByAccountHandleArgs, "handle">
+  >;
+  listingsForAccount?: Resolver<
+    Maybe<Array<Maybe<ResolversTypes["Listing"]>>>,
+    ParentType,
+    ContextType,
+    RequireFields<QueryListingsForAccountArgs, "accountId">
   >;
   user?: Resolver<
     Maybe<ResolversTypes["User"]>,

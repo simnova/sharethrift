@@ -7,6 +7,7 @@ const listingPermissions = shield({
   Query: {
     listing: allow,
     listings: allow,
+    listingsByAccountHandle: allow,
   },
   Mutation: {
     createListing: permissions.isAccountPortalUser,

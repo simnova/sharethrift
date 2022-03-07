@@ -1,4 +1,5 @@
 import { Table } from "antd"
+import dayjs from "dayjs"
 export const AccountSettingsContacts: React.FC<any> = (props) => {
   const columns = [
     {
@@ -20,11 +21,13 @@ export const AccountSettingsContacts: React.FC<any> = (props) => {
       title: "Updated",
       dataIndex: "updatedAt",
       key: "updatedAt",
+      render: (text: any) => <span>{dayjs(text).format('DD/MM/YYYY')}</span>
     },
     {
       title: "Created",
       dataIndex: "createdAt",
       key: "createdAt",
+      render: (text: any) => <span>{dayjs(text).format('DD/MM/YYYY')}</span>
     },
   ]
 

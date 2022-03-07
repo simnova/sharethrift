@@ -1,5 +1,6 @@
 import { Form,Input,Button,Descriptions } from 'antd';
 import PropTypes from 'prop-types';
+import dayjs from "dayjs";
 
 const ComponentPropTypes = {
   data: PropTypes.shape({
@@ -43,8 +44,8 @@ export const Profile: React.FC<any> = (props) => {
       <Descriptions title="User Info" size={'small'} layout={'vertical'}>
         <Descriptions.Item label="Id">{props.data.id}</Descriptions.Item>
         <Descriptions.Item label="Email">{props.data.email}</Descriptions.Item>
-        <Descriptions.Item label="Created At">{props.data.createdAt}</Descriptions.Item>
-        <Descriptions.Item label="Updated At">{props.data.updatedAt}</Descriptions.Item>
+        <Descriptions.Item label="Created At">{dayjs(props.data.createdAt).format('DD/MM/YYYY')}</Descriptions.Item>
+        <Descriptions.Item label="Updated At">{dayjs(props.data.updatedAt).format('DD/MM/YYYY')}</Descriptions.Item>
       </Descriptions>
       <Form 
         layout="vertical"

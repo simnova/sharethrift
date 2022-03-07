@@ -1,0 +1,7 @@
+mutation ListingCreateContainerCreateListing ( $input: ListingNewDraft!) {
+  createNewListing(input: $input) {
+    listing {
+      title
+    }
+  }
+}

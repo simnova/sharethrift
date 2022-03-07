@@ -1,0 +1,20 @@
+query ListingsListListingsByAccountHandle($handle: String!) {
+  listingsByAccountHandle(handle: $handle) {
+    ...ListingsListListingsByAccountHandleFields
+  }
+}
+
+fragment ListingsListListingsByAccountHandleFields on Listing {
+  id
+  title
+  description
+  tags
+  primaryCategory{
+    name
+  }
+  draft {
+    title
+  }
+  createdAt
+  updatedAt
+}

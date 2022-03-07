@@ -25,7 +25,7 @@ export interface Role extends EmbeddedBase {
 export interface Contact extends EmbeddedBase {
   firstName:string;
   lastName?:string;
-  role?:ObjectId;
+  role?:PopulatedDoc<Role> | ObjectId;
   user:PopulatedDoc<User.User> | ObjectId;
 }
 

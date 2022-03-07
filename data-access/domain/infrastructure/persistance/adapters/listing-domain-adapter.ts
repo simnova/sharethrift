@@ -17,6 +17,7 @@ import { MongoTypeConverter } from '../mongo-type-converter';
 import {  DraftProps } from '../../../contexts/listing/draft';
 import { DraftStatus as DraftStatusDO, DraftStatusProps } from '../../../contexts/listing/draft-status';
 import { Entity, EntityProps } from '../../../shared/entity';
+import { T } from 'ramda';
 
 export class ListingConverter extends MongoTypeConverter<Listing,ListingDomainAdapter,ListingDO<ListingDomainAdapter>> {
   constructor() {
@@ -106,8 +107,18 @@ export class ListingDomainAdapter extends MongooseDomainAdapater<Listing> implem
     }
     return new DraftDomainAdapter(this.props.draft);
   }
-  getNewDraft(): DraftProps {
-    return this.props.get('draft') as DraftProps;
+  getNewDraft(): DraftProps { //clone the base object
+    
+    var draft = this.props.get('draft');
+    draft.title = this.props.title;
+    draft.description = this.props.description;
+    draft.tags = this.props.tags;
+    draft.primaryCategory = this.props.primaryCategory;
+    draft.photos = this.props.photos;
+    
+    return draft;
+
+    //return this.props.get('draft') as DraftProps;
   }
       
   get title(): string {return this.props.title;}

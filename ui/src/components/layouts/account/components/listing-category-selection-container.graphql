@@ -1,0 +1,16 @@
+query ListingCategorySelectionContainerCategories {
+  categories {
+    ...CategorySelectionCategoryFields
+  }
+}
+
+fragment ListingCategorySelectionContainerFields on Category {
+  id
+  parentId {
+    id
+  }
+  schemaVersion
+  createdAt
+  updatedAt
+  name
+}

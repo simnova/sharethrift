@@ -28,13 +28,13 @@ export const MenuComponent = ({ pageLayouts , ...props } : TextProp) => {
         (grandChildren && grandChildren.length > 0 )? 
           <SubMenu key={child.id} title={child.title}>
             <Menu.Item key={`${child.id}-link`} icon={child.icon}>
-              <Link to={createPath(child.path)}>{child.title} - {child.id}</Link>
+              <Link to={createPath(child.path)}>{child.title}</Link>
             </Menu.Item>
             {buildMenu(child.id)}
           </SubMenu> 
         :  
         <Menu.Item key={child.id} icon={child.icon}>
-          <Link to={createPath(child.path)}>{child.title} - {child.id}</Link>
+          <Link to={createPath(child.path)}>{child.title}</Link>
         </Menu.Item>
       )
     });
