@@ -5,25 +5,27 @@ import { MongoRepositoryBase } from '../mongo-repository';
 import { TypeConverter } from '../../../shared/type-converter';
 import { ClientSession } from 'mongoose';
 import { EventBus } from '../../../shared/event-bus';
+import { DomainExecutionContext } from '../../../contexts/context';
 
-export class MongoUserRepository<PropType extends UserProps> extends MongoRepositoryBase<User,PropType,UserDO<PropType>> implements UserRepository<PropType> {
+export class MongoUserRepository<PropType extends UserProps> extends MongoRepositoryBase<DomainExecutionContext, User,PropType,UserDO<PropType>> implements UserRepository<PropType> {
   constructor(
     eventBus: EventBus,
     modelType: typeof UserModel, 
-    typeConverter: TypeConverter<User, UserDO<PropType>,PropType>,
-    session: ClientSession
+    typeConverter: TypeConverter<User, UserDO<PropType>,PropType, DomainExecutionContext>,
+    session: ClientSession,
+    context: DomainExecutionContext
   ) {
-    super(eventBus,modelType,typeConverter,session);
+    super(eventBus,modelType,typeConverter,session,context);
   }
   
   async getByExternalId(externalId: string): Promise<UserDO<PropType>> {
     let user = await this.model.findOne({ externalId: externalId }).exec();
-    return this.typeConverter.toDomain(user);
+    return this.typeConverter.toDomain(user, this.context);
   }
 
-  getNewInstance(externalId:string, firstName:string, lastName:string): UserDO<PropType> {
+  async getNewInstance(externalId:string, firstName:string, lastName:string): Promise<UserDO<PropType>> {
     let adapter = this.typeConverter.toAdapter(new this.model());
-    return UserDO.getNewUser(adapter, externalId, firstName, lastName);
+    return UserDO.getNewUser(adapter, externalId, firstName, lastName); //no context needed for new user
   }
 
   async delete(id: string): Promise<void> {

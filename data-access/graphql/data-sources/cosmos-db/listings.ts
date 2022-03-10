@@ -36,7 +36,7 @@ export class Listings extends MongoDataSource<Listing, Context> {
       let user = await this.context.dataSources.userAPI.getByExternalId(userExternalId);
       let account = await this.context.dataSources.accountAPI.getAccountByHandle(handle);
       if(account && account.contacts.some(c => c.user.toString() === user._id.toString())){
-        return this.findByFields({account: account.id});
+        return (await this.findByFields({account: account.id}));
       }
     } catch (error) {
       console.log(error);

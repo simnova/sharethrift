@@ -18,8 +18,10 @@ import {  DraftProps } from '../../../contexts/listing/draft';
 import { DraftStatus as DraftStatusDO, DraftStatusProps } from '../../../contexts/listing/draft-status';
 import { Entity, EntityProps } from '../../../shared/entity';
 import { T } from 'ramda';
+import { DomainExecutionContext } from '../../../contexts/context'; 
 
-export class ListingConverter extends MongoTypeConverter<Listing,ListingDomainAdapter,ListingDO<ListingDomainAdapter>> {
+
+export class ListingConverter extends MongoTypeConverter<DomainExecutionContext,Listing,ListingDomainAdapter,ListingDO<ListingDomainAdapter>> {
   constructor() {
     super(ListingDomainAdapter, ListingDO);
   }
@@ -133,14 +135,14 @@ export class ListingDomainAdapter extends MongooseDomainAdapater<Listing> implem
   get version(): number {return this.props.version;}
   set version(value: number) {this.props.version = value;}
 
-  async getAccount(): Promise<AccountEntityReference>{
+  async getAccount(context:DomainExecutionContext): Promise<AccountEntityReference>{
     if (!this.props.account) {
       return undefined;
     }
     if(mongoose.isValidObjectId(this.props.account.toString())){
       await this.props.populate('account');
     }
-    return (new AccountDO(new AccountDomainAdapter(this.props.account as Account)));
+    return (new AccountDO(new AccountDomainAdapter(this.props.account as Account), context));
   }
   public async setAccount(value: AccountEntityReference):Promise<void> {
     if (value) {

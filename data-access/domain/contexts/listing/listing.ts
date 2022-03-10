@@ -11,6 +11,7 @@ import { Draft, DraftProps } from "./draft";
 import { ListingDraftPublishRequestedEvent } from "../../events/listing-draft-publish-requested";
 
 import { DraftStatusCodes, NewStatus } from "./draft-status";
+import { DomainExecutionContext } from "../context";
 
 export interface ListingProps extends EntityProps {
   id: string;
@@ -21,7 +22,7 @@ export interface ListingProps extends EntityProps {
   tags: string[];
   location: LocationProps;
   photos: PhotoProps[];
-  getAccount(): Promise<AccountEntityReference>;
+  getAccount(context:DomainExecutionContext): Promise<AccountEntityReference>;
   setAccount(account: AccountEntityReference): Promise<void>;
   primaryCategory: CategoryProps;
   createdAt: Date;
@@ -46,7 +47,7 @@ export interface ListingEntityReference {
 
 
 export class Listing<props extends ListingProps> extends AggregateRoot<props> implements ListingEntityReference {
-  constructor(props: props) { super(props); }
+  constructor(props: props,private context:DomainExecutionContext) { super(props); }
   
   get draft(): Draft {return new Draft(this.props.draft ?? this.props.getNewDraft(), this);}
   get id(): string {return this.props.id;}
@@ -55,20 +56,20 @@ export class Listing<props extends ListingProps> extends AggregateRoot<props> im
   get tags(): string[] {return this.props.tags;}
   get location(): LocationEntityReference {return new Location(this.props.location);}
   get photos(): PhotoEntityReference[] { return this.props.photos.map(photo=>new Photo(photo));} //should be REadOnyArray<PhotoEntityReference> but gen has issues
-  async account(): Promise<AccountEntityReference> { return this.props.getAccount();}
+  async account(): Promise<AccountEntityReference> { return this.props.getAccount(this.context);}
   get primaryCategory(): CategoryEntityReference { return new Category(this.props.primaryCategory);}
   get updatedAt(): Date {return this.props.updatedAt;}
   get createdAt(): Date {return this.props.createdAt;}
   get schemaVersion(): string {return this.props.schemaVersion;}
 
-  static async getNewListing<newPropType extends ListingProps>(props:newPropType,account: AccountEntityReference, passport:Passport): Promise<Listing<newPropType>> {
-    let listing = new Listing(props);
+  static async getNewListing<newPropType extends ListingProps>(props:newPropType,account: AccountEntityReference, context:DomainExecutionContext): Promise<Listing<newPropType>> {
+    let listing = new Listing(props,context);
     props.getNewDraft();
     
     await listing.requestAddAccount(account);
    // listing.draft.addStatusUpdate(new NewStatus(DraftStatusCodes.Draft,"Listing created"));
     
-    if(!passport.forListing(listing).determineIf((permissions) => permissions.canManageListings)) {
+    if(!context.passport.forListing(listing).determineIf((permissions) => permissions.canManageListings)) {
       throw new Error('Cannot add listing');
     }
     return listing;
@@ -109,16 +110,16 @@ export class Listing<props extends ListingProps> extends AggregateRoot<props> im
     //this.props.photos.length = 0;
     //this.props.photos.push(...this.props.draft.photos.items);
    // this.props.primaryCategory = this.props.draft.primaryCategory;
-    this.addIntegrationEvent(ListingPublishedEvent,{listingId: this.props.id});
+    this.addIntegrationEvent(ListingPublishedEvent,{listingId: this.props.id, context: this.context});
   }
 
   async requestPublish(){
     await this.draft.requestPublish();
-    this.addIntegrationEvent(ListingDraftPublishRequestedEvent,{listingId: this.props.id});
+    this.addIntegrationEvent(ListingDraftPublishRequestedEvent,{listingId: this.props.id, context: this.context});
   }
   
   private  async requestAddAccount(account:AccountEntityReference){
-    let existingAccount = await this.props.getAccount();
+    let existingAccount = await this.props.getAccount(this.context);
     if(existingAccount){
       throw new Error("Account already exists");
     }

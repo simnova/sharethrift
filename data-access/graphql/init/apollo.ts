@@ -73,11 +73,12 @@ export class ApolloServerRequestHandler {
 
   constructor(portals:Map<string,string>){
     console.log(' -=-=-=-=-=-=-=-=-= INITALIZING APOLLO -=-=-=-=-=-=-=-=-=')
+    console.log('permissions:',permissions);
     const scuredSchema:GraphQLSchemaWithFragmentReplacements = applyMiddleware(combinedSchema,permissions);
     const portalTokenExtractor:PortalTokenValidation = new PortalTokenValidation(portals);
 
     const server = new ApolloServer({
-      ...this.serverConfig(portalTokenExtractor,scuredSchema)
+      ...this.serverConfig(portalTokenExtractor,scuredSchema) //TODO: re-add securedSchema
     });
 
     this.graphqlHandlerObj = server.createHandler({

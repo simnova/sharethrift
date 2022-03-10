@@ -6,14 +6,16 @@ import { TypeConverter } from '../../shared/type-converter';
 import { EntityProps } from '../../shared/entity';
 import { EventBus } from '../../shared/event-bus';
 import { DomainEvent } from '../../shared/domain-event';
+import { ExecutionContext } from '../../shared/execution-context';
 
-export class MongoUnitOfWork<MongoType extends Document,PropType extends EntityProps, DomainType  extends AggregateRoot<PropType>, RepoType extends MongoRepositoryBase<MongoType,PropType,DomainType> > extends PersistanceUnitOfWork<PropType,DomainType,RepoType> {
-  async withTransaction(func: (repository: RepoType) => Promise<void>): Promise<void> {
+export class MongoUnitOfWork<ContextType extends ExecutionContext, MongoType extends Document,PropType extends EntityProps, DomainType  extends AggregateRoot<PropType>, RepoType extends MongoRepositoryBase<ContextType, MongoType,PropType,DomainType> > extends PersistanceUnitOfWork<ContextType,PropType,DomainType,RepoType> {
+  async withTransaction(context:ContextType, func: (repository: RepoType) => Promise<void>): Promise<void> {
       let repoEvents: DomainEvent[] = [];
       console.log('withTransaction');
+    
       await mongoose.connection.transaction(async (session:ClientSession) => {
         console.log('transaction');
-        let repo = MongoRepositoryBase.create(this.bus, this.model, this.typeConverter, session, this.repoClass);
+        let repo = MongoRepositoryBase.create(this.bus, this.model, this.typeConverter, session, context, this.repoClass);
         console.log('repo created');
         try {
           await func(repo);
@@ -37,8 +39,8 @@ export class MongoUnitOfWork<MongoType extends Document,PropType extends EntityP
       private bus : EventBus,
       private integrationEventBus: EventBus,
       private model : Model<MongoType>, 
-      private typeConverter : TypeConverter<MongoType,DomainType,PropType>,
-      private repoClass : {new(bus:EventBus, model:Model<MongoType>,typeConverter:TypeConverter<MongoType,DomainType,PropType>,session:ClientSession) : RepoType}
+      private typeConverter : TypeConverter<MongoType,DomainType,PropType, ContextType>,
+      private repoClass : {new(bus:EventBus, model:Model<MongoType>,typeConverter:TypeConverter<MongoType,DomainType,PropType,ContextType>,session:ClientSession,context:ContextType) : RepoType}
     ){
       super();
     }

@@ -7,6 +7,8 @@ import { User, UserProps } from '../user/user';
 import { Contact, ContactEntityReference, ContactProps } from './contact';
 import { RoleProps, RoleEntityReference, Role } from './role';
 import * as ValueObjects from './account-value-objects';
+import { AccountVisa } from '../iam/account-visa';
+import { DomainExecutionContext } from '../context';
 
 export interface AccountPropValues extends EntityProps {
   name: string;
@@ -18,11 +20,11 @@ export interface AccountPropValues extends EntityProps {
 export interface AccountProps extends AccountPropValues, EntityProps {
   contacts(): Promise<ReadonlyArray<ContactProps>>;
   getNewContact(): ContactProps;
+  getNewRole(): RoleProps;
   addContact<props extends ContactProps>(contact: Contact<props>):void;
+  addRole<props extends RoleProps>(role: props):props;
 
   roles: PropArray<RoleProps>;
-//  getNewRole(): RoleProps;
-//  addRole<props extends RoleProps>(role: Role<props>):void
 }
 
 export interface AccountEntityReference extends Readonly<AccountPropValues> {
@@ -33,7 +35,12 @@ export interface AccountEntityReference extends Readonly<AccountPropValues> {
 const adminRoleName = "Administrator";
 
 export class Account<props extends AccountProps> extends AggregateRoot<props> implements AccountEntityReference  {
-  constructor(props: props) { super(props); }
+  constructor(props: props,private context:DomainExecutionContext) { 
+    super(props); 
+    this.visa = context.passport.forAcccount(this);
+  }
+  protected visa: AccountVisa;
+
 
   get name(): string {return this.props.name;}
   get handle(): string {return this.props.handle;}
@@ -41,13 +48,16 @@ export class Account<props extends AccountProps> extends AggregateRoot<props> im
   get updatedAt(): Date {return this.props.updatedAt;}
   get createdAt(): Date {return this.props.createdAt;}
   get schemaVersion(): string {return this.props.schemaVersion;}
-  public async contacts(): Promise<ContactEntityReference[]>  { return (await this.props.contacts()).map(contact => new Contact(contact)); }
-  get roles(): RoleEntityReference[] { return this.props.roles.items.map(role => new Role(role)); }
+  public async contacts(): Promise<ContactEntityReference[]>  { 
+    return (await this.props.contacts()).map(contact => new Contact(contact,this.visa,this.context));
+  }
+  get roles(): Role<any>[] { return this.props.roles.items.map(role => new Role(role,this.visa)); }
 
-  static async CreateInitialAccountForNewUser<newPropType extends AccountProps, userProps extends UserProps>(props:newPropType,newUser:User<userProps>): Promise<Account<newPropType>> {
+  static async CreateInitialAccountForNewUser<newPropType extends AccountProps, userProps extends UserProps>(props:newPropType,newUser:User<userProps>,context:DomainExecutionContext): Promise<Account<newPropType>> {
     props.name = newUser.id;
     props.handle = newUser.id;
-    let account = new Account(props);
+    let account = new Account(props,context);
+    account.visa = {determineIf: async (func: (permissions:AccountPermissions) => boolean) => true};
     account.addDefaultRoles();
     account.addContact(newUser);
     console.log('after-adding-contact', JSON.stringify(account));
@@ -59,16 +69,42 @@ export class Account<props extends AccountProps> extends AggregateRoot<props> im
     return account;
   }
 
-  public setHandle(handle: ValueObjects.Handle): void {
+  public async setHandle(handle: ValueObjects.Handle): Promise<void>{
+    if(!await this.visa.determineIf((permissions) => permissions.canManageAccountSettings)) {
+      throw new Error('Cannot set handle. Permission denied');
+    }
     this.props.handle = handle.valueOf();
     //todo verify handle is unique
   }
-  public setName(name: ValueObjects.Name): void {
+
+  public async setName(name: ValueObjects.Name): Promise<void>{
+    if(!await this.visa.determineIf((permissions) => permissions.canManageAccountSettings)) {
+      throw new Error('Cannot set name. Permission denied');
+    }
     this.props.name = name.valueOf();
   }
 
+  public async requestAddRole(roleName:string): Promise<Role<any>> {
+    if(!(await this.visa.determineIf((permissions) => permissions.canManageRolesAndPermissions))) {
+      throw new Error('Cannot add role. Permission denied');
+    }
+    if(this.props.roles.items.some(x => x.roleName === roleName)) {
+      throw new Error('Role already exists');
+    }
+
+    const baseRule = this.props.roles.getNewItem();
+    const ruleDefaults = {
+      roleName: roleName,
+      isDefault: false
+    } as Partial<RoleProps>;
+    
+    const mergedRule = {...baseRule, ...ruleDefaults};
+    const addedRule = this.props.addRole(mergedRule);
+    return  new Role(addedRule,this.visa);
+  }
+
   private async addContact<userProps extends UserProps>(newUser:User<userProps>): Promise<void> {
-    this.props.addContact(new Contact(this.props.getNewContact()));
+    this.props.addContact(new Contact(this.props.getNewContact(),this.visa,this.context));
     let contactProps = (await this.props.contacts())[0];
     contactProps.firstName = newUser.firstName;
     contactProps.lastName = newUser.lastName;
@@ -90,7 +126,7 @@ export class Account<props extends AccountProps> extends AggregateRoot<props> im
     if(verifiedAccountContact.roleId && verifiedAccountContact.roleId === role.id) {
       throw new Error('Contact already has role');
     }
-    verifiedAccountContact.addRole(new Role(verifiedRole));
+    verifiedAccountContact.addRole(new Role(verifiedRole,this.visa));
   }
 
   private addDefaultRoles(): void {
@@ -101,7 +137,8 @@ export class Account<props extends AccountProps> extends AggregateRoot<props> im
       isDefault: true,
       permissions: {
         accountPermissions: {
-          canManageRolesAndPermissions:true
+          canManageRolesAndPermissions:true,
+          canManageAccountSettings:true
         } ,
         listingPermissions: {
           canManageListings: true
@@ -109,7 +146,7 @@ export class Account<props extends AccountProps> extends AggregateRoot<props> im
       }
     } as Partial<RoleProps>;
     let meredProps = {...roleProps, ...newRoleProps};
-    let role = new Role(meredProps);
+    let role = new Role(meredProps,this.visa);
     this.props.roles.addItem(role);
     console.log('add-default-roles-done2', this.props.roles.items);
   }
@@ -118,8 +155,8 @@ export class Account<props extends AccountProps> extends AggregateRoot<props> im
     //create integraiton event 
   }
 
-  async deleteRoleAndReassignTo(roleToDelete: RoleEntityReference, roleToAssignTo: RoleEntityReference, passport:Passport): Promise<void> {
-    if(!passport.forAcccount(this).determineIf((permissions) => permissions.canManageRolesAndPermissions)) {
+  async deleteRoleAndReassignTo(roleToDelete: RoleEntityReference, roleToAssignTo: RoleEntityReference): Promise<void> {
+    if(!(await this.visa.determineIf((permissions) => permissions.canManageRolesAndPermissions))) {
       throw new Error('Cannot delete role');
     }
     if(!this.props.roles.items.includes(roleToDelete)) {
@@ -143,4 +180,5 @@ export class Account<props extends AccountProps> extends AggregateRoot<props> im
 
 export interface AccountPermissions {
   canManageRolesAndPermissions: boolean;
+  canManageAccountSettings: boolean;
 } 

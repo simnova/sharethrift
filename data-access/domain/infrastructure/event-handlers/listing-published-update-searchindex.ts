@@ -7,7 +7,7 @@ import { ListingUnitOfWork } from '../persistance/repositories';
 export default () => { NodeEventBus.register(ListingPublishedEvent, async (payload) => {
   console.log(`ListingPublishedEvent Search Index Integration: ${JSON.stringify(payload)} and ListingId: ${payload.listingId}`);
 
-  await ListingUnitOfWork.withTransaction(async (repo) => {
+  await ListingUnitOfWork.withTransaction(payload.context,async (repo) => {
 
     let listing = await repo.get(payload.listingId);
     let listingDoc:Partial<ListingIndexDocument> = {

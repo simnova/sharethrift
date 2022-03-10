@@ -7,4 +7,11 @@ const resolversArray = loadFilesSync(path.join(__dirname, "./**/*.resolvers.*"))
 const permissionsArray = loadFilesSync(path.join(__dirname, "./**/*.permissions.*"));
 
 export const resolvers: Resolvers = mergeResolvers(resolversArray);
-export const permissions = mergeResolvers(permissionsArray);
+const getPermissionsArray = (permissionsArr) => {
+  //TODO: understand why just calling merge resolvers alone didn't seem to work? Maybe console log is helping?
+  console.log('permissionsArr',permissionsArr);
+  var result = mergeResolvers(permissionsArr);
+  console.log('mergedPermissions-result',result);
+  return result;
+}
+export const permissions = getPermissionsArray(permissionsArray);

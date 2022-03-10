@@ -85,6 +85,12 @@ export type Account = MongoBase & {
 export type AccountPermissions = {
   __typename?: "AccountPermissions";
   canManageRolesAndPermissions: Scalars["Boolean"];
+  canManageAccountSettings: Scalars["Boolean"];
+};
+
+export type AccountPermissionsInput = {
+  canManageRolesAndPermissions: Scalars["Boolean"];
+  canManageAccountSettings: Scalars["Boolean"];
 };
 
 export type AccountUpdateInput = {
@@ -210,6 +216,10 @@ export type ListingPermissions = {
   canManageListings: Scalars["Boolean"];
 };
 
+export type ListingPermissionsInput = {
+  canManageListings: Scalars["Boolean"];
+};
+
 export type Location = MongoBase & {
   __typename?: "Location";
   position?: Maybe<Point>;
@@ -235,6 +245,8 @@ export type Mutation = {
   __typename?: "Mutation";
   /** IGNORE: Dummy field necessary for the Mutation type to be valid */
   _empty?: Maybe<Scalars["String"]>;
+  accountAddRole?: Maybe<Account>;
+  accountUpdateRole?: Maybe<Account>;
   createCategory?: Maybe<Category>;
   createListing?: Maybe<CreateListingPayload>;
   createNewListing?: Maybe<CreateListingPayload>;
@@ -245,6 +257,16 @@ export type Mutation = {
   updateDraft?: Maybe<Listing>;
   /** Allows the user to update their profile */
   updateUser?: Maybe<User>;
+};
+
+/**  Base Mutation Type definition - all mutations will be defined in separate files extending this type  */
+export type MutationAccountAddRoleArgs = {
+  input: RoleAddInput;
+};
+
+/**  Base Mutation Type definition - all mutations will be defined in separate files extending this type  */
+export type MutationAccountUpdateRoleArgs = {
+  input: RoleUpdateInput;
 };
 
 /**  Base Mutation Type definition - all mutations will be defined in separate files extending this type  */
@@ -291,6 +313,11 @@ export type Permissions = {
   __typename?: "Permissions";
   listingPermissions: ListingPermissions;
   accountPermissions: AccountPermissions;
+};
+
+export type PermissionsInput = {
+  listingPermissions: ListingPermissionsInput;
+  accountPermissions: AccountPermissionsInput;
 };
 
 export type Photo = {
@@ -372,6 +399,19 @@ export type Role = {
   id: Scalars["ObjectID"];
   updatedAt?: Maybe<Scalars["DateTime"]>;
   createdAt?: Maybe<Scalars["DateTime"]>;
+};
+
+export type RoleAddInput = {
+  accountHandle: Scalars["String"];
+  roleName: Scalars["String"];
+  permissions: PermissionsInput;
+};
+
+export type RoleUpdateInput = {
+  accountHandle: Scalars["String"];
+  id: Scalars["ObjectID"];
+  roleName: Scalars["String"];
+  permissions: PermissionsInput;
 };
 
 export type UpdateCategory = {
@@ -626,12 +666,33 @@ export type AccountSettingsRolesContainerAccountGetByHandleQuery = {
             accountPermissions: {
               __typename?: "AccountPermissions";
               canManageRolesAndPermissions: boolean;
+              canManageAccountSettings: boolean;
             };
           };
         }>
       >
     >;
   }>;
+};
+
+export type AccountSettingsRolesContainerAccountAddRoleMutationVariables =
+  Exact<{
+    input: RoleAddInput;
+  }>;
+
+export type AccountSettingsRolesContainerAccountAddRoleMutation = {
+  __typename?: "Mutation";
+  accountAddRole?: Maybe<{ __typename?: "Account"; id: any }>;
+};
+
+export type AccountSettingsRolesContainerAccountUpdateRoleMutationVariables =
+  Exact<{
+    input: RoleUpdateInput;
+  }>;
+
+export type AccountSettingsRolesContainerAccountUpdateRoleMutation = {
+  __typename?: "Mutation";
+  accountUpdateRole?: Maybe<{ __typename?: "Account"; id: any }>;
 };
 
 export type AccountSettingsRolesContainerAccountGetByHandleFieldsFragment = {
@@ -658,6 +719,7 @@ export type AccountSettingsRolesContainerAccountGetByHandleFieldsFragment = {
           accountPermissions: {
             __typename?: "AccountPermissions";
             canManageRolesAndPermissions: boolean;
+            canManageAccountSettings: boolean;
           };
         };
       }>
@@ -1351,6 +1413,13 @@ export const AccountSettingsRolesContainerAccountGetByHandleFieldsFragmentDoc =
                                 name: {
                                   kind: "Name",
                                   value: "canManageRolesAndPermissions",
+                                },
+                              },
+                              {
+                                kind: "Field",
+                                name: {
+                                  kind: "Name",
+                                  value: "canManageAccountSettings",
                                 },
                               },
                             ],
@@ -2115,6 +2184,120 @@ export const AccountSettingsRolesContainerAccountGetByHandleDocument = {
 } as unknown as DocumentNode<
   AccountSettingsRolesContainerAccountGetByHandleQuery,
   AccountSettingsRolesContainerAccountGetByHandleQueryVariables
+>;
+export const AccountSettingsRolesContainerAccountAddRoleDocument = {
+  kind: "Document",
+  definitions: [
+    {
+      kind: "OperationDefinition",
+      operation: "mutation",
+      name: {
+        kind: "Name",
+        value: "AccountSettingsRolesContainerAccountAddRole",
+      },
+      variableDefinitions: [
+        {
+          kind: "VariableDefinition",
+          variable: {
+            kind: "Variable",
+            name: { kind: "Name", value: "input" },
+          },
+          type: {
+            kind: "NonNullType",
+            type: {
+              kind: "NamedType",
+              name: { kind: "Name", value: "RoleAddInput" },
+            },
+          },
+        },
+      ],
+      selectionSet: {
+        kind: "SelectionSet",
+        selections: [
+          {
+            kind: "Field",
+            name: { kind: "Name", value: "accountAddRole" },
+            arguments: [
+              {
+                kind: "Argument",
+                name: { kind: "Name", value: "input" },
+                value: {
+                  kind: "Variable",
+                  name: { kind: "Name", value: "input" },
+                },
+              },
+            ],
+            selectionSet: {
+              kind: "SelectionSet",
+              selections: [
+                { kind: "Field", name: { kind: "Name", value: "id" } },
+              ],
+            },
+          },
+        ],
+      },
+    },
+  ],
+} as unknown as DocumentNode<
+  AccountSettingsRolesContainerAccountAddRoleMutation,
+  AccountSettingsRolesContainerAccountAddRoleMutationVariables
+>;
+export const AccountSettingsRolesContainerAccountUpdateRoleDocument = {
+  kind: "Document",
+  definitions: [
+    {
+      kind: "OperationDefinition",
+      operation: "mutation",
+      name: {
+        kind: "Name",
+        value: "AccountSettingsRolesContainerAccountUpdateRole",
+      },
+      variableDefinitions: [
+        {
+          kind: "VariableDefinition",
+          variable: {
+            kind: "Variable",
+            name: { kind: "Name", value: "input" },
+          },
+          type: {
+            kind: "NonNullType",
+            type: {
+              kind: "NamedType",
+              name: { kind: "Name", value: "RoleUpdateInput" },
+            },
+          },
+        },
+      ],
+      selectionSet: {
+        kind: "SelectionSet",
+        selections: [
+          {
+            kind: "Field",
+            name: { kind: "Name", value: "accountUpdateRole" },
+            arguments: [
+              {
+                kind: "Argument",
+                name: { kind: "Name", value: "input" },
+                value: {
+                  kind: "Variable",
+                  name: { kind: "Name", value: "input" },
+                },
+              },
+            ],
+            selectionSet: {
+              kind: "SelectionSet",
+              selections: [
+                { kind: "Field", name: { kind: "Name", value: "id" } },
+              ],
+            },
+          },
+        ],
+      },
+    },
+  ],
+} as unknown as DocumentNode<
+  AccountSettingsRolesContainerAccountUpdateRoleMutation,
+  AccountSettingsRolesContainerAccountUpdateRoleMutationVariables
 >;
 export const ListingCategorySelectionContainerCategoriesDocument = {
   kind: "Document",

@@ -14,15 +14,32 @@ extend type Query {
   accounts: [Account]
   account(id: ID!): Account
   accountGetByHandle(handle: String!): Account
+ 
 }
 extend type Mutation {
   updateAccount(input:AccountUpdateInput!): Account
+  accountAddRole(input:RoleAddInput!): Account
+  accountUpdateRole(input:RoleUpdateInput!): Account
 }
+
+input RoleAddInput {
+  accountHandle: String!
+  roleName: String!
+  permissions: PermissionsInput!
+}
+input RoleUpdateInput {
+  accountHandle: String!
+  id: ObjectID!
+  roleName: String!
+  permissions: PermissionsInput!
+}
+
 input AccountUpdateInput {
   id: ObjectID!
   name: String
   handle: String
 }
+
 
 type Role {
   roleName: String!
@@ -49,11 +66,26 @@ type Permissions {
   listingPermissions: ListingPermissions!
   accountPermissions: AccountPermissions!
 }
+input PermissionsInput {
+  listingPermissions: ListingPermissionsInput!
+  accountPermissions: AccountPermissionsInput!
+}
+
+
+
 
 type AccountPermissions {
   canManageRolesAndPermissions: Boolean!
+  canManageAccountSettings: Boolean!
+}
+input AccountPermissionsInput {
+  canManageRolesAndPermissions: Boolean!
+  canManageAccountSettings: Boolean!
 }
 
 type ListingPermissions {
+  canManageListings: Boolean!
+}
+input ListingPermissionsInput {
   canManageListings: Boolean!
 }

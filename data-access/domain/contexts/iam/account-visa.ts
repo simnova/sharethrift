@@ -1,15 +1,16 @@
-import { AccountPermissions, Account } from '../account/account';
-import { User } from '../user/user';
+import { AccountPermissions, AccountEntityReference } from '../account/account';
+import { UserEntityReference } from '../user/user';
 import { Visa } from './passport';
 
-export class AccountVisaImpl<root extends Account<any>> implements AccountVisa {
-  constructor(private root: root,  private user: User<any>) {
+export class AccountVisaImpl<root extends AccountEntityReference> implements AccountVisa {
+  constructor(private root: root, private user: UserEntityReference) {
   }  
+  
   async determineIf(func:((permissions:AccountPermissions) => boolean)) :  Promise<boolean> {
-    let contact = (await this.root.contacts()).find(c => c.id === this.user.id);
-    let roleId = contact.roleId
-    let contactRole = this.root.roles.find((role) => role.id === roleId );
-    let accountPermissions =  contactRole.permissions.accountPermissions;
+    const roleId = (await this.root.contacts()).find(x => x.user.id === this.user.id).roleId;
+    const contactRole = this.root.roles.find((role) => role.id === roleId);
+    const accountPermissions =  contactRole.permissions.accountPermissions;
+
     return func(accountPermissions);
   }
 }

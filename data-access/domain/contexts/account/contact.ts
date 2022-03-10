@@ -1,4 +1,6 @@
 import { Entity, EntityProps } from '../../shared/entity';
+import { DomainExecutionContext } from '../context';
+import { AccountVisa } from '../iam/account-visa';
 import { User, UserEntityReference, UserProps } from '../user/user';
 import { Role, RoleEntityReference, RoleProps} from './role';
 
@@ -17,14 +19,14 @@ export interface ContactEntityReference extends Readonly<Omit<ContactProps, 'add
 }
 
 export class Contact<props extends ContactProps> extends Entity<ContactProps> implements ContactEntityReference {
-  constructor(props: props) {
+  constructor(props: props, private visa:AccountVisa, private context:DomainExecutionContext) {
     super(props);
   }
   get id(): string { return this.props.id; }
   get firstName(): string { return this.props.firstName; }
   get lastName(): string { return this.props.lastName; }
   get roleId(): string { return this.props.roleId; }
-  get user(): UserEntityReference { return this.props.user; }
+  get user(): UserEntityReference {return new User(this.props.user,this.context);}
   get createdAt(): Date { return this.props.createdAt; }
   get updatedAt(): Date { return this.props.updatedAt; }
 }

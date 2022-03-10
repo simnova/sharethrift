@@ -64,7 +64,16 @@ const account : Resolvers = {
     updateAccount: async (parent, args, context, info) => {
       console.log(`Resolver>Mutation>updateAccount ${args.input.id}`)
       return (await context.dataSources.accountDomainAPI.updateAccount(args.input)) as Account;
+    },
+    accountAddRole: async (parent, args, context, info) => {
+      console.log(`Resolver>Mutation>updateAccount ${args.input.accountHandle}`)
+      return (await context.dataSources.accountDomainAPI.accountAddRole(args.input)) as Account;
+    },
+    accountUpdateRole: async (parent, args, context, info) => {
+      console.log(`Resolver>Mutation>updateAccount ${args.input.accountHandle}`)
+      return (await context.dataSources.accountDomainAPI.accountUpdateRole(args.input)) as Account;
     }
+
   }
 };
 export default account;

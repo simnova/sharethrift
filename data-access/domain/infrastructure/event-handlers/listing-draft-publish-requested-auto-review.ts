@@ -7,7 +7,7 @@ export default () => { NodeEventBus.register(ListingDraftPublishRequestedEvent, 
 
   console.log(`ListingDraftPublishRequestedEvent -> Auto Review Handler - Called with Payload: ${JSON.stringify(payload)} and UserId: ${payload.listingId}`);
   
-  await ListingUnitOfWork.withTransaction(async (repo) => {
+  await ListingUnitOfWork.withTransaction(payload.context, async (repo) => {
 
     let listing = await repo.get(payload.listingId);
     if(!listing) {

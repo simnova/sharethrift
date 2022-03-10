@@ -5,17 +5,22 @@ import { TypeConverter } from '../../shared/type-converter';
 import { EntityProps } from '../../shared/entity';
 import { EventBus } from '../../shared/event-bus';
 import { DomainEvent } from '../../shared/domain-event';
+import { ExecutionContext } from '../../shared/execution-context';
 
-export abstract class MongoRepositoryBase<MongoType extends Document,PropType extends EntityProps,DomainType extends AggregateRoot<PropType>> implements Repository<DomainType> {
+export abstract class MongoRepositoryBase<ContextType extends ExecutionContext, MongoType extends Document,PropType extends EntityProps,DomainType extends AggregateRoot<PropType>> implements Repository<DomainType> {
   protected itemsInTransaction:DomainType[] = [];
   constructor(
     protected eventBus: EventBus,
     protected model : Model<MongoType>, 
-    public typeConverter:TypeConverter<MongoType,DomainType,PropType>, 
-    protected session:ClientSession) {}
+    public typeConverter:TypeConverter<MongoType,DomainType,PropType,ContextType>, 
+    protected session:ClientSession,
+    protected context:ContextType
+    ) {}
+    
   
   async get(id: string): Promise<DomainType> {
-    return this.typeConverter.toDomain(await this.model.findById(id,null,{session:this.session}).exec());
+   // return this.typeConverter.toDomain(await this.model.findById(id,null,{session:this.session}).exec(),this.context); //including session restricts the transcation to a single query -.. bad idea
+   return this.typeConverter.toDomain(await this.model.findById(id).exec(),this.context);
   }
 
   async save(item: DomainType): Promise<DomainType> {
@@ -28,7 +33,7 @@ export abstract class MongoRepositoryBase<MongoType extends Document,PropType ex
     item.clearDomainEvents();
     this.itemsInTransaction.push(item);
     try {
-      return this.typeConverter.toDomain(await this.typeConverter.toMongo(item).save({session:this.session}));
+      return this.typeConverter.toDomain(await this.typeConverter.toMongo(item).save({session:this.session}),this.context);
     } catch (error) {
       console.log(`Error saving item : ${error}`);
       throw error;
@@ -43,13 +48,14 @@ export abstract class MongoRepositoryBase<MongoType extends Document,PropType ex
     return integrationEventsGroup.reduce((acc,curr) => acc.concat(curr),[]);
   }
 
-  static create<MongoType extends Document,PropType extends EntityProps, DomainType extends AggregateRoot<PropType>, RepoType extends MongoRepositoryBase<MongoType,PropType,DomainType>>(
+  static create<ContextType extends ExecutionContext, MongoType extends Document,PropType extends EntityProps, DomainType extends AggregateRoot<PropType>, RepoType extends MongoRepositoryBase<ContextType,MongoType,PropType,DomainType>>(
     bus: EventBus,
     model: Model<MongoType>, 
-    typeConverter:TypeConverter<MongoType,DomainType,PropType>, 
+    typeConverter:TypeConverter<MongoType,DomainType,PropType,ContextType>, 
     session:ClientSession,
-    repoClass: new(bus:EventBus,model:Model<MongoType>,typeConverter:TypeConverter<MongoType,DomainType,PropType>,session:ClientSession) =>RepoType ): RepoType {
-      return new repoClass(bus,model,typeConverter,session);
+    context:ContextType,
+    repoClass: new(bus:EventBus,model:Model<MongoType>,typeConverter:TypeConverter<MongoType,DomainType,PropType,ContextType>,session:ClientSession,context:ContextType) =>RepoType ): RepoType {
+      return new repoClass(bus,model,typeConverter,session,context);
   }
 }
 /*

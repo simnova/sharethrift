@@ -93,6 +93,12 @@ export type Account = MongoBase & {
 export type AccountPermissions = {
   __typename?: "AccountPermissions";
   canManageRolesAndPermissions: Scalars["Boolean"];
+  canManageAccountSettings: Scalars["Boolean"];
+};
+
+export type AccountPermissionsInput = {
+  canManageRolesAndPermissions: Scalars["Boolean"];
+  canManageAccountSettings: Scalars["Boolean"];
 };
 
 export type AccountUpdateInput = {
@@ -218,6 +224,10 @@ export type ListingPermissions = {
   canManageListings: Scalars["Boolean"];
 };
 
+export type ListingPermissionsInput = {
+  canManageListings: Scalars["Boolean"];
+};
+
 export type Location = MongoBase & {
   __typename?: "Location";
   position?: Maybe<Point>;
@@ -243,6 +253,8 @@ export type Mutation = {
   __typename?: "Mutation";
   /** IGNORE: Dummy field necessary for the Mutation type to be valid */
   _empty?: Maybe<Scalars["String"]>;
+  accountAddRole?: Maybe<Account>;
+  accountUpdateRole?: Maybe<Account>;
   createCategory?: Maybe<Category>;
   createListing?: Maybe<CreateListingPayload>;
   createNewListing?: Maybe<CreateListingPayload>;
@@ -253,6 +265,16 @@ export type Mutation = {
   updateDraft?: Maybe<Listing>;
   /** Allows the user to update their profile */
   updateUser?: Maybe<User>;
+};
+
+/**  Base Mutation Type definition - all mutations will be defined in separate files extending this type  */
+export type MutationAccountAddRoleArgs = {
+  input: RoleAddInput;
+};
+
+/**  Base Mutation Type definition - all mutations will be defined in separate files extending this type  */
+export type MutationAccountUpdateRoleArgs = {
+  input: RoleUpdateInput;
 };
 
 /**  Base Mutation Type definition - all mutations will be defined in separate files extending this type  */
@@ -299,6 +321,11 @@ export type Permissions = {
   __typename?: "Permissions";
   listingPermissions: ListingPermissions;
   accountPermissions: AccountPermissions;
+};
+
+export type PermissionsInput = {
+  listingPermissions: ListingPermissionsInput;
+  accountPermissions: AccountPermissionsInput;
 };
 
 export type Photo = {
@@ -380,6 +407,19 @@ export type Role = {
   id: Scalars["ObjectID"];
   updatedAt?: Maybe<Scalars["DateTime"]>;
   createdAt?: Maybe<Scalars["DateTime"]>;
+};
+
+export type RoleAddInput = {
+  accountHandle: Scalars["String"];
+  roleName: Scalars["String"];
+  permissions: PermissionsInput;
+};
+
+export type RoleUpdateInput = {
+  accountHandle: Scalars["String"];
+  id: Scalars["ObjectID"];
+  roleName: Scalars["String"];
+  permissions: PermissionsInput;
 };
 
 export type UpdateCategory = {
@@ -519,6 +559,7 @@ export type ResolversTypes = ResolversObject<{
   String: ResolverTypeWrapper<Scalars["String"]>;
   AccountPermissions: ResolverTypeWrapper<AccountPermissions>;
   Boolean: ResolverTypeWrapper<Scalars["Boolean"]>;
+  AccountPermissionsInput: AccountPermissionsInput;
   AccountUpdateInput: AccountUpdateInput;
   Address: ResolverTypeWrapper<Address>;
   BigInt: ResolverTypeWrapper<Scalars["BigInt"]>;
@@ -555,6 +596,7 @@ export type ResolversTypes = ResolversObject<{
   ID: ResolverTypeWrapper<Scalars["ID"]>;
   ListingNewDraft: ListingNewDraft;
   ListingPermissions: ResolverTypeWrapper<ListingPermissions>;
+  ListingPermissionsInput: ListingPermissionsInput;
   LocalDate: ResolverTypeWrapper<Scalars["LocalDate"]>;
   LocalEndTime: ResolverTypeWrapper<Scalars["LocalEndTime"]>;
   LocalTime: ResolverTypeWrapper<Scalars["LocalTime"]>;
@@ -579,6 +621,7 @@ export type ResolversTypes = ResolversObject<{
   NonPositiveInt: ResolverTypeWrapper<Scalars["NonPositiveInt"]>;
   ObjectID: ResolverTypeWrapper<Scalars["ObjectID"]>;
   Permissions: ResolverTypeWrapper<Permissions>;
+  PermissionsInput: PermissionsInput;
   PhoneNumber: ResolverTypeWrapper<Scalars["PhoneNumber"]>;
   Photo: ResolverTypeWrapper<Photo>;
   Int: ResolverTypeWrapper<Scalars["Int"]>;
@@ -592,6 +635,8 @@ export type ResolversTypes = ResolversObject<{
   RGB: ResolverTypeWrapper<Scalars["RGB"]>;
   RGBA: ResolverTypeWrapper<Scalars["RGBA"]>;
   Role: ResolverTypeWrapper<Role>;
+  RoleAddInput: RoleAddInput;
+  RoleUpdateInput: RoleUpdateInput;
   SafeInt: ResolverTypeWrapper<Scalars["SafeInt"]>;
   Time: ResolverTypeWrapper<Scalars["Time"]>;
   Timestamp: ResolverTypeWrapper<Scalars["Timestamp"]>;
@@ -613,6 +658,7 @@ export type ResolversParentTypes = ResolversObject<{
   String: Scalars["String"];
   AccountPermissions: AccountPermissions;
   Boolean: Scalars["Boolean"];
+  AccountPermissionsInput: AccountPermissionsInput;
   AccountUpdateInput: AccountUpdateInput;
   Address: Address;
   BigInt: Scalars["BigInt"];
@@ -648,6 +694,7 @@ export type ResolversParentTypes = ResolversObject<{
   ID: Scalars["ID"];
   ListingNewDraft: ListingNewDraft;
   ListingPermissions: ListingPermissions;
+  ListingPermissionsInput: ListingPermissionsInput;
   LocalDate: Scalars["LocalDate"];
   LocalEndTime: Scalars["LocalEndTime"];
   LocalTime: Scalars["LocalTime"];
@@ -672,6 +719,7 @@ export type ResolversParentTypes = ResolversObject<{
   NonPositiveInt: Scalars["NonPositiveInt"];
   ObjectID: Scalars["ObjectID"];
   Permissions: Permissions;
+  PermissionsInput: PermissionsInput;
   PhoneNumber: Scalars["PhoneNumber"];
   Photo: Photo;
   Int: Scalars["Int"];
@@ -685,6 +733,8 @@ export type ResolversParentTypes = ResolversObject<{
   RGB: Scalars["RGB"];
   RGBA: Scalars["RGBA"];
   Role: Role;
+  RoleAddInput: RoleAddInput;
+  RoleUpdateInput: RoleUpdateInput;
   SafeInt: Scalars["SafeInt"];
   Time: Scalars["Time"];
   Timestamp: Scalars["Timestamp"];
@@ -753,6 +803,11 @@ export type AccountPermissionsResolvers<
   ParentType extends ResolversParentTypes["AccountPermissions"] = ResolversParentTypes["AccountPermissions"]
 > = ResolversObject<{
   canManageRolesAndPermissions?: Resolver<
+    ResolversTypes["Boolean"],
+    ParentType,
+    ContextType
+  >;
+  canManageAccountSettings?: Resolver<
     ResolversTypes["Boolean"],
     ParentType,
     ContextType
@@ -1202,6 +1257,18 @@ export type MutationResolvers<
   ParentType extends ResolversParentTypes["Mutation"] = ResolversParentTypes["Mutation"]
 > = ResolversObject<{
   _empty?: Resolver<Maybe<ResolversTypes["String"]>, ParentType, ContextType>;
+  accountAddRole?: Resolver<
+    Maybe<ResolversTypes["Account"]>,
+    ParentType,
+    ContextType,
+    RequireFields<MutationAccountAddRoleArgs, "input">
+  >;
+  accountUpdateRole?: Resolver<
+    Maybe<ResolversTypes["Account"]>,
+    ParentType,
+    ContextType,
+    RequireFields<MutationAccountUpdateRoleArgs, "input">
+  >;
   createCategory?: Resolver<
     Maybe<ResolversTypes["Category"]>,
     ParentType,

@@ -24,8 +24,8 @@ export class Users extends DomainDataSource<Context,User,PropType,DomainType,Rep
       if(!domainObject || domainObject.externalId !== this.context.VerifiedUser.VerifiedJWT.sub) {
         throw new Error('Unauthorized');
       }
-      domainObject.setFirstName(user.firstName);
-      domainObject.setLastName(user.lastName);
+      await domainObject.setFirstName(user.firstName);
+      await domainObject.setLastName(user.lastName);
       result = (new UserConverter()).toMongo(await repo.save(domainObject));
     });
     return result;
@@ -50,12 +50,12 @@ export class Users extends DomainDataSource<Context,User,PropType,DomainType,Rep
       if(userExists) {
         userToReturn = userConverter.toMongo(userExists);
       }else{
-        let newUser = repo.getNewInstance(
+        let newUser = await repo.getNewInstance(
           userExternalId,
           userFirstName,
           userLastName);
         if(userEmail) {
-          newUser.setEmail(userEmail);
+          await newUser.setEmail(userEmail);
         }
         userToReturn = userConverter.toMongo(await repo.save(newUser));
       }

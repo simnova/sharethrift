@@ -9,6 +9,7 @@ export interface ListingPermissions {
 export interface AccountPermissions {
   id: ObjectId;
   canManageRolesAndPermissions: boolean;
+  canManageAccountSettings: boolean;
 }
 export interface Permissions {
   id: ObjectId;
@@ -59,15 +60,16 @@ export const AccountModel = model<Account>('Account',new Schema<Account, Model<A
       updatedAt: { type: Date, default: Date.now }
     }],
     roles: [{
-      roleName: { type: String, required: true },
+      roleName: { type: String, required: true, maxlength: 50 },
       isDefault: { type: Boolean, required: true },
       permissions: {
         listingPermissions: {
-          canManageListings: { type: Boolean, required: true }
+          canManageListings: { type: Boolean, required: true , default: false }
         },
         accountPermissions: {
-          canManageRolesAndPermissions: { type: Boolean, required: true }
-        }
+          canManageRolesAndPermissions: { type: Boolean, required: true , default: false },
+          canManageAccountSettings: { type: Boolean, required: true, default: false }
+        }     
       },
       createdAt: { type: Date, default: Date.now },
       updatedAt: { type: Date, default: Date.now }

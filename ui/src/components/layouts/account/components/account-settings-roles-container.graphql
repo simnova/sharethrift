@@ -4,6 +4,19 @@ query AccountSettingsRolesContainerAccountGetByHandle($handle: String!) {
   }
 }
 
+mutation AccountSettingsRolesContainerAccountAddRole($input: RoleAddInput!) {
+  accountAddRole(input: $input) {
+    id
+  }
+}
+
+mutation AccountSettingsRolesContainerAccountUpdateRole($input: RoleUpdateInput!) {
+  accountUpdateRole(input: $input) {
+    id
+  }
+}
+
+
 fragment AccountSettingsRolesContainerAccountGetByHandleFields on Account {
   id
   schemaVersion
@@ -21,6 +34,7 @@ fragment AccountSettingsRolesContainerAccountGetByHandleFields on Account {
       }
       accountPermissions {
         canManageRolesAndPermissions
+        canManageAccountSettings
       }
     }
 
