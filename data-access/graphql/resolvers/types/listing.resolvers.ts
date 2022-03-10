@@ -52,7 +52,7 @@ const listing : Resolvers = {
   Query: {    
 
     listing : async (parent, args, context, info)  => {
-      info.cacheControl.setCacheHint({ maxAge: 60,scope: CacheScope.Public });
+//      info.cacheControl.setCacheHint({ maxAge: 60,scope: CacheScope.Public });
       console.log(`Resolver>Query>listing ${args.id}`)
       return (await context.dataSources.listingAPI.getListing(args.id)) as Listing;
     },
@@ -84,7 +84,6 @@ const listing : Resolvers = {
       var newListing = (await context.dataSources.listingDomainAPI.addNewListing(args.input)) as Listing ;
       return  {listing: newListing} as CreateListingPayload;
     },
-
     createListing: async (parent, args, context, info) => {
       var newListing = (await context.dataSources.listingDomainAPI.addListing(args.input)) as Listing ;
       return  {listing: newListing} as CreateListingPayload;

@@ -41,7 +41,11 @@ export const ListingsList: React.FC<any> = (props) => {
 
   return (<>
     <div>
-      <Table columns={columns} dataSource={props.data} />
+      <Table 
+        columns={columns} 
+        dataSource={props.data}
+        rowKey={(record: any) => record.id}
+      />
     </div>
   </>)
 }

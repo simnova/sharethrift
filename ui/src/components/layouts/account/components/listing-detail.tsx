@@ -6,7 +6,6 @@ export const ListingDetail: React.FC<any> = (props) => {
   const [form] = Form.useForm();
   return (
     <div>
-    {JSON.stringify(props.data)}
     <Form
       layout='vertical'
       initialValues={props.data}
@@ -45,9 +44,6 @@ export const ListingDetail: React.FC<any> = (props) => {
       <Form.Item
         label="Tags"
         name={['draft', 'tags']}
-        rules={[
-          { required: true, message: 'Please select a Category!' },
-        ]}
       >
         <ListingDraftTags />
       </Form.Item>

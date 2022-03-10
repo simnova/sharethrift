@@ -152,7 +152,6 @@ export class Draft extends Entity<DraftProps> implements DraftEntityReference {
     if(this.getCurrentStatus()!=DraftStatusCodes.Draft){
       throw new Error('Cannot update category unless in draft status');
     }
-
     this.props.primaryCategory = category;
   }
 

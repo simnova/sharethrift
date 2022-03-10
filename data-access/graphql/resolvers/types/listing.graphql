@@ -41,6 +41,7 @@ input ListingDraft {
   description: String
   tags: [String]
   primaryCategory: ObjectID
+  
 }
 input ListingNewDraft {
   accountHandle: String!

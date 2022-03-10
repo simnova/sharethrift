@@ -41,8 +41,6 @@ export const ListingDraftTags : FC<ComponentProps> = ({
     }
   }, [inputVisible]);
 
-
-
   const showInput = () => {
     setInputVisible(true);
   };
