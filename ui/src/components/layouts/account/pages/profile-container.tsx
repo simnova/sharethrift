@@ -1,4 +1,4 @@
-import { PageHeader } from "antd";
+import { message, PageHeader, Skeleton } from "antd";
 import { useMutation, useQuery } from "@apollo/client";
 import { ProfileContainerUserUpdateDocument, ProfileContainerUserDocument, UserUpdateInput } from "../../../../generated";
 import { SubPageLayout } from "../sub-page-layout";
@@ -8,18 +8,28 @@ export const ProfileContainer: React.FC<any> = () => {
   const [updateProfile, { data, loading, error }] = useMutation(ProfileContainerUserUpdateDocument);  
   const { data: userData, loading: userLoading, error: userError } = useQuery(ProfileContainerUserDocument);
 
-  const handleSave = (values: UserUpdateInput) => {
+  const handleSave = async (values: UserUpdateInput) => {
     values.id = userData!.currentUser!.id;
-    updateProfile({
-      variables: {
-        input:values
-      }
-    });
+    try {
+      await updateProfile({
+        variables: {
+          input:values
+        },
+        refetchQueries: [
+          {
+            query:ProfileContainerUserDocument,
+          }
+        ]
+      });
+      message.success("Saved");
+    } catch (error) {
+      message.error(`Error updating user: ${JSON.stringify(error)}`);
+    }
   }
 
   const content = () => {
-    if(loading || userLoading) {
-      return <div>Loading...</div>
+    if(userLoading) {
+      return <div><Skeleton active /></div>
     } else if(error || userError) {
       return <div>{error}{userError}</div>
     } else {

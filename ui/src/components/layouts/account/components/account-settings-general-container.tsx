@@ -2,6 +2,8 @@ import { useMutation, useQuery } from "@apollo/client";
 import { AccountSettingsGeneralContainerAccountGetByHandleDocument,AccountSettingsGeneralContainerUpdateAccountDocument, AccountUpdateInput } from "../../../../generated";
 import { AccountSettingsGeneral,  AccountSettingsGeneralPropTypes} from "./account-settings-general";
 import PropTypes  from "prop-types";
+import { message,Skeleton } from "antd";
+import { SubPageLayout } from "../sub-page-layout";
 
 const ComponentPropTypes = {
   data: PropTypes.shape({
@@ -25,18 +27,32 @@ export const AccountSettingsGeneralContainer: React.FC<AccountSettingsGeneralCon
       }
     });
 
-  const handleSave = (values: AccountUpdateInput) => {
+  const handleSave = async (values: AccountUpdateInput) => {
     values.id = accountData!.accountGetByHandle!.id;
-    updateAccout({
-      variables: {
-        input:values
-      }
-    });
+    try {
+      await updateAccout({
+        variables: {
+          input:values
+        },
+        refetchQueries: [
+          {
+            query: AccountSettingsGeneralContainerAccountGetByHandleDocument,
+            variables: {
+              handle: props.data.handle
+            }
+          }
+        ]
+      });
+      message.success("Saved");
+    } catch (error) {
+      message.error(`Error updating user: ${JSON.stringify(error)}`);
+    }
+
   }
 
   const content = () => {
-    if(loading || accountLoading) {
-      return <div>Loading...</div>
+    if(accountLoading) {
+      return <div><Skeleton active /></div>
     } else if(error || accountError) {
       return <div>{error}{accountError}</div>
     } else if(accountData && accountData.accountGetByHandle) {

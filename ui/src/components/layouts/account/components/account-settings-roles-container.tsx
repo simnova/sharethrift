@@ -1,7 +1,7 @@
 import { useMutation, useQuery } from "@apollo/client";
 import { AccountSettingsRolesContainerAccountGetByHandleDocument,AccountSettingsRolesContainerAccountGetByHandleQuery, AccountSettingsRolesContainerAccountAddRoleDocument, RoleAddInput, AccountSettingsRolesContainerAccountUpdateRoleDocument, RoleUpdateInput } from "../../../../generated";
 import { AccountSettingsRoles} from "./account-settings-roles";
-import { message } from "antd";
+import { message, Skeleton } from "antd";
 
 export const AccountSettingsRolesContainer: React.FC<any> = (props) => {
   const [addRole, { data, loading, error }] = useMutation(AccountSettingsRolesContainerAccountAddRoleDocument);  
@@ -58,12 +58,10 @@ export const AccountSettingsRolesContainer: React.FC<any> = (props) => {
   }
 
   if(accountLoading) {
-    return <div>Loading...</div>
-  }
-  if(accountError) {
+    return <div><Skeleton active /></div>
+  }else if(accountError) {
     return <div>{JSON.stringify(accountError)}</div>
-  }
-  if(accountData && accountData.accountGetByHandle) {
+  }else if(accountData && accountData.accountGetByHandle) {
     return <AccountSettingsRoles data={accountData.accountGetByHandle.roles} onSave={handleSave} onUpdate={handleUpdate} />
   } else {
     return <div>No Data...</div>

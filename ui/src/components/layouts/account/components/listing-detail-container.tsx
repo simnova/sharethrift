@@ -1,7 +1,7 @@
 import { ListingDetailContainerListingsDocument, ListingDetailContainerUpdateDraftDocument,ListingDetailContainerPublishDraftDocument } from "../../../../generated";
 import { useQuery, useMutation } from "@apollo/client";
 import { ListingDetail } from "./listing-detail";
-import { message } from 'antd';
+import { message, PageHeader, Skeleton } from 'antd';
 
 export const ListingDetailContainer: React.FC<any> = (props) => {
   const { data: listingData, loading: listingLoading, error: listingError } = useQuery(ListingDetailContainerListingsDocument,{
@@ -45,13 +45,22 @@ export const ListingDetailContainer: React.FC<any> = (props) => {
     });
   }
 
-  if(listingLoading ) {
-    return <div>Loading...</div>
-  } else if(listingError || error) {
-    return <div>{JSON.stringify(listingError)} {JSON.stringify(error)}</div>
-  } else if(listingData && listingData.listing ) {
-    return <ListingDetail data={listingData.listing} onSave={handleSave} onPublish={handlePublish} />
-  } else {
-    return <div>No Data...</div>
+  const content = () => {
+    if(listingLoading ) {
+      return <div><Skeleton active /></div>
+    } else if(listingError || error) {
+      return <div>{JSON.stringify(listingError)} {JSON.stringify(error)}</div>
+    } else if(listingData && listingData.listing ) {
+      return <ListingDetail data={listingData.listing} onSave={handleSave} onPublish={handlePublish} />
+    } else {
+      return <div>No Data...</div>
+    }
   }
+
+  return (<>
+      <h1>Listing Detail</h1>
+      {content()}
+  </>
+
+  )
 }

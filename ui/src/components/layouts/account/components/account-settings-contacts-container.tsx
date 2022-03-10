@@ -1,6 +1,7 @@
 import { useMutation, useQuery } from "@apollo/client";
 import { AccountSettingsContactsContainerAccountGetByHandleDocument, AccountSettingsContactsContainerAccountGetByHandleQuery } from "../../../../generated";
 import { AccountSettingsContacts} from "./account-settings-contacts";
+import { Skeleton } from "antd";
 
 export const AccountSettingsContactsContainer: React.FC<any> = (props) => {
   const { data: accountData, loading: accountLoading, error: accountError } = useQuery(AccountSettingsContactsContainerAccountGetByHandleDocument,{
@@ -10,7 +11,7 @@ export const AccountSettingsContactsContainer: React.FC<any> = (props) => {
   });
 
   if(accountLoading) {
-    return <div>Loading...</div>
+    return <div><Skeleton active /></div>
   }
   if(accountError) {
     return <div>{JSON.stringify(accountError)}</div>

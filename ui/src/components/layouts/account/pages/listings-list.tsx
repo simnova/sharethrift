@@ -13,10 +13,16 @@ export const ListingsList: React.FC<any> = (props) => {
     <>
       <SubPageLayout
         fixedHeader={false}
-        header={<PageHeader title="Listings"  />}
+        header={
+          <PageHeader 
+            title="Listings" 
+            extra={[
+              <Button type="primary" onClick={() => navigate('new')}>Add New</Button>
+
+            ]}
+         />}
         >
           <ListingsListContainer data={{handle:params.handle}} />
-          <Button type="primary" onClick={() => navigate('new')}>Add New</Button>
 
       </SubPageLayout>
       

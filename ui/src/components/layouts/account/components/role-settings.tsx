@@ -3,7 +3,7 @@ import { Form, Descriptions, Input, Button, Checkbox } from 'antd';
 export const RoleSettings: React.FC<any> = (props) => {
   const [form] = Form.useForm();
   if(!props.data) {
-    return <div>No Data</div>
+    return <div></div>
   }
   return  <>
     <h1>Profile</h1>

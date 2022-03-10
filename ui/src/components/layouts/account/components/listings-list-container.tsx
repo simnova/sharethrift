@@ -1,6 +1,7 @@
 import { useMutation, useQuery } from "@apollo/client";
 import { ListingsListListingsByAccountHandleDocument } from "../../../../generated";
 import { ListingsList} from "./listings-list";
+import { Skeleton } from "antd";
 
 export const ListingsListContainer: React.FC<any> = (props) => {
   const { data: listingData, loading: listingLoading, error: listingError } = useQuery(ListingsListListingsByAccountHandleDocument,{
@@ -10,7 +11,7 @@ export const ListingsListContainer: React.FC<any> = (props) => {
   });
 
   if(listingLoading) {
-    return <div>Loading...</div>
+    return <div><Skeleton active /></div>
   }
   if(listingError) {
     return <div>{JSON.stringify(listingError)}</div>
