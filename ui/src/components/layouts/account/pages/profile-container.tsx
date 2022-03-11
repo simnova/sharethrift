@@ -33,8 +33,14 @@ export const ProfileContainer: React.FC<any> = () => {
       return <div><Skeleton active /></div>
     } else if(error || userError) {
       return <div>{error}{userError}</div>
-    } else {
-      return <Profile onSave={handleSave} data={userData?.currentUser} />
+    } else if(userData && userData.currentUser) {
+      return <div>
+        <Profile onSave={handleSave} data={userData?.currentUser} />
+        <h2>Profile Image</h2>
+        <ProfilePhotoUploadContainer userId={userData!.currentUser!.id} />
+        </div>
+    }else {
+      return <div>No data</div>
     }
   }
 
@@ -42,7 +48,7 @@ export const ProfileContainer: React.FC<any> = () => {
     <SubPageLayout header={<PageHeader title="Profile" />}>
         
         {content()}
-        <ProfilePhotoUploadContainer />
+       
     </SubPageLayout>
   </>
   

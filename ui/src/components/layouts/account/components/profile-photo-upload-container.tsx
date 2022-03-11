@@ -1,6 +1,7 @@
 import { ProfilePhotoUpload, AuthResult } from "./profile-photo-upload";
 import { PhotoUploadContainerUserCreateAuthHeaderForProfilePhotoDocument } from "../../../../generated";
 import { useMutation } from "@apollo/client";
+import { Image } from "antd";
 
 export const ProfilePhotoUploadContainer: React.FC<any> = (props) => {
   const [createAuthHeaderForProfilePhoto] = useMutation(PhotoUploadContainerUserCreateAuthHeaderForProfilePhotoDocument);
@@ -18,9 +19,14 @@ export const ProfilePhotoUploadContainer: React.FC<any> = (props) => {
   }
 
   return (
+    <>
+    Current Image: <br/>
+    <Image src={`${blobPath}/${props.userId}`} style={{maxWidth:'100px', maxHeight:'100px'}} /><br/>
+
     <ProfilePhotoUpload
      blobPath={blobPath}
      authorizeRequest={handleAuthorizeRequest}
     />
+    </>
   )
 }
