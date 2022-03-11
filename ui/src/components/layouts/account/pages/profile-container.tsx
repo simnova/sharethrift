@@ -3,6 +3,7 @@ import { useMutation, useQuery } from "@apollo/client";
 import { ProfileContainerUserUpdateDocument, ProfileContainerUserDocument, UserUpdateInput } from "../../../../generated";
 import { SubPageLayout } from "../sub-page-layout";
 import { Profile } from "./profile";
+import { ProfilePhotoUploadContainer } from "../components/profile-photo-upload-container";
 
 export const ProfileContainer: React.FC<any> = () => {
   const [updateProfile, { data, loading, error }] = useMutation(ProfileContainerUserUpdateDocument);  
@@ -39,7 +40,9 @@ export const ProfileContainer: React.FC<any> = () => {
 
   return <>
     <SubPageLayout header={<PageHeader title="Profile" />}>
+        
         {content()}
+        <ProfilePhotoUploadContainer />
     </SubPageLayout>
   </>
   

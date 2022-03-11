@@ -257,6 +257,7 @@ export type Mutation = {
   updateDraft?: Maybe<Listing>;
   /** Allows the user to update their profile */
   updateUser?: Maybe<User>;
+  userCreateAuthHeaderForProfilePhoto: UserCreateAuthHeaderForProfilePhotoOutput;
 };
 
 /**  Base Mutation Type definition - all mutations will be defined in separate files extending this type  */
@@ -307,6 +308,11 @@ export type MutationUpdateDraftArgs = {
 /**  Base Mutation Type definition - all mutations will be defined in separate files extending this type  */
 export type MutationUpdateUserArgs = {
   input: UserUpdateInput;
+};
+
+/**  Base Mutation Type definition - all mutations will be defined in separate files extending this type  */
+export type MutationUserCreateAuthHeaderForProfilePhotoArgs = {
+  input: UserProfilePhotoImageInput;
 };
 
 export type Permissions = {
@@ -424,10 +430,25 @@ export type User = MongoBase & {
   firstName?: Maybe<Scalars["String"]>;
   lastName?: Maybe<Scalars["String"]>;
   email?: Maybe<Scalars["EmailAddress"]>;
+  externalId?: Maybe<Scalars["String"]>;
   id: Scalars["ObjectID"];
   schemaVersion?: Maybe<Scalars["String"]>;
   createdAt?: Maybe<Scalars["DateTime"]>;
   updatedAt?: Maybe<Scalars["DateTime"]>;
+};
+
+export type UserCreateAuthHeaderForProfilePhotoOutput = {
+  __typename?: "UserCreateAuthHeaderForProfilePhotoOutput";
+  authHeader?: Maybe<Scalars["String"]>;
+  blobName?: Maybe<Scalars["String"]>;
+  requestDate?: Maybe<Scalars["String"]>;
+  isAuthorized?: Maybe<Scalars["Boolean"]>;
+  errorMessage?: Maybe<Scalars["String"]>;
+};
+
+export type UserProfilePhotoImageInput = {
+  contentType?: Maybe<Scalars["String"]>;
+  contentLength?: Maybe<Scalars["Int"]>;
 };
 
 export type UserUpdateInput = {
@@ -936,6 +957,23 @@ export type ListingsListListingsByAccountHandleFieldsFragment = {
   draft?: Maybe<{ __typename?: "Draft"; title?: Maybe<string> }>;
 };
 
+export type PhotoUploadContainerUserCreateAuthHeaderForProfilePhotoMutationVariables =
+  Exact<{
+    input: UserProfilePhotoImageInput;
+  }>;
+
+export type PhotoUploadContainerUserCreateAuthHeaderForProfilePhotoMutation = {
+  __typename?: "Mutation";
+  userCreateAuthHeaderForProfilePhoto: {
+    __typename?: "UserCreateAuthHeaderForProfilePhotoOutput";
+    authHeader?: Maybe<string>;
+    blobName?: Maybe<string>;
+    requestDate?: Maybe<string>;
+    isAuthorized?: Maybe<boolean>;
+    errorMessage?: Maybe<string>;
+  };
+};
+
 export type ProfileContainerUserQueryVariables = Exact<{
   [key: string]: never;
 }>;
@@ -1092,6 +1130,7 @@ export type LoggedInUserContainerCurrentUserQueryQuery = {
 export type LoggedInUserContainerCurrentUserFieldsFragment = {
   __typename?: "User";
   id: any;
+  externalId?: Maybe<string>;
   firstName?: Maybe<string>;
   lastName?: Maybe<string>;
 };
@@ -1685,6 +1724,7 @@ export const LoggedInUserContainerCurrentUserFieldsFragmentDoc = {
         kind: "SelectionSet",
         selections: [
           { kind: "Field", name: { kind: "Name", value: "id" } },
+          { kind: "Field", name: { kind: "Name", value: "externalId" } },
           { kind: "Field", name: { kind: "Name", value: "firstName" } },
           { kind: "Field", name: { kind: "Name", value: "lastName" } },
         ],
@@ -2614,6 +2654,76 @@ export const ListingsListListingsByAccountHandleDocument = {
 } as unknown as DocumentNode<
   ListingsListListingsByAccountHandleQuery,
   ListingsListListingsByAccountHandleQueryVariables
+>;
+export const PhotoUploadContainerUserCreateAuthHeaderForProfilePhotoDocument = {
+  kind: "Document",
+  definitions: [
+    {
+      kind: "OperationDefinition",
+      operation: "mutation",
+      name: {
+        kind: "Name",
+        value: "PhotoUploadContainerUserCreateAuthHeaderForProfilePhoto",
+      },
+      variableDefinitions: [
+        {
+          kind: "VariableDefinition",
+          variable: {
+            kind: "Variable",
+            name: { kind: "Name", value: "input" },
+          },
+          type: {
+            kind: "NonNullType",
+            type: {
+              kind: "NamedType",
+              name: { kind: "Name", value: "UserProfilePhotoImageInput" },
+            },
+          },
+        },
+      ],
+      selectionSet: {
+        kind: "SelectionSet",
+        selections: [
+          {
+            kind: "Field",
+            name: {
+              kind: "Name",
+              value: "userCreateAuthHeaderForProfilePhoto",
+            },
+            arguments: [
+              {
+                kind: "Argument",
+                name: { kind: "Name", value: "input" },
+                value: {
+                  kind: "Variable",
+                  name: { kind: "Name", value: "input" },
+                },
+              },
+            ],
+            selectionSet: {
+              kind: "SelectionSet",
+              selections: [
+                { kind: "Field", name: { kind: "Name", value: "authHeader" } },
+                { kind: "Field", name: { kind: "Name", value: "blobName" } },
+                { kind: "Field", name: { kind: "Name", value: "requestDate" } },
+                {
+                  kind: "Field",
+                  name: { kind: "Name", value: "isAuthorized" },
+                },
+                {
+                  kind: "Field",
+                  name: { kind: "Name", value: "errorMessage" },
+                },
+              ],
+            },
+          },
+        ],
+      },
+    },
+  ],
+} as unknown as DocumentNode<
+  PhotoUploadContainerUserCreateAuthHeaderForProfilePhotoMutation,
+  PhotoUploadContainerUserCreateAuthHeaderForProfilePhotoMutationVariables
 >;
 export const ProfileContainerUserDocument = {
   kind: "Document",

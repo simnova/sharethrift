@@ -38,6 +38,7 @@
     "@azure/cognitiveservices-contentmoderator": "^5.0.1",
     "@azure/ms-rest-azure-js": "^2.1.0",
     "@azure/search-documents": "^11.2.1",
+    "@azure/storage-blob": "^12.8.0",
     "@graphql-tools/graphql-file-loader": "^7.1.0",
     "@graphql-tools/json-file-loader": "^7.3.4",
     "@graphql-tools/load": "^7.2.0",
@@ -60,6 +61,7 @@
     "graphql-shield": "^7.5.0",
     "jose": "^4.1.1",
     "mongoose": "^6.0.10",
+    "nanoid": "^3.3.1",
     "openid-client": "^4.8.0",
     "ramda": "^0.27.1",
     "reflect-metadata": "^0.1.13"

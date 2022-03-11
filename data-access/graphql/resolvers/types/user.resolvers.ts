@@ -1,6 +1,8 @@
 import { Resolvers, User } from '../../generated';
 import { CacheScope } from 'apollo-server-types';
-
+import { nanoid } from 'nanoid';
+import { BlobStorage } from '../../../infrastructure/services/blob-storage';
+import { UserCreateAuthHeaderForProfilePhotoOutput } from '../../generated'
 
 const user : Resolvers = {
   Query: {      
@@ -45,6 +47,26 @@ const user : Resolvers = {
     },
     updateUser: async (parent, args, context, info) => {
       return (await context.dataSources.userDomainAPI.updateUser(args.input)) as User;
+    },
+    userCreateAuthHeaderForProfilePhoto: async (parent, args, context, info) => {
+      const maxSizeMb = 10;
+      const maxSizeBytes = maxSizeMb * 1024 * 1024;
+      const permittedContentTypes = [
+        'image/jpeg',
+        'image/png',
+        'image/gif',
+      ];
+      if (!permittedContentTypes.includes(args.input.contentType)) {
+        return {success:false, errorMessage:'Content type not permitted.'} as UserCreateAuthHeaderForProfilePhotoOutput;
+      }
+      if (args.input.contentLength > maxSizeBytes) {
+        return {success:false, errorMessage:'Content length exceeds permitted limit.'} as UserCreateAuthHeaderForProfilePhotoOutput;
+      }
+      var user =  (await context.dataSources.userAPI.getByExternalId(context.VerifiedUser.VerifiedJWT.sub)) as User;
+      var blobName = user.id; // nanoid();
+      var requestDate = new Date().toUTCString();
+      var authHeader = new BlobStorage().generateSharedKey(blobName, args.input.contentLength, requestDate ,args.input.contentType);
+      return {isAuthorized:true, authHeader:authHeader, requestDate:requestDate, blobName:blobName} as UserCreateAuthHeaderForProfilePhotoOutput;
     }
   }  
 }

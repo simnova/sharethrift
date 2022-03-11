@@ -61,7 +61,6 @@ export const AccountLayout: React.FC<any> = (props) => {
       </Sider>
       
       <Layout  style={{display:'flex',flexDirection:'column',flex:'1 auto', overflowY:'scroll', height:'calc(100vh - 64px)'}}>
-
         <Outlet/>
       </Layout>
     </Layout>

@@ -1,0 +1,9 @@
+mutation PhotoUploadContainerUserCreateAuthHeaderForProfilePhoto($input: UserProfilePhotoImageInput!) {
+  userCreateAuthHeaderForProfilePhoto(input: $input) {
+    authHeader
+    blobName
+    requestDate
+    isAuthorized
+    errorMessage
+  }
+}

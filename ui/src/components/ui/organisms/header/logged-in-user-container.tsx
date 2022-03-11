@@ -63,7 +63,8 @@ export const LoggedInUserContainer: React.FC<any> = (props) => {
         isLoggedIn:true,
         firstName:data.currentUser!.firstName??'',
         lastName:data.currentUser!.lastName??'',
-        notificationCount:0,        
+        notificationCount:0,  
+        profileImage:data.currentUser!?`https://sharethrift.blob.core.windows.net/public/${data.currentUser!.id}`:'',      
       }}
 
       return <LoggedInUser data={userData.data}

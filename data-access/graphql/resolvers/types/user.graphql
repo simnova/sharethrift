@@ -3,10 +3,21 @@ type User implements MongoBase {
   lastName: String
   email: EmailAddress
 
+  externalId: String
+
   id: ObjectID!
   schemaVersion: String
   createdAt: DateTime
   updatedAt: DateTime
+}
+
+
+
+
+extend type Query {
+  user(id: ID!): User
+  currentUser: User
+  users: [User] @cacheControl(maxAge: 90)
 }
 
 extend type Mutation {
@@ -15,13 +26,24 @@ extend type Mutation {
   Allows the user to update their profile
   """
   updateUser(input: UserUpdateInput!): User
+  userCreateAuthHeaderForProfilePhoto(input: UserProfilePhotoImageInput!): UserCreateAuthHeaderForProfilePhotoOutput!
+
 }
 
-extend type Query {
-  user(id: ID!): User
-  currentUser: User
-  users: [User] @cacheControl(maxAge: 90)
+
+input UserProfilePhotoImageInput {
+  contentType: String
+  contentLength: Int
 }
+type UserCreateAuthHeaderForProfilePhotoOutput {
+  authHeader: String
+  blobName: String
+  requestDate: String
+  isAuthorized: Boolean
+  errorMessage: String
+}
+
+
 
 input UserUpdateInput {
   id: ObjectID!

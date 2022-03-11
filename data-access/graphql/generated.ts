@@ -265,6 +265,7 @@ export type Mutation = {
   updateDraft?: Maybe<Listing>;
   /** Allows the user to update their profile */
   updateUser?: Maybe<User>;
+  userCreateAuthHeaderForProfilePhoto: UserCreateAuthHeaderForProfilePhotoOutput;
 };
 
 /**  Base Mutation Type definition - all mutations will be defined in separate files extending this type  */
@@ -315,6 +316,11 @@ export type MutationUpdateDraftArgs = {
 /**  Base Mutation Type definition - all mutations will be defined in separate files extending this type  */
 export type MutationUpdateUserArgs = {
   input: UserUpdateInput;
+};
+
+/**  Base Mutation Type definition - all mutations will be defined in separate files extending this type  */
+export type MutationUserCreateAuthHeaderForProfilePhotoArgs = {
+  input: UserProfilePhotoImageInput;
 };
 
 export type Permissions = {
@@ -432,10 +438,25 @@ export type User = MongoBase & {
   firstName?: Maybe<Scalars["String"]>;
   lastName?: Maybe<Scalars["String"]>;
   email?: Maybe<Scalars["EmailAddress"]>;
+  externalId?: Maybe<Scalars["String"]>;
   id: Scalars["ObjectID"];
   schemaVersion?: Maybe<Scalars["String"]>;
   createdAt?: Maybe<Scalars["DateTime"]>;
   updatedAt?: Maybe<Scalars["DateTime"]>;
+};
+
+export type UserCreateAuthHeaderForProfilePhotoOutput = {
+  __typename?: "UserCreateAuthHeaderForProfilePhotoOutput";
+  authHeader?: Maybe<Scalars["String"]>;
+  blobName?: Maybe<Scalars["String"]>;
+  requestDate?: Maybe<Scalars["String"]>;
+  isAuthorized?: Maybe<Scalars["Boolean"]>;
+  errorMessage?: Maybe<Scalars["String"]>;
+};
+
+export type UserProfilePhotoImageInput = {
+  contentType?: Maybe<Scalars["String"]>;
+  contentLength?: Maybe<Scalars["Int"]>;
 };
 
 export type UserUpdateInput = {
@@ -647,6 +668,8 @@ export type ResolversTypes = ResolversObject<{
   UnsignedInt: ResolverTypeWrapper<Scalars["UnsignedInt"]>;
   UpdateCategory: UpdateCategory;
   User: ResolverTypeWrapper<User>;
+  UserCreateAuthHeaderForProfilePhotoOutput: ResolverTypeWrapper<UserCreateAuthHeaderForProfilePhotoOutput>;
+  UserProfilePhotoImageInput: UserProfilePhotoImageInput;
   UserUpdateInput: UserUpdateInput;
   UtcOffset: ResolverTypeWrapper<Scalars["UtcOffset"]>;
   Void: ResolverTypeWrapper<Scalars["Void"]>;
@@ -745,6 +768,8 @@ export type ResolversParentTypes = ResolversObject<{
   UnsignedInt: Scalars["UnsignedInt"];
   UpdateCategory: UpdateCategory;
   User: User;
+  UserCreateAuthHeaderForProfilePhotoOutput: UserCreateAuthHeaderForProfilePhotoOutput;
+  UserProfilePhotoImageInput: UserProfilePhotoImageInput;
   UserUpdateInput: UserUpdateInput;
   UtcOffset: Scalars["UtcOffset"];
   Void: Scalars["Void"];
@@ -1318,6 +1343,12 @@ export type MutationResolvers<
     ContextType,
     RequireFields<MutationUpdateUserArgs, "input">
   >;
+  userCreateAuthHeaderForProfilePhoto?: Resolver<
+    ResolversTypes["UserCreateAuthHeaderForProfilePhotoOutput"],
+    ParentType,
+    ContextType,
+    RequireFields<MutationUserCreateAuthHeaderForProfilePhotoArgs, "input">
+  >;
 }>;
 
 export interface NegativeFloatScalarConfig
@@ -1609,6 +1640,11 @@ export type UserResolvers<
     ParentType,
     ContextType
   >;
+  externalId?: Resolver<
+    Maybe<ResolversTypes["String"]>,
+    ParentType,
+    ContextType
+  >;
   id?: Resolver<ResolversTypes["ObjectID"], ParentType, ContextType>;
   schemaVersion?: Resolver<
     Maybe<ResolversTypes["String"]>,
@@ -1622,6 +1658,34 @@ export type UserResolvers<
   >;
   updatedAt?: Resolver<
     Maybe<ResolversTypes["DateTime"]>,
+    ParentType,
+    ContextType
+  >;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+}>;
+
+export type UserCreateAuthHeaderForProfilePhotoOutputResolvers<
+  ContextType = Context,
+  ParentType extends ResolversParentTypes["UserCreateAuthHeaderForProfilePhotoOutput"] = ResolversParentTypes["UserCreateAuthHeaderForProfilePhotoOutput"]
+> = ResolversObject<{
+  authHeader?: Resolver<
+    Maybe<ResolversTypes["String"]>,
+    ParentType,
+    ContextType
+  >;
+  blobName?: Resolver<Maybe<ResolversTypes["String"]>, ParentType, ContextType>;
+  requestDate?: Resolver<
+    Maybe<ResolversTypes["String"]>,
+    ParentType,
+    ContextType
+  >;
+  isAuthorized?: Resolver<
+    Maybe<ResolversTypes["Boolean"]>,
+    ParentType,
+    ContextType
+  >;
+  errorMessage?: Resolver<
+    Maybe<ResolversTypes["String"]>,
     ParentType,
     ContextType
   >;
@@ -1708,6 +1772,7 @@ export type Resolvers<ContextType = Context> = ResolversObject<{
   UnsignedFloat?: GraphQLScalarType;
   UnsignedInt?: GraphQLScalarType;
   User?: UserResolvers<ContextType>;
+  UserCreateAuthHeaderForProfilePhotoOutput?: UserCreateAuthHeaderForProfilePhotoOutputResolvers<ContextType>;
   UtcOffset?: GraphQLScalarType;
   Void?: GraphQLScalarType;
 }>;

@@ -2,7 +2,6 @@ import React from 'react';
 import { AccountLayout } from './account-layout';
 import { Home } from './pages/home';
 import { Routes, Route, useParams } from "react-router-dom";
-import { Simple } from './pages/simple';
 import { Settings } from './pages/settings';
 import { Listings } from './pages/listings';
 import { Child2 } from './pages/child2';
@@ -17,13 +16,7 @@ export const Account: React.FC<any> = (props) => {
     {path : '/account/:handle/simple', title : 'Profile', icon : <IdcardOutlined /> , id:1, parent: 'ROOT'},
     {path : '/account/:handle/settings/*', title : 'Account', icon : <SettingOutlined /> , id:2, parent: 'ROOT'},
     {path : '/account/:handle/listings/*', title : 'Listings', icon : <BarsOutlined /> , id:3, parent: 'ROOT'},
-
   ]
-
-  /*
-      {path : '/account/:handle/simple/2', title : 'Child 2', icon : <SettingOutlined /> , id:3, parent: 1},
-    {path : '/account/:handle/simple/3', title : 'Child 3', icon : <SettingOutlined /> , id:4, parent: 1},
-  */
   
   return (
     <>

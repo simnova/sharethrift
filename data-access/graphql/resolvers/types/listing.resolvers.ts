@@ -90,6 +90,7 @@ const listing : Resolvers = {
     },
     updateDraft: async (parent, args, context, info) => {
       return (await context.dataSources.listingDomainAPI.updateDraft(args.input)) as Listing ;
+     
     },
     publishDraft: async (parent, args, context, info) => {
       return (await context.dataSources.listingDomainAPI.publishDraft(args.id)) as Listing;

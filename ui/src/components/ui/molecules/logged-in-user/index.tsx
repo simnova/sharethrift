@@ -11,6 +11,7 @@ const ComponentProps = {
     firstName: PropTypes.string,
     lastName: PropTypes.string,
     notificationCount: PropTypes.number,
+    profileImage: PropTypes.string,
 
   }),
   onLoginClicked: PropTypes.func,
@@ -24,6 +25,7 @@ interface ComponentPropInterface {
     firstName?: string;
     lastName?: string;
     notificationCount?: number;
+    profileImage?: string;
 
   }    
   onLoginClicked?: () => void;
@@ -39,6 +41,7 @@ export const LoggedInUser: React.FC<LoggedInUserPropTypes> = (props) => {
     if(props.data.isLoggedIn) {
 
       const loggedInProps:Partial<LoggedInPropTypes> = {data:{
+        profileImage: props.data.profileImage,
         firstName: props.data.firstName??'',
         lastName: props.data.lastName??'',
         notificationCount: props.data.notificationCount??0,}

@@ -6,6 +6,7 @@ query LoggedInUserContainerCurrentUserQuery {
 
 fragment LoggedInUserContainerCurrentUserFields on User {
   id
+  externalId
   firstName
   lastName
 }

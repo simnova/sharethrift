@@ -38,7 +38,7 @@ export class Listings extends DomainDataSource<Context,Listing,PropType,DomainTy
     let result : ListingDO<ListingDomainAdapter>;
     await this.withTransaction(async (repo) => {
       let domainObject = await repo.get(draft.id);
-
+      
       domainObject.draft.requestAddCategory(categoryAdapter);
       domainObject.draft.requestUpdateTitle(draft.title);
       domainObject.draft.requestUpdateDescription(draft.description);
