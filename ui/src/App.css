@@ -121,3 +121,12 @@ h6, .h6 {
   font-size: 18px;
   line-height: 24px;
 }
+
+/* ant-design fixes */
+.ant-image-preview-img {
+  margin-left: auto;
+  margin-right: auto;
+}
+.ant-image-preview-img-wrapper::before{
+  height: 10%;
+}
