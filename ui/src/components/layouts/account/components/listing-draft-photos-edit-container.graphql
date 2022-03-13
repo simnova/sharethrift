@@ -1,0 +1,25 @@
+query ListingDraftPhotosEditContainerListing($id: ID!) {
+  listing(id: $id) {
+    ...ListingDraftPhotosEditContainerListingFields
+  }
+}
+
+mutation ListingDraftPhotosEditContainerDraftAddPhoto($input: DraftPhotoImageInput!) {
+  draftAddPhoto(input: $input) {
+    authHeader
+    blobName
+    requestDate
+    isAuthorized
+    errorMessage
+  }
+}
+
+fragment ListingDraftPhotosEditContainerListingFields on Listing {
+  id  
+  draft {
+    photos {
+      order
+      documentId
+    }
+  }
+}

@@ -1,7 +1,0 @@
-mutation ListingCreate( $input: ListingDetail!) {
-  createListing(input: $input) {
-    listing {
-      title
-    }
-  }
-}

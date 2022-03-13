@@ -1,6 +1,6 @@
 query ListingDetailContainerListings($id: ID!) {
   listing(id: $id) {
-    ...ListingsFields
+    ...ListingDetailContainerListingsFields
   }
 }
 
@@ -17,7 +17,7 @@ mutation ListingDetailContainerPublishDraft($id: ID!) {
 }
 
 
-fragment ListingsFields on Listing {
+fragment ListingDetailContainerListingsFields on Listing {
   id
   account {
     id
@@ -40,6 +40,10 @@ fragment ListingsFields on Listing {
       statusDetail
       createdAt
 
+    }
+    photos {
+      order
+      documentId
     }
     primaryCategory {
       id

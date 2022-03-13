@@ -160,8 +160,25 @@ export type Draft = {
   title?: Maybe<Scalars["String"]>;
   description?: Maybe<Scalars["String"]>;
   tags?: Maybe<Array<Maybe<Scalars["String"]>>>;
+  photos?: Maybe<Array<Maybe<Photo>>>;
   primaryCategory?: Maybe<Category>;
   statusHistory?: Maybe<Array<Maybe<DraftStatus>>>;
+};
+
+export type DraftAuthHeaderForDraftPhotoOutput = {
+  __typename?: "DraftAuthHeaderForDraftPhotoOutput";
+  authHeader?: Maybe<Scalars["String"]>;
+  blobName?: Maybe<Scalars["String"]>;
+  requestDate?: Maybe<Scalars["String"]>;
+  isAuthorized?: Maybe<Scalars["Boolean"]>;
+  errorMessage?: Maybe<Scalars["String"]>;
+};
+
+export type DraftPhotoImageInput = {
+  listingId?: Maybe<Scalars["String"]>;
+  order?: Maybe<Scalars["Int"]>;
+  contentType?: Maybe<Scalars["String"]>;
+  contentLength?: Maybe<Scalars["Int"]>;
 };
 
 export type DraftStatus = {
@@ -248,9 +265,9 @@ export type Mutation = {
   accountAddRole?: Maybe<Account>;
   accountUpdateRole?: Maybe<Account>;
   createCategory?: Maybe<Category>;
-  createListing?: Maybe<CreateListingPayload>;
   createNewListing?: Maybe<CreateListingPayload>;
   createUser?: Maybe<User>;
+  draftAddPhoto: DraftAuthHeaderForDraftPhotoOutput;
   publishDraft?: Maybe<Listing>;
   updateAccount?: Maybe<Account>;
   updateCategory?: Maybe<Category>;
@@ -276,13 +293,13 @@ export type MutationCreateCategoryArgs = {
 };
 
 /**  Base Mutation Type definition - all mutations will be defined in separate files extending this type  */
-export type MutationCreateListingArgs = {
-  input: ListingDetail;
+export type MutationCreateNewListingArgs = {
+  input: ListingNewDraft;
 };
 
 /**  Base Mutation Type definition - all mutations will be defined in separate files extending this type  */
-export type MutationCreateNewListingArgs = {
-  input: ListingNewDraft;
+export type MutationDraftAddPhotoArgs = {
+  input: DraftPhotoImageInput;
 };
 
 /**  Base Mutation Type definition - all mutations will be defined in separate files extending this type  */
@@ -824,6 +841,15 @@ export type ListingDetailContainerListingsQuery = {
           }>
         >
       >;
+      photos?: Maybe<
+        Array<
+          Maybe<{
+            __typename?: "Photo";
+            order?: Maybe<number>;
+            documentId?: Maybe<string>;
+          }>
+        >
+      >;
       primaryCategory?: Maybe<{
         __typename?: "Category";
         id: any;
@@ -867,7 +893,7 @@ export type ListingDetailContainerPublishDraftMutation = {
   publishDraft?: Maybe<{ __typename?: "Listing"; title?: Maybe<string> }>;
 };
 
-export type ListingsFieldsFragment = {
+export type ListingDetailContainerListingsFieldsFragment = {
   __typename?: "Listing";
   id: any;
   title?: Maybe<string>;
@@ -895,6 +921,15 @@ export type ListingsFieldsFragment = {
         }>
       >
     >;
+    photos?: Maybe<
+      Array<
+        Maybe<{
+          __typename?: "Photo";
+          order?: Maybe<number>;
+          documentId?: Maybe<string>;
+        }>
+      >
+    >;
     primaryCategory?: Maybe<{
       __typename?: "Category";
       id: any;
@@ -916,6 +951,64 @@ export type ListingsFieldsFragment = {
       __typename?: "Address";
       freeformAddress?: Maybe<string>;
     }>;
+  }>;
+};
+
+export type ListingDraftPhotosEditContainerListingQueryVariables = Exact<{
+  id: Scalars["ID"];
+}>;
+
+export type ListingDraftPhotosEditContainerListingQuery = {
+  __typename?: "Query";
+  listing?: Maybe<{
+    __typename?: "Listing";
+    id: any;
+    draft?: Maybe<{
+      __typename?: "Draft";
+      photos?: Maybe<
+        Array<
+          Maybe<{
+            __typename?: "Photo";
+            order?: Maybe<number>;
+            documentId?: Maybe<string>;
+          }>
+        >
+      >;
+    }>;
+  }>;
+};
+
+export type ListingDraftPhotosEditContainerDraftAddPhotoMutationVariables =
+  Exact<{
+    input: DraftPhotoImageInput;
+  }>;
+
+export type ListingDraftPhotosEditContainerDraftAddPhotoMutation = {
+  __typename?: "Mutation";
+  draftAddPhoto: {
+    __typename?: "DraftAuthHeaderForDraftPhotoOutput";
+    authHeader?: Maybe<string>;
+    blobName?: Maybe<string>;
+    requestDate?: Maybe<string>;
+    isAuthorized?: Maybe<boolean>;
+    errorMessage?: Maybe<string>;
+  };
+};
+
+export type ListingDraftPhotosEditContainerListingFieldsFragment = {
+  __typename?: "Listing";
+  id: any;
+  draft?: Maybe<{
+    __typename?: "Draft";
+    photos?: Maybe<
+      Array<
+        Maybe<{
+          __typename?: "Photo";
+          order?: Maybe<number>;
+          documentId?: Maybe<string>;
+        }>
+      >
+    >;
   }>;
 };
 
@@ -1018,18 +1111,6 @@ export type ProfileContainerUserFieldsFragment = {
   updatedAt?: Maybe<any>;
 };
 
-export type ListingCreateMutationVariables = Exact<{
-  input: ListingDetail;
-}>;
-
-export type ListingCreateMutation = {
-  __typename?: "Mutation";
-  createListing?: Maybe<{
-    __typename?: "CreateListingPayload";
-    listing?: Maybe<{ __typename?: "Listing"; title?: Maybe<string> }>;
-  }>;
-};
-
 export type ListingDraftUpdateDraftMutationVariables = Exact<{
   input: ListingDraft;
 }>;
@@ -1111,6 +1192,58 @@ export type ListingsListingsQuery = {
       }>
     >
   >;
+};
+
+export type ListingsFieldsFragment = {
+  __typename?: "Listing";
+  id: any;
+  title?: Maybe<string>;
+  description?: Maybe<string>;
+  tags?: Maybe<Array<Maybe<string>>>;
+  createdAt?: Maybe<any>;
+  account?: Maybe<{ __typename?: "Account"; id: any; name?: Maybe<string> }>;
+  primaryCategory?: Maybe<{
+    __typename?: "Category";
+    id: any;
+    name?: Maybe<string>;
+  }>;
+  draft?: Maybe<{
+    __typename?: "Draft";
+    title?: Maybe<string>;
+    description?: Maybe<string>;
+    tags?: Maybe<Array<Maybe<string>>>;
+    statusHistory?: Maybe<
+      Array<
+        Maybe<{
+          __typename?: "DraftStatus";
+          statusCode?: Maybe<string>;
+          statusDetail?: Maybe<string>;
+          createdAt?: Maybe<any>;
+        }>
+      >
+    >;
+    primaryCategory?: Maybe<{
+      __typename?: "Category";
+      id: any;
+      name?: Maybe<string>;
+    }>;
+  }>;
+  photos?: Maybe<
+    Array<
+      Maybe<{
+        __typename?: "Photo";
+        order?: Maybe<number>;
+        documentId?: Maybe<string>;
+      }>
+    >
+  >;
+  location?: Maybe<{
+    __typename?: "Location";
+    address?: Maybe<{
+      __typename?: "Address";
+      freeformAddress?: Maybe<string>;
+    }>;
+  }>;
 };
 
 export type LoggedInUserContainerCurrentUserQueryQueryVariables = Exact<{
@@ -1514,6 +1647,267 @@ export const ListingCategorySelectionContainerFieldsFragmentDoc = {
   ListingCategorySelectionContainerFieldsFragment,
   unknown
 >;
+export const ListingDetailContainerListingsFieldsFragmentDoc = {
+  kind: "Document",
+  definitions: [
+    {
+      kind: "FragmentDefinition",
+      name: { kind: "Name", value: "ListingDetailContainerListingsFields" },
+      typeCondition: {
+        kind: "NamedType",
+        name: { kind: "Name", value: "Listing" },
+      },
+      selectionSet: {
+        kind: "SelectionSet",
+        selections: [
+          { kind: "Field", name: { kind: "Name", value: "id" } },
+          {
+            kind: "Field",
+            name: { kind: "Name", value: "account" },
+            selectionSet: {
+              kind: "SelectionSet",
+              selections: [
+                { kind: "Field", name: { kind: "Name", value: "id" } },
+                { kind: "Field", name: { kind: "Name", value: "name" } },
+              ],
+            },
+          },
+          { kind: "Field", name: { kind: "Name", value: "title" } },
+          { kind: "Field", name: { kind: "Name", value: "description" } },
+          { kind: "Field", name: { kind: "Name", value: "tags" } },
+          { kind: "Field", name: { kind: "Name", value: "createdAt" } },
+          {
+            kind: "Field",
+            name: { kind: "Name", value: "primaryCategory" },
+            selectionSet: {
+              kind: "SelectionSet",
+              selections: [
+                { kind: "Field", name: { kind: "Name", value: "id" } },
+                { kind: "Field", name: { kind: "Name", value: "name" } },
+              ],
+            },
+          },
+          {
+            kind: "Field",
+            name: { kind: "Name", value: "draft" },
+            selectionSet: {
+              kind: "SelectionSet",
+              selections: [
+                { kind: "Field", name: { kind: "Name", value: "title" } },
+                { kind: "Field", name: { kind: "Name", value: "description" } },
+                { kind: "Field", name: { kind: "Name", value: "tags" } },
+                {
+                  kind: "Field",
+                  name: { kind: "Name", value: "statusHistory" },
+                  selectionSet: {
+                    kind: "SelectionSet",
+                    selections: [
+                      {
+                        kind: "Field",
+                        name: { kind: "Name", value: "statusCode" },
+                      },
+                      {
+                        kind: "Field",
+                        name: { kind: "Name", value: "statusDetail" },
+                      },
+                      {
+                        kind: "Field",
+                        name: { kind: "Name", value: "createdAt" },
+                      },
+                    ],
+                  },
+                },
+                {
+                  kind: "Field",
+                  name: { kind: "Name", value: "photos" },
+                  selectionSet: {
+                    kind: "SelectionSet",
+                    selections: [
+                      { kind: "Field", name: { kind: "Name", value: "order" } },
+                      {
+                        kind: "Field",
+                        name: { kind: "Name", value: "documentId" },
+                      },
+                    ],
+                  },
+                },
+                {
+                  kind: "Field",
+                  name: { kind: "Name", value: "primaryCategory" },
+                  selectionSet: {
+                    kind: "SelectionSet",
+                    selections: [
+                      { kind: "Field", name: { kind: "Name", value: "id" } },
+                      { kind: "Field", name: { kind: "Name", value: "name" } },
+                    ],
+                  },
+                },
+              ],
+            },
+          },
+          {
+            kind: "Field",
+            name: { kind: "Name", value: "photos" },
+            selectionSet: {
+              kind: "SelectionSet",
+              selections: [
+                { kind: "Field", name: { kind: "Name", value: "order" } },
+                { kind: "Field", name: { kind: "Name", value: "documentId" } },
+              ],
+            },
+          },
+          {
+            kind: "Field",
+            name: { kind: "Name", value: "location" },
+            selectionSet: {
+              kind: "SelectionSet",
+              selections: [
+                {
+                  kind: "Field",
+                  name: { kind: "Name", value: "address" },
+                  selectionSet: {
+                    kind: "SelectionSet",
+                    selections: [
+                      {
+                        kind: "Field",
+                        name: { kind: "Name", value: "freeformAddress" },
+                      },
+                    ],
+                  },
+                },
+              ],
+            },
+          },
+        ],
+      },
+    },
+  ],
+} as unknown as DocumentNode<
+  ListingDetailContainerListingsFieldsFragment,
+  unknown
+>;
+export const ListingDraftPhotosEditContainerListingFieldsFragmentDoc = {
+  kind: "Document",
+  definitions: [
+    {
+      kind: "FragmentDefinition",
+      name: {
+        kind: "Name",
+        value: "ListingDraftPhotosEditContainerListingFields",
+      },
+      typeCondition: {
+        kind: "NamedType",
+        name: { kind: "Name", value: "Listing" },
+      },
+      selectionSet: {
+        kind: "SelectionSet",
+        selections: [
+          { kind: "Field", name: { kind: "Name", value: "id" } },
+          {
+            kind: "Field",
+            name: { kind: "Name", value: "draft" },
+            selectionSet: {
+              kind: "SelectionSet",
+              selections: [
+                {
+                  kind: "Field",
+                  name: { kind: "Name", value: "photos" },
+                  selectionSet: {
+                    kind: "SelectionSet",
+                    selections: [
+                      { kind: "Field", name: { kind: "Name", value: "order" } },
+                      {
+                        kind: "Field",
+                        name: { kind: "Name", value: "documentId" },
+                      },
+                    ],
+                  },
+                },
+              ],
+            },
+          },
+        ],
+      },
+    },
+  ],
+} as unknown as DocumentNode<
+  ListingDraftPhotosEditContainerListingFieldsFragment,
+  unknown
+>;
+export const ListingsListListingsByAccountHandleFieldsFragmentDoc = {
+  kind: "Document",
+  definitions: [
+    {
+      kind: "FragmentDefinition",
+      name: {
+        kind: "Name",
+        value: "ListingsListListingsByAccountHandleFields",
+      },
+      typeCondition: {
+        kind: "NamedType",
+        name: { kind: "Name", value: "Listing" },
+      },
+      selectionSet: {
+        kind: "SelectionSet",
+        selections: [
+          { kind: "Field", name: { kind: "Name", value: "id" } },
+          { kind: "Field", name: { kind: "Name", value: "title" } },
+          { kind: "Field", name: { kind: "Name", value: "description" } },
+          { kind: "Field", name: { kind: "Name", value: "tags" } },
+          {
+            kind: "Field",
+            name: { kind: "Name", value: "primaryCategory" },
+            selectionSet: {
+              kind: "SelectionSet",
+              selections: [
+                { kind: "Field", name: { kind: "Name", value: "name" } },
+              ],
+            },
+          },
+          {
+            kind: "Field",
+            name: { kind: "Name", value: "draft" },
+            selectionSet: {
+              kind: "SelectionSet",
+              selections: [
+                { kind: "Field", name: { kind: "Name", value: "title" } },
+              ],
+            },
+          },
+          { kind: "Field", name: { kind: "Name", value: "createdAt" } },
+          { kind: "Field", name: { kind: "Name", value: "updatedAt" } },
+        ],
+      },
+    },
+  ],
+} as unknown as DocumentNode<
+  ListingsListListingsByAccountHandleFieldsFragment,
+  unknown
+>;
+export const ProfileContainerUserFieldsFragmentDoc = {
+  kind: "Document",
+  definitions: [
+    {
+      kind: "FragmentDefinition",
+      name: { kind: "Name", value: "ProfileContainerUserFields" },
+      typeCondition: {
+        kind: "NamedType",
+        name: { kind: "Name", value: "User" },
+      },
+      selectionSet: {
+        kind: "SelectionSet",
+        selections: [
+          { kind: "Field", name: { kind: "Name", value: "id" } },
+          { kind: "Field", name: { kind: "Name", value: "firstName" } },
+          { kind: "Field", name: { kind: "Name", value: "lastName" } },
+          { kind: "Field", name: { kind: "Name", value: "email" } },
+          { kind: "Field", name: { kind: "Name", value: "createdAt" } },
+          { kind: "Field", name: { kind: "Name", value: "updatedAt" } },
+        ],
+      },
+    },
+  ],
+} as unknown as DocumentNode<ProfileContainerUserFieldsFragment, unknown>;
 export const ListingsFieldsFragmentDoc = {
   kind: "Document",
   definitions: [
@@ -1636,80 +2030,6 @@ export const ListingsFieldsFragmentDoc = {
     },
   ],
 } as unknown as DocumentNode<ListingsFieldsFragment, unknown>;
-export const ListingsListListingsByAccountHandleFieldsFragmentDoc = {
-  kind: "Document",
-  definitions: [
-    {
-      kind: "FragmentDefinition",
-      name: {
-        kind: "Name",
-        value: "ListingsListListingsByAccountHandleFields",
-      },
-      typeCondition: {
-        kind: "NamedType",
-        name: { kind: "Name", value: "Listing" },
-      },
-      selectionSet: {
-        kind: "SelectionSet",
-        selections: [
-          { kind: "Field", name: { kind: "Name", value: "id" } },
-          { kind: "Field", name: { kind: "Name", value: "title" } },
-          { kind: "Field", name: { kind: "Name", value: "description" } },
-          { kind: "Field", name: { kind: "Name", value: "tags" } },
-          {
-            kind: "Field",
-            name: { kind: "Name", value: "primaryCategory" },
-            selectionSet: {
-              kind: "SelectionSet",
-              selections: [
-                { kind: "Field", name: { kind: "Name", value: "name" } },
-              ],
-            },
-          },
-          {
-            kind: "Field",
-            name: { kind: "Name", value: "draft" },
-            selectionSet: {
-              kind: "SelectionSet",
-              selections: [
-                { kind: "Field", name: { kind: "Name", value: "title" } },
-              ],
-            },
-          },
-          { kind: "Field", name: { kind: "Name", value: "createdAt" } },
-          { kind: "Field", name: { kind: "Name", value: "updatedAt" } },
-        ],
-      },
-    },
-  ],
-} as unknown as DocumentNode<
-  ListingsListListingsByAccountHandleFieldsFragment,
-  unknown
->;
-export const ProfileContainerUserFieldsFragmentDoc = {
-  kind: "Document",
-  definitions: [
-    {
-      kind: "FragmentDefinition",
-      name: { kind: "Name", value: "ProfileContainerUserFields" },
-      typeCondition: {
-        kind: "NamedType",
-        name: { kind: "Name", value: "User" },
-      },
-      selectionSet: {
-        kind: "SelectionSet",
-        selections: [
-          { kind: "Field", name: { kind: "Name", value: "id" } },
-          { kind: "Field", name: { kind: "Name", value: "firstName" } },
-          { kind: "Field", name: { kind: "Name", value: "lastName" } },
-          { kind: "Field", name: { kind: "Name", value: "email" } },
-          { kind: "Field", name: { kind: "Name", value: "createdAt" } },
-          { kind: "Field", name: { kind: "Name", value: "updatedAt" } },
-        ],
-      },
-    },
-  ],
-} as unknown as DocumentNode<ProfileContainerUserFieldsFragment, unknown>;
 export const LoggedInUserContainerCurrentUserFieldsFragmentDoc = {
   kind: "Document",
   definitions: [
@@ -2478,7 +2798,10 @@ export const ListingDetailContainerListingsDocument = {
               selections: [
                 {
                   kind: "FragmentSpread",
-                  name: { kind: "Name", value: "ListingsFields" },
+                  name: {
+                    kind: "Name",
+                    value: "ListingDetailContainerListingsFields",
+                  },
                 },
               ],
             },
@@ -2486,7 +2809,7 @@ export const ListingDetailContainerListingsDocument = {
         ],
       },
     },
-    ...ListingsFieldsFragmentDoc.definitions,
+    ...ListingDetailContainerListingsFieldsFragmentDoc.definitions,
   ],
 } as unknown as DocumentNode<
   ListingDetailContainerListingsQuery,
@@ -2593,6 +2916,128 @@ export const ListingDetailContainerPublishDraftDocument = {
 } as unknown as DocumentNode<
   ListingDetailContainerPublishDraftMutation,
   ListingDetailContainerPublishDraftMutationVariables
+>;
+export const ListingDraftPhotosEditContainerListingDocument = {
+  kind: "Document",
+  definitions: [
+    {
+      kind: "OperationDefinition",
+      operation: "query",
+      name: { kind: "Name", value: "ListingDraftPhotosEditContainerListing" },
+      variableDefinitions: [
+        {
+          kind: "VariableDefinition",
+          variable: { kind: "Variable", name: { kind: "Name", value: "id" } },
+          type: {
+            kind: "NonNullType",
+            type: { kind: "NamedType", name: { kind: "Name", value: "ID" } },
+          },
+        },
+      ],
+      selectionSet: {
+        kind: "SelectionSet",
+        selections: [
+          {
+            kind: "Field",
+            name: { kind: "Name", value: "listing" },
+            arguments: [
+              {
+                kind: "Argument",
+                name: { kind: "Name", value: "id" },
+                value: {
+                  kind: "Variable",
+                  name: { kind: "Name", value: "id" },
+                },
+              },
+            ],
+            selectionSet: {
+              kind: "SelectionSet",
+              selections: [
+                {
+                  kind: "FragmentSpread",
+                  name: {
+                    kind: "Name",
+                    value: "ListingDraftPhotosEditContainerListingFields",
+                  },
+                },
+              ],
+            },
+          },
+        ],
+      },
+    },
+    ...ListingDraftPhotosEditContainerListingFieldsFragmentDoc.definitions,
+  ],
+} as unknown as DocumentNode<
+  ListingDraftPhotosEditContainerListingQuery,
+  ListingDraftPhotosEditContainerListingQueryVariables
+>;
+export const ListingDraftPhotosEditContainerDraftAddPhotoDocument = {
+  kind: "Document",
+  definitions: [
+    {
+      kind: "OperationDefinition",
+      operation: "mutation",
+      name: {
+        kind: "Name",
+        value: "ListingDraftPhotosEditContainerDraftAddPhoto",
+      },
+      variableDefinitions: [
+        {
+          kind: "VariableDefinition",
+          variable: {
+            kind: "Variable",
+            name: { kind: "Name", value: "input" },
+          },
+          type: {
+            kind: "NonNullType",
+            type: {
+              kind: "NamedType",
+              name: { kind: "Name", value: "DraftPhotoImageInput" },
+            },
+          },
+        },
+      ],
+      selectionSet: {
+        kind: "SelectionSet",
+        selections: [
+          {
+            kind: "Field",
+            name: { kind: "Name", value: "draftAddPhoto" },
+            arguments: [
+              {
+                kind: "Argument",
+                name: { kind: "Name", value: "input" },
+                value: {
+                  kind: "Variable",
+                  name: { kind: "Name", value: "input" },
+                },
+              },
+            ],
+            selectionSet: {
+              kind: "SelectionSet",
+              selections: [
+                { kind: "Field", name: { kind: "Name", value: "authHeader" } },
+                { kind: "Field", name: { kind: "Name", value: "blobName" } },
+                { kind: "Field", name: { kind: "Name", value: "requestDate" } },
+                {
+                  kind: "Field",
+                  name: { kind: "Name", value: "isAuthorized" },
+                },
+                {
+                  kind: "Field",
+                  name: { kind: "Name", value: "errorMessage" },
+                },
+              ],
+            },
+          },
+        ],
+      },
+    },
+  ],
+} as unknown as DocumentNode<
+  ListingDraftPhotosEditContainerDraftAddPhotoMutation,
+  ListingDraftPhotosEditContainerDraftAddPhotoMutationVariables
 >;
 export const ListingsListListingsByAccountHandleDocument = {
   kind: "Document",
@@ -2814,69 +3259,6 @@ export const ProfileContainerUserUpdateDocument = {
 } as unknown as DocumentNode<
   ProfileContainerUserUpdateMutation,
   ProfileContainerUserUpdateMutationVariables
->;
-export const ListingCreateDocument = {
-  kind: "Document",
-  definitions: [
-    {
-      kind: "OperationDefinition",
-      operation: "mutation",
-      name: { kind: "Name", value: "ListingCreate" },
-      variableDefinitions: [
-        {
-          kind: "VariableDefinition",
-          variable: {
-            kind: "Variable",
-            name: { kind: "Name", value: "input" },
-          },
-          type: {
-            kind: "NonNullType",
-            type: {
-              kind: "NamedType",
-              name: { kind: "Name", value: "ListingDetail" },
-            },
-          },
-        },
-      ],
-      selectionSet: {
-        kind: "SelectionSet",
-        selections: [
-          {
-            kind: "Field",
-            name: { kind: "Name", value: "createListing" },
-            arguments: [
-              {
-                kind: "Argument",
-                name: { kind: "Name", value: "input" },
-                value: {
-                  kind: "Variable",
-                  name: { kind: "Name", value: "input" },
-                },
-              },
-            ],
-            selectionSet: {
-              kind: "SelectionSet",
-              selections: [
-                {
-                  kind: "Field",
-                  name: { kind: "Name", value: "listing" },
-                  selectionSet: {
-                    kind: "SelectionSet",
-                    selections: [
-                      { kind: "Field", name: { kind: "Name", value: "title" } },
-                    ],
-                  },
-                },
-              ],
-            },
-          },
-        ],
-      },
-    },
-  ],
-} as unknown as DocumentNode<
-  ListingCreateMutation,
-  ListingCreateMutationVariables
 >;
 export const ListingDraftUpdateDraftDocument = {
   kind: "Document",

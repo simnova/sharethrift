@@ -8,6 +8,8 @@ import { EntityProps, Entity } from '../../shared/entity';
 import { DraftStatus, DraftStatusProps, NewStatus, DraftStatusCodes, DraftStatusEntityReference } from './draft-status';
 import { PropArray } from '../../shared/prop-array';
 import { Description, Title, Tags } from './listing-value-objects';
+import { ListingVisa } from "../iam/listing-visa";
+import { ListingPhotoDeletedEvent } from '../../events/listing-photo-deleted';
 
 export interface DraftPropValues extends EntityProps {
   title: string;
@@ -33,7 +35,12 @@ export interface DraftEntityReference extends Readonly<DraftPropValues> {
 }
 
 export class Draft extends Entity<DraftProps> implements DraftEntityReference {
-  constructor(props: DraftProps, private root: RootEventRegistry) { super(props); }
+  constructor(
+    props: DraftProps, 
+    private root: RootEventRegistry & {photos: PhotoEntityReference[]},
+    private visa: ListingVisa
+    
+    ) { super(props); }
 
   get title(): string {return this.props.title;}
   get description(): string {return this.props.description;}
@@ -76,7 +83,7 @@ export class Draft extends Entity<DraftProps> implements DraftEntityReference {
     return currentStatus;
   }
   
-  addStatusUpdate(newStatus: NewStatus){
+  private addStatusUpdate(newStatus: NewStatus){
     let currentStatus = this.getCurrentStatus();
    
     if(!this.validStatusTransitions.get(currentStatus).includes(newStatus.statusCode.valueOf())){
@@ -88,51 +95,78 @@ export class Draft extends Entity<DraftProps> implements DraftEntityReference {
     console.log('-=-=-=--=+==--=-= ADDDING NEW STATUS ', JSON.stringify(status));
     this.props.statusHistory.addItem(status.props);
   }
-  requestUpdateTitle(title: Title) {
+  public async requestUpdateTitle(title: Title): Promise<void> {
+    if(!await this.visa.determineIf((permissions) => permissions.canManageListings)) {
+      throw new Error('Permission denied');
+    }
     if(this.getCurrentStatus()!=DraftStatusCodes.Draft){
       throw new Error('Cannot update title unless in draft status');
     }
     this.props.title = title.valueOf();
   }
 
-  requestUpdateDescription(description: Description){
+  public async requestUpdateDescription(description: Description) : Promise<void>{
+    if(!await this.visa.determineIf((permissions) => permissions.canManageListings)) {
+      throw new Error('Permission denied');
+    }
     if(this.getCurrentStatus()!=DraftStatusCodes.Draft){
       throw new Error('Cannot update description unless in draft status');
     }
     this.props.description=description.valueOf();
   }
 
-  requestUpdateTags(tags: Tags){
+  public async requestUpdateTags(tags: Tags) : Promise<void>{
+    if(!await this.visa.determineIf((permissions) => permissions.canManageListings)) {
+      throw new Error('Permission denied');
+    }
     if(this.getCurrentStatus()!=DraftStatusCodes.Draft){
       throw new Error('Cannot update tags unless in draft status');
     }
     this.props.tags = tags.valueOf();
   }
 
-  requestAddPhoto(documentId:string, user:Passport){
+  public async requestAddPhoto(order:number) : Promise<PhotoEntityReference>{
+    if(!await this.visa.determineIf((permissions) => permissions.canManageListings)) {
+      throw new Error('Permission denied');
+    }
     if(this.getCurrentStatus()!=DraftStatusCodes.Draft){
       throw new Error('Cannot update photos unless in draft status');
     }
-
-    if(this.props.photos.items.length>=5){
+    var createNewDocumentId:boolean
+    var currentPhoto = this.props.photos.items.find(photo=>photo.order==order);
+    if(order>=5 || order<0){
       throw new Error('Max 5 photos allowed');
     }
 
-    if(this.props.photos.items.find(photo=>photo.documentId == documentId)){
-      throw new Error('Photo already exists');
+
+    if(!currentPhoto){ //draft does not have photo in this slot
+      createNewDocumentId = true;
+    }else{
+      if(this.root.photos.find(photo=>photo.documentId==currentPhoto.documentId)){ // root already has photo, so don't overwrite it
+        createNewDocumentId = true;
+      }else {
+        createNewDocumentId = false; //draft has photo in this slot, but root does have this photo, so it's ok to overwrite it
+      }
+    } 
+
+    if(!currentPhoto){
+      currentPhoto = this.props.photos.getNewItem();
+      currentPhoto.order = order;
+      currentPhoto.documentId = currentPhoto.getNewDocumentId();
+      this.props.photos.addItem(currentPhoto);
+    } else if (createNewDocumentId){
+      currentPhoto.documentId = currentPhoto.getNewDocumentId();
     }
-
-    let newPhoto = Photo.create({
-      documentId: documentId,
-      order: this.props.photos.items.length + 1,
-    });
-    this.props.photos.addItem(newPhoto);
-    this.root.addDomainEvent(ListingPhotoAddedEvent,newPhoto);
+    this.root.addDomainEvent(ListingPhotoAddedEvent,currentPhoto);
+    return new Photo(currentPhoto);
   }
+  
 
+  //TODO: create system access level to change this and prevent users from changing it
   async rejectPublish(rejectionReason: string){
     this.addStatusUpdate(new NewStatus(DraftStatusCodes.Rejected, rejectionReason));
   }
+  //TODO: create system access level to change this and prevent users from changing it
   async appovePublish(){
     this.addStatusUpdate(new NewStatus(DraftStatusCodes.Approved));
   }
@@ -148,14 +182,20 @@ export class Draft extends Entity<DraftProps> implements DraftEntityReference {
 
   }
   
-  requestAddCategory(category: CategoryProps) {
+  public async requestAddCategory(category: CategoryProps) : Promise<void>{
+    if(!await this.visa.determineIf((permissions) => permissions.canManageListings)) {
+      throw new Error('Permission denied');
+    }
     if(this.getCurrentStatus()!=DraftStatusCodes.Draft){
       throw new Error('Cannot update category unless in draft status');
     }
     this.props.primaryCategory = category;
   }
 
-  requestRemovePhoto(id: string, user: Passport){
+  public async requestRemovePhoto(id: string, user: Passport) : Promise<void>{
+    if(!await this.visa.determineIf((permissions) => permissions.canManageListings)) {
+      throw new Error('Permission denied');
+    }
     if(this.getCurrentStatus()!=DraftStatusCodes.Draft){
       throw new Error('Cannot remote photos unless in draft status');
     }
@@ -163,6 +203,9 @@ export class Draft extends Entity<DraftProps> implements DraftEntityReference {
     let photoToRemove = this.props.photos.items.find(photo=>photo.id==id);
     if(typeof photoToRemove=='undefined'){
       throw new Error('Photo not found');
+    }
+    if(!this.root.photos.find(photo=>photo.documentId==photoToRemove.documentId)){ //root does not have photo, so can remove it
+      this.root.addIntegrationEvent(ListingPhotoDeletedEvent,{documentId:photoToRemove.documentId});
     }
     this.props.photos.removeItem(photoToRemove);
   }

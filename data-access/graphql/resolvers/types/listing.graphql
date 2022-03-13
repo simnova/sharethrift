@@ -25,10 +25,10 @@ extend type Query {
 }
 
 extend type Mutation {
-  createListing(input: ListingDetail!): CreateListingPayload
   createNewListing(input: ListingNewDraft!): CreateListingPayload
   updateDraft(input: ListingDraft!) : Listing
   publishDraft(id: ID!) : Listing
+  draftAddPhoto(input: DraftPhotoImageInput!): DraftAuthHeaderForDraftPhotoOutput!
 }
 
 type CreateListingPayload {
@@ -104,6 +104,7 @@ type Draft {
   title: String
   description: String
   tags: [String]
+  photos: [Photo]
   primaryCategory: Category
   statusHistory: [DraftStatus]  
 }
@@ -112,4 +113,21 @@ type DraftStatus {
   statusCode: String
   statusDetail: String
   createdAt: DateTime
+}
+
+
+
+input DraftPhotoImageInput {
+  listingId: String
+  order: Int
+  contentType: String
+  contentLength: Int
+}
+
+type DraftAuthHeaderForDraftPhotoOutput {
+  authHeader: String
+  blobName: String
+  requestDate: String
+  isAuthorized: Boolean
+  errorMessage: String
 }

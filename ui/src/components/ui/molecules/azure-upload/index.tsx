@@ -1,6 +1,8 @@
 import PropTypes from 'prop-types';
 import { Upload } from 'antd';
 import axios from 'axios';
+import ImgCrop from 'antd-img-crop';
+import imageCompression from 'browser-image-compression';
 
 const ComponentProps = {
   data: PropTypes.shape({
@@ -8,16 +10,17 @@ const ComponentProps = {
     
     permittedFileExtensions: PropTypes.arrayOf(PropTypes.string),
     maxFileSizeBytes: PropTypes.number,
+    maxWidthOrHeight: PropTypes.number,
     blobPath: PropTypes.string.isRequired
 
   }),
   authorizeRequest: PropTypes.func.isRequired,
-  onChange: PropTypes.func,
   onInvalidContentType: PropTypes.func,
   onInvalidContentLength: PropTypes.func,
   onSuccess: PropTypes.func,
   onError: PropTypes.func,
-  value: PropTypes.string,
+  cropperProps: PropTypes.object,
+  uploadProps: PropTypes.object,
 }
 export interface AuthResult {
   isAuthorized: boolean;
@@ -30,6 +33,7 @@ interface ComponentProp {
     permittedContentTypes?: string[];
     permittedExtensions?: string[];
     maxFileSizeBytes?: number;
+    maxWidthOrHeight?: number;
     notificationCount?: number;
   }    
   onInvalidContentType?: () => void
@@ -37,22 +41,37 @@ interface ComponentProp {
   onSuccess?: () => void
   onError?: (file:File,error:any) => void
   authorizeRequest: (file:File) => Promise<AuthResult>
-  onChange?: (value:string) => void
-  value?: string
+  cropperProps?: object
+  uploadProps?: object
 }
 
-export type ComponentProps = PropTypes.InferProps<typeof ComponentProps> & ComponentProp;
+export type AzureUploadProps = PropTypes.InferProps<typeof ComponentProps> & ComponentProp;
 
 
-export const AzureUpload:React.FC<ComponentProps> = (props) => {
+export const AzureUpload:React.FC<AzureUploadProps> = (props) => {
   
   const beforeUpload = async (file:File) => {
     const isValidContentType = props.data.permittedContentTypes && props.data.permittedContentTypes.includes(file.type);
-    const isValidContentLength = props.data.maxFileSizeBytes && file.size <= props.data.maxFileSizeBytes;
 
     if (!isValidContentType) {
       if(props.onInvalidContentType) {props.onInvalidContentType() }
+      return Upload.LIST_IGNORE;
     }
+   
+    if(file.type.startsWith('image/') && (props.data.maxFileSizeBytes || props.data.maxWidthOrHeight)) {
+      try {
+        console.log('beforeUpload:', file.size);
+        var options:any = {};
+        if(props.data.maxFileSizeBytes) { options.maxSizeMB = props.data.maxFileSizeBytes / 1024 / 1024; }
+        if(props.data.maxWidthOrHeight) { options.maxWidthOrHeight = props.data.maxWidthOrHeight; }
+        return await imageCompression(file, options);
+      } catch (error) {
+        console.error('cannot compress:',error);
+      } 
+    }
+    console.log('afterCompress:', file.size);
+    const isValidContentLength = props.data.maxFileSizeBytes && file.size <= props.data.maxFileSizeBytes;
+
     if (!isValidContentLength) {
       if(props.onInvalidContentLength) {props.onInvalidContentLength() }
     }
@@ -61,7 +80,6 @@ export const AzureUpload:React.FC<ComponentProps> = (props) => {
 
   const customizeUpload =  async (option:any) => {
     const result =  await props.authorizeRequest(option.file) as AuthResult;
-    debugger
     if(result && result.isAuthorized) {
       const {authHeader,blobName,requestDate} = result;
       try {
@@ -96,6 +114,31 @@ export const AzureUpload:React.FC<ComponentProps> = (props) => {
   const validFileExtensions = props.data.permittedExtensions?('.' + props.data.permittedExtensions.join(', .')):undefined;
   console.log('validFileExtensions',validFileExtensions);
 
+  if(props.cropperProps) {
+    return(
+      <ImgCrop
+        {...props.cropperProps}
+        >
+         <Upload
+            accept={validFileExtensions}
+            customRequest={customizeUpload}
+            beforeUpload={beforeUpload}
+          
+            progress={{
+              strokeColor: {
+                '0%': '#108ee9',
+                '100%': '#87d068',
+              },
+              strokeWidth: 3,
+              format: percent => percent?`${parseFloat(percent.toFixed(2))}%`:''
+            }}
+            {...props.uploadProps}
+          >
+            {props.children}
+          </Upload>
+      </ImgCrop>
+    )
+  }
   return (
     <Upload
       accept={validFileExtensions}
@@ -110,9 +153,9 @@ export const AzureUpload:React.FC<ComponentProps> = (props) => {
         strokeWidth: 3,
         format: percent => percent?`${parseFloat(percent.toFixed(2))}%`:''
       }}
+      {...props.uploadProps}
     >
       {props.children}
-      
     </Upload>
   )
 }

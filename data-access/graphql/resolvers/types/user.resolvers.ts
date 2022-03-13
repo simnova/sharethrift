@@ -62,8 +62,8 @@ const user : Resolvers = {
       if (args.input.contentLength > maxSizeBytes) {
         return {success:false, errorMessage:'Content length exceeds permitted limit.'} as UserCreateAuthHeaderForProfilePhotoOutput;
       }
-      var user =  (await context.dataSources.userAPI.getByExternalId(context.VerifiedUser.VerifiedJWT.sub)) as User;
-      var blobName = user.id; // nanoid();
+      var currentUser =  (await context.dataSources.userAPI.getByExternalId(context.VerifiedUser.VerifiedJWT.sub)) as User;
+      var blobName = currentUser.id; // nanoid();
       var requestDate = new Date().toUTCString();
       var authHeader = new BlobStorage().generateSharedKey(blobName, args.input.contentLength, requestDate ,args.input.contentType);
       return {isAuthorized:true, authHeader:authHeader, requestDate:requestDate, blobName:blobName} as UserCreateAuthHeaderForProfilePhotoOutput;

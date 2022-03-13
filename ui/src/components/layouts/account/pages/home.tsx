@@ -3,7 +3,6 @@ import { Layout, PageHeader } from 'antd';
 import { Header as CustomHeader } from '../../../header';
 import { CategoryCreate } from '../../../../components/category-create';
 import { Users } from '../../../../components/users';
-import { ListingCreate } from '../../../listing-create';
 import { Listings } from '../../../../components/listings';
 import { UserCreate } from '../../../user-create';
 import { SubPageLayout } from '../sub-page-layout';
@@ -30,11 +29,6 @@ export const Home: React.FC = () => {
           <Users />
 
           <h3>Listings</h3>
-          <h6>Create Listing</h6>
-
-          <div>
-            <ListingCreate />
-          </div>
           <h6>All Listings</h6>
           <Listings/>
       </SubPageLayout>

@@ -12,6 +12,7 @@ import { ListingDraftPublishRequestedEvent } from "../../events/listing-draft-pu
 
 import { DraftStatusCodes, NewStatus } from "./draft-status";
 import { DomainExecutionContext } from "../context";
+import { ListingVisa } from "../iam/listing-visa";
 
 export interface ListingProps extends EntityProps {
   id: string;
@@ -47,9 +48,13 @@ export interface ListingEntityReference {
 
 
 export class Listing<props extends ListingProps> extends AggregateRoot<props> implements ListingEntityReference {
-  constructor(props: props,private context:DomainExecutionContext) { super(props); }
+  constructor(props: props,private context:DomainExecutionContext) { 
+    super(props); 
+    this.visa = context.passport.forListing(this);
+  }
+  protected visa: ListingVisa;
   
-  get draft(): Draft {return new Draft(this.props.draft ?? this.props.getNewDraft(), this);}
+  get draft(): Draft {return new Draft(this.props.draft ?? this.props.getNewDraft(), this, this.visa);}
   get id(): string {return this.props.id;}
   get title(): string {return this.props.title;}
   get description(): string {return this.props.description;}
@@ -75,14 +80,21 @@ export class Listing<props extends ListingProps> extends AggregateRoot<props> im
     return listing;
   }
 
-  requestUpdateTitle(title: string){
+  public async requestUpdateTitle(title: string) : Promise<void> {
+    if(!await this.visa.determineIf((permissions) => permissions.canManageListings)) {
+      throw new Error('Permission denied');
+    }
     this.props.title=title;
   }
 
-  requestUpdateDescription(description: string){
+  public async requestUpdateDescription(description: string) : Promise<void> {
+    if(!await this.visa.determineIf((permissions) => permissions.canManageListings)) {
+      throw new Error('Permission denied');
+    }
     this.props.description=description;
   }
 
+  /*
   requestAddPhoto(documentId:string, user:Passport){
 
     if(this.props.photos.length>=5){
@@ -100,6 +112,7 @@ export class Listing<props extends ListingProps> extends AggregateRoot<props> im
     this.props.photos.push(newPhoto);
     this.addDomainEvent(ListingPhotoAddedEvent,newPhoto);
   }
+  */
 
   async publishApprovedDraft(){
     await this.draft.appovePublish();

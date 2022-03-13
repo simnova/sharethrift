@@ -1,6 +1,7 @@
-import { Resolvers, Listing, Account, Category, CreateListingPayload} from '../../generated';
+import { Resolvers, Listing, Account, Category, CreateListingPayload, DraftAuthHeaderForDraftPhotoOutput} from '../../generated';
 import { CacheScope } from 'apollo-server-types';
 import mongoose, { isValidObjectId } from 'mongoose';
+import { BlobStorage } from '../../../infrastructure/services/blob-storage';
 
 const listing : Resolvers = {
   Listing: {
@@ -84,13 +85,28 @@ const listing : Resolvers = {
       var newListing = (await context.dataSources.listingDomainAPI.addNewListing(args.input)) as Listing ;
       return  {listing: newListing} as CreateListingPayload;
     },
-    createListing: async (parent, args, context, info) => {
-      var newListing = (await context.dataSources.listingDomainAPI.addListing(args.input)) as Listing ;
-      return  {listing: newListing} as CreateListingPayload;
-    },
     updateDraft: async (parent, args, context, info) => {
       return (await context.dataSources.listingDomainAPI.updateDraft(args.input)) as Listing ;
-     
+    },
+    draftAddPhoto: async (parent, args, context, info) => {
+      //TODO: Move blob logic to service
+      const maxSizeMb = .5;
+      const maxSizeBytes = maxSizeMb * 1024 * 1024;
+      const permittedContentTypes = [
+        'image/jpeg',
+        'image/png',
+        'image/gif',
+      ];
+      if (!permittedContentTypes.includes(args.input.contentType)) {
+        return {success:false, errorMessage:'Content type not permitted.'} as DraftAuthHeaderForDraftPhotoOutput;
+      }
+      if (args.input.contentLength > maxSizeBytes) {
+        return {success:false, errorMessage:'Content length exceeds permitted limit.'} as DraftAuthHeaderForDraftPhotoOutput;
+      }
+      var blobName = (await context.dataSources.listingDomainAPI.draftAddPhoto(args.input));
+      var requestDate = new Date().toUTCString();
+      var authHeader = new BlobStorage().generateSharedKey(blobName, args.input.contentLength, requestDate ,args.input.contentType);
+      return {isAuthorized:true, authHeader:authHeader, requestDate:requestDate, blobName:blobName} as DraftAuthHeaderForDraftPhotoOutput;
     },
     publishDraft: async (parent, args, context, info) => {
       return (await context.dataSources.listingDomainAPI.publishDraft(args.id)) as Listing;

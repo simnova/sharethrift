@@ -5,6 +5,7 @@ import { useParams } from 'react-router-dom';
 import { ListingCategorySelectionContainer } from '../components/listing-category-selection-container';
 import { ListingCreateContainer } from '../components/listing-create-container';
 import { ListingDetailContainer } from '../components/listing-detail-container';
+import { ListingDraftPhotosEditContainer } from '../components/listing-draft-photos-edit-container';
 import { useLocation } from 'react-router-dom';
 
 export const ListingsDetail: React.FC<any> = (props) => {
@@ -32,6 +33,7 @@ export const ListingsDetail: React.FC<any> = (props) => {
     <>
       <SubPageLayout header={<PageHeader title="Listing Detail"  onBack={() => window.history.back()} />}>
         <ListingDetailContainer listingId={params.listingId} />
+        <ListingDraftPhotosEditContainer listingId={params.listingId} />
       </SubPageLayout>
     </>
 

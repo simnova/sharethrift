@@ -168,8 +168,25 @@ export type Draft = {
   title?: Maybe<Scalars["String"]>;
   description?: Maybe<Scalars["String"]>;
   tags?: Maybe<Array<Maybe<Scalars["String"]>>>;
+  photos?: Maybe<Array<Maybe<Photo>>>;
   primaryCategory?: Maybe<Category>;
   statusHistory?: Maybe<Array<Maybe<DraftStatus>>>;
+};
+
+export type DraftAuthHeaderForDraftPhotoOutput = {
+  __typename?: "DraftAuthHeaderForDraftPhotoOutput";
+  authHeader?: Maybe<Scalars["String"]>;
+  blobName?: Maybe<Scalars["String"]>;
+  requestDate?: Maybe<Scalars["String"]>;
+  isAuthorized?: Maybe<Scalars["Boolean"]>;
+  errorMessage?: Maybe<Scalars["String"]>;
+};
+
+export type DraftPhotoImageInput = {
+  listingId?: Maybe<Scalars["String"]>;
+  order?: Maybe<Scalars["Int"]>;
+  contentType?: Maybe<Scalars["String"]>;
+  contentLength?: Maybe<Scalars["Int"]>;
 };
 
 export type DraftStatus = {
@@ -256,9 +273,9 @@ export type Mutation = {
   accountAddRole?: Maybe<Account>;
   accountUpdateRole?: Maybe<Account>;
   createCategory?: Maybe<Category>;
-  createListing?: Maybe<CreateListingPayload>;
   createNewListing?: Maybe<CreateListingPayload>;
   createUser?: Maybe<User>;
+  draftAddPhoto: DraftAuthHeaderForDraftPhotoOutput;
   publishDraft?: Maybe<Listing>;
   updateAccount?: Maybe<Account>;
   updateCategory?: Maybe<Category>;
@@ -284,13 +301,13 @@ export type MutationCreateCategoryArgs = {
 };
 
 /**  Base Mutation Type definition - all mutations will be defined in separate files extending this type  */
-export type MutationCreateListingArgs = {
-  input: ListingDetail;
+export type MutationCreateNewListingArgs = {
+  input: ListingNewDraft;
 };
 
 /**  Base Mutation Type definition - all mutations will be defined in separate files extending this type  */
-export type MutationCreateNewListingArgs = {
-  input: ListingNewDraft;
+export type MutationDraftAddPhotoArgs = {
+  input: DraftPhotoImageInput;
 };
 
 /**  Base Mutation Type definition - all mutations will be defined in separate files extending this type  */
@@ -594,6 +611,9 @@ export type ResolversTypes = ResolversObject<{
   Date: ResolverTypeWrapper<Scalars["Date"]>;
   DateTime: ResolverTypeWrapper<Scalars["DateTime"]>;
   Draft: ResolverTypeWrapper<Draft>;
+  DraftAuthHeaderForDraftPhotoOutput: ResolverTypeWrapper<DraftAuthHeaderForDraftPhotoOutput>;
+  DraftPhotoImageInput: DraftPhotoImageInput;
+  Int: ResolverTypeWrapper<Scalars["Int"]>;
   DraftStatus: ResolverTypeWrapper<DraftStatus>;
   Duration: ResolverTypeWrapper<Scalars["Duration"]>;
   EmailAddress: ResolverTypeWrapper<Scalars["EmailAddress"]>;
@@ -645,7 +665,6 @@ export type ResolversTypes = ResolversObject<{
   PermissionsInput: PermissionsInput;
   PhoneNumber: ResolverTypeWrapper<Scalars["PhoneNumber"]>;
   Photo: ResolverTypeWrapper<Photo>;
-  Int: ResolverTypeWrapper<Scalars["Int"]>;
   Point: ResolverTypeWrapper<Point>;
   Float: ResolverTypeWrapper<Scalars["Float"]>;
   Port: ResolverTypeWrapper<Scalars["Port"]>;
@@ -694,6 +713,9 @@ export type ResolversParentTypes = ResolversObject<{
   Date: Scalars["Date"];
   DateTime: Scalars["DateTime"];
   Draft: Draft;
+  DraftAuthHeaderForDraftPhotoOutput: DraftAuthHeaderForDraftPhotoOutput;
+  DraftPhotoImageInput: DraftPhotoImageInput;
+  Int: Scalars["Int"];
   DraftStatus: DraftStatus;
   Duration: Scalars["Duration"];
   EmailAddress: Scalars["EmailAddress"];
@@ -745,7 +767,6 @@ export type ResolversParentTypes = ResolversObject<{
   PermissionsInput: PermissionsInput;
   PhoneNumber: Scalars["PhoneNumber"];
   Photo: Photo;
-  Int: Scalars["Int"];
   Point: Point;
   Float: Scalars["Float"];
   Port: Scalars["Port"];
@@ -1017,6 +1038,11 @@ export type DraftResolvers<
     ParentType,
     ContextType
   >;
+  photos?: Resolver<
+    Maybe<Array<Maybe<ResolversTypes["Photo"]>>>,
+    ParentType,
+    ContextType
+  >;
   primaryCategory?: Resolver<
     Maybe<ResolversTypes["Category"]>,
     ParentType,
@@ -1024,6 +1050,34 @@ export type DraftResolvers<
   >;
   statusHistory?: Resolver<
     Maybe<Array<Maybe<ResolversTypes["DraftStatus"]>>>,
+    ParentType,
+    ContextType
+  >;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+}>;
+
+export type DraftAuthHeaderForDraftPhotoOutputResolvers<
+  ContextType = Context,
+  ParentType extends ResolversParentTypes["DraftAuthHeaderForDraftPhotoOutput"] = ResolversParentTypes["DraftAuthHeaderForDraftPhotoOutput"]
+> = ResolversObject<{
+  authHeader?: Resolver<
+    Maybe<ResolversTypes["String"]>,
+    ParentType,
+    ContextType
+  >;
+  blobName?: Resolver<Maybe<ResolversTypes["String"]>, ParentType, ContextType>;
+  requestDate?: Resolver<
+    Maybe<ResolversTypes["String"]>,
+    ParentType,
+    ContextType
+  >;
+  isAuthorized?: Resolver<
+    Maybe<ResolversTypes["Boolean"]>,
+    ParentType,
+    ContextType
+  >;
+  errorMessage?: Resolver<
+    Maybe<ResolversTypes["String"]>,
     ParentType,
     ContextType
   >;
@@ -1300,12 +1354,6 @@ export type MutationResolvers<
     ContextType,
     RequireFields<MutationCreateCategoryArgs, "category">
   >;
-  createListing?: Resolver<
-    Maybe<ResolversTypes["CreateListingPayload"]>,
-    ParentType,
-    ContextType,
-    RequireFields<MutationCreateListingArgs, "input">
-  >;
   createNewListing?: Resolver<
     Maybe<ResolversTypes["CreateListingPayload"]>,
     ParentType,
@@ -1313,6 +1361,12 @@ export type MutationResolvers<
     RequireFields<MutationCreateNewListingArgs, "input">
   >;
   createUser?: Resolver<Maybe<ResolversTypes["User"]>, ParentType, ContextType>;
+  draftAddPhoto?: Resolver<
+    ResolversTypes["DraftAuthHeaderForDraftPhotoOutput"],
+    ParentType,
+    ContextType,
+    RequireFields<MutationDraftAddPhotoArgs, "input">
+  >;
   publishDraft?: Resolver<
     Maybe<ResolversTypes["Listing"]>,
     ParentType,
@@ -1715,6 +1769,7 @@ export type Resolvers<ContextType = Context> = ResolversObject<{
   Date?: GraphQLScalarType;
   DateTime?: GraphQLScalarType;
   Draft?: DraftResolvers<ContextType>;
+  DraftAuthHeaderForDraftPhotoOutput?: DraftAuthHeaderForDraftPhotoOutputResolvers<ContextType>;
   DraftStatus?: DraftStatusResolvers<ContextType>;
   Duration?: GraphQLScalarType;
   EmailAddress?: GraphQLScalarType;
