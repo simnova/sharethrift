@@ -13,6 +13,12 @@ mutation ListingDraftPhotosEditContainerDraftAddPhoto($input: DraftPhotoImageInp
     errorMessage
   }
 }
+mutation ListingDraftPhotosEditContainerDraftRemovePhoto($input: DraftRemovePhotoImageInput!) {
+  draftRemovePhoto(input: $input) {
+    success
+    errorMessage
+  }
+}
 
 fragment ListingDraftPhotosEditContainerListingFields on Listing {
   id  

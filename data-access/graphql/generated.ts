@@ -189,6 +189,17 @@ export type DraftPhotoImageInput = {
   contentLength?: Maybe<Scalars["Int"]>;
 };
 
+export type DraftRemovePhotoImageInput = {
+  listingId: Scalars["ID"];
+  order: Scalars["Int"];
+};
+
+export type DraftRemovePhotoResult = {
+  __typename?: "DraftRemovePhotoResult";
+  success: Scalars["Boolean"];
+  errorMessage?: Maybe<Scalars["String"]>;
+};
+
 export type DraftStatus = {
   __typename?: "DraftStatus";
   statusCode?: Maybe<Scalars["String"]>;
@@ -276,6 +287,7 @@ export type Mutation = {
   createNewListing?: Maybe<CreateListingPayload>;
   createUser?: Maybe<User>;
   draftAddPhoto: DraftAuthHeaderForDraftPhotoOutput;
+  draftRemovePhoto: DraftRemovePhotoResult;
   publishDraft?: Maybe<Listing>;
   updateAccount?: Maybe<Account>;
   updateCategory?: Maybe<Category>;
@@ -308,6 +320,11 @@ export type MutationCreateNewListingArgs = {
 /**  Base Mutation Type definition - all mutations will be defined in separate files extending this type  */
 export type MutationDraftAddPhotoArgs = {
   input: DraftPhotoImageInput;
+};
+
+/**  Base Mutation Type definition - all mutations will be defined in separate files extending this type  */
+export type MutationDraftRemovePhotoArgs = {
+  input: DraftRemovePhotoImageInput;
 };
 
 /**  Base Mutation Type definition - all mutations will be defined in separate files extending this type  */
@@ -614,6 +631,9 @@ export type ResolversTypes = ResolversObject<{
   DraftAuthHeaderForDraftPhotoOutput: ResolverTypeWrapper<DraftAuthHeaderForDraftPhotoOutput>;
   DraftPhotoImageInput: DraftPhotoImageInput;
   Int: ResolverTypeWrapper<Scalars["Int"]>;
+  DraftRemovePhotoImageInput: DraftRemovePhotoImageInput;
+  ID: ResolverTypeWrapper<Scalars["ID"]>;
+  DraftRemovePhotoResult: ResolverTypeWrapper<DraftRemovePhotoResult>;
   DraftStatus: ResolverTypeWrapper<DraftStatus>;
   Duration: ResolverTypeWrapper<Scalars["Duration"]>;
   EmailAddress: ResolverTypeWrapper<Scalars["EmailAddress"]>;
@@ -634,7 +654,6 @@ export type ResolversTypes = ResolversObject<{
   Listing: ResolverTypeWrapper<Listing>;
   ListingDetail: ListingDetail;
   ListingDraft: ListingDraft;
-  ID: ResolverTypeWrapper<Scalars["ID"]>;
   ListingNewDraft: ListingNewDraft;
   ListingPermissions: ResolverTypeWrapper<ListingPermissions>;
   ListingPermissionsInput: ListingPermissionsInput;
@@ -716,6 +735,9 @@ export type ResolversParentTypes = ResolversObject<{
   DraftAuthHeaderForDraftPhotoOutput: DraftAuthHeaderForDraftPhotoOutput;
   DraftPhotoImageInput: DraftPhotoImageInput;
   Int: Scalars["Int"];
+  DraftRemovePhotoImageInput: DraftRemovePhotoImageInput;
+  ID: Scalars["ID"];
+  DraftRemovePhotoResult: DraftRemovePhotoResult;
   DraftStatus: DraftStatus;
   Duration: Scalars["Duration"];
   EmailAddress: Scalars["EmailAddress"];
@@ -736,7 +758,6 @@ export type ResolversParentTypes = ResolversObject<{
   Listing: Listing;
   ListingDetail: ListingDetail;
   ListingDraft: ListingDraft;
-  ID: Scalars["ID"];
   ListingNewDraft: ListingNewDraft;
   ListingPermissions: ListingPermissions;
   ListingPermissionsInput: ListingPermissionsInput;
@@ -1084,6 +1105,19 @@ export type DraftAuthHeaderForDraftPhotoOutputResolvers<
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 }>;
 
+export type DraftRemovePhotoResultResolvers<
+  ContextType = Context,
+  ParentType extends ResolversParentTypes["DraftRemovePhotoResult"] = ResolversParentTypes["DraftRemovePhotoResult"]
+> = ResolversObject<{
+  success?: Resolver<ResolversTypes["Boolean"], ParentType, ContextType>;
+  errorMessage?: Resolver<
+    Maybe<ResolversTypes["String"]>,
+    ParentType,
+    ContextType
+  >;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+}>;
+
 export type DraftStatusResolvers<
   ContextType = Context,
   ParentType extends ResolversParentTypes["DraftStatus"] = ResolversParentTypes["DraftStatus"]
@@ -1366,6 +1400,12 @@ export type MutationResolvers<
     ParentType,
     ContextType,
     RequireFields<MutationDraftAddPhotoArgs, "input">
+  >;
+  draftRemovePhoto?: Resolver<
+    ResolversTypes["DraftRemovePhotoResult"],
+    ParentType,
+    ContextType,
+    RequireFields<MutationDraftRemovePhotoArgs, "input">
   >;
   publishDraft?: Resolver<
     Maybe<ResolversTypes["Listing"]>,
@@ -1770,6 +1810,7 @@ export type Resolvers<ContextType = Context> = ResolversObject<{
   DateTime?: GraphQLScalarType;
   Draft?: DraftResolvers<ContextType>;
   DraftAuthHeaderForDraftPhotoOutput?: DraftAuthHeaderForDraftPhotoOutputResolvers<ContextType>;
+  DraftRemovePhotoResult?: DraftRemovePhotoResultResolvers<ContextType>;
   DraftStatus?: DraftStatusResolvers<ContextType>;
   Duration?: GraphQLScalarType;
   EmailAddress?: GraphQLScalarType;

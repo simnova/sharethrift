@@ -2,7 +2,7 @@ import { Listing as ListingDO } from '../../../domain/contexts/listing/listing';
 import { ListingConverter, ListingDomainAdapter }from '../../../domain/infrastructure/persistance/adapters/listing-domain-adapter';
 import { MongoListingRepository } from '../../../domain/infrastructure/persistance/repositories/mongo-listing-repository';
 import { Context } from '../../context';
-import { ListingDetail, ListingDraft, ListingNewDraft, DraftPhotoImageInput } from '../../generated';
+import { ListingDetail, ListingDraft, ListingNewDraft, DraftPhotoImageInput,DraftRemovePhotoImageInput } from '../../generated';
 import { DomainDataSource } from './domain-data-source';
 import { Listing } from '../../../infrastructure/data-sources/cosmos-db/models/listing';
 import { CategoryDomainAdapter } from '../../../domain/infrastructure/persistance/adapters/category-domain-adapter';
@@ -29,6 +29,15 @@ export class Listings extends DomainDataSource<Context,Listing,PropType,DomainTy
       await repo.save(domainObject);
     });
     return result;
+  }
+
+  async draftRemovePhoto(photoInfo: DraftRemovePhotoImageInput) : Promise<void> {
+    ensureAccountPortalUser(this.context);
+    await this.withTransaction(async (repo) => {
+      let domainObject = await repo.get(photoInfo.listingId);
+      await domainObject.draft.requestRemovePhoto(photoInfo.order);
+      await repo.save(domainObject);
+    });
   }
 
   /**

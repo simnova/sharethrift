@@ -1,6 +1,7 @@
 import { BlobRequest } from './blob-request';
 import { AuthHeader } from './auth-header';
 import { AccountInfo } from './account-info';
+import { BlobActions } from './blob-actions';
 
 export class BlobStorage {
 
@@ -13,6 +14,10 @@ export class BlobStorage {
     this.containerName = containerName;
     this.accountName = accountName;
     this.accountKey = accountKey;
+  }
+
+  public deleteBlob(blobName:string):Promise<void>{
+    return (new BlobActions(this.accountName,this.accountKey)).deleteBlob(blobName,this.containerName);
   }
 
   public generateSharedKey(blobName:string,fileSizeBytes:number,requestDate:string,mimeType:string):string{

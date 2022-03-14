@@ -181,6 +181,17 @@ export type DraftPhotoImageInput = {
   contentLength?: Maybe<Scalars["Int"]>;
 };
 
+export type DraftRemovePhotoImageInput = {
+  listingId: Scalars["ID"];
+  order: Scalars["Int"];
+};
+
+export type DraftRemovePhotoResult = {
+  __typename?: "DraftRemovePhotoResult";
+  success: Scalars["Boolean"];
+  errorMessage?: Maybe<Scalars["String"]>;
+};
+
 export type DraftStatus = {
   __typename?: "DraftStatus";
   statusCode?: Maybe<Scalars["String"]>;
@@ -268,6 +279,7 @@ export type Mutation = {
   createNewListing?: Maybe<CreateListingPayload>;
   createUser?: Maybe<User>;
   draftAddPhoto: DraftAuthHeaderForDraftPhotoOutput;
+  draftRemovePhoto: DraftRemovePhotoResult;
   publishDraft?: Maybe<Listing>;
   updateAccount?: Maybe<Account>;
   updateCategory?: Maybe<Category>;
@@ -300,6 +312,11 @@ export type MutationCreateNewListingArgs = {
 /**  Base Mutation Type definition - all mutations will be defined in separate files extending this type  */
 export type MutationDraftAddPhotoArgs = {
   input: DraftPhotoImageInput;
+};
+
+/**  Base Mutation Type definition - all mutations will be defined in separate files extending this type  */
+export type MutationDraftRemovePhotoArgs = {
+  input: DraftRemovePhotoImageInput;
 };
 
 /**  Base Mutation Type definition - all mutations will be defined in separate files extending this type  */
@@ -991,6 +1008,20 @@ export type ListingDraftPhotosEditContainerDraftAddPhotoMutation = {
     blobName?: Maybe<string>;
     requestDate?: Maybe<string>;
     isAuthorized?: Maybe<boolean>;
+    errorMessage?: Maybe<string>;
+  };
+};
+
+export type ListingDraftPhotosEditContainerDraftRemovePhotoMutationVariables =
+  Exact<{
+    input: DraftRemovePhotoImageInput;
+  }>;
+
+export type ListingDraftPhotosEditContainerDraftRemovePhotoMutation = {
+  __typename?: "Mutation";
+  draftRemovePhoto: {
+    __typename?: "DraftRemovePhotoResult";
+    success: boolean;
     errorMessage?: Maybe<string>;
   };
 };
@@ -3038,6 +3069,67 @@ export const ListingDraftPhotosEditContainerDraftAddPhotoDocument = {
 } as unknown as DocumentNode<
   ListingDraftPhotosEditContainerDraftAddPhotoMutation,
   ListingDraftPhotosEditContainerDraftAddPhotoMutationVariables
+>;
+export const ListingDraftPhotosEditContainerDraftRemovePhotoDocument = {
+  kind: "Document",
+  definitions: [
+    {
+      kind: "OperationDefinition",
+      operation: "mutation",
+      name: {
+        kind: "Name",
+        value: "ListingDraftPhotosEditContainerDraftRemovePhoto",
+      },
+      variableDefinitions: [
+        {
+          kind: "VariableDefinition",
+          variable: {
+            kind: "Variable",
+            name: { kind: "Name", value: "input" },
+          },
+          type: {
+            kind: "NonNullType",
+            type: {
+              kind: "NamedType",
+              name: { kind: "Name", value: "DraftRemovePhotoImageInput" },
+            },
+          },
+        },
+      ],
+      selectionSet: {
+        kind: "SelectionSet",
+        selections: [
+          {
+            kind: "Field",
+            name: { kind: "Name", value: "draftRemovePhoto" },
+            arguments: [
+              {
+                kind: "Argument",
+                name: { kind: "Name", value: "input" },
+                value: {
+                  kind: "Variable",
+                  name: { kind: "Name", value: "input" },
+                },
+              },
+            ],
+            selectionSet: {
+              kind: "SelectionSet",
+              selections: [
+                { kind: "Field", name: { kind: "Name", value: "success" } },
+                {
+                  kind: "Field",
+                  name: { kind: "Name", value: "errorMessage" },
+                },
+              ],
+            },
+          },
+        ],
+      },
+    },
+  ],
+} as unknown as DocumentNode<
+  ListingDraftPhotosEditContainerDraftRemovePhotoMutation,
+  ListingDraftPhotosEditContainerDraftRemovePhotoMutationVariables
 >;
 export const ListingsListListingsByAccountHandleDocument = {
   kind: "Document",

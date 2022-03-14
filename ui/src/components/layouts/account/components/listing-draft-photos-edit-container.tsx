@@ -1,4 +1,4 @@
-import { ListingDraftPhotosEditContainerListingDocument, ListingDraftPhotosEditContainerDraftAddPhotoDocument } from '../../../../generated';
+import { ListingDraftPhotosEditContainerListingDocument, ListingDraftPhotosEditContainerDraftAddPhotoDocument,ListingDraftPhotosEditContainerDraftRemovePhotoDocument } from '../../../../generated';
 import { useQuery, useMutation } from '@apollo/client';
 import { Skeleton } from 'antd';
 import { ListingDraftPhotosEdit } from './listing-draft-photos-edit'
@@ -10,6 +10,17 @@ export const ListingDraftPhotosEditContainer:React.FC<any> = (props) => {
     }
   });
   const [getAuthHeader] = useMutation(ListingDraftPhotosEditContainerDraftAddPhotoDocument);
+  const [removePhoto]= useMutation(ListingDraftPhotosEditContainerDraftRemovePhotoDocument);
+
+  const handleRemovePhoto = async (order:number) : Promise<boolean> => {
+    var result = await removePhoto({variables: {
+      input: {
+        order: order,
+        listingId: props.listingId
+      }
+    }});
+    return (result?.data?.draftRemovePhoto)?.success??false;
+  }
 
   const content = () => {
     if(listingLoading ) {
@@ -32,6 +43,7 @@ export const ListingDraftPhotosEditContainer:React.FC<any> = (props) => {
             }});
             return result?.data?.draftAddPhoto as AuthResult;
           }}
+          onRemove={handleRemovePhoto}
           />
       );
     }

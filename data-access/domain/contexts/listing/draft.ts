@@ -134,7 +134,7 @@ export class Draft extends Entity<DraftProps> implements DraftEntityReference {
     }
     var createNewDocumentId:boolean
     var currentPhoto = this.props.photos.items.find(photo=>photo.order==order);
-    if(order>=5 || order<0){
+    if(order>5 || order<=0){
       throw new Error('Max 5 photos allowed');
     }
 
@@ -145,7 +145,7 @@ export class Draft extends Entity<DraftProps> implements DraftEntityReference {
       if(this.root.photos.find(photo=>photo.documentId==currentPhoto.documentId)){ // root already has photo, so don't overwrite it
         createNewDocumentId = true;
       }else {
-        createNewDocumentId = false; //draft has photo in this slot, but root does have this photo, so it's ok to overwrite it
+        createNewDocumentId = false; //draft has photo in this slot, but root does not have this photo at all, so it's ok to overwrite it
       }
     } 
 
@@ -192,7 +192,7 @@ export class Draft extends Entity<DraftProps> implements DraftEntityReference {
     this.props.primaryCategory = category;
   }
 
-  public async requestRemovePhoto(id: string, user: Passport) : Promise<void>{
+  public async requestRemovePhoto(order: number) : Promise<void>{
     if(!await this.visa.determineIf((permissions) => permissions.canManageListings)) {
       throw new Error('Permission denied');
     }
@@ -200,10 +200,11 @@ export class Draft extends Entity<DraftProps> implements DraftEntityReference {
       throw new Error('Cannot remote photos unless in draft status');
     }
 
-    let photoToRemove = this.props.photos.items.find(photo=>photo.id==id);
+    let photoToRemove = this.props.photos.items.find(photo=>photo.order==order);
     if(typeof photoToRemove=='undefined'){
       throw new Error('Photo not found');
     }
+
     if(!this.root.photos.find(photo=>photo.documentId==photoToRemove.documentId)){ //root does not have photo, so can remove it
       this.root.addIntegrationEvent(ListingPhotoDeletedEvent,{documentId:photoToRemove.documentId});
     }

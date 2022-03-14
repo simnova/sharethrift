@@ -8,6 +8,7 @@ export interface ComponentProp {
     
   },
   authorizeRequest: (file: File, order:number) => Promise<AuthResult>,
+  onRemove: (order:number) => Promise<boolean>
 }
 
 export const ListingDraftPhotosEdit:React.FC<ComponentProp> = (props) => {
@@ -27,6 +28,7 @@ export const ListingDraftPhotosEdit:React.FC<ComponentProp> = (props) => {
           defaultImage={defaultImage}
           blobPath={blobPath}
           authorizeRequest={(file) => props.authorizeRequest(file, i)}
+          onRemove={() => props.onRemove(i)}
           />);
     }
     return elements;

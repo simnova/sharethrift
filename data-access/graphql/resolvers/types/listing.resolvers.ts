@@ -1,4 +1,4 @@
-import { Resolvers, Listing, Account, Category, CreateListingPayload, DraftAuthHeaderForDraftPhotoOutput} from '../../generated';
+import { Resolvers, Listing, Account, Category, CreateListingPayload, DraftAuthHeaderForDraftPhotoOutput, DraftRemovePhotoResult} from '../../generated';
 import { CacheScope } from 'apollo-server-types';
 import mongoose, { isValidObjectId } from 'mongoose';
 import { BlobStorage } from '../../../infrastructure/services/blob-storage';
@@ -108,6 +108,15 @@ const listing : Resolvers = {
       var authHeader = new BlobStorage().generateSharedKey(blobName, args.input.contentLength, requestDate ,args.input.contentType);
       return {isAuthorized:true, authHeader:authHeader, requestDate:requestDate, blobName:blobName} as DraftAuthHeaderForDraftPhotoOutput;
     },
+    draftRemovePhoto: async (parent, args, context, info) => {
+      try {
+        await context.dataSources.listingDomainAPI.draftRemovePhoto(args.input);
+        return {success:true} as DraftRemovePhotoResult;
+      } catch (error) {
+        return {success:false, errorMessage:error.message} as DraftRemovePhotoResult;
+      }
+    },
+
     publishDraft: async (parent, args, context, info) => {
       return (await context.dataSources.listingDomainAPI.publishDraft(args.id)) as Listing;
     }

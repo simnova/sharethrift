@@ -29,6 +29,7 @@ extend type Mutation {
   updateDraft(input: ListingDraft!) : Listing
   publishDraft(id: ID!) : Listing
   draftAddPhoto(input: DraftPhotoImageInput!): DraftAuthHeaderForDraftPhotoOutput!
+  draftRemovePhoto(input: DraftRemovePhotoImageInput!): DraftRemovePhotoResult!
 }
 
 type CreateListingPayload {
@@ -115,7 +116,14 @@ type DraftStatus {
   createdAt: DateTime
 }
 
-
+input DraftRemovePhotoImageInput {
+  listingId: ID!
+  order: Int!
+}
+type DraftRemovePhotoResult {
+  success: Boolean!,
+  errorMessage: String
+}
 
 input DraftPhotoImageInput {
   listingId: String
