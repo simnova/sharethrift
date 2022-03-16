@@ -23,7 +23,10 @@ reconnecting with nature
         </div>
         
       </div>
+      <div className="pt-8 pb-8">
       <ListingsContainer />
+
+      </div>
 
     </div>
      

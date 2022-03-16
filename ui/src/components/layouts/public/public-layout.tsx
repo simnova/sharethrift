@@ -5,7 +5,7 @@ import { Header } from '../../ui/organisms/header';
 export const PublicLayout: React.FC<any> = (props) => {
   return (
     <>
-      <div className='h-screen w-screen bg-gray-100 flex flex-col'>
+      <div className='h-screen w-screen flex flex-col'>
       
         <nav className="container mx-auto flex items-center justify-between flex-wrap bg-teal-500 p-6">
           <div className="flex items-center flex-shrink-0 text-white mr-6">
@@ -14,13 +14,13 @@ export const PublicLayout: React.FC<any> = (props) => {
           </div>
         </nav>
 
-        <section className='container bg-green-300 flex-1 mx-auto'>
+        <section className='container bg-white flex-1 mx-auto'>
           <Outlet />
         </section>
 
         <footer className={'bg-white'}>
           <div className={'container mx-auto'}>
-            <div className={'flex flex-col md:flex-row bg-sky-500/100'}>
+            <div className={'flex flex-col md:flex-row'} style={{backgroundColor:'var(--color-background-default)'}} >
               <div className={'flex-1 p-6'}>
                 <ul className={'list-reset text-sm'}>
                   <li className={'mb-2'}>
