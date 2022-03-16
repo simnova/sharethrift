@@ -1,4 +1,4 @@
-import { Resolvers, Listing, Account, Category, CreateListingPayload, DraftAuthHeaderForDraftPhotoOutput, DraftRemovePhotoResult} from '../../generated';
+import { Resolvers, Listing, Account, Category, CreateListingPayload, DraftAuthHeaderForDraftPhotoOutput, DraftRemovePhotoResult ,ListingSearchResult} from '../../generated';
 import { CacheScope } from 'apollo-server-types';
 import mongoose, { isValidObjectId } from 'mongoose';
 import { BlobStorage } from '../../../infrastructure/services/blob-storage';
@@ -61,6 +61,7 @@ const listing : Resolvers = {
   
     listings : async (parent, args, context, info) => {
       console.log(`Resolver>Query>listings`)
+
       return (await context.dataSources.listingAPI.getListings()) as Listing[];
     },
 
@@ -70,7 +71,27 @@ const listing : Resolvers = {
     listingSearch : async (parent, args, context, info) => {
      info.cacheControl.setCacheHint({ maxAge: 60,scope: CacheScope.Public });
       const searchService = new CognativeSearch();
-      const searchResults = await searchService.search('listings', args.input.searchString);
+      //var tagString = (!args.input.tags || args.input.tags.length === 0) ? "":  " AND tags:('" + args.input.tags?.join("' AND '") + "')";
+
+//(tags/any(t: t eq 'tagOne') or tags/any(t: t eq 'tagTwo'))
+//      var tagFilter = (!args.input.tags || args.input.tags.length === 0 || args.input.tags[0].trim().length === 0 ) ? undefined:  "tags/all(t: search.in(t, '" + args.input.tags?.join(", ") + "'))";
+      var tagFilter = (!args.input.tags || args.input.tags.length === 0 || args.input.tags[0].trim().length === 0 ) ? undefined:  "tags/any(t: t eq '" + args.input.tags?.join("') and tags/any(t: t eq '") + "')";
+
+console.log(`Resolver>Query>listingSearch ${args.input.tags.length}`)
+      console.log(`Resolver>Query>listingSearch ${args.input.searchString} ${tagFilter??''}`)
+      const searchResults = await searchService.search(
+        'listings', 
+        args.input.searchString,// + tagString,
+        {
+          queryType:"full", //needed for lucene style search
+          searchMode:"all",
+          filter: tagFilter,
+          facets:[
+            "tags",
+            "primaryCategory"
+          ],
+      });
+      //queryType : full => search all fields (lucene)
     
       console.log(`Resolver>Query>listingSearch ${JSON.stringify(searchResults)}`);
       var idList:string[] =[]
@@ -81,9 +102,15 @@ const listing : Resolvers = {
       //var pageOne = await searchResults.results.byPage[0];
       //console.log(`Resolver>Query>listingSearch ${JSON.stringify(pageOne)}`);
       //var idList = pageOne.map(r => r['id']);
-      var results = await context.dataSources.listingAPI.getListingsByIds(idList);  //.getListingsFromSearchResults(searchResults);
+      var results = await context.dataSources.listingAPI.getListingsByIds(idList) as Listing[];  //.getListingsFromSearchResults(searchResults);
 //      console.log(`Resolver>Query>listingSearch ${JSON.stringify(results)}`);
-      return results as Listing[];
+      //return results as Listing[];
+      return {
+        listingResults : results,
+        facets: {
+          tags: searchResults.facets.tags,
+        }
+      } as ListingSearchResult  
     },
     listingsByAccountHandle : async (parent, args, context, info) => {
       var result: Listing[] = [];

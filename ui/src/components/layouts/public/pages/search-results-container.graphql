@@ -1,30 +1,38 @@
 query SearchResultsContainerListingSearch($input: ListingSearchInput!) {
   listingSearch(input: $input) {
-    ...ListingContainerListingSearchFields
+    ...SearchResultsContainerListingSearchFields
   }
 }
 
-fragment SearchResultsListingSearchFields on Listing {
-  id
-  account {
+fragment SearchResultsContainerListingSearchFields on ListingSearchResult {
+  listingResults {
     id
-    name
+    account {
+      id
+      name
+    }
+    title
+    description
+    tags
+    createdAt
+    primaryCategory {
+      id
+      name
+    }
+    photos {
+      order
+      documentId
+    }
+    location {
+      address {
+        freeformAddress
+      }
+    }
   }
-  title
-  description
-  tags
-  createdAt
-  primaryCategory {
-    id
-    name
-  }
-  photos {
-    order
-    documentId
-  }
-  location {
-    address {
-      freeformAddress
+  facets {
+    tags {
+      value
+      count
     }
   }
 }

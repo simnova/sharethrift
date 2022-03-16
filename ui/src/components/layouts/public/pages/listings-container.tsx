@@ -17,9 +17,9 @@ export const ListingsContainer: React.FC<any> = (props) => {
       return <div><Skeleton active /></div>
     } else if(listingError) {
       return <div>{JSON.stringify(listingError)}</div>
-    } else if(listingData && listingData.listingSearch && listingData.listingSearch) {
+    } else if(listingData && listingData.listingSearch && listingData.listingSearch && listingData.listingSearch.listingResults) {
       
-      return <Listings data={listingData.listingSearch} />
+      return <Listings data={listingData.listingSearch.listingResults} />
     } else {
       return <div>No data</div>
     }

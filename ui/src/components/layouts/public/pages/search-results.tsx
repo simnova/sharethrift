@@ -13,7 +13,6 @@ export const SearchResults: React.FC<any> = (props) => {
 
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-      hello
     {results(props.data)}
     </div>
 

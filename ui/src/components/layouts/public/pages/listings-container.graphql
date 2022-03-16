@@ -4,27 +4,29 @@ query ListingContainerListingSearch($input: ListingSearchInput!) {
   }
 }
 
-fragment ListingContainerListingSearchFields on Listing {
-  id
-  account {
+fragment ListingContainerListingSearchFields on ListingSearchResult {
+  listingResults {
     id
-    name
-  }
-  title
-  description
-  tags
-  createdAt
-  primaryCategory {
-    id
-    name
-  }
-  photos {
-    order
-    documentId
-  }
-  location {
-    address {
-      freeformAddress
+    account {
+      id
+      name
+    }
+    title
+    description
+    tags
+    createdAt
+    primaryCategory {
+      id
+      name
+    }
+    photos {
+      order
+      documentId
+    }
+    location {
+      address {
+        freeformAddress
+      }
     }
   }
 }

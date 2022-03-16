@@ -208,6 +208,12 @@ export type DraftStatus = {
   createdAt?: Maybe<Scalars["DateTime"]>;
 };
 
+export type FacetDetail = {
+  __typename?: "FacetDetail";
+  value?: Maybe<Scalars["String"]>;
+  count?: Maybe<Scalars["Int"]>;
+};
+
 /**  https://www.apollographql.com/blog/graphql/basics/designing-graphql-mutations/  */
 export type Listing = MongoBase & {
   __typename?: "Listing";
@@ -257,12 +263,25 @@ export type ListingPermissionsInput = {
   canManageListings: Scalars["Boolean"];
 };
 
+export type ListingSearchFacets = {
+  __typename?: "ListingSearchFacets";
+  tags?: Maybe<Array<Maybe<FacetDetail>>>;
+  primaryCategory?: Maybe<Array<Maybe<FacetDetail>>>;
+};
+
 export type ListingSearchInput = {
   searchString?: Maybe<Scalars["String"]>;
   tags?: Maybe<Array<Maybe<Scalars["String"]>>>;
   category?: Maybe<Scalars["String"]>;
   limit?: Maybe<Scalars["Int"]>;
   skip?: Maybe<Scalars["Int"]>;
+};
+
+export type ListingSearchResult = {
+  __typename?: "ListingSearchResult";
+  listingResults?: Maybe<Array<Maybe<Listing>>>;
+  total?: Maybe<Scalars["Int"]>;
+  facets?: Maybe<ListingSearchFacets>;
 };
 
 export type Location = MongoBase & {
@@ -406,7 +425,7 @@ export type Query = {
   category?: Maybe<Category>;
   currentUser?: Maybe<User>;
   listing?: Maybe<Listing>;
-  listingSearch?: Maybe<Array<Maybe<Listing>>>;
+  listingSearch?: Maybe<ListingSearchResult>;
   listings?: Maybe<Array<Maybe<Listing>>>;
   listingsByAccountHandle?: Maybe<Array<Maybe<Listing>>>;
   listingsForAccount?: Maybe<Array<Maybe<Listing>>>;
@@ -652,6 +671,7 @@ export type ResolversTypes = ResolversObject<{
   DraftStatus: ResolverTypeWrapper<DraftStatus>;
   Duration: ResolverTypeWrapper<Scalars["Duration"]>;
   EmailAddress: ResolverTypeWrapper<Scalars["EmailAddress"]>;
+  FacetDetail: ResolverTypeWrapper<FacetDetail>;
   GUID: ResolverTypeWrapper<Scalars["GUID"]>;
   HSL: ResolverTypeWrapper<Scalars["HSL"]>;
   HSLA: ResolverTypeWrapper<Scalars["HSLA"]>;
@@ -672,7 +692,9 @@ export type ResolversTypes = ResolversObject<{
   ListingNewDraft: ListingNewDraft;
   ListingPermissions: ResolverTypeWrapper<ListingPermissions>;
   ListingPermissionsInput: ListingPermissionsInput;
+  ListingSearchFacets: ResolverTypeWrapper<ListingSearchFacets>;
   ListingSearchInput: ListingSearchInput;
+  ListingSearchResult: ResolverTypeWrapper<ListingSearchResult>;
   LocalDate: ResolverTypeWrapper<Scalars["LocalDate"]>;
   LocalEndTime: ResolverTypeWrapper<Scalars["LocalEndTime"]>;
   LocalTime: ResolverTypeWrapper<Scalars["LocalTime"]>;
@@ -757,6 +779,7 @@ export type ResolversParentTypes = ResolversObject<{
   DraftStatus: DraftStatus;
   Duration: Scalars["Duration"];
   EmailAddress: Scalars["EmailAddress"];
+  FacetDetail: FacetDetail;
   GUID: Scalars["GUID"];
   HSL: Scalars["HSL"];
   HSLA: Scalars["HSLA"];
@@ -777,7 +800,9 @@ export type ResolversParentTypes = ResolversObject<{
   ListingNewDraft: ListingNewDraft;
   ListingPermissions: ListingPermissions;
   ListingPermissionsInput: ListingPermissionsInput;
+  ListingSearchFacets: ListingSearchFacets;
   ListingSearchInput: ListingSearchInput;
+  ListingSearchResult: ListingSearchResult;
   LocalDate: Scalars["LocalDate"];
   LocalEndTime: Scalars["LocalEndTime"];
   LocalTime: Scalars["LocalTime"];
@@ -1168,6 +1193,15 @@ export interface EmailAddressScalarConfig
   name: "EmailAddress";
 }
 
+export type FacetDetailResolvers<
+  ContextType = Context,
+  ParentType extends ResolversParentTypes["FacetDetail"] = ResolversParentTypes["FacetDetail"]
+> = ResolversObject<{
+  value?: Resolver<Maybe<ResolversTypes["String"]>, ParentType, ContextType>;
+  count?: Resolver<Maybe<ResolversTypes["Int"]>, ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+}>;
+
 export interface GuidScalarConfig
   extends GraphQLScalarTypeConfig<ResolversTypes["GUID"], any> {
   name: "GUID";
@@ -1295,6 +1329,41 @@ export type ListingPermissionsResolvers<
 > = ResolversObject<{
   canManageListings?: Resolver<
     ResolversTypes["Boolean"],
+    ParentType,
+    ContextType
+  >;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+}>;
+
+export type ListingSearchFacetsResolvers<
+  ContextType = Context,
+  ParentType extends ResolversParentTypes["ListingSearchFacets"] = ResolversParentTypes["ListingSearchFacets"]
+> = ResolversObject<{
+  tags?: Resolver<
+    Maybe<Array<Maybe<ResolversTypes["FacetDetail"]>>>,
+    ParentType,
+    ContextType
+  >;
+  primaryCategory?: Resolver<
+    Maybe<Array<Maybe<ResolversTypes["FacetDetail"]>>>,
+    ParentType,
+    ContextType
+  >;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+}>;
+
+export type ListingSearchResultResolvers<
+  ContextType = Context,
+  ParentType extends ResolversParentTypes["ListingSearchResult"] = ResolversParentTypes["ListingSearchResult"]
+> = ResolversObject<{
+  listingResults?: Resolver<
+    Maybe<Array<Maybe<ResolversTypes["Listing"]>>>,
+    ParentType,
+    ContextType
+  >;
+  total?: Resolver<Maybe<ResolversTypes["Int"]>, ParentType, ContextType>;
+  facets?: Resolver<
+    Maybe<ResolversTypes["ListingSearchFacets"]>,
     ParentType,
     ContextType
   >;
@@ -1633,7 +1702,7 @@ export type QueryResolvers<
     RequireFields<QueryListingArgs, "id">
   >;
   listingSearch?: Resolver<
-    Maybe<Array<Maybe<ResolversTypes["Listing"]>>>,
+    Maybe<ResolversTypes["ListingSearchResult"]>,
     ParentType,
     ContextType,
     RequireFields<QueryListingSearchArgs, "input">
@@ -1838,6 +1907,7 @@ export type Resolvers<ContextType = Context> = ResolversObject<{
   DraftStatus?: DraftStatusResolvers<ContextType>;
   Duration?: GraphQLScalarType;
   EmailAddress?: GraphQLScalarType;
+  FacetDetail?: FacetDetailResolvers<ContextType>;
   GUID?: GraphQLScalarType;
   HSL?: GraphQLScalarType;
   HSLA?: GraphQLScalarType;
@@ -1854,6 +1924,8 @@ export type Resolvers<ContextType = Context> = ResolversObject<{
   Latitude?: GraphQLScalarType;
   Listing?: ListingResolvers<ContextType>;
   ListingPermissions?: ListingPermissionsResolvers<ContextType>;
+  ListingSearchFacets?: ListingSearchFacetsResolvers<ContextType>;
+  ListingSearchResult?: ListingSearchResultResolvers<ContextType>;
   LocalDate?: GraphQLScalarType;
   LocalEndTime?: GraphQLScalarType;
   LocalTime?: GraphQLScalarType;
