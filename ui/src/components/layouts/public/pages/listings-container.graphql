@@ -1,0 +1,30 @@
+query ListingContainerListingSearch($input: ListingSearchInput!) {
+  listingSearch(input: $input) {
+    ...ListingContainerListingSearchFields
+  }
+}
+
+fragment ListingContainerListingSearchFields on Listing {
+  id
+  account {
+    id
+    name
+  }
+  title
+  description
+  tags
+  createdAt
+  primaryCategory {
+    id
+    name
+  }
+  photos {
+    order
+    documentId
+  }
+  location {
+    address {
+      freeformAddress
+    }
+  }
+}

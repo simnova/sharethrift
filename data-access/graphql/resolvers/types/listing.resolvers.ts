@@ -2,6 +2,7 @@ import { Resolvers, Listing, Account, Category, CreateListingPayload, DraftAuthH
 import { CacheScope } from 'apollo-server-types';
 import mongoose, { isValidObjectId } from 'mongoose';
 import { BlobStorage } from '../../../infrastructure/services/blob-storage';
+import { CognativeSearch } from '../../../infrastructure/services/cognative-search';
 
 const listing : Resolvers = {
   Listing: {
@@ -65,6 +66,23 @@ const listing : Resolvers = {
 
     listingsForAccount : async (parent, args, context, info) => {
       return (await context.dataSources.listingAPI.getListingsForAccount(args.accountId)) as Listing[];
+    },
+    listingSearch : async (parent, args, context, info) => {
+      const searchService = new CognativeSearch();
+      const searchResults = await searchService.search('listings', '*');
+    
+      console.log(`Resolver>Query>listingSearch ${JSON.stringify(searchResults)}`);
+      var idList:string[] =[]
+      for await (const result of searchResults.results) {
+        console.log(result);
+        idList.push(result.document['id']);
+      }
+      //var pageOne = await searchResults.results.byPage[0];
+      //console.log(`Resolver>Query>listingSearch ${JSON.stringify(pageOne)}`);
+      //var idList = pageOne.map(r => r['id']);
+      var results = await context.dataSources.listingAPI.getListingsByIds(idList);  //.getListingsFromSearchResults(searchResults);
+//      console.log(`Resolver>Query>listingSearch ${JSON.stringify(results)}`);
+      return results as Listing[];
     },
     listingsByAccountHandle : async (parent, args, context, info) => {
       var result: Listing[] = [];

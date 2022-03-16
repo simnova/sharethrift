@@ -37,12 +37,17 @@ export const ListingDetailContainer: React.FC<any> = (props) => {
     }    
   }
 
-  const handlePublish = () => {
-    publishDraft({
-      variables: {
-        id: props.listingId
-      }
-    });
+  const handlePublish = async () => {
+    try {
+      await publishDraft({
+        variables: {
+          id: props.listingId
+        }
+      });
+      message.success('Published');
+    } catch (publishError) {
+      message.error(`Error updating listing: ${JSON.stringify(publishError)}`);
+    }    
   }
 
   const content = () => {

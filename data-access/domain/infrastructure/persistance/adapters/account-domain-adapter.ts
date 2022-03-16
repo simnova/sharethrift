@@ -34,6 +34,7 @@ class ListingPermissionsAdapter implements ListingPermissionsProps {
   public get id(): string { return this.props.id.valueOf() as string; }
   public get canManageListings(): boolean { return this.props.canManageListings; }
   public set canManageListings(value: boolean) { this.props.canManageListings = value; }
+  public get isSystemAccount(): boolean { return false; }
 }
 
 class PermissionsAdapter implements PermissionsProps{

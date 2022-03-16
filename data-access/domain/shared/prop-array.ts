@@ -5,4 +5,5 @@ export interface PropArray<propType extends EntityProps> {
   addItem(item: propType): propType;
   getNewItem(): propType;
   removeItem(item: propType): void;
+  removeAll(): void;
 }

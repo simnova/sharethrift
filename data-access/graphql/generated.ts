@@ -202,6 +202,7 @@ export type DraftRemovePhotoResult = {
 
 export type DraftStatus = {
   __typename?: "DraftStatus";
+  id: Scalars["ObjectID"];
   statusCode?: Maybe<Scalars["String"]>;
   statusDetail?: Maybe<Scalars["String"]>;
   createdAt?: Maybe<Scalars["DateTime"]>;
@@ -254,6 +255,14 @@ export type ListingPermissions = {
 
 export type ListingPermissionsInput = {
   canManageListings: Scalars["Boolean"];
+};
+
+export type ListingSearchInput = {
+  searchString?: Maybe<Scalars["String"]>;
+  tags?: Maybe<Array<Maybe<Scalars["String"]>>>;
+  category?: Maybe<Scalars["String"]>;
+  limit?: Maybe<Scalars["Int"]>;
+  skip?: Maybe<Scalars["Int"]>;
 };
 
 export type Location = MongoBase & {
@@ -397,6 +406,7 @@ export type Query = {
   category?: Maybe<Category>;
   currentUser?: Maybe<User>;
   listing?: Maybe<Listing>;
+  listingSearch?: Maybe<Array<Maybe<Listing>>>;
   listings?: Maybe<Array<Maybe<Listing>>>;
   listingsByAccountHandle?: Maybe<Array<Maybe<Listing>>>;
   listingsForAccount?: Maybe<Array<Maybe<Listing>>>;
@@ -422,6 +432,11 @@ export type QueryCategoryArgs = {
 /**  Base Query Type definition - , all mutations will be defined in separate files extending this type  */
 export type QueryListingArgs = {
   id: Scalars["ID"];
+};
+
+/**  Base Query Type definition - , all mutations will be defined in separate files extending this type  */
+export type QueryListingSearchArgs = {
+  input: ListingSearchInput;
 };
 
 /**  Base Query Type definition - , all mutations will be defined in separate files extending this type  */
@@ -657,6 +672,7 @@ export type ResolversTypes = ResolversObject<{
   ListingNewDraft: ListingNewDraft;
   ListingPermissions: ResolverTypeWrapper<ListingPermissions>;
   ListingPermissionsInput: ListingPermissionsInput;
+  ListingSearchInput: ListingSearchInput;
   LocalDate: ResolverTypeWrapper<Scalars["LocalDate"]>;
   LocalEndTime: ResolverTypeWrapper<Scalars["LocalEndTime"]>;
   LocalTime: ResolverTypeWrapper<Scalars["LocalTime"]>;
@@ -761,6 +777,7 @@ export type ResolversParentTypes = ResolversObject<{
   ListingNewDraft: ListingNewDraft;
   ListingPermissions: ListingPermissions;
   ListingPermissionsInput: ListingPermissionsInput;
+  ListingSearchInput: ListingSearchInput;
   LocalDate: Scalars["LocalDate"];
   LocalEndTime: Scalars["LocalEndTime"];
   LocalTime: Scalars["LocalTime"];
@@ -1122,6 +1139,7 @@ export type DraftStatusResolvers<
   ContextType = Context,
   ParentType extends ResolversParentTypes["DraftStatus"] = ResolversParentTypes["DraftStatus"]
 > = ResolversObject<{
+  id?: Resolver<ResolversTypes["ObjectID"], ParentType, ContextType>;
   statusCode?: Resolver<
     Maybe<ResolversTypes["String"]>,
     ParentType,
@@ -1613,6 +1631,12 @@ export type QueryResolvers<
     ParentType,
     ContextType,
     RequireFields<QueryListingArgs, "id">
+  >;
+  listingSearch?: Resolver<
+    Maybe<Array<Maybe<ResolversTypes["Listing"]>>>,
+    ParentType,
+    ContextType,
+    RequireFields<QueryListingSearchArgs, "input">
   >;
   listings?: Resolver<
     Maybe<Array<Maybe<ResolversTypes["Listing"]>>>,

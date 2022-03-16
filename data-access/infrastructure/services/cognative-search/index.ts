@@ -1,4 +1,4 @@
-import { SearchIndexClient, SearchClient, AzureKeyCredential, SearchIndex } from '@azure/search-documents';
+import { SearchIndexClient, SearchClient, AzureKeyCredential, SearchIndex, SearchOptions, SearchDocumentsResult } from '@azure/search-documents';
 
 export class CognativeSearch {
   private readonly searchKeyEnvVar = 'SEARCH_API_KEY';
@@ -31,6 +31,13 @@ export class CognativeSearch {
     });
     this.searchClients.set(indexName, this.client.getSearchClient(indexName));
   }
+
+  async search(indexName:string, searchText:string, options?: any):Promise<SearchDocumentsResult<Pick<unknown,never>>>{
+    var result = await this.client.getSearchClient(indexName).search(searchText, options);
+    console.log('search result', result);
+    return result;
+  }
+
 
   async indexDocument(indexName:string, document:any):Promise<void>{
     //return this.searchClients.get(indexName)!.indexDocuments([document]);

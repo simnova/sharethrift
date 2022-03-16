@@ -1,6 +1,8 @@
-import {Form, Input, Button} from 'antd';
+import {Form, Input, Button, Table} from 'antd';
 import { ListingCategorySelectionContainer } from './listing-category-selection-container';
 import { ListingDraftTags } from './listing-draft-tags';
+import { ListingDetailStatusHistory } from './listing-detail-status-history';
+import { json } from 'stream/consumers';
 
 export const ListingDetail: React.FC<any> = (props) => {
   const [form] = Form.useForm();
@@ -51,10 +53,19 @@ export const ListingDetail: React.FC<any> = (props) => {
       <Button type="primary" htmlType="submit">
         Update Listing
       </Button>
-      <Button type="primary" htmlType="submit">
+      <Button type="primary" onClick={props.onPublish}>
         Publish Listing
       </Button>
     </Form> 
+    {JSON.stringify(props.data)}
+    {props.data.draft.statusHistory ?(
+      <>  <div>
+        
+    <ListingDetailStatusHistory data={props.data.draft.statusHistory} />
+        </div>  
+      </>
+  
+    ):(<></>)}
     </div>
   )
 }

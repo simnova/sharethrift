@@ -5,7 +5,6 @@ import { Context } from '../../context';
 import { UserUpdateInput } from '../../generated';
 import { DomainDataSource } from './domain-data-source';
 import { User } from '../../../infrastructure/data-sources/cosmos-db/models/user';
-import { report } from 'process';
 
 type PropType = UserDomainAdapter;
 type DomainType = UserDO<PropType>;

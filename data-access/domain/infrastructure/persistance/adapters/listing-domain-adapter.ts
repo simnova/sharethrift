@@ -118,6 +118,7 @@ export class ListingDomainAdapter extends MongooseDomainAdapater<Listing> implem
     draft.primaryCategory = this.props.primaryCategory;
     draft.photos = this.props.photos;
     
+    
     return draft;
 
     //return this.props.get('draft') as DraftProps;
@@ -152,10 +153,8 @@ export class ListingDomainAdapter extends MongooseDomainAdapater<Listing> implem
       console.log('listing.account - postpopulate', JSON.stringify(this.props.account));
     }
   }
-  
-  get photos(): PhotoProps[] {
-    return this.props.photos.map((photo) => new PhotoDomainAdapter(photo));
-  }
+  public photos = new MongoosePropArray(this.props.photos, PhotoDomainAdapter);
+
 
    get location(): LocationProps { 
     if(!this.props.location){ 

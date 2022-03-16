@@ -76,7 +76,7 @@ export class Listings extends DomainDataSource<Context,Listing,PropType,DomainTy
     let result : ListingDO<ListingDomainAdapter>;
     await this.withTransaction(async (repo) => {
       let domainObject = await repo.get(id);
-      await domainObject.requestPublish();
+      await domainObject.draft.requestPublish();
       result = await repo.save(domainObject);
     });
     return (new ListingConverter()).toMongo(result);

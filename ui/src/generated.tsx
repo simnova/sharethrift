@@ -194,6 +194,7 @@ export type DraftRemovePhotoResult = {
 
 export type DraftStatus = {
   __typename?: "DraftStatus";
+  id: Scalars["ObjectID"];
   statusCode?: Maybe<Scalars["String"]>;
   statusDetail?: Maybe<Scalars["String"]>;
   createdAt?: Maybe<Scalars["DateTime"]>;
@@ -246,6 +247,14 @@ export type ListingPermissions = {
 
 export type ListingPermissionsInput = {
   canManageListings: Scalars["Boolean"];
+};
+
+export type ListingSearchInput = {
+  searchString?: Maybe<Scalars["String"]>;
+  tags?: Maybe<Array<Maybe<Scalars["String"]>>>;
+  category?: Maybe<Scalars["String"]>;
+  limit?: Maybe<Scalars["Int"]>;
+  skip?: Maybe<Scalars["Int"]>;
 };
 
 export type Location = MongoBase & {
@@ -389,6 +398,7 @@ export type Query = {
   category?: Maybe<Category>;
   currentUser?: Maybe<User>;
   listing?: Maybe<Listing>;
+  listingSearch?: Maybe<Array<Maybe<Listing>>>;
   listings?: Maybe<Array<Maybe<Listing>>>;
   listingsByAccountHandle?: Maybe<Array<Maybe<Listing>>>;
   listingsForAccount?: Maybe<Array<Maybe<Listing>>>;
@@ -414,6 +424,11 @@ export type QueryCategoryArgs = {
 /**  Base Query Type definition - , all mutations will be defined in separate files extending this type  */
 export type QueryListingArgs = {
   id: Scalars["ID"];
+};
+
+/**  Base Query Type definition - , all mutations will be defined in separate files extending this type  */
+export type QueryListingSearchArgs = {
+  input: ListingSearchInput;
 };
 
 /**  Base Query Type definition - , all mutations will be defined in separate files extending this type  */
@@ -852,6 +867,7 @@ export type ListingDetailContainerListingsQuery = {
         Array<
           Maybe<{
             __typename?: "DraftStatus";
+            id: any;
             statusCode?: Maybe<string>;
             statusDetail?: Maybe<string>;
             createdAt?: Maybe<any>;
@@ -932,6 +948,7 @@ export type ListingDetailContainerListingsFieldsFragment = {
       Array<
         Maybe<{
           __typename?: "DraftStatus";
+          id: any;
           statusCode?: Maybe<string>;
           statusDetail?: Maybe<string>;
           createdAt?: Maybe<any>;
@@ -1140,6 +1157,83 @@ export type ProfileContainerUserFieldsFragment = {
   email?: Maybe<any>;
   createdAt?: Maybe<any>;
   updatedAt?: Maybe<any>;
+};
+
+export type ListingContainerListingSearchQueryVariables = Exact<{
+  input: ListingSearchInput;
+}>;
+
+export type ListingContainerListingSearchQuery = {
+  __typename?: "Query";
+  listingSearch?: Maybe<
+    Array<
+      Maybe<{
+        __typename?: "Listing";
+        id: any;
+        title?: Maybe<string>;
+        description?: Maybe<string>;
+        tags?: Maybe<Array<Maybe<string>>>;
+        createdAt?: Maybe<any>;
+        account?: Maybe<{
+          __typename?: "Account";
+          id: any;
+          name?: Maybe<string>;
+        }>;
+        primaryCategory?: Maybe<{
+          __typename?: "Category";
+          id: any;
+          name?: Maybe<string>;
+        }>;
+        photos?: Maybe<
+          Array<
+            Maybe<{
+              __typename?: "Photo";
+              order?: Maybe<number>;
+              documentId?: Maybe<string>;
+            }>
+          >
+        >;
+        location?: Maybe<{
+          __typename?: "Location";
+          address?: Maybe<{
+            __typename?: "Address";
+            freeformAddress?: Maybe<string>;
+          }>;
+        }>;
+      }>
+    >
+  >;
+};
+
+export type ListingContainerListingSearchFieldsFragment = {
+  __typename?: "Listing";
+  id: any;
+  title?: Maybe<string>;
+  description?: Maybe<string>;
+  tags?: Maybe<Array<Maybe<string>>>;
+  createdAt?: Maybe<any>;
+  account?: Maybe<{ __typename?: "Account"; id: any; name?: Maybe<string> }>;
+  primaryCategory?: Maybe<{
+    __typename?: "Category";
+    id: any;
+    name?: Maybe<string>;
+  }>;
+  photos?: Maybe<
+    Array<
+      Maybe<{
+        __typename?: "Photo";
+        order?: Maybe<number>;
+        documentId?: Maybe<string>;
+      }>
+    >
+  >;
+  location?: Maybe<{
+    __typename?: "Location";
+    address?: Maybe<{
+      __typename?: "Address";
+      freeformAddress?: Maybe<string>;
+    }>;
+  }>;
 };
 
 export type ListingDraftUpdateDraftMutationVariables = Exact<{
@@ -1733,6 +1827,7 @@ export const ListingDetailContainerListingsFieldsFragmentDoc = {
                   selectionSet: {
                     kind: "SelectionSet",
                     selections: [
+                      { kind: "Field", name: { kind: "Name", value: "id" } },
                       {
                         kind: "Field",
                         name: { kind: "Name", value: "statusCode" },
@@ -1939,6 +2034,87 @@ export const ProfileContainerUserFieldsFragmentDoc = {
     },
   ],
 } as unknown as DocumentNode<ProfileContainerUserFieldsFragment, unknown>;
+export const ListingContainerListingSearchFieldsFragmentDoc = {
+  kind: "Document",
+  definitions: [
+    {
+      kind: "FragmentDefinition",
+      name: { kind: "Name", value: "ListingContainerListingSearchFields" },
+      typeCondition: {
+        kind: "NamedType",
+        name: { kind: "Name", value: "Listing" },
+      },
+      selectionSet: {
+        kind: "SelectionSet",
+        selections: [
+          { kind: "Field", name: { kind: "Name", value: "id" } },
+          {
+            kind: "Field",
+            name: { kind: "Name", value: "account" },
+            selectionSet: {
+              kind: "SelectionSet",
+              selections: [
+                { kind: "Field", name: { kind: "Name", value: "id" } },
+                { kind: "Field", name: { kind: "Name", value: "name" } },
+              ],
+            },
+          },
+          { kind: "Field", name: { kind: "Name", value: "title" } },
+          { kind: "Field", name: { kind: "Name", value: "description" } },
+          { kind: "Field", name: { kind: "Name", value: "tags" } },
+          { kind: "Field", name: { kind: "Name", value: "createdAt" } },
+          {
+            kind: "Field",
+            name: { kind: "Name", value: "primaryCategory" },
+            selectionSet: {
+              kind: "SelectionSet",
+              selections: [
+                { kind: "Field", name: { kind: "Name", value: "id" } },
+                { kind: "Field", name: { kind: "Name", value: "name" } },
+              ],
+            },
+          },
+          {
+            kind: "Field",
+            name: { kind: "Name", value: "photos" },
+            selectionSet: {
+              kind: "SelectionSet",
+              selections: [
+                { kind: "Field", name: { kind: "Name", value: "order" } },
+                { kind: "Field", name: { kind: "Name", value: "documentId" } },
+              ],
+            },
+          },
+          {
+            kind: "Field",
+            name: { kind: "Name", value: "location" },
+            selectionSet: {
+              kind: "SelectionSet",
+              selections: [
+                {
+                  kind: "Field",
+                  name: { kind: "Name", value: "address" },
+                  selectionSet: {
+                    kind: "SelectionSet",
+                    selections: [
+                      {
+                        kind: "Field",
+                        name: { kind: "Name", value: "freeformAddress" },
+                      },
+                    ],
+                  },
+                },
+              ],
+            },
+          },
+        ],
+      },
+    },
+  ],
+} as unknown as DocumentNode<
+  ListingContainerListingSearchFieldsFragment,
+  unknown
+>;
 export const ListingsFieldsFragmentDoc = {
   kind: "Document",
   definitions: [
@@ -3351,6 +3527,67 @@ export const ProfileContainerUserUpdateDocument = {
 } as unknown as DocumentNode<
   ProfileContainerUserUpdateMutation,
   ProfileContainerUserUpdateMutationVariables
+>;
+export const ListingContainerListingSearchDocument = {
+  kind: "Document",
+  definitions: [
+    {
+      kind: "OperationDefinition",
+      operation: "query",
+      name: { kind: "Name", value: "ListingContainerListingSearch" },
+      variableDefinitions: [
+        {
+          kind: "VariableDefinition",
+          variable: {
+            kind: "Variable",
+            name: { kind: "Name", value: "input" },
+          },
+          type: {
+            kind: "NonNullType",
+            type: {
+              kind: "NamedType",
+              name: { kind: "Name", value: "ListingSearchInput" },
+            },
+          },
+        },
+      ],
+      selectionSet: {
+        kind: "SelectionSet",
+        selections: [
+          {
+            kind: "Field",
+            name: { kind: "Name", value: "listingSearch" },
+            arguments: [
+              {
+                kind: "Argument",
+                name: { kind: "Name", value: "input" },
+                value: {
+                  kind: "Variable",
+                  name: { kind: "Name", value: "input" },
+                },
+              },
+            ],
+            selectionSet: {
+              kind: "SelectionSet",
+              selections: [
+                {
+                  kind: "FragmentSpread",
+                  name: {
+                    kind: "Name",
+                    value: "ListingContainerListingSearchFields",
+                  },
+                },
+              ],
+            },
+          },
+        ],
+      },
+    },
+    ...ListingContainerListingSearchFieldsFragmentDoc.definitions,
+  ],
+} as unknown as DocumentNode<
+  ListingContainerListingSearchQuery,
+  ListingContainerListingSearchQueryVariables
 >;
 export const ListingDraftUpdateDraftDocument = {
   kind: "Document",

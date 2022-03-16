@@ -36,6 +36,7 @@ fragment ListingDetailContainerListingsFields on Listing {
     description
     tags
     statusHistory {
+      id
       statusCode
       statusDetail
       createdAt

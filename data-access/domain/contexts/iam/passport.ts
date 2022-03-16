@@ -5,6 +5,8 @@ import { AccountVisa, AccountVisaImpl } from './account-visa';
 import { ListingVisa, ListingVisaImpl } from './listing-visa';
 import { UserVisa, UserVisaImpl } from './user-visa';
 
+export const SystemUserId = 'system';
+
 export interface Visa{
   determineIf(func:((permissions) => boolean)) :  Promise<boolean> ;
 }
@@ -17,6 +19,9 @@ export interface Passport {
 
 export class PassportImpl implements Passport {
   constructor(private readonly user: UserEntityReference){}
+  static async forSystem(): Promise<Passport> {
+    return new PassportImpl({id: SystemUserId} as UserEntityReference);
+  }
   forAcccount(root: AccountEntityReference):  AccountVisa {
     return new AccountVisaImpl(root,this.user);
   }

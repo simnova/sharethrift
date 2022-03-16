@@ -17,5 +17,6 @@ export class ListingPermissions extends Entity<ListingPermissionsProps> implemen
     }
     this.props.canManageListings = value;
   }
+  get isSystemAccount(): boolean {return this.props.isSystemAccount;} 
 
 }

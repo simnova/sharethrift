@@ -2,12 +2,15 @@ import { NodeEventBus } from '../events/node-event-bus';
 import { ListingDraftPublishRequestedEvent } from '../../events/listing-draft-publish-requested';
 import { ListingUnitOfWork } from '../persistance/repositories';
 import { moderateContentBatch } from '../../../infrastructure/services/content-moderator/moderate-content-batch';
+import { SystemExecutionContext } from '../persistance/execution-context';
 
 export default () => { NodeEventBus.register(ListingDraftPublishRequestedEvent, async (payload) => {
 
   console.log(`ListingDraftPublishRequestedEvent -> Auto Review Handler - Called with Payload: ${JSON.stringify(payload)} and UserId: ${payload.listingId}`);
   
-  await ListingUnitOfWork.withTransaction(payload.context, async (repo) => {
+  
+  const context = await SystemExecutionContext();
+  await ListingUnitOfWork.withTransaction(context, async (repo) => {
 
     let listing = await repo.get(payload.listingId);
     if(!listing) {

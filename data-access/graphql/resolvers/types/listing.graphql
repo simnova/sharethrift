@@ -20,9 +20,21 @@ type Listing implements MongoBase {
 extend type Query {
   listing(id: ID!): Listing 
   listings: [Listing]
+  listingSearch(input: ListingSearchInput!): [Listing]
   listingsForAccount(accountId:ID!): [Listing]
   listingsByAccountHandle(handle: String!): [Listing]
 }
+
+input ListingSearchInput {
+  searchString: String
+  tags: [String]
+  category: String
+  limit: Int
+  skip: Int
+}
+
+
+
 
 extend type Mutation {
   createNewListing(input: ListingNewDraft!): CreateListingPayload
@@ -111,6 +123,7 @@ type Draft {
 }
 
 type DraftStatus {
+  id: ObjectID!
   statusCode: String
   statusDetail: String
   createdAt: DateTime

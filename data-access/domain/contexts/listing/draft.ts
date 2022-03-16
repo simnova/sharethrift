@@ -1,6 +1,5 @@
 import { RootEventRegistry } from '../../shared/aggregate-root';
 import { Category, CategoryEntityReference, CategoryProps } from './category';
-import { Passport } from '../iam/passport';
 import { Location, LocationEntityReference, LocationProps } from './location';
 import { Photo, PhotoProps, PhotoEntityReference } from './photo';
 import { ListingPhotoAddedEvent } from '../../events/listing-photo-added';
@@ -10,6 +9,7 @@ import { PropArray } from '../../shared/prop-array';
 import { Description, Title, Tags } from './listing-value-objects';
 import { ListingVisa } from "../iam/listing-visa";
 import { ListingPhotoDeletedEvent } from '../../events/listing-photo-deleted';
+import { ListingDraftPublishRequestedEvent } from "../../events/listing-draft-publish-requested";
 
 export interface DraftPropValues extends EntityProps {
   title: string;
@@ -37,7 +37,7 @@ export interface DraftEntityReference extends Readonly<DraftPropValues> {
 export class Draft extends Entity<DraftProps> implements DraftEntityReference {
   constructor(
     props: DraftProps, 
-    private root: RootEventRegistry & {photos: PhotoEntityReference[]},
+    private root: RootEventRegistry & {photos: PhotoEntityReference[], id: string},
     private visa: ListingVisa
     
     ) { super(props); }
@@ -162,23 +162,36 @@ export class Draft extends Entity<DraftProps> implements DraftEntityReference {
   }
   
 
-  //TODO: create system access level to change this and prevent users from changing it
   async rejectPublish(rejectionReason: string){
+    if(!await this.visa.determineIf((permissions) => permissions.isSystemAccount)) {
+      throw new Error('Listing > Draft > Reject Publisn > Permission denied');
+    }
     this.addStatusUpdate(new NewStatus(DraftStatusCodes.Rejected, rejectionReason));
   }
-  //TODO: create system access level to change this and prevent users from changing it
+
   async appovePublish(){
+    if(!await this.visa.determineIf((permissions) => permissions.isSystemAccount)) {
+      throw new Error('Listing > Draft > Approve Publish > Permission denied');
+    }
     this.addStatusUpdate(new NewStatus(DraftStatusCodes.Approved));
   }
   
 
   async requestPublish() : Promise<void>{ 
+    if(!await this.visa.determineIf((permissions) => permissions.canManageListings)) {
+      throw new Error('Listing > Draft > Request Publish > Permission denied');
+    }
+    if(this.getCurrentStatus()!=DraftStatusCodes.Draft){
+      throw new Error('Cannot request publish unless in draft status');
+    }
     this.addStatusUpdate(new NewStatus(DraftStatusCodes.Pending, 'Draft publish requested'));
     
     let publishedQuantity = 5 //;await this.props.usersCurrentPublishedListingQuantity();
     if(publishedQuantity > 5){
       throw new Error('Listing is not valid');
     }
+    this.root.addIntegrationEvent(ListingDraftPublishRequestedEvent,{listingId: this.root.id});
+
 
   }
   

@@ -5,6 +5,7 @@ import {default as ResisterUserCreatedCreateAccountHandler} from './user-created
 import {default as ResisterUserCreatedCreateCategoryHandler} from './user-created-create-category';
 import {default as RegisterListingPublishedUpdateSearchIndexHandler} from './listing-published-update-searchindex';
 import {default as RegisterListingDraftPublishRequestedAutoReviewHandler } from './listing-draft-publish-requested-auto-review';
+import {default as RegisterListingPhotoDeletedDeleteBlobHandler} from './listing-photo-deleted-delete-blob'
 
 var RegisterHandlers = () => {
     // Register all event handlers
@@ -15,6 +16,7 @@ var RegisterHandlers = () => {
     ResisterUserCreatedCreateCategoryHandler();
     RegisterListingPublishedUpdateSearchIndexHandler();
     RegisterListingDraftPublishRequestedAutoReviewHandler();
+    RegisterListingPhotoDeletedDeleteBlobHandler();
 }
 
 export default RegisterHandlers;
