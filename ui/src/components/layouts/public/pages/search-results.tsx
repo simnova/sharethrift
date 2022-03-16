@@ -1,6 +1,6 @@
 import { SearchResultListing } from "../components/search-result-listing"
 
-export const Listings: React.FC<any> = (props) => {
+export const SearchResults: React.FC<any> = (props) => {
   const results = (data:any) => {
     return data.filter((x:any) => x !== null).map((listing:any, index:number) => {
       return(
@@ -13,6 +13,7 @@ export const Listings: React.FC<any> = (props) => {
 
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+      hello
     {results(props.data)}
     </div>
 

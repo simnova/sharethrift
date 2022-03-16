@@ -1,6 +1,7 @@
 import React from 'react';
 import Login from '../../../../components/login';
 import { ListingsContainer } from './listings-container';
+import { SearchBox } from '../components/search-box';
 
 export const Home: React.FC<any> = (props) => {
 
@@ -24,6 +25,7 @@ reconnecting with nature
         
       </div>
       <div className="pt-8 pb-8">
+      <SearchBox />
       <ListingsContainer />
 
       </div>

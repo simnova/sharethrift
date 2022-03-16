@@ -68,9 +68,9 @@ const listing : Resolvers = {
       return (await context.dataSources.listingAPI.getListingsForAccount(args.accountId)) as Listing[];
     },
     listingSearch : async (parent, args, context, info) => {
-      info.cacheControl.setCacheHint({ maxAge: 60,scope: CacheScope.Public });
+     info.cacheControl.setCacheHint({ maxAge: 60,scope: CacheScope.Public });
       const searchService = new CognativeSearch();
-      const searchResults = await searchService.search('listings', '*');
+      const searchResults = await searchService.search('listings', args.input.searchString);
     
       console.log(`Resolver>Query>listingSearch ${JSON.stringify(searchResults)}`);
       var idList:string[] =[]
