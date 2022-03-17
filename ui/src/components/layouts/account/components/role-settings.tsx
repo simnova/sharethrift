@@ -6,7 +6,7 @@ export const RoleSettings: React.FC<any> = (props) => {
     return <div></div>
   }
   return  <>
-    <h1>Profile</h1>
+    <h1>Role Detail</h1>
     <Descriptions size={'small'} layout={'vertical'}>
       <Descriptions.Item label="Id">{props.data?.id?(props.data!.id):"New Role"}</Descriptions.Item>
       <Descriptions.Item label="Is Default">{props.data?(props.data!.isDefault?"true":"false"):"false"}</Descriptions.Item>

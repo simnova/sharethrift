@@ -4,6 +4,7 @@ type Listing implements MongoBase {
   account: Account 
   title: String
   description: String
+  statusCode: String
   tags: [String]
   primaryCategory: Category 
   photos: [Photo]
@@ -51,9 +52,12 @@ type FacetDetail {
 extend type Mutation {
   createNewListing(input: ListingNewDraft!): CreateListingPayload
   updateDraft(input: ListingDraft!) : Listing
-  publishDraft(id: ID!) : Listing
   draftAddPhoto(input: DraftPhotoImageInput!): DraftAuthHeaderForDraftPhotoOutput!
   draftRemovePhoto(input: DraftRemovePhotoImageInput!): DraftRemovePhotoResult!
+  listingDraftCreate(id: ID!): ID
+  listingDraftPublish(id: ID!) : ID
+  listingUnpublish(id: ID!): ID
+
 }
 
 type CreateListingPayload {

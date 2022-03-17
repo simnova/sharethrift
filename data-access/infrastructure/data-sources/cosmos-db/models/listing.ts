@@ -9,10 +9,11 @@ export interface Photo extends EmbeddedBase {
   documentId: string
 }
 
-interface ListingBase {
+export interface ListingBase {
   title: string;
   description: string;
   tags: string[];
+  statusCode: string;
   primaryCategory?: PopulatedDoc<Category.Category> | ObjectId;
   photos?: mongoose.Types.DocumentArray<Photo>;
   location?: PopulatedDoc<Location.Location>;
@@ -99,6 +100,11 @@ export const ListingModel = model<Listing>('Listing',new Schema<Listing, Model<L
     tags: {
       type: [String],
       required: false,
+    },
+    statusCode: {
+      type: String,
+      enum: ['DRAFT', 'PUBLISHED'],
+      default: 'DRAFT',
     },
     primaryCategory: {
       type: Schema.Types.ObjectId,

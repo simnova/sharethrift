@@ -21,6 +21,11 @@ export const ListingsList: React.FC<any> = (props) => {
       key: "draftTitle",
     },
     {
+      title: "Status",
+      dataIndex: ["statusCode"],  
+      key: "statusCode",
+    },
+    {
       title: "Primary Category",
       dataIndex: ["primaryCategory", "name"],
       key: "primaryCategory",

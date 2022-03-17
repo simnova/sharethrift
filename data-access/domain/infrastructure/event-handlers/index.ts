@@ -4,6 +4,7 @@ import {default as RegisterListingPublishedSendFaxHandler} from './listing-publi
 import {default as ResisterUserCreatedCreateAccountHandler} from './user-created-create-account';
 import {default as ResisterUserCreatedCreateCategoryHandler} from './user-created-create-category';
 import {default as RegisterListingPublishedUpdateSearchIndexHandler} from './listing-published-update-searchindex';
+import {default as RegisterListingUnpublishedUpdateSearchIndexHandler} from './listing-unpublished-update-searchindex';
 import {default as RegisterListingDraftPublishRequestedAutoReviewHandler } from './listing-draft-publish-requested-auto-review';
 import {default as RegisterListingPhotoDeletedDeleteBlobHandler} from './listing-photo-deleted-delete-blob'
 
@@ -15,6 +16,7 @@ var RegisterHandlers = () => {
     ResisterUserCreatedCreateAccountHandler();
     ResisterUserCreatedCreateCategoryHandler();
     RegisterListingPublishedUpdateSearchIndexHandler();
+    RegisterListingUnpublishedUpdateSearchIndexHandler();
     RegisterListingDraftPublishRequestedAutoReviewHandler();
     RegisterListingPhotoDeletedDeleteBlobHandler();
 }

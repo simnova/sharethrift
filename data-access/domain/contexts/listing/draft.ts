@@ -19,7 +19,6 @@ export interface DraftPropValues extends EntityProps {
 
 export interface DraftProps extends DraftPropValues {
   location: LocationProps;
- 
   primaryCategory: CategoryProps;
   photos: PropArray<PhotoProps>;
   statusHistory: PropArray<DraftStatusProps>;
@@ -75,8 +74,7 @@ export class Draft extends Entity<DraftProps> implements DraftEntityReference {
           }else{
             return 0;
           }
-          // sort dates descending
-      
+          // sort dates descending      
       });
       currentStatus = orderedStatusHistory[0].statusCode ?? DraftStatusCodes.Draft;
     }
@@ -95,6 +93,7 @@ export class Draft extends Entity<DraftProps> implements DraftEntityReference {
     console.log('-=-=-=--=+==--=-= ADDDING NEW STATUS ', JSON.stringify(status));
     this.props.statusHistory.addItem(status.props);
   }
+
   public async requestUpdateTitle(title: Title): Promise<void> {
     if(!await this.visa.determineIf((permissions) => permissions.canManageListings)) {
       throw new Error('Permission denied');
@@ -125,6 +124,16 @@ export class Draft extends Entity<DraftProps> implements DraftEntityReference {
     this.props.tags = tags.valueOf();
   }
 
+  public async requestAddCategory(category: CategoryProps) : Promise<void>{
+    if(!await this.visa.determineIf((permissions) => permissions.canManageListings)) {
+      throw new Error('Permission denied');
+    }
+    if(this.getCurrentStatus()!=DraftStatusCodes.Draft){
+      throw new Error('Cannot update category unless in draft status');
+    }
+    this.props.primaryCategory = category;
+  }
+
   public async requestAddPhoto(order:number) : Promise<PhotoEntityReference>{
     if(!await this.visa.determineIf((permissions) => permissions.canManageListings)) {
       throw new Error('Permission denied');
@@ -137,7 +146,6 @@ export class Draft extends Entity<DraftProps> implements DraftEntityReference {
     if(order>5 || order<=0){
       throw new Error('Max 5 photos allowed');
     }
-
 
     if(!currentPhoto){ //draft does not have photo in this slot
       createNewDocumentId = true;
@@ -161,56 +169,6 @@ export class Draft extends Entity<DraftProps> implements DraftEntityReference {
     return new Photo(currentPhoto);
   }
   
-
-  async rejectPublish(rejectionReason: string){
-    if(!await this.visa.determineIf((permissions) => permissions.isSystemAccount)) {
-      throw new Error('Listing > Draft > Reject Publisn > Permission denied');
-    }
-    this.addStatusUpdate(new NewStatus(DraftStatusCodes.Rejected, rejectionReason));
-  }
-
-  async appovePublish(){
-    if(!await this.visa.determineIf((permissions) => permissions.isSystemAccount)) {
-      throw new Error('Listing > Draft > Approve Publish > Permission denied');
-    }
-    this.addStatusUpdate(new NewStatus(DraftStatusCodes.Approved));
-  }
-  
-
-  async requestPublish() : Promise<void>{ 
-    if(!await this.visa.determineIf((permissions) => permissions.canManageListings)) {
-      throw new Error('Listing > Draft > Request Publish > Permission denied');
-    }
-    if(this.getCurrentStatus()!=DraftStatusCodes.Draft){
-      throw new Error('Cannot request publish unless in draft status');
-    }
-    if(this.photos.length==0){
-      throw new Error('Cannot request publish without photos');
-    }
-
-
-
-    this.addStatusUpdate(new NewStatus(DraftStatusCodes.Pending, 'Draft publish requested'));
-    
-    let publishedQuantity = 5 //;await this.props.usersCurrentPublishedListingQuantity();
-    if(publishedQuantity > 5){
-      throw new Error('Listing is not valid');
-    }
-    this.root.addIntegrationEvent(ListingDraftPublishRequestedEvent,{listingId: this.root.id});
-
-
-  }
-  
-  public async requestAddCategory(category: CategoryProps) : Promise<void>{
-    if(!await this.visa.determineIf((permissions) => permissions.canManageListings)) {
-      throw new Error('Permission denied');
-    }
-    if(this.getCurrentStatus()!=DraftStatusCodes.Draft){
-      throw new Error('Cannot update category unless in draft status');
-    }
-    this.props.primaryCategory = category;
-  }
-
   public async requestRemovePhoto(order: number) : Promise<void>{
     if(!await this.visa.determineIf((permissions) => permissions.canManageListings)) {
       throw new Error('Permission denied');
@@ -230,4 +188,38 @@ export class Draft extends Entity<DraftProps> implements DraftEntityReference {
     this.props.photos.removeItem(photoToRemove);
   }
 
+  async requestPublish() : Promise<void>{ 
+    if(!await this.visa.determineIf((permissions) => permissions.canManageListings)) {
+      throw new Error('Listing > Draft > Request Publish > Permission denied');
+    }
+    if(this.getCurrentStatus()!=DraftStatusCodes.Draft){
+      throw new Error('Cannot request publish unless in draft status');
+    }
+    if(this.photos.length==0){
+      throw new Error('Cannot request publish without photos');
+    }
+
+    this.addStatusUpdate(new NewStatus(DraftStatusCodes.Pending, 'Draft publish requested'));
+    
+    let publishedQuantity = 5 //;await this.props.usersCurrentPublishedListingQuantity();
+    if(publishedQuantity > 5){
+      throw new Error('Listing is not valid');
+    }
+    this.root.addIntegrationEvent(ListingDraftPublishRequestedEvent,{listingId: this.root.id});
+  }
+
+  async rejectPublish(rejectionReason: string){
+    if(!await this.visa.determineIf((permissions) => permissions.isSystemAccount)) {
+      throw new Error('Listing > Draft > Reject Publisn > Permission denied');
+    }
+    this.addStatusUpdate(new NewStatus(DraftStatusCodes.Rejected, rejectionReason));
+  }
+
+  async appovePublish(){
+    if(!await this.visa.determineIf((permissions) => permissions.isSystemAccount)) {
+      throw new Error('Listing > Draft > Approve Publish > Permission denied');
+    }
+    this.addStatusUpdate(new NewStatus(DraftStatusCodes.Approved));
+  }
+  
 }

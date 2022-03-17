@@ -220,6 +220,7 @@ export type Listing = MongoBase & {
   account?: Maybe<Account>;
   title?: Maybe<Scalars["String"]>;
   description?: Maybe<Scalars["String"]>;
+  statusCode?: Maybe<Scalars["String"]>;
   tags?: Maybe<Array<Maybe<Scalars["String"]>>>;
   primaryCategory?: Maybe<Category>;
   photos?: Maybe<Array<Maybe<Photo>>>;
@@ -316,7 +317,9 @@ export type Mutation = {
   createUser?: Maybe<User>;
   draftAddPhoto: DraftAuthHeaderForDraftPhotoOutput;
   draftRemovePhoto: DraftRemovePhotoResult;
-  publishDraft?: Maybe<Listing>;
+  listingDraftCreate?: Maybe<Scalars["ID"]>;
+  listingDraftPublish?: Maybe<Scalars["ID"]>;
+  listingUnpublish?: Maybe<Scalars["ID"]>;
   updateAccount?: Maybe<Account>;
   updateCategory?: Maybe<Category>;
   updateDraft?: Maybe<Listing>;
@@ -356,7 +359,17 @@ export type MutationDraftRemovePhotoArgs = {
 };
 
 /**  Base Mutation Type definition - all mutations will be defined in separate files extending this type  */
-export type MutationPublishDraftArgs = {
+export type MutationListingDraftCreateArgs = {
+  id: Scalars["ID"];
+};
+
+/**  Base Mutation Type definition - all mutations will be defined in separate files extending this type  */
+export type MutationListingDraftPublishArgs = {
+  id: Scalars["ID"];
+};
+
+/**  Base Mutation Type definition - all mutations will be defined in separate files extending this type  */
+export type MutationListingUnpublishArgs = {
   id: Scalars["ID"];
 };
 
@@ -1283,6 +1296,11 @@ export type ListingResolvers<
     ParentType,
     ContextType
   >;
+  statusCode?: Resolver<
+    Maybe<ResolversTypes["String"]>,
+    ParentType,
+    ContextType
+  >;
   tags?: Resolver<
     Maybe<Array<Maybe<ResolversTypes["String"]>>>,
     ParentType,
@@ -1494,11 +1512,23 @@ export type MutationResolvers<
     ContextType,
     RequireFields<MutationDraftRemovePhotoArgs, "input">
   >;
-  publishDraft?: Resolver<
-    Maybe<ResolversTypes["Listing"]>,
+  listingDraftCreate?: Resolver<
+    Maybe<ResolversTypes["ID"]>,
     ParentType,
     ContextType,
-    RequireFields<MutationPublishDraftArgs, "id">
+    RequireFields<MutationListingDraftCreateArgs, "id">
+  >;
+  listingDraftPublish?: Resolver<
+    Maybe<ResolversTypes["ID"]>,
+    ParentType,
+    ContextType,
+    RequireFields<MutationListingDraftPublishArgs, "id">
+  >;
+  listingUnpublish?: Resolver<
+    Maybe<ResolversTypes["ID"]>,
+    ParentType,
+    ContextType,
+    RequireFields<MutationListingUnpublishArgs, "id">
   >;
   updateAccount?: Resolver<
     Maybe<ResolversTypes["Account"]>,

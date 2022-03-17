@@ -1,9 +1,7 @@
 import { Listing as ListingDO, ListingProps } from '../../../contexts/listing/listing';
-import { Listing ,ListingModel, ListingDraft, ListingStatus } from '../../../../infrastructure/data-sources/cosmos-db/models/listing';
+import { ListingBase, Listing ,ListingModel, ListingDraft, ListingStatus } from '../../../../infrastructure/data-sources/cosmos-db/models/listing';
 import { Account } from '../../../../infrastructure/data-sources/cosmos-db/models/account';
 import { LocationProps } from '../../../contexts/listing/location';
-import { Photo as PhotoDO, PhotoProps } from '../../../contexts/listing/photo';
-import { UserProps } from '../../../contexts/user/user';
 import { Account as AccountDO, AccountProps, AccountEntityReference } from '../../../contexts/account/account';
 import { CategoryProps } from '../../../contexts/listing/category';
 import mongoose from 'mongoose';
@@ -16,8 +14,6 @@ import { AccountDomainAdapter } from './account-domain-adapter';
 import { MongoTypeConverter } from '../mongo-type-converter';
 import {  DraftProps } from '../../../contexts/listing/draft';
 import { DraftStatus as DraftStatusDO, DraftStatusProps } from '../../../contexts/listing/draft-status';
-import { Entity, EntityProps } from '../../../shared/entity';
-import { T } from 'ramda';
 import { DomainExecutionContext } from '../../../contexts/context'; 
 
 
@@ -33,14 +29,14 @@ class DraftStatusDomainAdapter implements DraftStatusProps {
   get id(): string {return this.props.id}
   set id(value: string) {this.props.id = value}
 
-  get statusCode(): string {return this.props.statusCode};
-  set statusCode(value: string) {this.props.statusCode = value};
+  get statusCode(): string {return this.props.statusCode}
+  set statusCode(value: string) {this.props.statusCode = value}
 
-  get statusDetail(): string {return this.props.statusDetail};
-  set statusDetail(value: string) {this.props.statusDetail = value};
+  get statusDetail(): string {return this.props.statusDetail}
+  set statusDetail(value: string) {this.props.statusDetail = value}
 
-  get createdAt(): Date {return this.props.createdAt};
-  set createdAt(value: Date) {this.props.createdAt = value};
+  get createdAt(): Date {return this.props.createdAt}
+  set createdAt(value: Date) {this.props.createdAt = value}
 }
 
 class DraftDomainAdapter implements DraftProps {
@@ -109,17 +105,17 @@ export class ListingDomainAdapter extends MongooseDomainAdapater<Listing> implem
     }
     return new DraftDomainAdapter(this.props.draft);
   }
-  getNewDraft(): DraftProps { //clone the base object
+  getNewDraft(): void { //clone the base object
     
     var draft = this.props.get('draft');
     draft.title = this.props.title;
     draft.description = this.props.description;
     draft.tags = this.props.tags;
     draft.primaryCategory = this.props.primaryCategory;
-    draft.photos = this.props.photos;
+    draft.photos = this.props.photos; //this may or may not work...
+    draft.statusHistory = new mongoose.Types.DocumentArray<ListingStatus>([]); //clear the status history
     
-    
-    return draft;
+    this.props.draft = draft;
 
     //return this.props.get('draft') as DraftProps;
   }
@@ -129,6 +125,9 @@ export class ListingDomainAdapter extends MongooseDomainAdapater<Listing> implem
 
   get description(): string {return this.props.description;}
   set description(value: string) {this.props.description = value;}
+
+  get statusCode(): string {return this.props.statusCode}
+  set statusCode(value: string) {this.props.statusCode = value};
 
   get tags(): string[] {return this.props.tags;}
   set tags(value: string[]) {this.props.tags = value;}
@@ -153,15 +152,16 @@ export class ListingDomainAdapter extends MongooseDomainAdapater<Listing> implem
       console.log('listing.account - postpopulate', JSON.stringify(this.props.account));
     }
   }
+
   public photos = new MongoosePropArray(this.props.photos, PhotoDomainAdapter);
-
-
-   get location(): LocationProps { 
+  
+  get location(): LocationProps { 
     if(!this.props.location){ 
       return null;
     }
     return new LocationDomainAdapter(this.props.location); 
   }
+
   get primaryCategory(): CategoryProps { 
     if(!this.props.primaryCategory){ 
       return null;
@@ -174,4 +174,5 @@ export class ListingDomainAdapter extends MongooseDomainAdapater<Listing> implem
       this.props.primaryCategory = mongoose.Types.ObjectId(value.id);
     }
   }
+
 }

@@ -82,8 +82,24 @@ export class Listings extends DomainDataSource<Context,Listing,PropType,DomainTy
     return (new ListingConverter()).toMongo(result);
   }
 
- 
+  async createDraft(id:string) : Promise<void> {
+    ensureAccountPortalUser(this.context);
+    await this.withTransaction(async (repo) => {
+      let domainObject = await repo.get(id);
+      await domainObject.requestDraft();
+      await repo.save(domainObject);
+    });
+  }
 
+  async unpublish(id: string) : Promise<void> {
+    ensureAccountPortalUser(this.context);
+    await this.withTransaction(async (repo) => {
+      let domainObject = await repo.get(id);
+      await domainObject.requestUnpublish();
+      await repo.save(domainObject);
+    });
+  }
+ 
   async addNewListing(listing: ListingNewDraft) : Promise<Listing> {
     ensureAccountPortalUser(this.context);
 
@@ -99,23 +115,6 @@ export class Listings extends DomainDataSource<Context,Listing,PropType,DomainTy
       await domainObject.draft.requestAddCategory(categoryAdapter);
       await domainObject.draft.requestUpdateTitle(listing.title);
       await domainObject.draft.requestUpdateDescription(listing.description);
-      result = await repo.save(domainObject);
-    });
-    return (new ListingConverter()).toMongo(result);
-  }
-
-  async addListing(listing: ListingDetail) : Promise<Listing> {
-    ensureAccountPortalUser(this.context);
-    let passport = await getPassport(this.context);
-    let account = (new AccountConverter()).toDomain(await this.context.dataSources.accountAPI.getAccount(listing.account),{passport:passport}); //TODO: this is not the right way to do it
-    let category = await this.context.dataSources.categoryAPI.getCategory(listing.primaryCategory);
-
-    let categoryAdapter = new CategoryDomainAdapter(category);
-    let result : ListingDO<ListingDomainAdapter>;
-    await this.withTransaction(async (repo) => {
-      let domainObject = await repo.getNewInstance(account);
-      await domainObject.requestAddCategory(categoryAdapter);
-      await domainObject.requestUpdateDescription(listing.description);
       result = await repo.save(domainObject);
     });
     return (new ListingConverter()).toMongo(result);

@@ -38,7 +38,9 @@ export class CognativeSearch {
     return result;
   }
 
-
+  async deleteDocument(indexName:string, document:any):Promise<void>{
+    await this.client.getSearchClient(indexName).deleteDocuments([document]);
+  }
   async indexDocument(indexName:string, document:any):Promise<void>{
     //return this.searchClients.get(indexName)!.indexDocuments([document]);
     let searchClient = this.searchClients.get(indexName);

@@ -9,6 +9,7 @@ fragment ListingsListListingsByAccountHandleFields on Listing {
   title
   description
   tags
+  statusCode
   primaryCategory{
     name
   }

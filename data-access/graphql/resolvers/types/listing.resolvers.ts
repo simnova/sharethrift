@@ -139,6 +139,18 @@ console.log(`Resolver>Query>listingSearch ${args.input.tags?.length}`)
     updateDraft: async (parent, args, context, info) => {
       return (await context.dataSources.listingDomainAPI.updateDraft(args.input)) as Listing ;
     },
+    listingDraftCreate: async (parent, args, context, info) => {
+      await context.dataSources.listingDomainAPI.createDraft(args.id);
+      return args.id;
+    },
+    listingDraftPublish: async (parent, args, context, info) => {
+      await context.dataSources.listingDomainAPI.publishDraft(args.id)
+      return args.id;
+    },
+    listingUnpublish: async (parent, args, context, info) => {
+      await context.dataSources.listingDomainAPI.unpublish(args.id);
+      return args.id;
+    },
     draftAddPhoto: async (parent, args, context, info) => {
       //TODO: Move blob logic to service
       const maxSizeMb = .5;
@@ -168,9 +180,6 @@ console.log(`Resolver>Query>listingSearch ${args.input.tags?.length}`)
       }
     },
 
-    publishDraft: async (parent, args, context, info) => {
-      return (await context.dataSources.listingDomainAPI.publishDraft(args.id)) as Listing;
-    }
   }   
 }
 export default listing;
