@@ -77,40 +77,45 @@ const listing : Resolvers = {
 //      var tagFilter = (!args.input.tags || args.input.tags.length === 0 || args.input.tags[0].trim().length === 0 ) ? undefined:  "tags/all(t: search.in(t, '" + args.input.tags?.join(", ") + "'))";
       var tagFilter = (!args.input.tags || args.input.tags.length === 0 || args.input.tags[0].trim().length === 0 ) ? undefined:  "tags/any(t: t eq '" + args.input.tags?.join("') and tags/any(t: t eq '") + "')";
 
-console.log(`Resolver>Query>listingSearch ${args.input.tags.length}`)
-      console.log(`Resolver>Query>listingSearch ${args.input.searchString} ${tagFilter??''}`)
-      const searchResults = await searchService.search(
-        'listings', 
-        args.input.searchString,// + tagString,
-        {
-          queryType:"full", //needed for lucene style search
-          searchMode:"all",
-          filter: tagFilter,
-          facets:[
-            "tags",
-            "primaryCategory"
-          ],
-      });
-      //queryType : full => search all fields (lucene)
-    
-      console.log(`Resolver>Query>listingSearch ${JSON.stringify(searchResults)}`);
-      var idList:string[] =[]
-      for await (const result of searchResults.results) {
-        console.log(result);
-        idList.push(result.document['id']);
-      }
-      //var pageOne = await searchResults.results.byPage[0];
-      //console.log(`Resolver>Query>listingSearch ${JSON.stringify(pageOne)}`);
-      //var idList = pageOne.map(r => r['id']);
-      var results = await context.dataSources.listingAPI.getListingsByIds(idList) as Listing[];  //.getListingsFromSearchResults(searchResults);
-//      console.log(`Resolver>Query>listingSearch ${JSON.stringify(results)}`);
-      //return results as Listing[];
-      return {
-        listingResults : results,
-        facets: {
-          tags: searchResults.facets.tags,
+console.log(`Resolver>Query>listingSearch ${args.input.tags?.length}`)
+      try {
+        console.log(`Resolver>Query>listingSearch ${args.input.searchString} ${tagFilter??''}`)
+        const searchResults = await searchService.search(
+          'listings', 
+          args.input.searchString.trim() + '*',// + tagString,
+          {
+            queryType:"full", //needed for lucene style search
+            searchMode:"all",
+            filter: tagFilter,
+            facets:[
+              "tags",
+              "primaryCategory"
+            ],
+        });
+        //queryType : full => search all fields (lucene)
+      
+        console.log(`Resolver>Query>listingSearch ${JSON.stringify(searchResults)}`);
+        var idList:string[] =[]
+        for await (const result of searchResults.results) {
+          console.log(result);
+          idList.push(result.document['id']);
         }
-      } as ListingSearchResult  
+        //var pageOne = await searchResults.results.byPage[0];
+        //console.log(`Resolver>Query>listingSearch ${JSON.stringify(pageOne)}`);
+        //var idList = pageOne.map(r => r['id']);
+        var results = await context.dataSources.listingAPI.getListingsByIds(idList) as Listing[];  //.getListingsFromSearchResults(searchResults);
+  //      console.log(`Resolver>Query>listingSearch ${JSON.stringify(results)}`);
+        //return results as Listing[];
+        return {
+          listingResults : results,
+          facets: {
+            tags: searchResults.facets.tags,
+          }
+        } as ListingSearchResult
+      } catch (error) {
+        console.error(error);
+      }
+        
     },
     listingsByAccountHandle : async (parent, args, context, info) => {
       var result: Listing[] = [];

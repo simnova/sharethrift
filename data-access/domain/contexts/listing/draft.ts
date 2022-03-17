@@ -184,6 +184,12 @@ export class Draft extends Entity<DraftProps> implements DraftEntityReference {
     if(this.getCurrentStatus()!=DraftStatusCodes.Draft){
       throw new Error('Cannot request publish unless in draft status');
     }
+    if(this.photos.length==0){
+      throw new Error('Cannot request publish without photos');
+    }
+
+
+
     this.addStatusUpdate(new NewStatus(DraftStatusCodes.Pending, 'Draft publish requested'));
     
     let publishedQuantity = 5 //;await this.props.usersCurrentPublishedListingQuantity();

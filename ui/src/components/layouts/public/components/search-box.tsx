@@ -1,10 +1,10 @@
 import {Input, Space} from 'antd';
-import { useLocation, useNavigate } from 'react-router-dom';
+import { useLocation, useNavigate, useSearchParams } from 'react-router-dom';
 
 const {Search} = Input;
 
 export const SearchBox: React.FC<any> = (props) => {
-  const location = useLocation();
+  let [searchParams, setSearchParams] = useSearchParams();
   const navigate = useNavigate();
   const handleSearch = (value:any) => {
     console.log(value);
@@ -16,6 +16,7 @@ export const SearchBox: React.FC<any> = (props) => {
         placeholder="What are you looking for?"
         onSearch={handleSearch}
         enterButton="Search"
+        defaultValue={searchParams.get('search') ?? ''}
       />
     </Space>
   )

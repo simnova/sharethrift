@@ -7,7 +7,7 @@ export const ListingsContainer: React.FC<any> = (props) => {
   const { data: listingData, loading: listingLoading, error: listingError } = useQuery(ListingContainerListingSearchDocument,{
     variables: {
       input: {
-        searchString: '*',
+        searchString: '',
       }
     }
   });
