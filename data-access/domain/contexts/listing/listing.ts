@@ -5,6 +5,7 @@ import { Photo, PhotoProps, PhotoEntityReference } from './photo';
 import { ListingPhotoDeletedEvent } from '../../events/listing-photo-deleted';
 import { ListingPublishedEvent } from '../../events/listing-published';
 import { ListingUnpublishedEvent } from '../../events/listing-unpublished';
+import { DraftStatusCodes } from './draft-status';
 
 import { EntityProps } from '../../shared/entity';
 import { AccountEntityReference } from '../account/account';
@@ -49,13 +50,18 @@ export interface ListingEntityReference {
 
 
 export class Listing<props extends ListingProps> extends AggregateRoot<props> implements ListingEntityReference {
+  protected visa: ListingVisa;
   constructor(props: props,private context:DomainExecutionContext) { 
     super(props); 
     this.visa = context.passport.forListing(this);
   }
-  protected visa: ListingVisa;
   
-  get draft(): Draft {return new Draft(this.props.draft ?? this.props.getNewDraft(), this, this.visa);}
+  get draft(): Draft {
+    if(!this.props.draft) {
+      this.props.getNewDraft();
+    }
+    return new Draft(this.props.draft, this, this.visa);
+  }
   get id(): string {return this.props.id;}
   get title(): string {return this.props.title;}
   get description(): string {return this.props.description;}
@@ -115,7 +121,7 @@ export class Listing<props extends ListingProps> extends AggregateRoot<props> im
     if(!await this.visa.determineIf((permissions) => permissions.canManageListings)) {
       throw new Error('Permission denied');
     }    
-    if(this.props.statusCode === ListingStatusCodes.Draft) {
+    if(this.draft.getCurrentStatus() === DraftStatusCodes.Draft) {
       throw new Error('Already in draft status');
     }
     this.props.getNewDraft();

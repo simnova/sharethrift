@@ -19,7 +19,7 @@ export abstract class MongoRepositoryBase<ContextType extends ExecutionContext, 
     
   
   async get(id: string): Promise<DomainType> {
-   // return this.typeConverter.toDomain(await this.model.findById(id,null,{session:this.session}).exec(),this.context); //including session restricts the transcation to a single query -.. bad idea
+  //  return this.typeConverter.toDomain(await this.model.findById(id,null,{session:this.session}).exec(),this.context); //including session restricts the transcation to a single query -.. bad idea
    return this.typeConverter.toDomain(await this.model.findById(id).exec(),this.context);
   }
 

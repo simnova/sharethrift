@@ -55,7 +55,7 @@ export const AccountModel = model<Account>('Account',new Schema<Account, Model<A
       firstName: { type: String, required: true },
       lastName: { type: String, required: false },
       role: { type: Schema.Types.ObjectId, required: false },
-      user: { type: Schema.Types.ObjectId, ref: User.UserModel.modelName, required: false, index: true, unique: true },
+      user: { type: Schema.Types.ObjectId, ref: User.UserModel.modelName, required: false, index: true}, //can't add unique index here because of embedded docs
       createdAt: { type: Date, default: Date.now },
       updatedAt: { type: Date, default: Date.now }
     }],

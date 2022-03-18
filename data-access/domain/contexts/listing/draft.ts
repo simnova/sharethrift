@@ -56,7 +56,7 @@ export class Draft extends Entity<DraftProps> implements DraftEntityReference {
     [DraftStatusCodes.Rejected, [DraftStatusCodes.Draft]],
   ]);
 
-  private getCurrentStatus():string {
+  public getCurrentStatus():string {
     let currentStatus:string;
     if(!this.props.statusHistory || this.props.statusHistory.items.length==0){
       currentStatus = DraftStatusCodes.Draft;

@@ -1,17 +1,17 @@
-import {Form, Input, Button, Table,  Card} from 'antd';
+import {Form, Input, Button, Card} from 'antd';
 import { ListingCategorySelectionContainer } from './listing-category-selection-container';
 import { ListingDraftTags } from './listing-draft-tags';
 import { ListingDetailStatusHistory } from './listing-detail-status-history';
 import { Label, LabelType } from '../../../label';
 import React from 'react';
-
+import { debug } from 'console';
 
 export const ListingDetail: React.FC<any> = (props:any) => {
   const [form] = Form.useForm();
 
   const getCurrentStatusCode = ():string => {
-    if(!props.data.draft?.statusHistory || !(props.data.draft.statusHistory.length > 0)){ return "DRAFT"; }
-    return props.data.draft.statusHistory.sort((a:any,b:any) => 
+    if(!props.data.draft?.statusHistory || props.data.draft.statusHistory.length === 0){ return "DRAFT"; }
+    var newestHistoryItem = props.data.draft.statusHistory.sort((a:any,b:any) => 
     {
       let aTime = (new Date(a.createdAt)).getTime();
       let bTime = (new Date(b.createdAt)).getTime();
@@ -22,10 +22,11 @@ export const ListingDetail: React.FC<any> = (props:any) => {
       }else{
         return 0;
       }
-    })[0].statusCode
+    })[0]
+    return newestHistoryItem.statusCode
   }
   const hasPhotos = () => {
-    if(!props.data.draft?.photos || !(props.data.draft.photos.length > 0)){ return false; }
+    if(!props.data.draft?.photos || props.data.draft.photos.length === 0){ return false; }
     return true;
   }
   const requiredFieldsCompleted = () => {
@@ -82,73 +83,73 @@ export const ListingDetail: React.FC<any> = (props:any) => {
 
   return (
     <div>
-    {label()}
-    
-    {props.data.statusCode === "PUBLISHED" && <Button type="primary" onClick={props.onUnpublish}>Unpublish Listing</Button>}
-    {props.data.statusCode === "PUBLISHED" &&  getCurrentStatusCode() === "APPROVED" && <Button type="primary" onClick={props.onCreateDraft}>Create Draft</Button>}
-    <Form
-      layout='vertical'
-      initialValues={props.data}
-      form={form}
-      onFinish={(values) => {
-        props.onSave(values);
-      }}
+      {label()}
       
-    >
-      <Form.Item
-        label="Title"
-        name={['draft', 'title']}
-        rules={[
-          { required: true, message: 'Please input Title!' },
-        ]}
-      >
-        <Input placeholder="Title" />
-      </Form.Item>
-      <Form.Item
-        label="Description"
-        name={['draft', 'description']}
-        rules={[
-          { required: true, message: 'Please input Description!' },
-        ]}
-      >
-        <Input placeholder="Description" />
-      </Form.Item>
-      <Form.Item
-        label="Primary Category"
-        name={['draft', 'primaryCategory', 'id']}
-        rules={[
-          { required: true, message: 'Please select a Category!' },
-        ]}
-      >
-        <ListingCategorySelectionContainer />
-      </Form.Item>
-      <Form.Item
-        label="Tags"
-        name={['draft', 'tags']}
-      >
-        <ListingDraftTags />
-      </Form.Item>
+      {props.data.statusCode === "PUBLISHED" && <Button type="primary" onClick={props.onUnpublish}>Unpublish Listing</Button>}
+      {getCurrentStatusCode() === "APPROVED" && <Button type="primary" onClick={props.onCreateDraft}>Create Draft</Button>}
+      {(getCurrentStatusCode() === "DRAFT")&&(
+        <Form
+          layout='vertical'
+          initialValues={props.data}
+          form={form}
+          onFinish={(values) => {
+            props.onSave(values);
+          }}
+        >
+          <Form.Item
+            label="Title"
+            name={['draft', 'title']}
+            rules={[
+              { required: true, message: 'Please input Title!' },
+            ]}
+          >
+            <Input placeholder="Title" />
+          </Form.Item>
+          <Form.Item
+            label="Description"
+            name={['draft', 'description']}
+            rules={[
+              { required: true, message: 'Please input Description!' },
+            ]}
+          >
+            <Input placeholder="Description" />
+          </Form.Item>
+          <Form.Item
+            label="Primary Category"
+            name={['draft', 'primaryCategory', 'id']}
+            rules={[
+              { required: true, message: 'Please select a Category!' },
+            ]}
+          >
+            <ListingCategorySelectionContainer />
+          </Form.Item>
+          <Form.Item
+            label="Tags"
+            name={['draft', 'tags']}
+          >
+            <ListingDraftTags />
+          </Form.Item>
 
-      <Button type="primary" htmlType="submit">
-        Update Listing
-      </Button>
-      <Card>
-        <div>Current Status is Draft? {getCurrentStatusCode() === "DRAFT" ? "Yes" : "No" }</div>
-        <div>Required Fields Completed? {requiredFieldsCompleted() ? "Yes" : "No" }</div>
-        <div>Has Photos? {hasPhotos() ? "Yes" : "No" }</div>
-        <Button type="primary" onClick={props.onPublish} disabled={!canPublish()}>
-          Publish Listing
-        </Button>
-      </Card>
-    </Form> 
-    {props.data.draft.statusHistory ?(
-      <>  <div>
-        
-    <ListingDetailStatusHistory data={props.data.draft.statusHistory} />
+          <Button type="primary" htmlType="submit">
+            Update Listing
+          </Button>
+          <Card>
+            <div>Current Status is Draft? {getCurrentStatusCode() === "DRAFT" ? "Yes" : "No" }</div>
+            <div>Required Fields Completed? {requiredFieldsCompleted() ? "Yes" : "No" }</div>
+            <div>Has Photos? {hasPhotos() ? "Yes" : "No" }</div>
+            <Button type="primary" onClick={props.onPublish} disabled={!canPublish()}>
+              Publish Listing
+            </Button>
+          </Card>
+        </Form> 
+      )}
+
+      {props.data.draft.statusHistory && (
+        <div>
+          <h2>Status History</h2>
+          <ListingDetailStatusHistory data={props.data.draft.statusHistory} />
         </div>  
-      </>
-  
-    ):(<></>)}
+      )}
     </div>
   )
 }
