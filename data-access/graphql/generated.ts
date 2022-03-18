@@ -248,6 +248,18 @@ export type ListingDraft = {
   primaryCategory?: Maybe<Scalars["ObjectID"]>;
 };
 
+export type ListingMutationResult = {
+  __typename?: "ListingMutationResult";
+  status: ListingMutationStatus;
+  listing: Listing;
+};
+
+export type ListingMutationStatus = {
+  __typename?: "ListingMutationStatus";
+  success: Scalars["Boolean"];
+  errorMessage?: Maybe<Scalars["String"]>;
+};
+
 export type ListingNewDraft = {
   accountHandle: Scalars["String"];
   title?: Maybe<Scalars["String"]>;
@@ -313,16 +325,16 @@ export type Mutation = {
   accountAddRole?: Maybe<Account>;
   accountUpdateRole?: Maybe<Account>;
   createCategory?: Maybe<Category>;
-  createNewListing?: Maybe<CreateListingPayload>;
+  createNewListing: ListingMutationResult;
   createUser?: Maybe<User>;
   draftAddPhoto: DraftAuthHeaderForDraftPhotoOutput;
-  draftRemovePhoto: DraftRemovePhotoResult;
-  listingDraftCreate?: Maybe<Scalars["ID"]>;
-  listingDraftPublish?: Maybe<Scalars["ID"]>;
-  listingUnpublish?: Maybe<Scalars["ID"]>;
+  draftRemovePhoto: ListingMutationResult;
+  listingDraftCreate: ListingMutationResult;
+  listingDraftPublish: ListingMutationResult;
+  listingUnpublish: ListingMutationResult;
   updateAccount?: Maybe<Account>;
   updateCategory?: Maybe<Category>;
-  updateDraft?: Maybe<Listing>;
+  updateDraft: ListingMutationResult;
   /** Allows the user to update their profile */
   updateUser?: Maybe<User>;
   userCreateAuthHeaderForProfilePhoto: UserCreateAuthHeaderForProfilePhotoOutput;
@@ -702,6 +714,8 @@ export type ResolversTypes = ResolversObject<{
   Listing: ResolverTypeWrapper<Listing>;
   ListingDetail: ListingDetail;
   ListingDraft: ListingDraft;
+  ListingMutationResult: ResolverTypeWrapper<ListingMutationResult>;
+  ListingMutationStatus: ResolverTypeWrapper<ListingMutationStatus>;
   ListingNewDraft: ListingNewDraft;
   ListingPermissions: ResolverTypeWrapper<ListingPermissions>;
   ListingPermissionsInput: ListingPermissionsInput;
@@ -810,6 +824,8 @@ export type ResolversParentTypes = ResolversObject<{
   Listing: Listing;
   ListingDetail: ListingDetail;
   ListingDraft: ListingDraft;
+  ListingMutationResult: ListingMutationResult;
+  ListingMutationStatus: ListingMutationStatus;
   ListingNewDraft: ListingNewDraft;
   ListingPermissions: ListingPermissions;
   ListingPermissionsInput: ListingPermissionsInput;
@@ -1341,6 +1357,32 @@ export type ListingResolvers<
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 }>;
 
+export type ListingMutationResultResolvers<
+  ContextType = Context,
+  ParentType extends ResolversParentTypes["ListingMutationResult"] = ResolversParentTypes["ListingMutationResult"]
+> = ResolversObject<{
+  status?: Resolver<
+    ResolversTypes["ListingMutationStatus"],
+    ParentType,
+    ContextType
+  >;
+  listing?: Resolver<ResolversTypes["Listing"], ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+}>;
+
+export type ListingMutationStatusResolvers<
+  ContextType = Context,
+  ParentType extends ResolversParentTypes["ListingMutationStatus"] = ResolversParentTypes["ListingMutationStatus"]
+> = ResolversObject<{
+  success?: Resolver<ResolversTypes["Boolean"], ParentType, ContextType>;
+  errorMessage?: Resolver<
+    Maybe<ResolversTypes["String"]>,
+    ParentType,
+    ContextType
+  >;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+}>;
+
 export type ListingPermissionsResolvers<
   ContextType = Context,
   ParentType extends ResolversParentTypes["ListingPermissions"] = ResolversParentTypes["ListingPermissions"]
@@ -1494,7 +1536,7 @@ export type MutationResolvers<
     RequireFields<MutationCreateCategoryArgs, "category">
   >;
   createNewListing?: Resolver<
-    Maybe<ResolversTypes["CreateListingPayload"]>,
+    ResolversTypes["ListingMutationResult"],
     ParentType,
     ContextType,
     RequireFields<MutationCreateNewListingArgs, "input">
@@ -1507,25 +1549,25 @@ export type MutationResolvers<
     RequireFields<MutationDraftAddPhotoArgs, "input">
   >;
   draftRemovePhoto?: Resolver<
-    ResolversTypes["DraftRemovePhotoResult"],
+    ResolversTypes["ListingMutationResult"],
     ParentType,
     ContextType,
     RequireFields<MutationDraftRemovePhotoArgs, "input">
   >;
   listingDraftCreate?: Resolver<
-    Maybe<ResolversTypes["ID"]>,
+    ResolversTypes["ListingMutationResult"],
     ParentType,
     ContextType,
     RequireFields<MutationListingDraftCreateArgs, "id">
   >;
   listingDraftPublish?: Resolver<
-    Maybe<ResolversTypes["ID"]>,
+    ResolversTypes["ListingMutationResult"],
     ParentType,
     ContextType,
     RequireFields<MutationListingDraftPublishArgs, "id">
   >;
   listingUnpublish?: Resolver<
-    Maybe<ResolversTypes["ID"]>,
+    ResolversTypes["ListingMutationResult"],
     ParentType,
     ContextType,
     RequireFields<MutationListingUnpublishArgs, "id">
@@ -1543,7 +1585,7 @@ export type MutationResolvers<
     RequireFields<MutationUpdateCategoryArgs, "category">
   >;
   updateDraft?: Resolver<
-    Maybe<ResolversTypes["Listing"]>,
+    ResolversTypes["ListingMutationResult"],
     ParentType,
     ContextType,
     RequireFields<MutationUpdateDraftArgs, "input">
@@ -1953,6 +1995,8 @@ export type Resolvers<ContextType = Context> = ResolversObject<{
   JWT?: GraphQLScalarType;
   Latitude?: GraphQLScalarType;
   Listing?: ListingResolvers<ContextType>;
+  ListingMutationResult?: ListingMutationResultResolvers<ContextType>;
+  ListingMutationStatus?: ListingMutationStatusResolvers<ContextType>;
   ListingPermissions?: ListingPermissionsResolvers<ContextType>;
   ListingSearchFacets?: ListingSearchFacetsResolvers<ContextType>;
   ListingSearchResult?: ListingSearchResultResolvers<ContextType>;

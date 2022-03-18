@@ -240,6 +240,18 @@ export type ListingDraft = {
   primaryCategory?: Maybe<Scalars["ObjectID"]>;
 };
 
+export type ListingMutationResult = {
+  __typename?: "ListingMutationResult";
+  status: ListingMutationStatus;
+  listing: Listing;
+};
+
+export type ListingMutationStatus = {
+  __typename?: "ListingMutationStatus";
+  success: Scalars["Boolean"];
+  errorMessage?: Maybe<Scalars["String"]>;
+};
+
 export type ListingNewDraft = {
   accountHandle: Scalars["String"];
   title?: Maybe<Scalars["String"]>;
@@ -305,16 +317,16 @@ export type Mutation = {
   accountAddRole?: Maybe<Account>;
   accountUpdateRole?: Maybe<Account>;
   createCategory?: Maybe<Category>;
-  createNewListing?: Maybe<CreateListingPayload>;
+  createNewListing: ListingMutationResult;
   createUser?: Maybe<User>;
   draftAddPhoto: DraftAuthHeaderForDraftPhotoOutput;
-  draftRemovePhoto: DraftRemovePhotoResult;
-  listingDraftCreate?: Maybe<Scalars["ID"]>;
-  listingDraftPublish?: Maybe<Scalars["ID"]>;
-  listingUnpublish?: Maybe<Scalars["ID"]>;
+  draftRemovePhoto: ListingMutationResult;
+  listingDraftCreate: ListingMutationResult;
+  listingDraftPublish: ListingMutationResult;
+  listingUnpublish: ListingMutationResult;
   updateAccount?: Maybe<Account>;
   updateCategory?: Maybe<Category>;
-  updateDraft?: Maybe<Listing>;
+  updateDraft: ListingMutationResult;
   /** Allows the user to update their profile */
   updateUser?: Maybe<User>;
   userCreateAuthHeaderForProfilePhoto: UserCreateAuthHeaderForProfilePhotoOutput;
@@ -865,9 +877,213 @@ export type ListingCreateContainerCreateListingMutationVariables = Exact<{
 
 export type ListingCreateContainerCreateListingMutation = {
   __typename?: "Mutation";
-  createNewListing?: Maybe<{
-    __typename?: "CreateListingPayload";
-    listing?: Maybe<{ __typename?: "Listing"; title?: Maybe<string> }>;
+  createNewListing: {
+    __typename?: "ListingMutationResult";
+    status: {
+      __typename?: "ListingMutationStatus";
+      success: boolean;
+      errorMessage?: Maybe<string>;
+    };
+    listing: {
+      __typename?: "Listing";
+      id: any;
+      title?: Maybe<string>;
+      description?: Maybe<string>;
+      statusCode?: Maybe<string>;
+      tags?: Maybe<Array<Maybe<string>>>;
+      createdAt?: Maybe<any>;
+      account?: Maybe<{
+        __typename?: "Account";
+        id: any;
+        name?: Maybe<string>;
+      }>;
+      primaryCategory?: Maybe<{
+        __typename?: "Category";
+        id: any;
+        name?: Maybe<string>;
+      }>;
+      draft?: Maybe<{
+        __typename?: "Draft";
+        title?: Maybe<string>;
+        description?: Maybe<string>;
+        tags?: Maybe<Array<Maybe<string>>>;
+        statusHistory?: Maybe<
+          Array<
+            Maybe<{
+              __typename?: "DraftStatus";
+              id: any;
+              statusCode?: Maybe<string>;
+              statusDetail?: Maybe<string>;
+              createdAt?: Maybe<any>;
+            }>
+          >
+        >;
+        photos?: Maybe<
+          Array<
+            Maybe<{
+              __typename?: "Photo";
+              order?: Maybe<number>;
+              documentId?: Maybe<string>;
+            }>
+          >
+        >;
+        primaryCategory?: Maybe<{
+          __typename?: "Category";
+          id: any;
+          name?: Maybe<string>;
+        }>;
+      }>;
+      photos?: Maybe<
+        Array<
+          Maybe<{
+            __typename?: "Photo";
+            order?: Maybe<number>;
+            documentId?: Maybe<string>;
+          }>
+        >
+      >;
+      location?: Maybe<{
+        __typename?: "Location";
+        address?: Maybe<{
+          __typename?: "Address";
+          freeformAddress?: Maybe<string>;
+        }>;
+      }>;
+    };
+  };
+};
+
+export type ListingCreateContainerMutationFieldsFragment = {
+  __typename?: "ListingMutationResult";
+  status: {
+    __typename?: "ListingMutationStatus";
+    success: boolean;
+    errorMessage?: Maybe<string>;
+  };
+  listing: {
+    __typename?: "Listing";
+    id: any;
+    title?: Maybe<string>;
+    description?: Maybe<string>;
+    statusCode?: Maybe<string>;
+    tags?: Maybe<Array<Maybe<string>>>;
+    createdAt?: Maybe<any>;
+    account?: Maybe<{ __typename?: "Account"; id: any; name?: Maybe<string> }>;
+    primaryCategory?: Maybe<{
+      __typename?: "Category";
+      id: any;
+      name?: Maybe<string>;
+    }>;
+    draft?: Maybe<{
+      __typename?: "Draft";
+      title?: Maybe<string>;
+      description?: Maybe<string>;
+      tags?: Maybe<Array<Maybe<string>>>;
+      statusHistory?: Maybe<
+        Array<
+          Maybe<{
+            __typename?: "DraftStatus";
+            id: any;
+            statusCode?: Maybe<string>;
+            statusDetail?: Maybe<string>;
+            createdAt?: Maybe<any>;
+          }>
+        >
+      >;
+      photos?: Maybe<
+        Array<
+          Maybe<{
+            __typename?: "Photo";
+            order?: Maybe<number>;
+            documentId?: Maybe<string>;
+          }>
+        >
+      >;
+      primaryCategory?: Maybe<{
+        __typename?: "Category";
+        id: any;
+        name?: Maybe<string>;
+      }>;
+    }>;
+    photos?: Maybe<
+      Array<
+        Maybe<{
+          __typename?: "Photo";
+          order?: Maybe<number>;
+          documentId?: Maybe<string>;
+        }>
+      >
+    >;
+    location?: Maybe<{
+      __typename?: "Location";
+      address?: Maybe<{
+        __typename?: "Address";
+        freeformAddress?: Maybe<string>;
+      }>;
+    }>;
+  };
+};
+
+export type ListingCreateContainerListingFieldsFragment = {
+  __typename?: "Listing";
+  id: any;
+  title?: Maybe<string>;
+  description?: Maybe<string>;
+  statusCode?: Maybe<string>;
+  tags?: Maybe<Array<Maybe<string>>>;
+  createdAt?: Maybe<any>;
+  account?: Maybe<{ __typename?: "Account"; id: any; name?: Maybe<string> }>;
+  primaryCategory?: Maybe<{
+    __typename?: "Category";
+    id: any;
+    name?: Maybe<string>;
+  }>;
+  draft?: Maybe<{
+    __typename?: "Draft";
+    title?: Maybe<string>;
+    description?: Maybe<string>;
+    tags?: Maybe<Array<Maybe<string>>>;
+    statusHistory?: Maybe<
+      Array<
+        Maybe<{
+          __typename?: "DraftStatus";
+          id: any;
+          statusCode?: Maybe<string>;
+          statusDetail?: Maybe<string>;
+          createdAt?: Maybe<any>;
+        }>
+      >
+    >;
+    photos?: Maybe<
+      Array<
+        Maybe<{
+          __typename?: "Photo";
+          order?: Maybe<number>;
+          documentId?: Maybe<string>;
+        }>
+      >
+    >;
+    primaryCategory?: Maybe<{
+      __typename?: "Category";
+      id: any;
+      name?: Maybe<string>;
+    }>;
+  }>;
+  photos?: Maybe<
+    Array<
+      Maybe<{
+        __typename?: "Photo";
+        order?: Maybe<number>;
+        documentId?: Maybe<string>;
+      }>
+    >
+  >;
+  location?: Maybe<{
+    __typename?: "Location";
+    address?: Maybe<{
+      __typename?: "Address";
+      freeformAddress?: Maybe<string>;
+    }>;
   }>;
 };
 
@@ -947,7 +1163,80 @@ export type ListingDetailContainerUpdateDraftMutationVariables = Exact<{
 
 export type ListingDetailContainerUpdateDraftMutation = {
   __typename?: "Mutation";
-  updateDraft?: Maybe<{ __typename?: "Listing"; title?: Maybe<string> }>;
+  updateDraft: {
+    __typename?: "ListingMutationResult";
+    status: {
+      __typename?: "ListingMutationStatus";
+      success: boolean;
+      errorMessage?: Maybe<string>;
+    };
+    listing: {
+      __typename?: "Listing";
+      id: any;
+      title?: Maybe<string>;
+      description?: Maybe<string>;
+      statusCode?: Maybe<string>;
+      tags?: Maybe<Array<Maybe<string>>>;
+      createdAt?: Maybe<any>;
+      account?: Maybe<{
+        __typename?: "Account";
+        id: any;
+        name?: Maybe<string>;
+      }>;
+      primaryCategory?: Maybe<{
+        __typename?: "Category";
+        id: any;
+        name?: Maybe<string>;
+      }>;
+      draft?: Maybe<{
+        __typename?: "Draft";
+        title?: Maybe<string>;
+        description?: Maybe<string>;
+        tags?: Maybe<Array<Maybe<string>>>;
+        statusHistory?: Maybe<
+          Array<
+            Maybe<{
+              __typename?: "DraftStatus";
+              id: any;
+              statusCode?: Maybe<string>;
+              statusDetail?: Maybe<string>;
+              createdAt?: Maybe<any>;
+            }>
+          >
+        >;
+        photos?: Maybe<
+          Array<
+            Maybe<{
+              __typename?: "Photo";
+              order?: Maybe<number>;
+              documentId?: Maybe<string>;
+            }>
+          >
+        >;
+        primaryCategory?: Maybe<{
+          __typename?: "Category";
+          id: any;
+          name?: Maybe<string>;
+        }>;
+      }>;
+      photos?: Maybe<
+        Array<
+          Maybe<{
+            __typename?: "Photo";
+            order?: Maybe<number>;
+            documentId?: Maybe<string>;
+          }>
+        >
+      >;
+      location?: Maybe<{
+        __typename?: "Location";
+        address?: Maybe<{
+          __typename?: "Address";
+          freeformAddress?: Maybe<string>;
+        }>;
+      }>;
+    };
+  };
 };
 
 export type ListingDetailContainerPublishDraftMutationVariables = Exact<{
@@ -956,7 +1245,80 @@ export type ListingDetailContainerPublishDraftMutationVariables = Exact<{
 
 export type ListingDetailContainerPublishDraftMutation = {
   __typename?: "Mutation";
-  listingDraftPublish?: Maybe<string>;
+  listingDraftPublish: {
+    __typename?: "ListingMutationResult";
+    status: {
+      __typename?: "ListingMutationStatus";
+      success: boolean;
+      errorMessage?: Maybe<string>;
+    };
+    listing: {
+      __typename?: "Listing";
+      id: any;
+      title?: Maybe<string>;
+      description?: Maybe<string>;
+      statusCode?: Maybe<string>;
+      tags?: Maybe<Array<Maybe<string>>>;
+      createdAt?: Maybe<any>;
+      account?: Maybe<{
+        __typename?: "Account";
+        id: any;
+        name?: Maybe<string>;
+      }>;
+      primaryCategory?: Maybe<{
+        __typename?: "Category";
+        id: any;
+        name?: Maybe<string>;
+      }>;
+      draft?: Maybe<{
+        __typename?: "Draft";
+        title?: Maybe<string>;
+        description?: Maybe<string>;
+        tags?: Maybe<Array<Maybe<string>>>;
+        statusHistory?: Maybe<
+          Array<
+            Maybe<{
+              __typename?: "DraftStatus";
+              id: any;
+              statusCode?: Maybe<string>;
+              statusDetail?: Maybe<string>;
+              createdAt?: Maybe<any>;
+            }>
+          >
+        >;
+        photos?: Maybe<
+          Array<
+            Maybe<{
+              __typename?: "Photo";
+              order?: Maybe<number>;
+              documentId?: Maybe<string>;
+            }>
+          >
+        >;
+        primaryCategory?: Maybe<{
+          __typename?: "Category";
+          id: any;
+          name?: Maybe<string>;
+        }>;
+      }>;
+      photos?: Maybe<
+        Array<
+          Maybe<{
+            __typename?: "Photo";
+            order?: Maybe<number>;
+            documentId?: Maybe<string>;
+          }>
+        >
+      >;
+      location?: Maybe<{
+        __typename?: "Location";
+        address?: Maybe<{
+          __typename?: "Address";
+          freeformAddress?: Maybe<string>;
+        }>;
+      }>;
+    };
+  };
 };
 
 export type ListingDetailContainerUnpublishMutationVariables = Exact<{
@@ -965,7 +1327,80 @@ export type ListingDetailContainerUnpublishMutationVariables = Exact<{
 
 export type ListingDetailContainerUnpublishMutation = {
   __typename?: "Mutation";
-  listingUnpublish?: Maybe<string>;
+  listingUnpublish: {
+    __typename?: "ListingMutationResult";
+    status: {
+      __typename?: "ListingMutationStatus";
+      success: boolean;
+      errorMessage?: Maybe<string>;
+    };
+    listing: {
+      __typename?: "Listing";
+      id: any;
+      title?: Maybe<string>;
+      description?: Maybe<string>;
+      statusCode?: Maybe<string>;
+      tags?: Maybe<Array<Maybe<string>>>;
+      createdAt?: Maybe<any>;
+      account?: Maybe<{
+        __typename?: "Account";
+        id: any;
+        name?: Maybe<string>;
+      }>;
+      primaryCategory?: Maybe<{
+        __typename?: "Category";
+        id: any;
+        name?: Maybe<string>;
+      }>;
+      draft?: Maybe<{
+        __typename?: "Draft";
+        title?: Maybe<string>;
+        description?: Maybe<string>;
+        tags?: Maybe<Array<Maybe<string>>>;
+        statusHistory?: Maybe<
+          Array<
+            Maybe<{
+              __typename?: "DraftStatus";
+              id: any;
+              statusCode?: Maybe<string>;
+              statusDetail?: Maybe<string>;
+              createdAt?: Maybe<any>;
+            }>
+          >
+        >;
+        photos?: Maybe<
+          Array<
+            Maybe<{
+              __typename?: "Photo";
+              order?: Maybe<number>;
+              documentId?: Maybe<string>;
+            }>
+          >
+        >;
+        primaryCategory?: Maybe<{
+          __typename?: "Category";
+          id: any;
+          name?: Maybe<string>;
+        }>;
+      }>;
+      photos?: Maybe<
+        Array<
+          Maybe<{
+            __typename?: "Photo";
+            order?: Maybe<number>;
+            documentId?: Maybe<string>;
+          }>
+        >
+      >;
+      location?: Maybe<{
+        __typename?: "Location";
+        address?: Maybe<{
+          __typename?: "Address";
+          freeformAddress?: Maybe<string>;
+        }>;
+      }>;
+    };
+  };
 };
 
 export type ListingDetailContainerCreateDraftMutationVariables = Exact<{
@@ -974,10 +1409,154 @@ export type ListingDetailContainerCreateDraftMutationVariables = Exact<{
 
 export type ListingDetailContainerCreateDraftMutation = {
   __typename?: "Mutation";
-  listingDraftCreate?: Maybe<string>;
+  listingDraftCreate: {
+    __typename?: "ListingMutationResult";
+    status: {
+      __typename?: "ListingMutationStatus";
+      success: boolean;
+      errorMessage?: Maybe<string>;
+    };
+    listing: {
+      __typename?: "Listing";
+      id: any;
+      title?: Maybe<string>;
+      description?: Maybe<string>;
+      statusCode?: Maybe<string>;
+      tags?: Maybe<Array<Maybe<string>>>;
+      createdAt?: Maybe<any>;
+      account?: Maybe<{
+        __typename?: "Account";
+        id: any;
+        name?: Maybe<string>;
+      }>;
+      primaryCategory?: Maybe<{
+        __typename?: "Category";
+        id: any;
+        name?: Maybe<string>;
+      }>;
+      draft?: Maybe<{
+        __typename?: "Draft";
+        title?: Maybe<string>;
+        description?: Maybe<string>;
+        tags?: Maybe<Array<Maybe<string>>>;
+        statusHistory?: Maybe<
+          Array<
+            Maybe<{
+              __typename?: "DraftStatus";
+              id: any;
+              statusCode?: Maybe<string>;
+              statusDetail?: Maybe<string>;
+              createdAt?: Maybe<any>;
+            }>
+          >
+        >;
+        photos?: Maybe<
+          Array<
+            Maybe<{
+              __typename?: "Photo";
+              order?: Maybe<number>;
+              documentId?: Maybe<string>;
+            }>
+          >
+        >;
+        primaryCategory?: Maybe<{
+          __typename?: "Category";
+          id: any;
+          name?: Maybe<string>;
+        }>;
+      }>;
+      photos?: Maybe<
+        Array<
+          Maybe<{
+            __typename?: "Photo";
+            order?: Maybe<number>;
+            documentId?: Maybe<string>;
+          }>
+        >
+      >;
+      location?: Maybe<{
+        __typename?: "Location";
+        address?: Maybe<{
+          __typename?: "Address";
+          freeformAddress?: Maybe<string>;
+        }>;
+      }>;
+    };
+  };
 };
 
-export type ListingDetailContainerListingsFieldsFragment = {
+export type ListingDetailContainerMutationFieldsFragment = {
+  __typename?: "ListingMutationResult";
+  status: {
+    __typename?: "ListingMutationStatus";
+    success: boolean;
+    errorMessage?: Maybe<string>;
+  };
+  listing: {
+    __typename?: "Listing";
+    id: any;
+    title?: Maybe<string>;
+    description?: Maybe<string>;
+    statusCode?: Maybe<string>;
+    tags?: Maybe<Array<Maybe<string>>>;
+    createdAt?: Maybe<any>;
+    account?: Maybe<{ __typename?: "Account"; id: any; name?: Maybe<string> }>;
+    primaryCategory?: Maybe<{
+      __typename?: "Category";
+      id: any;
+      name?: Maybe<string>;
+    }>;
+    draft?: Maybe<{
+      __typename?: "Draft";
+      title?: Maybe<string>;
+      description?: Maybe<string>;
+      tags?: Maybe<Array<Maybe<string>>>;
+      statusHistory?: Maybe<
+        Array<
+          Maybe<{
+            __typename?: "DraftStatus";
+            id: any;
+            statusCode?: Maybe<string>;
+            statusDetail?: Maybe<string>;
+            createdAt?: Maybe<any>;
+          }>
+        >
+      >;
+      photos?: Maybe<
+        Array<
+          Maybe<{
+            __typename?: "Photo";
+            order?: Maybe<number>;
+            documentId?: Maybe<string>;
+          }>
+        >
+      >;
+      primaryCategory?: Maybe<{
+        __typename?: "Category";
+        id: any;
+        name?: Maybe<string>;
+      }>;
+    }>;
+    photos?: Maybe<
+      Array<
+        Maybe<{
+          __typename?: "Photo";
+          order?: Maybe<number>;
+          documentId?: Maybe<string>;
+        }>
+      >
+    >;
+    location?: Maybe<{
+      __typename?: "Location";
+      address?: Maybe<{
+        __typename?: "Address";
+        freeformAddress?: Maybe<string>;
+      }>;
+    }>;
+  };
+};
+
+export type ListingDetailContainerListingFieldsFragment = {
   __typename?: "Listing";
   id: any;
   title?: Maybe<string>;
@@ -1089,9 +1668,28 @@ export type ListingDraftPhotosEditContainerDraftRemovePhotoMutationVariables =
 export type ListingDraftPhotosEditContainerDraftRemovePhotoMutation = {
   __typename?: "Mutation";
   draftRemovePhoto: {
-    __typename?: "DraftRemovePhotoResult";
-    success: boolean;
-    errorMessage?: Maybe<string>;
+    __typename?: "ListingMutationResult";
+    status: {
+      __typename?: "ListingMutationStatus";
+      success: boolean;
+      errorMessage?: Maybe<string>;
+    };
+    listing: {
+      __typename?: "Listing";
+      id: any;
+      draft?: Maybe<{
+        __typename?: "Draft";
+        photos?: Maybe<
+          Array<
+            Maybe<{
+              __typename?: "Photo";
+              order?: Maybe<number>;
+              documentId?: Maybe<string>;
+            }>
+          >
+        >;
+      }>;
+    };
   };
 };
 
@@ -1820,12 +2418,12 @@ export const ListingCategorySelectionContainerFieldsFragmentDoc = {
   ListingCategorySelectionContainerFieldsFragment,
   unknown
 >;
-export const ListingDetailContainerListingsFieldsFragmentDoc = {
+export const ListingCreateContainerListingFieldsFragmentDoc = {
   kind: "Document",
   definitions: [
     {
       kind: "FragmentDefinition",
-      name: { kind: "Name", value: "ListingDetailContainerListingsFields" },
+      name: { kind: "Name", value: "ListingCreateContainerListingFields" },
       typeCondition: {
         kind: "NamedType",
         name: { kind: "Name", value: "Listing" },
@@ -1958,7 +2556,252 @@ export const ListingDetailContainerListingsFieldsFragmentDoc = {
     },
   ],
 } as unknown as DocumentNode<
-  ListingDetailContainerListingsFieldsFragment,
+  ListingCreateContainerListingFieldsFragment,
+  unknown
+>;
+export const ListingCreateContainerMutationFieldsFragmentDoc = {
+  kind: "Document",
+  definitions: [
+    {
+      kind: "FragmentDefinition",
+      name: { kind: "Name", value: "ListingCreateContainerMutationFields" },
+      typeCondition: {
+        kind: "NamedType",
+        name: { kind: "Name", value: "ListingMutationResult" },
+      },
+      selectionSet: {
+        kind: "SelectionSet",
+        selections: [
+          {
+            kind: "Field",
+            name: { kind: "Name", value: "status" },
+            selectionSet: {
+              kind: "SelectionSet",
+              selections: [
+                { kind: "Field", name: { kind: "Name", value: "success" } },
+                {
+                  kind: "Field",
+                  name: { kind: "Name", value: "errorMessage" },
+                },
+              ],
+            },
+          },
+          {
+            kind: "Field",
+            name: { kind: "Name", value: "listing" },
+            selectionSet: {
+              kind: "SelectionSet",
+              selections: [
+                {
+                  kind: "FragmentSpread",
+                  name: {
+                    kind: "Name",
+                    value: "ListingCreateContainerListingFields",
+                  },
+                },
+              ],
+            },
+          },
+        ],
+      },
+    },
+    ...ListingCreateContainerListingFieldsFragmentDoc.definitions,
+  ],
+} as unknown as DocumentNode<
+  ListingCreateContainerMutationFieldsFragment,
+  unknown
+>;
+export const ListingDetailContainerListingFieldsFragmentDoc = {
+  kind: "Document",
+  definitions: [
+    {
+      kind: "FragmentDefinition",
+      name: { kind: "Name", value: "ListingDetailContainerListingFields" },
+      typeCondition: {
+        kind: "NamedType",
+        name: { kind: "Name", value: "Listing" },
+      },
+      selectionSet: {
+        kind: "SelectionSet",
+        selections: [
+          { kind: "Field", name: { kind: "Name", value: "id" } },
+          {
+            kind: "Field",
+            name: { kind: "Name", value: "account" },
+            selectionSet: {
+              kind: "SelectionSet",
+              selections: [
+                { kind: "Field", name: { kind: "Name", value: "id" } },
+                { kind: "Field", name: { kind: "Name", value: "name" } },
+              ],
+            },
+          },
+          { kind: "Field", name: { kind: "Name", value: "title" } },
+          { kind: "Field", name: { kind: "Name", value: "description" } },
+          { kind: "Field", name: { kind: "Name", value: "statusCode" } },
+          { kind: "Field", name: { kind: "Name", value: "tags" } },
+          { kind: "Field", name: { kind: "Name", value: "createdAt" } },
+          {
+            kind: "Field",
+            name: { kind: "Name", value: "primaryCategory" },
+            selectionSet: {
+              kind: "SelectionSet",
+              selections: [
+                { kind: "Field", name: { kind: "Name", value: "id" } },
+                { kind: "Field", name: { kind: "Name", value: "name" } },
+              ],
+            },
+          },
+          {
+            kind: "Field",
+            name: { kind: "Name", value: "draft" },
+            selectionSet: {
+              kind: "SelectionSet",
+              selections: [
+                { kind: "Field", name: { kind: "Name", value: "title" } },
+                { kind: "Field", name: { kind: "Name", value: "description" } },
+                { kind: "Field", name: { kind: "Name", value: "tags" } },
+                {
+                  kind: "Field",
+                  name: { kind: "Name", value: "statusHistory" },
+                  selectionSet: {
+                    kind: "SelectionSet",
+                    selections: [
+                      { kind: "Field", name: { kind: "Name", value: "id" } },
+                      {
+                        kind: "Field",
+                        name: { kind: "Name", value: "statusCode" },
+                      },
+                      {
+                        kind: "Field",
+                        name: { kind: "Name", value: "statusDetail" },
+                      },
+                      {
+                        kind: "Field",
+                        name: { kind: "Name", value: "createdAt" },
+                      },
+                    ],
+                  },
+                },
+                {
+                  kind: "Field",
+                  name: { kind: "Name", value: "photos" },
+                  selectionSet: {
+                    kind: "SelectionSet",
+                    selections: [
+                      { kind: "Field", name: { kind: "Name", value: "order" } },
+                      {
+                        kind: "Field",
+                        name: { kind: "Name", value: "documentId" },
+                      },
+                    ],
+                  },
+                },
+                {
+                  kind: "Field",
+                  name: { kind: "Name", value: "primaryCategory" },
+                  selectionSet: {
+                    kind: "SelectionSet",
+                    selections: [
+                      { kind: "Field", name: { kind: "Name", value: "id" } },
+                      { kind: "Field", name: { kind: "Name", value: "name" } },
+                    ],
+                  },
+                },
+              ],
+            },
+          },
+          {
+            kind: "Field",
+            name: { kind: "Name", value: "photos" },
+            selectionSet: {
+              kind: "SelectionSet",
+              selections: [
+                { kind: "Field", name: { kind: "Name", value: "order" } },
+                { kind: "Field", name: { kind: "Name", value: "documentId" } },
+              ],
+            },
+          },
+          {
+            kind: "Field",
+            name: { kind: "Name", value: "location" },
+            selectionSet: {
+              kind: "SelectionSet",
+              selections: [
+                {
+                  kind: "Field",
+                  name: { kind: "Name", value: "address" },
+                  selectionSet: {
+                    kind: "SelectionSet",
+                    selections: [
+                      {
+                        kind: "Field",
+                        name: { kind: "Name", value: "freeformAddress" },
+                      },
+                    ],
+                  },
+                },
+              ],
+            },
+          },
+        ],
+      },
+    },
+  ],
+} as unknown as DocumentNode<
+  ListingDetailContainerListingFieldsFragment,
+  unknown
+>;
+export const ListingDetailContainerMutationFieldsFragmentDoc = {
+  kind: "Document",
+  definitions: [
+    {
+      kind: "FragmentDefinition",
+      name: { kind: "Name", value: "ListingDetailContainerMutationFields" },
+      typeCondition: {
+        kind: "NamedType",
+        name: { kind: "Name", value: "ListingMutationResult" },
+      },
+      selectionSet: {
+        kind: "SelectionSet",
+        selections: [
+          {
+            kind: "Field",
+            name: { kind: "Name", value: "status" },
+            selectionSet: {
+              kind: "SelectionSet",
+              selections: [
+                { kind: "Field", name: { kind: "Name", value: "success" } },
+                {
+                  kind: "Field",
+                  name: { kind: "Name", value: "errorMessage" },
+                },
+              ],
+            },
+          },
+          {
+            kind: "Field",
+            name: { kind: "Name", value: "listing" },
+            selectionSet: {
+              kind: "SelectionSet",
+              selections: [
+                {
+                  kind: "FragmentSpread",
+                  name: {
+                    kind: "Name",
+                    value: "ListingDetailContainerListingFields",
+                  },
+                },
+              ],
+            },
+          },
+        ],
+      },
+    },
+    ...ListingDetailContainerListingFieldsFragmentDoc.definitions,
+  ],
+} as unknown as DocumentNode<
+  ListingDetailContainerMutationFieldsFragment,
   unknown
 >;
 export const ListingDraftPhotosEditContainerListingFieldsFragmentDoc = {
@@ -3003,13 +3846,10 @@ export const ListingCreateContainerCreateListingDocument = {
               kind: "SelectionSet",
               selections: [
                 {
-                  kind: "Field",
-                  name: { kind: "Name", value: "listing" },
-                  selectionSet: {
-                    kind: "SelectionSet",
-                    selections: [
-                      { kind: "Field", name: { kind: "Name", value: "title" } },
-                    ],
+                  kind: "FragmentSpread",
+                  name: {
+                    kind: "Name",
+                    value: "ListingCreateContainerMutationFields",
                   },
                 },
               ],
@@ -3018,6 +3858,7 @@ export const ListingCreateContainerCreateListingDocument = {
         ],
       },
     },
+    ...ListingCreateContainerMutationFieldsFragmentDoc.definitions,
   ],
 } as unknown as DocumentNode<
   ListingCreateContainerCreateListingMutation,
@@ -3063,7 +3904,7 @@ export const ListingDetailContainerListingsDocument = {
                   kind: "FragmentSpread",
                   name: {
                     kind: "Name",
-                    value: "ListingDetailContainerListingsFields",
+                    value: "ListingDetailContainerListingFields",
                   },
                 },
               ],
@@ -3072,7 +3913,7 @@ export const ListingDetailContainerListingsDocument = {
         ],
       },
     },
-    ...ListingDetailContainerListingsFieldsFragmentDoc.definitions,
+    ...ListingDetailContainerListingFieldsFragmentDoc.definitions,
   ],
 } as unknown as DocumentNode<
   ListingDetailContainerListingsQuery,
@@ -3120,13 +3961,20 @@ export const ListingDetailContainerUpdateDraftDocument = {
             selectionSet: {
               kind: "SelectionSet",
               selections: [
-                { kind: "Field", name: { kind: "Name", value: "title" } },
+                {
+                  kind: "FragmentSpread",
+                  name: {
+                    kind: "Name",
+                    value: "ListingDetailContainerMutationFields",
+                  },
+                },
               ],
             },
           },
         ],
       },
     },
+    ...ListingDetailContainerMutationFieldsFragmentDoc.definitions,
   ],
 } as unknown as DocumentNode<
   ListingDetailContainerUpdateDraftMutation,
@@ -3165,10 +4013,23 @@ export const ListingDetailContainerPublishDraftDocument = {
                 },
               },
             ],
+            selectionSet: {
+              kind: "SelectionSet",
+              selections: [
+                {
+                  kind: "FragmentSpread",
+                  name: {
+                    kind: "Name",
+                    value: "ListingDetailContainerMutationFields",
+                  },
+                },
+              ],
+            },
           },
         ],
       },
     },
+    ...ListingDetailContainerMutationFieldsFragmentDoc.definitions,
   ],
 } as unknown as DocumentNode<
   ListingDetailContainerPublishDraftMutation,
@@ -3207,10 +4068,23 @@ export const ListingDetailContainerUnpublishDocument = {
                 },
               },
             ],
+            selectionSet: {
+              kind: "SelectionSet",
+              selections: [
+                {
+                  kind: "FragmentSpread",
+                  name: {
+                    kind: "Name",
+                    value: "ListingDetailContainerMutationFields",
+                  },
+                },
+              ],
+            },
           },
         ],
       },
     },
+    ...ListingDetailContainerMutationFieldsFragmentDoc.definitions,
   ],
 } as unknown as DocumentNode<
   ListingDetailContainerUnpublishMutation,
@@ -3249,10 +4123,23 @@ export const ListingDetailContainerCreateDraftDocument = {
                 },
               },
             ],
+            selectionSet: {
+              kind: "SelectionSet",
+              selections: [
+                {
+                  kind: "FragmentSpread",
+                  name: {
+                    kind: "Name",
+                    value: "ListingDetailContainerMutationFields",
+                  },
+                },
+              ],
+            },
           },
         ],
       },
     },
+    ...ListingDetailContainerMutationFieldsFragmentDoc.definitions,
   ],
 } as unknown as DocumentNode<
   ListingDetailContainerCreateDraftMutation,
@@ -3425,10 +4312,38 @@ export const ListingDraftPhotosEditContainerDraftRemovePhotoDocument = {
             selectionSet: {
               kind: "SelectionSet",
               selections: [
-                { kind: "Field", name: { kind: "Name", value: "success" } },
                 {
                   kind: "Field",
-                  name: { kind: "Name", value: "errorMessage" },
+                  name: { kind: "Name", value: "status" },
+                  selectionSet: {
+                    kind: "SelectionSet",
+                    selections: [
+                      {
+                        kind: "Field",
+                        name: { kind: "Name", value: "success" },
+                      },
+                      {
+                        kind: "Field",
+                        name: { kind: "Name", value: "errorMessage" },
+                      },
+                    ],
+                  },
+                },
+                {
+                  kind: "Field",
+                  name: { kind: "Name", value: "listing" },
+                  selectionSet: {
+                    kind: "SelectionSet",
+                    selections: [
+                      {
+                        kind: "FragmentSpread",
+                        name: {
+                          kind: "Name",
+                          value: "ListingDraftPhotosEditContainerListingFields",
+                        },
+                      },
+                    ],
+                  },
                 },
               ],
             },
@@ -3436,6 +4351,7 @@ export const ListingDraftPhotosEditContainerDraftRemovePhotoDocument = {
         ],
       },
     },
+    ...ListingDraftPhotosEditContainerListingFieldsFragmentDoc.definitions,
   ],
 } as unknown as DocumentNode<
   ListingDraftPhotosEditContainerDraftRemovePhotoMutation,

@@ -1,7 +1,61 @@
 mutation ListingCreateContainerCreateListing ( $input: ListingNewDraft!) {
   createNewListing(input: $input) {
-    listing {
-      title
+    ...ListingCreateContainerMutationFields
+  }
+}
+
+fragment ListingCreateContainerMutationFields on ListingMutationResult {
+  status {
+    success
+    errorMessage
+  }
+  listing {
+    ...ListingCreateContainerListingFields
+  }
+}
+
+fragment ListingCreateContainerListingFields on Listing {
+  id
+  account {
+    id
+    name
+  }
+  title
+  description
+  statusCode
+  tags
+  createdAt
+  primaryCategory {
+    id
+    name
+  }
+  draft {
+    title
+    description
+    tags
+    statusHistory {
+      id
+      statusCode
+      statusDetail
+      createdAt
+
+    }
+    photos {
+      order
+      documentId
+    }
+    primaryCategory {
+      id
+      name
+    }
+  }
+  photos {
+    order
+    documentId
+  }
+  location {
+    address {
+      freeformAddress
     }
   }
 }

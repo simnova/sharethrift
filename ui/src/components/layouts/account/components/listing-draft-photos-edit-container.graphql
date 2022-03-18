@@ -15,8 +15,13 @@ mutation ListingDraftPhotosEditContainerDraftAddPhoto($input: DraftPhotoImageInp
 }
 mutation ListingDraftPhotosEditContainerDraftRemovePhoto($input: DraftRemovePhotoImageInput!) {
   draftRemovePhoto(input: $input) {
-    success
-    errorMessage
+    status {
+      success
+      errorMessage
+    }
+    listing {
+      ...ListingDraftPhotosEditContainerListingFields
+    }
   }
 }
 

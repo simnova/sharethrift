@@ -27,15 +27,7 @@ export const ListingDetailContainer: React.FC<any> = (props) => {
       await updateDraft({
         variables: {
           input: values.draft
-        },
-        refetchQueries: [
-          {
-            query:ListingDetailContainerListingsDocument,
-            variables: {
-              id: props.listingId
-            }
-          }
-        ]
+        }
       });
       message.success('Saved');
     } catch (saveException) {
@@ -48,15 +40,7 @@ export const ListingDetailContainer: React.FC<any> = (props) => {
       await publishDraft({
         variables: {
           id: props.listingId
-        },
-        refetchQueries: [
-          {
-            query:ListingDetailContainerListingsDocument,
-            variables: {
-              id: props.listingId
-            }
-          }
-        ]
+        }
       });
       message.success('Published');
     } catch (publishException) {
@@ -68,15 +52,7 @@ export const ListingDetailContainer: React.FC<any> = (props) => {
       await unpublish({
         variables: {
           id: props.listingId
-        },
-        refetchQueries: [
-          {
-            query:ListingDetailContainerListingsDocument,
-            variables: {
-              id: props.listingId
-            }
-          }
-        ]
+        }
       });
       message.success('UnPublished');
     } catch (publishException) {

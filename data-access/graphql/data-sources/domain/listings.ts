@@ -31,13 +31,15 @@ export class Listings extends DomainDataSource<Context,Listing,PropType,DomainTy
     return result;
   }
 
-  async draftRemovePhoto(photoInfo: DraftRemovePhotoImageInput) : Promise<void> {
+  async draftRemovePhoto(photoInfo: DraftRemovePhotoImageInput) : Promise<Listing> {
     ensureAccountPortalUser(this.context);
+    let result : ListingDO<ListingDomainAdapter>;
     await this.withTransaction(async (repo) => {
       let domainObject = await repo.get(photoInfo.listingId);
       await domainObject.draft.requestRemovePhoto(photoInfo.order);
-      await repo.save(domainObject);
+      result = await repo.save(domainObject);
     });
+    return (new ListingConverter()).toMongo(result);
   }
 
   /**
@@ -72,7 +74,6 @@ export class Listings extends DomainDataSource<Context,Listing,PropType,DomainTy
    */
   async publishDraft(id: string) : Promise<Listing> {
     ensureAccountPortalUser(this.context);
-
     let result : ListingDO<ListingDomainAdapter>;
     await this.withTransaction(async (repo) => {
       let domainObject = await repo.get(id);
@@ -82,22 +83,26 @@ export class Listings extends DomainDataSource<Context,Listing,PropType,DomainTy
     return (new ListingConverter()).toMongo(result);
   }
 
-  async createDraft(id:string) : Promise<void> {
+  async createDraft(id:string) : Promise<Listing> {
     ensureAccountPortalUser(this.context);
+    let result : ListingDO<ListingDomainAdapter>;
     await this.withTransaction(async (repo) => {
       let domainObject = await repo.get(id);
       await domainObject.requestDraft();
-      await repo.save(domainObject);
+      result = await repo.save(domainObject);
     });
+    return (new ListingConverter()).toMongo(result);
   }
 
-  async unpublish(id: string) : Promise<void> {
+  async unpublish(id: string) : Promise<Listing> {
     ensureAccountPortalUser(this.context);
+    let result : ListingDO<ListingDomainAdapter>;
     await this.withTransaction(async (repo) => {
       let domainObject = await repo.get(id);
       await domainObject.requestUnpublish();
-      await repo.save(domainObject);
+      result = await repo.save(domainObject);
     });
+    return (new ListingConverter()).toMongo(result);
   }
  
   async addNewListing(listing: ListingNewDraft) : Promise<Listing> {

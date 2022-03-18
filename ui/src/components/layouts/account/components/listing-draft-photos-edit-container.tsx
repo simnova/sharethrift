@@ -19,7 +19,7 @@ export const ListingDraftPhotosEditContainer:React.FC<any> = (props) => {
         listingId: props.listingId
       }
     }});
-    return (result?.data?.draftRemovePhoto)?.success??false;
+    return (result?.data?.draftRemovePhoto)?.status.success??false;
   }
 
   const content = () => {

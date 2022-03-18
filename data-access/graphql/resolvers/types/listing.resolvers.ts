@@ -1,8 +1,26 @@
-import { Resolvers, Listing, Account, Category, CreateListingPayload, DraftAuthHeaderForDraftPhotoOutput, DraftRemovePhotoResult ,ListingSearchResult} from '../../generated';
+import { Resolvers, Listing, Account, Category, CreateListingPayload, DraftAuthHeaderForDraftPhotoOutput, DraftRemovePhotoResult ,ListingSearchResult, ListingMutationResult} from '../../generated';
 import { CacheScope } from 'apollo-server-types';
+import { Listing as ListingModel } from '../../../infrastructure/data-sources/cosmos-db/models/listing';
 import mongoose, { isValidObjectId } from 'mongoose';
 import { BlobStorage } from '../../../infrastructure/services/blob-storage';
 import { CognativeSearch } from '../../../infrastructure/services/cognative-search';
+
+
+const ListingMutationResolver = async (getListing:Promise<ListingModel>): Promise<ListingMutationResult> => {
+  try {
+    return {
+      status : { success: true },
+      listing: (await getListing) as Listing
+    } as ListingMutationResult;
+  }
+  catch(error){
+    console.error("Listing > Mutation > updateDraft : ",error);
+    return  {
+      status : { success: false, error: JSON.stringify(error) },
+      listing: null
+    } as ListingMutationResult;
+  }
+}
 
 const listing : Resolvers = {
   Listing: {
@@ -133,23 +151,19 @@ console.log(`Resolver>Query>listingSearch ${args.input.tags?.length}`)
   },
   Mutation: {  
     createNewListing: async (parent, args, context, info) => {
-      var newListing = (await context.dataSources.listingDomainAPI.addNewListing(args.input)) as Listing ;
-      return  {listing: newListing} as CreateListingPayload;
+      return ListingMutationResolver(context.dataSources.listingDomainAPI.addNewListing(args.input));
     },
     updateDraft: async (parent, args, context, info) => {
-      return (await context.dataSources.listingDomainAPI.updateDraft(args.input)) as Listing ;
+      return ListingMutationResolver(context.dataSources.listingDomainAPI.updateDraft(args.input));
     },
     listingDraftCreate: async (parent, args, context, info) => {
-      await context.dataSources.listingDomainAPI.createDraft(args.id);
-      return args.id;
+      return ListingMutationResolver(context.dataSources.listingDomainAPI.createDraft(args.id));
     },
     listingDraftPublish: async (parent, args, context, info) => {
-      await context.dataSources.listingDomainAPI.publishDraft(args.id)
-      return args.id;
+      return ListingMutationResolver(context.dataSources.listingDomainAPI.publishDraft(args.id));
     },
     listingUnpublish: async (parent, args, context, info) => {
-      await context.dataSources.listingDomainAPI.unpublish(args.id);
-      return args.id;
+      return ListingMutationResolver(context.dataSources.listingDomainAPI.unpublish(args.id));
     },
     draftAddPhoto: async (parent, args, context, info) => {
       //TODO: Move blob logic to service
@@ -172,12 +186,7 @@ console.log(`Resolver>Query>listingSearch ${args.input.tags?.length}`)
       return {isAuthorized:true, authHeader:authHeader, requestDate:requestDate, blobName:blobName} as DraftAuthHeaderForDraftPhotoOutput;
     },
     draftRemovePhoto: async (parent, args, context, info) => {
-      try {
-        await context.dataSources.listingDomainAPI.draftRemovePhoto(args.input);
-        return {success:true} as DraftRemovePhotoResult;
-      } catch (error) {
-        return {success:false, errorMessage:error.message} as DraftRemovePhotoResult;
-      }
+      return ListingMutationResolver(context.dataSources.listingDomainAPI.draftRemovePhoto(args.input));
     },
 
   }   

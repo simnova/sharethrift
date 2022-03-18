@@ -1,26 +1,41 @@
 query ListingDetailContainerListings($id: ID!) {
   listing(id: $id) {
-    ...ListingDetailContainerListingsFields
+    ...ListingDetailContainerListingFields
   }
 }
 
-mutation ListingDetailContainerUpdateDraft( $input: ListingDraft!) {
+mutation ListingDetailContainerUpdateDraft($input: ListingDraft!) {
   updateDraft(input: $input) {
-    title
+    ...ListingDetailContainerMutationFields
   }
 }
 mutation ListingDetailContainerPublishDraft($id: ID!) {
-  listingDraftPublish(id: $id) 
+  listingDraftPublish(id: $id) {
+    ...ListingDetailContainerMutationFields
+  }
 }
 mutation ListingDetailContainerUnpublish($id: ID!) {
-  listingUnpublish(id: $id) 
+  listingUnpublish(id: $id) {
+    ...ListingDetailContainerMutationFields
+  }
 }
 mutation ListingDetailContainerCreateDraft($id: ID!) {
-  listingDraftCreate(id: $id) 
+  listingDraftCreate(id: $id) {
+    ...ListingDetailContainerMutationFields
+  }
 }
 
+fragment ListingDetailContainerMutationFields on ListingMutationResult {
+  status {
+    success
+    errorMessage
+  }
+  listing {
+    ...ListingDetailContainerListingFields
+  }
+}
 
-fragment ListingDetailContainerListingsFields on Listing {
+fragment ListingDetailContainerListingFields on Listing {
   id
   account {
     id
