@@ -15,10 +15,10 @@ export const ListingDetailContainer: React.FC<any> = (props) => {
       id: props.listingId
     }
   });
-  const [updateDraft, { error }] = useMutation(ListingDetailContainerUpdateDraftDocument);
-  const [publishDraft] = useMutation(ListingDetailContainerPublishDraftDocument);
-  const [unpublish] = useMutation(ListingDetailContainerUnpublishDocument);
-  const [createDraft] = useMutation(ListingDetailContainerCreateDraftDocument);
+  const [updateDraft, {loading:updateLoading, error:updateError }] = useMutation(ListingDetailContainerUpdateDraftDocument);
+  const [publishDraft,{loading:publishLoading, error:publishError }] = useMutation(ListingDetailContainerPublishDraftDocument);
+  const [unpublish,{loading:unpublishLoading, error:unpublishError }] = useMutation(ListingDetailContainerUnpublishDocument);
+  const [createDraft,{loading:createDraftLoading, error:createDraftError }] = useMutation(ListingDetailContainerCreateDraftDocument);
 
   const handleSave = async (values: any) => {
     values.draft.id = props.listingId;
@@ -38,8 +38,8 @@ export const ListingDetailContainer: React.FC<any> = (props) => {
         ]
       });
       message.success('Saved');
-    } catch (saveError) {
-      message.error(`Error updating listing: ${JSON.stringify(saveError)}`);
+    } catch (saveException) {
+      message.error(`Error updating listing: ${JSON.stringify(saveException)}`);
     }    
   }
 
@@ -59,8 +59,8 @@ export const ListingDetailContainer: React.FC<any> = (props) => {
         ]
       });
       message.success('Published');
-    } catch (publishError) {
-      message.error(`Error updating listing: ${JSON.stringify(publishError)}`);
+    } catch (publishException) {
+      message.error(`Error updating listing: ${JSON.stringify(publishException)}`);
     }    
   }
   const handleUnpublish = async () => {
@@ -79,8 +79,8 @@ export const ListingDetailContainer: React.FC<any> = (props) => {
         ]
       });
       message.success('UnPublished');
-    } catch (publishError) {
-      message.error(`Error unpublishing listing: ${JSON.stringify(publishError)}`);
+    } catch (publishException) {
+      message.error(`Error unpublishing listing: ${JSON.stringify(publishException)}`);
     }    
   }
   const handleCreateDraft = async () => {
@@ -91,25 +91,38 @@ export const ListingDetailContainer: React.FC<any> = (props) => {
         }
       });
       message.success('Created Draft');
-    } catch (publishError) {
-      message.error(`Error creating draft: ${JSON.stringify(publishError)}`);
+    } catch (createDraftException) {
+      message.error(`Error creating draft: ${JSON.stringify(createDraftException)}`);
     }
   }
 
   const content = () => {
-    if(listingLoading ) {
+    if(listingLoading || updateLoading || publishLoading || unpublishLoading || createDraftLoading) {
       return <div><Skeleton active /></div>
-    } else if(listingError || error) {
-      return <div>{JSON.stringify(listingError)} {JSON.stringify(error)}</div>
+    } else if(listingError || updateError || publishError || unpublishError || createDraftError) {
+      return <div>
+        {JSON.stringify(listingError)} 
+        {JSON.stringify(updateError)}
+        {JSON.stringify(publishError)}
+        {JSON.stringify(unpublishError)}
+        {JSON.stringify(createDraftError)}
+      </div>
     } else if(listingData && listingData.listing ) {
-      return <ListingDetail data={listingData.listing} onSave={handleSave} onPublish={handlePublish} onUnpublish={handleUnpublish} onCreateDraft={handleCreateDraft} />
+      return (
+        <div>
+          {JSON.stringify(listingData)}
+          <ListingDetail key={listingData.listing.id} data={listingData.listing} onSave={handleSave} onPublish={handlePublish} onUnpublish={handleUnpublish} onCreateDraft={handleCreateDraft} />
+        </div>
+      )
     } else {
       return <div>No Data...</div>
     }
   }
 
-  return (<>
+  return (
+    <div>
       <h1>Listing Detail</h1>
       {content()}
-  </>)
+    </div>
+  )
 }

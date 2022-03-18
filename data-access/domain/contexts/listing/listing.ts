@@ -96,6 +96,7 @@ export class Listing<props extends ListingProps> extends AggregateRoot<props> im
     this.props.description = this.props.draft.description;
     this.props.tags = this.draft.tags;
     this.props.primaryCategory = this.props.draft.primaryCategory;
+    this.props.statusCode = ListingStatusCodes.Published;
 
     //remove photos no longer needed:
     var removedPhotos = this.props.photos.items.filter(photo=>!this.draft.photos.find(photoDraft=>photoDraft.documentId == photo.documentId));

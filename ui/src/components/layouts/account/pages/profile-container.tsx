@@ -1,12 +1,12 @@
-import { message, PageHeader, Skeleton } from "antd";
-import { useMutation, useQuery } from "@apollo/client";
-import { ProfileContainerUserUpdateDocument, ProfileContainerUserDocument, UserUpdateInput } from "../../../../generated";
-import { SubPageLayout } from "../sub-page-layout";
-import { Profile } from "./profile";
-import { ProfilePhotoUploadContainer } from "../components/profile-photo-upload-container";
+import { message, PageHeader, Skeleton } from 'antd';
+import { useMutation, useQuery } from '@apollo/client';
+import { ProfileContainerUserUpdateDocument, ProfileContainerUserDocument, UserUpdateInput } from '../../../../generated';
+import { SubPageLayout } from '../sub-page-layout';
+import { Profile } from './profile';
+import { ProfilePhotoUploadContainer } from '../components/profile-photo-upload-container';
 
 export const ProfileContainer: React.FC<any> = () => {
-  const [updateProfile, { data, loading, error }] = useMutation(ProfileContainerUserUpdateDocument);  
+  const [updateProfile, {error}] = useMutation(ProfileContainerUserUpdateDocument);  
   const { data: userData, loading: userLoading, error: userError } = useQuery(ProfileContainerUserDocument);
 
   const handleSave = async (values: UserUpdateInput) => {
@@ -23,8 +23,8 @@ export const ProfileContainer: React.FC<any> = () => {
         ]
       });
       message.success("Saved");
-    } catch (error) {
-      message.error(`Error updating user: ${JSON.stringify(error)}`);
+    } catch (saveError) {
+      message.error(`Error updating user: ${JSON.stringify(saveError)}`);
     }
   }
 
@@ -37,19 +37,17 @@ export const ProfileContainer: React.FC<any> = () => {
       return <div>
         <Profile onSave={handleSave} data={userData?.currentUser} />
         <h2>Profile Image</h2>
-        <ProfilePhotoUploadContainer userId={userData!.currentUser!.id} />
-        </div>
+        <ProfilePhotoUploadContainer userId={userData.currentUser.id} />
+      </div>
     }else {
       return <div>No data</div>
     }
   }
 
-  return <>
+  return (
     <SubPageLayout header={<PageHeader title="Profile" />}>
-        
-        {content()}
-       
+      {content()}
     </SubPageLayout>
-  </>
+  )
   
 }

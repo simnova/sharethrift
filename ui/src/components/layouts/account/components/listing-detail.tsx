@@ -4,14 +4,13 @@ import { ListingDraftTags } from './listing-draft-tags';
 import { ListingDetailStatusHistory } from './listing-detail-status-history';
 import { Label, LabelType } from '../../../label';
 import React from 'react';
-import { debug } from 'console';
 
 export const ListingDetail: React.FC<any> = (props:any) => {
   const [form] = Form.useForm();
 
   const getCurrentStatusCode = ():string => {
     if(!props.data.draft?.statusHistory || props.data.draft.statusHistory.length === 0){ return "DRAFT"; }
-    var newestHistoryItem = props.data.draft.statusHistory.sort((a:any,b:any) => 
+    props.data.draft.statusHistory.sort((a:any,b:any) => 
     {
       let aTime = (new Date(a.createdAt)).getTime();
       let bTime = (new Date(b.createdAt)).getTime();
@@ -22,13 +21,16 @@ export const ListingDetail: React.FC<any> = (props:any) => {
       }else{
         return 0;
       }
-    })[0]
+    });
+    var newestHistoryItem = props.data.draft.statusHistory[0];
     return newestHistoryItem.statusCode
   }
+
   const hasPhotos = () => {
     if(!props.data.draft?.photos || props.data.draft.photos.length === 0){ return false; }
     return true;
   }
+
   const requiredFieldsCompleted = () => {
     if(!props.data.draft.description || props.data.draft.description.trim().length == 0 ){ return false; } 
     if(!props.data.draft.title || props.data.draft.title.trim().length == 0 ){ return false; }

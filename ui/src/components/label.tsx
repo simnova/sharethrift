@@ -32,7 +32,8 @@ export type ComponentProps = InferProps<typeof ComponentPropTypes> & ComponentPr
 
 function CustomIcon(props: any)  {
   const { labelType } = props;
-  const propsWithoutLabelType = Object.assign({}, props, { labelType: null });
+  const propsWithoutLabelType = Object.assign({}, props);
+  delete propsWithoutLabelType.labelType;
   let result = <></>
   switch (labelType) {
     case LabelType.Default:
