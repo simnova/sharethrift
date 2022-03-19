@@ -6,7 +6,7 @@ export const Roles: React.FC<any> = (props) => {
 
   return (
     <>
-       <h1>Roles</h1>
+
       {params.handle && <AccountSettingsRolesContainer data={{handle: params.handle}} />}
     </>
   )

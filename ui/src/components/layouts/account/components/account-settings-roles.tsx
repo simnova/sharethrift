@@ -43,7 +43,14 @@ export const AccountSettingsRoles: React.FC<any> = (props) => {
 
   return (
     <div>
-      <Button type="primary" onClick={handleSetupNewRole}>Add New Role</Button>
+      <div className="flex">
+        <div className="flex-1"><h1>Roles</h1></div>
+        <div className="flex-1 text-right"><Button type="primary" onClick={handleSetupNewRole}>Add New Role</Button></div>
+        
+
+      </div>
+             
+      
       <Table 
         rowSelection={{
           selectedRowKeys: selectedRole?[selectedRole!.id]:[],

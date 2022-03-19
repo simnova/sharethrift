@@ -42,8 +42,7 @@ export const ProfilePhotoUploadContainer: React.FC<any> = (props) => {
 
   return (
     <>
-    Current Image: <br/>
-    <Image src={imageUrl} style={{maxWidth:'100px', maxHeight:'100px'}} /><br/>
+    <Image src={imageUrl} style={{maxWidth:'200px', maxHeight:'200px'}} className='rounded-full' /><br/>
 
     <ProfilePhotoUpload
      blobPath={blobPath}

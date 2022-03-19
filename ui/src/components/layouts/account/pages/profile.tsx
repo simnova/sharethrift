@@ -40,13 +40,7 @@ export const Profile: React.FC<any> = (props) => {
   
   return (
     <>
-      <h1>Profile</h1>
-      <Descriptions title="User Info" size={'small'} layout={'vertical'}>
-        <Descriptions.Item label="Id">{props.data.id}</Descriptions.Item>
-        <Descriptions.Item label="Email">{props.data.email}</Descriptions.Item>
-        <Descriptions.Item label="Created At">{dayjs(props.data.createdAt).format('DD/MM/YYYY')}</Descriptions.Item>
-        <Descriptions.Item label="Updated At">{dayjs(props.data.updatedAt).format('DD/MM/YYYY')}</Descriptions.Item>
-      </Descriptions>
+
       <Form 
         layout="vertical"
         form={form}
@@ -77,6 +71,7 @@ export const Profile: React.FC<any> = (props) => {
           Save
         </Button>
       </Form>
+
     </>
   )
 }
