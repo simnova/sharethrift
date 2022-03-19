@@ -11,6 +11,9 @@ mutation ListingDraftPhotosEditContainerDraftAddPhoto($input: DraftPhotoImageInp
     requestDate
     isAuthorized
     errorMessage
+    listing {
+      ...ListingDraftPhotosEditContainerListingFields
+    }
   }
 }
 mutation ListingDraftPhotosEditContainerDraftRemovePhoto($input: DraftRemovePhotoImageInput!) {

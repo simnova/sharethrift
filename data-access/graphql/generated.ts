@@ -180,6 +180,7 @@ export type DraftAuthHeaderForDraftPhotoOutput = {
   requestDate?: Maybe<Scalars["String"]>;
   isAuthorized?: Maybe<Scalars["Boolean"]>;
   errorMessage?: Maybe<Scalars["String"]>;
+  listing?: Maybe<Listing>;
 };
 
 export type DraftPhotoImageInput = {
@@ -1173,6 +1174,7 @@ export type DraftAuthHeaderForDraftPhotoOutputResolvers<
     ParentType,
     ContextType
   >;
+  listing?: Resolver<Maybe<ResolversTypes["Listing"]>, ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 }>;
 

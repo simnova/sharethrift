@@ -13,7 +13,7 @@ export const Account: React.FC<any> = (props) => {
 
   const pageLayouts = [
     {path : '/account/:handle/', title : 'Home', icon : <HomeOutlined />, id:'ROOT'},
-    {path : '/account/:handle/simple', title : 'Profile', icon : <IdcardOutlined /> , id:1, parent: 'ROOT'},
+    {path : '/account/:handle/profile', title : 'Profile', icon : <IdcardOutlined /> , id:1, parent: 'ROOT'},
     {path : '/account/:handle/settings/*', title : 'Account', icon : <SettingOutlined /> , id:2, parent: 'ROOT'},
     {path : '/account/:handle/listings/*', title : 'Listings', icon : <BarsOutlined /> , id:3, parent: 'ROOT'},
   ]
@@ -23,7 +23,7 @@ export const Account: React.FC<any> = (props) => {
       <Routes>
         <Route path="" element={<AccountLayout pageLayouts={pageLayouts} />}>
           <Route path="/" element={<Home />} />
-          <Route path="/simple" element={<ProfileContainer />} />
+          <Route path="/profile" element={<ProfileContainer />} />
           <Route path="/settings/*" element={<Settings />} />
           <Route path="/simple/2" element={<Child2 />} />
           <Route path="/listings/*" element={<Listings />} />

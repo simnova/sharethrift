@@ -1,0 +1,14 @@
+query AccountSelectorAccounts {
+  accounts {
+    ...AccountMenuAccountFields
+  }
+}
+
+fragment AccountSelectorAccountFields on Account {
+  id
+  schemaVersion
+  createdAt
+  updatedAt
+  handle
+  name
+}

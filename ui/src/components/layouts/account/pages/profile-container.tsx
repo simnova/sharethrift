@@ -15,12 +15,7 @@ export const ProfileContainer: React.FC<any> = () => {
       await updateProfile({
         variables: {
           input:values
-        },
-        refetchQueries: [
-          {
-            query:ProfileContainerUserDocument,
-          }
-        ]
+        }
       });
       message.success("Saved");
     } catch (saveError) {

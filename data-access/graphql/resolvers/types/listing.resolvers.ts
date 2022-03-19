@@ -180,10 +180,10 @@ console.log(`Resolver>Query>listingSearch ${args.input.tags?.length}`)
       if (args.input.contentLength > maxSizeBytes) {
         return {success:false, errorMessage:'Content length exceeds permitted limit.'} as DraftAuthHeaderForDraftPhotoOutput;
       }
-      var blobName = (await context.dataSources.listingDomainAPI.draftAddPhoto(args.input));
+      var {docId,listing:returnLising} = (await context.dataSources.listingDomainAPI.draftAddPhoto(args.input));
       var requestDate = new Date().toUTCString();
-      var authHeader = new BlobStorage().generateSharedKey(blobName, args.input.contentLength, requestDate ,args.input.contentType);
-      return {isAuthorized:true, authHeader:authHeader, requestDate:requestDate, blobName:blobName} as DraftAuthHeaderForDraftPhotoOutput;
+      var authHeader = new BlobStorage().generateSharedKey(docId, args.input.contentLength, requestDate ,args.input.contentType);
+      return {isAuthorized:true, authHeader:authHeader, requestDate:requestDate, blobName:docId, listing:returnLising} as DraftAuthHeaderForDraftPhotoOutput;
     },
     draftRemovePhoto: async (parent, args, context, info) => {
       return ListingMutationResolver(context.dataSources.listingDomainAPI.draftRemovePhoto(args.input));

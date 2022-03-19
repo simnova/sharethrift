@@ -20,15 +20,19 @@ export class Listings extends DomainDataSource<Context,Listing,PropType,DomainTy
    * @param photoInfo 
    * @returns Blob Storage documentId (nanoid)
    */
-  async draftAddPhoto(photoInfo: DraftPhotoImageInput) : Promise<string> {
+  async draftAddPhoto(photoInfo: DraftPhotoImageInput) : Promise<{docId:string,listing:Listing}> {
     ensureAccountPortalUser(this.context); 
-    let result : string
+    let docId : string
+    let result : ListingDO<ListingDomainAdapter>;
     await this.withTransaction(async (repo) => {
       let domainObject = await repo.get(photoInfo.listingId);
-      result = (await domainObject.draft.requestAddPhoto(photoInfo.order)).documentId;
-      await repo.save(domainObject);
+      docId = (await domainObject.draft.requestAddPhoto(photoInfo.order)).documentId;
+      result = await repo.save(domainObject);
     });
-    return result;
+    return {
+      docId: docId,
+      listing: (new ListingConverter()).toMongo(result)
+    };
   }
 
   async draftRemovePhoto(photoInfo: DraftRemovePhotoImageInput) : Promise<Listing> {

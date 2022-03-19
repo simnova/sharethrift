@@ -11,10 +11,21 @@ export const Home: React.FC = () => {
     <>
       <SubPageLayout
         fixedHeader={true}
-        header={<PageHeader title='sample data'/>}
+        header={<PageHeader title='Home'/>}
       >
-        <CustomHeader isLoggedIn={false} />
-          <h3>Categories</h3>
+        
+        <h3>Wecome to Sharethrift</h3>
+        <p>
+          Use the menu on the left to navigate to the different pages.<br/>
+          <br/>
+          <b>Profile</b> is used to set your personal information.<br/>
+          <br/>
+          <b>Account</b> you can share your account with others<br/>(you may have more than one account -- choose which account you want in the upper left of the screen).<br/>
+          <br/>
+          <b>Listings</b> stuff you want to share online to others.<br/>
+        </p>
+
+
 
       </SubPageLayout>
     

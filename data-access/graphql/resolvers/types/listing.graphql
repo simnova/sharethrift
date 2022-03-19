@@ -175,4 +175,5 @@ type DraftAuthHeaderForDraftPhotoOutput {
   requestDate: String
   isAuthorized: Boolean
   errorMessage: String
+  listing: Listing
 }

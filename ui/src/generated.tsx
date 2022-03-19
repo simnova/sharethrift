@@ -172,6 +172,7 @@ export type DraftAuthHeaderForDraftPhotoOutput = {
   requestDate?: Maybe<Scalars["String"]>;
   isAuthorized?: Maybe<Scalars["Boolean"]>;
   errorMessage?: Maybe<Scalars["String"]>;
+  listing?: Maybe<Listing>;
 };
 
 export type DraftPhotoImageInput = {
@@ -1657,6 +1658,22 @@ export type ListingDraftPhotosEditContainerDraftAddPhotoMutation = {
     requestDate?: Maybe<string>;
     isAuthorized?: Maybe<boolean>;
     errorMessage?: Maybe<string>;
+    listing?: Maybe<{
+      __typename?: "Listing";
+      id: any;
+      draft?: Maybe<{
+        __typename?: "Draft";
+        photos?: Maybe<
+          Array<
+            Maybe<{
+              __typename?: "Photo";
+              order?: Maybe<number>;
+              documentId?: Maybe<string>;
+            }>
+          >
+        >;
+      }>;
+    }>;
   };
 };
 
@@ -4256,12 +4273,29 @@ export const ListingDraftPhotosEditContainerDraftAddPhotoDocument = {
                   kind: "Field",
                   name: { kind: "Name", value: "errorMessage" },
                 },
+                {
+                  kind: "Field",
+                  name: { kind: "Name", value: "listing" },
+                  selectionSet: {
+                    kind: "SelectionSet",
+                    selections: [
+                      {
+                        kind: "FragmentSpread",
+                        name: {
+                          kind: "Name",
+                          value: "ListingDraftPhotosEditContainerListingFields",
+                        },
+                      },
+                    ],
+                  },
+                },
               ],
             },
           },
         ],
       },
     },
+    ...ListingDraftPhotosEditContainerListingFieldsFragmentDoc.definitions,
   ],
 } as unknown as DocumentNode<
   ListingDraftPhotosEditContainerDraftAddPhotoMutation,

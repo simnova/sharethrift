@@ -86,7 +86,6 @@ export const ListingDetailContainer: React.FC<any> = (props) => {
     } else if(listingData && listingData.listing ) {
       return (
         <div>
-          {JSON.stringify(listingData)}
           <ListingDetail key={listingData.listing.id} data={listingData.listing} onSave={handleSave} onPublish={handlePublish} onUnpublish={handleUnpublish} onCreateDraft={handleCreateDraft} />
         </div>
       )
