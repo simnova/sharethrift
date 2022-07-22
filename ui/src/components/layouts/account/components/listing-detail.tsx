@@ -10,7 +10,8 @@ export const ListingDetail: React.FC<any> = (props:any) => {
 
   const getCurrentStatusCode = ():string => {
     if(!props.data.draft?.statusHistory || props.data.draft.statusHistory.length === 0){ return "DRAFT"; }
-    props.data.draft.statusHistory.sort((a:any,b:any) => 
+    let sortedArray = props.data.draft.statusHistory.slice() as any;
+    sortedArray.sort((a:any,b:any) => 
     {
       let aTime = (new Date(a.createdAt)).getTime();
       let bTime = (new Date(b.createdAt)).getTime();
@@ -22,7 +23,7 @@ export const ListingDetail: React.FC<any> = (props:any) => {
         return 0;
       }
     });
-    var newestHistoryItem = props.data.draft.statusHistory[0];
+    let newestHistoryItem = sortedArray[0];
     return newestHistoryItem.statusCode
   }
 
@@ -46,8 +47,8 @@ export const ListingDetail: React.FC<any> = (props:any) => {
     return true;
   }
 
-  var label = () => {
-    var returnLabel:JSX.Element;
+  let label = () => {
+    let returnLabel:JSX.Element;
     switch (getCurrentStatusCode()) {
       case "DRAFT":
         returnLabel = <Label labelType={LabelType.ListingDraft}>Draft</Label>
@@ -85,6 +86,7 @@ export const ListingDetail: React.FC<any> = (props:any) => {
 
   return (
     <div>
+      HEYA
       {label()}
       
       {props.data.statusCode === "PUBLISHED" && <Button type="primary" onClick={props.onUnpublish}>Unpublish Listing</Button>}
