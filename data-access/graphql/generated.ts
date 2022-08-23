@@ -107,6 +107,15 @@ export type AccountUpdateInput = {
   handle?: Maybe<Scalars["String"]>;
 };
 
+export type AdditionalProps = {
+  transactionId?: Maybe<Scalars["String"]>;
+  transientTokenJwt?: Maybe<Scalars["String"]>;
+  merchantDefinedInformation3?: Maybe<Scalars["String"]>;
+  paypalSuccessRoute?: Maybe<Scalars["String"]>;
+  paypalErrorRoute?: Maybe<Scalars["String"]>;
+  paypalCancelRoute?: Maybe<Scalars["String"]>;
+};
+
 export type Address = {
   __typename?: "Address";
   streetNumber?: Maybe<Scalars["String"]>;
@@ -215,6 +224,14 @@ export type FacetDetail = {
   count?: Maybe<Scalars["Int"]>;
 };
 
+export type GetAuthTokenResult = {
+  __typename?: "GetAuthTokenResult";
+  respMsg?: Maybe<Scalars["String"]>;
+  result?: Maybe<Scalars["String"]>;
+  secureToken?: Maybe<Scalars["String"]>;
+  secureTokenId?: Maybe<Scalars["String"]>;
+};
+
 /**  https://www.apollographql.com/blog/graphql/basics/designing-graphql-mutations/  */
 export type Listing = MongoBase & {
   __typename?: "Listing";
@@ -298,6 +315,12 @@ export type ListingSearchResult = {
   facets?: Maybe<ListingSearchFacets>;
 };
 
+export type LoadPaymentPageResult = {
+  __typename?: "LoadPaymentPageResult";
+  keyId?: Maybe<Scalars["String"]>;
+  transactionId?: Maybe<Scalars["String"]>;
+};
+
 export type Location = MongoBase & {
   __typename?: "Location";
   position?: Maybe<Point>;
@@ -330,9 +353,13 @@ export type Mutation = {
   createUser?: Maybe<User>;
   draftAddPhoto: DraftAuthHeaderForDraftPhotoOutput;
   draftRemovePhoto: ListingMutationResult;
+  getAuthToken?: Maybe<GetAuthTokenResult>;
   listingDraftCreate: ListingMutationResult;
   listingDraftPublish: ListingMutationResult;
   listingUnpublish: ListingMutationResult;
+  loadPaymentPage?: Maybe<LoadPaymentPageResult>;
+  processPayment?: Maybe<ProcessPaymentResult>;
+  processRefund?: Maybe<ProcessRefundResult>;
   updateAccount?: Maybe<Account>;
   updateCategory?: Maybe<Category>;
   updateDraft: ListingMutationResult;
@@ -372,6 +399,11 @@ export type MutationDraftRemovePhotoArgs = {
 };
 
 /**  Base Mutation Type definition - all mutations will be defined in separate files extending this type  */
+export type MutationGetAuthTokenArgs = {
+  processPaymentRequest?: Maybe<ProcessPaymentRequest>;
+};
+
+/**  Base Mutation Type definition - all mutations will be defined in separate files extending this type  */
 export type MutationListingDraftCreateArgs = {
   id: Scalars["ID"];
 };
@@ -384,6 +416,16 @@ export type MutationListingDraftPublishArgs = {
 /**  Base Mutation Type definition - all mutations will be defined in separate files extending this type  */
 export type MutationListingUnpublishArgs = {
   id: Scalars["ID"];
+};
+
+/**  Base Mutation Type definition - all mutations will be defined in separate files extending this type  */
+export type MutationProcessPaymentArgs = {
+  processPaymentRequest?: Maybe<ProcessPaymentRequest>;
+};
+
+/**  Base Mutation Type definition - all mutations will be defined in separate files extending this type  */
+export type MutationProcessRefundArgs = {
+  processRefundRequest?: Maybe<ProcessRefundRequest>;
 };
 
 /**  Base Mutation Type definition - all mutations will be defined in separate files extending this type  */
@@ -437,6 +479,40 @@ export type Point = MongoBase & {
   schemaVersion?: Maybe<Scalars["String"]>;
   createdAt?: Maybe<Scalars["DateTime"]>;
   updatedAt?: Maybe<Scalars["DateTime"]>;
+};
+
+export type ProcessPaymentRequest = {
+  totalAmount?: Maybe<Scalars["String"]>;
+  firstName?: Maybe<Scalars["String"]>;
+  lastName?: Maybe<Scalars["String"]>;
+  address?: Maybe<Scalars["String"]>;
+  city?: Maybe<Scalars["String"]>;
+  state?: Maybe<Scalars["String"]>;
+  postalCode?: Maybe<Scalars["String"]>;
+  isoCountryCode?: Maybe<Scalars["String"]>;
+  customerId?: Maybe<Scalars["String"]>;
+  originApplication?: Maybe<Scalars["String"]>;
+  additionalProps?: Maybe<AdditionalProps>;
+};
+
+export type ProcessPaymentResult = {
+  __typename?: "ProcessPaymentResult";
+  transactionId?: Maybe<Scalars["String"]>;
+  reconciliationId?: Maybe<Scalars["String"]>;
+  status?: Maybe<Scalars["String"]>;
+  responseCode?: Maybe<Scalars["String"]>;
+  submittedTimeUtc?: Maybe<Scalars["String"]>;
+  requestId?: Maybe<Scalars["String"]>;
+};
+
+export type ProcessRefundRequest = {
+  totalAmount?: Maybe<Scalars["String"]>;
+  requestId?: Maybe<Scalars["String"]>;
+};
+
+export type ProcessRefundResult = {
+  __typename?: "ProcessRefundResult";
+  nothing?: Maybe<Scalars["String"]>;
 };
 
 /**  Base Query Type definition - , all mutations will be defined in separate files extending this type  */
@@ -676,6 +752,7 @@ export type ResolversTypes = ResolversObject<{
   Boolean: ResolverTypeWrapper<Scalars["Boolean"]>;
   AccountPermissionsInput: AccountPermissionsInput;
   AccountUpdateInput: AccountUpdateInput;
+  AdditionalProps: AdditionalProps;
   Address: ResolverTypeWrapper<Address>;
   BigInt: ResolverTypeWrapper<Scalars["BigInt"]>;
   Byte: ResolverTypeWrapper<Scalars["Byte"]>;
@@ -699,6 +776,7 @@ export type ResolversTypes = ResolversObject<{
   EmailAddress: ResolverTypeWrapper<Scalars["EmailAddress"]>;
   FacetDetail: ResolverTypeWrapper<FacetDetail>;
   GUID: ResolverTypeWrapper<Scalars["GUID"]>;
+  GetAuthTokenResult: ResolverTypeWrapper<GetAuthTokenResult>;
   HSL: ResolverTypeWrapper<Scalars["HSL"]>;
   HSLA: ResolverTypeWrapper<Scalars["HSLA"]>;
   HexColorCode: ResolverTypeWrapper<Scalars["HexColorCode"]>;
@@ -723,6 +801,7 @@ export type ResolversTypes = ResolversObject<{
   ListingSearchFacets: ResolverTypeWrapper<ListingSearchFacets>;
   ListingSearchInput: ListingSearchInput;
   ListingSearchResult: ResolverTypeWrapper<ListingSearchResult>;
+  LoadPaymentPageResult: ResolverTypeWrapper<LoadPaymentPageResult>;
   LocalDate: ResolverTypeWrapper<Scalars["LocalDate"]>;
   LocalEndTime: ResolverTypeWrapper<Scalars["LocalEndTime"]>;
   LocalTime: ResolverTypeWrapper<Scalars["LocalTime"]>;
@@ -756,6 +835,10 @@ export type ResolversTypes = ResolversObject<{
   PositiveFloat: ResolverTypeWrapper<Scalars["PositiveFloat"]>;
   PositiveInt: ResolverTypeWrapper<Scalars["PositiveInt"]>;
   PostalCode: ResolverTypeWrapper<Scalars["PostalCode"]>;
+  ProcessPaymentRequest: ProcessPaymentRequest;
+  ProcessPaymentResult: ResolverTypeWrapper<ProcessPaymentResult>;
+  ProcessRefundRequest: ProcessRefundRequest;
+  ProcessRefundResult: ResolverTypeWrapper<ProcessRefundResult>;
   Query: ResolverTypeWrapper<{}>;
   RGB: ResolverTypeWrapper<Scalars["RGB"]>;
   RGBA: ResolverTypeWrapper<Scalars["RGBA"]>;
@@ -787,6 +870,7 @@ export type ResolversParentTypes = ResolversObject<{
   Boolean: Scalars["Boolean"];
   AccountPermissionsInput: AccountPermissionsInput;
   AccountUpdateInput: AccountUpdateInput;
+  AdditionalProps: AdditionalProps;
   Address: Address;
   BigInt: Scalars["BigInt"];
   Byte: Scalars["Byte"];
@@ -809,6 +893,7 @@ export type ResolversParentTypes = ResolversObject<{
   EmailAddress: Scalars["EmailAddress"];
   FacetDetail: FacetDetail;
   GUID: Scalars["GUID"];
+  GetAuthTokenResult: GetAuthTokenResult;
   HSL: Scalars["HSL"];
   HSLA: Scalars["HSLA"];
   HexColorCode: Scalars["HexColorCode"];
@@ -833,6 +918,7 @@ export type ResolversParentTypes = ResolversObject<{
   ListingSearchFacets: ListingSearchFacets;
   ListingSearchInput: ListingSearchInput;
   ListingSearchResult: ListingSearchResult;
+  LoadPaymentPageResult: LoadPaymentPageResult;
   LocalDate: Scalars["LocalDate"];
   LocalEndTime: Scalars["LocalEndTime"];
   LocalTime: Scalars["LocalTime"];
@@ -866,6 +952,10 @@ export type ResolversParentTypes = ResolversObject<{
   PositiveFloat: Scalars["PositiveFloat"];
   PositiveInt: Scalars["PositiveInt"];
   PostalCode: Scalars["PostalCode"];
+  ProcessPaymentRequest: ProcessPaymentRequest;
+  ProcessPaymentResult: ProcessPaymentResult;
+  ProcessRefundRequest: ProcessRefundRequest;
+  ProcessRefundResult: ProcessRefundResult;
   Query: {};
   RGB: Scalars["RGB"];
   RGBA: Scalars["RGBA"];
@@ -1238,6 +1328,25 @@ export interface GuidScalarConfig
   name: "GUID";
 }
 
+export type GetAuthTokenResultResolvers<
+  ContextType = Context,
+  ParentType extends ResolversParentTypes["GetAuthTokenResult"] = ResolversParentTypes["GetAuthTokenResult"]
+> = ResolversObject<{
+  respMsg?: Resolver<Maybe<ResolversTypes["String"]>, ParentType, ContextType>;
+  result?: Resolver<Maybe<ResolversTypes["String"]>, ParentType, ContextType>;
+  secureToken?: Resolver<
+    Maybe<ResolversTypes["String"]>,
+    ParentType,
+    ContextType
+  >;
+  secureTokenId?: Resolver<
+    Maybe<ResolversTypes["String"]>,
+    ParentType,
+    ContextType
+  >;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+}>;
+
 export interface HslScalarConfig
   extends GraphQLScalarTypeConfig<ResolversTypes["HSL"], any> {
   name: "HSL";
@@ -1432,6 +1541,19 @@ export type ListingSearchResultResolvers<
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 }>;
 
+export type LoadPaymentPageResultResolvers<
+  ContextType = Context,
+  ParentType extends ResolversParentTypes["LoadPaymentPageResult"] = ResolversParentTypes["LoadPaymentPageResult"]
+> = ResolversObject<{
+  keyId?: Resolver<Maybe<ResolversTypes["String"]>, ParentType, ContextType>;
+  transactionId?: Resolver<
+    Maybe<ResolversTypes["String"]>,
+    ParentType,
+    ContextType
+  >;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+}>;
+
 export interface LocalDateScalarConfig
   extends GraphQLScalarTypeConfig<ResolversTypes["LocalDate"], any> {
   name: "LocalDate";
@@ -1556,6 +1678,12 @@ export type MutationResolvers<
     ContextType,
     RequireFields<MutationDraftRemovePhotoArgs, "input">
   >;
+  getAuthToken?: Resolver<
+    Maybe<ResolversTypes["GetAuthTokenResult"]>,
+    ParentType,
+    ContextType,
+    RequireFields<MutationGetAuthTokenArgs, never>
+  >;
   listingDraftCreate?: Resolver<
     ResolversTypes["ListingMutationResult"],
     ParentType,
@@ -1573,6 +1701,23 @@ export type MutationResolvers<
     ParentType,
     ContextType,
     RequireFields<MutationListingUnpublishArgs, "id">
+  >;
+  loadPaymentPage?: Resolver<
+    Maybe<ResolversTypes["LoadPaymentPageResult"]>,
+    ParentType,
+    ContextType
+  >;
+  processPayment?: Resolver<
+    Maybe<ResolversTypes["ProcessPaymentResult"]>,
+    ParentType,
+    ContextType,
+    RequireFields<MutationProcessPaymentArgs, never>
+  >;
+  processRefund?: Resolver<
+    Maybe<ResolversTypes["ProcessRefundResult"]>,
+    ParentType,
+    ContextType,
+    RequireFields<MutationProcessRefundArgs, never>
   >;
   updateAccount?: Resolver<
     Maybe<ResolversTypes["Account"]>,
@@ -1730,6 +1875,47 @@ export interface PostalCodeScalarConfig
   extends GraphQLScalarTypeConfig<ResolversTypes["PostalCode"], any> {
   name: "PostalCode";
 }
+
+export type ProcessPaymentResultResolvers<
+  ContextType = Context,
+  ParentType extends ResolversParentTypes["ProcessPaymentResult"] = ResolversParentTypes["ProcessPaymentResult"]
+> = ResolversObject<{
+  transactionId?: Resolver<
+    Maybe<ResolversTypes["String"]>,
+    ParentType,
+    ContextType
+  >;
+  reconciliationId?: Resolver<
+    Maybe<ResolversTypes["String"]>,
+    ParentType,
+    ContextType
+  >;
+  status?: Resolver<Maybe<ResolversTypes["String"]>, ParentType, ContextType>;
+  responseCode?: Resolver<
+    Maybe<ResolversTypes["String"]>,
+    ParentType,
+    ContextType
+  >;
+  submittedTimeUtc?: Resolver<
+    Maybe<ResolversTypes["String"]>,
+    ParentType,
+    ContextType
+  >;
+  requestId?: Resolver<
+    Maybe<ResolversTypes["String"]>,
+    ParentType,
+    ContextType
+  >;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+}>;
+
+export type ProcessRefundResultResolvers<
+  ContextType = Context,
+  ParentType extends ResolversParentTypes["ProcessRefundResult"] = ResolversParentTypes["ProcessRefundResult"]
+> = ResolversObject<{
+  nothing?: Resolver<Maybe<ResolversTypes["String"]>, ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+}>;
 
 export type QueryResolvers<
   ContextType = Context,
@@ -1983,6 +2169,7 @@ export type Resolvers<ContextType = Context> = ResolversObject<{
   EmailAddress?: GraphQLScalarType;
   FacetDetail?: FacetDetailResolvers<ContextType>;
   GUID?: GraphQLScalarType;
+  GetAuthTokenResult?: GetAuthTokenResultResolvers<ContextType>;
   HSL?: GraphQLScalarType;
   HSLA?: GraphQLScalarType;
   HexColorCode?: GraphQLScalarType;
@@ -2002,6 +2189,7 @@ export type Resolvers<ContextType = Context> = ResolversObject<{
   ListingPermissions?: ListingPermissionsResolvers<ContextType>;
   ListingSearchFacets?: ListingSearchFacetsResolvers<ContextType>;
   ListingSearchResult?: ListingSearchResultResolvers<ContextType>;
+  LoadPaymentPageResult?: LoadPaymentPageResultResolvers<ContextType>;
   LocalDate?: GraphQLScalarType;
   LocalEndTime?: GraphQLScalarType;
   LocalTime?: GraphQLScalarType;
@@ -2027,6 +2215,8 @@ export type Resolvers<ContextType = Context> = ResolversObject<{
   PositiveFloat?: GraphQLScalarType;
   PositiveInt?: GraphQLScalarType;
   PostalCode?: GraphQLScalarType;
+  ProcessPaymentResult?: ProcessPaymentResultResolvers<ContextType>;
+  ProcessRefundResult?: ProcessRefundResultResolvers<ContextType>;
   Query?: QueryResolvers<ContextType>;
   RGB?: GraphQLScalarType;
   RGBA?: GraphQLScalarType;

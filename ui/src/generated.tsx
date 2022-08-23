@@ -99,6 +99,15 @@ export type AccountUpdateInput = {
   handle?: Maybe<Scalars["String"]>;
 };
 
+export type AdditionalProps = {
+  transactionId?: Maybe<Scalars["String"]>;
+  transientTokenJwt?: Maybe<Scalars["String"]>;
+  merchantDefinedInformation3?: Maybe<Scalars["String"]>;
+  paypalSuccessRoute?: Maybe<Scalars["String"]>;
+  paypalErrorRoute?: Maybe<Scalars["String"]>;
+  paypalCancelRoute?: Maybe<Scalars["String"]>;
+};
+
 export type Address = {
   __typename?: "Address";
   streetNumber?: Maybe<Scalars["String"]>;
@@ -207,6 +216,14 @@ export type FacetDetail = {
   count?: Maybe<Scalars["Int"]>;
 };
 
+export type GetAuthTokenResult = {
+  __typename?: "GetAuthTokenResult";
+  respMsg?: Maybe<Scalars["String"]>;
+  result?: Maybe<Scalars["String"]>;
+  secureToken?: Maybe<Scalars["String"]>;
+  secureTokenId?: Maybe<Scalars["String"]>;
+};
+
 /**  https://www.apollographql.com/blog/graphql/basics/designing-graphql-mutations/  */
 export type Listing = MongoBase & {
   __typename?: "Listing";
@@ -290,6 +307,12 @@ export type ListingSearchResult = {
   facets?: Maybe<ListingSearchFacets>;
 };
 
+export type LoadPaymentPageResult = {
+  __typename?: "LoadPaymentPageResult";
+  keyId?: Maybe<Scalars["String"]>;
+  transactionId?: Maybe<Scalars["String"]>;
+};
+
 export type Location = MongoBase & {
   __typename?: "Location";
   position?: Maybe<Point>;
@@ -322,9 +345,13 @@ export type Mutation = {
   createUser?: Maybe<User>;
   draftAddPhoto: DraftAuthHeaderForDraftPhotoOutput;
   draftRemovePhoto: ListingMutationResult;
+  getAuthToken?: Maybe<GetAuthTokenResult>;
   listingDraftCreate: ListingMutationResult;
   listingDraftPublish: ListingMutationResult;
   listingUnpublish: ListingMutationResult;
+  loadPaymentPage?: Maybe<LoadPaymentPageResult>;
+  processPayment?: Maybe<ProcessPaymentResult>;
+  processRefund?: Maybe<ProcessRefundResult>;
   updateAccount?: Maybe<Account>;
   updateCategory?: Maybe<Category>;
   updateDraft: ListingMutationResult;
@@ -364,6 +391,11 @@ export type MutationDraftRemovePhotoArgs = {
 };
 
 /**  Base Mutation Type definition - all mutations will be defined in separate files extending this type  */
+export type MutationGetAuthTokenArgs = {
+  processPaymentRequest?: Maybe<ProcessPaymentRequest>;
+};
+
+/**  Base Mutation Type definition - all mutations will be defined in separate files extending this type  */
 export type MutationListingDraftCreateArgs = {
   id: Scalars["ID"];
 };
@@ -376,6 +408,16 @@ export type MutationListingDraftPublishArgs = {
 /**  Base Mutation Type definition - all mutations will be defined in separate files extending this type  */
 export type MutationListingUnpublishArgs = {
   id: Scalars["ID"];
+};
+
+/**  Base Mutation Type definition - all mutations will be defined in separate files extending this type  */
+export type MutationProcessPaymentArgs = {
+  processPaymentRequest?: Maybe<ProcessPaymentRequest>;
+};
+
+/**  Base Mutation Type definition - all mutations will be defined in separate files extending this type  */
+export type MutationProcessRefundArgs = {
+  processRefundRequest?: Maybe<ProcessRefundRequest>;
 };
 
 /**  Base Mutation Type definition - all mutations will be defined in separate files extending this type  */
@@ -429,6 +471,40 @@ export type Point = MongoBase & {
   schemaVersion?: Maybe<Scalars["String"]>;
   createdAt?: Maybe<Scalars["DateTime"]>;
   updatedAt?: Maybe<Scalars["DateTime"]>;
+};
+
+export type ProcessPaymentRequest = {
+  totalAmount?: Maybe<Scalars["String"]>;
+  firstName?: Maybe<Scalars["String"]>;
+  lastName?: Maybe<Scalars["String"]>;
+  address?: Maybe<Scalars["String"]>;
+  city?: Maybe<Scalars["String"]>;
+  state?: Maybe<Scalars["String"]>;
+  postalCode?: Maybe<Scalars["String"]>;
+  isoCountryCode?: Maybe<Scalars["String"]>;
+  customerId?: Maybe<Scalars["String"]>;
+  originApplication?: Maybe<Scalars["String"]>;
+  additionalProps?: Maybe<AdditionalProps>;
+};
+
+export type ProcessPaymentResult = {
+  __typename?: "ProcessPaymentResult";
+  transactionId?: Maybe<Scalars["String"]>;
+  reconciliationId?: Maybe<Scalars["String"]>;
+  status?: Maybe<Scalars["String"]>;
+  responseCode?: Maybe<Scalars["String"]>;
+  submittedTimeUtc?: Maybe<Scalars["String"]>;
+  requestId?: Maybe<Scalars["String"]>;
+};
+
+export type ProcessRefundRequest = {
+  totalAmount?: Maybe<Scalars["String"]>;
+  requestId?: Maybe<Scalars["String"]>;
+};
+
+export type ProcessRefundResult = {
+  __typename?: "ProcessRefundResult";
+  nothing?: Maybe<Scalars["String"]>;
 };
 
 /**  Base Query Type definition - , all mutations will be defined in separate files extending this type  */
@@ -616,6 +692,37 @@ export type CategorySelectionCategoryFieldsFragment = {
   schemaVersion?: Maybe<string>;
   createdAt?: Maybe<any>;
   updatedAt?: Maybe<any>;
+  name?: Maybe<string>;
+};
+
+export type AccountSelectorAccountsQueryVariables = Exact<{
+  [key: string]: never;
+}>;
+
+export type AccountSelectorAccountsQuery = {
+  __typename?: "Query";
+  accounts?: Maybe<
+    Array<
+      Maybe<{
+        __typename?: "Account";
+        id: any;
+        schemaVersion?: Maybe<string>;
+        createdAt?: Maybe<any>;
+        updatedAt?: Maybe<any>;
+        handle?: Maybe<string>;
+        name?: Maybe<string>;
+      }>
+    >
+  >;
+};
+
+export type AccountSelectorAccountFieldsFragment = {
+  __typename?: "Account";
+  id: any;
+  schemaVersion?: Maybe<string>;
+  createdAt?: Maybe<any>;
+  updatedAt?: Maybe<any>;
+  handle?: Maybe<string>;
   name?: Maybe<string>;
 };
 
@@ -1767,6 +1874,63 @@ export type ListingsListListingsByAccountHandleFieldsFragment = {
   draft?: Maybe<{ __typename?: "Draft"; title?: Maybe<string> }>;
 };
 
+export type PaymentLoadPaymentPageMutationVariables = Exact<{
+  [key: string]: never;
+}>;
+
+export type PaymentLoadPaymentPageMutation = {
+  __typename?: "Mutation";
+  loadPaymentPage?: Maybe<{
+    __typename?: "LoadPaymentPageResult";
+    keyId?: Maybe<string>;
+    transactionId?: Maybe<string>;
+  }>;
+};
+
+export type PaymentProcessPaymentMutationVariables = Exact<{
+  processPaymentRequest?: Maybe<ProcessPaymentRequest>;
+}>;
+
+export type PaymentProcessPaymentMutation = {
+  __typename?: "Mutation";
+  processPayment?: Maybe<{
+    __typename?: "ProcessPaymentResult";
+    transactionId?: Maybe<string>;
+    reconciliationId?: Maybe<string>;
+    status?: Maybe<string>;
+    responseCode?: Maybe<string>;
+    submittedTimeUtc?: Maybe<string>;
+    requestId?: Maybe<string>;
+  }>;
+};
+
+export type PaymentGetAuthTokenMutationVariables = Exact<{
+  processPaymentRequest?: Maybe<ProcessPaymentRequest>;
+}>;
+
+export type PaymentGetAuthTokenMutation = {
+  __typename?: "Mutation";
+  getAuthToken?: Maybe<{
+    __typename?: "GetAuthTokenResult";
+    respMsg?: Maybe<string>;
+    result?: Maybe<string>;
+    secureToken?: Maybe<string>;
+    secureTokenId?: Maybe<string>;
+  }>;
+};
+
+export type PaymentProcessRefundMutationVariables = Exact<{
+  processRefundRequest?: Maybe<ProcessRefundRequest>;
+}>;
+
+export type PaymentProcessRefundMutation = {
+  __typename?: "Mutation";
+  processRefund?: Maybe<{
+    __typename?: "ProcessRefundResult";
+    nothing?: Maybe<string>;
+  }>;
+};
+
 export type PhotoUploadContainerUserCreateAuthHeaderForProfilePhotoMutationVariables =
   Exact<{
     input: UserProfilePhotoImageInput;
@@ -2185,6 +2349,30 @@ export const CategorySelectionCategoryFieldsFragmentDoc = {
     },
   ],
 } as unknown as DocumentNode<CategorySelectionCategoryFieldsFragment, unknown>;
+export const AccountSelectorAccountFieldsFragmentDoc = {
+  kind: "Document",
+  definitions: [
+    {
+      kind: "FragmentDefinition",
+      name: { kind: "Name", value: "AccountSelectorAccountFields" },
+      typeCondition: {
+        kind: "NamedType",
+        name: { kind: "Name", value: "Account" },
+      },
+      selectionSet: {
+        kind: "SelectionSet",
+        selections: [
+          { kind: "Field", name: { kind: "Name", value: "id" } },
+          { kind: "Field", name: { kind: "Name", value: "schemaVersion" } },
+          { kind: "Field", name: { kind: "Name", value: "createdAt" } },
+          { kind: "Field", name: { kind: "Name", value: "updatedAt" } },
+          { kind: "Field", name: { kind: "Name", value: "handle" } },
+          { kind: "Field", name: { kind: "Name", value: "name" } },
+        ],
+      },
+    },
+  ],
+} as unknown as DocumentNode<AccountSelectorAccountFieldsFragment, unknown>;
 export const AccountMenuAccountFieldsFragmentDoc = {
   kind: "Document",
   definitions: [
@@ -3384,6 +3572,38 @@ export const CategorySelectionCategoriesDocument = {
   CategorySelectionCategoriesQuery,
   CategorySelectionCategoriesQueryVariables
 >;
+export const AccountSelectorAccountsDocument = {
+  kind: "Document",
+  definitions: [
+    {
+      kind: "OperationDefinition",
+      operation: "query",
+      name: { kind: "Name", value: "AccountSelectorAccounts" },
+      selectionSet: {
+        kind: "SelectionSet",
+        selections: [
+          {
+            kind: "Field",
+            name: { kind: "Name", value: "accounts" },
+            selectionSet: {
+              kind: "SelectionSet",
+              selections: [
+                {
+                  kind: "FragmentSpread",
+                  name: { kind: "Name", value: "AccountMenuAccountFields" },
+                },
+              ],
+            },
+          },
+        ],
+      },
+    },
+    ...AccountMenuAccountFieldsFragmentDoc.definitions,
+  ],
+} as unknown as DocumentNode<
+  AccountSelectorAccountsQuery,
+  AccountSelectorAccountsQueryVariables
+>;
 export const AccountMenuAccountsDocument = {
   kind: "Document",
   definitions: [
@@ -4451,6 +4671,214 @@ export const ListingsListListingsByAccountHandleDocument = {
 } as unknown as DocumentNode<
   ListingsListListingsByAccountHandleQuery,
   ListingsListListingsByAccountHandleQueryVariables
+>;
+export const PaymentLoadPaymentPageDocument = {
+  kind: "Document",
+  definitions: [
+    {
+      kind: "OperationDefinition",
+      operation: "mutation",
+      name: { kind: "Name", value: "PaymentLoadPaymentPage" },
+      selectionSet: {
+        kind: "SelectionSet",
+        selections: [
+          {
+            kind: "Field",
+            name: { kind: "Name", value: "loadPaymentPage" },
+            selectionSet: {
+              kind: "SelectionSet",
+              selections: [
+                { kind: "Field", name: { kind: "Name", value: "keyId" } },
+                {
+                  kind: "Field",
+                  name: { kind: "Name", value: "transactionId" },
+                },
+              ],
+            },
+          },
+        ],
+      },
+    },
+  ],
+} as unknown as DocumentNode<
+  PaymentLoadPaymentPageMutation,
+  PaymentLoadPaymentPageMutationVariables
+>;
+export const PaymentProcessPaymentDocument = {
+  kind: "Document",
+  definitions: [
+    {
+      kind: "OperationDefinition",
+      operation: "mutation",
+      name: { kind: "Name", value: "PaymentProcessPayment" },
+      variableDefinitions: [
+        {
+          kind: "VariableDefinition",
+          variable: {
+            kind: "Variable",
+            name: { kind: "Name", value: "processPaymentRequest" },
+          },
+          type: {
+            kind: "NamedType",
+            name: { kind: "Name", value: "ProcessPaymentRequest" },
+          },
+        },
+      ],
+      selectionSet: {
+        kind: "SelectionSet",
+        selections: [
+          {
+            kind: "Field",
+            name: { kind: "Name", value: "processPayment" },
+            arguments: [
+              {
+                kind: "Argument",
+                name: { kind: "Name", value: "processPaymentRequest" },
+                value: {
+                  kind: "Variable",
+                  name: { kind: "Name", value: "processPaymentRequest" },
+                },
+              },
+            ],
+            selectionSet: {
+              kind: "SelectionSet",
+              selections: [
+                {
+                  kind: "Field",
+                  name: { kind: "Name", value: "transactionId" },
+                },
+                {
+                  kind: "Field",
+                  name: { kind: "Name", value: "reconciliationId" },
+                },
+                { kind: "Field", name: { kind: "Name", value: "status" } },
+                {
+                  kind: "Field",
+                  name: { kind: "Name", value: "responseCode" },
+                },
+                {
+                  kind: "Field",
+                  name: { kind: "Name", value: "submittedTimeUtc" },
+                },
+                { kind: "Field", name: { kind: "Name", value: "requestId" } },
+              ],
+            },
+          },
+        ],
+      },
+    },
+  ],
+} as unknown as DocumentNode<
+  PaymentProcessPaymentMutation,
+  PaymentProcessPaymentMutationVariables
+>;
+export const PaymentGetAuthTokenDocument = {
+  kind: "Document",
+  definitions: [
+    {
+      kind: "OperationDefinition",
+      operation: "mutation",
+      name: { kind: "Name", value: "PaymentGetAuthToken" },
+      variableDefinitions: [
+        {
+          kind: "VariableDefinition",
+          variable: {
+            kind: "Variable",
+            name: { kind: "Name", value: "processPaymentRequest" },
+          },
+          type: {
+            kind: "NamedType",
+            name: { kind: "Name", value: "ProcessPaymentRequest" },
+          },
+        },
+      ],
+      selectionSet: {
+        kind: "SelectionSet",
+        selections: [
+          {
+            kind: "Field",
+            name: { kind: "Name", value: "getAuthToken" },
+            arguments: [
+              {
+                kind: "Argument",
+                name: { kind: "Name", value: "processPaymentRequest" },
+                value: {
+                  kind: "Variable",
+                  name: { kind: "Name", value: "processPaymentRequest" },
+                },
+              },
+            ],
+            selectionSet: {
+              kind: "SelectionSet",
+              selections: [
+                { kind: "Field", name: { kind: "Name", value: "respMsg" } },
+                { kind: "Field", name: { kind: "Name", value: "result" } },
+                { kind: "Field", name: { kind: "Name", value: "secureToken" } },
+                {
+                  kind: "Field",
+                  name: { kind: "Name", value: "secureTokenId" },
+                },
+              ],
+            },
+          },
+        ],
+      },
+    },
+  ],
+} as unknown as DocumentNode<
+  PaymentGetAuthTokenMutation,
+  PaymentGetAuthTokenMutationVariables
+>;
+export const PaymentProcessRefundDocument = {
+  kind: "Document",
+  definitions: [
+    {
+      kind: "OperationDefinition",
+      operation: "mutation",
+      name: { kind: "Name", value: "PaymentProcessRefund" },
+      variableDefinitions: [
+        {
+          kind: "VariableDefinition",
+          variable: {
+            kind: "Variable",
+            name: { kind: "Name", value: "processRefundRequest" },
+          },
+          type: {
+            kind: "NamedType",
+            name: { kind: "Name", value: "ProcessRefundRequest" },
+          },
+        },
+      ],
+      selectionSet: {
+        kind: "SelectionSet",
+        selections: [
+          {
+            kind: "Field",
+            name: { kind: "Name", value: "processRefund" },
+            arguments: [
+              {
+                kind: "Argument",
+                name: { kind: "Name", value: "processRefundRequest" },
+                value: {
+                  kind: "Variable",
+                  name: { kind: "Name", value: "processRefundRequest" },
+                },
+              },
+            ],
+            selectionSet: {
+              kind: "SelectionSet",
+              selections: [
+                { kind: "Field", name: { kind: "Name", value: "nothing" } },
+              ],
+            },
+          },
+        ],
+      },
+    },
+  ],
+} as unknown as DocumentNode<
+  PaymentProcessRefundMutation,
+  PaymentProcessRefundMutationVariables
 >;
 export const PhotoUploadContainerUserCreateAuthHeaderForProfilePhotoDocument = {
   kind: "Document",

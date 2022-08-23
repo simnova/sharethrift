@@ -1,0 +1,32 @@
+mutation PaymentLoadPaymentPage {
+  loadPaymentPage {
+    keyId
+    transactionId
+  }
+}
+
+mutation PaymentProcessPayment($processPaymentRequest: ProcessPaymentRequest) {
+  processPayment(processPaymentRequest: $processPaymentRequest) {
+    transactionId
+    reconciliationId
+    status
+    responseCode
+    submittedTimeUtc
+    requestId
+  }
+}
+
+mutation PaymentGetAuthToken($processPaymentRequest: ProcessPaymentRequest) {
+  getAuthToken(processPaymentRequest: $processPaymentRequest) {
+    respMsg
+    result
+    secureToken
+    secureTokenId
+  }
+}
+
+mutation PaymentProcessRefund($processRefundRequest: ProcessRefundRequest) {
+  processRefund(processRefundRequest: $processRefundRequest) {
+    nothing
+  }
+}

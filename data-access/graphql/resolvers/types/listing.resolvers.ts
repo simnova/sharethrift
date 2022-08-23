@@ -4,6 +4,13 @@ import { Listing as ListingModel } from '../../../infrastructure/data-sources/co
 import mongoose, { isValidObjectId } from 'mongoose';
 import { BlobStorage } from '../../../infrastructure/services/blob-storage';
 import { CognativeSearch } from '../../../infrastructure/services/cognative-search';
+import { 
+  LoadPaymentPageRes, 
+  ProcessCybersourcePaymentResponse, 
+  ProcessCybersourceRefundResponse,
+  ProcessPaypalAuthTokenResponse
+} from '../../../infrastructure/data-sources/cosmos-db/models/payment';
+import axios, { AxiosRequestConfig } from "axios";
 
 
 const ListingMutationResolver = async (getListing:Promise<ListingModel>): Promise<ListingMutationResult> => {
@@ -188,7 +195,110 @@ console.log(`Resolver>Query>listingSearch ${args.input.tags?.length}`)
     draftRemovePhoto: async (parent, args, context, info) => {
       return ListingMutationResolver(context.dataSources.listingDomainAPI.draftRemovePhoto(args.input));
     },
+    loadPaymentPage: async (parent, args, context, info) => {
+      var resultData;
 
+      await axios({
+        method: 'get',
+        url: `https://5e67-204-142-180-9.ngrok.io/api/Cybersource/loadPaymentPage?targetOrigin=http://localhost:3000`,
+        headers: {
+          'origin-app-name': 'PATHWAYS',
+          'origin-app-key': '2b0757a2-ef13-4aa5-ab74-d91994854253',
+        }
+      }).then((result: any) => {
+        console.log('LIST-LOAD-PAYMENT-PAGE', result);
+        resultData = result.data;
+      }).catch((error: any) => {
+        console.log('LIST-LOAD-PAYMENT-PAGE-ERROR', error);
+        return {
+          loadPaymentPageError: error
+        };
+      });
+
+      return {
+        keyId: resultData.keyId,
+        transactionId: resultData.transactionId
+      } as LoadPaymentPageRes;
+    },
+    getAuthToken: async (parent, args, context, info) => {
+      var resultData;
+
+      await axios({
+        method: 'post',
+        url: `https://5e67-204-142-180-9.ngrok.io/api/Paypal/getAuthToken`,
+        data: args.processPaymentRequest,
+        headers: {
+          'origin-app-name': 'PATHWAYS',
+          'origin-app-key': '2b0757a2-ef13-4aa5-ab74-d91994854253',
+        }
+      }).then((result: any) => {
+        resultData = result.data;
+      }).catch((error: any) => {
+        return {
+          getAuthTokenError: error
+        };
+      });
+
+      return {
+        respMsg: resultData.respMsg,
+        result: resultData.result,
+        secureToken: resultData.secureToken,
+        secureTokenId: resultData.secureTokenId
+      } as ProcessPaypalAuthTokenResponse;
+    },
+    processPayment: async (parent, args, context, info) => {
+      var resultData;
+
+      await axios({
+        method: 'post',
+        url: `https://5e67-204-142-180-9.ngrok.io/api/Cybersource/processPayment`,
+        data: args.processPaymentRequest,
+        headers: {
+          'origin-app-name': 'PATHWAYS',
+          'origin-app-key': '2b0757a2-ef13-4aa5-ab74-d91994854253',
+        }
+      }).then((result: any) => {
+        console.log('LIST-PROCESS-PAYMENT1', result.data);
+        resultData = result.data;
+        console.log('LIST-PROCESS-PAYMENT2', resultData.requestId);
+      }).catch((error: any) => {
+        return {
+          processPaymentError: error
+        };
+      });
+
+      return {
+        transactionId: resultData.transactionId,
+        reconciliationId: resultData.reconciliationId,
+        status: resultData.status,
+        responseCode: resultData.responseCode,
+        submittedTimeUtc: resultData.submittedTimeUtc,
+        requestId: resultData.requestId
+      } as ProcessCybersourcePaymentResponse;
+    },
+    processRefund: async (parent, args, context, info) => {
+      var resultData;
+
+      await axios({
+        method: 'post',
+        url: 'https://5e67-204-142-180-9.ngrok.io/api/Cybersource/processRefund',
+        data: args.processRefundRequest,
+        headers: {
+          'origin-app-name': 'PATHWAYS',
+          'origin-app-key': '2b0757a2-ef13-4aa5-ab74-d91994854253',
+        }
+      }).then((result: any) => {
+        resultData = result.data;
+      }).catch((error: any) => {
+        return {
+          processRefundError: error
+        };
+      });
+
+      return {
+        nothing: 'nothing'
+      } as ProcessCybersourceRefundResponse;
+    }
   }   
 }
 export default listing;

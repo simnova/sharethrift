@@ -1,0 +1,59 @@
+extend type Mutation {
+  loadPaymentPage: LoadPaymentPageResult
+  processPayment(processPaymentRequest: ProcessPaymentRequest): ProcessPaymentResult
+  getAuthToken(processPaymentRequest: ProcessPaymentRequest): GetAuthTokenResult
+  processRefund(processRefundRequest: ProcessRefundRequest): ProcessRefundResult
+}
+
+type LoadPaymentPageResult{
+  keyId: String
+  transactionId: String
+}
+
+input ProcessPaymentRequest{
+  totalAmount: String
+  firstName: String
+  lastName: String
+  address: String
+  city: String
+  state: String
+  postalCode: String
+  isoCountryCode: String
+  customerId: String
+  originApplication: String
+  additionalProps: AdditionalProps
+}
+
+input AdditionalProps{
+  transactionId: String
+  transientTokenJwt: String
+  merchantDefinedInformation3: String
+  paypalSuccessRoute: String
+  paypalErrorRoute: String
+  paypalCancelRoute: String
+}
+
+type ProcessPaymentResult{
+  transactionId: String
+  reconciliationId: String
+  status: String
+  responseCode: String
+  submittedTimeUtc: String
+  requestId: String
+}
+
+input ProcessRefundRequest{
+  totalAmount: String
+  requestId: String
+}
+
+type ProcessRefundResult{
+  nothing: String
+}
+
+type GetAuthTokenResult{
+  respMsg: String
+  result: String
+  secureToken: String
+  secureTokenId: String
+}
