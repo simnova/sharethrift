@@ -93,6 +93,30 @@ router.route("/validateUsername").post((req, res) => {
   return res.status(200).json({ message: "Username successfully validated" });
 });
 
+router.route("/invite").post((req, res) => {
+  //is the body empty?
+  if (req.body === null || req.body === undefined) {
+    return b2cErrorResponse('Request content is empty');
+  }
+
+  var email = req.body["email"];
+
+  //is the email address valid?
+  if (email === null || email === undefined) {
+    return b2cErrorResponse('Email address is empty');
+  }
+});
+
+function b2cErrorResponse(message) {
+  var errorResponse = {
+    version: "1.0.1",
+    status: 409,
+    userMessage: `${message}`
+  } as conflictError;
+
+  return errorResponse;
+}
+
 app.use("/api/B2CProfileLookup", router);
 
 module.exports = createHandler(app);
