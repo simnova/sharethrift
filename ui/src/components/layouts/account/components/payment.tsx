@@ -38,7 +38,6 @@ export const Payment: React.FC = () => {
     const [expirationYear, setExpirationYear] = useState("");
     
     const [transactionId, setTransactionId] = useState("");
-    const [creditCardInfoToken, setCreditCardInfoToken] = useState("");
     const [requestId, setRequestId] = useState("");
 
     const [loadPage,{loading:loadPaymentPageLoading, error:loadPaymentPageError }] = useMutation(PaymentLoadPaymentPageDocument);
@@ -56,10 +55,6 @@ export const Payment: React.FC = () => {
     useEffect(() => {
         loadPaymentPage();
     }, [])
-
-    useEffect(() => {
-        console.log('creditCardInfoToken has changed', creditCardInfoToken);
-    }, [creditCardInfoToken]);
 
     const loadPaymentPage = async () => {
         console.log("loadPaymentPage");
@@ -192,7 +187,6 @@ export const Payment: React.FC = () => {
                 console.log('FLEX-CREATETOKEN-ERR', err);
               &#125; else &#123;
                 console.log('SUCCESS', JSON.stringify(token));
-                creditCardInfoToken.value = JSON.stringify(token);
                 tokenInfo = JSON.stringify(token);
               &#125;
             &#125;);
@@ -375,19 +369,6 @@ export const Payment: React.FC = () => {
                         <div id="securityCode-container"></div>
                     </Form.Item>
 
-                    <Form.Item
-                        label=""
-                        name="creditCardInfoToken"
-                        style={{ marginBottom: 0 }}
-                        >
-                        <Input
-                            style={{ margin: "3px" }}
-                            type="hidden"
-                            value={creditCardInfoToken}
-                            name="creditCardInfoToken"
-                            onChange={(e) => setCreditCardInfoToken(e.target.value)}
-                        ></Input>
-                    </Form.Item>
                 </Col>
             </Row>
             <Row>
