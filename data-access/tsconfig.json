@@ -9,6 +9,7 @@
     "sourceMap": true,
     "strict": false,
     "esModuleInterop": true,
+    "jsx": "react"
    // "moduleResolution": "Node"
   }
 }
