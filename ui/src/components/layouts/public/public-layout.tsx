@@ -35,6 +35,9 @@ export const PublicLayout: React.FC<any> = (props) => {
                   <li className={'mb-2'}>
                     <a href="https://getterms.io/view/8buiD/aup/en-us" target="_blank" rel="noreferrer" className={'text-gray-800 hover:text-blue-800'}>Acceptable Use Policy</a>
                   </li>
+                  <li className={'mb-2'}>
+                    <a href="https://github.com/simnova/sharethrift" target="_blank" rel="noreferrer" className={'text-gray-800 hover:text-blue-800'}>Source Code</a>
+                  </li>
                 </ul>
               </div>
             </div>

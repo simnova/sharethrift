@@ -38,20 +38,20 @@ export const AccountSettingsRolesContainer: React.FC<any> = (props) => {
   const handleSave = async (values: RoleAddInput) => {
     values.accountHandle = props.data.handle;
     try {
-    addRole({
-      variables: {
-        input:values
-      },
-      refetchQueries: [
-        {
-          query: AccountSettingsRolesContainerAccountGetByHandleDocument,
-          variables: {
-            handle: props.data.handle
+      await addRole({
+        variables: {
+          input:values
+        },
+        refetchQueries: [
+          {
+            query: AccountSettingsRolesContainerAccountGetByHandleDocument,
+            variables: {
+              handle: props.data.handle
+            }
           }
-        }
-      ]
-    });
-    message.success("Role Added");
+        ]
+      });
+      message.success("Role Added");
     } catch (error) {
       message.error(`Error adding role: ${JSON.stringify(error)}`);
     }
