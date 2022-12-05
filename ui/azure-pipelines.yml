@@ -102,7 +102,7 @@ stages:
       runOnce:    #rolling, canary are the other strategies that are supported
         deploy:
           steps:
-          - template: ./templates/blob-cdn-website-deploy.yml@templates
+          - template: ./build-pipeline/deploy.yml
             parameters:
               subscription: $(azureSubscription)
               destinationBlobContainer: 'sharethriftqa'
