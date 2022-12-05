@@ -27,7 +27,7 @@ export class ApolloServerRequestHandler {
         ...DataSources
       }),
       context: async (req:any) => {
-
+        console.log('context');
         let bearerToken = util.ExtractBearerToken(req.request);
         let context:Partial<ApolloContext> ={};
         
