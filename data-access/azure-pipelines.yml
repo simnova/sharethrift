@@ -152,7 +152,7 @@ stages:
           - task: AzureFunctionApp@1
             displayName: 'Azure Functions App Deploy: $(functionApp1Name)'
             inputs:
-              azureSubscription: 'ShareThrift'
+              azureSubscription: $(azureSubscription)
               appType: functionAppLinux
               appName: $(functionApp1Name)
               package: '$(Pipeline.Workspace)/drop/$(Build.BuildId).zip'
@@ -161,7 +161,7 @@ stages:
           - task: AzureFunctionApp@1
             displayName: 'Azure Functions App Deploy: $(functionApp2Name)'
             inputs:
-              azureSubscription: 'ShareThrift'
+              azureSubscription: $(azureSubscription)
               appType: 'functionAppLinux'
               appName: $(functionApp2Name)
               package: '$(Pipeline.Workspace)/drop/$(Build.BuildId).zip'
