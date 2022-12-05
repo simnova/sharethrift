@@ -109,7 +109,7 @@ stages:
               archiveName: 'prod'
               cdnProfile: 'sharethrift'
               cdnResourceGroup: 'rg-sharethrift'
-              cdnName: 'sharethriftqa'
+              cdnName: 'sharethrift-qa'
 
 - stage: deploy_prod_stage
   dependsOn: deploy_qa_stage
@@ -130,4 +130,4 @@ stages:
               archiveName: 'prod'
               cdnProfile: 'sharethrift'
               cdnResourceGroup: 'rg-sharethrift'
-              cdnName: 'sharethrift'
+              cdnName: 'sharethriftprd'
