@@ -39,8 +39,8 @@ steps:
     scriptType: 'pscore'
     scriptLocation: 'inlineScript'
     inlineScript: |
-      az storage blob delete-batch -s `$web --pattern * --account-name ${{parameters.destinationBlobContainer}}
+      az storage blob delete-batch -s `$web --pattern * --account-name ${{parameters.destinationBlobContainer}} --auth-mode login
       az storage blob upload-batch --destination `$web --account-name ${{parameters.destinationBlobContainer}} --source $(Build.ArtifactStagingDirectory)/deploy --auth-mode login
-      az cdn endpoint purge --profile-name ${{parameters.cdnProfile}} -g ${{parameters.cdnResourceGroup}} -n ${{parameters.cdnName}} --content-paths "/*"
+      az cdn endpoint purge --profile-name ${{parameters.cdnProfile}} -g ${{parameters.cdnResourceGroup}} -n ${{parameters.cdnName}} --content-paths "/*" --auth-mode login
     addSpnToEnvironment: true
     workingDirectory: 'ui/build'
