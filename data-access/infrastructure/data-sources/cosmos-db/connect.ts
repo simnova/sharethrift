@@ -63,6 +63,7 @@ export const connect = async () => {
     console.log("Connecting to CosmosDB in Dev / Prod Mode");
   }
   
+  
   try {
     await mongoose.connect(connectionString, {
       //  useNewUrlParser: true, 
