@@ -33,15 +33,15 @@ stages:
       SonarCloud_organization: 'simnova'
       SonarCloud_scannerMode: 'CLI'
       SonarCloud_configMode: 'manual'
-      SonarCloud_cliProjectKey: 'simnova_cellix-data-access'
-      SonarCloud_cliProjectName: 'cellix-data-access'
+      SonarCloud_cliProjectKey: 'simnova_sharethrift-data-access'
+      SonarCloud_cliProjectName: 'sharethrift-data-access'
 
   - template: ../../../build-pipeline/core/function-app-deployment-stage.yml
     parameters: 
       stageName: 'DEV'
       #dependsOnStage: Core
       environmentNameBicep: 'dev'
-      environmentNameDevOps: 'cellix-dev'
+      environmentNameDevOps: 'sharethrift-dev'
       vmImageName: $(vmImageName)
       ServiceConnectionName: $(ServiceConnectionName)
       deploymentDefaultLocation: $(deploymentDefaultLocation)
