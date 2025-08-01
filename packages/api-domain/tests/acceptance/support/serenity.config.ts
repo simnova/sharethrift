@@ -4,7 +4,6 @@ import { SerenityBDDReporter } from '@serenity-js/serenity-bdd';
 import { ConsoleReporter } from '@serenity-js/console-reporter';
 import { resolve } from 'node:path';
 import { mkdirSync } from 'node:fs';
-import { CommunityCreationResults } from '../screenplay/interactions/create-community.js';
 
 /**
  * Serenity/JS configuration for BDD tests
@@ -41,8 +40,6 @@ BeforeAll(async function() {
 
 Before(function(scenario) {
   // Clean up any previous test state
-  CommunityCreationResults.createdCommunity = null;
-  CommunityCreationResults.creationError = null;
   
   // Log scenario information for better traceability
   console.log(`🎬 Starting scenario: ${scenario.pickle.name}`);
