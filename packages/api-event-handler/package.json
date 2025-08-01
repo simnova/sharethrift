@@ -1,0 +1,17 @@
+{
+  "name": "api-event-handler",
+  "version": "1.0.0",
+  "main": "dist/src/index.js",
+  "types": "dist/src/index.d.ts",  
+  "devDependencies": {
+  },
+  "scripts": {
+    "prebuild": "biome lint",
+    "build": "tsc --build",
+    "lint": "biome lint",
+    "format": "biome format --write"
+  },
+  "author": "",
+  "license": "ISC",
+  "description": ""
+}
