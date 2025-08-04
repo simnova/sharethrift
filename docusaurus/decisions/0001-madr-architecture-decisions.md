@@ -14,7 +14,7 @@ informed:
 
 ## Context and Problem Statement
 
-As the Sharethrift project evolves, maintaining architectural consistency becomes crucial. With a Node.js backend and a TypeScript React frontend, documenting and managing architectural decisions pose challenges. We must ensure alignment among team members and community contributors to avoid confusion and inconsistency. Therefore, an efficient framework is needed to document, evaluate, and communicate decisions, fostering transparency and collaboration.
+As the Sharethrift project evolves over time, maintaining architectural consistency becomes crucial. With a Node.js backend and a TypeScript React frontend, documenting and managing architectural decisions pose challenges. We must ensure alignment among team members and community contributors to avoid confusion and inconsistency. Therefore, an efficient framework is needed to document, evaluate, and communicate decisions, fostering transparency and collaboration.
 
 MADR is a lean template to capture any decisions in a structured way. The template originated from capturing architectural decisions and developed to a template allowing to capture any decisions taken.
 For more information [see](https://adr.github.io/)
