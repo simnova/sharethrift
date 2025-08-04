@@ -1,0 +1,129 @@
+{
+  "/__docusaurus/debug-5ff": {
+    "__comp": "__comp---theme-debug-config-23-a-2ff",
+    "__context": {
+      "plugin": "plugin---docusaurus-debugb-38-ad3"
+    }
+  },
+  "/__docusaurus/debug/config-5ba": {
+    "__comp": "__comp---theme-debug-config-23-a-2ff",
+    "__context": {
+      "plugin": "plugin---docusaurus-debugb-38-ad3"
+    }
+  },
+  "/__docusaurus/debug/content-a2b": {
+    "__comp": "__comp---theme-debug-contentba-8-ce7",
+    "__context": {
+      "plugin": "plugin---docusaurus-debugb-38-ad3"
+    },
+    "__props": "__props---docusaurus-debug-content-3-c-0-be2"
+  },
+  "/__docusaurus/debug/globalData-c3c": {
+    "__comp": "__comp---theme-debug-global-dataede-0fa",
+    "__context": {
+      "plugin": "plugin---docusaurus-debugb-38-ad3"
+    }
+  },
+  "/__docusaurus/debug/metadata-156": {
+    "__comp": "__comp---theme-debug-site-metadata-68-e-3d4",
+    "__context": {
+      "plugin": "plugin---docusaurus-debugb-38-ad3"
+    }
+  },
+  "/__docusaurus/debug/registry-88c": {
+    "__comp": "__comp---theme-debug-registry-679-501",
+    "__context": {
+      "plugin": "plugin---docusaurus-debugb-38-ad3"
+    }
+  },
+  "/__docusaurus/debug/routes-000": {
+    "__comp": "__comp---theme-debug-routes-946-699",
+    "__context": {
+      "plugin": "plugin---docusaurus-debugb-38-ad3"
+    }
+  },
+  "/docs-43c": {
+    "__comp": "__comp---theme-docs-root-5-e-9-0b6",
+    "__context": {
+      "plugin": "plugin---docsaba-d7c"
+    }
+  },
+  "/docs-30a": {
+    "__comp": "__comp---theme-doc-version-roota-7-b-5de",
+    "__props": "__props---docs-005-788"
+  },
+  "/docs-6bd": {
+    "__comp": "__comp---theme-doc-roota-94-67a"
+  },
+  "/docs/decisions/adr-short-template-7ae": {
+    "__comp": "__comp---theme-doc-item-178-a40",
+    "content": "content---docs-decisions-adr-short-template-8-fe-c4d"
+  },
+  "/docs/decisions/adr-template-932": {
+    "__comp": "__comp---theme-doc-item-178-a40",
+    "content": "content---docs-decisions-adr-templateb-5-a-b6f"
+  },
+  "/docs/decisions/authorization-58f": {
+    "__comp": "__comp---theme-doc-item-178-a40",
+    "content": "content---docs-decisions-authorization-3-fe-8ad"
+  },
+  "/docs/decisions/azure-infrastructure-deployments-250": {
+    "__comp": "__comp---theme-doc-item-178-a40",
+    "content": "content---docs-decisions-azure-infrastructure-deployments-322-2b6"
+  },
+  "/docs/decisions/bicep-264": {
+    "__comp": "__comp---theme-doc-item-178-a40",
+    "content": "content---docs-decisions-bicepf-61-c6b"
+  },
+  "/docs/decisions/cache-purging-955": {
+    "__comp": "__comp---theme-doc-item-178-a40",
+    "content": "content---docs-decisions-cache-purginga-3-b-2d5"
+  },
+  "/docs/decisions/domain-driven-design-701": {
+    "__comp": "__comp---theme-doc-item-178-a40",
+    "content": "content---docs-decisions-domain-driven-design-4-f-0-8a8"
+  },
+  "/docs/decisions/identity-access-6bb": {
+    "__comp": "__comp---theme-doc-item-178-a40",
+    "content": "content---docs-decisions-identity-accessf-55-979"
+  },
+  "/docs/decisions/linter-7f0": {
+    "__comp": "__comp---theme-doc-item-178-a40",
+    "content": "content---docs-decisions-linter-2-e-5-c3a"
+  },
+  "/docs/decisions/madr-architecture-decisions-c38": {
+    "__comp": "__comp---theme-doc-item-178-a40",
+    "content": "content---docs-decisions-madr-architecture-decisions-84-b-5ec"
+  },
+  "/docs/decisions/maps-963": {
+    "__comp": "__comp---theme-doc-item-178-a40",
+    "content": "content---docs-decisions-maps-043-f2d"
+  },
+  "/docs/decisions/open-telemetry-da4": {
+    "__comp": "__comp---theme-doc-item-178-a40",
+    "content": "content---docs-decisions-open-telemetry-4-ca-285"
+  },
+  "/docs/decisions/react-router-loaders-bba": {
+    "__comp": "__comp---theme-doc-item-178-a40",
+    "content": "content---docs-decisions-react-router-loaders-459-f26"
+  },
+  "/docs/decisions/serenityjs-060": {
+    "__comp": "__comp---theme-doc-item-178-a40",
+    "content": "content---docs-decisions-serenityjs-1-a-4-152"
+  },
+  "/docs/decisions/test-suite-42a": {
+    "__comp": "__comp---theme-doc-item-178-a40",
+    "content": "content---docs-decisions-test-suite-835-517"
+  },
+  "/docs/decisions/white-label-281": {
+    "__comp": "__comp---theme-doc-item-178-a40",
+    "content": "content---docs-decisions-white-labeldad-efa"
+  },
+  "/-2e1": {
+    "__comp": "__comp---site-src-pages-index-jsc-4-f-f99",
+    "__context": {
+      "plugin": "plugin---a-74-9d6"
+    },
+    "config": "config---5-e-9-4f3"
+  }
+}

@@ -1,0 +1,34 @@
+{
+  "id": "decisions/test-suite",
+  "title": "Select a Test Suite: Jest vs Vitest vs Node",
+  "description": "Decision record for selecting a test suite: Jest vs Vitest vs Node.",
+  "source": "@site/docs/decisions/0013-test-suite.md",
+  "sourceDirName": "decisions",
+  "slug": "/decisions/test-suite",
+  "permalink": "/docs/decisions/test-suite",
+  "draft": false,
+  "unlisted": false,
+  "tags": [],
+  "version": "current",
+  "sidebarPosition": 13,
+  "frontMatter": {
+    "sidebar_position": 13,
+    "sidebar_label": "0013 Test Suite Selection",
+    "description": "Decision record for selecting a test suite: Jest vs Vitest vs Node.",
+    "status": "proposed",
+    "contact": "nnoce14 iwilson dheruwala",
+    "date": "2025-06-28T00:00:00.000Z",
+    "deciders": "gidich etang93 mgupta83 nnoce14 iwilson dheruwala",
+    "consulted": null,
+    "informed": null
+  },
+  "sidebar": "docs",
+  "previous": {
+    "title": "0012 Linter Oxlint vs Biome",
+    "permalink": "/docs/decisions/linter"
+  },
+  "next": {
+    "title": "0014 Azure Infrastructure Deployments",
+    "permalink": "/docs/decisions/azure-infrastructure-deployments"
+  }
+}

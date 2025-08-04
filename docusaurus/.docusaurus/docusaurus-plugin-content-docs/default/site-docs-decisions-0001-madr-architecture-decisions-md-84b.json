@@ -1,0 +1,29 @@
+{
+  "id": "decisions/madr-architecture-decisions",
+  "title": "Use Markdown Any Decision Records (MADR) to track Architectural Decisions",
+  "description": "Use Markdown Any Decision Records (MADR) to track Architectural Decisions.",
+  "source": "@site/docs/decisions/0001-madr-architecture-decisions.md",
+  "sourceDirName": "decisions",
+  "slug": "/decisions/madr-architecture-decisions",
+  "permalink": "/docs/decisions/madr-architecture-decisions",
+  "draft": false,
+  "unlisted": false,
+  "tags": [],
+  "version": "current",
+  "sidebarPosition": 1,
+  "frontMatter": {
+    "sidebar_position": 1,
+    "sidebar_label": "0001 MADR Architecture Decisions",
+    "description": "Use Markdown Any Decision Records (MADR) to track Architectural Decisions.",
+    "status": "accepted",
+    "date": "2024-04-12T00:00:00.000Z",
+    "deciders": "dhaval, chara",
+    "consulted": "patrick",
+    "informed": null
+  },
+  "sidebar": "docs",
+  "next": {
+    "title": "0002 Open Telemetry",
+    "permalink": "/docs/decisions/open-telemetry"
+  }
+}

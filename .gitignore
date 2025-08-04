@@ -1,6 +1,7 @@
-/node_modules
-.DS_Store
 # .gitignore template - https://github.com/github/gitignore/blob/main/Node.gitignore
+/node_modules
+/docusaurus/node_modules
+.DS_Store
 lcov-report
 __*
 local.settings.json

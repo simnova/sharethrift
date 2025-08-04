@@ -1,0 +1,30 @@
+{
+  "id": "decisions/adr-template",
+  "title": "short title of solved problem and solution",
+  "description": "Use this template to track Architectural Decisions.",
+  "source": "@site/docs/decisions/adr-template.md",
+  "sourceDirName": "decisions",
+  "slug": "/decisions/adr-template",
+  "permalink": "/docs/decisions/adr-template",
+  "draft": false,
+  "unlisted": false,
+  "tags": [],
+  "version": "current",
+  "sidebarPosition": 15,
+  "frontMatter": {
+    "sidebar_position": 15,
+    "sidebar_label": "ADR Template",
+    "description": "Use this template to track Architectural Decisions.",
+    "status": "proposed | rejected | accepted | deprecated | … | superseded by [ADR-0001](0001-madr-architecture-decisions.md)",
+    "contact": "person proposing the ADR",
+    "date": "YYYY-MM-DD when the decision was last updated",
+    "deciders": "list everyone involved in the decision",
+    "consulted": "list everyone whose opinions are sought (typically subject-matter experts); and with whom there is a two-way communication",
+    "informed": "list everyone who is kept up-to-date on progress; and with whom there is a one-way communication"
+  },
+  "sidebar": "docs",
+  "previous": {
+    "title": "ADR Short Template",
+    "permalink": "/docs/decisions/adr-short-template"
+  }
+}
