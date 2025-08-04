@@ -2,6 +2,7 @@
 /node_modules
 /docusaurus/node_modules
 .DS_Store
+.docusaurus
 lcov-report
 __*
 local.settings.json
