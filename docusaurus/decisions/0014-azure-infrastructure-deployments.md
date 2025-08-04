@@ -5,7 +5,7 @@ description: "Decision record for selecting deployment approach: AVM vs Bicep."
 status: proposed
 contact: gidich etang93 mgupta83
 date: 2025-08-01
-deciders: gidich etang93 mgupta83 nnoce14 iwilson dheruwala
+deciders: gidich etang93 mgupta83 nnoce14 iwilson dheruwala jmorais
 consulted:
 informed:
 ---
