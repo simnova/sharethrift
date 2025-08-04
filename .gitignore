@@ -1,8 +1,6 @@
 # .gitignore template - https://github.com/github/gitignore/blob/main/Node.gitignore
 /node_modules
 /docusaurus/node_modules
-.docusaurus
-build
 .DS_Store
 lcov-report
 __*
