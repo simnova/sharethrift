@@ -5,7 +5,7 @@ applyTo: "./packages/ui-applicant/**/*"
 
 ## Purpose
 
-- The `ui-applicant` package provides the applicant-facing web UI for the CellixJS platform.
+- The `ui-sharethrift` package provides the applicant-facing web UI for the CellixJS platform.
 - Built with React, TypeScript, and Vite, it serves as the entry point for user interactions and application workflows.
 
 ## Architecture & Patterns
