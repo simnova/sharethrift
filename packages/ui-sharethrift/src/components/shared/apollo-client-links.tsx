@@ -38,10 +38,13 @@ export const ApolloLinkToAddAuthHeader = (auth: AuthContextProps): ApolloLink =>
   if(!headerValue || (ifTrue !== undefined && ifTrue === false)) {
     return forward(operation);
   }
-  operation.setContext((prevContext: DefaultContext) => { 
-    prevContext.headers[headerName] = headerValue;
-    return prevContext;
-  });
+  operation.setContext((prevContext: DefaultContext) => ({
+    ...prevContext,
+    headers: {
+      ...(prevContext.headers || {}),
+      [headerName]: headerValue
+    }
+  }));
   return forward(operation);
 });
 
