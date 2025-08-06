@@ -1,6 +1,6 @@
 import { Routes, Route } from "react-router-dom";
 import MyListingsMain from "./Main";
-import EditListing from "./EditListing";
+import EditListing from "./edit-listing";
 
 export default function MyListingsRoutes() {
   return (
