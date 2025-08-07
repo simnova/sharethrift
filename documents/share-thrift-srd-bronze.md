@@ -897,7 +897,7 @@ The ShareThrift System will leverage Azure Storage Queues to handle events that 
 |  | **Direction** | **Type** | **Source (for inbound)/Destination (for outbound)** | **Name** | **Handler (for inbound)/Emitter (for outbound)** |
 | 1 |  |  |  |  |  |
 
-<<ALIGN NUMBERS IN ABOVE TABLE TO NUMBERS IN DIAGRAMS, NAME EACH ACCCURATELY AND DEFINE HANDLERS>>
+<<ALIGN NUMBERS IN ABOVE TABLE TO NUMBERS IN DIAGRAMS, NAME EACH ACCURATELY AND DEFINE HANDLERS>>
 
 ## Event Specifications
 
