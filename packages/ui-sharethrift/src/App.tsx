@@ -2,7 +2,7 @@
 import { Navigate, Route, Routes } from 'react-router-dom';
 import HomeRoutes from './components/layouts/home';
 import { ApolloConnection } from './components/shared/apollo-connection';
-import SignupRoutes from './components/layouts/signup';
+import SignupRoutes from './components/layouts/signup/Index';
 
 
 function App() {
