@@ -1,20 +1,22 @@
 import { Route, Routes } from 'react-router-dom';
-import SignupIndex from './Index';
-import SelectAccountType from './SelectAccountType';
-import Terms from './Terms';
-import AccountSetup from './AccountSetup';
-import ProfileSetup from './ProfileSetup';
-import Payment from './Payment';
+import SelectAccountType from './components/SelectAccountType';
+import Terms from './components/Terms';
+import AccountSetup from './components/AccountSetup';
+import ProfileSetup from './components/ProfileSetup';
+import Payment from './components/Payment';
+import SignupLayout from './section-layout';
 
 export default function SignupRoutes() {
   return (
     <Routes>
-      <Route path="signup" element={<SignupIndex />} />
-      <Route path="signup/select-account-type" element={<SelectAccountType />} />
-      <Route path="signup/personal/terms" element={<Terms />} />
-      <Route path="signup/personal/account-setup" element={<AccountSetup />} />
-      <Route path="signup/personal/profile-setup" element={<ProfileSetup />} />
-      <Route path="signup/personal/payment" element={<Payment />} />
+      <Route element={<SignupLayout />}>
+        <Route path="" element={<>Signup Home</>} />
+        <Route path="select-account-type" element={<SelectAccountType />} />
+        <Route path="terms" element={<Terms />} />
+        <Route path="account-setup" element={<AccountSetup />} />
+        <Route path="profile-setup" element={<ProfileSetup />} />
+        <Route path="payment" element={<Payment />} />
+      </Route>
     </Routes>
   );
 }
