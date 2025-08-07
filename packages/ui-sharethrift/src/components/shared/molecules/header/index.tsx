@@ -1,6 +1,7 @@
 import React from 'react';
 import { Layout, Button } from 'antd';
 import styles from './index.module.css';
+import '../../../../styles/theme.css';
 
 export interface HeaderProps {
   isAuthenticated: boolean;
@@ -15,7 +16,7 @@ export const Header: React.FC<HeaderProps> = ({ isAuthenticated, onLogin, onLogo
   return (
     <AntHeader className={styles.header}>
       <div className={styles.logoSection}>
-        <img src="/logo.svg" alt="Sharethrift Logo" className={styles.logo} />
+        <img src="../../../src/assets/logo/logo-icon.svg" alt="Sharethrift Logo" className={styles.logo} />
         <span className={styles.logoText}>sharethrift</span>
       </div>
       <nav className={styles.authSection}>

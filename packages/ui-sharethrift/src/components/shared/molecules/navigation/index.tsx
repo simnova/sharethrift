@@ -2,16 +2,19 @@ import React, { useState } from 'react';
 import { Layout, Menu, Button, Drawer } from 'antd';
 import {
   HomeOutlined,
-  AppstoreOutlined,
-  BookOutlined,
+  ContainerOutlined,
+  CalendarOutlined,
   MessageOutlined,
   UserOutlined,
   SettingOutlined,
   StarOutlined,
   LogoutOutlined,
   MenuOutlined,
+  CloseOutlined,
 } from '@ant-design/icons';
 import styles from './index.module.css';
+import '../../../../styles/theme.css';
+
 
 export interface NavigationProps {
   isAuthenticated: boolean;
@@ -23,16 +26,16 @@ const { Sider } = Layout;
 
 const navItems = [
   { key: 'home', icon: <HomeOutlined />, label: 'Home' },
-  { key: 'listings', icon: <AppstoreOutlined />, label: 'My Listings' },
-  { key: 'reservations', icon: <BookOutlined />, label: 'My Reservations' },
+  { key: 'listings', icon: <ContainerOutlined />, label: 'My Listings' },
+  { key: 'reservations', icon: <CalendarOutlined />, label: 'My Reservations' },
   { key: 'messages', icon: <MessageOutlined />, label: 'Messages' },
   {
     key: 'account',
     icon: <UserOutlined />, label: 'Account',
     children: [
-      { key: 'profile', icon: <UserOutlined />, label: 'Profile' },
-      { key: 'bookmarks', icon: <StarOutlined />, label: 'Bookmarks' },
-      { key: 'settings', icon: <SettingOutlined />, label: 'Settings' },
+      { key: 'profile', label: 'Profile' },
+      { key: 'bookmarks', label: 'Bookmarks' },
+      { key: 'settings', label: 'Settings' },
     ],
   },
 ];
@@ -51,13 +54,13 @@ export const Navigation: React.FC<NavigationProps> = ({ isAuthenticated, onLogou
     <>
       {/* Hamburger for mobile (top right) - only if authenticated */}
       {isAuthenticated && (
-        <div className={styles.hamburgerContainer}>
+        <div className={styles.hamburgerContainer} style={{ zIndex: 1020 }}>
           <Button
             className={styles.hamburger}
-            icon={<MenuOutlined />}
-            onClick={() => setMobileOpen(true)}
+            icon={mobileOpen ? <CloseOutlined /> : <MenuOutlined />}
+            onClick={() => setMobileOpen(!mobileOpen)}
             type="text"
-            aria-label="Open navigation"
+            aria-label={mobileOpen ? 'Close navigation' : 'Open navigation'}
           />
         </div>
       )}
@@ -72,7 +75,7 @@ export const Navigation: React.FC<NavigationProps> = ({ isAuthenticated, onLogou
           collapsible
           collapsed={collapsed}
           onCollapse={setCollapsed}
-          style={{ minHeight: '100vh', position: 'fixed', left: 0, top: 0, zIndex: 1000 }}
+          style={{ minHeight: '100vh', position: 'fixed', left: 0, top: 64, zIndex: 1000 }}
         >
           <Menu
             mode="inline"
