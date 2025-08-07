@@ -6,3 +6,5 @@
 lcov-report
 __*
 local.settings.json
+*storybook.log
+storybook-static

@@ -1,0 +1,23 @@
+.appLayout {
+  min-height: 100vh;
+  background: var(--color-background);
+}
+.bodyWrapper {
+  display: flex;
+  flex-direction: row;
+  min-height: calc(100vh - 64px);
+}
+.content {
+  flex: 1;
+  padding: 32px;
+  background: var(--color-background);
+  min-height: 0;
+}
+@media (max-width: 900px) {
+  .bodyWrapper {
+    flex-direction: column;
+  }
+  .content {
+    padding: 16px;
+  }
+}

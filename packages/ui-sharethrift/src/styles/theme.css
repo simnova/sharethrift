@@ -1,0 +1,33 @@
+@import url('https://fonts.googleapis.com/css2?family=Urbanist:ital,wght@0,100..900;1,100..900&display=swap');
+
+:root {
+  --color-primary: #25322C;
+  --color-background: #FEFDFA;
+  --color-secondary: #3F8176;
+  --color-secondary-disabled: #9FC0BA;
+  --color-foreground-1: #C4BEA9;
+  --color-foreground-2: #DED7BF;
+  --color-message-text: #333333;
+  --color-message-transparent: rgba(51, 51, 51, 0.6);
+  --Urbanist: 'Urbanist', sans-serif;
+}
+
+body{
+    background-color: var(--color-background);
+}
+h1, .logoText {
+    font-family: var(--Urbanist);
+    font-weight: 700;
+    font-size: 24px;
+    line-height: 32px;
+    color: var(--color-primary);
+}
+
+p, .authButton {
+    font-family: var(--Urbanist);
+    font-weight: 400;
+    font-size: 14px;
+    line-height: 18px;
+    background: var(--color-background);
+    color: var(--color-message-text) !important;
+}
