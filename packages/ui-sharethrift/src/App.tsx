@@ -1,8 +1,8 @@
 
 import { Navigate, Route, Routes } from 'react-router-dom';
-import SignupRoutes from './components/layouts/signup/Index';
 import HomeRoutes from './components/layouts/home';
 import { ApolloConnection } from './components/shared/apollo-connection';
+import SignupRoutes from './components/layouts/signup/Index';
 
 
 function App() {

@@ -5,8 +5,9 @@ import AdminDashboardRoutes from "./admin-dashboard";
 import MyReservationsRoutes from "./my-reservations/Index";
 import Listings from "./components/Listings";
 import HomeTabsLayout from "./section-layout";
-import MyListingsRoutes from "./my-listings/Index";
-import MessagesRoutes from "./messages/Index";
+import MessagesRoutes from "./messages";
+import MyListingsRoutes from "./my-listings";
+
 
 export default function HomeRoutes() {
   return (
