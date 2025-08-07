@@ -6,7 +6,6 @@ import '../../../../styles/theme.css';
 export interface HeaderProps {
   isAuthenticated: boolean;
   onLogin?: () => void;
-  onLogout?: () => void;
   onSignUp?: () => void;
 }
 

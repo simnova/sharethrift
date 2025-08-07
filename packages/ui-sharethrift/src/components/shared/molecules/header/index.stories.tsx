@@ -18,7 +18,7 @@ export const LoggedOut: Story = {
 };
 
 export const LoggedIn: Story = {
-  render: () => <Header isAuthenticated={true} onLogout={() => {}} />,
+  render: () => <Header isAuthenticated={true} />,
 };
 
 export const ResponsiveHeaderDemo = () => {
@@ -28,7 +28,6 @@ export const ResponsiveHeaderDemo = () => {
       isAuthenticated={isAuthenticated}
       onLogin={() => setIsAuthenticated(true)}
       onSignUp={() => setIsAuthenticated(true)}
-      onLogout={() => setIsAuthenticated(false)}
     />
   );
 };

@@ -26,7 +26,6 @@ export const AppLayout: React.FC<AppLayoutProps> = ({
       <Header
         isAuthenticated={isAuthenticated}
         onLogin={onLogin}
-        onLogout={onLogout}
         onSignUp={onSignUp}
       />
       <div className={styles.bodyWrapper}>

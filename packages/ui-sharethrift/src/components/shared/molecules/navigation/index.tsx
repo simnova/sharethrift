@@ -98,7 +98,6 @@ export const Navigation: React.FC<NavigationProps> = ({ isAuthenticated, onLogou
           placement="left"
           open={mobileOpen}
           onClose={() => setMobileOpen(false)}
-          bodyStyle={{ padding: 0 }}
           width={240}
           className={styles.mobileDrawer}
         >
