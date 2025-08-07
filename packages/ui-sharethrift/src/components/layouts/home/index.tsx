@@ -3,7 +3,7 @@ import { Route, Routes } from "react-router-dom";
 import AccountRoutes from "./account";
 import AdminDashboardRoutes from "./admin-dashboard";
 import MyReservationsRoutes from "./my-reservations/Index";
-import Listings from "./components/Listings";
+import Listings from "./pages/Listings";
 import HomeTabsLayout from "./section-layout";
 import MessagesRoutes from "./messages";
 import MyListingsRoutes from "./my-listings";

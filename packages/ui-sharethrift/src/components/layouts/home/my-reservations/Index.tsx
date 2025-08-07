@@ -1,6 +1,6 @@
 import { Routes, Route } from "react-router-dom";
-import MyReservationsMain from "./Main";
-import ViewRequest from "./ViewRequest";
+import MyReservationsMain from "./pages/Main";
+import ViewRequest from "./pages/ViewRequest";
 
 export default function MyReservationsRoutes() {
   return (

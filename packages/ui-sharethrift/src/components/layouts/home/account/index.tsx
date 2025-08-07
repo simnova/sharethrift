@@ -1,7 +1,7 @@
 import { Route, Routes } from 'react-router-dom';
-import EditSettings from './EditSettings';
-import Profile from './Profile';
-import Settings from './Settings';
+import EditSettings from './pages/EditSettings';
+import Profile from './pages/Profile';
+import Settings from './pages/Settings';
 
 export default function AccountRoutes() {
   return (
