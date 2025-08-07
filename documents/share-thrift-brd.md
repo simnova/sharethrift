@@ -697,7 +697,7 @@ Requested reviews are evaluated by bots and checkers first. All higher level con
 
 [ShareThrift Legacy Codebase](https://github.com/simnova/sharethrift)
 
-[ShareThrift Tech Introcution & Business Case](https://ecfmg.gitbook.io/azure-serverless-quickstart)
+[ShareThrift Tech Introduction & Business Case](https://ecfmg.gitbook.io/azure-serverless-quickstart)
 
 [ShareThrift Project Charter](https://simnova.notion.site/ShareThrift-Project-Charter-d38fba50b9644c71805d000a2809de23)
 
