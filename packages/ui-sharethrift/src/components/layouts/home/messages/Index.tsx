@@ -1,6 +1,6 @@
 import { Routes, Route } from "react-router-dom";
-import MessagesMain from "./Main";
-import Conversation from "./Conversation";
+import MessagesMain from "./pages/Main";
+import Conversation from "./pages/Conversation";
 
 export default function MessagesRoutes() {
   return (

@@ -1,8 +1,8 @@
 import { Routes, Route } from "react-router-dom";
 
-import AdminDashboardMain from "./Main";
-import AdminListings from "./Listings";
-import AdminUsers from "./Users";
+import AdminDashboardMain from "./pages/Main";
+import AdminListings from "./pages/Listings";
+import AdminUsers from "./pages/Users";
 
 export default function AdminDashboardRoutes() {
   return (
