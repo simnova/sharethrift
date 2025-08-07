@@ -1,6 +1,6 @@
 import type { Meta, StoryObj } from '@storybook/react';
 import { AppLayout } from './index';
-import { useState } from 'react';
+import React, { useState } from 'react';
 
 const meta: Meta<typeof AppLayout> = {
   title: 'Organisms/AppLayout',
@@ -28,19 +28,21 @@ export const LoggedOut: Story = {
   ),
 };
 
+const LoggedInDemo: React.FC = () => {
+  const [isAuthenticated, setIsAuthenticated] = useState(true);
+  return (
+    <AppLayout
+      isAuthenticated={isAuthenticated}
+      onLogout={() => setIsAuthenticated(false)}
+      onLogin={() => setIsAuthenticated(true)}
+      onSignUp={() => setIsAuthenticated(true)}
+      onNavigate={() => {}}
+    >
+      <DemoContent />
+    </AppLayout>
+  );
+};
+
 export const LoggedIn: Story = {
-  render: () => {
-    const [isAuthenticated, setIsAuthenticated] = useState(true);
-    return (
-      <AppLayout
-        isAuthenticated={isAuthenticated}
-        onLogout={() => setIsAuthenticated(false)}
-        onLogin={() => setIsAuthenticated(true)}
-        onSignUp={() => setIsAuthenticated(true)}
-        onNavigate={() => {}}
-      >
-        <DemoContent />
-      </AppLayout>
-    );
-  },
+  render: () => <LoggedInDemo />,
 };
