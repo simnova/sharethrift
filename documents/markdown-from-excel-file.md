@@ -141,7 +141,7 @@
 | recipientId | NaN | NaN | NaN | NaN | required, objectId | NaN |
 | content | NaN | NaN | NaN | NaN | required, objectId | NaN |
 | twilioMessageId | NaN | NaN | NaN | NaN | optional, string | NaN |
-| createdAt | NaN | NaN | NaN | NaN | requried, timestamp | NaN |
+| createdAt | NaN | NaN | NaN | NaN | required, timestamp | NaN |
 | }] | NaN | NaN | NaN | NaN | NaN | NaN |
 
 ## ListingReport
