@@ -21,7 +21,9 @@
     "test:integration": "npm run test:integration --ws --if-present",
     "test:serenity": "npm run test:serenity --ws --if-present",
     "test:unit": "npm run test:unit --ws --if-present",
-    "test:watch": "node scripts/test-watch-all.js"
+    "test:watch": "node scripts/test-watch-all.js",
+    "storybook": "storybook dev -p 6006",
+    "build-storybook": "storybook build"
   },
   "workspaces": [
     "packages/cellix-domain-seedwork",
@@ -41,12 +43,25 @@
   "devDependencies": {
     "@amiceli/vitest-cucumber": "^5.1.2",
     "@biomejs/biome": "2.0.0",
+    "@chromatic-com/storybook": "^4.1.0",
+    "@storybook/addon-a11y": "^9.1.1",
+    "@storybook/addon-docs": "^9.1.1",
+    "@storybook/addon-vitest": "^9.1.1",
+    "@storybook/react-vite": "^9.1.1",
+    "@vitest/browser": "3.2.4",
     "@vitest/coverage-v8": "^3.2.4",
     "concurrently": "^9.1.2",
+    "playwright": "^1.54.2",
     "rimraf": "^6.0.1",
+    "storybook": "^9.1.1",
     "tsx": "^4.20.3",
     "typescript": "^5.8.3",
     "vite": "^7.0.4",
     "vitest": "^3.2.4"
+  },
+  "dependencies": {
+    "@tailwindcss/vite": "^4.1.11",
+    "antd": "^5.26.7",
+    "tailwindcss": "^4.1.11"
   }
 }
