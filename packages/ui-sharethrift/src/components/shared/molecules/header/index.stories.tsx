@@ -1,6 +1,6 @@
 import type { Meta, StoryObj } from '@storybook/react';
 import { Header } from './index';
-import React, { useState } from 'react';
+import { useState } from 'react';
 
 const meta: Meta<typeof Header> = {
   title: 'Molecules/Header',
@@ -21,7 +21,7 @@ export const LoggedIn: Story = {
   render: () => <Header isAuthenticated={true} onLogout={() => {}} />,
 };
 
-const ResponsiveHeaderDemo = () => {
+export const ResponsiveHeaderDemo = () => {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   return (
     <Header

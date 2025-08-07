@@ -6,8 +6,6 @@ import {
   CalendarOutlined,
   MessageOutlined,
   UserOutlined,
-  SettingOutlined,
-  StarOutlined,
   LogoutOutlined,
   MenuOutlined,
   CloseOutlined,

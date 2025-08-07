@@ -1,6 +1,6 @@
 import type { Meta, StoryObj } from '@storybook/react';
 import { Navigation } from './index';
-import React, { useState } from 'react';
+import { useState } from 'react';
 
 const meta: Meta<typeof Navigation> = {
   title: 'Molecules/Navigation',

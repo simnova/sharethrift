@@ -12,7 +12,7 @@ export interface HeaderProps {
 
 const { Header: AntHeader } = Layout;
 
-export const Header: React.FC<HeaderProps> = ({ isAuthenticated, onLogin, onLogout, onSignUp }) => {
+export const Header: React.FC<HeaderProps> = ({ isAuthenticated, onLogin, onSignUp }) => {
   return (
     <AntHeader className={styles.header}>
       <div className={styles.logoSection}>
