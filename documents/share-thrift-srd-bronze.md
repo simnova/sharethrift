@@ -856,7 +856,7 @@ Azure Blob Storage serves as the storage solution for images, such as PNGs, and 
 
 **Document Overwriting Policies**
 
-* **Images:** When a user uploads a new profile picture, the previous will be overrited and removed from blog storage. When uploading a listing photo to the same slot as one that already exists, it will also be overwrited and removed from blog storage.
+* **Images:** When a user uploads a new profile picture, the previous will be overwritten and removed from blob storage. When uploading a listing photo to the same slot as one that already exists, it will also be overwritten and removed from blob storage.
 
 **Image Retention**
 
