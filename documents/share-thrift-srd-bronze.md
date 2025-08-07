@@ -852,7 +852,7 @@ This section outlines the data retention strategy for both operational and image
 
 1. **Document Storage: Azure Blob Storage**
 
-Azure Blob Storage serves as the storage solution for images, such as PNGs, and JPEGs. Images stored in Blob Storage will be remain for the lifetime of the listing, or as long as it is kept for the the user profile.
+Azure Blob Storage serves as the storage solution for images, such as PNGs, and JPEGs. Images stored in Blob Storage will be remain for the lifetime of the listing, or as long as it is kept for the user profile.
 
 **Document Overwriting Policies**
 
