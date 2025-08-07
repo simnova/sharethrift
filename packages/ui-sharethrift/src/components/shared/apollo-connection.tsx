@@ -1,6 +1,6 @@
 import { from, ApolloLink, ApolloProvider } from "@apollo/client";
 import { type FC, useEffect } from "react";
-import { useAuth } from "react-oidc-context";
+import { useAuthContext } from "./auth-provider";
 // import { useParams } from "react-router-dom";
 import { ApolloLinkToAddAuthHeader, client, BaseApolloLink, TerminatingApolloLinkForGraphqlServer } from "./apollo-client-links"
 
@@ -8,7 +8,7 @@ export interface ApolloConnectionProps {
   children: React.ReactNode;
 }
 export const ApolloConnection: FC<ApolloConnectionProps> = (props: ApolloConnectionProps) => {
-  const auth = useAuth();
+  const auth = useAuthContext();
 //   const params = useParams(); // useParams.memberId won't work here because ApolloConnection wraps the Routes, not inside a Route
 
 

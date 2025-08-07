@@ -1,6 +1,5 @@
 import { ApolloClient, ApolloLink, type DefaultContext, InMemoryCache, from } from '@apollo/client';
 import { BatchHttpLink } from '@apollo/client/link/batch-http';
-import type { AuthContextProps } from 'react-oidc-context';
 import { removeTypenameFromVariables } from '@apollo/client/link/remove-typename';
 import { setContext } from '@apollo/client/link/context';
 
@@ -23,9 +22,22 @@ export const BaseApolloLink = (): ApolloLink => setContext((_, { headers }) => {
 
 
 // apollo link to add auth header
-export const ApolloLinkToAddAuthHeader = (auth: AuthContextProps): ApolloLink => 
+export const ApolloLinkToAddAuthHeader = (auth: any): ApolloLink => 
   setContext((_, { headers }) => {
-    const access_token = auth.isAuthenticated ? auth.user?.access_token : undefined;
+    // Handle both OIDC and simple auth user structures
+    let access_token: string | undefined;
+    
+    if (auth.isAuthenticated) {
+      // For OIDC auth
+      if (auth.user?.access_token) {
+        access_token = auth.user.access_token;
+      }
+      // For simple auth or other structures
+      else if (typeof auth.user === 'object' && auth.user?.access_token) {
+        access_token = auth.user.access_token;
+      }
+    }
+    
     return {
       headers: {
         ...headers,
