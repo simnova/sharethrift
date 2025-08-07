@@ -1,10 +1,10 @@
 import { Route, Routes } from 'react-router-dom';
-import SelectAccountType from './components/SelectAccountType';
-import Terms from './components/Terms';
-import AccountSetup from './components/AccountSetup';
-import ProfileSetup from './components/ProfileSetup';
-import Payment from './components/Payment';
+import SelectAccountType from './pages/SelectAccountType';
+import AccountSetup from './pages/AccountSetup';
+import ProfileSetup from './pages/ProfileSetup';
+import Payment from './pages/Payment';
 import SignupLayout from './section-layout';
+import Terms from './pages/Terms';
 
 export default function SignupRoutes() {
   return (
