@@ -1,10 +1,10 @@
 
 import React from 'react';
 import styles from './ThemeDemo.module.css';
-import '../../../styles/theme.css';
 import { Button, Input, Select, Alert, Card } from 'antd';
-
 import { MessageOutlined } from '@ant-design/icons';
+import '../../../styles/theme.css';
+
 const { Option } = Select;
 
 export const ThemeDemo: React.FC = () => (
@@ -47,15 +47,19 @@ export const ThemeDemo: React.FC = () => (
       <Button className={styles.primaryButton} type="primary"><MessageOutlined />Icon Button</Button>
     </div>
     <div className={styles.column}>
-      <Input className={styles.demoAntInput} placeholder="AntD Input" style={{ maxWidth: 300 }} />
-      <Input className={styles.demoAntInput} placeholder="AntD Input" style={{ maxWidth: 300 }} disabled />
-      <Select className={styles.demoAntSelect} defaultValue="option1" style={{ width: 120 }}>
-        <Option value="option1">Option 1</Option>
-        <Option value="option2">Option 2</Option>
-      </Select>
-    </div>
-    <div className={styles.row}>
-      <Alert className={styles.Alert} message="AntD Alert" type="info" showIcon style={{ width: 220 }} />
+      <Input placeholder="AntD Input" style={{ maxWidth: 300 }} />
+      <Input placeholder="AntD Input" style={{ maxWidth: 300 }} disabled />
+      <Select
+      style={{ width: 120 }}
+      allowClear
+      options={[
+        { value: 'option1', label: 'Option 1' },
+        { value: 'option2', label: 'Option 2' },
+        { value: 'option3', label: 'Option 3' },
+        { value: 'disabled', label: 'Disabled', disabled: true },
+      ]}
+      placeholder="Selection"
+    />
     </div>
   </div>
 );

@@ -125,16 +125,6 @@ p, .authButton, .primaryButton, .secondaryButton {
   border: none;
 }
 
-.ant-input{
-    border-color: var(--color-foreground-2);
-    color: var(--color-message-text);
-    border-radius: 3px;
-    font-family: var(--Urbanist);
-    font-weight: 400;
-    font-size: 14px;
-    line-height: 18px;
-}
-
 .ant-input-outlined:focus, .ant-input-focused, .ant-input:hover {
     border-color: var(--color-foreground-1);
     box-shadow: 0 0 0 2px rgba(196, 190, 169, 0.5);
@@ -142,7 +132,56 @@ p, .authButton, .primaryButton, .secondaryButton {
 
 .ant-input-outlined.ant-input-disabled{
     box-shadow: 0 0 0 0;
-    background-color: var(--color-background-2);
+    background-color: var(--color-background-2) !important;
     border-color: var(--color-foreground-1);
 }
+
+.ant-select .ant-select-selector, .ant-input {
+  border-color: var(--color-foreground-2) !important;
+  color: var(--color-message-text) !important;
+  border-radius: 3px !important;
+  font-family: var(--Urbanist);
+  font-size: 14px;
+}
+
+.ant-select-dropdown {
+  border-radius: 0;
+  box-shadow: 0 2px 12px rgba(0,0,0,0.08);
+  padding: 0;
+}
+
+.ant-select-item-option {
+  color: var(--color-message-text);
+  font-family: var(--Urbanist);
+  font-size: 14px;
+}
+
+.ant-select-dropdown .ant-select-item{
+  border-radius: 0;
+}
+
+.ant-select .ant-select-clear, .ant-select .ant-select-arrow{
+    color: var(--color-foreground-1)
+}
+
+.ant-select-item-option-selected,
+.ant-select-item-option-active {
+  background: var(--color-secondary-disabled) !important;
+  color: var(--color-primary) !important;
+}
+
+.ant-select-focused .ant-select-selector,
+.ant-select-selector:focus,
+.ant-select-selector:hover {
+  border-color: var(--color-foreground-1) !important;
+  box-shadow: 0 0 0 2px rgba(196, 190, 169, 0.5) !important;
+}
+
+.ant-select-disabled .ant-select-selector {
+  background: var(--color-background-2) !important;
+  color: var(--color-primary-disabled) !important;
+  border-color: var(--color-foreground-1) !important;
+  cursor: not-allowed;
+}
+
 
