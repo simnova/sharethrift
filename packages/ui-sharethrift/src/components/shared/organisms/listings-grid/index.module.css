@@ -1,0 +1,79 @@
+.gridContainer {
+  padding: 24px;
+  background: #fff;
+}
+
+.grid {
+  margin: 0;
+}
+
+.gridItem {
+  display: flex;
+}
+
+.gridItem > * {
+  flex: 1;
+}
+
+.emptyState {
+  text-align: center;
+  padding: 60px 24px;
+  background: #fff;
+}
+
+.emptyDescription {
+  color: #8c8c8c;
+  margin-top: 16px;
+  font-size: 14px;
+  max-width: 400px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.paginationContainer {
+  display: flex;
+  justify-content: center;
+  margin-top: 48px;
+  padding-top: 24px;
+  border-top: 1px solid #f0f0f0;
+}
+
+/* Ensure 4 cards per row on larger screens */
+@media (min-width: 1200px) {
+  .gridItem {
+    max-width: 25%;
+    flex: 0 0 25%;
+  }
+}
+
+/* 3 cards per row on medium screens */
+@media (min-width: 768px) and (max-width: 1199px) {
+  .gridItem {
+    max-width: 33.333%;
+    flex: 0 0 33.333%;
+  }
+}
+
+/* 2 cards per row on small screens */
+@media (min-width: 576px) and (max-width: 767px) {
+  .gridItem {
+    max-width: 50%;
+    flex: 0 0 50%;
+  }
+}
+
+/* 1 card per row on extra small screens */
+@media (max-width: 575px) {
+  .gridContainer {
+    padding: 16px;
+  }
+  
+  .gridItem {
+    max-width: 100%;
+    flex: 0 0 100%;
+  }
+  
+  .paginationContainer {
+    margin-top: 32px;
+  }
+}
