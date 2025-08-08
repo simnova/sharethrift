@@ -28,6 +28,14 @@
   border: 1px solid var(--color-foreground-2);
   box-shadow: 0 1px 4px rgba(0,0,0,0.04);
 }
+
+span{
+    font-family: var(--Urbanist);
+    font-weight: 400;
+    font-size: 14px;
+    line-height: 18px;
+}
+
 .fontSample {
   font-family: 'Urbanist', sans-serif;
   font-size: 1.2rem;

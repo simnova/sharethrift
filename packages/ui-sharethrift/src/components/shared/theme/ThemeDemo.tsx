@@ -1,11 +1,27 @@
 
 import React from 'react';
 import styles from './ThemeDemo.module.css';
-import { Button, Input, Select, Alert, Card } from 'antd';
+import { Button, Input, Select, Tabs, Checkbox, Tag } from 'antd';
 import { MessageOutlined } from '@ant-design/icons';
 import '../../../styles/theme.css';
 
-const { Option } = Select;
+const items = [
+  {
+    key: '1',
+    label: 'Tab 1',
+    children: 'Content of Tab Pane 1',
+  },
+  {
+    key: '2',
+    label: 'Tab 2',
+    children: 'Content of Tab Pane 2',
+  },
+  {
+    key: '3',
+    label: 'Tab 3',
+    children: 'Content of Tab Pane 3',
+  },
+];
 
 export const ThemeDemo: React.FC = () => (
   <div className={styles.demoRoot}>
@@ -60,6 +76,23 @@ export const ThemeDemo: React.FC = () => (
       ]}
       placeholder="Selection"
     />
+    <Tabs defaultActiveKey="1" items={items} />
+    <div className={styles.row}>
+      <Checkbox className={styles.demoAntCheckbox} defaultChecked>
+        AntD Checkbox
+      </Checkbox>
+      <Checkbox className={styles.demoAntCheckbox} disabled>
+        Disabled
+      </Checkbox>
+    </div>
+    <div className={styles.row}>
+      <Tag className={styles.demoAntTag} color="default">Default</Tag>
+      <Tag className={styles.demoAntTag} color="processing">Processing</Tag>
+      <Tag className={styles.demoAntTag} color="success">Success</Tag>
+      <Tag className={styles.demoAntTag} color="warning">Warning</Tag>
+      <Tag className={styles.demoAntTag} color="error">Error</Tag>
+      <Tag className={styles.demoAntTag} color="#3F8176">Custom</Tag>
+    </div>
     </div>
   </div>
 );

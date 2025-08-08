@@ -79,7 +79,7 @@ h4{
     color: var(--color-message-text);
 }
 
-p, .authButton, .primaryButton, .secondaryButton {
+p, .authButton, .primaryButton, .secondaryButton, .ant-tabs {
     font-family: var(--Urbanist);
     font-weight: 400;
     font-size: 14px;
@@ -160,7 +160,13 @@ p, .authButton, .primaryButton, .secondaryButton {
   border-radius: 0;
 }
 
-.ant-select .ant-select-clear, .ant-select .ant-select-arrow{
+.ant-select .ant-select-clear,
+.ant-select .ant-select-arrow{
+    color: var(--color-foreground-2)
+}
+
+.ant-select .ant-select-clear:hover,
+.ant-select .ant-select-arrow:hover{
     color: var(--color-foreground-1)
 }
 
@@ -182,6 +188,33 @@ p, .authButton, .primaryButton, .secondaryButton {
   color: var(--color-primary-disabled) !important;
   border-color: var(--color-foreground-1) !important;
   cursor: not-allowed;
+}
+
+/* Ant Design Tabs Theming */
+
+.ant-tabs-top >.ant-tabs-nav::before,
+.ant-tabs-bottom >.ant-tabs-nav::before,
+.ant-tabs-top >div>.ant-tabs-nav::before, 
+.ant-tabs-bottom >div>.ant-tabs-nav::before {
+    border-bottom: 2px solid var(--color-background-2) !important;
+}
+
+.ant-tabs-tab {
+  font-family: var(--Urbanist);
+  font-size: 14px;
+  color: var(--color-message-text) !important;
+  transition: color 0.18s;
+}
+.ant-tabs-tab-active .ant-tabs-tab-btn {
+  color: var(--color-secondary) !important;
+}
+.ant-tabs-ink-bar {
+  background: var(--color-secondary) !important;
+  height: 2px;
+}
+
+.ant-tabs-tab:hover {
+  color: var(--color-secondary);
 }
 
 
