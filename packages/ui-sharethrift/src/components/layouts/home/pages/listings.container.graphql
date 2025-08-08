@@ -1,0 +1,71 @@
+# GraphQL queries for the Browse Listings page
+
+query HomeListingsContainerGetListings(
+  $filters: ListingsFilterInput
+  $pagination: PaginationInput
+) {
+  getListings(filters: $filters, pagination: $pagination) {
+    listings {
+      ...HomeListingsContainerListingFields
+    }
+    totalCount
+    hasNextPage
+    hasPreviousPage
+    currentPage
+    totalPages
+  }
+}
+
+query HomeViewListingContainerGetListing($id: ID!) {
+  getListing(id: $id) {
+    ...HomeViewListingContainerListingFields
+  }
+}
+
+fragment HomeListingsContainerListingFields on ItemListing {
+  _id
+  title
+  description
+  category
+  location
+  sharingPeriodStart
+  sharingPeriodEnd
+  state
+  image
+  sharer {
+    _id
+    firstName
+    lastName
+  }
+}
+
+fragment HomeListingsContainerUserFields on User {
+  _id
+  firstName
+  lastName
+}
+
+fragment HomeViewListingContainerListingFields on ItemListing {
+  _id
+  title
+  description
+  category
+  location
+  sharingPeriodStart
+  sharingPeriodEnd
+  state
+  updatedAt
+  createdAt
+  reports
+  image
+  sharer {
+    ...HomeViewListingContainerUserFields
+  }
+}
+
+fragment HomeViewListingContainerUserFields on User {
+  _id
+  firstName
+  lastName
+  email
+}

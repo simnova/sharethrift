@@ -1,0 +1,82 @@
+# GraphQL Schema for Listings
+
+type ItemListing {
+  _id: ID!
+  sharer: User!
+  title: String!
+  description: String!
+  category: String!
+  location: String!
+  sharingPeriodStart: String!
+  sharingPeriodEnd: String!
+  state: ListingState!
+  updatedAt: String!
+  createdAt: String!
+  sharingHistory: [ID!]!
+  reports: Int!
+  image: String
+}
+
+type User {
+  _id: ID!
+  firstName: String!
+  lastName: String!
+  email: String!
+}
+
+enum ListingState {
+  Published
+  Paused
+  Cancelled
+  Drafted
+  Expired
+  Blocked
+  Appeal_Requested
+}
+
+input ListingsFilterInput {
+  category: String
+  location: String
+  searchTerm: String
+  state: ListingState
+}
+
+input PaginationInput {
+  page: Int = 1
+  limit: Int = 8
+}
+
+type ListingsResponse {
+  listings: [ItemListing!]!
+  totalCount: Int!
+  hasNextPage: Boolean!
+  hasPreviousPage: Boolean!
+  currentPage: Int!
+  totalPages: Int!
+}
+
+type Query {
+  # Get paginated listings with optional filters
+  getListings(
+    filters: ListingsFilterInput
+    pagination: PaginationInput
+  ): ListingsResponse!
+  
+  # Get a single listing by ID
+  getListing(id: ID!): ItemListing
+}
+
+type Mutation {
+  # Create a new listing
+  createListing(
+    title: String!
+    description: String!
+    category: String!
+    location: String!
+    sharingPeriodStart: String!
+    sharingPeriodEnd: String!
+  ): ItemListing!
+  
+  # Update listing state
+  updateListingState(id: ID!, state: ListingState!): ItemListing!
+}
