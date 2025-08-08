@@ -44,7 +44,7 @@ export const Navigation: React.FC<NavigationProps> = ({ isAuthenticated, onLogou
 
   const handleMenuClick = (e: any) => {
     // Use keyPath for nested menu items
-    let key = e.key;
+    let {key} = e;
     const accountSubTabs = ['profile', 'settings'];
     if (e.keyPath && e.keyPath.length > 1 && e.keyPath[1] === 'account' && accountSubTabs.includes(e.key)) {
       key = `account/${e.key}`;
