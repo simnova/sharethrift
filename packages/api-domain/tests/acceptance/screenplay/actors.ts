@@ -8,5 +8,4 @@
 /**
  * Convenience functions for creating common actors
  */
-export const Actors = {
-};
+export const Actors = {};
