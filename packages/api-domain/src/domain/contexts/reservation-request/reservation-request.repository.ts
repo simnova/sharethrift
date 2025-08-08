@@ -2,20 +2,20 @@ import type { DomainSeedwork } from '@cellix/domain-seedwork';
 import type {
 	ReservationRequest,
 	ReservationRequestEntityReference,
-} from './reservation-request.entity.ts';
+} from './reservation-request.aggregate.ts';
 
-export interface ReservationRequestRepository<PassportType>
-	extends DomainSeedwork.Repository<ReservationRequest<PassportType>> {
-	get(id: string): Promise<ReservationRequest<PassportType>>;
-	save(reservationRequest: ReservationRequest<PassportType>): Promise<ReservationRequest<PassportType>>;
-	getById(id: string): Promise<ReservationRequest<PassportType> | undefined>;
+export interface ReservationRequestRepository<props extends ReservationRequestProps>
+	extends DomainSeedwork.Repository<ReservationRequest<props>> {
+	get(id: string): Promise<ReservationRequest<props>>;
+	save(reservationRequest: ReservationRequest<props>): Promise<ReservationRequest<props>>;
+	getById(id: string): Promise<ReservationRequest<props> | undefined>;
 	getByReserverId(
 		reserverId: string,
-	): Promise<ReservationRequest<PassportType>[]>;
+	): Promise<ReservationRequest<props>[]>;
 	getByListingId(
 		listingId: string,
-	): Promise<ReservationRequest<PassportType>[]>;
+	): Promise<ReservationRequest<props>[]>;
 	saveAndGetReference(
-		reservationRequest: ReservationRequest<PassportType>,
+		reservationRequest: ReservationRequest<props>,
 	): Promise<ReservationRequestEntityReference>;
 }

@@ -1,3 +1,1 @@
-// export interface Passport {
-
-// }
+export type Passport = Record<string, never>;

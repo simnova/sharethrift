@@ -1,4 +1,5 @@
 import { DomainSeedwork } from '@cellix/domain-seedwork';
+import type { Passport } from '../passport.ts';
 import {
 	ReservationPeriod,
 	ReservationRequestState,
@@ -9,21 +10,81 @@ export interface ReservationRequestProps
 	extends DomainSeedwork.DomainEntityProps {
 	state: ReservationRequestStateValue;
 	reservationPeriod: ReservationPeriod;
-	createdAt: Date;
+	readonly createdAt: Date;
 	updatedAt: Date;
-	schemaVersion: number;
+	readonly schemaVersion: number;
 	listingId: string;
 	reserverId: string;
 	closeRequested: boolean;
 }
 
-export interface ReservationRequestEntityReference {
-	readonly id: string;
-}
+export interface ReservationRequestEntityReference extends Readonly<ReservationRequestProps> {}
 
-export class ReservationRequest<
-	PassportType,
-> extends DomainSeedwork.AggregateRoot<ReservationRequestProps, PassportType> {
+export class ReservationRequest<props extends ReservationRequestProps>
+	extends DomainSeedwork.AggregateRoot<props, Passport>
+	implements ReservationRequestEntityReference {
+	//#region Fields
+	private isNew: boolean = false;
+	//#endregion Fields
+
+	//#region Constructor
+	// Constructor inherited from AggregateRoot
+	//#endregion Constructor
+
+	//#region Methods
+	public static getNewInstance<props extends ReservationRequestProps>(
+		newProps: {
+			listingId: string;
+			reserverId: string;
+			reservationPeriodStart: Date;
+			reservationPeriodEnd: Date;
+		},
+		passport: Passport,
+	): ReservationRequest<props> {
+		const id = crypto.randomUUID();
+		const now = new Date();
+
+		const reservationPeriod = ReservationPeriod.create(
+			newProps.reservationPeriodStart,
+			newProps.reservationPeriodEnd,
+		);
+
+		const reservationRequestProps = {
+			...newProps,
+			id,
+			state: ReservationRequestStateValue.requested(),
+			reservationPeriod,
+			createdAt: now,
+			updatedAt: now,
+			schemaVersion: 1,
+			closeRequested: false,
+		} as props;
+
+		const aggregate = new ReservationRequest(reservationRequestProps, passport);
+		aggregate.markAsNew();
+		aggregate.isNew = false;
+		return aggregate;
+	}
+
+	private markAsNew(): void {
+		this.isNew = true;
+	}
+
+	/** @deprecated Use getNewInstance instead */
+	public static create<PassportType>(
+		props: {
+			listingId: string;
+			reserverId: string;
+			reservationPeriodStart: Date;
+			reservationPeriodEnd: Date;
+		},
+		passport: PassportType,
+	): ReservationRequest<any> {
+		return ReservationRequest.getNewInstance(props, passport as Passport);
+	}
+	//#endregion Methods
+
+	//#region Properties
 	get state(): ReservationRequestStateValue {
 		return this.props.state;
 	}
@@ -47,46 +108,21 @@ export class ReservationRequest<
 	get listingId(): string {
 		return this.props.listingId;
 	}
+	set listingId(value: string) {
+		this.props.listingId = value;
+	}
 
 	get reserverId(): string {
 		return this.props.reserverId;
+	}
+	set reserverId(value: string) {
+		this.props.reserverId = value;
 	}
 
 	get closeRequested(): boolean {
 		return this.props.closeRequested;
 	}
-
-	public static create<PassportType>(
-		props: {
-			listingId: string;
-			reserverId: string;
-			reservationPeriodStart: Date;
-			reservationPeriodEnd: Date;
-		},
-		passport: PassportType,
-	): ReservationRequest<PassportType> {
-		const id = crypto.randomUUID();
-		const now = new Date();
-
-		const reservationPeriod = ReservationPeriod.create(
-			props.reservationPeriodStart,
-			props.reservationPeriodEnd,
-		);
-
-		const reservationRequestProps: ReservationRequestProps = {
-			id,
-			state: ReservationRequestStateValue.requested(),
-			reservationPeriod,
-			createdAt: now,
-			updatedAt: now,
-			schemaVersion: 1,
-			listingId: props.listingId,
-			reserverId: props.reserverId,
-			closeRequested: false,
-		};
-
-		return new ReservationRequest(reservationRequestProps, passport);
-	}
+	//#endregion Properties
 
 	public accept(): void {
 		if (this.props.state.value !== ReservationRequestState.REQUESTED) {
@@ -142,8 +178,6 @@ export class ReservationRequest<
 	}
 
 	public getEntityReference(): ReservationRequestEntityReference {
-		return {
-			id: this.props.id,
-		};
+		return this.props as ReservationRequestEntityReference;
 	}
 }

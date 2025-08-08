@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { ReservationRequest } from './reservation-request.entity.ts';
+import { ReservationRequest } from './reservation-request.aggregate.ts';
 import { ReservationRequestState } from './reservation-request.value-objects.ts';
 
 describe('ReservationRequest', () => {
@@ -13,11 +13,11 @@ describe('ReservationRequest', () => {
     return { startDate, endDate };
   };
 
-  describe('create', () => {
+  describe('getNewInstance', () => {
     it('should create a new reservation request with REQUESTED state', () => {
       const { startDate, endDate } = getFutureDates();
 
-      const reservation = ReservationRequest.create({
+      const reservation = ReservationRequest.getNewInstance({
         listingId: 'listing-1',
         reserverId: 'user-1',
         reservationPeriodStart: startDate,
@@ -37,7 +37,7 @@ describe('ReservationRequest', () => {
       const { startDate, endDate } = getFutureDates();
 
       expect(() => {
-        ReservationRequest.create({
+        ReservationRequest.getNewInstance({
           listingId: 'listing-1',
           reserverId: 'user-1',
           reservationPeriodStart: endDate, // reversed
@@ -50,7 +50,7 @@ describe('ReservationRequest', () => {
   describe('accept', () => {
     it('should change state from REQUESTED to ACCEPTED', () => {
       const { startDate, endDate } = getFutureDates();
-      const reservation = ReservationRequest.create({
+      const reservation = ReservationRequest.getNewInstance({
         listingId: 'listing-1',
         reserverId: 'user-1',
         reservationPeriodStart: startDate,
@@ -64,7 +64,7 @@ describe('ReservationRequest', () => {
 
     it('should throw error if not in REQUESTED state', () => {
       const { startDate, endDate } = getFutureDates();
-      const reservation = ReservationRequest.create({
+      const reservation = ReservationRequest.getNewInstance({
         listingId: 'listing-1',
         reserverId: 'user-1',
         reservationPeriodStart: startDate,
@@ -82,7 +82,7 @@ describe('ReservationRequest', () => {
   describe('cancel', () => {
     it('should cancel a REQUESTED reservation', () => {
       const { startDate, endDate } = getFutureDates();
-      const reservation = ReservationRequest.create({
+      const reservation = ReservationRequest.getNewInstance({
         listingId: 'listing-1',
         reserverId: 'user-1',
         reservationPeriodStart: startDate,
@@ -96,7 +96,7 @@ describe('ReservationRequest', () => {
 
     it('should cancel a REJECTED reservation', () => {
       const { startDate, endDate } = getFutureDates();
-      const reservation = ReservationRequest.create({
+      const reservation = ReservationRequest.getNewInstance({
         listingId: 'listing-1',
         reserverId: 'user-1',
         reservationPeriodStart: startDate,
@@ -113,7 +113,7 @@ describe('ReservationRequest', () => {
   describe('close', () => {
     it('should close an ACCEPTED reservation', () => {
       const { startDate, endDate } = getFutureDates();
-      const reservation = ReservationRequest.create({
+      const reservation = ReservationRequest.getNewInstance({
         listingId: 'listing-1',
         reserverId: 'user-1',
         reservationPeriodStart: startDate,
@@ -128,7 +128,7 @@ describe('ReservationRequest', () => {
 
     it('should throw error if not in ACCEPTED state', () => {
       const { startDate, endDate } = getFutureDates();
-      const reservation = ReservationRequest.create({
+      const reservation = ReservationRequest.getNewInstance({
         listingId: 'listing-1',
         reserverId: 'user-1',
         reservationPeriodStart: startDate,
@@ -144,7 +144,7 @@ describe('ReservationRequest', () => {
   describe('requestClose', () => {
     it('should set closeRequested to true for ACCEPTED reservation', () => {
       const { startDate, endDate } = getFutureDates();
-      const reservation = ReservationRequest.create({
+      const reservation = ReservationRequest.getNewInstance({
         listingId: 'listing-1',
         reserverId: 'user-1',
         reservationPeriodStart: startDate,
