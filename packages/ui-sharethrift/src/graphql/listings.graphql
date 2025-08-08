@@ -1,0 +1,52 @@
+# GraphQL Queries for Browse Listings
+
+# Fragment for listing data
+fragment HomeListingsContainerListingFields on ItemListing {
+  _id
+  title
+  description
+  category
+  location
+  sharingPeriodStart
+  sharingPeriodEnd
+  state
+  images
+  sharer {
+    _id
+    name
+  }
+  createdAt
+  updatedAt
+}
+
+# Query to get active listings for the browse page
+query HomeListingsContainerActiveListings(
+  $category: String
+  $searchQuery: String
+  $first: Int
+  $after: String
+) {
+  activeListings(
+    filter: {
+      category: $category
+      searchQuery: $searchQuery
+      state: "Published"
+    }
+    first: $first
+    after: $after
+  ) {
+    edges {
+      node {
+        ...HomeListingsContainerListingFields
+      }
+      cursor
+    }
+    pageInfo {
+      hasNextPage
+      hasPreviousPage
+      startCursor
+      endCursor
+    }
+    totalCount
+  }
+}
