@@ -33,6 +33,7 @@ export function ConversationList({ onConversationSelect, selectedConversationId,
   if (!conversations || conversations.length === 0) {
     return <Empty description="No conversations yet" style={{ marginTop: 32 }} />;
   }
+
   return (
     <List
       itemLayout="horizontal"
