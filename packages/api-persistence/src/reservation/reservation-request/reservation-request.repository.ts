@@ -1,12 +1,9 @@
-import {
+import type {
 	ReservationRequest,
 	ReservationRequestRepository,
 	ReservationRequestEntityReference,
 	ReservationRequestProps,
 } from '@ocom/api-domain';
-
-// TODO: Define proper document type based on Mongoose model
-type ReservationRequestDocument = unknown;
 
 /**
  * MongoDB repository implementation for ReservationRequest aggregate.
@@ -22,24 +19,24 @@ export class ReservationRequestRepositoryImpl implements ReservationRequestRepos
 		return result;
 	}
 
-	async save(_reservationRequest: ReservationRequest<ReservationRequestProps>): Promise<ReservationRequest<ReservationRequestProps>> {
+	save(_reservationRequest: ReservationRequest<ReservationRequestProps>): Promise<ReservationRequest<ReservationRequestProps>> {
 		// TODO: Implement actual save logic
-		throw new Error('Method not implemented.');
+		return Promise.reject(new Error('Method not implemented.'));
 	}
 
-	async getById(_id: string): Promise<ReservationRequest<ReservationRequestProps> | undefined> {
+	getById(_id: string): Promise<ReservationRequest<ReservationRequestProps> | undefined> {
 		// TODO: Implement actual getById logic
-		throw new Error('Method not implemented.');
+		return Promise.reject(new Error('Method not implemented.'));
 	}
 
-	async getByReserverId(_reserverId: string): Promise<ReservationRequest<ReservationRequestProps>[]> {
+	getByReserverId(_reserverId: string): Promise<ReservationRequest<ReservationRequestProps>[]> {
 		// TODO: Implement actual getByReserverId logic
-		throw new Error('Method not implemented.');
+		return Promise.reject(new Error('Method not implemented.'));
 	}
 
-	async getByListingId(_listingId: string): Promise<ReservationRequest<ReservationRequestProps>[]> {
+	getByListingId(_listingId: string): Promise<ReservationRequest<ReservationRequestProps>[]> {
 		// TODO: Implement actual getByListingId logic
-		throw new Error('Method not implemented.');
+		return Promise.reject(new Error('Method not implemented.'));
 	}
 
 	async saveAndGetReference(

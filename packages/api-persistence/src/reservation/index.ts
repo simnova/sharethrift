@@ -1,5 +1,5 @@
-import { MongooseSeedwork } from '@cellix/data-sources-mongoose';
-import { EventBusSeedwork } from '@cellix/event-bus-seedwork-node';
+import type { MongooseSeedwork } from '@cellix/data-sources-mongoose';
+import type { InProcEventBusInstance, NodeEventBusInstance } from '@cellix/event-bus-seedwork-node';
 import { getReservationRequestUnitOfWork } from './reservation-request/index.ts';
 
 /**
@@ -13,8 +13,8 @@ import { getReservationRequestUnitOfWork } from './reservation-request/index.ts'
  */
 export const ReservationContextPersistence = (
 	mongooseContextFactory: MongooseSeedwork.MongooseContextFactory,
-	inProcEventBusInstance: EventBusSeedwork.InProcEventBusInstance,
-	nodeEventBusInstance: EventBusSeedwork.NodeEventBusInstance,
+	inProcEventBusInstance: typeof InProcEventBusInstance,
+	nodeEventBusInstance: typeof NodeEventBusInstance,
 ) => {
 	return {
 		getReservationRequestUnitOfWork: () => getReservationRequestUnitOfWork(

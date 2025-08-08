@@ -1,6 +1,6 @@
-import { MongooseSeedwork } from '@cellix/data-sources-mongoose';
-import { EventBusSeedwork } from '@cellix/event-bus-seedwork-node';
-import {
+import type { MongooseSeedwork } from '@cellix/data-sources-mongoose';
+import type { InProcEventBusInstance, NodeEventBusInstance } from '@cellix/event-bus-seedwork-node';
+import type {
 	ReservationRequestUnitOfWork,
 	ReservationRequestRepository,
 } from '@ocom/api-domain';
@@ -16,26 +16,27 @@ import { ReservationRequestRepositoryImpl } from './reservation-request.reposito
  */
 export const getReservationRequestUnitOfWork = (
 	mongooseContextFactory: MongooseSeedwork.MongooseContextFactory,
-	_inProcEventBusInstance: EventBusSeedwork.InProcEventBusInstance,
-	_nodeEventBusInstance: EventBusSeedwork.NodeEventBusInstance,
+	_inProcEventBusInstance: typeof InProcEventBusInstance,
+	_nodeEventBusInstance: typeof NodeEventBusInstance,
 ) => {
 	if (!mongooseContextFactory?.service) {
 		throw new Error('MongooseContextFactory service is required for ReservationRequest UoW');
 	}
 
-	const mongoContext = mongooseContextFactory.getContext();
-	const reservationRequestModel = mongoContext.ReservationRequestModel;
-
-	if (!reservationRequestModel) {
-		throw new Error('ReservationRequestModel is not available in Mongoose context');
-	}
+	// TODO: Get the actual mongoose context once models are properly integrated
+	// const mongoContext = mongooseContextFactory.getContext();
+	// const reservationRequestModel = mongoContext.ReservationRequestModel;
 
 	const repository: ReservationRequestRepository = new ReservationRequestRepositoryImpl();
 
-	// TODO: Implement proper MongoUnitOfWork integration
+	// TODO: Implement proper Unit of Work with transaction support
 	const uow: ReservationRequestUnitOfWork = {
 		reservationRequestRepository: repository,
-		// Add other required UoW methods as needed
+		withTransaction: async (_passport, func) => {
+			// For now, just execute the function directly
+			// In a full implementation, this would wrap in a database transaction
+			await func(repository);
+		},
 	} as ReservationRequestUnitOfWork;
 
 	return uow;

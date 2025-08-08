@@ -1,6 +1,7 @@
 import type { ConnectOptions } from 'mongoose';
 import type { MongooseSeedwork } from '@cellix/data-sources-mongoose';
 import { Persistence } from '@ocom/api-persistence';
+import { InProcEventBusInstance, NodeEventBusInstance } from '@cellix/event-bus-seedwork-node';
 
 const isUsingCosmosDBEmulator =
     //biome-ignore lint:useLiteralKeys
@@ -26,7 +27,7 @@ export const mongooseConnectionString: string =
 export const mongooseContextBuilder = (
 	initializedService: MongooseSeedwork.MongooseContextFactory,
 ) => {
-	return Persistence(initializedService);
+	return Persistence(initializedService, InProcEventBusInstance, NodeEventBusInstance);
 };
 
 export type MongooseModels = ReturnType<typeof mongooseContextBuilder>;
