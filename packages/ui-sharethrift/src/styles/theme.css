@@ -23,7 +23,7 @@ h1, .logoText {
     color: var(--color-primary);
 }
 
-p, .authButton {
+p, .authButton, :global(.ant-menu-item) {
     font-family: var(--Urbanist);
     font-weight: 400;
     font-size: 14px;
