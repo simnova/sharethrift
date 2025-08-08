@@ -65,7 +65,7 @@ export default function HomeTabsLayout() {
     home: 'home',
     listings: 'my-listings',
     reservations: 'my-reservations',
-    messages: 'messages',
+    messages: '', // go to /messages, not /messages/messages
     account: 'account',
     // subnavs can be handled in account/*
   };
@@ -97,12 +97,27 @@ export default function HomeTabsLayout() {
       navigate(`/${key}`);
       return;
     }
+    if (key === 'messages') {
+      navigate('/messages');
+      return;
+    }
     const route = routeMap[key];
     if (route) navigate(`/${route}`);
   };
 
   return (
-    <div style={{ minHeight: '100vh', width: '100vw', overflowX: 'hidden', display: 'flex', flexDirection: 'column' }}>
+    <div
+      style={{
+        minHeight: '100vh',
+        width: '100vw',
+        overflowX: 'hidden',
+        display: 'flex',
+        flexDirection: 'column',
+        fontFamily: 'Urbanist, Arial, sans-serif',
+        background: 'var(--global-bg, #f5f5f5)',
+        color: 'var(--global-text, #222)',
+      }}
+    >
       <div style={{ position: 'fixed', top: 0, left: 0, width: '100vw', zIndex: 1100 }}>
         <Header isAuthenticated={isAuthenticated} onLogin={() => {}} onSignUp={() => {}} />
       </div>
