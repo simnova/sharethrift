@@ -10,46 +10,46 @@ import { mkdirSync } from 'node:fs';
  * Configures reporting, timeouts, and crew members
  */
 
-BeforeAll(async function() {
-  // Ensure target directory exists for Serenity BDD reports
-  const outputDir = resolve(process.cwd(), 'target/site/serenity');
-  mkdirSync(outputDir, { recursive: true });
-  
-  // Configure Serenity/JS with reporters and settings
-  configure({
-    crew: [
-      // Console reporter for immediate feedback during test runs
-      ConsoleReporter.fromJSON({
-        theme: 'auto',
-      }),
-      
-      // Serenity BDD reporter - this will write JSON files for the CLI to process
-      SerenityBDDReporter.fromJSON({}),
-    ],
+BeforeAll(async function () {
+	// Ensure target directory exists for Serenity BDD reports
+	const outputDir = resolve(process.cwd(), 'target/site/serenity');
+	mkdirSync(outputDir, { recursive: true });
 
-    // Global timeout settings
-    cueTimeout: Duration.ofSeconds(5),
-    
-    // Test execution settings
-    interactionTimeout: Duration.ofSeconds(10),
-  });
+	// Configure Serenity/JS with reporters and settings
+	configure({
+		crew: [
+			// Console reporter for immediate feedback during test runs
+			ConsoleReporter.fromJSON({
+				theme: 'auto',
+			}),
 
-  console.log('🎭 Serenity/JS configured for Community Management BDD tests');
-  console.log('📊 Reports will be generated in: target/serenity-reports');
+			// Serenity BDD reporter - this will write JSON files for the CLI to process
+			SerenityBDDReporter.fromJSON({}),
+		],
+
+		// Global timeout settings
+		cueTimeout: Duration.ofSeconds(5),
+
+		// Test execution settings
+		interactionTimeout: Duration.ofSeconds(10),
+	});
+
+	console.log('🎭 Serenity/JS configured for Community Management BDD tests');
+	console.log('📊 Reports will be generated in: target/serenity-reports');
 });
 
-Before(function(scenario) {
-  // Clean up any previous test state
-  
-  // Log scenario information for better traceability
-  console.log(`🎬 Starting scenario: ${scenario.pickle.name}`);
-  if (scenario.pickle.tags.length > 0) {
-    const tags = scenario.pickle.tags.map(tag => tag.name).join(', ');
-    console.log(`🏷️  Tags: ${tags}`);
-  }
+Before(function (scenario) {
+	// Clean up any previous test state
+
+	// Log scenario information for better traceability
+	console.log(`🎬 Starting scenario: ${scenario.pickle.name}`);
+	if (scenario.pickle.tags.length > 0) {
+		const tags = scenario.pickle.tags.map((tag) => tag.name).join(', ');
+		console.log(`🏷️  Tags: ${tags}`);
+	}
 });
 
-AfterAll(async function() {
-  console.log('🎭 Serenity/JS test execution completed');
-  console.log('📈 Check target/serenity-reports for detailed test reports');
+AfterAll(async function () {
+	console.log('🎭 Serenity/JS test execution completed');
+	console.log('📈 Check target/serenity-reports for detailed test reports');
 });
