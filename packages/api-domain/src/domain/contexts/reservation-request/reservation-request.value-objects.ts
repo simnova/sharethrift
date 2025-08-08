@@ -69,12 +69,13 @@ export class ReservationRequestStateValue extends DomainSeedwork.ValueObject<Res
 	}
 
 	public isActive(): boolean {
-		return [
+		const activeStates: ReservationRequestState[] = [
 			ReservationRequestState.REQUESTED,
 			ReservationRequestState.ACCEPTED,
 			ReservationRequestState.REJECTED,
 			ReservationRequestState.CANCELLED,
-		].includes(this.props.state);
+		];
+		return activeStates.includes(this.props.state);
 	}
 
 	public isClosed(): boolean {
@@ -82,10 +83,11 @@ export class ReservationRequestStateValue extends DomainSeedwork.ValueObject<Res
 	}
 
 	public canBeCancelled(): boolean {
-		return [
+		const cancellableStates: ReservationRequestState[] = [
 			ReservationRequestState.REQUESTED,
 			ReservationRequestState.REJECTED,
-		].includes(this.props.state);
+		];
+		return cancellableStates.includes(this.props.state);
 	}
 
 	public canBeClosed(): boolean {
@@ -93,9 +95,10 @@ export class ReservationRequestStateValue extends DomainSeedwork.ValueObject<Res
 	}
 
 	public canBeMessaged(): boolean {
-		return [
+		const messagingStates: ReservationRequestState[] = [
 			ReservationRequestState.REQUESTED,
 			ReservationRequestState.ACCEPTED,
-		].includes(this.props.state);
+		];
+		return messagingStates.includes(this.props.state);
 	}
 }
