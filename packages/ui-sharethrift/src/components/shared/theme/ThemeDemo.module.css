@@ -1,6 +1,5 @@
 @import '../../../styles/theme.css';
 
-
 .demoRoot {
   padding: 32px;
   background: var(--color-background);
@@ -13,6 +12,12 @@
 .row {
   display: flex;
   align-items: center;
+  gap: 16px;
+  margin-bottom: 12px;
+}
+.column {
+  display: flex;
+  flex-direction: column;
   gap: 16px;
   margin-bottom: 12px;
 }

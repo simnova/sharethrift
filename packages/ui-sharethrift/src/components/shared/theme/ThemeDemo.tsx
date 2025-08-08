@@ -1,6 +1,11 @@
+
 import React from 'react';
 import styles from './ThemeDemo.module.css';
 import '../../../styles/theme.css';
+import { Button, Input, Select, Alert, Card } from 'antd';
+
+import { MessageOutlined } from '@ant-design/icons';
+const { Option } = Select;
 
 export const ThemeDemo: React.FC = () => (
   <div className={styles.demoRoot}>
@@ -35,5 +40,22 @@ export const ThemeDemo: React.FC = () => (
     <h3>h3 - 18px Urbanist Semibold</h3>
     <h4>h4 - 14px Urbanist Semibold</h4>
     <p>p - 14px Urbanist Regular</p>
+    <h3>Ant Design Component Samples</h3>
+    <div className={styles.row}>
+      <Button className={styles.primaryButton} type="primary">Primary Button</Button>
+      <Button className={styles.secondaryButton} type="default">Secondary Button</Button>
+      <Button className={styles.primaryButton} type="primary"><MessageOutlined />Icon Button</Button>
+    </div>
+    <div className={styles.column}>
+      <Input className={styles.demoAntInput} placeholder="AntD Input" style={{ maxWidth: 300 }} />
+      <Input className={styles.demoAntInput} placeholder="AntD Input" style={{ maxWidth: 300 }} disabled />
+      <Select className={styles.demoAntSelect} defaultValue="option1" style={{ width: 120 }}>
+        <Option value="option1">Option 1</Option>
+        <Option value="option2">Option 2</Option>
+      </Select>
+    </div>
+    <div className={styles.row}>
+      <Alert className={styles.Alert} message="AntD Alert" type="info" showIcon style={{ width: 220 }} />
+    </div>
   </div>
 );
