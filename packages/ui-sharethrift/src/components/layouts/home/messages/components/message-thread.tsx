@@ -1,6 +1,8 @@
 import { useState, useRef, useEffect } from 'react';
 import { useQuery, useMutation } from '@apollo/client';
 import { gql } from '@apollo/client';
+import { List, Avatar, Input, Button, Spin, Empty, message as antdMessage, Typography } from 'antd';
+import { UserOutlined, SendOutlined } from '@ant-design/icons';
 
 const GET_CONVERSATION_MESSAGES = gql`
   query GetConversationMessages($conversationId: ID!, $limit: Int, $offset: Int) {
@@ -39,41 +41,47 @@ interface Message {
 
 interface MessageThreadProps {
   conversationId: string;
+  __storybookMockData?: Message[];
 }
 
-export function MessageThread({ conversationId }: MessageThreadProps) {
   const [messageText, setMessageText] = useState('');
   const messagesEndRef = useRef<HTMLDivElement>(null);
-  
   // TODO: Get actual user ID from authentication context
   const currentUserId = 'user123'; // Placeholder
-
-  const { data, loading, error, refetch } = useQuery(GET_CONVERSATION_MESSAGES, {
+  const isMock = !!__storybookMockData;
+  // Always call hooks, but only use their results if not in mock mode
+  const queryResult = useQuery(GET_CONVERSATION_MESSAGES, {
     variables: { conversationId, limit: 50, offset: 0 },
-    pollInterval: 5000, // Poll every 5 seconds for new messages
+    pollInterval: 5000,
+    skip: isMock,
   });
-
-  const [sendMessage, { loading: sendingMessage }] = useMutation(SEND_MESSAGE, {
+  const mutationResult = useMutation(SEND_MESSAGE, {
     onCompleted: () => {
       setMessageText('');
-      refetch(); // Refresh messages after sending
+      queryResult.refetch && queryResult.refetch();
     },
     onError: (error) => {
       console.error('Error sending message:', error);
     }
   });
-
-  const messages: Message[] = data?.getConversationMessages || [];
-
-  // Auto-scroll to bottom when new messages arrive
+  const messages: Message[] = isMock
+    ? __storybookMockData || []
+    : queryResult.data?.getConversationMessages || [];
+  const loading = isMock ? false : queryResult.loading;
+  const error = isMock ? null : queryResult.error;
+  const [sendMessage, { loading: sendingMessage }] = isMock
+    ? [() => {}, { loading: false }]
+    : mutationResult;
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
   }, [messages]);
-
   const handleSendMessage = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!messageText.trim() || sendingMessage) return;
-
+    if (isMock) {
+      setMessageText('');
+      return;
+    }
     try {
       await sendMessage({
         variables: {
@@ -88,97 +96,56 @@ export function MessageThread({ conversationId }: MessageThreadProps) {
       console.error('Failed to send message:', error);
     }
   };
-
   if (loading) {
-    return (
-      <div className="flex-1 flex items-center justify-center">
-        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
-      </div>
-    );
+    return <Spin style={{ width: '100%', marginTop: 32, fontFamily: 'var(--Urbanist, Arial, sans-serif)' }} tip="Loading messages..." />;
   }
-
   if (error) {
-    return (
-      <div className="flex-1 flex items-center justify-center text-red-600">
-        <div className="text-center">
-          <p>Error loading messages</p>
-          <p className="text-sm text-gray-500">{error.message}</p>
-        </div>
-      </div>
-    );
+    antdMessage.error('Error loading messages');
+    return <Empty description="Failed to load messages" style={{ marginTop: 32, fontFamily: 'var(--Urbanist, Arial, sans-serif)' }} />;
   }
-
   return (
-    <div className="flex flex-col h-full">
-      {/* Messages Header */}
-      <div className="p-4 border-b border-gray-200 bg-white">
-        <div className="flex items-center space-x-3">
-          <div className="w-10 h-10 bg-gray-300 rounded-full flex items-center justify-center">
-            <span className="text-gray-600 font-medium">P</span>
-          </div>
-          <div>
-            <h2 className="text-lg font-semibold text-gray-900">Patrick G.</h2>
-            <div className="flex items-center space-x-4 text-sm text-gray-500">
-              <span>City Bike</span>
-              <span>Request Period: 1 week (04-JUL-22 / 10-JUL-22)</span>
-              <span className="px-2 py-1 bg-blue-100 text-blue-800 rounded-full text-xs font-medium">
-                Request Submitted
-              </span>
-            </div>
-          </div>
-        </div>
-      </div>
-
+    <div style={{ display: 'flex', flexDirection: 'column', height: '100%', fontFamily: 'var(--Urbanist, Arial, sans-serif)', background: 'var(--color-background, #FEFDFA)' }}>
       {/* Messages Area */}
-      <div className="flex-1 overflow-y-auto p-4 space-y-4 bg-gray-50">
+      <div style={{ flex: 1, overflowY: 'auto', padding: 16, background: 'var(--color-background, #FEFDFA)' }}>
         {messages.length === 0 ? (
-          <div className="text-center text-gray-500 mt-8">
-            <div className="text-3xl mb-2">💬</div>
-            <p>No messages yet</p>
-            <p className="text-sm text-gray-400">Start the conversation!</p>
-          </div>
+          <Empty description="No messages yet" style={{ marginTop: 32, fontFamily: 'var(--Urbanist, Arial, sans-serif)' }} />
         ) : (
-          messages.map((message, index) => (
-            <MessageBubble
-              key={message.id}
-              message={message}
-              isOwn={message.authorId === currentUserId}
-              showAvatar={
-                index === 0 || 
-                messages[index - 1].authorId !== message.authorId
-              }
-            />
-          ))
+          <List
+            dataSource={messages}
+            renderItem={(message, index) => (
+              <MessageBubble
+                key={message.id}
+                message={message}
+                isOwn={message.authorId === currentUserId}
+                showAvatar={index === 0 || messages[index - 1].authorId !== message.authorId}
+              />
+            )}
+          />
         )}
         <div ref={messagesEndRef} />
       </div>
-
       {/* Message Input */}
-      <div className="p-4 bg-white border-t border-gray-200">
-        <form onSubmit={handleSendMessage} className="flex space-x-3">
-          <div className="flex-1">
-            <input
-              type="text"
-              value={messageText}
-              onChange={(e) => setMessageText(e.target.value)}
-              placeholder="Type a message..."
-              className="w-full px-4 py-2 border border-gray-300 rounded-full focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-              disabled={sendingMessage}
-            />
-          </div>
-          <button
-            type="submit"
-            disabled={!messageText.trim() || sendingMessage}
-            className="px-6 py-2 bg-blue-600 text-white rounded-full hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:opacity-50 disabled:cursor-not-allowed flex items-center"
+      <div style={{ padding: 16, background: 'var(--color-foreground-2, #DED7BF)', borderTop: '1px solid var(--color-foreground-1, #C4BEA9)' }}>
+        <form onSubmit={handleSendMessage} style={{ display: 'flex', gap: 8 }}>
+          <Input
+            value={messageText}
+            onChange={(e: React.ChangeEvent<HTMLInputElement>) => setMessageText(e.target.value)}
+            placeholder="Type a message..."
+            disabled={sendingMessage}
+            onPressEnter={handleSendMessage}
+            style={{ flex: 1, fontFamily: 'var(--Urbanist, Arial, sans-serif)' }}
+            autoComplete="off"
+          />
+          <Button
+            type="primary"
+            htmlType="submit"
+            icon={<SendOutlined />}
+            loading={sendingMessage}
+            disabled={!messageText.trim()}
+            style={{ background: 'var(--color-primary, #25322C)', border: 'none', fontFamily: 'var(--Urbanist, Arial, sans-serif)' }}
           >
-            {sendingMessage ? (
-              <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></div>
-            ) : (
-              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8" />
-              </svg>
-            )}
-          </button>
+            Send
+          </Button>
         </form>
       </div>
     </div>
@@ -194,39 +161,35 @@ interface MessageBubbleProps {
 function MessageBubble({ message, isOwn, showAvatar }: MessageBubbleProps) {
   const formatTime = (dateString: string) => {
     const date = new Date(dateString);
-    return date.toLocaleTimeString('en-US', { 
-      hour: '2-digit', 
-      minute: '2-digit',
-      hour12: true 
-    });
+    return date.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', hour12: true });
   };
-
   return (
-    <div className={`flex ${isOwn ? 'justify-end' : 'justify-start'}`}>
-      <div className={`flex space-x-2 max-w-xs lg:max-w-md ${isOwn ? 'flex-row-reverse space-x-reverse' : ''}`}>
-        {/* Avatar */}
+    <div style={{ display: 'flex', justifyContent: isOwn ? 'flex-end' : 'flex-start', marginBottom: 8 }}>
+      <div style={{ display: 'flex', flexDirection: isOwn ? 'row-reverse' : 'row', gap: 8, maxWidth: 400 }}>
         {showAvatar && !isOwn && (
-          <div className="w-8 h-8 bg-gray-300 rounded-full flex items-center justify-center flex-shrink-0">
-            <span className="text-xs text-gray-600 font-medium">
-              {message.authorId.charAt(0).toUpperCase()}
-            </span>
-          </div>
+          <Avatar icon={<UserOutlined />} style={{ backgroundColor: 'var(--color-foreground-1, #C4BEA9)', flexShrink: 0 }} size={32}>
+            {message.authorId.charAt(0).toUpperCase()}
+          </Avatar>
         )}
-        {showAvatar && isOwn && <div className="w-8 h-8 flex-shrink-0" />}
-        {!showAvatar && <div className="w-8 h-8 flex-shrink-0" />}
-
-        {/* Message Bubble */}
+        {showAvatar && isOwn && <div style={{ width: 32 }} />}
+        {!showAvatar && <div style={{ width: 32 }} />}
         <div
-          className={`px-4 py-2 rounded-2xl ${
-            isOwn
-              ? 'bg-blue-600 text-white'
-              : 'bg-white text-gray-900 border border-gray-200'
-          }`}
+          style={{
+            background: isOwn ? 'var(--color-primary, #25322C)' : 'var(--color-foreground-2, #DED7BF)',
+            color: isOwn ? '#fff' : 'var(--color-message-text, #333333)',
+            borderRadius: 16,
+            padding: '8px 16px',
+            border: isOwn ? 'none' : '1px solid var(--color-foreground-1, #C4BEA9)',
+            minWidth: 60,
+            maxWidth: 320,
+            wordBreak: 'break-word',
+            fontFamily: 'var(--Urbanist, Arial, sans-serif)',
+          }}
         >
-          <p className="text-sm">{message.content}</p>
-          <p className={`text-xs mt-1 ${isOwn ? 'text-blue-100' : 'text-gray-500'}`}>
+          <Typography.Text style={{ color: isOwn ? '#fff' : 'var(--color-message-text, #333333)', fontFamily: 'var(--Urbanist, Arial, sans-serif)' }}>{message.content}</Typography.Text>
+          <div style={{ fontSize: 10, color: isOwn ? 'var(--color-secondary, #3F8176)' : '#888', marginTop: 4, textAlign: isOwn ? 'right' : 'left' }}>
             {formatTime(message.createdAt)}
-          </p>
+          </div>
         </div>
       </div>
     </div>
