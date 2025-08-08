@@ -18,6 +18,7 @@ export interface NavigationProps {
   isAuthenticated: boolean;
   onLogout?: () => void;
   onNavigate?: (route: string) => void;
+  selectedKey?: string;
 }
 
 const { Sider } = Layout;
@@ -32,18 +33,23 @@ const navItems = [
     icon: <UserOutlined />, label: 'Account',
     children: [
       { key: 'profile', label: 'Profile' },
-      { key: 'bookmarks', label: 'Bookmarks' },
       { key: 'settings', label: 'Settings' },
     ],
   },
 ];
 
-export const Navigation: React.FC<NavigationProps> = ({ isAuthenticated, onLogout, onNavigate }) => {
+export const Navigation: React.FC<NavigationProps> = ({ isAuthenticated, onLogout, onNavigate, selectedKey }) => {
   const [collapsed, setCollapsed] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
 
   const handleMenuClick = (e: any) => {
-    if (onNavigate) onNavigate(e.key);
+    // Use keyPath for nested menu items
+    let key = e.key;
+    const accountSubTabs = ['profile', 'settings'];
+    if (e.keyPath && e.keyPath.length > 1 && e.keyPath[1] === 'account' && accountSubTabs.includes(e.key)) {
+      key = `account/${e.key}`;
+    }
+    if (onNavigate) onNavigate(key);
     setMobileOpen(false);
   };
 
@@ -80,6 +86,7 @@ export const Navigation: React.FC<NavigationProps> = ({ isAuthenticated, onLogou
             items={navItems}
             onClick={handleMenuClick}
             style={{ border: 'none', flex: 1 }}
+            selectedKeys={[selectedKey || 'home']}
           />
           <Button
             className={styles.logoutDesktop}
@@ -106,6 +113,7 @@ export const Navigation: React.FC<NavigationProps> = ({ isAuthenticated, onLogou
             items={navItems}
             onClick={handleMenuClick}
             style={{ border: 'none', flex: 1 }}
+            selectedKeys={[selectedKey || 'home']}
           />
           <Button
             className={styles.logoutMobile}
