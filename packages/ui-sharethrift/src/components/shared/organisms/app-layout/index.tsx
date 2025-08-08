@@ -2,6 +2,7 @@ import React from 'react';
 import { Layout } from 'antd';
 import { Header } from '../../molecules/header/index';
 import { Navigation } from '../../molecules/navigation/index';
+import { Footer } from '../../molecules/footer/index';
 import styles from './index.module.css';
 
 export interface AppLayoutProps {
@@ -28,14 +29,15 @@ export const AppLayout: React.FC<AppLayoutProps> = ({
         onLogin={onLogin}
         onSignUp={onSignUp}
       />
-      <div className={styles.bodyWrapper}>
+        <div className={styles.bodyWrapper}>
         <Navigation
-          isAuthenticated={isAuthenticated}
-          onLogout={onLogout}
-          onNavigate={onNavigate}
+            isAuthenticated={isAuthenticated}
+            onLogout={onLogout}
+            onNavigate={onNavigate}
         />
         <main className={styles.content}>{children}</main>
-      </div>
+        </div>
+         <Footer />
     </Layout>
   );
 };

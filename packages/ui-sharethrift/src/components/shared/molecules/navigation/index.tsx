@@ -73,7 +73,7 @@ export const Navigation: React.FC<NavigationProps> = ({ isAuthenticated, onLogou
           collapsible
           collapsed={collapsed}
           onCollapse={setCollapsed}
-          style={{ minHeight: '100vh', position: 'fixed', left: 0, top: 64, zIndex: 1000 }}
+          style={{position: 'fixed', left: 0, top: 64, zIndex: 1000 }}
         >
           <Menu
             mode="inline"
