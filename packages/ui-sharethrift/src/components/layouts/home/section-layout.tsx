@@ -54,6 +54,52 @@ export default function HomeTabsLayout() {
     if (route) navigate(`/${route}`);
   };
 
+  const navigate = useNavigate();
+  const location = useLocation();
+  // TODO: Replace with real auth state
+  const isAuthenticated = true;
+
+  // Map nav keys to routes as defined in index.tsx
+  const routeMap: Record<string, string> = {
+    home: 'home',
+    listings: 'my-listings',
+    reservations: 'my-reservations',
+    messages: 'messages',
+    account: 'account',
+    // subnavs can be handled in account/*
+  };
+
+  // Determine selectedKey from current location
+  const getSelectedKey = () => {
+    const path = location.pathname.replace(/^\//, '');
+    // Account subroutes
+    if (path.startsWith('account/')) {
+      const subPath = path.replace('account/', '');
+      if (subPath.startsWith('profile')) return 'profile';
+      if (subPath.startsWith('settings')) return 'settings';
+      // Add more subroutes as needed
+      return undefined; // nothing highlighted if not a known subroute
+    }
+    const found = Object.entries(routeMap).find(([, route]) => path.startsWith(route));
+    return found ? found[0] : 'home';
+  };
+
+  const handleNavigate = (key: string) => {
+    // Handle account subroutes
+    const accountSubTabs = ['profile', 'bookmarks', 'settings'];
+    if (accountSubTabs.includes(key)) {
+      navigate(`/account/${key}`);
+      return;
+    }
+    // If key is already in the form 'account/profile', 'account/settings', etc.
+    if (key.startsWith('account/')) {
+      navigate(`/${key}`);
+      return;
+    }
+    const route = routeMap[key];
+    if (route) navigate(`/${route}`);
+  };
+
   return (
     <div
       style={{
