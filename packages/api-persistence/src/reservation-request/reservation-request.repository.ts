@@ -1,13 +1,10 @@
-import { MongooseSeedwork } from '@cellix/data-sources-mongoose';
+import type { MongooseSeedwork } from '@cellix/data-sources-mongoose';
 import type { ReservationRequestRepository as DomainReservationRequestRepository } from '@ocom/api-domain';
 
 export class ReservationRequestRepository 
-	extends MongooseSeedwork.MongoRepositoryBase<any, any, any, any>
 	implements DomainReservationRequestRepository<any> {
 	
-	constructor(initializedService: MongooseSeedwork.MongooseContextFactory) {
-		super(initializedService);
-	}
+	constructor(private initializedService: MongooseSeedwork.MongooseContextFactory) {}
 
 	// Implement domain-specific query methods here
 	async findByReserverId(_reserverId: string): Promise<any[]> {

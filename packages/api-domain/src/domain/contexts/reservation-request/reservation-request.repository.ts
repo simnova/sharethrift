@@ -2,6 +2,7 @@ import type { DomainSeedwork } from '@cellix/domain-seedwork';
 import type {
 	ReservationRequest,
 	ReservationRequestEntityReference,
+	ReservationRequestProps,
 } from './reservation-request.aggregate.ts';
 
 export interface ReservationRequestRepository<props extends ReservationRequestProps>

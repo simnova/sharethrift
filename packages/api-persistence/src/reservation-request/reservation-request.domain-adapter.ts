@@ -1,14 +1,9 @@
-import { MongooseSeedwork } from '@cellix/data-sources-mongoose';
+import type { MongooseSeedwork } from '@cellix/data-sources-mongoose';
 import type { ReservationRequest } from '@ocom/api-domain';
 
-export class ReservationRequestDomainAdapter 
-	implements MongooseSeedwork.MongooseDomainAdapter<any> {
+export class ReservationRequestDomainAdapter {
 	
-	constructor(initializedService: MongooseSeedwork.MongooseContextFactory) {
-		this.initializedService = initializedService;
-	}
-
-	private initializedService: MongooseSeedwork.MongooseContextFactory;
+	constructor(private initializedService: MongooseSeedwork.MongooseContextFactory) {}
 
 	toDomain(_mongooseDoc: any): ReservationRequest<any> {
 		// Convert Mongoose document to domain entity

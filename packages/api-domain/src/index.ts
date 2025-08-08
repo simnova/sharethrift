@@ -6,9 +6,9 @@ export interface DomainDataSource {
 	domainContexts: {
 		reservationRequest?: {
 			getReservationRequestUnitOfWork: (
-				inProcEventBusInstance: any,
-				nodeEventBusInstance: any,
-			) => any;
+				inProcEventBusInstance: unknown,
+				nodeEventBusInstance: unknown,
+			) => unknown;
 		};
 	};
 }

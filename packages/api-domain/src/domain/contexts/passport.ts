@@ -1,1 +1,1 @@
-export type Passport = Record<string, never>;
+export type Passport = Record<string, unknown>;

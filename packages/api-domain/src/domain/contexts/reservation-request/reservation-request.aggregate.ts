@@ -24,7 +24,7 @@ export class ReservationRequest<props extends ReservationRequestProps>
 	extends DomainSeedwork.AggregateRoot<props, Passport>
 	implements ReservationRequestEntityReference {
 	//#region Fields
-	private isNew: boolean = false;
+	// Fields will be added as needed
 	//#endregion Fields
 
 	//#region Constructor
@@ -58,16 +58,9 @@ export class ReservationRequest<props extends ReservationRequestProps>
 			updatedAt: now,
 			schemaVersion: 1,
 			closeRequested: false,
-		} as props;
+		} as unknown as props;
 
-		const aggregate = new ReservationRequest(reservationRequestProps, passport);
-		aggregate.markAsNew();
-		aggregate.isNew = false;
-		return aggregate;
-	}
-
-	private markAsNew(): void {
-		this.isNew = true;
+		return new ReservationRequest(reservationRequestProps, passport);
 	}
 
 	/** @deprecated Use getNewInstance instead */
@@ -79,7 +72,7 @@ export class ReservationRequest<props extends ReservationRequestProps>
 			reservationPeriodEnd: Date;
 		},
 		passport: PassportType,
-	): ReservationRequest<any> {
+	): ReservationRequest<ReservationRequestProps> {
 		return ReservationRequest.getNewInstance(props, passport as Passport);
 	}
 	//#endregion Methods
