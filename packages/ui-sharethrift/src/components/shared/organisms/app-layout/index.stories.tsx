@@ -14,7 +14,7 @@ export default meta;
 type Story = StoryObj<typeof AppLayout>;
 
 const DemoContent = () => (
-  <div style={{ minHeight: 400 }}>
+  <div >
     <h1>Welcome to the App Layout</h1>
     <p>This is the main content area. Add your page content here.</p>
   </div>
@@ -28,21 +28,16 @@ export const LoggedOut: Story = {
   ),
 };
 
-const LoggedInDemo: React.FC = () => {
-  const [isAuthenticated, setIsAuthenticated] = useState(true);
-  return (
+export const LoggedIn: Story = {
+  render: () => (
     <AppLayout
-      isAuthenticated={isAuthenticated}
-      onLogout={() => setIsAuthenticated(false)}
-      onLogin={() => setIsAuthenticated(true)}
-      onSignUp={() => setIsAuthenticated(true)}
+      isAuthenticated={true}
+      onLogout={() => {}}
+      onLogin={() => {}}
+      onSignUp={() => {}}
       onNavigate={() => {}}
     >
       <DemoContent />
     </AppLayout>
-  );
-};
-
-export const LoggedIn: Story = {
-  render: () => <LoggedInDemo />,
+  ),
 };

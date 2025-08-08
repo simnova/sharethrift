@@ -1,13 +1,13 @@
 @import '../../../../styles/theme.css';
 
 .sidebar {
-  position: fixed;
-  top: 64px;
-  left: 0;
   width: 240px;
-  height: 100vh;
   background: var(--color-background);
   border-right: 1px solid var(--color-foreground-2);
+  height: 100%;
+  align-self: stretch;
+  display: flex;
+  flex-direction: column;
 }
 
 :global(.ant-menu-item) {
@@ -28,7 +28,7 @@
 }
 
 :global(.ant-menu-item-selected){
-    font-weight: 600;
+    font-weight: 600 !important;
     border-right: 3px solid var(--color-primary);
 }
 
