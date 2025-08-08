@@ -1,0 +1,14 @@
+fragment HomeConversationListContainerConversationFields on Conversation {
+  id
+  twilioConversationSid
+  listingId
+  participants
+  createdAt
+  updatedAt
+}
+
+query HomeConversationListContainerGetUserConversations($userId: ID!) {
+  getUserConversations(userId: $userId) {
+    ...HomeConversationListContainerConversationFields
+  }
+}
