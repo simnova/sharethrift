@@ -5,11 +5,16 @@
 }
 
 .searchInput {
+  background-color: var(--color-background);
   border: 1px solid var(--color-primary);
   border-radius: 100px 0 0 100px;
   padding: 12px 24px;
   font-family: var(--Urbanist);
   color: var(--color-message-text);
+}
+
+.searchInput::placeholder {
+  color: var(--color-primary);
 }
 
 .searchInput:hover, .searchInput:focus {
@@ -28,7 +33,7 @@
   background-color: var(--color-primary) !important;
 }
 
-.searchIcon {
+.searchIcon > * {
   font-size: 24px;
   color: var(--color-background);
 }

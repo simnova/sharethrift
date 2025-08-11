@@ -1,7 +1,8 @@
 import React from 'react';
 import styles from './index.module.css';
 import { SearchBar } from '../search-bar';
-import heroImage from '../../../../assets/hero/hero.png';
+import heroImg from '../../../../assets/hero/hero.png';
+import heroImgSmall from '../../../../assets/hero/hero-small.png';
 
 export interface HeroSectionProps {
   onSearch?: (query: string) => void;
@@ -19,7 +20,10 @@ export const HeroSection: React.FC<HeroSectionProps> = ({
 
   return (
     <div className={styles.heroContainer}>
-      <img src={heroImage} alt="Hero background" className={styles.heroImage} />
+      <picture>
+        <source media="(max-width: 800px)" srcSet={heroImgSmall} />
+        <img src={heroImg} alt="Hero background" className={styles.heroImage} />
+      </picture>
       <div className={styles.heroContent}>
         <h1 className={styles.heroTitle}>
           Wherever you are,<br />

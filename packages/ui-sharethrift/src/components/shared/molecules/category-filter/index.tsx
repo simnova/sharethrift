@@ -26,6 +26,7 @@ export const CategoryFilter: React.FC<CategoryFilterProps> = ({
         style={{ width: 200 }}
         placeholder="Select a category"
         className={styles.categorySelect}
+        suffixIcon={null}
       >
         <Option value="All">All</Option> {/* Update the value to match the default */}
         {categories.map((category) => (

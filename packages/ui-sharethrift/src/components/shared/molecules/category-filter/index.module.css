@@ -2,31 +2,15 @@
   display: flex;
   align-items: center;
   color: #5E5B51;
-  gap: 8px;
 }
 
-.categorySelect .ant-select {
-  border: none !important; /* Force remove border */
-  background: none !important; /* Force remove background */
-  box-shadow: none !important; /* Force remove box shadow */
-  padding: 0 !important; /* Force remove padding */
-  color: inherit !important; /* Force inherit text color */
-  font: inherit !important; /* Force inherit font styles */
-  height: auto !important; /* Adjust height to fit text */
-  line-height: inherit !important; /* Match line height to text */
+.categorySelect > * {
+  border: none !important;
+  background-color: transparent !important;
+  color: #5E5B51;
 }
 
-.categorySelect .ant-select-selector {
-  border: none !important; /* Remove border */
-  background: none !important; /* Remove background */
-  box-shadow: none !important; /* Remove box shadow */
-  padding: 0 !important; /* Remove padding */
-  color: inherit !important; /* Inherit text color */
-  font: inherit !important; /* Inherit font styles */
-  height: auto !important; /* Adjust height to fit text */
-  line-height: inherit !important; /* Match line height to text */
-}
-
-.categorySelect .ant-select-arrow {
-  display: none !important; /* Hide dropdown arrow */
+.categorySelect:focus-visible {
+  border: none !important;
+  box-shadow: none !important;
 }
