@@ -1,7 +1,8 @@
 
 import React from 'react';
 import styles from './ThemeDemo.module.css';
-import { Button, Input, Select, Tabs, Checkbox, Tag } from 'antd';
+import { Button, Input, Select, Tabs, Checkbox, Tag, DatePicker, Form } from 'antd';
+const { RangePicker } = DatePicker;
 import { MessageOutlined } from '@ant-design/icons';
 import '../../../styles/theme.css';
 
@@ -63,20 +64,39 @@ export const ThemeDemo: React.FC = () => (
       <Button className={styles.primaryButton} type="primary"><MessageOutlined />Icon Button</Button>
     </div>
     <div className={styles.column}>
-      <Input placeholder="AntD Input" style={{ maxWidth: 300 }} />
-      <Input placeholder="AntD Input" style={{ maxWidth: 300 }} disabled />
+        <Form layout="vertical" style={{ maxWidth: 300 }}>
+          <Form.Item
+            label="AntD Input"
+            name="optionalInput"
+          >
+            <Input placeholder="AntD Input" required />
+          </Form.Item>
+          <Form.Item
+            label="Required AntD Input"
+            name="requiredInput"
+            rules={[{ required: true, message: 'This input is required' }]}
+          >
+            <Input placeholder="Required AntD Input" required />
+          </Form.Item>
+          <Form.Item
+            label="Disabled Input"
+            name="disabledInput"
+          >
+            <Input placeholder="AntD Disabled Input" style={{ maxWidth: 300 }} disabled />
+          </Form.Item>
+        </Form>
       <Select
-      style={{ width: 120 }}
-      allowClear
-      options={[
-        { value: 'option1', label: 'Option 1' },
-        { value: 'option2', label: 'Option 2' },
-        { value: 'option3', label: 'Option 3' },
-        { value: 'disabled', label: 'Disabled', disabled: true },
-      ]}
-      placeholder="Selection"
-    />
-    <Tabs defaultActiveKey="1" items={items} />
+        style={{ width: 120 }}
+        allowClear
+        options={[
+          { value: 'option1', label: 'Option 1' },
+          { value: 'option2', label: 'Option 2' },
+          { value: 'option3', label: 'Option 3' },
+          { value: 'disabled', label: 'Disabled', disabled: true },
+        ]}
+        placeholder="Selection"
+      />
+      <Tabs defaultActiveKey="1" items={items} />
     <div className={styles.row}>
       <Checkbox className={styles.demoAntCheckbox} defaultChecked>
         AntD Checkbox
@@ -85,13 +105,15 @@ export const ThemeDemo: React.FC = () => (
         Disabled
       </Checkbox>
     </div>
-    <div className={styles.row}>
-      <Tag className={styles.demoAntTag} color="default">Default</Tag>
-      <Tag className={styles.demoAntTag} color="processing">Processing</Tag>
-      <Tag className={styles.demoAntTag} color="success">Success</Tag>
-      <Tag className={styles.demoAntTag} color="warning">Warning</Tag>
-      <Tag className={styles.demoAntTag} color="error">Error</Tag>
-      <Tag className={styles.demoAntTag} color="#3F8176">Custom</Tag>
+    <div className={styles.tags}>
+      <Tag className={styles.activeTag} >Active</Tag>
+      <Tag className={styles.expiredTag} >Expired</Tag>
+      <Tag className={styles.blockedTag} >Blocked</Tag>
+      <Tag className={styles.pendingTag} >Pending</Tag>
+      <Tag className={styles.requestAcceptedTag} >Request Accepted</Tag>
+      <Tag className={styles.requestRejectedTag} >Request Rejected</Tag>
+      <Tag className={styles.closingTag} >Closing</Tag>
+      <Tag className={styles.closingTag} >Closing - Awaiting Response</Tag>
     </div>
     </div>
   </div>

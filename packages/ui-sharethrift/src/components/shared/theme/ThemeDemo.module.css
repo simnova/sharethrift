@@ -15,6 +15,13 @@
   gap: 16px;
   margin-bottom: 12px;
 }
+.tags {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 16px;
+  margin-bottom: 12px;
+}
 .column {
   display: flex;
   flex-direction: column;
