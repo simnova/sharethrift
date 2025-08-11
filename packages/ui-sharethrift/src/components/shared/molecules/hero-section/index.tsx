@@ -25,11 +25,13 @@ export const HeroSection: React.FC<HeroSectionProps> = ({
           Wherever you are,<br />
           borrow what you need.
         </h1>
-        <SearchBar
-          searchValue={searchValue}
-          onSearchChange={handleSearch}
-          onSearch={handleSearch}
-        />
+        <div>
+          <SearchBar
+            searchValue={searchValue}
+            onSearchChange={handleSearch}
+            onSearch={handleSearch}
+          />
+        </div>
       </div>
     </div>
   );

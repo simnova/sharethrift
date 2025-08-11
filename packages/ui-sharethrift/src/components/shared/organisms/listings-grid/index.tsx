@@ -31,9 +31,6 @@ export const ListingsGrid: React.FC<ListingsGridProps> = ({
         <Empty
           image={Empty.PRESENTED_IMAGE_SIMPLE}
           description="No Listings Found"
-          imageStyle={{
-            height: 60,
-          }}
         />
         <p className={styles.emptyDescription}>
           Try adjusting your search or category filters to find what you're looking for.
@@ -44,7 +41,7 @@ export const ListingsGrid: React.FC<ListingsGridProps> = ({
 
   return (
     <div className={styles.gridContainer}>
-      <Row gutter={[24, 24]} className={styles.grid}>
+      <Row gutter={[36, 36]} className={styles.grid}>
         {listings.map((listing) => (
           <Col 
             key={listing._id} 

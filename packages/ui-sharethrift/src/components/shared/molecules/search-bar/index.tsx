@@ -28,7 +28,7 @@ export const SearchBar: React.FC<SearchBarProps> = ({
       />
       <Button
         onClick={handleSearch}
-        className={styles.searchButton}
+        className={styles.searchSubmit}
       >
         <SearchOutlined className={styles.searchIcon} />
       </Button>

@@ -1,60 +1,51 @@
-import { useState, useMemo } from 'react';
+import { useState, useEffect } from 'react';
 import { HeroSection } from '../../../shared/molecules/hero-section';
 import { SearchBar } from '../../../shared/molecules/search-bar';
+import { CategoryFilter } from '../../../shared/molecules/category-filter';
 import { ListingsGrid } from '../../../shared/organisms/listings-grid';
-import { DUMMY_LISTINGS, filterListings } from '../../../../data/dummy-listings';
+import { DUMMY_LISTINGS } from '../../../../data/dummy-listings';
 import type { ItemListing } from '../../../../types/listing';
 import styles from './Listings.module.css';
 
 export default function Listings() {
   // TODO: Replace with real auth state from context/hooks
-  const isAuthenticated = false;
-  
-  // State for filters and search
+  const isAuthenticated = true;
+
+  // State for search query and pagination
   const [searchQuery, setSearchQuery] = useState('');
-  const [selectedCategory, setSelectedCategory] = useState('All');
   const [currentPage, setCurrentPage] = useState(1);
   const pageSize = 12;
 
-  // Filter listings based on search and category
-  const filteredListings = useMemo(() => {
-    return filterListings(DUMMY_LISTINGS, {
-      category: selectedCategory,
-      searchQuery: searchQuery,
-    });
-  }, [searchQuery, selectedCategory]);
+  const [selectedCategory, setSelectedCategory] = useState('');
+  const [listings, setListings] = useState<ItemListing[]>([]);
+  const [totalListings, setTotalListings] = useState(0);
 
-  // Paginate filtered listings
-  const paginatedListings = useMemo(() => {
-    const startIndex = (currentPage - 1) * pageSize;
-    return filteredListings.slice(startIndex, startIndex + pageSize);
-  }, [filteredListings, currentPage, pageSize]);
+  useEffect(() => {
+    const fetchListings = async () => {
+      setListings(DUMMY_LISTINGS);
+      setTotalListings(DUMMY_LISTINGS.length);
+    };
+
+    fetchListings();
+  }, [searchQuery, selectedCategory, currentPage]);
 
   const handleSearch = (query: string) => {
     setSearchQuery(query);
     setCurrentPage(1); // Reset to first page when searching
   };
 
-  const handleCategoryChange = (category: string) => {
-    setSelectedCategory(category);
-    setCurrentPage(1); // Reset to first page when filtering
-  };
-
   const handleListingClick = (listing: ItemListing) => {
     // TODO: Navigate to listing detail page
-    console.log('Navigate to listing:', listing._id);
-    // navigate(`/listing/${listing._id}`);
+    return null;
   };
 
   const handleCreateListing = () => {
     // TODO: Navigate to create listing page
-    console.log('Navigate to create listing');
-    // navigate('/create-listing');
+    return null;
   };
 
   const handlePageChange = (page: number) => {
     setCurrentPage(page);
-    // Scroll to top when page changes
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
@@ -62,46 +53,55 @@ export default function Listings() {
     <div>
       {/* Hero section - only shown for logged-out users */}
       {!isAuthenticated && (
-      <HeroSection
-        searchValue={searchQuery}
-        onSearchChange={setSearchQuery}
-        onSearch={handleSearch}
-      />
-      )}
-
-      <div className={styles.listingsPage}>
-      {/* Search, filter header */}
-      <div className={styles.listingsHeader}>
-        <div className={styles.searchBar}>
-        <SearchBar
+        <HeroSection
           searchValue={searchQuery}
           onSearchChange={setSearchQuery}
           onSearch={handleSearch}
         />
-        {isAuthenticated && (
-          <button
-          className={styles.createListing}
-          onClick={handleCreateListing}
-          >
-          Create a Listing
-          </button>
-        )}
-        </div>
-        <div className={styles.filterBar}>
-        <span className={styles.locationText}>Philadelphia, PA · 10 mi</span>
-        </div>
-      </div>
+      )}
 
-      {/* Listings grid */}
-      <ListingsGrid
-        listings={paginatedListings}
-        onListingClick={handleListingClick}
-        currentPage={currentPage}
-        pageSize={pageSize}
-        total={filteredListings.length}
-        onPageChange={handlePageChange}
-        showPagination={filteredListings.length > pageSize}
-      />
+      <div className={styles.listingsPage}>
+        <div className={styles.listingsHeader}>
+          {/* Search */}
+          <div className={styles.searchBar}>
+            <SearchBar
+              searchValue={searchQuery}
+              onSearchChange={setSearchQuery}
+              onSearch={handleSearch}
+            />
+            {/* Create listing button */}
+            {isAuthenticated && (
+              <button
+                className={styles.createListing}
+                onClick={handleCreateListing}
+              >
+                Create a Listing
+              </button>
+            )}
+          </div>
+          <div className={styles.filterBar}>
+            {/* Category filter */}
+            <CategoryFilter
+              label={"Category"}
+              categories={['Electronics', 'Furniture', 'Clothing']}
+              selectedCategory={selectedCategory}
+              onCategoryChange={setSelectedCategory}
+            />
+            {/* TODO: Location filter */}
+            <span>Philadelphia, PA · 10 mi</span>
+          </div>
+        </div>
+
+        {/* Listings grid */}
+        <ListingsGrid
+          listings={listings}
+          onListingClick={handleListingClick}
+          currentPage={currentPage}
+          pageSize={pageSize}
+          total={totalListings}
+          onPageChange={handlePageChange}
+          showPagination={totalListings > pageSize}
+        />
       </div>
     </div>
   );
