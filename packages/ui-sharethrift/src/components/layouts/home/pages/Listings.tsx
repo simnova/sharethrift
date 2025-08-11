@@ -1,6 +1,6 @@
 import { useState, useMemo } from 'react';
-import { HeroSection } from '../../../shared/molecules/hero-section';
-import { SearchFilterBar } from '../../../shared/molecules/search-filter-bar';
+import { HeroSection } from '../components/hero-section';
+import { SearchBar } from '../../../shared/molecules/search-bar';
 import { ListingsGrid } from '../../../shared/organisms/listings-grid';
 import { DUMMY_LISTINGS, filterListings } from '../../../../data/dummy-listings';
 import type { ItemListing } from '../../../../types/listing';
@@ -8,7 +8,7 @@ import styles from './Listings.module.css';
 
 export default function Listings() {
   // TODO: Replace with real auth state from context/hooks
-  const isAuthenticated = true;
+  const isAuthenticated = false;
   
   // State for filters and search
   const [searchQuery, setSearchQuery] = useState('');
@@ -59,30 +59,37 @@ export default function Listings() {
   };
 
   return (
-    <div className={styles.listingsPage}>
+    <div>
       {/* Hero section - only shown for logged-out users */}
       {!isAuthenticated && (
-        <HeroSection
+      <HeroSection
+        searchValue={searchQuery}
+        onSearchChange={setSearchQuery}
+        onSearch={handleSearch}
+      />
+      )}
+
+      <div className={styles.listingsPage}>
+      {/* Search, filter header */}
+      <div className={styles.listingsHeader}>
+        <div className={styles.searchBar}>
+        <SearchBar
           searchValue={searchQuery}
           onSearchChange={setSearchQuery}
           onSearch={handleSearch}
         />
-      )}
-
-      {/* Search and filter bar */}
-      <SearchFilterBar
-        searchValue={searchQuery}
-        selectedCategory={selectedCategory}
-        onSearchChange={setSearchQuery}
-        onCategoryChange={handleCategoryChange}
-        onSearch={handleSearch}
-        onCreateListing={handleCreateListing}
-        showCreateButton={isAuthenticated}
-      />
-
-      {/* Location indicator - matching the Figma design */}
-      <div className={styles.locationHeader}>
-        <span className={styles.locationText}>📍 Philadelphia, PA · 10 mi</span>
+        {isAuthenticated && (
+          <button
+          className={styles.createListing}
+          onClick={handleCreateListing}
+          >
+          Create a Listing
+          </button>
+        )}
+        </div>
+        <div className={styles.filterBar}>
+        <span className={styles.locationText}>Philadelphia, PA · 10 mi</span>
+        </div>
       </div>
 
       {/* Listings grid */}
@@ -95,6 +102,7 @@ export default function Listings() {
         onPageChange={handlePageChange}
         showPagination={filteredListings.length > pageSize}
       />
+      </div>
     </div>
   );
 }

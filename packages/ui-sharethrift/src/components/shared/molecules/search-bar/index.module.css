@@ -1,0 +1,30 @@
+.search {
+  display: flex;
+  height: 48px;
+  flex: 1;
+}
+
+.searchInput {
+  border: 1px solid var(--color-primary);
+  border-radius: 100px 0 0 100px;
+  padding: 12px 24px;
+  font-family: var(--Urbanist);
+  color: var(--color-message-text);
+}
+
+.searchInput:hover {
+  border-color: var(--color-primary-hover);
+}
+
+.searchButton {
+  border-radius: 0 100px 100px 0;
+  height:100%;
+  padding: 10px 24px;
+  border: 0px;
+  background-color: var(--color-primary);
+}
+
+.searchIcon {
+  font-size: 24px;
+  color: var(--color-background);
+}
