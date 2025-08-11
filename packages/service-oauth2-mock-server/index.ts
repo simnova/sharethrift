@@ -9,6 +9,8 @@ import {
 	type JWK,
 } from 'jose';
 import multer from 'multer';
+import dotenv from 'dotenv';
+dotenv.config({ path: '.env.local' });
 
 const app = express();
 const upload = multer();
@@ -130,7 +132,10 @@ async function main() {
 	// Simulate sign up endpoint
 	app.post('/token', async (req, res) => {
 		// In a real app, validate and create user here
-		const { email, given_name, family_name, aud, tid } = req.body;
+		const email = process.env['Email'] ?? "";
+		const given_name = process.env['Given_Name'] ?? "";
+		const family_name = process.env['Family_Name'] ?? "";
+		const { aud, tid } = req.body;
 		const profile: TokenProfile = {
 			aud: aud || 'test-client-id',
 			sub: crypto.randomUUID(),
