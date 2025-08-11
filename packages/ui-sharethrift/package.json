@@ -19,6 +19,7 @@
     "apollo-link-rest": "^0.9.0",
     "react": "^19.1.0",
     "react-dom": "^19.1.0",
+    "react-infinite-scroll-component": "^6.1.0",
     "react-oidc-context": "^3.3.0",
     "react-router-dom": "^7.7.1",
     "tailwindcss": "^4.1.11"
