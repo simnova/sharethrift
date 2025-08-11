@@ -28,15 +28,10 @@ interface MessageThreadProps {
 export function MessageThread({ messages, loading, error, messageText, setMessageText, sendingMessage, handleSendMessage, messagesEndRef, currentUserId }: MessageThreadProps) {
   if (loading) {
     return <Spin style={{ width: '100%', marginTop: 32, fontFamily: 'var(--Urbanist, Arial, sans-serif)' }} tip="Loading messages..." />;
-    return <Spin style={{ width: '100%', marginTop: 32 }} tip="Loading messages..." />;
-    return <Spin style={{ width: '100%', marginTop: 32 }} tip="Loading messages..." />;
   }
   if (error) {
     antdMessage.error('Error loading messages');
     return <Empty description="Failed to load messages" style={{ marginTop: 32, fontFamily: 'var(--Urbanist, Arial, sans-serif)' }} />;
-    antdMessage.error('Error loading messages');
-    return <Empty description="Failed to load messages" style={{ marginTop: 32 }} />;
-    return <Empty description="Failed to load messages" style={{ marginTop: 32 }} />;
   }
 
   return (
@@ -44,19 +39,6 @@ export function MessageThread({ messages, loading, error, messageText, setMessag
       {/* Messages Area */}
       <div style={{ flex: 1, width: '100%', overflowY: 'auto', background: '#f5f5f5' }}>
         {messages.length === 0 ? (
-          <Empty description="No messages yet" style={{ marginTop: 32 }} />
-        ) : (
-          <List
-            dataSource={messages}
-            renderItem={(message, index) => (
-              <MessageBubble
-                key={message.id}
-                message={message}
-                isOwn={message.authorId === currentUserId}
-                showAvatar={index === 0 || messages[index - 1].authorId !== message.authorId}
-              />
-            )}
-          />
           <Empty description="No messages yet" style={{ marginTop: 32 }} />
         ) : (
           <List
@@ -116,7 +98,6 @@ function MessageBubble({ message, isOwn, showAvatar }: MessageBubbleProps) {
       <div style={{ display: 'flex', flexDirection: isOwn ? 'row-reverse' : 'row', gap: 8, maxWidth: 400 }}>
         {showAvatar && !isOwn && (
           <Avatar icon={<UserOutlined />} style={{ backgroundColor: '#bfbfbf', flexShrink: 0 }} size={32}>
-          <Avatar icon={<UserOutlined />} style={{ backgroundColor: '#bfbfbf', flexShrink: 0 }} size={32}>
             {message.authorId.charAt(0).toUpperCase()}
           </Avatar>
         )}
@@ -129,14 +110,11 @@ function MessageBubble({ message, isOwn, showAvatar }: MessageBubbleProps) {
             borderRadius: 16,
             padding: '8px 16px',
             border: isOwn ? 'none' : '1px solid #f0f0f0',
-            border: isOwn ? 'none' : '1px solid #f0f0f0',
             minWidth: 60,
             maxWidth: 320,
             wordBreak: 'break-word',
           }}
         >
-          <Typography.Text style={{ color: isOwn ? '#fff' : undefined }}>{message.content}</Typography.Text>
-          <div style={{ fontSize: 10, color: isOwn ? '#e6f4ff' : '#888', marginTop: 4, textAlign: isOwn ? 'right' : 'left' }}>
           <Typography.Text style={{ color: isOwn ? '#fff' : undefined }}>{message.content}</Typography.Text>
           <div style={{ fontSize: 10, color: isOwn ? '#e6f4ff' : '#888', marginTop: 4, textAlign: isOwn ? 'right' : 'left' }}>
             {formatTime(message.createdAt)}
