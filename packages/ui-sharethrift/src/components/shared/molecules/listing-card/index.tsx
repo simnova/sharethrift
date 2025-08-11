@@ -9,10 +9,15 @@ export interface ListingCardProps {
 }
 
 export const ListingCard: React.FC<ListingCardProps> = ({ listing, onClick }) => {
+  const formatDate = (date: Date) => {
+    const mm = String(date.getMonth() + 1).padStart(2, '0');
+    const dd = String(date.getDate()).padStart(2, '0');
+    const yyyy = date.getFullYear();
+    return `${mm}-${dd}-${yyyy}`;
+  };
+
   const formatDateRange = (start: Date, end: Date) => {
-    const startStr = start.toLocaleDateString('en-US', { month: '2-digit', day: '2-digit', year: 'numeric' });
-    const endStr = end.toLocaleDateString('en-US', { month: '2-digit', day: '2-digit', year: 'numeric' });
-    return `${startStr} → ${endStr}`;
+    return `${formatDate(start)} → ${formatDate(end)}`;
   };
 
   return (
