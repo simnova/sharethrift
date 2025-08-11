@@ -1,9 +1,7 @@
 import React from 'react';
-import { Input, Button } from 'antd';
-import { SearchOutlined } from '@ant-design/icons';
 import styles from './index.module.css';
-import { SearchBar } from '../../../../shared/molecules/search-bar';
-import heroImage from '../../../../../assets/hero/hero.png';
+import { SearchBar } from '../search-bar';
+import heroImage from '../../../../assets/hero/hero.png';
 
 export interface HeroSectionProps {
   onSearch?: (query: string) => void;

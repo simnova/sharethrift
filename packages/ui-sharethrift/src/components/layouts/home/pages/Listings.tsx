@@ -1,5 +1,5 @@
 import { useState, useMemo } from 'react';
-import { HeroSection } from '../components/hero-section';
+import { HeroSection } from '../../../shared/molecules/hero-section';
 import { SearchBar } from '../../../shared/molecules/search-bar';
 import { ListingsGrid } from '../../../shared/organisms/listings-grid';
 import { DUMMY_LISTINGS, filterListings } from '../../../../data/dummy-listings';
