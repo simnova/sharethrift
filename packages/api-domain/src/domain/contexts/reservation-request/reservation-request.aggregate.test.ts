@@ -1,9 +1,22 @@
 import { describe, it, expect } from 'vitest';
 import { ReservationRequest } from './reservation-request.aggregate.ts';
 import { ReservationRequestState } from './reservation-request.value-objects.ts';
+import type { Passport } from '../passport.ts';
 
 describe('ReservationRequest', () => {
-  const mockPassport = { userId: 'test-user' };
+  const mockPassport: Passport = { 
+    reservationRequest: {
+      determineIf: () => true,
+      canCreate: () => true,
+      canUpdate: () => true,
+      canDelete: () => true,
+      canAccept: () => true,
+      canReject: () => true,
+      canCancel: () => true,
+      canClose: () => true,
+      canView: () => true,
+    }
+  };
 
   // Use future dates for testing
   const getFutureDates = () => {

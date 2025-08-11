@@ -3,8 +3,12 @@ import type { ReservationRequestRepository as DomainReservationRequestRepository
 
 export class ReservationRequestRepository 
 	implements DomainReservationRequestRepository<any> {
-	
-	constructor(private initializedService: MongooseSeedwork.MongooseContextFactory) {}
+
+	private readonly initializedService: MongooseSeedwork.MongooseContextFactory;
+
+	constructor(initializedService: MongooseSeedwork.MongooseContextFactory) {
+		this.initializedService = initializedService;
+	}
 
 	// Implement domain-specific query methods here
 	async findByReserverId(_reserverId: string): Promise<any[]> {

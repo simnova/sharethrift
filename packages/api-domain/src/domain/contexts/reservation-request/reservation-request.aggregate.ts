@@ -1,5 +1,6 @@
 import { DomainSeedwork } from '@cellix/domain-seedwork';
 import type { Passport } from '../passport.ts';
+import type { ReservationRequestVisa } from './reservation-request.visa.ts';
 import {
 	ReservationPeriod,
 	ReservationRequestState,
@@ -24,11 +25,15 @@ export class ReservationRequest<props extends ReservationRequestProps>
 	extends DomainSeedwork.AggregateRoot<props, Passport>
 	implements ReservationRequestEntityReference {
 	//#region Fields
-	// Fields will be added as needed
+	private isNew: boolean = false;
+	private readonly visa: ReservationRequestVisa;
 	//#endregion Fields
 
 	//#region Constructor
-	// Constructor inherited from AggregateRoot
+	constructor(props: props, passport: Passport) {
+		super(props, passport);
+		this.visa = passport.reservationRequest;
+	}
 	//#endregion Constructor
 
 	//#region Methods
@@ -60,7 +65,13 @@ export class ReservationRequest<props extends ReservationRequestProps>
 			closeRequested: false,
 		} as unknown as props;
 
-		return new ReservationRequest(reservationRequestProps, passport);
+		const aggregate = new ReservationRequest(reservationRequestProps, passport);
+		aggregate.markAsNew();
+		return aggregate;
+	}
+
+	private markAsNew(): void {
+		this.isNew = true;
 	}
 
 	/** @deprecated Use getNewInstance instead */
@@ -102,6 +113,11 @@ export class ReservationRequest<props extends ReservationRequestProps>
 		return this.props.listingId;
 	}
 	set listingId(value: string) {
+		if (!this.isNew && !this.visa.canUpdate()) {
+			throw new DomainSeedwork.PermissionError(
+				'You do not have permission to update this listing'
+			);
+		}
 		this.props.listingId = value;
 	}
 
@@ -109,6 +125,11 @@ export class ReservationRequest<props extends ReservationRequestProps>
 		return this.props.reserverId;
 	}
 	set reserverId(value: string) {
+		if (!this.isNew && !this.visa.canUpdate()) {
+			throw new DomainSeedwork.PermissionError(
+				'You do not have permission to update this reserver'
+			);
+		}
 		this.props.reserverId = value;
 	}
 
@@ -118,6 +139,12 @@ export class ReservationRequest<props extends ReservationRequestProps>
 	//#endregion Properties
 
 	public accept(): void {
+		if (!this.visa.canAccept()) {
+			throw new DomainSeedwork.PermissionError(
+				'You do not have permission to accept this reservation request'
+			);
+		}
+
 		if (this.props.state.value !== ReservationRequestState.REQUESTED) {
 			throw new Error('Can only accept requested reservations');
 		}
@@ -129,6 +156,12 @@ export class ReservationRequest<props extends ReservationRequestProps>
 	}
 
 	public reject(): void {
+		if (!this.visa.canReject()) {
+			throw new DomainSeedwork.PermissionError(
+				'You do not have permission to reject this reservation request'
+			);
+		}
+
 		if (this.props.state.value !== ReservationRequestState.REQUESTED) {
 			throw new Error('Can only reject requested reservations');
 		}
@@ -140,6 +173,12 @@ export class ReservationRequest<props extends ReservationRequestProps>
 	}
 
 	public cancel(): void {
+		if (!this.visa.canCancel()) {
+			throw new DomainSeedwork.PermissionError(
+				'You do not have permission to cancel this reservation request'
+			);
+		}
+
 		if (!this.props.state.canBeCancelled()) {
 			throw new Error('Cannot cancel reservation in current state');
 		}
@@ -151,6 +190,12 @@ export class ReservationRequest<props extends ReservationRequestProps>
 	}
 
 	public requestClose(): void {
+		if (!this.visa.canClose()) {
+			throw new DomainSeedwork.PermissionError(
+				'You do not have permission to request close for this reservation request'
+			);
+		}
+
 		if (!this.props.state.canBeClosed()) {
 			throw new Error('Cannot close reservation in current state');
 		}
@@ -160,6 +205,12 @@ export class ReservationRequest<props extends ReservationRequestProps>
 	}
 
 	public close(): void {
+		if (!this.visa.canClose()) {
+			throw new DomainSeedwork.PermissionError(
+				'You do not have permission to close this reservation request'
+			);
+		}
+
 		if (this.props.state.value !== ReservationRequestState.ACCEPTED) {
 			throw new Error('Can only close accepted reservations');
 		}

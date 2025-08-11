@@ -4,8 +4,8 @@ import { ReservationRequestDomainAdapter } from './reservation-request.domain-ad
 
 export const getReservationRequestUnitOfWork = (
 	initializedService: MongooseSeedwork.MongooseContextFactory,
-	inProcEventBusInstance: unknown,
-	nodeEventBusInstance: unknown,
+	_inProcEventBusInstance: unknown,
+	_nodeEventBusInstance: unknown,
 ) => {
 	// [NN] [ESLINT] disabling the ESLint rule here to ensure that the initializedService is checked for null or undefined
 	// eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
@@ -20,6 +20,6 @@ export const getReservationRequestUnitOfWork = (
 		commit: async () => { /* Implementation needed */ },
 		rollback: async () => { /* Implementation needed */ },
 		getRepository: () => new ReservationRequestRepository(initializedService),
-		getDomainAdapter: () => new ReservationRequestDomainAdapter(initializedService),
+		getDomainAdapter: () => new ReservationRequestDomainAdapter(/* needs proper document parameter */),
 	};
 };
