@@ -1,7 +1,9 @@
-import React from 'react';
-import { Layout, Button } from 'antd';
-import styles from './index.module.css';
-import '../../../../styles/theme.css';
+import React from "react";
+import { Layout, Button } from "antd";
+import styles from "./index.module.css";
+import "../../../../styles/theme.css";
+import { useAuth } from "react-oidc-context";
+import { HandleLogoutMockForMockAuth } from "../../handle-logout";
 
 export interface HeaderProps {
   isAuthenticated: boolean;
@@ -12,7 +14,12 @@ export interface HeaderProps {
 const { Header: AntHeader } = Layout;
 
 export const Header: React.FC<HeaderProps> = ({ isAuthenticated, onLogin, onSignUp }) => {
-  
+  const auth = useAuth();
+
+  const handleLogout = () => {
+    // Handle logout logic here
+   HandleLogoutMockForMockAuth(auth);
+  };
 
   return (
     <AntHeader className={styles.header}>
@@ -21,11 +28,21 @@ export const Header: React.FC<HeaderProps> = ({ isAuthenticated, onLogin, onSign
         <span className={styles.logoText}>sharethrift</span>
       </div>
       <nav className={styles.authSection}>
-        {!isAuthenticated && (
+        {!isAuthenticated ? (
           <>
-            <Button type="link" className={styles.authButton} onClick={onSignUp}>Sign Up</Button>
+            <Button type="link" className={styles.authButton} onClick={onSignUp}>
+              Sign Up
+            </Button>
             <span className={styles.divider}>|</span>
-            <Button type="link" className={styles.authButton} onClick={onLogin}>Log In</Button>
+            <Button type="link" className={styles.authButton} onClick={onLogin}>
+              Log In
+            </Button>
+          </>
+        ) : (
+          <>
+            <Button type="link" className={styles.authButton} onClick={handleLogout}>
+              Log Out
+            </Button>
           </>
         )}
       </nav>

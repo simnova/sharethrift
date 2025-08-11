@@ -3,6 +3,7 @@ import { Footer } from "../../shared/molecules/footer";
 import { Header } from "../../shared/molecules/header";
 import { Navigation } from "../../shared/molecules/navigation";
 import { useAuth } from "react-oidc-context";
+import { HandleLogoutMockForMockAuth } from "../../shared/handle-logout";
 
 export default function HomeTabsLayout() {
   const navigate = useNavigate();
@@ -58,13 +59,17 @@ export default function HomeTabsLayout() {
     navigate("/auth-redirect");
   };
 
+  const handleLogOut = () => {
+    HandleLogoutMockForMockAuth(auth);
+  };
+
   return (
     <div style={{ minHeight: "100vh", width: "100vw", overflowX: "hidden", display: "flex", flexDirection: "column" }}>
       <div style={{ position: "fixed", top: 0, left: 0, width: "100vw", zIndex: 1100 }}>
         <Header isAuthenticated={auth.isAuthenticated} onLogin={handleOnLogin} onSignUp={handleOnSignUp} />
       </div>
       <div style={{ display: "flex", flexDirection: "row", flex: 1, height: "100vh", paddingTop: 64 }}>
-        <Navigation isAuthenticated={auth.isAuthenticated} onNavigate={handleNavigate} onLogout={() => {}} selectedKey={getSelectedKey()} />
+        <Navigation isAuthenticated={auth.isAuthenticated} onNavigate={handleNavigate} onLogout={handleLogOut} selectedKey={getSelectedKey()} />
         <main style={{ marginLeft: 240, width: "100%" }}>
           <Outlet />
         </main>
