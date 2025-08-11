@@ -1,24 +1,12 @@
 import type { MongooseSeedwork } from '@cellix/data-sources-mongoose';
+import { ItemListingModelFactory } from './item-listing.ts';
 
 export const mongooseContextBuilder = (
-	_: MongooseSeedwork.MongooseContextFactory,
+	mongoose: MongooseSeedwork.MongooseContextFactory,
 ) => {
 	return {
+		ItemListing: ItemListingModelFactory(mongoose),
 	};
 };
-/*
+
 export type MongooseContext = ReturnType<typeof mongooseContextBuilder>;
-
-Community.CommunityModel.findById('123').then((doc) => {
-  doc?.whiteLabelDomain
-  doc?.createdBy
-});
-
-let x = mongooseContextBuilder(null as any).Community.Community;
-x.findById('123').then((doc) => {
-  doc?.whiteLabelDomain
-  doc?.createdBy
-  console.log(doc);
-});
-
-*/
