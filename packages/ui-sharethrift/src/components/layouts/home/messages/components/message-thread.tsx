@@ -34,9 +34,9 @@ export function MessageThread({ messages, loading, error, messageText, setMessag
   }
 
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
+    <div style={{ display: 'flex', flexDirection: 'column', height: '100%', width: '100%' }}>
       {/* Messages Area */}
-      <div style={{ flex: 1, overflowY: 'auto', padding: 16, background: '#f5f5f5' }}>
+      <div style={{ flex: 1, width: '100%', overflowY: 'auto', background: '#f5f5f5' }}>
         {messages.length === 0 ? (
           <Empty description="No messages yet" style={{ marginTop: 32 }} />
         ) : (
@@ -104,7 +104,7 @@ function MessageBubble({ message, isOwn, showAvatar }: MessageBubbleProps) {
         {!showAvatar && <div style={{ width: 32 }} />}
         <div
           style={{
-            background: isOwn ? '#1677ff' : '#fff',
+            background: isOwn ? '#25322C' : '#fff',
             color: isOwn ? '#fff' : '#222',
             borderRadius: 16,
             padding: '8px 16px',

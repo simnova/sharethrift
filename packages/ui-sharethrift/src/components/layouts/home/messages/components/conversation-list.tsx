@@ -67,7 +67,7 @@ function ConversationItem({ conversation, isSelected, onClick, currentUserId }: 
   };
   return (
     <List.Item
-      style={{ background: isSelected ? '#e6f4ff' : undefined, cursor: 'pointer' }}
+      style={{ background: isSelected ? '#e6f4ff' : undefined, cursor: 'pointer', padding: '16px 20px' }}
       onClick={onClick}
       extra={<Typography.Text type="secondary" style={{ fontSize: 12 }}>{formatTime(conversation.updatedAt)}</Typography.Text>}
     >
