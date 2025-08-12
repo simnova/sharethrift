@@ -167,11 +167,16 @@ async function main() {
 		});
 	});
 
+	const allowedRedirectUri =
+		process.env['ALLOWED_REDIRECT_URI'] ||
+		'http://localhost:3000/auth-redirect';
+
 	app.get('/authorize', (req, res) => {
-		// For a real OIDC flow, you'd validate params, show a login page, etc.
-		// For a mock, you can auto-redirect with a code.
 		const { redirect_uri, state } = req.query;
-		const code = 'mock-auth-code'; // Generate or mock an auth code
+		if (redirect_uri !== allowedRedirectUri) {
+			return res.status(400).send('Invalid redirect_uri');
+		}
+		const code = 'mock-auth-code';
 		const redirectUrl = `${redirect_uri}?code=${code}${state ? `&state=${state}` : ''}`;
 		res.redirect(redirectUrl);
 	});
