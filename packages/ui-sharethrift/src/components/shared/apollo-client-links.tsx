@@ -1,8 +1,29 @@
-import { ApolloClient, ApolloLink, type DefaultContext, InMemoryCache, from } from '@apollo/client';
+import { ApolloClient, ApolloLink, type DefaultContext, InMemoryCache, from, HttpLink } from '@apollo/client';
 import { BatchHttpLink } from '@apollo/client/link/batch-http';
 import type { AuthContextProps } from 'react-oidc-context';
 import { removeTypenameFromVariables } from '@apollo/client/link/remove-typename';
 import { setContext } from '@apollo/client/link/context';
+
+// Utility function to generate unique request IDs
+const generateRequestId = (): string => {
+  return `req-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
+};
+
+// Utility function to get client ID (can be enhanced to use actual client identification)
+const getClientId = (): string => {
+  return 'ui-sharethrift-client';
+};
+
+// Interface for custom headers configuration
+interface CustomHeadersConfig {
+  [key: string]: string | (() => string) | undefined;
+}
+
+// Default custom headers that are always added
+const defaultCustomHeaders: CustomHeadersConfig = {
+  'x-client-id': getClientId,
+  'x-request-id': generateRequestId
+};
 
 // apollo client instance
 export const client = new ApolloClient({
@@ -11,15 +32,27 @@ export const client = new ApolloClient({
 });
 
 
-// base apollo link with no customizations
-// could be used as a base for the link chain
-export const BaseApolloLink = (): ApolloLink => setContext((_, { headers }) => {
-  return {
-    headers: {
-      ...headers
-    }
-  };
-});
+// base apollo link with automatic custom headers
+// includes default headers and allows for additional custom headers
+export const BaseApolloLink = (additionalHeaders: CustomHeadersConfig = {}): ApolloLink => 
+  setContext((_, { headers }) => {
+    const allCustomHeaders = { ...defaultCustomHeaders, ...additionalHeaders };
+    const resolvedHeaders: Record<string, string> = {};
+
+    // Resolve all custom headers (whether they are functions or values)
+    Object.entries(allCustomHeaders).forEach(([key, value]) => {
+      if (value !== undefined) {
+        resolvedHeaders[key] = typeof value === 'function' ? value() : value;
+      }
+    });
+
+    return {
+      headers: {
+        ...headers,
+        ...resolvedHeaders
+      }
+    };
+  });
 
 
 // apollo link to add auth header
@@ -48,13 +81,29 @@ export const ApolloLinkToAddAuthHeader = (auth: AuthContextProps): ApolloLink =>
   return forward(operation);
 });
 
-// apollo link to batch graphql requests
+// Standard HTTP Link for single GraphQL requests
 // includes removeTypenameFromVariables link
-export const TerminatingApolloLinkForGraphqlServer= (config: BatchHttpLink.Options) => {
+export const TerminatingApolloLinkForStandardGraphqlServer = (config: { uri: string }) => {
+  const httpLink = new HttpLink({
+    uri: config.uri
+  });
+  return from([removeTypenameFromVariables(), httpLink]);
+};
+
+// Batch HTTP Link for batched GraphQL requests
+// includes removeTypenameFromVariables link
+export const TerminatingApolloLinkForBatchedGraphqlServer = (config: BatchHttpLink.Options) => {
   const batchHttpLink = new BatchHttpLink({
     uri: config.uri,
-    batchMax: config.batchMax, // No more than 15 operations per batch
-    batchInterval: config.batchInterval // Wait no more than 50ms after first batched operation
+    batchMax: config.batchMax || 15, // No more than 15 operations per batch
+    batchInterval: config.batchInterval || 50 // Wait no more than 50ms after first batched operation
   });
   return from([removeTypenameFromVariables(), batchHttpLink]);
 };
+
+// Backward compatibility alias
+export const TerminatingApolloLinkForGraphqlServer = TerminatingApolloLinkForBatchedGraphqlServer;
+
+// Export types and utilities for external use
+export type { CustomHeadersConfig };
+export { generateRequestId, getClientId, defaultCustomHeaders };
