@@ -1,4 +1,5 @@
 import { Outlet, useNavigate, useLocation } from 'react-router-dom';
+import React, { useState, useEffect } from 'react';
 import { Header } from '../../shared/molecules/header';
 import { Navigation } from '../../shared/molecules/navigation';
 import { Footer } from '../../shared/molecules/footer';
@@ -50,12 +51,21 @@ export default function HomeTabsLayout() {
     if (route) navigate(`/${route}`);
   };
 
+  // Responsive margin for main content
+  const [mainMargin, setMainMargin] = useState(240);
+  useEffect(() => {
+    const handleResize = () => setMainMargin(window.innerWidth <= 768 ? 0 : 240);
+    handleResize();
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
+
   return (
     <div style={{ minHeight: '100vh', width: '100vw', overflowX: 'hidden', display: 'flex', flexDirection: 'column' }}>
-        <Header isAuthenticated={isAuthenticated} onLogin={() => {}} onSignUp={() => {}} />
+      <Header isAuthenticated={isAuthenticated} onLogin={() => {}} onSignUp={() => {}} />
       <div style={{ display: 'flex', flexDirection: 'row', flex: 1, height: '100vh', paddingTop: 64 }}>
         <Navigation isAuthenticated={isAuthenticated} onNavigate={handleNavigate} onLogout={() => {}} selectedKey={getSelectedKey()} />
-        <main style={{ marginLeft: 240, width: '100%' }}>
+        <main style={{ marginLeft: mainMargin, width: '100%' }}>
           <Outlet />
         </main>
       </div>

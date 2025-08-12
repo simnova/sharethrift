@@ -11,6 +11,7 @@
     background: var(--color-background);
     border-bottom: 1px solid var(--color-primary);
     box-sizing: border-box;
+    position: fixed;
 }
 .logoSection {
     display: flex;
