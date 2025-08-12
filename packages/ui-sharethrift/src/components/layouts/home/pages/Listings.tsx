@@ -75,6 +75,7 @@ export default function Listings() {
                 <Button
                   className={styles.createListing}
                   onClick={handleCreateListing}
+                  type="primary"
                 >
                   Create a Listing
                 </Button>

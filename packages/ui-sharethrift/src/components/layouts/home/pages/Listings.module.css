@@ -27,7 +27,6 @@
 }
 
 .createListing.createListing {
-  background-color: var(--color-primary) !important;
-  color: var(--color-background) !important;
-  padding: 18px 24px !important;
+  padding: 18px 24px;
+  height: 48px !important;
 }
