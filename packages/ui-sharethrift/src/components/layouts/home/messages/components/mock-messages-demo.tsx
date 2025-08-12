@@ -146,9 +146,9 @@ export function MockMessagesDemo() {
   };
 
   return (
-    <div style={{ display: 'flex', height: '600px', border: '1px solid #eee', borderRadius: 8, overflow: 'hidden' }}>
+  <div style={{ display: 'flex', height: '600px', overflow: 'hidden' }}>
       {/* Conversation List */}
-      <div style={{ width: 320, borderRight: '1px solid #eee', background: '#fafcff' }}>
+      <div style={{ width: 320, borderRight: '1px solid var(--color-foreground-2)' }}>
         <ConversationList
           onConversationSelect={handleConversationSelect}
           selectedConversationId={selectedConversationId}
@@ -163,7 +163,11 @@ export function MockMessagesDemo() {
             {(() => {
               const conv = mockConversations.find(c => c.id === selectedConversationId);
               const owner = conv?.participants.find(p => p !== currentUserId) || 'Unknown';
-              return conv ? <ListingBannerContainer listingId={conv.listingId} owner={owner} /> : null;
+              return conv ? (
+                <div style={{ marginBottom: 24 }}>
+                  <ListingBannerContainer listingId={conv.listingId} owner={owner} />
+                </div>
+              ) : null;
             })()}
             <div style={{ flex: 1, minHeight: 0, display: 'flex', flexDirection: 'column' }}>
               <MessageThread
@@ -177,6 +181,7 @@ export function MockMessagesDemo() {
                 handleSendMessage={handleSendMessage}
                 messagesEndRef={messagesEndRef}
                 currentUserId={currentUserId}
+                contentContainerStyle={{ paddingLeft: 24 }}
               />
             </div>
           </>

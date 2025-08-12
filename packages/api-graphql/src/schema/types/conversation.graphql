@@ -1,0 +1,41 @@
+#graphql
+"""
+GraphQL schema for Conversations and Messages
+"""
+
+type Conversation {
+  id: ID!
+  participants: [User!]!
+  lastMessage: Message
+  createdAt: String!
+  updatedAt: String!
+}
+
+type Message {
+  id: ID!
+  conversation: Conversation!
+  sender: User!
+  content: String!
+  readBy: [User!]!
+  createdAt: String!
+  updatedAt: String!
+}
+
+type User {
+  id: ID!
+  username: String!
+  # Add more fields as needed
+}
+
+type Query {
+  conversations: [Conversation!]!
+  conversation(id: ID!): Conversation
+  messages(conversationId: ID!): [Message!]!
+  message(id: ID!): Message
+}
+
+type Mutation {
+  createConversation(participantIds: [ID!]!): Conversation!
+  sendMessage(conversationId: ID!, content: String!): Message!
+  markMessageRead(messageId: ID!): Message!
+}

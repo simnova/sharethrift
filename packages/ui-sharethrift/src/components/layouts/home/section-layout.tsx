@@ -2,7 +2,6 @@ import { Outlet, useNavigate, useLocation } from 'react-router-dom';
 import { Header } from '../../shared/molecules/header';
 import { Navigation } from '../../shared/molecules/navigation';
 import { Footer } from '../../shared/molecules/footer';
-import { Footer } from '../../shared/molecules/footer';
 
 export default function HomeTabsLayout() {
   const navigate = useNavigate();
@@ -57,7 +56,9 @@ export default function HomeTabsLayout() {
 
   return (
     <div style={{ minHeight: '100vh', width: '100vw', overflowX: 'hidden', display: 'flex', flexDirection: 'column' }}>
+      <div style={{ position: 'fixed', top: 0, left: 0, width: '100vw', zIndex: 1100 }}>
         <Header isAuthenticated={isAuthenticated} onLogin={() => {}} onSignUp={() => {}} />
+      </div>
       <div style={{ display: 'flex', flexDirection: 'row', flex: 1, height: '100vh', paddingTop: 64 }}>
         <Navigation isAuthenticated={isAuthenticated} onNavigate={handleNavigate} onLogout={() => {}} selectedKey={getSelectedKey()} />
         <main style={{ marginLeft: 240, width: '100%' }}>

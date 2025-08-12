@@ -1,10 +1,14 @@
+
+
+import { ConversationModel } from './conversation.js';
+import { MessageModel } from './message.js';
 import type { MongooseSeedwork } from '@cellix/data-sources-mongoose';
 
-export const mongooseContextBuilder = (
-	_: MongooseSeedwork.MongooseContextFactory,
-) => {
-	return {
-	};
+export const mongooseContextBuilder = (_: MongooseSeedwork.MongooseContextFactory) => {
+  return {
+    Conversation: ConversationModel,
+    Message: MessageModel,
+  };
 };
 /*
 export type MongooseContext = ReturnType<typeof mongooseContextBuilder>;
