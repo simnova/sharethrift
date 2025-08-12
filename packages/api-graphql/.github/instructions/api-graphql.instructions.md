@@ -1,6 +1,6 @@
 ```instructions
 ---
-applyTo: "./packages/api-graphql/**/*.ts"
+applyTo: "packages/api-graphql/**/*.ts"
 ---
 # Copilot Instructions: @ocom/api-graphql
 

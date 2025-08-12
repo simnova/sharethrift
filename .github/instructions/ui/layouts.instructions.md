@@ -1,5 +1,5 @@
 ---
-applyTo: "./packages/ui-*/src/components/layouts/**/*"
+applyTo: "packages/ui-*/src/components/layouts/**/*"
 ---
 
 # Copilot Instructions: Layouts
@@ -35,10 +35,10 @@ applyTo: "./packages/ui-*/src/components/layouts/**/*"
 ## Routing & Navigation
 
 - **Each layout must have an `index.tsx` file that defines all top-level routes for that layout.**
-    - These routes are mapped to page components from the `pages/` folder.
-    - The top-level routes in `index.tsx` appear in the sidebar navigation menu.
-    - Each route uses a page component from `pages/` as its `element`.
-    - The sidebar navigation is built from the layout's route configuration and reflects these top-level routes.
+	- These routes are mapped to page components from the `pages/` folder.
+	- The top-level routes in `index.tsx` appear in the sidebar navigation menu.
+	- Each route uses a page component from `pages/` as its `element`.
+	- The sidebar navigation is built from the layout's route configuration and reflects these top-level routes.
 	- The component name in `index.tsx` should match the layout name in PascalCase.
 - **Page components in `pages/` must be mapped in `index.tsx` to be accessible via navigation.**
 
