@@ -20,14 +20,25 @@ export const Default: Story = {
   },
 };
 
+
+import React, { useState } from 'react';
+
 export const WithPagination: Story = {
-  args: {
-    listings: DUMMY_LISTINGS.slice(0, 8),
-    total: DUMMY_LISTINGS.length,
-    currentPage: 1,
-    pageSize: 8,
-    onListingClick: (listing) => console.log('Clicked listing:', listing.title),
-    onPageChange: (page, pageSize) => console.log('Page change:', page, pageSize),
+  render: (args) => {
+    const [currentPage, setCurrentPage] = useState(1);
+    const pageSize = 8;
+    const pagedListings = DUMMY_LISTINGS.slice((currentPage - 1) * pageSize, currentPage * pageSize);
+    return (
+      <ListingsGrid
+        {...args}
+        listings={pagedListings}
+        total={DUMMY_LISTINGS.length}
+        currentPage={currentPage}
+        pageSize={pageSize}
+        onListingClick={(listing) => console.log('Clicked listing:', listing.title)}
+        onPageChange={(page) => setCurrentPage(page)}
+      />
+    );
   },
 };
 

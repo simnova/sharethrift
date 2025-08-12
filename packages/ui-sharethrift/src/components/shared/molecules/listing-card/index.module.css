@@ -14,8 +14,8 @@
 }
 
 .imageContainer {
-  width: 280px !important;
-  aspect-ratio: 1 / 1.1;
+  width: 228.75px !important;
+  aspect-ratio: 228.75 / 249;
   min-height: 0;
   height: auto;
   overflow: hidden;
