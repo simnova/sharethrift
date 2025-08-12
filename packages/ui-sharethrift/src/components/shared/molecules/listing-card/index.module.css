@@ -14,7 +14,7 @@
 }
 
 .imageContainer {
-  width: 280px !important;
+  width: 100%;
   aspect-ratio: 1 / 1.1;
   min-height: 0;
   height: auto;
@@ -46,28 +46,26 @@
   box-sizing: border-box;
 }
 
-.title {
-  font-size: 16px;
-  font-weight: 600;
+.content > * {
   color: var(--color-tertiary);
+}
+
+.title {
   margin: 0 0 8px 0;
   line-height: 1.4;
   overflow: hidden;
-  text-align: left;
+}
+
+.title:hover {
+  color: var(--color-secondary);
 }
 
 .dateRange {
-  font-size: 14px;
-  color: var(--color-tertiary);
   margin: 0 0 4px 0;
   line-height: 1.4;
-  text-align: left;
 }
 
 .location {
-  font-size: 14px;
-  color: var(--color-tertiary);
   margin: 0;
   line-height: 1.4;
-  text-align: left;
 }

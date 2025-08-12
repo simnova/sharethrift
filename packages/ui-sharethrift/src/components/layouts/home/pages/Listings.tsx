@@ -12,7 +12,7 @@ interface ListingsProps {
   loggedIn?: boolean;
 }
 
-export default function Listings({ loggedIn = true }: ListingsProps) {
+export default function Listings({ loggedIn = true }: Readonly<ListingsProps>) {
   const isAuthenticated = loggedIn;
 
   // State for search query and pagination
@@ -64,7 +64,7 @@ export default function Listings({ loggedIn = true }: ListingsProps) {
         />
       )}
 
-      <div className={styles.listingsPage}>
+      <div className={styles.listingsPage} style={{ padding: isAuthenticated ? '36px' : '100px' }}>
         <div className={styles.listingsHeader}>
           {/* Search */}
           <div className={styles.searchBar}>
@@ -86,14 +86,12 @@ export default function Listings({ loggedIn = true }: ListingsProps) {
           </div>
 
           {!isAuthenticated && (
-            <h1>Today's Picks</h1>
+            <h1 style={{ margin: '0' }}>Today's Picks</h1>
           )}
 
           <div className={styles.filterBar}>
             {/* Category filter */}
             <CategoryFilter
-              label={"Category"}
-              categories={['Electronics', 'Furniture', 'Clothing']}
               selectedCategory={selectedCategory}
               onCategoryChange={setSelectedCategory}
             />
@@ -103,7 +101,7 @@ export default function Listings({ loggedIn = true }: ListingsProps) {
         </div>
 
         {/* Listings grid */}
-        <div style={{ marginTop: '32px' }}>
+        <div className={styles.listingsGridWrapper}>
           <ListingsGrid
             listings={listings}
             onListingClick={handleListingClick}

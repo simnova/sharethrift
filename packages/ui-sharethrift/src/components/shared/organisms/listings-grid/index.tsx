@@ -1,5 +1,5 @@
 import React from 'react';
-import { Row, Col, Empty, Pagination } from 'antd';
+import { Empty, Pagination } from 'antd';
 import { ListingCard } from '../../molecules/listing-card';
 import type { ItemListing } from '../../../../types/listing';
 import styles from './index.module.css';
@@ -41,20 +41,17 @@ export const ListingsGrid: React.FC<ListingsGridProps> = ({
 
   return (
     <div className={styles.gridContainer}>
-      <Row gutter={[36, 36]} className={styles.grid} justify="space-between">
+      <div className={styles.grid}>
         {listings.map((listing) => (
-          <Col 
-            key={listing._id}
-            className={styles.gridItem}
-          >
+          <div key={listing._id} className={styles.gridItem}>
             <ListingCard
               listing={listing}
               onClick={() => onListingClick?.(listing)}
             />
-          </Col>
+          </div>
         ))}
-      </Row>
-      
+      </div>
+
       {showPagination && total && total > pageSize && (
         <div className={styles.paginationContainer}>
           <Pagination

@@ -35,8 +35,12 @@
   font-weight: 400;
 }
 
-@media (max-width: 800px) {
+@media (max-width: 768px) {
   .heroTitle {
     font-size: 32px;
+  }
+
+  .searchContainer {
+    display: none;
   }
 }

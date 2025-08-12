@@ -5,7 +5,6 @@
 .listingsPage {
   min-height: 100vh;
   background-color: var(--color-background);
-  padding: 36px;
 }
 
 .listingsHeader {
@@ -26,7 +25,25 @@
   justify-content: space-between;
 }
 
-.createListing.createListing {
+.createListing {
   padding: 18px 24px;
   height: 48px !important;
+}
+
+.listingsGridWrapper {
+  margin-top: 32px;
+}
+
+@media (max-width: 768px) {
+  .listingsPage {
+    padding: 50px 20px !important;
+  }
+
+  .listingsGridWrapper {
+    margin-top: 0;
+  }
+
+  .createListing {
+    display: none;
+  }
 }
