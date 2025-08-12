@@ -27,6 +27,7 @@
   background: var(--color-background);
   min-height: 0;
   overflow-x: hidden;
+  margin-top: 32px;
 }
 @media (max-width: 768px) {
   .bodyWrapper {

@@ -1,9 +1,10 @@
+import { useEffect, useState } from 'react';
+import { useAuth } from "react-oidc-context";
 import { Outlet, useLocation, useNavigate } from "react-router-dom";
+import { HandleLogoutMockForMockAuth } from "../../shared/handle-logout";
 import { Footer } from "../../shared/molecules/footer";
 import { Header } from "../../shared/molecules/header";
 import { Navigation } from "../../shared/molecules/navigation";
-import { useAuth } from "react-oidc-context";
-import { HandleLogoutMockForMockAuth } from "../../shared/handle-logout";
 
 export default function HomeTabsLayout() {
   const navigate = useNavigate();
@@ -50,6 +51,15 @@ export default function HomeTabsLayout() {
     const route = routeMap[key];
     if (route) navigate(`/${route}`);
   };
+  // Responsive margin for main content
+  const [mainMargin, setMainMargin] = useState(240);
+  useEffect(() => {
+    const handleResize = () => setMainMargin(window.innerWidth <= 768 ? 0 : 240);
+    handleResize();
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
+
 
   const handleOnLogin = () => {
     navigate("/auth-redirect");
@@ -62,15 +72,13 @@ export default function HomeTabsLayout() {
   const handleLogOut = () => {
     HandleLogoutMockForMockAuth(auth);
   };
-
+  
   return (
-    <div style={{ minHeight: "100vh", width: "100vw", overflowX: "hidden", display: "flex", flexDirection: "column" }}>
-      <div style={{ position: "fixed", top: 0, left: 0, width: "100vw", zIndex: 1100 }}>
-        <Header isAuthenticated={auth.isAuthenticated} onLogin={handleOnLogin} onSignUp={handleOnSignUp} />
-      </div>
-      <div style={{ display: "flex", flexDirection: "row", flex: 1, height: "100vh", paddingTop: 64 }}>
+    <div style={{ minHeight: '100vh', width: '100vw', overflowX: 'hidden', display: 'flex', flexDirection: 'column' }}>
+      <Header isAuthenticated={auth.isAuthenticated} onLogin={handleOnLogin} onSignUp={handleOnSignUp} />
+      <div style={{ display: 'flex', flexDirection: 'row', flex: 1, height: '100vh', paddingTop: 64 }}>
         <Navigation isAuthenticated={auth.isAuthenticated} onNavigate={handleNavigate} onLogout={handleLogOut} selectedKey={getSelectedKey()} />
-        <main style={{ marginLeft: 240, width: "100%" }}>
+        <main style={{ marginLeft: mainMargin, width: '100%' }}>
           <Outlet />
         </main>
       </div>
@@ -78,3 +86,4 @@ export default function HomeTabsLayout() {
     </div>
   );
 }
+
