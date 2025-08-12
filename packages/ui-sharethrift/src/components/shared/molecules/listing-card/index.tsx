@@ -1,5 +1,6 @@
 import React from 'react';
 import { Card } from 'antd';
+import { SwapRightOutlined } from '@ant-design/icons';
 import type { ItemListing } from '../../../../types/listing';
 import styles from './index.module.css';
 
@@ -14,10 +15,6 @@ export const ListingCard: React.FC<ListingCardProps> = ({ listing, onClick }) =>
     const dd = String(date.getDate()).padStart(2, '0');
     const yyyy = date.getFullYear();
     return `${mm}-${dd}-${yyyy}`;
-  };
-
-  const formatDateRange = (start: Date, end: Date) => {
-    return `${formatDate(start)} → ${formatDate(end)}`;
   };
 
   return (
@@ -38,7 +35,9 @@ export const ListingCard: React.FC<ListingCardProps> = ({ listing, onClick }) =>
       <div className={styles.content}>
         <h3 className={styles.title}>{listing.title}</h3>
         <p className={styles.dateRange}>
-          {formatDateRange(listing.sharingPeriodStart, listing.sharingPeriodEnd)}
+          {formatDate(listing.sharingPeriodStart)}
+          <SwapRightOutlined style={{ padding: '0 8px' }} />
+          {formatDate(listing.sharingPeriodEnd)}
         </p>
         <p className={styles.location}>{listing.location}</p>
       </div>

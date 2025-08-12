@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { Button } from 'antd';
 import { HeroSection } from '../../../shared/molecules/hero-section';
 import { SearchBar } from '../../../shared/molecules/search-bar';
 import { CategoryFilter } from '../../../shared/molecules/category-filter';
@@ -71,14 +72,19 @@ export default function Listings() {
             />
             {/* Create listing button */}
             {isAuthenticated && (
-              <button
-                className={styles.createListing}
-                onClick={handleCreateListing}
-              >
-                Create a Listing
-              </button>
+                <Button
+                  className={styles.createListing}
+                  onClick={handleCreateListing}
+                >
+                  Create a Listing
+                </Button>
             )}
           </div>
+
+          {!isAuthenticated && (
+            <h1>Today's Picks</h1>
+          )}
+
           <div className={styles.filterBar}>
             {/* Category filter */}
             <CategoryFilter
