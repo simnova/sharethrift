@@ -74,7 +74,7 @@ p, .authButton, .primaryButton, .secondaryButton, .ant-tabs, .ant-form-item-labe
   font-weight: 400;
   font-size: 14px;
   line-height: 18px;
-  color: var(--color-message-text) !important;
+  color: var(--color-message-text);
 }
 
 

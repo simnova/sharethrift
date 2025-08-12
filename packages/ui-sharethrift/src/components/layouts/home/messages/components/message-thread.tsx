@@ -36,12 +36,12 @@ export function MessageThread({ messages, loading, error, messageText, setMessag
   }
 
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', height: '100%', width: '100%' }}>
+    <div style={{ display: 'flex', flexDirection: 'column', height: '100%', width: '100%', fontFamily: 'var(--Urbanist, Arial, sans-serif)' }}>
       {/* Messages Area */}
       <div style={{ flex: 1, width: '100%', overflowY: 'auto', background: '#f5f5f5' }}>
-        <div style={contentContainerStyle}>
+        <div style={{ ...contentContainerStyle, fontFamily: 'var(--Urbanist, Arial, sans-serif)' }}>
           {messages.length === 0 ? (
-            <Empty description="No messages yet" style={{ marginTop: 32 }} />
+            <Empty description="No messages yet" style={{ marginTop: 32, fontFamily: 'var(--Urbanist, Arial, sans-serif)' }} />
           ) : (
             <List
               dataSource={messages}
@@ -59,15 +59,15 @@ export function MessageThread({ messages, loading, error, messageText, setMessag
         </div>
       </div>
       {/* Message Input */}
-      <div style={{ padding: 16, background: '#fff', borderTop: '1px solid #f0f0f0' }}>
-        <form onSubmit={handleSendMessage} style={{ display: 'flex', gap: 8 }}>
+      <div style={{ padding: 16, background: '#fff', borderTop: '1px solid #f0f0f0', fontFamily: 'var(--Urbanist, Arial, sans-serif)' }}>
+        <form onSubmit={handleSendMessage} style={{ display: 'flex', gap: 8, fontFamily: 'var(--Urbanist, Arial, sans-serif)' }}>
           <Input
             value={messageText}
             onChange={(e: React.ChangeEvent<HTMLInputElement>) => setMessageText(e.target.value)}
             placeholder="Type a message..."
             disabled={sendingMessage}
             onPressEnter={handleSendMessage}
-            style={{ flex: 1 }}
+            style={{ flex: 1, fontFamily: 'var(--Urbanist, Arial, sans-serif)' }}
             autoComplete="off"
           />
           <Button
@@ -76,6 +76,7 @@ export function MessageThread({ messages, loading, error, messageText, setMessag
             icon={<SendOutlined />}
             loading={sendingMessage}
             disabled={!messageText.trim()}
+            style={{ fontFamily: 'var(--Urbanist, Arial, sans-serif)' }}
           >
             Send
           </Button>
@@ -97,11 +98,11 @@ function MessageBubble({ message, isOwn, showAvatar }: MessageBubbleProps) {
     return date.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', hour12: true });
   };
   return (
-    <div style={{ display: 'flex', justifyContent: isOwn ? 'flex-end' : 'flex-start', marginBottom: 8 }}>
-      <div style={{ display: 'flex', flexDirection: isOwn ? 'row-reverse' : 'row', gap: 8, maxWidth: 400 }}>
+    <div style={{ display: 'flex', justifyContent: isOwn ? 'flex-end' : 'flex-start', marginBottom: 8, fontFamily: 'var(--Urbanist, Arial, sans-serif)' }}>
+      <div style={{ display: 'flex', flexDirection: isOwn ? 'row-reverse' : 'row', gap: 8, maxWidth: 400, fontFamily: 'var(--Urbanist, Arial, sans-serif)' }}>
         {showAvatar && !isOwn && (
               <Avatar
-                style={{ backgroundColor: 'var(--color-foreground-2)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}
+                style={{ backgroundColor: 'var(--color-foreground-2)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, fontFamily: 'var(--Urbanist, Arial, sans-serif)' }}
                 size={32}
                 icon={
                   <svg width="18" height="18" viewBox="0 0 29 28" fill="none" xmlns="http://www.w3.org/2000/svg" style={{ display: 'block', margin: 'auto' }}>
@@ -125,10 +126,11 @@ function MessageBubble({ message, isOwn, showAvatar }: MessageBubbleProps) {
             minWidth: 60,
             maxWidth: 320,
             wordBreak: 'break-word',
+            fontFamily: 'var(--Urbanist, Arial, sans-serif)'
           }}
         >
-          <p style={{ margin: 0, color: isOwn ? 'var(--color-highlight)' : 'var(--color-message-text)' }}>{message.content}</p>
-          <div style={{ fontSize: 10, color: isOwn ? 'var(--color-highlight)' : 'var(--color-foreground-1)', marginTop: 4, textAlign: isOwn ? 'right' : 'left' }}>
+          <p style={{ margin: 0, color: isOwn ? 'var(--color-highlight)' : 'var(--color-message-text)', fontFamily: 'var(--Urbanist, Arial, sans-serif)' }}>{message.content}</p>
+          <div style={{ fontSize: 10, color: isOwn ? 'var(--color-highlight)' : 'var(--color-foreground-1)', marginTop: 4, textAlign: isOwn ? 'right' : 'left', fontFamily: 'var(--Urbanist, Arial, sans-serif)' }}>
             {formatTime(message.createdAt)}
           </div>
         </div>

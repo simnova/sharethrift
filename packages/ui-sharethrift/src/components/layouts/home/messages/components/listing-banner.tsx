@@ -16,7 +16,7 @@ export interface ListingBannerProps {
 
 function Swap() {
   return (
-    <Avatar shape="circle" size={20} style={{ background: '#fff', border: '1px solid #3f8176' }} src={imgVector} />
+    <Avatar shape="circle" size={20} style={{ background: 'var(--color-highlight)', border: '1px solid var(--color-secondary)' }} src={imgVector} />
   );
 }
 
@@ -25,10 +25,10 @@ export function ListingBanner({ title, owner, period, status, imageUrl }: Listin
     <Card
       bodyStyle={{ padding: 0 }}
       style={{
-        background: '#edeae0',
+        background: 'var(--color-background-2)',
         border: 'none',
         borderRadius: 0,
-        borderBottom: '1px solid #e0ddd2',
+        borderBottom: '1px solid var(--color-foreground-2)',
         marginBottom: 0,
         boxShadow: 'none',
       }}
@@ -39,31 +39,31 @@ export function ListingBanner({ title, owner, period, status, imageUrl }: Listin
             shape="square"
             size={72}
             src={imageUrl || imgRectangle26}
-            style={{ borderRadius: 4, boxShadow: '0px 4px 5px 0px rgba(0,0,0,0.1)', background: '#c4c4c4' }}
+            style={{ borderRadius: 4, boxShadow: '0px 4px 5px 0px rgba(0,0,0,0.1)', background: 'var(--color-foreground-1)' }}
           />
         </Col>
         <Col flex="auto">
           <Row align="middle" gutter={24}>
             <Col flex="auto">
-              <Typography.Title level={3} style={{ margin: 0, color: '#25322c', fontFamily: 'Instrument Serif, serif', fontWeight: 400, fontSize: 36, lineHeight: '42px' }}>{title}</Typography.Title>
+              <Typography.Title level={3} style={{ margin: 0, color: 'var(--color-primary)', fontFamily: 'Instrument Serif, serif', fontWeight: 400, fontSize: 36, lineHeight: '42px' }}>{title}</Typography.Title>
               <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginTop: 4 }}>
-                <Typography.Text strong style={{ fontFamily: 'Urbanist, sans-serif', fontWeight: 600, fontSize: 14, color: '#25322c', lineHeight: '20px', width: 64 }}>{owner}</Typography.Text>
-                <Tag color="#3f8176" style={{ borderRadius: 20, padding: '2px 8px', display: 'flex', alignItems: 'center', margin: 0 }}>
+                <span style={{ fontFamily: 'Urbanist, sans-serif', fontWeight: 600, fontSize: 14, color: 'var(--color-primary)', lineHeight: '20px', width: 64 }}>{owner}</span>
+                <Tag color="var(--color-secondary)" style={{ borderRadius: 20, padding: '2px 8px', display: 'flex', alignItems: 'center', margin: 0 }}>
                   <Swap />
                 </Tag>
               </div>
             </Col>
             <Col>
-              <div style={{ color: '#5e5b51', fontFamily: 'Urbanist, sans-serif', fontSize: 14 }}>
-                <Typography.Text strong style={{ fontWeight: 600, lineHeight: '18px', color: '#5e5b51' }}>Request Period:</Typography.Text>
+              <div style={{ color: 'var(--color-tertiary)', fontFamily: 'Urbanist, sans-serif', fontSize: 14 }}>
+                <p style={{ fontFamily: 'Urbanist, sans-serif', fontWeight: 600, lineHeight: '18px', color: 'var(--color-tertiary)', margin: 0 }}>Request Period:</p>
                 <br />
-                <Typography.Text style={{ fontWeight: 400, lineHeight: '18px', color: '#5e5b51' }}>{period}</Typography.Text>
+                <span style={{ fontWeight: 400, lineHeight: '18px', color: 'var(--color-tertiary)', fontFamily: 'Urbanist, sans-serif' }}>{period}</span>
               </div>
             </Col>
             <Col>
-              <Tag color="#3f5f76" style={{ borderRadius: 20, padding: '8px 20px', display: 'flex', alignItems: 'center', gap: 8, margin: 0 }}>
+              <Tag color="var(--color-secondary)" style={{ borderRadius: 20, padding: '8px 20px', display: 'flex', alignItems: 'center', gap: 8, margin: 0 }}>
                 <Avatar shape="circle" size={14} src={img} style={{ background: 'transparent' }} />
-                <span style={{ color: '#edeae0', fontFamily: 'Urbanist, sans-serif', fontWeight: 600, fontSize: 12, lineHeight: '16px' }}>{status}</span>
+                <span style={{ color: 'var(--color-background-2)', fontFamily: 'Urbanist, sans-serif', fontWeight: 600, fontSize: 12, lineHeight: '16px' }}>{status}</span>
               </Tag>
             </Col>
           </Row>
