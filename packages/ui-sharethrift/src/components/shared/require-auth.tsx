@@ -1,6 +1,6 @@
-import { useEffect, type JSX } from 'react';
-import { hasAuthParams, useAuth } from 'react-oidc-context';
-import { Navigate } from 'react-router-dom';
+import { useEffect, type JSX } from "react";
+import { hasAuthParams, useAuth } from "react-oidc-context";
+import { Navigate } from "react-router-dom";
 
 interface RequireAuthProps {
   children: JSX.Element;
@@ -14,7 +14,7 @@ export const RequireAuth: React.FC<RequireAuthProps> = (props) => {
   // automatically sign-in
   useEffect(() => {
     if (!hasAuthParams() && props.forceLogin === true && !auth.isAuthenticated && !auth.activeNavigator && !auth.isLoading && !auth.error) {
-      window.sessionStorage.setItem('redirectTo', `${location.pathname}${location.search}`);
+      window.sessionStorage.setItem("redirectTo", `${location.pathname}${location.search}`);
 
       auth.signinRedirect();
     }
@@ -23,12 +23,21 @@ export const RequireAuth: React.FC<RequireAuthProps> = (props) => {
   // automatically refresh token
   useEffect(() => {
     return auth.events.addAccessTokenExpiring(() => {
-      auth.signinSilent(
-        {
-          redirect_uri: import.meta.env.VITE_B2C_REDIRECT_URI ?? ''
-        }
-      );
+      auth.signinSilent({
+        redirect_uri: import.meta.env.VITE_B2C_REDIRECT_URI ?? "",
+      });
     });
+
+    // *** Suggestion from sourcery that needs investigation
+    // const handleAccessTokenExpiring = () => {
+    //   auth.signinSilent({
+    //     redirect_uri: import.meta.env.VITE_B2C_REDIRECT_URI ?? "",
+    //   });
+    // };
+    // auth.events.addAccessTokenExpiring(handleAccessTokenExpiring);
+    // return () => {
+    //   auth.events.removeAccessTokenExpiring(handleAccessTokenExpiring);
+    // };
   }, [auth.events, auth.signinSilent]);
 
   let result: JSX.Element;
@@ -37,8 +46,8 @@ export const RequireAuth: React.FC<RequireAuthProps> = (props) => {
   } else if (auth.error) {
     result = <Navigate to="/" />;
   } else {
-    return <div>Checking auth2...</div>
+    return <div>Checking auth2...</div>;
   }
-  
+
   return result;
-}
+};
