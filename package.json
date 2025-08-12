@@ -21,9 +21,7 @@
     "test:integration": "npm run test:integration --ws --if-present",
     "test:serenity": "npm run test:serenity --ws --if-present",
     "test:unit": "npm run test:unit --ws --if-present",
-    "test:watch": "node scripts/test-watch-all.js",
-    "storybook": "storybook dev -p 6006",
-    "build-storybook": "storybook build"
+    "test:watch": "node scripts/test-watch-all.js"
   },
   "workspaces": [
     "packages/cellix-domain-seedwork",
@@ -32,7 +30,9 @@
     "packages/cellix-data-sources-mongoose",
     "packages/api-data-sources-mongoose-models",
     "packages/cellix-api-services-spec",
+    "packages/service-blob-storage",
     "packages/service-mongoose",
+    "packages/service-token-validation",
     "packages/service-otel",
     "packages/api-context-spec",
     "packages/api-graphql",
@@ -43,12 +43,12 @@
   "devDependencies": {
     "@amiceli/vitest-cucumber": "^5.1.2",
     "@biomejs/biome": "2.0.0",
+    "@vitest/coverage-v8": "^3.2.4",
     "concurrently": "^9.1.2",
-    "playwright": "^1.54.2",
     "rimraf": "^6.0.1",
     "tsx": "^4.20.3",
     "typescript": "^5.8.3",
-    "vite": "^7.0.4"
-  },
-  "dependencies": {}
+    "vite": "^7.0.4",
+    "vitest": "^3.2.4"
+  }
 }

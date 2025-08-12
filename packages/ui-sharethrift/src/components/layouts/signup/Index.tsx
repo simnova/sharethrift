@@ -10,7 +10,6 @@ export default function SignupRoutes() {
   return (
     <Routes>
       <Route element={<SignupLayout />}>
-        <Route path="" element={<>Signup Home</>} />
         <Route path="select-account-type" element={<SelectAccountType />} />
         <Route path="terms" element={<Terms />} />
         <Route path="account-setup" element={<AccountSetup />} />
