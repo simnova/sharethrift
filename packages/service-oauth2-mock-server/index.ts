@@ -8,12 +8,10 @@ import {
 	type CryptoKey,
 	type JWK,
 } from 'jose';
-import multer from 'multer';
 import dotenv from 'dotenv';
 dotenv.config({ path: '.env.local' });
 
 const app = express();
-const upload = multer();
 const port = 4000;
 // Type for user profile used in token claims
 interface TokenProfile {
@@ -116,9 +114,9 @@ async function main() {
 		res.json({ keys: [publicJwk] });
 	});
 
+	app.use(express.urlencoded({ extended: true }));
 	app.use(express.json());
 	// Support form-data (multipart/form-data) parsing
-	app.use(upload.none());
 	app.use((req, res, next) => {
 		res.header('Access-Control-Allow-Origin', '*'); // Allow all origins (for dev)
 		res.header('Access-Control-Allow-Methods', 'GET,POST,OPTIONS');
@@ -132,9 +130,9 @@ async function main() {
 	// Simulate sign up endpoint
 	app.post('/token', async (req, res) => {
 		// In a real app, validate and create user here
-		const email = process.env['Email'] ?? "";
-		const given_name = process.env['Given_Name'] ?? "";
-		const family_name = process.env['Family_Name'] ?? "";
+		const email = process.env['Email'] ?? '';
+		const given_name = process.env['Given_Name'] ?? '';
+		const family_name = process.env['Family_Name'] ?? '';
 		const { aud, tid } = req.body;
 		const profile: TokenProfile = {
 			aud: aud || 'test-client-id',
