@@ -1,5 +1,6 @@
 import type { MongooseSeedwork } from '@cellix/data-sources-mongoose';
-import type { Domain, DomainDataSource } from '@ocom/api-domain';
+import type { DomainDataSource } from '@ocom/api-domain';
+import { ReservationRequestPersistence } from './reservation-request/index.ts';
 
 export const Persistence = (
 	initializedService: MongooseSeedwork.MongooseContextFactory,
@@ -12,7 +13,9 @@ export const Persistence = (
 	}
 	console.log(domainServices);
 	const dataSource: DomainDataSource = {
-		domainContexts: null,
+		domainContexts: {
+			reservationRequest: ReservationRequestPersistence(initializedService),
+		},
 	};
 	return dataSource;
 };

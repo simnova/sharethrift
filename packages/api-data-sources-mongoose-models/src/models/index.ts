@@ -1,11 +1,15 @@
 import type { MongooseSeedwork } from '@cellix/data-sources-mongoose';
+import { createReservationRequestModel } from './reservation-request/index.ts';
 
 export const mongooseContextBuilder = (
-	_: MongooseSeedwork.MongooseContextFactory,
+	mongooseFactory: MongooseSeedwork.MongooseContextFactory,
 ) => {
 	return {
+		ReservationRequestModel: createReservationRequestModel(mongooseFactory),
 	};
 };
+
+export * from './reservation-request/index.ts';
 /*
 export type MongooseContext = ReturnType<typeof mongooseContextBuilder>;
 

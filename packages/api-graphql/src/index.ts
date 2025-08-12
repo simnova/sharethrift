@@ -12,6 +12,45 @@ import type { WithRequired } from '@apollo/utils.withrequired';
 const typeDefs = `#graphql
   type Query {
     hello: String
+    myReservations(userId: ID!): [ReservationRequest!]!
+  }
+
+  type Mutation {
+    cancelReservation(id: ID!): ReservationRequest
+    closeReservation(id: ID!): ReservationRequest
+  }
+
+  type ReservationRequest {
+    id: ID!
+    state: ReservationRequestState!
+    reservationPeriodStart: String!
+    reservationPeriodEnd: String!
+    createdAt: String!
+    updatedAt: String!
+    listingId: ID!
+    reserverId: ID!
+    closeRequested: Boolean!
+    listing: Listing
+    reserver: User
+  }
+
+  enum ReservationRequestState {
+    REQUESTED
+    ACCEPTED
+    REJECTED
+    RESERVATION_PERIOD
+    CANCELLED
+  }
+
+  type Listing {
+    id: ID!
+    title: String
+    imageUrl: String
+  }
+
+  type User {
+    id: ID!
+    name: String
   }
 `;
 
