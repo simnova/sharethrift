@@ -12,6 +12,7 @@ import dotenv from 'dotenv';
 dotenv.config({ path: '.env.local' });
 
 const app = express();
+app.disable('x-powered-by');
 const port = 4000;
 // Type for user profile used in token claims
 interface TokenProfile {
@@ -177,7 +178,7 @@ async function main() {
 			return res.status(400).send('Invalid redirect_uri');
 		}
 		const code = 'mock-auth-code';
-		const redirectUrl = `${redirect_uri}?code=${code}${state ? `&state=${state}` : ''}`;
+		const redirectUrl = `${allowedRedirectUri}?code=${code}${state ? `&state=${state}` : ''}`;
 		res.redirect(redirectUrl);
 	});
 
