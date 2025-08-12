@@ -1,6 +1,33 @@
+import type { ReservationRequest } from '../../../layouts/home/my-reservations/pages/main.container'; // Will eventually come from generated graphql files
 import type { Meta, StoryObj } from '@storybook/react';
 import { ReservationsGrid } from './reservations-grid';
-import { mockReservationRequests, getActiveReservations, getHistoryReservations } from '../../mocks/reservation-data';
+// Mock data moved here for storybook usage
+const mockReservationRequests: ReservationRequest[] = [
+  {
+  id: '1',
+  state: 'REQUESTED',
+    reservationPeriodStart: '2024-02-15T00:00:00Z',
+    reservationPeriodEnd: '2024-02-22T00:00:00Z',
+    createdAt: '2024-02-10T10:00:00Z',
+    updatedAt: '2024-02-12T12:00:00Z',
+    listingId: 'listing-1',
+    reserverId: 'user-1',
+    closeRequested: false,
+    listing: {
+      id: 'listing-1',
+      title: 'Power Drill Set',
+      imageUrl: 'https://images.unsplash.com/photo-1572981779307-38b8cabb2407?w=300&h=200&fit=crop',
+    },
+    reserver: {
+      id: 'user-1',
+      name: 'Sarah Johnson',
+    },
+  },
+  // ...add more mock reservations as needed
+];
+
+const getActiveReservations = (): ReservationRequest[] => mockReservationRequests.filter(r => ['REQUESTED', 'ACCEPTED', 'REJECTED', 'CANCELLED'].includes(r.state));
+const getHistoryReservations = (): ReservationRequest[] => mockReservationRequests.filter(r => r.state === 'RESERVATION_PERIOD');
 
 const meta: Meta<typeof ReservationsGrid> = {
   title: 'Organisms/ReservationsGrid',

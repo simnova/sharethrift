@@ -2,12 +2,12 @@ import React from 'react';
 import { Table, Image, Typography } from 'antd';
 import { ReservationStatusTag } from '../../atoms/reservation-status-tag/reservation-status-tag';
 import { ReservationActions } from '../../molecules/reservation-actions/reservation-actions';
-import type { MockReservationRequest } from '../../mocks/reservation-data';
+import type { ReservationRequest } from '../../../layouts/home/my-reservations/pages/main.container'; // Will eventually come from generated graphql files
 
 const { Text } = Typography;
 
 export interface ReservationsTableProps {
-  reservations: MockReservationRequest[];
+  reservations: ReservationRequest[]; // Will eventually come from generated graphql files
   onCancel: (id: string) => void;
   onClose: (id: string) => void;
   onMessage: (id: string) => void;
@@ -32,7 +32,7 @@ export const ReservationsTable: React.FC<ReservationsTableProps> = ({
       title: 'Listing',
       dataIndex: 'listing',
       key: 'listing',
-      render: (listing: MockReservationRequest['listing']) => (
+  render: (listing: ReservationRequest['listing']) => (
         <div className="flex items-center space-x-3">
           {listing?.imageUrl && (
             <Image
@@ -51,7 +51,7 @@ export const ReservationsTable: React.FC<ReservationsTableProps> = ({
       title: 'Sharer',
       dataIndex: 'reserver',
       key: 'sharer',
-      render: (reserver: MockReservationRequest['reserver']) => (
+  render: (reserver: ReservationRequest['reserver']) => (
         <Text>{reserver?.name || 'Unknown'}</Text>
       ),
     },
@@ -66,7 +66,7 @@ export const ReservationsTable: React.FC<ReservationsTableProps> = ({
     {
       title: 'Reservation Period',
       key: 'period',
-      render: (record: MockReservationRequest) => (
+  render: (record: ReservationRequest) => (
         <Text>
           {new Date(record.reservationPeriodStart).toLocaleDateString()} - {' '}
           {new Date(record.reservationPeriodEnd).toLocaleDateString()}
@@ -77,14 +77,14 @@ export const ReservationsTable: React.FC<ReservationsTableProps> = ({
       title: 'Status',
       dataIndex: 'state',
       key: 'status',
-      render: (state: MockReservationRequest['state']) => (
+  render: (state: ReservationRequest['state']) => (
         <ReservationStatusTag status={state} />
       ),
     },
     ...(showActions ? [{
       title: 'Actions',
       key: 'actions',
-      render: (record: MockReservationRequest) => (
+  render: (record: ReservationRequest) => (
         <ReservationActions
           status={record.state}
           onCancel={() => onCancel(record.id)}

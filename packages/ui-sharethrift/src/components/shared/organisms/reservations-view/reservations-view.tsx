@@ -1,10 +1,10 @@
 import React from 'react';
 import { ReservationsTable } from '../reservations-table/reservations-table';
 import { ReservationsGrid } from '../reservations-grid/reservations-grid';
-import type { MockReservationRequest } from '../../mocks/reservation-data';
+import type { ReservationRequest } from '../../../layouts/home/my-reservations/pages/main.container'; // Will eventually come from generated graphql files
 
 export interface ReservationsViewProps {
-  reservations: MockReservationRequest[];
+  reservations: ReservationRequest[]; // Will eventually come from generated graphql files
   onCancel: (id: string) => void;
   onClose: (id: string) => void;
   onMessage: (id: string) => void;

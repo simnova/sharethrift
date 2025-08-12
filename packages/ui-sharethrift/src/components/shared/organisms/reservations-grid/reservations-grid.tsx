@@ -1,12 +1,12 @@
 import React from 'react';
 import { Typography } from 'antd';
 import { ReservationCard } from '../../molecules/reservation-card/reservation-card';
-import type { MockReservationRequest } from '../../mocks/reservation-data';
+import type { ReservationRequest } from '../../../layouts/home/my-reservations/pages/main.container'; // Will eventually come from generated graphql files
 
 const { Text } = Typography;
 
 export interface ReservationsGridProps {
-  reservations: MockReservationRequest[];
+  reservations: ReservationRequest[]; // Will eventually come from generated graphql files
   onCancel: (id: string) => void;
   onClose: (id: string) => void;
   onMessage: (id: string) => void;
