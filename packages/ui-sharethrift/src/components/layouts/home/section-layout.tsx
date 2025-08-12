@@ -51,14 +51,20 @@ export default function HomeTabsLayout() {
     const route = routeMap[key];
     if (route) navigate(`/${route}`);
   };
-  // Responsive margin for main content
-  const [mainMargin, setMainMargin] = useState(240);
+  // Responsive margin for main content: no margin if sidebar is hidden (logged out), else responsive
+  const [mainMargin, setMainMargin] = useState(auth.isAuthenticated ? 240 : 0);
   useEffect(() => {
-    const handleResize = () => setMainMargin(window.innerWidth <= 768 ? 0 : 240);
+    const handleResize = () => {
+      if (!auth.isAuthenticated) {
+        setMainMargin(0);
+      } else {
+        setMainMargin(window.innerWidth <= 768 ? 0 : 240);
+      }
+    };
     handleResize();
     window.addEventListener('resize', handleResize);
     return () => window.removeEventListener('resize', handleResize);
-  }, []);
+  }, [auth.isAuthenticated]);
 
 
   const handleOnLogin = () => {
