@@ -8,9 +8,12 @@ import { DUMMY_LISTINGS } from '../../../../data/dummy-listings';
 import type { ItemListing } from '../../../../types/listing';
 import styles from './Listings.module.css';
 
-export default function Listings() {
-  // TODO: Replace with real auth state from context/hooks
-  const isAuthenticated = true;
+interface ListingsProps {
+  loggedIn?: boolean;
+}
+
+export default function Listings({ loggedIn = true }: ListingsProps) {
+  const isAuthenticated = loggedIn;
 
   // State for search query and pagination
   const [searchQuery, setSearchQuery] = useState('');
@@ -72,13 +75,13 @@ export default function Listings() {
             />
             {/* Create listing button */}
             {isAuthenticated && (
-                <Button
-                  className={styles.createListing}
-                  onClick={handleCreateListing}
-                  type="primary"
-                >
-                  Create a Listing
-                </Button>
+              <Button
+                className={styles.createListing}
+                onClick={handleCreateListing}
+                type="primary"
+              >
+                Create a Listing
+              </Button>
             )}
           </div>
 
@@ -95,20 +98,22 @@ export default function Listings() {
               onCategoryChange={setSelectedCategory}
             />
             {/* TODO: Location filter */}
-            <span>Philadelphia, PA · 10 mi</span>
+            <span style={{ color: 'var(--color-tertiary)' }}>Philadelphia, PA · 10 mi</span>
           </div>
         </div>
 
         {/* Listings grid */}
-        <ListingsGrid
-          listings={listings}
-          onListingClick={handleListingClick}
-          currentPage={currentPage}
-          pageSize={pageSize}
-          total={totalListings}
-          onPageChange={handlePageChange}
-          showPagination={totalListings > pageSize}
-        />
+        <div style={{ marginTop: '32px' }}>
+          <ListingsGrid
+            listings={listings}
+            onListingClick={handleListingClick}
+            currentPage={currentPage}
+            pageSize={pageSize}
+            total={totalListings}
+            onPageChange={handlePageChange}
+            showPagination={totalListings > pageSize}
+          />
+        </div>
       </div>
     </div>
   );

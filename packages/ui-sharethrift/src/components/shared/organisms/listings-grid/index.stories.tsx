@@ -6,7 +6,7 @@ const meta: Meta<typeof ListingsGrid> = {
   title: 'Organisms/ListingsGrid',
   component: ListingsGrid,
   parameters: {
-    layout: 'fullscreen',
+    layout: 'centered',
   },
 };
 

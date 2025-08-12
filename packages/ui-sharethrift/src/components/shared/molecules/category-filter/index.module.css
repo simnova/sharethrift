@@ -1,13 +1,19 @@
 .categoryFilter {
   display: flex;
   align-items: center;
-  color: #5E5B51;
+  color: var(--color-tertiary);
+  font-family: var(--Urbanist);
+}
+
+.categoryFilter > * {
+  font-family: var(--Urbanist);
+  color: var(--color-tertiary);
 }
 
 .categorySelect > * {
   border: none !important;
   background-color: transparent !important;
-  color: #5E5B51;
+  color: var(--color-tertiary);
 }
 
 .categorySelect:focus-visible {

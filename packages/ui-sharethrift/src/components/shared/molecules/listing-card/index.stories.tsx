@@ -21,7 +21,7 @@ const meta: Meta<typeof ListingCard> = {
   title: 'Molecules/ListingCard',
   component: ListingCard,
   parameters: {
-    layout: 'padded',
+    layout: 'centered',
   },
   args: {
     listing: sampleListing,
