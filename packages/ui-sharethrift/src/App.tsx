@@ -5,6 +5,7 @@ import { ApolloConnection } from './components/shared/apollo-connection';
 import SignupRoutes from './components/layouts/signup/Index';
 import { RequireAuth } from './components/shared/require-auth';
 import { AuthLanding } from './components/shared/auth-landing';
+import { ApolloTestComponent } from './components/shared/apollo-test-component';
 
 
   const authSection = (
@@ -26,6 +27,7 @@ function App() {
       <Route path="/*" element={<HomeRoutes />} />
       <Route path="/auth-redirect" element={authSection} />
       <Route path="/signup/*" element={signupSection} />
+      <Route path="/apollo-test" element={<ApolloTestComponent />} />
       <Route path="/" element={<Navigate to="/home" replace />} />
     </Routes>
     </ApolloConnection>
