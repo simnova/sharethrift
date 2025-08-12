@@ -14,9 +14,14 @@ export interface ListingBannerProps {
 }
 
 
-function Swap() {
+
+// Figma icon SVG (replace with the actual SVG if you have it)
+function SwapIcon() {
   return (
-    <Avatar shape="circle" size={20} style={{ background: 'var(--color-highlight)', border: '1px solid var(--color-secondary)' }} src={imgVector} />
+    <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <circle cx="10" cy="10" r="10" fill="var(--color-highlight)" stroke="var(--color-secondary)" strokeWidth="1" />
+      <path d="M7 10h6M13 10l-2-2m2 2l-2 2" stroke="var(--color-secondary)" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+    </svg>
   );
 }
 
@@ -49,14 +54,13 @@ export function ListingBanner({ title, owner, period, status, imageUrl }: Listin
               <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginTop: 4 }}>
                 <span style={{ fontFamily: 'Urbanist, sans-serif', fontWeight: 600, fontSize: 14, color: 'var(--color-primary)', lineHeight: '20px', width: 64 }}>{owner}</span>
                 <Tag color="var(--color-secondary)" style={{ borderRadius: 20, padding: '2px 8px', display: 'flex', alignItems: 'center', margin: 0 }}>
-                  <Swap />
+                  <SwapIcon />
                 </Tag>
               </div>
             </Col>
             <Col>
               <div style={{ color: 'var(--color-tertiary)', fontFamily: 'Urbanist, sans-serif', fontSize: 14 }}>
-                <p style={{ fontFamily: 'Urbanist, sans-serif', fontWeight: 600, lineHeight: '18px', color: 'var(--color-tertiary)', margin: 0 }}>Request Period:</p>
-                <br />
+                <p style={{ fontFamily: 'Urbanist, sans-serif', fontWeight: 600, lineHeight: '18px', color: 'var(--color-tertiary)', margin: 0, marginBottom: 2 }}>Request Period:</p>
                 <span style={{ fontWeight: 400, lineHeight: '18px', color: 'var(--color-tertiary)', fontFamily: 'Urbanist, sans-serif' }}>{period}</span>
               </div>
             </Col>

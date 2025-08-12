@@ -18,7 +18,8 @@
     "editor.defaultFormatter": "biomejs.biome",
     "chat.instructionsFilesLocations": {
         "packages/**": true
-    } //,
+    },
+    "vitest.disableWorkspaceWarning": true //,
     // "[typescript]": {
     //     "editor.tabSize": 2,
     //     // "prettier.singleQuote": true,

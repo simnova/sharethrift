@@ -146,7 +146,7 @@ export function MockMessagesDemo() {
   };
 
   return (
-  <div style={{ display: 'flex', height: '600px', overflow: 'hidden' }}>
+  <div style={{ display: 'flex', height: '100%', width: '100%', minHeight: 0, minWidth: 0, overflow: 'hidden' }}>
       {/* Conversation List */}
       <div style={{ width: 320, borderRight: '1px solid var(--color-foreground-2)' }}>
         <ConversationList
