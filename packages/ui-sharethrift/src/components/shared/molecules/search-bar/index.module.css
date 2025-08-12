@@ -7,7 +7,7 @@
 .searchInput {
   background-color: var(--color-background);
   border: 1px solid var(--color-primary);
-  border-radius: 100px 0 0 100px;
+  border-radius: 100px 0 0 100px !important;
   padding: 12px 24px;
   font-family: var(--Urbanist);
   color: var(--color-message-text);
@@ -22,7 +22,7 @@
 }
 
 .searchSubmit {
-  border-radius: 0 100px 100px 0;
+  border-radius: 0 100px 100px 0 !important;
   height:100%;
   padding: 10px 24px;
   border: 0px;

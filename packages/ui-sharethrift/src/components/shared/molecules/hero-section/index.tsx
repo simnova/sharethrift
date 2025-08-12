@@ -20,10 +20,7 @@ export const HeroSection: React.FC<HeroSectionProps> = ({
 
   return (
     <div className={styles.heroContainer}>
-      <picture>
-        <source media="(max-width: 800px)" srcSet={heroImgSmall} />
-        <img src={heroImg} alt="Hero background" className={styles.heroImage} />
-      </picture>
+      <img src={heroImg} alt="Hero background" className={styles.heroImage} />
       <div className={styles.heroContent}>
         <h1 className={styles.heroTitle}>
           Wherever you are,<br />

@@ -5,6 +5,7 @@
   border-radius: 0;
   border: none;
   box-shadow: none;
+  background-color: transparent;
 }
 
 .listingCard:hover {
@@ -18,9 +19,10 @@
   min-height: 0;
   height: auto;
   overflow: hidden;
-  border-radius: 0 !important;
+  background-color: lightgray;
+  border-radius: 2px !important;
   border: none;
-  box-shadow: none;
+  box-shadow: 0 4px 5px rgba(0, 0, 0, 0.1);
   outline: none;
   display: flex;
   align-items: center;

@@ -41,15 +41,10 @@ export const ListingsGrid: React.FC<ListingsGridProps> = ({
 
   return (
     <div className={styles.gridContainer}>
-      <Row gutter={[36, 36]} className={styles.grid}>
+      <Row gutter={[36, 36]} className={styles.grid} justify="space-between">
         {listings.map((listing) => (
           <Col 
-            key={listing._id} 
-            xs={24} 
-            sm={12} 
-            md={12} 
-            lg={6} 
-            xl={6}
+            key={listing._id}
             className={styles.gridItem}
           >
             <ListingCard
