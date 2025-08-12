@@ -1,5 +1,6 @@
 import type { MongooseSeedwork } from '@cellix/data-sources-mongoose';
 import type { DomainDataSource } from '@ocom/api-domain';
+import { ItemListingPersistence } from './item-listing/index.ts';
 
 export const Persistence = (
 	initializedService: MongooseSeedwork.MongooseContextFactory,
@@ -11,7 +12,9 @@ export const Persistence = (
 	}
 
 	const dataSource: DomainDataSource = {
-		domainContexts: {}, // TODO: Replace '{}' with the actual value or type if available
+		domainContexts: {
+			itemListing: ItemListingPersistence(initializedService),
+		},
 	};
 	return dataSource;
 };
