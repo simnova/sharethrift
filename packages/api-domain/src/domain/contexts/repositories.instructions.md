@@ -36,8 +36,8 @@ export interface MyAggregateRepository<props extends MyAggregateProps>
 	getNewInstance(/* required props for creation */) Promise<MyAggregate<props>>;
 	getById(id: string): Promise<MyAggregate<props>>;
 	// ...other domain-specific methods
-	// getAll(): Promise<MyAggregate<props>[]>;
-	// getBySomeCriteria(criteria: SomeCriteria): Promise<MyAggregate<props>[]>;
+    // getAll(): Promise<MyAggregate<props>[]>;
+    // getBySomeCriteria(criteria: SomeCriteria): Promise<MyAggregate<props>[]>;
 }
 ```
 

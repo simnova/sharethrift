@@ -69,15 +69,15 @@ src/
 - Each bounded context must define its own *DomainPermissions* interface related to interactions with its aggregates.
 ```typescript
 export interface MyContextDomainPermissions {
-    //some aggregate root permissions example
-    canCreateSomeAggregate: boolean;
-    canManageSomeAggregate: boolean;
-    //another aggregate root permissions example
-    canCreateAnotherAggregate: boolean;
+	//some aggregate root permissions example
+	canCreateSomeAggregate: boolean;
+	canManageSomeAggregate: boolean;
+	//another aggregate root permissions example
+	canCreateAnotherAggregate: boolean;
     canModifyAnotherAggregateProfile: boolean;
-    canManageFieldOnAnotherAggregate: boolean;
-    //other permissions
-    isSystemAccount: boolean;
+	canManageFieldOnAnotherAggregate: boolean;
+	//other permissions
+	isSystemAccount: boolean;
 }
 ```
 ### Visas
@@ -86,9 +86,9 @@ export interface MyContextDomainPermissions {
 import type { PassportSeedwork } from '@cellix/domain-seedwork';
 import type { MyContextDomainPermissions } from './my-context.domain-permissions.ts';
 export interface MyContextVisa extends PassportSeedwork.Visa<MyContextDomainPermissions> {
-    determineIf(
-        func: (permissions: Readonly<MyContextDomainPermissions>) => boolean,
-    ): boolean;
+	determineIf(
+		func: (permissions: Readonly<MyContextDomainPermissions>) => boolean,
+	): boolean;
 }
 ```
 ### Passports
@@ -97,7 +97,7 @@ export interface MyContextVisa extends PassportSeedwork.Visa<MyContextDomainPerm
 import type { MyContextVisa } from './community.visa.ts';
 import type { MyContextEntityReference } from './community/community.ts';
 export interface MyContextPassport {
-    forMyAggregate(root: MyAggregateEntityReference): MyContextVisa;
+	forMyAggregate(root: MyAggregateEntityReference): MyContextVisa;
 }
 ```
 

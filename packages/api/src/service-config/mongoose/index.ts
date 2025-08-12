@@ -1,7 +1,6 @@
 import type { ConnectOptions } from 'mongoose';
 import type { MongooseSeedwork } from '@cellix/data-sources-mongoose';
 import { Persistence } from '@ocom/api-persistence';
-import type { Domain } from '@ocom/api-domain';
 
 const isUsingCosmosDBEmulator =
     //biome-ignore lint:useLiteralKeys
@@ -26,18 +25,8 @@ export const mongooseConnectionString: string =
 
 export const mongooseContextBuilder = (
 	initializedService: MongooseSeedwork.MongooseContextFactory,
-    domainServices: Domain.Services,
 ) => {
-	return Persistence(initializedService, domainServices);
-};
-
-export const mongooseContextBuilderWithJwt = (
-	initializedService: MongooseSeedwork.MongooseContextFactory,
-    domainServices: Domain.Services,
-    jwt: Domain.Types.VerifiedJwt | null,
-) => {
-  console.log(jwt);
-	return Persistence(initializedService, domainServices);
+	return Persistence(initializedService);
 };
 
 export type MongooseModels = ReturnType<typeof mongooseContextBuilder>;
