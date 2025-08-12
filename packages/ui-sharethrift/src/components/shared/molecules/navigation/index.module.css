@@ -59,8 +59,36 @@
     background: var(--color-background);
 }
 
+
 .hamburgerContainer {
   display: none;
+}
+
+:global(.ant-drawer-body){
+    padding: 0 !important;
+}
+:global(.ant-drawer-header){
+    border: 0 !important;
+}
+
+@media (max-width: 768px) {
+  .hamburgerContainer {
+    display: flex;
+    position: fixed;
+    top: 1rem;
+    right: 10px;
+    z-index: 1100;
+  }
+  .hamburger {
+    display: flex;
+  }
+  .logoutDesktop {
+    display: none;
+  }
+  .logoutMobile {
+    display: block;
+    margin-top: 2rem;
+  }
 }
 
 .hamburger {
