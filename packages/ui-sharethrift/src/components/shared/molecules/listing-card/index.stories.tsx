@@ -18,7 +18,7 @@ const sampleListing: ItemListing = {
 };
 
 const meta: Meta<typeof ListingCard> = {
-  title: 'Molecules/ListingCard',
+  title: 'Molecules/Listing Card',
   component: ListingCard,
   parameters: {
     layout: 'centered',
@@ -31,10 +31,10 @@ const meta: Meta<typeof ListingCard> = {
 export default meta;
 type Story = StoryObj<typeof ListingCard>;
 
-export const Default: Story = {};
-
-export const WithClick: Story = {
-  args: {
-    onClick: () => alert('Card clicked!'),
-  },
+export const Default: Story = {
+  render: (args) => (
+    <div style={{ width: 280 }}>
+      <ListingCard {...args} />
+    </div>
+  ),
 };

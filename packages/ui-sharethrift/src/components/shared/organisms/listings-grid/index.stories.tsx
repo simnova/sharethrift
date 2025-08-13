@@ -1,4 +1,5 @@
 import type { Meta, StoryObj } from '@storybook/react';
+import { useState } from 'react';
 import { ListingsGrid } from './index';
 import { DUMMY_LISTINGS } from '../../../../data/dummy-listings';
 
@@ -6,7 +7,7 @@ const meta: Meta<typeof ListingsGrid> = {
   title: 'Organisms/ListingsGrid',
   component: ListingsGrid,
   parameters: {
-    layout: 'centered',
+    layout: 'fullscreen',
   },
 };
 
@@ -19,9 +20,6 @@ export const Default: Story = {
     onListingClick: (listing) => console.log('Clicked listing:', listing.title),
   },
 };
-
-
-import React, { useState } from 'react';
 
 export const WithPagination: Story = {
   render: (args) => {
@@ -45,14 +43,6 @@ export const WithPagination: Story = {
 export const Empty: Story = {
   args: {
     listings: [],
-    onListingClick: (listing) => console.log('Clicked listing:', listing.title),
-  },
-};
-
-export const SingleRow: Story = {
-  args: {
-    listings: DUMMY_LISTINGS.slice(0, 4),
-    showPagination: false,
     onListingClick: (listing) => console.log('Clicked listing:', listing.title),
   },
 };

@@ -12,7 +12,7 @@ interface ListingsProps {
   loggedIn?: boolean;
 }
 
-export default function Listings({ loggedIn = true }: Readonly<ListingsProps>) {
+export default function Listings({ loggedIn = false }: Readonly<ListingsProps>) {
   const isAuthenticated = loggedIn;
 
   // State for search query and pagination
@@ -55,7 +55,7 @@ export default function Listings({ loggedIn = true }: Readonly<ListingsProps>) {
 
   return (
     <div>
-      {/* Hero section - only shown for logged-out users */}
+      {/* Hero section */}
       {!isAuthenticated && (
         <HeroSection
           searchValue={searchQuery}
@@ -63,11 +63,10 @@ export default function Listings({ loggedIn = true }: Readonly<ListingsProps>) {
           onSearch={handleSearch}
         />
       )}
-
       <div className={styles.listingsPage} style={{ padding: isAuthenticated ? '36px' : '100px' }}>
-        <div className={styles.listingsHeader}>
+        <div className={styles.listingsHeader} style={{ gap: isAuthenticated ? '36px 0' : '24px 0' }}>
           {/* Search */}
-          <div className={styles.searchBar}>
+          <div className={`${styles.searchBar} ${isAuthenticated ? '' : styles.hideOnDesktop}`}>
             <SearchBar
               searchValue={searchQuery}
               onSearchChange={setSearchQuery}

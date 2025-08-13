@@ -1,8 +1,8 @@
 .grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, 280px); /* Dynamic columns with a fixed card width */
-  gap: 36px 12px; /* Add spacing between items */
-  justify-content: space-between; /* Distribute cards with space between */
+  grid-template-columns: repeat(auto-fit, 280px); 
+  gap: 36px 12px; 
+  justify-content: space-between; 
 }
 
 .emptyState {
