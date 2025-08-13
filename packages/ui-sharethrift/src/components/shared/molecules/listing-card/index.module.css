@@ -13,7 +13,7 @@
   min-height: 0;
   height: auto;
   overflow: hidden;
-  background-color: lightgray;
+  background-color: var(--color-foreground-1);
   border-radius: 2px !important;
   border: none;
   box-shadow: 0 4px 5px rgba(0, 0, 0, 0.1);
@@ -21,6 +21,10 @@
   display: flex;
   align-items: center;
   justify-content: center;
+}
+
+.imageContainer:hover {
+  box-shadow: 0 6px 7px rgba(0, 0, 0, 0.15);
 }
 
 .image {
@@ -51,4 +55,10 @@
 
 .dateRange {
   margin-bottom: 4px;
+}
+
+@media (max-width: 768px) {
+  .dateRange, .location {
+    font-size: 12px;
+  }
 }

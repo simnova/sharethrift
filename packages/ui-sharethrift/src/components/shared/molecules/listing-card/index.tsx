@@ -1,7 +1,7 @@
 import React from 'react';
 import { Card } from 'antd';
 import { SwapRightOutlined } from '@ant-design/icons';
-import type { ItemListing } from '../../../../types/listing';
+import type { ItemListing } from '../../../../components/layouts/home/components/mock-listings';
 import styles from './index.module.css';
 
 export interface ListingCardProps {

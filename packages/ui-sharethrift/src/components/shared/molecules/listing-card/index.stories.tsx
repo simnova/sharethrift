@@ -1,6 +1,6 @@
 import type { Meta, StoryObj } from '@storybook/react';
 import { ListingCard } from './index';
-import type { ItemListing } from '../../../../types/listing';
+import type { ItemListing } from '../../../../components/layouts/home/components/mock-listings'; // 
 
 const sampleListing: ItemListing = {
   _id: '1',

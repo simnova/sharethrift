@@ -36,11 +36,11 @@ export const CategoryFilter: React.FC<CategoryFilterProps> = ({
       <Select
         value={selectedCategory || 'All'} // Default to 'All'
         onChange={(value) => onCategoryChange(value)}
-        style={{ width: 200 }}
         placeholder="Select a category"
         className={styles.categorySelect}
         suffixIcon={null}
       >
+        <Option key={"All"} value="All">All</Option>
         {categories.map((category) => (
           <Option key={category} value={category}>
             {category}
