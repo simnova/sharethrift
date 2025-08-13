@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { Button, Card, Tabs } from "antd";
 import type { TabsProps } from "antd";
+import { PhoneOutlined, SafetyOutlined } from "@ant-design/icons";
 
 type PersonalAccountSubType = "non-verified" | "verified" | "verified-plus";
 type BusinessAccountSubType = "business" | "business-plus";
@@ -219,7 +220,7 @@ export default function SelectAccountType() {
         {selectedPersonalType === "verified" ||
         selectedPersonalType === "verified-plus" ? (
           <Button type="primary" size="large">
-            Start Identity Verification
+            <SafetyOutlined /> Start Identity Verification
           </Button>
         ) : null}
       </div>
@@ -252,7 +253,7 @@ export default function SelectAccountType() {
         }}
       >
         <Button type="primary" size="large">
-          Start Identity Verification
+          <SafetyOutlined /> Start Identity Verification
         </Button>
       </div>
     </div>
@@ -288,7 +289,7 @@ export default function SelectAccountType() {
         }}
       >
         <Button type="primary" size="large">
-          Contact Us
+          <PhoneOutlined /> Contact Us
         </Button>
       </div>
     </div>
@@ -338,11 +339,17 @@ export default function SelectAccountType() {
         centered
         size="large"
       />
-    <div style={{ display: "flex", justifyContent: "flex-end", marginTop: "32px" }}>
-      <Button type="default" size="large">
-        Save and Continue
-      </Button>
-    </div>
+      <div
+        style={{
+          display: "flex",
+          justifyContent: "flex-end",
+          marginTop: "32px",
+        }}
+      >
+        <Button type="default" size="large">
+          Save and Continue
+        </Button>
+      </div>
     </div>
   );
 }
