@@ -1,10 +1,9 @@
 import { Card, Typography, Avatar, Tag, Row, Col } from 'antd';
 import { SwapOutlined, AppstoreAddOutlined } from '@ant-design/icons';
+import bikeListingImg from '../../../../../assets/item-images/bike-listing.png';
 
 // Listing banner assets (from Figma export)
-const imgRectangle26 = "http://localhost:3845/assets/01578ef5d71b8fa8e18cc5f64d7def6801f92473.png";
-const imgVector = "http://localhost:3845/assets/81bd1230e72d3487b6fee61e6048d2d127a87690.svg";
-const img = "http://localhost:3845/assets/9846ff90b7c9c0832c8196bb932aaafe1745879d.svg";
+const imgRectangle26 = bikeListingImg;
 
 export interface ListingBannerProps {
   title: string;

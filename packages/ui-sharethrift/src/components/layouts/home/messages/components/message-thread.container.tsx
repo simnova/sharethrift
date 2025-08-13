@@ -1,5 +1,5 @@
 import { useState, useRef, useEffect } from 'react';
-import { useQuery, useMutation } from '@apollo/client';
+//import { useQuery, useMutation } from '@apollo/client';
 // import {
 //   HomeMessageThreadContainerGetConversationMessages as GET_CONVERSATION_MESSAGES,
 //   HomeMessageThreadContainerSendMessage as SEND_MESSAGE
@@ -39,8 +39,8 @@ export function MessageThreadContainer({ conversationId }: MessageThreadContaine
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
   }, [messages]);
 
-  const handleSendMessage = async (e: React.FormEvent) => {
-    // e.preventDefault();
+  //const handleSendMessage = async (e: React.FormEvent) => {
+    //e.preventDefault();
     // if (!messageText.trim() || sendingMessage) return;
     // try {
     //   await sendMessage({
@@ -55,6 +55,10 @@ export function MessageThreadContainer({ conversationId }: MessageThreadContaine
     // } catch (error) {
     //   console.error('Failed to send message:', error);
     // }
+  //};
+
+  const handleSendMessage = async () => {
+    // Message sending logic will go here
   };
 
   return (

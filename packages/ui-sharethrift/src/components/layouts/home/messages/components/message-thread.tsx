@@ -1,4 +1,4 @@
-import { List, Avatar, Input, Button, Spin, Empty, message as antdMessage, Typography } from 'antd';
+import { List, Avatar, Input, Button, Spin, Empty, message as antdMessage } from 'antd';
 import { SendOutlined } from '@ant-design/icons';
 
 interface Message {

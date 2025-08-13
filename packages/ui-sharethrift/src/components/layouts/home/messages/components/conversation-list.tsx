@@ -1,4 +1,4 @@
-import { List, Avatar, Spin, Empty, Typography, Tag, message as antdMessage } from 'antd';
+import { List, Avatar, Spin, Empty, Tag, message as antdMessage } from 'antd';
 import { SwapOutlined } from '@ant-design/icons';
 // No UserOutlined needed
 
@@ -111,7 +111,7 @@ function ConversationItem({ conversation, isSelected, onClick, currentUserId }: 
         }
         description={
           <>
-            <p style={{ margin: 0, color: 'var(--color-message-text)' }}>Listing: {conversation.listingId}</p>
+            <p style={{ margin: 0, marginBottom: 8, color: 'var(--color-message-text)' }}>Listing: {conversation.listingId}</p>
             <Tag className="activeTag" >Active</Tag>
           </>
         }
