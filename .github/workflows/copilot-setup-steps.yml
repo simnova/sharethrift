@@ -38,7 +38,7 @@ jobs:
         run: npm ci
 
       - name: Start all services
-        run: npm start &
+        run: npm start
 
       - name: Wait for OAuth2 Mock to be ready
         run: npx wait-on http://localhost:4000
