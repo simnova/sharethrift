@@ -119,26 +119,29 @@ export default function SelectAccountType() {
         >
           {option.title}
         </h3>
-        {isSelected && (
-          <div
-            style={{
-              marginLeft: 8,
-              backgroundColor: "var(--color-secondary)",
-              borderRadius: "50%",
-              width: 24,
-              height: 24,
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
-              color: "white",
-              fontSize: "14px",
-              fontWeight: "bold",
-              zIndex: 1,
-            }}
-          >
-            <CheckOutlined />
-          </div>
-        )}
+        <div
+          style={{
+            marginLeft: 8,
+            border: `1px solid ${
+              isSelected ? "var(--color-secondary)" : "grey"
+            }`,
+            backgroundColor: isSelected
+              ? "var(--color-secondary)"
+              : "transparent",
+            borderRadius: "50%",
+            width: 18,
+            height: 18,
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            color: "white",
+            fontSize: "14px",
+            fontWeight: "bold",
+            zIndex: 1,
+          }}
+        >
+          {isSelected ? <CheckOutlined /> : null}
+        </div>
       </div>
 
       <div
