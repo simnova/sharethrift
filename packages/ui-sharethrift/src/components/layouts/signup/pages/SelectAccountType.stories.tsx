@@ -28,7 +28,7 @@ export const PersonalAccountSelected: Story = {
 
 export const BusinessAccountSelected: Story = {
   name: 'Business Account Tab',
-  play: async ({ }) => {
+  play: async () => {
     // This would automatically select the business tab when the story loads
     // Implementation would require user interactions in Storybook
   },
@@ -36,7 +36,7 @@ export const BusinessAccountSelected: Story = {
 
 export const EnterpriseAccountSelected: Story = {
   name: 'Enterprise Account Tab',
-  play: async ({ }) => {
+  play: async () => {
     // This would automatically select the enterprise tab when the story loads
     // Implementation would require user interactions in Storybook
   },
