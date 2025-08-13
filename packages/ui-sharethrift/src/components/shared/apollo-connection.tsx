@@ -1,39 +1,48 @@
-import { from, ApolloLink, ApolloProvider } from "@apollo/client";
-import { type FC, useEffect } from "react";
+import { ApolloLink, ApolloProvider } from "@apollo/client";
+import { type FC, useEffect, useMemo } from "react";
 import { useAuth } from "react-oidc-context";
-// import { useParams } from "react-router-dom";
-import { ApolloLinkToAddAuthHeader, client, BaseApolloLink, TerminatingApolloLinkForGraphqlServer } from "./apollo-client-links"
+import { 
+  client, 
+  createApolloLinkChain, 
+  type ApolloClientConfig,
+  type CustomHeaders
+} from "./apollo-client-links";
 
 export interface ApolloConnectionProps {
   children: React.ReactNode;
 }
+
 export const ApolloConnection: FC<ApolloConnectionProps> = (props: ApolloConnectionProps) => {
   const auth = useAuth();
-//   const params = useParams(); // useParams.memberId won't work here because ApolloConnection wraps the Routes, not inside a Route
 
+  // Configuration for Apollo Client
+  const apolloConfig: ApolloClientConfig = useMemo(() => ({
+    uri: `${import.meta.env.VITE_FUNCTION_ENDPOINT}`,
+    batchMax: 15,
+    batchInterval: 50,
+    customHeaders: {
+      'x-app-version': import.meta.env.VITE_APP_VERSION || '1.0.0',
+      // Add more custom headers as needed
+    } as CustomHeaders
+  }), []);
 
-  const apolloLinkChainForGraphqlDataSource = from([
-    BaseApolloLink(),
-    ApolloLinkToAddAuthHeader(auth),
-    // ApolloLinkToAddCustomHeader('community', communityId, (communityId !== 'accounts')),
-    // ApolloLinkToAddCustomHeader('member', memberId),
-    TerminatingApolloLinkForGraphqlServer({
-      uri: `${import.meta.env.VITE_FUNCTION_ENDPOINT}`,
-      batchMax: 15,
-      batchInterval: 50
-    })
-  ]);
+  // Create the main GraphQL link chain
+  const apolloLinkChainForGraphqlDataSource = useMemo(() => 
+    createApolloLinkChain(apolloConfig, auth, true), // true for batching
+    [apolloConfig, auth]
+  );
 
-  const linkMap = {  
+  // Link map for different data sources (extendable for future needs)
+  const linkMap = useMemo(() => ({  
     default: apolloLinkChainForGraphqlDataSource  
-  };  
+  }), [apolloLinkChainForGraphqlDataSource]);
 
-  const updateLink = () => {  
+  // Dynamic link that can route operations to different endpoints
+  const updateLink = useMemo(() => {  
     return ApolloLink.from([  
       ApolloLink.split(  
-        // various options to split:
-        // 1. use a custom property in context: (operation) => operation.getContext().dataSource === some DataSourceEnum,
-        // 2. check for string name of the query if it is named: (operation) => operation.operationName === "CountryDetails",
+        // Route operations based on operation name or context
+        // For now, all operations use the default GraphQL endpoint
         (operation) => operation.operationName in linkMap,  
         new ApolloLink((operation, forward) => {  
           const link = linkMap[operation.operationName as keyof typeof linkMap] || linkMap.default;  
@@ -42,11 +51,12 @@ export const ApolloConnection: FC<ApolloConnectionProps> = (props: ApolloConnect
         apolloLinkChainForGraphqlDataSource  
       )  
     ]);  
-  }; 
+  }, [linkMap, apolloLinkChainForGraphqlDataSource]); 
 
+  // Update the Apollo Client link whenever auth changes
   useEffect(() => {
-    client.setLink(updateLink());
-  }, [auth]);
+    client.setLink(updateLink);
+  }, [updateLink]);
 
   return <ApolloProvider client={client}>{props.children}</ApolloProvider>;
 };
