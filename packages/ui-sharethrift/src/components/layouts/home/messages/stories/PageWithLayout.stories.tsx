@@ -13,21 +13,19 @@ export default meta;
 
 export const Default = {
   render: () => (
-    <div style={{ width: '100vw', height: '100vh', minHeight: 600, minWidth: 900 }}>
-      <AppLayout
-        isAuthenticated={true}
-        selectedKey="messages"
-        onLogout={() => undefined}
-        onLogin={() => undefined}
-        onSignUp={() => undefined}
-        onNavigate={(route) => {
-          // In Storybook, just log navigation
-          // eslint-disable-next-line no-console
-          console.log('Navigate to:', route);
-        }}
-      >
-        <MockMessagesDemo />
-      </AppLayout>
-    </div>
+    <AppLayout
+      isAuthenticated={true}
+      selectedKey="messages"
+      onLogout={() => undefined}
+      onLogin={() => undefined}
+      onSignUp={() => undefined}
+      onNavigate={(route) => {
+        // In Storybook, just log navigation
+        // eslint-disable-next-line no-console
+        console.log('Navigate to:', route);
+      }}
+    >
+      <MockMessagesDemo />
+    </AppLayout>
   ),
 };
