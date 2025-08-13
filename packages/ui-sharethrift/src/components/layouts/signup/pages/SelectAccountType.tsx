@@ -25,7 +25,7 @@ const personalOptions: AccountOption[] = [
       "15 items to share",
       "5 friends",
     ],
-    icon: "🪑", // Using emoji for now, can be replaced with proper icons
+    icon: "🪑",
   },
   {
     id: "verified",
@@ -59,11 +59,11 @@ const businessOptions: AccountOption[] = [
     title: "Business",
     price: "$14.99/month",
     features: [
-      "200 items for lease",
-      "50 friends",
-      "4 owner class listings",
-      "1 free legal case can show (first 60+15 if manage)",
-      "Help Required reports",
+      "200 items to share",
+      "200 bookmarks",
+      "4 active class listings",
+      "5 individual users can have shared access to manage",
+      "Basic business report",
     ],
     icon: "🛒",
   },
@@ -72,10 +72,10 @@ const businessOptions: AccountOption[] = [
     title: "Business Plus",
     price: "$24.99/month",
     features: [
-      "1000 items for lease",
-      "100 friends",
+      "1000 items to share",
+      "1000 bookmarks",
       "20 active class listings",
-      "20 free legal cases can show closed listings (6 if manage)",
+      "20 individual users can have shared access to manage",
       "Advanced business reports",
     ],
     icon: "🛍️",
@@ -100,7 +100,7 @@ export default function SelectAccountType() {
       }`}
       style={{
         width: 280,
-        height: 320,
+        // height: 320,
         position: "relative",
         border: isSelected
           ? "2px solid var(--color-secondary)"
