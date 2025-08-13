@@ -13,7 +13,7 @@ export interface ReservationRequestProps
 	reservationPeriod: ReservationPeriod;
 	readonly createdAt: Date;
 	updatedAt: Date;
-	readonly schemaVersion: number;
+	readonly schemaVersion: string;
 	listingId: string;
 	reserverId: string;
 	closeRequested: boolean;
@@ -39,20 +39,21 @@ export class ReservationRequest<props extends ReservationRequestProps>
 	//#region Methods
 	public static getNewInstance<props extends ReservationRequestProps>(
 		newProps: {
+            _id: string;
 			listingId: string;
 			reserverId: string;
-			reservationPeriodStart: Date;
-			reservationPeriodEnd: Date;
+			reservationPeriodStart: string | null;
+			reservationPeriodEnd: string | null;
 		},
 		passport: Passport,
 	): ReservationRequest<props> {
-		const id = crypto.randomUUID();
+		const id = newProps._id;
 		const now = new Date();
 
-		const reservationPeriod = ReservationPeriod.create(
-			newProps.reservationPeriodStart,
-			newProps.reservationPeriodEnd,
-		);
+		const reservationPeriod = new ReservationPeriod({
+			start: newProps.reservationPeriodStart,
+			end: newProps.reservationPeriodEnd,
+		});
 
 		const reservationRequestProps = {
 			...newProps,
@@ -61,7 +62,7 @@ export class ReservationRequest<props extends ReservationRequestProps>
 			reservationPeriod,
 			createdAt: now,
 			updatedAt: now,
-			schemaVersion: 1,
+			schemaVersion: "1",
 			closeRequested: false,
 		} as unknown as props;
 
@@ -73,20 +74,6 @@ export class ReservationRequest<props extends ReservationRequestProps>
 	private markAsNew(): void {
 		this.isNew = true;
 	}
-
-	/** @deprecated Use getNewInstance instead */
-	public static create<PassportType>(
-		props: {
-			listingId: string;
-			reserverId: string;
-			reservationPeriodStart: Date;
-			reservationPeriodEnd: Date;
-		},
-		passport: PassportType,
-	): ReservationRequest<ReservationRequestProps> {
-		return ReservationRequest.getNewInstance(props, passport as Passport);
-	}
-	//#endregion Methods
 
 	//#region Properties
 	get state(): ReservationRequestStateValue {
@@ -105,7 +92,7 @@ export class ReservationRequest<props extends ReservationRequestProps>
 		return this.props.updatedAt;
 	}
 
-	get schemaVersion(): number {
+	get schemaVersion(): string { // changed from number to string
 		return this.props.schemaVersion;
 	}
 
@@ -113,7 +100,7 @@ export class ReservationRequest<props extends ReservationRequestProps>
 		return this.props.listingId;
 	}
 	set listingId(value: string) {
-		if (!this.isNew && !this.visa.canUpdate()) {
+		if (!this.isNew && !this.visa.determineIf((domainPermissions) => domainPermissions.canUpdateRequest)) {
 			throw new DomainSeedwork.PermissionError(
 				'You do not have permission to update this listing'
 			);
@@ -125,7 +112,7 @@ export class ReservationRequest<props extends ReservationRequestProps>
 		return this.props.reserverId;
 	}
 	set reserverId(value: string) {
-		if (!this.isNew && !this.visa.canUpdate()) {
+		if (!this.isNew && !this.visa.determineIf((domainPermissions) => domainPermissions.canUpdateRequest)) {
 			throw new DomainSeedwork.PermissionError(
 				'You do not have permission to update this reserver'
 			);
@@ -139,7 +126,7 @@ export class ReservationRequest<props extends ReservationRequestProps>
 	//#endregion Properties
 
 	public accept(): void {
-		if (!this.visa.canAccept()) {
+		if (!this.visa.determineIf((domainPermissions) => domainPermissions.canAcceptRequest)) {
 			throw new DomainSeedwork.PermissionError(
 				'You do not have permission to accept this reservation request'
 			);
@@ -156,7 +143,7 @@ export class ReservationRequest<props extends ReservationRequestProps>
 	}
 
 	public reject(): void {
-		if (!this.visa.canReject()) {
+		if (!this.visa.determineIf((domainPermissions) => domainPermissions.canRejectRequest)) {
 			throw new DomainSeedwork.PermissionError(
 				'You do not have permission to reject this reservation request'
 			);
@@ -173,7 +160,7 @@ export class ReservationRequest<props extends ReservationRequestProps>
 	}
 
 	public cancel(): void {
-		if (!this.visa.canCancel()) {
+		if (!this.visa.determineIf((domainPermissions) => domainPermissions.canCancelRequest)) {
 			throw new DomainSeedwork.PermissionError(
 				'You do not have permission to cancel this reservation request'
 			);
@@ -190,7 +177,7 @@ export class ReservationRequest<props extends ReservationRequestProps>
 	}
 
 	public requestClose(): void {
-		if (!this.visa.canClose()) {
+		if (!this.visa.determineIf((domainPermissions) => domainPermissions.canCloseRequest)) {
 			throw new DomainSeedwork.PermissionError(
 				'You do not have permission to request close for this reservation request'
 			);
@@ -205,7 +192,7 @@ export class ReservationRequest<props extends ReservationRequestProps>
 	}
 
 	public close(): void {
-		if (!this.visa.canClose()) {
+		if (!this.visa.determineIf((domainPermissions) => domainPermissions.canCloseRequest)) {
 			throw new DomainSeedwork.PermissionError(
 				'You do not have permission to close this reservation request'
 			);

@@ -1,11 +1,13 @@
-export interface ReservationRequestVisa {
-	determineIf(predicate: (permissions: Record<string, unknown>) => boolean): boolean;
-	canCreate(): boolean;
-	canUpdate(): boolean;
-	canDelete(): boolean;
-	canAccept(): boolean;
-	canReject(): boolean;
-	canCancel(): boolean;
-	canClose(): boolean;
-	canView(): boolean;
+import type { PassportSeedwork } from "@cellix/domain-seedwork";
+import type { ReservationRequestDomainPermissions } from "./reservation-request.domain-permissions.ts";
+
+export interface ReservationRequestVisa
+  extends PassportSeedwork.Visa<ReservationRequestDomainPermissions> {
+  determineIf(
+    func: (
+      permissions: Readonly<ReservationRequestDomainPermissions>
+    ) => boolean
+  ): boolean;
 }
+
+

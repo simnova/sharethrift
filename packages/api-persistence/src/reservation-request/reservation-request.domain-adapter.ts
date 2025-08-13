@@ -1,59 +1,58 @@
 import { MongooseSeedwork } from "@cellix/data-sources-mongoose";
-import type { HydratedDocument } from 'mongoose';
 const { MongooseDomainAdapter, MongoTypeConverter } = MongooseSeedwork;
 import type { ReservationRequestProps, Passport } from "@ocom/api-domain";
-import { ReservationRequest as ReservationRequestAggregate } from "@ocom/api-domain"
+import { Domain, ReservationRequest as ReservationRequestAggregate } from "@ocom/api-domain";
+import { Models } from "@ocom/api-data-sources-mongoose-models";
 
-// Define the document interface based on the mongoose schema
-interface ReservationRequestDocument {
-  _id?: string;
-  state: string;
-  reservationPeriodStart: Date;
-  reservationPeriodEnd: Date;
-  createdAt: Date;
-  updatedAt: Date;
-  schemaversion: number;
-  listing: string;
-  reserver: string;
-  closeRequested: boolean;
+/**
+ * Type converter for ReservationRequest.
+ * Handles conversion between Mongoose doc and domain entity.
+ */
+export class ReservationRequestConverter extends MongoTypeConverter<
+  Models.ReservationRequest,
+  ReservationRequestDomainAdapter,
+  Passport,
+  Domain.Contexts.ReservationRequest<ReservationRequestDomainAdapter>
+> {
+  constructor() {
+    super(ReservationRequestDomainAdapter, ReservationRequestAggregate);
+  }
 }
 
-export type ReservationRequestModel = HydratedDocument<ReservationRequestDocument>;
-
-export class ReservationRequestDomainAdapter extends MongooseDomainAdapter<ReservationRequestModel> implements ReservationRequestProps {
+export class ReservationRequestDomainAdapter extends MongooseDomainAdapter<Models.ReservationRequest> implements ReservationRequestProps {
   // Primitive Fields Getters and Setters
-  get state() {
-    return this.doc.state;
+  get state(): Domain.Contexts.ReservationRequestStateValue {
+    return Domain.Contexts.ReservationRequestStateValue.create(this.doc.state);
   }
-  set state(value) {
-    this.doc.state = value;
+
+  set state(value: Domain.Contexts.ReservationRequestStateValue) {
+    this.doc.state = value.valueOf();
   }
 
   get listingId() {
-    return this.doc.listing?.toString() || '';
+    return this.doc.listing?.toString() || "";
   }
   set listingId(value: string) {
     this.doc.listing = value;
   }
 
   get reserverId() {
-    return this.doc.reserver?.toString() || '';
+    return this.doc.reserver?.toString() || "";
   }
   set reserverId(value: string) {
     this.doc.reserver = value;
   }
 
   get reservationPeriod() {
-    // This should return a ReservationPeriod value object
-    // For now, returning a simple object structure that matches expected interface
-    return {
-      start: this.doc.reservationPeriodStart,
-      end: this.doc.reservationPeriodEnd
-    } as any;
+    // Convert Date (Mongoose) to string (VO)
+    const start = this.doc.reservationPeriodStart instanceof Date ? this.doc.reservationPeriodStart.toISOString() : null;
+    const end = this.doc.reservationPeriodEnd instanceof Date ? this.doc.reservationPeriodEnd.toISOString() : null;
+    return new Domain.Contexts.ReservationPeriod({ start, end });
   }
   set reservationPeriod(value) {
-    this.doc.reservationPeriodStart = value.start;
-    this.doc.reservationPeriodEnd = value.end;
+    // Convert string (VO) to Date (Mongoose)
+    this.doc.reservationPeriodStart = value.start.valueOf() ? new Date(value.start.valueOf() as string) : new Date(0);
+    this.doc.reservationPeriodEnd = value.end.valueOf() ? new Date(value.end.valueOf() as string) : new Date(0);
   }
 
   get closeRequested() {
@@ -61,42 +60,5 @@ export class ReservationRequestDomainAdapter extends MongooseDomainAdapter<Reser
   }
   set closeRequested(value) {
     this.doc.closeRequested = value;
-  }
-
-  override get createdAt() {
-    return this.doc.createdAt;
-  }
-
-  override get updatedAt() {
-    return this.doc.updatedAt;
-  }
-  override set updatedAt(value: Date) {
-    this.doc.updatedAt = value;
-  }
-
-  override get schemaVersion() {
-    return this.doc.schemaversion?.toString() || '1';
-  }
-  override set schemaVersion(value: string) {
-    this.doc.schemaversion = parseInt(value, 10);
-  }
-
-  override get id() {
-    return this.doc._id?.toString() || '';
-  }
-}
-
-/**
- * Type converter for ReservationRequest.
- * Handles conversion between Mongoose doc and domain entity.
- */
-export class ReservationRequestConverter extends MongoTypeConverter<
-  ReservationRequestModel,
-  ReservationRequestDomainAdapter,
-  Passport,
-  ReservationRequestAggregate<ReservationRequestDomainAdapter>
-> {
-  constructor() {
-    super(ReservationRequestDomainAdapter, ReservationRequestAggregate);
   }
 }
