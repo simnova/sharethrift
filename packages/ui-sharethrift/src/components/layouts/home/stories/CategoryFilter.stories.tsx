@@ -1,9 +1,9 @@
-import { CategoryFilter } from './index';
+import { CategoryFilter } from '../components/category-filter';
 import { useState } from 'react';
 import type { Meta, StoryObj } from '@storybook/react';
 
 const meta: Meta<typeof CategoryFilter> = {
-  title: 'Molecules/Category Filter',
+  title: 'Listing/Category Filter',
   component: CategoryFilter,
   parameters: {
     layout: 'centered',

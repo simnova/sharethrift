@@ -1,6 +1,6 @@
 import React from 'react';
 import { Select } from 'antd';
-import styles from './index.module.css';
+import styles from './category-filter.module.css';
 
 const { Option } = Select;
 

@@ -1,8 +1,8 @@
-import Listings from './Listings';
+import Listings from '../pages/Listings';
 import type { Meta, StoryObj } from '@storybook/react';
 
 const meta: Meta<typeof Listings> = {
-  title: 'Pages/Home/Listings',
+  title: 'Pages/Browse Listings',
   component: Listings,
   parameters: {
     layout: 'fullscreen',
@@ -13,9 +13,9 @@ export default meta;
 type Story = StoryObj<typeof Listings>;
 
 export const LoggedIn: Story = {
-  render: () => <Listings loggedIn={true} />, // Simulate logged-in state
+  render: () => <Listings loggedIn={true} />,
 };
 
 export const LoggedOut: Story = {
-  render: () => <Listings loggedIn={false} />, // Simulate logged-out state
+  render: () => <Listings loggedIn={false} />,
 };

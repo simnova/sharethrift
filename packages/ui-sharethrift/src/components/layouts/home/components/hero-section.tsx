@@ -1,8 +1,8 @@
 import React from 'react';
-import styles from './index.module.css';
-import { SearchBar } from '../../../../shared/molecules/search-bar';
-import heroImg from '../../../../../assets/hero/hero.png';
-import heroImgSmall from '../../../../../assets/hero/hero-small.png';
+import styles from './hero-section.module.css';
+import { SearchBar } from '../../../shared/molecules/search-bar';
+import heroImg from '../../../../assets/hero/hero.png';
+import heroImgSmall from '../../../../assets/hero/hero-small.png';
 
 export interface HeroSectionProps {
   onSearch?: (query: string) => void;
