@@ -1,8 +1,20 @@
-import { Outlet } from "react-router-dom";
+import { Outlet, useNavigate } from "react-router-dom";
 import { Footer } from "../../shared/molecules/footer";
 import { Header } from "../../shared/molecules/header";
+import { useAuth } from "react-oidc-context";
 
 export default function SignupLayout() {
+  const auth = useAuth();
+  const navigate = useNavigate();
+
+  const handleOnLogin = () => {
+    navigate("/auth-redirect");
+  };
+
+  const handleOnSignUp = () => {
+    navigate("/auth-redirect");
+  };
+
   return (
     <div
       style={{
@@ -13,7 +25,11 @@ export default function SignupLayout() {
         flexDirection: "column",
       }}
     >
-      <Header isAuthenticated={true} />
+      <Header
+        isAuthenticated={auth.isAuthenticated}
+        onLogin={handleOnLogin}
+        onSignUp={handleOnSignUp}
+      />
       <div
         style={{
           display: "flex",
