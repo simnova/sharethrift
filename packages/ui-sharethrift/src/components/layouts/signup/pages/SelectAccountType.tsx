@@ -58,12 +58,16 @@ export default function SelectAccountType() {
   const [selectedPersonalType, setSelectedPersonalType] =
     useState<PersonalAccountSubType>("verified");
 
+  const handleSelectAccountType = (type: PersonalAccountSubType) => {
+    console.log("Selected account type:", type);
+    setSelectedPersonalType(type);
+  };
+
   const renderAccountCard = (
     option: AccountOption,
     isSelected: boolean,
     onSelect: () => void
   ) => (
-
     <Card
       key={option.id}
       className={`cursor-pointer transition-all duration-200 ${
@@ -91,7 +95,15 @@ export default function SelectAccountType() {
       }}
       onClick={onSelect}
     >
-      <div style={{ display: "flex", alignItems: "center", justifyContent: "center", width: "100%", marginBottom: 12 }}>
+      <div
+        style={{
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+          width: "100%",
+          marginBottom: 12,
+        }}
+      >
         <h3
           style={{
             fontSize: "18px",
@@ -187,7 +199,7 @@ export default function SelectAccountType() {
       >
         {personalOptions.map((option) =>
           renderAccountCard(option, selectedPersonalType === option.id, () =>
-            setSelectedPersonalType(option.id as PersonalAccountSubType)
+            handleSelectAccountType(option.id as PersonalAccountSubType)
           )
         )}
       </div>
