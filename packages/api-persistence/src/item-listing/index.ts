@@ -5,15 +5,8 @@ export const ItemListingPersistence = (
 	initializedService: MongooseSeedwork.MongooseContextFactory,
 ) => {
 	return {
-		getItemListingUnitOfWork: (
-			inProcEventBusInstance: unknown,
-			nodeEventBusInstance: unknown,
-		) => {
-			return getItemListingUnitOfWork(
-				initializedService,
-				inProcEventBusInstance,
-				nodeEventBusInstance,
-			);
+		getItemListingUnitOfWork: () => {
+			return getItemListingUnitOfWork(initializedService);
 		},
 	};
 };

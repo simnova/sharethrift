@@ -142,9 +142,9 @@ export class ItemListingDomainAdapter implements ItemListingProps {
  * Simple converter for ItemListing.
  * Handles conversion between Mongoose doc and domain entity.
  */
-export class ItemListingConverter {
-  static toDomain(doc: ItemListingModel, passport: Passport): ItemListingAggregate<ItemListingDomainAdapter> {
+export const ItemListingConverter = {
+  toDomain(doc: ItemListingModel, passport: Passport): ItemListingAggregate<ItemListingDomainAdapter> {
     const adapter = new ItemListingDomainAdapter(doc);
     return new ItemListingAggregate(adapter, passport);
   }
-}
+};

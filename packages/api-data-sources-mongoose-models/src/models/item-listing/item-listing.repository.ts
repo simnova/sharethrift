@@ -17,10 +17,12 @@ import {
 export class ItemListingRepositoryImpl<PassportType extends ItemListingProps>
 	implements ItemListingRepository<PassportType>
 {
+	// biome-ignore lint/suspicious/noExplicitAny: Required for mongoose model interface
 	private readonly model: Model<any>;
 	private readonly createPassport: () => Passport;
 
 	constructor(
+		// biome-ignore lint/suspicious/noExplicitAny: Required for mongoose model interface
 		model: Model<any>,
 		createPassport: () => Passport,
 	) {
@@ -88,7 +90,8 @@ export class ItemListingRepositoryImpl<PassportType extends ItemListingProps>
 		totalCount: number;
 	}> {
 		const limit = options.first || 20;
-		let query: any = { state: 'Published' };
+		// biome-ignore lint/suspicious/noExplicitAny: Required for dynamic query building
+		const query: any = { state: 'Published' };
 
 		// Add search filter
 		if (options.search) {
@@ -169,6 +172,7 @@ export class ItemListingRepositoryImpl<PassportType extends ItemListingProps>
 		} as ItemListingEntityReference;
 	}
 
+	// biome-ignore lint/suspicious/noExplicitAny: Required for mongoose document interface
 	private mapToEntity(doc: any): ItemListing<PassportType> {
 		const props = {
 			id: doc._id.toString(),
