@@ -36,14 +36,3 @@ jobs:
 
       - name: Install JavaScript dependencies
         run: npm ci
-
-      - name: Check if mock oauth server can be started
-        run: |
-          cd packages/service-oauth2-mock-server
-          npm run start-mock-auth
-          npx wait-on http://localhost:4000/token
-
-      - name: Stop mock oauth server
-        run: |
-          cd packages/service-oauth2-mock-server
-          npm run stop-mock-auth
