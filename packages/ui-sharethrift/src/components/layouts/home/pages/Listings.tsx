@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
-import { Button } from 'antd';
 import { HeroSection } from '../components/hero-section';
 import { SearchBar } from '../../../shared/molecules/search-bar';
+import { CreateListingButton } from '../../../shared/atoms/create-listing-button';
 import { CategoryFilter } from '../components/category-filter';
 import { ListingsGrid } from '../../../shared/organisms/listings-grid';
 import { DUMMY_LISTINGS } from '../../../../data/dummy-listings';
@@ -12,7 +12,7 @@ interface ListingsProps {
   loggedIn?: boolean;
 }
 
-export default function Listings({ loggedIn = false }: Readonly<ListingsProps>) {
+export default function Listings({ loggedIn = true }: Readonly<ListingsProps>) {
   const isAuthenticated = loggedIn;
 
   // State for search query and pagination
@@ -74,13 +74,7 @@ export default function Listings({ loggedIn = false }: Readonly<ListingsProps>) 
             />
             {/* Create listing button */}
             {isAuthenticated && (
-              <Button
-                className={styles.createListing}
-                onClick={handleCreateListing}
-                type="primary"
-              >
-                Create a Listing
-              </Button>
+              <CreateListingButton></CreateListingButton>
             )}
           </div>
 
@@ -95,7 +89,7 @@ export default function Listings({ loggedIn = false }: Readonly<ListingsProps>) 
               onCategoryChange={setSelectedCategory}
             />
             {/* TODO: Location filter */}
-            <span style={{ color: 'var(--color-tertiary)' }}>Philadelphia, PA · 10 mi</span>
+            <span style={{ fontSize: '14px', color: 'var(--color-tertiary)' }}><strong>Philadelphia, PA</strong> · 10 mi</span>
           </div>
         </div>
 

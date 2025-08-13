@@ -1,5 +1,6 @@
 import React from 'react';
 import { Layout, Button } from 'antd';
+import { CreateListingButton } from '../../atoms/create-listing-button';
 import styles from './index.module.css';
 import '../../../../styles/theme.css';
 
@@ -21,6 +22,7 @@ export const Header: React.FC<HeaderProps> = ({ isAuthenticated, onLogin, onSign
       <nav className={styles.authSection}>
         {!isAuthenticated && (
           <>
+            <CreateListingButton></CreateListingButton>
             <Button type="link" className={styles.authButton} onClick={onSignUp}>Sign Up</Button>
             <span className={styles.divider}>|</span>
             <Button type="link" className={styles.authButton} onClick={onLogin}>Log In</Button>
