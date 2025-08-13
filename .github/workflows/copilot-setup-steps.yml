@@ -35,7 +35,7 @@ jobs:
           cache: "npm"
 
       - name: Install JavaScript dependencies
-        run: npm ci --workspaces
+        run: npm ci
 
       - name: Start all services
         run: npm start
