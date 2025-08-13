@@ -6,7 +6,7 @@ export const oidcConfig = {
   noonce: true,
   response_type: 'code',
   scope: import.meta.env.VITE_B2C_SCOPE,
-  onSigninCallback: (_user:any | void) : void => {
+  onSigninCallback: () : void => {
     window.history.replaceState(
       {},
       document.title,
