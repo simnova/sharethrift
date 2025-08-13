@@ -7,7 +7,8 @@
 	"license": "MIT",
 	"main": "packages/api/dist/src/index.js",
 	"scripts": {
-		"start": "npm run build && concurrently npm:start:* --kill-others-on-fail --workspace=@ocom/api",
+		"start-mock-auth": "cd packages/service-oauth2-mock-server && npm run start-mock-auth",
+		"start": "npm run build && concurrently npm:start:* --kill-others-on-fail --workspace=@ocom/api \"npm run start-mock-auth\"",
 		"build": "npm run build --ws --if-present",
 		"lint": "npm run lint --ws --if-present",
 		"format": "npm run format --ws --if-present",
@@ -24,6 +25,7 @@
 		"test:watch": "node scripts/test-watch-all.js"
 	},
 	"workspaces": [
+    "packages/service-oauth2-mock-server",
 		"packages/cellix-domain-seedwork",
 		"packages/cellix-event-bus-seedwork-node",
 		"packages/api-domain",
