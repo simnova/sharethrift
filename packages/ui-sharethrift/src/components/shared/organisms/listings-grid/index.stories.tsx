@@ -1,4 +1,5 @@
 import type { Meta, StoryObj } from '@storybook/react';
+import { useState } from 'react';
 import { ListingsGrid } from './index';
 import { DUMMY_LISTINGS } from '../../../../data/dummy-listings';
 
@@ -21,27 +22,27 @@ export const Default: Story = {
 };
 
 export const WithPagination: Story = {
-  args: {
-    listings: DUMMY_LISTINGS.slice(0, 8),
-    total: DUMMY_LISTINGS.length,
-    currentPage: 1,
-    pageSize: 8,
-    onListingClick: (listing) => console.log('Clicked listing:', listing.title),
-    onPageChange: (page, pageSize) => console.log('Page change:', page, pageSize),
+  render: (args) => {
+    const [currentPage, setCurrentPage] = useState(1);
+    const pageSize = 8;
+    const pagedListings = DUMMY_LISTINGS.slice((currentPage - 1) * pageSize, currentPage * pageSize);
+    return (
+      <ListingsGrid
+        {...args}
+        listings={pagedListings}
+        total={DUMMY_LISTINGS.length}
+        currentPage={currentPage}
+        pageSize={pageSize}
+        onListingClick={(listing) => console.log('Clicked listing:', listing.title)}
+        onPageChange={(page) => setCurrentPage(page)}
+      />
+    );
   },
 };
 
 export const Empty: Story = {
   args: {
     listings: [],
-    onListingClick: (listing) => console.log('Clicked listing:', listing.title),
-  },
-};
-
-export const SingleRow: Story = {
-  args: {
-    listings: DUMMY_LISTINGS.slice(0, 4),
-    showPagination: false,
     onListingClick: (listing) => console.log('Clicked listing:', listing.title),
   },
 };

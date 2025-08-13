@@ -1,14 +1,8 @@
 .grid {
-  margin: 0;
-}
-
-.gridItem {
-  display: flex;
-  width: 300px;
-}
-
-.gridItem > * {
-  flex: 1;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, 280px); 
+  gap: 36px 12px; 
+  justify-content: space-between; 
 }
 
 .emptyState {
@@ -29,4 +23,11 @@
   justify-content: center;
   margin-top: 48px;
   padding-top: 24px;
+}
+
+@media (max-width: 768px) {
+  .grid {
+    grid-template-columns: repeat(auto-fit, 160px);
+    gap: 12px;
+  }
 }

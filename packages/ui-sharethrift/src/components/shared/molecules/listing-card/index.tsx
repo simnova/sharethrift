@@ -31,6 +31,7 @@ export const ListingCard: React.FC<ListingCardProps> = ({ listing, onClick }) =>
         </div>
       }
       onClick={onClick}
+      styles={{body: { padding: '0' }}}
     >
       <div className={styles.content}>
         <h3 className={styles.title}>{listing.title}</h3>

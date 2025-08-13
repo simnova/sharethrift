@@ -7,9 +7,12 @@ import { useActiveListings, useCategories } from '../../../../hooks/useListings'
 import type { ItemListing } from '../../../../types/listing';
 import styles from './Listings.module.css';
 
-export default function Listings() {
-  // TODO: Replace with real auth state from context/hooks
-  const isAuthenticated = true;
+interface ListingsProps {
+  loggedIn?: boolean;
+}
+
+export default function Listings({ loggedIn = false }: Readonly<ListingsProps>) {
+  const isAuthenticated = loggedIn;
 
   // State for search query and pagination
   const [searchQuery, setSearchQuery] = useState('');
@@ -81,7 +84,7 @@ export default function Listings() {
 
   return (
     <div>
-      {/* Hero section - only shown for logged-out users */}
+      {/* Hero section */}
       {!isAuthenticated && (
         <HeroSection
           searchValue={searchQuery}
@@ -89,11 +92,10 @@ export default function Listings() {
           onSearch={handleSearch}
         />
       )}
-
-      <div className={styles.listingsPage}>
-        <div className={styles.listingsHeader}>
+      <div className={styles.listingsPage} style={{ padding: isAuthenticated ? '36px' : '100px' }}>
+        <div className={styles.listingsHeader} style={{ gap: isAuthenticated ? '36px 0' : '24px 0' }}>
           {/* Search */}
-          <div className={styles.searchBar}>
+          <div className={`${styles.searchBar} ${isAuthenticated ? '' : styles.hideOnDesktop}`}>
             <SearchBar
               searchValue={searchQuery}
               onSearchChange={setSearchQuery}
@@ -118,7 +120,7 @@ export default function Listings() {
               onCategoryChange={setSelectedCategory}
             />
             {/* TODO: Location filter */}
-            <span>Philadelphia, PA · 10 mi</span>
+            <span style={{ color: 'var(--color-tertiary)' }}>Philadelphia, PA · 10 mi</span>
           </div>
         </div>
 

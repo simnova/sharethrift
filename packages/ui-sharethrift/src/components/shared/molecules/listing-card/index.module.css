@@ -1,21 +1,15 @@
 .listingCard {
   cursor: pointer;
-  transition: none;
-  height: 100%;
-  border-radius: 0;
   border: none;
-  box-shadow: none;
   background-color: transparent;
-}
-
-.listingCard:hover {
-  transform: none;
-  box-shadow: none;
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
 }
 
 .imageContainer {
   width: 100%;
-  aspect-ratio: 1 / 1;
+  aspect-ratio: 1 / 1.1;
   min-height: 0;
   height: auto;
   overflow: hidden;
@@ -32,42 +26,29 @@
 .image {
   width: 100%;
   height: 100%;
-  object-fit: contain;
-  transition: none;
-  display: block;
-  border-radius: 0;
 }
 
 .content {
-  padding: 0px 0 0 0;
-  margin-left: -24.5px;
   text-align: left;
   width: 100%;
   box-sizing: border-box;
 }
 
-.title {
-  font-size: 16px;
-  font-weight: 600;
+.content > * {
+  margin: 0;
   color: var(--color-tertiary);
-  margin: 0 0 8px 0;
-  line-height: 1.4;
   overflow: hidden;
-  text-align: left;
+}
+
+.title {
+  margin-bottom: 8px;
+  overflow: hidden;
+}
+
+.title:hover {
+  color: var(--color-secondary);
 }
 
 .dateRange {
-  font-size: 14px;
-  color: var(--color-tertiary);
-  margin: 0 0 4px 0;
-  line-height: 1.4;
-  text-align: left;
-}
-
-.location {
-  font-size: 14px;
-  color: var(--color-tertiary);
-  margin: 0;
-  line-height: 1.4;
-  text-align: left;
+  margin-bottom: 4px;
 }

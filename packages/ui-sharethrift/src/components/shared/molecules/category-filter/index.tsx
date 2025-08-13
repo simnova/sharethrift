@@ -5,15 +5,28 @@ import styles from './index.module.css';
 const { Option } = Select;
 
 interface CategoryFilterProps {
-  label: string;
-  categories: string[];
+  label?: string;
+  categories?: string[]; // Make categories optional
   selectedCategory: string;
   onCategoryChange: (category: string) => void;
 }
 
+const DEFAULT_CATEGORIES = [
+  'Tools & Equipment',
+  'Electronics',
+  'Sports & Outdoors',
+  'Home & Garden',
+  'Party & Events',
+  'Vehicles & Transportation',
+  'Kids & Baby',
+  'Books & Media',
+  'Clothing & Accessories',
+  'Miscellaneous',
+];
+
 export const CategoryFilter: React.FC<CategoryFilterProps> = ({
-  label,
-  categories,
+  label = "Category",
+  categories = DEFAULT_CATEGORIES, // Use default categories if none are provided
   selectedCategory,
   onCategoryChange,
 }) => {
@@ -28,7 +41,6 @@ export const CategoryFilter: React.FC<CategoryFilterProps> = ({
         className={styles.categorySelect}
         suffixIcon={null}
       >
-        <Option value="All">All</Option> {/* Update the value to match the default */}
         {categories.map((category) => (
           <Option key={category} value={category}>
             {category}
