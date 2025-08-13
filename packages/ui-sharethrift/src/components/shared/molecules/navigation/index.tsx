@@ -19,7 +19,6 @@ export interface NavigationProps {
   onLogout?: () => void;
   onNavigate?: (route: string) => void;
   selectedKey?: string;
-  selectedKey?: string;
 }
 
 const { Sider } = Layout;

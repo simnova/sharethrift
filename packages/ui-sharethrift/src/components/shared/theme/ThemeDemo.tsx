@@ -2,7 +2,7 @@
 import React from 'react';
 import styles from './ThemeDemo.module.css';
 import { Button, Input, Select, Tabs, Checkbox, Tag, DatePicker, Form } from 'antd';
-const { RangePicker } = DatePicker;
+import { SwapOutlined, AppstoreAddOutlined, UserOutlined } from '@ant-design/icons';
 import { MessageOutlined } from '@ant-design/icons';
 import '../../../styles/theme.css';
 
@@ -114,6 +114,26 @@ export const ThemeDemo: React.FC = () => (
       <Tag className={styles.requestRejectedTag} >Request Rejected</Tag>
       <Tag className={styles.closingTag} >Closing</Tag>
       <Tag className={styles.closingTag} >Closing - Awaiting Response</Tag>
+    </div>
+     <div className={styles.labels}>
+      <Tag className={styles.requestSubmitted} >
+        <AppstoreAddOutlined style={{ color: 'var(--color-background)', fontSize: 16 }}/>
+        Request Submitted
+      </Tag>
+      <Tag className={styles.sharer} >
+        <SwapOutlined style={{ color: 'var(--color-background)', fontSize: 16 }}/>
+        Sharer
+      </Tag>
+      <Tag className={styles.reserver} >
+        <UserOutlined style={{ color: 'var(--color-background)', fontSize: 16 }}/>
+        Reserver
+      </Tag>
+      <Tag className={styles.sharerIcon} >
+        <SwapOutlined style={{ color: 'var(--color-background)', fontSize: 16 }}/>
+      </Tag>
+      <Tag className={styles.reserverIcon} >
+        <UserOutlined style={{ color: 'var(--color-background)', fontSize: 16 }}/>
+      </Tag>
     </div>
     </div>
   </div>

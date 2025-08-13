@@ -35,18 +35,9 @@ const meta: Meta<typeof ConversationList> = {
 export default meta;
 type Story = StoryObj<typeof ConversationList>;
 
-
 export const Default: Story = {
-  render: (args) => (
-    <div style={{ width: 400, height: 600, background: '#f8f8f8', padding: 16 }}>
-      <ConversationList {...args} />
-    </div>
-  ),
   args: {
-    onConversationSelect: (id: string) => {
-      // eslint-disable-next-line no-console
-      console.log('Selected conversation:', id);
-    },
+    onConversationSelect: () => {},
     selectedConversationId: '1',
     conversations: mockConversations,
   },

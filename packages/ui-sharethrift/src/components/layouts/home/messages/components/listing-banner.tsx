@@ -1,4 +1,5 @@
 import { Card, Typography, Avatar, Tag, Row, Col } from 'antd';
+import { SwapOutlined, AppstoreAddOutlined } from '@ant-design/icons';
 
 // Listing banner assets (from Figma export)
 const imgRectangle26 = "http://localhost:3845/assets/01578ef5d71b8fa8e18cc5f64d7def6801f92473.png";
@@ -11,18 +12,6 @@ export interface ListingBannerProps {
   period: string;
   status: string;
   imageUrl?: string;
-}
-
-
-
-// Figma icon SVG (replace with the actual SVG if you have it)
-function SwapIcon() {
-  return (
-    <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
-      <circle cx="10" cy="10" r="10" fill="var(--color-highlight)" stroke="var(--color-secondary)" strokeWidth="1" />
-      <path d="M7 10h6M13 10l-2-2m2 2l-2 2" stroke="var(--color-secondary)" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
-    </svg>
-  );
 }
 
 export function ListingBanner({ title, owner, period, status, imageUrl }: ListingBannerProps) {
@@ -38,7 +27,12 @@ export function ListingBanner({ title, owner, period, status, imageUrl }: Listin
         boxShadow: 'none',
       }}
     >
-      <Row align="middle" gutter={24} style={{ padding: '16px 24px' }}>
+      <Row
+        align="middle"
+        gutter={24}
+        className="listingBannerRow"
+        style={{ padding: '16px 24px' }}
+      >
         <Col>
           <Avatar
             shape="square"
@@ -48,13 +42,13 @@ export function ListingBanner({ title, owner, period, status, imageUrl }: Listin
           />
         </Col>
         <Col flex="auto">
-          <Row align="middle" gutter={24}>
+          <Row align="middle" gutter={24} className="listingBannerContentRow">
             <Col flex="auto">
-              <Typography.Title level={3} style={{ margin: 0, color: 'var(--color-primary)', fontFamily: 'Instrument Serif, serif', fontWeight: 400, fontSize: 36, lineHeight: '42px' }}>{title}</Typography.Title>
-              <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginTop: 4 }}>
-                <span style={{ fontFamily: 'Urbanist, sans-serif', fontWeight: 600, fontSize: 14, color: 'var(--color-primary)', lineHeight: '20px', width: 64 }}>{owner}</span>
-                <Tag color="var(--color-secondary)" style={{ borderRadius: 20, padding: '2px 8px', display: 'flex', alignItems: 'center', margin: 0 }}>
-                  <SwapIcon />
+              <Typography.Title level={3} style={{ margin: 0, color: 'var(--color-primary)', fontFamily: 'Instrument Serif, serif', fontWeight: 400, fontSize: 36, lineHeight: '42px', textAlign: 'left' }}>{title}</Typography.Title>
+              <div className="listingBannerOwnerRow" style={{ display: 'flex', alignItems: 'center', gap: 8, marginTop: 4 }}>
+                <span style={{ fontFamily: 'Urbanist, sans-serif', fontWeight: 600, fontSize: 14, color: 'var(--color-primary)', lineHeight: '20px'}}>{owner}</span>
+                <Tag className="sharerIcon">
+                  <SwapOutlined />
                 </Tag>
               </div>
             </Col>
@@ -65,14 +59,39 @@ export function ListingBanner({ title, owner, period, status, imageUrl }: Listin
               </div>
             </Col>
             <Col>
-              <Tag color="var(--color-secondary)" style={{ borderRadius: 20, padding: '8px 20px', display: 'flex', alignItems: 'center', gap: 8, margin: 0 }}>
-                <Avatar shape="circle" size={14} src={img} style={{ background: 'transparent' }} />
-                <span style={{ color: 'var(--color-background-2)', fontFamily: 'Urbanist, sans-serif', fontWeight: 600, fontSize: 12, lineHeight: '16px' }}>{status}</span>
+              <Tag className="requestSubmitted">
+                <AppstoreAddOutlined style={{ color: 'var(--color-background-2)', fontSize: 16 }}/>
+                {status}
               </Tag>
             </Col>
           </Row>
         </Col>
       </Row>
+      <style>{`
+        .listingBannerContentRow {
+          gap: 8px !important;
+        }
+        @media (max-width: 576px) {
+          .listingBannerRow {
+            flex-direction: column !important;
+            align-items: center !important;
+            gap: 12px !important;
+          }
+          .listingBannerContentRow {
+            flex-direction: column !important;
+            align-items: center !important;
+            gap: 8px !important;
+          }
+          .listingBannerOwnerRow {
+            justify-content: center !important;
+          }
+          .ant-typography, .ant-typography h3 {
+            text-align: center !important;
+            font-size: 22px !important;
+            line-height: 28px !important;
+          }
+        }
+      `}</style>
     </Card>
   );
 }

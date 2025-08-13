@@ -1,4 +1,6 @@
 import { useState, useRef, useEffect } from 'react';
+import { Button } from 'antd';
+import { ArrowLeftOutlined } from '@ant-design/icons';
 import { ConversationList } from './conversation-list';
 import { MessageThread } from './message-thread';
 import { ListingBannerContainer } from './listing-banner.container';
@@ -100,14 +102,29 @@ const initialMessages: Record<string, Message[]> = {
   ],
 };
 
-
 export function MockMessagesDemo() {
   const [selectedConversationId, setSelectedConversationId] = useState<string | null>(mockConversations[0]?.id || null);
   const [messagesMap, setMessagesMap] = useState<Record<string, Message[]>>(initialMessages);
   const [messageText, setMessageText] = useState('');
   const [sendingMessage, setSendingMessage] = useState(false);
+  const [isMobile, setIsMobile] = useState(false);
+  const [showListOnMobile, setShowListOnMobile] = useState(true);
   const messagesEndRef = useRef<HTMLDivElement | null>(null);
   const currentUserId = 'user123';
+
+  // Detect mobile screen
+  useEffect(() => {
+    const mq = window.matchMedia('(max-width: 576px)');
+    const handleResize = () => setIsMobile(mq.matches);
+    handleResize();
+    mq.addEventListener('change', handleResize);
+    return () => mq.removeEventListener('change', handleResize);
+  }, []);
+
+  // When switching to desktop, always show both
+  useEffect(() => {
+    if (!isMobile) setShowListOnMobile(true);
+  }, [isMobile]);
 
   // Scroll to bottom when messages change
   useEffect(() => {
@@ -119,6 +136,7 @@ export function MockMessagesDemo() {
   const handleConversationSelect = (id: string) => {
     setSelectedConversationId(id);
     setMessageText('');
+    if (isMobile) setShowListOnMobile(false);
   };
 
   const handleSendMessage = (e: React.FormEvent) => {
@@ -145,10 +163,60 @@ export function MockMessagesDemo() {
     }, 300); // Simulate network delay
   };
 
+  // Responsive layout
+  if (isMobile) {
+    return (
+      <div style={{ height: '100%', width: '100%', minHeight: 0, minWidth: 0, overflow: 'hidden', background: 'var(--color-background)' }}>
+        {showListOnMobile ? (
+          <div style={{ width: '100%', height: '100%' }}>
+            <ConversationList
+              onConversationSelect={handleConversationSelect}
+              selectedConversationId={selectedConversationId}
+              conversations={mockConversations}
+            />
+          </div>
+        ) : (
+          <div style={{ width: '100%', height: '100%', display: 'flex', flexDirection: 'column', background: '#f5f5f5' }}>
+            <div style={{ display: 'flex', alignItems: 'center', height: 48, background: 'var(--color-background-2)', borderBottom: '1px solid var(--color-foreground-2)' }}>
+              <Button type="text" icon={<ArrowLeftOutlined />} onClick={() => setShowListOnMobile(true)} style={{ marginLeft: 8, fontSize: 20 }} />
+              <span style={{ fontWeight: 600, fontFamily: 'var(--Urbanist)', fontSize: 16, marginLeft: 8 }}>Conversation</span>
+            </div>
+            {/* Banner at the top */}
+            {(() => {
+              const conv = mockConversations.find(c => c.id === selectedConversationId);
+              const owner = conv?.participants.find(p => p !== currentUserId) || 'Unknown';
+              return conv ? (
+                <div style={{ marginBottom: 16 }}>
+                  <ListingBannerContainer listingId={conv.listingId} owner={owner} />
+                </div>
+              ) : null;
+            })()}
+            <div style={{ flex: 1, minHeight: 0, display: 'flex', flexDirection: 'column' }}>
+              <MessageThread
+                conversationId={selectedConversationId!}
+                messages={messagesMap[selectedConversationId!] || []}
+                loading={false}
+                error={null}
+                messageText={messageText}
+                setMessageText={setMessageText}
+                sendingMessage={sendingMessage}
+                handleSendMessage={handleSendMessage}
+                messagesEndRef={messagesEndRef}
+                currentUserId={currentUserId}
+                contentContainerStyle={{ paddingLeft: 8, paddingRight: 8 }}
+              />
+            </div>
+          </div>
+        )}
+      </div>
+    );
+  }
+
+  // Desktop layout (unchanged)
   return (
-  <div style={{ display: 'flex', height: '100%', width: '100%', minHeight: 0, minWidth: 0, overflow: 'hidden' }}>
+    <div style={{ display: 'flex', height: '100%', width: '100%', minHeight: 0, minWidth: 0, overflow: 'hidden' }}>
       {/* Conversation List */}
-      <div style={{ width: 320, borderRight: '1px solid var(--color-foreground-2)' }}>
+      <div style={{ width: 'clamp(220px, 28vw, 340px)', minWidth: 180, maxWidth: 400, borderRight: '1px solid var(--color-foreground-2)' }}>
         <ConversationList
           onConversationSelect={handleConversationSelect}
           selectedConversationId={selectedConversationId}
