@@ -41,8 +41,7 @@ jobs:
         run: |
           cd packages/service-oauth2-mock-server
           npm run start-mock-auth
-          sleep 5
-          curl -f http://localhost:4000/token || exit 1
+          npx wait-on http://localhost:4000/token
 
       - name: Stop mock oauth server
         run: |
