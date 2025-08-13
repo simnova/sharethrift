@@ -13,15 +13,16 @@ export default meta;
 
 type Story = StoryObj<typeof CategoryFilter>;
 
-export const Default: Story = {
-  render: () => {
-    const [selectedCategory, setSelectedCategory] = useState('');
-
-    return (
-      <CategoryFilter
+const DefaultCategoryFilter = () => {
+  const [selectedCategory, setSelectedCategory] = useState<string>("All");
+  return (
+    <CategoryFilter
       selectedCategory={selectedCategory}
       onCategoryChange={setSelectedCategory}
-      />
-    );
-  },
+    />
+  );
+};
+
+export const Default: Story = {
+  render: () => <DefaultCategoryFilter />,
 };

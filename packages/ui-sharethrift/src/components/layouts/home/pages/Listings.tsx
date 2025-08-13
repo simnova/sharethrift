@@ -12,7 +12,7 @@ interface ListingsProps {
   loggedIn?: boolean;
 }
 
-export default function Listings({ loggedIn = false }: Readonly<ListingsProps>) {
+export default function Listings({ loggedIn = true }: Readonly<ListingsProps>) {
   const isAuthenticated = loggedIn;
 
   // State for search query and pagination

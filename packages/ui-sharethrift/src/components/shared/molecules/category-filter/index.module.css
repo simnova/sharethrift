@@ -5,18 +5,21 @@
   font-family: var(--Urbanist);
 }
 
-.categoryFilter > * {
+.categoryFilter * {
   font-family: var(--Urbanist);
+  font-size: 14px !important;
   color: var(--color-tertiary);
+}
+
+.categorySelect * {
+  border: none !important;
+  padding: 0 !important;
+  background-color: transparent !important;
+  color: var(--color-tertiary) !important;
+  font-weight: 600 !important;
+  box-shadow: none !important;
 }
 
 .categorySelect > * {
-  border: none !important;
-  background-color: transparent !important;
-  color: var(--color-tertiary);
-}
-
-.categorySelect:focus-visible {
-  border: none !important;
-  box-shadow: none !important;
+  padding: 0 8px !important;
 }
