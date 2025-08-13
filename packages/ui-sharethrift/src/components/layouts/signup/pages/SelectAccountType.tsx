@@ -276,9 +276,9 @@ export default function SelectAccountType() {
           marginBottom: "24px",
         }}
       >
-        ShareThrift offers enterprise accounts to businesses for your company
-        account type integration. Please contact us if you need support for an
-        enterprise account in the right fit for you.
+        ShareThrift offers enterprise accounts with with custom restrictions and
+        identity integrations. Please contact us at (xxx) xxx-xxxx to discuss if
+        an enterprise account is the right fit for you.
       </p>
 
       <div
