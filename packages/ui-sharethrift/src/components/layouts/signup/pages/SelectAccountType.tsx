@@ -1,6 +1,9 @@
 import { useState } from "react";
 import { Button, Card } from "antd";
 import { SafetyOutlined } from "@ant-design/icons";
+import stool from "../../../../../src/assets/item-images/stool.png";
+import armchair from "../../../../../src/assets/item-images/armchair.png";
+import bubbleChair from "../../../../../src/assets/item-images/bubble-chair.png";
 
 type PersonalAccountSubType = "non-verified" | "verified" | "verified-plus";
 
@@ -23,7 +26,7 @@ const personalOptions: AccountOption[] = [
       "15 items to share",
       "5 friends",
     ],
-    icon: "🪑",
+    icon: stool,
   },
   {
     id: "verified",
@@ -35,7 +38,7 @@ const personalOptions: AccountOption[] = [
       "30 items to share",
       "10 friends",
     ],
-    icon: "🛋️",
+    icon: armchair,
   },
   {
     id: "verified-plus",
@@ -47,7 +50,7 @@ const personalOptions: AccountOption[] = [
       "50 items to share",
       "30 friends",
     ],
-    icon: "💺",
+    icon: bubbleChair,
   },
 ];
 
@@ -107,12 +110,23 @@ export default function SelectAccountType() {
             zIndex: 1,
           }}
         >
-          ✓
         </div>
       )}
 
-      <div style={{ fontSize: "60px", marginBottom: "20px" }}>
-        {option.icon}
+      <div
+        style={{
+          fontSize: "60px",
+          marginBottom: "20px",
+          height: 60,
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+        }}
+      >
+        <img
+          src={option.icon}
+          style={{ height: 100, width: "auto", objectFit: "contain" }}
+        />
       </div>
 
       <h3
