@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { EnvironmentFilled } from '@ant-design/icons';
 import { HeroSection } from '../components/hero-section';
 import { SearchBar } from '../../../shared/molecules/search-bar';
 import { CreateListingButton } from '../../../shared/atoms/create-listing-button';
@@ -89,7 +90,10 @@ export function MockListingsPage({ loggedIn = true }: Readonly<MockListingsPageP
               onCategoryChange={setSelectedCategory}
             />
             {/* TODO: Location filter */}
-            <span style={{ fontSize: '14px', color: 'var(--color-tertiary)' }}><strong>Philadelphia, PA</strong> · 10 mi</span>
+            <span style={{ fontSize: '14px', fontWeight: '600', color: 'var(--color-tertiary)', display: 'flex', alignItems: 'center' }}>
+              <EnvironmentFilled style={{fontSize: '18px', marginRight: '8px'}}/>
+              Philadelphia, PA · 10 mi
+              </span>
           </div>
         </div>
 

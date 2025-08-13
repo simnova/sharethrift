@@ -1,7 +1,7 @@
 import React from 'react';
 import { Empty, Pagination } from 'antd';
 import { ListingCard } from '../../molecules/listing-card';
-import type { ItemListing } from '../../../../types/listing';
+import type { ItemListing } from '../../../../components/layouts/home/components/mock-listings';
 import styles from './index.module.css';
 
 export interface ListingsGridProps {
