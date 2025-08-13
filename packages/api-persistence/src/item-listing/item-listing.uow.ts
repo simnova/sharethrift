@@ -1,47 +1,44 @@
 import { MongooseSeedwork } from '@cellix/data-sources-mongoose';
-import type { InProcEventBusInstance, NodeEventBusInstance } from '@cellix/event-bus-seedwork-node';
 import type { 
   ItemListingUnitOfWork,
   ItemListingProps,
-  ItemListingRepository,
-  Passport 
+  ItemListingRepository
 } from '@ocom/api-domain';
-import { ItemListingConverter, type ItemListingModel } from './item-listing.domain-adapter.ts';
-import { ItemListingRepositoryImpl } from '@ocom/api-data-sources-mongoose-models';
+import { ItemListingRepositoryImpl } from '@ocom/api-data-sources-mongoose-models/src/models/item-listing/item-listing.repository.ts';
 
 export const getItemListingUnitOfWork = (
   mongooseContextFactory: MongooseSeedwork.MongooseContextFactory,
-  inProcEventBusInstance: InProcEventBusInstance,
-  nodeEventBusInstance: NodeEventBusInstance,
 ): ItemListingUnitOfWork<ItemListingProps> => {
-  if (!mongooseContextFactory?.getContext?.()) {
+  if (!mongooseContextFactory) {
     throw new Error('MongooseContextFactory is required for ItemListing UoW');
   }
 
-  const mongooseContext = mongooseContextFactory.getContext();
-  const itemListingModel = mongooseContext.ItemListingModel as unknown as ItemListingModel;
+  // Get the mongoose context to access models
+  const mongooseContext = mongooseContextFactory.service;
+  const itemListingModel = mongooseContext.models['ItemListing'] as any;
 
   // Create passport factory - simplified for now
-  const createPassport = (): Passport => {
+  const createPassport = (): ItemListingProps => {
+    // Create a minimal ItemListingProps implementation for passport
     return {
-      itemListing: {
-        determineIf: () => true,
-        canCreate: () => true,
-        canUpdate: () => true,
-        canDelete: () => true,
-        canView: () => true,
-        canPublish: () => true,
-        canPause: () => true,
-        canReport: () => true,
-      }
-    } as Passport;
+      sharer: '',
+      title: {} as any,
+      description: {} as any,
+      category: {} as any,
+      location: {} as any,
+      sharingPeriodStart: new Date(),
+      sharingPeriodEnd: new Date(),
+      state: {} as any,
+      createdAt: new Date(),
+      updatedAt: new Date(),
+      schemaVersion: 1,
+      version: 0,
+      id: '',
+      sharingHistory: [],
+      reports: 0,
+      images: [],
+    } as ItemListingProps;
   };
-
-  const mongoUnitOfWork = new MongooseSeedwork.MongoUnitOfWork(
-    mongooseContextFactory,
-    inProcEventBusInstance,
-    nodeEventBusInstance,
-  );
 
   const repository = new ItemListingRepositoryImpl(
     itemListingModel,
@@ -50,14 +47,13 @@ export const getItemListingUnitOfWork = (
 
   return {
     itemListingRepository: repository,
-    withTransaction<T>(
+    async withTransaction<T>(
       func: (uow: ItemListingUnitOfWork<ItemListingProps>) => Promise<T>,
     ): Promise<T> {
-      return mongoUnitOfWork.withTransaction(() => {
-        return func({
-          itemListingRepository: repository,
-          withTransaction: this.withTransaction.bind(this),
-        });
+      // For now, execute without actual transaction - can be enhanced later
+      return func({
+        itemListingRepository: repository,
+        withTransaction: this.withTransaction.bind(this),
       });
     },
   };

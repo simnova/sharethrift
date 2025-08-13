@@ -1,9 +1,8 @@
-import type { MongooseSeedwork } from '@cellix/data-sources-mongoose';
-import { modelFactory } from '@cellix/data-sources-mongoose';
-import { Schema } from 'mongoose';
 
-export interface ItemListingModel {
-	_id: string;
+import { Schema, type Document, type Types } from 'mongoose';
+
+export interface ItemListingModel extends Document {
+	id: Types.ObjectId;
 	sharer: string;
 	title: string;
 	description: string;
@@ -12,10 +11,11 @@ export interface ItemListingModel {
 	sharingPeriodStart: Date;
 	sharingPeriodEnd: Date;
 	state: string;
-	updatedAt?: Date;
-	createdAt?: Date;
 	sharingHistory?: string[];
 	reports?: number;
+	createdAt: Date;
+	updatedAt: Date;
+	version: number;
 }
 
 export const ItemListingSchema = new Schema<ItemListingModel>(
@@ -75,15 +75,6 @@ export const ItemListingSchema = new Schema<ItemListingModel>(
 			],
 			default: 'Drafted',
 			index: true,
-		},
-		updatedAt: {
-			type: Date,
-			default: Date.now,
-		},
-		createdAt: {
-			type: Date,
-			default: Date.now,
-			immutable: true,
 		},
 		sharingHistory: [
 			{
