@@ -3,8 +3,8 @@ import type { Passport } from '../passport.ts';
 import type { ReservationRequestVisa } from './reservation-request.visa.ts';
 import {
 	ReservationPeriod,
-	ReservationRequestState,
 	ReservationRequestStateValue,
+	ReservationRequestStates,
 } from './reservation-request.value-objects.ts';
 
 export interface ReservationRequestProps
@@ -32,43 +32,36 @@ export class ReservationRequest<props extends ReservationRequestProps>
 	//#region Constructor
 	constructor(props: props, passport: Passport) {
 		super(props, passport);
-		this.visa = passport.reservationRequest;
+		this.visa = passport.reservationRequest.forReservationRequest(this);
 	}
 	//#endregion Constructor
 
 	//#region Methods
 	public static getNewInstance<props extends ReservationRequestProps>(
-		newProps: {
-            _id: string;
-			listingId: string;
-			reserverId: string;
-			reservationPeriodStart: string | null;
-			reservationPeriodEnd: string | null;
-		},
+		newProps: props,
+		state: ReservationRequestStateValue,
+		listingId: string,
+		reserverId: string,
+		reservationPeriod: ReservationPeriod,
 		passport: Passport,
 	): ReservationRequest<props> {
-		const id = newProps._id;
-		const now = new Date();
-
-		const reservationPeriod = new ReservationPeriod({
-			start: newProps.reservationPeriodStart,
-			end: newProps.reservationPeriodEnd,
-		});
-
-		const reservationRequestProps = {
-			...newProps,
-			id,
-			state: ReservationRequestStateValue.requested(),
-			reservationPeriod,
-			createdAt: now,
-			updatedAt: now,
-			schemaVersion: "1",
-			closeRequested: false,
-		} as unknown as props;
-
-		const aggregate = new ReservationRequest(reservationRequestProps, passport);
-		aggregate.markAsNew();
-		return aggregate;
+		const instance = new ReservationRequest(
+			{
+				...newProps,
+				state,
+				listingId,
+				reserverId,
+				reservationPeriod,
+				createdAt: newProps.createdAt ?? new Date(),
+				updatedAt: newProps.updatedAt ?? new Date(),
+				schemaVersion: newProps.schemaVersion ?? '1',
+				closeRequested: newProps.closeRequested ?? false,
+			} as props,
+			passport
+		);
+		instance.markAsNew();
+		instance.isNew = false;
+		return instance;
 	}
 
 	private markAsNew(): void {
@@ -132,12 +125,12 @@ export class ReservationRequest<props extends ReservationRequestProps>
 			);
 		}
 
-		if (this.props.state.value !== ReservationRequestState.REQUESTED) {
+		if (this.props.state.valueOf() !== ReservationRequestStates.REQUESTED) {
 			throw new Error('Can only accept requested reservations');
 		}
 
 		this.props.state = ReservationRequestStateValue.create(
-			ReservationRequestState.ACCEPTED,
+			ReservationRequestStates.ACCEPTED,
 		);
 		this.props.updatedAt = new Date();
 	}
@@ -149,12 +142,12 @@ export class ReservationRequest<props extends ReservationRequestProps>
 			);
 		}
 
-		if (this.props.state.value !== ReservationRequestState.REQUESTED) {
+		if (this.props.state.valueOf() !== ReservationRequestStates.REQUESTED) {
 			throw new Error('Can only reject requested reservations');
 		}
 
 		this.props.state = ReservationRequestStateValue.create(
-			ReservationRequestState.REJECTED,
+			ReservationRequestStates.REJECTED,
 		);
 		this.props.updatedAt = new Date();
 	}
@@ -171,7 +164,7 @@ export class ReservationRequest<props extends ReservationRequestProps>
 		}
 
 		this.props.state = ReservationRequestStateValue.create(
-			ReservationRequestState.CANCELLED,
+			ReservationRequestStates.CANCELLED,
 		);
 		this.props.updatedAt = new Date();
 	}
@@ -198,12 +191,12 @@ export class ReservationRequest<props extends ReservationRequestProps>
 			);
 		}
 
-		if (this.props.state.value !== ReservationRequestState.ACCEPTED) {
+		if (this.props.state.valueOf() !== ReservationRequestStates.ACCEPTED) {
 			throw new Error('Can only close accepted reservations');
 		}
 
 		this.props.state = ReservationRequestStateValue.create(
-			ReservationRequestState.RESERVATION_PERIOD,
+			ReservationRequestStates.RESERVATION_PERIOD,
 		);
 		this.props.updatedAt = new Date();
 	}

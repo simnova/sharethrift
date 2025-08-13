@@ -1,9 +1,12 @@
+import type { DomainSeedwork } from '@cellix/domain-seedwork';
+import type { Passport } from '../passport.ts';
+import type { ReservationRequest, ReservationRequestProps } from './reservation-request.aggregate.ts';
 import type { ReservationRequestRepository } from './reservation-request.repository.ts';
-import type { ReservationRequestProps } from './reservation-request.aggregate.ts';
 
-export interface ReservationRequestUnitOfWork<props extends ReservationRequestProps> {
-	reservationRequestRepository: ReservationRequestRepository<props>;
-	withTransaction<T>(
-		func: (uow: ReservationRequestUnitOfWork<props>) => Promise<T>,
-	): Promise<T>;
-}
+export interface ReservationRequestUnitOfWork
+	extends DomainSeedwork.UnitOfWork<
+		Passport,
+		ReservationRequestProps,
+		ReservationRequest<ReservationRequestProps>,
+		ReservationRequestRepository<ReservationRequestProps>
+	> {}

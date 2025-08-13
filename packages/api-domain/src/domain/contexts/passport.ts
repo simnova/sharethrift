@@ -1,5 +1,5 @@
-import type { ReservationRequestVisa } from './reservation-request/reservation-request.visa.ts';
+import type { ReservationRequestPassport } from './reservation-request/reservation-request.passport.ts';
 
 export interface Passport {
-	reservationRequest: ReservationRequestVisa;
+	get reservationRequest(): ReservationRequestPassport;
 }
