@@ -13,7 +13,7 @@ import {
 	ListingState,
 } from '@ocom/api-domain';
 
-export class ItemListingRepositoryImpl<PassportType>
+export class ItemListingRepositoryImpl<PassportType extends ItemListingProps>
 	implements ItemListingRepository<PassportType>
 {
 	private readonly model: Model<any>;
@@ -127,8 +127,8 @@ export class ItemListingRepositoryImpl<PassportType>
 			pageInfo: {
 				hasNextPage,
 				hasPreviousPage: !!options.after,
-				startCursor: edges.length > 0 ? edges[0].cursor : undefined,
-				endCursor: edges.length > 0 ? edges[edges.length - 1].cursor : undefined,
+				startCursor: edges.length > 0 ? edges[0]?.cursor : undefined,
+				endCursor: edges.length > 0 ? edges[edges.length - 1]?.cursor : undefined,
 			},
 			totalCount,
 		};
@@ -187,6 +187,7 @@ export class ItemListingRepositoryImpl<PassportType>
 			images: doc.images || [],
 		};
 
-		return new ItemListing(props, this.createPassport());
+		const passport = { ...this.createPassport(), itemListing: doc.itemListing ?? undefined };
+		return new ItemListing(props as PassportType, passport);
 	}
 }

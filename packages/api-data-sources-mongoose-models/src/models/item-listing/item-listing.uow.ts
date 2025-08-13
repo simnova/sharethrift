@@ -1,10 +1,11 @@
 import {
 	type ItemListingUnitOfWork,
 	type ItemListingRepository,
+    type ItemListingProps,
 } from '@ocom/api-domain';
 import { ItemListingRepositoryImpl } from './item-listing.repository.ts';
 
-export class ItemListingUnitOfWorkImpl<PassportType>
+export class ItemListingUnitOfWorkImpl<PassportType extends ItemListingProps>
 	implements ItemListingUnitOfWork<PassportType>
 {
 	public readonly itemListingRepository: ItemListingRepository<PassportType>;

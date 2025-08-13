@@ -1,10 +1,9 @@
 import { useState, useEffect } from 'react';
-import { Button } from 'antd';
 import { HeroSection } from '../../../shared/molecules/hero-section';
 import { SearchBar } from '../../../shared/molecules/search-bar';
 import { CategoryFilter } from '../../../shared/molecules/category-filter';
 import { ListingsGrid } from '../../../shared/organisms/listings-grid';
-import { DUMMY_LISTINGS } from '../../../../data/dummy-listings';
+import { useActiveListings, useCategories } from '../../../../hooks/useListings';
 import type { ItemListing } from '../../../../types/listing';
 import styles from './Listings.module.css';
 
@@ -18,24 +17,34 @@ export default function Listings() {
   const pageSize = 12;
 
   const [selectedCategory, setSelectedCategory] = useState('');
-  const [listings, setListings] = useState<ItemListing[]>([]);
-  const [totalListings, setTotalListings] = useState(0);
 
+  // Fetch categories from GraphQL
+  const { categories } = useCategories();
+
+  // Fetch listings from GraphQL
+  const { 
+    listings, 
+    totalCount,
+    loading: listingsLoading,
+    error: listingsError,
+    refetch
+  } = useActiveListings({
+    category: selectedCategory && selectedCategory !== 'All' ? selectedCategory : undefined,
+    searchQuery: searchQuery || undefined,
+    first: pageSize,
+  });
+
+  // Refetch data when search or category changes
   useEffect(() => {
-    const fetchListings = async () => {
-      setListings(DUMMY_LISTINGS);
-      setTotalListings(DUMMY_LISTINGS.length);
-    };
-
-    fetchListings();
-  }, [searchQuery, selectedCategory, currentPage]);
+    refetch();
+  }, [searchQuery, selectedCategory, refetch]);
 
   const handleSearch = (query: string) => {
     setSearchQuery(query);
     setCurrentPage(1); // Reset to first page when searching
   };
 
-  const handleListingClick = (listing: ItemListing) => {
+  const handleListingClick = (_listing: ItemListing) => {
     // TODO: Navigate to listing detail page
     return null;
   };
@@ -49,6 +58,26 @@ export default function Listings() {
     setCurrentPage(page);
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
+
+  // Handle loading state
+  if (listingsLoading) {
+    return (
+      <div className={styles.listingsPage}>
+        <div className={styles.loading}>Loading listings...</div>
+      </div>
+    );
+  }
+
+  // Handle error state
+  if (listingsError) {
+    return (
+      <div className={styles.listingsPage}>
+        <div className={styles.error}>
+          Error loading listings: {listingsError.message}
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div>
@@ -72,25 +101,19 @@ export default function Listings() {
             />
             {/* Create listing button */}
             {isAuthenticated && (
-                <Button
-                  className={styles.createListing}
-                  onClick={handleCreateListing}
-                  type="primary"
-                >
-                  Create a Listing
-                </Button>
+              <button
+                className={styles.createListing}
+                onClick={handleCreateListing}
+              >
+                Create a Listing
+              </button>
             )}
           </div>
-
-          {!isAuthenticated && (
-            <h1>Today's Picks</h1>
-          )}
-
           <div className={styles.filterBar}>
             {/* Category filter */}
             <CategoryFilter
               label={"Category"}
-              categories={['Electronics', 'Furniture', 'Clothing']}
+              categories={categories}
               selectedCategory={selectedCategory}
               onCategoryChange={setSelectedCategory}
             />
@@ -105,9 +128,9 @@ export default function Listings() {
           onListingClick={handleListingClick}
           currentPage={currentPage}
           pageSize={pageSize}
-          total={totalListings}
+          total={totalCount}
           onPageChange={handlePageChange}
-          showPagination={totalListings > pageSize}
+          showPagination={totalCount > pageSize}
         />
       </div>
     </div>
