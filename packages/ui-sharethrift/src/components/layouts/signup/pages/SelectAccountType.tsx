@@ -1,10 +1,8 @@
 import { useState } from "react";
-import { Button, Card, Tabs } from "antd";
-import type { TabsProps } from "antd";
-import { PhoneOutlined, SafetyOutlined } from "@ant-design/icons";
+import { Button, Card } from "antd";
+import { SafetyOutlined } from "@ant-design/icons";
 
 type PersonalAccountSubType = "non-verified" | "verified" | "verified-plus";
-type BusinessAccountSubType = "business" | "business-plus";
 
 interface AccountOption {
   id: string;
@@ -53,40 +51,9 @@ const personalOptions: AccountOption[] = [
   },
 ];
 
-const businessOptions: AccountOption[] = [
-  {
-    id: "business",
-    title: "Business",
-    price: "$14.99/month",
-    features: [
-      "200 items to share",
-      "200 bookmarks",
-      "4 active class listings",
-      "5 individual users can have shared access to manage",
-      "Basic business report",
-    ],
-    icon: "🛒",
-  },
-  {
-    id: "business-plus",
-    title: "Business Plus",
-    price: "$24.99/month",
-    features: [
-      "1000 items to share",
-      "1000 bookmarks",
-      "20 active class listings",
-      "20 individual users can have shared access to manage",
-      "Advanced business reports",
-    ],
-    icon: "🛍️",
-  },
-];
-
 export default function SelectAccountType() {
   const [selectedPersonalType, setSelectedPersonalType] =
     useState<PersonalAccountSubType>("verified");
-  const [selectedBusinessType, setSelectedBusinessType] =
-    useState<BusinessAccountSubType>("business-plus");
 
   const renderAccountCard = (
     option: AccountOption,
@@ -217,101 +184,15 @@ export default function SelectAccountType() {
           marginTop: "32px",
         }}
       >
-        {selectedPersonalType === "verified" ||
-        selectedPersonalType === "verified-plus" ? (
-          <Button type="primary" size="large">
-            <SafetyOutlined /> Start Identity Verification
-          </Button>
-        ) : null}
-      </div>
-    </div>
-  );
-
-  const businessTabContent = (
-    <div style={{ padding: "24px 0" }}>
-      <div
-        style={{
-          display: "flex",
-          gap: "24px",
-          justifyContent: "center",
-          flexWrap: "wrap",
-        }}
-      >
-        {businessOptions.map((option) =>
-          renderAccountCard(option, selectedBusinessType === option.id, () =>
-            setSelectedBusinessType(option.id as BusinessAccountSubType)
-          )
-        )}
-      </div>
-
-      <div
-        style={{
-          display: "flex",
-          justifyContent: "center",
-          gap: "16px",
-          marginTop: "32px",
-        }}
-      >
+        {/* {selectedPersonalType === "verified" || sel
+        selectedPersonalType === "verified-plus" ? ( */}
         <Button type="primary" size="large">
           <SafetyOutlined /> Start Identity Verification
         </Button>
+        {/* ) : null} */}
       </div>
     </div>
   );
-
-  const enterpriseTabContent = (
-    <div
-      style={{
-        padding: "48px 24px",
-        textAlign: "center",
-        maxWidth: "600px",
-        margin: "0 auto",
-      }}
-    >
-      <p
-        style={{
-          fontSize: "16px",
-          lineHeight: "1.6",
-          color: "var(--color-message-text)",
-          marginBottom: "24px",
-        }}
-      >
-        ShareThrift offers enterprise accounts with with custom restrictions and
-        identity integrations. Please contact us at (xxx) xxx-xxxx to discuss if
-        an enterprise account is the right fit for you.
-      </p>
-
-      <div
-        style={{
-          display: "flex",
-          justifyContent: "center",
-          gap: "16px",
-        }}
-      >
-        <Button type="primary" size="large">
-          <PhoneOutlined /> Contact Us
-        </Button>
-      </div>
-    </div>
-  );
-
-  const tabItems: TabsProps["items"] = [
-    {
-      key: "personal",
-      label: "Personal Account",
-      children: personalTabContent,
-    },
-    {
-      key: "business",
-      label: "Business Account",
-      children: businessTabContent,
-    },
-    {
-      key: "enterprise",
-      label: "Enterprise Account",
-      children: enterpriseTabContent,
-    },
-  ];
 
   return (
     <div
@@ -332,13 +213,7 @@ export default function SelectAccountType() {
       >
         Account Type and Plan
       </h1>
-
-      <Tabs
-        defaultActiveKey="personal"
-        items={tabItems}
-        centered
-        size="large"
-      />
+      {personalTabContent}
       <div
         style={{
           display: "flex",
