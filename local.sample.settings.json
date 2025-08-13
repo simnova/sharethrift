@@ -1,0 +1,16 @@
+{
+  "IsEncrypted": false,
+  "Values": {
+    "FUNCTIONS_WORKER_RUNTIME": "node",
+    "NODE_ENV": "development",
+    "languageWorkers__node__arguments": "--inspect=5858",
+ 
+    "AzureWebJobsStorage": "UseDevelopmentStorage=true",
+    "APPLICATIONINSIGHTS_CONNECTION_STRING": "",
+    "MONGODB_MEMORY_SERVER_PORT": "27017",
+    "MONGODB_MEMORY_SERVER_DBNAME": "sharethrift"
+  },
+  "ConnectionStrings": {
+ 
+  }
+}

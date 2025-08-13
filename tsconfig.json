@@ -20,5 +20,7 @@
     { "path": "./packages/api-rest"},
     { "path": "./packages/api-persistence"},
     { "path": "./packages/api"},
+    { "path": "./packages/service-oauth2-mock-server"},
+    { "path": "./packages/service-mongodb-memory-server"}
   ]
 }

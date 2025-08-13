@@ -1,6 +1,6 @@
 {
   "type": "module",
-  "name": "service-oauth2-mock-server",
+  "name": "@sthrift/service-oauth2-mock-server",
   "version": "1.0.0",
   "main": "index.js",
   "license": "MIT",

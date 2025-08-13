@@ -7,14 +7,18 @@
 	"license": "MIT",
 	"main": "packages/api/dist/src/index.js",
 	"scripts": {
-		"start": "npm run build && concurrently npm:start:* --kill-others-on-fail --workspace=@ocom/api",
+		"start": "npm run build && concurrently npm:start:* --kill-others-on-fail",
 		"build": "npm run build --ws --if-present",
 		"lint": "npm run lint --ws --if-present",
 		"format": "npm run format --ws --if-present",
 		"tsbuild": "tsc --build",
 		"tswatch": "tsc --build --watch",
 		"clean": "npm install && npm run clean --ws --if-present && rimraf dist node_modules package-lock.json **/coverage",
-		"start:api": "npm run start --workspace=@ocom/api",
+		"start:ui-sharethrift": "npm run start --workspace=@sthrift/ui-sharethrift",
+		"start:api": "npm run start --workspace=@sthrift/api",
+		"dev": "concurrently npm:start-emulator:* --kill-others-on-fail && concurrently npm:start:* --kill-others-on-fail",
+		"start-emulator:mongo-memory-server": "npm run start --workspace=@sthrift/service-mongodb-memory-server",
+		"start-emulator:auth-server": "npm run start --workspace=@sthrift/service-oauth2-mock-server",
 		"test": "npm run test --ws --if-present",
 		"test:all": "npm run test:all --ws --if-present",
 		"test:coverage": "npm run test:coverage --ws --if-present",
@@ -39,7 +43,8 @@
 		"packages/api-context-spec",
 		"packages/api-graphql",
 		"packages/api-rest",
-		"packages/api"
+		"packages/api",
+		"packages/service-mongodb-memory-server"
 	],
 	"devDependencies": {
 		"@amiceli/vitest-cucumber": "^5.1.2",
