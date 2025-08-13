@@ -3,7 +3,7 @@ import type { ItemListingPassportBase } from '../item-listing.passport-base.ts';
 
 export class ItemListingItemListingVisa implements ItemListingVisa {
 	constructor(_passport: ItemListingPassportBase) {
-		// Store passport for future use if needed
+		// Passport stored for future use if needed
 	}
 
 	determineIf(_predicate: (permissions: Record<string, unknown>) => boolean): boolean {

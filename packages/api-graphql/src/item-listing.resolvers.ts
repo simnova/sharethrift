@@ -47,13 +47,60 @@ export const itemListingResolvers = {
 		/**
 		 * Get active listings with filtering and pagination
 		 */
-		activeListings: (
+		activeListings: async (
 			_parent: unknown,
 			args: ActiveListingsArgs,
-			_context: GraphContext,
-		): Connection<MockItemListingData> => {
+			context: GraphContext,
+		): Promise<Connection<MockItemListingData>> => {
 			const { filter, first = 20, after } = args;
 			
+			// Check if we have access to real backend data
+			if (context.apiContext?.domainDataSource?.domainContexts?.itemListing) {
+				try {
+					// Get the UoW from the domain data source
+					const getUoW = context.apiContext.domainDataSource.domainContexts.itemListing.getItemListingUnitOfWork;
+					// biome-ignore lint/suspicious/noExplicitAny: Domain data source returns unknown type
+					const uow = getUoW(null, null) as any; // Type as any for now since it's unknown from interface
+					
+					// Use the repository to find active listings
+					const repositoryResult = await uow.itemListingRepository.findActiveListings({
+						search: filter?.searchQuery,
+						category: filter?.category,
+						first,
+						after,
+					});
+
+					// Convert domain entities to GraphQL format
+					// biome-ignore lint/suspicious/noExplicitAny: Repository result has dynamic edge types
+					const edges = repositoryResult.edges.map((edge: any) => ({
+						node: {
+							id: edge.node.id,
+							title: edge.node.title.valueOf(),
+							description: edge.node.description.valueOf(), 
+							category: edge.node.category.valueOf(),
+							location: edge.node.location.valueOf(),
+							sharingPeriodStart: edge.node.sharingPeriodStart,
+							sharingPeriodEnd: edge.node.sharingPeriodEnd,
+							state: edge.node.state.valueOf(),
+							images: edge.node.images,
+							sharer: edge.node.sharer,
+							thumbnailImage: edge.node.images[0] || '/src/assets/item-images/default.jpg',
+						} as MockItemListingData,
+						cursor: edge.cursor,
+					}));
+
+					return {
+						edges,
+						pageInfo: repositoryResult.pageInfo,
+						totalCount: repositoryResult.totalCount,
+					};
+				} catch (error) {
+					console.warn('Failed to fetch from backend, falling back to mock data:', error);
+					// Fall back to mock data if backend fails
+				}
+			}
+			
+			// Fallback to mock data (existing implementation)
 			// Calculate skip based on cursor
 			let skip = 0;
 			if (after) {

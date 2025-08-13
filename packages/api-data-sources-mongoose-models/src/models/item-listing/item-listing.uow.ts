@@ -1,7 +1,8 @@
-import {
-	type ItemListingUnitOfWork,
-	type ItemListingRepository,
-    type ItemListingProps,
+import type {
+	ItemListingUnitOfWork,
+	ItemListingRepository,
+    ItemListingProps,
+	Passport,
 } from '@ocom/api-domain';
 import { ItemListingRepositoryImpl } from './item-listing.repository.ts';
 
@@ -13,7 +14,7 @@ export class ItemListingUnitOfWorkImpl<PassportType extends ItemListingProps>
 
 	constructor(
 		itemListingModel: any,
-		createPassport: () => PassportType,
+		createPassport: () => Passport,
 		mongoUnitOfWork: any,
 	) {
 		this.itemListingRepository = new ItemListingRepositoryImpl(
