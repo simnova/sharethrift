@@ -10,6 +10,7 @@
 	"include": ["src/**/*.ts", "src/**/*.d.ts"],
 	"references": [
 		//needs to match peer dependencies in package.json
+        { "path": "../api-application-services" },
 		{ "path": "../api-context-spec" }
 	]
 }

@@ -15,8 +15,8 @@
 		"prebuild": "biome lint"
 	},
 	"peerDependencies": {
-		"@ocom/api-context-spec": "^1.0.0",
-		"@ocom/api-domain": "^1.0.0"
+        "@ocom/api-application-services": "^1.0.0",
+		"@ocom/api-context-spec": "^1.0.0"
 	},
 	"dependencies": {
 		"@apollo/server": "^4.11.3",

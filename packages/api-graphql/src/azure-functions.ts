@@ -1,8 +1,32 @@
-// Azure Functions adapter for Apollo Server v4
-import type { HttpRequest, InvocationContext } from '@azure/functions';
-import { ApolloServer } from '@apollo/server';
+import {
+	type ApolloServer,
+	type BaseContext,
+	type ContextFunction,
+	type HTTPGraphQLRequest,
+	HeaderMap,
+} from '@apollo/server';
+import type {
+	HttpHandler,
+	HttpRequest,
+	InvocationContext,
+} from '@azure/functions-v4';
 
-import type { BaseContext } from '@apollo/server';
+import type { WithRequired } from '@apollo/utils.withrequired';
+export type { WithRequired } from '@apollo/utils.withrequired';
+
+export interface AzureFunctionsContextFunctionArgument {
+	context: InvocationContext;
+	req: HttpRequest;
+}
+
+export interface AzureFunctionsMiddlewareOptions<TContext extends BaseContext> {
+	context?: ContextFunction<[AzureFunctionsContextFunctionArgument], TContext>;
+}
+
+// eslint-disable-next-line @typescript-eslint/require-await
+const defaultContext: ContextFunction<
+	[AzureFunctionsContextFunctionArgument]
+> = async () => ({});
 
 export function startServerAndCreateAzureFunctionHandler<TContext extends BaseContext>(
   server: ApolloServer<TContext>,
