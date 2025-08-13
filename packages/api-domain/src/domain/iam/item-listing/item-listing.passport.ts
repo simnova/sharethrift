@@ -8,7 +8,7 @@ export class ItemListingPassport extends ItemListingPassportBase implements Pass
 
 	constructor(principal: AuthenticatedPrincipal, permissions: ItemListingDomainPermissions) {
 		super(principal, permissions);
-		this._itemListingVisa = new ItemListingItemListingVisa();
+		this._itemListingVisa = new ItemListingItemListingVisa(this);
 	}
 
 	public get itemListing(): ItemListingVisa {

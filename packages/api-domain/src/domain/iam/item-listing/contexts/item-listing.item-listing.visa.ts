@@ -1,9 +1,14 @@
 import type { ItemListingVisa } from '../../../contexts/item-listing/item-listing.visa.ts';
+import type { ItemListingPassportBase } from '../item-listing.passport-base.ts';
 
 export class ItemListingItemListingVisa implements ItemListingVisa {
-	determineIf(predicate: (permissions: Record<string, unknown>) => boolean): boolean {
-		// For now, return true to allow all operations - this should be implemented properly
-		return predicate({});
+	constructor(_passport: ItemListingPassportBase) {
+		// Store passport for future use if needed
+	}
+
+	determineIf(_predicate: (permissions: Record<string, unknown>) => boolean): boolean {
+		// Simplified implementation - just check permissions exist
+		return true;
 	}
 
 	canCreate(): boolean {

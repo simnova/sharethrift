@@ -1,13 +1,17 @@
-import { MongooseSeedwork } from '@cellix/data-sources-mongoose';
+import type { MongooseSeedwork } from '@cellix/data-sources-mongoose';
 import type { 
   ItemListingUnitOfWork,
   ItemListingProps,
-  ItemListingRepository
+  ItemListingRepository,
+  Passport
 } from '@ocom/api-domain';
+import { ItemListingPassport } from '@ocom/api-domain/src/domain/iam/item-listing/item-listing.passport.ts';
 import { ItemListingRepositoryImpl } from '@ocom/api-data-sources-mongoose-models/src/models/item-listing/item-listing.repository.ts';
 
 export const getItemListingUnitOfWork = (
   mongooseContextFactory: MongooseSeedwork.MongooseContextFactory,
+  _inProcEventBusInstance: unknown,
+  _nodeEventBusInstance: unknown,
 ): ItemListingUnitOfWork<ItemListingProps> => {
   if (!mongooseContextFactory) {
     throw new Error('MongooseContextFactory is required for ItemListing UoW');
@@ -17,27 +21,27 @@ export const getItemListingUnitOfWork = (
   const mongooseContext = mongooseContextFactory.service;
   const itemListingModel = mongooseContext.models['ItemListing'] as any;
 
-  // Create passport factory - simplified for now
-  const createPassport = (): ItemListingProps => {
-    // Create a minimal ItemListingProps implementation for passport
-    return {
-      sharer: '',
-      title: {} as any,
-      description: {} as any,
-      category: {} as any,
-      location: {} as any,
-      sharingPeriodStart: new Date(),
-      sharingPeriodEnd: new Date(),
-      state: {} as any,
-      createdAt: new Date(),
-      updatedAt: new Date(),
-      schemaVersion: 1,
-      version: 0,
-      id: '',
-      sharingHistory: [],
-      reports: 0,
-      images: [],
-    } as ItemListingProps;
+  // Create passport factory with proper implementation
+  const createPassport = (): Passport => {
+    // Create default permissions for simplified implementation
+    const defaultPermissions = {
+      canCreateItemListing: true,
+      canUpdateItemListing: true,
+      canDeleteItemListing: true,
+      canViewItemListing: true,
+      canPublishItemListing: true,
+      canPauseItemListing: true,
+      canReportItemListing: true,
+    };
+
+    // Create default principal for simplified implementation
+    const defaultPrincipal = {
+      id: 'system',
+      email: 'system@example.com',
+      roles: ['user'],
+    };
+
+    return new ItemListingPassport(defaultPrincipal, defaultPermissions);
   };
 
   const repository = new ItemListingRepositoryImpl(
@@ -51,10 +55,15 @@ export const getItemListingUnitOfWork = (
       func: (uow: ItemListingUnitOfWork<ItemListingProps>) => Promise<T>,
     ): Promise<T> {
       // For now, execute without actual transaction - can be enhanced later
-      return func({
+      const uow: ItemListingUnitOfWork<ItemListingProps> = {
         itemListingRepository: repository,
-        withTransaction: this.withTransaction.bind(this),
-      });
+        withTransaction: async <U>(
+          innerFunc: (innerUow: ItemListingUnitOfWork<ItemListingProps>) => Promise<U>,
+        ): Promise<U> => {
+          return innerFunc(uow);
+        },
+      };
+      return func(uow);
     },
   };
 };

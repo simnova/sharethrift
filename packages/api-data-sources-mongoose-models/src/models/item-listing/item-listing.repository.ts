@@ -4,6 +4,7 @@ import {
 	type ItemListingRepository,
 	type ItemListingEntityReference,
 	type ItemListingProps,
+	type Passport,
 } from '@ocom/api-domain';
 import {
 	Title,
@@ -17,11 +18,11 @@ export class ItemListingRepositoryImpl<PassportType extends ItemListingProps>
 	implements ItemListingRepository<PassportType>
 {
 	private readonly model: Model<any>;
-	private readonly createPassport: () => PassportType;
+	private readonly createPassport: () => Passport;
 
 	constructor(
 		model: Model<any>,
-		createPassport: () => PassportType,
+		createPassport: () => Passport,
 	) {
 		this.model = model;
 		this.createPassport = createPassport;
@@ -187,7 +188,7 @@ export class ItemListingRepositoryImpl<PassportType extends ItemListingProps>
 			images: doc.images || [],
 		};
 
-		const passport = { ...this.createPassport(), itemListing: doc.itemListing ?? undefined };
+		const passport = this.createPassport();
 		return new ItemListing(props as PassportType, passport);
 	}
 }
