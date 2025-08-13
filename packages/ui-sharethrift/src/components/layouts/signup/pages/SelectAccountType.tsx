@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Button, Card } from "antd";
-import { SafetyOutlined } from "@ant-design/icons";
+import { CheckOutlined, SafetyOutlined } from "@ant-design/icons";
 import stool from "../../../../../src/assets/item-images/stool.png";
 import armchair from "../../../../../src/assets/item-images/armchair.png";
 import bubbleChair from "../../../../../src/assets/item-images/bubble-chair.png";
@@ -63,6 +63,7 @@ export default function SelectAccountType() {
     isSelected: boolean,
     onSelect: () => void
   ) => (
+
     <Card
       key={option.id}
       className={`cursor-pointer transition-all duration-200 ${
@@ -70,7 +71,6 @@ export default function SelectAccountType() {
       }`}
       style={{
         width: 280,
-        // height: 320,
         position: "relative",
         border: isSelected
           ? "2px solid var(--color-secondary)"
@@ -80,7 +80,7 @@ export default function SelectAccountType() {
       }}
       styles={{
         body: {
-          padding: "24px 20px",
+          padding: "10px 20px",
           display: "flex",
           flexDirection: "column",
           alignItems: "center",
@@ -91,33 +91,49 @@ export default function SelectAccountType() {
       }}
       onClick={onSelect}
     >
-      {isSelected && (
-        <div
+      <div style={{ display: "flex", alignItems: "center", justifyContent: "center", width: "100%", marginBottom: 12 }}>
+        <h3
           style={{
-            position: "absolute",
-            top: 12,
-            right: 12,
-            backgroundColor: "var(--color-secondary)",
-            borderRadius: "50%",
-            width: 24,
-            height: 24,
+            fontSize: "18px",
+            fontWeight: 600,
+            color: "var(--color-message-text)",
+            textAlign: "left",
+            margin: 0,
+            flex: 1,
+            minHeight: "48px",
             display: "flex",
             alignItems: "center",
-            justifyContent: "center",
-            color: "white",
-            fontSize: "14px",
-            fontWeight: "bold",
-            zIndex: 1,
           }}
         >
-        </div>
-      )}
+          {option.title}
+        </h3>
+        {isSelected && (
+          <div
+            style={{
+              marginLeft: 8,
+              backgroundColor: "var(--color-secondary)",
+              borderRadius: "50%",
+              width: 24,
+              height: 24,
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              color: "white",
+              fontSize: "14px",
+              fontWeight: "bold",
+              zIndex: 1,
+            }}
+          >
+            <CheckOutlined />
+          </div>
+        )}
+      </div>
 
       <div
         style={{
           fontSize: "60px",
           marginBottom: "20px",
-          height: 60,
+          height: 150,
           display: "flex",
           alignItems: "center",
           justifyContent: "center",
@@ -125,24 +141,10 @@ export default function SelectAccountType() {
       >
         <img
           src={option.icon}
-          style={{ height: 100, width: "auto", objectFit: "contain" }}
+          alt={option.title}
+          style={{ height: 150, width: "auto", objectFit: "contain" }}
         />
       </div>
-
-      <h3
-        style={{
-          fontSize: "18px",
-          fontWeight: 600,
-          marginBottom: "12px",
-          minHeight: "48px",
-          display: "flex",
-          alignItems: "center",
-          color: "var(--color-message-text)",
-          textAlign: "center",
-        }}
-      >
-        {option.title}
-      </h3>
 
       <div
         style={{
