@@ -1,8 +1,8 @@
 import { useState, useEffect } from 'react';
 import { Button } from 'antd';
-import { HeroSection } from '../../../shared/molecules/hero-section';
+import { HeroSection } from '../components/hero-section';
 import { SearchBar } from '../../../shared/molecules/search-bar';
-import { CategoryFilter } from '../../../shared/molecules/category-filter';
+import { CategoryFilter } from '../components/category-filter';
 import { ListingsGrid } from '../../../shared/organisms/listings-grid';
 import { DUMMY_LISTINGS } from '../../../../data/dummy-listings';
 import type { ItemListing } from '../../../../types/listing';
