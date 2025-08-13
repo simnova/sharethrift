@@ -25,6 +25,7 @@
 		"test:watch": "node scripts/test-watch-all.js"
 	},
 	"workspaces": [
+    "packages/service-oauth2-mock-server",
 		"packages/cellix-domain-seedwork",
 		"packages/cellix-event-bus-seedwork-node",
 		"packages/api-domain",
