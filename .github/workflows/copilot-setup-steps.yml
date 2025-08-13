@@ -36,19 +36,15 @@ jobs:
 
       - name: Install JavaScript dependencies
         run: npm ci
-      
-      - name: Install Azure Functions Core Tools
+
+      - name: Check if mock oauth server can be started
         run: |
-          npm install -g azure-functions-core-tools@4 --unsafe-perm true
+          cd packages/service-oauth2-mock-server
+          npm run start-mock-auth
+          sleep 5
+          curl -f http://localhost:4000/token || exit 1
 
-      - name: Start all services
-        run: npm start
-
-      - name: Wait for OAuth2 Mock to be ready
-        run: npx wait-on http://localhost:4000
-
-      - name: Print local service info
+      - name: Stop mock oauth server
         run: |
-          echo "Local services started by 'npm start':"
-          echo "- OAuth2 Mock: http://localhost:4000"
-          # Add other services/ports as needed
+          cd packages/service-oauth2-mock-server
+          npm run stop-mock-auth
