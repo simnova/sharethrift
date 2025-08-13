@@ -36,6 +36,10 @@ jobs:
 
       - name: Install JavaScript dependencies
         run: npm ci
+      
+      - name: Install Azure Functions Core Tools
+        run: |
+          npm install -g azure-functions-core-tools@4 --unsafe-perm true
 
       - name: Start all services
         run: npm start
