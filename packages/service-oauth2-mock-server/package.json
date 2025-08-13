@@ -17,6 +17,6 @@
     "typescript": "^5.0.0"
   },
   "scripts": {
-    "start": "tsx index.ts"
+    "start-mock-auth": "tsx index.ts"
   }
 }

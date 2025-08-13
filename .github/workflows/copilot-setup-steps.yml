@@ -36,3 +36,15 @@ jobs:
 
       - name: Install JavaScript dependencies
         run: npm ci
+
+      - name: Install Node.js dependencies
+        run: npm install
+
+      - name: Start all services
+        run: npm start &
+
+      - name: Print local service info
+        run: |
+          echo "Local services started by 'npm start':"
+          echo "- OAuth2 Mock: http://localhost:4000"
+          # Add other services/ports as needed
