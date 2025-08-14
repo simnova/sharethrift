@@ -17,19 +17,27 @@ export function MockListingsPage({ isAuthenticated }: Readonly<MockListingsPageP
   // State for search query and pagination
   const [searchQuery, setSearchQuery] = useState('');
   const [currentPage, setCurrentPage] = useState(1);
-  const pageSize = 12;
+  const pageSize = 10;
 
   const [selectedCategory, setSelectedCategory] = useState('');
   const [listings, setListings] = useState<ItemListing[]>([]);
   const [totalListings, setTotalListings] = useState(0);
 
-  useEffect(() => {
-    const fetchListings = async () => {
-      setListings(DUMMY_LISTINGS);
-      setTotalListings(DUMMY_LISTINGS.length);
-    };
 
-    fetchListings();
+  useEffect(() => {
+    // Filter listings by search and category
+    let filtered = DUMMY_LISTINGS;
+    if (selectedCategory && selectedCategory !== 'All') {
+      filtered = filtered.filter(l => l.category === selectedCategory);
+    }
+    if (searchQuery) {
+      filtered = filtered.filter(l => l.title.toLowerCase().includes(searchQuery.toLowerCase()));
+    }
+    setTotalListings(filtered.length);
+    // Paginate
+    const startIdx = (currentPage - 1) * pageSize;
+    const endIdx = startIdx + pageSize;
+    setListings(filtered.slice(startIdx, endIdx));
   }, [searchQuery, selectedCategory, currentPage]);
 
   const handleSearch = (query: string) => {
