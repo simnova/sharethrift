@@ -48,6 +48,10 @@ export default function HomeTabsLayout() {
       navigate(`/${key}`);
       return;
     }
+    if (key === 'messages') {
+      navigate('/messages');
+      return;
+    }
     const route = routeMap[key];
     if (route) navigate(`/${route}`);
   };

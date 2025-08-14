@@ -32,7 +32,8 @@
 	},
 	"dependencies": {
 		"@azure/functions": "^4.0.0",
-		"@azure/identity": "^4.8.0"
+		"@azure/identity": "^4.8.0",
+		"twilio": "^5.8.0"
 	},
 	"devDependencies": {
 		"rimraf": "^6.0.1",
