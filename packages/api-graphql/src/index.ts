@@ -133,8 +133,57 @@ const resolvers = {
 		hello: (_parent: unknown, _args: unknown, context: GraphContext) => {
 			return `world${JSON.stringify(context)}`;
 		},
+		// User queries - basic implementations for demonstration
+		user: (_parent: unknown, args: { id: string }, _context: GraphContext) => {
+			// Mock implementation - in real app would use context.applicationServices
+			return {
+				id: args.id,
+				userType: 'personal',
+				isBlocked: false,
+				account: {
+					accountType: 'personal',
+					email: 'user@example.com',
+					username: 'testuser',
+					profile: {
+						firstName: 'John',
+						lastName: 'Doe',
+						location: {
+							address1: '123 Main St',
+							address2: null,
+							city: 'Springfield',
+							state: 'IL',
+							country: 'USA',
+							zipCode: '12345'
+						},
+						billing: null
+					}
+				},
+				schemaVersion: '1.0.0',
+				createdAt: new Date().toISOString(),
+				updatedAt: new Date().toISOString()
+			};
+		},
+		users: (_parent: unknown, _args: { limit?: number; offset?: number }, _context: GraphContext) => {
+			// Mock implementation returning empty array for now
+			return [];
+		}
 	},
-	Mutation: {},
+	Mutation: {
+		// User mutations - basic implementations for demonstration
+		userCreate: (_parent: unknown, args: { input: { userType: string; account: unknown } }, _context: GraphContext) => {
+			// Mock implementation - in real app would use context.applicationServices
+			const { input } = args;
+			return {
+				id: 'new-user-id',
+				userType: input.userType,
+				isBlocked: false,
+				account: input.account,
+				schemaVersion: '1.0.0',
+				createdAt: new Date().toISOString(),
+				updatedAt: new Date().toISOString()
+			};
+		}
+	},
 };
 
 export const graphHandlerCreator = (

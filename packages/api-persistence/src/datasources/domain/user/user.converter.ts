@@ -22,15 +22,15 @@ export function toUserModel(props: Domain.Contexts.User.UserProps): Omit<UserMod
 				lastName: props.account.profile.lastName,
 				location: {
 					address1: props.account.profile.location.address1,
-					address2: props.account.profile.location.address2,
+					address2: props.account.profile.location.address2 || undefined,
 					city: props.account.profile.location.city,
 					state: props.account.profile.location.state,
 					country: props.account.profile.location.country,
 					zipCode: props.account.profile.location.zipCode
 				},
 				billing: props.account.profile.billing ? {
-					subscriptionId: props.account.profile.billing.subscriptionId,
-					cybersourceCustomerId: props.account.profile.billing.cybersourceCustomerId
+					subscriptionId: props.account.profile.billing.subscriptionId || undefined,
+					cybersourceCustomerId: props.account.profile.billing.cybersourceCustomerId || undefined
 				} : undefined
 			}
 		}
@@ -42,7 +42,7 @@ export function toUserModel(props: Domain.Contexts.User.UserProps): Omit<UserMod
  */
 export function toDomainProps(model: UserModel): Domain.Contexts.User.UserProps {
 	return {
-		id: model.id,
+		id: model.id.toString(),
 		schemaVersion: model.schemaVersion,
 		userType: model.userType as ValueObjects.UserType,
 		isBlocked: model.isBlocked,
