@@ -16,7 +16,7 @@
 		"clean": "npm install && npm run clean --ws --if-present && rimraf dist node_modules package-lock.json **/coverage",
 		"start:ui-sharethrift": "npm run start --workspace=@sthrift/ui-sharethrift",
 		"start:api": "npm run start --workspace=@sthrift/api",
-		"dev": "concurrently npm:start-emulator:* --kill-others-on-fail && concurrently npm:start:* --kill-others-on-fail",
+	    "dev": "npm run build && concurrently \"npm:start-emulator:*\" \"npm:start:* --kill-others-on-fail --workspace@sthrift/api\"",
 		"start-emulator:mongo-memory-server": "npm run start --workspace=@sthrift/service-mongodb-memory-server",
 		"start-emulator:auth-server": "npm run start --workspace=@sthrift/service-oauth2-mock-server",
 		"test": "npm run test --ws --if-present",
@@ -44,7 +44,9 @@
 		"packages/api-graphql",
 		"packages/api-rest",
 		"packages/api",
-		"packages/service-mongodb-memory-server"
+		"packages/service-mongodb-memory-server",
+		"packages/service-oauth2-mock-server",
+		"packages/ui-sharethrift"
 	],
 	"devDependencies": {
 		"@amiceli/vitest-cucumber": "^5.1.2",

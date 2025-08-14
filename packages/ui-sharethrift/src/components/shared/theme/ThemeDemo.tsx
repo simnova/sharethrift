@@ -1,8 +1,8 @@
 
 import React from 'react';
 import styles from './ThemeDemo.module.css';
-import { Button, Input, Select, Tabs, Checkbox, Tag, DatePicker, Form } from 'antd';
-const { RangePicker } = DatePicker;
+import { Button, Input, Select, Tabs, Checkbox, Tag, Form } from 'antd';
+// const { RangePicker } = DatePicker;
 import { MessageOutlined } from '@ant-design/icons';
 import '../../../styles/theme.css';
 
