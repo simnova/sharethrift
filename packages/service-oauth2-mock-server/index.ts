@@ -14,6 +14,9 @@ dotenv.config({ path: '.env.local' });
 const app = express();
 app.disable('x-powered-by');
 const port = 4000;
+const allowedRedirectUri =
+	process.env['ALLOWED_REDIRECT_URI'] || 'http://localhost:3000/auth-redirect';
+const aud = allowedRedirectUri;
 // Type for user profile used in token claims
 interface TokenProfile {
 	aud: string;
@@ -134,9 +137,9 @@ async function main() {
 		const email = process.env['Email'] ?? '';
 		const given_name = process.env['Given_Name'] ?? '';
 		const family_name = process.env['Family_Name'] ?? '';
-		const { aud, tid } = req.body;
+		const { tid } = req.body;
 		const profile: TokenProfile = {
-			aud: aud || 'test-client-id',
+			aud: aud,
 			sub: crypto.randomUUID(),
 			iss: `http://localhost:${port}`,
 			email,
@@ -167,10 +170,6 @@ async function main() {
 			claims_supported: ['sub', 'email', 'name'],
 		});
 	});
-
-	const allowedRedirectUri =
-		process.env['ALLOWED_REDIRECT_URI'] ||
-		'http://localhost:3000/auth-redirect';
 
 	app.get('/authorize', (req, res) => {
 		const { redirect_uri, state } = req.query;
