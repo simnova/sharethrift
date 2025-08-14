@@ -1,19 +1,19 @@
 import './service-config/otel-starter.ts';
 
 import { Cellix } from './cellix.ts';
-import type { ApiContextSpec } from '@ocom/api-context-spec';
-import { type ApplicationServices, buildApplicationServicesFactory } from '@ocom/api-application-services';
+import type { ApiContextSpec } from '@sthrift/api-context-spec';
+import { type ApplicationServices, buildApplicationServicesFactory } from '@sthrift/api-application-services';
 
-import { ServiceMongoose } from '@ocom/service-mongoose';
+import { ServiceMongoose } from '@sthrift/service-mongoose';
 import * as MongooseConfig from './service-config/mongoose/index.ts';
 
-import { ServiceBlobStorage } from '@ocom/service-blob-storage';
+import { ServiceBlobStorage } from '@sthrift/service-blob-storage';
 
-import { ServiceTokenValidation } from '@ocom/service-token-validation';
+import { ServiceTokenValidation } from '@sthrift/service-token-validation';
 import * as TokenValidationConfig from './service-config/token-validation/index.ts';
 
-import { graphHandlerCreator } from '@ocom/api-graphql';
-import { restHandlerCreator } from '@ocom/api-rest';
+import { graphHandlerCreator } from '@sthrift/api-graphql';
+import { restHandlerCreator } from '@sthrift/api-rest';
 
 
 Cellix

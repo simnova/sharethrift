@@ -1,11 +1,11 @@
 import type { MongooseSeedwork } from '@cellix/data-sources-mongoose';
-import type { DomainDataSource } from '@ocom/api-domain';
+import type { DomainDataSource } from '@sthrift/api-domain';
 import { DataSourcesImpl } from './datasources/index.ts';
 import type { ReadonlyDataSource } from './datasources/readonly/index.ts';
 
 export interface DataSources {
-    domainDataSource: DomainDataSource;
-    readonlyDataSource: ReadonlyDataSource;
+	domainDataSource: DomainDataSource;
+	readonlyDataSource: ReadonlyDataSource;
 }
 
 export const Persistence = (
@@ -17,13 +17,13 @@ export const Persistence = (
 		throw new Error('MongooseSeedwork.MongooseContextFactory is required');
 	}
 
-    // expose domain data source and readonly data source (wrappers for mongoose find, findOne, findById, allows projection)
+	// expose domain data source and readonly data source (wrappers for mongoose find, findOne, findById, allows projection)
 
-    // create a generic base MongoDataSource for exposing methods like find, findById and findOne, allowing the ability to specify projection on each
+	// create a generic base MongoDataSource for exposing methods like find, findById and findOne, allowing the ability to specify projection on each
 
-    // each collection should implement its own data source and wire through imports similar to the DomainDataSource
+	// each collection should implement its own data source and wire through imports similar to the DomainDataSource
 
-    // top level exports object containing domainDataSource and readonlyDataSource
+	// top level exports object containing domainDataSource and readonlyDataSource
 
 	return DataSourcesImpl(initializedService);
 };

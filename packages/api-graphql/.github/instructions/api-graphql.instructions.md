@@ -1,7 +1,7 @@
 ---
 applyTo: "packages/api-graphql/**/*.ts"
 ---
-# Copilot Instructions: @ocom/api-graphql
+# Copilot Instructions: @sthrift/api-graphql
 
 ## Purpose
 - This package provides GraphQL API endpoints for the CellixJS DDD application.

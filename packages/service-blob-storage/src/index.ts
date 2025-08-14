@@ -1,5 +1,5 @@
 import type { ServiceBase } from '@cellix/api-services-spec';
-import type { Domain } from '@ocom/api-domain';
+import type { Domain } from '@sthrift/api-domain';
 
 export class ServiceBlobStorage implements ServiceBase<Domain.Services["BlobStorage"]> {
 

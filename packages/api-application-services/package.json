@@ -1,5 +1,5 @@
 {
-	"name": "@ocom/api-application-services",
+	"name": "@sthrift/api-application-services",
 	"version": "1.0.0",
 	"author": "",
 	"license": "MIT",
@@ -15,8 +15,8 @@
 		"prebuild": "biome lint"
 	},
 	"peerDependencies": {
-        "@ocom/api-context-spec": "^1.0.0",
-        "@ocom/api-domain": "^1.0.0"
+		"@sthrift/api-context-spec": "^1.0.0",
+		"@sthrift/api-domain": "^1.0.0"
 	},
 	"devDependencies": {
 		"rimraf": "^6.0.1",

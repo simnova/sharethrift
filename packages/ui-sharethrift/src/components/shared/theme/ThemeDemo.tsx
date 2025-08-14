@@ -2,7 +2,8 @@
 import React from 'react';
 import styles from './ThemeDemo.module.css';
 import { Button, Input, Select, Tabs, Checkbox, Tag, Form } from 'antd';
-import { SwapOutlined, AppstoreAddOutlined, UserOutlined } from '@ant-design/icons';
+// const { RangePicker } = DatePicker;
+import { MessageOutlined } from '@ant-design/icons';
 import '../../../styles/theme.css';
 
 const items = [

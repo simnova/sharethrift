@@ -2,10 +2,10 @@
 applyTo: "packages/api/**/*.ts"
 ---
 
-# @ocom/api Package Instructions
+# @sthrift/api Package Instructions
 
 ## Purpose
-The `@ocom/api` package is the main Azure Functions application entry point that orchestrates the entire CellixJS serverless API. It acts as the composition root, configuring dependency injection, service initialization, and Azure Functions handler registration.
+The `@sthrift/api` package is the main Azure Functions application entry point that orchestrates the entire CellixJS serverless API. It acts as the composition root, configuring dependency injection, service initialization, and Azure Functions handler registration.
 
 ## Core Architecture
 
@@ -68,7 +68,7 @@ Cellix.initializeServices<ApiContextSpec>((serviceRegistry) => {
 ## Key Dependencies
 - `@azure/functions` - Azure Functions v4 runtime
 - `@azure/identity` - Azure authentication
-- OpenTelemetry integration via `@ocom/service-otel`
+- OpenTelemetry integration via `@sthrift/service-otel`
 - Service interfaces from `@cellix/api-services-spec`
 
 ## Development Notes
