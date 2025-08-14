@@ -6,10 +6,8 @@ import type {
 } from '@ocom/api-domain';
 import { ItemListingRepositoryImpl } from './item-listing.repository.ts';
 
-export class ItemListingUnitOfWorkImpl<PassportType extends ItemListingProps>
-	implements ItemListingUnitOfWork<PassportType>
-{
-	public readonly itemListingRepository: ItemListingRepository<PassportType>;
+export class ItemListingUnitOfWorkImpl implements ItemListingUnitOfWork {
+	public readonly itemListingRepository: ItemListingRepository<ItemListingProps>;
 	// biome-ignore lint/suspicious/noExplicitAny: Required for mongoose unit of work interface
 	private readonly mongoUnitOfWork: any; // Use any for now to avoid generic complexity
 
@@ -27,11 +25,12 @@ export class ItemListingUnitOfWorkImpl<PassportType extends ItemListingProps>
 		this.mongoUnitOfWork = mongoUnitOfWork;
 	}
 
-	withTransaction<T>(
-		func: (uow: ItemListingUnitOfWork<PassportType>) => Promise<T>,
-	): Promise<T> {
+	withTransaction<TReturn>(
+		_passport: Passport,
+		func: (repository: ItemListingRepository<ItemListingProps>) => Promise<TReturn>,
+	): Promise<TReturn> {
 		return this.mongoUnitOfWork.withTransaction(() => {
-			return func(this);
+			return func(this.itemListingRepository);
 		});
 	}
 }

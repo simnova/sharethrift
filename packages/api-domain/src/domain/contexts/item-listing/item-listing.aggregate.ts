@@ -43,7 +43,7 @@ export class ItemListing<props extends ItemListingProps>
 	//#region Constructor
 	constructor(props: props, passport: Passport) {
 		super(props, passport);
-		this.visa = passport.itemListing;
+		this.visa = passport.itemListing.forItemListing(this);
 	}
 	//#endregion Constructor
 
@@ -110,7 +110,7 @@ export class ItemListing<props extends ItemListingProps>
 		return this.props.sharer;
 	}
 	set sharer(value: string) {
-		if (!this.isNew && !this.visa.canUpdate()) {
+		if (!this.isNew && !this.visa.determineIf((permissions) => permissions.canUpdateItemListing)) {
 			throw new DomainSeedwork.PermissionError(
 				'You do not have permission to update this sharer'
 			);
@@ -122,7 +122,7 @@ export class ItemListing<props extends ItemListingProps>
 		return this.props.title;
 	}
 	set title(value: Title) {
-		if (!this.isNew && !this.visa.canUpdate()) {
+		if (!this.isNew && !this.visa.determineIf((permissions) => permissions.canUpdateItemListing)) {
 			throw new DomainSeedwork.PermissionError(
 				'You do not have permission to update this title'
 			);
@@ -135,7 +135,7 @@ export class ItemListing<props extends ItemListingProps>
 		return this.props.description;
 	}
 	set description(value: Description) {
-		if (!this.isNew && !this.visa.canUpdate()) {
+		if (!this.isNew && !this.visa.determineIf((permissions) => permissions.canUpdateItemListing)) {
 			throw new DomainSeedwork.PermissionError(
 				'You do not have permission to update this description'
 			);
@@ -148,7 +148,7 @@ export class ItemListing<props extends ItemListingProps>
 		return this.props.category;
 	}
 	set category(value: Category) {
-		if (!this.isNew && !this.visa.canUpdate()) {
+		if (!this.isNew && !this.visa.determineIf((permissions) => permissions.canUpdateItemListing)) {
 			throw new DomainSeedwork.PermissionError(
 				'You do not have permission to update this category'
 			);
@@ -161,7 +161,7 @@ export class ItemListing<props extends ItemListingProps>
 		return this.props.location;
 	}
 	set location(value: Location) {
-		if (!this.isNew && !this.visa.canUpdate()) {
+		if (!this.isNew && !this.visa.determineIf((permissions) => permissions.canUpdateItemListing)) {
 			throw new DomainSeedwork.PermissionError(
 				'You do not have permission to update this location'
 			);
@@ -174,7 +174,7 @@ export class ItemListing<props extends ItemListingProps>
 		return this.props.sharingPeriodStart;
 	}
 	set sharingPeriodStart(value: Date) {
-		if (!this.isNew && !this.visa.canUpdate()) {
+		if (!this.isNew && !this.visa.determineIf((permissions) => permissions.canUpdateItemListing)) {
 			throw new DomainSeedwork.PermissionError(
 				'You do not have permission to update this sharing period'
 			);
@@ -187,7 +187,7 @@ export class ItemListing<props extends ItemListingProps>
 		return this.props.sharingPeriodEnd;
 	}
 	set sharingPeriodEnd(value: Date) {
-		if (!this.isNew && !this.visa.canUpdate()) {
+		if (!this.isNew && !this.visa.determineIf((permissions) => permissions.canUpdateItemListing)) {
 			throw new DomainSeedwork.PermissionError(
 				'You do not have permission to update this sharing period'
 			);
@@ -224,7 +224,7 @@ export class ItemListing<props extends ItemListingProps>
 		return this.props.images ?? [];
 	}
 	set images(value: string[]) {
-		if (!this.isNew && !this.visa.canUpdate()) {
+		if (!this.isNew && !this.visa.determineIf((permissions) => permissions.canUpdateItemListing)) {
 			throw new DomainSeedwork.PermissionError(
 				'You do not have permission to update this images'
 			);
@@ -273,7 +273,7 @@ export class ItemListing<props extends ItemListingProps>
 	}
 
 	public publish(): void {
-		if (!this.visa.canPublish()) {
+		if (!this.visa.determineIf((permissions) => permissions.canPublishItemListing)) {
 			throw new DomainSeedwork.PermissionError(
 				'You do not have permission to publish this listing'
 			);
@@ -284,7 +284,7 @@ export class ItemListing<props extends ItemListingProps>
 	}
 
 	public pause(): void {
-		if (!this.visa.canPause()) {
+		if (!this.visa.determineIf((permissions) => permissions.canUnpublishItemListing)) {
 			throw new DomainSeedwork.PermissionError(
 				'You do not have permission to pause this listing'
 			);
@@ -295,7 +295,7 @@ export class ItemListing<props extends ItemListingProps>
 	}
 
 	public cancel(): void {
-		if (!this.visa.canDelete()) {
+		if (!this.visa.determineIf((permissions) => permissions.canDeleteItemListing)) {
 			throw new DomainSeedwork.PermissionError(
 				'You do not have permission to cancel this listing'
 			);

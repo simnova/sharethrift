@@ -1,20 +1,14 @@
+import type { DomainSeedwork } from '@cellix/domain-seedwork';
+import type { Passport } from '../passport.ts';
+import type { ItemListing, ItemListingProps } from './item-listing.aggregate.ts';
 import type { ItemListingRepository } from './item-listing.repository.ts';
-import type { ItemListingProps } from './item-listing.aggregate.ts';
 
-/**
- * Represents the Unit of Work interface for the ItemListing domain.
- * Provides simple interface without extending DomainSeedwork.UnitOfWork for now.
- */
-export interface ItemListingUnitOfWork<props extends ItemListingProps> {
-	/**
-	 * Get the repository for ItemListing operations
-	 */
-	itemListingRepository: ItemListingRepository<props>;
-	
-	/**
-	 * Execute operations within a transaction
-	 */
-	withTransaction<T>(
-		func: (uow: ItemListingUnitOfWork<props>) => Promise<T>,
-	): Promise<T>;
+export interface ItemListingUnitOfWork
+	extends DomainSeedwork.UnitOfWork<
+		Passport,
+		ItemListingProps,
+		ItemListing<ItemListingProps>,
+		ItemListingRepository<ItemListingProps>
+	> {
+	readonly itemListingRepository: ItemListingRepository<ItemListingProps>;
 }
