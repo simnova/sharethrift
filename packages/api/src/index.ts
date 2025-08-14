@@ -33,10 +33,12 @@ Cellix
             );
     })
 	.setContext((serviceRegistry) => {
+		const dataSources = MongooseConfig.mongooseContextBuilder(
+			serviceRegistry.getInfrastructureService<ServiceMongoose>(ServiceMongoose),
+		);
 		return {
-			dataSources: MongooseConfig.mongooseContextBuilder(
-				serviceRegistry.getInfrastructureService<ServiceMongoose>(ServiceMongoose),
-			),
+			dataSources,
+			domainDataSource: dataSources.domainDataSource,
 			tokenValidationService: serviceRegistry.getInfrastructureService<ServiceTokenValidation>(ServiceTokenValidation),
 		};
 	})

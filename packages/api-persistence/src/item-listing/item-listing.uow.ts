@@ -9,7 +9,7 @@ import { ItemListingRepositoryImpl } from '@ocom/api-data-sources-mongoose-model
 
 export const getItemListingUnitOfWork = (
   mongooseContextFactory: MongooseSeedwork.MongooseContextFactory,
-): ItemListingUnitOfWork<ItemListingProps> => {
+): ItemListingUnitOfWork => {
   if (!mongooseContextFactory) {
     throw new Error('MongooseContextFactory is required for ItemListing UoW');
   }
@@ -29,14 +29,9 @@ export const getItemListingUnitOfWork = (
   const createPassport = (): Passport => {
     return {
       itemListing: {
-        determineIf: () => true,
-        canCreate: () => true,
-        canUpdate: () => true,
-        canDelete: () => true,
-        canView: () => true,
-        canPublish: () => true,
-        canPause: () => true,
-        canReport: () => true,
+        forItemListing: () => ({
+          determineIf: () => true,
+        })
       }
     } as Passport;
   };
@@ -48,19 +43,11 @@ export const getItemListingUnitOfWork = (
 
   return {
     itemListingRepository: repository,
-    withTransaction<T>(
-      func: (uow: ItemListingUnitOfWork<ItemListingProps>) => Promise<T>,
-    ): Promise<T> {
-      // Create nested UoW for recursive transaction support
-      const uow: ItemListingUnitOfWork<ItemListingProps> = {
-        itemListingRepository: repository,
-        withTransaction: <U>(
-          innerFunc: (innerUow: ItemListingUnitOfWork<ItemListingProps>) => Promise<U>,
-        ): Promise<U> => {
-          return innerFunc(uow);
-        },
-      };
-      return func(uow);
+    withTransaction<TReturn>(
+      _passport: Passport,
+      func: (repository: ItemListingRepository<ItemListingProps>) => Promise<TReturn>,
+    ): Promise<TReturn> {
+      return func(repository);
     },
   };
 };

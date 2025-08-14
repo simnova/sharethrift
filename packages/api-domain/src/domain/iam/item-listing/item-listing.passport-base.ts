@@ -10,8 +10,7 @@ export interface ItemListingDomainPermissions {
 	canDeleteItemListing: boolean;
 	canViewItemListing: boolean;
 	canPublishItemListing: boolean;
-	canPauseItemListing: boolean;
-	canReportItemListing: boolean;
+	canUnpublishItemListing: boolean;
 }
 
 export class ItemListingPassportBase {

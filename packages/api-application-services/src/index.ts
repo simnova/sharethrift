@@ -1,8 +1,8 @@
 import type { ApiContextSpec } from '@ocom/api-context-spec';
 import { Domain } from '@ocom/api-domain';
 
-// biome-ignore lint/suspicious/noEmptyInterface: <explanation>
 export interface ApplicationServices {
+    context: ApiContextSpec;
 }
 
 export type PrincipalHints = {
@@ -49,6 +49,7 @@ export const buildApplicationServicesFactory = (infrastructureServicesRegistry: 
         }
 
         return {
+            context: infrastructureServicesRegistry, // Expose the context
         }
     }
 

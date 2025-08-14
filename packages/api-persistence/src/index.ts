@@ -7,7 +7,6 @@ export interface DataSources {
     domainDataSource: DomainDataSource;
     readonlyDataSource: ReadonlyDataSource;
 }
-import { ItemListingPersistence } from './item-listing/index.ts';
 
 export const Persistence = (
 	initializedService: MongooseSeedwork.MongooseContextFactory,

@@ -14,8 +14,8 @@ import {
 	ListingState,
 } from '@ocom/api-domain';
 
-export class ItemListingRepositoryImpl<PassportType extends ItemListingProps>
-	implements ItemListingRepository<PassportType>
+export class ItemListingRepositoryImpl
+	implements ItemListingRepository<ItemListingProps>
 {
 	// biome-ignore lint/suspicious/noExplicitAny: Required for mongoose model interface
 	private readonly model: Model<any>;
@@ -30,7 +30,7 @@ export class ItemListingRepositoryImpl<PassportType extends ItemListingProps>
 		this.createPassport = createPassport;
 	}
 
-	async get(id: string): Promise<ItemListing<PassportType>> {
+	async get(id: string): Promise<ItemListing<ItemListingProps>> {
 		const doc = await this.model.findById(id);
 		if (!doc) {
 			throw new Error(`ItemListing with id ${id} not found`);
@@ -38,7 +38,7 @@ export class ItemListingRepositoryImpl<PassportType extends ItemListingProps>
 		return this.mapToEntity(doc);
 	}
 
-	async save(itemListing: ItemListing<PassportType>): Promise<ItemListing<PassportType>> {
+	async save(itemListing: ItemListing<ItemListingProps>): Promise<ItemListing<ItemListingProps>> {
 		const doc = await this.model.findByIdAndUpdate(
 			itemListing.id,
 			{
@@ -63,7 +63,7 @@ export class ItemListingRepositoryImpl<PassportType extends ItemListingProps>
 		return this.mapToEntity(doc);
 	}
 
-	async getById(id: string): Promise<ItemListing<PassportType> | undefined> {
+	async getById(id: string): Promise<ItemListing<ItemListingProps> | undefined> {
 		const doc = await this.model.findById(id);
 		if (!doc) {
 			return undefined;
@@ -78,7 +78,7 @@ export class ItemListingRepositoryImpl<PassportType extends ItemListingProps>
 		after?: string;
 	}): Promise<{
 		edges: Array<{
-			node: ItemListing<PassportType>;
+			node: ItemListing<ItemListingProps>;
 			cursor: string;
 		}>;
 		pageInfo: {
@@ -138,13 +138,13 @@ export class ItemListingRepositoryImpl<PassportType extends ItemListingProps>
 		};
 	}
 
-	async getBySharerID(sharerId: string): Promise<ItemListing<PassportType>[]> {
+	async getBySharerID(sharerId: string): Promise<ItemListing<ItemListingProps>[]> {
 		const docs = await this.model.find({ sharer: sharerId });
 		return docs.map(doc => this.mapToEntity(doc));
 	}
 
 	async saveAndGetReference(
-		itemListing: ItemListing<PassportType>,
+		itemListing: ItemListing<ItemListingProps>,
 	): Promise<ItemListingEntityReference> {
 		const doc = await this.model.findByIdAndUpdate(
 			itemListing.id,
@@ -173,7 +173,7 @@ export class ItemListingRepositoryImpl<PassportType extends ItemListingProps>
 	}
 
 	// biome-ignore lint/suspicious/noExplicitAny: Required for mongoose document interface
-	private mapToEntity(doc: any): ItemListing<PassportType> {
+	private mapToEntity(doc: any): ItemListing<ItemListingProps> {
 		const props = {
 			id: doc._id.toString(),
 			sharer: doc.sharer.toString(),
@@ -193,6 +193,6 @@ export class ItemListingRepositoryImpl<PassportType extends ItemListingProps>
 		};
 
 		const passport = this.createPassport();
-		return new ItemListing(props as PassportType, passport);
+		return new ItemListing(props as ItemListingProps, passport);
 	}
 }
