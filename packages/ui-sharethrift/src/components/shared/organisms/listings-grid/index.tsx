@@ -1,5 +1,5 @@
 import React from 'react';
-import { Empty, Pagination, Button, Spin } from 'antd';
+import { Empty, Pagination } from 'antd';
 import { ListingCard } from '../../molecules/listing-card';
 import type { ItemListing } from '../../../../components/layouts/home/components/mock-listings';
 import styles from './index.module.css';
@@ -8,32 +8,22 @@ export interface ListingsGridProps {
   listings: ItemListing[];
   loading?: boolean;
   onListingClick?: (listing: ItemListing) => void;
-  // Legacy pagination props
   currentPage?: number;
   pageSize?: number;
   total?: number;
   onPageChange?: (page: number, pageSize?: number) => void;
   showPagination?: boolean;
-  // New infinite scroll props
-  hasNextPage?: boolean;
-  onLoadMore?: () => void;
-  totalCount?: number;
 }
 
 export const ListingsGrid: React.FC<ListingsGridProps> = ({
   listings,
   loading = false,
   onListingClick,
-  // Legacy pagination props
   currentPage = 1,
   pageSize = 12,
   total,
   onPageChange,
-  showPagination = false, // Default to false, prefer infinite scroll
-  // New infinite scroll props
-  hasNextPage = false,
-  onLoadMore,
-  totalCount,
+  showPagination = true,
 }) => {
   if (!loading && listings.length === 0) {
     return (
@@ -62,28 +52,7 @@ export const ListingsGrid: React.FC<ListingsGridProps> = ({
         ))}
       </div>
 
-      {/* Loading indicator */}
-      {loading && (
-        <div style={{ textAlign: 'center', padding: '20px' }}>
-          <Spin size="large" />
-        </div>
-      )}
-
-      {/* Load More button for infinite scroll */}
-      {!loading && hasNextPage && onLoadMore && (
-        <div style={{ textAlign: 'center', marginTop: '20px' }}>
-          <Button 
-            type="primary" 
-            onClick={onLoadMore}
-            size="large"
-          >
-            Load More Listings
-          </Button>
-        </div>
-      )}
-
-      {/* Legacy pagination - fallback */}
-      {showPagination && !onLoadMore && total && total > pageSize && (
+      {showPagination && total && total > pageSize && (
         <div className={styles.paginationContainer}>
           <Pagination
             current={currentPage}
