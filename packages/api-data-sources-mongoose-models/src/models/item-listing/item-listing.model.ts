@@ -1,5 +1,18 @@
-import { Schema } from 'mongoose';
-import { MongooseSeedwork } from '@cellix/data-sources-mongoose';
+import mongoose, { Schema, type Model, type Document, type ObjectId } from 'mongoose';
+export interface ItemListingDocument extends Document {
+  sharer: ObjectId;
+  title: string;
+  description: string;
+  category: string;
+  location: string;
+  sharingPeriodStart: Date;
+  sharingPeriodEnd: Date;
+  state?: 'Published' | 'Paused' | 'Cancelled' | 'Drafted' | 'Expired' | 'Blocked' | 'Appeal Requested';
+  createdAt?: Date;
+  updatedAt?: Date;
+  sharingHistory?: ObjectId[];
+  reports?: number;
+}
 
 export const ItemListingSchema = new Schema({
 	sharer: { type: Schema.Types.ObjectId, ref: 'User', required: true },
@@ -12,18 +25,22 @@ export const ItemListingSchema = new Schema({
 	state: {
 		type: String,
 		enum: ['Published', 'Paused', 'Cancelled', 'Drafted', 'Expired', 'Blocked', 'Appeal Requested'],
-		required: true,
-		default: 'Published'
+		required: false
 	},
-	createdAt: { type: Date, required: true, default: Date.now },
-	updatedAt: { type: Date, required: true, default: Date.now },
-	schemaversion: { type: Number, required: true, default: 1 },
+	createdAt: { type: Date, required: false, default: Date.now },
+	updatedAt: { type: Date, required: false, default: Date.now },
 	sharingHistory: [{ type: Schema.Types.ObjectId, ref: 'ReservationRequest' }],
 	reports: { type: Number, default: 0 },
-	images: [{ type: String }] // Array of image URLs
-}, { collection: 'item_listings' });
+});
 
-export const createItemListingModel = MongooseSeedwork.modelFactory(
-	'ItemListing',
-	ItemListingSchema,
-);
+export const ItemListingModelName = 'ItemListing';
+
+let ItemListingModel: Model<ItemListingDocument>;
+try {
+  ItemListingModel = mongoose.model<ItemListingDocument>(ItemListingModelName);
+} catch {
+  ItemListingModel = mongoose.model<ItemListingDocument>(ItemListingModelName, ItemListingSchema);
+}
+
+export { ItemListingModel };
+export const ItemListingCollectionName = 'Listings';

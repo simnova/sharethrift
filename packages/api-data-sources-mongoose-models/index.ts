@@ -1,11 +1,1 @@
-import type { MongooseSeedwork } from '@cellix/data-sources-mongoose';
-import { ItemListingModelFactory } from './src/models/item-listing'
-
-export const mongooseContextBuilder = (
-    	mongoose: MongooseSeedwork.MongooseContextFactory,
-        ) => {
-	return {
-		ItemListing: ItemListingModelFactory(mongoose),
-	};
-};
-export type MongooseContext = ReturnType<typeof mongooseContextBuilder>;
+export { ItemListingModel } from './src/models/item-listing/item-listing.model';
