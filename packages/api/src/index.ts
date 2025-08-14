@@ -1,45 +1,54 @@
 import './service-config/otel-starter.ts';
 
-import { Cellix, type UninitializedServiceRegistry } from './cellix.ts';
-import type { ApiContextSpec } from '@ocom/api-context-spec';
+import { Cellix } from './cellix.ts';
+import type { ApiContextSpec } from '@sthrift/api-context-spec';
+import { type ApplicationServices, buildApplicationServicesFactory } from '@sthrift/api-application-services';
 
-import { ServiceMongoose } from '@ocom/service-mongoose';
+import { ServiceMongoose } from '@sthrift/service-mongoose';
 import * as MongooseConfig from './service-config/mongoose/index.ts';
 
-import { graphHandlerCreator } from '@ocom/api-graphql';
-import { restHandlerCreator } from '@ocom/api-rest';
+import { ServiceBlobStorage } from '@sthrift/service-blob-storage';
 
-Cellix.initializeServices<ApiContextSpec>(
-	(serviceRegistry: UninitializedServiceRegistry<ApiContextSpec>) => {
-		serviceRegistry.registerService(
-			new ServiceMongoose(
-				MongooseConfig.mongooseConnectionString,
-				MongooseConfig.mongooseConnectOptions,
-			),
-		);
-	},
-)
+import { ServiceTokenValidation } from '@sthrift/service-token-validation';
+import * as TokenValidationConfig from './service-config/token-validation/index.ts';
+
+import { graphHandlerCreator } from '@sthrift/api-graphql';
+import { restHandlerCreator } from '@sthrift/api-rest';
+
+
+Cellix
+    .initializeInfrastructureServices<ApiContextSpec, ApplicationServices>((serviceRegistry) => {
+        serviceRegistry
+            .registerInfrastructureService(
+                new ServiceMongoose(
+                    MongooseConfig.mongooseConnectionString,
+                    MongooseConfig.mongooseConnectOptions,
+                ),
+            )
+            .registerInfrastructureService(new ServiceBlobStorage())
+            .registerInfrastructureService(
+                new ServiceTokenValidation(
+                    TokenValidationConfig.portalTokens,
+                ),
+            );
+    })
 	.setContext((serviceRegistry) => {
 		return {
-			domainDataSource: MongooseConfig.mongooseContextBuilder(
-				serviceRegistry.getService<ServiceMongoose>(ServiceMongoose),
+			dataSources: MongooseConfig.mongooseContextBuilder(
+				serviceRegistry.getInfrastructureService<ServiceMongoose>(ServiceMongoose),
 			),
+			tokenValidationService: serviceRegistry.getInfrastructureService<ServiceTokenValidation>(ServiceTokenValidation),
 		};
 	})
-	.then((cellix) => {
-		cellix
-			.registerAzureFunctionHandler(
-				'graphql',
-				{ route: 'graphql' },
-				graphHandlerCreator,
-			)
-			.registerAzureFunctionHandler(
-				'rest',
-				{ route: 'rest' },
-				restHandlerCreator,
-			);
-	})
-	.catch((error: unknown) => {
-		console.error('Error initializing Cellix:', error);
-		process.exit(1);
-	});
+    .initializeApplicationServices((context) => buildApplicationServicesFactory(context))
+    .registerAzureFunctionHttpHandler(
+        'graphql',
+        { route: 'graphql' },
+        graphHandlerCreator,
+    )
+    .registerAzureFunctionHttpHandler(
+        'rest',
+        { route: '{communityId}/{role}/{memberId}/{*rest}' },
+        restHandlerCreator,
+    )
+    .startUp();

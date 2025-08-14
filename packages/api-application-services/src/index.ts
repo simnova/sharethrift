@@ -61,8 +61,8 @@ export const buildApplicationServicesFactory = (
 			}
 		}
 
-        return {};
-    };
+		return {};
+	};
 
 	return {
 		forRequest,
