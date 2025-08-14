@@ -7,15 +7,18 @@
 	"license": "MIT",
 	"main": "packages/api/dist/src/index.js",
 	"scripts": {
-		"start-mock-auth": "cd packages/service-oauth2-mock-server && npm run start-mock-auth",
-		"start": "npm run build && concurrently npm:start:* --kill-others-on-fail --workspace=@ocom/api \"npm run start-mock-auth\"",
+		"start": "npm run build && concurrently npm:start:* --kill-others-on-fail",
 		"build": "npm run build --ws --if-present",
 		"lint": "npm run lint --ws --if-present",
 		"format": "npm run format --ws --if-present",
 		"tsbuild": "tsc --build",
 		"tswatch": "tsc --build --watch",
 		"clean": "npm install && npm run clean --ws --if-present && rimraf dist node_modules package-lock.json **/coverage",
-		"start:api": "npm run start --workspace=@ocom/api",
+		"start:ui-sharethrift": "npm run start --workspace=@sthrift/ui-sharethrift",
+		"start:api": "npm run start --workspace=@sthrift/api",
+		"dev": "npm run build && concurrently \"npm:start-emulator:*\" \"npm:start:* --kill-others-on-fail --workspace@sthrift/api\"",
+		"start-emulator:mongo-memory-server": "npm run start --workspace=@sthrift/service-mongodb-memory-server",
+		"start-emulator:auth-server": "npm run start --workspace=@sthrift/service-oauth2-mock-server",
 		"test": "npm run test --ws --if-present",
 		"test:all": "npm run test:all --ws --if-present",
 		"test:coverage": "npm run test:coverage --ws --if-present",
@@ -25,7 +28,6 @@
 		"test:watch": "node scripts/test-watch-all.js"
 	},
 	"workspaces": [
-    "packages/service-oauth2-mock-server",
 		"packages/cellix-domain-seedwork",
 		"packages/cellix-event-bus-seedwork-node",
 		"packages/api-domain",
@@ -41,7 +43,10 @@
 		"packages/api-context-spec",
 		"packages/api-graphql",
 		"packages/api-rest",
-		"packages/api"
+		"packages/api",
+		"packages/service-mongodb-memory-server",
+		"packages/service-oauth2-mock-server",
+		"packages/ui-sharethrift"
 	],
 	"devDependencies": {
 		"@amiceli/vitest-cucumber": "^5.1.2",
@@ -53,5 +58,8 @@
 		"typescript": "^5.8.3",
 		"vite": "^7.0.4",
 		"vitest": "^3.2.4"
+	},
+	"dependencies": {
+		"@sthrift/api-domain": "^1.0.0"
 	}
 }
