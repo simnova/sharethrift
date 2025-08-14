@@ -1,10 +1,10 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { Button } from 'antd';
 import { HeroSection } from '../components/hero-section';
 import { SearchBar } from '../../../shared/molecules/search-bar';
 import { CategoryFilter } from '../components/category-filter';
 import { ListingsGrid } from '../../../shared/organisms/listings-grid';
-import { DUMMY_LISTINGS } from '../../../../data/dummy-listings';
+import { useActiveListings, useCategories } from '../../../../hooks/useListings';
 import type { ItemListing } from '../../../../types/listing';
 import styles from './Listings.module.css';
 
@@ -15,30 +15,46 @@ interface ListingsProps {
 export default function Listings({ loggedIn = false }: Readonly<ListingsProps>) {
   const isAuthenticated = loggedIn;
 
-  // State for search query and pagination
+  // State for search query and category filter
   const [searchQuery, setSearchQuery] = useState('');
-  const [currentPage, setCurrentPage] = useState(1);
-  const pageSize = 12;
-
   const [selectedCategory, setSelectedCategory] = useState('');
-  const [listings, setListings] = useState<ItemListing[]>([]);
-  const [totalListings, setTotalListings] = useState(0);
 
-  useEffect(() => {
-    const fetchListings = async () => {
-      setListings(DUMMY_LISTINGS);
-      setTotalListings(DUMMY_LISTINGS.length);
-    };
+  // GraphQL queries using custom hooks
+  const { 
+    listings,
+    loading: listingsLoading, 
+    error: listingsError,
+    totalCount,
+    hasNextPage,
+    loadMore,
+    refetch
+  } = useActiveListings({
+    category: selectedCategory || undefined,
+    searchQuery: searchQuery || undefined,
+    first: 12
+  });
 
-    fetchListings();
-  }, [searchQuery, selectedCategory, currentPage]);
+  const { 
+    categories, 
+    loading: categoriesLoading, 
+    error: categoriesError 
+  } = useCategories();
 
   const handleSearch = (query: string) => {
     setSearchQuery(query);
-    setCurrentPage(1); // Reset to first page when searching
   };
 
-  const handleListingClick = (listing: ItemListing) => {
+  const handleCategoryChange = (category: string) => {
+    setSelectedCategory(category === 'All' ? '' : category);
+  };
+
+  const handleLoadMore = () => {
+    if (hasNextPage && !listingsLoading && loadMore) {
+      loadMore();
+    }
+  };
+
+  const handleListingClick = (_listing: ItemListing) => {
     // TODO: Navigate to listing detail page
     return null;
   };
@@ -48,10 +64,45 @@ export default function Listings({ loggedIn = false }: Readonly<ListingsProps>) 
     return null;
   };
 
-  const handlePageChange = (page: number) => {
-    setCurrentPage(page);
-    window.scrollTo({ top: 0, behavior: 'smooth' });
-  };
+  // Show loading state
+  if (listingsLoading && !listings.length) {
+    return (
+      <div>
+        {!isAuthenticated && (
+          <HeroSection
+            searchValue={searchQuery}
+            onSearchChange={setSearchQuery}
+            onSearch={handleSearch}
+          />
+        )}
+        <div className={styles.listingsPage} style={{ padding: isAuthenticated ? '36px' : '100px' }}>
+          <div style={{ textAlign: 'center', padding: '50px' }}>
+            Loading listings...
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  // Show error state
+  if (listingsError) {
+    return (
+      <div>
+        {!isAuthenticated && (
+          <HeroSection
+            searchValue={searchQuery}
+            onSearchChange={setSearchQuery}
+            onSearch={handleSearch}
+          />
+        )}
+        <div className={styles.listingsPage} style={{ padding: isAuthenticated ? '36px' : '100px' }}>
+          <div style={{ textAlign: 'center', padding: '50px', color: 'red' }}>
+            Error loading listings: {listingsError.message}
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div>
@@ -92,7 +143,10 @@ export default function Listings({ loggedIn = false }: Readonly<ListingsProps>) 
             {/* Category filter */}
             <CategoryFilter
               selectedCategory={selectedCategory}
-              onCategoryChange={setSelectedCategory}
+              onCategoryChange={handleCategoryChange}
+              categories={categories || []}
+              loading={categoriesLoading}
+              error={categoriesError}
             />
             {/* TODO: Location filter */}
             <span style={{ color: 'var(--color-tertiary)' }}>Philadelphia, PA · 10 mi</span>
@@ -104,12 +158,26 @@ export default function Listings({ loggedIn = false }: Readonly<ListingsProps>) 
           <ListingsGrid
             listings={listings}
             onListingClick={handleListingClick}
-            currentPage={currentPage}
-            pageSize={pageSize}
-            total={totalListings}
-            onPageChange={handlePageChange}
-            showPagination={totalListings > pageSize}
+            loading={listingsLoading}
+            hasNextPage={hasNextPage}
+            onLoadMore={handleLoadMore}
+            totalCount={totalCount}
           />
+          
+          {/* Show total count */}
+          {totalCount > 0 && (
+            <div style={{ textAlign: 'center', marginTop: '20px', color: 'var(--color-tertiary)' }}>
+              Showing {listings.length} of {totalCount} listings
+            </div>
+          )}
+          
+          {/* Show empty state */}
+          {!listingsLoading && listings.length === 0 && (
+            <div style={{ textAlign: 'center', padding: '50px' }}>
+              <h3>No listings found</h3>
+              <p>Try adjusting your search or filter criteria.</p>
+            </div>
+          )}
         </div>
       </div>
     </div>
