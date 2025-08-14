@@ -5,13 +5,11 @@ import type {
 	ApplicationServicesFactory,
 	PrincipalHints,
 } from '@ocom/api-application-services';
-import type { ApiContextSpec } from '@ocom/api-context-spec';
 import {
 	type AzureFunctionsMiddlewareOptions,
 	startServerAndCreateHandler,
 	type WithRequired,
 } from './azure-functions.ts';
-import { itemListingResolvers, itemListingTypeDefs } from './item-listing.resolvers.ts';
 
 // The GraphQL schema
 const typeDefs = `#graphql
@@ -38,13 +36,10 @@ const typeDefs = `#graphql
   type Mutation {
     communityCreate(input: CommunityCreateInput!): Community
   }
-
-  ${itemListingTypeDefs}
 `;
 
 interface GraphContext extends BaseContext {
 	applicationServices: ApplicationServices;
-	apiContext?: ApiContextSpec;
 }
 // A map of functions which return data for the schema.
 const resolvers = {
@@ -52,10 +47,8 @@ const resolvers = {
 		hello: (_parent: unknown, _args: unknown, context: GraphContext) => {
 			return `world${JSON.stringify(context)}`;
 		},
-		...itemListingResolvers.Query,
 	},
 	Mutation: {},
-	ItemListing: itemListingResolvers.ItemListing,
 };
 
 export const graphHandlerCreator = (
@@ -76,13 +69,11 @@ export const graphHandlerCreator = (
 				memberId: req.headers.get('x-member-id') ?? undefined,
 				communityId: req.headers.get('x-community-id') ?? undefined,
 			};
-			const applicationServices = await applicationServicesFactory.forRequest(
-				authHeader,
-				hints,
-			);
 			return Promise.resolve({
-				applicationServices,
-				apiContext: applicationServices.context, // Use the context from application services
+				applicationServices: await applicationServicesFactory.forRequest(
+					authHeader,
+					hints,
+				),
 			});
 		},
 	};
