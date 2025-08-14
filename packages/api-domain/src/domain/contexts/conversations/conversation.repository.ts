@@ -1,6 +1,6 @@
 import type { DomainSeedwork } from '@cellix/domain-seedwork';
-import type { Conversation, ConversationProps, ConversationEntityReference } from './conversation';
-import type { TwilioConversationSid, UserId, ListingId } from './conversation.value-objects';
+import type { Conversation /*, ConversationProps, ConversationEntityReference */} from './conversation.aggregate.ts';
+import type { TwilioConversationSid, UserId, ListingId } from './conversation.value-objects.ts';
 
 /**
  * Repository interface for Conversation aggregate root.

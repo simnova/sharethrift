@@ -1,14 +1,8 @@
 import type { DomainSeedwork } from '@cellix/domain-seedwork';
-import type { Conversation, Message, ConversationPassport, ConversationProps } from './conversation.js';
+import type { Conversation, ConversationPassport, ConversationProps } from './conversation.aggregate.ts';
+import type { Message } from './message.entity.ts';
 import type { TwilioConversationSid, UserId, ListingId } from './conversation.value-objects.js';
-
-export interface ConversationRepository extends DomainSeedwork.Repository<Conversation> {
-	getNewId(): Promise<string>;
-	getByTwilioSid(twilioSid: TwilioConversationSid): Promise<Conversation | null>;
-	getByListingAndParticipants(listingId: ListingId, participants: UserId[]): Promise<Conversation | null>;
-	getUserConversations(userId: UserId): Promise<Conversation[]>;
-}
-
+import type { ConversationRepository } from './conversation.repository.ts';
 export interface MessageRepository extends DomainSeedwork.Repository<Message> {
 	getNewId(): Promise<string>;
 	getConversationMessages(conversationId: string, limit?: number, offset?: number): Promise<Message[]>;
