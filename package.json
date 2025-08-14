@@ -16,7 +16,7 @@
 		"clean": "npm install && npm run clean --ws --if-present && rimraf dist node_modules package-lock.json **/coverage",
 		"start:ui-sharethrift": "npm run start --workspace=@sthrift/ui-sharethrift",
 		"start:api": "npm run start --workspace=@sthrift/api",
-		"dev": "npm run build && concurrently \"concurrently npm:azurite:start 'npm:start-emulator:*' 'npm:start:*'\" --kill-others-on-fail --workspace=@sthrift/api",
+		"dev": "npm run build && concurrently \"npm:azurite:start\" \"'npm:start-emulator:*'\" \"'npm:start:*'\" --kill-others-on-fail --workspace=@sthrift/api",
 		"start-emulator:mongo-memory-server": "npm run start --workspace=@sthrift/service-mongodb-memory-server",
 		"start-emulator:auth-server": "npm run start --workspace=@sthrift/service-oauth2-mock-server",
 		"test": "npm run test --ws --if-present",
