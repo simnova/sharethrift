@@ -17,7 +17,7 @@
     "typescript": "^5.0.0"
   },
   "scripts": {
-    "start-mock-auth": "tsx index.ts",
+    "start": "tsx index.ts",
     "clean": "rimraf node_modules package-lock.json"
   }
 }

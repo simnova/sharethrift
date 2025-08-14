@@ -9,11 +9,7 @@
     "start": "node dist/index.js"
   },
   "dependencies": {
-    "bl": "^4.1.0",
-    "fd-slicer": "^1.1.0",
-    "md5-file": "^5.0.0",
-    "mongodb-memory-server": "^8.14.0",
-    "yauzl": "^2.10.0"
+    "mongodb-memory-server": "^10.2.0"
   },
   "devDependencies": {
     "typescript": "^5.0.0"
