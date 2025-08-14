@@ -9,7 +9,7 @@ export interface GraphQLContext {
   // add other context properties as needed
 }
 
-export function authenticate(context: GraphQLContext): boolean {
+export function authenticate(_context: GraphQLContext): boolean {
   // Implement authentication logic
   return true;
 }
