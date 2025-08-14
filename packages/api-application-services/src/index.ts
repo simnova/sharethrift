@@ -6,9 +6,8 @@ interface JwtPayload {
 	email: string;
 }
 
-export interface ApplicationServices {
-    context: ApiContextSpec;
-}
+// biome-ignore lint/suspicious/noEmptyInterface: <explanation>
+export interface ApplicationServices {}
 
 // biome-ignore lint/complexity/noBannedTypes: <explanation>
 export type PrincipalHints = {
@@ -62,10 +61,8 @@ export const buildApplicationServicesFactory = (
 			}
 		}
 
-        return {
-            context: infrastructureServicesRegistry, // Expose the context
-        }
-    }
+        return {};
+    };
 
 	return {
 		forRequest,
