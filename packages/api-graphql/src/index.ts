@@ -1,49 +1,81 @@
 import { ApolloServer, type BaseContext } from '@apollo/server';
-import {
-	startServerAndCreateHandler,
-	type AzureFunctionsMiddlewareOptions,
-} from './azure-functions.ts';
 import type { HttpHandler } from '@azure/functions-v4';
-import type { ApiContextSpec } from '@ocom/api-context-spec';
-import { itemListingResolvers, itemListingTypeDefs } from './item-listing.resolvers.ts';
+import type {
+	ApplicationServices,
+	ApplicationServicesFactory,
+	PrincipalHints,
+} from '@ocom/api-application-services';
+import {
+	type AzureFunctionsMiddlewareOptions,
+	startServerAndCreateHandler,
+	type WithRequired,
+} from './azure-functions.ts';
 
 // The GraphQL schema
 const typeDefs = `#graphql
+  type Community {
+    id: String
+    name: String
+    createdBy: EndUser
+  } 
+
+  type EndUser {
+    id: String
+    displayName: String
+  }
+
   type Query {
     hello: String
   }
-  
-  ${itemListingTypeDefs}
+
+  input CommunityCreateInput {
+    name: String!
+    createdByEndUserId: String!
+  }
+
+  type Mutation {
+    communityCreate(input: CommunityCreateInput!): Community
+  }
 `;
 
 interface GraphContext extends BaseContext {
-	apiContext?: ApiContextSpec;
+	applicationServices: ApplicationServices;
 }
-
 // A map of functions which return data for the schema.
 const resolvers = {
 	Query: {
-		hello: (_parent: unknown, _args: unknown, context: GraphContext) =>
-			`world${JSON.stringify(context.apiContext)}`,
-		...itemListingResolvers.Query,
+		hello: (_parent: unknown, _args: unknown, context: GraphContext) => {
+			return `world${JSON.stringify(context)}`;
+		},
 	},
-	ItemListing: itemListingResolvers.ItemListing,
+	Mutation: {},
 };
 
 export const graphHandlerCreator = (
-	apiContext: ApiContextSpec,
+	applicationServicesFactory: ApplicationServicesFactory,
 ): HttpHandler => {
 	// Set up Apollo Server
 	const server = new ApolloServer<GraphContext>({
 		typeDefs,
 		resolvers,
 	});
-	const functionOptions: AzureFunctionsMiddlewareOptions<GraphContext> = {
-		context: () => {
+	const functionOptions: WithRequired<
+		AzureFunctionsMiddlewareOptions<GraphContext>,
+		'context'
+	> = {
+		context: async ({ req }) => {
+			const authHeader = req.headers.get('Authorization') ?? undefined;
+			const hints: PrincipalHints = {
+				memberId: req.headers.get('x-member-id') ?? undefined,
+				communityId: req.headers.get('x-community-id') ?? undefined,
+			};
 			return Promise.resolve({
-				apiContext: apiContext,
+				applicationServices: await applicationServicesFactory.forRequest(
+					authHeader,
+					hints,
+				),
 			});
 		},
 	};
-	return startServerAndCreateHandler(server, functionOptions);
+	return startServerAndCreateHandler<GraphContext>(server, functionOptions);
 };
