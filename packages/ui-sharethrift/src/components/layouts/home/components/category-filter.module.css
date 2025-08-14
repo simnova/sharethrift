@@ -12,14 +12,22 @@
 }
 
 .categorySelect * {
+  width: 200px !important;
   border: none !important;
   padding: 0 !important;
   background-color: transparent !important;
   color: var(--color-tertiary) !important;
   font-weight: 600 !important;
   box-shadow: none !important;
+  overflow: hidden !important;
 }
 
 .categorySelect > * {
-  padding: 0 8px !important;
+  padding: 0 4px !important;
+}
+
+@media (max-width: 768px) {
+  .categorySelect {
+    width: 100px !important;
+  }
 }

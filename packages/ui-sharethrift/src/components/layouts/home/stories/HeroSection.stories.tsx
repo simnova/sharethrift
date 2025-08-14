@@ -1,8 +1,8 @@
-import { HeroSection } from './index';
+import { HeroSection } from '../components/hero-section';
 import type { Meta, StoryObj } from '@storybook/react';
 
 const meta: Meta<typeof HeroSection> = {
-  title: 'Molecules/Hero',
+  title: 'Listing/Hero',
   component: HeroSection,
   parameters: {
     layout: 'fullscreen',

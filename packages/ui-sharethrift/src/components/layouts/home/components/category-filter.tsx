@@ -1,7 +1,7 @@
 import React from 'react';
 import { Select, Spin } from 'antd';
 import type { ApolloError } from '@apollo/client';
-import styles from './index.module.css';
+import styles from './category-filter.module.css';
 
 const { Option } = Select;
 
@@ -44,7 +44,6 @@ export const CategoryFilter: React.FC<CategoryFilterProps> = ({
       <Select
         value={displayValue}
         onChange={(value) => onCategoryChange(value)}
-        style={{ width: 200 }}
         placeholder="Select a category"
         className={styles.categorySelect}
         suffixIcon={loading ? <Spin size="small" /> : null}

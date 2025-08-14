@@ -28,6 +28,6 @@
 @media (max-width: 768px) {
   .grid {
     grid-template-columns: repeat(auto-fit, 160px);
-    gap: 12px;
+    gap: 24px 8px;
   }
 }

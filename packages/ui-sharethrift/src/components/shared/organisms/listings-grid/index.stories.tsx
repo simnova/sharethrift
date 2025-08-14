@@ -1,7 +1,7 @@
 import type { Meta, StoryObj } from '@storybook/react';
 import { useState } from 'react';
 import { ListingsGrid } from './index';
-import { DUMMY_LISTINGS } from '../../../../data/dummy-listings';
+import { DUMMY_LISTINGS } from '../../../../components/layouts/home/components/mock-listings';
 
 const meta: Meta<typeof ListingsGrid> = {
   title: 'Organisms/ListingsGrid',

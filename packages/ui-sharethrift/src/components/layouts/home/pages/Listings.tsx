@@ -9,7 +9,7 @@ import type { ItemListing } from '../../../../types/listing';
 import styles from './Listings.module.css';
 
 interface ListingsProps {
-  loggedIn?: boolean;
+  readonly loggedIn?: boolean;
 }
 
 export default function Listings({ loggedIn = false }: Readonly<ListingsProps>) {
@@ -183,3 +183,6 @@ export default function Listings({ loggedIn = false }: Readonly<ListingsProps>) 
     </div>
   );
 }
+// export default function Listings({ loggedIn = true }: ListingsProps) {
+//   return <MockListingsPage loggedIn={loggedIn} />;
+// }
