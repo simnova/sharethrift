@@ -24,8 +24,90 @@ const typeDefs = `#graphql
     displayName: String
   }
 
+  type Location {
+    address1: String!
+    address2: String
+    city: String!
+    state: String!
+    country: String!
+    zipCode: String!
+  }
+
+  type Billing {
+    subscriptionId: String
+    cybersourceCustomerId: String
+  }
+
+  type Profile {
+    firstName: String!
+    lastName: String!
+    location: Location!
+    billing: Billing
+  }
+
+  type Account {
+    accountType: String!
+    email: String!
+    username: String!
+    profile: Profile!
+  }
+
+  type User {
+    id: ID!
+    userType: String!
+    isBlocked: Boolean!
+    account: Account!
+    schemaVersion: String!
+    createdAt: String!
+    updatedAt: String!
+  }
+
+  input LocationInput {
+    address1: String!
+    address2: String
+    city: String!
+    state: String!
+    country: String!
+    zipCode: String!
+  }
+
+  input BillingInput {
+    subscriptionId: String
+    cybersourceCustomerId: String
+  }
+
+  input ProfileInput {
+    firstName: String!
+    lastName: String!
+    location: LocationInput!
+    billing: BillingInput
+  }
+
+  input AccountInput {
+    accountType: String!
+    email: String!
+    username: String!
+    profile: ProfileInput!
+  }
+
+  input UserCreateInput {
+    userType: String!
+    account: AccountInput!
+  }
+
+  input UserUpdateInput {
+    firstName: String
+    lastName: String
+    location: LocationInput
+    billing: BillingInput
+  }
+
   type Query {
     hello: String
+    user(id: ID!): User
+    userByEmail(email: String!): User
+    userByUsername(username: String!): User
+    users(limit: Int, offset: Int): [User!]!
   }
 
   input CommunityCreateInput {
@@ -35,6 +117,10 @@ const typeDefs = `#graphql
 
   type Mutation {
     communityCreate(input: CommunityCreateInput!): Community
+    userCreate(input: UserCreateInput!): User
+    userUpdate(id: ID!, input: UserUpdateInput!): User
+    userBlock(id: ID!): User
+    userUnblock(id: ID!): User
   }
 `;
 

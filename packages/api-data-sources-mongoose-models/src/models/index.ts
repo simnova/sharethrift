@@ -1,9 +1,13 @@
 import type { MongooseSeedwork } from '@cellix/data-sources-mongoose';
+import { UserModelFactory } from './user.ts';
+
+export * from './user.ts';
 
 export const mongooseContextBuilder = (
-	_: MongooseSeedwork.MongooseContextFactory,
+	mongooseContextFactory: MongooseSeedwork.MongooseContextFactory,
 ) => {
 	return {
+		User: UserModelFactory(mongooseContextFactory)
 	};
 };
 /*
