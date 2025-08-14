@@ -1,5 +1,5 @@
 import { gql, useQuery } from '@apollo/client';
-import type { ItemListing } from '../types/listing';
+import type { ItemListing } from '../components/layouts/home/components/mock-listings';
 
 // GraphQL query for active listings
 const GET_ACTIVE_LISTINGS = gql`

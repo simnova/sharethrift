@@ -4,9 +4,9 @@ import { HeroSection } from '../components/hero-section';
 import { SearchBar } from '../../../shared/molecules/search-bar';
 import { CategoryFilter } from '../components/category-filter';
 import { ListingsGrid } from '../../../shared/organisms/listings-grid';
-import { useActiveListings, useCategories } from '../../../../hooks/useListings';
-import type { ItemListing } from '../../../../types/listing';
-import styles from './Listings.module.css';
+import { DUMMY_LISTINGS } from '../components/mock-listings';
+import type { ItemListing } from '../components/mock-listings';
+import styles from '../components/mock-listings-page.module.css';
 
 interface ListingsProps {
   readonly loggedIn?: boolean;
@@ -19,26 +19,37 @@ export default function Listings({ loggedIn = false }: Readonly<ListingsProps>) 
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('');
 
-  // GraphQL queries using custom hooks
-  const { 
-    listings,
-    loading: listingsLoading, 
-    error: listingsError,
-    totalCount,
-    hasNextPage,
-    loadMore,
-    refetch
-  } = useActiveListings({
-    category: selectedCategory || undefined,
-    searchQuery: searchQuery || undefined,
-    first: 12
-  });
 
-  const { 
-    categories, 
-    loading: categoriesLoading, 
-    error: categoriesError 
-  } = useCategories();
+  // Hardcoded categories for demo
+  const categories = [
+    'All',
+    'Tools & Equipment',
+    'Electronics',
+    'Sports & Outdoors',
+    'Home & Garden',
+    'Party & Events',
+    'Vehicles & Transportation',
+    'Kids & Baby',
+    'Books & Media',
+    'Clothing & Accessories',
+    'Miscellaneous',
+  ];
+
+  // Filter and paginate dummy listings
+  const filteredListings = DUMMY_LISTINGS.filter(listing => {
+    if (selectedCategory && selectedCategory !== 'All' && listing.category !== selectedCategory) return false;
+    if (searchQuery && !listing.title.toLowerCase().includes(searchQuery.toLowerCase())) return false;
+    return true;
+  });
+  const totalCount = filteredListings.length;
+  const pageSize = 12;
+  const paginatedListings = filteredListings.slice(0, pageSize); // Simple: always first page
+  const listingsLoading = false;
+  const listingsError = null;
+
+  // Category loading/error state (mocked for now)
+  const categoriesLoading = false;
+  const categoriesError = null;
 
   const handleSearch = (query: string) => {
     setSearchQuery(query);
@@ -48,10 +59,10 @@ export default function Listings({ loggedIn = false }: Readonly<ListingsProps>) 
     setSelectedCategory(category === 'All' ? '' : category);
   };
 
+  // Placeholder for future pagination logic
   const handleLoadMore = () => {
-    if (hasNextPage && !listingsLoading && loadMore) {
-      loadMore();
-    }
+    // Pagination not implemented yet
+    // Example: if (hasNextPage && !listingsLoading && loadMore) { loadMore(); }
   };
 
   const handleListingClick = (_listing: ItemListing) => {
@@ -65,44 +76,7 @@ export default function Listings({ loggedIn = false }: Readonly<ListingsProps>) 
   };
 
   // Show loading state
-  if (listingsLoading && !listings.length) {
-    return (
-      <div>
-        {!isAuthenticated && (
-          <HeroSection
-            searchValue={searchQuery}
-            onSearchChange={setSearchQuery}
-            onSearch={handleSearch}
-          />
-        )}
-        <div className={styles.listingsPage} style={{ padding: isAuthenticated ? '36px' : '100px' }}>
-          <div style={{ textAlign: 'center', padding: '50px' }}>
-            Loading listings...
-          </div>
-        </div>
-      </div>
-    );
-  }
-
-  // Show error state
-  if (listingsError) {
-    return (
-      <div>
-        {!isAuthenticated && (
-          <HeroSection
-            searchValue={searchQuery}
-            onSearchChange={setSearchQuery}
-            onSearch={handleSearch}
-          />
-        )}
-        <div className={styles.listingsPage} style={{ padding: isAuthenticated ? '36px' : '100px' }}>
-          <div style={{ textAlign: 'center', padding: '50px', color: 'red' }}>
-            Error loading listings: {listingsError.message}
-          </div>
-        </div>
-      </div>
-    );
-  }
+  // No loading/error state for mock data
 
   return (
     <div>
@@ -156,23 +130,22 @@ export default function Listings({ loggedIn = false }: Readonly<ListingsProps>) 
         {/* Listings grid */}
         <div className={styles.listingsGridWrapper}>
           <ListingsGrid
-            listings={listings}
+            listings={paginatedListings}
             onListingClick={handleListingClick}
-            loading={listingsLoading}
-            hasNextPage={hasNextPage}
-            onLoadMore={handleLoadMore}
-            totalCount={totalCount}
+            currentPage={1}
+            pageSize={pageSize}
+            total={totalCount}
+            onPageChange={() => {}}
+            showPagination={totalCount > pageSize}
           />
-          
           {/* Show total count */}
           {totalCount > 0 && (
             <div style={{ textAlign: 'center', marginTop: '20px', color: 'var(--color-tertiary)' }}>
-              Showing {listings.length} of {totalCount} listings
+              Showing {paginatedListings.length} of {totalCount} listings
             </div>
           )}
-          
           {/* Show empty state */}
-          {!listingsLoading && listings.length === 0 && (
+          {paginatedListings.length === 0 && (
             <div style={{ textAlign: 'center', padding: '50px' }}>
               <h3>No listings found</h3>
               <p>Try adjusting your search or filter criteria.</p>
