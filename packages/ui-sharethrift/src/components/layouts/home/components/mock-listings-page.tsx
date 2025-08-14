@@ -10,12 +10,10 @@ import type { ItemListing } from './mock-listings';
 import styles from './mock-listings-page.module.css';
 
 interface MockListingsPageProps {
-  loggedIn?: boolean;
+  isAuthenticated: boolean;
 }
 
-export function MockListingsPage({ loggedIn = true }: Readonly<MockListingsPageProps>) {
-  const isAuthenticated = loggedIn;
-
+export function MockListingsPage({ isAuthenticated }: Readonly<MockListingsPageProps>) {
   // State for search query and pagination
   const [searchQuery, setSearchQuery] = useState('');
   const [currentPage, setCurrentPage] = useState(1);

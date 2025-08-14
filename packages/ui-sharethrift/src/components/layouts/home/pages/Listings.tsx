@@ -1,11 +1,17 @@
 import { MockListingsPage } from '../components/mock-listings-page';
+import { useAuth } from "react-oidc-context";
 
 interface ListingsProps {
-  readonly loggedIn?: boolean;
+  readonly isAuthenticated?: boolean; // use for mock/testing purposes
 }
 
-export default function Listings({ loggedIn = true }: ListingsProps) {
-  return <MockListingsPage loggedIn={loggedIn} />;
+export default function Listings({ isAuthenticated }: ListingsProps) {
+  const auth = useAuth();
+  const isUserAuthenticated = isAuthenticated ?? auth.isAuthenticated
+
+  return (
+    <MockListingsPage isAuthenticated={isUserAuthenticated} />
+  );
 }
 
 

@@ -13,9 +13,9 @@ export default meta;
 type Story = StoryObj<typeof Listings>;
 
 export const LoggedIn: Story = {
-  render: () => <Listings loggedIn={true} />,
+  render: () => <Listings isAuthenticated={true} />,
 };
 
 export const LoggedOut: Story = {
-  render: () => <Listings loggedIn={false} />,
+  render: () => <Listings isAuthenticated={false} />,
 };
