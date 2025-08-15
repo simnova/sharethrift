@@ -29,6 +29,11 @@
   margin-top: 32px;
 }
 
+.createListing {
+  padding: 18px 24px;
+  height: 48px;
+}
+
 @media (max-width: 768px) {
   .listingsPage {
     padding: 50px 20px !important;

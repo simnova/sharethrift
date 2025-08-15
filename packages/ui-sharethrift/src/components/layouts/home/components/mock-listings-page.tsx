@@ -1,8 +1,8 @@
 import { useState, useEffect } from 'react';
+import { Button } from 'antd';
 import { EnvironmentFilled } from '@ant-design/icons';
 import { HeroSection } from '../components/hero-section';
 import { SearchBar } from '../../../shared/molecules/search-bar';
-import { CreateListingButton } from '../../../shared/atoms/create-listing-button';
 import { CategoryFilter } from '../components/category-filter';
 import { ListingsGrid } from '../../../shared/organisms/listings-grid';
 import { DUMMY_LISTINGS } from './mock-listings';
@@ -72,8 +72,8 @@ export function MockListingsPage({ isAuthenticated }: Readonly<MockListingsPageP
       )}
       <div className={styles.listingsPage} style={{ padding: isAuthenticated ? '36px' : '100px' }} id="listings-content">
         <div className={styles.listingsHeader} style={{ gap: isAuthenticated ? '36px 0' : '24px 0' }}>
-          {/* Search */}
           <div className={`${styles.searchBar} ${isAuthenticated ? '' : styles.hideOnDesktop}`}>
+            {/* Search */}
             <SearchBar
               searchValue={searchQuery}
               onSearchChange={setSearchQuery}
@@ -81,7 +81,15 @@ export function MockListingsPage({ isAuthenticated }: Readonly<MockListingsPageP
             />
             {/* Create listing button */}
             {isAuthenticated && (
-              <CreateListingButton />
+              <Button
+                type="primary"
+                className={styles.createListing}
+                onClick={() => {
+                  // TODO: Open create listing modal
+                }}
+              >
+              Create a Listing
+              </Button>
             )}
           </div>
 
