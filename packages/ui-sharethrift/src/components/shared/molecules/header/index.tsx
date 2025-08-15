@@ -31,7 +31,7 @@ export const Header: React.FC<HeaderProps> = ({ isAuthenticated, onLogin, onSign
       <nav className={styles.authSection}>
         {!isAuthenticated ? (
           <>
-            <CreateListingButton></CreateListingButton>
+            <CreateListingButton />
             <Button type="link" className={styles.authButton} onClick={onSignUp}>
               Sign Up
             </Button>

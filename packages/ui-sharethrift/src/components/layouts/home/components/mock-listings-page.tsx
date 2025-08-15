@@ -17,7 +17,7 @@ export function MockListingsPage({ isAuthenticated }: Readonly<MockListingsPageP
   // State for search query and pagination
   const [searchQuery, setSearchQuery] = useState('');
   const [currentPage, setCurrentPage] = useState(1);
-  const pageSize = 10;
+  const pageSize = 20;
 
   const [selectedCategory, setSelectedCategory] = useState('');
   const [listings, setListings] = useState<ItemListing[]>([]);
@@ -52,7 +52,12 @@ export function MockListingsPage({ isAuthenticated }: Readonly<MockListingsPageP
 
   const handlePageChange = (page: number) => {
     setCurrentPage(page);
-    window.scrollTo({ top: 0, behavior: 'smooth' });
+    setTimeout(() => {
+      const content = document.getElementById('listings-content');
+      if (content) {
+        window.scrollTo({ top: content.offsetTop - 50, behavior: 'smooth' });
+      }
+    }, 100);
   };
 
   return (
@@ -65,7 +70,7 @@ export function MockListingsPage({ isAuthenticated }: Readonly<MockListingsPageP
           onSearch={handleSearch}
         />
       )}
-      <div className={styles.listingsPage} style={{ padding: isAuthenticated ? '36px' : '100px' }}>
+      <div className={styles.listingsPage} style={{ padding: isAuthenticated ? '36px' : '100px' }} id="listings-content">
         <div className={styles.listingsHeader} style={{ gap: isAuthenticated ? '36px 0' : '24px 0' }}>
           {/* Search */}
           <div className={`${styles.searchBar} ${isAuthenticated ? '' : styles.hideOnDesktop}`}>
@@ -76,7 +81,7 @@ export function MockListingsPage({ isAuthenticated }: Readonly<MockListingsPageP
             />
             {/* Create listing button */}
             {isAuthenticated && (
-              <CreateListingButton></CreateListingButton>
+              <CreateListingButton />
             )}
           </div>
 
@@ -107,7 +112,6 @@ export function MockListingsPage({ isAuthenticated }: Readonly<MockListingsPageP
             pageSize={pageSize}
             total={totalListings}
             onPageChange={handlePageChange}
-            showPagination={totalListings > pageSize}
           />
         </div>
       </div>

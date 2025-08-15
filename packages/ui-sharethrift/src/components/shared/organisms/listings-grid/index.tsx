@@ -20,7 +20,7 @@ export const ListingsGrid: React.FC<ListingsGridProps> = ({
   loading = false,
   onListingClick,
   currentPage = 1,
-  pageSize = 12,
+  pageSize = 20,
   total,
   onPageChange,
   showPagination = true,
@@ -60,10 +60,7 @@ export const ListingsGrid: React.FC<ListingsGridProps> = ({
             total={total}
             onChange={onPageChange}
             showSizeChanger={false}
-            showQuickJumper
-            showTotal={(total, range) =>
-              `${range[0]}-${range[1]} of ${total} listings`
-            }
+            className={styles.pagination}
           />
         </div>
       )}
