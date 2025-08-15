@@ -29,18 +29,30 @@ export class ReservationRequestDomainAdapter extends MongooseDomainAdapter<Model
     this.doc.state = value.valueOf();
   }
 
-  get listingId() {
-    return this.doc.listing?.toString() || "";
+  get listing(): Domain.Contexts.ListingEntityReference {
+    // Create entity reference from the stored ID and mock data
+    // In a real implementation, this would potentially fetch from database or cache
+    return {
+      id: this.doc.listing?.toString() || "",
+      title: "Mock Listing Title", // TODO: Replace with actual data source
+      description: "Mock Listing Description", // TODO: Replace with actual data source
+    };
   }
-  set listingId(value: string) {
-    this.doc.listing = value;
+  set listing(value: Domain.Contexts.ListingEntityReference) {
+    this.doc.listing = value.id;
   }
 
-  get reserverId() {
-    return this.doc.reserver?.toString() || "";
+  get reserver(): Domain.Contexts.ReserverEntityReference {
+    // Create entity reference from the stored ID and mock data  
+    // In a real implementation, this would potentially fetch from database or cache
+    return {
+      id: this.doc.reserver?.toString() || "",
+      name: "Mock Reserver Name", // TODO: Replace with actual data source
+      email: "mock@example.com", // TODO: Replace with actual data source
+    };
   }
-  set reserverId(value: string) {
-    this.doc.reserver = value;
+  set reserver(value: Domain.Contexts.ReserverEntityReference) {
+    this.doc.reserver = value.id;
   }
 
   get reservationPeriod() {

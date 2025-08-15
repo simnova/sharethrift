@@ -2,10 +2,21 @@ import { DomainSeedwork } from '@cellix/domain-seedwork';
 import type { Passport } from '../passport.ts';
 import type { ReservationRequestVisa } from './reservation-request.visa.ts';
 import {
-	ReservationPeriod,
+	type ReservationPeriod,
 	ReservationRequestStateValue,
 	ReservationRequestStates,
 } from './reservation-request.value-objects.ts';
+
+// Entity references for external aggregates
+export interface ListingEntityReference extends DomainSeedwork.DomainEntityProps {
+	readonly title: string;
+	readonly description: string;
+}
+
+export interface ReserverEntityReference extends DomainSeedwork.DomainEntityProps {
+	readonly name: string;
+	readonly email: string;
+}
 
 export interface ReservationRequestProps
 	extends DomainSeedwork.DomainEntityProps {
@@ -14,12 +25,17 @@ export interface ReservationRequestProps
 	readonly createdAt: Date;
 	updatedAt: Date;
 	readonly schemaVersion: string;
-	listingId: string;
-	reserverId: string;
+	listing: Readonly<ListingEntityReference>;
+	reserver: Readonly<ReserverEntityReference>;
 	closeRequested: boolean;
 }
 
-export interface ReservationRequestEntityReference extends Readonly<ReservationRequestProps> {}
+export interface ReservationRequestEntityReference extends Readonly<
+	Omit<ReservationRequestProps, 'listing' | 'reserver'>
+> {
+	readonly listing: Readonly<ListingEntityReference>;
+	readonly reserver: Readonly<ReserverEntityReference>;
+}
 
 export class ReservationRequest<props extends ReservationRequestProps>
 	extends DomainSeedwork.AggregateRoot<props, Passport>
@@ -40,8 +56,8 @@ export class ReservationRequest<props extends ReservationRequestProps>
 	public static getNewInstance<props extends ReservationRequestProps>(
 		newProps: props,
 		state: ReservationRequestStateValue,
-		listingId: string,
-		reserverId: string,
+		listing: ListingEntityReference,
+		reserver: ReserverEntityReference,
 		reservationPeriod: ReservationPeriod,
 		passport: Passport,
 	): ReservationRequest<props> {
@@ -49,8 +65,8 @@ export class ReservationRequest<props extends ReservationRequestProps>
 			{
 				...newProps,
 				state,
-				listingId,
-				reserverId,
+				listing,
+				reserver,
 				reservationPeriod,
 				createdAt: newProps.createdAt ?? new Date(),
 				updatedAt: newProps.updatedAt ?? new Date(),
@@ -89,28 +105,28 @@ export class ReservationRequest<props extends ReservationRequestProps>
 		return this.props.schemaVersion;
 	}
 
-	get listingId(): string {
-		return this.props.listingId;
+	get listing(): ListingEntityReference {
+		return this.props.listing;
 	}
-	set listingId(value: string) {
+	set listing(value: ListingEntityReference) {
 		if (!this.isNew && !this.visa.determineIf((domainPermissions) => domainPermissions.canUpdateRequest)) {
 			throw new DomainSeedwork.PermissionError(
 				'You do not have permission to update this listing'
 			);
 		}
-		this.props.listingId = value;
+		this.props.listing = value;
 	}
 
-	get reserverId(): string {
-		return this.props.reserverId;
+	get reserver(): ReserverEntityReference {
+		return this.props.reserver;
 	}
-	set reserverId(value: string) {
+	set reserver(value: ReserverEntityReference) {
 		if (!this.isNew && !this.visa.determineIf((domainPermissions) => domainPermissions.canUpdateRequest)) {
 			throw new DomainSeedwork.PermissionError(
 				'You do not have permission to update this reserver'
 			);
 		}
-		this.props.reserverId = value;
+		this.props.reserver = value;
 	}
 
 	get closeRequested(): boolean {

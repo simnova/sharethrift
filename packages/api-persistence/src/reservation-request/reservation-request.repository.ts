@@ -50,8 +50,8 @@ export class ReservationRequestRepository
 
 	async getNewInstance(
 		state: Domain.Contexts.ReservationRequestStateValue,
-		listing: Domain.Contexts.ListingEntityReference,  // Does not exist yet
-		reserver: Domain.Contexts.EndUserEntityReference, // Does not exist yet
+		listing: Domain.Contexts.ListingEntityReference,
+		reserver: Domain.Contexts.ReserverEntityReference,
 	): Promise<Domain.Contexts.ReservationRequest<PropType>> {
 		const adapter = this.typeConverter.toAdapter(new this.model());
 		return Promise.resolve(

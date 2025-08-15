@@ -27,11 +27,9 @@ const typeDefs = `#graphql
     reservationPeriodEnd: String!
     createdAt: String!
     updatedAt: String!
-    listingId: ID!
-    reserverId: ID!
     closeRequested: Boolean!
-    listing: Listing
-    reserver: User
+    listing: Listing!
+    reserver: User!
   }
 
   enum ReservationRequestState {

@@ -1,22 +1,29 @@
 import { describe, it, expect } from 'vitest';
-import { ReservationRequest } from './reservation-request.aggregate.ts';
-import { ReservationRequestState } from './reservation-request.value-objects.ts';
+import { ReservationRequest, type ListingEntityReference, type ReserverEntityReference } from './reservation-request.aggregate.ts';
+import { ReservationRequestStates, ReservationRequestStateValue, ReservationPeriod } from './reservation-request.value-objects.ts';
 import type { Passport } from '../passport.ts';
 
 describe('ReservationRequest', () => {
   const mockPassport: Passport = { 
     reservationRequest: {
-      determineIf: () => true,
-      canCreate: () => true,
-      canUpdate: () => true,
-      canDelete: () => true,
-      canAccept: () => true,
-      canReject: () => true,
-      canCancel: () => true,
-      canClose: () => true,
-      canView: () => true,
+      forReservationRequest: () => ({
+        determineIf: () => true,
+      }),
     }
-  };
+  } as any;
+
+  // Helper functions for creating mock entity references
+  const createMockListing = (id = 'listing-1'): ListingEntityReference => ({
+    id,
+    title: 'Mock Listing',
+    description: 'Mock listing description',
+  });
+
+  const createMockReserver = (id = 'user-1'): ReserverEntityReference => ({
+    id,
+    name: 'Mock User',
+    email: 'mock@example.com',
+  });
 
   // Use future dates for testing
   const getFutureDates = () => {
@@ -29,33 +36,41 @@ describe('ReservationRequest', () => {
   describe('getNewInstance', () => {
     it('should create a new reservation request with REQUESTED state', () => {
       const { startDate, endDate } = getFutureDates();
+      const listing = createMockListing();
+      const reserver = createMockReserver();
+      const state = ReservationRequestStateValue.requested();
+      const reservationPeriod = new ReservationPeriod({
+        start: startDate.toISOString(),
+        end: endDate.toISOString(),
+      });
 
-      const reservation = ReservationRequest.getNewInstance({
-        listingId: 'listing-1',
-        reserverId: 'user-1',
-        reservationPeriodStart: startDate,
-        reservationPeriodEnd: endDate,
-      }, mockPassport);
+      const reservation = ReservationRequest.getNewInstance(
+        {} as any, // props
+        state,
+        listing,
+        reserver,
+        reservationPeriod,
+        mockPassport
+      );
 
-      expect(reservation.state.value).toBe(ReservationRequestState.REQUESTED);
-      expect(reservation.listingId).toBe('listing-1');
-      expect(reservation.reserverId).toBe('user-1');
-      expect(reservation.reservationPeriod.start).toEqual(startDate);
-      expect(reservation.reservationPeriod.end).toEqual(endDate);
+      expect(reservation.state.valueOf()).toBe(ReservationRequestStates.REQUESTED);
+      expect(reservation.listing.id).toBe('listing-1');
+      expect(reservation.reserver.id).toBe('user-1');
       expect(reservation.closeRequested).toBe(false);
-      expect(reservation.schemaVersion).toBe(1);
+      expect(reservation.schemaVersion).toBe('1');
     });
 
     it('should throw error if start date is after end date', () => {
       const { startDate, endDate } = getFutureDates();
+      const listing = createMockListing();
+      const reserver = createMockReserver();
+      const state = ReservationRequestStateValue.requested();
 
       expect(() => {
-        ReservationRequest.getNewInstance({
-          listingId: 'listing-1',
-          reserverId: 'user-1',
-          reservationPeriodStart: endDate, // reversed
-          reservationPeriodEnd: startDate,
-        }, mockPassport);
+        new ReservationPeriod({
+          start: endDate.toISOString(), // reversed
+          end: startDate.toISOString(),
+        });
       }).toThrow('Reservation start date must be before end date');
     });
   });
@@ -63,26 +78,46 @@ describe('ReservationRequest', () => {
   describe('accept', () => {
     it('should change state from REQUESTED to ACCEPTED', () => {
       const { startDate, endDate } = getFutureDates();
-      const reservation = ReservationRequest.getNewInstance({
-        listingId: 'listing-1',
-        reserverId: 'user-1',
-        reservationPeriodStart: startDate,
-        reservationPeriodEnd: endDate,
-      }, mockPassport);
+      const listing = createMockListing();
+      const reserver = createMockReserver();
+      const state = ReservationRequestStateValue.requested();
+      const reservationPeriod = new ReservationPeriod({
+        start: startDate.toISOString(),
+        end: endDate.toISOString(),
+      });
+
+      const reservation = ReservationRequest.getNewInstance(
+        {} as any, // props
+        state,
+        listing,
+        reserver,
+        reservationPeriod,
+        mockPassport
+      );
 
       reservation.accept();
 
-      expect(reservation.state.value).toBe(ReservationRequestState.ACCEPTED);
+      expect(reservation.state.valueOf()).toBe(ReservationRequestStates.ACCEPTED);
     });
 
     it('should throw error if not in REQUESTED state', () => {
       const { startDate, endDate } = getFutureDates();
-      const reservation = ReservationRequest.getNewInstance({
-        listingId: 'listing-1',
-        reserverId: 'user-1',
-        reservationPeriodStart: startDate,
-        reservationPeriodEnd: endDate,
-      }, mockPassport);
+      const listing = createMockListing();
+      const reserver = createMockReserver();
+      const state = ReservationRequestStateValue.requested();
+      const reservationPeriod = new ReservationPeriod({
+        start: startDate.toISOString(),
+        end: endDate.toISOString(),
+      });
+
+      const reservation = ReservationRequest.getNewInstance(
+        {} as any, // props
+        state,
+        listing,
+        reserver,
+        reservationPeriod,
+        mockPassport
+      );
 
       reservation.accept();
 
@@ -95,58 +130,98 @@ describe('ReservationRequest', () => {
   describe('cancel', () => {
     it('should cancel a REQUESTED reservation', () => {
       const { startDate, endDate } = getFutureDates();
-      const reservation = ReservationRequest.getNewInstance({
-        listingId: 'listing-1',
-        reserverId: 'user-1',
-        reservationPeriodStart: startDate,
-        reservationPeriodEnd: endDate,
-      }, mockPassport);
+      const listing = createMockListing();
+      const reserver = createMockReserver();
+      const state = ReservationRequestStateValue.requested();
+      const reservationPeriod = new ReservationPeriod({
+        start: startDate.toISOString(),
+        end: endDate.toISOString(),
+      });
+
+      const reservation = ReservationRequest.getNewInstance(
+        {} as any, // props
+        state,
+        listing,
+        reserver,
+        reservationPeriod,
+        mockPassport
+      );
 
       reservation.cancel();
 
-      expect(reservation.state.value).toBe(ReservationRequestState.CANCELLED);
+      expect(reservation.state.valueOf()).toBe(ReservationRequestStates.CANCELLED);
     });
 
     it('should cancel a REJECTED reservation', () => {
       const { startDate, endDate } = getFutureDates();
-      const reservation = ReservationRequest.getNewInstance({
-        listingId: 'listing-1',
-        reserverId: 'user-1',
-        reservationPeriodStart: startDate,
-        reservationPeriodEnd: endDate,
-      }, mockPassport);
+      const listing = createMockListing();
+      const reserver = createMockReserver();
+      const state = ReservationRequestStateValue.requested();
+      const reservationPeriod = new ReservationPeriod({
+        start: startDate.toISOString(),
+        end: endDate.toISOString(),
+      });
+
+      const reservation = ReservationRequest.getNewInstance(
+        {} as any, // props
+        state,
+        listing,
+        reserver,
+        reservationPeriod,
+        mockPassport
+      );
 
       reservation.reject();
       reservation.cancel();
 
-      expect(reservation.state.value).toBe(ReservationRequestState.CANCELLED);
+      expect(reservation.state.valueOf()).toBe(ReservationRequestStates.CANCELLED);
     });
   });
 
   describe('close', () => {
     it('should close an ACCEPTED reservation', () => {
       const { startDate, endDate } = getFutureDates();
-      const reservation = ReservationRequest.getNewInstance({
-        listingId: 'listing-1',
-        reserverId: 'user-1',
-        reservationPeriodStart: startDate,
-        reservationPeriodEnd: endDate,
-      }, mockPassport);
+      const listing = createMockListing();
+      const reserver = createMockReserver();
+      const state = ReservationRequestStateValue.requested();
+      const reservationPeriod = new ReservationPeriod({
+        start: startDate.toISOString(),
+        end: endDate.toISOString(),
+      });
+
+      const reservation = ReservationRequest.getNewInstance(
+        {} as any, // props
+        state,
+        listing,
+        reserver,
+        reservationPeriod,
+        mockPassport
+      );
 
       reservation.accept();
       reservation.close();
 
-      expect(reservation.state.value).toBe(ReservationRequestState.RESERVATION_PERIOD);
+      expect(reservation.state.valueOf()).toBe(ReservationRequestStates.RESERVATION_PERIOD);
     });
 
     it('should throw error if not in ACCEPTED state', () => {
       const { startDate, endDate } = getFutureDates();
-      const reservation = ReservationRequest.getNewInstance({
-        listingId: 'listing-1',
-        reserverId: 'user-1',
-        reservationPeriodStart: startDate,
-        reservationPeriodEnd: endDate,
-      }, mockPassport);
+      const listing = createMockListing();
+      const reserver = createMockReserver();
+      const state = ReservationRequestStateValue.requested();
+      const reservationPeriod = new ReservationPeriod({
+        start: startDate.toISOString(),
+        end: endDate.toISOString(),
+      });
+
+      const reservation = ReservationRequest.getNewInstance(
+        {} as any, // props
+        state,
+        listing,
+        reserver,
+        reservationPeriod,
+        mockPassport
+      );
 
       expect(() => {
         reservation.close();
@@ -157,12 +232,22 @@ describe('ReservationRequest', () => {
   describe('requestClose', () => {
     it('should set closeRequested to true for ACCEPTED reservation', () => {
       const { startDate, endDate } = getFutureDates();
-      const reservation = ReservationRequest.getNewInstance({
-        listingId: 'listing-1',
-        reserverId: 'user-1',
-        reservationPeriodStart: startDate,
-        reservationPeriodEnd: endDate,
-      }, mockPassport);
+      const listing = createMockListing();
+      const reserver = createMockReserver();
+      const state = ReservationRequestStateValue.requested();
+      const reservationPeriod = new ReservationPeriod({
+        start: startDate.toISOString(),
+        end: endDate.toISOString(),
+      });
+
+      const reservation = ReservationRequest.getNewInstance(
+        {} as any, // props
+        state,
+        listing,
+        reserver,
+        reservationPeriod,
+        mockPassport
+      );
 
       reservation.accept();
       reservation.requestClose();

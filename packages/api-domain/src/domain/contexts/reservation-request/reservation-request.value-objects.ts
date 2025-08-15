@@ -17,7 +17,7 @@ export class ReservationPeriod extends VOObject({
 			if (start && end) {
 				const startDate = new Date(start);
 				const endDate = new Date(end);
-				if (isNaN(startDate.getTime()) || isNaN(endDate.getTime())) {
+				if (Number.isNaN(startDate.getTime()) || Number.isNaN(endDate.getTime())) {
 					throw new Error('Wrong raw value type');
 				}
 				if (startDate >= endDate) {
