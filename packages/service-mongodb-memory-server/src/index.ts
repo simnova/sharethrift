@@ -1,11 +1,12 @@
 import { MongoMemoryServer } from 'mongodb-memory-server';
+import {setupEnvironment} from "./setup-environment.js";
 
-
-console.log("Starting memory server on port ", 50000);
+setupEnvironment();
+console.log("Starting memory server on port ", process.env.port);
 MongoMemoryServer.create({
         instance: {
-            dbName: "sharethrift",
-            port: 50000
+            dbName: process.env.db_name,
+            port:  Number(process.env.port),
         },
 }).then(server => {
     console.log("Memory server started at ", server.getUri());

@@ -1,5 +1,5 @@
-// Use jose to generate and manage the signing key
-import crypto, { KeyObject } from 'crypto';
+import { setupEnvironment } from './setup-environment.js';
+import crypto, { type KeyObject } from 'crypto';
 import express from 'express';
 import {
 	exportJWK,
@@ -8,9 +8,8 @@ import {
 	type CryptoKey,
 	type JWK,
 } from 'jose';
-import dotenv from 'dotenv';
-dotenv.config({ path: '.env.local' });
 
+setupEnvironment();
 const app = express();
 app.disable('x-powered-by');
 const port = 4000;
