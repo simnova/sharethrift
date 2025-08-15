@@ -24,9 +24,9 @@
 }
 
 .searchInput:hover, .searchInput:focus {
+  background-color: var(--color-background) !important;
   border-color: var(--color-primary-hover);
   box-shadow: none !important;
-  background-color: var(--color-background) !important;
 }
 
 .searchSubmit {
@@ -37,7 +37,7 @@
   background-color: var(--color-primary) !important;
 }
 
-.searchSubmit:hover {
+.searchSubmit:hover.searchSubmit:hover, .searchSubmit:focus.searchSubmit:focus {
   background-color: var(--color-primary) !important;
   transform: none !important;
 }

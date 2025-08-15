@@ -19,9 +19,7 @@
 }
 
 .heroContent {
-  position: relative;
   text-align: center;
-  max-width: 600px;
 }
 
 .heroTitle {
@@ -29,7 +27,6 @@
   font-family: var(--Instrument-Serif);
   color: var(--color-primary);
   line-height: 1.1;
-  margin-bottom: 36px;
   font-weight: 400;
 }
 

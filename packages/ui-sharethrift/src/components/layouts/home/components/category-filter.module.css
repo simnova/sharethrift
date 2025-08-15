@@ -1,14 +1,12 @@
 .categoryFilter {
   display: flex;
   align-items: center;
-  color: var(--color-tertiary);
-  font-family: var(--Urbanist);
 }
 
 .categoryFilter * {
   font-family: var(--Urbanist);
   font-size: 14px !important;
-  color: var(--color-tertiary);
+  color: var(--color-tertiary) !important;
 }
 
 .categorySelect * {
@@ -16,7 +14,6 @@
   border: none !important;
   padding: 0 !important;
   background-color: transparent !important;
-  color: var(--color-tertiary) !important;
   font-weight: 600 !important;
   box-shadow: none !important;
   overflow: hidden !important;

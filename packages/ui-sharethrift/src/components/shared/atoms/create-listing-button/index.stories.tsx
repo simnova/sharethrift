@@ -2,7 +2,7 @@ import type { Meta, StoryObj } from '@storybook/react';
 import { CreateListingButton } from './index';
 
 const meta: Meta<typeof CreateListingButton> = {
-  title: 'Molecules/Create Listing Button',
+  title: 'Atoms/Create Listing Button',
   component: CreateListingButton,
   parameters: {
     layout: 'centered',

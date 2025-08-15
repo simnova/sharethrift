@@ -25,6 +25,7 @@ export const HeroSection: React.FC<HeroSectionProps> = ({
         <source srcSet={heroImg} media="(min-width: 769px)" />
         <img src={heroImg} alt="Hero background" />
       </picture>
+
       <div className={styles.heroContent}>
         <h1 className={styles.heroTitle}>
           Wherever you are,<br />

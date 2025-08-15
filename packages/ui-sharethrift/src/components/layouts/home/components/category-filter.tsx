@@ -6,7 +6,7 @@ const { Option } = Select;
 
 interface CategoryFilterProps {
   label?: string;
-  categories?: string[]; // Make categories optional
+  categories?: string[];
   selectedCategory: string;
   onCategoryChange: (category: string) => void;
 }

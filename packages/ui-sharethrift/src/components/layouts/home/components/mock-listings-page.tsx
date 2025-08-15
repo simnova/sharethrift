@@ -25,7 +25,7 @@ export function MockListingsPage({ isAuthenticated }: Readonly<MockListingsPageP
 
 
   useEffect(() => {
-    // Filter listings by search and category
+    // TODO: Fetch listings from backend. THIS IS JUST FRONTEND FILTER
     let filtered = DUMMY_LISTINGS;
     if (selectedCategory && selectedCategory !== 'All') {
       filtered = filtered.filter(l => l.category === selectedCategory);
@@ -94,7 +94,7 @@ export function MockListingsPage({ isAuthenticated }: Readonly<MockListingsPageP
             <span style={{ fontSize: '14px', fontWeight: '600', color: 'var(--color-tertiary)', display: 'flex', alignItems: 'center' }}>
               <EnvironmentFilled style={{fontSize: '18px', marginRight: '8px'}}/>
               Philadelphia, PA · 10 mi
-              </span>
+            </span>
           </div>
         </div>
 
