@@ -1,9 +1,8 @@
-import React from 'react';
 import { Form, Button, Card, Typography, Checkbox, Radio, Space, Divider } from 'antd';
 import { useNavigate } from 'react-router-dom';
-import '../../../styles/theme.css';
+import '../../../../styles/theme.css';
 
-const { Title, Text, Link } = Typography;
+const { Title, Text } = Typography;
 
 interface AcceptTermsFormData {
   acceptTerms: boolean;

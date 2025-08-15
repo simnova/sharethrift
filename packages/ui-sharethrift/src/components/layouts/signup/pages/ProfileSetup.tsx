@@ -1,9 +1,9 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { Form, Input, Button, Card, Typography, Upload, Avatar, Row, Col } from 'antd';
 import { UserOutlined, UploadOutlined } from '@ant-design/icons';
 import { useNavigate } from 'react-router-dom';
 import type { UploadFile } from 'antd';
-import '../../../styles/theme.css';
+import '../../../../styles/theme.css';
 
 const { Title } = Typography;
 
