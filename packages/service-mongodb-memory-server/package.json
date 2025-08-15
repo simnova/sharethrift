@@ -5,9 +5,9 @@
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "scripts": {
-    "build": "tsc",
-    "start": "node dist/index.js"
-  },
+    "build": "tsc --build",
+    "start": "node dist/index.js"  
+},
   "dependencies": {
     "mongodb-memory-server": "^10.2.0"
   },
