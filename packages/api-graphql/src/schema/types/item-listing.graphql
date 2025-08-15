@@ -1,0 +1,30 @@
+type ItemListing {
+  id: ObjectId!
+  sharer: ObjectId!
+  title: String!
+  description: String!
+  category: String!
+  location: String!
+  sharingPeriodStart: DateTime!
+  sharingPeriodEnd: DateTime!
+  state: ItemListingState
+  createdAt: DateTime
+  updatedAt: DateTime
+  sharingHistory: [ObjectId!]
+  reports: Int
+}
+
+enum ItemListingState {
+  Published
+  Paused
+  Cancelled
+  Drafted
+  Expired
+  Blocked
+  AppealRequested
+}
+
+type Query {
+  itemListings: [ItemListing!]!
+  itemListing(id: ObjectId!): ItemListing
+}

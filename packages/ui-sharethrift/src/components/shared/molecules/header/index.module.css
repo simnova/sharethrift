@@ -39,6 +39,12 @@
     color: var(--color-message-transparent) !important;
 }
 
+.createListing {
+  padding: 18px 24px;
+  height: 48px;
+  font-family: var(--Urbanist);
+}
+
 .divider {
   color: var(--color-message-text);
 }
@@ -56,5 +62,9 @@
   .logo {
     height: 28px;
     width: 28px;
+  }
+
+  .createListing {
+    display: none;
   }
 }
