@@ -1,5 +1,6 @@
 import { useParams } from 'react-router-dom';
-import { MessageSharerButton } from '../../../shared/molecules/message-sharer-button';
+import { MessageSharerButton } from "@sthrift/ui-sharethrift-components";
+
 
 export default function ViewListing() {
   const { listingId } = useParams<{ listingId: string }>();
