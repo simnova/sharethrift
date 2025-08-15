@@ -5,5 +5,8 @@ export const DomainDataSourceImplementation = (
 	initializedService: MongooseSeedwork.MongooseContextFactory,
 ): DomainDataSource => {
 	console.log(initializedService);
-	return {};
+
+	return {
+		// User data source will be implemented when we have passport implementation
+	};
 };

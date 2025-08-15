@@ -1,1 +1,1 @@
-export * as Models from './models/conversations/index.ts';
+export * as Models from './models/index.ts';
