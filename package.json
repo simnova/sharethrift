@@ -14,11 +14,11 @@
 		"tsbuild": "tsc --build",
 		"tswatch": "tsc --build --watch",
 		"clean": "npm install && npm run clean --ws --if-present && rimraf dist node_modules package-lock.json **/coverage",
-		"start:ui-sharethrift": "npm run start --workspace=@sthrift/ui-sharethrift",
+		"start:ui-sharethrift": "cd packages/ui-sharethrift && npm run build && npm run start",
 		"start:api": "npm run start --workspace=@sthrift/api",
-		"dev": "npm run build && concurrently \"npm:azurite:start\" \"'npm:start-emulator:*'\" \"'npm:start:*'\" --kill-others-on-fail --workspace=@sthrift/api",
-		"start-emulator:mongo-memory-server": "npm run start --workspace=@sthrift/service-mongodb-memory-server",
-		"start-emulator:auth-server": "npm run start --workspace=@sthrift/service-oauth2-mock-server",
+		"dev": "npm run build && concurrently \"npm:azurite:*\" \"'npm:start-emulator:*'\" \"'npm:start:*'\" --kill-others-on-fail --workspace=@sthrift/api",
+		"start-emulator:mongo-memory-server": "cd packages/service-mongodb-memory-server && npm run build && npm run start",
+		"start-emulator:auth-server": "cd packages/service-oauth2-mock-server && npm run build && npm run start",
 		"test": "npm run test --ws --if-present",
 		"test:all": "npm run test:all --ws --if-present",
 		"test:coverage": "npm run test:coverage --ws --if-present",
@@ -26,7 +26,6 @@
 		"test:serenity": "npm run test:serenity --ws --if-present",
 		"test:unit": "npm run test:unit --ws --if-present",
 		"test:watch": "node scripts/test-watch-all.js",
-		"azurite:start": "concurrently \"npm run azurite:blob\" \"npm run azurite:queue\" \"npm run azurite:table\"",
 		"azurite:blob": "azurite-blob --location ./__blobstorage__",
 		"azurite:queue": "azurite-queue --location ./__queuestorage__",
 		"azurite:table": "azurite-table --location ./__tablestorage__"
@@ -47,10 +46,7 @@
 		"packages/api-context-spec",
 		"packages/api-graphql",
 		"packages/api-rest",
-		"packages/api",
-		"packages/service-mongodb-memory-server",
-		"packages/service-oauth2-mock-server",
-		"packages/ui-sharethrift"
+		"packages/api"
 	],
 	"devDependencies": {
 		"@amiceli/vitest-cucumber": "^5.1.2",
