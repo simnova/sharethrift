@@ -1,0 +1,17 @@
+# ListingBanner GraphQL Query (mock)
+
+# This is a placeholder for the actual query you would use to fetch listing details.
+# Replace the fields and query name as needed for your backend schema.
+
+query GetListingBannerInfo($listingId: String!) {
+  listing(id: $listingId) {
+    id
+    title
+    imageUrl
+    owner {
+      name
+    }
+    period
+    status
+  }
+}

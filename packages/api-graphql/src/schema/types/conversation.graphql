@@ -1,0 +1,52 @@
+
+#graphql
+"""
+GraphQL schema for Conversations
+"""
+
+type Conversation {
+  id: ID!
+  sharer: User!
+  reserver: User!
+  listing: Listing!
+  twilioConversationId: String!
+  schemaversion: Int!
+  createdAt: String!
+  updatedAt: String!
+}
+
+type User {
+  id: ID!
+  username: String!
+  # Add more fields as needed
+}
+
+type Listing {
+  id: ID!
+  # Add more fields as needed
+}
+
+type Query {
+  conversations: [Conversation!]!
+  conversation(id: ID!): Conversation
+}
+
+type Conversation {
+  id: ID!
+  sharer: User!
+  reserver: User!
+  listing: Listing!
+  twilioConversationId: String!
+  schemaversion: Int!
+  createdAt: String!
+  updatedAt: String!
+}
+
+type Query {
+  conversations: [Conversation!]!
+  conversation(id: ID!): Conversation
+}
+
+type Mutation {
+  createConversation(sharerId: ID!, reserverId: ID!, listingId: ID!): Conversation!
+}

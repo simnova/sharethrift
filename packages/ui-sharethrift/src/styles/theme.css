@@ -1,3 +1,4 @@
+
 /* Font Imports */
 @import url('https://fonts.googleapis.com/css2?family=Urbanist:ital,wght@0,100..900;1,100..900&display=swap');
 @import url('https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Urbanist:ital,wght@0,100..900;1,100..900&display=swap');
@@ -17,6 +18,8 @@
   --color-highlight: #FFFFFF;
   --color-red-error: #CB5251;
   --color-message-text: #333333;
+  --color-action-foreground: #3F5F76;
+  --color-action-disabled: #608BA9;
   --color-message-transparent: rgba(51, 51, 51, 0.6);
   --Urbanist: 'Urbanist', sans-serif;
   --Instrument-Serif: 'Instrument Serif', serif;
@@ -269,6 +272,33 @@ p, .authButton, .primaryButton, .secondaryButton, .ant-tabs, .ant-form-item-labe
   background: #F0F5FF;
   color: #2F54EB;
   border: 1px solid #ADC6FF;
+}
+
+.requestSubmitted, .reserver, .sharer, .sharerIcon, .reserverIcon {
+    border-radius: 20px !important;
+    padding: 8px 20px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin: 0;
+    border: 0;
+}
+
+.sharerIcon, .reserverIcon{
+    padding: 4px;
+}
+
+.requestSubmitted{
+    background-color: var(--color-action-foreground);
+    color: var(--color-background);
+}
+.sharer, .sharerIcon {
+    background-color: var(--color-secondary);
+    color: var(--color-background);
+}
+.reserver, .reserverIcon {
+    background-color: var(--color-action-disabled);
+    color: var(--color-background);
 }
 
 /* --- Ant Design Form Label Theming --- */

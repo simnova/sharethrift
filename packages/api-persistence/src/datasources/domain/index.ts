@@ -1,5 +1,5 @@
 import type { MongooseSeedwork } from '@cellix/data-sources-mongoose';
-import type { DomainDataSource } from '@ocom/api-domain';
+import type { DomainDataSource } from '@sthrift/api-domain';
 import { ItemListingPersistence } from '../../item-listing/index.ts';
 
 export const DomainDataSourceImplementation = (

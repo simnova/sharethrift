@@ -1,5 +1,5 @@
-import type { ApiContextSpec } from '@ocom/api-context-spec';
-import { Domain } from '@ocom/api-domain';
+import type { ApiContextSpec } from '@sthrift/api-context-spec';
+import { Domain } from '@sthrift/api-domain';
 
 interface JwtPayload {
 	sub: string;

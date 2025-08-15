@@ -1,3 +1,7 @@
+
+
+import { MockMessagesDemo } from '../components/mock-messages-demo';
+
 export default function MessagesMain() {
-  return <div>Messages Main Page</div>;
+  return <MockMessagesDemo />;
 }

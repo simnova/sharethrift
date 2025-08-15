@@ -66,9 +66,11 @@
 
 :global(.ant-drawer-body){
     padding: 0 !important;
+    background: var(--color-background)!important;
 }
 :global(.ant-drawer-header){
     border: 0 !important;
+    padding: 20px 24px !important;
 }
 
 @media (max-width: 768px) {
