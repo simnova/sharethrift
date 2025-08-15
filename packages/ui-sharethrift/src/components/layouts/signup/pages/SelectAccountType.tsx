@@ -1,9 +1,9 @@
 import { useState } from "react";
 import { Button, Card } from "antd";
 import { CheckOutlined, SafetyOutlined } from "@ant-design/icons";
-import stool from "../../../../../src/assets/item-images/stool.png";
-import armchair from "../../../../../src/assets/item-images/armchair.png";
-import bubbleChair from "../../../../../src/assets/item-images/bubble-chair.png";
+import stool from "@sthrift/ui-sharethrift-components/src/assets/item-images/stool.png";
+import armchair from "@sthrift/ui-sharethrift-components/src/assets/item-images/armchair.png";
+import bubbleChair from "@sthrift/ui-sharethrift-components/src/assets/item-images/bubble-chair.png";
 
 type PersonalAccountSubType = "non-verified" | "verified" | "verified-plus";
 

@@ -47,7 +47,10 @@
 		"packages/api-graphql",
 		"packages/api-rest",
 		"packages/api",
-        "packages/ui-sharethrift"
+		"packages/service-mongodb-memory-server",
+		"packages/service-oauth2-mock-server",
+		"packages/ui-sharethrift",
+		"packages/ui-sharethrift-components"
 	],
 	"devDependencies": {
 		"@amiceli/vitest-cucumber": "^5.1.2",

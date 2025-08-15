@@ -1,0 +1,7 @@
+{
+  "version": 3,
+  "sources": ["../../../../sb-vite-plugin-externals/storybook/internal/preview-errors.js"],
+  "sourcesContent": ["module.exports = __STORYBOOK_MODULE_CORE_EVENTS_PREVIEW_ERRORS__;"],
+  "mappings": ";;;;;AAAA;AAAA;AAAA,WAAO,UAAU;AAAA;AAAA;",
+  "names": []
+}

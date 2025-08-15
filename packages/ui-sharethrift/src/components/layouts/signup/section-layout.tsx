@@ -1,6 +1,5 @@
 import { Outlet, useNavigate } from "react-router-dom";
-import { Footer } from "../../shared/molecules/footer";
-import { Header } from "../../shared/molecules/header";
+import { Footer, Header } from "@sthrift/ui-sharethrift-components";
 import { useAuth } from "react-oidc-context";
 
 export default function SignupLayout() {

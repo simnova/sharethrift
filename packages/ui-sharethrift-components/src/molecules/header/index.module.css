@@ -1,0 +1,60 @@
+@import '../../styles/theme.css';
+
+.header {
+    z-index: 1010;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+    height: 64px !important;
+    padding: 0 2rem;
+    background: var(--color-background);
+    border-bottom: 1px solid var(--color-primary);
+    box-sizing: border-box;
+    position: fixed;
+}
+.logoSection {
+    display: flex;
+    align-items: center;
+}
+.logo {
+    height: 28px;
+    width: 28px;
+    padding: 4px;
+}
+
+.authSection {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.authButton {
+  cursor: pointer;
+  padding: 0.25rem 0.75rem;
+}
+
+.authButton:hover {
+    background: var(--color-secondary);
+    color: var(--color-message-transparent) !important;
+}
+
+.divider {
+  color: var(--color-message-text);
+}
+
+@media (max-width: 600px) {
+  .logoText {
+    display: none;
+  }
+
+  .header {
+    padding: 0 1rem;
+    height: 56px;
+  }
+
+  .logo {
+    height: 28px;
+    width: 28px;
+  }
+}
