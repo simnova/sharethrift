@@ -1,6 +1,6 @@
 import type { HydratedDocument } from 'mongoose';
-import type { ItemListingProps, Passport } from "@ocom/api-domain";
-import { ItemListing as ItemListingAggregate, Title, Description, Category, Location, ListingState } from "@ocom/api-domain";
+import type { ItemListingProps, Passport } from "@sthrift/api-domain";
+import { ItemListing as ItemListingAggregate, Title, Description, Category, Location, ListingState } from "@sthrift/api-domain";
 
 // Define the document interface based on the mongoose schema
 interface ItemListingDocument {
@@ -66,6 +66,21 @@ export class ItemListingDomainAdapter implements ItemListingProps {
     this.doc.location = value.valueOf();
   }
 
+  get state() {
+    return new ListingState(this.doc.state || '');
+  }
+  set state(value: ListingState) {
+    this.doc.state = value.valueOf();
+  }
+
+  get createdAt() {
+    return this.doc.createdAt;
+  }
+
+  get updatedAt() {
+    return this.doc.updatedAt;
+  }
+
   get sharingPeriodStart() {
     return this.doc.sharingPeriodStart;
   }
@@ -80,11 +95,11 @@ export class ItemListingDomainAdapter implements ItemListingProps {
     this.doc.sharingPeriodEnd = value;
   }
 
-  get state() {
-    return new ListingState(this.doc.state || 'Published');
+  get schemaVersion() {
+    return this.doc.schemaversion || 1;
   }
-  set state(value: ListingState) {
-    this.doc.state = value.valueOf();
+  set schemaVersion(value: number) {
+    this.doc.schemaversion = value;
   }
 
   get sharingHistory() {
@@ -106,24 +121,6 @@ export class ItemListingDomainAdapter implements ItemListingProps {
   }
   set images(value: string[]) {
     this.doc.images = value;
-  }
-
-  get createdAt() {
-    return this.doc.createdAt;
-  }
-
-  get updatedAt() {
-    return this.doc.updatedAt;
-  }
-  set updatedAt(value: Date) {
-    this.doc.updatedAt = value;
-  }
-
-  get schemaVersion() {
-    return this.doc.schemaversion || 1;
-  }
-  set schemaVersion(value: number) {
-    this.doc.schemaversion = value;
   }
 
   get id() {

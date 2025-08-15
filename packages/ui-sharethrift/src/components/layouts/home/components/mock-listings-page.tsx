@@ -45,13 +45,8 @@ export function MockListingsPage({ isAuthenticated }: Readonly<MockListingsPageP
     setCurrentPage(1); // Reset to first page when searching
   };
 
-  const handleListingClick = (listing: ItemListing) => {
+  const handleListingClick = () => {
     // TODO: Navigate to listing detail page
-    return null;
-  };
-
-  const handleCreateListing = () => {
-    // TODO: Navigate to create listing page
     return null;
   };
 
