@@ -48,7 +48,7 @@ export class ReservationRequestRepository
 		return this.typeConverter.toDomain(mongoReservation, this.passport);
 	}
 
-	async getNewInstance(
+	getNewInstance(
 		state: Domain.Contexts.ReservationRequestStateValue,
 		listing: Domain.Contexts.ListingEntityReference,
 		reserver: Domain.Contexts.ReserverEntityReference,

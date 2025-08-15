@@ -1,5 +1,6 @@
 import type { ReservationRequestVisa } from '../../../contexts/reservation-request/reservation-request.visa.ts';
-import type { ReservationRequestPassportBase, ReservationRequestDomainPermissions } from '../reservation-request.passport-base.ts';
+import type { ReservationRequestDomainPermissions } from '../../../contexts/reservation-request/reservation-request.domain-permissions.ts';
+import type { ReservationRequestPassportBase } from '../reservation-request.passport-base.ts';
 
 export class ReservationRequestReservationRequestVisa implements ReservationRequestVisa {
 	private readonly passport: ReservationRequestPassportBase;
@@ -8,39 +9,48 @@ export class ReservationRequestReservationRequestVisa implements ReservationRequ
 		this.passport = passport;
 	}
 
-	determineIf(predicate: (permissions: ReservationRequestDomainPermissions) => boolean): boolean {
-		return this.passport.determineIf(predicate);
+	determineIf(predicate: (permissions: Readonly<ReservationRequestDomainPermissions>) => boolean): boolean {
+		// Map IAM permissions to context permissions
+		const iamPermissions = this.passport.domainPermissions;
+		const contextPermissions: ReservationRequestDomainPermissions = {
+			canCloseRequest: iamPermissions.canCloseReservationRequest,
+			canCancelRequest: iamPermissions.canCancelReservationRequest,
+			canAcceptRequest: iamPermissions.canAcceptReservationRequest,
+			canRejectRequest: iamPermissions.canRejectReservationRequest,
+			canUpdateRequest: iamPermissions.canUpdateReservationRequest,
+		};
+		return predicate(contextPermissions);
 	}
 
 	canCreate(): boolean {
-		return this.determineIf(permissions => permissions.canCreateReservationRequest);
+		return this.determineIf(permissions => permissions.canUpdateRequest);
 	}
 
 	canUpdate(): boolean {
-		return this.determineIf(permissions => permissions.canUpdateReservationRequest);
+		return this.determineIf(permissions => permissions.canUpdateRequest);
 	}
 
 	canDelete(): boolean {
-		return this.determineIf(permissions => permissions.canDeleteReservationRequest);
+		return this.determineIf(permissions => permissions.canUpdateRequest);
 	}
 
 	canAccept(): boolean {
-		return this.determineIf(permissions => permissions.canAcceptReservationRequest);
+		return this.determineIf(permissions => permissions.canAcceptRequest);
 	}
 
 	canReject(): boolean {
-		return this.determineIf(permissions => permissions.canRejectReservationRequest);
+		return this.determineIf(permissions => permissions.canRejectRequest);
 	}
 
 	canCancel(): boolean {
-		return this.determineIf(permissions => permissions.canCancelReservationRequest);
+		return this.determineIf(permissions => permissions.canCancelRequest);
 	}
 
 	canClose(): boolean {
-		return this.determineIf(permissions => permissions.canCloseReservationRequest);
+		return this.determineIf(permissions => permissions.canCloseRequest);
 	}
 
 	canView(): boolean {
-		return this.determineIf(permissions => permissions.canViewReservationRequest);
+		return this.determineIf(permissions => permissions.canUpdateRequest);
 	}
 }

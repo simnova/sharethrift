@@ -2,7 +2,7 @@ import { MongooseSeedwork } from "@cellix/data-sources-mongoose";
 const { MongooseDomainAdapter, MongoTypeConverter } = MongooseSeedwork;
 import type { ReservationRequestProps, Passport } from "@ocom/api-domain";
 import { Domain, ReservationRequest as ReservationRequestAggregate } from "@ocom/api-domain";
-import { Models } from "@ocom/api-data-sources-mongoose-models";
+import type { Models } from "@ocom/api-data-sources-mongoose-models";
 
 /**
  * Type converter for ReservationRequest.

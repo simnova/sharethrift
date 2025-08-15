@@ -29,6 +29,10 @@ export class ReservationRequestPassportBase {
 		}
 	}
 
+	public get domainPermissions(): ReservationRequestDomainPermissions {
+		return this.permissions;
+	}
+
 	public determineIf(predicate: (permissions: ReservationRequestDomainPermissions) => boolean): boolean {
 		return predicate(this.permissions);
 	}

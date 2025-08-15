@@ -10,7 +10,7 @@ describe('ReservationRequest', () => {
         determineIf: () => true,
       }),
     }
-  } as any;
+  } as Passport;
 
   // Helper functions for creating mock entity references
   const createMockListing = (id = 'listing-1'): ListingEntityReference => ({
@@ -23,6 +23,23 @@ describe('ReservationRequest', () => {
     id,
     name: 'Mock User',
     email: 'mock@example.com',
+  });
+
+  // Helper function to create full props for testing
+  const createMockProps = (overrides = {}) => ({
+    id: 'test-id',
+    createdAt: new Date(),
+    updatedAt: new Date(),
+    schemaVersion: '1',
+    state: ReservationRequestStateValue.requested(),
+    listing: createMockListing(),
+    reserver: createMockReserver(),
+    reservationPeriod: new ReservationPeriod({
+      start: new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString(),
+      end: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString(),
+    }),
+    closeRequested: false,
+    ...overrides,
   });
 
   // Use future dates for testing
@@ -44,8 +61,15 @@ describe('ReservationRequest', () => {
         end: endDate.toISOString(),
       });
 
+      const props = createMockProps({
+        state,
+        listing,
+        reserver,
+        reservationPeriod,
+      });
+
       const reservation = ReservationRequest.getNewInstance(
-        {} as any, // props
+        props,
         state,
         listing,
         reserver,
@@ -62,9 +86,6 @@ describe('ReservationRequest', () => {
 
     it('should throw error if start date is after end date', () => {
       const { startDate, endDate } = getFutureDates();
-      const listing = createMockListing();
-      const reserver = createMockReserver();
-      const state = ReservationRequestStateValue.requested();
 
       expect(() => {
         new ReservationPeriod({
@@ -86,8 +107,15 @@ describe('ReservationRequest', () => {
         end: endDate.toISOString(),
       });
 
+      const props = createMockProps({
+        state,
+        listing,
+        reserver,
+        reservationPeriod,
+      });
+
       const reservation = ReservationRequest.getNewInstance(
-        {} as any, // props
+        props,
         state,
         listing,
         reserver,
@@ -110,8 +138,15 @@ describe('ReservationRequest', () => {
         end: endDate.toISOString(),
       });
 
+      const props = createMockProps({
+        state,
+        listing,
+        reserver,
+        reservationPeriod,
+      });
+
       const reservation = ReservationRequest.getNewInstance(
-        {} as any, // props
+        props,
         state,
         listing,
         reserver,
@@ -138,8 +173,15 @@ describe('ReservationRequest', () => {
         end: endDate.toISOString(),
       });
 
+      const props = createMockProps({
+        state,
+        listing,
+        reserver,
+        reservationPeriod,
+      });
+
       const reservation = ReservationRequest.getNewInstance(
-        {} as any, // props
+        props,
         state,
         listing,
         reserver,
@@ -162,8 +204,15 @@ describe('ReservationRequest', () => {
         end: endDate.toISOString(),
       });
 
+      const props = createMockProps({
+        state,
+        listing,
+        reserver,
+        reservationPeriod,
+      });
+
       const reservation = ReservationRequest.getNewInstance(
-        {} as any, // props
+        props,
         state,
         listing,
         reserver,
@@ -189,8 +238,15 @@ describe('ReservationRequest', () => {
         end: endDate.toISOString(),
       });
 
+      const props = createMockProps({
+        state,
+        listing,
+        reserver,
+        reservationPeriod,
+      });
+
       const reservation = ReservationRequest.getNewInstance(
-        {} as any, // props
+        props,
         state,
         listing,
         reserver,
@@ -214,8 +270,15 @@ describe('ReservationRequest', () => {
         end: endDate.toISOString(),
       });
 
+      const props = createMockProps({
+        state,
+        listing,
+        reserver,
+        reservationPeriod,
+      });
+
       const reservation = ReservationRequest.getNewInstance(
-        {} as any, // props
+        props,
         state,
         listing,
         reserver,
@@ -240,8 +303,15 @@ describe('ReservationRequest', () => {
         end: endDate.toISOString(),
       });
 
+      const props = createMockProps({
+        state,
+        listing,
+        reserver,
+        reservationPeriod,
+      });
+
       const reservation = ReservationRequest.getNewInstance(
-        {} as any, // props
+        props,
         state,
         listing,
         reserver,
