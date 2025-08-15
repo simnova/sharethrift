@@ -4,7 +4,7 @@ import type {
 	ApplicationServices,
 	ApplicationServicesFactory,
 	PrincipalHints,
-} from '@ocom/api-application-services';
+} from '@sthrift/api-application-services';
 import {
 	type AzureFunctionsMiddlewareOptions,
 	startServerAndCreateHandler,
@@ -14,14 +14,14 @@ import {
 // The GraphQL schema
 const typeDefs = `#graphql
   type Community {
-    id: String
-    name: String
-    createdBy: EndUser
+	id: String
+	name: String
+	createdBy: EndUser
   } 
 
   type EndUser {
-    id: String
-    displayName: String
+	id: String
+	displayName: String
   }
 
   type Location {
@@ -111,12 +111,11 @@ const typeDefs = `#graphql
   }
 
   input CommunityCreateInput {
-    name: String!
-    createdByEndUserId: String!
+	name: String!
+	createdByEndUserId: String!
   }
 
   type Mutation {
-    communityCreate(input: CommunityCreateInput!): Community
     userCreate(input: UserCreateInput!): User
     userUpdate(id: ID!, input: UserUpdateInput!): User
     userBlock(id: ID!): User

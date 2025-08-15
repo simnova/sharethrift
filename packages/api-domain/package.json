@@ -1,5 +1,5 @@
 {
-	"name": "@ocom/api-domain",
+	"name": "@sthrift/api-domain",
 	"version": "1.0.0",
 	"author": "",
 	"license": "MIT",
@@ -13,12 +13,12 @@
 		"lint": "biome lint",
 		"format": "biome format --write",
 		"test": "vitest run",
-        "test:all": "npm run test && npm run test:serenity",
+		"test:all": "npm run test && npm run test:serenity",
 		"test:coverage": "vitest run --coverage",
-        "test:integration": "vitest run integration.test.ts",
-        "test:serenity": "cucumber-js",
-        "test:unit": "vitest run --exclude tests/integration/**/*.test.ts",
-        "test:watch": "vitest watch",
+		"test:integration": "vitest run integration.test.ts",
+		"test:serenity": "cucumber-js",
+		"test:unit": "vitest run --exclude tests/integration/**/*.test.ts",
+		"test:watch": "vitest watch",
 		"prebuild": "biome lint"
 	},
 	"peerDependencies": {

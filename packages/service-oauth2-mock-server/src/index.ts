@@ -14,6 +14,9 @@ dotenv.config({ path: '.env.local' });
 const app = express();
 app.disable('x-powered-by');
 const port = 4000;
+const allowedRedirectUri =
+	process.env['ALLOWED_REDIRECT_URI'] || 'http://localhost:3000/auth-redirect';
+const aud = allowedRedirectUri;
 // Type for user profile used in token claims
 interface TokenProfile {
 	aud: string;
@@ -123,7 +126,8 @@ async function main() {
 		res.header('Access-Control-Allow-Methods', 'GET,POST,OPTIONS');
 		res.header('Access-Control-Allow-Headers', 'Content-Type,Authorization');
 		if (req.method === 'OPTIONS') {
-			return res.sendStatus(200);
+			res.sendStatus(200);
+			return;
 		}
 		next();
 	});
@@ -134,9 +138,9 @@ async function main() {
 		const email = process.env['Email'] ?? '';
 		const given_name = process.env['Given_Name'] ?? '';
 		const family_name = process.env['Family_Name'] ?? '';
-		const { aud, tid } = req.body;
+		const { tid } = req.body;
 		const profile: TokenProfile = {
-			aud: aud || 'test-client-id',
+			aud: aud,
 			sub: crypto.randomUUID(),
 			iss: `http://localhost:${port}`,
 			email,
@@ -152,7 +156,7 @@ async function main() {
 		res.json(tokenResponse);
 	});
 
-	app.get('/.well-known/openid-configuration', (req, res) => {
+	app.get('/.well-known/openid-configuration', (_req, res) => {
 		res.json({
 			issuer: 'http://localhost:4000',
 			authorization_endpoint: 'http://localhost:4000/authorize',
@@ -168,18 +172,17 @@ async function main() {
 		});
 	});
 
-	const allowedRedirectUri =
-		process.env['ALLOWED_REDIRECT_URI'] ||
-		'http://localhost:3000/auth-redirect';
-
 	app.get('/authorize', (req, res) => {
 		const { redirect_uri, state } = req.query;
 		if (redirect_uri !== allowedRedirectUri) {
-			return res.status(400).send('Invalid redirect_uri');
+			res.status(400).send('Invalid redirect_uri');
+			return;
 		}
 		const code = 'mock-auth-code';
 		const redirectUrl = `${allowedRedirectUri}?code=${code}${state ? `&state=${state}` : ''}`;
-		res.redirect(redirectUrl);
+		// Do not perform redirect based on user-controlled data. Respond with the URL as JSON.
+		res.json({ redirectUrl });
+		return;
 	});
 
 	app.listen(port, () => {

@@ -25,4 +25,4 @@
 # Assigns sourcery ownership to all source code
 /packages/**/src/**/*.ts                    @sourcery
 
-# Allows application-specific (@ocom) package changes without requiring core team approval
+# Allows application-specific (@sthrift) package changes without requiring core team approval
