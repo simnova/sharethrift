@@ -1,4 +1,4 @@
-import { ThemeDemo } from './ThemeDemo';
+import { ThemeDemo } from './ThemeDemo.tsx';
 import type { Meta, StoryObj } from '@storybook/react';
 
 const meta: Meta<typeof ThemeDemo> = {

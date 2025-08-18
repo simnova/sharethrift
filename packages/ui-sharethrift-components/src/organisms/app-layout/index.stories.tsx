@@ -1,5 +1,5 @@
 import type { Meta, StoryObj } from '@storybook/react';
-import { AppLayout } from './index';
+import { AppLayout } from './index.tsx';
 
 const meta: Meta<typeof AppLayout> = {
   title: 'Organisms/AppLayout',

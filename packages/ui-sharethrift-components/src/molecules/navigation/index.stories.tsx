@@ -1,5 +1,5 @@
 import type { Meta, StoryObj } from '@storybook/react';
-import { Navigation } from './index';
+import { Navigation } from './index.tsx';
 import { useState } from 'react';
 
 const meta: Meta<typeof Navigation> = {

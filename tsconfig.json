@@ -3,8 +3,9 @@
     "./tsconfig.base",
   ],  
   "compilerOptions": {
-    "outDir": "dist",
-    "rootDir": ".",
+    "module": "ESNext",
+    "moduleResolution": "bundler",
+    "verbatimModuleSyntax": true
   },
   "files": [], //empty array to avoid double compilation
   "references": [
@@ -24,6 +25,9 @@
     { "path": "./packages/api-persistence"},
     { "path": "./packages/api"},
     { "path": "./packages/service-oauth2-mock-server"},
-    { "path": "./packages/service-mongodb-memory-server"}
-  ]
+    { "path": "./packages/service-mongodb-memory-server"},
+    { "path": "./packages/ui-sharethrift-components"},
+    { "path": "./packages/ui-sharethrift"}
+  ],
+  "lib": ["dom", "esnext"]
 }

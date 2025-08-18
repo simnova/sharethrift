@@ -47,11 +47,15 @@
 		"packages/api-graphql",
 		"packages/api-rest",
 		"packages/api",
-        "packages/ui-sharethrift"
+		"packages/service-mongodb-memory-server",
+		"packages/service-oauth2-mock-server",
+        "packages/ui-sharethrift-components",
+		"packages/ui-sharethrift"
 	],
 	"devDependencies": {
 		"@amiceli/vitest-cucumber": "^5.1.2",
 		"@biomejs/biome": "2.0.0",
+		"@types/dotenv": "^6.1.1",
 		"@vitest/coverage-v8": "^3.2.4",
 		"azurite": "^3.35.0",
 		"concurrently": "^9.1.2",
@@ -59,9 +63,11 @@
 		"tsx": "^4.20.3",
 		"typescript": "^5.8.3",
 		"vite": "^7.0.4",
-		"vitest": "^3.2.4"
+		"vitest": "^3.2.4",
+        "rollup": "3.29.4"
 	},
 	"dependencies": {
-		"@sthrift/api-domain": "^1.0.0"
+		"@sthrift/api-domain": "^1.0.0",
+		"dotenv": "^17.2.1"
 	}
 }

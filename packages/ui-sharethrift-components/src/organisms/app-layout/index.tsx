@@ -1,8 +1,8 @@
 import React from 'react';
 import { Layout } from 'antd';
-import { Header } from '../../molecules/header/index';
-import { Navigation } from '../../molecules/navigation/index';
-import { Footer } from '../../molecules/footer/index';
+import { Header } from '../../molecules/header/index.js';
+import { Navigation } from '../../molecules/navigation/index.js';
+import { Footer } from '../../molecules/footer/index.js';
 import styles from './index.module.css';
 
 export interface AppLayoutProps {
@@ -25,20 +25,20 @@ export const AppLayout: React.FC<AppLayoutProps> = ({
   children,
 }) => {
   return (
-    <Layout className={styles.appLayout}>
+  <Layout className={styles['appLayout']}>
       <Header
         isAuthenticated={isAuthenticated}
-        onLogin={onLogin}
-        onSignUp={onSignUp}
+        onLogin={onLogin ?? (() => {})}
+        onSignUp={onSignUp ?? (() => {})}
       />
-      <div className={styles.bodyWrapper}>
+  <div className={styles['bodyWrapper']}>
         <Navigation
           isAuthenticated={isAuthenticated}
-          onLogout={onLogout}
-          onNavigate={onNavigate}
-          selectedKey={selectedKey}
+          onLogout={onLogout ?? (() => {})}
+          onNavigate={onNavigate ?? (() => {})}
+          selectedKey={selectedKey ?? ""}
         />
-        <main className={styles.content}>{children}</main>
+  <main className={styles['content']}>{children}</main>
       </div>
       <Footer />
     </Layout>
