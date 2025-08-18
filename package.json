@@ -49,8 +49,8 @@
 		"packages/api",
 		"packages/service-mongodb-memory-server",
 		"packages/service-oauth2-mock-server",
-		"packages/ui-sharethrift",
-		"packages/ui-sharethrift-components"
+        "packages/ui-sharethrift-components",
+		"packages/ui-sharethrift"
 	],
 	"devDependencies": {
 		"@amiceli/vitest-cucumber": "^5.1.2",
