@@ -1,1 +1,0 @@
-module.exports = __STORYBOOK_MODULE_TEST__;
