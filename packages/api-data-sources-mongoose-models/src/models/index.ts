@@ -1,28 +1,16 @@
 import type { MongooseSeedwork } from '@cellix/data-sources-mongoose';
-import { UserModelFactory } from './user.ts';
+import { PersonalUserModelFactory, UserModelFactory } from './user/index.ts';
 
-export * from './user.ts';
+export * as User from './user/index.ts';
 
 export const mongooseContextBuilder = (
-	mongooseContextFactory: MongooseSeedwork.MongooseContextFactory,
+	initializedService: MongooseSeedwork.MongooseContextFactory,
 ) => {
 	return {
-		User: UserModelFactory(mongooseContextFactory)
+		User: {
+			PersonalUser: PersonalUserModelFactory(
+				UserModelFactory(initializedService),
+			),
+		},
 	};
 };
-/*
-export type MongooseContext = ReturnType<typeof mongooseContextBuilder>;
-
-Community.CommunityModel.findById('123').then((doc) => {
-  doc?.whiteLabelDomain
-  doc?.createdBy
-});
-
-let x = mongooseContextBuilder(null as any).Community.Community;
-x.findById('123').then((doc) => {
-  doc?.whiteLabelDomain
-  doc?.createdBy
-  console.log(doc);
-});
-
-*/
