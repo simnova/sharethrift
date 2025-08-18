@@ -1,6 +1,6 @@
 import { Card, Typography, Avatar, Tag, Row, Col } from 'antd';
 import { SwapOutlined, AppstoreAddOutlined } from '@ant-design/icons';
-import bikeListingImg from '../../../../../assets/item-images/bike-listing.png';
+import bikeListingImg from '@sthrift/ui-sharethrift-components/src/assets/item-images/bike-listing.png';
 
 // Listing banner assets (from Figma export)
 const imgRectangle26 = bikeListingImg;

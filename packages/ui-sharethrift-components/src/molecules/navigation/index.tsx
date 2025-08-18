@@ -11,7 +11,7 @@ import {
   CloseOutlined,
 } from '@ant-design/icons';
 import styles from './index.module.css';
-import '../../../../styles/theme.css';
+import '../../styles/theme.css';
 
 
 export interface NavigationProps {
@@ -37,7 +37,6 @@ const navItems = [
     ],
   },
 ];
-
 export const Navigation: React.FC<NavigationProps> = ({ isAuthenticated, onLogout, onNavigate, selectedKey }) => {
   const [collapsed, setCollapsed] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
@@ -58,9 +57,9 @@ export const Navigation: React.FC<NavigationProps> = ({ isAuthenticated, onLogou
     <>
       {/* Hamburger for mobile (top right) - only if authenticated */}
       {isAuthenticated && (
-        <div className={styles.hamburgerContainer} style={{ zIndex: 1020 }}>
+  <div className={styles["hamburgerContainer"]} style={{ zIndex: 1020 }}>
           <Button
-            className={styles.hamburger}
+            className={styles["hamburger"] ?? ""}
             icon={mobileOpen ? <CloseOutlined /> : <MenuOutlined />}
             onClick={() => setMobileOpen(!mobileOpen)}
             type="text"
@@ -71,7 +70,7 @@ export const Navigation: React.FC<NavigationProps> = ({ isAuthenticated, onLogou
       {/* Desktop Sider */}
       {isAuthenticated && (
         <Sider
-          className={styles.sidebar}
+          className={styles["sidebar"] ?? ""}
           breakpoint="md"
           collapsedWidth="0"
           width={240}
@@ -89,7 +88,7 @@ export const Navigation: React.FC<NavigationProps> = ({ isAuthenticated, onLogou
             selectedKeys={[selectedKey || 'home']}
           />
           <Button
-            className={styles.logoutDesktop}
+            className={styles["logoutDesktop"] ?? ""}
             icon={<LogoutOutlined />}
             type="link"
             onClick={onLogout}
@@ -106,7 +105,7 @@ export const Navigation: React.FC<NavigationProps> = ({ isAuthenticated, onLogou
           open={mobileOpen}
           onClose={() => setMobileOpen(false)}
           width={240}
-          className={styles.mobileDrawer}
+          className={styles["mobileDrawer"] ?? ""}
         >
           <Menu
             mode="inline"
@@ -116,7 +115,7 @@ export const Navigation: React.FC<NavigationProps> = ({ isAuthenticated, onLogou
             selectedKeys={[selectedKey || 'home']}
           />
           <Button
-            className={styles.logoutMobile}
+            className={styles["logoutMobile"] ?? ""}
             icon={<LogoutOutlined />}
             type="link"
             onClick={onLogout}

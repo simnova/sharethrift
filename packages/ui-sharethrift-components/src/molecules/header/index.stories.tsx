@@ -1,5 +1,5 @@
 import type { Meta, StoryObj } from '@storybook/react';
-import { Header } from './index';
+import { Header } from './index.tsx';
 import { useState } from 'react';
 
 const meta: Meta<typeof Header> = {

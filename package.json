@@ -47,6 +47,9 @@
 		"packages/api-graphql",
 		"packages/api-rest",
 		"packages/api",
+		"packages/service-mongodb-memory-server",
+		"packages/service-oauth2-mock-server",
+        "packages/ui-sharethrift-components",
 		"packages/ui-sharethrift"
 	],
 	"devDependencies": {
@@ -60,7 +63,8 @@
 		"tsx": "^4.20.3",
 		"typescript": "^5.8.3",
 		"vite": "^7.0.4",
-		"vitest": "^3.2.4"
+		"vitest": "^3.2.4",
+        "rollup": "3.29.4"
 	},
 	"dependencies": {
 		"@sthrift/api-domain": "^1.0.0",
