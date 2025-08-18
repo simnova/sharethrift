@@ -1,8 +1,19 @@
-import { useState } from 'react';
-import { Form, Input, Button, Card, Typography, Upload, Avatar, Row, Col } from 'antd';
-import { UserOutlined, UploadOutlined } from '@ant-design/icons';
-import { useNavigate } from 'react-router-dom';
-import type { UploadFile } from 'antd';
+import { useState } from "react";
+import {
+  Form,
+  Input,
+  Button,
+  Card,
+  Typography,
+  Upload,
+  Avatar,
+  Row,
+  Col,
+} from "antd";
+import { UserOutlined, UploadOutlined } from "@ant-design/icons";
+import { useNavigate } from "react-router-dom";
+import type { UploadFile } from "antd";
+import logo from "../../../../../src/assets/logo/logo-icon.svg";
 
 const { Title } = Typography;
 
@@ -19,25 +30,25 @@ interface ProfileSetupFormData {
 export default function ProfileSetup() {
   const [form] = Form.useForm();
   const navigate = useNavigate();
-  const [avatarUrl, setAvatarUrl] = useState<string>('');
+  const [avatarUrl, setAvatarUrl] = useState<string>("");
   const [fileList, setFileList] = useState<UploadFile[]>([]);
 
   const handleSubmit = (values: ProfileSetupFormData) => {
-    console.log('Profile setup form submitted:', values);
-    console.log('Avatar file:', fileList);
+    console.log("Profile setup form submitted:", values);
+    console.log("Avatar file:", fileList);
     // In a real app, this would save the profile data and avatar
     // For now, navigate to terms page
-    navigate('/signup/terms');
+    navigate("/signup/terms");
   };
 
   const handleAvatarChange = (info: any) => {
     setFileList(info.fileList.slice(-1)); // Keep only the latest file
-    
-    if (info.file.status === 'done' || info.file.originFileObj) {
+
+    if (info.file.status === "done" || info.file.originFileObj) {
       // Get this url from response in real app
       const file = info.file.originFileObj || info.file;
       const reader = new FileReader();
-      reader.addEventListener('load', () => {
+      reader.addEventListener("load", () => {
         setAvatarUrl(reader.result as string);
       });
       reader.readAsDataURL(file);
@@ -45,41 +56,60 @@ export default function ProfileSetup() {
   };
 
   const beforeUpload = (file: File) => {
-    const isJpgOrPng = file.type === 'image/jpeg' || file.type === 'image/png';
+    const isJpgOrPng = file.type === "image/jpeg" || file.type === "image/png";
     if (!isJpgOrPng) {
-      console.error('You can only upload JPG/PNG files!');
+      console.error("You can only upload JPG/PNG files!");
       return false;
     }
     const isLt2M = file.size / 1024 / 1024 < 2;
     if (!isLt2M) {
-      console.error('Image must smaller than 2MB!');
+      console.error("Image must smaller than 2MB!");
       return false;
     }
     return false; // Prevent actual upload for demo
   };
 
   return (
-    <div style={{ 
-      display: 'flex', 
-      justifyContent: 'center', 
-      alignItems: 'center', 
-      minHeight: 'calc(100vh - 128px)', 
-      padding: '20px' 
-    }}>
-      <Card style={{ maxWidth: 600, width: '100%' }}>
-        <div style={{ textAlign: 'center', marginBottom: '2rem' }}>
-          <Title level={2}>Profile Setup</Title>
+    <div
+      style={{
+        display: "flex",
+        justifyContent: "center",
+        alignItems: "center",
+        minHeight: "calc(100vh - 128px)",
+        padding: "20px",
+      }}
+    >
+      <Card
+        style={{
+          maxWidth: 600,
+          width: "100%",
+          backgroundColor: "transparent",
+          border: "none",
+        }}
+      >
+        <div style={{ textAlign: "center", marginBottom: "2rem" }}>
+          <Title
+            level={1}
+            className="title36"
+            style={{
+              textAlign: "center",
+              marginBottom: "32px",
+              color: "var(--color-message-text)",
+            }}
+          >
+            Profile Setup
+          </Title>
         </div>
-        
-        <div style={{ textAlign: 'center', marginBottom: '2rem' }}>
+
+        <div style={{ textAlign: "center", marginBottom: "2rem" }}>
           <Avatar
             size={100}
             src={avatarUrl}
-            icon={<UserOutlined />}
-            style={{ 
-              backgroundColor: '#f0f0f0',
-              border: '3px solid #e0e0e0',
-              marginBottom: '1rem'
+            icon={<logo />}
+            style={{
+              backgroundColor: "#f0f0f0",
+              border: "3px solid #e0e0e0",
+              marginBottom: "1rem",
             }}
           />
           <div>
@@ -91,16 +121,16 @@ export default function ProfileSetup() {
               beforeUpload={beforeUpload}
               showUploadList={false}
             >
-              <Button 
+              <Button
                 type="default"
                 icon={<UploadOutlined />}
                 style={{
-                  backgroundColor: 'var(--color-secondary)',
-                  borderColor: 'var(--color-secondary)',
-                  color: 'white',
-                  borderRadius: '20px',
-                  paddingLeft: '20px',
-                  paddingRight: '20px'
+                  backgroundColor: "var(--color-secondary)",
+                  borderColor: "var(--color-secondary)",
+                  color: "white",
+                  borderRadius: "20px",
+                  paddingLeft: "20px",
+                  paddingRight: "20px",
                 }}
               >
                 Choose Image
@@ -108,7 +138,7 @@ export default function ProfileSetup() {
             </Upload>
           </div>
         </div>
-        
+
         <Form
           form={form}
           layout="vertical"
@@ -120,6 +150,7 @@ export default function ProfileSetup() {
               <Form.Item
                 label="First Name"
                 name="firstName"
+                style={{ marginBottom: 5 }}
               >
                 <Input placeholder="Your First Name" />
               </Form.Item>
@@ -128,30 +159,29 @@ export default function ProfileSetup() {
               <Form.Item
                 label="Last Name"
                 name="lastName"
+                style={{ marginBottom: 5 }}
               >
                 <Input placeholder="Your Last Name" />
               </Form.Item>
             </Col>
           </Row>
 
-          <Title level={4} style={{ marginTop: '1.5rem', marginBottom: '1rem' }}>
+          <Title
+            level={4}
+            style={{ marginTop: "1.5rem", marginBottom: "1rem" }}
+          >
             Location
           </Title>
 
           <Form.Item
             label="Address Line 1"
             name="addressLine1"
-            rules={[
-              { required: true, message: 'Address is required' }
-            ]}
+            rules={[{ required: true, message: "Address is required" }]}
           >
             <Input placeholder="Address Line 1" />
           </Form.Item>
 
-          <Form.Item
-            label="Address Line 2"
-            name="addressLine2"
-          >
+          <Form.Item label="Address Line 2" name="addressLine2">
             <Input placeholder="Address Line 2" />
           </Form.Item>
 
@@ -160,9 +190,7 @@ export default function ProfileSetup() {
               <Form.Item
                 label="City"
                 name="city"
-                rules={[
-                  { required: true, message: 'City is required' }
-                ]}
+                rules={[{ required: true, message: "City is required" }]}
               >
                 <Input placeholder="City" />
               </Form.Item>
@@ -171,9 +199,7 @@ export default function ProfileSetup() {
               <Form.Item
                 label="State"
                 name="state"
-                rules={[
-                  { required: true, message: 'State is required' }
-                ]}
+                rules={[{ required: true, message: "State is required" }]}
               >
                 <Input placeholder="State" />
               </Form.Item>
@@ -182,26 +208,23 @@ export default function ProfileSetup() {
               <Form.Item
                 label="Country"
                 name="country"
-                rules={[
-                  { required: true, message: 'Country is required' }
-                ]}
+                rules={[{ required: true, message: "Country is required" }]}
               >
                 <Input placeholder="Country" />
               </Form.Item>
             </Col>
           </Row>
 
-          <Form.Item style={{ marginTop: '2rem' }}>
-            <Button 
-              type="primary" 
-              htmlType="submit" 
+          <Form.Item style={{ marginTop: "2rem", textAlign: "right" }}>
+            <Button
+              type="primary"
+              htmlType="submit"
               size="large"
-              style={{ 
-                width: '100%',
-                height: '48px',
-                borderRadius: '6px',
-                fontSize: '16px',
-                fontWeight: 600
+              style={{
+                width: "180px",
+                height: "38px",
+                fontSize: "16px",
+                fontWeight: 600,
               }}
             >
               Save and Continue
