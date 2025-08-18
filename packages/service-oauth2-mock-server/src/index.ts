@@ -180,8 +180,7 @@ async function main() {
 		}
 		const code = 'mock-auth-code';
 		const redirectUrl = `${allowedRedirectUri}?code=${code}${state ? `&state=${state}` : ''}`;
-		// Do not perform redirect based on user-controlled data. Respond with the URL as JSON.
-		res.json({ redirectUrl });
+    res.redirect(redirectUrl);
 		return;
 	});
 
