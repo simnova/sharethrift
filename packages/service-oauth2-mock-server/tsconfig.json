@@ -1,15 +1,11 @@
 {
-  "compilerOptions": {
-    "composite": true,
-    "target": "ES2020",
-    "module": "NodeNext",
-    "declaration": true,
-    "outDir": "dist",
-    "rootDir": "src",
-    "strict": true,
-    "esModuleInterop": true,
-    "skipLibCheck": true
-  },
-  "include": ["src"]
-}
+	"extends": ["../../tsconfig.base"],
+	"compilerOptions": {
+		/* Modules */
+		"rootDir": ".",
 
+		/* Emit */
+		"outDir": "dist"
+	},
+	"include": ["src/**/*.ts"],
+}
