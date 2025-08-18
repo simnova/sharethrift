@@ -3,7 +3,6 @@ import { Form, Input, Button, Card, Typography, Upload, Avatar, Row, Col } from 
 import { UserOutlined, UploadOutlined } from '@ant-design/icons';
 import { useNavigate } from 'react-router-dom';
 import type { UploadFile } from 'antd';
-import '../../../../styles/theme.css';
 
 const { Title } = Typography;
 

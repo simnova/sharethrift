@@ -1,7 +1,6 @@
 import { Form, Input, Button, Card, Typography } from "antd";
 import { useNavigate } from "react-router-dom";
 import { useState } from "react";
-import "../../../../styles/theme.css";
 
 const { Title } = Typography;
 
