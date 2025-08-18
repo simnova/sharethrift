@@ -1,5 +1,5 @@
-import type { ItemListingPassport } from './item-listing/item-listing.passport.ts';
-import { ItemListingPassport as ItemListingPassportImpl } from '../iam/item-listing/item-listing.passport.ts';
+import type { ItemListingPassport } from './listing/item.passport.ts';
+import { ItemListingPassport as ItemListingPassportImpl } from '../iam/listing/item.passport.ts';
 
 export interface Passport {
 	get itemListing(): ItemListingPassport;

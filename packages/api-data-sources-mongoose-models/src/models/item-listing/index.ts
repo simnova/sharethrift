@@ -1,1 +1,1 @@
-export * from './item-listing.model.ts';
+export * from './item.model.ts';

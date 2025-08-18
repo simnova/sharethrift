@@ -1,5 +1,5 @@
-import type { ItemListingVisa } from '../../../contexts/item-listing/item-listing.visa.ts';
-import type { ItemListingPassportBase, ItemListingDomainPermissions } from '../item-listing.passport-base.ts';
+import type { ItemListingVisa } from '../../../contexts/listing/item.visa.ts';
+import type { ItemListingPassportBase, ItemListingDomainPermissions } from '../item.passport-base.ts';
 
 export class ItemListingItemListingVisa implements ItemListingVisa {
 	private readonly passport: ItemListingPassportBase;

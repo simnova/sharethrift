@@ -1,6 +1,6 @@
 import { DomainSeedwork } from '@cellix/domain-seedwork';
 import type { Passport } from '../passport.ts';
-import type { ItemListingVisa } from './item-listing.visa.ts';
+import type { ItemListingVisa } from './item.visa.ts';
 import {
 	Category,
 	Description,
@@ -8,7 +8,7 @@ import {
 	ListingStateEnum,
 	Location,
 	Title,
-} from './item-listing.value-objects.ts';
+} from './item.value-objects.ts';
 
 export interface ItemListingProps extends DomainSeedwork.DomainEntityProps {
 	sharer: string; // User ID who created the listing

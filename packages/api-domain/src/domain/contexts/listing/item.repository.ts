@@ -3,7 +3,7 @@ import type {
 	ItemListing,
 	ItemListingEntityReference,
 	ItemListingProps,
-} from './item-listing.aggregate.ts';
+} from './item.aggregate.ts';
 
 export interface ItemListingRepository<props extends ItemListingProps>
 	extends DomainSeedwork.Repository<ItemListing<props>> {

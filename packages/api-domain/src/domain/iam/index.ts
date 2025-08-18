@@ -1,1 +1,1 @@
-export { ItemListingPassport } from "./item-listing/item-listing.passport.ts";
+export { ItemListingPassport } from "./listing/item.passport.ts";

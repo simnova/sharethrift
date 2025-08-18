@@ -1,8 +1,8 @@
 import type { Passport } from '../../contexts/passport.ts';
-import { ItemListingPassportBase, type AuthenticatedPrincipal, type ItemListingDomainPermissions } from './item-listing.passport-base.ts';
-import { ItemListingItemListingVisa } from './contexts/item-listing.item-listing.visa.ts';
-import type { ItemListingVisa } from '../../contexts/item-listing/item-listing.visa.ts';
-import type { ItemListingPassport as ItemListingPassportInterface } from '../../contexts/item-listing/item-listing.passport.ts';
+import { ItemListingPassportBase, type AuthenticatedPrincipal, type ItemListingDomainPermissions } from './item.passport-base.ts';
+import { ItemListingItemListingVisa } from './contexts/item.item.visa.ts';
+import type { ItemListingVisa } from '../../contexts/listing/item.visa.ts';
+import type { ItemListingPassport as ItemListingPassportInterface } from '../../contexts/listing/item.passport.ts';
 
 export class ItemListingPassport extends ItemListingPassportBase implements Passport {
 	private readonly _itemListingVisa: ItemListingVisa;
