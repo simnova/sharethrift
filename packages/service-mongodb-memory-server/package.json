@@ -14,6 +14,7 @@
     "mongodb-memory-server": "^10.2.0"
   },
   "devDependencies": {
+    "@types/dotenv": "^6.1.1",
     "typescript": "^5.0.0"
   },
   "license": "MIT"

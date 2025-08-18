@@ -13,6 +13,7 @@
     "oauth2-mock-server": "^8.1.0"
   },
   "devDependencies": {
+    "@types/dotenv": "^6.1.1",
     "ts-node": "^10.9.2",
     "tsx": "^4.7.0",
     "typescript": "^5.0.0"
