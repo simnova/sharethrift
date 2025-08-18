@@ -1,15 +1,15 @@
-import bikeImg from '../../../../assets/item-images/bike.png';
-import airpodsImg from '../../../../assets/item-images/airpods.png';
-import tentImg from '../../../../assets/item-images/tent.png';
-import projectorImg from '../../../../assets/item-images/projector.png';
-import sewingMachineImg from '../../../../assets/item-images/sewing-machine.png';
-import fanImg from '../../../../assets/item-images/fan.png';
-import hammockImg from '../../../../assets/item-images/hammock.png';
-import umbrellaImg from '../../../../assets/item-images/umbrella.png';
-import backpackImg from '../../../../assets/item-images/backpack.png';
-import deskLampImg from '../../../../assets/item-images/desk-lamp.png';
-import armchairImg from '../../../../assets/item-images/armchair.png';
-import bubbleChairImg from '../../../../assets/item-images/bubble-chair.png';
+import bikeImg from '@sthrift/ui-sharethrift-components/src/assets/item-images/bike.png';
+import airpodsImg from '@sthrift/ui-sharethrift-components/src/assets/item-images/airpods.png';
+import tentImg from '@sthrift/ui-sharethrift-components/src/assets/item-images/tent.png';
+import projectorImg from '@sthrift/ui-sharethrift-components/src/assets/item-images/projector.png';
+import sewingMachineImg from '@sthrift/ui-sharethrift-components/src/assets/item-images/sewing-machine.png';
+import fanImg from '@sthrift/ui-sharethrift-components/src/assets/item-images/fan.png';
+import hammockImg from '@sthrift/ui-sharethrift-components/src/assets/item-images/hammock.png';
+import umbrellaImg from '@sthrift/ui-sharethrift-components/src/assets/item-images/umbrella.png';
+import backpackImg from '@sthrift/ui-sharethrift-components/src/assets/item-images/backpack.png';
+import deskLampImg from '@sthrift/ui-sharethrift-components/src/assets/item-images/desk-lamp.png';
+import armchairImg from '@sthrift/ui-sharethrift-components/src/assets/item-images/armchair.png';
+import bubbleChairImg from '@sthrift/ui-sharethrift-components/src/assets/item-images/bubble-chair.png';
 
 export interface ItemListing {
   _id: string;

@@ -1,8 +1,24 @@
 import React from 'react';
 import { Empty, Pagination } from 'antd';
-import { ListingCard } from '../../molecules/listing-card';
-import type { ItemListing } from '../../../../components/layouts/home/components/mock-listings';
+import { ListingCard } from '../../molecules/listing-card/index.js';
 import styles from './index.module.css';
+
+export interface ItemListing {
+  _id: string;
+  sharer: string; // User reference
+  title: string;
+  description: string;
+  category: string;
+  location: string;
+  sharingPeriodStart: Date;
+  sharingPeriodEnd: Date;
+  state?: 'Published' | 'Paused' | 'Cancelled' | 'Drafted' | 'Expired' | 'Blocked' | 'Appeal Requested';
+  updatedAt?: Date;
+  createdAt?: Date;
+  sharingHistory?: string[]; // objectid[]
+  reports?: number;
+  images?: string[]; // For UI purposes, we'll add image URLs
+}
 
 export interface ListingsGridProps {
   listings: ItemListing[];
@@ -11,7 +27,7 @@ export interface ListingsGridProps {
   currentPage?: number;
   pageSize?: number;
   total?: number;
-  onPageChange?: (page: number, pageSize?: number) => void;
+  onPageChange: (page: number, pageSize: number) => void;
   showPagination?: boolean;
 }
 

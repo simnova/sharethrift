@@ -1,8 +1,8 @@
 import React from 'react';
 import styles from './hero-section.module.css';
-import { SearchBar } from '../../../shared/molecules/search-bar';
-import heroImg from '../../../../assets/hero/hero.png';
-import heroImgSmall from '../../../../assets/hero/hero-small.png';
+import { SearchBar } from '@sthrift/ui-sharethrift-components';
+import heroImg from '@sthrift/ui-sharethrift-components/src/assets/hero/hero.png';
+import heroImgSmall from '@sthrift/ui-sharethrift-components/src/assets/hero/hero-small.png';
 
 export interface HeroSectionProps {
   onSearch?: (query: string) => void;

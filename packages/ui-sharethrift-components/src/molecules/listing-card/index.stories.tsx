@@ -1,6 +1,22 @@
 import type { Meta, StoryObj } from '@storybook/react';
 import { ListingCard } from './index';
-import type { ItemListing } from '../../../../components/layouts/home/components/mock-listings'; // 
+
+export interface ItemListing {
+  _id: string;
+  sharer: string; // User reference
+  title: string;
+  description: string;
+  category: string;
+  location: string;
+  sharingPeriodStart: Date;
+  sharingPeriodEnd: Date;
+  state?: 'Published' | 'Paused' | 'Cancelled' | 'Drafted' | 'Expired' | 'Blocked' | 'Appeal Requested';
+  updatedAt?: Date;
+  createdAt?: Date;
+  sharingHistory?: string[]; // objectid[]
+  reports?: number;
+  images?: string[]; // For UI purposes, we'll add image URLs
+}
 
 const sampleListing: ItemListing = {
   _id: '1',

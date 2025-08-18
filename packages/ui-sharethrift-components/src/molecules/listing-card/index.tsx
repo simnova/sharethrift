@@ -1,8 +1,24 @@
 import React from 'react';
 import { Card } from 'antd';
 import { SwapRightOutlined } from '@ant-design/icons';
-import type { ItemListing } from '../../../../components/layouts/home/components/mock-listings';
 import styles from './index.module.css';
+
+export interface ItemListing {
+  _id: string;
+  sharer: string; // User reference
+  title: string;
+  description: string;
+  category: string;
+  location: string;
+  sharingPeriodStart: Date;
+  sharingPeriodEnd: Date;
+  state?: 'Published' | 'Paused' | 'Cancelled' | 'Drafted' | 'Expired' | 'Blocked' | 'Appeal Requested';
+  updatedAt?: Date;
+  createdAt?: Date;
+  sharingHistory?: string[]; // objectid[]
+  reports?: number;
+  images?: string[]; // For UI purposes, we'll add image URLs
+}
 
 export interface ListingCardProps {
   listing: ItemListing;

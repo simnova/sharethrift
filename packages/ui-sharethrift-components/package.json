@@ -37,6 +37,9 @@
       "import": "./dist/index.js",
       "require": "./dist/index.js"
     },
+    "./src/styles/theme.css": "./src/styles/theme.css",
+    "./src/assets/hero/hero.png": "./src/assets/hero/hero.png",
+    "./src/assets/hero/hero-small.png": "./src/assets/hero/hero-small.png",
     "./src/assets/item-images/airpods.png": "./src/assets/item-images/airpods.png",
     "./src/assets/item-images/armchair.png": "./src/assets/item-images/armchair.png",
     "./src/assets/item-images/backpack.png": "./src/assets/item-images/backpack.png",
