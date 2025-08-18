@@ -26,7 +26,8 @@
     { "path": "./packages/api"},
     { "path": "./packages/service-oauth2-mock-server"},
     { "path": "./packages/service-mongodb-memory-server"},
-    { "path": "./packages/ui-sharethrift-components"}
+    { "path": "./packages/ui-sharethrift-components"},
+    { "path": "./packages/ui-sharethrift"}
   ],
   "lib": ["dom", "esnext"]
 }
