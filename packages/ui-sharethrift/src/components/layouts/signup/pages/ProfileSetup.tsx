@@ -10,7 +10,7 @@ import {
   Row,
   Col,
 } from "antd";
-import { UserOutlined, UploadOutlined } from "@ant-design/icons";
+import { UploadOutlined } from "@ant-design/icons";
 import { useNavigate } from "react-router-dom";
 import type { UploadFile } from "antd";
 import logo from "../../../../../src/assets/logo/logo-icon.svg";
@@ -151,6 +151,7 @@ export default function ProfileSetup() {
                 label="First Name"
                 name="firstName"
                 style={{ marginBottom: 5 }}
+                rules={[{ required: true, message: "First name is required" }]}
               >
                 <Input placeholder="Your First Name" />
               </Form.Item>
@@ -160,6 +161,7 @@ export default function ProfileSetup() {
                 label="Last Name"
                 name="lastName"
                 style={{ marginBottom: 5 }}
+                rules={[{ required: true, message: "Last name is required" }]}
               >
                 <Input placeholder="Your Last Name" />
               </Form.Item>
