@@ -1,5 +1,5 @@
 import type { Meta, StoryObj } from '@storybook/react';
-import { ListingCard } from './index';
+import { ListingCard } from './index.tsx';
 
 export interface ItemListing {
   _id: string;
@@ -48,7 +48,7 @@ export default meta;
 type Story = StoryObj<typeof ListingCard>;
 
 export const Default: Story = {
-  render: (args) => (
+  render: (args: { listing: ItemListing }) => (
     <div style={{ width: 280 }}>
       <ListingCard {...args} />
     </div>

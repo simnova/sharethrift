@@ -23,7 +23,7 @@ export const SearchBar: React.FC<SearchBarProps> = ({
       <Input
         placeholder="Search"
         value={searchValue}
-        onChange={(e) => onSearchChange?.(e.target.value)}
+        onChange={(e) => onSearchChange?.((e.target as HTMLInputElement).value)}
         className={styles.searchInput}
       />
       <Button
