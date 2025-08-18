@@ -79,10 +79,10 @@ Use VS Code tasks for development (preferred over manual commands):
 
 ### Workspace Structure
 Monorepo uses npm workspaces with these core packages:
-- `@ocom/api` - Main Azure Functions application
-- `@ocom/api-domain` - Domain models and business logic
-- `@ocom/api-graphql` - GraphQL implementation
-- `@ocom/service-mongoose` - MongoDB data layer
+- `@sthrift/api` - Main Azure Functions application
+- `@sthrift/api-domain` - Domain models and business logic
+- `@sthrift/api-graphql` - GraphQL implementation
+- `@sthrift/service-mongoose` - MongoDB data layer
 - `@cellix/*` - Shared seedwork libraries
 
 ### External Integrations

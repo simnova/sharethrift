@@ -15,22 +15,22 @@ export class ServiceTokenValidation implements ServiceBase<TokenValidation> {
 	private readonly tokenSettings: Map<string, OpenIdConfig>;
 	private readonly refreshInterval: number;
 
-	constructor(portalTokens: Map<string, string>, refreshInterval: number = 1000 * 60 * 5) {
+	constructor(_portalTokens: Map<string, string>, refreshInterval: number = 1000 * 60 * 5) {
 		this.tokenSettings = new Map<string, OpenIdConfig>();
 		this.refreshInterval = refreshInterval;
 
-		for (const [portalKey, envPrefix] of portalTokens) {
-			this.tokenSettings.set(
-				portalKey,
-				{
-					oidcEndpoint: this.tryGetConfigValue(`${envPrefix}_OIDC_ENDPOINT`),
-					clockTolerance: this.tryGetConfigValueWithDefault(`${envPrefix}_OIDC_CLOCK_TOLERANCE`, '5 minutes'),
-					audience: this.tryGetConfigValue(`${envPrefix}_OIDC_AUDIENCE`),
-					issuerUrl: this.tryGetConfigValue(`${envPrefix}_OIDC_ISSUER`),
-					ignoreIssuer: this.tryGetConfigValueWithDefault(`${envPrefix}_OIDC_IGNORE_ISSUER`, 'false') === 'true',
-				} as OpenIdConfig
-			);
-		}
+		// for (const [portalKey, envPrefix] of portalTokens) {
+		// 	this.tokenSettings.set(
+		// 		portalKey,
+		// 		{
+		// 			oidcEndpoint: this.tryGetConfigValue(`${envPrefix}_OIDC_ENDPOINT`),
+		// 			clockTolerance: this.tryGetConfigValueWithDefault(`${envPrefix}_OIDC_CLOCK_TOLERANCE`, '5 minutes'),
+		// 			audience: this.tryGetConfigValue(`${envPrefix}_OIDC_AUDIENCE`),
+		// 			issuerUrl: this.tryGetConfigValue(`${envPrefix}_OIDC_ISSUER`),
+		// 			ignoreIssuer: this.tryGetConfigValueWithDefault(`${envPrefix}_OIDC_IGNORE_ISSUER`, 'false') === 'true',
+		// 		} as OpenIdConfig
+		// 	);
+		// }
 		this.tokenVerifier = new VerifiedTokenService(this.tokenSettings, this.refreshInterval);
 	}
 
@@ -58,22 +58,23 @@ export class ServiceTokenValidation implements ServiceBase<TokenValidation> {
 		if (this.tokenVerifier.timerInstance) {
 			clearInterval(this.tokenVerifier.timerInstance);
 		}
+        console.log('ServiceTokenValidation stopped');
         return Promise.resolve();
 	}
 
-	private tryGetConfigValue(configKey: string) {
-		if (Object.hasOwn(process.env, configKey)) {
-			return process.env[configKey];
-		} else {
-			throw new Error(`Environment variable ${configKey} not set`);
-		}
-	}
+	// private tryGetConfigValue(configKey: string) {
+	// 	if (Object.hasOwn(process.env, configKey)) {
+	// 		return process.env[configKey];
+	// 	} else {
+	// 		throw new Error(`Environment variable ${configKey} not set`);
+	// 	}
+	// }
 
-	private tryGetConfigValueWithDefault(configKey: string, defaultValue: string) {
-		if (Object.hasOwn(process.env, configKey)) {
-			return process.env[configKey];
-		} else {
-			return defaultValue;
-		}
-	}
+	// private tryGetConfigValueWithDefault(configKey: string, defaultValue: string) {
+	// 	if (Object.hasOwn(process.env, configKey)) {
+	// 		return process.env[configKey];
+	// 	} else {
+	// 		return defaultValue;
+	// 	}
+	// }
 }

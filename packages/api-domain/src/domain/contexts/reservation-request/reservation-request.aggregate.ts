@@ -7,12 +7,13 @@ import {
 	ReservationRequestStates,
 } from './reservation-request.value-objects.ts';
 
-// Entity references for external aggregates
+// Temporary Until listing task is completeted
 export interface ListingEntityReference extends DomainSeedwork.DomainEntityProps {
 	readonly title: string;
 	readonly description: string;
 }
 
+// Temporary Until user task is completeted
 export interface ReserverEntityReference extends DomainSeedwork.DomainEntityProps {
 	readonly name: string;
 	readonly email: string;

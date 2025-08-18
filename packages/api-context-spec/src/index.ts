@@ -1,8 +1,7 @@
-import type { Domain, DomainDataSource } from '@ocom/api-domain';
-import type { TokenValidation } from '@ocom/service-token-validation';
+import type { DataSources } from '@sthrift/api-persistence';
+import type { TokenValidation } from '@sthrift/service-token-validation';
 export interface ApiContextSpec {
 	//mongooseService:Exclude<ServiceMongoose, ServiceBase>;
-	domainDataSource: DomainDataSource;
-    domainDataSourceFromJwt: (validatedJwt: Domain.Types.VerifiedJwt | null) => DomainDataSource;
-    tokenValidationService: TokenValidation;
+	dataSources: DataSources; // NOT an infrastructure service
+	tokenValidationService: TokenValidation;
 }

@@ -1,0 +1,22 @@
+#graphql
+type ReservationRequest {
+  id: ID!
+  state: ReservationRequestState!
+  reservationPeriodStart: String!
+  reservationPeriodEnd: String!
+  createdAt: String!
+  updatedAt: String!
+  listingId: ID!
+  reserverId: ID!
+  closeRequested: Boolean!
+  listing: Listing
+  reserver: User
+}
+
+enum ReservationRequestState {
+  REQUESTED
+  ACCEPTED
+  REJECTED
+  RESERVATION_PERIOD
+  CANCELLED
+}

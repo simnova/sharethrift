@@ -1,5 +1,5 @@
 
 export const portalTokens = new Map<string, string>([
-    ['AccountPortal', 'ACCOUNT_PORTAL'],
+    ['UserPortal', 'USER_PORTAL'],
     // ['StaffPortal', 'STAFF_PORTAL'],
 ]);

@@ -11,6 +11,7 @@ export interface AppLayoutProps {
   onLogout?: () => void;
   onSignUp?: () => void;
   onNavigate?: (route: string) => void;
+  selectedKey?: string;
   children: React.ReactNode;
 }
 
@@ -20,6 +21,7 @@ export const AppLayout: React.FC<AppLayoutProps> = ({
   onLogout,
   onSignUp,
   onNavigate,
+  selectedKey,
   children,
 }) => {
   return (
@@ -29,15 +31,16 @@ export const AppLayout: React.FC<AppLayoutProps> = ({
         onLogin={onLogin}
         onSignUp={onSignUp}
       />
-        <div className={styles.bodyWrapper}>
+      <div className={styles.bodyWrapper}>
         <Navigation
-            isAuthenticated={isAuthenticated}
-            onLogout={onLogout}
-            onNavigate={onNavigate}
+          isAuthenticated={isAuthenticated}
+          onLogout={onLogout}
+          onNavigate={onNavigate}
+          selectedKey={selectedKey}
         />
         <main className={styles.content}>{children}</main>
-        </div>
-         <Footer />
+      </div>
+      <Footer />
     </Layout>
   );
 };

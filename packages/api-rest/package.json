@@ -1,5 +1,5 @@
 {
-	"name": "@ocom/api-rest",
+	"name": "@sthrift/api-rest",
 	"version": "1.0.0",
 	"author": "",
 	"license": "MIT",
@@ -15,7 +15,8 @@
 		"prebuild": "biome lint"
 	},
 	"peerDependencies": {
-		"@ocom/api-context-spec": "^1.0.0"
+		"@sthrift/api-application-services": "^1.0.0",
+		"@sthrift/api-context-spec": "^1.0.0"
 	},
 	"dependencies": {
 		"@azure/functions": "^4.6.0",

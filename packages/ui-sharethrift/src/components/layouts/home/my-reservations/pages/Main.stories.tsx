@@ -146,7 +146,7 @@ export const Loading: Story = {
   },
 };
 
-export const Error: Story = {
+export const reservationError: Story = {
   args: {
     activeReservations: [],
     historyReservations: [],

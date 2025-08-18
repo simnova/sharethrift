@@ -45,7 +45,6 @@ export class VerifiedTokenService {
    * 
    **/
   public start() {
-    console.log('custom-log | verified-token-service | starting');
     if (this.timerInstance) {
       return; // already running
     }

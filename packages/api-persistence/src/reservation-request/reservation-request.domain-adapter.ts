@@ -1,8 +1,7 @@
 import { MongooseSeedwork } from "@cellix/data-sources-mongoose";
 const { MongooseDomainAdapter, MongoTypeConverter } = MongooseSeedwork;
-import type { ReservationRequestProps, Passport } from "@ocom/api-domain";
-import { Domain, ReservationRequest as ReservationRequestAggregate } from "@ocom/api-domain";
-import type { Models } from "@ocom/api-data-sources-mongoose-models";
+import { Domain } from "@sthrift/api-domain";
+import type { Models } from "@sthrift/api-data-sources-mongoose-models";
 
 /**
  * Type converter for ReservationRequest.
@@ -11,15 +10,15 @@ import type { Models } from "@ocom/api-data-sources-mongoose-models";
 export class ReservationRequestConverter extends MongoTypeConverter<
   Models.ReservationRequest,
   ReservationRequestDomainAdapter,
-  Passport,
+  Domain.Passport,
   Domain.Contexts.ReservationRequest<ReservationRequestDomainAdapter>
 > {
   constructor() {
-    super(ReservationRequestDomainAdapter, ReservationRequestAggregate);
+    super(ReservationRequestDomainAdapter, Domain.Contexts.ReservationRequest);
   }
 }
 
-export class ReservationRequestDomainAdapter extends MongooseDomainAdapter<Models.ReservationRequest> implements ReservationRequestProps {
+export class ReservationRequestDomainAdapter extends MongooseDomainAdapter<Models.ReservationRequest> implements Domain.Contexts.ReservationRequestProps {
   // Primitive Fields Getters and Setters
   get state(): Domain.Contexts.ReservationRequestStateValue {
     return Domain.Contexts.ReservationRequestStateValue.create(this.doc.state);

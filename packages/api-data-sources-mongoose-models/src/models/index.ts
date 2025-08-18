@@ -1,28 +1,10 @@
-import type { MongooseSeedwork } from '@cellix/data-sources-mongoose';
-import { createReservationRequestModel } from './reservation-request/index.ts';
+export * from './reservation-request/reservation-request.model.ts';
+export * from './conversations/index.ts';
 
-export const mongooseContextBuilder = (
-	mongooseFactory: MongooseSeedwork.MongooseContextFactory,
-) => {
-	return {
-		ReservationRequestModel: createReservationRequestModel(mongooseFactory),
-	};
+import * as ReservationRequest from './reservation-request/reservation-request.model.ts';
+import * as Conversations from './conversations/index.ts';
+
+export const Models = {
+	...ReservationRequest,
+	...Conversations,
 };
-
-export * from './reservation-request/index.ts';
-/*
-export type MongooseContext = ReturnType<typeof mongooseContextBuilder>;
-
-Community.CommunityModel.findById('123').then((doc) => {
-  doc?.whiteLabelDomain
-  doc?.createdBy
-});
-
-let x = mongooseContextBuilder(null as any).Community.Community;
-x.findById('123').then((doc) => {
-  doc?.whiteLabelDomain
-  doc?.createdBy
-  console.log(doc);
-});
-
-*/

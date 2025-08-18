@@ -1,5 +1,5 @@
-import { Domain } from '@ocom/api-domain';
-import type { Models } from '@ocom/api-data-sources-mongoose-models';
+import { Domain } from '@sthrift/api-domain';
+import type { Models } from '@sthrift/api-data-sources-mongoose-models';
 import { MongooseSeedwork } from '@cellix/data-sources-mongoose';
 import type { ReservationRequestDomainAdapter } from './reservation-request.domain-adapter.ts';
 

@@ -1,8 +1,9 @@
 {
   "type": "module",
-  "name": "service-oauth2-mock-server",
+  "name": "@sthrift/service-oauth2-mock-server",
   "version": "1.0.0",
-  "main": "index.js",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
   "license": "MIT",
   "dependencies": {
     "@types/multer": "^2.0.0",
@@ -15,8 +16,11 @@
     "ts-node": "^10.9.2",
     "tsx": "^4.7.0",
     "typescript": "^5.0.0"
+    
   },
   "scripts": {
-    "start": "tsx index.ts"
+    "start": "node dist/index.js",
+    "clean": "rimraf node_modules package-lock.json",
+    "build": "tsc --build"
   }
 }
