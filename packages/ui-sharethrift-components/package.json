@@ -10,7 +10,7 @@
   ],
   "scripts": {
     "build": "tsc --build && npm run copy-css",
-    "copy-css": "cpx \"src/**/*.{css,svg,png,jpg,jpeg,gif}\" dist",
+    "copy-css": "cpx \"src/**/*.{css,svg,png,jpg,jpeg,gif}\" dist/src",
     "lint": "biome lint .",
     "test": "echo 'No tests yet'",
     "storybook": "storybook dev -p 6006",
@@ -34,8 +34,8 @@
   "license": "MIT",
   "exports": {
     ".": {
-      "import": "./dist/index.js",
-      "require": "./dist/index.js"
+      "import": "./dist/src/index.js",
+      "require": "./dist/src/index.js"
     },
     "./src/styles/theme.css": "./src/styles/theme.css",
     "./src/assets/hero/hero.png": "./src/assets/hero/hero.png",

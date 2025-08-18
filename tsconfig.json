@@ -18,6 +18,7 @@
     { "path": "./packages/service-blob-storage"},
     { "path": "./packages/service-mongoose"},
     { "path": "./packages/service-token-validation"},
+    { "path": "./packages/service-sendgrid"},
     { "path": "./packages/api-application-services"},
     { "path": "./packages/api-context-spec"},
     { "path": "./packages/api-graphql"},
