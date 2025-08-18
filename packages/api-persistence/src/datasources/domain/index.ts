@@ -5,10 +5,11 @@ import { ListingPersistence } from '../../listing/index.ts';
 export const DomainDataSourceImplementation = (
 	initializedService: MongooseSeedwork.MongooseContextFactory,
 ): DomainDataSource => {
-	console.log(initializedService);
 	return {
 		domainContexts: {
-			listing: ListingPersistence(initializedService),
+			listing: {
+				item: ListingPersistence(initializedService),
+			},
 		},
 	};
 };
