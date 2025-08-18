@@ -1,5 +1,7 @@
-import mongoose, { Schema, type Model, type Document, type ObjectId } from 'mongoose';
-export interface ItemListingDocument extends Document {
+import mongoose, { Schema, type Model, type ObjectId } from 'mongoose';
+import { MongooseSeedwork } from '@cellix/data-sources-mongoose';
+
+export interface ItemListingDocument extends MongooseSeedwork.Base {
   sharer: ObjectId;
   title: string;
   description: string;
@@ -8,13 +10,13 @@ export interface ItemListingDocument extends Document {
   sharingPeriodStart: Date;
   sharingPeriodEnd: Date;
   state?: 'Published' | 'Paused' | 'Cancelled' | 'Drafted' | 'Expired' | 'Blocked' | 'Appeal Requested';
-  createdAt?: Date;
-  updatedAt?: Date;
+  createdAt: Date;
+  updatedAt: Date;
   sharingHistory?: ObjectId[];
   reports?: number;
 }
 
-export const ItemListingSchema = new Schema({
+export const ItemListingSchema = new Schema<ItemListingDocument, Model<ItemListingDocument>, ItemListingDocument>({
 	sharer: { type: Schema.Types.ObjectId, ref: 'User', required: true },
 	title: { type: String, required: true, maxlength: 200 },
 	description: { type: String, required: true, maxlength: 2000 },
@@ -29,7 +31,7 @@ export const ItemListingSchema = new Schema({
 	},
 	createdAt: { type: Date, required: false, default: Date.now },
 	updatedAt: { type: Date, required: false, default: Date.now },
-	sharingHistory: [{ type: Schema.Types.ObjectId, ref: 'ReservationRequest' }],
+	sharingHistory: [{ type: Schema.Types.ObjectId, ref: 'ItemListing' }],
 	reports: { type: Number, default: 0 },
 });
 
@@ -43,4 +45,12 @@ try {
 }
 
 export { ItemListingModel };
+
+export const ItemListingModelFactory = MongooseSeedwork.modelFactory<ItemListingDocument>(
+	ItemListingModelName,
+	ItemListingSchema,
+);
+
+export type ItemListingModelType = ReturnType<typeof ItemListingModelFactory>;
+
 export const ItemListingCollectionName = 'Listings';
