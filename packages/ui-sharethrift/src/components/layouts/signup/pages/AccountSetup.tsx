@@ -1,5 +1,6 @@
 import { Form, Input, Button, Card, Typography } from "antd";
 import { useNavigate } from "react-router-dom";
+import { useState } from "react";
 import "../../../../styles/theme.css";
 
 const { Title } = Typography;
@@ -13,13 +14,19 @@ interface AccountSetupFormData {
 
 export default function AccountSetup() {
   const [form] = Form.useForm();
+  const [submitting, setSubmitting] = useState(false);
   const navigate = useNavigate();
 
-  const handleSubmit = (values: AccountSetupFormData) => {
-    console.log("Account setup form submitted:", values);
-    // In a real app, this would save the account data
-    // For now, navigate to profile setup
-    navigate("/signup/profile-setup");
+  const handleSubmit = async (values: AccountSetupFormData) => {
+    setSubmitting(true);
+    try {
+      console.log(values);
+      // Simulate async operation
+      // await apiCall(values);
+      navigate("/signup/profile-setup");
+    } finally {
+      setSubmitting(false);
+    }
   };
 
   const validateConfirmPassword = (_: any, value: string) => {
@@ -40,10 +47,16 @@ export default function AccountSetup() {
       }}
     >
       <Card
-        style={{ maxWidth: 500, width: "100%", backgroundColor: "transparent" }}
+        style={{
+          maxWidth: 500,
+          width: "100%",
+          backgroundColor: "transparent",
+          border: "none",
+        }}
       >
         <div style={{ textAlign: "center", marginBottom: "2rem" }}>
-          <h1
+          <Title
+            level={1}
             className="title36"
             style={{
               textAlign: "center",
@@ -52,7 +65,7 @@ export default function AccountSetup() {
             }}
           >
             Account Setup
-          </h1>
+          </Title>
         </div>
 
         <Form
@@ -70,7 +83,12 @@ export default function AccountSetup() {
               { type: "email", message: "Please enter a valid email address" },
             ]}
           >
-            <Input placeholder="johndoe@email.com" />
+            <Input
+              placeholder="johndoe@email.com"
+              autoFocus
+              aria-label="Email"
+              autoComplete="email"
+            />
           </Form.Item>
 
           <Form.Item
@@ -88,7 +106,11 @@ export default function AccountSetup() {
               },
             ]}
           >
-            <Input placeholder="Your Username" />
+            <Input
+              placeholder="Your Username"
+              aria-label="Username"
+              autoComplete="username"
+            />
           </Form.Item>
 
           <Title
@@ -112,19 +134,28 @@ export default function AccountSetup() {
               },
             ]}
           >
-            <Input.Password placeholder="Create Password" />
+            <Input.Password
+              placeholder="Create Password"
+              aria-label="Create Password"
+              autoComplete="new-password"
+            />
           </Form.Item>
 
           <Form.Item
             label="Confirm Password"
             name="confirmPassword"
             style={{ marginBottom: 12 }}
+            dependencies={["password"]}
             rules={[
               { required: true, message: "Please confirm your password" },
               { validator: validateConfirmPassword },
             ]}
           >
-            <Input.Password placeholder="Confirm Password" />
+            <Input.Password
+              placeholder="Confirm Password"
+              aria-label="Confirm Password"
+              autoComplete="new-password"
+            />
           </Form.Item>
 
           <Form.Item style={{ marginTop: "2rem", textAlign: "right" }}>
@@ -138,6 +169,8 @@ export default function AccountSetup() {
                 fontSize: "16px",
                 fontWeight: 600,
               }}
+              loading={submitting}
+              disabled={submitting}
             >
               Save and Continue
             </Button>
