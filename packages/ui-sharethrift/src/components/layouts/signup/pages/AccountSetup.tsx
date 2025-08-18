@@ -39,7 +39,9 @@ export default function AccountSetup() {
         padding: "20px",
       }}
     >
-      <Card style={{ maxWidth: 500, width: "100%" }}>
+      <Card
+        style={{ maxWidth: 500, width: "100%", backgroundColor: "transparent" }}
+      >
         <div style={{ textAlign: "center", marginBottom: "2rem" }}>
           <h1
             className="title36"
@@ -62,6 +64,7 @@ export default function AccountSetup() {
           <Form.Item
             label="Email"
             name="email"
+            style={{ marginBottom: 12 }}
             rules={[
               { required: true, message: "Email is required" },
               { type: "email", message: "Please enter a valid email address" },
@@ -73,6 +76,7 @@ export default function AccountSetup() {
           <Form.Item
             label="Username"
             name="username"
+            style={{ marginBottom: 12 }}
             rules={[
               { required: true, message: "Username is required" },
               { min: 3, message: "Username must be at least 3 characters" },
@@ -97,6 +101,7 @@ export default function AccountSetup() {
           <Form.Item
             label="Create Password"
             name="password"
+            style={{ marginBottom: 12 }}
             rules={[
               { required: true, message: "Password is required" },
               { min: 8, message: "Password must be at least 8 characters" },
@@ -113,6 +118,7 @@ export default function AccountSetup() {
           <Form.Item
             label="Confirm Password"
             name="confirmPassword"
+            style={{ marginBottom: 12 }}
             rules={[
               { required: true, message: "Please confirm your password" },
               { validator: validateConfirmPassword },

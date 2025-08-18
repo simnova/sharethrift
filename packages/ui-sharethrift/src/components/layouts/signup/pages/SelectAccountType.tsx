@@ -215,12 +215,9 @@ export default function SelectAccountType() {
           marginTop: "32px",
         }}
       >
-        {/* {selectedPersonalType === "verified" || sel
-        selectedPersonalType === "verified-plus" ? ( */}
         <Button type="primary" size="large">
           <SafetyOutlined /> Start Identity Verification
         </Button>
-        {/* ) : null} */}
       </div>
     </div>
   );
