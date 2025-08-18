@@ -126,7 +126,8 @@ export class ItemListingConverter {
     passport: Passport
   ): Domain.Contexts.ItemListing<ItemListingDomainAdapter> {
     const adapter = new ItemListingDomainAdapter(doc);
-    return new ItemListingAggregate(adapter as unknown, passport) as unknown as Domain.Contexts.ItemListing<ItemListingDomainAdapter>;
+    // Simple type workaround - in production this would be properly typed
+    return new ItemListingAggregate(adapter as ItemListingProps, passport) as unknown as Domain.Contexts.ItemListing<ItemListingDomainAdapter>;
   }
 
   toMongo(
