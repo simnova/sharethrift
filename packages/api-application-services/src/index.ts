@@ -6,10 +6,10 @@ interface JwtPayload {
 	email: string;
 }
 
-// biome-ignore lint/suspicious/noEmptyInterface: <explanation>
+// biome-ignore lint/suspicious/noEmptyInterface: application services interface for dependency injection
 export interface ApplicationServices {}
 
-// biome-ignore lint/complexity/noBannedTypes: <explanation>
+// biome-ignore lint/complexity/noBannedTypes: principal hints type configuration
 export type PrincipalHints = {
 	// memberId: string | undefined;
 	// communityId: string | undefined;

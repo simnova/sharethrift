@@ -7,8 +7,8 @@ export interface ReservationRequest extends MongooseSeedwork.Base {
 	reservationPeriodStart: Date;
 	reservationPeriodEnd: Date;
 	schemaVersion: string; // changed from number to string
-	listing: PopulatedDoc<any> | ObjectId; // Replace 'any' with Listing type if available
-	reserver: PopulatedDoc<any> | ObjectId; // Replace 'any' with User type if available
+	listing: PopulatedDoc<unknown> | ObjectId; // Replace 'unknown' with Listing type when available
+	reserver: PopulatedDoc<unknown> | ObjectId; // Replace 'unknown' with User type when available
 	closeRequested: boolean;
 }
 
