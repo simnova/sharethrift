@@ -5,6 +5,6 @@ export const ListingPersistence = (
     initializedService: MongooseSeedwork.MongooseContextFactory,
 ) => {
     return {
-        ...ItemListingPersistence(initializedService),
+        item: ItemListingPersistence(initializedService),
     };
 };

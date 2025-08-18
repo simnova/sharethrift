@@ -1,4 +1,4 @@
-import { MongooseSeedwork } from '@cellix/data-sources-mongoose';
+import type { MongooseSeedwork } from '@cellix/data-sources-mongoose';
 import type { Domain } from '@sthrift/api-domain';
 import { ItemListingModels } from '@sthrift/api-data-sources-mongoose-models';
 import { ItemListingConverter, type ItemListingDomainAdapter } from './item.domain-adapter.ts';
