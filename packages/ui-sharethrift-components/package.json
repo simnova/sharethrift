@@ -56,7 +56,8 @@
     "./src/assets/item-images/string-lights.png": "./src/assets/item-images/string-lights.png",
     "./src/assets/item-images/tent.png": "./src/assets/item-images/tent.png",
     "./src/assets/item-images/umbrella.png": "./src/assets/item-images/umbrella.png",
-    "./src/assets/item-images/utensils.png": "./src/assets/item-images/utensils.png"
+    "./src/assets/item-images/utensils.png": "./src/assets/item-images/utensils.png",
+    "./dist/src/styles/theme.css": "./dist/src/styles/theme.css"
   },
   "dependencies": {
     "@apollo/client": "^3.13.9",
