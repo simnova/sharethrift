@@ -48,6 +48,7 @@
 		"packages/api-graphql",
 		"packages/api-rest",
 		"packages/api",
+        "packages/service-sendgrid",
         "packages/ui-sharethrift-components"
 	],
 	"devDependencies": {
