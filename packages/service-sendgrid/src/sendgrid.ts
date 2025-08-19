@@ -7,7 +7,11 @@ export default class SendGrid {
   emailTemplateName: string;
 
   constructor(emailTemplateName: string) {
-    sendgrid.setApiKey(process.env['SENDGRID_API_KEY'] || '');
+    const apiKey = process.env['SENDGRID_API_KEY'];
+    if (!apiKey) {
+      throw new Error('SENDGRID_API_KEY environment variable is missing. Please set it to use SendGrid.');
+    }
+    sendgrid.setApiKey(apiKey);
     this.emailTemplateName = emailTemplateName;
   }
 
