@@ -58,13 +58,19 @@ export default class SendGrid {
       console.log(`Email saved to ${outFile}`);
       return;
     }
-    await sendgrid
-      .send({
+    try {
+      const response = await sendgrid.send({
         to: userEmail,
         from: template.fromEmail,
         subject: subject,
         html: htmlContent,
-      })
+      });
+      console.log('Email sent successfully');
+      console.log(response);
+    } catch (error) {
+      console.log('Error sending email');
+      console.log(error);
+    }
       .then((response) => {
         console.log('Email sent successfully');
         console.log(response);
