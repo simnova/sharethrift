@@ -13,7 +13,6 @@ import {
 import { UploadOutlined } from "@ant-design/icons";
 import { useNavigate } from "react-router-dom";
 import type { UploadFile } from "antd";
-import logo from "../../../../../src/assets/logo/logo-icon.svg";
 
 const { Title } = Typography;
 
@@ -108,7 +107,6 @@ export default function ProfileSetup() {
           <Avatar
             size={100}
             src={avatarUrl || undefined}
-            icon={!avatarUrl ? <img src={logo} alt="logo" /> : undefined}
             style={{
               backgroundColor: "#f0f0f0",
               border: "3px solid #e0e0e0",
@@ -138,7 +136,7 @@ export default function ProfileSetup() {
                   paddingRight: "20px",
                 }}
               >
-                Choose Image
+                {avatarUrl ? "Change Image" : "Choose Image"}
               </Button>
             </Upload>
           </div>
