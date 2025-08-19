@@ -155,8 +155,17 @@ export default function ProfileSetup() {
                     onFinish={handleSubmit}
                     autoComplete="off"
                 >
-                    <Row gutter={16}>
-                        <Col xs={24} sm={12}>
+                    <Row gutter={16} style={{ flexWrap: "nowrap" }}>
+                        <Col
+                            xs={12}
+                            sm={12}
+                            style={{
+                                paddingRight: 8,
+                                paddingLeft: 0,
+                                flex: 1,
+                                maxWidth: "50%",
+                            }}
+                        >
                             <Form.Item
                                 label="First Name"
                                 name="firstName"
@@ -165,7 +174,16 @@ export default function ProfileSetup() {
                                 <Input placeholder="Your First Name" />
                             </Form.Item>
                         </Col>
-                        <Col xs={24} sm={12}>
+                        <Col
+                            xs={12}
+                            sm={12}
+                            style={{
+                                paddingLeft: 8,
+                                paddingRight: 0,
+                                flex: 1,
+                                maxWidth: "50%",
+                            }}
+                        >
                             <Form.Item
                                 label="Last Name"
                                 name="lastName"
@@ -195,8 +213,17 @@ export default function ProfileSetup() {
                         <Input placeholder="Address Line 2" />
                     </Form.Item>
 
-                    <Row gutter={16}>
-                        <Col xs={24} sm={8}>
+                    <Row gutter={16} style={{ flexWrap: "nowrap" }}>
+                        <Col
+                            xs={8}
+                            sm={8}
+                            style={{
+                                paddingRight: 8,
+                                paddingLeft: 0,
+                                flex: 1,
+                                maxWidth: "33.33%",
+                            }}
+                        >
                             <Form.Item
                                 label="City"
                                 name="city"
@@ -205,7 +232,16 @@ export default function ProfileSetup() {
                                 <Input placeholder="City" />
                             </Form.Item>
                         </Col>
-                        <Col xs={24} sm={8}>
+                        <Col
+                            xs={8}
+                            sm={8}
+                            style={{
+                                paddingLeft: 4,
+                                paddingRight: 4,
+                                flex: 1,
+                                maxWidth: "33.33%",
+                            }}
+                        >
                             <Form.Item
                                 label="State"
                                 name="state"
@@ -214,7 +250,16 @@ export default function ProfileSetup() {
                                 <Input placeholder="State" />
                             </Form.Item>
                         </Col>
-                        <Col xs={24} sm={8}>
+                        <Col
+                            xs={8}
+                            sm={8}
+                            style={{
+                                paddingLeft: 0,
+                                paddingRight: 8,
+                                flex: 1,
+                                maxWidth: "33.33%",
+                            }}
+                        >
                             <Form.Item
                                 label="Country"
                                 name="country"
