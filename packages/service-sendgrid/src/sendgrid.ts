@@ -17,7 +17,13 @@ export default class SendGrid {
 
   sendEmailWithMagicLink = async (userEmail: string, magicLink: string) => {
     console.log('SendGrid.sendEmail() - email: ', userEmail);
-    const template = JSON.parse(readHtmlFile(this.emailTemplateName));
+    let template;
+    try {
+      template = JSON.parse(readHtmlFile(this.emailTemplateName));
+    } catch (err) {
+      console.error(`Failed to parse email template JSON for "${this.emailTemplateName}":`, err);
+      throw new Error(`Invalid email template JSON: ${this.emailTemplateName}`);
+    }
     const templateBodyWithMagicLink = this.replaceMagicLink(template.body, magicLink);
     const subject = `${template.subject} ${process.env['SENDGRID_MAGICLINK_SUBJECT_SUFFIX']}`;
     await this.sendEmail(userEmail, template, templateBodyWithMagicLink, subject);
