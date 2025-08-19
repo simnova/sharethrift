@@ -10,8 +10,8 @@
 	"scripts": {
 		"build": "tsc --build",
 		"clean": "rimraf dist node_modules tsconfig.tsbuildinfo && tsc --build --clean",
-		"lint": "biome lint",
-		"format": "biome format --write",
+		"lint": "npx biome lint",
+		"format": "npx biome format --write",
 		"test": "vitest run",
 		"test:all": "npm run test && npm run test:serenity",
 		"test:coverage": "vitest run --coverage",
@@ -19,7 +19,7 @@
 		"test:serenity": "cucumber-js",
 		"test:unit": "vitest run --exclude tests/integration/**/*.test.ts",
 		"test:watch": "vitest watch",
-		"prebuild": "biome lint"
+		"prebuild": "npx biome lint"
 	},
 	"peerDependencies": {
 		"@cellix/domain-seedwork": "^1.0.0",

@@ -1,6 +1,6 @@
 import type { Meta, StoryObj } from '@storybook/react';
-import { ReservationCard } from './reservation-card';
-import type { ReservationRequest } from '../../../layouts/home/my-reservations/pages/main.container'; // Will eventually come from generated graphql files
+import { ReservationCard } from './reservation-card.js';
+import type { ReservationRequest } from '../../types/reservation.js';
 
 const mockReservationRequests: ReservationRequest[] = [
   {
@@ -20,6 +20,8 @@ const mockReservationRequests: ReservationRequest[] = [
     },
     reserver: {
       id: 'user-1',
+      firstName: 'Sarah',
+      lastName: 'Johnson',
       name: 'Sarah Johnson',
     },
   },
@@ -40,6 +42,8 @@ const mockReservationRequests: ReservationRequest[] = [
     },
     reserver: {
       id: 'user-2',
+      firstName: 'Mike',
+      lastName: 'Brown',
       name: 'Mike Brown',
     },
   },
@@ -60,6 +64,8 @@ const mockReservationRequests: ReservationRequest[] = [
     },
     reserver: {
       id: 'user-3',
+      firstName: 'Anna',
+      lastName: 'Lee',
       name: 'Anna Lee',
     },
   },
@@ -80,6 +86,8 @@ const mockReservationRequests: ReservationRequest[] = [
     },
     reserver: {
       id: 'user-4',
+      firstName: 'Chris',
+      lastName: 'Green',
       name: 'Chris Green',
     },
   },
@@ -100,6 +108,8 @@ const mockReservationRequests: ReservationRequest[] = [
     },
     reserver: {
       id: 'user-5',
+      firstName: 'Patricia',
+      lastName: 'Black',
       name: 'Patricia Black',
     },
   },
@@ -130,65 +140,65 @@ type Story = StoryObj<typeof meta>;
 
 export const Requested: Story = {
   args: {
-    reservation: mockReservationRequests[0], // REQUESTED status
-    onCancel: (id) => console.log('Cancel clicked for:', id),
-    onClose: (id) => console.log('Close clicked for:', id),
-    onMessage: (id) => console.log('Message clicked for:', id),
+    reservation: mockReservationRequests[0]!, // REQUESTED status
+    onCancel: (id: string) => console.log('Cancel clicked for:', id),
+    onClose: (id: string) => console.log('Close clicked for:', id),
+    onMessage: (id: string) => console.log('Message clicked for:', id),
   },
 };
 
 export const Accepted: Story = {
   args: {
-    reservation: mockReservationRequests[1], // ACCEPTED status
-    onCancel: (id) => console.log('Cancel clicked for:', id),
-    onClose: (id) => console.log('Close clicked for:', id),
-    onMessage: (id) => console.log('Message clicked for:', id),
+    reservation: mockReservationRequests[1]!, // ACCEPTED status
+    onCancel: (id: string) => console.log('Cancel clicked for:', id),
+    onClose: (id: string) => console.log('Close clicked for:', id),
+    onMessage: (id: string) => console.log('Message clicked for:', id),
   },
 };
 
 export const Rejected: Story = {
   args: {
-    reservation: mockReservationRequests[2], // REJECTED status
-    onCancel: (id) => console.log('Cancel clicked for:', id),
-    onClose: (id) => console.log('Close clicked for:', id),
-    onMessage: (id) => console.log('Message clicked for:', id),
+    reservation: mockReservationRequests[2]!, // REJECTED status
+    onCancel: (id: string) => console.log('Cancel clicked for:', id),
+    onClose: (id: string) => console.log('Close clicked for:', id),
+    onMessage: (id: string) => console.log('Message clicked for:', id),
   },
 };
 
 export const Cancelled: Story = {
   args: {
-    reservation: mockReservationRequests[3], // CANCELLED status
-    onCancel: (id) => console.log('Cancel clicked for:', id),
-    onClose: (id) => console.log('Close clicked for:', id),
-    onMessage: (id) => console.log('Message clicked for:', id),
+    reservation: mockReservationRequests[3]!, // CANCELLED status
+    onCancel: (id: string) => console.log('Cancel clicked for:', id),
+    onClose: (id: string) => console.log('Close clicked for:', id),
+    onMessage: (id: string) => console.log('Message clicked for:', id),
   },
 };
 
 export const Closed: Story = {
   args: {
-    reservation: mockReservationRequests[4], // RESERVATION_PERIOD status
-    onCancel: (id) => console.log('Cancel clicked for:', id),
-    onClose: (id) => console.log('Close clicked for:', id),
-    onMessage: (id) => console.log('Message clicked for:', id),
+    reservation: mockReservationRequests[4]!, // RESERVATION_PERIOD status
+    onCancel: (id: string) => console.log('Cancel clicked for:', id),
+    onClose: (id: string) => console.log('Close clicked for:', id),
+    onMessage: (id: string) => console.log('Message clicked for:', id),
   },
 };
 
 export const WithoutActions: Story = {
   args: {
-    reservation: mockReservationRequests[0],
-    onCancel: (id) => console.log('Cancel clicked for:', id),
-    onClose: (id) => console.log('Close clicked for:', id),
-    onMessage: (id) => console.log('Message clicked for:', id),
+    reservation: mockReservationRequests[0]!,
+    onCancel: (id: string) => console.log('Cancel clicked for:', id),
+    onClose: (id: string) => console.log('Close clicked for:', id),
+    onMessage: (id: string) => console.log('Message clicked for:', id),
     showActions: false,
   },
 };
 
 export const LoadingStates: Story = {
   args: {
-    reservation: mockReservationRequests[0],
-    onCancel: (id) => console.log('Cancel clicked for:', id),
-    onClose: (id) => console.log('Close clicked for:', id),
-    onMessage: (id) => console.log('Message clicked for:', id),
+    reservation: mockReservationRequests[0]!,
+    onCancel: (id: string) => console.log('Cancel clicked for:', id),
+    onClose: (id: string) => console.log('Close clicked for:', id),
+    onMessage: (id: string) => console.log('Message clicked for:', id),
     cancelLoading: true,
   },
 };

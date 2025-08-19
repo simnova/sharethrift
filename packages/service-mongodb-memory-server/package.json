@@ -2,6 +2,7 @@
   "name": "@sthrift/service-mongodb-memory-server",
   "version": "0.1.0",
   "description": "MongoDB Memory Server service for CellixJS monorepo.",
+  "type": "module",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "scripts": {

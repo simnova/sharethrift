@@ -5,15 +5,7 @@ import type {
 	ApplicationServicesFactory,
 	PrincipalHints,
 } from '@sthrift/api-application-services';
-import type {
-	ApplicationServices,
-	ApplicationServicesFactory,
-	PrincipalHints,
-} from '@sthrift/api-application-services';
 import {
-	type AzureFunctionsMiddlewareOptions,
-	startServerAndCreateHandler,
-	type WithRequired,
 	type AzureFunctionsMiddlewareOptions,
 	startServerAndCreateHandler,
 	type WithRequired,
@@ -105,7 +97,6 @@ const typeDefs = `#graphql
 
 interface GraphContext extends BaseContext {
 	applicationServices: ApplicationServices;
-	applicationServices: ApplicationServices;
 }
 // A map of functions which return data for the schema.
 const resolvers = {
@@ -113,14 +104,11 @@ const resolvers = {
 		hello: (_parent: unknown, _args: unknown, context: GraphContext) => {
 			return `world${JSON.stringify(context)}`;
 		},
-		},
 	},
-	Mutation: {},
 	Mutation: {},
 };
 
 export const graphHandlerCreator = (
-	applicationServicesFactory: ApplicationServicesFactory,
 	applicationServicesFactory: ApplicationServicesFactory,
 ): HttpHandler => {
 	// Set up Apollo Server
@@ -128,10 +116,7 @@ export const graphHandlerCreator = (
 		typeDefs,
 		resolvers,
 	});
-	const functionOptions: WithRequired<
-		AzureFunctionsMiddlewareOptions<GraphContext>,
-		'context'
-	> = {
+	
 	const functionOptions: WithRequired<
 		AzureFunctionsMiddlewareOptions<GraphContext>,
 		'context'
@@ -148,19 +133,7 @@ export const graphHandlerCreator = (
 					hints,
 				),
 			});
-			const authHeader = req.headers.get('Authorization') ?? undefined;
-			const hints: PrincipalHints = {
-				memberId: req.headers.get('x-member-id') ?? undefined,
-				communityId: req.headers.get('x-community-id') ?? undefined,
-			};
-			return Promise.resolve({
-				applicationServices: await applicationServicesFactory.forRequest(
-					authHeader,
-					hints,
-				),
-			});
 		},
 	};
-	return startServerAndCreateHandler<GraphContext>(server, functionOptions);
 	return startServerAndCreateHandler<GraphContext>(server, functionOptions);
 };

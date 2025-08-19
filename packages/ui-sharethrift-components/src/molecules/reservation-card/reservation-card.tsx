@@ -1,25 +1,13 @@
 import React from 'react';
 import { Card, Image, Typography } from 'antd';
-import { ReservationStatusTag } from '../../atoms/reservation-status-tag/reservation-status-tag';
-import { ReservationActions } from '../reservation-actions/reservation-actions';
+import { ReservationStatusTag } from '../../atoms/reservation-status-tag/reservation-status-tag.js';
+import { ReservationActions } from '../reservation-actions/reservation-actions.js';
+import type { ReservationRequest } from '../../types/reservation.js';
 
 const { Text } = Typography;
 
 export interface ReservationCardProps {
-  reservation: {
-    id: string;
-    state: 'REQUESTED' | 'ACCEPTED' | 'REJECTED' | 'RESERVATION_PERIOD' | 'CANCELLED';
-    reservationPeriodStart: string;
-    reservationPeriodEnd: string;
-    createdAt: string;
-    listing?: {
-      title?: string;
-      imageUrl?: string;
-    };
-    reserver?: {
-      name?: string;
-    };
-  };
+  reservation: ReservationRequest;
   onCancel: (id: string) => void;
   onClose: (id: string) => void;
   onMessage: (id: string) => void;
@@ -53,10 +41,10 @@ export const ReservationCard: React.FC<ReservationCardProps> = ({
     <Card
       className="mb-4"
       cover={
-        reservation.listing?.imageUrl ? (
+        reservation.listing?.imageUrl || reservation.listing?.primaryImageUrl ? (
           <Image
             alt={reservation.listing.title}
-            src={reservation.listing.imageUrl}
+            src={reservation.listing.imageUrl || reservation.listing.primaryImageUrl!}
             height={200}
             style={{ objectFit: 'cover' }}
           />
@@ -70,7 +58,7 @@ export const ReservationCard: React.FC<ReservationCardProps> = ({
           <div className="space-y-2">
             <div>
               <Text strong>Sharer: </Text>
-              <Text>{reservation.reserver?.name || 'Unknown'}</Text>
+              <Text>{reservation.reserver?.name || `${reservation.reserver?.firstName || ''} ${reservation.reserver?.lastName || ''}`.trim() || 'Unknown'}</Text>
             </div>
             <div>
               <Text strong>Requested On: </Text>

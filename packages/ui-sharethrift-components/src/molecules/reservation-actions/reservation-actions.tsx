@@ -1,6 +1,6 @@
 import React from 'react';
 import { Space } from 'antd';
-import { ReservationActionButton } from '../../atoms/reservation-action-button/reservation-action-button';
+import { ReservationActionButton } from '../../atoms/reservation-action-button/reservation-action-button.js';
 
 export interface ReservationActionsProps {
   status: 'REQUESTED' | 'ACCEPTED' | 'REJECTED' | 'RESERVATION_PERIOD' | 'CANCELLED';

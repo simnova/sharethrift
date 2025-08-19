@@ -6,10 +6,10 @@
   "devDependencies": {
   },
   "scripts": {
-    "prebuild": "biome lint",
+    "prebuild": "npx biome lint",
     "build": "tsc --build",
-    "lint": "biome lint",
-    "format": "biome format --write"
+    "lint": "npx biome lint",
+    "format": "npx biome format --write"
   },
   "author": "",
   "license": "ISC",
