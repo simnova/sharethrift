@@ -19,14 +19,12 @@ query HomeListingsPageContainerActiveListings(
   $after: String
   $search: String
   $category: String
-  $state: ListingState
 ) {
   activeListings(
     first: $first
     after: $after
     search: $search
     category: $category
-    state: $state
   ) {
     edges {
       node {

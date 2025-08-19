@@ -1,5 +1,3 @@
-// import { useQuery } from '@apollo/client';
-// import GET_HERO_CONTENT from './hero-section.container.graphql';
 import { HeroSection } from './hero-section';
 
 interface HeroSectionContainerProps {
@@ -13,7 +11,7 @@ export function HeroSectionContainer({
   onSearchChange, 
   onSearch 
 }: HeroSectionContainerProps) {
-  // TODO: Add any business logic here when needed
+  // Add any logic here when needed
   // For now, this is a simple pass-through container
   
   return (
