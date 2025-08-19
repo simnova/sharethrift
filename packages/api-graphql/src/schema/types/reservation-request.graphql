@@ -1,0 +1,70 @@
+#graphql
+"""
+GraphQL schema for Reservation Requests
+"""
+
+enum ReservationRequestState {
+  PENDING
+  ACCEPTED
+  REJECTED
+  CANCELLED
+  CLOSING
+  CLOSED
+}
+
+type ReservationRequest {
+  id: ID!
+  state: ReservationRequestState!
+  reservationPeriodStart: String!
+  reservationPeriodEnd: String!
+  closeRequested: Boolean!
+  reason: String
+  listing: Listing!
+  reserver: User!
+  createdAt: String!
+  updatedAt: String!
+  schemaVersion: Int!
+}
+
+type Listing {
+  id: ID!
+  title: String!
+  description: String!
+  imageUrl: String
+  ownerId: String!
+}
+
+type User {
+  id: ID!
+  firstName: String!
+  lastName: String!
+  email: String!
+  profileImageUrl: String
+}
+
+input CreateReservationRequestInput {
+  listingId: String!
+  reservationPeriodStart: String!
+  reservationPeriodEnd: String!
+}
+
+input UpdateReservationRequestInput {
+  id: ID!
+  reason: String
+}
+
+extend type Query {
+  reservationRequests: [ReservationRequest!]!
+  reservationRequest(id: ID!): ReservationRequest
+  activeReservations(reserverId: String): [ReservationRequest!]!
+  reservationHistory(reserverId: String): [ReservationRequest!]!
+}
+
+extend type Mutation {
+  createReservationRequest(input: CreateReservationRequestInput!): ReservationRequest!
+  acceptReservationRequest(id: ID!): ReservationRequest!
+  rejectReservationRequest(input: UpdateReservationRequestInput!): ReservationRequest!
+  cancelReservationRequest(input: UpdateReservationRequestInput!): ReservationRequest!
+  requestCloseReservation(id: ID!): ReservationRequest!
+  closeReservation(id: ID!): ReservationRequest!
+}
