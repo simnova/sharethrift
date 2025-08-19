@@ -1,5 +1,4 @@
-import { useState } from 'react';
-import { Modal, Button } from 'antd';
+import { Row, Col } from 'antd';
 import { ListingImageGallery } from './listing-image-gallery';
 import { SharerInformation } from './sharer-information';
 import { ListingInformation } from './listing-information';
@@ -43,11 +42,10 @@ export function ViewListing({
   reservationRequestStatus,
   sharedTimeAgo = '2 days ago' 
 }: ViewListingProps) {
-  const [showLoginModal, setShowLoginModal] = useState(false);
 
   const handleReserveClick = () => {
     if (!isAuthenticated) {
-      setShowLoginModal(true);
+      // TODO: Show login or redirect to login page
     } else {
       // TODO: Handle reservation request logic
       console.log('Creating reservation request for listing:', listing.id);
@@ -55,13 +53,11 @@ export function ViewListing({
   };
 
   const handleLoginClick = () => {
-    setShowLoginModal(false);
     // TODO: Navigate to login page or trigger login flow
     console.log('Navigating to login...');
   };
 
   const handleSignUpClick = () => {
-    setShowLoginModal(false);
     // TODO: Navigate to signup page or trigger signup flow
     console.log('Navigating to signup...');
   };
@@ -69,71 +65,59 @@ export function ViewListing({
   const isOwner = userRole === 'sharer' || Boolean(currentUserId && currentUserId === listing.owner.id);
 
   return (
-    <div className="max-w-4xl mx-auto p-6">
-      {/* Header */}
-      <div className="mb-6">
-        <nav className="text-sm text-gray-500 mb-2">
-          <span>Home</span> &gt; <span>Listings</span> &gt; <span className="text-gray-900">{listing.title}</span>
-        </nav>
-      </div>
-
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-        {/* Image Gallery */}
-        <ListingImageGallery 
-          images={listing.images}
-          title={listing.title}
-        />
-
-        {/* Listing Details */}
-        <div className="space-y-6">
-          <ListingInformation
-            listing={listing}
-            userRole={userRole}
-            isAuthenticated={isAuthenticated}
-            reservationRequestStatus={reservationRequestStatus}
-            onReserveClick={handleReserveClick}
-            onLoginClick={handleLoginClick}
-            onSignUpClick={handleSignUpClick}
+    <>
+  <Row style={{ minHeight: '100vh', paddingLeft: 125, paddingRight: 125, paddingTop: 72, paddingBottom: 72, boxSizing: 'border-box', width: '100%' }} gutter={[0, 12]}>
+        <Col span={24} style={{ marginBottom: 0, paddingBottom: 0 }}>
+          {/* Sharer Info at top */}
+          <SharerInformation
+            sharer={listing.owner}
+            listingId={listing.id}
+            isOwner={isOwner}
+            sharedTimeAgo={sharedTimeAgo}
           />
-        </div>
-      </div>
-
-      {/* Sharer Information */}
-      <div className="mt-8">
-        <SharerInformation
-          owner={listing.owner}
-          listingId={listing.id}
-          isOwner={isOwner}
-          sharedTimeAgo={sharedTimeAgo}
-        />
-      </div>
-
-      {/* Description */}
-      <div className="mt-8">
-        <h2 className="text-xl font-semibold text-gray-900 mb-4">Description</h2>
-        <p className="text-gray-700 leading-relaxed">{listing.description}</p>
-      </div>
-
-      {/* Login/Signup Modal */}
+        </Col>
+        <Col span={24} style={{ marginTop: 0, paddingTop: 0 }}>
+          {/* Main content: 2 columns */}
+          <Row gutter={36} align="top" style={{ marginTop: 0, paddingTop: 0 }}>
+            {/* Left: Images */}
+            <Col span={12} style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', marginTop: 0, paddingTop: 0 }}>
+              <ListingImageGallery title={listing.title} />
+            </Col>
+            {/* Right: Info/Form */}
+            <Col span={12} style={{ marginTop: 0, paddingTop: 0 }}>
+              <ListingInformation
+                listing={listing}
+                userRole={userRole}
+                isAuthenticated={isAuthenticated}
+                reservationRequestStatus={reservationRequestStatus}
+                onReserveClick={handleReserveClick}
+                onLoginClick={handleLoginClick}
+                onSignUpClick={handleSignUpClick}
+              />
+            </Col>
+          </Row>
+        </Col>
+      </Row>
+      {/*
       <Modal
-        title="Login Required"
         open={showLoginModal}
         onCancel={() => setShowLoginModal(false)}
-        footer={[
-          <Button key="cancel" onClick={() => setShowLoginModal(false)}>
-            Cancel
-          </Button>,
-          <Button key="login" onClick={handleLoginClick}>
-            Login
-          </Button>,
-          <Button key="signup" type="primary" onClick={handleSignUpClick}>
-            Sign Up
-          </Button>,
-        ]}
+        footer={null}
+        centered
       >
-        <p>You need to be logged in to request a reservation for this item.</p>
-        <p className="mt-2">Would you like to login to your existing account or create a new one?</p>
+        <Row justify="center" align="middle" style={{ padding: 24 }}>
+          <Col span={24} style={{ textAlign: 'center' }}>
+            <h2 className="text-lg font-semibold">Sign in to reserve this listing</h2>
+          </Col>
+          <Col span={24} style={{ marginBottom: 8 }}>
+            <Button type="primary" block onClick={handleLoginClick}>Login</Button>
+          </Col>
+          <Col span={24}>
+            <Button block onClick={handleSignUpClick}>Sign Up</Button>
+          </Col>
+        </Row>
       </Modal>
-    </div>
+      */}
+    </>
   );
 }
