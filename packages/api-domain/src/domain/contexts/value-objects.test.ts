@@ -59,7 +59,7 @@ describeFeature(feature, ({ Scenario }) => {
 				'I try to create an email with a string of 255 characters ending with "@e.com"',
 				() => {
 					createEmail = () => {
-						new ValueObjects.Email(`${'a'.repeat(249)}@e.com`).valueOf();
+						new ValueObjects.Email(`${'a'.repeat(249)}@e.com`).valueOf().valueOf();
 					};
 				},
 			);
@@ -73,7 +73,7 @@ describeFeature(feature, ({ Scenario }) => {
 		let createEmail: () => void;
 		When('I try to create an email with "not-an-email"', () => {
 			createEmail = () => {
-				new ValueObjects.Email('not-an-email').valueOf();
+				new ValueObjects.Email('not-an-email').valueOf().valueOf();
 			};
 		});
 		Then('an error should be thrown indicating the value is invalid', () => {
@@ -85,7 +85,7 @@ describeFeature(feature, ({ Scenario }) => {
 		let createEmail: () => void;
 		When('I try to create an email with an empty string', () => {
 			createEmail = () => {
-				new ValueObjects.Email('').valueOf();
+				new ValueObjects.Email('').valueOf().valueOf();
 			};
 		});
 		Then('an error should be thrown indicating the value is invalid', () => {
@@ -98,7 +98,7 @@ describeFeature(feature, ({ Scenario }) => {
 		When('I try to create an email with a null value', () => {
 			createEmail = () => {
 				// @ts-expect-error
-				new ValueObjects.Email(null).valueOf();
+				new ValueObjects.Email(null).valueOf().valueOf();
 			};
 		});
 		Then('an error should be thrown indicating the value is invalid', () => {
@@ -111,7 +111,7 @@ describeFeature(feature, ({ Scenario }) => {
 		When('I try to create an email with an undefined value', () => {
 			createEmail = () => {
 				// @ts-expect-error
-				new ValueObjects.Email(undefined).valueOf();
+				new ValueObjects.Email(undefined).valueOf().valueOf();
 			};
 		});
 		Then('an error should be thrown indicating the value is invalid', () => {
@@ -172,7 +172,7 @@ describeFeature(feature, ({ Scenario }) => {
 				'I try to create a nullable email with a string of 255 characters ending with "@e.com"',
 				() => {
 					createNullableEmail = () => {
-						new ValueObjects.NullableEmail(`${'a'.repeat(249)}@e.com`).valueOf();
+						new ValueObjects.NullableEmail(`${'a'.repeat(249)}@e.com`).valueOf().valueOf();
 					};
 				},
 			);
@@ -188,7 +188,7 @@ describeFeature(feature, ({ Scenario }) => {
 			let createNullableEmail: () => void;
 			When('I try to create a nullable email with "not-an-email"', () => {
 				createNullableEmail = () => {
-					new ValueObjects.NullableEmail('not-an-email').valueOf();
+					new ValueObjects.NullableEmail('not-an-email').valueOf().valueOf();
 				};
 			});
 			Then('an error should be thrown indicating the value is invalid', () => {
@@ -215,7 +215,7 @@ describeFeature(feature, ({ Scenario }) => {
 		When('I create a nullable email with a null value', () => {
 			createNullableEmail = () => {
 				// @ts-expect-error
-				new ValueObjects.NullableEmail(null).valueOf();
+				new ValueObjects.NullableEmail(null).valueOf().valueOf();
 			};
 		});
 		Then('an error should be thrown indicating the value is invalid', () => {
@@ -230,7 +230,7 @@ describeFeature(feature, ({ Scenario }) => {
 			When('I create a nullable email with an undefined value', () => {
 				createNullableEmail = () => {
 					// @ts-expect-error
-					new ValueObjects.NullableEmail(undefined).valueOf();
+					new ValueObjects.NullableEmail(undefined).valueOf().valueOf();
 				};
 			});
 			Then('an error should be thrown indicating the value is invalid', () => {
@@ -279,7 +279,7 @@ describeFeature(feature, ({ Scenario }) => {
 			'I try to create an ExternalId with a valid length string but not a valid GUID',
 			() => {
 				createExternalId = () => {
-					new ValueObjects.ExternalId('a'.repeat(36)).valueOf();
+					new ValueObjects.ExternalId('a'.repeat(36)).valueOf().valueOf();
 				};
 			},
 		);
@@ -294,7 +294,7 @@ describeFeature(feature, ({ Scenario }) => {
 			let createExternalId: () => void;
 			When('I try to create an ExternalId with "short-id"', () => {
 				createExternalId = () => {
-					new ValueObjects.ExternalId('short-id').valueOf();
+					new ValueObjects.ExternalId('short-id').valueOf().valueOf();
 				};
 			});
 			Then(
@@ -314,7 +314,7 @@ describeFeature(feature, ({ Scenario }) => {
 				'I try to create an ExternalId with a string of 37 characters',
 				() => {
 					createExternalId = () => {
-						new ValueObjects.ExternalId('a'.repeat(37)).valueOf();
+						new ValueObjects.ExternalId('a'.repeat(37)).valueOf().valueOf();
 					};
 				},
 			);

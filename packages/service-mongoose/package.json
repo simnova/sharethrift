@@ -7,6 +7,7 @@
 	"type": "module",
 	"main": "dist/src/index.js",
 	"types": "dist/src/index.d.ts",
+
 	"scripts": {
 		"build": "tsc --build",
 		"clean": "rimraf dist node_modules tsconfig.tsbuildinfo && tsc --build --clean",
