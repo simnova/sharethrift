@@ -6,27 +6,14 @@ const { Option } = Select;
 
 interface CategoryFilterProps {
   label?: string;
-  categories?: string[];
+  categories: string[];
   selectedCategory: string;
   onCategoryChange: (category: string) => void;
 }
 
-const DEFAULT_CATEGORIES = [
-  'Tools & Equipment',
-  'Electronics',
-  'Sports & Outdoors',
-  'Home & Garden',
-  'Party & Events',
-  'Vehicles & Transportation',
-  'Kids & Baby',
-  'Books & Media',
-  'Clothing & Accessories',
-  'Miscellaneous',
-];
-
 export const CategoryFilter: React.FC<CategoryFilterProps> = ({
   label = "Category",
-  categories = DEFAULT_CATEGORIES, // Use default categories if none are provided
+  categories,
   selectedCategory,
   onCategoryChange,
 }) => {

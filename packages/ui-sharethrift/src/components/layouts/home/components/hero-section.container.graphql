@@ -1,0 +1,13 @@
+fragment HomeHeroSectionContainerHeroFields on HeroContent {
+  id
+  title
+  subtitle
+  backgroundImage
+  ctaText
+}
+
+query HomeHeroSectionContainerGetHeroContent {
+  heroContent {
+    ...HomeHeroSectionContainerHeroFields
+  }
+}
