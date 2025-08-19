@@ -17,7 +17,7 @@ export default class SendGrid {
 
   sendEmailWithMagicLink = async (userEmail: string, magicLink: string) => {
     console.log('SendGrid.sendEmail() - email: ', userEmail);
-    let template;
+    let template: { fromEmail: string; subject: string; body: string };
     try {
       template = JSON.parse(readHtmlFile(this.emailTemplateName));
     } catch (err) {
@@ -49,7 +49,7 @@ export default class SendGrid {
       function sanitizeFilename(name: string): string {
         // Replace all invalid filename characters with underscores
         // Invalid chars: / \ : * ? " < > | and also @ for clarity
-        return name.replace(/[@\/\\:\*\?"<>\|]/g, '_');
+        return name.replace(/[@/\\:*?"<>|]/g, '_');
       }
 
       const sanitizedEmail = sanitizeFilename(userEmail);
@@ -71,13 +71,5 @@ export default class SendGrid {
       console.log('Error sending email');
       console.log(error);
     }
-      .then((response) => {
-        console.log('Email sent successfully');
-        console.log(response);
-      })
-      .catch((error) => {
-        console.log('Error sending email');
-        console.log(error);
-      });
   }
 }
