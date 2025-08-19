@@ -1,6 +1,7 @@
 import React from 'react';
 import { Card } from 'antd';
 import { SwapRightOutlined } from '@ant-design/icons';
+import { Link } from 'react-router-dom';
 import styles from './index.module.css';
 
 export interface ItemListing {
@@ -34,30 +35,31 @@ export const ListingCard: React.FC<ListingCardProps> = ({ listing, onClick }) =>
   };
 
   return (
-    <Card
-      className={styles.listingCard}
-      cover={
-        <div className={styles.imageContainer}>
-          <img
-            alt={listing.title}
-            src={listing.images?.[0] || '/placeholder.jpg'}
-            className={styles.image}
-            loading="lazy"
-          />
+    <Link to={`/`} onClick={onClick}> {/* TODO: link to listing */}
+      <Card
+        className={styles.listingCard}
+        cover={
+          <div className={styles.imageContainer}>
+            <img
+              alt={listing.title}
+              src={listing.images?.[0] || '/placeholder.jpg'}
+              className={styles.image}
+              loading="lazy"
+            />
+          </div>
+        }
+        styles={{ body: { padding: '0' } }}
+      >
+        <div className={styles.content}>
+          <h3 className={styles.title}>{listing.title}</h3>
+          <p className={styles.dateRange}>
+            {formatDate(listing.sharingPeriodStart)}
+            <SwapRightOutlined style={{ padding: '0 8px' }} />
+            {formatDate(listing.sharingPeriodEnd)}
+          </p>
+          <p className={styles.location}>{listing.location}</p>
         </div>
-      }
-      onClick={onClick}
-      styles={{body: { padding: '0' }}}
-    >
-      <div className={styles.content}>
-        <h3 className={styles.title}>{listing.title}</h3>
-        <p className={styles.dateRange}>
-          {formatDate(listing.sharingPeriodStart)}
-          <SwapRightOutlined style={{ padding: '0 8px' }} />
-          {formatDate(listing.sharingPeriodEnd)}
-        </p>
-        <p className={styles.location}>{listing.location}</p>
-      </div>
-    </Card>
+      </Card>
+    </Link>
   );
 };

@@ -84,7 +84,7 @@ export function MockListingsPage({ isAuthenticated }: Readonly<MockListingsPageP
                 type="primary"
                 className={styles.createListing}
                 onClick={() => {
-                  // TODO: Open create listing modal
+                  // TODO: Open create listing page
                 }}
               >
               Create a Listing
