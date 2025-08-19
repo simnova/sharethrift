@@ -41,18 +41,10 @@ export default class SendGrid {
     subject: string
   ) {
     if (process.env["NODE_ENV"] === 'development') {
-      // Save email to disk instead of sending
       const outDir = path.join(process.cwd(), 'tmp-emails');
       if (!fs.existsSync(outDir)) fs.mkdirSync(outDir);
 
-      // Comprehensive filename sanitization
-      function sanitizeFilename(name: string): string {
-        // Replace all invalid filename characters with underscores
-        // Invalid chars: / \ : * ? " < > | and also @ for clarity
-        return name.replace(/[@/\\:*?"<>|]/g, '_');
-      }
-
-      const sanitizedEmail = sanitizeFilename(userEmail);
+      const sanitizedEmail = userEmail.replace(/[@/\\:*?"<>|]/g, '_')
       const outFile = path.join(outDir, `${sanitizedEmail}_${Date.now()}.html`);
       fs.writeFileSync(outFile, htmlContent, 'utf-8');
       console.log(`Email saved to ${outFile}`);
