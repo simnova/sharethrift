@@ -42,16 +42,19 @@ export default function ProfileSetup() {
   };
 
   const handleAvatarChange = (info: any) => {
-    setFileList(info.fileList.slice(-1)); // Keep only the latest file
+    const latestFileList = info.fileList.slice(-1); // Keep only the latest file
+    setFileList(latestFileList);
 
-    if (info.file.status === "done" || info.file.originFileObj) {
-      // Get this url from response in real app
-      const file = info.file.originFileObj || info.file;
+    // Show preview for the latest image file
+    const fileObj = latestFileList[0]?.originFileObj;
+    if (fileObj && (fileObj.type === "image/jpeg" || fileObj.type === "image/png")) {
       const reader = new FileReader();
-      reader.addEventListener("load", () => {
-        setAvatarUrl(reader.result as string);
-      });
-      reader.readAsDataURL(file);
+      reader.onload = (e) => {
+        setAvatarUrl(e.target?.result as string);
+      };
+      reader.readAsDataURL(fileObj);
+    } else if (latestFileList.length === 0) {
+      setAvatarUrl("");
     }
   };
 
@@ -59,12 +62,12 @@ export default function ProfileSetup() {
     const isJpgOrPng = file.type === "image/jpeg" || file.type === "image/png";
     if (!isJpgOrPng) {
       console.error("You can only upload JPG/PNG files!");
-      return false;
+      return Upload.LIST_IGNORE;
     }
     const isLt2M = file.size / 1024 / 1024 < 2;
     if (!isLt2M) {
       console.error("Image must smaller than 2MB!");
-      return false;
+      return Upload.LIST_IGNORE;
     }
     return false; // Prevent actual upload for demo
   };
@@ -104,12 +107,13 @@ export default function ProfileSetup() {
         <div style={{ textAlign: "center", marginBottom: "2rem" }}>
           <Avatar
             size={100}
-            src={avatarUrl}
-            icon={<logo />}
+            src={avatarUrl || undefined}
+            icon={!avatarUrl ? <img src={logo} alt="logo" /> : undefined}
             style={{
               backgroundColor: "#f0f0f0",
               border: "3px solid #e0e0e0",
               marginBottom: "1rem",
+              objectFit: "cover",
             }}
           />
           <div>
@@ -120,6 +124,7 @@ export default function ProfileSetup() {
               onChange={handleAvatarChange}
               beforeUpload={beforeUpload}
               showUploadList={false}
+              accept="image/jpeg,image/png"
             >
               <Button
                 type="default"
