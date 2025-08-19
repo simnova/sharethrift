@@ -1,3 +1,4 @@
 export * from './conversations/conversation.aggregate.ts';
 export * from './conversations/conversation.value-objects.ts';
 export * from './conversations/conversation.uow.ts';
+export * from './reservation-requests/index.js';
