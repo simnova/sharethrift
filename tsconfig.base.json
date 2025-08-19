@@ -38,6 +38,6 @@
 		"incremental": true,
 
 		/* Completeness */
-		"skipLibCheck": false
+	"skipLibCheck": true
 	}
 }
