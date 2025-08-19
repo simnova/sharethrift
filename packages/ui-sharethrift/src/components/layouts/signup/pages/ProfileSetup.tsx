@@ -236,8 +236,8 @@ export default function ProfileSetup() {
                             xs={8}
                             sm={8}
                             style={{
-                                paddingLeft: 4,
-                                paddingRight: 4,
+                                paddingLeft: 0,
+                                paddingRight: 8,
                                 flex: 1,
                                 maxWidth: "33.33%",
                             }}
