@@ -1,6 +1,5 @@
 import { Button, Avatar, Row, Col } from "antd";
 import { MessageOutlined } from "@ant-design/icons";
-import styles from "../../../../../../styles/ThemeDemo.module.css";
 
 export type Sharer = {
   id: string;
@@ -51,7 +50,7 @@ export function SharerInformation({
       <Col>
         {!isOwner && (
           <Button
-            className={styles["secondaryButton"] ?? ""}
+            className="secondaryButton"
             type="default"
             icon={<MessageOutlined />}
           >
