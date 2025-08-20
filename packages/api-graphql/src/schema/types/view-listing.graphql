@@ -1,0 +1,16 @@
+fragment ViewListingFields on ViewListing {
+  id
+  title
+  description
+  images
+  owner { id name avatar }
+  category
+  location
+  status
+}
+
+query ViewListing($id: ID!) {
+  viewListing(id: $id) {
+    ...ViewListingFields
+  }
+}

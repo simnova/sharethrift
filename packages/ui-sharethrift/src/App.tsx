@@ -1,5 +1,4 @@
-
-import { Navigate, Route, Routes } from 'react-router-dom';
+import { Route, Routes } from 'react-router-dom';
 import HomeRoutes from './components/layouts/home';
 import { ApolloConnection } from './components/shared/apollo-connection';
 import SignupRoutes from './components/layouts/signup/Index';
@@ -26,7 +25,6 @@ function App() {
       <Route path="/*" element={<HomeRoutes />} />
       <Route path="/auth-redirect" element={authSection} />
       <Route path="/signup/*" element={signupSection} />
-      <Route path="/" element={<Navigate to="/home" replace />} />
     </Routes>
     </ApolloConnection>
   );
