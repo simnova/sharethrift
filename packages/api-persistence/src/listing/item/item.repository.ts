@@ -4,7 +4,7 @@ import type { ItemListingDomainAdapter } from './item.domain-adapter.ts';
 
 // Type aliases for model and adapter
 type PropType = ItemListingDomainAdapter;
-type ItemListingModelType = ItemListingModels.ItemListingDocument;
+type ItemListingModelType = ItemListingModels.ItemListing;
 
 /**
  * Simplified repository implementation

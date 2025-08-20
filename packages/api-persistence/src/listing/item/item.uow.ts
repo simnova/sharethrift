@@ -7,7 +7,8 @@ import { ItemListingRepository } from './item.repository.ts';
 export const getItemListingUnitOfWork = (
 	mongooseFactory: MongooseSeedwork.MongooseContextFactory,
 ): Domain.Contexts.ItemListingUnitOfWork => {
-	const itemListingModel = ItemListingModels.ItemListingModelFactory(mongooseFactory);
+	const listingModel = ItemListingModels.ListingModelFactory(mongooseFactory);
+	const itemListingModel = ItemListingModels.ItemListingModelFactory(listingModel);
 	
 	// Create a mock passport for now - in production this would come from the request context
 	const mockPassport = {} as Domain.Contexts.Passport;

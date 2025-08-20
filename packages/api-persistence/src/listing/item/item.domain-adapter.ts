@@ -7,9 +7,9 @@ import type { ItemListingModels } from "@sthrift/api-data-sources-mongoose-model
  * without extending MongooseDomainAdapter to avoid type conflicts
  */
 export class ItemListingDomainAdapter implements ItemListingProps {
-  public doc: ItemListingModels.ItemListingDocument;
+  public doc: ItemListingModels.ItemListing;
 
-  constructor(doc: ItemListingModels.ItemListingDocument) {
+  constructor(doc: ItemListingModels.ItemListing) {
     this.doc = doc;
   }
 
@@ -46,7 +46,7 @@ export class ItemListingDomainAdapter implements ItemListingProps {
     return new Domain.Contexts.ListingState(this.doc.state || 'Published');
   }
   set state(value: Domain.Contexts.ListingState) {
-    this.doc.state = value.valueOf() as NonNullable<ItemListingModels.ItemListingDocument['state']>;
+    this.doc.state = value.valueOf() as NonNullable<ItemListingModels.ItemListing['state']>;
   }
 
   get sharingPeriodStart(): Date {
@@ -67,7 +67,7 @@ export class ItemListingDomainAdapter implements ItemListingProps {
     return this.doc.sharer?.toString() || "";
   }
   set sharer(value: string) {
-    this.doc.sharer = value as unknown as ItemListingModels.ItemListingDocument['sharer'];
+    this.doc.sharer = value as unknown as ItemListingModels.ItemListing['sharer'];
   }
 
   get sharingHistory(): string[] {
@@ -75,7 +75,7 @@ export class ItemListingDomainAdapter implements ItemListingProps {
   }
   set sharingHistory(value: string[]) {
     // Simple conversion - in production this would handle ObjectId conversion properly
-    this.doc.sharingHistory = value as unknown as ItemListingModels.ItemListingDocument['sharingHistory'] || [];
+    this.doc.sharingHistory = value as unknown as ItemListingModels.ItemListing['sharingHistory'] || [];
   }
 
   get reports(): number {
@@ -122,7 +122,7 @@ export class ItemListingDomainAdapter implements ItemListingProps {
  */
 export class ItemListingConverter {
   toDomain(
-    doc: ItemListingModels.ItemListingDocument,
+    doc: ItemListingModels.ItemListing,
     passport: Passport
   ): Domain.Contexts.ItemListing<ItemListingDomainAdapter> {
     const adapter = new ItemListingDomainAdapter(doc);
@@ -132,7 +132,7 @@ export class ItemListingConverter {
 
   toMongo(
     domain: Domain.Contexts.ItemListing<ItemListingDomainAdapter>
-  ): ItemListingModels.ItemListingDocument {
+  ): ItemListingModels.ItemListing {
     // Simple conversion - in production this would be more sophisticated
     return (domain.props as ItemListingDomainAdapter).doc;
   }

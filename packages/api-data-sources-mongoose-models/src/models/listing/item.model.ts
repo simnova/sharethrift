@@ -1,7 +1,7 @@
-import mongoose, { Schema, type Model, type ObjectId } from 'mongoose';
-import { MongooseSeedwork } from '@cellix/data-sources-mongoose';
+import { Schema, type Model, type ObjectId } from 'mongoose';
+import { type Listing, type ListingModelType, listingOptions } from './listing.model.ts';
 
-export interface ItemListingDocument extends MongooseSeedwork.Base {
+export interface ItemListing extends Listing {
   sharer: ObjectId;
   title: string;
   description: string;
@@ -16,7 +16,7 @@ export interface ItemListingDocument extends MongooseSeedwork.Base {
   reports?: number;
 }
 
-export const ItemListingSchema = new Schema<ItemListingDocument, Model<ItemListingDocument>, ItemListingDocument>({
+export const ItemListingSchema = new Schema<ItemListing, Model<ItemListing>, ItemListing>({
 	sharer: { type: Schema.Types.ObjectId, ref: 'User', required: true },
 	title: { type: String, required: true, maxlength: 200 },
 	description: { type: String, required: true, maxlength: 2000 },
@@ -33,24 +33,12 @@ export const ItemListingSchema = new Schema<ItemListingDocument, Model<ItemListi
 	updatedAt: { type: Date, required: false, default: Date.now },
 	sharingHistory: [{ type: Schema.Types.ObjectId, ref: 'ItemListing' }],
 	reports: { type: Number, default: 0 },
-});
+}, listingOptions);
 
-export const ItemListingModelName = 'ItemListing';
+export const ItemListingModelName: string = 'item-listings'; //TODO: This should be in singular form
 
-let ItemListingModel: Model<ItemListingDocument>;
-try {
-  ItemListingModel = mongoose.model<ItemListingDocument>(ItemListingModelName);
-} catch {
-  ItemListingModel = mongoose.model<ItemListingDocument>(ItemListingModelName, ItemListingSchema);
-}
-
-export { ItemListingModel };
-
-export const ItemListingModelFactory = MongooseSeedwork.modelFactory<ItemListingDocument>(
-	ItemListingModelName,
-	ItemListingSchema,
-);
+export const ItemListingModelFactory = (ListingModel: ListingModelType) => {
+	return ListingModel.discriminator(ItemListingModelName, ItemListingSchema);
+};
 
 export type ItemListingModelType = ReturnType<typeof ItemListingModelFactory>;
-
-export const ItemListingCollectionName = 'Listings';
