@@ -170,9 +170,6 @@ export default function Terms() {
                 <Radio value="yes" style={{ color: 'var(--color-message-text)' }}>
                   Get ShareThrift tips and recommendations.
                 </Radio>
-                <Radio value="no" style={{ color: 'var(--color-message-text)' }}>
-                  No recommendations, please.
-                </Radio>
               </Space>
             </Radio.Group>
           </Form.Item>
