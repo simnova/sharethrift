@@ -30,6 +30,7 @@ export const Header: React.FC<HeaderProps> = ({ isAuthenticated, onLogin, onSign
   <nav className={styles["authSection"]}>
         {!isAuthenticated ? (
           <>
+            <Button type="primary" className={styles["createListing"] ?? ""} onClick={() => { /* TODO: Open create listing page */ }}>Create a Listing</Button>
             <Button type="link" className={styles["authButton"] ?? ""} onClick={onSignUp}>
               Sign Up
             </Button>
