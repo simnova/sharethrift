@@ -1,22 +1,11 @@
 import type { DomainSeedwork } from '@cellix/domain-seedwork';
 import type {
 	ItemListing,
-	ItemListingEntityReference,
 	ItemListingProps,
 } from './item.aggregate.ts';
 
 export interface ItemListingRepository<props extends ItemListingProps>
 	extends DomainSeedwork.Repository<ItemListing<props>> {
-	/**
-	 * Get a specific listing by ID
-	 */
-	get(id: string): Promise<ItemListing<props>>;
-	
-	/**
-	 * Save a listing (create or update)
-	 */
-	save(listing: ItemListing<props>): Promise<ItemListing<props>>;
-	
 	/**
 	 * Get a listing by ID, returns undefined if not found
 	 */
@@ -48,11 +37,4 @@ export interface ItemListingRepository<props extends ItemListingProps>
 	 * Get listings by sharer ID
 	 */
 	getBySharerID(sharerId: string): Promise<ItemListing<props>[]>;
-	
-	/**
-	 * Save and get entity reference for the listing
-	 */
-	saveAndGetReference(
-		listing: ItemListing<props>,
-	): Promise<ItemListingEntityReference>;
 }
