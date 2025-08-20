@@ -1,6 +1,7 @@
 export * as Domain from './domain/index.ts';
 
-// biome-ignore lint/suspicious/noEmptyInterface: <explanation>
 export interface DomainDataSource {
-	
+	User: {
+		PersonalUser: import('./domain/contexts/user/personal-user/personal-user.uow.ts').PersonalUserUnitOfWork;
+	};
 }

@@ -1,12 +1,23 @@
 import type { MongooseSeedwork } from '@cellix/data-sources-mongoose';
 import type { DomainDataSource } from '@sthrift/api-domain';
+import { InProcEventBusInstance, NodeEventBusInstance } from '@cellix/event-bus-seedwork-node';
+import { mongooseContextBuilder } from '@sthrift/api-data-sources-mongoose-models';
+import { UserContextPersistence } from './user/index.ts';
 
 export const DomainDataSourceImplementation = (
 	initializedService: MongooseSeedwork.MongooseContextFactory,
 ): DomainDataSource => {
-	console.log(initializedService);
+	if (!initializedService) {
+		throw new Error('MongooseContextFactory service is not available');
+	}
+
+	const mongooseModels = mongooseContextBuilder(initializedService);
 
 	return {
-		// User data source will be implemented when we have passport implementation
+		User: UserContextPersistence(
+			mongooseModels,
+			InProcEventBusInstance,
+			NodeEventBusInstance,
+		),
 	};
 };
