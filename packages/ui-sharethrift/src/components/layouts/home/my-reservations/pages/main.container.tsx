@@ -187,10 +187,10 @@ export const MyReservationsContainer: React.FC<MyReservationsContainerProps> = (
     <MyReservationsMain
       activeReservations={MOCK_ACTIVE_RESERVATIONS}
       historyReservations={MOCK_HISTORY_RESERVATIONS}
-      loading={false}
-      error={false}
+      loading={false} // replace with variable. Will not work until queries can be imported
+      error={false} // replace with variable. Will not work until queries can be imported
       onCancel={() => {}}
-      onClose={() => {}}    // Replace props with real variables
+      onClose={() => {}}    // Replace with real functions. Will not work until queries can be imported
       onMessage={() => {}}
       cancelLoading={false}
       closeLoading={false}

@@ -1,13 +1,12 @@
 import React from 'react';
-import { Table, Image, Typography } from 'antd';
+import { Table, Image } from 'antd';
+import styles from './reservations-table.module.css';
 import { ReservationStatusTag } from '../../atoms/reservation-status-tag/reservation-status-tag.js';
 import { ReservationActions } from '../../molecules/reservation-actions/reservation-actions.js';
 import type { ReservationRequest } from '../../types/reservation-request.js';
 
-const { Text } = Typography;
-
 export interface ReservationsTableProps {
-  reservations: ReservationRequest[]; // Will eventually come from generated graphql files
+  reservations: ReservationRequest[]; // Type will eventually come from generated graphql files
   onCancel: (id: string) => void;
   onClose: (id: string) => void;
   onMessage: (id: string) => void;
@@ -32,18 +31,17 @@ export const ReservationsTable: React.FC<ReservationsTableProps> = ({
       title: 'Listing',
       dataIndex: 'listing',
       key: 'listing',
-  render: (listing: ReservationRequest['listing']) => (
-        <div className="flex items-center space-x-3">
+      render: (listing: ReservationRequest['listing']) => (
+        <div className={styles.listingCell}>
           {listing?.imageUrl && (
             <Image
-              width={50}
-              height={50}
               src={listing.imageUrl}
               alt={listing.title}
-              style={{ objectFit: 'cover', borderRadius: '4px' }}
+              className={styles.listingImage}
+              preview={false}
             />
           )}
-          <Text strong>{listing?.title || 'Unknown Listing'}</Text>
+          <span className={styles.tableText}>{listing?.title || 'Unknown Listing'}</span>
         </div>
       ),
     },
@@ -51,8 +49,10 @@ export const ReservationsTable: React.FC<ReservationsTableProps> = ({
       title: 'Sharer',
       dataIndex: 'reserver',
       key: 'sharer',
-  render: (reserver: ReservationRequest['reserver']) => (
-        <Text>{reserver?.name || 'Unknown'}</Text>
+      render: (reserver: ReservationRequest['reserver']) => (
+        <span className={styles.tableText}>
+          {reserver?.name ? `@${reserver.name}` : 'Unknown'}
+        </span>
       ),
     },
     {
@@ -60,17 +60,17 @@ export const ReservationsTable: React.FC<ReservationsTableProps> = ({
       dataIndex: 'createdAt',
       key: 'createdAt',
       render: (createdAt: string) => (
-        <Text>{new Date(createdAt).toLocaleDateString()}</Text>
+        <span className={styles.tableText}>{new Date(createdAt).toLocaleDateString()}</span>
       ),
     },
     {
       title: 'Reservation Period',
       key: 'period',
-  render: (record: ReservationRequest) => (
-        <Text>
+      render: (record: ReservationRequest) => (
+        <span className={styles.tableText}>
           {new Date(record.reservationPeriodStart).toLocaleDateString()} - {' '}
           {new Date(record.reservationPeriodEnd).toLocaleDateString()}
-        </Text>
+        </span>
       ),
     },
     {

@@ -1,5 +1,6 @@
 import React from 'react';
-import { Card, Image, Typography } from 'antd';
+import { Card, Typography } from 'antd';
+import styles from './reservation-card.module.css';
 import { ReservationStatusTag } from '../../atoms/reservation-status-tag/reservation-status-tag.js';
 import { ReservationActions } from '../reservation-actions/reservation-actions.js';
 import type { ReservationRequest } from '../../types/reservation.js';
@@ -25,59 +26,65 @@ export const ReservationCard: React.FC<ReservationCardProps> = ({
   closeLoading = false,
   showActions = true,
 }) => {
-  const actions = showActions ? [
-    <ReservationActions
-      key="actions"
-      status={reservation.state}
-      onCancel={() => onCancel(reservation.id)}
-      onClose={() => onClose(reservation.id)}
-      onMessage={() => onMessage(reservation.id)}
-      cancelLoading={cancelLoading}
-      closeLoading={closeLoading}
-    />
-  ] : [];
+  // Compute sharer display name with @ prefix if present
+  let sharerDisplay = 'Unknown';
+  if (reservation.reserver?.name) {
+    sharerDisplay = `@${reservation.reserver.name}`;
+  } else if (reservation.reserver?.firstName || reservation.reserver?.lastName) {
+    sharerDisplay = `@${[
+      reservation.reserver?.firstName || '',
+      reservation.reserver?.lastName || ''
+    ].join(' ').trim()}`;
+  }
 
   return (
-    <Card
-      className="mb-4"
-      cover={
-        reservation.listing?.imageUrl || reservation.listing?.primaryImageUrl ? (
-          <Image
-            alt={reservation.listing.title}
-            src={reservation.listing.imageUrl || reservation.listing.primaryImageUrl!}
-            height={200}
-            style={{ objectFit: 'cover' }}
-          />
-        ) : null
-      }
-      actions={actions}
-    >
-      <Card.Meta
-        title={reservation.listing?.title || 'Unknown Listing'}
-        description={
-          <div className="space-y-2">
+    <Card className="mb-4" bodyStyle={{ padding: 0 }}>
+      <div className={styles.cardRow}>
+        {reservation.listing?.imageUrl || reservation.listing?.primaryImageUrl ? (
+          <div className={styles.reservationImageWrapper}>
+            <img
+              alt={reservation.listing.title}
+              src={reservation.listing.imageUrl || reservation.listing.primaryImageUrl!}
+              className={styles.reservationImage}
+            />
+            <div className={styles.statusTagOverlay}>
+              <ReservationStatusTag status={reservation.state} />
+            </div>
+          </div>
+        ) : null}
+        <div className={styles.cardContent}>
+          <div className={styles.cardTitle}>{reservation.listing?.title || 'Unknown Listing'}</div>
+          <div className={styles.cardMeta}>
             <div>
-              <Text strong>Sharer: </Text>
-              <Text>{reservation.reserver?.name || `${reservation.reserver?.firstName || ''} ${reservation.reserver?.lastName || ''}`.trim() || 'Unknown'}</Text>
+              <Text strong className={styles.cardMetaLabel}>Sharer: </Text>
+              <Text className={styles.cardMetaValue}>{sharerDisplay}</Text>
             </div>
             <div>
-              <Text strong>Requested On: </Text>
-              <Text>{new Date(reservation.createdAt).toLocaleDateString()}</Text>
+              <Text strong className={styles.cardMetaLabel}>Requested On: </Text>
+              <Text className={styles.cardMetaValue}>{new Date(reservation.createdAt).toLocaleDateString()}</Text>
             </div>
             <div>
-              <Text strong>Reservation Period: </Text>
-              <Text>
+              <Text strong className={styles.cardMetaLabel}>Reservation Period: </Text>
+              <Text className={styles.cardMetaValue}>
                 {new Date(reservation.reservationPeriodStart).toLocaleDateString()} - {' '}
                 {new Date(reservation.reservationPeriodEnd).toLocaleDateString()}
               </Text>
             </div>
-            <div>
-              <Text strong>Status: </Text>
-              <ReservationStatusTag status={reservation.state} />
-            </div>
           </div>
-        }
-      />
+          {showActions && (
+            <div className={styles.cardActions}>
+              <ReservationActions
+                status={reservation.state}
+                onCancel={() => onCancel(reservation.id)}
+                onClose={() => onClose(reservation.id)}
+                onMessage={() => onMessage(reservation.id)}
+                cancelLoading={cancelLoading}
+                closeLoading={closeLoading}
+              />
+            </div>
+          )}
+        </div>
+      </div>
     </Card>
   );
 };

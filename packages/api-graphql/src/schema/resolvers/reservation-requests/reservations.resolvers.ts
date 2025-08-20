@@ -8,7 +8,7 @@ interface GraphContext extends BaseContext {
 export const reservationsResolvers = {
 	Query: {
 		myReservations: async (_parent: unknown, args: { userId: string }, _context: GraphContext) => {
-			// Mock data for now - will be replaced with actual database calls
+			// Mock data for now - will be replaced with calls to application services
 			return await Promise.resolve([
 				{
 					id: '1',

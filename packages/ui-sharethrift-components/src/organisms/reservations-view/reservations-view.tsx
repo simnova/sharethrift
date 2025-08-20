@@ -1,6 +1,7 @@
 import React from 'react';
 import { ReservationsTable } from '../reservations-table/reservations-table.js';
 import { ReservationsGrid } from '../reservations-grid/reservations-grid.js';
+import styles from './reservations-view.module.css';
 import type { ReservationRequest } from '../../types/reservation-request.js';
 
 export interface ReservationsViewProps {
@@ -26,9 +27,9 @@ export const ReservationsView: React.FC<ReservationsViewProps> = ({
 }) => {
   return (
     <div>
-      {/* Desktop Table View */}
-      <div className="hidden md:block">
-        <ReservationsTable
+      {/* Mobile Grid View */}
+      <div className={styles.mobileOnly}>
+        <ReservationsGrid
           reservations={reservations}
           onCancel={onCancel}
           onClose={onClose}
@@ -39,10 +40,10 @@ export const ReservationsView: React.FC<ReservationsViewProps> = ({
           emptyText={emptyText}
         />
       </div>
-      
-      {/* Mobile Grid View */}
-      <div className="block md:hidden">
-        <ReservationsGrid
+
+      {/* Desktop Table View */}
+      <div className={styles.desktopOnly}>
+        <ReservationsTable
           reservations={reservations}
           onCancel={onCancel}
           onClose={onClose}
