@@ -1,10 +1,11 @@
-import { ViewListingRepository } from '@sthrift/api-domain/src/domain/contexts/listing/view-listing.repository';
+import type { GraphContext } from "../../context.ts";
 
 export const resolvers = {
   Query: {
-    viewListing: async (_: unknown, { id }: { id: string }) => {
-      const repo = new ViewListingRepository();
-      return await repo.findById(id);
+  viewListing: (_parent: unknown, { id }: { id: string }, context: GraphContext) => {
+      console.log('viewListing resolver called with context:', context);
+  // TODO: implement actual logic to fetch a listing by id using context
+  return { id };
     },
   },
 };
