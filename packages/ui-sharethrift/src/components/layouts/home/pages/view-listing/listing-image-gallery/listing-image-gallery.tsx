@@ -15,7 +15,7 @@ export function ListingImageGallery({ title, className = '' }: { title: string; 
 
   return (
     <Carousel arrows dots swipeToSlide className={className} style={{ width: 450, height: 500 }}>
-      {images.map((imgSrc, idx) => (
+      {images.map((imgSrc: string, idx: number) => (
         <Card
           key={idx}
           bodyStyle={{ padding: 0, margin: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', height: 500, width: 450, boxSizing: 'border-box' }}
