@@ -1,5 +1,6 @@
-import { Image } from 'antd';
 import bikeListingImg from '@sthrift/ui-sharethrift-components/src/assets/item-images/bike-listing.png';
+import './listing-image-gallery.css';
+import { Carousel } from 'antd';
 
 export interface ListingImageGalleryProps {
   images: string[];
@@ -8,22 +9,24 @@ export interface ListingImageGalleryProps {
 }
 
 export function ListingImageGallery({ title, className = '' }: { title: string; className?: string }) {
-  // Always use the city bike image from assets
-  const selectedImage = bikeListingImg;
+  // Use images prop if provided, else default to 4 bike images
+  const images = Array.isArray(arguments[0]?.images) && arguments[0]?.images.length > 0
+    ? arguments[0].images
+    : [bikeListingImg, bikeListingImg, bikeListingImg, bikeListingImg];
 
   return (
     <div className={className}>
-      {/* Main Image */}
-      <div className="aspect-[386/440] bg-gray-200 rounded-lg overflow-hidden mb-4 flex items-center justify-center">
-        <Image
-          src={selectedImage}
-          alt={`${title} - City Bike`}
-          className="w-full h-full object-cover"
-        />
-      </div>
-
-      {/* Thumbnails - Desktop Layout */}
-  {/* No thumbnails or counter since only one image is used */}
+      <Carousel dots swipeToSlide style={{ width: 450, height: 500 }}>
+        {images.map((imgSrc, idx) => (
+          <div key={idx} style={{ width: 450, height: 500, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+            <img
+              src={imgSrc}
+              alt={`${title} - Image ${idx + 1}`}
+              style={{ height: 500, width: 450, borderRadius: 2, border: '0.5px solid var(--color-foreground-2)', objectFit: 'cover', display: 'block' }}
+            />
+          </div>
+        ))}
+      </Carousel>
     </div>
   );
 }

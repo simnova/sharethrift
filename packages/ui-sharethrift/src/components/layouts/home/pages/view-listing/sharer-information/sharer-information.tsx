@@ -24,9 +24,9 @@ export function SharerInformation({
   className = '' 
 }: SharerInformationProps) {
   return (
-  <Row align="middle" justify="space-between" gutter={4} className={className}>
+    <Row align="middle" justify="space-between" gutter={4} className={className}>
       <Col flex="auto">
-  <Row align="middle" gutter={4}>
+        <Row align="middle" gutter={16}>
           <Col>
             <Avatar
               style={{ backgroundColor: 'var(--color-foreground-2)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, fontFamily: 'var(--Urbanist, Arial, sans-serif)' }}
@@ -42,8 +42,10 @@ export function SharerInformation({
             </Avatar>
           </Col>
           <Col flex="auto">
-            <h2 className="truncate">{sharer.name}</h2>
-            <p className="truncate">shared {sharedTimeAgo}</p>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
+              <h2 className="truncate" style={{ marginBottom: 0 }}>{sharer.name}</h2>
+              <p className="truncate" style={{ marginTop: 2 }}>shared {sharedTimeAgo}</p>
+            </div>
           </Col>
         </Row>
       </Col>

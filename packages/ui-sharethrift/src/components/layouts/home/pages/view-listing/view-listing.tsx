@@ -1,4 +1,5 @@
 import { Row, Col } from 'antd';
+import './view-listing-responsive.css';
 import { ListingImageGallery } from './listing-image-gallery';
 import { SharerInformation } from './sharer-information';
 import { ListingInformation } from './listing-information';
@@ -66,7 +67,11 @@ export function ViewListing({
 
   return (
     <>
-  <Row style={{ minHeight: '100vh', paddingLeft: 125, paddingRight: 125, paddingTop: 72, paddingBottom: 72, boxSizing: 'border-box', width: '100%' }} gutter={[0, 12]}>
+      <Row
+        style={{ minHeight: '100vh', paddingLeft: 125, paddingRight: 125, paddingTop: 72, paddingBottom: 72, boxSizing: 'border-box', width: '100%' }}
+        gutter={[0, 12]}
+        className="view-listing-responsive"
+      >
         <Col span={24} style={{ marginBottom: 0, paddingBottom: 0 }}>
           {/* Sharer Info at top */}
           <SharerInformation
@@ -74,17 +79,18 @@ export function ViewListing({
             listingId={listing.id}
             isOwner={isOwner}
             sharedTimeAgo={sharedTimeAgo}
+            className="sharer-info-responsive"
           />
         </Col>
         <Col span={24} style={{ marginTop: 0, paddingTop: 0 }}>
-          {/* Main content: 2 columns */}
-          <Row gutter={36} align="top" style={{ marginTop: 0, paddingTop: 0 }}>
+          {/* Main content: 2 columns on desktop, stacked on mobile */}
+          <Row gutter={36} align="top" style={{ marginTop: 0, paddingTop: 0 }} className="listing-main-responsive">
             {/* Left: Images */}
-            <Col span={12} style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', marginTop: 0, paddingTop: 0 }}>
-              <ListingImageGallery title={listing.title} />
+            <Col xs={24} md={12} style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'center', marginTop: 0, paddingTop: 0 }}>
+              <ListingImageGallery title={listing.title} className="listing-gallery-responsive" />
             </Col>
             {/* Right: Info/Form */}
-            <Col span={12} style={{ marginTop: 0, paddingTop: 0 }}>
+            <Col xs={24} md={12} style={{ marginTop: 0, paddingTop: 0 }}>
               <ListingInformation
                 listing={listing}
                 userRole={userRole}

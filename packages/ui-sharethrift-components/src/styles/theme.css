@@ -1,7 +1,44 @@
-
-/* Font Imports */
 @import url('https://fonts.googleapis.com/css2?family=Urbanist:ital,wght@0,100..900;1,100..900&display=swap');
 @import url('https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Urbanist:ital,wght@0,100..900;1,100..900&display=swap');
+
+/* --- Ant Design DatePicker Calendar Theming --- */
+.ant-picker-panel,
+.ant-picker-content,
+.ant-picker-header,
+.ant-picker-cell-inner,
+.ant-picker-cell {
+  font-family: var(--Urbanist) !important;
+  color: var(--color-message-text) !important;
+}
+.ant-picker-panel {
+  background: var(--color-background) !important;
+  border-radius: 8px !important;
+}
+.ant-picker-header {
+  background: var(--color-background-2) !important;
+  color: var(--color-primary) !important;
+  font-weight: 600 !important;
+  font-size: 16px !important;
+  border-bottom: 1px solid var(--color-foreground-2) !important;
+}
+.ant-picker-cell {
+  font-size: 14px !important;
+}
+.ant-picker-cell-in-view {
+  background: var(--color-background) !important;
+}
+.ant-picker-cell-selected .ant-picker-cell-inner, .ant-picker-cell-range-start .ant-picker-cell-inner, .ant-picker-cell-range-end .ant-picker-cell-inner {
+  background: var(--color-secondary) !important;
+  color: var(--color-highlight) !important;
+  border-radius: 6px !important;
+}
+.ant-picker-cell-today .ant-picker-cell-inner {
+  border: 1px solid var(--color-primary) !important;
+}
+.ant-picker-cell-disabled .ant-picker-cell-inner {
+  color: var(--color-primary-disabled) !important;
+  background: var(--color-background-2) !important;
+}
 
 /* Theme Variables */
 :root {
@@ -71,6 +108,15 @@ h4 {
   line-height: 20px;
   color: var(--color-message-text);
 }
+
+h5 {
+  font-family: var(--Urbanist);
+  font-weight: 600;
+  font-size: 14px;
+  line-height: 18px;
+  color: var(--color-message-text); 
+}
+
 p, .authButton, .primaryButton, .secondaryButton, .ant-tabs, .ant-form-item-label > label {
   font-family: var(--Urbanist);
   font-weight: 400;
