@@ -1,6 +1,4 @@
 import { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { ViewListingContainer } from './view-listing/view-listing.container';
 // import { useQuery } from '@apollo/client';
 // import GET_ACTIVE_LISTINGS from './listings-page.container.graphql';
 import { ListingsPage } from './listings-page';
@@ -12,7 +10,6 @@ interface ListingsPageContainerProps {
 }
 
 export function ListingsPageContainer({ isAuthenticated }: ListingsPageContainerProps) {
-  const navigate = useNavigate();
   // State for search query and pagination
   const [searchQuery, setSearchQuery] = useState('');
   const [currentPage, setCurrentPage] = useState(1);
@@ -43,6 +40,11 @@ export function ListingsPageContainer({ isAuthenticated }: ListingsPageContainer
     setCurrentPage(1); // Reset to first page when searching
   };
 
+  const handleListingClick = () => {
+    // TODO: Navigate to listing detail page
+    return null;
+  };
+
   const handlePageChange = (page: number) => {
     setCurrentPage(page);
     setTimeout(() => {
@@ -70,6 +72,7 @@ export function ListingsPageContainer({ isAuthenticated }: ListingsPageContainer
       currentPage={currentPage}
       pageSize={pageSize}
       totalListings={totalListings}
+      onListingClick={handleListingClick}
       onPageChange={handlePageChange}
     />
   );

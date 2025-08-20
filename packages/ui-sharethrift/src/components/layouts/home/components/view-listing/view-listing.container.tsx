@@ -1,80 +1,79 @@
-import { useParams } from 'react-router-dom';
-import { ViewListing } from './view-listing';
-import type { ViewListingProps } from './view-listing';
+import { useState, useEffect } from 'react';
+// import { useQuery } from '@apollo/client';
+// import GET_ACTIVE_LISTINGS from './listings-page.container.graphql';
+import { ListingsPage } from '../listings-page';
 import { DUMMY_LISTINGS } from '../mock-listings';
-import type { ListingStatus, UserRole, ReservationRequestStatus } from './listing-information';
+import type { ItemListing } from '../mock-listings';
 
-// This is a mock container. Replace with real GraphQL query and data mapping as needed.
 interface ViewListingContainerProps {
-  // Add any additional props if needed
+  isAuthenticated: boolean;
 }
 
-export function ViewListingContainer(_props: ViewListingContainerProps) {
-  const { listingId } = useParams<{ listingId: string }>();
-  // TODO: Replace with actual GraphQL query using useQuery
-  // TODO: Get actual user authentication status and current user ID
-  const isAuthenticated = false; // Placeholder - should come from auth context
-  const currentUserId = '';
-  // Find the correct listing from DUMMY_LISTINGS
-  const foundListing = DUMMY_LISTINGS.find(l => l._id === listingId);
-  const mockListing = foundListing
-    ? {
-        id: foundListing._id,
-        title: foundListing.title,
-        description: foundListing.description,
-        price: 25,
-        priceUnit: 'per day',
-        location: foundListing.location,
-        images: foundListing.images ?? [],
-        owner: {
-          id: foundListing.sharer,
-          name: foundListing.sharer,
-          avatar: '/api/placeholder/50/50',
-          rating: 4.8,
-          reviewCount: 23
-        },
-        category: foundListing.category,
-        condition: 'Excellent',
-        availableFrom: foundListing.sharingPeriodStart.toISOString(),
-        availableTo: foundListing.sharingPeriodEnd.toISOString(),
-        status: foundListing.state === 'Published' ? 'Active' : 'Blocked',
-        itemName: foundListing.title
-      }
-    : {
-        id: 'notfound',
-        title: 'Listing Not Found',
-        description: '',
-        price: 0,
-        priceUnit: '',
-        location: '',
-        images: [],
-        owner: {
-          id: '',
-          name: '',
-          avatar: '',
-          rating: 0,
-          reviewCount: 0
-        },
-        category: '',
-        condition: '',
-        availableFrom: '',
-        availableTo: '',
-        status: 'Blocked',
-        itemName: ''
-      };
-  let userRole: UserRole = 'logged-out';
-  if (isAuthenticated) {
-    userRole = currentUserId === mockListing.owner.id ? 'sharer' : 'reserver';
-  }
-  const reservationRequestStatus: ReservationRequestStatus | undefined = 
-    userRole === 'reserver' ? 'pending' : undefined;
-  const data: ViewListingProps = {
-    listing: mockListing,
-    userRole,
-    isAuthenticated,
-    currentUserId,
-    reservationRequestStatus,
-    sharedTimeAgo: '2 days ago'
+export function ViewListingContainer({ isAuthenticated }: ViewListingContainerProps) {
+  // State for search query and pagination
+  const [searchQuery, setSearchQuery] = useState('');
+  const [currentPage, setCurrentPage] = useState(1);
+  const pageSize = 20;
+
+  const [selectedCategory, setSelectedCategory] = useState('');
+  const [listings, setListings] = useState<ItemListing[]>([]);
+  const [totalListings, setTotalListings] = useState(0);
+
+  useEffect(() => {
+    // TODO: Fetch listings from backend. THIS IS JUST FRONTEND FILTER
+    let filtered = DUMMY_LISTINGS;
+    if (selectedCategory && selectedCategory !== 'All') {
+      filtered = filtered.filter((l: ItemListing) => l.category === selectedCategory);
+    }
+    if (searchQuery) {
+      filtered = filtered.filter((l: ItemListing) => l.title.toLowerCase().includes(searchQuery.toLowerCase()));
+    }
+    setTotalListings(filtered.length);
+    // Paginate
+    const startIdx = (currentPage - 1) * pageSize;
+    const endIdx = startIdx + pageSize;
+    setListings(filtered.slice(startIdx, endIdx));
+  }, [searchQuery, selectedCategory, currentPage]);
+
+  const handleSearch = (query: string) => {
+    setSearchQuery(query);
+    setCurrentPage(1); // Reset to first page when searching
   };
-  return <ViewListing {...data} />;
+
+  const handleListingClick = () => {
+    // TODO: Navigate to listing detail page
+    return null;
+  };
+
+  const handlePageChange = (page: number) => {
+    setCurrentPage(page);
+    setTimeout(() => {
+      const content = document.getElementById('listings-content');
+      if (content) {
+        window.scrollTo({ top: content.offsetTop - 50, behavior: 'smooth' });
+      }
+    }, 100);
+  };
+
+  const handleCategoryChange = (category: string) => {
+    setSelectedCategory(category);
+    setCurrentPage(1); // Reset to first page when changing category
+  };
+
+  return (
+    <ListingsPage
+      isAuthenticated={isAuthenticated}
+      searchQuery={searchQuery}
+      onSearchChange={setSearchQuery}
+      onSearch={handleSearch}
+      selectedCategory={selectedCategory}
+      onCategoryChange={handleCategoryChange}
+      listings={listings}
+      currentPage={currentPage}
+      pageSize={pageSize}
+      totalListings={totalListings}
+      onListingClick={handleListingClick}
+      onPageChange={handlePageChange}
+    />
+  );
 }
