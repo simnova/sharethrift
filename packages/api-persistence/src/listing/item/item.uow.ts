@@ -1,14 +1,14 @@
 import type { MongooseSeedwork } from '@cellix/data-sources-mongoose';
 import type { Domain } from '@sthrift/api-domain';
-import { ItemListingModels } from '@sthrift/api-data-sources-mongoose-models';
+import { ListingModels } from '@sthrift/api-data-sources-mongoose-models';
 import { ItemListingConverter, type ItemListingDomainAdapter } from './item.domain-adapter.ts';
 import { ItemListingRepository } from './item.repository.ts';
 
 export const getItemListingUnitOfWork = (
 	mongooseFactory: MongooseSeedwork.MongooseContextFactory,
 ): Domain.Contexts.ItemListingUnitOfWork => {
-	const listingModel = ItemListingModels.ListingModelFactory(mongooseFactory);
-	const itemListingModel = ItemListingModels.ItemListingModelFactory(listingModel);
+	const listingModel = ListingModels.ListingModelFactory(mongooseFactory);
+	const itemListingModel = ListingModels.ItemListingModelFactory(listingModel);
 	
 	// Create a mock passport for now - in production this would come from the request context
 	const mockPassport = {} as Domain.Contexts.Passport;

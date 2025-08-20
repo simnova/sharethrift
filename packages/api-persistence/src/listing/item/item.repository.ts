@@ -1,22 +1,22 @@
 import type { Domain } from '@sthrift/api-domain';
-import type { ItemListingModels } from '@sthrift/api-data-sources-mongoose-models';
+import type { ListingModels } from '@sthrift/api-data-sources-mongoose-models';
 import type { ItemListingDomainAdapter } from './item.domain-adapter.ts';
 
 // Type aliases for model and adapter
 type PropType = ItemListingDomainAdapter;
-type ItemListingModelType = ItemListingModels.ItemListing;
+type ItemListingModelType = ListingModels.ItemListing;
 
 /**
  * Simplified repository implementation
  */
 export class ItemListingRepository implements Domain.Contexts.ItemListingRepository<PropType> {
-	private model: ItemListingModels.ItemListingModelType;
+	private model: ListingModels.ItemListingModelType;
 	private converter: { toDomain: (doc: ItemListingModelType, passport: Domain.Contexts.Passport) => Domain.Contexts.ItemListing<PropType> };
 	private passport: Domain.Contexts.Passport;
 
 	constructor(
 		passport: Domain.Contexts.Passport,
-		model: ItemListingModels.ItemListingModelType,
+		model: ListingModels.ItemListingModelType,
 		converter: { toDomain: (doc: ItemListingModelType, passport: Domain.Contexts.Passport) => Domain.Contexts.ItemListing<PropType> }
 	) {
 		this.passport = passport;
