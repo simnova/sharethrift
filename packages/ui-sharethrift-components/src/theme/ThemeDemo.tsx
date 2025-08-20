@@ -1,7 +1,6 @@
-
 import React from 'react';
 import styles from './ThemeDemo.module.css';
-import { Button, Input, Select, Tabs, Checkbox, Tag, Form, DatePicker, Carousel } from 'antd';
+import { Button, Input, Select, Tabs, Checkbox, Tag, Form, DatePicker } from 'antd';
 import { MessageOutlined, AppstoreAddOutlined, SwapOutlined, UserOutlined } from '@ant-design/icons';
 import '../styles/theme.css';
 
@@ -22,10 +21,6 @@ const items = [
     children: 'Content of Tab Pane 3',
   },
 ];
-
-const images = Array.isArray(arguments[0]?.images) && arguments[0]?.images.length > 0
-    ? arguments[0].images
-    : [bikeListingImg, bikeListingImg, bikeListingImg, bikeListingImg];
 
 export const ThemeDemo: React.FC = () => (
   <div className={styles['demoRoot'] ?? ""}>
@@ -142,22 +137,6 @@ export const ThemeDemo: React.FC = () => (
               placeholder={["Start date", "End date"]}
               allowClear
             />
-    <Carousel arrows dots swipeToSlide style={{ width: 450, height: 500 }}>
-      {images.map((imgSrc, idx) => (
-        <Card
-          key={idx}
-          bodyStyle={{ padding: 0, margin: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', height: 500, width: 450, boxSizing: 'border-box' }}
-          bordered={false}
-          style={{ boxShadow: 'none', background: 'transparent', height: 500, width: 450, boxSizing: 'border-box' }}
-        >
-          <img
-            src={imgSrc}
-            alt={title}
-            style={{ height: 'calc(100% - 2px)', width: 'calc(100% - 2px)', borderRadius: 2, border: '0.5px solid var(--color-foreground-2)', objectFit: 'cover', display: 'block', boxSizing: 'border-box' }}
-          />
-        </Card>
-      ))}
-    </Carousel>
     </div>
   </div>
 );
