@@ -128,6 +128,9 @@ export const MOCK_HISTORY_RESERVATIONS: ReservationRequest[] = [
 ];
 
 export const MyReservationsContainer: React.FC<MyReservationsContainerProps> = (/*{ userId }*/) => {
+
+// Uncomment and implement the following when GraphQL queries can be imported
+
 //   const { data, loading, error, refetch } = useQuery(MY_RESERVATIONS_QUERY, {
 //     variables: { userId },
 //     errorPolicy: 'all',

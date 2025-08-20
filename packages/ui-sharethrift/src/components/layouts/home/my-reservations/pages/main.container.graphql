@@ -1,47 +1,60 @@
-import { gql } from '@apollo/client';
+fragment MyReservationsPageContainerReservationFields on ReservationRequest {
+  id
+  state
+  reservationPeriodStart
+  reservationPeriodEnd
+  createdAt
+  updatedAt
+  closeRequested
+  listing {
+    id
+    title
+    imageUrl
+  }
+  reserver {
+    id
+    firstName
+    lastName
+    name
+  }
+}
 
-export const MY_RESERVATIONS_QUERY = gql`
-  query HomeMyReservationsContainerMyReservations($userId: ID!) {
-    myReservations(userId: $userId) {
+query HomeMyReservationsContainerMyReservations($userId: ID!) {
+  myReservations(userId: $userId) {
+    id
+    state
+    reservationPeriodStart
+    reservationPeriodEnd
+    createdAt
+    updatedAt
+    listingId
+    reserverId
+    closeRequested
+    listing {
       id
-      state
-      reservationPeriodStart
-      reservationPeriodEnd
-      createdAt
-      updatedAt
-      listingId
-      reserverId
-      closeRequested
-      listing {
-        id
-        title
-        imageUrl
-      }
-      reserver {
-        id
-        name
-      }
+      title
+      imageUrl
+    }
+    reserver {
+      id
+      name
     }
   }
-`;
+}
 
-export const CANCEL_RESERVATION_MUTATION = gql`
-  mutation HomeMyReservationsContainerCancelReservation($id: ID!) {
-    cancelReservation(id: $id) {
-      id
-      state
-      updatedAt
-    }
+mutation HomeMyReservationsContainerCancelReservation($id: ID!) {
+  cancelReservation(id: $id) {
+    id
+    state
+    updatedAt
   }
-`;
+}
 
-export const CLOSE_RESERVATION_MUTATION = gql`
-  mutation HomeMyReservationsContainerCloseReservation($id: ID!) {
-    closeReservation(id: $id) {
-      id
-      state
-      updatedAt
-      closeRequested
-    }
+mutation HomeMyReservationsContainerCloseReservation($id: ID!) {
+  closeReservation(id: $id) {
+    id
+    state
+    updatedAt
+    closeRequested
   }
-`;
+}
