@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { ReservationRequest, type ListingEntityReference, type ReserverEntityReference } from './reservation-request.aggregate.ts';
+import { ReservationRequest, type ListingEntityReference, type UserEntityReference, type ReservationRequestProps } from './reservation-request.aggregate.ts';
 import { ReservationRequestStates, ReservationRequestStateValue, ReservationPeriod } from './reservation-request.value-objects.ts';
 import type { Passport } from '../passport.ts';
 
@@ -19,28 +19,34 @@ describe('ReservationRequest', () => {
     description: 'Mock listing description',
   });
 
-  const createMockReserver = (id = 'user-1'): ReserverEntityReference => ({
+  const createMockReserver = (id = 'user-1'): UserEntityReference => ({
     id,
     name: 'Mock User',
     email: 'mock@example.com',
   });
 
   // Helper function to create full props for testing
-  const createMockProps = (overrides = {}) => ({
-    id: 'test-id',
-    createdAt: new Date(),
-    updatedAt: new Date(),
-    schemaVersion: '1',
-    state: ReservationRequestStateValue.requested(),
-    listing: createMockListing(),
-    reserver: createMockReserver(),
-    reservationPeriod: new ReservationPeriod({
-      start: new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString(),
-      end: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString(),
-    }),
-    closeRequested: false,
-    ...overrides,
-  });
+  const createMockProps = (overrides: Partial<ReservationRequestProps> = {}) => {
+    const listing = overrides.listing || createMockListing();
+    const reserver = overrides.reserver || createMockReserver();
+    return {
+      id: 'test-id',
+      createdAt: new Date(),
+      updatedAt: new Date(),
+      schemaVersion: '1',
+      state: ReservationRequestStateValue.requested(),
+      listing,
+      reserver,
+      reservationPeriod: new ReservationPeriod({
+        start: new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString(),
+        end: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString(),
+      }),
+      closeRequested: false,
+      loadListing: async () => listing,
+      loadReserver: async () => reserver,
+      ...overrides,
+    };
+  };
 
   // Use future dates for testing
   const getFutureDates = () => {

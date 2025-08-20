@@ -29,7 +29,7 @@ export const ReservationRequestSchema = new Schema<ReservationRequest, Model<Res
 }, { collection: 'reservation_requests' });
 
 
-export const ReservationRequestModelName = 'ReservationRequest';
+export const ReservationRequestModelName: string = 'ReservationRequest';
 export const ReservationRequestModelFactory = MongooseSeedwork.modelFactory<ReservationRequest>(
 	ReservationRequestModelName,
 	ReservationRequestSchema,

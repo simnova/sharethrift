@@ -1,0 +1,15 @@
+{
+	"folders": [
+		{
+			"path": "."
+		}
+    ],
+    "settings": {
+        "debug.internalConsoleOptions": "neverOpen",
+        "chat.instructionsFilesLocations": {
+            "packages/**": true
+        },
+        "github.copilot.chat.customInstructionsInSystemMessage": false,
+        "typescript.experimental.useTsgo": true
+    }
+}
