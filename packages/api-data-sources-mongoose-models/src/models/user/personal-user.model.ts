@@ -4,7 +4,7 @@ import { type User, type UserModelType, userOptions } from './user.model.ts';
 import { Patterns } from '../../patterns.ts';
 
 // Location
-export interface PersonalUserLocation extends MongooseSeedwork.NestedPath {
+export interface PersonalUserAccountProfileLocation extends MongooseSeedwork.NestedPath {
 	address1: string;
 	address2?: string;
 	city: string;
@@ -12,7 +12,7 @@ export interface PersonalUserLocation extends MongooseSeedwork.NestedPath {
 	country: string;
 	zipCode: string;
 }
-export const PersonalUserLocationType = {
+export const PersonalUserAccountProfileLocationType = {
 	address1: { type: String, required: true },
 	address2: { type: String, required: false },
 	city: { type: String, required: true },
@@ -22,32 +22,32 @@ export const PersonalUserLocationType = {
 };
 
 // Billing
-export interface PersonalUserBilling extends MongooseSeedwork.NestedPath {
+export interface PersonalUserAccountProfileBilling extends MongooseSeedwork.NestedPath {
 	subscriptionId?: string;
 	cybersourceCustomerId?: string;
 }
-export const PersonalUserBillingType = {
+export const PersonalUserAccountProfileBillingType = {
 	subscriptionId: { type: String, required: false },
 	cybersourceCustomerId: { type: String, required: false },
 };
 
 // Profile
-export interface PersonalUserProfile extends MongooseSeedwork.NestedPath {
+export interface PersonalUserAccountProfile extends MongooseSeedwork.NestedPath {
 	firstName: string;
 	lastName: string;
-	location: PersonalUserLocation;
-	billing?: PersonalUserBilling;
+	location: PersonalUserAccountProfileLocation;
+	billing?: PersonalUserAccountProfileBilling;
 }
-export const PersonalUserProfileType = {
+export const PersonalUserAccountProfileType = {
 	firstName: { type: String, required: true },
 	lastName: { type: String, required: true },
 	location: {
-		type: PersonalUserLocationType,
+		type: PersonalUserAccountProfileLocationType,
 		required: true,
 		...MongooseSeedwork.NestedPathOptions,
 	},
 	billing: {
-		type: PersonalUserBillingType,
+		type: PersonalUserAccountProfileBillingType,
 		required: false,
 		...MongooseSeedwork.NestedPathOptions,
 	},
@@ -58,7 +58,7 @@ export interface PersonalUserAccount extends MongooseSeedwork.NestedPath {
 	accountType: string;
 	email: string;
 	username: string;
-	profile: PersonalUserProfile;
+	profile: PersonalUserAccountProfile;
 }
 export const PersonalUserAccountType = {
 	accountType: {
@@ -80,7 +80,7 @@ export const PersonalUserAccountType = {
 		unique: true,
 	},
 	profile: {
-		type: PersonalUserProfileType,
+		type: PersonalUserAccountProfileType,
 		required: true,
 		...MongooseSeedwork.NestedPathOptions,
 	},

@@ -1,5 +1,5 @@
 export { type Repository, NotFoundError } from './repository.ts';
-export { AggregateRoot } from './aggregate-root.ts';
+export { AggregateRoot, type RootEventRegistry } from './aggregate-root.ts';
 export {
 	CustomDomainEventImpl,
 	type DomainEvent,

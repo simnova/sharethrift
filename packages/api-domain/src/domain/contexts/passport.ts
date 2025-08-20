@@ -1,5 +1,8 @@
-// biome-ignore lint/suspicious/noEmptyInterface: <explanation>
-export interface Passport {}
+import type { UserPassport } from './user/user.passport.ts';
+
+export interface Passport {
+  get user(): UserPassport;
+}
 
 export const PassportFactory = {
 	forReadOnly(): Passport {
