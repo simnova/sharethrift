@@ -1,0 +1,11 @@
+fragment HomeCategoryFilterContainerCategoryFields on Category {
+  id
+  name
+  description
+}
+
+query HomeCategoryFilterContainerGetCategories {
+  categories {
+    ...HomeCategoryFilterContainerCategoryFields
+  }
+}

@@ -28,7 +28,8 @@
     { "path": "./packages/service-oauth2-mock-server"},
     { "path": "./packages/service-mongodb-memory-server"},
     { "path": "./packages/ui-sharethrift-components"},
-    { "path": "./packages/ui-sharethrift"}
+    { "path": "./packages/ui-sharethrift"},
+    { "path": "./packages/service-sendgrid" }
   ],
   "lib": ["dom", "esnext"]
 }
