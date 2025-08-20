@@ -7,7 +7,7 @@ import type { ReservationRequestDomainAdapter } from './reservation-request.doma
 // Type aliases for model and adapter
 
 type PropType = ReservationRequestDomainAdapter;
-type ReservationRequestModelType = Models.ReservationRequest;
+type ReservationRequestModelType = Models.ReservationRequest.ReservationRequest;
 export class ReservationRequestRepository
 	extends MongooseSeedwork.MongoRepositoryBase<
 		ReservationRequestModelType,

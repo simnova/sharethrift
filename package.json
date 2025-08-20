@@ -48,7 +48,8 @@
 		"packages/api-graphql",
 		"packages/api-rest",
 		"packages/api",
-		"packages/ui-sharethrift-components"
+        "packages/service-sendgrid",
+        "packages/ui-sharethrift-components"
 	],
 	"devDependencies": {
 		"@amiceli/vitest-cucumber": "^5.1.2",

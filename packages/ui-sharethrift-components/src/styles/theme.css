@@ -80,21 +80,22 @@ p, .authButton, .primaryButton, .secondaryButton, .ant-tabs, .ant-form-item-labe
 }
 
 
-/* --- Ant Design Button Theming --- */
+
+
+
+/* --- Ant Design Button Theming (Restored Custom Styles, Scoped/Variable) --- */
 .ant-btn-primary, .ant-btn-default {
-  color: var(--color-background) !important;
+  color: var(--ant-btn-color, var(--color-background)) !important;
+  background-color: var(--ant-btn-bg, var(--color-primary));
   border-radius: 50vw;
-  padding: 10px 18px !important;
-  height: 38px;
+  padding: 10px 18px;
   transition: transform 0.18s ease-in-out;
   border: none;
 }
-.ant-btn-primary {
-  background-color: var(--color-primary) !important;
-}
 .ant-btn-default {
-  background-color: var(--color-secondary) !important;
+  background-color: var(--ant-btn-bg, var(--color-secondary));
 }
+
 .ant-btn-primary:hover, .ant-btn-default:hover {
   transform: scale(1.06);
 }
@@ -102,24 +103,41 @@ p, .authButton, .primaryButton, .secondaryButton, .ant-tabs, .ant-form-item-labe
   transform: scale(0.96);
 }
 
+/* Prevent AntD blue on button hover/focus/active */
+.ant-btn-primary:hover, .ant-btn-primary:focus,
+.ant-btn-secondary:hover, .ant-btn-secondary:focus {
+  color: var(--ant-btn-color, var(--color-background)) !important;
+  background-color: var(--ant-btn-bg, var(--color-primary)) !important;
+  border-color: var(--ant-btn-bg, var(--color-primary)) !important;
+  transform: scale(1.06);
+}
+.ant-btn-default:hover, .ant-btn-default:focus {
+  color: var(--ant-btn-color, var(--color-background)) !important;
+  background-color: var(--ant-btn-bg, var(--color-secondary)) !important;
+  border-color: var(--ant-btn-bg, var(--color-secondary)) !important;
+  transform: scale(1.06);
+}
+.ant-btn-primary:active, .ant-btn-default:active, .ant-btn-secondary:active {
+  transform: scale(0.96);
+}
 
-/* --- Ant Design Input & Select Theming --- */
-.ant-input, .ant-select .ant-select-selector {
-  border-color: var(--color-foreground-2) !important;
-  color: var(--color-message-text) !important;
-  border-radius: 3px !important;
+
+/* --- Ant Design Input Theming (Scoped/Variable) --- */
+.ant-input {
+  border-color: var(--ant-input-border, var(--color-foreground-2));
+  color: var(--ant-input-color, var(--color-message-text));
+  border-radius: 3px;
   font-family: var(--Urbanist);
   font-size: 14px;
 }
-.ant-input-outlined:focus, .ant-input-focused, .ant-input:hover,
-.ant-select-focused .ant-select-selector, .ant-select-selector:focus, .ant-select-selector:hover {
-  border-color: var(--color-foreground-1) !important;
-  box-shadow: 0 0 0 2px rgba(196, 190, 169, 0.5) !important;
+.ant-input-outlined:focus, .ant-input-focused, .ant-input:hover {
+  border-color: var(--ant-input-border-focus, var(--color-foreground-1));
+  box-shadow: 0 0 0 2px rgba(196, 190, 169, 0.5);
 }
-.ant-input-outlined.ant-input-disabled, .ant-select-disabled .ant-select-selector {
-  background-color: var(--color-background-2) !important;
-  border-color: var(--color-foreground-1) !important;
-  color: var(--color-primary-disabled) !important;
+.ant-input-outlined.ant-input-disabled {
+  background-color: var(--ant-input-bg-disabled, var(--color-background-2));
+  border-color: var(--ant-input-border-disabled, var(--color-foreground-1));
+  color: var(--ant-input-color-disabled, var(--color-primary-disabled));
   cursor: not-allowed;
   box-shadow: 0 0 0 0;
 }

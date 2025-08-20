@@ -13,7 +13,7 @@ export const ReservationRequestPersistence = (
 			nodeEventBusInstance: DomainSeedwork.EventBus,
 		): Domain.Contexts.ReservationRequestUnitOfWork => {
 			// Get the model using the factory pattern
-			const model = Models.ReservationRequestModelFactory(initializedService);
+			const model = Models.ReservationRequest.ReservationRequestModelFactory(initializedService);
 			
 			return getReservationRequestUnitOfWork(
 				model,

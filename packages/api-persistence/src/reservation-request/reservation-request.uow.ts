@@ -7,7 +7,7 @@ import type { Models } from '@sthrift/api-data-sources-mongoose-models';
 import type { DomainSeedwork } from '@cellix/domain-seedwork';
 
 export const getReservationRequestUnitOfWork = (
-	reservationRequestModel: Model<Models.ReservationRequest>,
+	reservationRequestModel: Model<Models.ReservationRequest.ReservationRequest>,
 	inProcEventBusInstance: DomainSeedwork.EventBus,
 	nodeEventBusInstance: DomainSeedwork.EventBus,
 ): Domain.Contexts.ReservationRequestUnitOfWork => {

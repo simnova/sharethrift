@@ -4,12 +4,17 @@ import { ReservationRequestStates, ReservationRequestStateValue, ReservationPeri
 import type { Passport } from '../passport.ts';
 
 describe('ReservationRequest', () => {
-  const mockPassport: Passport = { 
+  const mockPassport: Passport = {
     reservationRequest: {
       forReservationRequest: () => ({
         determineIf: () => true,
       }),
-    }
+    },
+    itemListing: {
+      forItemListing: () => ({
+        determineIf: () => true,
+      }),
+    },
   } as Passport;
 
   // Helper functions for creating mock entity references

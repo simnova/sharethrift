@@ -8,7 +8,7 @@ import type { Models } from "@sthrift/api-data-sources-mongoose-models";
  * Handles conversion between Mongoose doc and domain entity.
  */
 export class ReservationRequestConverter extends MongoTypeConverter<
-  Models.ReservationRequest,
+  Models.ReservationRequest.ReservationRequest,
   ReservationRequestDomainAdapter,
   Domain.Passport,
   Domain.Contexts.ReservationRequest<ReservationRequestDomainAdapter>
@@ -19,7 +19,7 @@ export class ReservationRequestConverter extends MongoTypeConverter<
 }
 
 export class ReservationRequestDomainAdapter
-  extends MongooseDomainAdapter<Models.ReservationRequest>
+  extends MongooseDomainAdapter<Models.ReservationRequest.ReservationRequest>
   implements Domain.Contexts.ReservationRequestProps
 {
   // Primitive Fields Getters and Setters

@@ -11,6 +11,5 @@
 	"references": [
 		//needs to match peer dependencies in package.json
 		{ "path": "../cellix-domain-seedwork" }
-		,{ "path": "../service-mongodb-memory-server" }
 	]
 }

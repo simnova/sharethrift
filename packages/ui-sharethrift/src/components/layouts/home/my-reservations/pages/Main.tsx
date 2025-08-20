@@ -83,7 +83,7 @@ export default function MyReservationsMain({
   ];
 
   return (
-    <div className="p-6">
+    <div className={`p-6 ${styles.mainContent}`}>
       <Title level={2} className={styles.pageTitle}>My Reservations</Title>
       <Tabs defaultActiveKey="active" items={tabItems} />
     </div>

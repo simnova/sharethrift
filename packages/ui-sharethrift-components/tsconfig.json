@@ -4,7 +4,7 @@
 	"rootDir": ".",
 	"outDir": "dist",
 	"jsx": "react-jsx",
-	"lib": ["ES2023", "DOM", "DOM.Iterable"]
+  "lib": ["dom", "esnext"],
   },
   "include": [
 	"src/**/*.ts",

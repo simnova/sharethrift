@@ -1,10 +1,26 @@
-export * from './reservation-request/reservation-request.model.ts';
-export * from './conversations/index.ts';
+import type { MongooseSeedwork } from "@cellix/data-sources-mongoose";
+import { ReservationRequestModelFactory } from "./reservation-request/index.ts";
+import {
+  ItemListingModelFactory,
+  ListingModelFactory,
+} from "./listing/index.ts";
 
-import * as ReservationRequest from './reservation-request/reservation-request.model.ts';
-import * as Conversations from './conversations/index.ts';
+export * as Conversation from "./conversations/index.ts";
+export * as Listing from "./listing/index.ts";
+export * as ReservationRequest from "./reservation-request/index.ts";
 
-export const Models = {
-	...ReservationRequest,
-	...Conversations,
+export const mongooseContextBuilder = (
+  initializedService: MongooseSeedwork.MongooseContextFactory
+) => {
+  return {
+    Listing: {
+      ItemListingModel: ItemListingModelFactory(
+        ListingModelFactory(initializedService)
+      ),
+    },
+    ReservationRequest: {
+      ReservationRequestModel:
+        ReservationRequestModelFactory(initializedService),
+    },
+  };
 };
