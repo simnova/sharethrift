@@ -1,9 +1,0 @@
-.ant-carousel .slick-dots li button {
-  background: var(--color-primary, #222) !important;
-}
-.ant-carousel .slick-dots li.slick-active button {
-  background: var(--color-secondary, #007aff) !important;
-}
-.ant-carousel .slick-dots li {
-  margin: 0 6px !important;
-}

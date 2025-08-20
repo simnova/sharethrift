@@ -78,18 +78,18 @@ export function ListingInformation(props: ListingInformationProps) {
         {/* Reservation Period Section */}
         <Row style={{ marginTop: 32 }}>
           <Col span={24}>
-            <h3 className="font-urbanist font-semibold text-[18px] leading-[24px] text-[#25322c] mb-2">Reservation Period</h3>
+            <h3>Reservation Period</h3>
             <DatePicker.RangePicker
               style={{
                 width: '100%',
-                height: 44,
-                borderRadius: 8,
-                fontFamily: 'var(--Urbanist, Arial, sans-serif)',
-                fontSize: 14,
-                color: 'var(--color-message-text)',
-                backgroundColor: 'var(--color-background)',
-                border: '1px solid var(--color-foreground-2)',
-                boxShadow: '0 2px 8px rgba(0,0,0,0.04)'
+                // height: 44,
+                // borderRadius: 8,
+                // fontFamily: 'var(--Urbanist, Arial, sans-serif)',
+                // fontSize: 14,
+                // color: 'var(--color-message-text)',
+                // backgroundColor: 'var(--color-background)',
+                // border: '1px solid var(--color-foreground-2)',
+                // boxShadow: '0 2px 8px rgba(0,0,0,0.04)'
               }}
               placeholder={["Start date", "End date"]}
               allowClear
@@ -101,7 +101,7 @@ export function ListingInformation(props: ListingInformationProps) {
         {/* Reserve Button */}
         <Row>
           <Col span={24}>
-            <Button type="primary" className="primaryButton" style={{ width: '100%', borderRadius: 9999, fontFamily: 'Urbanist', fontWeight: 600, fontSize: 14, boxShadow: '0 2px 8px rgba(0,0,0,0.04)' }}>
+            <Button type="primary" className="primaryButton" style={{ width: '100%' }}>
               Reserve
             </Button>
           </Col>

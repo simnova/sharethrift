@@ -1,5 +1,4 @@
 import { Row, Col } from 'antd';
-import './view-listing-responsive.css';
 import { ListingImageGallery } from './listing-image-gallery';
 import { SharerInformation } from './sharer-information';
 import { ListingInformation } from './listing-information';

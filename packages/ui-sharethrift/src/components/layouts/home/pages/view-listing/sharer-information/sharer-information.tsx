@@ -15,13 +15,15 @@ export interface SharerInformationProps {
   isOwner?: boolean;
   sharedTimeAgo?: string;
   className?: string;
+  showIconOnly?: boolean;
 }
 
 export function SharerInformation({ 
   sharer, 
   isOwner = false,
   sharedTimeAgo = "2 days ago",
-  className = '' 
+  className = '',
+  showIconOnly = false
 }: SharerInformationProps) {
   return (
     <Row align="middle" justify="space-between" gutter={4} className={className}>
@@ -56,7 +58,7 @@ export function SharerInformation({
             type="default"
             icon={<MessageOutlined />}
           >
-            Message Sharer
+            {!showIconOnly && 'Message Sharer'}
           </Button>
         )}
       </Col>

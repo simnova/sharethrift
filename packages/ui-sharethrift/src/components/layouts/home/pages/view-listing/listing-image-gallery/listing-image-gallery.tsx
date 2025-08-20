@@ -1,6 +1,5 @@
 import bikeListingImg from '@sthrift/ui-sharethrift-components/src/assets/item-images/bike-listing.png';
-import './listing-image-gallery.css';
-import { Carousel } from 'antd';
+import { Carousel, Card } from 'antd';
 
 export interface ListingImageGalleryProps {
   images: string[];
@@ -15,18 +14,21 @@ export function ListingImageGallery({ title, className = '' }: { title: string; 
     : [bikeListingImg, bikeListingImg, bikeListingImg, bikeListingImg];
 
   return (
-    <div className={className}>
-      <Carousel dots swipeToSlide style={{ width: 450, height: 500 }}>
-        {images.map((imgSrc, idx) => (
-          <div key={idx} style={{ width: 450, height: 500, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-            <img
-              src={imgSrc}
-              alt={`${title} - Image ${idx + 1}`}
-              style={{ height: 500, width: 450, borderRadius: 2, border: '0.5px solid var(--color-foreground-2)', objectFit: 'cover', display: 'block' }}
-            />
-          </div>
-        ))}
-      </Carousel>
-    </div>
+    <Carousel arrows dots swipeToSlide className={className} style={{ width: 450, height: 500 }}>
+      {images.map((imgSrc, idx) => (
+        <Card
+          key={idx}
+          bodyStyle={{ padding: 0, margin: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', height: 500, width: 450, boxSizing: 'border-box' }}
+          bordered={false}
+          style={{ boxShadow: 'none', background: 'transparent', height: 500, width: 450, boxSizing: 'border-box' }}
+        >
+          <img
+            src={imgSrc}
+            alt={title}
+            style={{ height: 'calc(100% - 2px)', width: 'calc(100% - 2px)', borderRadius: 2, border: '0.5px solid var(--color-foreground-2)', objectFit: 'cover', display: 'block', boxSizing: 'border-box' }}
+          />
+        </Card>
+      ))}
+    </Carousel>
   );
 }
