@@ -1,0 +1,125 @@
+#graphql
+"""
+GraphQL schema for Personal Users
+"""
+
+type PersonalUser {
+  id: ID!
+  userType: String!
+  isBlocked: Boolean!
+  account: PersonalUserAccount!
+  schemaVersion: String!
+  createdAt: String!
+  updatedAt: String!
+}
+
+type PersonalUserAccount {
+  accountType: String!
+  email: String!
+  username: String!
+  profile: PersonalUserProfile!
+}
+
+type PersonalUserProfile {
+  firstName: String!
+  lastName: String!
+  location: PersonalUserLocation!
+  billing: PersonalUserBilling
+}
+
+type PersonalUserLocation {
+  address1: String!
+  address2: String
+  city: String!
+  state: String!
+  country: String!
+  zipCode: String!
+}
+
+type PersonalUserBilling {
+  subscriptionId: String
+  cybersourceCustomerId: String
+}
+
+input PersonalUserCreateInput {
+  userType: String!
+  account: PersonalUserAccountInput!
+}
+
+input PersonalUserAccountInput {
+  accountType: String!
+  email: String!
+  username: String!
+  profile: PersonalUserProfileInput!
+}
+
+input PersonalUserProfileInput {
+  firstName: String!
+  lastName: String!
+  location: PersonalUserLocationInput!
+  billing: PersonalUserBillingInput
+}
+
+input PersonalUserLocationInput {
+  address1: String!
+  address2: String
+  city: String!
+  state: String!
+  country: String!
+  zipCode: String!
+}
+
+input PersonalUserBillingInput {
+  subscriptionId: String
+  cybersourceCustomerId: String
+}
+
+input PersonalUserUpdateInput {
+  userType: String
+  isBlocked: Boolean
+  account: PersonalUserAccountUpdateInput
+}
+
+input PersonalUserAccountUpdateInput {
+  accountType: String
+  email: String
+  username: String
+  profile: PersonalUserProfileUpdateInput
+}
+
+input PersonalUserProfileUpdateInput {
+  firstName: String
+  lastName: String
+  location: PersonalUserLocationUpdateInput
+  billing: PersonalUserBillingUpdateInput
+}
+
+input PersonalUserLocationUpdateInput {
+  address1: String
+  address2: String
+  city: String
+  state: String
+  country: String
+  zipCode: String
+}
+
+input PersonalUserBillingUpdateInput {
+  subscriptionId: String
+  cybersourceCustomerId: String
+}
+
+type Query {
+  # Personal User queries
+  personalUser(id: ID!): PersonalUser
+  personalUserByEmail(email: String!): PersonalUser
+  personalUserByUsername(username: String!): PersonalUser
+  personalUsers(limit: Int, offset: Int): [PersonalUser!]!
+}
+
+type Mutation {
+  # Personal User mutations
+  personalUserCreate(input: PersonalUserCreateInput!): PersonalUser!
+  personalUserUpdate(id: ID!, input: PersonalUserUpdateInput!): PersonalUser!
+  personalUserBlock(id: ID!): PersonalUser!
+  personalUserUnblock(id: ID!): PersonalUser!
+}
