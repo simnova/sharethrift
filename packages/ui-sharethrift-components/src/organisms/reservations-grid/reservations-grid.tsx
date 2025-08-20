@@ -1,7 +1,7 @@
 import React from 'react';
 import { Typography } from 'antd';
-import { ReservationCard } from '../../molecules/reservation-card/reservation-card';
-import type { ReservationRequest } from '../../../layouts/home/my-reservations/pages/main.container'; // Will eventually come from generated graphql files
+import { ReservationCard } from '../../molecules/reservation-card/reservation-card.js';
+import type { ReservationRequest } from '../../types/reservation-request.js';
 
 const { Text } = Typography;
 

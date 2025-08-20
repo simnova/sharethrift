@@ -18,13 +18,15 @@ export interface ReservationRequest {
   listingId: string;
   reserverId: string;
   closeRequested: boolean;
-  listing?: {
+  listing: {
     id: string;
-    title?: string;
-    imageUrl?: string;
+    title: string;
+    imageUrl: string;
   };
-  reserver?: {
+  reserver: {
     id: string;
+    firstName: string;
+    lastName: string;
     name?: string;
   };
 }
@@ -48,6 +50,8 @@ export const MOCK_ACTIVE_RESERVATIONS: ReservationRequest[] = [
     },
     reserver: {
       id: 'user1',
+      firstName: 'Alice',
+      lastName: 'Johnson',
       name: 'Alice Johnson'
     }
   },
@@ -68,6 +72,8 @@ export const MOCK_ACTIVE_RESERVATIONS: ReservationRequest[] = [
     },
     reserver: {
       id: 'user2',
+      firstName: 'Bob',
+      lastName: 'Smith',
       name: 'Bob Smith'
     }
   },
@@ -92,6 +98,8 @@ export const MOCK_HISTORY_RESERVATIONS: ReservationRequest[] = [
     },
     reserver: {
       id: 'user3',
+      firstName: 'Charlie',
+      lastName: 'Lee',
       name: 'Charlie Lee'
     }
   },
@@ -112,6 +120,8 @@ export const MOCK_HISTORY_RESERVATIONS: ReservationRequest[] = [
     },
     reserver: {
       id: 'user4',
+      firstName: 'Sam',
+      lastName: 'White',
       name: 'Sam White'
     }
   },

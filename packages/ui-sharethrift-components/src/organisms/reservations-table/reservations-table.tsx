@@ -1,8 +1,8 @@
 import React from 'react';
 import { Table, Image, Typography } from 'antd';
-import { ReservationStatusTag } from '../../atoms/reservation-status-tag/reservation-status-tag';
-import { ReservationActions } from '../../molecules/reservation-actions/reservation-actions';
-import type { ReservationRequest } from '../../../layouts/home/my-reservations/pages/main.container'; // Will eventually come from generated graphql files
+import { ReservationStatusTag } from '../../atoms/reservation-status-tag/reservation-status-tag.js';
+import { ReservationActions } from '../../molecules/reservation-actions/reservation-actions.js';
+import type { ReservationRequest } from '../../types/reservation-request.js';
 
 const { Text } = Typography;
 

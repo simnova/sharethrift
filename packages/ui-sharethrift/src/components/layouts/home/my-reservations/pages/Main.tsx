@@ -1,5 +1,5 @@
 import { Tabs, Typography, Alert, Spin } from 'antd';
-import { ReservationsView } from '../../../../shared/organisms/reservations-view/reservations-view.tsx';
+import { ReservationsView } from '../../../../../../../ui-sharethrift-components/src/organisms/reservations-view/reservations-view.tsx';
 import type { ReservationRequest } from './main.container'; // Will eventually come from generated GraphQL files
 
 const { Title } = Typography;

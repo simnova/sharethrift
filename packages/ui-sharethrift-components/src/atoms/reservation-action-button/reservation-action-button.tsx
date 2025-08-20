@@ -1,6 +1,7 @@
 import React from 'react';
 import { Button } from 'antd';
-import { MessageOutlined, CloseOutlined, StopOutlined } from '@ant-design/icons';
+import styles from '../../molecules/header/index.module.css';
+
 
 export interface ReservationActionButtonProps {
   action: 'cancel' | 'close' | 'message';
@@ -17,27 +18,27 @@ export const ReservationActionButton: React.FC<ReservationActionButtonProps> = (
     switch (action) {
       case 'cancel':
         return {
-          icon: <StopOutlined />,
           children: 'Cancel',
-          type: 'default' as const,
-          danger: true,
+          type: 'link' as const,
+          className: styles["authButton"] ?? '',
         };
       case 'close':
         return {
-          icon: <CloseOutlined />,
           children: 'Close',
-          type: 'primary' as const,
+          type: 'link' as const,
+          className: styles["authButton"] ?? '',
         };
       case 'message':
         return {
-          icon: <MessageOutlined />,
           children: 'Message',
-          type: 'default' as const,
+          type: 'link' as const,
+          className: styles["authButton"] ?? '',
         };
       default:
         return {
           children: 'Action',
-          type: 'default' as const,
+          type: 'link' as const,
+          className: styles["authButton"] ?? '',
         };
     }
   };

@@ -30,6 +30,8 @@ const mockActiveReservations = [
     },
     reserver: {
       id: 'user1',
+      firstName: 'John',
+      lastName: 'Doe',
       name: 'John Doe',
     },
   },
@@ -50,6 +52,8 @@ const mockActiveReservations = [
     },
     reserver: {
       id: 'user1',
+      firstName: 'John',
+      lastName: 'Doe',
       name: 'John Doe',
     },
   },
@@ -70,6 +74,8 @@ const mockActiveReservations = [
     },
     reserver: {
       id: 'user1',
+      firstName: 'John',
+      lastName: 'Doe',
       name: 'John Doe',
     },
   },
@@ -93,6 +99,8 @@ const mockHistoryReservations = [
     },
     reserver: {
       id: 'user1',
+      firstName: 'John',
+      lastName: 'Doe',
       name: 'John Doe',
     },
   },
@@ -113,6 +121,8 @@ const mockHistoryReservations = [
     },
     reserver: {
       id: 'user1',
+      firstName: 'John',
+      lastName: 'Doe',
       name: 'John Doe',
     },
   },
