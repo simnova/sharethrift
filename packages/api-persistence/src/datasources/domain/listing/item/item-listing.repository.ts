@@ -1,6 +1,6 @@
 import type { Domain } from '@sthrift/api-domain';
 import type { Models } from '@sthrift/api-data-sources-mongoose-models';
-import type { ItemListingDomainAdapter } from './item.domain-adapter.ts';
+import type { ItemListingDomainAdapter } from './item-listing.domain-adapter.ts';
 
 // Type aliases for model and adapter
 type PropType = ItemListingDomainAdapter;

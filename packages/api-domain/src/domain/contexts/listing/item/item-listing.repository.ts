@@ -2,7 +2,7 @@ import type { DomainSeedwork } from '@cellix/domain-seedwork';
 import type {
 	ItemListing,
 	ItemListingProps,
-} from './item.aggregate.ts';
+} from './item-listing.ts';
 
 export interface ItemListingRepository<props extends ItemListingProps>
 	extends DomainSeedwork.Repository<ItemListing<props>> {

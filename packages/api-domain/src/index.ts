@@ -8,10 +8,9 @@ export interface DomainDataSource {
 		};
 	};
 
-  Listing: {
-      Item?: {
-        ListingItemUnitOfWork: Contexts.User.PersonalUser.PersonalUserUnitOfWork;
-      };
-    }
-  
+	Listing: {
+		ItemListing: {
+			ItemListingUnitOfWork: Contexts.Listing.ItemListing.ItemListingUnitOfWork;
+		};
+	};
 }
