@@ -12,9 +12,11 @@
     "storybook": "storybook dev -p 6006",
     "build-storybook": "storybook build"
   },
+  "peerDependencies": {
+    "@sthrift/ui-sharethrift-components": "^1.0.0"
+  },
   "dependencies": {
     "@apollo/client": "^3.13.9",
-    "@sthrift/ui-sharethrift-components": "*",
     "@tailwindcss/vite": "^4.1.11",
     "@twilio/conversations": "^2.6.3",
     "antd": "^5.27.1",
