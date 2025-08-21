@@ -1,23 +1,25 @@
-import { Schema, type Model, type ObjectId } from 'mongoose';
+import { Schema, type Model, Types } from 'mongoose';
 import { type Listing, type ListingModelType, listingOptions } from './listing.model.ts';
 
+// Local interface for Mongoose schema typing (plain data shape, not domain aggregate)
 export interface ItemListing extends Listing {
-  sharer: ObjectId;
-  title: string;
-  description: string;
-  category: string;
-  location: string;
-  sharingPeriodStart: Date;
-  sharingPeriodEnd: Date;
-  state?: 'Published' | 'Paused' | 'Cancelled' | 'Drafted' | 'Expired' | 'Blocked' | 'Appeal Requested';
-  createdAt: Date;
-  updatedAt: Date;
-  sharingHistory?: ObjectId[];
-  reports?: number;
+	sharer: string;
+	title: string;
+	description: string;
+	category: string;
+	location: string;
+	sharingPeriodStart: Date;
+	sharingPeriodEnd: Date;
+	state?: 'Published' | 'Paused' | 'Cancelled' | 'Drafted' | 'Expired' | 'Blocked' | 'Appeal Requested';
+	createdAt: Date;
+	updatedAt: Date;
+	sharingHistory?: string[];
+	reports?: number;
+	_id: Types.ObjectId;
 }
 
 export const ItemListingSchema = new Schema<ItemListing, Model<ItemListing>, ItemListing>({
-	sharer: { type: Schema.Types.ObjectId, ref: 'User', required: true },
+	sharer: { type: String, required: true },
 	title: { type: String, required: true, maxlength: 200 },
 	description: { type: String, required: true, maxlength: 2000 },
 	category: { type: String, required: true, maxlength: 100 },
@@ -31,11 +33,11 @@ export const ItemListingSchema = new Schema<ItemListing, Model<ItemListing>, Ite
 	},
 	createdAt: { type: Date, required: false, default: Date.now },
 	updatedAt: { type: Date, required: false, default: Date.now },
-	sharingHistory: [{ type: Schema.Types.ObjectId, ref: 'ItemListing' }],
+	sharingHistory: [{ type: String }],
 	reports: { type: Number, default: 0 },
 }, listingOptions);
 
-export const ItemListingModelName: string = 'item-listings'; //TODO: This should be in singular form
+export const ItemListingModelName: string = 'item-listing';
 
 export const ItemListingModelFactory = (ListingModel: ListingModelType) => {
 	return ListingModel.discriminator(ItemListingModelName, ItemListingSchema);
