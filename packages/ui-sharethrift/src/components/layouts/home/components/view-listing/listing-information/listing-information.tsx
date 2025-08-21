@@ -53,24 +53,24 @@ export function ListingInformation({
   }
 
   return (
-    <Row gutter={[0, 24]} style={{ width: '100%' }} className={className}>
+    <Row gutter={[0, 12]} style={{ width: '100%' }} className={className}>
       <Col span={24}>
         {/* Title at top, using title42 class */}
         <div className="title42">{listing.title}</div>
       </Col>
       <Col span={24}>
         {/* Location and Category */}
-        <Row gutter={32}>
-          <Col span={8} >
-            <h5>Located in</h5>
-            <h5>Category</h5>
+        <Row gutter={16} align="middle">
+          <Col span={8} style={{ display: 'flex', flexDirection: 'column', justifyContent: 'center', height: '100%' }}>
+            <h5 style={{ marginBottom: 8, marginTop: 0, lineHeight: '18px' }}>Located in</h5>
+            <h5 style={{ marginBottom: 0, marginTop: 0, lineHeight: '18px' }}>Category</h5>
           </Col>
-          <Col span={16} className="flex flex-col gap-3">
-            <div className="font-urbanist text-[14px] text-[rgba(0,0,0,0.85)]">
-              <p>{listing.location}</p>
+          <Col span={16} style={{ display: 'flex', flexDirection: 'column', justifyContent: 'center', height: '100%' }}>
+            <div className="font-urbanist text-[14px] text-[rgba(0,0,0,0.85)]" style={{ marginBottom: 8, marginTop: 0, lineHeight: '18px' }}>
+              <p style={{ marginBottom: 0, marginTop: 0, lineHeight: '18px' }}>{listing.location}</p>
             </div>
-            <div className="font-urbanist text-[14px] text-[rgba(0,0,0,0.85)]">
-              <p>{listing.category}</p>
+            <div className="font-urbanist text-[14px] text-[rgba(0,0,0,0.85)]" style={{ marginBottom: 0, marginTop: 0, lineHeight: '18px' }}>
+              <p style={{ marginBottom: 0, marginTop: 0, lineHeight: '18px' }}>{listing.category}</p>
             </div>
           </Col>
         </Row>
@@ -79,15 +79,15 @@ export function ListingInformation({
         {/* Description */}
         <Row>
           <Col span={24}>
-            <div className="font-urbanist text-[14px] text-[#333333] w-full max-w-[499px]">
-              <p>{listing.description}</p>
+            <div className="font-urbanist text-[14px] text-[#333333] w-full max-w-[499px]" style={{ marginBottom: 8 }}>
+              <p style={{ marginBottom: 8 }}>{listing.description}</p>
             </div>
           </Col>
         </Row>
         {/* Reservation Period Section */}
-        <Row style={{ marginTop: 32 }}>
+        <Row style={{ marginTop: 16 }}>
           <Col span={24}>
-            <h3>Reservation Period</h3>
+            <h3 style={{ marginBottom: 8 }}>Reservation Period</h3>
             <DatePicker.RangePicker
               style={{
                 width: '100%',

@@ -322,7 +322,7 @@ p, .authButton, .primaryButton, .secondaryButton, .ant-tabs, .ant-form-item-labe
   background: var(--color-primary, #222) !important;
 }
 .ant-carousel .slick-dots li.slick-active button {
-  background: var(--color-secondary, #007aff) !important;
+  background: var(--color-primary, #222) !important;
 }
 .ant-carousel .slick-dots li {
   margin: 0 6px !important;

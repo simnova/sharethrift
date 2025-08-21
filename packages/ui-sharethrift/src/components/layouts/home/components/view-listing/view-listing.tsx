@@ -30,6 +30,38 @@ export function ViewListing({
   };
   return (
     <>
+      <style>{`
+        @media (max-width: 600px) {
+          .view-listing-responsive {
+            padding-left: 16px !important;
+            padding-right: 16px !important;
+            padding-top: 24px !important;
+            padding-bottom: 24px !important;
+          }
+          .listing-main-responsive {
+            flex-direction: column !important;
+            gap: 0 !important;
+          }
+          .listing-gallery-responsive,
+          .listing-info-responsive,
+          .sharer-info-responsive {
+            width: 100% !important;
+            max-width: 450px !important;
+            margin-left: auto !important;
+            margin-right: auto !important;
+          }
+          .listing-gallery-responsive {
+            height: auto !important;
+            margin-bottom: 8px !important;
+          }
+          .listing-info-responsive {
+            margin-bottom: 16px !important;
+          }
+          .sharer-info-responsive {
+            margin-bottom: 16px !important;
+          }
+        }
+      `}</style>
       <Row
         style={{ minHeight: '100vh', paddingLeft: 125, paddingRight: 125, paddingTop: 72, paddingBottom: 72, boxSizing: 'border-box', width: '100%' }}
         gutter={[0, 12]}

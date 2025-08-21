@@ -1,4 +1,5 @@
 import { Button, Avatar, Row, Col } from "antd";
+import { useEffect, useState } from "react";
 import { MessageOutlined } from "@ant-design/icons";
 
 export type Sharer = {
@@ -23,6 +24,14 @@ export function SharerInformation({
   className = '',
   showIconOnly = false
 }: SharerInformationProps) {
+  const [isMobile, setIsMobile] = useState(false);
+  useEffect(() => {
+    const checkMobile = () => setIsMobile(window.innerWidth <= 600);
+    checkMobile();
+    window.addEventListener('resize', checkMobile);
+    return () => window.removeEventListener('resize', checkMobile);
+  }, []);
+
   return (
     <Row align="middle" gutter={4} className={className}>
       <Col style={{ minWidth: 56, display: 'flex', alignItems: 'center', justifyContent: 'flex-start' }}>
@@ -52,7 +61,7 @@ export function SharerInformation({
             type="default"
             icon={<MessageOutlined />}
           >
-            {!showIconOnly && 'Message Sharer'}
+            {!isMobile && 'Message Sharer'}
           </Button>
         )}
       </Col>
