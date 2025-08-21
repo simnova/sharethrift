@@ -1,7 +1,7 @@
 import { useParams } from 'react-router-dom';
 import { DUMMY_LISTINGS } from '../mock-listings';
 import { ViewListing } from './view-listing';
-import type { ItemListing } from '../mock-listings';
+// ...existing code...
 
 
 

@@ -15,16 +15,15 @@ interface SharerInformationContainerProps {
   showIconOnly?: boolean;
 }
 
-export default function SharerInformationContainer({ sharer, listingId, isOwner, sharedTimeAgo, className, showIconOnly }: SharerInformationContainerProps) {
+export default function SharerInformationContainer({ sharer, listingId, isOwner, sharedTimeAgo, className }: SharerInformationContainerProps) {
   return (
-    <SharerInformation
-      sharer={sharer}
-      listingId={listingId}
-      isOwner={isOwner}
-      sharedTimeAgo={sharedTimeAgo}
-      className={className}
-      showIconOnly={showIconOnly}
-    />
+      <SharerInformation
+        sharer={sharer}
+        listingId={listingId}
+        isOwner={isOwner}
+        sharedTimeAgo={sharedTimeAgo}
+        className={className}
+      />
   );
 }
 

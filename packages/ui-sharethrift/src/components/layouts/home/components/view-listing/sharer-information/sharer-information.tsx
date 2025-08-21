@@ -14,15 +14,13 @@ export interface SharerInformationProps {
   isOwner?: boolean;
   sharedTimeAgo?: string;
   className?: string;
-  showIconOnly?: boolean;
 }
 
 export function SharerInformation({
   sharer,
   isOwner = false,
   sharedTimeAgo = "2 days ago",
-  className = '',
-  showIconOnly = false
+  className = ''
 }: SharerInformationProps) {
   const [isMobile, setIsMobile] = useState(false);
   useEffect(() => {

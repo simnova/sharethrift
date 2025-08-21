@@ -4,7 +4,7 @@ import SharerInformationContainer from './sharer-information/sharer-information.
 import ListingInformationContainer from './listing-information/listing-information.container';
 import type { UserRole, ReservationRequestStatus } from './listing-information/listing-information';
 
-import type { ItemListing } from '../../mock-listings';
+import type { ItemListing } from '../mock-listings';
 
 export interface ViewListingProps {
   listing: ItemListing;
