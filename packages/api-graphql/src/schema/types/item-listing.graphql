@@ -12,6 +12,23 @@ type ItemListing {
   updatedAt: DateTime
   sharingHistory: [ObjectId!]
   reports: Int
+  images: [String!]
+  pendingRequestsCount: Int
+}
+
+type ListingRequest {
+  id: ObjectId!
+  listingId: ObjectId!
+  listing: ItemListing
+  requestedBy: ObjectId!
+  requestedByUsername: String
+  listingOwner: ObjectId!
+  reservationPeriodStart: DateTime!
+  reservationPeriodEnd: DateTime!
+  state: ListingRequestState!
+  message: String
+  createdAt: DateTime!
+  updatedAt: DateTime!
 }
 
 enum ItemListingState {
@@ -24,7 +41,89 @@ enum ItemListingState {
   AppealRequested
 }
 
+enum ListingRequestState {
+  Pending
+  Accepted
+  Rejected
+  Cancelled
+  Closed
+  Closing
+}
+
+input MyListingsFilterInput {
+  search: String
+  status: ItemListingState
+  sortBy: MyListingsSortField
+  sortOrder: SortOrder
+}
+
+input MyListingRequestsFilterInput {
+  search: String
+  status: ListingRequestState
+  sortBy: MyListingRequestsSortField
+  sortOrder: SortOrder
+}
+
+enum MyListingsSortField {
+  TITLE
+  CREATED_AT
+  UPDATED_AT
+  SHARING_PERIOD_START
+}
+
+enum MyListingRequestsSortField {
+  REQUESTED_BY
+  CREATED_AT
+  UPDATED_AT
+  RESERVATION_PERIOD_START
+}
+
+enum SortOrder {
+  ASC
+  DESC
+}
+
+type MyListingsConnection {
+  edges: [MyListingsEdge!]!
+  pageInfo: PageInfo!
+  totalCount: Int!
+}
+
+type MyListingsEdge {
+  node: ItemListing!
+  cursor: String!
+}
+
+type MyListingRequestsConnection {
+  edges: [MyListingRequestsEdge!]!
+  pageInfo: PageInfo!
+  totalCount: Int!
+}
+
+type MyListingRequestsEdge {
+  node: ListingRequest!
+  cursor: String!
+}
+
+type PageInfo {
+  hasNextPage: Boolean!
+  hasPreviousPage: Boolean!
+  startCursor: String
+  endCursor: String
+}
+
 type Query {
   itemListings: [ItemListing!]!
   itemListing(id: ObjectId!): ItemListing
+  myListings(
+    first: Int = 6
+    after: String
+    filter: MyListingsFilterInput
+  ): MyListingsConnection!
+  myListingRequests(
+    first: Int = 6
+    after: String
+    filter: MyListingRequestsFilterInput
+  ): MyListingRequestsConnection!
+  myListingRequestsCount: Int!
 }
