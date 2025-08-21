@@ -3,8 +3,9 @@
     "./tsconfig.base",
   ],  
   "compilerOptions": {
-    "outDir": "dist",
-    "rootDir": ".",
+    "module": "ESNext",
+    "moduleResolution": "bundler",
+    "verbatimModuleSyntax": true
   },
   "files": [], //empty array to avoid double compilation
   "references": [
@@ -17,6 +18,7 @@
     { "path": "./packages/service-blob-storage"},
     { "path": "./packages/service-mongoose"},
     { "path": "./packages/service-token-validation"},
+    { "path": "./packages/service-sendgrid"},
     { "path": "./packages/api-application-services"},
     { "path": "./packages/api-context-spec"},
     { "path": "./packages/api-graphql"},
@@ -24,6 +26,10 @@
     { "path": "./packages/api-persistence"},
     { "path": "./packages/api"},
     { "path": "./packages/service-oauth2-mock-server"},
-    { "path": "./packages/service-mongodb-memory-server"}
-  ]
+    { "path": "./packages/service-mongodb-memory-server"},
+    { "path": "./packages/ui-sharethrift-components"},
+    { "path": "./packages/ui-sharethrift"},
+    { "path": "./packages/service-sendgrid" }
+  ],
+  "lib": ["dom", "esnext"]
 }
