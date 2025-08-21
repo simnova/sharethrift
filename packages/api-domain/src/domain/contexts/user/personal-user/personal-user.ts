@@ -1,7 +1,11 @@
 import { DomainSeedwork } from '@cellix/domain-seedwork';
 import type { Passport } from '../../passport.ts';
 import type { UserVisa } from '../user.visa.ts';
-import  { PersonalUserAccount, type PersonalUserAccountProps, type PersonalUserAccountEntityReference } from './personal-user-account.ts';
+import {
+	PersonalUserAccount,
+	type PersonalUserAccountProps,
+	type PersonalUserAccountEntityReference,
+} from './personal-user-account.ts';
 
 export interface PersonalUserProps extends DomainSeedwork.DomainEntityProps {
 	userType: string;
@@ -37,11 +41,17 @@ export class PersonalUser<props extends PersonalUserProps>
 	public static getNewInstance<props extends PersonalUserProps>(
 		newProps: props,
 		passport: Passport,
+		email: string,
+		firstName: string,
+		lastName: string,
 	): PersonalUser<props> {
 		const newInstance = new PersonalUser(newProps, passport);
 		newInstance.markAsNew();
 		newInstance._isNew = true;
 		//field assignments
+		newInstance.account.email = email;
+		newInstance.account.profile.firstName = firstName;
+		newInstance.account.profile.lastName = lastName;
 		newInstance._isNew = false;
 		return newInstance;
 	}

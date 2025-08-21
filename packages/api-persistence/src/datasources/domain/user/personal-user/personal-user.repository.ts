@@ -1,85 +1,43 @@
 import { MongooseSeedwork } from '@cellix/data-sources-mongoose';
+import type { Models } from '@sthrift/api-data-sources-mongoose-models';
 import { Domain } from '@sthrift/api-domain';
-import type { PersonalUserModelType } from '@sthrift/api-data-sources-mongoose-models';
-import { PersonalUserDomainAdapter } from './personal-user.domain-adapter.ts';
 
-export class PersonalUserRepositoryImpl<props extends Domain.Contexts.User.PersonalUser.PersonalUserProps>
-	extends MongooseSeedwork.MongoRepositoryBase<
-		Domain.Contexts.User.PersonalUser.PersonalUser<props>,
-		PersonalUserModelType,
-		props
+export class PersonalUserRepository<
+		PropType extends Domain.Contexts.User.PersonalUser.PersonalUserProps,
 	>
-	implements Domain.Contexts.User.PersonalUser.PersonalUserRepository<props>
+	extends MongooseSeedwork.MongoRepositoryBase<
+		Models.User.PersonalUser,
+		PropType,
+		Domain.Passport,
+		Domain.Contexts.User.PersonalUser.PersonalUser<PropType>
+	>
+	implements Domain.Contexts.User.PersonalUser.PersonalUserRepository<PropType>
 {
-	constructor(model: PersonalUserModelType) {
-		super(model, new PersonalUserDomainAdapter());
-	}
-
-	getNewInstance(name: string): Promise<Domain.Contexts.User.PersonalUser.PersonalUser<props>> {
-		// Create new instance with minimal required properties
-		// The name parameter might be used for username or display name
-		const newProps = {
-			id: this.model.createObjectId().toString(),
-			userType: 'personal',
-			isBlocked: false,
-			schemaVersion: '1.0.0',
-			account: {
-				accountType: 'personal',
-				email: `${name}@example.com`, // This should be replaced with actual email
-				username: name,
-				profile: {
-					firstName: '',
-					lastName: '',
-					location: {
-						address1: '',
-						city: '',
-						state: '',
-						country: '',
-						zipCode: '',
-					},
-				},
-			},
-			createdAt: new Date(),
-			updatedAt: new Date(),
-		} as props;
-
-		// For now, create a mock passport - this should be replaced with actual passport
-		const mockPassport = { user: { forPersonalUser: () => ({}) } } as unknown as Domain.Passport;
-		return Promise.resolve(this.getAdapter().toDomain(newProps, mockPassport));
-	}
-
-	async getById(id: string): Promise<Domain.Contexts.User.PersonalUser.PersonalUser<props>> {
-		const document = await this.model.findById(id);
-		if (!document) {
-			throw new Error(`PersonalUser with id ${id} not found`);
+	async getById(
+		id: string,
+	): Promise<Domain.Contexts.User.PersonalUser.PersonalUser<PropType>> {
+		const user = await this.model.findOne({ _id: id }).exec();
+		if (!user) {
+			throw new Error(`User with id ${id} not found`);
 		}
-		const mockPassport = { user: { forPersonalUser: () => ({}) } } as unknown as Domain.Passport;
-		return this.getAdapter().toDomain(document.toObject(), mockPassport);
+		return this.typeConverter.toDomain(user, this.passport);
 	}
 
-	async getAll(): Promise<Domain.Contexts.User.PersonalUser.PersonalUser<props>[]> {
-		const documents = await this.model.find({});
-		const mockPassport = { user: { forPersonalUser: () => ({}) } } as unknown as Domain.Passport;
-		return documents.map((doc) => 
-			this.getAdapter().toDomain(doc.toObject(), mockPassport)
+	// biome-ignore lint:noRequireAwait
+	async getNewInstance(
+		email: string,
+		firstName: string,
+		lastName: string,
+	): Promise<Domain.Contexts.User.PersonalUser.PersonalUser<PropType>> {
+		const adapter = this.typeConverter.toAdapter(new this.model());
+		return Promise.resolve(
+			Domain.Contexts.User.PersonalUser.PersonalUser.getNewInstance(
+				adapter,
+				this.passport,
+				email,
+				firstName,
+				lastName,
+			),
 		);
-	}
-
-	async getByEmail(email: string): Promise<Domain.Contexts.User.PersonalUser.PersonalUser<props> | null> {
-		const document = await this.model.findOne({ 'account.email': email });
-		if (!document) {
-			return null;
-		}
-		const mockPassport = { user: { forPersonalUser: () => ({}) } } as unknown as Domain.Passport;
-		return this.getAdapter().toDomain(document.toObject(), mockPassport);
-	}
-
-	async getByUsername(username: string): Promise<Domain.Contexts.User.PersonalUser.PersonalUser<props> | null> {
-		const document = await this.model.findOne({ 'account.username': username });
-		if (!document) {
-			return null;
-		}
-		const mockPassport = { user: { forPersonalUser: () => ({}) } } as unknown as Domain.Passport;
-		return this.getAdapter().toDomain(document.toObject(), mockPassport);
 	}
 }

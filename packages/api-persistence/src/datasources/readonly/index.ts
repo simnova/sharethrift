@@ -1,11 +1,19 @@
-import type { MongooseSeedwork } from '@cellix/data-sources-mongoose';
+import type { Domain } from '@sthrift/api-domain';
+import type { ModelsContext } from '../../index.ts';
+import type * as PersonalUser from './user/personal-user/index.ts';
+import { UserContext } from './user/index.ts';
 
-// biome-ignore lint/suspicious/noEmptyInterface: This interface is intentionally empty as a placeholder for future readonly data sources
-export interface ReadonlyDataSource {}
+export interface ReadonlyDataSource {
+	User: {
+		PersonalUser: {
+			PersonalUserReadRepo: PersonalUser.PersonalUserReadRepository;
+		};
+	};
+}
 
 export const ReadonlyDataSourceImplementation = (
-	initializedService: MongooseSeedwork.MongooseContextFactory,
-): ReadonlyDataSource => {
-  console.log(initializedService);
-	return {};
-};
+	models: ModelsContext,
+	passport: Domain.Passport,
+): ReadonlyDataSource => ({
+	User: UserContext(models, passport),
+});

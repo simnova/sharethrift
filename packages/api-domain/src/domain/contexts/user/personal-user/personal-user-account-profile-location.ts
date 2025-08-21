@@ -5,7 +5,7 @@ import type { PersonalUserAggregateRoot } from './personal-user.ts';
 export interface PersonalUserAccountProfileLocationProps
 	extends DomainSeedwork.ValueObjectProps {
 	address1: string;
-	address2: string | undefined;
+	address2?: string | undefined;
 	city: string;
 	state: string;
 	country: string;

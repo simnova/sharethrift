@@ -4,8 +4,8 @@ import type { PersonalUserAggregateRoot } from './personal-user.ts';
 
 export interface PersonalUserAccountProfileBillingProps
 	extends DomainSeedwork.ValueObjectProps {
-	subscriptionId: string | undefined;
-	cybersourceCustomerId: string | undefined;
+	subscriptionId?: string | undefined;
+	cybersourceCustomerId?: string | undefined;
 }
 
 export interface PersonalUserAccountProfileBillingEntityReference
