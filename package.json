@@ -42,14 +42,14 @@
 		"packages/service-mongoose",
 		"packages/service-token-validation",
 		"packages/service-otel",
-        "packages/service-sendgrid",
+		"packages/service-sendgrid",
 		"packages/api-application-services",
 		"packages/api-context-spec",
 		"packages/api-graphql",
 		"packages/api-rest",
 		"packages/api",
-        "packages/service-sendgrid",
-        "packages/ui-sharethrift-components"
+		"packages/service-sendgrid",
+		"packages/ui-sharethrift-components"
 	],
 	"devDependencies": {
 		"@amiceli/vitest-cucumber": "^5.1.2",
@@ -58,12 +58,13 @@
 		"@vitest/coverage-v8": "^3.2.4",
 		"azurite": "^3.35.0",
 		"concurrently": "^9.1.2",
+		"cpx2": "^3.0.2",
 		"rimraf": "^6.0.1",
+		"rollup": "3.29.4",
 		"tsx": "^4.20.3",
 		"typescript": "^5.8.3",
 		"vite": "^7.0.4",
-		"vitest": "^3.2.4",
-        "rollup": "3.29.4"
+		"vitest": "^3.2.4"
 	},
 	"dependencies": {
 		"@sthrift/api-domain": "^1.0.0",

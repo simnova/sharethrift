@@ -1,8 +1,12 @@
+
 import type { MongooseSeedwork } from '@cellix/data-sources-mongoose';
 import { ItemListingModelFactory, ListingModelFactory } from './listing/index.ts';
 
 export * as Conversation from './conversations/index.ts';
 export * as Listing from './listing/index.ts';
+
+// Explicit export for consumers
+export { ItemListingModelFactory };
 
 export const mongooseContextBuilder = (
 	initializedService: MongooseSeedwork.MongooseContextFactory,
