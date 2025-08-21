@@ -39,13 +39,11 @@ export class ReservationRequestDomainAdapter
   }
 
   get reservationPeriod() {
-    // Convert Date (Mongoose) to string (VO)
     const start = this.doc.reservationPeriodStart.toISOString();
     const end = this.doc.reservationPeriodEnd.toISOString();
     return new Domain.Contexts.ReservationPeriod({ start, end });
   }
   set reservationPeriod(value) {
-    // Convert string (VO) to Date (Mongoose)
     this.doc.reservationPeriodStart = new Date(value.start.valueOf() as string);
     this.doc.reservationPeriodEnd = new Date(value.end.valueOf() as string);
   }

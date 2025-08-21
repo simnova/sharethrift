@@ -67,10 +67,10 @@ export class ReservationRequest<props extends ReservationRequestProps>
   ): ReservationRequest<props> {
     const instance = new ReservationRequest(newProps, passport);
     instance.markAsNew();
-    instance.props.state = state;
+    instance.state = state;
     instance.listing = listing;
     instance.reserver = reserver;
-    instance.props.reservationPeriod = reservationPeriod;
+    instance.reservationPeriod = reservationPeriod;
     instance.isNew = false;
     return instance;
   }
@@ -105,6 +105,25 @@ export class ReservationRequest<props extends ReservationRequestProps>
 
   get reservationPeriod(): ReservationPeriod {
     return this.props.reservationPeriod;
+  }
+  set reservationPeriod(value: ReservationPeriod) {
+    if (
+      !this.isNew &&
+      !this.visa.determineIf(
+        (domainPermissions) => domainPermissions.canUpdateRequest
+      )
+    ) {
+      throw new DomainSeedwork.PermissionError(
+        "You do not have permission to update this reservation period"
+      );
+    }
+    if (!value) {
+      throw new DomainSeedwork.PermissionError(
+        "value cannot be null or undefined"
+      );
+    }
+    this.props.reservationPeriod = value;
+    this.props.updatedAt = new Date();
   }
 
   get createdAt(): Date {

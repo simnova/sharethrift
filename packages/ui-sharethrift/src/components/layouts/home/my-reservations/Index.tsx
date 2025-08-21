@@ -3,7 +3,7 @@ import { MyReservationsContainer } from "./pages/main.container";
 
 function MyReservationsMainWrapper() {
   const { userId } = useParams<{ userId: string }>();
-  return <MyReservationsContainer userId={userId} />;
+  return <MyReservationsContainer userId={userId || "demo-user"} />;
 }
 
 export default function MyReservationsRoutes() {
