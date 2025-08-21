@@ -1,4 +1,3 @@
-import bikeListingImg from '@sthrift/ui-sharethrift-components/src/assets/item-images/bike-listing.png';
 import { Carousel, Card } from 'antd';
 
 export interface ListingImageGalleryProps {
@@ -7,17 +6,12 @@ export interface ListingImageGalleryProps {
   className?: string;
 }
 
-export function ListingImageGallery({ title, className = '' }: { title: string; className?: string }) {
-  // Use images prop if provided, else default to 4 bike images
-  const images = Array.isArray(arguments[0]?.images) && arguments[0]?.images.length > 0
-    ? arguments[0].images
-    : [bikeListingImg, bikeListingImg, bikeListingImg, bikeListingImg];
-
+export function ListingImageGallery({ images, title, className = '' }: ListingImageGalleryProps) {
   return (
     <Carousel arrows dots swipeToSlide className={className} style={{ width: 450, height: 500 }}>
-      {images.map((imgSrc: string, idx: number) => (
+      {images.map((imgSrc: string) => (
         <Card
-          key={idx}
+          key={imgSrc}
           bodyStyle={{ padding: 0, margin: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', height: 500, width: 450, boxSizing: 'border-box' }}
           bordered={false}
           style={{ boxShadow: 'none', background: 'transparent', height: 500, width: 450, boxSizing: 'border-box' }}

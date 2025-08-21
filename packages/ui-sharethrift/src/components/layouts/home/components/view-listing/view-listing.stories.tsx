@@ -1,5 +1,5 @@
 import type { Meta, StoryObj } from '@storybook/react';
-import { ViewListing } from './index';
+import { ViewListing } from './view-listing';
 import type { ViewListingProps } from './view-listing';
 
 const meta: Meta<typeof ViewListing> = {
@@ -13,31 +13,10 @@ export default meta;
 
 type Story = StoryObj<typeof ViewListing>;
 
+import { DUMMY_LISTINGS } from '../mock-listings';
+
 const baseListing: ViewListingProps['listing'] = {
-  id: 'listing123',
-  title: 'City Bike',
-  description: 'A great bike for city commuting. Well maintained and ready to ride! Perfect for getting around downtown and exploring the city. Features include front and rear lights, a comfortable seat, and smooth gear shifting.',
-  price: 25,
-  priceUnit: 'per day',
-  location: 'Downtown Seattle',
-  images: [
-    '/api/placeholder/600/400',
-    '/api/placeholder/600/400',
-    '/api/placeholder/600/400',
-  ],
-  owner: {
-    id: 'owner456',
-    name: 'Patrick G.',
-    avatar: '/api/placeholder/50/50',
-    rating: 4.8,
-    reviewCount: 23,
-  },
-  category: 'Transportation',
-  condition: 'Excellent',
-  availableFrom: '2024-07-04',
-  availableTo: '2024-07-10',
-  status: 'Active',
-  itemName: 'Trek Hybrid Bike',
+  ...DUMMY_LISTINGS[0],
 };
 
 export const Default: Story = {
@@ -55,7 +34,7 @@ export const AsReserver: Story = {
     ...Default.args,
     userRole: 'reserver',
     isAuthenticated: true,
-    currentUserId: 'user789',
+    currentUserId: 'user2',
     reservationRequestStatus: 'pending',
   },
 };
@@ -65,6 +44,6 @@ export const AsOwner: Story = {
     ...Default.args,
     userRole: 'sharer',
     isAuthenticated: true,
-    currentUserId: 'owner456',
+    currentUserId: baseListing.sharer,
   },
 };

@@ -1,0 +1,11 @@
+query ViewListingInformationGetListing($listingId: ID!) {
+  listing(id: $listingId) {
+    id
+    title
+    description
+    status
+    price
+    location
+    category
+  }
+}

@@ -27,8 +27,17 @@ export interface ListingInformationProps {
   onSignUpClick?: () => void;
   className?: string;
 }
-export function ListingInformation(props: ListingInformationProps) {
-  const { listing } = props;
+
+export function ListingInformation({
+  listing,
+  onReserveClick,
+  className = '',
+  // userRole,
+  // isAuthenticated,
+  // reservationRequestStatus,
+  // onLoginClick,
+  // onSignUpClick,
+}: ListingInformationProps) {
   if (listing.status !== 'Active') {
     return (
       <div className="p-4">
@@ -44,7 +53,7 @@ export function ListingInformation(props: ListingInformationProps) {
   }
 
   return (
-    <Row gutter={[0, 24]} style={{ width: '100%' }}>
+    <Row gutter={[0, 24]} style={{ width: '100%' }} className={className}>
       <Col span={24}>
         {/* Title at top, using title42 class */}
         <div className="title42">{listing.title}</div>
@@ -82,14 +91,6 @@ export function ListingInformation(props: ListingInformationProps) {
             <DatePicker.RangePicker
               style={{
                 width: '100%',
-                // height: 44,
-                // borderRadius: 8,
-                // fontFamily: 'var(--Urbanist, Arial, sans-serif)',
-                // fontSize: 14,
-                // color: 'var(--color-message-text)',
-                // backgroundColor: 'var(--color-background)',
-                // border: '1px solid var(--color-foreground-2)',
-                // boxShadow: '0 2px 8px rgba(0,0,0,0.04)'
               }}
               placeholder={["Start date", "End date"]}
               allowClear
@@ -101,7 +102,7 @@ export function ListingInformation(props: ListingInformationProps) {
         {/* Reserve Button */}
         <Row>
           <Col span={24}>
-            <Button type="primary" className="primaryButton" style={{ width: '100%' }}>
+            <Button type="primary" className="primaryButton" style={{ width: '100%' }} onClick={onReserveClick}>
               Reserve
             </Button>
           </Col>

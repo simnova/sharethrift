@@ -1,32 +1,13 @@
 import { Row, Col } from 'antd';
-import { ListingImageGallery } from './listing-image-gallery';
-import { SharerInformation } from './sharer-information';
-import { ListingInformation } from './listing-information';
-import type { ListingStatus, UserRole, ReservationRequestStatus } from './listing-information';
+import ListingImageGalleryContainer from './listing-image-gallery/listing-image-gallery.container';
+import SharerInformationContainer from './sharer-information/sharer-information.container';
+import ListingInformationContainer from './listing-information/listing-information.container';
+import type { UserRole, ReservationRequestStatus } from './listing-information/listing-information';
+
+import type { ItemListing } from '../../mock-listings';
 
 export interface ViewListingProps {
-  listing: {
-    id: string;
-    title: string;
-    itemName?: string;
-    description: string;
-    price?: number;
-    priceUnit?: string;
-    category: string;
-    condition?: string;
-    location: string;
-    availableFrom: string;
-    availableTo: string;
-    status: ListingStatus;
-    images: string[];
-    owner: {
-      id: string;
-      name: string;
-      avatar?: string;
-      rating: number;
-      reviewCount: number;
-    };
-  };
+  listing: ItemListing;
   userRole: UserRole;
   isAuthenticated: boolean;
   currentUserId?: string;
@@ -35,35 +16,18 @@ export interface ViewListingProps {
 }
 
 export function ViewListing({ 
-  listing, 
-  userRole, 
-  isAuthenticated, 
-  currentUserId,
+  listing,
+  userRole,
+  isAuthenticated,
   reservationRequestStatus,
-  sharedTimeAgo = '2 days ago' 
+  sharedTimeAgo,
 }: ViewListingProps) {
-
-  const handleReserveClick = () => {
-    if (!isAuthenticated) {
-      // TODO: Show login or redirect to login page
-    } else {
-      // TODO: Handle reservation request logic
-      console.log('Creating reservation request for listing:', listing.id);
-    }
+  // Mock sharer info (since ItemListing.sharer is just an ID)
+  const sharer = {
+    id: listing.sharer,
+    name: listing.sharer,
+    avatar: undefined,
   };
-
-  const handleLoginClick = () => {
-    // TODO: Navigate to login page or trigger login flow
-    console.log('Navigating to login...');
-  };
-
-  const handleSignUpClick = () => {
-    // TODO: Navigate to signup page or trigger signup flow
-    console.log('Navigating to signup...');
-  };
-
-  const isOwner = userRole === 'sharer' || Boolean(currentUserId && currentUserId === listing.owner.id);
-
   return (
     <>
       <Row
@@ -73,12 +37,11 @@ export function ViewListing({
       >
         <Col span={24} style={{ marginBottom: 0, paddingBottom: 0 }}>
           {/* Sharer Info at top */}
-          <SharerInformation
-            sharer={listing.owner}
-            listingId={listing.id}
-            isOwner={isOwner}
-            sharedTimeAgo={sharedTimeAgo}
+          <SharerInformationContainer
+            sharer={sharer}
+            listingId={listing._id}
             className="sharer-info-responsive"
+            sharedTimeAgo={sharedTimeAgo}
           />
         </Col>
         <Col span={24} style={{ marginTop: 0, paddingTop: 0 }}>
@@ -86,43 +49,23 @@ export function ViewListing({
           <Row gutter={36} align="top" style={{ marginTop: 0, paddingTop: 0 }} className="listing-main-responsive">
             {/* Left: Images */}
             <Col xs={24} md={12} style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'center', marginTop: 0, paddingTop: 0 }}>
-              <ListingImageGallery title={listing.title} className="listing-gallery-responsive" />
+              <ListingImageGalleryContainer images={listing.images ?? []} title={listing.title} className="listing-gallery-responsive" />
             </Col>
             {/* Right: Info/Form */}
             <Col xs={24} md={12} style={{ marginTop: 0, paddingTop: 0 }}>
-              <ListingInformation
-                listing={listing}
+              <ListingInformationContainer
+                listingId={listing._id}
                 userRole={userRole}
                 isAuthenticated={isAuthenticated}
                 reservationRequestStatus={reservationRequestStatus}
-                onReserveClick={handleReserveClick}
-                onLoginClick={handleLoginClick}
-                onSignUpClick={handleSignUpClick}
+                onReserveClick={undefined}
+                className="listing-info-responsive"
               />
             </Col>
           </Row>
         </Col>
       </Row>
-      {/*
-      <Modal
-        open={showLoginModal}
-        onCancel={() => setShowLoginModal(false)}
-        footer={null}
-        centered
-      >
-        <Row justify="center" align="middle" style={{ padding: 24 }}>
-          <Col span={24} style={{ textAlign: 'center' }}>
-            <h2 className="text-lg font-semibold">Sign in to reserve this listing</h2>
-          </Col>
-          <Col span={24} style={{ marginBottom: 8 }}>
-            <Button type="primary" block onClick={handleLoginClick}>Login</Button>
-          </Col>
-          <Col span={24}>
-            <Button block onClick={handleSignUpClick}>Sign Up</Button>
-          </Col>
-        </Row>
-      </Modal>
-      */}
+      {/* TODO: Add login modal here for unauthenticated users attempting to reserve a listing. */}
     </>
   );
 }
