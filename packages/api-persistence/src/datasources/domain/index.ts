@@ -1,7 +1,12 @@
-import type { Domain } from '@sthrift/api-domain';
+import type { Domain, DomainDataSource } from '@sthrift/api-domain';
 import type { ModelsContext } from '../../index.ts';
 import { UserContextPersistence } from './user/index.ts';
+import { ListingContextPersistence } from './listing/index.ts';
 
-export const DomainDataSourceImplementation = (models: ModelsContext, passport: Domain.Passport) => ({
-    User: UserContextPersistence(models, passport)
+export const DomainDataSourceImplementation = (
+	models: ModelsContext,
+	passport: Domain.Passport,
+): DomainDataSource => ({
+	User: UserContextPersistence(models, passport),
+	Listing: ListingContextPersistence(models, passport),
 });

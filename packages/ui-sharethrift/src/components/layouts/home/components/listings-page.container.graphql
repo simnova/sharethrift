@@ -1,0 +1,43 @@
+fragment HomeListingsPageContainerListingFields on ItemListing {
+  id
+  title
+  description
+  category
+  location
+  state
+  images
+  createdAt
+  updatedAt
+  sharer {
+    id
+    displayName
+  }
+}
+
+query HomeListingsPageContainerActiveListings(
+  $first: Int
+  $after: String
+  $search: String
+  $category: String
+) {
+  activeListings(
+    first: $first
+    after: $after
+    search: $search
+    category: $category
+  ) {
+    edges {
+      node {
+        ...HomeListingsPageContainerListingFields
+      }
+      cursor
+    }
+    pageInfo {
+      hasNextPage
+      hasPreviousPage
+      startCursor
+      endCursor
+    }
+    totalCount
+  }
+}
