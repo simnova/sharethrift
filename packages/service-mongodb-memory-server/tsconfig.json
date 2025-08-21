@@ -2,7 +2,7 @@
 	"extends": ["../../tsconfig.base"],
 	"compilerOptions": {
 		/* Modules */
-		"rootDir": "src",
+		"rootDir": ".",
 
 		/* Emit */
 		"outDir": "dist"

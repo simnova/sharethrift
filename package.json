@@ -48,12 +48,12 @@
 		"packages/api-graphql",
 		"packages/api-rest",
 		"packages/api",
-        "packages/service-sendgrid",
-        "packages/ui-sharethrift-components"
+		"packages/service-sendgrid",
+		"packages/ui-sharethrift-components"
 	],
 	"devDependencies": {
 		"@amiceli/vitest-cucumber": "^5.1.2",
-		"@biomejs/biome": "^2.0.0",
+		"@biomejs/biome": "2.0.0",
 		"@types/dotenv": "^6.1.1",
 		"@vitest/coverage-v8": "^3.2.4",
 		"azurite": "^3.35.0",

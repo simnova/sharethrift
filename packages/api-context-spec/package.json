@@ -10,9 +10,9 @@
 	"scripts": {
 		"build": "tsc --build",
 		"clean": "rimraf dist node_modules tsconfig.tsbuildinfo && tsc --build --clean",
-		"lint": "npx biome lint",
-		"format": "npx biome format --write",
-		"prebuild": "npx biome lint"
+		"lint": "biome lint",
+		"format": "biome format --write",
+		"prebuild": "biome lint"
 	},
 	"peerDependencies": {
 		"@sthrift/api-domain": "^1.0.0"

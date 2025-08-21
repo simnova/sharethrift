@@ -21,7 +21,7 @@
     },
     "github.copilot.chat.customInstructionsInSystemMessage": false,
     "[typescript]": {
-        "editor.defaultFormatter": "esbenp.prettier-vscode"
+        "editor.defaultFormatter": "biomejs.biome"
     },
     "typescript.experimental.useTsgo": true,
     // "[typescript]": {
