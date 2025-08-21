@@ -24,7 +24,66 @@ enum ItemListingState {
   AppealRequested
 }
 
+# My Listings Dashboard Types
+enum ListingStatus {
+  Active
+  Paused
+  Reserved
+  Expired
+  Draft
+  Blocked
+}
+
+enum RequestStatus {
+  Accepted
+  Rejected
+  Closed
+  Pending
+  Closing
+}
+
+type DateRange {
+  start: DateTime!
+  end: DateTime!
+}
+
+type ListingAllDTO {
+  id: String!
+  title: String!
+  image: String
+  publishedAt: DateTime!
+  reservationPeriod: DateRange!
+  status: ListingStatus!
+  pendingRequestsCount: Int!
+}
+
+type ListingRequestDTO {
+  id: String!
+  title: String!
+  image: String
+  requestedBy: String!
+  requestedOn: DateTime!
+  reservationPeriod: DateRange!
+  status: RequestStatus!
+}
+
+type ListingAllPage {
+  items: [ListingAllDTO!]!
+  total: Int!
+  page: Int!
+  pageSize: Int!
+}
+
+type ListingRequestPage {
+  items: [ListingRequestDTO!]!
+  total: Int!
+  page: Int!
+  pageSize: Int!
+}
+
 type Query {
   itemListings: [ItemListing!]!
   itemListing(id: ObjectId!): ItemListing
+  myListingsAll(page: Int!, pageSize: Int!): ListingAllPage!
+  myListingsRequests(page: Int!, pageSize: Int!): ListingRequestPage!
 }

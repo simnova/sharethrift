@@ -1,15 +1,19 @@
 import type { ApiContextSpec } from '@sthrift/api-context-spec';
 import { Domain } from '@sthrift/api-domain';
+import type { ItemListingRepository, ItemListingProps } from '@sthrift/api-domain';
+import { MyListingsAllQuery, MyListingsRequestsQuery, MockListingService } from './listing/index.ts';
 
 interface JwtPayload {
 	sub: string;
 	email: string;
 }
 
-// biome-ignore lint/suspicious/noEmptyInterface: <explanation>
-export interface ApplicationServices {}
+export interface ApplicationServices {
+	readonly myListingsAllQuery: MyListingsAllQuery;
+	readonly myListingsRequestsQuery: MyListingsRequestsQuery;
+}
 
-// biome-ignore lint/complexity/noBannedTypes: <explanation>
+// biome-ignore lint/complexity/noBannedTypes: empty object type for future extension
 export type PrincipalHints = {
 	// memberId: string | undefined;
 	// communityId: string | undefined;
@@ -61,7 +65,17 @@ export const buildApplicationServicesFactory = (
 			}
 		}
 
-		return {};
+		// Initialize listing services with mock data
+		const mockListingService = new MockListingService();
+		const itemListingRepository = {} as ItemListingRepository<ItemListingProps>; // TODO: Get from infrastructure services registry
+		
+		const myListingsAllQuery = new MyListingsAllQuery(itemListingRepository, mockListingService);
+		const myListingsRequestsQuery = new MyListingsRequestsQuery(itemListingRepository, mockListingService);
+
+		return {
+			myListingsAllQuery,
+			myListingsRequestsQuery,
+		};
 	};
 
 	return {

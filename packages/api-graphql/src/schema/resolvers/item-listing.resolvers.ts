@@ -17,5 +17,43 @@ export const itemListingResolvers = {
       // TODO: implement actual logic to fetch active listings
       return [];
     },
+    myListingsAll: async (
+      _parent: unknown, 
+      args: { page: number; pageSize: number }, 
+      context: GraphContext
+    ) => {
+      console.log('myListingsAll resolver called with args:', args);
+      
+      if (!context.applicationServices) {
+        throw new Error('Application services not available');
+      }
+
+      // TODO: Get actual user ID from context/authentication
+      const userId = 'mock-user-id';
+      
+      return await context.applicationServices.myListingsAllQuery.execute(userId, {
+        page: args.page,
+        pageSize: args.pageSize
+      });
+    },
+    myListingsRequests: async (
+      _parent: unknown, 
+      args: { page: number; pageSize: number }, 
+      context: GraphContext
+    ) => {
+      console.log('myListingsRequests resolver called with args:', args);
+      
+      if (!context.applicationServices) {
+        throw new Error('Application services not available');
+      }
+
+      // TODO: Get actual user ID from context/authentication
+      const userId = 'mock-user-id';
+      
+      return await context.applicationServices.myListingsRequestsQuery.execute(userId, {
+        page: args.page,
+        pageSize: args.pageSize
+      });
+    },
   },
 };
