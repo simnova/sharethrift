@@ -69,80 +69,8 @@ export class ItemListingRepository implements Domain.Contexts.ItemListingReposit
 		};
 	}
 
-	async getBySharerID(sharerID: string, options?: {
-		search?: string;
-		status?: string;
-		first?: number;
-		after?: string;
-		sortBy?: 'title' | 'createdAt' | 'updatedAt' | 'sharingPeriodStart';
-		sortOrder?: 'asc' | 'desc';
-	}): Promise<{
-		edges: Array<{
-			node: Domain.Contexts.ItemListing<PropType>;
-			cursor: string;
-		}>;
-		pageInfo: {
-			hasNextPage: boolean;
-			hasPreviousPage: boolean;
-			startCursor?: string;
-			endCursor?: string;
-		};
-		totalCount: number;
-	}> {
+	async getBySharerID(sharerID: string): Promise<Domain.Contexts.ItemListing<PropType>[]> {
 		const mongoItems = await this.model.find({ sharer: sharerID }).exec();
-		const listings = mongoItems.map(doc => this.converter.toDomain(doc, this.passport));
-		
-		// Apply filtering and sorting (basic implementation)
-		let filtered = [...listings];
-		
-		if (options?.search) {
-			const searchLower = options.search.toLowerCase();
-			filtered = filtered.filter(listing =>
-				listing.title.valueOf().toLowerCase().includes(searchLower)
-			);
-		}
-		
-		if (options?.status) {
-			filtered = filtered.filter(listing => 
-				listing.state.valueOf() === options.status
-			);
-		}
-		
-		// Apply pagination
-		const first = options?.first || 6;
-		const startIndex = options?.after ? parseInt(options.after) + 1 : 0;
-		const endIndex = Math.min(startIndex + first, filtered.length);
-		const slicedItems = filtered.slice(startIndex, endIndex);
-		
-		const edges = slicedItems.map((item, index) => ({
-			node: item,
-			cursor: (startIndex + index).toString(),
-		}));
-
-		const pageInfo: {
-			hasNextPage: boolean;
-			hasPreviousPage: boolean;
-			startCursor?: string;
-			endCursor?: string;
-		} = {
-			hasNextPage: endIndex < filtered.length,
-			hasPreviousPage: startIndex > 0,
-		};
-
-		if (edges.length > 0 && edges[0]) {
-			pageInfo.startCursor = edges[0].cursor;
-		}
-		if (edges.length > 0) {
-			const lastEdge = edges[edges.length - 1];
-			if (lastEdge) {
-				pageInfo.endCursor = lastEdge.cursor;
-			}
-		}
-		
-		return {
-			edges,
-			pageInfo,
-			totalCount: filtered.length,
-		};
+		return mongoItems.map(doc => this.converter.toDomain(doc, this.passport));
 	}
 }

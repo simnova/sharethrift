@@ -34,26 +34,7 @@ export interface ItemListingRepository<props extends ItemListingProps>
 	}>;
 	
 	/**
-	 * Get listings by sharer ID with enhanced filtering and pagination
+	 * Get listings by sharer ID
 	 */
-	getBySharerID(sharerId: string, options?: {
-		search?: string;
-		status?: string;
-		first?: number;
-		after?: string;
-		sortBy?: 'title' | 'createdAt' | 'updatedAt' | 'sharingPeriodStart';
-		sortOrder?: 'asc' | 'desc';
-	}): Promise<{
-		edges: Array<{
-			node: ItemListing<props>;
-			cursor: string;
-		}>;
-		pageInfo: {
-			hasNextPage: boolean;
-			hasPreviousPage: boolean;
-			startCursor?: string;
-			endCursor?: string;
-		};
-		totalCount: number;
-	}>;
+	getBySharerID(sharerId: string): Promise<ItemListing<props>[]>;
 }
