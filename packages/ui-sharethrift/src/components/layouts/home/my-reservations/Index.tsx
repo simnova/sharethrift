@@ -1,12 +1,16 @@
-import { Routes, Route } from "react-router-dom";
-import MyReservationsMain from "./pages/Main";
-import ViewRequest from "./pages/ViewRequest";
+import { Routes, Route, useParams } from "react-router-dom";
+import { MyReservationsContainer } from "./pages/my-reservations.container";
+
+function MyReservationsMainWrapper() {
+  const { userId } = useParams<{ userId: string }>();
+  return <MyReservationsContainer userId={userId || "demo-user"} />;
+}
 
 export default function MyReservationsRoutes() {
   return (
     <Routes>
-      <Route path="user/:userId" element={<MyReservationsMain />} />
-      <Route path="user/:userId/reservation-request/:reservationId/view" element={<ViewRequest />} />
+      <Route path="" element={<MyReservationsMainWrapper />} /> {/*Here for show purposes*/}
+      <Route path="user/:userId" element={<MyReservationsMainWrapper />} />
     </Routes>
   );
 }

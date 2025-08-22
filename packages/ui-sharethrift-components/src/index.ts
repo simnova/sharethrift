@@ -9,3 +9,4 @@ export { SearchBar } from './molecules/search-bar/index.js';
 export { MessageSharerButton } from './molecules/message-sharer-button.js';
 export { AppLayout } from './organisms/app-layout/index.js';
 export { ListingsGrid } from './organisms/listings-grid/index.js';
+export { ReservationStatusTag } from './atoms/reservation-status-tag/index.js';

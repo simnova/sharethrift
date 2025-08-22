@@ -24,8 +24,65 @@ const typeDefs = `#graphql
 	displayName: String
   }
 
+  type Community {
+	id: String
+	name: String
+	createdBy: EndUser
+  } 
+
+  type EndUser {
+	id: String
+	displayName: String
+  }
+
   type Query {
 	hello: String
+    myReservations(userId: ID!): [ReservationRequest!]!
+  }
+
+  type Mutation {
+    cancelReservation(id: ID!): ReservationRequest
+    closeReservation(id: ID!): ReservationRequest
+  }
+
+  type ReservationRequest {
+    id: ID!
+    state: ReservationRequestState!
+    reservationPeriodStart: String!
+    reservationPeriodEnd: String!
+    createdAt: String!
+    updatedAt: String!
+    closeRequested: Boolean!
+    listing: Listing!
+    reserver: User!
+  }
+
+  enum ReservationRequestState {
+    REQUESTED
+    ACCEPTED
+    REJECTED
+    RESERVATION_PERIOD
+    CANCELLED
+  }
+
+  type Listing {
+    id: ID!
+    title: String
+    imageUrl: String
+  }
+
+  type User {
+    id: ID!
+    name: String
+  }
+
+  input CommunityCreateInput {
+	name: String!
+	createdByEndUserId: String!
+  }
+
+  type Mutation {
+	communityCreate(input: CommunityCreateInput!): Community
   }
 
   input CommunityCreateInput {
@@ -59,6 +116,7 @@ export const graphHandlerCreator = (
 		typeDefs,
 		resolvers,
 	});
+	
 	const functionOptions: WithRequired<
 		AzureFunctionsMiddlewareOptions<GraphContext>,
 		'context'

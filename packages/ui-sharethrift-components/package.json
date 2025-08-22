@@ -1,6 +1,6 @@
 {
   "name": "@sthrift/ui-sharethrift-components",
-  "version": "0.1.0",
+  "version": "1.0.0",
   "description": "Reusable UI components (molecules, organisms, theme) for ShareThrift portals.",
   "type": "module",
   "main": "dist/index.js",
