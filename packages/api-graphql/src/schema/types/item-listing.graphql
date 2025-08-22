@@ -12,6 +12,23 @@ type ItemListing {
   updatedAt: DateTime
   sharingHistory: [ObjectId!]
   reports: Int
+  # Extended fields for My Listings
+  pendingRequestsCount: Int
+  isReserved: Boolean
+  requestData: ReservationRequestData
+}
+
+type ReservationRequestData {
+  id: String!
+  requestedBy: String!
+  requestedOn: DateTime!
+  status: ReservationRequestStatus!
+  reservationPeriod: DateRange!
+}
+
+type DateRange {
+  start: DateTime!
+  end: DateTime!
 }
 
 enum ItemListingState {
@@ -24,7 +41,78 @@ enum ItemListingState {
   AppealRequested
 }
 
+enum ReservationRequestStatus {
+  Pending
+  Accepted
+  Rejected
+  Closed
+  Closing
+}
+
+# Connection types for pagination
+type ItemListingEdge {
+  node: ItemListing!
+  cursor: String!
+}
+
+type ItemListingConnection {
+  edges: [ItemListingEdge!]!
+  pageInfo: PageInfo!
+  totalCount: Int!
+}
+
+type PageInfo {
+  hasNextPage: Boolean!
+  hasPreviousPage: Boolean!
+  startCursor: String
+  endCursor: String
+}
+
+# Input types for filtering
+input ItemListingFilter {
+  searchText: String
+  statusFilter: [String!]
+  sortBy: String
+  sortOrder: String
+}
+
+# Action result type
+type ListingActionResult {
+  success: Boolean!
+  message: String
+}
+
 type Query {
   itemListings: [ItemListing!]!
   itemListing(id: ObjectId!): ItemListing
+  
+  # My Listings queries with pagination and filtering
+  myListingsAll(
+    page: Int!
+    pageSize: Int!
+    filter: ItemListingFilter
+  ): ItemListingConnection!
+  
+  myListingsRequests(
+    page: Int!
+    pageSize: Int!
+    filter: ItemListingFilter  
+  ): ItemListingConnection!
+}
+
+type Mutation {
+  # Listing actions (placeholder implementations)
+  pauseListing(listingId: String!): ListingActionResult!
+  reinstateListing(listingId: String!): ListingActionResult!
+  appealListing(listingId: String!, reason: String!): ListingActionResult!
+  publishListing(listingId: String!): ListingActionResult!
+  editListing(listingId: String!): ListingActionResult!
+  deleteListing(listingId: String!): ListingActionResult!
+  
+  # Request actions (placeholder implementations)
+  acceptRequest(requestId: String!): ListingActionResult!
+  rejectRequest(requestId: String!): ListingActionResult!
+  closeRequest(requestId: String!): ListingActionResult!
+  messageRequester(requestId: String!): ListingActionResult!
+  deleteRequest(requestId: String!): ListingActionResult!
 }
