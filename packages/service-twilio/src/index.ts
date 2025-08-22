@@ -50,8 +50,8 @@ export class ServiceTwilio implements ServiceBase<ServiceTwilio> {
 
   public async getConversation(conversationId: string): Promise<ConversationInstance> {
     if (!this.client) throw new Error('Twilio client not initialized');
-    const result = await this.client.conversations.v1.conversations(conversationId).fetch();
-    return result;
+    return await this.client.conversations.v1.conversations(conversationId).fetch();
+
   }
 
   public async sendMessage(conversationId: string, body: string, author?: string): Promise<MessageInstance> {
