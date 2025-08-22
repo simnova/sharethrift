@@ -155,7 +155,7 @@ export function AllListingsTable({
       key: 'publishedAt',
       sorter: true,
       sortOrder: sorter.field === 'publishedAt' ? sorter.order : null,
-      render: (date: Date) => date.toLocaleDateString(),
+      render: (date: Date) => date.toISOString().slice(0, 10),
     },
     {
       title: 'Reservation Period',
@@ -164,7 +164,7 @@ export function AllListingsTable({
       sortOrder: sorter.field === 'sharingPeriodStart' ? sorter.order : null,
       render: (_, record) => (
         <span>
-          {record.sharingPeriodStart.toLocaleDateString()} - {record.sharingPeriodEnd.toLocaleDateString()}
+          {record.sharingPeriodStart.toISOString().slice(0, 10)} - {record.sharingPeriodEnd.toISOString().slice(0, 10)}
         </span>
       ),
     },
@@ -196,7 +196,7 @@ export function AllListingsTable({
       key: 'actions',
       width: 200,
       render: (_, record) => (
-        <div style={{ display: 'flex', flexWrap: 'wrap', gap: 4 }}>
+        <div style={{ display: 'flex', flexWrap: 'nowrap', gap: 4, alignItems: 'center', overflowX: 'auto' }}>
           {getActionButtons(record)}
         </div>
       ),

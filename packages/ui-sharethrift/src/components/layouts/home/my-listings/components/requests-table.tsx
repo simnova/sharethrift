@@ -153,7 +153,7 @@ export function RequestsTable({
       key: 'requestedOn',
       sorter: true,
       sortOrder: sorter.field === 'requestedOn' ? sorter.order : null,
-      render: (date: Date) => date.toLocaleDateString(),
+      render: (date: Date) => date.toISOString().slice(0, 10),
     },
     {
       title: 'Reservation Period',
@@ -162,7 +162,7 @@ export function RequestsTable({
       sortOrder: sorter.field === 'reservationPeriodStart' ? sorter.order : null,
       render: (_, record) => (
         <span>
-          {record.reservationPeriodStart.toLocaleDateString()} - {record.reservationPeriodEnd.toLocaleDateString()}
+          {record.reservationPeriodStart.toISOString().slice(0, 10)} - {record.reservationPeriodEnd.toISOString().slice(0, 10)}
         </span>
       ),
     },
