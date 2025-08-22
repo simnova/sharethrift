@@ -29,7 +29,7 @@ export class ServiceTwilio implements ServiceBase<ServiceTwilio> {
     this.client = new Twilio(process.env['TWILIO_ACCOUNT_SID'], process.env['TWILIO_AUTH_TOKEN']);
     console.log('ServiceTwilio started');
 
-    return this as Exclude<ServiceTwilio, ServiceBase<ServiceTwilio>>;
+    return Promise.resolve(this) as Exclude<ServiceTwilio, ServiceBase<ServiceTwilio>>;
   }
 
   public shutDown(): Promise<void> {
