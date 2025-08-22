@@ -41,6 +41,10 @@ export function ViewListing({
           .listing-main-responsive {
             flex-direction: column !important;
             gap: 0 !important;
+            align-items: center !important;
+          }
+          .sharer-info-responsive {
+            align-items: center !important;
           }
           .listing-gallery-responsive,
           .listing-info-responsive,
@@ -49,6 +53,11 @@ export function ViewListing({
             max-width: 450px !important;
             margin-left: auto !important;
             margin-right: auto !important;
+          }
+          .listing-info-text-row,
+          .sharer-info-text-row {
+            width: 100% !important;
+            text-align: left !important;
           }
           .listing-gallery-responsive {
             height: auto !important;
