@@ -71,7 +71,7 @@ generates:
   ./src/schema/builder/graphql.schema.json:
     plugins:
       - 'introspection'
-  ../ui-community/src/generated.tsx:
+  ../ui-sharethrift/src/generated.tsx:
     documents: '../ui-sharethrift/src/components/**/**.graphql'
     config:
       withHooks: true
