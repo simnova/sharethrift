@@ -2,80 +2,92 @@
 query HomeMyListingsContainerMyListingsAll(
   $page: Int!
   $pageSize: Int!
-  $searchText: String
-  $statusFilter: [ListingStatus!]
-  $sortBy: String
-  $sortOrder: String
+  $filter: ItemListingFilter
 ) {
   myListingsAll(
     page: $page
     pageSize: $pageSize
-    searchText: $searchText
-    statusFilter: $statusFilter
-    sortBy: $sortBy
-    sortOrder: $sortOrder
+    filter: $filter
   ) {
-    items {
-      ...HomeMyListingsContainerListingFields
+    edges {
+      node {
+        ...HomeMyListingsContainerListingFields
+      }
+      cursor
     }
-    total
-    page
-    pageSize
+    pageInfo {
+      hasNextPage
+      hasPreviousPage
+      startCursor
+      endCursor
+    }
+    totalCount
   }
 }
 
 # Listing fields fragment for My Listings
-fragment HomeMyListingsContainerListingFields on ListingAllDTO {
+fragment HomeMyListingsContainerListingFields on ItemListing {
   id
   title
-  image
-  publishedAt
-  reservationPeriod {
-    start
-    end
-  }
-  status
+  sharer
+  createdAt
+  updatedAt
+  sharingPeriodStart
+  sharingPeriodEnd
+  state
+  reports
   pendingRequestsCount
+  isReserved
 }
 
 # My Listings Requests Query
 query HomeMyListingsContainerMyListingsRequests(
   $page: Int!
   $pageSize: Int!
-  $searchText: String
-  $statusFilter: [RequestStatus!]
-  $sortBy: String
-  $sortOrder: String
+  $filter: ItemListingFilter
 ) {
   myListingsRequests(
     page: $page
     pageSize: $pageSize
-    searchText: $searchText
-    statusFilter: $statusFilter
-    sortBy: $sortBy
-    sortOrder: $sortOrder
+    filter: $filter
   ) {
-    items {
-      ...HomeMyListingsContainerRequestFields
+    edges {
+      node {
+        ...HomeMyListingsContainerListingWithRequestFields
+      }
+      cursor
     }
-    total
-    page
-    pageSize
+    pageInfo {
+      hasNextPage
+      hasPreviousPage
+      startCursor
+      endCursor
+    }
+    totalCount
   }
 }
 
 # Request fields fragment for My Listings
-fragment HomeMyListingsContainerRequestFields on ListingRequestDTO {
+fragment HomeMyListingsContainerListingWithRequestFields on ItemListing {
   id
   title
-  image
-  requestedBy
-  requestedOn
-  reservationPeriod {
-    start
-    end
+  sharer
+  createdAt
+  updatedAt
+  sharingPeriodStart
+  sharingPeriodEnd
+  state
+  reports
+  requestData {
+    id
+    requestedBy
+    requestedOn
+    status
+    reservationPeriod {
+      start
+      end
+    }
   }
-  status
 }
 
 # Listing Action Mutations (placeholder implementations)
