@@ -1,7 +1,32 @@
 import type { ApiContextSpec } from '@sthrift/api-context-spec';
 import { Domain } from '@sthrift/api-domain';
-import type { ItemListingRepository, ItemListingProps } from '@sthrift/api-domain';
-import { MyListingsAllQuery, MyListingsRequestsQuery, MockListingService } from './listing/index.ts';
+import { 
+	MyListingsAllQuery, 
+	MyListingsRequestsQuery,
+	PauseListingMutation,
+	ReinstateListingMutation,
+	AppealListingMutation,
+	PublishListingMutation,
+	EditListingMutation,
+	DeleteListingMutation,
+	AcceptRequestMutation,
+	RejectRequestMutation,
+	CloseRequestMutation,
+	MessageRequesterMutation,
+	DeleteRequestMutation
+} from './listing/index.ts';
+
+// Re-export types for external use
+export type {
+	ListingAllDTO,
+	ListingRequestDTO,
+	ListingStatus,
+	RequestStatus,
+	ListingAllPage,
+	ListingRequestPage,
+	MyListingsAllQueryInput,
+	MyListingsRequestsQueryInput
+} from './listing/index.ts';
 
 interface JwtPayload {
 	sub: string;
@@ -9,11 +34,27 @@ interface JwtPayload {
 }
 
 export interface ApplicationServices {
-	readonly myListingsAllQuery: MyListingsAllQuery;
-	readonly myListingsRequestsQuery: MyListingsRequestsQuery;
+	// My Listings queries
+	myListingsAllQuery: MyListingsAllQuery;
+	myListingsRequestsQuery: MyListingsRequestsQuery;
+	
+	// Listing action mutations (placeholder implementations)
+	pauseListingMutation: PauseListingMutation;
+	reinstateListingMutation: ReinstateListingMutation;
+	appealListingMutation: AppealListingMutation;
+	publishListingMutation: PublishListingMutation;
+	editListingMutation: EditListingMutation;
+	deleteListingMutation: DeleteListingMutation;
+	
+	// Request action mutations (placeholder implementations)
+	acceptRequestMutation: AcceptRequestMutation;
+	rejectRequestMutation: RejectRequestMutation;
+	closeRequestMutation: CloseRequestMutation;
+	messageRequesterMutation: MessageRequesterMutation;
+	deleteRequestMutation: DeleteRequestMutation;
 }
 
-// biome-ignore lint/complexity/noBannedTypes: empty object type for future extension
+// biome-ignore lint/complexity/noBannedTypes: temporary type for principal hints
 export type PrincipalHints = {
 	// memberId: string | undefined;
 	// communityId: string | undefined;
@@ -65,16 +106,25 @@ export const buildApplicationServicesFactory = (
 			}
 		}
 
-		// Initialize listing services with mock data
-		const mockListingService = new MockListingService();
-		const itemListingRepository = {} as ItemListingRepository<ItemListingProps>; // TODO: Get from infrastructure services registry
-		
-		const myListingsAllQuery = new MyListingsAllQuery(itemListingRepository, mockListingService);
-		const myListingsRequestsQuery = new MyListingsRequestsQuery(itemListingRepository, mockListingService);
-
 		return {
-			myListingsAllQuery,
-			myListingsRequestsQuery,
+			// My Listings queries
+			myListingsAllQuery: new MyListingsAllQuery(),
+			myListingsRequestsQuery: new MyListingsRequestsQuery(),
+			
+			// Listing action mutations (placeholder implementations)
+			pauseListingMutation: new PauseListingMutation(),
+			reinstateListingMutation: new ReinstateListingMutation(),
+			appealListingMutation: new AppealListingMutation(),
+			publishListingMutation: new PublishListingMutation(),
+			editListingMutation: new EditListingMutation(),
+			deleteListingMutation: new DeleteListingMutation(),
+			
+			// Request action mutations (placeholder implementations)
+			acceptRequestMutation: new AcceptRequestMutation(),
+			rejectRequestMutation: new RejectRequestMutation(),
+			closeRequestMutation: new CloseRequestMutation(),
+			messageRequesterMutation: new MessageRequesterMutation(),
+			deleteRequestMutation: new DeleteRequestMutation(),
 		};
 	};
 

@@ -7,26 +7,33 @@ import type { ApplicationServices } from '@sthrift/api-application-services';
 
 export interface GraphContext {
   apiContext: ApiContextSpec;
-  applicationServices?: ApplicationServices;
+  applicationServices: ApplicationServices;
   // Add authentication, user context, etc.
 }
 
 import type { HttpRequest } from '@azure/functions';
-import type { ApplicationServicesFactory } from '@sthrift/api-application-services';
 
 export function buildGraphContext(
-  req: HttpRequest & { apiContext?: ApiContextSpec },
-  _applicationServicesFactory?: ApplicationServicesFactory
+  req: HttpRequest & { 
+    apiContext?: ApiContextSpec;
+    applicationServices?: ApplicationServices;
+  }
 ): GraphContext {
   // Extract apiContext from request (if available)
   const apiContext: ApiContextSpec =
     req.apiContext?.dataSources
       ? req.apiContext
       : (() => { throw new Error('dataSources is not available in apiContext'); })();
-  
+      
+  // Extract applicationServices from request (if available)
+  const applicationServices: ApplicationServices =
+    req.applicationServices
+      ? req.applicationServices
+      : (() => { throw new Error('applicationServices is not available in request'); })();
+      
   return {
     apiContext,
-    // applicationServices will be injected by the Apollo context function
+    applicationServices,
     // ... add more context as needed ...
   };
 }
