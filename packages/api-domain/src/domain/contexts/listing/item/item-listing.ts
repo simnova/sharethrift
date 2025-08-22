@@ -1,24 +1,17 @@
 import { DomainSeedwork } from '@cellix/domain-seedwork';
 import type { Passport } from '../../passport.ts';
 import type { ItemListingVisa } from './item-listing.visa.ts';
-import {
-	Category,
-	Description,
-	ListingState,
-	ListingStateEnum,
-	Location,
-	Title,
-} from './item-listing.value-objects.ts';
+import * as ValueObjects from './item-listing.value-objects.ts';
 
 export interface ItemListingProps extends DomainSeedwork.DomainEntityProps {
 	readonly sharer: string;
-	title: Title;
-	description: Description;
-	category: Category;
-	location: Location;
+	title: ValueObjects.Title;
+	description: ValueObjects.Description;
+	category: ValueObjects.Category;
+	location: ValueObjects.Location;
 	sharingPeriodStart: Date;
 	sharingPeriodEnd: Date;
-	state: ListingState;
+	state: ValueObjects.ListingState;
 	readonly createdAt: Date;
 	updatedAt: Date;
 	readonly schemaVersion: string;
@@ -68,7 +61,7 @@ export class ItemListing<props extends ItemListingProps>
 			sharingPeriodStart: newProps.sharingPeriodStart,
 			sharingPeriodEnd: newProps.sharingPeriodEnd,
 			images: newProps.images ?? [],
-			state: ListingState.Published,
+			state: ValueObjects.ListingState.Published,
 			createdAt: now,
 			updatedAt: now,
 			schemaVersion: 1,
@@ -92,10 +85,10 @@ export class ItemListing<props extends ItemListingProps>
 		return this.props.sharer;
 	}
 
-	get title(): Title {
+	get title(): ValueObjects.Title {
 		return this.props.title;
 	}
-	set title(value: Title) {
+	set title(value: ValueObjects.Title) {
 		if (
 			!this.isNew &&
 			!this.visa.determineIf((permissions) => permissions.canUpdateItemListing)
@@ -108,10 +101,10 @@ export class ItemListing<props extends ItemListingProps>
 		this.props.updatedAt = new Date();
 	}
 
-	get description(): Description {
+	get description(): ValueObjects.Description {
 		return this.props.description;
 	}
-	set description(value: Description) {
+	set description(value: ValueObjects.Description) {
 		if (
 			!this.isNew &&
 			!this.visa.determineIf((permissions) => permissions.canUpdateItemListing)
@@ -124,10 +117,10 @@ export class ItemListing<props extends ItemListingProps>
 		this.props.updatedAt = new Date();
 	}
 
-	get category(): Category {
+	get category(): ValueObjects.Category {
 		return this.props.category;
 	}
-	set category(value: Category) {
+	set category(value: ValueObjects.Category) {
 		if (
 			!this.isNew &&
 			!this.visa.determineIf((permissions) => permissions.canUpdateItemListing)
@@ -140,10 +133,10 @@ export class ItemListing<props extends ItemListingProps>
 		this.props.updatedAt = new Date();
 	}
 
-	get location(): Location {
+	get location(): ValueObjects.Location {
 		return this.props.location;
 	}
-	set location(value: Location) {
+	set location(value: ValueObjects.Location) {
 		if (
 			!this.isNew &&
 			!this.visa.determineIf((permissions) => permissions.canUpdateItemListing)
@@ -188,7 +181,7 @@ export class ItemListing<props extends ItemListingProps>
 		this.props.updatedAt = new Date();
 	}
 
-	get state(): ListingState {
+	get state(): ValueObjects.ListingState {
 		return this.props.state;
 	}
 
@@ -233,7 +226,7 @@ export class ItemListing<props extends ItemListingProps>
 	 * Determines if this listing is visible to regular users
 	 */
 	get isActive(): boolean {
-		return this.props.state.valueOf() === ListingStateEnum.Published;
+		return this.props.state.valueOf() === ValueObjects.ListingStateEnum.Published;
 	}
 
 	/**
@@ -276,7 +269,7 @@ export class ItemListing<props extends ItemListingProps>
 			);
 		}
 
-		this.props.state = ListingState.Published;
+		this.props.state = ValueObjects.ListingState.Published;
 		this.props.updatedAt = new Date();
 	}
 
@@ -291,7 +284,7 @@ export class ItemListing<props extends ItemListingProps>
 			);
 		}
 
-		this.props.state = ListingState.Paused;
+		this.props.state = ValueObjects.ListingState.Paused;
 		this.props.updatedAt = new Date();
 	}
 
@@ -304,7 +297,7 @@ export class ItemListing<props extends ItemListingProps>
 			);
 		}
 
-		this.props.state = ListingState.Cancelled;
+		this.props.state = ValueObjects.ListingState.Cancelled;
 		this.props.updatedAt = new Date();
 	}
 
