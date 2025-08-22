@@ -1,4 +1,5 @@
 import { Carousel } from 'antd';
+import './listing-image-gallery.overrides.css';
 
 export interface ListingImageGalleryProps {
   images: string[];
@@ -20,7 +21,7 @@ export function ListingImageGallery({ images, title, className = '' }: ListingIm
         position: 'relative',
       }}
     >
-      <style>{`
+  <style>{`
         .listing-gallery-responsive {
           width: 100% !important;
           max-width: 450px !important;
@@ -28,14 +29,6 @@ export function ListingImageGallery({ images, title, className = '' }: ListingIm
           height: auto !important;
           min-height: 300px !important;
           padding-bottom: 12px !important;
-        }
-        .listing-gallery-responsive img {
-          width: 100% !important;
-          height: 100% !important;
-          aspect-ratio: 9/10 !important;
-          max-width: 450px !important;
-          max-height: 500px !important;
-          object-fit: cover !important;
         }
       `}</style>
       <Carousel arrows dots swipeToSlide style={{ width: '100%', height: '100%' }} className="listing-gallery-responsive">

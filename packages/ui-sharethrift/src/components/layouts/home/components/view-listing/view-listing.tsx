@@ -1,4 +1,5 @@
-import { Row, Col } from 'antd';
+import { Row, Col, Button } from 'antd';
+import { LeftOutlined } from '@ant-design/icons';
 import ListingImageGalleryContainer from './listing-image-gallery/listing-image-gallery.container';
 import SharerInformationContainer from './sharer-information/sharer-information.container';
 import ListingInformationContainer from './listing-information/listing-information.container';
@@ -28,9 +29,17 @@ export function ViewListing({
     name: listing.sharer,
     avatar: undefined,
   };
+  const handleBack = () => {
+    if (window.history.length > 1) {
+      window.history.back();
+    } else {
+      window.location.href = '/';
+    }
+  };
   return (
     <>
       <style>{`
+
         @media (max-width: 600px) {
           .view-listing-responsive {
             padding-left: 16px !important;
@@ -72,10 +81,21 @@ export function ViewListing({
         }
       `}</style>
       <Row
-        style={{ minHeight: '100vh', paddingLeft: 125, paddingRight: 125, paddingTop: 72, paddingBottom: 72, boxSizing: 'border-box', width: '100%' }}
-        gutter={[0, 12]}
+        style={{paddingLeft: 100, paddingRight: 100, paddingTop: 50, paddingBottom: 75, boxSizing: 'border-box', width: '100%' }}
+        gutter={[0, 24]}
         className="view-listing-responsive"
       >
+        <Col span={24} style={{ marginBottom: 0, paddingBottom: 0 }}>
+          <Button
+                className="view-listing-back-btn"
+                icon={<LeftOutlined />}
+                onClick={handleBack}
+                type="text"
+                aria-label="Back"
+            >
+        Back
+      </Button>
+        </Col>
         <Col span={24} style={{ marginBottom: 0, paddingBottom: 0 }}>
           {/* Sharer Info at top */}
           <SharerInformationContainer
