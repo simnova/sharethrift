@@ -9,6 +9,4 @@ export interface ItemListingUnitOfWork
 		ItemListingProps,
 		ItemListing<ItemListingProps>,
 		ItemListingRepository<ItemListingProps>
-	> {
-	readonly itemListingRepository: ItemListingRepository<ItemListingProps>;
-}
+	> {}

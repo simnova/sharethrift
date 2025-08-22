@@ -21,20 +21,22 @@ export interface ItemListingProps extends DomainSeedwork.DomainEntityProps {
 	state: ListingState;
 	readonly createdAt: Date;
 	updatedAt: Date;
-	readonly schemaVersion: number;
+	readonly schemaVersion: string;
 	sharingHistory?: string[]; // Array of reservation/sharing IDs
 	reports?: number;
 	images?: string[]; // Array of image URLs
 }
 
-export interface ItemListingEntityReference extends Readonly<Omit<ItemListingProps, 'sharingHistory' | 'images'>> {
+export interface ItemListingEntityReference
+	extends Readonly<Omit<ItemListingProps, 'sharingHistory' | 'images'>> {
 	readonly sharingHistory?: readonly string[];
 	readonly images?: readonly string[];
 }
 
 export class ItemListing<props extends ItemListingProps>
 	extends DomainSeedwork.AggregateRoot<props, Passport>
-	implements ItemListingEntityReference {
+	implements ItemListingEntityReference
+{
 	//#region Fields
 	private isNew: boolean = false;
 	private readonly visa: ItemListingVisa;
@@ -48,45 +50,36 @@ export class ItemListing<props extends ItemListingProps>
 	//#endregion Constructor
 
 	//#region Methods
-  public static getNewInstance<props extends ItemListingProps>(
-    newProps: {
-      sharer: string;
-      title: string;
-      description: string;
-      category: string;
-      location: string;
-      sharingPeriodStart: Date;
-      sharingPeriodEnd: Date;
-      images?: string[];
-    },
-    passport: Passport,
-  ): ItemListing<props> {
-    const id = crypto.randomUUID();
-    const now = new Date();
+	public static getNewInstance<props extends ItemListingProps>(
+		newProps: props,
+		passport: Passport,
+	): ItemListing<props> {
+		const id = crypto.randomUUID();
+		const now = new Date();
 
-    const itemListingProps = {
-      id,
-      sharer: newProps.sharer,
-      title: new Title(newProps.title),
-      description: new Description(newProps.description),
-      category: new Category(newProps.category),
-      location: new Location(newProps.location),
-      sharingPeriodStart: newProps.sharingPeriodStart,
-      sharingPeriodEnd: newProps.sharingPeriodEnd,
-      images: newProps.images ?? [],
-      state: ListingState.Published,
-      createdAt: now,
-      updatedAt: now,
-      schemaVersion: 1,
-      reports: 0,
-      sharingHistory: [],
-    } as unknown as props;
+		const itemListingProps = {
+			id,
 
-    const aggregate = new ItemListing(itemListingProps, passport);
-    aggregate.markAsNew();
-    return aggregate;
-  }
+			sharer: newProps.sharer,
+			title: newProps.title,
+			description: newProps.description,
+			category: newProps.category,
+			location: newProps.location,
+			sharingPeriodStart: newProps.sharingPeriodStart,
+			sharingPeriodEnd: newProps.sharingPeriodEnd,
+			images: newProps.images ?? [],
+			state: ListingState.Published,
+			createdAt: now,
+			updatedAt: now,
+			schemaVersion: 1,
+			reports: 0,
+			sharingHistory: [],
+		} as unknown as props;
 
+		const aggregate = new ItemListing(itemListingProps, passport);
+		aggregate.markAsNew();
+		return aggregate;
+	}
 
 	private markAsNew(): void {
 		this.isNew = true;
@@ -103,9 +96,12 @@ export class ItemListing<props extends ItemListingProps>
 		return this.props.title;
 	}
 	set title(value: Title) {
-		if (!this.isNew && !this.visa.determineIf((permissions) => permissions.canUpdateItemListing)) {
+		if (
+			!this.isNew &&
+			!this.visa.determineIf((permissions) => permissions.canUpdateItemListing)
+		) {
 			throw new DomainSeedwork.PermissionError(
-				'You do not have permission to update this title'
+				'You do not have permission to update this title',
 			);
 		}
 		this.props.title = value;
@@ -116,9 +112,12 @@ export class ItemListing<props extends ItemListingProps>
 		return this.props.description;
 	}
 	set description(value: Description) {
-		if (!this.isNew && !this.visa.determineIf((permissions) => permissions.canUpdateItemListing)) {
+		if (
+			!this.isNew &&
+			!this.visa.determineIf((permissions) => permissions.canUpdateItemListing)
+		) {
 			throw new DomainSeedwork.PermissionError(
-				'You do not have permission to update this description'
+				'You do not have permission to update this description',
 			);
 		}
 		this.props.description = value;
@@ -129,9 +128,12 @@ export class ItemListing<props extends ItemListingProps>
 		return this.props.category;
 	}
 	set category(value: Category) {
-		if (!this.isNew && !this.visa.determineIf((permissions) => permissions.canUpdateItemListing)) {
+		if (
+			!this.isNew &&
+			!this.visa.determineIf((permissions) => permissions.canUpdateItemListing)
+		) {
 			throw new DomainSeedwork.PermissionError(
-				'You do not have permission to update this category'
+				'You do not have permission to update this category',
 			);
 		}
 		this.props.category = value;
@@ -142,9 +144,12 @@ export class ItemListing<props extends ItemListingProps>
 		return this.props.location;
 	}
 	set location(value: Location) {
-		if (!this.isNew && !this.visa.determineIf((permissions) => permissions.canUpdateItemListing)) {
+		if (
+			!this.isNew &&
+			!this.visa.determineIf((permissions) => permissions.canUpdateItemListing)
+		) {
 			throw new DomainSeedwork.PermissionError(
-				'You do not have permission to update this location'
+				'You do not have permission to update this location',
 			);
 		}
 		this.props.location = value;
@@ -155,9 +160,12 @@ export class ItemListing<props extends ItemListingProps>
 		return this.props.sharingPeriodStart;
 	}
 	set sharingPeriodStart(value: Date) {
-		if (!this.isNew && !this.visa.determineIf((permissions) => permissions.canUpdateItemListing)) {
+		if (
+			!this.isNew &&
+			!this.visa.determineIf((permissions) => permissions.canUpdateItemListing)
+		) {
 			throw new DomainSeedwork.PermissionError(
-				'You do not have permission to update this sharing period'
+				'You do not have permission to update this sharing period',
 			);
 		}
 		this.props.sharingPeriodStart = value;
@@ -168,9 +176,12 @@ export class ItemListing<props extends ItemListingProps>
 		return this.props.sharingPeriodEnd;
 	}
 	set sharingPeriodEnd(value: Date) {
-		if (!this.isNew && !this.visa.determineIf((permissions) => permissions.canUpdateItemListing)) {
+		if (
+			!this.isNew &&
+			!this.visa.determineIf((permissions) => permissions.canUpdateItemListing)
+		) {
 			throw new DomainSeedwork.PermissionError(
-				'You do not have permission to update this sharing period'
+				'You do not have permission to update this sharing period',
 			);
 		}
 		this.props.sharingPeriodEnd = value;
@@ -189,7 +200,7 @@ export class ItemListing<props extends ItemListingProps>
 		return this.props.createdAt;
 	}
 
-	get schemaVersion(): number {
+	get schemaVersion(): string {
 		return this.props.schemaVersion;
 	}
 
@@ -205,9 +216,12 @@ export class ItemListing<props extends ItemListingProps>
 		return this.props.images ?? [];
 	}
 	set images(value: string[]) {
-		if (!this.isNew && !this.visa.determineIf((permissions) => permissions.canUpdateItemListing)) {
+		if (
+			!this.isNew &&
+			!this.visa.determineIf((permissions) => permissions.canUpdateItemListing)
+		) {
 			throw new DomainSeedwork.PermissionError(
-				'You do not have permission to update this images'
+				'You do not have permission to update this images',
 			);
 		}
 		this.props.images = value;
@@ -254,9 +268,11 @@ export class ItemListing<props extends ItemListingProps>
 	}
 
 	public publish(): void {
-		if (!this.visa.determineIf((permissions) => permissions.canPublishItemListing)) {
+		if (
+			!this.visa.determineIf((permissions) => permissions.canPublishItemListing)
+		) {
 			throw new DomainSeedwork.PermissionError(
-				'You do not have permission to publish this listing'
+				'You do not have permission to publish this listing',
 			);
 		}
 
@@ -265,9 +281,13 @@ export class ItemListing<props extends ItemListingProps>
 	}
 
 	public pause(): void {
-		if (!this.visa.determineIf((permissions) => permissions.canUnpublishItemListing)) {
+		if (
+			!this.visa.determineIf(
+				(permissions) => permissions.canUnpublishItemListing,
+			)
+		) {
 			throw new DomainSeedwork.PermissionError(
-				'You do not have permission to pause this listing'
+				'You do not have permission to pause this listing',
 			);
 		}
 
@@ -276,9 +296,11 @@ export class ItemListing<props extends ItemListingProps>
 	}
 
 	public cancel(): void {
-		if (!this.visa.determineIf((permissions) => permissions.canDeleteItemListing)) {
+		if (
+			!this.visa.determineIf((permissions) => permissions.canDeleteItemListing)
+		) {
 			throw new DomainSeedwork.PermissionError(
-				'You do not have permission to cancel this listing'
+				'You do not have permission to cancel this listing',
 			);
 		}
 
