@@ -29,12 +29,18 @@ export function ViewListing({
     name: listing.sharer,
     avatar: undefined,
   };
-  const handleBack = () => {
-    if (window.history.length > 1) {
-      window.history.back();
-    } else {
-      window.location.href = '/';
-    }
+  const handleBack = (e: React.MouseEvent<HTMLButtonElement>) => {
+    e.preventDefault();
+    // Remove focus from the button to avoid double-activation issues
+    e.currentTarget.blur();
+    // Use setTimeout to ensure navigation happens after event propagation
+    setTimeout(() => {
+      if (window.history.length > 1) {
+        window.history.back();
+      } else {
+        window.location.href = '/';
+      }
+    }, 0);
   };
   return (
     <>
@@ -86,15 +92,15 @@ export function ViewListing({
         className="view-listing-responsive"
       >
         <Col span={24} style={{ marginBottom: 0, paddingBottom: 0 }}>
-          <Button
-                className="view-listing-back-btn"
-                icon={<LeftOutlined />}
-                onClick={handleBack}
-                type="text"
-                aria-label="Back"
-            >
-        Back
-      </Button>
+        <Button
+          className="view-listing-back-btn"
+          icon={<LeftOutlined />}
+          onClick={handleBack}
+          type="primary"
+          aria-label="Back"
+        >
+          Back
+        </Button>
         </Col>
         <Col span={24} style={{ marginBottom: 0, paddingBottom: 0 }}>
           {/* Sharer Info at top */}
