@@ -1,5 +1,5 @@
 import { Routes, Route, useParams } from "react-router-dom";
-import { MyReservationsContainer } from "./pages/main.container";
+import { MyReservationsContainer } from "./pages/my-reservations.container";
 
 function MyReservationsMainWrapper() {
   const { userId } = useParams<{ userId: string }>();

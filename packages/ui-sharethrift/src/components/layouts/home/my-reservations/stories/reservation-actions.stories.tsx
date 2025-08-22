@@ -1,5 +1,5 @@
 import type { Meta, StoryObj } from '@storybook/react';
-import { ReservationActions } from './reservation-actions.js';
+import { ReservationActions } from '../components/reservation-actions.js';
 
 const meta: Meta<typeof ReservationActions> = {
   title: 'Molecules/ReservationActions',

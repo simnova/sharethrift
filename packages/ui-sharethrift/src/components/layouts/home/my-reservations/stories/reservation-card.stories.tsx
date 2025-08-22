@@ -1,6 +1,6 @@
 import type { Meta, StoryObj } from '@storybook/react';
-import { ReservationCard } from './reservation-card.js';
-import type { ReservationRequest } from '../../types/reservation.js';
+import { ReservationCard } from '../components/reservation-card.js';
+import type { ReservationRequest } from '../pages/my-reservations.container.tsx';
 
 const mockReservationRequests: ReservationRequest[] = [
   {

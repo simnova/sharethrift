@@ -1,7 +1,7 @@
 import React from 'react';
 import { Typography } from 'antd';
-import { ReservationCard } from '../../molecules/reservation-card/reservation-card.js';
-import type { ReservationRequest } from '../../types/reservation-request.js';
+import { ReservationCard } from './reservation-card.tsx';
+import type { ReservationRequest } from '../pages/my-reservations.container.tsx';
 
 const { Text } = Typography;
 

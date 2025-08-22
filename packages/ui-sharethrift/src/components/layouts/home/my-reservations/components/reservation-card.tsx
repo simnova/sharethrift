@@ -1,9 +1,9 @@
 import React from 'react';
 import { Card, Typography } from 'antd';
 import styles from './reservation-card.module.css';
-import { ReservationStatusTag } from '../../atoms/reservation-status-tag/reservation-status-tag.js';
-import { ReservationActions } from '../reservation-actions/reservation-actions.js';
-import type { ReservationRequest } from '../../types/reservation.js';
+import { ReservationStatusTag } from '@sthrift/ui-sharethrift-components';
+import { ReservationActions } from './reservation-actions.tsx';
+import type { ReservationRequest } from '../pages/my-reservations.container.tsx';
 
 const { Text } = Typography;
 
@@ -40,11 +40,11 @@ export const ReservationCard: React.FC<ReservationCardProps> = ({
   return (
     <Card className="mb-4" bodyStyle={{ padding: 0 }}>
       <div className={styles.cardRow}>
-        {reservation.listing?.imageUrl || reservation.listing?.primaryImageUrl ? (
+        {reservation.listing?.imageUrl ? (
           <div className={styles.reservationImageWrapper}>
             <img
               alt={reservation.listing.title}
-              src={reservation.listing.imageUrl || reservation.listing.primaryImageUrl!}
+              src={reservation.listing.imageUrl}
               className={styles.reservationImage}
             />
             <div className={styles.statusTagOverlay}>

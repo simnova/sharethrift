@@ -1,8 +1,8 @@
 import React from 'react';
-import { ReservationsTable } from '../reservations-table/reservations-table.js';
-import { ReservationsGrid } from '../reservations-grid/reservations-grid.js';
+import { ReservationsTable } from './reservations-table.tsx';
+import { ReservationsGrid } from './reservations-grid.tsx';
 import styles from './reservations-view.module.css';
-import type { ReservationRequest } from '../../types/reservation-request.js';
+import type { ReservationRequest } from '../pages/my-reservations.container.tsx';
 
 export interface ReservationsViewProps {
   reservations: ReservationRequest[]; // Will eventually come from generated graphql files

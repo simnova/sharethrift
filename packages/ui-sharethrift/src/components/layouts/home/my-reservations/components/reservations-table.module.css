@@ -16,8 +16,6 @@
   background: #fff;
 }
 
-/* Remove .listingTitle, not needed. All table text uses .tableText */
-
 .tableText {
   font-family: var(--Urbanist), 'Urbanist', sans-serif;
   color: var(--color-message-text);

@@ -1,7 +1,7 @@
 import React from 'react';
 //import { useQuery, useMutation } from '@apollo/client';
 //import { MY_RESERVATIONS_QUERY, CANCEL_RESERVATION_MUTATION, CLOSE_RESERVATION_MUTATION } from './main.container.graphql';  //Will be updated to correct path
-import MyReservationsMain from './Main';
+import MyReservationsMain from './my-reservations';
 
 export interface MyReservationsContainerProps {
   userId: string;

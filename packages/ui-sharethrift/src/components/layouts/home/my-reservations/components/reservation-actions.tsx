@@ -1,6 +1,6 @@
 import React from 'react';
 import { Space } from 'antd';
-import { ReservationActionButton } from '../../atoms/reservation-action-button/reservation-action-button.js';
+import { ReservationActionButton } from './reservation-action-button.tsx';
 
 export interface ReservationActionsProps {
   status: 'REQUESTED' | 'ACCEPTED' | 'REJECTED' | 'RESERVATION_PERIOD' | 'CANCELLED';
@@ -27,7 +27,7 @@ export const ReservationActions: React.FC<ReservationActionsProps> = ({
         actions.push(
           <ReservationActionButton
             key="cancel"
-            action="cancel"
+            action="Cancel"
             onClick={onCancel}
             loading={cancelLoading}
           />
@@ -35,7 +35,7 @@ export const ReservationActions: React.FC<ReservationActionsProps> = ({
         actions.push(
           <ReservationActionButton
             key="message"
-            action="message"
+            action="Message"
             onClick={onMessage}
           />
         );
@@ -45,7 +45,7 @@ export const ReservationActions: React.FC<ReservationActionsProps> = ({
         actions.push(
           <ReservationActionButton
             key="close"
-            action="close"
+            action="Close"
             onClick={onClose}
             loading={closeLoading}
           />
@@ -53,7 +53,7 @@ export const ReservationActions: React.FC<ReservationActionsProps> = ({
         actions.push(
           <ReservationActionButton
             key="message"
-            action="message"
+            action="Message"
             onClick={onMessage}
           />
         );
@@ -63,7 +63,7 @@ export const ReservationActions: React.FC<ReservationActionsProps> = ({
         actions.push(
           <ReservationActionButton
             key="cancel"
-            action="cancel"
+            action="Cancel"
             onClick={onCancel}
             loading={cancelLoading}
           />

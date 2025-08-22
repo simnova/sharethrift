@@ -1,11 +1,11 @@
+import type { ReservationRequest } from '../pages/my-reservations.container.tsx';
 import type { Meta, StoryObj } from '@storybook/react';
-import { ReservationsTable } from './reservations-table.js';
-import type { ReservationRequest } from '../../types/reservation-request.js';
+import { ReservationsGrid } from '../components/reservations-grid.tsx';
 // Mock data moved here for storybook usage
 const mockReservationRequests: ReservationRequest[] = [
   {
   id: '1',
-  state: 'REQUESTED', // correct literal type
+  state: 'REQUESTED',
     reservationPeriodStart: '2024-02-15T00:00:00Z',
     reservationPeriodEnd: '2024-02-22T00:00:00Z',
     createdAt: '2024-02-10T10:00:00Z',
@@ -31,9 +31,9 @@ const mockReservationRequests: ReservationRequest[] = [
 const getActiveReservations = (): ReservationRequest[] => mockReservationRequests.filter(r => ['REQUESTED', 'ACCEPTED', 'REJECTED', 'CANCELLED'].includes(r.state));
 const getHistoryReservations = (): ReservationRequest[] => mockReservationRequests.filter(r => r.state === 'RESERVATION_PERIOD');
 
-const meta: Meta<typeof ReservationsTable> = {
-  title: 'Organisms/ReservationsTable',
-  component: ReservationsTable,
+const meta: Meta<typeof ReservationsGrid> = {
+  title: 'Organisms/ReservationsGrid',
+  component: ReservationsGrid,
   parameters: {
     layout: 'padded',
   },

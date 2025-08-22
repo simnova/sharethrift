@@ -1,9 +1,9 @@
 import React from 'react';
 import { Table, Image } from 'antd';
 import styles from './reservations-table.module.css';
-import { ReservationStatusTag } from '../../atoms/reservation-status-tag/reservation-status-tag.js';
-import { ReservationActions } from '../../molecules/reservation-actions/reservation-actions.js';
-import type { ReservationRequest } from '../../types/reservation-request.js';
+import { ReservationStatusTag } from '@sthrift/ui-sharethrift-components';
+import { ReservationActions } from './reservation-actions.tsx';
+import type { ReservationRequest } from '../pages/my-reservations.container.tsx';
 
 export interface ReservationsTableProps {
   reservations: ReservationRequest[]; // Type will eventually come from generated graphql files
