@@ -58,9 +58,9 @@ export class ServiceTwilio implements ServiceBase<ServiceTwilio> {
     if (!this.client) throw new Error('Twilio client not initialized');
     const params: { body: string; author?: string } = { body };
     if (author) params.author = author;
-    const result = await this.client.conversations.v1.conversations(conversationId)
-      .messages.create(params);
-    return result;
+    return await this.client.conversations.v1.conversations(conversationId)
+          .messages.create(params);
+
   }
 
   public async deleteConversation(conversationId: string): Promise<void> {
