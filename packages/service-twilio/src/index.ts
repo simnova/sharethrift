@@ -1,27 +1,35 @@
+import TwilioPkg from 'twilio';
+const { Twilio } = TwilioPkg;
 import type { ServiceBase } from '@cellix/api-services-spec';
-import { Twilio } from 'twilio';
-import type { TwilioConfig } from './service-twilio.js';
-import type { ConversationInstance } from 'twilio/lib/rest/conversations/v1/conversation';
 
+export interface ConversationInstance {
+  sid: string;
+  friendlyName?: string;
+  dateCreated?: Date;
+  dateUpdated?: Date;
+}
 
-export class ServiceTwilio implements ServiceBase<never> {
-  private readonly config: TwilioConfig;
-  private client: Twilio | undefined;
+export interface MessageInstance {
+  sid: string;
+  body: string;
+  author?: string;
+  dateCreated?: Date;
+}
 
-  constructor(config: TwilioConfig) {
-    if (!config.accountSid || !config.authToken) {
-      throw new Error('TwilioConfig is missing required fields.');
-    }
-    this.config = config;
-  }
+export class ServiceTwilio implements ServiceBase<ServiceTwilio> {
+  private client: InstanceType<typeof Twilio> | undefined;
 
-  public startUp(): ServiceTwilio {
+  public startUp(): Promise<Exclude<ServiceTwilio, ServiceBase<ServiceTwilio>>> {
     if (this.client) {
       throw new Error('ServiceTwilio is already started');
     }
-    this.client = new Twilio(this.config.accountSid, this.config.authToken);
+    if (!process.env['TWILIO_ACCOUNT_SID'] || !process.env['TWILIO_AUTH_TOKEN']) {
+      throw new Error('TWILIO_ACCOUNT_SID and TWILIO_AUTH_TOKEN must be set in environment variables');
+    }
+    this.client = new Twilio(process.env['TWILIO_ACCOUNT_SID'], process.env['TWILIO_AUTH_TOKEN']);
     console.log('ServiceTwilio started');
-    return this;
+
+    return this as Exclude<ServiceTwilio, ServiceBase<ServiceTwilio>>;
   }
 
   public shutDown(): Promise<void> {
@@ -30,27 +38,32 @@ export class ServiceTwilio implements ServiceBase<never> {
     }
     this.client = undefined;
     console.log('ServiceTwilio stopped');
+    return Promise.resolve();
   }
 
-  public get service(): Twilio {
+  public get service(): InstanceType<typeof Twilio> {
     if (!this.client) {
       throw new Error('ServiceTwilio is not started - cannot access service');
     }
     return this.client;
   }
 
-  private async getConversation(conversationId: string): Promise<ConversationInstance> {
+  public async getConversation(conversationId: string): Promise<ConversationInstance> {
     if (!this.client) throw new Error('Twilio client not initialized');
-    return await this.client.conversations.v1.conversations(conversationId).fetch();
+    const result = await this.client.conversations.v1.conversations(conversationId).fetch();
+    return result;
   }
 
-  private async sendMessage(conversationId: string, body: string, author?: string): Promise<ReturnType<Twilio['conversations']['messages']>['create']> {
+  public async sendMessage(conversationId: string, body: string, author?: string): Promise<MessageInstance> {
     if (!this.client) throw new Error('Twilio client not initialized');
-    return await this.client.conversations.v1.conversations(conversationId)
-      .messages.create({ body, author });
+    const params: { body: string; author?: string } = { body };
+    if (author) params.author = author;
+    const result = await this.client.conversations.v1.conversations(conversationId)
+      .messages.create(params);
+    return result;
   }
 
-  private async deleteConversation(conversationId: string): Promise<void> {
+  public async deleteConversation(conversationId: string): Promise<void> {
     if (!this.client) throw new Error('Twilio client not initialized');
     await this.client.conversations.v1.conversations(conversationId).remove();
   }

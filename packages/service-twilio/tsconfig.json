@@ -1,16 +1,12 @@
 {
-  "compilerOptions": {
-    "outDir": "dist",
-    "rootDir": ".",
-    "declaration": true,
-    "module": "ESNext",
-    "target": "ES2022",
-    "moduleResolution": "Node",
-    "esModuleInterop": true,
-    "forceConsistentCasingInFileNames": true,
-    "strict": true,
-    "skipLibCheck": true
-  },
-  "include": ["src"],
-  "exclude": ["dist", "node_modules"]
+	"extends": ["../../tsconfig.base"],
+	"compilerOptions": {
+		/* Modules */
+		"rootDir": ".",
+		"types": ["node"],
+		/* Emit */
+        "outDir": "dist",
+        "esModuleInterop": true
+	},
+	"include": ["src/**/*.ts"]
 }
