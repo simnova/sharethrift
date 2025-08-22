@@ -1,7 +1,8 @@
-import { Table, Input, Checkbox, Button, Tag, Image, Pagination, Popconfirm } from 'antd';
+import { Table, Input, Checkbox, Button, Image, Pagination, Popconfirm } from 'antd';
 import { SearchOutlined, FilterOutlined } from '@ant-design/icons';
 import type { ColumnsType, TableProps } from 'antd/es/table';
-import { STATUS_COLORS, type MyListing } from '../mock-data';
+import { StatusTag } from '@sthrift/ui-sharethrift-components';
+import type { MyListing } from '../mock-data';
 
 const { Search } = Input;
 
@@ -187,9 +188,7 @@ export function AllListingsTable({
       ),
       filterIcon: (filtered) => <FilterOutlined style={{ color: filtered ? '#1890ff' : undefined }} />,
       render: (status: string) => (
-        <Tag color={STATUS_COLORS[status as keyof typeof STATUS_COLORS]}>
-          {status}
-        </Tag>
+        <StatusTag status={status as any} />
       ),
     },
     {

@@ -1,0 +1,158 @@
+# My Listings All Query
+query HomeMyListingsContainerMyListingsAll(
+  $page: Int!
+  $pageSize: Int!
+  $searchText: String
+  $statusFilter: [ListingStatus!]
+  $sortBy: String
+  $sortOrder: String
+) {
+  myListingsAll(
+    page: $page
+    pageSize: $pageSize
+    searchText: $searchText
+    statusFilter: $statusFilter
+    sortBy: $sortBy
+    sortOrder: $sortOrder
+  ) {
+    items {
+      ...HomeMyListingsContainerListingFields
+    }
+    total
+    page
+    pageSize
+  }
+}
+
+# Listing fields fragment for My Listings
+fragment HomeMyListingsContainerListingFields on ListingAllDTO {
+  id
+  title
+  image
+  publishedAt
+  reservationPeriod {
+    start
+    end
+  }
+  status
+  pendingRequestsCount
+}
+
+# My Listings Requests Query
+query HomeMyListingsContainerMyListingsRequests(
+  $page: Int!
+  $pageSize: Int!
+  $searchText: String
+  $statusFilter: [RequestStatus!]
+  $sortBy: String
+  $sortOrder: String
+) {
+  myListingsRequests(
+    page: $page
+    pageSize: $pageSize
+    searchText: $searchText
+    statusFilter: $statusFilter
+    sortBy: $sortBy
+    sortOrder: $sortOrder
+  ) {
+    items {
+      ...HomeMyListingsContainerRequestFields
+    }
+    total
+    page
+    pageSize
+  }
+}
+
+# Request fields fragment for My Listings
+fragment HomeMyListingsContainerRequestFields on ListingRequestDTO {
+  id
+  title
+  image
+  requestedBy
+  requestedOn
+  reservationPeriod {
+    start
+    end
+  }
+  status
+}
+
+# Listing Action Mutations (placeholder implementations)
+mutation HomeMyListingsContainerPauseListing($listingId: String!) {
+  pauseListing(listingId: $listingId) {
+    success
+    message
+  }
+}
+
+mutation HomeMyListingsContainerReinstateListing($listingId: String!) {
+  reinstateListing(listingId: $listingId) {
+    success
+    message
+  }
+}
+
+mutation HomeMyListingsContainerAppealListing($listingId: String!, $reason: String!) {
+  appealListing(listingId: $listingId, reason: $reason) {
+    success
+    message
+  }
+}
+
+mutation HomeMyListingsContainerPublishListing($listingId: String!) {
+  publishListing(listingId: $listingId) {
+    success
+    message
+  }
+}
+
+mutation HomeMyListingsContainerEditListing($listingId: String!) {
+  editListing(listingId: $listingId) {
+    success
+    message
+  }
+}
+
+mutation HomeMyListingsContainerDeleteListing($listingId: String!) {
+  deleteListing(listingId: $listingId) {
+    success
+    message
+  }
+}
+
+# Request Action Mutations (placeholder implementations)
+mutation HomeMyListingsContainerAcceptRequest($requestId: String!) {
+  acceptRequest(requestId: $requestId) {
+    success
+    message
+  }
+}
+
+mutation HomeMyListingsContainerRejectRequest($requestId: String!) {
+  rejectRequest(requestId: $requestId) {
+    success
+    message
+  }
+}
+
+mutation HomeMyListingsContainerCloseRequest($requestId: String!) {
+  closeRequest(requestId: $requestId) {
+    success
+    message
+  }
+}
+
+mutation HomeMyListingsContainerMessageRequester($requestId: String!) {
+  messageRequester(requestId: $requestId) {
+    success
+    message
+  }
+}
+
+mutation HomeMyListingsContainerDeleteRequest($requestId: String!) {
+  deleteRequest(requestId: $requestId) {
+    success
+    message
+  }
+}
