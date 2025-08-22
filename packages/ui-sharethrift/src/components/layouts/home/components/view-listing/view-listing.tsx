@@ -29,18 +29,8 @@ export function ViewListing({
     name: listing.sharer,
     avatar: undefined,
   };
-  const handleBack = (e: React.MouseEvent<HTMLButtonElement>) => {
-    e.preventDefault();
-    // Remove focus from the button to avoid double-activation issues
-    e.currentTarget.blur();
-    // Use setTimeout to ensure navigation happens after event propagation
-    setTimeout(() => {
-      if (window.history.length > 1) {
-        window.history.back();
-      } else {
-        window.location.href = '/';
-      }
-    }, 0);
+  const handleBack = () => {
+    window.location.href = '/';
   };
   return (
     <>
@@ -93,7 +83,7 @@ export function ViewListing({
       >
         <Col span={24} style={{ marginBottom: 0, paddingBottom: 0 }}>
         <Button
-          className="view-listing-back-btn"
+          className="primaryButton"
           icon={<LeftOutlined />}
           onClick={handleBack}
           type="primary"
