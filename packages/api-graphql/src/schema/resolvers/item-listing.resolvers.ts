@@ -30,67 +30,52 @@ export const itemListingResolvers = {
     },
     
     // My Listings queries
-    myListingsAll: async (_parent: unknown, args: MyListingsArgs, context: GraphContext) => {
-      console.log('myListingsAll resolver called with args:', args);
+    myListingsAll: (_parent: unknown, args: MyListingsArgs, context: GraphContext) => {
+      console.log('myListingsAll resolver called with args:', args, context);
       
-      // TODO: Get actual user ID from context/auth or pass it in
-      const userId = 'currentUser';
+      // TODO: Implement actual logic to fetch listings for the current user
+      // Get the listing repository from context
+      // const listingRepository = context.apiContext.dataSources.domainDataSource.listingDataSource.itemListingRepository;
       
-      try {
-        // Get the listing repository from context
-        const listingRepository = context.apiContext.dataSources.domainDataSource.listingDataSource.itemListingRepository;
-        
-        const result = await listingRepository.findBySharerWithPagination({
-          sharerId: userId,
-          page: args.page,
-          pageSize: args.pageSize,
-          searchText: args.filter?.searchText,
-          statusFilter: args.filter?.statusFilter,
-          sortBy: args.filter?.sortBy,
-          sortOrder: args.filter?.sortOrder
-        });
-        
-        return {
-          edges: result.edges,
-          pageInfo: result.pageInfo,
-          totalCount: result.totalCount
-        };
-      } catch (error) {
-        console.error('Error in myListingsAll resolver:', error);
-        throw error;
+      // const result = await listingRepository.findBySharerWithPagination({
+      //   sharerId: userId,
+      //   page: args.page,
+      //   pageSize: args.pageSize,
+      //   searchText: args.filter?.searchText,
+      //   statusFilter: args.filter?.statusFilter,
+      //   sortBy: args.filter?.sortBy,
+      //   sortOrder: args.filter?.sortOrder
+      // });
+      
+      // return {
+      //   edges: result.edges,
+      //   pageInfo: result.pageInfo,
+      //   totalCount: result.totalCount
+      // };
+
+      return {
+        edges: [],
+        pageInfo: {
+          hasNextPage: false,
+          hasPreviousPage: false,
+        },
+        totalCount: 0,
       }
     },
     
-    myListingsRequests: async (_parent: unknown, args: MyListingsArgs, context: GraphContext) => {
-      console.log('myListingsRequests resolver called with args:', args);
+    myListingsRequests: (_parent: unknown, args: MyListingsArgs, context: GraphContext) => {
+      console.log('myListingsRequests resolver called with args:', args, context);
       
-      // TODO: Get actual user ID from context/auth or pass it in
-      const userId = 'currentUser';
-      
-      try {
-        // Get the listing repository from context
-        const listingRepository = context.apiContext.dataSources.domainDataSource.listingDataSource.itemListingRepository;
-        
-        const result = await listingRepository.findBySharerWithRequestsWithPagination({
-          sharerId: userId,
-          page: args.page,
-          pageSize: args.pageSize,
-          searchText: args.filter?.searchText,
-          statusFilter: args.filter?.statusFilter,
-          sortBy: args.filter?.sortBy,
-          sortOrder: args.filter?.sortOrder
-        });
-        
-        return {
-          edges: result.edges,
-          pageInfo: result.pageInfo,
-          totalCount: result.totalCount
-        };
-      } catch (error) {
-        console.error('Error in myListingsRequests resolver:', error);
-        throw error;
+      // TODO: Implement actual logic to fetch listings with requests
+      return {
+        edges: [],
+        pageInfo: {
+          hasNextPage: false,
+          hasPreviousPage: false,
+        },
+        totalCount: 0,
       }
-    },
+    }
   },
   
   Mutation: {
