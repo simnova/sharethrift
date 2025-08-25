@@ -5,6 +5,7 @@
 		/* Modules */
 		"rootDir": ".",
 
+        "types": ["node"],
 		/* Emit */
 		"outDir": "dist"
 	},
@@ -20,7 +21,7 @@
 		{ "path": "../service-blob-storage" },
 		{ "path": "../service-mongoose" },
 		{ "path": "../service-otel" },
-		{ "path": "../service-token-validation" }
-		,{ "path": "../service-mongodb-memory-server" }
+		{ "path": "../service-token-validation" },
+        { "path": "../service-twilio" }
 	]
 }

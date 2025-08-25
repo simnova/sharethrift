@@ -3,9 +3,10 @@
 	"compilerOptions": {
 		/* Modules */
 		"rootDir": ".",
-        "types": ["node"],
+		"types": ["node"],
 		/* Emit */
-		"outDir": "dist"
+        "outDir": "dist",
+        "esModuleInterop": true
 	},
-	"include": ["src/**/*.ts"],
+	"include": ["src/**/*.ts"]
 }

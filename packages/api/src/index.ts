@@ -12,6 +12,8 @@ import { ServiceBlobStorage } from '@sthrift/service-blob-storage';
 import { ServiceTokenValidation } from '@sthrift/service-token-validation';
 import * as TokenValidationConfig from './service-config/token-validation/index.ts';
 
+import { ServiceTwilio } from '@sthrift/service-twilio';
+
 import { graphHandlerCreator } from '@sthrift/api-graphql';
 import { restHandlerCreator } from '@sthrift/api-rest';
 
@@ -30,7 +32,7 @@ Cellix
                 new ServiceTokenValidation(
                     TokenValidationConfig.portalTokens,
                 ),
-            );
+            ).registerInfrastructureService(new ServiceTwilio());
     })
 	.setContext((serviceRegistry) => {
 		return {
@@ -38,8 +40,9 @@ Cellix
 				serviceRegistry.getInfrastructureService<ServiceMongoose>(ServiceMongoose),
 			),
 			tokenValidationService: serviceRegistry.getInfrastructureService<ServiceTokenValidation>(ServiceTokenValidation),
-		};
-	})
+            twilioService: serviceRegistry.getInfrastructureService<ServiceTwilio>(ServiceTwilio),
+        } as ApiContextSpec;
+    })
     .initializeApplicationServices((context) => buildApplicationServicesFactory(context))
     .registerAzureFunctionHttpHandler(
         'graphql',
