@@ -1,0 +1,19 @@
+{
+  "name": "service-mock-cognitive-search",
+  "version": "1.0.0",
+  "description": "In-memory mock for Azure Cognitive Search, similar to mongodb-memory-server.",
+  "main": "dist/src/index.js",
+  "types": "dist/src/index.d.ts",
+  "scripts": {
+    "build": "tsc --build",
+    "start": "node dist/src/index.js",
+    "test": "vitest"
+  },
+  "author": "CellixJS",
+  "license": "MIT",
+  "dependencies": {},
+  "devDependencies": {
+    "typescript": "^5.8.3",
+    "vitest": "^3.2.4"
+  }
+}
