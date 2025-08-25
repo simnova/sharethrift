@@ -2,7 +2,7 @@ import './service-config/otel-starter.ts';
 
 import { Cellix } from './cellix.ts';
 import type { ApiContextSpec } from '@sthrift/api-context-spec';
-import { type ApplicationServices, buildApplicationServicesFactory } from '@ocom/api-application-services';
+import { type ApplicationServices, buildApplicationServicesFactory } from '@sthrift/api-application-services';
 import { RegisterEventHandlers } from '@sthrift/api-event-handler';
 
 import { ServiceMongoose } from '@sthrift/service-mongoose';
