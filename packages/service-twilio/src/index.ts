@@ -1,6 +1,9 @@
+
 import TwilioPkg from 'twilio';
 const { Twilio } = TwilioPkg;
 import type { ServiceBase } from '@cellix/api-services-spec';
+
+type TwilioClient = InstanceType<typeof Twilio> | undefined;
 
 export interface ConversationInstance {
   sid: string;
@@ -17,9 +20,9 @@ export interface MessageInstance {
 }
 
 export class ServiceTwilio implements ServiceBase<ServiceTwilio> {
-  private client: InstanceType<typeof Twilio> | undefined;
+  private client: TwilioClient;
 
-  public startUp(): Promise<Exclude<ServiceTwilio, ServiceBase<ServiceTwilio>>> {
+  public startUp(): Promise<Exclude<ServiceTwilio, ServiceBase>> {
     if (this.client) {
       throw new Error('ServiceTwilio is already started');
     }
@@ -28,8 +31,7 @@ export class ServiceTwilio implements ServiceBase<ServiceTwilio> {
     }
     this.client = new Twilio(process.env['TWILIO_ACCOUNT_SID'], process.env['TWILIO_AUTH_TOKEN']);
     console.log('ServiceTwilio started');
-
-    return Promise.resolve(this) as Exclude<ServiceTwilio, ServiceBase<ServiceTwilio>>;
+    return Promise.resolve(this as Exclude<ServiceTwilio, ServiceBase>);
   }
 
   public shutDown(): Promise<void> {
@@ -41,7 +43,7 @@ export class ServiceTwilio implements ServiceBase<ServiceTwilio> {
     return Promise.resolve();
   }
 
-  public get service(): InstanceType<typeof Twilio> {
+  public get service(): TwilioClient {
     if (!this.client) {
       throw new Error('ServiceTwilio is not started - cannot access service');
     }
