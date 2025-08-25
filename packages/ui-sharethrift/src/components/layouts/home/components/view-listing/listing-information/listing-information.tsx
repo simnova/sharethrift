@@ -1,0 +1,113 @@
+import { Button, Row, Col, DatePicker } from 'antd';
+
+export type ListingStatus = 'Active' | 'Paused' | 'Blocked' | 'Cancelled' | 'Expired';
+export type UserRole = 'logged-out' | 'sharer' | 'reserver';
+export type ReservationRequestStatus = 'pending' | 'accepted' | 'rejected' | 'closing' | 'closed';
+
+export interface ListingInformationProps {
+  listing: {
+    id: string;
+    title: string;
+    itemName?: string;
+    description: string;
+    price?: number;
+    priceUnit?: string;
+    category: string;
+    condition?: string;
+    location: string;
+    availableFrom: string;
+    availableTo: string;
+    status: ListingStatus;
+  };
+  userRole: UserRole;
+  isAuthenticated: boolean;
+  reservationRequestStatus?: ReservationRequestStatus;
+  onReserveClick?: () => void;
+  onLoginClick?: () => void;
+  onSignUpClick?: () => void;
+  className?: string;
+}
+
+export function ListingInformation({
+  listing,
+  onReserveClick,
+  className = '',
+  // userRole,
+  // isAuthenticated,
+  // reservationRequestStatus,
+  // onLoginClick,
+  // onSignUpClick,
+}: ListingInformationProps) {
+  if (listing.status !== 'Active') {
+    return (
+      <div className="p-4">
+        <button
+          type="button"
+          disabled
+          className="w-full bg-gray-400 text-white py-3 px-4 rounded-lg font-semibold cursor-not-allowed"
+        >
+          Listing Not Available
+        </button>
+      </div>
+    );
+  }
+
+  return (
+    <Row gutter={[0, 12]} style={{ width: '100%' }} className={className}>
+      <Col span={24}>
+        {/* Title at top, using title42 class */}
+        <div className="title42">{listing.title}</div>
+      </Col>
+      <Col span={24}>
+        {/* Location and Category */}
+        <Row gutter={16} align="middle">
+          <Col span={8} style={{ display: 'flex', flexDirection: 'column', justifyContent: 'center', height: '100%' }}>
+            <h5 style={{ marginBottom: 8, marginTop: 0, lineHeight: '18px' }}>Located in</h5>
+            <h5 style={{ marginBottom: 0, marginTop: 0, lineHeight: '18px' }}>Category</h5>
+          </Col>
+          <Col span={16} style={{ display: 'flex', flexDirection: 'column', justifyContent: 'center', height: '100%' }}>
+            <div className="font-urbanist text-[14px] text-[rgba(0,0,0,0.85)]" style={{ marginBottom: 8, marginTop: 0, lineHeight: '18px' }}>
+              <p style={{ marginBottom: 0, marginTop: 0, lineHeight: '18px' }}>{listing.location}</p>
+            </div>
+            <div className="font-urbanist text-[14px] text-[rgba(0,0,0,0.85)]" style={{ marginBottom: 0, marginTop: 0, lineHeight: '18px' }}>
+              <p style={{ marginBottom: 0, marginTop: 0, lineHeight: '18px' }}>{listing.category}</p>
+            </div>
+          </Col>
+        </Row>
+      </Col>
+      <Col span={24}>
+        {/* Description */}
+        <Row>
+          <Col span={24}>
+            <div className="font-urbanist text-[14px] text-[#333333] w-full max-w-[499px]" style={{ marginBottom: 8 }}>
+              <p style={{ marginBottom: 8 }}>{listing.description}</p>
+            </div>
+          </Col>
+        </Row>
+        {/* Reservation Period Section */}
+        <Row style={{ marginTop: 16 }}>
+          <Col span={24}>
+            <h3 style={{ marginBottom: 8 }}>Reservation Period</h3>
+            <DatePicker.RangePicker
+              style={{
+                width: '100%',
+              }}
+              placeholder={["Start date", "End date"]}
+              allowClear
+            />
+          </Col>
+        </Row>
+      </Col>
+      <Col span={24}>
+        {/* Reserve Button */}
+        <Row>
+          <Col span={24}>
+            <Button type="primary" className="primaryButton" style={{ width: '100%' }} onClick={onReserveClick}>
+              Reserve
+            </Button>
+          </Col>
+        </Row>
+      </Col>
+    </Row>
+  );
+}

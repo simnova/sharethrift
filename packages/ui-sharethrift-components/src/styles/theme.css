@@ -1,5 +1,3 @@
-
-/* Font Imports */
 @import url('https://fonts.googleapis.com/css2?family=Urbanist:ital,wght@0,100..900;1,100..900&display=swap');
 @import url('https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Urbanist:ital,wght@0,100..900;1,100..900&display=swap');
 
@@ -71,6 +69,15 @@ h4 {
   line-height: 20px;
   color: var(--color-message-text);
 }
+
+h5 {
+  font-family: var(--Urbanist);
+  font-weight: 600;
+  font-size: 14px;
+  line-height: 18px;
+  color: var(--color-message-text); 
+}
+
 p, .authButton, .primaryButton, .secondaryButton, .ant-tabs, .ant-form-item-label > label {
   font-family: var(--Urbanist);
   font-weight: 400;
@@ -308,4 +315,112 @@ p, .authButton, .primaryButton, .secondaryButton, .ant-tabs, .ant-form-item-labe
   font-size: 1rem;
   letter-spacing: 0.01em;
   margin-bottom: 0.25em;
+}
+
+/* --- Ant Design Carousel Dot Theming --- */
+.ant-carousel .slick-dots li button {
+  background: var(--color-primary, #222) !important;
+}
+.ant-carousel .slick-dots li.slick-active button {
+  background: var(--color-primary, #222) !important;
+}
+.ant-carousel .slick-dots li {
+  margin: 0 6px !important;
+}
+
+
+/* --- Ant Design DatePicker Theming (Consolidated & Cleaned) --- */
+.ant-picker,
+.ant-picker-range,
+.ant-picker-input > input,
+.ant-picker.ant-picker-range.ant-picker-outlined,
+.ant-picker.ant-picker-range.ant-picker-outlined .ant-picker-input input,
+.ant-picker-range .ant-picker-input input {
+  width: 100% !important;
+  height: 32px !important;
+  border-radius: 8px !important;
+  font-family: var(--Urbanist, Arial, sans-serif) !important;
+  font-size: 14px !important;
+  color: var(--color-message-text) !important;
+  background-color: var(--color-background) !important;
+}
+.ant-picker-input > input,
+.ant-picker.ant-picker-range.ant-picker-outlined .ant-picker-input input,
+.ant-picker-range .ant-picker-input input {
+  background-color: transparent !important;
+}
+.ant-picker-range,
+.ant-picker.ant-picker-range.ant-picker-outlined {
+  border: 1px solid var(--color-foreground-2) !important;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.04) !important;
+  border-radius: 3px !important;
+}
+.ant-picker-focused,
+.ant-picker-range .ant-picker-active-bar {
+  border-color: var(--color-secondary) !important;
+}
+.ant-picker-range .ant-picker-active-bar {
+  background: var(--color-secondary) !important;
+}
+
+/* Calendar Panel & Header */
+.ant-picker-panel,
+.ant-picker-content,
+.ant-picker-header,
+.ant-picker-cell-inner,
+.ant-picker-cell {
+  font-family: var(--Urbanist) !important;
+  color: var(--color-message-text) !important;
+}
+.ant-picker-panel {
+  background: var(--color-background) !important;
+  border-radius: 8px !important;
+}
+.ant-picker-header {
+  background: var(--color-background-2) !important;
+  color: var(--color-primary) !important;
+  font-weight: 600 !important;
+  font-size: 16px !important;
+  border-bottom: 1px solid var(--color-foreground-2) !important;
+}
+.ant-picker-cell {
+  font-size: 14px !important;
+}
+.ant-picker-cell-in-view {
+  background: var(--color-background) !important;
+}
+.ant-picker-cell-selected .ant-picker-cell-inner,
+.ant-picker-cell-range-start .ant-picker-cell-inner,
+.ant-picker-cell-range-end .ant-picker-cell-inner {
+  background: var(--color-secondary) !important;
+  color: var(--color-highlight) !important;
+  border-radius: 6px !important;
+}
+.ant-picker-cell-today .ant-picker-cell-inner {
+  border: 1px solid var(--color-primary) !important;
+}
+.ant-picker-cell-disabled .ant-picker-cell-inner {
+  color: var(--color-primary-disabled) !important;
+  background: var(--color-background-2) !important;
+}
+
+/* Range highlight background */
+.ant-picker-cell-in-range::before,
+.ant-picker-cell-range-start::before,
+.ant-picker-cell-range-end::before {
+  background: rgba(63, 129, 118, 0.18) !important; /* var(--color-secondary) with transparency */
+}
+
+/* Remove blue focus/active highlights from calendar buttons and cells */
+.ant-picker-panel *:focus,
+.ant-picker-panel *:active,
+.ant-picker-panel .ant-picker-cell-inner:focus,
+.ant-picker-panel .ant-picker-cell-inner:active,
+.ant-picker-panel .ant-picker-btn:focus,
+.ant-picker-panel .ant-picker-btn:active,
+.ant-picker-panel .ant-picker-header button:focus,
+.ant-picker-panel .ant-picker-header button:active {
+  outline: none !important;
+  box-shadow: none !important;
+  border-color: var(--color-secondary) !important;
 }

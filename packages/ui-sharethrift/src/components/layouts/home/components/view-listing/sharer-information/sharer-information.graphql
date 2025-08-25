@@ -1,0 +1,8 @@
+query ViewListingSharerInformationGetSharer($sharerId: ID!) {
+  sharer(id: $sharerId) {
+    id
+    name
+    avatar
+    bio
+  }
+}

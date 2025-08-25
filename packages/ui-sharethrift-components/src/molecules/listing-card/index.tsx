@@ -35,7 +35,7 @@ export const ListingCard: React.FC<ListingCardProps> = ({ listing, onClick }) =>
   };
 
   return (
-    <Link to={`/`} onClick={onClick}> {/* TODO: link to listing */}
+    <Link to={`/listing/${listing._id}`} onClick={onClick}>
       <Card
         className={styles.listingCard}
         cover={

@@ -12,7 +12,7 @@ export default function HomeRoutes() {
   return (
     <Routes>
         <Route path="" element={<HomeTabsLayout />} >
-            <Route path="home/*" element={<Listings />} />
+            <Route path="home" element={<Listings />} />
             <Route path="listing/:listingId" element={<ViewListing />} />
             <Route path="my-listings/*" element={<MyListingsRoutes />} />
             <Route path="my-reservations/*" element={<MyReservationsRoutes />} />

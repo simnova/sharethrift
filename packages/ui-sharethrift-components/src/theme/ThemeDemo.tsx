@@ -1,7 +1,6 @@
-
 import React from 'react';
 import styles from './ThemeDemo.module.css';
-import { Button, Input, Select, Tabs, Checkbox, Tag, Form } from 'antd';
+import { Button, Input, Select, Tabs, Checkbox, Tag, Form, DatePicker } from 'antd';
 import { MessageOutlined, AppstoreAddOutlined, SwapOutlined, UserOutlined } from '@ant-design/icons';
 import '../styles/theme.css';
 
@@ -134,6 +133,10 @@ export const ThemeDemo: React.FC = () => (
         <UserOutlined style={{ color: 'var(--color-background)', fontSize: 16 }}/>
       </Tag>
     </div>
+    <DatePicker.RangePicker
+              placeholder={["Start date", "End date"]}
+              allowClear
+            />
     </div>
   </div>
 );

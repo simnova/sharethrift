@@ -1,0 +1,15 @@
+.listing-gallery-responsive .slick-arrow {
+  color: var(--color-secondary, #3F8176) !important;
+}
+
+.listing-gallery-responsive .slick-dots li button {
+  background: var(--color-secondary, #3F8176) !important;
+}
+.listing-gallery-responsive .slick-dots li.slick-active button {
+  background: var(--color-secondary, #3F8176) !important;
+  opacity: 1 !important;
+  border: 2px solid var(--color-secondary, #3F8176);
+}
+.ant-carousel .slick-dots li.slick-active::after {
+    background: transparent;
+}

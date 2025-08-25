@@ -1,0 +1,56 @@
+# View Listing Query
+
+query HomeViewListingContainerListing($listingId: ID!) {
+  listing(id: $listingId) {
+    id
+    title
+    description
+    images
+    itemName
+    category
+    condition
+    location
+    availableFrom
+    availableTo
+    status
+    price
+    priceUnit
+    owner {
+      id
+      name
+      avatar
+      rating
+      reviewCount
+    }
+    currentUserReservationRequest {
+      id
+      status
+    }
+  }
+}
+
+# Fragment for listing fields used across queries
+fragment HomeViewListingContainerListingFields on Listing {
+  id
+  title
+  description
+  images
+  itemName
+  category
+  condition
+  location
+  availableFrom
+  availableTo
+  status
+  price
+  priceUnit
+}
+
+# Fragment for owner fields
+fragment HomeViewListingContainerOwnerFields on User {
+  id
+  name
+  avatar
+  rating
+  reviewCount
+}
