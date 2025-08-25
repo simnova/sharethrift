@@ -1,18 +1,18 @@
 import type { ApiContextSpec } from '@sthrift/api-context-spec';
 import { Domain } from '@sthrift/api-domain';
+import type { DomainDataSource } from '@sthrift/api-domain';
 
 interface JwtPayload {
 	sub: string;
 	email: string;
 }
 
-// biome-ignore lint/suspicious/noEmptyInterface: <explanation>
-export interface ApplicationServices {}
+export interface ApplicationServices {
+	domainDataSource: DomainDataSource;
+}
 
-// biome-ignore lint/complexity/noBannedTypes: <explanation>
 export type PrincipalHints = {
-	// memberId: string | undefined;
-	// communityId: string | undefined;
+	// placeholder for future hint fields (memberId, communityId, etc.)
 };
 
 export interface AppServicesHost<S> {
@@ -38,30 +38,23 @@ export const buildApplicationServicesFactory = (
 			await infrastructureServicesRegistry.tokenValidationService.verifyJwt<JwtPayload>(
 				access_token as string,
 			);
-		// const tokenValidationResult = { verifiedJwt: { sub: '123'}, openIdConfigKey: 'AccountPortal'};
 		const passport = Domain.PassportFactory.forReadOnly();
 		console.log(passport);
 		if (tokenValidationResult !== null) {
 			const { verifiedJwt, openIdConfigKey } = tokenValidationResult;
 			if (openIdConfigKey === 'UserPortal') {
-				// when datastore infra service is available, can query for actual documents here
-
 				if ((verifiedJwt as { sub: string })?.sub) {
-					// Query for end user document by externalId
 					await Promise.resolve();
 				}
-
-				// const endUser = { id: '123' } as Domain.Contexts.User.EndUser.EndUserEntityReference;
-				// const member = { id: '456', community: { id: '789'}, accounts: [{ user: { id: '123'} }]} as unknown as Domain.Contexts.Community.Member.MemberEntityReference;
-				// const community = { id: '789'} as Domain.Contexts.Community.Community.CommunityEntityReference;
-				// passport = Domain.PassportFactory.forMember(endUser, member, community);
 			} else if (openIdConfigKey === 'StaffPortal') {
-				// const staffUser = {} as Domain.Contexts.User.StaffUser.StaffUserEntityReference;
-				// passport = Domain.PassportFactory.forStaffUser(staffUser);
+				// staff portal specific logic could go here
 			}
 		}
 
-		return {};
+		return {
+			// expose domain data source so GraphQL resolvers can access repositories / UoWs
+			domainDataSource: infrastructureServicesRegistry.dataSources.domainDataSource,
+		};
 	};
 
 	return {

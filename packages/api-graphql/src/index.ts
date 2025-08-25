@@ -13,40 +13,59 @@ import {
 
 // The GraphQL schema
 const typeDefs = `#graphql
-  type Community {
+	type Community {
 	id: String
 	name: String
 	createdBy: EndUser
-  } 
+	} 
 
-  type EndUser {
+	type EndUser {
 	id: String
 	displayName: String
-  }
+	}
 
-  type Query {
+	type Listing {
+		id: ID!
+		title: String!
+		description: String!
+		category: String!
+		location: String!
+		sharingPeriodStart: String!
+		sharingPeriodEnd: String!
+		state: String!
+		images: [String!]!
+		createdAt: String!
+		updatedAt: String!
+	}
+
+	type Query {
 	hello: String
-  }
+		viewListing(id: ID!): Listing
+	}
 
-  input CommunityCreateInput {
+	input CommunityCreateInput {
 	name: String!
 	createdByEndUserId: String!
-  }
+	}
 
-  type Mutation {
+	type Mutation {
 	communityCreate(input: CommunityCreateInput!): Community
-  }
+	}
 `;
 
 interface GraphContext extends BaseContext {
 	applicationServices: ApplicationServices;
 }
 // A map of functions which return data for the schema.
+import { resolvers as viewListingResolvers } from './schema/resolvers/view-listing.resolvers.ts';
+
 const resolvers = {
 	Query: {
 		hello: (_parent: unknown, _args: unknown, context: GraphContext) => {
 			return `world${JSON.stringify(context)}`;
 		},
+		// merge in viewListing resolver (will be overwritten if duplicate keys)
+		...viewListingResolvers.Query,
 	},
 	Mutation: {},
 };
