@@ -4,12 +4,14 @@
 GraphQL schema for Conversations
 """
 
-type Conversation {
-  id: ObjectID!
+type Conversation implements MongoBase{
+  
   sharer: User!
   reserver: User!
   listing: Listing!
   twilioConversationId: String!
+
+  id: ObjectID!
   schemaversion: Int!
   createdAt: String!
   updatedAt: String!
@@ -26,25 +28,10 @@ type Listing {
   # Add more fields as needed
 }
 
-type Query {
+
+extend type Query {
   conversations: [Conversation!]!
   conversation(id: ObjectID!): Conversation
-}
-
-type Conversation {
-  id: ObjectID!
-  sharer: User!
-  reserver: User!
-  listing: Listing!
-  twilioConversationId: String!
-  schemaversion: Int!
-  createdAt: String!
-  updatedAt: String!
-}
-
-type Query {
-  conversations: [Conversation!]!
-  getUserConversations(userId: ObjectID!): [Conversation!]!
 }
 
 # type Mutation {

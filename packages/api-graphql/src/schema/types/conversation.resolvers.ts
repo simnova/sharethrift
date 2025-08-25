@@ -2,13 +2,13 @@ import type { GraphContext } from "../../init/context.ts";
 
 export const conversationResolvers = {
   Query: {
-    getUserConversations: (_parent: unknown, _args: unknown, context: GraphContext) => {
+    conversations: (_parent: unknown, _args: unknown, context: GraphContext) => {
         console.log('conversations resolver called with context:', context);
       return [];
     },
     conversation: () => {
-      console.log('conversations resolver called');
-      return [];
+      console.log('conversation resolver called');
+      return {};
     }
   },
   // Mutation: {

@@ -4,7 +4,8 @@ import { type User, type UserModelType, userOptions } from './user.model.ts';
 import { Patterns } from '../../patterns.ts';
 
 // Location
-export interface PersonalUserAccountProfileLocation extends MongooseSeedwork.NestedPath {
+export interface PersonalUserAccountProfileLocation
+	extends MongooseSeedwork.NestedPath {
 	address1: string;
 	address2?: string;
 	city: string;
@@ -22,7 +23,8 @@ export const PersonalUserAccountProfileLocationType = {
 };
 
 // Billing
-export interface PersonalUserAccountProfileBilling extends MongooseSeedwork.NestedPath {
+export interface PersonalUserAccountProfileBilling
+	extends MongooseSeedwork.NestedPath {
 	subscriptionId?: string;
 	cybersourceCustomerId?: string;
 }
@@ -32,7 +34,8 @@ export const PersonalUserAccountProfileBillingType = {
 };
 
 // Profile
-export interface PersonalUserAccountProfile extends MongooseSeedwork.NestedPath {
+export interface PersonalUserAccountProfile
+	extends MongooseSeedwork.NestedPath {
 	firstName: string;
 	lastName: string;
 	location: PersonalUserAccountProfileLocation;
@@ -72,7 +75,6 @@ export const PersonalUserAccountType = {
 		maxlength: 254,
 		required: true,
 		unique: true,
-		index: true,
 	},
 	username: {
 		type: String,
@@ -111,9 +113,7 @@ const PersonalUserSchema = new Schema<
 		schemaVersion: { type: String, required: true, default: '1.0.0' },
 	},
 	userOptions,
-);
-
-PersonalUserSchema.index({ 'account.email': 1 }, { sparse: true });
+).index({ 'account.email': 1 }, { sparse: true });
 
 export const PersonalUserModelName: string = 'personal-users'; //TODO: This should be in singular form
 

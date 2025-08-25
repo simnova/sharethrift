@@ -1,5 +1,5 @@
-type ItemListing {
-  id: ObjectID!
+type ItemListing implements MongoBase{
+  
   sharer: ObjectID!
   title: String!
   description: String!
@@ -8,10 +8,14 @@ type ItemListing {
   sharingPeriodStart: DateTime!
   sharingPeriodEnd: DateTime!
   state: ItemListingState
-  createdAt: DateTime
-  updatedAt: DateTime
+  
   sharingHistory: [ObjectID!]
   reports: Int
+
+  id: ObjectID!
+  schemaVersion: String
+  createdAt: DateTime
+  updatedAt: DateTime
 }
 
 enum ItemListingState {
@@ -24,7 +28,7 @@ enum ItemListingState {
   AppealRequested
 }
 
-type Query {
+extend type Query {
   itemListings: [ItemListing!]!
   itemListing(id: ObjectID!): ItemListing
 }

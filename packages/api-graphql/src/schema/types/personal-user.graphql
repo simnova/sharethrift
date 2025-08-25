@@ -2,14 +2,15 @@
 """
 GraphQL schema for Personal Users
 """
-type PersonalUser {
-  id: ID!
+type PersonalUser implements MongoBase {
   userType: String!
   isBlocked: Boolean!
   account: PersonalUserAccount!
-  schemaVersion: String!
-  createdAt: String!
-  updatedAt: String!
+
+  id: ObjectID!
+  schemaVersion: String
+  createdAt: DateTime
+  updatedAt: DateTime
 }
 
 type PersonalUserAccount {
@@ -107,13 +108,13 @@ input PersonalUserAccountProfileBillingUpdateInput {
   cybersourceCustomerId: String
 }
 
-type Query {
+extend type Query {
   # Personal User queries
   personalUserById(id: ObjectID!): PersonalUser
   currentEndUserAndCreateIfNotExists: PersonalUser!
 }
 
-type Mutation {
-  # Personal User mutations
-  personalUserUpdate(id: ObjectID!, input: PersonalUserUpdateInput!): PersonalUser!
-}
+# type Mutation {
+#   # Personal User mutations
+#   personalUserUpdate(id: ObjectID!, input: PersonalUserUpdateInput!): PersonalUser!
+# }

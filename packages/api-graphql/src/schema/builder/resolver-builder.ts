@@ -17,10 +17,8 @@ const __dirname = path.dirname(__filename);
 const resolversGlob = path.resolve(__dirname, '../types/**/*.resolvers.{js,cjs,mjs}');
 const permissionsGlob = path.resolve(__dirname, '../types/**/*.permissions.{js,cjs,mjs}');
 
-console.log(`custom-log | resolver-builder | ${resolversGlob}`);
-
 const resolversArray = loadFilesSync(resolversGlob);
 const permissionsArray = loadFilesSync(permissionsGlob);
 
 export const resolvers: Resolvers = mergeResolvers(resolversArray);
-export const permissions = mergeResolvers(permissionsArray);
+export const permissions: Resolvers = mergeResolvers(permissionsArray);
