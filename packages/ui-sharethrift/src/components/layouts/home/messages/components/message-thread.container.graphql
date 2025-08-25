@@ -1,22 +1,22 @@
-# GraphQL queries and fragments for MessageThreadContainer
+# # GraphQL queries and fragments for MessageThreadContainer
 
-fragment HomeMessageThreadContainerMessageFields on Message {
-  id
-  twilioMessageSid
-  conversationId
-  authorId
-  content
-  createdAt
-}
+# fragment HomeMessageThreadContainerMessageFields on Message {
+#   id
+#   twilioMessageSid
+#   conversationId
+#   authorId
+#   content
+#   createdAt
+# }
 
-query HomeMessageThreadContainerGetConversationMessages($conversationId: ID!, $limit: Int, $offset: Int) {
-  getConversationMessages(conversationId: $conversationId, limit: $limit, offset: $offset) {
-    ...HomeMessageThreadContainerMessageFields
-  }
-}
+# query HomeMessageThreadContainerGetConversationMessages($conversationId: ID!, $limit: Int, $offset: Int) {
+#   getConversationMessages(conversationId: $conversationId, limit: $limit, offset: $offset) {
+#     ...HomeMessageThreadContainerMessageFields
+#   }
+# }
 
-mutation HomeMessageThreadContainerSendMessage($input: SendMessageInput!) {
-  sendMessage(input: $input) {
-    ...HomeMessageThreadContainerMessageFields
-  }
-}
+# mutation HomeMessageThreadContainerSendMessage($input: SendMessageInput!) {
+#   sendMessage(input: $input) {
+#     ...HomeMessageThreadContainerMessageFields
+#   }
+# }

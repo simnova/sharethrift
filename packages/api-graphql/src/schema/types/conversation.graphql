@@ -5,7 +5,7 @@ GraphQL schema for Conversations
 """
 
 type Conversation {
-  id: ID!
+  id: ObjectID!
   sharer: User!
   reserver: User!
   listing: Listing!
@@ -16,23 +16,23 @@ type Conversation {
 }
 
 type User {
-  id: ID!
+  id: ObjectID!
   username: String!
   # Add more fields as needed
 }
 
 type Listing {
-  id: ID!
+  id: ObjectID!
   # Add more fields as needed
 }
 
 type Query {
   conversations: [Conversation!]!
-  conversation(id: ID!): Conversation
+  conversation(id: ObjectID!): Conversation
 }
 
 type Conversation {
-  id: ID!
+  id: ObjectID!
   sharer: User!
   reserver: User!
   listing: Listing!
@@ -44,9 +44,9 @@ type Conversation {
 
 type Query {
   conversations: [Conversation!]!
-  conversation(id: ID!): Conversation
+  getUserConversations(userId: ObjectID!): [Conversation!]!
 }
 
-type Mutation {
-  createConversation(sharerId: ID!, reserverId: ID!, listingId: ID!): Conversation!
-}
+# type Mutation {
+  # createConversation(sharerId: ObjectID!, reserverId: ObjectID!, listingId: ObjectID!): Conversation!
+# }

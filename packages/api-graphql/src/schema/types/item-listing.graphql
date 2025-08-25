@@ -1,6 +1,6 @@
 type ItemListing {
-  id: ObjectId!
-  sharer: ObjectId!
+  id: ObjectID!
+  sharer: ObjectID!
   title: String!
   description: String!
   category: String!
@@ -10,7 +10,7 @@ type ItemListing {
   state: ItemListingState
   createdAt: DateTime
   updatedAt: DateTime
-  sharingHistory: [ObjectId!]
+  sharingHistory: [ObjectID!]
   reports: Int
 }
 
@@ -26,5 +26,5 @@ enum ItemListingState {
 
 type Query {
   itemListings: [ItemListing!]!
-  itemListing(id: ObjectId!): ItemListing
+  itemListing(id: ObjectID!): ItemListing
 }
