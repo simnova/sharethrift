@@ -37,4 +37,54 @@ export interface ItemListingRepository<props extends ItemListingProps>
 	 * Get listings by sharer ID
 	 */
 	getBySharerID(sharerId: string): Promise<ItemListing<props>[]>;
+
+	/**
+	 * Find listings by sharer with pagination, filtering, and sorting
+	 */
+	findBySharerWithPagination(options: {
+		sharerId: string;
+		page: number;
+		pageSize: number;
+		searchText?: string;
+		statusFilter?: string[];
+		sortBy?: string;
+		sortOrder?: 'asc' | 'desc';
+	}): Promise<{
+		edges: Array<{
+			node: ItemListing<props>;
+			cursor: string;
+		}>;
+		pageInfo: {
+			hasNextPage: boolean;
+			hasPreviousPage: boolean;
+			startCursor?: string;
+			endCursor?: string;
+		};
+		totalCount: number;
+	}>;
+
+	/**
+	 * Find listings by sharer that have incoming requests, with pagination
+	 */
+	findBySharerWithRequestsWithPagination(options: {
+		sharerId: string;
+		page: number;
+		pageSize: number;
+		searchText?: string;
+		statusFilter?: string[];
+		sortBy?: string;
+		sortOrder?: 'asc' | 'desc';
+	}): Promise<{
+		edges: Array<{
+			node: ItemListing<props> & { requestData?: unknown };
+			cursor: string;
+		}>;
+		pageInfo: {
+			hasNextPage: boolean;
+			hasPreviousPage: boolean;
+			startCursor?: string;
+			endCursor?: string;
+		};
+		totalCount: number;
+	}>;
 }

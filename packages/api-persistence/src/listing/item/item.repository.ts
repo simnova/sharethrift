@@ -73,4 +73,72 @@ export class ItemListingRepository implements Domain.Contexts.ItemListingReposit
 		const mongoItems = await this.model.find({ sharer: sharerID }).exec();
 		return mongoItems.map(doc => this.converter.toDomain(doc, this.passport));
 	}
+  
+  async findBySharerWithPagination(options: {
+		sharerId: string;
+		page: number;
+		pageSize: number;
+		searchText?: string;
+		statusFilter?: string[];
+		sortBy?: string;
+		sortOrder?: 'asc' | 'desc';
+	}): Promise<{
+		edges: Array<{
+			node: Domain.Contexts.ItemListing<PropType> & { requestData?: unknown };
+			cursor: string;
+		}>;
+		pageInfo: {
+			hasNextPage: boolean;
+			hasPreviousPage: boolean;
+			startCursor?: string;
+			endCursor?: string;
+		};
+		totalCount: number;
+	}> {
+    // TODO: Implement actual filtering, sorting, and pagination logic
+    console.log('findBySharerWithPagination called with options:', options);
+    await Promise.resolve(); // fake await to appease lint
+    return {
+      edges: [],
+      pageInfo: {
+      hasNextPage: false,
+      hasPreviousPage: false,
+      },
+      totalCount: 0,
+    };
+	}
+
+	async findBySharerWithRequestsWithPagination(options: {
+		sharerId: string;
+		page: number;
+		pageSize: number;
+		searchText?: string;
+		statusFilter?: string[];
+		sortBy?: string;
+		sortOrder?: 'asc' | 'desc';
+	}): Promise<{
+		edges: Array<{
+			node: Domain.Contexts.ItemListing<PropType> & { requestData?: unknown };
+			cursor: string;
+		}>;
+		pageInfo: {
+			hasNextPage: boolean;
+			hasPreviousPage: boolean;
+			startCursor?: string;
+			endCursor?: string;
+		};
+		totalCount: number;
+	}> {
+    // TODO: Implement actual filtering, sorting, and pagination logic
+    console.log('findBySharerWithRequestsWithPagination called with options:', options);
+    await Promise.resolve(); // fake await to appease lint
+    return {
+      edges: [],
+      pageInfo: {
+      hasNextPage: false,
+      hasPreviousPage: false,
+      },
+      totalCount: 0,
+    };
+	}
 }
