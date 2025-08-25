@@ -112,16 +112,16 @@ export type BlobMetadataField = {
 export type CacheControlScope = "PRIVATE" | "PUBLIC";
 
 /** GraphQL schema for Conversations */
-export type Conversation = {
+export type Conversation = MongoBase & {
   __typename?: "Conversation";
-  createdAt: Scalars["String"]["output"];
+  createdAt: Scalars["DateTime"]["output"];
   id: Scalars["ObjectID"]["output"];
   listing: Listing;
   reserver: User;
-  schemaversion: Scalars["Int"]["output"];
+  schemaVersion: Scalars["String"]["output"];
   sharer: User;
   twilioConversationId: Scalars["String"]["output"];
-  updatedAt: Scalars["String"]["output"];
+  updatedAt: Scalars["DateTime"]["output"];
 };
 
 export type ItemListing = MongoBase & {
@@ -401,7 +401,7 @@ export type DirectiveResolverFn<TResult = {}, TParent = {}, TContext = {}, TArgs
 
 /** Mapping of interface types */
 export type ResolversInterfaceTypes<_RefType extends Record<string, unknown>> = ResolversObject<{
-  MongoBase: ItemListing | PersonalUser;
+  MongoBase: Conversation | ItemListing | PersonalUser;
   MongoSubdocument: never;
   MutationResult: never;
 }>;
@@ -676,14 +676,14 @@ export type ConversationResolvers<
   ContextType = GraphContext,
   ParentType extends ResolversParentTypes["Conversation"] = ResolversParentTypes["Conversation"],
 > = ResolversObject<{
-  createdAt?: Resolver<ResolversTypes["String"], ParentType, ContextType>;
+  createdAt?: Resolver<ResolversTypes["DateTime"], ParentType, ContextType>;
   id?: Resolver<ResolversTypes["ObjectID"], ParentType, ContextType>;
   listing?: Resolver<ResolversTypes["Listing"], ParentType, ContextType>;
   reserver?: Resolver<ResolversTypes["User"], ParentType, ContextType>;
-  schemaversion?: Resolver<ResolversTypes["Int"], ParentType, ContextType>;
+  schemaVersion?: Resolver<ResolversTypes["String"], ParentType, ContextType>;
   sharer?: Resolver<ResolversTypes["User"], ParentType, ContextType>;
   twilioConversationId?: Resolver<ResolversTypes["String"], ParentType, ContextType>;
-  updatedAt?: Resolver<ResolversTypes["String"], ParentType, ContextType>;
+  updatedAt?: Resolver<ResolversTypes["DateTime"], ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 }>;
 
@@ -868,7 +868,7 @@ export type MongoBaseResolvers<
   ContextType = GraphContext,
   ParentType extends ResolversParentTypes["MongoBase"] = ResolversParentTypes["MongoBase"],
 > = ResolversObject<{
-  __resolveType: TypeResolveFn<"ItemListing" | "PersonalUser", ParentType, ContextType>;
+  __resolveType: TypeResolveFn<"Conversation" | "ItemListing" | "PersonalUser", ParentType, ContextType>;
   createdAt?: Resolver<Maybe<ResolversTypes["DateTime"]>, ParentType, ContextType>;
   id?: Resolver<ResolversTypes["ObjectID"], ParentType, ContextType>;
   schemaVersion?: Resolver<Maybe<ResolversTypes["String"]>, ParentType, ContextType>;

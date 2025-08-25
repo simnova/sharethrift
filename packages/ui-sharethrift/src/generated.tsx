@@ -123,16 +123,16 @@ export type BlobMetadataField = {
 export type CacheControlScope = "PRIVATE" | "PUBLIC";
 
 /** GraphQL schema for Conversations */
-export type Conversation = {
+export type Conversation = MongoBase & {
   __typename?: "Conversation";
-  createdAt: Scalars["String"]["output"];
+  createdAt: Scalars["DateTime"]["output"];
   id: Scalars["ObjectID"]["output"];
   listing: Listing;
   reserver: User;
-  schemaversion: Scalars["Int"]["output"];
+  schemaVersion: Scalars["String"]["output"];
   sharer: User;
   twilioConversationId: Scalars["String"]["output"];
-  updatedAt: Scalars["String"]["output"];
+  updatedAt: Scalars["DateTime"]["output"];
 };
 
 export type ItemListing = MongoBase & {

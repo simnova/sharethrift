@@ -12,9 +12,9 @@ type Conversation implements MongoBase{
   twilioConversationId: String!
 
   id: ObjectID!
-  schemaversion: Int!
-  createdAt: String!
-  updatedAt: String!
+  schemaVersion: String!
+  createdAt: DateTime!
+  updatedAt: DateTime!
 }
 
 type User {

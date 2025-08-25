@@ -103,7 +103,6 @@ const PersonalUserSchema = new Schema<
 	PersonalUser
 >(
 	{
-		userType: { type: String, required: true },
 		isBlocked: { type: Boolean, required: true },
 		account: {
 			type: PersonalUserAccountType,

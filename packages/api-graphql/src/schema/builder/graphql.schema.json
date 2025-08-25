@@ -273,7 +273,7 @@
               "name": null,
               "ofType": {
                 "kind": "SCALAR",
-                "name": "String",
+                "name": "DateTime",
                 "ofType": null
               }
             },
@@ -329,7 +329,7 @@
             "deprecationReason": null
           },
           {
-            "name": "schemaversion",
+            "name": "schemaVersion",
             "description": null,
             "args": [],
             "type": {
@@ -337,7 +337,7 @@
               "name": null,
               "ofType": {
                 "kind": "SCALAR",
-                "name": "Int",
+                "name": "String",
                 "ofType": null
               }
             },
@@ -385,7 +385,7 @@
               "name": null,
               "ofType": {
                 "kind": "SCALAR",
-                "name": "String",
+                "name": "DateTime",
                 "ofType": null
               }
             },
@@ -394,7 +394,13 @@
           }
         ],
         "inputFields": null,
-        "interfaces": [],
+        "interfaces": [
+          {
+            "kind": "INTERFACE",
+            "name": "MongoBase",
+            "ofType": null
+          }
+        ],
         "enumValues": null,
         "possibleTypes": null
       },
@@ -1187,6 +1193,11 @@
         "interfaces": [],
         "enumValues": null,
         "possibleTypes": [
+          {
+            "kind": "OBJECT",
+            "name": "Conversation",
+            "ofType": null
+          },
           {
             "kind": "OBJECT",
             "name": "ItemListing",
