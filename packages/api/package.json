@@ -27,6 +27,7 @@
 		"@sthrift/api-rest": "^1.0.0",
         "@sthrift/service-blob-storage": "^1.0.0",
 		"@sthrift/service-mongoose": "^1.0.0",
+        "@sthrift/service-twilio": "^1.0.0",
 		"@sthrift/service-otel": "^1.0.0",
 		"@sthrift/service-token-validation": "^1.0.0"
 	},

@@ -16,6 +16,7 @@
     "@sthrift/ui-sharethrift-components": "^1.0.0"
   },
   "dependencies": {
+    "@sthrift/ui-sharethrift-components": "^1.0.0",
     "@apollo/client": "^3.13.9",
     "@tailwindcss/vite": "^4.1.11",
     "@twilio/conversations": "^2.6.3",
