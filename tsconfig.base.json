@@ -38,6 +38,6 @@
 		"incremental": true,
 
 		/* Completeness */
-	"skipLibCheck": false
+	"skipLibCheck": true /* Skip type checking to bypass error related to mdx: https://www.google.com/search?q=..%2F..%2Fnode_modules%2F%40types%2Fmdx%2Ftypes.d.ts%3A23%3A38+-+error+TS2503%3A+Cannot+find+namespace+%27JSX%27.&oq=..%2F..%2Fnode_modules%2F%40types%2Fmdx%2Ftypes.d.ts%3A23%3A38+-+error+TS2503%3A+Cannot+find+namespace+%27JSX%27.&gs_lcrp=EgZjaHJvbWUyBggAEEUYOdIBBzE5NGowajSoAgCwAgE&sourceid=chrome&ie=UTF-8 */
 	}
 }

@@ -1,13 +1,14 @@
 {
-  "compilerOptions": {
-    "module": "commonjs",
-    "target": "es6",
-    "outDir": "dist",
-    "types": ["node"],
-    "rootDir": ".",
-    "sourceMap": true,
-    "strict": false,
-    "esModuleInterop": true,
-    "declaration": true,
-  }
+	"extends": ["../../tsconfig.base"],
+	"compilerOptions": {
+		/* Modules */
+		"rootDir": ".",
+
+		/* Emit */
+		"outDir": "dist"
+	},
+	"include": ["src/**/*.ts"],
+	"references": [
+		{ "path": "../api-domain" }
+	]
 }
