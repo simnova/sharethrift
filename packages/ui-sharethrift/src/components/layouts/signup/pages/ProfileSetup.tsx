@@ -38,7 +38,7 @@ export default function ProfileSetup() {
         setLoading(true);
         try {
             console.log({ ...values, profileImage:avatarUrl });
-            navigate("/signup/terms");
+            navigate("/signup/payment");
         } catch (err) {
             message.error("Failed to save profile. Please try again.");
         } finally {

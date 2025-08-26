@@ -12,7 +12,7 @@ import {
 import { message } from "antd";
 import { useNavigate } from "react-router-dom";
 import { useState } from "react";
-
+import { SaveOutlined } from "@ant-design/icons";
 
 const { Title, Text } = Typography;
 
@@ -78,11 +78,10 @@ export default function Payment() {
       // If all valid, proceed
       console.log("Billing information submitted:", values);
       setTimeout(() => {
-        navigate("/");
+        navigate("/signup/terms");
         setLoading(false);
       }, 1000);
     } catch (err) {
-      // Validation errors handled by form
       setLoading(false);
     }
   };
@@ -390,6 +389,7 @@ export default function Payment() {
               onClick={handleSaveOnly}
               loading={saveOnlyLoading}
               size="large"
+              icon={<SaveOutlined />}
               style={{
                 borderRadius: "20px",
                 height: "38px",
@@ -456,7 +456,7 @@ export default function Payment() {
             </Checkbox>
           </Form.Item>
 
-          <Form.Item style={{ textAlign: "center", marginTop: "32px" }}>
+          <Form.Item style={{ textAlign: "right", marginTop: "32px" }}>
             <Button
               type="primary"
               htmlType="submit"
