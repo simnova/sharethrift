@@ -7,9 +7,9 @@ import type { ReservationRequest } from '../pages/my-reservations.container.tsx'
 
 export interface ReservationsTableProps {
   reservations: ReservationRequest[]; // Type will eventually come from generated graphql files
-  onCancel: (id: string) => void;
-  onClose: (id: string) => void;
-  onMessage: (id: string) => void;
+  onCancel?: (id: string) => void;
+  onClose?: (id: string) => void;
+  onMessage?: (id: string) => void;
   cancelLoading?: boolean;
   closeLoading?: boolean;
   showActions?: boolean;
@@ -26,6 +26,7 @@ export const ReservationsTable: React.FC<ReservationsTableProps> = ({
   showActions = true,
   emptyText = 'No reservations found',
 }) => {
+
   const columns = [
     {
       title: 'Listing',
@@ -77,19 +78,19 @@ export const ReservationsTable: React.FC<ReservationsTableProps> = ({
       title: 'Status',
       dataIndex: 'state',
       key: 'status',
-  render: (state: ReservationRequest['state']) => (
+      render: (state: ReservationRequest['state']) => (
         <ReservationStatusTag status={state} />
       ),
     },
     ...(showActions ? [{
       title: 'Actions',
       key: 'actions',
-  render: (record: ReservationRequest) => (
+      render: (record: ReservationRequest) => (
         <ReservationActions
           status={record.state}
-          onCancel={() => onCancel(record.id)}
-          onClose={() => onClose(record.id)}
-          onMessage={() => onMessage(record.id)}
+          onCancel={() => onCancel?.(record.id)}
+          onClose={() => onClose?.(record.id)}
+          onMessage={() => onMessage?.(record.id)}
           cancelLoading={cancelLoading}
           closeLoading={closeLoading}
         />

@@ -3,7 +3,7 @@ import { Button } from "antd";
 
 export interface ReservationActionButtonProps {
   action: "Cancel" | "Close" | "Message";
-  onClick: () => void;
+  onClick?: () => void;
   loading?: boolean;
 }
 
@@ -12,7 +12,7 @@ export const ReservationActionButton: React.FC<
 > = ({ action, onClick, loading = false }) => {
   return (
     <Button
-      onClick={onClick}
+      onClick={onClick || (() => {})}
       loading={loading}
       size="small"
       type="link"

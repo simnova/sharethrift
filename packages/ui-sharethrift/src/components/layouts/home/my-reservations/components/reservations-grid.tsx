@@ -7,9 +7,9 @@ const { Text } = Typography;
 
 export interface ReservationsGridProps {
   reservations: ReservationRequest[]; // Will eventually come from generated graphql files
-  onCancel: (id: string) => void;
-  onClose: (id: string) => void;
-  onMessage: (id: string) => void;
+  onCancel?: (id: string) => void;
+  onClose?: (id: string) => void;
+  onMessage?: (id: string) => void;
   cancelLoading?: boolean;
   closeLoading?: boolean;
   showActions?: boolean;

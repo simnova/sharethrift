@@ -4,9 +4,9 @@ import { ReservationActionButton } from './reservation-action-button.tsx';
 
 export interface ReservationActionsProps {
   status: 'REQUESTED' | 'ACCEPTED' | 'REJECTED' | 'RESERVATION_PERIOD' | 'CANCELLED';
-  onCancel: () => void;
-  onClose: () => void;
-  onMessage: () => void;
+  onCancel?: () => void;
+  onClose?: () => void;
+  onMessage?: () => void;
   cancelLoading?: boolean;
   closeLoading?: boolean;
 }

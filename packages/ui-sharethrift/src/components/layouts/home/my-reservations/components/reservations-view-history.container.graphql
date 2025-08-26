@@ -1,0 +1,24 @@
+fragment ReservationsViewHistoryContainerReservationFields on ReservationRequest {
+  id
+  state
+  reservationPeriodStart
+  reservationPeriodEnd
+  createdAt
+  updatedAt
+  closeRequested
+  listing {
+    id
+    title
+    imageUrl
+  }
+  reserver {
+    id
+    name
+  }
+}
+
+query ReservationsViewHistoryContainerPastReservations($userId: ID!) {
+  myPastReservations(userId: $userId) {
+    ...ReservationsViewHistoryContainerReservationFields
+  }
+}

@@ -1,0 +1,42 @@
+fragment ReservationsViewActiveContainerReservationFields on ReservationRequest {
+  id
+  state
+  reservationPeriodStart
+  reservationPeriodEnd
+  createdAt
+  updatedAt
+  closeRequested
+  listing {
+    id
+    title
+    imageUrl
+  }
+  reserver {
+    id
+    name
+  }
+}
+
+query ReservationsViewActiveContainerActiveReservations($userId: ID!) {
+  myActiveReservations(userId: $userId) {
+    ...ReservationsViewActiveContainerReservationFields
+  }
+}
+
+
+mutation HomeMyReservationsViewActiveContainerCancelReservation($id: ID!) {
+  cancelReservation(id: $id) {
+    id
+    state
+    updatedAt
+  }
+}
+
+mutation HomeMyReservationsViewActiveContainerCloseReservation($id: ID!) {
+  closeReservation(id: $id) {
+    id
+    state
+    updatedAt
+    closeRequested
+  }
+}

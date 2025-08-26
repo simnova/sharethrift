@@ -9,9 +9,9 @@ const { Text } = Typography;
 
 export interface ReservationCardProps {
   reservation: ReservationRequest;
-  onCancel: (id: string) => void;
-  onClose: (id: string) => void;
-  onMessage: (id: string) => void;
+  onCancel?: (id: string) => void;
+  onClose?: (id: string) => void;
+  onMessage?: (id: string) => void;
   cancelLoading?: boolean;
   closeLoading?: boolean;
   showActions?: boolean;
@@ -75,9 +75,9 @@ export const ReservationCard: React.FC<ReservationCardProps> = ({
             <div className={styles.cardActions}>
               <ReservationActions
                 status={reservation.state}
-                onCancel={() => onCancel(reservation.id)}
-                onClose={() => onClose(reservation.id)}
-                onMessage={() => onMessage(reservation.id)}
+                onCancel={() => onCancel?.(reservation.id)}
+                onClose={() => onClose?.(reservation.id)}
+                onMessage={() => onMessage?.(reservation.id)}
                 cancelLoading={cancelLoading}
                 closeLoading={closeLoading}
               />
