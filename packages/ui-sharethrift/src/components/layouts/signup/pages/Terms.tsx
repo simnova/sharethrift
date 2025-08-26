@@ -1,6 +1,5 @@
 import { Form, Button, Card, Typography, Checkbox, Radio, Space, Divider } from 'antd';
 import { useNavigate } from 'react-router-dom';
-import '../../../../styles/theme.css';
 
 const { Title, Text } = Typography;
 
@@ -17,7 +16,7 @@ export default function Terms() {
 
   const handleSubmit = (values: AcceptTermsFormData) => {
     console.log('Terms form submitted:', values);
-    navigate('/signup/terms');
+    navigate('/signup/payment');
   };
 
   return (
