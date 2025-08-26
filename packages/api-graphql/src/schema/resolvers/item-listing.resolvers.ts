@@ -1,14 +1,9 @@
 import type { GraphContext } from "../../context.ts";
+import { myListingsMockService } from "../../mock-services/my-listings-mock.service.ts";
 
 interface MyListingsArgs {
   page: number;
   pageSize: number;
-  filter?: {
-    searchText?: string;
-    statusFilter?: string[];
-    sortBy?: string;
-    sortOrder?: 'asc' | 'desc';
-  };
 }
 
 export const itemListingResolvers = {
@@ -33,52 +28,29 @@ export const itemListingResolvers = {
     myListingsAll: (_parent: unknown, args: MyListingsArgs, context: GraphContext) => {
       console.log('myListingsAll resolver called with args:', args, context);
       
-      // TODO: Implement actual logic to fetch listings for the current user
-      // Get the listing repository from context
-      // const listingRepository = context.apiContext.dataSources.domainDataSource.listingDataSource.itemListingRepository;
+      // Use mock service to get paginated listings
+      const result = myListingsMockService.getMyListings({
+        page: args.page,
+        pageSize: args.pageSize,
+      });
       
-      // const result = await listingRepository.findBySharerWithPagination({
-      //   sharerId: userId,
-      //   page: args.page,
-      //   pageSize: args.pageSize,
-      //   searchText: args.filter?.searchText,
-      //   statusFilter: args.filter?.statusFilter,
-      //   sortBy: args.filter?.sortBy,
-      //   sortOrder: args.filter?.sortOrder
-      // });
-      
-      // return {
-      //   edges: result.edges,
-      //   pageInfo: result.pageInfo,
-      //   totalCount: result.totalCount
-      // };
-
-      return {
-        edges: [],
-        pageInfo: {
-          hasNextPage: false,
-          hasPreviousPage: false,
-        },
-        totalCount: 0,
-      }
+      return result;
     },
     
     myListingsRequests: (_parent: unknown, args: MyListingsArgs, context: GraphContext) => {
       console.log('myListingsRequests resolver called with args:', args, context);
       
-      // TODO: Implement actual logic to fetch listings with requests
-      return {
-        edges: [],
-        pageInfo: {
-          hasNextPage: false,
-          hasPreviousPage: false,
-        },
-        totalCount: 0,
-      }
+      // Use mock service to get paginated listing requests
+      const result = myListingsMockService.getMyListingRequests({
+        page: args.page,
+        pageSize: args.pageSize,
+      });
+      
+      return result;
     }
   },
   
   Mutation: {
-    // mutations
+    // placeholder mutations for future implementation
   },
 };
