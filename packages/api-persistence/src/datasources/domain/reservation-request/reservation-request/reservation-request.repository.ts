@@ -13,11 +13,11 @@ export class ReservationRequestRepository
 		ReservationRequestModelType,
 		PropType,
 		Domain.Contexts.Passport,
-		Domain.Contexts.ReservationRequest<PropType>
+		Domain.Contexts.ReservationRequest.ReservationRequest.ReservationRequest<PropType>
 	>
-	implements Domain.Contexts.ReservationRequestRepository<PropType>
+	implements Domain.Contexts.ReservationRequest.ReservationRequest.ReservationRequestRepository<PropType>
 {
-	async getById(id: string): Promise<Domain.Contexts.ReservationRequest<PropType>> {
+	async getById(id: string): Promise<Domain.Contexts.ReservationRequest.ReservationRequest.ReservationRequest<PropType>> {
 		const mongoReservation = await this.model
 			.findById(id)
 			.populate('listing reserver')
@@ -28,7 +28,7 @@ export class ReservationRequestRepository
 		return this.typeConverter.toDomain(mongoReservation, this.passport);
 	}
 
-	async getAll(): Promise<Domain.Contexts.ReservationRequest<PropType>[]> {
+	async getAll(): Promise<Domain.Contexts.ReservationRequest.ReservationRequest.ReservationRequest<PropType>[]> {
 		const mongoReservations = await this.model
 			.find()
 			.populate('listing reserver')
@@ -37,7 +37,7 @@ export class ReservationRequestRepository
 	}
 	async getByIdWithListing(
 		id: string,
-	): Promise<Domain.Contexts.ReservationRequest<PropType>> {
+	): Promise<Domain.Contexts.ReservationRequest.ReservationRequest.ReservationRequest<PropType>> {
 		const mongoReservation = await this.model
 			.findById(id)
 			.populate('listing reserver')
@@ -50,13 +50,13 @@ export class ReservationRequestRepository
 
 	getNewInstance(
 		state: Domain.Contexts.ReservationRequestStateValue,
-		listing: Domain.Contexts.ListingEntityReference,
-		reserver: Domain.Contexts.UserEntityReference,
+		listing: Domain.Contexts.ReservationRequest.ReservationRequest.ListingEntityReference,
+		reserver: Domain.Contexts.ReservationRequest.ReservationRequest.UserEntityReference,
         reservationPeriod: Domain.Contexts.ReservationPeriod,
-	): Promise<Domain.Contexts.ReservationRequest<PropType>> {
+	): Promise<Domain.Contexts.ReservationRequest.ReservationRequest.ReservationRequest<PropType>> {
 		const adapter = this.typeConverter.toAdapter(new this.model());
 		return Promise.resolve(
-			Domain.Contexts.ReservationRequest.getNewInstance(
+			Domain.Contexts.ReservationRequest.ReservationRequest.ReservationRequest.getNewInstance(
 				adapter,
 				state,
 				listing, 
@@ -67,7 +67,7 @@ export class ReservationRequestRepository
 		);
 	}
 
-	async getByReserverId(reserverId: string): Promise<Domain.Contexts.ReservationRequest<PropType>[]> {
+	async getByReserverId(reserverId: string): Promise<Domain.Contexts.ReservationRequest.ReservationRequest.ReservationRequest<PropType>[]> {
 		const mongoReservations = await this.model
 			.find({ reserver: reserverId })
 			.populate('listing reserver')
@@ -75,16 +75,11 @@ export class ReservationRequestRepository
 		return mongoReservations.map(doc => this.typeConverter.toDomain(doc, this.passport));
 	}
 
-	async getByListingId(listingId: string): Promise<Domain.Contexts.ReservationRequest<PropType>[]> {
+	async getByListingId(listingId: string): Promise<Domain.Contexts.ReservationRequest.ReservationRequest.ReservationRequest<PropType>[]> {
 		const mongoReservations = await this.model
 			.find({ listing: listingId })
 			.populate('listing reserver')
 			.exec();
 		return mongoReservations.map(doc => this.typeConverter.toDomain(doc, this.passport));
-	}
-
-	async saveAndGetReference(reservationRequest: Domain.Contexts.ReservationRequest<PropType>): Promise<Domain.Contexts.ReservationRequestEntityReference> {
-		await this.save(reservationRequest);
-		return reservationRequest.getEntityReference();
 	}
 }

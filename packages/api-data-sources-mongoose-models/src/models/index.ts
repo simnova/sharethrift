@@ -19,7 +19,7 @@ export const mongooseContextBuilder = (
       ),
     },
     ReservationRequest: {
-      ReservationRequestModel:
+      ReservationRequest:
         ReservationRequestModelFactory(initializedService),
     },
   };

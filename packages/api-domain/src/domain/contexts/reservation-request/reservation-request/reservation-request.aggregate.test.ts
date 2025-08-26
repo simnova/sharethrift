@@ -1,7 +1,7 @@
 import { describe, it, expect } from 'vitest';
 import { ReservationRequest, type ListingEntityReference, type UserEntityReference, type ReservationRequestProps } from './reservation-request.aggregate.ts';
 import { ReservationRequestStates, ReservationRequestStateValue, ReservationPeriod } from './reservation-request.value-objects.ts';
-import type { Passport } from '../passport.ts';
+import type { Passport } from '../../passport.ts';
 
 describe('ReservationRequest', () => {
   const mockPassport: Passport = {

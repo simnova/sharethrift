@@ -3,7 +3,7 @@ import type { ItemListingPassport } from './listing/item.passport.ts';
 
 export interface Passport {
 	get reservationRequest(): ReservationRequestPassport;
-    	get itemListing(): ItemListingPassport;
+	get itemListing(): ItemListingPassport;
 }
 
 export const PassportFactory = {

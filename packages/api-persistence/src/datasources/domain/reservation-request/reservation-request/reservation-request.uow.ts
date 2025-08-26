@@ -4,20 +4,23 @@ import type { Model } from 'mongoose';
 import { ReservationRequestConverter } from './reservation-request.domain-adapter.ts';
 import { ReservationRequestRepository } from './reservation-request.repository.ts';
 import type { Models } from '@sthrift/api-data-sources-mongoose-models';
-import type { DomainSeedwork } from '@cellix/domain-seedwork';
+import {
+	InProcEventBusInstance,
+	NodeEventBusInstance,
+} from '@cellix/event-bus-seedwork-node';
+
 
 export const getReservationRequestUnitOfWork = (
 	reservationRequestModel: Model<Models.ReservationRequest.ReservationRequest>,
-	inProcEventBusInstance: DomainSeedwork.EventBus,
-	nodeEventBusInstance: DomainSeedwork.EventBus,
-): Domain.Contexts.ReservationRequestUnitOfWork => {
+	// passport: Domain.Passport
+): Domain.Contexts.ReservationRequest.ReservationRequest.ReservationRequestUnitOfWork => {
 	const unitOfWork = new MongooseSeedwork.MongoUnitOfWork(
-		inProcEventBusInstance,
-		nodeEventBusInstance,
+		InProcEventBusInstance,
+		NodeEventBusInstance,
 		reservationRequestModel,
 		new ReservationRequestConverter(),
 		ReservationRequestRepository,
 	);
-	return unitOfWork;
+    return unitOfWork;
+	// return MongooseSeedwork.getInitializedUnitOfWork(unitOfWork, passport); // For when the seedwork is updated
 };
-// should return MongooseSeedwork.getInitializedUnitOfWork(unitOfWork, passport); when seedwork is updated

@@ -2,11 +2,14 @@ import type { MongooseSeedwork } from '@cellix/data-sources-mongoose';
 import type { DomainDataSource } from '@sthrift/api-domain';
 import { DataSourcesImpl } from './datasources/index.ts';
 import type { ReadonlyDataSource } from './datasources/readonly/index.ts';
+import { Models } from '@sthrift/api-data-sources-mongoose-models';
 
 export interface DataSources {
 	domainDataSource: DomainDataSource;
 	readonlyDataSource: ReadonlyDataSource;
 }
+
+export type ModelsContext = ReturnType<typeof Models.mongooseContextBuilder>;
 
 export const Persistence = (
 	initializedService: MongooseSeedwork.MongooseContextFactory,

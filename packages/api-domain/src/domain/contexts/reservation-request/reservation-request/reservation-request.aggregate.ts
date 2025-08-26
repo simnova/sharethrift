@@ -1,6 +1,6 @@
 import { DomainSeedwork } from "@cellix/domain-seedwork";
-import type { Passport } from "../passport.ts";
-import type { ReservationRequestVisa } from "./reservation-request.visa.ts";
+import type { Passport } from "../../passport.ts";
+import type { ReservationRequestVisa } from "../reservation-request.visa.ts";
 import {
   type ReservationPeriod,
   ReservationRequestStateValue,
@@ -22,16 +22,18 @@ export interface UserEntityReference extends DomainSeedwork.DomainEntityProps {
 
 export interface ReservationRequestProps
   extends DomainSeedwork.DomainEntityProps {
-  state: ReservationRequestStateValue;
-  reservationPeriod: ReservationPeriod;
-  readonly createdAt: Date;
-  updatedAt: Date;
-  readonly schemaVersion: string;
-  listing: Readonly<ListingEntityReference>;
-  reserver: Readonly<UserEntityReference>;
-  closeRequested: boolean;
-  loadListing(): Promise<ListingEntityReference>;
-  loadReserver(): Promise<UserEntityReference>;
+    state: ReservationRequestStateValue;
+    reservationPeriod: ReservationPeriod;
+    readonly createdAt: Date;
+    updatedAt: Date;
+    readonly schemaVersion: string;
+    listing: Readonly<ListingEntityReference>;
+    loadListing(): Promise<ListingEntityReference>;
+    reserver: Readonly<UserEntityReference>;
+    loadReserver(): Promise<UserEntityReference>;
+    closeRequested: boolean;
+    
+    
 }
 
 export interface ReservationRequestEntityReference
@@ -307,7 +309,4 @@ export class ReservationRequest<props extends ReservationRequestProps>
     this.props.updatedAt = new Date();
   }
 
-  public getEntityReference(): ReservationRequestEntityReference {
-    return this.props as ReservationRequestEntityReference;
-  }
 }

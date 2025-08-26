@@ -5,7 +5,7 @@ interface GraphContext extends BaseContext {
 	apiContext?: ApiContextSpec;
 }
 
-export const reservationsResolvers = {
+export const reservationRequest = {
 	Query: {
 		myReservations: async (_parent: unknown, args: { userId: string }, _context: GraphContext) => {
 			// Mock data for now - will be replaced with calls to application services
