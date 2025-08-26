@@ -1,7 +1,7 @@
 import type { GraphContext } from '../../init/context.ts';
 import type { GraphQLResolveInfo } from 'graphql';
 
-export const personalUserResolvers = {
+const personalUserResolvers = {
 	Query: {
 		personalUserById: (
 			_parent: unknown,
@@ -43,3 +43,6 @@ export const personalUserResolvers = {
 
 	Mutation: {},
 };
+
+
+export default personalUserResolvers;

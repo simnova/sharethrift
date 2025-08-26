@@ -303,7 +303,6 @@ export type Query = {
   _empty?: Maybe<Scalars["String"]["output"]>;
   conversation?: Maybe<Conversation>;
   conversations: Array<Conversation>;
-  currentEndUserAndCreateIfNotExists: PersonalUser;
   itemListing?: Maybe<ItemListing>;
   itemListings: Array<ItemListing>;
   personalUserById?: Maybe<PersonalUser>;
@@ -1026,7 +1025,6 @@ export type QueryResolvers<
   _empty?: Resolver<Maybe<ResolversTypes["String"]>, ParentType, ContextType>;
   conversation?: Resolver<Maybe<ResolversTypes["Conversation"]>, ParentType, ContextType, RequireFields<QueryConversationArgs, "id">>;
   conversations?: Resolver<Array<ResolversTypes["Conversation"]>, ParentType, ContextType>;
-  currentEndUserAndCreateIfNotExists?: Resolver<ResolversTypes["PersonalUser"], ParentType, ContextType>;
   itemListing?: Resolver<Maybe<ResolversTypes["ItemListing"]>, ParentType, ContextType, RequireFields<QueryItemListingArgs, "id">>;
   itemListings?: Resolver<Array<ResolversTypes["ItemListing"]>, ParentType, ContextType>;
   personalUserById?: Resolver<Maybe<ResolversTypes["PersonalUser"]>, ParentType, ContextType, RequireFields<QueryPersonalUserByIdArgs, "id">>;

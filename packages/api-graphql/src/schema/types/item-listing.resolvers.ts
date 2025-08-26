@@ -1,6 +1,6 @@
 import type { GraphContext } from "../../init/context.ts";
 
-export const itemListingResolvers = {
+const itemListingResolvers = {
   Query: {
     itemListings: (_parent: unknown, _args: unknown, context: GraphContext) => {
       console.log('item listing resolver called with context:', context);
@@ -19,3 +19,5 @@ export const itemListingResolvers = {
     // },
   },
 };
+
+export default itemListingResolvers;

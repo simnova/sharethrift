@@ -111,7 +111,7 @@ input PersonalUserAccountProfileBillingUpdateInput {
 extend type Query {
   # Personal User queries
   personalUserById(id: ObjectID!): PersonalUser
-  currentEndUserAndCreateIfNotExists: PersonalUser!
+  # currentEndUserAndCreateIfNotExists: PersonalUser!
 }
 
 # type Mutation {

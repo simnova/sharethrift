@@ -321,7 +321,6 @@ export type Query = {
   _empty?: Maybe<Scalars["String"]["output"]>;
   conversation?: Maybe<Conversation>;
   conversations: Array<Conversation>;
-  currentEndUserAndCreateIfNotExists: PersonalUser;
   itemListing?: Maybe<ItemListing>;
   itemListings: Array<ItemListing>;
   personalUserById?: Maybe<PersonalUser>;

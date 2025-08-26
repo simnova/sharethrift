@@ -50,7 +50,8 @@
 		"packages/api-rest",
 		"packages/api",
 		"packages/service-sendgrid",
-		"packages/ui-sharethrift-components"
+		"packages/ui-sharethrift-components",
+    "packages/ui-sharethrift"
 	],
 	"devDependencies": {
 		"@amiceli/vitest-cucumber": "^5.1.2",

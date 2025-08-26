@@ -2595,22 +2595,6 @@
             "deprecationReason": null
           },
           {
-            "name": "currentEndUserAndCreateIfNotExists",
-            "description": null,
-            "args": [],
-            "type": {
-              "kind": "NON_NULL",
-              "name": null,
-              "ofType": {
-                "kind": "OBJECT",
-                "name": "PersonalUser",
-                "ofType": null
-              }
-            },
-            "isDeprecated": false,
-            "deprecationReason": null
-          },
-          {
             "name": "itemListing",
             "description": null,
             "args": [
