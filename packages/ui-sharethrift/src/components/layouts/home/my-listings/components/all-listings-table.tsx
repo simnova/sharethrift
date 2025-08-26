@@ -195,11 +195,48 @@ export function AllListingsTable({
       title: 'Actions',
       key: 'actions',
       width: 200,
-      render: (_, record) => (
-        <div style={{ display: 'flex', flexWrap: 'nowrap', gap: 4, alignItems: 'center', overflowX: 'auto' }}>
-          {getActionButtons(record)}
-        </div>
-      ),
+      render: (_, record) => {
+        const actions = getActionButtons(record);
+        // Ensure at least 3 slots for alignment (first, middle, last)
+        const minActions = 3;
+        const paddedActions = [
+          ...actions,
+          ...Array(Math.max(0, minActions - actions.length)).fill(null)
+        ];
+        return (
+          <div
+            style={{
+              display: 'flex',
+              flexDirection: 'row',
+              justifyContent: 'space-between',
+              alignItems: 'center',
+              width: '100%',
+              minWidth: 220,
+              gap: 0,
+            }}
+          >
+            {paddedActions.map((btn, idx) => (
+              <div
+                key={btn?.key || idx}
+                style={{
+                  flex: 1,
+                  display: 'flex',
+                  justifyContent:
+                    idx === 0
+                      ? 'flex-start'
+                      : idx === paddedActions.length - 1
+                      ? 'flex-end'
+                      : 'center',
+                  minWidth: 60,
+                  maxWidth: 100,
+                }}
+              >
+                {btn}
+              </div>
+            ))}
+          </div>
+        );
+      },
     },
     {
       title: 'Pending Requests',
@@ -208,30 +245,33 @@ export function AllListingsTable({
       sorter: true,
       sortOrder: sorter.field === 'pendingRequests' ? sorter.order : null,
       render: (count: number, record) => (
-        <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-          <span>{count}</span>
+        <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', minHeight: 60 }}>
+          <div
+            style={{
+              background: count > 0 ? '#ff4d4f' : '#f5f5f5',
+              color: count > 0 ? 'white' : '#bfbfbf',
+              borderRadius: 12,
+              width: 32,
+              height: 24,
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              fontWeight: 500,
+              fontSize: 15,
+              marginBottom: count > 0 ? 4 : 0,
+              transition: 'background 0.2s, color 0.2s',
+            }}
+          >
+            {count}
+          </div>
           {count > 0 && (
-            <Button 
-              type="link" 
-              size="small" 
-              style={{ padding: 0, height: 'auto' }}
+            <Button
+              type="link"
+              size="small"
+              style={{ padding: 0, height: 'auto', marginTop: 0 }}
               onClick={() => onViewAllRequests(record._id)}
             >
-              <div style={{
-                backgroundColor: '#ff4d4f',
-                color: 'white',
-                borderRadius: '50%',
-                width: 20,
-                height: 20,
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                fontSize: '12px',
-                fontWeight: 500,
-              }}>
-                {count}
-              </div>
-              <span style={{ marginLeft: 4, color: '#1890ff' }}>View all</span>
+              <span style={{ color: '#2d4156', fontWeight: 500, fontSize: 13 }}>View all</span>
             </Button>
           )}
         </div>
