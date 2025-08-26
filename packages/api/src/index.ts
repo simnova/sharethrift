@@ -13,6 +13,8 @@ import { ServiceBlobStorage } from '@sthrift/service-blob-storage';
 import { ServiceTokenValidation } from '@sthrift/service-token-validation';
 import * as TokenValidationConfig from './service-config/token-validation/index.ts';
 
+import { ServiceTwilio } from '@sthrift/service-twilio';
+
 import { graphHandlerCreator } from '@sthrift/api-graphql';
 import { restHandlerCreator } from '@sthrift/api-rest';
 
@@ -31,7 +33,7 @@ Cellix
                 new ServiceTokenValidation(
                     TokenValidationConfig.portalTokens,
                 ),
-            );
+            ).registerInfrastructureService(new ServiceTwilio());
     })
     .setContext((serviceRegistry) => {
         const dataSourcesFactory = MongooseConfig.mongooseContextBuilder(

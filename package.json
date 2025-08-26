@@ -43,15 +43,15 @@
 		"packages/service-token-validation",
 		"packages/service-otel",
 		"packages/service-sendgrid",
+		"packages/service-twilio",
 		"packages/api-application-services",
 		"packages/api-context-spec",
-    "packages/api-event-handler",
+		"packages/api-event-handler",
 		"packages/api-graphql",
 		"packages/api-rest",
 		"packages/api",
-		"packages/service-sendgrid",
 		"packages/ui-sharethrift-components",
-    "packages/ui-sharethrift"
+		"packages/ui-sharethrift"
 	],
 	"devDependencies": {
 		"@amiceli/vitest-cucumber": "^5.1.2",

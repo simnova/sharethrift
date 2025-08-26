@@ -1,0 +1,17 @@
+{
+  "name": "@sthrift/service-twilio",
+  "version": "1.0.0",
+  "main": "dist/src/index.js",
+  "types": "dist/src/index.d.ts",
+  "type": "module",
+  "files": ["dist"],
+  "scripts": {
+    "build": "tsc --project tsconfig.json"
+  },
+  "dependencies": {
+    "twilio": "^4.0.0"
+  },
+  "devDependencies": {
+    "typescript": "^5.8.3"
+  }
+}
