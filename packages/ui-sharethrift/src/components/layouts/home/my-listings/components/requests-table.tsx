@@ -212,7 +212,7 @@ export function RequestsTable({
         style={{ marginBottom: 16 }}
       />
       
-      <div style={{ display: 'flex', justifyContent: 'center' }}>
+      <div style={{ display: 'flex', justifyContent: 'flex-end', marginTop: 16 }}>
         <Pagination
           current={currentPage}
           pageSize={pageSize}
