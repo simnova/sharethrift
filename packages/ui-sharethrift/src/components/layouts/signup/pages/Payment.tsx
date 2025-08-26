@@ -77,7 +77,7 @@ export default function Payment() {
     >
       <Card
         style={{
-          maxWidth: 800,
+          maxWidth: 500,
           width: '100%',
           backgroundColor: 'transparent',
           border: 'none',
@@ -301,8 +301,6 @@ export default function Payment() {
             marginTop: '32px',
             padding: '24px',
             borderRadius: '8px',
-            backgroundColor: 'rgba(0, 0, 0, 0.02)',
-            border: '1px solid var(--color-border)'
           }}>
             <Button
               type="default"
