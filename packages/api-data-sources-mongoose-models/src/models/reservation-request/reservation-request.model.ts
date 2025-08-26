@@ -3,7 +3,7 @@ import { Schema } from 'mongoose';
 import { MongooseSeedwork } from '@cellix/data-sources-mongoose';
 
 export interface ReservationRequest extends MongooseSeedwork.Base {
-	state: 'Requested' | 'Accepted' | 'Rejected' | 'Reservation Period' | 'Cancelled';
+	state: string;
 	reservationPeriodStart: Date;
 	reservationPeriodEnd: Date;
 	schemaVersion: string; // changed from number to string
@@ -15,7 +15,6 @@ export interface ReservationRequest extends MongooseSeedwork.Base {
 export const ReservationRequestSchema = new Schema<ReservationRequest, Model<ReservationRequest>, ReservationRequest>({
 	state: {
 		type: String,
-		enum: ['Requested', 'Accepted', 'Rejected', 'Reservation Period', 'Cancelled'],
 		required: true,
 	},
 	reservationPeriodStart: { type: Date, required: true },

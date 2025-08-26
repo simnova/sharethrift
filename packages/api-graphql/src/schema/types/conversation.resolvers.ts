@@ -1,6 +1,6 @@
 import type { GraphContext } from "../../context.ts";
 
-export const conversationResolvers = {
+const conversationResolvers = {
   Query: {
     conversations: (_parent: unknown, _args: unknown, context: GraphContext) => {
         console.log('conversations resolver called with context:', context);
@@ -19,3 +19,5 @@ export const conversationResolvers = {
     },
   },
 };
+
+export default conversationResolvers;

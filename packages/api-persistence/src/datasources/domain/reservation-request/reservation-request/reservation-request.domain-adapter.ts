@@ -22,12 +22,12 @@ export class ReservationRequestDomainAdapter
   implements Domain.Contexts.ReservationRequest.ReservationRequest.ReservationRequestProps
 {
   // Primitive Fields Getters and Setters
-  get state(): Domain.Contexts.ReservationRequestStateValue {
-    return Domain.Contexts.ReservationRequestStateValue.create(this.doc.state);
+  get state() {
+    return this.doc.state;
   }
 
-  set state(value: Domain.Contexts.ReservationRequestStateValue) {
-    this.doc.state = value.valueOf();
+  set state(value: string) {
+    this.doc.state = value;
   }
 
   get closeRequested() {
@@ -37,14 +37,18 @@ export class ReservationRequestDomainAdapter
     this.doc.closeRequested = value;
   }
 
-  get reservationPeriod() {
-    const start = this.doc.reservationPeriodStart.toISOString();
-    const end = this.doc.reservationPeriodEnd.toISOString();
-    return new Domain.Contexts.ReservationPeriod({ start, end });
+  get reservationPeriodStart() {
+    return this.doc.reservationPeriodStart;
   }
-  set reservationPeriod(value) {
-    this.doc.reservationPeriodStart = new Date(value.start.valueOf() as string);
-    this.doc.reservationPeriodEnd = new Date(value.end.valueOf() as string);
+  set reservationPeriodStart(value) {
+    this.doc.reservationPeriodStart = value;
+  }
+
+  get reservationPeriodEnd() {
+    return this.doc.reservationPeriodEnd;
+  }
+  set reservationPeriodEnd(value) {
+    this.doc.reservationPeriodEnd = value;
   }
 
   get listing(): Domain.Contexts.ReservationRequest.ReservationRequest.ListingEntityReference {

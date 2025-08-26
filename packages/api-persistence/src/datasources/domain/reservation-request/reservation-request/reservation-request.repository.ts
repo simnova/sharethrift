@@ -49,19 +49,21 @@ export class ReservationRequestRepository
 	}
 
 	getNewInstance(
-		state: Domain.Contexts.ReservationRequestStateValue,
+		state: string,
 		listing: Domain.Contexts.ReservationRequest.ReservationRequest.ListingEntityReference,
 		reserver: Domain.Contexts.ReservationRequest.ReservationRequest.UserEntityReference,
-        reservationPeriod: Domain.Contexts.ReservationPeriod,
+        reservationPeriodStart: Date,
+        reservationPeriodEnd: Date,
 	): Promise<Domain.Contexts.ReservationRequest.ReservationRequest.ReservationRequest<PropType>> {
 		const adapter = this.typeConverter.toAdapter(new this.model());
 		return Promise.resolve(
 			Domain.Contexts.ReservationRequest.ReservationRequest.ReservationRequest.getNewInstance(
 				adapter,
 				state,
-				listing, 
-				reserver, 
-				reservationPeriod, 
+				listing,
+				reserver,
+				reservationPeriodStart,
+				reservationPeriodEnd,
 				this.passport,
 			),
 		);

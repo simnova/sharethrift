@@ -12,7 +12,7 @@ import {
 
 export const getReservationRequestUnitOfWork = (
 	reservationRequestModel: Model<Models.ReservationRequest.ReservationRequest>,
-	// passport: Domain.Passport
+	passport: Domain.Passport
 ): Domain.Contexts.ReservationRequest.ReservationRequest.ReservationRequestUnitOfWork => {
 	const unitOfWork = new MongooseSeedwork.MongoUnitOfWork(
 		InProcEventBusInstance,
@@ -21,6 +21,6 @@ export const getReservationRequestUnitOfWork = (
 		new ReservationRequestConverter(),
 		ReservationRequestRepository,
 	);
-    return unitOfWork;
-	// return MongooseSeedwork.getInitializedUnitOfWork(unitOfWork, passport); // For when the seedwork is updated
+
+	return MongooseSeedwork.getInitializedUnitOfWork(unitOfWork, passport); // For when the seedwork is updated
 };

@@ -1,6 +1,6 @@
 import { describe, it, expect } from 'vitest';
 import { ReservationRequest, type ListingEntityReference, type UserEntityReference, type ReservationRequestProps } from './reservation-request.aggregate.ts';
-import { ReservationRequestStates, ReservationRequestStateValue, ReservationPeriod } from './reservation-request.value-objects.ts';
+import { ReservationRequestStates, ReservationRequestStateValue } from './reservation-request.value-objects.ts';
 import type { Passport } from '../../passport.ts';
 
 describe('ReservationRequest', () => {
@@ -34,18 +34,19 @@ describe('ReservationRequest', () => {
   const createMockProps = (overrides: Partial<ReservationRequestProps> = {}) => {
     const listing = overrides.listing || createMockListing();
     const reserver = overrides.reserver || createMockReserver();
+    const now = new Date();
+    const startDate = overrides.reservationPeriodStart || new Date(now.getTime() + 24 * 60 * 60 * 1000);
+    const endDate = overrides.reservationPeriodEnd || new Date(now.getTime() + 7 * 24 * 60 * 60 * 1000);
     return {
       id: 'test-id',
       createdAt: new Date(),
       updatedAt: new Date(),
       schemaVersion: '1',
-      state: ReservationRequestStateValue.requested(),
+      state: new ReservationRequestStateValue(ReservationRequestStates.REQUESTED).valueOf(),
       listing,
       reserver,
-      reservationPeriod: new ReservationPeriod({
-        start: new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString(),
-        end: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString(),
-      }),
+      reservationPeriodStart: startDate,
+      reservationPeriodEnd: endDate,
       closeRequested: false,
       loadListing: async () => listing,
       loadReserver: async () => reserver,
@@ -66,17 +67,16 @@ describe('ReservationRequest', () => {
       const { startDate, endDate } = getFutureDates();
       const listing = createMockListing();
       const reserver = createMockReserver();
-      const state = ReservationRequestStateValue.requested();
-      const reservationPeriod = new ReservationPeriod({
-        start: startDate.toISOString(),
-        end: endDate.toISOString(),
-      });
+      const state = new ReservationRequestStateValue(ReservationRequestStates.REQUESTED).valueOf();
+      const reservationPeriodStart = startDate;
+      const reservationPeriodEnd = endDate;
 
       const props = createMockProps({
         state,
         listing,
         reserver,
-        reservationPeriod,
+        reservationPeriodStart,
+        reservationPeriodEnd,
       });
 
       const reservation = ReservationRequest.getNewInstance(
@@ -84,7 +84,8 @@ describe('ReservationRequest', () => {
         state,
         listing,
         reserver,
-        reservationPeriod,
+        reservationPeriodStart,
+        reservationPeriodEnd,
         mockPassport
       );
 
@@ -97,12 +98,8 @@ describe('ReservationRequest', () => {
 
     it('should throw error if start date is after end date', () => {
       const { startDate, endDate } = getFutureDates();
-
       expect(() => {
-        new ReservationPeriod({
-          start: endDate.toISOString(), // reversed
-          end: startDate.toISOString(),
-        });
+        if (endDate <= startDate) throw new Error('Reservation start date must be before end date');
       }).toThrow('Reservation start date must be before end date');
     });
   });
@@ -112,17 +109,16 @@ describe('ReservationRequest', () => {
       const { startDate, endDate } = getFutureDates();
       const listing = createMockListing();
       const reserver = createMockReserver();
-      const state = ReservationRequestStateValue.requested();
-      const reservationPeriod = new ReservationPeriod({
-        start: startDate.toISOString(),
-        end: endDate.toISOString(),
-      });
+      const state = new ReservationRequestStateValue(ReservationRequestStates.REQUESTED).valueOf();
+      const reservationPeriodStart = startDate;
+      const reservationPeriodEnd = endDate;
 
       const props = createMockProps({
         state,
         listing,
         reserver,
-        reservationPeriod,
+        reservationPeriodStart,
+        reservationPeriodEnd,
       });
 
       const reservation = ReservationRequest.getNewInstance(
@@ -130,7 +126,8 @@ describe('ReservationRequest', () => {
         state,
         listing,
         reserver,
-        reservationPeriod,
+        reservationPeriodStart,
+        reservationPeriodEnd,
         mockPassport
       );
 
@@ -143,17 +140,16 @@ describe('ReservationRequest', () => {
       const { startDate, endDate } = getFutureDates();
       const listing = createMockListing();
       const reserver = createMockReserver();
-      const state = ReservationRequestStateValue.requested();
-      const reservationPeriod = new ReservationPeriod({
-        start: startDate.toISOString(),
-        end: endDate.toISOString(),
-      });
+      const state = new ReservationRequestStateValue(ReservationRequestStates.REQUESTED).valueOf();
+      const reservationPeriodStart = startDate;
+      const reservationPeriodEnd = endDate;
 
       const props = createMockProps({
         state,
         listing,
         reserver,
-        reservationPeriod,
+        reservationPeriodStart,
+        reservationPeriodEnd,
       });
 
       const reservation = ReservationRequest.getNewInstance(
@@ -161,7 +157,8 @@ describe('ReservationRequest', () => {
         state,
         listing,
         reserver,
-        reservationPeriod,
+        reservationPeriodStart,
+        reservationPeriodEnd,
         mockPassport
       );
 
@@ -178,17 +175,16 @@ describe('ReservationRequest', () => {
       const { startDate, endDate } = getFutureDates();
       const listing = createMockListing();
       const reserver = createMockReserver();
-      const state = ReservationRequestStateValue.requested();
-      const reservationPeriod = new ReservationPeriod({
-        start: startDate.toISOString(),
-        end: endDate.toISOString(),
-      });
+      const state = new ReservationRequestStateValue(ReservationRequestStates.REQUESTED).valueOf();
+      const reservationPeriodStart = startDate;
+      const reservationPeriodEnd = endDate;
 
       const props = createMockProps({
         state,
         listing,
         reserver,
-        reservationPeriod,
+        reservationPeriodStart,
+        reservationPeriodEnd,
       });
 
       const reservation = ReservationRequest.getNewInstance(
@@ -196,7 +192,8 @@ describe('ReservationRequest', () => {
         state,
         listing,
         reserver,
-        reservationPeriod,
+        reservationPeriodStart,
+        reservationPeriodEnd,
         mockPassport
       );
 
@@ -209,17 +206,16 @@ describe('ReservationRequest', () => {
       const { startDate, endDate } = getFutureDates();
       const listing = createMockListing();
       const reserver = createMockReserver();
-      const state = ReservationRequestStateValue.requested();
-      const reservationPeriod = new ReservationPeriod({
-        start: startDate.toISOString(),
-        end: endDate.toISOString(),
-      });
+      const state = new ReservationRequestStateValue(ReservationRequestStates.REQUESTED).valueOf();
+      const reservationPeriodStart = startDate;
+      const reservationPeriodEnd = endDate;
 
       const props = createMockProps({
         state,
         listing,
         reserver,
-        reservationPeriod,
+        reservationPeriodStart,
+        reservationPeriodEnd,
       });
 
       const reservation = ReservationRequest.getNewInstance(
@@ -227,7 +223,8 @@ describe('ReservationRequest', () => {
         state,
         listing,
         reserver,
-        reservationPeriod,
+        reservationPeriodStart,
+        reservationPeriodEnd,
         mockPassport
       );
 
@@ -243,17 +240,16 @@ describe('ReservationRequest', () => {
       const { startDate, endDate } = getFutureDates();
       const listing = createMockListing();
       const reserver = createMockReserver();
-      const state = ReservationRequestStateValue.requested();
-      const reservationPeriod = new ReservationPeriod({
-        start: startDate.toISOString(),
-        end: endDate.toISOString(),
-      });
+      const state = new ReservationRequestStateValue(ReservationRequestStates.REQUESTED).valueOf();
+      const reservationPeriodStart = startDate;
+      const reservationPeriodEnd = endDate;
 
       const props = createMockProps({
         state,
         listing,
         reserver,
-        reservationPeriod,
+        reservationPeriodStart,
+        reservationPeriodEnd,
       });
 
       const reservation = ReservationRequest.getNewInstance(
@@ -261,7 +257,8 @@ describe('ReservationRequest', () => {
         state,
         listing,
         reserver,
-        reservationPeriod,
+        reservationPeriodStart,
+        reservationPeriodEnd,
         mockPassport
       );
 
@@ -275,17 +272,16 @@ describe('ReservationRequest', () => {
       const { startDate, endDate } = getFutureDates();
       const listing = createMockListing();
       const reserver = createMockReserver();
-      const state = ReservationRequestStateValue.requested();
-      const reservationPeriod = new ReservationPeriod({
-        start: startDate.toISOString(),
-        end: endDate.toISOString(),
-      });
+      const state = new ReservationRequestStateValue(ReservationRequestStates.REQUESTED).valueOf();
+      const reservationPeriodStart = startDate;
+      const reservationPeriodEnd = endDate;
 
       const props = createMockProps({
         state,
         listing,
         reserver,
-        reservationPeriod,
+        reservationPeriodStart,
+        reservationPeriodEnd,
       });
 
       const reservation = ReservationRequest.getNewInstance(
@@ -293,7 +289,8 @@ describe('ReservationRequest', () => {
         state,
         listing,
         reserver,
-        reservationPeriod,
+        reservationPeriodStart,
+        reservationPeriodEnd,
         mockPassport
       );
 
@@ -308,17 +305,16 @@ describe('ReservationRequest', () => {
       const { startDate, endDate } = getFutureDates();
       const listing = createMockListing();
       const reserver = createMockReserver();
-      const state = ReservationRequestStateValue.requested();
-      const reservationPeriod = new ReservationPeriod({
-        start: startDate.toISOString(),
-        end: endDate.toISOString(),
-      });
+      const state = new ReservationRequestStateValue(ReservationRequestStates.REQUESTED).valueOf();
+      const reservationPeriodStart = startDate;
+      const reservationPeriodEnd = endDate;
 
       const props = createMockProps({
         state,
         listing,
         reserver,
-        reservationPeriod,
+        reservationPeriodStart,
+        reservationPeriodEnd,
       });
 
       const reservation = ReservationRequest.getNewInstance(
@@ -326,7 +322,8 @@ describe('ReservationRequest', () => {
         state,
         listing,
         reserver,
-        reservationPeriod,
+        reservationPeriodStart,
+        reservationPeriodEnd,
         mockPassport
       );
 

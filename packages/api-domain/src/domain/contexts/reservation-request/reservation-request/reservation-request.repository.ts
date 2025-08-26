@@ -6,19 +6,15 @@ import type {
   ListingEntityReference,
 } from "./reservation-request.aggregate.ts";
 
-import type {
-  ReservationPeriod,
-  ReservationRequestStateValue,
-} from "./reservation-request.value-objects.ts";
-
 export interface ReservationRequestRepository<
   props extends ReservationRequestProps
 > extends DomainSeedwork.Repository<ReservationRequest<props>> {
   getNewInstance(
-    state: ReservationRequestStateValue,
+    state: string,
     listing: ListingEntityReference,
     reserver: UserEntityReference,
-    reservationPeriod: ReservationPeriod,
+    reservationPeriodStart: Date,
+    reservationPeriodEnd: Date,
   ): Promise<ReservationRequest<props>>;
   getById(id: string): Promise<ReservationRequest<props> | undefined>;
   getByReserverId(reserverId: string): Promise<ReservationRequest<props>[]>;

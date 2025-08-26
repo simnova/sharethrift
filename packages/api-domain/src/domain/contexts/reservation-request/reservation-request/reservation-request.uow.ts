@@ -12,10 +12,10 @@ export interface ReservationRequestUnitOfWork
 			ReservationRequestProps,
 			ReservationRequest<ReservationRequestProps>,
 			ReservationRequestRepository<ReservationRequestProps>
-		> /*, Seedwork needs to be updated
+		>, 
 		DomainSeedwork.InitializedUnitOfWork<
 			Passport,
 			ReservationRequestProps,
 			ReservationRequest<ReservationRequestProps>,
 			ReservationRequestRepository<ReservationRequestProps>
-		> */{}
+		> {}

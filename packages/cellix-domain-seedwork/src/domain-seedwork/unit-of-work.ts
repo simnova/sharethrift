@@ -6,10 +6,25 @@ export interface UnitOfWork<
 	PassportType,
 	PropType extends DomainEntityProps,
 	Root extends AggregateRoot<PropType, PassportType>,
-	RepoType extends Repository<Root>
+	RepoType extends Repository<Root>,
 > {
-	withTransaction<TReturn>(
+	withTransaction(
 		passport: PassportType,
-		func: (repository: RepoType) => Promise<TReturn>,
-	): Promise<TReturn>;
+		func: (repository: RepoType) => Promise<void>,
+	): Promise<void>;
+}
+
+export interface InitializedUnitOfWork<
+    PassportType,
+    PropType extends DomainEntityProps,
+    Root extends AggregateRoot<PropType, PassportType>,
+    RepoType extends Repository<Root>,
+> extends UnitOfWork<PassportType, PropType, Root, RepoType> {
+    withScopedTransaction(
+        func: (repository: RepoType) => Promise<void>,
+    ): Promise<void>;
+    withScopedTransactionById(
+        id: string,
+        func: (repository: RepoType) => Promise<void>,
+    ): Promise<Root>;
 }
