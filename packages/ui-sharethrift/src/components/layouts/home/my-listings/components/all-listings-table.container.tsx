@@ -2,15 +2,13 @@ import { useState, useMemo } from 'react';
 import { AllListingsTable } from './all-listings-table';
 import { MOCK_MY_LISTINGS, type MyListing } from '../mock-data';
 
-export function AllListingsTableContainer() {
+export function AllListingsTableContainer({ currentPage, onPageChange }: { currentPage: number, onPageChange: (page: number) => void }) {
   const [searchText, setSearchText] = useState('');
   const [statusFilters, setStatusFilters] = useState<string[]>([]);
   const [sorter, setSorter] = useState<{
     field: string | null;
     order: 'ascend' | 'descend' | null;
   }>({ field: null, order: null });
-  const [currentPage, setCurrentPage] = useState(1);
-  
   const pageSize = 6;
 
   // Filter and sort data
@@ -78,8 +76,9 @@ export function AllListingsTableContainer() {
     setCurrentPage(1);
   };
 
+  // Use the passed onPageChange prop
   const handlePageChange = (page: number) => {
-    setCurrentPage(page);
+    onPageChange(page);
   };
 
   const handleAction = (action: string, listingId: string) => {

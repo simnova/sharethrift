@@ -2,15 +2,13 @@ import { useState, useMemo } from 'react';
 import { RequestsTable } from './requests-table';
 import { MOCK_LISTING_REQUESTS, type ListingRequest } from '../mock-data';
 
-export function RequestsTableContainer() {
+export function RequestsTableContainer({ currentPage, onPageChange }: { currentPage: number, onPageChange: (page: number) => void }) {
   const [searchText, setSearchText] = useState('');
   const [statusFilters, setStatusFilters] = useState<string[]>([]);
   const [sorter, setSorter] = useState<{
     field: string | null;
     order: 'ascend' | 'descend' | null;
   }>({ field: null, order: null });
-  const [currentPage, setCurrentPage] = useState(1);
-  
   const pageSize = 6;
 
   // Filter and sort data
@@ -92,8 +90,9 @@ export function RequestsTableContainer() {
     setCurrentPage(1);
   };
 
+  // Use the passed onPageChange prop
   const handlePageChange = (page: number) => {
-    setCurrentPage(page);
+    onPageChange(page);
   };
 
   const handleAction = (action: string, requestId: string) => {
