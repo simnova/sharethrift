@@ -24,7 +24,7 @@ query ReservationsViewActiveContainerActiveReservations($userId: ID!) {
 }
 
 
-mutation HomeMyReservationsViewActiveContainerCancelReservation($id: ID!) {
+mutation ReservationsViewActiveContainerCancelReservation($id: ID!) {
   cancelReservation(id: $id) {
     id
     state
@@ -32,7 +32,7 @@ mutation HomeMyReservationsViewActiveContainerCancelReservation($id: ID!) {
   }
 }
 
-mutation HomeMyReservationsViewActiveContainerCloseReservation($id: ID!) {
+mutation ReservationsViewActiveContainerCloseReservation($id: ID!) {
   closeReservation(id: $id) {
     id
     state

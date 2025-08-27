@@ -1,9 +1,9 @@
-import { Routes, Route, useParams } from "react-router-dom";
-import { MyReservationsContainer } from "./pages/my-reservations.container";
+import { Routes, Route } from "react-router-dom";
+import { MyReservationsMain } from "./pages/my-reservations.tsx";
 
 function MyReservationsMainWrapper() {
-  const { userId } = useParams<{ userId: string }>();
-  return <MyReservationsContainer userId={userId || "demo-user"} />;
+//   const { userId } = useParams<{ userId: string }>();
+  return <MyReservationsMain />;
 }
 
 export default function MyReservationsRoutes() {

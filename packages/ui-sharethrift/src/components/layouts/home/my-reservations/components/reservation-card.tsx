@@ -3,7 +3,7 @@ import { Card, Typography } from 'antd';
 import styles from './reservation-card.module.css';
 import { ReservationStatusTag } from '@sthrift/ui-sharethrift-components';
 import { ReservationActions } from './reservation-actions.tsx';
-import type { ReservationRequest } from '../pages/my-reservations.container.tsx';
+import type { ReservationRequest } from '../pages/my-reservations.tsx';
 
 const { Text } = Typography;
 

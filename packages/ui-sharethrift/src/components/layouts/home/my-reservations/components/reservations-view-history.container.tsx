@@ -1,5 +1,5 @@
 import { ReservationsView } from "./reservations-view";
-import type { ReservationRequest } from "../pages/my-reservations.container";
+import type { ReservationRequest } from "../pages/my-reservations";
 
 export const MOCK_HISTORY_RESERVATIONS: ReservationRequest[] = [
   {

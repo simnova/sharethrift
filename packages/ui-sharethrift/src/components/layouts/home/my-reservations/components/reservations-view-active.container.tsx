@@ -1,5 +1,5 @@
 import { ReservationsView } from './reservations-view';
-import type { ReservationRequest } from '../pages/my-reservations.container';
+import type { ReservationRequest } from '../pages/my-reservations';
 //import { useQuery, useMutation } from '@apollo/client';
 
 export const MOCK_ACTIVE_RESERVATIONS: ReservationRequest[] = [
@@ -51,8 +51,7 @@ export const MOCK_ACTIVE_RESERVATIONS: ReservationRequest[] = [
 
 
 
-export const ReservationsViewActiveContainer: React.FC = ({
-}) => {
+export const ReservationsViewActiveContainer: React.FC = () => {
 
 
     // const [reservations, setReservations] = React.useState(MOCK_ACTIVE_RESERVATIONS);

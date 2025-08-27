@@ -3,7 +3,7 @@ import { Table, Image } from 'antd';
 import styles from './reservations-table.module.css';
 import { ReservationStatusTag } from '@sthrift/ui-sharethrift-components';
 import { ReservationActions } from './reservation-actions.tsx';
-import type { ReservationRequest } from '../pages/my-reservations.container.tsx';
+import type { ReservationRequest } from '../pages/my-reservations.tsx';
 
 export interface ReservationsTableProps {
   reservations: ReservationRequest[]; // Type will eventually come from generated graphql files

@@ -3,7 +3,7 @@ import { ReservationsTable } from './reservations-table.tsx';
 import { ReservationsGrid } from './reservations-grid.tsx';
 import { Alert, Spin } from 'antd';
 import styles from './reservations-view.module.css';
-import type { ReservationRequest } from '../pages/my-reservations.container.tsx';
+import type { ReservationRequest } from '../pages/my-reservations.tsx';
 
 export interface ReservationsViewProps {
   reservations: ReservationRequest[]; // Will eventually come from generated graphql files
@@ -15,7 +15,7 @@ export interface ReservationsViewProps {
   showActions?: boolean;
   emptyText?: string;
   loading?: boolean;
-  error?: any;
+  error?: Error | null;
 }
 
 export const ReservationsView: React.FC<ReservationsViewProps> = ({

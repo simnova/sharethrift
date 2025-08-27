@@ -1,4 +1,4 @@
-import type { ReservationRequest } from '../pages/my-reservations.container.tsx';
+import type { ReservationRequest } from '../pages/my-reservations.tsx';
 import type { Meta, StoryObj } from '@storybook/react';
 import { ReservationsView } from '../components/reservations-view.tsx';
 // Mock data moved here for storybook usage
