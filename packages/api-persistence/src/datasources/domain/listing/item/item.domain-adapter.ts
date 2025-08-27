@@ -63,11 +63,11 @@ export class ItemListingDomainAdapter implements ItemListingProps {
     this.doc.sharingPeriodEnd = value;
   }
 
-  get sharer(): string {
-    return this.doc.sharer?.toString() || "";
+  get sharer(): ObjectId {
+    return this.doc.sharer;
   }
-  set sharer(value: string) {
-    this.doc.sharer = value as unknown as Models.Listing.ItemListing['sharer'];
+  set sharer(value: ObjectId) {
+    this.doc.sharer = value;
   }
 
   get sharingHistory(): string[] {

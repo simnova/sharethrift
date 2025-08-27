@@ -1,10 +1,14 @@
+
 import { DomainSeedwork } from '@cellix/domain-seedwork';
-import type { TwilioConversationSid, UserId, ListingId } from './conversation.value-objects.js';
+
+import type { ObjectId } from 'mongodb';
 
 export interface ConversationProps extends DomainSeedwork.DomainEntityProps {
-  twilioConversationSid: TwilioConversationSid;
-  listingId: ListingId;
-  participants: UserId[];
+  sharer: ObjectId;
+  reserver: ObjectId;
+  listing: ObjectId;
+  twilioConversationId: string;
+  schemaversion: number;
   createdAt: Date;
   updatedAt: Date;
 }
@@ -13,49 +17,94 @@ export interface ConversationEntityReference extends Readonly<ConversationProps>
 
 export type ConversationPassport = Record<string, never>;
 
-export class Conversation extends DomainSeedwork.AggregateRoot<ConversationProps, ConversationPassport> implements ConversationEntityReference {
-  get twilioConversationSid() {
-    return this.props.twilioConversationSid;
+export class Conversation<props extends ConversationProps>
+  extends DomainSeedwork.AggregateRoot<props, ConversationPassport>
+  implements ConversationEntityReference {
+  private isNew: boolean = false;
+  private readonly visa: ConversationPassport;
+
+  //#region Constructor
+  constructor(props: props, passport: ConversationPassport) {
+    super(props, passport);
+    this.visa = passport;
   }
-  get listingId() {
-    return this.props.listingId;
-  }
-  get participants() {
-    return [...this.props.participants];
-  }
-  get createdAt() {
-    return this.props.createdAt;
-  }
-  get updatedAt() {
-    return this.props.updatedAt;
-  }
-  public static create(
-    id: string,
-    twilioConversationSid: TwilioConversationSid,
-    listingId: ListingId,
-    participants: UserId[],
+
+  public static getNewInstance<props extends ConversationProps>(
+    newProps: props,
+    sharer: ObjectId,
+    reserver: ObjectId,
+    listing: ObjectId,
+    twilioConversationId: string,
+    schemaversion: number,
     passport: ConversationPassport
-  ): Conversation {
+  ): Conversation<props> {
     const now = new Date();
-    return new Conversation({
-      id,
-      twilioConversationSid,
-      listingId,
-      participants,
+    const instance = new Conversation({
+      ...newProps,
+      sharer,
+      reserver,
+      listing,
+      twilioConversationId,
+      schemaversion,
       createdAt: now,
       updatedAt: now,
-    }, passport);
+    } as props, passport);
+    instance.markAsNew();
+    instance.isNew = false;
+    return instance;
   }
-  public addParticipant(userId: UserId): void {
-    if (!this.props.participants.some((p: UserId) => p.valueOf() === userId.valueOf())) {
-      this.props.participants.push(userId);
-      this.props.updatedAt = new Date();
-    }
+
+  private markAsNew(): void {
+    this.isNew = true;
+    // Optionally emit integration event for aggregate creation
+    // this.addIntegrationEvent(ConversationCreatedEvent, { conversationId: this.props.id });
   }
-  public isParticipant(userId: UserId): boolean {
-    return this.props.participants.some((p: UserId) => p.valueOf() === userId.valueOf());
+
+  get sharer(): ObjectId {
+    return this.props.sharer;
   }
+  set sharer(value: ObjectId) {
+    this.props.sharer = value;
+  }
+
+  get reserver(): ObjectId {
+    return this.props.reserver;
+  }
+  set reserver(value: ObjectId) {
+    this.props.reserver = value;
+  }
+
+  get listing(): ObjectId {
+    return this.props.listing;
+  }
+  set listing(value: ObjectId) {
+    this.props.listing = value;
+  }
+
+  get twilioConversationId(): string {
+    return this.props.twilioConversationId;
+  }
+  set twilioConversationId(value: string) {
+    this.props.twilioConversationId = value;
+  }
+
+  get schemaversion(): number {
+    return this.props.schemaversion;
+  }
+  set schemaversion(value: number) {
+    this.props.schemaversion = value;
+  }
+
+  get createdAt(): Date {
+    return this.props.createdAt;
+  }
+
+  get updatedAt(): Date {
+    return this.props.updatedAt;
+  }
+
   public updateLastActivity(): void {
     this.props.updatedAt = new Date();
   }
+  //#endregion Properties
 }

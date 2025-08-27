@@ -49,42 +49,42 @@ export class ItemListing<props extends ItemListingProps>
 
 	//#region Methods
   public static getNewInstance<props extends ItemListingProps>(
-    newProps: {
-      sharer: string;
-      title: string;
-      description: string;
-      category: string;
-      location: string;
-      sharingPeriodStart: Date;
-      sharingPeriodEnd: Date;
-      images?: string[];
-    },
-    passport: Passport,
+	newProps: {
+	  sharer: string;
+	  title: string;
+	  description: string;
+	  category: string;
+	  location: string;
+	  sharingPeriodStart: Date;
+	  sharingPeriodEnd: Date;
+	  images?: string[];
+	},
+	passport: Passport,
   ): ItemListing<props> {
-    const id = crypto.randomUUID();
-    const now = new Date();
+	const id = crypto.randomUUID();
+	const now = new Date();
 
-    const itemListingProps = {
-      id,
-      sharer: newProps.sharer,
-      title: new Title(newProps.title),
-      description: new Description(newProps.description),
-      category: new Category(newProps.category),
-      location: new Location(newProps.location),
-      sharingPeriodStart: newProps.sharingPeriodStart,
-      sharingPeriodEnd: newProps.sharingPeriodEnd,
-      images: newProps.images ?? [],
-      state: ListingState.Published,
-      createdAt: now,
-      updatedAt: now,
-      schemaVersion: 1,
-      reports: 0,
-      sharingHistory: [],
-    } as unknown as props;
+	const itemListingProps = {
+	  id,
+	  sharer: newProps.sharer,
+	  title: new Title(newProps.title),
+	  description: new Description(newProps.description),
+	  category: new Category(newProps.category),
+	  location: new Location(newProps.location),
+	  sharingPeriodStart: newProps.sharingPeriodStart,
+	  sharingPeriodEnd: newProps.sharingPeriodEnd,
+	  images: newProps.images ?? [],
+	  state: ListingState.Published,
+	  createdAt: now,
+	  updatedAt: now,
+	  schemaVersion: 1,
+	  reports: 0,
+	  sharingHistory: [],
+	} as unknown as props;
 
-    const aggregate = new ItemListing(itemListingProps, passport);
-    aggregate.markAsNew();
-    return aggregate;
+	const aggregate = new ItemListing(itemListingProps, passport);
+	aggregate.markAsNew();
+	return aggregate;
   }
 
 
@@ -95,9 +95,12 @@ export class ItemListing<props extends ItemListingProps>
 	//#endregion Methods
 
 	//#region Properties
-	get sharer(): string {
-		return this.props.sharer;
-	}
+  get sharer(): ObjectId {
+	return this.props.sharer;
+  }
+  set sharer(value: ObjectId) {
+	this.props.sharer = value;
+  }
 
 	get title(): Title {
 		return this.props.title;
