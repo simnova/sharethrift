@@ -1,51 +1,93 @@
-
 import type { ObjectId } from 'mongodb';
+import { MongooseSeedwork } from '@cellix/data-sources-mongoose';
+import type { Models } from '@sthrift/api-data-sources-mongoose-models';
+import { Domain } from '@sthrift/api-domain';
 
-export class ConversationDomainAdapter extends MongooseDomainAdapter<ConversationDocument> implements DomainSeedwork.DomainEntityProps {
-  get sharer(): ObjectId {
-    return this.doc.sharer;
-  }
-  set sharer(value: ObjectId) {
-    this.doc.sharer = value;
-  }
+export class ConversationConverter extends MongooseSeedwork.MongoTypeConverter<
+	Models.Conversation.Conversation,
+	ConversationDomainAdapter,
+	Domain.Passport,
+	Domain.Contexts.Conversation.Conversation.Conversation<ConversationDomainAdapter>
+> {
+	constructor() {
+		super(
+			ConversationDomainAdapter,
+			Domain.Contexts.Conversation.Conversation.Conversation,
+		);
+	}
+}
+export class ConversationDomainAdapter
+	extends MongooseSeedwork.MongooseDomainAdapter<Models.Conversation.Conversation>
+	implements Domain.Contexts.Conversation.Conversation.ConversationProps
+{
+	get sharer(): ObjectId {
+		if (!this.doc.sharer) throw new Error('sharer is not populated');
+		return this.doc.sharer;
+	}
+	set sharer(value: ObjectId) {
+		this.doc.sharer = value;
+	}
 
-  get reserver(): ObjectId {
-    return this.doc.reserver;
-  }
-  set reserver(value: ObjectId) {
-    this.doc.reserver = value;
-  }
+	async loadSharer(): Promise<ObjectId> {
+		if (!this.doc.sharer) throw new Error('sharer is not populated');
+		if (this.doc.sharer instanceof MongooseSeedwork.ObjectId) {
+			await this.doc.populate('sharer');
+		}
+		return this.doc.sharer;
+	}
 
-  get listing(): ObjectId {
-    return this.doc.listing;
-  }
-  set listing(value: ObjectId) {
-    this.doc.listing = value;
-  }
+	get reserver(): ObjectId {
+		if (!this.doc.reserver) throw new Error('reserver is not populated');
+		return this.doc.reserver;
+	}
+	set reserver(value: ObjectId) {
+		this.doc.reserver = value;
+	}
 
-  get twilioConversationId(): string {
-    return this.doc.twilioConversationId;
-  }
-  set twilioConversationId(value: string) {
-    this.doc.twilioConversationId = value;
-  }
+	async loadReserver(): Promise<ObjectId> {
+		if (!this.doc.reserver) throw new Error('reserver is not populated');
+		if (this.doc.reserver instanceof MongooseSeedwork.ObjectId) {
+			await this.doc.populate('reserver');
+		}
+		return this.doc.reserver;
+	}
 
-  get schemaversion(): number {
-    return this.doc.schemaversion;
-  }
-  set schemaversion(value: number) {
-    this.doc.schemaversion = value;
-  }
+	get listing(): ObjectId {
+		return this.doc.listing;
+	}
+	set listing(value: ObjectId) {
+		this.doc.listing = value;
+	}
 
-  get createdAt(): Date {
-    return this.doc.createdAt;
-  }
+	get twilioConversationId(): string {
+		return this.doc.twilioConversationId;
+	}
+	set twilioConversationId(value: string) {
+		this.doc.twilioConversationId = value;
+	}
 
-  get updatedAt(): Date {
-    return this.doc.updatedAt;
-  }
+	get schemaversion(): number {
+		return this.doc.schemaversion;
+	}
+	set schemaversion(value: number) {
+		this.doc.schemaversion = value;
+	}
 
-  get id(): string {
-    return this.doc._id?.toString() || '';
-  }
+	get createdAt(): Date {
+		return this.doc.createdAt;
+	}
+	override set createdAt(value: Date) {
+		this.doc.createdAt = value;
+	}
+
+	override get updatedAt(): Date {
+		return this.doc.updatedAt;
+	}
+	override set updatedAt(value: Date) {
+		this.doc.updatedAt = value;
+	}
+
+	override get id(): string {
+		return this.doc._id?.toString() || '';
+	}
 }

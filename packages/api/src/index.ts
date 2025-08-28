@@ -2,7 +2,10 @@ import './service-config/otel-starter.ts';
 
 import { Cellix } from './cellix.ts';
 import type { ApiContextSpec } from '@sthrift/api-context-spec';
-import { type ApplicationServices, buildApplicationServicesFactory } from '@sthrift/api-application-services';
+import {
+	type ApplicationServices,
+	buildApplicationServicesFactory,
+} from '@sthrift/api-application-services';
 
 import { ServiceMongoose } from '@sthrift/service-mongoose';
 import * as MongooseConfig from './service-config/mongoose/index.ts';
@@ -17,41 +20,48 @@ import { ServiceTwilio } from '@sthrift/service-twilio';
 import { graphHandlerCreator } from '@sthrift/api-graphql';
 import { restHandlerCreator } from '@sthrift/api-rest';
 
-
-Cellix
-    .initializeInfrastructureServices<ApiContextSpec, ApplicationServices>((serviceRegistry) => {
-        serviceRegistry
-            .registerInfrastructureService(
-                new ServiceMongoose(
-                    MongooseConfig.mongooseConnectionString,
-                    MongooseConfig.mongooseConnectOptions,
-                ),
-            )
-            .registerInfrastructureService(new ServiceBlobStorage())
-            .registerInfrastructureService(
-                new ServiceTokenValidation(
-                    TokenValidationConfig.portalTokens,
-                ),
-            ).registerInfrastructureService(new ServiceTwilio());
-    })
+Cellix.initializeInfrastructureServices<ApiContextSpec, ApplicationServices>(
+	(serviceRegistry) => {
+		serviceRegistry
+			.registerInfrastructureService(
+				new ServiceMongoose(
+					MongooseConfig.mongooseConnectionString,
+					MongooseConfig.mongooseConnectOptions,
+				),
+			)
+			.registerInfrastructureService(new ServiceBlobStorage())
+			.registerInfrastructureService(
+				new ServiceTokenValidation(TokenValidationConfig.portalTokens),
+			)
+			.registerInfrastructureService(new ServiceTwilio());
+	},
+)
 	.setContext((serviceRegistry) => {
 		return {
 			dataSources: MongooseConfig.mongooseContextBuilder(
-				serviceRegistry.getInfrastructureService<ServiceMongoose>(ServiceMongoose),
+				serviceRegistry.getInfrastructureService<ServiceMongoose>(
+					ServiceMongoose,
+				),
 			),
-			tokenValidationService: serviceRegistry.getInfrastructureService<ServiceTokenValidation>(ServiceTokenValidation),
-            twilioService: serviceRegistry.getInfrastructureService<ServiceTwilio>(ServiceTwilio),
-        } as ApiContextSpec;
-    })
-    .initializeApplicationServices((context) => buildApplicationServicesFactory(context))
-    .registerAzureFunctionHttpHandler(
-        'graphql',
-        { route: 'graphql' },
-        graphHandlerCreator,
-    )
-    .registerAzureFunctionHttpHandler(
-        'rest',
-        { route: '{communityId}/{role}/{memberId}/{*rest}' },
-        restHandlerCreator,
-    )
-    .startUp();
+			tokenValidationService:
+				serviceRegistry.getInfrastructureService<ServiceTokenValidation>(
+					ServiceTokenValidation,
+				),
+			twilioService:
+				serviceRegistry.getInfrastructureService<ServiceTwilio>(ServiceTwilio),
+		} as ApiContextSpec;
+	})
+	.initializeApplicationServices((context) =>
+		buildApplicationServicesFactory(context),
+	)
+	.registerAzureFunctionHttpHandler(
+		'graphql',
+		{ route: 'graphql' },
+		graphHandlerCreator,
+	)
+	.registerAzureFunctionHttpHandler(
+		'rest',
+		{ route: '{communityId}/{role}/{memberId}/{*rest}' },
+		restHandlerCreator,
+	)
+	.startUp();

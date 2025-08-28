@@ -1,7 +1,9 @@
+import type { ConversationPassport } from './conversation/conversation.passport.ts';
 import type { ItemListingPassport } from './listing/item.passport.ts';
 
 export interface Passport {
 	get itemListing(): ItemListingPassport;
+	get conversation(): ConversationPassport;
 }
 
 export const PassportFactory = {
