@@ -287,7 +287,7 @@ export function AllListingsTable({
         rowKey="_id"
         pagination={false}
         onChange={onTableChange}
-        style={{ marginBottom: 16 }}
+        style={{ marginBottom: 16, boxShadow: '0 0 0 1px var(--color-foreground-2)' }}
       />
       
       <div style={{ display: 'flex', justifyContent: 'flex-end', marginTop: 16 }}>

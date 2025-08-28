@@ -40,7 +40,7 @@ export function MyListingsDashboard({ onCreateListing }: MyListingsDashboardProp
         alignItems: 'center', 
         marginBottom: '24px' 
       }}>
-        <h1 style={{ margin: 0, fontSize: '24px', fontWeight: 600 }}>
+        <h1 className="title42">
           My Listings
         </h1>
         <Button 
@@ -63,8 +63,6 @@ export function MyListingsDashboard({ onCreateListing }: MyListingsDashboardProp
         items={items}
         size="large"
         style={{ 
-          backgroundColor: 'white',
-          borderRadius: '8px',
           padding: '16px'
         }}
       />
