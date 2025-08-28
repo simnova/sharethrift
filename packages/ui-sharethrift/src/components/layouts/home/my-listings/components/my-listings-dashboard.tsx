@@ -2,17 +2,31 @@ import { Button, Tabs } from 'antd';
 import type { TabsProps } from 'antd';
 import { AllListingsTableContainer } from './all-listings-table.container';
 import { RequestsTableContainer } from './requests-table.container';
+import { MOCK_LISTING_REQUESTS } from '../mock-data';
+import { useState } from 'react';
 
 export interface MyListingsDashboardProps {
   onCreateListing: () => void;
 }
 
 export function MyListingsDashboard({ onCreateListing }: MyListingsDashboardProps) {
+  const requestsCount = MOCK_LISTING_REQUESTS.length;
+  const [activeTab, setActiveTab] = useState('all-listings');
+  const [allListingsPage, setAllListingsPage] = useState(1);
+  const [requestsPage, setRequestsPage] = useState(1);
+
+  const handleTabChange = (key: string) => {
+    setActiveTab(key);
+    // Reset the page for the tab being switched to
+    if (key === 'all-listings') setAllListingsPage(1);
+    if (key === 'requests') setRequestsPage(1);
+  };
+
   const items: TabsProps['items'] = [
     {
       key: 'all-listings',
       label: 'All Listings',
-      children: <AllListingsTableContainer />,
+      children: <AllListingsTableContainer currentPage={allListingsPage} onPageChange={setAllListingsPage} />, 
     },
     {
       key: 'requests',
@@ -25,10 +39,10 @@ export function MyListingsDashboard({ onCreateListing }: MyListingsDashboardProp
             padding: '2px 6px', 
             fontSize: '12px', 
             marginLeft: '4px' 
-          }}>6</span>
+          }}>{requestsCount}</span>
         </span>
       ),
-      children: <RequestsTableContainer />,
+      children: <RequestsTableContainer currentPage={requestsPage} onPageChange={setRequestsPage} />, 
     },
   ];
 
@@ -59,7 +73,8 @@ export function MyListingsDashboard({ onCreateListing }: MyListingsDashboardProp
       </div>
       
       <Tabs 
-        defaultActiveKey="all-listings" 
+        activeKey={activeTab}
+        onChange={handleTabChange}
         items={items}
         size="large"
         style={{ 
