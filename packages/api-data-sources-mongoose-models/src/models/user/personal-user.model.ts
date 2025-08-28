@@ -1,4 +1,4 @@
-import { type Model, Schema } from 'mongoose';
+import { type Model, Schema, type SchemaDefinition } from 'mongoose';
 import { MongooseSeedwork } from '@cellix/data-sources-mongoose';
 import { type User, type UserModelType, userOptions } from './user.model.ts';
 import { Patterns } from '../../patterns.ts';
@@ -13,7 +13,7 @@ export interface PersonalUserAccountProfileLocation
 	country: string;
 	zipCode: string;
 }
-export const PersonalUserAccountProfileLocationType = {
+export const PersonalUserAccountProfileLocationType:SchemaDefinition<PersonalUserAccountProfileLocation> = {
 	address1: { type: String, required: true },
 	address2: { type: String, required: false },
 	city: { type: String, required: true },
@@ -28,7 +28,7 @@ export interface PersonalUserAccountProfileBilling
 	subscriptionId?: string;
 	cybersourceCustomerId?: string;
 }
-export const PersonalUserAccountProfileBillingType = {
+export const PersonalUserAccountProfileBillingType: SchemaDefinition<PersonalUserAccountProfileBilling> = {
 	subscriptionId: { type: String, required: false },
 	cybersourceCustomerId: { type: String, required: false },
 };
@@ -41,7 +41,7 @@ export interface PersonalUserAccountProfile
 	location: PersonalUserAccountProfileLocation;
 	billing: PersonalUserAccountProfileBilling;
 }
-export const PersonalUserAccountProfileType = {
+export const PersonalUserAccountProfileType: SchemaDefinition<PersonalUserAccountProfile> = {
 	firstName: { type: String, required: true },
 	lastName: { type: String, required: true },
 	location: {
@@ -63,7 +63,7 @@ export interface PersonalUserAccount extends MongooseSeedwork.NestedPath {
 	username: string;
 	profile: PersonalUserAccountProfile;
 }
-export const PersonalUserAccountType = {
+export const PersonalUserAccountType: SchemaDefinition<PersonalUserAccount> = {
 	accountType: {
 		type: String,
 		required: true,
