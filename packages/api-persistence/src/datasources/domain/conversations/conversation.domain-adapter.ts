@@ -20,15 +20,15 @@ export class ConversationDomainAdapter
 	extends MongooseSeedwork.MongooseDomainAdapter<Models.Conversation.Conversation>
 	implements Domain.Contexts.Conversation.Conversation.ConversationProps
 {
-	get sharer(): ObjectId {
+	get sharer() {
 		if (!this.doc.sharer) throw new Error('sharer is not populated');
 		return this.doc.sharer;
 	}
-	set sharer(value: ObjectId) {
+	set sharer(value) {
 		this.doc.sharer = value;
 	}
 
-	async loadSharer(): Promise<ObjectId> {
+	async loadSharer() {
 		if (!this.doc.sharer) throw new Error('sharer is not populated');
 		if (this.doc.sharer instanceof MongooseSeedwork.ObjectId) {
 			await this.doc.populate('sharer');
@@ -36,7 +36,7 @@ export class ConversationDomainAdapter
 		return this.doc.sharer;
 	}
 
-	get reserver(): ObjectId {
+	get reserver() {
 		if (!this.doc.reserver) throw new Error('reserver is not populated');
 		return this.doc.reserver;
 	}
@@ -52,7 +52,7 @@ export class ConversationDomainAdapter
 		return this.doc.reserver;
 	}
 
-	get listing(): ObjectId {
+	get listing() {
 		return this.doc.listing;
 	}
 	set listing(value: ObjectId) {

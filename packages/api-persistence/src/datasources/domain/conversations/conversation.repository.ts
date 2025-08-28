@@ -1,9 +1,9 @@
 import { MongooseSeedwork } from '@cellix/data-sources-mongoose';
 import type { Models } from '@sthrift/api-data-sources-mongoose-models';
 import type { Domain } from '@sthrift/api-domain';
-import type { ConversationDomainAdapter } from './conversation.domain-adapter';
+import type { ConversationDomainAdapter } from './conversation.domain-adapter.ts';
 
-type ConversationModelType = Models.Conversation.ConversationModel;
+type ConversationModelType = Models.Conversation.ConversationModelType;
 type PropType = ConversationDomainAdapter;
 
 export class ConversationRepository
@@ -11,13 +11,14 @@ export class ConversationRepository
 		ConversationModelType,
 		PropType,
 		Domain.Passport,
-		Domain.Contexts.Conversation.Conversation<PropType>
+		Domain.Contexts.Conversation.Conversation.Conversation<PropType>
 	>
-	implements Domain.Contexts.Conversation.ConversationRepository<PropType>
+	implements
+		Domain.Contexts.Conversation.Conversation.ConversationRepository<PropType>
 {
 	async getById(
 		id: string,
-	): Promise<Domain.Contexts.Conversation.Conversation<PropType> | null> {
+	): Promise<Domain.Contexts.Conversation.Conversation.Conversation<PropType> | null> {
 		const mongoConversation = await this.model.findById(id).exec();
 		if (!mongoConversation) return null;
 		return this.typeConverter.toDomain(mongoConversation, this.passport);
@@ -27,7 +28,7 @@ export class ConversationRepository
 		listing: string,
 		sharer: string,
 		reserver: string,
-	): Promise<Domain.Contexts.Conversation.Conversation<PropType> | null> {
+	): Promise<Domain.Contexts.Conversation.Conversation.Conversation<PropType> | null> {
 		const mongoConversation = await this.model
 			.findOne({ listing, sharer, reserver })
 			.exec();
@@ -37,7 +38,9 @@ export class ConversationRepository
 
 	async getUserConversations(
 		userId: string,
-	): Promise<Domain.Contexts.Conversation.Conversation<PropType>[]> {
+	): Promise<
+		Domain.Contexts.Conversation.Conversation.Conversation<PropType>[]
+	> {
 		const mongoConversations = await this.model
 			.find({ $or: [{ sharer: userId }, { reserver: userId }] })
 			.exec();
@@ -53,7 +56,7 @@ export class ConversationRepository
 		twilioConversationId: string,
 		schemaversion: number,
 		passport: Domain.Passport,
-	): Domain.Contexts.Conversation.Conversation<PropType> {
+	): Domain.Contexts.Conversation.Conversation.Conversation<PropType> {
 		const adapter = this.typeConverter.toAdapter(new this.model());
 		adapter.sharer = sharer;
 		adapter.reserver = reserver;
@@ -63,12 +66,5 @@ export class ConversationRepository
 		adapter.createdAt = new Date();
 		adapter.updatedAt = new Date();
 		return this.typeConverter.toDomain(adapter.doc, passport);
-		return Domain.Contexts.Conversation.Conversation.create(
-			adapter.id,
-			twilioConversationSid,
-			listingId,
-			participants,
-			passport,
-		);
 	}
 }

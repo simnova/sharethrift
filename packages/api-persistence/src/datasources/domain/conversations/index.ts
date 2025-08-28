@@ -1,4 +1,3 @@
-export * from './conversation.domain-adapter';
-export * from './conversation.converter';
-export * from './conversation.repository';
-export * from './conversation.uow';
+export * from './conversation.domain-adapter.ts';
+export * from './conversation.repository.ts';
+export * from './conversation.uow.ts';

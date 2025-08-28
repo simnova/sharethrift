@@ -1,5 +1,5 @@
 import type { DomainSeedwork } from '@cellix/domain-seedwork';
-import type { ConversationPassport } from './conversation.passport.ts';
+import type { ConversationPassport } from '../conversation.passport.ts';
 import type {
 	Conversation,
 	ConversationProps,

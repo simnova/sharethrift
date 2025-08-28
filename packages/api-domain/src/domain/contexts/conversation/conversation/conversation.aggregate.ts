@@ -1,8 +1,8 @@
 import { DomainSeedwork } from '@cellix/domain-seedwork';
 
 import type { ObjectId } from 'mongodb';
-import type { ConversationPassport } from '../conversation.passport.ts';
 import type { ConversationVisa } from '../conversation.visa.ts';
+import type { Passport } from '../../passport.ts';
 
 export interface ConversationProps extends DomainSeedwork.DomainEntityProps {
 	sharer: ObjectId;
@@ -18,16 +18,16 @@ export interface ConversationEntityReference
 	extends Readonly<ConversationProps> {}
 
 export class Conversation<props extends ConversationProps>
-	extends DomainSeedwork.AggregateRoot<props, ConversationPassport>
+	extends DomainSeedwork.AggregateRoot<props, Passport>
 	implements ConversationEntityReference
 {
 	private isNew: boolean = false;
 	private readonly visa: ConversationVisa;
 
 	//#region Constructor
-	constructor(props: props, passport: ConversationPassport) {
+	constructor(props: props, passport: Passport) {
 		super(props, passport);
-		this.visa = passport.forConversation(this);
+		this.visa = passport.conversation.forConversation(this);
 	}
 
 	public static getNewInstance<props extends ConversationProps>(
@@ -37,7 +37,7 @@ export class Conversation<props extends ConversationProps>
 		listing: ObjectId,
 		twilioConversationId: string,
 		schemaversion: number,
-		passport: ConversationPassport,
+		passport: Passport,
 	): Conversation<props> {
 		const now = new Date();
 		const instance = new Conversation(

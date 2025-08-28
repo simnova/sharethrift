@@ -3,7 +3,7 @@ import type {
 	Conversation,
 	ConversationProps,
 } from './conversation.aggregate.ts';
-import type { ConversationPassport } from './conversation.passport.ts';
+import type { ConversationPassport } from '../conversation.passport.ts';
 import type { ConversationRepository } from './conversation.repository.ts';
 
 export interface ConversationUnitOfWork

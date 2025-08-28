@@ -5,11 +5,11 @@ import {
 } from '@cellix/event-bus-seedwork-node';
 import type { Models } from '@sthrift/api-data-sources-mongoose-models';
 import type { Domain } from '@sthrift/api-domain';
-import { ConversationConverter } from './conversation.converter';
-import { ConversationRepository } from './conversation.repository';
+import { ConversationConverter } from './conversation.domain-adapter.ts';
+import { ConversationRepository } from './conversation.repository.ts';
 
 export const getConversationUnitOfWork = (
-	conversationModel: Models.Conversations.ConversationModelType,
+	conversationModel: Models.Conversation.ConversationModelType,
 	passport: Domain.Passport,
 ): Domain.Contexts.Conversation.Conversation.ConversationUnitOfWork => {
 	const unitOfWork = new MongooseSeedwork.MongoUnitOfWork(
