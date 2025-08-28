@@ -3,6 +3,7 @@
     "module": "commonjs",
     "target": "es6",
     "outDir": "dist",
+    "types": ["node"],
     "rootDir": ".",
     "sourceMap": true,
     "strict": false,
