@@ -1,32 +1,20 @@
 import type { MongooseSeedwork } from '@cellix/data-sources-mongoose';
-import type { DomainDataSource } from '@sthrift/api-domain';
-import { DataSourcesImpl } from './datasources/index.ts';
-import type { ReadonlyDataSource } from './datasources/readonly/index.ts';
 import { Models } from '@sthrift/api-data-sources-mongoose-models';
-
-export interface DataSources {
-	domainDataSource: DomainDataSource;
-	readonlyDataSource: ReadonlyDataSource;
-}
+import { DataSourcesFactoryImpl } from './datasources/index.ts';
 
 export type ModelsContext = ReturnType<typeof Models.mongooseContextBuilder>;
+export type { DataSources, DataSourcesFactory } from './datasources/index.ts';
 
 export const Persistence = (
 	initializedService: MongooseSeedwork.MongooseContextFactory,
-): DataSources => {
-	// [NN] [ESLINT] disabling the ESLint rule here to ensure that the initializedService is checked for null or undefined
-	// eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
+) => {
 	if (!initializedService?.service) {
 		throw new Error('MongooseSeedwork.MongooseContextFactory is required');
 	}
 
-	// expose domain data source and readonly data source (wrappers for mongoose find, findOne, findById, allows projection)
+	const models: ModelsContext = {
+		...Models.mongooseContextBuilder(initializedService),
+	};
 
-	// create a generic base MongoDataSource for exposing methods like find, findById and findOne, allowing the ability to specify projection on each
-
-	// each collection should implement its own data source and wire through imports similar to the DomainDataSource
-
-	// top level exports object containing domainDataSource and readonlyDataSource
-
-	return DataSourcesImpl(initializedService);
+	return DataSourcesFactoryImpl(models);
 };

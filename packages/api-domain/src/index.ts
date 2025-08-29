@@ -1,13 +1,16 @@
-import type * as Domain from './domain/index.ts';
+import type { Contexts } from './domain/index.ts';
 export * as Domain from './domain/index.ts';
-export * from './domain/contexts/index.ts'
 
 export interface DomainDataSource {
-  domainContexts: {
-    listing?: {
-      item?: {
-        getItemListingUnitOfWork: () => Domain.Contexts.ItemListingUnitOfWork;
-      };
-    }
-  }
+	User: {
+		PersonalUser: {
+			PersonalUserUnitOfWork: Contexts.User.PersonalUser.PersonalUserUnitOfWork;
+		};
+	};
+
+	Listing: {
+		ItemListing: {
+			ItemListingUnitOfWork: Contexts.Listing.ItemListing.ItemListingUnitOfWork;
+		};
+	};
 }

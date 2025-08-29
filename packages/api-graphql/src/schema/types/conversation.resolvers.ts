@@ -1,4 +1,4 @@
-import type { GraphContext } from "../../context.ts";
+import type { GraphContext } from "../../init/context.ts";
 
 const conversationResolvers = {
   Query: {
@@ -7,17 +7,18 @@ const conversationResolvers = {
       return [];
     },
     conversation: () => {
-      console.log('conversations resolver called');
-      return [];
+      console.log('conversation resolver called');
+      return undefined;
     }
   },
-  Mutation: {
-    createConversation: (_: unknown, { sharerId, reserverId, listingId }: { sharerId: string, reserverId: string, listingId: string }) => {
-      // Example usage to avoid unused parameter errors
-      console.log('Creating conversation with:', { sharerId, reserverId, listingId });
-      // TODO: Implement actual creation logic here
-    },
-  },
+  // Mutation: {
+    // createConversation: (_: unknown, { sharerId, reserverId, listingId }: { sharerId: string, reserverId: string, listingId: string }) => {
+    //   // Example usage to avoid unused parameter errors
+    //   console.log('Creating conversation with:', { sharerId, reserverId, listingId });
+    //   // TODO: Implement actual creation logic here
+    // },
+  // },
 };
+
 
 export default conversationResolvers;

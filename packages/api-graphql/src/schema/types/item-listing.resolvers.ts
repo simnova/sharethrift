@@ -1,4 +1,4 @@
-import type { GraphContext } from "../../context.ts";
+import type { GraphContext } from "../../init/context.ts";
 
 const itemListingResolvers = {
   Query: {
@@ -12,11 +12,11 @@ const itemListingResolvers = {
       // TODO: implement actual logic to fetch listings
       return {};
     },
-    activeListings: (_parent: unknown, _args: unknown, context: GraphContext) => {
-      console.log('active listings resolver called with context:', context);
-      // TODO: implement actual logic to fetch active listings
-      return [];
-    },
+    // activeListings: (_parent: unknown, _args: unknown, context: GraphContext) => {
+    //   console.log('active listings resolver called with context:', context);
+    //   // TODO: implement actual logic to fetch active listings
+    //   return [];
+    // },
   },
 };
 

@@ -5,15 +5,30 @@ import type { Passport } from '../../passport.ts';
 
 describe('ReservationRequest', () => {
   const mockPassport: Passport = {
-    reservationRequest: {
-      forReservationRequest: () => ({
-        determineIf: () => true,
-      }),
+    get reservationRequest() {
+      return {
+        forReservationRequest: () => ({
+          determineIf: () => true,
+        }),
+      };
     },
-    itemListing: {
-      forItemListing: () => ({
-        determineIf: () => true,
-      }),
+    get itemListing() {
+      return {
+        forItemListing: () => ({
+          determineIf: () => true,
+        }),
+      };
+    },
+    get user() {
+      return {
+        // Provide minimal mock implementation for UserPassport
+        forUser: () => ({
+          determineIf: () => true,
+        }),
+        forPersonalUser: () => ({
+          determineIf: () => true,
+        }),
+      };
     },
   } as Passport;
 
