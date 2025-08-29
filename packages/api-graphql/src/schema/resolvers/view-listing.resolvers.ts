@@ -1,4 +1,4 @@
-import type { GraphContext } from "../../context.ts";
+import type { GraphContext } from "../../init/context.ts";
 
 export const resolvers = {
   Query: {
