@@ -22,6 +22,7 @@
 		{ "path": "../service-mongoose" },
 		{ "path": "../service-otel" },
 		{ "path": "../service-token-validation" },
-        { "path": "../service-twilio" }
+        { "path": "../service-twilio" },
+        { "path": "../service-cybersource" }
 	]
 }
