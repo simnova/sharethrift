@@ -3,6 +3,7 @@ import './service-config/otel-starter.ts';
 import { Cellix } from './cellix.ts';
 import type { ApiContextSpec } from '@sthrift/api-context-spec';
 import { type ApplicationServices, buildApplicationServicesFactory } from '@sthrift/api-application-services';
+import { RegisterEventHandlers } from '@sthrift/api-event-handler';
 
 import { ServiceMongoose } from '@sthrift/service-mongoose';
 import * as MongooseConfig from './service-config/mongoose/index.ts';
@@ -34,19 +35,23 @@ Cellix
                 ),
             ).registerInfrastructureService(new ServiceTwilio());
     })
-	.setContext((serviceRegistry) => {
-		return {
-			dataSources: MongooseConfig.mongooseContextBuilder(
-				serviceRegistry.getInfrastructureService<ServiceMongoose>(ServiceMongoose),
-			),
-			tokenValidationService: serviceRegistry.getInfrastructureService<ServiceTokenValidation>(ServiceTokenValidation),
-            twilioService: serviceRegistry.getInfrastructureService<ServiceTwilio>(ServiceTwilio),
-        } as ApiContextSpec;
+    .setContext((serviceRegistry) => {
+        const dataSourcesFactory = MongooseConfig.mongooseContextBuilder(
+            serviceRegistry.getInfrastructureService<ServiceMongoose>(ServiceMongoose),
+        );
+
+        const { domainDataSource} = dataSourcesFactory.withSystemPassport();
+        RegisterEventHandlers(domainDataSource);
+
+        return {
+            dataSourcesFactory,
+            tokenValidationService: serviceRegistry.getInfrastructureService<ServiceTokenValidation>(ServiceTokenValidation),
+        };
     })
     .initializeApplicationServices((context) => buildApplicationServicesFactory(context))
     .registerAzureFunctionHttpHandler(
         'graphql',
-        { route: 'graphql' },
+        { route: 'graphql/{*segments}', methods: ['GET', 'POST', 'PATCH', 'PUT', 'DELETE', 'OPTIONS', 'HEAD'] },
         graphHandlerCreator,
     )
     .registerAzureFunctionHttpHandler(
