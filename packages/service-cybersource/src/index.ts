@@ -27,7 +27,7 @@ export interface RefundResponse {
   [key: string]: any;
 }
 
-export class ServicePayment implements ServiceBase<ServicePayment> {
+export class ServiceCybersource implements ServiceBase<ServiceCybersource> {
 
   private client: AxiosInstance | undefined;
   private baseUrl: string;
@@ -36,10 +36,10 @@ export class ServicePayment implements ServiceBase<ServicePayment> {
     this.baseUrl = baseUrl;
   }
 
-  public async startUp(): Promise<Exclude<ServicePayment, ServiceBase<ServicePayment>>> {
-    if (this.client) throw new Error('ServicePayment is already started');
+  public async startUp(): Promise<Exclude<ServiceCybersource, ServiceBase<ServiceCybersource>>> {
+    if (this.client) throw new Error('ServiceCybersource is already started');
     this.client = axios.create({ baseURL: this.baseUrl });
-    return this as Exclude<ServicePayment, ServiceBase<ServicePayment>>;
+    return this as Exclude<ServiceCybersource, ServiceBase<ServiceCybersource>>;
   }
 
   public async shutdown(): Promise<void> {
@@ -47,7 +47,7 @@ export class ServicePayment implements ServiceBase<ServicePayment> {
   }
 
   public get service(): AxiosInstance {
-    if (!this.client) throw new Error('ServicePayment is not started - cannot access service');
+    if (!this.client) throw new Error('ServiceCybersource is not started - cannot access service');
     return this.client;
   }
 
