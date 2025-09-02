@@ -1,5 +1,6 @@
 import type { ServiceBase } from '@cellix/api-services-spec';
-import axios, { AxiosInstance } from 'axios';
+import axios from 'axios';
+import type { AxiosInstance } from 'axios';
 
 export interface PaymentRequest {
   amount: number;
@@ -42,7 +43,7 @@ export class ServiceCybersource implements ServiceBase<ServiceCybersource> {
     return this as Exclude<ServiceCybersource, ServiceBase<ServiceCybersource>>;
   }
 
-  public async shutdown(): Promise<void> {
+  public async shutDown(): Promise<void> {
     this.client = undefined;
   }
 
