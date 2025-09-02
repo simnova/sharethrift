@@ -22,8 +22,8 @@ export interface ItemListingProps extends DomainSeedwork.DomainEntityProps {
 
 export interface ItemListingEntityReference
 	extends Readonly<Omit<ItemListingProps, 'sharingHistory' | 'images'>> {
-	readonly sharingHistory?: readonly string[];
-	readonly images?: readonly string[];
+	sharingHistory?: string[];
+	images?: string[];
 }
 
 export class ItemListing<props extends ItemListingProps>
@@ -200,16 +200,16 @@ export class ItemListing<props extends ItemListingProps>
 		return this.props.schemaVersion;
 	}
 
-	get sharingHistory(): readonly string[] {
-		return this.props.sharingHistory ?? [];
+	get sharingHistory(): string[] {
+		return this.props.sharingHistory ? [...this.props.sharingHistory] : [];
 	}
 
 	get reports(): number {
 		return this.props.reports ?? 0;
 	}
 
-	get images(): readonly string[] {
-		return this.props.images ?? [];
+	get images(): string[] {
+		return this.props.images ? [...this.props.images] : [];
 	}
 	set images(value: string[]) {
 		if (

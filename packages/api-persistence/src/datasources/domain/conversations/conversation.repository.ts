@@ -1,9 +1,9 @@
-import { MongooseSeedwork } from '@cellix/data-sources-mongoose';
+import { Domain } from '@sthrift/api-domain';
 import type { Models } from '@sthrift/api-data-sources-mongoose-models';
-import type { Domain } from '@sthrift/api-domain';
+import { MongooseSeedwork } from '@cellix/data-sources-mongoose';
 import type { ConversationDomainAdapter } from './conversation.domain-adapter.ts';
 
-type ConversationModelType = Models.Conversation.ConversationModelType;
+type ConversationModelType = Models.Conversation.Conversation;
 type PropType = ConversationDomainAdapter;
 
 export class ConversationRepository
@@ -16,55 +16,40 @@ export class ConversationRepository
 	implements
 		Domain.Contexts.Conversation.Conversation.ConversationRepository<PropType>
 {
-	async getById(
+	async getByIdWithReferences(
 		id: string,
-	): Promise<Domain.Contexts.Conversation.Conversation.Conversation<PropType> | null> {
-		const mongoConversation = await this.model.findById(id).exec();
-		if (!mongoConversation) return null;
-		return this.typeConverter.toDomain(mongoConversation, this.passport);
-	}
-
-	async getByListingAndParticipants(
-		listing: string,
-		sharer: string,
-		reserver: string,
-	): Promise<Domain.Contexts.Conversation.Conversation.Conversation<PropType> | null> {
+	): Promise<Domain.Contexts.Conversation.Conversation.Conversation<PropType>> {
 		const mongoConversation = await this.model
-			.findOne({ listing, sharer, reserver })
+			.findById(id)
+			.populate('sharer')
+			.populate('reserver')
+			.populate('listing')
 			.exec();
-		if (!mongoConversation) return null;
+		if (!mongoConversation) {
+			throw new Error(`Conversation with id ${id} not found`);
+		}
 		return this.typeConverter.toDomain(mongoConversation, this.passport);
 	}
 
-	async getUserConversations(
-		userId: string,
-	): Promise<
-		Domain.Contexts.Conversation.Conversation.Conversation<PropType>[]
-	> {
-		const mongoConversations = await this.model
-			.find({ $or: [{ sharer: userId }, { reserver: userId }] })
-			.exec();
-		return mongoConversations.map((doc) =>
-			this.typeConverter.toDomain(doc, this.passport),
-		);
-	}
-
-	createNewInstance(
-		sharer: string,
-		reserver: string,
-		listing: string,
+	// biome-ignore lint:noRequireAwait
+	async getNewInstance(
+		sharer: Domain.Contexts.User.PersonalUser.PersonalUserEntityReference,
+		reserver: Domain.Contexts.User.PersonalUser.PersonalUserEntityReference,
+		listing: Domain.Contexts.Listing.ItemListing.ItemListingEntityReference,
 		twilioConversationId: string,
 		schemaversion: number,
-		passport: Domain.Passport,
-	): Domain.Contexts.Conversation.Conversation.Conversation<PropType> {
+	): Promise<Domain.Contexts.Conversation.Conversation.Conversation<PropType>> {
 		const adapter = this.typeConverter.toAdapter(new this.model());
-		adapter.sharer = sharer;
-		adapter.reserver = reserver;
-		adapter.listing = listing;
-		adapter.twilioConversationId = twilioConversationId;
-		adapter.schemaversion = schemaversion;
-		adapter.createdAt = new Date();
-		adapter.updatedAt = new Date();
-		return this.typeConverter.toDomain(adapter.doc, passport);
+		return Promise.resolve(
+			Domain.Contexts.Conversation.Conversation.Conversation.getNewInstance(
+				adapter,
+				sharer,
+				reserver,
+				listing,
+				twilioConversationId,
+				schemaversion,
+				this.passport,
+			),
+		);
 	}
 }

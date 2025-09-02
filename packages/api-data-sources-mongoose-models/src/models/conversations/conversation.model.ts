@@ -1,10 +1,12 @@
-import { type Model, type ObjectId, Schema } from 'mongoose';
+import { type Model, type ObjectId, Schema, type PopulatedDoc } from 'mongoose';
 import { MongooseSeedwork } from '@cellix/data-sources-mongoose';
+import type * as PersonalUser from '../user/personal-user.model.ts';
+import type * as ItemListing from '../listing/item.model.ts';
 
 export interface Conversation extends MongooseSeedwork.Base {
-	sharer: ObjectId;
-	reserver: ObjectId;
-	listing: ObjectId;
+	sharer: PopulatedDoc<PersonalUser.PersonalUser> | ObjectId;
+	reserver: PopulatedDoc<PersonalUser.PersonalUser> | ObjectId;
+	listing: PopulatedDoc<ItemListing.ItemListing> | ObjectId;
 	twilioConversationId: string;
 	schemaversion: number;
 	createdAt: Date;
