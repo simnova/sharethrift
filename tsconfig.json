@@ -1,36 +1,33 @@
 {
-  "extends": [
-    "./tsconfig.base",
-  ],  
-  "compilerOptions": {
-    "module": "ESNext",
-    "moduleResolution": "bundler",
-    "verbatimModuleSyntax": true
-  },
-  "files": [], //empty array to avoid double compilation
-  "references": [
-    { "path": "./packages/cellix-domain-seedwork"},
-    { "path": "./packages/cellix-event-bus-seedwork-node"},
-    { "path": "./packages/api-domain"},
-    { "path": "./packages/cellix-data-sources-mongoose"},
-    { "path": "./packages/api-data-sources-mongoose-models"},
-    { "path": "./packages/cellix-api-services-spec"},
-    { "path": "./packages/service-blob-storage"},
-    { "path": "./packages/service-mongoose"},
-    { "path": "./packages/service-token-validation"},
-    { "path": "./packages/service-sendgrid"},
-    { "path": "./packages/api-application-services"},
-    { "path": "./packages/api-context-spec"},
-    { "path": "./packages/api-graphql"},
-    { "path": "./packages/api-rest"},
-    { "path": "./packages/api-persistence"},
-    { "path": "./packages/api"},
-    { "path": "./packages/service-oauth2-mock-server"},
-    { "path": "./packages/service-mongodb-memory-server"},
-    { "path": "./packages/ui-sharethrift-components"},
-    { "path": "./packages/ui-sharethrift"},
-    { "path": "./packages/service-sendgrid" },
-    { "path": "./packages/service-twilio" }
-  ],
-  "lib": ["dom", "esnext"]
+	"extends": ["./tsconfig.base"],
+	"compilerOptions": {
+		"outDir": "dist",
+		"rootDir": "."
+	},
+	"files": [], //empty array to avoid double compilation
+	"references": [
+		{ "path": "./packages/cellix-domain-seedwork" },
+		{ "path": "./packages/cellix-event-bus-seedwork-node" },
+		{ "path": "./packages/api-domain" },
+		{ "path": "./packages/cellix-data-sources-mongoose" },
+		{ "path": "./packages/api-data-sources-mongoose-models" },
+		{ "path": "./packages/cellix-api-services-spec" },
+		{ "path": "./packages/service-blob-storage" },
+		{ "path": "./packages/service-mongoose" },
+		{ "path": "./packages/service-token-validation" },
+		{ "path": "./packages/service-sendgrid" },
+		{ "path": "./packages/api-application-services" },
+		{ "path": "./packages/api-context-spec" },
+		{ "path": "./packages/api-graphql" },
+		{ "path": "./packages/api-rest" },
+		{ "path": "./packages/api-event-handler" },
+		{ "path": "./packages/api-persistence" },
+		{ "path": "./packages/api" },
+		{ "path": "./packages/service-oauth2-mock-server" },
+		{ "path": "./packages/service-mongodb-memory-server" },
+		{ "path": "./packages/ui-sharethrift-components" },
+		{ "path": "./packages/ui-sharethrift" },
+		{ "path": "./packages/service-sendgrid" },
+		{ "path": "./packages/service-twilio" }
+	]
 }

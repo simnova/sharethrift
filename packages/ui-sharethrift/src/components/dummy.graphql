@@ -1,0 +1,6 @@
+# add dummy graphql to temporarily fix graphql code gen
+query DummyGraphql {
+  itemListings {
+    id
+  }
+}
