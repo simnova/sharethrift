@@ -1,10 +1,10 @@
-import type { MongooseSeedwork } from '@cellix/data-sources-mongoose';
-import { ItemListingPersistence } from './item/index.ts';
+import type { Domain } from '@sthrift/api-domain';
+import type { ModelsContext } from '../../../index.ts';
+import * as ItemListing from './item/index.ts';
 
-export const ListingPersistence = (
-    initializedService: MongooseSeedwork.MongooseContextFactory,
-) => {
-    return {
-        item: ItemListingPersistence(initializedService),
-    };
-};
+export const ListingContextPersistence = (
+	models: ModelsContext,
+	passport: Domain.Passport,
+) => ({
+	ItemListing: ItemListing.ItemListingPersistence(models, passport),
+});

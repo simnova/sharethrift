@@ -1,12 +1,13 @@
-import type { MongooseSeedwork } from '@cellix/data-sources-mongoose';
-import { getItemListingUnitOfWork } from './item.uow.ts';
+import type { Domain } from '@sthrift/api-domain';
+import type { ModelsContext } from '../../../../index.ts';
+import { getItemListingUnitOfWork } from './item-listing.uow.ts';
 
 export const ItemListingPersistence = (
-	initializedService: MongooseSeedwork.MongooseContextFactory,
+	models: ModelsContext,
+	passport: Domain.Passport,
 ) => {
+	const itemListingModel = models.Listing?.ItemListingModel;
 	return {
-		getItemListingUnitOfWork: () => {
-			return getItemListingUnitOfWork(initializedService);
-		},
+		ItemListingUnitOfWork: getItemListingUnitOfWork(itemListingModel, passport),
 	};
 };
