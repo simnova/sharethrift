@@ -35,7 +35,6 @@ export const ApolloLinkToAddAuthHeader = (access_token: string | undefined): Apo
       headers: {
         ...headers,
         ...(access_token && { Authorization: `Bearer ${access_token}` }),
-        abc: "asdf",
       },
     };
   });
