@@ -7,10 +7,11 @@ type ItemListing implements MongoBase{
   location: String!
   sharingPeriodStart: DateTime!
   sharingPeriodEnd: DateTime!
-  state: ItemListingState
+  status: ItemListingStatus
   
   sharingHistory: [ObjectID!]
   reports: Int
+  images: [String!] # Array of image URLs
 
   id: ObjectID!
   schemaVersion: String
@@ -18,7 +19,8 @@ type ItemListing implements MongoBase{
   updatedAt: DateTime
 }
 
-enum ItemListingState {
+ 
+enum ItemListingStatus {
   Published
   Paused
   Cancelled

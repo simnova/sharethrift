@@ -746,6 +746,26 @@
             "deprecationReason": null
           },
           {
+            "name": "images",
+            "description": null,
+            "args": [],
+            "type": {
+              "kind": "LIST",
+              "name": null,
+              "ofType": {
+                "kind": "NON_NULL",
+                "name": null,
+                "ofType": {
+                  "kind": "SCALAR",
+                  "name": "String",
+                  "ofType": null
+                }
+              }
+            },
+            "isDeprecated": false,
+            "deprecationReason": null
+          },
+          {
             "name": "location",
             "description": null,
             "args": [],
@@ -854,12 +874,12 @@
             "deprecationReason": null
           },
           {
-            "name": "state",
+            "name": "status",
             "description": null,
             "args": [],
             "type": {
               "kind": "ENUM",
-              "name": "ItemListingState",
+              "name": "ItemListingStatus",
               "ofType": null
             },
             "isDeprecated": false,
@@ -907,7 +927,7 @@
       },
       {
         "kind": "ENUM",
-        "name": "ItemListingState",
+        "name": "ItemListingStatus",
         "description": null,
         "isOneOf": null,
         "fields": null,

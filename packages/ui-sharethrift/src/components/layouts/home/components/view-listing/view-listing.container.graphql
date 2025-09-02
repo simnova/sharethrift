@@ -1,7 +1,7 @@
 # View Listing Query (backend-aligned)
 
-query ViewListing($id: ID!) {
-  viewListing(id: $id) {
+query ViewListing($id: ObjectID!) {
+  itemListing(id: $id) {
     id
     title
     description
@@ -9,9 +9,13 @@ query ViewListing($id: ID!) {
     location
     sharingPeriodStart
     sharingPeriodEnd
-    state
+    status
     images
     createdAt
     updatedAt
+    reports
+    sharingHistory
+    sharer
+    schemaVersion
   }
 }

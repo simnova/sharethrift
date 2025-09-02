@@ -24,11 +24,7 @@ export function ViewListing({
   sharedTimeAgo,
 }: ViewListingProps) {
   // Mock sharer info (since ItemListing.sharer is just an ID)
-  const sharer = {
-    id: listing.sharer,
-    name: listing.sharer,
-    avatar: undefined,
-  };
+  const sharerId = listing.sharer;
   const handleBack = () => {
     window.location.href = '/';
   };
@@ -95,7 +91,7 @@ export function ViewListing({
         <Col span={24} style={{ marginBottom: 0, paddingBottom: 0 }}>
           {/* Sharer Info at top */}
           <SharerInformationContainer
-            sharer={sharer}
+            sharerId={sharerId}
             listingId={listing._id}
             className="sharer-info-responsive"
             sharedTimeAgo={sharedTimeAgo}
@@ -106,7 +102,10 @@ export function ViewListing({
           <Row gutter={36} align="top" style={{ marginTop: 0, paddingTop: 0 }} className="listing-main-responsive">
             {/* Left: Images */}
             <Col xs={24} md={12} style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'center', marginTop: 0, paddingTop: 0 }}>
-              <ListingImageGalleryContainer images={listing.images ?? []} title={listing.title} className="listing-gallery-responsive" />
+              <ListingImageGalleryContainer 
+                listingId={listing._id}
+                className="listing-gallery-responsive" 
+              />
             </Col>
             {/* Right: Info/Form */}
             <Col xs={24} md={12} style={{ marginTop: 0, paddingTop: 0 }}>
@@ -115,7 +114,6 @@ export function ViewListing({
                 userRole={userRole}
                 isAuthenticated={isAuthenticated}
                 reservationRequestStatus={reservationRequestStatus}
-                onReserveClick={undefined}
                 className="listing-info-responsive"
               />
             </Col>

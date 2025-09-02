@@ -1,7 +1,5 @@
-query ViewListingImageGalleryGetImages($listingId: ID!) {
-  listing(id: $listingId) {
-    images {
-      url
-    }
+query ViewListingImageGalleryGetImages($listingId: ObjectID!) {
+  itemListing(id: $listingId) {
+    images
   }
 }
