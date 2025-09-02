@@ -5,19 +5,9 @@ import {
   ReservationRequestStates,
 } from "./reservation-request.value-objects.ts";
 import * as ValueObjects from './reservation-request.value-objects.ts';
+import type { ItemListingEntityReference } from '../../listing/item/item-listing.ts';
+import type { PersonalUserEntityReference } from '../../user/personal-user/personal-user.ts'
 
-// Temporary Until listing task is completeted
-export interface ListingEntityReference
-  extends DomainSeedwork.DomainEntityProps {
-  readonly title: string;
-  readonly description: string;
-}
-
-// Temporary Until user task is completeted
-export interface UserEntityReference extends DomainSeedwork.DomainEntityProps {
-  readonly name: string;
-  readonly email: string;
-}
 
 export interface ReservationRequestProps
   extends DomainSeedwork.DomainEntityProps {
@@ -27,17 +17,17 @@ export interface ReservationRequestProps
     readonly createdAt: Date;
     updatedAt: Date;
     readonly schemaVersion: string;
-    listing: Readonly<ListingEntityReference>;
-    loadListing(): Promise<ListingEntityReference>;
-    reserver: Readonly<UserEntityReference>;
-    loadReserver(): Promise<UserEntityReference>;
+    listing: Readonly<ItemListingEntityReference>;
+    loadListing(): Promise<ItemListingEntityReference>;
+    reserver: Readonly<PersonalUserEntityReference>;
+    loadReserver(): Promise<PersonalUserEntityReference>;
     closeRequested: boolean;
 }
 
 export interface ReservationRequestEntityReference
   extends Readonly<Omit<ReservationRequestProps, "listing" | "reserver">> {
-  readonly listing: Readonly<ListingEntityReference>;
-  readonly reserver: Readonly<UserEntityReference>;
+  readonly listing: Readonly<ItemListingEntityReference>;
+  readonly reserver: Readonly<PersonalUserEntityReference>;
 }
 
 export class ReservationRequest<props extends ReservationRequestProps>
@@ -60,8 +50,8 @@ export class ReservationRequest<props extends ReservationRequestProps>
   public static getNewInstance<props extends ReservationRequestProps>(
     newProps: props,
     state: string,
-    listing: ListingEntityReference,
-    reserver: UserEntityReference,
+    listing: ItemListingEntityReference,
+    reserver: PersonalUserEntityReference,
     reservationPeriodStart: Date,
     reservationPeriodEnd: Date,
     passport: Passport
@@ -164,10 +154,10 @@ export class ReservationRequest<props extends ReservationRequestProps>
     return this.props.schemaVersion;
   }
 
-  get listing(): ListingEntityReference {
+  get listing(): ItemListingEntityReference {
     return this.props.listing;
   }
-  set listing(value: ListingEntityReference) {
+  set listing(value: ItemListingEntityReference) {
     if (
       !this.isNew &&
       !this.visa.determineIf(
@@ -186,10 +176,10 @@ export class ReservationRequest<props extends ReservationRequestProps>
     this.props.listing = value;
   }
 
-  get reserver(): UserEntityReference {
+  get reserver(): PersonalUserEntityReference {
     return this.props.reserver;
   }
-  set reserver(value: UserEntityReference) {
+  set reserver(value: PersonalUserEntityReference) {
     if (
       !this.isNew &&
       !this.visa.determineIf(
@@ -221,11 +211,11 @@ export class ReservationRequest<props extends ReservationRequestProps>
   }
   //#endregion Properties
 
-  async loadReserver(): Promise<UserEntityReference> {
+  async loadReserver(): Promise<PersonalUserEntityReference> {
     return await this.props.loadReserver();
   }
 
-  async loadListing(): Promise<ListingEntityReference> {
+  async loadListing(): Promise<ItemListingEntityReference> {
     return await this.props.loadListing();
   }
 

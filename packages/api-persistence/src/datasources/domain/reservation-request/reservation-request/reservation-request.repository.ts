@@ -50,8 +50,8 @@ export class ReservationRequestRepository
 
 	getNewInstance(
 		state: string,
-		listing: Domain.Contexts.ReservationRequest.ReservationRequest.ListingEntityReference,
-		reserver: Domain.Contexts.ReservationRequest.ReservationRequest.UserEntityReference,
+		listing: Domain.Contexts.Listing.ItemListing.ItemListingEntityReference,
+		reserver: Domain.Contexts.User.PersonalUser.PersonalUserEntityReference,
         reservationPeriodStart: Date,
         reservationPeriodEnd: Date,
 	): Promise<Domain.Contexts.ReservationRequest.ReservationRequest.ReservationRequest<PropType>> {

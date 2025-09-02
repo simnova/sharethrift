@@ -1,11 +1,9 @@
 import { MongooseSeedwork } from "@cellix/data-sources-mongoose";
 import { Domain } from "@sthrift/api-domain";
 import type { Models } from "@sthrift/api-data-sources-mongoose-models";
+import { ItemListingDomainAdapter } from "../../listing/item/item-listing.domain-adapter.ts";
+import { PersonalUserDomainAdapter } from "../../user/personal-user/personal-user.domain-adapter.ts";
 
-/**
- * Type converter for ReservationRequest.
- * Handles conversion between Mongoose doc and domain entity.
- */
 export class ReservationRequestConverter extends MongooseSeedwork.MongoTypeConverter<
   Models.ReservationRequest.ReservationRequest,
   ReservationRequestDomainAdapter,
@@ -51,7 +49,7 @@ export class ReservationRequestDomainAdapter
     this.doc.reservationPeriodEnd = value;
   }
 
-  get listing(): Domain.Contexts.ReservationRequest.ReservationRequest.ListingEntityReference {
+  get listing(): Domain.Contexts.Listing.ItemListing.ItemListingEntityReference {
     if (!this.doc.listing) {
       throw new Error("listing is not populated");
     }
@@ -59,10 +57,11 @@ export class ReservationRequestDomainAdapter
       throw new Error("listing is not populated or is not of the correct type");
     }
     // Return a new Listing domain adapter. Not created yet so this cannot be returned
-    return this.doc.listing as Domain.Contexts.ReservationRequest.ReservationRequest.ListingEntityReference;
+    return new ItemListingDomainAdapter(this.doc.listing as Models.Listing.ItemListing);
+    // return this.doc.listing as Domain.Contexts.ReservationRequest.ReservationRequest.ListingEntityReference;
   }
 
-  async loadListing(): Promise<Domain.Contexts.ReservationRequest.ReservationRequest.ListingEntityReference> {
+  async loadListing(): Promise<Domain.Contexts.Listing.ItemListing.ItemListingEntityReference> {
     if (!this.doc.listing) {
       throw new Error("listing is not populated");
     }
@@ -70,17 +69,18 @@ export class ReservationRequestDomainAdapter
       await this.doc.populate("listing");
     }
     // Return a new Listing domain adapter. Not created yet so this cannot be returned
-    return this.doc.listing as Domain.Contexts.ReservationRequest.ReservationRequest.ListingEntityReference;
+    // return this.doc.listing as Domain.Contexts.ReservationRequest.ReservationRequest.ListingEntityReference;
+    return new ItemListingDomainAdapter(this.doc.listing as Models.Listing.ItemListing);
   }
 
-  set listing(value: Domain.Contexts.ReservationRequest.ReservationRequest.ListingEntityReference) {
+  set listing(value: Domain.Contexts.Listing.ItemListing.ItemListingEntityReference) {
     if (!value?.id) {
       throw new Error("listing reference is missing id");
     }
     this.doc.set("listing", new MongooseSeedwork.ObjectId(value.id));
   }
 
-  get reserver(): Domain.Contexts.ReservationRequest.ReservationRequest.UserEntityReference {
+  get reserver(): Domain.Contexts.User.PersonalUser.PersonalUserEntityReference {
     if (!this.doc.reserver) {
       throw new Error("reserver is not populated");
     }
@@ -88,10 +88,11 @@ export class ReservationRequestDomainAdapter
       throw new Error("reserver is not populated or is not of the correct type");
     }
     // Return a new User domain adapter. Not created yet so this cannot be returned
-    return this.doc.reserver as Domain.Contexts.ReservationRequest.ReservationRequest.UserEntityReference;
+    //return this.doc.reserver as Domain.Contexts.ReservationRequest.ReservationRequest.UserEntityReference;
+    return new PersonalUserDomainAdapter(this.doc.reserver as Models.User.PersonalUser);
   }
 
-  async loadReserver(): Promise<Domain.Contexts.ReservationRequest.ReservationRequest.UserEntityReference> {
+  async loadReserver(): Promise<Domain.Contexts.User.PersonalUser.PersonalUserEntityReference> {
     if (!this.doc.reserver) {
       throw new Error("reserver is not populated");
     }
@@ -99,10 +100,11 @@ export class ReservationRequestDomainAdapter
       await this.doc.populate("reserver");
     }
     // Return a new User domain adapter. Not created yet so this cannot be returned
-    return this.doc.reserver as Domain.Contexts.ReservationRequest.ReservationRequest.UserEntityReference;
+    // return this.doc.reserver as Domain.Contexts.ReservationRequest.ReservationRequest.UserEntityReference;
+    return new PersonalUserDomainAdapter(this.doc.reserver as Models.User.PersonalUser);
   }
 
-  set reserver(user: Domain.Contexts.ReservationRequest.ReservationRequest.UserEntityReference) {
+  set reserver(user: Domain.Contexts.User.PersonalUser.PersonalUserEntityReference) {
     if (!user?.id) {
       throw new Error("user reference is missing id");
     }

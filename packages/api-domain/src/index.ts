@@ -13,4 +13,10 @@ export interface DomainDataSource {
 			ItemListingUnitOfWork: Contexts.Listing.ItemListing.ItemListingUnitOfWork;
 		};
 	};
+
+    ReservationRequest: {
+        ReservationRequest: {
+            ReservationRequestUnitOfWork: Contexts.ReservationRequest.ReservationRequest.ReservationRequestUnitOfWork;
+        }
+    }
 }

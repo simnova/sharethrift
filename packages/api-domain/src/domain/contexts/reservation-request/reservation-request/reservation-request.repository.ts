@@ -2,17 +2,17 @@ import type { DomainSeedwork } from "@cellix/domain-seedwork";
 import type {
   ReservationRequest,
   ReservationRequestProps,
-  UserEntityReference,
-  ListingEntityReference,
-} from "./reservation-request.aggregate.ts";
+} from "./reservation-request.ts";
+import type { ItemListingEntityReference } from '../../listing/item/item-listing.ts';
+import type { PersonalUserEntityReference } from '../../user/personal-user/personal-user.ts'
 
 export interface ReservationRequestRepository<
   props extends ReservationRequestProps
 > extends DomainSeedwork.Repository<ReservationRequest<props>> {
   getNewInstance(
     state: string,
-    listing: ListingEntityReference,
-    reserver: UserEntityReference,
+    listing: ItemListingEntityReference,
+    reserver: PersonalUserEntityReference,
     reservationPeriodStart: Date,
     reservationPeriodEnd: Date,
   ): Promise<ReservationRequest<props>>;
