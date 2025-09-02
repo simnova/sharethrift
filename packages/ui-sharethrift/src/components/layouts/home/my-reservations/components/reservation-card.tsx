@@ -30,12 +30,7 @@ export const ReservationCard: React.FC<ReservationCardProps> = ({
   let sharerDisplay = 'Unknown';
   if (reservation.reserver?.name) {
     sharerDisplay = `@${reservation.reserver.name}`;
-  } else if (reservation.reserver?.firstName || reservation.reserver?.lastName) {
-    sharerDisplay = `@${[
-      reservation.reserver?.firstName || '',
-      reservation.reserver?.lastName || ''
-    ].join(' ').trim()}`;
-  }
+  } 
 
   return (
     <Card className="mb-4" bodyStyle={{ padding: 0 }}>

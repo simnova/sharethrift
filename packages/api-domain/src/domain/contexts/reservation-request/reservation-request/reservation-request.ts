@@ -86,12 +86,22 @@ export class ReservationRequest<props extends ReservationRequestProps>
       case ReservationRequestStates.CANCELLED:
         this.cancel();
         break;
-      case ReservationRequestStates.RESERVATION_PERIOD:
+      case ReservationRequestStates.CLOSED:
         this.close();
         break;
-      default:
-        this.props.state = value;
-        this.props.updatedAt = new Date();
+      case ReservationRequestStates.RESERVATION_PERIOD:
+        if (
+          !this.isNew &&
+          !this.visa.determineIf(
+            (domainPermissions) => domainPermissions.canUpdateRequest
+          )
+        ) {
+          throw new DomainSeedwork.PermissionError(
+            "You do not have permission to update this reservation period"
+          );
+        }
+        this.props.state = new ValueObjects.ReservationRequestStateValue(ReservationRequestStates.RESERVATION_PERIOD).valueOf();
+        break;
     }
   }
 
@@ -150,7 +160,6 @@ export class ReservationRequest<props extends ReservationRequestProps>
   }
 
   get schemaVersion(): string {
-    // changed from number to string
     return this.props.schemaVersion;
   }
 
@@ -202,12 +211,22 @@ export class ReservationRequest<props extends ReservationRequestProps>
     return this.props.closeRequested;
   }
   set closeRequested(value: boolean) {
-    if (value) {
-      this.requestClose();
-    } else {
-      this.props.closeRequested = false;
-      this.props.updatedAt = new Date();
+    if (
+      !this.visa.determineIf(
+        (domainPermissions) => domainPermissions.canCloseRequest
+      )
+    ) {
+      throw new DomainSeedwork.PermissionError(
+        "You do not have permission to request close for this reservation request"
+      );
     }
+
+    if (this.props.state.valueOf() !== ReservationRequestStates.ACCEPTED) {
+      throw new Error("Cannot close reservation in current state");
+    }
+
+    this.props.closeRequested = value;
+    this.props.updatedAt = new Date();
   }
   //#endregion Properties
 
@@ -273,26 +292,7 @@ export class ReservationRequest<props extends ReservationRequestProps>
       throw new Error("Cannot cancel reservation in current state");
     }
 
-    new ValueObjects.ReservationRequestStateValue(ReservationRequestStates.CANCELLED).valueOf();
-    this.props.updatedAt = new Date();
-  }
-
-  public requestClose(): void {
-    if (
-      !this.visa.determineIf(
-        (domainPermissions) => domainPermissions.canCloseRequest
-      )
-    ) {
-      throw new DomainSeedwork.PermissionError(
-        "You do not have permission to request close for this reservation request"
-      );
-    }
-
-    if (!(this.props.state.valueOf() === ReservationRequestStates.ACCEPTED)) {
-      throw new Error("Cannot close reservation in current state");
-    }
-
-    this.props.closeRequested = true;
+    this.props.state = new ValueObjects.ReservationRequestStateValue(ReservationRequestStates.CANCELLED).valueOf();
     this.props.updatedAt = new Date();
   }
 
@@ -311,7 +311,11 @@ export class ReservationRequest<props extends ReservationRequestProps>
       throw new Error("Can only close accepted reservations");
     }
 
-    this.props.state =  new ValueObjects.ReservationRequestStateValue(ReservationRequestStates.RESERVATION_PERIOD).valueOf();
+    if (!this.props.closeRequested) {
+      throw new Error("Can only close reservation requests where closeRequested is true");
+    }
+
+    this.props.state =  new ValueObjects.ReservationRequestStateValue(ReservationRequestStates.CLOSED).valueOf();
     this.props.updatedAt = new Date();
   }
 

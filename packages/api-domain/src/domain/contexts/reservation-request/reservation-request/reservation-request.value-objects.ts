@@ -9,6 +9,7 @@ export const ReservationRequestStates = {
 	REJECTED: 'Rejected',
 	RESERVATION_PERIOD: 'Reservation Period',
 	CANCELLED: 'Cancelled',
+    CLOSED: 'Closed'
 } as const;
 type StatesType =
 	(typeof ReservationRequestStates)[keyof typeof ReservationRequestStates];
