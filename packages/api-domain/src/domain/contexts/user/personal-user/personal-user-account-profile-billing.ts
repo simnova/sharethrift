@@ -1,11 +1,36 @@
 import { DomainSeedwork } from '@cellix/domain-seedwork';
+import { VOString } from '@lucaspaganini/value-objects';
 import type { UserVisa } from '../user.visa.ts';
 import type { PersonalUserAggregateRoot } from './personal-user.ts';
+
+/**
+ * Payment status enumeration
+ */
+export const PaymentStateEnum = {
+    Pending: 'PENDING',
+    Succeeded: 'SUCCEEDED',
+    Failed: 'FAILED',
+    Refunded: 'REFUNDED'
+} as const;
+
+export class PaymentState extends VOString({
+    trim: true,
+    minLength: 6,
+    maxLength: 9,
+}) {
+    static Pending = new PaymentState(PaymentStateEnum.Pending);
+    static Succeeded = new PaymentState(PaymentStateEnum.Succeeded);
+    static Failed = new PaymentState(PaymentStateEnum.Failed);
+    static Refunded = new PaymentState(PaymentStateEnum.Refunded);
+}
 
 export interface PersonalUserAccountProfileBillingProps
 	extends DomainSeedwork.ValueObjectProps {
 	subscriptionId?: string | undefined;
 	cybersourceCustomerId?: string | undefined;
+	lastTransactionId?: string | undefined;
+	paymentState?: string | undefined;
+	lastPaymentAmount?: number | undefined;
 }
 
 export interface PersonalUserAccountProfileBillingEntityReference
@@ -32,6 +57,15 @@ export class PersonalUserAccountProfileBilling
 	get cybersourceCustomerId(): string | undefined {
 		return this.props.cybersourceCustomerId;
 	}
+	get lastTransactionId(): string | undefined {
+		return this.props.lastTransactionId;
+	}
+	get paymentState(): string | undefined {
+		return this.props.paymentState;
+	}
+	get lastPaymentAmount(): number | undefined {
+		return this.props.lastPaymentAmount;
+	}
 
 	private validateVisa(): void {
 		if (
@@ -49,5 +83,17 @@ export class PersonalUserAccountProfileBilling
 	set cybersourceCustomerId(value: string) {
 		this.validateVisa();
 		this.props.cybersourceCustomerId = value;
+	}
+	set lastTransactionId(value: string) {
+		this.validateVisa();
+		this.props.lastTransactionId = value;
+	}
+	set paymentState(value: string) {
+		this.validateVisa();
+		this.props.paymentState = value;
+	}
+	set lastPaymentAmount(value: number) {
+		this.validateVisa();
+		this.props.lastPaymentAmount = value;
 	}
 }

@@ -2,6 +2,13 @@
 """
 GraphQL schema for Personal Users
 """
+enum PaymentState {
+  PENDING
+  SUCCEEDED
+  FAILED
+  REFUNDED
+}
+
 type PersonalUser implements MongoBase {
   userType: String!
   isBlocked: Boolean!
@@ -39,6 +46,9 @@ type PersonalUserAccountProfileLocation {
 type PersonalUserAccountProfileBilling {
   subscriptionId: String
   cybersourceCustomerId: String
+  lastTransactionId: String
+  paymentState: PaymentState
+  lastPaymentAmount: Float
 }
 
 input PersonalUserCreateInput {
@@ -72,6 +82,9 @@ input PersonalUserAccountProfileLocationInput {
 input PersonalUserAccountProfileBillingInput {
   subscriptionId: String
   cybersourceCustomerId: String
+  lastTransactionId: String
+  paymentState: PaymentState
+  lastPaymentAmount: Float
 }
 
 input PersonalUserUpdateInput {
@@ -106,6 +119,9 @@ input PersonalUserAccountProfileLocationUpdateInput {
 input PersonalUserAccountProfileBillingUpdateInput {
   subscriptionId: String
   cybersourceCustomerId: String
+  lastTransactionId: String
+  paymentState: PaymentState
+  lastPaymentAmount: Float
 }
 
 extend type Query {
@@ -114,7 +130,39 @@ extend type Query {
   # currentEndUserAndCreateIfNotExists: PersonalUser!
 }
 
-# type Mutation {
-#   # Personal User mutations
-#   personalUserUpdate(id: ObjectID!, input: PersonalUserUpdateInput!): PersonalUser!
-# }
+# Payment related input/output types
+input PaymentRequest {
+  userId: ObjectID!
+  amount: Float!
+  source: String!
+  description: String
+}
+
+type PaymentResponse {
+  transactionId: String!
+  status: String!
+  success: Boolean!
+  message: String
+}
+
+input RefundRequest {
+  userId: ObjectID!
+  transactionId: String!
+  amount: Float!
+}
+
+type RefundResponse {
+  transactionId: String!
+  status: String!
+  success: Boolean!
+  message: String
+}
+
+extend type Mutation {
+  # Personal User mutations
+  personalUserUpdate(id: ObjectID!, input: PersonalUserUpdateInput!): PersonalUser!
+  
+  # Payment mutations
+  processPayment(request: PaymentRequest!): PaymentResponse!
+  refundPayment(request: RefundRequest!): RefundResponse!
+}
