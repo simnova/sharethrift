@@ -64,3 +64,25 @@ npm init -w ./packages/event-bus-seedwork-node
 npm install --save-dev @tsconfig/node20
 npm install --save-dev @tsconfig/node-ts
 npm install --save-dev vitest @vitest/coverage-v8
+
+## Your feedback matters!
+
+Do you find Sharethrift useful? [Give it a ⭐ star on GitHub](https://github.com/simnova/sharethrift)!
+
+[![GitHub stars](https://img.shields.io/github/stars/simnova/sharethrift)](https://github.com/simnova/sharethrift)
+
+Found a bug? Need a feature? Raise [an issue](https://github.com/simnova/sharethrift/issues?state=open)
+or submit a pull request.
+
+Have feedback? Leave a comment in [ShareThrift discussions on GitHub](https://github.com/simnova/sharethrift/discussions)
+
+## Project Status
+
+[![Build Status](https://dev.azure.com/simnova/ShareThrift/_apis/build/status%2FShareThrift?branchName=refs%2Fpull%2F120%2Fmerge)](https://dev.azure.com/simnova/ShareThrift/_build/latest?definitionId=13&branchName=refs%2Fpull%2F120%2Fmerge)
+
+
+## Thanks to all our contributitors
+
+[![sharethrift contributors](https://contrib.rocks/image?repo=simnova/sharethrift)](https://github.com/simnova/sharethrift/graphs/contributors)
+
+[⬆ Back to Top](#table-of-contents)
