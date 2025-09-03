@@ -81,7 +81,7 @@ Have feedback? Leave a comment in [ShareThrift discussions on GitHub](https://gi
 [![Build Status](https://dev.azure.com/simnova/ShareThrift/_apis/build/status%2FShareThrift?branchName=refs%2Fpull%2F120%2Fmerge)](https://dev.azure.com/simnova/ShareThrift/_build/latest?definitionId=13&branchName=refs%2Fpull%2F120%2Fmerge)
 
 
-## Thanks to all our contributitors
+## Thanks to all our contributors
 
 [![sharethrift contributors](https://contrib.rocks/image?repo=simnova/sharethrift)](https://github.com/simnova/sharethrift/graphs/contributors)
 
