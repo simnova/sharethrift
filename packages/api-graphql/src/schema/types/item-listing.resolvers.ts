@@ -4,6 +4,12 @@ import { myListingsMockService } from "../../mock-services/my-listings-mock.serv
 interface MyListingsArgs {
   page: number;
   pageSize: number;
+  searchText?: string;
+  statusFilters?: string[];
+  sorter?: {
+    field: string;
+    order: 'ascend' | 'descend';
+  };
 }
 
 const itemListingResolvers = {
@@ -32,6 +38,9 @@ const itemListingResolvers = {
       const result = myListingsMockService.getMyListings({
         page: args.page,
         pageSize: args.pageSize,
+        searchText: args.searchText,
+        statusFilters: args.statusFilters,
+        sorter: args.sorter,
       });
       
       return result;

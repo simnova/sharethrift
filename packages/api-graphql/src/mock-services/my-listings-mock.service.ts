@@ -21,6 +21,14 @@ export interface MockListingRequest {
 export interface PaginationOptions {
   page: number;
   pageSize: number;
+  searchText?: string | undefined;
+  statusFilters?: string[] | undefined;
+  sorter?:
+    | {
+        field: string;
+        order: 'ascend' | 'descend';
+      }
+    | undefined;
 }
 
 export interface PageResult<T> {

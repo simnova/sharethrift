@@ -67,6 +67,11 @@ type ListingRequest {
 type Query {
   itemListings: [ItemListing!]!
   itemListing(id: ObjectId!): ItemListing
-  myListingsAll(page: Int!, pageSize: Int!): ListingAllPage!
+  myListingsAll(page: Int!, pageSize: Int!, searchText: String, statusFilters: [String!], sorter: SorterInput): ListingAllPage!
   myListingsRequests(page: Int!, pageSize: Int!): ListingRequestPage!
+}
+
+input SorterInput {
+  field: String
+  order: String
 }

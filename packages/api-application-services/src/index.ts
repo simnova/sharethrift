@@ -6,10 +6,10 @@ interface JwtPayload {
 	email: string;
 }
 
-// biome-ignore lint/suspicious/noEmptyInterface: <explanation>
+// biome-ignore lint/suspicious/noEmptyInterface: This is a placeholder for future application services
 export interface ApplicationServices {}
 
-// biome-ignore lint/complexity/noBannedTypes: <explanation>
+// biome-ignore lint/complexity/noBannedTypes: Using object for PrincipalHints
 export type PrincipalHints = {
 	// memberId: string | undefined;
 	// communityId: string | undefined;

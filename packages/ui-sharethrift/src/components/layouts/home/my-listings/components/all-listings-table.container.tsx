@@ -1,6 +1,34 @@
-import { useState, useMemo } from 'react';
+import { useState } from 'react';
+import { useQuery, gql } from '@apollo/client';
 import { AllListingsTable } from './all-listings-table';
-import { MOCK_MY_LISTINGS, type MyListing } from '../mock-data';
+
+const GET_MY_LISTINGS = gql`
+  query MyListingsAll(
+    $page: Int!
+    $pageSize: Int!
+    $searchText: String
+    $statusFilters: [String!]
+    $sorter: SorterInput
+  ) {
+    myListingsAll(
+      page: $page
+      pageSize: $pageSize
+      searchText: $searchText
+      statusFilters: $statusFilters
+      sorter: $sorter
+    ) {
+      listings {
+        id
+        title
+        status
+        sharedCount
+        requestsCount
+        createdAt
+      }
+      total
+    }
+  }
+`;
 
 export function AllListingsTableContainer({ currentPage, onPageChange }: { currentPage: number, onPageChange: (page: number) => void }) {
   const [searchText, setSearchText] = useState('');
@@ -11,61 +39,29 @@ export function AllListingsTableContainer({ currentPage, onPageChange }: { curre
   }>({ field: null, order: null });
   const pageSize = 6;
 
-  // Filter and sort data
-  const filteredAndSortedData = useMemo(() => {
-    let filtered = MOCK_MY_LISTINGS;
+  const { data, loading, error } = useQuery(GET_MY_LISTINGS, {
+    variables: {
+      page: currentPage,
+      pageSize: pageSize,
+      searchText: searchText,
+      statusFilters: statusFilters,
+      sorter: sorter,
+    },
+  });
 
-    // Apply search filter
-    if (searchText) {
-      filtered = filtered.filter(listing =>
-        listing.title.toLowerCase().includes(searchText.toLowerCase())
-      );
-    }
-
-    // Apply status filters
-    if (statusFilters.length > 0) {
-      filtered = filtered.filter(listing =>
-        statusFilters.includes(listing.status)
-      );
-    }
-
-    // Apply sorting
-    if (sorter.field && sorter.order) {
-      filtered = [...filtered].sort((a, b) => {
-        const aValue = a[sorter.field as keyof MyListing];
-        const bValue = b[sorter.field as keyof MyListing];
-        
-        let comparison = 0;
-        if (aValue instanceof Date && bValue instanceof Date) {
-          comparison = aValue.getTime() - bValue.getTime();
-        } else if (typeof aValue === 'number' && typeof bValue === 'number') {
-          comparison = aValue - bValue;
-        } else {
-          comparison = String(aValue).localeCompare(String(bValue));
-        }
-        
-        return sorter.order === 'ascend' ? comparison : -comparison;
-      });
-    }
-
-    return filtered;
-  }, [searchText, statusFilters, sorter]);
-
-  // Paginate data
-  const paginatedData = useMemo(() => {
-    const startIndex = (currentPage - 1) * pageSize;
-    const endIndex = startIndex + pageSize;
-    return filteredAndSortedData.slice(startIndex, endIndex);
-  }, [filteredAndSortedData, currentPage]);
+  console.log("------->>>>>>>-----", data);
+  // Filter and sort data - this is now handled by the backend
+  const listings = data ? data.myListingsAll.listings : [];
+  const total = data ? data.myListingsAll.total : 0;
 
   const handleSearch = (value: string) => {
     setSearchText(value);
-    setCurrentPage(1);
+    onPageChange(1);
   };
 
   const handleStatusFilter = (checkedValues: string[]) => {
     setStatusFilters(checkedValues);
-    setCurrentPage(1);
+    onPageChange(1);
   };
 
   const handleTableChange = (_pagination: any, _filters: any, sorter: any) => {
@@ -73,7 +69,7 @@ export function AllListingsTableContainer({ currentPage, onPageChange }: { curre
       field: sorter.field || null,
       order: sorter.order || null,
     });
-    setCurrentPage(1);
+    onPageChange(1);
   };
 
   // Use the passed onPageChange prop
@@ -91,15 +87,18 @@ export function AllListingsTableContainer({ currentPage, onPageChange }: { curre
     console.log(`View all requests for listing: ${listingId}`);
   };
 
+  if (loading) return <p>Loading...</p>;
+  if (error) return <p>Error: {error.message}</p>;
+
   return (
     <AllListingsTable
-      data={paginatedData}
+      data={listings}
       searchText={searchText}
       statusFilters={statusFilters}
       sorter={sorter}
       currentPage={currentPage}
       pageSize={pageSize}
-      total={filteredAndSortedData.length}
+      total={total}
       onSearch={handleSearch}
       onStatusFilter={handleStatusFilter}
       onTableChange={handleTableChange}

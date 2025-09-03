@@ -74,12 +74,12 @@ export function RequestsTableContainer({ currentPage, onPageChange }: { currentP
 
   const handleSearch = (value: string) => {
     setSearchText(value);
-    setCurrentPage(1);
+    onPageChange(1);
   };
 
   const handleStatusFilter = (checkedValues: string[]) => {
     setStatusFilters(checkedValues);
-    setCurrentPage(1);
+    onPageChange(1);
   };
 
   const handleTableChange = (_pagination: any, _filters: any, sorter: any) => {
@@ -87,7 +87,7 @@ export function RequestsTableContainer({ currentPage, onPageChange }: { currentP
       field: sorter.field || null,
       order: sorter.order || null,
     });
-    setCurrentPage(1);
+    onPageChange(1);
   };
 
   // Use the passed onPageChange prop
