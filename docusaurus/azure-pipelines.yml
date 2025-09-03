@@ -1,0 +1,42 @@
+ trigger:
+  branches:
+    include:
+      - main
+  paths:
+    include:
+      - docusaurus
+
+pr:
+  branches:
+    include:
+      - main
+  paths:
+    include:
+      - docusaurus     
+
+pool:
+  vmImage: ubuntu-latest
+
+steps:
+  - checkout: self
+    persistCredentials: true
+
+  - task: UseNode@1
+    inputs:
+      version: '22.x'
+    displayName: Install Node.js
+
+  - script: |
+      git config --global user.name "${GH_NAME}"
+      git config --global user.email "${GH_EMAIL}"
+      git checkout -b main
+      echo "machine github.com login ${GH_NAME} password ${GH_TOKEN}" > ~/.netrc
+      cd docusaurus
+      npm install
+      npm run build
+      GIT_USER="${GH_NAME}" USE_SSH=false npm run deploy
+    env:
+      GH_NAME: $(GH_NAME)
+      GH_EMAIL: $(GH_EMAIL)
+      GH_TOKEN: $(GH_TOKEN)
+    displayName: Install and build
