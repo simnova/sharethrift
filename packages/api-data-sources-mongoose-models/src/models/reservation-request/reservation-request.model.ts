@@ -1,7 +1,7 @@
 import type { PopulatedDoc, ObjectId, Model } from 'mongoose';
 import { Schema } from 'mongoose';
 import { MongooseSeedwork } from '@cellix/data-sources-mongoose';
-import * as ItemListing from '../listing/item-model.ts'
+import * as ItemListing from '../listing/item.model.ts'
 import * as PersonalUser from '../user/personal-user.model.ts'
 
 export interface ReservationRequest extends MongooseSeedwork.Base {
@@ -11,7 +11,8 @@ export interface ReservationRequest extends MongooseSeedwork.Base {
 	schemaVersion: string;
 	listing: PopulatedDoc<ItemListing.ItemListing> | ObjectId;
 	reserver: PopulatedDoc<PersonalUser.PersonalUser> | ObjectId;
-	closeRequested: boolean;
+	closeRequestedBySharer: boolean;
+    closeRequestedByReserver: boolean;
 }
 
 export const ReservationRequestSchema = new Schema<ReservationRequest, Model<ReservationRequest>, ReservationRequest>({
@@ -26,7 +27,8 @@ export const ReservationRequestSchema = new Schema<ReservationRequest, Model<Res
 	schemaVersion: { type: String, required: true, default: '1.0.0' },
 	listing: { type: Schema.Types.ObjectId, ref: ItemListing.ItemListingModelName, required: true },
 	reserver: { type: Schema.Types.ObjectId, ref: PersonalUser.PersonalUserModelName, required: true },
-	closeRequested: { type: Boolean, required: true, default: false },
+	closeRequestedBySharer: { type: Boolean, required: true, default: false },
+    closeRequestedByReserver: { type: Boolean, required: true, default: false },
 }, { collection: 'reservation_requests' });
 
 

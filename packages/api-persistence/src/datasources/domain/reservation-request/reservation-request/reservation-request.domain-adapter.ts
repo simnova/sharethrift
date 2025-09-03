@@ -28,11 +28,18 @@ export class ReservationRequestDomainAdapter
     this.doc.state = value;
   }
 
-  get closeRequested() {
-    return this.doc.closeRequested;
+  get closeRequestedBySharer() {
+    return this.doc.closeRequestedBySharer;
   }
-  set closeRequested(value) {
-    this.doc.closeRequested = value;
+  set closeRequestedBySharer(value: boolean) {
+    this.doc.closeRequestedBySharer = value;
+  }
+
+  get closeRequestedByReserver() {
+    return this.doc.closeRequestedByReserver;
+  }
+  set closeRequestedByReserver(value: boolean) {
+    this.doc.closeRequestedByReserver = value;
   }
 
   get reservationPeriodStart() {

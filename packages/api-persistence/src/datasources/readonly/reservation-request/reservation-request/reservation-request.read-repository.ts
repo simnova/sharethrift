@@ -1,4 +1,5 @@
 import type { Domain } from '@sthrift/api-domain';
+import { Types } from 'mongoose';
 import type { ModelsContext } from '../../../../index.ts';
 import { ReservationRequestDataSourceImpl, type ReservationRequestDataSource } from './reservation-request.data.ts';
 import type { FindOneOptions, FindOptions } from '../../mongo-data-source.ts';
@@ -49,7 +50,7 @@ export class ReservationRequestReadRepositoryImpl implements ReservationRequestR
     }
 
     async getByReserverId(reserverId: string, options?: FindOptions): Promise<Domain.Contexts.ReservationRequest.ReservationRequest.ReservationRequestEntityReference[]> {
-        const result = await this.mongoDataSource.find({ reserver: reserverId }, options);
+        const result = await this.mongoDataSource.find({ reserver:  new Types.ObjectId(reserverId) }, options); // not sure about this type conversion
         return result.map(doc => this.converter.toDomain(doc, this.passport));
     }
 }

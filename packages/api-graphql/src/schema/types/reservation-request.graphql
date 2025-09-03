@@ -8,7 +8,8 @@ type ReservationRequest {
   updatedAt: String!
   listingId: ID!
   reserverId: ID!
-  closeRequested: Boolean!
+  closeRequestedBySharer: Boolean!
+  closeRequestedByReserver: Boolean!
   listing: Listing
   reserver: User
 }

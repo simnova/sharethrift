@@ -129,12 +129,13 @@ describe('ReservationRequest', () => {
       createdAt: new Date(),
       updatedAt: new Date(),
       schemaVersion: '1',
-  state: new ReservationRequestStateValue(ReservationRequestStates.REQUESTED).valueOf(),
+      state: new ReservationRequestStateValue(ReservationRequestStates.REQUESTED).valueOf(),
       listing,
       reserver,
       reservationPeriodStart: startDate,
       reservationPeriodEnd: endDate,
-      closeRequested: false,
+      closeRequestedBySharer: overrides.closeRequestedBySharer ?? false,
+      closeRequestedByReserver: overrides.closeRequestedByReserver ?? false,
       loadListing: async () => listing,
       loadReserver: async () => reserver,
       ...overrides,
@@ -154,7 +155,7 @@ describe('ReservationRequest', () => {
       const { startDate, endDate } = getFutureDates();
       const listing = createMockListing();
       const reserver = createMockReserver();
-  const state = new ReservationRequestStateValue(ReservationRequestStates.REQUESTED).valueOf();
+      const state = new ReservationRequestStateValue(ReservationRequestStates.REQUESTED).valueOf();
       const reservationPeriodStart = startDate;
       const reservationPeriodEnd = endDate;
 
@@ -164,6 +165,8 @@ describe('ReservationRequest', () => {
         reserver,
         reservationPeriodStart,
         reservationPeriodEnd,
+        closeRequestedBySharer: false,
+        closeRequestedByReserver: false,
       });
 
       const reservation = ReservationRequest.getNewInstance(
@@ -176,10 +179,11 @@ describe('ReservationRequest', () => {
         mockPassport
       );
 
-  expect(reservation.state.valueOf()).toBe(new ReservationRequestStateValue(ReservationRequestStates.REQUESTED).valueOf());
+      expect(reservation.state.valueOf()).toBe(new ReservationRequestStateValue(ReservationRequestStates.REQUESTED).valueOf());
       expect(reservation.listing.id).toBe('listing-1');
       expect(reservation.reserver.id).toBe('user-1');
-      expect(reservation.closeRequested).toBe(false);
+      expect(reservation.closeRequestedBySharer).toBe(false);
+      expect(reservation.closeRequestedByReserver).toBe(false);
       expect(reservation.schemaVersion).toBe('1');
     });
 
@@ -323,11 +327,11 @@ describe('ReservationRequest', () => {
   });
 
   describe('close', () => {
-    it('should close an ACCEPTED reservation', () => {
+    it('should close an ACCEPTED reservation if closeRequestedBySharer is true', () => {
       const { startDate, endDate } = getFutureDates();
       const listing = createMockListing();
       const reserver = createMockReserver();
-  const state = new ReservationRequestStateValue(ReservationRequestStates.REQUESTED).valueOf();
+      const state = new ReservationRequestStateValue(ReservationRequestStates.REQUESTED).valueOf();
       const reservationPeriodStart = startDate;
       const reservationPeriodEnd = endDate;
 
@@ -337,6 +341,8 @@ describe('ReservationRequest', () => {
         reserver,
         reservationPeriodStart,
         reservationPeriodEnd,
+        closeRequestedBySharer: false,
+        closeRequestedByReserver: false,
       });
 
       const reservation = ReservationRequest.getNewInstance(
@@ -350,9 +356,45 @@ describe('ReservationRequest', () => {
       );
 
       reservation.accept();
+      reservation.closeRequestedBySharer = true;
       reservation.close();
 
-  expect(reservation.state.valueOf()).toBe(new ReservationRequestStateValue(ReservationRequestStates.RESERVATION_PERIOD).valueOf());
+      expect(reservation.state.valueOf()).toBe(new ReservationRequestStateValue(ReservationRequestStates.CLOSED).valueOf());
+    });
+
+    it('should close an ACCEPTED reservation if closeRequestedByReserver is true', () => {
+      const { startDate, endDate } = getFutureDates();
+      const listing = createMockListing();
+      const reserver = createMockReserver();
+      const state = new ReservationRequestStateValue(ReservationRequestStates.REQUESTED).valueOf();
+      const reservationPeriodStart = startDate;
+      const reservationPeriodEnd = endDate;
+
+      const props = createMockProps({
+        state,
+        listing,
+        reserver,
+        reservationPeriodStart,
+        reservationPeriodEnd,
+        closeRequestedBySharer: false,
+        closeRequestedByReserver: false,
+      });
+
+      const reservation = ReservationRequest.getNewInstance(
+        props,
+        state,
+        listing,
+        reserver,
+        reservationPeriodStart,
+        reservationPeriodEnd,
+        mockPassport
+      );
+
+      reservation.accept();
+      reservation.closeRequestedByReserver = true;
+      reservation.close();
+
+      expect(reservation.state.valueOf()).toBe(new ReservationRequestStateValue(ReservationRequestStates.CLOSED).valueOf());
     });
 
     it('should throw error if not in ACCEPTED state', () => {
@@ -369,6 +411,8 @@ describe('ReservationRequest', () => {
         reserver,
         reservationPeriodStart,
         reservationPeriodEnd,
+        closeRequestedBySharer: false,
+        closeRequestedByReserver: false,
       });
 
       const reservation = ReservationRequest.getNewInstance(
@@ -385,10 +429,8 @@ describe('ReservationRequest', () => {
         reservation.close();
       }).toThrow('Can only close accepted reservations');
     });
-  });
 
-  describe('requestClose', () => {
-    it('should set closeRequested to true for ACCEPTED reservation', () => {
+    it('should throw error if neither closeRequestedBySharer nor closeRequestedByReserver is true', () => {
       const { startDate, endDate } = getFutureDates();
       const listing = createMockListing();
       const reserver = createMockReserver();
@@ -402,6 +444,8 @@ describe('ReservationRequest', () => {
         reserver,
         reservationPeriodStart,
         reservationPeriodEnd,
+        closeRequestedBySharer: false,
+        closeRequestedByReserver: false,
       });
 
       const reservation = ReservationRequest.getNewInstance(
@@ -415,9 +459,45 @@ describe('ReservationRequest', () => {
       );
 
       reservation.accept();
-    reservation.closeRequested = true;
+      expect(() => {
+        reservation.close();
+      }).toThrow('Can only close reservation requests if at least one user requested it');
+    });
+  });
 
-      expect(reservation.closeRequested).toBe(true);
+  describe('requestClose', () => {
+    it('should set closeRequestedByReserver to true for ACCEPTED reservation', () => {
+      const { startDate, endDate } = getFutureDates();
+      const listing = createMockListing();
+      const reserver = createMockReserver();
+      const state = new ReservationRequestStateValue(ReservationRequestStates.REQUESTED).valueOf();
+      const reservationPeriodStart = startDate;
+      const reservationPeriodEnd = endDate;
+
+      const props = createMockProps({
+        state,
+        listing,
+        reserver,
+        reservationPeriodStart,
+        reservationPeriodEnd,
+        closeRequestedBySharer: false,
+        closeRequestedByReserver: false,
+      });
+
+      const reservation = ReservationRequest.getNewInstance(
+        props,
+        state,
+        listing,
+        reserver,
+        reservationPeriodStart,
+        reservationPeriodEnd,
+        mockPassport
+      );
+
+      reservation.accept();
+      reservation.closeRequestedByReserver = true;
+
+      expect(reservation.closeRequestedByReserver).toBe(true);
     });
   });
 });

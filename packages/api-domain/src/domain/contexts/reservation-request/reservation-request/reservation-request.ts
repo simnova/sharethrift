@@ -20,7 +20,8 @@ export interface ReservationRequestProps
     loadListing(): Promise<ItemListingEntityReference>;
     reserver: Readonly<PersonalUserEntityReference>;
     loadReserver(): Promise<PersonalUserEntityReference>;
-    closeRequested: boolean;
+    closeRequestedBySharer: boolean;
+    closeRequestedByReserver: boolean;
 }
 
 export interface ReservationRequestEntityReference
@@ -204,10 +205,10 @@ export class ReservationRequest<props extends ReservationRequestProps>
     this.props.reserver = value;
   }
 
-  get closeRequested(): boolean {
-    return this.props.closeRequested;
+  get closeRequestedBySharer(): boolean {
+    return this.props.closeRequestedBySharer;
   }
-  set closeRequested(value: boolean) {
+  set closeRequestedBySharer(value: boolean) {
     if (
       !this.visa.determineIf(
         (domainPermissions) => domainPermissions.canCloseRequest
@@ -222,8 +223,30 @@ export class ReservationRequest<props extends ReservationRequestProps>
       throw new Error("Cannot close reservation in current state");
     }
 
-    this.props.closeRequested = value;
+    this.props.closeRequestedBySharer = value;
   }
+
+  get closeRequestedByReserver(): boolean {
+    return this.props.closeRequestedByReserver;
+  }
+  set closeRequestedByReserver(value: boolean) {
+    if (
+      !this.visa.determineIf(
+        (domainPermissions) => domainPermissions.canCloseRequest
+      )
+    ) {
+      throw new DomainSeedwork.PermissionError(
+        "You do not have permission to request close for this reservation request"
+      );
+    }
+
+    if (this.props.state.valueOf() !== ReservationRequestStates.ACCEPTED) {
+      throw new Error("Cannot close reservation in current state");
+    }
+
+    this.props.closeRequestedByReserver = value;
+  }
+
   //#endregion Properties
 
   async loadReserver(): Promise<PersonalUserEntityReference> {
@@ -304,8 +327,8 @@ export class ReservationRequest<props extends ReservationRequestProps>
       throw new Error("Can only close accepted reservations");
     }
 
-    if (!this.props.closeRequested) {
-      throw new Error("Can only close reservation requests where closeRequested is true");
+    if (!(this.props.closeRequestedBySharer || this.props.closeRequestedByReserver)) {
+      throw new Error("Can only close reservation requests if at least one user requested it");
     }
 
     this.props.state =  new ValueObjects.ReservationRequestStateValue(ReservationRequestStates.CLOSED).valueOf();
