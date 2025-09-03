@@ -28,7 +28,8 @@
 		"test:watch": "node scripts/test-watch-all.js",
 		"azurite:blob": "azurite-blob --location ./__blobstorage__",
 		"azurite:queue": "azurite-queue --location ./__queuestorage__",
-		"azurite:table": "azurite-table --location ./__tablestorage__"
+		"azurite:table": "azurite-table --location ./__tablestorage__",
+    "gen": "cd packages/api-graphql && npm run gen"
 	},
 	"workspaces": [
 		"packages/cellix-domain-seedwork",
