@@ -1,10 +1,56 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-// import { useQuery } from '@apollo/client';
-// import GET_ACTIVE_LISTINGS from './listings-page.container.graphql';
+import { gql, useQuery } from '@apollo/client';
 import { ListingsPage } from './listings-page';
-import { DUMMY_LISTINGS } from './mock-listings';
 import type { ItemListing } from './mock-listings';
+
+type ItemListingState = 'Published' | 'Paused' | 'Cancelled' | 'Drafted' | 'Expired' | 'Blocked' | 'Appeal Requested';
+
+interface GraphQLItemListing {
+  id: string;
+  title: string;
+  description: string;
+  category: string;
+  location: string;
+  state: ItemListingState;
+  images: string[];
+  createdAt: string;
+  updatedAt: string;
+  sharingPeriodStart: string;
+  sharingPeriodEnd: string;
+  sharer: string;
+  schemaVersion: string;
+  version: number;
+  reports: number;
+  sharingHistory: string[];
+}
+
+interface ListingsQueryData {
+  itemListings: GraphQLItemListing[];
+}
+
+const GET_LISTINGS = gql`
+  query GetListings {
+    itemListings {
+      id
+      title
+      description
+      category
+      location
+      state
+      images
+      createdAt
+      updatedAt
+      sharingPeriodStart
+      sharingPeriodEnd
+      sharer
+      schemaVersion
+      version
+      reports
+      sharingHistory
+    }
+  }
+`;
 
 interface ListingsPageContainerProps {
   isAuthenticated: boolean;
@@ -17,24 +63,23 @@ export function ListingsPageContainer({ isAuthenticated }: ListingsPageContainer
   const pageSize = 20;
 
   const [selectedCategory, setSelectedCategory] = useState('');
-  const [listings, setListings] = useState<ItemListing[]>([]);
-  const [totalListings, setTotalListings] = useState(0);
+  const { data, loading, error } = useQuery<ListingsQueryData>(GET_LISTINGS);
+  
+  const filteredListings = data?.itemListings ? data.itemListings
+    .filter((listing: GraphQLItemListing) => {
+      if (selectedCategory && selectedCategory !== 'All') {
+        if (listing.category !== selectedCategory) return false;
+      }
+      if (searchQuery) {
+        if (!listing.title.toLowerCase().includes(searchQuery.toLowerCase())) return false;
+      }
+      return true;
+    }) : [];
 
-  useEffect(() => {
-    // TODO: Fetch listings from backend. THIS IS JUST FRONTEND FILTER
-    let filtered = DUMMY_LISTINGS;
-    if (selectedCategory && selectedCategory !== 'All') {
-      filtered = filtered.filter(l => l.category === selectedCategory);
-    }
-    if (searchQuery) {
-      filtered = filtered.filter(l => l.title.toLowerCase().includes(searchQuery.toLowerCase()));
-    }
-    setTotalListings(filtered.length);
-    // Paginate
-    const startIdx = (currentPage - 1) * pageSize;
-    const endIdx = startIdx + pageSize;
-    setListings(filtered.slice(startIdx, endIdx));
-  }, [searchQuery, selectedCategory, currentPage]);
+  const totalListings = filteredListings.length;
+  const startIdx = (currentPage - 1) * pageSize;
+  const endIdx = startIdx + pageSize;
+  const currentListings = filteredListings.slice(startIdx, endIdx);
 
   const handleSearch = (query: string) => {
     setSearchQuery(query);
@@ -61,6 +106,9 @@ export function ListingsPageContainer({ isAuthenticated }: ListingsPageContainer
     setCurrentPage(1); // Reset to first page when changing category
   };
 
+  if (error) return <div>Error loading listings</div>;
+  if (loading) return <div>Loading listings...</div>;
+
   return (
     <ListingsPage
       isAuthenticated={isAuthenticated}
@@ -69,11 +117,24 @@ export function ListingsPageContainer({ isAuthenticated }: ListingsPageContainer
       onSearch={handleSearch}
       selectedCategory={selectedCategory}
       onCategoryChange={handleCategoryChange}
-      listings={listings}
+      listings={currentListings.map((listing: GraphQLItemListing): ItemListing => ({
+        _id: listing.id,
+        title: listing.title,
+        description: listing.description,
+        category: listing.category,
+        location: listing.location,
+        state: listing.state,
+        images: listing.images,
+        sharingPeriodStart: new Date(listing.sharingPeriodStart),
+        sharingPeriodEnd: new Date(listing.sharingPeriodEnd),
+        sharer: listing.sharer,
+        createdAt: new Date(listing.createdAt),
+        updatedAt: new Date(listing.updatedAt)
+      }))}
       currentPage={currentPage}
       pageSize={pageSize}
       totalListings={totalListings}
-  onListingClick={handleListingClick}
+      onListingClick={handleListingClick}
       onPageChange={handlePageChange}
     />
   );
