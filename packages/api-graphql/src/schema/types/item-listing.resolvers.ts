@@ -1,5 +1,6 @@
 // biome-ignore assist/source/organizeImports: <explanation>
-import { DUMMY_LISTINGS, ItemListing } from './mock-listings.js';
+import { DUMMY_LISTINGS } from './mock-listings.js';
+import type { ItemListing } from './mock-listings.js';
 
 function mapState(state?: string) {
   return state === 'Appeal Requested' ? 'Appeal_Requested' : state;
