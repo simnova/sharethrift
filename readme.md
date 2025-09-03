@@ -1,3 +1,7 @@
+## ShareThrift
+[![Sourcery](https://img.shields.io/badge/Sourcery-enabled-brightgreen)](https://sourcery.ai)
+[![License: MIT](https://img.shields.io/github/license/simnova/sharethrift)](https://github.com/simnova/sharethrift/blob/main/LICENSE)
+
 
 
 VSCode Extensions Required:
