@@ -2,8 +2,9 @@ import type { Domain } from '@sthrift/api-domain';
 import type { DataSources } from '@sthrift/api-persistence';
 
 export interface ConversationCreateCommand {
-	topic: string;
-	PersonalUserExternalId: string;
+	reserverId: string;
+	sharerId: string;
+	listingId: string;
 }
 
 export const create = (dataSources: DataSources) => {
@@ -12,12 +13,28 @@ export const create = (dataSources: DataSources) => {
 	): Promise<Domain.Contexts.Conversation.Conversation.ConversationEntityReference> => {
 		const sharer =
 			await dataSources.readonlyDataSource.User.PersonalUser.PersonalUserReadRepo.getById(
-				command.PersonalUserExternalId,
+				command.reserverId,
+			);
+		const reserver =
+			await dataSources.readonlyDataSource.User.PersonalUser.PersonalUserReadRepo.getById(
+				command.sharerId,
+			);
+		const listing =
+			await dataSources.readonlyDataSource.Listing.ItemListing.ItemReadRepo.getById(
+				command.listingId,
 			);
 		if (!sharer) {
 			throw new Error(
-				`End user not found for external id ${command.PersonalUserExternalId}`,
+				`Personal user (sharer) not found for external id ${command.reserverId}`,
 			);
+		}
+		if (!reserver) {
+			throw new Error(
+				`Personal user (reserver) not found for external id ${command.sharerId}`,
+			);
+		}
+		if (!listing) {
+			throw new Error(`Listing not found for id ${command.listingId}`);
 		}
 		let conversationToReturn:
 			| Domain.Contexts.Conversation.Conversation.ConversationEntityReference
@@ -25,14 +42,15 @@ export const create = (dataSources: DataSources) => {
 		await dataSources.domainDataSource.Conversation.Conversation.ConversationUnitOfWork.withScopedTransaction(
 			async (repo) => {
 				const newConversation = await repo.getNewInstance(
-					command.topic,
 					sharer,
+					reserver,
+					listing,
 				);
 				conversationToReturn = await repo.save(newConversation);
 			},
 		);
 		if (!conversationToReturn) {
-			throw new Error('conversation not found');
+			throw new Error('Conversation not found');
 		}
 		return conversationToReturn;
 	};

@@ -70,8 +70,6 @@ export class ConversationRepository
 		sharer: Domain.Contexts.User.PersonalUser.PersonalUserEntityReference,
 		reserver: Domain.Contexts.User.PersonalUser.PersonalUserEntityReference,
 		listing: Domain.Contexts.Listing.ItemListing.ItemListingEntityReference,
-		twilioConversationId: string,
-		schemaversion: number,
 	): Promise<Domain.Contexts.Conversation.Conversation.Conversation<PropType>> {
 		const adapter = this.typeConverter.toAdapter(new this.model());
 		return Promise.resolve(
@@ -80,8 +78,6 @@ export class ConversationRepository
 				sharer,
 				reserver,
 				listing,
-				twilioConversationId,
-				schemaversion,
 				this.passport,
 			),
 		);

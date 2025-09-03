@@ -1,8 +1,8 @@
 import { MongooseSeedwork } from '@cellix/data-sources-mongoose';
 import type { Models } from '@sthrift/api-data-sources-mongoose-models';
 import { Domain } from '@sthrift/api-domain';
-import { ItemListingDomainAdapter } from '../listing/item/item-listing.domain-adapter.ts';
-import { PersonalUserDomainAdapter } from '../user/personal-user/personal-user.domain-adapter.ts';
+import { ItemListingDomainAdapter } from '../../listing/item/item-listing.domain-adapter.ts';
+import { PersonalUserDomainAdapter } from '../../user/personal-user/personal-user.domain-adapter.ts';
 export class ConversationConverter extends MongooseSeedwork.MongoTypeConverter<
 	Models.Conversation.Conversation,
 	ConversationDomainAdapter,

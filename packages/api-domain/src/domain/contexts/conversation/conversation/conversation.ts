@@ -40,8 +40,6 @@ export class Conversation<props extends ConversationProps>
 		sharer: PersonalUserEntityReference,
 		reserver: PersonalUserEntityReference,
 		listing: ItemListingEntityReference,
-		twilioConversationId: string,
-		schemaversion: number,
 		passport: Passport,
 	): Conversation<props> {
 		const now = new Date();
@@ -51,8 +49,6 @@ export class Conversation<props extends ConversationProps>
 				sharer,
 				reserver,
 				listing,
-				twilioConversationId,
-				schemaversion,
 				createdAt: now,
 				updatedAt: now,
 			} as props,
