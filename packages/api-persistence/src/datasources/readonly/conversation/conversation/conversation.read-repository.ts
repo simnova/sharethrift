@@ -53,16 +53,6 @@ export class ConversationReadRepositoryImpl
 		}
 		return this.converter.toDomain(result, this.passport);
 	}
-	async getById(
-		id: string,
-		options?: FindOneOptions,
-	): Promise<Domain.Contexts.Conversation.Conversation.ConversationEntityReference | null> {
-		const result = await this.mongoDataSource.findById(id, options);
-		if (!result) {
-			return null;
-		}
-		return this.converter.toDomain(result, this.passport);
-	}
 }
 
 export const getConversationReadRepository = (
