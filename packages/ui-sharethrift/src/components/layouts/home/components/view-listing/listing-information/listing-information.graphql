@@ -7,7 +7,7 @@ query ViewListingInformationGetListing($listingId: ObjectID!) {
     location
     sharingPeriodStart
     sharingPeriodEnd
-    status
+    state
     images
     createdAt
     updatedAt

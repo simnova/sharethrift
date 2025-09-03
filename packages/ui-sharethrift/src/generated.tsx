@@ -145,17 +145,18 @@ export type ItemListing = MongoBase & {
   location: Scalars["String"]["output"];
   reports?: Maybe<Scalars["Int"]["output"]>;
   schemaVersion?: Maybe<Scalars["String"]["output"]>;
-  sharer: Scalars["ObjectID"]["output"];
-  sharingHistory?: Maybe<Array<Scalars["ObjectID"]["output"]>>;
+  sharer: Scalars["String"]["output"];
+  sharingHistory?: Maybe<Array<Scalars["String"]["output"]>>;
   sharingPeriodEnd: Scalars["DateTime"]["output"];
   sharingPeriodStart: Scalars["DateTime"]["output"];
-  status?: Maybe<ItemListingStatus>;
+  state?: Maybe<ItemListingState>;
   title: Scalars["String"]["output"];
   updatedAt?: Maybe<Scalars["DateTime"]["output"]>;
+  version?: Maybe<Scalars["Int"]["output"]>;
 };
 
-export type ItemListingStatus =
-  | "AppealRequested"
+export type ItemListingState =
+  | "Appeal_Requested"
   | "Blocked"
   | "Cancelled"
   | "Drafted"
@@ -382,13 +383,13 @@ export type ViewListingInformationGetListingQuery = {
     location: string;
     sharingPeriodStart: any;
     sharingPeriodEnd: any;
-    status?: ItemListingStatus | null;
+    state?: ItemListingState | null;
     images?: Array<string> | null;
     createdAt?: any | null;
     updatedAt?: any | null;
     reports?: number | null;
-    sharingHistory?: Array<any> | null;
-    sharer: any;
+    sharingHistory?: Array<string> | null;
+    sharer: string;
     schemaVersion?: string | null;
   } | null;
 };
@@ -437,13 +438,13 @@ export type ViewListingQuery = {
     location: string;
     sharingPeriodStart: any;
     sharingPeriodEnd: any;
-    status?: ItemListingStatus | null;
+    state?: ItemListingState | null;
     images?: Array<string> | null;
     createdAt?: any | null;
     updatedAt?: any | null;
     reports?: number | null;
-    sharingHistory?: Array<any> | null;
-    sharer: any;
+    sharingHistory?: Array<string> | null;
+    sharer: string;
     schemaVersion?: string | null;
   } | null;
 };
@@ -582,7 +583,7 @@ export const ViewListingInformationGetListingDocument = {
                   kind: "Field",
                   name: { kind: "Name", value: "sharingPeriodEnd" },
                 },
-                { kind: "Field", name: { kind: "Name", value: "status" } },
+                { kind: "Field", name: { kind: "Name", value: "state" } },
                 { kind: "Field", name: { kind: "Name", value: "images" } },
                 { kind: "Field", name: { kind: "Name", value: "createdAt" } },
                 { kind: "Field", name: { kind: "Name", value: "updatedAt" } },
@@ -766,7 +767,7 @@ export const ViewListingDocument = {
                   kind: "Field",
                   name: { kind: "Name", value: "sharingPeriodEnd" },
                 },
-                { kind: "Field", name: { kind: "Name", value: "status" } },
+                { kind: "Field", name: { kind: "Name", value: "state" } },
                 { kind: "Field", name: { kind: "Name", value: "images" } },
                 { kind: "Field", name: { kind: "Name", value: "createdAt" } },
                 { kind: "Field", name: { kind: "Name", value: "updatedAt" } },
