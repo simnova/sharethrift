@@ -1,56 +1,21 @@
-# View Listing Query
+# View Listing Query (backend-aligned)
 
-query HomeViewListingContainerListing($listingId: ID!) {
-  listing(id: $listingId) {
+query ViewListing($id: ObjectID!) {
+  itemListing(id: $id) {
     id
     title
     description
-    images
-    itemName
     category
-    condition
     location
-    availableFrom
-    availableTo
+    sharingPeriodStart
+    sharingPeriodEnd
     status
-    price
-    priceUnit
-    owner {
-      id
-      name
-      avatar
-      rating
-      reviewCount
-    }
-    currentUserReservationRequest {
-      id
-      status
-    }
+    images
+    createdAt
+    updatedAt
+    reports
+    sharingHistory
+    sharer
+    schemaVersion
   }
-}
-
-# Fragment for listing fields used across queries
-fragment HomeViewListingContainerListingFields on Listing {
-  id
-  title
-  description
-  images
-  itemName
-  category
-  condition
-  location
-  availableFrom
-  availableTo
-  status
-  price
-  priceUnit
-}
-
-# Fragment for owner fields
-fragment HomeViewListingContainerOwnerFields on User {
-  id
-  name
-  avatar
-  rating
-  reviewCount
 }

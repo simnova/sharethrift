@@ -1,11 +1,19 @@
-query ViewListingInformationGetListing($listingId: ID!) {
-  listing(id: $listingId) {
+query ViewListingInformationGetListing($listingId: ObjectID!) {
+  itemListing(id: $listingId) {
     id
     title
     description
-    status
-    price
-    location
     category
+    location
+    sharingPeriodStart
+    sharingPeriodEnd
+    status
+    images
+    createdAt
+    updatedAt
+    reports
+    sharingHistory
+    sharer
+    schemaVersion
   }
 }

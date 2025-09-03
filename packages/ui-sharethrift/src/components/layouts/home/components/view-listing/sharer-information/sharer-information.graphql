@@ -1,8 +1,19 @@
-query ViewListingSharerInformationGetSharer($sharerId: ID!) {
-  sharer(id: $sharerId) {
+query ViewListingSharerInformationGetSharer($sharerId: ObjectID!) {
+  personalUserById(id: $sharerId) {
     id
-    name
-    avatar
-    bio
+    userType
+    isBlocked
+    account {
+      username
+      profile {
+        firstName
+        lastName
+        location {
+          city
+          state
+          country
+        }
+      }
+    }
   }
 }

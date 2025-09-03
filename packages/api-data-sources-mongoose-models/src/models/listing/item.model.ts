@@ -30,6 +30,7 @@ const itemListingFieldDefs = {
 	updatedAt: { type: Date, required: false, default: Date.now },
 	sharingHistory: [{ type: String }],
 	reports: { type: Number, default: 0 },
+	images: [{ type: String }], // Array of image URLs
 };
 
 // Local interface for Mongoose schema typing (plain data shape, not domain aggregate)
@@ -46,6 +47,7 @@ export interface ItemListing extends Listing {
 	updatedAt: Date;
 	sharingHistory?: string[];
 	reports?: number;
+	images?: string[];
 	_id: Types.ObjectId;
 }
 
