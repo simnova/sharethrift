@@ -39,9 +39,20 @@ export class ConversationReadRepositoryImpl
 	): Promise<
 		Domain.Contexts.Conversation.Conversation.ConversationEntityReference[]
 	> {
-		return await this.mongoDataSource.find({}, options);
+		const result = await this.mongoDataSource.find({}, options);
+		return result.map((doc) => this.converter.toDomain(doc, this.passport));
 	}
 
+	async getById(
+		id: string,
+		options?: FindOneOptions,
+	): Promise<Domain.Contexts.Conversation.Conversation.ConversationEntityReference | null> {
+		const result = await this.mongoDataSource.findById(id, options);
+		if (!result) {
+			return null;
+		}
+		return this.converter.toDomain(result, this.passport);
+	}
 	async getById(
 		id: string,
 		options?: FindOneOptions,
