@@ -1,14 +1,16 @@
 import type { PopulatedDoc, ObjectId, Model } from 'mongoose';
 import { Schema } from 'mongoose';
 import { MongooseSeedwork } from '@cellix/data-sources-mongoose';
+import * as ItemListing from '../listing/item-model.ts'
+import * as PersonalUser from '../user/personal-user.model.ts'
 
 export interface ReservationRequest extends MongooseSeedwork.Base {
 	state: string;
 	reservationPeriodStart: Date;
 	reservationPeriodEnd: Date;
-	schemaVersion: string; // changed from number to string
-	listing: PopulatedDoc<unknown> | ObjectId; // Replace 'unknown' with Listing type when available
-	reserver: PopulatedDoc<unknown> | ObjectId; // Replace 'unknown' with User type when available
+	schemaVersion: string;
+	listing: PopulatedDoc<ItemListing.ItemListing> | ObjectId;
+	reserver: PopulatedDoc<PersonalUser.PersonalUser> | ObjectId;
 	closeRequested: boolean;
 }
 
@@ -21,9 +23,9 @@ export const ReservationRequestSchema = new Schema<ReservationRequest, Model<Res
 	reservationPeriodEnd: { type: Date, required: true },
 	createdAt: { type: Date, required: true, default: Date.now },
 	updatedAt: { type: Date, required: true, default: Date.now },
-	schemaVersion: { type: String, required: true }, // changed from Number to String
-	listing: { type: Schema.Types.ObjectId, ref: 'Listing', required: true },
-	reserver: { type: Schema.Types.ObjectId, ref: 'User', required: true },
+	schemaVersion: { type: String, required: true, default: '1.0.0' },
+	listing: { type: Schema.Types.ObjectId, ref: ItemListing.ItemListingModelName, required: true },
+	reserver: { type: Schema.Types.ObjectId, ref: PersonalUser.PersonalUserModelName, required: true },
 	closeRequested: { type: Boolean, required: true, default: false },
 }, { collection: 'reservation_requests' });
 

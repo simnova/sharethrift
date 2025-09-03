@@ -8,14 +8,13 @@ import * as ValueObjects from './reservation-request.value-objects.ts';
 import type { ItemListingEntityReference } from '../../listing/item/item-listing.ts';
 import type { PersonalUserEntityReference } from '../../user/personal-user/personal-user.ts'
 
-
 export interface ReservationRequestProps
   extends DomainSeedwork.DomainEntityProps {
     state: string;
     reservationPeriodStart: Date;
     reservationPeriodEnd: Date;
     readonly createdAt: Date;
-    updatedAt: Date;
+    readonly updatedAt: Date;
     readonly schemaVersion: string;
     listing: Readonly<ItemListingEntityReference>;
     loadListing(): Promise<ItemListingEntityReference>;
@@ -125,7 +124,6 @@ export class ReservationRequest<props extends ReservationRequestProps>
       );
     }
     this.props.reservationPeriodStart = value;
-    this.props.updatedAt = new Date();
   }
 
   get reservationPeriodEnd(): Date {
@@ -148,7 +146,6 @@ export class ReservationRequest<props extends ReservationRequestProps>
       );
     }
     this.props.reservationPeriodEnd = value;
-    this.props.updatedAt = new Date();
   }
 
   get createdAt(): Date {
@@ -226,7 +223,6 @@ export class ReservationRequest<props extends ReservationRequestProps>
     }
 
     this.props.closeRequested = value;
-    this.props.updatedAt = new Date();
   }
   //#endregion Properties
 
@@ -254,7 +250,6 @@ export class ReservationRequest<props extends ReservationRequestProps>
     }
 
     this.props.state = new ValueObjects.ReservationRequestStateValue(ReservationRequestStates.ACCEPTED).valueOf();
-    this.props.updatedAt = new Date();
   }
 
   public reject(): void {
@@ -273,7 +268,6 @@ export class ReservationRequest<props extends ReservationRequestProps>
     }
 
     this.props.state =  new ValueObjects.ReservationRequestStateValue(ReservationRequestStates.REJECTED).valueOf();
-    this.props.updatedAt = new Date();
   }
 
   public cancel(): void {
@@ -293,7 +287,6 @@ export class ReservationRequest<props extends ReservationRequestProps>
     }
 
     this.props.state = new ValueObjects.ReservationRequestStateValue(ReservationRequestStates.CANCELLED).valueOf();
-    this.props.updatedAt = new Date();
   }
 
   public close(): void {
@@ -316,7 +309,6 @@ export class ReservationRequest<props extends ReservationRequestProps>
     }
 
     this.props.state =  new ValueObjects.ReservationRequestStateValue(ReservationRequestStates.CLOSED).valueOf();
-    this.props.updatedAt = new Date();
   }
 
 }
