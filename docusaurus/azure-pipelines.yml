@@ -7,7 +7,7 @@
       - docusaurus
 
 variables:
-  - group: github-credentials # Reference the variable group containing GH_TOKEN, GH_NAME, GH_EMAIL
+  - group: github-credentials-sharethift # Reference the variable group containing GH_TOKEN, GH_NAME, GH_EMAIL
 
 pr:
   branches:
