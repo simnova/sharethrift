@@ -5,8 +5,14 @@ import type { ItemListingRepository } from './item-listing.repository.ts';
 
 export interface ItemListingUnitOfWork
 	extends DomainSeedwork.UnitOfWork<
-		Passport,
-		ItemListingProps,
-		ItemListing<ItemListingProps>,
-		ItemListingRepository<ItemListingProps>
-	> {}
+			Passport,
+			ItemListingProps,
+			ItemListing<ItemListingProps>,
+			ItemListingRepository<ItemListingProps>
+		>,
+		DomainSeedwork.InitializedUnitOfWork<
+			Passport,
+			ItemListingProps,
+			ItemListing<ItemListingProps>,
+			ItemListingRepository<ItemListingProps>
+		> {}

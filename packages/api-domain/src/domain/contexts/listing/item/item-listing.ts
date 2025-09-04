@@ -2,9 +2,10 @@ import { DomainSeedwork } from '@cellix/domain-seedwork';
 import type { Passport } from '../../passport.ts';
 import type { ItemListingVisa } from './item-listing.visa.ts';
 import * as ValueObjects from './item-listing.value-objects.ts';
+import type { PersonalUserEntityReference } from '../../user/personal-user/personal-user.ts';
 
 export interface ItemListingProps extends DomainSeedwork.DomainEntityProps {
-	readonly sharer: string;
+	sharer: PersonalUserEntityReference;
 	title: ValueObjects.Title;
 	description: ValueObjects.Description;
 	category: ValueObjects.Category;
@@ -45,6 +46,7 @@ export class ItemListing<props extends ItemListingProps>
 	//#region Methods
 	public static getNewInstance<props extends ItemListingProps>(
 		newProps: props,
+		sharer: PersonalUserEntityReference,
 		passport: Passport,
 	): ItemListing<props> {
 		const id = crypto.randomUUID();
@@ -52,8 +54,7 @@ export class ItemListing<props extends ItemListingProps>
 
 		const itemListingProps = {
 			id,
-
-			sharer: newProps.sharer,
+			sharer: sharer,
 			title: newProps.title,
 			description: newProps.description,
 			category: newProps.category,
@@ -81,10 +82,10 @@ export class ItemListing<props extends ItemListingProps>
 	//#endregion Methods
 
 	//#region Properties
-	get sharer(): ObjectId {
+	get sharer(): PersonalUserEntityReference {
 		return this.props.sharer;
 	}
-	set sharer(value: ObjectId) {
+	set sharer(value: PersonalUserEntityReference) {
 		this.props.sharer = value;
 	}
 
@@ -223,44 +224,13 @@ export class ItemListing<props extends ItemListingProps>
 		this.props.images = value;
 		this.props.updatedAt = new Date();
 	}
-	//#endregion Properties
 
-	/**
-	 * Determines if this listing is visible to regular users
-	 */
 	get isActive(): boolean {
 		return (
 			this.props.state.valueOf() === ValueObjects.ListingStateEnum.Published
 		);
 	}
 
-	/**
-	 * Determines if the current user can edit this listing
-	 */
-	canEdit(userId: string): boolean {
-		return this.props.sharer === userId;
-	}
-
-	/**
-	 * Gets a formatted date range string for display
-	 */
-	get dateRange(): string {
-		const startDate = this.sharingPeriodStart.toLocaleDateString('en-US', {
-			month: '2-digit',
-			day: '2-digit',
-			year: '2-digit',
-		});
-		const endDate = this.sharingPeriodEnd.toLocaleDateString('en-US', {
-			month: '2-digit',
-			day: '2-digit',
-			year: '2-digit',
-		});
-		return `${startDate} → ${endDate}`;
-	}
-
-	/**
-	 * Gets the location in a display-friendly format
-	 */
 	get displayLocation(): string {
 		return this.location.cityState;
 	}
