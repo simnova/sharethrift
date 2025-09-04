@@ -41,12 +41,12 @@ steps:
       targetType: 'inline'
       script: |
         # Configure Git with credentials
-        git config --global user.name "Azure Pipelines"
+        git config --global user.name "azure-pipelines"
         git config --global user.email "azure-pipelines@microsoft.com"
         
         # Configure GitHub authentication using credential helper
         git config --global credential.helper store
-        echo "https://nobody:${GITHUB_TOKEN}@github.com" > ~/.git-credentials
+        echo "https://azure-pipelines:${GITHUB_TOKEN}@github.com" > ~/.git-credentials
         chmod 600 ~/.git-credentials
         
         cd docusaurus
@@ -54,5 +54,5 @@ steps:
         npm run build
         npm run deploy
     env:
-      GIT_USER: "Azure Pipelines"
+      GIT_USER: "azure-pipelines"
       GITHUB_TOKEN: $(System.AccessToken)
