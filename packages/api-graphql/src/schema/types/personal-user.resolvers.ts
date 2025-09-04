@@ -43,17 +43,10 @@ const personalUserResolvers = {
 
 	Mutation: {
 		processPayment: async (_parent: unknown, { request }: { request: { amount: number; source: string; description?: string; userId: string } }, context: GraphContext) => {
+			console.log('Processing payment', request);
 			try {
-				const result = await context.applicationServices.Payment.processPayment({
-					amount: request.amount,
-					currency: 'USD',
-					source: request.source,
-					description: request.description || 'Payment for account',
-					metadata: {
-						userId: request.userId
-					}
-				});
-				return result;
+				const response = await context.applicationServices.Payment.processPayment(request);
+				return response;
 			} catch (error) {
 				console.error('Payment processing error:', error);
 				return {
@@ -65,18 +58,22 @@ const personalUserResolvers = {
 			}
 		},
 
-		refundPayment: (_parent: unknown, { request }: { request: unknown }, _context: GraphContext) => {
+		refundPayment: async (_parent: unknown, { request }: { request: { userId: string; transactionId: string; amount: number } }, context: GraphContext) => {
 			console.log('Refunding payment', request);
-            return {
-				transactionId: '321',
-				status: 'FAILED',
-				success: false,
-				message: 'Refund not implemented'
-			};
-
+			try {
+				const response = await context.applicationServices.Payment.refundPayment(request);
+				return response;
+			} catch (error) {
+				console.error('Refund processing error:', error);
+				return {
+					transactionId: '',
+					status: 'FAILED',
+					success: false,
+					message: error instanceof Error ? error.message : 'Unknown error occurred'
+				};
+			}
 		}
-	},
+	}
 };
-
 
 export default personalUserResolvers;
