@@ -50,7 +50,7 @@ export class ReservationRequestReadRepositoryImpl implements ReservationRequestR
     }
 
     async getByReserverId(reserverId: string, options?: FindOptions): Promise<Domain.Contexts.ReservationRequest.ReservationRequest.ReservationRequestEntityReference[]> {
-        const result = await this.mongoDataSource.find({ reserver:  new Types.ObjectId(reserverId) }, options); // not sure about this type conversion
+        const result = await this.mongoDataSource.find({ reserver:  new Types.ObjectId(reserverId) }, options); 
         return result.map(doc => this.converter.toDomain(doc, this.passport));
     }
 }

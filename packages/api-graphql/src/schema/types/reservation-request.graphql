@@ -9,8 +9,6 @@ type ReservationRequest {
 	reserver: PersonalUser!
 	closeRequestedBySharer: Boolean!
 	closeRequestedByReserver: Boolean!
-	listing: Listing
-	reserver: User
 }
 
 enum ReservationRequestState {
