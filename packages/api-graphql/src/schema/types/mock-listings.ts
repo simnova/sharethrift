@@ -1,4 +1,5 @@
-// Image URLs for UI assets
+
+// Image URLs for UI assets (frontend will resolve these from public/assets/item-images/)
 const bikeImg = '/assets/item-images/bike.png';
 const airpodsImg = '/assets/item-images/airpods.png';
 const tentImg = '/assets/item-images/tent.png';
