@@ -36,14 +36,13 @@ steps:
     displayName: Install Node.js
 
   - script: |
-      git config --global user.name "git"
-      git config --global user.email "azure-pipelines@example.com"
-      git config --global user.token "$(System.AccessToken)"
+      git config --global user.name "Azure Pipelines"
+      git config --global user.email "azure-pipelines@microsoft.com"
       cd docusaurus
       npm ci
       npm run build
       npm run deploy
     env:
-      GIT_USER: "git"
+      GIT_USER: "$(Build.RequestedFor)"
       GITHUB_TOKEN: $(System.AccessToken)
     displayName: 'Install, Build, and Deploy'
