@@ -1,15 +1,16 @@
-import bikeImg from '@sthrift/ui-sharethrift-components/src/assets/item-images/bike.png';
-import airpodsImg from '@sthrift/ui-sharethrift-components/src/assets/item-images/airpods.png';
-import tentImg from '@sthrift/ui-sharethrift-components/src/assets/item-images/tent.png';
-import projectorImg from '@sthrift/ui-sharethrift-components/src/assets/item-images/projector.png';
-import sewingMachineImg from '@sthrift/ui-sharethrift-components/src/assets/item-images/sewing-machine.png';
-import fanImg from '@sthrift/ui-sharethrift-components/src/assets/item-images/fan.png';
-import hammockImg from '@sthrift/ui-sharethrift-components/src/assets/item-images/hammock.png';
-import umbrellaImg from '@sthrift/ui-sharethrift-components/src/assets/item-images/umbrella.png';
-import backpackImg from '@sthrift/ui-sharethrift-components/src/assets/item-images/backpack.png';
-import deskLampImg from '@sthrift/ui-sharethrift-components/src/assets/item-images/desk-lamp.png';
-import armchairImg from '@sthrift/ui-sharethrift-components/src/assets/item-images/armchair.png';
-import bubbleChairImg from '@sthrift/ui-sharethrift-components/src/assets/item-images/bubble-chair.png';
+
+const bikeImg = '/assets/item-images/bike.png';
+const airpodsImg = '/assets/item-images/airpods.png';
+const tentImg = '/assets/item-images/tent.png';
+const projectorImg = '/assets/item-images/projector.png';
+const sewingMachineImg = '/assets/item-images/sewing-machine.png';
+const fanImg = '/assets/item-images/fan.png';
+const hammockImg = '/assets/item-images/hammock.png';
+const umbrellaImg = '/assets/item-images/umbrella.png';
+const backpackImg = '/assets/item-images/backpack.png';
+const deskLampImg = '/assets/item-images/desk-lamp.png';
+const armchairImg = '/assets/item-images/armchair.png';
+const bubbleChairImg = '/assets/item-images/bubble-chair.png';
 
 export interface ItemListing {
   _id: string;
