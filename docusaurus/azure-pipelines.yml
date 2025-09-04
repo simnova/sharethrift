@@ -54,12 +54,19 @@ steps:
         echo "Git User: $GIT_USER"
         echo "Git Email: $GIT_EMAIL"
 
+        # Configure Git to store credentials for the session
+        git config --global credential.helper store
+        echo "https://x-access-token:${GITHUB_TOKEN}@github.com" > ~/.git-credentials
+
         # Reset origin to use the GitHub service connection token
         git remote set-url origin https://x-access-token:${GITHUB_TOKEN}@github.com/simnova/sharethrift.git
 
         cd docusaurus
         npm ci
         npm run build
+        
+        # Set the GITHUB_TOKEN for Docusaurus deployment
+        export GITHUB_TOKEN="${GITHUB_TOKEN}"
         GIT_USER="${GIT_USER}" USE_SSH=false npm run deploy
     env:
       GIT_USER: "azure-pipelines"
