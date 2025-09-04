@@ -21,6 +21,10 @@ steps:
   - checkout: self
     persistCredentials: true
 
+  - checkout: git://Simnova/sharethrift
+    persistCredentials: true
+    displayName: 'Checkout with GitHub Service Connection'
+
   # Cache NPM packages to speed up build process.
   - task: Cache@2
     displayName: 'NPM: Restore Cache'
@@ -35,16 +39,19 @@ steps:
       version: '22.x'
     displayName: Install Node.js
 
-  - script: |
-      git config --global user.name "Azure Pipelines"
-      git config --global user.email "azure-pipelines@microsoft.com"
-      # Configure GitHub credentials using the access token
-      git config --global url."https://$(System.AccessToken)@github.com/".insteadOf "https://github.com/"
-      cd docusaurus
-      npm ci
-      npm run build
-      npm run deploy
-    env:
-      GIT_USER: "$(Build.RequestedFor)"
-      GITHUB_TOKEN: $(System.AccessToken)
+  - task: Bash@3
     displayName: 'Install, Build, and Deploy'
+    inputs:
+      targetType: 'inline'
+      script: |
+        # Configure Git with credentials
+        git config --global user.name "Azure Pipelines"
+        git config --global user.email "azure-pipelines@microsoft.com"
+        
+        cd docusaurus
+        npm ci
+        npm run build
+        npm run deploy
+    env:
+      GIT_USER: "Azure Pipelines"
+      GITHUB_TOKEN: $(System.AccessToken)
