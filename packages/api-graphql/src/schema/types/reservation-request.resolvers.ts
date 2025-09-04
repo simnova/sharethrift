@@ -52,6 +52,8 @@ const reservationRequest = {
 					createdAt: '2024-01-01',
 					updatedAt: '2024-01-13',
 				},
+                closeRequestedBySharer: false,
+	            closeRequestedByReserver: false,
 			}]);
 		},
 		myPastReservations: async (
@@ -99,6 +101,8 @@ const reservationRequest = {
 					createdAt: '2024-01-01',
 					updatedAt: '2024-01-13',
 				},
+                closeRequestedBySharer: true,
+	            closeRequestedByReserver: true,
 			}]);
 		},
 	},
@@ -148,6 +152,8 @@ const reservationRequest = {
 					createdAt: '2024-01-01',
 					updatedAt: '2024-01-13',
 				},
+                closeRequestedBySharer: false,
+	            closeRequestedByReserver: false,
 			});
 		},
 		closeReservation: async (
@@ -195,6 +201,8 @@ const reservationRequest = {
 					createdAt: '2024-01-01',
 					updatedAt: '2024-01-13',
 				},
+                closeRequestedBySharer: false,
+	            closeRequestedByReserver: true,
 			});
 		},
 	},
