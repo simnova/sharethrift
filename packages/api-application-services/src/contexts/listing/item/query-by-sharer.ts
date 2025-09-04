@@ -1,18 +1,18 @@
 import type { Domain } from '@sthrift/api-domain';
 import type { DataSources } from '@sthrift/api-persistence';
 
-export interface ItemListingQueryByPersonalUserCommand {
+export interface ItemListingQueryBySharerCommand {
 	personalUser: string;
 	fields?: string[];
 }
 
-export const queryByPersonalUser = (dataSources: DataSources) => {
+export const queryBySharer = (dataSources: DataSources) => {
 	return async (
-		command: ItemListingQueryByPersonalUserCommand,
+		command: ItemListingQueryBySharerCommand,
 	): Promise<
 		Domain.Contexts.Listing.ItemListing.ItemListingEntityReference[]
 	> => {
-		return await dataSources.readonlyDataSource.Listing.ItemListing.ItemReadRepo.getByPersonalUserExternalId(
+		return await dataSources.readonlyDataSource.Listing.ItemListing.ItemListingReadRepo.getBySharer(
 			command.personalUser,
 		);
 	};

@@ -6,6 +6,7 @@ import {
 } from './item-listing.data.ts';
 import type { FindOneOptions, FindOptions } from '../../mongo-data-source.ts';
 import { ItemListingConverter } from '../../../domain/listing/item/item-listing.domain-adapter.ts';
+import { ObjectId } from 'mongodb';
 
 export interface ItemListingReadRepository {
 	getAll: (
@@ -17,6 +18,12 @@ export interface ItemListingReadRepository {
 		id: string,
 		options?: FindOneOptions,
 	) => Promise<Domain.Contexts.Listing.ItemListing.ItemListingEntityReference | null>;
+	getBySharer: (
+		sharerId: string,
+		options?: FindOptions,
+	) => Promise<
+		Domain.Contexts.Listing.ItemListing.ItemListingEntityReference[]
+	>;
 }
 
 export class ItemListingReadRepositoryImpl
@@ -50,6 +57,18 @@ export class ItemListingReadRepositoryImpl
 			return null;
 		}
 		return this.converter.toDomain(result, this.passport);
+	}
+
+	async getBySharer(
+		sharerId: string,
+		options?: FindOptions,
+	): Promise<Domain.Contexts.Listing.ItemListing.ItemListingEntityReference[]> {
+		// Assuming the field is 'sharer' in the model and stores the user's ObjectId or externalId
+		const result = await this.mongoDataSource.find(
+			{ sharer: new ObjectId(sharerId) },
+			options,
+		);
+		return result.map((doc) => this.converter.toDomain(doc, this.passport));
 	}
 }
 

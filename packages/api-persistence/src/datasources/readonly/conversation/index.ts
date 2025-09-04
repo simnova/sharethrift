@@ -1,10 +1,10 @@
 import type { Domain } from '@sthrift/api-domain';
 import type { ModelsContext } from '../../../index.ts';
-// TODO: Implement ConversationReadRepositoryImpl
+import { ConversationReadRepositoryImpl } from './conversation/index.ts';
 
 export const ConversationContext = (
 	models: ModelsContext,
 	passport: Domain.Passport,
 ) => ({
-	// Add ConversationReadRepo here
+	Conversation: ConversationReadRepositoryImpl(models, passport),
 });

@@ -8,6 +8,6 @@ export const ConversationReadRepositoryImpl = (
 	passport: Domain.Passport,
 ) => {
 	return {
-		ItemListingReadRepo: getConversationReadRepository(models, passport),
+		ConversationReadRepo: getConversationReadRepository(models, passport),
 	};
 };

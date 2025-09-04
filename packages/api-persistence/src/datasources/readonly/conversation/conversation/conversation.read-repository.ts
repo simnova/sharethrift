@@ -6,6 +6,7 @@ import {
 } from './conversation.data.ts';
 import type { FindOneOptions, FindOptions } from '../../mongo-data-source.ts';
 import { ConversationConverter } from '../../../domain/conversation/conversation/conversation.domain-adapter.ts';
+import { ObjectId } from 'mongodb';
 
 export interface ConversationReadRepository {
 	getAll: (
@@ -17,6 +18,13 @@ export interface ConversationReadRepository {
 		id: string,
 		options?: FindOneOptions,
 	) => Promise<Domain.Contexts.Conversation.Conversation.ConversationEntityReference | null>;
+
+	getBySharer: (
+		sharerId: string,
+		options?: FindOptions,
+	) => Promise<
+		Domain.Contexts.Conversation.Conversation.ConversationEntityReference[]
+	>;
 }
 
 export class ConversationReadRepositoryImpl
@@ -52,6 +60,20 @@ export class ConversationReadRepositoryImpl
 			return null;
 		}
 		return this.converter.toDomain(result, this.passport);
+	}
+
+	async getBySharer(
+		sharerId: string,
+		options?: FindOptions,
+	): Promise<
+		Domain.Contexts.Conversation.Conversation.ConversationEntityReference[]
+	> {
+		// Assuming the field is 'sharer' in the model and stores the user's ObjectId or externalId
+		const result = await this.mongoDataSource.find(
+			{ sharer: new ObjectId(sharerId) },
+			options,
+		);
+		return result.map((doc) => this.converter.toDomain(doc, this.passport));
 	}
 }
 

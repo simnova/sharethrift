@@ -6,5 +6,5 @@ export const ListingContext = (
 	models: ModelsContext,
 	passport: Domain.Passport,
 ) => ({
-	Item: ItemListingReadRepositoryImpl(models, passport),
+	ItemListing: ItemListingReadRepositoryImpl(models, passport),
 });

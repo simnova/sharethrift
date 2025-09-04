@@ -20,7 +20,7 @@ export const create = (dataSources: DataSources) => {
 				command.sharerId,
 			);
 		const listing =
-			await dataSources.readonlyDataSource.Listing.ItemListing.ItemReadRepo.getById(
+			await dataSources.readonlyDataSource.Listing.ItemListing.ItemListingReadRepo.getById(
 				command.listingId,
 			);
 		if (!sharer) {

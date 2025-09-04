@@ -10,7 +10,7 @@ export const queryById = (dataSources: DataSources) => {
 	return async (
 		command: ItemListingQueryByIdCommand,
 	): Promise<Domain.Contexts.Listing.ItemListing.ItemListingEntityReference | null> => {
-		return await dataSources.readonlyDataSource.Listing.ItemListing.ItemReadRepo.getById(
+		return await dataSources.readonlyDataSource.Listing.ItemListing.ItemListingReadRepo.getById(
 			command.id,
 			{ fields: command.fields },
 		);

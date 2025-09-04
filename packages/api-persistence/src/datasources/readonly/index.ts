@@ -17,7 +17,7 @@ export interface ReadonlyDataSource {
 	};
 	Listing: {
 		ItemListing: {
-			ItemReadRepo: ItemListing.ItemReadRepository;
+			ItemListingReadRepo: ItemListing.ItemListingReadRepository;
 		};
 	};
 	Conversation: {
