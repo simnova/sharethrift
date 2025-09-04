@@ -21,10 +21,6 @@ steps:
   - checkout: self
     persistCredentials: true
 
-  - checkout: git://Simnova/sharethrift
-    persistCredentials: true
-    displayName: 'Checkout with GitHub Service Connection'
-
   # Cache NPM packages to speed up build process.
   - task: Cache@2
     displayName: 'NPM: Restore Cache'
