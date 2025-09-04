@@ -14,6 +14,14 @@ pr:
     include:
       - docusaurus     
 
+resources:
+  repositories:
+    - repository: self
+      type: git
+      name: simnova/sharethrift
+      ref: refs/heads/main
+      endpoint: 'Simnova (1)'
+
 pool:
   vmImage: ubuntu-latest
 
@@ -43,11 +51,6 @@ steps:
         # Configure Git with credentials
         git config --global user.name "azure-pipelines"
         git config --global user.email "azure-pipelines@microsoft.com"
-        
-        # Configure GitHub authentication using credential helper
-        git config --global credential.helper store
-        echo "https://azure-pipelines:${GITHUB_TOKEN}@github.com" > ~/.git-credentials
-        chmod 600 ~/.git-credentials
         
         cd docusaurus
         npm ci
