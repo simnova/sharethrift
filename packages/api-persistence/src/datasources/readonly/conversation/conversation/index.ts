@@ -1,14 +1,13 @@
 import type { Domain } from '@sthrift/api-domain';
 import type { ModelsContext } from '../../../../index.ts';
-// TODO: Implement getItemListingReadRepository
+import { getConversationReadRepository } from './conversation.read-repository.ts';
+export type { ConversationReadRepository } from './conversation.read-repository.ts';
 
-export type { ItemListingReadRepository } from './item-listing.read-repository.ts';
-
-export const ItemListingReadRepositoryImpl = (
+export const ConversationReadRepositoryImpl = (
 	models: ModelsContext,
 	passport: Domain.Passport,
 ) => {
 	return {
-		ItemListingReadRepo: undefined, // Replace with actual implementation
+		ItemListingReadRepo: getConversationReadRepository(models, passport),
 	};
 };

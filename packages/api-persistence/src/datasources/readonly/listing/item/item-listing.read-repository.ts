@@ -1,47 +1,50 @@
 import type { Domain } from '@sthrift/api-domain';
 import type { ModelsContext } from '../../../../index.ts';
 import {
-	PersonalUserDataSourceImpl,
-	type PersonalUserDataSource,
-} from './personal-user.data.ts';
+	ItemListingDataSourceImpl,
+	type ItemListingDataSource,
+} from './item-listing.data.ts';
 import type { FindOneOptions, FindOptions } from '../../mongo-data-source.ts';
-import { PersonalUserConverter } from '../../../domain/user/personal-user/personal-user.domain-adapter.ts';
+import { ItemListingConverter } from '../../../domain/listing/item/item-listing.domain-adapter.ts';
 
-export interface PersonalUserReadRepository {
+export interface ItemListingReadRepository {
 	getAll: (
 		options?: FindOptions,
-	) => Promise<Domain.Contexts.User.PersonalUser.PersonalUserEntityReference[]>;
+	) => Promise<
+		Domain.Contexts.Listing.ItemListing.ItemListingEntityReference[]
+	>;
 	getById: (
 		id: string,
 		options?: FindOneOptions,
-	) => Promise<Domain.Contexts.User.PersonalUser.PersonalUserEntityReference | null>;
+	) => Promise<Domain.Contexts.Listing.ItemListing.ItemListingEntityReference | null>;
 }
 
-export class PersonalUserReadRepositoryImpl
-	implements PersonalUserReadRepository
+export class ItemListingReadRepositoryImpl
+	implements ItemListingReadRepository
 {
-	private readonly mongoDataSource: PersonalUserDataSource;
-	private readonly converter: PersonalUserConverter;
+	private readonly mongoDataSource: ItemListingDataSource;
+	private readonly converter: ItemListingConverter;
 	private readonly passport: Domain.Passport;
 
 	constructor(models: ModelsContext, passport: Domain.Passport) {
-		this.mongoDataSource = new PersonalUserDataSourceImpl(
-			models.User.PersonalUser,
+		this.mongoDataSource = new ItemListingDataSourceImpl(
+			models.Listing.ItemListingModel,
 		);
-		this.converter = new PersonalUserConverter();
+		this.converter = new ItemListingConverter();
 		this.passport = passport;
 	}
 
 	async getAll(
 		options?: FindOptions,
-	): Promise<Domain.Contexts.User.PersonalUser.PersonalUserEntityReference[]> {
-		return await this.mongoDataSource.find({}, options);
+	): Promise<Domain.Contexts.Listing.ItemListing.ItemListingEntityReference[]> {
+		const result = await this.mongoDataSource.find({}, options);
+		return result.map((doc) => this.converter.toDomain(doc, this.passport));
 	}
 
 	async getById(
 		id: string,
 		options?: FindOneOptions,
-	): Promise<Domain.Contexts.User.PersonalUser.PersonalUserEntityReference | null> {
+	): Promise<Domain.Contexts.Listing.ItemListing.ItemListingEntityReference | null> {
 		const result = await this.mongoDataSource.findById(id, options);
 		if (!result) {
 			return null;
@@ -50,9 +53,9 @@ export class PersonalUserReadRepositoryImpl
 	}
 }
 
-export const getPersonalUserReadRepository = (
+export const getItemListingReadRepository = (
 	models: ModelsContext,
 	passport: Domain.Passport,
 ) => {
-	return new PersonalUserReadRepositoryImpl(models, passport);
+	return new ItemListingReadRepositoryImpl(models, passport);
 };

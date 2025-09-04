@@ -4,8 +4,8 @@ import {
 	MongoDataSourceImpl,
 } from '../../mongo-data-source.ts';
 
-export interface PersonalUserDataSource
-	extends MongoDataSource<Models.User.PersonalUser> {}
-export class PersonalUserDataSourceImpl
-	extends MongoDataSourceImpl<Models.User.PersonalUser>
-	implements PersonalUserDataSource {}
+export interface ItemListingDataSource
+	extends MongoDataSource<Models.Listing.ItemListing> {}
+export class ItemListingDataSourceImpl
+	extends MongoDataSourceImpl<Models.Listing.ItemListing>
+	implements ItemListingDataSource {}
