@@ -42,23 +42,9 @@ const personalUserResolvers = {
 	},
 
 	Mutation: {
-		processPayment: async (_parent: unknown, { request }: { request: unknown }, context: GraphContext) => {
-			console.log('------>Processing payment', request);
-            // console.log(context)
-            // return {
-			// 		transactionId: "123",
-			// 		status: 'paymentResponse.status',
-			// 		success: true,
-			// 		message: 'Payment processed successfully'
-			// 	};
+		processPayment: async (_parent: unknown, { request }: { request: { amount: number; source: string; description?: string; userId: string } }, context: GraphContext) => {
 			try {
-				// Get the payment service from context
-				if (!context.paymentService) {
-					throw new Error('Payment service not available');
-				}
-				const paymentService = context.paymentService;
-		
-				const paymentResponse = await paymentService.createPayment({
+				const result = await context.applicationServices.Payment.processPayment({
 					amount: request.amount,
 					currency: 'USD',
 					source: request.source,
@@ -67,15 +53,7 @@ const personalUserResolvers = {
 						userId: request.userId
 					}
 				});
-
-                console.log("------->paymentResponse", paymentResponse);
-
-				return {
-					transactionId: "123",
-					status: 'paymentResponse.status',
-					success: 'SUCCEEDED',
-					message: 'Payment processed successfully'
-				};
+				return result;
 			} catch (error) {
 				console.error('Payment processing error:', error);
 				return {

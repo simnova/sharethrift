@@ -33,7 +33,7 @@ export class ServiceCybersource implements ServiceBase<ServiceCybersource> {
   private client: AxiosInstance | undefined;
   private baseUrl: string;
 
-  constructor(baseUrl: string = process.env['PAYMENT_API_URL'] || 'http://localhost:4005') {
+  constructor(baseUrl: string = process.env['PAYMENT_API_URL']!) {
     this.baseUrl = baseUrl;
   }
 

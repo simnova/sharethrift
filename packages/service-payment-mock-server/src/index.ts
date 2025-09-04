@@ -11,81 +11,105 @@ app.get("/", (_: any, res: any) => {
 
 import { randomUUID } from "crypto";
 
-app.post("/pts/v2/payments", (req: any, res: any) => {
-  const { orderInformation, paymentInformation, clientReferenceInformation } =
-    req.body;
+app.post("/pts/v2/payments", (_req: any, res: any) => {
+//   const { orderInformation, paymentInformation, clientReferenceInformation } =
+//     req.body;
 
 
-  if (
-    !orderInformation?.amountDetails?.totalAmount ||
-    !orderInformation?.amountDetails?.currency
-  ) {
-    return res.status(400).json({
-      errorInformation: {
-        reason: "INVALID_DATA",
-        message: "Missing orderInformation.amountDetails fields",
-      },
-    });
-  }
-  if (!paymentInformation?.card) {
-    return res.status(400).json({
-      errorInformation: {
-        reason: "INVALID_DATA",
-        message: "Missing paymentInformation.card fields",
-      },
-    });
-  }
+//   if (
+//     !orderInformation?.amountDetails?.totalAmount ||
+//     !orderInformation?.amountDetails?.currency
+//   ) {
+//     return res.status(400).json({
+//       errorInformation: {
+//         reason: "INVALID_DATA",
+//         message: "Missing orderInformation.amountDetails fields",
+//       },
+//     });
+//   }
+//   if (!paymentInformation?.card) {
+//     return res.status(400).json({
+//       errorInformation: {
+//         reason: "INVALID_DATA",
+//         message: "Missing paymentInformation.card fields",
+//       },
+//     });
+//   }
 
-  const cardNumber = paymentInformation.card.number || "";
-  const paymentId = randomUUID();
+//   const cardNumber = paymentInformation.card.number || "";
+//   const paymentId = randomUUID();
 
-  // Simulate outcomes
-  let status = "AUTHORIZED";
-  let errorInfo: any = null;
+//   // Simulate outcomes
+//   let status = "AUTHORIZED";
+//   let errorInfo: any = null;
 
-  if (cardNumber === "4000000000000002") {
-    status = "DECLINED";
-    errorInfo = {
-      reason: "CARD_DECLINED",
-      message: "The card was declined.",
-    };
-  } else if (cardNumber === "4000000000009995") {
-    status = "INVALID_REQUEST";
-    errorInfo = {
-      reason: "INVALID_ACCOUNT",
-      message: "Invalid account number.",
-    };
-  }
+//   if (cardNumber === "4000000000000002") {
+//     status = "DECLINED";
+//     errorInfo = {
+//       reason: "CARD_DECLINED",
+//       message: "The card was declined.",
+//     };
+//   } else if (cardNumber === "4000000000009995") {
+//     status = "INVALID_REQUEST";
+//     errorInfo = {
+//       reason: "INVALID_ACCOUNT",
+//       message: "Invalid account number.",
+//     };
+//   }
 
-  if (errorInfo) {
-    return res.status(402).json({
-      id: paymentId,
-      status,
-      clientReferenceInformation: clientReferenceInformation || {},
-      errorInformation: errorInfo,
-    });
-  }
+//   if (errorInfo) {
+//     return res.status(402).json({
+//       id: paymentId,
+//       status,
+//       clientReferenceInformation: clientReferenceInformation || {},
+//       errorInformation: errorInfo,
+//     });
+//   }
+//   const response = {
+//     id: paymentId,
+//     status,
+//     clientReferenceInformation: clientReferenceInformation || {},
+//     orderInformation: {
+//       amountDetails: orderInformation.amountDetails,
+//       billTo: orderInformation.billTo || {},
+//     },
+//     paymentInformation: {
+//       card: {
+//         type: paymentInformation.card.type || "001",
+//         expirationMonth: paymentInformation.card.expirationMonth,
+//         expirationYear: paymentInformation.card.expirationYear,
+//         number: cardNumber.slice(-4),
+//       },
+//     },
+//   };
 
-  // Success response
   const response = {
-    id: paymentId,
-    status,
-    clientReferenceInformation: clientReferenceInformation || {},
+    id: "" + randomUUID(),
+    status: "SUCCEEDED",
+    clientReferenceInformation: {},
     orderInformation: {
-      amountDetails: orderInformation.amountDetails,
-      billTo: orderInformation.billTo || {},
+      amountDetails: { totalAmount: "100.00", currency: "USD" },
+      billTo: {
+        firstName: "John",
+        lastName: "Doe",
+        address1: "123 Main St",
+        address2: "Apt 4B",
+        city: "Anytown",
+        state: "CA",
+        postalCode: "12345",
+        country: "USA"
+      }
     },
     paymentInformation: {
       card: {
-        type: paymentInformation.card.type || "001",
-        expirationMonth: paymentInformation.card.expirationMonth,
-        expirationYear: paymentInformation.card.expirationYear,
-        number: cardNumber.slice(-4),
+        type: "001",
+        expirationMonth: "12",
+        expirationYear: "2025",
+        number: "1234",
       },
     },
   };
-
-  res.status(201).json(response);
+    res.status(201).json(response);
 });
 
 app.post("/pts/v2/refunds", (req: any, res: any) => {

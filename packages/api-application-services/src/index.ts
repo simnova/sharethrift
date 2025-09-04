@@ -1,5 +1,7 @@
 import type { ApiContextSpec } from '@sthrift/api-context-spec';
 import { Domain } from '@sthrift/api-domain';
+import type { PaymentApplicationService } from './payment-application-service.js';
+import { DefaultPaymentApplicationService } from './payment-application-service.js';
 
 interface JwtPayload {
 	sub: string;
@@ -7,7 +9,9 @@ interface JwtPayload {
 }
 
 // biome-ignore lint/suspicious/noEmptyInterface: <explanation>
-export interface ApplicationServices {}
+export interface ApplicationServices {
+    Payment: PaymentApplicationService;
+}
 
 // biome-ignore lint/complexity/noBannedTypes: <explanation>
 export type PrincipalHints = {
@@ -26,6 +30,8 @@ export type ApplicationServicesFactory = AppServicesHost<ApplicationServices>;
 export const buildApplicationServicesFactory = (
 	infrastructureServicesRegistry: ApiContextSpec,
 ): ApplicationServicesFactory => {
+    	const paymentApplicationService = new DefaultPaymentApplicationService(infrastructureServicesRegistry.paymentService);
+
 	console.log(infrastructureServicesRegistry);
 	const forRequest = async (
 		rawAuthHeader?: string,
@@ -61,7 +67,9 @@ export const buildApplicationServicesFactory = (
 			}
 		}
 
-		return {};
+		return {
+            Payment: paymentApplicationService
+        };
 	};
 
 	return {
