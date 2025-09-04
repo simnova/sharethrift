@@ -19,32 +19,32 @@ export function ViewListingContainer({ isAuthenticated }: { readonly isAuthentic
   if (!listingId) return <div>Missing listing id.</div>;
   if (loading) return <div>Loading listing...</div>;
   if (error) return <div>Error loading listing.</div>;
-  if (!data?.viewListing) return <div>Listing not found.</div>;
+  if (!data?.itemListing) return <div>Listing not found.</div>;
 
   // Map server model to existing ViewListingProps.listing shape expected by presentational component
   const listing = {
-    _id: data.viewListing.id,
-    id: data.viewListing.id,
-    title: data.viewListing.title,
-    description: data.viewListing.description,
-    category: data.viewListing.category,
-    location: data.viewListing.location,
-    images: data.viewListing.images ?? [],
-  sharingPeriodStart: data.viewListing.sharingPeriodStart ? new Date(data.viewListing.sharingPeriodStart) : new Date(),
-  sharingPeriodEnd: data.viewListing.sharingPeriodEnd ? new Date(data.viewListing.sharingPeriodEnd) : new Date(),
+    _id: data.itemListing.id,
+    id: data.itemListing.id,
+    title: data.itemListing.title,
+    description: data.itemListing.description,
+    category: data.itemListing.category,
+    location: data.itemListing.location,
+    images: data.itemListing.images ?? [],
+  sharingPeriodStart: data.itemListing.sharingPeriodStart ? new Date(data.itemListing.sharingPeriodStart) : new Date(),
+  sharingPeriodEnd: data.itemListing.sharingPeriodEnd ? new Date(data.itemListing.sharingPeriodEnd) : new Date(),
     // Fields not yet provided by backend; use placeholders / derive
     price: undefined,
     priceUnit: undefined,
     condition: undefined,
-    itemName: data.viewListing.title,
-    availableFrom: data.viewListing.sharingPeriodStart,
-    availableTo: data.viewListing.sharingPeriodEnd,
-    status: data.viewListing.state,
-    sharer: 'unknown-sharer',
+    itemName: data.itemListing.title,
+    availableFrom: data.itemListing.sharingPeriodStart,
+    availableTo: data.itemListing.sharingPeriodEnd,
+    status: data.itemListing.state,
+    sharer: data.itemListing.sharer,
   } as const;
 
-  const sharedTimeAgo = data.viewListing.createdAt
-    ? computeTimeAgo(data.viewListing.createdAt)
+  const sharedTimeAgo = data.itemListing.createdAt
+    ? computeTimeAgo(data.itemListing.createdAt)
     : undefined;
 
   return (

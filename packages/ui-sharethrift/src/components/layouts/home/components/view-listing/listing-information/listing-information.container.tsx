@@ -12,7 +12,7 @@ const GET_LISTING_INFORMATION = gql`
       location
       sharingPeriodStart
       sharingPeriodEnd
-      status
+      state
     }
   }
 `;
@@ -23,7 +23,7 @@ interface ItemListing {
   description: string;
   category: string;
   location: string;
-  status: string;
+  state: string;
   sharingPeriodStart: string;
   sharingPeriodEnd: string;
 }
@@ -41,6 +41,28 @@ interface ListingInformationContainerProps {
   onLoginClick?: () => void;
   onSignUpClick?: () => void;
   className?: string;
+}
+
+// Map backend ItemListingState to frontend ListingStatus
+function mapListingStateToStatus(state: string): ListingStatus {
+  switch (state) {
+    case 'Published':
+      return 'Active';
+    case 'Paused':
+      return 'Paused';
+    case 'Blocked':
+      return 'Blocked';
+    case 'Cancelled':
+      return 'Cancelled';
+    case 'Expired':
+      return 'Expired';
+    case 'Drafted':
+      return 'Cancelled'; 
+    case 'Appeal_Requested':
+      return 'Blocked'; 
+    default:
+      return 'Active'; 
+  }
 }
 
 export default function ListingInformationContainer({
@@ -62,7 +84,7 @@ export default function ListingInformationContainer({
 
   if (loading) return <div>Loading...</div>;
   if (error) return <div>Error loading listing information</div>;
-  if (!data?.itemListing) return null;
+  if (!data?.itemListing) return <div>Listing not found</div>;
 
   // Map backend ItemListing to ListingInformationProps.listing shape
   const mappedListing: ListingInformationProps['listing'] = {
@@ -71,7 +93,7 @@ export default function ListingInformationContainer({
     description: data.itemListing.description,
     category: data.itemListing.category,
     location: data.itemListing.location,
-    status: data.itemListing.status as ListingStatus,
+    status: mapListingStateToStatus(data.itemListing.state),
     availableFrom: new Date(data.itemListing.sharingPeriodStart).toISOString().slice(0, 10),
     availableTo: new Date(data.itemListing.sharingPeriodEnd).toISOString().slice(0, 10),
   };

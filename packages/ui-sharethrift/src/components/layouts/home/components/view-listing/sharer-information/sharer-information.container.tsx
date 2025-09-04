@@ -46,6 +46,26 @@ interface SharerInformationContainerProps {
 }
 
 export default function SharerInformationContainer({ sharerId, listingId, isOwner, sharedTimeAgo, className }: SharerInformationContainerProps) {
+  // If sharerId looks like a name (contains spaces or letters), use it directly
+  // Otherwise, try to query for user data
+  const isNameOnly = typeof sharerId === 'string' && (sharerId.includes(' ') || /^[a-zA-Z\s]+$/.test(sharerId));
+  
+  if (isNameOnly) {
+    const sharer = {
+      id: sharerId,
+      name: sharerId,
+    };
+    return (
+      <SharerInformation
+        sharer={sharer}
+        listingId={listingId}
+        isOwner={isOwner}
+        sharedTimeAgo={sharedTimeAgo}
+        className={className}
+      />
+    );
+  }
+
   const { data, loading, error } = useQuery<SharerQueryResponse>(
     GET_SHARER_INFORMATION,
     {
