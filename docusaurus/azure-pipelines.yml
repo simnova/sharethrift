@@ -30,18 +30,12 @@ steps:
     displayName: Install Node.js
 
 - script: |
-      git config --global user.name "$(GH_NAME)"
-      git config --global user.email "$(GH_EMAIL)"
-      # Configure Git to use credential cache
-      git config --global credential.helper 'cache --timeout=300'
-      # Provide credentials to the cache
-      echo "protocol=https" | git credential approve
-      echo "host=github.com" | git credential approve
-      echo "username=$(GH_NAME)" | git credential approve
-      echo "password=$(GH_TOKEN)" | git credential approve
+git config --global user.name "Azure Pipelines"
+      git config --global user.email "azure-pipelines@example.com"
+      cd docusaurus
       npm install
       npm run build
-      GIT_USER="$(GH_NAME)" yarn deploy
+      npm run deploy
     env:
       GH_NAME: $(GH_NAME)
       GH_EMAIL: $(GH_EMAIL)
