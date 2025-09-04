@@ -7,79 +7,194 @@ interface GraphContext extends BaseContext {
 
 const reservationRequest = {
 	Query: {
-		myReservations: async (_parent: unknown, args: { userId: string }, _context: GraphContext) => {
+		myActiveReservations: async (
+			_parent: unknown,
+			args: { userId: string },
+			_context: GraphContext,
+		) => {
 			// Mock data for now - will be replaced with calls to application services
-			return await Promise.resolve([
-				{
-					id: '1',
-					state: 'REQUESTED',
-					reservationPeriodStart: '2024-01-15',
-					reservationPeriodEnd: '2024-01-20',
-					createdAt: '2024-01-10',
-					updatedAt: '2024-01-10',
-					listingId: 'listing1',
-					reserverId: args.userId,
-					closeRequested: false,
-					listing: {
-						id: 'listing1',
-						title: 'Awesome Camera',
-						imageUrl: 'https://example.com/camera.jpg'
+			return await Promise.resolve({
+				id: '2',
+				state: 'ACCEPTED',
+				reservationPeriodStart: '2024-01-25',
+				reservationPeriodEnd: '2024-01-30',
+				createdAt: '2024-01-12',
+				updatedAt: '2024-01-13',
+				closeRequested: false,
+				listing: {
+					id: 'listing2',
+					sharer: {
+						id: 'user-3',
+						userType: 'personal',
+						isBlocked: false,
+						account: {
+							email: 'sharer2@example.com',
+							username: 'shareruser2',
+							profile: {
+								firstName: 'Alex',
+								lastName: 'Owner',
+							},
+						},
+						schemaVersion: '1',
+						createdAt: '2024-01-05T09:00:00Z',
+						updatedAt: '2024-01-13T09:00:00Z',
 					},
-					reserver: {
-						id: args.userId,
-						name: 'John Doe'
-					}
+					title: 'Professional Microphone',
+					sharingPeriodStart: '2024-01-25T09:00:00Z',
+					sharingPeriodEnd: '2024-01-30T18:00:00Z',
+					schemaVersion: '1',
+					createdAt: '2024-01-05T09:00:00Z',
+					updatedAt: '2024-01-13T09:00:00Z',
 				},
-				{
-					id: '2',
-					state: 'ACCEPTED',
-					reservationPeriodStart: '2024-01-25',
-					reservationPeriodEnd: '2024-01-30',
-					createdAt: '2024-01-12',
+				reserver: {
+					id: args.userId,
+					name: 'John Doe',
+					createdAt: '2024-01-01',
 					updatedAt: '2024-01-13',
-					listingId: 'listing2',
-					reserverId: args.userId,
-					closeRequested: false,
-					listing: {
-						id: 'listing2',
-						title: 'Professional Microphone',
-						imageUrl: 'https://example.com/microphone.jpg'
+				},
+			});
+		},
+		myPastReservations: async (
+			_parent: unknown,
+			args: { userId: string },
+			_context: GraphContext,
+		) => {
+			// Mock data for now - will be replaced with calls to application services
+			return await Promise.resolve({
+				id: '2',
+				state: 'ACCEPTED',
+				reservationPeriodStart: '2024-01-25',
+				reservationPeriodEnd: '2024-01-30',
+				createdAt: '2024-01-12',
+				updatedAt: '2024-01-13',
+				closeRequested: false,
+				listing: {
+					id: 'listing2',
+					sharer: {
+						id: 'user-3',
+						userType: 'personal',
+						isBlocked: false,
+						account: {
+							email: 'sharer2@example.com',
+							username: 'shareruser2',
+							profile: {
+								firstName: 'Alex',
+								lastName: 'Owner',
+							},
+						},
+						schemaVersion: '1',
+						createdAt: '2024-01-05T09:00:00Z',
+						updatedAt: '2024-01-13T09:00:00Z',
 					},
-					reserver: {
-						id: args.userId,
-						name: 'John Doe'
-					}
-				}
-			]);
+					title: 'Professional Microphone',
+					sharingPeriodStart: '2024-01-25T09:00:00Z',
+					sharingPeriodEnd: '2024-01-30T18:00:00Z',
+					schemaVersion: '1',
+					createdAt: '2024-01-05T09:00:00Z',
+					updatedAt: '2024-01-13T09:00:00Z',
+				},
+				reserver: {
+					id: args.userId,
+					name: 'John Doe',
+					createdAt: '2024-01-01',
+					updatedAt: '2024-01-13',
+				},
+			});
 		},
 	},
 	Mutation: {
-		cancelReservation: async (_parent: unknown, args: { id: string }, _context: GraphContext) => {
+		cancelReservation: async (
+			_parent: unknown,
+			args: { id: string },
+			_context: GraphContext,
+		) => {
 			// Mock implementation - will be replaced with actual business logic
 			return await Promise.resolve({
 				id: args.id,
 				state: 'CANCELLED',
-				reservationPeriodStart: '2024-01-15',
-				reservationPeriodEnd: '2024-01-20',
-				createdAt: '2024-01-10',
-				updatedAt: new Date().toISOString(),
-				listingId: 'listing1',
-				reserverId: 'user1',
+				reservationPeriodStart: '2024-01-25',
+				reservationPeriodEnd: '2024-01-30',
+				createdAt: '2024-01-12',
+				updatedAt: '2024-01-13',
 				closeRequested: false,
+				listing: {
+					id: 'listing2',
+					sharer: {
+						id: 'user-3',
+						userType: 'personal',
+						isBlocked: false,
+						account: {
+							email: 'sharer2@example.com',
+							username: 'shareruser2',
+							profile: {
+								firstName: 'Alex',
+								lastName: 'Owner',
+							},
+						},
+						schemaVersion: '1',
+						createdAt: '2024-01-05T09:00:00Z',
+						updatedAt: '2024-01-13T09:00:00Z',
+					},
+					title: 'Professional Microphone',
+					sharingPeriodStart: '2024-01-25T09:00:00Z',
+					sharingPeriodEnd: '2024-01-30T18:00:00Z',
+					schemaVersion: '1',
+					createdAt: '2024-01-05T09:00:00Z',
+					updatedAt: '2024-01-13T09:00:00Z',
+				},
+				reserver: {
+					id: 'reserver-id-2',
+					name: 'John Doe',
+					createdAt: '2024-01-01',
+					updatedAt: '2024-01-13',
+				},
 			});
 		},
-		closeReservation: async (_parent: unknown, args: { id: string }, _context: GraphContext) => {
+		closeReservation: async (
+			_parent: unknown,
+			args: { id: string },
+			_context: GraphContext,
+		) => {
 			// Mock implementation - will be replaced with actual business logic
 			return await Promise.resolve({
 				id: args.id,
-				state: 'ACCEPTED',
-				reservationPeriodStart: '2024-01-15',
-				reservationPeriodEnd: '2024-01-20',
-				createdAt: '2024-01-10',
-				updatedAt: new Date().toISOString(),
-				listingId: 'listing1',
-				reserverId: 'user1',
-				closeRequested: true,
+				state: 'CLOSED',
+				reservationPeriodStart: '2024-01-25',
+				reservationPeriodEnd: '2024-01-30',
+				createdAt: '2024-01-12',
+				updatedAt: '2024-01-13',
+				closeRequested: false,
+				listing: {
+					id: 'listing2',
+					sharer: {
+						id: 'user-3',
+						userType: 'personal',
+						isBlocked: false,
+						account: {
+							email: 'sharer2@example.com',
+							username: 'shareruser2',
+							profile: {
+								firstName: 'Alex',
+								lastName: 'Owner',
+							},
+						},
+						schemaVersion: '1',
+						createdAt: '2024-01-05T09:00:00Z',
+						updatedAt: '2024-01-13T09:00:00Z',
+					},
+					title: 'Professional Microphone',
+					sharingPeriodStart: '2024-01-25T09:00:00Z',
+					sharingPeriodEnd: '2024-01-30T18:00:00Z',
+					schemaVersion: '1',
+					createdAt: '2024-01-05T09:00:00Z',
+					updatedAt: '2024-01-13T09:00:00Z',
+				},
+				reserver: {
+					id: 'reverver-id-4',
+					name: 'John Doe',
+					createdAt: '2024-01-01',
+					updatedAt: '2024-01-13',
+				},
 			});
 		},
 	},

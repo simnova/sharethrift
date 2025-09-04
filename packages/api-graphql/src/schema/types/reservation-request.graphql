@@ -1,23 +1,45 @@
-#graphql
 type ReservationRequest {
-  id: ID!
-  state: ReservationRequestState!
-  reservationPeriodStart: String!
-  reservationPeriodEnd: String!
-  createdAt: String!
-  updatedAt: String!
-  listingId: ID!
-  reserverId: ID!
-  closeRequestedBySharer: Boolean!
-  closeRequestedByReserver: Boolean!
-  listing: Listing
-  reserver: User
+	id: ObjectID!
+	state: ReservationRequestState!
+	reservationPeriodStart: String!
+	reservationPeriodEnd: String!
+	createdAt: String!
+	updatedAt: String!
+	listing: ItemListing!
+	reserver: PersonalUser!
+	closeRequestedBySharer: Boolean!
+	closeRequestedByReserver: Boolean!
+	listing: Listing
+	reserver: User
 }
 
 enum ReservationRequestState {
-  REQUESTED
-  ACCEPTED
-  REJECTED
-  CLOSED
-  CANCELLED
+	REQUESTED
+	ACCEPTED
+	REJECTED
+	CLOSED
+	CANCELLED
+}
+
+extend type Query {
+	myActiveReservations(userId: ObjectID!): [ReservationRequest!]!
+	myPastReservations(userId: ObjectID!): [ReservationRequest!]!
+}
+
+extend type Mutation {
+	cancelReservation(input: CancelReservationInput!): ReservationRequest!
+	closeReservation(input: CloseReservationInput!): ReservationRequest!
+}
+
+type ReservationRequestMutationResult implements MutationResult {
+	status: MutationStatus!
+	reservationRequest: ReservationRequest
+}
+
+input CancelReservationInput {
+	id: ID!
+}
+
+input CloseReservationInput {
+	id: ID!
 }

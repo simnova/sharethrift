@@ -20,7 +20,7 @@ export class ReservationRequestRepository
 	async getById(id: string): Promise<Domain.Contexts.ReservationRequest.ReservationRequest.ReservationRequest<PropType>> {
 		const mongoReservation = await this.model
 			.findById(id)
-			.populate('listing reserver')
+			.populate(['listing', 'reserver'])
 			.exec();
 		if (!mongoReservation) {
 			throw new Error(`ReservationRequest with id ${id} not found`);
@@ -31,7 +31,7 @@ export class ReservationRequestRepository
 	async getAll(): Promise<Domain.Contexts.ReservationRequest.ReservationRequest.ReservationRequest<PropType>[]> {
 		const mongoReservations = await this.model
 			.find()
-			.populate('listing reserver')
+			.populate(['listing', 'reserver'])
 			.exec();
 		return mongoReservations.map(doc => this.typeConverter.toDomain(doc, this.passport));
 	}
@@ -40,7 +40,7 @@ export class ReservationRequestRepository
 	): Promise<Domain.Contexts.ReservationRequest.ReservationRequest.ReservationRequest<PropType>> {
 		const mongoReservation = await this.model
 			.findById(id)
-			.populate('listing reserver')
+			.populate(['listing', 'reserver'])
 			.exec();
 		if (!mongoReservation) {
 			throw new Error(`ReservationRequest with id ${id} not found`);
@@ -72,7 +72,7 @@ export class ReservationRequestRepository
 	async getByReserverId(reserverId: string): Promise<Domain.Contexts.ReservationRequest.ReservationRequest.ReservationRequest<PropType>[]> {
 		const mongoReservations = await this.model
 			.find({ reserver: reserverId })
-			.populate('listing reserver')
+			.populate(['listing', 'reserver'])
 			.exec();
 		return mongoReservations.map(doc => this.typeConverter.toDomain(doc, this.passport));
 	}
@@ -80,7 +80,7 @@ export class ReservationRequestRepository
 	async getByListingId(listingId: string): Promise<Domain.Contexts.ReservationRequest.ReservationRequest.ReservationRequest<PropType>[]> {
 		const mongoReservations = await this.model
 			.find({ listing: listingId })
-			.populate('listing reserver')
+			.populate(['listing', 'reserver'])
 			.exec();
 		return mongoReservations.map(doc => this.typeConverter.toDomain(doc, this.passport));
 	}
