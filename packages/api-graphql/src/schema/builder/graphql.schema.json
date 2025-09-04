@@ -874,12 +874,12 @@
             "deprecationReason": null
           },
           {
-            "name": "status",
+            "name": "state",
             "description": null,
             "args": [],
             "type": {
               "kind": "ENUM",
-              "name": "ItemListingStatus",
+              "name": "ItemListingState",
               "ofType": null
             },
             "isDeprecated": false,
@@ -939,7 +939,7 @@
       },
       {
         "kind": "ENUM",
-        "name": "ItemListingStatus",
+        "name": "ItemListingState",
         "description": null,
         "isOneOf": null,
         "fields": null,

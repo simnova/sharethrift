@@ -138,7 +138,7 @@ export type ItemListing = MongoBase & {
   sharingHistory?: Maybe<Array<Scalars["String"]["output"]>>;
   sharingPeriodEnd: Scalars["DateTime"]["output"];
   sharingPeriodStart: Scalars["DateTime"]["output"];
-  status?: Maybe<ItemListingStatus>;
+  state?: Maybe<ItemListingState>;
   title: Scalars["String"]["output"];
   updatedAt?: Maybe<Scalars["DateTime"]["output"]>;
   version?: Maybe<Scalars["Int"]["output"]>;
@@ -445,7 +445,7 @@ export type ResolversTypes = ResolversObject<{
   ISO8601Duration: ResolverTypeWrapper<Scalars["ISO8601Duration"]["output"]>;
   Int: ResolverTypeWrapper<Scalars["Int"]["output"]>;
   ItemListing: ResolverTypeWrapper<ItemListing>;
-  ItemListingStatus: ItemListingStatus;
+  ItemListingState: ItemListingState;
   JSON: ResolverTypeWrapper<Scalars["JSON"]["output"]>;
   JSONObject: ResolverTypeWrapper<Scalars["JSONObject"]["output"]>;
   JWT: ResolverTypeWrapper<Scalars["JWT"]["output"]>;
@@ -801,7 +801,7 @@ export type ItemListingResolvers<
   sharingHistory?: Resolver<Maybe<Array<ResolversTypes["String"]>>, ParentType, ContextType>;
   sharingPeriodEnd?: Resolver<ResolversTypes["DateTime"], ParentType, ContextType>;
   sharingPeriodStart?: Resolver<ResolversTypes["DateTime"], ParentType, ContextType>;
-  status?: Resolver<Maybe<ResolversTypes["ItemListingStatus"]>, ParentType, ContextType>;
+  state?: Resolver<Maybe<ResolversTypes["ItemListingState"]>, ParentType, ContextType>;
   title?: Resolver<ResolversTypes["String"], ParentType, ContextType>;
   updatedAt?: Resolver<Maybe<ResolversTypes["DateTime"]>, ParentType, ContextType>;
   version?: Resolver<Maybe<ResolversTypes["Int"]>, ParentType, ContextType>;

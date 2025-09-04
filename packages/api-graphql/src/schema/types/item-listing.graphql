@@ -6,7 +6,7 @@ type ItemListing implements MongoBase {
   location: String!
   sharingPeriodStart: DateTime!
   sharingPeriodEnd: DateTime!
-  status: ItemListingStatus
+  state: ItemListingState
   
   sharingHistory: [String!]
   reports: Int
@@ -20,7 +20,7 @@ type ItemListing implements MongoBase {
 }
 
  
-enum ItemListingStatus {
+enum ItemListingState {
   Published
   Paused
   Cancelled
