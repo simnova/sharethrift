@@ -82,8 +82,8 @@ export const ReservationsViewActiveContainer: React.FC = () => {
       onMessage={onMessage}
       showActions={true}
       emptyText="No active reservations"
-      loading={false} //temporarily literal values 
-      error={null}
+      // loading={false} //temporarily literal values 
+      // error={null}
       cancelLoading={false}
       closeLoading={false}
     />

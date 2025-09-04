@@ -62,8 +62,8 @@ export const ReservationsViewHistoryContainer: React.FC = () => {
       reservations={MOCK_HISTORY_RESERVATIONS}
       showActions={false}
       emptyText="No past reservations"
-      loading={false} //temporarily literal values
-      error={null}
+      // loading={false} //temporarily literal values
+      // error={null}
     />
   );
 };
