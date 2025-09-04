@@ -190,36 +190,36 @@ export type MutationStatus = {
 /** GraphQL schema for Personal Users */
 export type PersonalUser = MongoBase & {
   __typename?: "PersonalUser";
-  account: PersonalUserAccount;
+  account?: Maybe<PersonalUserAccount>;
   createdAt?: Maybe<Scalars["DateTime"]["output"]>;
   id: Scalars["ObjectID"]["output"];
-  isBlocked: Scalars["Boolean"]["output"];
+  isBlocked?: Maybe<Scalars["Boolean"]["output"]>;
   schemaVersion?: Maybe<Scalars["String"]["output"]>;
   updatedAt?: Maybe<Scalars["DateTime"]["output"]>;
-  userType: Scalars["String"]["output"];
+  userType?: Maybe<Scalars["String"]["output"]>;
 };
 
 export type PersonalUserAccount = {
   __typename?: "PersonalUserAccount";
-  accountType: Scalars["String"]["output"];
-  email: Scalars["String"]["output"];
-  profile: PersonalUserAccountProfile;
-  username: Scalars["String"]["output"];
+  accountType?: Maybe<Scalars["String"]["output"]>;
+  email?: Maybe<Scalars["String"]["output"]>;
+  profile?: Maybe<PersonalUserAccountProfile>;
+  username?: Maybe<Scalars["String"]["output"]>;
 };
 
 export type PersonalUserAccountInput = {
-  accountType: Scalars["String"]["input"];
-  email: Scalars["String"]["input"];
-  profile: PersonalUserAccountProfileInput;
-  username: Scalars["String"]["input"];
+  accountType?: InputMaybe<Scalars["String"]["input"]>;
+  email?: InputMaybe<Scalars["String"]["input"]>;
+  profile?: InputMaybe<PersonalUserAccountProfileInput>;
+  username?: InputMaybe<Scalars["String"]["input"]>;
 };
 
 export type PersonalUserAccountProfile = {
   __typename?: "PersonalUserAccountProfile";
   billing?: Maybe<PersonalUserAccountProfileBilling>;
-  firstName: Scalars["String"]["output"];
-  lastName: Scalars["String"]["output"];
-  location: PersonalUserAccountProfileLocation;
+  firstName?: Maybe<Scalars["String"]["output"]>;
+  lastName?: Maybe<Scalars["String"]["output"]>;
+  location?: Maybe<PersonalUserAccountProfileLocation>;
 };
 
 export type PersonalUserAccountProfileBilling = {
@@ -240,19 +240,19 @@ export type PersonalUserAccountProfileBillingUpdateInput = {
 
 export type PersonalUserAccountProfileInput = {
   billing?: InputMaybe<PersonalUserAccountProfileBillingInput>;
-  firstName: Scalars["String"]["input"];
-  lastName: Scalars["String"]["input"];
-  location: PersonalUserAccountProfileLocationInput;
+  firstName?: InputMaybe<Scalars["String"]["input"]>;
+  lastName?: InputMaybe<Scalars["String"]["input"]>;
+  location?: InputMaybe<PersonalUserAccountProfileLocationInput>;
 };
 
 export type PersonalUserAccountProfileLocation = {
   __typename?: "PersonalUserAccountProfileLocation";
-  address1: Scalars["String"]["output"];
+  address1?: Maybe<Scalars["String"]["output"]>;
   address2?: Maybe<Scalars["String"]["output"]>;
-  city: Scalars["String"]["output"];
-  country: Scalars["String"]["output"];
-  state: Scalars["String"]["output"];
-  zipCode: Scalars["String"]["output"];
+  city?: Maybe<Scalars["String"]["output"]>;
+  country?: Maybe<Scalars["String"]["output"]>;
+  state?: Maybe<Scalars["String"]["output"]>;
+  zipCode?: Maybe<Scalars["String"]["output"]>;
 };
 
 export type PersonalUserAccountProfileLocationInput = {
@@ -288,8 +288,8 @@ export type PersonalUserAccountUpdateInput = {
 };
 
 export type PersonalUserCreateInput = {
-  account: PersonalUserAccountInput;
-  userType: Scalars["String"]["input"];
+  account?: InputMaybe<PersonalUserAccountInput>;
+  userType?: InputMaybe<Scalars["String"]["input"]>;
 };
 
 export type PersonalUserUpdateInput = {
@@ -305,6 +305,7 @@ export type Query = {
   _empty?: Maybe<Scalars["String"]["output"]>;
   conversation?: Maybe<Conversation>;
   conversations: Array<Conversation>;
+  currentPersonalUserAndCreateIfNotExists: PersonalUser;
   itemListing?: Maybe<ItemListing>;
   itemListings: Array<ItemListing>;
   personalUserById?: Maybe<PersonalUser>;
@@ -948,13 +949,13 @@ export type PersonalUserResolvers<
   ContextType = GraphContext,
   ParentType extends ResolversParentTypes["PersonalUser"] = ResolversParentTypes["PersonalUser"],
 > = ResolversObject<{
-  account?: Resolver<ResolversTypes["PersonalUserAccount"], ParentType, ContextType>;
+  account?: Resolver<Maybe<ResolversTypes["PersonalUserAccount"]>, ParentType, ContextType>;
   createdAt?: Resolver<Maybe<ResolversTypes["DateTime"]>, ParentType, ContextType>;
   id?: Resolver<ResolversTypes["ObjectID"], ParentType, ContextType>;
-  isBlocked?: Resolver<ResolversTypes["Boolean"], ParentType, ContextType>;
+  isBlocked?: Resolver<Maybe<ResolversTypes["Boolean"]>, ParentType, ContextType>;
   schemaVersion?: Resolver<Maybe<ResolversTypes["String"]>, ParentType, ContextType>;
   updatedAt?: Resolver<Maybe<ResolversTypes["DateTime"]>, ParentType, ContextType>;
-  userType?: Resolver<ResolversTypes["String"], ParentType, ContextType>;
+  userType?: Resolver<Maybe<ResolversTypes["String"]>, ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 }>;
 
@@ -962,10 +963,10 @@ export type PersonalUserAccountResolvers<
   ContextType = GraphContext,
   ParentType extends ResolversParentTypes["PersonalUserAccount"] = ResolversParentTypes["PersonalUserAccount"],
 > = ResolversObject<{
-  accountType?: Resolver<ResolversTypes["String"], ParentType, ContextType>;
-  email?: Resolver<ResolversTypes["String"], ParentType, ContextType>;
-  profile?: Resolver<ResolversTypes["PersonalUserAccountProfile"], ParentType, ContextType>;
-  username?: Resolver<ResolversTypes["String"], ParentType, ContextType>;
+  accountType?: Resolver<Maybe<ResolversTypes["String"]>, ParentType, ContextType>;
+  email?: Resolver<Maybe<ResolversTypes["String"]>, ParentType, ContextType>;
+  profile?: Resolver<Maybe<ResolversTypes["PersonalUserAccountProfile"]>, ParentType, ContextType>;
+  username?: Resolver<Maybe<ResolversTypes["String"]>, ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 }>;
 
@@ -974,9 +975,9 @@ export type PersonalUserAccountProfileResolvers<
   ParentType extends ResolversParentTypes["PersonalUserAccountProfile"] = ResolversParentTypes["PersonalUserAccountProfile"],
 > = ResolversObject<{
   billing?: Resolver<Maybe<ResolversTypes["PersonalUserAccountProfileBilling"]>, ParentType, ContextType>;
-  firstName?: Resolver<ResolversTypes["String"], ParentType, ContextType>;
-  lastName?: Resolver<ResolversTypes["String"], ParentType, ContextType>;
-  location?: Resolver<ResolversTypes["PersonalUserAccountProfileLocation"], ParentType, ContextType>;
+  firstName?: Resolver<Maybe<ResolversTypes["String"]>, ParentType, ContextType>;
+  lastName?: Resolver<Maybe<ResolversTypes["String"]>, ParentType, ContextType>;
+  location?: Resolver<Maybe<ResolversTypes["PersonalUserAccountProfileLocation"]>, ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 }>;
 
@@ -993,12 +994,12 @@ export type PersonalUserAccountProfileLocationResolvers<
   ContextType = GraphContext,
   ParentType extends ResolversParentTypes["PersonalUserAccountProfileLocation"] = ResolversParentTypes["PersonalUserAccountProfileLocation"],
 > = ResolversObject<{
-  address1?: Resolver<ResolversTypes["String"], ParentType, ContextType>;
+  address1?: Resolver<Maybe<ResolversTypes["String"]>, ParentType, ContextType>;
   address2?: Resolver<Maybe<ResolversTypes["String"]>, ParentType, ContextType>;
-  city?: Resolver<ResolversTypes["String"], ParentType, ContextType>;
-  country?: Resolver<ResolversTypes["String"], ParentType, ContextType>;
-  state?: Resolver<ResolversTypes["String"], ParentType, ContextType>;
-  zipCode?: Resolver<ResolversTypes["String"], ParentType, ContextType>;
+  city?: Resolver<Maybe<ResolversTypes["String"]>, ParentType, ContextType>;
+  country?: Resolver<Maybe<ResolversTypes["String"]>, ParentType, ContextType>;
+  state?: Resolver<Maybe<ResolversTypes["String"]>, ParentType, ContextType>;
+  zipCode?: Resolver<Maybe<ResolversTypes["String"]>, ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 }>;
 
@@ -1029,6 +1030,7 @@ export type QueryResolvers<
   _empty?: Resolver<Maybe<ResolversTypes["String"]>, ParentType, ContextType>;
   conversation?: Resolver<Maybe<ResolversTypes["Conversation"]>, ParentType, ContextType, RequireFields<QueryConversationArgs, "id">>;
   conversations?: Resolver<Array<ResolversTypes["Conversation"]>, ParentType, ContextType>;
+  currentPersonalUserAndCreateIfNotExists?: Resolver<ResolversTypes["PersonalUser"], ParentType, ContextType>;
   itemListing?: Resolver<Maybe<ResolversTypes["ItemListing"]>, ParentType, ContextType, RequireFields<QueryItemListingArgs, "id">>;
   itemListings?: Resolver<Array<ResolversTypes["ItemListing"]>, ParentType, ContextType>;
   personalUserById?: Resolver<Maybe<ResolversTypes["PersonalUser"]>, ParentType, ContextType, RequireFields<QueryPersonalUserByIdArgs, "id">>;
