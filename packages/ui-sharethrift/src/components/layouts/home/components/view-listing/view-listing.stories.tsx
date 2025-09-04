@@ -78,19 +78,20 @@ const meta: Meta<typeof ViewListing> = {
     layout: 'fullscreen',
   },
   decorators: [
-    (Story, context) => {
+    (Story) => {
       // Add a console log to debug the variables passed to the query
-      // This will only log in the Storybook browser console
       if (typeof window !== 'undefined') {
         const origFetch = window.fetch;
         window.fetch = function(...args) {
-          // Log all GraphQL POST requests
           if (args[0] && typeof args[0] === 'string' && args[0].includes('/graphql')) {
             try {
-              const body = JSON.parse(args[1]?.body || '{}');
-              if (body && body.variables) {
-                // eslint-disable-next-line no-console
-                console.log('[Storybook GraphQL Variables]', body.variables);
+              const maybeBody = args[1]?.body;
+              if (typeof maybeBody === 'string') {
+                const body = JSON.parse(maybeBody);
+                if (body?.variables) {
+                  // eslint-disable-next-line no-console
+                  console.log('[Storybook GraphQL Variables]', body.variables);
+                }
               }
             } catch {}
           }
