@@ -1,13 +1,10 @@
- trigger:
+trigger:
   branches:
     include:
       - main
   paths:
     include:
       - docusaurus
-
-variables:
-  - group: github-credentials-sharethrift # Reference the variable group containing GH_TOKEN, GH_NAME, GH_EMAIL
 
 pr:
   branches:
