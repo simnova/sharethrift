@@ -1,0 +1,23 @@
+.emptyText {
+  text-align: center;
+  color: #999;
+  font-size: 16px;
+  margin-top: 20px;
+}
+
+.mobileOnly {
+  display: block;
+}
+
+.desktopOnly {
+  display: none;
+}
+
+@media (min-width: 768px) {
+  .mobileOnly {
+    display: none;
+  }
+  .desktopOnly {
+    display: block;
+  }
+}
