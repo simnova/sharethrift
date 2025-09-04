@@ -17,15 +17,18 @@ const GET_MY_LISTINGS = gql`
       statusFilters: $statusFilters
       sorter: $sorter
     ) {
-      listings {
+      items {
         id
         title
         status
-        sharedCount
-        requestsCount
-        createdAt
+        image
+        pendingRequestsCount
+        publishedAt
+        reservationPeriod
       }
       total
+      page
+      pageSize
     }
   }
 `;
@@ -45,13 +48,14 @@ export function AllListingsTableContainer({ currentPage, onPageChange }: { curre
       pageSize: pageSize,
       searchText: searchText,
       statusFilters: statusFilters,
-      sorter: sorter,
+      sorter: sorter.order ? sorter : null,
     },
+    fetchPolicy: 'network-only', // Ensure we always fetch from the network
   });
 
   console.log("------->>>>>>>-----", data);
   // Filter and sort data - this is now handled by the backend
-  const listings = data ? data.myListingsAll.listings : [];
+  const listings = data ? data.myListingsAll.items : [];
   const total = data ? data.myListingsAll.total : 0;
 
   const handleSearch = (value: string) => {

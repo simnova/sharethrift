@@ -1,4 +1,4 @@
-import type { GraphContext } from "../../context.ts";
+import type { GraphContext } from "../../init/context.ts";
 import { myListingsMockService } from "../../mock-services/my-listings-mock.service.ts";
 
 interface MyListingsArgs {
@@ -24,11 +24,11 @@ const itemListingResolvers = {
       // TODO: implement actual logic to fetch listings
       return {};
     },
-    activeListings: (_parent: unknown, _args: unknown, context: GraphContext) => {
-      console.log('active listings resolver called with context:', context);
-      // TODO: implement actual logic to fetch active listings
-      return [];
-    },
+    // activeListings: (_parent: unknown, _args: unknown, context: GraphContext) => {
+    //   console.log('active listings resolver called with context:', context);
+    //   // TODO: implement actual logic to fetch active listings
+    //   return [];
+    // },
     
     // My Listings queries
     myListingsAll: (_parent: unknown, args: MyListingsArgs, context: GraphContext) => {

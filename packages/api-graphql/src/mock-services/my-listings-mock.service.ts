@@ -41,7 +41,7 @@ export interface PageResult<T> {
 export class MyListingsMockService {
   private mockListings: MockListing[] = [
     {
-      id: '1',
+      id: '6324a3f1e3e4e1e6a8e1d8a1',
       title: 'Cordless Drill',
       image: 'https://example.com/drill.jpg',
       publishedAt: '2025-12-23',
@@ -50,7 +50,7 @@ export class MyListingsMockService {
       pendingRequestsCount: 0,
     },
     {
-      id: '2',
+      id: '6324a3f1e3e4e1e6a8e1d8a2',
       title: 'City Bike',
       image: 'https://example.com/bike.jpg',
       publishedAt: '2025-01-03',
@@ -59,7 +59,7 @@ export class MyListingsMockService {
       pendingRequestsCount: 2,
     },
     {
-      id: '3',
+      id: '6324a3f1e3e4e1e6a8e1d8a3',
       title: 'Sewing Kit',
       image: 'https://example.com/sewing.jpg',
       publishedAt: '2025-01-12',
@@ -68,7 +68,7 @@ export class MyListingsMockService {
       pendingRequestsCount: 0,
     },
     {
-      id: '4',
+      id: '6324a3f1e3e4e1e6a8e1d8a4',
       title: 'Monopoly Board Game',
       image: 'https://example.com/monopoly.jpg',
       publishedAt: '2024-04-02',
@@ -77,7 +77,7 @@ export class MyListingsMockService {
       pendingRequestsCount: 0,
     },
     {
-      id: '5',
+      id: '6324a3f1e3e4e1e6a8e1d8a5',
       title: 'Camping Tent',
       image: 'https://example.com/tent.jpg',
       publishedAt: '2024-02-22',
@@ -86,7 +86,7 @@ export class MyListingsMockService {
       pendingRequestsCount: 1,
     },
     {
-      id: '6',
+      id: '6324a3f1e3e4e1e6a8e1d8a6',
       title: 'Outdoor Table And Chairs',
       image: 'https://example.com/table.jpg',
       publishedAt: '2022-05-17',
@@ -95,7 +95,7 @@ export class MyListingsMockService {
       pendingRequestsCount: 0,
     },
     {
-      id: '7',
+      id: '6324a3f1e3e4e1e6a8e1d8a7',
       title: 'Digital Camera',
       image: 'https://example.com/camera.jpg',
       publishedAt: '2024-08-15',
@@ -104,7 +104,7 @@ export class MyListingsMockService {
       pendingRequestsCount: 3,
     },
     {
-      id: '8',
+      id: '6324a3f1e3e4e1e6a8e1d8a8',
       title: 'Electric Guitar',
       image: 'https://example.com/guitar.jpg',
       publishedAt: '2024-06-10',
@@ -113,7 +113,7 @@ export class MyListingsMockService {
       pendingRequestsCount: 1,
     },
     {
-      id: '9',
+      id: '6324a3f1e3e4e1e6a8e1d8a9',
       title: 'Vacuum Cleaner',
       image: 'https://example.com/vacuum.jpg',
       publishedAt: '2024-03-28',
@@ -122,7 +122,7 @@ export class MyListingsMockService {
       pendingRequestsCount: 0,
     },
     {
-      id: '10',
+      id: '6324a3f1e3e4e1e6a8e1d8b0',
       title: 'Lawn Mower',
       image: 'https://example.com/mower.jpg',
       publishedAt: '2024-07-14',
@@ -131,7 +131,7 @@ export class MyListingsMockService {
       pendingRequestsCount: 0,
     },
     {
-      id: '11',
+      id: '6324a3f1e3e4e1e6a8e1d8b1',
       title: 'Power Tools Set',
       image: 'https://example.com/tools.jpg',
       publishedAt: '2024-05-20',
@@ -140,7 +140,7 @@ export class MyListingsMockService {
       pendingRequestsCount: 0,
     },
     {
-      id: '12',
+      id: '6324a3f1e3e4e1e6a8e1d8b2',
       title: 'Kitchen Mixer',
       image: 'https://example.com/mixer.jpg',
       publishedAt: '2024-09-05',
@@ -149,7 +149,7 @@ export class MyListingsMockService {
       pendingRequestsCount: 2,
     },
     {
-      id: '13',
+      id: '6324a3f1e3e4e1e6a8e1d8b3',
       title: 'Gaming Console',
       image: 'https://example.com/console.jpg',
       publishedAt: '2024-04-18',
@@ -161,7 +161,7 @@ export class MyListingsMockService {
 
   private mockRequests: MockListingRequest[] = [
     {
-      id: '2',
+      id: '6324a3f1e3e4e1e6a8e1d8a2',
       title: 'City Bike',
       image: 'https://example.com/bike.jpg',
       requestedBy: '@patrickg',
@@ -170,7 +170,7 @@ export class MyListingsMockService {
       status: 'Pending',
     },
     {
-      id: '5',
+      id: '6324a3f1e3e4e1e6a8e1d8a5',
       title: 'Camping Tent',
       image: 'https://example.com/tent.jpg',
       requestedBy: '@jasonm',
@@ -179,7 +179,7 @@ export class MyListingsMockService {
       status: 'Accepted',
     },
     {
-      id: '5',
+      id: '6324a3f1e3e4e1e6a8e1d8a5',
       title: 'Camping Tent',
       image: 'https://example.com/tent.jpg',
       requestedBy: '@shannonj',
@@ -188,7 +188,7 @@ export class MyListingsMockService {
       status: 'Rejected',
     },
     {
-      id: '5',
+      id: '6324a3f1e3e4e1e6a8e1d8a5',
       title: 'Camping Tent',
       image: 'https://example.com/tent.jpg',
       requestedBy: '@patrickg',
@@ -197,7 +197,7 @@ export class MyListingsMockService {
       status: 'Closed',
     },
     {
-      id: '2',
+      id: '6324a3f1e3e4e1e6a8e1d8a2',
       title: 'City Bike',
       image: 'https://example.com/bike.jpg',
       requestedBy: '@jasonm',
@@ -206,7 +206,7 @@ export class MyListingsMockService {
       status: 'Cancelled',
     },
     {
-      id: '5',
+      id: '6324a3f1e3e4e1e6a8e1d8a5',
       title: 'Camping Tent',
       image: 'https://example.com/tent.jpg',
       requestedBy: '@kishorg',
@@ -215,7 +215,7 @@ export class MyListingsMockService {
       status: 'Cancelled',
     },
     {
-      id: '7',
+      id: '6324a3f1e3e4e1e6a8e1d8a7',
       title: 'Digital Camera',
       image: 'https://example.com/camera.jpg',
       requestedBy: '@patrickg',
@@ -224,7 +224,7 @@ export class MyListingsMockService {
       status: 'Pending',
     },
     {
-      id: '12',
+      id: '6324a3f1e3e4e1e6a8e1d8b2',
       title: 'Kitchen Mixer',
       image: 'https://example.com/mixer.jpg',
       requestedBy: '@jasonm',
@@ -238,15 +238,51 @@ export class MyListingsMockService {
    * Get paginated listings for a user
    */
   getMyListings(options: PaginationOptions): PageResult<MockListing> {
-    const { page, pageSize } = options;
+    const { page, pageSize, searchText, statusFilters, sorter } = options;
+    let filteredListings = this.mockListings;
+
+    // Apply search text filter
+    if (searchText) {
+      filteredListings = filteredListings.filter((listing) =>
+        listing.title.toLowerCase().includes(searchText.toLowerCase()),
+      );
+    }
+
+    // Apply status filters
+    if (statusFilters && statusFilters.length > 0) {
+      filteredListings = filteredListings.filter((listing) =>
+        statusFilters.includes(listing.status),
+      );
+    }
+
+    // Apply sorter
+    if (sorter && sorter.field) {
+      filteredListings.sort((a, b) => {
+        const fieldA = a[sorter.field as keyof MockListing];
+        const fieldB = b[sorter.field as keyof MockListing];
+
+        // Handle undefined cases for sorting
+        if (fieldA === undefined || fieldA === null) return sorter.order === 'ascend' ? -1 : 1;
+        if (fieldB === undefined || fieldB === null) return sorter.order === 'ascend' ? 1 : -1;
+
+        if (fieldA < fieldB) {
+          return sorter.order === 'ascend' ? -1 : 1;
+        }
+        if (fieldA > fieldB) {
+          return sorter.order === 'ascend' ? 1 : -1;
+        }
+        return 0;
+      });
+    }
+
+    const total = filteredListings.length;
     const startIndex = (page - 1) * pageSize;
     const endIndex = startIndex + pageSize;
-    
-    const items = this.mockListings.slice(startIndex, endIndex);
-    
+    const items = filteredListings.slice(startIndex, endIndex);
+
     return {
       items,
-      total: this.mockListings.length,
+      total,
       page,
       pageSize,
     };
@@ -256,15 +292,51 @@ export class MyListingsMockService {
    * Get paginated listing requests for a user
    */
   getMyListingRequests(options: PaginationOptions): PageResult<MockListingRequest> {
-    const { page, pageSize } = options;
+    const { page, pageSize, searchText, statusFilters, sorter } = options;
+    let filteredRequests = this.mockRequests;
+
+    // Apply search text filter
+    if (searchText) {
+      filteredRequests = filteredRequests.filter((request) =>
+        request.title.toLowerCase().includes(searchText.toLowerCase()),
+      );
+    }
+
+    // Apply status filters
+    if (statusFilters && statusFilters.length > 0) {
+      filteredRequests = filteredRequests.filter((request) =>
+        statusFilters.includes(request.status),
+      );
+    }
+
+    // Apply sorter
+    if (sorter && sorter.field) {
+      filteredRequests.sort((a, b) => {
+        const fieldA = a[sorter.field as keyof MockListingRequest];
+        const fieldB = b[sorter.field as keyof MockListingRequest];
+
+        // Handle undefined cases for sorting
+        if (fieldA === undefined || fieldA === null) return sorter.order === 'ascend' ? -1 : 1;
+        if (fieldB === undefined || fieldB === null) return sorter.order === 'ascend' ? 1 : -1;
+
+        if (fieldA < fieldB) {
+          return sorter.order === 'ascend' ? -1 : 1;
+        }
+        if (fieldA > fieldB) {
+          return sorter.order === 'ascend' ? 1 : -1;
+        }
+        return 0;
+      });
+    }
+
+    const total = filteredRequests.length;
     const startIndex = (page - 1) * pageSize;
     const endIndex = startIndex + pageSize;
-    
-    const items = this.mockRequests.slice(startIndex, endIndex);
-    
+    const items = filteredRequests.slice(startIndex, endIndex);
+
     return {
       items,
-      total: this.mockRequests.length,
+      total,
       page,
       pageSize,
     };

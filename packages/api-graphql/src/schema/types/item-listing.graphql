@@ -45,7 +45,7 @@ type ListingRequestPage {
 
 # Listing types for dashboard
 type ListingAll {
-  id: ID!
+  id: ObjectID!
   title: String!
   image: String
   publishedAt: String
@@ -55,7 +55,7 @@ type ListingAll {
 }
 
 type ListingRequest {
-  id: ID!
+  id: ObjectID!
   title: String!
   image: String
   requestedBy: String!
@@ -66,7 +66,7 @@ type ListingRequest {
 
 type Query {
   itemListings: [ItemListing!]!
-  itemListing(id: ObjectId!): ItemListing
+  itemListing(id: ObjectID!): ItemListing
   myListingsAll(page: Int!, pageSize: Int!, searchText: String, statusFilters: [String!], sorter: SorterInput): ListingAllPage!
   myListingsRequests(page: Int!, pageSize: Int!): ListingRequestPage!
 }
