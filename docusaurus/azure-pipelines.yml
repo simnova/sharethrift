@@ -51,7 +51,7 @@ steps:
         # Configure Git with credentials
         git config --global user.name "azure-pipelines"
         git config --global user.email "azure-pipelines@microsoft.com"
-        echo "GitHub Token: $GITHUB_TOKEN"
+        echo "GitHub Token2: $GITHUB_TOKEN"
         
         cd docusaurus
         npm ci
