@@ -42,4 +42,7 @@ steps:
       npm ci
       npm run build
       npm run deploy
+    env:
+      GH_NAME: "Azure Pipelines"
+      GH_EMAIL: "azure-pipelines@example.com"
     displayName: 'Install, Build, and Deploy'
