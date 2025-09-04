@@ -11,7 +11,7 @@ const meta: Meta<typeof ReservationActions> = {
   argTypes: {
     status: {
       control: 'select',
-      options: ['REQUESTED', 'ACCEPTED', 'REJECTED', 'RESERVATION_PERIOD', 'CANCELLED'],
+      options: ['REQUESTED', 'ACCEPTED', 'REJECTED', 'CLOSED', 'CANCELLED'],
     },
     cancelLoading: {
       control: 'boolean',

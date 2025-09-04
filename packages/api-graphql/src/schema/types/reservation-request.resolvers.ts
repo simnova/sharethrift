@@ -72,7 +72,7 @@ const reservationRequest = {
 			// Mock implementation - will be replaced with actual business logic
 			return await Promise.resolve({
 				id: args.id,
-				state: 'RESERVATION_PERIOD',
+				state: 'ACCEPTED',
 				reservationPeriodStart: '2024-01-15',
 				reservationPeriodEnd: '2024-01-20',
 				createdAt: '2024-01-10',

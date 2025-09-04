@@ -7,7 +7,6 @@ export const ReservationRequestStates = {
 	REQUESTED: 'Requested',
 	ACCEPTED: 'Accepted',
 	REJECTED: 'Rejected',
-	RESERVATION_PERIOD: 'Reservation Period',
 	CANCELLED: 'Cancelled',
     CLOSED: 'Closed'
 } as const;

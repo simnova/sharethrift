@@ -27,8 +27,8 @@ export const Rejected: Story = {
   args: { status: 'REJECTED' },
 };
 
-export const ReservationPeriod: Story = {
-  args: { status: 'RESERVATION_PERIOD' },
+export const Closed: Story = {
+  args: { status: 'CLOSED' },
 };
 
 export const Cancelled: Story = {

@@ -28,8 +28,8 @@ const mockReservationRequests: ReservationRequest[] = [
   // ...add more mock reservations as needed
 ];
 
-const getActiveReservations = (): ReservationRequest[] => mockReservationRequests.filter(r => ['REQUESTED', 'ACCEPTED', 'REJECTED', 'CANCELLED'].includes(r.state));
-const getHistoryReservations = (): ReservationRequest[] => mockReservationRequests.filter(r => r.state === 'RESERVATION_PERIOD');
+const getActiveReservations = (): ReservationRequest[] => mockReservationRequests.filter(r => ['REQUESTED', 'ACCEPTED'].includes(r.state));
+const getHistoryReservations = (): ReservationRequest[] => mockReservationRequests.filter(r => ['CANCELLED', 'CLOSED', 'REJECTED'].includes(r.state));
 
 const meta: Meta<typeof ReservationsGrid> = {
   title: 'Organisms/ReservationsGrid',

@@ -27,7 +27,7 @@ export const MOCK_HISTORY_RESERVATIONS: ReservationRequest[] = [
   },
   {
     id: "4",
-    state: "RESERVATION_PERIOD",
+    state: "ACCEPTED",
     reservationPeriodStart: "2025-06-10",
     reservationPeriodEnd: "2025-06-15",
     createdAt: "2025-06-01",

@@ -89,19 +89,6 @@ export class ReservationRequest<props extends ReservationRequestProps>
       case ReservationRequestStates.CLOSED:
         this.close();
         break;
-      case ReservationRequestStates.RESERVATION_PERIOD:
-        if (
-          !this.isNew &&
-          !this.visa.determineIf(
-            (domainPermissions) => domainPermissions.canUpdateRequest
-          )
-        ) {
-          throw new DomainSeedwork.PermissionError(
-            "You do not have permission to update this reservation period"
-          );
-        }
-        this.props.state = new ValueObjects.ReservationRequestStateValue(ReservationRequestStates.RESERVATION_PERIOD).valueOf();
-        break;
     }
   }
 
@@ -257,7 +244,7 @@ export class ReservationRequest<props extends ReservationRequestProps>
     return await this.props.loadListing();
   }
 
-  public accept(): void {
+  private accept(): void {
     if (
       !this.visa.determineIf(
         (domainPermissions) => domainPermissions.canAcceptRequest
@@ -275,7 +262,7 @@ export class ReservationRequest<props extends ReservationRequestProps>
     this.props.state = new ValueObjects.ReservationRequestStateValue(ReservationRequestStates.ACCEPTED).valueOf();
   }
 
-  public reject(): void {
+  private reject(): void {
     if (
       !this.visa.determineIf(
         (domainPermissions) => domainPermissions.canRejectRequest
@@ -293,7 +280,7 @@ export class ReservationRequest<props extends ReservationRequestProps>
     this.props.state =  new ValueObjects.ReservationRequestStateValue(ReservationRequestStates.REJECTED).valueOf();
   }
 
-  public cancel(): void {
+  private cancel(): void {
     if (
       !this.visa.determineIf(
         (domainPermissions) => domainPermissions.canCancelRequest
@@ -304,15 +291,14 @@ export class ReservationRequest<props extends ReservationRequestProps>
       );
     }
 
-    if (!(this.props.state.valueOf() === ReservationRequestStates.REQUESTED || 
-            this.props.state.valueOf() === ReservationRequestStates.REJECTED)) {
+    if (this.props.state.valueOf() !== ReservationRequestStates.REQUESTED) {
       throw new Error("Cannot cancel reservation in current state");
     }
 
     this.props.state = new ValueObjects.ReservationRequestStateValue(ReservationRequestStates.CANCELLED).valueOf();
   }
 
-  public close(): void {
+  private close(): void {
     if (
       !this.visa.determineIf(
         (domainPermissions) => domainPermissions.canCloseRequest

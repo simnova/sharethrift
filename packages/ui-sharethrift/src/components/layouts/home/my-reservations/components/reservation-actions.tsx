@@ -3,7 +3,7 @@ import { Space } from 'antd';
 import { ReservationActionButton } from './reservation-action-button.tsx';
 
 export interface ReservationActionsProps {
-  status: 'REQUESTED' | 'ACCEPTED' | 'REJECTED' | 'RESERVATION_PERIOD' | 'CANCELLED';
+  status: 'REQUESTED' | 'ACCEPTED' | 'REJECTED' | 'CLOSED' | 'CANCELLED';
   onCancel?: () => void;
   onClose?: () => void;
   onMessage?: () => void;

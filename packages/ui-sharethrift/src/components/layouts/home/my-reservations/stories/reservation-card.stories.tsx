@@ -93,7 +93,7 @@ const mockReservationRequests: ReservationRequest[] = [
   },
   {
     id: '5',
-    state: 'RESERVATION_PERIOD',
+    state: 'ACCEPTED',
     reservationPeriodStart: '2024-06-01T00:00:00Z',
     reservationPeriodEnd: '2024-06-05T00:00:00Z',
     createdAt: '2024-05-20T10:00:00Z',
@@ -176,7 +176,7 @@ export const Cancelled: Story = {
 
 export const Closed: Story = {
   args: {
-    reservation: mockReservationRequests[4]!, // RESERVATION_PERIOD status
+    reservation: mockReservationRequests[4]!, 
     onCancel: (id: string) => console.log('Cancel clicked for:', id),
     onClose: (id: string) => console.log('Close clicked for:', id),
     onMessage: (id: string) => console.log('Message clicked for:', id),

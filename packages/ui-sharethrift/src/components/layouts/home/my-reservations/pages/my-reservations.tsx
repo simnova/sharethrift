@@ -8,7 +8,7 @@ const { Title } = Typography;
 //Will eventually come from the generated graphql files
 export interface ReservationRequest {
   id: string;
-  state: 'REQUESTED' | 'ACCEPTED' | 'REJECTED' | 'RESERVATION_PERIOD' | 'CANCELLED';
+  state: 'REQUESTED' | 'ACCEPTED' | 'REJECTED' | 'CLOSED' | 'CANCELLED';
   reservationPeriodStart: string;
   reservationPeriodEnd: string;
   createdAt: string;

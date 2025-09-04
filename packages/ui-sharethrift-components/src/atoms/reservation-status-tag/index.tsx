@@ -6,7 +6,7 @@ export interface ReservationStatusTagProps {
     | "REQUESTED"
     | "ACCEPTED"
     | "REJECTED"
-    | "RESERVATION_PERIOD"
+    | "CLOSED"
     | "CANCELLED";
 }
 
@@ -14,7 +14,7 @@ const ReservationStatusTagColorMap = {
   REQUESTED: "blue",
   ACCEPTED: "green",
   REJECTED: "red",
-  RESERVATION_PERIOD: "purple",
+  CLOSED: "purple",
   CANCELLED: "default",
 };
 

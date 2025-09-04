@@ -18,6 +18,6 @@ enum ReservationRequestState {
   REQUESTED
   ACCEPTED
   REJECTED
-  RESERVATION_PERIOD
+  CLOSED
   CANCELLED
 }

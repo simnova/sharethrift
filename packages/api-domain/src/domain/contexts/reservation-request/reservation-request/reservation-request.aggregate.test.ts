@@ -222,7 +222,7 @@ describe('ReservationRequest', () => {
         mockPassport
       );
 
-      reservation.accept();
+  reservation.state = ReservationRequestStates.ACCEPTED;
 
   expect(reservation.state.valueOf()).toBe(new ReservationRequestStateValue(ReservationRequestStates.ACCEPTED).valueOf());
     });
@@ -253,10 +253,10 @@ describe('ReservationRequest', () => {
         mockPassport
       );
 
-      reservation.accept();
+  reservation.state = ReservationRequestStates.ACCEPTED;
 
       expect(() => {
-        reservation.accept();
+  reservation.state = ReservationRequestStates.ACCEPTED;
       }).toThrow('Can only accept requested reservations');
     });
   });
@@ -288,7 +288,7 @@ describe('ReservationRequest', () => {
         mockPassport
       );
 
-      reservation.cancel();
+  reservation.state = ReservationRequestStates.CANCELLED;
 
   expect(reservation.state.valueOf()).toBe(new ReservationRequestStateValue(ReservationRequestStates.CANCELLED).valueOf());
     });
@@ -319,8 +319,8 @@ describe('ReservationRequest', () => {
         mockPassport
       );
 
-      reservation.reject();
-      reservation.cancel();
+  reservation.state = ReservationRequestStates.REJECTED;
+  reservation.state = ReservationRequestStates.CANCELLED;
 
   expect(reservation.state.valueOf()).toBe(new ReservationRequestStateValue(ReservationRequestStates.CANCELLED).valueOf());
     });
@@ -355,9 +355,9 @@ describe('ReservationRequest', () => {
         mockPassport
       );
 
-      reservation.accept();
-      reservation.closeRequestedBySharer = true;
-      reservation.close();
+  reservation.state = ReservationRequestStates.ACCEPTED;
+  reservation.closeRequestedBySharer = true;
+  reservation.state = ReservationRequestStates.CLOSED;
 
       expect(reservation.state.valueOf()).toBe(new ReservationRequestStateValue(ReservationRequestStates.CLOSED).valueOf());
     });
@@ -390,9 +390,9 @@ describe('ReservationRequest', () => {
         mockPassport
       );
 
-      reservation.accept();
-      reservation.closeRequestedByReserver = true;
-      reservation.close();
+  reservation.state = ReservationRequestStates.ACCEPTED;
+  reservation.closeRequestedByReserver = true;
+  reservation.state = ReservationRequestStates.CLOSED;
 
       expect(reservation.state.valueOf()).toBe(new ReservationRequestStateValue(ReservationRequestStates.CLOSED).valueOf());
     });
@@ -426,7 +426,7 @@ describe('ReservationRequest', () => {
       );
 
       expect(() => {
-        reservation.close();
+        reservation.state = ReservationRequestStates.CLOSED;
       }).toThrow('Can only close accepted reservations');
     });
 
@@ -458,9 +458,9 @@ describe('ReservationRequest', () => {
         mockPassport
       );
 
-      reservation.accept();
+      reservation.state = ReservationRequestStates.ACCEPTED;
       expect(() => {
-        reservation.close();
+        reservation.state = ReservationRequestStates.CLOSED;
       }).toThrow('Can only close reservation requests if at least one user requested it');
     });
   });
@@ -494,7 +494,7 @@ describe('ReservationRequest', () => {
         mockPassport
       );
 
-      reservation.accept();
+  reservation.state = ReservationRequestStates.ACCEPTED;
       reservation.closeRequestedByReserver = true;
 
       expect(reservation.closeRequestedByReserver).toBe(true);
