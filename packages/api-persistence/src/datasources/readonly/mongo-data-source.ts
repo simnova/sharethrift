@@ -15,8 +15,8 @@ export type FindOptions = {
 
 export type FindOneOptions = Omit<FindOptions, 'limit' | 'skip' | 'sort'>;
 export interface MongoDataSource<TDoc extends MongooseSeedwork.Base> {
-    find(filter: Partial<TDoc>, options?: FindOptions): Promise<Lean<TDoc>[]>;
-    findOne(filter: Partial<TDoc>, options?: FindOneOptions): Promise<Lean<TDoc> | null>;
+    find(filter: FilterQuery<TDoc>, options?: FindOptions): Promise<Lean<TDoc>[]>;
+    findOne(filter: FilterQuery<TDoc>, options?: FindOneOptions): Promise<Lean<TDoc> | null>;
     findById(id: string, options?: FindOneOptions): Promise<Lean<TDoc> | null>;
 }
 
@@ -36,15 +36,8 @@ export class MongoDataSourceImpl<TDoc extends MongooseSeedwork.Base> implements 
         return projection;
     }
 
-    private buildFilterQuery(filter: Partial<TDoc>): FilterQuery<TDoc> {
-        const query: FilterQuery<TDoc> = {};
-        for (const key of Object.keys(filter)) {
-            const value = filter[key as keyof TDoc];
-            if (value !== undefined) {
-                query[key as keyof FilterQuery<TDoc>] = value as FilterQuery<TDoc>[keyof TDoc];
-            }
-        }
-        return query;
+    private buildFilterQuery(filter: FilterQuery<TDoc>): FilterQuery<TDoc> {
+        return filter;
     }
 
     private appendId(doc: LeanBase<TDoc>): Lean<TDoc> {
@@ -62,13 +55,13 @@ export class MongoDataSourceImpl<TDoc extends MongooseSeedwork.Base> implements 
         return findOptions;
     }
 
-    async find(filter: Partial<TDoc>, options?: FindOptions): Promise<Lean<TDoc>[]> {
+    async find(filter: FilterQuery<TDoc>, options?: FindOptions): Promise<Lean<TDoc>[]> {
         const queryOptions = this.buildQueryOptions(options);
         const docs = await this.model.find(this.buildFilterQuery(filter), this.buildProjection(options?.fields, options?.projectionMode), queryOptions).lean<LeanBase<TDoc>[]>()
         return docs.map(doc => this.appendId(doc));
     }
 
-    async findOne(filter: Partial<TDoc>, options?: FindOneOptions): Promise<Lean<TDoc> | null> {
+    async findOne(filter: FilterQuery<TDoc>, options?: FindOneOptions): Promise<Lean<TDoc> | null> {
         const doc = await this.model.findOne(this.buildFilterQuery(filter), this.buildProjection(options?.fields, options?.projectionMode)).lean<LeanBase<TDoc>>();
         if (options?.populateFields?.length) {
             await doc?.populate(options.populateFields);
