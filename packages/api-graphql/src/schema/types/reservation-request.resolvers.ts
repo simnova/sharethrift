@@ -13,7 +13,7 @@ const reservationRequest = {
 			_context: GraphContext,
 		) => {
 			// Mock data for now - will be replaced with calls to application services
-			return await Promise.resolve({
+			return await Promise.resolve([{
 				id: '2',
 				state: 'ACCEPTED',
 				reservationPeriodStart: '2024-01-25',
@@ -52,7 +52,7 @@ const reservationRequest = {
 					createdAt: '2024-01-01',
 					updatedAt: '2024-01-13',
 				},
-			});
+			}]);
 		},
 		myPastReservations: async (
 			_parent: unknown,
@@ -60,7 +60,7 @@ const reservationRequest = {
 			_context: GraphContext,
 		) => {
 			// Mock data for now - will be replaced with calls to application services
-			return await Promise.resolve({
+			return await Promise.resolve([{
 				id: '2',
 				state: 'ACCEPTED',
 				reservationPeriodStart: '2024-01-25',
@@ -99,7 +99,7 @@ const reservationRequest = {
 					createdAt: '2024-01-01',
 					updatedAt: '2024-01-13',
 				},
-			});
+			}]);
 		},
 	},
 	Mutation: {
