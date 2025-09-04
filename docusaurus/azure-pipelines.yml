@@ -14,14 +14,6 @@ pr:
     include:
       - docusaurus     
 
-resources:
-  repositories:
-    - repository: self
-      type: git
-      name: simnova/sharethrift
-      ref: refs/heads/main
-      endpoint: 'Simnova (1)'
-
 pool:
   vmImage: ubuntu-latest
 
@@ -49,14 +41,17 @@ steps:
       targetType: 'inline'
       script: |
         # Configure Git with credentials
-        git config --global user.name "azure-pipelines"
-        git config --global user.email "azure-pipelines@microsoft.com"
+        git config --global user.name "${GIT_USER}"
+        git config --global user.email "${GIT_EMAIL}"
+        echo "Git User: $GIT_USER"
+        echo "Git Email: $GIT_EMAIL"
         echo "GitHub Token2: $GITHUB_TOKEN"
         
         cd docusaurus
         npm ci
         npm run build
-        npm run deploy
+        GIT_USER="${GIT_USER}" USE_SSH=false npm run deploy
     env:
       GIT_USER: "azure-pipelines"
+      GIT_EMAIL: "azure-pipelines@microsoft.com"
       GITHUB_TOKEN: $(System.AccessToken)
