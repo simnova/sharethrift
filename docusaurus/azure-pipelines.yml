@@ -38,6 +38,8 @@ steps:
   - script: |
       git config --global user.name "Azure Pipelines"
       git config --global user.email "azure-pipelines@microsoft.com"
+      # Configure GitHub credentials using the access token
+      git config --global url."https://$(System.AccessToken)@github.com/".insteadOf "https://github.com/"
       cd docusaurus
       npm ci
       npm run build
