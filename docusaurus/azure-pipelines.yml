@@ -40,7 +40,4 @@ steps:
       npm ci
       npm run build
       npm run deploy
-    env:
-      GIT_USER: "git"
-      GH_TOKEN: $(System.AccessToken)
     displayName: 'Install, Build, and Deploy'
