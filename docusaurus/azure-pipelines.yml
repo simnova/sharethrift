@@ -43,13 +43,11 @@ steps:
         # Configure Git with credentials
         git config --global user.name "Azure Pipelines"
         git config --global user.email "azure-pipelines@microsoft.com"
-        git config --global credential.helper 'cache --timeout 600'
-        << eof tr -d ' ' | git credential-cache store
-          protocol=https
-          host=github.com
-          username=nobody
-          password=${GITHUB_TOKEN}
-        eof        
+        
+        # Configure GitHub authentication using credential helper
+        git config --global credential.helper store
+        echo "https://nobody:${GITHUB_TOKEN}@github.com" > ~/.git-credentials
+        chmod 600 ~/.git-credentials
         
         cd docusaurus
         npm ci
