@@ -43,5 +43,5 @@ steps:
       npm run build
       npm run deploy
     env:
-      GIT_USER: "Azure Pipelines"
+      GIT_USER: "AzurePipelines"
     displayName: 'Install, Build, and Deploy'
