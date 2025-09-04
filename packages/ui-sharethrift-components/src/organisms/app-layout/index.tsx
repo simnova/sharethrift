@@ -1,9 +1,9 @@
-import React from 'react';
-import { Layout } from 'antd';
-import { Header } from '../../molecules/header/index.js';
-import { Navigation } from '../../molecules/navigation/index.js';
-import { Footer } from '../../molecules/footer/index.js';
-import styles from './index.module.css';
+import React from "react";
+import { Layout } from "antd";
+import { Header } from "../../molecules/header/index.js";
+import { Navigation } from "../../molecules/navigation/index.js";
+import { Footer } from "../../molecules/footer/index.js";
+import styles from "./index.module.css";
 
 export interface AppLayoutProps {
   isAuthenticated: boolean;
@@ -15,30 +15,18 @@ export interface AppLayoutProps {
   children: React.ReactNode;
 }
 
-export const AppLayout: React.FC<AppLayoutProps> = ({
-  isAuthenticated,
-  onLogin,
-  onLogout,
-  onSignUp,
-  onNavigate,
-  selectedKey,
-  children,
-}) => {
+export const AppLayout: React.FC<AppLayoutProps> = ({ isAuthenticated, onLogin, onLogout, onSignUp, onNavigate, selectedKey, children }) => {
   return (
-  <Layout className={styles['appLayout']}>
-      <Header
-        isAuthenticated={isAuthenticated}
-        onLogin={onLogin ?? (() => {})}
-        onSignUp={onSignUp ?? (() => {})}
-      />
-  <div className={styles['bodyWrapper']}>
+    <Layout className={styles["appLayout"]}>
+      <Header isAuthenticated={isAuthenticated} onLogin={onLogin ?? (() => {})} onSignUp={onSignUp ?? (() => {})} onLogout={onLogout ?? (() => {})} />
+      <div className={styles["bodyWrapper"]}>
         <Navigation
           isAuthenticated={isAuthenticated}
           onLogout={onLogout ?? (() => {})}
           onNavigate={onNavigate ?? (() => {})}
           selectedKey={selectedKey ?? ""}
         />
-  <main className={styles['content']}>{children}</main>
+        <main className={styles["content"]}>{children}</main>
       </div>
       <Footer />
     </Layout>

@@ -1,9 +1,7 @@
 import { useState } from "react";
 import { Button, Card } from "antd";
 import { CheckOutlined, SafetyOutlined } from "@ant-design/icons";
-import stool from "@sthrift/ui-sharethrift-components/src/assets/item-images/stool.png";
-import armchair from "@sthrift/ui-sharethrift-components/src/assets/item-images/armchair.png";
-import bubbleChair from "@sthrift/ui-sharethrift-components/src/assets/item-images/bubble-chair.png";
+
 
 type PersonalAccountSubType = "non-verified" | "verified" | "verified-plus";
 
@@ -26,7 +24,7 @@ const personalOptions: AccountOption[] = [
       "15 items to share",
       "5 friends",
     ],
-    icon: stool,
+    icon: "/assets/item-images/stool.png",
   },
   {
     id: "verified",
@@ -38,7 +36,7 @@ const personalOptions: AccountOption[] = [
       "30 items to share",
       "10 friends",
     ],
-    icon: armchair,
+    icon: "/assets/item-images/armchair.png",
   },
   {
     id: "verified-plus",
@@ -50,7 +48,7 @@ const personalOptions: AccountOption[] = [
       "50 items to share",
       "30 friends",
     ],
-    icon: bubbleChair,
+    icon: "/assets/item-images/bubble-chair.png",
   },
 ];
 

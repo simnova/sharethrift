@@ -9,7 +9,7 @@ query ViewListing($id: ObjectID!) {
     location
     sharingPeriodStart
     sharingPeriodEnd
-    status
+    state
     images
     createdAt
     updatedAt
