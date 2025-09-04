@@ -1,32 +1,32 @@
 import type { Domain } from '@sthrift/api-domain';
 import type { DataSources } from '@sthrift/api-persistence';
-import { type ConversationCreateCommand, create } from './create.ts';
-import { type ConversationQueryByIdCommand, queryById } from './query-by-id.ts';
+import { type ItemListingCreateCommand, create } from './create.ts';
+import { type ItemListingQueryByIdCommand, queryById } from './query-by-id.ts';
 import {
-	type ConversationQueryByPersonalUserExternalIdCommand,
-	queryByPersonalUserExternalId,
-} from './query-by-personal-user-external-id.ts';
+	type ItemListingQueryByPersonalUserCommand,
+	queryByPersonalUser,
+} from './query-by-personal-user.ts';
 
-export interface ConversationApplicationService {
+export interface ItemListingApplicationService {
 	create: (
-		command: ConversationCreateCommand,
-	) => Promise<Domain.Contexts.Conversation.Conversation.ConversationEntityReference>;
+		command: ItemListingCreateCommand,
+	) => Promise<Domain.Contexts.Listing.ItemListing.ItemListingEntityReference>;
 	queryById: (
-		command: ConversationQueryByIdCommand,
-	) => Promise<Domain.Contexts.Conversation.Conversation.ConversationEntityReference | null>;
-	queryByPersonalUserExternalId: (
-		command: ConversationQueryByPersonalUserExternalIdCommand,
+		command: ItemListingQueryByIdCommand,
+	) => Promise<Domain.Contexts.Listing.ItemListing.ItemListingEntityReference | null>;
+	queryByPersonalUser: (
+		command: ItemListingQueryByPersonalUserCommand,
 	) => Promise<
-		Domain.Contexts.Conversation.Conversation.ConversationEntityReference[]
+		Domain.Contexts.Listing.ItemListing.ItemListingEntityReference[]
 	>;
 }
 
-export const Conversation = (
+export const ItemListing = (
 	dataSources: DataSources,
-): ConversationApplicationService => {
+): ItemListingApplicationService => {
 	return {
 		create: create(dataSources),
 		queryById: queryById(dataSources),
-		queryByPersonalUserExternalId: queryByPersonalUserExternalId(dataSources),
+		queryByPersonalUser: queryByPersonalUser(dataSources),
 	};
 };

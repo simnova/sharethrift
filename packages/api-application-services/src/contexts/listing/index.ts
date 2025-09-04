@@ -1,17 +1,17 @@
 import type { DataSources } from '@sthrift/api-persistence';
 import {
-	Conversation as ConversationApi,
-	type ConversationApplicationService,
-} from './conversation/index.ts';
+	ItemListing as ItemListingApi,
+	type ItemListingApplicationService,
+} from './item/index.ts';
 
 export interface ConversationContextApplicationService {
-	Conversation: ConversationApplicationService;
+	ItemListing: ItemListingApplicationService;
 }
 
 export const Conversation = (
 	dataSources: DataSources,
 ): ConversationContextApplicationService => {
 	return {
-		Conversation: ConversationApi(dataSources),
+		ItemListing: ItemListingApi(dataSources),
 	};
 };

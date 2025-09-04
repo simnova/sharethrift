@@ -3,9 +3,9 @@ import type { DataSources } from '@sthrift/api-persistence';
 import { type ConversationCreateCommand, create } from './create.ts';
 import { type ConversationQueryByIdCommand, queryById } from './query-by-id.ts';
 import {
-	type ConversationQueryByPersonalUserExternalIdCommand,
-	queryByPersonalUserExternalId,
-} from './query-by-personal-user-external-id.ts';
+	type ConversationQueryByPersonalUserCommand,
+	queryByPersonalUser,
+} from './query-by-personal-user.ts';
 
 export interface ConversationApplicationService {
 	create: (
@@ -14,8 +14,8 @@ export interface ConversationApplicationService {
 	queryById: (
 		command: ConversationQueryByIdCommand,
 	) => Promise<Domain.Contexts.Conversation.Conversation.ConversationEntityReference | null>;
-	queryByPersonalUserExternalId: (
-		command: ConversationQueryByPersonalUserExternalIdCommand,
+	queryByPersonalUser: (
+		command: ConversationQueryByPersonalUserCommand,
 	) => Promise<
 		Domain.Contexts.Conversation.Conversation.ConversationEntityReference[]
 	>;
@@ -27,6 +27,6 @@ export const Conversation = (
 	return {
 		create: create(dataSources),
 		queryById: queryById(dataSources),
-		queryByPersonalUserExternalId: queryByPersonalUserExternalId(dataSources),
+		queryByPersonalUser: queryByPersonalUser(dataSources),
 	};
 };
