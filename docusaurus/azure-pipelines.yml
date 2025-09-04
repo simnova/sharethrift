@@ -7,7 +7,7 @@
       - docusaurus
 
 variables:
-  - group: github-credentials-sharethift # Reference the variable group containing GH_TOKEN, GH_NAME, GH_EMAIL
+  - group: github-credentials-sharethrift # Reference the variable group containing GH_TOKEN, GH_NAME, GH_EMAIL
 
 pr:
   branches:
@@ -32,20 +32,18 @@ steps:
 - script: |
       git config --global user.name "$(GH_NAME)"
       git config --global user.email "$(GH_EMAIL)"
-      # Configure Git to use the PAT for authentication
-      git config --global credential.helper 'store --file=.git-credentials'
-      echo "https://$(GH_NAME):$(GH_TOKEN)@github.com" > .git-credentials
-      cd docusaurus
+      # Configure Git to use credential cache
+      git config --global credential.helper 'cache --timeout=300'
+      # Provide credentials to the cache
+      echo "protocol=https" | git credential approve
+      echo "host=github.com" | git credential approve
+      echo "username=$(GH_NAME)" | git credential approve
+      echo "password=$(GH_TOKEN)" | git credential approve
       npm install
       npm run build
-      GIT_USER="$(GH_NAME)" npm run deploy
+      GIT_USER="$(GH_NAME)" yarn deploy
     env:
       GH_NAME: $(GH_NAME)
       GH_EMAIL: $(GH_EMAIL)
       GH_TOKEN: $(GH_TOKEN)
     displayName: 'Install, Build, and Deploy'
-
-  - script: |
-      rm -f .git-credentials
-    condition: always()
-    displayName: 'Clean up credentials file'
