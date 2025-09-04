@@ -14,6 +14,14 @@ pr:
     include:
       - docusaurus     
 
+resources:
+  repositories:
+    - repository: self
+      type: git
+      name: simnova/sharethrift
+      ref: refs/heads/main
+      endpoint: 'Simnova (1)'
+
 pool:
   vmImage: ubuntu-latest
 
@@ -45,8 +53,10 @@ steps:
         git config --global user.email "${GIT_EMAIL}"
         echo "Git User: $GIT_USER"
         echo "Git Email: $GIT_EMAIL"
-        echo "GitHub Token2: $GITHUB_TOKEN"
-        
+
+        # Reset origin to use the GitHub service connection token
+        git remote set-url origin https://x-access-token:${GITHUB_TOKEN}@github.com/simnova/sharethrift.git
+
         cd docusaurus
         npm ci
         npm run build
