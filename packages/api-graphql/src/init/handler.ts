@@ -39,8 +39,6 @@ export const graphHandlerCreator = (
             };
             return Promise.resolve({
                 applicationServices: await applicationServicesFactory.forRequest(authHeader, hints),
-                paymentService: {}, // You'll need to properly initialize this
-                dataSourcesFactory: {}, // You'll need to properly initialize this
             });
 		},
 	};
