@@ -1,12 +1,13 @@
 import React from 'react';
-import { ReservationsTable } from './reservations-table.tsx';
-import { ReservationsGrid } from './reservations-grid.tsx';
-import { Alert, Spin } from 'antd';
+import { Image } from 'antd';
+import { Dashboard, ReservationStatusTag } from '@sthrift/ui-sharethrift-components';
+import { ReservationActions } from './reservation-actions.tsx';
+import { ReservationCard } from './reservation-card.tsx';
 import styles from './reservations-view.module.css';
 import type { ReservationRequest } from '../pages/my-reservations.tsx';
 
 export interface ReservationsViewProps {
-  reservations: ReservationRequest[]; // Will eventually come from generated graphql files
+  reservations: ReservationRequest[];
   onCancel?: (id: string) => void;
   onClose?: (id: string) => void;
   onMessage?: (id: string) => void;
@@ -14,8 +15,6 @@ export interface ReservationsViewProps {
   closeLoading?: boolean;
   showActions?: boolean;
   emptyText?: string;
-  loading?: boolean;
-  error?: Error | null;
 }
 
 export const ReservationsView: React.FC<ReservationsViewProps> = ({
@@ -27,58 +26,99 @@ export const ReservationsView: React.FC<ReservationsViewProps> = ({
   closeLoading = false,
   showActions = true,
   emptyText = 'No reservations found',
-  loading = false,
-  error,
 }) => {
-  if (loading) {
-    return (
-      <div className="flex justify-center items-center h-64">
-        <Spin size="large" />
-      </div>
-    );
-  }
+  const columns = [
+    {
+      title: 'Listing',
+      dataIndex: 'listing',
+      key: 'listing',
+      render: (listing: ReservationRequest['listing']) => (
+        <div className={styles.listingCell}>
+          {listing?.imageUrl && (
+            <Image
+              src={listing.imageUrl}
+              alt={listing.title}
+              className={styles.listingImage}
+              preview={false}
+            />
+          )}
+          <span className={styles.tableText}>{listing?.title || 'Unknown Listing'}</span>
+        </div>
+      ),
+    },
+    {
+      title: 'Sharer',
+      dataIndex: 'reserver',
+      key: 'sharer',
+      render: (reserver: ReservationRequest['reserver']) => (
+        <span className={styles.tableText}>
+          {reserver?.name ? `@${reserver.name}` : 'Unknown'}
+        </span>
+      ),
+    },
+    {
+      title: 'Requested On',
+      dataIndex: 'createdAt',
+      key: 'createdAt',
+      render: (createdAt: string) => (
+        <span className={styles.tableText}>{new Date(createdAt).toLocaleDateString()}</span>
+      ),
+    },
+    {
+      title: 'Reservation Period',
+      key: 'period',
+      render: (record: ReservationRequest) => (
+        <span className={styles.tableText}>
+          {new Date(record.reservationPeriodStart).toLocaleDateString()} - {' '}
+          {new Date(record.reservationPeriodEnd).toLocaleDateString()}
+        </span>
+      ),
+    },
+    {
+      title: 'Status',
+      dataIndex: 'state',
+      key: 'status',
+      render: (state: ReservationRequest['state']) => (
+        <ReservationStatusTag status={state} />
+      ),
+    },
+    ...(showActions ? [{
+      title: 'Actions',
+      key: 'actions',
+      render: (record: ReservationRequest) => (
+        <ReservationActions
+          status={record.state}
+          onCancel={() => onCancel?.(record.id)}
+          onClose={() => onClose?.(record.id)}
+          onMessage={() => onMessage?.(record.id)}
+          cancelLoading={cancelLoading}
+          closeLoading={closeLoading}
+        />
+      ),
+    }] : []),
+  ];
 
-  if (error) {
-    return (
-      <Alert
-        message="Error Loading Reservations"
-        description="There was an error loading your reservations. Please try again later."
-        type="error"
-        showIcon
-      />
-    );
-  }
+  const renderGridItem = (record: ReservationRequest) => (
+    <ReservationCard
+      key={record.id}
+      reservation={record}
+      onCancel={onCancel}
+      onClose={onClose}
+      onMessage={onMessage}
+      cancelLoading={cancelLoading}
+      closeLoading={closeLoading}
+      showActions={showActions}
+    />
+  );
 
   return (
-    <div>
-      {/* Mobile Grid View */}
-      <div className={styles.mobileOnly}>
-        <ReservationsGrid
-          reservations={reservations}
-          onCancel={onCancel}
-          onClose={onClose}
-          onMessage={onMessage}
-          cancelLoading={cancelLoading}
-          closeLoading={closeLoading}
-          showActions={showActions}
-          emptyText={emptyText}
-        />
-      </div>
-
-      {/* Desktop Table View */}
-      <div className={styles.desktopOnly}>
-        <ReservationsTable
-          reservations={reservations}
-          onCancel={onCancel}
-          onClose={onClose}
-          onMessage={onMessage}
-          cancelLoading={cancelLoading}
-          closeLoading={closeLoading}
-          showActions={showActions}
-          emptyText={emptyText}
-        />
-      </div>
-    </div>
+    <Dashboard
+      data={reservations}
+      columns={columns}
+      renderGridItem={renderGridItem}
+      rowKey="id"
+      emptyText={emptyText}
+    />
   );
 };
 
