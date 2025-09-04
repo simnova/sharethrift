@@ -24,20 +24,25 @@ steps:
   - checkout: self
     persistCredentials: true
 
+  # Cache NPM packages to speed up build process.
+  - task: Cache@2
+    displayName: 'NPM: Restore Cache'
+    inputs:
+      key: 'npm | "$(Agent.OS)" | $(Build.SourcesDirectory)/package-lock.json'
+      restoreKeys: |
+          npm | "$(Agent.OS)"
+      path: $(npm_config_cache)
+
   - task: UseNode@1
     inputs:
       version: '22.x'
     displayName: Install Node.js
 
-- script: |
-git config --global user.name "Azure Pipelines"
+  - script: |
+      git config --global user.name "Azure Pipelines"
       git config --global user.email "azure-pipelines@example.com"
       cd docusaurus
-      npm install
+      npm ci
       npm run build
       npm run deploy
-    env:
-      GH_NAME: $(GH_NAME)
-      GH_EMAIL: $(GH_EMAIL)
-      GH_TOKEN: $(GH_TOKEN)
     displayName: 'Install, Build, and Deploy'
