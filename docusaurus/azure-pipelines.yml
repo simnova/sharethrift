@@ -48,6 +48,11 @@ steps:
         echo "GH_TOKEN: $(GH_TOKEN)"
         echo "Token length: ${#GH_TOKEN}"
 
+        if [ -z "$(GH_TOKEN)" ]; then
+          echo "Error: GH_TOKEN is empty or not loaded. Please check the variable group configuration."
+          exit 1
+        fi
+
         # Configure Git with credentials from variable group
         git config --global user.name "$(GH_NAME)"
         git config --global user.email "$(GH_EMAIL)"
