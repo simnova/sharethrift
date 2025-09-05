@@ -58,7 +58,7 @@ describeFeature(feature, ({ Scenario }) => {
 				() => {
 					createShort = () =>
 						new ValueObjects.TwilioConversationSid(
-							'CH' + '1'.repeat(31),
+							`CH${'1'.repeat(31)}`,
 						).valueOf();
 				},
 			);
@@ -80,7 +80,7 @@ describeFeature(feature, ({ Scenario }) => {
 				() => {
 					createLong = () =>
 						new ValueObjects.TwilioConversationSid(
-							'CH' + '1'.repeat(33),
+							`CH${'1'.repeat(33)}`,
 						).valueOf();
 				},
 			);
@@ -150,7 +150,7 @@ describeFeature(feature, ({ Scenario }) => {
 				() => {
 					createShort = () =>
 						new ValueObjects.TwilioParticipantSid(
-							'MB' + '1'.repeat(31),
+							`MB${'1'.repeat(31)}`,
 						).valueOf();
 				},
 			);
@@ -172,7 +172,7 @@ describeFeature(feature, ({ Scenario }) => {
 				() => {
 					createLong = () =>
 						new ValueObjects.TwilioParticipantSid(
-							'MB' + '1'.repeat(33),
+							`MB${'1'.repeat(33)}`,
 						).valueOf();
 				},
 			);

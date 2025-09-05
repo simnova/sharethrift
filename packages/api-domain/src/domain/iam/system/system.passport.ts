@@ -3,7 +3,7 @@ import type { UserPassport } from '../../contexts/user/user.passport.ts';
 import type { ListingPassport } from '../../contexts/listing/listing.passport.ts';
 import type { ConversationPassport } from '../../contexts/conversation/conversation.passport.ts';
 import { SystemUserPassport } from './contexts/system.user.passport.ts';
-import { SystemListingPassport } from './contexts/system.item-listing.passport.ts';
+import { SystemListingPassport } from './contexts/system.listing.passport.ts';
 import { SystemConversationPassport } from './contexts/system.conversation.passport.ts'; // Ensure this file exists and is named correctly
 import { SystemPassportBase } from './system.passport-base.ts';
 
