@@ -3,12 +3,10 @@
 	"compilerOptions": {
 		/* Modules */
 		"rootDir": ".",
+		"types": ["node"],
 
 		/* Emit */
-		"outDir": "dist",
-		/* add these to fix type error related to JSX */
-		"types": ["@types/react"],
-		"lib": ["dom", "esnext"]
+		"outDir": "dist"
 	},
 	"include": ["src/**/*.ts"],
 	"references": [{ "path": "../api-domain" }]

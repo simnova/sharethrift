@@ -1,8 +1,15 @@
 import { Outlet, useNavigate } from "react-router-dom";
 import { Footer, Header } from "@sthrift/ui-sharethrift-components";
 import { useAuth } from "react-oidc-context";
+import type { PersonalUser } from "../../../generated.tsx";
+import { HandleLogoutMockForMockAuth } from "../../shared/handle-logout";
 
-export default function SignupLayout() {
+interface SectionLayoutProps {
+  personalData?: PersonalUser
+}
+
+
+export const SectionLayout: React.FC<SectionLayoutProps> = (_props) => {
   const auth = useAuth();
   const navigate = useNavigate();
 
@@ -14,6 +21,10 @@ export default function SignupLayout() {
     navigate("/auth-redirect");
   };
 
+  const handleLogOut = () => {
+    HandleLogoutMockForMockAuth(auth);
+  }
+
   return (
     <div
       style={{
@@ -24,11 +35,7 @@ export default function SignupLayout() {
         flexDirection: "column",
       }}
     >
-      <Header
-        isAuthenticated={auth.isAuthenticated}
-        onLogin={handleOnLogin}
-        onSignUp={handleOnSignUp}
-      />
+      <Header isAuthenticated={auth.isAuthenticated} onLogin={handleOnLogin} onSignUp={handleOnSignUp} onLogout={handleLogOut}/>
       <div
         style={{
           display: "flex",
@@ -45,4 +52,4 @@ export default function SignupLayout() {
       <Footer />
     </div>
   );
-}
+};

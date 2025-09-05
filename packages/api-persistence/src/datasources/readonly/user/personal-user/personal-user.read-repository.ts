@@ -15,6 +15,10 @@ export interface PersonalUserReadRepository {
 		id: string,
 		options?: FindOneOptions,
 	) => Promise<Domain.Contexts.User.PersonalUser.PersonalUserEntityReference | null>;
+	getByEmail: (
+		email: string,
+		options?: FindOneOptions,
+	) => Promise<Domain.Contexts.User.PersonalUser.PersonalUserEntityReference | null>;
 }
 
 export class PersonalUserReadRepositoryImpl
@@ -43,6 +47,17 @@ export class PersonalUserReadRepositoryImpl
 		options?: FindOneOptions,
 	): Promise<Domain.Contexts.User.PersonalUser.PersonalUserEntityReference | null> {
 		const result = await this.mongoDataSource.findById(id, options);
+		if (!result) {
+			return null;
+		}
+		return this.converter.toDomain(result, this.passport);
+	}
+
+	async getByEmail(
+		email: string,
+		options?: FindOneOptions,
+	): Promise<Domain.Contexts.User.PersonalUser.PersonalUserEntityReference | null> {
+    const result = await this.mongoDataSource.findOne({ 'account.email': email }, options);
 		if (!result) {
 			return null;
 		}

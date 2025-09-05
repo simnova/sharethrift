@@ -5,8 +5,14 @@ import type { PersonalUserRepository } from './personal-user.repository.ts';
 
 export interface PersonalUserUnitOfWork
 	extends DomainSeedwork.UnitOfWork<
-		Passport,
-		PersonalUserProps,
-		PersonalUser<PersonalUserProps>,
-		PersonalUserRepository<PersonalUserProps>
-	> {}
+			Passport,
+			PersonalUserProps,
+			PersonalUser<PersonalUserProps>,
+			PersonalUserRepository<PersonalUserProps>
+		>,
+		DomainSeedwork.InitializedUnitOfWork<
+			Passport,
+			PersonalUserProps,
+			PersonalUser<PersonalUserProps>,
+			PersonalUserRepository<PersonalUserProps>
+		> {}
