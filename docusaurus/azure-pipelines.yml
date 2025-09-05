@@ -38,17 +38,13 @@ steps:
       path: 
         $(Build.SourcesDirectory)/docusaurus/node_modules
 
-
-
   - task: Bash@3
     displayName: 'Install, Build, and Deploy'
     inputs:
       targetType: 'inline'
       script: |
-        # Debug variable availability
         echo "GH_NAME: $(GH_NAME)"
         echo "GH_EMAIL: $(GH_EMAIL)"
-        echo "GH_TOKEN length: ${#GH_TOKEN}"
         echo "Current directory: $(pwd)"
         echo "Git remote URL:"
         git remote -v
@@ -57,17 +53,18 @@ steps:
           echo "Error: GH_TOKEN is empty or not loaded. Please check the variable group configuration."
           exit 1
         fi
+        echo "GH_TOKEN PRESENT: True"
 
-        git config --global user.name "$(GH_NAME)"
-        git config --global user.email "$(GH_EMAIL)"
         cd docusaurus
         npm ci
 
-
+        git config --global user.name "$(GH_NAME)"
+        git config --global user.email "$(GH_EMAIL)"
 
         export GIT_USER=$(GH_NAME)
         export GIT_PASS=$(GH_TOKEN)
-        
-
+      
         npm run deploy --skip-build
+
+        #requires GH_TOKEN secret variable with Pages permission with Read/Write access
 
