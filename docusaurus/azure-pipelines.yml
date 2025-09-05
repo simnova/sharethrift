@@ -49,8 +49,8 @@ steps:
         # Set the remote URL with token from variable group
         git remote set-url origin https://x-access-token:${GH_TOKEN}@github.com/simnova/sharethrift.git
         
-        # Configure Git to use the token without prompting
-        git config --global http.https://github.com/.extraheader "Authorization: Basic $(echo -n x-access-token:${GH_TOKEN} | base64)"
+        # Configure Git credential helper
+        git config --global credential.helper "!f() { echo username=x-access-token; echo password=${GH_TOKEN}; }; f"
         
         # Verify Git configuration
         echo "Git remote URL:"
