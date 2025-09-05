@@ -45,8 +45,10 @@ steps:
         # Debug variable availability
         echo "GH_NAME: $(GH_NAME)"
         echo "GH_EMAIL: $(GH_EMAIL)"
-        echo "GH_TOKEN: $(GH_TOKEN)"
-        echo "Token length: ${#GH_TOKEN}"
+        echo "GH_TOKEN length: ${#GH_TOKEN}"
+        echo "Current directory: $(pwd)"
+        echo "Git remote URL:"
+        git remote -v
 
         if [ -z "$(GH_TOKEN)" ]; then
           echo "Error: GH_TOKEN is empty or not loaded. Please check the variable group configuration."
@@ -60,11 +62,10 @@ steps:
 
         export GIT_USER=$(GH_NAME)
         export GIT_PASS=$(GH_TOKEN)
+        export DEBUG=*
 
-        # git config --global credential.helper 'cache --timeout=300'
-        # echo "protocol=https" | git credential approve
-        # echo "host=github.com" | git credential approve
-        # echo "username=$(GH_NAME)" | git credential approve
-        # echo "password=$(GH_TOKEN)" | git credential approve
+        # Debug Docusaurus config
+        echo "Docusaurus config:"
+        cat docusaurus.config.js
+
         npm run deploy
-        
