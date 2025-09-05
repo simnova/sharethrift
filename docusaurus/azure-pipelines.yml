@@ -78,11 +78,12 @@ steps:
         #git config credential.helper '!f() { echo "username=x-access-token"; echo "password=${GITHUB_TOKEN}"; }; f'
         ls -a 
         # Deploy using Docusaurus with explicit environment variables
-        GITHUB_TOKEN="${GITHUB_TOKEN}" GIT_USER="${GIT_USER}" USE_SSH=false npm run deploy
+        # GITHUB_TOKEN="${GITHUB_TOKEN}" GIT_USER="${GIT_USER}" USE_SSH=false npm run deploy
+        npm run deploy
         ls -a
         # git push --force origin gh-pages
     env:
-      GIT_USER: "azure-pipelines"
-      GIT_EMAIL: "azure-pipelines@microsoft.com"
+      GIT_USER_NAME: "azure-pipelines"
+      GIT_USER_EMAIL: "azure-pipelines@microsoft.com"
       GITHUB_TOKEN: $(System.AccessToken)
-      USE_SSH: "true"
+      USE_SSH: "false"
