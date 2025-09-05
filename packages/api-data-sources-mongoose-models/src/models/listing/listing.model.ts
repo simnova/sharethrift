@@ -5,13 +5,6 @@ import { MongooseSeedwork } from '@cellix/data-sources-mongoose';
 // Local interface for Mongoose schema typing (plain data shape, not domain aggregate)
 export interface Listing extends MongooseSeedwork.Base {
 	discriminatorKey: string;
-	// All required fields from Base
-	id: Types.ObjectId;
-	createdAt: Date;
-	updatedAt: Date;
-	_id: Types.ObjectId;
-	schemaVersion: string;
-	version: number;
 }
 
 export const listingOptions = {

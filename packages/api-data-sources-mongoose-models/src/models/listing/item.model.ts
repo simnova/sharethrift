@@ -26,8 +26,6 @@ const itemListingFieldDefs = {
 		enum: LISTING_STATE_ENUM,
 		required: false,
 	},
-	createdAt: { type: Date, required: false, default: Date.now },
-	updatedAt: { type: Date, required: false, default: Date.now },
 	sharingHistory: [{ type: String }],
 	reports: { type: Number, default: 0 },
 	images: [{ type: String }], // Array of image URLs
@@ -43,12 +41,9 @@ export interface ItemListing extends Listing {
 	sharingPeriodStart: Date;
 	sharingPeriodEnd: Date;
 	state?: 'Published' | 'Paused' | 'Cancelled' | 'Drafted' | 'Expired' | 'Blocked' | 'Appeal Requested';
-	createdAt: Date;
-	updatedAt: Date;
 	sharingHistory?: string[];
 	reports?: number;
 	images?: string[];
-	_id: Types.ObjectId;
 }
 
 export const ItemListingSchema = new Schema<ItemListing, Model<ItemListing>, ItemListing>(
