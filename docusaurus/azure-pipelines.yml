@@ -19,7 +19,7 @@ resources:
     - repository: simnovaRepo
       type: github
       name: simnova/sharethrift
-      ref: refs/heads/main
+      ref: pg-fix-docusaurus
       endpoint: 'Simnova (1)'
 
 pool:
