@@ -47,6 +47,7 @@ steps:
         echo "GH_EMAIL: ${GH_EMAIL}"
         echo "GH_TOKEN: ${GH_TOKEN}"
         echo "Token length: ${#GH_TOKEN}"
+        echo "if GH_TOKEN is empty, the length will be 0"
 
         # Configure Git with credentials from variable group
         git config --global user.name "${GH_NAME}"
