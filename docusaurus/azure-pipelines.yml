@@ -17,7 +17,7 @@ pr:
 resources:
   repositories:
     - repository: self
-      type: git
+      type: github
       name: simnova/sharethrift
       ref: refs/heads/main
       endpoint: 'Simnova (1)'
@@ -72,15 +72,15 @@ steps:
         npm run build
         
         # Configure Git in the docusaurus directory as well
-        git config user.name "${GIT_USER}"
-        git config user.email "${GIT_EMAIL}"
-        echo "machine github.com login ${GH_NAME} password ${GH_TOKEN}" > ~/.netrc
+        #git config user.name "${GIT_USER}"
+        #git config user.email "${GIT_EMAIL}"
+        #echo "machine github.com login ${GH_NAME} password ${GH_TOKEN}" > ~/.netrc
         #git config credential.helper '!f() { echo "username=x-access-token"; echo "password=${GITHUB_TOKEN}"; }; f'
-        ls -a 
+        
         # Deploy using Docusaurus with explicit environment variables
         # GITHUB_TOKEN="${GITHUB_TOKEN}" GIT_USER="${GIT_USER}" USE_SSH=false npm run deploy
         npm run deploy
-        ls -a
+      
         # git push --force origin gh-pages
     env:
       GIT_USER: "azure-pipelines"
