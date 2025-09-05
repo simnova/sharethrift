@@ -37,27 +37,30 @@ steps:
       version: '22.x'
     displayName: 'Install Node.js'
 
-  - task: Bash@3
-    displayName: 'Install, Build, and Deploy'
-    inputs:
-      targetType: 'inline'
-      script: |
-        # Configure Git with credentials from variable group
-        git config --global user.name "${GH_NAME}"
-        git config --global user.email "${GH_EMAIL}"
-        
-        # Set the remote URL with token from variable group
-        git remote set-url origin https://x-access-token:${GH_TOKEN}@github.com/simnova/sharethrift.git
-        
-        # Verify Git configuration
-        echo "Git remote URL:"
-        git remote get-url origin
-        echo "Using token: ${GH_TOKEN}"
+- task: Bash@3
+  displayName: 'Install, Build, and Deploy'
+  inputs:
+    targetType: 'inline'
+    script: |
+      # Configure Git with credentials from variable group
+      git config --global user.name "${GH_NAME}"
+      git config --global user.email "${GH_EMAIL}"
+      
+      # Set the remote URL with token from variable group
+      git remote set-url origin https://x-access-token:${GH_TOKEN}@github.com/simnova/sharethrift.git
+      
+      # Configure Git to use the token without prompting
+      git config --global http.https://github.com/.extraheader "Authorization: Basic $(echo -n x-access-token:${GH_TOKEN} | base64)"
+      
+      # Verify Git configuration
+      echo "Git remote URL:"
+      git remote get-url origin
+      echo "Using token: ${GH_TOKEN}"
 
-        cd docusaurus
-        npm ci
-        npm run build
-        echo "Build Complete"
-        
-        # Deploy using Docusaurus with GIT_USER
-        GIT_USER="${GH_NAME}" npm run deploy
+      cd docusaurus
+      npm ci
+      npm run build
+      echo "Build Complete"
+      
+      # Deploy using Docusaurus with GIT_USER
+      GIT_USER="${GH_NAME}" npm run deploy
