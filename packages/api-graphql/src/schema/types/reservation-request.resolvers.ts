@@ -20,7 +20,6 @@ const reservationRequest = {
 				reservationPeriodEnd: '2024-01-30',
 				createdAt: '2024-01-12',
 				updatedAt: '2024-01-13',
-				closeRequested: false,
 				listing: {
 					id: 'listing2',
 					sharer: {
@@ -28,6 +27,7 @@ const reservationRequest = {
 						userType: 'personal',
 						isBlocked: false,
 						account: {
+                            accountType: 'personal',
 							email: 'sharer2@example.com',
 							username: 'shareruser2',
 							profile: {
@@ -40,9 +40,13 @@ const reservationRequest = {
 						updatedAt: '2024-01-13T09:00:00Z',
 					},
 					title: 'Professional Microphone',
+					description: 'A high-quality microphone for professional use.',
+                    category: 'Electronics',
+                    location: 'New York, NY',
 					sharingPeriodStart: '2024-01-25T09:00:00Z',
 					sharingPeriodEnd: '2024-01-30T18:00:00Z',
 					schemaVersion: '1',
+                    state: 'Published',
 					createdAt: '2024-01-05T09:00:00Z',
 					updatedAt: '2024-01-13T09:00:00Z',
 				},
@@ -64,12 +68,11 @@ const reservationRequest = {
 			// Mock data for now - will be replaced with calls to application services
 			return await Promise.resolve([{
 				id: '2',
-				state: 'ACCEPTED',
+				state: 'Closed',
 				reservationPeriodStart: '2024-01-25',
 				reservationPeriodEnd: '2024-01-30',
 				createdAt: '2024-01-12',
 				updatedAt: '2024-01-13',
-				closeRequested: false,
 				listing: {
 					id: 'listing2',
 					sharer: {
@@ -77,6 +80,7 @@ const reservationRequest = {
 						userType: 'personal',
 						isBlocked: false,
 						account: {
+                            accountType: 'personal',
 							email: 'sharer2@example.com',
 							username: 'shareruser2',
 							profile: {
@@ -89,9 +93,13 @@ const reservationRequest = {
 						updatedAt: '2024-01-13T09:00:00Z',
 					},
 					title: 'Professional Microphone',
+					description: 'A high-quality microphone for professional use.',
+                    category: 'Electronics',
+                    location: 'New York, NY',
 					sharingPeriodStart: '2024-01-25T09:00:00Z',
 					sharingPeriodEnd: '2024-01-30T18:00:00Z',
 					schemaVersion: '1',
+                    state: 'Published',
 					createdAt: '2024-01-05T09:00:00Z',
 					updatedAt: '2024-01-13T09:00:00Z',
 				},
@@ -101,8 +109,8 @@ const reservationRequest = {
 					createdAt: '2024-01-01',
 					updatedAt: '2024-01-13',
 				},
-                closeRequestedBySharer: true,
-	            closeRequestedByReserver: true,
+                closeRequestedBySharer: false,
+	            closeRequestedByReserver: false,
 			}]);
 		},
 	},
@@ -128,6 +136,7 @@ const reservationRequest = {
 						userType: 'personal',
 						isBlocked: false,
 						account: {
+                            accountType: 'personal',
 							email: 'sharer2@example.com',
 							username: 'shareruser2',
 							profile: {
@@ -140,9 +149,13 @@ const reservationRequest = {
 						updatedAt: '2024-01-13T09:00:00Z',
 					},
 					title: 'Professional Microphone',
+					description: 'A high-quality microphone for professional use.',
+                    category: 'Electronics',
+                    location: 'New York, NY',
 					sharingPeriodStart: '2024-01-25T09:00:00Z',
 					sharingPeriodEnd: '2024-01-30T18:00:00Z',
 					schemaVersion: '1',
+                    state: 'Published',
 					createdAt: '2024-01-05T09:00:00Z',
 					updatedAt: '2024-01-13T09:00:00Z',
 				},
@@ -177,6 +190,7 @@ const reservationRequest = {
 						userType: 'personal',
 						isBlocked: false,
 						account: {
+                            accountType: 'personal',
 							email: 'sharer2@example.com',
 							username: 'shareruser2',
 							profile: {
@@ -189,9 +203,13 @@ const reservationRequest = {
 						updatedAt: '2024-01-13T09:00:00Z',
 					},
 					title: 'Professional Microphone',
+					description: 'A high-quality microphone for professional use.',
+                    category: 'Electronics',
+                    location: 'New York, NY',
 					sharingPeriodStart: '2024-01-25T09:00:00Z',
 					sharingPeriodEnd: '2024-01-30T18:00:00Z',
 					schemaVersion: '1',
+                    state: 'Published',
 					createdAt: '2024-01-05T09:00:00Z',
 					updatedAt: '2024-01-13T09:00:00Z',
 				},
