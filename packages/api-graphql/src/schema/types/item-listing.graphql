@@ -1,6 +1,5 @@
-type ItemListing implements MongoBase{
-  
-  sharer: ObjectID!
+type ItemListing implements MongoBase {
+  sharer: String!
   title: String!
   description: String!
   category: String!
@@ -9,15 +8,18 @@ type ItemListing implements MongoBase{
   sharingPeriodEnd: DateTime!
   state: ItemListingState
   
-  sharingHistory: [ObjectID!]
+  sharingHistory: [String!]
   reports: Int
+  images: [String!] # Array of image URLs
 
   id: ObjectID!
   schemaVersion: String
   createdAt: DateTime
   updatedAt: DateTime
+  version: Int
 }
 
+ 
 enum ItemListingState {
   Published
   Paused
@@ -25,7 +27,7 @@ enum ItemListingState {
   Drafted
   Expired
   Blocked
-  AppealRequested
+  Appeal_Requested
 }
 
 extend type Query {

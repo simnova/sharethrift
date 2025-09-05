@@ -1,0 +1,13 @@
+# add dummy graphql to temporarily fix graphql code gen
+query SignUpSectionLayoutContainerCurrentPersonalUserAndCreateIfNotExists {
+  currentPersonalUserAndCreateIfNotExists {
+    id
+    account {
+      email
+      profile {
+        firstName
+        lastName
+      }
+    }
+  }
+}

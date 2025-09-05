@@ -4,33 +4,34 @@ import styles from "./index.module.css";
 import "../../styles/theme.css";
 import logoIcon from "../../assets/logo/logo-icon.svg";
 
-
 export interface HeaderProps {
   isAuthenticated: boolean;
   onLogin?: () => void;
   onSignUp?: () => void;
+  onLogout?: () => void;
 }
 
 const { Header: AntHeader } = Layout;
 
-export const Header: React.FC<HeaderProps> = ({ isAuthenticated, onLogin, onSignUp }) => {
-
-
-  const handleLogout = () => {
-    // TODO: Implement logout logic
-    // Example: auth.removeUser();
-  };
-
+export const Header: React.FC<HeaderProps> = ({ isAuthenticated, onLogin, onSignUp, onLogout }) => {
   return (
-  <AntHeader className={styles["header"]}>
-  <div className={styles["logoSection"]}>
-  <img src={logoIcon} alt="Sharethrift Logo" className={styles["logo"]} />
-  <span className={styles["logoText"]}>sharethrift</span>
+    <AntHeader className={styles["header"]}>
+      <div className={styles["logoSection"]}>
+        <img src={logoIcon} alt="Sharethrift Logo" className={styles["logo"]} />
+        <span className={styles["logoText"]}>sharethrift</span>
       </div>
-  <nav className={styles["authSection"]}>
+      <nav className={styles["authSection"]}>
         {!isAuthenticated ? (
           <>
-            <Button type="primary" className={styles["createListing"] ?? ""} onClick={() => { /* TODO: Open create listing page */ }}>Create a Listing</Button>
+            <Button
+              type="primary"
+              className={styles["createListing"] ?? ""}
+              onClick={() => {
+                /* TODO: Open create listing page */
+              }}
+            >
+              Create a Listing
+            </Button>
             <Button type="link" className={styles["authButton"] ?? ""} onClick={onSignUp}>
               Sign Up
             </Button>
@@ -40,7 +41,7 @@ export const Header: React.FC<HeaderProps> = ({ isAuthenticated, onLogin, onSign
             </Button>
           </>
         ) : (
-          <Button type="link" className={styles["authButton"] ?? ""} onClick={handleLogout}>
+          <Button type="link" className={styles["authButton"] ?? ""} onClick={onLogout}>
             Log Out
           </Button>
         )}

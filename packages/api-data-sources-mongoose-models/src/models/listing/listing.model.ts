@@ -1,6 +1,7 @@
 import { type Model, Schema } from 'mongoose';
 import { MongooseSeedwork } from '@cellix/data-sources-mongoose';
 
+// Local interface for Mongoose schema typing (plain data shape, not domain aggregate)
 export interface Listing extends MongooseSeedwork.Base {
 	discriminatorKey: string;
 }
