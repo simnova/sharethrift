@@ -1,6 +1,6 @@
 import { DomainSeedwork } from '@cellix/domain-seedwork';
 import type { Passport } from '../../passport.ts';
-import type { ItemListingVisa } from './item-listing.visa.ts';
+import type { ListingVisa } from '../listing.visa.ts';
 import * as ValueObjects from './item-listing.value-objects.ts';
 import type { PersonalUserEntityReference } from '../../user/personal-user/personal-user.ts';
 
@@ -33,13 +33,13 @@ export class ItemListing<props extends ItemListingProps>
 {
 	//#region Fields
 	private isNew: boolean = false;
-	private readonly visa: ItemListingVisa;
+	private readonly visa: ListingVisa;
 	//#endregion Fields
 
 	//#region Constructor
 	constructor(props: props, passport: Passport) {
 		super(props, passport);
-		this.visa = passport.itemListing.forItemListing(this);
+		this.visa = passport.listing.forItemListing(this);
 	}
 	//#endregion Constructor
 

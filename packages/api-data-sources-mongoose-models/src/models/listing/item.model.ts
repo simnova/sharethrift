@@ -62,7 +62,7 @@ export const ItemListingSchema = new Schema<
 	listingOptions,
 );
 
-export const ItemListingModelName: string = 'item-listings'; //TODO: This should be in singular form
+export const ItemListingModelName: string = 'item-listing'; //TODO: This should be in singular form
 
 export const ItemListingModelFactory = (ListingModel: ListingModelType) => {
 	return ListingModel.discriminator(ItemListingModelName, ItemListingSchema);

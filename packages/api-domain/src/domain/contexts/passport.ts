@@ -1,12 +1,12 @@
 import type { ConversationPassport } from './conversation/conversation.passport.ts';
 import type { UserPassport } from './user/user.passport.ts';
-import type { ItemListingPassport } from './listing/item/item-listing.passport.ts';
+import type { ListingPassport } from './listing/listing.passport.ts';
 import { SystemPassport } from '../iam/index.ts';
 import type { PermissionsSpec } from '../iam/system/system.passport-base.ts';
 
 export interface Passport {
 	get user(): UserPassport;
-	get itemListing(): ItemListingPassport;
+	get listing(): ListingPassport;
 	get conversation(): ConversationPassport;
 }
 

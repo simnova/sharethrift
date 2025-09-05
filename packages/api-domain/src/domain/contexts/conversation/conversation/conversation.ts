@@ -14,7 +14,6 @@ export interface ConversationProps extends DomainSeedwork.DomainEntityProps {
 	listing: Readonly<ItemListingEntityReference>;
 	loadListing: () => Promise<Readonly<ItemListingEntityReference>>;
 	twilioConversationId: string;
-	schemaversion: number;
 	createdAt: Date;
 	updatedAt: Date;
 }
@@ -154,13 +153,6 @@ export class Conversation<props extends ConversationProps>
 	}
 	set twilioConversationId(value: string) {
 		this.props.twilioConversationId = value;
-	}
-
-	get schemaversion(): number {
-		return this.props.schemaversion;
-	}
-	set schemaversion(value: number) {
-		this.props.schemaversion = value;
 	}
 
 	get createdAt(): Date {

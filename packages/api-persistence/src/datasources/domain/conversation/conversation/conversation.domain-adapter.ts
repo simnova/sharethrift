@@ -113,11 +113,4 @@ export class ConversationDomainAdapter
 	set twilioConversationId(value: string) {
 		this.doc.twilioConversationId = value;
 	}
-
-	get schemaversion(): number {
-		return this.doc.schemaversion;
-	}
-	set schemaversion(value: number) {
-		this.doc.schemaversion = value;
-	}
 }

@@ -8,7 +8,7 @@ export interface Conversation extends MongooseSeedwork.Base {
 	reserver: PopulatedDoc<PersonalUser.PersonalUser> | ObjectId;
 	listing: PopulatedDoc<ItemListing.ItemListing> | ObjectId;
 	twilioConversationId: string;
-	schemaversion: number;
+	schemaVersion: string;
 	createdAt: Date;
 	updatedAt: Date;
 }
@@ -23,7 +23,7 @@ const ConversationSchema = new Schema<
 		reserver: { type: Schema.Types.ObjectId, ref: 'User', required: true },
 		listing: { type: Schema.Types.ObjectId, ref: 'Listing', required: true },
 		twilioConversationId: { type: String, required: true, unique: true },
-		schemaversion: { type: Number, required: true, default: 1 },
+		schemaVersion: { type: String, required: true, default: '1.0.0' },
 		createdAt: { type: Date, required: true, default: Date.now },
 		updatedAt: { type: Date, required: true, default: Date.now },
 	},
