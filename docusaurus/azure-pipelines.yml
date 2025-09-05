@@ -47,10 +47,7 @@ steps:
         git config --global user.email "${GH_EMAIL}"
         
         # Set the remote URL with token from variable group
-        git remote set-url origin https://x-access-token:${GH_TOKEN}@github.com/simnova/sharethrift.git
-        
-        # Configure Git credential helper
-        git config --global credential.helper "!f() { echo username=x-access-token; echo password=${GH_TOKEN}; }; f"
+        git remote set-url origin https://${GH_TOKEN}@github.com/simnova/sharethrift.git
         
         # Verify Git configuration
         echo "Git remote URL:"
