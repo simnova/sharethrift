@@ -57,14 +57,13 @@ steps:
         git config --global user.email "$(GH_EMAIL)"
         cd docusaurus
         npm install
-        # npm ci
-        npm run deploy || {
-          export GIT_USER=$(GH_NAME)
-          echo "Default credentials failed, using explicit credentials"
-          git config --global credential.helper 'cache --timeout=300'
-          echo "protocol=https" | git credential approve
-          echo "host=github.com" | git credential approve
-          echo "username=$(GH_NAME)" | git credential approve
-          echo "password=$(GH_TOKEN)" | git credential approve
-          npm run deploy
-        }
+
+        export GIT_USER=$(GH_NAME)
+        echo "Default credentials failed, using explicit credentials"
+        git config --global credential.helper 'cache --timeout=300'
+        echo "protocol=https" | git credential approve
+        echo "host=github.com" | git credential approve
+        echo "username=$(GH_NAME)" | git credential approve
+        echo "password=$(GH_TOKEN)" | git credential approve
+        npm run deploy
+        
