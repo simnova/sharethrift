@@ -3,7 +3,7 @@
 	"compilerOptions": {
 		/* Modules */
 		"rootDir": ".",
-        "types": ["node"],
+		"types": ["node"],
 
 		/* Emit */
 		"outDir": "dist"
@@ -12,7 +12,6 @@
 	"references": [
 		//needs to match peer dependencies in package.json
 		{ "path": "../api-context-spec" },
-		{ "path": "../api-domain" },
-		{ "path": "../api-persistence" }
+		{ "path": "../api-domain" }
 	]
 }

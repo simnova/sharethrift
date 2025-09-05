@@ -1,8 +1,34 @@
-import { Schema } from 'mongoose';
-import type { Model } from 'mongoose';
-import { type Listing, type ListingModelType, listingOptions } from './listing.model.ts';
+import { Schema, type Model, type ObjectId, type PopulatedDoc } from 'mongoose';
+import {
+	type Listing,
+	type ListingModelType,
+	listingOptions,
+} from './listing.model.ts';
+import type * as PersonalUser from '../user/personal-user.model.ts';
 
-// Shared enum for listing state
+export interface ItemListing extends Listing {
+	sharer: PopulatedDoc<PersonalUser.PersonalUser> | ObjectId;
+	title: string;
+	description: string;
+	category: string;
+	location: string;
+	sharingPeriodStart: Date;
+	sharingPeriodEnd: Date;
+	state?:
+		| 'Published'
+		| 'Paused'
+		| 'Cancelled'
+		| 'Drafted'
+		| 'Expired'
+		| 'Blocked'
+		| 'Appeal Requested';
+	createdAt: Date;
+	updatedAt: Date;
+	sharingHistory?: ObjectId[];
+	reports?: number;
+	images?: string[];
+}
+
 export const LISTING_STATE_ENUM = [
 	'Published',
 	'Paused',
@@ -13,43 +39,29 @@ export const LISTING_STATE_ENUM = [
 	'Appeal Requested',
 ] as const;
 
-// Shared field definitions for ItemListing
-const itemListingFieldDefs = {
-	sharer: { type: String, required: false },
-	title: { type: String, required: false, maxlength: 200 },
-	description: { type: String, required: false, maxlength: 2000 },
-	category: { type: String, required: false, maxlength: 100 },
-	location: { type: String, required: false, maxlength: 255 },
-	sharingPeriodStart: { type: Date, required: false },
-	sharingPeriodEnd: { type: Date, required: false },
-	state: {
-		type: String,
-		enum: LISTING_STATE_ENUM,
-		required: false,
+export const ItemListingSchema = new Schema<
+	ItemListing,
+	Model<ItemListing>,
+	ItemListing
+>(
+	{
+		sharer: { type: String, required: false },
+		title: { type: String, required: false, maxlength: 200 },
+		description: { type: String, required: false, maxlength: 2000 },
+		category: { type: String, required: false, maxlength: 100 },
+		location: { type: String, required: false, maxlength: 255 },
+		sharingPeriodStart: { type: Date, required: false },
+		sharingPeriodEnd: { type: Date, required: false },
+		state: {
+			type: String,
+			enum: LISTING_STATE_ENUM,
+			required: false,
+		},
+		sharingHistory: [{ type: String }],
+		reports: { type: Number, default: 0 },
+		images: [{ type: String }], // Array of image URLs
 	},
-	sharingHistory: [{ type: String }],
-	reports: { type: Number, default: 0 },
-	images: [{ type: String }], // Array of image URLs
-};
-
-// Local interface for Mongoose schema typing (plain data shape, not domain aggregate)
-export interface ItemListing extends Listing {
-	sharer: string;
-	title: string;
-	description: string;
-	category: string;
-	location: string;
-	sharingPeriodStart: Date;
-	sharingPeriodEnd: Date;
-	state?: 'Published' | 'Paused' | 'Cancelled' | 'Drafted' | 'Expired' | 'Blocked' | 'Appeal Requested';
-	sharingHistory?: string[];
-	reports?: number;
-	images?: string[];
-}
-
-export const ItemListingSchema = new Schema<ItemListing, Model<ItemListing>, ItemListing>(
-	itemListingFieldDefs,
-	listingOptions
+	listingOptions,
 );
 
 export const ItemListingModelName: string = 'item-listing';

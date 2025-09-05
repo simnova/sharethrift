@@ -1,4 +1,4 @@
-export interface ItemListingDomainPermissions {
+export interface ListingDomainPermissions {
 	canCreateItemListing: boolean;
 	canUpdateItemListing: boolean;
 	canDeleteItemListing: boolean;

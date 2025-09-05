@@ -1,6 +1,7 @@
 import { Domain } from '@sthrift/api-domain';
 import type { Models } from '@sthrift/api-data-sources-mongoose-models';
 import { MongooseSeedwork } from '@cellix/data-sources-mongoose';
+import { PersonalUserDomainAdapter } from '../../user/personal-user/personal-user.domain-adapter.ts';
 
 export class ItemListingConverter extends MongooseSeedwork.MongoTypeConverter<
 	Models.Listing.ItemListing,
@@ -82,11 +83,19 @@ export class ItemListingDomainAdapter
 		this.doc.sharingPeriodEnd = value;
 	}
 
-	get sharer(): string {
-		return this.doc.sharer?.toString() || '';
+	get sharer(): PersonalUserDomainAdapter {
+		if (!this.doc.sharer) {
+			throw new Error('sharer is not populated');
+		}
+		if (this.doc.sharer instanceof MongooseSeedwork.ObjectId) {
+			throw new Error('sharer is not populated or is not of the correct type');
+		}
+		return new PersonalUserDomainAdapter(
+			this.doc.sharer as Models.User.PersonalUser,
+		);
 	}
-	set sharer(value: string) {
-		this.doc.sharer = value as unknown as Models.Listing.ItemListing['sharer'];
+	set sharer(user: PersonalUserDomainAdapter) {
+		this.doc.set('sharer', user.doc);
 	}
 
 	get sharingHistory(): string[] {
