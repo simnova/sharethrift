@@ -1,5 +1,5 @@
-
-import { type Model, Schema, Types } from 'mongoose';
+import { type Model, Schema } from 'mongoose';
+import type { Types } from 'mongoose';
 import { MongooseSeedwork } from '@cellix/data-sources-mongoose';
 
 // Local interface for Mongoose schema typing (plain data shape, not domain aggregate)

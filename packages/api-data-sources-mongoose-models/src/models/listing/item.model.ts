@@ -1,4 +1,5 @@
-import { Schema, type Model, Types } from 'mongoose';
+import { Schema } from 'mongoose';
+import type { Model } from 'mongoose';
 import { type Listing, type ListingModelType, listingOptions } from './listing.model.ts';
 
 // Shared enum for listing state
