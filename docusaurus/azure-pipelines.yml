@@ -29,10 +29,10 @@ steps:
       version: '22.x'
     displayName: 'Install Node.js'
 
-  - task: UseNode@1
-    inputs:
-      version: '22.x'
-    displayName: 'Install Node.js' 
+  - script: |
+      echo "npm_config_cache is: $(npm_config_cache)"
+      npm config list
+    displayName: 'Debug npm_config_cache'
     
   - task: Cache@2
     displayName: 'NPM: Restore Cache'
