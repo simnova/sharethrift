@@ -14,13 +14,13 @@ export const LISTING_STATE_ENUM = [
 
 // Shared field definitions for ItemListing
 const itemListingFieldDefs = {
-	sharer: { type: String, required: true },
-	title: { type: String, required: true, maxlength: 200 },
-	description: { type: String, required: true, maxlength: 2000 },
-	category: { type: String, required: true, maxlength: 100 },
-	location: { type: String, required: true, maxlength: 255 },
-	sharingPeriodStart: { type: Date, required: true },
-	sharingPeriodEnd: { type: Date, required: true },
+	sharer: { type: String, required: false },
+	title: { type: String, required: false, maxlength: 200 },
+	description: { type: String, required: false, maxlength: 2000 },
+	category: { type: String, required: false, maxlength: 100 },
+	location: { type: String, required: false, maxlength: 255 },
+	sharingPeriodStart: { type: Date, required: false },
+	sharingPeriodEnd: { type: Date, required: false },
 	state: {
 		type: String,
 		enum: LISTING_STATE_ENUM,
