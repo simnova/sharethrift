@@ -30,7 +30,9 @@ steps:
       key: 'npm | "$(Agent.OS)" | $(Build.SourcesDirectory)/docusaurus/package-lock.json'
       restoreKeys: |
           npm | "$(Agent.OS)"
-      path: $(npm_config_cache)
+      path: 
+        $(npm_config_cache)
+        $(Build.SourcesDirectory)/docusaurus/node_modules
 
   - task: UseNode@1
     inputs:
@@ -60,10 +62,7 @@ steps:
         cd docusaurus
         npm ci
 
-        # Stash node_modules outside the folder deploy wipes
-        STASH_TAR="$(Agent.TempDirectory)/node_modules.tar"
-        echo "Stashing node_modules to: ${STASH_TAR}"
-        tar -C . -cf "${STASH_TAR}" node_modules
+
 
         export GIT_USER=$(GH_NAME)
         export GIT_PASS=$(GH_TOKEN)
@@ -71,6 +70,3 @@ steps:
 
         npm run deploy --skip-build
 
-        # Restore node_modules so cache/save can see it
-        echo "Restoring node_modules from: ${STASH_TAR}"
-        tar -C . -xf "${STASH_TAR}"
