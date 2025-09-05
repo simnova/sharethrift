@@ -20,7 +20,7 @@ resources:
       type: github
       name: simnova/sharethrift
       ref: pg-fix-docusaurus
-      endpoint: 'Simnova (1)'
+      endpoint: 'Simnova'
 
 pool:
   vmImage: ubuntu-latest
