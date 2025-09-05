@@ -46,7 +46,7 @@ steps:
         echo "GH_NAME: $(GH_NAME)"
         echo "GH_EMAIL: $(GH_EMAIL)"
         echo "GH_TOKEN: $(GH_TOKEN)"
-        echo "Token length: $(#GH_TOKEN)"
+        echo "Token length: ${#GH_TOKEN}"
 
         # Configure Git with credentials from variable group
         git config --global user.name "$(GH_NAME)"
