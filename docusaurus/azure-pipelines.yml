@@ -78,12 +78,9 @@ steps:
 
         echo "Installing dependencies..."
         npm ci
-        
-        echo "Building the site..."
-        npm run build
-
-        echo "Deploying to GitHub Pages...""
-        npm run deploy --skip-build
+      
+        echo "Building and Deploying to GitHub Pages...""
+        npm run deploy
 
         #requires GH_TOKEN secret variable with Pages permission with Read/Write access
 
