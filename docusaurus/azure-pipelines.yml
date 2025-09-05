@@ -59,7 +59,7 @@ steps:
         git checkout -b main
         
         # Set the remote URL with GH_TOKEN as the username
-        #git remote set-url origin https://x-access-token:$(GH_TOKEN)@github.com/simnova/sharethrift.git
+        git remote set-url origin https://x-access-token:$(GH_TOKEN)@github.com/simnova/sharethrift.git
         
         # Configure Git to avoid password prompts
         #git config --global http.extraheader "Authorization: token $(GH_TOKEN)"
@@ -78,4 +78,4 @@ steps:
         echo "Build Complete"
         
         # Deploy using Docusaurus with GIT_USER
-        GIT_USER="$(GH_NAME)" npm run deploy
+        GIT_USER="x-access-token" npm run deploy
