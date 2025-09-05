@@ -1,14 +1,10 @@
 import { useQuery, gql } from '@apollo/client';
 import { ListingImageGallery } from './listing-image-gallery';
+// eslint-disable-next-line import/no-absolute-path, @typescript-eslint/ban-ts-comment
+// @ts-ignore - allow raw import string
+import ListingImageGalleryQuerySource from './listing-image-gallery.graphql?raw';
 
-const GET_LISTING_IMAGES = gql`
-  query ViewListingImageGalleryGetImages($listingId: ObjectID!) {
-    itemListing(id: $listingId) {
-      images
-      title
-    }
-  }
-`;
+const GET_LISTING_IMAGES = gql(ListingImageGalleryQuerySource);
 
 interface ListingImagesResponse {
   itemListing: {

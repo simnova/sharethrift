@@ -1,21 +1,11 @@
 import { useQuery, gql } from '@apollo/client';
 import { ListingInformation } from './listing-information';
 import type { ListingInformationProps, ListingStatus } from './listing-information';
+// eslint-disable-next-line import/no-absolute-path, @typescript-eslint/ban-ts-comment
+// @ts-ignore - allow raw import string
+import ListingInformationQuerySource from './listing-information.graphql?raw';
 
-const GET_LISTING_INFORMATION = gql`
-  query ViewListingInformationGetListing($listingId: ObjectID!) {
-    itemListing(id: $listingId) {
-      id
-      title
-      description
-      category
-      location
-      sharingPeriodStart
-      sharingPeriodEnd
-      state
-    }
-  }
-`;
+const GET_LISTING_INFORMATION = gql(ListingInformationQuerySource);
 
 interface ItemListing {
   id: string;

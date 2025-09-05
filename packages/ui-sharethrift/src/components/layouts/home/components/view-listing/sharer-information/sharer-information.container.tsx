@@ -1,20 +1,10 @@
 import { useQuery, gql } from '@apollo/client';
 import { SharerInformation } from './sharer-information';
+// eslint-disable-next-line import/no-absolute-path, @typescript-eslint/ban-ts-comment
+// @ts-ignore - allow raw import string
+import SharerInformationQuerySource from './sharer-information.graphql?raw';
 
-const GET_SHARER_INFORMATION = gql`
-  query ViewListingSharerInformationGetSharer($sharerId: ObjectID!) {
-    personalUserById(id: $sharerId) {
-      id
-      account {
-        username
-        profile {
-          firstName
-          lastName
-        }
-      }
-    }
-  }
-`;
+const GET_SHARER_INFORMATION = gql(SharerInformationQuerySource);
 
 interface PersonalUser {
   id: string;

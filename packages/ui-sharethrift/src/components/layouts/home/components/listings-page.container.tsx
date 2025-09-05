@@ -3,6 +3,9 @@ import { useNavigate } from 'react-router-dom';
 import { gql, useQuery } from '@apollo/client';
 import { ListingsPage } from './listings-page';
 import type { ItemListing } from './mock-listings';
+// eslint-disable-next-line import/no-absolute-path, @typescript-eslint/ban-ts-comment
+// @ts-ignore - allow raw import string
+import ListingsPageQuerySource from './listings-page.container.graphql?raw';
 
 type ItemListingState = 'Published' | 'Paused' | 'Cancelled' | 'Drafted' | 'Expired' | 'Blocked' | 'Appeal Requested';
 
@@ -29,28 +32,7 @@ interface ListingsQueryData {
   itemListings: GraphQLItemListing[];
 }
 
-const GET_LISTINGS = gql`
-  query GetListings {
-    itemListings {
-      id
-      title
-      description
-      category
-      location
-      state
-      images
-      createdAt
-      updatedAt
-      sharingPeriodStart
-      sharingPeriodEnd
-      sharer
-      schemaVersion
-      version
-      reports
-      sharingHistory
-    }
-  }
-`;
+const GET_LISTINGS = gql(ListingsPageQuerySource);
 
 interface ListingsPageContainerProps {
   isAuthenticated: boolean;
