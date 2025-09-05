@@ -83,3 +83,4 @@ steps:
       GIT_USER: "azure-pipelines"
       GIT_EMAIL: "azure-pipelines@microsoft.com"
       GITHUB_TOKEN: $(System.AccessToken)
+      USE_SSH: "true"
