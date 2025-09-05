@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { Button, Card } from "antd";
+import { useNavigate } from "react-router-dom";
 import { CheckOutlined, SafetyOutlined } from "@ant-design/icons";
 import stool from "@sthrift/ui-sharethrift-components/src/assets/item-images/stool.png";
 import armchair from "@sthrift/ui-sharethrift-components/src/assets/item-images/armchair.png";
@@ -55,12 +56,20 @@ const personalOptions: AccountOption[] = [
 ];
 
 export default function SelectAccountType() {
+      const navigate = useNavigate();
+
   const [selectedPersonalType, setSelectedPersonalType] =
     useState<PersonalAccountSubType>("verified");
 
   const handleSelectAccountType = (type: PersonalAccountSubType) => {
     console.log("Selected account type:", type);
     setSelectedPersonalType(type);
+  };
+
+  const handleSaveAndContinue = () => {
+    console.log("Saving and continuing...");
+     navigate("/signup/account-setup");
+    // Implement save and continue logic here
   };
 
   const renderAccountCard = (
@@ -215,12 +224,9 @@ export default function SelectAccountType() {
           marginTop: "32px",
         }}
       >
-        {/* {selectedPersonalType === "verified" || sel
-        selectedPersonalType === "verified-plus" ? ( */}
         <Button type="primary" size="large">
           <SafetyOutlined /> Start Identity Verification
         </Button>
-        {/* ) : null} */}
       </div>
     </div>
   );
@@ -252,7 +258,7 @@ export default function SelectAccountType() {
           marginTop: "32px",
         }}
       >
-        <Button type="default" size="large">
+        <Button type="default" size="large" onClick={handleSaveAndContinue}>
           Save and Continue
         </Button>
       </div>

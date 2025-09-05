@@ -14,6 +14,7 @@ import { ServiceTokenValidation } from '@sthrift/service-token-validation';
 import * as TokenValidationConfig from './service-config/token-validation/index.ts';
 
 import { ServiceTwilio } from '@sthrift/service-twilio';
+import { ServiceCybersource } from '@sthrift/service-cybersource';
 
 import { graphHandlerCreator } from '@sthrift/api-graphql';
 import { restHandlerCreator } from '@sthrift/api-rest';
@@ -33,7 +34,8 @@ Cellix
                 new ServiceTokenValidation(
                     TokenValidationConfig.portalTokens,
                 ),
-            ).registerInfrastructureService(new ServiceTwilio());
+            ).registerInfrastructureService(new ServiceTwilio())
+            .registerInfrastructureService(new ServiceCybersource());
     })
     .setContext((serviceRegistry) => {
         const dataSourcesFactory = MongooseConfig.mongooseContextBuilder(
@@ -46,6 +48,7 @@ Cellix
         return {
             dataSourcesFactory,
             tokenValidationService: serviceRegistry.getInfrastructureService<ServiceTokenValidation>(ServiceTokenValidation),
+            paymentService: serviceRegistry.getInfrastructureService<ServiceCybersource>(ServiceCybersource),
         };
     })
     .initializeApplicationServices((context) => buildApplicationServicesFactory(context))
