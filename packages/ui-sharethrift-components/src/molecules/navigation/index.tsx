@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { Layout, Menu, Button, Drawer } from 'antd';
+import React, { useState } from "react";
+import { Layout, Menu, Button, Drawer } from "antd";
 import {
   HomeOutlined,
   ContainerOutlined,
@@ -9,10 +9,9 @@ import {
   LogoutOutlined,
   MenuOutlined,
   CloseOutlined,
-} from '@ant-design/icons';
-import styles from './index.module.css';
-import '../../styles/theme.css';
-
+} from "@ant-design/icons";
+import styles from "./index.module.css";
+import "../../styles/theme.css";
 
 export interface NavigationProps {
   isAuthenticated: boolean;
@@ -24,16 +23,17 @@ export interface NavigationProps {
 const { Sider } = Layout;
 
 const navItems = [
-  { key: 'home', icon: <HomeOutlined />, label: 'Home' },
-  { key: 'listings', icon: <ContainerOutlined />, label: 'My Listings' },
-  { key: 'reservations', icon: <CalendarOutlined />, label: 'My Reservations' },
-  { key: 'messages', icon: <MessageOutlined />, label: 'Messages' },
+  { key: "home", icon: <HomeOutlined />, label: "Home" },
+  { key: "listings", icon: <ContainerOutlined />, label: "My Listings" },
+  { key: "reservations", icon: <CalendarOutlined />, label: "My Reservations" },
+  { key: "messages", icon: <MessageOutlined />, label: "Messages" },
   {
-    key: 'account',
-    icon: <UserOutlined />, label: 'Account',
+    key: "account",
+    icon: <UserOutlined />,
+    label: "Account",
     children: [
-      { key: 'profile', label: 'Profile' },
-      { key: 'settings', label: 'Settings' },
+      { key: "profile", label: "Profile" },
+      { key: "settings", label: "Settings" },
     ],
   },
 ];
@@ -43,9 +43,9 @@ export const Navigation: React.FC<NavigationProps> = ({ isAuthenticated, onLogou
 
   const handleMenuClick = (e: any) => {
     // Use keyPath for nested menu items
-    let {key} = e;
-    const accountSubTabs = ['profile', 'settings'];
-    if (e.keyPath && e.keyPath.length > 1 && e.keyPath[1] === 'account' && accountSubTabs.includes(e.key)) {
+    let { key } = e;
+    const accountSubTabs = ["profile", "settings"];
+    if (e.keyPath && e.keyPath.length > 1 && e.keyPath[1] === "account" && accountSubTabs.includes(e.key)) {
       key = `account/${e.key}`;
     }
     if (onNavigate) onNavigate(key);
@@ -57,13 +57,13 @@ export const Navigation: React.FC<NavigationProps> = ({ isAuthenticated, onLogou
     <>
       {/* Hamburger for mobile (top right) - only if authenticated */}
       {isAuthenticated && (
-  <div className={styles["hamburgerContainer"]} style={{ zIndex: 1020 }}>
+        <div className={styles["hamburgerContainer"]} style={{ zIndex: 1020 }}>
           <Button
             className={styles["hamburger"] ?? ""}
             icon={mobileOpen ? <CloseOutlined /> : <MenuOutlined />}
             onClick={() => setMobileOpen(!mobileOpen)}
             type="text"
-            aria-label={mobileOpen ? 'Close navigation' : 'Open navigation'}
+            aria-label={mobileOpen ? "Close navigation" : "Open navigation"}
           />
         </div>
       )}
@@ -78,21 +78,15 @@ export const Navigation: React.FC<NavigationProps> = ({ isAuthenticated, onLogou
           collapsible
           collapsed={collapsed}
           onCollapse={setCollapsed}
-          style={{position: 'fixed', left: 0, top: 64, zIndex: 1000 }}
+          style={{ position: "fixed", left: 0, top: 64, zIndex: 1000 }}
         >
-          <Menu
-            mode="inline"
-            items={navItems}
-            onClick={handleMenuClick}
-            style={{ border: 'none', flex: 1 }}
-            selectedKeys={[selectedKey || 'home']}
-          />
+          <Menu mode="inline" items={navItems} onClick={handleMenuClick} style={{ border: "none", flex: 1 }} selectedKeys={[selectedKey || "home"]} />
           <Button
             className={styles["logoutDesktop"] ?? ""}
             icon={<LogoutOutlined />}
             type="link"
             onClick={onLogout}
-            style={{ width: '100%', marginTop: 24 }}
+            style={{ width: "100%", marginTop: 24 }}
           >
             Log Out
           </Button>
@@ -100,26 +94,14 @@ export const Navigation: React.FC<NavigationProps> = ({ isAuthenticated, onLogou
       )}
       {/* Mobile Drawer */}
       {isAuthenticated && (
-        <Drawer
-          placement="left"
-          open={mobileOpen}
-          onClose={() => setMobileOpen(false)}
-          width={240}
-          className={styles["mobileDrawer"] ?? ""}
-        >
-          <Menu
-            mode="inline"
-            items={navItems}
-            onClick={handleMenuClick}
-            style={{ border: 'none', flex: 1 }}
-            selectedKeys={[selectedKey || 'home']}
-          />
+        <Drawer placement="left" open={mobileOpen} onClose={() => setMobileOpen(false)} width={240} className={styles["mobileDrawer"] ?? ""}>
+          <Menu mode="inline" items={navItems} onClick={handleMenuClick} style={{ border: "none", flex: 1 }} selectedKeys={[selectedKey || "home"]} />
           <Button
             className={styles["logoutMobile"] ?? ""}
             icon={<LogoutOutlined />}
             type="link"
             onClick={onLogout}
-            style={{ width: '100%', marginTop: 24 }}
+            style={{ width: "100%", marginTop: 24 }}
           >
             Log Out
           </Button>

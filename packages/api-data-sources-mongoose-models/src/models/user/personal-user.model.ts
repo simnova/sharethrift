@@ -46,7 +46,7 @@ export const PersonalUserAccountProfileType: SchemaDefinition<PersonalUserAccoun
 	lastName: { type: String, required: true },
 	location: {
 		type: PersonalUserAccountProfileLocationType,
-		required: true,
+		required: false,
 		...MongooseSeedwork.NestedPathOptions,
 	},
 	billing: {
@@ -66,7 +66,7 @@ export interface PersonalUserAccount extends MongooseSeedwork.NestedPath {
 export const PersonalUserAccountType: SchemaDefinition<PersonalUserAccount> = {
 	accountType: {
 		type: String,
-		required: true,
+		required: false,
 		enum: ['personal', 'business', 'enterprise'],
 	},
 	email: {
@@ -78,8 +78,7 @@ export const PersonalUserAccountType: SchemaDefinition<PersonalUserAccount> = {
 	},
 	username: {
 		type: String,
-		required: true,
-		unique: true,
+		required: false,
 	},
 	profile: {
 		type: PersonalUserAccountProfileType,
@@ -103,10 +102,10 @@ const PersonalUserSchema = new Schema<
 	PersonalUser
 >(
 	{
-		isBlocked: { type: Boolean, required: true },
+		isBlocked: { type: Boolean, required: false },
 		account: {
 			type: PersonalUserAccountType,
-			required: true,
+			required: false,
 			...MongooseSeedwork.NestedPathOptions,
 		},
 		schemaVersion: { type: String, required: true, default: '1.0.0' },
