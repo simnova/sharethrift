@@ -2,7 +2,7 @@ module.exports = {
   title: 'Sharethrift Docs',
   tagline: 'Documentation for Sharethrift',
   url: 'https://simnova.github.io',
-  baseUrl: '/',
+  baseUrl: '/sharethrift/',
   onBrokenLinks: 'throw',
   onBrokenMarkdownLinks: 'warn',
   favicon: 'img/favicon.ico',
