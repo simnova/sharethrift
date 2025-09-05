@@ -49,20 +49,20 @@ steps:
       targetType: 'inline'
       script: |
         # Configure Git with credentials
-        git config --global user.name "${GIT_USER}"
-        git config --global user.email "${GIT_EMAIL}"
+        #git config --global user.name "${GIT_USER}"
+        #git config --global user.email "${GIT_EMAIL}"
         echo "Git User: $GIT_USER"
         echo "Git Email: $GIT_EMAIL"
 
         # Configure Git credentials using URL-specific configuration
-        git config --global credential.helper '!f() { echo "username=x-access-token"; echo "password=${GITHUB_TOKEN}"; }; f'
+        #git config --global credential.helper '!f() { echo "username=x-access-token"; echo "password=${GITHUB_TOKEN}"; }; f'
         
         # Set the remote URL with token
-        git remote set-url origin https://x-access-token:${GITHUB_TOKEN}@github.com/simnova/sharethrift.git
+        #git remote set-url origin https://x-access-token:${GITHUB_TOKEN}@github.com/simnova/sharethrift.git
         
         # Verify Git configuration
-        echo "Git remote URL:"
-        git remote get-url origin
+        #echo "Git remote URL:"
+        #git remote get-url origin
 
         echo "System Access Token env: ${GITHUB_TOKEN}"
         echo "System Access Token build variable: $(System.AccessToken)"
@@ -83,6 +83,7 @@ steps:
         ls -a
         # git push --force origin gh-pages
     env:
+      GIT_USER: "azure-pipelines"
       GIT_USER_NAME: "azure-pipelines"
       GIT_USER_EMAIL: "azure-pipelines@microsoft.com"
       GITHUB_TOKEN: $(System.AccessToken)
