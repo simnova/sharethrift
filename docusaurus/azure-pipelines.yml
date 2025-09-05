@@ -27,7 +27,7 @@ steps:
   - task: Cache@2
     displayName: 'NPM: Restore Cache'
     inputs:
-      key: 'npm | "$(Agent.OS)" | $(Build.SourcesDirectory)/package-lock.json'
+      key: 'npm | "$(Agent.OS)" | $(Build.SourcesDirectory)/docusaurus/package-lock.json'
       restoreKeys: |
           npm | "$(Agent.OS)"
       path: $(npm_config_cache)
