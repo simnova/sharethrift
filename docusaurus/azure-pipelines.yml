@@ -74,7 +74,8 @@ steps:
         # Configure Git in the docusaurus directory as well
         git config user.name "${GIT_USER}"
         git config user.email "${GIT_EMAIL}"
-        git config credential.helper '!f() { echo "username=x-access-token"; echo "password=${GITHUB_TOKEN}"; }; f'
+        echo "machine github.com login ${GH_NAME} password ${GH_TOKEN}" > ~/.netrc
+        #git config credential.helper '!f() { echo "username=x-access-token"; echo "password=${GITHUB_TOKEN}"; }; f'
         
         # Deploy using Docusaurus with explicit environment variables
         GITHUB_TOKEN="${GITHUB_TOKEN}" GIT_USER="${GIT_USER}" USE_SSH=false npm run deploy
