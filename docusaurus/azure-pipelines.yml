@@ -70,6 +70,7 @@ steps:
         cd docusaurus
         npm ci
         npm run build
+        echo "Build Complete"
         
         # Configure Git in the docusaurus directory as well
         #git config user.name "${GIT_USER}"
@@ -79,6 +80,7 @@ steps:
         
         # Deploy using Docusaurus with explicit environment variables
         # GITHUB_TOKEN="${GITHUB_TOKEN}" GIT_USER="${GIT_USER}" USE_SSH=false npm run deploy
+        echo "Attempting to deploy"
         npm run deploy
       
         # git push --force origin gh-pages
