@@ -1,4 +1,3 @@
-
 import type { Meta, StoryObj } from '@storybook/react';
 import { ViewListing } from './view-listing';
 import type { ViewListingProps } from './view-listing';
@@ -6,31 +5,16 @@ import type { ViewListingProps } from './view-listing';
 import { MockedProvider } from '@apollo/client/testing';
 import { gql } from '@apollo/client';
 
+// eslint-disable-next-line import/no-absolute-path, @typescript-eslint/ban-ts-comment
+// @ts-ignore - allow raw import string
+import ListingImagesQuerySource from './listing-image-gallery/listing-image-gallery.graphql?raw';
+// eslint-disable-next-line import/no-absolute-path, @typescript-eslint/ban-ts-comment
+// @ts-ignore - allow raw import string
+import ListingInformationQuerySource from './listing-information/listing-information.graphql?raw';
 
 
-// GraphQL queries (must match containers exactly)
-const GET_LISTING_IMAGES = gql`
-  query ViewListingImageGalleryGetImages($listingId: ObjectID!) {
-    itemListing(id: $listingId) {
-      images
-      title
-    }
-  }
-`;
-const GET_LISTING_INFORMATION = gql`
-  query ViewListingInformationGetListing($listingId: ObjectID!) {
-    itemListing(id: $listingId) {
-      id
-      title
-      description
-      category
-      location
-      sharingPeriodStart
-      sharingPeriodEnd
-      state
-    }
-  }
-`;
+const GET_LISTING_IMAGES = gql(ListingImagesQuerySource);
+const GET_LISTING_INFORMATION = gql(ListingInformationQuerySource);
 
 const baseListingId = DUMMY_LISTINGS[0]._id;
 
@@ -44,7 +28,6 @@ const mocks = [
       data: {
         itemListing: {
           images: DUMMY_LISTINGS[0].images,
-          title: DUMMY_LISTINGS[0].title,
         },
       },
     },
@@ -65,6 +48,13 @@ const mocks = [
           sharingPeriodStart: DUMMY_LISTINGS[0].sharingPeriodStart.toISOString(),
           sharingPeriodEnd: DUMMY_LISTINGS[0].sharingPeriodEnd.toISOString(),
           state: DUMMY_LISTINGS[0].state,
+          images: DUMMY_LISTINGS[0].images,
+          createdAt: DUMMY_LISTINGS[0].createdAt.toISOString(),
+          updatedAt: DUMMY_LISTINGS[0].updatedAt.toISOString(),
+          reports: 0,
+          sharingHistory: [],
+          sharer: DUMMY_LISTINGS[0].sharer,
+          schemaVersion: '1.0',
         },
       },
     },
@@ -93,7 +83,9 @@ const meta: Meta<typeof ViewListing> = {
                   console.log('[Storybook GraphQL Variables]', body.variables);
                 }
               }
-            } catch {}
+            } catch (_error) {
+              // Ignore parsing errors for non-GraphQL requests
+            }
           }
           return origFetch.apply(this, args);
         };
