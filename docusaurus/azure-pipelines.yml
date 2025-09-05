@@ -58,10 +58,13 @@ steps:
         git config --global user.email "$(GH_EMAIL)"
         
         # Set the remote URL with GH_TOKEN as the username
-        git remote set-url origin https://x-access-token:$(GH_TOKEN)@github.com/simnova/sharethrift.git
+        #git remote set-url origin https://x-access-token:$(GH_TOKEN)@github.com/simnova/sharethrift.git
         
         # Configure Git to avoid password prompts
-        git config --global http.extraheader "Authorization: token $(GH_TOKEN)"
+        #git config --global http.extraheader "Authorization: token $(GH_TOKEN)"
+
+        echo "machine github.com login $(GH_NAME) password $(GH_TOKEN)" > ~/.netrc
+        cat ~/.netrc
         
         # Verify Git configuration
         echo "Git remote URL:"
