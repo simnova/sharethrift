@@ -53,18 +53,21 @@ steps:
           exit 1
         fi
 
+        # Set the remote URL with GH_TOKEN as the username
+        git remote set-url origin https://x-access-token:$(GH_TOKEN)@github.com/simnova/sharethrift.git
+
         # Configure Git with credentials from variable group
-        git config --global user.name "$(GH_NAME)"
+        git config --global user.name "x-access-token"
+        # "$(GH_NAME)"
         git config --global user.email "$(GH_EMAIL)"
         git checkout -b main
         
-        # Set the remote URL with GH_TOKEN as the username
-        git remote set-url origin https://x-access-token:$(GH_TOKEN)@github.com/simnova/sharethrift.git
+  
         
         # Configure Git to avoid password prompts
         #git config --global http.extraheader "Authorization: token $(GH_TOKEN)"
 
-        echo "machine github.com login $(GH_NAME) password $(GH_TOKEN)" > ~/.netrc
+        echo "machine github.com login x-access-token password $(GH_TOKEN)" > ~/.netrc
         cat ~/.netrc
         
         # Verify Git configuration
