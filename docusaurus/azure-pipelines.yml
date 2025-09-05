@@ -59,6 +59,7 @@ steps:
         git config --global user.email "$(GH_EMAIL)"
         cd docusaurus
         npm install
+        npm ci
 
         export GIT_USER=$(GH_NAME)
         export GIT_PASS=$(GH_TOKEN)
@@ -68,4 +69,4 @@ steps:
         # echo "Docusaurus config:"
         # cat docusaurus.config.js
 
-        npm run deploy
+        npm run deploy --skip-build
