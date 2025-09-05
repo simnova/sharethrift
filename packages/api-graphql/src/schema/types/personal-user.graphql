@@ -204,12 +204,15 @@ input RefundOrderInformation {
 input RefundRequest {
   userId: ObjectID!
   transactionId: String!
+  amount: Float
   orderInformation: RefundOrderInformation!
 }
 
 type RefundResponse {
   id: String
   status: String!
+  success: Boolean
+  message: String
   errorInformation: PaymentErrorInformation
   orderInformation: PaymentResponseOrderInformation
 }

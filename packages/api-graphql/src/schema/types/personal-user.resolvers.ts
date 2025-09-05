@@ -99,6 +99,7 @@ const personalUserResolvers = {
 		refundPayment: async (_parent: unknown, { request }: { request: {
 			userId: string;
 			transactionId: string;
+			amount?: number;
 			orderInformation: {
 				amountDetails: {
 					totalAmount: number;
@@ -109,11 +110,17 @@ const personalUserResolvers = {
 			console.log('Refunding payment', request);
 			try {
 				const response = await context.applicationServices.Payment.refundPayment(request);
-				return response;
+				return {
+					...response,
+					success: response.status === 'REFUNDED',
+					message: response.status === 'REFUNDED' ? 'Refund processed successfully' : undefined
+				};
 			} catch (error) {
 				console.error('Refund processing error:', error);
 				return {
 					status: 'FAILED',
+					success: false,
+					message: error instanceof Error ? error.message : 'Unknown error occurred',
 					errorInformation: {
 						reason: 'PROCESSING_ERROR',
 						message: error instanceof Error ? error.message : 'Unknown error occurred'

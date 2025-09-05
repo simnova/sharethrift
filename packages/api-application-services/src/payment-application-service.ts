@@ -53,6 +53,7 @@ export interface ProcessPaymentResponse {
 export interface RefundPaymentRequest {
     userId: string;
     transactionId: string;
+    amount?: number;
     orderInformation: {
         amountDetails: {
             totalAmount: number;
