@@ -1,25 +1,14 @@
-import { ApolloClient, ApolloLink, type DefaultContext, HttpLink } from "@apollo/client";
+import { ApolloLink, type DefaultContext, HttpLink } from "@apollo/client";
 import { BatchHttpLink } from "@apollo/client/link/batch-http";
 import { setContext } from "@apollo/client/link/context";
 import { removeTypenameFromVariables } from "@apollo/client/link/remove-typename";
-import { ApolloManualMergeCacheFix } from "./apollo-manual-merge-cache-fix";
 import { createPersistedQueryLink } from "@apollo/client/link/persisted-queries";
 import { sha256 } from "crypto-hash";
-
-// apollo client instance
-export const client = new ApolloClient({
-  link: new HttpLink({ uri: import.meta.env.VITE_FUNCTION_ENDPOINT }),
-  cache: ApolloManualMergeCacheFix,
-  devtools: {
-    enabled: import.meta.env.NODE_ENV !== "production", // or false
-  },
-});
 
 // base apollo link with no customizations
 // could be used as a base for the link chain
 export const BaseApolloLink = (): ApolloLink =>
-  // biome-ignore lint/suspicious/useAwait: <explanation>
-  setContext(async (_, { headers }) => {
+  setContext((_, { headers }) => {
     return {
       headers: {
         ...headers,
@@ -29,8 +18,7 @@ export const BaseApolloLink = (): ApolloLink =>
 
 // apollo link to add auth header
 export const ApolloLinkToAddAuthHeader = (access_token: string | undefined): ApolloLink =>
-  // biome-ignore lint/suspicious/useAwait: <explanation>
-  setContext(async (_, { headers }) => {
+  setContext((_, { headers }) => {
     return {
       headers: {
         ...headers,
@@ -45,8 +33,7 @@ export const ApolloLinkToAddCustomHeader = (headerName: string, headerValue: str
     if (!headerValue || (ifTrue !== undefined && ifTrue === false)) {
       return forward(operation);
     }
-    // biome-ignore lint/suspicious/useAwait: <explanation>
-    operation.setContext(async (prevContext: DefaultContext) => {
+    operation.setContext((prevContext: DefaultContext) => {
       prevContext.headers[headerName] = headerValue;
       return prevContext;
     });
