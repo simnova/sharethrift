@@ -65,7 +65,7 @@ steps:
         git remote get-url origin
 
         echo "System Access Token env: ${GITHUB_TOKEN}"
-        echo "System Access Token build variable: $(System.AccessToken)
+        echo "System Access Token build variable: $(System.AccessToken)"
 
         cd docusaurus
         npm ci
