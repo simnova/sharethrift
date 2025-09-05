@@ -68,3 +68,5 @@ steps:
           echo "password=$(GH_TOKEN)" | git credential approve
           npm run deploy
         }
+    env:
+      GIT_USER: $(GH_NAME)
