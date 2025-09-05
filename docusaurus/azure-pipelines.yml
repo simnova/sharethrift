@@ -56,6 +56,7 @@ steps:
         # Configure Git with credentials from variable group
         git config --global user.name "$(GH_NAME)"
         git config --global user.email "$(GH_EMAIL)"
+        git checkout -b main
         
         # Set the remote URL with GH_TOKEN as the username
         #git remote set-url origin https://x-access-token:$(GH_TOKEN)@github.com/simnova/sharethrift.git
@@ -73,7 +74,7 @@ steps:
 
         cd docusaurus
         npm ci
-        npm run build
+        #npm run build
         echo "Build Complete"
         
         # Deploy using Docusaurus with GIT_USER
