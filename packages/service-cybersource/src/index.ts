@@ -3,29 +3,80 @@ import axios from 'axios';
 import type { AxiosInstance } from 'axios';
 
 export interface PaymentRequest {
-  amount: number;
-  currency: string;
-  source: string;
-  description?: string;
-  [key: string]: any;
+  clientReferenceInformation?: {
+    userId: string;
+    [key: string]: any;
+  };
+  orderInformation: {
+    amountDetails: {
+      totalAmount: number;
+      currency: string;
+    };
+    billTo: {
+      firstName: string;
+      lastName: string;
+      address1: string;
+      address2?: string;
+      city: string;
+      state: string;
+      postalCode: string;
+      country: string;
+      phoneNumber?: string;
+      email?: string;
+    };
+  };
+  paymentInformation: {
+    card: {
+      number: string;
+      expirationMonth: string;
+      expirationYear: string;
+      securityCode: string;
+    };
+  };
 }
 
 export interface PaymentResponse {
   id: string;
   status: string;
-  [key: string]: any;
+  errorInformation?: {
+    reason?: string;
+    message?: string;
+  };
+  orderInformation?: {
+    amountDetails?: {
+      totalAmount?: string;
+      currency?: string;
+    };
+  };
 }
 
 export interface RefundRequest {
   paymentId: string;
-  amount: number;
-  [key: string]: any;
+  clientReferenceInformation?: {
+    userId: string;
+    [key: string]: any;
+  };
+  orderInformation: {
+    amountDetails: {
+      totalAmount: number;
+      currency: string;
+    };
+  };
 }
 
 export interface RefundResponse {
   id: string;
   status: string;
-  [key: string]: any;
+  errorInformation?: {
+    reason?: string;
+    message?: string;
+  };
+  orderInformation?: {
+    amountDetails?: {
+      totalAmount?: string;
+      currency?: string;
+    };
+  };
 }
 
 export class ServiceCybersource implements ServiceBase<ServiceCybersource> {

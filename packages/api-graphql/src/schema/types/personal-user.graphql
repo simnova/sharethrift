@@ -131,31 +131,87 @@ extend type Query {
 }
 
 # Payment related input/output types
+input PaymentAmountDetails {
+  totalAmount: Float!
+  currency: String!
+}
+
+input PaymentBillTo {
+  firstName: String!
+  lastName: String!
+  address1: String!
+  address2: String
+  city: String!
+  state: String!
+  postalCode: String!
+  country: String!
+  phoneNumber: String
+  email: String
+}
+
+input PaymentCard {
+  number: String!
+  expirationMonth: String!
+  expirationYear: String!
+  securityCode: String!
+}
+
+input PaymentOrderInformation {
+  amountDetails: PaymentAmountDetails!
+  billTo: PaymentBillTo!
+}
+
+input PaymentCardInformation {
+  card: PaymentCard!
+}
+
 input PaymentRequest {
   userId: ObjectID!
-  amount: Float!
-  source: String!
+  amount: Float
+  source: String
   description: String
+  orderInformation: PaymentOrderInformation!
+  paymentInformation: PaymentCardInformation!
+}
+
+type PaymentErrorInformation {
+  reason: String
+  message: String
+}
+
+type PaymentResponseAmountDetails {
+  totalAmount: String
+  currency: String
+}
+
+type PaymentResponseOrderInformation {
+  amountDetails: PaymentResponseAmountDetails
 }
 
 type PaymentResponse {
-  transactionId: String!
+  id: String
   status: String!
-  success: Boolean!
+  success: Boolean
   message: String
+  errorInformation: PaymentErrorInformation
+  orderInformation: PaymentResponseOrderInformation
+}
+
+input RefundOrderInformation {
+  amountDetails: PaymentAmountDetails!
 }
 
 input RefundRequest {
   userId: ObjectID!
   transactionId: String!
-  amount: Float!
+  orderInformation: RefundOrderInformation!
 }
 
 type RefundResponse {
-  transactionId: String!
+  id: String
   status: String!
-  success: Boolean!
-  message: String
+  errorInformation: PaymentErrorInformation
+  orderInformation: PaymentResponseOrderInformation
 }
 
 extend type Mutation {

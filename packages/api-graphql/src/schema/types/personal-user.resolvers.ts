@@ -42,23 +42,70 @@ const personalUserResolvers = {
 	},
 
 	Mutation: {
-		processPayment: async (_parent: unknown, { request }: { request: { amount: number; source: string; description?: string; userId: string } }, context: GraphContext) => {
+		processPayment: async (_parent: unknown, { request }: { request: {
+			userId: string;
+			amount?: number;
+			source?: string;
+			description?: string;
+			orderInformation: {
+				amountDetails: {
+					totalAmount: number;
+					currency: string;
+				};
+				billTo: {
+					firstName: string;
+					lastName: string;
+					address1: string;
+					address2?: string;
+					city: string;
+					state: string;
+					postalCode: string;
+					country: string;
+					phoneNumber?: string;
+					email?: string;
+				};
+			};
+			paymentInformation: {
+				card: {
+					number: string;
+					expirationMonth: string;
+					expirationYear: string;
+					securityCode: string;
+				};
+			};
+		} }, context: GraphContext) => {
 			console.log('Processing payment', request);
 			try {
 				const response = await context.applicationServices.Payment.processPayment(request);
-				return response;
+				return {
+					...response,
+					success: response.status === 'SUCCEEDED',
+					message: response.status === 'SUCCEEDED' ? 'Payment processed successfully' : undefined
+				};
 			} catch (error) {
 				console.error('Payment processing error:', error);
 				return {
-					transactionId: '',
 					status: 'FAILED',
 					success: false,
-					message: error instanceof Error ? error.message : 'Unknown error occurred'
+					message: error instanceof Error ? error.message : 'Unknown error occurred',
+					errorInformation: {
+						reason: 'PROCESSING_ERROR',
+						message: error instanceof Error ? error.message : 'Unknown error occurred'
+					}
 				};
 			}
 		},
 
-		refundPayment: async (_parent: unknown, { request }: { request: { userId: string; transactionId: string; amount: number } }, context: GraphContext) => {
+		refundPayment: async (_parent: unknown, { request }: { request: {
+			userId: string;
+			transactionId: string;
+			orderInformation: {
+				amountDetails: {
+					totalAmount: number;
+					currency: string;
+				};
+			};
+		} }, context: GraphContext) => {
 			console.log('Refunding payment', request);
 			try {
 				const response = await context.applicationServices.Payment.refundPayment(request);
@@ -66,10 +113,11 @@ const personalUserResolvers = {
 			} catch (error) {
 				console.error('Refund processing error:', error);
 				return {
-					transactionId: '',
 					status: 'FAILED',
-					success: false,
-					message: error instanceof Error ? error.message : 'Unknown error occurred'
+					errorInformation: {
+						reason: 'PROCESSING_ERROR',
+						message: error instanceof Error ? error.message : 'Unknown error occurred'
+					}
 				};
 			}
 		}

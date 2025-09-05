@@ -7,29 +7,73 @@ export interface PaymentApplicationService {
 
 export interface ProcessPaymentRequest {
     userId: string;
-    amount: number;
-    source: string;
-    description?: string;
+    orderInformation: {
+        amountDetails: {
+            totalAmount: number;
+            currency: string;
+        };
+        billTo: {
+            firstName: string;
+            lastName: string;
+            address1: string;
+            address2?: string;
+            city: string;
+            state: string;
+            postalCode: string;
+            country: string;
+            phoneNumber?: string;
+            email?: string;
+        };
+    };
+    paymentInformation: {
+        card: {
+            number: string;
+            expirationMonth: string;
+            expirationYear: string;
+            securityCode: string;
+        };
+    };
 }
 
 export interface ProcessPaymentResponse {
-    transactionId: string;
+    id?: string;
     status: string;
-    success: boolean;
-    message?: string;
+    errorInformation?: {
+        reason?: string;
+        message?: string;
+    };
+    orderInformation?: {
+        amountDetails?: {
+            totalAmount?: string;
+            currency?: string;
+        };
+    };
 }
 
 export interface RefundPaymentRequest {
     userId: string;
     transactionId: string;
-    amount: number;
+    orderInformation: {
+        amountDetails: {
+            totalAmount: number;
+            currency: string;
+        };
+    };
 }
 
 export interface RefundPaymentResponse {
-    transactionId: string;
+    id?: string;
     status: string;
-    success: boolean;
-    message?: string;
+    errorInformation?: {
+        reason?: string;
+        message?: string;
+    };
+    orderInformation?: {
+        amountDetails?: {
+            totalAmount?: string;
+            currency?: string;
+        };
+    };
 }
 
 export class DefaultPaymentApplicationService implements PaymentApplicationService {
@@ -42,28 +86,31 @@ export class DefaultPaymentApplicationService implements PaymentApplicationServi
     async processPayment(request: ProcessPaymentRequest): Promise<ProcessPaymentResponse> {
         try {
             const paymentResponse = await this.paymentService.createPayment({
-                amount: request.amount,
-                currency: 'USD',
-                source: request.source,
-                description: request.description || 'Payment for account',
-                metadata: {
+                clientReferenceInformation: {
                     userId: request.userId
-                }
+                },
+                orderInformation: request.orderInformation,
+                paymentInformation: request.paymentInformation
             });
 
             return {
-                transactionId: paymentResponse.id,
+                id: paymentResponse.id,
                 status: paymentResponse.status,
-                success: paymentResponse.status === 'SUCCEEDED',
-                message: 'Payment processed successfully'
+                orderInformation: {
+                    amountDetails: {
+                        totalAmount: request.orderInformation.amountDetails.totalAmount.toString(),
+                        currency: request.orderInformation.amountDetails.currency
+                    }
+                }
             };
         } catch (error) {
             console.error('Payment processing error:', error);
             return {
-                transactionId: '',
                 status: 'FAILED',
-                success: false,
-                message: error instanceof Error ? error.message : 'Unknown error occurred'
+                errorInformation: {
+                    reason: 'PROCESSING_ERROR',
+                    message: error instanceof Error ? error.message : 'Unknown error occurred'
+                }
             };
         }
     }
@@ -72,22 +119,30 @@ export class DefaultPaymentApplicationService implements PaymentApplicationServi
         try {
             const refundResponse = await this.paymentService.refundPayment({
                 paymentId: request.transactionId,
-                amount: request.amount
+                orderInformation: request.orderInformation,
+                clientReferenceInformation: {
+                    userId: request.userId
+                }
             });
 
             return {
-                transactionId: refundResponse.id,
+                id: refundResponse.id,
                 status: refundResponse.status,
-                success: refundResponse.status === 'SUCCEEDED',
-                message: 'Refund processed successfully'
+                orderInformation: {
+                    amountDetails: {
+                        totalAmount: request.orderInformation.amountDetails.totalAmount.toString(),
+                        currency: request.orderInformation.amountDetails.currency
+                    }
+                }
             };
         } catch (error) {
             console.error('Refund processing error:', error);
             return {
-                transactionId: '',
                 status: 'FAILED',
-                success: false,
-                message: error instanceof Error ? error.message : 'Unknown error occurred'
+                errorInformation: {
+                    reason: 'PROCESSING_ERROR',
+                    message: error instanceof Error ? error.message : 'Unknown error occurred'
+                }
             };
         }
     }
