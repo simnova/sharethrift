@@ -62,10 +62,10 @@ steps:
 
         export GIT_USER=$(GH_NAME)
         export GIT_PASS=$(GH_TOKEN)
-        export DEBUG=*
+        
 
         # Debug Docusaurus config
-        echo "Docusaurus config:"
-        cat docusaurus.config.js
+        # echo "Docusaurus config:"
+        # cat docusaurus.config.js
 
         npm run deploy
