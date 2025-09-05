@@ -53,32 +53,17 @@ steps:
           exit 1
         fi
 
-        # Set the remote URL with GH_TOKEN as the username
-        git remote set-url origin https://heruwala:$(GH_TOKEN)@github.com/simnova/sharethrift.git
-
-        # Configure Git with credentials from variable group
-        git config --global user.name "x-access-token"
-        # "$(GH_NAME)"
-        git config --global user.email "$(GH_EMAIL)"
-        git checkout -b main
-        
-  
-        
-        # Configure Git to avoid password prompts
-        # git config --global http.extraheader "Authorization: token $(GH_TOKEN)"
-
-        # echo "machine github.com login heruwala password $(GH_TOKEN)" > ~/.netrc
-        # cat ~/.netrc
-        
-        # Verify Git configuration
-        echo "Git remote URL:"
-        git remote get-url origin
-        echo "Using token: $(GH_TOKEN)"
-
-        cd docusaurus
-        npm ci
-        #npm run build
-        echo "Build Complete"
-        
-        # Deploy using Docusaurus with GIT_USER
-        GIT_USER="x-access-token" npm run deploy
+        git config --global user.name "$(GH_NAME:-Azure Pipelines)"
+        git config --global user.email "$(GH_EMAIL:-azure-pipelines@example.com)"
+        npm install
+        # npm ci
+        npm deploy || {
+          GIT_USER=$(GH_NAME)
+          echo "Default credentials failed, using explicit credentials"
+          git config --global credential.helper 'cache --timeout=300'
+          echo "protocol=https" | git credential approve
+          echo "host=github.com" | git credential approve
+          echo "username=$(GH_NAME)" | git credential approve
+          echo "password=$(GH_TOKEN)" | git credential approve
+          npm deploy
+        }
