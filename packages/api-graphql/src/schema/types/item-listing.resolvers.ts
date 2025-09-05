@@ -51,6 +51,7 @@ const itemListingResolvers = {
         updatedAt: listing.updatedAt?.toISOString(),
         version: 1
       };
+      
     },
   },
 };
