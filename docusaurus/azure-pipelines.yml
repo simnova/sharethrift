@@ -14,19 +14,14 @@ pr:
     include:
       - docusaurus     
 
-resources:
-  repositories:
-    - repository: simnovaRepo
-      type: github
-      name: simnova/sharethrift
-      ref: pg-fix-docusaurus
-      endpoint: 'Simnova'
-
 pool:
   vmImage: ubuntu-latest
 
+variables:
+  - group: github-credential-sharethrift
+
 steps:
-  - checkout: simnovaRepo
+  - checkout: self
     persistCredentials: true
 
   - task: Cache@2
@@ -47,16 +42,17 @@ steps:
     inputs:
       targetType: 'inline'
       script: |
-        # Configure Git with credentials
-        git config --global user.name "${GIT_USER}"
-        git config --global user.email "${GIT_USER_EMAIL}"
+        # Configure Git with credentials from variable group
+        git config --global user.name "${GH_NAME}"
+        git config --global user.email "${GH_EMAIL}"
         
-        # Set the remote URL with token
-        git remote set-url origin https://x-access-token:${GIT_PASS}@github.com/simnova/sharethrift.git
+        # Set the remote URL with token from variable group
+        git remote set-url origin https://x-access-token:${GH_TOKEN}@github.com/simnova/sharethrift.git
         
         # Verify Git configuration
         echo "Git remote URL:"
         git remote get-url origin
+        echo "Using token: ${GH_TOKEN}"
 
         cd docusaurus
         npm ci
@@ -65,7 +61,3 @@ steps:
         
         # Deploy using Docusaurus
         npm run deploy
-    env:
-      GIT_USER: "azure-pipelines"
-      GIT_USER_EMAIL: "azure-pipelines@microsoft.com"
-      GIT_PASS: $(System.AccessToken)
