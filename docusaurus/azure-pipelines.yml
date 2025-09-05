@@ -43,21 +43,25 @@ steps:
       targetType: 'inline'
       script: |
         # Debug variable availability
-        echo "GH_NAME: ${GH_NAME}"
-        echo "GH_EMAIL: ${GH_EMAIL}"
-        echo "GH_TOKEN: ${GH_TOKEN}"
+        echo "GH_NAME: $(GH_NAME)"
+        echo "GH_EMAIL: $(GH_EMAIL)"
+        echo "GH_TOKEN: $(GH_TOKEN)"
         echo "Token length: ${#GH_TOKEN}"
 
-        # Set the remote URL with a placeholder username and token as password
-        git remote set-url origin https://x-access-token:${GH_TOKEN}@github.com/simnova/sharethrift.git
+        # Configure Git with credentials from variable group
+        git config --global user.name "$(GH_NAME)"
+        git config --global user.email "$(GH_EMAIL)"
         
-        # Configure Git to use token authentication without prompts
-        git config --global http.extraheader "Authorization: token ${GH_TOKEN}"
+        # Set the remote URL with GH_TOKEN as the username
+        git remote set-url origin https://x-access-token:$(GH_TOKEN)@github.com/simnova/sharethrift.git
+        
+        # Configure Git to avoid password prompts
+        git config --global http.extraheader "Authorization: token $(GH_TOKEN)"
         
         # Verify Git configuration
         echo "Git remote URL:"
         git remote get-url origin
-        echo "Using token: ${GH_TOKEN}"
+        echo "Using token: $(GH_TOKEN)"
 
         cd docusaurus
         npm ci
