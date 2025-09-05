@@ -53,13 +53,13 @@ steps:
           exit 1
         fi
 
-        git config --global user.name "$(GH_NAME:-Azure Pipelines)"
-        git config --global user.email "$(GH_EMAIL:-azure-pipelines@example.com)"
+        git config --global user.name "$(GH_NAME)"
+        git config --global user.email "$(GH_EMAIL)"
         cd docusaurus
         npm install
         # npm ci
         npm run deploy || {
-          GIT_USER=$(GH_NAME)
+          export GIT_USER=$(GH_NAME)
           echo "Default credentials failed, using explicit credentials"
           git config --global credential.helper 'cache --timeout=300'
           echo "protocol=https" | git credential approve
@@ -68,5 +68,3 @@ steps:
           echo "password=$(GH_TOKEN)" | git credential approve
           npm run deploy
         }
-    env:
-      GIT_USER: $(GH_NAME)
