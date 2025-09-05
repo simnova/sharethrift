@@ -16,7 +16,7 @@ pr:
 
 resources:
   repositories:
-    - repository: self
+    - repository: simnovaRepo
       type: github
       name: simnova/sharethrift
       ref: refs/heads/main
@@ -26,7 +26,7 @@ pool:
   vmImage: ubuntu-latest
 
 steps:
-  - checkout: self
+  - checkout: simnovaRepo
     persistCredentials: true
 
   # Cache NPM packages to speed up build process.
@@ -86,5 +86,5 @@ steps:
       GIT_USER: "azure-pipelines"
       GIT_USER_NAME: "azure-pipelines"
       GIT_USER_EMAIL: "azure-pipelines@microsoft.com"
-      GITHUB_TOKEN: $(System.AccessToken)
+      GIT_PASS: $(System.AccessToken)
       USE_SSH: "false"
