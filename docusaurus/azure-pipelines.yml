@@ -67,8 +67,7 @@ steps:
         # Configure Git to avoid password prompts
         #git config --global http.extraheader "Authorization: token $(GH_TOKEN)"
 
-       # echo "machine github.com login heruwala password $(GH_TOKEN)" > ~/.netrc
-       # cat ~/.netrc
+ 
         
         # Verify Git configuration
         echo "Git remote URL:"
