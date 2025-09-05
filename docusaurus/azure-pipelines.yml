@@ -47,16 +47,11 @@ steps:
         echo "GH_EMAIL: ${GH_EMAIL}"
         echo "GH_TOKEN: ${GH_TOKEN}"
         echo "Token length: ${#GH_TOKEN}"
-        echo "if GH_TOKEN is empty, the length will be 0 - not good"
 
-        # Configure Git with credentials from variable group
-        git config --global user.name "${GH_NAME}"
-        git config --global user.email "${GH_EMAIL}"
+        # Set the remote URL with a placeholder username and token as password
+        git remote set-url origin https://x-access-token:${GH_TOKEN}@github.com/simnova/sharethrift.git
         
-        # Set the remote URL with GH_TOKEN as the username
-        git remote set-url origin https://${GH_TOKEN}@github.com/simnova/sharethrift.git
-        
-        # Configure Git to avoid password prompts
+        # Configure Git to use token authentication without prompts
         git config --global http.extraheader "Authorization: token ${GH_TOKEN}"
         
         # Verify Git configuration
@@ -70,4 +65,4 @@ steps:
         echo "Build Complete"
         
         # Deploy using Docusaurus with GIT_USER
-        GIT_USER="${GH_NAME}" npm run deploy
+        GIT_USER="x-access-token" npm run deploy
