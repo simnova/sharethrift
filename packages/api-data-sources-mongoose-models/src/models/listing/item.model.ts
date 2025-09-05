@@ -26,7 +26,18 @@ export interface ItemListing extends Listing {
 	updatedAt: Date;
 	sharingHistory?: ObjectId[];
 	reports?: number;
+	images?: string[];
 }
+
+export const LISTING_STATE_ENUM = [
+	'Published',
+	'Paused',
+	'Cancelled',
+	'Drafted',
+	'Expired',
+	'Blocked',
+	'Appeal Requested',
+] as const;
 
 export const ItemListingSchema = new Schema<
 	ItemListing,
@@ -34,35 +45,26 @@ export const ItemListingSchema = new Schema<
 	ItemListing
 >(
 	{
-		sharer: { type: Schema.Types.ObjectId, ref: 'User', required: true },
-		title: { type: String, required: true, maxlength: 200 },
-		description: { type: String, required: true, maxlength: 2000 },
-		category: { type: String, required: true, maxlength: 100 },
-		location: { type: String, required: true, maxlength: 255 },
-		sharingPeriodStart: { type: Date, required: true },
-		sharingPeriodEnd: { type: Date, required: true },
+		sharer: { type: String, required: false },
+		title: { type: String, required: false, maxlength: 200 },
+		description: { type: String, required: false, maxlength: 2000 },
+		category: { type: String, required: false, maxlength: 100 },
+		location: { type: String, required: false, maxlength: 255 },
+		sharingPeriodStart: { type: Date, required: false },
+		sharingPeriodEnd: { type: Date, required: false },
 		state: {
 			type: String,
-			enum: [
-				'Published',
-				'Paused',
-				'Cancelled',
-				'Drafted',
-				'Expired',
-				'Blocked',
-				'Appeal Requested',
-			],
+			enum: LISTING_STATE_ENUM,
 			required: false,
 		},
-		createdAt: { type: Date, required: false, default: Date.now },
-		updatedAt: { type: Date, required: false, default: Date.now },
-		sharingHistory: [{ type: Schema.Types.ObjectId, ref: 'ItemListing' }],
+		sharingHistory: [{ type: String }],
 		reports: { type: Number, default: 0 },
+		images: [{ type: String }], // Array of image URLs
 	},
 	listingOptions,
 );
 
-export const ItemListingModelName: string = 'item-listing'; //TODO: This should be in singular form
+export const ItemListingModelName: string = 'item-listing';
 
 export const ItemListingModelFactory = (ListingModel: ListingModelType) => {
 	return ListingModel.discriminator(ItemListingModelName, ItemListingSchema);
