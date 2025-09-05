@@ -58,15 +58,19 @@ steps:
         git config --global user.name "$(GH_NAME)"
         git config --global user.email "$(GH_EMAIL)"
         cd docusaurus
-        npm install
         npm ci
+
+        # Stash node_modules outside the folder deploy wipes
+        STASH_TAR="$(Agent.TempDirectory)/node_modules.tar"
+        echo "Stashing node_modules to: ${STASH_TAR}"
+        tar -C . -cf "${STASH_TAR}" node_modules
 
         export GIT_USER=$(GH_NAME)
         export GIT_PASS=$(GH_TOKEN)
         
 
-        # Debug Docusaurus config
-        # echo "Docusaurus config:"
-        # cat docusaurus.config.js
-
         npm run deploy --skip-build
+
+        # Restore node_modules so cache/save can see it
+        echo "Restoring node_modules from: ${STASH_TAR}"
+        tar -C . -xf "${STASH_TAR}"
