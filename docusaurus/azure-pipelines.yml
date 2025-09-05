@@ -69,3 +69,29 @@ steps:
       GIT_USER: "azure-pipelines"
       GIT_USER_EMAIL: "azure-pipelines@microsoft.com"
       GIT_PASS: $(System.AccessToken)
+    displayName: 'Install, Build, and Deploy'
+    inputs:
+      targetType: 'inline'
+      script: |
+        # Configure Git with credentials
+        git config --global user.name "${GIT_USER}"
+        git config --global user.email "${GIT_USER_EMAIL}"
+        
+        # Set the remote URL with token
+        git remote set-url origin https://x-access-token:${GIT_PASS}@github.com/simnova/sharethrift.git
+        
+        # Verify Git configuration
+        echo "Git remote URL:"
+        git remote get-url origin
+
+        cd docusaurus
+        npm ci
+        npm run build
+        echo "Build Complete"
+        
+        # Deploy using Docusaurus
+        npm run deploy
+    env:
+      GIT_USER: "azure-pipelines"
+      GIT_USER_EMAIL: "azure-pipelines@microsoft.com"
+      GIT_PASS: $(System.AccessToken)
