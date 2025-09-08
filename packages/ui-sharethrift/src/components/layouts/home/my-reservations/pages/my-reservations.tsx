@@ -1,8 +1,7 @@
 import { Tabs, Typography } from 'antd';
 import styles from './my-reservations.module.css';
-import { MyReservationsHistory } from './my-reservations-history.tsx';
-import { MyReservationsActive } from './my-reservations-active.tsx';
-
+import { ReservationsViewActiveContainer } from '../components/reservations-view-active.container.tsx';
+import { ReservationsViewHistoryContainer } from '../components/reservations-view-history.container.tsx';
 const { Title } = Typography;
 
 //Will eventually come from the generated graphql files
@@ -39,12 +38,12 @@ export const MyReservationsMain: React.FC = () => {
     {
       key: 'active',
       label: `Active Reservations`,
-      children: <MyReservationsActive />,
+      children: <ReservationsViewActiveContainer />,
     },
     {
       key: 'history',
       label: `Reservation History`,
-      children: <MyReservationsHistory />,
+      children: <ReservationsViewHistoryContainer />,
     },
   ];
   return (
