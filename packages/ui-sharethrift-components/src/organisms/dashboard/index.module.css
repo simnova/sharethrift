@@ -18,11 +18,38 @@
   border: none;
 }
 
+.tableRow {
+  /* Add any default table row styling here */
+}
+
+/* My Listings specific table styling */
+:global(.my-listings-table) {
+  box-shadow: 0 0 0 1px var(--color-foreground-2);
+}
+
+:global(.requests-table) {
+  /* Additional styling for requests table if needed */
+}
+
 .emptyText {
   text-align: center;
   color: #999;
   font-size: 16px;
   margin-top: 20px;
+}
+
+.gridContainer {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 16px;
+  padding: 16px 0;
+}
+
+.gridItem {
+  border: 1px solid var(--color-foreground-2);
+  border-radius: 8px;
+  padding: 16px;
+  background: var(--color-background);
 }
 
 .mobileOnly {
