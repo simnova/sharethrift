@@ -44,9 +44,6 @@ const personalUserResolvers = {
 	Mutation: {
 		processPayment: async (_parent: unknown, { request }: { request: {
 			userId: string;
-			amount?: number;
-			source?: string;
-			description?: string;
 			orderInformation: {
 				amountDetails: {
 					totalAmount: number;
