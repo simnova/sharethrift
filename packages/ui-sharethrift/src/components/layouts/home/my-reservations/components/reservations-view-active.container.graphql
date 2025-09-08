@@ -1,42 +1,53 @@
 fragment ReservationsViewActiveContainerReservationFields on ReservationRequest {
-  id
-  state
-  reservationPeriodStart
-  reservationPeriodEnd
-  createdAt
-  updatedAt
-  closeRequested
-  listing {
-    id
-    title
-    imageUrl
-  }
-  reserver {
-    id
-    name
-  }
+	id
+	state
+	reservationPeriodStart
+	reservationPeriodEnd
+	createdAt
+	updatedAt
+	listing {
+		id
+		title
+	}
+	reserver {
+		account {
+			username
+			profile {
+				firstName
+				lastName
+			}
+		}
+	}
+	closeRequestedBySharer
+	closeRequestedByReserver
 }
 
-query ReservationsViewActiveContainerActiveReservations($userId: ID!) {
-  myActiveReservations(userId: $userId) {
-    ...ReservationsViewActiveContainerReservationFields
-  }
+query ReservationsViewActiveContainerActiveReservations($userId: ObjectID!) {
+	myActiveReservations(userId: $userId) {
+		...ReservationsViewActiveContainerReservationFields
+	}
 }
 
-
-mutation ReservationsViewActiveContainerCancelReservation($id: ID!) {
-  cancelReservation(id: $id) {
-    id
-    state
-    updatedAt
-  }
+mutation ReservationsViewActiveContainerCancelReservation(
+	$input: CancelReservationInput!
+) {
+	cancelReservation(input: $input) {
+		id
+		state
+		updatedAt
+		closeRequestedBySharer
+		closeRequestedByReserver
+	}
 }
 
-mutation ReservationsViewActiveContainerCloseReservation($id: ID!) {
-  closeReservation(id: $id) {
-    id
-    state
-    updatedAt
-    closeRequested
-  }
+mutation ReservationsViewActiveContainerCloseReservation(
+	$input: CloseReservationInput!
+) {
+	closeReservation(input: $input) {
+		id
+		state
+		updatedAt
+		closeRequestedBySharer
+		closeRequestedByReserver
+	}
 }

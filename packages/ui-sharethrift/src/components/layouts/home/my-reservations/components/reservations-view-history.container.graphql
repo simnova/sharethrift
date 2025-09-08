@@ -5,19 +5,25 @@ fragment ReservationsViewHistoryContainerReservationFields on ReservationRequest
   reservationPeriodEnd
   createdAt
   updatedAt
-  closeRequested
   listing {
     id
     title
-    imageUrl
   }
   reserver {
     id
-    name
+    account {
+      username
+      profile {
+        firstName
+        lastName
+      }
+    }
   }
+  closeRequestedBySharer
+  closeRequestedByReserver
 }
 
-query ReservationsViewHistoryContainerPastReservations($userId: ID!) {
+query ReservationsViewHistoryContainerPastReservations($userId: ObjectID!) {
   myPastReservations(userId: $userId) {
     ...ReservationsViewHistoryContainerReservationFields
   }

@@ -63,9 +63,7 @@ export class ReservationRequestDomainAdapter
     if (this.doc.listing instanceof MongooseSeedwork.ObjectId) {
       throw new Error("listing is not populated or is not of the correct type");
     }
-    // Return a new Listing domain adapter. Not created yet so this cannot be returned
     return new ItemListingDomainAdapter(this.doc.listing as Models.Listing.ItemListing);
-    // return this.doc.listing as Domain.Contexts.ReservationRequest.ReservationRequest.ListingEntityReference;
   }
 
   async loadListing(): Promise<Domain.Contexts.Listing.ItemListing.ItemListingEntityReference> {
@@ -75,8 +73,6 @@ export class ReservationRequestDomainAdapter
     if (this.doc.listing instanceof MongooseSeedwork.ObjectId) {
       await this.doc.populate("listing");
     }
-    // Return a new Listing domain adapter. Not created yet so this cannot be returned
-    // return this.doc.listing as Domain.Contexts.ReservationRequest.ReservationRequest.ListingEntityReference;
     return new ItemListingDomainAdapter(this.doc.listing as Models.Listing.ItemListing);
   }
 
@@ -94,8 +90,6 @@ export class ReservationRequestDomainAdapter
     if (this.doc.reserver instanceof MongooseSeedwork.ObjectId) {
       throw new Error("reserver is not populated or is not of the correct type");
     }
-    // Return a new User domain adapter. Not created yet so this cannot be returned
-    //return this.doc.reserver as Domain.Contexts.ReservationRequest.ReservationRequest.UserEntityReference;
     return new PersonalUserDomainAdapter(this.doc.reserver as Models.User.PersonalUser);
   }
 
@@ -106,8 +100,6 @@ export class ReservationRequestDomainAdapter
     if (this.doc.reserver instanceof MongooseSeedwork.ObjectId) {
       await this.doc.populate("reserver");
     }
-    // Return a new User domain adapter. Not created yet so this cannot be returned
-    // return this.doc.reserver as Domain.Contexts.ReservationRequest.ReservationRequest.UserEntityReference;
     return new PersonalUserDomainAdapter(this.doc.reserver as Models.User.PersonalUser);
   }
 

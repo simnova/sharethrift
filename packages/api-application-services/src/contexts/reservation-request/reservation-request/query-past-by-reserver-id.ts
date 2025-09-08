@@ -1,18 +1,18 @@
 import type { Domain } from '@sthrift/api-domain';
 import type { DataSources } from '@sthrift/api-persistence';
 
-export interface ReservationRequestQueryByReserverIdCommand {
+export interface ReservationRequestQueryPastByReserverIdCommand {
     reserverId: string;
     fields?: string[];
 };
 
-export const queryByReserverId = (
+export const queryPastByReserverId = (
     dataSources: DataSources,
 ) => {
     return async (
-        command: ReservationRequestQueryByReserverIdCommand,
+        command: ReservationRequestQueryPastByReserverIdCommand,
     ): Promise<Domain.Contexts.ReservationRequest.ReservationRequest.ReservationRequestEntityReference[]> => {
-        return await dataSources.readonlyDataSource.ReservationRequest.ReservationRequest.ReservationRequestReadRepo.getByReserverId(
+        return await dataSources.readonlyDataSource.ReservationRequest.ReservationRequest.ReservationRequestReadRepo.getPastByReserverIdWithListingWithSharer(
             command.reserverId,
             { fields: command.fields }
         )

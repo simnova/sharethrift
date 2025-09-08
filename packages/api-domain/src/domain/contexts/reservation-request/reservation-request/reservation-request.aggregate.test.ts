@@ -2,7 +2,7 @@ import { describe, it, expect } from 'vitest';
 import { ReservationRequest, type ReservationRequestProps } from './reservation-request.ts';
 import type { ItemListingEntityReference } from '../../listing/item/item-listing.ts';
 import type { PersonalUserEntityReference } from '../../user/personal-user/personal-user.ts';
-import { Location, ListingState } from '../../listing/item/item-listing.value-objects.ts';
+// ...existing code...
 import { ReservationRequestStates, ReservationRequestStateValue } from './reservation-request.value-objects.ts';
 import type { Passport } from '../../passport.ts';
 // Minimal test-only mocks for missing domain value objects
@@ -72,14 +72,14 @@ describe('ReservationRequest', () => {
   // ...existing code...
   const createMockListing = (id = 'listing-1'): ItemListingEntityReference => ({
     id,
-    sharer: 'sharer-1',
+    sharer: createMockReserver('sharer-1'),
     title: 'Mock Listing',
     description: 'Mock listing description',
     category: 'Tools & Equipment',
-    location: new Location('123 Main St, Springfield'),
+    location: '123 Main St, Springfield',
     sharingPeriodStart: new Date(),
     sharingPeriodEnd: new Date(),
-    state: ListingState.Published,
+    state: 'Published',
     createdAt: new Date(),
     updatedAt: new Date(),
     schemaVersion: '1',

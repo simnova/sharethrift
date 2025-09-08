@@ -1,8 +1,9 @@
-import { Schema, type Model, type ObjectId } from 'mongoose';
+import { Schema, type Model, type ObjectId, type PopulatedDoc } from 'mongoose';
 import { type Listing, type ListingModelType, listingOptions } from './listing.model.ts';
+import * as PersonalUser from '../user/personal-user.model.ts'
 
 export interface ItemListing extends Listing {
-  sharer: ObjectId;
+  sharer: PopulatedDoc<PersonalUser.PersonalUser> | ObjectId;
   title: string;
   description: string;
   category: string;
@@ -17,7 +18,7 @@ export interface ItemListing extends Listing {
 }
 
 export const ItemListingSchema = new Schema<ItemListing, Model<ItemListing>, ItemListing>({
-	sharer: { type: Schema.Types.ObjectId, ref: 'User', required: true },
+	sharer: { type: Schema.Types.ObjectId, ref: PersonalUser.PersonalUserModelName, required: true  },
 	title: { type: String, required: true, maxlength: 200 },
 	description: { type: String, required: true, maxlength: 2000 },
 	category: { type: String, required: true, maxlength: 100 },

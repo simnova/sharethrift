@@ -2,16 +2,17 @@ import { DomainSeedwork } from '@cellix/domain-seedwork';
 import type { Passport } from '../../passport.ts';
 import type { ItemListingVisa } from './item-listing.visa.ts';
 import * as ValueObjects from './item-listing.value-objects.ts';
+import type { PersonalUserEntityReference } from '../../user/personal-user/personal-user.ts'
 
 export interface ItemListingProps extends DomainSeedwork.DomainEntityProps {
-	readonly sharer: string;
-	title: ValueObjects.Title;
-	description: ValueObjects.Description;
-	category: ValueObjects.Category;
-	location: ValueObjects.Location;
+	readonly sharer: Readonly<PersonalUserEntityReference>;
+	title: string;
+	description: string;
+	category: string;
+	location: string;
 	sharingPeriodStart: Date;
 	sharingPeriodEnd: Date;
-	state: ValueObjects.ListingState;
+	state: string;
 	readonly createdAt: Date;
 	updatedAt: Date;
 	readonly schemaVersion: string;
@@ -81,14 +82,14 @@ export class ItemListing<props extends ItemListingProps>
 	//#endregion Methods
 
 	//#region Properties
-	get sharer(): string {
+	get sharer(): Readonly<PersonalUserEntityReference> {
 		return this.props.sharer;
 	}
 
-	get title(): ValueObjects.Title {
+	get title(): string {
 		return this.props.title;
 	}
-	set title(value: ValueObjects.Title) {
+	set title(value: string) {
 		if (
 			!this.isNew &&
 			!this.visa.determineIf((permissions) => permissions.canUpdateItemListing)
@@ -97,14 +98,14 @@ export class ItemListing<props extends ItemListingProps>
 				'You do not have permission to update this title',
 			);
 		}
-		this.props.title = value;
+		this.props.title = new ValueObjects.Title(value).valueOf();
 		this.props.updatedAt = new Date();
 	}
 
-	get description(): ValueObjects.Description {
-		return this.props.description;
+	get description(): string {
+		return this.props.description.valueOf();
 	}
-	set description(value: ValueObjects.Description) {
+	set description(value: string) {
 		if (
 			!this.isNew &&
 			!this.visa.determineIf((permissions) => permissions.canUpdateItemListing)
@@ -113,14 +114,14 @@ export class ItemListing<props extends ItemListingProps>
 				'You do not have permission to update this description',
 			);
 		}
-		this.props.description = value;
+		this.props.description = new ValueObjects.Description(value).valueOf();
 		this.props.updatedAt = new Date();
 	}
 
-	get category(): ValueObjects.Category {
+	get category(): string {
 		return this.props.category;
 	}
-	set category(value: ValueObjects.Category) {
+	set category(value: string) {
 		if (
 			!this.isNew &&
 			!this.visa.determineIf((permissions) => permissions.canUpdateItemListing)
@@ -129,14 +130,14 @@ export class ItemListing<props extends ItemListingProps>
 				'You do not have permission to update this category',
 			);
 		}
-		this.props.category = value;
+		this.props.category = new ValueObjects.Category(value).valueOf();
 		this.props.updatedAt = new Date();
 	}
 
-	get location(): ValueObjects.Location {
+	get location(): string {
 		return this.props.location;
 	}
-	set location(value: ValueObjects.Location) {
+	set location(value: string) {
 		if (
 			!this.isNew &&
 			!this.visa.determineIf((permissions) => permissions.canUpdateItemListing)
@@ -145,7 +146,7 @@ export class ItemListing<props extends ItemListingProps>
 				'You do not have permission to update this location',
 			);
 		}
-		this.props.location = value;
+		this.props.location = new ValueObjects.Location(value).valueOf();
 		this.props.updatedAt = new Date();
 	}
 
@@ -181,7 +182,7 @@ export class ItemListing<props extends ItemListingProps>
 		this.props.updatedAt = new Date();
 	}
 
-	get state(): ValueObjects.ListingState {
+	get state(): string {
 		return this.props.state;
 	}
 
@@ -232,9 +233,9 @@ export class ItemListing<props extends ItemListingProps>
 	/**
 	 * Determines if the current user can edit this listing
 	 */
-	canEdit(userId: string): boolean {
-		return this.props.sharer === userId;
-	}
+	// canEdit(userId: string): boolean {
+	// 	return this.props.sharer === userId;
+	// }
 
 	/**
 	 * Gets a formatted date range string for display
@@ -257,7 +258,7 @@ export class ItemListing<props extends ItemListingProps>
 	 * Gets the location in a display-friendly format
 	 */
 	get displayLocation(): string {
-		return this.location.cityState;
+		return this.location;
 	}
 
 	public publish(): void {
@@ -269,7 +270,7 @@ export class ItemListing<props extends ItemListingProps>
 			);
 		}
 
-		this.props.state = ValueObjects.ListingState.Published;
+		this.props.state = new ValueObjects.ListingState('Published').valueOf();
 		this.props.updatedAt = new Date();
 	}
 
@@ -284,7 +285,7 @@ export class ItemListing<props extends ItemListingProps>
 			);
 		}
 
-		this.props.state = ValueObjects.ListingState.Paused;
+		this.props.state = new ValueObjects.ListingState('Paused').valueOf();
 		this.props.updatedAt = new Date();
 	}
 
@@ -297,7 +298,7 @@ export class ItemListing<props extends ItemListingProps>
 			);
 		}
 
-		this.props.state = ValueObjects.ListingState.Cancelled;
+		this.props.state = new ValueObjects.ListingState('Cancelled').valueOf();
 		this.props.updatedAt = new Date();
 	}
 
