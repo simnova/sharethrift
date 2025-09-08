@@ -2,7 +2,7 @@ import type { DataSources } from '@sthrift/api-persistence';
 import {
 	PersonalUser as PersonalUserApi,
 	type PersonalUserApplicationService,
-} from './end-user/index.ts';
+} from './personal-user/index.ts';
 
 export interface UserContextApplicationService {
 	PersonalUser: PersonalUserApplicationService;

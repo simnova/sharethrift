@@ -138,19 +138,21 @@ export type ItemListing = MongoBase & {
   createdAt?: Maybe<Scalars["DateTime"]["output"]>;
   description: Scalars["String"]["output"];
   id: Scalars["ObjectID"]["output"];
+  images?: Maybe<Array<Scalars["String"]["output"]>>;
   location: Scalars["String"]["output"];
   reports?: Maybe<Scalars["Int"]["output"]>;
   schemaVersion?: Maybe<Scalars["String"]["output"]>;
-  sharer: PersonalUser;
-  sharingHistory?: Maybe<Array<Scalars["ObjectID"]["output"]>>;
+  sharer: Scalars["String"]["output"];
+  sharingHistory?: Maybe<Array<Scalars["String"]["output"]>>;
   sharingPeriodEnd: Scalars["DateTime"]["output"];
   sharingPeriodStart: Scalars["DateTime"]["output"];
   state?: Maybe<ItemListingState>;
   title: Scalars["String"]["output"];
   updatedAt?: Maybe<Scalars["DateTime"]["output"]>;
+  version?: Maybe<Scalars["Int"]["output"]>;
 };
 
-export type ItemListingState = "AppealRequested" | "Blocked" | "Cancelled" | "Drafted" | "Expired" | "Paused" | "Published";
+export type ItemListingState = "Appeal_Requested" | "Blocked" | "Cancelled" | "Drafted" | "Expired" | "Paused" | "Published";
 
 export type Listing = {
   __typename?: "Listing";
@@ -854,16 +856,18 @@ export type ItemListingResolvers<
   createdAt?: Resolver<Maybe<ResolversTypes["DateTime"]>, ParentType, ContextType>;
   description?: Resolver<ResolversTypes["String"], ParentType, ContextType>;
   id?: Resolver<ResolversTypes["ObjectID"], ParentType, ContextType>;
+  images?: Resolver<Maybe<Array<ResolversTypes["String"]>>, ParentType, ContextType>;
   location?: Resolver<ResolversTypes["String"], ParentType, ContextType>;
   reports?: Resolver<Maybe<ResolversTypes["Int"]>, ParentType, ContextType>;
   schemaVersion?: Resolver<Maybe<ResolversTypes["String"]>, ParentType, ContextType>;
-  sharer?: Resolver<ResolversTypes["PersonalUser"], ParentType, ContextType>;
-  sharingHistory?: Resolver<Maybe<Array<ResolversTypes["ObjectID"]>>, ParentType, ContextType>;
+  sharer?: Resolver<ResolversTypes["String"], ParentType, ContextType>;
+  sharingHistory?: Resolver<Maybe<Array<ResolversTypes["String"]>>, ParentType, ContextType>;
   sharingPeriodEnd?: Resolver<ResolversTypes["DateTime"], ParentType, ContextType>;
   sharingPeriodStart?: Resolver<ResolversTypes["DateTime"], ParentType, ContextType>;
   state?: Resolver<Maybe<ResolversTypes["ItemListingState"]>, ParentType, ContextType>;
   title?: Resolver<ResolversTypes["String"], ParentType, ContextType>;
   updatedAt?: Resolver<Maybe<ResolversTypes["DateTime"]>, ParentType, ContextType>;
+  version?: Resolver<Maybe<ResolversTypes["Int"]>, ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 }>;
 

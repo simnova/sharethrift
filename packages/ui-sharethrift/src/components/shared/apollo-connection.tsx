@@ -31,8 +31,11 @@ export interface ApolloConnectionProps {
 }
 export const ApolloConnection: FC<ApolloConnectionProps> = (props: ApolloConnectionProps) => {
   const auth = useAuth();
+
   // Show nothing (or a loader) while auth is loading
-  if (auth.isLoading) return null;
+  if (auth.isLoading) {
+    return null;
+  }
   const access_token = auth.isAuthenticated ? auth.user?.access_token : undefined;
 
   /**

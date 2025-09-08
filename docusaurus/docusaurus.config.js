@@ -1,13 +1,14 @@
 module.exports = {
   title: 'Sharethrift Docs',
   tagline: 'Documentation for Sharethrift',
-  url: 'https://your-org.github.io',
-  baseUrl: '/',
+  url: 'https://simnova.github.io',
+  baseUrl: '/sharethrift/',
   onBrokenLinks: 'throw',
   onBrokenMarkdownLinks: 'warn',
   favicon: 'img/favicon.ico',
   organizationName: 'simnova', // GitHub org/user
   projectName: 'sharethrift', // Repo name
+  trailingSlash: false,
   presets: [
     [
       'classic',

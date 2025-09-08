@@ -1,4 +1,5 @@
-import { Schema, type Model, type ObjectId, type PopulatedDoc } from 'mongoose';
+import { Schema } from 'mongoose';
+import type { Model, PopulatedDoc, ObjectId } from 'mongoose';
 import { type Listing, type ListingModelType, listingOptions } from './listing.model.ts';
 import * as PersonalUser from '../user/personal-user.model.ts'
 
@@ -36,7 +37,7 @@ export const ItemListingSchema = new Schema<ItemListing, Model<ItemListing>, Ite
 	reports: { type: Number, default: 0 },
 }, listingOptions);
 
-export const ItemListingModelName: string = 'item-listings'; //TODO: This should be in singular form
+export const ItemListingModelName: string = 'item-listing';
 
 export const ItemListingModelFactory = (ListingModel: ListingModelType) => {
 	return ListingModel.discriminator(ItemListingModelName, ItemListingSchema);
