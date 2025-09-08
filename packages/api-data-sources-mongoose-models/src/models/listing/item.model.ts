@@ -1,41 +1,68 @@
-import { Schema } from 'mongoose';
-import type { Model, PopulatedDoc, ObjectId } from 'mongoose';
-import { type Listing, type ListingModelType, listingOptions } from './listing.model.ts';
-import * as PersonalUser from '../user/personal-user.model.ts'
+import { Schema, type Model, type ObjectId, type PopulatedDoc } from 'mongoose';
+import {
+	type Listing,
+	type ListingModelType,
+	listingOptions,
+} from './listing.model.ts';
+import * as PersonalUser from '../user/personal-user.model.ts';
 
 export interface ItemListing extends Listing {
-  sharer: PopulatedDoc<PersonalUser.PersonalUser> | ObjectId;
-  title: string;
-  description: string;
-  category: string;
-  location: string;
-  sharingPeriodStart: Date;
-  sharingPeriodEnd: Date;
-  state?: 'Published' | 'Paused' | 'Cancelled' | 'Drafted' | 'Expired' | 'Blocked' | 'Appeal Requested';
-  createdAt: Date;
-  updatedAt: Date;
-  sharingHistory?: ObjectId[];
-  reports?: number;
+	sharer: PopulatedDoc<PersonalUser.PersonalUser> | ObjectId;
+	title: string;
+	description: string;
+	category: string;
+	location: string;
+	sharingPeriodStart: Date;
+	sharingPeriodEnd: Date;
+	state?:
+		| 'Published'
+		| 'Paused'
+		| 'Cancelled'
+		| 'Drafted'
+		| 'Expired'
+		| 'Blocked'
+		| 'Appeal Requested';
+	createdAt: Date;
+	updatedAt: Date;
+	sharingHistory?: ObjectId[];
+	reports?: number;
+	images?: string[];
 }
 
-export const ItemListingSchema = new Schema<ItemListing, Model<ItemListing>, ItemListing>({
-	sharer: { type: Schema.Types.ObjectId, ref: PersonalUser.PersonalUserModelName, required: true  },
-	title: { type: String, required: true, maxlength: 200 },
-	description: { type: String, required: true, maxlength: 2000 },
-	category: { type: String, required: true, maxlength: 100 },
-	location: { type: String, required: true, maxlength: 255 },
-	sharingPeriodStart: { type: Date, required: true },
-	sharingPeriodEnd: { type: Date, required: true },
-	state: {
-		type: String,
-		enum: ['Published', 'Paused', 'Cancelled', 'Drafted', 'Expired', 'Blocked', 'Appeal Requested'],
-		required: false
+export const LISTING_STATE_ENUM = [
+	'Published',
+	'Paused',
+	'Cancelled',
+	'Drafted',
+	'Expired',
+	'Blocked',
+	'Appeal Requested',
+] as const;
+
+export const ItemListingSchema = new Schema<
+	ItemListing,
+	Model<ItemListing>,
+	ItemListing
+>(
+	{
+		sharer: { type: Schema.Types.ObjectId, ref: PersonalUser.PersonalUserModelName, required: true  },
+		title: { type: String, required: false, maxlength: 200 },
+		description: { type: String, required: false, maxlength: 2000 },
+		category: { type: String, required: false, maxlength: 100 },
+		location: { type: String, required: false, maxlength: 255 },
+		sharingPeriodStart: { type: Date, required: false },
+		sharingPeriodEnd: { type: Date, required: false },
+		state: {
+			type: String,
+			enum: LISTING_STATE_ENUM,
+			required: false,
+		},
+		sharingHistory: [{ type: String }],
+		reports: { type: Number, default: 0 },
+		images: [{ type: String }], // Array of image URLs
 	},
-	createdAt: { type: Date, required: false, default: Date.now },
-	updatedAt: { type: Date, required: false, default: Date.now },
-	sharingHistory: [{ type: Schema.Types.ObjectId, ref: 'ItemListing' }],
-	reports: { type: Number, default: 0 },
-}, listingOptions);
+	listingOptions,
+);
 
 export const ItemListingModelName: string = 'item-listing';
 

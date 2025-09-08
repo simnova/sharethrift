@@ -1,15 +1,17 @@
-import type { ItemListingPassport } from '../../contexts/listing/item/item-listing.passport.ts';
+import type { ListingPassport } from '../../contexts/listing/listing.passport.ts';
 import type { ReservationRequestPassport } from '../../contexts/reservation-request/reservation-request.passport.ts';
 import type { Passport } from '../../contexts/passport.ts';
 import type { UserPassport } from '../../contexts/user/user.passport.ts';
 import { GuestUserPassport } from './contexts/guest.user.passport.ts';
-import { GuestItemListingPassport } from './contexts/guest.item-listing.passport.ts';
-import { GuestReservationRequestPassport } from './contexts/guest.reservation-request.passport.ts';
+import { GuestListingPassport } from './contexts/guest.listing.passport.ts';
+import { GuestConversationPassport } from './contexts/guest.conversation.passport.ts';
+import type { ConversationPassport } from '../../contexts/conversation/conversation.passport.ts';
 import { GuestPassportBase } from './guest.passport-base.ts';
 
 export class GuestPassport extends GuestPassportBase implements Passport {
 	private _userPassport: UserPassport | undefined;
-	private _itemListingPassport: ItemListingPassport | undefined;
+	private _listingPassport: ListingPassport | undefined;
+	private _conversationPassport: ConversationPassport | undefined;
     private _reservationRequestPassport: ReservationRequestPassport | undefined;
 
 	public get user(): UserPassport {
@@ -19,11 +21,18 @@ export class GuestPassport extends GuestPassportBase implements Passport {
 		return this._userPassport;
 	}
 
-	public get itemListing(): ItemListingPassport {
-		if (!this._itemListingPassport) {
-			this._itemListingPassport = new GuestItemListingPassport();
+	public get listing(): ListingPassport {
+		if (!this._listingPassport) {
+			this._listingPassport = new GuestListingPassport();
 		}
-		return this._itemListingPassport;
+		return this._listingPassport;
+	}
+
+	public get conversation(): ConversationPassport {
+		if (!this._conversationPassport) {
+			this._conversationPassport = new GuestConversationPassport();
+		}
+		return this._conversationPassport;
 	}
 
     public get reservationRequest(): ReservationRequestPassport {

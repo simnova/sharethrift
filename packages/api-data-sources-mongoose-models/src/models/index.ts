@@ -6,6 +6,7 @@ import {
 	ItemListingModelFactory,
 	ListingModelFactory,
 } from './listing/index.ts';
+import { ConversationModelFactory } from './conversations/conversation.model.ts';
 
 export * as User from './user/index.ts';
 export * as Conversation from './conversations/index.ts';
@@ -29,6 +30,9 @@ export const mongooseContextBuilder = (
 			ItemListingModel: ItemListingModelFactory(
 				ListingModelFactory(initializedService),
 			),
+		},
+		Conversation: {
+			ConversationModel: ConversationModelFactory(initializedService),
 		},
 		ReservationRequest: {
 			ReservationRequest: ReservationRequestModelFactory(initializedService),
