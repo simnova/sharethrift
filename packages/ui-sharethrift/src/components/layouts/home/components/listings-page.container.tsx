@@ -73,6 +73,10 @@ export function ListingsPageContainer({ isAuthenticated }: ListingsPageContainer
     navigate(`/listing/${listing._id}`);
   };
 
+  const handleCreateListingClick = () => {
+    navigate('/create-listing');
+  };
+
   const handlePageChange = (page: number) => {
     setCurrentPage(page);
     setTimeout(() => {
@@ -118,6 +122,7 @@ export function ListingsPageContainer({ isAuthenticated }: ListingsPageContainer
       totalListings={totalListings}
       onListingClick={handleListingClick}
       onPageChange={handlePageChange}
+      onCreateListingClick={handleCreateListingClick}
     />
   );
 }

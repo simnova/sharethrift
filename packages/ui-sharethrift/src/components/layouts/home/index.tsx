@@ -6,6 +6,7 @@ import MyListingsRoutes from "./my-listings/Index";
 import MyReservationsRoutes from "./my-reservations/Index";
 import Listings from "./pages/Listings";
 import ViewListing from "./pages/ViewListing";
+import CreateListing from "./pages/CreateListing";
 import HomeTabsLayout from "./section-layout";
 
 export default function HomeRoutes() {
@@ -14,6 +15,7 @@ export default function HomeRoutes() {
         <Route path="" element={<HomeTabsLayout />} >
             <Route path="home" element={<Listings />} />
             <Route path="listing/:listingId" element={<ViewListing />} />
+            <Route path="create-listing" element={<CreateListing />} />
             <Route path="my-listings/*" element={<MyListingsRoutes />} />
             <Route path="my-reservations/*" element={<MyReservationsRoutes />} />
             <Route path="messages/*" element={<MessagesRoutes />} />

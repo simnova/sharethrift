@@ -1,0 +1,25 @@
+# Create Item Listing Mutation
+mutation HomeCreateListingContainerCreateItemListing($input: CreateItemListingInput!) {
+  createItemListing(input: $input) {
+    id
+    title
+    description
+    category
+    location
+    sharingPeriodStart
+    sharingPeriodEnd
+    state
+    images
+    createdAt
+    updatedAt
+    sharer
+    schemaVersion
+  }
+}
+
+# Categories query for dropdown
+query HomeCreateListingContainerCategories {
+  itemListings {
+    category
+  }
+}

@@ -19,6 +19,7 @@ interface ListingsPageProps {
   totalListings: number;
   onListingClick: (listing: ItemListing) => void;
   onPageChange: (page: number) => void;
+  onCreateListingClick: () => void;
 }
 
 export function ListingsPage({
@@ -34,6 +35,7 @@ export function ListingsPage({
   totalListings,
   onListingClick,
   onPageChange,
+  onCreateListingClick,
 }: Readonly<ListingsPageProps>) {
 
   return (
@@ -60,9 +62,7 @@ export function ListingsPage({
               <Button
                 type="primary"
                 className={styles.createListing}
-                onClick={() => {
-                  // TODO: Open create listing page
-                }}
+                onClick={onCreateListingClick}
               >
               Create a Listing
               </Button>
