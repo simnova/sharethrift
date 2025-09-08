@@ -12,7 +12,7 @@ export class ReservationRequestRepository
 	extends MongooseSeedwork.MongoRepositoryBase<
 		ReservationRequestModelType,
 		PropType,
-		Domain.Contexts.Passport,
+		Domain.Passport,
 		Domain.Contexts.ReservationRequest.ReservationRequest.ReservationRequest<PropType>
 	>
 	implements Domain.Contexts.ReservationRequest.ReservationRequest.ReservationRequestRepository<PropType>

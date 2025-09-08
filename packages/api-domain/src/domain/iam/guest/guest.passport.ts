@@ -7,6 +7,7 @@ import { GuestListingPassport } from './contexts/guest.listing.passport.ts';
 import { GuestConversationPassport } from './contexts/guest.conversation.passport.ts';
 import type { ConversationPassport } from '../../contexts/conversation/conversation.passport.ts';
 import { GuestPassportBase } from './guest.passport-base.ts';
+import { GuestReservationRequestPassport } from './contexts/guest.reservation-request.passport.ts';
 
 export class GuestPassport extends GuestPassportBase implements Passport {
 	private _userPassport: UserPassport | undefined;

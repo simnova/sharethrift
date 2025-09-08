@@ -5,7 +5,7 @@ import * as ValueObjects from './item-listing.value-objects.ts';
 import type { PersonalUserEntityReference } from '../../user/personal-user/personal-user.ts'
 
 export interface ItemListingProps extends DomainSeedwork.DomainEntityProps {
-	readonly sharer: Readonly<PersonalUserEntityReference>;
+	sharer: Readonly<PersonalUserEntityReference>;
 	title: string;
 	description: string;
 	category: string;
@@ -82,9 +82,10 @@ export class ItemListing<props extends ItemListingProps>
 	//#endregion Methods
 
 	//#region Properties
-	get sharer(): Readonly<PersonalUserEntityReference> {
+	get sharer(): PersonalUserEntityReference {
 		return this.props.sharer;
 	}
+
 	set sharer(value: PersonalUserEntityReference) {
 		this.props.sharer = value;
 	}
