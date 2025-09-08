@@ -21,8 +21,12 @@ const meta: Meta<typeof CreateListing> = {
     onSubmit: () => {},
     onCancel: () => {},
     uploadedImages: [],
-    onImageUpload: () => Promise.resolve(''),
-    onImageRemove: () => {},
+    onImageAdd: () => {
+      // Mock image addition
+    },
+    onImageRemove: () => {
+      // Mock image removal
+    },
   },
 };
 

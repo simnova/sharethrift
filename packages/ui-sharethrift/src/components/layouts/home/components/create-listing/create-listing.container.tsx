@@ -100,22 +100,12 @@ export function CreateListingContainer({ isAuthenticated }: CreateListingContain
     navigate(-1); // Go back to previous page
   };
 
-  const handleImageUpload = async (file: File): Promise<string> => {
-    // Mock image upload - in real implementation, this would upload to blob storage
-    return new Promise((resolve, reject) => {
-      const reader = new FileReader();
-      reader.onload = () => {
-        const result = reader.result as string;
-        setUploadedImages(prev => [...prev, result]);
-        resolve(result);
-      };
-      reader.onerror = () => reject(new Error('Failed to read file'));
-      reader.readAsDataURL(file);
-    });
-  };
-
   const handleImageRemove = (imageUrl: string) => {
     setUploadedImages(prev => prev.filter(url => url !== imageUrl));
+  };
+
+  const handleImageAdd = (imageUrl: string) => {
+    setUploadedImages(prev => [...prev, imageUrl]);
   };
 
   return (
@@ -125,7 +115,7 @@ export function CreateListingContainer({ isAuthenticated }: CreateListingContain
       onSubmit={handleSubmit}
       onCancel={handleCancel}
       uploadedImages={uploadedImages}
-      onImageUpload={handleImageUpload}
+      onImageAdd={handleImageAdd}
       onImageRemove={handleImageRemove}
     />
   );
