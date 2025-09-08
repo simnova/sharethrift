@@ -53,7 +53,7 @@ export function AllListingsTable({
     // Conditional actions based on status
     if (record.status === 'Active' || record.status === 'Reserved') {
       buttons.push(
-        <Button key="pause" type="link" size="small" onClick={() => onAction('pause', record.id)}>
+        <Button key="pause" type="link" size="small" onClick={() => onAction('pause', record._id)}>
           Pause
         </Button>
       );
@@ -61,7 +61,7 @@ export function AllListingsTable({
     
     if (record.status === 'Paused' || record.status === 'Expired') {
       buttons.push(
-        <Button key="reinstate" type="link" size="small" onClick={() => onAction('reinstate', record.id)}>
+        <Button key="reinstate" type="link" size="small" onClick={() => onAction('reinstate', record._id)}>
           Reinstate
         </Button>
       );
@@ -73,7 +73,7 @@ export function AllListingsTable({
           key="appeal"
           title="Appeal this listing?"
           description="Are you sure you want to appeal the block on this listing?"
-          onConfirm={() => onAction('appeal', record.id)}
+          onConfirm={() => onAction('appeal', record._id)}
           okText="Yes"
           cancelText="No"
         >
@@ -84,7 +84,7 @@ export function AllListingsTable({
     
     if (record.status === 'Draft') {
       buttons.push(
-        <Button key="publish" type="link" size="small" onClick={() => onAction('publish', record.id)}>
+        <Button key="publish" type="link" size="small" onClick={() => onAction('publish', record._id)}>
           Publish
         </Button>
       );
@@ -92,7 +92,7 @@ export function AllListingsTable({
     
     // Always available actions
     buttons.push(
-      <Button key="edit" type="link" size="small" onClick={() => onAction('edit', record.id)}>
+      <Button key="edit" type="link" size="small" onClick={() => onAction('edit', record._id)}>
         Edit
       </Button>
     );
@@ -102,7 +102,7 @@ export function AllListingsTable({
         key="delete"
         title="Delete this listing?"
         description="Are you sure you want to delete this listing? This action cannot be undone."
-        onConfirm={() => onAction('delete', record.id)}
+        onConfirm={() => onAction('delete', record._id)}
         okText="Yes"
         cancelText="No"
       >
@@ -138,7 +138,7 @@ export function AllListingsTable({
       render: (title, record) => (
         <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
           <Image
-            src={record.image}
+            src={record.images[0]}
             alt={title}
             width={60}
             height={60}
@@ -155,15 +155,18 @@ export function AllListingsTable({
       key: 'publishedAt',
       sorter: true,
       sortOrder: sorter.field === 'publishedAt' ? sorter.order : null,
-      render: (date: string) => date,
+      render: (date: Date) => date.toISOString().slice(0, 10),
     },
     {
       title: 'Reservation Period',
-      dataIndex: 'reservationPeriod',
       key: 'reservationPeriod',
-      sorter: true,
-      sortOrder: sorter.field === 'reservationPeriod' ? sorter.order : null,
-      render: (period: string) => <span>{period}</span>,
+      sorter: (a, b) => a.sharingPeriodStart.getTime() - b.sharingPeriodStart.getTime(),
+      sortOrder: sorter.field === 'sharingPeriodStart' ? sorter.order : null,
+      render: (_, record) => (
+        <span>
+          {record.sharingPeriodStart.toISOString().slice(0, 10)} - {record.sharingPeriodEnd.toISOString().slice(0, 10)}
+        </span>
+      ),
     },
     {
       title: 'Status',
@@ -237,7 +240,7 @@ export function AllListingsTable({
     },
     {
       title: 'Pending Requests',
-      dataIndex: 'pendingRequestsCount',
+      dataIndex: 'pendingRequests',
       key: 'pendingRequests',
       sorter: true,
       sortOrder: sorter.field === 'pendingRequests' ? sorter.order : null,
@@ -266,7 +269,7 @@ export function AllListingsTable({
               type="link"
               size="small"
               style={{ padding: 0, height: 'auto', marginTop: 0 }}
-              onClick={() => onViewAllRequests(record.id)}
+              onClick={() => onViewAllRequests(record._id)}
             >
               <span style={{ color: '#2d4156', fontWeight: 500, fontSize: 13 }}>View all</span>
             </Button>
@@ -281,7 +284,7 @@ export function AllListingsTable({
       <Table
         columns={columns}
         dataSource={data}
-        rowKey="id"
+        rowKey="_id"
         pagination={false}
         onChange={onTableChange}
         style={{ marginBottom: 16, boxShadow: '0 0 0 1px var(--color-foreground-2)' }}

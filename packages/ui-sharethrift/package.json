@@ -13,19 +13,21 @@
     "build-storybook": "storybook build"
   },
   "dependencies": {
-    "@apollo/client": "^3.13.9",
-    "@sthrift/ui-sharethrift-components": "*",
+    "@apollo/client": "^3.14.0",
+    "@sthrift/ui-sharethrift-components": "^1.0.0",
     "@tailwindcss/vite": "^4.1.11",
     "@twilio/conversations": "^2.6.3",
     "antd": "^5.26.7",
     "apollo-link-rest": "^0.9.0",
     "clean": "^4.0.2",
     "crypto-hash": "^3.1.0",
+    "graphql": "^16.11.0",
     "lodash": "^4.17.21",
     "react": "^19.1.1",
     "react-dom": "^19.1.1",
     "react-oidc-context": "^3.3.0",
     "react-router-dom": "^7.8.0",
+    "rxjs": "^7.8.2",
     "tailwindcss": "^4.1.11"
   },
   "devDependencies": {
