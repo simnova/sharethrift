@@ -4,12 +4,15 @@ import { gql, useQuery, useMutation } from '@apollo/client';
 import { message } from 'antd';
 // eslint-disable-next-line import/no-absolute-path, @typescript-eslint/ban-ts-comment
 // @ts-ignore - allow raw import string
-import CreateListingQuerySource from './create-listing.container.graphql?raw';
+import CreateListingMutationSource from './create-listing.container.graphql?raw';
+// eslint-disable-next-line import/no-absolute-path, @typescript-eslint/ban-ts-comment
+// @ts-ignore - allow raw import string
+import ListingsQuerySource from '../listings-page.container.graphql?raw';
 import { CreateListing, type CreateListingFormData } from './create-listing';
 
 // Parse the GraphQL operations
-const CREATE_LISTING_MUTATION = gql(CreateListingQuerySource.split('# Categories query')[0]);
-const CATEGORIES_QUERY = gql(CreateListingQuerySource.split('# Categories query')[1]);
+const CREATE_LISTING_MUTATION = gql(CreateListingMutationSource);
+const LISTINGS_QUERY = gql(ListingsQuerySource);
 
 interface CreateListingContainerProps {
   readonly isAuthenticated?: boolean;
@@ -35,7 +38,7 @@ export function CreateListingContainer({ isAuthenticated }: CreateListingContain
   const [uploadedImages, setUploadedImages] = useState<string[]>([]);
 
   // Get categories from existing listings
-  const { data: categoriesData } = useQuery<CategoriesQueryData>(CATEGORIES_QUERY, {
+  const { data: categoriesData } = useQuery<CategoriesQueryData>(LISTINGS_QUERY, {
     fetchPolicy: 'cache-first',
   });
 

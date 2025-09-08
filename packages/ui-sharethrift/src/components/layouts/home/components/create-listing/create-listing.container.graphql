@@ -16,10 +16,3 @@ mutation HomeCreateListingContainerCreateItemListing($input: CreateItemListingIn
     schemaVersion
   }
 }
-
-# Categories query for dropdown
-query HomeCreateListingContainerCategories {
-  itemListings {
-    category
-  }
-}
