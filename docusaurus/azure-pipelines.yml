@@ -157,6 +157,8 @@ stages:
                 echo "Installing dependencies for deployment..."
                 npm ci
 
+                set -e
+
                 echo "Deploying to GitHub Pages..."
                 npm run deploy --skip-build
 
