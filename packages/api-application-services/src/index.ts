@@ -4,9 +4,13 @@ import {
 	User,
 	type UserContextApplicationService,
 } from './contexts/user/index.ts';
-
+import { 
+    ReservationRequest, 
+    type ReservationRequestContextApplicationService 
+} from './contexts/reservation-request/index.ts';
 export interface ApplicationServices {
 	User: UserContextApplicationService;
+    ReservationRequest: ReservationRequestContextApplicationService;
 	get verifiedUser(): VerifiedUser | null;
 }
 
@@ -26,7 +30,7 @@ export interface VerifiedUser {
 	hints?: PrincipalHints | undefined;
 }
 
-// biome-ignore lint/complexity/noBannedTypes: <explanation>
+// biome-ignore lint/complexity/noBannedTypes: principal hints type configuration
 export type PrincipalHints = {
 	// memberId: string | undefined;
 	// communityId: string | undefined;
@@ -85,6 +89,7 @@ export const buildApplicationServicesFactory = (
 			get verifiedUser(): VerifiedUser | null {
 				return { ...tokenValidationResult, hints: hints };
 			},
+            ReservationRequest: ReservationRequest(dataSources),
 		};
 	};
  

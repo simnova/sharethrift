@@ -1,0 +1,26 @@
+
+.listingCell {
+  display: flex;
+  align-items: center;
+  gap: 1.25rem;
+}
+
+.listingImage {
+  width: 72px !important;
+  height: 72px !important;
+  min-width: 72px !important;
+  min-height: 72px !important;
+  object-fit: cover;
+  border-radius: 0;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.06);
+  background: #fff;
+}
+
+.tableText {
+  font-family: var(--Urbanist), 'Urbanist', sans-serif;
+  color: var(--color-message-text);
+  font-size: 0.95rem;
+  font-weight: 400;
+  letter-spacing: 0.01em;
+  line-height: 1.4;
+}
