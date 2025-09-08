@@ -283,7 +283,6 @@ export function CreateListing({
                       <label
                         htmlFor="additional-image-upload"
                         style={{
-                          display: 'inline-block',
                           width: '80px',
                           height: '80px',
                           border: '2px dashed var(--color-foreground-2)',
