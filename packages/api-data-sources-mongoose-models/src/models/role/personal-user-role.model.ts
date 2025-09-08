@@ -1,0 +1,97 @@
+import type { MongooseSeedwork } from '@cellix/data-sources-mongoose';
+import {
+	type Model,
+	type ObjectId,
+	Schema,
+	type SchemaDefinition,
+} from 'mongoose';
+import { type Role, type RoleModelType, roleOptions } from './role.model.ts';
+
+export interface PersonalUserListingPermissions
+	extends MongooseSeedwork.NestedPath {
+	id?: ObjectId;
+	canCreateItemListing: boolean;
+	canUpdateItemListing: boolean;
+	canDeleteItemListing: boolean;
+	canViewItemListing: boolean;
+	canPublishItemListing: boolean;
+	canUnpublishItemListing: boolean;
+}
+
+export interface PersonalUserConversationPermissions
+	extends MongooseSeedwork.NestedPath {
+	id?: ObjectId;
+	canCreateConversation: boolean;
+	canManageConversation: boolean;
+	canViewConversation: boolean;
+}
+
+export interface PersonalUserPermissions extends MongooseSeedwork.NestedPath {
+	id?: ObjectId;
+	listing: PersonalUserListingPermissions;
+	conversation: PersonalUserConversationPermissions;
+}
+
+export interface PersonalUserRole extends Role {
+	permissions: PersonalUserPermissions;
+	roleName: string;
+	roleType?: string;
+	isDefault: boolean;
+}
+
+export const PersonalUserRoleSchema = new Schema<
+	PersonalUserRole,
+	Model<PersonalUserRole>,
+	PersonalUserRole
+>(
+	{
+		permissions: {
+			listing: {
+				canCreateItemListing: { type: Boolean, required: true, default: false },
+				canUpdateItemListing: { type: Boolean, required: true, default: false },
+				canDeleteItemListing: { type: Boolean, required: true, default: false },
+				canViewItemListing: { type: Boolean, required: true, default: true },
+				canPublishItemListing: {
+					type: Boolean,
+					required: true,
+					default: false,
+				},
+				canUnpublishItemListing: {
+					type: Boolean,
+					required: true,
+					default: false,
+				},
+			} as SchemaDefinition<PersonalUserListingPermissions>,
+			conversation: {
+				canCreateConversation: {
+					type: Boolean,
+					required: true,
+					default: false,
+				},
+				canManageConversation: {
+					type: Boolean,
+					required: true,
+					default: false,
+				},
+				canViewConversation: { type: Boolean, required: true, default: true },
+			} as SchemaDefinition<PersonalUserConversationPermissions>,
+		} as SchemaDefinition<PersonalUserPermissions>,
+		schemaVersion: { type: String, default: '1.0.0' },
+		roleName: { type: String, required: true, maxlength: 50 },
+		isDefault: { type: Boolean, required: true, default: false },
+	},
+	roleOptions,
+).index({ roleName: 1 }, { unique: true });
+
+export const PersonalUserRoleModelName: string = 'personal-user-role';
+
+export const PersonalUserRoleModelFactory = (RoleModel: RoleModelType) => {
+	return RoleModel.discriminator(
+		PersonalUserRoleModelName,
+		PersonalUserRoleSchema,
+	);
+};
+
+export type PersonalUserRoleModelType = ReturnType<
+	typeof PersonalUserRoleModelFactory
+>;
