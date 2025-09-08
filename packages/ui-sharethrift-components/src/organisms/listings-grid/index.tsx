@@ -1,6 +1,7 @@
 import React from 'react';
-import { Empty, Pagination } from 'antd';
+import { Empty } from 'antd';
 import { ListingCard } from '../../molecules/listing-card/index.js';
+import { Pagination } from '../../molecules/pagination/index.js';
 import styles from './index.module.css';
 
 export interface ItemListing {
@@ -76,7 +77,6 @@ export const ListingsGrid: React.FC<ListingsGridProps> = ({
             total={total}
             onChange={onPageChange}
             showSizeChanger={false}
-            className={styles.pagination}
           />
         </div>
       )}

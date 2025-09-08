@@ -13,3 +13,4 @@ export { AppLayout } from './organisms/app-layout/index.js';
 export { ListingsGrid } from './organisms/listings-grid/index.js';
 export type { ComponentQueryLoaderProps } from './molecules/component-query-loader/index.js';
 export { ComponentQueryLoader } from './molecules/component-query-loader/index.js';
+export { Dashboard } from './organisms/dashboard/index.js';

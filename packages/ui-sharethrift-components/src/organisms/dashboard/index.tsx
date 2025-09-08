@@ -27,7 +27,7 @@ export const Dashboard = <T extends object>({
           columns={columns as ColumnsType<T>}
           dataSource={data}
           rowKey={rowKey as string}
-          pagination={false}
+          pagination={{ pageSize: 6, className: styles.pagination }}
           locale={{
             emptyText,
           }}
