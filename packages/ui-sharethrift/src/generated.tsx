@@ -123,11 +123,11 @@ export type BlobMetadataField = {
 export type CacheControlScope = "PRIVATE" | "PUBLIC";
 
 export type CancelReservationInput = {
-  id: Scalars["ID"]["input"];
+  id: Scalars["ObjectID"]["input"];
 };
 
 export type CloseReservationInput = {
-  id: Scalars["ID"]["input"];
+  id: Scalars["ObjectID"]["input"];
 };
 
 /** GraphQL schema for Conversations */
@@ -152,7 +152,7 @@ export type ItemListing = MongoBase & {
   location: Scalars["String"]["output"];
   reports?: Maybe<Scalars["Int"]["output"]>;
   schemaVersion?: Maybe<Scalars["String"]["output"]>;
-  sharer: Scalars["ObjectID"]["output"];
+  sharer: PersonalUser;
   sharingHistory?: Maybe<Array<Scalars["ObjectID"]["output"]>>;
   sharingPeriodEnd: Scalars["DateTime"]["output"];
   sharingPeriodStart: Scalars["DateTime"]["output"];
@@ -395,11 +395,11 @@ export type ReservationRequestMutationResult = MutationResult & {
 };
 
 export type ReservationRequestState =
-  | "ACCEPTED"
-  | "CANCELLED"
-  | "CLOSED"
-  | "REJECTED"
-  | "REQUESTED";
+  | "Accepted"
+  | "Cancelled"
+  | "Closed"
+  | "Rejected"
+  | "Requested";
 
 export type User = {
   __typename?: "User";
@@ -437,38 +437,6 @@ export type ReservationsViewActiveContainerReservationFieldsFragment = {
       } | null;
     } | null;
   };
-};
-
-export type MyActiveReservationsQueryVariables = Exact<{
-  userId: Scalars["ObjectID"]["input"];
-}>;
-
-export type MyActiveReservationsQuery = {
-  __typename?: "Query";
-  myActiveReservations: Array<{
-    __typename?: "ReservationRequest";
-    id: any;
-    state: ReservationRequestState;
-    reservationPeriodStart: string;
-    reservationPeriodEnd: string;
-    createdAt: string;
-    updatedAt: string;
-    closeRequestedBySharer: boolean;
-    closeRequestedByReserver: boolean;
-    listing: { __typename?: "ItemListing"; id: any; title: string };
-    reserver: {
-      __typename?: "PersonalUser";
-      account?: {
-        __typename?: "PersonalUserAccount";
-        username?: string | null;
-        profile?: {
-          __typename?: "PersonalUserAccountProfile";
-          firstName?: string | null;
-          lastName?: string | null;
-        } | null;
-      } | null;
-    };
-  }>;
 };
 
 export type ReservationsViewActiveContainerActiveReservationsQueryVariables =
@@ -833,152 +801,6 @@ export const DummyGraphqlDocument = {
     },
   ],
 } as unknown as DocumentNode<DummyGraphqlQuery, DummyGraphqlQueryVariables>;
-export const MyActiveReservationsDocument = {
-  kind: "Document",
-  definitions: [
-    {
-      kind: "OperationDefinition",
-      operation: "query",
-      name: { kind: "Name", value: "myActiveReservations" },
-      variableDefinitions: [
-        {
-          kind: "VariableDefinition",
-          variable: {
-            kind: "Variable",
-            name: { kind: "Name", value: "userId" },
-          },
-          type: {
-            kind: "NonNullType",
-            type: {
-              kind: "NamedType",
-              name: { kind: "Name", value: "ObjectID" },
-            },
-          },
-        },
-      ],
-      selectionSet: {
-        kind: "SelectionSet",
-        selections: [
-          {
-            kind: "Field",
-            name: { kind: "Name", value: "myActiveReservations" },
-            arguments: [
-              {
-                kind: "Argument",
-                name: { kind: "Name", value: "userId" },
-                value: {
-                  kind: "Variable",
-                  name: { kind: "Name", value: "userId" },
-                },
-              },
-            ],
-            selectionSet: {
-              kind: "SelectionSet",
-              selections: [
-                {
-                  kind: "FragmentSpread",
-                  name: {
-                    kind: "Name",
-                    value: "ReservationsViewActiveContainerReservationFields",
-                  },
-                },
-              ],
-            },
-          },
-        ],
-      },
-    },
-    {
-      kind: "FragmentDefinition",
-      name: {
-        kind: "Name",
-        value: "ReservationsViewActiveContainerReservationFields",
-      },
-      typeCondition: {
-        kind: "NamedType",
-        name: { kind: "Name", value: "ReservationRequest" },
-      },
-      selectionSet: {
-        kind: "SelectionSet",
-        selections: [
-          { kind: "Field", name: { kind: "Name", value: "id" } },
-          { kind: "Field", name: { kind: "Name", value: "state" } },
-          {
-            kind: "Field",
-            name: { kind: "Name", value: "reservationPeriodStart" },
-          },
-          {
-            kind: "Field",
-            name: { kind: "Name", value: "reservationPeriodEnd" },
-          },
-          { kind: "Field", name: { kind: "Name", value: "createdAt" } },
-          { kind: "Field", name: { kind: "Name", value: "updatedAt" } },
-          {
-            kind: "Field",
-            name: { kind: "Name", value: "listing" },
-            selectionSet: {
-              kind: "SelectionSet",
-              selections: [
-                { kind: "Field", name: { kind: "Name", value: "id" } },
-                { kind: "Field", name: { kind: "Name", value: "title" } },
-              ],
-            },
-          },
-          {
-            kind: "Field",
-            name: { kind: "Name", value: "reserver" },
-            selectionSet: {
-              kind: "SelectionSet",
-              selections: [
-                {
-                  kind: "Field",
-                  name: { kind: "Name", value: "account" },
-                  selectionSet: {
-                    kind: "SelectionSet",
-                    selections: [
-                      {
-                        kind: "Field",
-                        name: { kind: "Name", value: "username" },
-                      },
-                      {
-                        kind: "Field",
-                        name: { kind: "Name", value: "profile" },
-                        selectionSet: {
-                          kind: "SelectionSet",
-                          selections: [
-                            {
-                              kind: "Field",
-                              name: { kind: "Name", value: "firstName" },
-                            },
-                            {
-                              kind: "Field",
-                              name: { kind: "Name", value: "lastName" },
-                            },
-                          ],
-                        },
-                      },
-                    ],
-                  },
-                },
-              ],
-            },
-          },
-          {
-            kind: "Field",
-            name: { kind: "Name", value: "closeRequestedBySharer" },
-          },
-          {
-            kind: "Field",
-            name: { kind: "Name", value: "closeRequestedByReserver" },
-          },
-        ],
-      },
-    },
-  ],
-} as unknown as DocumentNode<
-  MyActiveReservationsQuery,
-  MyActiveReservationsQueryVariables
->;
 export const ReservationsViewActiveContainerActiveReservationsDocument = {
   kind: "Document",
   definitions: [

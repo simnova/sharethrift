@@ -12,11 +12,11 @@ type ReservationRequest {
 }
 
 enum ReservationRequestState {
-	REQUESTED
-	ACCEPTED
-	REJECTED
-	CLOSED
-	CANCELLED
+	Requested
+	Accepted
+	Rejected
+	Closed
+	Cancelled
 }
 
 extend type Query {
@@ -35,9 +35,9 @@ type ReservationRequestMutationResult implements MutationResult {
 }
 
 input CancelReservationInput {
-	id: ID!
+	id: ObjectID!
 }
 
 input CloseReservationInput {
-	id: ID!
+	id: ObjectID!
 }

@@ -112,11 +112,11 @@ export type BlobMetadataField = {
 export type CacheControlScope = "PRIVATE" | "PUBLIC";
 
 export type CancelReservationInput = {
-  id: Scalars["ID"]["input"];
+  id: Scalars["ObjectID"]["input"];
 };
 
 export type CloseReservationInput = {
-  id: Scalars["ID"]["input"];
+  id: Scalars["ObjectID"]["input"];
 };
 
 /** GraphQL schema for Conversations */
@@ -141,7 +141,7 @@ export type ItemListing = MongoBase & {
   location: Scalars["String"]["output"];
   reports?: Maybe<Scalars["Int"]["output"]>;
   schemaVersion?: Maybe<Scalars["String"]["output"]>;
-  sharer: Scalars["ObjectID"]["output"];
+  sharer: PersonalUser;
   sharingHistory?: Maybe<Array<Scalars["ObjectID"]["output"]>>;
   sharingPeriodEnd: Scalars["DateTime"]["output"];
   sharingPeriodStart: Scalars["DateTime"]["output"];
@@ -376,7 +376,7 @@ export type ReservationRequestMutationResult = MutationResult & {
   status: MutationStatus;
 };
 
-export type ReservationRequestState = "ACCEPTED" | "CANCELLED" | "CLOSED" | "REJECTED" | "REQUESTED";
+export type ReservationRequestState = "Accepted" | "Cancelled" | "Closed" | "Rejected" | "Requested";
 
 export type User = {
   __typename?: "User";
@@ -491,7 +491,6 @@ export type ResolversTypes = ResolversObject<{
   HexColorCode: ResolverTypeWrapper<Scalars["HexColorCode"]["output"]>;
   Hexadecimal: ResolverTypeWrapper<Scalars["Hexadecimal"]["output"]>;
   IBAN: ResolverTypeWrapper<Scalars["IBAN"]["output"]>;
-  ID: ResolverTypeWrapper<Scalars["ID"]["output"]>;
   IP: ResolverTypeWrapper<Scalars["IP"]["output"]>;
   IPCPatent: ResolverTypeWrapper<Scalars["IPCPatent"]["output"]>;
   IPv4: ResolverTypeWrapper<Scalars["IPv4"]["output"]>;
@@ -602,7 +601,6 @@ export type ResolversParentTypes = ResolversObject<{
   HexColorCode: Scalars["HexColorCode"]["output"];
   Hexadecimal: Scalars["Hexadecimal"]["output"];
   IBAN: Scalars["IBAN"]["output"];
-  ID: Scalars["ID"]["output"];
   IP: Scalars["IP"]["output"];
   IPCPatent: Scalars["IPCPatent"]["output"];
   IPv4: Scalars["IPv4"]["output"];
@@ -859,7 +857,7 @@ export type ItemListingResolvers<
   location?: Resolver<ResolversTypes["String"], ParentType, ContextType>;
   reports?: Resolver<Maybe<ResolversTypes["Int"]>, ParentType, ContextType>;
   schemaVersion?: Resolver<Maybe<ResolversTypes["String"]>, ParentType, ContextType>;
-  sharer?: Resolver<ResolversTypes["ObjectID"], ParentType, ContextType>;
+  sharer?: Resolver<ResolversTypes["PersonalUser"], ParentType, ContextType>;
   sharingHistory?: Resolver<Maybe<Array<ResolversTypes["ObjectID"]>>, ParentType, ContextType>;
   sharingPeriodEnd?: Resolver<ResolversTypes["DateTime"], ParentType, ContextType>;
   sharingPeriodStart?: Resolver<ResolversTypes["DateTime"], ParentType, ContextType>;

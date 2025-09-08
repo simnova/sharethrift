@@ -7,6 +7,7 @@ import {
 } from './reservation-request.data.ts';
 import type { FindOneOptions, FindOptions } from '../../mongo-data-source.ts';
 import { ReservationRequestConverter } from '../../../domain/reservation-request/reservation-request/reservation-request.domain-adapter.ts';
+// import { MongooseSeedwork } from '@cellix/data-sources-mongoose';
 
 export interface ReservationRequestReadRepository {
 	getAll: (
@@ -98,10 +99,10 @@ export class ReservationRequestReadRepositoryImpl
 	): Promise<
 		Domain.Contexts.ReservationRequest.ReservationRequest.ReservationRequestEntityReference[]
 	> {
-		const result = await this.mongoDataSource.find(
-			{ reserver: new Types.ObjectId(reserverId) },
-			options,
-		);
+		const filter = {
+			reserver: new Types.ObjectId(reserverId)
+		};
+		const result = await this.mongoDataSource.find(filter, options);
 		return result.map((doc) => this.converter.toDomain(doc, this.passport));
 	}
 
@@ -117,6 +118,14 @@ export class ReservationRequestReadRepositoryImpl
 	): Promise<
 		Domain.Contexts.ReservationRequest.ReservationRequest.ReservationRequestEntityReference[]
 	> {
+        // Real implementation, commented out for the time being
+        // const filter = {
+		// 	reserver: new MongooseSeedwork.ObjectId(reserverId),
+		// 	state: { $in: ['Accepted', 'Requested'] },
+		// };
+		// const result = await this.mongoDataSource.find(filter, { ...options, populateFields: ['listing', 'listing.sharer'] });
+		// return result.map((doc) => this.converter.toDomain(doc, this.passport));
+
 		// Mock result for active reservations, uses await to avoid error
 		const mockResult = await Promise.resolve(
 			getMockReservationRequests(reserverId, 'active'),
@@ -137,6 +146,14 @@ export class ReservationRequestReadRepositoryImpl
 	): Promise<
 		Domain.Contexts.ReservationRequest.ReservationRequest.ReservationRequestEntityReference[]
 	> {
+        // Real implementation, commented out for the time being
+        // const filter = {
+		// 	reserver: new MongooseSeedwork.ObjectId(reserverId),
+		// 	state: { $in: ['Cancelled', 'Closed', 'Rejected'] },
+		// };
+		// const result = await this.mongoDataSource.find(filter, { ...options, populateFields: ['listing', 'listing.sharer'] });
+		// return result.map((doc) => this.converter.toDomain(doc, this.passport));
+        
 		// Mock result for past reservations, uses await to avoid error
 		const mockResult = await Promise.resolve(
 			getMockReservationRequests(reserverId, 'past'),
@@ -161,7 +178,7 @@ const getMockReservationRequests = (
 	const mockResult = [
 		{
 			_id: new Types.ObjectId(),
-			id: 'mock-reservation-id',
+			id: '507f1f77bcf86cd799439011',
 			state: reservationState,
 			reservationPeriodStart: new Date('2024-09-05T10:00:00Z'),
 			reservationPeriodEnd: new Date('2024-09-15T10:00:00Z'),
@@ -170,7 +187,7 @@ const getMockReservationRequests = (
 			schemaVersion: '1',
 			listing: {
 				_id: new Types.ObjectId(),
-				id: 'mock-listing-id',
+				id: '60ddc9732f8fb814c89b6789',
 				title: 'Professional Microphone',
 				description: 'A high-quality microphone for professional use.',
 				category: 'Electronics',
@@ -183,7 +200,7 @@ const getMockReservationRequests = (
 				updatedAt: new Date('2024-01-13T09:00:00Z'),
 				sharer: {
 					_id: new Types.ObjectId(),
-					id: 'mock-sharer-id',
+					id: '5f8d0d55b54764421b7156c5',
 					userType: 'personal',
 					isBlocked: false,
 					account: {
@@ -246,7 +263,7 @@ const getMockReservationRequests = (
 			loadListing: () => {
 				return Promise.resolve({
 					_id: new Types.ObjectId(),
-					id: 'mock-listing-id',
+					id: '60ddc9732f8fb814c89b6789',
 					title: 'Professional Microphone',
 					description: 'A high-quality microphone for professional use.',
 					category: 'Electronics',
