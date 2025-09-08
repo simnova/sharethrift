@@ -151,6 +151,44 @@ export type Listing = {
   id: Scalars["ObjectID"]["output"];
 };
 
+export type ListingAll = {
+  __typename?: "ListingAll";
+  id: Scalars["ID"]["output"];
+  image?: Maybe<Scalars["String"]["output"]>;
+  pendingRequestsCount: Scalars["Int"]["output"];
+  publishedAt?: Maybe<Scalars["String"]["output"]>;
+  reservationPeriod?: Maybe<Scalars["String"]["output"]>;
+  status: Scalars["String"]["output"];
+  title: Scalars["String"]["output"];
+};
+
+export type ListingAllPage = {
+  __typename?: "ListingAllPage";
+  items: Array<ListingAll>;
+  page: Scalars["Int"]["output"];
+  pageSize: Scalars["Int"]["output"];
+  total: Scalars["Int"]["output"];
+};
+
+export type ListingRequest = {
+  __typename?: "ListingRequest";
+  id: Scalars["ID"]["output"];
+  image?: Maybe<Scalars["String"]["output"]>;
+  requestedBy: Scalars["String"]["output"];
+  requestedOn: Scalars["String"]["output"];
+  reservationPeriod: Scalars["String"]["output"];
+  status: Scalars["String"]["output"];
+  title: Scalars["String"]["output"];
+};
+
+export type ListingRequestPage = {
+  __typename?: "ListingRequestPage";
+  items: Array<ListingRequest>;
+  page: Scalars["Int"]["output"];
+  pageSize: Scalars["Int"]["output"];
+  total: Scalars["Int"]["output"];
+};
+
 /** Base type for all models in mongo. */
 export type MongoBase = {
   createdAt?: Maybe<Scalars["DateTime"]["output"]>;
@@ -308,6 +346,8 @@ export type Query = {
   currentPersonalUserAndCreateIfNotExists: PersonalUser;
   itemListing?: Maybe<ItemListing>;
   itemListings: Array<ItemListing>;
+  myListingsAll: ListingAllPage;
+  myListingsRequests: ListingRequestPage;
   personalUserById?: Maybe<PersonalUser>;
 };
 
@@ -322,8 +362,28 @@ export type QueryItemListingArgs = {
 };
 
 /**  Base Query Type definition - , all mutations will be defined in separate files extending this type  */
+export type QueryMyListingsAllArgs = {
+  page: Scalars["Int"]["input"];
+  pageSize: Scalars["Int"]["input"];
+  searchText?: InputMaybe<Scalars["String"]["input"]>;
+  sorter?: InputMaybe<SorterInput>;
+  statusFilters?: InputMaybe<Array<Scalars["String"]["input"]>>;
+};
+
+/**  Base Query Type definition - , all mutations will be defined in separate files extending this type  */
+export type QueryMyListingsRequestsArgs = {
+  page: Scalars["Int"]["input"];
+  pageSize: Scalars["Int"]["input"];
+};
+
+/**  Base Query Type definition - , all mutations will be defined in separate files extending this type  */
 export type QueryPersonalUserByIdArgs = {
   id: Scalars["ObjectID"]["input"];
+};
+
+export type SorterInput = {
+  field: Scalars["String"]["input"];
+  order: Scalars["String"]["input"];
 };
 
 export type User = {
@@ -437,6 +497,7 @@ export type ResolversTypes = ResolversObject<{
   HexColorCode: ResolverTypeWrapper<Scalars["HexColorCode"]["output"]>;
   Hexadecimal: ResolverTypeWrapper<Scalars["Hexadecimal"]["output"]>;
   IBAN: ResolverTypeWrapper<Scalars["IBAN"]["output"]>;
+  ID: ResolverTypeWrapper<Scalars["ID"]["output"]>;
   IP: ResolverTypeWrapper<Scalars["IP"]["output"]>;
   IPCPatent: ResolverTypeWrapper<Scalars["IPCPatent"]["output"]>;
   IPv4: ResolverTypeWrapper<Scalars["IPv4"]["output"]>;
@@ -452,6 +513,10 @@ export type ResolversTypes = ResolversObject<{
   LCCSubclass: ResolverTypeWrapper<Scalars["LCCSubclass"]["output"]>;
   Latitude: ResolverTypeWrapper<Scalars["Latitude"]["output"]>;
   Listing: ResolverTypeWrapper<Listing>;
+  ListingAll: ResolverTypeWrapper<ListingAll>;
+  ListingAllPage: ResolverTypeWrapper<ListingAllPage>;
+  ListingRequest: ResolverTypeWrapper<ListingRequest>;
+  ListingRequestPage: ResolverTypeWrapper<ListingRequestPage>;
   LocalDate: ResolverTypeWrapper<Scalars["LocalDate"]["output"]>;
   LocalDateTime: ResolverTypeWrapper<Scalars["LocalDateTime"]["output"]>;
   LocalEndTime: ResolverTypeWrapper<Scalars["LocalEndTime"]["output"]>;
@@ -500,6 +565,7 @@ export type ResolversTypes = ResolversObject<{
   SESSN: ResolverTypeWrapper<Scalars["SESSN"]["output"]>;
   SafeInt: ResolverTypeWrapper<Scalars["SafeInt"]["output"]>;
   SemVer: ResolverTypeWrapper<Scalars["SemVer"]["output"]>;
+  SorterInput: SorterInput;
   String: ResolverTypeWrapper<Scalars["String"]["output"]>;
   Time: ResolverTypeWrapper<Scalars["Time"]["output"]>;
   TimeZone: ResolverTypeWrapper<Scalars["TimeZone"]["output"]>;
@@ -542,6 +608,7 @@ export type ResolversParentTypes = ResolversObject<{
   HexColorCode: Scalars["HexColorCode"]["output"];
   Hexadecimal: Scalars["Hexadecimal"]["output"];
   IBAN: Scalars["IBAN"]["output"];
+  ID: Scalars["ID"]["output"];
   IP: Scalars["IP"]["output"];
   IPCPatent: Scalars["IPCPatent"]["output"];
   IPv4: Scalars["IPv4"]["output"];
@@ -556,6 +623,10 @@ export type ResolversParentTypes = ResolversObject<{
   LCCSubclass: Scalars["LCCSubclass"]["output"];
   Latitude: Scalars["Latitude"]["output"];
   Listing: Listing;
+  ListingAll: ListingAll;
+  ListingAllPage: ListingAllPage;
+  ListingRequest: ListingRequest;
+  ListingRequestPage: ListingRequestPage;
   LocalDate: Scalars["LocalDate"]["output"];
   LocalDateTime: Scalars["LocalDateTime"]["output"];
   LocalEndTime: Scalars["LocalEndTime"]["output"];
@@ -604,6 +675,7 @@ export type ResolversParentTypes = ResolversObject<{
   SESSN: Scalars["SESSN"]["output"];
   SafeInt: Scalars["SafeInt"]["output"];
   SemVer: Scalars["SemVer"]["output"];
+  SorterInput: SorterInput;
   String: Scalars["String"]["output"];
   Time: Scalars["Time"]["output"];
   TimeZone: Scalars["TimeZone"]["output"];
@@ -836,6 +908,56 @@ export type ListingResolvers<
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 }>;
 
+export type ListingAllResolvers<
+  ContextType = GraphContext,
+  ParentType extends ResolversParentTypes["ListingAll"] = ResolversParentTypes["ListingAll"],
+> = ResolversObject<{
+  id?: Resolver<ResolversTypes["ID"], ParentType, ContextType>;
+  image?: Resolver<Maybe<ResolversTypes["String"]>, ParentType, ContextType>;
+  pendingRequestsCount?: Resolver<ResolversTypes["Int"], ParentType, ContextType>;
+  publishedAt?: Resolver<Maybe<ResolversTypes["String"]>, ParentType, ContextType>;
+  reservationPeriod?: Resolver<Maybe<ResolversTypes["String"]>, ParentType, ContextType>;
+  status?: Resolver<ResolversTypes["String"], ParentType, ContextType>;
+  title?: Resolver<ResolversTypes["String"], ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+}>;
+
+export type ListingAllPageResolvers<
+  ContextType = GraphContext,
+  ParentType extends ResolversParentTypes["ListingAllPage"] = ResolversParentTypes["ListingAllPage"],
+> = ResolversObject<{
+  items?: Resolver<Array<ResolversTypes["ListingAll"]>, ParentType, ContextType>;
+  page?: Resolver<ResolversTypes["Int"], ParentType, ContextType>;
+  pageSize?: Resolver<ResolversTypes["Int"], ParentType, ContextType>;
+  total?: Resolver<ResolversTypes["Int"], ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+}>;
+
+export type ListingRequestResolvers<
+  ContextType = GraphContext,
+  ParentType extends ResolversParentTypes["ListingRequest"] = ResolversParentTypes["ListingRequest"],
+> = ResolversObject<{
+  id?: Resolver<ResolversTypes["ID"], ParentType, ContextType>;
+  image?: Resolver<Maybe<ResolversTypes["String"]>, ParentType, ContextType>;
+  requestedBy?: Resolver<ResolversTypes["String"], ParentType, ContextType>;
+  requestedOn?: Resolver<ResolversTypes["String"], ParentType, ContextType>;
+  reservationPeriod?: Resolver<ResolversTypes["String"], ParentType, ContextType>;
+  status?: Resolver<ResolversTypes["String"], ParentType, ContextType>;
+  title?: Resolver<ResolversTypes["String"], ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+}>;
+
+export type ListingRequestPageResolvers<
+  ContextType = GraphContext,
+  ParentType extends ResolversParentTypes["ListingRequestPage"] = ResolversParentTypes["ListingRequestPage"],
+> = ResolversObject<{
+  items?: Resolver<Array<ResolversTypes["ListingRequest"]>, ParentType, ContextType>;
+  page?: Resolver<ResolversTypes["Int"], ParentType, ContextType>;
+  pageSize?: Resolver<ResolversTypes["Int"], ParentType, ContextType>;
+  total?: Resolver<ResolversTypes["Int"], ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+}>;
+
 export interface LocalDateScalarConfig extends GraphQLScalarTypeConfig<ResolversTypes["LocalDate"], any> {
   name: "LocalDate";
 }
@@ -1033,6 +1155,13 @@ export type QueryResolvers<
   currentPersonalUserAndCreateIfNotExists?: Resolver<ResolversTypes["PersonalUser"], ParentType, ContextType>;
   itemListing?: Resolver<Maybe<ResolversTypes["ItemListing"]>, ParentType, ContextType, RequireFields<QueryItemListingArgs, "id">>;
   itemListings?: Resolver<Array<ResolversTypes["ItemListing"]>, ParentType, ContextType>;
+  myListingsAll?: Resolver<ResolversTypes["ListingAllPage"], ParentType, ContextType, RequireFields<QueryMyListingsAllArgs, "page" | "pageSize">>;
+  myListingsRequests?: Resolver<
+    ResolversTypes["ListingRequestPage"],
+    ParentType,
+    ContextType,
+    RequireFields<QueryMyListingsRequestsArgs, "page" | "pageSize">
+  >;
   personalUserById?: Resolver<Maybe<ResolversTypes["PersonalUser"]>, ParentType, ContextType, RequireFields<QueryPersonalUserByIdArgs, "id">>;
 }>;
 
@@ -1148,6 +1277,10 @@ export type Resolvers<ContextType = GraphContext> = ResolversObject<{
   LCCSubclass?: GraphQLScalarType;
   Latitude?: GraphQLScalarType;
   Listing?: ListingResolvers<ContextType>;
+  ListingAll?: ListingAllResolvers<ContextType>;
+  ListingAllPage?: ListingAllPageResolvers<ContextType>;
+  ListingRequest?: ListingRequestResolvers<ContextType>;
+  ListingRequestPage?: ListingRequestPageResolvers<ContextType>;
   LocalDate?: GraphQLScalarType;
   LocalDateTime?: GraphQLScalarType;
   LocalEndTime?: GraphQLScalarType;

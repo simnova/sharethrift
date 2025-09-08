@@ -1,11 +1,19 @@
 // biome-ignore assist/source/organizeImports: <explanation>
 import { DUMMY_LISTINGS } from './mock-listings.js';
 import type { ItemListing } from './mock-listings.js';
+import type { GraphContext } from "../../init/context.ts";
+import { myListingsMockService } from "../../mock-services/my-listings-mock.service.ts";
 
 function mapState(state?: string) {
   return state === 'Appeal Requested' ? 'Appeal_Requested' : state;
 }
-
+interface MyListingsArgs {
+  page: number;
+  pageSize: number;
+  searchText?: string;
+  statusFilters?: string[];
+  sorter?: { field: string; order: 'ascend' | 'descend' };
+}
 const itemListingResolvers = {
   Query: {
     itemListings: () => {
@@ -53,6 +61,22 @@ const itemListingResolvers = {
       };
       
     },
+    // My Listings queries
+    myListingsAll: (_parent: unknown, args: MyListingsArgs, context: GraphContext) => {
+      console.log('myListingsAll resolver called with args:', args, context);
+      
+      // Use mock service to get paginated listings
+      const result = myListingsMockService.getMyListings({
+        page: args.page,
+        pageSize: args.pageSize,
+        searchText: args.searchText,
+        statusFilters: args.statusFilters,
+        sorter: args.sorter,
+      });
+      
+      return result;
+    },
+    
   },
 };
 

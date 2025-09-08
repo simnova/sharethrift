@@ -2,169 +2,162 @@
 query HomeMyListingsContainerMyListingsAll(
   $page: Int!
   $pageSize: Int!
-  $filter: ItemListingFilter
+  $searchText: String
+  $statusFilters: [String!]
+  $sorter: SorterInput
 ) {
   myListingsAll(
     page: $page
     pageSize: $pageSize
-    filter: $filter
+    searchText: $searchText
+    statusFilters: $statusFilters
+    sorter: $sorter
   ) {
-    edges {
-      node {
-        ...HomeMyListingsContainerListingFields
-      }
-      cursor
+    items {
+      ...HomeMyListingsContainerListingFields
     }
-    pageInfo {
-      hasNextPage
-      hasPreviousPage
-      startCursor
-      endCursor
-    }
-    totalCount
+    total
+    page
+    pageSize
   }
 }
 
 # Listing fields fragment for My Listings
-fragment HomeMyListingsContainerListingFields on ItemListing {
+fragment HomeMyListingsContainerListingFields on ListingAll {
   id
   title
-  sharer
-  createdAt
-  updatedAt
-  sharingPeriodStart
-  sharingPeriodEnd
-  state
-  reports
+  status
+  image
   pendingRequestsCount
-  isReserved
+  publishedAt
+  reservationPeriod
 }
 
 # My Listings Requests Query
-query HomeMyListingsContainerMyListingsRequests(
-  $page: Int!
-  $pageSize: Int!
-  $filter: ItemListingFilter
-) {
-  myListingsRequests(
-    page: $page
-    pageSize: $pageSize
-    filter: $filter
-  ) {
-    edges {
-      node {
-        ...HomeMyListingsContainerListingWithRequestFields
-      }
-      cursor
-    }
-    pageInfo {
-      hasNextPage
-      hasPreviousPage
-      startCursor
-      endCursor
-    }
-    totalCount
-  }
-}
+# query HomeMyListingsContainerMyListingsRequests(
+#   $page: Int!
+#   $pageSize: Int!
+#   $filter: ItemListingFilter
+# ) {
+#   myListingsRequests(
+#     page: $page
+#     pageSize: $pageSize
+#     filter: $filter
+#   ) {
+#     edges {
+#       node {
+#         ...HomeMyListingsContainerListingWithRequestFields
+#       }
+#       cursor
+#     }
+#     pageInfo {
+#       hasNextPage
+#       hasPreviousPage
+#       startCursor
+#       endCursor
+#     }
+#     totalCount
+#   }
+# }
 
 # Request fields fragment for My Listings
-fragment HomeMyListingsContainerListingWithRequestFields on ItemListing {
-  id
-  title
-  sharer
-  createdAt
-  updatedAt
-  sharingPeriodStart
-  sharingPeriodEnd
-  state
-  reports
-  requestData {
-    id
-    requestedBy
-    requestedOn
-    status
-    reservationPeriod {
-      start
-      end
-    }
-  }
-}
+# fragment HomeMyListingsContainerListingWithRequestFields on ItemListing {
+#   id
+#   title
+#   sharer
+#   createdAt
+#   updatedAt
+#   sharingPeriodStart
+#   sharingPeriodEnd
+#   state
+#   reports
+#   requestData {
+#     id
+#     requestedBy
+#     requestedOn
+#     status
+#     reservationPeriod {
+#       start
+#       end
+#     }
+#   }
+# }
 
 # Listing Action Mutations (placeholder implementations)
-mutation HomeMyListingsContainerPauseListing($listingId: String!) {
-  pauseListing(listingId: $listingId) {
-    success
-    message
-  }
-}
+# mutation HomeMyListingsContainerPauseListing($listingId: String!) {
+#   pauseListing(listingId: $listingId) {
+#     success
+#     message
+#   }
+# }
 
-mutation HomeMyListingsContainerReinstateListing($listingId: String!) {
-  reinstateListing(listingId: $listingId) {
-    success
-    message
-  }
-}
+# mutation HomeMyListingsContainerReinstateListing($listingId: String!) {
+#   reinstateListing(listingId: $listingId) {
+#     success
+#     message
+#   }
+# }
 
-mutation HomeMyListingsContainerAppealListing($listingId: String!, $reason: String!) {
-  appealListing(listingId: $listingId, reason: $reason) {
-    success
-    message
-  }
-}
+# mutation HomeMyListingsContainerAppealListing($listingId: String!, $reason: String!) {
+#   appealListing(listingId: $listingId, reason: $reason) {
+#     success
+#     message
+#   }
+# }
 
-mutation HomeMyListingsContainerPublishListing($listingId: String!) {
-  publishListing(listingId: $listingId) {
-    success
-    message
-  }
-}
+# mutation HomeMyListingsContainerPublishListing($listingId: String!) {
+#   publishListing(listingId: $listingId) {
+#     success
+#     message
+#   }
+# }
 
-mutation HomeMyListingsContainerEditListing($listingId: String!) {
-  editListing(listingId: $listingId) {
-    success
-    message
-  }
-}
+# mutation HomeMyListingsContainerEditListing($listingId: String!) {
+#   editListing(listingId: $listingId) {
+#     success
+#     message
+#   }
+# }
 
-mutation HomeMyListingsContainerDeleteListing($listingId: String!) {
-  deleteListing(listingId: $listingId) {
-    success
-    message
-  }
-}
+# mutation HomeMyListingsContainerDeleteListing($listingId: String!) {
+#   deleteListing(listingId: $listingId) {
+#     success
+#     message
+#   }
+# }
 
-# Request Action Mutations (placeholder implementations)
-mutation HomeMyListingsContainerAcceptRequest($requestId: String!) {
-  acceptRequest(requestId: $requestId) {
-    success
-    message
-  }
-}
+# # Request Action Mutations (placeholder implementations)
+# mutation HomeMyListingsContainerAcceptRequest($requestId: String!) {
+#   acceptRequest(requestId: $requestId) {
+#     success
+#     message
+#   }
+# }
 
-mutation HomeMyListingsContainerRejectRequest($requestId: String!) {
-  rejectRequest(requestId: $requestId) {
-    success
-    message
-  }
-}
+# mutation HomeMyListingsContainerRejectRequest($requestId: String!) {
+#   rejectRequest(requestId: $requestId) {
+#     success
+#     message
+#   }
+# }
 
-mutation HomeMyListingsContainerCloseRequest($requestId: String!) {
-  closeRequest(requestId: $requestId) {
-    success
-    message
-  }
-}
+# mutation HomeMyListingsContainerCloseRequest($requestId: String!) {
+#   closeRequest(requestId: $requestId) {
+#     success
+#     message
+#   }
+# }
 
-mutation HomeMyListingsContainerMessageRequester($requestId: String!) {
-  messageRequester(requestId: $requestId) {
-    success
-    message
-  }
-}
+# mutation HomeMyListingsContainerMessageRequester($requestId: String!) {
+#   messageRequester(requestId: $requestId) {
+#     success
+#     message
+#   }
+# }
 
-mutation HomeMyListingsContainerDeleteRequest($requestId: String!) {
-  deleteRequest(requestId: $requestId) {
-    success
-    message
-  }
-}
+# mutation HomeMyListingsContainerDeleteRequest($requestId: String!) {
+#   deleteRequest(requestId: $requestId) {
+#     success
+#     message
+#   }
+# }
