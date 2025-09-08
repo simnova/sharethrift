@@ -24,6 +24,7 @@
         "editor.defaultFormatter": "biomejs.biome"
     },
     "typescript.experimental.useTsgo": true,
+    "editor.formatOnSave": true,
     // "[typescript]": {
     //     "editor.tabSize": 2,
     //     // "prettier.singleQuote": true,
