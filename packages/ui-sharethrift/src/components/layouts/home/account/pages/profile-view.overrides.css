@@ -1,0 +1,42 @@
+.profile-header {
+  background: transparent !important;
+  border: none !important;
+}
+
+.profile-title {
+  /* Example font styling, customize as needed */
+  font-family: 'Montserrat', Arial, sans-serif !important;
+  font-weight: 700 !important;
+  font-size: 2.2em !important;
+  letter-spacing: 0.02em;
+}
+
+.profile-avatar-scale {
+  width: 100% !important;
+  aspect-ratio: 1 / 1;
+  max-width: 150px;
+  height: auto !important;
+  display: block;
+  margin-left: auto;
+  margin-right: auto;
+  border-radius: 50% !important;
+  object-fit: cover;
+}
+
+.nameSect h3 {
+  margin-top: 0;
+  margin-bottom: 10px;
+}
+
+.personalAccount {
+  background-color: var(--color-secondary) !important;
+  color: var(--color-background) !important;
+  height: 32px !important;
+  border-radius: 20px !important;
+  padding: 8px 20px !important;
+  display: flex !important;
+  align-items: center !important;
+  gap: 8px !important;
+  margin: 0 !important;
+  border: 0 !important;
+}
