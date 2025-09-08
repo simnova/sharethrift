@@ -1,4 +1,15 @@
+
 Feature: Conversation aggregate
+
+  Scenario: Setting the twilioConversationId with permission
+    Given a Conversation aggregate with permission to manage conversation
+    When I set the twilioConversationId to a new value
+    Then the twilioConversationId should be updated
+
+  Scenario: Setting the twilioConversationId without permission
+    Given a Conversation aggregate without permission to manage conversation
+    When I try to set the twilioConversationId to a new value
+    Then a PermissionError should be thrown
 
   Background:
     Given a valid Passport with conversation permissions

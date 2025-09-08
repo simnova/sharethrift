@@ -152,6 +152,16 @@ export class Conversation<props extends ConversationProps>
 		return this.props.twilioConversationId;
 	}
 	set twilioConversationId(value: string) {
+		if (
+			!this.isNew &&
+			!this.visa.determineIf(
+				(domainPermissions) => domainPermissions.canManageConversation,
+			)
+		) {
+			throw new DomainSeedwork.PermissionError(
+				'You do not have permission to change the twilioConversationId of this conversation',
+			);
+		}
 		this.props.twilioConversationId = value;
 	}
 

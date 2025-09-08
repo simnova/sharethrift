@@ -408,4 +408,50 @@ describeFeature(feature, ({ Scenario, Background, BeforeEachScenario }) => {
 			);
 		});
 	});
+
+	Scenario(
+		'Setting the twilioConversationId with permission',
+		({ Given, When, Then }) => {
+			Given(
+				'a Conversation aggregate with permission to manage conversation',
+				() => {
+					passport = makePassport(true);
+					conversation = new Conversation(makeBaseProps(), passport);
+				},
+			);
+			When('I set the twilioConversationId to a new value', () => {
+				conversation.twilioConversationId = 'twilio-456';
+			});
+			Then('the twilioConversationId should be updated', () => {
+				expect(conversation.twilioConversationId).toBe('twilio-456');
+			});
+		},
+	);
+
+	Scenario(
+		'Setting the twilioConversationId without permission',
+		({ Given, When, Then }) => {
+			let setTwilioIdWithoutPermission: () => void;
+			Given(
+				'a Conversation aggregate without permission to manage conversation',
+				() => {
+					passport = makePassport(false);
+					conversation = new Conversation(makeBaseProps(), passport);
+				},
+			);
+			When('I try to set the twilioConversationId to a new value', () => {
+				setTwilioIdWithoutPermission = () => {
+					conversation.twilioConversationId = 'twilio-789';
+				};
+			});
+			Then('a PermissionError should be thrown', () => {
+				expect(setTwilioIdWithoutPermission).toThrow(
+					DomainSeedwork.PermissionError,
+				);
+				expect(setTwilioIdWithoutPermission).throws(
+					'You do not have permission to change the twilioConversationId of this conversation',
+				);
+			});
+		},
+	);
 });
