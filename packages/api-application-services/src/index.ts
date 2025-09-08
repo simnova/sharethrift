@@ -31,15 +31,15 @@ export type PrincipalHints = {
 	// memberId: string | undefined;
 	// communityId: string | undefined;
 };
-
+ 
 export interface AppServicesHost<S> {
 	forRequest(rawAuthHeader?: string, hints?: PrincipalHints): Promise<S>;
 	// forSystem can be added later without breaking Cellix API:
 	// forSystem?: (opts?: unknown) => Promise<S>;
 }
-
+ 
 export type ApplicationServicesFactory = AppServicesHost<ApplicationServices>;
-
+ 
 export const buildApplicationServicesFactory = (
 	infrastructureServicesRegistry: ApiContextSpec,
 ): ApplicationServicesFactory => {
@@ -87,7 +87,7 @@ export const buildApplicationServicesFactory = (
 			},
 		};
 	};
-
+ 
 	return {
 		forRequest,
 	};

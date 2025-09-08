@@ -16,6 +16,7 @@ const personalUserResolvers = {
 			// })) as PersonalUser;
 			// For now, return mock data until persistence layer is fixed
 			return {
+				id: args.id, // Add the id field
 				userType: 'personal',
 				isBlocked: false,
 				account: {

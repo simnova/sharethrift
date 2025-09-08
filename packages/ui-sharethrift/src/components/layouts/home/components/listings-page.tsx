@@ -17,7 +17,7 @@ interface ListingsPageProps {
   currentPage: number;
   pageSize: number;
   totalListings: number;
-  onListingClick: () => void;
+  onListingClick: (listing: ItemListing) => void;
   onPageChange: (page: number) => void;
 }
 
