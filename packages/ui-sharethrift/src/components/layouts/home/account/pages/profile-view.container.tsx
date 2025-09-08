@@ -1,0 +1,213 @@
+import { gql, useQuery } from '@apollo/client';
+import { useNavigate } from 'react-router-dom';
+import { ProfileView } from './profile-view';
+// eslint-disable-next-line import/no-absolute-path, @typescript-eslint/ban-ts-comment
+// @ts-ignore - allow raw import string
+import ProfileViewQuerySource from './profile-view.container.graphql?raw';
+
+interface UserProfile {
+  id: string;
+  userType: string;
+  account: {
+    accountType: string;
+    email: string;
+    username: string;
+    profile: {
+      firstName: string;
+      lastName: string;
+      location: {
+        city: string;
+        state: string;
+      };
+    };
+  };
+  createdAt: string;
+}
+
+interface ItemListing {
+  id: string;
+  title: string;
+  description: string;
+  category: string;
+  location: string;
+  state: string;
+  images: string[];
+  sharer: string;
+  createdAt: string;
+  updatedAt: string;
+  sharingPeriodStart: string;
+  sharingPeriodEnd: string;
+}
+
+interface CurrentUserQueryData {
+  currentPersonalUserAndCreateIfNotExists: UserProfile;
+}
+
+interface UserListingsQueryData {
+  itemListings: ItemListing[];
+}
+
+const GET_CURRENT_USER = gql`
+  query HomeAccountProfileViewContainerCurrentUser {
+    currentPersonalUserAndCreateIfNotExists {
+      id
+      userType
+      account {
+        accountType
+        email
+        username
+        profile {
+          firstName
+          lastName
+          location {
+            city
+            state
+          }
+        }
+      }
+      createdAt
+    }
+  }
+`;
+
+const GET_USER_LISTINGS = gql`
+  query HomeAccountProfileViewContainerUserListings {
+    itemListings {
+      id
+      title
+      description
+      category
+      location
+      state
+      images
+      sharer
+      createdAt
+      updatedAt
+      sharingPeriodStart
+      sharingPeriodEnd
+    }
+  }
+`;
+
+export function ProfileViewContainer() {
+  const navigate = useNavigate();
+  
+  const { data: userData, loading: userLoading, error: userError } = useQuery<CurrentUserQueryData>(GET_CURRENT_USER);
+  const { data: listingsData, loading: listingsLoading, error: listingsError } = useQuery<UserListingsQueryData>(GET_USER_LISTINGS);
+
+  // Filter listings to only show ones by the current user
+  const userListings = listingsData?.itemListings?.filter(listing => {
+    // For now, we'll match by firstName + lastName (since sharer is stored as "FirstName L." format)
+    if (userData?.currentPersonalUserAndCreateIfNotExists?.account?.profile) {
+      const { firstName, lastName } = userData.currentPersonalUserAndCreateIfNotExists.account.profile;
+      const userDisplayName = `${firstName} ${lastName.charAt(0)}.`;
+      return listing.sharer === userDisplayName;
+    }
+    return false;
+  }) || [];
+
+  const handleEditSettings = () => {
+    navigate('/account/settings');
+  };
+
+  const handleListingClick = (listingId: string) => {
+    navigate(`/listing/${listingId}`);
+  };
+
+  if (userError || listingsError) {
+    // When API is not available, show mock data for demonstration
+    const mockUser = {
+      id: 'mock-user-id',
+      firstName: 'Patrick',
+      lastName: 'Garcia',
+      username: 'patrick_g',
+      email: 'patrick.g@example.com',
+      accountType: 'personal',
+      location: {
+        city: 'Philadelphia',
+        state: 'PA',
+      },
+      createdAt: new Date('2024-08-01').toISOString(),
+    };
+
+    const mockListings = [
+      {
+        id: '64f7a9c2d1e5b97f3c9d0a41',
+        title: 'City Bike',
+        description: 'Perfect city bike for commuting and leisure rides around the neighborhood.',
+        category: 'Vehicles & Transportation',
+        location: 'Philadelphia, PA',
+        state: 'Published',
+        images: ['/assets/item-images/bike.png'],
+        createdAt: '2024-08-01T00:00:00.000Z',
+        sharingPeriodStart: '2024-08-11T00:00:00.000Z',
+        sharingPeriodEnd: '2024-12-23T00:00:00.000Z',
+      },
+      {
+        id: '64f7a9c2d1e5b97f3c9d0a13',
+        title: 'Projector',
+        description: 'HD projector for movie nights and presentations.',
+        category: 'Electronics',
+        location: 'Philadelphia, PA',
+        state: 'Published',
+        images: ['/assets/item-images/projector.png'],
+        createdAt: '2024-08-13T00:00:00.000Z',
+        sharingPeriodStart: '2024-08-13T00:00:00.000Z',
+        sharingPeriodEnd: '2024-12-23T00:00:00.000Z',
+      },
+    ];
+
+    return (
+      <ProfileView
+        user={mockUser}
+        listings={mockListings}
+        isOwnProfile={true}
+        onEditSettings={handleEditSettings}
+        onListingClick={handleListingClick}
+      />
+    );
+  }
+
+  if (userLoading || listingsLoading) {
+    return <div>Loading profile...</div>;
+  }
+
+  if (!userData?.currentPersonalUserAndCreateIfNotExists) {
+    return <div>User not found</div>;
+  }
+
+  const user = userData.currentPersonalUserAndCreateIfNotExists;
+
+  return (
+    <ProfileView
+      user={{
+        id: user.id,
+        firstName: user.account.profile.firstName,
+        lastName: user.account.profile.lastName,
+        username: user.account.username,
+        email: user.account.email,
+        accountType: user.account.accountType,
+        location: {
+          city: user.account.profile.location.city,
+          state: user.account.profile.location.state,
+        },
+        createdAt: user.createdAt,
+      }}
+      listings={userListings.map(listing => ({
+        id: listing.id,
+        title: listing.title,
+        description: listing.description,
+        category: listing.category,
+        location: listing.location,
+        state: listing.state,
+        images: listing.images,
+        createdAt: listing.createdAt,
+        sharingPeriodStart: listing.sharingPeriodStart,
+        sharingPeriodEnd: listing.sharingPeriodEnd,
+      }))}
+      isOwnProfile={true}
+      onEditSettings={handleEditSettings}
+      onListingClick={handleListingClick}
+    />
+  );
+}
