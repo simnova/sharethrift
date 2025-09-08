@@ -1,122 +1,167 @@
 import express from "express";
+import type { Request, Response } from "express";
+import { randomUUID } from "crypto";
+
+interface PaymentRequest {
+  clientReferenceInformation?: {
+    userId: string;
+    [key: string]: any;
+  };
+  orderInformation: {
+    amountDetails: {
+      totalAmount: number;
+      currency: string;
+    };
+    billTo: {
+      firstName: string;
+      lastName: string;
+      address1: string;
+      address2?: string;
+      city: string;
+      state: string;
+      postalCode: string;
+      country: string;
+      phoneNumber?: string;
+      email?: string;
+    };
+  };
+  paymentInformation: {
+    card: {
+      number: string;
+      expirationMonth: string;
+      expirationYear: string;
+      securityCode: string;
+    };
+  };
+}
+
+interface RefundRequest {
+  paymentId: string;
+  clientReferenceInformation?: {
+    userId: string;
+    [key: string]: any;
+  };
+  orderInformation: {
+    amountDetails: {
+      totalAmount: number;
+      currency: string;
+    };
+  };
+}
+
+interface PaymentResponse {
+  id: string;
+  status: string;
+  errorInformation?: {
+    reason?: string;
+    message?: string;
+  };
+  orderInformation?: {
+    amountDetails?: {
+      totalAmount?: string;
+      currency?: string;
+    };
+  };
+}
+
+interface RefundResponse {
+  id: string;
+  status: string;
+  errorInformation?: {
+    reason?: string;
+    message?: string;
+  };
+  orderInformation?: {
+    amountDetails?: {
+      totalAmount?: string;
+      currency?: string;
+    };
+  };
+}
 
 const app = express();
 const port = 3001;
 
 app.use(express.json());
 
-app.get("/", (_: any, res: any) => {
-  res.send("Payment Mock Server is running! okokss");
+app.get("/", (_req: Request, res: Response) => {
+  res.send("Payment Mock Server is running!");
 });
 
-import { randomUUID } from "crypto";
+app.post("/pts/v2/payments", (req: Request<{}, {}, PaymentRequest>, res: Response<PaymentResponse>) => {
+  const { orderInformation, paymentInformation } = req.body;
 
-app.post("/pts/v2/payments", (_req: any, res: any) => {
-//   const { orderInformation, paymentInformation, clientReferenceInformation } =
-//     req.body;
-
-
-//   if (
-//     !orderInformation?.amountDetails?.totalAmount ||
-//     !orderInformation?.amountDetails?.currency
-//   ) {
-//     return res.status(400).json({
-//       errorInformation: {
-//         reason: "INVALID_DATA",
-//         message: "Missing orderInformation.amountDetails fields",
-//       },
-//     });
-//   }
-//   if (!paymentInformation?.card) {
-//     return res.status(400).json({
-//       errorInformation: {
-//         reason: "INVALID_DATA",
-//         message: "Missing paymentInformation.card fields",
-//       },
-//     });
-//   }
-
-//   const cardNumber = paymentInformation.card.number || "";
-//   const paymentId = randomUUID();
-
-//   // Simulate outcomes
-//   let status = "AUTHORIZED";
-//   let errorInfo: any = null;
-
-//   if (cardNumber === "4000000000000002") {
-//     status = "DECLINED";
-//     errorInfo = {
-//       reason: "CARD_DECLINED",
-//       message: "The card was declined.",
-//     };
-//   } else if (cardNumber === "4000000000009995") {
-//     status = "INVALID_REQUEST";
-//     errorInfo = {
-//       reason: "INVALID_ACCOUNT",
-//       message: "Invalid account number.",
-//     };
-//   }
-
-//   if (errorInfo) {
-//     return res.status(402).json({
-//       id: paymentId,
-//       status,
-//       clientReferenceInformation: clientReferenceInformation || {},
-//       errorInformation: errorInfo,
-//     });
-//   }
-//   const response = {
-//     id: paymentId,
-//     status,
-//     clientReferenceInformation: clientReferenceInformation || {},
-//     orderInformation: {
-//       amountDetails: orderInformation.amountDetails,
-//       billTo: orderInformation.billTo || {},
-//     },
-//     paymentInformation: {
-//       card: {
-//         type: paymentInformation.card.type || "001",
-//         expirationMonth: paymentInformation.card.expirationMonth,
-//         expirationYear: paymentInformation.card.expirationYear,
-//         number: cardNumber.slice(-4),
-//       },
-//     },
-//   };
-
-  const response = {
-    id: "" + randomUUID(),
-    status: "SUCCEEDED",
-    clientReferenceInformation: {},
-    orderInformation: {
-      amountDetails: { totalAmount: "100.00", currency: "USD" },
-      billTo: {
-        firstName: "John",
-        lastName: "Doe",
-        address1: "123 Main St",
-        address2: "Apt 4B",
-        city: "Anytown",
-        state: "CA",
-        postalCode: "12345",
-        country: "USA"
+  if (!orderInformation?.amountDetails?.totalAmount || !orderInformation?.amountDetails?.currency) {
+    return res.status(400).json({
+      id: randomUUID(),
+      status: "INVALID_REQUEST",
+      errorInformation: {
+        reason: "INVALID_DATA",
+        message: "Missing orderInformation.amountDetails fields",
       }
-    },
-    paymentInformation: {
-      card: {
-        type: "001",
-        expirationMonth: "12",
-        expirationYear: "2025",
-        number: "1234",
-      },
-    },
-  };
-    res.status(201).json(response);
+    });
+  }
+
+  if (!paymentInformation?.card) {
+    return res.status(400).json({
+      id: randomUUID(),
+      status: "INVALID_REQUEST",
+      errorInformation: {
+        reason: "INVALID_DATA",
+        message: "Missing paymentInformation.card fields",
+      }
+    });
+  }
+
+  const cardNumber = paymentInformation.card.number;
+  const paymentId = randomUUID();
+
+  // Simulate different payment scenarios based on card number
+  switch (cardNumber) {
+    case "4000000000000002":
+      return res.status(402).json({
+        id: paymentId,
+        status: "DECLINED",
+        errorInformation: {
+          reason: "CARD_DECLINED",
+          message: "The card was declined.",
+        }
+      });
+
+    case "4000000000009995":
+      return res.status(400).json({
+        id: paymentId,
+        status: "INVALID_REQUEST",
+        errorInformation: {
+          reason: "INVALID_ACCOUNT",
+          message: "Invalid account number.",
+        }
+      });
+
+    default:
+      const response: PaymentResponse = {
+        id: paymentId,
+        status: "SUCCEEDED",
+        orderInformation: {
+          amountDetails: {
+            totalAmount: orderInformation.amountDetails.totalAmount.toString(),
+            currency: orderInformation.amountDetails.currency,
+          }
+        },
+      };
+
+      return res.status(201).json(response);
+  }
 });
 
-app.post("/pts/v2/refunds", (req: any, res: any) => {
-  const { clientReferenceInformation, orderInformation, paymentId } = req.body;
+app.post("/pts/v2/refunds", (req: Request<{}, {}, RefundRequest>, res: Response<RefundResponse>) => {
+  const { orderInformation, paymentId } = req.body;
 
   if (!paymentId) {
     return res.status(400).json({
+      id: randomUUID(),
+      status: "FAILED",
+      orderInformation: { amountDetails: { totalAmount: "0", currency: "" } },
       errorInformation: {
         reason: "MISSING_FIELD",
         message: "paymentId is required for refund"
@@ -126,6 +171,9 @@ app.post("/pts/v2/refunds", (req: any, res: any) => {
 
   if (!orderInformation?.amountDetails?.totalAmount) {
     return res.status(400).json({
+      id: randomUUID(),
+      status: "FAILED",
+      orderInformation: { amountDetails: { totalAmount: "0", currency: "" } },
       errorInformation: {
         reason: "MISSING_FIELD",
         message: "Refund amount is required"
@@ -135,21 +183,20 @@ app.post("/pts/v2/refunds", (req: any, res: any) => {
 
   const refundId = randomUUID();
 
-  const response = {
+  const response: RefundResponse = {
     id: refundId,
     status: "REFUNDED",
-    submittedAgainstPaymentId: paymentId,
     orderInformation: {
-      amountDetails: orderInformation.amountDetails
-    },
-    clientReferenceInformation: clientReferenceInformation || {},
-    createdAt: new Date().toISOString(),
-    message: `Mock refund of ${orderInformation.amountDetails.totalAmount} ${orderInformation.amountDetails.currency} processed.`
-  };
+      amountDetails: {
+        totalAmount: orderInformation.amountDetails.totalAmount.toString(),
+        currency: orderInformation.amountDetails.currency
+      }
+    },  };
 
-  res.status(201).json(response);
+  return res.status(201).json(response);
 });
 
 app.listen(port, () => {
   console.log(`Payment Mock Server listening on port ${port}`);
 });
+
