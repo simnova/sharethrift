@@ -166,7 +166,20 @@ export function AllListingsTable({
       key: 'publishedAt',
       sorter: true,
       sortOrder: sorter.field === 'publishedAt' ? sorter.order : null,
-      render: (date?: string) => (date ? new Date(date).toLocaleDateString() : 'N/A'),
+      render: (date?: string) => {
+        if (!date) {
+          return 'N/A';
+        }
+        // Format as yyyy-mm-dd and align digits
+        const d = new Date(date);
+        const yyyy = d.getFullYear();
+        const mm = String(d.getMonth() + 1).padStart(2, '0');
+        const dd = String(d.getDate()).padStart(2, '0');
+        const formatted = `${yyyy}-${mm}-${dd}`;
+        return (
+          <span style={{ fontVariantNumeric: 'tabular-nums', fontFamily: 'inherit', minWidth: 100, display: 'inline-block', textAlign: 'left' }}>{formatted}</span>
+        );
+      },
     },
     {
       title: 'Reservation Period',
@@ -174,7 +187,35 @@ export function AllListingsTable({
       key: 'reservationPeriod',
       sorter: true,
       sortOrder: sorter.field === 'reservationPeriod' ? sorter.order : null,
-      render: (period?: string) => period || 'N/A',
+      render: (period?: string) => {
+        if (!period) {
+          return 'N/A';
+        }
+        // Expect format 'yyyy-mm-dd - yyyy-mm-dd' or similar
+        // If not, try to parse and format
+        let start = '', end = '';
+        if (period.includes(' - ')) {
+          [start, end] = period.split(' - ');
+        } else {
+          start = period;
+        }
+        // Try to format both as yyyy-mm-dd
+        function formatDate(str: string) {
+          const d = new Date(str);
+          if (isNaN(d.getTime())) return str;
+          const yyyy = d.getFullYear();
+          const mm = String(d.getMonth() + 1).padStart(2, '0');
+          const dd = String(d.getDate()).padStart(2, '0');
+          return `${yyyy}-${mm}-${dd}`;
+        }
+        const formattedStart = formatDate(start);
+        const formattedEnd = end ? formatDate(end) : '';
+        return (
+          <span style={{ fontVariantNumeric: 'tabular-nums', fontFamily: 'inherit', minWidth: 220, display: 'inline-block', textAlign: 'left' }}>
+            {formattedStart}{formattedEnd ? ` - ${formattedEnd}` : ''}
+          </span>
+        );
+      },
     },
     {
       title: 'Status',

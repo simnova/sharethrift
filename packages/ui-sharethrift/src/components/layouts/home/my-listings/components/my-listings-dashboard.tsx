@@ -2,7 +2,7 @@ import { Button, Tabs } from 'antd';
 import type { TabsProps } from 'antd';
 import { AllListingsTableContainer } from './all-listings-table.container';
 import { RequestsTableContainer } from './requests-table.container';
-import { MOCK_LISTING_REQUESTS } from '../mock-data';
+import { useQuery, gql } from '@apollo/client';
 import { useState } from 'react';
 
 export interface MyListingsDashboardProps {
@@ -10,7 +10,16 @@ export interface MyListingsDashboardProps {
 }
 
 export function MyListingsDashboard({ onCreateListing }: MyListingsDashboardProps) {
-  const requestsCount = MOCK_LISTING_REQUESTS.length;
+  // Query for the total number of requests
+  const REQUESTS_COUNT_QUERY = gql`
+    query HomeMyListingsRequestsTableContainerMyListingsRequestsCount {
+      myListingsRequests(page: 1, pageSize: 1) {
+        total
+      }
+    }
+  `;
+  const { data: requestsCountData } = useQuery(REQUESTS_COUNT_QUERY);
+  const requestsCount = requestsCountData?.myListingsRequests?.total ?? 0;
   const [activeTab, setActiveTab] = useState('all-listings');
   const [allListingsPage, setAllListingsPage] = useState(1);
   const [requestsPage, setRequestsPage] = useState(1);
@@ -18,8 +27,12 @@ export function MyListingsDashboard({ onCreateListing }: MyListingsDashboardProp
   const handleTabChange = (key: string) => {
     setActiveTab(key);
     // Reset the page for the tab being switched to
-    if (key === 'all-listings') setAllListingsPage(1);
-    if (key === 'requests') setRequestsPage(1);
+    if (key === 'all-listings') {
+      setAllListingsPage(1);
+    }
+    if (key === 'requests') {
+      setRequestsPage(1);
+    }
   };
 
   const items: TabsProps['items'] = [
