@@ -102,13 +102,15 @@ export function CreateListing({
         {/* Header */}
         <Col span={24} style={{ marginBottom: 0, paddingBottom: 0 }}>
           <Button 
-            type="text" 
+            className="primaryButton"
+            type="primary"
             icon={<LeftOutlined />} 
             onClick={onCancel}
-            style={{ padding: '4px 8px', marginBottom: '16px' }}
           >
             Back
           </Button>
+        </Col>
+        <Col span={24} style={{ marginBottom: 0, paddingBottom: 0 }}>
           <div className="title42">
             Create a Listing
           </div>
@@ -388,12 +390,13 @@ export function CreateListing({
                 {/* Action Buttons */}
                 <Row gutter={16} style={{ marginTop: '24px' }}>
                   <Col>
-                    <Button onClick={onCancel} disabled={isLoading}>
+                    <Button className="secondaryButton" onClick={onCancel} disabled={isLoading}>
                       Cancel
                     </Button>
                   </Col>
                   <Col>
                     <Button 
+                      className="secondaryButton"
                       type="default" 
                       onClick={() => handleFormSubmit(true)}
                       loading={isLoading}
@@ -403,6 +406,7 @@ export function CreateListing({
                   </Col>
                   <Col>
                     <Button 
+                      className="primaryButton"
                       type="primary" 
                       onClick={() => handleFormSubmit(false)}
                       loading={isLoading}
