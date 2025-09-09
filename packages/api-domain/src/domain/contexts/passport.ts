@@ -1,16 +1,19 @@
+import type { ConversationPassport } from './conversation/conversation.passport.ts';
 import type { UserPassport } from './user/user.passport.ts';
-import type { ItemListingPassport } from './listing/item/item-listing.passport.ts';
-import { SystemPassport } from '../iam/index.ts';
+import type { ListingPassport } from './listing/listing.passport.ts';
+import { SystemPassport, GuestPassport } from '../iam/index.ts';
 import type { PermissionsSpec } from '../iam/system/system.passport-base.ts';
 
 export interface Passport {
 	get user(): UserPassport;
-	get itemListing(): ItemListingPassport;
+	get listing(): ListingPassport;
+	get conversation(): ConversationPassport;
 }
 
 export const PassportFactory = {
-	forReadOnly(): Passport {
-		return {} as Passport; // need to implement read only passport implementation in IAM section
+	// for users who are not logged in on any portal - defaults to false for all permissions
+	forGuest(): Passport {
+		return new GuestPassport();
 	},
 	forSystem(permissions?: Partial<PermissionsSpec>): Passport {
 		return new SystemPassport(permissions);

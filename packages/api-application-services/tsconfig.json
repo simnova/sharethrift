@@ -3,14 +3,16 @@
 	"compilerOptions": {
 		/* Modules */
 		"rootDir": ".",
-        "types": ["node"],
+		"types": ["node"],
+
 		/* Emit */
 		"outDir": "dist"
 	},
 	"include": ["src/**/*.ts"],
 	"references": [
 		//needs to match peer dependencies in package.json
-        { "path": "../api-context-spec" },
-        { "path": "../api-domain" }
+		{ "path": "../api-context-spec" },
+		{ "path": "../api-domain" },
+		{ "path": "../api-persistence" }
 	]
 }

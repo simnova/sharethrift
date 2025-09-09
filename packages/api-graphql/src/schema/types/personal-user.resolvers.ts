@@ -16,6 +16,7 @@ const personalUserResolvers = {
 			// })) as PersonalUser;
 			// For now, return mock data until persistence layer is fixed
 			return {
+				id: args.id, // Add the id field
 				userType: 'personal',
 				isBlocked: false,
 				account: {
@@ -38,6 +39,23 @@ const personalUserResolvers = {
 				createdAt: new Date().toISOString(),
 				updatedAt: new Date().toISOString(),
 			};
+		},
+		currentPersonalUserAndCreateIfNotExists: async (
+			_parent: unknown,
+			_args: unknown,
+			context: GraphContext,
+			_info: GraphQLResolveInfo,
+		) => {
+			if (!context.applicationServices.verifiedUser?.verifiedJwt) {
+				throw new Error('Unauthorized');
+			}
+			console.log('currentPersonalUserAndCreateIfNotExists resolver called');
+			// Implement the logic to get the current personal user or create a new one
+			return await context.applicationServices.User.PersonalUser.createIfNotExists({
+        email: context.applicationServices.verifiedUser.verifiedJwt.email,
+        firstName: context.applicationServices.verifiedUser.verifiedJwt.given_name,
+        lastName: context.applicationServices.verifiedUser.verifiedJwt.family_name,
+      });
 		},
 	},
 
