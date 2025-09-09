@@ -33,6 +33,43 @@ export class PersonalUserDomainAdapter
 		this.doc.isBlocked = value;
 	}
 
+	get role(): Domain.Contexts.Role.PersonalUserRole.PersonalUserRoleProps {
+		if (!this.doc.role) {
+			throw new Error('role is not populated');
+		}
+		if (this.doc.role instanceof MongooseSeedwork.ObjectId) {
+			throw new Error('role is not populated or is not of the correct type');
+		}
+		return new EndUserRoleDomainAdapter(
+			this.doc.role as Models.Role.EndUserRole,
+		);
+	}
+	async loadRole(): Promise<Domain.Contexts.Community.Role.EndUserRole.EndUserRoleProps> {
+		if (!this.doc.role) {
+			throw new Error('role is not populated');
+		}
+		if (this.doc.role instanceof MongooseSeedwork.ObjectId) {
+			await this.doc.populate('role');
+		}
+		return new EndUserRoleDomainAdapter(
+			this.doc.role as Models.Role.EndUserRole,
+		);
+	}
+	set role(role:
+		| Domain.Contexts.Community.Role.EndUserRole.EndUserRoleEntityReference
+		| Domain.Contexts.Community.Role.EndUserRole.EndUserRole<EndUserRoleDomainAdapter>) {
+		if (
+			role instanceof Domain.Contexts.Community.Role.EndUserRole.EndUserRole
+		) {
+			this.doc.set('role', role.props.doc);
+			return;
+		}
+		if (!role?.id) {
+			throw new Error('role reference is missing id');
+		}
+		this.doc.set('role', new MongooseSeedwork.ObjectId(role.id));
+	}
+
 	get account() {
 		if (!this.doc.account) {
 			this.doc.set('account', {});

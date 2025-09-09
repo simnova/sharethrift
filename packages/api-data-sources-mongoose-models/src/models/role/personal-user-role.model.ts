@@ -43,7 +43,7 @@ export interface PersonalUserPermissions extends MongooseSeedwork.NestedPath {
 export interface PersonalUserRole extends Role {
 	permissions: PersonalUserPermissions;
 	roleName: string;
-	roleType?: string;
+	roleType: string;
 	isDefault: boolean;
 }
 

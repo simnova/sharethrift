@@ -6,11 +6,17 @@ import {
 	type PersonalUserAccountProps,
 	type PersonalUserAccountEntityReference,
 } from './personal-user-account.ts';
+import {
+	type PersonalUserRoleEntityReference,
+	PersonalUserRole,
+} from '../../role/personal-user-role/personal-user-role.ts';
 
 export interface PersonalUserProps extends DomainSeedwork.DomainEntityProps {
 	userType: string;
 	isBlocked: boolean;
 	schemaVersion: string;
+	role: Readonly<PersonalUserRoleEntityReference>;
+	loadRole: () => Promise<Readonly<PersonalUserRoleEntityReference>>;
 
 	readonly account: PersonalUserAccountProps;
 
@@ -40,6 +46,7 @@ export class PersonalUser<props extends PersonalUserProps>
 	}
 	public static getNewInstance<props extends PersonalUserProps>(
 		newProps: props,
+		role: PersonalUserRoleEntityReference,
 		passport: Passport,
 		email: string,
 		firstName: string,
@@ -48,6 +55,7 @@ export class PersonalUser<props extends PersonalUserProps>
 		const newInstance = new PersonalUser(newProps, passport);
 		newInstance.markAsNew();
 		newInstance._isNew = true;
+		newInstance.props.role = role;
 		//field assignments
 		newInstance.account.email = email;
 		newInstance.account.profile.firstName = firstName;
@@ -95,6 +103,33 @@ export class PersonalUser<props extends PersonalUserProps>
 
 	get account(): PersonalUserAccount {
 		return new PersonalUserAccount(this.props.account, this.visa, this);
+	}
+
+	get role(): PersonalUserRoleEntityReference {
+		return new PersonalUserRole(this.props.role, this.passport);
+	}
+
+	async loadRole(): Promise<PersonalUserRoleEntityReference> {
+		return await this.props.loadRole();
+	}
+
+	private set role(role: PersonalUserRoleEntityReference | null | undefined) {
+		if (
+			!this.isNew &&
+			!this.visa.determineIf(
+				(domainPermissions) => domainPermissions.canCreateUser,
+			)
+		) {
+			throw new DomainSeedwork.PermissionError(
+				'You do not have permission to change the sharer of this conversation',
+			);
+		}
+		if (role === null || role === undefined) {
+			throw new DomainSeedwork.PermissionError(
+				'sharer cannot be null or undefined',
+			);
+		}
+		this.props.role = role;
 	}
 
 	set userType(value: string) {
