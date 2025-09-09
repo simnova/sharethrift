@@ -18,14 +18,6 @@ export class PersonalUserRoleListingPermissions
 	extends DomainSeedwork.ValueObject<PersonalUserRoleListingPermissionsProps>
 	implements PersonalUserRoleListingPermissionsEntityReference
 {
-	// private readonly visa: CommunityVisa;
-
-	// constructor(props: PersonalUserRoleListingPermissionsProps, visa: CommunityVisa) {
-	//   super(props);
-	//   this.visa = visa;
-	// }
-	// If you want to enforce permission checks, uncomment above and use visa in setters
-
 	get canCreateItemListing(): boolean {
 		return this.props.canCreateItemListing;
 	}

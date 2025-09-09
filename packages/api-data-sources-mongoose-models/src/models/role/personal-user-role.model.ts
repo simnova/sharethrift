@@ -26,6 +26,14 @@ export interface PersonalUserConversationPermissions
 	canViewConversation: boolean;
 }
 
+export interface PersonalUserReservationRequestPermissions
+	extends MongooseSeedwork.NestedPath {
+	id?: ObjectId;
+	canCreateReservationRequest: boolean;
+	canManageReservationRequest: boolean;
+	canViewReservationRequest: boolean;
+}
+
 export interface PersonalUserPermissions extends MongooseSeedwork.NestedPath {
 	id?: ObjectId;
 	listing: PersonalUserListingPermissions;
@@ -75,6 +83,23 @@ export const PersonalUserRoleSchema = new Schema<
 				},
 				canViewConversation: { type: Boolean, required: true, default: true },
 			} as SchemaDefinition<PersonalUserConversationPermissions>,
+			reservationRequest: {
+				canCreateReservationRequest: {
+					type: Boolean,
+					required: true,
+					default: false,
+				},
+				canManageReservationRequest: {
+					type: Boolean,
+					required: true,
+					default: false,
+				},
+				canViewReservationRequest: {
+					type: Boolean,
+					required: true,
+					default: true,
+				},
+			} as SchemaDefinition<PersonalUserReservationRequestPermissions>,
 		} as SchemaDefinition<PersonalUserPermissions>,
 		schemaVersion: { type: String, default: '1.0.0' },
 		roleName: { type: String, required: true, maxlength: 50 },

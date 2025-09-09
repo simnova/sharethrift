@@ -2,6 +2,7 @@ export {
 	type PersonalUserRole,
 	type PersonalUserPermissions,
 	type PersonalUserListingPermissions,
+	type PersonalUserReservationRequestPermissions,
 	type PersonalUserConversationPermissions,
 	PersonalUserRoleModelFactory,
 	type PersonalUserRoleModelType,
