@@ -53,7 +53,7 @@ export class ItemListingRepository<
 		);
 	}
 
-	async getBySharerIDWithPagination(
+	getBySharerIDWithPagination(
 		_sharerId: string,
 		options: {
 			page: number;
@@ -204,8 +204,8 @@ export class ItemListingRepository<
 		// Apply sorter
 		if (options.sorter?.field) {
 			filteredListings.sort((a, b) => {
-				const fieldA = a[options.sorter!.field as keyof typeof a];
-				const fieldB = b[options.sorter!.field as keyof typeof b];
+				const fieldA = a[options.sorter?.field as keyof typeof a];
+				const fieldB = b[options.sorter?.field as keyof typeof b];
 
 				// Handle undefined cases for sorting
 				if (fieldA === undefined || fieldA === null)
@@ -232,7 +232,7 @@ export class ItemListingRepository<
 		const domainItems = items.map((item) => ({
 			...item,
 			reservationPeriod: `${item.sharingPeriodStart.toISOString().slice(0, 10)} - ${item.sharingPeriodEnd.toISOString().slice(0, 10)}`,
-		})) as any; // TODO: Properly convert to domain objects
+		})) as unknown as Domain.Contexts.Listing.ItemListing.ItemListing<PropType>[]; // TODO: Properly convert to domain objects
 
 		return {
 			items: domainItems,

@@ -85,7 +85,7 @@ export class ReservationRequestRepository
 		return mongoReservations.map(doc => this.typeConverter.toDomain(doc, this.passport));
 	}
 
-	async getByListingOwnerIDWithPagination(
+	getByListingOwnerIDWithPagination(
 		_ownerId: string,
 		options: {
 			page: number;
@@ -241,7 +241,7 @@ export class ReservationRequestRepository
 		const items = filteredRequests.slice(startIndex, endIndex);
 
 		// Convert mock data to domain objects (simplified for now)
-		const domainItems = items as any; // TODO: Properly convert to domain objects
+		const domainItems = items as unknown as Domain.Contexts.ReservationRequest.ReservationRequest.ReservationRequest<PropType>[]; // TODO: Properly convert to domain objects
 
 		return {
 			items: domainItems,
