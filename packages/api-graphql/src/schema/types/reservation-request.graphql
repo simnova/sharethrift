@@ -1,0 +1,43 @@
+type ReservationRequest {
+	id: ObjectID!
+	state: ReservationRequestState!
+	reservationPeriodStart: String!
+	reservationPeriodEnd: String!
+	createdAt: String!
+	updatedAt: String!
+	listing: ItemListing!
+	reserver: PersonalUser!
+	closeRequestedBySharer: Boolean!
+	closeRequestedByReserver: Boolean!
+}
+
+enum ReservationRequestState {
+	Requested
+	Accepted
+	Rejected
+	Closed
+	Cancelled
+}
+
+extend type Query {
+	myActiveReservations(userId: ObjectID!): [ReservationRequest!]!
+	myPastReservations(userId: ObjectID!): [ReservationRequest!]!
+}
+
+extend type Mutation {
+	cancelReservation(input: CancelReservationInput!): ReservationRequest!
+	closeReservation(input: CloseReservationInput!): ReservationRequest!
+}
+
+type ReservationRequestMutationResult implements MutationResult {
+	status: MutationStatus!
+	reservationRequest: ReservationRequest
+}
+
+input CancelReservationInput {
+	id: ObjectID!
+}
+
+input CloseReservationInput {
+	id: ObjectID!
+}

@@ -79,6 +79,7 @@ export const PersonalUserAccountType: SchemaDefinition<PersonalUserAccount> = {
 	username: {
 		type: String,
 		required: false,
+    unique: true,
 	},
 	profile: {
 		type: PersonalUserAccountProfileType,
