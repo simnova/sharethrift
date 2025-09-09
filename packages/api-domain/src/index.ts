@@ -19,4 +19,10 @@ export interface DomainDataSource {
 			ConversationUnitOfWork: Contexts.Conversation.Conversation.ConversationUnitOfWork;
 		};
 	};
+
+    ReservationRequest: {
+        ReservationRequest: {
+            ReservationRequestUnitOfWork: Contexts.ReservationRequest.ReservationRequest.ReservationRequestUnitOfWork;
+        }
+    }
 }

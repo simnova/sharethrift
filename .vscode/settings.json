@@ -4,7 +4,8 @@
         "dataobject",
         "lucaspaganini",
         "maxlength",
-        "seedwork"
+        "seedwork",
+        "sharethrift"
     ],
     "azureFunctions.deploySubpath": "packages/api",
     "azureFunctions.postDeployTask": "npm install (functions)",
