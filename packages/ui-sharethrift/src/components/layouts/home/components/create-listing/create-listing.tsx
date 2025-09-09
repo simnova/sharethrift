@@ -167,7 +167,7 @@ export function CreateListing({
                   )}
 
                   {/* Additional Images */}
-                  {uploadedImages.length > 1 && (
+                  {uploadedImages.length >= 1 && (
                     <div style={{ marginTop: '16px', marginBottom: '16px' }}>
                       <Text strong style={{ marginBottom: '12px', display: 'block' }}>Additional Images</Text>
                       <div style={{ display: 'flex', gap: '12px', flexWrap: 'nowrap', alignItems: 'center' }}>
@@ -256,6 +256,67 @@ export function CreateListing({
                           </div>
                         )}
                       </div>
+                    </div>
+                  )}
+
+                  {/* Upload Button - Full width when no images */}
+                  {uploadedImages.length === 0 && (
+                    <div style={{ marginBottom: '16px' }}>
+                      <input
+                        type="file"
+                        accept="image/*"
+                        multiple
+                        onChange={(e) => {
+                          const files = Array.from(e.target.files || []);
+                          files.forEach(file => {
+                            const reader = new FileReader();
+                            reader.onload = () => {
+                              const result = reader.result as string;
+                              onImageAdd(result);
+                            };
+                            reader.readAsDataURL(file);
+                          });
+                          // Reset input
+                          e.target.value = '';
+                        }}
+                        style={{ display: 'none' }}
+                        id="image-upload"
+                      />
+                      <label
+                        htmlFor="image-upload"
+                        style={{
+                          width: '100%',
+                          maxWidth: 450,
+                          aspectRatio: '9/10',
+                          minHeight: 300,
+                          border: '2px dashed var(--color-foreground-2)',
+                          borderRadius: '8px',
+                          display: 'flex',
+                          flexDirection: 'column',
+                          alignItems: 'center',
+                          justifyContent: 'center',
+                          cursor: 'pointer',
+                          transition: 'border-color 0.3s ease',
+                          backgroundColor: 'var(--color-background-2)',
+                          margin: '0 auto'
+                        }}
+                        onMouseEnter={(e) => {
+                          e.currentTarget.style.borderColor = 'var(--color-secondary)';
+                          e.currentTarget.style.backgroundColor = 'rgba(63, 129, 118, 0.05)';
+                        }}
+                        onMouseLeave={(e) => {
+                          e.currentTarget.style.borderColor = 'var(--color-foreground-2)';
+                          e.currentTarget.style.backgroundColor = 'var(--color-background-2)';
+                        }}
+                      >
+                        <PlusOutlined style={{ fontSize: '48px', color: 'var(--color-foreground-2)', marginBottom: '16px' }} />
+                        <div style={{ fontSize: '18px', fontWeight: '500', color: 'var(--color-message-text)', marginBottom: '8px' }}>
+                          Click to upload images
+                        </div>
+                        <div style={{ fontSize: '14px', color: 'var(--color-primary-disabled)' }}>
+                          or drag and drop
+                        </div>
+                      </label>
                     </div>
                   )}
 
