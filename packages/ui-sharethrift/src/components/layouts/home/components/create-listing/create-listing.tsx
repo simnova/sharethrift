@@ -89,8 +89,12 @@ export function CreateListing({
             margin-right: auto !important;
           }
           .create-listing-images-responsive {
+            width: 100% !important;
+            maxWidth: 450px !important;
+            aspectRatio: '9/10' !important;
             height: auto !important;
-            min-height: 300px !important;
+            minHeight: 300px !important;
+            paddingBottom: '12px' !important;
           }
         }
       `}</style>
@@ -123,7 +127,7 @@ export function CreateListing({
           >
             <Row gutter={36} align="top" style={{ marginTop: 0, paddingTop: 0 }} className="create-listing-main-responsive">
               <Col xs={24} md={12} style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'center', marginTop: 0, paddingTop: 0 }}>
-                <div style={{ width: '100%', height: '100%', minHeight: '500px' }} className="create-listing-images-responsive">
+                <div style={{ width: '100%', maxWidth: 450, aspectRatio: '9/10', minHeight: 300, margin: '0 auto' }} className="create-listing-images-responsive">
                   
                   {/* Spacer to align with Item Details h1 */}
                   <div style={{ height: '24px', marginBottom: '16px' }}></div>
@@ -133,14 +137,17 @@ export function CreateListing({
                     <div 
                       style={{ 
                         width: '100%', 
-                        height: '400px',
+                        maxWidth: 450,
+                        aspectRatio: '9/10',
+                        minHeight: 300,
                         border: '1px solid var(--color-foreground-2)', 
                         borderRadius: '8px',
                         backgroundImage: `url(${uploadedImages[0]})`,
                         backgroundSize: 'cover',
                         backgroundPosition: 'center',
                         position: 'relative',
-                        marginBottom: '16px'
+                        marginBottom: '32px',
+                        margin: '0 auto'
                       }}
                     >
                       <Button
@@ -161,155 +168,97 @@ export function CreateListing({
 
                   {/* Additional Images */}
                   {uploadedImages.length > 1 && (
-                    <div style={{ marginBottom: '16px' }}>
-                      <Text strong style={{ marginBottom: '8px', display: 'block' }}>Additional Images</Text>
-                      <Row gutter={[8, 8]}>
+                    <div style={{ marginTop: '16px', marginBottom: '16px' }}>
+                      <Text strong style={{ marginBottom: '12px', display: 'block' }}>Additional Images</Text>
+                      <div style={{ display: 'flex', gap: '12px', flexWrap: 'nowrap', alignItems: 'center' }}>
                         {uploadedImages.slice(1).map((image, index) => (
-                          <Col span={8} key={`additional-image-${index + 1}`}>
-                            <div 
+                          <div 
+                            key={`additional-image-${index + 1}`}
+                            style={{ 
+                              width: '80px',
+                              height: '80px', 
+                              border: '1px solid var(--color-foreground-2)', 
+                              borderRadius: '4px',
+                              backgroundImage: `url(${image})`,
+                              backgroundSize: 'cover',
+                              backgroundPosition: 'center',
+                              position: 'relative',
+                              flexShrink: 0
+                            }}
+                          >
+                            <Button
+                              type="text"
+                              danger
+                              size="small"
+                              onClick={() => onImageRemove(image)}
                               style={{ 
-                                width: '80px',
-                                height: '80px', 
-                                border: '1px solid var(--color-foreground-2)', 
-                                borderRadius: '4px',
-                                backgroundImage: `url(${image})`,
-                                backgroundSize: 'cover',
-                                backgroundPosition: 'center',
-                                position: 'relative'
+                                position: 'absolute', 
+                                top: '2px', 
+                                right: '2px',
+                                background: 'rgba(255, 255, 255, 0.9)',
+                                minWidth: '20px',
+                                height: '20px',
+                                fontSize: '12px'
                               }}
                             >
-                              <Button
-                                type="text"
-                                danger
-                                size="small"
-                                onClick={() => onImageRemove(image)}
-                                style={{ 
-                                  position: 'absolute', 
-                                  top: '2px', 
-                                  right: '2px',
-                                  background: 'rgba(255, 255, 255, 0.9)',
-                                  minWidth: '20px',
-                                  height: '20px',
-                                  fontSize: '12px'
-                                }}
-                              >
-                                ×
-                              </Button>
-                            </div>
-                          </Col>
+                              ×
+                            </Button>
+                          </div>
                         ))}
-                      </Row>
+                        {/* Upload Button - Inline with additional images */}
+                        {uploadedImages.length < 5 && (
+                          <div>
+                            <input
+                              type="file"
+                              accept="image/*"
+                              onChange={(e) => {
+                                const file = e.target.files?.[0];
+                                if (file) {
+                                  const reader = new FileReader();
+                                  reader.onload = () => {
+                                    const result = reader.result as string;
+                                    onImageAdd(result);
+                                  };
+                                  reader.readAsDataURL(file);
+                                }
+                                // Reset input
+                                e.target.value = '';
+                              }}
+                              style={{ display: 'none' }}
+                              id="additional-image-upload"
+                            />
+                            <label
+                              htmlFor="additional-image-upload"
+                              style={{
+                                width: '80px',
+                                height: '80px',
+                                border: '2px dashed var(--color-foreground-2)',
+                                borderRadius: '8px',
+                                cursor: 'pointer',
+                                backgroundColor: 'var(--color-background-2)',
+                                transition: 'all 0.3s ease',
+                                display: 'flex',
+                                alignItems: 'center',
+                                justifyContent: 'center',
+                                flexShrink: 0
+                              }}
+                              onMouseEnter={(e) => {
+                                e.currentTarget.style.borderColor = 'var(--color-secondary)';
+                                e.currentTarget.style.backgroundColor = 'rgba(63, 129, 118, 0.05)';
+                              }}
+                              onMouseLeave={(e) => {
+                                e.currentTarget.style.borderColor = 'var(--color-foreground-2)';
+                                e.currentTarget.style.backgroundColor = 'var(--color-background-2)';
+                              }}
+                            >
+                              <PlusOutlined style={{ fontSize: '24px', color: 'var(--color-foreground-2)' }} />
+                            </label>
+                          </div>
+                        )}
+                      </div>
                     </div>
                   )}
 
-                  {/* Upload Button - Full width when no images */}
-                  {uploadedImages.length === 0 && (
-                    <div style={{ marginBottom: '16px' }}>
-                      <input
-                        type="file"
-                        accept="image/*"
-                        multiple
-                        onChange={(e) => {
-                          const files = Array.from(e.target.files || []);
-                          files.forEach(file => {
-                            const reader = new FileReader();
-                            reader.onload = () => {
-                              const result = reader.result as string;
-                              onImageAdd(result);
-                            };
-                            reader.readAsDataURL(file);
-                          });
-                          // Reset input
-                          e.target.value = '';
-                        }}
-                        style={{ display: 'none' }}
-                        id="image-upload"
-                      />
-                      <label
-                        htmlFor="image-upload"
-                        style={{
-                          width: '100%',
-                          height: '400px',
-                          border: '2px dashed var(--color-foreground-2)',
-                          borderRadius: '8px',
-                          display: 'flex',
-                          flexDirection: 'column',
-                          alignItems: 'center',
-                          justifyContent: 'center',
-                          cursor: 'pointer',
-                          transition: 'border-color 0.3s ease',
-                          backgroundColor: 'var(--color-background-2)',
-                        }}
-                        onMouseEnter={(e) => {
-                          e.currentTarget.style.borderColor = 'var(--color-secondary)';
-                          e.currentTarget.style.backgroundColor = 'rgba(63, 129, 118, 0.05)';
-                        }}
-                        onMouseLeave={(e) => {
-                          e.currentTarget.style.borderColor = 'var(--color-foreground-2)';
-                          e.currentTarget.style.backgroundColor = 'var(--color-background-2)';
-                        }}
-                      >
-                        <PlusOutlined style={{ fontSize: '48px', color: 'var(--color-foreground-2)', marginBottom: '16px' }} />
-                        <div style={{ fontSize: '18px', fontWeight: '500', color: 'var(--color-message-text', marginBottom: '8px' }}>
-                          Click to upload images
-                        </div>
-                        <div style={{ fontSize: '14px', color: 'var(--color-primary-disabled)' }}>
-                          or drag and drop
-                        </div>
-                      </label>
-                    </div>
-                  )}
-
-                  {/* Upload Button - Smaller when images exist */}
-                  {uploadedImages.length > 0 && uploadedImages.length < 5 && (
-                    <div style={{ marginBottom: '16px' }}>
-                      <input
-                        type="file"
-                        accept="image/*"
-                        onChange={(e) => {
-                          const file = e.target.files?.[0];
-                          if (file) {
-                            const reader = new FileReader();
-                            reader.onload = () => {
-                              const result = reader.result as string;
-                              onImageAdd(result);
-                            };
-                            reader.readAsDataURL(file);
-                          }
-                          // Reset input
-                          e.target.value = '';
-                        }}
-                        style={{ display: 'none' }}
-                        id="additional-image-upload"
-                      />
-                      <label
-                        htmlFor="additional-image-upload"
-                        style={{
-                          width: '80px',
-                          height: '80px',
-                          border: '2px dashed var(--color-foreground-2)',
-                          borderRadius: '8px',
-                          cursor: 'pointer',
-                          backgroundColor: 'var(--color-background-2)',
-                          transition: 'all 0.3s ease',
-                          display: 'flex',
-                          alignItems: 'center',
-                          justifyContent: 'center',
-                        }}
-                        onMouseEnter={(e) => {
-                          e.currentTarget.style.borderColor = 'var(--color-secondary)';
-                          e.currentTarget.style.backgroundColor = 'rgba(63, 129, 118, 0.05)';
-                        }}
-                        onMouseLeave={(e) => {
-                          e.currentTarget.style.borderColor = 'var(--color-foreground-2)';
-                          e.currentTarget.style.backgroundColor = 'var(--color-background-2)';
-                        }}
-                      >
-                        <PlusOutlined style={{ fontSize: '24px', color: 'var(--color-foreground-2)' }} />
-                      </label>
-                    </div>
-                  )}
-                  
                   <Text type="secondary" style={{ fontSize: '12px' }}>
                     Upload up to 5 images. First image will be the primary image.
                   </Text>
