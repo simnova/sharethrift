@@ -11,6 +11,8 @@ import {
 	ReservationRequestStateValue,
 } from './reservation-request.value-objects.ts';
 import type { Passport } from '../../passport.ts';
+import type { PersonalUserRoleEntityReference } from '../../role/personal-user-role/personal-user-role.ts';
+import { PersonalUserRolePermissions } from '../../role/personal-user-role/personal-user-role-permissions.ts';
 // Minimal test-only mocks for missing domain value objects
 class PersonalUserAccountProfileLocation {
 	readonly address1: string;
@@ -97,6 +99,36 @@ describe('ReservationRequest', () => {
 		schemaVersion: '1',
 	});
 
+	const mockRole: Readonly<PersonalUserRoleEntityReference> = {
+		id: 'role-1',
+		roleName: 'mock-role',
+		isDefault: false,
+		permissions: new PersonalUserRolePermissions({
+			listingPermissions: {
+				canCreateItemListing: true,
+				canUpdateItemListing: true,
+				canDeleteItemListing: true,
+				canViewItemListing: true,
+				canPublishItemListing: true,
+				canUnpublishItemListing: true,
+			},
+			conversationPermissions: {
+				canCreateConversation: true,
+				canManageConversation: true,
+				canViewConversation: true,
+			},
+			reservationRequestPermissions: {
+				canCreateReservationRequest: true,
+				canManageReservationRequest: true,
+				canViewReservationRequest: true,
+			},
+		}),
+		roleType: 'mock-type',
+		createdAt: new Date(),
+		updatedAt: new Date(),
+		schemaVersion: '1',
+	};
+
 	const createMockReserver = (id = 'user-1'): PersonalUserEntityReference => {
 		return {
 			id,
@@ -125,6 +157,8 @@ describe('ReservationRequest', () => {
 			},
 			createdAt: new Date(),
 			updatedAt: new Date(),
+			role: mockRole,
+			loadRole: async () => mockRole,
 		};
 	};
 

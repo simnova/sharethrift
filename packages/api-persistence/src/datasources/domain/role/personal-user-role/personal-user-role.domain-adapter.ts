@@ -71,10 +71,28 @@ export class PersonalUserRolePermissionsDomainAdapter
 	) {
 		this.props = props;
 	}
+
+	get reservationRequestPermissions(): Domain.Contexts.Role.PersonalUserRole.PersonalUserRoleReservationRequestPermissionsProps {
+		return new PersonalUserRoleReservationRequestPermissionsDomainAdapter(
+			this.props.reservationRequestPermissions,
+		);
+	}
+
+	get listingPermissions(): Domain.Contexts.Role.PersonalUserRole.PersonalUserRoleListingPermissionsProps {
+		return new PersonalUserRoleListingPermissionsDomainAdapter(
+			this.props.listingPermissions,
+		);
+	}
+
+	get conversationPermissions(): Domain.Contexts.Role.PersonalUserRole.PersonalUserRoleConversationPermissionsProps {
+		return new PersonalUserRoleConversationPermissionsDomainAdapter(
+			this.props.conversationPermissions,
+		);
+	}
 }
 export class PersonalUserRoleReservationRequestPermissionsDomainAdapter
 	implements
-		Domain.Contexts.Role.PersonalUserRole.PersonalUserRoleReversationRequestPermissionsProps
+		Domain.Contexts.Role.PersonalUserRole.PersonalUserRoleResversationRequestPermissionsProps
 {
 	public readonly props: Models.Role.PersonalUserReservationRequestPermissions;
 	constructor(props: Models.Role.PersonalUserReservationRequestPermissions) {

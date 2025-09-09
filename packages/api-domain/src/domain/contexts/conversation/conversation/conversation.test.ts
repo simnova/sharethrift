@@ -43,7 +43,7 @@ function makeBaseProps(
 ): ConversationProps {
 	// Provide a valid PersonalUserPermissions value object for permissions
 	const permissions = new PersonalUserRolePermissions({
-		listing: {
+		listingPermissions: {
 			canCreateItemListing: true,
 			canUpdateItemListing: true,
 			canDeleteItemListing: true,
@@ -51,10 +51,15 @@ function makeBaseProps(
 			canPublishItemListing: true,
 			canUnpublishItemListing: true,
 		},
-		conversation: {
+		conversationPermissions: {
 			canCreateConversation: true,
 			canManageConversation: true,
 			canViewConversation: true,
+		},
+		reservationRequestPermissions: {
+			canCreateReservationRequest: true,
+			canManageReservationRequest: true,
+			canViewReservationRequest: true,
 		},
 	});
 	const roleProps = {
