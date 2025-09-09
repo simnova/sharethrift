@@ -491,6 +491,24 @@ export type ViewListingInformationGetListingQuery = {
   } | null;
 };
 
+export type HomeListingInformationCreateReservationRequestMutationVariables =
+  Exact<{
+    input: CreateReservationRequestInput;
+  }>;
+
+export type HomeListingInformationCreateReservationRequestMutation = {
+  __typename?: "Mutation";
+  createReservationRequest: {
+    __typename?: "ReservationRequest";
+    id: any;
+    state: ReservationRequestState;
+    reservationPeriodStart: string;
+    reservationPeriodEnd: string;
+    createdAt: string;
+    updatedAt: string;
+  };
+};
+
 export type ViewListingSharerInformationGetSharerQueryVariables = Exact<{
   sharerId: Scalars["ObjectID"]["input"];
 }>;
@@ -1118,6 +1136,74 @@ export const ViewListingInformationGetListingDocument = {
 } as unknown as DocumentNode<
   ViewListingInformationGetListingQuery,
   ViewListingInformationGetListingQueryVariables
+>;
+export const HomeListingInformationCreateReservationRequestDocument = {
+  kind: "Document",
+  definitions: [
+    {
+      kind: "OperationDefinition",
+      operation: "mutation",
+      name: {
+        kind: "Name",
+        value: "HomeListingInformationCreateReservationRequest",
+      },
+      variableDefinitions: [
+        {
+          kind: "VariableDefinition",
+          variable: {
+            kind: "Variable",
+            name: { kind: "Name", value: "input" },
+          },
+          type: {
+            kind: "NonNullType",
+            type: {
+              kind: "NamedType",
+              name: { kind: "Name", value: "CreateReservationRequestInput" },
+            },
+          },
+        },
+      ],
+      selectionSet: {
+        kind: "SelectionSet",
+        selections: [
+          {
+            kind: "Field",
+            name: { kind: "Name", value: "createReservationRequest" },
+            arguments: [
+              {
+                kind: "Argument",
+                name: { kind: "Name", value: "input" },
+                value: {
+                  kind: "Variable",
+                  name: { kind: "Name", value: "input" },
+                },
+              },
+            ],
+            selectionSet: {
+              kind: "SelectionSet",
+              selections: [
+                { kind: "Field", name: { kind: "Name", value: "id" } },
+                { kind: "Field", name: { kind: "Name", value: "state" } },
+                {
+                  kind: "Field",
+                  name: { kind: "Name", value: "reservationPeriodStart" },
+                },
+                {
+                  kind: "Field",
+                  name: { kind: "Name", value: "reservationPeriodEnd" },
+                },
+                { kind: "Field", name: { kind: "Name", value: "createdAt" } },
+                { kind: "Field", name: { kind: "Name", value: "updatedAt" } },
+              ],
+            },
+          },
+        ],
+      },
+    },
+  ],
+} as unknown as DocumentNode<
+  HomeListingInformationCreateReservationRequestMutation,
+  HomeListingInformationCreateReservationRequestMutationVariables
 >;
 export const ViewListingSharerInformationGetSharerDocument = {
   kind: "Document",

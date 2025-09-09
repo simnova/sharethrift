@@ -6,7 +6,7 @@ import type { ListingInformationProps, ListingStatus } from './listing-informati
 // eslint-disable-next-line import/no-absolute-path, @typescript-eslint/ban-ts-comment
 // @ts-ignore - allow raw import string
 import ListingInformationQuerySource from './listing-information.graphql?raw';
-import type { CreateReservationRequestInput } from '../../../../../../generated';
+import { HomeListingInformationCreateReservationRequestDocument, type CreateReservationRequestInput } from '../../../../../../generated';
 
 const GET_LISTING_INFORMATION = gql(ListingInformationQuerySource);
 
@@ -82,18 +82,7 @@ export default function ListingInformationContainer({
   );
 
   const [createReservationRequestMutation, { loading: mutationLoading }] = useMutation(
-    gql`
-      mutation HomeListingInformationCreateReservationRequest($input: CreateReservationRequestInput!) {
-        createReservationRequest(input: $input) {
-          id
-          state
-          reservationPeriodStart
-          reservationPeriodEnd
-          createdAt
-          updatedAt
-        }
-      }
-    `,
+    HomeListingInformationCreateReservationRequestDocument,
     {
       onCompleted: () => {
         message.success('Reservation request created successfully!');
