@@ -12,7 +12,7 @@ export interface MyListingsDashboardProps {
 export function MyListingsDashboard({ onCreateListing }: MyListingsDashboardProps) {
   // Query for the total number of requests
   const REQUESTS_COUNT_QUERY = gql`
-    query HomeMyListingsRequestsTableContainerMyListingsRequestsCount {
+    query HomeMyListingsDashboardContainerMyListingsRequestsCount {
       myListingsRequests(page: 1, pageSize: 1) {
         total
       }

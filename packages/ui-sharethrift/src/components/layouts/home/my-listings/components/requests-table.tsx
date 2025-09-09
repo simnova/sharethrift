@@ -1,7 +1,7 @@
-import { Table, Input, Checkbox, Button, Image, Pagination, Popconfirm } from 'antd';
+import { Input, Checkbox, Button, Image, Popconfirm } from 'antd';
 import { SearchOutlined, FilterOutlined } from '@ant-design/icons';
 import type { ColumnsType, TableProps } from 'antd/es/table';
-import { StatusTag } from '@sthrift/ui-sharethrift-components';
+import { StatusTag, Dashboard, type RequestStatus } from '@sthrift/ui-sharethrift-components';
 
 const { Search } = Input;
 
@@ -222,7 +222,7 @@ export function RequestsTable({
       ),
       filterIcon: (filtered) => <FilterOutlined style={{ color: filtered ? '#1890ff' : undefined }} />,
       render: (status: string) => (
-        <StatusTag status={status as any} />
+        <StatusTag status={status as RequestStatus} />
       ),
     },
     {
@@ -238,27 +238,17 @@ export function RequestsTable({
   ];
 
   return (
-    <div>
-      <Table
-        columns={columns}
-        dataSource={data}
-        rowKey="id"
-        pagination={false}
-        loading={loading}
-        onChange={onTableChange}
-        style={{ marginBottom: 16 }}
-      />
-      
-      <div style={{ display: 'flex', justifyContent: 'flex-end', marginTop: 16 }}>
-        <Pagination
-          current={currentPage}
-          pageSize={pageSize}
-          total={total}
-          onChange={onPageChange}
-          showSizeChanger={false}
-          showQuickJumper={false}
-        />
-      </div>
-    </div>
+    <Dashboard
+      data={data}
+      columns={columns}
+      loading={loading}
+      currentPage={currentPage}
+      pageSize={pageSize}
+      total={total}
+      onPageChange={onPageChange}
+      showPagination={true}
+      onChange={onTableChange}
+      tableClassName="requests-table"
+    />
   );
 }

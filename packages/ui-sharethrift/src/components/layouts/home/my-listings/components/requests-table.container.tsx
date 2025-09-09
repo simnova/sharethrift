@@ -1,37 +1,11 @@
 import { useState } from 'react';
 import { useQuery, gql } from '@apollo/client';
 import { RequestsTable } from './requests-table';
+// eslint-disable-next-line import/no-absolute-path, @typescript-eslint/ban-ts-comment
+// @ts-ignore - allow raw import string
+import RequestsTableQuerySource from './requests-table.container.graphql?raw';
 
-const GET_MY_LISTINGS_REQUESTS = gql`
-  query HomeMyListingsRequestsTableContainerMyListingsRequests(
-    $page: Int!
-    $pageSize: Int!
-    $searchText: String
-    $statusFilters: [String!]
-    $sorter: SorterInput
-  ) {
-    myListingsRequests(
-      page: $page
-      pageSize: $pageSize
-      searchText: $searchText
-      statusFilters: $statusFilters
-      sorter: $sorter
-    ) {
-      items {
-        id
-        title
-        image
-        requestedBy
-        requestedOn
-        reservationPeriod
-        status
-      }
-      total
-      page
-      pageSize
-    }
-  }
-`;
+const GET_MY_LISTINGS_REQUESTS = gql(RequestsTableQuerySource);
 
 export interface RequestsTableContainerProps {
   currentPage: number;
@@ -71,10 +45,11 @@ export function RequestsTableContainer({ currentPage, onPageChange }: RequestsTa
     onPageChange(1);
   };
 
-  const handleTableChange = (_pagination: any, _filters: any, sorter: any) => {
+  const handleTableChange = (_pagination: unknown, _filters: unknown, sorter: unknown) => {
+    const typedSorter = sorter as { field?: string; order?: 'ascend' | 'descend' };
     setSorter({
-      field: sorter.field || null,
-      order: sorter.order || null,
+      field: typedSorter.field || null,
+      order: typedSorter.order || null,
     });
     onPageChange(1);
   };

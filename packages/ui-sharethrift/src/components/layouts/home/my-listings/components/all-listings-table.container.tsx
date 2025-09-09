@@ -1,37 +1,11 @@
 import { useState } from 'react';
 import { useQuery, gql } from '@apollo/client';
 import { AllListingsTable } from './all-listings-table';
+// eslint-disable-next-line import/no-absolute-path, @typescript-eslint/ban-ts-comment
+// @ts-ignore - allow raw import string
+import AllListingsTableQuerySource from './all-listings-table.container.graphql?raw';
 
-const GET_MY_LISTINGS_ALL = gql`
-  query HomeMyListingsAllListingsTableContainerMyListingsAll(
-    $page: Int!
-    $pageSize: Int!
-    $searchText: String
-    $statusFilters: [String!]
-    $sorter: SorterInput
-  ) {
-    myListingsAll(
-      page: $page
-      pageSize: $pageSize
-      searchText: $searchText
-      statusFilters: $statusFilters
-      sorter: $sorter
-    ) {
-      items {
-        id
-        title
-        status
-        image
-        pendingRequestsCount
-        publishedAt
-        reservationPeriod
-      }
-      total
-      page
-      pageSize
-    }
-  }
-`;
+const GET_MY_LISTINGS_ALL = gql(AllListingsTableQuerySource);
 
 export interface AllListingsTableContainerProps {
   currentPage: number;
@@ -71,10 +45,11 @@ export function AllListingsTableContainer({ currentPage, onPageChange }: AllList
     onPageChange(1);
   };
 
-  const handleTableChange = (_pagination: any, _filters: any, sorter: any) => {
+  const handleTableChange = (_pagination: unknown, _filters: unknown, sorter: unknown) => {
+    const typedSorter = sorter as { field?: string; order?: 'ascend' | 'descend' };
     setSorter({
-      field: sorter.field || null,
-      order: sorter.order || null,
+      field: typedSorter.field || null,
+      order: typedSorter.order || null,
     });
     onPageChange(1);
   };
