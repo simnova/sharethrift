@@ -7,7 +7,7 @@ import {
 } from 'mongoose';
 import { type Role, type RoleModelType, roleOptions } from './role.model.ts';
 
-export interface PersonalUserListingPermissions
+export interface PersonalUserRoleListingPermissions
 	extends MongooseSeedwork.NestedPath {
 	id?: ObjectId;
 	canCreateItemListing: boolean;
@@ -18,7 +18,7 @@ export interface PersonalUserListingPermissions
 	canUnpublishItemListing: boolean;
 }
 
-export interface PersonalUserConversationPermissions
+export interface PersonalUserRoleConversationPermissions
 	extends MongooseSeedwork.NestedPath {
 	id?: ObjectId;
 	canCreateConversation: boolean;
@@ -26,7 +26,7 @@ export interface PersonalUserConversationPermissions
 	canViewConversation: boolean;
 }
 
-export interface PersonalUserReservationRequestPermissions
+export interface PersonalUserRoleReservationRequestPermissions
 	extends MongooseSeedwork.NestedPath {
 	id?: ObjectId;
 	canCreateReservationRequest: boolean;
@@ -34,14 +34,16 @@ export interface PersonalUserReservationRequestPermissions
 	canViewReservationRequest: boolean;
 }
 
-export interface PersonalUserPermissions extends MongooseSeedwork.NestedPath {
+export interface PersonalUserRolePermissions
+	extends MongooseSeedwork.NestedPath {
 	id?: ObjectId;
-	listing: PersonalUserListingPermissions;
-	conversation: PersonalUserConversationPermissions;
+	listingPermissions: PersonalUserRoleListingPermissions;
+	conversationPermissions: PersonalUserRoleConversationPermissions;
+	reservationRequestPermissions: PersonalUserRoleReservationRequestPermissions;
 }
 
 export interface PersonalUserRole extends Role {
-	permissions: PersonalUserPermissions;
+	permissions: PersonalUserRolePermissions;
 	roleName: string;
 	roleType: string;
 	isDefault: boolean;
@@ -69,7 +71,7 @@ export const PersonalUserRoleSchema = new Schema<
 					required: true,
 					default: false,
 				},
-			} as SchemaDefinition<PersonalUserListingPermissions>,
+			} as SchemaDefinition<PersonalUserRoleListingPermissions>,
 			conversation: {
 				canCreateConversation: {
 					type: Boolean,
@@ -82,7 +84,7 @@ export const PersonalUserRoleSchema = new Schema<
 					default: false,
 				},
 				canViewConversation: { type: Boolean, required: true, default: true },
-			} as SchemaDefinition<PersonalUserConversationPermissions>,
+			} as SchemaDefinition<PersonalUserRoleConversationPermissions>,
 			reservationRequest: {
 				canCreateReservationRequest: {
 					type: Boolean,
@@ -99,8 +101,8 @@ export const PersonalUserRoleSchema = new Schema<
 					required: true,
 					default: true,
 				},
-			} as SchemaDefinition<PersonalUserReservationRequestPermissions>,
-		} as SchemaDefinition<PersonalUserPermissions>,
+			} as SchemaDefinition<PersonalUserRoleReservationRequestPermissions>,
+		} as SchemaDefinition<PersonalUserRolePermissions>,
 		schemaVersion: { type: String, default: '1.0.0' },
 		roleName: { type: String, required: true, maxlength: 50 },
 		isDefault: { type: Boolean, required: true, default: false },

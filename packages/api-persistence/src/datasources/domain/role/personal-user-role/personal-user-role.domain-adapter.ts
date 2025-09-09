@@ -3,7 +3,7 @@ import type { Models } from '@sthrift/api-data-sources-mongoose-models';
 import { Domain } from '@sthrift/api-domain';
 
 export class PersonalUserRoleConverter extends MongooseSeedwork.MongoTypeConverter<
-	PersonalUserRole,
+	Models.Role.PersonalUserRole,
 	PersonalUserRoleDomainAdapter,
 	Domain.Passport,
 	Domain.Contexts.Role.PersonalUserRole.PersonalUserRole<PersonalUserRoleDomainAdapter>
@@ -36,55 +36,50 @@ export class PersonalUserRoleDomainAdapter
 
 	get permissions(): Domain.Contexts.Role.PersonalUserRole.PersonalUserRolePermissionsProps {
 		if (!this.doc.permissions) {
-			this.doc.set('permissions', {} as Models.Role.PersonalUserPermissions);
+			this.doc.set(
+				'permissions',
+				{} as Models.Role.PersonalUserRolePermissions,
+			);
 		}
-		return new PersonalUserRolePermissionsDomainAdapter(
-			this.doc.permissions as Models.Role.PersonalUserPermissions,
-		);
+		return new PersonalUserRolePermissionsDomainAdapter(this.doc.permissions);
 	}
 
 	get roleType(): string {
 		return this.doc.roleType;
 	}
-
-	get createdAt(): Date {
-		return this.doc.createdAt;
-	}
-
-	get updatedAt(): Date {
-		return this.doc.updatedAt;
-	}
-
-	get schemaVersion(): string {
-		return this.doc.schemaVersion;
-	}
 }
 
-// Permissions adapter tree
 export class PersonalUserRolePermissionsDomainAdapter
 	implements
 		Domain.Contexts.Role.PersonalUserRole.PersonalUserRolePermissionsProps
 {
-	public readonly props: Domain.Contexts.Role.PersonalUserRole.PersonalUserRolePermissions;
-	constructor(
-		props: Domain.Contexts.Role.PersonalUserRole.PersonalUserRolePermissions,
-	) {
+	public readonly props: Models.Role.PersonalUserRolePermissions;
+	constructor(props: Models.Role.PersonalUserRolePermissions) {
 		this.props = props;
 	}
 
 	get reservationRequestPermissions(): Domain.Contexts.Role.PersonalUserRole.PersonalUserRoleReservationRequestPermissionsProps {
+		if (!this.props.reservationRequestPermissions) {
+			this.props.set('reservationRequestPermissions', {});
+		}
 		return new PersonalUserRoleReservationRequestPermissionsDomainAdapter(
 			this.props.reservationRequestPermissions,
 		);
 	}
 
 	get listingPermissions(): Domain.Contexts.Role.PersonalUserRole.PersonalUserRoleListingPermissionsProps {
+		if (!this.props.listingPermissions) {
+			this.props.set('listingPermissions', {});
+		}
 		return new PersonalUserRoleListingPermissionsDomainAdapter(
 			this.props.listingPermissions,
 		);
 	}
 
 	get conversationPermissions(): Domain.Contexts.Role.PersonalUserRole.PersonalUserRoleConversationPermissionsProps {
+		if (!this.props.conversationPermissions) {
+			this.props.set('conversationPermissions', {});
+		}
 		return new PersonalUserRoleConversationPermissionsDomainAdapter(
 			this.props.conversationPermissions,
 		);
@@ -92,26 +87,32 @@ export class PersonalUserRolePermissionsDomainAdapter
 }
 export class PersonalUserRoleReservationRequestPermissionsDomainAdapter
 	implements
-		Domain.Contexts.Role.PersonalUserRole.PersonalUserRoleResversationRequestPermissionsProps
+		Domain.Contexts.Role.PersonalUserRole.PersonalUserRoleReservationRequestPermissionsProps
 {
-	public readonly props: Models.Role.PersonalUserReservationRequestPermissions;
-	constructor(props: Models.Role.PersonalUserReservationRequestPermissions) {
+	public readonly props: Models.Role.PersonalUserRoleReservationRequestPermissions;
+	constructor(
+		props: Models.Role.PersonalUserRoleReservationRequestPermissions,
+	) {
 		this.props = props;
 	}
-	get canCloseRequest(): boolean {
-		return false;
+
+	get canCreateReservationRequest(): boolean {
+		return this.props.canCreateReservationRequest;
 	}
-	get canCancelRequest(): boolean {
-		return false;
+	set canCreateReservationRequest(value: boolean) {
+		this.props.canCreateReservationRequest = value;
 	}
-	get canAcceptRequest(): boolean {
-		return false;
+	get canManageReservationRequest(): boolean {
+		return this.props.canManageReservationRequest;
 	}
-	get canRejectRequest(): boolean {
-		return false;
+	set canManageReservationRequest(value: boolean) {
+		this.props.canManageReservationRequest = value;
 	}
-	get canUpdateRequest(): boolean {
-		return false;
+	get canViewReservationRequest(): boolean {
+		return this.props.canViewReservationRequest;
+	}
+	set canViewReservationRequest(value: boolean) {
+		this.props.canViewReservationRequest = value;
 	}
 }
 
@@ -119,8 +120,8 @@ export class PersonalUserRoleListingPermissionsDomainAdapter
 	implements
 		Domain.Contexts.Role.PersonalUserRole.PersonalUserRoleListingPermissionsProps
 {
-	public readonly props: Models.Role.PersonalUserListingPermissions;
-	constructor(props: Models.Role.PersonalUserListingPermissions) {
+	public readonly props: Models.Role.PersonalUserRoleListingPermissions;
+	constructor(props: Models.Role.PersonalUserRoleListingPermissions) {
 		this.props = props;
 	}
 	get canCreateItemListing(): boolean {
@@ -165,8 +166,8 @@ export class PersonalUserRoleConversationPermissionsDomainAdapter
 	implements
 		Domain.Contexts.Role.PersonalUserRole.PersonalUserRoleConversationPermissionsProps
 {
-	public readonly props: Models.Role.PersonalUserConversationPermissions;
-	constructor(props: Models.Role.PersonalUserConversationPermissions) {
+	public readonly props: Models.Role.PersonalUserRoleConversationPermissions;
+	constructor(props: Models.Role.PersonalUserRoleConversationPermissions) {
 		this.props = props;
 	}
 	get canCreateConversation(): boolean {

@@ -7,7 +7,6 @@ export interface PersonalUserRoleConversationPermissionsProps
 	canManageConversation: boolean;
 	canViewConversation: boolean;
 }
-
 export interface PersonalUserRoleConversationPermissionsEntityReference
 	extends Readonly<PersonalUserRoleConversationPermissionsProps> {}
 

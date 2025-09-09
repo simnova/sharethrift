@@ -1,13 +1,14 @@
 import { DomainSeedwork } from '@cellix/domain-seedwork';
 import type { Passport } from '../../passport.ts';
-import type { PersonalUserRolePermissions } from './personal-user-role-permissions.ts';
+import { PersonalUserRolePermissions } from './personal-user-role-permissions.ts';
 import * as ValueObjects from './personal-user-role.value-objects.ts';
+import type { PersonalUserRolePermissionsProps } from './personal-user-role-permissions.ts';
 
 export interface PersonalUserRoleProps
 	extends DomainSeedwork.DomainEntityProps {
 	roleName: string;
 	isDefault: boolean;
-	permissions: PersonalUserRolePermissions;
+	permissions: PersonalUserRolePermissionsProps;
 	readonly roleType: string;
 	readonly createdAt: Date;
 	readonly updatedAt: Date;
@@ -19,18 +20,18 @@ export interface PersonalUserRoleEntityReference
 	get permissions(): PersonalUserRolePermissions;
 }
 
-export class PersonalUserRole<P extends PersonalUserRoleProps>
-	extends DomainSeedwork.AggregateRoot<P, Passport>
+export class PersonalUserRole<props extends PersonalUserRoleProps>
+	extends DomainSeedwork.AggregateRoot<props, Passport>
 	implements PersonalUserRoleEntityReference
 {
 	protected isNew: boolean = false;
 
-	public static getNewInstance<P extends PersonalUserRoleProps>(
-		newProps: P,
+	public static getNewInstance<props extends PersonalUserRoleProps>(
+		newProps: props,
 		passport: Passport,
 		roleName: string,
 		isDefault: boolean,
-	): PersonalUserRole<P> {
+	): PersonalUserRole<props> {
 		const role = new PersonalUserRole(newProps, passport);
 		role.isNew = true;
 		role.roleName = roleName;
@@ -54,7 +55,7 @@ export class PersonalUserRole<P extends PersonalUserRoleProps>
 	}
 
 	get permissions() {
-		return this.props.permissions;
+		return new PersonalUserRolePermissions(this.props.permissions);
 	}
 
 	get roleType() {

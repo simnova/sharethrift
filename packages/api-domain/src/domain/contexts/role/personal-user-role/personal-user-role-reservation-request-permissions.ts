@@ -1,54 +1,35 @@
 import { DomainSeedwork } from '@cellix/domain-seedwork';
-// import type { CommunityVisa } from '../../community.visa'; // Uncomment if you have a visa concept
 
-export interface PersonalUserRoleReversationRequestPermissionsProps
+export interface PersonalUserRoleReservationRequestPermissionsProps
 	extends DomainSeedwork.ValueObjectProps {
-	canCloseRequest: boolean;
-	canCancelRequest: boolean;
-	canAcceptRequest: boolean;
-	canRejectRequest: boolean;
-	canUpdateRequest: boolean;
+	canCreateReservationRequest: boolean;
+	canManageReservationRequest: boolean;
+	canViewReservationRequest: boolean;
 }
 
-export interface PersonalUserRoleReversationRequestPermissionsEntityReference
-	extends Readonly<PersonalUserRoleReversationRequestPermissionsProps> {}
+export interface PersonalUserRoleReservationRequestPermissionsEntityReference
+	extends Readonly<PersonalUserRoleReservationRequestPermissionsProps> {}
 
-export class PersonalUserRoleReversationRequestPermissions
-	extends DomainSeedwork.ValueObject<PersonalUserRoleReversationRequestPermissionsProps>
-	implements PersonalUserRoleReversationRequestPermissionsEntityReference
+export class PersonalUserRoleReservationRequestPermissions
+	extends DomainSeedwork.ValueObject<PersonalUserRoleReservationRequestPermissionsProps>
+	implements PersonalUserRoleReservationRequestPermissionsEntityReference
 {
-	get canCloseRequest(): boolean {
-		return this.props.canCloseRequest;
+	get canCreateReservationRequest(): boolean {
+		return this.props.canCreateReservationRequest;
 	}
-	set canCloseRequest(value: boolean) {
-		this.props.canCloseRequest = value;
-	}
-
-	get canCancelRequest(): boolean {
-		return this.props.canCancelRequest;
-	}
-	set canCancelRequest(value: boolean) {
-		this.props.canCancelRequest = value;
+	get canManageReservationRequest(): boolean {
+		return this.props.canManageReservationRequest;
 	}
 
-	get canAcceptRequest(): boolean {
-		return this.props.canAcceptRequest;
-	}
-	set canAcceptRequest(value: boolean) {
-		this.props.canAcceptRequest = value;
+	set canManageReservationRequest(value: boolean) {
+		this.props.canManageReservationRequest = value;
 	}
 
-	get canRejectRequest(): boolean {
-		return this.props.canRejectRequest;
-	}
-	set canRejectRequest(value: boolean) {
-		this.props.canRejectRequest = value;
+	set canCreateReservationRequest(value: boolean) {
+		this.props.canCreateReservationRequest = value;
 	}
 
-	get canUpdateRequest(): boolean {
-		return this.props.canUpdateRequest;
-	}
-	set canUpdateRequest(value: boolean) {
-		this.props.canUpdateRequest = value;
+	set canViewReservationRequest(value: boolean) {
+		this.props.canViewReservationRequest = value;
 	}
 }
