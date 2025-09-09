@@ -19,4 +19,23 @@ export interface ReservationRequestRepository<
   getById(id: string): Promise<ReservationRequest<props> | undefined>;
   getByReserverId(reserverId: string): Promise<ReservationRequest<props>[]>;
   getByListingId(listingId: string): Promise<ReservationRequest<props>[]>;
+  
+  /**
+   * Get paginated reservation requests by listing owner ID with filtering and sorting
+   */
+  getByListingOwnerIDWithPagination(
+    ownerId: string,
+    options: {
+      page: number;
+      pageSize: number;
+      searchText?: string;
+      statusFilters?: string[];
+      sorter?: { field: string; order: 'ascend' | 'descend' };
+    }
+  ): Promise<{
+    items: ReservationRequest<props>[];
+    total: number;
+    page: number;
+    pageSize: number;
+  }>;
 }

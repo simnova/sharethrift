@@ -75,5 +75,4 @@ extend type Query {
   itemListings: [ItemListing!]!
   itemListing(id: ObjectID!): ItemListing
   myListingsAll(page: Int!, pageSize: Int!, searchText: String, statusFilters: [String!], sorter: SorterInput): ListingAllPage!
-  myListingsRequests(page: Int!, pageSize: Int!): ListingRequestPage!
 }

@@ -2,21 +2,31 @@ import { Table, Input, Checkbox, Button, Image, Pagination, Popconfirm } from 'a
 import { SearchOutlined, FilterOutlined } from '@ant-design/icons';
 import type { ColumnsType, TableProps } from 'antd/es/table';
 import { StatusTag } from '@sthrift/ui-sharethrift-components';
-import type { MyListing } from '../mock-data';
 
 const { Search } = Input;
 
+interface MyListingData {
+  id: string;
+  title: string;
+  image: string;
+  publishedAt: string;
+  reservationPeriod: string;
+  status: string;
+  pendingRequestsCount: number;
+}
+
 export interface AllListingsTableProps {
-  data: MyListing[];
+  data: MyListingData[];
   searchText: string;
   statusFilters: string[];
   sorter: { field: string | null; order: 'ascend' | 'descend' | null };
   currentPage: number;
   pageSize: number;
   total: number;
+  loading?: boolean;
   onSearch: (value: string) => void;
   onStatusFilter: (checkedValues: string[]) => void;
-  onTableChange: TableProps<MyListing>['onChange'];
+  onTableChange: TableProps<MyListingData>['onChange'];
   onPageChange: (page: number) => void;
   onAction: (action: string, listingId: string) => void;
   onViewAllRequests: (listingId: string) => void;
@@ -39,6 +49,7 @@ export function AllListingsTable({
   currentPage,
   pageSize,
   total,
+  loading = false,
   onSearch,
   onStatusFilter,
   onTableChange,
@@ -47,7 +58,7 @@ export function AllListingsTable({
   onViewAllRequests,
 }: AllListingsTableProps) {
   
-  const getActionButtons = (record: MyListing) => {
+  const getActionButtons = (record: MyListingData) => {
     const buttons = [];
     
     // Conditional actions based on status
@@ -113,7 +124,7 @@ export function AllListingsTable({
     return buttons;
   };
 
-  const columns: ColumnsType<MyListing> = [
+  const columns: ColumnsType<MyListingData> = [
     {
       title: 'Listing',
       dataIndex: 'title',
@@ -138,7 +149,7 @@ export function AllListingsTable({
       render: (title, record) => (
         <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
           <Image
-            src={record.images}
+            src={record.image}
             alt={title}
             width={60}
             height={60}
@@ -159,8 +170,9 @@ export function AllListingsTable({
     },
     {
       title: 'Reservation Period',
+      dataIndex: 'reservationPeriod',
       key: 'reservationPeriod',
-      sorter: (a, b) => a.sharingPeriodStart.getTime() - b.sharingPeriodStart.getTime(),
+      sorter: true,
       sortOrder: sorter.field === 'reservationPeriod' ? sorter.order : null,
       render: (period?: string) => period || 'N/A',
     },
@@ -236,10 +248,10 @@ export function AllListingsTable({
     },
     {
       title: 'Pending Requests',
-      dataIndex: 'pendingRequests',
-      key: 'pendingRequests',
+      dataIndex: 'pendingRequestsCount',
+      key: 'pendingRequestsCount',
       sorter: true,
-      sortOrder: sorter.field === 'pendingRequests' ? sorter.order : null,
+      sortOrder: sorter.field === 'pendingRequestsCount' ? sorter.order : null,
       render: (count: number, record) => (
         <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', minHeight: 60 }}>
           <div
@@ -282,6 +294,7 @@ export function AllListingsTable({
         dataSource={data}
         rowKey="id"
         pagination={false}
+        loading={loading}
         onChange={onTableChange}
         style={{ marginBottom: 16, boxShadow: '0 0 0 1px var(--color-foreground-2)' }}
       />

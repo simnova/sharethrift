@@ -1,16 +1,9 @@
 import { useState } from 'react';
 import { useQuery, gql } from '@apollo/client';
-import { Dashboard } from '@sthrift/ui-sharethrift-components';
-import { Input, Checkbox, Button, Image, Popconfirm } from 'antd';
-import { SearchOutlined, FilterOutlined } from '@ant-design/icons';
-import type { ColumnsType } from 'antd/es/table';
-import { StatusTag } from '@sthrift/ui-sharethrift-components';
-import type { MyListing } from '../mock-data';
+import { AllListingsTable } from './all-listings-table';
 
-const { Search } = Input;
-
-const GET_MY_LISTINGS = gql`
-  query MyListingsAll(
+const GET_MY_LISTINGS_ALL = gql`
+  query HomeMyListingsAllListingsTableContainerMyListingsAll(
     $page: Int!
     $pageSize: Int!
     $searchText: String
@@ -27,7 +20,7 @@ const GET_MY_LISTINGS = gql`
       items {
         id
         title
-        status       
+        status
         image
         pendingRequestsCount
         publishedAt
@@ -40,16 +33,12 @@ const GET_MY_LISTINGS = gql`
   }
 `;
 
-const STATUS_OPTIONS = [
-  { label: 'Active', value: 'Active' },
-  { label: 'Paused', value: 'Paused' },
-  { label: 'Reserved', value: 'Reserved' },
-  { label: 'Expired', value: 'Expired' },
-  { label: 'Draft', value: 'Draft' },
-  { label: 'Blocked', value: 'Blocked' },
-];
+export interface AllListingsTableContainerProps {
+  currentPage: number;
+  onPageChange: (page: number) => void;
+}
 
-export function AllListingsTableContainer({ currentPage, onPageChange }: { currentPage: number, onPageChange: (page: number) => void }) {
+export function AllListingsTableContainer({ currentPage, onPageChange }: AllListingsTableContainerProps) {
   const [searchText, setSearchText] = useState('');
   const [statusFilters, setStatusFilters] = useState<string[]>([]);
   const [sorter, setSorter] = useState<{
@@ -58,7 +47,7 @@ export function AllListingsTableContainer({ currentPage, onPageChange }: { curre
   }>({ field: null, order: null });
   const pageSize = 6;
 
-  const { data, loading, error } = useQuery(GET_MY_LISTINGS, {
+  const { data, loading, error } = useQuery(GET_MY_LISTINGS_ALL, {
     variables: {
       page: currentPage,
       pageSize: pageSize,
@@ -100,249 +89,24 @@ export function AllListingsTableContainer({ currentPage, onPageChange }: { curre
     console.log(`View all requests for listing: ${listingId}`);
   };
 
-  const getActionButtons = (record: MyListing) => {
-    const buttons = [];
-    
-    // Conditional actions based on status
-    if (record.status === 'Active' || record.status === 'Reserved') {
-      buttons.push(
-        <Button key="pause" type="link" size="small" onClick={() => handleAction('pause', record.id)}>
-          Pause
-        </Button>
-      );
-    }
-    
-    if (record.status === 'Paused' || record.status === 'Expired') {
-      buttons.push(
-        <Button key="reinstate" type="link" size="small" onClick={() => handleAction('reinstate', record.id)}>
-          Reinstate
-        </Button>
-      );
-    }
-    
-    if (record.status === 'Blocked') {
-      buttons.push(
-        <Popconfirm
-          key="appeal"
-          title="Appeal this listing?"
-          description="Are you sure you want to appeal the block on this listing?"
-          onConfirm={() => handleAction('appeal', record.id)}
-          okText="Yes"
-          cancelText="No"
-        >
-          <Button type="link" size="small">Appeal</Button>
-        </Popconfirm>
-      );
-    }
-    
-    if (record.status === 'Draft') {
-      buttons.push(
-        <Button key="publish" type="link" size="small" onClick={() => handleAction('publish', record.id)}>
-          Publish
-        </Button>
-      );
-    }
-    
-    // Always available actions
-    buttons.push(
-      <Button key="edit" type="link" size="small" onClick={() => handleAction('edit', record.id)}>
-        Edit
-      </Button>
-    );
-    
-    buttons.push(
-      <Popconfirm
-        key="delete"
-        title="Delete this listing?"
-        description="Are you sure you want to delete this listing? This action cannot be undone."
-        onConfirm={() => handleAction('delete', record.id)}
-        okText="Yes"
-        cancelText="No"
-      >
-        <Button type="link" size="small" danger>Delete</Button>
-      </Popconfirm>
-    );
-    
-    return buttons;
-  };
-
-  const columns: ColumnsType<MyListing> = [
-    {
-      title: 'Listing',
-      dataIndex: 'title',
-      key: 'title',
-      width: 300,
-      filterDropdown: ({ setSelectedKeys, confirm }) => (
-        <div style={{ padding: 8 }}>
-          <Search
-            placeholder="Search listings"
-            value={searchText}
-            onChange={(e) => {
-              setSelectedKeys([e.target.value]);
-              handleSearch(e.target.value);
-            }}
-            onSearch={() => confirm()}
-            style={{ width: 200 }}
-            allowClear
-          />
-        </div>
-      ),
-      filterIcon: (filtered) => <SearchOutlined style={{ color: filtered ? '#1890ff' : undefined }} />,
-      render: (title, record) => (
-        <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
-          <Image
-            src={record.images}
-            alt={title}
-            width={60}
-            height={60}
-            style={{ objectFit: 'cover', borderRadius: 4 }}
-            preview={false}
-          />
-          <span style={{ fontWeight: 500 }}>{title}</span>
-        </div>
-      ),
-    },
-    {
-      title: 'Published At',
-      dataIndex: 'publishedAt',
-      key: 'publishedAt',
-      sorter: true,
-      sortOrder: sorter.field === 'publishedAt' ? sorter.order : null,
-      render: (date?: string) => (date ? new Date(date).toLocaleDateString() : 'N/A'),
-    },
-    {
-      title: 'Reservation Period',
-      key: 'reservationPeriod',
-      sorter: (a, b) => a.sharingPeriodStart.getTime() - b.sharingPeriodStart.getTime(),
-      sortOrder: sorter.field === 'reservationPeriod' ? sorter.order : null,
-      render: (period?: string) => period || 'N/A',
-    },
-    {
-      title: 'Status',
-      dataIndex: 'status',
-      key: 'status',
-      filterDropdown: ({ confirm }) => (
-        <div style={{ padding: 16, width: 200 }}>
-          <div style={{ marginBottom: 8, fontWeight: 500 }}>Filter by Status</div>
-          <Checkbox.Group
-            options={STATUS_OPTIONS}
-            value={statusFilters}
-            onChange={(checkedValues) => {
-              handleStatusFilter(checkedValues as string[]);
-              confirm();
-            }}
-            style={{ display: 'flex', flexDirection: 'column', gap: 8 }}
-          />
-        </div>
-      ),
-      filterIcon: (filtered) => <FilterOutlined style={{ color: filtered ? '#1890ff' : undefined }} />,
-      render: (status: string) => (
-        <StatusTag status={status as any} />
-      ),
-    },
-    {
-      title: 'Actions',
-      key: 'actions',
-      width: 200,
-      render: (_, record) => {
-        const actions = getActionButtons(record);
-        // Ensure at least 3 slots for alignment (first, middle, last)
-        const minActions = 3;
-        const paddedActions = [
-          ...actions,
-          ...Array(Math.max(0, minActions - actions.length)).fill(null)
-        ];
-        return (
-          <div
-            style={{
-              display: 'flex',
-              flexDirection: 'row',
-              justifyContent: 'space-between',
-              alignItems: 'center',
-              width: '100%',
-              minWidth: 220,
-              gap: 0,
-            }}
-          >
-            {paddedActions.map((btn, idx) => (
-              <div
-                key={btn?.key || idx}
-                style={{
-                  flex: 1,
-                  display: 'flex',
-                  justifyContent:
-                    idx === 0
-                      ? 'flex-start'
-                      : idx === paddedActions.length - 1
-                      ? 'flex-end'
-                      : 'center',
-                  minWidth: 60,
-                  maxWidth: 100,
-                }}
-              >
-                {btn}
-              </div>
-            ))}
-          </div>
-        );
-      },
-    },
-    {
-      title: 'Pending Requests',
-      dataIndex: 'pendingRequests',
-      key: 'pendingRequests',
-      sorter: true,
-      sortOrder: sorter.field === 'pendingRequests' ? sorter.order : null,
-      render: (count: number, record) => (
-        <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', minHeight: 60 }}>
-          <div
-            style={{
-              background: count > 0 ? '#ff4d4f' : '#f5f5f5',
-              color: count > 0 ? 'white' : '#bfbfbf',
-              borderRadius: 12,
-              width: 32,
-              height: 24,
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              fontWeight: 500,
-              fontSize: 15,
-              marginBottom: count > 0 ? 4 : 0,
-              transition: 'background 0.2s, color 0.2s',
-            }}
-          >
-            {count}
-          </div>
-          {count > 0 && (
-            <Button
-              type="link"
-              size="small"
-              style={{ padding: 0, height: 'auto', marginTop: 0 }}
-              onClick={() => handleViewAllRequests(record.id)}
-            >
-              <span style={{ color: '#2d4156', fontWeight: 500, fontSize: 13 }}>View all</span>
-            </Button>
-          )}
-        </div>
-      ),
-    },
-  ];
-
   if (error) return <p>Error: {error.message}</p>;
 
   return (
-    <Dashboard
+    <AllListingsTable
       data={listings}
-      columns={columns}
-      loading={loading}
+      searchText={searchText}
+      statusFilters={statusFilters}
+      sorter={sorter}
       currentPage={currentPage}
       pageSize={pageSize}
       total={total}
+      onSearch={handleSearch}
+      onStatusFilter={handleStatusFilter}
+      onTableChange={handleTableChange}
       onPageChange={onPageChange}
-      showPagination={true}
-      onChange={handleTableChange}
-      tableClassName="my-listings-table"
-      emptyText="No listings found"
+      onAction={handleAction}
+      onViewAllRequests={handleViewAllRequests}
+      loading={loading}
     />
   );
 }

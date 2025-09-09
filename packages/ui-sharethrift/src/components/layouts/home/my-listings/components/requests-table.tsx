@@ -2,21 +2,31 @@ import { Table, Input, Checkbox, Button, Image, Pagination, Popconfirm } from 'a
 import { SearchOutlined, FilterOutlined } from '@ant-design/icons';
 import type { ColumnsType, TableProps } from 'antd/es/table';
 import { StatusTag } from '@sthrift/ui-sharethrift-components';
-import type { ListingRequest } from '../mock-data';
 
 const { Search } = Input;
 
+interface ListingRequestData {
+  id: string;
+  title: string;
+  image: string;
+  requestedBy: string;
+  requestedOn: string;
+  reservationPeriod: string;
+  status: string;
+}
+
 export interface RequestsTableProps {
-  data: ListingRequest[];
+  data: ListingRequestData[];
   searchText: string;
   statusFilters: string[];
   sorter: { field: string | null; order: 'ascend' | 'descend' | null };
   currentPage: number;
   pageSize: number;
   total: number;
+  loading?: boolean;
   onSearch: (value: string) => void;
   onStatusFilter: (checkedValues: string[]) => void;
-  onTableChange: TableProps<ListingRequest>['onChange'];
+  onTableChange: TableProps<ListingRequestData>['onChange'];
   onPageChange: (page: number) => void;
   onAction: (action: string, requestId: string) => void;
 }
@@ -37,6 +47,7 @@ export function RequestsTable({
   currentPage,
   pageSize,
   total,
+  loading = false,
   onSearch,
   onStatusFilter,
   onTableChange,
@@ -44,7 +55,7 @@ export function RequestsTable({
   onAction,
 }: RequestsTableProps) {
   
-  const getActionButtons = (record: ListingRequest) => {
+  const getActionButtons = (record: ListingRequestData) => {
     const buttons = [];
     
     // Conditional actions based on status
@@ -54,7 +65,7 @@ export function RequestsTable({
           key="delete"
           title="Delete this request?"
           description="Are you sure you want to delete this request? This action cannot be undone."
-          onConfirm={() => onAction('delete', record._id)}
+          onConfirm={() => onAction('delete', record.id)}
           okText="Yes"
           cancelText="No"
         >
@@ -65,7 +76,7 @@ export function RequestsTable({
     
     if (record.status === 'Closed' || record.status === 'Accepted') {
       buttons.push(
-        <Button key="message" type="link" size="small" onClick={() => onAction('message', record._id)}>
+        <Button key="message" type="link" size="small" onClick={() => onAction('message', record.id)}>
           Message
         </Button>
       );
@@ -77,7 +88,7 @@ export function RequestsTable({
           key="close"
           title="Close this request?"
           description="Are you sure you want to close this request?"
-          onConfirm={() => onAction('close', record._id)}
+          onConfirm={() => onAction('close', record.id)}
           okText="Yes"
           cancelText="No"
         >
@@ -88,12 +99,12 @@ export function RequestsTable({
     
     if (record.status === 'Pending') {
       buttons.push(
-        <Button key="accept" type="link" size="small" onClick={() => onAction('accept', record._id)}>
+        <Button key="accept" type="link" size="small" onClick={() => onAction('accept', record.id)}>
           Accept
         </Button>
       );
       buttons.push(
-        <Button key="reject" type="link" size="small" onClick={() => onAction('reject', record._id)}>
+        <Button key="reject" type="link" size="small" onClick={() => onAction('reject', record.id)}>
           Reject
         </Button>
       );
@@ -102,7 +113,7 @@ export function RequestsTable({
     return buttons;
   };
 
-  const columns: ColumnsType<ListingRequest> = [
+  const columns: ColumnsType<ListingRequestData> = [
     {
       title: 'Listing',
       key: 'listing',
@@ -126,14 +137,14 @@ export function RequestsTable({
       render: (_, record) => (
         <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
           <Image
-            src={record.listing.images[0]}
-            alt={record.listing.title}
+            src={record.image}
+            alt={record.title}
             width={60}
             height={60}
             style={{ objectFit: 'cover', borderRadius: 4 }}
             preview={false}
           />
-          <span style={{ fontWeight: 500 }}>{record.listing.title}</span>
+          <span style={{ fontWeight: 500 }}>{record.title}</span>
         </div>
       ),
     },
@@ -153,18 +164,15 @@ export function RequestsTable({
       key: 'requestedOn',
       sorter: true,
       sortOrder: sorter.field === 'requestedOn' ? sorter.order : null,
-      render: (date: Date) => date.toISOString().slice(0, 10),
+      render: (date: string) => new Date(date).toISOString().slice(0, 10),
     },
     {
       title: 'Reservation Period',
+      dataIndex: 'reservationPeriod',
       key: 'reservationPeriod',
-      sorter: (a, b) => a.reservationPeriodStart.getTime() - b.reservationPeriodStart.getTime(),
-      sortOrder: sorter.field === 'reservationPeriodStart' ? sorter.order : null,
-      render: (_, record) => (
-        <span>
-          {record.reservationPeriodStart.toISOString().slice(0, 10)} - {record.reservationPeriodEnd.toISOString().slice(0, 10)}
-        </span>
-      ),
+      sorter: true,
+      sortOrder: sorter.field === 'reservationPeriod' ? sorter.order : null,
+      render: (period: string) => period,
     },
     {
       title: 'Status',
@@ -206,8 +214,9 @@ export function RequestsTable({
       <Table
         columns={columns}
         dataSource={data}
-        rowKey="_id"
+        rowKey="id"
         pagination={false}
+        loading={loading}
         onChange={onTableChange}
         style={{ marginBottom: 16 }}
       />
