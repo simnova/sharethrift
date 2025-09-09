@@ -89,13 +89,20 @@ export function ViewListing({
         </Button>
         </Col>
         <Col span={24} style={{ marginBottom: 0, paddingBottom: 0 }}>
-          {/* Sharer Info at top */}
-          <SharerInformationContainer
-            sharerId={sharerId}
-            listingId={listing._id}
-            className="sharer-info-responsive"
-            sharedTimeAgo={sharedTimeAgo}
-          />
+          {/* Sharer Info at top, clickable to profile */}
+          <a
+            href={`/profile/${sharerId}`}
+            style={{ textDecoration: 'none', color: 'inherit', cursor: 'pointer', display: 'block' }}
+            aria-label="View sharer profile"
+          >
+            <SharerInformationContainer
+              sharerId={sharerId}
+              listingId={listing._id}
+              isOwner={listing.sharer === (typeof window !== 'undefined' ? window.localStorage.getItem('userId') : undefined)}
+              className="sharer-info-responsive"
+              sharedTimeAgo={sharedTimeAgo}
+            />
+          </a>
         </Col>
         <Col span={24} style={{ marginTop: 0, paddingTop: 0 }}>
           {/* Main content: 2 columns on desktop, stacked on mobile */}

@@ -83,7 +83,7 @@ export default function HomeTabsLayout() {
   
   return (
     <div style={{ minHeight: '100vh', width: '100vw', overflowX: 'hidden', display: 'flex', flexDirection: 'column' }}>
-      <Header isAuthenticated={auth.isAuthenticated} onLogin={handleOnLogin} onSignUp={handleOnSignUp} onLogout={handleLogOut}/>
+      <Header isAuthenticated={auth.isAuthenticated} onLogin={handleOnLogin} onSignUp={handleOnSignUp} />
       <div style={{ display: 'flex', flexDirection: 'row', flex: 1, height: '100vh', paddingTop: 64 }}>
         <Navigation isAuthenticated={auth.isAuthenticated} onNavigate={handleNavigate} onLogout={handleLogOut} selectedKey={getSelectedKey()} />
         <main style={{ marginLeft: mainMargin, width: '100%' }}>

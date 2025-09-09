@@ -40,3 +40,66 @@
   margin: 0 !important;
   border: 0 !important;
 }
+
+.ant-divider {
+    margin: 0 !important;
+    padding-right: 24px !important;
+    padding-left: 24px !important;
+    width: 100%;
+}
+
+.ant-divider-horizontal.ant-divider-with-text-start::before,
+.ant-divider-horizontal.ant-divider-with-text-start::after {
+    width: 100%;
+    border-block-start: 2px solid;
+    border-block-start-color: var(--color-background-2);
+}
+
+/* Mobile Account Settings Button */
+.profile-settings-mobile {
+  display: none;
+}
+.profile-settings-desktop {
+  display: flex;
+}
+
+@media (max-width: 768px) {
+  .profile-settings-mobile {
+    display: flex !important;
+    justify-content: flex-end;
+    margin-bottom: 12px;
+  }
+  .profile-settings-desktop {
+    display: none !important;
+  }
+}
+
+@media (max-width: 575px) {
+  .profile-info-center {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+  }
+  .profile-info-center .title42 {
+    justify-content: center;
+    text-align: center;
+    width: 100%;
+  }
+  .profile-info-center .block {
+    text-align: center;
+    width: 100%;
+  }
+
+  .ant-space{
+    justify-content: center;
+    row-gap: 0;
+  }
+
+  .profile-info{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+  }
+}
