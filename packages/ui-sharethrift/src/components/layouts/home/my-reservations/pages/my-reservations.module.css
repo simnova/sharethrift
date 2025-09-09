@@ -1,0 +1,12 @@
+.pageTitle {
+  font-family: var(--Instrument-Serif), 'Instrument Serif', serif !important;
+  font-weight: 400 !important;
+  font-size: 2.5rem !important;
+  line-height: 1.1 !important;
+  color: var(--color-primary) !important;
+  margin-bottom: 1.5rem !important;
+}
+
+.mainContent {
+  margin-left: 2.0rem;
+}

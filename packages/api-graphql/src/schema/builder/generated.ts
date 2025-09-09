@@ -111,6 +111,14 @@ export type BlobMetadataField = {
 /**  Required to enable Apollo Cache Control  */
 export type CacheControlScope = "PRIVATE" | "PUBLIC";
 
+export type CancelReservationInput = {
+  id: Scalars["ObjectID"]["input"];
+};
+
+export type CloseReservationInput = {
+  id: Scalars["ObjectID"]["input"];
+};
+
 /** GraphQL schema for Conversations */
 export type Conversation = MongoBase & {
   __typename?: "Conversation";
@@ -213,6 +221,18 @@ export type Mutation = {
   __typename?: "Mutation";
   /** IGNORE: Dummy field necessary for the Mutation type to be valid */
   _empty?: Maybe<Scalars["String"]["output"]>;
+  cancelReservation: ReservationRequest;
+  closeReservation: ReservationRequest;
+};
+
+/**  Base Mutation Type definition - all mutations will be defined in separate files extending this type  */
+export type MutationCancelReservationArgs = {
+  input: CancelReservationInput;
+};
+
+/**  Base Mutation Type definition - all mutations will be defined in separate files extending this type  */
+export type MutationCloseReservationArgs = {
+  input: CloseReservationInput;
 };
 
 export type MutationResult = {
@@ -346,6 +366,8 @@ export type Query = {
   currentPersonalUserAndCreateIfNotExists: PersonalUser;
   itemListing?: Maybe<ItemListing>;
   itemListings: Array<ItemListing>;
+  myActiveReservations: Array<ReservationRequest>;
+  myPastReservations: Array<ReservationRequest>;
   myListingsAll: ListingAllPage;
   myListingsRequests: ListingRequestPage;
   personalUserById?: Maybe<PersonalUser>;
@@ -359,6 +381,16 @@ export type QueryConversationArgs = {
 /**  Base Query Type definition - , all mutations will be defined in separate files extending this type  */
 export type QueryItemListingArgs = {
   id: Scalars["ObjectID"]["input"];
+};
+
+/**  Base Query Type definition - , all mutations will be defined in separate files extending this type  */
+export type QueryMyActiveReservationsArgs = {
+  userId: Scalars["ObjectID"]["input"];
+};
+
+/**  Base Query Type definition - , all mutations will be defined in separate files extending this type  */
+export type QueryMyPastReservationsArgs = {
+  userId: Scalars["ObjectID"]["input"];
 };
 
 /**  Base Query Type definition - , all mutations will be defined in separate files extending this type  */
@@ -380,6 +412,28 @@ export type QueryMyListingsRequestsArgs = {
 export type QueryPersonalUserByIdArgs = {
   id: Scalars["ObjectID"]["input"];
 };
+
+export type ReservationRequest = {
+  __typename?: "ReservationRequest";
+  closeRequestedByReserver: Scalars["Boolean"]["output"];
+  closeRequestedBySharer: Scalars["Boolean"]["output"];
+  createdAt: Scalars["String"]["output"];
+  id: Scalars["ObjectID"]["output"];
+  listing: ItemListing;
+  reservationPeriodEnd: Scalars["String"]["output"];
+  reservationPeriodStart: Scalars["String"]["output"];
+  reserver: PersonalUser;
+  state: ReservationRequestState;
+  updatedAt: Scalars["String"]["output"];
+};
+
+export type ReservationRequestMutationResult = MutationResult & {
+  __typename?: "ReservationRequestMutationResult";
+  reservationRequest?: Maybe<ReservationRequest>;
+  status: MutationStatus;
+};
+
+export type ReservationRequestState = "Accepted" | "Cancelled" | "Closed" | "Rejected" | "Requested";
 
 export type SorterInput = {
   field: Scalars["String"]["input"];
@@ -465,7 +519,7 @@ export type DirectiveResolverFn<TResult = {}, TParent = {}, TContext = {}, TArgs
 export type ResolversInterfaceTypes<_RefType extends Record<string, unknown>> = ResolversObject<{
   MongoBase: Conversation | ItemListing | PersonalUser;
   MongoSubdocument: never;
-  MutationResult: never;
+  MutationResult: ReservationRequestMutationResult;
 }>;
 
 /** Mapping between all available schema types and the resolvers types */
@@ -478,6 +532,8 @@ export type ResolversTypes = ResolversObject<{
   Boolean: ResolverTypeWrapper<Scalars["Boolean"]["output"]>;
   Byte: ResolverTypeWrapper<Scalars["Byte"]["output"]>;
   CacheControlScope: CacheControlScope;
+  CancelReservationInput: CancelReservationInput;
+  CloseReservationInput: CloseReservationInput;
   Conversation: ResolverTypeWrapper<Conversation>;
   CountryCode: ResolverTypeWrapper<Scalars["CountryCode"]["output"]>;
   CountryName: ResolverTypeWrapper<Scalars["CountryName"]["output"]>;
@@ -561,6 +617,9 @@ export type ResolversTypes = ResolversObject<{
   Query: ResolverTypeWrapper<{}>;
   RGB: ResolverTypeWrapper<Scalars["RGB"]["output"]>;
   RGBA: ResolverTypeWrapper<Scalars["RGBA"]["output"]>;
+  ReservationRequest: ResolverTypeWrapper<ReservationRequest>;
+  ReservationRequestMutationResult: ResolverTypeWrapper<ReservationRequestMutationResult>;
+  ReservationRequestState: ReservationRequestState;
   RoutingNumber: ResolverTypeWrapper<Scalars["RoutingNumber"]["output"]>;
   SESSN: ResolverTypeWrapper<Scalars["SESSN"]["output"]>;
   SafeInt: ResolverTypeWrapper<Scalars["SafeInt"]["output"]>;
@@ -589,6 +648,8 @@ export type ResolversParentTypes = ResolversObject<{
   BlobMetadataField: BlobMetadataField;
   Boolean: Scalars["Boolean"]["output"];
   Byte: Scalars["Byte"]["output"];
+  CancelReservationInput: CancelReservationInput;
+  CloseReservationInput: CloseReservationInput;
   Conversation: Conversation;
   CountryCode: Scalars["CountryCode"]["output"];
   CountryName: Scalars["CountryName"]["output"];
@@ -671,6 +732,8 @@ export type ResolversParentTypes = ResolversObject<{
   Query: {};
   RGB: Scalars["RGB"]["output"];
   RGBA: Scalars["RGBA"]["output"];
+  ReservationRequest: ReservationRequest;
+  ReservationRequestMutationResult: ReservationRequestMutationResult;
   RoutingNumber: Scalars["RoutingNumber"]["output"];
   SESSN: Scalars["SESSN"]["output"];
   SafeInt: Scalars["SafeInt"]["output"];
@@ -1016,13 +1079,15 @@ export type MutationResolvers<
   ParentType extends ResolversParentTypes["Mutation"] = ResolversParentTypes["Mutation"],
 > = ResolversObject<{
   _empty?: Resolver<Maybe<ResolversTypes["String"]>, ParentType, ContextType>;
+  cancelReservation?: Resolver<ResolversTypes["ReservationRequest"], ParentType, ContextType, RequireFields<MutationCancelReservationArgs, "input">>;
+  closeReservation?: Resolver<ResolversTypes["ReservationRequest"], ParentType, ContextType, RequireFields<MutationCloseReservationArgs, "input">>;
 }>;
 
 export type MutationResultResolvers<
   ContextType = GraphContext,
   ParentType extends ResolversParentTypes["MutationResult"] = ResolversParentTypes["MutationResult"],
 > = ResolversObject<{
-  __resolveType: TypeResolveFn<null, ParentType, ContextType>;
+  __resolveType: TypeResolveFn<"ReservationRequestMutationResult", ParentType, ContextType>;
   status?: Resolver<ResolversTypes["MutationStatus"], ParentType, ContextType>;
 }>;
 
@@ -1155,6 +1220,18 @@ export type QueryResolvers<
   currentPersonalUserAndCreateIfNotExists?: Resolver<ResolversTypes["PersonalUser"], ParentType, ContextType>;
   itemListing?: Resolver<Maybe<ResolversTypes["ItemListing"]>, ParentType, ContextType, RequireFields<QueryItemListingArgs, "id">>;
   itemListings?: Resolver<Array<ResolversTypes["ItemListing"]>, ParentType, ContextType>;
+  myActiveReservations?: Resolver<
+    Array<ResolversTypes["ReservationRequest"]>,
+    ParentType,
+    ContextType,
+    RequireFields<QueryMyActiveReservationsArgs, "userId">
+  >;
+  myPastReservations?: Resolver<
+    Array<ResolversTypes["ReservationRequest"]>,
+    ParentType,
+    ContextType,
+    RequireFields<QueryMyPastReservationsArgs, "userId">
+  >;
   myListingsAll?: Resolver<ResolversTypes["ListingAllPage"], ParentType, ContextType, RequireFields<QueryMyListingsAllArgs, "page" | "pageSize">>;
   myListingsRequests?: Resolver<
     ResolversTypes["ListingRequestPage"],
@@ -1172,6 +1249,32 @@ export interface RgbScalarConfig extends GraphQLScalarTypeConfig<ResolversTypes[
 export interface RgbaScalarConfig extends GraphQLScalarTypeConfig<ResolversTypes["RGBA"], any> {
   name: "RGBA";
 }
+
+export type ReservationRequestResolvers<
+  ContextType = GraphContext,
+  ParentType extends ResolversParentTypes["ReservationRequest"] = ResolversParentTypes["ReservationRequest"],
+> = ResolversObject<{
+  closeRequestedByReserver?: Resolver<ResolversTypes["Boolean"], ParentType, ContextType>;
+  closeRequestedBySharer?: Resolver<ResolversTypes["Boolean"], ParentType, ContextType>;
+  createdAt?: Resolver<ResolversTypes["String"], ParentType, ContextType>;
+  id?: Resolver<ResolversTypes["ObjectID"], ParentType, ContextType>;
+  listing?: Resolver<ResolversTypes["ItemListing"], ParentType, ContextType>;
+  reservationPeriodEnd?: Resolver<ResolversTypes["String"], ParentType, ContextType>;
+  reservationPeriodStart?: Resolver<ResolversTypes["String"], ParentType, ContextType>;
+  reserver?: Resolver<ResolversTypes["PersonalUser"], ParentType, ContextType>;
+  state?: Resolver<ResolversTypes["ReservationRequestState"], ParentType, ContextType>;
+  updatedAt?: Resolver<ResolversTypes["String"], ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+}>;
+
+export type ReservationRequestMutationResultResolvers<
+  ContextType = GraphContext,
+  ParentType extends ResolversParentTypes["ReservationRequestMutationResult"] = ResolversParentTypes["ReservationRequestMutationResult"],
+> = ResolversObject<{
+  reservationRequest?: Resolver<Maybe<ResolversTypes["ReservationRequest"]>, ParentType, ContextType>;
+  status?: Resolver<ResolversTypes["MutationStatus"], ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+}>;
 
 export interface RoutingNumberScalarConfig extends GraphQLScalarTypeConfig<ResolversTypes["RoutingNumber"], any> {
   name: "RoutingNumber";
@@ -1315,6 +1418,8 @@ export type Resolvers<ContextType = GraphContext> = ResolversObject<{
   Query?: QueryResolvers<ContextType>;
   RGB?: GraphQLScalarType;
   RGBA?: GraphQLScalarType;
+  ReservationRequest?: ReservationRequestResolvers<ContextType>;
+  ReservationRequestMutationResult?: ReservationRequestMutationResultResolvers<ContextType>;
   RoutingNumber?: GraphQLScalarType;
   SESSN?: GraphQLScalarType;
   SafeInt?: GraphQLScalarType;
