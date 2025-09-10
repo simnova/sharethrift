@@ -1,9 +1,7 @@
 import { gql, useQuery } from '@apollo/client';
 import { useNavigate } from 'react-router-dom';
 import { ProfileView } from './profile-view';
-// eslint-disable-next-line import/no-absolute-path, @typescript-eslint/ban-ts-comment
-// @ts-ignore - allow raw import string
-import ProfileViewQuerySource from './profile-view.container.graphql?raw';
+import profileViewQueriesRaw from './profile-view.graphql?raw';
 
 interface UserProfile {
   id: string;
@@ -47,51 +45,15 @@ interface UserListingsQueryData {
   itemListings: ItemListing[];
 }
 
-const GET_CURRENT_USER = gql`
-  query HomeAccountProfileViewContainerCurrentUser {
-    currentPersonalUserAndCreateIfNotExists {
-      id
-      userType
-      account {
-        accountType
-        email
-        username
-        profile {
-          firstName
-          lastName
-          location {
-            city
-            state
-          }
-        }
-      }
-      createdAt
-    }
-  }
-`;
-
-const GET_USER_LISTINGS = gql`
-  query HomeAccountProfileViewContainerUserListings {
-    itemListings {
-      id
-      title
-      description
-      category
-      location
-      state
-      images
-      sharer
-      createdAt
-      updatedAt
-      sharingPeriodStart
-      sharingPeriodEnd
-    }
-  }
-`;
-
 export function ProfileViewContainer() {
+
   const navigate = useNavigate();
-  
+
+  // Split the raw .graphql file into two queries and parse with gql
+  const queries = profileViewQueriesRaw.split('query HomeAccountProfileViewContainerUserListings');
+  const GET_CURRENT_USER = gql(queries[0]);
+  const GET_USER_LISTINGS = gql('query HomeAccountProfileViewContainerUserListings' + queries[1]);
+
   const { data: userData, loading: userLoading, error: userError } = useQuery<CurrentUserQueryData>(GET_CURRENT_USER);
   const { data: listingsData, loading: listingsLoading, error: listingsError } = useQuery<UserListingsQueryData>(GET_USER_LISTINGS);
 
