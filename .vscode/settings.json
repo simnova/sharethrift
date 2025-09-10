@@ -24,6 +24,10 @@
         "editor.defaultFormatter": "biomejs.biome"
     },
     "typescript.experimental.useTsgo": true,
+    "sonarlint.connectedMode.project": {
+        "connectionId": "simnova",
+        "projectKey": "simnova_sharethrift-data-access"
+    },
     // "[typescript]": {
     //     "editor.tabSize": 2,
     //     // "prettier.singleQuote": true,
