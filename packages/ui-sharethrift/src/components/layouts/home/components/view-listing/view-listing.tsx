@@ -3,16 +3,16 @@ import { LeftOutlined } from '@ant-design/icons';
 import ListingImageGalleryContainer from './listing-image-gallery/listing-image-gallery.container';
 import SharerInformationContainer from './sharer-information/sharer-information.container';
 import ListingInformationContainer from './listing-information/listing-information.container';
-import type { UserRole, ReservationRequestStatus } from './listing-information/listing-information';
+import type { ReservationRequestState } from '../../../../../generated';
 
 import type { ItemListing } from '../mock-listings';
 
 export interface ViewListingProps {
   listing: ItemListing;
-  userRole: UserRole;
+  userRole: string;
   isAuthenticated: boolean;
   currentUserId?: string;
-  reservationRequestStatus?: ReservationRequestStatus;
+  reservationRequestStatus: ReservationRequestState | null;
   sharedTimeAgo?: string;
 }
 

@@ -1,59 +1,75 @@
 import { useParams } from 'react-router-dom';
-import { gql, useQuery } from '@apollo/client';
+import { useQuery } from '@apollo/client';
 // Import the GraphQL document (Vite raw import if needed)
 // eslint-disable-next-line import/no-absolute-path, @typescript-eslint/ban-ts-comment
 // @ts-ignore - allow raw import string
-import ViewListingQuerySource from './view-listing.container.graphql?raw';
 import { ViewListing } from './view-listing';
+import { 
+    ViewListingCurrentUserDocument, 
+    type ViewListingCurrentUserQuery,
+    ViewListingDocument,
+    type ViewListingQuery,
+    type ViewListingQueryVariables
+} from '../../../../../generated';
 
-const VIEW_LISTING_QUERY = gql(ViewListingQuerySource);
 
 export function ViewListingContainer({ isAuthenticated }: { readonly isAuthenticated: boolean }) {
   const { listingId } = useParams();
-  const { data, loading, error } = useQuery(VIEW_LISTING_QUERY, {
+  const { data: listingData, loading: listingLoading, error: listingError } = useQuery<ViewListingQuery, ViewListingQueryVariables>(ViewListingDocument, {
     variables: { id: listingId },
     skip: !listingId,
     fetchPolicy: 'cache-first',
   });
 
+  const { data: currentUserData } = useQuery<ViewListingCurrentUserQuery>(ViewListingCurrentUserDocument);
+
+  const reservationRequestStatus = null; // Placeholder until integrated
+
   if (!listingId) return <div>Missing listing id.</div>;
-  if (loading) return <div>Loading listing...</div>;
-  if (error) return <div>Error loading listing.</div>;
-  if (!data?.itemListing) return <div>Listing not found.</div>;
+  if (listingLoading) return <div>Loading listing...</div>;
+  if (listingError) return <div>Error loading listing.</div>;
+  if (!listingData?.itemListing) return <div>Listing not found.</div>;
+
+  // Temporary debug logs
+  if (!currentUserData?.currentPersonalUserAndCreateIfNotExists) {console.log("Current user could not be created or not found:");}
+//   if (currentUserError) { return <div>Error loading current user data.</div>; }
+//   if (currentUserLoading) { return <div>Loading current user data...</div> }
 
   // Map server model to existing ViewListingProps.listing shape expected by presentational component
   const listing = {
-    _id: data.itemListing.id,
-    id: data.itemListing.id,
-    title: data.itemListing.title,
-    description: data.itemListing.description,
-    category: data.itemListing.category,
-    location: data.itemListing.location,
-    images: data.itemListing.images ?? [],
-  sharingPeriodStart: data.itemListing.sharingPeriodStart ? new Date(data.itemListing.sharingPeriodStart) : new Date(),
-  sharingPeriodEnd: data.itemListing.sharingPeriodEnd ? new Date(data.itemListing.sharingPeriodEnd) : new Date(),
+    _id: listingData.itemListing.id,
+    id: listingData.itemListing.id,
+    title: listingData.itemListing.title,
+    description: listingData.itemListing.description,
+    category: listingData.itemListing.category,
+    location: listingData.itemListing.location,
+    images: listingData.itemListing.images ?? [],
+  sharingPeriodStart: listingData.itemListing.sharingPeriodStart ? new Date(listingData.itemListing.sharingPeriodStart) : new Date(),
+  sharingPeriodEnd: listingData.itemListing.sharingPeriodEnd ? new Date(listingData.itemListing.sharingPeriodEnd) : new Date(),
     // Fields not yet provided by backend; use placeholders / derive
     price: undefined,
     priceUnit: undefined,
     condition: undefined,
-    itemName: data.itemListing.title,
-    availableFrom: data.itemListing.sharingPeriodStart,
-    availableTo: data.itemListing.sharingPeriodEnd,
-    status: data.itemListing.state,
-    sharer: data.itemListing.sharer,
+    itemName: listingData.itemListing.title,
+    availableFrom: listingData.itemListing.sharingPeriodStart,
+    availableTo: listingData.itemListing.sharingPeriodEnd,
+    status: listingData.itemListing.state,
+    sharer: listingData.itemListing.sharer,
   } as const;
 
-  const sharedTimeAgo = data.itemListing.createdAt
-    ? computeTimeAgo(data.itemListing.createdAt)
+  const sharedTimeAgo = listingData.itemListing.createdAt
+    ? computeTimeAgo(listingData.itemListing.createdAt)
     : undefined;
 
+  const userRole = currentUserData?.currentPersonalUserAndCreateIfNotExists.id === listingData.itemListing.sharer ? 'sharer' : 'reserver';
   return (
     <ViewListing
       listing={listing}
-      userRole={isAuthenticated ? 'sharer' : 'logged-out'}
+      userRole={userRole}
       isAuthenticated={isAuthenticated}
       currentUserId={isAuthenticated ? listing.sharer : undefined}
       sharedTimeAgo={sharedTimeAgo}
+      reservationRequestStatus={reservationRequestStatus}
     />
   );
 }

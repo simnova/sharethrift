@@ -125,7 +125,7 @@ export const AsReserver: Story = {
     userRole: 'reserver',
     isAuthenticated: true,
     currentUserId: 'user2',
-    reservationRequestStatus: 'pending',
+    reservationRequestStatus: 'Requested',
   },
 };
 

@@ -1,14 +1,14 @@
 type ReservationRequest {
 	id: ObjectID!
-	state: ReservationRequestState!
-	reservationPeriodStart: String!
-	reservationPeriodEnd: String!
-	createdAt: String!
-	updatedAt: String!
-	listing: ItemListing!
-	reserver: PersonalUser!
-	closeRequestedBySharer: Boolean!
-	closeRequestedByReserver: Boolean!
+	state: ReservationRequestState
+	reservationPeriodStart: String
+	reservationPeriodEnd: String
+	createdAt: String
+	updatedAt: String
+	listing: ItemListing
+	reserver: PersonalUser
+	closeRequestedBySharer: Boolean
+	closeRequestedByReserver: Boolean
 }
 
 enum ReservationRequestState {

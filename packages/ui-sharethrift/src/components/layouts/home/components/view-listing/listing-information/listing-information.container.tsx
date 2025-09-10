@@ -6,7 +6,7 @@ import type { ListingInformationProps, ListingStatus } from './listing-informati
 // eslint-disable-next-line import/no-absolute-path, @typescript-eslint/ban-ts-comment
 // @ts-ignore - allow raw import string
 import ListingInformationQuerySource from './listing-information.graphql?raw';
-import { HomeListingInformationCreateReservationRequestDocument, type CreateReservationRequestInput } from '../../../../../../generated';
+import { HomeListingInformationCreateReservationRequestDocument, type CreateReservationRequestInput, type ReservationRequestState, ViewListingCurrentUserDocument, type ViewListingCurrentUserQuery } from '../../../../../../generated';
 
 const GET_LISTING_INFORMATION = gql(ListingInformationQuerySource);
 
@@ -27,9 +27,9 @@ interface ListingQueryResponse {
 
 interface ListingInformationContainerProps {
   listingId: string;
-  userRole: ListingInformationProps['userRole'];
+  userRole: string;
   isAuthenticated: boolean;
-  reservationRequestStatus?: ListingInformationProps['reservationRequestStatus'];
+  reservationRequestStatus: ReservationRequestState | null;
   onLoginClick?: () => void;
   onSignUpClick?: () => void;
   className?: string;
@@ -81,26 +81,23 @@ export default function ListingInformationContainer({
     }
   );
 
+    const { data: currentUserData } = useQuery<ViewListingCurrentUserQuery>(ViewListingCurrentUserDocument);
+    if (!currentUserData?.currentPersonalUserAndCreateIfNotExists) {console.log("Current user could not be created or not found:");}
   const [createReservationRequestMutation, { loading: mutationLoading }] = useMutation(
     HomeListingInformationCreateReservationRequestDocument,
     {
       onCompleted: () => {
-        message.success('Reservation request created successfully!');
+        console.log('Reservation request created successfully!');
         // Clear the selected dates after successful reservation
         setReservationDates({ startDate: null, endDate: null });
       },
       onError: (error) => {
-        message.error(error.message || 'Failed to create reservation request');
+        console.log(error.message || 'Failed to create reservation request');
       },
     }
   );
 
   const handleReserveClick = async () => {
-    if (!isAuthenticated) {
-      message.warning('Please log in to make a reservation');
-      return;
-    }
-
     if (!reservationDates.startDate || !reservationDates.endDate) {
       message.warning('Please select both start and end dates for your reservation');
       return;
