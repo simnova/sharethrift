@@ -59,7 +59,91 @@ const personalUserResolvers = {
 		},
 	},
 
-	Mutation: {},
+	Mutation: {
+		processPayment: async (_parent: unknown, { request }: { request: {
+			userId: string;
+			orderInformation: {
+				amountDetails: {
+					totalAmount: number;
+					currency: string;
+				};
+				billTo: {
+					firstName: string;
+					lastName: string;
+					address1: string;
+					address2?: string;
+					city: string;
+					state: string;
+					postalCode: string;
+					country: string;
+					phoneNumber?: string;
+					email?: string;
+				};
+			};
+			paymentInformation: {
+				card: {
+					number: string;
+					expirationMonth: string;
+					expirationYear: string;
+					securityCode: string;
+				};
+			};
+		} }, context: GraphContext) => {
+			console.log('Processing payment', request);
+			try {
+				const response = await context.applicationServices.Payment.processPayment(request);
+				return {
+					...response,
+					success: response.status === 'SUCCEEDED',
+					message: response.status === 'SUCCEEDED' ? 'Payment processed successfully' : undefined
+				};
+			} catch (error) {
+				console.error('Payment processing error:', error);
+				return {
+					status: 'FAILED',
+					success: false,
+					message: error instanceof Error ? error.message : 'Unknown error occurred',
+					errorInformation: {
+						reason: 'PROCESSING_ERROR',
+						message: error instanceof Error ? error.message : 'Unknown error occurred'
+					}
+				};
+			}
+		},
+
+		refundPayment: async (_parent: unknown, { request }: { request: {
+			userId: string;
+			transactionId: string;
+			amount?: number;
+			orderInformation: {
+				amountDetails: {
+					totalAmount: number;
+					currency: string;
+				};
+			};
+		} }, context: GraphContext) => {
+			console.log('Refunding payment', request);
+			try {
+				const response = await context.applicationServices.Payment.refundPayment(request);
+				return {
+					...response,
+					success: response.status === 'REFUNDED',
+					message: response.status === 'REFUNDED' ? 'Refund processed successfully' : undefined
+				};
+			} catch (error) {
+				console.error('Refund processing error:', error);
+				return {
+					status: 'FAILED',
+					success: false,
+					message: error instanceof Error ? error.message : 'Unknown error occurred',
+					errorInformation: {
+						reason: 'PROCESSING_ERROR',
+						message: error instanceof Error ? error.message : 'Unknown error occurred'
+					}
+				};
+			}
+		}
+	}
 };
 
 export default personalUserResolvers;

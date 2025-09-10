@@ -1,0 +1,11 @@
+{
+	"extends": ["../../tsconfig.base"],
+	"compilerOptions": {
+		/* Modules */
+		"rootDir": ".",
+        "types": ["node"],
+		/* Emit */
+		"outDir": "dist"
+	},
+	"include": ["src/**/*.ts"],
+}

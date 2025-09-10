@@ -21,6 +21,7 @@ import { ServiceTwilio } from '@sthrift/service-twilio';
 
 import { graphHandlerCreator } from '@sthrift/api-graphql';
 import { restHandlerCreator } from '@sthrift/api-rest';
+import { ServiceCybersource } from '@sthrift/service-cybersource';
 
 Cellix.initializeInfrastructureServices<ApiContextSpec, ApplicationServices>(
 	(serviceRegistry) => {
@@ -35,7 +36,8 @@ Cellix.initializeInfrastructureServices<ApiContextSpec, ApplicationServices>(
 			.registerInfrastructureService(
 				new ServiceTokenValidation(TokenValidationConfig.portalTokens),
 			)
-			.registerInfrastructureService(new ServiceTwilio());
+			.registerInfrastructureService(new ServiceTwilio())
+            .registerInfrastructureService(new ServiceCybersource());
 	},
 )
 	.setContext((serviceRegistry) => {
@@ -50,10 +52,9 @@ Cellix.initializeInfrastructureServices<ApiContextSpec, ApplicationServices>(
 
 		return {
 			dataSourcesFactory,
-			tokenValidationService:
-				serviceRegistry.getInfrastructureService<ServiceTokenValidation>(
-					ServiceTokenValidation,
-				),
+			tokenValidationService:serviceRegistry.getInfrastructureService<ServiceTokenValidation>(ServiceTokenValidation),
+			paymentService: serviceRegistry.getInfrastructureService<ServiceCybersource>(ServiceCybersource),
+
 		};
 	})
 	.initializeApplicationServices((context) =>

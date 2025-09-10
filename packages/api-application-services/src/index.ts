@@ -4,14 +4,19 @@ import {
 	User,
 	type UserContextApplicationService,
 } from './contexts/user/index.ts';
+import type { PaymentApplicationService } from './payment-application-service.js';
+import { DefaultPaymentApplicationService } from './payment-application-service.js';
+
 import { 
     ReservationRequest, 
     type ReservationRequestContextApplicationService 
 } from './contexts/reservation-request/index.ts';
+
 export interface ApplicationServices {
 	User: UserContextApplicationService;
     ReservationRequest: ReservationRequestContextApplicationService;
 	get verifiedUser(): VerifiedUser | null;
+    Payment: PaymentApplicationService;
 }
 
 export interface VerifiedJwt {
@@ -47,6 +52,8 @@ export type ApplicationServicesFactory = AppServicesHost<ApplicationServices>;
 export const buildApplicationServicesFactory = (
 	infrastructureServicesRegistry: ApiContextSpec,
 ): ApplicationServicesFactory => {
+    const paymentApplicationService = new DefaultPaymentApplicationService(infrastructureServicesRegistry.paymentService);
+
 	const forRequest = async (
 		rawAuthHeader?: string,
 		hints?: PrincipalHints,
@@ -89,6 +96,7 @@ export const buildApplicationServicesFactory = (
 			get verifiedUser(): VerifiedUser | null {
 				return { ...tokenValidationResult, hints: hints };
 			},
+            Payment: paymentApplicationService,
             ReservationRequest: ReservationRequest(dataSources),
 		};
 	};
