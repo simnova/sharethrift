@@ -1,4 +1,6 @@
-import { Button, Row, Col, DatePicker } from 'antd';
+import { Row, Col, DatePicker } from 'antd';
+import { ReserveButton, type ReserveButtonState } from '../reserve-button/reserve-button';
+import type { Dayjs } from 'dayjs';
 
 export type ListingStatus = 'Active' | 'Paused' | 'Blocked' | 'Cancelled' | 'Expired';
 export type UserRole = 'logged-out' | 'sharer' | 'reserver';
@@ -26,31 +28,63 @@ export interface ListingInformationProps {
   onLoginClick?: () => void;
   onSignUpClick?: () => void;
   className?: string;
+  reservationDates?: {
+    startDate: Date | null;
+    endDate: Date | null;
+  };
+  onReservationDatesChange?: (dates: { startDate: Date | null; endDate: Date | null }) => void;
+  reservationLoading?: boolean;
 }
 
 export function ListingInformation({
   listing,
   onReserveClick,
   className = '',
-  // userRole,
-  // isAuthenticated,
-  // reservationRequestStatus,
-  // onLoginClick,
-  // onSignUpClick,
+  userRole,
+  isAuthenticated,
+  reservationRequestStatus,
+  reservationDates,
+  onReservationDatesChange,
+  reservationLoading = false,
 }: ListingInformationProps) {
   if (listing.status !== 'Active') {
     return (
       <div className="p-4">
-        <button
-          type="button"
-          disabled
-          className="w-full bg-gray-400 text-white py-3 px-4 rounded-lg font-semibold cursor-not-allowed"
-        >
-          Listing Not Available
-        </button>
+        <ReserveButton
+          state="disabled"
+          onClick={() => {}}
+        />
       </div>
     );
   }
+
+  // Determine the Reserve button state based on reservation status
+  const getReserveButtonState = (): ReserveButtonState => {
+    if (reservationLoading) return 'loading';
+    if (!isAuthenticated) return 'reserve';
+    if (reservationRequestStatus === 'pending') return 'cancel';
+    return 'reserve';
+  };
+
+  // Check if dates are selected for enabling the Reserve button
+  const areDatesSelected = reservationDates?.startDate && reservationDates?.endDate;
+  const isReserveButtonDisabled = !isAuthenticated || (isAuthenticated && !areDatesSelected) || userRole === 'sharer';
+
+  const handleDateRangeChange = (dates: [Dayjs | null, Dayjs | null] | null) => {
+    if (onReservationDatesChange) {
+      if (dates && dates[0] && dates[1]) {
+        onReservationDatesChange({
+          startDate: dates[0].toDate(),
+          endDate: dates[1].toDate(),
+        });
+      } else {
+        onReservationDatesChange({
+          startDate: null,
+          endDate: null,
+        });
+      }
+    }
+  };
 
   return (
     <Row gutter={[0, 12]} style={{ width: '100%' }} className={className}>
@@ -84,29 +118,44 @@ export function ListingInformation({
             </div>
           </Col>
         </Row>
-        {/* Reservation Period Section */}
-        <Row style={{ marginTop: 16 }}>
-          <Col span={24}>
-            <h3 style={{ marginBottom: 8 }}>Reservation Period</h3>
-            <DatePicker.RangePicker
-              style={{
-                width: '100%',
-              }}
-              placeholder={["Start date", "End date"]}
-              allowClear
-            />
-          </Col>
-        </Row>
+        {/* Reservation Period Section - Only show if authenticated */}
+        {isAuthenticated && (
+          <Row style={{ marginTop: 16 }}>
+            <Col span={24}>
+              <h3 style={{ marginBottom: 8 }}>Reservation Period</h3>
+              <DatePicker.RangePicker
+                style={{
+                  width: '100%',
+                }}
+                placeholder={["Start date", "End date"]}
+                allowClear
+                onChange={handleDateRangeChange}
+                value={
+                  reservationDates?.startDate && reservationDates?.endDate
+                    ? [
+                        reservationDates.startDate ? require('dayjs')(reservationDates.startDate) : null,
+                        reservationDates.endDate ? require('dayjs')(reservationDates.endDate) : null,
+                      ]
+                    : null
+                }
+              />
+            </Col>
+          </Row>
+        )}
       </Col>
       <Col span={24}>
-        {/* Reserve Button */}
-        <Row>
-          <Col span={24}>
-            <Button type="primary" className="primaryButton" style={{ width: '100%' }} onClick={onReserveClick}>
-              Reserve
-            </Button>
-          </Col>
-        </Row>
+        {/* Reserve Button - Only show if authenticated */}
+        {isAuthenticated && (
+          <Row>
+            <Col span={24}>
+              <ReserveButton
+                state={getReserveButtonState()}
+                onClick={() => onReserveClick?.()}
+                disabled={isReserveButtonDisabled}
+              />
+            </Col>
+          </Row>
+        )}
       </Col>
     </Row>
   );

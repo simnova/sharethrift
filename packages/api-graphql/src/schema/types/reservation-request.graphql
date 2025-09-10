@@ -25,6 +25,7 @@ extend type Query {
 }
 
 extend type Mutation {
+	createReservationRequest(input: CreateReservationRequestInput!): ReservationRequest!
 	cancelReservation(input: CancelReservationInput!): ReservationRequest!
 	closeReservation(input: CloseReservationInput!): ReservationRequest!
 }
@@ -32,6 +33,12 @@ extend type Mutation {
 type ReservationRequestMutationResult implements MutationResult {
 	status: MutationStatus!
 	reservationRequest: ReservationRequest
+}
+
+input CreateReservationRequestInput {
+	listingId: ObjectID!
+	reservationPeriodStart: DateTime!
+	reservationPeriodEnd: DateTime!
 }
 
 input CancelReservationInput {

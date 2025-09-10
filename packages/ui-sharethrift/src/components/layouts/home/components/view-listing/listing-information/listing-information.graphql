@@ -17,3 +17,14 @@ query ViewListingInformationGetListing($listingId: ObjectID!) {
     schemaVersion
   }
 }
+
+mutation HomeListingInformationCreateReservationRequest($input: CreateReservationRequestInput!) {
+  createReservationRequest(input: $input) {
+    id
+    state
+    reservationPeriodStart
+    reservationPeriodEnd
+    createdAt
+    updatedAt
+  }
+}
