@@ -25,7 +25,6 @@ export function ViewListing({
 }: ViewListingProps) {
   // Mock sharer info (since ItemListing.sharer is just an ID)
   const sharerId = listing.sharer;
-  const username = listing.sharer.username;
   const handleBack = () => {
     window.location.href = '/';
   };
@@ -92,7 +91,7 @@ export function ViewListing({
         <Col span={24} style={{ marginBottom: 0, paddingBottom: 0 }}>
           {/* Sharer Info at top, clickable to profile */}
           <a
-            href={`/profile/${username}`}
+            href={`/account/profile`}
             style={{ textDecoration: 'none', color: 'inherit', cursor: 'pointer', display: 'block' }}
             aria-label="View sharer profile"
           >
