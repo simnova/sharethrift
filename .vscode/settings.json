@@ -26,7 +26,6 @@
 	},
 	"typescript.experimental.useTsgo": true,
 	"editor.formatOnSave": true,
-	"vitest.disableWorkspaceWarning": true,
 	"sonarlint.connectedMode.project": {
 		"connectionId": "simnova",
 		"projectKey": "simnova_sharethrift-data-access"
