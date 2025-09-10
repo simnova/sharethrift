@@ -1,7 +1,7 @@
-import { Input, Checkbox, Button, Image, Popconfirm } from 'antd';
+import { Input, Checkbox, Button, Image, Popconfirm, Tag } from 'antd';
 import { SearchOutlined, FilterOutlined } from '@ant-design/icons';
 import type { ColumnsType, TableProps } from 'antd/es/table';
-import { StatusTag, Dashboard, type RequestStatus } from '@sthrift/ui-sharethrift-components';
+import { Dashboard } from '@sthrift/ui-sharethrift-components';
 
 const { Search } = Input;
 
@@ -38,6 +38,23 @@ const REQUEST_STATUS_OPTIONS = [
   { label: 'Pending', value: 'Pending' },
   { label: 'Closing', value: 'Closing' },
 ];
+
+const getRequestStatusTagClass = (status: string): string => {
+  switch (status) {
+    case 'Accepted':
+      return 'requestAcceptedTag';
+    case 'Rejected':
+      return 'requestRejectedTag';
+    case 'Closed':
+      return 'expiredTag';
+    case 'Pending':
+      return 'pendingTag';
+    case 'Closing':
+      return 'closingTag';
+    default:
+      return '';
+  }
+};
 
 export function RequestsTable({
   data,
@@ -222,7 +239,9 @@ export function RequestsTable({
       ),
       filterIcon: (filtered) => <FilterOutlined style={{ color: filtered ? '#1890ff' : undefined }} />,
       render: (status: string) => (
-        <StatusTag status={status as RequestStatus} />
+        <Tag className={getRequestStatusTagClass(status)}>
+          {status}
+        </Tag>
       ),
     },
     {

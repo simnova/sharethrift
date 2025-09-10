@@ -1,7 +1,7 @@
 import React from 'react';
-import { Table, Image } from 'antd';
+import { Image, Tag } from 'antd';
 import styles from './reservations-table.module.css';
-import { ReservationStatusTag } from '@sthrift/ui-sharethrift-components';
+import { Dashboard } from '@sthrift/ui-sharethrift-components';
 import { ReservationActions } from './reservation-actions.tsx';
 import type { ReservationRequest } from '../pages/my-reservations.tsx';
 
@@ -15,6 +15,30 @@ export interface ReservationsTableProps {
   showActions?: boolean;
   emptyText?: string;
 }
+
+const getReservationStatusTagClass = (status: ReservationRequest['state']): string => {
+  switch (status) {
+    case 'REQUESTED':
+      return 'pendingTag';
+    case 'ACCEPTED':
+      return 'requestAcceptedTag';
+    case 'REJECTED':
+      return 'requestRejectedTag';
+    case 'CLOSED':
+      return 'expiredTag';
+    case 'CANCELLED':
+      return 'expiredTag';
+    default:
+      return '';
+  }
+};
+
+const formatReservationStatus = (status: ReservationRequest['state']): string => {
+  return status
+    .toLowerCase()
+    .replace(/_/g, ' ')
+    .replace(/\b\w/g, c => c.toUpperCase());
+};
 
 export const ReservationsTable: React.FC<ReservationsTableProps> = ({
   reservations,
@@ -79,7 +103,9 @@ export const ReservationsTable: React.FC<ReservationsTableProps> = ({
       dataIndex: 'state',
       key: 'status',
       render: (state: ReservationRequest['state']) => (
-        <ReservationStatusTag status={state} />
+        <Tag className={getReservationStatusTagClass(state)}>
+          {formatReservationStatus(state)}
+        </Tag>
       ),
     },
     ...(showActions ? [{
@@ -99,14 +125,54 @@ export const ReservationsTable: React.FC<ReservationsTableProps> = ({
   ];
 
   return (
-    <Table
+    <Dashboard
+      data={reservations}
       columns={columns}
-      dataSource={reservations}
       rowKey="id"
-      pagination={false}
-      locale={{
-        emptyText,
-      }}
+      emptyText={emptyText}
+      renderGridItem={(reservation) => (
+        <div key={reservation.id} style={{ marginBottom: 16 }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 8 }}>
+            {reservation.listing?.imageUrl && (
+              <img
+                src={reservation.listing.imageUrl}
+                alt={reservation.listing?.title || 'Listing'}
+                style={{ width: 60, height: 60, objectFit: 'cover', borderRadius: 4 }}
+              />
+            )}
+            <div>
+              <div style={{ fontWeight: 500, marginBottom: 4 }}>
+                {reservation.listing?.title || 'Unknown Listing'}
+              </div>
+              <div style={{ fontSize: 12, color: '#666' }}>
+                By {reservation.reserver?.name ? `@${reservation.reserver.name}` : 'Unknown'}
+              </div>
+            </div>
+          </div>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 8 }}>
+            <Tag className={getReservationStatusTagClass(reservation.state)}>
+              {formatReservationStatus(reservation.state)}
+            </Tag>
+            <div style={{ fontSize: 12, color: '#666' }}>
+              {new Date(reservation.createdAt).toLocaleDateString()}
+            </div>
+          </div>
+          <div style={{ fontSize: 12, color: '#666', marginBottom: 8 }}>
+            {new Date(reservation.reservationPeriodStart).toLocaleDateString()} - {' '}
+            {new Date(reservation.reservationPeriodEnd).toLocaleDateString()}
+          </div>
+          {showActions && (
+            <ReservationActions
+              status={reservation.state}
+              onCancel={() => onCancel?.(reservation.id)}
+              onClose={() => onClose?.(reservation.id)}
+              onMessage={() => onMessage?.(reservation.id)}
+              cancelLoading={cancelLoading}
+              closeLoading={closeLoading}
+            />
+          )}
+        </div>
+      )}
     />
   );
 };

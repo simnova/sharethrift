@@ -1,7 +1,7 @@
-import { Input, Checkbox, Button, Image, Popconfirm } from 'antd';
+import { Input, Checkbox, Button, Image, Popconfirm, Tag } from 'antd';
 import { SearchOutlined, FilterOutlined } from '@ant-design/icons';
 import type { ColumnsType, TableProps } from 'antd/es/table';
-import { StatusTag, Dashboard, type ListingStatus } from '@sthrift/ui-sharethrift-components';
+import { Dashboard } from '@sthrift/ui-sharethrift-components';
 
 const { Search } = Input;
 
@@ -40,6 +40,25 @@ const STATUS_OPTIONS = [
   { label: 'Draft', value: 'Draft' },
   { label: 'Blocked', value: 'Blocked' },
 ];
+
+const getStatusTagClass = (status: string): string => {
+  switch (status) {
+    case 'Active':
+      return 'activeTag';
+    case 'Paused':
+      return 'pendingTag';
+    case 'Reserved':
+      return 'activeTag';
+    case 'Expired':
+      return 'expiredTag';
+    case 'Draft':
+      return 'pendingTag';
+    case 'Blocked':
+      return 'blockedTag';
+    default:
+      return '';
+  }
+};
 
 export function AllListingsTable({
   data,
@@ -237,7 +256,9 @@ export function AllListingsTable({
       ),
       filterIcon: (filtered) => <FilterOutlined style={{ color: filtered ? '#1890ff' : undefined }} />,
       render: (status: string) => (
-        <StatusTag status={status as ListingStatus} />
+        <Tag className={getStatusTagClass(status)}>
+          {status}
+        </Tag>
       ),
     },
     {

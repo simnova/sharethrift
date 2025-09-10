@@ -1,8 +1,6 @@
 import React from 'react';
 import { ReservationsTable } from './reservations-table.tsx';
-import { ReservationsGrid } from './reservations-grid.tsx';
 import { Alert, Spin } from 'antd';
-import styles from './reservations-view.module.css';
 import type { ReservationRequest } from '../pages/my-reservations.tsx';
 
 export interface ReservationsViewProps {
@@ -50,35 +48,16 @@ export const ReservationsView: React.FC<ReservationsViewProps> = ({
   }
 
   return (
-    <div>
-      {/* Mobile Grid View */}
-      <div className={styles.mobileOnly}>
-        <ReservationsGrid
-          reservations={reservations}
-          onCancel={onCancel}
-          onClose={onClose}
-          onMessage={onMessage}
-          cancelLoading={cancelLoading}
-          closeLoading={closeLoading}
-          showActions={showActions}
-          emptyText={emptyText}
-        />
-      </div>
-
-      {/* Desktop Table View */}
-      <div className={styles.desktopOnly}>
-        <ReservationsTable
-          reservations={reservations}
-          onCancel={onCancel}
-          onClose={onClose}
-          onMessage={onMessage}
-          cancelLoading={cancelLoading}
-          closeLoading={closeLoading}
-          showActions={showActions}
-          emptyText={emptyText}
-        />
-      </div>
-    </div>
+    <ReservationsTable
+      reservations={reservations}
+      onCancel={onCancel}
+      onClose={onClose}
+      onMessage={onMessage}
+      cancelLoading={cancelLoading}
+      closeLoading={closeLoading}
+      showActions={showActions}
+      emptyText={emptyText}
+    />
   );
 };
 
