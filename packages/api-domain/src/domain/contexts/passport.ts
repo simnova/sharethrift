@@ -3,11 +3,14 @@ import type { UserPassport } from './user/user.passport.ts';
 import type { ListingPassport } from './listing/listing.passport.ts';
 import { SystemPassport, GuestPassport } from '../iam/index.ts';
 import type { PermissionsSpec } from '../iam/system/system.passport-base.ts';
+import type { ReservationRequestPassport } from './reservation-request/reservation-request.passport.ts';
+
 
 export interface Passport {
 	get user(): UserPassport;
 	get listing(): ListingPassport;
 	get conversation(): ConversationPassport;
+	get reservationRequest(): ReservationRequestPassport;
 }
 
 export const PassportFactory = {

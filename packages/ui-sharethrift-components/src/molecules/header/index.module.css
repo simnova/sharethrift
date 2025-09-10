@@ -14,8 +14,8 @@
     position: fixed;
 }
 .logoSection {
-    display: flex;
-    align-items: center;
+  display: flex;
+  align-items: center;
 }
 .logo {
     height: 28px;

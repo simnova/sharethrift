@@ -1,0 +1,83 @@
+.cardMetaLabel {
+  font-family: var(--Urbanist), 'Urbanist', sans-serif;
+  font-weight: 600;
+  font-size: 0.95rem;
+  color: var(--color-message-text);
+}
+
+.cardMetaValue {
+  font-family: var(--Urbanist), 'Urbanist', sans-serif;
+  font-weight: 400;
+  font-size: 0.95rem;
+  color: var(--color-message-text);
+}
+.cardActions {
+  margin-top: 10px;
+  display: flex;
+  gap: 16px;
+  align-items: center;
+  /* Buttons will align left by default */
+}
+.cardRow {
+  display: flex;
+  flex-direction: row;
+  align-items: stretch;
+}
+
+
+.reservationImageWrapper {
+  position: relative;
+  width: 130px;
+  min-width: 130px;
+  height: 130px;
+  margin: 16px 0 16px 16px;
+  border-radius: 0;
+  overflow: hidden;
+  flex-shrink: 0;
+  background: #fff;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.06);
+}
+
+
+.reservationImage {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: 0;
+  display: block;
+}
+
+
+.statusTagOverlay {
+  position: absolute;
+  right: 1px;
+  bottom: 8px;
+  z-index: 2;
+  pointer-events: none;
+}
+
+.cardContent {
+  flex: 1;
+  padding: 16px 16px 16px 20px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.cardTitle {
+  font-family: var(--Urbanist), 'Urbanist', sans-serif;
+  font-size: 1.08rem;
+  font-weight: 600;
+  color: var(--color-message-text);
+  margin-bottom: 4px;
+}
+
+.cardMeta {
+  font-family: var(--Urbanist), 'Urbanist', sans-serif;
+  font-size: 0.95rem;
+  color: var(--color-message-text);
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+

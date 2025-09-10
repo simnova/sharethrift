@@ -9,13 +9,6 @@ import { PersonalUser } from '../../user/personal-user/personal-user.ts';
 import type { PersonalUserProps } from '../../user/personal-user/personal-user.ts';
 import { ItemListing } from '../../listing/item/item-listing.ts';
 import type { ItemListingProps } from '../../listing/item/item-listing.ts';
-import {
-	Title,
-	Description,
-	Category,
-	Location,
-	ListingState,
-} from '../../listing/item/item-listing.value-objects.ts';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const feature = await loadFeature(
@@ -105,11 +98,11 @@ function makeBaseProps(
 	const listing = new ItemListing<ItemListingProps>(
 		{
 			id: 'listing-1',
-			title: new Title('Test Listing'),
-			description: new Description('A test listing'),
-			category: new Category('test'),
-			location: new Location('Test City'),
-			state: ListingState.Published,
+			title: 'Test Listing',
+			description: 'A test listing',
+			category: 'test',
+			location: 'Test City',
+			state: 'Published',
 			sharingPeriodStart: new Date('2020-01-01T00:00:00Z'),
 			sharingPeriodEnd: new Date('2020-01-10T00:00:00Z'),
 			sharer: user,
