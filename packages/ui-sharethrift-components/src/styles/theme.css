@@ -270,15 +270,20 @@ p, .authButton, .primaryButton, .secondaryButton, .ant-tabs, .ant-form-item-labe
   color: #F5222D;
   border: 1px solid #FFA39E;
 }
-.pendingTag {
+.pausedTag, .pendingTag {
   background: #FFF7E6;
   color: #FA8C16;
   border: 1px solid #FFD591;
 }
-.closingTag {
+.closingTag, .reservedTag {
   background: #F0F5FF;
   color: #2F54EB;
   border: 1px solid #ADC6FF;
+}
+.blockedTag {
+  background: #F9F0FF;
+  color: #722ED1;
+  border: 1px solid #D3ADF7;
 }
 
 .requestSubmitted, .reserver, .sharer, .sharerIcon, .reserverIcon {

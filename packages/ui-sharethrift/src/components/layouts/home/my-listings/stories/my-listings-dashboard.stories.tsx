@@ -1,5 +1,5 @@
 import type { Meta, StoryObj } from '@storybook/react';
-import { MyListingsDashboard } from './my-listings-dashboard';
+import { MyListingsDashboard } from '../components/my-listings-dashboard';
 
 const meta: Meta<typeof MyListingsDashboard> = {
   title: 'My Listings/Dashboard',

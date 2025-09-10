@@ -1,65 +1,66 @@
 import type { Meta, StoryObj } from '@storybook/react';
-import { RequestsTable } from './requests-table';
+import { AllListingsTable } from '../components/all-listings-table';
 
 // Mock data for Storybook
-const MOCK_REQUEST_DATA = [
+const MOCK_LISTING_DATA = [
   {
     id: '1',
-    title: 'City Bike',
-    image: '/assets/item-images/bike.png',
-    requestedBy: '@patrickg',
-    requestedOn: '2025-12-23',
+    title: 'Cordless Drill',
+    image: '/assets/item-images/projector.png',
+    publishedAt: '2025-12-23',
     reservationPeriod: '2020-11-08 - 2020-12-23',
-    status: 'Pending',
+    status: 'Paused',
+    pendingRequestsCount: 0,
   },
   {
     id: '2',
     title: 'Electric Guitar',
     image: '/assets/item-images/projector.png',
-    requestedBy: '@musicfan',
-    requestedOn: '2025-09-02',
-    reservationPeriod: '2025-09-05 - 2025-09-10',
-    status: 'Accepted',
+    publishedAt: '2025-08-30',
+    reservationPeriod: '2025-09-01 - 2025-09-30',
+    status: 'Active',
+    pendingRequestsCount: 3,
   },
   {
     id: '3',
     title: 'Stand Mixer',
     image: '/assets/item-images/sewing-machine.png',
-    requestedBy: '@bakerella',
-    requestedOn: '2025-10-02',
-    reservationPeriod: '2025-10-03 - 2025-10-07',
-    status: 'Pending',
+    publishedAt: '2025-09-28',
+    reservationPeriod: '2025-10-01 - 2025-10-15',
+    status: 'Reserved',
+    pendingRequestsCount: 1,
   },
   {
     id: '4',
     title: 'Bubble Chair',
     image: '/assets/item-images/bubble-chair.png',
-    requestedBy: '@lounger',
-    requestedOn: '2025-11-02',
-    reservationPeriod: '2025-11-03 - 2025-11-10',
-    status: 'Rejected',
+    publishedAt: '2025-10-30',
+    reservationPeriod: '2025-11-01 - 2025-11-15',
+    status: 'Draft',
+    pendingRequestsCount: 0,
   },
 ];
 
-const meta: Meta<typeof RequestsTable> = {
-  title: 'My Listings/Requests Table',
-  component: RequestsTable,
+const meta: Meta<typeof AllListingsTable> = {
+  title: 'My Listings/All Listings Table',
+  component: AllListingsTable,
   parameters: {
     layout: 'padded',
   },
   args: {
-    data: MOCK_REQUEST_DATA,
+    data: MOCK_LISTING_DATA,
     searchText: '',
     statusFilters: [],
     sorter: { field: null, order: null },
     currentPage: 1,
     pageSize: 6,
-    total: MOCK_REQUEST_DATA.length,
+    total: MOCK_LISTING_DATA.length,
     onSearch: (value: string) => console.log('Search:', value),
     onStatusFilter: (values: string[]) => console.log('Status filter:', values),
     onTableChange: (pagination, filters, sorter) => console.log('Table change:', { pagination, filters, sorter }),
     onPageChange: (page: number) => console.log('Page change:', page),
-    onAction: (action: string, requestId: string) => console.log('Action:', action, 'Request:', requestId),
+    onAction: (action: string, listingId: string) => console.log('Action:', action, 'Listing:', listingId),
+    onViewAllRequests: (listingId: string) => console.log('View all requests:', listingId),
   },
 };
 
@@ -70,7 +71,7 @@ export const Default: Story = {};
 
 export const WithFilters: Story = {
   args: {
-    searchText: 'tent',
-    statusFilters: ['Pending', 'Accepted'],
+    searchText: 'bike',
+    statusFilters: ['Active', 'Paused'],
   },
 };

@@ -46,13 +46,13 @@ const getStatusTagClass = (status: string): string => {
     case 'Active':
       return 'activeTag';
     case 'Paused':
-      return 'pendingTag';
+      return 'pausedTag';
     case 'Reserved':
-      return 'activeTag';
+      return 'reservedTag';
     case 'Expired':
       return 'expiredTag';
     case 'Draft':
-      return 'pendingTag';
+      return 'draftTag';
     case 'Blocked':
       return 'blockedTag';
     default:
