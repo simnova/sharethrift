@@ -10,7 +10,8 @@ import {
 	message,
 } from 'antd';
 import { PlusOutlined, LeftOutlined, CloseOutlined } from '@ant-design/icons';
-import { Carousel } from 'antd';
+import { Dayjs } from 'dayjs';
+import { useRef } from 'react';
 import '../view-listing/listing-image-gallery/listing-image-gallery.overrides.css';
 
 const { TextArea } = Input;
@@ -46,6 +47,8 @@ export function CreateListing({
 }: CreateListingProps) {
 	const [form] = Form.useForm();
 	const maxCharacters = 2000;
+	const mainFileInputRef = useRef<HTMLInputElement>(null);
+	const additionalFileInputRef = useRef<HTMLInputElement>(null);
 
 	const handleFormSubmit = (isDraft: boolean) => {
 		form
@@ -74,7 +77,7 @@ export function CreateListing({
 			});
 	};
 
-	const disabledDate: DatePickerProps['disabledDate'] = (current) => {
+	const disabledDate = (current: Dayjs) => {
 		// Disable dates before today
 		return current && current.valueOf() < Date.now() - 24 * 60 * 60 * 1000;
 	};
@@ -82,100 +85,136 @@ export function CreateListing({
 	return (
 		<>
 			<style>{`
-        @media (max-width: 600px) {
-          .create-listing-responsive {
-            padding-left: 16px !important;
-            padding-right: 16px !important;
-            padding-top: 24px !important;
-            padding-bottom: 24px !important;
-          }
-          .create-listing-main-responsive {
-            flex-direction: column !important;
-            gap: 48px !important;
-            align-items: center !important;
-            margin-bottom: 0 !important;
-          }
-          .create-listing-images-responsive,
-          .create-listing-form-responsive {
-            width: 100% !important;
-            max-width: 450px !important;
-            margin-left: auto !important;
-            margin-right: auto !important;
-          }
-          .create-listing-images-responsive {
-            width: 100% !important;
-            maxWidth: 450px !important;
-            aspectRatio: '9/10' !important;
-            height: auto !important;
-            min-height: 300px !important;
-            padding-bottom: 12px !important;
-            margin-bottom: 16px !important;
-          }
-          .create-listing-form-responsive {
-            width: 100% !important;
-            max-width: 450px !important;
-            margin-left: auto !important;
-            margin-right: auto !important;
-            margin-top: 16px !important;
-            position: relative !important;
-            z-index: 1 !important;
-          }
-          .listing-gallery-responsive .slick-arrow {
-            color: var(--color-secondary, #3F8176) !important;
-          }
-          .listing-gallery-responsive .slick-dots li button {
-            background: var(--color-secondary, #3F8176) !important;
-          }
-          .listing-gallery-responsive .slick-dots li.slick-active button {
-            background: var(--color-secondary, #3F8176) !important;
-            opacity: 1 !important;
-            border: 2px solid var(--color-secondary, #3F8176) !important;
-          }
-          .listing-gallery-responsive .slick-dots li.slick-active::after {
-            background: transparent !important;
-          }
-          .carousel-plus-overlay {
-            position: absolute !important;
-            bottom: 12px !important;
-            right: 12px !important;
-            width: 44px !important;
-            height: 44px !important;
-            border-radius: 50% !important;
-            background-color: var(--color-secondary) !important;
-            display: flex !important;
-            align-items: center !important;
-            justify-content: center !important;
-            cursor: pointer !important;
-            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15) !important;
-            transition: all 0.3s ease !important;
-            z-index: 10 !important;
-          }
-          .carousel-plus-overlay:hover {
-            background-color: var(--color-secondary-hover, #3a7c6b) !important;
-            transform: scale(1.1) !important;
-          }
-        }
+@media (max-width: 600px) {
+  .create-listing-responsive {
+    padding-left: 16px !important;
+    padding-right: 16px !important;
+    padding-top: 24px !important;
+    padding-bottom: 24px !important;
+    margin-bottom: 48px !important;
+  }
+  .create-listing-main-responsive {
+    flex-direction: column !important;
+    gap: 80px !important;
+    align-items: center !important;
+    margin-bottom: 0 !important;
+    padding-bottom: 24px !important;
+  }
+  .create-listing-images-responsive,
+  .create-listing-form-responsive {
+    width: 100% !important;
+    max-width: 450px !important;
+    margin-left: auto !important;
+    margin-right: auto !important;
+  }
+  .create-listing-images-responsive {
+    width: 100% !important;
+    max-width: 450px !important;
+    aspect-ratio: 1/1 !important;
+    height: auto !important;
+    min-height: 300px !important;
+    padding-bottom: 12px !important;
+    margin-bottom: 16px !important;
+    margin-top: 24px !important;
+    padding-bottom: 32px !important;
+  }
+  .create-listing-form-responsive {
+    width: 100% !important;
+    max-width: 450px !important;
+    margin-left: auto !important;
+    margin-right: auto !important;
+    margin-top: 16px !important;
+    position: relative !important;
+    z-index: 1 !important;
+    padding-top: 40px !important;
+    margin-bottom: 32px !important;
+  }
+  .listing-gallery-responsive .slick-arrow {
+    color: var(--color-secondary, #3F8176) !important;
+  }
+  .listing-gallery-responsive .slick-dots li button {
+    background: var(--color-secondary, #3F8176) !important;
+  }
+  .listing-gallery-responsive .slick-dots li.slick-active button {
+    background: var(--color-secondary, #3F8176) !important;
+    opacity: 1 !important;
+    border: 2px solid var(--color-secondary, #3F8176) !important;
+  }
+  .listing-gallery-responsive .slick-dots li.slick-active::after {
+    background: transparent !important;
+  }
+  .carousel-plus-overlay {
+    position: absolute !important;
+    bottom: 12px !important;
+    right: 12px !important;
+    width: 44px !important;
+    height: 44px !important;
+    border-radius: 50% !important;
+    background-color: var(--color-secondary) !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    cursor: pointer !important;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15) !important;
+    transition: all 0.3s ease !important;
+    z-index: 10 !important;
+  }
+  .carousel-plus-overlay:hover {
+    background-color: var(--color-secondary-hover, #3a7c6b) !important;
+    transform: scale(1.1) !important;
+  }
+}
 
-        /* Add vertical spacing between buttons when they wrap */
-        .create-listing-buttons .ant-col {
-          margin-bottom: 8px !important;
-        }
-        .create-listing-buttons .ant-col:last-child {
-          margin-bottom: 0 !important;
-        }
+/* Add vertical spacing between buttons when they wrap */
+.create-listing-buttons .ant-col {
+  margin-bottom: 8px !important;
+}
+.create-listing-buttons .ant-col:last-child {
+  margin-bottom: 0 !important;
+}
 
-        .listing-gallery-responsive .slick-slide img,
-          .listing-gallery-responsive .slick-slide label,
-          .listing-gallery-responsive label {
-            max-width: none !important;
-            max-height: none !important;
-            width: 100% !important;
-            height: 100% !important;
-          }
-          .listing-gallery-responsive .slick-slide {
-        overflow: visible !important;
-      }
-      `}</style>
+.listing-gallery-responsive .slick-slide img,
+.listing-gallery-responsive .slick-slide label,
+.listing-gallery-responsive label {
+  max-width: none !important;
+  max-height: none !important;
+  width: 100% !important;
+  height: 100% !important;
+}
+.listing-gallery-responsive .slick-slide {
+  overflow: visible !important;
+}
+
+.remove-image-button {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  background: white;
+  border: 1px solid #d9d9d9;
+  border-radius: 4px;
+  z-index: 9999;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 1;
+  transition: background 0.3s ease, transform 0.3s ease;
+}
+
+.remove-image-button:hover {
+  background-color: #f0f0f0 !important;
+  border-color: #1890ff !important;
+  transform: scale(1.1) !important;
+}
+
+.remove-thumbnail-button:hover {
+  background-color: #f0f0f0 !important;
+  border-color: #ff4d4f !important;
+  transform: scale(1.1) !important;
+}
+`}</style>
 			<Row
 				style={{
 					paddingLeft: 100,
@@ -202,7 +241,10 @@ export function CreateListing({
 				<Col span={24} style={{ marginBottom: 0, paddingBottom: 0 }}>
 					<div className="title42">Create a Listing</div>
 				</Col>
-				<Col span={24} style={{ marginTop: 0, paddingTop: 0 }}>
+				<Col
+					span={24}
+					style={{ marginTop: 0, paddingTop: 0, marginBottom: '32px' }}
+				>
 					<Form form={form} layout="vertical" requiredMark="optional">
 						<Row
 							gutter={36}
@@ -225,7 +267,7 @@ export function CreateListing({
 									style={{
 										width: '100%',
 										maxWidth: 450,
-										aspectRatio: '9/10',
+										aspectRatio: '1/1',
 										margin: '0 auto',
 										padding: 0,
 										boxSizing: 'border-box',
@@ -236,266 +278,262 @@ export function CreateListing({
 									{/* Spacer to align with Item Details h1 */}
 									<div style={{ height: '24px', marginBottom: '16px' }}></div>
 
-									{/* Single Image Gallery Carousel */}
-									<div
-										style={{
-											width: '100%',
-											maxWidth: 450,
-											aspectRatio: '9/10',
-											margin: '0 auto',
-											padding: 0,
-											boxSizing: 'border-box',
-											position: 'relative',
-										}}
-									>
-										<Carousel
-											arrows
-											dots
-											swipeToSlide
-											style={{ width: '100%', height: '100%' }}
-											className="listing-gallery-responsive"
+									{/* Main Image */}
+									{uploadedImages.length > 0 && (
+										<div
+											style={{
+												width: '100%',
+												maxWidth: 450,
+												aspectRatio: '1/1',
+												margin: '0 auto',
+												padding: 0,
+												boxSizing: 'border-box',
+												position: 'relative',
+												marginBottom: '16px',
+											}}
 										>
-											{/* All uploaded images */}
-											{uploadedImages.map((image, index) => (
-												<div
+											<img
+												src={uploadedImages[0]}
+												alt="Main uploaded item"
+												style={{
+													width: '100%',
+													height: '100%',
+													aspectRatio: '1/1',
+													maxWidth: 450,
+													maxHeight: 450,
+													borderRadius: '2px',
+													border: '0.5px solid var(--color-foreground-2)',
+													objectFit: 'cover',
+													display: 'block',
+													boxSizing: 'border-box',
+													margin: '0 auto',
+												}}
+											/>
+											<Button
+												type="text"
+												danger
+												icon={<CloseOutlined />}
+												aria-label="Remove main image"
+												onClick={() => onImageRemove(uploadedImages[0])}
+												className="remove-image-button"
+												style={{
+													position: 'absolute',
+													top: '8px',
+													right: '8px',
+													background: 'white',
+													border: '1px solid #d9d9d9',
+													borderRadius: '4px',
+													zIndex: 10,
+													boxShadow: '0 2px 4px rgba(0, 0, 0, 0.1)',
+													width: '32px',
+													height: '32px',
+													display: 'flex',
+													alignItems: 'center',
+													justifyContent: 'center',
+													opacity: 1,
+												}}
+											/>
+										</div>
+									)}
+
+									{/* Image Thumbnails */}
+									{uploadedImages.length > 0 ? (
+										<div
+											style={{
+												display: 'flex',
+												flexWrap: 'wrap',
+												gap: '8px',
+												justifyContent: 'flex-start',
+												marginTop: uploadedImages.length > 1 ? '16px' : '0',
+												maxWidth: '450px',
+												margin: '0 auto',
+											}}
+										>
+											{/* Show additional images as thumbnails (skip the first one since it's the main image) */}
+											{uploadedImages.slice(1).map((image, index) => (
+												<Button
 													key={image}
+													type="text"
 													style={{
-														width: '100%',
-														height: '100%',
-														aspectRatio: '9/10',
-														display: 'flex',
-														alignItems: 'center',
-														justifyContent: 'center',
+														width: '80px',
+														height: '80px',
+														borderRadius: '4px',
+														border: '1px solid var(--color-foreground-2)',
+														overflow: 'hidden',
 														position: 'relative',
-														overflow: 'visible',
+														padding: 0,
+														margin: 0,
+														flexShrink: 0,
+													}}
+													onClick={() => {
+														// Move clicked thumbnail to main position
+														const newImages = [...uploadedImages];
+														const clickedImage = newImages.splice(
+															index + 1,
+															1,
+														)[0];
+														newImages.unshift(clickedImage);
+														// Note: This would require updating the parent state, but for now, just show the layout
 													}}
 												>
 													<img
 														src={image}
-														alt={`Uploaded item ${index + 1}`}
+														alt={`Thumbnail ${index + 2}`}
 														style={{
 															width: '100%',
 															height: '100%',
-															aspectRatio: '9/10',
-															maxWidth: 450,
-															maxHeight: 500,
-															borderRadius: '2px',
-															border: '0.5px solid var(--color-foreground-2)',
 															objectFit: 'cover',
-															display: 'block',
-															boxSizing: 'border-box',
-															margin: '0 auto',
 														}}
 													/>
-													{/* Image Counter */}
-													<div
-														style={{
-															position: 'absolute',
-															top: '8px',
-															left: '8px',
-															background: 'rgba(0, 0, 0, 0.7)',
-															color: 'white',
-															padding: '4px 8px',
-															borderRadius: '4px',
-															fontSize: '12px',
-															fontWeight: '500',
-															zIndex: 5,
-														}}
-													>
-														{index + 1} / {uploadedImages.length}
-													</div>
 													<Button
 														type="text"
 														danger
 														icon={<CloseOutlined />}
-														onClick={() => onImageRemove(image)}
+														aria-label="Remove image"
+														onClick={(e) => {
+															e.stopPropagation();
+															onImageRemove(image);
+														}}
+														className="remove-thumbnail-button"
 														style={{
 															position: 'absolute',
-															top: '8px',
-															right: '8px',
+															top: '2px',
+															right: '2px',
 															background: 'white',
 															border: '1px solid #d9d9d9',
-															borderRadius: '4px',
-															zIndex: 9999,
-															boxShadow: '0 2px 4px rgba(0, 0, 0, 0.1)',
-															width: '32px',
-															height: '32px',
+															borderRadius: '2px',
+															zIndex: 10,
+															boxShadow: '0 1px 2px rgba(0, 0, 0, 0.1)',
+															width: '20px',
+															height: '20px',
 															display: 'flex',
 															alignItems: 'center',
 															justifyContent: 'center',
 															opacity: 1,
+															fontSize: '10px',
 														}}
 													/>
-												</div>
+												</Button>
 											))}
 
-											{/* Upload Button as carousel slide */}
+											{/* Upload Thumbnail */}
 											{uploadedImages.length < 5 && (
-												<div
+												<button
+													type="button"
 													style={{
-														width: '100%',
-														height: '100%',
-														aspectRatio: '9/10',
-														display: 'flex',
-														alignItems: 'center',
-														justifyContent: 'center',
-													}}
-												>
-													<input
-														type="file"
-														accept="image/*"
-														onChange={(e) => {
-															const file = e.target.files?.[0];
-															if (file) {
-																const reader = new FileReader();
-																reader.onload = () => {
-																	const result = reader.result as string;
-																	onImageAdd(result);
-																};
-																reader.readAsDataURL(file);
-															}
-															// Reset input
-															e.target.value = '';
-														}}
-														style={{ display: 'none' }}
-														id="carousel-image-upload"
-													/>
-													<label
-														htmlFor="carousel-image-upload"
-														style={{
-															width: '100%',
-															height: '100%',
-															aspectRatio: '9/10',
-															maxWidth: 450,
-															maxHeight: 500,
-															border: '2px dashed var(--color-foreground-2)',
-															borderRadius: '2px',
-															display: 'flex',
-															flexDirection: 'column',
-															alignItems: 'center',
-															justifyContent: 'center',
-															cursor: 'pointer',
-															transition: 'border-color 0.3s ease',
-															backgroundColor: 'var(--color-background-2)',
-															boxSizing: 'border-box',
-														}}
-														onMouseEnter={(e) => {
-															e.currentTarget.style.borderColor =
-																'var(--color-secondary)';
-															e.currentTarget.style.backgroundColor =
-																'rgba(63, 129, 118, 0.05)';
-														}}
-														onMouseLeave={(e) => {
-															e.currentTarget.style.borderColor =
-																'var(--color-foreground-2)';
-															e.currentTarget.style.backgroundColor =
-																'var(--color-background-2)';
-														}}
-													>
-														<PlusOutlined
-															style={{
-																fontSize: '48px',
-																color: 'var(--color-foreground-2)',
-																marginBottom: '16px',
-															}}
-														/>
-														<div
-															style={{
-																fontSize: '18px',
-																fontWeight: '500',
-																color: 'var(--color-message-text)',
-																marginBottom: '8px',
-															}}
-														>
-															Click to upload images
-														</div>
-														<div
-															style={{
-																fontSize: '14px',
-																color: 'var(--color-primary-disabled)',
-															}}
-														>
-															or drag and drop
-														</div>
-													</label>
-												</div>
-											)}
-										</Carousel>
-
-										{/* Floating Plus Button Overlay */}
-										{uploadedImages.length > 0 && uploadedImages.length < 5 && (
-											<>
-												<input
-													type="file"
-													accept="image/*"
-													multiple
-													onChange={(e) => {
-														const files = Array.from(e.target.files || []);
-														files.forEach((file) => {
-															const reader = new FileReader();
-															reader.onload = () => {
-																const result = reader.result as string;
-																onImageAdd(result);
-															};
-															reader.readAsDataURL(file);
-														});
-														// Reset input
-														e.target.value = '';
-													}}
-													style={{ display: 'none' }}
-													id="overlay-image-upload"
-												/>
-												<label
-													htmlFor="overlay-image-upload"
-													style={{
-														position: 'absolute',
-														bottom: '12px',
-														right: '12px',
-														width: '44px',
-														height: '44px',
-														borderRadius: '50%',
-														backgroundColor: 'var(--color-secondary)',
+														width: '80px',
+														height: '80px',
+														border: '2px dashed var(--color-foreground-2)',
+														borderRadius: '4px',
 														display: 'flex',
 														alignItems: 'center',
 														justifyContent: 'center',
 														cursor: 'pointer',
-														boxShadow: '0 2px 8px rgba(0, 0, 0, 0.15)',
-														transition: 'all 0.3s ease',
-														zIndex: 10,
+														backgroundColor: 'var(--color-background-2)',
+														padding: 0,
+														flexShrink: 0,
+													}}
+													onClick={() =>
+														additionalFileInputRef.current?.click()
+													}
+													onKeyDown={(e) => {
+														if (e.key === 'Enter' || e.key === ' ') {
+															e.preventDefault();
+															additionalFileInputRef.current?.click();
+														}
 													}}
 													onMouseEnter={(e) => {
+														e.currentTarget.style.borderColor =
+															'var(--color-secondary)';
 														e.currentTarget.style.backgroundColor =
-															'var(--color-secondary-hover, #3a7c6b)';
-														e.currentTarget.style.transform = 'scale(1.1)';
+															'rgba(63, 129, 118, 0.05)';
 													}}
 													onMouseLeave={(e) => {
+														e.currentTarget.style.borderColor =
+															'var(--color-foreground-2)';
 														e.currentTarget.style.backgroundColor =
-															'var(--color-secondary)';
-														e.currentTarget.style.transform = 'scale(1)';
+															'var(--color-background-2)';
 													}}
+													aria-label="Upload additional image"
 												>
 													<PlusOutlined
 														style={{
-															fontSize: '20px',
-															color: 'white',
+															fontSize: '24px',
+															color: 'var(--color-foreground-2)',
 														}}
 													/>
-												</label>
-											</>
-										)}
-									</div>
-
-									{/* Image Count Display */}
-									<div
-										style={{
-											marginTop: '8px',
-											fontSize: '12px',
-											color: 'var(--color-primary-disabled)',
-											textAlign: 'right',
-										}}
-									>
-										{uploadedImages.length}/5 images
-									</div>
+												</button>
+											)}
+										</div>
+									) : (
+										/* Upload area when no images */
+										<div
+											style={{
+												width: '100%',
+												maxWidth: 450,
+												aspectRatio: '1/1',
+												margin: '0 auto',
+												padding: 0,
+												boxSizing: 'border-box',
+												position: 'relative',
+												marginTop: '16px',
+											}}
+										>
+											<button
+												type="button"
+												style={{
+													width: '100%',
+													height: '100%',
+													border: '2px dashed var(--color-foreground-2)',
+													borderRadius: '4px',
+													display: 'flex',
+													flexDirection: 'column',
+													alignItems: 'center',
+													justifyContent: 'center',
+													cursor: 'pointer',
+													backgroundColor: 'var(--color-background-2)',
+													padding: 0,
+												}}
+												onClick={() => mainFileInputRef.current?.click()}
+												onKeyDown={(e) => {
+													if (e.key === 'Enter' || e.key === ' ') {
+														e.preventDefault();
+														mainFileInputRef.current?.click();
+													}
+												}}
+												onMouseEnter={(e) => {
+													e.currentTarget.style.borderColor =
+														'var(--color-secondary)';
+													e.currentTarget.style.backgroundColor =
+														'rgba(63, 129, 118, 0.05)';
+												}}
+												onMouseLeave={(e) => {
+													e.currentTarget.style.borderColor =
+														'var(--color-foreground-2)';
+													e.currentTarget.style.backgroundColor =
+														'var(--color-background-2)';
+												}}
+												aria-label="Upload image"
+											>
+												<PlusOutlined
+													style={{
+														fontSize: '48px',
+														color: 'var(--color-foreground-2)',
+													}}
+												/>
+												<div
+													style={{
+														marginTop: '16px',
+														color: 'var(--color-foreground-2)',
+														fontSize: '16px',
+														fontWeight: '500',
+													}}
+												>
+													Click to upload images
+												</div>
+											</button>
+										</div>
+									)}
 								</div>
 							</Col>
 
@@ -506,7 +544,7 @@ export function CreateListing({
 								style={{ marginTop: 0, paddingTop: 0 }}
 								className="create-listing-form-responsive"
 							>
-								<div>
+								<div style={{ marginTop: '60px', paddingTop: '20px' }}>
 									<Space
 										direction="vertical"
 										size="large"
@@ -588,7 +626,8 @@ export function CreateListing({
 												placeholder="Describe your item"
 												rows={6}
 												showCount={{
-													formatter: ({ count }) => `${count}/${maxCharacters}`,
+													formatter: ({ count }: { count: number }) =>
+														`${count}/${maxCharacters}`,
 												}}
 											/>
 										</Form.Item>
@@ -636,6 +675,46 @@ export function CreateListing({
 					</Form>
 				</Col>
 			</Row>
+
+			{/* Hidden file inputs */}
+			<input
+				ref={mainFileInputRef}
+				type="file"
+				accept="image/*"
+				multiple
+				onChange={(e) => {
+					const files = Array.from(e.target.files || []);
+					files.forEach((file) => {
+						const reader = new FileReader();
+						reader.onload = () => {
+							const result = reader.result as string;
+							onImageAdd(result);
+						};
+						reader.readAsDataURL(file);
+					});
+					e.target.value = '';
+				}}
+				style={{ display: 'none' }}
+			/>
+			<input
+				ref={additionalFileInputRef}
+				type="file"
+				accept="image/*"
+				multiple
+				onChange={(e) => {
+					const files = Array.from(e.target.files || []);
+					files.forEach((file) => {
+						const reader = new FileReader();
+						reader.onload = () => {
+							const result = reader.result as string;
+							onImageAdd(result);
+						};
+						reader.readAsDataURL(file);
+					});
+					e.target.value = '';
+				}}
+				style={{ display: 'none' }}
+			/>
 		</>
 	);
 }
