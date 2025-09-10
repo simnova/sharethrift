@@ -1,17 +1,18 @@
 import { DomainSeedwork } from '@cellix/domain-seedwork';
 import type { Passport } from '../../passport.ts';
-import type { ItemListingVisa } from './item-listing.visa.ts';
+import type { ListingVisa } from '../listing.visa.ts';
 import * as ValueObjects from './item-listing.value-objects.ts';
+import type { PersonalUserEntityReference } from '../../user/personal-user/personal-user.ts'
 
 export interface ItemListingProps extends DomainSeedwork.DomainEntityProps {
-	readonly sharer: string;
-	title: ValueObjects.Title;
-	description: ValueObjects.Description;
-	category: ValueObjects.Category;
-	location: ValueObjects.Location;
+	sharer: Readonly<PersonalUserEntityReference>;
+	title: string;
+	description: string;
+	category: string;
+	location: string;
 	sharingPeriodStart: Date;
 	sharingPeriodEnd: Date;
-	state: ValueObjects.ListingState;
+	state: string;
 	readonly createdAt: Date;
 	updatedAt: Date;
 	readonly schemaVersion: string;
@@ -22,8 +23,8 @@ export interface ItemListingProps extends DomainSeedwork.DomainEntityProps {
 
 export interface ItemListingEntityReference
 	extends Readonly<Omit<ItemListingProps, 'sharingHistory' | 'images'>> {
-	readonly sharingHistory?: readonly string[];
-	readonly images?: readonly string[];
+	sharingHistory?: string[];
+	images?: string[];
 }
 
 export class ItemListing<props extends ItemListingProps>
@@ -32,19 +33,20 @@ export class ItemListing<props extends ItemListingProps>
 {
 	//#region Fields
 	private isNew: boolean = false;
-	private readonly visa: ItemListingVisa;
+	private readonly visa: ListingVisa;
 	//#endregion Fields
 
 	//#region Constructor
 	constructor(props: props, passport: Passport) {
 		super(props, passport);
-		this.visa = passport.itemListing.forItemListing(this);
+		this.visa = passport.listing.forItemListing(this);
 	}
 	//#endregion Constructor
 
 	//#region Methods
 	public static getNewInstance<props extends ItemListingProps>(
 		newProps: props,
+		sharer: PersonalUserEntityReference,
 		passport: Passport,
 	): ItemListing<props> {
 		const id = crypto.randomUUID();
@@ -52,8 +54,7 @@ export class ItemListing<props extends ItemListingProps>
 
 		const itemListingProps = {
 			id,
-
-			sharer: newProps.sharer,
+			sharer: sharer,
 			title: newProps.title,
 			description: newProps.description,
 			category: newProps.category,
@@ -81,14 +82,18 @@ export class ItemListing<props extends ItemListingProps>
 	//#endregion Methods
 
 	//#region Properties
-	get sharer(): string {
+	get sharer(): PersonalUserEntityReference {
 		return this.props.sharer;
 	}
 
-	get title(): ValueObjects.Title {
+	set sharer(value: PersonalUserEntityReference) {
+		this.props.sharer = value;
+	}
+
+	get title(): string {
 		return this.props.title;
 	}
-	set title(value: ValueObjects.Title) {
+	set title(value: string) {
 		if (
 			!this.isNew &&
 			!this.visa.determineIf((permissions) => permissions.canUpdateItemListing)
@@ -97,14 +102,14 @@ export class ItemListing<props extends ItemListingProps>
 				'You do not have permission to update this title',
 			);
 		}
-		this.props.title = value;
+		this.props.title = new ValueObjects.Title(value).valueOf();
 		this.props.updatedAt = new Date();
 	}
 
-	get description(): ValueObjects.Description {
-		return this.props.description;
+	get description(): string {
+		return this.props.description.valueOf();
 	}
-	set description(value: ValueObjects.Description) {
+	set description(value: string) {
 		if (
 			!this.isNew &&
 			!this.visa.determineIf((permissions) => permissions.canUpdateItemListing)
@@ -113,14 +118,14 @@ export class ItemListing<props extends ItemListingProps>
 				'You do not have permission to update this description',
 			);
 		}
-		this.props.description = value;
+		this.props.description = new ValueObjects.Description(value).valueOf();
 		this.props.updatedAt = new Date();
 	}
 
-	get category(): ValueObjects.Category {
+	get category(): string {
 		return this.props.category;
 	}
-	set category(value: ValueObjects.Category) {
+	set category(value: string) {
 		if (
 			!this.isNew &&
 			!this.visa.determineIf((permissions) => permissions.canUpdateItemListing)
@@ -129,14 +134,14 @@ export class ItemListing<props extends ItemListingProps>
 				'You do not have permission to update this category',
 			);
 		}
-		this.props.category = value;
+		this.props.category = new ValueObjects.Category(value).valueOf();
 		this.props.updatedAt = new Date();
 	}
 
-	get location(): ValueObjects.Location {
+	get location(): string {
 		return this.props.location;
 	}
-	set location(value: ValueObjects.Location) {
+	set location(value: string) {
 		if (
 			!this.isNew &&
 			!this.visa.determineIf((permissions) => permissions.canUpdateItemListing)
@@ -145,7 +150,7 @@ export class ItemListing<props extends ItemListingProps>
 				'You do not have permission to update this location',
 			);
 		}
-		this.props.location = value;
+		this.props.location = new ValueObjects.Location(value).valueOf();
 		this.props.updatedAt = new Date();
 	}
 
@@ -181,7 +186,7 @@ export class ItemListing<props extends ItemListingProps>
 		this.props.updatedAt = new Date();
 	}
 
-	get state(): ValueObjects.ListingState {
+	get state(): string {
 		return this.props.state;
 	}
 
@@ -197,16 +202,16 @@ export class ItemListing<props extends ItemListingProps>
 		return this.props.schemaVersion;
 	}
 
-	get sharingHistory(): readonly string[] {
-		return this.props.sharingHistory ?? [];
+	get sharingHistory(): string[] {
+		return this.props.sharingHistory ? [...this.props.sharingHistory] : [];
 	}
 
 	get reports(): number {
 		return this.props.reports ?? 0;
 	}
 
-	get images(): readonly string[] {
-		return this.props.images ?? [];
+	get images(): string[] {
+		return this.props.images ? [...this.props.images] : [];
 	}
 	set images(value: string[]) {
 		if (
@@ -220,11 +225,7 @@ export class ItemListing<props extends ItemListingProps>
 		this.props.images = value;
 		this.props.updatedAt = new Date();
 	}
-	//#endregion Properties
 
-	/**
-	 * Determines if this listing is visible to regular users
-	 */
 	get isActive(): boolean {
 		return this.props.state.valueOf() === ValueObjects.ListingStateEnum.Published;
 	}
@@ -232,32 +233,12 @@ export class ItemListing<props extends ItemListingProps>
 	/**
 	 * Determines if the current user can edit this listing
 	 */
-	canEdit(userId: string): boolean {
-		return this.props.sharer === userId;
-	}
+	// canEdit(userId: string): boolean {
+	// 	return this.props.sharer === userId;
+	// }
 
-	/**
-	 * Gets a formatted date range string for display
-	 */
-	get dateRange(): string {
-		const startDate = this.sharingPeriodStart.toLocaleDateString('en-US', {
-			month: '2-digit',
-			day: '2-digit',
-			year: '2-digit',
-		});
-		const endDate = this.sharingPeriodEnd.toLocaleDateString('en-US', {
-			month: '2-digit',
-			day: '2-digit',
-			year: '2-digit',
-		});
-		return `${startDate} → ${endDate}`;
-	}
-
-	/**
-	 * Gets the location in a display-friendly format
-	 */
 	get displayLocation(): string {
-		return this.location.cityState;
+		return this.location;
 	}
 
 	public publish(): void {
@@ -269,7 +250,7 @@ export class ItemListing<props extends ItemListingProps>
 			);
 		}
 
-		this.props.state = ValueObjects.ListingState.Published;
+		this.props.state = new ValueObjects.ListingState('Published').valueOf();
 		this.props.updatedAt = new Date();
 	}
 
@@ -284,7 +265,7 @@ export class ItemListing<props extends ItemListingProps>
 			);
 		}
 
-		this.props.state = ValueObjects.ListingState.Paused;
+		this.props.state = new ValueObjects.ListingState('Paused').valueOf();
 		this.props.updatedAt = new Date();
 	}
 
@@ -297,7 +278,7 @@ export class ItemListing<props extends ItemListingProps>
 			);
 		}
 
-		this.props.state = ValueObjects.ListingState.Cancelled;
+		this.props.state = new ValueObjects.ListingState('Cancelled').valueOf();
 		this.props.updatedAt = new Date();
 	}
 

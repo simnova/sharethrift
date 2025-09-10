@@ -1,6 +1,7 @@
 import { Domain } from '@sthrift/api-domain';
 import type { Models } from '@sthrift/api-data-sources-mongoose-models';
 import { MongooseSeedwork } from '@cellix/data-sources-mongoose';
+import { PersonalUserDomainAdapter } from '../../user/personal-user/personal-user.domain-adapter.ts';
 
 export class ItemListingConverter extends MongooseSeedwork.MongoTypeConverter<
 	Models.Listing.ItemListing,
@@ -21,51 +22,39 @@ export class ItemListingDomainAdapter
 	implements Domain.Contexts.Listing.ItemListing.ItemListingProps
 {
 	// Primitive Fields Getters and Setters
-	get title(): Domain.Contexts.Listing.ItemListing.ItemListingValueObjects.Title {
-		return new Domain.Contexts.Listing.ItemListing.ItemListingValueObjects.Title(
-			this.doc.title,
-		);
+	get title(): string {
+		return this.doc.title;
 	}
-	set title(value: Domain.Contexts.Listing.ItemListing.ItemListingValueObjects.Title) {
-		this.doc.title = value.valueOf();
+	set title(value: string) {
+		this.doc.title = value;
 	}
 
-	get description(): Domain.Contexts.Listing.ItemListing.ItemListingValueObjects.Description {
-		return new Domain.Contexts.Listing.ItemListing.ItemListingValueObjects.Description(
-			this.doc.description,
-		);
+	get description(): string {
+		return this.doc.description;
 	}
-	set description(value: Domain.Contexts.Listing.ItemListing.ItemListingValueObjects.Description) {
-		this.doc.description = value.valueOf();
+	set description(value: string) {
+		this.doc.description = value;
 	}
 
-	get category(): Domain.Contexts.Listing.ItemListing.ItemListingValueObjects.Category {
-		return new Domain.Contexts.Listing.ItemListing.ItemListingValueObjects.Category(
-			this.doc.category,
-		);
+	get category(): string {
+		return this.doc.category;
 	}
-	set category(value: Domain.Contexts.Listing.ItemListing.ItemListingValueObjects.Category) {
-		this.doc.category = value.valueOf();
+	set category(value: string) {
+		this.doc.category = value;
 	}
 
-	get location(): Domain.Contexts.Listing.ItemListing.ItemListingValueObjects.Location {
-		return new Domain.Contexts.Listing.ItemListing.ItemListingValueObjects.Location(
-			this.doc.location,
-		);
+	get location(): string {
+		return this.doc.location;
 	}
-	set location(value: Domain.Contexts.Listing.ItemListing.ItemListingValueObjects.Location) {
-		this.doc.location = value.valueOf();
+	set location(value: string) {
+		this.doc.location = value;
 	}
 
-	get state(): Domain.Contexts.Listing.ItemListing.ItemListingValueObjects.ListingState {
-		return new Domain.Contexts.Listing.ItemListing.ItemListingValueObjects.ListingState(
-			this.doc.state || 'Published',
-		);
+	get state(): string {
+		return this.doc.state || 'Published';
 	}
-	set state(value: Domain.Contexts.Listing.ItemListing.ItemListingValueObjects.ListingState) {
-		this.doc.state = value.valueOf() as NonNullable<
-			Models.Listing.ItemListing['state']
-		>;
+	set state(value: string) {
+		this.doc.state = value as NonNullable<Models.Listing.ItemListing['state']>;
 	}
 
 	get sharingPeriodStart(): Date {
@@ -82,11 +71,33 @@ export class ItemListingDomainAdapter
 		this.doc.sharingPeriodEnd = value;
 	}
 
-	get sharer(): string {
-		return this.doc.sharer?.toString() || '';
+	get sharer(): Domain.Contexts.User.PersonalUser.PersonalUserEntityReference {
+		if (!this.doc.sharer) {
+			throw new Error('listing is not populated');
+		}
+		if (this.doc.sharer instanceof MongooseSeedwork.ObjectId) {
+			throw new Error('listing is not populated or is not of the correct type');
+		}
+		return new PersonalUserDomainAdapter(
+			this.doc.sharer as Models.User.PersonalUser,
+		);
 	}
-	set sharer(value: string) {
-		this.doc.sharer = value as unknown as Models.Listing.ItemListing['sharer'];
+	async loadSharer(): Promise<Domain.Contexts.User.PersonalUser.PersonalUserEntityReference> {
+		if (!this.doc.sharer) {
+			throw new Error('sharer is not populated');
+		}
+		if (this.doc.sharer instanceof MongooseSeedwork.ObjectId) {
+			await this.doc.populate('sharer');
+		}
+		return new PersonalUserDomainAdapter(
+			this.doc.sharer as Models.User.PersonalUser,
+		);
+	}
+	set sharer(user: Domain.Contexts.User.PersonalUser.PersonalUserEntityReference) {
+		if (!user?.id) {
+			throw new Error('user reference is missing id');
+		}
+		this.doc.set('sharer', new MongooseSeedwork.ObjectId(user.id));
 	}
 
 	get sharingHistory(): string[] {

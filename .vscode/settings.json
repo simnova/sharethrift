@@ -4,7 +4,8 @@
         "dataobject",
         "lucaspaganini",
         "maxlength",
-        "seedwork"
+        "seedwork",
+        "sharethrift"
     ],
     "azureFunctions.deploySubpath": "packages/api",
     "azureFunctions.postDeployTask": "npm install (functions)",
@@ -28,6 +29,7 @@
         "connectionId": "simnova",
         "projectKey": "simnova_sharethrift-data-access"
     },
+    "editor.formatOnSave": true,
     // "[typescript]": {
     //     "editor.tabSize": 2,
     //     // "prettier.singleQuote": true,

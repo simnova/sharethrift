@@ -2,6 +2,8 @@ import type { Domain, DomainDataSource } from '@sthrift/api-domain';
 import type { ModelsContext } from '../../index.ts';
 import { UserContextPersistence } from './user/index.ts';
 import { ListingContextPersistence } from './listing/index.ts';
+import { ConversationContextPersistence } from './conversation/index.ts';
+import { ReservationRequestContextPersistence } from './reservation-request/index.ts'
 
 export const DomainDataSourceImplementation = (
 	models: ModelsContext,
@@ -9,4 +11,6 @@ export const DomainDataSourceImplementation = (
 ): DomainDataSource => ({
 	User: UserContextPersistence(models, passport),
 	Listing: ListingContextPersistence(models, passport),
+	Conversation: ConversationContextPersistence(models, passport),
+    ReservationRequest: ReservationRequestContextPersistence(models, passport),
 });

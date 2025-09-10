@@ -122,6 +122,14 @@ export type BlobMetadataField = {
 /**  Required to enable Apollo Cache Control  */
 export type CacheControlScope = "PRIVATE" | "PUBLIC";
 
+export type CancelReservationInput = {
+  id: Scalars["ObjectID"]["input"];
+};
+
+export type CloseReservationInput = {
+  id: Scalars["ObjectID"]["input"];
+};
+
 /** GraphQL schema for Conversations */
 export type Conversation = MongoBase & {
   __typename?: "Conversation";
@@ -193,6 +201,18 @@ export type Mutation = {
   __typename?: "Mutation";
   /** IGNORE: Dummy field necessary for the Mutation type to be valid */
   _empty?: Maybe<Scalars["String"]["output"]>;
+  cancelReservation: ReservationRequest;
+  closeReservation: ReservationRequest;
+};
+
+/**  Base Mutation Type definition - all mutations will be defined in separate files extending this type  */
+export type MutationCancelReservationArgs = {
+  input: CancelReservationInput;
+};
+
+/**  Base Mutation Type definition - all mutations will be defined in separate files extending this type  */
+export type MutationCloseReservationArgs = {
+  input: CloseReservationInput;
 };
 
 export type MutationResult = {
@@ -326,6 +346,8 @@ export type Query = {
   currentPersonalUserAndCreateIfNotExists: PersonalUser;
   itemListing?: Maybe<ItemListing>;
   itemListings: Array<ItemListing>;
+  myActiveReservations: Array<ReservationRequest>;
+  myPastReservations: Array<ReservationRequest>;
   personalUserById?: Maybe<PersonalUser>;
 };
 
@@ -340,9 +362,46 @@ export type QueryItemListingArgs = {
 };
 
 /**  Base Query Type definition - , all mutations will be defined in separate files extending this type  */
+export type QueryMyActiveReservationsArgs = {
+  userId: Scalars["ObjectID"]["input"];
+};
+
+/**  Base Query Type definition - , all mutations will be defined in separate files extending this type  */
+export type QueryMyPastReservationsArgs = {
+  userId: Scalars["ObjectID"]["input"];
+};
+
+/**  Base Query Type definition - , all mutations will be defined in separate files extending this type  */
 export type QueryPersonalUserByIdArgs = {
   id: Scalars["ObjectID"]["input"];
 };
+
+export type ReservationRequest = {
+  __typename?: "ReservationRequest";
+  closeRequestedByReserver: Scalars["Boolean"]["output"];
+  closeRequestedBySharer: Scalars["Boolean"]["output"];
+  createdAt: Scalars["String"]["output"];
+  id: Scalars["ObjectID"]["output"];
+  listing: ItemListing;
+  reservationPeriodEnd: Scalars["String"]["output"];
+  reservationPeriodStart: Scalars["String"]["output"];
+  reserver: PersonalUser;
+  state: ReservationRequestState;
+  updatedAt: Scalars["String"]["output"];
+};
+
+export type ReservationRequestMutationResult = MutationResult & {
+  __typename?: "ReservationRequestMutationResult";
+  reservationRequest?: Maybe<ReservationRequest>;
+  status: MutationStatus;
+};
+
+export type ReservationRequestState =
+  | "Accepted"
+  | "Cancelled"
+  | "Closed"
+  | "Rejected"
+  | "Requested";
 
 export type User = {
   __typename?: "User";
@@ -355,59 +414,6 @@ export type DummyGraphqlQueryVariables = Exact<{ [key: string]: never }>;
 export type DummyGraphqlQuery = {
   __typename?: "Query";
   itemListings: Array<{ __typename?: "ItemListing"; id: any }>;
-};
-
-export type HomeAccountProfileViewContainerCurrentUserQueryVariables = Exact<{
-  [key: string]: never;
-}>;
-
-export type HomeAccountProfileViewContainerCurrentUserQuery = {
-  __typename?: "Query";
-  currentPersonalUserAndCreateIfNotExists: {
-    __typename?: "PersonalUser";
-    id: any;
-    userType?: string | null;
-    createdAt?: any | null;
-    account?: {
-      __typename?: "PersonalUserAccount";
-      accountType?: string | null;
-      email?: string | null;
-      username?: string | null;
-      profile?: {
-        __typename?: "PersonalUserAccountProfile";
-        firstName?: string | null;
-        lastName?: string | null;
-        location?: {
-          __typename?: "PersonalUserAccountProfileLocation";
-          city?: string | null;
-          state?: string | null;
-        } | null;
-      } | null;
-    } | null;
-  };
-};
-
-export type HomeAccountProfileViewContainerUserListingsQueryVariables = Exact<{
-  [key: string]: never;
-}>;
-
-export type HomeAccountProfileViewContainerUserListingsQuery = {
-  __typename?: "Query";
-  itemListings: Array<{
-    __typename?: "ItemListing";
-    id: any;
-    title: string;
-    description: string;
-    category: string;
-    location: string;
-    state?: ItemListingState | null;
-    images?: Array<string> | null;
-    sharer: string;
-    createdAt?: any | null;
-    updatedAt?: any | null;
-    sharingPeriodStart: any;
-    sharingPeriodEnd: any;
-  }>;
 };
 
 export type GetListingsQueryVariables = Exact<{ [key: string]: never }>;
@@ -528,6 +534,158 @@ export type ViewListingQuery = {
   } | null;
 };
 
+export type ReservationsViewActiveContainerReservationFieldsFragment = {
+  __typename?: "ReservationRequest";
+  id: any;
+  state: ReservationRequestState;
+  reservationPeriodStart: string;
+  reservationPeriodEnd: string;
+  createdAt: string;
+  updatedAt: string;
+  closeRequestedBySharer: boolean;
+  closeRequestedByReserver: boolean;
+  listing: { __typename?: "ItemListing"; id: any; title: string };
+  reserver: {
+    __typename?: "PersonalUser";
+    account?: {
+      __typename?: "PersonalUserAccount";
+      username?: string | null;
+      profile?: {
+        __typename?: "PersonalUserAccountProfile";
+        firstName?: string | null;
+        lastName?: string | null;
+      } | null;
+    } | null;
+  };
+};
+
+export type ReservationsViewActiveContainerActiveReservationsQueryVariables =
+  Exact<{
+    userId: Scalars["ObjectID"]["input"];
+  }>;
+
+export type ReservationsViewActiveContainerActiveReservationsQuery = {
+  __typename?: "Query";
+  myActiveReservations: Array<{
+    __typename?: "ReservationRequest";
+    id: any;
+    state: ReservationRequestState;
+    reservationPeriodStart: string;
+    reservationPeriodEnd: string;
+    createdAt: string;
+    updatedAt: string;
+    closeRequestedBySharer: boolean;
+    closeRequestedByReserver: boolean;
+    listing: { __typename?: "ItemListing"; id: any; title: string };
+    reserver: {
+      __typename?: "PersonalUser";
+      account?: {
+        __typename?: "PersonalUserAccount";
+        username?: string | null;
+        profile?: {
+          __typename?: "PersonalUserAccountProfile";
+          firstName?: string | null;
+          lastName?: string | null;
+        } | null;
+      } | null;
+    };
+  }>;
+};
+
+export type ReservationsViewActiveContainerCancelReservationMutationVariables =
+  Exact<{
+    input: CancelReservationInput;
+  }>;
+
+export type ReservationsViewActiveContainerCancelReservationMutation = {
+  __typename?: "Mutation";
+  cancelReservation: {
+    __typename?: "ReservationRequest";
+    id: any;
+    state: ReservationRequestState;
+    updatedAt: string;
+    closeRequestedBySharer: boolean;
+    closeRequestedByReserver: boolean;
+  };
+};
+
+export type ReservationsViewActiveContainerCloseReservationMutationVariables =
+  Exact<{
+    input: CloseReservationInput;
+  }>;
+
+export type ReservationsViewActiveContainerCloseReservationMutation = {
+  __typename?: "Mutation";
+  closeReservation: {
+    __typename?: "ReservationRequest";
+    id: any;
+    state: ReservationRequestState;
+    updatedAt: string;
+    closeRequestedBySharer: boolean;
+    closeRequestedByReserver: boolean;
+  };
+};
+
+export type ReservationsViewHistoryContainerReservationFieldsFragment = {
+  __typename?: "ReservationRequest";
+  id: any;
+  state: ReservationRequestState;
+  reservationPeriodStart: string;
+  reservationPeriodEnd: string;
+  createdAt: string;
+  updatedAt: string;
+  closeRequestedBySharer: boolean;
+  closeRequestedByReserver: boolean;
+  listing: { __typename?: "ItemListing"; id: any; title: string };
+  reserver: {
+    __typename?: "PersonalUser";
+    id: any;
+    account?: {
+      __typename?: "PersonalUserAccount";
+      username?: string | null;
+      profile?: {
+        __typename?: "PersonalUserAccountProfile";
+        firstName?: string | null;
+        lastName?: string | null;
+      } | null;
+    } | null;
+  };
+};
+
+export type ReservationsViewHistoryContainerPastReservationsQueryVariables =
+  Exact<{
+    userId: Scalars["ObjectID"]["input"];
+  }>;
+
+export type ReservationsViewHistoryContainerPastReservationsQuery = {
+  __typename?: "Query";
+  myPastReservations: Array<{
+    __typename?: "ReservationRequest";
+    id: any;
+    state: ReservationRequestState;
+    reservationPeriodStart: string;
+    reservationPeriodEnd: string;
+    createdAt: string;
+    updatedAt: string;
+    closeRequestedBySharer: boolean;
+    closeRequestedByReserver: boolean;
+    listing: { __typename?: "ItemListing"; id: any; title: string };
+    reserver: {
+      __typename?: "PersonalUser";
+      id: any;
+      account?: {
+        __typename?: "PersonalUserAccount";
+        username?: string | null;
+        profile?: {
+          __typename?: "PersonalUserAccountProfile";
+          firstName?: string | null;
+          lastName?: string | null;
+        } | null;
+      } | null;
+    };
+  }>;
+};
+
 export type SignUpSectionLayoutContainerCurrentPersonalUserAndCreateIfNotExistsQueryVariables =
   Exact<{ [key: string]: never }>;
 
@@ -549,6 +707,195 @@ export type SignUpSectionLayoutContainerCurrentPersonalUserAndCreateIfNotExistsQ
     };
   };
 
+export const ReservationsViewActiveContainerReservationFieldsFragmentDoc = {
+  kind: "Document",
+  definitions: [
+    {
+      kind: "FragmentDefinition",
+      name: {
+        kind: "Name",
+        value: "ReservationsViewActiveContainerReservationFields",
+      },
+      typeCondition: {
+        kind: "NamedType",
+        name: { kind: "Name", value: "ReservationRequest" },
+      },
+      selectionSet: {
+        kind: "SelectionSet",
+        selections: [
+          { kind: "Field", name: { kind: "Name", value: "id" } },
+          { kind: "Field", name: { kind: "Name", value: "state" } },
+          {
+            kind: "Field",
+            name: { kind: "Name", value: "reservationPeriodStart" },
+          },
+          {
+            kind: "Field",
+            name: { kind: "Name", value: "reservationPeriodEnd" },
+          },
+          { kind: "Field", name: { kind: "Name", value: "createdAt" } },
+          { kind: "Field", name: { kind: "Name", value: "updatedAt" } },
+          {
+            kind: "Field",
+            name: { kind: "Name", value: "listing" },
+            selectionSet: {
+              kind: "SelectionSet",
+              selections: [
+                { kind: "Field", name: { kind: "Name", value: "id" } },
+                { kind: "Field", name: { kind: "Name", value: "title" } },
+              ],
+            },
+          },
+          {
+            kind: "Field",
+            name: { kind: "Name", value: "reserver" },
+            selectionSet: {
+              kind: "SelectionSet",
+              selections: [
+                {
+                  kind: "Field",
+                  name: { kind: "Name", value: "account" },
+                  selectionSet: {
+                    kind: "SelectionSet",
+                    selections: [
+                      {
+                        kind: "Field",
+                        name: { kind: "Name", value: "username" },
+                      },
+                      {
+                        kind: "Field",
+                        name: { kind: "Name", value: "profile" },
+                        selectionSet: {
+                          kind: "SelectionSet",
+                          selections: [
+                            {
+                              kind: "Field",
+                              name: { kind: "Name", value: "firstName" },
+                            },
+                            {
+                              kind: "Field",
+                              name: { kind: "Name", value: "lastName" },
+                            },
+                          ],
+                        },
+                      },
+                    ],
+                  },
+                },
+              ],
+            },
+          },
+          {
+            kind: "Field",
+            name: { kind: "Name", value: "closeRequestedBySharer" },
+          },
+          {
+            kind: "Field",
+            name: { kind: "Name", value: "closeRequestedByReserver" },
+          },
+        ],
+      },
+    },
+  ],
+} as unknown as DocumentNode<
+  ReservationsViewActiveContainerReservationFieldsFragment,
+  unknown
+>;
+export const ReservationsViewHistoryContainerReservationFieldsFragmentDoc = {
+  kind: "Document",
+  definitions: [
+    {
+      kind: "FragmentDefinition",
+      name: {
+        kind: "Name",
+        value: "ReservationsViewHistoryContainerReservationFields",
+      },
+      typeCondition: {
+        kind: "NamedType",
+        name: { kind: "Name", value: "ReservationRequest" },
+      },
+      selectionSet: {
+        kind: "SelectionSet",
+        selections: [
+          { kind: "Field", name: { kind: "Name", value: "id" } },
+          { kind: "Field", name: { kind: "Name", value: "state" } },
+          {
+            kind: "Field",
+            name: { kind: "Name", value: "reservationPeriodStart" },
+          },
+          {
+            kind: "Field",
+            name: { kind: "Name", value: "reservationPeriodEnd" },
+          },
+          { kind: "Field", name: { kind: "Name", value: "createdAt" } },
+          { kind: "Field", name: { kind: "Name", value: "updatedAt" } },
+          {
+            kind: "Field",
+            name: { kind: "Name", value: "listing" },
+            selectionSet: {
+              kind: "SelectionSet",
+              selections: [
+                { kind: "Field", name: { kind: "Name", value: "id" } },
+                { kind: "Field", name: { kind: "Name", value: "title" } },
+              ],
+            },
+          },
+          {
+            kind: "Field",
+            name: { kind: "Name", value: "reserver" },
+            selectionSet: {
+              kind: "SelectionSet",
+              selections: [
+                { kind: "Field", name: { kind: "Name", value: "id" } },
+                {
+                  kind: "Field",
+                  name: { kind: "Name", value: "account" },
+                  selectionSet: {
+                    kind: "SelectionSet",
+                    selections: [
+                      {
+                        kind: "Field",
+                        name: { kind: "Name", value: "username" },
+                      },
+                      {
+                        kind: "Field",
+                        name: { kind: "Name", value: "profile" },
+                        selectionSet: {
+                          kind: "SelectionSet",
+                          selections: [
+                            {
+                              kind: "Field",
+                              name: { kind: "Name", value: "firstName" },
+                            },
+                            {
+                              kind: "Field",
+                              name: { kind: "Name", value: "lastName" },
+                            },
+                          ],
+                        },
+                      },
+                    ],
+                  },
+                },
+              ],
+            },
+          },
+          {
+            kind: "Field",
+            name: { kind: "Name", value: "closeRequestedBySharer" },
+          },
+          {
+            kind: "Field",
+            name: { kind: "Name", value: "closeRequestedByReserver" },
+          },
+        ],
+      },
+    },
+  ],
+} as unknown as DocumentNode<
+  ReservationsViewHistoryContainerReservationFieldsFragment,
+  unknown
+>;
 export const DummyGraphqlDocument = {
   kind: "Document",
   definitions: [
@@ -574,142 +921,6 @@ export const DummyGraphqlDocument = {
     },
   ],
 } as unknown as DocumentNode<DummyGraphqlQuery, DummyGraphqlQueryVariables>;
-export const HomeAccountProfileViewContainerCurrentUserDocument = {
-  kind: "Document",
-  definitions: [
-    {
-      kind: "OperationDefinition",
-      operation: "query",
-      name: {
-        kind: "Name",
-        value: "HomeAccountProfileViewContainerCurrentUser",
-      },
-      selectionSet: {
-        kind: "SelectionSet",
-        selections: [
-          {
-            kind: "Field",
-            name: {
-              kind: "Name",
-              value: "currentPersonalUserAndCreateIfNotExists",
-            },
-            selectionSet: {
-              kind: "SelectionSet",
-              selections: [
-                { kind: "Field", name: { kind: "Name", value: "id" } },
-                { kind: "Field", name: { kind: "Name", value: "userType" } },
-                {
-                  kind: "Field",
-                  name: { kind: "Name", value: "account" },
-                  selectionSet: {
-                    kind: "SelectionSet",
-                    selections: [
-                      {
-                        kind: "Field",
-                        name: { kind: "Name", value: "accountType" },
-                      },
-                      { kind: "Field", name: { kind: "Name", value: "email" } },
-                      {
-                        kind: "Field",
-                        name: { kind: "Name", value: "username" },
-                      },
-                      {
-                        kind: "Field",
-                        name: { kind: "Name", value: "profile" },
-                        selectionSet: {
-                          kind: "SelectionSet",
-                          selections: [
-                            {
-                              kind: "Field",
-                              name: { kind: "Name", value: "firstName" },
-                            },
-                            {
-                              kind: "Field",
-                              name: { kind: "Name", value: "lastName" },
-                            },
-                            {
-                              kind: "Field",
-                              name: { kind: "Name", value: "location" },
-                              selectionSet: {
-                                kind: "SelectionSet",
-                                selections: [
-                                  {
-                                    kind: "Field",
-                                    name: { kind: "Name", value: "city" },
-                                  },
-                                  {
-                                    kind: "Field",
-                                    name: { kind: "Name", value: "state" },
-                                  },
-                                ],
-                              },
-                            },
-                          ],
-                        },
-                      },
-                    ],
-                  },
-                },
-                { kind: "Field", name: { kind: "Name", value: "createdAt" } },
-              ],
-            },
-          },
-        ],
-      },
-    },
-  ],
-} as unknown as DocumentNode<
-  HomeAccountProfileViewContainerCurrentUserQuery,
-  HomeAccountProfileViewContainerCurrentUserQueryVariables
->;
-export const HomeAccountProfileViewContainerUserListingsDocument = {
-  kind: "Document",
-  definitions: [
-    {
-      kind: "OperationDefinition",
-      operation: "query",
-      name: {
-        kind: "Name",
-        value: "HomeAccountProfileViewContainerUserListings",
-      },
-      selectionSet: {
-        kind: "SelectionSet",
-        selections: [
-          {
-            kind: "Field",
-            name: { kind: "Name", value: "itemListings" },
-            selectionSet: {
-              kind: "SelectionSet",
-              selections: [
-                { kind: "Field", name: { kind: "Name", value: "id" } },
-                { kind: "Field", name: { kind: "Name", value: "title" } },
-                { kind: "Field", name: { kind: "Name", value: "description" } },
-                { kind: "Field", name: { kind: "Name", value: "category" } },
-                { kind: "Field", name: { kind: "Name", value: "location" } },
-                { kind: "Field", name: { kind: "Name", value: "state" } },
-                { kind: "Field", name: { kind: "Name", value: "images" } },
-                { kind: "Field", name: { kind: "Name", value: "sharer" } },
-                { kind: "Field", name: { kind: "Name", value: "createdAt" } },
-                { kind: "Field", name: { kind: "Name", value: "updatedAt" } },
-                {
-                  kind: "Field",
-                  name: { kind: "Name", value: "sharingPeriodStart" },
-                },
-                {
-                  kind: "Field",
-                  name: { kind: "Name", value: "sharingPeriodEnd" },
-                },
-              ],
-            },
-          },
-        ],
-      },
-    },
-  ],
-} as unknown as DocumentNode<
-  HomeAccountProfileViewContainerUserListingsQuery,
-  HomeAccountProfileViewContainerUserListingsQueryVariables
->;
 export const GetListingsDocument = {
   kind: "Document",
   definitions: [
@@ -1077,6 +1288,439 @@ export const ViewListingDocument = {
     },
   ],
 } as unknown as DocumentNode<ViewListingQuery, ViewListingQueryVariables>;
+export const ReservationsViewActiveContainerActiveReservationsDocument = {
+  kind: "Document",
+  definitions: [
+    {
+      kind: "OperationDefinition",
+      operation: "query",
+      name: {
+        kind: "Name",
+        value: "ReservationsViewActiveContainerActiveReservations",
+      },
+      variableDefinitions: [
+        {
+          kind: "VariableDefinition",
+          variable: {
+            kind: "Variable",
+            name: { kind: "Name", value: "userId" },
+          },
+          type: {
+            kind: "NonNullType",
+            type: {
+              kind: "NamedType",
+              name: { kind: "Name", value: "ObjectID" },
+            },
+          },
+        },
+      ],
+      selectionSet: {
+        kind: "SelectionSet",
+        selections: [
+          {
+            kind: "Field",
+            name: { kind: "Name", value: "myActiveReservations" },
+            arguments: [
+              {
+                kind: "Argument",
+                name: { kind: "Name", value: "userId" },
+                value: {
+                  kind: "Variable",
+                  name: { kind: "Name", value: "userId" },
+                },
+              },
+            ],
+            selectionSet: {
+              kind: "SelectionSet",
+              selections: [
+                {
+                  kind: "FragmentSpread",
+                  name: {
+                    kind: "Name",
+                    value: "ReservationsViewActiveContainerReservationFields",
+                  },
+                },
+              ],
+            },
+          },
+        ],
+      },
+    },
+    {
+      kind: "FragmentDefinition",
+      name: {
+        kind: "Name",
+        value: "ReservationsViewActiveContainerReservationFields",
+      },
+      typeCondition: {
+        kind: "NamedType",
+        name: { kind: "Name", value: "ReservationRequest" },
+      },
+      selectionSet: {
+        kind: "SelectionSet",
+        selections: [
+          { kind: "Field", name: { kind: "Name", value: "id" } },
+          { kind: "Field", name: { kind: "Name", value: "state" } },
+          {
+            kind: "Field",
+            name: { kind: "Name", value: "reservationPeriodStart" },
+          },
+          {
+            kind: "Field",
+            name: { kind: "Name", value: "reservationPeriodEnd" },
+          },
+          { kind: "Field", name: { kind: "Name", value: "createdAt" } },
+          { kind: "Field", name: { kind: "Name", value: "updatedAt" } },
+          {
+            kind: "Field",
+            name: { kind: "Name", value: "listing" },
+            selectionSet: {
+              kind: "SelectionSet",
+              selections: [
+                { kind: "Field", name: { kind: "Name", value: "id" } },
+                { kind: "Field", name: { kind: "Name", value: "title" } },
+              ],
+            },
+          },
+          {
+            kind: "Field",
+            name: { kind: "Name", value: "reserver" },
+            selectionSet: {
+              kind: "SelectionSet",
+              selections: [
+                {
+                  kind: "Field",
+                  name: { kind: "Name", value: "account" },
+                  selectionSet: {
+                    kind: "SelectionSet",
+                    selections: [
+                      {
+                        kind: "Field",
+                        name: { kind: "Name", value: "username" },
+                      },
+                      {
+                        kind: "Field",
+                        name: { kind: "Name", value: "profile" },
+                        selectionSet: {
+                          kind: "SelectionSet",
+                          selections: [
+                            {
+                              kind: "Field",
+                              name: { kind: "Name", value: "firstName" },
+                            },
+                            {
+                              kind: "Field",
+                              name: { kind: "Name", value: "lastName" },
+                            },
+                          ],
+                        },
+                      },
+                    ],
+                  },
+                },
+              ],
+            },
+          },
+          {
+            kind: "Field",
+            name: { kind: "Name", value: "closeRequestedBySharer" },
+          },
+          {
+            kind: "Field",
+            name: { kind: "Name", value: "closeRequestedByReserver" },
+          },
+        ],
+      },
+    },
+  ],
+} as unknown as DocumentNode<
+  ReservationsViewActiveContainerActiveReservationsQuery,
+  ReservationsViewActiveContainerActiveReservationsQueryVariables
+>;
+export const ReservationsViewActiveContainerCancelReservationDocument = {
+  kind: "Document",
+  definitions: [
+    {
+      kind: "OperationDefinition",
+      operation: "mutation",
+      name: {
+        kind: "Name",
+        value: "ReservationsViewActiveContainerCancelReservation",
+      },
+      variableDefinitions: [
+        {
+          kind: "VariableDefinition",
+          variable: {
+            kind: "Variable",
+            name: { kind: "Name", value: "input" },
+          },
+          type: {
+            kind: "NonNullType",
+            type: {
+              kind: "NamedType",
+              name: { kind: "Name", value: "CancelReservationInput" },
+            },
+          },
+        },
+      ],
+      selectionSet: {
+        kind: "SelectionSet",
+        selections: [
+          {
+            kind: "Field",
+            name: { kind: "Name", value: "cancelReservation" },
+            arguments: [
+              {
+                kind: "Argument",
+                name: { kind: "Name", value: "input" },
+                value: {
+                  kind: "Variable",
+                  name: { kind: "Name", value: "input" },
+                },
+              },
+            ],
+            selectionSet: {
+              kind: "SelectionSet",
+              selections: [
+                { kind: "Field", name: { kind: "Name", value: "id" } },
+                { kind: "Field", name: { kind: "Name", value: "state" } },
+                { kind: "Field", name: { kind: "Name", value: "updatedAt" } },
+                {
+                  kind: "Field",
+                  name: { kind: "Name", value: "closeRequestedBySharer" },
+                },
+                {
+                  kind: "Field",
+                  name: { kind: "Name", value: "closeRequestedByReserver" },
+                },
+              ],
+            },
+          },
+        ],
+      },
+    },
+  ],
+} as unknown as DocumentNode<
+  ReservationsViewActiveContainerCancelReservationMutation,
+  ReservationsViewActiveContainerCancelReservationMutationVariables
+>;
+export const ReservationsViewActiveContainerCloseReservationDocument = {
+  kind: "Document",
+  definitions: [
+    {
+      kind: "OperationDefinition",
+      operation: "mutation",
+      name: {
+        kind: "Name",
+        value: "ReservationsViewActiveContainerCloseReservation",
+      },
+      variableDefinitions: [
+        {
+          kind: "VariableDefinition",
+          variable: {
+            kind: "Variable",
+            name: { kind: "Name", value: "input" },
+          },
+          type: {
+            kind: "NonNullType",
+            type: {
+              kind: "NamedType",
+              name: { kind: "Name", value: "CloseReservationInput" },
+            },
+          },
+        },
+      ],
+      selectionSet: {
+        kind: "SelectionSet",
+        selections: [
+          {
+            kind: "Field",
+            name: { kind: "Name", value: "closeReservation" },
+            arguments: [
+              {
+                kind: "Argument",
+                name: { kind: "Name", value: "input" },
+                value: {
+                  kind: "Variable",
+                  name: { kind: "Name", value: "input" },
+                },
+              },
+            ],
+            selectionSet: {
+              kind: "SelectionSet",
+              selections: [
+                { kind: "Field", name: { kind: "Name", value: "id" } },
+                { kind: "Field", name: { kind: "Name", value: "state" } },
+                { kind: "Field", name: { kind: "Name", value: "updatedAt" } },
+                {
+                  kind: "Field",
+                  name: { kind: "Name", value: "closeRequestedBySharer" },
+                },
+                {
+                  kind: "Field",
+                  name: { kind: "Name", value: "closeRequestedByReserver" },
+                },
+              ],
+            },
+          },
+        ],
+      },
+    },
+  ],
+} as unknown as DocumentNode<
+  ReservationsViewActiveContainerCloseReservationMutation,
+  ReservationsViewActiveContainerCloseReservationMutationVariables
+>;
+export const ReservationsViewHistoryContainerPastReservationsDocument = {
+  kind: "Document",
+  definitions: [
+    {
+      kind: "OperationDefinition",
+      operation: "query",
+      name: {
+        kind: "Name",
+        value: "ReservationsViewHistoryContainerPastReservations",
+      },
+      variableDefinitions: [
+        {
+          kind: "VariableDefinition",
+          variable: {
+            kind: "Variable",
+            name: { kind: "Name", value: "userId" },
+          },
+          type: {
+            kind: "NonNullType",
+            type: {
+              kind: "NamedType",
+              name: { kind: "Name", value: "ObjectID" },
+            },
+          },
+        },
+      ],
+      selectionSet: {
+        kind: "SelectionSet",
+        selections: [
+          {
+            kind: "Field",
+            name: { kind: "Name", value: "myPastReservations" },
+            arguments: [
+              {
+                kind: "Argument",
+                name: { kind: "Name", value: "userId" },
+                value: {
+                  kind: "Variable",
+                  name: { kind: "Name", value: "userId" },
+                },
+              },
+            ],
+            selectionSet: {
+              kind: "SelectionSet",
+              selections: [
+                {
+                  kind: "FragmentSpread",
+                  name: {
+                    kind: "Name",
+                    value: "ReservationsViewHistoryContainerReservationFields",
+                  },
+                },
+              ],
+            },
+          },
+        ],
+      },
+    },
+    {
+      kind: "FragmentDefinition",
+      name: {
+        kind: "Name",
+        value: "ReservationsViewHistoryContainerReservationFields",
+      },
+      typeCondition: {
+        kind: "NamedType",
+        name: { kind: "Name", value: "ReservationRequest" },
+      },
+      selectionSet: {
+        kind: "SelectionSet",
+        selections: [
+          { kind: "Field", name: { kind: "Name", value: "id" } },
+          { kind: "Field", name: { kind: "Name", value: "state" } },
+          {
+            kind: "Field",
+            name: { kind: "Name", value: "reservationPeriodStart" },
+          },
+          {
+            kind: "Field",
+            name: { kind: "Name", value: "reservationPeriodEnd" },
+          },
+          { kind: "Field", name: { kind: "Name", value: "createdAt" } },
+          { kind: "Field", name: { kind: "Name", value: "updatedAt" } },
+          {
+            kind: "Field",
+            name: { kind: "Name", value: "listing" },
+            selectionSet: {
+              kind: "SelectionSet",
+              selections: [
+                { kind: "Field", name: { kind: "Name", value: "id" } },
+                { kind: "Field", name: { kind: "Name", value: "title" } },
+              ],
+            },
+          },
+          {
+            kind: "Field",
+            name: { kind: "Name", value: "reserver" },
+            selectionSet: {
+              kind: "SelectionSet",
+              selections: [
+                { kind: "Field", name: { kind: "Name", value: "id" } },
+                {
+                  kind: "Field",
+                  name: { kind: "Name", value: "account" },
+                  selectionSet: {
+                    kind: "SelectionSet",
+                    selections: [
+                      {
+                        kind: "Field",
+                        name: { kind: "Name", value: "username" },
+                      },
+                      {
+                        kind: "Field",
+                        name: { kind: "Name", value: "profile" },
+                        selectionSet: {
+                          kind: "SelectionSet",
+                          selections: [
+                            {
+                              kind: "Field",
+                              name: { kind: "Name", value: "firstName" },
+                            },
+                            {
+                              kind: "Field",
+                              name: { kind: "Name", value: "lastName" },
+                            },
+                          ],
+                        },
+                      },
+                    ],
+                  },
+                },
+              ],
+            },
+          },
+          {
+            kind: "Field",
+            name: { kind: "Name", value: "closeRequestedBySharer" },
+          },
+          {
+            kind: "Field",
+            name: { kind: "Name", value: "closeRequestedByReserver" },
+          },
+        ],
+      },
+    },
+  ],
+} as unknown as DocumentNode<
+  ReservationsViewHistoryContainerPastReservationsQuery,
+  ReservationsViewHistoryContainerPastReservationsQueryVariables
+>;
 export const SignUpSectionLayoutContainerCurrentPersonalUserAndCreateIfNotExistsDocument =
   {
     kind: "Document",
