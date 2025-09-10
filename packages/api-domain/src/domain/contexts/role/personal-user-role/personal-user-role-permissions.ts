@@ -29,7 +29,8 @@ export interface PersonalUserRolePermissionsEntityReference
 		Omit<
 			PersonalUserRolePermissionsProps,
 			| 'listingPermissions'
-			| 'conversationPermissions | reservationRequestPermissions'
+			| 'conversationPermissions'
+			| 'reservationRequestPermissions'
 		>
 	> {
 	readonly listingPermissions: PersonalUserRoleListingPermissionsEntityReference;
