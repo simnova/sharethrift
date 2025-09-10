@@ -170,12 +170,12 @@ export function AllListingsTable({
           <Image
             src={record.image}
             alt={title}
-            width={60}
-            height={60}
+            width={72}
+            height={72}
             style={{ objectFit: 'cover', borderRadius: 4 }}
             preview={false}
           />
-          <span style={{ fontWeight: 500 }}>{title}</span>
+          <span>{title}</span>
         </div>
       ),
     },
@@ -329,7 +329,6 @@ export function AllListingsTable({
               fontWeight: 500,
               fontSize: 15,
               marginBottom: count > 0 ? 4 : 0,
-              transition: 'background 0.2s, color 0.2s',
             }}
           >
             {count}
@@ -341,7 +340,7 @@ export function AllListingsTable({
               style={{ padding: 0, height: 'auto', marginTop: 0 }}
               onClick={() => onViewAllRequests(record.id)}
             >
-              <span style={{ color: '#2d4156', fontWeight: 500, fontSize: 13 }}>View all</span>
+              <span style={{ color: 'var(--color-action-foreground)', fontSize: 12 }}>View all</span>
             </Button>
           )}
         </div>
@@ -360,7 +359,6 @@ export function AllListingsTable({
       onPageChange={onPageChange}
       showPagination={true}
       onChange={onTableChange}
-      tableClassName="all-listings-table"
     />
   );
 }

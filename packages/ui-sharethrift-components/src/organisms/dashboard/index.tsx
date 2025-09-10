@@ -1,5 +1,5 @@
 import React from 'react';
-import { Table, Typography, Pagination, Skeleton } from 'antd';
+import { Table, Typography, Pagination, Skeleton, ConfigProvider } from 'antd';
 import type { ColumnsType, TableProps } from 'antd/es/table';
 import styles from './index.module.css';
 
@@ -21,8 +21,6 @@ export interface DashboardProps<T> {
   showPagination?: boolean;
   // Table props
   onChange?: TableProps<T>['onChange'];
-  // Optional styling
-  tableClassName?: string;
 }
 
 export const Dashboard = <T extends object>({
@@ -38,7 +36,6 @@ export const Dashboard = <T extends object>({
   onPageChange,
   showPagination = false,
   onChange,
-  tableClassName,
 }: DashboardProps<T>) => {
   // Show loading skeleton
   if (loading) {
@@ -52,29 +49,39 @@ export const Dashboard = <T extends object>({
   return (
     <>
       <div className={styles.desktopOnly}>
-        <Table
-          columns={columns as ColumnsType<T>}
-          dataSource={data}
-          rowKey={rowKey as string}
-          pagination={showPagination ? false : { pageSize, className: styles.pagination }}
-          {...(onChange ? { onChange } : {})}
-          locale={{
-            emptyText,
-          }}
-          rowClassName={() => styles.tableRow}
-          {...(tableClassName ? { className: tableClassName } : {})}
-        />
-        
+        <ConfigProvider
+          theme={{
+          components: {
+            Table: {
+              headerBg: "var(--color-background-2)",
+              headerBorderRadius: 0,
+            },
+          },
+            }}
+        >
+          <Table
+            columns={columns as ColumnsType<T>}
+            dataSource={data}
+            rowKey={rowKey as string}
+            pagination={false}
+            {...(onChange ? { onChange } : {})}
+            locale={{ emptyText }}
+            rowClassName={styles.tableRow}
+            className={styles.tableContainer}
+          />
+        </ConfigProvider>
+
         {showPagination && onPageChange && (
           <div style={{ display: 'flex', justifyContent: 'flex-end', marginTop: 16 }}>
-            <Pagination
-              current={currentPage}
-              pageSize={pageSize}
-              total={total || data.length}
-              onChange={onPageChange}
-              showSizeChanger={false}
-              showQuickJumper={false}
-            />
+        <Pagination
+          current={currentPage}
+          pageSize={pageSize}
+          total={total || data.length}
+          onChange={onPageChange}
+          className={styles.pagination}
+          showSizeChanger={false}
+          showQuickJumper={false}
+        />
           </div>
         )}
       </div>

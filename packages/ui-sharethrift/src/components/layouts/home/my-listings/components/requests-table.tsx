@@ -161,7 +161,7 @@ export function RequestsTable({
             style={{ objectFit: 'cover', borderRadius: 4 }}
             preview={false}
           />
-          <span style={{ fontWeight: 500 }}>{record.title}</span>
+          <span>{record.title}</span>
         </div>
       ),
     },
@@ -267,7 +267,6 @@ export function RequestsTable({
       onPageChange={onPageChange}
       showPagination={true}
       onChange={onTableChange}
-      tableClassName="requests-table"
     />
   );
 }

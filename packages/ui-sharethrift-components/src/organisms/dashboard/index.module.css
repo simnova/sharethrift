@@ -19,16 +19,15 @@
 }
 
 .tableRow {
-  /* Add any default table row styling here */
+  background: var(--color-background);
 }
 
-/* My Listings specific table styling */
-:global(.my-listings-table) {
+.tableContainer {
   box-shadow: 0 0 0 1px var(--color-foreground-2);
 }
 
-:global(.requests-table) {
-  /* Additional styling for requests table if needed */
+.tableContainer * {
+  font-family: var(--Urbanist) !important;
 }
 
 .emptyText {

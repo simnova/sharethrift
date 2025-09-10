@@ -60,14 +60,14 @@ export function MyListingsDashboard({ onCreateListing }: MyListingsDashboardProp
   ];
 
   return (
-    <div style={{ padding: '24px' }}>
+    <div style={{ padding: '36px' }}>
       <div style={{ 
         display: 'flex', 
         justifyContent: 'space-between', 
         alignItems: 'center', 
         marginBottom: '24px' 
       }}>
-        <h1 className="title42">
+        <h1 className="title42" style={{ margin: 0 }}>
           My Listings
         </h1>
         <Button 
@@ -75,10 +75,9 @@ export function MyListingsDashboard({ onCreateListing }: MyListingsDashboardProp
           size="large"
           onClick={onCreateListing}
           style={{
-            backgroundColor: '#333',
-            borderColor: '#333',
-            color: 'white',
-            fontWeight: 500,
+            padding: '18px 24px',
+            height: '48px',
+            fontFamily: 'var(--Urbanist)',
           }}
         >
           Create a Listing
@@ -89,10 +88,6 @@ export function MyListingsDashboard({ onCreateListing }: MyListingsDashboardProp
         activeKey={activeTab}
         onChange={handleTabChange}
         items={items}
-        size="large"
-        style={{ 
-          padding: '16px'
-        }}
       />
     </div>
   );
