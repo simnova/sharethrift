@@ -18,7 +18,7 @@ export interface MyListing {
   publishedAt: Date;
   status: 'Active' | 'Paused' | 'Reserved' | 'Expired' | 'Draft' | 'Blocked';
   pendingRequests: number;
-  images: string; // Changed to array to support multiple images
+  images: string[]; // Changed to array to support multiple images
   createdAt: Date;
   updatedAt: Date;
 }

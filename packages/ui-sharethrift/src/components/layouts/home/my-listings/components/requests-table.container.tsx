@@ -27,7 +27,7 @@ export function RequestsTableContainer({ currentPage, onPageChange }: RequestsTa
       pageSize: pageSize,
       searchText: searchText,
       statusFilters: statusFilters,
-      sorter: sorter.order ? sorter : null,
+      sorter: (sorter.field && sorter.order) ? sorter : null,
     },
     fetchPolicy: 'network-only', // Ensure we always fetch from the network
   });

@@ -240,8 +240,10 @@ export class ReservationRequestRepository
 		const endIndex = startIndex + options.pageSize;
 		const items = filteredRequests.slice(startIndex, endIndex);
 
-		// Convert mock data to domain objects (simplified for now)
-		const domainItems = items as unknown as Domain.Contexts.ReservationRequest.ReservationRequest.ReservationRequest<PropType>[]; // TODO: Properly convert to domain objects
+		// Convert mock data to domain objects (with runtime validation)
+		const domainItems = items
+			.map(item => toReservationRequestDomain(item))
+			.filter((item): item is Domain.Contexts.ReservationRequest.ReservationRequest.ReservationRequest<PropType> => item !== null);
 
 		return {
 			items: domainItems,
