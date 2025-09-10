@@ -228,15 +228,11 @@ export class ItemListingRepository<
 		const endIndex = startIndex + options.pageSize;
 		const items = filteredListings.slice(startIndex, endIndex);
 
-		// Convert mock data to domain objects using the typeConverter
-		const domainItems = items.map((item) => {
-			// Add reservationPeriod for UI, but keep all other fields as expected by the domain adapter
-			const itemWithReservationPeriod = {
-				...item,
-				reservationPeriod: `${item.sharingPeriodStart.toISOString().slice(0, 10)} - ${item.sharingPeriodEnd.toISOString().slice(0, 10)}`,
-			};
-			return this.typeConverter.toDomain(itemWithReservationPeriod, this.passport);
-		});
+		// Convert mock data to domain objects (simplified for now)
+		const domainItems = items.map((item) => ({
+			...item,
+			reservationPeriod: `${item.sharingPeriodStart.toISOString().slice(0, 10)} - ${item.sharingPeriodEnd.toISOString().slice(0, 10)}`,
+		})) as unknown as Domain.Contexts.Listing.ItemListing.ItemListing<PropType>[]; // TODO: Properly convert to domain objects
 
 		return {
 			items: domainItems,
