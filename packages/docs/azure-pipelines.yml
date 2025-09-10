@@ -1,0 +1,26 @@
+# Azure Pipelines for CellixJS Docs
+trigger:
+  branches:
+    include:
+      - main
+
+pool:
+  vmImage: 'ubuntu-latest'
+
+steps:
+  - checkout: self
+    fetchDepth: 0
+  - task: NodeTool@0
+    inputs:
+      versionSpec: '20.x'
+    displayName: 'Install Node.js'
+  - script: |
+      cd packages/docs
+      npm ci
+      npm run build
+    displayName: 'Build Docusaurus site'
+  - script: |
+      cd packages/docs
+      npm run deploy
+    displayName: 'Deploy to GitHub Pages'
+    condition: eq(variables['Build.SourceBranch'], 'refs/heads/main')
