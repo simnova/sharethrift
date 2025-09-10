@@ -6,6 +6,7 @@ import {
 	ListingModelFactory,
 } from './listing/index.ts';
 import { ConversationModelFactory } from './conversations/conversation.model.ts';
+import { PersonalUserRoleModelFactory } from './role/personal-user-role.model.ts';
 
 export * as User from './user/index.ts';
 export * as Conversation from './conversations/index.ts';
@@ -38,7 +39,7 @@ export const mongooseContextBuilder = (
 			ReservationRequest: ReservationRequestModelFactory(initializedService),
 		},
 		Role: {
-			PersonalUserRole: PersonalUserModelFactory(
+			PersonalUserRole: PersonalUserRoleModelFactory(
 				UserModelFactory(initializedService),
 			),
 		},

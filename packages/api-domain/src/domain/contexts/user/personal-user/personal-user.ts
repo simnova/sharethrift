@@ -46,7 +46,6 @@ export class PersonalUser<props extends PersonalUserProps>
 	}
 	public static getNewInstance<props extends PersonalUserProps>(
 		newProps: props,
-		role: PersonalUserRoleEntityReference,
 		passport: Passport,
 		email: string,
 		firstName: string,
@@ -55,7 +54,6 @@ export class PersonalUser<props extends PersonalUserProps>
 		const newInstance = new PersonalUser(newProps, passport);
 		newInstance.markAsNew();
 		newInstance._isNew = true;
-		newInstance.props.role = role;
 		//field assignments
 		newInstance.account.email = email;
 		newInstance.account.profile.firstName = firstName;
@@ -113,7 +111,7 @@ export class PersonalUser<props extends PersonalUserProps>
 		return await this.props.loadRole();
 	}
 
-	private set role(role: PersonalUserRoleEntityReference | null | undefined) {
+	private set role(role: PersonalUserRoleEntityReference) {
 		if (
 			!this.isNew &&
 			!this.visa.determineIf(

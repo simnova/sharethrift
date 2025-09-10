@@ -8,7 +8,7 @@ import type { Domain } from '@sthrift/api-domain';
 import { PersonalUserRoleConverter } from './personal-user-role.domain-adapter.ts';
 import { PersonalUserRoleRepository } from './personal-user-role.repository.ts';
 
-export const getEndUserRoleUnitOfWork = (
+export const getPersonalUserRoleUnitOfWork = (
 	endUserRoleModel: Models.Role.PersonalUserRoleModelType,
 	passport: Domain.Passport,
 ): Domain.Contexts.Role.PersonalUserRole.PersonalUserRoleUnitOfWork => {

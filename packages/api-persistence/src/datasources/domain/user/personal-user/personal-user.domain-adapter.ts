@@ -1,6 +1,7 @@
 import { Domain } from '@sthrift/api-domain';
 import type { Models } from '@sthrift/api-data-sources-mongoose-models';
 import { MongooseSeedwork } from '@cellix/data-sources-mongoose';
+import { PersonalUserRoleDomainAdapter } from '../../role/personal-user-role/personal-user-role.domain-adapter.ts';
 
 export class PersonalUserConverter extends MongooseSeedwork.MongoTypeConverter<
 	Models.User.PersonalUser,
@@ -40,26 +41,26 @@ export class PersonalUserDomainAdapter
 		if (this.doc.role instanceof MongooseSeedwork.ObjectId) {
 			throw new Error('role is not populated or is not of the correct type');
 		}
-		return new EndUserRoleDomainAdapter(
-			this.doc.role as Models.Role.EndUserRole,
+		return new PersonalUserRoleDomainAdapter(
+			this.doc.role as Models.Role.PersonalUserRole,
 		);
 	}
-	async loadRole(): Promise<Domain.Contexts.Community.Role.EndUserRole.EndUserRoleProps> {
+	async loadRole(): Promise<Domain.Contexts.Role.PersonalUserRole.PersonalUserRoleProps> {
 		if (!this.doc.role) {
 			throw new Error('role is not populated');
 		}
 		if (this.doc.role instanceof MongooseSeedwork.ObjectId) {
 			await this.doc.populate('role');
 		}
-		return new EndUserRoleDomainAdapter(
-			this.doc.role as Models.Role.EndUserRole,
+		return new PersonalUserRoleDomainAdapter(
+			this.doc.role as Models.Role.PersonalUserRole,
 		);
 	}
 	set role(role:
-		| Domain.Contexts.Community.Role.EndUserRole.EndUserRoleEntityReference
-		| Domain.Contexts.Community.Role.EndUserRole.EndUserRole<EndUserRoleDomainAdapter>) {
+		| Domain.Contexts.Role.PersonalUserRole.PersonalUserRoleEntityReference
+		| Domain.Contexts.Role.PersonalUserRole.PersonalUserRole<PersonalUserRoleDomainAdapter>) {
 		if (
-			role instanceof Domain.Contexts.Community.Role.EndUserRole.EndUserRole
+			role instanceof Domain.Contexts.Role.PersonalUserRole.PersonalUserRole
 		) {
 			this.doc.set('role', role.props.doc);
 			return;

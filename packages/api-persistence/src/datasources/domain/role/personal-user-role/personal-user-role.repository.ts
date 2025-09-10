@@ -7,8 +7,6 @@ type EndUserRoleModelType = Models.Role.PersonalUserRole; // ReturnType<typeof M
 type PropType = PersonalUserRoleDomainAdapter;
 
 export class PersonalUserRoleRepository //<
-	//PropType extends Domain.Contexts.EndUserRole.EndUserRole.EndUserRoleProps
-	//>
 	extends MongooseSeedwork.MongoRepositoryBase<
 		EndUserRoleModelType,
 		PropType,

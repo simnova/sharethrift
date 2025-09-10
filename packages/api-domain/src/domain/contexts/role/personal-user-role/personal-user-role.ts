@@ -2,7 +2,10 @@ import { DomainSeedwork } from '@cellix/domain-seedwork';
 import type { Passport } from '../../passport.ts';
 import { PersonalUserRolePermissions } from './personal-user-role-permissions.ts';
 import * as ValueObjects from './personal-user-role.value-objects.ts';
-import type { PersonalUserRolePermissionsProps } from './personal-user-role-permissions.ts';
+import type {
+	PersonalUserRolePermissionsProps,
+	PersonalUserRolePermissionsEntityReference,
+} from './personal-user-role-permissions.ts';
 
 export interface PersonalUserRoleProps
 	extends DomainSeedwork.DomainEntityProps {
@@ -17,7 +20,7 @@ export interface PersonalUserRoleProps
 
 export interface PersonalUserRoleEntityReference
 	extends Readonly<Omit<PersonalUserRoleProps, 'permissions'>> {
-	get permissions(): PersonalUserRolePermissions;
+	get permissions(): PersonalUserRolePermissionsEntityReference;
 }
 
 export class PersonalUserRole<props extends PersonalUserRoleProps>
