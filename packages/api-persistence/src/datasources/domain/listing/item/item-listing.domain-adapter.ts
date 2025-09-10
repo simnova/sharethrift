@@ -117,9 +117,9 @@ export class ItemListingDomainAdapter
 	}
 
 	get images(): string[] {
-		return []; // Images not stored in the current model
+		return this.doc.images || [];
 	}
-	set images(_value: string[]) {
-		// Images not supported in the current model
+	set images(value: string[]) {
+		this.doc.images = value;
 	}
 }
