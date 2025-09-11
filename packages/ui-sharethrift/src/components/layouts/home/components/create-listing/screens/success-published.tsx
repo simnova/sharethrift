@@ -1,4 +1,5 @@
 import { Modal, Button, Spin } from 'antd';
+import { useNavigate } from 'react-router-dom';
 import styles from './screens.module.css';
 import '@sthrift/ui-sharethrift-components/src/styles/theme.css';
 import confettiImg from '@sthrift/ui-sharethrift-components/src/assets/item-images/confetti.png';
@@ -8,6 +9,7 @@ export const SuccessPublished: React.FC<{
 	loading?: boolean;
 	onClose?: () => void;
 }> = ({ visible, loading, onClose }) => {
+	const navigate = useNavigate();
 	return (
 		<Modal
 			open={visible}
@@ -48,8 +50,13 @@ export const SuccessPublished: React.FC<{
 							>
 								View Listing
 							</Button>
-							<Button className="secondaryButton" onClick={onClose}>
-								Back to Listings
+							<Button
+								className="secondaryButton"
+								onClick={() => {
+									navigate('/');
+								}}
+							>
+								Back to Home
 							</Button>
 						</div>
 					</>
