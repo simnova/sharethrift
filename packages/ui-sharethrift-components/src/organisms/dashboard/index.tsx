@@ -97,7 +97,6 @@ export const Dashboard = <T extends object>({
             pageSize={pageSize}
             total={total || data.length}
             onChange={onPageChange}
-            className={styles.pagination}
             showSizeChanger={false}
             showQuickJumper={false}
           />

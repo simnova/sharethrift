@@ -1,7 +1,6 @@
 import React from 'react';
-import { Empty } from 'antd';
+import { Empty, Pagination } from 'antd';
 import { ListingCard } from '../../molecules/listing-card/index.js';
-import { Pagination } from '../../molecules/pagination/index.js';
 import styles from './index.module.css';
 
 export interface ItemListing {

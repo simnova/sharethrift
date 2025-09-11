@@ -429,3 +429,22 @@ p, .authButton, .primaryButton, .secondaryButton, .ant-tabs, .ant-form-item-labe
   box-shadow: none !important;
   border-color: var(--color-secondary) !important;
 }
+
+/* Pagination formatting */
+.ant-pagination * {
+  color: var(--color-primary) !important;
+  background-color: transparent !important;
+  font-family: var(--Urbanist) !important;
+  font-weight: 600;
+  height: 30px !important;
+}
+.ant-pagination > * {
+  margin: 0 !important;
+}
+.ant-pagination-item {
+  border: none !important;
+}
+.ant-pagination-item-active {
+  box-shadow: inset 0 0 0 1.5px var(--color-primary) !important;
+  border: none !important;
+}
