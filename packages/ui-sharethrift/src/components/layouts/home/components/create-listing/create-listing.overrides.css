@@ -1,0 +1,131 @@
+@media (max-width: 600px) {
+	.create-listing-responsive {
+		padding-left: 16px !important;
+		padding-right: 16px !important;
+		padding-top: 24px !important;
+		padding-bottom: 24px !important;
+		margin-bottom: 48px !important;
+	}
+	.create-listing-main-responsive {
+		flex-direction: column !important;
+		gap: 80px !important;
+		align-items: center !important;
+		margin-bottom: 0 !important;
+		padding-bottom: 24px !important;
+	}
+	.create-listing-images-responsive,
+	.create-listing-form-responsive {
+		width: 100% !important;
+		max-width: 450px !important;
+		margin-left: auto !important;
+		margin-right: auto !important;
+	}
+	.create-listing-images-responsive {
+		width: 100% !important;
+		max-width: 450px !important;
+		aspect-ratio: 1 / 1 !important;
+		height: auto !important;
+		min-height: 300px !important;
+		padding-bottom: 12px !important;
+		margin-bottom: 16px !important;
+		margin-top: 24px !important;
+		padding-bottom: 32px !important;
+	}
+	.create-listing-form-responsive {
+		width: 100% !important;
+		max-width: 450px !important;
+		margin-left: auto !important;
+		margin-right: auto !important;
+		margin-top: 16px !important;
+		position: relative !important;
+		z-index: 1 !important;
+		padding-top: 40px !important;
+		margin-bottom: 32px !important;
+	}
+	.listing-gallery-responsive .slick-arrow {
+		color: var(--color-secondary, #3f8176) !important;
+	}
+	.listing-gallery-responsive .slick-dots li button {
+		background: var(--color-secondary, #3f8176) !important;
+	}
+	.listing-gallery-responsive .slick-dots li.slick-active button {
+		background: var(--color-secondary, #3f8176) !important;
+		opacity: 1 !important;
+		border: 2px solid var(--color-secondary, #3f8176) !important;
+	}
+	.listing-gallery-responsive .slick-dots li.slick-active::after {
+		background: transparent !important;
+	}
+	.carousel-plus-overlay {
+		position: absolute !important;
+		bottom: 12px !important;
+		right: 12px !important;
+		width: 44px !important;
+		height: 44px !important;
+		border-radius: 50% !important;
+		background-color: var(--color-secondary) !important;
+		display: flex !important;
+		align-items: center !important;
+		justify-content: center !important;
+		cursor: pointer !important;
+		box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15) !important;
+		transition: all 0.3s ease !important;
+		z-index: 10 !important;
+	}
+	.carousel-plus-overlay:hover {
+		background-color: var(--color-secondary-hover, #3a7c6b) !important;
+		transform: scale(1.1) !important;
+	}
+}
+
+/* Add vertical spacing between buttons when they wrap */
+.create-listing-buttons .ant-col {
+	margin-bottom: 8px !important;
+}
+.create-listing-buttons .ant-col:last-child {
+	margin-bottom: 0 !important;
+}
+
+.listing-gallery-responsive .slick-slide img,
+.listing-gallery-responsive .slick-slide label,
+.listing-gallery-responsive label {
+	max-width: none !important;
+	max-height: none !important;
+	width: 100% !important;
+	height: 100% !important;
+}
+.listing-gallery-responsive .slick-slide {
+	overflow: visible !important;
+}
+
+.remove-image-button {
+	position: absolute;
+	top: 8px;
+	right: 8px;
+	background: white;
+	border: 1px solid #d9d9d9;
+	border-radius: 4px;
+	z-index: 9999;
+	box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+	width: 32px;
+	height: 32px;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	opacity: 1;
+	transition:
+		background 0.3s ease,
+		transform 0.3s ease;
+}
+
+.remove-image-button:hover {
+	background-color: #f0f0f0 !important;
+	border-color: #1890ff !important;
+	transform: scale(1.1) !important;
+}
+
+.remove-thumbnail-button:hover {
+	background-color: #f0f0f0 !important;
+	border-color: #ff4d4f !important;
+	transform: scale(1.1) !important;
+}
