@@ -1,5 +1,6 @@
 import type { Meta, StoryObj } from '@storybook/react';
 import { ListingCard } from './index.tsx';
+import { MemoryRouter } from 'react-router-dom';
 
 export interface ItemListing {
   _id: string;
@@ -49,8 +50,10 @@ type Story = StoryObj<typeof ListingCard>;
 
 export const Default: Story = {
   render: (args: { listing: ItemListing }) => (
-    <div style={{ width: 280 }}>
-      <ListingCard {...args} />
-    </div>
+    <MemoryRouter>
+      <div style={{ width: 280 }}>
+        <ListingCard {...args} />
+      </div>
+    </MemoryRouter>
   ),
 };

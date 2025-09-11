@@ -1,8 +1,10 @@
 .grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, 280px); 
-  gap: 36px 12px; 
-  justify-content: space-between; 
+  grid-template-columns: repeat(auto-fit, 280px);
+  gap: 36px 12px;
+  justify-content: start;
+  margin-left: auto;
+  margin-right: auto;
 }
 
 .emptyState {
