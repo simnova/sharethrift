@@ -74,9 +74,7 @@ export function ListingInformation({
   // Check if dates are selected for enabling the Reserve button
   const areDatesSelected =
     reservationDates?.startDate && reservationDates?.endDate;
-  const isReserveButtonDisabled =
-    !areDatesSelected || userRole === "sharer";
-
+    
 console.log("is authenticated", isAuthenticated);
 
   const handleDateRangeChange = (
@@ -188,15 +186,17 @@ console.log("is authenticated", isAuthenticated);
         {/* Reserve Button - Only show if authenticated */}
         <Row>
           <Col span={24}>
-            <Button
+          {userRole !== "sharer" ? (
+             <Button
                 type={reservationRequestStatus === 'Requested' ? 'default' : 'primary'}
                 block
                 onClick={onReserveClick}
-                disabled={isReserveButtonDisabled}
+                disabled={!areDatesSelected}
                 icon={reservationLoading ? <LoadingOutlined /> : undefined}
             >
                 {reservationRequestStatus === "Requested" ? "Cancel Request" : "Reserve"}
             </Button>
+          ) : null}
           </Col>
         </Row>
       </Col>

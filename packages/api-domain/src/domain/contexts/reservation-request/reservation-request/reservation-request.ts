@@ -111,6 +111,18 @@ export class ReservationRequest<props extends ReservationRequestProps>
         "value cannot be null or undefined"
       );
     }
+
+    if (value.getTime() < Date.now()) {
+        throw new DomainSeedwork.PermissionError(
+            "Reservation period start date must be today or in the future"
+        );
+    }
+
+    if (this.props.reservationPeriodEnd && value.getTime() >= this.props.reservationPeriodEnd.getTime()) {
+        throw new DomainSeedwork.PermissionError(
+            "Reservation period start date must be before the end date"
+        );
+    }
     this.props.reservationPeriodStart = value;
   }
 
@@ -132,6 +144,18 @@ export class ReservationRequest<props extends ReservationRequestProps>
       throw new DomainSeedwork.PermissionError(
         "value cannot be null or undefined"
       );
+    }
+
+    if (value.getTime() < Date.now()) {
+        throw new DomainSeedwork.PermissionError(
+            "Reservation period end date must be in the future"
+        );
+    }
+
+    if (this.props.reservationPeriodStart && value.getTime() <= this.props.reservationPeriodStart.getTime()) {
+        throw new DomainSeedwork.PermissionError(
+            "Reservation period end date must be after the start date"
+        );
     }
     this.props.reservationPeriodEnd = value;
   }
@@ -166,6 +190,12 @@ export class ReservationRequest<props extends ReservationRequestProps>
       throw new DomainSeedwork.PermissionError(
         "value cannot be null or undefined"
       );
+    }
+
+    if (value.state !== 'Published') {
+        throw new DomainSeedwork.PermissionError(
+            "Cannot create reservation request for listing that is not published"
+        );
     }
     this.props.listing = value;
   }

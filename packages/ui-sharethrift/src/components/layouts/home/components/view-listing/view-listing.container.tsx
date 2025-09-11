@@ -9,7 +9,11 @@ import {
     type ViewListingCurrentUserQuery,
     ViewListingDocument,
     type ViewListingQuery,
-    type ViewListingQueryVariables
+    type ViewListingQueryVariables,
+    ViewListingActiveReservationRequestForListingDocument,
+    type ViewListingActiveReservationRequestForListingQuery,
+    type ViewListingActiveReservationRequestForListingQueryVariables,
+    type ReservationRequestState
 } from '../../../../../generated';
 
 
@@ -23,8 +27,15 @@ export function ViewListingContainer({ isAuthenticated }: { readonly isAuthentic
 
   const { data: currentUserData } = useQuery<ViewListingCurrentUserQuery>(ViewListingCurrentUserDocument);
 
-  const reservationRequestStatus = null; // Placeholder until integrated
+  const { data: userReservationData, loading: userReservationLoading, error: userReservationError } = useQuery<ViewListingActiveReservationRequestForListingQuery, ViewListingActiveReservationRequestForListingQueryVariables>(ViewListingActiveReservationRequestForListingDocument, {
+    variables: { listingId: listingId ?? '', reserverId: currentUserData?.currentPersonalUserAndCreateIfNotExists?.id ?? '' },
+    skip: !currentUserData?.currentPersonalUserAndCreateIfNotExists?.id || !listingId,
+  })
+  const reservationRequestStatus: ReservationRequestState | null = userReservationData?.myActiveReservationForListing?.state ?? null;
 
+  if (userReservationData) { console.log("User reservation data:", userReservationData); }
+  if (userReservationLoading) { console.log("User reservation loading..."); }
+  if (userReservationError) { console.log("User reservation error:", userReservationError); }
   if (!listingId) return <div>Missing listing id.</div>;
   if (listingLoading) return <div>Loading listing...</div>;
   if (listingError) return <div>Error loading listing.</div>;

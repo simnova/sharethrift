@@ -340,6 +340,7 @@ export type Query = {
   currentPersonalUserAndCreateIfNotExists: PersonalUser;
   itemListing?: Maybe<ItemListing>;
   itemListings: Array<ItemListing>;
+  myActiveReservationForListing: ReservationRequest;
   myActiveReservations: Array<ReservationRequest>;
   myPastReservations: Array<ReservationRequest>;
   personalUserById?: Maybe<PersonalUser>;
@@ -353,6 +354,12 @@ export type QueryConversationArgs = {
 /**  Base Query Type definition - , all mutations will be defined in separate files extending this type  */
 export type QueryItemListingArgs = {
   id: Scalars["ObjectID"]["input"];
+};
+
+/**  Base Query Type definition - , all mutations will be defined in separate files extending this type  */
+export type QueryMyActiveReservationForListingArgs = {
+  listingId: Scalars["ObjectID"]["input"];
+  userId: Scalars["ObjectID"]["input"];
 };
 
 /**  Base Query Type definition - , all mutations will be defined in separate files extending this type  */
@@ -372,16 +379,16 @@ export type QueryPersonalUserByIdArgs = {
 
 export type ReservationRequest = {
   __typename?: "ReservationRequest";
-  closeRequestedByReserver: Scalars["Boolean"]["output"];
-  closeRequestedBySharer: Scalars["Boolean"]["output"];
-  createdAt: Scalars["String"]["output"];
+  closeRequestedByReserver?: Maybe<Scalars["Boolean"]["output"]>;
+  closeRequestedBySharer?: Maybe<Scalars["Boolean"]["output"]>;
+  createdAt?: Maybe<Scalars["String"]["output"]>;
   id: Scalars["ObjectID"]["output"];
-  listing: ItemListing;
-  reservationPeriodEnd: Scalars["String"]["output"];
-  reservationPeriodStart: Scalars["String"]["output"];
-  reserver: PersonalUser;
-  state: ReservationRequestState;
-  updatedAt: Scalars["String"]["output"];
+  listing?: Maybe<ItemListing>;
+  reservationPeriodEnd?: Maybe<Scalars["String"]["output"]>;
+  reservationPeriodStart?: Maybe<Scalars["String"]["output"]>;
+  reserver?: Maybe<PersonalUser>;
+  state?: Maybe<ReservationRequestState>;
+  updatedAt?: Maybe<Scalars["String"]["output"]>;
 };
 
 export type ReservationRequestMutationResult = MutationResult & {
@@ -1118,6 +1125,12 @@ export type QueryResolvers<
   currentPersonalUserAndCreateIfNotExists?: Resolver<ResolversTypes["PersonalUser"], ParentType, ContextType>;
   itemListing?: Resolver<Maybe<ResolversTypes["ItemListing"]>, ParentType, ContextType, RequireFields<QueryItemListingArgs, "id">>;
   itemListings?: Resolver<Array<ResolversTypes["ItemListing"]>, ParentType, ContextType>;
+  myActiveReservationForListing?: Resolver<
+    ResolversTypes["ReservationRequest"],
+    ParentType,
+    ContextType,
+    RequireFields<QueryMyActiveReservationForListingArgs, "listingId" | "userId">
+  >;
   myActiveReservations?: Resolver<
     Array<ResolversTypes["ReservationRequest"]>,
     ParentType,
@@ -1145,16 +1158,16 @@ export type ReservationRequestResolvers<
   ContextType = GraphContext,
   ParentType extends ResolversParentTypes["ReservationRequest"] = ResolversParentTypes["ReservationRequest"],
 > = ResolversObject<{
-  closeRequestedByReserver?: Resolver<ResolversTypes["Boolean"], ParentType, ContextType>;
-  closeRequestedBySharer?: Resolver<ResolversTypes["Boolean"], ParentType, ContextType>;
-  createdAt?: Resolver<ResolversTypes["String"], ParentType, ContextType>;
+  closeRequestedByReserver?: Resolver<Maybe<ResolversTypes["Boolean"]>, ParentType, ContextType>;
+  closeRequestedBySharer?: Resolver<Maybe<ResolversTypes["Boolean"]>, ParentType, ContextType>;
+  createdAt?: Resolver<Maybe<ResolversTypes["String"]>, ParentType, ContextType>;
   id?: Resolver<ResolversTypes["ObjectID"], ParentType, ContextType>;
-  listing?: Resolver<ResolversTypes["ItemListing"], ParentType, ContextType>;
-  reservationPeriodEnd?: Resolver<ResolversTypes["String"], ParentType, ContextType>;
-  reservationPeriodStart?: Resolver<ResolversTypes["String"], ParentType, ContextType>;
-  reserver?: Resolver<ResolversTypes["PersonalUser"], ParentType, ContextType>;
-  state?: Resolver<ResolversTypes["ReservationRequestState"], ParentType, ContextType>;
-  updatedAt?: Resolver<ResolversTypes["String"], ParentType, ContextType>;
+  listing?: Resolver<Maybe<ResolversTypes["ItemListing"]>, ParentType, ContextType>;
+  reservationPeriodEnd?: Resolver<Maybe<ResolversTypes["String"]>, ParentType, ContextType>;
+  reservationPeriodStart?: Resolver<Maybe<ResolversTypes["String"]>, ParentType, ContextType>;
+  reserver?: Resolver<Maybe<ResolversTypes["PersonalUser"]>, ParentType, ContextType>;
+  state?: Resolver<Maybe<ResolversTypes["ReservationRequestState"]>, ParentType, ContextType>;
+  updatedAt?: Resolver<Maybe<ResolversTypes["String"]>, ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 }>;
 

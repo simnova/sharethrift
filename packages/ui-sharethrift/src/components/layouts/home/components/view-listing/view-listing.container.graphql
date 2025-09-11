@@ -27,7 +27,7 @@ query ViewListingCurrentUser {
 }
 
 query ViewListingActiveReservationRequestForListing($listingId: ObjectID!, $reserverId: ObjectID!) {
-  myActiveReservationRequests(userId: $reserverId) {
+  myActiveReservationForListing(listingId: $listingId, userId: $reserverId) {
     id
     state
     reservationPeriodStart

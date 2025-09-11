@@ -22,6 +22,7 @@ enum ReservationRequestState {
 extend type Query {
 	myActiveReservations(userId: ObjectID!): [ReservationRequest!]!
 	myPastReservations(userId: ObjectID!): [ReservationRequest!]!
+    myActiveReservationForListing(listingId: ObjectID!, userId: ObjectID!): ReservationRequest
 }
 
 extend type Mutation {

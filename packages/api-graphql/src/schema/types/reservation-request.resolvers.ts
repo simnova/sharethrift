@@ -23,6 +23,18 @@ const reservationRequest = {
                 reserverId: args.userId
             });
 		},
+        myActiveReservationForListing: async (
+            _parent: unknown,
+            args: { listingId: string, userId: string },
+            context: GraphContext,
+            _info: GraphQLResolveInfo,
+        ) => {
+            // Ideally would use external id from JWT here
+            return await context.applicationServices.ReservationRequest.ReservationRequest.queryActiveByReserverIdAndListingId({
+                listingId: args.listingId,
+                reserverId: args.userId
+            });
+        }
 	},
 	Mutation: {
 		createReservationRequest: async (
@@ -31,9 +43,8 @@ const reservationRequest = {
 			context: GraphContext,
 			_info: GraphQLResolveInfo,
 		) => {
-			// Get the current user ID from the JWT context
-			const currentUserId = context.applicationServices.verifiedUser?.verifiedJwt?.sub;
-			if (!currentUserId) {
+            const verifiedJwt = context.applicationServices.verifiedUser?.verifiedJwt;
+			if (!verifiedJwt) {
 				throw new Error('User must be authenticated to create a reservation request');
 			}
 
@@ -41,7 +52,7 @@ const reservationRequest = {
 				listingId: args.input.listingId,
 				reservationPeriodStart: new Date(args.input.reservationPeriodStart),
 				reservationPeriodEnd: new Date(args.input.reservationPeriodEnd),
-				reserverId: currentUserId,
+				reserverEmail: verifiedJwt.email,
 			});
 		},
 	},

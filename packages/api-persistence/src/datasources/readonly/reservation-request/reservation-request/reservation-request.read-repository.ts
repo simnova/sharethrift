@@ -7,7 +7,7 @@ import {
 } from './reservation-request.data.ts';
 import type { FindOneOptions, FindOptions } from '../../mongo-data-source.ts';
 import { ReservationRequestConverter } from '../../../domain/reservation-request/reservation-request/reservation-request.domain-adapter.ts';
-// import { MongooseSeedwork } from '@cellix/data-sources-mongoose';
+import { MongooseSeedwork } from '@cellix/data-sources-mongoose';
 
 export interface ReservationRequestReadRepository {
 	getAll: (
@@ -36,6 +36,13 @@ export interface ReservationRequestReadRepository {
 		options?: FindOptions,
 	) => Promise<
 		Domain.Contexts.ReservationRequest.ReservationRequest.ReservationRequestEntityReference[]
+	>;
+    getActiveByReserverIdAndListingId: (
+		reserverId: string,
+		listingId: string,
+		options?: FindOptions,
+	) => Promise<
+		Domain.Contexts.ReservationRequest.ReservationRequest.ReservationRequestEntityReference | null
 	>;
 }
 
@@ -161,6 +168,25 @@ export class ReservationRequestReadRepositoryImpl
 		console.log(options); //gets rid of unused error
 		return Promise.resolve(mockResult);
 	}
+
+    async getActiveByReserverIdAndListingId(
+        reserverId: string,
+        listingId: string,
+        options?: FindOptions,
+    ): Promise<
+        Domain.Contexts.ReservationRequest.ReservationRequest.ReservationRequestEntityReference | null
+    > {
+        const filter = {
+        	reserver: new MongooseSeedwork.ObjectId(reserverId),
+        	listing: new MongooseSeedwork.ObjectId(listingId),
+        	state: { $in: ['Accepted', 'Requested'] },
+        };
+        const result = await this.mongoDataSource.findOne(filter, options);
+        if (!result) {
+            return null;
+        }
+        return this.converter.toDomain(result, this.passport);
+    }
 }
 
 export const getReservationRequestReadRepository = (
