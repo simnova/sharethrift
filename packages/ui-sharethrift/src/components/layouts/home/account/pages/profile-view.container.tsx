@@ -1,17 +1,23 @@
 import { useNavigate } from 'react-router-dom';
 import { ProfileView } from './profile-view';
-import profileViewQueriesRaw from './profile-view.container.graphql?raw';
-import { gql, useQuery } from '@apollo/client';
+import { useQuery } from '@apollo/client';
 import type { CurrentUserQueryData, UserListingsQueryData, UserListing } from './profile-view.types';
+import {HomeAccountProfileViewContainerCurrentUserDocument, HomeAccountProfileViewContainerUserListingsDocument} from '../../../../../generated';
 
 function ProfileViewLoader() {
   const navigate = useNavigate();
-  const queries = profileViewQueriesRaw.split('query HomeAccountProfileViewContainerUserListings');
-  const GET_CURRENT_USER = gql(queries[0]);
-  const GET_USER_LISTINGS = gql('query HomeAccountProfileViewContainerUserListings' + queries[1]);
 
-  const { data: userData, loading: userLoading, error: userError } = useQuery<CurrentUserQueryData>(GET_CURRENT_USER);
-  const { data: listingsData, loading: listingsLoading, error: listingsError } = useQuery<UserListingsQueryData>(GET_USER_LISTINGS);
+  const{
+    data: userData,
+    loading: userLoading,
+    error: userError
+  } = useQuery<CurrentUserQueryData>(HomeAccountProfileViewContainerCurrentUserDocument);
+  
+  const {
+    data: listingsData,
+    loading: listingsLoading,
+    error: listingsError
+  } = useQuery<UserListingsQueryData>(HomeAccountProfileViewContainerUserListingsDocument);
 
   const handleEditSettings = () => {
     navigate('/account/settings');
