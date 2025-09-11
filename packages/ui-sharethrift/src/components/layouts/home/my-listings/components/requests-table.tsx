@@ -1,5 +1,5 @@
 import { Input, Checkbox, Button, Image, Popconfirm, Tag } from 'antd';
-import { SearchOutlined, FilterOutlined, SwapRightOutlined } from '@ant-design/icons';
+import { SearchOutlined, FilterOutlined } from '@ant-design/icons';
 import type { ColumnsType, TableProps } from 'antd/es/table';
 import { Dashboard } from '@sthrift/ui-sharethrift-components';
 import { RequestsCard } from './requests-card';
@@ -216,17 +216,7 @@ export function RequestsTable({
         const formattedEnd = end ? formatDate(end) : '';
         return (
           <span style={{ fontVariantNumeric: 'tabular-nums', fontFamily: 'inherit', minWidth: 220, display: 'inline-block', textAlign: 'left' }}>
-            {formattedStart}
-            {formattedEnd ? (
-            <>
-              &nbsp;
-              <span style={{ verticalAlign: 'middle', display: 'inline-flex', alignItems: 'center' }}>
-              <SwapRightOutlined style={{ paddingBottom: '4px' }} />
-              </span>
-              &nbsp;
-              {formattedEnd}
-            </>
-            ) : ''}
+            {formattedStart}{formattedEnd ? ` - ${formattedEnd}` : ''}
           </span>
         );
       },

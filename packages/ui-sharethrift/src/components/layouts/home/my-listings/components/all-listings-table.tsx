@@ -1,6 +1,6 @@
 import { Input, Checkbox, Button, Image, Popconfirm, Tag, Badge } from 'antd';
 import type { TableProps, ColumnsType } from 'antd/es/table';
-import { SearchOutlined, FilterOutlined, SwapRightOutlined } from '@ant-design/icons';
+import { SearchOutlined, FilterOutlined } from '@ant-design/icons';
 import { Dashboard } from '@sthrift/ui-sharethrift-components';
 import { AllListingsCard } from './all-listings-card';
 
@@ -234,17 +234,7 @@ export function AllListingsTable({
         const formattedEnd = end ? formatDate(end) : '';
         return (
           <span style={{ fontVariantNumeric: 'tabular-nums', fontFamily: 'inherit', minWidth: 220, display: 'inline-block', textAlign: 'left' }}>
-            {formattedStart}
-            {formattedEnd ? (
-            <>
-              &nbsp;
-              <span style={{ verticalAlign: 'middle', display: 'inline-flex', alignItems: 'center' }}>
-              <SwapRightOutlined style={{ paddingBottom: '4px' }} />
-              </span>
-              &nbsp;
-              {formattedEnd}
-            </>
-            ) : ''}
+            {formattedStart}{formattedEnd ? ` - ${formattedEnd}` : ''}
           </span>
         );
       },
