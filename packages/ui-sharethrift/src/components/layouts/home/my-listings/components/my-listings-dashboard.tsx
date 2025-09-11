@@ -1,23 +1,20 @@
-import { Button, Tabs } from 'antd';
+import { Button, Tabs, Badge } from 'antd';
 import type { TabsProps } from 'antd';
 import { AllListingsTableContainer } from './all-listings-table.container';
 import { RequestsTableContainer } from './requests-table.container';
 import { useQuery, gql } from '@apollo/client';
 import { useState } from 'react';
+import styles from './my-listings-dashboard.module.css';
+// eslint-disable-next-line import/no-absolute-path, @typescript-eslint/ban-ts-comment
+// @ts-ignore - allow raw import string
+import MyListingsQuerySource from './my-listings-dashboard.container.graphql?raw';
 
 export interface MyListingsDashboardProps {
   onCreateListing: () => void;
 }
 
 export function MyListingsDashboard({ onCreateListing }: MyListingsDashboardProps) {
-  // Query for the total number of requests
-  const REQUESTS_COUNT_QUERY = gql`
-    query HomeMyListingsDashboardContainerMyListingsRequestsCount {
-      myListingsRequests(page: 1, pageSize: 1) {
-        total
-      }
-    }
-  `;
+  const REQUESTS_COUNT_QUERY = gql(MyListingsQuerySource);
   const { data: requestsCountData } = useQuery(REQUESTS_COUNT_QUERY);
   const requestsCount = requestsCountData?.myListingsRequests?.total ?? 0;
   const [activeTab, setActiveTab] = useState('all-listings');
@@ -44,15 +41,18 @@ export function MyListingsDashboard({ onCreateListing }: MyListingsDashboardProp
     {
       key: 'requests',
       label: (
-        <span>
-          Requests <span style={{ 
-            backgroundColor: '#ff4d4f', 
-            color: 'white', 
-            borderRadius: '50%', 
-            padding: '2px 6px', 
-            fontSize: '12px', 
-            marginLeft: '4px' 
-          }}>{requestsCount}</span>
+        <span style={{ display: 'flex', alignItems: 'center' }}>
+          Requests
+          <Badge
+            count={requestsCount}
+            showZero
+            style={{
+              backgroundColor: requestsCount > 0 ? '#ff4d4f' : '#f5f5f5',
+              color: requestsCount > 0 ? 'white' : '#808080',
+              fontSize: 12,
+              marginLeft: '6px',
+            }}
+          />
         </span>
       ),
       children: <RequestsTableContainer currentPage={requestsPage} onPageChange={setRequestsPage} />, 
@@ -60,7 +60,7 @@ export function MyListingsDashboard({ onCreateListing }: MyListingsDashboardProp
   ];
 
   return (
-    <div style={{ padding: '36px' }}>
+    <div className={styles.dashboardContainer}>
       <div style={{ 
         display: 'flex', 
         justifyContent: 'space-between', 
@@ -74,11 +74,7 @@ export function MyListingsDashboard({ onCreateListing }: MyListingsDashboardProp
           type="primary" 
           size="large"
           onClick={onCreateListing}
-          style={{
-            padding: '18px 24px',
-            height: '48px',
-            fontFamily: 'var(--Urbanist)',
-          }}
+          className={styles.createListing}
         >
           Create a Listing
         </Button>

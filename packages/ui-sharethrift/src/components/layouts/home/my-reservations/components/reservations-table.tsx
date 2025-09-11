@@ -3,6 +3,7 @@ import { Image, Tag } from 'antd';
 import styles from './reservations-table.module.css';
 import { Dashboard } from '@sthrift/ui-sharethrift-components';
 import { ReservationActions } from './reservation-actions.tsx';
+import { ReservationCard } from './reservation-card.tsx';
 import type { ReservationRequest } from '../pages/my-reservations.tsx';
 
 export interface ReservationsTableProps {
@@ -131,47 +132,7 @@ export const ReservationsTable: React.FC<ReservationsTableProps> = ({
       rowKey="id"
       emptyText={emptyText}
       renderGridItem={(reservation) => (
-        <div key={reservation.id} style={{ marginBottom: 16 }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 8 }}>
-            {reservation.listing?.imageUrl && (
-              <img
-                src={reservation.listing.imageUrl}
-                alt={reservation.listing?.title || 'Listing'}
-                style={{ width: 60, height: 60, objectFit: 'cover', borderRadius: 4 }}
-              />
-            )}
-            <div>
-              <div style={{ fontWeight: 500, marginBottom: 4 }}>
-                {reservation.listing?.title || 'Unknown Listing'}
-              </div>
-              <div style={{ fontSize: 12, color: '#666' }}>
-                By {reservation.reserver?.name ? `@${reservation.reserver.name}` : 'Unknown'}
-              </div>
-            </div>
-          </div>
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 8 }}>
-            <Tag className={getReservationStatusTagClass(reservation.state)}>
-              {formatReservationStatus(reservation.state)}
-            </Tag>
-            <div style={{ fontSize: 12, color: '#666' }}>
-              {new Date(reservation.createdAt).toLocaleDateString()}
-            </div>
-          </div>
-          <div style={{ fontSize: 12, color: '#666', marginBottom: 8 }}>
-            {new Date(reservation.reservationPeriodStart).toLocaleDateString()} - {' '}
-            {new Date(reservation.reservationPeriodEnd).toLocaleDateString()}
-          </div>
-          {showActions && (
-            <ReservationActions
-              status={reservation.state}
-              onCancel={() => onCancel?.(reservation.id)}
-              onClose={() => onClose?.(reservation.id)}
-              onMessage={() => onMessage?.(reservation.id)}
-              cancelLoading={cancelLoading}
-              closeLoading={closeLoading}
-            />
-          )}
-        </div>
+        <ReservationCard reservation={reservation} onCancel={onCancel} onClose={onClose} onMessage={onMessage} cancelLoading={cancelLoading} closeLoading={closeLoading} showActions={showActions} />
       )}
     />
   );

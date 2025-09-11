@@ -1,11 +1,12 @@
-import { Input, Checkbox, Button, Image, Popconfirm, Tag } from 'antd';
-import { SearchOutlined, FilterOutlined } from '@ant-design/icons';
-import type { ColumnsType, TableProps } from 'antd/es/table';
+import { Input, Checkbox, Button, Image, Popconfirm, Tag, Badge } from 'antd';
+import type { TableProps, ColumnsType } from 'antd/es/table';
+import { SearchOutlined, FilterOutlined, SwapRightOutlined } from '@ant-design/icons';
 import { Dashboard } from '@sthrift/ui-sharethrift-components';
+import { AllListingsCard } from './all-listings-card';
 
 const { Search } = Input;
 
-interface MyListingData {
+export interface MyListingData {
   id: string;
   title: string;
   image: string;
@@ -41,7 +42,7 @@ const STATUS_OPTIONS = [
   { label: 'Blocked', value: 'Blocked' },
 ];
 
-const getStatusTagClass = (status: string): string => {
+export const getStatusTagClass = (status: string): string => {
   switch (status) {
     case 'Active':
       return 'activeTag';
@@ -149,23 +150,25 @@ export function AllListingsTable({
       dataIndex: 'title',
       key: 'title',
       width: 300,
-      filterDropdown: ({ setSelectedKeys, confirm }) => (
+      filterDropdown: ({ setSelectedKeys, selectedKeys, confirm }) => (
         <div style={{ padding: 8 }}>
           <Search
             placeholder="Search listings"
-            value={searchText}
+            value={selectedKeys.length ? (selectedKeys[0] as string) : searchText} 
             onChange={(e) => {
-              setSelectedKeys([e.target.value]);
-              onSearch(e.target.value);
+              setSelectedKeys(e.target.value ? [e.target.value] : []);
             }}
-            onSearch={() => confirm()}
+            onSearch={(value) => {
+              confirm();       
+              onSearch(value);
+            }}
             style={{ width: 200 }}
             allowClear
           />
         </div>
       ),
-      filterIcon: (filtered) => <SearchOutlined style={{ color: filtered ? '#1890ff' : undefined }} />,
-      render: (title, record) => (
+      filterIcon: (filtered: boolean) => <SearchOutlined style={{ color: filtered ? '#1890ff' : undefined }} />,
+      render: (title: string, record: MyListingData) => (
         <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
           <Image
             src={record.image}
@@ -221,7 +224,7 @@ export function AllListingsTable({
         // Try to format both as yyyy-mm-dd
         function formatDate(str: string) {
           const d = new Date(str);
-          if (isNaN(d.getTime())) return str;
+          if (isNaN(d.getTime())) { return str; }
           const yyyy = d.getFullYear();
           const mm = String(d.getMonth() + 1).padStart(2, '0');
           const dd = String(d.getDate()).padStart(2, '0');
@@ -231,7 +234,17 @@ export function AllListingsTable({
         const formattedEnd = end ? formatDate(end) : '';
         return (
           <span style={{ fontVariantNumeric: 'tabular-nums', fontFamily: 'inherit', minWidth: 220, display: 'inline-block', textAlign: 'left' }}>
-            {formattedStart}{formattedEnd ? ` - ${formattedEnd}` : ''}
+            {formattedStart}
+            {formattedEnd ? (
+            <>
+              &nbsp;
+              <span style={{ verticalAlign: 'middle', display: 'inline-flex', alignItems: 'center' }}>
+              <SwapRightOutlined style={{ paddingBottom: '4px' }} />
+              </span>
+              &nbsp;
+              {formattedEnd}
+            </>
+            ) : ''}
           </span>
         );
       },
@@ -247,7 +260,7 @@ export function AllListingsTable({
             options={STATUS_OPTIONS}
             value={statusFilters}
             onChange={(checkedValues) => {
-              onStatusFilter(checkedValues as string[]);
+              onStatusFilter(checkedValues);
               confirm();
             }}
             style={{ display: 'flex', flexDirection: 'column', gap: 8 }}
@@ -265,7 +278,7 @@ export function AllListingsTable({
       title: 'Actions',
       key: 'actions',
       width: 200,
-      render: (_, record) => {
+      render: (_, record: MyListingData) => {
         const actions = getActionButtons(record);
         // Ensure at least 3 slots for alignment (first, middle, last)
         const minActions = 3;
@@ -314,25 +327,18 @@ export function AllListingsTable({
       key: 'pendingRequestsCount',
       sorter: true,
       sortOrder: sorter.field === 'pendingRequestsCount' ? sorter.order : null,
-      render: (count: number, record) => (
+      render: (count: number, record: MyListingData) => (
         <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', minHeight: 60 }}>
-          <div
+          <Badge
+            count={count}
+            showZero
             style={{
-              background: count > 0 ? '#ff4d4f' : '#f5f5f5',
-              color: count > 0 ? 'white' : '#bfbfbf',
-              borderRadius: 12,
-              width: 32,
-              height: 24,
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              fontWeight: 500,
-              fontSize: 15,
-              marginBottom: count > 0 ? 4 : 0,
+              backgroundColor: count > 0 ? '#ff4d4f' : '#f5f5f5',
+              color: count > 0 ? 'white' : '#808080',
+              minWidth: 32,
+              fontSize: 14,
             }}
-          >
-            {count}
-          </div>
+          />
           {count > 0 && (
             <Button
               type="link"
@@ -359,6 +365,13 @@ export function AllListingsTable({
       onPageChange={onPageChange}
       showPagination={true}
       onChange={onTableChange}
+      renderGridItem={(item) => (
+        <AllListingsCard
+          listing={item}
+          onViewPendingRequests={onViewAllRequests}
+          onAction={onAction}
+        />
+      )}
     />
   );
 }

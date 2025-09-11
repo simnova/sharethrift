@@ -54,6 +54,10 @@ export const Dashboard = <T extends object>({
           components: {
             Table: {
               headerBg: "var(--color-background-2)",
+              headerSortActiveBg: "var(--color-background-2)",
+              headerSortHoverBg	: "var(--color-background-2)",
+              bodySortBg: "var(--color-background)",
+              rowHoverBg: "var(--color-background)",
               headerBorderRadius: 0,
             },
           },
@@ -70,23 +74,9 @@ export const Dashboard = <T extends object>({
             className={styles.tableContainer}
           />
         </ConfigProvider>
-
-        {showPagination && onPageChange && (
-          <div style={{ display: 'flex', justifyContent: 'flex-end', marginTop: 16 }}>
-        <Pagination
-          current={currentPage}
-          pageSize={pageSize}
-          total={total || data.length}
-          onChange={onPageChange}
-          className={styles.pagination}
-          showSizeChanger={false}
-          showQuickJumper={false}
-        />
-          </div>
-        )}
       </div>
 
-      <div className={`${styles.gridContainer} ${styles.mobileOnly}`}>
+      <div className={styles.gridContainer}>
         {data.length > 0 ? (
           data.map((item) => (
             <div key={item[rowKey] as React.Key} className={styles.gridItem}>
@@ -99,6 +89,20 @@ export const Dashboard = <T extends object>({
           </div>
         )}
       </div>
+
+      {showPagination && onPageChange && (
+        <div style={{ display: 'flex', justifyContent: 'flex-end', marginTop: 16 }}>
+          <Pagination
+            current={currentPage}
+            pageSize={pageSize}
+            total={total || data.length}
+            onChange={onPageChange}
+            className={styles.pagination}
+            showSizeChanger={false}
+            showQuickJumper={false}
+          />
+        </div>
+      )}
     </>
   );
 };

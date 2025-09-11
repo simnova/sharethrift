@@ -1,11 +1,12 @@
 import { Input, Checkbox, Button, Image, Popconfirm, Tag } from 'antd';
-import { SearchOutlined, FilterOutlined } from '@ant-design/icons';
+import { SearchOutlined, FilterOutlined, SwapRightOutlined } from '@ant-design/icons';
 import type { ColumnsType, TableProps } from 'antd/es/table';
 import { Dashboard } from '@sthrift/ui-sharethrift-components';
+import { RequestsCard } from './requests-card';
 
 const { Search } = Input;
 
-interface ListingRequestData {
+export interface ListingRequestData {
   id: string;
   title: string;
   image: string;
@@ -39,7 +40,7 @@ const REQUEST_STATUS_OPTIONS = [
   { label: 'Closing', value: 'Closing' },
 ];
 
-const getRequestStatusTagClass = (status: string): string => {
+export const getStatusTagClass = (status: string): string => {
   switch (status) {
     case 'Accepted':
       return 'requestAcceptedTag';
@@ -54,6 +55,64 @@ const getRequestStatusTagClass = (status: string): string => {
     default:
       return '';
   }
+};
+
+export const getActionButtons = (record: ListingRequestData, onAction: (action: string, requestId: string) => void) => {
+  const buttons = [];
+  
+  // Conditional actions based on status
+  if (record.status === 'Cancelled' || record.status === 'Rejected') {
+    buttons.push(
+      <Popconfirm
+        key="delete"
+        title="Delete this request?"
+        description="Are you sure you want to delete this request? This action cannot be undone."
+        onConfirm={() => onAction('delete', record.id)}
+        okText="Yes"
+        cancelText="No"
+      >
+        <Button type="link" size="small" danger>Delete</Button>
+      </Popconfirm>
+    );
+  }
+  
+  if (record.status === 'Closed' || record.status === 'Accepted') {
+    buttons.push(
+      <Button key="message" type="link" size="small" onClick={() => onAction('message', record.id)}>
+        Message
+      </Button>
+    );
+  }
+  
+  if (record.status === 'Accepted') {
+    buttons.push(
+      <Popconfirm
+        key="close"
+        title="Close this request?"
+        description="Are you sure you want to close this request?"
+        onConfirm={() => onAction('close', record.id)}
+        okText="Yes"
+        cancelText="No"
+      >
+        <Button type="link" size="small">Close</Button>
+      </Popconfirm>
+    );
+  }
+  
+  if (record.status === 'Pending') {
+    buttons.push(
+      <Button key="accept" type="link" size="small" onClick={() => onAction('accept', record.id)}>
+        Accept
+      </Button>
+    );
+    buttons.push(
+      <Button key="reject" type="link" size="small" onClick={() => onAction('reject', record.id)}>
+        Reject
+      </Button>
+    );
+  }
+  
+  return buttons;
 };
 
 export function RequestsTable({
@@ -71,80 +130,23 @@ export function RequestsTable({
   onPageChange,
   onAction,
 }: RequestsTableProps) {
-  
-  const getActionButtons = (record: ListingRequestData) => {
-    const buttons = [];
-    
-    // Conditional actions based on status
-    if (record.status === 'Cancelled' || record.status === 'Rejected') {
-      buttons.push(
-        <Popconfirm
-          key="delete"
-          title="Delete this request?"
-          description="Are you sure you want to delete this request? This action cannot be undone."
-          onConfirm={() => onAction('delete', record.id)}
-          okText="Yes"
-          cancelText="No"
-        >
-          <Button type="link" size="small" danger>Delete</Button>
-        </Popconfirm>
-      );
-    }
-    
-    if (record.status === 'Closed' || record.status === 'Accepted') {
-      buttons.push(
-        <Button key="message" type="link" size="small" onClick={() => onAction('message', record.id)}>
-          Message
-        </Button>
-      );
-    }
-    
-    if (record.status === 'Accepted') {
-      buttons.push(
-        <Popconfirm
-          key="close"
-          title="Close this request?"
-          description="Are you sure you want to close this request?"
-          onConfirm={() => onAction('close', record.id)}
-          okText="Yes"
-          cancelText="No"
-        >
-          <Button type="link" size="small">Close</Button>
-        </Popconfirm>
-      );
-    }
-    
-    if (record.status === 'Pending') {
-      buttons.push(
-        <Button key="accept" type="link" size="small" onClick={() => onAction('accept', record.id)}>
-          Accept
-        </Button>
-      );
-      buttons.push(
-        <Button key="reject" type="link" size="small" onClick={() => onAction('reject', record.id)}>
-          Reject
-        </Button>
-      );
-    }
-    
-    return buttons;
-  };
-
   const columns: ColumnsType<ListingRequestData> = [
     {
       title: 'Listing',
       key: 'listing',
       width: 300,
-      filterDropdown: ({ setSelectedKeys, confirm }) => (
+      filterDropdown: ({ setSelectedKeys, selectedKeys, confirm }) => (
         <div style={{ padding: 8 }}>
           <Search
             placeholder="Search listings"
-            value={searchText}
+            value={selectedKeys.length ? (selectedKeys[0] as string) : searchText} 
             onChange={(e) => {
-              setSelectedKeys([e.target.value]);
-              onSearch(e.target.value);
+              setSelectedKeys(e.target.value ? [e.target.value] : []);
             }}
-            onSearch={() => confirm()}
+            onSearch={(value) => {
+              confirm();       
+              onSearch(value);
+            }}
             style={{ width: 200 }}
             allowClear
           />
@@ -214,7 +216,17 @@ export function RequestsTable({
         const formattedEnd = end ? formatDate(end) : '';
         return (
           <span style={{ fontVariantNumeric: 'tabular-nums', fontFamily: 'inherit', minWidth: 220, display: 'inline-block', textAlign: 'left' }}>
-            {formattedStart}{formattedEnd ? ` - ${formattedEnd}` : ''}
+            {formattedStart}
+            {formattedEnd ? (
+            <>
+              &nbsp;
+              <span style={{ verticalAlign: 'middle', display: 'inline-flex', alignItems: 'center' }}>
+              <SwapRightOutlined style={{ paddingBottom: '4px' }} />
+              </span>
+              &nbsp;
+              {formattedEnd}
+            </>
+            ) : ''}
           </span>
         );
       },
@@ -239,7 +251,7 @@ export function RequestsTable({
       ),
       filterIcon: (filtered) => <FilterOutlined style={{ color: filtered ? '#1890ff' : undefined }} />,
       render: (status: string) => (
-        <Tag className={getRequestStatusTagClass(status)}>
+        <Tag className={getStatusTagClass(status)}>
           {status}
         </Tag>
       ),
@@ -250,7 +262,7 @@ export function RequestsTable({
       width: 200,
       render: (_, record) => (
         <div style={{ display: 'flex', flexWrap: 'wrap', gap: 4 }}>
-          {getActionButtons(record)}
+          {getActionButtons(record, onAction)}
         </div>
       ),
     },
@@ -267,6 +279,9 @@ export function RequestsTable({
       onPageChange={onPageChange}
       showPagination={true}
       onChange={onTableChange}
+      renderGridItem={(listing) => (
+        <RequestsCard listing={listing} onAction={onAction} />
+      )}
     />
   );
 }
