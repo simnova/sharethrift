@@ -1,6 +1,6 @@
 heruwala:
   name: Dhaval Heruwala
-  title: CellixJs core team
+  title: Sharethrift core team
   url: https://linkedin.com/in/heruwala
   image_url: https://github.com/heruwala.png
   page: true
@@ -12,7 +12,7 @@ heruwala:
 
 gidich:
   name: Patrick Gidich
-  title: CellixJs maintainer
+  title: Sharethrift maintainer
   url: https://www.simnova.com
   image_url: https://github.com/gidich.png
   page:
@@ -23,3 +23,12 @@ gidich:
     linkedin: gidich
     github: gidich
     newsletter: https://www.simnova.com
+
+jasonmorais:
+  name: Jason Morais
+  title: Sharethrift core team
+  url: https://www.linkedin.com/in/jason-morais-06b629164
+  image_url: https://github.com/jasonmorais.png
+  socials:
+    linkedin: jason-morais-06b629164
+    github: jasonmorais

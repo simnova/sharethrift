@@ -1,12 +1,12 @@
 ---
 sidebar_position: 1
 sidebar_label: Tech Stack Overview
-description: Overview of the CellixJs tech stack and architecture philosophy
+description: Overview of the Sharethrift tech stack and architecture philosophy
 ---
 
 # Tech Stack Overview
 
-CellixJs leverages modern technologies to deliver a robust, scalable platform for community management and engagement.
+Sharethrift leverages modern technologies to deliver a robust, scalable platform for community management and engagement.
 
 ## 🔑 Key App Tech/Services
 

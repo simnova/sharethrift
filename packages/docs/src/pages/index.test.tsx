@@ -7,7 +7,7 @@ describe('Home', () => {
 		render(<Home />);
 
 		// Check if the site title is rendered
-		expect(screen.getByText('CellixJs Docs')).toBeInTheDocument();
+		expect(screen.getByText('Sharethrift Docs')).toBeInTheDocument();
 
 		// Check if the tagline is rendered
 		expect(
@@ -19,7 +19,7 @@ describe('Home', () => {
 		render(<Home />);
 
 		// Check if the CTA button is rendered
-		const ctaButton = screen.getByText('CellixJs Doc - 15min ⏱️');
+		const ctaButton = screen.getByText('Sharethrift Doc - 15min ⏱️');
 		expect(ctaButton).toBeInTheDocument();
 		expect(ctaButton.closest('a')).toHaveAttribute('href', '/docs/intro');
 	});
@@ -30,7 +30,7 @@ describe('Home', () => {
 		// Check if the layout is rendered
 		const layout = screen.getByTestId('layout');
 		expect(layout).toBeInTheDocument();
-		expect(layout).toHaveAttribute('data-title', 'CellixJs Docs');
+		expect(layout).toHaveAttribute('data-title', 'Sharethrift Docs');
 		expect(layout).toHaveAttribute(
 			'data-description',
 			'Description will go into a meta tag in <head />',
@@ -70,6 +70,6 @@ describe('Home', () => {
 		// Check if the title is rendered as h1 specifically
 		const h1Element = screen.getByRole('heading', { level: 1 });
 		expect(h1Element).toBeInTheDocument();
-		expect(h1Element).toHaveTextContent('CellixJs Docs');
+		expect(h1Element).toHaveTextContent('Sharethrift Docs');
 	});
 });

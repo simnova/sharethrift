@@ -13,7 +13,7 @@ informed: team
 
 ## Context and Problem Statement
 
-The CellixJS project uses Docusaurus for documentation hosting via GitHub Pages, with Azure Pipelines handling the CI/CD process. The previous single-stage pipeline configuration (`docusaurus/azure-pipelines.yml`) was executing both build and deployment operations on every commit, including pull requests. This resulted in unwanted deployments of documentation changes that hadn't been merged to the `main` branch yet, which violates CI/CD best practices and could potentially deploy incomplete or unreviewed documentation.
+The Sharethrift project uses Docusaurus for documentation hosting via GitHub Pages, with Azure Pipelines handling the CI/CD process. The previous single-stage pipeline configuration (`docusaurus/azure-pipelines.yml`) was executing both build and deployment operations on every commit, including pull requests. This resulted in unwanted deployments of documentation changes that hadn't been merged to the `main` branch yet, which violates CI/CD best practices and could potentially deploy incomplete or unreviewed documentation.
 
 We needed a solution that would validate documentation builds on every PR while only deploying documentation after successful merge to `main`.
 

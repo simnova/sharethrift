@@ -1,12 +1,12 @@
 ---
 sidebar_position: 3
 sidebar_label: Contexts
-description: "Execution contexts within CellixJs framework manage domain-related actions through passport-based security and permissions."
+description: "Execution contexts within Sharethrift framework manage domain-related actions through passport-based security and permissions."
 ---
 
 # Contexts
 
-Contexts within the CellixJs framework involve multiple levels of abstraction, primarily focusing on the management and execution of domain-related actions. These contexts are part of a security and permissions framework built around the passport pattern and are integrated with the Domain-Driven Design (DDD) architecture.
+Contexts within the Sharethrift framework involve multiple levels of abstraction, primarily focusing on the management and execution of domain-related actions. These contexts are part of a security and permissions framework built around the passport pattern and are integrated with the Domain-Driven Design (DDD) architecture.
 
 ## Levels of Abstraction
 
@@ -23,7 +23,7 @@ interface DomainExecutionContext {
 
 ### Passport Types
 
-The CellixJs framework implements several passport types for different execution contexts:
+The Sharethrift framework implements several passport types for different execution contexts:
 
 #### System Passport
 

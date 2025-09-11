@@ -22,7 +22,7 @@ function HomepageHeader() {
 						className="button button--secondary button--lg"
 						to="/docs/intro"
 					>
-						CellixJs Doc - 15min ⏱️
+						Sharethrift Doc - 15min ⏱️
 					</Link>
 				</div>
 			</div>
