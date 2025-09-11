@@ -10,8 +10,10 @@ import {
 	message,
 } from 'antd';
 import { PlusOutlined, LeftOutlined, CloseOutlined } from '@ant-design/icons';
-import { Dayjs } from 'dayjs';
-import { useRef } from 'react';
+import type { Dayjs } from 'dayjs';
+import { useRef, useState, useEffect } from 'react';
+import { SuccessPublished } from './screens/success-published';
+import { SuccessDraft } from './screens/success-draft';
 import '../view-listing/listing-image-gallery/listing-image-gallery.overrides.css';
 
 const { TextArea } = Input;
@@ -67,6 +69,8 @@ export function CreateListing({
 						: ['', ''],
 					images: uploadedImages,
 				};
+				// remember last action so we can show the appropriate modal when isLoading updates
+				setLastAction(isDraft ? 'draft' : 'publish');
 				onSubmit(formData, isDraft);
 			})
 			.catch((errorInfo) => {
@@ -76,6 +80,30 @@ export function CreateListing({
 				}
 			});
 	};
+
+	// Local UI state to manage modals (loading / success)
+	const [lastAction, setLastAction] = useState<'none' | 'publish' | 'draft'>(
+		'none',
+	);
+	const [localModal, setLocalModal] = useState<
+		'none' | 'loading' | 'published' | 'draft'
+	>('none');
+
+	useEffect(() => {
+		// When isLoading becomes true, show loading. When it becomes false, show appropriate success modal
+		if (isLoading) {
+			setLocalModal('loading');
+		} else if (localModal === 'loading') {
+			// transition from loading to result
+			if (lastAction === 'publish') {
+				setLocalModal('published');
+			} else if (lastAction === 'draft') {
+				setLocalModal('draft');
+			} else {
+				setLocalModal('none');
+			}
+		}
+	}, [isLoading, localModal, lastAction]);
 
 	const disabledDate = (current: Dayjs) => {
 		// Disable dates before today
@@ -715,6 +743,38 @@ export function CreateListing({
 				}}
 				style={{ display: 'none' }}
 			/>
+			{/* Modals for success (loading shown inside modals) */}
+			<SuccessPublished
+				visible={
+					localModal === 'published' ||
+					(localModal === 'loading' && lastAction === 'publish')
+				}
+				loading={
+					localModal === 'loading' && lastAction === 'publish'
+						? isLoading
+						: undefined
+				}
+				onClose={() => {
+					setLocalModal('none');
+				}}
+			/>
+			<SuccessDraft
+				visible={
+					localModal === 'draft' ||
+					(localModal === 'loading' && lastAction === 'draft')
+				}
+				loading={
+					localModal === 'loading' && lastAction === 'draft'
+						? isLoading
+						: undefined
+				}
+				onClose={() => {
+					setLocalModal('none');
+				}}
+			/>
 		</>
 	);
 }
+
+// Render modals outside of main JSX so imports are used (component exports are within same file scope)
+export default CreateListing;

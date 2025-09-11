@@ -1,0 +1,30 @@
+.modalRoot .ant-modal-content {
+	border-radius: 12px;
+	padding: 24px;
+}
+
+.content {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	justify-content: center;
+	gap: 8px;
+	padding: 8px 16px 24px 16px;
+	min-width: 320px;
+}
+
+.image {
+	width: 200px;
+	height: 200px;
+	object-fit: contain;
+}
+
+@media (max-width: 600px) {
+	.content {
+		padding: 8px 12px 20px 12px;
+	}
+	.image {
+		width: 140px;
+		height: 140px;
+	}
+}
