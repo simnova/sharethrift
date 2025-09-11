@@ -39,7 +39,8 @@ export class PersonalUserReadRepositoryImpl
 	async getAll(
 		options?: FindOptions,
 	): Promise<Domain.Contexts.User.PersonalUser.PersonalUserEntityReference[]> {
-		return await this.mongoDataSource.find({}, options);
+		const results = await this.mongoDataSource.find({}, options);
+		return results.map((doc) => this.converter.toDomain(doc, this.passport));
 	}
 
 	async getById(
@@ -57,7 +58,10 @@ export class PersonalUserReadRepositoryImpl
 		email: string,
 		options?: FindOneOptions,
 	): Promise<Domain.Contexts.User.PersonalUser.PersonalUserEntityReference | null> {
-    const result = await this.mongoDataSource.findOne({ 'account.email': email }, options);
+		const result = await this.mongoDataSource.findOne(
+			{ 'account.email': email },
+			options,
+		);
 		if (!result) {
 			return null;
 		}
