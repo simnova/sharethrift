@@ -2,35 +2,11 @@ import { Card, Avatar, Button, Tag, Typography, Row, Col, Space, Divider } from 
 import { ListingsGrid } from '@sthrift/ui-sharethrift-components';
 import { SettingOutlined, UserOutlined } from '@ant-design/icons';
 import './profile-view.overrides.css';
+import type { UserProfileData, UserListing } from './profile-view.types';
 
 const { Text } = Typography;
 
-interface UserProfileData {
-  id: string;
-  firstName: string;
-  lastName: string;
-  username: string;
-  email: string;
-  accountType: string;
-  location: {
-    city: string;
-    state: string;
-  };
-  createdAt: string;
-}
-
-interface UserListing {
-  id: string;
-  title: string;
-  description: string;
-  category: string;
-  location: string;
-  state: string;
-  images: string[];
-  createdAt: string;
-  sharingPeriodStart: string;
-  sharingPeriodEnd: string;
-}
+// ...interfaces now imported from profile-view.types.ts
 
 interface ProfileViewProps {
   user: UserProfileData;

@@ -1,55 +1,11 @@
-import { gql, useQuery } from '@apollo/client';
 import { useNavigate } from 'react-router-dom';
 import { ProfileView } from './profile-view';
-import profileViewQueriesRaw from './profile-view.graphql?raw';
+import profileViewQueriesRaw from './profile-view.container.graphql?raw';
+import { gql, useQuery } from '@apollo/client';
+import type { CurrentUserQueryData, UserListingsQueryData, UserListing } from './profile-view.types';
 
-interface UserProfile {
-  id: string;
-  userType: string;
-  account: {
-    accountType: string;
-    email: string;
-    username: string;
-    profile: {
-      firstName: string;
-      lastName: string;
-      location: {
-        city: string;
-        state: string;
-      };
-    };
-  };
-  createdAt: string;
-}
-
-interface ItemListing {
-  id: string;
-  title: string;
-  description: string;
-  category: string;
-  location: string;
-  state: string;
-  images: string[];
-  sharer: string;
-  createdAt: string;
-  updatedAt: string;
-  sharingPeriodStart: string;
-  sharingPeriodEnd: string;
-}
-
-interface CurrentUserQueryData {
-  currentPersonalUserAndCreateIfNotExists: UserProfile;
-}
-
-interface UserListingsQueryData {
-  itemListings: ItemListing[];
-}
-
-export function ProfileViewContainer() {
-
+function ProfileViewLoader() {
   const navigate = useNavigate();
-
-  // Split the raw .graphql file into two queries and parse with gql
   const queries = profileViewQueriesRaw.split('query HomeAccountProfileViewContainerUserListings');
   const GET_CURRENT_USER = gql(queries[0]);
   const GET_USER_LISTINGS = gql('query HomeAccountProfileViewContainerUserListings' + queries[1]);
@@ -57,21 +13,9 @@ export function ProfileViewContainer() {
   const { data: userData, loading: userLoading, error: userError } = useQuery<CurrentUserQueryData>(GET_CURRENT_USER);
   const { data: listingsData, loading: listingsLoading, error: listingsError } = useQuery<UserListingsQueryData>(GET_USER_LISTINGS);
 
-  // Filter listings to only show ones by the current user
-  const userListings = listingsData?.itemListings?.filter(listing => {
-    // For now, we'll match by firstName + lastName (since sharer is stored as "FirstName L." format)
-    if (userData?.currentPersonalUserAndCreateIfNotExists?.account?.profile) {
-      const { firstName, lastName } = userData.currentPersonalUserAndCreateIfNotExists.account.profile;
-      const userDisplayName = `${firstName} ${lastName.charAt(0)}.`;
-      return listing.sharer === userDisplayName;
-    }
-    return false;
-  }) || [];
-
   const handleEditSettings = () => {
     navigate('/account/settings');
   };
-
   const handleListingClick = (listingId: string) => {
     navigate(`/listing/${listingId}`);
   };
@@ -91,7 +35,6 @@ export function ProfileViewContainer() {
       },
       createdAt: new Date('2024-08-01').toISOString(),
     };
-
     const mockListings = [
       {
         id: '64f7a9c2d1e5b97f3c9d0a41',
@@ -118,7 +61,6 @@ export function ProfileViewContainer() {
         sharingPeriodEnd: '2024-12-23T00:00:00.000Z',
       },
     ];
-
     return (
       <ProfileView
         user={mockUser}
@@ -139,6 +81,14 @@ export function ProfileViewContainer() {
   }
 
   const user = userData.currentPersonalUserAndCreateIfNotExists;
+  const userListings = listingsData?.itemListings?.filter((listing: UserListing & { sharer: string; updatedAt: string }) => {
+    if (user?.account?.profile) {
+      const { firstName, lastName } = user.account.profile;
+      const userDisplayName = `${firstName} ${lastName.charAt(0)}.`;
+      return listing.sharer === userDisplayName;
+    }
+    return false;
+  }) || [];
 
   return (
     <ProfileView
@@ -155,7 +105,7 @@ export function ProfileViewContainer() {
         },
         createdAt: user.createdAt,
       }}
-      listings={userListings.map(listing => ({
+      listings={userListings.map((listing: UserListing & { sharer: string; updatedAt: string }) => ({
         id: listing.id,
         title: listing.title,
         description: listing.description,
@@ -172,4 +122,8 @@ export function ProfileViewContainer() {
       onListingClick={handleListingClick}
     />
   );
+}
+
+export function ProfileViewContainer() {
+  return <ProfileViewLoader />;
 }
