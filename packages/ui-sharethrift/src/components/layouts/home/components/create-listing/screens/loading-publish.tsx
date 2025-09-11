@@ -23,7 +23,7 @@ export const LoadingPublish: React.FC<{
 				<div className="title36" style={{ marginTop: 16, textAlign: 'center' }}>
 					Publishing your listing
 				</div>
-				<p> className="p" style={{ marginTop: 8, textAlign: 'center' }}>
+				<p className="p" style={{ marginTop: 8, textAlign: 'center' }}>
 					Hang tight — we are publishing your listing. This may take a few
 					moments.
 				</p>

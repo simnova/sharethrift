@@ -85,7 +85,7 @@ export function ListingsPage({
 							selectedCategory={selectedCategory}
 							onCategoryChange={onCategoryChange}
 						/>
-						{/* TODO: Location filter */}
+						{/* Location filter placeholder - implement advanced filter later */}
 						<span
 							style={{
 								fontSize: '14px',

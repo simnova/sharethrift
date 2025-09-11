@@ -36,11 +36,11 @@ export const SuccessPublished: React.FC<{
 						>
 							Your listing is live!
 						</div>
-						<div className="p" style={{ marginTop: 8, textAlign: 'center' }}>
+						<p style={{ marginTop: 8, textAlign: 'center' }}>
 							Congratulations — your item has been published and is visible to
 							others.
-						</div>
-						<div style={{ marginTop: 20, display: 'flex', gap: 8 }}>
+						</p>
+						<div className={styles.actions}>
 							<Button
 								type="primary"
 								className="primaryButton"

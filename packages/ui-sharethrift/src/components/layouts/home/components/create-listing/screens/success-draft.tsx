@@ -40,7 +40,7 @@ export const SuccessDraft: React.FC<{
 							Your draft has been saved. You can publish it anytime from your
 							drafts.
 						</p>
-						<div style={{ marginTop: 20, display: 'flex', gap: 8 }}>
+						<div className={styles.actions}>
 							<Button
 								type="primary"
 								className="primaryButton"

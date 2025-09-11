@@ -10,14 +10,30 @@ import {
 	message,
 } from 'antd';
 import { PlusOutlined, LeftOutlined, CloseOutlined } from '@ant-design/icons';
-import type { Dayjs } from 'dayjs';
 import { useRef, useState, useEffect } from 'react';
+import dayjs from 'dayjs';
+import type { ConfigType } from 'dayjs';
 import { SuccessPublished } from './screens/success-published';
 import { SuccessDraft } from './screens/success-draft';
 import '../view-listing/listing-image-gallery/listing-image-gallery.overrides.css';
 
 const { TextArea } = Input;
 const { RangePicker } = DatePicker;
+
+// Disable dates before today
+const disabledDate = (current: ConfigType) => {
+	// AntD DatePicker uses dayjs objects; guard in case other types are passed
+	try {
+		const maybeDay = current as dayjs.Dayjs;
+		if (!maybeDay || typeof maybeDay.isBefore !== 'function') {
+			return false;
+		}
+
+		return maybeDay.isBefore(dayjs(), 'day');
+	} catch (_err) {
+		return false;
+	}
+};
 
 export interface CreateListingFormData {
 	title: string;
@@ -29,13 +45,13 @@ export interface CreateListingFormData {
 }
 
 export interface CreateListingProps {
-	categories: string[];
-	isLoading: boolean;
-	onSubmit: (data: CreateListingFormData, isDraft: boolean) => void;
-	onCancel: () => void;
-	uploadedImages: string[];
-	onImageAdd: (imageUrl: string) => void;
-	onImageRemove: (imageUrl: string) => void;
+	readonly categories: string[];
+	readonly isLoading: boolean;
+	readonly onSubmit: (data: CreateListingFormData, isDraft: boolean) => void;
+	readonly onCancel: () => void;
+	readonly uploadedImages: string[];
+	readonly onImageAdd: (imageUrl: string) => void;
+	readonly onImageRemove: (imageUrl: string) => void;
 }
 
 export function CreateListing({
@@ -46,13 +62,37 @@ export function CreateListing({
 	uploadedImages,
 	onImageAdd,
 	onImageRemove,
-}: CreateListingProps) {
+}: Readonly<CreateListingProps>) {
 	const [form] = Form.useForm();
 	const maxCharacters = 2000;
 	const mainFileInputRef = useRef<HTMLInputElement>(null);
 	const additionalFileInputRef = useRef<HTMLInputElement>(null);
 
 	const handleFormSubmit = (isDraft: boolean) => {
+		// If saving as draft, skip required-field validation and submit whatever the user has entered
+		if (isDraft) {
+			const values = form.getFieldsValue();
+			const formData: CreateListingFormData = {
+				title: values.title || '',
+				description: values.description || '',
+				category: values.category || '',
+				location: values.location || '',
+				sharingPeriod: values.sharingPeriod
+					? [
+							values.sharingPeriod[0]?.toISOString?.() || '',
+							values.sharingPeriod[1]?.toISOString?.() || '',
+						]
+					: ['', ''],
+				images: uploadedImages,
+			};
+
+			// remember last action so we can show the draft modal when isLoading updates
+			setLastAction('draft');
+			onSubmit(formData, true);
+			return;
+		}
+
+		// Publishing requires validation
 		form
 			.validateFields()
 			.then((values) => {
@@ -70,7 +110,7 @@ export function CreateListing({
 					images: uploadedImages,
 				};
 				// remember last action so we can show the appropriate modal when isLoading updates
-				setLastAction(isDraft ? 'draft' : 'publish');
+				setLastAction('publish');
 				onSubmit(formData, isDraft);
 			})
 			.catch((errorInfo) => {
@@ -104,11 +144,6 @@ export function CreateListing({
 			}
 		}
 	}, [isLoading, localModal, lastAction]);
-
-	const disabledDate = (current: Dayjs) => {
-		// Disable dates before today
-		return current && current.valueOf() < Date.now() - 24 * 60 * 60 * 1000;
-	};
 
 	return (
 		<>
