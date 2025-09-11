@@ -70,3 +70,12 @@
   flex-direction: column;
   gap: 4px;
 }
+
+.dropdown {
+  background: var(--color-background);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+}
+
+.dropdown * {
+  font-family: var(--Urbanist), 'Urbanist', sans-serif !important;
+}

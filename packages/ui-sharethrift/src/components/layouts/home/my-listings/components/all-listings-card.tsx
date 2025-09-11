@@ -1,5 +1,6 @@
 import React from 'react';
-import { Card, Tag, Space, Button, Popconfirm, Badge } from 'antd';
+import { Card, Tag, Space, Button, Popconfirm, Badge, Dropdown } from 'antd';
+import { EllipsisOutlined } from '@ant-design/icons';
 import styles from './all-listings-card.module.css';
 import type { MyListingData } from './all-listings-table';
 import { getStatusTagClass } from './all-listings-table';
@@ -72,7 +73,34 @@ const AllListingsCard: React.FC<AllListingsCardProps> = ({ listing, onViewPendin
           </div>
         ) : null}
         <div className={styles.cardContent}>
-          <h3 className={styles.cardTitle}>{listing.title}</h3>
+            <div style={{ display: 'flex', flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
+              <h3 className={styles.cardTitle}>{listing.title}</h3>
+              <Dropdown
+                trigger={['click']}
+                overlay={
+                  <Space direction="vertical" className={styles.dropdown}>
+                    <Button type="text" onClick={() => onAction('edit', listing.id)}>Edit</Button>
+                    <Popconfirm
+                      title="Delete this listing?"
+                      description="Are you sure you want to delete this listing? This action cannot be undone."
+                      onConfirm={() => onAction('delete', listing.id)}
+                      okText="Delete"
+                      cancelText="Cancel"
+                      placement="bottomRight"
+                      overlayStyle={{ width: 300 }}
+                    >
+                      <Button type="text">Delete</Button>
+                    </Popconfirm>
+                  </Space>
+                }
+                placement="bottomRight"
+              >
+                <Button
+                  type="text"
+                  icon={<EllipsisOutlined />}
+                />
+              </Dropdown>
+            </div>
           <div className={styles.cardMeta}>
             <div>
               Published On: {listing.publishedAt}
