@@ -28,3 +28,11 @@
 	--ifm-color-primary-lightest: #4fddff;
 	--docusaurus-highlighted-code-line-bg: rgba(0, 0, 0, 0.3);
 }
+
+.featureSvg {
+	width: 120px;
+	height: 120px;
+	max-width: 100%;
+	max-height: 120px;
+	display: inline-block;
+}
