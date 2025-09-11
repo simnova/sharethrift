@@ -1,4 +1,3 @@
-
 ---
 sidebar_position: 7
 sidebar_label: 0007 SerenityJS

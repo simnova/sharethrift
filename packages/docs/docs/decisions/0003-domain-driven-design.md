@@ -1,4 +1,3 @@
-
 ---
 sidebar_position: 3
 sidebar_label: 0003 Domain Driven Design
@@ -84,6 +83,7 @@ An abstraction that provides access to the aggregate root, encapsulating the det
 - *Think of it as an interface that provides CRUD operations for aggregate root, typically a save and multiple purpose-specific get methods.*
 - **Implementation:** src/app/domain/contexts/**/*.uow.ts
 - **Example:** : member *(Typically, one for each aggregate-root.)*
+
 
 
 ## Consequences

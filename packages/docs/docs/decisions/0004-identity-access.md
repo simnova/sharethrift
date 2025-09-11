@@ -1,4 +1,3 @@
-
 ---
 sidebar_position: 4
 sidebar_label: 0004 Identity and Access Control

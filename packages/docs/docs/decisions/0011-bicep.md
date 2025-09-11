@@ -11,6 +11,7 @@ deciders:
 # Using Bicep for Infrastructure as Code instead of manual configuration of environments
 
 
+
 ## Context and Problem Statement
 Bicep is a domain-specific language (DSL) for deploying Azure resources declaratively. It aims to simplify the authoring experience compared to traditional ARM templates. Prior to this decision, we were manually configuring Azure resources, which was error-prone and hard to maintain. We need a more structured and maintainable approach to managing infrastructure as code in our build pipeline.
 
@@ -69,3 +70,4 @@ Cons:
 
 ## MORE INFORMATION
 - [Bicep Documentation](https://docs.microsoft.com/en-us/azure/azure-resource-manager/bicep/)
+

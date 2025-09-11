@@ -1,4 +1,3 @@
-
 ---
 sidebar_position: 2
 sidebar_label: 0002 Open Telemetry
@@ -16,7 +15,7 @@ informed: ikeem07, nguyenduy
 
 ## Context and Problem Statement
 
-For the Owner Community project, we need end-to-end observability to monitor and troubleshoot the application. We need to track the performance of the application, identify bottlenecks, and troubleshoot issues. We need a solution that provides distributed tracing, metrics, and logging capabilities. We need to decide on a tool that can provide these capabilities and integrate well with our existing infrastructure.
+For the Sharethrift project, we need end-to-end observability to monitor and troubleshoot the application. We need to track the performance of the application, identify bottlenecks, and troubleshoot issues. We need a solution that provides distributed tracing, metrics, and logging capabilities. We need to decide on a tool that can provide these capabilities and integrate well with our existing infrastructure.
 
 <!-- This is an optional element. Feel free to remove. -->
 
