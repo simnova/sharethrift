@@ -1,33 +1,13 @@
 import { DomainSeedwork } from '@cellix/domain-seedwork';
 import type { Passport } from '../../passport.ts';
 import type { UserVisa } from '../user.visa.ts';
-import {
-	PersonalUserAccount,
-	type PersonalUserAccountProps,
-	type PersonalUserAccountEntityReference,
-} from './personal-user-account.ts';
-import {
-	type PersonalUserRoleEntityReference,
-	PersonalUserRole,
-} from '../../role/personal-user-role/personal-user-role.ts';
-
-export interface PersonalUserProps extends DomainSeedwork.DomainEntityProps {
-	userType: string;
-	isBlocked: boolean;
-	schemaVersion: string;
-	role: Readonly<PersonalUserRoleEntityReference>;
-	loadRole: () => Promise<Readonly<PersonalUserRoleEntityReference>>;
-
-	readonly account: PersonalUserAccountProps;
-
-	readonly createdAt: Date;
-	readonly updatedAt: Date;
-}
-
-export interface PersonalUserEntityReference
-	extends Readonly<Omit<PersonalUserProps, 'account'>> {
-	readonly account: PersonalUserAccountEntityReference;
-}
+import { PersonalUserAccount } from './personal-user-account.ts';
+import { PersonalUserRole } from '../../role/personal-user-role/personal-user-role.ts';
+import type { PersonalUserRoleEntityReference } from '../../role/personal-user-role/personal-user-role.entity.ts';
+import type {
+	PersonalUserEntityReference,
+	PersonalUserProps,
+} from './personal-user.entity.ts';
 
 export interface PersonalUserAggregateRoot
 	extends DomainSeedwork.RootEventRegistry {

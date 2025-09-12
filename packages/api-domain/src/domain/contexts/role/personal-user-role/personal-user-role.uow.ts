@@ -1,10 +1,8 @@
 import type { DomainSeedwork } from '@cellix/domain-seedwork';
 import type { Passport } from '../../passport.ts';
 import type { PersonalUserRoleRepository } from './personal-user-role.repository.ts';
-import type {
-	PersonalUserRole,
-	PersonalUserRoleProps,
-} from './personal-user-role.ts';
+import type { PersonalUserRole } from './personal-user-role.ts';
+import type { PersonalUserRoleProps } from './personal-user-role.entity.ts';
 
 export interface PersonalUserRoleUnitOfWork
 	extends DomainSeedwork.UnitOfWork<
