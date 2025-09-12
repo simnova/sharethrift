@@ -6,7 +6,7 @@ import {
 } from './item-listing.data.ts';
 import type { FindOneOptions, FindOptions } from '../../mongo-data-source.ts';
 import { ItemListingConverter } from '../../../domain/listing/item/item-listing.domain-adapter.ts';
-import { ObjectId } from 'mongodb';
+import { MongooseSeedwork } from '@cellix/data-sources-mongoose';
 
 export interface ItemListingReadRepository {
 	getAll: (
@@ -65,7 +65,7 @@ export class ItemListingReadRepositoryImpl
 	): Promise<Domain.Contexts.Listing.ItemListing.ItemListingEntityReference[]> {
 		// Assuming the field is 'sharer' in the model and stores the user's ObjectId or externalId
 		const result = await this.mongoDataSource.find(
-			{ sharer: new ObjectId(sharerId) },
+			{ sharer: new MongooseSeedwork.ObjectId(sharerId) },
 			options,
 		);
 		return result.map((doc) => this.converter.toDomain(doc, this.passport));

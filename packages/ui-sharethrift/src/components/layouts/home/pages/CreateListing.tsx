@@ -1,3 +1,15 @@
-export default function CreateListing() {
-  return <div>Create Listing Page</div>;
+import { CreateListingContainer } from '../components/create-listing/create-listing.container';
+import { useAuth } from "react-oidc-context";
+
+interface CreateListingProps {
+  readonly isAuthenticated?: boolean; // use for mock/testing purposes
+}
+
+export default function CreateListing({ isAuthenticated }: CreateListingProps) {
+  const auth = useAuth();
+  const isUserAuthenticated = isAuthenticated ?? auth.isAuthenticated;
+
+  return (
+    <CreateListingContainer isAuthenticated={isUserAuthenticated} />
+  );
 }
