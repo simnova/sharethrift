@@ -206,7 +206,9 @@ export function RequestsTable({
         // Try to format both as yyyy-mm-dd
         function formatDate(str: string) {
           const d = new Date(str);
-          if (isNaN(d.getTime())) return str;
+          if (isNaN(d.getTime())) {
+            return str;
+          }
           const yyyy = d.getFullYear();
           const mm = String(d.getMonth() + 1).padStart(2, '0');
           const dd = String(d.getDate()).padStart(2, '0');

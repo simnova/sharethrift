@@ -1,5 +1,5 @@
 import { Routes, Route } from "react-router-dom";
-import MyListingsMain from "./pages/Main";
+import MyListingsMain from "./pages/my-listings";
 import EditListing from "./pages/edit-listing";
 
 export default function MyListingsRoutes() {
