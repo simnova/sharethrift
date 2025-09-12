@@ -22,6 +22,7 @@ enum ReservationRequestState {
 extend type Query {
 	myActiveReservations(userId: ObjectID!): [ReservationRequest!]!
 	myPastReservations(userId: ObjectID!): [ReservationRequest!]!
+	myListingsRequests(page: Int!, pageSize: Int!, searchText: String, statusFilters: [String!], sorter: SorterInput): ListingRequestPage!
 }
 
 extend type Mutation {

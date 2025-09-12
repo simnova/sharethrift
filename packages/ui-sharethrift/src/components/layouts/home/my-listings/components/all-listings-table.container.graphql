@@ -1,0 +1,32 @@
+query HomeAllListingsTableContainerMyListingsAll(
+  $page: Int!
+  $pageSize: Int!
+  $searchText: String
+  $statusFilters: [String!]
+  $sorter: SorterInput
+) {
+  myListingsAll(
+    page: $page
+    pageSize: $pageSize
+    searchText: $searchText
+    statusFilters: $statusFilters
+    sorter: $sorter
+  ) {
+    items {
+      ...HomeAllListingsTableContainerListingFields
+    }
+    total
+    page
+    pageSize
+  }
+}
+
+fragment HomeAllListingsTableContainerListingFields on ListingAll {
+  id
+  title
+  status
+  image
+  pendingRequestsCount
+  publishedAt
+  reservationPeriod
+}

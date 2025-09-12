@@ -1,8 +1,9 @@
 import React from 'react';
-import { Table, Image } from 'antd';
+import { Image, Tag } from 'antd';
 import styles from './reservations-table.module.css';
-import { ReservationStatusTag } from '@sthrift/ui-sharethrift-components';
+import { Dashboard } from '@sthrift/ui-sharethrift-components';
 import { ReservationActions } from './reservation-actions.tsx';
+import { ReservationCard } from './reservation-card.tsx';
 import type { ReservationRequest } from '../pages/my-reservations.tsx';
 
 export interface ReservationsTableProps {
@@ -15,6 +16,30 @@ export interface ReservationsTableProps {
   showActions?: boolean;
   emptyText?: string;
 }
+
+const getReservationStatusTagClass = (status: ReservationRequest['state']): string => {
+  switch (status) {
+    case 'REQUESTED':
+      return 'pendingTag';
+    case 'ACCEPTED':
+      return 'requestAcceptedTag';
+    case 'REJECTED':
+      return 'requestRejectedTag';
+    case 'CLOSED':
+      return 'expiredTag';
+    case 'CANCELLED':
+      return 'expiredTag';
+    default:
+      return '';
+  }
+};
+
+const formatReservationStatus = (status: ReservationRequest['state']): string => {
+  return status
+    .toLowerCase()
+    .replace(/_/g, ' ')
+    .replace(/\b\w/g, c => c.toUpperCase());
+};
 
 export const ReservationsTable: React.FC<ReservationsTableProps> = ({
   reservations,
@@ -79,7 +104,9 @@ export const ReservationsTable: React.FC<ReservationsTableProps> = ({
       dataIndex: 'state',
       key: 'status',
       render: (state: ReservationRequest['state']) => (
-        <ReservationStatusTag status={state} />
+        <Tag className={getReservationStatusTagClass(state)}>
+          {formatReservationStatus(state)}
+        </Tag>
       ),
     },
     ...(showActions ? [{
@@ -99,14 +126,14 @@ export const ReservationsTable: React.FC<ReservationsTableProps> = ({
   ];
 
   return (
-    <Table
+    <Dashboard
+      data={reservations}
       columns={columns}
-      dataSource={reservations}
       rowKey="id"
-      pagination={false}
-      locale={{
-        emptyText,
-      }}
+      emptyText={emptyText}
+      renderGridItem={(reservation) => (
+        <ReservationCard reservation={reservation} onCancel={onCancel} onClose={onClose} onMessage={onMessage} cancelLoading={cancelLoading} closeLoading={closeLoading} showActions={showActions} />
+      )}
     />
   );
 };
