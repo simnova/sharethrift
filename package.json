@@ -29,7 +29,7 @@
 		"azurite:blob": "azurite-blob --location ./__blobstorage__",
 		"azurite:queue": "azurite-queue --location ./__queuestorage__",
 		"azurite:table": "azurite-table --location ./__tablestorage__",
-    "gen": "cd packages/api-graphql && npm run gen"
+		"gen": "cd packages/api-graphql && npm run gen"
 	},
 	"workspaces": [
 		"packages/cellix-domain-seedwork",
@@ -53,7 +53,8 @@
 		"packages/api-rest",
 		"packages/api",
 		"packages/ui-sharethrift-components",
-		"packages/ui-sharethrift"
+		"packages/ui-sharethrift",
+		"packages/docs"
 	],
 	"devDependencies": {
 		"@amiceli/vitest-cucumber": "^5.1.2",
