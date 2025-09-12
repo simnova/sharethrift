@@ -1,0 +1,29 @@
+query HomeAccountSettingsViewContainerCurrentUser {
+  currentPersonalUserAndCreateIfNotExists {
+    id
+    userType
+    account {
+      accountType
+      email
+      username
+      profile {
+        firstName
+        lastName
+        location {
+          address1
+          address2
+          city
+          state
+          country
+          zipCode
+        }
+        billing {
+          subscriptionId
+          cybersourceCustomerId
+        }
+      }
+    }
+    createdAt
+    updatedAt
+  }
+}

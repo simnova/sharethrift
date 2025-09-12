@@ -1,3 +1,5 @@
+import { SettingsViewContainer } from './settings-view.container';
+
 export default function Settings() {
-  return <div>Settings Page</div>;
+  return <SettingsViewContainer />;
 }
