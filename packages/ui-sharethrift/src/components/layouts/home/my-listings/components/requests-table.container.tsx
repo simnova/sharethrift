@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { useQuery } from '@apollo/client';
 import { RequestsTable } from './requests-table';
+import { ComponentQueryLoader } from '@sthrift/ui-sharethrift-components';
 import { HomeRequestsTableContainerMyListingsRequestsDocument } from '../../../../../generated';
 
 export interface RequestsTableContainerProps {
@@ -58,20 +59,27 @@ export function RequestsTableContainer({ currentPage, onPageChange }: RequestsTa
   if (error) return <p>Error: {error.message}</p>;
 
   return (
-    <RequestsTable
-      data={requests}
-      searchText={searchText}
-      statusFilters={statusFilters}
-      sorter={sorter}
-      currentPage={currentPage}
-      pageSize={pageSize}
-      total={total}
-      onSearch={handleSearch}
-      onStatusFilter={handleStatusFilter}
-      onTableChange={handleTableChange}
-      onPageChange={onPageChange}
-      onAction={handleAction}
+    <ComponentQueryLoader
       loading={loading}
+      error={error}
+      hasData={data?.myListingsRequests}
+      hasDataComponent={
+        <RequestsTable
+          data={requests}
+          searchText={searchText}
+          statusFilters={statusFilters}
+          sorter={sorter}
+          currentPage={currentPage}
+          pageSize={pageSize}
+          total={total}
+          onSearch={handleSearch}
+          onStatusFilter={handleStatusFilter}
+          onTableChange={handleTableChange}
+          onPageChange={onPageChange}
+          onAction={handleAction}
+          loading={loading}
+        />
+      }
     />
   );
 }

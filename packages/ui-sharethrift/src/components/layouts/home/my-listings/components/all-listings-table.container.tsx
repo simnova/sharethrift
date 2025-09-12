@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { useQuery } from '@apollo/client';
 import { AllListingsTable } from './all-listings-table';
+import { ComponentQueryLoader } from '@sthrift/ui-sharethrift-components';
 import { HomeAllListingsTableContainerMyListingsAllDocument } from '../../../../../generated';
 
 export interface AllListingsTableContainerProps {
@@ -63,21 +64,28 @@ export function AllListingsTableContainer({ currentPage, onPageChange }: AllList
   if (error) return <p>Error: {error.message}</p>;
 
   return (
-    <AllListingsTable
-      data={listings}
-      searchText={searchText}
-      statusFilters={statusFilters}
-      sorter={sorter}
-      currentPage={currentPage}
-      pageSize={pageSize}
-      total={total}
-      onSearch={handleSearch}
-      onStatusFilter={handleStatusFilter}
-      onTableChange={handleTableChange}
-      onPageChange={onPageChange}
-      onAction={handleAction}
-      onViewAllRequests={handleViewAllRequests}
+    <ComponentQueryLoader
       loading={loading}
+      error={error}
+      hasData={data?.myListingsAll}
+      hasDataComponent={
+        <AllListingsTable
+          data={listings}
+          searchText={searchText}
+          statusFilters={statusFilters}
+          sorter={sorter}
+          currentPage={currentPage}
+          pageSize={pageSize}
+          total={total}
+          onSearch={handleSearch}
+          onStatusFilter={handleStatusFilter}
+          onTableChange={handleTableChange}
+          onPageChange={onPageChange}
+          onAction={handleAction}
+          onViewAllRequests={handleViewAllRequests}
+          loading={loading}
+        />
+      }
     />
   );
 }
