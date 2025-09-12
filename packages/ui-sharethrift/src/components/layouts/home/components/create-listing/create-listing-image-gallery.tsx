@@ -43,7 +43,8 @@ export const ImageGallery: FC<ImageGalleryProps> = ({
 					input.value = '';
 				}
 				message.info(
-					`Only ${remaining} more image${remaining === 1 ? '' : 's'} allowed`,
+					`${files.length} image${files.length === 1 ? '' : 's'} selected — only ${remaining} ` +
+						`${remaining === 1 ? 'image was' : 'images were'} accepted (max 5)`,
 				);
 			}
 		};
@@ -58,6 +59,24 @@ export const ImageGallery: FC<ImageGalleryProps> = ({
 			addInput.addEventListener('change', handleInputChange);
 		}
 
+		// Also listen at document level to catch change events from inputs that
+		// may be attached after this effect runs (refs updated later). We only
+		// forward events whose target matches our refs.
+		const documentChangeHandler = (e: Event) => {
+			const target = e.target as HTMLInputElement | null;
+			if (!target) {
+				return;
+			}
+			if (
+				target === mainFileInputRef?.current ||
+				target === additionalFileInputRef?.current
+			) {
+				handleInputChange(e);
+			}
+		};
+
+		document.addEventListener('change', documentChangeHandler);
+
 		return () => {
 			if (mainInput) {
 				mainInput.removeEventListener('change', handleInputChange);
@@ -65,11 +84,15 @@ export const ImageGallery: FC<ImageGalleryProps> = ({
 			if (addInput) {
 				addInput.removeEventListener('change', handleInputChange);
 			}
+
+			document.removeEventListener('change', documentChangeHandler);
 		};
 	}, [mainFileInputRef, additionalFileInputRef, uploadedImages.length]);
 	// Pick the first non-empty image as the primary to be defensive against
 	// transient ordering or missing entries.
-	const mainImage = uploadedImages.find((img) => !!img);
+	const normalizedImages = uploadedImages.filter((img) => !!img);
+	const mainImage = normalizedImages[0];
+	const totalImages = normalizedImages.length;
 
 	return (
 		<div
@@ -88,7 +111,7 @@ export const ImageGallery: FC<ImageGalleryProps> = ({
 			<div style={{ height: '24px', marginBottom: '16px' }}></div>
 
 			{/* Main Image */}
-			{uploadedImages.length > 0 && (
+			{mainImage && (
 				<div
 					style={{
 						width: '100%',
@@ -102,7 +125,7 @@ export const ImageGallery: FC<ImageGalleryProps> = ({
 					}}
 				>
 					<img
-						src={uploadedImages[0]}
+						src={mainImage}
 						alt="Main uploaded item"
 						style={{
 							width: '100%',
@@ -118,12 +141,24 @@ export const ImageGallery: FC<ImageGalleryProps> = ({
 							margin: '0 auto',
 						}}
 					/>
+					{/* Image count caption centered under the primary image */}
+					<div
+						style={{
+							textAlign: 'center',
+							marginTop: '8px',
+							color: 'var(--color-foreground-2)',
+							fontSize: '13px',
+							fontWeight: 500,
+						}}
+					>
+						{totalImages > 0 ? `${totalImages} / 5` : '0 / 5'}
+					</div>
 					<Button
 						type="text"
 						danger
 						icon={<CloseOutlined />}
 						aria-label="Remove main image"
-						onClick={() => onImageRemove(uploadedImages[0])}
+						onClick={() => onImageRemove(mainImage)}
 						className="remove-image-button"
 						style={{
 							position: 'absolute',
@@ -160,72 +195,68 @@ export const ImageGallery: FC<ImageGalleryProps> = ({
 						margin: '0 auto',
 					}}
 				>
-					{uploadedImages
-						.filter((_, i) => i !== 0)
-						.map((image, index) => (
-							<Button
-								key={image}
-								type="text"
+					{normalizedImages.slice(1).map((image, index) => (
+						<Button
+							key={image}
+							type="text"
+							style={{
+								width: '80px',
+								height: '80px',
+								borderRadius: '4px',
+								border: '1px solid var(--color-foreground-2)',
+								overflow: 'hidden',
+								position: 'relative',
+								padding: 0,
+								margin: 0,
+								flexShrink: 0,
+							}}
+							onClick={() => {
+								// Parent owns state; if they support promoting a thumbnail to main,
+								// they should expose an API. For now, just no-op here.
+							}}
+						>
+							<img
+								src={image}
+								alt={`Thumbnail ${index + 2}`}
 								style={{
-									width: '80px',
-									height: '80px',
-									borderRadius: '4px',
-									border: '1px solid var(--color-foreground-2)',
-									overflow: 'hidden',
-									position: 'relative',
-									padding: 0,
-									margin: 0,
-									flexShrink: 0,
+									width: '100%',
+									height: '100%',
+									objectFit: 'cover',
 								}}
-								onClick={() => {
-									const newImages = [...uploadedImages];
-									const clickedImage = newImages.splice(index + 1, 1)[0];
-									newImages.unshift(clickedImage);
-									// parent state should be updated by owner; kept here to preserve layout
+							/>
+							<Button
+								type="text"
+								danger
+								icon={<CloseOutlined />}
+								aria-label="Remove image"
+								onClick={(e) => {
+									e.stopPropagation();
+									onImageRemove(image);
 								}}
-							>
-								<img
-									src={image}
-									alt={`Thumbnail ${index + 2}`}
-									style={{
-										width: '100%',
-										height: '100%',
-										objectFit: 'cover',
-									}}
-								/>
-								<Button
-									type="text"
-									danger
-									icon={<CloseOutlined />}
-									aria-label="Remove image"
-									onClick={(e) => {
-										e.stopPropagation();
-										onImageRemove(image);
-									}}
-									className="remove-thumbnail-button"
-									style={{
-										position: 'absolute',
-										top: '2px',
-										right: '2px',
-										background: 'white',
-										border: '1px solid #d9d9d9',
-										borderRadius: '2px',
-										zIndex: 10,
-										boxShadow: '0 1px 2px rgba(0, 0, 0, 0.1)',
-										width: '20px',
-										height: '20px',
-										display: 'flex',
-										alignItems: 'center',
-										justifyContent: 'center',
-										opacity: 1,
-										fontSize: '10px',
-									}}
-								/>
-							</Button>
-						))}
+								className="remove-thumbnail-button"
+								style={{
+									position: 'absolute',
+									top: '2px',
+									right: '2px',
+									background: 'white',
+									border: '1px solid #d9d9d9',
+									borderRadius: '2px',
+									zIndex: 10,
+									boxShadow: '0 1px 2px rgba(0, 0, 0, 0.1)',
+									width: '20px',
+									height: '20px',
+									display: 'flex',
+									alignItems: 'center',
+									justifyContent: 'center',
+									opacity: 1,
+									fontSize: '10px',
+								}}
+							/>
+						</Button>
+					))}
 
 					{/* Upload Thumbnail */}
-					{uploadedImages.length < 5 && (
+					{totalImages < 5 && (
 						<button
 							type="button"
 							style={{
