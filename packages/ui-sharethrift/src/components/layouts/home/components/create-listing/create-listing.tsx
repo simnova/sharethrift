@@ -1,8 +1,8 @@
 import { Row, Col, Button, Form, message } from 'antd';
 import { LeftOutlined } from '@ant-design/icons';
 import { useRef, useState, useEffect } from 'react';
-import { SuccessPublished } from './screens/success-published';
-import { SuccessDraft } from './screens/success-draft';
+import { SuccessPublished } from './create-listing-success';
+import { SuccessDraft } from './create-draft-success';
 import ImageGallery from './create-listing-image-gallery';
 import ListingForm from './create-listing-form';
 import '../view-listing/listing-image-gallery/listing-image-gallery.overrides.css';

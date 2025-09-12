@@ -1,9 +1,18 @@
 import type { Meta, StoryObj } from '@storybook/react';
 import { CreateListing } from './create-listing';
+import { MemoryRouter } from 'react-router-dom';
 
 const meta: Meta<typeof CreateListing> = {
 	title: 'Components/CreateListing',
 	component: CreateListing,
+	// Provide a Router context for components that call useNavigate
+	decorators: [
+		(Story) => (
+			<MemoryRouter initialEntries={['/']}>
+				<Story />
+			</MemoryRouter>
+		),
+	],
 	parameters: {
 		layout: 'fullscreen',
 	},
@@ -18,15 +27,11 @@ const meta: Meta<typeof CreateListing> = {
 			'Vehicles & Transportation',
 		],
 		isLoading: false,
-		onSubmit: () => {},
-		onCancel: () => {},
+		onSubmit: () => undefined,
+		onCancel: () => undefined,
 		uploadedImages: [],
-		onImageAdd: () => {
-			// Mock image addition
-		},
-		onImageRemove: () => {
-			// Mock image removal
-		},
+		onImageAdd: () => undefined,
+		onImageRemove: () => undefined,
 	},
 };
 

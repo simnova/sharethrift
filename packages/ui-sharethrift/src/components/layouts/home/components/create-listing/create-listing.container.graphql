@@ -1,18 +1,23 @@
-# Create Item Listing Mutation
-mutation HomeCreateListingContainerCreateItemListing($input: CreateItemListingInput!) {
-  createItemListing(input: $input) {
-    id
-    title
-    description
-    category
-    location
-    sharingPeriodStart
-    sharingPeriodEnd
-    state
-    images
-    createdAt
-    updatedAt
-    sharer
-    schemaVersion
-  }
+fragment ItemListingFields on ItemListing {
+	id
+	title
+	description
+	category
+	location
+	sharingPeriodStart
+	sharingPeriodEnd
+	state
+	images
+	createdAt
+	updatedAt
+	sharer
+	schemaVersion
+}
+
+mutation HomeCreateListingContainerCreateItemListing(
+	$input: CreateItemListingInput!
+) {
+	createItemListing(input: $input) {
+		...ItemListingFields
+	}
 }

@@ -1,10 +1,10 @@
 import { Modal, Button, Spin } from 'antd';
 import { useNavigate } from 'react-router-dom';
-import styles from './screens.module.css';
+import styles from './modals.module.css';
 import '@sthrift/ui-sharethrift-components/src/styles/theme.css';
-import confettiImg from '@sthrift/ui-sharethrift-components/src/assets/item-images/confetti.png';
+import listImg from '@sthrift/ui-sharethrift-components/src/assets/item-images/list.png';
 
-export const SuccessPublished: React.FC<{
+export const SuccessDraft: React.FC<{
 	visible: boolean;
 	loading?: boolean;
 	onClose?: () => void;
@@ -26,21 +26,21 @@ export const SuccessPublished: React.FC<{
 							className="title36"
 							style={{ marginTop: 16, textAlign: 'center' }}
 						>
-							Publishing your listing
+							Saving draft
 						</div>
 					</>
 				) : (
 					<>
-						<img src={confettiImg} alt="confetti" className={styles['image']} />
+						<img src={listImg} alt="list" className={styles['image']} />
 						<div
 							className="title36"
 							style={{ marginTop: 16, textAlign: 'center' }}
 						>
-							Your listing is live!
+							Draft saved
 						</div>
 						<p style={{ marginTop: 8, textAlign: 'center' }}>
-							Congratulations — your item has been published and is visible to
-							others.
+							Your draft has been saved. You can publish it anytime from your
+							drafts.
 						</p>
 						<div className={styles.actions}>
 							<Button
@@ -48,7 +48,7 @@ export const SuccessPublished: React.FC<{
 								className="primaryButton"
 								onClick={onClose}
 							>
-								View Listing
+								View Draft
 							</Button>
 							<Button
 								className="secondaryButton"
