@@ -2,19 +2,10 @@ import { Input, Checkbox, Button, Image, Popconfirm, Tag, Badge } from 'antd';
 import type { TableProps, ColumnsType } from 'antd/es/table';
 import { SearchOutlined, FilterOutlined } from '@ant-design/icons';
 import { Dashboard } from '@sthrift/ui-sharethrift-components';
+import type { MyListingData } from './my-listings-dashboard.types';
 import { AllListingsCard } from './all-listings-card';
 
 const { Search } = Input;
-
-export interface MyListingData {
-  id: string;
-  title: string;
-  image: string;
-  publishedAt: string;
-  reservationPeriod: string;
-  status: string;
-  pendingRequestsCount: number;
-}
 
 export interface AllListingsTableProps {
   data: MyListingData[];

@@ -367,9 +367,9 @@ export type Query = {
   itemListing?: Maybe<ItemListing>;
   itemListings: Array<ItemListing>;
   myActiveReservations: Array<ReservationRequest>;
-  myPastReservations: Array<ReservationRequest>;
   myListingsAll: ListingAllPage;
   myListingsRequests: ListingRequestPage;
+  myPastReservations: Array<ReservationRequest>;
   personalUserById?: Maybe<PersonalUser>;
 };
 
@@ -389,11 +389,6 @@ export type QueryMyActiveReservationsArgs = {
 };
 
 /**  Base Query Type definition - , all mutations will be defined in separate files extending this type  */
-export type QueryMyPastReservationsArgs = {
-  userId: Scalars["ObjectID"]["input"];
-};
-
-/**  Base Query Type definition - , all mutations will be defined in separate files extending this type  */
 export type QueryMyListingsAllArgs = {
   page: Scalars["Int"]["input"];
   pageSize: Scalars["Int"]["input"];
@@ -406,6 +401,14 @@ export type QueryMyListingsAllArgs = {
 export type QueryMyListingsRequestsArgs = {
   page: Scalars["Int"]["input"];
   pageSize: Scalars["Int"]["input"];
+  searchText?: InputMaybe<Scalars["String"]["input"]>;
+  sorter?: InputMaybe<SorterInput>;
+  statusFilters?: InputMaybe<Array<Scalars["String"]["input"]>>;
+};
+
+/**  Base Query Type definition - , all mutations will be defined in separate files extending this type  */
+export type QueryMyPastReservationsArgs = {
+  userId: Scalars["ObjectID"]["input"];
 };
 
 /**  Base Query Type definition - , all mutations will be defined in separate files extending this type  */
@@ -1226,18 +1229,18 @@ export type QueryResolvers<
     ContextType,
     RequireFields<QueryMyActiveReservationsArgs, "userId">
   >;
-  myPastReservations?: Resolver<
-    Array<ResolversTypes["ReservationRequest"]>,
-    ParentType,
-    ContextType,
-    RequireFields<QueryMyPastReservationsArgs, "userId">
-  >;
   myListingsAll?: Resolver<ResolversTypes["ListingAllPage"], ParentType, ContextType, RequireFields<QueryMyListingsAllArgs, "page" | "pageSize">>;
   myListingsRequests?: Resolver<
     ResolversTypes["ListingRequestPage"],
     ParentType,
     ContextType,
     RequireFields<QueryMyListingsRequestsArgs, "page" | "pageSize">
+  >;
+  myPastReservations?: Resolver<
+    Array<ResolversTypes["ReservationRequest"]>,
+    ParentType,
+    ContextType,
+    RequireFields<QueryMyPastReservationsArgs, "userId">
   >;
   personalUserById?: Resolver<Maybe<ResolversTypes["PersonalUser"]>, ParentType, ContextType, RequireFields<QueryPersonalUserByIdArgs, "id">>;
 }>;

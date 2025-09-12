@@ -2,7 +2,7 @@ import React from 'react';
 import { Card, Tag, Space, Button, Popconfirm, Badge, Dropdown } from 'antd';
 import { EllipsisOutlined } from '@ant-design/icons';
 import styles from './all-listings-card.module.css';
-import type { MyListingData } from './all-listings-table';
+import type { MyListingData } from './my-listings-dashboard.types';
 import { getStatusTagClass } from './all-listings-table';
 
 export interface AllListingsCardProps {

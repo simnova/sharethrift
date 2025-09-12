@@ -3,18 +3,9 @@ import { SearchOutlined, FilterOutlined } from '@ant-design/icons';
 import type { ColumnsType, TableProps } from 'antd/es/table';
 import { Dashboard } from '@sthrift/ui-sharethrift-components';
 import { RequestsCard } from './requests-card';
+import type { ListingRequestData } from './my-listings-dashboard.types';
 
 const { Search } = Input;
-
-export interface ListingRequestData {
-  id: string;
-  title: string;
-  image: string;
-  requestedBy: string;
-  requestedOn: string;
-  reservationPeriod: string;
-  status: string;
-}
 
 export interface RequestsTableProps {
   data: ListingRequestData[];

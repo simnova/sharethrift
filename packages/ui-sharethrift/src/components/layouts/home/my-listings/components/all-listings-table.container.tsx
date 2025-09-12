@@ -1,8 +1,6 @@
 import { useState } from 'react';
 import { useQuery, gql } from '@apollo/client';
 import { AllListingsTable } from './all-listings-table';
-// eslint-disable-next-line import/no-absolute-path, @typescript-eslint/ban-ts-comment
-// @ts-ignore - allow raw import string
 import AllListingsTableQuerySource from './all-listings-table.container.graphql?raw';
 
 const GET_MY_LISTINGS_ALL = gql(AllListingsTableQuerySource);
