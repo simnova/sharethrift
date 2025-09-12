@@ -154,7 +154,7 @@ export function CreateListing({
 				>
 					<Form form={form} layout="vertical" requiredMark="optional">
 						<Row
-							gutter={36}
+							gutter={0}
 							align="top"
 							style={{ marginTop: 0, paddingTop: 0 }}
 							className="create-listing-main-responsive"

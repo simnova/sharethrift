@@ -46,10 +46,7 @@ export const ListingForm: React.FC<ListingFormProps> = ({
 	};
 
 	return (
-		<div
-			className="create-listing-form-responsive"
-			style={{ marginTop: '60px', paddingTop: '20px' }}
-		>
+		<div className="create-listing-form-responsive">
 			<Space direction="vertical" size="large" style={{ width: '100%' }}>
 				<Form form={form} layout="vertical" requiredMark="optional">
 					<Form.Item
