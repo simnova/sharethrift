@@ -1,20 +1,76 @@
-import React from 'react';
-import { Button } from 'antd';
+import { useEffect, type RefObject, type FC } from 'react';
+import { Button, message } from 'antd';
 import { PlusOutlined, CloseOutlined } from '@ant-design/icons';
 
 export interface ImageGalleryProps {
 	uploadedImages: string[];
 	onImageRemove: (imageUrl: string) => void;
-	mainFileInputRef: React.RefObject<HTMLInputElement | null>;
-	additionalFileInputRef: React.RefObject<HTMLInputElement | null>;
+	mainFileInputRef: RefObject<HTMLInputElement | null>;
+	additionalFileInputRef: RefObject<HTMLInputElement | null>;
 }
 
-export const ImageGallery: React.FC<ImageGalleryProps> = ({
+export const ImageGallery: FC<ImageGalleryProps> = ({
 	uploadedImages,
 	onImageRemove,
 	mainFileInputRef,
 	additionalFileInputRef,
 }) => {
+	// Ensure file inputs never allow more than 5 total images to be selected/uploaded.
+	// We attach `change` listeners to the input elements (if provided via refs)
+	// and trim the FileList to the number of remaining slots using a DataTransfer.
+	useEffect(() => {
+		const handleInputChange = (e: Event) => {
+			const input = e.target as HTMLInputElement | null;
+			if (!input?.files) {
+				return;
+			}
+			const files = Array.from(input.files);
+			const remaining = 5 - uploadedImages.length;
+			if (remaining <= 0) {
+				// No more files allowed, clear the input value
+				input.value = '';
+				message.info('Maximum of 5 images allowed');
+				return;
+			}
+			if (files.length > remaining) {
+				const allowed = files.slice(0, remaining);
+				const dt = new DataTransfer();
+				allowed.forEach((f) => dt.items.add(f));
+				try {
+					input.files = dt.files;
+				} catch {
+					// some environments may not allow setting files; clear instead
+					input.value = '';
+				}
+				message.info(
+					`Only ${remaining} more image${remaining === 1 ? '' : 's'} allowed`,
+				);
+			}
+		};
+
+		const mainInput = mainFileInputRef?.current ?? null;
+		const addInput = additionalFileInputRef?.current ?? null;
+
+		if (mainInput) {
+			mainInput.addEventListener('change', handleInputChange);
+		}
+		if (addInput) {
+			addInput.addEventListener('change', handleInputChange);
+		}
+
+		return () => {
+			if (mainInput) {
+				mainInput.removeEventListener('change', handleInputChange);
+			}
+			if (addInput) {
+				addInput.removeEventListener('change', handleInputChange);
+			}
+		};
+	}, [mainFileInputRef, additionalFileInputRef, uploadedImages.length]);
+	// Pick the first non-empty image as the primary to be defensive against
+	// transient ordering or missing entries.
+	const mainImage = uploadedImages.find((img) => !!img);
+
 	return (
 		<div
 			style={{
@@ -90,79 +146,83 @@ export const ImageGallery: React.FC<ImageGalleryProps> = ({
 			)}
 
 			{/* Image Thumbnails */}
-			{uploadedImages.length > 0 ? (
+			{mainImage ? (
 				<div
 					style={{
 						display: 'flex',
 						flexWrap: 'wrap',
 						gap: '8px',
 						justifyContent: 'flex-start',
-						marginTop: uploadedImages.length > 1 ? '16px' : '0',
+						// Always add spacing between main image and thumbnails to avoid
+						// layout overlap when the primary image changes.
+						marginTop: '16px',
 						maxWidth: '450px',
 						margin: '0 auto',
 					}}
 				>
-					{uploadedImages.slice(1).map((image, index) => (
-						<Button
-							key={image}
-							type="text"
-							style={{
-								width: '80px',
-								height: '80px',
-								borderRadius: '4px',
-								border: '1px solid var(--color-foreground-2)',
-								overflow: 'hidden',
-								position: 'relative',
-								padding: 0,
-								margin: 0,
-								flexShrink: 0,
-							}}
-							onClick={() => {
-								const newImages = [...uploadedImages];
-								const clickedImage = newImages.splice(index + 1, 1)[0];
-								newImages.unshift(clickedImage);
-								// parent state should be updated by owner; kept here to preserve layout
-							}}
-						>
-							<img
-								src={image}
-								alt={`Thumbnail ${index + 2}`}
-								style={{
-									width: '100%',
-									height: '100%',
-									objectFit: 'cover',
-								}}
-							/>
+					{uploadedImages
+						.filter((_, i) => i !== 0)
+						.map((image, index) => (
 							<Button
+								key={image}
 								type="text"
-								danger
-								icon={<CloseOutlined />}
-								aria-label="Remove image"
-								onClick={(e) => {
-									e.stopPropagation();
-									onImageRemove(image);
-								}}
-								className="remove-thumbnail-button"
 								style={{
-									position: 'absolute',
-									top: '2px',
-									right: '2px',
-									background: 'white',
-									border: '1px solid #d9d9d9',
-									borderRadius: '2px',
-									zIndex: 10,
-									boxShadow: '0 1px 2px rgba(0, 0, 0, 0.1)',
-									width: '20px',
-									height: '20px',
-									display: 'flex',
-									alignItems: 'center',
-									justifyContent: 'center',
-									opacity: 1,
-									fontSize: '10px',
+									width: '80px',
+									height: '80px',
+									borderRadius: '4px',
+									border: '1px solid var(--color-foreground-2)',
+									overflow: 'hidden',
+									position: 'relative',
+									padding: 0,
+									margin: 0,
+									flexShrink: 0,
 								}}
-							/>
-						</Button>
-					))}
+								onClick={() => {
+									const newImages = [...uploadedImages];
+									const clickedImage = newImages.splice(index + 1, 1)[0];
+									newImages.unshift(clickedImage);
+									// parent state should be updated by owner; kept here to preserve layout
+								}}
+							>
+								<img
+									src={image}
+									alt={`Thumbnail ${index + 2}`}
+									style={{
+										width: '100%',
+										height: '100%',
+										objectFit: 'cover',
+									}}
+								/>
+								<Button
+									type="text"
+									danger
+									icon={<CloseOutlined />}
+									aria-label="Remove image"
+									onClick={(e) => {
+										e.stopPropagation();
+										onImageRemove(image);
+									}}
+									className="remove-thumbnail-button"
+									style={{
+										position: 'absolute',
+										top: '2px',
+										right: '2px',
+										background: 'white',
+										border: '1px solid #d9d9d9',
+										borderRadius: '2px',
+										zIndex: 10,
+										boxShadow: '0 1px 2px rgba(0, 0, 0, 0.1)',
+										width: '20px',
+										height: '20px',
+										display: 'flex',
+										alignItems: 'center',
+										justifyContent: 'center',
+										opacity: 1,
+										fontSize: '10px',
+									}}
+								/>
+							</Button>
+						))}
 
 					{/* Upload Thumbnail */}
 					{uploadedImages.length < 5 && (
@@ -275,7 +335,7 @@ export const ImageGallery: React.FC<ImageGalleryProps> = ({
 								fontWeight: '500',
 							}}
 						>
-							Click to upload images
+							Click to upload images, up to 5
 						</div>
 					</button>
 				</div>
