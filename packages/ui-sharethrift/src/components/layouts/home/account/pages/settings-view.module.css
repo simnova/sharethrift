@@ -1,0 +1,196 @@
+.settingsContainer {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 24px;
+}
+
+.settingsHeader {
+  margin-bottom: 24px;
+}
+
+.settingsHeader h2 {
+  margin-bottom: 8px;
+}
+
+.sectionsContainer {
+  width: 100%;
+}
+
+.sectionCard {
+  width: 100%;
+  margin-bottom: 24px;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+}
+
+.sectionHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.sectionHeader h4 {
+  margin: 0;
+}
+
+.editButton {
+  color: #1890ff;
+  font-weight: 500;
+}
+
+.editButton:hover {
+  background-color: #f0f9ff;
+}
+
+/* Profile Section */
+.profileImageCol {
+  text-align: center;
+}
+
+.profileAvatar {
+  background-color: #f0f0f0;
+  border: 2px solid #d9d9d9;
+}
+
+.profileInfo {
+  width: 100%;
+}
+
+.profileInfo > div {
+  margin-bottom: 16px;
+}
+
+/* Plan Section */
+.planCard {
+  height: 100%;
+  transition: all 0.3s ease;
+  border: 2px solid transparent;
+  cursor: pointer;
+}
+
+.planCard:hover {
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+  transform: translateY(-2px);
+}
+
+.selectedPlan {
+  border-color: #52c41a;
+  background-color: #f6ffed;
+}
+
+.planHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 12px;
+}
+
+.planName {
+  margin: 0;
+  font-size: 16px;
+}
+
+.planPrice {
+  font-size: 18px;
+  color: #1890ff;
+  display: block;
+  margin-bottom: 16px;
+}
+
+.planFeatures {
+  list-style: none;
+  padding: 0;
+  margin: 0 0 16px 0;
+}
+
+.planFeatures li {
+  padding: 4px 0;
+  color: #666;
+  font-size: 14px;
+}
+
+.planFeatures li:before {
+  content: "✓";
+  color: #52c41a;
+  margin-right: 8px;
+  font-weight: bold;
+}
+
+.selectedTag {
+  margin-top: 8px;
+}
+
+/* Billing Section */
+.billingInfo {
+  width: 100%;
+}
+
+.billingInfo > div {
+  margin-bottom: 16px;
+}
+
+/* Password Section */
+.changePasswordButton {
+  background-color: #722ed1;
+  border-color: #722ed1;
+}
+
+.changePasswordButton:hover {
+  background-color: #9254de;
+  border-color: #9254de;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .settingsContainer {
+    padding: 16px;
+  }
+  
+  .sectionHeader {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 12px;
+  }
+  
+  .editButton {
+    align-self: flex-end;
+  }
+  
+  .profileImageCol {
+    margin-bottom: 20px;
+  }
+  
+  .planCard {
+    margin-bottom: 16px;
+  }
+  
+  .planHeader {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 8px;
+  }
+}
+
+@media (max-width: 576px) {
+  .settingsContainer {
+    padding: 12px;
+  }
+  
+  .sectionCard {
+    margin-bottom: 16px;
+  }
+  
+  .sectionCard .ant-card-body {
+    padding: 16px;
+  }
+  
+  .profileAvatar {
+    width: 80px;
+    height: 80px;
+  }
+  
+  .settingsHeader h2 {
+    font-size: 24px;
+  }
+}
