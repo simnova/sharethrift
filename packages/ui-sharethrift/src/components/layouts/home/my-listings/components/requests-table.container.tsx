@@ -1,9 +1,7 @@
 import { useState } from 'react';
-import { useQuery, gql } from '@apollo/client';
+import { useQuery } from '@apollo/client';
 import { RequestsTable } from './requests-table';
-import RequestsTableQuerySource from './requests-table.container.graphql?raw';
-
-const GET_MY_LISTINGS_REQUESTS = gql(RequestsTableQuerySource);
+import { HomeRequestsTableContainerMyListingsRequestsDocument } from '../../../../../generated';
 
 export interface RequestsTableContainerProps {
   currentPage: number;
@@ -19,15 +17,15 @@ export function RequestsTableContainer({ currentPage, onPageChange }: RequestsTa
   }>({ field: null, order: null });
   const pageSize = 6;
 
-  const { data, loading, error } = useQuery(GET_MY_LISTINGS_REQUESTS, {
+  const { data, loading, error } = useQuery(HomeRequestsTableContainerMyListingsRequestsDocument, {
     variables: {
       page: currentPage,
       pageSize: pageSize,
       searchText: searchText,
       statusFilters: statusFilters,
-      sorter: (sorter.field && sorter.order) ? sorter : null,
+      sorter: sorter.field && sorter.order ? { field: sorter.field, order: sorter.order } : undefined,
     },
-    fetchPolicy: 'network-only', // Ensure we always fetch from the network
+    fetchPolicy: 'network-only',
   });
 
   const requests = data?.myListingsRequests?.items ?? [];

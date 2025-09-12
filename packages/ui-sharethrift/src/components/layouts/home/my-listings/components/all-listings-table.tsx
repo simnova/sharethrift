@@ -162,7 +162,7 @@ export function AllListingsTable({
       render: (title: string, record: MyListingData) => (
         <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
           <Image
-            src={record.image}
+            src={record.image ?? ''}
             alt={title}
             width={72}
             height={72}

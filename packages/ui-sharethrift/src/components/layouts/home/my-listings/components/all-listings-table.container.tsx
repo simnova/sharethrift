@@ -1,9 +1,7 @@
 import { useState } from 'react';
-import { useQuery, gql } from '@apollo/client';
+import { useQuery } from '@apollo/client';
 import { AllListingsTable } from './all-listings-table';
-import AllListingsTableQuerySource from './all-listings-table.container.graphql?raw';
-
-const GET_MY_LISTINGS_ALL = gql(AllListingsTableQuerySource);
+import { HomeAllListingsTableContainerMyListingsAllDocument } from '../../../../../generated';
 
 export interface AllListingsTableContainerProps {
   currentPage: number;
@@ -19,15 +17,15 @@ export function AllListingsTableContainer({ currentPage, onPageChange }: AllList
   }>({ field: null, order: null });
   const pageSize = 6;
 
-  const { data, loading, error } = useQuery(GET_MY_LISTINGS_ALL, {
+  const { data, loading, error } = useQuery(HomeAllListingsTableContainerMyListingsAllDocument, {
     variables: {
       page: currentPage,
       pageSize: pageSize,
       searchText: searchText,
       statusFilters: statusFilters,
-      sorter: (sorter.field && sorter.order) ? sorter : null,
+      sorter: sorter.field && sorter.order ? { field: sorter.field, order: sorter.order } : undefined,
     },
-    fetchPolicy: 'network-only', // Ensure we always fetch from the network
+    fetchPolicy: 'network-only',
   });
 
   const listings = data?.myListingsAll?.items ?? [];

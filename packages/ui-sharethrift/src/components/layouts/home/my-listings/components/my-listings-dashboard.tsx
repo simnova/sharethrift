@@ -2,21 +2,22 @@ import { Button, Tabs, Badge } from 'antd';
 import type { TabsProps } from 'antd';
 import { AllListingsTableContainer } from './all-listings-table.container';
 import { RequestsTableContainer } from './requests-table.container';
-import { useQuery, gql } from '@apollo/client';
+// import { useQuery, gql } from '@apollo/client';
 import { useState } from 'react';
 import styles from './my-listings-dashboard.module.css';
 // eslint-disable-next-line import/no-absolute-path, @typescript-eslint/ban-ts-comment
 // @ts-ignore - allow raw import string
-import MyListingsQuerySource from './my-listings-dashboard.container.graphql?raw';
+// import MyListingsQuerySource from './my-listings-dashboard.container.graphql?raw';
 
 export interface MyListingsDashboardProps {
   onCreateListing: () => void;
+  requestsCount: number;
 }
 
-export function MyListingsDashboard({ onCreateListing }: MyListingsDashboardProps) {
-  const REQUESTS_COUNT_QUERY = gql(MyListingsQuerySource);
-  const { data: requestsCountData } = useQuery(REQUESTS_COUNT_QUERY);
-  const requestsCount = requestsCountData?.myListingsRequests?.total ?? 0;
+export function MyListingsDashboard({ onCreateListing, requestsCount }: MyListingsDashboardProps) {
+  // const REQUESTS_COUNT_QUERY = gql(MyListingsQuerySource);
+  // const { data: requestsCountData } = useQuery(REQUESTS_COUNT_QUERY);
+  // const requestsCount = requestsCountData?.myListingsRequests?.total ?? 0;
   const [activeTab, setActiveTab] = useState('all-listings');
   const [allListingsPage, setAllListingsPage] = useState(1);
   const [requestsPage, setRequestsPage] = useState(1);

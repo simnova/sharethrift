@@ -147,7 +147,7 @@ export function RequestsTable({
       render: (_, record) => (
         <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
           <Image
-            src={record.image}
+            src={record.image ?? ''}
             alt={record.title}
             width={60}
             height={60}
