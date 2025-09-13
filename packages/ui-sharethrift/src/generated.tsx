@@ -204,6 +204,8 @@ export type Mutation = {
   cancelReservation: ReservationRequest;
   closeReservation: ReservationRequest;
   personalUserUpdate: PersonalUser;
+  processPayment: PaymentResponse;
+  refundPayment: RefundResponse;
 };
 
 /**  Base Mutation Type definition - all mutations will be defined in separate files extending this type  */
@@ -221,6 +223,16 @@ export type MutationPersonalUserUpdateArgs = {
   input: PersonalUserUpdateInput;
 };
 
+/**  Base Mutation Type definition - all mutations will be defined in separate files extending this type  */
+export type MutationProcessPaymentArgs = {
+  request: PaymentRequest;
+};
+
+/**  Base Mutation Type definition - all mutations will be defined in separate files extending this type  */
+export type MutationRefundPaymentArgs = {
+  request: RefundRequest;
+};
+
 export type MutationResult = {
   status: MutationStatus;
 };
@@ -231,7 +243,76 @@ export type MutationStatus = {
   success: Scalars["Boolean"]["output"];
 };
 
+export type PaymentAmountDetails = {
+  currency: Scalars["String"]["input"];
+  totalAmount: Scalars["Float"]["input"];
+};
+
+export type PaymentBillTo = {
+  address1: Scalars["String"]["input"];
+  address2?: InputMaybe<Scalars["String"]["input"]>;
+  city: Scalars["String"]["input"];
+  country: Scalars["String"]["input"];
+  email?: InputMaybe<Scalars["String"]["input"]>;
+  firstName: Scalars["String"]["input"];
+  lastName: Scalars["String"]["input"];
+  phoneNumber?: InputMaybe<Scalars["String"]["input"]>;
+  postalCode: Scalars["String"]["input"];
+  state: Scalars["String"]["input"];
+};
+
+export type PaymentCard = {
+  expirationMonth: Scalars["String"]["input"];
+  expirationYear: Scalars["String"]["input"];
+  number: Scalars["String"]["input"];
+  securityCode: Scalars["String"]["input"];
+};
+
+export type PaymentCardInformation = {
+  card: PaymentCard;
+};
+
+export type PaymentErrorInformation = {
+  __typename?: "PaymentErrorInformation";
+  message?: Maybe<Scalars["String"]["output"]>;
+  reason?: Maybe<Scalars["String"]["output"]>;
+};
+
+export type PaymentOrderInformation = {
+  amountDetails: PaymentAmountDetails;
+  billTo: PaymentBillTo;
+};
+
+export type PaymentRequest = {
+  orderInformation: PaymentOrderInformation;
+  paymentInformation: PaymentCardInformation;
+  userId: Scalars["ObjectID"]["input"];
+};
+
+export type PaymentResponse = {
+  __typename?: "PaymentResponse";
+  errorInformation?: Maybe<PaymentErrorInformation>;
+  id?: Maybe<Scalars["String"]["output"]>;
+  message?: Maybe<Scalars["String"]["output"]>;
+  orderInformation?: Maybe<PaymentResponseOrderInformation>;
+  status: Scalars["String"]["output"];
+  success?: Maybe<Scalars["Boolean"]["output"]>;
+};
+
+export type PaymentResponseAmountDetails = {
+  __typename?: "PaymentResponseAmountDetails";
+  currency?: Maybe<Scalars["String"]["output"]>;
+  totalAmount?: Maybe<Scalars["String"]["output"]>;
+};
+
+export type PaymentResponseOrderInformation = {
+  __typename?: "PaymentResponseOrderInformation";
+  amountDetails?: Maybe<PaymentResponseAmountDetails>;
+};
+
 /** GraphQL schema for Personal Users */
+export type PaymentState = "FAILED" | "PENDING" | "REFUNDED" | "SUCCEEDED";
+
 export type PersonalUser = MongoBase & {
   __typename?: "PersonalUser";
   account?: Maybe<PersonalUserAccount>;
@@ -269,16 +350,25 @@ export type PersonalUserAccountProfile = {
 export type PersonalUserAccountProfileBilling = {
   __typename?: "PersonalUserAccountProfileBilling";
   cybersourceCustomerId?: Maybe<Scalars["String"]["output"]>;
+  lastPaymentAmount?: Maybe<Scalars["Float"]["output"]>;
+  lastTransactionId?: Maybe<Scalars["String"]["output"]>;
+  paymentState?: Maybe<PaymentState>;
   subscriptionId?: Maybe<Scalars["String"]["output"]>;
 };
 
 export type PersonalUserAccountProfileBillingInput = {
   cybersourceCustomerId?: InputMaybe<Scalars["String"]["input"]>;
+  lastPaymentAmount?: InputMaybe<Scalars["Float"]["input"]>;
+  lastTransactionId?: InputMaybe<Scalars["String"]["input"]>;
+  paymentState?: InputMaybe<PaymentState>;
   subscriptionId?: InputMaybe<Scalars["String"]["input"]>;
 };
 
 export type PersonalUserAccountProfileBillingUpdateInput = {
   cybersourceCustomerId?: InputMaybe<Scalars["String"]["input"]>;
+  lastPaymentAmount?: InputMaybe<Scalars["Float"]["input"]>;
+  lastTransactionId?: InputMaybe<Scalars["String"]["input"]>;
+  paymentState?: InputMaybe<PaymentState>;
   subscriptionId?: InputMaybe<Scalars["String"]["input"]>;
 };
 
@@ -381,6 +471,27 @@ export type QueryMyPastReservationsArgs = {
 /**  Base Query Type definition - , all mutations will be defined in separate files extending this type  */
 export type QueryPersonalUserByIdArgs = {
   id: Scalars["ObjectID"]["input"];
+};
+
+export type RefundOrderInformation = {
+  amountDetails: PaymentAmountDetails;
+};
+
+export type RefundRequest = {
+  amount?: InputMaybe<Scalars["Float"]["input"]>;
+  orderInformation: RefundOrderInformation;
+  transactionId: Scalars["String"]["input"];
+  userId: Scalars["ObjectID"]["input"];
+};
+
+export type RefundResponse = {
+  __typename?: "RefundResponse";
+  errorInformation?: Maybe<PaymentErrorInformation>;
+  id?: Maybe<Scalars["String"]["output"]>;
+  message?: Maybe<Scalars["String"]["output"]>;
+  orderInformation?: Maybe<PaymentResponseOrderInformation>;
+  status: Scalars["String"]["output"];
+  success?: Maybe<Scalars["Boolean"]["output"]>;
 };
 
 export type ReservationRequest = {
