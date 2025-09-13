@@ -51,99 +51,148 @@ const personalUserResolvers = {
 			}
 			console.log('currentPersonalUserAndCreateIfNotExists resolver called');
 			// Implement the logic to get the current personal user or create a new one
-			return await context.applicationServices.User.PersonalUser.createIfNotExists({
-        email: context.applicationServices.verifiedUser.verifiedJwt.email,
-        firstName: context.applicationServices.verifiedUser.verifiedJwt.given_name,
-        lastName: context.applicationServices.verifiedUser.verifiedJwt.family_name,
-      });
+			return await context.applicationServices.User.PersonalUser.createIfNotExists(
+				{
+					email: context.applicationServices.verifiedUser.verifiedJwt.email,
+					firstName:
+						context.applicationServices.verifiedUser.verifiedJwt.given_name,
+					lastName:
+						context.applicationServices.verifiedUser.verifiedJwt.family_name,
+				},
+			);
 		},
 	},
 
 	Mutation: {
-		processPayment: async (_parent: unknown, { request }: { request: {
-			userId: string;
-			orderInformation: {
-				amountDetails: {
-					totalAmount: number;
-					currency: string;
-				};
-				billTo: {
-					firstName: string;
-					lastName: string;
-					address1: string;
-					address2?: string;
-					city: string;
-					state: string;
-					postalCode: string;
-					country: string;
-					phoneNumber?: string;
-					email?: string;
-				};
-			};
-			paymentInformation: {
-				card: {
-					number: string;
-					expirationMonth: string;
-					expirationYear: string;
-					securityCode: string;
-				};
-			};
-		} }, context: GraphContext) => {
-			console.log('Processing payment', request);
-			try {
-				const response = await context.applicationServices.Payment.processPayment(request);
-				return {
-					...response,
-					success: response.status === 'SUCCEEDED',
-					message: response.status === 'SUCCEEDED' ? 'Payment processed successfully' : undefined
-				};
-			} catch (error) {
-				console.error('Payment processing error:', error);
-				return {
-					status: 'FAILED',
-					success: false,
-					message: error instanceof Error ? error.message : 'Unknown error occurred',
-					errorInformation: {
-						reason: 'PROCESSING_ERROR',
-						message: error instanceof Error ? error.message : 'Unknown error occurred'
-					}
-				};
+		updatePersonalUser: async (
+			_parent: unknown,
+			args: { id: string; input: any },
+			context: GraphContext,
+			_info: GraphQLResolveInfo,
+		) => {
+			if (!context.applicationServices.verifiedUser?.verifiedJwt) {
+				throw new Error('Unauthorized');
 			}
+			console.log('updatePersonalUser resolver called with id:', args.id);
+			// Implement the logic to update the personal user
+			return await context.applicationServices.User.PersonalUser.update({
+				id: args.id,
+				input: args.input,
+			});
 		},
+	},
 
-		refundPayment: async (_parent: unknown, { request }: { request: {
-			userId: string;
-			transactionId: string;
-			amount?: number;
-			orderInformation: {
-				amountDetails: {
-					totalAmount: number;
-					currency: string;
+	processPayment: async (
+		_parent: unknown,
+		{
+			request,
+		}: {
+			request: {
+				userId: string;
+				orderInformation: {
+					amountDetails: {
+						totalAmount: number;
+						currency: string;
+					};
+					billTo: {
+						firstName: string;
+						lastName: string;
+						address1: string;
+						address2?: string;
+						city: string;
+						state: string;
+						postalCode: string;
+						country: string;
+						phoneNumber?: string;
+						email?: string;
+					};
+				};
+				paymentInformation: {
+					card: {
+						number: string;
+						expirationMonth: string;
+						expirationYear: string;
+						securityCode: string;
+					};
 				};
 			};
-		} }, context: GraphContext) => {
-			console.log('Refunding payment', request);
-			try {
-				const response = await context.applicationServices.Payment.refundPayment(request);
-				return {
-					...response,
-					success: response.status === 'REFUNDED',
-					message: response.status === 'REFUNDED' ? 'Refund processed successfully' : undefined
-				};
-			} catch (error) {
-				console.error('Refund processing error:', error);
-				return {
-					status: 'FAILED',
-					success: false,
-					message: error instanceof Error ? error.message : 'Unknown error occurred',
-					errorInformation: {
-						reason: 'PROCESSING_ERROR',
-						message: error instanceof Error ? error.message : 'Unknown error occurred'
-					}
-				};
-			}
+		},
+		context: GraphContext,
+	) => {
+		console.log('Processing payment', request);
+		try {
+			const response =
+				await context.applicationServices.Payment.processPayment(request);
+			return {
+				...response,
+				success: response.status === 'SUCCEEDED',
+				message:
+					response.status === 'SUCCEEDED'
+						? 'Payment processed successfully'
+						: undefined,
+			};
+		} catch (error) {
+			console.error('Payment processing error:', error);
+			return {
+				status: 'FAILED',
+				success: false,
+				message:
+					error instanceof Error ? error.message : 'Unknown error occurred',
+				errorInformation: {
+					reason: 'PROCESSING_ERROR',
+					message:
+						error instanceof Error ? error.message : 'Unknown error occurred',
+				},
+			};
 		}
-	}
+	},
+
+	refundPayment: async (
+		_parent: unknown,
+		{
+			request,
+		}: {
+			request: {
+				userId: string;
+				transactionId: string;
+				amount?: number;
+				orderInformation: {
+					amountDetails: {
+						totalAmount: number;
+						currency: string;
+					};
+				};
+			};
+		},
+		context: GraphContext,
+	) => {
+		console.log('Refunding payment', request);
+		try {
+			const response =
+				await context.applicationServices.Payment.refundPayment(request);
+			return {
+				...response,
+				success: response.status === 'REFUNDED',
+				message:
+					response.status === 'REFUNDED'
+						? 'Refund processed successfully'
+						: undefined,
+			};
+		} catch (error) {
+			console.error('Refund processing error:', error);
+			return {
+				status: 'FAILED',
+				success: false,
+				message:
+					error instanceof Error ? error.message : 'Unknown error occurred',
+				errorInformation: {
+					reason: 'PROCESSING_ERROR',
+					message:
+						error instanceof Error ? error.message : 'Unknown error occurred',
+				},
+			};
+		}
+	},
 };
 
 export default personalUserResolvers;

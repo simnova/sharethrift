@@ -88,6 +88,7 @@ input PersonalUserAccountProfileBillingInput {
 }
 
 input PersonalUserUpdateInput {
+  id: ObjectID!
   userType: String
   isBlocked: Boolean
   account: PersonalUserAccountUpdateInput
@@ -216,8 +217,8 @@ type RefundResponse {
 
 extend type Mutation {
   # Personal User mutations
-  personalUserUpdate(id: ObjectID!, input: PersonalUserUpdateInput!): PersonalUser!
-  
+  personalUserUpdate(input: PersonalUserUpdateInput!): PersonalUser!
+
   # Payment mutations
   processPayment(request: PaymentRequest!): PaymentResponse!
   refundPayment(request: RefundRequest!): RefundResponse!

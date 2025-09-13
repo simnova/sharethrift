@@ -6,9 +6,14 @@ import {
 	type PersonalUserCreateCommand,
 } from './create-if-not-exists.ts';
 
+import { update, type PersonalUserUpdateCommand } from './update.ts';
+
 export interface PersonalUserApplicationService {
 	createIfNotExists: (
 		command: PersonalUserCreateCommand,
+	) => Promise<Domain.Contexts.User.PersonalUser.PersonalUserEntityReference>;
+	update: (
+		command: PersonalUserUpdateCommand,
 	) => Promise<Domain.Contexts.User.PersonalUser.PersonalUserEntityReference>;
 }
 
@@ -17,5 +22,6 @@ export const PersonalUser = (
 ): PersonalUserApplicationService => {
 	return {
 		createIfNotExists: createIfNotExists(dataSources),
+    update: update(dataSources)
 	};
 };
