@@ -39,12 +39,15 @@ export class PersonalUserAccount
 
 	private validateVisa(): void {
 		if (
-			!this.root.isNew &&
-			!this.visa.determineIf(
-				(permissions) => permissions.canEditAccountSettings, //TODO: Adjust permissions as needed
-			)
+			!this.root.isNew
+			// &&
+			// !this.visa.determineIf(
+			// 	(permissions) => permissions.canEditAccountSettings, //TODO: Adjust permissions as needed
+			// )
 		) {
-			throw new DomainSeedwork.PermissionError('Cannot set identity details');
+			throw new DomainSeedwork.PermissionError(
+				'Cannot set user account details',
+			);
 		}
 	}
 	// Primitive Field Getters

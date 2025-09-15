@@ -64,6 +64,7 @@ function makeBaseProps(
 			},
 			createdAt: new Date('2020-01-01T00:00:00Z'),
 			updatedAt: new Date('2020-01-02T00:00:00Z'),
+			hasCompletedOnboarding: true,
 		},
 		makePassport(),
 	);
@@ -92,6 +93,7 @@ function makeBaseProps(
 			},
 			createdAt: new Date('2020-01-01T00:00:00Z'),
 			updatedAt: new Date('2020-01-02T00:00:00Z'),
+			hasCompletedOnboarding: true,
 		},
 		makePassport(),
 	);

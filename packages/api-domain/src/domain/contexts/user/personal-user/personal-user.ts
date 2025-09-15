@@ -10,10 +10,11 @@ import {
 export interface PersonalUserProps extends DomainSeedwork.DomainEntityProps {
 	userType: string;
 	isBlocked: boolean;
-	schemaVersion: string;
+	hasCompletedOnboarding: boolean;
 
 	readonly account: PersonalUserAccountProps;
 
+	schemaVersion: string;
 	readonly createdAt: Date;
 	readonly updatedAt: Date;
 }
@@ -83,6 +84,9 @@ export class PersonalUser<props extends PersonalUserProps>
 	get isBlocked(): boolean {
 		return this.props.isBlocked;
 	}
+	get hasCompletedOnboarding(): boolean {
+		return this.props.hasCompletedOnboarding;
+	}
 	get schemaVersion(): string {
 		return this.props.schemaVersion;
 	}
@@ -104,5 +108,14 @@ export class PersonalUser<props extends PersonalUserProps>
 	set isBlocked(value: boolean) {
 		this.validateVisa();
 		this.props.isBlocked = value;
+	}
+	set hasCompletedOnboarding(value: boolean) {
+		if (this.props.hasCompletedOnboarding) {
+			throw new DomainSeedwork.PermissionError(
+				'Users can only be onboarded once.',
+			);
+		}
+
+		this.props.hasCompletedOnboarding = value;
 	}
 }

@@ -7,16 +7,16 @@ import {
 import type { PaymentApplicationService } from './payment-application-service.js';
 import { DefaultPaymentApplicationService } from './payment-application-service.js';
 
-import { 
-    ReservationRequest, 
-    type ReservationRequestContextApplicationService 
+import {
+	ReservationRequest,
+	type ReservationRequestContextApplicationService,
 } from './contexts/reservation-request/index.ts';
 
 export interface ApplicationServices {
 	User: UserContextApplicationService;
-    ReservationRequest: ReservationRequestContextApplicationService;
+	ReservationRequest: ReservationRequestContextApplicationService;
 	get verifiedUser(): VerifiedUser | null;
-    Payment: PaymentApplicationService;
+	Payment: PaymentApplicationService;
 }
 
 export interface VerifiedJwt {
@@ -40,19 +40,21 @@ export type PrincipalHints = {
 	// memberId: string | undefined;
 	// communityId: string | undefined;
 };
- 
+
 export interface AppServicesHost<S> {
 	forRequest(rawAuthHeader?: string, hints?: PrincipalHints): Promise<S>;
 	// forSystem can be added later without breaking Cellix API:
 	// forSystem?: (opts?: unknown) => Promise<S>;
 }
- 
+
 export type ApplicationServicesFactory = AppServicesHost<ApplicationServices>;
- 
+
 export const buildApplicationServicesFactory = (
 	infrastructureServicesRegistry: ApiContextSpec,
 ): ApplicationServicesFactory => {
-    const paymentApplicationService = new DefaultPaymentApplicationService(infrastructureServicesRegistry.paymentService);
+	const paymentApplicationService = new DefaultPaymentApplicationService(
+		infrastructureServicesRegistry.paymentService,
+	);
 
 	const forRequest = async (
 		rawAuthHeader?: string,
@@ -96,12 +98,14 @@ export const buildApplicationServicesFactory = (
 			get verifiedUser(): VerifiedUser | null {
 				return { ...tokenValidationResult, hints: hints };
 			},
-            Payment: paymentApplicationService,
-            ReservationRequest: ReservationRequest(dataSources),
+			Payment: paymentApplicationService,
+			ReservationRequest: ReservationRequest(dataSources),
 		};
 	};
- 
+
 	return {
 		forRequest,
 	};
 };
+
+export type { PersonalUserUpdateCommand } from './contexts/user/personal-user/update.ts';

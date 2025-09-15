@@ -125,6 +125,7 @@ describe('ReservationRequest', () => {
 			},
 			createdAt: new Date(),
 			updatedAt: new Date(),
+			hasCompletedOnboarding: true,
 		};
 	};
 

@@ -412,7 +412,6 @@ export type PersonalUserUpdateInput = {
   account?: InputMaybe<PersonalUserAccountUpdateInput>;
   id: Scalars["ObjectID"]["input"];
   isBlocked?: InputMaybe<Scalars["Boolean"]["input"]>;
-  userType?: InputMaybe<Scalars["String"]["input"]>;
 };
 
 /**  Base Query Type definition - , all mutations will be defined in separate files extending this type  */

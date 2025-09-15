@@ -89,7 +89,6 @@ input PersonalUserAccountProfileBillingInput {
 
 input PersonalUserUpdateInput {
   id: ObjectID!
-  userType: String
   isBlocked: Boolean
   account: PersonalUserAccountUpdateInput
 }

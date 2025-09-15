@@ -3,25 +3,15 @@
  * Defines authorization capabilities for user-related operations.
  */
 export interface UserDomainPermissions {
-	// User aggregate permissions
-	canCreateUser: boolean;
-	canManageUser: boolean;
-	canViewUserProfile: boolean;
-	canEditUserProfile: boolean;
-
-	// User moderation permissions (admin)
-	canBlockUser: boolean;
-	canUnblockUser: boolean;
-	canViewAllUsers: boolean;
+	// Admin Permissions
+	canBlockUsers: boolean;
+	canBlockListings: boolean;
+	canUnblockUsers: boolean;
+	canUnblockListings: boolean;
+	canRemoveListings: boolean;
+	canViewListingReports: boolean;
 	canViewUserReports: boolean;
 
-	// Profile-specific permissions
-	canViewPrivateProfile: boolean;
-	canEditAccountSettings: boolean;
-	canViewBillingInfo: boolean;
-	canEditBillingInfo: boolean;
-
-	// System permissions
-	isUserOwner: boolean;
-	isAdmin: boolean;
+	isEditingOwnAccount: boolean;
+	isSystemAccount: boolean;
 }

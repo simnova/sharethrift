@@ -31,7 +31,7 @@ export interface ReservationRequestReadRepository {
 	) => Promise<
 		Domain.Contexts.ReservationRequest.ReservationRequest.ReservationRequestEntityReference[]
 	>;
-    getPastByReserverIdWithListingWithSharer: (
+	getPastByReserverIdWithListingWithSharer: (
 		reserverId: string,
 		options?: FindOptions,
 	) => Promise<
@@ -100,26 +100,26 @@ export class ReservationRequestReadRepositoryImpl
 		Domain.Contexts.ReservationRequest.ReservationRequest.ReservationRequestEntityReference[]
 	> {
 		const filter = {
-			reserver: new Types.ObjectId(reserverId)
+			reserver: new Types.ObjectId(reserverId),
 		};
 		const result = await this.mongoDataSource.find(filter, options);
 		return result.map((doc) => this.converter.toDomain(doc, this.passport));
 	}
 
-    /**
-     * Retrieves an array of active ReservationRequest entities by the id of its reserver field, including the 'listing' and 'listing.sharer' fields.
-     * @param reserverId - The ID of the Reserver entity on the ReservationRequest.
-     * @param options - Optional find options for querying.
-     * @returns A promise that resolves to an array of ReservationRequestEntityReference objects or null if not found.
-     */
+	/**
+	 * Retrieves an array of active ReservationRequest entities by the id of its reserver field, including the 'listing' and 'listing.sharer' fields.
+	 * @param reserverId - The ID of the Reserver entity on the ReservationRequest.
+	 * @param options - Optional find options for querying.
+	 * @returns A promise that resolves to an array of ReservationRequestEntityReference objects or null if not found.
+	 */
 	async getActiveByReserverIdWithListingWithSharer(
 		reserverId: string,
 		options?: FindOptions,
 	): Promise<
 		Domain.Contexts.ReservationRequest.ReservationRequest.ReservationRequestEntityReference[]
 	> {
-        // Real implementation, commented out for the time being
-        // const filter = {
+		// Real implementation, commented out for the time being
+		// const filter = {
 		// 	reserver: new MongooseSeedwork.ObjectId(reserverId),
 		// 	state: { $in: ['Accepted', 'Requested'] },
 		// };
@@ -134,26 +134,26 @@ export class ReservationRequestReadRepositoryImpl
 		return Promise.resolve(mockResult);
 	}
 
-    /**
-     * Retrieves an array of past ReservationRequest entities by the id of its reserver field, including the 'listing' and 'listing.sharer' fields.
-     * @param reserverId - The ID of the Reserver entity on the ReservationRequest.
-     * @param options - Optional find options for querying.
-     * @returns A promise that resolves to an array of ReservationRequestEntityReference objects or null if not found.
-     */
+	/**
+	 * Retrieves an array of past ReservationRequest entities by the id of its reserver field, including the 'listing' and 'listing.sharer' fields.
+	 * @param reserverId - The ID of the Reserver entity on the ReservationRequest.
+	 * @param options - Optional find options for querying.
+	 * @returns A promise that resolves to an array of ReservationRequestEntityReference objects or null if not found.
+	 */
 	async getPastByReserverIdWithListingWithSharer(
 		reserverId: string,
 		options?: FindOptions,
 	): Promise<
 		Domain.Contexts.ReservationRequest.ReservationRequest.ReservationRequestEntityReference[]
 	> {
-        // Real implementation, commented out for the time being
-        // const filter = {
+		// Real implementation, commented out for the time being
+		// const filter = {
 		// 	reserver: new MongooseSeedwork.ObjectId(reserverId),
 		// 	state: { $in: ['Cancelled', 'Closed', 'Rejected'] },
 		// };
 		// const result = await this.mongoDataSource.find(filter, { ...options, populateFields: ['listing', 'listing.sharer'] });
 		// return result.map((doc) => this.converter.toDomain(doc, this.passport));
-        
+
 		// Mock result for past reservations, uses await to avoid error
 		const mockResult = await Promise.resolve(
 			getMockReservationRequests(reserverId, 'past'),
@@ -226,6 +226,7 @@ const getMockReservationRequests = (
 					schemaVersion: '1',
 					createdAt: new Date('2024-01-05T09:00:00Z'),
 					updatedAt: new Date('2024-01-13T09:00:00Z'),
+					hasCompletedOnboarding: true,
 				},
 			},
 			reserver: {
@@ -257,6 +258,7 @@ const getMockReservationRequests = (
 				schemaVersion: '1',
 				createdAt: new Date('2024-01-01T09:00:00Z'),
 				updatedAt: new Date('2024-01-13T09:00:00Z'),
+				hasCompletedOnboarding: true,
 			},
 			closeRequestedBySharer: false,
 			closeRequestedByReserver: false,
@@ -302,6 +304,7 @@ const getMockReservationRequests = (
 						schemaVersion: '1',
 						createdAt: new Date('2024-01-05T09:00:00Z'),
 						updatedAt: new Date('2024-01-13T09:00:00Z'),
+						hasCompletedOnboarding: true,
 					},
 				});
 			},
@@ -310,6 +313,7 @@ const getMockReservationRequests = (
 					_id: new Types.ObjectId(reserverId),
 					id: reserverId,
 					name: 'John Doe',
+
 					account: {
 						accountType: 'personal',
 						email: 'reserver@example.com',
@@ -335,6 +339,7 @@ const getMockReservationRequests = (
 					updatedAt: new Date('2024-01-13T09:00:00Z'),
 					userType: 'personal',
 					isBlocked: false,
+					hasCompletedOnboarding: true,
 				});
 			},
 		},

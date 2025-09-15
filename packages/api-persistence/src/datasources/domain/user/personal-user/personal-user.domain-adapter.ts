@@ -39,6 +39,13 @@ export class PersonalUserDomainAdapter
 		}
 		return new PersonalUserAccountDomainAdapter(this.doc.account);
 	}
+
+	get hasCompletedOnboarding() {
+		return this.doc.hasCompletedOnboarding;
+	}
+	set hasCompletedOnboarding(value: boolean) {
+		this.doc.hasCompletedOnboarding = value;
+	}
 }
 
 // Nested Path Domain Adapters

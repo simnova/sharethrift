@@ -71,10 +71,7 @@ export class PersonalUserProfile
 	// DocumentArray Field Getters
 
 	private validateVisa(): void {
-		if (
-			!this.root.isNew &&
-			!this.visa.determineIf((permissions) => permissions.canEditBillingInfo)
-		) {
+		if (!this.root.isNew) {
 			throw new DomainSeedwork.PermissionError('Cannot set identity details');
 		}
 	}

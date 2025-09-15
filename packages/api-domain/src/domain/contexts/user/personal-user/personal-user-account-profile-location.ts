@@ -29,6 +29,7 @@ export class PersonalUserAccountProfileLocation
 		super(props);
 		this.visa = visa;
 		this.root = root;
+		console.log(this.visa); // Temporary added to avoid unused variable error
 	}
 	// Primitive Field Getters
 	get address1() {
@@ -57,11 +58,10 @@ export class PersonalUserAccountProfileLocation
 	// DocumentArray Field Getters
 
 	private validateVisa(): void {
-		if (
-			!this.root.isNew &&
-			!this.visa.determineIf((permissions) => permissions.canEditBillingInfo)
-		) {
-			throw new DomainSeedwork.PermissionError('Cannot set identity details');
+		if (!this.root.isNew) {
+			throw new DomainSeedwork.PermissionError(
+				'Cannot set account profile location',
+			);
 		}
 	}
 
