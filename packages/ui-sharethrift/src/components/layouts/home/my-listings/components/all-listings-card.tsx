@@ -58,7 +58,7 @@ const AllListingsCard: React.FC<AllListingsCardProps> = ({ listing, onViewPendin
   };
 
   return (
-    <Card className={styles.listingCard} styles={{ body: { padding: 0, background: 'var(--color-background)',  } }}>
+    <Card className={styles.listingCard} styles={{ body: { padding: 0,  } }}>
       <div className={styles.cardRow}>
         {listing.image ? (
           <div className={styles.listingImageWrapper}>

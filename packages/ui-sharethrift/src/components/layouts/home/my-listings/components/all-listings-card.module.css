@@ -1,6 +1,7 @@
 .listingCard {
   border: 0;
   padding: 24px 0;
+  background: var(--color-background);
 }
 
 .listingCard * {

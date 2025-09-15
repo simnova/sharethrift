@@ -9,6 +9,7 @@ const meta: Meta<typeof MyListingsDashboard> = {
   },
   args: {
     onCreateListing: () => console.log('Create listing clicked'),
+    requestsCount: 2,
   },
 };
 

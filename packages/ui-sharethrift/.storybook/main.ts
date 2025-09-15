@@ -14,7 +14,7 @@ const config: StorybookConfig = {
   ],
   // Serve static assets (images) from the public directory for Storybook
   staticDirs: [
-    '../packages/ui-sharethrift/public'
+    '../public'
   ],
   "addons": [
     getAbsolutePath('@chromatic-com/storybook'),
