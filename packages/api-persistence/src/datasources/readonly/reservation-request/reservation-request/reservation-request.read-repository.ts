@@ -44,6 +44,14 @@ export interface ReservationRequestReadRepository {
 	) => Promise<
 		Domain.Contexts.ReservationRequest.ReservationRequest.ReservationRequestEntityReference | null
 	>;
+    getOverlapActiveReservationRequestsForListing: (
+        listingId: string,
+        reservationPeriodStart: Date,
+        reservationPeriodEnd: Date,
+        options?: FindOptions,
+    ) => Promise<
+        Domain.Contexts.ReservationRequest.ReservationRequest.ReservationRequestEntityReference[]
+    >;
 }
 
 export class ReservationRequestReadRepositoryImpl
@@ -186,6 +194,24 @@ export class ReservationRequestReadRepositoryImpl
             return null;
         }
         return this.converter.toDomain(result, this.passport);
+    }
+
+    async getOverlapActiveReservationRequestsForListing(
+        listingId: string,
+        reservationPeriodStart: Date,
+        reservationPeriodEnd: Date,
+        options?: FindOptions,
+    ): Promise<
+        Domain.Contexts.ReservationRequest.ReservationRequest.ReservationRequestEntityReference[]
+    > {
+        const filter = {
+        	listing: new MongooseSeedwork.ObjectId(listingId),
+        	state: { $in: ['Accepted', 'Requested'] },
+            reservationPeriodStart: { $lt: reservationPeriodEnd },
+            reservationPeriodEnd: { $gt: reservationPeriodStart },
+        };
+        const result = await this.mongoDataSource.find(filter, options);
+        return result.map((doc) => this.converter.toDomain(doc, this.passport));
     }
 }
 

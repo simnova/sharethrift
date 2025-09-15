@@ -23,6 +23,7 @@ extend type Query {
 	myActiveReservations(userId: ObjectID!): [ReservationRequest!]!
 	myPastReservations(userId: ObjectID!): [ReservationRequest!]!
     myActiveReservationForListing(listingId: ObjectID!, userId: ObjectID!): ReservationRequest
+    overlapActiveReservationRequestsForListing(listingId: ObjectID!, reservationPeriodStart: DateTime!, reservationPeriodEnd: DateTime!): [ReservationRequest!]!
 }
 
 extend type Mutation {

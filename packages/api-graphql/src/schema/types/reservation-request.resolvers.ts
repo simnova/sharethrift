@@ -34,8 +34,8 @@ const reservationRequest = {
                 listingId: args.listingId,
                 reserverId: args.userId
             });
-        }
-	},
+        },
+    },
 	Mutation: {
 		createReservationRequest: async (
 			_parent: unknown,
