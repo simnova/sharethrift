@@ -1,6 +1,6 @@
 import type { Domain } from '@sthrift/api-domain';
 import { Types } from 'mongoose';
-import type { ModelsContext } from '../../../../index.ts';
+import type { ModelsContext } from '../../../../models-context.ts';
 import {
 	ReservationRequestDataSourceImpl,
 	type ReservationRequestDataSource,
