@@ -1,19 +1,10 @@
 import { DomainSeedwork } from '@cellix/domain-seedwork';
 import type { UserVisa } from '../user.visa.ts';
 import type { PersonalUserAggregateRoot } from './personal-user.ts';
-
-export interface PersonalUserAccountProfileLocationProps
-	extends DomainSeedwork.ValueObjectProps {
-	address1: string;
-	address2?: string | undefined;
-	city: string;
-	state: string;
-	country: string;
-	zipCode: string;
-}
-
-export interface PersonalUserAccountProfileLocationEntityReference
-	extends Readonly<PersonalUserAccountProfileLocationProps> {}
+import type {
+	PersonalUserAccountProfileLocationEntityReference,
+	PersonalUserAccountProfileLocationProps,
+} from './personal-user-account-profile-location.entity.ts';
 
 export class PersonalUserAccountProfileLocation
 	extends DomainSeedwork.ValueObject<PersonalUserAccountProfileLocationProps>
