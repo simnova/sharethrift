@@ -12,6 +12,10 @@ import type {
   PlanCreation,
   PlanCreationResponse,
   PlanResponse,
+  Subscription,
+  SubscriptionResponse,
+  SubscriptionsListResponse,
+  SuspendSubscriptionResponse
 } from "./cybersource-interface.js";
 import axios from "axios";
 import type { AxiosInstance } from "axios";
@@ -969,5 +973,228 @@ export class ServiceCybersource
       },
     };
   }
-  
+
+  async createSubscription(
+    subscription: Subscription
+  ): Promise<SubscriptionResponse> {
+    console.log("Mock createSubscription called with:", subscription);
+    return {
+      _links: {
+        self: {
+          href: "/rbs/v1/subscriptions/7577512808726664404807",
+          method: "GET",
+        },
+        cancel: {
+          href: "/rbs/v1/subscriptions/7577512808726664404807/cancel",
+          method: "POST",
+        },
+        update: {
+          href: "/rbs/v1/subscriptions/7577512808726664404807",
+          method: "PATCH",
+        },
+      },
+      id: `SUBS_${Date.now()}`,
+      status: "ACTIVE",
+      submitTimeUtc: new Date().toISOString(),
+      subscriptionInformation: {
+        status: "ACTIVE",
+      },
+    };
+  }
+
+  async updatePlanForSubscription(
+    subscriptionId: string,
+    planId: string
+  ): Promise<SubscriptionResponse> {
+    console.log(
+      "Mock updatePlanForSubscription called with:",
+      subscriptionId,
+      planId
+    );
+    return {
+      _links: {
+        self: {
+          href: "/rbs/v1/subscriptions/7577512808726664404807",
+          method: "GET",
+        },
+        cancel: {
+          href: "/rbs/v1/subscriptions/7577512808726664404807/cancel",
+          method: "POST",
+        },
+        update: {
+          href: "/rbs/v1/subscriptions/7577512808726664404807",
+          method: "PATCH",
+        },
+      },
+      id: subscriptionId,
+      status: "ACTIVE",
+      submitTimeUtc: new Date().toISOString(),
+      subscriptionInformation: {
+        status: "ACTIVE",
+      },
+    };
+  }
+
+  async listOfSubscriptions(): Promise<SubscriptionsListResponse> {
+    console.log("Mock listOfSubscriptions called");
+    return {
+      _links: {
+        self: {
+          href: "/rbs/v1/subscriptions?status=ACTIVE&limit=2",
+          method: "GET",
+        },
+        next: {
+          href: "/rbs/v1/subscriptions?status=ACTIVE&offset=2&limit=2",
+          method: "GET",
+        },
+      },
+      totalCount: 29,
+      subscriptions: [
+        {
+          _links: {
+            self: {
+              href: "/rbs/v1/subscriptions/6192112872526176101960",
+              method: "GET",
+            },
+            update: {
+              href: "/rbs/v1/subscriptions/6192112872526176101960",
+              method: "PATCH",
+            },
+            cancel: {
+              href: "/rbs/v1/subscriptions/6192112872526176101960/cancel",
+              method: "POST",
+            },
+            suspend: {
+              href: "/rbs/v1/subscriptions/6192112872526176101960/suspend",
+              method: "POST",
+            },
+          },
+          id: "6192112872526176101960",
+          planInformation: {
+            code: "34873819306413101960",
+            name: "RainTree Books Daily Plan",
+            billingPeriod: {
+              length: "1",
+              unit: "D",
+            },
+            billingCycles: {
+              total: "2",
+              current: "1",
+            },
+          },
+          subscriptionInformation: {
+            code: "AWC-44",
+            planId: "6034873819306413101960",
+            name: "Test",
+            startDate: "2023-04-13T17:01:42Z",
+            status: "ACTIVE",
+          },
+          paymentInformation: {
+            customer: {
+              id: "C09F227C54F94951E0533F36CF0A3D91",
+            },
+          },
+          orderInformation: {
+            amountDetails: {
+              currency: "USD",
+              billingAmount: "2.00",
+              setupFee: "1.00",
+            },
+            billTo: {
+              firstName: "JENNY",
+              lastName: "AUTO",
+            },
+          },
+        },
+        {
+          _links: {
+            self: {
+              href: "/rbs/v1/subscriptions/6192115800926177701960",
+              method: "GET",
+            },
+            update: {
+              href: "/rbs/v1/subscriptions/6192115800926177701960",
+              method: "PATCH",
+            },
+            cancel: {
+              href: "/rbs/v1/subscriptions/6192115800926177701960/cancel",
+              method: "POST",
+            },
+            suspend: {
+              href: "/rbs/v1/subscriptions/6192115800926177701960/suspend",
+              method: "POST",
+            },
+          },
+          id: "6192115800926177701960",
+          planInformation: {
+            code: "SITPlanCode6",
+            name: "Jan11DeployPlan1",
+            billingPeriod: {
+              length: "1",
+              unit: "W",
+            },
+            billingCycles: {
+              total: "6",
+              current: "1",
+            },
+          },
+          subscriptionInformation: {
+            code: "AWC-45",
+            planId: "6104313186846711501956",
+            name: "Testsub1",
+            startDate: "2023-04-13T17:01:42Z",
+            status: "ACTIVE",
+          },
+          paymentInformation: {
+            customer: {
+              id: "C09F227C54F94951E0533F36CF0A3D91",
+            },
+          },
+          orderInformation: {
+            amountDetails: {
+              currency: "USD",
+              billingAmount: "1.00",
+              setupFee: "5.00",
+            },
+            billTo: {
+              firstName: "JENNY",
+              lastName: "AUTO",
+            },
+          },
+        },
+      ],
+    };
+  }
+
+  async suspendSubscription(
+    subscriptionId: string
+  ): Promise<SuspendSubscriptionResponse> {
+    console.log("Mock suspendSubscription called with:", subscriptionId);
+    return {
+      _links: {
+        self: {
+          href: `/rbs/v1/subscriptions/${subscriptionId}`,
+          method: "GET",
+        },
+        update: {
+          href: `/rbs/v1/subscriptions/${subscriptionId}`,
+          method: "PATCH",
+        },
+        cancel: {
+          href: `/rbs/v1/subscriptions/${subscriptionId}/cancel`,
+          method: "POST",
+        },
+        suspend: {
+          href: `/rbs/v1/subscriptions/${subscriptionId}/suspend`,
+          method: "POST",
+        },
+      },
+      id: subscriptionId,
+      status: "ACCEPTED",
+      subscriptionInformation: {
+        code: "AWC-44",
+        status: "SUSPENDED",
+      },
+    };
+  }
 }

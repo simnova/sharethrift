@@ -420,3 +420,139 @@ export interface PlanResponse {
     };
   };
 }
+
+export interface Subscription {
+  subscriptionInformation: {
+    planId: string;
+    name: string;
+    startDate: string;
+  };
+  paymentInformation: {
+    customer: {
+      id: string;
+    };
+  };
+}
+
+export interface SubscriptionResponse {
+  _links: {
+    self: {
+      href: string;
+      method?: string;
+    };
+    update: {
+      href: string;
+      method?: string;
+    };
+    cancel: {
+      href: string;
+      method?: string;
+    };
+  };
+  id: string;
+  submitTimeUtc: string;
+  status: string;
+  subscriptionInformation: {
+    code?: string;
+    status: string;
+  };
+}
+
+export interface SubscriptionsListResponse {
+  _links: {
+    self: {
+      href: string;
+      method: string;
+    };
+    next?: {
+      href: string;
+      method: string;
+    };
+  };
+  totalCount: number;
+  subscriptions: SingleSubscription[];
+}
+
+export interface SingleSubscription {
+  _links: {
+    self: {
+      href: string;
+      method: string;
+    };
+    update: {
+      href: string;
+      method: string;
+    };
+    cancel: {
+      href: string;
+      method: string;
+    };
+    suspend: {
+      href: string;
+      method: string;
+    };
+  };
+  id: string;
+  planInformation: {
+    code: string;
+    name: string;
+    billingPeriod: {
+      length: string;
+      unit: string; // 'D' | 'W' | 'M' | 'Y' etc.
+    };
+    billingCycles: {
+      total: string;
+      current: string;
+    };
+  };
+  subscriptionInformation: {
+    code: string;
+    planId: string;
+    name: string;
+    startDate: string; // ISO date string
+    status: string; // 'ACTIVE' | 'PENDING' | 'SUSPENDED' | etc.
+  };
+  paymentInformation: {
+    customer: {
+      id: string;
+    };
+  };
+  orderInformation: {
+    amountDetails: {
+      currency: string;
+      billingAmount: string;
+      setupFee?: string;
+    };
+    billTo: {
+      firstName: string;
+      lastName: string;
+    };
+  };
+}
+
+export interface SuspendSubscriptionResponse {
+  _links: {
+    self: {
+      href: string;
+      method: string;
+    };
+    update: {
+      href: string;
+      method: string;
+    };
+    cancel: {
+      href: string;
+      method: string;
+    };
+    suspend: {
+      href: string;
+      method: string;
+    };
+  };
+  id: string;
+  status: string; // e.g. "ACCEPTED"
+  subscriptionInformation: {
+    code?: string;
+    status: string; // e.g. "ACTIVE" | "SUSPENDED" | "CANCELED"
+  };
+}
