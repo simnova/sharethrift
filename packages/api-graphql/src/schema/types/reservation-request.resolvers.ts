@@ -35,6 +35,16 @@ const reservationRequest = {
                 reserverId: args.userId
             });
         },
+        queryActiveByListingId: async (
+            _parent: unknown,
+            args: { listingId: string },
+            context: GraphContext,
+            _info: GraphQLResolveInfo,
+        ) => {
+            return await context.applicationServices.ReservationRequest.ReservationRequest.queryActiveByListingId({
+                listingId: args.listingId
+            });
+        }
     },
 	Mutation: {
 		createReservationRequest: async (

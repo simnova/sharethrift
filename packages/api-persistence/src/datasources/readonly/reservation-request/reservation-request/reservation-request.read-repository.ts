@@ -52,6 +52,12 @@ export interface ReservationRequestReadRepository {
     ) => Promise<
         Domain.Contexts.ReservationRequest.ReservationRequest.ReservationRequestEntityReference[]
     >;
+    getActiveByListingId: (
+        listingId: string,
+        options?: FindOptions,
+    ) => Promise<
+        Domain.Contexts.ReservationRequest.ReservationRequest.ReservationRequestEntityReference[]
+    >;
 }
 
 export class ReservationRequestReadRepositoryImpl
@@ -213,7 +219,26 @@ export class ReservationRequestReadRepositoryImpl
         const result = await this.mongoDataSource.find(filter, options);
         return result.map((doc) => this.converter.toDomain(doc, this.passport));
     }
+
+    async getActiveByListingId(
+        listingId: string,
+        options?: FindOptions,
+    ): Promise<
+        Domain.Contexts.ReservationRequest.ReservationRequest.ReservationRequestEntityReference[]
+    > {
+        // const filter = {
+        //     listing: new MongooseSeedwork.ObjectId(listingId),
+        // };
+        // const result = await this.mongoDataSource.find(filter, options);
+        // return result.map((doc) => this.converter.toDomain(doc, this.passport));
+        const mockResult = await Promise.resolve(
+			getMockReservationRequests("507f1f77bcf86cd799439011", 'active'),
+		);
+		console.log(options, listingId); //gets rid of unused error
+		return Promise.resolve(mockResult);
+    }
 }
+
 
 export const getReservationRequestReadRepository = (
 	models: ModelsContext,
@@ -232,8 +257,8 @@ const getMockReservationRequests = (
 			_id: new Types.ObjectId(),
 			id: '507f1f77bcf86cd799439011',
 			state: reservationState,
-			reservationPeriodStart: new Date('2024-09-05T10:00:00Z'),
-			reservationPeriodEnd: new Date('2024-09-15T10:00:00Z'),
+			reservationPeriodStart: new Date('2025-09-20T10:00:00Z'),
+			reservationPeriodEnd: new Date('2025-09-25T10:00:00Z'),
 			createdAt: new Date('2024-09-01T10:00:00Z'),
 			updatedAt: new Date('2024-09-05T12:00:00Z'),
 			schemaVersion: '1',

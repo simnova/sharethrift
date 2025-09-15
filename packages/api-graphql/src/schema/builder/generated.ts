@@ -340,10 +340,12 @@ export type Query = {
   currentPersonalUserAndCreateIfNotExists: PersonalUser;
   itemListing?: Maybe<ItemListing>;
   itemListings: Array<ItemListing>;
-  myActiveReservationForListing: ReservationRequest;
+  myActiveReservationForListing?: Maybe<ReservationRequest>;
   myActiveReservations: Array<ReservationRequest>;
   myPastReservations: Array<ReservationRequest>;
+  overlapActiveReservationRequestsForListing: Array<ReservationRequest>;
   personalUserById?: Maybe<PersonalUser>;
+  queryActiveByListingId: Array<Maybe<ReservationRequest>>;
 };
 
 /**  Base Query Type definition - , all mutations will be defined in separate files extending this type  */
@@ -373,8 +375,20 @@ export type QueryMyPastReservationsArgs = {
 };
 
 /**  Base Query Type definition - , all mutations will be defined in separate files extending this type  */
+export type QueryOverlapActiveReservationRequestsForListingArgs = {
+  listingId: Scalars["ObjectID"]["input"];
+  reservationPeriodEnd: Scalars["DateTime"]["input"];
+  reservationPeriodStart: Scalars["DateTime"]["input"];
+};
+
+/**  Base Query Type definition - , all mutations will be defined in separate files extending this type  */
 export type QueryPersonalUserByIdArgs = {
   id: Scalars["ObjectID"]["input"];
+};
+
+/**  Base Query Type definition - , all mutations will be defined in separate files extending this type  */
+export type QueryQueryActiveByListingIdArgs = {
+  listingId: Scalars["ObjectID"]["input"];
 };
 
 export type ReservationRequest = {
@@ -1126,7 +1140,7 @@ export type QueryResolvers<
   itemListing?: Resolver<Maybe<ResolversTypes["ItemListing"]>, ParentType, ContextType, RequireFields<QueryItemListingArgs, "id">>;
   itemListings?: Resolver<Array<ResolversTypes["ItemListing"]>, ParentType, ContextType>;
   myActiveReservationForListing?: Resolver<
-    ResolversTypes["ReservationRequest"],
+    Maybe<ResolversTypes["ReservationRequest"]>,
     ParentType,
     ContextType,
     RequireFields<QueryMyActiveReservationForListingArgs, "listingId" | "userId">
@@ -1143,7 +1157,19 @@ export type QueryResolvers<
     ContextType,
     RequireFields<QueryMyPastReservationsArgs, "userId">
   >;
+  overlapActiveReservationRequestsForListing?: Resolver<
+    Array<ResolversTypes["ReservationRequest"]>,
+    ParentType,
+    ContextType,
+    RequireFields<QueryOverlapActiveReservationRequestsForListingArgs, "listingId" | "reservationPeriodEnd" | "reservationPeriodStart">
+  >;
   personalUserById?: Resolver<Maybe<ResolversTypes["PersonalUser"]>, ParentType, ContextType, RequireFields<QueryPersonalUserByIdArgs, "id">>;
+  queryActiveByListingId?: Resolver<
+    Array<Maybe<ResolversTypes["ReservationRequest"]>>,
+    ParentType,
+    ContextType,
+    RequireFields<QueryQueryActiveByListingIdArgs, "listingId">
+  >;
 }>;
 
 export interface RgbScalarConfig extends GraphQLScalarTypeConfig<ResolversTypes["RGB"], any> {
