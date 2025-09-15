@@ -1,6 +1,15 @@
-import type { PersonalUserUpdateInput } from '@sthrift/api-graphql';
 import type { DataSources } from '@sthrift/api-persistence';
 import type { Domain } from '@sthrift/api-domain';
+
+interface PersonalUserUpdateInput {
+	id: string;
+	account: {
+		profile?: {
+			firstName?: string;
+			lastName?: string;
+		};
+	};
+}
 
 export interface PersonalUserUpdateCommand {
 	personalUserUpdateInput: PersonalUserUpdateInput;
