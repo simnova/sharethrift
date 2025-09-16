@@ -2,7 +2,11 @@ import type { StorybookConfig } from '@storybook/react-vite';
 
 import { join, dirname } from 'path';
 
-function getAbsolutePath(value: string): any {
+function getAbsolutePath(value: string): string {
+	// Prevent path traversal attacks
+	if (value.includes('..') || value.startsWith('/')) {
+		throw new Error(`Invalid package name: ${value}`);
+	}
 	return dirname(require.resolve(join(value, 'package.json')));
 }
 const config: StorybookConfig = {
