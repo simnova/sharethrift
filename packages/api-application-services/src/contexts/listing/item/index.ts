@@ -7,6 +7,22 @@ import {
 	queryBySharer,
 } from './query-by-sharer.ts';
 
+export interface ItemListingQueryAllCommand {
+	fields?: string[];
+}
+
+export const queryAll = (dataSources: DataSources) => {
+	return async (
+		command: ItemListingQueryAllCommand,
+	): Promise<
+		Domain.Contexts.Listing.ItemListing.ItemListingEntityReference[]
+	> => {
+		return await dataSources.readonlyDataSource.Listing.ItemListing.ItemListingReadRepo.getAll(
+			{ fields: command.fields },
+		);
+	};
+};
+
 export interface ItemListingApplicationService {
 	create: (
 		command: ItemListingCreateCommand,
@@ -19,6 +35,11 @@ export interface ItemListingApplicationService {
 	) => Promise<
 		Domain.Contexts.Listing.ItemListing.ItemListingEntityReference[]
 	>;
+	queryAll: (
+		command: ItemListingQueryAllCommand,
+	) => Promise<
+		Domain.Contexts.Listing.ItemListing.ItemListingEntityReference[]
+	>;
 }
 
 export const ItemListing = (
@@ -28,5 +49,6 @@ export const ItemListing = (
 		create: create(dataSources),
 		queryById: queryById(dataSources),
 		queryBySharer: queryBySharer(dataSources),
+		queryAll: queryAll(dataSources),
 	};
 };
