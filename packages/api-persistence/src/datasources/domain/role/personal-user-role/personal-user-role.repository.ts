@@ -3,12 +3,12 @@ import type { Models } from '@sthrift/api-data-sources-mongoose-models';
 import { Domain } from '@sthrift/api-domain';
 import type { PersonalUserRoleDomainAdapter } from './personal-user-role.domain-adapter.ts';
 
-type EndUserRoleModelType = Models.Role.PersonalUserRole; // ReturnType<typeof Models.EndUserRole.EndUserRoleModelFactory> & Models.EndUserRole.EndUserRole & { baseModelName: string };
+type PersonalUserRoleModelType = Models.Role.PersonalUserRole; // ReturnType<typeof Models.EndUserRole.EndUserRoleModelFactory> & Models.EndUserRole.EndUserRole & { baseModelName: string };
 type PropType = PersonalUserRoleDomainAdapter;
 
 export class PersonalUserRoleRepository //<
 	extends MongooseSeedwork.MongoRepositoryBase<
-		EndUserRoleModelType,
+		PersonalUserRoleModelType,
 		PropType,
 		Domain.Passport,
 		Domain.Contexts.Role.PersonalUserRole.PersonalUserRole<PropType>

@@ -1,5 +1,4 @@
 import { DomainSeedwork } from '@cellix/domain-seedwork';
-// import type { CommunityVisa } from '../../community.visa'; // Uncomment if you have a visa concept
 
 export interface PersonalUserRoleListingPermissionsProps
 	extends DomainSeedwork.ValueObjectProps {

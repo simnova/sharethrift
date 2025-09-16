@@ -36,15 +36,15 @@ export interface VerifiedUser {
 }
 
 // biome-ignore lint/complexity/noBannedTypes: principal hints type configuration
+
 export type PrincipalHints = {
 	// memberId: string | undefined;
 	// communityId: string | undefined;
 };
+export type PrincipalHints = {};
 
 export interface AppServicesHost<S> {
 	forRequest(rawAuthHeader?: string, hints?: PrincipalHints): Promise<S>;
-	// forSystem can be added later without breaking Cellix API:
-	// forSystem?: (opts?: unknown) => Promise<S>;
 }
 
 export type ApplicationServicesFactory = AppServicesHost<ApplicationServices>;
@@ -76,12 +76,6 @@ export const buildApplicationServicesFactory = (
 				if (personalUser) {
 					console.log(passport);
 					passport = Domain.PassportFactory.forSystem(); // temporary create system passport, change to forPersonalUser when it is ready
-				}
-			} else if (openIdConfigKey === 'StaffPortal') {
-				const staffUser = undefined;
-				// const staffUser = await readonlyDataSource.User.StaffUser.StaffUserReadRepo.getByExternalId(verifiedJwt.sub);
-				if (staffUser) {
-					// passport = Domain.PassportFactory.forStaffUser(staffUser);
 				}
 			}
 		}

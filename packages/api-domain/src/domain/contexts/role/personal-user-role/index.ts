@@ -1,8 +1,8 @@
-export {
-	PersonalUserRole,
-	type PersonalUserRoleEntityReference,
-	type PersonalUserRoleProps,
-} from './personal-user-role.ts';
+export { PersonalUserRole } from './personal-user-role.ts';
+export type {
+	PersonalUserRoleProps,
+	PersonalUserRoleEntityReference,
+} from './personal-user-role.entity.ts';
 export {
 	PersonalUserRoleListingPermissions,
 	type PersonalUserRoleListingPermissionsEntityReference,

@@ -3,25 +3,9 @@ import type { Passport } from '../../passport.ts';
 import { PersonalUserRolePermissions } from './personal-user-role-permissions.ts';
 import * as ValueObjects from './personal-user-role.value-objects.ts';
 import type {
-	PersonalUserRolePermissionsProps,
-	PersonalUserRolePermissionsEntityReference,
-} from './personal-user-role-permissions.ts';
-
-export interface PersonalUserRoleProps
-	extends DomainSeedwork.DomainEntityProps {
-	roleName: string;
-	isDefault: boolean;
-	permissions: PersonalUserRolePermissionsProps;
-	readonly roleType: string;
-	readonly createdAt: Date;
-	readonly updatedAt: Date;
-	readonly schemaVersion: string;
-}
-
-export interface PersonalUserRoleEntityReference
-	extends Readonly<Omit<PersonalUserRoleProps, 'permissions'>> {
-	get permissions(): PersonalUserRolePermissionsEntityReference;
-}
+	PersonalUserRoleEntityReference,
+	PersonalUserRoleProps,
+} from './personal-user-role.entity.ts';
 
 export class PersonalUserRole<props extends PersonalUserRoleProps>
 	extends DomainSeedwork.AggregateRoot<props, Passport>

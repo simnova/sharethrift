@@ -1,5 +1,5 @@
 import type { Domain } from '@sthrift/api-domain';
-import type { ModelsContext } from '../../../../index.ts';
+import type { ModelsContext } from '../../../../models-context.ts';
 import { getPersonalUserReadRepository } from './personal-user.read-repository.ts';
 
 export type { PersonalUserReadRepository } from './personal-user.read-repository.ts';

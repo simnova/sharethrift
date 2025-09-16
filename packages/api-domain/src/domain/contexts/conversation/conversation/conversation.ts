@@ -1,25 +1,14 @@
 import { DomainSeedwork } from '@cellix/domain-seedwork';
 import type { ConversationVisa } from '../conversation.visa.ts';
 import type { Passport } from '../../passport.ts';
-import type { PersonalUserEntityReference } from '../../user/personal-user/personal-user.ts';
+import type { PersonalUserEntityReference } from '../../user/personal-user/personal-user.entity.ts';
 import { PersonalUser } from '../../user/personal-user/personal-user.ts';
-import type { ItemListingEntityReference } from '../../listing/item/item-listing.ts';
+import type { ItemListingEntityReference } from '../../listing/item/item-listing.entity.ts';
 import { ItemListing } from '../../listing/item/item-listing.ts';
-
-export interface ConversationProps extends DomainSeedwork.DomainEntityProps {
-	sharer: Readonly<PersonalUserEntityReference>;
-	loadSharer: () => Promise<Readonly<PersonalUserEntityReference>>;
-	reserver: Readonly<PersonalUserEntityReference>;
-	loadReserver: () => Promise<Readonly<PersonalUserEntityReference>>;
-	listing: Readonly<ItemListingEntityReference>;
-	loadListing: () => Promise<Readonly<ItemListingEntityReference>>;
-	twilioConversationId: string;
-	createdAt: Date;
-	updatedAt: Date;
-}
-
-export interface ConversationEntityReference
-	extends Readonly<ConversationProps> {}
+import type {
+	ConversationEntityReference,
+	ConversationProps,
+} from './conversation.entity.ts';
 
 export class Conversation<props extends ConversationProps>
 	extends DomainSeedwork.AggregateRoot<props, Passport>
