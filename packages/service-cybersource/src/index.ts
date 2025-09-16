@@ -51,15 +51,17 @@ export class ServiceCybersource
     return this.client;
   }
 
-  public async createPayment(req: unknown): Promise<unknown> {
-    const { data } = await this.service.post("/pts/v2/payments", req);
-    return data;
-  }
+//   public async createPayment(_req: unknown): Promise<unknown> {
+//     throw new Error(
+//       "ServiceCybersource.createPayment is deprecated. Use processPayment(clientReferenceCode, paymentInstrumentId, amount) instead."
+//     );
+//   }
 
-  public async refundPayment(req: unknown): Promise<unknown> {
-    const { data } = await this.service.post("/pts/v2/refunds", req);
-    return data;
-  }
+//   public async refundPayment(_req: unknown): Promise<unknown> {
+//     throw new Error(
+//       "ServiceCybersource.refundPayment is deprecated. Use processRefund(transactionId, amount, referenceId) instead."
+//     );
+//   }
   //   ========== This code will get deleted ===========
 
   async generatePublicKey(): Promise<string> {
@@ -612,7 +614,7 @@ export class ServiceCybersource
       },
       id: paymentInstrumentInfo.paymentInstrumentId,
       object: "paymentInstrument",
-      default: paymentInstrumentInfo.id === "DEFAULT" ? true : false,
+  default: paymentInstrumentInfo.id === "DEFAULT",
       state: "ACTIVE",
       card: {
         expirationMonth: paymentInstrumentInfo.cardExpirationMonth,
