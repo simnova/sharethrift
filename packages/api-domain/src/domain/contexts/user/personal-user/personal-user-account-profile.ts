@@ -1,31 +1,12 @@
 import { DomainSeedwork } from '@cellix/domain-seedwork';
 import type { UserVisa } from '../user.visa.ts';
 import type { PersonalUserAggregateRoot } from './personal-user.ts';
-import {
-	PersonalUserAccountProfileLocation,
-	type PersonalUserAccountProfileLocationProps,
-	type PersonalUserAccountProfileLocationEntityReference,
-} from './personal-user-account-profile-location.ts';
-import {
-	PersonalUserAccountProfileBilling,
-	type PersonalUserAccountProfileBillingProps,
-	type PersonalUserAccountProfileBillingEntityReference,
-} from './personal-user-account-profile-billing.ts';
-
-export interface PersonalUserProfileProps
-	extends DomainSeedwork.ValueObjectProps {
-	firstName: string;
-	lastName: string;
-
-	readonly location: PersonalUserAccountProfileLocationProps;
-	readonly billing: PersonalUserAccountProfileBillingProps;
-}
-
-export interface PersonalUserProfileEntityReference
-	extends Readonly<Omit<PersonalUserProfileProps, 'location' | 'billing'>> {
-	readonly location: PersonalUserAccountProfileLocationEntityReference;
-	readonly billing: PersonalUserAccountProfileBillingEntityReference;
-}
+import type {
+	PersonalUserProfileEntityReference,
+	PersonalUserProfileProps,
+} from './personal-user-account-profile.entity.ts';
+import { PersonalUserAccountProfileLocation } from './personal-user-account-profile-location.ts';
+import { PersonalUserAccountProfileBilling } from './personal-user-account-profile-billing.ts';
 
 export class PersonalUserProfile
 	extends DomainSeedwork.ValueObject<PersonalUserProfileProps>

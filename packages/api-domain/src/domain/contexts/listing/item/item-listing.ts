@@ -2,31 +2,11 @@ import { DomainSeedwork } from '@cellix/domain-seedwork';
 import type { Passport } from '../../passport.ts';
 import type { ListingVisa } from '../listing.visa.ts';
 import * as ValueObjects from './item-listing.value-objects.ts';
-import type { PersonalUserEntityReference } from '../../user/personal-user/personal-user.ts'
-
-export interface ItemListingProps extends DomainSeedwork.DomainEntityProps {
-	sharer: Readonly<PersonalUserEntityReference>;
-	title: string;
-	description: string;
-	category: string;
-	location: string;
-	sharingPeriodStart: Date;
-	sharingPeriodEnd: Date;
-	state: string;
-	readonly createdAt: Date;
-	updatedAt: Date;
-	readonly schemaVersion: string;
-	sharingHistory?: string[]; // Array of reservation/sharing IDs
-	reports?: number;
-	images?: string[]; // Array of image URLs
-}
-
-export interface ItemListingEntityReference
-	extends Readonly<Omit<ItemListingProps, 'sharingHistory' | 'images'>> {
-	sharingHistory?: string[];
-	images?: string[];
-}
-
+import type { PersonalUserEntityReference } from '../../user/personal-user/personal-user.entity.ts';
+import type {
+	ItemListingEntityReference,
+	ItemListingProps,
+} from './item-listing.entity.ts';
 export class ItemListing<props extends ItemListingProps>
 	extends DomainSeedwork.AggregateRoot<props, Passport>
 	implements ItemListingEntityReference
@@ -227,7 +207,9 @@ export class ItemListing<props extends ItemListingProps>
 	}
 
 	get isActive(): boolean {
-		return this.props.state.valueOf() === ValueObjects.ListingStateEnum.Published;
+		return (
+			this.props.state.valueOf() === ValueObjects.ListingStateEnum.Published
+		);
 	}
 
 	/**
