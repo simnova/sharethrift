@@ -44,19 +44,10 @@ export class PersonalUser<props extends PersonalUserProps>
 
 	private markAsNew(): void {
 		this._isNew = true;
-		// this.addIntegrationEvent(PersonalUserCreatedEvent, { userId: this.props.id });
 	}
 
 	private validateVisa(): void {
-		// if (
-		// 	!this.isNew &&
-		// 	!this.visa.determineIf(
-		// 		(permissions) =>
-		// 			permissions.isEditingOwnAccount || permissions.canManageEndUsers,
-		// 	)
-		// ) {
-		// 	throw new DomainSeedwork.PermissionError('Unauthorized');
-		// }
+		// TODO
 	}
 
 	get isNew() {

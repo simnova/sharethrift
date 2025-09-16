@@ -1,6 +1,5 @@
 import { ReservationsView } from './reservations-view';
 import type { ReservationRequest } from '../pages/index.ts';
-//import { useQuery, useMutation } from '@apollo/client';
 
 export const MOCK_ACTIVE_RESERVATIONS: ReservationRequest[] = [
 	{
@@ -52,12 +51,6 @@ export const MOCK_ACTIVE_RESERVATIONS: ReservationRequest[] = [
 ];
 
 export const ReservationsViewActiveContainer: React.FC = () => {
-	// const [reservations, setReservations] = React.useState(MOCK_ACTIVE_RESERVATIONS);
-	// const loading = false;
-	// const error: string | null = null;
-	// const cancelLoading = false;
-	// const closeLoading = false;
-
 	const onCancel = (reservationId: string) => {
 		// mock: do nothing
 		console.log('Cancel reservation', reservationId);
