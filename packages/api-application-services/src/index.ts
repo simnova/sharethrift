@@ -41,7 +41,6 @@ export type PrincipalHints = {
 	// memberId: string | undefined;
 	// communityId: string | undefined;
 };
-export type PrincipalHints = {};
 
 export interface AppServicesHost<S> {
 	forRequest(rawAuthHeader?: string, hints?: PrincipalHints): Promise<S>;
