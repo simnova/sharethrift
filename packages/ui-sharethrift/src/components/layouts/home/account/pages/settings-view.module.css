@@ -18,9 +18,10 @@
 
 .sectionCard {
   width: 100%;
-  margin-bottom: 24px;
-  border-radius: 12px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+  margin-bottom: 12px;
+  box-shadow: none;
+  background-color: var(--color-background);
+  border: none;
 }
 
 .sectionHeader {
@@ -30,27 +31,21 @@
   margin-bottom: 20px;
 }
 
-.sectionHeader h4 {
-  margin: 0;
-}
-
-.editButton {
-  color: #1890ff;
-  font-weight: 500;
-}
-
-.editButton:hover {
-  background-color: #f0f9ff;
-}
-
 /* Profile Section */
 .profileImageCol {
-  text-align: center;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .profileAvatar {
-  background-color: #f0f0f0;
-  border: 2px solid #d9d9d9;
+  width: 100%;
+  max-width: 140px;
+  aspect-ratio: 1 / 1;
+  height: auto !important;
+  border-radius: 50% !important;
+  object-fit: cover;
+  display: block;
 }
 
 .profileInfo {
@@ -130,17 +125,6 @@
   margin-bottom: 16px;
 }
 
-/* Password Section */
-.changePasswordButton {
-  background-color: #722ed1;
-  border-color: #722ed1;
-}
-
-.changePasswordButton:hover {
-  background-color: #9254de;
-  border-color: #9254de;
-}
-
 /* Responsive Design */
 @media (max-width: 768px) {
   .settingsContainer {
@@ -170,6 +154,10 @@
     align-items: flex-start;
     gap: 8px;
   }
+  
+  .profileAvatar {
+    max-width: 100px;
+  }
 }
 
 @media (max-width: 576px) {
@@ -186,8 +174,7 @@
   }
   
   .profileAvatar {
-    width: 80px;
-    height: 80px;
+    max-width: 70px;
   }
   
   .settingsHeader h2 {

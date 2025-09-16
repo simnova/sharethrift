@@ -3,6 +3,7 @@ import { Card, Button, Avatar, Typography, Row, Col, Divider, Space, Tag } from 
 import { EditOutlined, UserOutlined, LockOutlined } from '@ant-design/icons';
 import type { SettingsViewProps, PlanOption } from './settings-view.types';
 import styles from './settings-view.module.css';
+import '@sthrift/ui-sharethrift-components/src/styles/theme.css';
 
 const { Title, Text } = Typography;
 
@@ -44,12 +45,11 @@ export const SettingsView: React.FC<SettingsViewProps> = ({
   const renderProfileSection = () => (
     <Card className={styles.sectionCard}>
       <div className={styles.sectionHeader}>
-        <Title level={4}>Profile Information</Title>
+        <h2>Profile Information</h2>
         <Button 
-          type="text" 
           icon={<EditOutlined />} 
           onClick={() => handleEdit('profile')}
-          className={styles.editButton}
+          type="primary"
         >
           Edit
         </Button>
@@ -57,31 +57,39 @@ export const SettingsView: React.FC<SettingsViewProps> = ({
       
       <Row gutter={[16, 16]} align="middle">
         <Col xs={24} sm={6} className={styles.profileImageCol}>
-          <Avatar size={100} icon={<UserOutlined />} className={styles.profileAvatar} />
+          <Avatar className={styles.profileAvatar} />
         </Col>
         <Col xs={24} sm={18}>
-          <Space direction="vertical" size="small" className={styles.profileInfo}>
-            <div>
-              <Text type="secondary">First Name</Text>
-              <br />
-              <Text strong>{user.firstName || 'Not provided'}</Text>
-            </div>
-            <div>
-              <Text type="secondary">Last Name</Text>
-              <br />
-              <Text strong>{user.lastName || 'Not provided'}</Text>
-            </div>
-            <div>
-              <Text type="secondary">Username</Text>
-              <br />
-              <Text strong>{user.username}</Text>
-            </div>
-            <div>
-              <Text type="secondary">Email</Text>
-              <br />
-              <Text strong>{user.email}</Text>
-            </div>
-          </Space>
+            <Row>
+                <Col xs={24} sm={12}>
+                    <div>
+                    <Text class="label">First Name</Text>
+                    <br />
+                    <p>{user.firstName || 'Not provided'}</p>
+                    </div>
+                </Col>
+                <Col xs={24} sm={12}>
+                    <div>
+                    <Text class="label">Last Name</Text>
+                    <br />
+                    <p>{user.lastName || 'Not provided'}</p>
+                    </div>
+                </Col>
+                <Col xs={24} sm={12}>
+                    <div>
+                    <Text class="label">Username</Text>
+                    <br />
+                    <p>{user.username}</p>
+                    </div>
+                </Col>
+                 <Col xs={24} sm={12}>
+                    <div>
+                    <Text class="label">Email</Text>
+                    <br />
+                    <p>{user.email}</p>
+                    </div>
+                </Col>
+            </Row>
         </Col>
       </Row>
     </Card>
@@ -90,12 +98,11 @@ export const SettingsView: React.FC<SettingsViewProps> = ({
   const renderLocationSection = () => (
     <Card className={styles.sectionCard}>
       <div className={styles.sectionHeader}>
-        <Title level={4}>Location</Title>
+        <h2>Location</h2>
         <Button 
-          type="text" 
           icon={<EditOutlined />} 
           onClick={() => handleEdit('location')}
-          className={styles.editButton}
+          type="primary"
         >
           Edit
         </Button>
@@ -104,100 +111,197 @@ export const SettingsView: React.FC<SettingsViewProps> = ({
       <Row gutter={[16, 16]}>
         <Col xs={24} sm={12}>
           <div>
-            <Text type="secondary">Address Line 1</Text>
+            <Text class="label">Address Line 1</Text>
             <br />
-            <Text strong>{user.location.address1 || 'Not provided'}</Text>
+            <p>{user.location.address1 || 'Not provided'}</p>
           </div>
         </Col>
         <Col xs={24} sm={12}>
           <div>
-            <Text type="secondary">Address Line 2</Text>
+            <Text class="label">Address Line 2</Text>
             <br />
-            <Text strong>{user.location.address2 || 'Not provided'}</Text>
+            <p>{user.location.address2 || 'Not provided'}</p>
           </div>
         </Col>
-        <Col xs={24} sm={8}>
+        <Col xs={24} sm={6}>
           <div>
-            <Text type="secondary">City</Text>
+            <Text class="label">City</Text>
             <br />
-            <Text strong>{user.location.city || 'Not provided'}</Text>
+            <p>{user.location.city || 'Not provided'}</p>
           </div>
         </Col>
-        <Col xs={24} sm={8}>
+        <Col xs={24} sm={6}>
           <div>
-            <Text type="secondary">State</Text>
+            <Text class="label">State</Text>
             <br />
-            <Text strong>{user.location.state || 'Not provided'}</Text>
+            <p>{user.location.state || 'Not provided'}</p>
           </div>
         </Col>
-        <Col xs={24} sm={8}>
+        <Col xs={24} sm={6}>
           <div>
-            <Text type="secondary">Country</Text>
+            <Text class="label">Country</Text>
             <br />
-            <Text strong>{user.location.country || 'Not provided'}</Text>
+            <p>{user.location.country || 'Not provided'}</p>
           </div>
         </Col>
-        <Col xs={24} sm={12}>
+        <Col xs={24} sm={6}>
           <div>
-            <Text type="secondary">Zip Code</Text>
+            <Text class="label">Zip Code</Text>
             <br />
-            <Text strong>{user.location.zipCode || 'Not provided'}</Text>
+            <p>{user.location.zipCode || 'Not provided'}</p>
           </div>
         </Col>
       </Row>
+    </Card>
+  );
+
+  // Plan icons to match SelectAccountType.tsx
+  const planIcons: Record<string, string> = {
+    'non-verified': '/assets/item-images/stool.png',
+    'verified': '/assets/item-images/armchair.png',
+    'verified-plus': '/assets/item-images/bubble-chair.png',
+  };
+
+  const renderPlanCard = (plan: PlanOption) => (
+    <Card
+      key={plan.id}
+      className={`cursor-pointer transition-all duration-200 ${styles.planCard} ${plan.isSelected ? styles.selectedPlan : ''}`}
+      style={{
+        width: 280,
+        position: 'relative',
+        border: plan.isSelected
+          ? '2px solid var(--color-secondary)'
+          : '1px solid var(--color-foreground-2)',
+        borderRadius: '12px',
+        overflow: 'hidden',
+        margin: '0 auto',
+      }}
+      bodyStyle={{
+        padding: '10px 20px',
+        display: 'flex',
+        flexDirection: 'column',
+        alignItems: 'center',
+        textAlign: 'center',
+        height: '100%',
+        position: 'relative',
+      }}
+    >
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', width: '100%', marginBottom: 12 }}>
+        <h3
+          className="font-bold text-secondary"
+          style={{
+            fontSize: '18px',
+            fontWeight: 600,
+            color: 'var(--color-message-text)',
+            textAlign: 'left',
+            margin: 0,
+            flex: 1,
+            minHeight: '48px',
+            display: 'flex',
+            alignItems: 'center',
+          }}
+        >
+          {plan.name}
+        </h3>
+        {plan.isPopular && <Tag color="blue" style={{ marginLeft: 8 }}>Popular</Tag>}
+        <div
+          style={{
+            marginLeft: 8,
+            border: `1px solid ${plan.isSelected ? 'var(--color-secondary)' : 'grey'}`,
+            backgroundColor: plan.isSelected ? 'var(--color-secondary)' : 'transparent',
+            borderRadius: '50%',
+            width: 18,
+            height: 18,
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            color: 'white',
+            fontSize: '14px',
+            fontWeight: 'bold',
+            zIndex: 1,
+          }}
+        >
+          {plan.isSelected ? <span style={{ fontSize: 14 }}>✓</span> : null}
+        </div>
+      </div>
+
+      <div
+        style={{
+          fontSize: '60px',
+          marginBottom: '20px',
+          height: 150,
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+        }}
+      >
+        <img
+          src={planIcons[plan.id]}
+          alt={plan.name}
+          style={{ height: 150, width: 'auto', objectFit: 'contain' }}
+        />
+      </div>
+
+      <div
+        className="font-bold text-secondary"
+        style={{
+          fontSize: '20px',
+          fontWeight: 'bold',
+          color: 'var(--color-secondary)',
+          marginBottom: '20px',
+        }}
+      >
+        {plan.price}
+      </div>
+
+      <div
+        style={{
+          textAlign: 'left',
+          fontSize: '13px',
+          lineHeight: '1.5',
+          flex: 1,
+          color: 'var(--color-message-text)',
+        }}
+      >
+        {plan.features.map((feature) => (
+          <div key={feature} style={{ marginBottom: '6px' }}>
+            • {feature}
+          </div>
+        ))}
+      </div>
+
+      {plan.isSelected && (
+        <Tag color="green" className={styles.selectedTag} style={{ marginTop: 12 }}>Current Plan</Tag>
+      )}
     </Card>
   );
 
   const renderPlanSection = () => (
     <Card className={styles.sectionCard}>
       <div className={styles.sectionHeader}>
-        <Title level={4}>Plan</Title>
+        <h2>Plan</h2>
         <Button 
-          type="text" 
           icon={<EditOutlined />} 
           onClick={() => handleEdit('plan')}
-          className={styles.editButton}
+          type="primary"
         >
-          Edit Plan
+          Edit
         </Button>
       </div>
-      
-      <Row gutter={[16, 16]}>
-        {PLAN_OPTIONS.map((plan) => (
-          <Col xs={24} lg={8} key={plan.id}>
-            <Card 
-              className={`${styles.planCard} ${plan.isSelected ? styles.selectedPlan : ''}`}
-              bodyStyle={{ padding: '20px' }}
-            >
-              <div className={styles.planHeader}>
-                <Title level={5} className={styles.planName}>{plan.name}</Title>
-                {plan.isPopular && <Tag color="blue">Popular</Tag>}
-              </div>
-              <Text strong className={styles.planPrice}>{plan.price}</Text>
-              <ul className={styles.planFeatures}>
-                {plan.features.map((feature, index) => (
-                  <li key={index}>{feature}</li>
-                ))}
-              </ul>
-              {plan.isSelected && (
-                <Tag color="green" className={styles.selectedTag}>Current Plan</Tag>
-              )}
-            </Card>
-          </Col>
-        ))}
-      </Row>
+      <div style={{ display: 'flex', gap: '24px', justifyContent: 'center', flexWrap: 'wrap', padding: '24px 0' }}>
+        {PLAN_OPTIONS.map((plan) => renderPlanCard(plan))}
+      </div>
     </Card>
   );
 
   const renderBillingSection = () => (
     <Card className={styles.sectionCard}>
       <div className={styles.sectionHeader}>
-        <Title level={4}>Billing Information</Title>
+        <h2>Billing</h2>
         <Button 
-          type="text" 
           icon={<EditOutlined />} 
           onClick={() => handleEdit('billing')}
-          className={styles.editButton}
+          type="primary"
         >
           Edit
         </Button>
@@ -205,20 +309,20 @@ export const SettingsView: React.FC<SettingsViewProps> = ({
       
       <Space direction="vertical" size="large" className={styles.billingInfo}>
         <div>
-          <Text type="secondary">Payment Method</Text>
+          <Text class="label">Payment Method</Text>
           <br />
-          <Text strong>No payment method on file</Text>
+          <p>No payment method on file</p>
         </div>
         <div>
-          <Text type="secondary">Billing Address</Text>
+          <Text class="label">Billing Address</Text>
           <br />
-          <Text strong>Same as profile address</Text>
+          <p>Same as profile address</p>
         </div>
         {user.billing?.subscriptionId && (
           <div>
-            <Text type="secondary">Subscription ID</Text>
+            <Text class="label">Subscription ID</Text>
             <br />
-            <Text strong>{user.billing.subscriptionId}</Text>
+            <p>{user.billing.subscriptionId}</p>
           </div>
         )}
       </Space>
@@ -228,18 +332,17 @@ export const SettingsView: React.FC<SettingsViewProps> = ({
   const renderPasswordSection = () => (
     <Card className={styles.sectionCard}>
       <div className={styles.sectionHeader}>
-        <Title level={4}>Change Password</Title>
+        <h2>Change Password</h2>
       </div>
       
       <Space direction="vertical" size="middle">
-        <Text type="secondary">
+        <Text class="label">
           Click the button below to change your password. You will be redirected to a secure password change form.
         </Text>
         <Button 
           type="primary"
           icon={<LockOutlined />}
           onClick={onChangePassword}
-          className={styles.changePasswordButton}
         >
           Change Password
         </Button>
@@ -250,17 +353,20 @@ export const SettingsView: React.FC<SettingsViewProps> = ({
   return (
     <div className={styles.settingsContainer}>
       <div className={styles.settingsHeader}>
-        <Title level={2}>Account Settings</Title>
-        <Text type="secondary">Manage your account information and preferences</Text>
+        <h1 className="title42">Account Settings</h1>
       </div>
       
       <Divider />
       
       <Space direction="vertical" size="large" className={styles.sectionsContainer}>
         {renderProfileSection()}
+        <Divider />
         {renderLocationSection()}
+        <Divider />
         {renderPlanSection()}
+        <Divider />
         {renderBillingSection()}
+        <Divider />
         {renderPasswordSection()}
       </Space>
     </div>
