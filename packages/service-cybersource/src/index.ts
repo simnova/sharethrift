@@ -15,7 +15,8 @@ import type {
   Subscription,
   SubscriptionResponse,
   SubscriptionsListResponse,
-  SuspendSubscriptionResponse
+  SuspendSubscriptionResponse,
+  PlansListResponse,
 } from "./cybersource-interface.js";
 import axios from "axios";
 import type { AxiosInstance } from "axios";
@@ -51,17 +52,17 @@ export class ServiceCybersource
     return this.client;
   }
 
-//   public async createPayment(_req: unknown): Promise<unknown> {
-//     throw new Error(
-//       "ServiceCybersource.createPayment is deprecated. Use processPayment(clientReferenceCode, paymentInstrumentId, amount) instead."
-//     );
-//   }
+  //   public async createPayment(_req: unknown): Promise<unknown> {
+  //     throw new Error(
+  //       "ServiceCybersource.createPayment is deprecated. Use processPayment(clientReferenceCode, paymentInstrumentId, amount) instead."
+  //     );
+  //   }
 
-//   public async refundPayment(_req: unknown): Promise<unknown> {
-//     throw new Error(
-//       "ServiceCybersource.refundPayment is deprecated. Use processRefund(transactionId, amount, referenceId) instead."
-//     );
-//   }
+  //   public async refundPayment(_req: unknown): Promise<unknown> {
+  //     throw new Error(
+  //       "ServiceCybersource.refundPayment is deprecated. Use processRefund(transactionId, amount, referenceId) instead."
+  //     );
+  //   }
   //   ========== This code will get deleted ===========
 
   async generatePublicKey(): Promise<string> {
@@ -614,7 +615,7 @@ export class ServiceCybersource
       },
       id: paymentInstrumentInfo.paymentInstrumentId,
       object: "paymentInstrument",
-  default: paymentInstrumentInfo.id === "DEFAULT",
+      default: paymentInstrumentInfo.id === "DEFAULT",
       state: "ACTIVE",
       card: {
         expirationMonth: paymentInstrumentInfo.cardExpirationMonth,
@@ -937,6 +938,99 @@ export class ServiceCybersource
       planInformation: {
         status: "ACTIVE",
       },
+    };
+  }
+
+  async listOfPlans(): Promise<PlansListResponse> {
+    console.log("Mock listOfPlans called");
+    return {
+      _links: {
+        self: {
+          href: "/rbs/v1/plans?limit=2",
+          method: "GET",
+        },
+        next: {
+          href: "/rbs/v1/plans?offset=2&limit=2",
+          method: "GET",
+        },
+      },
+      totalCount: 29,
+      plans: [
+        {
+          _links: {
+            self: {
+              href: "/rbs/v1/plans/1619212820",
+              method: "GET",
+            },
+            update: {
+              href: "/rbs/v1/plans/1619212820",
+              method: "PATCH",
+            },
+            deactivate: {
+              href: "/rbs/v1/plans/1619212820/deactivate",
+              method: "POST",
+            },
+          },
+          id: "1619212820",
+          planInformation: {
+            code: "1619310018",
+            status: "ACTIVE",
+            name: "Test plan",
+            description: "Description",
+            billingPeriod: {
+              length: "1",
+              unit: "W",
+            },
+            billingCycles: {
+              total: "4",
+            },
+          },
+          orderInformation: {
+            amountDetails: {
+              currency: "USD",
+              billingAmount: "7.00",
+              setupFee: "0.00",
+            },
+          },
+        },
+        {
+          _links: {
+            self: {
+              href: "/rbs/v1/plans/6183561970436023701960",
+              method: "GET",
+            },
+            update: {
+              href: "/rbs/v1/plans/6183561970436023701960",
+              method: "PATCH",
+            },
+            activate: {
+              href: "/rbs/v1/plans/6183561970436023701960/activate",
+              method: "POST",
+            },
+          },
+          id: "6183561970436023701960",
+          planInformation: {
+            code: "1616024773",
+            status: "DRAFT",
+            name: "Plan Test",
+            description: "12123",
+            billingPeriod: {
+              length: "9999",
+              unit: "Y",
+            },
+            billingCycles: {
+              total: "123",
+            },
+          },
+          orderInformation: {
+            amountDetails: {
+              currency: "USD",
+              billingAmount: "1.00",
+              setupFee: "0.00",
+            },
+          },
+        },
+      ],
     };
   }
 

@@ -556,3 +556,60 @@ export interface SuspendSubscriptionResponse {
     status: string; // e.g. "ACTIVE" | "SUSPENDED" | "CANCELED"
   };
 }
+
+export interface PlansListResponse {
+  _links: {
+    self: {
+      href: string;
+      method: string;
+    };
+    next?: {
+      href: string;
+      method: string;
+    };
+  };
+  totalCount: number;
+  plans: SinglePlan[];
+}
+
+export interface SinglePlan {
+  _links: {
+    self: {
+      href: string;
+      method: string;
+    };
+    update: {
+      href: string;
+      method: string;
+    };
+    activate?: {
+      href: string;
+      method: string;
+    };
+    deactivate?: {
+      href: string;
+      method: string;
+    };
+  };
+  id: string;
+  planInformation: {
+    code: string;
+    status: string; // e.g. "ACTIVE" | "DRAFT" | "INACTIVE"
+    name: string;
+    description: string;
+    billingPeriod: {
+      length: string;
+      unit: string; // e.g. "D", "W", "M", "Y"
+    };
+    billingCycles: {
+      total: string;
+    };
+  };
+  orderInformation: {
+    amountDetails: {
+      currency: string;       // e.g. "USD"
+      billingAmount: string;  // e.g. "7.00"
+      setupFee: string;       // e.g. "0.00"
+    };
+  };
+}
