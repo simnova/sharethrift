@@ -51,42 +51,6 @@ type PersonalUserAccountProfileBilling {
   lastPaymentAmount: Float
 }
 
-input PersonalUserCreateInput {
-  userType: String
-  account: PersonalUserAccountInput
-}
-
-input PersonalUserAccountInput {
-  accountType: String
-  email: String
-  username: String
-  profile: PersonalUserAccountProfileInput
-}
-
-input PersonalUserAccountProfileInput {
-  firstName: String
-  lastName: String
-  location: PersonalUserAccountProfileLocationInput
-  billing: PersonalUserAccountProfileBillingInput
-}
-
-input PersonalUserAccountProfileLocationInput {
-  address1: String!
-  address2: String
-  city: String!
-  state: String!
-  country: String!
-  zipCode: String!
-}
-
-input PersonalUserAccountProfileBillingInput {
-  subscriptionId: String
-  cybersourceCustomerId: String
-  lastTransactionId: String
-  paymentState: PaymentState
-  lastPaymentAmount: Float
-}
-
 input PersonalUserUpdateInput {
   id: ObjectID!
   isBlocked: Boolean
@@ -95,7 +59,6 @@ input PersonalUserUpdateInput {
 
 input PersonalUserAccountUpdateInput {
   accountType: String
-  email: String
   username: String
   profile: PersonalUserAccountProfileUpdateInput
 }

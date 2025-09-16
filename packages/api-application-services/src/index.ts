@@ -79,7 +79,7 @@ export const buildApplicationServicesFactory = (
 
 				if (personalUser) {
 					console.log(passport);
-					passport = Domain.PassportFactory.forSystem(); // temporary create system passport, change to forPersonalUser when it is ready
+					passport = Domain.PassportFactory.forPersonalUser(personalUser);
 				}
 			} else if (openIdConfigKey === 'StaffPortal') {
 				const staffUser = undefined;

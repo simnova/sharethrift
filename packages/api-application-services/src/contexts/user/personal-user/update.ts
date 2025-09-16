@@ -6,7 +6,6 @@ export interface PersonalUserUpdateCommand {
 	isBlocked?: boolean;
 	account: {
 		accountType?: string;
-		email?: string;
 		username?: string;
 		profile?: {
 			firstName?: string;
@@ -49,17 +48,19 @@ export const update = (datasources: DataSources) => {
 
 				if (command.account) {
 					existingPersonalUser.account.accountType =
-						command.account.accountType ?? '';
-					existingPersonalUser.account.email = command.account.email ?? '';
+						command.account.accountType ??
+						existingPersonalUser.account.accountType;
 					existingPersonalUser.account.username =
-						command.account.username ?? '';
+						command.account.username ?? existingPersonalUser.account.username;
 				}
 
 				if (command.account?.profile) {
 					existingPersonalUser.account.profile.firstName =
-						command.account.profile.firstName ?? '';
+						command.account.profile.firstName ??
+						existingPersonalUser.account.profile.firstName;
 					existingPersonalUser.account.profile.lastName =
-						command.account.profile.lastName ?? '';
+						command.account.profile.lastName ??
+						existingPersonalUser.account.profile.lastName;
 				}
 				if (command.account?.profile?.location) {
 					existingPersonalUser.account.profile.location.address1 =

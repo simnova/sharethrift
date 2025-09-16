@@ -51,16 +51,13 @@ export class PersonalUserAccountProfileLocation
 		return this.props.zipCode;
 	}
 
-	// NestedPath Field Getters
-
-	// PopulateDoc Field Getters
-
-	// DocumentArray Field Getters
-
 	private validateVisa(): void {
-		if (!this.root.isNew) {
+		if (
+			!this.root.isNew &&
+			!this.visa.determineIf((permissions) => permissions.isEditingOwnAccount)
+		) {
 			throw new DomainSeedwork.PermissionError(
-				'Cannot set account profile location',
+				'Unauthorized to set location info',
 			);
 		}
 	}
@@ -70,7 +67,7 @@ export class PersonalUserAccountProfileLocation
 		this.validateVisa();
 		this.props.address1 = value;
 	}
-	set address2(value: string) {
+	set address2(value: string | undefined) {
 		this.validateVisa();
 		this.props.address2 = value;
 	}

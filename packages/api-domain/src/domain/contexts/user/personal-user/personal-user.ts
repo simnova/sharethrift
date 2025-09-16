@@ -63,15 +63,12 @@ export class PersonalUser<props extends PersonalUserProps>
 	}
 
 	private validateVisa(): void {
-		// if (
-		// 	!this.isNew &&
-		// 	!this.visa.determineIf(
-		// 		(permissions) =>
-		// 			permissions.isEditingOwnAccount || permissions.canManageEndUsers,
-		// 	)
-		// ) {
-		// 	throw new DomainSeedwork.PermissionError('Unauthorized');
-		// }
+		if (
+			!this._isNew &&
+			!this.visa.determineIf((permissions) => permissions.isEditingOwnAccount)
+		) {
+			throw new DomainSeedwork.PermissionError('Unauthorized to modify user');
+		}
 	}
 
 	get isNew() {

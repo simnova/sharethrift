@@ -314,13 +314,6 @@ export type PersonalUserAccount = {
   username?: Maybe<Scalars["String"]["output"]>;
 };
 
-export type PersonalUserAccountInput = {
-  accountType?: InputMaybe<Scalars["String"]["input"]>;
-  email?: InputMaybe<Scalars["String"]["input"]>;
-  profile?: InputMaybe<PersonalUserAccountProfileInput>;
-  username?: InputMaybe<Scalars["String"]["input"]>;
-};
-
 export type PersonalUserAccountProfile = {
   __typename?: "PersonalUserAccountProfile";
   billing?: Maybe<PersonalUserAccountProfileBilling>;
@@ -338,27 +331,12 @@ export type PersonalUserAccountProfileBilling = {
   subscriptionId?: Maybe<Scalars["String"]["output"]>;
 };
 
-export type PersonalUserAccountProfileBillingInput = {
-  cybersourceCustomerId?: InputMaybe<Scalars["String"]["input"]>;
-  lastPaymentAmount?: InputMaybe<Scalars["Float"]["input"]>;
-  lastTransactionId?: InputMaybe<Scalars["String"]["input"]>;
-  paymentState?: InputMaybe<PaymentState>;
-  subscriptionId?: InputMaybe<Scalars["String"]["input"]>;
-};
-
 export type PersonalUserAccountProfileBillingUpdateInput = {
   cybersourceCustomerId?: InputMaybe<Scalars["String"]["input"]>;
   lastPaymentAmount?: InputMaybe<Scalars["Float"]["input"]>;
   lastTransactionId?: InputMaybe<Scalars["String"]["input"]>;
   paymentState?: InputMaybe<PaymentState>;
   subscriptionId?: InputMaybe<Scalars["String"]["input"]>;
-};
-
-export type PersonalUserAccountProfileInput = {
-  billing?: InputMaybe<PersonalUserAccountProfileBillingInput>;
-  firstName?: InputMaybe<Scalars["String"]["input"]>;
-  lastName?: InputMaybe<Scalars["String"]["input"]>;
-  location?: InputMaybe<PersonalUserAccountProfileLocationInput>;
 };
 
 export type PersonalUserAccountProfileLocation = {
@@ -369,15 +347,6 @@ export type PersonalUserAccountProfileLocation = {
   country?: Maybe<Scalars["String"]["output"]>;
   state?: Maybe<Scalars["String"]["output"]>;
   zipCode?: Maybe<Scalars["String"]["output"]>;
-};
-
-export type PersonalUserAccountProfileLocationInput = {
-  address1: Scalars["String"]["input"];
-  address2?: InputMaybe<Scalars["String"]["input"]>;
-  city: Scalars["String"]["input"];
-  country: Scalars["String"]["input"];
-  state: Scalars["String"]["input"];
-  zipCode: Scalars["String"]["input"];
 };
 
 export type PersonalUserAccountProfileLocationUpdateInput = {
@@ -398,14 +367,8 @@ export type PersonalUserAccountProfileUpdateInput = {
 
 export type PersonalUserAccountUpdateInput = {
   accountType?: InputMaybe<Scalars["String"]["input"]>;
-  email?: InputMaybe<Scalars["String"]["input"]>;
   profile?: InputMaybe<PersonalUserAccountProfileUpdateInput>;
   username?: InputMaybe<Scalars["String"]["input"]>;
-};
-
-export type PersonalUserCreateInput = {
-  account?: InputMaybe<PersonalUserAccountInput>;
-  userType?: InputMaybe<Scalars["String"]["input"]>;
 };
 
 export type PersonalUserUpdateInput = {
@@ -660,18 +623,13 @@ export type ResolversTypes = ResolversObject<{
   PaymentState: PaymentState;
   PersonalUser: ResolverTypeWrapper<PersonalUser>;
   PersonalUserAccount: ResolverTypeWrapper<PersonalUserAccount>;
-  PersonalUserAccountInput: PersonalUserAccountInput;
   PersonalUserAccountProfile: ResolverTypeWrapper<PersonalUserAccountProfile>;
   PersonalUserAccountProfileBilling: ResolverTypeWrapper<PersonalUserAccountProfileBilling>;
-  PersonalUserAccountProfileBillingInput: PersonalUserAccountProfileBillingInput;
   PersonalUserAccountProfileBillingUpdateInput: PersonalUserAccountProfileBillingUpdateInput;
-  PersonalUserAccountProfileInput: PersonalUserAccountProfileInput;
   PersonalUserAccountProfileLocation: ResolverTypeWrapper<PersonalUserAccountProfileLocation>;
-  PersonalUserAccountProfileLocationInput: PersonalUserAccountProfileLocationInput;
   PersonalUserAccountProfileLocationUpdateInput: PersonalUserAccountProfileLocationUpdateInput;
   PersonalUserAccountProfileUpdateInput: PersonalUserAccountProfileUpdateInput;
   PersonalUserAccountUpdateInput: PersonalUserAccountUpdateInput;
-  PersonalUserCreateInput: PersonalUserCreateInput;
   PersonalUserUpdateInput: PersonalUserUpdateInput;
   PhoneNumber: ResolverTypeWrapper<Scalars["PhoneNumber"]["output"]>;
   Port: ResolverTypeWrapper<Scalars["Port"]["output"]>;
@@ -783,18 +741,13 @@ export type ResolversParentTypes = ResolversObject<{
   PaymentResponseOrderInformation: PaymentResponseOrderInformation;
   PersonalUser: PersonalUser;
   PersonalUserAccount: PersonalUserAccount;
-  PersonalUserAccountInput: PersonalUserAccountInput;
   PersonalUserAccountProfile: PersonalUserAccountProfile;
   PersonalUserAccountProfileBilling: PersonalUserAccountProfileBilling;
-  PersonalUserAccountProfileBillingInput: PersonalUserAccountProfileBillingInput;
   PersonalUserAccountProfileBillingUpdateInput: PersonalUserAccountProfileBillingUpdateInput;
-  PersonalUserAccountProfileInput: PersonalUserAccountProfileInput;
   PersonalUserAccountProfileLocation: PersonalUserAccountProfileLocation;
-  PersonalUserAccountProfileLocationInput: PersonalUserAccountProfileLocationInput;
   PersonalUserAccountProfileLocationUpdateInput: PersonalUserAccountProfileLocationUpdateInput;
   PersonalUserAccountProfileUpdateInput: PersonalUserAccountProfileUpdateInput;
   PersonalUserAccountUpdateInput: PersonalUserAccountUpdateInput;
-  PersonalUserCreateInput: PersonalUserCreateInput;
   PersonalUserUpdateInput: PersonalUserUpdateInput;
   PhoneNumber: Scalars["PhoneNumber"]["output"];
   Port: Scalars["Port"]["output"];

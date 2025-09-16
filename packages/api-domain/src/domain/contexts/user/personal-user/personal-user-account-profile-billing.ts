@@ -1,28 +1,6 @@
 import { DomainSeedwork } from '@cellix/domain-seedwork';
-import { VOString } from '@lucaspaganini/value-objects';
 import type { UserVisa } from '../user.visa.ts';
 import type { PersonalUserAggregateRoot } from './personal-user.ts';
-
-/**
- * Payment status enumeration
- */
-export const PaymentStateEnum = {
-    Pending: 'PENDING',
-    Succeeded: 'SUCCEEDED',
-    Failed: 'FAILED',
-    Refunded: 'REFUNDED'
-} as const;
-
-export class PaymentState extends VOString({
-    trim: true,
-    minLength: 6,
-    maxLength: 9,
-}) {
-    static Pending = new PaymentState(PaymentStateEnum.Pending);
-    static Succeeded = new PaymentState(PaymentStateEnum.Succeeded);
-    static Failed = new PaymentState(PaymentStateEnum.Failed);
-    static Refunded = new PaymentState(PaymentStateEnum.Refunded);
-}
 
 export interface PersonalUserAccountProfileBillingProps
 	extends DomainSeedwork.ValueObjectProps {
@@ -70,9 +48,11 @@ export class PersonalUserAccountProfileBilling
 	private validateVisa(): void {
 		if (
 			!this.root.isNew &&
-			!this.visa.determineIf((permissions) => permissions.canEditUserProfile)
+			!this.visa.determineIf((permissions) => permissions.isEditingOwnAccount)
 		) {
-			throw new DomainSeedwork.PermissionError('Cannot set email');
+			throw new DomainSeedwork.PermissionError(
+				'Unauthorized to set billing info',
+			);
 		}
 	}
 

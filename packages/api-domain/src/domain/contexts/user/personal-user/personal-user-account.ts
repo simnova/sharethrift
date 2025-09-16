@@ -39,14 +39,11 @@ export class PersonalUserAccount
 
 	private validateVisa(): void {
 		if (
-			!this.root.isNew
-			// &&
-			// !this.visa.determineIf(
-			// 	(permissions) => permissions.canEditAccountSettings, //TODO: Adjust permissions as needed
-			// )
+			!this.root.isNew &&
+			!this.visa.determineIf((permissions) => permissions.isEditingOwnAccount)
 		) {
 			throw new DomainSeedwork.PermissionError(
-				'Cannot set user account details',
+				'Unauthorized to set account details',
 			);
 		}
 	}

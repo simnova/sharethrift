@@ -71,8 +71,13 @@ export class PersonalUserProfile
 	// DocumentArray Field Getters
 
 	private validateVisa(): void {
-		if (!this.root.isNew) {
-			throw new DomainSeedwork.PermissionError('Cannot set identity details');
+		if (
+			!this.root.isNew &&
+			!this.visa.determineIf((permissions) => permissions.isEditingOwnAccount)
+		) {
+			throw new DomainSeedwork.PermissionError(
+				'Unauthorized to set account profile details',
+			);
 		}
 	}
 
