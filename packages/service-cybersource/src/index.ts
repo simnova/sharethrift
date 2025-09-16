@@ -66,317 +66,74 @@ export class ServiceCybersource
   //   ========== This code will get deleted ===========
 
   async generatePublicKey(): Promise<string> {
-    // Mock implementation, return a dummy public key
-    return "MOCK_PUBLIC_KEY_1234567890";
+    try {
+      const { data } = await this.service.post("/pts/v2/public-key");
+      return data.publicKey;
+    } catch (error) {
+      console.error("Error generating public key:", error);
+      throw new Error("Failed to generate public key");
+    }
   }
 
   async createCustomerProfile(
     customerProfile: CustomerProfile,
     paymentTokenInfo: PaymentTokenInfo
   ): Promise<PaymentTransactionResponse> {
-    console.log(
-      "Mock createCustomerProfile called with:",
-      customerProfile,
-      paymentTokenInfo
-    );
-    // Mock implementation, return a dummy response
-    return {
-      _links: {
-        self: {
-          href: "https://api.mockcybersource.com/customers/MOCK_CUSTOMER_ID_123456",
-          method: "GET",
-        },
-        capture: {
-          href: "https://api.mockcybersource.com/customers/MOCK_CUSTOMER_ID_123456/capture",
-          method: "POST",
-        },
-      },
-      id: "MOCK_CUSTOMER_ID_123456",
-      submitTimeUtc: new Date().toISOString(),
-      status: "AUTHORIZED",
-      reason: "NONE",
-      reconciliationId: "MOCK_RECONCILIATION_7890",
-      clientReferenceInformation: { code: "REF-MOCK-123" },
-      processorInformation: {
-        approvalCode: "APPROVED123",
-        responseCode: "100",
-        avs: { code: "Y", codeRaw: "Y" },
-        cardVerification: { resultCode: "M" },
-        paymentAccountReferenceNumber: "PAR123456789",
-        transactionId: "TXN-MOCK-456789",
-        networkTransactionId: "NTXN-MOCK-987654",
-      },
-      paymentAccountInformation: {
-        card: { type: "001" },
-      },
-      paymentInformation: {
-        card: { type: "001" },
-        tokenizedCard: { type: "001" },
-        paymentInstrument: { id: "MOCK_PAYINSTRUMENT_111" },
-        instrumentIdentifier: { id: "MOCK_INSTRUMENT_222", state: "ACTIVE" },
-        accountFeatures: { balanceAmount: "0.00" },
-        customer: { id: "MOCK_CUSTOMER_ID_123456" },
-      },
-      orderInformation: {
-        amountDetails: {
-          totalAmount: "0.00",
-          authorizedAmount: "0.00",
-          currency: "USD",
-        },
-      },
-      pointOfSaleInformation: { terminalId: "MOCK_TERMINAL_01" },
-      tokenInformation: {
-        instrumentidentifierNew: true,
-        paymentInstrument: { id: "MOCK_PAYINSTRUMENT_111" },
-        instrumentIdentifier: { id: "MOCK_INSTRUMENT_222", state: "ACTIVE" },
-        customer: { id: "MOCK_CUSTOMER_ID_123456" },
-      },
-      voidAmountDetails: {
-        voidAmount: "0.00",
-        currency: "USD",
-      },
-    };
+    try {
+      const { data } = await this.service.post("/pts/v2/customers", {
+        customerProfile,
+        paymentTokenInfo,
+      });
+      return data;
+    } catch (error) {
+      console.error("Error creating customer profile:", error);
+      throw new Error("Failed to create customer profile");
+    }
   }
 
   async getCustomerProfile(
     customerId: string
   ): Promise<CustomerPaymentResponse> {
-    // Mock implementation, return a dummy response
-    console.log("Mock getCustomerProfile called with:", customerId);
-    return {
-      _links: {
-        self: {
-          href: `https://api.mockcybersource.com/customers/${customerId}`,
-        },
-        paymentInstruments: {
-          href: `https://api.mockcybersource.com/customers/${customerId}/payment-instruments`,
-        },
-      },
-      id: customerId,
-      clientReferenceInformation: { code: "MOCK-REF-001" },
-      defaultPaymentInstrument: { id: "MOCK_PAYMENT_INSTRUMENT_1" },
-      metadata: { creator: "mock_service" },
-      _embedded: {
-        defaultPaymentInstrument: {
-          _links: {
-            self: {
-              href: `https://api.mockcybersource.com/payment-instruments/MOCK_PAYMENT_INSTRUMENT_1`,
-            },
-            customer: {
-              href: `https://api.mockcybersource.com/customers/${customerId}`,
-            },
-          },
-          id: "MOCK_PAYMENT_INSTRUMENT_1",
-          object: "paymentInstrument",
-          default: true,
-          state: "ACTIVE",
-          card: {
-            expirationMonth: "12",
-            expirationYear: "2025",
-            type: "001", // Visa
-          },
-          buyerInformation: {
-            currency: "USD",
-          },
-          billTo: {
-            firstName: "John",
-            lastName: "Doe",
-            address1: "123 Mock Street",
-            address2: "",
-            locality: "Mock City",
-            administrativeArea: "CA",
-            postalCode: "90001",
-            country: "US",
-            email: "john.doe@example.com",
-            phoneNumber: "1234567890",
-          },
-          processingInformation: {
-            billPaymentProgramEnabled: false,
-          },
-          instrumentIdentifier: {
-            id: "MOCK_INSTRUMENT_123",
-          },
-          metadata: {
-            creator: "mock_service",
-          },
-          _embedded: {
-            instrumentIdentifier: {
-              _links: {
-                self: {
-                  href: `https://api.mockcybersource.com/instrument-identifiers/MOCK_INSTRUMENT_123`,
-                },
-                paymentInstruments: {
-                  href: `https://api.mockcybersource.com/instrument-identifiers/MOCK_INSTRUMENT_123/payment-instruments`,
-                },
-              },
-              id: "MOCK_INSTRUMENT_123",
-              object: "instrumentIdentifier",
-              state: "ACTIVE",
-              card: {
-                number: "411111XXXXXX1111",
-              },
-              processingInformation: {
-                authorizationOptions: {
-                  initiator: {
-                    merchantInitiatedTransaction: {
-                      previousTransactionId: "TXN-MOCK-111",
-                    },
-                  },
-                },
-              },
-              metadata: {
-                creator: "mock_service",
-              },
-            },
-          },
-        },
-      },
-    };
+    try {
+      const { data } = await this.service.get(
+        `/pts/v2/customers/${customerId}`
+      );
+      return data;
+    } catch (error) {
+      console.error("Error getting customer profile:", error);
+      throw new Error("Failed to get customer profile");
+    }
   }
 
   async addCustomerPaymentInstrument(
     customerProfile: CustomerProfile,
     paymentTokenInfo: PaymentTokenInfo
   ): Promise<PaymentTransactionResponse> {
-    console.log(
-      "Mock addCustomerPaymentInstrument called with:",
-      customerProfile,
-      paymentTokenInfo
-    );
-    return {
-      _links: {
-        self: {
-          href: `https://api.mockcybersource.com/customers/${
-            customerProfile.customerId ?? "MOCK_CUSTOMER"
-          }/payment-instruments/MOCK_INSTRUMENT_456`,
-          method: "GET",
-        },
-        capture: {
-          href: `https://api.mockcybersource.com/customers/${
-            customerProfile.customerId ?? "MOCK_CUSTOMER"
-          }/payment-instruments/MOCK_INSTRUMENT_456/capture`,
-          method: "POST",
-        },
-      },
-      id: "MOCK_INSTRUMENT_456",
-      submitTimeUtc: new Date().toISOString(),
-      status: "AUTHORIZED",
-      reason: "NONE",
-      reconciliationId: "MOCK_RECONCILIATION_2222",
-      clientReferenceInformation: { code: "REF-MOCK-INSTRUMENT" },
-      processorInformation: {
-        approvalCode: "APPROVED456",
-        responseCode: "100",
-        avs: { code: "Y", codeRaw: "Y" },
-        cardVerification: { resultCode: "M" },
-        paymentAccountReferenceNumber: "PAR-MOCK-456",
-        transactionId: "TXN-MOCK-2222",
-        networkTransactionId: "NTXN-MOCK-2222",
-      },
-      paymentAccountInformation: {
-        card: { type: "002" }, // MasterCard
-      },
-      paymentInformation: {
-        card: { type: "002" },
-        tokenizedCard: { type: "002" },
-        paymentInstrument: { id: "MOCK_INSTRUMENT_456" },
-        instrumentIdentifier: { id: "MOCK_IDENTIFIER_456", state: "ACTIVE" },
-        accountFeatures: { balanceAmount: "0.00" },
-        customer: { id: customerProfile.customerId ?? "MOCK_CUSTOMER" },
-      },
-      orderInformation: {
-        amountDetails: {
-          totalAmount: "0.00",
-          authorizedAmount: "0.00",
-          currency: "USD",
-        },
-      },
-      pointOfSaleInformation: {
-        terminalId: "MOCK_TERMINAL_02",
-      },
-      tokenInformation: {
-        instrumentidentifierNew: true,
-        paymentInstrument: { id: "MOCK_INSTRUMENT_456" },
-        instrumentIdentifier: { id: "MOCK_IDENTIFIER_456", state: "ACTIVE" },
-        customer: { id: customerProfile.customerId ?? "MOCK_CUSTOMER" },
-      },
-      voidAmountDetails: {
-        voidAmount: "0.00",
-        currency: "USD",
-      },
-    };
+    try {
+      const { data } = await this.service.post(
+        `/tms/v2/customers//${customerProfile.customerId}/payment-instruments`,
+        { paymentTokenInfo }
+      );
+      return data;
+    } catch (error) {
+      console.error("Error adding customer payment instrument:", error);
+      throw new Error("Failed to add customer payment instrument");
+    }
   }
 
   async getCustomerPaymentInstrument(
     customerId: string,
     paymentInstrumentId: string
   ): Promise<CustomerPaymentInstrumentResponse> {
-    console.log(
-      "Mock getCustomerPaymentInstrument called with:",
-      customerId,
-      paymentInstrumentId
-    );
-    return {
-      _links: {
-        self: {
-          href: `https://api.mockcybersource.com/customers/${customerId}/payment-instruments/PI_1111`,
-        },
-        customer: {
-          href: `https://api.mockcybersource.com/customers/${customerId}`,
-        },
-      },
-      id: "PI_1111",
-      object: "paymentInstrument",
-      default: true,
-      state: "ACTIVE",
-      card: {
-        expirationMonth: "12",
-        expirationYear: "2026",
-        type: "001", // Visa
-      },
-      buyerInformation: { currency: "USD" },
-      billTo: {
-        firstName: "John",
-        lastName: "Doe",
-        address1: "123 Mock Street",
-        address2: "",
-        locality: "Faketown",
-        administrativeArea: "CA",
-        postalCode: "99999",
-        country: "US",
-        email: "john.doe@example.com",
-        phoneNumber: "+1-555-1234",
-      },
-      processingInformation: { billPaymentProgramEnabled: false },
-      instrumentIdentifier: { id: "MOCK_IDENTIFIER_1111" },
-      metadata: { creator: "mock_system" },
-      _embedded: {
-        instrumentIdentifier: {
-          _links: {
-            self: {
-              href: `https://api.mockcybersource.com/instrument-identifiers/MOCK_IDENTIFIER_1111`,
-            },
-            paymentInstruments: {
-              href: `https://api.mockcybersource.com/customers/${customerId}/payment-instruments`,
-            },
-          },
-          id: "MOCK_IDENTIFIER_1111",
-          object: "instrumentIdentifier",
-          state: "ACTIVE",
-          card: { number: "411111XXXXXX1111" },
-          processingInformation: {
-            authorizationOptions: {
-              initiator: {
-                merchantInitiatedTransaction: {
-                  previousTransactionId: "TXN12345",
-                },
-              },
-            },
-          },
-          metadata: { creator: "mock_system" },
-        },
-      },
-    };
+    try {
+      const { data } = await this.service.get(
+        `/tms/v2/customers/${customerId}/payment-instruments/${paymentInstrumentId}`
+      );
+      return data;
+    } catch (error) {
+      console.error("Error getting customer payment instrument:", error);
+      throw new Error("Failed to get customer payment instrument");
+    }
   }
 
   async getCustomerPaymentInstruments(
@@ -384,109 +141,30 @@ export class ServiceCybersource
     offset: number = 0,
     limit: number = 10
   ): Promise<CustomerPaymentInstrumentsResponse> {
-    console.log(
-      "Mock getCustomerPaymentInstruments called with:",
-      customerId,
-      offset,
-      limit
-    );
-    const paymentInstruments = [
-      {
-        _links: {
-          self: {
-            href: `https://api.mockcybersource.com/customers/${customerId}/payment-instruments/PI_1111`,
-          },
-          customer: {
-            href: `https://api.mockcybersource.com/customers/${customerId}`,
-          },
-        },
-        id: "PI_1111",
-        object: "paymentInstrument",
-        default: true,
-        state: "ACTIVE",
-        card: {
-          expirationMonth: "12",
-          expirationYear: "2026",
-          type: "001", // Visa
-        },
-        buyerInformation: { currency: "USD" },
-        billTo: {
-          firstName: "John",
-          lastName: "Doe",
-          address1: "123 Mock Street",
-          address2: "",
-          locality: "Faketown",
-          administrativeArea: "CA",
-          postalCode: "99999",
-          country: "US",
-          email: "john.doe@example.com",
-          phoneNumber: "+1-555-1234",
-        },
-        processingInformation: { billPaymentProgramEnabled: false },
-        instrumentIdentifier: { id: "MOCK_IDENTIFIER_1111" },
-        metadata: { creator: "mock_system" },
-        _embedded: {
-          instrumentIdentifier: {
-            _links: {
-              self: {
-                href: `https://api.mockcybersource.com/instrument-identifiers/MOCK_IDENTIFIER_1111`,
-              },
-              paymentInstruments: {
-                href: `https://api.mockcybersource.com/customers/${customerId}/payment-instruments`,
-              },
-            },
-            id: "MOCK_IDENTIFIER_1111",
-            object: "instrumentIdentifier",
-            state: "ACTIVE",
-            card: { number: "411111XXXXXX1111" },
-            processingInformation: {
-              authorizationOptions: {
-                initiator: {
-                  merchantInitiatedTransaction: {
-                    previousTransactionId: "TXN12345",
-                  },
-                },
-              },
-            },
-            metadata: { creator: "mock_system" },
-          },
-        },
-      },
-    ];
-
-    return {
-      _links: {
-        self: {
-          href: `https://api.mockcybersource.com/customers/${customerId}/payment-instruments`,
-        },
-        first: {
-          href: `https://api.mockcybersource.com/customers/${customerId}/payment-instruments?offset=0&limit=${limit}`,
-        },
-        last: {
-          href: `https://api.mockcybersource.com/customers/${customerId}/payment-instruments?offset=0&limit=${limit}`,
-        },
-      },
-      offset,
-      limit,
-      count: paymentInstruments.length,
-      total: paymentInstruments.length,
-      _embedded: {
-        paymentInstruments: paymentInstruments.slice(offset, offset + limit),
-      },
-    };
+    try {
+      const { data } = await this.service.get(
+        `/tms/v2/customers/${customerId}/payment-instruments?offset=${offset}&limit=${limit}`
+      );
+      return data;
+    } catch (error) {
+      console.error("Error getting customer payment instruments:", error);
+      throw new Error("Failed to get customer payment instruments");
+    }
   }
 
   async deleteCustomerPaymentInstrument(
     customerId: string,
     paymentInstrumentId: string
   ): Promise<boolean> {
-    // In real API, we’d check if the instrument exists and delete it.
-    console.log(
-      "Mock deleteCustomerPaymentInstrument called with:",
-      customerId,
-      paymentInstrumentId
-    );
-    return true;
+    try {
+      const { data } = await this.service.delete(
+        `/tms/v2/customers/${customerId}/payment-instruments/${paymentInstrumentId}`
+      );
+      return data;
+    } catch (error) {
+      console.error("Error deleting customer payment instrument:", error);
+      throw new Error("Failed to delete customer payment instrument");
+    }
   }
 
   async setDefaultCustomerPaymentInstrument(
