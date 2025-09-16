@@ -1,33 +1,26 @@
-import { useQuery, useMutation, gql } from '@apollo/client';
+import { useQuery, useMutation, useApolloClient } from '@apollo/client';
 import { useState } from 'react';
 import { message } from 'antd';
 import { ListingInformation } from './listing-information';
-import type { ListingInformationProps, ListingStatus } from './listing-information';
+
 // eslint-disable-next-line import/no-absolute-path, @typescript-eslint/ban-ts-comment
 // @ts-ignore - allow raw import string
-import ListingInformationQuerySource from './listing-information.graphql?raw';
-import { HomeListingInformationCreateReservationRequestDocument, type CreateReservationRequestInput, type ReservationRequestState, ViewListingCurrentUserDocument, type ViewListingCurrentUserQuery } from '../../../../../../generated';
-
-const GET_LISTING_INFORMATION = gql(ListingInformationQuerySource);
-
-interface ItemListing {
-  id: string;
-  title: string;
-  description: string;
-  category: string;
-  location: string;
-  state: string;
-  sharingPeriodStart: string;
-  sharingPeriodEnd: string;
-}
-
-interface ListingQueryResponse {
-  itemListing: ItemListing;
-}
+import { 
+    HomeListingInformationCreateReservationRequestDocument, 
+    type CreateReservationRequestInput, 
+    type ReservationRequestState, 
+    ViewListingCurrentUserDocument, 
+    type ViewListingCurrentUserQuery,
+    ViewListingQueryActiveByListingIdDocument, 
+    type ViewListingQueryActiveByListingIdQuery, 
+    type ViewListingQueryActiveByListingIdQueryVariables,
+    ViewListingActiveReservationRequestForListingDocument,
+    type ItemListing
+} from '../../../../../../generated';
 
 interface ListingInformationContainerProps {
-  listingId: string;
-  userRole: string;
+  listing: ItemListing;
+  userIsSharer: boolean;
   isAuthenticated: boolean;
   reservationRequestStatus: ReservationRequestState | null;
   onLoginClick?: () => void;
@@ -36,30 +29,30 @@ interface ListingInformationContainerProps {
 }
 
 // Map backend ItemListingState to frontend ListingStatus
-function mapListingStateToStatus(state: string): ListingStatus {
-  switch (state) {
-    case 'Published':
-      return 'Active';
-    case 'Paused':
-      return 'Paused';
-    case 'Blocked':
-      return 'Blocked';
-    case 'Cancelled':
-      return 'Cancelled';
-    case 'Expired':
-      return 'Expired';
-    case 'Drafted':
-      return 'Cancelled'; 
-    case 'Appeal_Requested':
-      return 'Blocked'; 
-    default:
-      return 'Active'; 
-  }
-}
+// function mapListingStateToStatus(state: string | null | undefined): ListingStatus {
+//   switch (state) {
+//     case 'Published':
+//       return 'Active';
+//     case 'Paused':
+//       return 'Paused';
+//     case 'Blocked':
+//       return 'Blocked';
+//     case 'Cancelled':
+//       return 'Cancelled';
+//     case 'Expired':
+//       return 'Expired';
+//     case 'Drafted':
+//       return 'Cancelled'; 
+//     case 'Appeal_Requested':
+//       return 'Blocked'; 
+//     default:
+//       return 'Active'; 
+//   }
+// }
 
 export default function ListingInformationContainer({
-  listingId,
-  userRole,
+  listing,
+  userIsSharer,
   isAuthenticated,
   reservationRequestStatus,
   onLoginClick,
@@ -74,21 +67,29 @@ export default function ListingInformationContainer({
     endDate: null
   });
 
-  const { data, loading, error } = useQuery<ListingQueryResponse>(
-    GET_LISTING_INFORMATION,
+  const { data: otherReservationsData, loading: otherReservationsLoading, error: otherReservationsError } = useQuery<ViewListingQueryActiveByListingIdQuery, ViewListingQueryActiveByListingIdQueryVariables>(
+    ViewListingQueryActiveByListingIdDocument,
     {
-      variables: { listingId },
+      variables: { listingId: listing.id },
+      skip: !listing?.id,
+      fetchPolicy: 'cache-first',
     }
   );
 
-    const { data: currentUserData } = useQuery<ViewListingCurrentUserQuery>(ViewListingCurrentUserDocument);
-    if (!currentUserData?.currentPersonalUserAndCreateIfNotExists) {console.log("Current user could not be created or not found:");}
+  if (otherReservationsData) { console.log("Other reservations data:", otherReservationsData); }
+  
+  const { data: currentUserData } = useQuery<ViewListingCurrentUserQuery>(ViewListingCurrentUserDocument);
+  if (!currentUserData?.currentPersonalUserAndCreateIfNotExists) {console.log("Current user could not be created or not found:");}
+
+  const client = useApolloClient();
+
   const [createReservationRequestMutation, { loading: mutationLoading }] = useMutation(
     HomeListingInformationCreateReservationRequestDocument,
     {
       onCompleted: () => {
-        console.log('Reservation request created successfully!');
-        // Clear the selected dates after successful reservation
+        client.refetchQueries({
+          include: [ViewListingActiveReservationRequestForListingDocument],
+        });
         setReservationDates({ startDate: null, endDate: null });
       },
       onError: (error) => {
@@ -102,12 +103,11 @@ export default function ListingInformationContainer({
       message.warning('Please select both start and end dates for your reservation');
       return;
     }
-
     try {
       await createReservationRequestMutation({
         variables: {
           input: {
-            listingId,
+            listingId: listing.id,
             reservationPeriodStart: reservationDates.startDate.toISOString(),
             reservationPeriodEnd: reservationDates.endDate.toISOString(),
           } as CreateReservationRequestInput,
@@ -118,26 +118,10 @@ export default function ListingInformationContainer({
     }
   };
 
-  if (loading) return <div>Loading...</div>;
-  if (error) return <div>Error loading listing information</div>;
-  if (!data?.itemListing) return <div>Listing not found</div>;
-
-  // Map backend ItemListing to ListingInformationProps.listing shape
-  const mappedListing: ListingInformationProps['listing'] = {
-    id: data.itemListing.id,
-    title: data.itemListing.title,
-    description: data.itemListing.description,
-    category: data.itemListing.category,
-    location: data.itemListing.location,
-    status: mapListingStateToStatus(data.itemListing.state),
-    availableFrom: new Date(data.itemListing.sharingPeriodStart).toISOString().slice(0, 10),
-    availableTo: new Date(data.itemListing.sharingPeriodEnd).toISOString().slice(0, 10),
-  };
-
   return (
     <ListingInformation
-      listing={mappedListing}
-      userRole={userRole}
+      listing={listing}
+      userIsSharer={userIsSharer}
       isAuthenticated={isAuthenticated}
       reservationRequestStatus={reservationRequestStatus}
       onReserveClick={handleReserveClick}
@@ -147,6 +131,9 @@ export default function ListingInformationContainer({
       reservationDates={reservationDates}
       onReservationDatesChange={setReservationDates}
       reservationLoading={mutationLoading}
+      otherReservationsLoading={otherReservationsLoading}
+      otherReservationsError={otherReservationsError}
+      otherReservations={otherReservationsData?.queryActiveByListingId}
     />
   );
 }

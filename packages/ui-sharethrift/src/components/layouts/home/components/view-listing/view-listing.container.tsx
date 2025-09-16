@@ -1,84 +1,74 @@
-import { useParams } from 'react-router-dom';
-import { useQuery } from '@apollo/client';
+import { useParams } from "react-router-dom";
+import { useQuery } from "@apollo/client";
 // Import the GraphQL document (Vite raw import if needed)
 // eslint-disable-next-line import/no-absolute-path, @typescript-eslint/ban-ts-comment
 // @ts-ignore - allow raw import string
-import { ViewListing } from './view-listing';
-import { 
-    ViewListingCurrentUserDocument, 
-    type ViewListingCurrentUserQuery,
-    ViewListingDocument,
-    type ViewListingQuery,
-    type ViewListingQueryVariables,
-    ViewListingActiveReservationRequestForListingDocument,
-    type ViewListingActiveReservationRequestForListingQuery,
-    type ViewListingActiveReservationRequestForListingQueryVariables,
-    type ReservationRequestState
-} from '../../../../../generated';
+import { ViewListing } from "./view-listing";
+import {
+  ViewListingCurrentUserDocument,
+  type ViewListingCurrentUserQuery,
+  ViewListingDocument,
+  type ViewListingQuery,
+  type ViewListingQueryVariables,
+  ViewListingActiveReservationRequestForListingDocument,
+  type ViewListingActiveReservationRequestForListingQuery,
+  type ViewListingActiveReservationRequestForListingQueryVariables,
+  type ReservationRequestState,
+} from "../../../../../generated";
 
+export function ViewListingContainer({ isAuthenticated }: {readonly isAuthenticated: boolean; }) {
 
-export function ViewListingContainer({ isAuthenticated }: { readonly isAuthenticated: boolean }) {
   const { listingId } = useParams();
-  const { data: listingData, loading: listingLoading, error: listingError } = useQuery<ViewListingQuery, ViewListingQueryVariables>(ViewListingDocument, {
-    variables: { id: listingId },
-    skip: !listingId,
-    fetchPolicy: 'cache-first',
+
+  const { data: listingData, loading: listingLoading, error: listingError } = 
+    useQuery<ViewListingQuery, ViewListingQueryVariables>(
+        ViewListingDocument,
+        {
+            variables: { id: listingId },
+            skip: !listingId,
+            fetchPolicy: "cache-first",
+        }
+  );
+
+  const { data: currentUserData } = useQuery<ViewListingCurrentUserQuery>(
+    ViewListingCurrentUserDocument
+  );
+
+  const reserverId =
+    currentUserData?.currentPersonalUserAndCreateIfNotExists?.id ?? "";
+
+  const skip = !reserverId || !listingId;
+
+  const { data: userReservationData, loading: userReservationLoading, error: userReservationError } = 
+  useQuery<
+    ViewListingActiveReservationRequestForListingQuery,
+    ViewListingActiveReservationRequestForListingQueryVariables
+  >(ViewListingActiveReservationRequestForListingDocument, {
+    variables: { listingId: listingId ?? "", reserverId },
+    skip,
   });
 
-  const { data: currentUserData } = useQuery<ViewListingCurrentUserQuery>(ViewListingCurrentUserDocument);
+  console.log("userReservationLoading", userReservationLoading);
+  console.log("userReservationError", userReservationError);
 
-  const { data: userReservationData, loading: userReservationLoading, error: userReservationError } = useQuery<ViewListingActiveReservationRequestForListingQuery, ViewListingActiveReservationRequestForListingQueryVariables>(ViewListingActiveReservationRequestForListingDocument, {
-    variables: { listingId: listingId ?? '', reserverId: currentUserData?.currentPersonalUserAndCreateIfNotExists?.id ?? '' },
-    skip: !currentUserData?.currentPersonalUserAndCreateIfNotExists?.id || !listingId,
-  })
-  const reservationRequestStatus: ReservationRequestState | null = userReservationData?.myActiveReservationForListing?.state ?? null;
+  const reservationRequestStatus: ReservationRequestState | null =  userReservationData?.myActiveReservationForListing?.state ?? null;
 
-  if (userReservationData) { console.log("User reservation data:", userReservationData); }
-  if (userReservationLoading) { console.log("User reservation loading..."); }
-  if (userReservationError) { console.log("User reservation error:", userReservationError); }
   if (!listingId) return <div>Missing listing id.</div>;
   if (listingLoading) return <div>Loading listing...</div>;
   if (listingError) return <div>Error loading listing.</div>;
   if (!listingData?.itemListing) return <div>Listing not found.</div>;
 
-  // Temporary debug logs
-  if (!currentUserData?.currentPersonalUserAndCreateIfNotExists) {console.log("Current user could not be created or not found:");}
-//   if (currentUserError) { return <div>Error loading current user data.</div>; }
-//   if (currentUserLoading) { return <div>Loading current user data...</div> }
-
-  // Map server model to existing ViewListingProps.listing shape expected by presentational component
-  const listing = {
-    _id: listingData.itemListing.id,
-    id: listingData.itemListing.id,
-    title: listingData.itemListing.title,
-    description: listingData.itemListing.description,
-    category: listingData.itemListing.category,
-    location: listingData.itemListing.location,
-    images: listingData.itemListing.images ?? [],
-  sharingPeriodStart: listingData.itemListing.sharingPeriodStart ? new Date(listingData.itemListing.sharingPeriodStart) : new Date(),
-  sharingPeriodEnd: listingData.itemListing.sharingPeriodEnd ? new Date(listingData.itemListing.sharingPeriodEnd) : new Date(),
-    // Fields not yet provided by backend; use placeholders / derive
-    price: undefined,
-    priceUnit: undefined,
-    condition: undefined,
-    itemName: listingData.itemListing.title,
-    availableFrom: listingData.itemListing.sharingPeriodStart,
-    availableTo: listingData.itemListing.sharingPeriodEnd,
-    status: listingData.itemListing.state,
-    sharer: listingData.itemListing.sharer,
-  } as const;
-
   const sharedTimeAgo = listingData.itemListing.createdAt
     ? computeTimeAgo(listingData.itemListing.createdAt)
     : undefined;
 
-  const userRole = currentUserData?.currentPersonalUserAndCreateIfNotExists.id === listingData.itemListing.sharer ? 'sharer' : 'reserver';
+  const userIsSharer = currentUserData?.currentPersonalUserAndCreateIfNotExists.id ===listingData.itemListing.sharer
+
   return (
     <ViewListing
-      listing={listing}
-      userRole={userRole}
+      listing={listingData.itemListing}
+      userIsSharer={userIsSharer}
       isAuthenticated={isAuthenticated}
-      currentUserId={isAuthenticated ? listing.sharer : undefined}
       sharedTimeAgo={sharedTimeAgo}
       reservationRequestStatus={reservationRequestStatus}
     />
@@ -95,6 +85,6 @@ function computeTimeAgo(isoDate: string): string {
     const diffDays = Math.floor(diffHours / 24);
     return `${diffDays}d ago`;
   } catch {
-    return '';
+    return "";
   }
 }

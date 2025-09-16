@@ -19,7 +19,7 @@ export const create = (
         // use mock data for now
         const listing = {
             _id: new Types.ObjectId(),
-            id: '60ddc9732f8fb814c89b6789',
+            id: command.listingId,
             title: 'Professional Microphone',
             description: 'A high-quality microphone for professional use.',
             category: 'Electronics',

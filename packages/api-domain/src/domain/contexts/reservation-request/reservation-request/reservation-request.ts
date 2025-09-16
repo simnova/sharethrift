@@ -89,6 +89,9 @@ export class ReservationRequest<props extends ReservationRequestProps>
       case ReservationRequestStates.CLOSED:
         this.close();
         break;
+      case ReservationRequestStates.REQUESTED:
+        this.request();
+        break;
     }
   }
 
@@ -97,13 +100,10 @@ export class ReservationRequest<props extends ReservationRequestProps>
   }
   set reservationPeriodStart(value: Date) {
     if (
-      !this.isNew &&
-      !this.visa.determineIf(
-        (domainPermissions) => domainPermissions.canUpdateRequest
-      )
+      !this.isNew
     ) {
       throw new DomainSeedwork.PermissionError(
-        "You do not have permission to update this reservation period"
+        "Reservation period start date cannot be updated after creation"
       );
     }
     if (!value) {
@@ -131,10 +131,7 @@ export class ReservationRequest<props extends ReservationRequestProps>
   }
   set reservationPeriodEnd(value: Date) {
     if (
-      !this.isNew &&
-      !this.visa.determineIf(
-        (domainPermissions) => domainPermissions.canUpdateRequest
-      )
+      !this.isNew
     ) {
       throw new DomainSeedwork.PermissionError(
         "You do not have permission to update this reservation period"
@@ -177,13 +174,10 @@ export class ReservationRequest<props extends ReservationRequestProps>
   }
   set listing(value: ItemListingEntityReference) {
     if (
-      !this.isNew &&
-      !this.visa.determineIf(
-        (domainPermissions) => domainPermissions.canUpdateRequest
-      )
+      !this.isNew
     ) {
       throw new DomainSeedwork.PermissionError(
-        "You do not have permission to update this listing"
+        "Listing can only be set when creating a new reservation request"
       );
     }
     if (value === null || value === undefined) {
@@ -205,13 +199,10 @@ export class ReservationRequest<props extends ReservationRequestProps>
   }
   set reserver(value: PersonalUserEntityReference) {
     if (
-      !this.isNew &&
-      !this.visa.determineIf(
-        (domainPermissions) => domainPermissions.canUpdateRequest
-      )
+      !this.isNew
     ) {
       throw new DomainSeedwork.PermissionError(
-        "You do not have permission to update this reserver"
+        "Reserver can only be set when creating a new reservation request"
       );
     }
     if (value === null || value === undefined) {
@@ -350,4 +341,19 @@ export class ReservationRequest<props extends ReservationRequestProps>
     this.props.state =  new ValueObjects.ReservationRequestStateValue(ReservationRequestStates.CLOSED).valueOf();
   }
 
+  private request(): void {
+    if (
+      !this.isNew
+    ) {
+      throw new DomainSeedwork.PermissionError(
+        "Can only set state to requested when creating new reservation requests"
+      );
+    }
+
+    if (!this.isNew) {
+        throw new Error("Can only set state to requested when creating new reservation requests");
+    }
+    
+    this.props.state = new ValueObjects.ReservationRequestStateValue(ReservationRequestStates.REQUESTED).valueOf();
+  }
 }

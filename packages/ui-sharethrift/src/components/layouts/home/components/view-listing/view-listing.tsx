@@ -5,20 +5,19 @@ import SharerInformationContainer from './sharer-information/sharer-information.
 import ListingInformationContainer from './listing-information/listing-information.container';
 import type { ReservationRequestState } from '../../../../../generated';
 
-import type { ItemListing } from '../mock-listings';
+import type { ItemListing } from "../../../../../generated";
 
 export interface ViewListingProps {
   listing: ItemListing;
-  userRole: string;
+  userIsSharer: boolean;
   isAuthenticated: boolean;
-  currentUserId?: string;
   reservationRequestStatus: ReservationRequestState | null;
   sharedTimeAgo?: string;
 }
 
 export function ViewListing({ 
   listing,
-  userRole,
+  userIsSharer,
   isAuthenticated,
   reservationRequestStatus,
   sharedTimeAgo,
@@ -92,7 +91,7 @@ export function ViewListing({
           {/* Sharer Info at top */}
           <SharerInformationContainer
             sharerId={sharerId}
-            listingId={listing._id}
+            listingId={listing.id}
             className="sharer-info-responsive"
             sharedTimeAgo={sharedTimeAgo}
           />
@@ -103,15 +102,15 @@ export function ViewListing({
             {/* Left: Images */}
             <Col xs={24} md={12} style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'center', marginTop: 0, paddingTop: 0 }}>
               <ListingImageGalleryContainer 
-                listingId={listing._id}
+                listingId={listing.id}
                 className="listing-gallery-responsive" 
               />
             </Col>
             {/* Right: Info/Form */}
             <Col xs={24} md={12} style={{ marginTop: 0, paddingTop: 0 }}>
               <ListingInformationContainer
-                listingId={listing._id}
-                userRole={userRole}
+                listing={listing}
+                userIsSharer={userIsSharer}
                 isAuthenticated={isAuthenticated}
                 reservationRequestStatus={reservationRequestStatus}
                 className="listing-info-responsive"
