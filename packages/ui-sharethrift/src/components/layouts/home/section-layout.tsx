@@ -3,6 +3,7 @@ import { useAuth } from 'react-oidc-context';
 import { Outlet, useLocation, useNavigate } from 'react-router-dom';
 import { HandleLogoutMockForMockAuth } from '../../shared/handle-logout';
 import { Footer, Header, Navigation } from '@sthrift/ui-sharethrift-components';
+import { useCreateListingNavigation } from './components/create-listing/hooks/use-create-listing-navigation';
 
 export default function HomeTabsLayout() {
 	const navigate = useNavigate();
@@ -78,15 +79,7 @@ export default function HomeTabsLayout() {
 		navigate('/auth-redirect');
 	};
 
-	const handleCreateListing = () => {
-		if (!auth.isAuthenticated) {
-			// Store the intended destination for after login
-			sessionStorage.setItem('redirectTo', '/create-listing');
-			navigate('/auth-redirect');
-		} else {
-			navigate('/create-listing');
-		}
-	};
+	const handleCreateListing = useCreateListingNavigation();
 
 	const handleLogOut = () => {
 		HandleLogoutMockForMockAuth(auth);

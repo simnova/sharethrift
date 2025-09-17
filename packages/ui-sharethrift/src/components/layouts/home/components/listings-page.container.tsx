@@ -6,6 +6,7 @@ import type { ItemListing } from './mock-listings';
 // eslint-disable-next-line import/no-absolute-path, @typescript-eslint/ban-ts-comment
 // @ts-ignore - allow raw import string
 import ListingsPageQuerySource from './listings-page.container.graphql?raw';
+import { useCreateListingNavigation } from './create-listing/hooks/use-create-listing-navigation';
 
 type ItemListingState =
 	| 'Published'
@@ -84,15 +85,7 @@ export function ListingsPageContainer({
 		navigate(`/listing/${listing._id}`);
 	};
 
-	const handleCreateListingClick = () => {
-		if (!isAuthenticated) {
-			// Store the intended destination for after login
-			sessionStorage.setItem('redirectTo', '/create-listing');
-			navigate('/auth-redirect');
-		} else {
-			navigate('/create-listing');
-		}
-	};
+	const handleCreateListingClick = useCreateListingNavigation();
 
 	const handlePageChange = (page: number) => {
 		setCurrentPage(page);

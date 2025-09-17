@@ -3,6 +3,7 @@ import { Footer, Header } from '@sthrift/ui-sharethrift-components';
 import { useAuth } from 'react-oidc-context';
 import type { PersonalUser } from '../../../generated.tsx';
 import { HandleLogoutMockForMockAuth } from '../../shared/handle-logout';
+import { useCreateListingNavigation } from '../home/components/create-listing/hooks/use-create-listing-navigation';
 
 interface SectionLayoutProps {
 	personalData?: PersonalUser;
@@ -20,15 +21,7 @@ export const SectionLayout: React.FC<SectionLayoutProps> = (_props) => {
 		navigate('/auth-redirect');
 	};
 
-	const handleCreateListing = () => {
-		if (!auth.isAuthenticated) {
-			// Store the intended destination for after login
-			sessionStorage.setItem('redirectTo', '/create-listing');
-			navigate('/auth-redirect');
-		} else {
-			navigate('/create-listing');
-		}
-	};
+	const handleCreateListing = useCreateListingNavigation();
 
 	const handleLogOut = () => {
 		HandleLogoutMockForMockAuth(auth);
