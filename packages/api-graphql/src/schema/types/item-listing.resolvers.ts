@@ -2,17 +2,6 @@ import type { GraphContext } from '../../init/context.ts';
 import type { Domain } from '@sthrift/api-domain';
 import { toGraphItem } from '../../helpers/mapping.js';
 
-interface CreateItemListingInput {
-	title: string;
-	description: string;
-	category: string;
-	location: string;
-	sharingPeriodStart: string;
-	sharingPeriodEnd: string;
-	images?: string[];
-	isDraft?: boolean;
-}
-
 const itemListingResolvers = {
 	Query: {
 		itemListings: async (

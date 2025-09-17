@@ -98,9 +98,7 @@ export const ImageGallery: FC<ImageGalleryProps> = ({
 		<div
 			style={{
 				width: '100%',
-				maxWidth: 450,
 				aspectRatio: '1/1',
-				margin: '0 auto',
 				padding: 0,
 				boxSizing: 'border-box',
 				position: 'relative',
@@ -117,7 +115,6 @@ export const ImageGallery: FC<ImageGalleryProps> = ({
 						width: '100%',
 						maxWidth: 450,
 						aspectRatio: '1/1',
-						margin: '0 auto',
 						padding: 0,
 						boxSizing: 'border-box',
 						position: 'relative',
@@ -138,7 +135,6 @@ export const ImageGallery: FC<ImageGalleryProps> = ({
 							objectFit: 'cover',
 							display: 'block',
 							boxSizing: 'border-box',
-							margin: '0 auto',
 						}}
 					/>
 					{/* Image count caption centered under the primary image */}
@@ -188,11 +184,8 @@ export const ImageGallery: FC<ImageGalleryProps> = ({
 						flexWrap: 'wrap',
 						gap: '8px',
 						justifyContent: 'flex-start',
-						// Always add spacing between main image and thumbnails to avoid
-						// layout overlap when the primary image changes.
 						marginTop: '16px',
 						maxWidth: '450px',
-						margin: '0 auto',
 					}}
 				>
 					{normalizedImages.slice(1).map((image, index) => (
@@ -309,7 +302,6 @@ export const ImageGallery: FC<ImageGalleryProps> = ({
 						width: '100%',
 						maxWidth: 450,
 						aspectRatio: '1/1',
-						margin: '0 auto',
 						padding: 0,
 						boxSizing: 'border-box',
 						position: 'relative',
@@ -359,10 +351,10 @@ export const ImageGallery: FC<ImageGalleryProps> = ({
 							}}
 						/>
 						<div
+							className="upload-instruction-text"
 							style={{
 								marginTop: '16px',
 								color: 'var(--color-foreground-2)',
-								fontSize: '16px',
 								fontWeight: '500',
 							}}
 						>
