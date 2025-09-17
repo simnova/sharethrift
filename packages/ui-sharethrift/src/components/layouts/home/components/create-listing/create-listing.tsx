@@ -162,6 +162,7 @@ export function CreateListing({
 							<Col
 								xs={24}
 								md={12}
+								className="image-col"
 								style={{
 									display: 'flex',
 									alignItems: 'flex-start',
@@ -170,16 +171,46 @@ export function CreateListing({
 									paddingTop: 0,
 								}}
 							>
-								<ImageGallery
-									uploadedImages={uploadedImages}
-									onImageRemove={onImageRemove}
-									mainFileInputRef={mainFileInputRef}
-									additionalFileInputRef={additionalFileInputRef}
-								/>
+								<Form.Item
+									name="images"
+									rules={[
+										{
+											validator: (_rule, _value, callback) => {
+												if (uploadedImages.length === 0) {
+													message.error(
+														'At least one image is required to publish the listing',
+													);
+													callback(
+														'At least one image is required to publish the listing',
+													);
+												} else {
+													callback();
+												}
+											},
+										},
+									]}
+									style={{
+										width: '100%',
+										margin: '0 auto',
+										marginBottom: 0,
+									}}
+								>
+									<ImageGallery
+										uploadedImages={uploadedImages}
+										onImageRemove={onImageRemove}
+										mainFileInputRef={mainFileInputRef}
+										additionalFileInputRef={additionalFileInputRef}
+									/>
+								</Form.Item>
 							</Col>
 
 							{/* Right Column - Form */}
-							<Col xs={24} md={12} style={{ marginTop: 0, paddingTop: 0 }}>
+							<Col
+								xs={24}
+								md={12}
+								className="form-col"
+								style={{ marginTop: 0, paddingTop: 0 }}
+							>
 								<ListingForm
 									categories={categories}
 									isLoading={isLoading}
