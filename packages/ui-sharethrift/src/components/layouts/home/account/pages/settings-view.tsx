@@ -1,11 +1,11 @@
 import React from 'react';
 import { Card, Button, Avatar, Typography, Row, Col, Divider, Space, Tag } from 'antd';
-import { EditOutlined, UserOutlined, LockOutlined } from '@ant-design/icons';
+import { EditOutlined, LockOutlined } from '@ant-design/icons';
 import type { SettingsViewProps, PlanOption } from './settings-view.types';
 import styles from './settings-view.module.css';
 import '@sthrift/ui-sharethrift-components/src/styles/theme.css';
 
-const { Title, Text } = Typography;
+const { Text } = Typography;
 
 // Mock plan data - this would come from API in real implementation
 const PLAN_OPTIONS: PlanOption[] = [
@@ -63,28 +63,28 @@ export const SettingsView: React.FC<SettingsViewProps> = ({
             <Row>
                 <Col xs={24} sm={12}>
                     <div>
-                    <Text class="label">First Name</Text>
+                    <Text className="label">First Name</Text>
                     <br />
                     <p>{user.firstName || 'Not provided'}</p>
                     </div>
                 </Col>
                 <Col xs={24} sm={12}>
                     <div>
-                    <Text class="label">Last Name</Text>
+                    <Text className="label">Last Name</Text>
                     <br />
                     <p>{user.lastName || 'Not provided'}</p>
                     </div>
                 </Col>
                 <Col xs={24} sm={12}>
                     <div>
-                    <Text class="label">Username</Text>
+                    <Text className="label">Username</Text>
                     <br />
                     <p>{user.username}</p>
                     </div>
                 </Col>
                  <Col xs={24} sm={12}>
                     <div>
-                    <Text class="label">Email</Text>
+                    <Text className="label">Email</Text>
                     <br />
                     <p>{user.email}</p>
                     </div>
@@ -111,42 +111,42 @@ export const SettingsView: React.FC<SettingsViewProps> = ({
       <Row gutter={[16, 16]}>
         <Col xs={24} sm={12}>
           <div>
-            <Text class="label">Address Line 1</Text>
+            <Text className="label">Address Line 1</Text>
             <br />
             <p>{user.location.address1 || 'Not provided'}</p>
           </div>
         </Col>
         <Col xs={24} sm={12}>
           <div>
-            <Text class="label">Address Line 2</Text>
+            <Text className="label">Address Line 2</Text>
             <br />
             <p>{user.location.address2 || 'Not provided'}</p>
           </div>
         </Col>
         <Col xs={24} sm={6}>
           <div>
-            <Text class="label">City</Text>
+            <Text className="label">City</Text>
             <br />
             <p>{user.location.city || 'Not provided'}</p>
           </div>
         </Col>
         <Col xs={24} sm={6}>
           <div>
-            <Text class="label">State</Text>
+            <Text className="label">State</Text>
             <br />
             <p>{user.location.state || 'Not provided'}</p>
           </div>
         </Col>
         <Col xs={24} sm={6}>
           <div>
-            <Text class="label">Country</Text>
+            <Text className="label">Country</Text>
             <br />
             <p>{user.location.country || 'Not provided'}</p>
           </div>
         </Col>
         <Col xs={24} sm={6}>
           <div>
-            <Text class="label">Zip Code</Text>
+            <Text className="label">Zip Code</Text>
             <br />
             <p>{user.location.zipCode || 'Not provided'}</p>
           </div>
@@ -309,18 +309,18 @@ export const SettingsView: React.FC<SettingsViewProps> = ({
       
       <Space direction="vertical" size="large" className={styles.billingInfo}>
         <div>
-          <Text class="label">Payment Method</Text>
+          <Text className="label">Payment Method</Text>
           <br />
           <p>No payment method on file</p>
         </div>
         <div>
-          <Text class="label">Billing Address</Text>
+          <Text className="label">Billing Address</Text>
           <br />
           <p>Same as profile address</p>
         </div>
         {user.billing?.subscriptionId && (
           <div>
-            <Text class="label">Subscription ID</Text>
+            <Text className="label">Subscription ID</Text>
             <br />
             <p>{user.billing.subscriptionId}</p>
           </div>
@@ -336,7 +336,7 @@ export const SettingsView: React.FC<SettingsViewProps> = ({
       </div>
       
       <Space direction="vertical" size="middle">
-        <Text class="label">
+        <Text className="label">
           Click the button below to change your password. You will be redirected to a secure password change form.
         </Text>
         <Button 
