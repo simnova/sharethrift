@@ -14,17 +14,6 @@ interface CreateListingContainerProps {
 	readonly isAuthenticated?: boolean;
 }
 
-interface CreateItemListingInput {
-	title: string;
-	description: string;
-	category: string;
-	location: string;
-	sharingPeriodStart: string;
-	sharingPeriodEnd: string;
-	images?: string[];
-	isDraft?: boolean;
-}
-
 export function CreateListingContainer({
 	isAuthenticated,
 }: CreateListingContainerProps) {
@@ -87,7 +76,7 @@ export function CreateListingContainer({
 			return;
 		}
 
-		const input: CreateItemListingInput = {
+		const input = {
 			title: formData.title,
 			description: formData.description,
 			category: formData.category,

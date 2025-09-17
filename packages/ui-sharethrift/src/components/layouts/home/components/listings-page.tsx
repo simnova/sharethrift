@@ -66,15 +66,13 @@ export function ListingsPage({
 							onSearch={onSearch}
 						/>
 						{/* Create listing button */}
-						{isAuthenticated && (
-							<Button
-								type="primary"
-								className={styles.createListing}
-								onClick={onCreateListingClick}
-							>
-								Create a Listing
-							</Button>
-						)}
+						<Button
+							type="primary"
+							className={styles.createListing}
+							onClick={onCreateListingClick}
+						>
+							Create a Listing
+						</Button>
 					</div>
 
 					{!isAuthenticated && <h1 style={{ margin: '0' }}>Today's Picks</h1>}
@@ -117,43 +115,41 @@ export function ListingsPage({
 			</div>
 
 			{/* Mobile Create Listing Overlay Button */}
-			{isAuthenticated && (
-				<button
-					type="button"
-					className="mobile-create-overlay"
-					onClick={onCreateListingClick}
-					style={{
-						position: 'fixed',
-						bottom: '20px',
-						right: '20px',
-						width: '56px',
-						height: '56px',
-						borderRadius: '50%',
-						backgroundColor: 'var(--color-primary, #1890ff)',
-						border: 'none',
-						color: 'white',
-						display: 'flex',
-						alignItems: 'center',
-						justifyContent: 'center',
-						cursor: 'pointer',
-						boxShadow: '0 4px 12px rgba(0, 0, 0, 0.15)',
-						transition: 'all 0.3s ease',
-						zIndex: 1000,
-					}}
-					onMouseEnter={(e) => {
-						e.currentTarget.style.backgroundColor =
-							'var(--color-secondary, #3F8176)';
-						e.currentTarget.style.transform = 'scale(1.1)';
-					}}
-					onMouseLeave={(e) => {
-						e.currentTarget.style.backgroundColor =
-							'var(--color-primary, #1890ff)';
-						e.currentTarget.style.transform = 'scale(1)';
-					}}
-				>
-					<PlusOutlined style={{ fontSize: '24px' }} />
-				</button>
-			)}
+			<button
+				type="button"
+				className="mobile-create-overlay"
+				onClick={onCreateListingClick}
+				style={{
+					position: 'fixed',
+					bottom: '20px',
+					right: '20px',
+					width: '56px',
+					height: '56px',
+					borderRadius: '50%',
+					backgroundColor: 'var(--color-primary, #1890ff)',
+					border: 'none',
+					color: 'white',
+					display: 'flex',
+					alignItems: 'center',
+					justifyContent: 'center',
+					cursor: 'pointer',
+					boxShadow: '0 4px 12px rgba(0, 0, 0, 0.15)',
+					transition: 'all 0.3s ease',
+					zIndex: 1000,
+				}}
+				onMouseEnter={(e) => {
+					e.currentTarget.style.backgroundColor =
+						'var(--color-secondary, #3F8176)';
+					e.currentTarget.style.transform = 'scale(1.1)';
+				}}
+				onMouseLeave={(e) => {
+					e.currentTarget.style.backgroundColor =
+						'var(--color-primary, #1890ff)';
+					e.currentTarget.style.transform = 'scale(1)';
+				}}
+			>
+				<PlusOutlined style={{ fontSize: '24px' }} />
+			</button>
 		</div>
 	);
 }
