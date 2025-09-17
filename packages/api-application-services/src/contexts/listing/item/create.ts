@@ -31,16 +31,30 @@ export const create = (dataSources: DataSources) => {
 			| undefined;
 		await dataSources.domainDataSource.Listing.ItemListing.ItemListingUnitOfWork.withScopedTransaction(
 			async (repo) => {
-				const newItemListing = await repo.getNewInstance(sharer, {
+				const fields: {
+					title: string;
+					description: string;
+					category: string;
+					location: string;
+					sharingPeriodStart: Date;
+					sharingPeriodEnd: Date;
+					images?: string[];
+					isDraft?: boolean;
+				} = {
 					title: command.title,
 					description: command.description,
 					category: command.category,
 					location: command.location,
 					sharingPeriodStart: command.sharingPeriodStart,
 					sharingPeriodEnd: command.sharingPeriodEnd,
-					images: command.images,
-					isDraft: command.isDraft,
-				});
+				};
+				if (command.images) {
+					fields.images = command.images;
+				}
+				if (command.isDraft !== undefined) {
+					fields.isDraft = command.isDraft;
+				}
+				const newItemListing = await repo.getNewInstance(sharer, fields);
 
 				itemListingToReturn = await repo.save(newItemListing);
 			},

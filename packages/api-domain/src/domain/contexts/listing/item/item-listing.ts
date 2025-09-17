@@ -52,7 +52,7 @@ export class ItemListing<props extends ItemListingProps>
 			sharingPeriodEnd: fields.sharingPeriodEnd,
 			images: fields.images ?? [],
 			state: fields.isDraft
-				? ValueObjects.ListingState.Draft
+				? ValueObjects.ListingState.Drafted
 				: ValueObjects.ListingState.Published,
 			createdAt: now,
 			updatedAt: now,
