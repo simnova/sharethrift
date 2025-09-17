@@ -1,9 +1,9 @@
-import type { GraphContext } from '../../init/context.ts';
+import type { GraphContext } from '../../../init/context.ts';
 import type { Domain } from '@sthrift/api-domain';
 import type {
 	ConversationCreateInput,
 	Resolvers,
-} from '../builder/generated.ts';
+} from '../../builder/generated.ts';
 
 const ConversationMutationResolver = async (
 	getConversation: Promise<Domain.Contexts.Conversation.Conversation.ConversationEntityReference>,

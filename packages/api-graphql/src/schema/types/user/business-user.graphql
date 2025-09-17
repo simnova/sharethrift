@@ -1,0 +1,37 @@
+type BusinessUser implements MongoBase {
+	userType: String
+	isBlocked: Boolean
+	account: BusinessUserAccount
+	id: ObjectID!
+	schemaVersion: String
+	createdAt: DateTime
+	updatedAt: DateTime
+}
+
+type BusinessUserAccount {
+	accountType: String
+	email: String
+	username: String
+	profile: BusinessUserAccountProfile
+}
+
+type BusinessUserAccountProfile {
+	firstName: String
+	lastName: String
+	location: BusinessUserAccountProfileLocation
+	billing: BusinessUserAccountProfileBilling
+}
+
+type BusinessUserAccountProfileLocation {
+	address1: String
+	address2: String
+	city: String
+	state: String
+	country: String
+	zipCode: String
+}
+
+type BusinessUserAccountProfileBilling {
+	subscriptionId: String
+	cybersourceCustomerId: String
+}

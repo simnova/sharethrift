@@ -119,6 +119,49 @@ export type BlobMetadataField = {
   value: Scalars["String"]["output"];
 };
 
+export type BusinessUser = MongoBase & {
+  __typename?: "BusinessUser";
+  account?: Maybe<BusinessUserAccount>;
+  createdAt?: Maybe<Scalars["DateTime"]["output"]>;
+  id: Scalars["ObjectID"]["output"];
+  isBlocked?: Maybe<Scalars["Boolean"]["output"]>;
+  schemaVersion?: Maybe<Scalars["String"]["output"]>;
+  updatedAt?: Maybe<Scalars["DateTime"]["output"]>;
+  userType?: Maybe<Scalars["String"]["output"]>;
+};
+
+export type BusinessUserAccount = {
+  __typename?: "BusinessUserAccount";
+  accountType?: Maybe<Scalars["String"]["output"]>;
+  email?: Maybe<Scalars["String"]["output"]>;
+  profile?: Maybe<BusinessUserAccountProfile>;
+  username?: Maybe<Scalars["String"]["output"]>;
+};
+
+export type BusinessUserAccountProfile = {
+  __typename?: "BusinessUserAccountProfile";
+  billing?: Maybe<BusinessUserAccountProfileBilling>;
+  firstName?: Maybe<Scalars["String"]["output"]>;
+  lastName?: Maybe<Scalars["String"]["output"]>;
+  location?: Maybe<BusinessUserAccountProfileLocation>;
+};
+
+export type BusinessUserAccountProfileBilling = {
+  __typename?: "BusinessUserAccountProfileBilling";
+  cybersourceCustomerId?: Maybe<Scalars["String"]["output"]>;
+  subscriptionId?: Maybe<Scalars["String"]["output"]>;
+};
+
+export type BusinessUserAccountProfileLocation = {
+  __typename?: "BusinessUserAccountProfileLocation";
+  address1?: Maybe<Scalars["String"]["output"]>;
+  address2?: Maybe<Scalars["String"]["output"]>;
+  city?: Maybe<Scalars["String"]["output"]>;
+  country?: Maybe<Scalars["String"]["output"]>;
+  state?: Maybe<Scalars["String"]["output"]>;
+  zipCode?: Maybe<Scalars["String"]["output"]>;
+};
+
 /**  Required to enable Apollo Cache Control  */
 export type CacheControlScope = "PRIVATE" | "PUBLIC";
 
@@ -174,7 +217,7 @@ export type ItemListing = MongoBase & {
   version?: Maybe<Scalars["Int"]["output"]>;
 };
 
-export type Listing = ItemListing;
+export type Listing = ItemListing | ServiceListing;
 
 /** Base type for all models in mongo. */
 export type MongoBase = {
@@ -412,7 +455,27 @@ export type ReservationRequestState =
   | "Rejected"
   | "Requested";
 
-export type User = PersonalUser;
+export type ServiceListing = {
+  __typename?: "ServiceListing";
+  category: Scalars["String"]["output"];
+  createdAt?: Maybe<Scalars["DateTime"]["output"]>;
+  description: Scalars["String"]["output"];
+  id: Scalars["ObjectID"]["output"];
+  images?: Maybe<Array<Scalars["String"]["output"]>>;
+  location: Scalars["String"]["output"];
+  reports?: Maybe<Scalars["Int"]["output"]>;
+  schemaVersion?: Maybe<Scalars["String"]["output"]>;
+  sharer: User;
+  sharingHistory?: Maybe<Array<Scalars["String"]["output"]>>;
+  sharingPeriodEnd: Scalars["DateTime"]["output"];
+  sharingPeriodStart: Scalars["DateTime"]["output"];
+  state?: Maybe<Scalars["String"]["output"]>;
+  title: Scalars["String"]["output"];
+  updatedAt?: Maybe<Scalars["DateTime"]["output"]>;
+  version?: Maybe<Scalars["Int"]["output"]>;
+};
+
+export type User = BusinessUser | PersonalUser;
 
 export type DummyGraphqlQueryVariables = Exact<{ [key: string]: never }>;
 
@@ -470,23 +533,25 @@ export type HomeAccountProfileViewContainerUserListingsQuery = {
     updatedAt?: any | null;
     sharingPeriodStart: any;
     sharingPeriodEnd: any;
-    sharer: {
-      __typename?: "PersonalUser";
-      id: any;
-      account?: {
-        __typename?: "PersonalUserAccount";
-        profile?: {
-          __typename?: "PersonalUserAccountProfile";
-          firstName?: string | null;
-          lastName?: string | null;
-          location?: {
-            __typename?: "PersonalUserAccountProfileLocation";
-            city?: string | null;
-            state?: string | null;
+    sharer:
+      | { __typename?: "BusinessUser" }
+      | {
+          __typename?: "PersonalUser";
+          id: any;
+          account?: {
+            __typename?: "PersonalUserAccount";
+            profile?: {
+              __typename?: "PersonalUserAccountProfile";
+              firstName?: string | null;
+              lastName?: string | null;
+              location?: {
+                __typename?: "PersonalUserAccountProfileLocation";
+                city?: string | null;
+                state?: string | null;
+              } | null;
+            } | null;
           } | null;
-        } | null;
-      } | null;
-    };
+        };
   }>;
 };
 
@@ -511,23 +576,25 @@ export type GetListingsQuery = {
     version?: number | null;
     reports?: number | null;
     sharingHistory?: Array<string> | null;
-    sharer: {
-      __typename?: "PersonalUser";
-      id: any;
-      account?: {
-        __typename?: "PersonalUserAccount";
-        profile?: {
-          __typename?: "PersonalUserAccountProfile";
-          firstName?: string | null;
-          lastName?: string | null;
-          location?: {
-            __typename?: "PersonalUserAccountProfileLocation";
-            city?: string | null;
-            state?: string | null;
+    sharer:
+      | { __typename?: "BusinessUser" }
+      | {
+          __typename?: "PersonalUser";
+          id: any;
+          account?: {
+            __typename?: "PersonalUserAccount";
+            profile?: {
+              __typename?: "PersonalUserAccountProfile";
+              firstName?: string | null;
+              lastName?: string | null;
+              location?: {
+                __typename?: "PersonalUserAccountProfileLocation";
+                city?: string | null;
+                state?: string | null;
+              } | null;
+            } | null;
           } | null;
-        } | null;
-      } | null;
-    };
+        };
   }>;
 };
 
@@ -565,23 +632,25 @@ export type ViewListingInformationGetListingQuery = {
     reports?: number | null;
     sharingHistory?: Array<string> | null;
     schemaVersion?: string | null;
-    sharer: {
-      __typename?: "PersonalUser";
-      id: any;
-      account?: {
-        __typename?: "PersonalUserAccount";
-        profile?: {
-          __typename?: "PersonalUserAccountProfile";
-          firstName?: string | null;
-          lastName?: string | null;
-          location?: {
-            __typename?: "PersonalUserAccountProfileLocation";
-            city?: string | null;
-            state?: string | null;
+    sharer:
+      | { __typename?: "BusinessUser" }
+      | {
+          __typename?: "PersonalUser";
+          id: any;
+          account?: {
+            __typename?: "PersonalUserAccount";
+            profile?: {
+              __typename?: "PersonalUserAccountProfile";
+              firstName?: string | null;
+              lastName?: string | null;
+              location?: {
+                __typename?: "PersonalUserAccountProfileLocation";
+                city?: string | null;
+                state?: string | null;
+              } | null;
+            } | null;
           } | null;
-        } | null;
-      } | null;
-    };
+        };
   } | null;
 };
 
@@ -636,23 +705,25 @@ export type ViewListingQuery = {
     reports?: number | null;
     sharingHistory?: Array<string> | null;
     schemaVersion?: string | null;
-    sharer: {
-      __typename?: "PersonalUser";
-      id: any;
-      account?: {
-        __typename?: "PersonalUserAccount";
-        profile?: {
-          __typename?: "PersonalUserAccountProfile";
-          firstName?: string | null;
-          lastName?: string | null;
-          location?: {
-            __typename?: "PersonalUserAccountProfileLocation";
-            city?: string | null;
-            state?: string | null;
+    sharer:
+      | { __typename?: "BusinessUser" }
+      | {
+          __typename?: "PersonalUser";
+          id: any;
+          account?: {
+            __typename?: "PersonalUserAccount";
+            profile?: {
+              __typename?: "PersonalUserAccountProfile";
+              firstName?: string | null;
+              lastName?: string | null;
+              location?: {
+                __typename?: "PersonalUserAccountProfileLocation";
+                city?: string | null;
+                state?: string | null;
+              } | null;
+            } | null;
           } | null;
-        } | null;
-      } | null;
-    };
+        };
   } | null;
 };
 
