@@ -130,7 +130,6 @@ export type CloseReservationInput = {
   id: Scalars["ObjectID"]["input"];
 };
 
-/** GraphQL schema for Conversations */
 export type Conversation = MongoBase & {
   __typename?: "Conversation";
   createdAt: Scalars["DateTime"]["output"];
@@ -143,8 +142,40 @@ export type Conversation = MongoBase & {
   updatedAt: Scalars["DateTime"]["output"];
 };
 
-export type ItemListing = MongoBase & {
-  __typename?: "ItemListing";
+export type ConversationCreateInput = {
+  listingId: Scalars["ObjectID"]["input"];
+  reserverId: Scalars["ObjectID"]["input"];
+  sharerId: Scalars["ObjectID"]["input"];
+};
+
+export type ConversationMutationResult = MutationResult & {
+  __typename?: "ConversationMutationResult";
+  conversation?: Maybe<Conversation>;
+  status: MutationStatus;
+};
+
+export type ItemListing = Listing &
+  MongoBase & {
+    __typename?: "ItemListing";
+    category: Scalars["String"]["output"];
+    createdAt?: Maybe<Scalars["DateTime"]["output"]>;
+    description: Scalars["String"]["output"];
+    id: Scalars["ObjectID"]["output"];
+    images?: Maybe<Array<Scalars["String"]["output"]>>;
+    location: Scalars["String"]["output"];
+    reports?: Maybe<Scalars["Int"]["output"]>;
+    schemaVersion?: Maybe<Scalars["String"]["output"]>;
+    sharer: User;
+    sharingHistory?: Maybe<Array<Scalars["String"]["output"]>>;
+    sharingPeriodEnd: Scalars["DateTime"]["output"];
+    sharingPeriodStart: Scalars["DateTime"]["output"];
+    state?: Maybe<Scalars["String"]["output"]>;
+    title: Scalars["String"]["output"];
+    updatedAt?: Maybe<Scalars["DateTime"]["output"]>;
+    version?: Maybe<Scalars["Int"]["output"]>;
+  };
+
+export type Listing = {
   category: Scalars["String"]["output"];
   createdAt?: Maybe<Scalars["DateTime"]["output"]>;
   description: Scalars["String"]["output"];
@@ -153,28 +184,14 @@ export type ItemListing = MongoBase & {
   location: Scalars["String"]["output"];
   reports?: Maybe<Scalars["Int"]["output"]>;
   schemaVersion?: Maybe<Scalars["String"]["output"]>;
-  sharer: Scalars["String"]["output"];
+  sharer: User;
   sharingHistory?: Maybe<Array<Scalars["String"]["output"]>>;
   sharingPeriodEnd: Scalars["DateTime"]["output"];
   sharingPeriodStart: Scalars["DateTime"]["output"];
-  state?: Maybe<ItemListingState>;
+  state?: Maybe<Scalars["String"]["output"]>;
   title: Scalars["String"]["output"];
   updatedAt?: Maybe<Scalars["DateTime"]["output"]>;
   version?: Maybe<Scalars["Int"]["output"]>;
-};
-
-export type ItemListingState =
-  | "Appeal_Requested"
-  | "Blocked"
-  | "Cancelled"
-  | "Drafted"
-  | "Expired"
-  | "Paused"
-  | "Published";
-
-export type Listing = {
-  __typename?: "Listing";
-  id: Scalars["ObjectID"]["output"];
 };
 
 /** Base type for all models in mongo. */
@@ -203,6 +220,7 @@ export type Mutation = {
   _empty?: Maybe<Scalars["String"]["output"]>;
   cancelReservation: ReservationRequest;
   closeReservation: ReservationRequest;
+  createConversation: ConversationMutationResult;
 };
 
 /**  Base Mutation Type definition - all mutations will be defined in separate files extending this type  */
@@ -215,6 +233,11 @@ export type MutationCloseReservationArgs = {
   input: CloseReservationInput;
 };
 
+/**  Base Mutation Type definition - all mutations will be defined in separate files extending this type  */
+export type MutationCreateConversationArgs = {
+  input: ConversationCreateInput;
+};
+
 export type MutationResult = {
   status: MutationStatus;
 };
@@ -225,45 +248,23 @@ export type MutationStatus = {
   success: Scalars["Boolean"]["output"];
 };
 
-/** GraphQL schema for Personal Users */
-export type PersonalUser = MongoBase & {
-  __typename?: "PersonalUser";
-  account?: Maybe<PersonalUserAccount>;
-  createdAt?: Maybe<Scalars["DateTime"]["output"]>;
-  id: Scalars["ObjectID"]["output"];
-  isBlocked?: Maybe<Scalars["Boolean"]["output"]>;
-  schemaVersion?: Maybe<Scalars["String"]["output"]>;
-  updatedAt?: Maybe<Scalars["DateTime"]["output"]>;
-  userType?: Maybe<Scalars["String"]["output"]>;
-};
-
-export type PersonalUserAccount = {
-  __typename?: "PersonalUserAccount";
-  accountType?: Maybe<Scalars["String"]["output"]>;
-  email?: Maybe<Scalars["String"]["output"]>;
-  profile?: Maybe<PersonalUserAccountProfile>;
-  username?: Maybe<Scalars["String"]["output"]>;
-};
+export type PersonalUser = MongoBase &
+  User & {
+    __typename?: "PersonalUser";
+    account?: Maybe<UserAccount>;
+    createdAt?: Maybe<Scalars["DateTime"]["output"]>;
+    id: Scalars["ObjectID"]["output"];
+    isBlocked?: Maybe<Scalars["Boolean"]["output"]>;
+    schemaVersion?: Maybe<Scalars["String"]["output"]>;
+    updatedAt?: Maybe<Scalars["DateTime"]["output"]>;
+    userType?: Maybe<Scalars["String"]["output"]>;
+  };
 
 export type PersonalUserAccountInput = {
   accountType?: InputMaybe<Scalars["String"]["input"]>;
   email?: InputMaybe<Scalars["String"]["input"]>;
   profile?: InputMaybe<PersonalUserAccountProfileInput>;
   username?: InputMaybe<Scalars["String"]["input"]>;
-};
-
-export type PersonalUserAccountProfile = {
-  __typename?: "PersonalUserAccountProfile";
-  billing?: Maybe<PersonalUserAccountProfileBilling>;
-  firstName?: Maybe<Scalars["String"]["output"]>;
-  lastName?: Maybe<Scalars["String"]["output"]>;
-  location?: Maybe<PersonalUserAccountProfileLocation>;
-};
-
-export type PersonalUserAccountProfileBilling = {
-  __typename?: "PersonalUserAccountProfileBilling";
-  cybersourceCustomerId?: Maybe<Scalars["String"]["output"]>;
-  subscriptionId?: Maybe<Scalars["String"]["output"]>;
 };
 
 export type PersonalUserAccountProfileBillingInput = {
@@ -281,16 +282,6 @@ export type PersonalUserAccountProfileInput = {
   firstName?: InputMaybe<Scalars["String"]["input"]>;
   lastName?: InputMaybe<Scalars["String"]["input"]>;
   location?: InputMaybe<PersonalUserAccountProfileLocationInput>;
-};
-
-export type PersonalUserAccountProfileLocation = {
-  __typename?: "PersonalUserAccountProfileLocation";
-  address1?: Maybe<Scalars["String"]["output"]>;
-  address2?: Maybe<Scalars["String"]["output"]>;
-  city?: Maybe<Scalars["String"]["output"]>;
-  country?: Maybe<Scalars["String"]["output"]>;
-  state?: Maybe<Scalars["String"]["output"]>;
-  zipCode?: Maybe<Scalars["String"]["output"]>;
 };
 
 export type PersonalUserAccountProfileLocationInput = {
@@ -342,7 +333,7 @@ export type Query = {
   /** IGNORE: Dummy field necessary for the Query type to be valid */
   _empty?: Maybe<Scalars["String"]["output"]>;
   conversation?: Maybe<Conversation>;
-  conversations: Array<Conversation>;
+  conversationsByUser?: Maybe<Array<Maybe<Conversation>>>;
   currentPersonalUserAndCreateIfNotExists: PersonalUser;
   itemListing?: Maybe<ItemListing>;
   itemListings: Array<ItemListing>;
@@ -353,7 +344,12 @@ export type Query = {
 
 /**  Base Query Type definition - , all mutations will be defined in separate files extending this type  */
 export type QueryConversationArgs = {
-  id: Scalars["ObjectID"]["input"];
+  conversationId: Scalars["ObjectID"]["input"];
+};
+
+/**  Base Query Type definition - , all mutations will be defined in separate files extending this type  */
+export type QueryConversationsByUserArgs = {
+  userId: Scalars["ObjectID"]["input"];
 };
 
 /**  Base Query Type definition - , all mutations will be defined in separate files extending this type  */
@@ -404,9 +400,45 @@ export type ReservationRequestState =
   | "Requested";
 
 export type User = {
-  __typename?: "User";
+  account?: Maybe<UserAccount>;
+  createdAt?: Maybe<Scalars["DateTime"]["output"]>;
   id: Scalars["ObjectID"]["output"];
-  username: Scalars["String"]["output"];
+  isBlocked?: Maybe<Scalars["Boolean"]["output"]>;
+  schemaVersion?: Maybe<Scalars["String"]["output"]>;
+  updatedAt?: Maybe<Scalars["DateTime"]["output"]>;
+  userType?: Maybe<Scalars["String"]["output"]>;
+};
+
+export type UserAccount = {
+  __typename?: "UserAccount";
+  accountType?: Maybe<Scalars["String"]["output"]>;
+  email?: Maybe<Scalars["String"]["output"]>;
+  profile?: Maybe<UserAccountProfile>;
+  username?: Maybe<Scalars["String"]["output"]>;
+};
+
+export type UserAccountProfile = {
+  __typename?: "UserAccountProfile";
+  billing?: Maybe<UserAccountProfileBilling>;
+  firstName?: Maybe<Scalars["String"]["output"]>;
+  lastName?: Maybe<Scalars["String"]["output"]>;
+  location?: Maybe<UserAccountProfileLocation>;
+};
+
+export type UserAccountProfileBilling = {
+  __typename?: "UserAccountProfileBilling";
+  cybersourceCustomerId?: Maybe<Scalars["String"]["output"]>;
+  subscriptionId?: Maybe<Scalars["String"]["output"]>;
+};
+
+export type UserAccountProfileLocation = {
+  __typename?: "UserAccountProfileLocation";
+  address1?: Maybe<Scalars["String"]["output"]>;
+  address2?: Maybe<Scalars["String"]["output"]>;
+  city?: Maybe<Scalars["String"]["output"]>;
+  country?: Maybe<Scalars["String"]["output"]>;
+  state?: Maybe<Scalars["String"]["output"]>;
+  zipCode?: Maybe<Scalars["String"]["output"]>;
 };
 
 export type DummyGraphqlQueryVariables = Exact<{ [key: string]: never }>;
@@ -428,16 +460,16 @@ export type HomeAccountProfileViewContainerCurrentUserQuery = {
     userType?: string | null;
     createdAt?: any | null;
     account?: {
-      __typename?: "PersonalUserAccount";
+      __typename?: "UserAccount";
       accountType?: string | null;
       email?: string | null;
       username?: string | null;
       profile?: {
-        __typename?: "PersonalUserAccountProfile";
+        __typename?: "UserAccountProfile";
         firstName?: string | null;
         lastName?: string | null;
         location?: {
-          __typename?: "PersonalUserAccountProfileLocation";
+          __typename?: "UserAccountProfileLocation";
           city?: string | null;
           state?: string | null;
         } | null;
@@ -459,13 +491,29 @@ export type HomeAccountProfileViewContainerUserListingsQuery = {
     description: string;
     category: string;
     location: string;
-    state?: ItemListingState | null;
+    state?: string | null;
     images?: Array<string> | null;
-    sharer: string;
     createdAt?: any | null;
     updatedAt?: any | null;
     sharingPeriodStart: any;
     sharingPeriodEnd: any;
+    sharer: {
+      __typename?: "PersonalUser";
+      id: any;
+      account?: {
+        __typename?: "UserAccount";
+        profile?: {
+          __typename?: "UserAccountProfile";
+          firstName?: string | null;
+          lastName?: string | null;
+          location?: {
+            __typename?: "UserAccountProfileLocation";
+            city?: string | null;
+            state?: string | null;
+          } | null;
+        } | null;
+      } | null;
+    };
   }>;
 };
 
@@ -480,17 +528,33 @@ export type GetListingsQuery = {
     description: string;
     category: string;
     location: string;
-    state?: ItemListingState | null;
+    state?: string | null;
     images?: Array<string> | null;
     createdAt?: any | null;
     updatedAt?: any | null;
     sharingPeriodStart: any;
     sharingPeriodEnd: any;
-    sharer: string;
     schemaVersion?: string | null;
     version?: number | null;
     reports?: number | null;
     sharingHistory?: Array<string> | null;
+    sharer: {
+      __typename?: "PersonalUser";
+      id: any;
+      account?: {
+        __typename?: "UserAccount";
+        profile?: {
+          __typename?: "UserAccountProfile";
+          firstName?: string | null;
+          lastName?: string | null;
+          location?: {
+            __typename?: "UserAccountProfileLocation";
+            city?: string | null;
+            state?: string | null;
+          } | null;
+        } | null;
+      } | null;
+    };
   }>;
 };
 
@@ -521,14 +585,30 @@ export type ViewListingInformationGetListingQuery = {
     location: string;
     sharingPeriodStart: any;
     sharingPeriodEnd: any;
-    state?: ItemListingState | null;
+    state?: string | null;
     images?: Array<string> | null;
     createdAt?: any | null;
     updatedAt?: any | null;
     reports?: number | null;
     sharingHistory?: Array<string> | null;
-    sharer: string;
     schemaVersion?: string | null;
+    sharer: {
+      __typename?: "PersonalUser";
+      id: any;
+      account?: {
+        __typename?: "UserAccount";
+        profile?: {
+          __typename?: "UserAccountProfile";
+          firstName?: string | null;
+          lastName?: string | null;
+          location?: {
+            __typename?: "UserAccountProfileLocation";
+            city?: string | null;
+            state?: string | null;
+          } | null;
+        } | null;
+      } | null;
+    };
   } | null;
 };
 
@@ -544,14 +624,14 @@ export type ViewListingSharerInformationGetSharerQuery = {
     userType?: string | null;
     isBlocked?: boolean | null;
     account?: {
-      __typename?: "PersonalUserAccount";
+      __typename?: "UserAccount";
       username?: string | null;
       profile?: {
-        __typename?: "PersonalUserAccountProfile";
+        __typename?: "UserAccountProfile";
         firstName?: string | null;
         lastName?: string | null;
         location?: {
-          __typename?: "PersonalUserAccountProfileLocation";
+          __typename?: "UserAccountProfileLocation";
           city?: string | null;
           state?: string | null;
           country?: string | null;
@@ -576,14 +656,30 @@ export type ViewListingQuery = {
     location: string;
     sharingPeriodStart: any;
     sharingPeriodEnd: any;
-    state?: ItemListingState | null;
+    state?: string | null;
     images?: Array<string> | null;
     createdAt?: any | null;
     updatedAt?: any | null;
     reports?: number | null;
     sharingHistory?: Array<string> | null;
-    sharer: string;
     schemaVersion?: string | null;
+    sharer: {
+      __typename?: "PersonalUser";
+      id: any;
+      account?: {
+        __typename?: "UserAccount";
+        profile?: {
+          __typename?: "UserAccountProfile";
+          firstName?: string | null;
+          lastName?: string | null;
+          location?: {
+            __typename?: "UserAccountProfileLocation";
+            city?: string | null;
+            state?: string | null;
+          } | null;
+        } | null;
+      } | null;
+    };
   } | null;
 };
 
@@ -601,10 +697,10 @@ export type ReservationsViewActiveContainerReservationFieldsFragment = {
   reserver: {
     __typename?: "PersonalUser";
     account?: {
-      __typename?: "PersonalUserAccount";
+      __typename?: "UserAccount";
       username?: string | null;
       profile?: {
-        __typename?: "PersonalUserAccountProfile";
+        __typename?: "UserAccountProfile";
         firstName?: string | null;
         lastName?: string | null;
       } | null;
@@ -633,10 +729,10 @@ export type ReservationsViewActiveContainerActiveReservationsQuery = {
     reserver: {
       __typename?: "PersonalUser";
       account?: {
-        __typename?: "PersonalUserAccount";
+        __typename?: "UserAccount";
         username?: string | null;
         profile?: {
-          __typename?: "PersonalUserAccountProfile";
+          __typename?: "UserAccountProfile";
           firstName?: string | null;
           lastName?: string | null;
         } | null;
@@ -694,10 +790,10 @@ export type ReservationsViewHistoryContainerReservationFieldsFragment = {
     __typename?: "PersonalUser";
     id: any;
     account?: {
-      __typename?: "PersonalUserAccount";
+      __typename?: "UserAccount";
       username?: string | null;
       profile?: {
-        __typename?: "PersonalUserAccountProfile";
+        __typename?: "UserAccountProfile";
         firstName?: string | null;
         lastName?: string | null;
       } | null;
@@ -727,10 +823,10 @@ export type ReservationsViewHistoryContainerPastReservationsQuery = {
       __typename?: "PersonalUser";
       id: any;
       account?: {
-        __typename?: "PersonalUserAccount";
+        __typename?: "UserAccount";
         username?: string | null;
         profile?: {
-          __typename?: "PersonalUserAccountProfile";
+          __typename?: "UserAccountProfile";
           firstName?: string | null;
           lastName?: string | null;
         } | null;
@@ -749,10 +845,10 @@ export type SignUpSectionLayoutContainerCurrentPersonalUserAndCreateIfNotExistsQ
       __typename?: "PersonalUser";
       id: any;
       account?: {
-        __typename?: "PersonalUserAccount";
+        __typename?: "UserAccount";
         email?: string | null;
         profile?: {
-          __typename?: "PersonalUserAccountProfile";
+          __typename?: "UserAccountProfile";
           firstName?: string | null;
           lastName?: string | null;
         } | null;
@@ -1088,7 +1184,62 @@ export const HomeAccountProfileViewContainerUserListingsDocument = {
                 { kind: "Field", name: { kind: "Name", value: "location" } },
                 { kind: "Field", name: { kind: "Name", value: "state" } },
                 { kind: "Field", name: { kind: "Name", value: "images" } },
-                { kind: "Field", name: { kind: "Name", value: "sharer" } },
+                {
+                  kind: "Field",
+                  name: { kind: "Name", value: "sharer" },
+                  selectionSet: {
+                    kind: "SelectionSet",
+                    selections: [
+                      { kind: "Field", name: { kind: "Name", value: "id" } },
+                      {
+                        kind: "Field",
+                        name: { kind: "Name", value: "account" },
+                        selectionSet: {
+                          kind: "SelectionSet",
+                          selections: [
+                            {
+                              kind: "Field",
+                              name: { kind: "Name", value: "profile" },
+                              selectionSet: {
+                                kind: "SelectionSet",
+                                selections: [
+                                  {
+                                    kind: "Field",
+                                    name: { kind: "Name", value: "firstName" },
+                                  },
+                                  {
+                                    kind: "Field",
+                                    name: { kind: "Name", value: "lastName" },
+                                  },
+                                  {
+                                    kind: "Field",
+                                    name: { kind: "Name", value: "location" },
+                                    selectionSet: {
+                                      kind: "SelectionSet",
+                                      selections: [
+                                        {
+                                          kind: "Field",
+                                          name: { kind: "Name", value: "city" },
+                                        },
+                                        {
+                                          kind: "Field",
+                                          name: {
+                                            kind: "Name",
+                                            value: "state",
+                                          },
+                                        },
+                                      ],
+                                    },
+                                  },
+                                ],
+                              },
+                            },
+                          ],
+                        },
+                      },
+                    ],
+                  },
+                },
                 { kind: "Field", name: { kind: "Name", value: "createdAt" } },
                 { kind: "Field", name: { kind: "Name", value: "updatedAt" } },
                 {
@@ -1143,7 +1294,62 @@ export const GetListingsDocument = {
                   kind: "Field",
                   name: { kind: "Name", value: "sharingPeriodEnd" },
                 },
-                { kind: "Field", name: { kind: "Name", value: "sharer" } },
+                {
+                  kind: "Field",
+                  name: { kind: "Name", value: "sharer" },
+                  selectionSet: {
+                    kind: "SelectionSet",
+                    selections: [
+                      { kind: "Field", name: { kind: "Name", value: "id" } },
+                      {
+                        kind: "Field",
+                        name: { kind: "Name", value: "account" },
+                        selectionSet: {
+                          kind: "SelectionSet",
+                          selections: [
+                            {
+                              kind: "Field",
+                              name: { kind: "Name", value: "profile" },
+                              selectionSet: {
+                                kind: "SelectionSet",
+                                selections: [
+                                  {
+                                    kind: "Field",
+                                    name: { kind: "Name", value: "firstName" },
+                                  },
+                                  {
+                                    kind: "Field",
+                                    name: { kind: "Name", value: "lastName" },
+                                  },
+                                  {
+                                    kind: "Field",
+                                    name: { kind: "Name", value: "location" },
+                                    selectionSet: {
+                                      kind: "SelectionSet",
+                                      selections: [
+                                        {
+                                          kind: "Field",
+                                          name: { kind: "Name", value: "city" },
+                                        },
+                                        {
+                                          kind: "Field",
+                                          name: {
+                                            kind: "Name",
+                                            value: "state",
+                                          },
+                                        },
+                                      ],
+                                    },
+                                  },
+                                ],
+                              },
+                            },
+                          ],
+                        },
+                      },
+                    ],
+                  },
+                },
                 {
                   kind: "Field",
                   name: { kind: "Name", value: "schemaVersion" },
@@ -1280,7 +1486,62 @@ export const ViewListingInformationGetListingDocument = {
                   kind: "Field",
                   name: { kind: "Name", value: "sharingHistory" },
                 },
-                { kind: "Field", name: { kind: "Name", value: "sharer" } },
+                {
+                  kind: "Field",
+                  name: { kind: "Name", value: "sharer" },
+                  selectionSet: {
+                    kind: "SelectionSet",
+                    selections: [
+                      { kind: "Field", name: { kind: "Name", value: "id" } },
+                      {
+                        kind: "Field",
+                        name: { kind: "Name", value: "account" },
+                        selectionSet: {
+                          kind: "SelectionSet",
+                          selections: [
+                            {
+                              kind: "Field",
+                              name: { kind: "Name", value: "profile" },
+                              selectionSet: {
+                                kind: "SelectionSet",
+                                selections: [
+                                  {
+                                    kind: "Field",
+                                    name: { kind: "Name", value: "firstName" },
+                                  },
+                                  {
+                                    kind: "Field",
+                                    name: { kind: "Name", value: "lastName" },
+                                  },
+                                  {
+                                    kind: "Field",
+                                    name: { kind: "Name", value: "location" },
+                                    selectionSet: {
+                                      kind: "SelectionSet",
+                                      selections: [
+                                        {
+                                          kind: "Field",
+                                          name: { kind: "Name", value: "city" },
+                                        },
+                                        {
+                                          kind: "Field",
+                                          name: {
+                                            kind: "Name",
+                                            value: "state",
+                                          },
+                                        },
+                                      ],
+                                    },
+                                  },
+                                ],
+                              },
+                            },
+                          ],
+                        },
+                      },
+                    ],
+                  },
+                },
                 {
                   kind: "Field",
                   name: { kind: "Name", value: "schemaVersion" },
@@ -1464,7 +1725,62 @@ export const ViewListingDocument = {
                   kind: "Field",
                   name: { kind: "Name", value: "sharingHistory" },
                 },
-                { kind: "Field", name: { kind: "Name", value: "sharer" } },
+                {
+                  kind: "Field",
+                  name: { kind: "Name", value: "sharer" },
+                  selectionSet: {
+                    kind: "SelectionSet",
+                    selections: [
+                      { kind: "Field", name: { kind: "Name", value: "id" } },
+                      {
+                        kind: "Field",
+                        name: { kind: "Name", value: "account" },
+                        selectionSet: {
+                          kind: "SelectionSet",
+                          selections: [
+                            {
+                              kind: "Field",
+                              name: { kind: "Name", value: "profile" },
+                              selectionSet: {
+                                kind: "SelectionSet",
+                                selections: [
+                                  {
+                                    kind: "Field",
+                                    name: { kind: "Name", value: "firstName" },
+                                  },
+                                  {
+                                    kind: "Field",
+                                    name: { kind: "Name", value: "lastName" },
+                                  },
+                                  {
+                                    kind: "Field",
+                                    name: { kind: "Name", value: "location" },
+                                    selectionSet: {
+                                      kind: "SelectionSet",
+                                      selections: [
+                                        {
+                                          kind: "Field",
+                                          name: { kind: "Name", value: "city" },
+                                        },
+                                        {
+                                          kind: "Field",
+                                          name: {
+                                            kind: "Name",
+                                            value: "state",
+                                          },
+                                        },
+                                      ],
+                                    },
+                                  },
+                                ],
+                              },
+                            },
+                          ],
+                        },
+                      },
+                    ],
+                  },
+                },
                 {
                   kind: "Field",
                   name: { kind: "Name", value: "schemaVersion" },

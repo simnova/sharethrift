@@ -1,12 +1,12 @@
-type ItemListing implements Listing & MongoBase {
+interface Listing implements MongoBase {
 	sharer: User!
 	title: String!
 	description: String!
 	category: String!
 	location: String!
 	sharingPeriodStart: DateTime!
-	sharingPeriodEnd: DateTime!
 	state: String
+	sharingPeriodEnd: DateTime!
 	sharingHistory: [String!]
 	reports: Int
 	images: [String!] # Array of image URLs
@@ -15,9 +15,4 @@ type ItemListing implements Listing & MongoBase {
 	createdAt: DateTime
 	updatedAt: DateTime
 	version: Int
-}
-
-extend type Query {
-	itemListings: [ItemListing!]!
-	itemListing(id: ObjectID!): ItemListing
 }

@@ -8,8 +8,19 @@ import {
 	ReservationRequest,
 	type ReservationRequestContextApplicationService,
 } from './contexts/reservation-request/index.ts';
+import {
+	Conversation,
+	type ConversationContextApplicationService,
+} from './contexts/conversation/index.ts';
+import {
+	Listing,
+	type ListingContextApplicationService,
+} from './contexts/listing/index.ts';
+
 export interface ApplicationServices {
 	User: UserContextApplicationService;
+	Conversation: ConversationContextApplicationService;
+	Listing: ListingContextApplicationService;
 	ReservationRequest: ReservationRequestContextApplicationService;
 	get verifiedUser(): VerifiedUser | null;
 }
@@ -79,6 +90,8 @@ export const buildApplicationServicesFactory = (
 				return { ...tokenValidationResult, hints: hints };
 			},
 			ReservationRequest: ReservationRequest(dataSources),
+			Listing: Listing(dataSources),
+			Conversation: Conversation(dataSources),
 		};
 	};
 

@@ -1,19 +1,31 @@
 query ViewListingInformationGetListing($listingId: ObjectID!) {
-  itemListing(id: $listingId) {
-    id
-    title
-    description
-    category
-    location
-    sharingPeriodStart
-    sharingPeriodEnd
-    state
-    images
-    createdAt
-    updatedAt
-    reports
-    sharingHistory
-    sharer
-    schemaVersion
-  }
+	itemListing(id: $listingId) {
+		id
+		title
+		description
+		category
+		location
+		sharingPeriodStart
+		sharingPeriodEnd
+		state
+		images
+		createdAt
+		updatedAt
+		reports
+		sharingHistory
+		sharer {
+			id
+			account {
+				profile {
+					firstName
+					lastName
+					location {
+						city
+						state
+					}
+				}
+			}
+		}
+		schemaVersion
+	}
 }

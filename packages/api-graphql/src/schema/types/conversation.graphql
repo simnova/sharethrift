@@ -1,39 +1,32 @@
-
-#graphql
-"""
-GraphQL schema for Conversations
-"""
-
-type Conversation implements MongoBase{
-  
-  sharer: User!
-  reserver: User!
-  listing: Listing!
-  twilioConversationId: String!
-
-  id: ObjectID!
-  schemaVersion: String!
-  createdAt: DateTime!
-  updatedAt: DateTime!
+type Conversation implements MongoBase {
+	sharer: User!
+	reserver: User!
+	listing: Listing!
+	twilioConversationId: String!
+	id: ObjectID!
+	schemaVersion: String!
+	createdAt: DateTime!
+	updatedAt: DateTime!
 }
-
-type User {
-  id: ObjectID!
-  username: String!
-  # Add more fields as needed
-}
-
-type Listing {
-  id: ObjectID!
-  # Add more fields as needed
-}
-
 
 extend type Query {
-  conversations: [Conversation!]!
-  conversation(id: ObjectID!): Conversation
+	conversationsByUser(userId: ObjectID!): [Conversation]
+	conversation(conversationId: ObjectID!): Conversation
 }
 
-# type Mutation {
-  # createConversation(sharerId: ObjectID!, reserverId: ObjectID!, listingId: ObjectID!): Conversation!
-# }
+extend type Mutation {
+	createConversation(
+		input: ConversationCreateInput!
+	): ConversationMutationResult!
+}
+
+input ConversationCreateInput {
+	sharerId: ObjectID!
+	reserverId: ObjectID!
+	listingId: ObjectID!
+}
+
+type ConversationMutationResult implements MutationResult {
+	status: MutationStatus!
+	conversation: Conversation
+}
