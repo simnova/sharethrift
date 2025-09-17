@@ -1,8 +1,13 @@
-import { type Model, Schema, type SchemaDefinition } from 'mongoose';
+import {
+	type ObjectId,
+	type Model,
+	Schema,
+	type SchemaDefinition,
+	type PopulatedDoc,
+} from 'mongoose';
 import { MongooseSeedwork } from '@cellix/data-sources-mongoose';
 import { type User, type UserModelType, userOptions } from './user.model.ts';
 import { Patterns } from '../../patterns.ts';
-import type { ObjectId, PopulatedDoc } from 'mongoose';
 import * as PersonalUserRole from '../role/personal-user-role.model.ts';
 
 // Location
