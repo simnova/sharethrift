@@ -22,10 +22,10 @@ export interface CybersourceBase {
     customerId: string,
     paymentInstrumentId: string
   ): Promise<boolean>;
-  setDefaultCustomerPaymentInstrument(
-    customerId: string,
-    paymentInstrumentId: string
-  ): Promise<CustomerPaymentResponse>;
+//   setDefaultCustomerPaymentInstrument(
+//     customerId: string,
+//     paymentInstrumentId: string
+//   ): Promise<CustomerPaymentResponse>;
   updateCustomerPaymentInstrument(
     customerProfile: CustomerProfile,
     paymentInstrumentInfo: PaymentInstrumentInfo
@@ -40,10 +40,10 @@ export interface CybersourceBase {
     amount: number,
     referenceId: string
   ): Promise<TransactionReceipt>;
-  voidPayment(
-    clientReferenceCode: string,
-    transactionId: string
-  ): Promise<PaymentTransactionResponse>;
+//   voidPayment(
+//     clientReferenceCode: string,
+//     transactionId: string
+//   ): Promise<PaymentTransactionResponse>;
   getSuccessOrLatestFailedTransactionsByReferenceId(
     referenceId: string
   ): Promise<TransactionReceipt>;

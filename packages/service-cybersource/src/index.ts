@@ -167,111 +167,111 @@ export class ServiceCybersource
     }
   }
 
-  async setDefaultCustomerPaymentInstrument(
-    customerId: string,
-    paymentInstrumentId: string
-  ): Promise<CustomerPaymentResponse> {
-    console.log(
-      "Mock setDefaultCustomerPaymentInstrument called with:",
-      customerId,
-      paymentInstrumentId
-    );
-    return {
-      _links: {
-        self: {
-          href: `https://api.mockcybersource.com/customers/${customerId}`,
-        },
-        paymentInstruments: {
-          href: `https://api.mockcybersource.com/customers/${customerId}/payment-instruments`,
-        },
-      },
-      id: customerId,
-      clientReferenceInformation: {
-        code: `SET_DEFAULT_${paymentInstrumentId}`,
-      },
-      defaultPaymentInstrument: {
-        id: paymentInstrumentId,
-      },
-      metadata: {
-        creator: "mock-service",
-      },
-      _embedded: {
-        defaultPaymentInstrument: {
-          _links: {
-            self: {
-              href: `https://api.mockcybersource.com/customers/${customerId}/payment-instruments/${paymentInstrumentId}`,
-            },
-            customer: {
-              href: `https://api.mockcybersource.com/customers/${customerId}`,
-            },
-          },
-          id: paymentInstrumentId,
-          object: "paymentInstrument",
-          default: true,
-          state: "ACTIVE",
-          card: {
-            expirationMonth: "12",
-            expirationYear: "2026",
-            type: "001", // Visa
-          },
-          buyerInformation: {
-            currency: "USD",
-          },
-          billTo: {
-            firstName: "John",
-            lastName: "Doe",
-            address1: "123 Mock Street",
-            address2: "Unit 4",
-            locality: "Faketown",
-            administrativeArea: "CA",
-            postalCode: "99999",
-            country: "US",
-            email: "john.doe@example.com",
-            phoneNumber: "555-123-4567",
-          },
-          processingInformation: {
-            billPaymentProgramEnabled: false,
-          },
-          instrumentIdentifier: {
-            id: "MOCK_IDENTIFIER_DEFAULT",
-          },
-          metadata: {
-            creator: "mock-service",
-          },
-          _embedded: {
-            instrumentIdentifier: {
-              _links: {
-                self: {
-                  href: `https://api.mockcybersource.com/instrumentidentifiers/MOCK_IDENTIFIER_DEFAULT`,
-                },
-                paymentInstruments: {
-                  href: `https://api.mockcybersource.com/instrumentidentifiers/MOCK_IDENTIFIER_DEFAULT/payment-instruments`,
-                },
-              },
-              id: "MOCK_IDENTIFIER_DEFAULT",
-              object: "instrumentIdentifier",
-              state: "ACTIVE",
-              card: {
-                number: "411111XXXXXX1111",
-              },
-              processingInformation: {
-                authorizationOptions: {
-                  initiator: {
-                    merchantInitiatedTransaction: {
-                      previousTransactionId: "TXN123456789",
-                    },
-                  },
-                },
-              },
-              metadata: {
-                creator: "mock-service",
-              },
-            },
-          },
-        },
-      },
-    };
-  }
+//   async setDefaultCustomerPaymentInstrument(
+//     customerId: string,
+//     paymentInstrumentId: string
+//   ): Promise<CustomerPaymentResponse> {
+//     console.log(
+//       "Mock setDefaultCustomerPaymentInstrument called with:",
+//       customerId,
+//       paymentInstrumentId
+//     );
+//     return {
+//       _links: {
+//         self: {
+//           href: `https://api.mockcybersource.com/customers/${customerId}`,
+//         },
+//         paymentInstruments: {
+//           href: `https://api.mockcybersource.com/customers/${customerId}/payment-instruments`,
+//         },
+//       },
+//       id: customerId,
+//       clientReferenceInformation: {
+//         code: `SET_DEFAULT_${paymentInstrumentId}`,
+//       },
+//       defaultPaymentInstrument: {
+//         id: paymentInstrumentId,
+//       },
+//       metadata: {
+//         creator: "mock-service",
+//       },
+//       _embedded: {
+//         defaultPaymentInstrument: {
+//           _links: {
+//             self: {
+//               href: `https://api.mockcybersource.com/customers/${customerId}/payment-instruments/${paymentInstrumentId}`,
+//             },
+//             customer: {
+//               href: `https://api.mockcybersource.com/customers/${customerId}`,
+//             },
+//           },
+//           id: paymentInstrumentId,
+//           object: "paymentInstrument",
+//           default: true,
+//           state: "ACTIVE",
+//           card: {
+//             expirationMonth: "12",
+//             expirationYear: "2026",
+//             type: "001", // Visa
+//           },
+//           buyerInformation: {
+//             currency: "USD",
+//           },
+//           billTo: {
+//             firstName: "John",
+//             lastName: "Doe",
+//             address1: "123 Mock Street",
+//             address2: "Unit 4",
+//             locality: "Faketown",
+//             administrativeArea: "CA",
+//             postalCode: "99999",
+//             country: "US",
+//             email: "john.doe@example.com",
+//             phoneNumber: "555-123-4567",
+//           },
+//           processingInformation: {
+//             billPaymentProgramEnabled: false,
+//           },
+//           instrumentIdentifier: {
+//             id: "MOCK_IDENTIFIER_DEFAULT",
+//           },
+//           metadata: {
+//             creator: "mock-service",
+//           },
+//           _embedded: {
+//             instrumentIdentifier: {
+//               _links: {
+//                 self: {
+//                   href: `https://api.mockcybersource.com/instrumentidentifiers/MOCK_IDENTIFIER_DEFAULT`,
+//                 },
+//                 paymentInstruments: {
+//                   href: `https://api.mockcybersource.com/instrumentidentifiers/MOCK_IDENTIFIER_DEFAULT/payment-instruments`,
+//                 },
+//               },
+//               id: "MOCK_IDENTIFIER_DEFAULT",
+//               object: "instrumentIdentifier",
+//               state: "ACTIVE",
+//               card: {
+//                 number: "411111XXXXXX1111",
+//               },
+//               processingInformation: {
+//                 authorizationOptions: {
+//                   initiator: {
+//                     merchantInitiatedTransaction: {
+//                       previousTransactionId: "TXN123456789",
+//                     },
+//                   },
+//                 },
+//               },
+//               metadata: {
+//                 creator: "mock-service",
+//               },
+//             },
+//           },
+//         },
+//       },
+//     };
+//   }
 
   async updateCustomerPaymentInstrument(
     customerProfile: CustomerProfile,
@@ -325,123 +325,123 @@ export class ServiceCybersource
     }
   }
 
-  async voidPayment(
-    clientReferenceCode: string,
-    transactionId: string
-  ): Promise<PaymentTransactionResponse> {
-    console.log(
-      "Mock voidPayment called with:",
-      clientReferenceCode,
-      transactionId
-    );
-    // Mock rule: transactionId must start with TXN_
-    if (!transactionId.startsWith("TXN_")) {
-      return {
-        _links: {
-          self: {
-            href: `https://api.mockcybersource.com/payments/${transactionId}`,
-            method: "GET",
-          },
-          capture: {
-            href: `https://api.mockcybersource.com/payments/${transactionId}`,
-            method: "POST",
-          },
-        },
-        id: transactionId,
-        submitTimeUtc: new Date().toISOString(),
-        status: "ERROR",
-        reason: "INVALID_TRANSACTION",
-        reconciliationId: `RECON_VOID_FAIL_${Date.now()}`,
-        clientReferenceInformation: { code: clientReferenceCode },
-        processorInformation: {
-          approvalCode: "",
-          responseCode: "404",
-          avs: { code: "", codeRaw: "" },
-          cardVerification: { resultCode: "" },
-          paymentAccountReferenceNumber: "",
-          transactionId,
-          networkTransactionId: "",
-        },
-        paymentAccountInformation: { card: { type: "001" } },
-        paymentInformation: {
-          card: { type: "001" },
-          tokenizedCard: { type: "TOKEN_123456" },
-          paymentInstrument: { id: "MOCK_INSTRUMENT_1" },
-          instrumentIdentifier: { id: "INSTRUMENT_1", state: "ACTIVE" },
-          accountFeatures: { balanceAmount: "1000" },
-          customer: { id: "MOCK_CUSTOMER_1" },
-        },
-        orderInformation: {
-          amountDetails: {
-            totalAmount: "100",
-            authorizedAmount: "100",
-            currency: "USD",
-          },
-        },
-        pointOfSaleInformation: { terminalId: "POS_1" },
-        tokenInformation: {
-          instrumentidentifierNew: false,
-          paymentInstrument: { id: "MOCK_INSTRUMENT_1" },
-          instrumentIdentifier: { id: "INSTRUMENT_1", state: "ACTIVE" },
-          customer: { id: "MOCK_CUSTOMER_1" },
-        },
-        voidAmountDetails: { voidAmount: "100", currency: "USD" },
-      };
-    }
+//   async voidPayment(
+//     clientReferenceCode: string,
+//     transactionId: string
+//   ): Promise<PaymentTransactionResponse> {
+//     console.log(
+//       "Mock voidPayment called with:",
+//       clientReferenceCode,
+//       transactionId
+//     );
+//     // Mock rule: transactionId must start with TXN_
+//     if (!transactionId.startsWith("TXN_")) {
+//       return {
+//         _links: {
+//           self: {
+//             href: `https://api.mockcybersource.com/payments/${transactionId}`,
+//             method: "GET",
+//           },
+//           capture: {
+//             href: `https://api.mockcybersource.com/payments/${transactionId}`,
+//             method: "POST",
+//           },
+//         },
+//         id: transactionId,
+//         submitTimeUtc: new Date().toISOString(),
+//         status: "ERROR",
+//         reason: "INVALID_TRANSACTION",
+//         reconciliationId: `RECON_VOID_FAIL_${Date.now()}`,
+//         clientReferenceInformation: { code: clientReferenceCode },
+//         processorInformation: {
+//           approvalCode: "",
+//           responseCode: "404",
+//           avs: { code: "", codeRaw: "" },
+//           cardVerification: { resultCode: "" },
+//           paymentAccountReferenceNumber: "",
+//           transactionId,
+//           networkTransactionId: "",
+//         },
+//         paymentAccountInformation: { card: { type: "001" } },
+//         paymentInformation: {
+//           card: { type: "001" },
+//           tokenizedCard: { type: "TOKEN_123456" },
+//           paymentInstrument: { id: "MOCK_INSTRUMENT_1" },
+//           instrumentIdentifier: { id: "INSTRUMENT_1", state: "ACTIVE" },
+//           accountFeatures: { balanceAmount: "1000" },
+//           customer: { id: "MOCK_CUSTOMER_1" },
+//         },
+//         orderInformation: {
+//           amountDetails: {
+//             totalAmount: "100",
+//             authorizedAmount: "100",
+//             currency: "USD",
+//           },
+//         },
+//         pointOfSaleInformation: { terminalId: "POS_1" },
+//         tokenInformation: {
+//           instrumentidentifierNew: false,
+//           paymentInstrument: { id: "MOCK_INSTRUMENT_1" },
+//           instrumentIdentifier: { id: "INSTRUMENT_1", state: "ACTIVE" },
+//           customer: { id: "MOCK_CUSTOMER_1" },
+//         },
+//         voidAmountDetails: { voidAmount: "100", currency: "USD" },
+//       };
+//     }
 
-    // Otherwise, return a successful void response
-    return {
-      _links: {
-        self: {
-          href: `https://api.mockcybersource.com/payments/${transactionId}`,
-          method: "GET",
-        },
-        capture: {
-          href: `https://api.mockcybersource.com/payments/${transactionId}`,
-          method: "POST",
-        },
-      },
-      id: transactionId,
-      submitTimeUtc: new Date().toISOString(),
-      status: "VOIDED",
-      reason: "VOIDED_BY_MOCK",
-      reconciliationId: `RECON_VOID_${Date.now()}`,
-      clientReferenceInformation: { code: clientReferenceCode },
-      processorInformation: {
-        approvalCode: "APPROVED",
-        responseCode: "200",
-        avs: { code: "Y", codeRaw: "Y" },
-        cardVerification: { resultCode: "M" },
-        paymentAccountReferenceNumber: "REF_123456",
-        transactionId,
-        networkTransactionId: `NET_${Date.now()}`,
-      },
-      paymentAccountInformation: { card: { type: "001" } },
-      paymentInformation: {
-        card: { type: "001" },
-        tokenizedCard: { type: "TOKEN_123456" },
-        paymentInstrument: { id: "MOCK_INSTRUMENT_1" },
-        instrumentIdentifier: { id: "INSTRUMENT_1", state: "ACTIVE" },
-        accountFeatures: { balanceAmount: "1000" },
-        customer: { id: "MOCK_CUSTOMER_1" },
-      },
-      orderInformation: {
-        amountDetails: {
-          totalAmount: "100",
-          authorizedAmount: "100",
-          currency: "USD",
-        },
-      },
-      pointOfSaleInformation: { terminalId: "POS_1" },
-      tokenInformation: {
-        instrumentidentifierNew: false,
-        paymentInstrument: { id: "MOCK_INSTRUMENT_1" },
-        instrumentIdentifier: { id: "INSTRUMENT_1", state: "ACTIVE" },
-        customer: { id: "MOCK_CUSTOMER_1" },
-      },
-      voidAmountDetails: { voidAmount: "100", currency: "USD" },
-    };
-  }
+//     // Otherwise, return a successful void response
+//     return {
+//       _links: {
+//         self: {
+//           href: `https://api.mockcybersource.com/payments/${transactionId}`,
+//           method: "GET",
+//         },
+//         capture: {
+//           href: `https://api.mockcybersource.com/payments/${transactionId}`,
+//           method: "POST",
+//         },
+//       },
+//       id: transactionId,
+//       submitTimeUtc: new Date().toISOString(),
+//       status: "VOIDED",
+//       reason: "VOIDED_BY_MOCK",
+//       reconciliationId: `RECON_VOID_${Date.now()}`,
+//       clientReferenceInformation: { code: clientReferenceCode },
+//       processorInformation: {
+//         approvalCode: "APPROVED",
+//         responseCode: "200",
+//         avs: { code: "Y", codeRaw: "Y" },
+//         cardVerification: { resultCode: "M" },
+//         paymentAccountReferenceNumber: "REF_123456",
+//         transactionId,
+//         networkTransactionId: `NET_${Date.now()}`,
+//       },
+//       paymentAccountInformation: { card: { type: "001" } },
+//       paymentInformation: {
+//         card: { type: "001" },
+//         tokenizedCard: { type: "TOKEN_123456" },
+//         paymentInstrument: { id: "MOCK_INSTRUMENT_1" },
+//         instrumentIdentifier: { id: "INSTRUMENT_1", state: "ACTIVE" },
+//         accountFeatures: { balanceAmount: "1000" },
+//         customer: { id: "MOCK_CUSTOMER_1" },
+//       },
+//       orderInformation: {
+//         amountDetails: {
+//           totalAmount: "100",
+//           authorizedAmount: "100",
+//           currency: "USD",
+//         },
+//       },
+//       pointOfSaleInformation: { terminalId: "POS_1" },
+//       tokenInformation: {
+//         instrumentidentifierNew: false,
+//         paymentInstrument: { id: "MOCK_INSTRUMENT_1" },
+//         instrumentIdentifier: { id: "INSTRUMENT_1", state: "ACTIVE" },
+//         customer: { id: "MOCK_CUSTOMER_1" },
+//       },
+//       voidAmountDetails: { voidAmount: "100", currency: "USD" },
+//     };
+//   }
 
   async getSuccessOrLatestFailedTransactionsByReferenceId(
     referenceId: string
@@ -450,7 +450,6 @@ export class ServiceCybersource
       "Mock getSuccessOrLatestFailedTransactionsByReferenceId called with:",
       referenceId
     );
-    // Mock logic: randomly return success or failed transaction
     const isSuccess = Math.random() > 0.3; // 70% chance success
     const now = new Date();
 
@@ -459,7 +458,7 @@ export class ServiceCybersource
         isSuccess: true,
         vendor: "MOCK_CYBERSOURCE",
         completedAt: now,
-        amount: 100, // mock amount
+        amount: 100, 
         transactionId: `TXN_${referenceId}_${Date.now()}`,
         reconciliationId: `RECON_${referenceId}_${Date.now()}`,
       };
