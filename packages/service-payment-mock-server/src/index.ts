@@ -15,7 +15,8 @@ import type {
   Subscription,
   SubscriptionResponse,
   SuspendSubscriptionResponse,
-  SubscriptionsListResponse
+  SubscriptionsListResponse,
+  PaymentInstrumentInfo,
 } from "./payment-interface.ts";
 
 const app = express();
@@ -27,7 +28,7 @@ app.get("/", (_req: Request, res: Response) => {
   res.send("Payment Mock Server is running!");
 });
 
-// createCustomerProfile endpoint
+// generatePublicKey endpoint
 app.get("/pts/v2/public-key", (_req: Request, res: Response) => {
   return res.status(200).json({
     publicKey: "MOCK_PUBLIC_KEY_1234567890",
@@ -505,6 +506,105 @@ app.delete(
   }
 );
 
+// updateCustomerPaymentInstrument endpoint
+app.patch(
+  "/tms/v2/customers/:customerId/payment-instruments/:paymentInstrumentId",
+  (
+    req: Request<
+      { customerId: string; paymentInstrumentId: string },
+      {},
+      {
+        customerProfile: CustomerProfile;
+        paymentInstrumentInfo: PaymentInstrumentInfo;
+      }
+    >,
+    res: Response<CustomerPaymentInstrumentResponse>
+  ) => {
+    const { customerId, paymentInstrumentId } = req.params;
+    const { customerProfile, paymentInstrumentInfo } = req.body;
+    console.log(
+      "Mock updateCustomerPaymentInstrument called with:",
+      customerId,
+      paymentInstrumentId
+    );
+
+    const mockResponse: CustomerPaymentInstrumentResponse = {
+      _links: {
+        self: {
+          href: `https://api.mockcybersource.com/customers/${customerId}/payment-instruments/${paymentInstrumentId}`,
+        },
+        customer: {
+          href: `https://api.mockcybersource.com/customers/${customerId}`,
+        },
+      },
+      id: paymentInstrumentId,
+      object: "paymentInstrument",
+      default: paymentInstrumentInfo.id === "DEFAULT",
+      state: "ACTIVE",
+      card: {
+        expirationMonth: paymentInstrumentInfo.cardExpirationMonth,
+        expirationYear: paymentInstrumentInfo.cardExpirationYear,
+        type: paymentInstrumentInfo.cardType, // e.g., "001" Visa
+      },
+      buyerInformation: {
+        currency: "USD",
+      },
+      billTo: {
+        firstName: customerProfile.billingFirstName,
+        lastName: customerProfile.billingLastName,
+        address1: customerProfile.billingAddressLine1,
+        address2: customerProfile.billingAddressLine2 || "",
+        locality: customerProfile.billingCity,
+        administrativeArea: customerProfile.billingState,
+        postalCode: customerProfile.billingPostalCode,
+        country: customerProfile.billingCountry,
+        email: customerProfile.billingEmail,
+        phoneNumber: customerProfile.billingPhone || "",
+      },
+      processingInformation: {
+        billPaymentProgramEnabled: false,
+      },
+      instrumentIdentifier: {
+        id: `MOCK_IDENTIFIER_${paymentInstrumentInfo.paymentInstrumentId}`,
+      },
+      metadata: {
+        creator: "mock-service",
+      },
+      _embedded: {
+        instrumentIdentifier: {
+          _links: {
+            self: {
+              href: `https://api.mockcybersource.com/instrumentidentifiers/MOCK_IDENTIFIER_${paymentInstrumentInfo.paymentInstrumentId}`,
+            },
+            paymentInstruments: {
+              href: `https://api.mockcybersource.com/instrumentidentifiers/MOCK_IDENTIFIER_${paymentInstrumentInfo.paymentInstrumentId}/payment-instruments`,
+            },
+          },
+          id: `MOCK_IDENTIFIER_${paymentInstrumentInfo.paymentInstrumentId}`,
+          object: "instrumentIdentifier",
+          state: "ACTIVE",
+          card: {
+            number: "411111XXXXXX1111",
+          },
+          processingInformation: {
+            authorizationOptions: {
+              initiator: {
+                merchantInitiatedTransaction: {
+                  previousTransactionId: "TXN_UPDATED_12345",
+                },
+              },
+            },
+          },
+          metadata: {
+            creator: "mock-service",
+          },
+        },
+      },
+    };
+    return res.status(200).json(mockResponse);
+  }
+);
+
 // processPayment endpoint
 app.post(
   "/pts/v2/payments",
@@ -814,7 +914,7 @@ app.post(
 
 // updatePlanForSubscription endpoint
 app.patch(
-  "rbs/v1/subscriptions/:subscriptionId",
+  "/rbs/v1/subscriptions/:subscriptionId",
   (
     req: Request<{ subscriptionId: string }>,
     res: Response<SubscriptionResponse>

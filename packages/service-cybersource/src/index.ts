@@ -277,84 +277,16 @@ export class ServiceCybersource
     customerProfile: CustomerProfile,
     paymentInstrumentInfo: PaymentInstrumentInfo
   ): Promise<CustomerPaymentInstrumentResponse> {
-    console.log(
-      "Mock updateCustomerPaymentInstrument called with:",
-      customerProfile,
-      paymentInstrumentInfo
-    );
-    return {
-      _links: {
-        self: {
-          href: `https://api.mockcybersource.com/customers/${customerProfile.customerId}/payment-instruments/${paymentInstrumentInfo.paymentInstrumentId}`,
-        },
-        customer: {
-          href: `https://api.mockcybersource.com/customers/${customerProfile.customerId}`,
-        },
-      },
-      id: paymentInstrumentInfo.paymentInstrumentId,
-      object: "paymentInstrument",
-      default: paymentInstrumentInfo.id === "DEFAULT",
-      state: "ACTIVE",
-      card: {
-        expirationMonth: paymentInstrumentInfo.cardExpirationMonth,
-        expirationYear: paymentInstrumentInfo.cardExpirationYear,
-        type: paymentInstrumentInfo.cardType, // e.g., "001" Visa
-      },
-      buyerInformation: {
-        currency: "USD",
-      },
-      billTo: {
-        firstName: customerProfile.billingFirstName,
-        lastName: customerProfile.billingLastName,
-        address1: customerProfile.billingAddressLine1,
-        address2: customerProfile.billingAddressLine2 || "",
-        locality: customerProfile.billingCity,
-        administrativeArea: customerProfile.billingState,
-        postalCode: customerProfile.billingPostalCode,
-        country: customerProfile.billingCountry,
-        email: customerProfile.billingEmail,
-        phoneNumber: customerProfile.billingPhone || "",
-      },
-      processingInformation: {
-        billPaymentProgramEnabled: false,
-      },
-      instrumentIdentifier: {
-        id: `MOCK_IDENTIFIER_${paymentInstrumentInfo.paymentInstrumentId}`,
-      },
-      metadata: {
-        creator: "mock-service",
-      },
-      _embedded: {
-        instrumentIdentifier: {
-          _links: {
-            self: {
-              href: `https://api.mockcybersource.com/instrumentidentifiers/MOCK_IDENTIFIER_${paymentInstrumentInfo.paymentInstrumentId}`,
-            },
-            paymentInstruments: {
-              href: `https://api.mockcybersource.com/instrumentidentifiers/MOCK_IDENTIFIER_${paymentInstrumentInfo.paymentInstrumentId}/payment-instruments`,
-            },
-          },
-          id: `MOCK_IDENTIFIER_${paymentInstrumentInfo.paymentInstrumentId}`,
-          object: "instrumentIdentifier",
-          state: "ACTIVE",
-          card: {
-            number: "411111XXXXXX1111",
-          },
-          processingInformation: {
-            authorizationOptions: {
-              initiator: {
-                merchantInitiatedTransaction: {
-                  previousTransactionId: "TXN_UPDATED_12345",
-                },
-              },
-            },
-          },
-          metadata: {
-            creator: "mock-service",
-          },
-        },
-      },
-    };
+    try {
+      const { data } = await this.service.patch(
+        `/tms/v2/customers/${customerProfile.customerId}/payment-instruments/${paymentInstrumentInfo.id}`,
+        { customerProfile, paymentInstrumentInfo }
+      );
+      return data;
+    } catch (error) {
+      console.error("Error updating customer payment instrument:", error);
+      throw new Error("Failed to update customer payment instrument");
+    }
   }
 
   async processPayment(
