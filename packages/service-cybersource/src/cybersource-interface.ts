@@ -47,6 +47,16 @@ export interface CybersourceBase {
   getSuccessOrLatestFailedTransactionsByReferenceId(
     referenceId: string
   ): Promise<TransactionReceipt>;
+  createPlan(plan: PlanCreation): Promise<PlanCreationResponse>;
+  listOfPlans(): Promise<PlansListResponse>;
+  getPlan(planId: string): Promise<PlanResponse>;
+  createSubscription(subscription: Subscription): Promise<SubscriptionResponse>;
+  updatePlanForSubscription(
+    subscriptionId: string,
+    planId: string
+  ): Promise<SubscriptionResponse>;
+  listOfSubscriptions(): Promise<SubscriptionsListResponse>;
+  suspendSubscription(subscriptionId: string): Promise<SuspendSubscriptionResponse>;
 }
 
 export interface CustomerProfile {
