@@ -362,34 +362,17 @@ export class ServiceCybersource
     paymentInstrumentId: string,
     amount: number
   ): Promise<TransactionReceipt> {
-    console.log(
-      "Mock processPayment called with:",
-      clientReferenceCode,
-      paymentInstrumentId,
-      amount
-    );
-    // Simple mock rule: decline if amount > 1000
-    if (amount > 1000) {
-      return {
-        isSuccess: false,
-        vendor: "MockCybersource",
-        errorOccurredAt: new Date(),
+    try {
+      const { data } = await this.service.post("/pts/v2/payments", {
+        clientReferenceCode,
+        paymentInstrumentId,
         amount,
-        transactionId: `TXN_FAIL_${Date.now()}`,
-        reconciliationId: `RECON_FAIL_${Date.now()}`,
-        errorCode: "LIMIT_EXCEEDED",
-        errorMessage: "Mock: Transactions over 1000 are declined.",
-      };
+      });
+      return data;
+    } catch (error) {
+      console.error("Error processing payment:", error);
+      throw error;
     }
-
-    return {
-      isSuccess: true,
-      vendor: "MockCybersource",
-      completedAt: new Date(),
-      amount,
-      transactionId: `TXN_${Date.now()}`,
-      reconciliationId: `RECON_${Date.now()}`,
-    };
   }
 
   async processRefund(
@@ -397,49 +380,17 @@ export class ServiceCybersource
     amount: number,
     referenceId: string
   ): Promise<TransactionReceipt> {
-    console.log(
-      "Mock processRefund called with:",
-      transactionId,
-      amount,
-      referenceId
-    );
-    // Mock rule: if amount is 0 or negative, fail
-    if (amount <= 0) {
-      return {
-        isSuccess: false,
-        vendor: "MockCybersource",
-        errorOccurredAt: new Date(),
+    try {
+      const { data } = await this.service.post("/pts/v2/refunds", {
+        transactionId,
         amount,
-        transactionId: `REFUND_FAIL_${Date.now()}`,
-        reconciliationId: `RECON_REFUND_FAIL_${Date.now()}`,
-        errorCode: "INVALID_AMOUNT",
-        errorMessage: "Mock: Refund amount must be greater than zero.",
-      };
+        referenceId,
+      });
+      return data;
+    } catch (error) {
+      console.error("Error processing refund:", error);
+      throw error;
     }
-
-    // Mock rule: if transactionId looks invalid, fail
-    if (!transactionId.startsWith("TXN_")) {
-      return {
-        isSuccess: false,
-        vendor: "MockCybersource",
-        errorOccurredAt: new Date(),
-        amount,
-        transactionId: `REFUND_FAIL_${Date.now()}`,
-        reconciliationId: `RECON_REFUND_FAIL_${Date.now()}`,
-        errorCode: "INVALID_TRANSACTION",
-        errorMessage: `Mock: Transaction ${transactionId} not found.`,
-      };
-    }
-
-    // Otherwise pretend refund succeeded
-    return {
-      isSuccess: true,
-      vendor: "MockCybersource",
-      completedAt: new Date(),
-      amount,
-      transactionId: `REFUND_${Date.now()}`,
-      reconciliationId: `RECON_REFUND_${Date.now()}`,
-    };
   }
 
   async voidPayment(
@@ -594,381 +545,87 @@ export class ServiceCybersource
   }
 
   async createPlan(plan: PlanCreation): Promise<PlanCreationResponse> {
-    console.log("Mock createPlan called with:", plan);
-    return {
-      _links: {
-        self: {
-          href: `/rbs/v1/plans/7577512808726664404807`,
-          method: "GET",
-        },
-        update: {
-          href: `/rbs/v1/plans/7577512808726664404807`,
-          method: "POST",
-        },
-        deactivate: {
-          href: `/rbs/v1/plans/7577512808726664404807/deactivate`,
-          method: "POST",
-        },
-      },
-      id: `PLAN_${Date.now()}`,
-      status: "COMPLETED",
-      submitTimeUtc: new Date().toISOString(),
-      planInformation: {
-        status: "ACTIVE",
-      },
-    };
+    try {
+      const { data } = await this.service.post("/rbs/v1/plans", plan);
+      return data;
+    } catch (error) {
+      console.error("Error creating plan:", error);
+      throw error;
+    }
   }
 
   async listOfPlans(): Promise<PlansListResponse> {
-    console.log("Mock listOfPlans called");
-    return {
-      _links: {
-        self: {
-          href: "/rbs/v1/plans?limit=2",
-          method: "GET",
-        },
-        next: {
-          href: "/rbs/v1/plans?offset=2&limit=2",
-          method: "GET",
-        },
-      },
-      totalCount: 29,
-      plans: [
-        {
-          _links: {
-            self: {
-              href: "/rbs/v1/plans/1619212820",
-              method: "GET",
-            },
-            update: {
-              href: "/rbs/v1/plans/1619212820",
-              method: "PATCH",
-            },
-            deactivate: {
-              href: "/rbs/v1/plans/1619212820/deactivate",
-              method: "POST",
-            },
-          },
-          id: "1619212820",
-          planInformation: {
-            code: "1619310018",
-            status: "ACTIVE",
-            name: "Test plan",
-            description: "Description",
-            billingPeriod: {
-              length: "1",
-              unit: "W",
-            },
-            billingCycles: {
-              total: "4",
-            },
-          },
-          orderInformation: {
-            amountDetails: {
-              currency: "USD",
-              billingAmount: "7.00",
-              setupFee: "0.00",
-            },
-          },
-        },
-        {
-          _links: {
-            self: {
-              href: "/rbs/v1/plans/6183561970436023701960",
-              method: "GET",
-            },
-            update: {
-              href: "/rbs/v1/plans/6183561970436023701960",
-              method: "PATCH",
-            },
-            activate: {
-              href: "/rbs/v1/plans/6183561970436023701960/activate",
-              method: "POST",
-            },
-          },
-          id: "6183561970436023701960",
-          planInformation: {
-            code: "1616024773",
-            status: "DRAFT",
-            name: "Plan Test",
-            description: "12123",
-            billingPeriod: {
-              length: "9999",
-              unit: "Y",
-            },
-            billingCycles: {
-              total: "123",
-            },
-          },
-          orderInformation: {
-            amountDetails: {
-              currency: "USD",
-              billingAmount: "1.00",
-              setupFee: "0.00",
-            },
-          },
-        },
-      ],
-    };
+    try {
+      const { data } = await this.service.get("/rbs/v1/plans");
+      return data;
+    } catch (error) {
+      console.error("Error fetching list of plans:", error);
+      throw error;
+    }
   }
 
   async getPlan(planId: string): Promise<PlanResponse> {
-    console.log("Mock getPlan called with:", planId);
-    return {
-      _links: {
-        self: {
-          href: "/rbs/v1/plans/7577512808726664404807",
-          method: "GET",
-        },
-        update: {
-          href: "/rbs/v1/plans/7577512808726664404807",
-          method: "PATCH",
-        },
-        deactivate: {
-          href: "/rbs/v1/plans/7577512808726664404807/deactivate",
-          method: "POST",
-        },
-      },
-      id: "7577512808726664404807",
-      submitTimeUtc: "2025-09-13T13:09:53.410Z",
-      planInformation: {
-        code: "UP1A912B2BAEGXBJ20",
-        status: "ACTIVE",
-        name: "Gold Plan",
-        description: "New Gold Plan",
-        billingPeriod: { length: 1, unit: "M" },
-        billingCycles: { total: 12 },
-      },
-      orderInformation: {
-        amountDetails: {
-          currency: "USD",
-          billingAmount: "10.00",
-        },
-      },
-    };
+    try {
+      const { data } = await this.service.get(`/rbs/v1/plans/${planId}`);
+      return data;
+    } catch (error) {
+      console.error("Error fetching plan:", error);
+      throw error;
+    }
   }
 
   async createSubscription(
     subscription: Subscription
   ): Promise<SubscriptionResponse> {
-    console.log("Mock createSubscription called with:", subscription);
-    return {
-      _links: {
-        self: {
-          href: "/rbs/v1/subscriptions/7577512808726664404807",
-          method: "GET",
-        },
-        cancel: {
-          href: "/rbs/v1/subscriptions/7577512808726664404807/cancel",
-          method: "POST",
-        },
-        update: {
-          href: "/rbs/v1/subscriptions/7577512808726664404807",
-          method: "PATCH",
-        },
-      },
-      id: `SUBS_${Date.now()}`,
-      status: "ACTIVE",
-      submitTimeUtc: new Date().toISOString(),
-      subscriptionInformation: {
-        status: "ACTIVE",
-      },
-    };
+    try {
+      const { data } = await this.service.post(
+        "/rbs/v1/subscriptions",
+        subscription
+      );
+      return data;
+    } catch (error) {
+      console.error("Error creating subscription:", error);
+      throw error;
+    }
   }
 
   async updatePlanForSubscription(
     subscriptionId: string,
     planId: string
   ): Promise<SubscriptionResponse> {
-    console.log(
-      "Mock updatePlanForSubscription called with:",
-      subscriptionId,
-      planId
-    );
-    return {
-      _links: {
-        self: {
-          href: "/rbs/v1/subscriptions/7577512808726664404807",
-          method: "GET",
-        },
-        cancel: {
-          href: "/rbs/v1/subscriptions/7577512808726664404807/cancel",
-          method: "POST",
-        },
-        update: {
-          href: "/rbs/v1/subscriptions/7577512808726664404807",
-          method: "PATCH",
-        },
-      },
-      id: subscriptionId,
-      status: "ACTIVE",
-      submitTimeUtc: new Date().toISOString(),
-      subscriptionInformation: {
-        status: "ACTIVE",
-      },
-    };
+    try {
+      const { data } = await this.service.patch(
+        `/rbs/v1/subscriptions/${subscriptionId}`,
+        { planId }
+      );
+      return data;
+    } catch (error) {
+      console.error("Error updating plan for subscription:", error);
+      throw error;
+    }
   }
 
   async listOfSubscriptions(): Promise<SubscriptionsListResponse> {
-    console.log("Mock listOfSubscriptions called");
-    return {
-      _links: {
-        self: {
-          href: "/rbs/v1/subscriptions?status=ACTIVE&limit=2",
-          method: "GET",
-        },
-        next: {
-          href: "/rbs/v1/subscriptions?status=ACTIVE&offset=2&limit=2",
-          method: "GET",
-        },
-      },
-      totalCount: 29,
-      subscriptions: [
-        {
-          _links: {
-            self: {
-              href: "/rbs/v1/subscriptions/6192112872526176101960",
-              method: "GET",
-            },
-            update: {
-              href: "/rbs/v1/subscriptions/6192112872526176101960",
-              method: "PATCH",
-            },
-            cancel: {
-              href: "/rbs/v1/subscriptions/6192112872526176101960/cancel",
-              method: "POST",
-            },
-            suspend: {
-              href: "/rbs/v1/subscriptions/6192112872526176101960/suspend",
-              method: "POST",
-            },
-          },
-          id: "6192112872526176101960",
-          planInformation: {
-            code: "34873819306413101960",
-            name: "RainTree Books Daily Plan",
-            billingPeriod: {
-              length: "1",
-              unit: "D",
-            },
-            billingCycles: {
-              total: "2",
-              current: "1",
-            },
-          },
-          subscriptionInformation: {
-            code: "AWC-44",
-            planId: "6034873819306413101960",
-            name: "Test",
-            startDate: "2023-04-13T17:01:42Z",
-            status: "ACTIVE",
-          },
-          paymentInformation: {
-            customer: {
-              id: "C09F227C54F94951E0533F36CF0A3D91",
-            },
-          },
-          orderInformation: {
-            amountDetails: {
-              currency: "USD",
-              billingAmount: "2.00",
-              setupFee: "1.00",
-            },
-            billTo: {
-              firstName: "JENNY",
-              lastName: "AUTO",
-            },
-          },
-        },
-        {
-          _links: {
-            self: {
-              href: "/rbs/v1/subscriptions/6192115800926177701960",
-              method: "GET",
-            },
-            update: {
-              href: "/rbs/v1/subscriptions/6192115800926177701960",
-              method: "PATCH",
-            },
-            cancel: {
-              href: "/rbs/v1/subscriptions/6192115800926177701960/cancel",
-              method: "POST",
-            },
-            suspend: {
-              href: "/rbs/v1/subscriptions/6192115800926177701960/suspend",
-              method: "POST",
-            },
-          },
-          id: "6192115800926177701960",
-          planInformation: {
-            code: "SITPlanCode6",
-            name: "Jan11DeployPlan1",
-            billingPeriod: {
-              length: "1",
-              unit: "W",
-            },
-            billingCycles: {
-              total: "6",
-              current: "1",
-            },
-          },
-          subscriptionInformation: {
-            code: "AWC-45",
-            planId: "6104313186846711501956",
-            name: "Testsub1",
-            startDate: "2023-04-13T17:01:42Z",
-            status: "ACTIVE",
-          },
-          paymentInformation: {
-            customer: {
-              id: "C09F227C54F94951E0533F36CF0A3D91",
-            },
-          },
-          orderInformation: {
-            amountDetails: {
-              currency: "USD",
-              billingAmount: "1.00",
-              setupFee: "5.00",
-            },
-            billTo: {
-              firstName: "JENNY",
-              lastName: "AUTO",
-            },
-          },
-        },
-      ],
-    };
+    try {
+      const { data } = await this.service.get("/rbs/v1/subscriptions");
+      return data;
+    } catch (error) {
+      console.error("Error fetching list of subscriptions:", error);
+      throw error;
+    }
   }
 
   async suspendSubscription(
     subscriptionId: string
   ): Promise<SuspendSubscriptionResponse> {
-    console.log("Mock suspendSubscription called with:", subscriptionId);
-    return {
-      _links: {
-        self: {
-          href: `/rbs/v1/subscriptions/${subscriptionId}`,
-          method: "GET",
-        },
-        update: {
-          href: `/rbs/v1/subscriptions/${subscriptionId}`,
-          method: "PATCH",
-        },
-        cancel: {
-          href: `/rbs/v1/subscriptions/${subscriptionId}/cancel`,
-          method: "POST",
-        },
-        suspend: {
-          href: `/rbs/v1/subscriptions/${subscriptionId}/suspend`,
-          method: "POST",
-        },
-      },
-      id: subscriptionId,
-      status: "ACCEPTED",
-      subscriptionInformation: {
-        code: "AWC-44",
-        status: "SUSPENDED",
-      },
-    };
+    try {
+      const { data } = await this.service.post(
+        `/rbs/v1/subscriptions/${subscriptionId}/suspend`
+      );
+      return data;
+    } catch (error) {
+      console.error("Error suspending subscription:", error);
+      throw error;
+    }
   }
 }

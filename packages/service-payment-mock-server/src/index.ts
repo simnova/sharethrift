@@ -7,6 +7,15 @@ import type {
   CustomerPaymentResponse,
   CustomerPaymentInstrumentResponse,
   CustomerPaymentInstrumentsResponse,
+  TransactionReceipt,
+  PlanCreation,
+  PlanCreationResponse,
+  PlansListResponse,
+  PlanResponse,
+  Subscription,
+  SubscriptionResponse,
+  SuspendSubscriptionResponse,
+  SubscriptionsListResponse
 } from "./payment-interface.ts";
 
 const app = express();
@@ -482,10 +491,538 @@ app.get(
 // deleteCustomerPaymentInstrument endpoint
 app.delete(
   "/tms/v2/customers/:customerId/payment-instruments/:paymentInstrumentId",
-  (req: Request<{ customerId: string; paymentInstrumentId: string }>, res: Response) => {
+  (
+    req: Request<{ customerId: string; paymentInstrumentId: string }>,
+    res: Response
+  ) => {
     const { customerId, paymentInstrumentId } = req.params;
-    console.log("Mock deleteCustomerPaymentInstrument called with:", customerId, paymentInstrumentId);
+    console.log(
+      "Mock deleteCustomerPaymentInstrument called with:",
+      customerId,
+      paymentInstrumentId
+    );
     res.status(204).send();
+  }
+);
+
+// processPayment endpoint
+app.post(
+  "/pts/v2/payments",
+  (
+    req: Request<
+      {},
+      {},
+      {
+        clientReferenceCode: string;
+        paymentInstrumentId: string;
+        amount: number;
+      }
+    >,
+    res: Response<TransactionReceipt>
+  ) => {
+    const { clientReferenceCode, paymentInstrumentId, amount } = req.body;
+    console.log(
+      "Mock processPayment called with:",
+      clientReferenceCode,
+      paymentInstrumentId,
+      amount
+    );
+    // Simple mock rule: decline if amount > 1000
+    if (amount > 1000) {
+      return res.status(402).json({
+        isSuccess: false,
+        vendor: "MockCybersource",
+        errorOccurredAt: new Date(),
+        amount,
+        transactionId: `TXN_FAIL_${Date.now()}`,
+        reconciliationId: `RECON_FAIL_${Date.now()}`,
+        errorCode: "LIMIT_EXCEEDED",
+        errorMessage: "Mock: Transactions over 1000 are declined.",
+      });
+    }
+
+    const receipt: TransactionReceipt = {
+      isSuccess: true,
+      vendor: "MockCybersource",
+      completedAt: new Date(),
+      amount,
+      transactionId: `TXN_${Date.now()}`,
+      reconciliationId: `RECON_${Date.now()}`,
+    };
+
+    return res.status(201).json(receipt);
+  }
+);
+
+// processRefund endpoint
+app.post(
+  "/pts/v2/refunds",
+  (
+    req: Request<
+      {},
+      {},
+      { transactionId: string; amount: number; referenceId: number }
+    >,
+    res: Response<TransactionReceipt>
+  ) => {
+    const { transactionId, amount, referenceId } = req.body;
+
+    console.log(
+      "Mock processRefund called with:",
+      transactionId,
+      amount,
+      referenceId
+    );
+
+    // Simple mock rule: decline if amount > 1000
+    if (amount > 1000) {
+      return res.status(402).json({
+        isSuccess: false,
+        vendor: "MockCybersource",
+        errorOccurredAt: new Date(),
+        amount,
+        transactionId: `TXN_FAIL_${Date.now()}`,
+        reconciliationId: `RECON_FAIL_${Date.now()}`,
+        errorCode: "LIMIT_EXCEEDED",
+        errorMessage: "Mock: Transactions over 1000 are declined.",
+      });
+    }
+
+    const receipt: TransactionReceipt = {
+      isSuccess: true,
+      vendor: "MockCybersource",
+      completedAt: new Date(),
+      amount,
+      transactionId: `TXN_${Date.now()}`,
+      reconciliationId: `RECON_${Date.now()}`,
+    };
+
+    return res.status(201).json(receipt);
+  }
+);
+
+// createPlan endpoint
+app.post(
+  "/rbs/v1/plans",
+  (
+    _req: Request<{}, {}, { plan: PlanCreation }>,
+    res: Response<PlanCreationResponse>
+  ) => {
+    console.log("Mock createPlan called");
+
+    const mockResponse: PlanCreationResponse = {
+      _links: {
+        self: {
+          href: `/rbs/v1/plans/7577512808726664404807`,
+          method: "GET",
+        },
+        update: {
+          href: `/rbs/v1/plans/7577512808726664404807`,
+          method: "POST",
+        },
+        deactivate: {
+          href: `/rbs/v1/plans/7577512808726664404807/deactivate`,
+          method: "POST",
+        },
+      },
+      id: `PLAN_${Date.now()}`,
+      status: "COMPLETED",
+      submitTimeUtc: new Date().toISOString(),
+      planInformation: {
+        status: "ACTIVE",
+      },
+    };
+    return res.status(201).json(mockResponse);
+  }
+);
+
+// listOfPlans endpoint
+app.get("/rbs/v1/plans", (_req: Request, res: Response<PlansListResponse>) => {
+  console.log("Mock listOfPlans called");
+
+  const mockResponse: PlansListResponse = {
+    _links: {
+      self: {
+        href: "/rbs/v1/plans?limit=2",
+        method: "GET",
+      },
+      next: {
+        href: "/rbs/v1/plans?offset=2&limit=2",
+        method: "GET",
+      },
+    },
+    totalCount: 29,
+    plans: [
+      {
+        _links: {
+          self: {
+            href: "/rbs/v1/plans/1619212820",
+            method: "GET",
+          },
+          update: {
+            href: "/rbs/v1/plans/1619212820",
+            method: "PATCH",
+          },
+          deactivate: {
+            href: "/rbs/v1/plans/1619212820/deactivate",
+            method: "POST",
+          },
+        },
+        id: "1619212820",
+        planInformation: {
+          code: "1619310018",
+          status: "ACTIVE",
+          name: "Test plan",
+          description: "Description",
+          billingPeriod: {
+            length: "1",
+            unit: "W",
+          },
+          billingCycles: {
+            total: "4",
+          },
+        },
+        orderInformation: {
+          amountDetails: {
+            currency: "USD",
+            billingAmount: "7.00",
+            setupFee: "0.00",
+          },
+        },
+      },
+      {
+        _links: {
+          self: {
+            href: "/rbs/v1/plans/6183561970436023701960",
+            method: "GET",
+          },
+          update: {
+            href: "/rbs/v1/plans/6183561970436023701960",
+            method: "PATCH",
+          },
+          activate: {
+            href: "/rbs/v1/plans/6183561970436023701960/activate",
+            method: "POST",
+          },
+        },
+        id: "6183561970436023701960",
+        planInformation: {
+          code: "1616024773",
+          status: "DRAFT",
+          name: "Plan Test",
+          description: "12123",
+          billingPeriod: {
+            length: "9999",
+            unit: "Y",
+          },
+          billingCycles: {
+            total: "123",
+          },
+        },
+        orderInformation: {
+          amountDetails: {
+            currency: "USD",
+            billingAmount: "1.00",
+            setupFee: "0.00",
+          },
+        },
+      },
+    ],
+  };
+
+  return res.status(200).json(mockResponse);
+});
+
+// getPlan endpoint
+app.get(
+  "/rbs/v1/plans/:planId",
+  (req: Request<{ planId: string }>, res: Response<PlanResponse>) => {
+    const { planId } = req.params;
+    console.log("Mock getPlan called with:", planId);
+
+    const mockResponse: PlanResponse = {
+      _links: {
+        self: {
+          href: "/rbs/v1/plans/7577512808726664404807",
+          method: "GET",
+        },
+        update: {
+          href: "/rbs/v1/plans/7577512808726664404807",
+          method: "PATCH",
+        },
+        deactivate: {
+          href: "/rbs/v1/plans/7577512808726664404807/deactivate",
+          method: "POST",
+        },
+      },
+      id: "7577512808726664404807",
+      submitTimeUtc: "2025-09-13T13:09:53.410Z",
+      planInformation: {
+        code: "UP1A912B2BAEGXBJ20",
+        status: "ACTIVE",
+        name: "Gold Plan",
+        description: "New Gold Plan",
+        billingPeriod: { length: 1, unit: "M" },
+        billingCycles: { total: 12 },
+      },
+      orderInformation: {
+        amountDetails: {
+          currency: "USD",
+          billingAmount: "10.00",
+        },
+      },
+    };
+    return res.status(200).json(mockResponse);
+  }
+);
+
+// createSubscription endpoint
+app.post(
+  "/rbs/v1/subscriptions",
+  (
+    _req: Request<{}, {}, { subscription: Subscription }>,
+    res: Response<SubscriptionResponse>
+  ) => {
+    console.log("Mock createSubscription called");
+
+    const mockResponse: SubscriptionResponse = {
+      _links: {
+        self: {
+          href: "/rbs/v1/subscriptions/7577512808726664404807",
+          method: "GET",
+        },
+        cancel: {
+          href: "/rbs/v1/subscriptions/7577512808726664404807/cancel",
+          method: "POST",
+        },
+        update: {
+          href: "/rbs/v1/subscriptions/7577512808726664404807",
+          method: "PATCH",
+        },
+      },
+      id: `SUBS_${Date.now()}`,
+      status: "ACTIVE",
+      submitTimeUtc: new Date().toISOString(),
+      subscriptionInformation: {
+        status: "ACTIVE",
+      },
+    };
+
+    return res.status(201).json(mockResponse);
+  }
+);
+
+// updatePlanForSubscription endpoint
+app.patch(
+  "rbs/v1/subscriptions/:subscriptionId",
+  (
+    req: Request<{ subscriptionId: string }>,
+    res: Response<SubscriptionResponse>
+  ) => {
+    const { subscriptionId } = req.params;
+    console.log("Mock updatePlanForSubscription called with:", subscriptionId);
+
+    const mockResponse: SubscriptionResponse = {
+      _links: {
+        self: {
+          href: `/rbs/v1/subscriptions/${subscriptionId}`,
+          method: "GET",
+        },
+        cancel: {
+          href: `/rbs/v1/subscriptions/${subscriptionId}/cancel`,
+          method: "POST",
+        },
+        update: {
+          href: `/rbs/v1/subscriptions/${subscriptionId}`,
+          method: "PATCH",
+        },
+      },
+      id: subscriptionId,
+      status: "ACTIVE",
+      submitTimeUtc: new Date().toISOString(),
+      subscriptionInformation: {
+        status: "ACTIVE",
+      },
+    };
+
+    return res.status(200).json(mockResponse);
+  }
+);
+
+// listOfSubscriptions endpoint
+app.get(
+  "/rbs/v1/subscriptions",
+  (_req: Request, res: Response<SubscriptionsListResponse>) => {
+    console.log("Mock listOfSubscriptions called");
+    const mockResponse: SubscriptionsListResponse = {
+      _links: {
+        self: {
+          href: "/rbs/v1/subscriptions?status=ACTIVE&limit=2",
+          method: "GET",
+        },
+        next: {
+          href: "/rbs/v1/subscriptions?status=ACTIVE&offset=2&limit=2",
+          method: "GET",
+        },
+      },
+      totalCount: 29,
+      subscriptions: [
+        {
+          _links: {
+            self: {
+              href: "/rbs/v1/subscriptions/6192112872526176101960",
+              method: "GET",
+            },
+            update: {
+              href: "/rbs/v1/subscriptions/6192112872526176101960",
+              method: "PATCH",
+            },
+            cancel: {
+              href: "/rbs/v1/subscriptions/6192112872526176101960/cancel",
+              method: "POST",
+            },
+            suspend: {
+              href: "/rbs/v1/subscriptions/6192112872526176101960/suspend",
+              method: "POST",
+            },
+          },
+          id: "6192112872526176101960",
+          planInformation: {
+            code: "34873819306413101960",
+            name: "RainTree Books Daily Plan",
+            billingPeriod: {
+              length: "1",
+              unit: "D",
+            },
+            billingCycles: {
+              total: "2",
+              current: "1",
+            },
+          },
+          subscriptionInformation: {
+            code: "AWC-44",
+            planId: "6034873819306413101960",
+            name: "Test",
+            startDate: "2023-04-13T17:01:42Z",
+            status: "ACTIVE",
+          },
+          paymentInformation: {
+            customer: {
+              id: "C09F227C54F94951E0533F36CF0A3D91",
+            },
+          },
+          orderInformation: {
+            amountDetails: {
+              currency: "USD",
+              billingAmount: "2.00",
+              setupFee: "1.00",
+            },
+            billTo: {
+              firstName: "JENNY",
+              lastName: "AUTO",
+            },
+          },
+        },
+        {
+          _links: {
+            self: {
+              href: "/rbs/v1/subscriptions/6192115800926177701960",
+              method: "GET",
+            },
+            update: {
+              href: "/rbs/v1/subscriptions/6192115800926177701960",
+              method: "PATCH",
+            },
+            cancel: {
+              href: "/rbs/v1/subscriptions/6192115800926177701960/cancel",
+              method: "POST",
+            },
+            suspend: {
+              href: "/rbs/v1/subscriptions/6192115800926177701960/suspend",
+              method: "POST",
+            },
+          },
+          id: "6192115800926177701960",
+          planInformation: {
+            code: "SITPlanCode6",
+            name: "Jan11DeployPlan1",
+            billingPeriod: {
+              length: "1",
+              unit: "W",
+            },
+            billingCycles: {
+              total: "6",
+              current: "1",
+            },
+          },
+          subscriptionInformation: {
+            code: "AWC-45",
+            planId: "6104313186846711501956",
+            name: "Testsub1",
+            startDate: "2023-04-13T17:01:42Z",
+            status: "ACTIVE",
+          },
+          paymentInformation: {
+            customer: {
+              id: "C09F227C54F94951E0533F36CF0A3D91",
+            },
+          },
+          orderInformation: {
+            amountDetails: {
+              currency: "USD",
+              billingAmount: "1.00",
+              setupFee: "5.00",
+            },
+            billTo: {
+              firstName: "JENNY",
+              lastName: "AUTO",
+            },
+          },
+        },
+      ],
+    };
+
+    return res.status(200).json(mockResponse);
+  }
+);
+
+// suspendSubscription endpoint
+app.post(
+  "/rbs/v1/subscriptions/:subscriptionId/suspend",
+  (
+    req: Request<{ subscriptionId: string }>,
+    res: Response<SuspendSubscriptionResponse>
+  ) => {
+    const { subscriptionId } = req.params;
+    console.log("Mock suspendSubscription called with:", subscriptionId);
+
+    const mockResponse: SuspendSubscriptionResponse = {
+      _links: {
+        self: {
+          href: `/rbs/v1/subscriptions/${subscriptionId}`,
+          method: "GET",
+        },
+        update: {
+          href: `/rbs/v1/subscriptions/${subscriptionId}`,
+          method: "PATCH",
+        },
+        cancel: {
+          href: `/rbs/v1/subscriptions/${subscriptionId}/cancel`,
+          method: "POST",
+        },
+        suspend: {
+          href: `/rbs/v1/subscriptions/${subscriptionId}/suspend`,
+          method: "POST",
+        },
+      },
+      id: subscriptionId,
+      status: "ACCEPTED",
+      subscriptionInformation: {
+        code: "AWC-44",
+        status: "SUSPENDED",
+      },
+    };
+    return res.status(200).json(mockResponse);
   }
 );
 
