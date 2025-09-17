@@ -6,22 +6,7 @@ import {
 	type ItemListingQueryBySharerCommand,
 	queryBySharer,
 } from './query-by-sharer.ts';
-
-export interface ItemListingQueryAllCommand {
-	fields?: string[];
-}
-
-export const queryAll = (dataSources: DataSources) => {
-	return async (
-		command: ItemListingQueryAllCommand,
-	): Promise<
-		Domain.Contexts.Listing.ItemListing.ItemListingEntityReference[]
-	> => {
-		return await dataSources.readonlyDataSource.Listing.ItemListing.ItemListingReadRepo.getAll(
-			{ fields: command.fields },
-		);
-	};
-};
+import { type ItemListingQueryAllCommand, queryAll } from './query-all.ts';
 
 export interface ItemListingApplicationService {
 	create: (
