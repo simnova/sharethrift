@@ -1,18 +1,10 @@
 import { DomainSeedwork } from '@cellix/domain-seedwork';
 import type { UserVisa } from '../user.visa.ts';
 import type { PersonalUserAggregateRoot } from './personal-user.ts';
-
-export interface PersonalUserAccountProfileBillingProps
-	extends DomainSeedwork.ValueObjectProps {
-	subscriptionId?: string | undefined;
-	cybersourceCustomerId?: string | undefined;
-	lastTransactionId?: string | undefined;
-	paymentState?: string | undefined;
-	lastPaymentAmount?: number | undefined;
-}
-
-export interface PersonalUserAccountProfileBillingEntityReference
-	extends Readonly<PersonalUserAccountProfileBillingProps> {}
+import type {
+	PersonalUserAccountProfileBillingEntityReference,
+	PersonalUserAccountProfileBillingProps,
+} from './personal-user-account-profile-billing.entity.ts';
 
 export class PersonalUserAccountProfileBilling
 	extends DomainSeedwork.ValueObject<PersonalUserAccountProfileBillingProps>

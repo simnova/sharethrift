@@ -1,3 +1,4 @@
+import { MemoryRouter } from 'react-router-dom';
 import type { Meta, StoryObj } from '@storybook/react';
 import { useState } from 'react';
 import { ListingsGrid, type ItemListing } from './index.tsx';
@@ -50,6 +51,11 @@ export default meta;
 type Story = StoryObj<typeof ListingsGrid>;
 
 export const Default: Story = {
+  render: (args) => (
+    <MemoryRouter>
+      <ListingsGrid {...args} />
+    </MemoryRouter>
+  ),
   args: {
     listings: DUMMY_LISTINGS,
     onListingClick: (listing) => console.log('Clicked listing:', listing.title),
@@ -74,11 +80,20 @@ export const WithPagination: Story = {
         />
       );
     }
-    return <WithPaginationComponent {...args} />;
+    return (
+      <MemoryRouter>
+        <WithPaginationComponent {...args} />
+      </MemoryRouter>
+    );
   },
 };
 
 export const Empty: Story = {
+  render: (args) => (
+    <MemoryRouter>
+      <ListingsGrid {...args} />
+    </MemoryRouter>
+  ),
   args: {
     listings: [],
     onListingClick: (listing) => console.log('Clicked listing:', listing.title),

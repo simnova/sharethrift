@@ -281,7 +281,7 @@ p, .authButton, .primaryButton, .secondaryButton, .ant-tabs, .ant-form-item-labe
   border: 1px solid #ADC6FF;
 }
 
-.requestSubmitted, .reserver, .sharer, .sharerIcon, .reserverIcon {
+.requestSubmitted, .reserver, .sharer, .sharerIcon, .reserverIcon, .personalAccount {
     border-radius: 20px !important;
     padding: 8px 20px;
     display: flex;
@@ -307,6 +307,13 @@ p, .authButton, .primaryButton, .secondaryButton, .ant-tabs, .ant-form-item-labe
     background-color: var(--color-action-disabled);
     color: var(--color-background);
 }
+
+.personalAccount{
+    background-color: var(--color-secondary);
+    color: var(--color-background);
+    height: 32px;
+}
+
 
 /* --- Ant Design Form Label Theming --- */
 .ant-form-item-label > label {

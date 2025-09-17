@@ -17,6 +17,7 @@
 		"start:ui-sharethrift": "npm run start --workspace=@sthrift/ui-sharethrift",
 		"start:api": "npm run start --workspace=@sthrift/api",
 		"dev": "npm run build && concurrently \"npm:azurite:*\" \"'npm:start-emulator:*'\" \"'npm:start:*'\" --kill-others-on-fail --workspace=@sthrift/api",
+		"dev:install": "npm install && cd packages/oauth2-mock-server && npm install && cd ../service-mongodb-memory-server && npm install && cd ../..",
 		"start-emulator:mongo-memory-server": "cd packages/service-mongodb-memory-server && npm install && npm run build && npm run start",
 		"start-emulator:auth-server": "cd packages/service-oauth2-mock-server && npm install && npm run build && npm run start",
 		"start-emulator:payment-server": "cd packages/service-payment-mock-server && npm run build && npm run start",
@@ -54,7 +55,8 @@
 		"packages/api-rest",
 		"packages/api",
 		"packages/ui-sharethrift-components",
-		"packages/ui-sharethrift"
+		"packages/ui-sharethrift",
+		"packages/docs"
 	],
 	"devDependencies": {
 		"@amiceli/vitest-cucumber": "^5.1.2",

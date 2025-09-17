@@ -1,13 +1,12 @@
 import type { Domain } from '@sthrift/api-domain';
 import { Types } from 'mongoose';
-import type { ModelsContext } from '../../../../index.ts';
+import type { ModelsContext } from '../../../../models-context.ts';
 import {
 	ReservationRequestDataSourceImpl,
 	type ReservationRequestDataSource,
 } from './reservation-request.data.ts';
 import type { FindOneOptions, FindOptions } from '../../mongo-data-source.ts';
 import { ReservationRequestConverter } from '../../../domain/reservation-request/reservation-request/reservation-request.domain-adapter.ts';
-// import { MongooseSeedwork } from '@cellix/data-sources-mongoose';
 
 export interface ReservationRequestReadRepository {
 	getAll: (
@@ -46,11 +45,6 @@ export class ReservationRequestReadRepositoryImpl
 	private readonly converter: ReservationRequestConverter;
 	private readonly passport: Domain.Passport;
 
-	/**
-	 * Constructs a new ReservationRequestReadRepositoryImpl.
-	 * @param models - The models context containing the ReservationRequest model.
-	 * @param passport - The passport object for domain access.
-	 */
 	constructor(models: ModelsContext, passport: Domain.Passport) {
 		this.mongoDataSource = new ReservationRequestDataSourceImpl(
 			models.ReservationRequest.ReservationRequest,
@@ -59,11 +53,6 @@ export class ReservationRequestReadRepositoryImpl
 		this.passport = passport;
 	}
 
-	/**
-	 * Retrieves all ReservationRequest entities.
-	 * @param options - Optional find options for querying.
-	 * @returns A promise that resolves to an array of ReservationRequestEntityReference objects.
-	 */
 	async getAll(
 		options?: FindOptions,
 	): Promise<
@@ -73,12 +62,6 @@ export class ReservationRequestReadRepositoryImpl
 		return result.map((doc) => this.converter.toDomain(doc, this.passport));
 	}
 
-	/**
-	 * Retrieves a ReservationRequest entity by its ID.
-	 * @param id - The ID of the ReservationRequest entity.
-	 * @param options - Optional find options for querying.
-	 * @returns A promise that resolves to a ReservationRequestEntityReference object or null if not found.
-	 */
 	async getById(
 		id: string,
 		options?: FindOneOptions,
@@ -90,9 +73,6 @@ export class ReservationRequestReadRepositoryImpl
 		return this.converter.toDomain(result, this.passport);
 	}
 
-	/**
-	 * Retrieves all ReservationRequest entities for which the specified user is a reserver.
-	 */
 	async getByReserverId(
 		reserverId: string,
 		options?: FindOptions,
@@ -106,27 +86,12 @@ export class ReservationRequestReadRepositoryImpl
 		return result.map((doc) => this.converter.toDomain(doc, this.passport));
 	}
 
-	/**
-	 * Retrieves an array of active ReservationRequest entities by the id of its reserver field, including the 'listing' and 'listing.sharer' fields.
-	 * @param reserverId - The ID of the Reserver entity on the ReservationRequest.
-	 * @param options - Optional find options for querying.
-	 * @returns A promise that resolves to an array of ReservationRequestEntityReference objects or null if not found.
-	 */
 	async getActiveByReserverIdWithListingWithSharer(
 		reserverId: string,
 		options?: FindOptions,
 	): Promise<
 		Domain.Contexts.ReservationRequest.ReservationRequest.ReservationRequestEntityReference[]
 	> {
-		// Real implementation, commented out for the time being
-		// const filter = {
-		// 	reserver: new MongooseSeedwork.ObjectId(reserverId),
-		// 	state: { $in: ['Accepted', 'Requested'] },
-		// };
-		// const result = await this.mongoDataSource.find(filter, { ...options, populateFields: ['listing', 'listing.sharer'] });
-		// return result.map((doc) => this.converter.toDomain(doc, this.passport));
-
-		// Mock result for active reservations, uses await to avoid error
 		const mockResult = await Promise.resolve(
 			getMockReservationRequests(reserverId, 'active'),
 		);
@@ -134,27 +99,12 @@ export class ReservationRequestReadRepositoryImpl
 		return Promise.resolve(mockResult);
 	}
 
-	/**
-	 * Retrieves an array of past ReservationRequest entities by the id of its reserver field, including the 'listing' and 'listing.sharer' fields.
-	 * @param reserverId - The ID of the Reserver entity on the ReservationRequest.
-	 * @param options - Optional find options for querying.
-	 * @returns A promise that resolves to an array of ReservationRequestEntityReference objects or null if not found.
-	 */
 	async getPastByReserverIdWithListingWithSharer(
 		reserverId: string,
 		options?: FindOptions,
 	): Promise<
 		Domain.Contexts.ReservationRequest.ReservationRequest.ReservationRequestEntityReference[]
 	> {
-		// Real implementation, commented out for the time being
-		// const filter = {
-		// 	reserver: new MongooseSeedwork.ObjectId(reserverId),
-		// 	state: { $in: ['Cancelled', 'Closed', 'Rejected'] },
-		// };
-		// const result = await this.mongoDataSource.find(filter, { ...options, populateFields: ['listing', 'listing.sharer'] });
-		// return result.map((doc) => this.converter.toDomain(doc, this.passport));
-
-		// Mock result for past reservations, uses await to avoid error
 		const mockResult = await Promise.resolve(
 			getMockReservationRequests(reserverId, 'past'),
 		);
@@ -227,6 +177,65 @@ const getMockReservationRequests = (
 					createdAt: new Date('2024-01-05T09:00:00Z'),
 					updatedAt: new Date('2024-01-13T09:00:00Z'),
 					hasCompletedOnboarding: true,
+					role: {
+						id: 'role-id',
+						roleName: 'user',
+						isDefault: true,
+						roleType: 'personal',
+						createdAt: new Date('2024-01-01T09:00:00Z'),
+						updatedAt: new Date('2024-01-13T09:00:00Z'),
+						schemaVersion: '1',
+						permissions: {
+							listingPermissions: {
+								canCreateItemListing: true,
+								canUpdateItemListing: true,
+								canDeleteItemListing: true,
+								canViewItemListing: true,
+								canPublishItemListing: true,
+								canUnpublishItemListing: true,
+							},
+							conversationPermissions: {
+								canCreateConversation: true,
+								canManageConversation: true,
+								canViewConversation: true,
+							},
+							reservationRequestPermissions: {
+								canCreateReservationRequest: true,
+								canManageReservationRequest: true,
+								canViewReservationRequest: true,
+							},
+						},
+					},
+					loadRole: () =>
+						Promise.resolve({
+							id: 'role-id',
+							roleName: 'user',
+							isDefault: true,
+							roleType: 'personal',
+							createdAt: new Date('2024-01-01T09:00:00Z'),
+							updatedAt: new Date('2024-01-13T09:00:00Z'),
+							schemaVersion: '1',
+							permissions: {
+								listingPermissions: {
+									canCreateItemListing: true,
+									canUpdateItemListing: true,
+									canDeleteItemListing: true,
+									canViewItemListing: true,
+									canPublishItemListing: true,
+									canUnpublishItemListing: true,
+								},
+								conversationPermissions: {
+									canCreateConversation: true,
+									canManageConversation: true,
+									canViewConversation: true,
+								},
+								reservationRequestPermissions: {
+									canCreateReservationRequest: true,
+									canManageReservationRequest: true,
+									canViewReservationRequest: true,
+								},
+							},
+						}),
 				},
 			},
 			reserver: {
@@ -259,6 +268,65 @@ const getMockReservationRequests = (
 				createdAt: new Date('2024-01-01T09:00:00Z'),
 				updatedAt: new Date('2024-01-13T09:00:00Z'),
 				hasCompletedOnboarding: true,
+				role: {
+					id: 'role-id',
+					roleName: 'user',
+					isDefault: true,
+					roleType: 'personal',
+					createdAt: new Date('2024-01-01T09:00:00Z'),
+					updatedAt: new Date('2024-01-13T09:00:00Z'),
+					schemaVersion: '1',
+					permissions: {
+						listingPermissions: {
+							canCreateItemListing: true,
+							canUpdateItemListing: true,
+							canDeleteItemListing: true,
+							canViewItemListing: true,
+							canPublishItemListing: true,
+							canUnpublishItemListing: true,
+						},
+						conversationPermissions: {
+							canCreateConversation: true,
+							canManageConversation: true,
+							canViewConversation: true,
+						},
+						reservationRequestPermissions: {
+							canCreateReservationRequest: true,
+							canManageReservationRequest: true,
+							canViewReservationRequest: true,
+						},
+					},
+				},
+				loadRole: () =>
+					Promise.resolve({
+						id: 'role-id',
+						roleName: 'user',
+						isDefault: true,
+						roleType: 'personal',
+						createdAt: new Date('2024-01-01T09:00:00Z'),
+						updatedAt: new Date('2024-01-13T09:00:00Z'),
+						schemaVersion: '1',
+						permissions: {
+							listingPermissions: {
+								canCreateItemListing: true,
+								canUpdateItemListing: true,
+								canDeleteItemListing: true,
+								canViewItemListing: true,
+								canPublishItemListing: true,
+								canUnpublishItemListing: true,
+							},
+							conversationPermissions: {
+								canCreateConversation: true,
+								canManageConversation: true,
+								canViewConversation: true,
+							},
+							reservationRequestPermissions: {
+								canCreateReservationRequest: true,
+								canManageReservationRequest: true,
+								canViewReservationRequest: true,
+							},
+						},
+					}),
 			},
 			closeRequestedBySharer: false,
 			closeRequestedByReserver: false,
@@ -305,10 +373,98 @@ const getMockReservationRequests = (
 						createdAt: new Date('2024-01-05T09:00:00Z'),
 						updatedAt: new Date('2024-01-13T09:00:00Z'),
 						hasCompletedOnboarding: true,
+						role: {
+							id: 'role-id',
+							roleName: 'user',
+							isDefault: true,
+							roleType: 'personal',
+							createdAt: new Date('2024-01-01T09:00:00Z'),
+							updatedAt: new Date('2024-01-13T09:00:00Z'),
+							schemaVersion: '1',
+							permissions: {
+								listingPermissions: {
+									canCreateItemListing: true,
+									canUpdateItemListing: true,
+									canDeleteItemListing: true,
+									canViewItemListing: true,
+									canPublishItemListing: true,
+									canUnpublishItemListing: true,
+								},
+								conversationPermissions: {
+									canCreateConversation: true,
+									canManageConversation: true,
+									canViewConversation: true,
+								},
+								reservationRequestPermissions: {
+									canCreateReservationRequest: true,
+									canManageReservationRequest: true,
+									canViewReservationRequest: true,
+								},
+							},
+						},
+						loadRole: () =>
+							Promise.resolve({
+								id: 'role-id',
+								roleName: 'user',
+								isDefault: true,
+								roleType: 'personal',
+								createdAt: new Date('2024-01-01T09:00:00Z'),
+								updatedAt: new Date('2024-01-13T09:00:00Z'),
+								schemaVersion: '1',
+								permissions: {
+									listingPermissions: {
+										canCreateItemListing: true,
+										canUpdateItemListing: true,
+										canDeleteItemListing: true,
+										canViewItemListing: true,
+										canPublishItemListing: true,
+										canUnpublishItemListing: true,
+									},
+									conversationPermissions: {
+										canCreateConversation: true,
+										canManageConversation: true,
+										canViewConversation: true,
+									},
+									reservationRequestPermissions: {
+										canCreateReservationRequest: true,
+										canManageReservationRequest: true,
+										canViewReservationRequest: true,
+									},
+								},
+							}),
 					},
 				});
 			},
 			loadReserver: () => {
+				const mockRole = {
+					id: 'role-id',
+					roleName: 'user',
+					isDefault: true,
+					roleType: 'personal',
+					createdAt: new Date('2024-01-01T09:00:00Z'),
+					updatedAt: new Date('2024-01-13T09:00:00Z'),
+					schemaVersion: '1',
+					permissions: {
+						listingPermissions: {
+							canCreateItemListing: true,
+							canUpdateItemListing: true,
+							canDeleteItemListing: true,
+							canViewItemListing: true,
+							canPublishItemListing: true,
+							canUnpublishItemListing: true,
+						},
+						conversationPermissions: {
+							canCreateConversation: true,
+							canManageConversation: true,
+							canViewConversation: true,
+						},
+						reservationRequestPermissions: {
+							canCreateReservationRequest: true,
+							canManageReservationRequest: true,
+							canViewReservationRequest: true,
+						},
+					},
+				};
 				return Promise.resolve({
 					_id: new Types.ObjectId(reserverId),
 					id: reserverId,
@@ -340,6 +496,8 @@ const getMockReservationRequests = (
 					userType: 'personal',
 					isBlocked: false,
 					hasCompletedOnboarding: true,
+					role: mockRole,
+					loadRole: () => Promise.resolve(mockRole),
 				});
 			},
 		},

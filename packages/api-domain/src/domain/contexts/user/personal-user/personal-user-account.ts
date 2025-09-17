@@ -1,25 +1,11 @@
 import { DomainSeedwork } from '@cellix/domain-seedwork';
 import type { UserVisa } from '../user.visa.ts';
 import type { PersonalUserAggregateRoot } from './personal-user.ts';
-import {
-	PersonalUserProfile,
-	type PersonalUserProfileProps,
-	type PersonalUserProfileEntityReference,
-} from './personal-user-account-profile.ts';
-
-export interface PersonalUserAccountProps
-	extends DomainSeedwork.ValueObjectProps {
-	accountType: string;
-	email: string;
-	username: string;
-
-	readonly profile: PersonalUserProfileProps;
-}
-
-export interface PersonalUserAccountEntityReference
-	extends Readonly<Omit<PersonalUserAccountProps, 'profile'>> {
-	readonly profile: PersonalUserProfileEntityReference;
-}
+import { PersonalUserProfile } from './personal-user-account-profile.ts';
+import type {
+	PersonalUserAccountEntityReference,
+	PersonalUserAccountProps,
+} from './personal-user-account.entity.ts';
 
 export class PersonalUserAccount
 	extends DomainSeedwork.ValueObject<PersonalUserAccountProps>
