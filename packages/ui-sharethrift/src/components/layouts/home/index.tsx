@@ -4,8 +4,8 @@ import AdminDashboardRoutes from './admin-dashboard';
 import MessagesRoutes from './messages/Index';
 import MyListingsRoutes from './my-listings/Index';
 import MyReservationsRoutes from './my-reservations/Index';
-import Listings from './pages/Listings';
-import ViewListing from './pages/ViewListing';
+import Listings from './pages/all-listings-page';
+import ViewListing from './pages/view-listing-page';
 import CreateListing from './pages/create-listing-page';
 import HomeTabsLayout from './section-layout';
 
