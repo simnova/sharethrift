@@ -1,5 +1,5 @@
 import type { UserDomainPermissions } from '../../contexts/user/user.domain-permissions.ts';
-import type { PersonalUserEntityReference } from '../../contexts/user/personal-user/personal-user.ts';
+import type { PersonalUserEntityReference } from '../../contexts/user/personal-user/personal-user.entity.ts';
 import type { UserVisa } from '../../contexts/user/user.visa.ts';
 export class PersonalUserUserVisa<root extends PersonalUserEntityReference>
 	implements UserVisa
@@ -15,6 +15,7 @@ export class PersonalUserUserVisa<root extends PersonalUserEntityReference>
 		func: (permissions: Readonly<UserDomainPermissions>) => boolean,
 	): boolean {
 		const updatedPermissions: UserDomainPermissions = {
+			canCreateUser: false,
 			canBlockUsers: false,
 			canBlockListings: false,
 			canUnblockUsers: false,
