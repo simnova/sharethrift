@@ -167,7 +167,7 @@ export const SettingsView: React.FC<SettingsViewProps> = ({
       key={plan.id}
       className={`cursor-pointer transition-all duration-200 ${styles.planCard} ${plan.isSelected ? styles.selectedPlan : ''}`}
       style={{
-        width: 280,
+        width: 340,
         position: 'relative',
         border: plan.isSelected
           ? '2px solid var(--color-secondary)'
@@ -288,7 +288,7 @@ export const SettingsView: React.FC<SettingsViewProps> = ({
           Edit
         </Button>
       </div>
-      <div style={{ display: 'flex', gap: '24px', justifyContent: 'center', flexWrap: 'wrap', padding: '24px 0' }}>
+      <div style={{ display: 'flex', gap: '12px', justifyContent: 'center', flexWrap: 'wrap', padding: '8px 0' }}>
         {PLAN_OPTIONS.map((plan) => renderPlanCard(plan))}
       </div>
     </Card>
@@ -355,20 +355,18 @@ export const SettingsView: React.FC<SettingsViewProps> = ({
       <div className={styles.settingsHeader}>
         <h1 className="title42">Account Settings</h1>
       </div>
-      
-      <Divider />
-      
-      <Space direction="vertical" size="large" className={styles.sectionsContainer}>
-        {renderProfileSection()}
-        <Divider />
-        {renderLocationSection()}
-        <Divider />
-        {renderPlanSection()}
-        <Divider />
-        {renderBillingSection()}
-        <Divider />
-        {renderPasswordSection()}
-      </Space>
+      <Divider style={{ margin: '12px 0' }} />
+      <div className={styles.sectionsContainer} style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+        <div style={{ marginBottom: 0 }}>{renderProfileSection()}</div>
+        <Divider style={{ margin: '12px 0' }} />
+        <div style={{ marginBottom: 0 }}>{renderLocationSection()}</div>
+        <Divider style={{ margin: '12px 0' }} />
+        <div style={{ marginBottom: 0 }}>{renderPlanSection()}</div>
+        <Divider style={{ margin: '12px 0' }} />
+        <div style={{ marginBottom: 0 }}>{renderBillingSection()}</div>
+        <Divider style={{ margin: '12px 0' }} />
+        <div style={{ marginBottom: 0 }}>{renderPasswordSection()}</div>
+      </div>
     </div>
   );
 };
