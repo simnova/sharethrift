@@ -296,7 +296,8 @@ export const SettingsView: React.FC<SettingsViewProps> = ({
 
   const renderBillingSection = () => {
     const billing = user.billing;
-    const hasCard = billing && billing.cardNumber && billing.nameOnCard;
+    const hasCard = false;
+    /*const hasCard = billing && billing.cardNumber && billing.nameOnCard;*/
     return (
       <Card className={styles.sectionCard}>
         <div className={styles.sectionHeader}>
@@ -315,36 +316,36 @@ export const SettingsView: React.FC<SettingsViewProps> = ({
               <div>
                 <Text className="label">Cardholder Name</Text>
                 <br />
-                <p>{billing.nameOnCard}</p>
+                <p>{/*billing.nameOnCard*/}</p>
               </div>
               <div>
                 <Text className="label">Card Number</Text>
                 <br />
-                <p>{billing.cardNumber}</p>
+                <p>{/*billing.cardNumber*/}</p>
               </div>
               <div style={{ display: 'flex', gap: 16 }}>
                 <div>
                   <Text className="label">Expiration</Text>
                   <br />
-                  <p>{billing.expiration}</p>
+                  <p>{/*billing.expiration*/}</p>
                 </div>
                 <div>
                   <Text className="label">Security Code</Text>
                   <br />
-                  <p>{billing.securityCode}</p>
+                  <p>{/*billing.securityCode*/}</p>
                 </div>
               </div>
               <div>
                 <Text className="label">Billing Address</Text>
                 <br />
                 <p>
-                  {billing.address1}<br />
-                  {billing.address2 && (<>{billing.address2}<br /></>)}
-                  {billing.city}, {billing.state} {billing.zipCode}<br />
-                  {billing.country}
+                  {/*billing.address1*/}<br />
+                  {/*billing.address2 && (<>{billing.address2}<br /></>)*/}
+                  {/*billing.city*/}, {/*billing.state*/} {/*billing.zipCode*/}<br />
+                  {/*billing.country*/}
                 </p>
               </div>
-              {billing.subscriptionId && (
+              {billing && billing.subscriptionId && (
                 <div>
                   <Text className="label">Subscription ID</Text>
                   <br />
