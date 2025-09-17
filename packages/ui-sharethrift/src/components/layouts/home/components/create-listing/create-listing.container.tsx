@@ -116,4 +116,4 @@ export const CreateListingContainer: React.FC<CreateListingContainerProps> = ({
 			onImageRemove={handleImageRemove}
 		/>
 	);
-}
+};
