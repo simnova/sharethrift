@@ -26,12 +26,21 @@ export class ItemListingRepository<
 	// biome-ignore lint:noRequireAwait
 	async getNewInstance(
 		sharer: Domain.Contexts.User.PersonalUser.PersonalUserEntityReference,
+		fields: {
+			title: string;
+			description: string;
+			category: string;
+			location: string;
+			sharingPeriodStart: Date;
+			sharingPeriodEnd: Date;
+			images?: string[];
+			isDraft?: boolean;
+		},
 	): Promise<Domain.Contexts.Listing.ItemListing.ItemListing<PropType>> {
-		const adapter = this.typeConverter.toAdapter(new this.model());
 		return Promise.resolve(
 			Domain.Contexts.Listing.ItemListing.ItemListing.getNewInstance(
-				adapter,
 				sharer,
+				fields,
 				this.passport,
 			),
 		);

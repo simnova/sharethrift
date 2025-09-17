@@ -10,6 +10,7 @@ export interface ItemListingCreateCommand {
 	sharingPeriodStart: Date;
 	sharingPeriodEnd: Date;
 	images?: string[];
+	isDraft?: boolean;
 }
 
 export const create = (dataSources: DataSources) => {
@@ -30,18 +31,16 @@ export const create = (dataSources: DataSources) => {
 			| undefined;
 		await dataSources.domainDataSource.Listing.ItemListing.ItemListingUnitOfWork.withScopedTransaction(
 			async (repo) => {
-				const newItemListing = await repo.getNewInstance(sharer);
-
-				// Set all the properties from the command
-				newItemListing.title = command.title;
-				newItemListing.description = command.description;
-				newItemListing.category = command.category;
-				newItemListing.location = command.location;
-				newItemListing.sharingPeriodStart = command.sharingPeriodStart;
-				newItemListing.sharingPeriodEnd = command.sharingPeriodEnd;
-				if (command.images && command.images.length > 0) {
-					newItemListing.images = command.images;
-				}
+				const newItemListing = await repo.getNewInstance(sharer, {
+					title: command.title,
+					description: command.description,
+					category: command.category,
+					location: command.location,
+					sharingPeriodStart: command.sharingPeriodStart,
+					sharingPeriodEnd: command.sharingPeriodEnd,
+					images: command.images,
+					isDraft: command.isDraft,
+				});
 
 				itemListingToReturn = await repo.save(newItemListing);
 			},

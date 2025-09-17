@@ -25,8 +25,17 @@ export class ItemListing<props extends ItemListingProps>
 
 	//#region Methods
 	public static getNewInstance<props extends ItemListingProps>(
-		newProps: props,
 		sharer: PersonalUserEntityReference,
+		fields: {
+			title: string;
+			description: string;
+			category: string;
+			location: string;
+			sharingPeriodStart: Date;
+			sharingPeriodEnd: Date;
+			images?: string[];
+			isDraft?: boolean;
+		},
 		passport: Passport,
 	): ItemListing<props> {
 		const id = crypto.randomUUID();
@@ -35,14 +44,16 @@ export class ItemListing<props extends ItemListingProps>
 		const itemListingProps = {
 			id,
 			sharer: sharer,
-			title: newProps.title,
-			description: newProps.description,
-			category: newProps.category,
-			location: newProps.location,
-			sharingPeriodStart: newProps.sharingPeriodStart,
-			sharingPeriodEnd: newProps.sharingPeriodEnd,
-			images: newProps.images ?? [],
-			state: ValueObjects.ListingState.Published,
+			title: fields.title,
+			description: new ValueObjects.Description(fields.description),
+			category: new ValueObjects.Category(fields.category),
+			location: new ValueObjects.Location(fields.location),
+			sharingPeriodStart: fields.sharingPeriodStart,
+			sharingPeriodEnd: fields.sharingPeriodEnd,
+			images: fields.images ?? [],
+			state: fields.isDraft
+				? ValueObjects.ListingState.Draft
+				: ValueObjects.ListingState.Published,
 			createdAt: now,
 			updatedAt: now,
 			schemaVersion: 1,
