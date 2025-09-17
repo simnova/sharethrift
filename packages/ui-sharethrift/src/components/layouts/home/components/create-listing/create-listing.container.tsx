@@ -15,9 +15,9 @@ interface CreateListingContainerProps {
 	isAuthenticated?: boolean;
 }
 
-export const CreateListingContainer: React.FC<CreateListingContainerProps> = ({
-	isAuthenticated,
-}) => {
+export const CreateListingContainer: React.FC<CreateListingContainerProps> = (
+	props,
+) => {
 	const navigate = useNavigate();
 	const [uploadedImages, setUploadedImages] = useState<string[]>([]);
 
@@ -70,7 +70,7 @@ export const CreateListingContainer: React.FC<CreateListingContainerProps> = ({
 		formData: CreateListingFormData,
 		isDraft: boolean,
 	) => {
-		if (!isAuthenticated) {
+		if (!props.isAuthenticated) {
 			// Store the intended destination for after login
 			sessionStorage.setItem('redirectTo', '/create-listing');
 			navigate('/auth-redirect');
