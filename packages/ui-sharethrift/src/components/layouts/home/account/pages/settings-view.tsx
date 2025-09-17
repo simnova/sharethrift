@@ -294,40 +294,77 @@ export const SettingsView: React.FC<SettingsViewProps> = ({
     </Card>
   );
 
-  const renderBillingSection = () => (
-    <Card className={styles.sectionCard}>
-      <div className={styles.sectionHeader}>
-        <h2>Billing</h2>
-        <Button 
-          icon={<EditOutlined />} 
-          onClick={() => handleEdit('billing')}
-          type="primary"
-        >
-          Edit
-        </Button>
-      </div>
-      
-      <Space direction="vertical" size="large" className={styles.billingInfo}>
-        <div>
-          <Text className="label">Payment Method</Text>
-          <br />
-          <p>No payment method on file</p>
+  const renderBillingSection = () => {
+    const billing = user.billing;
+    const hasCard = billing && billing.cardNumber && billing.nameOnCard;
+    return (
+      <Card className={styles.sectionCard}>
+        <div className={styles.sectionHeader}>
+          <h2>Billing</h2>
+          <Button 
+            icon={<EditOutlined />} 
+            onClick={() => handleEdit('billing')}
+            type="primary"
+          >
+            Edit
+          </Button>
         </div>
-        <div>
-          <Text className="label">Billing Address</Text>
-          <br />
-          <p>Same as profile address</p>
-        </div>
-        {user.billing?.subscriptionId && (
-          <div>
-            <Text className="label">Subscription ID</Text>
-            <br />
-            <p>{user.billing.subscriptionId}</p>
-          </div>
-        )}
-      </Space>
-    </Card>
-  );
+        <Space direction="vertical" size="large" className={styles.billingInfo}>
+          {hasCard ? (
+            <>
+              <div>
+                <Text className="label">Cardholder Name</Text>
+                <br />
+                <p>{billing.nameOnCard}</p>
+              </div>
+              <div>
+                <Text className="label">Card Number</Text>
+                <br />
+                <p>{billing.cardNumber}</p>
+              </div>
+              <div style={{ display: 'flex', gap: 16 }}>
+                <div>
+                  <Text className="label">Expiration</Text>
+                  <br />
+                  <p>{billing.expiration}</p>
+                </div>
+                <div>
+                  <Text className="label">Security Code</Text>
+                  <br />
+                  <p>{billing.securityCode}</p>
+                </div>
+              </div>
+              <div>
+                <Text className="label">Billing Address</Text>
+                <br />
+                <p>
+                  {billing.address1}<br />
+                  {billing.address2 && (<>{billing.address2}<br /></>)}
+                  {billing.city}, {billing.state} {billing.zipCode}<br />
+                  {billing.country}
+                </p>
+              </div>
+              {billing.subscriptionId && (
+                <div>
+                  <Text className="label">Subscription ID</Text>
+                  <br />
+                  <p>{billing.subscriptionId}</p>
+                </div>
+              )}
+            </>
+          ) : (
+            <>
+              <div>
+                <Text className="label">Payment Method</Text>
+                <br />
+                <p>No payment method on file</p>
+              </div>
+            </>
+          )}
+        </Space>
+      </Card>
+    );
+  };
 
   const renderPasswordSection = () => (
     <Card className={styles.sectionCard}>
@@ -355,16 +392,16 @@ export const SettingsView: React.FC<SettingsViewProps> = ({
       <div className={styles.settingsHeader}>
         <h1 className="title42">Account Settings</h1>
       </div>
-      <Divider style={{ margin: '12px 0' }} />
+      <Divider style={{ margin: '8px 0' }} />
       <div className={styles.sectionsContainer} style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
         <div style={{ marginBottom: 0 }}>{renderProfileSection()}</div>
-        <Divider style={{ margin: '12px 0' }} />
+        <Divider style={{ margin: '8px 0' }} />
         <div style={{ marginBottom: 0 }}>{renderLocationSection()}</div>
-        <Divider style={{ margin: '12px 0' }} />
+        <Divider style={{ margin: '8px 0' }} />
         <div style={{ marginBottom: 0 }}>{renderPlanSection()}</div>
-        <Divider style={{ margin: '12px 0' }} />
+        <Divider style={{ margin: '8px 0' }} />
         <div style={{ marginBottom: 0 }}>{renderBillingSection()}</div>
-        <Divider style={{ margin: '12px 0' }} />
+        <Divider style={{ margin: '8px 0' }} />
         <div style={{ marginBottom: 0 }}>{renderPasswordSection()}</div>
       </div>
     </div>
