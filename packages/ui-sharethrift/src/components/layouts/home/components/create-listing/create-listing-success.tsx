@@ -4,22 +4,24 @@ import styles from './modals.module.css';
 import '@sthrift/ui-sharethrift-components/src/styles/theme.css';
 import confettiImg from '@sthrift/ui-sharethrift-components/src/assets/item-images/confetti.png';
 
-export const SuccessPublished: React.FC<{
+interface SuccessPublishedProps {
 	visible: boolean;
 	loading?: boolean;
 	onClose?: () => void;
-}> = ({ visible, loading, onClose }) => {
+}
+
+export const SuccessPublished: React.FC<SuccessPublishedProps> = (props) => {
 	const navigate = useNavigate();
 	return (
 		<Modal
-			open={visible}
+			open={props.visible}
 			footer={null}
 			closable={false}
 			centered
 			className={styles['modalRoot']}
 		>
 			<div className={styles['content']}>
-				{loading ? (
+				{props.loading ? (
 					<>
 						<Spin size="large" />
 						<div
@@ -46,7 +48,7 @@ export const SuccessPublished: React.FC<{
 							<Button
 								type="primary"
 								className="primaryButton"
-								onClick={onClose}
+								onClick={props.onClose}
 							>
 								View Listing
 							</Button>
