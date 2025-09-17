@@ -1,4 +1,4 @@
-type ItemListing implements Listing & MongoBase {
+type ItemListing implements MongoBase {
 	sharer: User!
 	title: String!
 	description: String!

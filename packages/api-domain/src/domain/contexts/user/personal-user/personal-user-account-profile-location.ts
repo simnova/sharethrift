@@ -25,7 +25,7 @@ export class PersonalUserAccountProfileLocation
 	get address1() {
 		return this.props.address1;
 	}
-	get address2(): string | undefined {
+	get address2(): string | null {
 		return this.props.address2;
 	}
 	get city() {

@@ -29,14 +29,16 @@ query HomeAccountProfileViewContainerUserListings {
 		state
 		images
 		sharer {
-			id
-			account {
-				profile {
-					firstName
-					lastName
-					location {
-						city
-						state
+			... on PersonalUser {
+				id
+				account {
+					profile {
+						firstName
+						lastName
+						location {
+							city
+							state
+						}
 					}
 				}
 			}

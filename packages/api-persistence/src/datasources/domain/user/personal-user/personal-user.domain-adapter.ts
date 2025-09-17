@@ -173,14 +173,14 @@ export class PersonalUserAccountProfileBillingDomainAdapter
 		this.props = props;
 	}
 	//Primitive Field Getters and Setters
-	get subscriptionId(): string | undefined {
-		return this.props.subscriptionId;
+	get subscriptionId(): string | null {
+		return this.props.subscriptionId ?? null;
 	}
 	set subscriptionId(value: string) {
 		this.props.subscriptionId = value;
 	}
-	get cybersourceCustomerId(): string | undefined {
-		return this.props.cybersourceCustomerId;
+	get cybersourceCustomerId(): string | null {
+		return this.props.cybersourceCustomerId ?? null;
 	}
 	set cybersourceCustomerId(value: string) {
 		this.props.cybersourceCustomerId = value;
@@ -206,7 +206,7 @@ export class PersonalUserAccountProfileLocationDomainAdapter
 	set address1(value: string) {
 		this.props.address1 = value;
 	}
-	get address2(): string | undefined {
+	get address2(): string | null {
 		return this.props.address2;
 	}
 	set address2(value: string) {

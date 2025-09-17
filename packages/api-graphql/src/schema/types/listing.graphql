@@ -1,18 +1,1 @@
-interface Listing implements MongoBase {
-	sharer: User!
-	title: String!
-	description: String!
-	category: String!
-	location: String!
-	sharingPeriodStart: DateTime!
-	state: String
-	sharingPeriodEnd: DateTime!
-	sharingHistory: [String!]
-	reports: Int
-	images: [String!] # Array of image URLs
-	id: ObjectID!
-	schemaVersion: String
-	createdAt: DateTime
-	updatedAt: DateTime
-	version: Int
-}
+union Listing = ItemListing # Add other types later

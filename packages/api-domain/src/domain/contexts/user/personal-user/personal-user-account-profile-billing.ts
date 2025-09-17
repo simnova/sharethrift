@@ -21,10 +21,10 @@ export class PersonalUserAccountProfileBilling
 		this.visa = visa;
 		this.root = root;
 	}
-	get subscriptionId(): string | undefined {
+	get subscriptionId(): string | null {
 		return this.props.subscriptionId;
 	}
-	get cybersourceCustomerId(): string | undefined {
+	get cybersourceCustomerId(): string | null {
 		return this.props.cybersourceCustomerId;
 	}
 

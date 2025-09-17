@@ -14,18 +14,21 @@ import { PersonalUserRolePermissions } from '../../role/personal-user-role/perso
 // Minimal test-only mocks for missing domain value objects
 class PersonalUserAccountProfileLocation {
 	readonly address1: string;
+	readonly address2: string | null;
 	readonly city: string;
 	readonly state: string;
 	readonly country: string;
 	readonly zipCode: string;
 	constructor(props: {
 		address1: string;
+		address2: string | null;
 		city: string;
 		state: string;
 		country: string;
 		zipCode: string;
 	}) {
 		this.address1 = props.address1;
+		this.address2 = props.address2;
 		this.city = props.city;
 		this.state = props.state;
 		this.country = props.country;
@@ -142,6 +145,7 @@ describe('ReservationRequest', () => {
 					lastName: 'User',
 					location: new PersonalUserAccountProfileLocation({
 						address1: '123 Main St',
+						address2: null,
 						city: 'Springfield',
 						state: 'IL',
 						country: 'USA',

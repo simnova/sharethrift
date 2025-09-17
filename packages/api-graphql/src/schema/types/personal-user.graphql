@@ -1,11 +1,39 @@
-type PersonalUser implements User & MongoBase {
+type PersonalUser implements MongoBase {
 	userType: String
 	isBlocked: Boolean
-	account: UserAccount
+	account: PersonalUserAccount
 	id: ObjectID!
 	schemaVersion: String
 	createdAt: DateTime
 	updatedAt: DateTime
+}
+
+type PersonalUserAccount {
+	accountType: String
+	email: String
+	username: String
+	profile: PersonalUserAccountProfile
+}
+
+type PersonalUserAccountProfile {
+	firstName: String
+	lastName: String
+	location: PersonalUserAccountProfileLocation
+	billing: PersonalUserAccountProfileBilling
+}
+
+type PersonalUserAccountProfileLocation {
+	address1: String
+	address2: String
+	city: String
+	state: String
+	country: String
+	zipCode: String
+}
+
+type PersonalUserAccountProfileBilling {
+	subscriptionId: String
+	cybersourceCustomerId: String
 }
 
 input PersonalUserCreateInput {

@@ -16,14 +16,16 @@ query ViewListing($id: ObjectID!) {
 		reports
 		sharingHistory
 		sharer {
-			id
-			account {
-				profile {
-					firstName
-					lastName
-					location {
-						city
-						state
+			... on PersonalUser {
+				id
+				account {
+					profile {
+						firstName
+						lastName
+						location {
+							city
+							state
+						}
 					}
 				}
 			}

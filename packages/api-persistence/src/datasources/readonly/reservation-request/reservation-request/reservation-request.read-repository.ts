@@ -162,6 +162,7 @@ const getMockReservationRequests = (
 							lastName: 'Reserver',
 							location: {
 								address1: '123 Main St',
+								address2: null,
 								city: 'Boston',
 								state: 'MA',
 								country: 'USA',
@@ -250,6 +251,7 @@ const getMockReservationRequests = (
 						lastName: 'Reserver',
 						location: {
 							address1: '123 Main St',
+							address2: null,
 							city: 'Boston',
 							state: 'MA',
 							country: 'USA',
@@ -356,6 +358,7 @@ const getMockReservationRequests = (
 								lastName: 'Reserver',
 								location: {
 									address1: '123 Main St',
+									address2: null,
 									city: 'Boston',
 									state: 'MA',
 									country: 'USA',
@@ -475,6 +478,7 @@ const getMockReservationRequests = (
 							lastName: 'Reserver',
 							location: {
 								address1: '123 Main St',
+								address2: null,
 								city: 'Boston',
 								state: 'MA',
 								country: 'USA',

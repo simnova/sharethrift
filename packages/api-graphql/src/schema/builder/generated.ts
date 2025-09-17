@@ -144,28 +144,8 @@ export type ConversationMutationResult = MutationResult & {
   status: MutationStatus;
 };
 
-export type ItemListing = Listing &
-  MongoBase & {
-    __typename?: "ItemListing";
-    category: Scalars["String"]["output"];
-    createdAt?: Maybe<Scalars["DateTime"]["output"]>;
-    description: Scalars["String"]["output"];
-    id: Scalars["ObjectID"]["output"];
-    images?: Maybe<Array<Scalars["String"]["output"]>>;
-    location: Scalars["String"]["output"];
-    reports?: Maybe<Scalars["Int"]["output"]>;
-    schemaVersion?: Maybe<Scalars["String"]["output"]>;
-    sharer: User;
-    sharingHistory?: Maybe<Array<Scalars["String"]["output"]>>;
-    sharingPeriodEnd: Scalars["DateTime"]["output"];
-    sharingPeriodStart: Scalars["DateTime"]["output"];
-    state?: Maybe<Scalars["String"]["output"]>;
-    title: Scalars["String"]["output"];
-    updatedAt?: Maybe<Scalars["DateTime"]["output"]>;
-    version?: Maybe<Scalars["Int"]["output"]>;
-  };
-
-export type Listing = {
+export type ItemListing = MongoBase & {
+  __typename?: "ItemListing";
   category: Scalars["String"]["output"];
   createdAt?: Maybe<Scalars["DateTime"]["output"]>;
   description: Scalars["String"]["output"];
@@ -183,6 +163,8 @@ export type Listing = {
   updatedAt?: Maybe<Scalars["DateTime"]["output"]>;
   version?: Maybe<Scalars["Int"]["output"]>;
 };
+
+export type Listing = ItemListing;
 
 /** Base type for all models in mongo. */
 export type MongoBase = {
@@ -238,23 +220,44 @@ export type MutationStatus = {
   success: Scalars["Boolean"]["output"];
 };
 
-export type PersonalUser = MongoBase &
-  User & {
-    __typename?: "PersonalUser";
-    account?: Maybe<UserAccount>;
-    createdAt?: Maybe<Scalars["DateTime"]["output"]>;
-    id: Scalars["ObjectID"]["output"];
-    isBlocked?: Maybe<Scalars["Boolean"]["output"]>;
-    schemaVersion?: Maybe<Scalars["String"]["output"]>;
-    updatedAt?: Maybe<Scalars["DateTime"]["output"]>;
-    userType?: Maybe<Scalars["String"]["output"]>;
-  };
+export type PersonalUser = MongoBase & {
+  __typename?: "PersonalUser";
+  account?: Maybe<PersonalUserAccount>;
+  createdAt?: Maybe<Scalars["DateTime"]["output"]>;
+  id: Scalars["ObjectID"]["output"];
+  isBlocked?: Maybe<Scalars["Boolean"]["output"]>;
+  schemaVersion?: Maybe<Scalars["String"]["output"]>;
+  updatedAt?: Maybe<Scalars["DateTime"]["output"]>;
+  userType?: Maybe<Scalars["String"]["output"]>;
+};
+
+export type PersonalUserAccount = {
+  __typename?: "PersonalUserAccount";
+  accountType?: Maybe<Scalars["String"]["output"]>;
+  email?: Maybe<Scalars["String"]["output"]>;
+  profile?: Maybe<PersonalUserAccountProfile>;
+  username?: Maybe<Scalars["String"]["output"]>;
+};
 
 export type PersonalUserAccountInput = {
   accountType?: InputMaybe<Scalars["String"]["input"]>;
   email?: InputMaybe<Scalars["String"]["input"]>;
   profile?: InputMaybe<PersonalUserAccountProfileInput>;
   username?: InputMaybe<Scalars["String"]["input"]>;
+};
+
+export type PersonalUserAccountProfile = {
+  __typename?: "PersonalUserAccountProfile";
+  billing?: Maybe<PersonalUserAccountProfileBilling>;
+  firstName?: Maybe<Scalars["String"]["output"]>;
+  lastName?: Maybe<Scalars["String"]["output"]>;
+  location?: Maybe<PersonalUserAccountProfileLocation>;
+};
+
+export type PersonalUserAccountProfileBilling = {
+  __typename?: "PersonalUserAccountProfileBilling";
+  cybersourceCustomerId?: Maybe<Scalars["String"]["output"]>;
+  subscriptionId?: Maybe<Scalars["String"]["output"]>;
 };
 
 export type PersonalUserAccountProfileBillingInput = {
@@ -272,6 +275,16 @@ export type PersonalUserAccountProfileInput = {
   firstName?: InputMaybe<Scalars["String"]["input"]>;
   lastName?: InputMaybe<Scalars["String"]["input"]>;
   location?: InputMaybe<PersonalUserAccountProfileLocationInput>;
+};
+
+export type PersonalUserAccountProfileLocation = {
+  __typename?: "PersonalUserAccountProfileLocation";
+  address1?: Maybe<Scalars["String"]["output"]>;
+  address2?: Maybe<Scalars["String"]["output"]>;
+  city?: Maybe<Scalars["String"]["output"]>;
+  country?: Maybe<Scalars["String"]["output"]>;
+  state?: Maybe<Scalars["String"]["output"]>;
+  zipCode?: Maybe<Scalars["String"]["output"]>;
 };
 
 export type PersonalUserAccountProfileLocationInput = {
@@ -384,47 +397,7 @@ export type ReservationRequestMutationResult = MutationResult & {
 
 export type ReservationRequestState = "Accepted" | "Cancelled" | "Closed" | "Rejected" | "Requested";
 
-export type User = {
-  account?: Maybe<UserAccount>;
-  createdAt?: Maybe<Scalars["DateTime"]["output"]>;
-  id: Scalars["ObjectID"]["output"];
-  isBlocked?: Maybe<Scalars["Boolean"]["output"]>;
-  schemaVersion?: Maybe<Scalars["String"]["output"]>;
-  updatedAt?: Maybe<Scalars["DateTime"]["output"]>;
-  userType?: Maybe<Scalars["String"]["output"]>;
-};
-
-export type UserAccount = {
-  __typename?: "UserAccount";
-  accountType?: Maybe<Scalars["String"]["output"]>;
-  email?: Maybe<Scalars["String"]["output"]>;
-  profile?: Maybe<UserAccountProfile>;
-  username?: Maybe<Scalars["String"]["output"]>;
-};
-
-export type UserAccountProfile = {
-  __typename?: "UserAccountProfile";
-  billing?: Maybe<UserAccountProfileBilling>;
-  firstName?: Maybe<Scalars["String"]["output"]>;
-  lastName?: Maybe<Scalars["String"]["output"]>;
-  location?: Maybe<UserAccountProfileLocation>;
-};
-
-export type UserAccountProfileBilling = {
-  __typename?: "UserAccountProfileBilling";
-  cybersourceCustomerId?: Maybe<Scalars["String"]["output"]>;
-  subscriptionId?: Maybe<Scalars["String"]["output"]>;
-};
-
-export type UserAccountProfileLocation = {
-  __typename?: "UserAccountProfileLocation";
-  address1?: Maybe<Scalars["String"]["output"]>;
-  address2?: Maybe<Scalars["String"]["output"]>;
-  city?: Maybe<Scalars["String"]["output"]>;
-  country?: Maybe<Scalars["String"]["output"]>;
-  state?: Maybe<Scalars["String"]["output"]>;
-  zipCode?: Maybe<Scalars["String"]["output"]>;
-};
+export type User = PersonalUser;
 
 export type WithIndex<TObject> = TObject & Record<string, any>;
 export type ResolversObject<TObject> = WithIndex<TObject>;
@@ -495,9 +468,14 @@ export type DirectiveResolverFn<TResult = {}, TParent = {}, TContext = {}, TArgs
   info: GraphQLResolveInfo,
 ) => TResult | Promise<TResult>;
 
+/** Mapping of union types */
+export type ResolversUnionTypes<_RefType extends Record<string, unknown>> = ResolversObject<{
+  Listing: Omit<ItemListing, "sharer"> & { sharer: _RefType["User"] };
+  User: PersonalUser;
+}>;
+
 /** Mapping of interface types */
 export type ResolversInterfaceTypes<_RefType extends Record<string, unknown>> = ResolversObject<{
-  Listing: Omit<ItemListing, "sharer"> & { sharer: _RefType["User"] };
   MongoBase:
     | (Omit<Conversation, "listing" | "reserver" | "sharer"> & { listing: _RefType["Listing"]; reserver: _RefType["User"]; sharer: _RefType["User"] })
     | (Omit<ItemListing, "sharer"> & { sharer: _RefType["User"] })
@@ -506,7 +484,6 @@ export type ResolversInterfaceTypes<_RefType extends Record<string, unknown>> = 
   MutationResult:
     | (Omit<ConversationMutationResult, "conversation"> & { conversation?: Maybe<_RefType["Conversation"]> })
     | (Omit<ReservationRequestMutationResult, "reservationRequest"> & { reservationRequest?: Maybe<_RefType["ReservationRequest"]> });
-  User: PersonalUser;
 }>;
 
 /** Mapping between all available schema types and the resolvers types */
@@ -563,7 +540,7 @@ export type ResolversTypes = ResolversObject<{
   JWT: ResolverTypeWrapper<Scalars["JWT"]["output"]>;
   LCCSubclass: ResolverTypeWrapper<Scalars["LCCSubclass"]["output"]>;
   Latitude: ResolverTypeWrapper<Scalars["Latitude"]["output"]>;
-  Listing: ResolverTypeWrapper<ResolversInterfaceTypes<ResolversTypes>["Listing"]>;
+  Listing: ResolverTypeWrapper<ResolversUnionTypes<ResolversTypes>["Listing"]>;
   LocalDate: ResolverTypeWrapper<Scalars["LocalDate"]["output"]>;
   LocalDateTime: ResolverTypeWrapper<Scalars["LocalDateTime"]["output"]>;
   LocalEndTime: ResolverTypeWrapper<Scalars["LocalEndTime"]["output"]>;
@@ -586,10 +563,14 @@ export type ResolversTypes = ResolversObject<{
   NonPositiveInt: ResolverTypeWrapper<Scalars["NonPositiveInt"]["output"]>;
   ObjectID: ResolverTypeWrapper<Scalars["ObjectID"]["output"]>;
   PersonalUser: ResolverTypeWrapper<PersonalUser>;
+  PersonalUserAccount: ResolverTypeWrapper<PersonalUserAccount>;
   PersonalUserAccountInput: PersonalUserAccountInput;
+  PersonalUserAccountProfile: ResolverTypeWrapper<PersonalUserAccountProfile>;
+  PersonalUserAccountProfileBilling: ResolverTypeWrapper<PersonalUserAccountProfileBilling>;
   PersonalUserAccountProfileBillingInput: PersonalUserAccountProfileBillingInput;
   PersonalUserAccountProfileBillingUpdateInput: PersonalUserAccountProfileBillingUpdateInput;
   PersonalUserAccountProfileInput: PersonalUserAccountProfileInput;
+  PersonalUserAccountProfileLocation: ResolverTypeWrapper<PersonalUserAccountProfileLocation>;
   PersonalUserAccountProfileLocationInput: PersonalUserAccountProfileLocationInput;
   PersonalUserAccountProfileLocationUpdateInput: PersonalUserAccountProfileLocationUpdateInput;
   PersonalUserAccountProfileUpdateInput: PersonalUserAccountProfileUpdateInput;
@@ -622,11 +603,7 @@ export type ResolversTypes = ResolversObject<{
   UUID: ResolverTypeWrapper<Scalars["UUID"]["output"]>;
   UnsignedFloat: ResolverTypeWrapper<Scalars["UnsignedFloat"]["output"]>;
   UnsignedInt: ResolverTypeWrapper<Scalars["UnsignedInt"]["output"]>;
-  User: ResolverTypeWrapper<ResolversInterfaceTypes<ResolversTypes>["User"]>;
-  UserAccount: ResolverTypeWrapper<UserAccount>;
-  UserAccountProfile: ResolverTypeWrapper<UserAccountProfile>;
-  UserAccountProfileBilling: ResolverTypeWrapper<UserAccountProfileBilling>;
-  UserAccountProfileLocation: ResolverTypeWrapper<UserAccountProfileLocation>;
+  User: ResolverTypeWrapper<ResolversUnionTypes<ResolversTypes>["User"]>;
   UtcOffset: ResolverTypeWrapper<Scalars["UtcOffset"]["output"]>;
   Void: ResolverTypeWrapper<Scalars["Void"]["output"]>;
 }>;
@@ -680,7 +657,7 @@ export type ResolversParentTypes = ResolversObject<{
   JWT: Scalars["JWT"]["output"];
   LCCSubclass: Scalars["LCCSubclass"]["output"];
   Latitude: Scalars["Latitude"]["output"];
-  Listing: ResolversInterfaceTypes<ResolversParentTypes>["Listing"];
+  Listing: ResolversUnionTypes<ResolversParentTypes>["Listing"];
   LocalDate: Scalars["LocalDate"]["output"];
   LocalDateTime: Scalars["LocalDateTime"]["output"];
   LocalEndTime: Scalars["LocalEndTime"]["output"];
@@ -703,10 +680,14 @@ export type ResolversParentTypes = ResolversObject<{
   NonPositiveInt: Scalars["NonPositiveInt"]["output"];
   ObjectID: Scalars["ObjectID"]["output"];
   PersonalUser: PersonalUser;
+  PersonalUserAccount: PersonalUserAccount;
   PersonalUserAccountInput: PersonalUserAccountInput;
+  PersonalUserAccountProfile: PersonalUserAccountProfile;
+  PersonalUserAccountProfileBilling: PersonalUserAccountProfileBilling;
   PersonalUserAccountProfileBillingInput: PersonalUserAccountProfileBillingInput;
   PersonalUserAccountProfileBillingUpdateInput: PersonalUserAccountProfileBillingUpdateInput;
   PersonalUserAccountProfileInput: PersonalUserAccountProfileInput;
+  PersonalUserAccountProfileLocation: PersonalUserAccountProfileLocation;
   PersonalUserAccountProfileLocationInput: PersonalUserAccountProfileLocationInput;
   PersonalUserAccountProfileLocationUpdateInput: PersonalUserAccountProfileLocationUpdateInput;
   PersonalUserAccountProfileUpdateInput: PersonalUserAccountProfileUpdateInput;
@@ -738,11 +719,7 @@ export type ResolversParentTypes = ResolversObject<{
   UUID: Scalars["UUID"]["output"];
   UnsignedFloat: Scalars["UnsignedFloat"]["output"];
   UnsignedInt: Scalars["UnsignedInt"]["output"];
-  User: ResolversInterfaceTypes<ResolversParentTypes>["User"];
-  UserAccount: UserAccount;
-  UserAccountProfile: UserAccountProfile;
-  UserAccountProfileBilling: UserAccountProfileBilling;
-  UserAccountProfileLocation: UserAccountProfileLocation;
+  User: ResolversUnionTypes<ResolversParentTypes>["User"];
   UtcOffset: Scalars["UtcOffset"]["output"];
   Void: Scalars["Void"]["output"];
 }>;
@@ -971,22 +948,6 @@ export type ListingResolvers<
   ParentType extends ResolversParentTypes["Listing"] = ResolversParentTypes["Listing"],
 > = ResolversObject<{
   __resolveType: TypeResolveFn<"ItemListing", ParentType, ContextType>;
-  category?: Resolver<ResolversTypes["String"], ParentType, ContextType>;
-  createdAt?: Resolver<Maybe<ResolversTypes["DateTime"]>, ParentType, ContextType>;
-  description?: Resolver<ResolversTypes["String"], ParentType, ContextType>;
-  id?: Resolver<ResolversTypes["ObjectID"], ParentType, ContextType>;
-  images?: Resolver<Maybe<Array<ResolversTypes["String"]>>, ParentType, ContextType>;
-  location?: Resolver<ResolversTypes["String"], ParentType, ContextType>;
-  reports?: Resolver<Maybe<ResolversTypes["Int"]>, ParentType, ContextType>;
-  schemaVersion?: Resolver<Maybe<ResolversTypes["String"]>, ParentType, ContextType>;
-  sharer?: Resolver<ResolversTypes["User"], ParentType, ContextType>;
-  sharingHistory?: Resolver<Maybe<Array<ResolversTypes["String"]>>, ParentType, ContextType>;
-  sharingPeriodEnd?: Resolver<ResolversTypes["DateTime"], ParentType, ContextType>;
-  sharingPeriodStart?: Resolver<ResolversTypes["DateTime"], ParentType, ContextType>;
-  state?: Resolver<Maybe<ResolversTypes["String"]>, ParentType, ContextType>;
-  title?: Resolver<ResolversTypes["String"], ParentType, ContextType>;
-  updatedAt?: Resolver<Maybe<ResolversTypes["DateTime"]>, ParentType, ContextType>;
-  version?: Resolver<Maybe<ResolversTypes["Int"]>, ParentType, ContextType>;
 }>;
 
 export interface LocalDateScalarConfig extends GraphQLScalarTypeConfig<ResolversTypes["LocalDate"], any> {
@@ -1110,13 +1071,57 @@ export type PersonalUserResolvers<
   ContextType = GraphContext,
   ParentType extends ResolversParentTypes["PersonalUser"] = ResolversParentTypes["PersonalUser"],
 > = ResolversObject<{
-  account?: Resolver<Maybe<ResolversTypes["UserAccount"]>, ParentType, ContextType>;
+  account?: Resolver<Maybe<ResolversTypes["PersonalUserAccount"]>, ParentType, ContextType>;
   createdAt?: Resolver<Maybe<ResolversTypes["DateTime"]>, ParentType, ContextType>;
   id?: Resolver<ResolversTypes["ObjectID"], ParentType, ContextType>;
   isBlocked?: Resolver<Maybe<ResolversTypes["Boolean"]>, ParentType, ContextType>;
   schemaVersion?: Resolver<Maybe<ResolversTypes["String"]>, ParentType, ContextType>;
   updatedAt?: Resolver<Maybe<ResolversTypes["DateTime"]>, ParentType, ContextType>;
   userType?: Resolver<Maybe<ResolversTypes["String"]>, ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+}>;
+
+export type PersonalUserAccountResolvers<
+  ContextType = GraphContext,
+  ParentType extends ResolversParentTypes["PersonalUserAccount"] = ResolversParentTypes["PersonalUserAccount"],
+> = ResolversObject<{
+  accountType?: Resolver<Maybe<ResolversTypes["String"]>, ParentType, ContextType>;
+  email?: Resolver<Maybe<ResolversTypes["String"]>, ParentType, ContextType>;
+  profile?: Resolver<Maybe<ResolversTypes["PersonalUserAccountProfile"]>, ParentType, ContextType>;
+  username?: Resolver<Maybe<ResolversTypes["String"]>, ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+}>;
+
+export type PersonalUserAccountProfileResolvers<
+  ContextType = GraphContext,
+  ParentType extends ResolversParentTypes["PersonalUserAccountProfile"] = ResolversParentTypes["PersonalUserAccountProfile"],
+> = ResolversObject<{
+  billing?: Resolver<Maybe<ResolversTypes["PersonalUserAccountProfileBilling"]>, ParentType, ContextType>;
+  firstName?: Resolver<Maybe<ResolversTypes["String"]>, ParentType, ContextType>;
+  lastName?: Resolver<Maybe<ResolversTypes["String"]>, ParentType, ContextType>;
+  location?: Resolver<Maybe<ResolversTypes["PersonalUserAccountProfileLocation"]>, ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+}>;
+
+export type PersonalUserAccountProfileBillingResolvers<
+  ContextType = GraphContext,
+  ParentType extends ResolversParentTypes["PersonalUserAccountProfileBilling"] = ResolversParentTypes["PersonalUserAccountProfileBilling"],
+> = ResolversObject<{
+  cybersourceCustomerId?: Resolver<Maybe<ResolversTypes["String"]>, ParentType, ContextType>;
+  subscriptionId?: Resolver<Maybe<ResolversTypes["String"]>, ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+}>;
+
+export type PersonalUserAccountProfileLocationResolvers<
+  ContextType = GraphContext,
+  ParentType extends ResolversParentTypes["PersonalUserAccountProfileLocation"] = ResolversParentTypes["PersonalUserAccountProfileLocation"],
+> = ResolversObject<{
+  address1?: Resolver<Maybe<ResolversTypes["String"]>, ParentType, ContextType>;
+  address2?: Resolver<Maybe<ResolversTypes["String"]>, ParentType, ContextType>;
+  city?: Resolver<Maybe<ResolversTypes["String"]>, ParentType, ContextType>;
+  country?: Resolver<Maybe<ResolversTypes["String"]>, ParentType, ContextType>;
+  state?: Resolver<Maybe<ResolversTypes["String"]>, ParentType, ContextType>;
+  zipCode?: Resolver<Maybe<ResolversTypes["String"]>, ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 }>;
 
@@ -1257,57 +1262,6 @@ export type UserResolvers<
   ParentType extends ResolversParentTypes["User"] = ResolversParentTypes["User"],
 > = ResolversObject<{
   __resolveType: TypeResolveFn<"PersonalUser", ParentType, ContextType>;
-  account?: Resolver<Maybe<ResolversTypes["UserAccount"]>, ParentType, ContextType>;
-  createdAt?: Resolver<Maybe<ResolversTypes["DateTime"]>, ParentType, ContextType>;
-  id?: Resolver<ResolversTypes["ObjectID"], ParentType, ContextType>;
-  isBlocked?: Resolver<Maybe<ResolversTypes["Boolean"]>, ParentType, ContextType>;
-  schemaVersion?: Resolver<Maybe<ResolversTypes["String"]>, ParentType, ContextType>;
-  updatedAt?: Resolver<Maybe<ResolversTypes["DateTime"]>, ParentType, ContextType>;
-  userType?: Resolver<Maybe<ResolversTypes["String"]>, ParentType, ContextType>;
-}>;
-
-export type UserAccountResolvers<
-  ContextType = GraphContext,
-  ParentType extends ResolversParentTypes["UserAccount"] = ResolversParentTypes["UserAccount"],
-> = ResolversObject<{
-  accountType?: Resolver<Maybe<ResolversTypes["String"]>, ParentType, ContextType>;
-  email?: Resolver<Maybe<ResolversTypes["String"]>, ParentType, ContextType>;
-  profile?: Resolver<Maybe<ResolversTypes["UserAccountProfile"]>, ParentType, ContextType>;
-  username?: Resolver<Maybe<ResolversTypes["String"]>, ParentType, ContextType>;
-  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
-}>;
-
-export type UserAccountProfileResolvers<
-  ContextType = GraphContext,
-  ParentType extends ResolversParentTypes["UserAccountProfile"] = ResolversParentTypes["UserAccountProfile"],
-> = ResolversObject<{
-  billing?: Resolver<Maybe<ResolversTypes["UserAccountProfileBilling"]>, ParentType, ContextType>;
-  firstName?: Resolver<Maybe<ResolversTypes["String"]>, ParentType, ContextType>;
-  lastName?: Resolver<Maybe<ResolversTypes["String"]>, ParentType, ContextType>;
-  location?: Resolver<Maybe<ResolversTypes["UserAccountProfileLocation"]>, ParentType, ContextType>;
-  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
-}>;
-
-export type UserAccountProfileBillingResolvers<
-  ContextType = GraphContext,
-  ParentType extends ResolversParentTypes["UserAccountProfileBilling"] = ResolversParentTypes["UserAccountProfileBilling"],
-> = ResolversObject<{
-  cybersourceCustomerId?: Resolver<Maybe<ResolversTypes["String"]>, ParentType, ContextType>;
-  subscriptionId?: Resolver<Maybe<ResolversTypes["String"]>, ParentType, ContextType>;
-  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
-}>;
-
-export type UserAccountProfileLocationResolvers<
-  ContextType = GraphContext,
-  ParentType extends ResolversParentTypes["UserAccountProfileLocation"] = ResolversParentTypes["UserAccountProfileLocation"],
-> = ResolversObject<{
-  address1?: Resolver<Maybe<ResolversTypes["String"]>, ParentType, ContextType>;
-  address2?: Resolver<Maybe<ResolversTypes["String"]>, ParentType, ContextType>;
-  city?: Resolver<Maybe<ResolversTypes["String"]>, ParentType, ContextType>;
-  country?: Resolver<Maybe<ResolversTypes["String"]>, ParentType, ContextType>;
-  state?: Resolver<Maybe<ResolversTypes["String"]>, ParentType, ContextType>;
-  zipCode?: Resolver<Maybe<ResolversTypes["String"]>, ParentType, ContextType>;
-  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 }>;
 
 export interface UtcOffsetScalarConfig extends GraphQLScalarTypeConfig<ResolversTypes["UtcOffset"], any> {
@@ -1380,6 +1334,10 @@ export type Resolvers<ContextType = GraphContext> = ResolversObject<{
   NonPositiveInt?: GraphQLScalarType;
   ObjectID?: GraphQLScalarType;
   PersonalUser?: PersonalUserResolvers<ContextType>;
+  PersonalUserAccount?: PersonalUserAccountResolvers<ContextType>;
+  PersonalUserAccountProfile?: PersonalUserAccountProfileResolvers<ContextType>;
+  PersonalUserAccountProfileBilling?: PersonalUserAccountProfileBillingResolvers<ContextType>;
+  PersonalUserAccountProfileLocation?: PersonalUserAccountProfileLocationResolvers<ContextType>;
   PhoneNumber?: GraphQLScalarType;
   Port?: GraphQLScalarType;
   PositiveFloat?: GraphQLScalarType;
@@ -1403,10 +1361,6 @@ export type Resolvers<ContextType = GraphContext> = ResolversObject<{
   UnsignedFloat?: GraphQLScalarType;
   UnsignedInt?: GraphQLScalarType;
   User?: UserResolvers<ContextType>;
-  UserAccount?: UserAccountResolvers<ContextType>;
-  UserAccountProfile?: UserAccountProfileResolvers<ContextType>;
-  UserAccountProfileBilling?: UserAccountProfileBillingResolvers<ContextType>;
-  UserAccountProfileLocation?: UserAccountProfileLocationResolvers<ContextType>;
   UtcOffset?: GraphQLScalarType;
   Void?: GraphQLScalarType;
 }>;
