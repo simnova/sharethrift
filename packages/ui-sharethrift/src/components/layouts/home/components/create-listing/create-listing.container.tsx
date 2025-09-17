@@ -1,3 +1,4 @@
+import type React from 'react';
 import { useState, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { gql, useMutation } from '@apollo/client';
@@ -11,12 +12,12 @@ import { CreateListing, type CreateListingFormData } from './create-listing';
 const CREATE_LISTING_MUTATION = gql(CreateListingMutationSource);
 
 interface CreateListingContainerProps {
-	readonly isAuthenticated?: boolean;
+	isAuthenticated?: boolean;
 }
 
-export function CreateListingContainer({
+export const CreateListingContainer: React.FC<CreateListingContainerProps> = ({
 	isAuthenticated,
-}: CreateListingContainerProps) {
+}) => {
 	const navigate = useNavigate();
 	const [uploadedImages, setUploadedImages] = useState<string[]>([]);
 

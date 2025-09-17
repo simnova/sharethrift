@@ -20,13 +20,13 @@ export interface CreateListingFormData {
 }
 
 export interface CreateListingProps {
-	readonly categories: string[];
-	readonly isLoading: boolean;
-	readonly onSubmit: (data: CreateListingFormData, isDraft: boolean) => void;
-	readonly onCancel: () => void;
-	readonly uploadedImages: string[];
-	readonly onImageAdd: (imageUrl: string) => void;
-	readonly onImageRemove: (imageUrl: string) => void;
+	categories: string[];
+	isLoading: boolean;
+	onSubmit: (data: CreateListingFormData, isDraft: boolean) => void;
+	onCancel: () => void;
+	uploadedImages: string[];
+	onImageAdd: (imageUrl: string) => void;
+	onImageRemove: (imageUrl: string) => void;
 }
 
 export function CreateListing({
@@ -37,7 +37,7 @@ export function CreateListing({
 	uploadedImages,
 	onImageAdd,
 	onImageRemove,
-}: Readonly<CreateListingProps>) {
+}: CreateListingProps) {
 	const [form] = Form.useForm();
 	const maxCharacters = 2000;
 	const mainFileInputRef = useRef<HTMLInputElement>(null);
