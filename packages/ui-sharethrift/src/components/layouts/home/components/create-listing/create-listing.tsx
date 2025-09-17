@@ -191,7 +191,8 @@ export function CreateListing({
 									]}
 									style={{
 										width: '100%',
-										margin: '0 auto',
+										marginLeft: 'auto',
+										marginRight: 'auto',
 										marginBottom: 0,
 									}}
 								>
@@ -214,7 +215,6 @@ export function CreateListing({
 								<ListingForm
 									categories={categories}
 									isLoading={isLoading}
-									form={form}
 									maxCharacters={maxCharacters}
 									handleFormSubmit={handleFormSubmit}
 									onCancel={onCancel}

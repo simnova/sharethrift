@@ -81,7 +81,9 @@ export function CreateListingContainer({
 		isDraft: boolean,
 	) => {
 		if (!isAuthenticated) {
-			message.error('You must be logged in to create a listing');
+			// Store the intended destination for after login
+			sessionStorage.setItem('redirectTo', '/create-listing');
+			navigate('/auth-redirect');
 			return;
 		}
 
