@@ -2,7 +2,7 @@ import type { Domain } from '@sthrift/api-domain';
 import type { DataSources } from '@sthrift/api-persistence';
 
 export interface ItemListingCreateCommand {
-	sharerId: string;
+	sharer: Domain.Contexts.User.PersonalUser.PersonalUserEntityReference;
 	title: string;
 	description: string;
 	category: string;
@@ -17,15 +17,6 @@ export const create = (dataSources: DataSources) => {
 	return async (
 		command: ItemListingCreateCommand,
 	): Promise<Domain.Contexts.Listing.ItemListing.ItemListingEntityReference> => {
-		const sharer =
-			await dataSources.readonlyDataSource.User.PersonalUser.PersonalUserReadRepo.getById(
-				command.sharerId,
-			);
-		if (!sharer) {
-			throw new Error(
-				`Personal user (sharer) not found for external id ${command.sharerId}`,
-			);
-		}
 		let itemListingToReturn:
 			| Domain.Contexts.Listing.ItemListing.ItemListingEntityReference
 			| undefined;
@@ -54,7 +45,10 @@ export const create = (dataSources: DataSources) => {
 				if (command.isDraft !== undefined) {
 					fields.isDraft = command.isDraft;
 				}
-				const newItemListing = await repo.getNewInstance(sharer, fields);
+				const newItemListing = await repo.getNewInstance(
+					command.sharer,
+					fields,
+				);
 
 				itemListingToReturn = await repo.save(newItemListing);
 			},

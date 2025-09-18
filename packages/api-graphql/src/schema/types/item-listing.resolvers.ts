@@ -51,13 +51,23 @@ const itemListingResolvers = {
 			args: { input: CreateItemListingInput },
 			context: GraphContext,
 		) => {
-			const userId = context.applicationServices.verifiedUser?.verifiedJwt?.sub;
-			if (!userId) {
+			const userEmail =
+				context.applicationServices.verifiedUser?.verifiedJwt?.email;
+			if (!userEmail) {
 				throw new Error('Authentication required');
 			}
 
+			// Find the user by email to get their database ID
+			const user =
+				await context.applicationServices.User.PersonalUser.getByEmail(
+					userEmail,
+				);
+			if (!user) {
+				throw new Error(`User not found for email ${userEmail}`);
+			}
+
 			const command = {
-				sharerId: userId,
+				sharer: user,
 				title: args.input.title,
 				description: args.input.description,
 				category: args.input.category,

@@ -76,7 +76,10 @@ export class ItemListingDomainAdapter
 			throw new Error('listing is not populated');
 		}
 		if (this.doc.sharer instanceof MongooseSeedwork.ObjectId) {
-			throw new Error('listing is not populated or is not of the correct type');
+			// Return a minimal entity reference when sharer is not populated
+			return {
+				id: this.doc.sharer.toString(),
+			} as Domain.Contexts.User.PersonalUser.PersonalUserEntityReference;
 		}
 		return new PersonalUserDomainAdapter(
 			this.doc.sharer as Models.User.PersonalUser,
