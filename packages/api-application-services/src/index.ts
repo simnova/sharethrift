@@ -16,7 +16,7 @@ export interface ApplicationServices {
 	User: UserContextApplicationService;
 	ReservationRequest: ReservationRequestContextApplicationService;
 	get verifiedUser(): VerifiedUser | null;
-    Payment: PaymentApplicationService;
+	Payment: PaymentApplicationService;
 }
 
 export interface VerifiedJwt {
@@ -47,7 +47,9 @@ export type ApplicationServicesFactory = AppServicesHost<ApplicationServices>;
 export const buildApplicationServicesFactory = (
 	infrastructureServicesRegistry: ApiContextSpec,
 ): ApplicationServicesFactory => {
-    const paymentApplicationService = new DefaultPaymentApplicationService(infrastructureServicesRegistry.paymentService);
+	const paymentApplicationService = new DefaultPaymentApplicationService(
+		infrastructureServicesRegistry.paymentService,
+	);
 
 	const forRequest = async (
 		rawAuthHeader?: string,
@@ -72,7 +74,7 @@ export const buildApplicationServicesFactory = (
 
 				if (personalUser) {
 					console.log(passport);
-					passport = Domain.PassportFactory.forSystem(); // temporary create system passport, change to forPersonalUser when it is ready
+					passport = Domain.PassportFactory.forPersonalUser(personalUser);
 				}
 			}
 		}
@@ -94,3 +96,5 @@ export const buildApplicationServicesFactory = (
 		forRequest,
 	};
 };
+
+export type { PersonalUserUpdateCommand } from './contexts/user/personal-user/update.ts';

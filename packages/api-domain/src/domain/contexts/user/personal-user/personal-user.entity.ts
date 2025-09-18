@@ -8,12 +8,13 @@ import type { PersonalUserRoleEntityReference } from '../../role/personal-user-r
 export interface PersonalUserProps extends DomainSeedwork.DomainEntityProps {
 	userType: string;
 	isBlocked: boolean;
-	schemaVersion: string;
+	hasCompletedOnboarding: boolean;
 	role: Readonly<PersonalUserRoleEntityReference>;
 	loadRole: () => Promise<Readonly<PersonalUserRoleEntityReference>>;
 
 	readonly account: PersonalUserAccountProps;
 
+	readonly schemaVersion: string;
 	readonly createdAt: Date;
 	readonly updatedAt: Date;
 }

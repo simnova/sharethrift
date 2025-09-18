@@ -47,7 +47,12 @@ export class PersonalUser<props extends PersonalUserProps>
 	}
 
 	private validateVisa(): void {
-		// TODO
+		if (
+			!this._isNew &&
+			!this.visa.determineIf((permissions) => permissions.isEditingOwnAccount)
+		) {
+			throw new DomainSeedwork.PermissionError('Unauthorized to modify user');
+		}
 	}
 
 	get isNew() {
@@ -59,6 +64,9 @@ export class PersonalUser<props extends PersonalUserProps>
 	}
 	get isBlocked(): boolean {
 		return this.props.isBlocked;
+	}
+	get hasCompletedOnboarding(): boolean {
+		return this.props.hasCompletedOnboarding;
 	}
 	get schemaVersion(): string {
 		return this.props.schemaVersion;
@@ -108,5 +116,14 @@ export class PersonalUser<props extends PersonalUserProps>
 	set isBlocked(value: boolean) {
 		this.validateVisa();
 		this.props.isBlocked = value;
+	}
+	set hasCompletedOnboarding(value: boolean) {
+		if (this.props.hasCompletedOnboarding) {
+			throw new DomainSeedwork.PermissionError(
+				'Users can only be onboarded once.',
+			);
+		}
+
+		this.props.hasCompletedOnboarding = value;
 	}
 }

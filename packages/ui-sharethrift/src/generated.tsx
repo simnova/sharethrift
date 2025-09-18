@@ -332,13 +332,6 @@ export type PersonalUserAccount = {
   username?: Maybe<Scalars["String"]["output"]>;
 };
 
-export type PersonalUserAccountInput = {
-  accountType?: InputMaybe<Scalars["String"]["input"]>;
-  email?: InputMaybe<Scalars["String"]["input"]>;
-  profile?: InputMaybe<PersonalUserAccountProfileInput>;
-  username?: InputMaybe<Scalars["String"]["input"]>;
-};
-
 export type PersonalUserAccountProfile = {
   __typename?: "PersonalUserAccountProfile";
   billing?: Maybe<PersonalUserAccountProfileBilling>;
@@ -356,27 +349,12 @@ export type PersonalUserAccountProfileBilling = {
   subscriptionId?: Maybe<Scalars["String"]["output"]>;
 };
 
-export type PersonalUserAccountProfileBillingInput = {
-  cybersourceCustomerId?: InputMaybe<Scalars["String"]["input"]>;
-  lastPaymentAmount?: InputMaybe<Scalars["Float"]["input"]>;
-  lastTransactionId?: InputMaybe<Scalars["String"]["input"]>;
-  paymentState?: InputMaybe<PaymentState>;
-  subscriptionId?: InputMaybe<Scalars["String"]["input"]>;
-};
-
 export type PersonalUserAccountProfileBillingUpdateInput = {
   cybersourceCustomerId?: InputMaybe<Scalars["String"]["input"]>;
   lastPaymentAmount?: InputMaybe<Scalars["Float"]["input"]>;
   lastTransactionId?: InputMaybe<Scalars["String"]["input"]>;
   paymentState?: InputMaybe<PaymentState>;
   subscriptionId?: InputMaybe<Scalars["String"]["input"]>;
-};
-
-export type PersonalUserAccountProfileInput = {
-  billing?: InputMaybe<PersonalUserAccountProfileBillingInput>;
-  firstName?: InputMaybe<Scalars["String"]["input"]>;
-  lastName?: InputMaybe<Scalars["String"]["input"]>;
-  location?: InputMaybe<PersonalUserAccountProfileLocationInput>;
 };
 
 export type PersonalUserAccountProfileLocation = {
@@ -387,15 +365,6 @@ export type PersonalUserAccountProfileLocation = {
   country?: Maybe<Scalars["String"]["output"]>;
   state?: Maybe<Scalars["String"]["output"]>;
   zipCode?: Maybe<Scalars["String"]["output"]>;
-};
-
-export type PersonalUserAccountProfileLocationInput = {
-  address1: Scalars["String"]["input"];
-  address2?: InputMaybe<Scalars["String"]["input"]>;
-  city: Scalars["String"]["input"];
-  country: Scalars["String"]["input"];
-  state: Scalars["String"]["input"];
-  zipCode: Scalars["String"]["input"];
 };
 
 export type PersonalUserAccountProfileLocationUpdateInput = {
@@ -416,21 +385,14 @@ export type PersonalUserAccountProfileUpdateInput = {
 
 export type PersonalUserAccountUpdateInput = {
   accountType?: InputMaybe<Scalars["String"]["input"]>;
-  email?: InputMaybe<Scalars["String"]["input"]>;
   profile?: InputMaybe<PersonalUserAccountProfileUpdateInput>;
   username?: InputMaybe<Scalars["String"]["input"]>;
-};
-
-export type PersonalUserCreateInput = {
-  account?: InputMaybe<PersonalUserAccountInput>;
-  userType?: InputMaybe<Scalars["String"]["input"]>;
 };
 
 export type PersonalUserUpdateInput = {
   account?: InputMaybe<PersonalUserAccountUpdateInput>;
   id: Scalars["ObjectID"]["input"];
   isBlocked?: InputMaybe<Scalars["Boolean"]["input"]>;
-  userType?: InputMaybe<Scalars["String"]["input"]>;
 };
 
 /**  Base Query Type definition - , all mutations will be defined in separate files extending this type  */

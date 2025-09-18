@@ -1,18 +1,28 @@
 import type { DataSources } from '@sthrift/api-persistence';
 import type { Domain } from '@sthrift/api-domain';
 
-interface PersonalUserUpdateInput {
+export interface PersonalUserUpdateCommand {
 	id: string;
+	isBlocked?: boolean;
 	account: {
+		accountType?: string;
+		username?: string;
 		profile?: {
 			firstName?: string;
 			lastName?: string;
-		};
-	};
-}
 
-export interface PersonalUserUpdateCommand {
-	personalUserUpdateInput: PersonalUserUpdateInput;
+			location?: {
+				address1: string;
+				address2?: string | undefined;
+				city: string;
+				state: string;
+				country: string;
+				zipCode: string;
+			};
+		};
+
+		// TBD: Billing info
+	};
 }
 
 export const update = (datasources: DataSources) => {
@@ -24,23 +34,49 @@ export const update = (datasources: DataSources) => {
 			| undefined;
 		await datasources.domainDataSource.User.PersonalUser.PersonalUserUnitOfWork.withScopedTransaction(
 			async (repo) => {
-				if (!command.personalUserUpdateInput.id) {
+				if (!command.id) {
 					throw new Error('personal user id is required');
 				}
-				const existingPersonalUser = await repo.getById(
-					command.personalUserUpdateInput.id,
-				);
+				const existingPersonalUser = await repo.getById(command.id);
 				if (!existingPersonalUser) {
 					throw new Error('personal user not found');
 				}
-				if (command.personalUserUpdateInput.account?.profile?.firstName) {
+
+				if (command.isBlocked !== undefined) {
+					existingPersonalUser.isBlocked = command.isBlocked;
+				}
+
+				if (command.account) {
+					existingPersonalUser.account.accountType =
+						command.account.accountType ??
+						existingPersonalUser.account.accountType;
+					existingPersonalUser.account.username =
+						command.account.username ?? existingPersonalUser.account.username;
+				}
+
+				if (command.account?.profile) {
 					existingPersonalUser.account.profile.firstName =
-						command.personalUserUpdateInput.account.profile.firstName;
-				}
-				if (command.personalUserUpdateInput.account?.profile?.lastName) {
+						command.account.profile.firstName ??
+						existingPersonalUser.account.profile.firstName;
 					existingPersonalUser.account.profile.lastName =
-						command.personalUserUpdateInput.account.profile.lastName;
+						command.account.profile.lastName ??
+						existingPersonalUser.account.profile.lastName;
 				}
+				if (command.account?.profile?.location) {
+					existingPersonalUser.account.profile.location.address1 =
+						command.account.profile.location.address1;
+					existingPersonalUser.account.profile.location.address2 =
+						command.account.profile.location.address2 ?? '';
+					existingPersonalUser.account.profile.location.city =
+						command.account.profile.location.city;
+					existingPersonalUser.account.profile.location.state =
+						command.account.profile.location.state;
+					existingPersonalUser.account.profile.location.country =
+						command.account.profile.location.country;
+					existingPersonalUser.account.profile.location.zipCode =
+						command.account.profile.location.zipCode;
+				}
+
 				personalUserToReturn = await repo.save(existingPersonalUser);
 			},
 		);

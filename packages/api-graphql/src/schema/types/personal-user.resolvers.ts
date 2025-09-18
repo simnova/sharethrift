@@ -1,7 +1,7 @@
 import type { GraphContext } from '../../init/context.ts';
 import type { GraphQLResolveInfo } from 'graphql';
 import type { PersonalUserUpdateInput } from '../builder/generated.ts';
-
+import type { PersonalUserUpdateCommand } from '@sthrift/api-application-services';
 const personalUserResolvers = {
 	Query: {
 		personalUserById: (
@@ -76,17 +76,9 @@ const personalUserResolvers = {
 			}
 			console.log('personalUserUpdate resolver called with id:', args.input.id);
 			// Implement the logic to update the personal user
-			return await context.applicationServices.User.PersonalUser.update({
-				personalUserUpdateInput: {
-					id: args.input.id,
-					account: {
-						profile: {
-							firstName: args.input.account?.profile?.firstName as string,
-							lastName: args.input.account?.profile?.lastName as string,
-						},
-					},
-				},
-			});
+			return await context.applicationServices.User.PersonalUser.update(
+				args.input as PersonalUserUpdateCommand,
+			);
 		},
 		processPayment: async (
 			_parent: unknown,

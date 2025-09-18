@@ -54,9 +54,11 @@ export class PersonalUserProfile
 	private validateVisa(): void {
 		if (
 			!this.root.isNew &&
-			!this.visa.determineIf((permissions) => permissions.canEditBillingInfo)
+			!this.visa.determineIf((permissions) => permissions.isEditingOwnAccount)
 		) {
-			throw new DomainSeedwork.PermissionError('Cannot set identity details');
+			throw new DomainSeedwork.PermissionError(
+				'Unauthorized to set account profile details',
+			);
 		}
 	}
 

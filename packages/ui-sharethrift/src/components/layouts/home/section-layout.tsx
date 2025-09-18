@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState } from "react";
 import { useAuth } from "react-oidc-context";
 import { Outlet, useLocation, useNavigate } from "react-router-dom";
 import { HandleLogoutMockForMockAuth } from "../../shared/handle-logout";
@@ -46,8 +46,8 @@ export default function HomeTabsLayout() {
       navigate(`/${key}`);
       return;
     }
-    if (key === 'messages') {
-      navigate('/messages');
+    if (key === "messages") {
+      navigate("/messages");
       return;
     }
     const route = routeMap[key];
@@ -64,10 +64,9 @@ export default function HomeTabsLayout() {
       }
     };
     handleResize();
-    window.addEventListener('resize', handleResize);
-    return () => window.removeEventListener('resize', handleResize);
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
   }, [auth.isAuthenticated]);
-
 
   const handleOnLogin = () => {
     navigate("/auth-redirect");
@@ -80,13 +79,13 @@ export default function HomeTabsLayout() {
   const handleLogOut = () => {
     HandleLogoutMockForMockAuth(auth);
   };
-  
+
   return (
-    <div style={{ minHeight: '100vh', width: '100vw', overflowX: 'hidden', display: 'flex', flexDirection: 'column' }}>
-      <Header isAuthenticated={auth.isAuthenticated} onLogin={handleOnLogin} onSignUp={handleOnSignUp} />
-      <div style={{ display: 'flex', flexDirection: 'row', flex: 1, height: '100vh', paddingTop: 64 }}>
+    <div style={{ minHeight: "100vh", width: "100vw", overflowX: "hidden", display: "flex", flexDirection: "column" }}>
+      <Header isAuthenticated={auth.isAuthenticated} onLogin={handleOnLogin} onSignUp={handleOnSignUp} onLogout={handleLogOut} />
+      <div style={{ display: "flex", flexDirection: "row", flex: 1, height: "100vh", paddingTop: 64 }}>
         <Navigation isAuthenticated={auth.isAuthenticated} onNavigate={handleNavigate} onLogout={handleLogOut} selectedKey={getSelectedKey()} />
-        <main style={{ marginLeft: mainMargin, width: '100%' }}>
+        <main style={{ marginLeft: mainMargin, width: "100%" }}>
           <Outlet />
         </main>
       </div>
@@ -94,4 +93,3 @@ export default function HomeTabsLayout() {
     </div>
   );
 }
-

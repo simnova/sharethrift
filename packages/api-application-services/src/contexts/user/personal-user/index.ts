@@ -7,7 +7,6 @@ import {
 } from './create-if-not-exists.ts';
 
 import { update, type PersonalUserUpdateCommand } from './update.ts';
-
 export interface PersonalUserApplicationService {
 	createIfNotExists: (
 		command: PersonalUserCreateCommand,
@@ -22,6 +21,6 @@ export const PersonalUser = (
 ): PersonalUserApplicationService => {
 	return {
 		createIfNotExists: createIfNotExists(dataSources),
-    update: update(dataSources)
+		update: update(dataSources),
 	};
 };

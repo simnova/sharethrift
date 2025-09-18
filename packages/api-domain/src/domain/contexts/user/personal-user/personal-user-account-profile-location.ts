@@ -20,6 +20,7 @@ export class PersonalUserAccountProfileLocation
 		super(props);
 		this.visa = visa;
 		this.root = root;
+		console.log(this.visa); // Temporary added to avoid unused variable error
 	}
 	// Primitive Field Getters
 	get address1() {
@@ -41,18 +42,14 @@ export class PersonalUserAccountProfileLocation
 		return this.props.zipCode;
 	}
 
-	// NestedPath Field Getters
-
-	// PopulateDoc Field Getters
-
-	// DocumentArray Field Getters
-
 	private validateVisa(): void {
 		if (
 			!this.root.isNew &&
-			!this.visa.determineIf((permissions) => permissions.canEditBillingInfo)
+			!this.visa.determineIf((permissions) => permissions.isEditingOwnAccount)
 		) {
-			throw new DomainSeedwork.PermissionError('Cannot set identity details');
+			throw new DomainSeedwork.PermissionError(
+				'Unauthorized to set location info',
+			);
 		}
 	}
 
@@ -61,7 +58,7 @@ export class PersonalUserAccountProfileLocation
 		this.validateVisa();
 		this.props.address1 = value;
 	}
-	set address2(value: string) {
+	set address2(value: string | undefined) {
 		this.validateVisa();
 		this.props.address2 = value;
 	}

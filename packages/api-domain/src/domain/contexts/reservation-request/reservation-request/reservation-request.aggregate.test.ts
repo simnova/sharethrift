@@ -155,6 +155,7 @@ describe('ReservationRequest', () => {
 			},
 			createdAt: new Date(),
 			updatedAt: new Date(),
+			hasCompletedOnboarding: true,
 			role: mockRole,
 			loadRole: async () => mockRole,
 		};

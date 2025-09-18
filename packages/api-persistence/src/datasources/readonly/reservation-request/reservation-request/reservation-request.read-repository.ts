@@ -176,6 +176,7 @@ const getMockReservationRequests = (
 					schemaVersion: '1',
 					createdAt: new Date('2024-01-05T09:00:00Z'),
 					updatedAt: new Date('2024-01-13T09:00:00Z'),
+					hasCompletedOnboarding: true,
 					role: {
 						id: 'role-id',
 						roleName: 'user',
@@ -266,6 +267,7 @@ const getMockReservationRequests = (
 				schemaVersion: '1',
 				createdAt: new Date('2024-01-01T09:00:00Z'),
 				updatedAt: new Date('2024-01-13T09:00:00Z'),
+				hasCompletedOnboarding: true,
 				role: {
 					id: 'role-id',
 					roleName: 'user',
@@ -370,6 +372,7 @@ const getMockReservationRequests = (
 						schemaVersion: '1',
 						createdAt: new Date('2024-01-05T09:00:00Z'),
 						updatedAt: new Date('2024-01-13T09:00:00Z'),
+						hasCompletedOnboarding: true,
 						role: {
 							id: 'role-id',
 							roleName: 'user',
@@ -466,6 +469,7 @@ const getMockReservationRequests = (
 					_id: new Types.ObjectId(reserverId),
 					id: reserverId,
 					name: 'John Doe',
+
 					account: {
 						accountType: 'personal',
 						email: 'reserver@example.com',
@@ -491,6 +495,7 @@ const getMockReservationRequests = (
 					updatedAt: new Date('2024-01-13T09:00:00Z'),
 					userType: 'personal',
 					isBlocked: false,
+					hasCompletedOnboarding: true,
 					role: mockRole,
 					loadRole: () => Promise.resolve(mockRole),
 				});
