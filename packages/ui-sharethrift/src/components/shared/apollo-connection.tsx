@@ -3,7 +3,7 @@ import { ApolloClient, ApolloLink, ApolloProvider, from } from "@apollo/client";
 import { RestLink } from "apollo-link-rest";
 import { useAuth } from "react-oidc-context";
 import {
-  ApolloLinkToAddAuthHeader,
+  ApolloLinkToAddAuthHeaderIfAccessTokenAvailable,
   ApolloLinkToAddCustomHeader,
   BaseApolloLink,
   TerminatingApolloBatchLinkForGraphqlServer,
@@ -31,54 +31,48 @@ export interface ApolloConnectionProps {
 }
 export const ApolloConnection: FC<ApolloConnectionProps> = (props: ApolloConnectionProps) => {
   const auth = useAuth();
-
-  const access_token = auth.isAuthenticated ? auth.user?.access_token : undefined;
-
   /**
    * linkMap is a map of linkChain, where
    * - each linkChain has a terminating link that will make the request to the server
    * - there must be no forwarding link after the terminating link
    */
-  const linkMap = useMemo(
-    () => ({
+  const linkMap = useMemo(() => {
+    return {
       countries: restLinkForCountryDataSource,
       healthProfession: restLinkForHealthProfessionsDataSource,
       cacheEnabled: from([
         BaseApolloLink(),
-        ApolloLinkToAddAuthHeader(access_token),
+        ApolloLinkToAddAuthHeaderIfAccessTokenAvailable(auth.user?.access_token),
         ApolloLinkToAddCustomHeader("Cache-Enabled", "true"),
         apolloHttpLinkForGraphqlDataSource,
       ]),
       default: from([
         BaseApolloLink(),
-        ApolloLinkToAddAuthHeader(access_token),
+        ApolloLinkToAddAuthHeaderIfAccessTokenAvailable(auth.user?.access_token),
         ApolloLinkToAddCustomHeader("Cache-Enabled", "false"),
         apolloBatchHttpLinkForGraphqlDataSource,
       ]),
-    }),
-    [access_token]
-  );
+    };
+  }, [auth.user?.access_token]);
 
-  const client = useMemo(
-    () =>
-      new ApolloClient({
-        cache: ApolloManualMergeCacheFix,
-        link: ApolloLink.split(
-          (operation) => operation.getContext().headers?.["Cache-Enabled"] === "true",
-          linkMap.cacheEnabled,
-          ApolloLink.split(
-            (operation) => operation.operationName in linkMap,
-            new ApolloLink((operation) => {
-              const link = linkMap[operation.operationName as keyof typeof linkMap] || linkMap.default;
-              return link.request(operation);
-            }),
-            linkMap.default
-          )
-        ),
-        devtools: { enabled: import.meta.env.NODE_ENV !== "production" },
-      }),
-    [access_token]
-  );
+  const client = useMemo(() => {
+    return new ApolloClient({
+      cache: ApolloManualMergeCacheFix,
+      link: ApolloLink.split(
+        (operation) => operation.getContext().headers?.["Cache-Enabled"] === "true",
+        linkMap.cacheEnabled,
+        ApolloLink.split(
+          (operation) => operation.operationName in linkMap,
+          new ApolloLink((operation) => {
+            const link = linkMap[operation.operationName as keyof typeof linkMap] || linkMap.default;
+            return link.request(operation);
+          }),
+          linkMap.default
+        )
+      ),
+      devtools: { enabled: import.meta.env.NODE_ENV !== "production" },
+    });
+  }, [linkMap]);
 
   return <ApolloProvider client={client}>{props.children}</ApolloProvider>;
 };
