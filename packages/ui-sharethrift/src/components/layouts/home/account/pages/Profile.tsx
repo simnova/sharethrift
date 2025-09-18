@@ -1,3 +1,5 @@
+import { ProfileViewContainer } from './profile-view.container';
+
 export default function Profile() {
-  return <div>Profile Page</div>;
+  return <ProfileViewContainer />;
 }

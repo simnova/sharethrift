@@ -2,6 +2,8 @@ import { type Model, Schema, type SchemaDefinition } from 'mongoose';
 import { MongooseSeedwork } from '@cellix/data-sources-mongoose';
 import { type User, type UserModelType, userOptions } from './user.model.ts';
 import { Patterns } from '../../patterns.ts';
+import type { ObjectId, PopulatedDoc } from 'mongoose';
+import * as PersonalUserRole from '../role/personal-user-role.model.ts';
 
 // Location
 export interface PersonalUserAccountProfileLocation
@@ -13,14 +15,15 @@ export interface PersonalUserAccountProfileLocation
 	country: string;
 	zipCode: string;
 }
-export const PersonalUserAccountProfileLocationType:SchemaDefinition<PersonalUserAccountProfileLocation> = {
-	address1: { type: String, required: true },
-	address2: { type: String, required: false },
-	city: { type: String, required: true },
-	state: { type: String, required: true },
-	country: { type: String, required: true },
-	zipCode: { type: String, required: true },
-};
+export const PersonalUserAccountProfileLocationType: SchemaDefinition<PersonalUserAccountProfileLocation> =
+	{
+		address1: { type: String, required: true },
+		address2: { type: String, required: false },
+		city: { type: String, required: true },
+		state: { type: String, required: true },
+		country: { type: String, required: true },
+		zipCode: { type: String, required: true },
+	};
 
 // Billing
 export interface PersonalUserAccountProfileBilling
@@ -28,10 +31,11 @@ export interface PersonalUserAccountProfileBilling
 	subscriptionId?: string;
 	cybersourceCustomerId?: string;
 }
-export const PersonalUserAccountProfileBillingType: SchemaDefinition<PersonalUserAccountProfileBilling> = {
-	subscriptionId: { type: String, required: false },
-	cybersourceCustomerId: { type: String, required: false },
-};
+export const PersonalUserAccountProfileBillingType: SchemaDefinition<PersonalUserAccountProfileBilling> =
+	{
+		subscriptionId: { type: String, required: false },
+		cybersourceCustomerId: { type: String, required: false },
+	};
 
 // Profile
 export interface PersonalUserAccountProfile
@@ -41,20 +45,21 @@ export interface PersonalUserAccountProfile
 	location: PersonalUserAccountProfileLocation;
 	billing: PersonalUserAccountProfileBilling;
 }
-export const PersonalUserAccountProfileType: SchemaDefinition<PersonalUserAccountProfile> = {
-	firstName: { type: String, required: true },
-	lastName: { type: String, required: true },
-	location: {
-		type: PersonalUserAccountProfileLocationType,
-		required: false,
-		...MongooseSeedwork.NestedPathOptions,
-	},
-	billing: {
-		type: PersonalUserAccountProfileBillingType,
-		required: false,
-		...MongooseSeedwork.NestedPathOptions,
-	},
-};
+export const PersonalUserAccountProfileType: SchemaDefinition<PersonalUserAccountProfile> =
+	{
+		firstName: { type: String, required: true },
+		lastName: { type: String, required: true },
+		location: {
+			type: PersonalUserAccountProfileLocationType,
+			required: false,
+			...MongooseSeedwork.NestedPathOptions,
+		},
+		billing: {
+			type: PersonalUserAccountProfileBillingType,
+			required: false,
+			...MongooseSeedwork.NestedPathOptions,
+		},
+	};
 
 // Account
 export interface PersonalUserAccount extends MongooseSeedwork.NestedPath {
@@ -79,7 +84,7 @@ export const PersonalUserAccountType: SchemaDefinition<PersonalUserAccount> = {
 	username: {
 		type: String,
 		required: false,
-    unique: true,
+		unique: true,
 	},
 	profile: {
 		type: PersonalUserAccountProfileType,
@@ -91,6 +96,7 @@ export const PersonalUserAccountType: SchemaDefinition<PersonalUserAccount> = {
 export interface PersonalUser extends User {
 	userType: string;
 	isBlocked: boolean;
+	role?: PopulatedDoc<PersonalUserRole.PersonalUserRole> | ObjectId;
 	account: PersonalUserAccount;
 	schemaVersion: string;
 	createdAt: Date;
@@ -103,6 +109,12 @@ const PersonalUserSchema = new Schema<
 	PersonalUser
 >(
 	{
+		role: {
+			type: Schema.Types.ObjectId,
+			ref: PersonalUserRole.PersonalUserRoleModelName,
+			required: false,
+			index: true,
+		},
 		isBlocked: { type: Boolean, required: false },
 		account: {
 			type: PersonalUserAccountType,

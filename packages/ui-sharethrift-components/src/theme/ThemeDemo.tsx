@@ -132,6 +132,11 @@ export const ThemeDemo: React.FC = () => (
   <Tag className={styles["reserverIcon"] ?? ""} >
         <UserOutlined style={{ color: 'var(--color-background)', fontSize: 16 }}/>
       </Tag>
+
+    <Tag className={styles["personalAccount"] ?? ""} >
+        <UserOutlined style={{ color: 'var(--color-background)', fontSize: 16 }}/>
+        Personal
+    </Tag>
     </div>
     <DatePicker.RangePicker
               placeholder={["Start date", "End date"]}
