@@ -29,7 +29,7 @@ const reservationRequest = {
             context: GraphContext,
             _info: GraphQLResolveInfo,
         ) => {
-            // Ideally would use external id from JWT here
+            // Ideally would use an id from the JWT instead of passing userId. Or verify the userId
             return await context.applicationServices.ReservationRequest.ReservationRequest.queryActiveByReserverIdAndListingId({
                 listingId: args.listingId,
                 reserverId: args.userId
