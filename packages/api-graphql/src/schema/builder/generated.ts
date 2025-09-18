@@ -122,14 +122,14 @@ export type CloseReservationInput = {
 /** GraphQL schema for Conversations */
 export type Conversation = MongoBase & {
   __typename?: "Conversation";
-  createdAt: Scalars["DateTime"]["output"];
+  createdAt?: Maybe<Scalars["DateTime"]["output"]>;
   id: Scalars["ObjectID"]["output"];
-  listing: Listing;
-  reserver: User;
-  schemaVersion: Scalars["String"]["output"];
-  sharer: User;
-  twilioConversationId: Scalars["String"]["output"];
-  updatedAt: Scalars["DateTime"]["output"];
+  listing?: Maybe<Listing>;
+  reserver?: Maybe<User>;
+  schemaVersion?: Maybe<Scalars["String"]["output"]>;
+  sharer?: Maybe<User>;
+  twilioConversationId?: Maybe<Scalars["String"]["output"]>;
+  updatedAt?: Maybe<Scalars["DateTime"]["output"]>;
 };
 
 export type ItemListing = MongoBase & {
@@ -840,14 +840,14 @@ export type ConversationResolvers<
   ContextType = GraphContext,
   ParentType extends ResolversParentTypes["Conversation"] = ResolversParentTypes["Conversation"],
 > = ResolversObject<{
-  createdAt?: Resolver<ResolversTypes["DateTime"], ParentType, ContextType>;
+  createdAt?: Resolver<Maybe<ResolversTypes["DateTime"]>, ParentType, ContextType>;
   id?: Resolver<ResolversTypes["ObjectID"], ParentType, ContextType>;
-  listing?: Resolver<ResolversTypes["Listing"], ParentType, ContextType>;
-  reserver?: Resolver<ResolversTypes["User"], ParentType, ContextType>;
-  schemaVersion?: Resolver<ResolversTypes["String"], ParentType, ContextType>;
-  sharer?: Resolver<ResolversTypes["User"], ParentType, ContextType>;
-  twilioConversationId?: Resolver<ResolversTypes["String"], ParentType, ContextType>;
-  updatedAt?: Resolver<ResolversTypes["DateTime"], ParentType, ContextType>;
+  listing?: Resolver<Maybe<ResolversTypes["Listing"]>, ParentType, ContextType>;
+  reserver?: Resolver<Maybe<ResolversTypes["User"]>, ParentType, ContextType>;
+  schemaVersion?: Resolver<Maybe<ResolversTypes["String"]>, ParentType, ContextType>;
+  sharer?: Resolver<Maybe<ResolversTypes["User"]>, ParentType, ContextType>;
+  twilioConversationId?: Resolver<Maybe<ResolversTypes["String"]>, ParentType, ContextType>;
+  updatedAt?: Resolver<Maybe<ResolversTypes["DateTime"]>, ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 }>;
 

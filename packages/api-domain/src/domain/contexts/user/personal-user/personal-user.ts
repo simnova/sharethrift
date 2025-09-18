@@ -33,7 +33,6 @@ export class PersonalUser<props extends PersonalUserProps>
 	): PersonalUser<props> {
 		const newInstance = new PersonalUser(newProps, passport);
 		newInstance.markAsNew();
-		newInstance._isNew = true;
 		//field assignments
 		newInstance.account.email = email;
 		newInstance.account.profile.firstName = firstName;

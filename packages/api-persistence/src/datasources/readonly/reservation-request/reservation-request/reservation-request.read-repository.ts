@@ -170,6 +170,9 @@ const getMockReservationRequests = (
 							billing: {
 								subscriptionId: '98765789',
 								cybersourceCustomerId: '87654345678',
+								paymentState: 'active',
+								lastTransactionId: 'txn-123456',
+								lastPaymentAmount: 100.0,
 							},
 						},
 					},
@@ -259,6 +262,9 @@ const getMockReservationRequests = (
 						billing: {
 							subscriptionId: '98765789',
 							cybersourceCustomerId: '87654345678',
+							paymentState: 'active',
+							lastTransactionId: 'txn-123456',
+							lastPaymentAmount: 100.0,
 						},
 					},
 				},
@@ -366,6 +372,9 @@ const getMockReservationRequests = (
 								billing: {
 									subscriptionId: '98765789',
 									cybersourceCustomerId: '87654345678',
+									paymentState: 'active',
+									lastTransactionId: 'txn-123456',
+									lastPaymentAmount: 100.0,
 								},
 							},
 						},
@@ -487,6 +496,9 @@ const getMockReservationRequests = (
 							billing: {
 								subscriptionId: '98765789',
 								cybersourceCustomerId: '87654345678',
+								paymentState: 'active',
+								lastTransactionId: 'txn-123456',
+								lastPaymentAmount: 100.0,
 							},
 						},
 					},
