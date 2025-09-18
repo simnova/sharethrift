@@ -132,6 +132,17 @@ export type Conversation = MongoBase & {
   updatedAt: Scalars["DateTime"]["output"];
 };
 
+export type CreateItemListingInput = {
+  category: Scalars["String"]["input"];
+  description: Scalars["String"]["input"];
+  images?: InputMaybe<Array<Scalars["String"]["input"]>>;
+  isDraft?: InputMaybe<Scalars["Boolean"]["input"]>;
+  location: Scalars["String"]["input"];
+  sharingPeriodEnd: Scalars["DateTime"]["input"];
+  sharingPeriodStart: Scalars["DateTime"]["input"];
+  title: Scalars["String"]["input"];
+};
+
 export type CreateReservationRequestInput = {
   listingId: Scalars["ObjectID"]["input"];
   reservationPeriodEnd: Scalars["DateTime"]["input"];
@@ -191,6 +202,7 @@ export type Mutation = {
   _empty?: Maybe<Scalars["String"]["output"]>;
   cancelReservation: ReservationRequest;
   closeReservation: ReservationRequest;
+  createItemListing: ItemListing;
   createReservationRequest: ReservationRequest;
 };
 
@@ -202,6 +214,11 @@ export type MutationCancelReservationArgs = {
 /**  Base Mutation Type definition - all mutations will be defined in separate files extending this type  */
 export type MutationCloseReservationArgs = {
   input: CloseReservationInput;
+};
+
+/**  Base Mutation Type definition - all mutations will be defined in separate files extending this type  */
+export type MutationCreateItemListingArgs = {
+  input: CreateItemListingInput;
 };
 
 /**  Base Mutation Type definition - all mutations will be defined in separate files extending this type  */
@@ -510,6 +527,7 @@ export type ResolversTypes = ResolversObject<{
   Conversation: ResolverTypeWrapper<Conversation>;
   CountryCode: ResolverTypeWrapper<Scalars["CountryCode"]["output"]>;
   CountryName: ResolverTypeWrapper<Scalars["CountryName"]["output"]>;
+  CreateItemListingInput: CreateItemListingInput;
   CreateReservationRequestInput: CreateReservationRequestInput;
   Cuid: ResolverTypeWrapper<Scalars["Cuid"]["output"]>;
   Currency: ResolverTypeWrapper<Scalars["Currency"]["output"]>;
@@ -621,6 +639,7 @@ export type ResolversParentTypes = ResolversObject<{
   Conversation: Conversation;
   CountryCode: Scalars["CountryCode"]["output"];
   CountryName: Scalars["CountryName"]["output"];
+  CreateItemListingInput: CreateItemListingInput;
   CreateReservationRequestInput: CreateReservationRequestInput;
   Cuid: Scalars["Cuid"]["output"];
   Currency: Scalars["Currency"]["output"];
@@ -994,6 +1013,7 @@ export type MutationResolvers<
   _empty?: Resolver<Maybe<ResolversTypes["String"]>, ParentType, ContextType>;
   cancelReservation?: Resolver<ResolversTypes["ReservationRequest"], ParentType, ContextType, RequireFields<MutationCancelReservationArgs, "input">>;
   closeReservation?: Resolver<ResolversTypes["ReservationRequest"], ParentType, ContextType, RequireFields<MutationCloseReservationArgs, "input">>;
+  createItemListing?: Resolver<ResolversTypes["ItemListing"], ParentType, ContextType, RequireFields<MutationCreateItemListingArgs, "input">>;
   createReservationRequest?: Resolver<
     ResolversTypes["ReservationRequest"],
     ParentType,

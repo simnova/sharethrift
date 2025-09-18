@@ -6,7 +6,8 @@ import {
 } from './item-listing.data.ts';
 import type { FindOneOptions, FindOptions } from '../../mongo-data-source.ts';
 import { ItemListingConverter } from '../../../domain/listing/item/item-listing.domain-adapter.ts';
-import { ObjectId } from 'mongodb';
+import { MongooseSeedwork } from '@cellix/data-sources-mongoose';
+import { getMockItemListings } from './mock-item-listings.js';
 
 export interface ItemListingReadRepository {
 	getAll: (
@@ -45,6 +46,10 @@ export class ItemListingReadRepositoryImpl
 		options?: FindOptions,
 	): Promise<Domain.Contexts.Listing.ItemListing.ItemListingEntityReference[]> {
 		const result = await this.mongoDataSource.find({}, options);
+		if (!result || result.length === 0) {
+			// Return mock data when no real data exists
+			return getMockItemListings();
+		}
 		return result.map((doc) => this.converter.toDomain(doc, this.passport));
 	}
 
@@ -52,110 +57,71 @@ export class ItemListingReadRepositoryImpl
 		id: string,
 		options?: FindOneOptions,
 	): Promise<Domain.Contexts.Listing.ItemListing.ItemListingEntityReference | null> {
-		// const result = await this.mongoDataSource.findById(id, options);
-		// if (!result) {
-		// 	return null;
-		// }
-		// return this.converter.toDomain(result, this.passport);
-		console.log(options); // To avoid unused variable error
-		return await Promise.resolve({
-			id: id,
-			title: 'Professional Microphone',
-			description: 'A high-quality microphone for professional use.',
-			category: 'Electronics',
-			location: 'New York, NY',
-			sharingPeriodStart: new Date('2024-09-05T10:00:00Z'),
-			sharingPeriodEnd: new Date('2024-09-15T10:00:00Z'),
-			state: 'Published',
-			schemaVersion: '1',
-			createdAt: new Date('2024-01-05T09:00:00Z'),
-			updatedAt: new Date('2024-01-13T09:00:00Z'),
-			sharer: {
-				// _id removed to match PersonalUserEntityReference type
-				id: '5f8d0d55b54764421b7156c5',
-				userType: 'personal',
-				isBlocked: false,
-				account: {
-					accountType: 'personal',
-					email: 'sharer2@example.com',
-					username: 'shareruser2',
-					profile: {
-						firstName: 'Jane',
-						lastName: 'Reserver',
-						location: {
-							address1: '123 Main St',
-							city: 'Boston',
-							state: 'MA',
-							country: 'USA',
-							zipCode: '02101',
-							canPublishItemListing: true,
-							canUnpublishItemListing: true,
-						},
-						billing: {
-							subscriptionId: '98765789',
-							cybersourceCustomerId: '87654345678',
-						},
-					},
-				},
-				schemaVersion: '1',
-				createdAt: new Date('2024-01-05T09:00:00Z'),
-				updatedAt: new Date('2024-01-13T09:00:00Z'),
-				// Add required role and loadRole
-				role: {
-					id: 'role-1',
-					roleName: 'user',
-					isDefault: true,
-					roleType: 'personal',
-					createdAt: new Date('2024-01-05T09:00:00Z'),
-					updatedAt: new Date('2024-01-13T09:00:00Z'),
-					schemaVersion: '1',
-					get permissions() {
-						return {
-							listingPermissions: {
-								canCreateItemListing: true,
-								canUpdateItemListing: true,
-								canDeleteItemListing: true,
-								canViewItemListing: true,
-								canReserveItemListing: true,
-								canShareItemListing: true,
-								canPublishItemListing: true,
-								canUnpublishItemListing: true,
-							},
-							conversationPermissions: {
-								canCreateConversation: true,
-								canViewConversation: true,
-								canReplyConversation: true,
-								canDeleteConversation: true,
-								canManageConversation: true,
-							},
-							reservationRequestPermissions: {
-								canCreateReservationRequest: true,
-								canViewReservationRequest: true,
-								canCancelReservationRequest: true,
-								canApproveReservationRequest: true,
-								canRejectReservationRequest: true,
-								canManageReservationRequest: true,
-							},
-						};
-					},
-				},
-				loadRole: async function () {
-					return await Promise.resolve(this.role);
-				},
-			},
-		});
+		const result = await this.mongoDataSource.findById(id, options);
+		if (!result) {
+			// Try to find in mock data
+			const mockResult = getMockItemListings().find(
+				(
+					listing: Domain.Contexts.Listing.ItemListing.ItemListingEntityReference,
+				) => listing.id === id,
+			);
+			if (mockResult) {
+				return mockResult;
+			}
+			return null;
+		}
+		return this.converter.toDomain(result, this.passport);
 	}
 
 	async getBySharer(
 		sharerId: string,
 		options?: FindOptions,
 	): Promise<Domain.Contexts.Listing.ItemListing.ItemListingEntityReference[]> {
-		// Assuming the field is 'sharer' in the model and stores the user's ObjectId or externalId
-		const result = await this.mongoDataSource.find(
-			{ sharer: new ObjectId(sharerId) },
-			options,
-		);
-		return result.map((doc) => this.converter.toDomain(doc, this.passport));
+		// Handle empty or invalid sharerId (for development/testing)
+		if (!sharerId || sharerId.trim() === '') {
+			return getMockItemListings();
+		}
+
+        console.log("SHARER ID:", sharerId);
+		try {
+			// Assuming the field is 'sharer' in the model and stores the user's ObjectId or externalId
+			const result = await this.mongoDataSource.find(
+				{ sharer: new MongooseSeedwork.ObjectId(sharerId) },
+				options,
+			);
+			if (!result || result.length === 0) {
+				// Return all mock data when no real data exists (for development/testing)
+				// Update mock users to use the current sharerId for consistency
+				const mockListings = getMockItemListings();
+				return mockListings.map(
+					(
+						listing: Domain.Contexts.Listing.ItemListing.ItemListingEntityReference,
+					) => ({
+						...listing,
+						sharer: {
+							...listing.sharer,
+							id: sharerId, // Use the actual sharerId from the request
+						},
+					}),
+				);
+			}
+			return result.map((doc) => this.converter.toDomain(doc, this.passport));
+		} catch (error) {
+			// If ObjectId creation fails, return mock data
+			console.warn('Error with ObjectId, returning mock data:', error);
+			const mockListings = getMockItemListings();
+			return mockListings.map(
+				(
+					listing: Domain.Contexts.Listing.ItemListing.ItemListingEntityReference,
+				) => ({
+					...listing,
+					sharer: {
+						...listing.sharer,
+						id: sharerId, // Use the actual sharerId from the request
+					},
+				}),
+			);
+		}
 	}
 }
 

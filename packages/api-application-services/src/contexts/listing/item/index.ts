@@ -6,6 +6,7 @@ import {
 	type ItemListingQueryBySharerCommand,
 	queryBySharer,
 } from './query-by-sharer.ts';
+import { type ItemListingQueryAllCommand, queryAll } from './query-all.ts';
 
 export interface ItemListingApplicationService {
 	create: (
@@ -19,6 +20,11 @@ export interface ItemListingApplicationService {
 	) => Promise<
 		Domain.Contexts.Listing.ItemListing.ItemListingEntityReference[]
 	>;
+	queryAll: (
+		command: ItemListingQueryAllCommand,
+	) => Promise<
+		Domain.Contexts.Listing.ItemListing.ItemListingEntityReference[]
+	>;
 }
 
 export const ItemListing = (
@@ -28,5 +34,6 @@ export const ItemListing = (
 		create: create(dataSources),
 		queryById: queryById(dataSources),
 		queryBySharer: queryBySharer(dataSources),
+		queryAll: queryAll(dataSources),
 	};
 };

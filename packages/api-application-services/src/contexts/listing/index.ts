@@ -4,13 +4,13 @@ import {
 	type ItemListingApplicationService,
 } from './item/index.ts';
 
-export interface ConversationContextApplicationService {
+export interface ListingContextApplicationService {
 	ItemListing: ItemListingApplicationService;
 }
 
-export const Conversation = (
+export const Listing = (
 	dataSources: DataSources,
-): ConversationContextApplicationService => {
+): ListingContextApplicationService => {
 	return {
 		ItemListing: ItemListingApi(dataSources),
 	};
