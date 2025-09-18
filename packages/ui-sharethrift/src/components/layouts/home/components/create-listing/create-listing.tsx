@@ -53,6 +53,13 @@ export function CreateListing({
 		// If saving as draft, skip required-field validation and submit whatever the user has entered
 		if (isDraft) {
 			const values = form.getFieldsValue();
+			
+			// For drafts, provide default dates if not set
+			const defaultStartDate = new Date();
+			defaultStartDate.setDate(defaultStartDate.getDate() + 1); // Tomorrow
+			const defaultEndDate = new Date();
+			defaultEndDate.setDate(defaultEndDate.getDate() + 30); // 30 days from now
+			
 			const formData: CreateListingFormData = {
 				title: values.title || '',
 				description: values.description || '',
@@ -60,10 +67,10 @@ export function CreateListing({
 				location: values.location || '',
 				sharingPeriod: values.sharingPeriod
 					? [
-							values.sharingPeriod[0]?.toISOString?.() || '',
-							values.sharingPeriod[1]?.toISOString?.() || '',
+							values.sharingPeriod[0]?.toISOString?.() || defaultStartDate.toISOString(),
+							values.sharingPeriod[1]?.toISOString?.() || defaultEndDate.toISOString(),
 						]
-					: ['', ''],
+					: [defaultStartDate.toISOString(), defaultEndDate.toISOString()],
 				images: uploadedImages,
 			};
 

@@ -77,8 +77,8 @@ export const CreateListingContainer: React.FC<CreateListingContainerProps> = (
 			description: formData.description,
 			category: formData.category,
 			location: formData.location,
-			sharingPeriodStart: formData.sharingPeriod[0],
-			sharingPeriodEnd: formData.sharingPeriod[1],
+			sharingPeriodStart: new Date(formData.sharingPeriod[0]),
+			sharingPeriodEnd: new Date(formData.sharingPeriod[1]),
 			images: formData.images,
 			isDraft,
 		};

@@ -40,18 +40,56 @@ export class ItemListing<props extends ItemListingProps>
 	): ItemListing<props> {
 		const id = crypto.randomUUID();
 		const now = new Date();
+		const isDraft = fields.isDraft ?? false;
+
+		// For drafts, use placeholder values if fields are empty
+		const title =
+			isDraft && (!fields.title || fields.title.trim() === '')
+				? 'Draft Title'
+				: fields.title;
+		const description =
+			isDraft && (!fields.description || fields.description.trim() === '')
+				? 'Draft Description'
+				: fields.description;
+		const category =
+			isDraft && (!fields.category || fields.category.trim() === '')
+				? 'Miscellaneous'
+				: fields.category;
+		const location =
+			isDraft && (!fields.location || fields.location.trim() === '')
+				? 'Draft Location'
+				: fields.location;
+
+		// For drafts, use default dates if not provided or invalid
+		const defaultStartDate = new Date();
+		defaultStartDate.setDate(defaultStartDate.getDate() + 1); // Tomorrow
+		const defaultEndDate = new Date();
+		defaultEndDate.setDate(defaultEndDate.getDate() + 30); // 30 days from now
+
+		const sharingPeriodStart =
+			isDraft &&
+			(!fields.sharingPeriodStart ||
+				Number.isNaN(fields.sharingPeriodStart.getTime()))
+				? defaultStartDate
+				: fields.sharingPeriodStart;
+		const sharingPeriodEnd =
+			isDraft &&
+			(!fields.sharingPeriodEnd ||
+				Number.isNaN(fields.sharingPeriodEnd.getTime()))
+				? defaultEndDate
+				: fields.sharingPeriodEnd;
 
 		const itemListingProps = {
 			id,
 			sharer: sharer,
-			title: fields.title,
-			description: new ValueObjects.Description(fields.description),
-			category: new ValueObjects.Category(fields.category),
-			location: new ValueObjects.Location(fields.location),
-			sharingPeriodStart: fields.sharingPeriodStart,
-			sharingPeriodEnd: fields.sharingPeriodEnd,
+			title: title,
+			description: new ValueObjects.Description(description),
+			category: new ValueObjects.Category(category),
+			location: new ValueObjects.Location(location),
+			sharingPeriodStart: sharingPeriodStart,
+			sharingPeriodEnd: sharingPeriodEnd,
 			images: fields.images ?? [],
-			state: fields.isDraft
+			state: isDraft
 				? ValueObjects.ListingState.Drafted
 				: ValueObjects.ListingState.Published,
 			createdAt: now,
