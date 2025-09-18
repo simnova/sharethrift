@@ -1,0 +1,105 @@
+.profile-header {
+  background: transparent !important;
+  border: none !important;
+}
+
+.profile-title {
+  /* Example font styling, customize as needed */
+  font-family: 'Montserrat', Arial, sans-serif !important;
+  font-weight: 700 !important;
+  font-size: 2.2em !important;
+  letter-spacing: 0.02em;
+}
+
+.profile-avatar-scale {
+  width: 100% !important;
+  aspect-ratio: 1 / 1;
+  max-width: 150px;
+  height: auto !important;
+  display: block;
+  margin-left: auto;
+  margin-right: auto;
+  border-radius: 50% !important;
+  object-fit: cover;
+}
+
+.nameSect h3 {
+  margin-top: 0;
+  margin-bottom: 10px;
+}
+
+.personalAccount {
+  background-color: var(--color-secondary) !important;
+  color: var(--color-background) !important;
+  height: 32px !important;
+  border-radius: 20px !important;
+  padding: 8px 20px !important;
+  display: flex !important;
+  align-items: center !important;
+  gap: 8px !important;
+  margin: 0 !important;
+  border: 0 !important;
+}
+
+.ant-divider {
+    margin: 0 !important;
+    padding-right: 24px !important;
+    padding-left: 24px !important;
+    width: 100%;
+}
+
+.ant-divider-horizontal.ant-divider-with-text-start::before,
+.ant-divider-horizontal.ant-divider-with-text-start::after {
+    width: 100%;
+    border-block-start: 2px solid;
+    border-block-start-color: var(--color-background-2);
+}
+
+/* Mobile Account Settings Button */
+.profile-settings-mobile {
+  display: none;
+}
+.profile-settings-desktop {
+  display: flex;
+}
+
+@media (max-width: 768px) {
+  .profile-settings-mobile {
+    display: flex !important;
+    justify-content: flex-end;
+    margin-bottom: 12px;
+  }
+  .profile-settings-desktop {
+    display: none !important;
+  }
+}
+
+@media (max-width: 575px) {
+  .profile-info-center {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+  }
+  .profile-info-center .title42 {
+    justify-content: center;
+    text-align: center;
+    width: 100%;
+  }
+  .profile-info-center .block {
+    text-align: center;
+    width: 100%;
+  }
+
+  .ant-space{
+    justify-content: center;
+    row-gap: 0;
+  }
+
+  .profile-info{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+  }
+}

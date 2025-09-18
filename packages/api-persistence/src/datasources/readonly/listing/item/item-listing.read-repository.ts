@@ -1,5 +1,5 @@
 import type { Domain } from '@sthrift/api-domain';
-import type { ModelsContext } from '../../../../index.ts';
+import type { ModelsContext } from '../../../../models-context.ts';
 import {
 	ItemListingDataSourceImpl,
 	type ItemListingDataSource,
@@ -7,7 +7,7 @@ import {
 import type { FindOneOptions, FindOptions } from '../../mongo-data-source.ts';
 import { ItemListingConverter } from '../../../domain/listing/item/item-listing.domain-adapter.ts';
 import { ObjectId } from 'mongodb';
-import { Types } from 'mongoose';
+
 export interface ItemListingReadRepository {
 	getAll: (
 		options?: FindOptions,
@@ -57,50 +57,93 @@ export class ItemListingReadRepositoryImpl
 		// 	return null;
 		// }
 		// return this.converter.toDomain(result, this.passport);
-        console.log(options); // To avoid unused variable error
-        return await Promise.resolve({
-            _id: new Types.ObjectId(),
-            id: id,
-            title: 'Professional Microphone',
-            description: 'A high-quality microphone for professional use.',
-            category: 'Electronics',
-            location: 'New York, NY',
-            sharingPeriodStart: new Date('2024-09-05T10:00:00Z'),
-            sharingPeriodEnd: new Date('2024-09-15T10:00:00Z'),
-            state: 'Published',
-            schemaVersion: '1',
-            createdAt: new Date('2024-01-05T09:00:00Z'),
-            updatedAt: new Date('2024-01-13T09:00:00Z'),
-            sharer: {
-                _id: new Types.ObjectId(),
-                id: '5f8d0d55b54764421b7156c5',
-                userType: 'personal',
-                isBlocked: false,
-                account: {
-                    accountType: 'personal',
-                    email: 'sharer2@example.com',
-                    username: 'shareruser2',
-                    profile: {
-                        firstName: 'Jane',
-                        lastName: 'Reserver',
-                        location: {
-                            address1: '123 Main St',
-                            city: 'Boston',
-                            state: 'MA',
-                            country: 'USA',
-                            zipCode: '02101',
-                        },
-                        billing: {
-                            subscriptionId: '98765789',
-                            cybersourceCustomerId: '87654345678',
-                        },
-                    },
-                },
-                schemaVersion: '1',
-                createdAt: new Date('2024-01-05T09:00:00Z'),
-                updatedAt: new Date('2024-01-13T09:00:00Z'),
-            },
-        });
+		console.log(options); // To avoid unused variable error
+		return await Promise.resolve({
+			id: id,
+			title: 'Professional Microphone',
+			description: 'A high-quality microphone for professional use.',
+			category: 'Electronics',
+			location: 'New York, NY',
+			sharingPeriodStart: new Date('2024-09-05T10:00:00Z'),
+			sharingPeriodEnd: new Date('2024-09-15T10:00:00Z'),
+			state: 'Published',
+			schemaVersion: '1',
+			createdAt: new Date('2024-01-05T09:00:00Z'),
+			updatedAt: new Date('2024-01-13T09:00:00Z'),
+			sharer: {
+				// _id removed to match PersonalUserEntityReference type
+				id: '5f8d0d55b54764421b7156c5',
+				userType: 'personal',
+				isBlocked: false,
+				account: {
+					accountType: 'personal',
+					email: 'sharer2@example.com',
+					username: 'shareruser2',
+					profile: {
+						firstName: 'Jane',
+						lastName: 'Reserver',
+						location: {
+							address1: '123 Main St',
+							city: 'Boston',
+							state: 'MA',
+							country: 'USA',
+							zipCode: '02101',
+							canPublishItemListing: true,
+							canUnpublishItemListing: true,
+						},
+						billing: {
+							subscriptionId: '98765789',
+							cybersourceCustomerId: '87654345678',
+						},
+					},
+				},
+				schemaVersion: '1',
+				createdAt: new Date('2024-01-05T09:00:00Z'),
+				updatedAt: new Date('2024-01-13T09:00:00Z'),
+				// Add required role and loadRole
+				role: {
+					id: 'role-1',
+					roleName: 'user',
+					isDefault: true,
+					roleType: 'personal',
+					createdAt: new Date('2024-01-05T09:00:00Z'),
+					updatedAt: new Date('2024-01-13T09:00:00Z'),
+					schemaVersion: '1',
+					get permissions() {
+						return {
+							listingPermissions: {
+								canCreateItemListing: true,
+								canUpdateItemListing: true,
+								canDeleteItemListing: true,
+								canViewItemListing: true,
+								canReserveItemListing: true,
+								canShareItemListing: true,
+								canPublishItemListing: true,
+								canUnpublishItemListing: true,
+							},
+							conversationPermissions: {
+								canCreateConversation: true,
+								canViewConversation: true,
+								canReplyConversation: true,
+								canDeleteConversation: true,
+								canManageConversation: true,
+							},
+							reservationRequestPermissions: {
+								canCreateReservationRequest: true,
+								canViewReservationRequest: true,
+								canCancelReservationRequest: true,
+								canApproveReservationRequest: true,
+								canRejectReservationRequest: true,
+								canManageReservationRequest: true,
+							},
+						};
+					},
+				},
+				loadRole: async function () {
+					return await Promise.resolve(this.role);
+				},
+			},
+		});
 	}
 
 	async getBySharer(

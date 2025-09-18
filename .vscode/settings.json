@@ -25,9 +25,13 @@
 		"editor.defaultFormatter": "biomejs.biome"
 	},
 	"typescript.experimental.useTsgo": true,
+    "sonarlint.connectedMode.project": {
+        "connectionId": "simnova",
+        "projectKey": "simnova_sharethrift-data-access"
+    },
 	"editor.formatOnSave": true,
 	"sonarlint.connectedMode.project": {
-		"connectionId": "Github Connection",
+		"connectionId": "simnova",
 		"projectKey": "simnova_sharethrift-data-access"
 	}
 	// "[typescript]": {

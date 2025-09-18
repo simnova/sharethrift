@@ -1,27 +1,13 @@
 import { DomainSeedwork } from '@cellix/domain-seedwork';
 import type { Passport } from '../../passport.ts';
 import type { UserVisa } from '../user.visa.ts';
-import {
-	PersonalUserAccount,
-	type PersonalUserAccountProps,
-	type PersonalUserAccountEntityReference,
-} from './personal-user-account.ts';
-
-export interface PersonalUserProps extends DomainSeedwork.DomainEntityProps {
-	userType: string;
-	isBlocked: boolean;
-	schemaVersion: string;
-
-	readonly account: PersonalUserAccountProps;
-
-	readonly createdAt: Date;
-	readonly updatedAt: Date;
-}
-
-export interface PersonalUserEntityReference
-	extends Readonly<Omit<PersonalUserProps, 'account'>> {
-	readonly account: PersonalUserAccountEntityReference;
-}
+import { PersonalUserAccount } from './personal-user-account.ts';
+import { PersonalUserRole } from '../../role/personal-user-role/personal-user-role.ts';
+import type { PersonalUserRoleEntityReference } from '../../role/personal-user-role/personal-user-role.entity.ts';
+import type {
+	PersonalUserEntityReference,
+	PersonalUserProps,
+} from './personal-user.entity.ts';
 
 export interface PersonalUserAggregateRoot
 	extends DomainSeedwork.RootEventRegistry {
@@ -58,19 +44,10 @@ export class PersonalUser<props extends PersonalUserProps>
 
 	private markAsNew(): void {
 		this._isNew = true;
-		// this.addIntegrationEvent(PersonalUserCreatedEvent, { userId: this.props.id });
 	}
 
 	private validateVisa(): void {
-		// if (
-		// 	!this.isNew &&
-		// 	!this.visa.determineIf(
-		// 		(permissions) =>
-		// 			permissions.isEditingOwnAccount || permissions.canManageEndUsers,
-		// 	)
-		// ) {
-		// 	throw new DomainSeedwork.PermissionError('Unauthorized');
-		// }
+		// TODO
 	}
 
 	get isNew() {
@@ -95,6 +72,33 @@ export class PersonalUser<props extends PersonalUserProps>
 
 	get account(): PersonalUserAccount {
 		return new PersonalUserAccount(this.props.account, this.visa, this);
+	}
+
+	get role(): PersonalUserRoleEntityReference {
+		return new PersonalUserRole(this.props.role, this.passport);
+	}
+
+	async loadRole(): Promise<PersonalUserRoleEntityReference> {
+		return await this.props.loadRole();
+	}
+
+	private set role(role: PersonalUserRoleEntityReference) {
+		if (
+			!this.isNew &&
+			!this.visa.determineIf(
+				(domainPermissions) => domainPermissions.canCreateUser,
+			)
+		) {
+			throw new DomainSeedwork.PermissionError(
+				'You do not have permission to change the sharer of this conversation',
+			);
+		}
+		if (role === null || role === undefined) {
+			throw new DomainSeedwork.PermissionError(
+				'sharer cannot be null or undefined',
+			);
+		}
+		this.props.role = role;
 	}
 
 	set userType(value: string) {
