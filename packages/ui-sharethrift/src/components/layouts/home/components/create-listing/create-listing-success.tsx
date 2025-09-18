@@ -8,6 +8,7 @@ interface SuccessPublishedProps {
 	visible: boolean;
 	loading?: boolean;
 	onClose?: () => void;
+	onViewListing?: () => void;
 }
 
 export const SuccessPublished: React.FC<SuccessPublishedProps> = (props) => {
@@ -48,7 +49,7 @@ export const SuccessPublished: React.FC<SuccessPublishedProps> = (props) => {
 							<Button
 								type="primary"
 								className="primaryButton"
-								onClick={props.onClose}
+								onClick={props.onViewListing || props.onClose}
 							>
 								View Listing
 							</Button>

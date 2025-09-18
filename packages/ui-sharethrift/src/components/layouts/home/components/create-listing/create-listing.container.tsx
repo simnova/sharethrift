@@ -50,12 +50,7 @@ export const CreateListingContainer: React.FC<CreateListingContainerProps> = (
 						: 'Listing published successfully!',
 				);
 
-				// Navigate to the new listing or my listings
-				if (isDraft) {
-					navigate('/my-listings');
-				} else {
-					navigate(`/listing/${data.createItemListing.id}`);
-				}
+				// Don't navigate automatically - let user choose from modal
 			},
 			onError: (error) => {
 				console.error('Error creating listing:', error);
@@ -97,6 +92,18 @@ export const CreateListingContainer: React.FC<CreateListingContainerProps> = (
 		navigate(-1); // Go back to previous page
 	};
 
+	const handleViewListing = () => {
+		navigate('/my-listings');
+	};
+
+	const handleViewDraft = () => {
+		navigate('/my-listings');
+	};
+
+	const handleModalClose = () => {
+		// Just close the modal without navigation
+	};
+
 	const handleImageRemove = (imageUrl: string) => {
 		setUploadedImages((prev) => prev.filter((url) => url !== imageUrl));
 	};
@@ -114,6 +121,9 @@ export const CreateListingContainer: React.FC<CreateListingContainerProps> = (
 			uploadedImages={uploadedImages}
 			onImageAdd={handleImageAdd}
 			onImageRemove={handleImageRemove}
+			onViewListing={handleViewListing}
+			onViewDraft={handleViewDraft}
+			onModalClose={handleModalClose}
 		/>
 	);
 };

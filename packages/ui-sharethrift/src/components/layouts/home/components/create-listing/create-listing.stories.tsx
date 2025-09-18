@@ -32,6 +32,9 @@ const meta: Meta<typeof CreateListing> = {
 		uploadedImages: [],
 		onImageAdd: () => undefined,
 		onImageRemove: () => undefined,
+		onViewListing: () => undefined,
+		onViewDraft: () => undefined,
+		onModalClose: () => undefined,
 	},
 };
 

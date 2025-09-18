@@ -8,6 +8,7 @@ interface SuccessDraftProps {
 	visible: boolean;
 	loading?: boolean;
 	onClose?: () => void;
+	onViewDraft?: () => void;
 }
 
 export const SuccessDraft: React.FC<SuccessDraftProps> = (props) => {
@@ -48,7 +49,7 @@ export const SuccessDraft: React.FC<SuccessDraftProps> = (props) => {
 							<Button
 								type="primary"
 								className="primaryButton"
-								onClick={props.onClose}
+								onClick={props.onViewDraft || props.onClose}
 							>
 								View Draft
 							</Button>

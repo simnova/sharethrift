@@ -27,6 +27,9 @@ export interface CreateListingProps {
 	uploadedImages: string[];
 	onImageAdd: (imageUrl: string) => void;
 	onImageRemove: (imageUrl: string) => void;
+	onViewListing: () => void;
+	onViewDraft: () => void;
+	onModalClose: () => void;
 }
 
 export function CreateListing({
@@ -37,6 +40,9 @@ export function CreateListing({
 	uploadedImages,
 	onImageAdd,
 	onImageRemove,
+	onViewListing,
+	onViewDraft,
+	onModalClose,
 }: CreateListingProps) {
 	const [form] = Form.useForm();
 	const maxCharacters = 2000;
@@ -275,9 +281,8 @@ export function CreateListing({
 						? isLoading
 						: undefined
 				}
-				onClose={() => {
-					setLocalModal('none');
-				}}
+				onClose={onModalClose}
+				onViewListing={onViewListing}
 			/>
 			<SuccessDraft
 				visible={
@@ -289,9 +294,8 @@ export function CreateListing({
 						? isLoading
 						: undefined
 				}
-				onClose={() => {
-					setLocalModal('none');
-				}}
+				onClose={onModalClose}
+				onViewDraft={onViewDraft}
 			/>
 		</>
 	);
