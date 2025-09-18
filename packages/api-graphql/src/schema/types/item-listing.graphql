@@ -30,7 +30,22 @@ enum ItemListingState {
   Appeal_Requested
 }
 
+input CreateItemListingInput {
+  title: String!
+  description: String!
+  category: String!
+  location: String!
+  sharingPeriodStart: DateTime!
+  sharingPeriodEnd: DateTime!
+  images: [String!]
+  isDraft: Boolean
+}
+
 extend type Query {
   itemListings: [ItemListing!]!
   itemListing(id: ObjectID!): ItemListing
+}
+
+extend type Mutation {
+  createItemListing(input: CreateItemListingInput!): ItemListing!
 }

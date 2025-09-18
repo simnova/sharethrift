@@ -19,5 +19,15 @@ export interface ItemListingRepository<props extends ItemListingProps>
 
 	getNewInstance(
 		sharer: PersonalUserEntityReference,
+		fields: {
+			title: string;
+			description: string;
+			category: string;
+			location: string;
+			sharingPeriodStart: Date;
+			sharingPeriodEnd: Date;
+			images?: string[];
+			isDraft?: boolean;
+		},
 	): Promise<ItemListing<props>>;
 }
