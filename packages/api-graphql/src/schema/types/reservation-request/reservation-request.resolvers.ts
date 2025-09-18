@@ -1,4 +1,4 @@
-import type { GraphContext } from '../../init/context.ts';
+import type { GraphContext } from '../../../init/context.ts';
 import type { GraphQLResolveInfo } from 'graphql';
 
 const reservationRequest = {
@@ -9,9 +9,11 @@ const reservationRequest = {
 			context: GraphContext,
 			_info: GraphQLResolveInfo,
 		) => {
-			return await context.applicationServices.ReservationRequest.ReservationRequest.queryActiveByReserverId({
-                reserverId: args.userId
-            });
+			return await context.applicationServices.ReservationRequest.ReservationRequest.queryActiveByReserverId(
+				{
+					reserverId: args.userId,
+				},
+			);
 		},
 		myPastReservations: async (
 			_parent: unknown,
@@ -19,9 +21,11 @@ const reservationRequest = {
 			context: GraphContext,
 			_info: GraphQLResolveInfo,
 		) => {
-			return await context.applicationServices.ReservationRequest.ReservationRequest.queryPastByReserverId({
-                reserverId: args.userId
-            });
+			return await context.applicationServices.ReservationRequest.ReservationRequest.queryPastByReserverId(
+				{
+					reserverId: args.userId,
+				},
+			);
 		},
 	},
 };

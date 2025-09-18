@@ -1,4 +1,4 @@
-import type { GraphContext } from '../../init/context.ts';
+import type { GraphContext } from '../../../init/context.ts';
 import type { GraphQLResolveInfo } from 'graphql';
 
 const personalUserResolvers = {
@@ -51,11 +51,15 @@ const personalUserResolvers = {
 			}
 			console.log('currentPersonalUserAndCreateIfNotExists resolver called');
 			// Implement the logic to get the current personal user or create a new one
-			return await context.applicationServices.User.PersonalUser.createIfNotExists({
-        email: context.applicationServices.verifiedUser.verifiedJwt.email,
-        firstName: context.applicationServices.verifiedUser.verifiedJwt.given_name,
-        lastName: context.applicationServices.verifiedUser.verifiedJwt.family_name,
-      });
+			return await context.applicationServices.User.PersonalUser.createIfNotExists(
+				{
+					email: context.applicationServices.verifiedUser.verifiedJwt.email,
+					firstName:
+						context.applicationServices.verifiedUser.verifiedJwt.given_name,
+					lastName:
+						context.applicationServices.verifiedUser.verifiedJwt.family_name,
+				},
+			);
 		},
 	},
 
