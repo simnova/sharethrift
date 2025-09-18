@@ -135,7 +135,7 @@ export const AsReserver: Story = {
     ...Default.args,
     userIsSharer: false,
     isAuthenticated: true,
-    reservationRequestStatus: "Requested",
+
   },
 };
 

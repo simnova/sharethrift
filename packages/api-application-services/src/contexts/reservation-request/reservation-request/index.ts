@@ -6,7 +6,7 @@ import { type ReservationRequestQueryActiveByReserverIdAndListingIdCommand, quer
 import { type ReservationRequestQueryByIdCommand, queryById } from './query-by-id.ts';
 import { type ReservationRequestCreateCommand, create } from './create.ts';
 import { type ReservationRequestQueryOverlapByListingIdAndReservationPeriodCommand, queryOverlapByListingIdAndReservationPeriod } from './query-overlap-by-listing-id-and-reservation-period.ts';
-import { type ReservationRequestQueryActiveByListingIdCommand, queryActiveByListingId } from './query-by-listing-id.ts';
+import { type ReservationRequestQueryActiveByListingIdCommand, queryActiveByListingId } from './query-active-by-listing-id.ts';
 
 export interface ReservationRequestApplicationService {
     queryById: (command: ReservationRequestQueryByIdCommand) => Promise<Domain.Contexts.ReservationRequest.ReservationRequest.ReservationRequestEntityReference | null>,

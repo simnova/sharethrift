@@ -8,21 +8,21 @@ import { ListingInformation } from './listing-information';
 import { 
     HomeListingInformationCreateReservationRequestDocument, 
     type CreateReservationRequestInput, 
-    type ReservationRequestState, 
     ViewListingCurrentUserDocument, 
     type ViewListingCurrentUserQuery,
     ViewListingQueryActiveByListingIdDocument, 
     type ViewListingQueryActiveByListingIdQuery, 
     type ViewListingQueryActiveByListingIdQueryVariables,
     ViewListingActiveReservationRequestForListingDocument,
-    type ItemListing
+    type ItemListing,
+    type ViewListingActiveReservationRequestForListingQuery
 } from '../../../../../../generated';
 
 interface ListingInformationContainerProps {
   listing: ItemListing;
   userIsSharer: boolean;
   isAuthenticated: boolean;
-  reservationRequestStatus: ReservationRequestState | null;
+  userReservationRequest: ViewListingActiveReservationRequestForListingQuery["myActiveReservationForListing"] | null;
   onLoginClick?: () => void;
   onSignUpClick?: () => void;
   className?: string;
@@ -54,7 +54,7 @@ export default function ListingInformationContainer({
   listing,
   userIsSharer,
   isAuthenticated,
-  reservationRequestStatus,
+  userReservationRequest,
   onLoginClick,
   onSignUpClick,
   className
@@ -123,7 +123,7 @@ export default function ListingInformationContainer({
       listing={listing}
       userIsSharer={userIsSharer}
       isAuthenticated={isAuthenticated}
-      reservationRequestStatus={reservationRequestStatus}
+      userReservationRequest={userReservationRequest}
       onReserveClick={handleReserveClick}
       onLoginClick={onLoginClick}
       onSignUpClick={onSignUpClick}

@@ -13,13 +13,12 @@ import {
   ViewListingActiveReservationRequestForListingDocument,
   type ViewListingActiveReservationRequestForListingQuery,
   type ViewListingActiveReservationRequestForListingQueryVariables,
-  type ReservationRequestState,
 } from "../../../../../generated";
 
-export function ViewListingContainer({ isAuthenticated }: {readonly isAuthenticated: boolean; }) {
+export function ViewListingContainer({isAuthenticated}: {isAuthenticated: boolean}) {
 
   const { listingId } = useParams();
-
+  
   const { data: listingData, loading: listingLoading, error: listingError } = 
     useQuery<ViewListingQuery, ViewListingQueryVariables>(
         ViewListingDocument,
@@ -51,8 +50,6 @@ export function ViewListingContainer({ isAuthenticated }: {readonly isAuthentica
   console.log("userReservationLoading", userReservationLoading);
   console.log("userReservationError", userReservationError);
 
-  const reservationRequestStatus: ReservationRequestState | null =  userReservationData?.myActiveReservationForListing?.state ?? null;
-
   if (!listingId) return <div>Missing listing id.</div>;
   if (listingLoading) return <div>Loading listing...</div>;
   if (listingError) return <div>Error loading listing.</div>;
@@ -70,7 +67,7 @@ export function ViewListingContainer({ isAuthenticated }: {readonly isAuthentica
       userIsSharer={userIsSharer}
       isAuthenticated={isAuthenticated}
       sharedTimeAgo={sharedTimeAgo}
-      reservationRequestStatus={reservationRequestStatus}
+      userReservationRequest={userReservationData?.myActiveReservationForListing}
     />
   );
 }

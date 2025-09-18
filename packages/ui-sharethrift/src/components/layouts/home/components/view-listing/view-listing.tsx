@@ -3,15 +3,14 @@ import { LeftOutlined } from '@ant-design/icons';
 import ListingImageGalleryContainer from './listing-image-gallery/listing-image-gallery.container';
 import SharerInformationContainer from './sharer-information/sharer-information.container';
 import ListingInformationContainer from './listing-information/listing-information.container';
-import type { ReservationRequestState } from '../../../../../generated';
 
-import type { ItemListing } from "../../../../../generated";
+import type { ItemListing, ViewListingActiveReservationRequestForListingQuery } from "../../../../../generated";
 
 export interface ViewListingProps {
   listing: ItemListing;
   userIsSharer: boolean;
   isAuthenticated: boolean;
-  reservationRequestStatus: ReservationRequestState | null;
+  userReservationRequest: ViewListingActiveReservationRequestForListingQuery["myActiveReservationForListing"] | null;
   sharedTimeAgo?: string;
 }
 
@@ -19,7 +18,7 @@ export function ViewListing({
   listing,
   userIsSharer,
   isAuthenticated,
-  reservationRequestStatus,
+  userReservationRequest,
   sharedTimeAgo,
 }: ViewListingProps) {
   // Mock sharer info (since ItemListing.sharer is just an ID)
@@ -27,6 +26,7 @@ export function ViewListing({
   const handleBack = () => {
     window.location.href = '/';
   };
+
   return (
     <>
       <style>{`
@@ -112,7 +112,7 @@ export function ViewListing({
                 listing={listing}
                 userIsSharer={userIsSharer}
                 isAuthenticated={isAuthenticated}
-                reservationRequestStatus={reservationRequestStatus}
+                userReservationRequest={userReservationRequest}
                 className="listing-info-responsive"
               />
             </Col>

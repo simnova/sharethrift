@@ -3,29 +3,24 @@ import dayjs from "dayjs";
 import type { Dayjs } from "dayjs";
 import isBetween from "dayjs/plugin/isBetween";
 import type {
-  ReservationRequestState,
   ViewListingQueryActiveByListingIdQuery,
+  ItemListing,
+  ViewListingActiveReservationRequestForListingQuery
 } from "../../../../../../generated";
 import { LoadingOutlined } from "@ant-design/icons";
 import { useState } from "react";
-
-import type { ItemListing } from "../../../../../../generated";
-export type ListingStatus =
-  | "Active"
-  | "Paused"
-  | "Blocked"
-  | "Cancelled"
-  | "Expired";
+import { useNavigate } from "react-router-dom";
 
 dayjs.extend(isBetween);
 export interface ListingInformationProps {
   listing: ItemListing;
   userIsSharer: boolean;
   isAuthenticated: boolean;
-  reservationRequestStatus: ReservationRequestState | null;
+  userReservationRequest: ViewListingActiveReservationRequestForListingQuery["myActiveReservationForListing"] | null;
   onReserveClick?: () => void;
   onLoginClick?: () => void;
   onSignUpClick?: () => void;
+  onCancelClick?: () => void;
   className?: string;
   reservationDates?: {
     startDate: Date | null;
@@ -44,10 +39,11 @@ export interface ListingInformationProps {
 export function ListingInformation({
   listing,
   onReserveClick,
+  onCancelClick,
   className = "",
   userIsSharer,
   isAuthenticated,
-  reservationRequestStatus,
+  userReservationRequest,
   reservationDates,
   onReservationDatesChange,
   reservationLoading = false,
@@ -56,6 +52,7 @@ export function ListingInformation({
   otherReservations,
 }: ListingInformationProps) {
 
+  const navigate = useNavigate(); 
   const [dateSelectionError, setDateSelectionError] = useState<string | null>(null);
       
   if (listing.state !== "Published") {
@@ -76,6 +73,7 @@ export function ListingInformation({
   const areDatesSelected = reservationDates?.startDate && reservationDates?.endDate;
 
   console.log("is authenticated", isAuthenticated);
+  console.log("user reservation request", userReservationRequest?.reservationPeriodEnd);
 
   const handleDateRangeChange = ( dates: [Dayjs | null, Dayjs | null] | null ): void => {
     if (!onReservationDatesChange) {
@@ -111,7 +109,6 @@ export function ListingInformation({
 
     if (!isRangeValid(start, end)) {
       setDateSelectionError("Selected date range overlaps with existing reservations.");
-      onReservationDatesChange({ startDate: null, endDate: null });
       return;
     }
 
@@ -123,6 +120,7 @@ export function ListingInformation({
     console.log("Selected dates:", dates);
   };
 
+  const reservationRequestStatus = userReservationRequest?.state ?? null;
   return (
     <Row gutter={[0, 12]} style={{ width: "100%" }} className={className}>
       <Col span={24}>
@@ -193,7 +191,7 @@ export function ListingInformation({
           <Col span={24}>
             {otherReservationsLoading ? (
               <LoadingOutlined style={{ fontSize: 24, marginBottom: 8 }} />
-            ) : (
+            ) : isAuthenticated ? (
               <>
                 <h3 style={{ marginBottom: 8 }}>Reservation Period</h3>
                 <DatePicker.RangePicker
@@ -202,41 +200,31 @@ export function ListingInformation({
                   allowClear
                   onChange={handleDateRangeChange}
                   value={
-                    reservationDates?.startDate && reservationDates?.endDate
+                    userReservationRequest?.reservationPeriodStart != null && userReservationRequest?.reservationPeriodEnd
                       ? [
-                          dayjs(reservationDates.startDate),
-                          dayjs(reservationDates.endDate),
+                          dayjs(Number(userReservationRequest.reservationPeriodStart)),
+                          dayjs(Number(userReservationRequest.reservationPeriodEnd)),
                         ]
-                      : null
+                      : [
+                          reservationDates?.startDate ? dayjs(reservationDates.startDate) : null,
+                          reservationDates?.endDate ? dayjs(reservationDates.endDate) : null,
+                      ]
                   }
+                  disabled={reservationRequestStatus !== null} 
                   disabledDate={(current) => {
                     // Disable dates that overlap with other active reservations
-                    if (current.isBefore(dayjs().startOf("day"))) {
-                      return true;
-                    }
-                    if (otherReservationsError || !otherReservations) {
-                      return false;
-                    }
+                    if (current.isBefore(dayjs().startOf("day"))) { return true; }
+                    if (otherReservationsError || !otherReservations) { return false; }
                     return otherReservations.some((reservation) => {
-                      const resStart = dayjs(
-                        Number(reservation?.reservationPeriodStart)
-                      );
-                      const resEnd = dayjs(
-                        Number(reservation?.reservationPeriodEnd)
-                      );
-                      const isDisabled = current.isBetween(
-                        resStart,
-                        resEnd,
-                        "day",
-                        "[]"
-                      );
-                      return isDisabled;
+                      const resStart = dayjs(Number(reservation?.reservationPeriodStart));
+                      const resEnd = dayjs(Number(reservation?.reservationPeriodEnd));
+                      return current.isBetween(resStart, resEnd, "day", "[]");
                     });
                   }}
                 />
                 <div style={{ color: 'red', marginTop: 8 }}>{dateSelectionError}</div>
               </>
-            )}
+            ) : null}
           </Col>
         </Row>
       </Col>
@@ -244,7 +232,7 @@ export function ListingInformation({
         {/* Reserve Button - Only show if authenticated */}
         <Row>
           <Col span={24}>
-            {!userIsSharer ? (
+            {!userIsSharer && isAuthenticated ? (
               <Button
                 type={
                   reservationRequestStatus === "Requested"
@@ -252,13 +240,23 @@ export function ListingInformation({
                     : "primary"
                 }
                 block
-                onClick={onReserveClick}
+                onClick={reservationRequestStatus === "Requested"
+                  ? onCancelClick
+                  : onReserveClick}
                 disabled={!areDatesSelected && reservationRequestStatus !== "Requested"}
                 icon={reservationLoading ? <LoadingOutlined /> : undefined}
               >
                 {reservationRequestStatus === "Requested"
                   ? "Cancel Request"
                   : "Reserve"}
+              </Button>
+            ) : !isAuthenticated ? (
+              <Button
+                type="primary"
+                block
+                onClick={() => navigate("/signup/select-account-type")}
+              >
+                Log in to Reserve
               </Button>
             ) : null}
           </Col>

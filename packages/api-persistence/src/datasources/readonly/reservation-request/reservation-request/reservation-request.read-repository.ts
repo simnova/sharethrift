@@ -252,18 +252,16 @@ const getMockReservationRequests = (
 	type: string,
 ): Domain.Contexts.ReservationRequest.ReservationRequest.ReservationRequestEntityReference[] => {
 	const reservationState = type === 'active' ? 'Accepted' : 'Closed';
-	const mockResult = [
+	return [
 		{
-			_id: new Types.ObjectId(),
 			id: '507f1f77bcf86cd799439011',
 			state: reservationState,
-			reservationPeriodStart: new Date('2025-09-20T10:00:00Z'),
-			reservationPeriodEnd: new Date('2025-09-25T10:00:00Z'),
+			reservationPeriodStart: new Date('2025-09-30T10:00:00Z'),
+			reservationPeriodEnd: new Date('2025-10-05T10:00:00Z'),
 			createdAt: new Date('2024-09-01T10:00:00Z'),
 			updatedAt: new Date('2024-09-05T12:00:00Z'),
 			schemaVersion: '1',
 			listing: {
-				_id: new Types.ObjectId(),
 				id: '60ddc9732f8fb814c89b6789',
 				title: 'Professional Microphone',
 				description: 'A high-quality microphone for professional use.',
@@ -276,7 +274,6 @@ const getMockReservationRequests = (
 				createdAt: new Date('2024-01-05T09:00:00Z'),
 				updatedAt: new Date('2024-01-13T09:00:00Z'),
 				sharer: {
-					_id: new Types.ObjectId(),
 					id: '5f8d0d55b54764421b7156c5',
 					userType: 'personal',
 					isBlocked: false,
@@ -306,9 +303,7 @@ const getMockReservationRequests = (
 				},
 			},
 			reserver: {
-				_id: new Types.ObjectId(reserverId),
 				id: reserverId,
-				name: 'John Doe',
 				account: {
 					accountType: 'personal',
 					email: 'reserver@example.com',
@@ -339,7 +334,6 @@ const getMockReservationRequests = (
 			closeRequestedByReserver: false,
 			loadListing: () => {
 				return Promise.resolve({
-					_id: new Types.ObjectId(),
 					id: '60ddc9732f8fb814c89b6789',
 					title: 'Professional Microphone',
 					description: 'A high-quality microphone for professional use.',
@@ -352,7 +346,6 @@ const getMockReservationRequests = (
 					createdAt: new Date('2024-01-05T09:00:00Z'),
 					updatedAt: new Date('2024-01-13T09:00:00Z'),
 					sharer: {
-						_id: new Types.ObjectId(),
 						id: 'mock-sharer-id',
 						userType: 'personal',
 						isBlocked: false,
@@ -384,9 +377,8 @@ const getMockReservationRequests = (
 			},
 			loadReserver: () => {
 				return Promise.resolve({
-					_id: new Types.ObjectId(reserverId),
 					id: reserverId,
-					name: 'John Doe',
+					//name: 'John Doe',
 					account: {
 						accountType: 'personal',
 						email: 'reserver@example.com',
@@ -416,5 +408,4 @@ const getMockReservationRequests = (
 			},
 		},
 	];
-	return mockResult;
 };
