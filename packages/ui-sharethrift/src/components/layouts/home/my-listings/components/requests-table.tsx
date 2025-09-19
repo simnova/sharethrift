@@ -1,4 +1,4 @@
-import { Input, Checkbox, Button, Image, Popconfirm, Tag } from 'antd';
+import { Input, Checkbox, Image, Tag } from 'antd';
 import { SearchOutlined, FilterOutlined } from '@ant-design/icons';
 import type { ColumnsType, TableProps } from 'antd/es/table';
 import { Dashboard } from '@sthrift/ui-sharethrift-components';
