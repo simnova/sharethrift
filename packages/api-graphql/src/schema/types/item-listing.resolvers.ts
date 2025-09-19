@@ -109,7 +109,6 @@ const itemListingResolvers = {
 
 			return {
 				items: result.items.map((listing) => {
-					console.log("--listing---", listing);
 					const sharingStart = listing.sharingPeriodStart.toISOString();
 					const sharingEnd = listing.sharingPeriodEnd.toISOString();
 					return {
