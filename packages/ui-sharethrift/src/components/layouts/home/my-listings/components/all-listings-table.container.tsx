@@ -30,6 +30,7 @@ export function AllListingsTableContainer({ currentPage, onPageChange }: AllList
   });
 
   const listings = data?.myListingsAll?.items ?? [];
+  console.log('Listings data:', data);
   const total = data?.myListingsAll?.total ?? 0;
 
   const handleSearch = (value: string) => {

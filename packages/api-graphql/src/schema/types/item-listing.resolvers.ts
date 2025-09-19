@@ -4,130 +4,11 @@ import { toGraphItem } from '../../helpers/mapping.js';
 import type { CreateItemListingInput } from '../builder/generated.js';
 
 interface MyListingsArgs {
-  page: number;
-  pageSize: number;
-  searchText?: string;
-  statusFilters?: string[];
-  sorter?: { field: string; order: 'ascend' | 'descend' };
-}
-
-// Mock data for My Listings (will be moved to proper domain layer later)
-const MOCK_MY_LISTINGS = [
-  {
-    id: '6324a3f1e3e4e1e6a8e1d8b1',
-    title: 'Cordless Drill',
-    status: 'Paused',
-    image: '/assets/item-images/projector.png',
-    pendingRequestsCount: 0,
-    publishedAt: '2025-12-23',
-    reservationPeriod: '2020-11-08 - 2020-12-23',
-  },
-  {
-    id: '6324a3f1e3e4e1e6a8e1d8b7',
-    title: 'Electric Guitar',
-    status: 'Active',
-    image: '/assets/item-images/projector.png',
-    pendingRequestsCount: 3,
-    publishedAt: '2025-08-30',
-    reservationPeriod: '2025-09-01 - 2025-09-30',
-  },
-  {
-    id: '6324a3f1e3e4e1e6a8e1d8b8',
-    title: 'Stand Mixer',
-    status: 'Reserved',
-    image: '/assets/item-images/sewing-machine.png',
-    pendingRequestsCount: 1,
-    publishedAt: '2025-09-28',
-    reservationPeriod: '2025-10-01 - 2025-10-15',
-  },
-  {
-    id: '6324a3f1e3e4e1e6a8e1d8b9',
-    title: 'Bubble Chair',
-    status: 'Draft',
-    image: '/assets/item-images/bubble-chair.png',
-    pendingRequestsCount: 0,
-    publishedAt: '2025-10-30',
-    reservationPeriod: '2025-11-01 - 2025-11-15',
-  },
-  {
-    id: '6324a3f1e3e4e1e6a8e1d8c0',
-    title: 'Projector',
-    status: 'Blocked',
-    image: '/assets/item-images/projector.png',
-    pendingRequestsCount: 0,
-    publishedAt: '2025-11-28',
-    reservationPeriod: '2025-12-01 - 2025-12-10',
-  },
-  {
-    id: '6324a3f1e3e4e1e6a8e1d8b2',
-    title: 'City Bike',
-    status: 'Active',
-    image: '/assets/item-images/bike.png',
-    pendingRequestsCount: 2,
-    publishedAt: '2025-01-03',
-    reservationPeriod: '2020-11-08 - 2020-12-23',
-  },
-  {
-    id: '6324a3f1e3e4e1e6a8e1d8b3',
-    title: 'Sewing Kit',
-    status: 'Expired',
-    image: '/assets/item-images/sewing-machine.png',
-    pendingRequestsCount: 0,
-    publishedAt: '2025-01-12',
-    reservationPeriod: '2020-11-08 - 2020-12-23',
-  },
-];
-
-function getMyListingsWithPagination(options: MyListingsArgs) {
-  let filteredListings = [...MOCK_MY_LISTINGS];
-
-  // Apply search text filter
-  if (options.searchText) {
-    filteredListings = filteredListings.filter((listing) =>
-      listing.title.toLowerCase().includes(options.searchText?.toLowerCase() || ''),
-    );
-  }
-
-  // Apply status filters
-  if (options.statusFilters && options.statusFilters.length > 0) {
-    filteredListings = filteredListings.filter((listing) =>
-      options.statusFilters?.includes(listing.status),
-    );
-  }
-
-  // Apply sorter
-  if (options.sorter?.field) {
-    filteredListings.sort((a, b) => {
-      const fieldA = a[options.sorter?.field as keyof typeof a];
-      const fieldB = b[options.sorter?.field as keyof typeof b];
-
-      // Handle undefined cases for sorting
-      if (fieldA === undefined || fieldA === null)
-        return options.sorter?.order === 'ascend' ? -1 : 1;
-      if (fieldB === undefined || fieldB === null)
-        return options.sorter?.order === 'ascend' ? 1 : -1;
-
-      if (fieldA < fieldB) {
-        return options.sorter?.order === 'ascend' ? -1 : 1;
-      }
-      if (fieldA > fieldB) {
-        return options.sorter?.order === 'ascend' ? 1 : -1;
-      }
-      return 0;
-    });
-  }
-
-  const total = filteredListings.length;
-  const startIndex = (options.page - 1) * options.pageSize;
-  const endIndex = startIndex + options.pageSize;
-  const items = filteredListings.slice(startIndex, endIndex);
-
-  return {
-    items,
-    total,
-    page: options.page,
-    pageSize: options.pageSize,
-  };
+	page: number;
+	pageSize: number;
+	searchText?: string;
+	statusFilters?: string[];
+	sorter?: { field: string; order: 'ascend' | 'descend' };
 }
 
 const itemListingResolvers = {
@@ -172,14 +53,80 @@ const itemListingResolvers = {
 			return toGraphItem(listing);
 		},
 
-    myListingsAll: (_parent: unknown, args: MyListingsArgs, _context: GraphContext) => {
-      console.log('myListingsAll resolver called with args:', args);
-      
-      // Use mock data to get paginated listings
-      const result = getMyListingsWithPagination(args);
-      
-      return result;
-    },
+		myListingsAll: async (
+			_parent: unknown,
+			args: MyListingsArgs,
+			context: GraphContext,
+		) => {
+			const currentUser = context.applicationServices.verifiedUser;
+			const sharerId = currentUser?.verifiedJwt?.sub;
+			const { page, pageSize, searchText, statusFilters, sorter } = args;
+			const pagedArgs: {
+				page: number;
+				pageSize: number;
+				searchText?: string;
+				statusFilters?: string[];
+				sharerId?: string;
+				sorter?: { field: string; order: 'ascend' | 'descend' };
+			} = { page, pageSize };
+			if (searchText !== undefined) {
+				pagedArgs.searchText = searchText;
+			}
+			if (statusFilters !== undefined) {
+				pagedArgs.statusFilters = statusFilters;
+			}
+			if (sorter !== undefined) {
+				pagedArgs.sorter = sorter;
+			}
+			if (sharerId !== undefined) {
+				pagedArgs.sharerId = sharerId;
+			}
+			const result =
+				await context.applicationServices.Listing.ItemListing.queryPaged(
+					pagedArgs,
+				);
+
+			// Map domain ItemListingEntityReference -> GraphQL ListingAll shape
+			// ListingAll requires: id, title, image, publishedAt, reservationPeriod, status, pendingRequestsCount
+			// Domain entity provides: images, createdAt, sharingPeriodStart/End, state
+			// We derive/transform where necessary and guarantee non-null status
+			const mapStateToStatus = (state?: string): string => {
+				if (!state || state.trim() === '') {
+					return 'Unknown';
+				}
+				// Normalize internal domain states to UI statuses
+				switch (state) {
+					case 'Published':
+						return 'Active';
+					case 'Drafted':
+						return 'Draft';
+					case 'Appeal Requested':
+						return 'Appeal_Requested';
+					default:
+						return state; // Paused, Cancelled, Expired, Blocked, Reserved (future), etc.
+				}
+			};
+
+			return {
+				items: result.items.map((listing) => {
+					console.log("--listing---", listing);
+					const sharingStart = listing.sharingPeriodStart.toISOString();
+					const sharingEnd = listing.sharingPeriodEnd.toISOString();
+					return {
+						id: listing.id,
+						title: listing.title,
+						image: listing.images && listing.images.length > 0 ? listing.images[0] : null,
+						publishedAt: listing.createdAt.toISOString(),
+						reservationPeriod: `${sharingStart.slice(0, 10)} - ${sharingEnd.slice(0, 10)}`,
+						status: mapStateToStatus(listing?.state),
+						pendingRequestsCount: 0, // TODO: integrate reservation request counts
+					};
+				}),
+				total: result.total,
+				page: result.page,
+				pageSize: result.pageSize,
+			};
+		},
 	},
 	Mutation: {
 		createItemListing: async (
