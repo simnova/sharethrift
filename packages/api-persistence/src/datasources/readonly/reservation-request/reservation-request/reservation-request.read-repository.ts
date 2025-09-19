@@ -37,6 +37,13 @@ export interface ReservationRequestReadRepository {
 	) => Promise<
 		Domain.Contexts.ReservationRequest.ReservationRequest.ReservationRequestEntityReference[]
 	>;
+	// Returns reservation requests for listings owned by the sharer (listing owner dashboard)
+	getListingRequestsBySharerId: (
+		sharerId: string,
+		options?: FindOptions,
+	) => Promise<
+		Domain.Contexts.ReservationRequest.ReservationRequest.ReservationRequestEntityReference[]
+	>;
 	getActiveByReserverIdAndListingId: (
 		reserverId: string,
 		listingId: string,
@@ -57,6 +64,26 @@ export interface ReservationRequestReadRepository {
 		Domain.Contexts.ReservationRequest.ReservationRequest.ReservationRequestEntityReference[]
 	>;
 }
+
+// Mock data for reservation requests targeting listings owned by a sharer
+// (used by GraphQL myListingsRequests resolver until real query implemented)
+const getMockListingReservationRequests = (
+	sharerId: string,
+): Domain.Contexts.ReservationRequest.ReservationRequest.ReservationRequestEntityReference[] => {
+	// Reuse base mock and tweak reserver / listing ids for variety
+	const base = getMockReservationRequests('507f1f77bcf86cd799439099', 'active');
+	return base.map((r, idx) => ({
+		...r,
+		id: `${r.id}-L${idx}`,
+		listing: {
+			...r.listing,
+			sharer: {
+				...r.listing.sharer,
+				id: sharerId,
+			},
+		},
+	}));
+};
 
 export class ReservationRequestReadRepositoryImpl
 	implements ReservationRequestReadRepository
@@ -129,6 +156,20 @@ export class ReservationRequestReadRepositoryImpl
 			getMockReservationRequests(reserverId, 'past'),
 		);
 		console.log(options); //gets rid of unused error
+		return Promise.resolve(mockResult);
+	}
+
+	async getListingRequestsBySharerId(
+		sharerId: string,
+		options?: FindOptions,
+	): Promise<
+		Domain.Contexts.ReservationRequest.ReservationRequest.ReservationRequestEntityReference[]
+	> {
+		// For now reuse mock generator using sharerId to seed distinct ids
+		const mockResult = await Promise.resolve(
+			getMockListingReservationRequests(sharerId),
+		);
+		console.log(options); // silence unused
 		return Promise.resolve(mockResult);
 	}
 

@@ -194,6 +194,44 @@ export type Listing = {
   id: Scalars["ObjectID"]["output"];
 };
 
+export type ListingAll = {
+  __typename?: "ListingAll";
+  id: Scalars["ID"]["output"];
+  image?: Maybe<Scalars["String"]["output"]>;
+  pendingRequestsCount: Scalars["Int"]["output"];
+  publishedAt?: Maybe<Scalars["String"]["output"]>;
+  reservationPeriod?: Maybe<Scalars["String"]["output"]>;
+  status: Scalars["String"]["output"];
+  title: Scalars["String"]["output"];
+};
+
+export type ListingAllPage = {
+  __typename?: "ListingAllPage";
+  items: Array<ListingAll>;
+  page: Scalars["Int"]["output"];
+  pageSize: Scalars["Int"]["output"];
+  total: Scalars["Int"]["output"];
+};
+
+export type ListingRequest = {
+  __typename?: "ListingRequest";
+  id: Scalars["ID"]["output"];
+  image?: Maybe<Scalars["String"]["output"]>;
+  requestedBy: Scalars["String"]["output"];
+  requestedOn: Scalars["String"]["output"];
+  reservationPeriod: Scalars["String"]["output"];
+  status: Scalars["String"]["output"];
+  title: Scalars["String"]["output"];
+};
+
+export type ListingRequestPage = {
+  __typename?: "ListingRequestPage";
+  items: Array<ListingRequest>;
+  page: Scalars["Int"]["output"];
+  pageSize: Scalars["Int"]["output"];
+  total: Scalars["Int"]["output"];
+};
+
 /** Base type for all models in mongo. */
 export type MongoBase = {
   createdAt?: Maybe<Scalars["DateTime"]["output"]>;
@@ -436,6 +474,8 @@ export type Query = {
   itemListings: Array<ItemListing>;
   myActiveReservationForListing?: Maybe<ReservationRequest>;
   myActiveReservations: Array<ReservationRequest>;
+  myListingsAll: ListingAllPage;
+  myListingsRequests: ListingRequestPage;
   myPastReservations: Array<ReservationRequest>;
   overlapActiveReservationRequestsForListing: Array<ReservationRequest>;
   personalUserById?: Maybe<PersonalUser>;
@@ -461,6 +501,24 @@ export type QueryMyActiveReservationForListingArgs = {
 /**  Base Query Type definition - , all mutations will be defined in separate files extending this type  */
 export type QueryMyActiveReservationsArgs = {
   userId: Scalars["ObjectID"]["input"];
+};
+
+/**  Base Query Type definition - , all mutations will be defined in separate files extending this type  */
+export type QueryMyListingsAllArgs = {
+  page: Scalars["Int"]["input"];
+  pageSize: Scalars["Int"]["input"];
+  searchText?: InputMaybe<Scalars["String"]["input"]>;
+  sorter?: InputMaybe<SorterInput>;
+  statusFilters?: InputMaybe<Array<Scalars["String"]["input"]>>;
+};
+
+/**  Base Query Type definition - , all mutations will be defined in separate files extending this type  */
+export type QueryMyListingsRequestsArgs = {
+  page: Scalars["Int"]["input"];
+  pageSize: Scalars["Int"]["input"];
+  searchText?: InputMaybe<Scalars["String"]["input"]>;
+  sorter?: InputMaybe<SorterInput>;
+  statusFilters?: InputMaybe<Array<Scalars["String"]["input"]>>;
 };
 
 /**  Base Query Type definition - , all mutations will be defined in separate files extending this type  */
@@ -532,6 +590,11 @@ export type ReservationRequestState =
   | "Closed"
   | "Rejected"
   | "Requested";
+
+export type SorterInput = {
+  field: Scalars["String"]["input"];
+  order: Scalars["String"]["input"];
+};
 
 export type User = {
   __typename?: "User";
@@ -865,6 +928,96 @@ export type ViewListingActiveReservationRequestForListingQuery = {
   } | null;
 };
 
+export type HomeAllListingsTableContainerMyListingsAllQueryVariables = Exact<{
+  page: Scalars["Int"]["input"];
+  pageSize: Scalars["Int"]["input"];
+  searchText?: InputMaybe<Scalars["String"]["input"]>;
+  statusFilters?: InputMaybe<
+    Array<Scalars["String"]["input"]> | Scalars["String"]["input"]
+  >;
+  sorter?: InputMaybe<SorterInput>;
+}>;
+
+export type HomeAllListingsTableContainerMyListingsAllQuery = {
+  __typename?: "Query";
+  myListingsAll: {
+    __typename?: "ListingAllPage";
+    total: number;
+    page: number;
+    pageSize: number;
+    items: Array<{
+      __typename?: "ListingAll";
+      id: string;
+      title: string;
+      status: string;
+      image?: string | null;
+      pendingRequestsCount: number;
+      publishedAt?: string | null;
+      reservationPeriod?: string | null;
+    }>;
+  };
+};
+
+export type HomeAllListingsTableContainerListingFieldsFragment = {
+  __typename?: "ListingAll";
+  id: string;
+  title: string;
+  status: string;
+  image?: string | null;
+  pendingRequestsCount: number;
+  publishedAt?: string | null;
+  reservationPeriod?: string | null;
+};
+
+export type HomeMyListingsDashboardContainerMyListingsRequestsCountQueryVariables =
+  Exact<{ [key: string]: never }>;
+
+export type HomeMyListingsDashboardContainerMyListingsRequestsCountQuery = {
+  __typename?: "Query";
+  myListingsRequests: { __typename?: "ListingRequestPage"; total: number };
+};
+
+export type HomeRequestsTableContainerMyListingsRequestsQueryVariables = Exact<{
+  page: Scalars["Int"]["input"];
+  pageSize: Scalars["Int"]["input"];
+  searchText?: InputMaybe<Scalars["String"]["input"]>;
+  statusFilters?: InputMaybe<
+    Array<Scalars["String"]["input"]> | Scalars["String"]["input"]
+  >;
+  sorter?: InputMaybe<SorterInput>;
+}>;
+
+export type HomeRequestsTableContainerMyListingsRequestsQuery = {
+  __typename?: "Query";
+  myListingsRequests: {
+    __typename?: "ListingRequestPage";
+    total: number;
+    page: number;
+    pageSize: number;
+    items: Array<{
+      __typename?: "ListingRequest";
+      id: string;
+      title: string;
+      image?: string | null;
+      requestedBy: string;
+      requestedOn: string;
+      reservationPeriod: string;
+      status: string;
+    }>;
+  };
+};
+
+export type HomeRequestsTableContainerRequestFieldsFragment = {
+  __typename?: "ListingRequest";
+  id: string;
+  title: string;
+  image?: string | null;
+  requestedBy: string;
+  requestedOn: string;
+  reservationPeriod: string;
+  status: string;
+};
+
 export type ReservationsViewActiveContainerReservationFieldsFragment = {
   __typename?: "ReservationRequest";
   id: any;
@@ -1072,6 +1225,68 @@ export const ItemListingFieldsFragmentDoc = {
     },
   ],
 } as unknown as DocumentNode<ItemListingFieldsFragment, unknown>;
+export const HomeAllListingsTableContainerListingFieldsFragmentDoc = {
+  kind: "Document",
+  definitions: [
+    {
+      kind: "FragmentDefinition",
+      name: {
+        kind: "Name",
+        value: "HomeAllListingsTableContainerListingFields",
+      },
+      typeCondition: {
+        kind: "NamedType",
+        name: { kind: "Name", value: "ListingAll" },
+      },
+      selectionSet: {
+        kind: "SelectionSet",
+        selections: [
+          { kind: "Field", name: { kind: "Name", value: "id" } },
+          { kind: "Field", name: { kind: "Name", value: "title" } },
+          { kind: "Field", name: { kind: "Name", value: "status" } },
+          { kind: "Field", name: { kind: "Name", value: "image" } },
+          {
+            kind: "Field",
+            name: { kind: "Name", value: "pendingRequestsCount" },
+          },
+          { kind: "Field", name: { kind: "Name", value: "publishedAt" } },
+          { kind: "Field", name: { kind: "Name", value: "reservationPeriod" } },
+        ],
+      },
+    },
+  ],
+} as unknown as DocumentNode<
+  HomeAllListingsTableContainerListingFieldsFragment,
+  unknown
+>;
+export const HomeRequestsTableContainerRequestFieldsFragmentDoc = {
+  kind: "Document",
+  definitions: [
+    {
+      kind: "FragmentDefinition",
+      name: { kind: "Name", value: "HomeRequestsTableContainerRequestFields" },
+      typeCondition: {
+        kind: "NamedType",
+        name: { kind: "Name", value: "ListingRequest" },
+      },
+      selectionSet: {
+        kind: "SelectionSet",
+        selections: [
+          { kind: "Field", name: { kind: "Name", value: "id" } },
+          { kind: "Field", name: { kind: "Name", value: "title" } },
+          { kind: "Field", name: { kind: "Name", value: "image" } },
+          { kind: "Field", name: { kind: "Name", value: "requestedBy" } },
+          { kind: "Field", name: { kind: "Name", value: "requestedOn" } },
+          { kind: "Field", name: { kind: "Name", value: "reservationPeriod" } },
+          { kind: "Field", name: { kind: "Name", value: "status" } },
+        ],
+      },
+    },
+  ],
+} as unknown as DocumentNode<
+  HomeRequestsTableContainerRequestFieldsFragment,
+  unknown
+>;
 export const ReservationsViewActiveContainerReservationFieldsFragmentDoc = {
   kind: "Document",
   definitions: [
@@ -2265,6 +2480,391 @@ export const ViewListingActiveReservationRequestForListingDocument = {
 } as unknown as DocumentNode<
   ViewListingActiveReservationRequestForListingQuery,
   ViewListingActiveReservationRequestForListingQueryVariables
+>;
+export const HomeAllListingsTableContainerMyListingsAllDocument = {
+  kind: "Document",
+  definitions: [
+    {
+      kind: "OperationDefinition",
+      operation: "query",
+      name: {
+        kind: "Name",
+        value: "HomeAllListingsTableContainerMyListingsAll",
+      },
+      variableDefinitions: [
+        {
+          kind: "VariableDefinition",
+          variable: { kind: "Variable", name: { kind: "Name", value: "page" } },
+          type: {
+            kind: "NonNullType",
+            type: { kind: "NamedType", name: { kind: "Name", value: "Int" } },
+          },
+        },
+        {
+          kind: "VariableDefinition",
+          variable: {
+            kind: "Variable",
+            name: { kind: "Name", value: "pageSize" },
+          },
+          type: {
+            kind: "NonNullType",
+            type: { kind: "NamedType", name: { kind: "Name", value: "Int" } },
+          },
+        },
+        {
+          kind: "VariableDefinition",
+          variable: {
+            kind: "Variable",
+            name: { kind: "Name", value: "searchText" },
+          },
+          type: { kind: "NamedType", name: { kind: "Name", value: "String" } },
+        },
+        {
+          kind: "VariableDefinition",
+          variable: {
+            kind: "Variable",
+            name: { kind: "Name", value: "statusFilters" },
+          },
+          type: {
+            kind: "ListType",
+            type: {
+              kind: "NonNullType",
+              type: {
+                kind: "NamedType",
+                name: { kind: "Name", value: "String" },
+              },
+            },
+          },
+        },
+        {
+          kind: "VariableDefinition",
+          variable: {
+            kind: "Variable",
+            name: { kind: "Name", value: "sorter" },
+          },
+          type: {
+            kind: "NamedType",
+            name: { kind: "Name", value: "SorterInput" },
+          },
+        },
+      ],
+      selectionSet: {
+        kind: "SelectionSet",
+        selections: [
+          {
+            kind: "Field",
+            name: { kind: "Name", value: "myListingsAll" },
+            arguments: [
+              {
+                kind: "Argument",
+                name: { kind: "Name", value: "page" },
+                value: {
+                  kind: "Variable",
+                  name: { kind: "Name", value: "page" },
+                },
+              },
+              {
+                kind: "Argument",
+                name: { kind: "Name", value: "pageSize" },
+                value: {
+                  kind: "Variable",
+                  name: { kind: "Name", value: "pageSize" },
+                },
+              },
+              {
+                kind: "Argument",
+                name: { kind: "Name", value: "searchText" },
+                value: {
+                  kind: "Variable",
+                  name: { kind: "Name", value: "searchText" },
+                },
+              },
+              {
+                kind: "Argument",
+                name: { kind: "Name", value: "statusFilters" },
+                value: {
+                  kind: "Variable",
+                  name: { kind: "Name", value: "statusFilters" },
+                },
+              },
+              {
+                kind: "Argument",
+                name: { kind: "Name", value: "sorter" },
+                value: {
+                  kind: "Variable",
+                  name: { kind: "Name", value: "sorter" },
+                },
+              },
+            ],
+            selectionSet: {
+              kind: "SelectionSet",
+              selections: [
+                {
+                  kind: "Field",
+                  name: { kind: "Name", value: "items" },
+                  selectionSet: {
+                    kind: "SelectionSet",
+                    selections: [
+                      {
+                        kind: "FragmentSpread",
+                        name: {
+                          kind: "Name",
+                          value: "HomeAllListingsTableContainerListingFields",
+                        },
+                      },
+                    ],
+                  },
+                },
+                { kind: "Field", name: { kind: "Name", value: "total" } },
+                { kind: "Field", name: { kind: "Name", value: "page" } },
+                { kind: "Field", name: { kind: "Name", value: "pageSize" } },
+              ],
+            },
+          },
+        ],
+      },
+    },
+    {
+      kind: "FragmentDefinition",
+      name: {
+        kind: "Name",
+        value: "HomeAllListingsTableContainerListingFields",
+      },
+      typeCondition: {
+        kind: "NamedType",
+        name: { kind: "Name", value: "ListingAll" },
+      },
+      selectionSet: {
+        kind: "SelectionSet",
+        selections: [
+          { kind: "Field", name: { kind: "Name", value: "id" } },
+          { kind: "Field", name: { kind: "Name", value: "title" } },
+          { kind: "Field", name: { kind: "Name", value: "status" } },
+          { kind: "Field", name: { kind: "Name", value: "image" } },
+          {
+            kind: "Field",
+            name: { kind: "Name", value: "pendingRequestsCount" },
+          },
+          { kind: "Field", name: { kind: "Name", value: "publishedAt" } },
+          { kind: "Field", name: { kind: "Name", value: "reservationPeriod" } },
+        ],
+      },
+    },
+  ],
+} as unknown as DocumentNode<
+  HomeAllListingsTableContainerMyListingsAllQuery,
+  HomeAllListingsTableContainerMyListingsAllQueryVariables
+>;
+export const HomeMyListingsDashboardContainerMyListingsRequestsCountDocument = {
+  kind: "Document",
+  definitions: [
+    {
+      kind: "OperationDefinition",
+      operation: "query",
+      name: {
+        kind: "Name",
+        value: "HomeMyListingsDashboardContainerMyListingsRequestsCount",
+      },
+      selectionSet: {
+        kind: "SelectionSet",
+        selections: [
+          {
+            kind: "Field",
+            name: { kind: "Name", value: "myListingsRequests" },
+            arguments: [
+              {
+                kind: "Argument",
+                name: { kind: "Name", value: "page" },
+                value: { kind: "IntValue", value: "1" },
+              },
+              {
+                kind: "Argument",
+                name: { kind: "Name", value: "pageSize" },
+                value: { kind: "IntValue", value: "1" },
+              },
+            ],
+            selectionSet: {
+              kind: "SelectionSet",
+              selections: [
+                { kind: "Field", name: { kind: "Name", value: "total" } },
+              ],
+            },
+          },
+        ],
+      },
+    },
+  ],
+} as unknown as DocumentNode<
+  HomeMyListingsDashboardContainerMyListingsRequestsCountQuery,
+  HomeMyListingsDashboardContainerMyListingsRequestsCountQueryVariables
+>;
+export const HomeRequestsTableContainerMyListingsRequestsDocument = {
+  kind: "Document",
+  definitions: [
+    {
+      kind: "OperationDefinition",
+      operation: "query",
+      name: {
+        kind: "Name",
+        value: "HomeRequestsTableContainerMyListingsRequests",
+      },
+      variableDefinitions: [
+        {
+          kind: "VariableDefinition",
+          variable: { kind: "Variable", name: { kind: "Name", value: "page" } },
+          type: {
+            kind: "NonNullType",
+            type: { kind: "NamedType", name: { kind: "Name", value: "Int" } },
+          },
+        },
+        {
+          kind: "VariableDefinition",
+          variable: {
+            kind: "Variable",
+            name: { kind: "Name", value: "pageSize" },
+          },
+          type: {
+            kind: "NonNullType",
+            type: { kind: "NamedType", name: { kind: "Name", value: "Int" } },
+          },
+        },
+        {
+          kind: "VariableDefinition",
+          variable: {
+            kind: "Variable",
+            name: { kind: "Name", value: "searchText" },
+          },
+          type: { kind: "NamedType", name: { kind: "Name", value: "String" } },
+        },
+        {
+          kind: "VariableDefinition",
+          variable: {
+            kind: "Variable",
+            name: { kind: "Name", value: "statusFilters" },
+          },
+          type: {
+            kind: "ListType",
+            type: {
+              kind: "NonNullType",
+              type: {
+                kind: "NamedType",
+                name: { kind: "Name", value: "String" },
+              },
+            },
+          },
+        },
+        {
+          kind: "VariableDefinition",
+          variable: {
+            kind: "Variable",
+            name: { kind: "Name", value: "sorter" },
+          },
+          type: {
+            kind: "NamedType",
+            name: { kind: "Name", value: "SorterInput" },
+          },
+        },
+      ],
+      selectionSet: {
+        kind: "SelectionSet",
+        selections: [
+          {
+            kind: "Field",
+            name: { kind: "Name", value: "myListingsRequests" },
+            arguments: [
+              {
+                kind: "Argument",
+                name: { kind: "Name", value: "page" },
+                value: {
+                  kind: "Variable",
+                  name: { kind: "Name", value: "page" },
+                },
+              },
+              {
+                kind: "Argument",
+                name: { kind: "Name", value: "pageSize" },
+                value: {
+                  kind: "Variable",
+                  name: { kind: "Name", value: "pageSize" },
+                },
+              },
+              {
+                kind: "Argument",
+                name: { kind: "Name", value: "searchText" },
+                value: {
+                  kind: "Variable",
+                  name: { kind: "Name", value: "searchText" },
+                },
+              },
+              {
+                kind: "Argument",
+                name: { kind: "Name", value: "statusFilters" },
+                value: {
+                  kind: "Variable",
+                  name: { kind: "Name", value: "statusFilters" },
+                },
+              },
+              {
+                kind: "Argument",
+                name: { kind: "Name", value: "sorter" },
+                value: {
+                  kind: "Variable",
+                  name: { kind: "Name", value: "sorter" },
+                },
+              },
+            ],
+            selectionSet: {
+              kind: "SelectionSet",
+              selections: [
+                {
+                  kind: "Field",
+                  name: { kind: "Name", value: "items" },
+                  selectionSet: {
+                    kind: "SelectionSet",
+                    selections: [
+                      {
+                        kind: "FragmentSpread",
+                        name: {
+                          kind: "Name",
+                          value: "HomeRequestsTableContainerRequestFields",
+                        },
+                      },
+                    ],
+                  },
+                },
+                { kind: "Field", name: { kind: "Name", value: "total" } },
+                { kind: "Field", name: { kind: "Name", value: "page" } },
+                { kind: "Field", name: { kind: "Name", value: "pageSize" } },
+              ],
+            },
+          },
+        ],
+      },
+    },
+    {
+      kind: "FragmentDefinition",
+      name: { kind: "Name", value: "HomeRequestsTableContainerRequestFields" },
+      typeCondition: {
+        kind: "NamedType",
+        name: { kind: "Name", value: "ListingRequest" },
+      },
+      selectionSet: {
+        kind: "SelectionSet",
+        selections: [
+          { kind: "Field", name: { kind: "Name", value: "id" } },
+          { kind: "Field", name: { kind: "Name", value: "title" } },
+          { kind: "Field", name: { kind: "Name", value: "image" } },
+          { kind: "Field", name: { kind: "Name", value: "requestedBy" } },
+          { kind: "Field", name: { kind: "Name", value: "requestedOn" } },
+          { kind: "Field", name: { kind: "Name", value: "reservationPeriod" } },
+          { kind: "Field", name: { kind: "Name", value: "status" } },
+        ],
+      },
+    },
+  ],
+} as unknown as DocumentNode<
+  HomeRequestsTableContainerMyListingsRequestsQuery,
+  HomeRequestsTableContainerMyListingsRequestsQueryVariables
 >;
 export const ReservationsViewActiveContainerActiveReservationsDocument = {
   kind: "Document",
