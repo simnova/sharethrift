@@ -26,15 +26,37 @@ export class ItemListingRepository<
 	// biome-ignore lint:noRequireAwait
 	async getNewInstance(
 		sharer: Domain.Contexts.User.PersonalUser.PersonalUserEntityReference,
+		fields: {
+			title: string;
+			description: string;
+			category: string;
+			location: string;
+			sharingPeriodStart: Date;
+			sharingPeriodEnd: Date;
+			images?: string[];
+			isDraft?: boolean;
+		},
 	): Promise<Domain.Contexts.Listing.ItemListing.ItemListing<PropType>> {
-		const adapter = this.typeConverter.toAdapter(new this.model());
-		return Promise.resolve(
-			Domain.Contexts.Listing.ItemListing.ItemListing.getNewInstance(
-				adapter,
-				sharer,
-				this.passport,
-			),
-		);
+		// Create a new Mongoose document
+		const newDoc = new this.model({
+			sharer: sharer.id,
+			title: fields.title,
+			description: fields.description,
+			category: fields.category,
+			location: fields.location,
+			sharingPeriodStart: fields.sharingPeriodStart,
+			sharingPeriodEnd: fields.sharingPeriodEnd,
+			images: fields.images ?? [],
+			state: fields.isDraft ? 'Drafted' : 'Published',
+			createdAt: new Date(),
+			updatedAt: new Date(),
+			schemaVersion: 1,
+			reports: 0,
+			sharingHistory: [],
+		});
+
+		// Use the type converter to create the domain entity from the document
+		return this.typeConverter.toDomain(newDoc, this.passport);
 	}
 
 	async getActiveItemListings() {

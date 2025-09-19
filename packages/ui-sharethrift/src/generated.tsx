@@ -143,6 +143,17 @@ export type Conversation = MongoBase & {
   updatedAt: Scalars["DateTime"]["output"];
 };
 
+export type CreateItemListingInput = {
+  category: Scalars["String"]["input"];
+  description: Scalars["String"]["input"];
+  images?: InputMaybe<Array<Scalars["String"]["input"]>>;
+  isDraft?: InputMaybe<Scalars["Boolean"]["input"]>;
+  location: Scalars["String"]["input"];
+  sharingPeriodEnd: Scalars["DateTime"]["input"];
+  sharingPeriodStart: Scalars["DateTime"]["input"];
+  title: Scalars["String"]["input"];
+};
+
 export type ItemListing = MongoBase & {
   __typename?: "ItemListing";
   category: Scalars["String"]["output"];
@@ -203,6 +214,7 @@ export type Mutation = {
   _empty?: Maybe<Scalars["String"]["output"]>;
   cancelReservation: ReservationRequest;
   closeReservation: ReservationRequest;
+  createItemListing: ItemListing;
 };
 
 /**  Base Mutation Type definition - all mutations will be defined in separate files extending this type  */
@@ -213,6 +225,11 @@ export type MutationCancelReservationArgs = {
 /**  Base Mutation Type definition - all mutations will be defined in separate files extending this type  */
 export type MutationCloseReservationArgs = {
   input: CloseReservationInput;
+};
+
+/**  Base Mutation Type definition - all mutations will be defined in separate files extending this type  */
+export type MutationCreateItemListingArgs = {
+  input: CreateItemListingInput;
 };
 
 export type MutationResult = {
@@ -469,43 +486,45 @@ export type HomeAccountProfileViewContainerUserListingsQuery = {
   }>;
 };
 
-export type HomeAccountSettingsViewContainerCurrentUserQueryVariables = Exact<{
-  [key: string]: never;
-}>;
+export type ItemListingFieldsFragment = {
+  __typename?: "ItemListing";
+  id: any;
+  title: string;
+  description: string;
+  category: string;
+  location: string;
+  sharingPeriodStart: any;
+  sharingPeriodEnd: any;
+  state?: ItemListingState | null;
+  images?: Array<string> | null;
+  createdAt?: any | null;
+  updatedAt?: any | null;
+  sharer: string;
+  schemaVersion?: string | null;
+};
 
-export type HomeAccountSettingsViewContainerCurrentUserQuery = {
-  __typename?: "Query";
-  currentPersonalUserAndCreateIfNotExists: {
-    __typename?: "PersonalUser";
+export type HomeCreateListingContainerCreateItemListingMutationVariables =
+  Exact<{
+    input: CreateItemListingInput;
+  }>;
+
+export type HomeCreateListingContainerCreateItemListingMutation = {
+  __typename?: "Mutation";
+  createItemListing: {
+    __typename?: "ItemListing";
     id: any;
-    userType?: string | null;
+    title: string;
+    description: string;
+    category: string;
+    location: string;
+    sharingPeriodStart: any;
+    sharingPeriodEnd: any;
+    state?: ItemListingState | null;
+    images?: Array<string> | null;
     createdAt?: any | null;
     updatedAt?: any | null;
-    account?: {
-      __typename?: "PersonalUserAccount";
-      accountType?: string | null;
-      email?: string | null;
-      username?: string | null;
-      profile?: {
-        __typename?: "PersonalUserAccountProfile";
-        firstName?: string | null;
-        lastName?: string | null;
-        location?: {
-          __typename?: "PersonalUserAccountProfileLocation";
-          address1?: string | null;
-          address2?: string | null;
-          city?: string | null;
-          state?: string | null;
-          country?: string | null;
-          zipCode?: string | null;
-        } | null;
-        billing?: {
-          __typename?: "PersonalUserAccountProfileBilling";
-          subscriptionId?: string | null;
-          cybersourceCustomerId?: string | null;
-        } | null;
-      } | null;
-    } | null;
+    sharer: string;
+    schemaVersion?: string | null;
   };
 };
 
@@ -800,6 +819,40 @@ export type SignUpSectionLayoutContainerCurrentPersonalUserAndCreateIfNotExistsQ
     };
   };
 
+export const ItemListingFieldsFragmentDoc = {
+  kind: "Document",
+  definitions: [
+    {
+      kind: "FragmentDefinition",
+      name: { kind: "Name", value: "ItemListingFields" },
+      typeCondition: {
+        kind: "NamedType",
+        name: { kind: "Name", value: "ItemListing" },
+      },
+      selectionSet: {
+        kind: "SelectionSet",
+        selections: [
+          { kind: "Field", name: { kind: "Name", value: "id" } },
+          { kind: "Field", name: { kind: "Name", value: "title" } },
+          { kind: "Field", name: { kind: "Name", value: "description" } },
+          { kind: "Field", name: { kind: "Name", value: "category" } },
+          { kind: "Field", name: { kind: "Name", value: "location" } },
+          {
+            kind: "Field",
+            name: { kind: "Name", value: "sharingPeriodStart" },
+          },
+          { kind: "Field", name: { kind: "Name", value: "sharingPeriodEnd" } },
+          { kind: "Field", name: { kind: "Name", value: "state" } },
+          { kind: "Field", name: { kind: "Name", value: "images" } },
+          { kind: "Field", name: { kind: "Name", value: "createdAt" } },
+          { kind: "Field", name: { kind: "Name", value: "updatedAt" } },
+          { kind: "Field", name: { kind: "Name", value: "sharer" } },
+          { kind: "Field", name: { kind: "Name", value: "schemaVersion" } },
+        ],
+      },
+    },
+  ],
+} as unknown as DocumentNode<ItemListingFieldsFragment, unknown>;
 export const ReservationsViewActiveContainerReservationFieldsFragmentDoc = {
   kind: "Document",
   definitions: [
@@ -1150,133 +1203,94 @@ export const HomeAccountProfileViewContainerUserListingsDocument = {
   HomeAccountProfileViewContainerUserListingsQuery,
   HomeAccountProfileViewContainerUserListingsQueryVariables
 >;
-export const HomeAccountSettingsViewContainerCurrentUserDocument = {
+export const HomeCreateListingContainerCreateItemListingDocument = {
   kind: "Document",
   definitions: [
     {
       kind: "OperationDefinition",
-      operation: "query",
+      operation: "mutation",
       name: {
         kind: "Name",
-        value: "HomeAccountSettingsViewContainerCurrentUser",
+        value: "HomeCreateListingContainerCreateItemListing",
       },
+      variableDefinitions: [
+        {
+          kind: "VariableDefinition",
+          variable: {
+            kind: "Variable",
+            name: { kind: "Name", value: "input" },
+          },
+          type: {
+            kind: "NonNullType",
+            type: {
+              kind: "NamedType",
+              name: { kind: "Name", value: "CreateItemListingInput" },
+            },
+          },
+        },
+      ],
       selectionSet: {
         kind: "SelectionSet",
         selections: [
           {
             kind: "Field",
-            name: {
-              kind: "Name",
-              value: "currentPersonalUserAndCreateIfNotExists",
-            },
+            name: { kind: "Name", value: "createItemListing" },
+            arguments: [
+              {
+                kind: "Argument",
+                name: { kind: "Name", value: "input" },
+                value: {
+                  kind: "Variable",
+                  name: { kind: "Name", value: "input" },
+                },
+              },
+            ],
             selectionSet: {
               kind: "SelectionSet",
               selections: [
-                { kind: "Field", name: { kind: "Name", value: "id" } },
-                { kind: "Field", name: { kind: "Name", value: "userType" } },
                 {
-                  kind: "Field",
-                  name: { kind: "Name", value: "account" },
-                  selectionSet: {
-                    kind: "SelectionSet",
-                    selections: [
-                      {
-                        kind: "Field",
-                        name: { kind: "Name", value: "accountType" },
-                      },
-                      { kind: "Field", name: { kind: "Name", value: "email" } },
-                      {
-                        kind: "Field",
-                        name: { kind: "Name", value: "username" },
-                      },
-                      {
-                        kind: "Field",
-                        name: { kind: "Name", value: "profile" },
-                        selectionSet: {
-                          kind: "SelectionSet",
-                          selections: [
-                            {
-                              kind: "Field",
-                              name: { kind: "Name", value: "firstName" },
-                            },
-                            {
-                              kind: "Field",
-                              name: { kind: "Name", value: "lastName" },
-                            },
-                            {
-                              kind: "Field",
-                              name: { kind: "Name", value: "location" },
-                              selectionSet: {
-                                kind: "SelectionSet",
-                                selections: [
-                                  {
-                                    kind: "Field",
-                                    name: { kind: "Name", value: "address1" },
-                                  },
-                                  {
-                                    kind: "Field",
-                                    name: { kind: "Name", value: "address2" },
-                                  },
-                                  {
-                                    kind: "Field",
-                                    name: { kind: "Name", value: "city" },
-                                  },
-                                  {
-                                    kind: "Field",
-                                    name: { kind: "Name", value: "state" },
-                                  },
-                                  {
-                                    kind: "Field",
-                                    name: { kind: "Name", value: "country" },
-                                  },
-                                  {
-                                    kind: "Field",
-                                    name: { kind: "Name", value: "zipCode" },
-                                  },
-                                ],
-                              },
-                            },
-                            {
-                              kind: "Field",
-                              name: { kind: "Name", value: "billing" },
-                              selectionSet: {
-                                kind: "SelectionSet",
-                                selections: [
-                                  {
-                                    kind: "Field",
-                                    name: {
-                                      kind: "Name",
-                                      value: "subscriptionId",
-                                    },
-                                  },
-                                  {
-                                    kind: "Field",
-                                    name: {
-                                      kind: "Name",
-                                      value: "cybersourceCustomerId",
-                                    },
-                                  },
-                                ],
-                              },
-                            },
-                          ],
-                        },
-                      },
-                    ],
-                  },
+                  kind: "FragmentSpread",
+                  name: { kind: "Name", value: "ItemListingFields" },
                 },
-                { kind: "Field", name: { kind: "Name", value: "createdAt" } },
-                { kind: "Field", name: { kind: "Name", value: "updatedAt" } },
               ],
             },
           },
         ],
       },
     },
+    {
+      kind: "FragmentDefinition",
+      name: { kind: "Name", value: "ItemListingFields" },
+      typeCondition: {
+        kind: "NamedType",
+        name: { kind: "Name", value: "ItemListing" },
+      },
+      selectionSet: {
+        kind: "SelectionSet",
+        selections: [
+          { kind: "Field", name: { kind: "Name", value: "id" } },
+          { kind: "Field", name: { kind: "Name", value: "title" } },
+          { kind: "Field", name: { kind: "Name", value: "description" } },
+          { kind: "Field", name: { kind: "Name", value: "category" } },
+          { kind: "Field", name: { kind: "Name", value: "location" } },
+          {
+            kind: "Field",
+            name: { kind: "Name", value: "sharingPeriodStart" },
+          },
+          { kind: "Field", name: { kind: "Name", value: "sharingPeriodEnd" } },
+          { kind: "Field", name: { kind: "Name", value: "state" } },
+          { kind: "Field", name: { kind: "Name", value: "images" } },
+          { kind: "Field", name: { kind: "Name", value: "createdAt" } },
+          { kind: "Field", name: { kind: "Name", value: "updatedAt" } },
+          { kind: "Field", name: { kind: "Name", value: "sharer" } },
+          { kind: "Field", name: { kind: "Name", value: "schemaVersion" } },
+        ],
+      },
+    },
   ],
 } as unknown as DocumentNode<
-  HomeAccountSettingsViewContainerCurrentUserQuery,
-  HomeAccountSettingsViewContainerCurrentUserQueryVariables
+  HomeCreateListingContainerCreateItemListingMutation,
+  HomeCreateListingContainerCreateItemListingMutationVariables
 >;
 export const GetListingsDocument = {
   kind: "Document",

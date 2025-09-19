@@ -4,13 +4,18 @@ import {
 	User,
 	type UserContextApplicationService,
 } from './contexts/user/index.ts';
-import { 
-    ReservationRequest, 
-    type ReservationRequestContextApplicationService 
+import {
+	ReservationRequest,
+	type ReservationRequestContextApplicationService,
 } from './contexts/reservation-request/index.ts';
+import {
+	Listing,
+	type ListingContextApplicationService,
+} from './contexts/listing/index.ts';
 export interface ApplicationServices {
 	User: UserContextApplicationService;
-    ReservationRequest: ReservationRequestContextApplicationService;
+	ReservationRequest: ReservationRequestContextApplicationService;
+	Listing: ListingContextApplicationService;
 	get verifiedUser(): VerifiedUser | null;
 }
 
@@ -31,19 +36,18 @@ export interface VerifiedUser {
 }
 
 // biome-ignore lint/complexity/noBannedTypes: principal hints type configuration
+
 export type PrincipalHints = {
 	// memberId: string | undefined;
 	// communityId: string | undefined;
 };
- 
+
 export interface AppServicesHost<S> {
 	forRequest(rawAuthHeader?: string, hints?: PrincipalHints): Promise<S>;
-	// forSystem can be added later without breaking Cellix API:
-	// forSystem?: (opts?: unknown) => Promise<S>;
 }
- 
+
 export type ApplicationServicesFactory = AppServicesHost<ApplicationServices>;
- 
+
 export const buildApplicationServicesFactory = (
 	infrastructureServicesRegistry: ApiContextSpec,
 ): ApplicationServicesFactory => {
@@ -72,12 +76,6 @@ export const buildApplicationServicesFactory = (
 					console.log(passport);
 					passport = Domain.PassportFactory.forSystem(); // temporary create system passport, change to forPersonalUser when it is ready
 				}
-			} else if (openIdConfigKey === 'StaffPortal') {
-				const staffUser = undefined;
-				// const staffUser = await readonlyDataSource.User.StaffUser.StaffUserReadRepo.getByExternalId(verifiedJwt.sub);
-				if (staffUser) {
-					// passport = Domain.PassportFactory.forStaffUser(staffUser);
-				}
 			}
 		}
 
@@ -89,10 +87,11 @@ export const buildApplicationServicesFactory = (
 			get verifiedUser(): VerifiedUser | null {
 				return { ...tokenValidationResult, hints: hints };
 			},
-            ReservationRequest: ReservationRequest(dataSources),
+			ReservationRequest: ReservationRequest(dataSources),
+			Listing: Listing(dataSources),
 		};
 	};
- 
+
 	return {
 		forRequest,
 	};

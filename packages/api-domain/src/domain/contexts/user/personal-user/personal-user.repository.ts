@@ -1,4 +1,5 @@
-import type { PersonalUser, PersonalUserProps } from './personal-user.ts';
+import type { PersonalUserProps } from './personal-user.entity.ts';
+import type { PersonalUser } from './personal-user.ts';
 import type { DomainSeedwork } from '@cellix/domain-seedwork';
 
 export interface PersonalUserRepository<props extends PersonalUserProps>

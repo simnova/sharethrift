@@ -1,5 +1,5 @@
 import type { Domain } from '@sthrift/api-domain';
-import type { ModelsContext } from '../../../../index.ts';
+import type { ModelsContext } from '../../../../models-context.ts';
 import { getPersonalUserRoleUnitOfWork } from './personal-user-role.uow.ts';
 
 export const PersonalUserRolePersistence = (
