@@ -143,6 +143,17 @@ export type Conversation = MongoBase & {
   updatedAt: Scalars["DateTime"]["output"];
 };
 
+export type CreateItemListingInput = {
+  category: Scalars["String"]["input"];
+  description: Scalars["String"]["input"];
+  images?: InputMaybe<Array<Scalars["String"]["input"]>>;
+  isDraft?: InputMaybe<Scalars["Boolean"]["input"]>;
+  location: Scalars["String"]["input"];
+  sharingPeriodEnd: Scalars["DateTime"]["input"];
+  sharingPeriodStart: Scalars["DateTime"]["input"];
+  title: Scalars["String"]["input"];
+};
+
 export type ItemListing = MongoBase & {
   __typename?: "ItemListing";
   category: Scalars["String"]["output"];
@@ -241,6 +252,7 @@ export type Mutation = {
   _empty?: Maybe<Scalars["String"]["output"]>;
   cancelReservation: ReservationRequest;
   closeReservation: ReservationRequest;
+  createItemListing: ItemListing;
 };
 
 /**  Base Mutation Type definition - all mutations will be defined in separate files extending this type  */
@@ -251,6 +263,11 @@ export type MutationCancelReservationArgs = {
 /**  Base Mutation Type definition - all mutations will be defined in separate files extending this type  */
 export type MutationCloseReservationArgs = {
   input: CloseReservationInput;
+};
+
+/**  Base Mutation Type definition - all mutations will be defined in separate files extending this type  */
+export type MutationCreateItemListingArgs = {
+  input: CreateItemListingInput;
 };
 
 export type MutationResult = {
@@ -477,6 +494,101 @@ export type DummyGraphqlQueryVariables = Exact<{ [key: string]: never }>;
 export type DummyGraphqlQuery = {
   __typename?: "Query";
   itemListings: Array<{ __typename?: "ItemListing"; id: any }>;
+};
+
+export type HomeAccountProfileViewContainerCurrentUserQueryVariables = Exact<{
+  [key: string]: never;
+}>;
+
+export type HomeAccountProfileViewContainerCurrentUserQuery = {
+  __typename?: "Query";
+  currentPersonalUserAndCreateIfNotExists: {
+    __typename?: "PersonalUser";
+    id: any;
+    userType?: string | null;
+    createdAt?: any | null;
+    account?: {
+      __typename?: "PersonalUserAccount";
+      accountType?: string | null;
+      email?: string | null;
+      username?: string | null;
+      profile?: {
+        __typename?: "PersonalUserAccountProfile";
+        firstName?: string | null;
+        lastName?: string | null;
+        location?: {
+          __typename?: "PersonalUserAccountProfileLocation";
+          city?: string | null;
+          state?: string | null;
+        } | null;
+      } | null;
+    } | null;
+  };
+};
+
+export type HomeAccountProfileViewContainerUserListingsQueryVariables = Exact<{
+  [key: string]: never;
+}>;
+
+export type HomeAccountProfileViewContainerUserListingsQuery = {
+  __typename?: "Query";
+  itemListings: Array<{
+    __typename?: "ItemListing";
+    id: any;
+    title: string;
+    description: string;
+    category: string;
+    location: string;
+    state?: ItemListingState | null;
+    images?: Array<string> | null;
+    sharer: string;
+    createdAt?: any | null;
+    updatedAt?: any | null;
+    sharingPeriodStart: any;
+    sharingPeriodEnd: any;
+  }>;
+};
+
+export type ItemListingFieldsFragment = {
+  __typename?: "ItemListing";
+  id: any;
+  title: string;
+  description: string;
+  category: string;
+  location: string;
+  sharingPeriodStart: any;
+  sharingPeriodEnd: any;
+  state?: ItemListingState | null;
+  images?: Array<string> | null;
+  createdAt?: any | null;
+  updatedAt?: any | null;
+  sharer: string;
+  schemaVersion?: string | null;
+};
+
+export type HomeCreateListingContainerCreateItemListingMutationVariables =
+  Exact<{
+    input: CreateItemListingInput;
+  }>;
+
+export type HomeCreateListingContainerCreateItemListingMutation = {
+  __typename?: "Mutation";
+  createItemListing: {
+    __typename?: "ItemListing";
+    id: any;
+    title: string;
+    description: string;
+    category: string;
+    location: string;
+    sharingPeriodStart: any;
+    sharingPeriodEnd: any;
+    state?: ItemListingState | null;
+    images?: Array<string> | null;
+    createdAt?: any | null;
+    updatedAt?: any | null;
+    sharer: string;
+    schemaVersion?: string | null;
+  };
 };
 
 export type GetListingsQueryVariables = Exact<{ [key: string]: never }>;
@@ -860,68 +972,40 @@ export type SignUpSectionLayoutContainerCurrentPersonalUserAndCreateIfNotExistsQ
     };
   };
 
-export const HomeAllListingsTableContainerListingFieldsFragmentDoc = {
+export const ItemListingFieldsFragmentDoc = {
   kind: "Document",
   definitions: [
     {
       kind: "FragmentDefinition",
-      name: {
-        kind: "Name",
-        value: "HomeAllListingsTableContainerListingFields",
-      },
+      name: { kind: "Name", value: "ItemListingFields" },
       typeCondition: {
         kind: "NamedType",
-        name: { kind: "Name", value: "ListingAll" },
+        name: { kind: "Name", value: "ItemListing" },
       },
       selectionSet: {
         kind: "SelectionSet",
         selections: [
           { kind: "Field", name: { kind: "Name", value: "id" } },
           { kind: "Field", name: { kind: "Name", value: "title" } },
-          { kind: "Field", name: { kind: "Name", value: "status" } },
-          { kind: "Field", name: { kind: "Name", value: "image" } },
+          { kind: "Field", name: { kind: "Name", value: "description" } },
+          { kind: "Field", name: { kind: "Name", value: "category" } },
+          { kind: "Field", name: { kind: "Name", value: "location" } },
           {
             kind: "Field",
-            name: { kind: "Name", value: "pendingRequestsCount" },
+            name: { kind: "Name", value: "sharingPeriodStart" },
           },
-          { kind: "Field", name: { kind: "Name", value: "publishedAt" } },
-          { kind: "Field", name: { kind: "Name", value: "reservationPeriod" } },
+          { kind: "Field", name: { kind: "Name", value: "sharingPeriodEnd" } },
+          { kind: "Field", name: { kind: "Name", value: "state" } },
+          { kind: "Field", name: { kind: "Name", value: "images" } },
+          { kind: "Field", name: { kind: "Name", value: "createdAt" } },
+          { kind: "Field", name: { kind: "Name", value: "updatedAt" } },
+          { kind: "Field", name: { kind: "Name", value: "sharer" } },
+          { kind: "Field", name: { kind: "Name", value: "schemaVersion" } },
         ],
       },
     },
   ],
-} as unknown as DocumentNode<
-  HomeAllListingsTableContainerListingFieldsFragment,
-  unknown
->;
-export const HomeRequestsTableContainerRequestFieldsFragmentDoc = {
-  kind: "Document",
-  definitions: [
-    {
-      kind: "FragmentDefinition",
-      name: { kind: "Name", value: "HomeRequestsTableContainerRequestFields" },
-      typeCondition: {
-        kind: "NamedType",
-        name: { kind: "Name", value: "ListingRequest" },
-      },
-      selectionSet: {
-        kind: "SelectionSet",
-        selections: [
-          { kind: "Field", name: { kind: "Name", value: "id" } },
-          { kind: "Field", name: { kind: "Name", value: "title" } },
-          { kind: "Field", name: { kind: "Name", value: "image" } },
-          { kind: "Field", name: { kind: "Name", value: "requestedBy" } },
-          { kind: "Field", name: { kind: "Name", value: "requestedOn" } },
-          { kind: "Field", name: { kind: "Name", value: "reservationPeriod" } },
-          { kind: "Field", name: { kind: "Name", value: "status" } },
-        ],
-      },
-    },
-  ],
-} as unknown as DocumentNode<
-  HomeRequestsTableContainerRequestFieldsFragment,
-  unknown
->;
+} as unknown as DocumentNode<ItemListingFieldsFragment, unknown>;
 export const ReservationsViewActiveContainerReservationFieldsFragmentDoc = {
   kind: "Document",
   definitions: [
@@ -1136,6 +1220,231 @@ export const DummyGraphqlDocument = {
     },
   ],
 } as unknown as DocumentNode<DummyGraphqlQuery, DummyGraphqlQueryVariables>;
+export const HomeAccountProfileViewContainerCurrentUserDocument = {
+  kind: "Document",
+  definitions: [
+    {
+      kind: "OperationDefinition",
+      operation: "query",
+      name: {
+        kind: "Name",
+        value: "HomeAccountProfileViewContainerCurrentUser",
+      },
+      selectionSet: {
+        kind: "SelectionSet",
+        selections: [
+          {
+            kind: "Field",
+            name: {
+              kind: "Name",
+              value: "currentPersonalUserAndCreateIfNotExists",
+            },
+            selectionSet: {
+              kind: "SelectionSet",
+              selections: [
+                { kind: "Field", name: { kind: "Name", value: "id" } },
+                { kind: "Field", name: { kind: "Name", value: "userType" } },
+                {
+                  kind: "Field",
+                  name: { kind: "Name", value: "account" },
+                  selectionSet: {
+                    kind: "SelectionSet",
+                    selections: [
+                      {
+                        kind: "Field",
+                        name: { kind: "Name", value: "accountType" },
+                      },
+                      { kind: "Field", name: { kind: "Name", value: "email" } },
+                      {
+                        kind: "Field",
+                        name: { kind: "Name", value: "username" },
+                      },
+                      {
+                        kind: "Field",
+                        name: { kind: "Name", value: "profile" },
+                        selectionSet: {
+                          kind: "SelectionSet",
+                          selections: [
+                            {
+                              kind: "Field",
+                              name: { kind: "Name", value: "firstName" },
+                            },
+                            {
+                              kind: "Field",
+                              name: { kind: "Name", value: "lastName" },
+                            },
+                            {
+                              kind: "Field",
+                              name: { kind: "Name", value: "location" },
+                              selectionSet: {
+                                kind: "SelectionSet",
+                                selections: [
+                                  {
+                                    kind: "Field",
+                                    name: { kind: "Name", value: "city" },
+                                  },
+                                  {
+                                    kind: "Field",
+                                    name: { kind: "Name", value: "state" },
+                                  },
+                                ],
+                              },
+                            },
+                          ],
+                        },
+                      },
+                    ],
+                  },
+                },
+                { kind: "Field", name: { kind: "Name", value: "createdAt" } },
+              ],
+            },
+          },
+        ],
+      },
+    },
+  ],
+} as unknown as DocumentNode<
+  HomeAccountProfileViewContainerCurrentUserQuery,
+  HomeAccountProfileViewContainerCurrentUserQueryVariables
+>;
+export const HomeAccountProfileViewContainerUserListingsDocument = {
+  kind: "Document",
+  definitions: [
+    {
+      kind: "OperationDefinition",
+      operation: "query",
+      name: {
+        kind: "Name",
+        value: "HomeAccountProfileViewContainerUserListings",
+      },
+      selectionSet: {
+        kind: "SelectionSet",
+        selections: [
+          {
+            kind: "Field",
+            name: { kind: "Name", value: "itemListings" },
+            selectionSet: {
+              kind: "SelectionSet",
+              selections: [
+                { kind: "Field", name: { kind: "Name", value: "id" } },
+                { kind: "Field", name: { kind: "Name", value: "title" } },
+                { kind: "Field", name: { kind: "Name", value: "description" } },
+                { kind: "Field", name: { kind: "Name", value: "category" } },
+                { kind: "Field", name: { kind: "Name", value: "location" } },
+                { kind: "Field", name: { kind: "Name", value: "state" } },
+                { kind: "Field", name: { kind: "Name", value: "images" } },
+                { kind: "Field", name: { kind: "Name", value: "sharer" } },
+                { kind: "Field", name: { kind: "Name", value: "createdAt" } },
+                { kind: "Field", name: { kind: "Name", value: "updatedAt" } },
+                {
+                  kind: "Field",
+                  name: { kind: "Name", value: "sharingPeriodStart" },
+                },
+                {
+                  kind: "Field",
+                  name: { kind: "Name", value: "sharingPeriodEnd" },
+                },
+              ],
+            },
+          },
+        ],
+      },
+    },
+  ],
+} as unknown as DocumentNode<
+  HomeAccountProfileViewContainerUserListingsQuery,
+  HomeAccountProfileViewContainerUserListingsQueryVariables
+>;
+export const HomeCreateListingContainerCreateItemListingDocument = {
+  kind: "Document",
+  definitions: [
+    {
+      kind: "OperationDefinition",
+      operation: "mutation",
+      name: {
+        kind: "Name",
+        value: "HomeCreateListingContainerCreateItemListing",
+      },
+      variableDefinitions: [
+        {
+          kind: "VariableDefinition",
+          variable: {
+            kind: "Variable",
+            name: { kind: "Name", value: "input" },
+          },
+          type: {
+            kind: "NonNullType",
+            type: {
+              kind: "NamedType",
+              name: { kind: "Name", value: "CreateItemListingInput" },
+            },
+          },
+        },
+      ],
+      selectionSet: {
+        kind: "SelectionSet",
+        selections: [
+          {
+            kind: "Field",
+            name: { kind: "Name", value: "createItemListing" },
+            arguments: [
+              {
+                kind: "Argument",
+                name: { kind: "Name", value: "input" },
+                value: {
+                  kind: "Variable",
+                  name: { kind: "Name", value: "input" },
+                },
+              },
+            ],
+            selectionSet: {
+              kind: "SelectionSet",
+              selections: [
+                {
+                  kind: "FragmentSpread",
+                  name: { kind: "Name", value: "ItemListingFields" },
+                },
+              ],
+            },
+          },
+        ],
+      },
+    },
+    {
+      kind: "FragmentDefinition",
+      name: { kind: "Name", value: "ItemListingFields" },
+      typeCondition: {
+        kind: "NamedType",
+        name: { kind: "Name", value: "ItemListing" },
+      },
+      selectionSet: {
+        kind: "SelectionSet",
+        selections: [
+          { kind: "Field", name: { kind: "Name", value: "id" } },
+          { kind: "Field", name: { kind: "Name", value: "title" } },
+          { kind: "Field", name: { kind: "Name", value: "description" } },
+          { kind: "Field", name: { kind: "Name", value: "category" } },
+          { kind: "Field", name: { kind: "Name", value: "location" } },
+          {
+            kind: "Field",
+            name: { kind: "Name", value: "sharingPeriodStart" },
+          },
+          { kind: "Field", name: { kind: "Name", value: "sharingPeriodEnd" } },
+          { kind: "Field", name: { kind: "Name", value: "state" } },
+          { kind: "Field", name: { kind: "Name", value: "images" } },
+          { kind: "Field", name: { kind: "Name", value: "createdAt" } },
+          { kind: "Field", name: { kind: "Name", value: "updatedAt" } },
+          { kind: "Field", name: { kind: "Name", value: "sharer" } },
+          { kind: "Field", name: { kind: "Name", value: "schemaVersion" } },
+        ],
+      },
+    },
+  ],
+} as unknown as DocumentNode<
+  HomeCreateListingContainerCreateItemListingMutation,
+  HomeCreateListingContainerCreateItemListingMutationVariables
+>;
 export const GetListingsDocument = {
   kind: "Document",
   definitions: [

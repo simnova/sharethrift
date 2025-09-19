@@ -1,6 +1,9 @@
 import { DUMMY_LISTINGS } from './mock-listings.js';
 import type { ItemListing } from './mock-listings.js';
 import type { GraphContext } from "../../init/context.ts";
+import type { Domain } from '@sthrift/api-domain';
+import { toGraphItem } from '../../helpers/mapping.js';
+import type { CreateItemListingInput } from '../builder/generated.js';
 
 function mapState(state?: string) {
   return state === 'Appeal Requested' ? 'Appeal_Requested' : state;
@@ -180,7 +183,54 @@ const itemListingResolvers = {
       
     },
     // My Listings queries
-    myListingsAll: (_parent: unknown, args: MyListingsArgs, _context: GraphContext) => {
+
+    
+  },
+
+
+const itemListingResolvers = {
+	Query: {
+		itemListings: async (
+			_parent: unknown,
+			_args: unknown,
+			context: GraphContext,
+		) => {
+			const currentUser = context.applicationServices.verifiedUser;
+			const user = currentUser?.verifiedJwt?.sub;
+
+			let listings: Domain.Contexts.Listing.ItemListing.ItemListingEntityReference[];
+
+			if (user) {
+				listings =
+					await context.applicationServices.Listing.ItemListing.queryBySharer({
+						personalUser: user,
+					});
+			} else {
+				listings =
+					await context.applicationServices.Listing.ItemListing.queryAll({});
+			}
+
+			return listings.map(toGraphItem);
+		},
+
+		itemListing: async (
+			_parent: unknown,
+			args: { id: string },
+			context: GraphContext,
+		) => {
+			const listing =
+				await context.applicationServices.Listing.ItemListing.queryById({
+					id: args.id,
+				});
+
+			if (!listing) {
+				return null;
+			}
+
+			return toGraphItem(listing);
+		},
+
+        myListingsAll: (_parent: unknown, args: MyListingsArgs, _context: GraphContext) => {
       console.log('myListingsAll resolver called with args:', args);
       
       // Use mock data to get paginated listings
@@ -188,8 +238,45 @@ const itemListingResolvers = {
       
       return result;
     },
-    
-  },
+	},
+	Mutation: {
+		createItemListing: async (
+			_parent: unknown,
+			args: { input: CreateItemListingInput },
+			context: GraphContext,
+		) => {
+			const userEmail =
+				context.applicationServices.verifiedUser?.verifiedJwt?.email;
+			if (!userEmail) {
+				throw new Error('Authentication required');
+			}
+
+			// Find the user by email to get their database ID
+			const user =
+				await context.applicationServices.User.PersonalUser.getByEmail(
+					userEmail,
+				);
+			if (!user) {
+				throw new Error(`User not found for email ${userEmail}`);
+			}
+
+			const command = {
+				sharer: user,
+				title: args.input.title,
+				description: args.input.description,
+				category: args.input.category,
+				location: args.input.location,
+				sharingPeriodStart: new Date(args.input.sharingPeriodStart),
+				sharingPeriodEnd: new Date(args.input.sharingPeriodEnd),
+				images: args.input.images ?? [],
+				isDraft: args.input.isDraft ?? false,
+			};
+
+			const result =
+				await context.applicationServices.Listing.ItemListing.create(command);
+			return toGraphItem(result);
+		},
+	},
 };
 
 export default itemListingResolvers;

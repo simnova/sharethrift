@@ -7,11 +7,10 @@ type ItemListing implements MongoBase {
   sharingPeriodStart: DateTime!
   sharingPeriodEnd: DateTime!
   state: ItemListingState
-  
+
   sharingHistory: [String!]
   reports: Int
   images: [String!] # Array of image URLs
-
   id: ObjectID!
   schemaVersion: String
   createdAt: DateTime
@@ -19,7 +18,6 @@ type ItemListing implements MongoBase {
   version: Int
 }
 
- 
 enum ItemListingState {
   Published
   Paused
@@ -75,4 +73,8 @@ extend type Query {
   itemListings: [ItemListing!]!
   itemListing(id: ObjectID!): ItemListing
   myListingsAll(page: Int!, pageSize: Int!, searchText: String, statusFilters: [String!], sorter: SorterInput): ListingAllPage!
+}
+
+extend type Mutation {
+  createItemListing(input: CreateItemListingInput!): ItemListing!
 }

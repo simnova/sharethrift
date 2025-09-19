@@ -3,31 +3,39 @@ import { Header } from './index.tsx';
 import { useState } from 'react';
 
 const meta: Meta<typeof Header> = {
-  title: 'Molecules/Header',
-  component: Header,
-  parameters: {
-    layout: 'fullscreen',
-  },
+	title: 'Molecules/Header',
+	component: Header,
+	parameters: {
+		layout: 'fullscreen',
+	},
 };
 export default meta;
 
 type Story = StoryObj<typeof Header>;
 
 export const LoggedOut: Story = {
-  render: () => <Header isAuthenticated={false} onLogin={() => {}} onSignUp={() => {}} />,
+	render: () => (
+		<Header
+			isAuthenticated={false}
+			onLogin={() => {}}
+			onSignUp={() => {}}
+			onCreateListing={() => {}}
+		/>
+	),
 };
 
 export const LoggedIn: Story = {
-  render: () => <Header isAuthenticated={true} />,
+	render: () => <Header isAuthenticated={true} />,
 };
 
 export const ResponsiveHeaderDemo = () => {
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
-  return (
-    <Header
-      isAuthenticated={isAuthenticated}
-      onLogin={() => setIsAuthenticated(true)}
-      onSignUp={() => setIsAuthenticated(true)}
-    />
-  );
+	const [isAuthenticated, setIsAuthenticated] = useState(false);
+	return (
+		<Header
+			isAuthenticated={isAuthenticated}
+			onLogin={() => setIsAuthenticated(true)}
+			onSignUp={() => setIsAuthenticated(true)}
+			onCreateListing={() => {}}
+		/>
+	);
 };

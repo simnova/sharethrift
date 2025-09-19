@@ -79,7 +79,7 @@ const meta: Meta<typeof ViewListing> = {
               if (typeof maybeBody === 'string') {
                 const body = JSON.parse(maybeBody);
                 if (body?.variables) {
-                  // eslint-disable-next-line no-console
+                   
                   console.log('[Storybook GraphQL Variables]', body.variables);
                 }
               }
