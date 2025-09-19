@@ -13,3 +13,4 @@ export type { ComponentQueryLoaderProps } from './molecules/component-query-load
 export { ComponentQueryLoader } from './molecules/component-query-loader/index.js';
 export type { DashboardProps } from './organisms/dashboard/index.tsx';
 export { Dashboard } from './organisms/dashboard/index.tsx';
+export { ReservationStatusTag } from './atoms/reservation-status-tag/index.js';

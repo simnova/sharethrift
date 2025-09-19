@@ -1,6 +1,7 @@
 import React from 'react';
-import { Card, Typography, Tag } from 'antd';
+import { Card, Typography } from 'antd';
 import styles from './reservation-card.module.css';
+import { ReservationStatusTag } from '@sthrift/ui-sharethrift-components';
 import { ReservationActions } from './reservation-actions.tsx';
 import type { ReservationRequest } from '../pages/index.ts';
 
@@ -15,30 +16,6 @@ export interface ReservationCardProps {
 	closeLoading?: boolean;
 	showActions?: boolean;
 }
-
-const getReservationStatusTagClass = (status: ReservationRequest['state']): string => {
-  switch (status) {
-    case 'REQUESTED':
-      return 'pendingTag';
-    case 'ACCEPTED':
-      return 'requestAcceptedTag';
-    case 'REJECTED':
-      return 'requestRejectedTag';
-    case 'CLOSED':
-      return 'expiredTag';
-    case 'CANCELLED':
-      return 'expiredTag';
-    default:
-      return '';
-  }
-};
-
-const formatReservationStatus = (status: ReservationRequest['state']): string => {
-  return status
-    .toLowerCase()
-    .replace(/_/g, ' ')
-    .replace(/\b\w/g, c => c.toUpperCase());
-};
 
 export const ReservationCard: React.FC<ReservationCardProps> = ({
 	reservation,

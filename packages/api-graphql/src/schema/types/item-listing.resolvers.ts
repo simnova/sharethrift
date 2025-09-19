@@ -1,13 +1,8 @@
-import { DUMMY_LISTINGS } from './mock-listings.js';
-import type { ItemListing } from './mock-listings.js';
 import type { GraphContext } from "../../init/context.ts";
 import type { Domain } from '@sthrift/api-domain';
 import { toGraphItem } from '../../helpers/mapping.js';
 import type { CreateItemListingInput } from '../builder/generated.js';
 
-function mapState(state?: string) {
-  return state === 'Appeal Requested' ? 'Appeal_Requested' : state;
-}
 interface MyListingsArgs {
   page: number;
   pageSize: number;
@@ -136,59 +131,6 @@ function getMyListingsWithPagination(options: MyListingsArgs) {
 }
 
 const itemListingResolvers = {
-  Query: {
-    itemListings: () => {
-      return DUMMY_LISTINGS.map((listing: ItemListing) => ({
-        sharer: listing.sharer,
-        title: listing.title,
-        description: listing.description,
-        category: listing.category,
-        location: listing.location,
-        sharingPeriodStart: listing.sharingPeriodStart.toISOString(),
-        sharingPeriodEnd: listing.sharingPeriodEnd.toISOString(),
-        state: mapState(listing.state),
-        sharingHistory: listing.sharingHistory || [],
-        reports: listing.reports || 0,
-        images: listing.images || [],
-        id: listing._id,
-        schemaVersion: "1",
-        createdAt: listing.createdAt?.toISOString(),
-        updatedAt: listing.updatedAt?.toISOString(),
-        version: 1
-      }));
-    },
-    itemListing: (_parent: unknown, args: { id: string }) => {
-      const listing = DUMMY_LISTINGS.find((l: ItemListing) => l._id === args.id);
-      if (!listing) {
-        return null;
-      }
-      return {
-        sharer: listing.sharer,
-        title: listing.title,
-        description: listing.description,
-        category: listing.category,
-        location: listing.location,
-        sharingPeriodStart: listing.sharingPeriodStart.toISOString(),
-        sharingPeriodEnd: listing.sharingPeriodEnd.toISOString(),
-        state: mapState(listing.state),
-        sharingHistory: listing.sharingHistory || [],
-        reports: listing.reports || 0,
-        images: listing.images || [],
-        id: listing._id,
-        schemaVersion: "1",
-        createdAt: listing.createdAt?.toISOString(),
-        updatedAt: listing.updatedAt?.toISOString(),
-        version: 1
-      };
-      
-    },
-    // My Listings queries
-
-    
-  },
-
-
-const itemListingResolvers = {
 	Query: {
 		itemListings: async (
 			_parent: unknown,
@@ -230,7 +172,7 @@ const itemListingResolvers = {
 			return toGraphItem(listing);
 		},
 
-        myListingsAll: (_parent: unknown, args: MyListingsArgs, _context: GraphContext) => {
+    myListingsAll: (_parent: unknown, args: MyListingsArgs, _context: GraphContext) => {
       console.log('myListingsAll resolver called with args:', args);
       
       // Use mock data to get paginated listings

@@ -69,6 +69,17 @@ input SorterInput {
   order: String!
 }
 
+input CreateItemListingInput {
+  title: String!
+  description: String!
+  category: String!
+  location: String!
+  sharingPeriodStart: DateTime!
+  sharingPeriodEnd: DateTime!
+  images: [String!]
+  isDraft: Boolean
+}
+
 extend type Query {
   itemListings: [ItemListing!]!
   itemListing(id: ObjectID!): ItemListing

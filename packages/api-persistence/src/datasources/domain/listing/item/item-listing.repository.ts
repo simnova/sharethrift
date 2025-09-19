@@ -1,6 +1,6 @@
 import { MongooseSeedwork } from '@cellix/data-sources-mongoose';
 import type { Models } from '@sthrift/api-data-sources-mongoose-models';
-import { Domain } from '@sthrift/api-domain';
+import type { Domain } from '@sthrift/api-domain';
 
 export class ItemListingRepository<
 		PropType extends Domain.Contexts.Listing.ItemListing.ItemListingProps,
@@ -230,10 +230,12 @@ export class ItemListingRepository<
 				const fieldB = b[options.sorter?.field as keyof typeof b];
 
 				// Handle undefined cases for sorting
-				if (fieldA === undefined || fieldA === null)
+				if (fieldA === undefined || fieldA === null) {
 					return options.sorter?.order === 'ascend' ? -1 : 1;
-				if (fieldB === undefined || fieldB === null)
+				}
+				if (fieldB === undefined || fieldB === null) {
 					return options.sorter?.order === 'ascend' ? 1 : -1;
+				}
 
 				if (fieldA < fieldB) {
 					return options.sorter?.order === 'ascend' ? -1 : 1;

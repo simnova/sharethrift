@@ -1006,6 +1006,68 @@ export const ItemListingFieldsFragmentDoc = {
     },
   ],
 } as unknown as DocumentNode<ItemListingFieldsFragment, unknown>;
+export const HomeAllListingsTableContainerListingFieldsFragmentDoc = {
+  kind: "Document",
+  definitions: [
+    {
+      kind: "FragmentDefinition",
+      name: {
+        kind: "Name",
+        value: "HomeAllListingsTableContainerListingFields",
+      },
+      typeCondition: {
+        kind: "NamedType",
+        name: { kind: "Name", value: "ListingAll" },
+      },
+      selectionSet: {
+        kind: "SelectionSet",
+        selections: [
+          { kind: "Field", name: { kind: "Name", value: "id" } },
+          { kind: "Field", name: { kind: "Name", value: "title" } },
+          { kind: "Field", name: { kind: "Name", value: "status" } },
+          { kind: "Field", name: { kind: "Name", value: "image" } },
+          {
+            kind: "Field",
+            name: { kind: "Name", value: "pendingRequestsCount" },
+          },
+          { kind: "Field", name: { kind: "Name", value: "publishedAt" } },
+          { kind: "Field", name: { kind: "Name", value: "reservationPeriod" } },
+        ],
+      },
+    },
+  ],
+} as unknown as DocumentNode<
+  HomeAllListingsTableContainerListingFieldsFragment,
+  unknown
+>;
+export const HomeRequestsTableContainerRequestFieldsFragmentDoc = {
+  kind: "Document",
+  definitions: [
+    {
+      kind: "FragmentDefinition",
+      name: { kind: "Name", value: "HomeRequestsTableContainerRequestFields" },
+      typeCondition: {
+        kind: "NamedType",
+        name: { kind: "Name", value: "ListingRequest" },
+      },
+      selectionSet: {
+        kind: "SelectionSet",
+        selections: [
+          { kind: "Field", name: { kind: "Name", value: "id" } },
+          { kind: "Field", name: { kind: "Name", value: "title" } },
+          { kind: "Field", name: { kind: "Name", value: "image" } },
+          { kind: "Field", name: { kind: "Name", value: "requestedBy" } },
+          { kind: "Field", name: { kind: "Name", value: "requestedOn" } },
+          { kind: "Field", name: { kind: "Name", value: "reservationPeriod" } },
+          { kind: "Field", name: { kind: "Name", value: "status" } },
+        ],
+      },
+    },
+  ],
+} as unknown as DocumentNode<
+  HomeRequestsTableContainerRequestFieldsFragment,
+  unknown
+>;
 export const ReservationsViewActiveContainerReservationFieldsFragmentDoc = {
   kind: "Document",
   definitions: [

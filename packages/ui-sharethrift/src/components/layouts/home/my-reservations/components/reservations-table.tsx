@@ -1,7 +1,7 @@
 import React from 'react';
-import { Image, Tag } from 'antd';
+import { Table, Image } from 'antd';
 import styles from './reservations-table.module.css';
-import { Dashboard } from '@sthrift/ui-sharethrift-components';
+import { ReservationStatusTag } from '@sthrift/ui-sharethrift-components';
 import { ReservationActions } from './reservation-actions.tsx';
 import type { ReservationRequest } from '../pages/index.ts';
 
@@ -15,30 +15,6 @@ export interface ReservationsTableProps {
 	showActions?: boolean;
 	emptyText?: string;
 }
-
-const getReservationStatusTagClass = (status: ReservationRequest['state']): string => {
-  switch (status) {
-    case 'REQUESTED':
-      return 'pendingTag';
-    case 'ACCEPTED':
-      return 'requestAcceptedTag';
-    case 'REJECTED':
-      return 'requestRejectedTag';
-    case 'CLOSED':
-      return 'expiredTag';
-    case 'CANCELLED':
-      return 'expiredTag';
-    default:
-      return '';
-  }
-};
-
-const formatReservationStatus = (status: ReservationRequest['state']): string => {
-  return status
-    .toLowerCase()
-    .replace(/_/g, ' ')
-    .replace(/\b\w/g, c => c.toUpperCase());
-};
 
 export const ReservationsTable: React.FC<ReservationsTableProps> = ({
 	reservations,

@@ -17,25 +17,6 @@ export interface ItemListingRepository<props extends ItemListingProps>
 	 */
 	getBySharerID(sharerId: string): Promise<ItemListing<props>[]>;
 
-	/**
-	 * Get paginated listings by sharer ID with filtering and sorting
-	 */
-	getBySharerIDWithPagination(
-		sharerId: string,
-		options: {
-			page: number;
-			pageSize: number;
-			searchText?: string;
-			statusFilters?: string[];
-			sorter?: { field: string; order: 'ascend' | 'descend' };
-		}
-	): Promise<{
-		items: ItemListing<props>[];
-		total: number;
-		page: number;
-		pageSize: number;
-	}>;
-
 	getNewInstance(
 		sharer: PersonalUserEntityReference,
 		fields: {
