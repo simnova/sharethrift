@@ -5,7 +5,6 @@ import type { PersonalUser } from "../../../generated.tsx";
 import { HandleLogoutMockForMockAuth } from "../../shared/handle-logout";
 
 interface SectionLayoutProps {
-  personalData?: PersonalUser
 }
 
 

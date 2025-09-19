@@ -77,7 +77,8 @@ export const PersonalUserAccountType: SchemaDefinition<PersonalUserAccount> = {
 	accountType: {
 		type: String,
 		required: false,
-		enum: ['personal', 'business', 'enterprise'],
+		enum: ["non-verified-personal", "verified-personal" , "verified-personal-plus", 'business', 'enterprise'],
+        
 	},
 	email: {
 		type: String,
