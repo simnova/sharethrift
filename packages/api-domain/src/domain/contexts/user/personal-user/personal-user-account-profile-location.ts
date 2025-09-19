@@ -58,7 +58,7 @@ export class PersonalUserAccountProfileLocation
 		this.validateVisa();
 		this.props.address1 = value;
 	}
-	set address2(value: string | undefined) {
+	set address2(value: string | null) {
 		this.validateVisa();
 		this.props.address2 = value;
 	}

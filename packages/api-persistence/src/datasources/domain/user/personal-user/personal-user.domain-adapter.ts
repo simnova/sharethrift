@@ -2,7 +2,6 @@ import { Domain } from '@sthrift/api-domain';
 import type { Models } from '@sthrift/api-data-sources-mongoose-models';
 import { MongooseSeedwork } from '@cellix/data-sources-mongoose';
 import { PersonalUserRoleDomainAdapter } from '../../role/personal-user-role/personal-user-role.domain-adapter.ts';
-
 export class PersonalUserConverter extends MongooseSeedwork.MongoTypeConverter<
 	Models.User.PersonalUser,
 	PersonalUserDomainAdapter,
@@ -181,33 +180,33 @@ export class PersonalUserAccountProfileBillingDomainAdapter
 	}
 	//Primitive Field Getters and Setters
 	get subscriptionId(): string | null {
-		return this.props.subscriptionId ?? null;
+		return this.props.subscriptionId;
 	}
 	set subscriptionId(value: string) {
 		this.props.subscriptionId = value;
 	}
 	get cybersourceCustomerId(): string | null {
-		return this.props.cybersourceCustomerId ?? null;
+		return this.props.cybersourceCustomerId;
 	}
 	set cybersourceCustomerId(value: string) {
 		this.props.cybersourceCustomerId = value;
 	}
 
-	get paymentState(): string | undefined {
+	get paymentState(): string {
 		return this.props.paymentState;
 	}
 	set paymentState(value: string) {
 		this.props.paymentState = value;
 	}
 
-	get lastTransactionId(): string | undefined {
+	get lastTransactionId(): string | null {
 		return this.props.lastTransactionId;
 	}
 	set lastTransactionId(value: string) {
 		this.props.lastTransactionId = value;
 	}
 
-	get lastPaymentAmount(): number | undefined {
+	get lastPaymentAmount(): number | null {
 		return this.props.lastPaymentAmount;
 	}
 	set lastPaymentAmount(value: number) {

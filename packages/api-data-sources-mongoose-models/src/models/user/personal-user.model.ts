@@ -30,20 +30,38 @@ export const PersonalUserAccountProfileLocationType: SchemaDefinition<PersonalUs
 		zipCode: { type: String, required: true },
 	};
 
-// Billing
+export const PaymentStateEnum = {
+	FAILED: 'FAILED',
+	PENDING: 'PENDING',
+	REFUNDED: 'REFUNDED',
+	SUCCEEDED: 'SUCCEEDED',
+} as const;
+export type PaymentStateEnum =
+	(typeof PaymentStateEnum)[keyof typeof PaymentStateEnum];
+
 export interface PersonalUserAccountProfileBilling
 	extends MongooseSeedwork.NestedPath {
-	subscriptionId?: string;
-	cybersourceCustomerId?: string;
-	paymentState?: string;
-	lastTransactionId?: string;
-	lastPaymentAmount?: number;
+	subscriptionId: string;
+	cybersourceCustomerId: string;
+	paymentState: string;
+	lastTransactionId: string;
+	lastPaymentAmount: number;
 }
+
 export const PersonalUserAccountProfileBillingType: SchemaDefinition<PersonalUserAccountProfileBilling> =
 	{
 		subscriptionId: { type: String, required: false },
 		cybersourceCustomerId: { type: String, required: false },
-		paymentState: { type: String, required: false },
+		paymentState: {
+			type: String,
+			enum: [
+				PaymentStateEnum.FAILED,
+				PaymentStateEnum.PENDING,
+				PaymentStateEnum.REFUNDED,
+				PaymentStateEnum.SUCCEEDED,
+			],
+			required: false,
+		},
 		lastTransactionId: { type: String, required: false },
 		lastPaymentAmount: { type: Number, required: false },
 	};

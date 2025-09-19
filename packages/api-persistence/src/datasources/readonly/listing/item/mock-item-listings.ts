@@ -88,6 +88,7 @@ export const getMockItemListings =
 					lastName,
 					location: {
 						address1: '123 Main St',
+						address2: null,
 						city: 'Philadelphia',
 						state: 'PA',
 						country: 'US',

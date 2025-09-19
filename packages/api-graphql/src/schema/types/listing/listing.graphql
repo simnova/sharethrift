@@ -1,1 +1,1 @@
-union Listing = ItemListing | ServiceListing
+union Listing = ItemListing

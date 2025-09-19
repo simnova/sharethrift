@@ -2,13 +2,6 @@
 """
 GraphQL schema for Personal Users
 """
-enum PaymentState {
-	PENDING
-	SUCCEEDED
-	FAILED
-	REFUNDED
-}
-
 type PersonalUser implements MongoBase {
 	userType: String
 	isBlocked: Boolean
@@ -47,7 +40,7 @@ type PersonalUserAccountProfileBilling {
 	subscriptionId: String
 	cybersourceCustomerId: String
 	lastTransactionId: String
-	paymentState: PaymentState
+	paymentState: String
 	lastPaymentAmount: Float
 }
 
@@ -83,7 +76,7 @@ input PersonalUserAccountProfileBillingUpdateInput {
 	subscriptionId: String
 	cybersourceCustomerId: String
 	lastTransactionId: String
-	paymentState: PaymentState
+	paymentState: String
 	lastPaymentAmount: Float
 }
 
