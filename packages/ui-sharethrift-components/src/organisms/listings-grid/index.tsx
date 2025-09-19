@@ -76,7 +76,6 @@ export const ListingsGrid: React.FC<ListingsGridProps> = ({
             total={total}
             onChange={onPageChange}
             showSizeChanger={false}
-            className={styles.pagination}
           />
         </div>
       )}

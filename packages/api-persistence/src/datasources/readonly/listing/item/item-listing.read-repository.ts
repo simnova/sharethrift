@@ -15,6 +15,19 @@ export interface ItemListingReadRepository {
 	) => Promise<
 		Domain.Contexts.Listing.ItemListing.ItemListingEntityReference[]
 	>;
+	getPaged: (args: {
+		page: number;
+		pageSize: number;
+		searchText?: string;
+		statusFilters?: string[];
+		sharerId?: string; // optional filter by sharer
+		sorter?: { field: string; order: 'ascend' | 'descend' };
+	}) => Promise<{
+		items: Domain.Contexts.Listing.ItemListing.ItemListingEntityReference[];
+		total: number;
+		page: number;
+		pageSize: number;
+	}>;
 	getById: (
 		id: string,
 		options?: FindOneOptions,
@@ -51,6 +64,87 @@ export class ItemListingReadRepositoryImpl
 			return getMockItemListings();
 		}
 		return result.map((doc) => this.converter.toDomain(doc, this.passport));
+	}
+
+	async getPaged(args: {
+		page: number;
+		pageSize: number;
+		searchText?: string;
+		statusFilters?: string[];
+		sharerId?: string;
+		sorter?: { field: string; order: 'ascend' | 'descend' };
+	}): Promise<{
+		items: Domain.Contexts.Listing.ItemListing.ItemListingEntityReference[];
+		total: number;
+		page: number;
+		pageSize: number;
+	}> {
+		// Basic in-memory filtering using existing repository methods & mock fallback
+		let listings: Domain.Contexts.Listing.ItemListing.ItemListingEntityReference[];
+
+		if (args.sharerId) {
+			listings = await this.getBySharer(args.sharerId);
+		} else {
+			listings = await this.getAll();
+		}
+
+		// Apply search filter
+		if (args.searchText) {
+			const text = args.searchText.toLowerCase();
+			listings = listings.filter((l) => l.title.toLowerCase().includes(text));
+		}
+
+		// Apply status filters (map to domain state property if present)
+		if (args.statusFilters && args.statusFilters.length > 0) {
+			listings = listings.filter((l) =>
+				l.state ? args.statusFilters?.includes(l.state) === true : true,
+			);
+		}
+
+		// Apply sorter
+		if (args.sorter?.field) {
+			const { field, order } = args.sorter;
+			listings = [...listings].sort((a, b) => {
+				// Access dynamic field in a type-safe way by narrowing via keyof
+				// Cast through unknown to satisfy exactOptionalPropertyTypes without asserting broad index signature
+				const key = field as keyof typeof a & keyof typeof b;
+				// Use a generic indexable helper type instead of Record<any, unknown>
+				type Indexable<T> = { [K in keyof T]: T[K] };
+				const fieldA = (a as unknown as Indexable<typeof a>)[key] as
+					| string
+					| number
+					| Date
+					| undefined;
+				const fieldB = (b as unknown as Indexable<typeof b>)[key] as
+					| string
+					| number
+					| Date
+					| undefined;
+				if (fieldA == null && fieldB == null) {
+					return 0;
+				}
+				if (fieldA == null) {
+					return order === 'ascend' ? -1 : 1;
+				}
+				if (fieldB == null) {
+					return order === 'ascend' ? 1 : -1;
+				}
+				if (fieldA < fieldB) {
+					return order === 'ascend' ? -1 : 1;
+				}
+				if (fieldA > fieldB) {
+					return order === 'ascend' ? 1 : -1;
+				}
+				return 0;
+			});
+		}
+
+		const total = listings.length;
+		const startIndex = (args.page - 1) * args.pageSize;
+		const endIndex = startIndex + args.pageSize;
+		const items = listings.slice(startIndex, endIndex);
+
+		return { items, total, page: args.page, pageSize: args.pageSize };
 	}
 
 	async getById(
