@@ -1,7 +1,7 @@
 import {
-	type ObjectId,
 	type Model,
 	Schema,
+	type ObjectId,
 	type SchemaDefinition,
 	type PopulatedDoc,
 } from 'mongoose';
@@ -14,7 +14,7 @@ import * as PersonalUserRole from '../role/personal-user-role.model.ts';
 export interface PersonalUserAccountProfileLocation
 	extends MongooseSeedwork.NestedPath {
 	address1: string;
-	address2?: string;
+	address2: string | null;
 	city: string;
 	state: string;
 	country: string;
@@ -30,20 +30,38 @@ export const PersonalUserAccountProfileLocationType: SchemaDefinition<PersonalUs
 		zipCode: { type: String, required: true },
 	};
 
-// Billing
+export const PaymentStateEnum = {
+	FAILED: 'FAILED',
+	PENDING: 'PENDING',
+	REFUNDED: 'REFUNDED',
+	SUCCEEDED: 'SUCCEEDED',
+} as const;
+export type PaymentStateEnum =
+	(typeof PaymentStateEnum)[keyof typeof PaymentStateEnum];
+
 export interface PersonalUserAccountProfileBilling
 	extends MongooseSeedwork.NestedPath {
-	subscriptionId?: string;
-	cybersourceCustomerId?: string;
-	paymentState?: string;
-	lastTransactionId?: string;
-	lastPaymentAmount?: number;
+	subscriptionId: string;
+	cybersourceCustomerId: string;
+	paymentState: string;
+	lastTransactionId: string;
+	lastPaymentAmount: number;
 }
+
 export const PersonalUserAccountProfileBillingType: SchemaDefinition<PersonalUserAccountProfileBilling> =
 	{
 		subscriptionId: { type: String, required: false },
 		cybersourceCustomerId: { type: String, required: false },
-		paymentState: { type: String, required: false },
+		paymentState: {
+			type: String,
+			enum: [
+				PaymentStateEnum.FAILED,
+				PaymentStateEnum.PENDING,
+				PaymentStateEnum.REFUNDED,
+				PaymentStateEnum.SUCCEEDED,
+			],
+			required: false,
+		},
 		lastTransactionId: { type: String, required: false },
 		lastPaymentAmount: { type: Number, required: false },
 	};
@@ -83,8 +101,13 @@ export const PersonalUserAccountType: SchemaDefinition<PersonalUserAccount> = {
 	accountType: {
 		type: String,
 		required: false,
-		enum: ["non-verified-personal", "verified-personal" , "verified-personal-plus", 'business', 'enterprise'],
-        
+		enum: [
+			'non-verified-personal',
+			'verified-personal',
+			'verified-personal-plus',
+			'business',
+			'enterprise',
+		],
 	},
 	email: {
 		type: String,

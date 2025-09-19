@@ -1,7 +1,7 @@
-import type { GraphContext } from "../../init/context.ts";
+import type { GraphContext } from '../../../init/context.ts';
 import type { Domain } from '@sthrift/api-domain';
-import { toGraphItem } from '../../helpers/mapping.js';
-import type { CreateItemListingInput } from '../builder/generated.js';
+import { toGraphItem } from '../../../helpers/mapping.js';
+import type { CreateItemListingInput } from '../../builder/generated.js';
 
 interface MyListingsArgs {
 	page: number;
@@ -114,7 +114,10 @@ const itemListingResolvers = {
 					return {
 						id: listing.id,
 						title: listing.title,
-						image: listing.images && listing.images.length > 0 ? listing.images[0] : null,
+						image:
+							listing.images && listing.images.length > 0
+								? listing.images[0]
+								: null,
 						publishedAt: listing.createdAt.toISOString(),
 						reservationPeriod: `${sharingStart.slice(0, 10)} - ${sharingEnd.slice(0, 10)}`,
 						status: mapStateToStatus(listing?.state),

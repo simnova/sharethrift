@@ -7,19 +7,26 @@ import {
 import type { PaymentApplicationService } from './payment-application-service.js';
 import { DefaultPaymentApplicationService } from './payment-application-service.js';
 
-import { 
-    ReservationRequest, 
-    type ReservationRequestContextApplicationService 
+import {
+	ReservationRequest,
+	type ReservationRequestContextApplicationService,
 } from './contexts/reservation-request/index.ts';
+
+import {
+	Conversation,
+	type ConversationContextApplicationService,
+} from './contexts/conversation/index.ts';
 
 import {
 	Listing,
 	type ListingContextApplicationService,
 } from './contexts/listing/index.ts';
+
 export interface ApplicationServices {
 	User: UserContextApplicationService;
-	ReservationRequest: ReservationRequestContextApplicationService;
+	Conversation: ConversationContextApplicationService;
 	Listing: ListingContextApplicationService;
+	ReservationRequest: ReservationRequestContextApplicationService;
 	get verifiedUser(): VerifiedUser | null;
 	Payment: PaymentApplicationService;
 }
@@ -40,12 +47,7 @@ export interface VerifiedUser {
 	hints?: PrincipalHints | undefined;
 }
 
-// biome-ignore lint/complexity/noBannedTypes: principal hints type configuration
-
-export type PrincipalHints = {
-	// memberId: string | undefined;
-	// communityId: string | undefined;
-};
+export type PrincipalHints = {};
 
 export interface AppServicesHost<S> {
 	forRequest(rawAuthHeader?: string, hints?: PrincipalHints): Promise<S>;
@@ -99,6 +101,7 @@ export const buildApplicationServicesFactory = (
 			Payment: paymentApplicationService,
 			ReservationRequest: ReservationRequest(dataSources),
 			Listing: Listing(dataSources),
+			Conversation: Conversation(dataSources),
 		};
 	};
 

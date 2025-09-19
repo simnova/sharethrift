@@ -21,19 +21,19 @@ export class PersonalUserAccountProfileBilling
 		this.visa = visa;
 		this.root = root;
 	}
-	get subscriptionId(): string | undefined {
+	get subscriptionId(): string | null {
 		return this.props.subscriptionId;
 	}
-	get cybersourceCustomerId(): string | undefined {
+	get cybersourceCustomerId(): string | null {
 		return this.props.cybersourceCustomerId;
 	}
-	get lastTransactionId(): string | undefined {
+	get lastTransactionId(): string | null {
 		return this.props.lastTransactionId;
 	}
-	get paymentState(): string | undefined {
+	get paymentState(): string {
 		return this.props.paymentState;
 	}
-	get lastPaymentAmount(): number | undefined {
+	get lastPaymentAmount(): number | null {
 		return this.props.lastPaymentAmount;
 	}
 
@@ -56,7 +56,7 @@ export class PersonalUserAccountProfileBilling
 		this.validateVisa();
 		this.props.cybersourceCustomerId = value;
 	}
-	set lastTransactionId(value: string) {
+	set lastTransactionId(value: string | null) {
 		this.validateVisa();
 		this.props.lastTransactionId = value;
 	}
@@ -64,7 +64,7 @@ export class PersonalUserAccountProfileBilling
 		this.validateVisa();
 		this.props.paymentState = value;
 	}
-	set lastPaymentAmount(value: number) {
+	set lastPaymentAmount(value: number | null) {
 		this.validateVisa();
 		this.props.lastPaymentAmount = value;
 	}

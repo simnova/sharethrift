@@ -30,15 +30,12 @@ export class Conversation<props extends ConversationProps>
 		listing: ItemListingEntityReference,
 		passport: Passport,
 	): Conversation<props> {
-		const now = new Date();
 		const instance = new Conversation(
 			{
 				...newProps,
 				sharer,
 				reserver,
 				listing,
-				createdAt: now,
-				updatedAt: now,
 			} as props,
 			passport,
 		);
@@ -162,8 +159,7 @@ export class Conversation<props extends ConversationProps>
 		return this.props.updatedAt;
 	}
 
-	public updateLastActivity(): void {
-		this.props.updatedAt = new Date();
+	get schemaVersion(): string {
+		return this.props.schemaVersion;
 	}
-	//#endregion Properties
 }

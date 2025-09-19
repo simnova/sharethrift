@@ -110,6 +110,7 @@ describe('ReservationRequest', () => {
 					lastName: 'User',
 					location: {
 						address1: '123 Main St',
+						address2: null,
 						city: 'Springfield',
 						state: 'IL',
 						country: 'USA',

@@ -2,7 +2,7 @@ import type { Domain } from '@sthrift/api-domain';
 import type { DataSources } from '@sthrift/api-persistence';
 
 export interface ConversationQueryByIdCommand {
-	id: string;
+	conversationId: string;
 	fields?: string[];
 }
 
@@ -11,7 +11,7 @@ export const queryById = (dataSources: DataSources) => {
 		command: ConversationQueryByIdCommand,
 	): Promise<Domain.Contexts.Conversation.Conversation.ConversationEntityReference | null> => {
 		return await dataSources.readonlyDataSource.Conversation.Conversation.ConversationReadRepo.getById(
-			command.id,
+			command.conversationId,
 			{ fields: command.fields },
 		);
 	};

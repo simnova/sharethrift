@@ -1,20 +1,34 @@
 query GetListings {
-  itemListings {
-    id
-    title
-    description
-    category
-    location
-    state
-    images
-    createdAt
-    updatedAt
-    sharingPeriodStart
-    sharingPeriodEnd
-    sharer
-    schemaVersion
-    version
-    reports
-    sharingHistory
-  }
+	itemListings {
+		id
+		title
+		description
+		category
+		location
+		state
+		images
+		createdAt
+		updatedAt
+		sharingPeriodStart
+		sharingPeriodEnd
+		sharer {
+			... on PersonalUser {
+				id
+				account {
+					profile {
+						firstName
+						lastName
+						location {
+							city
+							state
+						}
+					}
+				}
+			}
+		}
+		schemaVersion
+		version
+		reports
+		sharingHistory
+	}
 }

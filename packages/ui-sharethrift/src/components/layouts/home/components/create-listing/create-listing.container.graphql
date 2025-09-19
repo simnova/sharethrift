@@ -10,7 +10,21 @@ fragment ItemListingFields on ItemListing {
 	images
 	createdAt
 	updatedAt
-	sharer
+	sharer {
+		... on PersonalUser {
+			id
+			account {
+				profile {
+					firstName
+					lastName
+					location {
+						city
+						state
+					}
+				}
+			}
+		}
+	}
 	schemaVersion
 }
 

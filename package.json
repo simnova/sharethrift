@@ -1,9 +1,9 @@
 {
-	"name": "cellixjs",
+	"name": "sharethrift",
 	"version": "1.0.0",
 	"description": "",
 	"type": "module",
-	"author": "CellixJS",
+	"author": "Simnova",
 	"license": "MIT",
 	"main": "packages/api/dist/src/index.js",
 	"scripts": {

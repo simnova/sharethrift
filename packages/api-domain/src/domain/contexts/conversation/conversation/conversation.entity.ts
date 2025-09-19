@@ -10,8 +10,10 @@ export interface ConversationProps extends DomainSeedwork.DomainEntityProps {
 	listing: Readonly<ItemListingEntityReference>;
 	loadListing: () => Promise<Readonly<ItemListingEntityReference>>;
 	twilioConversationId: string;
-	createdAt: Date;
-	updatedAt: Date;
+
+	get createdAt(): Date;
+	get updatedAt(): Date;
+	get schemaVersion(): string;
 }
 
 export interface ConversationEntityReference

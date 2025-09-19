@@ -6,7 +6,7 @@ import {
 } from './conversation.data.ts';
 import type { FindOneOptions, FindOptions } from '../../mongo-data-source.ts';
 import { ConversationConverter } from '../../../domain/conversation/conversation/conversation.domain-adapter.ts';
-import { ObjectId } from 'mongodb';
+import { MongooseSeedwork } from '@cellix/data-sources-mongoose';
 
 export interface ConversationReadRepository {
 	getAll: (
@@ -19,8 +19,8 @@ export interface ConversationReadRepository {
 		options?: FindOneOptions,
 	) => Promise<Domain.Contexts.Conversation.Conversation.ConversationEntityReference | null>;
 
-	getBySharer: (
-		sharerId: string,
+	getByUser: (
+		userId: string,
 		options?: FindOptions,
 	) => Promise<
 		Domain.Contexts.Conversation.Conversation.ConversationEntityReference[]
@@ -62,15 +62,20 @@ export class ConversationReadRepositoryImpl
 		return this.converter.toDomain(result, this.passport);
 	}
 
-	async getBySharer(
-		sharerId: string,
+	async getByUser(
+		userId: string,
 		options?: FindOptions,
 	): Promise<
 		Domain.Contexts.Conversation.Conversation.ConversationEntityReference[]
 	> {
 		// Assuming the field is 'sharer' in the model and stores the user's ObjectId or externalId
 		const result = await this.mongoDataSource.find(
-			{ sharer: new ObjectId(sharerId) },
+			{
+				$or: [
+					{ sharer: new MongooseSeedwork.ObjectId(userId) },
+					{ reserver: new MongooseSeedwork.ObjectId(userId) },
+				],
+			},
 			options,
 		);
 		return result.map((doc) => this.converter.toDomain(doc, this.passport));

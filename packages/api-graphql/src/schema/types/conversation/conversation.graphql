@@ -1,0 +1,32 @@
+type Conversation implements MongoBase {
+	sharer: User!
+	reserver: User!
+	listing: Listing!
+	twilioConversationId: String!
+	id: ObjectID!
+	schemaVersion: String!
+	createdAt: DateTime!
+	updatedAt: DateTime!
+}
+
+extend type Query {
+	conversationsByUser(userId: ObjectID!): [Conversation]
+	conversation(conversationId: ObjectID!): Conversation
+}
+
+extend type Mutation {
+	createConversation(
+		input: ConversationCreateInput!
+	): ConversationMutationResult!
+}
+
+input ConversationCreateInput {
+	sharerId: ObjectID!
+	reserverId: ObjectID!
+	listingId: ObjectID!
+}
+
+type ConversationMutationResult implements MutationResult {
+	status: MutationStatus!
+	conversation: Conversation
+}

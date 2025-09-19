@@ -1,37 +1,51 @@
 query HomeAccountProfileViewContainerCurrentUser {
-  currentPersonalUserAndCreateIfNotExists {
-    id
-    userType
-    account {
-      accountType
-      email
-      username
-      profile {
-        firstName
-        lastName
-        location {
-          city
-          state
-        }
-      }
-    }
-    createdAt
-  }
+	currentPersonalUserAndCreateIfNotExists {
+		id
+		userType
+		account {
+			accountType
+			email
+			username
+			profile {
+				firstName
+				lastName
+				location {
+					city
+					state
+				}
+			}
+		}
+		createdAt
+	}
 }
 
 query HomeAccountProfileViewContainerUserListings {
-  itemListings {
-    id
-    title
-    description
-    category
-    location
-    state
-    images
-    sharer
-    createdAt
-    updatedAt
-    sharingPeriodStart
-    sharingPeriodEnd
-  }
+	itemListings {
+		id
+		title
+		description
+		category
+		location
+		state
+		images
+		sharer {
+			... on PersonalUser {
+				id
+				account {
+					profile {
+						firstName
+						lastName
+						location {
+							city
+							state
+						}
+					}
+				}
+			}
+		}
+		createdAt
+		updatedAt
+		sharingPeriodStart
+		sharingPeriodEnd
+	}
 }

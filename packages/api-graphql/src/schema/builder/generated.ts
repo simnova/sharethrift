@@ -7,6 +7,7 @@ export type MakeOptional<T, K extends keyof T> = Omit<T, K> & { [SubKey in K]?: 
 export type MakeMaybe<T, K extends keyof T> = Omit<T, K> & { [SubKey in K]: Maybe<T[SubKey]> };
 export type MakeEmpty<T extends { [key: string]: unknown }, K extends keyof T> = { [_ in K]?: never };
 export type Incremental<T> = T | { [P in keyof T]?: P extends " $fragmentName" | "__typename" ? T[P] : never };
+export type Omit<T, K extends keyof T> = Pick<T, Exclude<keyof T, K>>;
 export type RequireFields<T, K extends keyof T> = Omit<T, K> & { [P in K]-?: NonNullable<T[P]> };
 /** All built-in and custom scalars, mapped to their actual values */
 export type Scalars = {
@@ -119,17 +120,28 @@ export type CloseReservationInput = {
   id: Scalars["ObjectID"]["input"];
 };
 
-/** GraphQL schema for Conversations */
 export type Conversation = MongoBase & {
   __typename?: "Conversation";
-  createdAt?: Maybe<Scalars["DateTime"]["output"]>;
+  createdAt: Scalars["DateTime"]["output"];
   id: Scalars["ObjectID"]["output"];
-  listing?: Maybe<Listing>;
-  reserver?: Maybe<User>;
-  schemaVersion?: Maybe<Scalars["String"]["output"]>;
-  sharer?: Maybe<User>;
-  twilioConversationId?: Maybe<Scalars["String"]["output"]>;
-  updatedAt?: Maybe<Scalars["DateTime"]["output"]>;
+  listing: Listing;
+  reserver: User;
+  schemaVersion: Scalars["String"]["output"];
+  sharer: User;
+  twilioConversationId: Scalars["String"]["output"];
+  updatedAt: Scalars["DateTime"]["output"];
+};
+
+export type ConversationCreateInput = {
+  listingId: Scalars["ObjectID"]["input"];
+  reserverId: Scalars["ObjectID"]["input"];
+  sharerId: Scalars["ObjectID"]["input"];
+};
+
+export type ConversationMutationResult = MutationResult & {
+  __typename?: "ConversationMutationResult";
+  conversation?: Maybe<Conversation>;
+  status: MutationStatus;
 };
 
 export type CreateItemListingInput = {
@@ -159,22 +171,17 @@ export type ItemListing = MongoBase & {
   location: Scalars["String"]["output"];
   reports?: Maybe<Scalars["Int"]["output"]>;
   schemaVersion?: Maybe<Scalars["String"]["output"]>;
-  sharer: Scalars["String"]["output"];
+  sharer: User;
   sharingHistory?: Maybe<Array<Scalars["String"]["output"]>>;
   sharingPeriodEnd: Scalars["DateTime"]["output"];
   sharingPeriodStart: Scalars["DateTime"]["output"];
-  state?: Maybe<ItemListingState>;
+  state?: Maybe<Scalars["String"]["output"]>;
   title: Scalars["String"]["output"];
   updatedAt?: Maybe<Scalars["DateTime"]["output"]>;
   version?: Maybe<Scalars["Int"]["output"]>;
 };
 
-export type ItemListingState = "Appeal_Requested" | "Blocked" | "Cancelled" | "Drafted" | "Expired" | "Paused" | "Published";
-
-export type Listing = {
-  __typename?: "Listing";
-  id: Scalars["ObjectID"]["output"];
-};
+export type Listing = ItemListing;
 
 export type ListingAll = {
   __typename?: "ListingAll";
@@ -240,6 +247,7 @@ export type Mutation = {
   _empty?: Maybe<Scalars["String"]["output"]>;
   cancelReservation: ReservationRequest;
   closeReservation: ReservationRequest;
+  createConversation: ConversationMutationResult;
   createItemListing: ItemListing;
   createReservationRequest: ReservationRequest;
   personalUserUpdate: PersonalUser;
@@ -255,6 +263,11 @@ export type MutationCancelReservationArgs = {
 /**  Base Mutation Type definition - all mutations will be defined in separate files extending this type  */
 export type MutationCloseReservationArgs = {
   input: CloseReservationInput;
+};
+
+/**  Base Mutation Type definition - all mutations will be defined in separate files extending this type  */
+export type MutationCreateConversationArgs = {
+  input: ConversationCreateInput;
 };
 
 /**  Base Mutation Type definition - all mutations will be defined in separate files extending this type  */
@@ -360,8 +373,6 @@ export type PaymentResponseOrderInformation = {
 };
 
 /** GraphQL schema for Personal Users */
-export type PaymentState = "FAILED" | "PENDING" | "REFUNDED" | "SUCCEEDED";
-
 export type PersonalUser = MongoBase & {
   __typename?: "PersonalUser";
   account?: Maybe<PersonalUserAccount>;
@@ -394,7 +405,7 @@ export type PersonalUserAccountProfileBilling = {
   cybersourceCustomerId?: Maybe<Scalars["String"]["output"]>;
   lastPaymentAmount?: Maybe<Scalars["Float"]["output"]>;
   lastTransactionId?: Maybe<Scalars["String"]["output"]>;
-  paymentState?: Maybe<PaymentState>;
+  paymentState?: Maybe<Scalars["String"]["output"]>;
   subscriptionId?: Maybe<Scalars["String"]["output"]>;
 };
 
@@ -402,7 +413,7 @@ export type PersonalUserAccountProfileBillingUpdateInput = {
   cybersourceCustomerId?: InputMaybe<Scalars["String"]["input"]>;
   lastPaymentAmount?: InputMaybe<Scalars["Float"]["input"]>;
   lastTransactionId?: InputMaybe<Scalars["String"]["input"]>;
-  paymentState?: InputMaybe<PaymentState>;
+  paymentState?: InputMaybe<Scalars["String"]["input"]>;
   subscriptionId?: InputMaybe<Scalars["String"]["input"]>;
 };
 
@@ -450,7 +461,7 @@ export type Query = {
   /** IGNORE: Dummy field necessary for the Query type to be valid */
   _empty?: Maybe<Scalars["String"]["output"]>;
   conversation?: Maybe<Conversation>;
-  conversations: Array<Conversation>;
+  conversationsByUser?: Maybe<Array<Maybe<Conversation>>>;
   currentPersonalUserAndCreateIfNotExists: PersonalUser;
   itemListing?: Maybe<ItemListing>;
   itemListings: Array<ItemListing>;
@@ -466,7 +477,12 @@ export type Query = {
 
 /**  Base Query Type definition - , all mutations will be defined in separate files extending this type  */
 export type QueryConversationArgs = {
-  id: Scalars["ObjectID"]["input"];
+  conversationId: Scalars["ObjectID"]["input"];
+};
+
+/**  Base Query Type definition - , all mutations will be defined in separate files extending this type  */
+export type QueryConversationsByUserArgs = {
+  userId: Scalars["ObjectID"]["input"];
 };
 
 /**  Base Query Type definition - , all mutations will be defined in separate files extending this type  */
@@ -573,11 +589,7 @@ export type SorterInput = {
   order: Scalars["String"]["input"];
 };
 
-export type User = {
-  __typename?: "User";
-  id: Scalars["ObjectID"]["output"];
-  username: Scalars["String"]["output"];
-};
+export type User = PersonalUser;
 
 export type WithIndex<TObject> = TObject & Record<string, any>;
 export type ResolversObject<TObject> = WithIndex<TObject>;
@@ -648,11 +660,22 @@ export type DirectiveResolverFn<TResult = {}, TParent = {}, TContext = {}, TArgs
   info: GraphQLResolveInfo,
 ) => TResult | Promise<TResult>;
 
+/** Mapping of union types */
+export type ResolversUnionTypes<_RefType extends Record<string, unknown>> = ResolversObject<{
+  Listing: Omit<ItemListing, "sharer"> & { sharer: _RefType["User"] };
+  User: PersonalUser;
+}>;
+
 /** Mapping of interface types */
 export type ResolversInterfaceTypes<_RefType extends Record<string, unknown>> = ResolversObject<{
-  MongoBase: Conversation | ItemListing | PersonalUser;
+  MongoBase:
+    | (Omit<Conversation, "listing" | "reserver" | "sharer"> & { listing: _RefType["Listing"]; reserver: _RefType["User"]; sharer: _RefType["User"] })
+    | (Omit<ItemListing, "sharer"> & { sharer: _RefType["User"] })
+    | PersonalUser;
   MongoSubdocument: never;
-  MutationResult: ReservationRequestMutationResult;
+  MutationResult:
+    | (Omit<ConversationMutationResult, "conversation"> & { conversation?: Maybe<_RefType["Conversation"]> })
+    | (Omit<ReservationRequestMutationResult, "reservationRequest"> & { reservationRequest?: Maybe<_RefType["ReservationRequest"]> });
 }>;
 
 /** Mapping between all available schema types and the resolvers types */
@@ -667,7 +690,17 @@ export type ResolversTypes = ResolversObject<{
   CacheControlScope: CacheControlScope;
   CancelReservationInput: CancelReservationInput;
   CloseReservationInput: CloseReservationInput;
-  Conversation: ResolverTypeWrapper<Conversation>;
+  Conversation: ResolverTypeWrapper<
+    Omit<Conversation, "listing" | "reserver" | "sharer"> & {
+      listing: ResolversTypes["Listing"];
+      reserver: ResolversTypes["User"];
+      sharer: ResolversTypes["User"];
+    }
+  >;
+  ConversationCreateInput: ConversationCreateInput;
+  ConversationMutationResult: ResolverTypeWrapper<
+    Omit<ConversationMutationResult, "conversation"> & { conversation?: Maybe<ResolversTypes["Conversation"]> }
+  >;
   CountryCode: ResolverTypeWrapper<Scalars["CountryCode"]["output"]>;
   CountryName: ResolverTypeWrapper<Scalars["CountryName"]["output"]>;
   CreateItemListingInput: CreateItemListingInput;
@@ -697,14 +730,13 @@ export type ResolversTypes = ResolversObject<{
   ISBN: ResolverTypeWrapper<Scalars["ISBN"]["output"]>;
   ISO8601Duration: ResolverTypeWrapper<Scalars["ISO8601Duration"]["output"]>;
   Int: ResolverTypeWrapper<Scalars["Int"]["output"]>;
-  ItemListing: ResolverTypeWrapper<ItemListing>;
-  ItemListingState: ItemListingState;
+  ItemListing: ResolverTypeWrapper<Omit<ItemListing, "sharer"> & { sharer: ResolversTypes["User"] }>;
   JSON: ResolverTypeWrapper<Scalars["JSON"]["output"]>;
   JSONObject: ResolverTypeWrapper<Scalars["JSONObject"]["output"]>;
   JWT: ResolverTypeWrapper<Scalars["JWT"]["output"]>;
   LCCSubclass: ResolverTypeWrapper<Scalars["LCCSubclass"]["output"]>;
   Latitude: ResolverTypeWrapper<Scalars["Latitude"]["output"]>;
-  Listing: ResolverTypeWrapper<Listing>;
+  Listing: ResolverTypeWrapper<ResolversUnionTypes<ResolversTypes>["Listing"]>;
   ListingAll: ResolverTypeWrapper<ListingAll>;
   ListingAllPage: ResolverTypeWrapper<ListingAllPage>;
   ListingRequest: ResolverTypeWrapper<ListingRequest>;
@@ -740,7 +772,6 @@ export type ResolversTypes = ResolversObject<{
   PaymentResponse: ResolverTypeWrapper<PaymentResponse>;
   PaymentResponseAmountDetails: ResolverTypeWrapper<PaymentResponseAmountDetails>;
   PaymentResponseOrderInformation: ResolverTypeWrapper<PaymentResponseOrderInformation>;
-  PaymentState: PaymentState;
   PersonalUser: ResolverTypeWrapper<PersonalUser>;
   PersonalUserAccount: ResolverTypeWrapper<PersonalUserAccount>;
   PersonalUserAccountProfile: ResolverTypeWrapper<PersonalUserAccountProfile>;
@@ -762,8 +793,10 @@ export type ResolversTypes = ResolversObject<{
   RefundOrderInformation: RefundOrderInformation;
   RefundRequest: RefundRequest;
   RefundResponse: ResolverTypeWrapper<RefundResponse>;
-  ReservationRequest: ResolverTypeWrapper<ReservationRequest>;
-  ReservationRequestMutationResult: ResolverTypeWrapper<ReservationRequestMutationResult>;
+  ReservationRequest: ResolverTypeWrapper<Omit<ReservationRequest, "listing"> & { listing?: Maybe<ResolversTypes["ItemListing"]> }>;
+  ReservationRequestMutationResult: ResolverTypeWrapper<
+    Omit<ReservationRequestMutationResult, "reservationRequest"> & { reservationRequest?: Maybe<ResolversTypes["ReservationRequest"]> }
+  >;
   ReservationRequestState: ReservationRequestState;
   RoutingNumber: ResolverTypeWrapper<Scalars["RoutingNumber"]["output"]>;
   SESSN: ResolverTypeWrapper<Scalars["SESSN"]["output"]>;
@@ -779,7 +812,7 @@ export type ResolversTypes = ResolversObject<{
   UUID: ResolverTypeWrapper<Scalars["UUID"]["output"]>;
   UnsignedFloat: ResolverTypeWrapper<Scalars["UnsignedFloat"]["output"]>;
   UnsignedInt: ResolverTypeWrapper<Scalars["UnsignedInt"]["output"]>;
-  User: ResolverTypeWrapper<User>;
+  User: ResolverTypeWrapper<ResolversUnionTypes<ResolversTypes>["User"]>;
   UtcOffset: ResolverTypeWrapper<Scalars["UtcOffset"]["output"]>;
   Void: ResolverTypeWrapper<Scalars["Void"]["output"]>;
 }>;
@@ -795,7 +828,13 @@ export type ResolversParentTypes = ResolversObject<{
   Byte: Scalars["Byte"]["output"];
   CancelReservationInput: CancelReservationInput;
   CloseReservationInput: CloseReservationInput;
-  Conversation: Conversation;
+  Conversation: Omit<Conversation, "listing" | "reserver" | "sharer"> & {
+    listing: ResolversParentTypes["Listing"];
+    reserver: ResolversParentTypes["User"];
+    sharer: ResolversParentTypes["User"];
+  };
+  ConversationCreateInput: ConversationCreateInput;
+  ConversationMutationResult: Omit<ConversationMutationResult, "conversation"> & { conversation?: Maybe<ResolversParentTypes["Conversation"]> };
   CountryCode: Scalars["CountryCode"]["output"];
   CountryName: Scalars["CountryName"]["output"];
   CreateItemListingInput: CreateItemListingInput;
@@ -825,13 +864,13 @@ export type ResolversParentTypes = ResolversObject<{
   ISBN: Scalars["ISBN"]["output"];
   ISO8601Duration: Scalars["ISO8601Duration"]["output"];
   Int: Scalars["Int"]["output"];
-  ItemListing: ItemListing;
+  ItemListing: Omit<ItemListing, "sharer"> & { sharer: ResolversParentTypes["User"] };
   JSON: Scalars["JSON"]["output"];
   JSONObject: Scalars["JSONObject"]["output"];
   JWT: Scalars["JWT"]["output"];
   LCCSubclass: Scalars["LCCSubclass"]["output"];
   Latitude: Scalars["Latitude"]["output"];
-  Listing: Listing;
+  Listing: ResolversUnionTypes<ResolversParentTypes>["Listing"];
   ListingAll: ListingAll;
   ListingAllPage: ListingAllPage;
   ListingRequest: ListingRequest;
@@ -888,8 +927,10 @@ export type ResolversParentTypes = ResolversObject<{
   RefundOrderInformation: RefundOrderInformation;
   RefundRequest: RefundRequest;
   RefundResponse: RefundResponse;
-  ReservationRequest: ReservationRequest;
-  ReservationRequestMutationResult: ReservationRequestMutationResult;
+  ReservationRequest: Omit<ReservationRequest, "listing"> & { listing?: Maybe<ResolversParentTypes["ItemListing"]> };
+  ReservationRequestMutationResult: Omit<ReservationRequestMutationResult, "reservationRequest"> & {
+    reservationRequest?: Maybe<ResolversParentTypes["ReservationRequest"]>;
+  };
   RoutingNumber: Scalars["RoutingNumber"]["output"];
   SESSN: Scalars["SESSN"]["output"];
   SafeInt: Scalars["SafeInt"]["output"];
@@ -904,7 +945,7 @@ export type ResolversParentTypes = ResolversObject<{
   UUID: Scalars["UUID"]["output"];
   UnsignedFloat: Scalars["UnsignedFloat"]["output"];
   UnsignedInt: Scalars["UnsignedInt"]["output"];
-  User: User;
+  User: ResolversUnionTypes<ResolversParentTypes>["User"];
   UtcOffset: Scalars["UtcOffset"]["output"];
   Void: Scalars["Void"]["output"];
 }>;
@@ -969,14 +1010,23 @@ export type ConversationResolvers<
   ContextType = GraphContext,
   ParentType extends ResolversParentTypes["Conversation"] = ResolversParentTypes["Conversation"],
 > = ResolversObject<{
-  createdAt?: Resolver<Maybe<ResolversTypes["DateTime"]>, ParentType, ContextType>;
+  createdAt?: Resolver<ResolversTypes["DateTime"], ParentType, ContextType>;
   id?: Resolver<ResolversTypes["ObjectID"], ParentType, ContextType>;
-  listing?: Resolver<Maybe<ResolversTypes["Listing"]>, ParentType, ContextType>;
-  reserver?: Resolver<Maybe<ResolversTypes["User"]>, ParentType, ContextType>;
-  schemaVersion?: Resolver<Maybe<ResolversTypes["String"]>, ParentType, ContextType>;
-  sharer?: Resolver<Maybe<ResolversTypes["User"]>, ParentType, ContextType>;
-  twilioConversationId?: Resolver<Maybe<ResolversTypes["String"]>, ParentType, ContextType>;
-  updatedAt?: Resolver<Maybe<ResolversTypes["DateTime"]>, ParentType, ContextType>;
+  listing?: Resolver<ResolversTypes["Listing"], ParentType, ContextType>;
+  reserver?: Resolver<ResolversTypes["User"], ParentType, ContextType>;
+  schemaVersion?: Resolver<ResolversTypes["String"], ParentType, ContextType>;
+  sharer?: Resolver<ResolversTypes["User"], ParentType, ContextType>;
+  twilioConversationId?: Resolver<ResolversTypes["String"], ParentType, ContextType>;
+  updatedAt?: Resolver<ResolversTypes["DateTime"], ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+}>;
+
+export type ConversationMutationResultResolvers<
+  ContextType = GraphContext,
+  ParentType extends ResolversParentTypes["ConversationMutationResult"] = ResolversParentTypes["ConversationMutationResult"],
+> = ResolversObject<{
+  conversation?: Resolver<Maybe<ResolversTypes["Conversation"]>, ParentType, ContextType>;
+  status?: Resolver<ResolversTypes["MutationStatus"], ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 }>;
 
@@ -1088,11 +1138,11 @@ export type ItemListingResolvers<
   location?: Resolver<ResolversTypes["String"], ParentType, ContextType>;
   reports?: Resolver<Maybe<ResolversTypes["Int"]>, ParentType, ContextType>;
   schemaVersion?: Resolver<Maybe<ResolversTypes["String"]>, ParentType, ContextType>;
-  sharer?: Resolver<ResolversTypes["String"], ParentType, ContextType>;
+  sharer?: Resolver<ResolversTypes["User"], ParentType, ContextType>;
   sharingHistory?: Resolver<Maybe<Array<ResolversTypes["String"]>>, ParentType, ContextType>;
   sharingPeriodEnd?: Resolver<ResolversTypes["DateTime"], ParentType, ContextType>;
   sharingPeriodStart?: Resolver<ResolversTypes["DateTime"], ParentType, ContextType>;
-  state?: Resolver<Maybe<ResolversTypes["ItemListingState"]>, ParentType, ContextType>;
+  state?: Resolver<Maybe<ResolversTypes["String"]>, ParentType, ContextType>;
   title?: Resolver<ResolversTypes["String"], ParentType, ContextType>;
   updatedAt?: Resolver<Maybe<ResolversTypes["DateTime"]>, ParentType, ContextType>;
   version?: Resolver<Maybe<ResolversTypes["Int"]>, ParentType, ContextType>;
@@ -1123,8 +1173,7 @@ export type ListingResolvers<
   ContextType = GraphContext,
   ParentType extends ResolversParentTypes["Listing"] = ResolversParentTypes["Listing"],
 > = ResolversObject<{
-  id?: Resolver<ResolversTypes["ObjectID"], ParentType, ContextType>;
-  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+  __resolveType: TypeResolveFn<"ItemListing", ParentType, ContextType>;
 }>;
 
 export type ListingAllResolvers<
@@ -1237,6 +1286,12 @@ export type MutationResolvers<
   _empty?: Resolver<Maybe<ResolversTypes["String"]>, ParentType, ContextType>;
   cancelReservation?: Resolver<ResolversTypes["ReservationRequest"], ParentType, ContextType, RequireFields<MutationCancelReservationArgs, "input">>;
   closeReservation?: Resolver<ResolversTypes["ReservationRequest"], ParentType, ContextType, RequireFields<MutationCloseReservationArgs, "input">>;
+  createConversation?: Resolver<
+    ResolversTypes["ConversationMutationResult"],
+    ParentType,
+    ContextType,
+    RequireFields<MutationCreateConversationArgs, "input">
+  >;
   createItemListing?: Resolver<ResolversTypes["ItemListing"], ParentType, ContextType, RequireFields<MutationCreateItemListingArgs, "input">>;
   createReservationRequest?: Resolver<
     ResolversTypes["ReservationRequest"],
@@ -1253,7 +1308,7 @@ export type MutationResultResolvers<
   ContextType = GraphContext,
   ParentType extends ResolversParentTypes["MutationResult"] = ResolversParentTypes["MutationResult"],
 > = ResolversObject<{
-  __resolveType: TypeResolveFn<"ReservationRequestMutationResult", ParentType, ContextType>;
+  __resolveType: TypeResolveFn<"ConversationMutationResult" | "ReservationRequestMutationResult", ParentType, ContextType>;
   status?: Resolver<ResolversTypes["MutationStatus"], ParentType, ContextType>;
 }>;
 
@@ -1380,7 +1435,7 @@ export type PersonalUserAccountProfileBillingResolvers<
   cybersourceCustomerId?: Resolver<Maybe<ResolversTypes["String"]>, ParentType, ContextType>;
   lastPaymentAmount?: Resolver<Maybe<ResolversTypes["Float"]>, ParentType, ContextType>;
   lastTransactionId?: Resolver<Maybe<ResolversTypes["String"]>, ParentType, ContextType>;
-  paymentState?: Resolver<Maybe<ResolversTypes["PaymentState"]>, ParentType, ContextType>;
+  paymentState?: Resolver<Maybe<ResolversTypes["String"]>, ParentType, ContextType>;
   subscriptionId?: Resolver<Maybe<ResolversTypes["String"]>, ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 }>;
@@ -1423,8 +1478,13 @@ export type QueryResolvers<
   ParentType extends ResolversParentTypes["Query"] = ResolversParentTypes["Query"],
 > = ResolversObject<{
   _empty?: Resolver<Maybe<ResolversTypes["String"]>, ParentType, ContextType>;
-  conversation?: Resolver<Maybe<ResolversTypes["Conversation"]>, ParentType, ContextType, RequireFields<QueryConversationArgs, "id">>;
-  conversations?: Resolver<Array<ResolversTypes["Conversation"]>, ParentType, ContextType>;
+  conversation?: Resolver<Maybe<ResolversTypes["Conversation"]>, ParentType, ContextType, RequireFields<QueryConversationArgs, "conversationId">>;
+  conversationsByUser?: Resolver<
+    Maybe<Array<Maybe<ResolversTypes["Conversation"]>>>,
+    ParentType,
+    ContextType,
+    RequireFields<QueryConversationsByUserArgs, "userId">
+  >;
   currentPersonalUserAndCreateIfNotExists?: Resolver<ResolversTypes["PersonalUser"], ParentType, ContextType>;
   itemListing?: Resolver<Maybe<ResolversTypes["ItemListing"]>, ParentType, ContextType, RequireFields<QueryItemListingArgs, "id">>;
   itemListings?: Resolver<Array<ResolversTypes["ItemListing"]>, ParentType, ContextType>;
@@ -1567,9 +1627,7 @@ export type UserResolvers<
   ContextType = GraphContext,
   ParentType extends ResolversParentTypes["User"] = ResolversParentTypes["User"],
 > = ResolversObject<{
-  id?: Resolver<ResolversTypes["ObjectID"], ParentType, ContextType>;
-  username?: Resolver<ResolversTypes["String"], ParentType, ContextType>;
-  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+  __resolveType: TypeResolveFn<"PersonalUser", ParentType, ContextType>;
 }>;
 
 export interface UtcOffsetScalarConfig extends GraphQLScalarTypeConfig<ResolversTypes["UtcOffset"], any> {
@@ -1588,6 +1646,7 @@ export type Resolvers<ContextType = GraphContext> = ResolversObject<{
   BlobMetadataField?: BlobMetadataFieldResolvers<ContextType>;
   Byte?: GraphQLScalarType;
   Conversation?: ConversationResolvers<ContextType>;
+  ConversationMutationResult?: ConversationMutationResultResolvers<ContextType>;
   CountryCode?: GraphQLScalarType;
   CountryName?: GraphQLScalarType;
   Cuid?: GraphQLScalarType;

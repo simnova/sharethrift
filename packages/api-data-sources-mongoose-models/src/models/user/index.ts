@@ -7,5 +7,6 @@ export {
 	type PersonalUserAccountProfile,
 	type PersonalUserAccountProfileLocation,
 	type PersonalUserAccountProfileBilling,
+	type PaymentStateEnum,
 } from './personal-user.model.ts';
 export { UserModelFactory } from './user.model.ts';

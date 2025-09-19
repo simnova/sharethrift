@@ -1,4 +1,4 @@
-import type { GraphContext } from '../../init/context.ts';
+import type { GraphContext } from '../../../init/context.ts';
 import type { GraphQLResolveInfo } from 'graphql';
 
 interface MyListingRequestsArgs {
@@ -106,9 +106,11 @@ const reservationRequest = {
 			context: GraphContext,
 			_info: GraphQLResolveInfo,
 		) => {
-			return await context.applicationServices.ReservationRequest.ReservationRequest.queryActiveByReserverId({
-                reserverId: args.userId
-            });
+			return await context.applicationServices.ReservationRequest.ReservationRequest.queryActiveByReserverId(
+				{
+					reserverId: args.userId,
+				},
+			);
 		},
 		myPastReservations: async (
 			_parent: unknown,
@@ -116,9 +118,11 @@ const reservationRequest = {
 			context: GraphContext,
 			_info: GraphQLResolveInfo,
 		) => {
-			return await context.applicationServices.ReservationRequest.ReservationRequest.queryPastByReserverId({
-                reserverId: args.userId
-            });
+			return await context.applicationServices.ReservationRequest.ReservationRequest.queryPastByReserverId(
+				{
+					reserverId: args.userId,
+				},
+			);
 		},
     myListingsRequests: async (_parent: unknown, args: MyListingRequestsArgs, context: GraphContext) => {
       // Fetch reservation requests for listings owned by sharer from application services
