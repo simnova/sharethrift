@@ -819,6 +819,41 @@ export type ReservationsViewHistoryContainerPastReservationsQuery = {
   }>;
 };
 
+export type SignupSelectAccountTypePersonalUserUpdateMutationVariables = Exact<{
+  input: PersonalUserUpdateInput;
+}>;
+
+export type SignupSelectAccountTypePersonalUserUpdateMutation = {
+  __typename?: "Mutation";
+  personalUserUpdate: {
+    __typename?: "PersonalUser";
+    id: any;
+    schemaVersion?: string | null;
+    createdAt?: any | null;
+    updatedAt?: any | null;
+    account?: {
+      __typename?: "PersonalUserAccount";
+      accountType?: string | null;
+    } | null;
+  };
+};
+
+export type SignupSelectAccountTypeCurrentPersonalUserAndCreateIfNotExistsQueryVariables =
+  Exact<{ [key: string]: never }>;
+
+export type SignupSelectAccountTypeCurrentPersonalUserAndCreateIfNotExistsQuery =
+  {
+    __typename?: "Query";
+    currentPersonalUserAndCreateIfNotExists: {
+      __typename?: "PersonalUser";
+      id: any;
+      account?: {
+        __typename?: "PersonalUserAccount";
+        accountType?: string | null;
+      } | null;
+    };
+  };
+
 export type SignUpSectionLayoutContainerCurrentPersonalUserAndCreateIfNotExistsQueryVariables =
   Exact<{ [key: string]: never }>;
 
@@ -1990,6 +2025,131 @@ export const ReservationsViewHistoryContainerPastReservationsDocument = {
   ReservationsViewHistoryContainerPastReservationsQuery,
   ReservationsViewHistoryContainerPastReservationsQueryVariables
 >;
+export const SignupSelectAccountTypePersonalUserUpdateDocument = {
+  kind: "Document",
+  definitions: [
+    {
+      kind: "OperationDefinition",
+      operation: "mutation",
+      name: {
+        kind: "Name",
+        value: "SignupSelectAccountTypePersonalUserUpdate",
+      },
+      variableDefinitions: [
+        {
+          kind: "VariableDefinition",
+          variable: {
+            kind: "Variable",
+            name: { kind: "Name", value: "input" },
+          },
+          type: {
+            kind: "NonNullType",
+            type: {
+              kind: "NamedType",
+              name: { kind: "Name", value: "PersonalUserUpdateInput" },
+            },
+          },
+        },
+      ],
+      selectionSet: {
+        kind: "SelectionSet",
+        selections: [
+          {
+            kind: "Field",
+            name: { kind: "Name", value: "personalUserUpdate" },
+            arguments: [
+              {
+                kind: "Argument",
+                name: { kind: "Name", value: "input" },
+                value: {
+                  kind: "Variable",
+                  name: { kind: "Name", value: "input" },
+                },
+              },
+            ],
+            selectionSet: {
+              kind: "SelectionSet",
+              selections: [
+                { kind: "Field", name: { kind: "Name", value: "id" } },
+                {
+                  kind: "Field",
+                  name: { kind: "Name", value: "schemaVersion" },
+                },
+                { kind: "Field", name: { kind: "Name", value: "createdAt" } },
+                { kind: "Field", name: { kind: "Name", value: "updatedAt" } },
+                {
+                  kind: "Field",
+                  name: { kind: "Name", value: "account" },
+                  selectionSet: {
+                    kind: "SelectionSet",
+                    selections: [
+                      {
+                        kind: "Field",
+                        name: { kind: "Name", value: "accountType" },
+                      },
+                    ],
+                  },
+                },
+              ],
+            },
+          },
+        ],
+      },
+    },
+  ],
+} as unknown as DocumentNode<
+  SignupSelectAccountTypePersonalUserUpdateMutation,
+  SignupSelectAccountTypePersonalUserUpdateMutationVariables
+>;
+export const SignupSelectAccountTypeCurrentPersonalUserAndCreateIfNotExistsDocument =
+  {
+    kind: "Document",
+    definitions: [
+      {
+        kind: "OperationDefinition",
+        operation: "query",
+        name: {
+          kind: "Name",
+          value:
+            "SignupSelectAccountTypeCurrentPersonalUserAndCreateIfNotExists",
+        },
+        selectionSet: {
+          kind: "SelectionSet",
+          selections: [
+            {
+              kind: "Field",
+              name: {
+                kind: "Name",
+                value: "currentPersonalUserAndCreateIfNotExists",
+              },
+              selectionSet: {
+                kind: "SelectionSet",
+                selections: [
+                  { kind: "Field", name: { kind: "Name", value: "id" } },
+                  {
+                    kind: "Field",
+                    name: { kind: "Name", value: "account" },
+                    selectionSet: {
+                      kind: "SelectionSet",
+                      selections: [
+                        {
+                          kind: "Field",
+                          name: { kind: "Name", value: "accountType" },
+                        },
+                      ],
+                    },
+                  },
+                ],
+              },
+            },
+          ],
+        },
+      },
+    ],
+  } as unknown as DocumentNode<
+    SignupSelectAccountTypeCurrentPersonalUserAndCreateIfNotExistsQuery,
+    SignupSelectAccountTypeCurrentPersonalUserAndCreateIfNotExistsQueryVariables
+  >;
 export const SignUpSectionLayoutContainerCurrentPersonalUserAndCreateIfNotExistsDocument =
   {
     kind: "Document",
