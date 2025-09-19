@@ -3,7 +3,7 @@ import { Card, Tag, Space, Button, Popconfirm, Badge, Dropdown } from 'antd';
 import { EllipsisOutlined } from '@ant-design/icons';
 import styles from './all-listings-card.module.css';
 import type { MyListingData } from './my-listings-dashboard.types';
-import { getStatusTagClass } from './all-listings-table';
+import { getStatusTagClass } from './status-tag-class';
 
 export interface AllListingsCardProps {
   listing: MyListingData;

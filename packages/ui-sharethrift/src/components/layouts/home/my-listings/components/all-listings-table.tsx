@@ -4,6 +4,7 @@ import { SearchOutlined, FilterOutlined } from '@ant-design/icons';
 import { Dashboard } from '@sthrift/ui-sharethrift-components';
 import type { MyListingData } from './my-listings-dashboard.types';
 import { AllListingsCard } from './all-listings-card';
+import { getStatusTagClass } from './status-tag-class';
 
 const { Search } = Input;
 
@@ -33,24 +34,7 @@ const STATUS_OPTIONS = [
   { label: 'Blocked', value: 'Blocked' },
 ];
 
-export const getStatusTagClass = (status: string): string => {
-  switch (status) {
-    case 'Active':
-      return 'activeTag';
-    case 'Paused':
-      return 'pausedTag';
-    case 'Reserved':
-      return 'reservedTag';
-    case 'Expired':
-      return 'expiredTag';
-    case 'Draft':
-      return 'draftTag';
-    case 'Blocked':
-      return 'blockedTag';
-    default:
-      return '';
-  }
-};
+// getStatusTagClass moved to shared helper status-tag-class.ts
 
 export function AllListingsTable({
   data,
