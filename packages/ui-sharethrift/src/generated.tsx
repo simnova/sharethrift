@@ -154,6 +154,12 @@ export type CreateItemListingInput = {
   title: Scalars["String"]["input"];
 };
 
+export type CreateReservationRequestInput = {
+  listingId: Scalars["ObjectID"]["input"];
+  reservationPeriodEnd: Scalars["DateTime"]["input"];
+  reservationPeriodStart: Scalars["DateTime"]["input"];
+};
+
 export type ItemListing = MongoBase & {
   __typename?: "ItemListing";
   category: Scalars["String"]["output"];
@@ -215,6 +221,7 @@ export type Mutation = {
   cancelReservation: ReservationRequest;
   closeReservation: ReservationRequest;
   createItemListing: ItemListing;
+  createReservationRequest: ReservationRequest;
 };
 
 /**  Base Mutation Type definition - all mutations will be defined in separate files extending this type  */
@@ -230,6 +237,11 @@ export type MutationCloseReservationArgs = {
 /**  Base Mutation Type definition - all mutations will be defined in separate files extending this type  */
 export type MutationCreateItemListingArgs = {
   input: CreateItemListingInput;
+};
+
+/**  Base Mutation Type definition - all mutations will be defined in separate files extending this type  */
+export type MutationCreateReservationRequestArgs = {
+  input: CreateReservationRequestInput;
 };
 
 export type MutationResult = {
@@ -363,9 +375,12 @@ export type Query = {
   currentPersonalUserAndCreateIfNotExists: PersonalUser;
   itemListing?: Maybe<ItemListing>;
   itemListings: Array<ItemListing>;
+  myActiveReservationForListing?: Maybe<ReservationRequest>;
   myActiveReservations: Array<ReservationRequest>;
   myPastReservations: Array<ReservationRequest>;
+  overlapActiveReservationRequestsForListing: Array<ReservationRequest>;
   personalUserById?: Maybe<PersonalUser>;
+  queryActiveByListingId: Array<Maybe<ReservationRequest>>;
 };
 
 /**  Base Query Type definition - , all mutations will be defined in separate files extending this type  */
@@ -379,6 +394,12 @@ export type QueryItemListingArgs = {
 };
 
 /**  Base Query Type definition - , all mutations will be defined in separate files extending this type  */
+export type QueryMyActiveReservationForListingArgs = {
+  listingId: Scalars["ObjectID"]["input"];
+  userId: Scalars["ObjectID"]["input"];
+};
+
+/**  Base Query Type definition - , all mutations will be defined in separate files extending this type  */
 export type QueryMyActiveReservationsArgs = {
   userId: Scalars["ObjectID"]["input"];
 };
@@ -389,22 +410,34 @@ export type QueryMyPastReservationsArgs = {
 };
 
 /**  Base Query Type definition - , all mutations will be defined in separate files extending this type  */
+export type QueryOverlapActiveReservationRequestsForListingArgs = {
+  listingId: Scalars["ObjectID"]["input"];
+  reservationPeriodEnd: Scalars["DateTime"]["input"];
+  reservationPeriodStart: Scalars["DateTime"]["input"];
+};
+
+/**  Base Query Type definition - , all mutations will be defined in separate files extending this type  */
 export type QueryPersonalUserByIdArgs = {
   id: Scalars["ObjectID"]["input"];
 };
 
+/**  Base Query Type definition - , all mutations will be defined in separate files extending this type  */
+export type QueryQueryActiveByListingIdArgs = {
+  listingId: Scalars["ObjectID"]["input"];
+};
+
 export type ReservationRequest = {
   __typename?: "ReservationRequest";
-  closeRequestedByReserver: Scalars["Boolean"]["output"];
-  closeRequestedBySharer: Scalars["Boolean"]["output"];
-  createdAt: Scalars["String"]["output"];
+  closeRequestedByReserver?: Maybe<Scalars["Boolean"]["output"]>;
+  closeRequestedBySharer?: Maybe<Scalars["Boolean"]["output"]>;
+  createdAt?: Maybe<Scalars["String"]["output"]>;
   id: Scalars["ObjectID"]["output"];
-  listing: ItemListing;
-  reservationPeriodEnd: Scalars["String"]["output"];
-  reservationPeriodStart: Scalars["String"]["output"];
-  reserver: PersonalUser;
-  state: ReservationRequestState;
-  updatedAt: Scalars["String"]["output"];
+  listing?: Maybe<ItemListing>;
+  reservationPeriodEnd?: Maybe<Scalars["String"]["output"]>;
+  reservationPeriodStart?: Maybe<Scalars["String"]["output"]>;
+  reserver?: Maybe<PersonalUser>;
+  state?: Maybe<ReservationRequestState>;
+  updatedAt?: Maybe<Scalars["String"]["output"]>;
 };
 
 export type ReservationRequestMutationResult = MutationResult & {
@@ -631,6 +664,43 @@ export type ViewListingInformationGetListingQuery = {
   } | null;
 };
 
+export type ViewListingQueryActiveByListingIdQueryVariables = Exact<{
+  listingId: Scalars["ObjectID"]["input"];
+}>;
+
+export type ViewListingQueryActiveByListingIdQuery = {
+  __typename?: "Query";
+  queryActiveByListingId: Array<{
+    __typename?: "ReservationRequest";
+    id: any;
+    state?: ReservationRequestState | null;
+    reservationPeriodStart?: string | null;
+    reservationPeriodEnd?: string | null;
+    createdAt?: string | null;
+    updatedAt?: string | null;
+    closeRequestedBySharer?: boolean | null;
+    closeRequestedByReserver?: boolean | null;
+  } | null>;
+};
+
+export type HomeListingInformationCreateReservationRequestMutationVariables =
+  Exact<{
+    input: CreateReservationRequestInput;
+  }>;
+
+export type HomeListingInformationCreateReservationRequestMutation = {
+  __typename?: "Mutation";
+  createReservationRequest: {
+    __typename?: "ReservationRequest";
+    id: any;
+    state?: ReservationRequestState | null;
+    reservationPeriodStart?: string | null;
+    reservationPeriodEnd?: string | null;
+    createdAt?: string | null;
+    updatedAt?: string | null;
+  };
+};
+
 export type ViewListingSharerInformationGetSharerQueryVariables = Exact<{
   sharerId: Scalars["ObjectID"]["input"];
 }>;
@@ -686,18 +756,47 @@ export type ViewListingQuery = {
   } | null;
 };
 
+export type ViewListingCurrentUserQueryVariables = Exact<{
+  [key: string]: never;
+}>;
+
+export type ViewListingCurrentUserQuery = {
+  __typename?: "Query";
+  currentPersonalUserAndCreateIfNotExists: {
+    __typename?: "PersonalUser";
+    id: any;
+  };
+};
+
+export type ViewListingActiveReservationRequestForListingQueryVariables =
+  Exact<{
+    listingId: Scalars["ObjectID"]["input"];
+    reserverId: Scalars["ObjectID"]["input"];
+  }>;
+
+export type ViewListingActiveReservationRequestForListingQuery = {
+  __typename?: "Query";
+  myActiveReservationForListing?: {
+    __typename?: "ReservationRequest";
+    id: any;
+    state?: ReservationRequestState | null;
+    reservationPeriodStart?: string | null;
+    reservationPeriodEnd?: string | null;
+  } | null;
+};
+
 export type ReservationsViewActiveContainerReservationFieldsFragment = {
   __typename?: "ReservationRequest";
   id: any;
-  state: ReservationRequestState;
-  reservationPeriodStart: string;
-  reservationPeriodEnd: string;
-  createdAt: string;
-  updatedAt: string;
-  closeRequestedBySharer: boolean;
-  closeRequestedByReserver: boolean;
-  listing: { __typename?: "ItemListing"; id: any; title: string };
-  reserver: {
+  state?: ReservationRequestState | null;
+  reservationPeriodStart?: string | null;
+  reservationPeriodEnd?: string | null;
+  createdAt?: string | null;
+  updatedAt?: string | null;
+  closeRequestedBySharer?: boolean | null;
+  closeRequestedByReserver?: boolean | null;
+  listing?: { __typename?: "ItemListing"; id: any; title: string } | null;
+  reserver?: {
     __typename?: "PersonalUser";
     account?: {
       __typename?: "PersonalUserAccount";
@@ -708,7 +807,7 @@ export type ReservationsViewActiveContainerReservationFieldsFragment = {
         lastName?: string | null;
       } | null;
     } | null;
-  };
+  } | null;
 };
 
 export type ReservationsViewActiveContainerActiveReservationsQueryVariables =
@@ -721,15 +820,15 @@ export type ReservationsViewActiveContainerActiveReservationsQuery = {
   myActiveReservations: Array<{
     __typename?: "ReservationRequest";
     id: any;
-    state: ReservationRequestState;
-    reservationPeriodStart: string;
-    reservationPeriodEnd: string;
-    createdAt: string;
-    updatedAt: string;
-    closeRequestedBySharer: boolean;
-    closeRequestedByReserver: boolean;
-    listing: { __typename?: "ItemListing"; id: any; title: string };
-    reserver: {
+    state?: ReservationRequestState | null;
+    reservationPeriodStart?: string | null;
+    reservationPeriodEnd?: string | null;
+    createdAt?: string | null;
+    updatedAt?: string | null;
+    closeRequestedBySharer?: boolean | null;
+    closeRequestedByReserver?: boolean | null;
+    listing?: { __typename?: "ItemListing"; id: any; title: string } | null;
+    reserver?: {
       __typename?: "PersonalUser";
       account?: {
         __typename?: "PersonalUserAccount";
@@ -740,7 +839,7 @@ export type ReservationsViewActiveContainerActiveReservationsQuery = {
           lastName?: string | null;
         } | null;
       } | null;
-    };
+    } | null;
   }>;
 };
 
@@ -754,10 +853,10 @@ export type ReservationsViewActiveContainerCancelReservationMutation = {
   cancelReservation: {
     __typename?: "ReservationRequest";
     id: any;
-    state: ReservationRequestState;
-    updatedAt: string;
-    closeRequestedBySharer: boolean;
-    closeRequestedByReserver: boolean;
+    state?: ReservationRequestState | null;
+    updatedAt?: string | null;
+    closeRequestedBySharer?: boolean | null;
+    closeRequestedByReserver?: boolean | null;
   };
 };
 
@@ -771,25 +870,25 @@ export type ReservationsViewActiveContainerCloseReservationMutation = {
   closeReservation: {
     __typename?: "ReservationRequest";
     id: any;
-    state: ReservationRequestState;
-    updatedAt: string;
-    closeRequestedBySharer: boolean;
-    closeRequestedByReserver: boolean;
+    state?: ReservationRequestState | null;
+    updatedAt?: string | null;
+    closeRequestedBySharer?: boolean | null;
+    closeRequestedByReserver?: boolean | null;
   };
 };
 
 export type ReservationsViewHistoryContainerReservationFieldsFragment = {
   __typename?: "ReservationRequest";
   id: any;
-  state: ReservationRequestState;
-  reservationPeriodStart: string;
-  reservationPeriodEnd: string;
-  createdAt: string;
-  updatedAt: string;
-  closeRequestedBySharer: boolean;
-  closeRequestedByReserver: boolean;
-  listing: { __typename?: "ItemListing"; id: any; title: string };
-  reserver: {
+  state?: ReservationRequestState | null;
+  reservationPeriodStart?: string | null;
+  reservationPeriodEnd?: string | null;
+  createdAt?: string | null;
+  updatedAt?: string | null;
+  closeRequestedBySharer?: boolean | null;
+  closeRequestedByReserver?: boolean | null;
+  listing?: { __typename?: "ItemListing"; id: any; title: string } | null;
+  reserver?: {
     __typename?: "PersonalUser";
     id: any;
     account?: {
@@ -801,7 +900,7 @@ export type ReservationsViewHistoryContainerReservationFieldsFragment = {
         lastName?: string | null;
       } | null;
     } | null;
-  };
+  } | null;
 };
 
 export type ReservationsViewHistoryContainerPastReservationsQueryVariables =
@@ -814,15 +913,15 @@ export type ReservationsViewHistoryContainerPastReservationsQuery = {
   myPastReservations: Array<{
     __typename?: "ReservationRequest";
     id: any;
-    state: ReservationRequestState;
-    reservationPeriodStart: string;
-    reservationPeriodEnd: string;
-    createdAt: string;
-    updatedAt: string;
-    closeRequestedBySharer: boolean;
-    closeRequestedByReserver: boolean;
-    listing: { __typename?: "ItemListing"; id: any; title: string };
-    reserver: {
+    state?: ReservationRequestState | null;
+    reservationPeriodStart?: string | null;
+    reservationPeriodEnd?: string | null;
+    createdAt?: string | null;
+    updatedAt?: string | null;
+    closeRequestedBySharer?: boolean | null;
+    closeRequestedByReserver?: boolean | null;
+    listing?: { __typename?: "ItemListing"; id: any; title: string } | null;
+    reserver?: {
       __typename?: "PersonalUser";
       id: any;
       account?: {
@@ -834,7 +933,7 @@ export type ReservationsViewHistoryContainerPastReservationsQuery = {
           lastName?: string | null;
         } | null;
       } | null;
-    };
+    } | null;
   }>;
 };
 
@@ -1646,6 +1745,147 @@ export const ViewListingInformationGetListingDocument = {
   ViewListingInformationGetListingQuery,
   ViewListingInformationGetListingQueryVariables
 >;
+export const ViewListingQueryActiveByListingIdDocument = {
+  kind: "Document",
+  definitions: [
+    {
+      kind: "OperationDefinition",
+      operation: "query",
+      name: { kind: "Name", value: "ViewListingQueryActiveByListingId" },
+      variableDefinitions: [
+        {
+          kind: "VariableDefinition",
+          variable: {
+            kind: "Variable",
+            name: { kind: "Name", value: "listingId" },
+          },
+          type: {
+            kind: "NonNullType",
+            type: {
+              kind: "NamedType",
+              name: { kind: "Name", value: "ObjectID" },
+            },
+          },
+        },
+      ],
+      selectionSet: {
+        kind: "SelectionSet",
+        selections: [
+          {
+            kind: "Field",
+            name: { kind: "Name", value: "queryActiveByListingId" },
+            arguments: [
+              {
+                kind: "Argument",
+                name: { kind: "Name", value: "listingId" },
+                value: {
+                  kind: "Variable",
+                  name: { kind: "Name", value: "listingId" },
+                },
+              },
+            ],
+            selectionSet: {
+              kind: "SelectionSet",
+              selections: [
+                { kind: "Field", name: { kind: "Name", value: "id" } },
+                { kind: "Field", name: { kind: "Name", value: "state" } },
+                {
+                  kind: "Field",
+                  name: { kind: "Name", value: "reservationPeriodStart" },
+                },
+                {
+                  kind: "Field",
+                  name: { kind: "Name", value: "reservationPeriodEnd" },
+                },
+                { kind: "Field", name: { kind: "Name", value: "createdAt" } },
+                { kind: "Field", name: { kind: "Name", value: "updatedAt" } },
+                {
+                  kind: "Field",
+                  name: { kind: "Name", value: "closeRequestedBySharer" },
+                },
+                {
+                  kind: "Field",
+                  name: { kind: "Name", value: "closeRequestedByReserver" },
+                },
+              ],
+            },
+          },
+        ],
+      },
+    },
+  ],
+} as unknown as DocumentNode<
+  ViewListingQueryActiveByListingIdQuery,
+  ViewListingQueryActiveByListingIdQueryVariables
+>;
+export const HomeListingInformationCreateReservationRequestDocument = {
+  kind: "Document",
+  definitions: [
+    {
+      kind: "OperationDefinition",
+      operation: "mutation",
+      name: {
+        kind: "Name",
+        value: "HomeListingInformationCreateReservationRequest",
+      },
+      variableDefinitions: [
+        {
+          kind: "VariableDefinition",
+          variable: {
+            kind: "Variable",
+            name: { kind: "Name", value: "input" },
+          },
+          type: {
+            kind: "NonNullType",
+            type: {
+              kind: "NamedType",
+              name: { kind: "Name", value: "CreateReservationRequestInput" },
+            },
+          },
+        },
+      ],
+      selectionSet: {
+        kind: "SelectionSet",
+        selections: [
+          {
+            kind: "Field",
+            name: { kind: "Name", value: "createReservationRequest" },
+            arguments: [
+              {
+                kind: "Argument",
+                name: { kind: "Name", value: "input" },
+                value: {
+                  kind: "Variable",
+                  name: { kind: "Name", value: "input" },
+                },
+              },
+            ],
+            selectionSet: {
+              kind: "SelectionSet",
+              selections: [
+                { kind: "Field", name: { kind: "Name", value: "id" } },
+                { kind: "Field", name: { kind: "Name", value: "state" } },
+                {
+                  kind: "Field",
+                  name: { kind: "Name", value: "reservationPeriodStart" },
+                },
+                {
+                  kind: "Field",
+                  name: { kind: "Name", value: "reservationPeriodEnd" },
+                },
+                { kind: "Field", name: { kind: "Name", value: "createdAt" } },
+                { kind: "Field", name: { kind: "Name", value: "updatedAt" } },
+              ],
+            },
+          },
+        ],
+      },
+    },
+  ],
+} as unknown as DocumentNode<
+  HomeListingInformationCreateReservationRequestMutation,
+  HomeListingInformationCreateReservationRequestMutationVariables
+>;
 export const ViewListingSharerInformationGetSharerDocument = {
   kind: "Document",
   definitions: [
@@ -1827,6 +2067,125 @@ export const ViewListingDocument = {
     },
   ],
 } as unknown as DocumentNode<ViewListingQuery, ViewListingQueryVariables>;
+export const ViewListingCurrentUserDocument = {
+  kind: "Document",
+  definitions: [
+    {
+      kind: "OperationDefinition",
+      operation: "query",
+      name: { kind: "Name", value: "ViewListingCurrentUser" },
+      selectionSet: {
+        kind: "SelectionSet",
+        selections: [
+          {
+            kind: "Field",
+            name: {
+              kind: "Name",
+              value: "currentPersonalUserAndCreateIfNotExists",
+            },
+            selectionSet: {
+              kind: "SelectionSet",
+              selections: [
+                { kind: "Field", name: { kind: "Name", value: "id" } },
+              ],
+            },
+          },
+        ],
+      },
+    },
+  ],
+} as unknown as DocumentNode<
+  ViewListingCurrentUserQuery,
+  ViewListingCurrentUserQueryVariables
+>;
+export const ViewListingActiveReservationRequestForListingDocument = {
+  kind: "Document",
+  definitions: [
+    {
+      kind: "OperationDefinition",
+      operation: "query",
+      name: {
+        kind: "Name",
+        value: "ViewListingActiveReservationRequestForListing",
+      },
+      variableDefinitions: [
+        {
+          kind: "VariableDefinition",
+          variable: {
+            kind: "Variable",
+            name: { kind: "Name", value: "listingId" },
+          },
+          type: {
+            kind: "NonNullType",
+            type: {
+              kind: "NamedType",
+              name: { kind: "Name", value: "ObjectID" },
+            },
+          },
+        },
+        {
+          kind: "VariableDefinition",
+          variable: {
+            kind: "Variable",
+            name: { kind: "Name", value: "reserverId" },
+          },
+          type: {
+            kind: "NonNullType",
+            type: {
+              kind: "NamedType",
+              name: { kind: "Name", value: "ObjectID" },
+            },
+          },
+        },
+      ],
+      selectionSet: {
+        kind: "SelectionSet",
+        selections: [
+          {
+            kind: "Field",
+            name: { kind: "Name", value: "myActiveReservationForListing" },
+            arguments: [
+              {
+                kind: "Argument",
+                name: { kind: "Name", value: "listingId" },
+                value: {
+                  kind: "Variable",
+                  name: { kind: "Name", value: "listingId" },
+                },
+              },
+              {
+                kind: "Argument",
+                name: { kind: "Name", value: "userId" },
+                value: {
+                  kind: "Variable",
+                  name: { kind: "Name", value: "reserverId" },
+                },
+              },
+            ],
+            selectionSet: {
+              kind: "SelectionSet",
+              selections: [
+                { kind: "Field", name: { kind: "Name", value: "id" } },
+                { kind: "Field", name: { kind: "Name", value: "state" } },
+                {
+                  kind: "Field",
+                  name: { kind: "Name", value: "reservationPeriodStart" },
+                },
+                {
+                  kind: "Field",
+                  name: { kind: "Name", value: "reservationPeriodEnd" },
+                },
+              ],
+            },
+          },
+        ],
+      },
+    },
+  ],
+} as unknown as DocumentNode<
+  ViewListingActiveReservationRequestForListingQuery,
+  ViewListingActiveReservationRequestForListingQueryVariables
+>;
 export const ReservationsViewActiveContainerActiveReservationsDocument = {
   kind: "Document",
   definitions: [

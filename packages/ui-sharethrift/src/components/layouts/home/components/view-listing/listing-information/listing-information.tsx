@@ -1,44 +1,61 @@
-import { Button, Row, Col, DatePicker } from 'antd';
+import { Row, Col, DatePicker, Button } from "antd";
+import dayjs from "dayjs";
+import type { Dayjs } from "dayjs";
+import isBetween from "dayjs/plugin/isBetween";
+import type {
+  ViewListingQueryActiveByListingIdQuery,
+  ItemListing,
+  ViewListingActiveReservationRequestForListingQuery
+} from "../../../../../../generated";
+import { LoadingOutlined } from "@ant-design/icons";
+import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 
-export type ListingStatus = 'Active' | 'Paused' | 'Blocked' | 'Cancelled' | 'Expired';
-export type UserRole = 'logged-out' | 'sharer' | 'reserver';
-export type ReservationRequestStatus = 'pending' | 'accepted' | 'rejected' | 'closing' | 'closed';
-
+dayjs.extend(isBetween);
 export interface ListingInformationProps {
-  listing: {
-    id: string;
-    title: string;
-    itemName?: string;
-    description: string;
-    price?: number;
-    priceUnit?: string;
-    category: string;
-    condition?: string;
-    location: string;
-    availableFrom: string;
-    availableTo: string;
-    status: ListingStatus;
-  };
-  userRole: UserRole;
+  listing: ItemListing;
+  userIsSharer: boolean;
   isAuthenticated: boolean;
-  reservationRequestStatus?: ReservationRequestStatus;
+  userReservationRequest: ViewListingActiveReservationRequestForListingQuery["myActiveReservationForListing"] | null;
   onReserveClick?: () => void;
   onLoginClick?: () => void;
   onSignUpClick?: () => void;
+  onCancelClick?: () => void;
   className?: string;
+  reservationDates?: {
+    startDate: Date | null;
+    endDate: Date | null;
+  };
+  onReservationDatesChange?: (dates: {
+    startDate: Date | null;
+    endDate: Date | null;
+  }) => void;
+  reservationLoading?: boolean;
+  otherReservationsLoading?: boolean;
+  otherReservationsError?: Error;
+  otherReservations?: ViewListingQueryActiveByListingIdQuery["queryActiveByListingId"];
 }
 
 export function ListingInformation({
   listing,
   onReserveClick,
-  className = '',
-  // userRole,
-  // isAuthenticated,
-  // reservationRequestStatus,
-  // onLoginClick,
-  // onSignUpClick,
+  onCancelClick,
+  className = "",
+  userIsSharer,
+  isAuthenticated,
+  userReservationRequest,
+  reservationDates,
+  onReservationDatesChange,
+  reservationLoading = false,
+  otherReservationsLoading = false,
+  otherReservationsError,
+  otherReservations,
 }: ListingInformationProps) {
-  if (listing.status !== 'Active') {
+
+  const navigate = useNavigate(); 
+  const [dateSelectionError, setDateSelectionError] = useState<string | null>(null);
+      
+  if (listing.state !== "Published") {
     return (
       <div className="p-4">
         <button
@@ -52,8 +69,60 @@ export function ListingInformation({
     );
   }
 
+  // Check if dates are selected for enabling the Reserve button
+  const areDatesSelected = reservationDates?.startDate && reservationDates?.endDate;
+
+  console.log("is authenticated", isAuthenticated);
+  console.log("user reservation request", userReservationRequest?.reservationPeriodEnd);
+
+  const handleDateRangeChange = ( dates: [Dayjs | null, Dayjs | null] | null ): void => {
+    if (!onReservationDatesChange) {
+      return;
+    }
+    if (!dates?.[0] || !dates?.[1]) {
+      onReservationDatesChange({ startDate: null, endDate: null });
+      return;
+    }
+    const [start, end] = dates;
+    if (start.isBefore(dayjs().startOf("day"))) {
+      setDateSelectionError("Selected date range is before today.");
+      onReservationDatesChange({ startDate: null, endDate: null });
+      return;
+    }
+
+    const isRangeValid = (startDate: Dayjs, endDate: Dayjs): boolean => {
+      if (otherReservationsError || !otherReservations) { return true; }
+      let currentDate = startDate.clone();
+      while (currentDate.isBefore(endDate, "day") || currentDate.isSame(endDate, "day")) {
+        const isDisabled = otherReservations.some((otherRes) => {
+          const otherResStart = dayjs(Number(otherRes?.reservationPeriodStart));
+          const otherResEnd = dayjs(Number(otherRes?.reservationPeriodEnd));
+          return currentDate.isBetween(otherResStart, otherResEnd, "day", "[]");
+        });
+        if (isDisabled) {
+          return false;
+        }
+        currentDate = currentDate.add(1, "day");
+      }
+      return true;
+    };
+
+    if (!isRangeValid(start, end)) {
+      setDateSelectionError("Selected date range overlaps with existing reservations.");
+      return;
+    }
+
+    setDateSelectionError(null);
+    onReservationDatesChange({
+      startDate: start.toDate(),
+      endDate: end.toDate(),
+    });
+    console.log("Selected dates:", dates);
+  };
+
+  const reservationRequestStatus = userReservationRequest?.state ?? null;
   return (
-    <Row gutter={[0, 12]} style={{ width: '100%' }} className={className}>
+    <Row gutter={[0, 12]} style={{ width: "100%" }} className={className}>
       <Col span={24}>
         {/* Title at top, using title42 class */}
         <div className="title42">{listing.title}</div>
@@ -61,16 +130,46 @@ export function ListingInformation({
       <Col span={24}>
         {/* Location and Category */}
         <Row gutter={16} align="middle">
-          <Col span={8} style={{ display: 'flex', flexDirection: 'column', justifyContent: 'center', height: '100%' }}>
-            <h5 style={{ marginBottom: 8, marginTop: 0, lineHeight: '18px' }}>Located in</h5>
-            <h5 style={{ marginBottom: 0, marginTop: 0, lineHeight: '18px' }}>Category</h5>
+          <Col
+            span={8}
+            style={{
+              display: "flex",
+              flexDirection: "column",
+              justifyContent: "center",
+              height: "100%",
+            }}
+          >
+            <h5 style={{ marginBottom: 8, marginTop: 0, lineHeight: "18px" }}>
+              Located in
+            </h5>
+            <h5 style={{ marginBottom: 0, marginTop: 0, lineHeight: "18px" }}>
+              Category
+            </h5>
           </Col>
-          <Col span={16} style={{ display: 'flex', flexDirection: 'column', justifyContent: 'center', height: '100%' }}>
-            <div className="font-urbanist text-[14px] text-[rgba(0,0,0,0.85)]" style={{ marginBottom: 8, marginTop: 0, lineHeight: '18px' }}>
-              <p style={{ marginBottom: 0, marginTop: 0, lineHeight: '18px' }}>{listing.location}</p>
+          <Col
+            span={16}
+            style={{
+              display: "flex",
+              flexDirection: "column",
+              justifyContent: "center",
+              height: "100%",
+            }}
+          >
+            <div
+              className="font-urbanist text-[14px] text-[rgba(0,0,0,0.85)]"
+              style={{ marginBottom: 8, marginTop: 0, lineHeight: "18px" }}
+            >
+              <p style={{ marginBottom: 0, marginTop: 0, lineHeight: "18px" }}>
+                {listing.location}
+              </p>
             </div>
-            <div className="font-urbanist text-[14px] text-[rgba(0,0,0,0.85)]" style={{ marginBottom: 0, marginTop: 0, lineHeight: '18px' }}>
-              <p style={{ marginBottom: 0, marginTop: 0, lineHeight: '18px' }}>{listing.category}</p>
+            <div
+              className="font-urbanist text-[14px] text-[rgba(0,0,0,0.85)]"
+              style={{ marginBottom: 0, marginTop: 0, lineHeight: "18px" }}
+            >
+              <p style={{ marginBottom: 0, marginTop: 0, lineHeight: "18px" }}>
+                {listing.category}
+              </p>
             </div>
           </Col>
         </Row>
@@ -79,32 +178,87 @@ export function ListingInformation({
         {/* Description */}
         <Row>
           <Col span={24}>
-            <div className="font-urbanist text-[14px] text-[#333333] w-full max-w-[499px]" style={{ marginBottom: 8 }}>
+            <div
+              className="font-urbanist text-[14px] text-[#333333] w-full max-w-[499px]"
+              style={{ marginBottom: 8 }}
+            >
               <p style={{ marginBottom: 8 }}>{listing.description}</p>
             </div>
           </Col>
         </Row>
-        {/* Reservation Period Section */}
+        {/* Reservation Period Section - Only show if authenticated */}
         <Row style={{ marginTop: 16 }}>
           <Col span={24}>
-            <h3 style={{ marginBottom: 8 }}>Reservation Period</h3>
-            <DatePicker.RangePicker
-              style={{
-                width: '100%',
-              }}
-              placeholder={["Start date", "End date"]}
-              allowClear
-            />
+            {otherReservationsLoading ? (
+              <LoadingOutlined style={{ fontSize: 24, marginBottom: 8 }} />
+            ) : isAuthenticated ? (
+              <>
+                <h3 style={{ marginBottom: 8 }}>Reservation Period</h3>
+                <DatePicker.RangePicker
+                  style={{ width: "100%" }}
+                  placeholder={["Start date", "End date"]}
+                  allowClear
+                  onChange={handleDateRangeChange}
+                  value={
+                    userReservationRequest?.reservationPeriodStart != null && userReservationRequest?.reservationPeriodEnd
+                      ? [
+                          dayjs(Number(userReservationRequest.reservationPeriodStart)),
+                          dayjs(Number(userReservationRequest.reservationPeriodEnd)),
+                        ]
+                      : [
+                          reservationDates?.startDate ? dayjs(reservationDates.startDate) : null,
+                          reservationDates?.endDate ? dayjs(reservationDates.endDate) : null,
+                      ]
+                  }
+                  disabled={reservationRequestStatus !== null} 
+                  disabledDate={(current) => {
+                    // Disable dates that overlap with other active reservations
+                    if (current.isBefore(dayjs().startOf("day"))) { return true; }
+                    if (otherReservationsError || !otherReservations) { return false; }
+                    return otherReservations.some((reservation) => {
+                      const resStart = dayjs(Number(reservation?.reservationPeriodStart));
+                      const resEnd = dayjs(Number(reservation?.reservationPeriodEnd));
+                      return current.isBetween(resStart, resEnd, "day", "[]");
+                    });
+                  }}
+                />
+                <div style={{ color: 'red', marginTop: 8 }}>{dateSelectionError}</div>
+              </>
+            ) : null}
           </Col>
         </Row>
       </Col>
       <Col span={24}>
-        {/* Reserve Button */}
+        {/* Reserve Button - Only show if authenticated */}
         <Row>
           <Col span={24}>
-            <Button type="primary" className="primaryButton" style={{ width: '100%' }} onClick={onReserveClick}>
-              Reserve
-            </Button>
+            {!userIsSharer && isAuthenticated ? (
+              <Button
+                type={
+                  reservationRequestStatus === "Requested"
+                    ? "default"
+                    : "primary"
+                }
+                block
+                onClick={reservationRequestStatus === "Requested"
+                  ? onCancelClick
+                  : onReserveClick}
+                disabled={!areDatesSelected && reservationRequestStatus !== "Requested"}
+                icon={reservationLoading ? <LoadingOutlined /> : undefined}
+              >
+                {reservationRequestStatus === "Requested"
+                  ? "Cancel Request"
+                  : "Reserve"}
+              </Button>
+            ) : !isAuthenticated ? (
+              <Button
+                type="primary"
+                block
+                onClick={() => navigate("/signup/select-account-type")}
+              >
+                Log in to Reserve
+              </Button>
+            ) : null}
           </Col>
         </Row>
       </Col>
