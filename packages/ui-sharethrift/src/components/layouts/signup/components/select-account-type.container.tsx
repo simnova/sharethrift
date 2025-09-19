@@ -57,12 +57,12 @@ export default function SelectAccountTypeContainer() {
     [currentUserData, updateAccountType, navigate, savingAccountType]
   );
 
-  const errorMessage = userError?.message || updateError?.message || undefined;
+  const errorMessage = userError || updateError
 
   return (
     <ComponentQueryLoader
       loading={loadingUser || savingAccountType}
-      hasData={!!currentUserData}
+      hasData={currentUserData}
       error={errorMessage}
       hasDataComponent={
         <SelectAccountType
