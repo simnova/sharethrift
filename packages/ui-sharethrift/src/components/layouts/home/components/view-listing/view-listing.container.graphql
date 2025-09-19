@@ -19,3 +19,18 @@ query ViewListing($id: ObjectID!) {
     schemaVersion
   }
 }
+
+query ViewListingCurrentUser {
+  currentPersonalUserAndCreateIfNotExists {
+    id
+  }
+}
+
+query ViewListingActiveReservationRequestForListing($listingId: ObjectID!, $reserverId: ObjectID!) {
+  myActiveReservationForListing(listingId: $listingId, userId: $reserverId) {
+    id
+    state
+    reservationPeriodStart
+    reservationPeriodEnd
+  }
+}
