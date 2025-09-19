@@ -77,6 +77,13 @@ export class PersonalUserDomainAdapter
 		}
 		return new PersonalUserAccountDomainAdapter(this.doc.account);
 	}
+
+	get hasCompletedOnboarding() {
+		return this.doc.hasCompletedOnboarding;
+	}
+	set hasCompletedOnboarding(value: boolean) {
+		this.doc.hasCompletedOnboarding = value;
+	}
 }
 
 // Nested Path Domain Adapters
@@ -184,6 +191,27 @@ export class PersonalUserAccountProfileBillingDomainAdapter
 	}
 	set cybersourceCustomerId(value: string) {
 		this.props.cybersourceCustomerId = value;
+	}
+
+	get paymentState(): string | undefined {
+		return this.props.paymentState;
+	}
+	set paymentState(value: string) {
+		this.props.paymentState = value;
+	}
+
+	get lastTransactionId(): string | undefined {
+		return this.props.lastTransactionId;
+	}
+	set lastTransactionId(value: string) {
+		this.props.lastTransactionId = value;
+	}
+
+	get lastPaymentAmount(): number | undefined {
+		return this.props.lastPaymentAmount;
+	}
+	set lastPaymentAmount(value: number) {
+		this.props.lastPaymentAmount = value;
 	}
 
 	// Nested Path Getters

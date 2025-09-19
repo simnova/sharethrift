@@ -31,3 +31,29 @@ query ViewListingInformationGetListing($listingId: ObjectID!) {
 		schemaVersion
 	}
 }
+
+query ViewListingQueryActiveByListingId($listingId: ObjectID!) {
+	queryActiveByListingId(listingId: $listingId) {
+		id
+		state
+		reservationPeriodStart
+		reservationPeriodEnd
+		createdAt
+		updatedAt
+		closeRequestedBySharer
+		closeRequestedByReserver
+	}
+}
+
+mutation HomeListingInformationCreateReservationRequest(
+	$input: CreateReservationRequestInput!
+) {
+	createReservationRequest(input: $input) {
+		id
+		state
+		reservationPeriodStart
+		reservationPeriodEnd
+		createdAt
+		updatedAt
+	}
+}

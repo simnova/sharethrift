@@ -4,6 +4,9 @@ export interface PersonalUserAccountProfileBillingProps
 	extends DomainSeedwork.ValueObjectProps {
 	subscriptionId: string | null;
 	cybersourceCustomerId: string | null;
+	paymentState: string | undefined;
+	lastTransactionId: string | undefined;
+	lastPaymentAmount: number | undefined;
 }
 
 export interface PersonalUserAccountProfileBillingEntityReference

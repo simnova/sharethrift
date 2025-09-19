@@ -20,6 +20,7 @@
 		"dev:install": "npm install && cd packages/oauth2-mock-server && npm install && cd ../service-mongodb-memory-server && npm install && cd ../..",
 		"start-emulator:mongo-memory-server": "cd packages/service-mongodb-memory-server && npm install && npm run build && npm run start",
 		"start-emulator:auth-server": "cd packages/service-oauth2-mock-server && npm install && npm run build && npm run start",
+		"start-emulator:payment-server": "cd packages/service-payment-mock-server && npm run build && npm run start",
 		"test": "npm run test --ws --if-present",
 		"test:all": "npm run test:all --ws --if-present",
 		"test:coverage": "npm run test:coverage --ws --if-present",
@@ -48,7 +49,7 @@
 		"packages/service-twilio",
 		"packages/api-application-services",
 		"packages/api-event-handler",
-
+		"packages/service-cybersource",
 		"packages/api-context-spec",
 		"packages/api-graphql",
 		"packages/api-rest",

@@ -17,7 +17,70 @@ type ItemListing implements MongoBase {
 	version: Int
 }
 
+type ListingAllPage {
+	items: [ListingAll!]!
+	total: Int!
+	page: Int!
+	pageSize: Int!
+}
+
+type ListingRequestPage {
+	items: [ListingRequest!]!
+	total: Int!
+	page: Int!
+	pageSize: Int!
+}
+
+# Listing types for dashboard
+type ListingAll {
+	id: ID!
+	title: String!
+	image: String
+	publishedAt: String
+	reservationPeriod: String
+	status: String!
+	pendingRequestsCount: Int!
+}
+
+type ListingRequest {
+	id: ID!
+	title: String!
+	image: String
+	requestedBy: String!
+	requestedOn: String!
+	reservationPeriod: String!
+	status: String!
+}
+
+input SorterInput {
+	field: String!
+	order: String!
+}
+
+input CreateItemListingInput {
+	title: String!
+	description: String!
+	category: String!
+	location: String!
+	sharingPeriodStart: DateTime!
+	sharingPeriodEnd: DateTime!
+	images: [String!]
+	isDraft: Boolean
+}
+
+extend type Mutation {
+	createItemListing(input: CreateItemListingInput!): ItemListing!
+}
+
 extend type Query {
 	itemListings: [ItemListing!]!
 	itemListing(id: ObjectID!): ItemListing
+	itemListings: [ItemListing!]!
+	myListingsAll(
+		page: Int!
+		pageSize: Int!
+		searchText: String
+		statusFilters: [String!]
+		sorter: SorterInput
+	): ListingAllPage!
 }

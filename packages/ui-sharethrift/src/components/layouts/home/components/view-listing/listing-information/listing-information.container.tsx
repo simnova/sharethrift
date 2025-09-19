@@ -1,103 +1,139 @@
-import { useQuery, gql } from '@apollo/client';
+import { useQuery, useMutation, useApolloClient } from '@apollo/client';
+import { useState } from 'react';
+import { message } from 'antd';
 import { ListingInformation } from './listing-information';
-import type { ListingInformationProps, ListingStatus } from './listing-information';
+
 // eslint-disable-next-line import/no-absolute-path, @typescript-eslint/ban-ts-comment
 // @ts-ignore - allow raw import string
-import ListingInformationQuerySource from './listing-information.graphql?raw';
-
-const GET_LISTING_INFORMATION = gql(ListingInformationQuerySource);
-
-interface ItemListing {
-  id: string;
-  title: string;
-  description: string;
-  category: string;
-  location: string;
-  state: string;
-  sharingPeriodStart: string;
-  sharingPeriodEnd: string;
-}
-
-interface ListingQueryResponse {
-  itemListing: ItemListing;
-}
+import { 
+    HomeListingInformationCreateReservationRequestDocument, 
+    type CreateReservationRequestInput, 
+    ViewListingCurrentUserDocument, 
+    type ViewListingCurrentUserQuery,
+    ViewListingQueryActiveByListingIdDocument, 
+    type ViewListingQueryActiveByListingIdQuery, 
+    type ViewListingQueryActiveByListingIdQueryVariables,
+    ViewListingActiveReservationRequestForListingDocument,
+    type ItemListing,
+    type ViewListingActiveReservationRequestForListingQuery
+} from '../../../../../../generated';
 
 interface ListingInformationContainerProps {
-  listingId: string;
-  userRole: ListingInformationProps['userRole'];
+  listing: ItemListing;
+  userIsSharer: boolean;
   isAuthenticated: boolean;
-  reservationRequestStatus?: ListingInformationProps['reservationRequestStatus'];
-  onReserveClick?: () => void;
+  userReservationRequest: ViewListingActiveReservationRequestForListingQuery["myActiveReservationForListing"] | null;
   onLoginClick?: () => void;
   onSignUpClick?: () => void;
   className?: string;
 }
 
 // Map backend ItemListingState to frontend ListingStatus
-function mapListingStateToStatus(state: string): ListingStatus {
-  switch (state) {
-    case 'Published':
-      return 'Active';
-    case 'Paused':
-      return 'Paused';
-    case 'Blocked':
-      return 'Blocked';
-    case 'Cancelled':
-      return 'Cancelled';
-    case 'Expired':
-      return 'Expired';
-    case 'Drafted':
-      return 'Cancelled'; 
-    case 'Appeal_Requested':
-      return 'Blocked'; 
-    default:
-      return 'Active'; 
-  }
-}
+// function mapListingStateToStatus(state: string | null | undefined): ListingStatus {
+//   switch (state) {
+//     case 'Published':
+//       return 'Active';
+//     case 'Paused':
+//       return 'Paused';
+//     case 'Blocked':
+//       return 'Blocked';
+//     case 'Cancelled':
+//       return 'Cancelled';
+//     case 'Expired':
+//       return 'Expired';
+//     case 'Drafted':
+//       return 'Cancelled'; 
+//     case 'Appeal_Requested':
+//       return 'Blocked'; 
+//     default:
+//       return 'Active'; 
+//   }
+// }
 
 export default function ListingInformationContainer({
-  listingId,
-  userRole,
+  listing,
+  userIsSharer,
   isAuthenticated,
-  reservationRequestStatus,
-  onReserveClick,
+  userReservationRequest,
   onLoginClick,
   onSignUpClick,
   className
 }: ListingInformationContainerProps) {
-  const { data, loading, error } = useQuery<ListingQueryResponse>(
-    GET_LISTING_INFORMATION,
+  const [reservationDates, setReservationDates] = useState<{
+    startDate: Date | null;
+    endDate: Date | null;
+  }>({
+    startDate: null,
+    endDate: null
+  });
+
+  const { data: otherReservationsData, loading: otherReservationsLoading, error: otherReservationsError } = useQuery<ViewListingQueryActiveByListingIdQuery, ViewListingQueryActiveByListingIdQueryVariables>(
+    ViewListingQueryActiveByListingIdDocument,
     {
-      variables: { listingId },
+      variables: { listingId: listing.id },
+      skip: !listing?.id,
+      fetchPolicy: 'cache-first',
     }
   );
 
-  if (loading) return <div>Loading...</div>;
-  if (error) return <div>Error loading listing information</div>;
-  if (!data?.itemListing) return <div>Listing not found</div>;
+  if (otherReservationsData) { console.log("Other reservations data:", otherReservationsData); }
+  
+  const { data: currentUserData } = useQuery<ViewListingCurrentUserQuery>(ViewListingCurrentUserDocument);
+  if (!currentUserData?.currentPersonalUserAndCreateIfNotExists) {console.log("Current user could not be created or not found:");}
 
-  // Map backend ItemListing to ListingInformationProps.listing shape
-  const mappedListing: ListingInformationProps['listing'] = {
-    id: data.itemListing.id,
-    title: data.itemListing.title,
-    description: data.itemListing.description,
-    category: data.itemListing.category,
-    location: data.itemListing.location,
-    status: mapListingStateToStatus(data.itemListing.state),
-    availableFrom: new Date(data.itemListing.sharingPeriodStart).toISOString().slice(0, 10),
-    availableTo: new Date(data.itemListing.sharingPeriodEnd).toISOString().slice(0, 10),
+  const client = useApolloClient();
+
+  const [createReservationRequestMutation, { loading: mutationLoading }] = useMutation(
+    HomeListingInformationCreateReservationRequestDocument,
+    {
+      onCompleted: () => {
+        client.refetchQueries({
+          include: [ViewListingActiveReservationRequestForListingDocument],
+        });
+        setReservationDates({ startDate: null, endDate: null });
+      },
+      onError: (error) => {
+        console.log(error.message || 'Failed to create reservation request');
+      },
+    }
+  );
+
+  const handleReserveClick = async () => {
+    if (!reservationDates.startDate || !reservationDates.endDate) {
+      message.warning('Please select both start and end dates for your reservation');
+      return;
+    }
+    try {
+      await createReservationRequestMutation({
+        variables: {
+          input: {
+            listingId: listing.id,
+            reservationPeriodStart: reservationDates.startDate.toISOString(),
+            reservationPeriodEnd: reservationDates.endDate.toISOString(),
+          } as CreateReservationRequestInput,
+        },
+      });
+    } catch (error) {
+      console.error('Error creating reservation request:', error);
+    }
   };
 
   return (
     <ListingInformation
-      listing={mappedListing}
-      userRole={userRole}
+      listing={listing}
+      userIsSharer={userIsSharer}
       isAuthenticated={isAuthenticated}
-      reservationRequestStatus={reservationRequestStatus}
-      onReserveClick={onReserveClick}
+      userReservationRequest={userReservationRequest}
+      onReserveClick={handleReserveClick}
       onLoginClick={onLoginClick}
       onSignUpClick={onSignUpClick}
       className={className}
+      reservationDates={reservationDates}
+      onReservationDatesChange={setReservationDates}
+      reservationLoading={mutationLoading}
+      otherReservationsLoading={otherReservationsLoading}
+      otherReservationsError={otherReservationsError}
+      otherReservations={otherReservationsData?.queryActiveByListingId}
     />
   );
 }

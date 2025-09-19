@@ -1,13 +1,11 @@
 import { Outlet, useNavigate } from "react-router-dom";
 import { Footer, Header } from "@sthrift/ui-sharethrift-components";
 import { useAuth } from "react-oidc-context";
-import type { PersonalUser } from "../../../generated.tsx";
 import { HandleLogoutMockForMockAuth } from "../../shared/handle-logout";
+import { useCreateListingNavigation } from "../home/components/create-listing/hooks/use-create-listing-navigation";
 
-interface SectionLayoutProps {
-  personalData?: PersonalUser
-}
-
+// biome-ignore lint/suspicious/noEmptyInterface: <explanation>
+interface SectionLayoutProps {}
 
 export const SectionLayout: React.FC<SectionLayoutProps> = (_props) => {
   const auth = useAuth();
@@ -21,9 +19,11 @@ export const SectionLayout: React.FC<SectionLayoutProps> = (_props) => {
     navigate("/auth-redirect");
   };
 
+  const handleCreateListing = useCreateListingNavigation();
+
   const handleLogOut = () => {
     HandleLogoutMockForMockAuth(auth);
-  }
+  };
 
   return (
     <div
@@ -35,7 +35,13 @@ export const SectionLayout: React.FC<SectionLayoutProps> = (_props) => {
         flexDirection: "column",
       }}
     >
-      <Header isAuthenticated={auth.isAuthenticated} onLogin={handleOnLogin} onSignUp={handleOnSignUp} onLogout={handleLogOut}/>
+      <Header
+        isAuthenticated={auth.isAuthenticated}
+        onLogin={handleOnLogin}
+        onSignUp={handleOnSignUp}
+        onLogout={handleLogOut}
+        onCreateListing={handleCreateListing}
+      />
       <div
         style={{
           display: "flex",

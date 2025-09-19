@@ -1,8 +1,9 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState } from "react";
 import { useAuth } from "react-oidc-context";
 import { Outlet, useLocation, useNavigate } from "react-router-dom";
 import { HandleLogoutMockForMockAuth } from "../../shared/handle-logout";
 import { Footer, Header, Navigation } from "@sthrift/ui-sharethrift-components";
+import { useCreateListingNavigation } from "./components/create-listing/hooks/use-create-listing-navigation";
 
 export default function HomeTabsLayout() {
   const navigate = useNavigate();
@@ -25,8 +26,12 @@ export default function HomeTabsLayout() {
     // Account subroutes
     if (path.startsWith("account/")) {
       const subPath = path.replace("account/", "");
-      if (subPath.startsWith("profile")) return "profile";
-      if (subPath.startsWith("settings")) return "settings";
+      if (subPath.startsWith("profile")) {
+        return "profile";
+      }
+      if (subPath.startsWith("settings")) {
+        return "settings";
+      }
       // Add more subroutes as needed
       return undefined; // nothing highlighted if not a known subroute
     }
@@ -46,12 +51,14 @@ export default function HomeTabsLayout() {
       navigate(`/${key}`);
       return;
     }
-    if (key === 'messages') {
-      navigate('/messages');
+    if (key === "messages") {
+      navigate("/messages");
       return;
     }
     const route = routeMap[key];
-    if (route) navigate(`/${route}`);
+    if (route) {
+      navigate(`/${route}`);
+    }
   };
   // Responsive margin for main content: no margin if sidebar is hidden (logged out), else responsive
   const [mainMargin, setMainMargin] = useState(auth.isAuthenticated ? 240 : 0);
@@ -64,10 +71,9 @@ export default function HomeTabsLayout() {
       }
     };
     handleResize();
-    window.addEventListener('resize', handleResize);
-    return () => window.removeEventListener('resize', handleResize);
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
   }, [auth.isAuthenticated]);
-
 
   const handleOnLogin = () => {
     navigate("/auth-redirect");
@@ -77,16 +83,40 @@ export default function HomeTabsLayout() {
     navigate("/auth-redirect");
   };
 
+  const handleCreateListing = useCreateListingNavigation();
+
   const handleLogOut = () => {
     HandleLogoutMockForMockAuth(auth);
   };
-  
+
   return (
-    <div style={{ minHeight: '100vh', width: '100vw', overflowX: 'hidden', display: 'flex', flexDirection: 'column' }}>
-      <Header isAuthenticated={auth.isAuthenticated} onLogin={handleOnLogin} onSignUp={handleOnSignUp} />
-      <div style={{ display: 'flex', flexDirection: 'row', flex: 1, height: '100vh', paddingTop: 64 }}>
+    <div
+      style={{
+        minHeight: "100vh",
+        width: "100vw",
+        overflowX: "hidden",
+        display: "flex",
+        flexDirection: "column",
+      }}
+    >
+      <Header
+        isAuthenticated={auth.isAuthenticated}
+        onLogin={handleOnLogin}
+        onLogout={handleLogOut}
+        onSignUp={handleOnSignUp}
+        onCreateListing={handleCreateListing}
+      />
+      <div
+        style={{
+          display: "flex",
+          flexDirection: "row",
+          flex: 1,
+          height: "100vh",
+          paddingTop: 64,
+        }}
+      >
         <Navigation isAuthenticated={auth.isAuthenticated} onNavigate={handleNavigate} onLogout={handleLogOut} selectedKey={getSelectedKey()} />
-        <main style={{ marginLeft: mainMargin, width: '100%' }}>
+        <main style={{ marginLeft: mainMargin, width: "100%" }}>
           <Outlet />
         </main>
       </div>
@@ -94,4 +124,3 @@ export default function HomeTabsLayout() {
     </div>
   );
 }
-

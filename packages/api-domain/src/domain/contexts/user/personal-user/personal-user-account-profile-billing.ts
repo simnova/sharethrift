@@ -27,13 +27,24 @@ export class PersonalUserAccountProfileBilling
 	get cybersourceCustomerId(): string | null {
 		return this.props.cybersourceCustomerId;
 	}
+	get lastTransactionId(): string | undefined {
+		return this.props.lastTransactionId;
+	}
+	get paymentState(): string | undefined {
+		return this.props.paymentState;
+	}
+	get lastPaymentAmount(): number | undefined {
+		return this.props.lastPaymentAmount;
+	}
 
 	private validateVisa(): void {
 		if (
 			!this.root.isNew &&
-			!this.visa.determineIf((permissions) => permissions.canEditUserProfile)
+			!this.visa.determineIf((permissions) => permissions.isEditingOwnAccount)
 		) {
-			throw new DomainSeedwork.PermissionError('Cannot set email');
+			throw new DomainSeedwork.PermissionError(
+				'Unauthorized to set billing info',
+			);
 		}
 	}
 
@@ -44,5 +55,17 @@ export class PersonalUserAccountProfileBilling
 	set cybersourceCustomerId(value: string) {
 		this.validateVisa();
 		this.props.cybersourceCustomerId = value;
+	}
+	set lastTransactionId(value: string) {
+		this.validateVisa();
+		this.props.lastTransactionId = value;
+	}
+	set paymentState(value: string) {
+		this.validateVisa();
+		this.props.paymentState = value;
+	}
+	set lastPaymentAmount(value: number) {
+		this.validateVisa();
+		this.props.lastPaymentAmount = value;
 	}
 }

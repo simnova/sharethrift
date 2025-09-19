@@ -1,7 +1,19 @@
+#graphql
+"""
+GraphQL schema for Personal Users
+"""
+enum PaymentState {
+	PENDING
+	SUCCEEDED
+	FAILED
+	REFUNDED
+}
+
 type PersonalUser implements MongoBase {
 	userType: String
 	isBlocked: Boolean
 	account: PersonalUserAccount
+
 	id: ObjectID!
 	schemaVersion: String
 	createdAt: DateTime
@@ -34,50 +46,19 @@ type PersonalUserAccountProfileLocation {
 type PersonalUserAccountProfileBilling {
 	subscriptionId: String
 	cybersourceCustomerId: String
-}
-
-input PersonalUserCreateInput {
-	userType: String
-	account: PersonalUserAccountInput
-}
-
-input PersonalUserAccountInput {
-	accountType: String
-	email: String
-	username: String
-	profile: PersonalUserAccountProfileInput
-}
-
-input PersonalUserAccountProfileInput {
-	firstName: String
-	lastName: String
-	location: PersonalUserAccountProfileLocationInput
-	billing: PersonalUserAccountProfileBillingInput
-}
-
-input PersonalUserAccountProfileLocationInput {
-	address1: String!
-	address2: String
-	city: String!
-	state: String!
-	country: String!
-	zipCode: String!
-}
-
-input PersonalUserAccountProfileBillingInput {
-	subscriptionId: String
-	cybersourceCustomerId: String
+	lastTransactionId: String
+	paymentState: PaymentState
+	lastPaymentAmount: Float
 }
 
 input PersonalUserUpdateInput {
-	userType: String
+	id: ObjectID!
 	isBlocked: Boolean
 	account: PersonalUserAccountUpdateInput
 }
 
 input PersonalUserAccountUpdateInput {
 	accountType: String
-	email: String
 	username: String
 	profile: PersonalUserAccountProfileUpdateInput
 }
@@ -101,6 +82,9 @@ input PersonalUserAccountProfileLocationUpdateInput {
 input PersonalUserAccountProfileBillingUpdateInput {
 	subscriptionId: String
 	cybersourceCustomerId: String
+	lastTransactionId: String
+	paymentState: PaymentState
+	lastPaymentAmount: Float
 }
 
 extend type Query {
@@ -109,7 +93,95 @@ extend type Query {
 	currentPersonalUserAndCreateIfNotExists: PersonalUser!
 }
 
-# type Mutation {
-#   # Personal User mutations
-#   personalUserUpdate(id: ObjectID!, input: PersonalUserUpdateInput!): PersonalUser!
-# }
+# Payment related input/output types
+input PaymentAmountDetails {
+	totalAmount: Float!
+	currency: String!
+}
+
+input PaymentBillTo {
+	firstName: String!
+	lastName: String!
+	address1: String!
+	address2: String
+	city: String!
+	state: String!
+	postalCode: String!
+	country: String!
+	phoneNumber: String
+	email: String
+}
+
+input PaymentCard {
+	number: String!
+	expirationMonth: String!
+	expirationYear: String!
+	securityCode: String!
+}
+
+input PaymentOrderInformation {
+	amountDetails: PaymentAmountDetails!
+	billTo: PaymentBillTo!
+}
+
+input PaymentCardInformation {
+	card: PaymentCard!
+}
+
+input PaymentRequest {
+	userId: ObjectID!
+	orderInformation: PaymentOrderInformation!
+	paymentInformation: PaymentCardInformation!
+}
+
+type PaymentErrorInformation {
+	reason: String
+	message: String
+}
+
+type PaymentResponseAmountDetails {
+	totalAmount: String
+	currency: String
+}
+
+type PaymentResponseOrderInformation {
+	amountDetails: PaymentResponseAmountDetails
+}
+
+type PaymentResponse {
+	id: String
+	status: String!
+	success: Boolean
+	message: String
+	errorInformation: PaymentErrorInformation
+	orderInformation: PaymentResponseOrderInformation
+}
+
+input RefundOrderInformation {
+	amountDetails: PaymentAmountDetails!
+}
+
+input RefundRequest {
+	userId: ObjectID!
+	transactionId: String!
+	amount: Float
+	orderInformation: RefundOrderInformation!
+}
+
+type RefundResponse {
+	id: String
+	status: String!
+	success: Boolean
+	message: String
+	errorInformation: PaymentErrorInformation
+	orderInformation: PaymentResponseOrderInformation
+}
+
+extend type Mutation {
+	# Personal User mutations
+	personalUserUpdate(input: PersonalUserUpdateInput!): PersonalUser!
+
+	# Payment mutations
+	processPayment(request: PaymentRequest!): PaymentResponse!
+	refundPayment(request: RefundRequest!): RefundResponse!
+}

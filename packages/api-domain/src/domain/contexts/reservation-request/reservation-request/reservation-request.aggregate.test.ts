@@ -12,41 +12,6 @@ import type { Passport } from '../../passport.ts';
 import type { PersonalUserRoleEntityReference } from '../../role/personal-user-role/personal-user-role.entity.ts';
 import { PersonalUserRolePermissions } from '../../role/personal-user-role/personal-user-role-permissions.ts';
 // Minimal test-only mocks for missing domain value objects
-class PersonalUserAccountProfileLocation {
-	readonly address1: string;
-	readonly address2: string | null;
-	readonly city: string;
-	readonly state: string;
-	readonly country: string;
-	readonly zipCode: string;
-	constructor(props: {
-		address1: string;
-		address2: string | null;
-		city: string;
-		state: string;
-		country: string;
-		zipCode: string;
-	}) {
-		this.address1 = props.address1;
-		this.address2 = props.address2;
-		this.city = props.city;
-		this.state = props.state;
-		this.country = props.country;
-		this.zipCode = props.zipCode;
-	}
-}
-
-class PersonalUserAccountProfileBilling {
-	readonly subscriptionId: string;
-	readonly cybersourceCustomerId: string;
-	constructor(props: {
-		subscriptionId: string;
-		cybersourceCustomerId: string;
-	}) {
-		this.subscriptionId = props.subscriptionId;
-		this.cybersourceCustomerId = props.cybersourceCustomerId;
-	}
-}
 
 describe('ReservationRequest', () => {
 	const mockPassport: Passport = {
@@ -143,22 +108,26 @@ describe('ReservationRequest', () => {
 				profile: {
 					firstName: 'Mock',
 					lastName: 'User',
-					location: new PersonalUserAccountProfileLocation({
+					location: {
 						address1: '123 Main St',
 						address2: null,
 						city: 'Springfield',
 						state: 'IL',
 						country: 'USA',
 						zipCode: '62704',
-					}),
-					billing: new PersonalUserAccountProfileBilling({
+					},
+					billing: {
 						subscriptionId: 'sub-123',
 						cybersourceCustomerId: 'cyber-456',
-					}),
+						paymentState: 'active',
+						lastPaymentAmount: 49.99,
+						lastTransactionId: 'txn-789',
+					},
 				},
 			},
 			createdAt: new Date(),
 			updatedAt: new Date(),
+			hasCompletedOnboarding: true,
 			role: mockRole,
 			loadRole: async () => mockRole,
 		};

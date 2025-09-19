@@ -19,6 +19,7 @@
   --color-action-foreground: #3F5F76;
   --color-action-disabled: #608BA9;
   --color-message-transparent: rgba(51, 51, 51, 0.6);
+  --color-message-transparent-2: rgba(51, 51, 51, 0.4);
   --Urbanist: 'Urbanist', sans-serif;
   --Instrument-Serif: 'Instrument Serif', serif;
 }
@@ -86,8 +87,13 @@ p, .authButton, .primaryButton, .secondaryButton, .ant-tabs, .ant-form-item-labe
   color: var(--color-message-text);
 }
 
-
-
+.label{
+  font-family: var(--Urbanist);
+  font-weight: 400;
+  font-size: 12px;
+  line-height: 20px;
+  color: var(--color-message-transparent-2);
+}
 
 
 /* --- Ant Design Button Theming (Restored Custom Styles, Scoped/Variable) --- */
@@ -270,15 +276,20 @@ p, .authButton, .primaryButton, .secondaryButton, .ant-tabs, .ant-form-item-labe
   color: #F5222D;
   border: 1px solid #FFA39E;
 }
-.pendingTag {
+.pausedTag, .pendingTag {
   background: #FFF7E6;
   color: #FA8C16;
   border: 1px solid #FFD591;
 }
-.closingTag {
+.closingTag, .reservedTag {
   background: #F0F5FF;
   color: #2F54EB;
   border: 1px solid #ADC6FF;
+}
+.blockedTag {
+  background: #F9F0FF;
+  color: #722ED1;
+  border: 1px solid #D3ADF7;
 }
 
 .requestSubmitted, .reserver, .sharer, .sharerIcon, .reserverIcon, .personalAccount {
@@ -430,4 +441,23 @@ p, .authButton, .primaryButton, .secondaryButton, .ant-tabs, .ant-form-item-labe
   outline: none !important;
   box-shadow: none !important;
   border-color: var(--color-secondary) !important;
+}
+
+/* Pagination formatting */
+.ant-pagination * {
+  color: var(--color-primary) !important;
+  background-color: transparent !important;
+  font-family: var(--Urbanist) !important;
+  font-weight: 600;
+  height: 30px !important;
+}
+.ant-pagination > * {
+  margin: 0 !important;
+}
+.ant-pagination-item {
+  border: none !important;
+}
+.ant-pagination-item-active {
+  box-shadow: inset 0 0 0 1.5px var(--color-primary) !important;
+  border: none !important;
 }

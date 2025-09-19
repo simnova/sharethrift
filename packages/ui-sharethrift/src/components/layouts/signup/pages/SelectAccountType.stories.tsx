@@ -1,10 +1,10 @@
 import type { Meta, StoryObj } from '@storybook/react';
-import SelectAccountType from './SelectAccountType';
+import SignupSelectAccountType from './signup-select-account-type.tsx';
 import { BrowserRouter } from 'react-router-dom';
 
-const meta: Meta<typeof SelectAccountType> = {
-  title: 'Signup/SelectAccountType',
-  component: SelectAccountType,
+const meta: Meta<typeof SignupSelectAccountType> = {
+  title: 'Signup/SignupSelectAccountType',
+  component: SignupSelectAccountType,
   parameters: {
     layout: 'fullscreen',
   },

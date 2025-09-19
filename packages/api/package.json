@@ -31,7 +31,8 @@
 		"@sthrift/service-mongoose": "^1.0.0",
         "@sthrift/service-twilio": "^1.0.0",
 		"@sthrift/service-otel": "^1.0.0",
-		"@sthrift/service-token-validation": "^1.0.0"
+		"@sthrift/service-token-validation": "^1.0.0",
+        "@sthrift/service-cybersource": "^1.0.0"
 	},
 	"dependencies": {
 		"@azure/functions": "^4.0.0",

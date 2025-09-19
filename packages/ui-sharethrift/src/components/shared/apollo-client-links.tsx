@@ -17,7 +17,7 @@ export const BaseApolloLink = (): ApolloLink =>
   });
 
 // apollo link to add auth header
-export const ApolloLinkToAddAuthHeader = (access_token: string | undefined): ApolloLink =>
+export const ApolloLinkToAddAuthHeaderIfAccessTokenAvailable = (access_token: string | undefined): ApolloLink =>
   setContext((_, { headers }) => {
     return {
       headers: {
