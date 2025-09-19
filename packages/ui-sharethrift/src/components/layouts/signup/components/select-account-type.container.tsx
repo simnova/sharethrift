@@ -15,22 +15,20 @@ export default function SelectAccountTypeContainer() {
     data: currentUserData,
     loading: loadingUser,
     error: userError,
-  } = useQuery(
-    SignupSelectAccountTypeCurrentPersonalUserAndCreateIfNotExistsDocument
-  );
+  } = useQuery(SignupSelectAccountTypeCurrentPersonalUserAndCreateIfNotExistsDocument);
 
-  const [
-    updateAccountType,
-    { loading: savingAccountType, error: updateError },
-  ] = useMutation(SignupSelectAccountTypePersonalUserUpdateDocument);
+  const [updateAccountType, { loading: savingAccountType, error: updateError }] = useMutation(SignupSelectAccountTypePersonalUserUpdateDocument);
 
   const handleUpdateAccountType = useCallback(
     async (accountType: string) => {
-      if (savingAccountType) {return};
+      if (savingAccountType) {
+        return;
+      }
       try {
-        const userId =
-          currentUserData?.currentPersonalUserAndCreateIfNotExists?.id;
-        if (!userId) {return};
+        const userId = currentUserData?.currentPersonalUserAndCreateIfNotExists?.id;
+        if (!userId) {
+          return;
+        }
         const result = await updateAccountType({
           variables: {
             input: {
@@ -40,8 +38,7 @@ export default function SelectAccountTypeContainer() {
           },
           refetchQueries: [
             {
-              query:
-                SignupSelectAccountTypeCurrentPersonalUserAndCreateIfNotExistsDocument,
+              query: SignupSelectAccountTypeCurrentPersonalUserAndCreateIfNotExistsDocument,
             },
           ],
         });
@@ -57,7 +54,7 @@ export default function SelectAccountTypeContainer() {
     [currentUserData, updateAccountType, navigate, savingAccountType]
   );
 
-  const errorMessage = userError || updateError
+  const errorMessage = userError || updateError;
 
   return (
     <ComponentQueryLoader
@@ -66,9 +63,7 @@ export default function SelectAccountTypeContainer() {
       error={errorMessage}
       hasDataComponent={
         <SelectAccountType
-          currentUserData={
-            currentUserData?.currentPersonalUserAndCreateIfNotExists
-          }
+          currentUserData={currentUserData?.currentPersonalUserAndCreateIfNotExists}
           loadingUser={loadingUser}
           handleUpdateAccountType={handleUpdateAccountType}
           savingAccountType={savingAccountType}
