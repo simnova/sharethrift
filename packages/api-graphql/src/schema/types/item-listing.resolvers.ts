@@ -141,9 +141,9 @@ const itemListingResolvers = {
 
 			// Find the user by email to get their database ID
 			const user =
-				await context.applicationServices.User.PersonalUser.getByEmail(
-					userEmail,
-				);
+				await context.applicationServices.User.PersonalUser.queryByEmail({
+					email: userEmail,
+				});
 			if (!user) {
 				throw new Error(`User not found for email ${userEmail}`);
 			}

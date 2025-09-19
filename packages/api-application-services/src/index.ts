@@ -4,10 +4,14 @@ import {
 	User,
 	type UserContextApplicationService,
 } from './contexts/user/index.ts';
-import {
-	ReservationRequest,
-	type ReservationRequestContextApplicationService,
+import type { PaymentApplicationService } from './payment-application-service.js';
+import { DefaultPaymentApplicationService } from './payment-application-service.js';
+
+import { 
+    ReservationRequest, 
+    type ReservationRequestContextApplicationService 
 } from './contexts/reservation-request/index.ts';
+
 import {
 	Listing,
 	type ListingContextApplicationService,
@@ -17,6 +21,7 @@ export interface ApplicationServices {
 	ReservationRequest: ReservationRequestContextApplicationService;
 	Listing: ListingContextApplicationService;
 	get verifiedUser(): VerifiedUser | null;
+	Payment: PaymentApplicationService;
 }
 
 export interface VerifiedJwt {
@@ -51,6 +56,10 @@ export type ApplicationServicesFactory = AppServicesHost<ApplicationServices>;
 export const buildApplicationServicesFactory = (
 	infrastructureServicesRegistry: ApiContextSpec,
 ): ApplicationServicesFactory => {
+	const paymentApplicationService = new DefaultPaymentApplicationService(
+		infrastructureServicesRegistry.paymentService,
+	);
+
 	const forRequest = async (
 		rawAuthHeader?: string,
 		hints?: PrincipalHints,
@@ -74,7 +83,7 @@ export const buildApplicationServicesFactory = (
 
 				if (personalUser) {
 					console.log(passport);
-					passport = Domain.PassportFactory.forSystem(); // temporary create system passport, change to forPersonalUser when it is ready
+					passport = Domain.PassportFactory.forPersonalUser(personalUser);
 				}
 			}
 		}
@@ -87,6 +96,7 @@ export const buildApplicationServicesFactory = (
 			get verifiedUser(): VerifiedUser | null {
 				return { ...tokenValidationResult, hints: hints };
 			},
+			Payment: paymentApplicationService,
 			ReservationRequest: ReservationRequest(dataSources),
 			Listing: Listing(dataSources),
 		};
@@ -96,3 +106,5 @@ export const buildApplicationServicesFactory = (
 		forRequest,
 	};
 };
+
+export type { PersonalUserUpdateCommand } from './contexts/user/personal-user/update.ts';

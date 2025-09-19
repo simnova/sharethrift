@@ -122,14 +122,14 @@ export type CloseReservationInput = {
 /** GraphQL schema for Conversations */
 export type Conversation = MongoBase & {
   __typename?: "Conversation";
-  createdAt: Scalars["DateTime"]["output"];
+  createdAt?: Maybe<Scalars["DateTime"]["output"]>;
   id: Scalars["ObjectID"]["output"];
-  listing: Listing;
-  reserver: User;
-  schemaVersion: Scalars["String"]["output"];
-  sharer: User;
-  twilioConversationId: Scalars["String"]["output"];
-  updatedAt: Scalars["DateTime"]["output"];
+  listing?: Maybe<Listing>;
+  reserver?: Maybe<User>;
+  schemaVersion?: Maybe<Scalars["String"]["output"]>;
+  sharer?: Maybe<User>;
+  twilioConversationId?: Maybe<Scalars["String"]["output"]>;
+  updatedAt?: Maybe<Scalars["DateTime"]["output"]>;
 };
 
 export type CreateItemListingInput = {
@@ -242,6 +242,9 @@ export type Mutation = {
   closeReservation: ReservationRequest;
   createItemListing: ItemListing;
   createReservationRequest: ReservationRequest;
+  personalUserUpdate: PersonalUser;
+  processPayment: PaymentResponse;
+  refundPayment: RefundResponse;
 };
 
 /**  Base Mutation Type definition - all mutations will be defined in separate files extending this type  */
@@ -264,6 +267,21 @@ export type MutationCreateReservationRequestArgs = {
   input: CreateReservationRequestInput;
 };
 
+/**  Base Mutation Type definition - all mutations will be defined in separate files extending this type  */
+export type MutationPersonalUserUpdateArgs = {
+  input: PersonalUserUpdateInput;
+};
+
+/**  Base Mutation Type definition - all mutations will be defined in separate files extending this type  */
+export type MutationProcessPaymentArgs = {
+  request: PaymentRequest;
+};
+
+/**  Base Mutation Type definition - all mutations will be defined in separate files extending this type  */
+export type MutationRefundPaymentArgs = {
+  request: RefundRequest;
+};
+
 export type MutationResult = {
   status: MutationStatus;
 };
@@ -274,7 +292,76 @@ export type MutationStatus = {
   success: Scalars["Boolean"]["output"];
 };
 
+export type PaymentAmountDetails = {
+  currency: Scalars["String"]["input"];
+  totalAmount: Scalars["Float"]["input"];
+};
+
+export type PaymentBillTo = {
+  address1: Scalars["String"]["input"];
+  address2?: InputMaybe<Scalars["String"]["input"]>;
+  city: Scalars["String"]["input"];
+  country: Scalars["String"]["input"];
+  email?: InputMaybe<Scalars["String"]["input"]>;
+  firstName: Scalars["String"]["input"];
+  lastName: Scalars["String"]["input"];
+  phoneNumber?: InputMaybe<Scalars["String"]["input"]>;
+  postalCode: Scalars["String"]["input"];
+  state: Scalars["String"]["input"];
+};
+
+export type PaymentCard = {
+  expirationMonth: Scalars["String"]["input"];
+  expirationYear: Scalars["String"]["input"];
+  number: Scalars["String"]["input"];
+  securityCode: Scalars["String"]["input"];
+};
+
+export type PaymentCardInformation = {
+  card: PaymentCard;
+};
+
+export type PaymentErrorInformation = {
+  __typename?: "PaymentErrorInformation";
+  message?: Maybe<Scalars["String"]["output"]>;
+  reason?: Maybe<Scalars["String"]["output"]>;
+};
+
+export type PaymentOrderInformation = {
+  amountDetails: PaymentAmountDetails;
+  billTo: PaymentBillTo;
+};
+
+export type PaymentRequest = {
+  orderInformation: PaymentOrderInformation;
+  paymentInformation: PaymentCardInformation;
+  userId: Scalars["ObjectID"]["input"];
+};
+
+export type PaymentResponse = {
+  __typename?: "PaymentResponse";
+  errorInformation?: Maybe<PaymentErrorInformation>;
+  id?: Maybe<Scalars["String"]["output"]>;
+  message?: Maybe<Scalars["String"]["output"]>;
+  orderInformation?: Maybe<PaymentResponseOrderInformation>;
+  status: Scalars["String"]["output"];
+  success?: Maybe<Scalars["Boolean"]["output"]>;
+};
+
+export type PaymentResponseAmountDetails = {
+  __typename?: "PaymentResponseAmountDetails";
+  currency?: Maybe<Scalars["String"]["output"]>;
+  totalAmount?: Maybe<Scalars["String"]["output"]>;
+};
+
+export type PaymentResponseOrderInformation = {
+  __typename?: "PaymentResponseOrderInformation";
+  amountDetails?: Maybe<PaymentResponseAmountDetails>;
+};
+
 /** GraphQL schema for Personal Users */
+export type PaymentState = "FAILED" | "PENDING" | "REFUNDED" | "SUCCEEDED";
+
 export type PersonalUser = MongoBase & {
   __typename?: "PersonalUser";
   account?: Maybe<PersonalUserAccount>;
@@ -294,13 +381,6 @@ export type PersonalUserAccount = {
   username?: Maybe<Scalars["String"]["output"]>;
 };
 
-export type PersonalUserAccountInput = {
-  accountType?: InputMaybe<Scalars["String"]["input"]>;
-  email?: InputMaybe<Scalars["String"]["input"]>;
-  profile?: InputMaybe<PersonalUserAccountProfileInput>;
-  username?: InputMaybe<Scalars["String"]["input"]>;
-};
-
 export type PersonalUserAccountProfile = {
   __typename?: "PersonalUserAccountProfile";
   billing?: Maybe<PersonalUserAccountProfileBilling>;
@@ -312,24 +392,18 @@ export type PersonalUserAccountProfile = {
 export type PersonalUserAccountProfileBilling = {
   __typename?: "PersonalUserAccountProfileBilling";
   cybersourceCustomerId?: Maybe<Scalars["String"]["output"]>;
+  lastPaymentAmount?: Maybe<Scalars["Float"]["output"]>;
+  lastTransactionId?: Maybe<Scalars["String"]["output"]>;
+  paymentState?: Maybe<PaymentState>;
   subscriptionId?: Maybe<Scalars["String"]["output"]>;
-};
-
-export type PersonalUserAccountProfileBillingInput = {
-  cybersourceCustomerId?: InputMaybe<Scalars["String"]["input"]>;
-  subscriptionId?: InputMaybe<Scalars["String"]["input"]>;
 };
 
 export type PersonalUserAccountProfileBillingUpdateInput = {
   cybersourceCustomerId?: InputMaybe<Scalars["String"]["input"]>;
+  lastPaymentAmount?: InputMaybe<Scalars["Float"]["input"]>;
+  lastTransactionId?: InputMaybe<Scalars["String"]["input"]>;
+  paymentState?: InputMaybe<PaymentState>;
   subscriptionId?: InputMaybe<Scalars["String"]["input"]>;
-};
-
-export type PersonalUserAccountProfileInput = {
-  billing?: InputMaybe<PersonalUserAccountProfileBillingInput>;
-  firstName?: InputMaybe<Scalars["String"]["input"]>;
-  lastName?: InputMaybe<Scalars["String"]["input"]>;
-  location?: InputMaybe<PersonalUserAccountProfileLocationInput>;
 };
 
 export type PersonalUserAccountProfileLocation = {
@@ -340,15 +414,6 @@ export type PersonalUserAccountProfileLocation = {
   country?: Maybe<Scalars["String"]["output"]>;
   state?: Maybe<Scalars["String"]["output"]>;
   zipCode?: Maybe<Scalars["String"]["output"]>;
-};
-
-export type PersonalUserAccountProfileLocationInput = {
-  address1: Scalars["String"]["input"];
-  address2?: InputMaybe<Scalars["String"]["input"]>;
-  city: Scalars["String"]["input"];
-  country: Scalars["String"]["input"];
-  state: Scalars["String"]["input"];
-  zipCode: Scalars["String"]["input"];
 };
 
 export type PersonalUserAccountProfileLocationUpdateInput = {
@@ -369,20 +434,14 @@ export type PersonalUserAccountProfileUpdateInput = {
 
 export type PersonalUserAccountUpdateInput = {
   accountType?: InputMaybe<Scalars["String"]["input"]>;
-  email?: InputMaybe<Scalars["String"]["input"]>;
   profile?: InputMaybe<PersonalUserAccountProfileUpdateInput>;
   username?: InputMaybe<Scalars["String"]["input"]>;
 };
 
-export type PersonalUserCreateInput = {
-  account?: InputMaybe<PersonalUserAccountInput>;
-  userType?: InputMaybe<Scalars["String"]["input"]>;
-};
-
 export type PersonalUserUpdateInput = {
   account?: InputMaybe<PersonalUserAccountUpdateInput>;
+  id: Scalars["ObjectID"]["input"];
   isBlocked?: InputMaybe<Scalars["Boolean"]["input"]>;
-  userType?: InputMaybe<Scalars["String"]["input"]>;
 };
 
 /**  Base Query Type definition - , all mutations will be defined in separate files extending this type  */
@@ -464,6 +523,27 @@ export type QueryPersonalUserByIdArgs = {
 /**  Base Query Type definition - , all mutations will be defined in separate files extending this type  */
 export type QueryQueryActiveByListingIdArgs = {
   listingId: Scalars["ObjectID"]["input"];
+};
+
+export type RefundOrderInformation = {
+  amountDetails: PaymentAmountDetails;
+};
+
+export type RefundRequest = {
+  amount?: InputMaybe<Scalars["Float"]["input"]>;
+  orderInformation: RefundOrderInformation;
+  transactionId: Scalars["String"]["input"];
+  userId: Scalars["ObjectID"]["input"];
+};
+
+export type RefundResponse = {
+  __typename?: "RefundResponse";
+  errorInformation?: Maybe<PaymentErrorInformation>;
+  id?: Maybe<Scalars["String"]["output"]>;
+  message?: Maybe<Scalars["String"]["output"]>;
+  orderInformation?: Maybe<PaymentResponseOrderInformation>;
+  status: Scalars["String"]["output"];
+  success?: Maybe<Scalars["Boolean"]["output"]>;
 };
 
 export type ReservationRequest = {
@@ -601,6 +681,7 @@ export type ResolversTypes = ResolversObject<{
   DeweyDecimal: ResolverTypeWrapper<Scalars["DeweyDecimal"]["output"]>;
   Duration: ResolverTypeWrapper<Scalars["Duration"]["output"]>;
   EmailAddress: ResolverTypeWrapper<Scalars["EmailAddress"]["output"]>;
+  Float: ResolverTypeWrapper<Scalars["Float"]["output"]>;
   GUID: ResolverTypeWrapper<Scalars["GUID"]["output"]>;
   GeoJSON: ResolverTypeWrapper<Scalars["GeoJSON"]["output"]>;
   HSL: ResolverTypeWrapper<Scalars["HSL"]["output"]>;
@@ -649,20 +730,26 @@ export type ResolversTypes = ResolversObject<{
   NonPositiveFloat: ResolverTypeWrapper<Scalars["NonPositiveFloat"]["output"]>;
   NonPositiveInt: ResolverTypeWrapper<Scalars["NonPositiveInt"]["output"]>;
   ObjectID: ResolverTypeWrapper<Scalars["ObjectID"]["output"]>;
+  PaymentAmountDetails: PaymentAmountDetails;
+  PaymentBillTo: PaymentBillTo;
+  PaymentCard: PaymentCard;
+  PaymentCardInformation: PaymentCardInformation;
+  PaymentErrorInformation: ResolverTypeWrapper<PaymentErrorInformation>;
+  PaymentOrderInformation: PaymentOrderInformation;
+  PaymentRequest: PaymentRequest;
+  PaymentResponse: ResolverTypeWrapper<PaymentResponse>;
+  PaymentResponseAmountDetails: ResolverTypeWrapper<PaymentResponseAmountDetails>;
+  PaymentResponseOrderInformation: ResolverTypeWrapper<PaymentResponseOrderInformation>;
+  PaymentState: PaymentState;
   PersonalUser: ResolverTypeWrapper<PersonalUser>;
   PersonalUserAccount: ResolverTypeWrapper<PersonalUserAccount>;
-  PersonalUserAccountInput: PersonalUserAccountInput;
   PersonalUserAccountProfile: ResolverTypeWrapper<PersonalUserAccountProfile>;
   PersonalUserAccountProfileBilling: ResolverTypeWrapper<PersonalUserAccountProfileBilling>;
-  PersonalUserAccountProfileBillingInput: PersonalUserAccountProfileBillingInput;
   PersonalUserAccountProfileBillingUpdateInput: PersonalUserAccountProfileBillingUpdateInput;
-  PersonalUserAccountProfileInput: PersonalUserAccountProfileInput;
   PersonalUserAccountProfileLocation: ResolverTypeWrapper<PersonalUserAccountProfileLocation>;
-  PersonalUserAccountProfileLocationInput: PersonalUserAccountProfileLocationInput;
   PersonalUserAccountProfileLocationUpdateInput: PersonalUserAccountProfileLocationUpdateInput;
   PersonalUserAccountProfileUpdateInput: PersonalUserAccountProfileUpdateInput;
   PersonalUserAccountUpdateInput: PersonalUserAccountUpdateInput;
-  PersonalUserCreateInput: PersonalUserCreateInput;
   PersonalUserUpdateInput: PersonalUserUpdateInput;
   PhoneNumber: ResolverTypeWrapper<Scalars["PhoneNumber"]["output"]>;
   Port: ResolverTypeWrapper<Scalars["Port"]["output"]>;
@@ -672,6 +759,9 @@ export type ResolversTypes = ResolversObject<{
   Query: ResolverTypeWrapper<{}>;
   RGB: ResolverTypeWrapper<Scalars["RGB"]["output"]>;
   RGBA: ResolverTypeWrapper<Scalars["RGBA"]["output"]>;
+  RefundOrderInformation: RefundOrderInformation;
+  RefundRequest: RefundRequest;
+  RefundResponse: ResolverTypeWrapper<RefundResponse>;
   ReservationRequest: ResolverTypeWrapper<ReservationRequest>;
   ReservationRequestMutationResult: ResolverTypeWrapper<ReservationRequestMutationResult>;
   ReservationRequestState: ReservationRequestState;
@@ -719,6 +809,7 @@ export type ResolversParentTypes = ResolversObject<{
   DeweyDecimal: Scalars["DeweyDecimal"]["output"];
   Duration: Scalars["Duration"]["output"];
   EmailAddress: Scalars["EmailAddress"]["output"];
+  Float: Scalars["Float"]["output"];
   GUID: Scalars["GUID"]["output"];
   GeoJSON: Scalars["GeoJSON"]["output"];
   HSL: Scalars["HSL"]["output"];
@@ -766,20 +857,25 @@ export type ResolversParentTypes = ResolversObject<{
   NonPositiveFloat: Scalars["NonPositiveFloat"]["output"];
   NonPositiveInt: Scalars["NonPositiveInt"]["output"];
   ObjectID: Scalars["ObjectID"]["output"];
+  PaymentAmountDetails: PaymentAmountDetails;
+  PaymentBillTo: PaymentBillTo;
+  PaymentCard: PaymentCard;
+  PaymentCardInformation: PaymentCardInformation;
+  PaymentErrorInformation: PaymentErrorInformation;
+  PaymentOrderInformation: PaymentOrderInformation;
+  PaymentRequest: PaymentRequest;
+  PaymentResponse: PaymentResponse;
+  PaymentResponseAmountDetails: PaymentResponseAmountDetails;
+  PaymentResponseOrderInformation: PaymentResponseOrderInformation;
   PersonalUser: PersonalUser;
   PersonalUserAccount: PersonalUserAccount;
-  PersonalUserAccountInput: PersonalUserAccountInput;
   PersonalUserAccountProfile: PersonalUserAccountProfile;
   PersonalUserAccountProfileBilling: PersonalUserAccountProfileBilling;
-  PersonalUserAccountProfileBillingInput: PersonalUserAccountProfileBillingInput;
   PersonalUserAccountProfileBillingUpdateInput: PersonalUserAccountProfileBillingUpdateInput;
-  PersonalUserAccountProfileInput: PersonalUserAccountProfileInput;
   PersonalUserAccountProfileLocation: PersonalUserAccountProfileLocation;
-  PersonalUserAccountProfileLocationInput: PersonalUserAccountProfileLocationInput;
   PersonalUserAccountProfileLocationUpdateInput: PersonalUserAccountProfileLocationUpdateInput;
   PersonalUserAccountProfileUpdateInput: PersonalUserAccountProfileUpdateInput;
   PersonalUserAccountUpdateInput: PersonalUserAccountUpdateInput;
-  PersonalUserCreateInput: PersonalUserCreateInput;
   PersonalUserUpdateInput: PersonalUserUpdateInput;
   PhoneNumber: Scalars["PhoneNumber"]["output"];
   Port: Scalars["Port"]["output"];
@@ -789,6 +885,9 @@ export type ResolversParentTypes = ResolversObject<{
   Query: {};
   RGB: Scalars["RGB"]["output"];
   RGBA: Scalars["RGBA"]["output"];
+  RefundOrderInformation: RefundOrderInformation;
+  RefundRequest: RefundRequest;
+  RefundResponse: RefundResponse;
   ReservationRequest: ReservationRequest;
   ReservationRequestMutationResult: ReservationRequestMutationResult;
   RoutingNumber: Scalars["RoutingNumber"]["output"];
@@ -870,14 +969,14 @@ export type ConversationResolvers<
   ContextType = GraphContext,
   ParentType extends ResolversParentTypes["Conversation"] = ResolversParentTypes["Conversation"],
 > = ResolversObject<{
-  createdAt?: Resolver<ResolversTypes["DateTime"], ParentType, ContextType>;
+  createdAt?: Resolver<Maybe<ResolversTypes["DateTime"]>, ParentType, ContextType>;
   id?: Resolver<ResolversTypes["ObjectID"], ParentType, ContextType>;
-  listing?: Resolver<ResolversTypes["Listing"], ParentType, ContextType>;
-  reserver?: Resolver<ResolversTypes["User"], ParentType, ContextType>;
-  schemaVersion?: Resolver<ResolversTypes["String"], ParentType, ContextType>;
-  sharer?: Resolver<ResolversTypes["User"], ParentType, ContextType>;
-  twilioConversationId?: Resolver<ResolversTypes["String"], ParentType, ContextType>;
-  updatedAt?: Resolver<ResolversTypes["DateTime"], ParentType, ContextType>;
+  listing?: Resolver<Maybe<ResolversTypes["Listing"]>, ParentType, ContextType>;
+  reserver?: Resolver<Maybe<ResolversTypes["User"]>, ParentType, ContextType>;
+  schemaVersion?: Resolver<Maybe<ResolversTypes["String"]>, ParentType, ContextType>;
+  sharer?: Resolver<Maybe<ResolversTypes["User"]>, ParentType, ContextType>;
+  twilioConversationId?: Resolver<Maybe<ResolversTypes["String"]>, ParentType, ContextType>;
+  updatedAt?: Resolver<Maybe<ResolversTypes["DateTime"]>, ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 }>;
 
@@ -1145,6 +1244,9 @@ export type MutationResolvers<
     ContextType,
     RequireFields<MutationCreateReservationRequestArgs, "input">
   >;
+  personalUserUpdate?: Resolver<ResolversTypes["PersonalUser"], ParentType, ContextType, RequireFields<MutationPersonalUserUpdateArgs, "input">>;
+  processPayment?: Resolver<ResolversTypes["PaymentResponse"], ParentType, ContextType, RequireFields<MutationProcessPaymentArgs, "request">>;
+  refundPayment?: Resolver<ResolversTypes["RefundResponse"], ParentType, ContextType, RequireFields<MutationRefundPaymentArgs, "request">>;
 }>;
 
 export type MutationResultResolvers<
@@ -1196,6 +1298,45 @@ export interface ObjectIdScalarConfig extends GraphQLScalarTypeConfig<ResolversT
   name: "ObjectID";
 }
 
+export type PaymentErrorInformationResolvers<
+  ContextType = GraphContext,
+  ParentType extends ResolversParentTypes["PaymentErrorInformation"] = ResolversParentTypes["PaymentErrorInformation"],
+> = ResolversObject<{
+  message?: Resolver<Maybe<ResolversTypes["String"]>, ParentType, ContextType>;
+  reason?: Resolver<Maybe<ResolversTypes["String"]>, ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+}>;
+
+export type PaymentResponseResolvers<
+  ContextType = GraphContext,
+  ParentType extends ResolversParentTypes["PaymentResponse"] = ResolversParentTypes["PaymentResponse"],
+> = ResolversObject<{
+  errorInformation?: Resolver<Maybe<ResolversTypes["PaymentErrorInformation"]>, ParentType, ContextType>;
+  id?: Resolver<Maybe<ResolversTypes["String"]>, ParentType, ContextType>;
+  message?: Resolver<Maybe<ResolversTypes["String"]>, ParentType, ContextType>;
+  orderInformation?: Resolver<Maybe<ResolversTypes["PaymentResponseOrderInformation"]>, ParentType, ContextType>;
+  status?: Resolver<ResolversTypes["String"], ParentType, ContextType>;
+  success?: Resolver<Maybe<ResolversTypes["Boolean"]>, ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+}>;
+
+export type PaymentResponseAmountDetailsResolvers<
+  ContextType = GraphContext,
+  ParentType extends ResolversParentTypes["PaymentResponseAmountDetails"] = ResolversParentTypes["PaymentResponseAmountDetails"],
+> = ResolversObject<{
+  currency?: Resolver<Maybe<ResolversTypes["String"]>, ParentType, ContextType>;
+  totalAmount?: Resolver<Maybe<ResolversTypes["String"]>, ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+}>;
+
+export type PaymentResponseOrderInformationResolvers<
+  ContextType = GraphContext,
+  ParentType extends ResolversParentTypes["PaymentResponseOrderInformation"] = ResolversParentTypes["PaymentResponseOrderInformation"],
+> = ResolversObject<{
+  amountDetails?: Resolver<Maybe<ResolversTypes["PaymentResponseAmountDetails"]>, ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+}>;
+
 export type PersonalUserResolvers<
   ContextType = GraphContext,
   ParentType extends ResolversParentTypes["PersonalUser"] = ResolversParentTypes["PersonalUser"],
@@ -1237,6 +1378,9 @@ export type PersonalUserAccountProfileBillingResolvers<
   ParentType extends ResolversParentTypes["PersonalUserAccountProfileBilling"] = ResolversParentTypes["PersonalUserAccountProfileBilling"],
 > = ResolversObject<{
   cybersourceCustomerId?: Resolver<Maybe<ResolversTypes["String"]>, ParentType, ContextType>;
+  lastPaymentAmount?: Resolver<Maybe<ResolversTypes["Float"]>, ParentType, ContextType>;
+  lastTransactionId?: Resolver<Maybe<ResolversTypes["String"]>, ParentType, ContextType>;
+  paymentState?: Resolver<Maybe<ResolversTypes["PaymentState"]>, ParentType, ContextType>;
   subscriptionId?: Resolver<Maybe<ResolversTypes["String"]>, ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 }>;
@@ -1331,6 +1475,19 @@ export interface RgbScalarConfig extends GraphQLScalarTypeConfig<ResolversTypes[
 export interface RgbaScalarConfig extends GraphQLScalarTypeConfig<ResolversTypes["RGBA"], any> {
   name: "RGBA";
 }
+
+export type RefundResponseResolvers<
+  ContextType = GraphContext,
+  ParentType extends ResolversParentTypes["RefundResponse"] = ResolversParentTypes["RefundResponse"],
+> = ResolversObject<{
+  errorInformation?: Resolver<Maybe<ResolversTypes["PaymentErrorInformation"]>, ParentType, ContextType>;
+  id?: Resolver<Maybe<ResolversTypes["String"]>, ParentType, ContextType>;
+  message?: Resolver<Maybe<ResolversTypes["String"]>, ParentType, ContextType>;
+  orderInformation?: Resolver<Maybe<ResolversTypes["PaymentResponseOrderInformation"]>, ParentType, ContextType>;
+  status?: Resolver<ResolversTypes["String"], ParentType, ContextType>;
+  success?: Resolver<Maybe<ResolversTypes["Boolean"]>, ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+}>;
 
 export type ReservationRequestResolvers<
   ContextType = GraphContext,
@@ -1487,6 +1644,10 @@ export type Resolvers<ContextType = GraphContext> = ResolversObject<{
   NonPositiveFloat?: GraphQLScalarType;
   NonPositiveInt?: GraphQLScalarType;
   ObjectID?: GraphQLScalarType;
+  PaymentErrorInformation?: PaymentErrorInformationResolvers<ContextType>;
+  PaymentResponse?: PaymentResponseResolvers<ContextType>;
+  PaymentResponseAmountDetails?: PaymentResponseAmountDetailsResolvers<ContextType>;
+  PaymentResponseOrderInformation?: PaymentResponseOrderInformationResolvers<ContextType>;
   PersonalUser?: PersonalUserResolvers<ContextType>;
   PersonalUserAccount?: PersonalUserAccountResolvers<ContextType>;
   PersonalUserAccountProfile?: PersonalUserAccountProfileResolvers<ContextType>;
@@ -1500,6 +1661,7 @@ export type Resolvers<ContextType = GraphContext> = ResolversObject<{
   Query?: QueryResolvers<ContextType>;
   RGB?: GraphQLScalarType;
   RGBA?: GraphQLScalarType;
+  RefundResponse?: RefundResponseResolvers<ContextType>;
   ReservationRequest?: ReservationRequestResolvers<ContextType>;
   ReservationRequestMutationResult?: ReservationRequestMutationResultResolvers<ContextType>;
   RoutingNumber?: GraphQLScalarType;

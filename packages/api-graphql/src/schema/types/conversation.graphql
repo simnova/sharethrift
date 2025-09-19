@@ -1,20 +1,17 @@
-
 #graphql
 """
 GraphQL schema for Conversations
 """
-
-type Conversation implements MongoBase{
-  
-  sharer: User!
-  reserver: User!
-  listing: Listing!
-  twilioConversationId: String!
+type Conversation implements MongoBase {
+  sharer: User
+  reserver: User
+  listing: Listing
+  twilioConversationId: String
 
   id: ObjectID!
-  schemaVersion: String!
-  createdAt: DateTime!
-  updatedAt: DateTime!
+  schemaVersion: String
+  createdAt: DateTime
+  updatedAt: DateTime
 }
 
 type User {
@@ -28,12 +25,11 @@ type Listing {
   # Add more fields as needed
 }
 
-
 extend type Query {
   conversations: [Conversation!]!
   conversation(id: ObjectID!): Conversation
 }
 
 # type Mutation {
-  # createConversation(sharerId: ObjectID!, reserverId: ObjectID!, listingId: ObjectID!): Conversation!
+# createConversation(sharerId: ObjectID!, reserverId: ObjectID!, listingId: ObjectID!): Conversation!
 # }

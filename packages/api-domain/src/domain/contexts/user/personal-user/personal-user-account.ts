@@ -26,11 +26,11 @@ export class PersonalUserAccount
 	private validateVisa(): void {
 		if (
 			!this.root.isNew &&
-			!this.visa.determineIf(
-				(permissions) => permissions.canEditAccountSettings, //TODO: Adjust permissions as needed
-			)
+			!this.visa.determineIf((permissions) => permissions.isEditingOwnAccount)
 		) {
-			throw new DomainSeedwork.PermissionError('Cannot set identity details');
+			throw new DomainSeedwork.PermissionError(
+				'Unauthorized to set account details',
+			);
 		}
 	}
 	// Primitive Field Getters

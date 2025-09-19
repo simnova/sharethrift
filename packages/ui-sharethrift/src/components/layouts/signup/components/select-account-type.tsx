@@ -1,9 +1,11 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Button, Card } from "antd";
 import { CheckOutlined, SafetyOutlined } from "@ant-design/icons";
 
-
-type PersonalAccountSubType = "non-verified" | "verified" | "verified-plus";
+type PersonalAccountSubType =
+  | "non-verified-personal"
+  | "verified-personal"
+  | "verified-personal-plus";
 
 interface AccountOption {
   id: string;
@@ -15,7 +17,7 @@ interface AccountOption {
 
 const personalOptions: AccountOption[] = [
   {
-    id: "non-verified",
+    id: "non-verified-personal",
     title: "Non-Verified Personal",
     price: "$0/month",
     features: [
@@ -27,7 +29,7 @@ const personalOptions: AccountOption[] = [
     icon: "/assets/item-images/stool.png",
   },
   {
-    id: "verified",
+    id: "verified-personal",
     title: "Verified Personal",
     price: "$0/month",
     features: [
@@ -39,7 +41,7 @@ const personalOptions: AccountOption[] = [
     icon: "/assets/item-images/armchair.png",
   },
   {
-    id: "verified-plus",
+    id: "verified-personal-plus",
     title: "Verified Personal Plus",
     price: "$4.99/month",
     features: [
@@ -52,12 +54,33 @@ const personalOptions: AccountOption[] = [
   },
 ];
 
-export default function SelectAccountType() {
-  const [selectedPersonalType, setSelectedPersonalType] =
-    useState<PersonalAccountSubType>("verified");
+interface SelectAccountTypeProps {
+  currentUserData: any;
+  loadingUser: boolean;
+  handleUpdateAccountType: (accountType: string) => void;
+  savingAccountType: boolean;
+}
+
+export const SelectAccountType: React.FC<SelectAccountTypeProps> = (props) => {
+
+  const [selectedPersonalType, setSelectedPersonalType] = useState<string>(
+    "non-verified-personal"
+  );
+
+  useEffect(() => {
+    if (
+      props?.currentUserData?.account?.accountType &&
+      [
+        "non-verified-personal",
+        "verified-personal",
+        "verified-personal-plus",
+      ].includes(props?.currentUserData.account?.accountType)
+    ) {
+      setSelectedPersonalType(props?.currentUserData.account?.accountType);
+    }
+  }, [props?.currentUserData]);
 
   const handleSelectAccountType = (type: PersonalAccountSubType) => {
-    console.log("Selected account type:", type);
     setSelectedPersonalType(type);
   };
 
@@ -213,12 +236,9 @@ export default function SelectAccountType() {
           marginTop: "32px",
         }}
       >
-        {/* {selectedPersonalType === "verified" || sel
-        selectedPersonalType === "verified-plus" ? ( */}
         <Button type="primary" size="large">
           <SafetyOutlined /> Start Identity Verification
         </Button>
-        {/* ) : null} */}
       </div>
     </div>
   );
@@ -250,10 +270,16 @@ export default function SelectAccountType() {
           marginTop: "32px",
         }}
       >
-        <Button type="default" size="large">
+        <Button
+          type="default"
+          size="large"
+          onClick={() => props?.handleUpdateAccountType(selectedPersonalType)}
+          loading={props?.savingAccountType}
+          disabled={props?.loadingUser || props?.savingAccountType}
+        >
           Save and Continue
         </Button>
       </div>
     </div>
   );
-}
+};

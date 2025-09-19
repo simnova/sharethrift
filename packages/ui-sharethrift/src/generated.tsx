@@ -133,14 +133,14 @@ export type CloseReservationInput = {
 /** GraphQL schema for Conversations */
 export type Conversation = MongoBase & {
   __typename?: "Conversation";
-  createdAt: Scalars["DateTime"]["output"];
+  createdAt?: Maybe<Scalars["DateTime"]["output"]>;
   id: Scalars["ObjectID"]["output"];
-  listing: Listing;
-  reserver: User;
-  schemaVersion: Scalars["String"]["output"];
-  sharer: User;
-  twilioConversationId: Scalars["String"]["output"];
-  updatedAt: Scalars["DateTime"]["output"];
+  listing?: Maybe<Listing>;
+  reserver?: Maybe<User>;
+  schemaVersion?: Maybe<Scalars["String"]["output"]>;
+  sharer?: Maybe<User>;
+  twilioConversationId?: Maybe<Scalars["String"]["output"]>;
+  updatedAt?: Maybe<Scalars["DateTime"]["output"]>;
 };
 
 export type CreateItemListingInput = {
@@ -260,6 +260,9 @@ export type Mutation = {
   closeReservation: ReservationRequest;
   createItemListing: ItemListing;
   createReservationRequest: ReservationRequest;
+  personalUserUpdate: PersonalUser;
+  processPayment: PaymentResponse;
+  refundPayment: RefundResponse;
 };
 
 /**  Base Mutation Type definition - all mutations will be defined in separate files extending this type  */
@@ -282,6 +285,21 @@ export type MutationCreateReservationRequestArgs = {
   input: CreateReservationRequestInput;
 };
 
+/**  Base Mutation Type definition - all mutations will be defined in separate files extending this type  */
+export type MutationPersonalUserUpdateArgs = {
+  input: PersonalUserUpdateInput;
+};
+
+/**  Base Mutation Type definition - all mutations will be defined in separate files extending this type  */
+export type MutationProcessPaymentArgs = {
+  request: PaymentRequest;
+};
+
+/**  Base Mutation Type definition - all mutations will be defined in separate files extending this type  */
+export type MutationRefundPaymentArgs = {
+  request: RefundRequest;
+};
+
 export type MutationResult = {
   status: MutationStatus;
 };
@@ -292,7 +310,76 @@ export type MutationStatus = {
   success: Scalars["Boolean"]["output"];
 };
 
+export type PaymentAmountDetails = {
+  currency: Scalars["String"]["input"];
+  totalAmount: Scalars["Float"]["input"];
+};
+
+export type PaymentBillTo = {
+  address1: Scalars["String"]["input"];
+  address2?: InputMaybe<Scalars["String"]["input"]>;
+  city: Scalars["String"]["input"];
+  country: Scalars["String"]["input"];
+  email?: InputMaybe<Scalars["String"]["input"]>;
+  firstName: Scalars["String"]["input"];
+  lastName: Scalars["String"]["input"];
+  phoneNumber?: InputMaybe<Scalars["String"]["input"]>;
+  postalCode: Scalars["String"]["input"];
+  state: Scalars["String"]["input"];
+};
+
+export type PaymentCard = {
+  expirationMonth: Scalars["String"]["input"];
+  expirationYear: Scalars["String"]["input"];
+  number: Scalars["String"]["input"];
+  securityCode: Scalars["String"]["input"];
+};
+
+export type PaymentCardInformation = {
+  card: PaymentCard;
+};
+
+export type PaymentErrorInformation = {
+  __typename?: "PaymentErrorInformation";
+  message?: Maybe<Scalars["String"]["output"]>;
+  reason?: Maybe<Scalars["String"]["output"]>;
+};
+
+export type PaymentOrderInformation = {
+  amountDetails: PaymentAmountDetails;
+  billTo: PaymentBillTo;
+};
+
+export type PaymentRequest = {
+  orderInformation: PaymentOrderInformation;
+  paymentInformation: PaymentCardInformation;
+  userId: Scalars["ObjectID"]["input"];
+};
+
+export type PaymentResponse = {
+  __typename?: "PaymentResponse";
+  errorInformation?: Maybe<PaymentErrorInformation>;
+  id?: Maybe<Scalars["String"]["output"]>;
+  message?: Maybe<Scalars["String"]["output"]>;
+  orderInformation?: Maybe<PaymentResponseOrderInformation>;
+  status: Scalars["String"]["output"];
+  success?: Maybe<Scalars["Boolean"]["output"]>;
+};
+
+export type PaymentResponseAmountDetails = {
+  __typename?: "PaymentResponseAmountDetails";
+  currency?: Maybe<Scalars["String"]["output"]>;
+  totalAmount?: Maybe<Scalars["String"]["output"]>;
+};
+
+export type PaymentResponseOrderInformation = {
+  __typename?: "PaymentResponseOrderInformation";
+  amountDetails?: Maybe<PaymentResponseAmountDetails>;
+};
+
 /** GraphQL schema for Personal Users */
+export type PaymentState = "FAILED" | "PENDING" | "REFUNDED" | "SUCCEEDED";
+
 export type PersonalUser = MongoBase & {
   __typename?: "PersonalUser";
   account?: Maybe<PersonalUserAccount>;
@@ -312,13 +399,6 @@ export type PersonalUserAccount = {
   username?: Maybe<Scalars["String"]["output"]>;
 };
 
-export type PersonalUserAccountInput = {
-  accountType?: InputMaybe<Scalars["String"]["input"]>;
-  email?: InputMaybe<Scalars["String"]["input"]>;
-  profile?: InputMaybe<PersonalUserAccountProfileInput>;
-  username?: InputMaybe<Scalars["String"]["input"]>;
-};
-
 export type PersonalUserAccountProfile = {
   __typename?: "PersonalUserAccountProfile";
   billing?: Maybe<PersonalUserAccountProfileBilling>;
@@ -330,24 +410,18 @@ export type PersonalUserAccountProfile = {
 export type PersonalUserAccountProfileBilling = {
   __typename?: "PersonalUserAccountProfileBilling";
   cybersourceCustomerId?: Maybe<Scalars["String"]["output"]>;
+  lastPaymentAmount?: Maybe<Scalars["Float"]["output"]>;
+  lastTransactionId?: Maybe<Scalars["String"]["output"]>;
+  paymentState?: Maybe<PaymentState>;
   subscriptionId?: Maybe<Scalars["String"]["output"]>;
-};
-
-export type PersonalUserAccountProfileBillingInput = {
-  cybersourceCustomerId?: InputMaybe<Scalars["String"]["input"]>;
-  subscriptionId?: InputMaybe<Scalars["String"]["input"]>;
 };
 
 export type PersonalUserAccountProfileBillingUpdateInput = {
   cybersourceCustomerId?: InputMaybe<Scalars["String"]["input"]>;
+  lastPaymentAmount?: InputMaybe<Scalars["Float"]["input"]>;
+  lastTransactionId?: InputMaybe<Scalars["String"]["input"]>;
+  paymentState?: InputMaybe<PaymentState>;
   subscriptionId?: InputMaybe<Scalars["String"]["input"]>;
-};
-
-export type PersonalUserAccountProfileInput = {
-  billing?: InputMaybe<PersonalUserAccountProfileBillingInput>;
-  firstName?: InputMaybe<Scalars["String"]["input"]>;
-  lastName?: InputMaybe<Scalars["String"]["input"]>;
-  location?: InputMaybe<PersonalUserAccountProfileLocationInput>;
 };
 
 export type PersonalUserAccountProfileLocation = {
@@ -358,15 +432,6 @@ export type PersonalUserAccountProfileLocation = {
   country?: Maybe<Scalars["String"]["output"]>;
   state?: Maybe<Scalars["String"]["output"]>;
   zipCode?: Maybe<Scalars["String"]["output"]>;
-};
-
-export type PersonalUserAccountProfileLocationInput = {
-  address1: Scalars["String"]["input"];
-  address2?: InputMaybe<Scalars["String"]["input"]>;
-  city: Scalars["String"]["input"];
-  country: Scalars["String"]["input"];
-  state: Scalars["String"]["input"];
-  zipCode: Scalars["String"]["input"];
 };
 
 export type PersonalUserAccountProfileLocationUpdateInput = {
@@ -387,20 +452,14 @@ export type PersonalUserAccountProfileUpdateInput = {
 
 export type PersonalUserAccountUpdateInput = {
   accountType?: InputMaybe<Scalars["String"]["input"]>;
-  email?: InputMaybe<Scalars["String"]["input"]>;
   profile?: InputMaybe<PersonalUserAccountProfileUpdateInput>;
   username?: InputMaybe<Scalars["String"]["input"]>;
 };
 
-export type PersonalUserCreateInput = {
-  account?: InputMaybe<PersonalUserAccountInput>;
-  userType?: InputMaybe<Scalars["String"]["input"]>;
-};
-
 export type PersonalUserUpdateInput = {
   account?: InputMaybe<PersonalUserAccountUpdateInput>;
+  id: Scalars["ObjectID"]["input"];
   isBlocked?: InputMaybe<Scalars["Boolean"]["input"]>;
-  userType?: InputMaybe<Scalars["String"]["input"]>;
 };
 
 /**  Base Query Type definition - , all mutations will be defined in separate files extending this type  */
@@ -482,6 +541,27 @@ export type QueryPersonalUserByIdArgs = {
 /**  Base Query Type definition - , all mutations will be defined in separate files extending this type  */
 export type QueryQueryActiveByListingIdArgs = {
   listingId: Scalars["ObjectID"]["input"];
+};
+
+export type RefundOrderInformation = {
+  amountDetails: PaymentAmountDetails;
+};
+
+export type RefundRequest = {
+  amount?: InputMaybe<Scalars["Float"]["input"]>;
+  orderInformation: RefundOrderInformation;
+  transactionId: Scalars["String"]["input"];
+  userId: Scalars["ObjectID"]["input"];
+};
+
+export type RefundResponse = {
+  __typename?: "RefundResponse";
+  errorInformation?: Maybe<PaymentErrorInformation>;
+  id?: Maybe<Scalars["String"]["output"]>;
+  message?: Maybe<Scalars["String"]["output"]>;
+  orderInformation?: Maybe<PaymentResponseOrderInformation>;
+  status: Scalars["String"]["output"];
+  success?: Maybe<Scalars["Boolean"]["output"]>;
 };
 
 export type ReservationRequest = {
@@ -1090,10 +1170,29 @@ export type ReservationsViewHistoryContainerPastReservationsQuery = {
   }>;
 };
 
-export type SignUpSectionLayoutContainerCurrentPersonalUserAndCreateIfNotExistsQueryVariables =
+export type SignupSelectAccountTypePersonalUserUpdateMutationVariables = Exact<{
+  input: PersonalUserUpdateInput;
+}>;
+
+export type SignupSelectAccountTypePersonalUserUpdateMutation = {
+  __typename?: "Mutation";
+  personalUserUpdate: {
+    __typename?: "PersonalUser";
+    id: any;
+    schemaVersion?: string | null;
+    createdAt?: any | null;
+    updatedAt?: any | null;
+    account?: {
+      __typename?: "PersonalUserAccount";
+      accountType?: string | null;
+    } | null;
+  };
+};
+
+export type SignupSelectAccountTypeCurrentPersonalUserAndCreateIfNotExistsQueryVariables =
   Exact<{ [key: string]: never }>;
 
-export type SignUpSectionLayoutContainerCurrentPersonalUserAndCreateIfNotExistsQuery =
+export type SignupSelectAccountTypeCurrentPersonalUserAndCreateIfNotExistsQuery =
   {
     __typename?: "Query";
     currentPersonalUserAndCreateIfNotExists: {
@@ -1101,12 +1200,7 @@ export type SignUpSectionLayoutContainerCurrentPersonalUserAndCreateIfNotExistsQ
       id: any;
       account?: {
         __typename?: "PersonalUserAccount";
-        email?: string | null;
-        profile?: {
-          __typename?: "PersonalUserAccountProfile";
-          firstName?: string | null;
-          lastName?: string | null;
-        } | null;
+        accountType?: string | null;
       } | null;
     };
   };
@@ -3219,7 +3313,83 @@ export const ReservationsViewHistoryContainerPastReservationsDocument = {
   ReservationsViewHistoryContainerPastReservationsQuery,
   ReservationsViewHistoryContainerPastReservationsQueryVariables
 >;
-export const SignUpSectionLayoutContainerCurrentPersonalUserAndCreateIfNotExistsDocument =
+export const SignupSelectAccountTypePersonalUserUpdateDocument = {
+  kind: "Document",
+  definitions: [
+    {
+      kind: "OperationDefinition",
+      operation: "mutation",
+      name: {
+        kind: "Name",
+        value: "SignupSelectAccountTypePersonalUserUpdate",
+      },
+      variableDefinitions: [
+        {
+          kind: "VariableDefinition",
+          variable: {
+            kind: "Variable",
+            name: { kind: "Name", value: "input" },
+          },
+          type: {
+            kind: "NonNullType",
+            type: {
+              kind: "NamedType",
+              name: { kind: "Name", value: "PersonalUserUpdateInput" },
+            },
+          },
+        },
+      ],
+      selectionSet: {
+        kind: "SelectionSet",
+        selections: [
+          {
+            kind: "Field",
+            name: { kind: "Name", value: "personalUserUpdate" },
+            arguments: [
+              {
+                kind: "Argument",
+                name: { kind: "Name", value: "input" },
+                value: {
+                  kind: "Variable",
+                  name: { kind: "Name", value: "input" },
+                },
+              },
+            ],
+            selectionSet: {
+              kind: "SelectionSet",
+              selections: [
+                { kind: "Field", name: { kind: "Name", value: "id" } },
+                {
+                  kind: "Field",
+                  name: { kind: "Name", value: "schemaVersion" },
+                },
+                { kind: "Field", name: { kind: "Name", value: "createdAt" } },
+                { kind: "Field", name: { kind: "Name", value: "updatedAt" } },
+                {
+                  kind: "Field",
+                  name: { kind: "Name", value: "account" },
+                  selectionSet: {
+                    kind: "SelectionSet",
+                    selections: [
+                      {
+                        kind: "Field",
+                        name: { kind: "Name", value: "accountType" },
+                      },
+                    ],
+                  },
+                },
+              ],
+            },
+          },
+        ],
+      },
+    },
+  ],
+} as unknown as DocumentNode<
+  SignupSelectAccountTypePersonalUserUpdateMutation,
+  SignupSelectAccountTypePersonalUserUpdateMutationVariables
+>;
+export const SignupSelectAccountTypeCurrentPersonalUserAndCreateIfNotExistsDocument =
   {
     kind: "Document",
     definitions: [
@@ -3229,7 +3399,7 @@ export const SignUpSectionLayoutContainerCurrentPersonalUserAndCreateIfNotExists
         name: {
           kind: "Name",
           value:
-            "SignUpSectionLayoutContainerCurrentPersonalUserAndCreateIfNotExists",
+            "SignupSelectAccountTypeCurrentPersonalUserAndCreateIfNotExists",
         },
         selectionSet: {
           kind: "SelectionSet",
@@ -3252,24 +3422,7 @@ export const SignUpSectionLayoutContainerCurrentPersonalUserAndCreateIfNotExists
                       selections: [
                         {
                           kind: "Field",
-                          name: { kind: "Name", value: "email" },
-                        },
-                        {
-                          kind: "Field",
-                          name: { kind: "Name", value: "profile" },
-                          selectionSet: {
-                            kind: "SelectionSet",
-                            selections: [
-                              {
-                                kind: "Field",
-                                name: { kind: "Name", value: "firstName" },
-                              },
-                              {
-                                kind: "Field",
-                                name: { kind: "Name", value: "lastName" },
-                              },
-                            ],
-                          },
+                          name: { kind: "Name", value: "accountType" },
                         },
                       ],
                     },
@@ -3282,6 +3435,6 @@ export const SignUpSectionLayoutContainerCurrentPersonalUserAndCreateIfNotExists
       },
     ],
   } as unknown as DocumentNode<
-    SignUpSectionLayoutContainerCurrentPersonalUserAndCreateIfNotExistsQuery,
-    SignUpSectionLayoutContainerCurrentPersonalUserAndCreateIfNotExistsQueryVariables
+    SignupSelectAccountTypeCurrentPersonalUserAndCreateIfNotExistsQuery,
+    SignupSelectAccountTypeCurrentPersonalUserAndCreateIfNotExistsQueryVariables
   >;

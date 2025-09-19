@@ -18,6 +18,8 @@ export const getMockItemListings =
 			userType: 'personal',
 			isBlocked: false,
 			schemaVersion: '1',
+			hasCompletedOnboarding: true,
+
 			role: {
 				id: 'role-1',
 				permissions: {
@@ -93,6 +95,11 @@ export const getMockItemListings =
 					},
 					billing: {
 						// Minimal billing structure - just provide empty object for required properties
+						subscriptionId: '',
+						cybersourceCustomerId: '',
+						paymentState: '',
+						lastTransactionId: '',
+						lastPaymentAmount: 0,
 					},
 				},
 			},
