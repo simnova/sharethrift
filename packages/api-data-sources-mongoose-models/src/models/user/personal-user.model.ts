@@ -35,11 +35,17 @@ export interface PersonalUserAccountProfileBilling
 	extends MongooseSeedwork.NestedPath {
 	subscriptionId?: string;
 	cybersourceCustomerId?: string;
+	paymentState?: string;
+	lastTransactionId?: string;
+	lastPaymentAmount?: number;
 }
 export const PersonalUserAccountProfileBillingType: SchemaDefinition<PersonalUserAccountProfileBilling> =
 	{
 		subscriptionId: { type: String, required: false },
 		cybersourceCustomerId: { type: String, required: false },
+		paymentState: { type: String, required: false },
+		lastTransactionId: { type: String, required: false },
+		lastPaymentAmount: { type: Number, required: false },
 	};
 
 // Profile

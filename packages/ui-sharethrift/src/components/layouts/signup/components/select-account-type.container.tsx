@@ -26,11 +26,11 @@ export default function SelectAccountTypeContainer() {
 
   const handleUpdateAccountType = useCallback(
     async (accountType: string) => {
-      if (savingAccountType) return;
+      if (savingAccountType) {return};
       try {
         const userId =
           currentUserData?.currentPersonalUserAndCreateIfNotExists?.id;
-        if (!userId) return;
+        if (!userId) {return};
         const result = await updateAccountType({
           variables: {
             input: {

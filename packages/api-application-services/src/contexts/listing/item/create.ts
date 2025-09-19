@@ -2,7 +2,7 @@ import type { Domain } from '@sthrift/api-domain';
 import type { DataSources } from '@sthrift/api-persistence';
 
 export interface ItemListingCreateCommand {
-	sharerId: string;
+	sharer: Domain.Contexts.User.PersonalUser.PersonalUserEntityReference;
 	title: string;
 	description: string;
 	category: string;
@@ -10,27 +10,46 @@ export interface ItemListingCreateCommand {
 	sharingPeriodStart: Date;
 	sharingPeriodEnd: Date;
 	images?: string[];
+	isDraft?: boolean;
 }
 
 export const create = (dataSources: DataSources) => {
 	return async (
 		command: ItemListingCreateCommand,
 	): Promise<Domain.Contexts.Listing.ItemListing.ItemListingEntityReference> => {
-		const sharer =
-			await dataSources.readonlyDataSource.User.PersonalUser.PersonalUserReadRepo.getById(
-				command.sharerId,
-			);
-		if (!sharer) {
-			throw new Error(
-				`Personal user (sharer) not found for external id ${command.sharerId}`,
-			);
-		}
 		let itemListingToReturn:
 			| Domain.Contexts.Listing.ItemListing.ItemListingEntityReference
 			| undefined;
 		await dataSources.domainDataSource.Listing.ItemListing.ItemListingUnitOfWork.withScopedTransaction(
 			async (repo) => {
-				const newItemListing = await repo.getNewInstance(sharer);
+				const fields: {
+					title: string;
+					description: string;
+					category: string;
+					location: string;
+					sharingPeriodStart: Date;
+					sharingPeriodEnd: Date;
+					images?: string[];
+					isDraft?: boolean;
+				} = {
+					title: command.title,
+					description: command.description,
+					category: command.category,
+					location: command.location,
+					sharingPeriodStart: command.sharingPeriodStart,
+					sharingPeriodEnd: command.sharingPeriodEnd,
+				};
+				if (command.images) {
+					fields.images = command.images;
+				}
+				if (command.isDraft !== undefined) {
+					fields.isDraft = command.isDraft;
+				}
+				const newItemListing = await repo.getNewInstance(
+					command.sharer,
+					fields,
+				);
+
 				itemListingToReturn = await repo.save(newItemListing);
 			},
 		);

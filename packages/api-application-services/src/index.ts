@@ -12,9 +12,14 @@ import {
     type ReservationRequestContextApplicationService 
 } from './contexts/reservation-request/index.ts';
 
+import {
+	Listing,
+	type ListingContextApplicationService,
+} from './contexts/listing/index.ts';
 export interface ApplicationServices {
 	User: UserContextApplicationService;
 	ReservationRequest: ReservationRequestContextApplicationService;
+	Listing: ListingContextApplicationService;
 	get verifiedUser(): VerifiedUser | null;
 	Payment: PaymentApplicationService;
 }
@@ -36,7 +41,11 @@ export interface VerifiedUser {
 }
 
 // biome-ignore lint/complexity/noBannedTypes: principal hints type configuration
-export type PrincipalHints = {};
+
+export type PrincipalHints = {
+	// memberId: string | undefined;
+	// communityId: string | undefined;
+};
 
 export interface AppServicesHost<S> {
 	forRequest(rawAuthHeader?: string, hints?: PrincipalHints): Promise<S>;
@@ -87,8 +96,9 @@ export const buildApplicationServicesFactory = (
 			get verifiedUser(): VerifiedUser | null {
 				return { ...tokenValidationResult, hints: hints };
 			},
-            Payment: paymentApplicationService,
-            ReservationRequest: ReservationRequest(dataSources),
+			Payment: paymentApplicationService,
+			ReservationRequest: ReservationRequest(dataSources),
+			Listing: Listing(dataSources),
 		};
 	};
 

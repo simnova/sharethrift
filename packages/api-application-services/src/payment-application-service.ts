@@ -1,38 +1,40 @@
 import type { ServiceCybersource } from '@sthrift/service-cybersource';
 
 export interface PaymentApplicationService {
-    processPayment(request: ProcessPaymentRequest): Promise<ProcessPaymentResponse>;
-    refundPayment(request: RefundPaymentRequest): Promise<RefundPaymentResponse>;
+	processPayment(
+		request: ProcessPaymentRequest,
+	): Promise<ProcessPaymentResponse>;
+	refundPayment(request: RefundPaymentRequest): Promise<RefundPaymentResponse>;
 }
 
 export interface ProcessPaymentRequest {
-    userId: string;
-    orderInformation: {
-        amountDetails: {
-            totalAmount: number;
-            currency: string;
-        };
-        billTo: {
-            firstName: string;
-            lastName: string;
-            address1: string;
-            address2?: string;
-            city: string;
-            state: string;
-            postalCode: string;
-            country: string;
-            phoneNumber?: string;
-            email?: string;
-        };
-    };
-    paymentInformation: {
-        card: {
-            number: string;
-            expirationMonth: string;
-            expirationYear: string;
-            securityCode: string;
-        };
-    };
+	userId: string;
+	orderInformation: {
+		amountDetails: {
+			totalAmount: number;
+			currency: string;
+		};
+		billTo: {
+			firstName: string;
+			lastName: string;
+			address1: string;
+			address2?: string;
+			city: string;
+			state: string;
+			postalCode: string;
+			country: string;
+			phoneNumber?: string;
+			email?: string;
+		};
+	};
+	paymentInformation: {
+		card: {
+			number: string;
+			expirationMonth: string;
+			expirationYear: string;
+			securityCode: string;
+		};
+	};
 }
 
 export interface ProcessPaymentResponse {
@@ -51,38 +53,40 @@ export interface ProcessPaymentResponse {
 }
 
 export interface RefundPaymentRequest {
-    userId: string;
-    transactionId: string;
-    amount?: number;
-    orderInformation: {
-        amountDetails: {
-            totalAmount: number;
-            currency: string;
-        };
-    };
+	userId: string;
+	transactionId: string;
+	amount?: number;
+	orderInformation: {
+		amountDetails: {
+			totalAmount: number;
+			currency: string;
+		};
+	};
 }
 
 export interface RefundPaymentResponse {
-    id?: string;
-    status: string;
-    errorInformation?: {
-        reason?: string;
-        message?: string;
-    };
-    orderInformation?: {
-        amountDetails?: {
-            totalAmount?: string;
-            currency?: string;
-        };
-    };
+	id?: string;
+	status: string;
+	errorInformation?: {
+		reason?: string;
+		message?: string;
+	};
+	orderInformation?: {
+		amountDetails?: {
+			totalAmount?: string;
+			currency?: string;
+		};
+	};
 }
 
-export class DefaultPaymentApplicationService implements PaymentApplicationService {
-    private readonly paymentService: ServiceCybersource;
+export class DefaultPaymentApplicationService
+	implements PaymentApplicationService
+{
+	private readonly paymentService: ServiceCybersource;
 
-    constructor(paymentService: ServiceCybersource) {
-        this.paymentService = paymentService;
-    }
+	constructor(paymentService: ServiceCybersource) {
+		this.paymentService = paymentService;
+	}
 
     async processPayment(request: ProcessPaymentRequest): Promise<ProcessPaymentResponse> {
         try {
@@ -194,6 +198,4 @@ export class DefaultPaymentApplicationService implements PaymentApplicationServi
             };
         }
     }
-
-
 }

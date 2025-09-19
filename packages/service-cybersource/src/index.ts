@@ -40,8 +40,8 @@ export class ServiceCybersource
   }
 
   public async shutDown(): Promise<void> {
-    this.client = undefined;
-  }
+		this.client = undefined;
+}
 
   //   ========== This code will get deleted ===========
   public get service(): AxiosInstance {

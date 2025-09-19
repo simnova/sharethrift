@@ -7,11 +7,10 @@ type ItemListing implements MongoBase {
   sharingPeriodStart: DateTime!
   sharingPeriodEnd: DateTime!
   state: ItemListingState
-  
+
   sharingHistory: [String!]
   reports: Int
   images: [String!] # Array of image URLs
-
   id: ObjectID!
   schemaVersion: String
   createdAt: DateTime
@@ -19,7 +18,6 @@ type ItemListing implements MongoBase {
   version: Int
 }
 
- 
 enum ItemListingState {
   Published
   Paused
@@ -30,7 +28,64 @@ enum ItemListingState {
   Appeal_Requested
 }
 
+# Page types for My Listings Dashboard
+type ListingAllPage {
+  items: [ListingAll!]!
+  total: Int!
+  page: Int!
+  pageSize: Int!
+}
+
+type ListingRequestPage {
+  items: [ListingRequest!]!
+  total: Int!
+  page: Int!
+  pageSize: Int!
+}
+
+# Listing types for dashboard
+type ListingAll {
+  id: ID!
+  title: String!
+  image: String
+  publishedAt: String
+  reservationPeriod: String
+  status: String!
+  pendingRequestsCount: Int!
+}
+
+type ListingRequest {
+  id: ID!
+  title: String!
+  image: String
+  requestedBy: String!
+  requestedOn: String!
+  reservationPeriod: String!
+  status: String!
+}
+
+input SorterInput {
+  field: String!
+  order: String!
+}
+
+input CreateItemListingInput {
+  title: String!
+  description: String!
+  category: String!
+  location: String!
+  sharingPeriodStart: DateTime!
+  sharingPeriodEnd: DateTime!
+  images: [String!]
+  isDraft: Boolean
+}
+
 extend type Query {
   itemListings: [ItemListing!]!
   itemListing(id: ObjectID!): ItemListing
+  myListingsAll(page: Int!, pageSize: Int!, searchText: String, statusFilters: [String!], sorter: SorterInput): ListingAllPage!
+}
+
+extend type Mutation {
+  createItemListing(input: CreateItemListingInput!): ItemListing!
 }

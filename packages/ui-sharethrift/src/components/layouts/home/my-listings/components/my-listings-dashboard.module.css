@@ -1,0 +1,19 @@
+.createListing {
+  padding: 18px 24px;
+  height: 48px;
+  font-family: var(--Urbanist);
+}
+
+.dashboardContainer {
+  padding: 36px;
+}
+
+@media (max-width: 768px) {
+  .createListing {
+    display: none;
+  }
+
+  .dashboardContainer {
+  padding: 24px 20px;
+}
+}

@@ -193,6 +193,27 @@ export class PersonalUserAccountProfileBillingDomainAdapter
 		this.props.cybersourceCustomerId = value;
 	}
 
+	get paymentState(): string | undefined {
+		return this.props.paymentState;
+	}
+	set paymentState(value: string) {
+		this.props.paymentState = value;
+	}
+
+	get lastTransactionId(): string | undefined {
+		return this.props.lastTransactionId;
+	}
+	set lastTransactionId(value: string) {
+		this.props.lastTransactionId = value;
+	}
+
+	get lastPaymentAmount(): number | undefined {
+		return this.props.lastPaymentAmount;
+	}
+	set lastPaymentAmount(value: number) {
+		this.props.lastPaymentAmount = value;
+	}
+
 	// Nested Path Getters
 
 	// Populated Doc Getters and Setters

@@ -122,14 +122,31 @@ export type CloseReservationInput = {
 /** GraphQL schema for Conversations */
 export type Conversation = MongoBase & {
   __typename?: "Conversation";
-  createdAt: Scalars["DateTime"]["output"];
+  createdAt?: Maybe<Scalars["DateTime"]["output"]>;
   id: Scalars["ObjectID"]["output"];
-  listing: Listing;
-  reserver: User;
-  schemaVersion: Scalars["String"]["output"];
-  sharer: User;
-  twilioConversationId: Scalars["String"]["output"];
-  updatedAt: Scalars["DateTime"]["output"];
+  listing?: Maybe<Listing>;
+  reserver?: Maybe<User>;
+  schemaVersion?: Maybe<Scalars["String"]["output"]>;
+  sharer?: Maybe<User>;
+  twilioConversationId?: Maybe<Scalars["String"]["output"]>;
+  updatedAt?: Maybe<Scalars["DateTime"]["output"]>;
+};
+
+export type CreateItemListingInput = {
+  category: Scalars["String"]["input"];
+  description: Scalars["String"]["input"];
+  images?: InputMaybe<Array<Scalars["String"]["input"]>>;
+  isDraft?: InputMaybe<Scalars["Boolean"]["input"]>;
+  location: Scalars["String"]["input"];
+  sharingPeriodEnd: Scalars["DateTime"]["input"];
+  sharingPeriodStart: Scalars["DateTime"]["input"];
+  title: Scalars["String"]["input"];
+};
+
+export type CreateReservationRequestInput = {
+  listingId: Scalars["ObjectID"]["input"];
+  reservationPeriodEnd: Scalars["DateTime"]["input"];
+  reservationPeriodStart: Scalars["DateTime"]["input"];
 };
 
 export type ItemListing = MongoBase & {
@@ -159,6 +176,44 @@ export type Listing = {
   id: Scalars["ObjectID"]["output"];
 };
 
+export type ListingAll = {
+  __typename?: "ListingAll";
+  id: Scalars["ID"]["output"];
+  image?: Maybe<Scalars["String"]["output"]>;
+  pendingRequestsCount: Scalars["Int"]["output"];
+  publishedAt?: Maybe<Scalars["String"]["output"]>;
+  reservationPeriod?: Maybe<Scalars["String"]["output"]>;
+  status: Scalars["String"]["output"];
+  title: Scalars["String"]["output"];
+};
+
+export type ListingAllPage = {
+  __typename?: "ListingAllPage";
+  items: Array<ListingAll>;
+  page: Scalars["Int"]["output"];
+  pageSize: Scalars["Int"]["output"];
+  total: Scalars["Int"]["output"];
+};
+
+export type ListingRequest = {
+  __typename?: "ListingRequest";
+  id: Scalars["ID"]["output"];
+  image?: Maybe<Scalars["String"]["output"]>;
+  requestedBy: Scalars["String"]["output"];
+  requestedOn: Scalars["String"]["output"];
+  reservationPeriod: Scalars["String"]["output"];
+  status: Scalars["String"]["output"];
+  title: Scalars["String"]["output"];
+};
+
+export type ListingRequestPage = {
+  __typename?: "ListingRequestPage";
+  items: Array<ListingRequest>;
+  page: Scalars["Int"]["output"];
+  pageSize: Scalars["Int"]["output"];
+  total: Scalars["Int"]["output"];
+};
+
 /** Base type for all models in mongo. */
 export type MongoBase = {
   createdAt?: Maybe<Scalars["DateTime"]["output"]>;
@@ -185,6 +240,8 @@ export type Mutation = {
   _empty?: Maybe<Scalars["String"]["output"]>;
   cancelReservation: ReservationRequest;
   closeReservation: ReservationRequest;
+  createItemListing: ItemListing;
+  createReservationRequest: ReservationRequest;
   personalUserUpdate: PersonalUser;
   processPayment: PaymentResponse;
   refundPayment: RefundResponse;
@@ -198,6 +255,16 @@ export type MutationCancelReservationArgs = {
 /**  Base Mutation Type definition - all mutations will be defined in separate files extending this type  */
 export type MutationCloseReservationArgs = {
   input: CloseReservationInput;
+};
+
+/**  Base Mutation Type definition - all mutations will be defined in separate files extending this type  */
+export type MutationCreateItemListingArgs = {
+  input: CreateItemListingInput;
+};
+
+/**  Base Mutation Type definition - all mutations will be defined in separate files extending this type  */
+export type MutationCreateReservationRequestArgs = {
+  input: CreateReservationRequestInput;
 };
 
 /**  Base Mutation Type definition - all mutations will be defined in separate files extending this type  */
@@ -387,9 +454,14 @@ export type Query = {
   currentPersonalUserAndCreateIfNotExists: PersonalUser;
   itemListing?: Maybe<ItemListing>;
   itemListings: Array<ItemListing>;
+  myActiveReservationForListing?: Maybe<ReservationRequest>;
   myActiveReservations: Array<ReservationRequest>;
+  myListingsAll: ListingAllPage;
+  myListingsRequests: ListingRequestPage;
   myPastReservations: Array<ReservationRequest>;
+  overlapActiveReservationRequestsForListing: Array<ReservationRequest>;
   personalUserById?: Maybe<PersonalUser>;
+  queryActiveByListingId: Array<Maybe<ReservationRequest>>;
 };
 
 /**  Base Query Type definition - , all mutations will be defined in separate files extending this type  */
@@ -403,8 +475,32 @@ export type QueryItemListingArgs = {
 };
 
 /**  Base Query Type definition - , all mutations will be defined in separate files extending this type  */
+export type QueryMyActiveReservationForListingArgs = {
+  listingId: Scalars["ObjectID"]["input"];
+  userId: Scalars["ObjectID"]["input"];
+};
+
+/**  Base Query Type definition - , all mutations will be defined in separate files extending this type  */
 export type QueryMyActiveReservationsArgs = {
   userId: Scalars["ObjectID"]["input"];
+};
+
+/**  Base Query Type definition - , all mutations will be defined in separate files extending this type  */
+export type QueryMyListingsAllArgs = {
+  page: Scalars["Int"]["input"];
+  pageSize: Scalars["Int"]["input"];
+  searchText?: InputMaybe<Scalars["String"]["input"]>;
+  sorter?: InputMaybe<SorterInput>;
+  statusFilters?: InputMaybe<Array<Scalars["String"]["input"]>>;
+};
+
+/**  Base Query Type definition - , all mutations will be defined in separate files extending this type  */
+export type QueryMyListingsRequestsArgs = {
+  page: Scalars["Int"]["input"];
+  pageSize: Scalars["Int"]["input"];
+  searchText?: InputMaybe<Scalars["String"]["input"]>;
+  sorter?: InputMaybe<SorterInput>;
+  statusFilters?: InputMaybe<Array<Scalars["String"]["input"]>>;
 };
 
 /**  Base Query Type definition - , all mutations will be defined in separate files extending this type  */
@@ -413,8 +509,20 @@ export type QueryMyPastReservationsArgs = {
 };
 
 /**  Base Query Type definition - , all mutations will be defined in separate files extending this type  */
+export type QueryOverlapActiveReservationRequestsForListingArgs = {
+  listingId: Scalars["ObjectID"]["input"];
+  reservationPeriodEnd: Scalars["DateTime"]["input"];
+  reservationPeriodStart: Scalars["DateTime"]["input"];
+};
+
+/**  Base Query Type definition - , all mutations will be defined in separate files extending this type  */
 export type QueryPersonalUserByIdArgs = {
   id: Scalars["ObjectID"]["input"];
+};
+
+/**  Base Query Type definition - , all mutations will be defined in separate files extending this type  */
+export type QueryQueryActiveByListingIdArgs = {
+  listingId: Scalars["ObjectID"]["input"];
 };
 
 export type RefundOrderInformation = {
@@ -440,16 +548,16 @@ export type RefundResponse = {
 
 export type ReservationRequest = {
   __typename?: "ReservationRequest";
-  closeRequestedByReserver: Scalars["Boolean"]["output"];
-  closeRequestedBySharer: Scalars["Boolean"]["output"];
-  createdAt: Scalars["String"]["output"];
+  closeRequestedByReserver?: Maybe<Scalars["Boolean"]["output"]>;
+  closeRequestedBySharer?: Maybe<Scalars["Boolean"]["output"]>;
+  createdAt?: Maybe<Scalars["String"]["output"]>;
   id: Scalars["ObjectID"]["output"];
-  listing: ItemListing;
-  reservationPeriodEnd: Scalars["String"]["output"];
-  reservationPeriodStart: Scalars["String"]["output"];
-  reserver: PersonalUser;
-  state: ReservationRequestState;
-  updatedAt: Scalars["String"]["output"];
+  listing?: Maybe<ItemListing>;
+  reservationPeriodEnd?: Maybe<Scalars["String"]["output"]>;
+  reservationPeriodStart?: Maybe<Scalars["String"]["output"]>;
+  reserver?: Maybe<PersonalUser>;
+  state?: Maybe<ReservationRequestState>;
+  updatedAt?: Maybe<Scalars["String"]["output"]>;
 };
 
 export type ReservationRequestMutationResult = MutationResult & {
@@ -459,6 +567,11 @@ export type ReservationRequestMutationResult = MutationResult & {
 };
 
 export type ReservationRequestState = "Accepted" | "Cancelled" | "Closed" | "Rejected" | "Requested";
+
+export type SorterInput = {
+  field: Scalars["String"]["input"];
+  order: Scalars["String"]["input"];
+};
 
 export type User = {
   __typename?: "User";
@@ -557,6 +670,8 @@ export type ResolversTypes = ResolversObject<{
   Conversation: ResolverTypeWrapper<Conversation>;
   CountryCode: ResolverTypeWrapper<Scalars["CountryCode"]["output"]>;
   CountryName: ResolverTypeWrapper<Scalars["CountryName"]["output"]>;
+  CreateItemListingInput: CreateItemListingInput;
+  CreateReservationRequestInput: CreateReservationRequestInput;
   Cuid: ResolverTypeWrapper<Scalars["Cuid"]["output"]>;
   Currency: ResolverTypeWrapper<Scalars["Currency"]["output"]>;
   DID: ResolverTypeWrapper<Scalars["DID"]["output"]>;
@@ -574,6 +689,7 @@ export type ResolversTypes = ResolversObject<{
   HexColorCode: ResolverTypeWrapper<Scalars["HexColorCode"]["output"]>;
   Hexadecimal: ResolverTypeWrapper<Scalars["Hexadecimal"]["output"]>;
   IBAN: ResolverTypeWrapper<Scalars["IBAN"]["output"]>;
+  ID: ResolverTypeWrapper<Scalars["ID"]["output"]>;
   IP: ResolverTypeWrapper<Scalars["IP"]["output"]>;
   IPCPatent: ResolverTypeWrapper<Scalars["IPCPatent"]["output"]>;
   IPv4: ResolverTypeWrapper<Scalars["IPv4"]["output"]>;
@@ -589,6 +705,10 @@ export type ResolversTypes = ResolversObject<{
   LCCSubclass: ResolverTypeWrapper<Scalars["LCCSubclass"]["output"]>;
   Latitude: ResolverTypeWrapper<Scalars["Latitude"]["output"]>;
   Listing: ResolverTypeWrapper<Listing>;
+  ListingAll: ResolverTypeWrapper<ListingAll>;
+  ListingAllPage: ResolverTypeWrapper<ListingAllPage>;
+  ListingRequest: ResolverTypeWrapper<ListingRequest>;
+  ListingRequestPage: ResolverTypeWrapper<ListingRequestPage>;
   LocalDate: ResolverTypeWrapper<Scalars["LocalDate"]["output"]>;
   LocalDateTime: ResolverTypeWrapper<Scalars["LocalDateTime"]["output"]>;
   LocalEndTime: ResolverTypeWrapper<Scalars["LocalEndTime"]["output"]>;
@@ -649,6 +769,7 @@ export type ResolversTypes = ResolversObject<{
   SESSN: ResolverTypeWrapper<Scalars["SESSN"]["output"]>;
   SafeInt: ResolverTypeWrapper<Scalars["SafeInt"]["output"]>;
   SemVer: ResolverTypeWrapper<Scalars["SemVer"]["output"]>;
+  SorterInput: SorterInput;
   String: ResolverTypeWrapper<Scalars["String"]["output"]>;
   Time: ResolverTypeWrapper<Scalars["Time"]["output"]>;
   TimeZone: ResolverTypeWrapper<Scalars["TimeZone"]["output"]>;
@@ -677,6 +798,8 @@ export type ResolversParentTypes = ResolversObject<{
   Conversation: Conversation;
   CountryCode: Scalars["CountryCode"]["output"];
   CountryName: Scalars["CountryName"]["output"];
+  CreateItemListingInput: CreateItemListingInput;
+  CreateReservationRequestInput: CreateReservationRequestInput;
   Cuid: Scalars["Cuid"]["output"];
   Currency: Scalars["Currency"]["output"];
   DID: Scalars["DID"]["output"];
@@ -694,6 +817,7 @@ export type ResolversParentTypes = ResolversObject<{
   HexColorCode: Scalars["HexColorCode"]["output"];
   Hexadecimal: Scalars["Hexadecimal"]["output"];
   IBAN: Scalars["IBAN"]["output"];
+  ID: Scalars["ID"]["output"];
   IP: Scalars["IP"]["output"];
   IPCPatent: Scalars["IPCPatent"]["output"];
   IPv4: Scalars["IPv4"]["output"];
@@ -708,6 +832,10 @@ export type ResolversParentTypes = ResolversObject<{
   LCCSubclass: Scalars["LCCSubclass"]["output"];
   Latitude: Scalars["Latitude"]["output"];
   Listing: Listing;
+  ListingAll: ListingAll;
+  ListingAllPage: ListingAllPage;
+  ListingRequest: ListingRequest;
+  ListingRequestPage: ListingRequestPage;
   LocalDate: Scalars["LocalDate"]["output"];
   LocalDateTime: Scalars["LocalDateTime"]["output"];
   LocalEndTime: Scalars["LocalEndTime"]["output"];
@@ -766,6 +894,7 @@ export type ResolversParentTypes = ResolversObject<{
   SESSN: Scalars["SESSN"]["output"];
   SafeInt: Scalars["SafeInt"]["output"];
   SemVer: Scalars["SemVer"]["output"];
+  SorterInput: SorterInput;
   String: Scalars["String"]["output"];
   Time: Scalars["Time"]["output"];
   TimeZone: Scalars["TimeZone"]["output"];
@@ -840,14 +969,14 @@ export type ConversationResolvers<
   ContextType = GraphContext,
   ParentType extends ResolversParentTypes["Conversation"] = ResolversParentTypes["Conversation"],
 > = ResolversObject<{
-  createdAt?: Resolver<ResolversTypes["DateTime"], ParentType, ContextType>;
+  createdAt?: Resolver<Maybe<ResolversTypes["DateTime"]>, ParentType, ContextType>;
   id?: Resolver<ResolversTypes["ObjectID"], ParentType, ContextType>;
-  listing?: Resolver<ResolversTypes["Listing"], ParentType, ContextType>;
-  reserver?: Resolver<ResolversTypes["User"], ParentType, ContextType>;
-  schemaVersion?: Resolver<ResolversTypes["String"], ParentType, ContextType>;
-  sharer?: Resolver<ResolversTypes["User"], ParentType, ContextType>;
-  twilioConversationId?: Resolver<ResolversTypes["String"], ParentType, ContextType>;
-  updatedAt?: Resolver<ResolversTypes["DateTime"], ParentType, ContextType>;
+  listing?: Resolver<Maybe<ResolversTypes["Listing"]>, ParentType, ContextType>;
+  reserver?: Resolver<Maybe<ResolversTypes["User"]>, ParentType, ContextType>;
+  schemaVersion?: Resolver<Maybe<ResolversTypes["String"]>, ParentType, ContextType>;
+  sharer?: Resolver<Maybe<ResolversTypes["User"]>, ParentType, ContextType>;
+  twilioConversationId?: Resolver<Maybe<ResolversTypes["String"]>, ParentType, ContextType>;
+  updatedAt?: Resolver<Maybe<ResolversTypes["DateTime"]>, ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 }>;
 
@@ -998,6 +1127,56 @@ export type ListingResolvers<
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 }>;
 
+export type ListingAllResolvers<
+  ContextType = GraphContext,
+  ParentType extends ResolversParentTypes["ListingAll"] = ResolversParentTypes["ListingAll"],
+> = ResolversObject<{
+  id?: Resolver<ResolversTypes["ID"], ParentType, ContextType>;
+  image?: Resolver<Maybe<ResolversTypes["String"]>, ParentType, ContextType>;
+  pendingRequestsCount?: Resolver<ResolversTypes["Int"], ParentType, ContextType>;
+  publishedAt?: Resolver<Maybe<ResolversTypes["String"]>, ParentType, ContextType>;
+  reservationPeriod?: Resolver<Maybe<ResolversTypes["String"]>, ParentType, ContextType>;
+  status?: Resolver<ResolversTypes["String"], ParentType, ContextType>;
+  title?: Resolver<ResolversTypes["String"], ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+}>;
+
+export type ListingAllPageResolvers<
+  ContextType = GraphContext,
+  ParentType extends ResolversParentTypes["ListingAllPage"] = ResolversParentTypes["ListingAllPage"],
+> = ResolversObject<{
+  items?: Resolver<Array<ResolversTypes["ListingAll"]>, ParentType, ContextType>;
+  page?: Resolver<ResolversTypes["Int"], ParentType, ContextType>;
+  pageSize?: Resolver<ResolversTypes["Int"], ParentType, ContextType>;
+  total?: Resolver<ResolversTypes["Int"], ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+}>;
+
+export type ListingRequestResolvers<
+  ContextType = GraphContext,
+  ParentType extends ResolversParentTypes["ListingRequest"] = ResolversParentTypes["ListingRequest"],
+> = ResolversObject<{
+  id?: Resolver<ResolversTypes["ID"], ParentType, ContextType>;
+  image?: Resolver<Maybe<ResolversTypes["String"]>, ParentType, ContextType>;
+  requestedBy?: Resolver<ResolversTypes["String"], ParentType, ContextType>;
+  requestedOn?: Resolver<ResolversTypes["String"], ParentType, ContextType>;
+  reservationPeriod?: Resolver<ResolversTypes["String"], ParentType, ContextType>;
+  status?: Resolver<ResolversTypes["String"], ParentType, ContextType>;
+  title?: Resolver<ResolversTypes["String"], ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+}>;
+
+export type ListingRequestPageResolvers<
+  ContextType = GraphContext,
+  ParentType extends ResolversParentTypes["ListingRequestPage"] = ResolversParentTypes["ListingRequestPage"],
+> = ResolversObject<{
+  items?: Resolver<Array<ResolversTypes["ListingRequest"]>, ParentType, ContextType>;
+  page?: Resolver<ResolversTypes["Int"], ParentType, ContextType>;
+  pageSize?: Resolver<ResolversTypes["Int"], ParentType, ContextType>;
+  total?: Resolver<ResolversTypes["Int"], ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+}>;
+
 export interface LocalDateScalarConfig extends GraphQLScalarTypeConfig<ResolversTypes["LocalDate"], any> {
   name: "LocalDate";
 }
@@ -1058,6 +1237,13 @@ export type MutationResolvers<
   _empty?: Resolver<Maybe<ResolversTypes["String"]>, ParentType, ContextType>;
   cancelReservation?: Resolver<ResolversTypes["ReservationRequest"], ParentType, ContextType, RequireFields<MutationCancelReservationArgs, "input">>;
   closeReservation?: Resolver<ResolversTypes["ReservationRequest"], ParentType, ContextType, RequireFields<MutationCloseReservationArgs, "input">>;
+  createItemListing?: Resolver<ResolversTypes["ItemListing"], ParentType, ContextType, RequireFields<MutationCreateItemListingArgs, "input">>;
+  createReservationRequest?: Resolver<
+    ResolversTypes["ReservationRequest"],
+    ParentType,
+    ContextType,
+    RequireFields<MutationCreateReservationRequestArgs, "input">
+  >;
   personalUserUpdate?: Resolver<ResolversTypes["PersonalUser"], ParentType, ContextType, RequireFields<MutationPersonalUserUpdateArgs, "input">>;
   processPayment?: Resolver<ResolversTypes["PaymentResponse"], ParentType, ContextType, RequireFields<MutationProcessPaymentArgs, "request">>;
   refundPayment?: Resolver<ResolversTypes["RefundResponse"], ParentType, ContextType, RequireFields<MutationRefundPaymentArgs, "request">>;
@@ -1242,11 +1428,24 @@ export type QueryResolvers<
   currentPersonalUserAndCreateIfNotExists?: Resolver<ResolversTypes["PersonalUser"], ParentType, ContextType>;
   itemListing?: Resolver<Maybe<ResolversTypes["ItemListing"]>, ParentType, ContextType, RequireFields<QueryItemListingArgs, "id">>;
   itemListings?: Resolver<Array<ResolversTypes["ItemListing"]>, ParentType, ContextType>;
+  myActiveReservationForListing?: Resolver<
+    Maybe<ResolversTypes["ReservationRequest"]>,
+    ParentType,
+    ContextType,
+    RequireFields<QueryMyActiveReservationForListingArgs, "listingId" | "userId">
+  >;
   myActiveReservations?: Resolver<
     Array<ResolversTypes["ReservationRequest"]>,
     ParentType,
     ContextType,
     RequireFields<QueryMyActiveReservationsArgs, "userId">
+  >;
+  myListingsAll?: Resolver<ResolversTypes["ListingAllPage"], ParentType, ContextType, RequireFields<QueryMyListingsAllArgs, "page" | "pageSize">>;
+  myListingsRequests?: Resolver<
+    ResolversTypes["ListingRequestPage"],
+    ParentType,
+    ContextType,
+    RequireFields<QueryMyListingsRequestsArgs, "page" | "pageSize">
   >;
   myPastReservations?: Resolver<
     Array<ResolversTypes["ReservationRequest"]>,
@@ -1254,7 +1453,19 @@ export type QueryResolvers<
     ContextType,
     RequireFields<QueryMyPastReservationsArgs, "userId">
   >;
+  overlapActiveReservationRequestsForListing?: Resolver<
+    Array<ResolversTypes["ReservationRequest"]>,
+    ParentType,
+    ContextType,
+    RequireFields<QueryOverlapActiveReservationRequestsForListingArgs, "listingId" | "reservationPeriodEnd" | "reservationPeriodStart">
+  >;
   personalUserById?: Resolver<Maybe<ResolversTypes["PersonalUser"]>, ParentType, ContextType, RequireFields<QueryPersonalUserByIdArgs, "id">>;
+  queryActiveByListingId?: Resolver<
+    Array<Maybe<ResolversTypes["ReservationRequest"]>>,
+    ParentType,
+    ContextType,
+    RequireFields<QueryQueryActiveByListingIdArgs, "listingId">
+  >;
 }>;
 
 export interface RgbScalarConfig extends GraphQLScalarTypeConfig<ResolversTypes["RGB"], any> {
@@ -1282,16 +1493,16 @@ export type ReservationRequestResolvers<
   ContextType = GraphContext,
   ParentType extends ResolversParentTypes["ReservationRequest"] = ResolversParentTypes["ReservationRequest"],
 > = ResolversObject<{
-  closeRequestedByReserver?: Resolver<ResolversTypes["Boolean"], ParentType, ContextType>;
-  closeRequestedBySharer?: Resolver<ResolversTypes["Boolean"], ParentType, ContextType>;
-  createdAt?: Resolver<ResolversTypes["String"], ParentType, ContextType>;
+  closeRequestedByReserver?: Resolver<Maybe<ResolversTypes["Boolean"]>, ParentType, ContextType>;
+  closeRequestedBySharer?: Resolver<Maybe<ResolversTypes["Boolean"]>, ParentType, ContextType>;
+  createdAt?: Resolver<Maybe<ResolversTypes["String"]>, ParentType, ContextType>;
   id?: Resolver<ResolversTypes["ObjectID"], ParentType, ContextType>;
-  listing?: Resolver<ResolversTypes["ItemListing"], ParentType, ContextType>;
-  reservationPeriodEnd?: Resolver<ResolversTypes["String"], ParentType, ContextType>;
-  reservationPeriodStart?: Resolver<ResolversTypes["String"], ParentType, ContextType>;
-  reserver?: Resolver<ResolversTypes["PersonalUser"], ParentType, ContextType>;
-  state?: Resolver<ResolversTypes["ReservationRequestState"], ParentType, ContextType>;
-  updatedAt?: Resolver<ResolversTypes["String"], ParentType, ContextType>;
+  listing?: Resolver<Maybe<ResolversTypes["ItemListing"]>, ParentType, ContextType>;
+  reservationPeriodEnd?: Resolver<Maybe<ResolversTypes["String"]>, ParentType, ContextType>;
+  reservationPeriodStart?: Resolver<Maybe<ResolversTypes["String"]>, ParentType, ContextType>;
+  reserver?: Resolver<Maybe<ResolversTypes["PersonalUser"]>, ParentType, ContextType>;
+  state?: Resolver<Maybe<ResolversTypes["ReservationRequestState"]>, ParentType, ContextType>;
+  updatedAt?: Resolver<Maybe<ResolversTypes["String"]>, ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 }>;
 
@@ -1408,6 +1619,10 @@ export type Resolvers<ContextType = GraphContext> = ResolversObject<{
   LCCSubclass?: GraphQLScalarType;
   Latitude?: GraphQLScalarType;
   Listing?: ListingResolvers<ContextType>;
+  ListingAll?: ListingAllResolvers<ContextType>;
+  ListingAllPage?: ListingAllPageResolvers<ContextType>;
+  ListingRequest?: ListingRequestResolvers<ContextType>;
+  ListingRequestPage?: ListingRequestPageResolvers<ContextType>;
   LocalDate?: GraphQLScalarType;
   LocalDateTime?: GraphQLScalarType;
   LocalEndTime?: GraphQLScalarType;
