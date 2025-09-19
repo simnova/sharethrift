@@ -3,13 +3,6 @@
   border: none !important;
 }
 
-.profile-title {
-  /* Example font styling, customize as needed */
-  font-family: 'Montserrat', Arial, sans-serif !important;
-  font-weight: 700 !important;
-  font-size: 2.2em !important;
-  letter-spacing: 0.02em;
-}
 
 .profile-avatar-scale {
   width: 100% !important;

@@ -82,7 +82,6 @@ export class ItemListingReadRepositoryImpl
 			return getMockItemListings();
 		}
 
-        console.log("SHARER ID:", sharerId);
 		try {
 			// Assuming the field is 'sharer' in the model and stores the user's ObjectId or externalId
 			const result = await this.mongoDataSource.find(

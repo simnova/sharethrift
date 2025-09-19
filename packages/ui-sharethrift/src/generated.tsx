@@ -519,6 +519,46 @@ export type HomeAccountProfileViewContainerUserListingsQuery = {
   }>;
 };
 
+export type HomeAccountSettingsViewContainerCurrentUserQueryVariables = Exact<{
+  [key: string]: never;
+}>;
+
+export type HomeAccountSettingsViewContainerCurrentUserQuery = {
+  __typename?: "Query";
+  currentPersonalUserAndCreateIfNotExists: {
+    __typename?: "PersonalUser";
+    id: any;
+    userType?: string | null;
+    createdAt?: any | null;
+    updatedAt?: any | null;
+    account?: {
+      __typename?: "PersonalUserAccount";
+      accountType?: string | null;
+      email?: string | null;
+      username?: string | null;
+      profile?: {
+        __typename?: "PersonalUserAccountProfile";
+        firstName?: string | null;
+        lastName?: string | null;
+        location?: {
+          __typename?: "PersonalUserAccountProfileLocation";
+          address1?: string | null;
+          address2?: string | null;
+          city?: string | null;
+          state?: string | null;
+          country?: string | null;
+          zipCode?: string | null;
+        } | null;
+        billing?: {
+          __typename?: "PersonalUserAccountProfileBilling";
+          subscriptionId?: string | null;
+          cybersourceCustomerId?: string | null;
+        } | null;
+      } | null;
+    } | null;
+  };
+};
+
 export type ItemListingFieldsFragment = {
   __typename?: "ItemListing";
   id: any;
@@ -1301,6 +1341,134 @@ export const HomeAccountProfileViewContainerUserListingsDocument = {
 } as unknown as DocumentNode<
   HomeAccountProfileViewContainerUserListingsQuery,
   HomeAccountProfileViewContainerUserListingsQueryVariables
+>;
+export const HomeAccountSettingsViewContainerCurrentUserDocument = {
+  kind: "Document",
+  definitions: [
+    {
+      kind: "OperationDefinition",
+      operation: "query",
+      name: {
+        kind: "Name",
+        value: "HomeAccountSettingsViewContainerCurrentUser",
+      },
+      selectionSet: {
+        kind: "SelectionSet",
+        selections: [
+          {
+            kind: "Field",
+            name: {
+              kind: "Name",
+              value: "currentPersonalUserAndCreateIfNotExists",
+            },
+            selectionSet: {
+              kind: "SelectionSet",
+              selections: [
+                { kind: "Field", name: { kind: "Name", value: "id" } },
+                { kind: "Field", name: { kind: "Name", value: "userType" } },
+                {
+                  kind: "Field",
+                  name: { kind: "Name", value: "account" },
+                  selectionSet: {
+                    kind: "SelectionSet",
+                    selections: [
+                      {
+                        kind: "Field",
+                        name: { kind: "Name", value: "accountType" },
+                      },
+                      { kind: "Field", name: { kind: "Name", value: "email" } },
+                      {
+                        kind: "Field",
+                        name: { kind: "Name", value: "username" },
+                      },
+                      {
+                        kind: "Field",
+                        name: { kind: "Name", value: "profile" },
+                        selectionSet: {
+                          kind: "SelectionSet",
+                          selections: [
+                            {
+                              kind: "Field",
+                              name: { kind: "Name", value: "firstName" },
+                            },
+                            {
+                              kind: "Field",
+                              name: { kind: "Name", value: "lastName" },
+                            },
+                            {
+                              kind: "Field",
+                              name: { kind: "Name", value: "location" },
+                              selectionSet: {
+                                kind: "SelectionSet",
+                                selections: [
+                                  {
+                                    kind: "Field",
+                                    name: { kind: "Name", value: "address1" },
+                                  },
+                                  {
+                                    kind: "Field",
+                                    name: { kind: "Name", value: "address2" },
+                                  },
+                                  {
+                                    kind: "Field",
+                                    name: { kind: "Name", value: "city" },
+                                  },
+                                  {
+                                    kind: "Field",
+                                    name: { kind: "Name", value: "state" },
+                                  },
+                                  {
+                                    kind: "Field",
+                                    name: { kind: "Name", value: "country" },
+                                  },
+                                  {
+                                    kind: "Field",
+                                    name: { kind: "Name", value: "zipCode" },
+                                  },
+                                ],
+                              },
+                            },
+                            {
+                              kind: "Field",
+                              name: { kind: "Name", value: "billing" },
+                              selectionSet: {
+                                kind: "SelectionSet",
+                                selections: [
+                                  {
+                                    kind: "Field",
+                                    name: {
+                                      kind: "Name",
+                                      value: "subscriptionId",
+                                    },
+                                  },
+                                  {
+                                    kind: "Field",
+                                    name: {
+                                      kind: "Name",
+                                      value: "cybersourceCustomerId",
+                                    },
+                                  },
+                                ],
+                              },
+                            },
+                          ],
+                        },
+                      },
+                    ],
+                  },
+                },
+                { kind: "Field", name: { kind: "Name", value: "createdAt" } },
+                { kind: "Field", name: { kind: "Name", value: "updatedAt" } },
+              ],
+            },
+          },
+        ],
+      },
+    },
+  ],
+} as unknown as DocumentNode<
+  HomeAccountSettingsViewContainerCurrentUserQuery,
+  HomeAccountSettingsViewContainerCurrentUserQueryVariables
 >;
 export const HomeCreateListingContainerCreateItemListingDocument = {
   kind: "Document",
