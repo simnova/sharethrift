@@ -36,7 +36,7 @@
 	},
 	"dependencies": {
 		"@azure/functions": "^4.0.0",
-		"@azure/identity": "^4.8.0",
+		"@azure/identity": "^4.11.2",
 		"twilio": "^5.8.0"
 	},
 	"devDependencies": {
