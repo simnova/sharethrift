@@ -2,7 +2,7 @@ import React from 'react';
 import { Card, Tag, Space } from 'antd';
 import styles from './all-listings-card.module.css';
 import type { ListingRequestData } from './my-listings-dashboard.types';
-import { getStatusTagClass, getActionButtons } from './requests-table';
+import { getStatusTagClass, getActionButtons } from './requests-status-helpers';
 
 export interface RequestsCardProps {
   listing: ListingRequestData;
