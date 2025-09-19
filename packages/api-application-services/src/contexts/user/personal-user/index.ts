@@ -5,8 +5,12 @@ import {
 	createIfNotExists,
 	type PersonalUserCreateCommand,
 } from './create-if-not-exists.ts';
-
+import {
+	queryByEmail,
+	type PersonalUserQueryByEmailCommand,
+} from './query-by-email.ts';
 import { update, type PersonalUserUpdateCommand } from './update.ts';
+
 export interface PersonalUserApplicationService {
 	createIfNotExists: (
 		command: PersonalUserCreateCommand,
@@ -17,6 +21,9 @@ export interface PersonalUserApplicationService {
 	update: (
 		command: PersonalUserUpdateCommand,
 	) => Promise<Domain.Contexts.User.PersonalUser.PersonalUserEntityReference>;
+	queryByEmail: (
+		email: PersonalUserQueryByEmailCommand,
+	) => Promise<Domain.Contexts.User.PersonalUser.PersonalUserEntityReference | null>;
 }
 
 export const PersonalUser = (
@@ -26,5 +33,6 @@ export const PersonalUser = (
 		createIfNotExists: createIfNotExists(dataSources),
 		queryById: queryById(dataSources),
 		update: update(dataSources),
+		queryByEmail: queryByEmail(dataSources),
 	};
 };

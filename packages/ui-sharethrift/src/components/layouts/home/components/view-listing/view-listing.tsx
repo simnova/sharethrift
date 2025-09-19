@@ -3,24 +3,22 @@ import { LeftOutlined } from '@ant-design/icons';
 import ListingImageGalleryContainer from './listing-image-gallery/listing-image-gallery.container';
 import SharerInformationContainer from './sharer-information/sharer-information.container';
 import ListingInformationContainer from './listing-information/listing-information.container';
-import type { UserRole, ReservationRequestStatus } from './listing-information/listing-information';
 
-import type { ItemListing } from '../mock-listings';
+import type { ItemListing, ViewListingActiveReservationRequestForListingQuery } from "../../../../../generated";
 
 export interface ViewListingProps {
   listing: ItemListing;
-  userRole: UserRole;
+  userIsSharer: boolean;
   isAuthenticated: boolean;
-  currentUserId?: string;
-  reservationRequestStatus?: ReservationRequestStatus;
+  userReservationRequest: ViewListingActiveReservationRequestForListingQuery["myActiveReservationForListing"] | null;
   sharedTimeAgo?: string;
 }
 
 export function ViewListing({ 
   listing,
-  userRole,
+  userIsSharer,
   isAuthenticated,
-  reservationRequestStatus,
+  userReservationRequest,
   sharedTimeAgo,
 }: ViewListingProps) {
   // Mock sharer info (since ItemListing.sharer is just an ID)
@@ -28,6 +26,7 @@ export function ViewListing({
   const handleBack = () => {
     window.location.href = '/';
   };
+
   return (
     <>
       <style>{`
@@ -97,7 +96,7 @@ export function ViewListing({
           >
             <SharerInformationContainer
               sharerId={sharerId}
-              listingId={listing._id}
+              listingId={listing.id}
               isOwner={listing.sharer === (typeof window !== 'undefined' ? window.localStorage.getItem('userId') : undefined)}
               className="sharer-info-responsive"
               sharedTimeAgo={sharedTimeAgo}
@@ -110,17 +109,17 @@ export function ViewListing({
             {/* Left: Images */}
             <Col xs={24} md={12} style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'center', marginTop: 0, paddingTop: 0 }}>
               <ListingImageGalleryContainer 
-                listingId={listing._id}
+                listingId={listing.id}
                 className="listing-gallery-responsive" 
               />
             </Col>
             {/* Right: Info/Form */}
             <Col xs={24} md={12} style={{ marginTop: 0, paddingTop: 0 }}>
               <ListingInformationContainer
-                listingId={listing._id}
-                userRole={userRole}
+                listing={listing}
+                userIsSharer={userIsSharer}
                 isAuthenticated={isAuthenticated}
-                reservationRequestStatus={reservationRequestStatus}
+                userReservationRequest={userReservationRequest}
                 className="listing-info-responsive"
               />
             </Col>

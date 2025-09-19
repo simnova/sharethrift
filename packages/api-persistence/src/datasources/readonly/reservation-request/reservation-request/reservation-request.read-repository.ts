@@ -7,6 +7,7 @@ import {
 } from './reservation-request.data.ts';
 import type { FindOneOptions, FindOptions } from '../../mongo-data-source.ts';
 import { ReservationRequestConverter } from '../../../domain/reservation-request/reservation-request/reservation-request.domain-adapter.ts';
+import { MongooseSeedwork } from '@cellix/data-sources-mongoose';
 
 export interface ReservationRequestReadRepository {
 	getAll: (
@@ -32,6 +33,25 @@ export interface ReservationRequestReadRepository {
 	>;
 	getPastByReserverIdWithListingWithSharer: (
 		reserverId: string,
+		options?: FindOptions,
+	) => Promise<
+		Domain.Contexts.ReservationRequest.ReservationRequest.ReservationRequestEntityReference[]
+	>;
+	getActiveByReserverIdAndListingId: (
+		reserverId: string,
+		listingId: string,
+		options?: FindOptions,
+	) => Promise<Domain.Contexts.ReservationRequest.ReservationRequest.ReservationRequestEntityReference | null>;
+	getOverlapActiveReservationRequestsForListing: (
+		listingId: string,
+		reservationPeriodStart: Date,
+		reservationPeriodEnd: Date,
+		options?: FindOptions,
+	) => Promise<
+		Domain.Contexts.ReservationRequest.ReservationRequest.ReservationRequestEntityReference[]
+	>;
+	getActiveByListingId: (
+		listingId: string,
 		options?: FindOptions,
 	) => Promise<
 		Domain.Contexts.ReservationRequest.ReservationRequest.ReservationRequestEntityReference[]
@@ -111,6 +131,59 @@ export class ReservationRequestReadRepositoryImpl
 		console.log(options); //gets rid of unused error
 		return Promise.resolve(mockResult);
 	}
+
+	async getActiveByReserverIdAndListingId(
+		reserverId: string,
+		listingId: string,
+		options?: FindOptions,
+	): Promise<Domain.Contexts.ReservationRequest.ReservationRequest.ReservationRequestEntityReference | null> {
+		const filter = {
+			reserver: new MongooseSeedwork.ObjectId(reserverId),
+			listing: new MongooseSeedwork.ObjectId(listingId),
+			state: { $in: ['Accepted', 'Requested'] },
+		};
+		const result = await this.mongoDataSource.findOne(filter, options);
+		if (!result) {
+			return null;
+		}
+		return this.converter.toDomain(result, this.passport);
+	}
+
+	async getOverlapActiveReservationRequestsForListing(
+		listingId: string,
+		reservationPeriodStart: Date,
+		reservationPeriodEnd: Date,
+		options?: FindOptions,
+	): Promise<
+		Domain.Contexts.ReservationRequest.ReservationRequest.ReservationRequestEntityReference[]
+	> {
+		const filter = {
+			listing: new MongooseSeedwork.ObjectId(listingId),
+			state: { $in: ['Accepted', 'Requested'] },
+			reservationPeriodStart: { $lt: reservationPeriodEnd },
+			reservationPeriodEnd: { $gt: reservationPeriodStart },
+		};
+		const result = await this.mongoDataSource.find(filter, options);
+		return result.map((doc) => this.converter.toDomain(doc, this.passport));
+	}
+
+	async getActiveByListingId(
+		listingId: string,
+		options?: FindOptions,
+	): Promise<
+		Domain.Contexts.ReservationRequest.ReservationRequest.ReservationRequestEntityReference[]
+	> {
+		// const filter = {
+		//     listing: new MongooseSeedwork.ObjectId(listingId),
+		// };
+		// const result = await this.mongoDataSource.find(filter, options);
+		// return result.map((doc) => this.converter.toDomain(doc, this.passport));
+		const mockResult = await Promise.resolve(
+			getMockReservationRequests('507f1f77bcf86cd799439011', 'active'),
+		);
+		console.log(options, listingId); //gets rid of unused error
+		return Promise.resolve(mockResult);
+	}
 }
 
 export const getReservationRequestReadRepository = (
@@ -125,18 +198,16 @@ const getMockReservationRequests = (
 	type: string,
 ): Domain.Contexts.ReservationRequest.ReservationRequest.ReservationRequestEntityReference[] => {
 	const reservationState = type === 'active' ? 'Accepted' : 'Closed';
-	const mockResult = [
+	return [
 		{
-			_id: new Types.ObjectId(),
 			id: '507f1f77bcf86cd799439011',
 			state: reservationState,
-			reservationPeriodStart: new Date('2024-09-05T10:00:00Z'),
-			reservationPeriodEnd: new Date('2024-09-15T10:00:00Z'),
+			reservationPeriodStart: new Date('2025-10-27T10:00:00Z'),
+			reservationPeriodEnd: new Date('2025-11-06T10:00:00Z'),
 			createdAt: new Date('2024-09-01T10:00:00Z'),
 			updatedAt: new Date('2024-09-05T12:00:00Z'),
 			schemaVersion: '1',
 			listing: {
-				_id: new Types.ObjectId(),
 				id: '60ddc9732f8fb814c89b6789',
 				title: 'Professional Microphone',
 				description: 'A high-quality microphone for professional use.',
@@ -149,7 +220,6 @@ const getMockReservationRequests = (
 				createdAt: new Date('2024-01-05T09:00:00Z'),
 				updatedAt: new Date('2024-01-13T09:00:00Z'),
 				sharer: {
-					_id: new Types.ObjectId(),
 					id: '5f8d0d55b54764421b7156c5',
 					userType: 'personal',
 					isBlocked: false,
@@ -242,9 +312,7 @@ const getMockReservationRequests = (
 				},
 			},
 			reserver: {
-				_id: new Types.ObjectId(reserverId),
 				id: reserverId,
-				name: 'John Doe',
 				account: {
 					accountType: 'personal',
 					email: 'reserver@example.com',
@@ -338,7 +406,6 @@ const getMockReservationRequests = (
 			closeRequestedByReserver: false,
 			loadListing: () => {
 				return Promise.resolve({
-					_id: new Types.ObjectId(),
 					id: '60ddc9732f8fb814c89b6789',
 					title: 'Professional Microphone',
 					description: 'A high-quality microphone for professional use.',
@@ -351,7 +418,6 @@ const getMockReservationRequests = (
 					createdAt: new Date('2024-01-05T09:00:00Z'),
 					updatedAt: new Date('2024-01-13T09:00:00Z'),
 					sharer: {
-						_id: new Types.ObjectId(),
 						id: 'mock-sharer-id',
 						userType: 'personal',
 						isBlocked: false,
@@ -475,10 +541,8 @@ const getMockReservationRequests = (
 					},
 				};
 				return Promise.resolve({
-					_id: new Types.ObjectId(reserverId),
 					id: reserverId,
-					name: 'John Doe',
-
+					//name: 'John Doe',
 					account: {
 						accountType: 'personal',
 						email: 'reserver@example.com',
@@ -514,5 +578,4 @@ const getMockReservationRequests = (
 			},
 		},
 	];
-	return mockResult;
 };

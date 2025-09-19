@@ -1,0 +1,75 @@
+.modalRoot .ant-modal-content {
+	border-radius: 12px;
+	padding: 24px;
+	/* keep modal from getting too wide on large screens but allow it to shrink on mobile */
+	max-width: 640px;
+	width: 100%;
+}
+
+.content {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	justify-content: center;
+	gap: 8px;
+	padding: 8px 16px 24px 16px;
+	min-width: 0;
+	max-width: 520px; /* content area max to keep readable line lengths */
+	box-sizing: border-box;
+	text-align: center;
+}
+
+.image {
+	/* make image scale with available space but not exceed a comfortable size */
+	width: min(40%, 220px);
+	height: auto;
+	object-fit: contain;
+}
+
+/* ensure heading and paragraph text wrap and don't overflow */
+.content .title36,
+.content .p,
+.content p,
+.content div[class^="title"] {
+	width: 100%;
+	white-space: normal;
+	word-break: break-word;
+	overflow-wrap: anywhere;
+}
+
+.actions {
+	margin-top: 20px;
+	display: flex;
+	gap: 8px;
+	align-items: center;
+	justify-content: center;
+}
+
+/* Make action buttons wrap and stack on small screens */
+@media (max-width: 480px) {
+	.actions {
+		flex-direction: column;
+		gap: 12px;
+	}
+	.actions .primaryButton,
+	.actions .secondaryButton,
+	.actions .ant-btn {
+		width: 100%;
+	}
+}
+
+@media (max-width: 600px) {
+	.content {
+		padding: 8px 12px 20px 12px;
+		max-width: 92%;
+	}
+	.image {
+		width: 120px;
+		height: auto;
+	}
+
+	.modalRoot .ant-modal-content {
+		padding: 16px;
+		max-width: calc(100% - 32px);
+	}
+}

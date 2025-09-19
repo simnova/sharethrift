@@ -1,0 +1,183 @@
+.settingsContainer {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 24px;
+}
+
+.settingsHeader {
+  margin-bottom: 24px;
+}
+
+.settingsHeader h2 {
+  margin-bottom: 8px;
+}
+
+.sectionsContainer {
+  width: 100%;
+}
+
+.sectionCard {
+  width: 100%;
+  margin-bottom: 12px;
+  box-shadow: none;
+  background-color: var(--color-background);
+  border: none;
+}
+
+.sectionHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+/* Profile Section */
+.profileImageCol {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.profileAvatar {
+  width: 100%;
+  max-width: 140px;
+  aspect-ratio: 1 / 1;
+  height: auto !important;
+  border-radius: 50% !important;
+  object-fit: cover;
+  display: block;
+}
+
+.profileInfo {
+  width: 100%;
+}
+
+.profileInfo > div {
+  margin-bottom: 16px;
+}
+
+/* Plan Section */
+.planCard {
+  height: 100%;
+  transition: all 0.3s ease;
+  border: 2px solid transparent;
+  cursor: pointer;
+}
+
+.planCard:hover {
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+  transform: translateY(-2px);
+}
+
+.selectedPlan {
+  border-color: #52c41a;
+  background-color: #f6ffed;
+}
+
+.planHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 12px;
+}
+
+.planName {
+  margin: 0;
+  font-size: 16px;
+}
+
+.planPrice {
+  font-size: 18px;
+  color: #1890ff;
+  display: block;
+  margin-bottom: 16px;
+}
+
+.planFeatures {
+  list-style: none;
+  padding: 0;
+  margin: 0 0 16px 0;
+}
+
+.planFeatures li {
+  padding: 4px 0;
+  color: #666;
+  font-size: 14px;
+}
+
+.planFeatures li:before {
+  content: "✓";
+  color: #52c41a;
+  margin-right: 8px;
+  font-weight: bold;
+}
+
+.selectedTag {
+  margin-top: 8px;
+}
+
+/* Billing Section */
+.billingInfo {
+  width: 100%;
+}
+
+.billingInfo > div {
+  margin-bottom: 16px;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .settingsContainer {
+    padding: 16px;
+  }
+  
+  .sectionHeader {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 12px;
+  }
+  
+  .editButton {
+    align-self: flex-end;
+  }
+  
+  .profileImageCol {
+    margin-bottom: 20px;
+  }
+  
+  .planCard {
+    margin-bottom: 16px;
+  }
+  
+  .planHeader {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 8px;
+  }
+  
+  .profileAvatar {
+    max-width: 100px;
+  }
+}
+
+@media (max-width: 576px) {
+  .settingsContainer {
+    padding: 12px;
+  }
+  
+  .sectionCard {
+    margin-bottom: 16px;
+  }
+  
+  .sectionCard .ant-card-body {
+    padding: 16px;
+  }
+  
+  .profileAvatar {
+    max-width: 70px;
+  }
+  
+  .settingsHeader h2 {
+    font-size: 24px;
+  }
+}
