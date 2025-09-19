@@ -16,7 +16,8 @@
 	},
 	"peerDependencies": {
 		"@sthrift/api-domain": "^1.0.0",
-		"@sthrift/api-persistence": "^1.0.0"
+		"@sthrift/service-token-validation": "^1.0.0",
+		"@sthrift/service-cybersource": "^1.0.0"
 	},
 	"devDependencies": {
 		"rimraf": "^6.0.1",

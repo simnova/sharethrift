@@ -3,13 +3,15 @@
 	"compilerOptions": {
 		/* Modules */
 		"rootDir": ".",
-        "types": ["node"],
+		"types": ["node"],
 		/* Emit */
 		"outDir": "dist"
 	},
 	"include": ["src/**/*.ts"],
 	"references": [
 		//needs to match peer dependencies in package.json
-		{ "path": "../api-domain" }
+		{ "path": "../service-token-validation" },
+		{ "path": "../service-cybersource" },
+		{ "path": "../api-persistence" }
 	]
 }
