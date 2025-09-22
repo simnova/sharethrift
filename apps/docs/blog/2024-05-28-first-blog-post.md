@@ -9,4 +9,4 @@ Welcome to Sharethrift, a Domain-Driven Design (DDD) monorepo built on Azure Fun
 
 <!-- truncate -->
 
-Sharethrift implements a multi-layered architecture following strict DDD principles with bounded contexts for community management and user administration. The project includes specialized packages like `@sthrift/api-domain` for business logic, `@sthrift/api-graphql` for GraphQL implementation, and various service packages for MongoDB connectivity and observability.
+Sharethrift implements a multi-layered architecture following strict DDD principles with bounded contexts for community management and user administration. The project includes specialized packages like `@sthrift/domain` for business logic, `@sthrift/graphql` for GraphQL implementation, and various service packages for MongoDB connectivity and observability.

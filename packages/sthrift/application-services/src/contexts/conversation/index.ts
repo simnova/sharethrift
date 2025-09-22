@@ -1,4 +1,4 @@
-import type { DataSources } from '@sthrift/api-persistence';
+import type { DataSources } from '@sthrift/persistence';
 import {
 	Conversation as ConversationApi,
 	type ConversationApplicationService,

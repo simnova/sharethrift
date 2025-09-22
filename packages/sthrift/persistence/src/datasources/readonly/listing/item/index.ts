@@ -1,4 +1,4 @@
-import type { Domain } from '@sthrift/api-domain';
+import type { Domain } from '@sthrift/domain';
 import type { ModelsContext } from '../../../../models-context.ts';
 import { getItemListingReadRepository } from './item-listing.read-repository.ts';
 

@@ -1,2 +1,2 @@
-import type { Models } from '@sthrift/api-data-sources-mongoose-models';
+import type { Models } from '@sthrift/data-sources-mongoose-models';
 export type ModelsContext = ReturnType<typeof Models.mongooseContextBuilder>;

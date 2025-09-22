@@ -1,9 +1,9 @@
 ---
-applyTo: "packages/cellix-domain-seedwork/src/domain-seedwork/**/*.ts"
+applyTo: "packages/domain-seedwork/src/domain-seedwork/**/*.ts"
 ---
 # Copilot Instructions for src/domain-seedwork
 
-See the package-wide instructions in `.github/instructions/cellix-domain-seedwork.instructions.md` for general rules, architecture, and conventions for this package.
+See the package-wide instructions in `.github/instructions/domain-seedwork.instructions.md` for general rules, architecture, and conventions for this package.
 
 ## Purpose
 - This folder provides foundational abstractions for Domain-Driven Design (DDD) in the Cellix monorepo.

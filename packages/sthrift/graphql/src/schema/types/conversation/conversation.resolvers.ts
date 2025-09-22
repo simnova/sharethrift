@@ -1,5 +1,5 @@
 import type { GraphContext } from '../../../init/context.ts';
-import type { Domain } from '@sthrift/api-domain';
+import type { Domain } from '@sthrift/domain';
 import type {
 	ConversationCreateInput,
 	Resolvers,

@@ -7,7 +7,7 @@ import type {
 	RefundResponse,
 	Resolvers,
 } from '../../builder/generated.ts';
-import type { PersonalUserUpdateCommand } from '@sthrift/api-application-services';
+import type { PersonalUserUpdateCommand } from '@sthrift/application-services';
 
 const personalUserResolvers: Resolvers = {
 	Query: {

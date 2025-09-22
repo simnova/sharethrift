@@ -1,5 +1,5 @@
-import type { ApiContextSpec } from '@sthrift/api-context-spec';
-import { Domain } from '@sthrift/api-domain';
+import type { ApiContextSpec } from '@sthrift/context-spec';
+import { Domain } from '@sthrift/domain';
 import {
 	User,
 	type UserContextApplicationService,

@@ -1,4 +1,4 @@
-# @sthrift/service-mongodb-memory-server
+# @sthrift/mock-mongodb-memory-server
 
 MongoDB Memory Server service for CellixJS monorepo.
 

@@ -1,4 +1,4 @@
-import type { Models } from "@sthrift/api-data-sources-mongoose-models";
+import type { Models } from "@sthrift/data-sources-mongoose-models";
 import { MongoDataSourceImpl, type MongoDataSource } from "../../mongo-data-source.ts";
 
 export interface ReservationRequestDataSource extends MongoDataSource<Models.ReservationRequest.ReservationRequest> {}

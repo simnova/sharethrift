@@ -1,4 +1,4 @@
-import type { Domain, DomainDataSource } from '@sthrift/api-domain';
+import type { Domain, DomainDataSource } from '@sthrift/domain';
 import type { ModelsContext } from '../../models-context.ts';
 import { UserContextPersistence } from './user/index.ts';
 import { ListingContextPersistence } from './listing/index.ts';

@@ -1,5 +1,5 @@
 import type { MongooseSeedwork } from '@cellix/data-sources-mongoose';
-import { Models } from '@sthrift/api-data-sources-mongoose-models';
+import { Models } from '@sthrift/data-sources-mongoose-models';
 import { DataSourcesFactoryImpl } from './datasources/index.ts';
 import type { ModelsContext } from './models-context.ts';
 

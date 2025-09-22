@@ -1,6 +1,6 @@
 import { useCallback } from "react";
 import { SelectAccountType } from "./select-account-type";
-import { ComponentQueryLoader } from "@sthrift/ui-sharethrift-components";
+import { ComponentQueryLoader } from "@sthrift/ui-components";
 import { useQuery, useMutation } from "@apollo/client";
 import { useNavigate } from "react-router-dom";
 import {
@@ -15,9 +15,14 @@ export default function SelectAccountTypeContainer() {
     data: currentUserData,
     loading: loadingUser,
     error: userError,
-  } = useQuery(SignupSelectAccountTypeCurrentPersonalUserAndCreateIfNotExistsDocument);
+  } = useQuery(
+    SignupSelectAccountTypeCurrentPersonalUserAndCreateIfNotExistsDocument
+  );
 
-  const [updateAccountType, { loading: savingAccountType, error: updateError }] = useMutation(SignupSelectAccountTypePersonalUserUpdateDocument);
+  const [
+    updateAccountType,
+    { loading: savingAccountType, error: updateError },
+  ] = useMutation(SignupSelectAccountTypePersonalUserUpdateDocument);
 
   const handleUpdateAccountType = useCallback(
     async (accountType: string) => {
@@ -25,7 +30,8 @@ export default function SelectAccountTypeContainer() {
         return;
       }
       try {
-        const userId = currentUserData?.currentPersonalUserAndCreateIfNotExists?.id;
+        const userId =
+          currentUserData?.currentPersonalUserAndCreateIfNotExists?.id;
         if (!userId) {
           return;
         }
@@ -38,7 +44,8 @@ export default function SelectAccountTypeContainer() {
           },
           refetchQueries: [
             {
-              query: SignupSelectAccountTypeCurrentPersonalUserAndCreateIfNotExistsDocument,
+              query:
+                SignupSelectAccountTypeCurrentPersonalUserAndCreateIfNotExistsDocument,
             },
           ],
         });
@@ -63,7 +70,9 @@ export default function SelectAccountTypeContainer() {
       error={errorMessage}
       hasDataComponent={
         <SelectAccountType
-          currentUserData={currentUserData?.currentPersonalUserAndCreateIfNotExists}
+          currentUserData={
+            currentUserData?.currentPersonalUserAndCreateIfNotExists
+          }
           loadingUser={loadingUser}
           handleUpdateAccountType={handleUpdateAccountType}
           savingAccountType={savingAccountType}

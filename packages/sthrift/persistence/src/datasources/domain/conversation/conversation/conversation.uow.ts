@@ -3,8 +3,8 @@ import {
 	InProcEventBusInstance,
 	NodeEventBusInstance,
 } from '@cellix/event-bus-seedwork-node';
-import type { Models } from '@sthrift/api-data-sources-mongoose-models';
-import type { Domain } from '@sthrift/api-domain';
+import type { Models } from '@sthrift/data-sources-mongoose-models';
+import type { Domain } from '@sthrift/domain';
 import { ConversationConverter } from './conversation.domain-adapter.ts';
 import { ConversationRepository } from './conversation.repository.ts';
 

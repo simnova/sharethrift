@@ -1,36 +1,45 @@
-import { useState } from 'react';
-import { useQuery } from '@apollo/client';
-import { AllListingsTable } from './all-listings-table';
-import { ComponentQueryLoader } from '@sthrift/ui-sharethrift-components';
-import { HomeAllListingsTableContainerMyListingsAllDocument } from '../../../../../generated';
+import { useState } from "react";
+import { useQuery } from "@apollo/client";
+import { AllListingsTable } from "./all-listings-table";
+import { ComponentQueryLoader } from "@sthrift/ui-components";
+import { HomeAllListingsTableContainerMyListingsAllDocument } from "../../../../../generated";
 
 export interface AllListingsTableContainerProps {
   currentPage: number;
   onPageChange: (page: number) => void;
 }
 
-export function AllListingsTableContainer({ currentPage, onPageChange }: AllListingsTableContainerProps) {
-  const [searchText, setSearchText] = useState('');
+export function AllListingsTableContainer({
+  currentPage,
+  onPageChange,
+}: AllListingsTableContainerProps) {
+  const [searchText, setSearchText] = useState("");
   const [statusFilters, setStatusFilters] = useState<string[]>([]);
   const [sorter, setSorter] = useState<{
     field: string | null;
-    order: 'ascend' | 'descend' | null;
+    order: "ascend" | "descend" | null;
   }>({ field: null, order: null });
   const pageSize = 6;
 
-  const { data, loading, error } = useQuery(HomeAllListingsTableContainerMyListingsAllDocument, {
-    variables: {
-      page: currentPage,
-      pageSize: pageSize,
-      searchText: searchText,
-      statusFilters: statusFilters,
-      sorter: sorter.field && sorter.order ? { field: sorter.field, order: sorter.order } : undefined,
-    },
-    fetchPolicy: 'network-only',
-  });
+  const { data, loading, error } = useQuery(
+    HomeAllListingsTableContainerMyListingsAllDocument,
+    {
+      variables: {
+        page: currentPage,
+        pageSize: pageSize,
+        searchText: searchText,
+        statusFilters: statusFilters,
+        sorter:
+          sorter.field && sorter.order
+            ? { field: sorter.field, order: sorter.order }
+            : undefined,
+      },
+      fetchPolicy: "network-only",
+    }
+  );
 
   const listings = data?.myListingsAll?.items ?? [];
-  console.log('Listings data:', data);
+  console.log("Listings data:", data);
   const total = data?.myListingsAll?.total ?? 0;
 
   const handleSearch = (value: string) => {
@@ -43,8 +52,15 @@ export function AllListingsTableContainer({ currentPage, onPageChange }: AllList
     onPageChange(1);
   };
 
-  const handleTableChange = (_pagination: unknown, _filters: unknown, sorter: unknown) => {
-    const typedSorter = sorter as { field?: string; order?: 'ascend' | 'descend' };
+  const handleTableChange = (
+    _pagination: unknown,
+    _filters: unknown,
+    sorter: unknown
+  ) => {
+    const typedSorter = sorter as {
+      field?: string;
+      order?: "ascend" | "descend";
+    };
     setSorter({
       field: typedSorter.field || null,
       order: typedSorter.order || null,

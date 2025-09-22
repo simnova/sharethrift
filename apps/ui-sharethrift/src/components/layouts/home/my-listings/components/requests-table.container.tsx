@@ -1,33 +1,42 @@
-import { useState } from 'react';
-import { useQuery } from '@apollo/client';
-import { RequestsTable } from './requests-table';
-import { ComponentQueryLoader } from '@sthrift/ui-sharethrift-components';
-import { HomeRequestsTableContainerMyListingsRequestsDocument } from '../../../../../generated';
+import { useState } from "react";
+import { useQuery } from "@apollo/client";
+import { RequestsTable } from "./requests-table";
+import { ComponentQueryLoader } from "@sthrift/ui-components";
+import { HomeRequestsTableContainerMyListingsRequestsDocument } from "../../../../../generated";
 
 export interface RequestsTableContainerProps {
   currentPage: number;
   onPageChange: (page: number) => void;
 }
 
-export function RequestsTableContainer({ currentPage, onPageChange }: RequestsTableContainerProps) {
-  const [searchText, setSearchText] = useState('');
+export function RequestsTableContainer({
+  currentPage,
+  onPageChange,
+}: RequestsTableContainerProps) {
+  const [searchText, setSearchText] = useState("");
   const [statusFilters, setStatusFilters] = useState<string[]>([]);
   const [sorter, setSorter] = useState<{
     field: string | null;
-    order: 'ascend' | 'descend' | null;
+    order: "ascend" | "descend" | null;
   }>({ field: null, order: null });
   const pageSize = 6;
 
-  const { data, loading, error } = useQuery(HomeRequestsTableContainerMyListingsRequestsDocument, {
-    variables: {
-      page: currentPage,
-      pageSize: pageSize,
-      searchText: searchText,
-      statusFilters: statusFilters,
-      sorter: sorter.field && sorter.order ? { field: sorter.field, order: sorter.order } : undefined,
-    },
-    fetchPolicy: 'network-only',
-  });
+  const { data, loading, error } = useQuery(
+    HomeRequestsTableContainerMyListingsRequestsDocument,
+    {
+      variables: {
+        page: currentPage,
+        pageSize: pageSize,
+        searchText: searchText,
+        statusFilters: statusFilters,
+        sorter:
+          sorter.field && sorter.order
+            ? { field: sorter.field, order: sorter.order }
+            : undefined,
+      },
+      fetchPolicy: "network-only",
+    }
+  );
 
   const requests = data?.myListingsRequests?.items ?? [];
   const total = data?.myListingsRequests?.total ?? 0;
@@ -42,8 +51,15 @@ export function RequestsTableContainer({ currentPage, onPageChange }: RequestsTa
     onPageChange(1);
   };
 
-  const handleTableChange = (_pagination: unknown, _filters: unknown, sorter: unknown) => {
-    const typedSorter = sorter as { field?: string; order?: 'ascend' | 'descend' };
+  const handleTableChange = (
+    _pagination: unknown,
+    _filters: unknown,
+    sorter: unknown
+  ) => {
+    const typedSorter = sorter as {
+      field?: string;
+      order?: "ascend" | "descend";
+    };
     setSorter({
       field: typedSorter.field || null,
       order: typedSorter.order || null,

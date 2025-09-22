@@ -1,8 +1,18 @@
-import { Card, Avatar, Button, Tag, Typography, Row, Col, Space, Divider } from 'antd';
-import { ListingsGrid } from '@sthrift/ui-sharethrift-components';
-import { SettingOutlined, UserOutlined } from '@ant-design/icons';
-import './profile-view.overrides.css';
-import type { UserProfileData, UserListing } from './profile-view.types';
+import {
+  Card,
+  Avatar,
+  Button,
+  Tag,
+  Typography,
+  Row,
+  Col,
+  Space,
+  Divider,
+} from "antd";
+import { ListingsGrid } from "@sthrift/ui-components";
+import { SettingOutlined, UserOutlined } from "@ant-design/icons";
+import "./profile-view.overrides.css";
+import type { UserProfileData, UserListing } from "./profile-view.types";
 
 const { Text } = Typography;
 
@@ -16,19 +26,17 @@ interface ProfileViewProps {
   onListingClick: (listingId: string) => void;
 }
 
-export function ProfileView({ 
-  user, 
-  listings, 
-  isOwnProfile, 
-  onEditSettings, 
-  onListingClick 
+export function ProfileView({
+  user,
+  listings,
+  isOwnProfile,
+  onEditSettings,
+  onListingClick,
 }: Readonly<ProfileViewProps>) {
-
-
   const formatDate = (dateString: string) => {
-    return new Date(dateString).toLocaleDateString('en-US', {
-      year: 'numeric',
-      month: 'long'
+    return new Date(dateString).toLocaleDateString("en-US", {
+      year: "numeric",
+      month: "long",
     });
   };
 
@@ -54,8 +62,17 @@ export function ProfileView({
           </Col>
           <Col xs={24} sm={18} lg={20}>
             <div className="nameSect profile-info-center">
-              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '1rem' }}>
-                <div className="title42">{user.firstName} {user.lastName.charAt(0)}.</div>
+              <div
+                style={{
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "space-between",
+                  gap: "1rem",
+                }}
+              >
+                <div className="title42">
+                  {user.firstName} {user.lastName.charAt(0)}.
+                </div>
                 {/* Desktop Account Settings Button */}
                 {isOwnProfile && (
                   <div className="profile-settings-desktop">
@@ -69,18 +86,21 @@ export function ProfileView({
                   </div>
                 )}
               </div>
-              <h3 className="block mb-2">
-                @{user.username}
-              </h3>
+              <h3 className="block mb-2">@{user.username}</h3>
             </div>
             <div className="profile-info-center">
               <Space className="mb-3" wrap>
                 <Tag className="personalAccount">
-                  <UserOutlined style={{ color: 'var(--color-background)', fontSize: 16 }}/>
-                  {user.accountType.charAt(0).toUpperCase() + user.accountType.slice(1)}
+                  <UserOutlined
+                    style={{ color: "var(--color-background)", fontSize: 16 }}
+                  />
+                  {user.accountType.charAt(0).toUpperCase() +
+                    user.accountType.slice(1)}
                 </Tag>
                 <span>|</span>
-                <p>{user.location.city}, {user.location.state}</p>
+                <p>
+                  {user.location.city}, {user.location.state}
+                </p>
                 <span>|</span>
                 <p>Sharing since {formatDate(user.createdAt)}</p>
               </Space>
@@ -90,35 +110,50 @@ export function ProfileView({
       </Card>
 
       <Divider orientation="left">
-        <h2 className="title30" style={{ color: 'var(--color-tertiary)' }}>My Listings</h2>
+        <h2 className="title30" style={{ color: "var(--color-tertiary)" }}>
+          My Listings
+        </h2>
       </Divider>
 
       {/* User Listings */}
-      <div className="profile-listings-grid-override" style={{ marginTop: '1rem', marginBottom: '2rem', marginLeft: '3rem', marginRight: '3rem' }}>
+      <div
+        className="profile-listings-grid-override"
+        style={{
+          marginTop: "1rem",
+          marginBottom: "2rem",
+          marginLeft: "3rem",
+          marginRight: "3rem",
+        }}
+      >
         <ListingsGrid
-          listings={listings.map(l => ({
+          listings={listings.map((l) => ({
             ...l,
             _id: l.id,
             sharer: user.username,
             sharingPeriodStart: new Date(l.sharingPeriodStart),
             sharingPeriodEnd: new Date(l.sharingPeriodEnd),
-            state: ([
-              'Published', 'Paused', 'Cancelled', 'Drafted', 'Expired', 'Blocked', 'Appeal Requested'
+            state: [
+              "Published",
+              "Paused",
+              "Cancelled",
+              "Drafted",
+              "Expired",
+              "Blocked",
+              "Appeal Requested",
             ].includes(l.state)
-              ? l.state as (
-                | 'Published'
-                | 'Paused'
-                | 'Cancelled'
-                | 'Drafted'
-                | 'Expired'
-                | 'Blocked'
-                | 'Appeal Requested'
-                | undefined
-              )
-              : undefined),
+              ? (l.state as
+                  | "Published"
+                  | "Paused"
+                  | "Cancelled"
+                  | "Drafted"
+                  | "Expired"
+                  | "Blocked"
+                  | "Appeal Requested"
+                  | undefined)
+              : undefined,
             createdAt: l.createdAt ? new Date(l.createdAt) : undefined,
           }))}
-          onListingClick={listing => onListingClick(listing._id)}
+          onListingClick={(listing) => onListingClick(listing._id)}
           currentPage={1}
           pageSize={20}
           total={listings.length}

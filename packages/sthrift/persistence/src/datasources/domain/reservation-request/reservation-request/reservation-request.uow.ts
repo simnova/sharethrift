@@ -1,9 +1,9 @@
 import { MongooseSeedwork } from '@cellix/data-sources-mongoose';
-import type { Domain } from '@sthrift/api-domain';
+import type { Domain } from '@sthrift/domain';
 import type { Model } from 'mongoose';
 import { ReservationRequestConverter } from './reservation-request.domain-adapter.ts';
 import { ReservationRequestRepository } from './reservation-request.repository.ts';
-import type { Models } from '@sthrift/api-data-sources-mongoose-models';
+import type { Models } from '@sthrift/data-sources-mongoose-models';
 import {
 	InProcEventBusInstance,
 	NodeEventBusInstance,

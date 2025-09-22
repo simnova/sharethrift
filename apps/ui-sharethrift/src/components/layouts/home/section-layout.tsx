@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { useAuth } from "react-oidc-context";
 import { Outlet, useLocation, useNavigate } from "react-router-dom";
 import { HandleLogoutMockForMockAuth } from "../../shared/handle-logout";
-import { Footer, Header, Navigation } from "@sthrift/ui-sharethrift-components";
+import { Footer, Header, Navigation } from "@sthrift/ui-components";
 import { useCreateListingNavigation } from "./components/create-listing/hooks/use-create-listing-navigation";
 
 export default function HomeTabsLayout() {
@@ -35,7 +35,9 @@ export default function HomeTabsLayout() {
       // Add more subroutes as needed
       return undefined; // nothing highlighted if not a known subroute
     }
-    const found = Object.entries(routeMap).find(([, route]) => path.startsWith(route));
+    const found = Object.entries(routeMap).find(([, route]) =>
+      path.startsWith(route)
+    );
     return found ? found[0] : "home";
   };
 
@@ -115,7 +117,12 @@ export default function HomeTabsLayout() {
           paddingTop: 64,
         }}
       >
-        <Navigation isAuthenticated={auth.isAuthenticated} onNavigate={handleNavigate} onLogout={handleLogOut} selectedKey={getSelectedKey()} />
+        <Navigation
+          isAuthenticated={auth.isAuthenticated}
+          onNavigate={handleNavigate}
+          onLogout={handleLogOut}
+          selectedKey={getSelectedKey()}
+        />
         <main style={{ marginLeft: mainMargin, width: "100%" }}>
           <Outlet />
         </main>

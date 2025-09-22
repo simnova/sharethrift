@@ -8,7 +8,7 @@ Import from the package root to access the `MongooseSeedwork` namespace.
 import { MongooseSeedwork } from '@cellix/data-sources-mongoose';
 ```
 
-This README documents the persistence-side pieces only. Domain concepts are documented in [Domain Seedwork API docs](../../../cellix-domain-seedwork/src/domain-seedwork/README.md).
+This README documents the persistence-side pieces only. Domain concepts are documented in [Domain Seedwork API docs](../../../domain-seedwork/src/domain-seedwork/README.md).
 
 ---
 
@@ -95,4 +95,4 @@ await uow.withTransaction(passport, async (repo) => {
 - Use `MongoTypeConverter` to keep mapping concerns out of aggregates and value objects.
 - Domain events are dispatched before persistence commit; integration events after commit.
 
-For domain-side concepts and patterns, see [Domain Seedwork API docs](../../../cellix-domain-seedwork/src/domain-seedwork/README.md).
+For domain-side concepts and patterns, see [Domain Seedwork API docs](../../../domain-seedwork/src/domain-seedwork/README.md).

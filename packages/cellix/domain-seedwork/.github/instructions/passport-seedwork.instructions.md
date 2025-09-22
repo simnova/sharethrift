@@ -1,9 +1,9 @@
 ---
-applyTo: "packages/cellix-domain-seedwork/src/passport-seedwork/**/*.ts"
+applyTo: "packages/domain-seedwork/src/passport-seedwork/**/*.ts"
 ---
 # Copilot Instructions: @cellix-domain-seedwork/src/passport-seedwork
 
-See the package-wide instructions in `.github/instructions/cellix-domain-seedwork.instructions.md` for general rules, architecture, and conventions for this package.
+See the package-wide instructions in `.github/instructions/domain-seedwork.instructions.md` for general rules, architecture, and conventions for this package.
 
 ## Purpose
 - This folder provides foundational abstractions for authentication and authorization in the Cellix monorepo.

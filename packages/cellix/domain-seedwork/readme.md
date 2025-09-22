@@ -2,7 +2,7 @@
 
 Foundational, framework-agnostic building blocks for Domain-Driven Design (DDD) used across the Cellix monorepo. This package provides base classes and interfaces for aggregates, entities, value objects, domain events, repositories, units of work, and simple authorization primitives. It intentionally contains no infrastructure code (no HTTP, databases, queues).
 
-- Purpose: act as seedwork to be extended/implemented by bounded contexts (e.g., `@sthrift/api-domain`).
+- Purpose: act as seedwork to be extended/implemented by bounded contexts (e.g., `@sthrift/domain`).
 - Scope: abstractions and minimal base implementations only; concrete persistence/event bus live in other packages.
 - Language/runtime: TypeScript 5.8, ESM, Node 22+.
 
@@ -29,7 +29,7 @@ import { DomainSeedwork, PassportSeedwork } from '@cellix/domain-seedwork';
 ## Folder structure
 
 ```
-packages/cellix-domain-seedwork/
+packages/domain-seedwork/
 ├── src/
 │   ├── domain-seedwork/         # Core DDD seedwork (aggregates, entities, VO, events, repo, UoW)
 │   │   ├── README.md            # API and usage for seedwork exports (authoritative)
@@ -127,7 +127,7 @@ Common scripts from `package.json` (executed in this workspace):
 ## See also
 
 - `@cellix/data-sources-mongoose` — Mongoose implementations for Repository/UoW/TypeConverter/PropArray
-- `@sthrift/api-domain` — Real-world domain using this seedwork
+- `@sthrift/domain` — Real-world domain using this seedwork
 
 ---
 

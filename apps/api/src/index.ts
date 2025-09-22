@@ -1,13 +1,13 @@
 import './service-config/otel-starter.ts';
 
 import { Cellix } from './cellix.ts';
-import type { ApiContextSpec } from '@sthrift/api-context-spec';
+import type { ApiContextSpec } from '@sthrift/context-spec';
 
 import {
 	type ApplicationServices,
 	buildApplicationServicesFactory,
-} from '@sthrift/api-application-services';
-import { RegisterEventHandlers } from '@sthrift/api-event-handler';
+} from '@sthrift/application-services';
+import { RegisterEventHandlers } from '@sthrift/event-handler';
 
 import { ServiceMongoose } from '@sthrift/service-mongoose';
 import * as MongooseConfig from './service-config/mongoose/index.ts';
@@ -19,8 +19,8 @@ import * as TokenValidationConfig from './service-config/token-validation/index.
 
 import { ServiceTwilio } from '@sthrift/service-twilio';
 
-import { graphHandlerCreator } from '@sthrift/api-graphql';
-import { restHandlerCreator } from '@sthrift/api-rest';
+import { graphHandlerCreator } from '@sthrift/graphql';
+import { restHandlerCreator } from '@sthrift/rest';
 import { ServiceCybersource } from '@sthrift/service-cybersource';
 
 Cellix.initializeInfrastructureServices<ApiContextSpec, ApplicationServices>(

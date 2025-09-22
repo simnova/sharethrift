@@ -1,10 +1,10 @@
 ---
-applyTo: "packages/api-domain/src/domain/contexts/**/*.aggregate.ts"
+applyTo: "packages/domain/src/domain/contexts/**/*.aggregate.ts"
 ---
 
 # Copilot Instructions: Aggregates
 
-See the package-wide and context-specific instructions `.github/instructions/api-domain.instructions.md` for general rules, architecture, and conventions.
+See the package-wide and context-specific instructions `.github/instructions/domain.instructions.md` for general rules, architecture, and conventions.
 
 ## Related Instructions
 - `.github/instructions/contexts.instructions.md`

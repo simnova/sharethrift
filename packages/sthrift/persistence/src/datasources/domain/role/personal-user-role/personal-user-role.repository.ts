@@ -1,6 +1,6 @@
 import { MongooseSeedwork } from '@cellix/data-sources-mongoose';
-import type { Models } from '@sthrift/api-data-sources-mongoose-models';
-import { Domain } from '@sthrift/api-domain';
+import type { Models } from '@sthrift/data-sources-mongoose-models';
+import { Domain } from '@sthrift/domain';
 import type { PersonalUserRoleDomainAdapter } from './personal-user-role.domain-adapter.ts';
 
 type PersonalUserRoleModelType = Models.Role.PersonalUserRole; // ReturnType<typeof Models.EndUserRole.EndUserRoleModelFactory> & Models.EndUserRole.EndUserRole & { baseModelName: string };

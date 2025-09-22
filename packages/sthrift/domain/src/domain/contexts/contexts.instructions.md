@@ -1,10 +1,10 @@
 ---
-applyTo: "packages/api-domain/src/domain/contexts/**/*.ts"
+applyTo: "packages/domain/src/domain/contexts/**/*.ts"
 ---
 
 # Copilot Instructions: Bounded Contexts
 
-See the package-wide instructions in `.github/instructions/api-domain.instructions.md` for general rules, architecture, and conventions.
+See the package-wide instructions in `.github/instructions/domain.instructions.md` for general rules, architecture, and conventions.
 
 ## Related Instructions
 - `.github/instructions/aggregates.instructions.md`

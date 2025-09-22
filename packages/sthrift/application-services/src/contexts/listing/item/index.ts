@@ -1,5 +1,5 @@
-import type { Domain } from '@sthrift/api-domain';
-import type { DataSources } from '@sthrift/api-persistence';
+import type { Domain } from '@sthrift/domain';
+import type { DataSources } from '@sthrift/persistence';
 import { type ItemListingCreateCommand, create } from './create.ts';
 import { type ItemListingQueryByIdCommand, queryById } from './query-by-id.ts';
 import {

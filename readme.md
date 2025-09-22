@@ -37,13 +37,13 @@ Recipe:
 npm i -D concurrently
 
 
-npm init -w ./packages/api-graphql
+npm init -w ./packages/graphql
 npm install @as-integrations/azure-functions @apollo/server graphql @azure/functions -w api-graphql
 
-npm init -w ./packages/api-event-handler
+npm init -w ./packages/event-handler
 
 npm init -w ./packages/api-services
-npm init -w ./packages/api-rest
+npm init -w ./packages/rest
 npm install @azure/functions -w api-rest
 
 npm init -w ./packages/api-data-sources-domain
@@ -54,7 +54,7 @@ npm install @azure/monitor-opentelemetry -w service-otel
 
 
 
-npm init -w ./packages/api-persistence
+npm init -w ./packages/persistence
 
 
 npm init -w ./packages/event-bus-seedwork-node

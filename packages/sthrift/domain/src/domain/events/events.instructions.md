@@ -1,10 +1,10 @@
 ---
-applyTo: "packages/api-domain/src/domain/events/**/*.ts"
+applyTo: "packages/domain/src/domain/events/**/*.ts"
 ---
 
 # Copilot Instructions: Domain and Integration Events
 
-See the package-wide instructions in `.github/instructions/api-domain.instructions.md` for general rules, architecture, and conventions.
+See the package-wide instructions in `.github/instructions/domain.instructions.md` for general rules, architecture, and conventions.
 
 ## Related Instructions
 - `.github/instructions/aggregates.instructions.md`

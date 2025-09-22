@@ -1,5 +1,5 @@
-import { Domain } from '@sthrift/api-domain';
-import type { Models } from '@sthrift/api-data-sources-mongoose-models';
+import { Domain } from '@sthrift/domain';
+import type { Models } from '@sthrift/data-sources-mongoose-models';
 import { MongooseSeedwork } from '@cellix/data-sources-mongoose';
 import type { ConversationDomainAdapter } from './conversation.domain-adapter.ts';
 

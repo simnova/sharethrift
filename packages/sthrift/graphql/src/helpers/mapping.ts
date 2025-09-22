@@ -1,4 +1,4 @@
-import type { Domain } from '@sthrift/api-domain';
+import type { Domain } from '@sthrift/domain';
 
 function mapState(state?: string) {
 	return state === 'Appeal Requested' ? 'Appeal_Requested' : state;

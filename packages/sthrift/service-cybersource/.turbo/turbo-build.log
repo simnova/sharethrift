@@ -3,19 +3,4 @@
 > @sthrift/service-cybersource@1.0.0 build
 > tsc --project tsconfig.json
 
-[1G[0K⠸[1G[0K[96msrc/index.ts[0m:[93m1[0m:[93m34[0m - [91merror[0m[90m TS2307: [0mCannot find module '@cellix/api-services-spec' or its corresponding type declarations.
-
-[7m1[0m import type { ServiceBase } from '@cellix/api-services-spec';
-[7m [0m [91m                                 ~~~~~~~~~~~~~~~~~~~~~~~~~~~[0m
-
-
-Found 1 error in src/index.ts[90m:1[0m
-
-[1G[0K⠙[1G[0K[1mnpm[22m [31merror[39m Lifecycle script `build` failed with error:
-[1G[0K⠙[1G[0K[1mnpm[22m [31merror[39m [94mcode[39m [33m2[39m
-[1G[0K⠙[1G[0K[1mnpm[22m [31merror[39m [94mpath[39m /Users/kishorgupta/oneplace/src/sharethrift/packages/sthrift/service-cybersource
-[1G[0K⠙[1G[0K[1mnpm[22m [31merror[39m [94mworkspace[39m @sthrift/service-cybersource@1.0.0
-[1G[0K⠙[1G[0K[1mnpm[22m [31merror[39m [94mlocation[39m /Users/kishorgupta/oneplace/src/sharethrift/packages/sthrift/service-cybersource
-[1G[0K⠙[1G[0K[1mnpm[22m [31merror[39m command failed
-[1G[0K⠹[1G[0K[1mnpm[22m [31merror[39m [94mcommand[39m sh -c tsc --project tsconfig.json
-[1G[0K⠹[1G[0K
+[1G[0K⠹[1G[0K[1G[0K⠙[1G[0K

@@ -61,7 +61,7 @@ The development server will be available at:
 
 Sharethrift follows these core patterns:
 
-- **Domain Layer**: Core business logic in `packages/api-domain/src/domain/contexts/`
+- **Domain Layer**: Core business logic in `packages/domain/src/domain/contexts/`
 - **Application Services**: Orchestration layer for business operations
 - **Infrastructure**: Data persistence via Mongoose, OpenTelemetry observability  
 - **API Layer**: GraphQL and REST endpoints via Azure Functions

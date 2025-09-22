@@ -1,11 +1,11 @@
 ---
-applyTo: "packages/api-persistence/**/*.ts"
+applyTo: "packages/persistence/**/*.ts"
 ---
 
 # API Persistence Package Development Guide
 
 ## Package Purpose
-The `@sthrift/api-persistence` package serves as the **Infrastructure Layer** in the DDD architecture, implementing data persistence for domain entities using MongoDB through Mongoose. It bridges domain models with data storage via the Repository and Unit of Work patterns.
+The `@sthrift/persistence` package serves as the **Infrastructure Layer** in the DDD architecture, implementing data persistence for domain entities using MongoDB through Mongoose. It bridges domain models with data storage via the Repository and Unit of Work patterns.
 
 ## Architecture Patterns
 
@@ -54,8 +54,8 @@ src/
 - `@cellix/domain-seedwork` - Base domain patterns and interfaces
 - `@cellix/data-sources-mongoose` - Mongoose integration seedwork
 - `@cellix/event-bus-seedwork-node` - Event publishing infrastructure
-- `@sthrift/api-domain` - Domain models and interfaces
-- `@sthrift/api-data-sources-mongoose-models` - Mongoose model definitions
+- `@sthrift/domain` - Domain models and interfaces
+- `@sthrift/data-sources-mongoose-models` - Mongoose model definitions
 
 ### Event Bus Integration
 - Use `InProcEventBusInstance` for in-process events

@@ -1,5 +1,5 @@
 import { Outlet, useNavigate } from "react-router-dom";
-import { Footer, Header } from "@sthrift/ui-sharethrift-components";
+import { Footer, Header } from "@sthrift/ui-components";
 import { useAuth } from "react-oidc-context";
 import { HandleLogoutMockForMockAuth } from "../../shared/handle-logout";
 import { useCreateListingNavigation } from "../home/components/create-listing/hooks/use-create-listing-navigation";

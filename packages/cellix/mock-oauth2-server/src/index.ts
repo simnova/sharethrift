@@ -1,11 +1,11 @@
 import { setupEnvironment } from './setup-environment.js';
-import crypto, { type KeyObject } from 'crypto';
+import crypto, { type KeyObject } from 'node:crypto';
 import express from 'express';
 import {
 	exportJWK,
 	generateKeyPair,
 	SignJWT,
-	type CryptoKey,
+	type KeyLike,
 	type JWK,
 } from 'jose';
 
@@ -13,6 +13,7 @@ setupEnvironment();
 const app = express();
 app.disable('x-powered-by');
 const port = 4000;
+// biome-ignore lint:useLiteralKeys
 const allowedRedirectUri =
 	process.env['ALLOWED_REDIRECT_URI'] || 'http://localhost:3000/auth-redirect';
 const aud = allowedRedirectUri;
@@ -31,7 +32,7 @@ interface TokenProfile {
 // Note: privateKey and jwk are always jose objects, safe for dev/test. Linter warning for 'any' can be ignored in this context.
 async function buildTokenResponse(
 	profile: TokenProfile,
-	privateKey: CryptoKey | KeyObject | JWK | Uint8Array,
+	privateKey: KeyLike | KeyObject | JWK | Uint8Array,
 	jwk: { alg?: string; kid?: string },
 	existingRefreshToken?: string,
 ) {
@@ -134,8 +135,11 @@ async function main() {
 	// Simulate sign up endpoint
 	app.post('/token', async (req, res) => {
 		// In a real app, validate and create user here
+        // biome-ignore lint:useLiteralKeys
 		const email = process.env['Email'] ?? '';
+        // biome-ignore lint:useLiteralKeys
 		const given_name = process.env['Given_Name'] ?? '';
+        // biome-ignore lint:useLiteralKeys
 		const family_name = process.env['Family_Name'] ?? '';
 		const { tid } = req.body;
 		const profile: TokenProfile = {

@@ -1,4 +1,4 @@
-# @sthrift/ui-sharethrift-components
+# @sthrift/ui-components
 
 Reusable UI components for ShareThrift portals.
 
@@ -13,7 +13,7 @@ Reusable UI components for ShareThrift portals.
 Import components from this package in any ShareThrift portal:
 
 ```tsx
-import { Button } from '@sthrift/ui-sharethrift-components';
+import { Button } from '@sthrift/ui-components';
 ```
 
 ## Development

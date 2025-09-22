@@ -1,4 +1,4 @@
-import type { Domain } from '@sthrift/api-domain';
+import type { Domain } from '@sthrift/domain';
 
 export const getMockItemListings =
 	(): Domain.Contexts.Listing.ItemListing.ItemListingEntityReference[] => {

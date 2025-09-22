@@ -1,8 +1,8 @@
-import React from 'react';
-import styles from './hero-section.module.css';
-import { SearchBar } from '@sthrift/ui-sharethrift-components';
-import heroImg from '@sthrift/ui-sharethrift-components/src/assets/hero/hero.png';
-import heroImgSmall from '@sthrift/ui-sharethrift-components/src/assets/hero/hero-small.png';
+import React from "react";
+import styles from "./hero-section.module.css";
+import { SearchBar } from "@sthrift/ui-components";
+import heroImg from "@sthrift/ui-components/src/assets/hero/hero.png";
+import heroImgSmall from "@sthrift/ui-components/src/assets/hero/hero-small.png";
 
 export interface HeroSectionProps {
   onSearch?: (query: string) => void;
@@ -10,9 +10,9 @@ export interface HeroSectionProps {
   onSearchChange?: (value: string) => void;
 }
 
-export const HeroSection: React.FC<HeroSectionProps> = ({ 
-  onSearch, 
-  searchValue = ''
+export const HeroSection: React.FC<HeroSectionProps> = ({
+  onSearch,
+  searchValue = "",
 }) => {
   const handleSearch = (value: string) => {
     onSearch?.(value);
@@ -28,7 +28,8 @@ export const HeroSection: React.FC<HeroSectionProps> = ({
 
       <div className={styles.heroContent}>
         <h1 className={styles.heroTitle}>
-          Wherever you are,<br />
+          Wherever you are,
+          <br />
           borrow what you need.
         </h1>
         <div className={styles.searchContainer}>

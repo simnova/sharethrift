@@ -1,4 +1,4 @@
-import type { DomainDataSource } from "@sthrift/api-domain";
+import type { DomainDataSource } from "@sthrift/domain";
 import { RegisterDomainEventHandlers } from "./domain/index.ts";
 import { RegisterIntegrationEventHandlers } from "./integration/index.ts";
 

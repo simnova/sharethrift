@@ -3,7 +3,7 @@ import { fileURLToPath } from 'node:url';
 import { describeFeature, loadFeature } from '@amiceli/vitest-cucumber';
 import { expect, vi } from 'vitest';
 import { MongooseSeedwork } from '@cellix/data-sources-mongoose';
-import type { Models } from '@sthrift/api-data-sources-mongoose-models';
+import type { Models } from '@sthrift/data-sources-mongoose-models';
 import { ConversationDomainAdapter } from './conversation.domain-adapter.ts';
 import { PersonalUserDomainAdapter } from '../../user/personal-user/personal-user.domain-adapter.ts';
 

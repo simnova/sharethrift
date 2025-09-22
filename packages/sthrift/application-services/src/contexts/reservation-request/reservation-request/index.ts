@@ -1,5 +1,5 @@
-import type { Domain } from '@sthrift/api-domain';
-import type { DataSources } from '@sthrift/api-persistence';
+import type { Domain } from '@sthrift/domain';
+import type { DataSources } from '@sthrift/persistence';
 import { type ReservationRequestQueryActiveByReserverIdCommand, queryActiveByReserverId } from './query-active-by-reserver-id.ts';
 import { type ReservationRequestQueryPastByReserverIdCommand, queryPastByReserverId } from './query-past-by-reserver-id.ts';
 import { type ReservationRequestQueryActiveByReserverIdAndListingIdCommand, queryActiveByReserverIdAndListingId } from './query-active-by-reserver-id-and-listing-id.ts';

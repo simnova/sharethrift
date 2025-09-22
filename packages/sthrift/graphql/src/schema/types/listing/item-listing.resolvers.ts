@@ -1,5 +1,5 @@
 import type { GraphContext } from '../../../init/context.ts';
-import type { Domain } from '@sthrift/api-domain';
+import type { Domain } from '@sthrift/domain';
 import { toGraphItem } from '../../../helpers/mapping.js';
 import type { CreateItemListingInput } from '../../builder/generated.js';
 

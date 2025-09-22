@@ -1,4 +1,4 @@
-import type { DomainDataSource } from '@sthrift/api-domain';
+import type { DomainDataSource } from '@sthrift/domain';
 
 export const RegisterDomainEventHandlers = (
     _domainDataSource: DomainDataSource

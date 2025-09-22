@@ -3,7 +3,7 @@ import type {
 	HttpResponseInit,
 	InvocationContext,
 } from '@azure/functions';
-import type { ApplicationServicesFactory, PrincipalHints } from '@sthrift/api-application-services';
+import type { ApplicationServicesFactory, PrincipalHints } from '@sthrift/application-services';
 
 export type HttpHandler = (
 	request: HttpRequest,

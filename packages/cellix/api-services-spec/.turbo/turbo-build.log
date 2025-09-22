@@ -1,11 +1,11 @@
 
-[1G[0K⠙[1G[0K⠹[1G[0K⠸[1G[0K
+
 > @cellix/api-services-spec@1.0.0 prebuild
 > biome lint
 
-[1G[0K⠸[1G[0K[0m[34mChecked [0m[0m[34m4[0m[0m[34m [0m[0m[34mfiles[0m[0m[34m in [0m[0m[34m31[0m[0m[2m[34mms[0m[0m[34m.[0m[0m[34m No fixes applied.[0m
+[1G[0K[0m[34mChecked [0m[0m[34m4[0m[0m[34m [0m[0m[34mfiles[0m[0m[34m in [0m[0m[34m57[0m[0m[2m[34mms[0m[0m[34m.[0m[0m[34m No fixes applied.[0m
 [1G[0K⠙[1G[0K
 > @cellix/api-services-spec@1.0.0 build
 > tsc --build
 
-[1G[0K⠙[1G[0K
+[1G[0K⠙[1G[0K[1G[0K⠙[1G[0K

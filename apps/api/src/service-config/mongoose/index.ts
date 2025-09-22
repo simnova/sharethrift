@@ -1,5 +1,5 @@
 import type { MongooseSeedwork } from '@cellix/data-sources-mongoose';
-import { Persistence } from '@sthrift/api-persistence';
+import { Persistence } from '@sthrift/persistence';
 import type { ServiceMongooseOptions } from '@sthrift/service-mongoose';
 
 const isUsingCosmosDBEmulator =

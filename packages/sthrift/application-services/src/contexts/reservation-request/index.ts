@@ -1,4 +1,4 @@
-import type { DataSources } from '@sthrift/api-persistence';
+import type { DataSources } from '@sthrift/persistence';
 import { ReservationRequest as ReservationRequestApi, type ReservationRequestApplicationService } from './reservation-request/index.ts';
 
 export interface ReservationRequestContextApplicationService {
