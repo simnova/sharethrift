@@ -4,3 +4,4 @@
 __*
 dist
 tsconfig.tsbuildinfo
+.turbo

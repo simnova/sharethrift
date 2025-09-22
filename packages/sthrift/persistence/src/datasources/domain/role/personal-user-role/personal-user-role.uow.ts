@@ -1,4 +1,4 @@
-import { MongooseSeedwork } from '@cellix/data-sources-mongoose';
+import { MongooseSeedwork } from '@cellix/mongoose-seedwork';
 import {
 	InProcEventBusInstance,
 	NodeEventBusInstance,

@@ -1,5 +1,5 @@
 import { type Model, Schema } from 'mongoose';
-import { MongooseSeedwork } from '@cellix/data-sources-mongoose';
+import { MongooseSeedwork } from '@cellix/mongoose-seedwork';
 
 export interface User extends MongooseSeedwork.Base {
 	discriminatorKey: string;

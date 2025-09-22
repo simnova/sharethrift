@@ -1,4 +1,4 @@
-import { MongooseSeedwork } from '@cellix/data-sources-mongoose';
+import { MongooseSeedwork } from '@cellix/mongoose-seedwork';
 import type { Models } from '@sthrift/data-sources-mongoose-models';
 import { Domain } from '@sthrift/domain';
 import type { PersonalUserRoleDomainAdapter } from './personal-user-role.domain-adapter.ts';

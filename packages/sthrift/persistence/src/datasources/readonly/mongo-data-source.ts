@@ -1,4 +1,4 @@
-import type { MongooseSeedwork } from '@cellix/data-sources-mongoose';
+import type { MongooseSeedwork } from '@cellix/mongoose-seedwork';
 import {
 	type FilterQuery,
 	type FlattenMaps,

@@ -1,20 +1,15 @@
 import { setupEnvironment } from './setup-environment.js';
-import crypto, { type KeyObject } from 'node:crypto';
+import crypto, { type KeyObject, type webcrypto } from 'node:crypto';
 import express from 'express';
-import {
-	exportJWK,
-	generateKeyPair,
-	SignJWT,
-	type KeyLike,
-	type JWK,
-} from 'jose';
+import { exportJWK, generateKeyPair, SignJWT, type JWK } from 'jose';
+import { exportPKCS8 } from 'jose';
 
 setupEnvironment();
 const app = express();
 app.disable('x-powered-by');
 const port = 4000;
-// biome-ignore lint:useLiteralKeys
 const allowedRedirectUri =
+	// biome-ignore lint:useLiteralKeys
 	process.env['ALLOWED_REDIRECT_URI'] || 'http://localhost:3000/auth-redirect';
 const aud = allowedRedirectUri;
 // Type for user profile used in token claims
@@ -32,7 +27,7 @@ interface TokenProfile {
 // Note: privateKey and jwk are always jose objects, safe for dev/test. Linter warning for 'any' can be ignored in this context.
 async function buildTokenResponse(
 	profile: TokenProfile,
-	privateKey: KeyLike | KeyObject | JWK | Uint8Array,
+	privateKey: webcrypto.CryptoKey | KeyObject | JWK | Uint8Array,
 	jwk: { alg?: string; kid?: string },
 	existingRefreshToken?: string,
 ) {
@@ -109,6 +104,16 @@ async function main() {
 	// Generate signing keypair with jose
 	const { publicKey, privateKey } = await generateKeyPair('RS256');
 	const publicJwk = await exportJWK(publicKey);
+
+	//Duy to Review
+	const pkcs8 = await exportPKCS8(privateKey);
+	const keyObject = crypto.createPrivateKey({
+		key: pkcs8,
+		format: 'pem',
+		type: 'pkcs8',
+	});
+
+	// Convert CryptoKey to KeyObject if needed for jose compatibility
 	publicJwk.use = 'sig';
 	publicJwk.alg = 'RS256';
 	publicJwk.kid = publicJwk.kid || 'mock-key';
@@ -135,11 +140,11 @@ async function main() {
 	// Simulate sign up endpoint
 	app.post('/token', async (req, res) => {
 		// In a real app, validate and create user here
-        // biome-ignore lint:useLiteralKeys
+		// biome-ignore lint:useLiteralKeys
 		const email = process.env['Email'] ?? '';
-        // biome-ignore lint:useLiteralKeys
+		// biome-ignore lint:useLiteralKeys
 		const given_name = process.env['Given_Name'] ?? '';
-        // biome-ignore lint:useLiteralKeys
+		// biome-ignore lint:useLiteralKeys
 		const family_name = process.env['Family_Name'] ?? '';
 		const { tid } = req.body;
 		const profile: TokenProfile = {
@@ -153,7 +158,7 @@ async function main() {
 		};
 		const tokenResponse = await buildTokenResponse(
 			profile,
-			privateKey,
+			keyObject,
 			publicJwk,
 		);
 		res.json(tokenResponse);
@@ -183,7 +188,7 @@ async function main() {
 		}
 		const code = 'mock-auth-code';
 		const redirectUrl = `${allowedRedirectUri}?code=${code}${state ? `&state=${state}` : ''}`;
-    res.redirect(redirectUrl);
+		res.redirect(redirectUrl);
 		return;
 	});
 

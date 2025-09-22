@@ -6,7 +6,7 @@ import {
 } from './item-listing.data.ts';
 import type { FindOneOptions, FindOptions } from '../../mongo-data-source.ts';
 import { ItemListingConverter } from '../../../domain/listing/item/item-listing.domain-adapter.ts';
-import { MongooseSeedwork } from '@cellix/data-sources-mongoose';
+import { MongooseSeedwork } from '@cellix/mongoose-seedwork';
 import { getMockItemListings } from './mock-item-listings.js';
 
 export interface ItemListingReadRepository {

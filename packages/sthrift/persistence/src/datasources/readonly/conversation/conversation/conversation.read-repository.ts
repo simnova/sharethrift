@@ -6,7 +6,7 @@ import {
 } from './conversation.data.ts';
 import type { FindOneOptions, FindOptions } from '../../mongo-data-source.ts';
 import { ConversationConverter } from '../../../domain/conversation/conversation/conversation.domain-adapter.ts';
-import { MongooseSeedwork } from '@cellix/data-sources-mongoose';
+import { MongooseSeedwork } from '@cellix/mongoose-seedwork';
 
 export interface ConversationReadRepository {
 	getAll: (

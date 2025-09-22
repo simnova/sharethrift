@@ -21,7 +21,7 @@ npm i -D -w @cellix/data-sources-mongoose
 
 - Public API is exposed via the package root:
 ```ts
-import { MongooseSeedwork } from '@cellix/data-sources-mongoose';
+import { MongooseSeedwork } from '@cellix/mongoose-seedwork';
 ```
 - Deep imports into `src/**` are not part of the public API and are not recommended.
 

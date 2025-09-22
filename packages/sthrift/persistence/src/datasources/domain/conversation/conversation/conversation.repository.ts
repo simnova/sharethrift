@@ -1,6 +1,6 @@
 import { Domain } from '@sthrift/domain';
 import type { Models } from '@sthrift/data-sources-mongoose-models';
-import { MongooseSeedwork } from '@cellix/data-sources-mongoose';
+import { MongooseSeedwork } from '@cellix/mongoose-seedwork';
 import type { ConversationDomainAdapter } from './conversation.domain-adapter.ts';
 
 type ConversationModelType = Models.Conversation.Conversation;

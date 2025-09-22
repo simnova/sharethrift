@@ -1,6 +1,6 @@
 import type { Domain } from '@sthrift/domain';
 import type { Models } from '@sthrift/data-sources-mongoose-models';
-import { MongooseSeedwork } from '@cellix/data-sources-mongoose';
+import { MongooseSeedwork } from '@cellix/mongoose-seedwork';
 import {
 	InProcEventBusInstance,
 	NodeEventBusInstance,
@@ -12,7 +12,7 @@ import { ItemListingRepository } from './item-listing.repository.ts';
 export const getItemListingUnitOfWork = (
 	itemListingModel: Models.Listing.ItemListingModelType,
 	passport: Domain.Passport,
-) => {
+): Domain.Contexts.Listing.ItemListing.ItemListingUnitOfWork => {
 	const unitOfWork = new MongooseSeedwork.MongoUnitOfWork(
 		InProcEventBusInstance,
 		NodeEventBusInstance,

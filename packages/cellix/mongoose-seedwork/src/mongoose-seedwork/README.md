@@ -5,7 +5,7 @@ Infrastructure adapters and helpers for using Domain Seedwork with MongoDB/Mongo
 Import from the package root to access the `MongooseSeedwork` namespace.
 
 ```ts
-import { MongooseSeedwork } from '@cellix/data-sources-mongoose';
+import { MongooseSeedwork } from '@cellix/mongoose-seedwork';
 ```
 
 This README documents the persistence-side pieces only. Domain concepts are documented in [Domain Seedwork API docs](../../../domain-seedwork/src/domain-seedwork/README.md).
@@ -29,7 +29,7 @@ This README documents the persistence-side pieces only. Domain concepts are docu
 **Example: Creating a model**
 
 ```ts
-import { MongooseSeedwork } from '@cellix/data-sources-mongoose';
+import { MongooseSeedwork } from '@cellix/mongoose-seedwork';
 
 const getUserModel = MongooseSeedwork.modelFactory('User', userSchema);
 const UserModel = getUserModel({ service: mongooseInstance });

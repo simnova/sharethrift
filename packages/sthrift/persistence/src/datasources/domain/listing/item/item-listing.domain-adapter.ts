@@ -1,6 +1,6 @@
 import { Domain } from '@sthrift/domain';
 import type { Models } from '@sthrift/data-sources-mongoose-models';
-import { MongooseSeedwork } from '@cellix/data-sources-mongoose';
+import { MongooseSeedwork } from '@cellix/mongoose-seedwork';
 import { PersonalUserDomainAdapter } from '../../user/personal-user/personal-user.domain-adapter.ts';
 
 export class ItemListingConverter extends MongooseSeedwork.MongoTypeConverter<

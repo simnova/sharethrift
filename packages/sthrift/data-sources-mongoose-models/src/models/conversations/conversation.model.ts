@@ -1,5 +1,5 @@
 import { type Model, type ObjectId, Schema, type PopulatedDoc } from 'mongoose';
-import { MongooseSeedwork } from '@cellix/data-sources-mongoose';
+import { MongooseSeedwork } from '@cellix/mongoose-seedwork';
 import type * as PersonalUser from '../user/personal-user.model.ts';
 import type * as ItemListing from '../listing/item.model.ts';
 

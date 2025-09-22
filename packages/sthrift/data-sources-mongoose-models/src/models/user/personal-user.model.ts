@@ -5,7 +5,7 @@ import {
 	type SchemaDefinition,
 	type PopulatedDoc,
 } from 'mongoose';
-import { MongooseSeedwork } from '@cellix/data-sources-mongoose';
+import { MongooseSeedwork } from '@cellix/mongoose-seedwork';
 import { type User, type UserModelType, userOptions } from './user.model.ts';
 import { Patterns } from '../../patterns.ts';
 import * as PersonalUserRole from '../role/personal-user-role.model.ts';

@@ -1,4 +1,4 @@
-import { MongooseSeedwork } from '@cellix/data-sources-mongoose';
+import { MongooseSeedwork } from '@cellix/mongoose-seedwork';
 import type { Domain } from '@sthrift/domain';
 import type { Model } from 'mongoose';
 import { ReservationRequestConverter } from './reservation-request.domain-adapter.ts';
@@ -9,10 +9,9 @@ import {
 	NodeEventBusInstance,
 } from '@cellix/event-bus-seedwork-node';
 
-
 export const getReservationRequestUnitOfWork = (
 	reservationRequestModel: Model<Models.ReservationRequest.ReservationRequest>,
-	passport: Domain.Passport
+	passport: Domain.Passport,
 ): Domain.Contexts.ReservationRequest.ReservationRequest.ReservationRequestUnitOfWork => {
 	const unitOfWork = new MongooseSeedwork.MongoUnitOfWork(
 		InProcEventBusInstance,

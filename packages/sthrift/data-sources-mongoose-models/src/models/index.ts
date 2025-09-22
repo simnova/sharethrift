@@ -1,4 +1,4 @@
-import type { MongooseSeedwork } from '@cellix/data-sources-mongoose';
+import type { MongooseSeedwork } from '@cellix/mongoose-seedwork';
 import { PersonalUserModelFactory, UserModelFactory } from './user/index.ts';
 import { ReservationRequestModelFactory } from './reservation-request/index.ts';
 import {

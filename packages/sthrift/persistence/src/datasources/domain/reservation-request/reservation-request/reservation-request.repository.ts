@@ -1,6 +1,6 @@
 import { Domain } from '@sthrift/domain';
 import type { Models } from '@sthrift/data-sources-mongoose-models';
-import { MongooseSeedwork } from '@cellix/data-sources-mongoose';
+import { MongooseSeedwork } from '@cellix/mongoose-seedwork';
 import type { ReservationRequestDomainAdapter } from './reservation-request.domain-adapter.ts';
 
 // Type aliases for model and adapter

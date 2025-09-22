@@ -1,4 +1,4 @@
-import { MongooseSeedwork } from '@cellix/data-sources-mongoose';
+import { MongooseSeedwork } from '@cellix/mongoose-seedwork';
 import type { Models } from '@sthrift/data-sources-mongoose-models';
 import type { Domain } from '@sthrift/domain';
 
@@ -83,7 +83,7 @@ export class ItemListingRepository<
 			searchText?: string;
 			statusFilters?: string[];
 			sorter?: { field: string; order: 'ascend' | 'descend' };
-		}
+		},
 	): Promise<{
 		items: Domain.Contexts.Listing.ItemListing.ItemListing<PropType>[];
 		total: number;
@@ -92,7 +92,9 @@ export class ItemListingRepository<
 	}> {
 		// TODO: Replace with real MongoDB implementation
 		// For now, using mock data to match the existing implementation pattern
-		return Promise.resolve(this.getMockListingsWithPagination(_sharerId, options));
+		return Promise.resolve(
+			this.getMockListingsWithPagination(_sharerId, options),
+		);
 	}
 
 	private getMockListingsWithPagination(
@@ -103,7 +105,7 @@ export class ItemListingRepository<
 			searchText?: string;
 			statusFilters?: string[];
 			sorter?: { field: string; order: 'ascend' | 'descend' };
-		}
+		},
 	) {
 		// Mock data for listings
 		const mockListings = [
@@ -111,7 +113,8 @@ export class ItemListingRepository<
 				id: '6324a3f1e3e4e1e6a8e1d8b1',
 				sharer: 'currentUser',
 				title: 'Cordless Drill',
-				description: 'Professional grade cordless drill with multiple attachments.',
+				description:
+					'Professional grade cordless drill with multiple attachments.',
 				category: 'Tools & Equipment',
 				location: 'Philadelphia, PA',
 				sharingPeriodStart: new Date('2020-11-08'),
@@ -195,7 +198,8 @@ export class ItemListingRepository<
 				id: '6324a3f1e3e4e1e6a8e1d8b3',
 				sharer: 'currentUser',
 				title: 'Sewing Kit',
-				description: 'Complete sewing kit with threads, needles, and accessories.',
+				description:
+					'Complete sewing kit with threads, needles, and accessories.',
 				category: 'Home & Garden',
 				location: 'Philadelphia, PA',
 				sharingPeriodStart: new Date('2020-11-08'),
@@ -212,7 +216,9 @@ export class ItemListingRepository<
 		// Apply search text filter
 		if (options.searchText) {
 			filteredListings = filteredListings.filter((listing) =>
-				listing.title.toLowerCase().includes(options.searchText?.toLowerCase() || ''),
+				listing.title
+					.toLowerCase()
+					.includes(options.searchText?.toLowerCase() || ''),
 			);
 		}
 
