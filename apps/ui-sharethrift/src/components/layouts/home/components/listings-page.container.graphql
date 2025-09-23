@@ -11,21 +11,7 @@ query GetListings {
 		updatedAt
 		sharingPeriodStart
 		sharingPeriodEnd
-		sharer {
-			... on PersonalUser {
-				id
-				account {
-					profile {
-						firstName
-						lastName
-						location {
-							city
-							state
-						}
-					}
-				}
-			}
-		}
+
 		schemaVersion
 		version
 		reports

@@ -116,9 +116,9 @@ export function ViewListing({
 						aria-label="View sharer profile"
 					>
 						<SharerInformationContainer
-							sharerId={sharer.id}
+							sharerId={sharer?.id}
 							listingId={listing.id}
-							isOwner={sharer.id === userId}
+							isOwner={sharer?.id === userId}
 							className="sharer-info-responsive"
 							sharedTimeAgo={sharedTimeAgo}
 						/>

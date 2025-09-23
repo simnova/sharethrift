@@ -134,10 +134,10 @@ export type Conversation = MongoBase & {
   __typename?: "Conversation";
   createdAt: Scalars["DateTime"]["output"];
   id: Scalars["ObjectID"]["output"];
-  listing: Listing;
-  reserver: User;
+  listing: ItemListing;
+  reserver: PersonalUser;
   schemaVersion: Scalars["String"]["output"];
-  sharer: User;
+  sharer: PersonalUser;
   twilioConversationId: Scalars["String"]["output"];
   updatedAt: Scalars["DateTime"]["output"];
 };
@@ -181,7 +181,7 @@ export type ItemListing = MongoBase & {
   location: Scalars["String"]["output"];
   reports?: Maybe<Scalars["Int"]["output"]>;
   schemaVersion?: Maybe<Scalars["String"]["output"]>;
-  sharer: User;
+  sharer?: Maybe<PersonalUser>;
   sharingHistory?: Maybe<Array<Scalars["String"]["output"]>>;
   sharingPeriodEnd: Scalars["DateTime"]["output"];
   sharingPeriodStart: Scalars["DateTime"]["output"];

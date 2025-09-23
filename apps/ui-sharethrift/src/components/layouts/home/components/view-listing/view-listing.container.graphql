@@ -15,21 +15,6 @@ query ViewListing($id: ObjectID!) {
 		updatedAt
 		reports
 		sharingHistory
-		sharer {
-			... on PersonalUser {
-				id
-				account {
-					profile {
-						firstName
-						lastName
-						location {
-							city
-							state
-						}
-					}
-				}
-			}
-		}
 		schemaVersion
 	}
 }

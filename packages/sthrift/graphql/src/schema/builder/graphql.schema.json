@@ -360,8 +360,8 @@
               "kind": "NON_NULL",
               "name": null,
               "ofType": {
-                "kind": "UNION",
-                "name": "Listing",
+                "kind": "OBJECT",
+                "name": "ItemListing",
                 "ofType": null
               }
             },
@@ -376,8 +376,8 @@
               "kind": "NON_NULL",
               "name": null,
               "ofType": {
-                "kind": "UNION",
-                "name": "User",
+                "kind": "OBJECT",
+                "name": "PersonalUser",
                 "ofType": null
               }
             },
@@ -408,8 +408,8 @@
               "kind": "NON_NULL",
               "name": null,
               "ofType": {
-                "kind": "UNION",
-                "name": "User",
+                "kind": "OBJECT",
+                "name": "PersonalUser",
                 "ofType": null
               }
             },
@@ -1194,13 +1194,9 @@
             "description": null,
             "args": [],
             "type": {
-              "kind": "NON_NULL",
-              "name": null,
-              "ofType": {
-                "kind": "UNION",
-                "name": "User",
-                "ofType": null
-              }
+              "kind": "OBJECT",
+              "name": "PersonalUser",
+              "ofType": null
             },
             "isDeprecated": false,
             "deprecationReason": null

@@ -124,10 +124,10 @@ export type Conversation = MongoBase & {
   readonly __typename?: "Conversation";
   readonly createdAt: Scalars["DateTime"]["output"];
   readonly id: Scalars["ObjectID"]["output"];
-  readonly listing: Listing;
-  readonly reserver: User;
+  readonly listing: ItemListing;
+  readonly reserver: PersonalUser;
   readonly schemaVersion: Scalars["String"]["output"];
-  readonly sharer: User;
+  readonly sharer: PersonalUser;
   readonly twilioConversationId: Scalars["String"]["output"];
   readonly updatedAt: Scalars["DateTime"]["output"];
 };
@@ -171,7 +171,7 @@ export type ItemListing = MongoBase & {
   readonly location: Scalars["String"]["output"];
   readonly reports?: Maybe<Scalars["Int"]["output"]>;
   readonly schemaVersion?: Maybe<Scalars["String"]["output"]>;
-  readonly sharer: User;
+  readonly sharer?: Maybe<PersonalUser>;
   readonly sharingHistory?: Maybe<ReadonlyArray<Scalars["String"]["output"]>>;
   readonly sharingPeriodEnd: Scalars["DateTime"]["output"];
   readonly sharingPeriodStart: Scalars["DateTime"]["output"];
@@ -1060,10 +1060,10 @@ export type ConversationResolvers<
 > = ResolversObject<{
   createdAt?: Resolver<ResolversTypes["DateTime"], ParentType, ContextType>;
   id?: Resolver<ResolversTypes["ObjectID"], ParentType, ContextType>;
-  listing?: Resolver<ResolversTypes["Listing"], ParentType, ContextType>;
-  reserver?: Resolver<ResolversTypes["User"], ParentType, ContextType>;
+  listing?: Resolver<ResolversTypes["ItemListing"], ParentType, ContextType>;
+  reserver?: Resolver<ResolversTypes["PersonalUser"], ParentType, ContextType>;
   schemaVersion?: Resolver<ResolversTypes["String"], ParentType, ContextType>;
-  sharer?: Resolver<ResolversTypes["User"], ParentType, ContextType>;
+  sharer?: Resolver<ResolversTypes["PersonalUser"], ParentType, ContextType>;
   twilioConversationId?: Resolver<ResolversTypes["String"], ParentType, ContextType>;
   updatedAt?: Resolver<ResolversTypes["DateTime"], ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
@@ -1186,7 +1186,7 @@ export type ItemListingResolvers<
   location?: Resolver<ResolversTypes["String"], ParentType, ContextType>;
   reports?: Resolver<Maybe<ResolversTypes["Int"]>, ParentType, ContextType>;
   schemaVersion?: Resolver<Maybe<ResolversTypes["String"]>, ParentType, ContextType>;
-  sharer?: Resolver<ResolversTypes["User"], ParentType, ContextType>;
+  sharer?: Resolver<Maybe<ResolversTypes["PersonalUser"]>, ParentType, ContextType>;
   sharingHistory?: Resolver<Maybe<ReadonlyArray<ResolversTypes["String"]>>, ParentType, ContextType>;
   sharingPeriodEnd?: Resolver<ResolversTypes["DateTime"], ParentType, ContextType>;
   sharingPeriodStart?: Resolver<ResolversTypes["DateTime"], ParentType, ContextType>;

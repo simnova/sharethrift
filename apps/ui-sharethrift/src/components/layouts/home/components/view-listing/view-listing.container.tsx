@@ -68,9 +68,9 @@ export function ViewListingContainer({
 		? computeTimeAgo(listingData.itemListing.createdAt)
 		: undefined;
 
-	const userIsSharer =
-		currentUserData?.currentPersonalUserAndCreateIfNotExists.id ===
-		(listingData.itemListing.sharer as { id: string }).id;
+	const userIsSharer = false;
+	// currentUserData?.currentPersonalUserAndCreateIfNotExists.id ===
+	// (listingData.itemListing.sharer?.id as { id: string }).id;
 
 	return (
 		<ViewListing

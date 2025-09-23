@@ -1,7 +1,7 @@
 type Conversation implements MongoBase {
-	sharer: User!
-	reserver: User!
-	listing: Listing!
+	sharer: PersonalUser!
+	reserver: PersonalUser!
+	listing: ItemListing!
 	twilioConversationId: String!
 	id: ObjectID!
 	schemaVersion: String!

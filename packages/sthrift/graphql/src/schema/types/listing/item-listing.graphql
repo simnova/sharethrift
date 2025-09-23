@@ -1,5 +1,5 @@
 type ItemListing implements MongoBase {
-	sharer: User!
+	sharer: PersonalUser
 	title: String!
 	description: String!
 	category: String!

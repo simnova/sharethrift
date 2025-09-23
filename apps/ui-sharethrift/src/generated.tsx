@@ -134,10 +134,10 @@ export type Conversation = MongoBase & {
   __typename?: "Conversation";
   createdAt: Scalars["DateTime"]["output"];
   id: Scalars["ObjectID"]["output"];
-  listing: Listing;
-  reserver: User;
+  listing: ItemListing;
+  reserver: PersonalUser;
   schemaVersion: Scalars["String"]["output"];
-  sharer: User;
+  sharer: PersonalUser;
   twilioConversationId: Scalars["String"]["output"];
   updatedAt: Scalars["DateTime"]["output"];
 };
@@ -181,7 +181,7 @@ export type ItemListing = MongoBase & {
   location: Scalars["String"]["output"];
   reports?: Maybe<Scalars["Int"]["output"]>;
   schemaVersion?: Maybe<Scalars["String"]["output"]>;
-  sharer: User;
+  sharer?: Maybe<PersonalUser>;
   sharingHistory?: Maybe<Array<Scalars["String"]["output"]>>;
   sharingPeriodEnd: Scalars["DateTime"]["output"];
   sharingPeriodStart: Scalars["DateTime"]["output"];
@@ -707,23 +707,6 @@ export type HomeAccountProfileViewContainerUserListingsQuery = {
     updatedAt?: any | null;
     sharingPeriodStart: any;
     sharingPeriodEnd: any;
-    sharer: {
-      __typename?: "PersonalUser";
-      id: any;
-      account?: {
-        __typename?: "PersonalUserAccount";
-        profile?: {
-          __typename?: "PersonalUserAccountProfile";
-          firstName?: string | null;
-          lastName?: string | null;
-          location?: {
-            __typename?: "PersonalUserAccountProfileLocation";
-            city?: string | null;
-            state?: string | null;
-          } | null;
-        } | null;
-      } | null;
-    };
   }>;
 };
 
@@ -781,23 +764,6 @@ export type ItemListingFieldsFragment = {
   createdAt?: any | null;
   updatedAt?: any | null;
   schemaVersion?: string | null;
-  sharer: {
-    __typename?: "PersonalUser";
-    id: any;
-    account?: {
-      __typename?: "PersonalUserAccount";
-      profile?: {
-        __typename?: "PersonalUserAccountProfile";
-        firstName?: string | null;
-        lastName?: string | null;
-        location?: {
-          __typename?: "PersonalUserAccountProfileLocation";
-          city?: string | null;
-          state?: string | null;
-        } | null;
-      } | null;
-    } | null;
-  };
 };
 
 export type HomeCreateListingContainerCreateItemListingMutationVariables =
@@ -821,23 +787,6 @@ export type HomeCreateListingContainerCreateItemListingMutation = {
     createdAt?: any | null;
     updatedAt?: any | null;
     schemaVersion?: string | null;
-    sharer: {
-      __typename?: "PersonalUser";
-      id: any;
-      account?: {
-        __typename?: "PersonalUserAccount";
-        profile?: {
-          __typename?: "PersonalUserAccountProfile";
-          firstName?: string | null;
-          lastName?: string | null;
-          location?: {
-            __typename?: "PersonalUserAccountProfileLocation";
-            city?: string | null;
-            state?: string | null;
-          } | null;
-        } | null;
-      } | null;
-    };
   };
 };
 
@@ -862,23 +811,6 @@ export type GetListingsQuery = {
     version?: number | null;
     reports?: number | null;
     sharingHistory?: Array<string> | null;
-    sharer: {
-      __typename?: "PersonalUser";
-      id: any;
-      account?: {
-        __typename?: "PersonalUserAccount";
-        profile?: {
-          __typename?: "PersonalUserAccountProfile";
-          firstName?: string | null;
-          lastName?: string | null;
-          location?: {
-            __typename?: "PersonalUserAccountProfileLocation";
-            city?: string | null;
-            state?: string | null;
-          } | null;
-        } | null;
-      } | null;
-    };
   }>;
 };
 
@@ -916,23 +848,6 @@ export type ViewListingInformationGetListingQuery = {
     reports?: number | null;
     sharingHistory?: Array<string> | null;
     schemaVersion?: string | null;
-    sharer: {
-      __typename?: "PersonalUser";
-      id: any;
-      account?: {
-        __typename?: "PersonalUserAccount";
-        profile?: {
-          __typename?: "PersonalUserAccountProfile";
-          firstName?: string | null;
-          lastName?: string | null;
-          location?: {
-            __typename?: "PersonalUserAccountProfileLocation";
-            city?: string | null;
-            state?: string | null;
-          } | null;
-        } | null;
-      } | null;
-    };
   } | null;
 };
 
@@ -1024,23 +939,6 @@ export type ViewListingQuery = {
     reports?: number | null;
     sharingHistory?: Array<string> | null;
     schemaVersion?: string | null;
-    sharer: {
-      __typename?: "PersonalUser";
-      id: any;
-      account?: {
-        __typename?: "PersonalUserAccount";
-        profile?: {
-          __typename?: "PersonalUserAccountProfile";
-          firstName?: string | null;
-          lastName?: string | null;
-          location?: {
-            __typename?: "PersonalUserAccountProfileLocation";
-            city?: string | null;
-            state?: string | null;
-          } | null;
-        } | null;
-      } | null;
-    };
   } | null;
 };
 
@@ -1375,74 +1273,6 @@ export const ItemListingFieldsFragmentDoc = {
           { kind: "Field", name: { kind: "Name", value: "images" } },
           { kind: "Field", name: { kind: "Name", value: "createdAt" } },
           { kind: "Field", name: { kind: "Name", value: "updatedAt" } },
-          {
-            kind: "Field",
-            name: { kind: "Name", value: "sharer" },
-            selectionSet: {
-              kind: "SelectionSet",
-              selections: [
-                {
-                  kind: "InlineFragment",
-                  typeCondition: {
-                    kind: "NamedType",
-                    name: { kind: "Name", value: "PersonalUser" },
-                  },
-                  selectionSet: {
-                    kind: "SelectionSet",
-                    selections: [
-                      { kind: "Field", name: { kind: "Name", value: "id" } },
-                      {
-                        kind: "Field",
-                        name: { kind: "Name", value: "account" },
-                        selectionSet: {
-                          kind: "SelectionSet",
-                          selections: [
-                            {
-                              kind: "Field",
-                              name: { kind: "Name", value: "profile" },
-                              selectionSet: {
-                                kind: "SelectionSet",
-                                selections: [
-                                  {
-                                    kind: "Field",
-                                    name: { kind: "Name", value: "firstName" },
-                                  },
-                                  {
-                                    kind: "Field",
-                                    name: { kind: "Name", value: "lastName" },
-                                  },
-                                  {
-                                    kind: "Field",
-                                    name: { kind: "Name", value: "location" },
-                                    selectionSet: {
-                                      kind: "SelectionSet",
-                                      selections: [
-                                        {
-                                          kind: "Field",
-                                          name: { kind: "Name", value: "city" },
-                                        },
-                                        {
-                                          kind: "Field",
-                                          name: {
-                                            kind: "Name",
-                                            value: "state",
-                                          },
-                                        },
-                                      ],
-                                    },
-                                  },
-                                ],
-                              },
-                            },
-                          ],
-                        },
-                      },
-                    ],
-                  },
-                },
-              ],
-            },
-          },
           { kind: "Field", name: { kind: "Name", value: "schemaVersion" } },
         ],
       },
@@ -1839,89 +1669,6 @@ export const HomeAccountProfileViewContainerUserListingsDocument = {
                 { kind: "Field", name: { kind: "Name", value: "location" } },
                 { kind: "Field", name: { kind: "Name", value: "state" } },
                 { kind: "Field", name: { kind: "Name", value: "images" } },
-                {
-                  kind: "Field",
-                  name: { kind: "Name", value: "sharer" },
-                  selectionSet: {
-                    kind: "SelectionSet",
-                    selections: [
-                      {
-                        kind: "InlineFragment",
-                        typeCondition: {
-                          kind: "NamedType",
-                          name: { kind: "Name", value: "PersonalUser" },
-                        },
-                        selectionSet: {
-                          kind: "SelectionSet",
-                          selections: [
-                            {
-                              kind: "Field",
-                              name: { kind: "Name", value: "id" },
-                            },
-                            {
-                              kind: "Field",
-                              name: { kind: "Name", value: "account" },
-                              selectionSet: {
-                                kind: "SelectionSet",
-                                selections: [
-                                  {
-                                    kind: "Field",
-                                    name: { kind: "Name", value: "profile" },
-                                    selectionSet: {
-                                      kind: "SelectionSet",
-                                      selections: [
-                                        {
-                                          kind: "Field",
-                                          name: {
-                                            kind: "Name",
-                                            value: "firstName",
-                                          },
-                                        },
-                                        {
-                                          kind: "Field",
-                                          name: {
-                                            kind: "Name",
-                                            value: "lastName",
-                                          },
-                                        },
-                                        {
-                                          kind: "Field",
-                                          name: {
-                                            kind: "Name",
-                                            value: "location",
-                                          },
-                                          selectionSet: {
-                                            kind: "SelectionSet",
-                                            selections: [
-                                              {
-                                                kind: "Field",
-                                                name: {
-                                                  kind: "Name",
-                                                  value: "city",
-                                                },
-                                              },
-                                              {
-                                                kind: "Field",
-                                                name: {
-                                                  kind: "Name",
-                                                  value: "state",
-                                                },
-                                              },
-                                            ],
-                                          },
-                                        },
-                                      ],
-                                    },
-                                  },
-                                ],
-                              },
-                            },
-                          ],
-                        },
-                      },
-                    ],
-                  },
-                },
                 { kind: "Field", name: { kind: "Name", value: "createdAt" } },
                 { kind: "Field", name: { kind: "Name", value: "updatedAt" } },
                 {
@@ -2150,74 +1897,6 @@ export const HomeCreateListingContainerCreateItemListingDocument = {
           { kind: "Field", name: { kind: "Name", value: "images" } },
           { kind: "Field", name: { kind: "Name", value: "createdAt" } },
           { kind: "Field", name: { kind: "Name", value: "updatedAt" } },
-          {
-            kind: "Field",
-            name: { kind: "Name", value: "sharer" },
-            selectionSet: {
-              kind: "SelectionSet",
-              selections: [
-                {
-                  kind: "InlineFragment",
-                  typeCondition: {
-                    kind: "NamedType",
-                    name: { kind: "Name", value: "PersonalUser" },
-                  },
-                  selectionSet: {
-                    kind: "SelectionSet",
-                    selections: [
-                      { kind: "Field", name: { kind: "Name", value: "id" } },
-                      {
-                        kind: "Field",
-                        name: { kind: "Name", value: "account" },
-                        selectionSet: {
-                          kind: "SelectionSet",
-                          selections: [
-                            {
-                              kind: "Field",
-                              name: { kind: "Name", value: "profile" },
-                              selectionSet: {
-                                kind: "SelectionSet",
-                                selections: [
-                                  {
-                                    kind: "Field",
-                                    name: { kind: "Name", value: "firstName" },
-                                  },
-                                  {
-                                    kind: "Field",
-                                    name: { kind: "Name", value: "lastName" },
-                                  },
-                                  {
-                                    kind: "Field",
-                                    name: { kind: "Name", value: "location" },
-                                    selectionSet: {
-                                      kind: "SelectionSet",
-                                      selections: [
-                                        {
-                                          kind: "Field",
-                                          name: { kind: "Name", value: "city" },
-                                        },
-                                        {
-                                          kind: "Field",
-                                          name: {
-                                            kind: "Name",
-                                            value: "state",
-                                          },
-                                        },
-                                      ],
-                                    },
-                                  },
-                                ],
-                              },
-                            },
-                          ],
-                        },
-                      },
-                    ],
-                  },
-                },
-              ],
-            },
-          },
           { kind: "Field", name: { kind: "Name", value: "schemaVersion" } },
         ],
       },
@@ -2259,89 +1938,6 @@ export const GetListingsDocument = {
                 {
                   kind: "Field",
                   name: { kind: "Name", value: "sharingPeriodEnd" },
-                },
-                {
-                  kind: "Field",
-                  name: { kind: "Name", value: "sharer" },
-                  selectionSet: {
-                    kind: "SelectionSet",
-                    selections: [
-                      {
-                        kind: "InlineFragment",
-                        typeCondition: {
-                          kind: "NamedType",
-                          name: { kind: "Name", value: "PersonalUser" },
-                        },
-                        selectionSet: {
-                          kind: "SelectionSet",
-                          selections: [
-                            {
-                              kind: "Field",
-                              name: { kind: "Name", value: "id" },
-                            },
-                            {
-                              kind: "Field",
-                              name: { kind: "Name", value: "account" },
-                              selectionSet: {
-                                kind: "SelectionSet",
-                                selections: [
-                                  {
-                                    kind: "Field",
-                                    name: { kind: "Name", value: "profile" },
-                                    selectionSet: {
-                                      kind: "SelectionSet",
-                                      selections: [
-                                        {
-                                          kind: "Field",
-                                          name: {
-                                            kind: "Name",
-                                            value: "firstName",
-                                          },
-                                        },
-                                        {
-                                          kind: "Field",
-                                          name: {
-                                            kind: "Name",
-                                            value: "lastName",
-                                          },
-                                        },
-                                        {
-                                          kind: "Field",
-                                          name: {
-                                            kind: "Name",
-                                            value: "location",
-                                          },
-                                          selectionSet: {
-                                            kind: "SelectionSet",
-                                            selections: [
-                                              {
-                                                kind: "Field",
-                                                name: {
-                                                  kind: "Name",
-                                                  value: "city",
-                                                },
-                                              },
-                                              {
-                                                kind: "Field",
-                                                name: {
-                                                  kind: "Name",
-                                                  value: "state",
-                                                },
-                                              },
-                                            ],
-                                          },
-                                        },
-                                      ],
-                                    },
-                                  },
-                                ],
-                              },
-                            },
-                          ],
-                        },
-                      },
-                    ],
-                  },
                 },
                 {
                   kind: "Field",
@@ -2478,89 +2074,6 @@ export const ViewListingInformationGetListingDocument = {
                 {
                   kind: "Field",
                   name: { kind: "Name", value: "sharingHistory" },
-                },
-                {
-                  kind: "Field",
-                  name: { kind: "Name", value: "sharer" },
-                  selectionSet: {
-                    kind: "SelectionSet",
-                    selections: [
-                      {
-                        kind: "InlineFragment",
-                        typeCondition: {
-                          kind: "NamedType",
-                          name: { kind: "Name", value: "PersonalUser" },
-                        },
-                        selectionSet: {
-                          kind: "SelectionSet",
-                          selections: [
-                            {
-                              kind: "Field",
-                              name: { kind: "Name", value: "id" },
-                            },
-                            {
-                              kind: "Field",
-                              name: { kind: "Name", value: "account" },
-                              selectionSet: {
-                                kind: "SelectionSet",
-                                selections: [
-                                  {
-                                    kind: "Field",
-                                    name: { kind: "Name", value: "profile" },
-                                    selectionSet: {
-                                      kind: "SelectionSet",
-                                      selections: [
-                                        {
-                                          kind: "Field",
-                                          name: {
-                                            kind: "Name",
-                                            value: "firstName",
-                                          },
-                                        },
-                                        {
-                                          kind: "Field",
-                                          name: {
-                                            kind: "Name",
-                                            value: "lastName",
-                                          },
-                                        },
-                                        {
-                                          kind: "Field",
-                                          name: {
-                                            kind: "Name",
-                                            value: "location",
-                                          },
-                                          selectionSet: {
-                                            kind: "SelectionSet",
-                                            selections: [
-                                              {
-                                                kind: "Field",
-                                                name: {
-                                                  kind: "Name",
-                                                  value: "city",
-                                                },
-                                              },
-                                              {
-                                                kind: "Field",
-                                                name: {
-                                                  kind: "Name",
-                                                  value: "state",
-                                                },
-                                              },
-                                            ],
-                                          },
-                                        },
-                                      ],
-                                    },
-                                  },
-                                ],
-                              },
-                            },
-                          ],
-                        },
-                      },
-                    ],
-                  },
                 },
                 {
                   kind: "Field",
@@ -2885,89 +2398,6 @@ export const ViewListingDocument = {
                 {
                   kind: "Field",
                   name: { kind: "Name", value: "sharingHistory" },
-                },
-                {
-                  kind: "Field",
-                  name: { kind: "Name", value: "sharer" },
-                  selectionSet: {
-                    kind: "SelectionSet",
-                    selections: [
-                      {
-                        kind: "InlineFragment",
-                        typeCondition: {
-                          kind: "NamedType",
-                          name: { kind: "Name", value: "PersonalUser" },
-                        },
-                        selectionSet: {
-                          kind: "SelectionSet",
-                          selections: [
-                            {
-                              kind: "Field",
-                              name: { kind: "Name", value: "id" },
-                            },
-                            {
-                              kind: "Field",
-                              name: { kind: "Name", value: "account" },
-                              selectionSet: {
-                                kind: "SelectionSet",
-                                selections: [
-                                  {
-                                    kind: "Field",
-                                    name: { kind: "Name", value: "profile" },
-                                    selectionSet: {
-                                      kind: "SelectionSet",
-                                      selections: [
-                                        {
-                                          kind: "Field",
-                                          name: {
-                                            kind: "Name",
-                                            value: "firstName",
-                                          },
-                                        },
-                                        {
-                                          kind: "Field",
-                                          name: {
-                                            kind: "Name",
-                                            value: "lastName",
-                                          },
-                                        },
-                                        {
-                                          kind: "Field",
-                                          name: {
-                                            kind: "Name",
-                                            value: "location",
-                                          },
-                                          selectionSet: {
-                                            kind: "SelectionSet",
-                                            selections: [
-                                              {
-                                                kind: "Field",
-                                                name: {
-                                                  kind: "Name",
-                                                  value: "city",
-                                                },
-                                              },
-                                              {
-                                                kind: "Field",
-                                                name: {
-                                                  kind: "Name",
-                                                  value: "state",
-                                                },
-                                              },
-                                            ],
-                                          },
-                                        },
-                                      ],
-                                    },
-                                  },
-                                ],
-                              },
-                            },
-                          ],
-                        },
-                      },
-                    ],
-                  },
                 },
                 {
                   kind: "Field",
