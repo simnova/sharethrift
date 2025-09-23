@@ -6,7 +6,10 @@ import { message } from 'antd';
 // eslint-disable-next-line import/no-absolute-path, @typescript-eslint/ban-ts-comment
 // @ts-ignore - allow raw import string
 import CreateListingMutationSource from './create-listing.container.graphql?raw';
-import { CreateListing, type CreateListingFormData } from './create-listing';
+import {
+	CreateListing,
+	type CreateListingFormData,
+} from './create-listing.tsx';
 
 // Parse the GraphQL operations
 const CREATE_LISTING_MUTATION = gql(CreateListingMutationSource);

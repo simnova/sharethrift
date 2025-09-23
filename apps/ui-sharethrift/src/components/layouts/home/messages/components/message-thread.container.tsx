@@ -4,7 +4,7 @@ import { useState, useRef, useEffect } from 'react';
 //   HomeMessageThreadContainerGetConversationMessages as GET_CONVERSATION_MESSAGES,
 //   HomeMessageThreadContainerSendMessage as SEND_MESSAGE
 // } from './message-thread.container.graphql';
-import { MessageThread } from './message-thread';
+import { MessageThread } from './message-thread.tsx';
 
 interface MessageThreadContainerProps {
 	conversationId: string;
@@ -34,6 +34,7 @@ export function MessageThreadContainer({
 	//   });
 
 	// TODO: Replace 'any' with your actual Message type/interface
+	// biome-ignore lint/suspicious/noExplicitAny: <explanation>
 	const messages: any[] = [];
 
 	// Auto-scroll to bottom when new messages arrive

@@ -1,12 +1,12 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { gql, useQuery } from '@apollo/client';
-import { ListingsPage } from './listings-page';
-import type { ItemListing } from './mock-listings';
+import { ListingsPage } from './listings-page.tsx';
+import type { ItemListing } from './mock-listings.ts';
 // eslint-disable-next-line import/no-absolute-path, @typescript-eslint/ban-ts-comment
 // @ts-ignore - allow raw import string
 import ListingsPageQuerySource from './listings-page.container.graphql?raw';
-import { useCreateListingNavigation } from './create-listing/hooks/use-create-listing-navigation';
+import { useCreateListingNavigation } from './create-listing/hooks/use-create-listing-navigation.ts';
 
 type ItemListingState =
 	| 'Published'

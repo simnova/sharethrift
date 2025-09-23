@@ -1,7 +1,7 @@
 import type { Meta, StoryObj } from '@storybook/react';
-import { ViewListing } from './view-listing';
+import { ViewListing } from './view-listing.tsx';
 //import type { ViewListingProps } from "./view-listing";
-import type { ItemListing } from '../../../../../generated';
+import type { ItemListing } from '../../../../../generated.tsx';
 import { MockedProvider } from '@apollo/client/testing';
 import { gql } from '@apollo/client';
 
@@ -15,7 +15,7 @@ import ListingInformationQuerySource from './listing-information/listing-informa
 const GET_LISTING_IMAGES = gql(ListingImagesQuerySource);
 const GET_LISTING_INFORMATION = gql(ListingInformationQuerySource);
 
-const baseListingId = DUMMY_LISTINGS[0]._id;
+const baseListingId = DUMMY_LISTINGS[0]?._id;
 
 const mocks = [
 	{
@@ -26,7 +26,7 @@ const mocks = [
 		result: {
 			data: {
 				itemListing: {
-					images: DUMMY_LISTINGS[0].images,
+					images: DUMMY_LISTINGS[0]?.images,
 				},
 			},
 		},
@@ -40,20 +40,20 @@ const mocks = [
 			data: {
 				itemListing: {
 					id: baseListingId,
-					title: DUMMY_LISTINGS[0].title,
-					description: DUMMY_LISTINGS[0].description,
-					category: DUMMY_LISTINGS[0].category,
-					location: DUMMY_LISTINGS[0].location,
+					title: DUMMY_LISTINGS[0]?.title,
+					description: DUMMY_LISTINGS[0]?.description,
+					category: DUMMY_LISTINGS[0]?.category,
+					location: DUMMY_LISTINGS[0]?.location,
 					sharingPeriodStart:
-						DUMMY_LISTINGS[0].sharingPeriodStart.toISOString(),
-					sharingPeriodEnd: DUMMY_LISTINGS[0].sharingPeriodEnd.toISOString(),
-					state: DUMMY_LISTINGS[0].state,
-					images: DUMMY_LISTINGS[0].images,
+						DUMMY_LISTINGS[0]?.sharingPeriodStart.toISOString(),
+					sharingPeriodEnd: DUMMY_LISTINGS[0]?.sharingPeriodEnd.toISOString(),
+					state: DUMMY_LISTINGS[0]?.state,
+					images: DUMMY_LISTINGS[0]?.images,
 					createdAt:
-						DUMMY_LISTINGS[0].createdAt?.toISOString() ??
+						DUMMY_LISTINGS[0]?.createdAt?.toISOString() ??
 						new Date().toISOString(),
 					updatedAt:
-						DUMMY_LISTINGS[0].updatedAt?.toISOString() ??
+						DUMMY_LISTINGS[0]?.updatedAt?.toISOString() ??
 						new Date().toISOString(),
 					reports: 0,
 					sharingHistory: [],
@@ -129,15 +129,27 @@ export default meta;
 
 type Story = StoryObj<typeof ViewListing>;
 
-import { DUMMY_LISTINGS } from '../mock-listings';
+import { DUMMY_LISTINGS } from '../mock-listings.ts';
 
 const baseListing: ItemListing = {
 	...DUMMY_LISTINGS[0],
-	id: DUMMY_LISTINGS[0]._id, // add id field for compatibility with queries/components
+	id: DUMMY_LISTINGS[0]?._id ?? 'dummy-listing-id', // fallback to dummy id
+	category: DUMMY_LISTINGS[0]?.category ?? 'Miscellaneous',
+	description: DUMMY_LISTINGS[0]?.description ?? 'No description provided.',
+	location: DUMMY_LISTINGS[0]?.location ?? 'Unknown',
+	title: DUMMY_LISTINGS[0]?.title ?? 'Untitled Listing',
+	sharingPeriodStart: DUMMY_LISTINGS[0]?.sharingPeriodStart ?? new Date(),
+	sharingPeriodEnd: DUMMY_LISTINGS[0]?.sharingPeriodEnd ?? new Date(),
 	state:
-		DUMMY_LISTINGS[0].state === 'Appeal Requested'
+		DUMMY_LISTINGS[0]?.state === 'Appeal Requested'
 			? 'Appeal_Requested'
-			: DUMMY_LISTINGS[0].state,
+			: (DUMMY_LISTINGS[0]?.state ?? 'Available'),
+	createdAt: DUMMY_LISTINGS[0]?.createdAt ?? new Date(),
+	updatedAt: DUMMY_LISTINGS[0]?.updatedAt ?? new Date(),
+	images: DUMMY_LISTINGS[0]?.images ?? [],
+	reports: DUMMY_LISTINGS[0]?.reports ?? 0,
+	sharingHistory: DUMMY_LISTINGS[0]?.sharingHistory ?? [],
+	schemaVersion: '1.0',
 	sharer: {
 		__typename: 'PersonalUser',
 		id: 'dummy-sharer-id',

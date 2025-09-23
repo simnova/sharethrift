@@ -22,8 +22,8 @@ export const MyReservationsMain: React.FC = () => {
 		},
 	];
 	return (
-		<div className={`p-6 ${styles.mainContent}`}>
-			<Title level={2} className={styles.pageTitle}>
+		<div className={`p-6 ${styles['mainContent']}`}>
+			<Title level={2} className={styles['pageTitle']}>
 				My Reservations
 			</Title>
 			<Tabs defaultActiveKey="active" items={tabItems} />

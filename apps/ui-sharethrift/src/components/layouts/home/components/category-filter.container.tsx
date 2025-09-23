@@ -1,4 +1,4 @@
-import { CategoryFilter } from './category-filter';
+import { CategoryFilter } from './category-filter.tsx';
 
 interface CategoryFilterContainerProps {
 	selectedCategory: string;

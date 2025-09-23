@@ -9,8 +9,8 @@ export const Thumbnail = ({
 	src: string;
 	onRemove: () => void;
 }) => (
-	<div className={styles.wrapper}>
-		<img src={src} className={styles.img} alt="" />
+	<div className={styles['wrapper']}>
+		<img src={src} className={styles['img']} alt="" />
 		<Button
 			type="text"
 			danger
@@ -19,7 +19,7 @@ export const Thumbnail = ({
 				e.stopPropagation();
 				onRemove();
 			}}
-			className={styles.remove}
+			className={styles['remove']}
 		/>
 	</div>
 );

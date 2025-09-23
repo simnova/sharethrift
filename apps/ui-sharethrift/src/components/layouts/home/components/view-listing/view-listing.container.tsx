@@ -13,7 +13,7 @@ import {
 	ViewListingActiveReservationRequestForListingDocument,
 	type ViewListingActiveReservationRequestForListingQuery,
 	type ViewListingActiveReservationRequestForListingQueryVariables,
-} from '../../../../../generated';
+} from '../../../../../generated.tsx';
 
 export function ViewListingContainer({
 	isAuthenticated,

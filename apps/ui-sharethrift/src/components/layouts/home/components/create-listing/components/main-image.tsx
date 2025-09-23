@@ -12,15 +12,15 @@ export function MainImage({
 	onRemove: () => void;
 }) {
 	return (
-		<div className={styles.container}>
-			<img src={src} alt="" className={styles.image} />
-			<div className={styles.caption}>{count} / 5</div>
+		<div className={styles['container']}>
+			<img src={src} alt="" className={styles['image']} />
+			<div className={styles['caption']}>{count} / 5</div>
 			<Button
 				type="text"
 				danger
 				icon={<CloseOutlined />}
 				onClick={onRemove}
-				className={styles.removeButton}
+				className={styles['removeButton']}
 			/>
 		</div>
 	);

@@ -1,4 +1,4 @@
-import { ListingsPageContainer } from '../components/listings-page.container';
+import { ListingsPageContainer } from '../components/listings-page.container.tsx';
 import { useAuth } from 'react-oidc-context';
 
 interface ListingsProps {

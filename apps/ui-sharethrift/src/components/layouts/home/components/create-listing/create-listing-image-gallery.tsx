@@ -1,8 +1,8 @@
 import type { RefObject, FC } from 'react';
 import { PlusOutlined } from '@ant-design/icons';
-import { useFileLimit } from './hooks/use-file-limit';
-import { MainImage } from './components/main-image';
-import { Thumbnail } from './components/thumbnail';
+import { useFileLimit } from './hooks/use-file-limit.ts';
+import { MainImage } from './components/main-image.tsx';
+import { Thumbnail } from './components/thumbnail.tsx';
 import styles from './image-gallery.module.css';
 
 export interface ImageGalleryProps {
@@ -24,7 +24,7 @@ export const ImageGallery: FC<ImageGalleryProps> = ({
 	const [first, ...rest] = uploadedImages.filter(Boolean);
 
 	return (
-		<div className={styles.root}>
+		<div className={styles['root']}>
 			{/* Spacer to align with Item Details h1 */}
 			<div style={{ height: '24px', marginBottom: '16px' }}></div>
 			{first ? (
@@ -34,7 +34,7 @@ export const ImageGallery: FC<ImageGalleryProps> = ({
 						count={uploadedImages.length}
 						onRemove={() => onImageRemove(first)}
 					/>
-					<div className={styles.thumbs}>
+					<div className={styles['thumbs']}>
 						{rest.map((src) => (
 							<Thumbnail
 								key={src}
@@ -52,16 +52,16 @@ export const ImageGallery: FC<ImageGalleryProps> = ({
 										additionalFileInputRef.current?.click();
 									}
 								}}
-								className={styles.uploadBtn}
+								className={styles['uploadBtn']}
 								aria-label="Upload additional image"
 							>
-								<PlusOutlined className={styles.plusIconSmall} />
+								<PlusOutlined className={styles['plusIconSmall']} />
 							</button>
 						)}
 					</div>
 				</>
 			) : (
-				<div className={styles.uploadArea}>
+				<div className={styles['uploadArea']}>
 					<button
 						type="button"
 						onClick={() => mainFileInputRef.current?.click()}
@@ -71,11 +71,11 @@ export const ImageGallery: FC<ImageGalleryProps> = ({
 								mainFileInputRef.current?.click();
 							}
 						}}
-						className={styles.uploadButton}
+						className={styles['uploadButton']}
 						aria-label="Upload image"
 					>
-						<PlusOutlined className={styles.plusIcon} />
-						<div className={styles.uploadText}>
+						<PlusOutlined className={styles['plusIcon']} />
+						<div className={styles['uploadText']}>
 							Click to upload images, up to 5
 						</div>
 					</button>

@@ -1,5 +1,5 @@
-import { ProfileViewContainer } from './profile-view.container';
+import { ProfileViewContainer } from './profile-view.container.tsx';
 
 export default function Profile() {
-  return <ProfileViewContainer />;
+	return <ProfileViewContainer />;
 }

@@ -8,7 +8,7 @@ import {
 	BaseApolloLink,
 	TerminatingApolloBatchLinkForGraphqlServer,
 	TerminatingApolloHttpLinkForGraphqlServer,
-} from './apollo-client-links.ts';
+} from './apollo-client-links.tsx';
 import { ApolloManualMergeCacheFix } from './apollo-manual-merge-cache-fix.ts';
 
 const restLinkForCountryDataSource = new RestLink({

@@ -1,4 +1,4 @@
-import { ConversationList } from './conversation-list';
+import { ConversationList } from './conversation-list.tsx';
 
 interface ConversationListContainerProps {
 	onConversationSelect: (conversationId: string) => void;

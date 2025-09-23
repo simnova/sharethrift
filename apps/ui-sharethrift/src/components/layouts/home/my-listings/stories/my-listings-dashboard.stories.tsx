@@ -1,16 +1,16 @@
 import type { Meta, StoryObj } from '@storybook/react';
-import { MyListingsDashboard } from '../components/my-listings-dashboard';
+import { MyListingsDashboard } from '../components/my-listings-dashboard.tsx';
 
 const meta: Meta<typeof MyListingsDashboard> = {
-  title: 'My Listings/Dashboard',
-  component: MyListingsDashboard,
-  parameters: {
-    layout: 'fullscreen',
-  },
-  args: {
-    onCreateListing: () => console.log('Create listing clicked'),
-    requestsCount: 2,
-  },
+	title: 'My Listings/Dashboard',
+	component: MyListingsDashboard,
+	parameters: {
+		layout: 'fullscreen',
+	},
+	args: {
+		onCreateListing: () => console.log('Create listing clicked'),
+		requestsCount: 2,
+	},
 };
 
 export default meta;

@@ -1,13 +1,12 @@
 import { Row, Col, Button } from 'antd';
 import { LeftOutlined } from '@ant-design/icons';
-import ListingImageGalleryContainer from './listing-image-gallery/listing-image-gallery.container';
-import SharerInformationContainer from './sharer-information/sharer-information.container';
-import ListingInformationContainer from './listing-information/listing-information.container';
-
+import ListingImageGalleryContainer from './listing-image-gallery/listing-image-gallery.container.tsx';
+import SharerInformationContainer from './sharer-information/sharer-information.container.tsx';
+import ListingInformationContainer from './listing-information/listing-information.container.tsx';
 import type {
 	ItemListing,
 	ViewListingActiveReservationRequestForListingQuery,
-} from '../../../../../generated';
+} from '../../../../../generated.tsx';
 
 export interface ViewListingProps {
 	listing: ItemListing;

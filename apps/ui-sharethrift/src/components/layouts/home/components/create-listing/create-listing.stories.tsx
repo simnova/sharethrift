@@ -1,5 +1,5 @@
 import type { Meta, StoryObj } from '@storybook/react';
-import { CreateListing } from './create-listing';
+import { CreateListing } from './create-listing.tsx';
 import { MemoryRouter } from 'react-router-dom';
 
 const meta: Meta<typeof CreateListing> = {

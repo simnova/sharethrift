@@ -1,10 +1,10 @@
 import { Row, Col, Button, Form, message } from 'antd';
 import { LeftOutlined } from '@ant-design/icons';
 import { useRef, useState, useEffect } from 'react';
-import { SuccessPublished } from './create-listing-success';
-import { SuccessDraft } from './create-draft-success';
-import ImageGallery from './create-listing-image-gallery';
-import ListingForm from './create-listing-form';
+import { SuccessPublished } from './create-listing-success.tsx';
+import { SuccessDraft } from './create-draft-success.tsx';
+import ImageGallery from './create-listing-image-gallery.tsx';
+import ListingForm from './create-listing-form.tsx';
 import '../view-listing/listing-image-gallery/listing-image-gallery.overrides.css';
 import './create-listing.overrides.css';
 

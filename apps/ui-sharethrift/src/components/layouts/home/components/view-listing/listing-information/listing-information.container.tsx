@@ -1,31 +1,33 @@
 import { useQuery, useMutation, useApolloClient } from '@apollo/client';
 import { useState } from 'react';
 import { message } from 'antd';
-import { ListingInformation } from './listing-information';
+import { ListingInformation } from './listing-information.tsx';
 
 // eslint-disable-next-line import/no-absolute-path, @typescript-eslint/ban-ts-comment
 // @ts-ignore - allow raw import string
-import { 
-    HomeListingInformationCreateReservationRequestDocument, 
-    type CreateReservationRequestInput, 
-    ViewListingCurrentUserDocument, 
-    type ViewListingCurrentUserQuery,
-    ViewListingQueryActiveByListingIdDocument, 
-    type ViewListingQueryActiveByListingIdQuery, 
-    type ViewListingQueryActiveByListingIdQueryVariables,
-    ViewListingActiveReservationRequestForListingDocument,
-    type ItemListing,
-    type ViewListingActiveReservationRequestForListingQuery
-} from '../../../../../../generated';
+import {
+	HomeListingInformationCreateReservationRequestDocument,
+	type CreateReservationRequestInput,
+	ViewListingCurrentUserDocument,
+	type ViewListingCurrentUserQuery,
+	ViewListingQueryActiveByListingIdDocument,
+	type ViewListingQueryActiveByListingIdQuery,
+	type ViewListingQueryActiveByListingIdQueryVariables,
+	ViewListingActiveReservationRequestForListingDocument,
+	type ItemListing,
+	type ViewListingActiveReservationRequestForListingQuery,
+} from '../../../../../../generated.tsx';
 
 interface ListingInformationContainerProps {
-  listing: ItemListing;
-  userIsSharer: boolean;
-  isAuthenticated: boolean;
-  userReservationRequest: ViewListingActiveReservationRequestForListingQuery["myActiveReservationForListing"] | null;
-  onLoginClick?: () => void;
-  onSignUpClick?: () => void;
-  className?: string;
+	listing: ItemListing;
+	userIsSharer: boolean;
+	isAuthenticated: boolean;
+	userReservationRequest:
+		| ViewListingActiveReservationRequestForListingQuery['myActiveReservationForListing']
+		| null;
+	onLoginClick?: () => void;
+	onSignUpClick?: () => void;
+	className?: string;
 }
 
 // Map backend ItemListingState to frontend ListingStatus
@@ -42,99 +44,108 @@ interface ListingInformationContainerProps {
 //     case 'Expired':
 //       return 'Expired';
 //     case 'Drafted':
-//       return 'Cancelled'; 
+//       return 'Cancelled';
 //     case 'Appeal_Requested':
-//       return 'Blocked'; 
+//       return 'Blocked';
 //     default:
-//       return 'Active'; 
+//       return 'Active';
 //   }
 // }
 
 export default function ListingInformationContainer({
-  listing,
-  userIsSharer,
-  isAuthenticated,
-  userReservationRequest,
-  onLoginClick,
-  onSignUpClick,
-  className
+	listing,
+	userIsSharer,
+	isAuthenticated,
+	userReservationRequest,
+	onLoginClick,
+	onSignUpClick,
+	className,
 }: ListingInformationContainerProps) {
-  const [reservationDates, setReservationDates] = useState<{
-    startDate: Date | null;
-    endDate: Date | null;
-  }>({
-    startDate: null,
-    endDate: null
-  });
+	const [reservationDates, setReservationDates] = useState<{
+		startDate: Date | null;
+		endDate: Date | null;
+	}>({
+		startDate: null,
+		endDate: null,
+	});
 
-  const { data: otherReservationsData, loading: otherReservationsLoading, error: otherReservationsError } = useQuery<ViewListingQueryActiveByListingIdQuery, ViewListingQueryActiveByListingIdQueryVariables>(
-    ViewListingQueryActiveByListingIdDocument,
-    {
-      variables: { listingId: listing.id },
-      skip: !listing?.id,
-      fetchPolicy: 'cache-first',
-    }
-  );
+	const {
+		data: otherReservationsData,
+		loading: otherReservationsLoading,
+		error: otherReservationsError,
+	} = useQuery<
+		ViewListingQueryActiveByListingIdQuery,
+		ViewListingQueryActiveByListingIdQueryVariables
+	>(ViewListingQueryActiveByListingIdDocument, {
+		variables: { listingId: listing.id },
+		skip: !listing?.id,
+		fetchPolicy: 'cache-first',
+	});
 
-  if (otherReservationsData) { console.log("Other reservations data:", otherReservationsData); }
-  
-  const { data: currentUserData } = useQuery<ViewListingCurrentUserQuery>(ViewListingCurrentUserDocument);
-  if (!currentUserData?.currentPersonalUserAndCreateIfNotExists) {console.log("Current user could not be created or not found:");}
+	if (otherReservationsData) {
+		console.log('Other reservations data:', otherReservationsData);
+	}
 
-  const client = useApolloClient();
+	const { data: currentUserData } = useQuery<ViewListingCurrentUserQuery>(
+		ViewListingCurrentUserDocument,
+	);
+	if (!currentUserData?.currentPersonalUserAndCreateIfNotExists) {
+		console.log('Current user could not be created or not found:');
+	}
 
-  const [createReservationRequestMutation, { loading: mutationLoading }] = useMutation(
-    HomeListingInformationCreateReservationRequestDocument,
-    {
-      onCompleted: () => {
-        client.refetchQueries({
-          include: [ViewListingActiveReservationRequestForListingDocument],
-        });
-        setReservationDates({ startDate: null, endDate: null });
-      },
-      onError: (error) => {
-        console.log(error.message || 'Failed to create reservation request');
-      },
-    }
-  );
+	const client = useApolloClient();
 
-  const handleReserveClick = async () => {
-    if (!reservationDates.startDate || !reservationDates.endDate) {
-      message.warning('Please select both start and end dates for your reservation');
-      return;
-    }
-    try {
-      await createReservationRequestMutation({
-        variables: {
-          input: {
-            listingId: listing.id,
-            reservationPeriodStart: reservationDates.startDate.toISOString(),
-            reservationPeriodEnd: reservationDates.endDate.toISOString(),
-          } as CreateReservationRequestInput,
-        },
-      });
-    } catch (error) {
-      console.error('Error creating reservation request:', error);
-    }
-  };
+	const [createReservationRequestMutation, { loading: mutationLoading }] =
+		useMutation(HomeListingInformationCreateReservationRequestDocument, {
+			onCompleted: () => {
+				client.refetchQueries({
+					include: [ViewListingActiveReservationRequestForListingDocument],
+				});
+				setReservationDates({ startDate: null, endDate: null });
+			},
+			onError: (error) => {
+				console.log(error.message || 'Failed to create reservation request');
+			},
+		});
 
-  return (
-    <ListingInformation
-      listing={listing}
-      userIsSharer={userIsSharer}
-      isAuthenticated={isAuthenticated}
-      userReservationRequest={userReservationRequest}
-      onReserveClick={handleReserveClick}
-      onLoginClick={onLoginClick}
-      onSignUpClick={onSignUpClick}
-      className={className}
-      reservationDates={reservationDates}
-      onReservationDatesChange={setReservationDates}
-      reservationLoading={mutationLoading}
-      otherReservationsLoading={otherReservationsLoading}
-      otherReservationsError={otherReservationsError}
-      otherReservations={otherReservationsData?.queryActiveByListingId}
-    />
-  );
+	const handleReserveClick = async () => {
+		if (!reservationDates.startDate || !reservationDates.endDate) {
+			message.warning(
+				'Please select both start and end dates for your reservation',
+			);
+			return;
+		}
+		try {
+			await createReservationRequestMutation({
+				variables: {
+					input: {
+						listingId: listing.id,
+						reservationPeriodStart: reservationDates.startDate.toISOString(),
+						reservationPeriodEnd: reservationDates.endDate.toISOString(),
+					} as CreateReservationRequestInput,
+				},
+			});
+		} catch (error) {
+			console.error('Error creating reservation request:', error);
+		}
+	};
+
+	return (
+		<ListingInformation
+			listing={listing}
+			userIsSharer={userIsSharer}
+			isAuthenticated={isAuthenticated}
+			userReservationRequest={userReservationRequest}
+			onReserveClick={handleReserveClick}
+			onLoginClick={onLoginClick}
+			onSignUpClick={onSignUpClick}
+			className={className}
+			reservationDates={reservationDates}
+			onReservationDatesChange={setReservationDates}
+			reservationLoading={mutationLoading}
+			otherReservationsLoading={otherReservationsLoading}
+			otherReservationsError={otherReservationsError}
+			otherReservations={otherReservationsData?.queryActiveByListingId}
+		/>
+	);
 }
-

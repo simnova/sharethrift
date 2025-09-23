@@ -1,10 +1,10 @@
 import { Input, Checkbox, Button, Image, Popconfirm, Tag, Badge } from 'antd';
-import type { TableProps, ColumnsType } from 'antd/es/table';
+import type { TableProps } from 'antd';
 import { SearchOutlined, FilterOutlined } from '@ant-design/icons';
 import { Dashboard } from '@sthrift/ui-components';
-import type { MyListingData } from './my-listings-dashboard.types';
-import { AllListingsCard } from './all-listings-card';
-import { getStatusTagClass } from './status-tag-class';
+import type { MyListingData } from './my-listings-dashboard.types.ts';
+import { AllListingsCard } from './all-listings-card.tsx';
+import { getStatusTagClass } from './status-tag-class.ts';
 
 const { Search } = Input;
 
@@ -142,7 +142,7 @@ export function AllListingsTable({
 		return buttons;
 	};
 
-	const columns: ColumnsType<MyListingData> = [
+	const columns: TableProps<MyListingData>['columns'] = [
 		{
 			title: 'Listing',
 			dataIndex: 'title',
@@ -229,10 +229,13 @@ export function AllListingsTable({
 				// If not, try to parse and format
 				let start = '',
 					end = '';
-				if (period.includes(' - ')) {
-					[start, end] = period.split(' - ');
+				const safePeriod = period ?? '';
+				if (safePeriod.includes(' - ')) {
+					const parts = safePeriod.split(' - ');
+					start = parts[0] ?? '';
+					end = parts[1] ?? '';
 				} else {
-					start = period;
+					start = safePeriod;
 				}
 				// Try to format both as yyyy-mm-dd
 				function formatDate(str: string) {
@@ -283,7 +286,7 @@ export function AllListingsTable({
 					/>
 				</div>
 			),
-			filterIcon: (filtered) => (
+			filterIcon: (filtered: boolean) => (
 				<FilterOutlined style={{ color: filtered ? '#1890ff' : undefined }} />
 			),
 			render: (status: string) => (
@@ -294,7 +297,7 @@ export function AllListingsTable({
 			title: 'Actions',
 			key: 'actions',
 			width: 200,
-			render: (_, record: MyListingData) => {
+			render: (_: unknown, record: MyListingData) => {
 				const actions = getActionButtons(record);
 				// Ensure at least 3 slots for alignment (first, middle, last)
 				const minActions = 3;

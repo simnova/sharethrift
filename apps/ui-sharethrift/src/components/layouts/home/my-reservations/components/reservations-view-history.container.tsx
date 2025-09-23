@@ -1,4 +1,4 @@
-import { ReservationsView } from './reservations-view';
+import { ReservationsView } from './reservations-view.tsx';
 import type { ReservationRequest } from '../pages/index.ts';
 
 export const MOCK_HISTORY_RESERVATIONS: ReservationRequest[] = [

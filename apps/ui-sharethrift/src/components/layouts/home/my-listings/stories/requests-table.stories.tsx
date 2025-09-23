@@ -1,5 +1,5 @@
 import type { Meta, StoryObj } from '@storybook/react';
-import { RequestsTable } from '../components/requests-table';
+import { RequestsTable } from '../components/requests-table.tsx';
 
 const MOCK_REQUESTS = [
 	{
@@ -35,9 +35,21 @@ const meta: Meta<typeof RequestsTable> = {
 		total: MOCK_REQUESTS.length,
 		onSearch: (value: string) => console.log('Search:', value),
 		onStatusFilter: (values: string[]) => console.log('Status filter:', values),
-		onTableChange: (pagination, filters, sorter) => console.log('Table change:', { pagination, filters, sorter }),
+		onTableChange: (pagination, filters, sorter, extra) => {
+			let normalizedSorter = sorter;
+			if (Array.isArray(sorter)) {
+				normalizedSorter = sorter[0] || { field: undefined, order: null };
+			}
+			console.log('Table change:', {
+				pagination,
+				filters,
+				sorter: normalizedSorter,
+				extra,
+			});
+		},
 		onPageChange: (page: number) => console.log('Page change:', page),
-		onAction: (action: string, requestId: string) => console.log('Action:', action, 'Request:', requestId),
+		onAction: (action: string, requestId: string) =>
+			console.log('Action:', action, 'Request:', requestId),
 	},
 };
 
