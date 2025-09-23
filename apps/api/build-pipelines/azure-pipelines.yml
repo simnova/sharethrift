@@ -22,7 +22,7 @@ parameters:
 
 
 stages:
-  - template: ../../../build-pipeline/core/function-app-build-stage.yml
+  - template: ../../../build-pipeline/core/function-app-build-stage-turbo.yml
     parameters:
       vmImageName: $(vmImageName)
       npm_config_cache: $(npm_config_cache)
