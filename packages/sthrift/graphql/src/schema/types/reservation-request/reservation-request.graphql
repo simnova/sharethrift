@@ -1,58 +1,70 @@
 type ReservationRequest {
-  id: ObjectID!
-  state: ReservationRequestState
-  reservationPeriodStart: String
-  reservationPeriodEnd: String
-  createdAt: String
-  updatedAt: String
-  listing: ItemListing
-  reserver: PersonalUser
-  closeRequestedBySharer: Boolean
-  closeRequestedByReserver: Boolean
+	id: ObjectID!
+	state: ReservationRequestState
+	reservationPeriodStart: DateTime
+	reservationPeriodEnd: DateTime
+	createdAt: DateTime
+	updatedAt: DateTime
+	listing: ItemListing
+	reserver: PersonalUser
+	closeRequestedBySharer: Boolean
+	closeRequestedByReserver: Boolean
 }
 
 enum ReservationRequestState {
-  Requested
-  Accepted
-  Rejected
-  Closed
-  Cancelled
+	Requested
+	Accepted
+	Rejected
+	Closed
+	Cancelled
 }
 
 extend type Query {
-  myActiveReservations(userId: ObjectID!): [ReservationRequest!]!
-  myPastReservations(userId: ObjectID!): [ReservationRequest!]!
-  myListingsRequests(page: Int!, pageSize: Int!, searchText: String, statusFilters: [String!], sorter: SorterInput): ListingRequestPage!
-  myActiveReservationForListing(listingId: ObjectID!, userId: ObjectID!): ReservationRequest
-  overlapActiveReservationRequestsForListing(
-    listingId: ObjectID!
-    reservationPeriodStart: DateTime!
-    reservationPeriodEnd: DateTime!
-  ): [ReservationRequest!]!
-  queryActiveByListingId(listingId: ObjectID!): [ReservationRequest]!
+	myActiveReservations(userId: ObjectID!): [ReservationRequest!]!
+	myPastReservations(userId: ObjectID!): [ReservationRequest!]!
+	myListingsRequests(
+		page: Int!
+		pageSize: Int!
+		searchText: String!
+		statusFilters: [String!]!
+		sorter: SorterInput!
+		sharerId: ObjectID!
+	): ListingRequestPage!
+	myActiveReservationForListing(
+		listingId: ObjectID!
+		userId: ObjectID!
+	): ReservationRequest
+	overlapActiveReservationRequestsForListing(
+		listingId: ObjectID!
+		reservationPeriodStart: DateTime!
+		reservationPeriodEnd: DateTime!
+	): [ReservationRequest!]!
+	queryActiveByListingId(listingId: ObjectID!): [ReservationRequest]!
 }
 
 extend type Mutation {
-  createReservationRequest(input: CreateReservationRequestInput!): ReservationRequest!
-  cancelReservation(input: CancelReservationInput!): ReservationRequest!
-  closeReservation(input: CloseReservationInput!): ReservationRequest!
+	createReservationRequest(
+		input: CreateReservationRequestInput!
+	): ReservationRequest!
+	cancelReservation(input: CancelReservationInput!): ReservationRequest!
+	closeReservation(input: CloseReservationInput!): ReservationRequest!
 }
 
 type ReservationRequestMutationResult implements MutationResult {
-  status: MutationStatus!
-  reservationRequest: ReservationRequest
+	status: MutationStatus!
+	reservationRequest: ReservationRequest
 }
 
 input CreateReservationRequestInput {
-  listingId: ObjectID!
-  reservationPeriodStart: DateTime!
-  reservationPeriodEnd: DateTime!
+	listingId: ObjectID!
+	reservationPeriodStart: DateTime!
+	reservationPeriodEnd: DateTime!
 }
 
 input CancelReservationInput {
-  id: ObjectID!
+	id: ObjectID!
 }
 
 input CloseReservationInput {
-  id: ObjectID!
+	id: ObjectID!
 }

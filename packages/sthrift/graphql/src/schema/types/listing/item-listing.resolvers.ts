@@ -159,7 +159,7 @@ const itemListingResolvers = {
 				location: args.input.location,
 				sharingPeriodStart: new Date(args.input.sharingPeriodStart),
 				sharingPeriodEnd: new Date(args.input.sharingPeriodEnd),
-				images: args.input.images ?? [],
+				images: [...(args.input.images ?? [])],
 				isDraft: args.input.isDraft ?? false,
 			};
 

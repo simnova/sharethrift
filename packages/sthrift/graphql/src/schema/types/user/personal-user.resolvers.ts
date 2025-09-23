@@ -2,7 +2,6 @@ import type { GraphContext } from '../../../init/context.ts';
 import type { GraphQLResolveInfo } from 'graphql';
 import type {
 	PersonalUserUpdateInput,
-	PersonalUser,
 	PaymentResponse,
 	RefundResponse,
 	Resolvers,
@@ -18,9 +17,9 @@ const personalUserResolvers: Resolvers = {
 			_info: GraphQLResolveInfo,
 		) => {
 			console.log('personalUser resolver called with id:', args.id);
-			return (await context.applicationServices.User.PersonalUser.queryById({
+			return await context.applicationServices.User.PersonalUser.queryById({
 				id: args.id,
-			})) as PersonalUser;
+			});
 		},
 		currentPersonalUserAndCreateIfNotExists: async (
 			_parent: unknown,
@@ -33,7 +32,7 @@ const personalUserResolvers: Resolvers = {
 			}
 			console.log('currentPersonalUserAndCreateIfNotExists resolver called');
 			// Implement the logic to get the current personal user or create a new one
-			return (await context.applicationServices.User.PersonalUser.createIfNotExists(
+			return await context.applicationServices.User.PersonalUser.createIfNotExists(
 				{
 					email: context.applicationServices.verifiedUser.verifiedJwt.email,
 					firstName:
@@ -41,7 +40,7 @@ const personalUserResolvers: Resolvers = {
 					lastName:
 						context.applicationServices.verifiedUser.verifiedJwt.family_name,
 				},
-			)) as PersonalUser;
+			);
 		},
 	},
 
@@ -57,9 +56,9 @@ const personalUserResolvers: Resolvers = {
 			}
 			console.log('personalUserUpdate resolver called with id:', args.input.id);
 			// Implement the logic to update the personal user
-			return (await context.applicationServices.User.PersonalUser.update(
+			return await context.applicationServices.User.PersonalUser.update(
 				args.input as PersonalUserUpdateCommand,
-			)) as PersonalUser;
+			);
 		},
 		processPayment: async (_parent, { request }, context) => {
 			console.log('Processing payment', request);

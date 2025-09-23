@@ -1,12 +1,9 @@
-#graphql
-"""
-GraphQL schema for Personal Users
-"""
 type PersonalUser implements MongoBase {
 	userType: String
 	isBlocked: Boolean
 	account: PersonalUserAccount
-
+	hasCompletedOnboarding: Boolean
+	role: PersonalUserRole
 	id: ObjectID!
 	schemaVersion: String
 	createdAt: DateTime

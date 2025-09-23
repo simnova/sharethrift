@@ -382,13 +382,14 @@ export type PaymentResponseOrderInformation = {
   amountDetails?: Maybe<PaymentResponseAmountDetails>;
 };
 
-/** GraphQL schema for Personal Users */
 export type PersonalUser = MongoBase & {
   __typename?: "PersonalUser";
   account?: Maybe<PersonalUserAccount>;
   createdAt?: Maybe<Scalars["DateTime"]["output"]>;
+  hasCompletedOnboarding?: Maybe<Scalars["Boolean"]["output"]>;
   id: Scalars["ObjectID"]["output"];
   isBlocked?: Maybe<Scalars["Boolean"]["output"]>;
+  role?: Maybe<PersonalUserRole>;
   schemaVersion?: Maybe<Scalars["String"]["output"]>;
   updatedAt?: Maybe<Scalars["DateTime"]["output"]>;
   userType?: Maybe<Scalars["String"]["output"]>;
@@ -459,6 +460,49 @@ export type PersonalUserAccountUpdateInput = {
   username?: InputMaybe<Scalars["String"]["input"]>;
 };
 
+export type PersonalUserRole = MongoBase & {
+  __typename?: "PersonalUserRole";
+  createdAt?: Maybe<Scalars["DateTime"]["output"]>;
+  id: Scalars["ObjectID"]["output"];
+  isDefault?: Maybe<Scalars["Boolean"]["output"]>;
+  permissions?: Maybe<PersonalUserRolePermissions>;
+  roleName?: Maybe<Scalars["String"]["output"]>;
+  roleType?: Maybe<Scalars["String"]["output"]>;
+  schemaVersion?: Maybe<Scalars["String"]["output"]>;
+  updatedAt?: Maybe<Scalars["DateTime"]["output"]>;
+};
+
+export type PersonalUserRoleConversationPermissions = {
+  __typename?: "PersonalUserRoleConversationPermissions";
+  canCreateConversation?: Maybe<Scalars["Boolean"]["output"]>;
+  canManageConversation?: Maybe<Scalars["Boolean"]["output"]>;
+  canViewConversation?: Maybe<Scalars["Boolean"]["output"]>;
+};
+
+export type PersonalUserRoleListingPermissions = {
+  __typename?: "PersonalUserRoleListingPermissions";
+  canCreateItemListing?: Maybe<Scalars["Boolean"]["output"]>;
+  canDeleteItemListing?: Maybe<Scalars["Boolean"]["output"]>;
+  canPublishItemListing?: Maybe<Scalars["Boolean"]["output"]>;
+  canUnpublishItemListing?: Maybe<Scalars["Boolean"]["output"]>;
+  canUpdateItemListing?: Maybe<Scalars["Boolean"]["output"]>;
+  canViewItemListing?: Maybe<Scalars["Boolean"]["output"]>;
+};
+
+export type PersonalUserRolePermissions = {
+  __typename?: "PersonalUserRolePermissions";
+  conversationPermissions?: Maybe<PersonalUserRoleConversationPermissions>;
+  listingPermissions?: Maybe<PersonalUserRoleListingPermissions>;
+  reservationRequestPermissions?: Maybe<PersonalUserRoleReservationRequestPermissions>;
+};
+
+export type PersonalUserRoleReservationRequestPermissions = {
+  __typename?: "PersonalUserRoleReservationRequestPermissions";
+  canCreateReservationRequest?: Maybe<Scalars["Boolean"]["output"]>;
+  canManageReservationRequest?: Maybe<Scalars["Boolean"]["output"]>;
+  canViewReservationRequest?: Maybe<Scalars["Boolean"]["output"]>;
+};
+
 export type PersonalUserUpdateInput = {
   account?: InputMaybe<PersonalUserAccountUpdateInput>;
   id: Scalars["ObjectID"]["input"];
@@ -524,9 +568,10 @@ export type QueryMyListingsAllArgs = {
 export type QueryMyListingsRequestsArgs = {
   page: Scalars["Int"]["input"];
   pageSize: Scalars["Int"]["input"];
-  searchText?: InputMaybe<Scalars["String"]["input"]>;
-  sorter?: InputMaybe<SorterInput>;
-  statusFilters?: InputMaybe<Array<Scalars["String"]["input"]>>;
+  searchText: Scalars["String"]["input"];
+  sharerId: Scalars["ObjectID"]["input"];
+  sorter: SorterInput;
+  statusFilters: Array<Scalars["String"]["input"]>;
 };
 
 /**  Base Query Type definition - , all mutations will be defined in separate files extending this type  */
@@ -576,14 +621,14 @@ export type ReservationRequest = {
   __typename?: "ReservationRequest";
   closeRequestedByReserver?: Maybe<Scalars["Boolean"]["output"]>;
   closeRequestedBySharer?: Maybe<Scalars["Boolean"]["output"]>;
-  createdAt?: Maybe<Scalars["String"]["output"]>;
+  createdAt?: Maybe<Scalars["DateTime"]["output"]>;
   id: Scalars["ObjectID"]["output"];
   listing?: Maybe<ItemListing>;
-  reservationPeriodEnd?: Maybe<Scalars["String"]["output"]>;
-  reservationPeriodStart?: Maybe<Scalars["String"]["output"]>;
+  reservationPeriodEnd?: Maybe<Scalars["DateTime"]["output"]>;
+  reservationPeriodStart?: Maybe<Scalars["DateTime"]["output"]>;
   reserver?: Maybe<PersonalUser>;
   state?: Maybe<ReservationRequestState>;
-  updatedAt?: Maybe<Scalars["String"]["output"]>;
+  updatedAt?: Maybe<Scalars["DateTime"]["output"]>;
 };
 
 export type ReservationRequestMutationResult = MutationResult & {
@@ -901,10 +946,10 @@ export type ViewListingQueryActiveByListingIdQuery = {
     __typename?: "ReservationRequest";
     id: any;
     state?: ReservationRequestState | null;
-    reservationPeriodStart?: string | null;
-    reservationPeriodEnd?: string | null;
-    createdAt?: string | null;
-    updatedAt?: string | null;
+    reservationPeriodStart?: any | null;
+    reservationPeriodEnd?: any | null;
+    createdAt?: any | null;
+    updatedAt?: any | null;
     closeRequestedBySharer?: boolean | null;
     closeRequestedByReserver?: boolean | null;
   } | null>;
@@ -921,10 +966,10 @@ export type HomeListingInformationCreateReservationRequestMutation = {
     __typename?: "ReservationRequest";
     id: any;
     state?: ReservationRequestState | null;
-    reservationPeriodStart?: string | null;
-    reservationPeriodEnd?: string | null;
-    createdAt?: string | null;
-    updatedAt?: string | null;
+    reservationPeriodStart?: any | null;
+    reservationPeriodEnd?: any | null;
+    createdAt?: any | null;
+    updatedAt?: any | null;
   };
 };
 
@@ -1023,8 +1068,8 @@ export type ViewListingActiveReservationRequestForListingQuery = {
     __typename?: "ReservationRequest";
     id: any;
     state?: ReservationRequestState | null;
-    reservationPeriodStart?: string | null;
-    reservationPeriodEnd?: string | null;
+    reservationPeriodStart?: any | null;
+    reservationPeriodEnd?: any | null;
   } | null;
 };
 
@@ -1080,11 +1125,9 @@ export type HomeMyListingsDashboardContainerMyListingsRequestsCountQuery = {
 export type HomeRequestsTableContainerMyListingsRequestsQueryVariables = Exact<{
   page: Scalars["Int"]["input"];
   pageSize: Scalars["Int"]["input"];
-  searchText?: InputMaybe<Scalars["String"]["input"]>;
-  statusFilters?: InputMaybe<
-    Array<Scalars["String"]["input"]> | Scalars["String"]["input"]
-  >;
-  sorter?: InputMaybe<SorterInput>;
+  searchText: Scalars["String"]["input"];
+  statusFilters: Array<Scalars["String"]["input"]> | Scalars["String"]["input"];
+  sorter: SorterInput;
 }>;
 
 export type HomeRequestsTableContainerMyListingsRequestsQuery = {
@@ -1122,10 +1165,10 @@ export type ReservationsViewActiveContainerReservationFieldsFragment = {
   __typename?: "ReservationRequest";
   id: any;
   state?: ReservationRequestState | null;
-  reservationPeriodStart?: string | null;
-  reservationPeriodEnd?: string | null;
-  createdAt?: string | null;
-  updatedAt?: string | null;
+  reservationPeriodStart?: any | null;
+  reservationPeriodEnd?: any | null;
+  createdAt?: any | null;
+  updatedAt?: any | null;
   closeRequestedBySharer?: boolean | null;
   closeRequestedByReserver?: boolean | null;
   listing?: { __typename?: "ItemListing"; id: any; title: string } | null;
@@ -1154,10 +1197,10 @@ export type ReservationsViewActiveContainerActiveReservationsQuery = {
     __typename?: "ReservationRequest";
     id: any;
     state?: ReservationRequestState | null;
-    reservationPeriodStart?: string | null;
-    reservationPeriodEnd?: string | null;
-    createdAt?: string | null;
-    updatedAt?: string | null;
+    reservationPeriodStart?: any | null;
+    reservationPeriodEnd?: any | null;
+    createdAt?: any | null;
+    updatedAt?: any | null;
     closeRequestedBySharer?: boolean | null;
     closeRequestedByReserver?: boolean | null;
     listing?: { __typename?: "ItemListing"; id: any; title: string } | null;
@@ -1187,7 +1230,7 @@ export type ReservationsViewActiveContainerCancelReservationMutation = {
     __typename?: "ReservationRequest";
     id: any;
     state?: ReservationRequestState | null;
-    updatedAt?: string | null;
+    updatedAt?: any | null;
     closeRequestedBySharer?: boolean | null;
     closeRequestedByReserver?: boolean | null;
   };
@@ -1204,7 +1247,7 @@ export type ReservationsViewActiveContainerCloseReservationMutation = {
     __typename?: "ReservationRequest";
     id: any;
     state?: ReservationRequestState | null;
-    updatedAt?: string | null;
+    updatedAt?: any | null;
     closeRequestedBySharer?: boolean | null;
     closeRequestedByReserver?: boolean | null;
   };
@@ -1214,10 +1257,10 @@ export type ReservationsViewHistoryContainerReservationFieldsFragment = {
   __typename?: "ReservationRequest";
   id: any;
   state?: ReservationRequestState | null;
-  reservationPeriodStart?: string | null;
-  reservationPeriodEnd?: string | null;
-  createdAt?: string | null;
-  updatedAt?: string | null;
+  reservationPeriodStart?: any | null;
+  reservationPeriodEnd?: any | null;
+  createdAt?: any | null;
+  updatedAt?: any | null;
   closeRequestedBySharer?: boolean | null;
   closeRequestedByReserver?: boolean | null;
   listing?: { __typename?: "ItemListing"; id: any; title: string } | null;
@@ -1247,10 +1290,10 @@ export type ReservationsViewHistoryContainerPastReservationsQuery = {
     __typename?: "ReservationRequest";
     id: any;
     state?: ReservationRequestState | null;
-    reservationPeriodStart?: string | null;
-    reservationPeriodEnd?: string | null;
-    createdAt?: string | null;
-    updatedAt?: string | null;
+    reservationPeriodStart?: any | null;
+    reservationPeriodEnd?: any | null;
+    createdAt?: any | null;
+    updatedAt?: any | null;
     closeRequestedBySharer?: boolean | null;
     closeRequestedByReserver?: boolean | null;
     listing?: { __typename?: "ItemListing"; id: any; title: string } | null;
@@ -3258,6 +3301,43 @@ export const HomeMyListingsDashboardContainerMyListingsRequestsCountDocument = {
                 name: { kind: "Name", value: "pageSize" },
                 value: { kind: "IntValue", value: "1" },
               },
+              {
+                kind: "Argument",
+                name: { kind: "Name", value: "searchText" },
+                value: { kind: "StringValue", value: "", block: false },
+              },
+              {
+                kind: "Argument",
+                name: { kind: "Name", value: "sorter" },
+                value: {
+                  kind: "ObjectValue",
+                  fields: [
+                    {
+                      kind: "ObjectField",
+                      name: { kind: "Name", value: "field" },
+                      value: { kind: "StringValue", value: "", block: false },
+                    },
+                    {
+                      kind: "ObjectField",
+                      name: { kind: "Name", value: "order" },
+                      value: { kind: "StringValue", value: "", block: false },
+                    },
+                  ],
+                },
+              },
+              {
+                kind: "Argument",
+                name: { kind: "Name", value: "sharerId" },
+                value: { kind: "StringValue", value: "", block: false },
+              },
+              {
+                kind: "Argument",
+                name: { kind: "Name", value: "statusFilters" },
+                value: {
+                  kind: "ListValue",
+                  values: [{ kind: "StringValue", value: "", block: false }],
+                },
+              },
             ],
             selectionSet: {
               kind: "SelectionSet",
@@ -3310,7 +3390,13 @@ export const HomeRequestsTableContainerMyListingsRequestsDocument = {
             kind: "Variable",
             name: { kind: "Name", value: "searchText" },
           },
-          type: { kind: "NamedType", name: { kind: "Name", value: "String" } },
+          type: {
+            kind: "NonNullType",
+            type: {
+              kind: "NamedType",
+              name: { kind: "Name", value: "String" },
+            },
+          },
         },
         {
           kind: "VariableDefinition",
@@ -3319,12 +3405,15 @@ export const HomeRequestsTableContainerMyListingsRequestsDocument = {
             name: { kind: "Name", value: "statusFilters" },
           },
           type: {
-            kind: "ListType",
+            kind: "NonNullType",
             type: {
-              kind: "NonNullType",
+              kind: "ListType",
               type: {
-                kind: "NamedType",
-                name: { kind: "Name", value: "String" },
+                kind: "NonNullType",
+                type: {
+                  kind: "NamedType",
+                  name: { kind: "Name", value: "String" },
+                },
               },
             },
           },
@@ -3336,8 +3425,11 @@ export const HomeRequestsTableContainerMyListingsRequestsDocument = {
             name: { kind: "Name", value: "sorter" },
           },
           type: {
-            kind: "NamedType",
-            name: { kind: "Name", value: "SorterInput" },
+            kind: "NonNullType",
+            type: {
+              kind: "NamedType",
+              name: { kind: "Name", value: "SorterInput" },
+            },
           },
         },
       ],
@@ -3387,6 +3479,11 @@ export const HomeRequestsTableContainerMyListingsRequestsDocument = {
                   kind: "Variable",
                   name: { kind: "Name", value: "sorter" },
                 },
+              },
+              {
+                kind: "Argument",
+                name: { kind: "Name", value: "sharerId" },
+                value: { kind: "StringValue", value: "", block: false },
               },
             ],
             selectionSet: {

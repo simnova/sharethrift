@@ -88,171 +88,171 @@ export type Scalars = {
 };
 
 export type BlobAuthHeader = {
-  __typename?: "BlobAuthHeader";
-  authHeader?: Maybe<Scalars["String"]["output"]>;
-  blobName?: Maybe<Scalars["String"]["output"]>;
-  blobPath?: Maybe<Scalars["String"]["output"]>;
-  indexTags?: Maybe<Array<Maybe<BlobIndexTag>>>;
-  metadataFields?: Maybe<Array<Maybe<BlobMetadataField>>>;
-  requestDate?: Maybe<Scalars["String"]["output"]>;
+  readonly __typename?: "BlobAuthHeader";
+  readonly authHeader?: Maybe<Scalars["String"]["output"]>;
+  readonly blobName?: Maybe<Scalars["String"]["output"]>;
+  readonly blobPath?: Maybe<Scalars["String"]["output"]>;
+  readonly indexTags?: Maybe<ReadonlyArray<Maybe<BlobIndexTag>>>;
+  readonly metadataFields?: Maybe<ReadonlyArray<Maybe<BlobMetadataField>>>;
+  readonly requestDate?: Maybe<Scalars["String"]["output"]>;
 };
 
 export type BlobIndexTag = {
-  __typename?: "BlobIndexTag";
-  name: Scalars["String"]["output"];
-  value: Scalars["String"]["output"];
+  readonly __typename?: "BlobIndexTag";
+  readonly name: Scalars["String"]["output"];
+  readonly value: Scalars["String"]["output"];
 };
 
 export type BlobMetadataField = {
-  __typename?: "BlobMetadataField";
-  name: Scalars["String"]["output"];
-  value: Scalars["String"]["output"];
+  readonly __typename?: "BlobMetadataField";
+  readonly name: Scalars["String"]["output"];
+  readonly value: Scalars["String"]["output"];
 };
 
 /**  Required to enable Apollo Cache Control  */
 export type CacheControlScope = "PRIVATE" | "PUBLIC";
 
 export type CancelReservationInput = {
-  id: Scalars["ObjectID"]["input"];
+  readonly id: Scalars["ObjectID"]["input"];
 };
 
 export type CloseReservationInput = {
-  id: Scalars["ObjectID"]["input"];
+  readonly id: Scalars["ObjectID"]["input"];
 };
 
 export type Conversation = MongoBase & {
-  __typename?: "Conversation";
-  createdAt: Scalars["DateTime"]["output"];
-  id: Scalars["ObjectID"]["output"];
-  listing: Listing;
-  reserver: User;
-  schemaVersion: Scalars["String"]["output"];
-  sharer: User;
-  twilioConversationId: Scalars["String"]["output"];
-  updatedAt: Scalars["DateTime"]["output"];
+  readonly __typename?: "Conversation";
+  readonly createdAt: Scalars["DateTime"]["output"];
+  readonly id: Scalars["ObjectID"]["output"];
+  readonly listing: Listing;
+  readonly reserver: User;
+  readonly schemaVersion: Scalars["String"]["output"];
+  readonly sharer: User;
+  readonly twilioConversationId: Scalars["String"]["output"];
+  readonly updatedAt: Scalars["DateTime"]["output"];
 };
 
 export type ConversationCreateInput = {
-  listingId: Scalars["ObjectID"]["input"];
-  reserverId: Scalars["ObjectID"]["input"];
-  sharerId: Scalars["ObjectID"]["input"];
+  readonly listingId: Scalars["ObjectID"]["input"];
+  readonly reserverId: Scalars["ObjectID"]["input"];
+  readonly sharerId: Scalars["ObjectID"]["input"];
 };
 
 export type ConversationMutationResult = MutationResult & {
-  __typename?: "ConversationMutationResult";
-  conversation?: Maybe<Conversation>;
-  status: MutationStatus;
+  readonly __typename?: "ConversationMutationResult";
+  readonly conversation?: Maybe<Conversation>;
+  readonly status: MutationStatus;
 };
 
 export type CreateItemListingInput = {
-  category: Scalars["String"]["input"];
-  description: Scalars["String"]["input"];
-  images?: InputMaybe<Array<Scalars["String"]["input"]>>;
-  isDraft?: InputMaybe<Scalars["Boolean"]["input"]>;
-  location: Scalars["String"]["input"];
-  sharingPeriodEnd: Scalars["DateTime"]["input"];
-  sharingPeriodStart: Scalars["DateTime"]["input"];
-  title: Scalars["String"]["input"];
+  readonly category: Scalars["String"]["input"];
+  readonly description: Scalars["String"]["input"];
+  readonly images?: InputMaybe<ReadonlyArray<Scalars["String"]["input"]>>;
+  readonly isDraft?: InputMaybe<Scalars["Boolean"]["input"]>;
+  readonly location: Scalars["String"]["input"];
+  readonly sharingPeriodEnd: Scalars["DateTime"]["input"];
+  readonly sharingPeriodStart: Scalars["DateTime"]["input"];
+  readonly title: Scalars["String"]["input"];
 };
 
 export type CreateReservationRequestInput = {
-  listingId: Scalars["ObjectID"]["input"];
-  reservationPeriodEnd: Scalars["DateTime"]["input"];
-  reservationPeriodStart: Scalars["DateTime"]["input"];
+  readonly listingId: Scalars["ObjectID"]["input"];
+  readonly reservationPeriodEnd: Scalars["DateTime"]["input"];
+  readonly reservationPeriodStart: Scalars["DateTime"]["input"];
 };
 
 export type ItemListing = MongoBase & {
-  __typename?: "ItemListing";
-  category: Scalars["String"]["output"];
-  createdAt?: Maybe<Scalars["DateTime"]["output"]>;
-  description: Scalars["String"]["output"];
-  id: Scalars["ObjectID"]["output"];
-  images?: Maybe<Array<Scalars["String"]["output"]>>;
-  location: Scalars["String"]["output"];
-  reports?: Maybe<Scalars["Int"]["output"]>;
-  schemaVersion?: Maybe<Scalars["String"]["output"]>;
-  sharer: User;
-  sharingHistory?: Maybe<Array<Scalars["String"]["output"]>>;
-  sharingPeriodEnd: Scalars["DateTime"]["output"];
-  sharingPeriodStart: Scalars["DateTime"]["output"];
-  state?: Maybe<Scalars["String"]["output"]>;
-  title: Scalars["String"]["output"];
-  updatedAt?: Maybe<Scalars["DateTime"]["output"]>;
-  version?: Maybe<Scalars["Int"]["output"]>;
+  readonly __typename?: "ItemListing";
+  readonly category: Scalars["String"]["output"];
+  readonly createdAt?: Maybe<Scalars["DateTime"]["output"]>;
+  readonly description: Scalars["String"]["output"];
+  readonly id: Scalars["ObjectID"]["output"];
+  readonly images?: Maybe<ReadonlyArray<Scalars["String"]["output"]>>;
+  readonly location: Scalars["String"]["output"];
+  readonly reports?: Maybe<Scalars["Int"]["output"]>;
+  readonly schemaVersion?: Maybe<Scalars["String"]["output"]>;
+  readonly sharer: User;
+  readonly sharingHistory?: Maybe<ReadonlyArray<Scalars["String"]["output"]>>;
+  readonly sharingPeriodEnd: Scalars["DateTime"]["output"];
+  readonly sharingPeriodStart: Scalars["DateTime"]["output"];
+  readonly state?: Maybe<Scalars["String"]["output"]>;
+  readonly title: Scalars["String"]["output"];
+  readonly updatedAt?: Maybe<Scalars["DateTime"]["output"]>;
+  readonly version?: Maybe<Scalars["Int"]["output"]>;
 };
 
 export type Listing = ItemListing;
 
 export type ListingAll = {
-  __typename?: "ListingAll";
-  id: Scalars["ID"]["output"];
-  image?: Maybe<Scalars["String"]["output"]>;
-  pendingRequestsCount: Scalars["Int"]["output"];
-  publishedAt?: Maybe<Scalars["String"]["output"]>;
-  reservationPeriod?: Maybe<Scalars["String"]["output"]>;
-  status: Scalars["String"]["output"];
-  title: Scalars["String"]["output"];
+  readonly __typename?: "ListingAll";
+  readonly id: Scalars["ID"]["output"];
+  readonly image?: Maybe<Scalars["String"]["output"]>;
+  readonly pendingRequestsCount: Scalars["Int"]["output"];
+  readonly publishedAt?: Maybe<Scalars["String"]["output"]>;
+  readonly reservationPeriod?: Maybe<Scalars["String"]["output"]>;
+  readonly status: Scalars["String"]["output"];
+  readonly title: Scalars["String"]["output"];
 };
 
 export type ListingAllPage = {
-  __typename?: "ListingAllPage";
-  items: Array<ListingAll>;
-  page: Scalars["Int"]["output"];
-  pageSize: Scalars["Int"]["output"];
-  total: Scalars["Int"]["output"];
+  readonly __typename?: "ListingAllPage";
+  readonly items: ReadonlyArray<ListingAll>;
+  readonly page: Scalars["Int"]["output"];
+  readonly pageSize: Scalars["Int"]["output"];
+  readonly total: Scalars["Int"]["output"];
 };
 
 export type ListingRequest = {
-  __typename?: "ListingRequest";
-  id: Scalars["ID"]["output"];
-  image?: Maybe<Scalars["String"]["output"]>;
-  requestedBy: Scalars["String"]["output"];
-  requestedOn: Scalars["String"]["output"];
-  reservationPeriod: Scalars["String"]["output"];
-  status: Scalars["String"]["output"];
-  title: Scalars["String"]["output"];
+  readonly __typename?: "ListingRequest";
+  readonly id: Scalars["ID"]["output"];
+  readonly image?: Maybe<Scalars["String"]["output"]>;
+  readonly requestedBy: Scalars["String"]["output"];
+  readonly requestedOn: Scalars["String"]["output"];
+  readonly reservationPeriod: Scalars["String"]["output"];
+  readonly status: Scalars["String"]["output"];
+  readonly title: Scalars["String"]["output"];
 };
 
 export type ListingRequestPage = {
-  __typename?: "ListingRequestPage";
-  items: Array<ListingRequest>;
-  page: Scalars["Int"]["output"];
-  pageSize: Scalars["Int"]["output"];
-  total: Scalars["Int"]["output"];
+  readonly __typename?: "ListingRequestPage";
+  readonly items: ReadonlyArray<ListingRequest>;
+  readonly page: Scalars["Int"]["output"];
+  readonly pageSize: Scalars["Int"]["output"];
+  readonly total: Scalars["Int"]["output"];
 };
 
 /** Base type for all models in mongo. */
 export type MongoBase = {
-  createdAt?: Maybe<Scalars["DateTime"]["output"]>;
+  readonly createdAt?: Maybe<Scalars["DateTime"]["output"]>;
   /** The ID of the object. */
-  id: Scalars["ObjectID"]["output"];
-  schemaVersion?: Maybe<Scalars["String"]["output"]>;
+  readonly id: Scalars["ObjectID"]["output"];
+  readonly schemaVersion?: Maybe<Scalars["String"]["output"]>;
   /** Automatically generated timestamp, updated on every save. */
-  updatedAt?: Maybe<Scalars["DateTime"]["output"]>;
+  readonly updatedAt?: Maybe<Scalars["DateTime"]["output"]>;
 };
 
 /** Base type for all models in mongo. */
 export type MongoSubdocument = {
-  createdAt?: Maybe<Scalars["DateTime"]["output"]>;
+  readonly createdAt?: Maybe<Scalars["DateTime"]["output"]>;
   /** The ID of the object. */
-  id: Scalars["ObjectID"]["output"];
+  readonly id: Scalars["ObjectID"]["output"];
   /** Automatically generated timestamp, updated on every save. */
-  updatedAt?: Maybe<Scalars["DateTime"]["output"]>;
+  readonly updatedAt?: Maybe<Scalars["DateTime"]["output"]>;
 };
 
 /**  Base Mutation Type definition - all mutations will be defined in separate files extending this type  */
 export type Mutation = {
-  __typename?: "Mutation";
+  readonly __typename?: "Mutation";
   /** IGNORE: Dummy field necessary for the Mutation type to be valid */
-  _empty?: Maybe<Scalars["String"]["output"]>;
-  cancelReservation: ReservationRequest;
-  closeReservation: ReservationRequest;
-  createConversation: ConversationMutationResult;
-  createItemListing: ItemListing;
-  createReservationRequest: ReservationRequest;
-  personalUserUpdate: PersonalUser;
-  processPayment: PaymentResponse;
-  refundPayment: RefundResponse;
+  readonly _empty?: Maybe<Scalars["String"]["output"]>;
+  readonly cancelReservation: ReservationRequest;
+  readonly closeReservation: ReservationRequest;
+  readonly createConversation: ConversationMutationResult;
+  readonly createItemListing: ItemListing;
+  readonly createReservationRequest: ReservationRequest;
+  readonly personalUserUpdate: PersonalUser;
+  readonly processPayment: PaymentResponse;
+  readonly refundPayment: RefundResponse;
 };
 
 /**  Base Mutation Type definition - all mutations will be defined in separate files extending this type  */
@@ -296,183 +296,227 @@ export type MutationRefundPaymentArgs = {
 };
 
 export type MutationResult = {
-  status: MutationStatus;
+  readonly status: MutationStatus;
 };
 
 export type MutationStatus = {
-  __typename?: "MutationStatus";
-  errorMessage?: Maybe<Scalars["String"]["output"]>;
-  success: Scalars["Boolean"]["output"];
+  readonly __typename?: "MutationStatus";
+  readonly errorMessage?: Maybe<Scalars["String"]["output"]>;
+  readonly success: Scalars["Boolean"]["output"];
 };
 
 export type PaymentAmountDetails = {
-  currency: Scalars["String"]["input"];
-  totalAmount: Scalars["Float"]["input"];
+  readonly currency: Scalars["String"]["input"];
+  readonly totalAmount: Scalars["Float"]["input"];
 };
 
 export type PaymentBillTo = {
-  address1: Scalars["String"]["input"];
-  address2?: InputMaybe<Scalars["String"]["input"]>;
-  city: Scalars["String"]["input"];
-  country: Scalars["String"]["input"];
-  email?: InputMaybe<Scalars["String"]["input"]>;
-  firstName: Scalars["String"]["input"];
-  lastName: Scalars["String"]["input"];
-  phoneNumber?: InputMaybe<Scalars["String"]["input"]>;
-  postalCode: Scalars["String"]["input"];
-  state: Scalars["String"]["input"];
+  readonly address1: Scalars["String"]["input"];
+  readonly address2?: InputMaybe<Scalars["String"]["input"]>;
+  readonly city: Scalars["String"]["input"];
+  readonly country: Scalars["String"]["input"];
+  readonly email?: InputMaybe<Scalars["String"]["input"]>;
+  readonly firstName: Scalars["String"]["input"];
+  readonly lastName: Scalars["String"]["input"];
+  readonly phoneNumber?: InputMaybe<Scalars["String"]["input"]>;
+  readonly postalCode: Scalars["String"]["input"];
+  readonly state: Scalars["String"]["input"];
 };
 
 export type PaymentCard = {
-  expirationMonth: Scalars["String"]["input"];
-  expirationYear: Scalars["String"]["input"];
-  number: Scalars["String"]["input"];
-  securityCode: Scalars["String"]["input"];
+  readonly expirationMonth: Scalars["String"]["input"];
+  readonly expirationYear: Scalars["String"]["input"];
+  readonly number: Scalars["String"]["input"];
+  readonly securityCode: Scalars["String"]["input"];
 };
 
 export type PaymentCardInformation = {
-  card: PaymentCard;
+  readonly card: PaymentCard;
 };
 
 export type PaymentErrorInformation = {
-  __typename?: "PaymentErrorInformation";
-  message?: Maybe<Scalars["String"]["output"]>;
-  reason?: Maybe<Scalars["String"]["output"]>;
+  readonly __typename?: "PaymentErrorInformation";
+  readonly message?: Maybe<Scalars["String"]["output"]>;
+  readonly reason?: Maybe<Scalars["String"]["output"]>;
 };
 
 export type PaymentOrderInformation = {
-  amountDetails: PaymentAmountDetails;
-  billTo: PaymentBillTo;
+  readonly amountDetails: PaymentAmountDetails;
+  readonly billTo: PaymentBillTo;
 };
 
 export type PaymentRequest = {
-  orderInformation: PaymentOrderInformation;
-  paymentInformation: PaymentCardInformation;
-  userId: Scalars["ObjectID"]["input"];
+  readonly orderInformation: PaymentOrderInformation;
+  readonly paymentInformation: PaymentCardInformation;
+  readonly userId: Scalars["ObjectID"]["input"];
 };
 
 export type PaymentResponse = {
-  __typename?: "PaymentResponse";
-  errorInformation?: Maybe<PaymentErrorInformation>;
-  id?: Maybe<Scalars["String"]["output"]>;
-  message?: Maybe<Scalars["String"]["output"]>;
-  orderInformation?: Maybe<PaymentResponseOrderInformation>;
-  status: Scalars["String"]["output"];
-  success?: Maybe<Scalars["Boolean"]["output"]>;
+  readonly __typename?: "PaymentResponse";
+  readonly errorInformation?: Maybe<PaymentErrorInformation>;
+  readonly id?: Maybe<Scalars["String"]["output"]>;
+  readonly message?: Maybe<Scalars["String"]["output"]>;
+  readonly orderInformation?: Maybe<PaymentResponseOrderInformation>;
+  readonly status: Scalars["String"]["output"];
+  readonly success?: Maybe<Scalars["Boolean"]["output"]>;
 };
 
 export type PaymentResponseAmountDetails = {
-  __typename?: "PaymentResponseAmountDetails";
-  currency?: Maybe<Scalars["String"]["output"]>;
-  totalAmount?: Maybe<Scalars["String"]["output"]>;
+  readonly __typename?: "PaymentResponseAmountDetails";
+  readonly currency?: Maybe<Scalars["String"]["output"]>;
+  readonly totalAmount?: Maybe<Scalars["String"]["output"]>;
 };
 
 export type PaymentResponseOrderInformation = {
-  __typename?: "PaymentResponseOrderInformation";
-  amountDetails?: Maybe<PaymentResponseAmountDetails>;
+  readonly __typename?: "PaymentResponseOrderInformation";
+  readonly amountDetails?: Maybe<PaymentResponseAmountDetails>;
 };
 
-/** GraphQL schema for Personal Users */
 export type PersonalUser = MongoBase & {
-  __typename?: "PersonalUser";
-  account?: Maybe<PersonalUserAccount>;
-  createdAt?: Maybe<Scalars["DateTime"]["output"]>;
-  id: Scalars["ObjectID"]["output"];
-  isBlocked?: Maybe<Scalars["Boolean"]["output"]>;
-  schemaVersion?: Maybe<Scalars["String"]["output"]>;
-  updatedAt?: Maybe<Scalars["DateTime"]["output"]>;
-  userType?: Maybe<Scalars["String"]["output"]>;
+  readonly __typename?: "PersonalUser";
+  readonly account?: Maybe<PersonalUserAccount>;
+  readonly createdAt?: Maybe<Scalars["DateTime"]["output"]>;
+  readonly hasCompletedOnboarding?: Maybe<Scalars["Boolean"]["output"]>;
+  readonly id: Scalars["ObjectID"]["output"];
+  readonly isBlocked?: Maybe<Scalars["Boolean"]["output"]>;
+  readonly role?: Maybe<PersonalUserRole>;
+  readonly schemaVersion?: Maybe<Scalars["String"]["output"]>;
+  readonly updatedAt?: Maybe<Scalars["DateTime"]["output"]>;
+  readonly userType?: Maybe<Scalars["String"]["output"]>;
 };
 
 export type PersonalUserAccount = {
-  __typename?: "PersonalUserAccount";
-  accountType?: Maybe<Scalars["String"]["output"]>;
-  email?: Maybe<Scalars["String"]["output"]>;
-  profile?: Maybe<PersonalUserAccountProfile>;
-  username?: Maybe<Scalars["String"]["output"]>;
+  readonly __typename?: "PersonalUserAccount";
+  readonly accountType?: Maybe<Scalars["String"]["output"]>;
+  readonly email?: Maybe<Scalars["String"]["output"]>;
+  readonly profile?: Maybe<PersonalUserAccountProfile>;
+  readonly username?: Maybe<Scalars["String"]["output"]>;
 };
 
 export type PersonalUserAccountProfile = {
-  __typename?: "PersonalUserAccountProfile";
-  billing?: Maybe<PersonalUserAccountProfileBilling>;
-  firstName?: Maybe<Scalars["String"]["output"]>;
-  lastName?: Maybe<Scalars["String"]["output"]>;
-  location?: Maybe<PersonalUserAccountProfileLocation>;
+  readonly __typename?: "PersonalUserAccountProfile";
+  readonly billing?: Maybe<PersonalUserAccountProfileBilling>;
+  readonly firstName?: Maybe<Scalars["String"]["output"]>;
+  readonly lastName?: Maybe<Scalars["String"]["output"]>;
+  readonly location?: Maybe<PersonalUserAccountProfileLocation>;
 };
 
 export type PersonalUserAccountProfileBilling = {
-  __typename?: "PersonalUserAccountProfileBilling";
-  cybersourceCustomerId?: Maybe<Scalars["String"]["output"]>;
-  lastPaymentAmount?: Maybe<Scalars["Float"]["output"]>;
-  lastTransactionId?: Maybe<Scalars["String"]["output"]>;
-  paymentState?: Maybe<Scalars["String"]["output"]>;
-  subscriptionId?: Maybe<Scalars["String"]["output"]>;
+  readonly __typename?: "PersonalUserAccountProfileBilling";
+  readonly cybersourceCustomerId?: Maybe<Scalars["String"]["output"]>;
+  readonly lastPaymentAmount?: Maybe<Scalars["Float"]["output"]>;
+  readonly lastTransactionId?: Maybe<Scalars["String"]["output"]>;
+  readonly paymentState?: Maybe<Scalars["String"]["output"]>;
+  readonly subscriptionId?: Maybe<Scalars["String"]["output"]>;
 };
 
 export type PersonalUserAccountProfileBillingUpdateInput = {
-  cybersourceCustomerId?: InputMaybe<Scalars["String"]["input"]>;
-  lastPaymentAmount?: InputMaybe<Scalars["Float"]["input"]>;
-  lastTransactionId?: InputMaybe<Scalars["String"]["input"]>;
-  paymentState?: InputMaybe<Scalars["String"]["input"]>;
-  subscriptionId?: InputMaybe<Scalars["String"]["input"]>;
+  readonly cybersourceCustomerId?: InputMaybe<Scalars["String"]["input"]>;
+  readonly lastPaymentAmount?: InputMaybe<Scalars["Float"]["input"]>;
+  readonly lastTransactionId?: InputMaybe<Scalars["String"]["input"]>;
+  readonly paymentState?: InputMaybe<Scalars["String"]["input"]>;
+  readonly subscriptionId?: InputMaybe<Scalars["String"]["input"]>;
 };
 
 export type PersonalUserAccountProfileLocation = {
-  __typename?: "PersonalUserAccountProfileLocation";
-  address1?: Maybe<Scalars["String"]["output"]>;
-  address2?: Maybe<Scalars["String"]["output"]>;
-  city?: Maybe<Scalars["String"]["output"]>;
-  country?: Maybe<Scalars["String"]["output"]>;
-  state?: Maybe<Scalars["String"]["output"]>;
-  zipCode?: Maybe<Scalars["String"]["output"]>;
+  readonly __typename?: "PersonalUserAccountProfileLocation";
+  readonly address1?: Maybe<Scalars["String"]["output"]>;
+  readonly address2?: Maybe<Scalars["String"]["output"]>;
+  readonly city?: Maybe<Scalars["String"]["output"]>;
+  readonly country?: Maybe<Scalars["String"]["output"]>;
+  readonly state?: Maybe<Scalars["String"]["output"]>;
+  readonly zipCode?: Maybe<Scalars["String"]["output"]>;
 };
 
 export type PersonalUserAccountProfileLocationUpdateInput = {
-  address1?: InputMaybe<Scalars["String"]["input"]>;
-  address2?: InputMaybe<Scalars["String"]["input"]>;
-  city?: InputMaybe<Scalars["String"]["input"]>;
-  country?: InputMaybe<Scalars["String"]["input"]>;
-  state?: InputMaybe<Scalars["String"]["input"]>;
-  zipCode?: InputMaybe<Scalars["String"]["input"]>;
+  readonly address1?: InputMaybe<Scalars["String"]["input"]>;
+  readonly address2?: InputMaybe<Scalars["String"]["input"]>;
+  readonly city?: InputMaybe<Scalars["String"]["input"]>;
+  readonly country?: InputMaybe<Scalars["String"]["input"]>;
+  readonly state?: InputMaybe<Scalars["String"]["input"]>;
+  readonly zipCode?: InputMaybe<Scalars["String"]["input"]>;
 };
 
 export type PersonalUserAccountProfileUpdateInput = {
-  billing?: InputMaybe<PersonalUserAccountProfileBillingUpdateInput>;
-  firstName?: InputMaybe<Scalars["String"]["input"]>;
-  lastName?: InputMaybe<Scalars["String"]["input"]>;
-  location?: InputMaybe<PersonalUserAccountProfileLocationUpdateInput>;
+  readonly billing?: InputMaybe<PersonalUserAccountProfileBillingUpdateInput>;
+  readonly firstName?: InputMaybe<Scalars["String"]["input"]>;
+  readonly lastName?: InputMaybe<Scalars["String"]["input"]>;
+  readonly location?: InputMaybe<PersonalUserAccountProfileLocationUpdateInput>;
 };
 
 export type PersonalUserAccountUpdateInput = {
-  accountType?: InputMaybe<Scalars["String"]["input"]>;
-  profile?: InputMaybe<PersonalUserAccountProfileUpdateInput>;
-  username?: InputMaybe<Scalars["String"]["input"]>;
+  readonly accountType?: InputMaybe<Scalars["String"]["input"]>;
+  readonly profile?: InputMaybe<PersonalUserAccountProfileUpdateInput>;
+  readonly username?: InputMaybe<Scalars["String"]["input"]>;
+};
+
+export type PersonalUserRole = MongoBase & {
+  readonly __typename?: "PersonalUserRole";
+  readonly createdAt?: Maybe<Scalars["DateTime"]["output"]>;
+  readonly id: Scalars["ObjectID"]["output"];
+  readonly isDefault?: Maybe<Scalars["Boolean"]["output"]>;
+  readonly permissions?: Maybe<PersonalUserRolePermissions>;
+  readonly roleName?: Maybe<Scalars["String"]["output"]>;
+  readonly roleType?: Maybe<Scalars["String"]["output"]>;
+  readonly schemaVersion?: Maybe<Scalars["String"]["output"]>;
+  readonly updatedAt?: Maybe<Scalars["DateTime"]["output"]>;
+};
+
+export type PersonalUserRoleConversationPermissions = {
+  readonly __typename?: "PersonalUserRoleConversationPermissions";
+  readonly canCreateConversation?: Maybe<Scalars["Boolean"]["output"]>;
+  readonly canManageConversation?: Maybe<Scalars["Boolean"]["output"]>;
+  readonly canViewConversation?: Maybe<Scalars["Boolean"]["output"]>;
+};
+
+export type PersonalUserRoleListingPermissions = {
+  readonly __typename?: "PersonalUserRoleListingPermissions";
+  readonly canCreateItemListing?: Maybe<Scalars["Boolean"]["output"]>;
+  readonly canDeleteItemListing?: Maybe<Scalars["Boolean"]["output"]>;
+  readonly canPublishItemListing?: Maybe<Scalars["Boolean"]["output"]>;
+  readonly canUnpublishItemListing?: Maybe<Scalars["Boolean"]["output"]>;
+  readonly canUpdateItemListing?: Maybe<Scalars["Boolean"]["output"]>;
+  readonly canViewItemListing?: Maybe<Scalars["Boolean"]["output"]>;
+};
+
+export type PersonalUserRolePermissions = {
+  readonly __typename?: "PersonalUserRolePermissions";
+  readonly conversationPermissions?: Maybe<PersonalUserRoleConversationPermissions>;
+  readonly listingPermissions?: Maybe<PersonalUserRoleListingPermissions>;
+  readonly reservationRequestPermissions?: Maybe<PersonalUserRoleReservationRequestPermissions>;
+};
+
+export type PersonalUserRoleReservationRequestPermissions = {
+  readonly __typename?: "PersonalUserRoleReservationRequestPermissions";
+  readonly canCreateReservationRequest?: Maybe<Scalars["Boolean"]["output"]>;
+  readonly canManageReservationRequest?: Maybe<Scalars["Boolean"]["output"]>;
+  readonly canViewReservationRequest?: Maybe<Scalars["Boolean"]["output"]>;
 };
 
 export type PersonalUserUpdateInput = {
-  account?: InputMaybe<PersonalUserAccountUpdateInput>;
-  id: Scalars["ObjectID"]["input"];
-  isBlocked?: InputMaybe<Scalars["Boolean"]["input"]>;
+  readonly account?: InputMaybe<PersonalUserAccountUpdateInput>;
+  readonly id: Scalars["ObjectID"]["input"];
+  readonly isBlocked?: InputMaybe<Scalars["Boolean"]["input"]>;
 };
 
 /**  Base Query Type definition - , all mutations will be defined in separate files extending this type  */
 export type Query = {
-  __typename?: "Query";
+  readonly __typename?: "Query";
   /** IGNORE: Dummy field necessary for the Query type to be valid */
-  _empty?: Maybe<Scalars["String"]["output"]>;
-  conversation?: Maybe<Conversation>;
-  conversationsByUser?: Maybe<Array<Maybe<Conversation>>>;
-  currentPersonalUserAndCreateIfNotExists: PersonalUser;
-  itemListing?: Maybe<ItemListing>;
-  itemListings: Array<ItemListing>;
-  myActiveReservationForListing?: Maybe<ReservationRequest>;
-  myActiveReservations: Array<ReservationRequest>;
-  myListingsAll: ListingAllPage;
-  myListingsRequests: ListingRequestPage;
-  myPastReservations: Array<ReservationRequest>;
-  overlapActiveReservationRequestsForListing: Array<ReservationRequest>;
-  personalUserById?: Maybe<PersonalUser>;
-  queryActiveByListingId: Array<Maybe<ReservationRequest>>;
+  readonly _empty?: Maybe<Scalars["String"]["output"]>;
+  readonly conversation?: Maybe<Conversation>;
+  readonly conversationsByUser?: Maybe<ReadonlyArray<Maybe<Conversation>>>;
+  readonly currentPersonalUserAndCreateIfNotExists: PersonalUser;
+  readonly itemListing?: Maybe<ItemListing>;
+  readonly itemListings: ReadonlyArray<ItemListing>;
+  readonly myActiveReservationForListing?: Maybe<ReservationRequest>;
+  readonly myActiveReservations: ReadonlyArray<ReservationRequest>;
+  readonly myListingsAll: ListingAllPage;
+  readonly myListingsRequests: ListingRequestPage;
+  readonly myPastReservations: ReadonlyArray<ReservationRequest>;
+  readonly overlapActiveReservationRequestsForListing: ReadonlyArray<ReservationRequest>;
+  readonly personalUserById?: Maybe<PersonalUser>;
+  readonly queryActiveByListingId: ReadonlyArray<Maybe<ReservationRequest>>;
 };
 
 /**  Base Query Type definition - , all mutations will be defined in separate files extending this type  */
@@ -507,16 +551,17 @@ export type QueryMyListingsAllArgs = {
   pageSize: Scalars["Int"]["input"];
   searchText?: InputMaybe<Scalars["String"]["input"]>;
   sorter?: InputMaybe<SorterInput>;
-  statusFilters?: InputMaybe<Array<Scalars["String"]["input"]>>;
+  statusFilters?: InputMaybe<ReadonlyArray<Scalars["String"]["input"]>>;
 };
 
 /**  Base Query Type definition - , all mutations will be defined in separate files extending this type  */
 export type QueryMyListingsRequestsArgs = {
   page: Scalars["Int"]["input"];
   pageSize: Scalars["Int"]["input"];
-  searchText?: InputMaybe<Scalars["String"]["input"]>;
-  sorter?: InputMaybe<SorterInput>;
-  statusFilters?: InputMaybe<Array<Scalars["String"]["input"]>>;
+  searchText: Scalars["String"]["input"];
+  sharerId: Scalars["ObjectID"]["input"];
+  sorter: SorterInput;
+  statusFilters: ReadonlyArray<Scalars["String"]["input"]>;
 };
 
 /**  Base Query Type definition - , all mutations will be defined in separate files extending this type  */
@@ -542,51 +587,51 @@ export type QueryQueryActiveByListingIdArgs = {
 };
 
 export type RefundOrderInformation = {
-  amountDetails: PaymentAmountDetails;
+  readonly amountDetails: PaymentAmountDetails;
 };
 
 export type RefundRequest = {
-  amount?: InputMaybe<Scalars["Float"]["input"]>;
-  orderInformation: RefundOrderInformation;
-  transactionId: Scalars["String"]["input"];
-  userId: Scalars["ObjectID"]["input"];
+  readonly amount?: InputMaybe<Scalars["Float"]["input"]>;
+  readonly orderInformation: RefundOrderInformation;
+  readonly transactionId: Scalars["String"]["input"];
+  readonly userId: Scalars["ObjectID"]["input"];
 };
 
 export type RefundResponse = {
-  __typename?: "RefundResponse";
-  errorInformation?: Maybe<PaymentErrorInformation>;
-  id?: Maybe<Scalars["String"]["output"]>;
-  message?: Maybe<Scalars["String"]["output"]>;
-  orderInformation?: Maybe<PaymentResponseOrderInformation>;
-  status: Scalars["String"]["output"];
-  success?: Maybe<Scalars["Boolean"]["output"]>;
+  readonly __typename?: "RefundResponse";
+  readonly errorInformation?: Maybe<PaymentErrorInformation>;
+  readonly id?: Maybe<Scalars["String"]["output"]>;
+  readonly message?: Maybe<Scalars["String"]["output"]>;
+  readonly orderInformation?: Maybe<PaymentResponseOrderInformation>;
+  readonly status: Scalars["String"]["output"];
+  readonly success?: Maybe<Scalars["Boolean"]["output"]>;
 };
 
 export type ReservationRequest = {
-  __typename?: "ReservationRequest";
-  closeRequestedByReserver?: Maybe<Scalars["Boolean"]["output"]>;
-  closeRequestedBySharer?: Maybe<Scalars["Boolean"]["output"]>;
-  createdAt?: Maybe<Scalars["String"]["output"]>;
-  id: Scalars["ObjectID"]["output"];
-  listing?: Maybe<ItemListing>;
-  reservationPeriodEnd?: Maybe<Scalars["String"]["output"]>;
-  reservationPeriodStart?: Maybe<Scalars["String"]["output"]>;
-  reserver?: Maybe<PersonalUser>;
-  state?: Maybe<ReservationRequestState>;
-  updatedAt?: Maybe<Scalars["String"]["output"]>;
+  readonly __typename?: "ReservationRequest";
+  readonly closeRequestedByReserver?: Maybe<Scalars["Boolean"]["output"]>;
+  readonly closeRequestedBySharer?: Maybe<Scalars["Boolean"]["output"]>;
+  readonly createdAt?: Maybe<Scalars["DateTime"]["output"]>;
+  readonly id: Scalars["ObjectID"]["output"];
+  readonly listing?: Maybe<ItemListing>;
+  readonly reservationPeriodEnd?: Maybe<Scalars["DateTime"]["output"]>;
+  readonly reservationPeriodStart?: Maybe<Scalars["DateTime"]["output"]>;
+  readonly reserver?: Maybe<PersonalUser>;
+  readonly state?: Maybe<ReservationRequestState>;
+  readonly updatedAt?: Maybe<Scalars["DateTime"]["output"]>;
 };
 
 export type ReservationRequestMutationResult = MutationResult & {
-  __typename?: "ReservationRequestMutationResult";
-  reservationRequest?: Maybe<ReservationRequest>;
-  status: MutationStatus;
+  readonly __typename?: "ReservationRequestMutationResult";
+  readonly reservationRequest?: Maybe<ReservationRequest>;
+  readonly status: MutationStatus;
 };
 
 export type ReservationRequestState = "Accepted" | "Cancelled" | "Closed" | "Rejected" | "Requested";
 
 export type SorterInput = {
-  field: Scalars["String"]["input"];
-  order: Scalars["String"]["input"];
+  readonly field: Scalars["String"]["input"];
+  readonly order: Scalars["String"]["input"];
 };
 
 export type User = PersonalUser;
@@ -662,16 +707,17 @@ export type DirectiveResolverFn<TResult = {}, TParent = {}, TContext = {}, TArgs
 
 /** Mapping of union types */
 export type ResolversUnionTypes<_RefType extends Record<string, unknown>> = ResolversObject<{
-  Listing: Omit<ItemListing, "sharer"> & { sharer: _RefType["User"] };
-  User: PersonalUser;
+  Listing: import("@sthrift/domain").Domain.Contexts.Listing.ItemListing.ItemListingEntityReference;
+  User: import("@sthrift/domain").Domain.Contexts.User.PersonalUser.PersonalUserEntityReference;
 }>;
 
 /** Mapping of interface types */
 export type ResolversInterfaceTypes<_RefType extends Record<string, unknown>> = ResolversObject<{
   MongoBase:
-    | (Omit<Conversation, "listing" | "reserver" | "sharer"> & { listing: _RefType["Listing"]; reserver: _RefType["User"]; sharer: _RefType["User"] })
-    | (Omit<ItemListing, "sharer"> & { sharer: _RefType["User"] })
-    | PersonalUser;
+    | import("@sthrift/domain").Domain.Contexts.Conversation.Conversation.ConversationEntityReference
+    | import("@sthrift/domain").Domain.Contexts.Listing.ItemListing.ItemListingEntityReference
+    | import("@sthrift/domain").Domain.Contexts.User.PersonalUser.PersonalUserEntityReference
+    | PersonalUserRole;
   MongoSubdocument: never;
   MutationResult:
     | (Omit<ConversationMutationResult, "conversation"> & { conversation?: Maybe<_RefType["Conversation"]> })
@@ -690,13 +736,7 @@ export type ResolversTypes = ResolversObject<{
   CacheControlScope: CacheControlScope;
   CancelReservationInput: CancelReservationInput;
   CloseReservationInput: CloseReservationInput;
-  Conversation: ResolverTypeWrapper<
-    Omit<Conversation, "listing" | "reserver" | "sharer"> & {
-      listing: ResolversTypes["Listing"];
-      reserver: ResolversTypes["User"];
-      sharer: ResolversTypes["User"];
-    }
-  >;
+  Conversation: ResolverTypeWrapper<import("@sthrift/domain").Domain.Contexts.Conversation.Conversation.ConversationEntityReference>;
   ConversationCreateInput: ConversationCreateInput;
   ConversationMutationResult: ResolverTypeWrapper<
     Omit<ConversationMutationResult, "conversation"> & { conversation?: Maybe<ResolversTypes["Conversation"]> }
@@ -730,7 +770,7 @@ export type ResolversTypes = ResolversObject<{
   ISBN: ResolverTypeWrapper<Scalars["ISBN"]["output"]>;
   ISO8601Duration: ResolverTypeWrapper<Scalars["ISO8601Duration"]["output"]>;
   Int: ResolverTypeWrapper<Scalars["Int"]["output"]>;
-  ItemListing: ResolverTypeWrapper<Omit<ItemListing, "sharer"> & { sharer: ResolversTypes["User"] }>;
+  ItemListing: ResolverTypeWrapper<import("@sthrift/domain").Domain.Contexts.Listing.ItemListing.ItemListingEntityReference>;
   JSON: ResolverTypeWrapper<Scalars["JSON"]["output"]>;
   JSONObject: ResolverTypeWrapper<Scalars["JSONObject"]["output"]>;
   JWT: ResolverTypeWrapper<Scalars["JWT"]["output"]>;
@@ -772,7 +812,7 @@ export type ResolversTypes = ResolversObject<{
   PaymentResponse: ResolverTypeWrapper<PaymentResponse>;
   PaymentResponseAmountDetails: ResolverTypeWrapper<PaymentResponseAmountDetails>;
   PaymentResponseOrderInformation: ResolverTypeWrapper<PaymentResponseOrderInformation>;
-  PersonalUser: ResolverTypeWrapper<PersonalUser>;
+  PersonalUser: ResolverTypeWrapper<import("@sthrift/domain").Domain.Contexts.User.PersonalUser.PersonalUserEntityReference>;
   PersonalUserAccount: ResolverTypeWrapper<PersonalUserAccount>;
   PersonalUserAccountProfile: ResolverTypeWrapper<PersonalUserAccountProfile>;
   PersonalUserAccountProfileBilling: ResolverTypeWrapper<PersonalUserAccountProfileBilling>;
@@ -781,6 +821,11 @@ export type ResolversTypes = ResolversObject<{
   PersonalUserAccountProfileLocationUpdateInput: PersonalUserAccountProfileLocationUpdateInput;
   PersonalUserAccountProfileUpdateInput: PersonalUserAccountProfileUpdateInput;
   PersonalUserAccountUpdateInput: PersonalUserAccountUpdateInput;
+  PersonalUserRole: ResolverTypeWrapper<PersonalUserRole>;
+  PersonalUserRoleConversationPermissions: ResolverTypeWrapper<PersonalUserRoleConversationPermissions>;
+  PersonalUserRoleListingPermissions: ResolverTypeWrapper<PersonalUserRoleListingPermissions>;
+  PersonalUserRolePermissions: ResolverTypeWrapper<PersonalUserRolePermissions>;
+  PersonalUserRoleReservationRequestPermissions: ResolverTypeWrapper<PersonalUserRoleReservationRequestPermissions>;
   PersonalUserUpdateInput: PersonalUserUpdateInput;
   PhoneNumber: ResolverTypeWrapper<Scalars["PhoneNumber"]["output"]>;
   Port: ResolverTypeWrapper<Scalars["Port"]["output"]>;
@@ -793,7 +838,9 @@ export type ResolversTypes = ResolversObject<{
   RefundOrderInformation: RefundOrderInformation;
   RefundRequest: RefundRequest;
   RefundResponse: ResolverTypeWrapper<RefundResponse>;
-  ReservationRequest: ResolverTypeWrapper<Omit<ReservationRequest, "listing"> & { listing?: Maybe<ResolversTypes["ItemListing"]> }>;
+  ReservationRequest: ResolverTypeWrapper<
+    import("@sthrift/domain").Domain.Contexts.ReservationRequest.ReservationRequest.ReservationRequestEntityReference
+  >;
   ReservationRequestMutationResult: ResolverTypeWrapper<
     Omit<ReservationRequestMutationResult, "reservationRequest"> & { reservationRequest?: Maybe<ResolversTypes["ReservationRequest"]> }
   >;
@@ -828,11 +875,7 @@ export type ResolversParentTypes = ResolversObject<{
   Byte: Scalars["Byte"]["output"];
   CancelReservationInput: CancelReservationInput;
   CloseReservationInput: CloseReservationInput;
-  Conversation: Omit<Conversation, "listing" | "reserver" | "sharer"> & {
-    listing: ResolversParentTypes["Listing"];
-    reserver: ResolversParentTypes["User"];
-    sharer: ResolversParentTypes["User"];
-  };
+  Conversation: import("@sthrift/domain").Domain.Contexts.Conversation.Conversation.ConversationEntityReference;
   ConversationCreateInput: ConversationCreateInput;
   ConversationMutationResult: Omit<ConversationMutationResult, "conversation"> & { conversation?: Maybe<ResolversParentTypes["Conversation"]> };
   CountryCode: Scalars["CountryCode"]["output"];
@@ -864,7 +907,7 @@ export type ResolversParentTypes = ResolversObject<{
   ISBN: Scalars["ISBN"]["output"];
   ISO8601Duration: Scalars["ISO8601Duration"]["output"];
   Int: Scalars["Int"]["output"];
-  ItemListing: Omit<ItemListing, "sharer"> & { sharer: ResolversParentTypes["User"] };
+  ItemListing: import("@sthrift/domain").Domain.Contexts.Listing.ItemListing.ItemListingEntityReference;
   JSON: Scalars["JSON"]["output"];
   JSONObject: Scalars["JSONObject"]["output"];
   JWT: Scalars["JWT"]["output"];
@@ -906,7 +949,7 @@ export type ResolversParentTypes = ResolversObject<{
   PaymentResponse: PaymentResponse;
   PaymentResponseAmountDetails: PaymentResponseAmountDetails;
   PaymentResponseOrderInformation: PaymentResponseOrderInformation;
-  PersonalUser: PersonalUser;
+  PersonalUser: import("@sthrift/domain").Domain.Contexts.User.PersonalUser.PersonalUserEntityReference;
   PersonalUserAccount: PersonalUserAccount;
   PersonalUserAccountProfile: PersonalUserAccountProfile;
   PersonalUserAccountProfileBilling: PersonalUserAccountProfileBilling;
@@ -915,6 +958,11 @@ export type ResolversParentTypes = ResolversObject<{
   PersonalUserAccountProfileLocationUpdateInput: PersonalUserAccountProfileLocationUpdateInput;
   PersonalUserAccountProfileUpdateInput: PersonalUserAccountProfileUpdateInput;
   PersonalUserAccountUpdateInput: PersonalUserAccountUpdateInput;
+  PersonalUserRole: PersonalUserRole;
+  PersonalUserRoleConversationPermissions: PersonalUserRoleConversationPermissions;
+  PersonalUserRoleListingPermissions: PersonalUserRoleListingPermissions;
+  PersonalUserRolePermissions: PersonalUserRolePermissions;
+  PersonalUserRoleReservationRequestPermissions: PersonalUserRoleReservationRequestPermissions;
   PersonalUserUpdateInput: PersonalUserUpdateInput;
   PhoneNumber: Scalars["PhoneNumber"]["output"];
   Port: Scalars["Port"]["output"];
@@ -927,7 +975,7 @@ export type ResolversParentTypes = ResolversObject<{
   RefundOrderInformation: RefundOrderInformation;
   RefundRequest: RefundRequest;
   RefundResponse: RefundResponse;
-  ReservationRequest: Omit<ReservationRequest, "listing"> & { listing?: Maybe<ResolversParentTypes["ItemListing"]> };
+  ReservationRequest: import("@sthrift/domain").Domain.Contexts.ReservationRequest.ReservationRequest.ReservationRequestEntityReference;
   ReservationRequestMutationResult: Omit<ReservationRequestMutationResult, "reservationRequest"> & {
     reservationRequest?: Maybe<ResolversParentTypes["ReservationRequest"]>;
   };
@@ -978,8 +1026,8 @@ export type BlobAuthHeaderResolvers<
   authHeader?: Resolver<Maybe<ResolversTypes["String"]>, ParentType, ContextType>;
   blobName?: Resolver<Maybe<ResolversTypes["String"]>, ParentType, ContextType>;
   blobPath?: Resolver<Maybe<ResolversTypes["String"]>, ParentType, ContextType>;
-  indexTags?: Resolver<Maybe<Array<Maybe<ResolversTypes["BlobIndexTag"]>>>, ParentType, ContextType>;
-  metadataFields?: Resolver<Maybe<Array<Maybe<ResolversTypes["BlobMetadataField"]>>>, ParentType, ContextType>;
+  indexTags?: Resolver<Maybe<ReadonlyArray<Maybe<ResolversTypes["BlobIndexTag"]>>>, ParentType, ContextType>;
+  metadataFields?: Resolver<Maybe<ReadonlyArray<Maybe<ResolversTypes["BlobMetadataField"]>>>, ParentType, ContextType>;
   requestDate?: Resolver<Maybe<ResolversTypes["String"]>, ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 }>;
@@ -1134,12 +1182,12 @@ export type ItemListingResolvers<
   createdAt?: Resolver<Maybe<ResolversTypes["DateTime"]>, ParentType, ContextType>;
   description?: Resolver<ResolversTypes["String"], ParentType, ContextType>;
   id?: Resolver<ResolversTypes["ObjectID"], ParentType, ContextType>;
-  images?: Resolver<Maybe<Array<ResolversTypes["String"]>>, ParentType, ContextType>;
+  images?: Resolver<Maybe<ReadonlyArray<ResolversTypes["String"]>>, ParentType, ContextType>;
   location?: Resolver<ResolversTypes["String"], ParentType, ContextType>;
   reports?: Resolver<Maybe<ResolversTypes["Int"]>, ParentType, ContextType>;
   schemaVersion?: Resolver<Maybe<ResolversTypes["String"]>, ParentType, ContextType>;
   sharer?: Resolver<ResolversTypes["User"], ParentType, ContextType>;
-  sharingHistory?: Resolver<Maybe<Array<ResolversTypes["String"]>>, ParentType, ContextType>;
+  sharingHistory?: Resolver<Maybe<ReadonlyArray<ResolversTypes["String"]>>, ParentType, ContextType>;
   sharingPeriodEnd?: Resolver<ResolversTypes["DateTime"], ParentType, ContextType>;
   sharingPeriodStart?: Resolver<ResolversTypes["DateTime"], ParentType, ContextType>;
   state?: Resolver<Maybe<ResolversTypes["String"]>, ParentType, ContextType>;
@@ -1194,7 +1242,7 @@ export type ListingAllPageResolvers<
   ContextType = GraphContext,
   ParentType extends ResolversParentTypes["ListingAllPage"] = ResolversParentTypes["ListingAllPage"],
 > = ResolversObject<{
-  items?: Resolver<Array<ResolversTypes["ListingAll"]>, ParentType, ContextType>;
+  items?: Resolver<ReadonlyArray<ResolversTypes["ListingAll"]>, ParentType, ContextType>;
   page?: Resolver<ResolversTypes["Int"], ParentType, ContextType>;
   pageSize?: Resolver<ResolversTypes["Int"], ParentType, ContextType>;
   total?: Resolver<ResolversTypes["Int"], ParentType, ContextType>;
@@ -1219,7 +1267,7 @@ export type ListingRequestPageResolvers<
   ContextType = GraphContext,
   ParentType extends ResolversParentTypes["ListingRequestPage"] = ResolversParentTypes["ListingRequestPage"],
 > = ResolversObject<{
-  items?: Resolver<Array<ResolversTypes["ListingRequest"]>, ParentType, ContextType>;
+  items?: Resolver<ReadonlyArray<ResolversTypes["ListingRequest"]>, ParentType, ContextType>;
   page?: Resolver<ResolversTypes["Int"], ParentType, ContextType>;
   pageSize?: Resolver<ResolversTypes["Int"], ParentType, ContextType>;
   total?: Resolver<ResolversTypes["Int"], ParentType, ContextType>;
@@ -1262,7 +1310,7 @@ export type MongoBaseResolvers<
   ContextType = GraphContext,
   ParentType extends ResolversParentTypes["MongoBase"] = ResolversParentTypes["MongoBase"],
 > = ResolversObject<{
-  __resolveType: TypeResolveFn<"Conversation" | "ItemListing" | "PersonalUser", ParentType, ContextType>;
+  __resolveType: TypeResolveFn<"Conversation" | "ItemListing" | "PersonalUser" | "PersonalUserRole", ParentType, ContextType>;
   createdAt?: Resolver<Maybe<ResolversTypes["DateTime"]>, ParentType, ContextType>;
   id?: Resolver<ResolversTypes["ObjectID"], ParentType, ContextType>;
   schemaVersion?: Resolver<Maybe<ResolversTypes["String"]>, ParentType, ContextType>;
@@ -1398,8 +1446,10 @@ export type PersonalUserResolvers<
 > = ResolversObject<{
   account?: Resolver<Maybe<ResolversTypes["PersonalUserAccount"]>, ParentType, ContextType>;
   createdAt?: Resolver<Maybe<ResolversTypes["DateTime"]>, ParentType, ContextType>;
+  hasCompletedOnboarding?: Resolver<Maybe<ResolversTypes["Boolean"]>, ParentType, ContextType>;
   id?: Resolver<ResolversTypes["ObjectID"], ParentType, ContextType>;
   isBlocked?: Resolver<Maybe<ResolversTypes["Boolean"]>, ParentType, ContextType>;
+  role?: Resolver<Maybe<ResolversTypes["PersonalUserRole"]>, ParentType, ContextType>;
   schemaVersion?: Resolver<Maybe<ResolversTypes["String"]>, ParentType, ContextType>;
   updatedAt?: Resolver<Maybe<ResolversTypes["DateTime"]>, ParentType, ContextType>;
   userType?: Resolver<Maybe<ResolversTypes["String"]>, ParentType, ContextType>;
@@ -1453,6 +1503,66 @@ export type PersonalUserAccountProfileLocationResolvers<
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 }>;
 
+export type PersonalUserRoleResolvers<
+  ContextType = GraphContext,
+  ParentType extends ResolversParentTypes["PersonalUserRole"] = ResolversParentTypes["PersonalUserRole"],
+> = ResolversObject<{
+  createdAt?: Resolver<Maybe<ResolversTypes["DateTime"]>, ParentType, ContextType>;
+  id?: Resolver<ResolversTypes["ObjectID"], ParentType, ContextType>;
+  isDefault?: Resolver<Maybe<ResolversTypes["Boolean"]>, ParentType, ContextType>;
+  permissions?: Resolver<Maybe<ResolversTypes["PersonalUserRolePermissions"]>, ParentType, ContextType>;
+  roleName?: Resolver<Maybe<ResolversTypes["String"]>, ParentType, ContextType>;
+  roleType?: Resolver<Maybe<ResolversTypes["String"]>, ParentType, ContextType>;
+  schemaVersion?: Resolver<Maybe<ResolversTypes["String"]>, ParentType, ContextType>;
+  updatedAt?: Resolver<Maybe<ResolversTypes["DateTime"]>, ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+}>;
+
+export type PersonalUserRoleConversationPermissionsResolvers<
+  ContextType = GraphContext,
+  ParentType extends
+    ResolversParentTypes["PersonalUserRoleConversationPermissions"] = ResolversParentTypes["PersonalUserRoleConversationPermissions"],
+> = ResolversObject<{
+  canCreateConversation?: Resolver<Maybe<ResolversTypes["Boolean"]>, ParentType, ContextType>;
+  canManageConversation?: Resolver<Maybe<ResolversTypes["Boolean"]>, ParentType, ContextType>;
+  canViewConversation?: Resolver<Maybe<ResolversTypes["Boolean"]>, ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+}>;
+
+export type PersonalUserRoleListingPermissionsResolvers<
+  ContextType = GraphContext,
+  ParentType extends ResolversParentTypes["PersonalUserRoleListingPermissions"] = ResolversParentTypes["PersonalUserRoleListingPermissions"],
+> = ResolversObject<{
+  canCreateItemListing?: Resolver<Maybe<ResolversTypes["Boolean"]>, ParentType, ContextType>;
+  canDeleteItemListing?: Resolver<Maybe<ResolversTypes["Boolean"]>, ParentType, ContextType>;
+  canPublishItemListing?: Resolver<Maybe<ResolversTypes["Boolean"]>, ParentType, ContextType>;
+  canUnpublishItemListing?: Resolver<Maybe<ResolversTypes["Boolean"]>, ParentType, ContextType>;
+  canUpdateItemListing?: Resolver<Maybe<ResolversTypes["Boolean"]>, ParentType, ContextType>;
+  canViewItemListing?: Resolver<Maybe<ResolversTypes["Boolean"]>, ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+}>;
+
+export type PersonalUserRolePermissionsResolvers<
+  ContextType = GraphContext,
+  ParentType extends ResolversParentTypes["PersonalUserRolePermissions"] = ResolversParentTypes["PersonalUserRolePermissions"],
+> = ResolversObject<{
+  conversationPermissions?: Resolver<Maybe<ResolversTypes["PersonalUserRoleConversationPermissions"]>, ParentType, ContextType>;
+  listingPermissions?: Resolver<Maybe<ResolversTypes["PersonalUserRoleListingPermissions"]>, ParentType, ContextType>;
+  reservationRequestPermissions?: Resolver<Maybe<ResolversTypes["PersonalUserRoleReservationRequestPermissions"]>, ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+}>;
+
+export type PersonalUserRoleReservationRequestPermissionsResolvers<
+  ContextType = GraphContext,
+  ParentType extends
+    ResolversParentTypes["PersonalUserRoleReservationRequestPermissions"] = ResolversParentTypes["PersonalUserRoleReservationRequestPermissions"],
+> = ResolversObject<{
+  canCreateReservationRequest?: Resolver<Maybe<ResolversTypes["Boolean"]>, ParentType, ContextType>;
+  canManageReservationRequest?: Resolver<Maybe<ResolversTypes["Boolean"]>, ParentType, ContextType>;
+  canViewReservationRequest?: Resolver<Maybe<ResolversTypes["Boolean"]>, ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+}>;
+
 export interface PhoneNumberScalarConfig extends GraphQLScalarTypeConfig<ResolversTypes["PhoneNumber"], any> {
   name: "PhoneNumber";
 }
@@ -1480,14 +1590,14 @@ export type QueryResolvers<
   _empty?: Resolver<Maybe<ResolversTypes["String"]>, ParentType, ContextType>;
   conversation?: Resolver<Maybe<ResolversTypes["Conversation"]>, ParentType, ContextType, RequireFields<QueryConversationArgs, "conversationId">>;
   conversationsByUser?: Resolver<
-    Maybe<Array<Maybe<ResolversTypes["Conversation"]>>>,
+    Maybe<ReadonlyArray<Maybe<ResolversTypes["Conversation"]>>>,
     ParentType,
     ContextType,
     RequireFields<QueryConversationsByUserArgs, "userId">
   >;
   currentPersonalUserAndCreateIfNotExists?: Resolver<ResolversTypes["PersonalUser"], ParentType, ContextType>;
   itemListing?: Resolver<Maybe<ResolversTypes["ItemListing"]>, ParentType, ContextType, RequireFields<QueryItemListingArgs, "id">>;
-  itemListings?: Resolver<Array<ResolversTypes["ItemListing"]>, ParentType, ContextType>;
+  itemListings?: Resolver<ReadonlyArray<ResolversTypes["ItemListing"]>, ParentType, ContextType>;
   myActiveReservationForListing?: Resolver<
     Maybe<ResolversTypes["ReservationRequest"]>,
     ParentType,
@@ -1495,7 +1605,7 @@ export type QueryResolvers<
     RequireFields<QueryMyActiveReservationForListingArgs, "listingId" | "userId">
   >;
   myActiveReservations?: Resolver<
-    Array<ResolversTypes["ReservationRequest"]>,
+    ReadonlyArray<ResolversTypes["ReservationRequest"]>,
     ParentType,
     ContextType,
     RequireFields<QueryMyActiveReservationsArgs, "userId">
@@ -1505,23 +1615,23 @@ export type QueryResolvers<
     ResolversTypes["ListingRequestPage"],
     ParentType,
     ContextType,
-    RequireFields<QueryMyListingsRequestsArgs, "page" | "pageSize">
+    RequireFields<QueryMyListingsRequestsArgs, "page" | "pageSize" | "searchText" | "sharerId" | "sorter" | "statusFilters">
   >;
   myPastReservations?: Resolver<
-    Array<ResolversTypes["ReservationRequest"]>,
+    ReadonlyArray<ResolversTypes["ReservationRequest"]>,
     ParentType,
     ContextType,
     RequireFields<QueryMyPastReservationsArgs, "userId">
   >;
   overlapActiveReservationRequestsForListing?: Resolver<
-    Array<ResolversTypes["ReservationRequest"]>,
+    ReadonlyArray<ResolversTypes["ReservationRequest"]>,
     ParentType,
     ContextType,
     RequireFields<QueryOverlapActiveReservationRequestsForListingArgs, "listingId" | "reservationPeriodEnd" | "reservationPeriodStart">
   >;
   personalUserById?: Resolver<Maybe<ResolversTypes["PersonalUser"]>, ParentType, ContextType, RequireFields<QueryPersonalUserByIdArgs, "id">>;
   queryActiveByListingId?: Resolver<
-    Array<Maybe<ResolversTypes["ReservationRequest"]>>,
+    ReadonlyArray<Maybe<ResolversTypes["ReservationRequest"]>>,
     ParentType,
     ContextType,
     RequireFields<QueryQueryActiveByListingIdArgs, "listingId">
@@ -1555,14 +1665,14 @@ export type ReservationRequestResolvers<
 > = ResolversObject<{
   closeRequestedByReserver?: Resolver<Maybe<ResolversTypes["Boolean"]>, ParentType, ContextType>;
   closeRequestedBySharer?: Resolver<Maybe<ResolversTypes["Boolean"]>, ParentType, ContextType>;
-  createdAt?: Resolver<Maybe<ResolversTypes["String"]>, ParentType, ContextType>;
+  createdAt?: Resolver<Maybe<ResolversTypes["DateTime"]>, ParentType, ContextType>;
   id?: Resolver<ResolversTypes["ObjectID"], ParentType, ContextType>;
   listing?: Resolver<Maybe<ResolversTypes["ItemListing"]>, ParentType, ContextType>;
-  reservationPeriodEnd?: Resolver<Maybe<ResolversTypes["String"]>, ParentType, ContextType>;
-  reservationPeriodStart?: Resolver<Maybe<ResolversTypes["String"]>, ParentType, ContextType>;
+  reservationPeriodEnd?: Resolver<Maybe<ResolversTypes["DateTime"]>, ParentType, ContextType>;
+  reservationPeriodStart?: Resolver<Maybe<ResolversTypes["DateTime"]>, ParentType, ContextType>;
   reserver?: Resolver<Maybe<ResolversTypes["PersonalUser"]>, ParentType, ContextType>;
   state?: Resolver<Maybe<ResolversTypes["ReservationRequestState"]>, ParentType, ContextType>;
-  updatedAt?: Resolver<Maybe<ResolversTypes["String"]>, ParentType, ContextType>;
+  updatedAt?: Resolver<Maybe<ResolversTypes["DateTime"]>, ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 }>;
 
@@ -1712,6 +1822,11 @@ export type Resolvers<ContextType = GraphContext> = ResolversObject<{
   PersonalUserAccountProfile?: PersonalUserAccountProfileResolvers<ContextType>;
   PersonalUserAccountProfileBilling?: PersonalUserAccountProfileBillingResolvers<ContextType>;
   PersonalUserAccountProfileLocation?: PersonalUserAccountProfileLocationResolvers<ContextType>;
+  PersonalUserRole?: PersonalUserRoleResolvers<ContextType>;
+  PersonalUserRoleConversationPermissions?: PersonalUserRoleConversationPermissionsResolvers<ContextType>;
+  PersonalUserRoleListingPermissions?: PersonalUserRoleListingPermissionsResolvers<ContextType>;
+  PersonalUserRolePermissions?: PersonalUserRolePermissionsResolvers<ContextType>;
+  PersonalUserRoleReservationRequestPermissions?: PersonalUserRoleReservationRequestPermissionsResolvers<ContextType>;
   PhoneNumber?: GraphQLScalarType;
   Port?: GraphQLScalarType;
   PositiveFloat?: GraphQLScalarType;

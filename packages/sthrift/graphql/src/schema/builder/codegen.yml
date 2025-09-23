@@ -11,6 +11,7 @@ generates:
       useIndexSignature: true
       useTypeImports: true
       enumsAsTypes: true
+      immutableTypes: true
 
       scalars:
         BigInt: any
@@ -65,14 +66,33 @@ generates:
         UnsignedInt: any
         UtcOffset: any
         Void: any
+
+      mappers:
+        ItemListing: "import('@sthrift/domain').Domain.Contexts.Listing.ItemListing.ItemListingEntityReference"
+        Conversation: "import('@sthrift/domain').Domain.Contexts.Conversation.Conversation.ConversationEntityReference"
+        PersonalUser: "import('@sthrift/domain').Domain.Contexts.User.PersonalUser.PersonalUserEntityReference"
+        ReservationRequest: "import('@sthrift/domain').Domain.Contexts.ReservationRequest.ReservationRequest.ReservationRequestEntityReference"
+
     plugins:
       - 'typescript'
       - 'typescript-resolvers'
   ./src/schema/builder/graphql.schema.json:
     plugins:
       - 'introspection'
-  ../ui-sharethrift/src/generated.tsx:
-    documents: '../ui-sharethrift/src/components/**/**.graphql'
+  ../../../apps/ui-sharethrift/src/generated.tsx:
+    documents: '../../../apps/ui-sharethrift/src/components/**/**.graphql'
+    config:
+      withHooks: true
+      withHOC: false
+      withComponent: false
+      useTypeImports: true
+      enumsAsTypes: true
+    plugins:
+      - 'typescript'
+      - 'typescript-operations'
+      - 'typed-document-node'
+  ../../sthrift/ui-components/src/generated.tsx:
+    documents: '../../sthrift/ui-components/src/components/**/**.graphql'
     config:
       withHooks: true
       withHOC: false

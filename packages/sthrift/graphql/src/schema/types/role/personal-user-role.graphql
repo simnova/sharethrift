@@ -1,0 +1,37 @@
+type PersonalUserRole implements MongoBase {
+	id: ObjectID!
+	schemaVersion: String
+	createdAt: DateTime
+	updatedAt: DateTime
+	roleType: String
+	isDefault: Boolean
+	roleName: String
+	permissions: PersonalUserRolePermissions
+}
+
+type PersonalUserRolePermissions {
+	listingPermissions: PersonalUserRoleListingPermissions
+	reservationRequestPermissions: PersonalUserRoleReservationRequestPermissions
+	conversationPermissions: PersonalUserRoleConversationPermissions
+}
+
+type PersonalUserRoleListingPermissions {
+	canCreateItemListing: Boolean
+	canUpdateItemListing: Boolean
+	canDeleteItemListing: Boolean
+	canViewItemListing: Boolean
+	canPublishItemListing: Boolean
+	canUnpublishItemListing: Boolean
+}
+
+type PersonalUserRoleReservationRequestPermissions {
+	canCreateReservationRequest: Boolean
+	canManageReservationRequest: Boolean
+	canViewReservationRequest: Boolean
+}
+
+type PersonalUserRoleConversationPermissions {
+	canCreateConversation: Boolean
+	canManageConversation: Boolean
+	canViewConversation: Boolean
+}
