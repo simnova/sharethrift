@@ -54,7 +54,7 @@ stages:
         deploy:
           steps:
           - task: AzureFunctionApp@1
-            displayName: 'Azure Functions App Deploy: Cellix-func-app'
+            displayName: 'Azure Functions App Deploy: Sharethrift-func-app'
             inputs:
               azureSubscription: ${{parameters.ServiceConnectionName}}
               appType: 'functionAppLinux'
@@ -74,7 +74,7 @@ stages:
         deploy:
           steps:
           - task: AzureStaticWebApp@0
-            displayName: 'Azure Static Web App Deploy: Cellix-docs'
+            displayName: 'Azure Static Web App Deploy: Sharethrift-docs'
             inputs:
               azure_static_web_apps_api_token: $(deployment-token)
               action: 'Upload'
@@ -95,7 +95,7 @@ stages:
         deploy:
           steps:
           - task: AzureStaticWebApp@0
-            displayName: 'Azure Static Web App Deploy: Cellix-ui-sharethrift'
+            displayName: 'Azure Static Web App Deploy: ui-sharethrift'
             inputs:
               azure_static_web_apps_api_token: $(deployment-token)
               action: 'Upload'
