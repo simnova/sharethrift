@@ -15,6 +15,8 @@ import { MongooseInstrumentation } from '@opentelemetry/instrumentation-mongoose
 import { expect, vi } from 'vitest';
 import { OtelBuilder } from './otel-builder.ts';
 
+
+const test = { for: describeFeature };
 // Move mocks INSIDE the vi.mock factory to avoid hoisting issues
 vi.mock('@azure/monitor-opentelemetry-exporter', () => {
   // Unique classes for instanceof checks
@@ -49,7 +51,7 @@ const feature = await loadFeature(
   path.resolve(__dirname, 'features/otel-builder.feature')
 );
 
-describeFeature(feature, ({ Scenario, BeforeEachScenario, AfterEachScenario }) => {
+test.for(feature, ({ Scenario, BeforeEachScenario, AfterEachScenario }) => {
   let builder: OtelBuilder;
   let originalEnv: NodeJS.ProcessEnv;
   let traceExporterMock: ReturnType<typeof vi.fn>;

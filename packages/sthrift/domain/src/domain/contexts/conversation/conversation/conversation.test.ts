@@ -13,6 +13,8 @@ import type { ItemListingProps } from '../../listing/item/item-listing.entity.ts
 import { PersonalUserRolePermissions } from '../../role/personal-user-role/personal-user-role-permissions.ts';
 import { PersonalUserRole } from '../../role/personal-user-role/personal-user-role.ts';
 
+
+const test = { for: describeFeature };
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const feature = await loadFeature(
 	path.resolve(__dirname, 'features/conversation.feature'),
@@ -187,7 +189,7 @@ function makeBaseProps(
 	};
 }
 
-describeFeature(feature, ({ Scenario, Background, BeforeEachScenario }) => {
+test.for(feature, ({ Scenario, Background, BeforeEachScenario }) => {
 	let passport: Passport;
 	let baseProps: ConversationProps;
 	let conversation: Conversation<ConversationProps>;
