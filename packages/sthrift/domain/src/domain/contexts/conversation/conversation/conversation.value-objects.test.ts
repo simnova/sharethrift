@@ -5,12 +5,14 @@ import { expect } from 'vitest';
 
 import * as ValueObjects from './conversation.value-objects.ts';
 
+
+const test = { for: describeFeature };
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const feature = await loadFeature(
 	path.resolve(__dirname, 'features/conversation.value-objects.feature'),
 );
 
-describeFeature(feature, ({ Scenario }) => {
+test.for(feature, ({ Scenario }) => {
 	// TwilioConversationSid
 	Scenario(
 		'Creating a TwilioConversationSid with valid value',

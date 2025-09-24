@@ -7,6 +7,8 @@ import type { Models } from '@sthrift/data-sources-mongoose-models';
 import { ConversationDomainAdapter } from './conversation.domain-adapter.ts';
 import { PersonalUserDomainAdapter } from '../../user/personal-user/personal-user.domain-adapter.ts';
 
+
+const test = { for: describeFeature };
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const feature = await loadFeature(
 	path.resolve(__dirname, 'features/conversation.domain-adapter.feature'),
@@ -37,7 +39,7 @@ function makeConversationDoc(
 	return vi.mocked(base);
 }
 
-describeFeature(feature, ({ Scenario, Background, BeforeEachScenario }) => {
+test.for(feature, ({ Scenario, Background, BeforeEachScenario }) => {
 	let doc: Models.Conversation.Conversation;
 	let adapter: ConversationDomainAdapter;
 	let sharerDoc: Models.User.PersonalUser;

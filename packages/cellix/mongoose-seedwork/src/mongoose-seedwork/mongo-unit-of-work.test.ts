@@ -9,6 +9,8 @@ import type { Base } from './index.ts';
 import { MongoUnitOfWork } from './mongo-unit-of-work.ts';
 import { MongoRepositoryBase } from './mongo-repository.ts';
 
+
+const test = { for: describeFeature };
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const feature = await loadFeature(
   path.resolve(__dirname, 'features/mongo-unit-of-work.feature')
@@ -43,7 +45,7 @@ vi.mock('mongoose', async () => {
   };
 });
 
-describeFeature(feature, ({ Scenario, BeforeEachScenario }) => {
+test.for(feature, ({ Scenario, BeforeEachScenario }) => {
   let unitOfWork: MongoUnitOfWork<MongoType, PropType, unknown, AggregateRootMock, RepoMock>;
   let repoInstance: RepoMock;
   let eventBus: DomainSeedwork.EventBus;

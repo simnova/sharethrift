@@ -7,6 +7,8 @@ import { MongoRepositoryBase } from './mongo-repository.ts';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 
+
+const test = { for: describeFeature };
 // Minimal Base (MongoType)
 interface TestMongoType extends Base {
 	foo: string;
@@ -89,7 +91,7 @@ class TestMongoRepository extends MongoRepositoryBase<
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const mongoRepositoryFeature = await loadFeature(path.resolve(__dirname, 'features/mongo-repository.feature'));
 
-describeFeature(mongoRepositoryFeature, ({ Background, Scenario, BeforeEachScenario }) => {
+test.for(mongoRepositoryFeature, ({ Background, Scenario, BeforeEachScenario }) => {
 
   let repo: TestMongoRepository;
   let aggregate: DummyAggregateRoot;

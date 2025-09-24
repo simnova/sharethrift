@@ -5,6 +5,8 @@ import { fileURLToPath } from 'node:url';
 import { NodeEventBusInstance } from './node-event-bus.ts';
 import { DomainSeedwork } from '@cellix/domain-seedwork';
 
+
+const test = { for: describeFeature };
 // --- Mocks for OpenTelemetry and performance ---
 vi.mock('@opentelemetry/api', () => {
   const propagation = {
@@ -47,7 +49,7 @@ class TestEvent extends DomainSeedwork.CustomDomainEventImpl<{ test: string }> {
 class EventA extends DomainSeedwork.CustomDomainEventImpl<{ a: string }> {}
 class EventB extends DomainSeedwork.CustomDomainEventImpl<{ b: string }> {}
 
-describeFeature(feature, ({ Scenario, Background, BeforeEachScenario }) => {
+test.for(feature, ({ Scenario, Background, BeforeEachScenario }) => {
   let handler: ReturnType<typeof vi.fn>;
   let handler1: ReturnType<typeof vi.fn>;
   let handler2: ReturnType<typeof vi.fn>;
