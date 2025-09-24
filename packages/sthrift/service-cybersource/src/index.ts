@@ -27,7 +27,7 @@ export class ServiceCybersource
 	private client: AxiosInstance | undefined;
 	private baseUrl: string;
 
-	constructor(baseUrl: string = process.env['PAYMENT_API_URL']!) {
+	constructor(baseUrl: string = process.env['PAYMENT_API_URL'] ?? '') {
 		this.baseUrl = baseUrl;
 	}
 
@@ -451,7 +451,7 @@ export class ServiceCybersource
 			'Mock getSuccessOrLatestFailedTransactionsByReferenceId called with:',
 			referenceId,
 		);
-		const isSuccess = Math.random() > 0.3; // 70% chance success
+		const isSuccess = true;
 		const now = new Date();
 
 		if (isSuccess) {
