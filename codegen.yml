@@ -2,10 +2,10 @@
 
 overwrite: true
 schema:
-  - './src/schema/core/graphql-tools-scalars.ts'
-  - './src/schema/**/**.graphql'
+  - './packages/sthrift/graphql/src/schema/core/graphql-tools-scalars.ts'
+  - './packages/sthrift/graphql/src/schema/**/**.graphql'
 generates:
-  ./src/schema/builder/generated.ts:
+  ./packages/sthrift/graphql/src/schema/builder/generated.ts:
     config:
       contextType: '../../init/context.ts#GraphContext'
       useIndexSignature: true
@@ -72,15 +72,15 @@ generates:
         Conversation: "import('@sthrift/domain').Domain.Contexts.Conversation.Conversation.ConversationEntityReference"
         PersonalUser: "import('@sthrift/domain').Domain.Contexts.User.PersonalUser.PersonalUserEntityReference"
         ReservationRequest: "import('@sthrift/domain').Domain.Contexts.ReservationRequest.ReservationRequest.ReservationRequestEntityReference"
-
+        
     plugins:
       - 'typescript'
       - 'typescript-resolvers'
-  ./src/schema/builder/graphql.schema.json:
+  ./packages/sthrift/graphql/src/schema/builder/graphql.schema.json:
     plugins:
       - 'introspection'
-  ../../../apps/ui-sharethrift/src/generated.tsx:
-    documents: '../../../apps/ui-sharethrift/src/components/**/**.graphql'
+  ./apps/ui-sharethrift/src/generated.tsx:
+    documents: './apps/ui-sharethrift/src/components/**/**.graphql'
     config:
       withHooks: true
       withHOC: false
@@ -91,8 +91,8 @@ generates:
       - 'typescript'
       - 'typescript-operations'
       - 'typed-document-node'
-  ../../sthrift/ui-components/src/generated.tsx:
-    documents: '../../sthrift/ui-components/src/components/**/**.graphql'
+  ./packages/sthrift/ui-components/src/generated.tsx:
+    documents: './packages/sthrift/ui-components/src/components/**/**.graphql'
     config:
       withHooks: true
       withHOC: false
