@@ -1,0 +1,32 @@
+{
+    "name": "@sthrift/service-sendgrid",
+    "version": "0.1.0",
+    "description": "SendGrid email service for ShareThrift portals.",
+    "type": "module",
+    "main": "dist/src/index.js",
+    "types": "dist/src/index.d.ts",
+    "license": "MIT",
+    "exports": {
+        ".": {
+            "types": "./dist/src/index.d.ts",
+            "default": "./dist/src/index.js"
+        }
+    },
+    "scripts": {
+        "build": "tsc --build",
+        "lint": "biome lint .",
+        "test": "echo 'No tests yet'"
+    },
+    "peerDependencies": {
+        "react": ">=17.0.0",
+        "react-dom": ">=17.0.0"
+    },
+    "devDependencies": {
+        "@biomejs/biome": "2.0.0",
+        "typescript": "^5.0.0",
+        "@cellix/typescript-config": "*"
+    },
+    "dependencies": {
+        "@sendgrid/mail": "^8.0.0"
+    }
+}

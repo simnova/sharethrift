@@ -1,0 +1,20 @@
+query GetListings {
+	itemListings {
+		id
+		title
+		description
+		category
+		location
+		state
+		images
+		createdAt
+		updatedAt
+		sharingPeriodStart
+		sharingPeriodEnd
+
+		schemaVersion
+		version
+		reports
+		sharingHistory
+	}
+}

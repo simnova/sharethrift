@@ -1,5 +1,0 @@
-query HomeMyListingsDashboardContainerMyListingsRequestsCount {
-  myListingsRequests(page: 1, pageSize: 1) {
-    total
-  }
-}

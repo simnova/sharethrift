@@ -1,0 +1,7 @@
+# .gitignore template - https://github.com/github/gitignore/blob/main/Node.gitignore
+/node_modules
+.DS_Store
+__*
+dist
+tsconfig.tsbuildinfo
+.turbo

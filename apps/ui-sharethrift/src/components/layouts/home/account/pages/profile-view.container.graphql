@@ -1,0 +1,37 @@
+query HomeAccountProfileViewContainerCurrentUser {
+	currentPersonalUserAndCreateIfNotExists {
+		id
+		userType
+		account {
+			accountType
+			email
+			username
+			profile {
+				firstName
+				lastName
+				location {
+					city
+					state
+				}
+			}
+		}
+		createdAt
+	}
+}
+
+query HomeAccountProfileViewContainerUserListings {
+	itemListings {
+		id
+		title
+		description
+		category
+		location
+		state
+		images
+
+		createdAt
+		updatedAt
+		sharingPeriodStart
+		sharingPeriodEnd
+	}
+}

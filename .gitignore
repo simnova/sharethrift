@@ -1,10 +1,13 @@
-# .gitignore template - https://github.com/github/gitignore/blob/main/Node.gitignore
 /node_modules
-/docusaurus/node_modules
 .DS_Store
-.docusaurus
+**/coverage
+# .gitignore template - https://github.com/github/gitignore/blob/main/Node.gitignore
 lcov-report
 __*
 local.settings.json
-*storybook.log
-storybook-static
+
+# Turborepo
+.turbo
+
+# SonarScanner
+.scannerwork

@@ -1,0 +1,25 @@
+{
+	"name": "@sthrift/service-twilio",
+	"version": "1.0.0",
+	"main": "dist/src/index.js",
+	"types": "dist/src/index.d.ts",
+	"type": "module",
+	"exports": {
+		".": {
+			"types": "./dist/src/index.d.ts",
+			"default": "./dist/src/index.js"
+		}
+	},
+	"scripts": {
+		"build": "tsc --project tsconfig.json"
+	},
+	"dependencies": {
+		"twilio": "^4.0.0",
+		"@cellix/api-services-spec": "*"
+	},
+	"devDependencies": {
+		"typescript": "^5.8.3",
+		"url-parse": "^1.5.9",
+		"@cellix/typescript-config": "*"
+	}
+}

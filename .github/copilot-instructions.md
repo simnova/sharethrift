@@ -4,7 +4,7 @@
 
 CellixJS is a Domain-Driven Design (DDD) monorepo built on Azure Functions, implementing a modular architecture with strict separation of concerns:
 
-- **Domain Layer**: Core business logic in `packages/api-domain/src/domain/contexts/`
+- **Domain Layer**: Core business logic in `packages/domain/src/domain/contexts/`
 - **Application Services**: Orchestration layer in `packages/cellix-api-services-spec/`
 - **Infrastructure**: Data persistence via Mongoose, OpenTelemetry observability
 - **API Layer**: GraphQL and REST endpoints via Azure Functions
@@ -80,8 +80,8 @@ Use VS Code tasks for development (preferred over manual commands):
 ### Workspace Structure
 Monorepo uses npm workspaces with these core packages:
 - `@sthrift/api` - Main Azure Functions application
-- `@sthrift/api-domain` - Domain models and business logic
-- `@sthrift/api-graphql` - GraphQL implementation
+- `@sthrift/domain` - Domain models and business logic
+- `@sthrift/graphql` - GraphQL implementation
 - `@sthrift/service-mongoose` - MongoDB data layer
 - `@cellix/*` - Shared seedwork libraries
 
