@@ -41,7 +41,7 @@ stages:
   - template: ../../apps/docs/deploy-docs.yml
     parameters:
       vmImageName: ${{parameters.vmImageName}}
-  - template: ../../apps/ui-community/deploy-ui-community.yml
+  - template: ../../apps/ui-sharethrift/deploy-ui-sharethrift.yml
     parameters:
       environmentNameDevOps: ${{parameters.environmentNameDevOps}}
       vmImageName: ${{parameters.vmImageName}}
