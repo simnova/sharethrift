@@ -5,7 +5,7 @@ graph TD
   subgraph Cellix Seedwork
     cellix-domain-seedwork["@cellix/domain-seedwork"]
     cellix-event-bus-seedwork-node["@cellix/event-bus-seedwork-node"]
-    cellix-mongoose-seedwork["@cellix/mong oose-seedwork"]
+    cellix-mongoose-seedwork["@cellix/mongoose-seedwork"]
   end
 
   %% Domain Layer
