@@ -1,5 +1,6 @@
+```instructions
 ---
-applyTo: "packages/graphql/**/*.ts"
+applyTo: "packages/sthrift/graphql/**/*.ts"
 ---
 # Copilot Instructions: @sthrift/graphql
 

@@ -1,5 +1,5 @@
 ---
-applyTo: "packages/ui-*/src/components/layouts/**/pages/*.tsx"
+applyTo: "apps/ui-sharethrift/src/components/layouts/**/pages/*.tsx"
 ---
 
 # Copilot Instructions: Pages
