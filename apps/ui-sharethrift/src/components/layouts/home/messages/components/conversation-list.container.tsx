@@ -1,47 +1,42 @@
-import { ConversationList } from './conversation-list.tsx';
+import { ConversationList } from "./conversation-list.tsx";
+import { useQuery } from "@apollo/client";
+import {
+  HomeConversationListContainerConversationsByUserDocument,
+  type Conversation,
+} from "../../../../../generated.tsx";
+import { ComponentQueryLoader } from "@sthrift/ui-components";
 
 interface ConversationListContainerProps {
-	onConversationSelect: (conversationId: string) => void;
-	selectedConversationId: string | null;
+  onConversationSelect: (conversationId: string) => void;
 }
 
 export function ConversationListContainer({
-	onConversationSelect,
-	selectedConversationId,
+  onConversationSelect,
 }: ConversationListContainerProps) {
-	// Mock data for demonstration
-	const mockConversations = [
-		{
-			id: '1',
-			twilioConversationSid: 'CH123',
-			listingId: 'Bike-001',
-			participants: ['user123', 'Alice'],
-			createdAt: '2025-08-08T10:00:00Z',
-			updatedAt: '2025-08-08T12:00:00Z',
-		},
-		{
-			id: '2',
-			twilioConversationSid: 'CH124',
-			listingId: 'Camera-002',
-			participants: ['user123', 'Bob'],
-			createdAt: '2025-08-07T09:00:00Z',
-			updatedAt: '2025-08-08T11:30:00Z',
-		},
-		{
-			id: '3',
-			twilioConversationSid: 'CH125',
-			listingId: 'Tent-003',
-			participants: ['user123', 'Carol'],
-			createdAt: '2025-08-06T08:00:00Z',
-			updatedAt: '2025-08-08T10:45:00Z',
-		},
-	];
+  const {
+    data: currentUserConversationsData,
+    loading: loadingConversations,
+    error: conversationsError,
+  } = useQuery(HomeConversationListContainerConversationsByUserDocument, {
+    variables: {
+      userId: "507f1f77bcf86cd799439099",
+    },
+  });
 
-	return (
-		<ConversationList
-			onConversationSelect={onConversationSelect}
-			selectedConversationId={selectedConversationId}
-			conversations={mockConversations}
-		/>
-	);
+  return (
+    <ComponentQueryLoader
+      loading={loadingConversations}
+      hasData={currentUserConversationsData}
+      error={conversationsError}
+      hasDataComponent={
+        <ConversationList
+          onConversationSelect={onConversationSelect}
+          selectedConversationId={null}
+          conversations={
+            currentUserConversationsData?.conversationsByUser as Conversation[]
+          }
+        />
+      }
+    />
+  );
 }
