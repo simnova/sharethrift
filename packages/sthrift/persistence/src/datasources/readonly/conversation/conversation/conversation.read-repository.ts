@@ -62,15 +62,12 @@ export class ConversationReadRepositoryImpl
 	): Promise<Domain.Contexts.Conversation.Conversation.ConversationEntityReference | null> {
 		const result = await this.mongoDataSource.findById(id, options);
 		if (!result) {
-			// Try to find in mock data
+			// Try to find in mock data if no database record exists
 			const mockResult = getMockConversations().find(
 				(conversation: Domain.Contexts.Conversation.Conversation.ConversationEntityReference) => 
 					conversation.id === id,
 			);
-			if (mockResult) {
-				return mockResult;
-			}
-			return null;
+			return mockResult || null;
 		}
 		return this.converter.toDomain(result, this.passport);
 	}
@@ -81,13 +78,11 @@ export class ConversationReadRepositoryImpl
 	): Promise<
 		Domain.Contexts.Conversation.Conversation.ConversationEntityReference[]
 	> {
-		// Handle empty or invalid userId (for development/testing)
 		if (!userId || userId.trim() === '') {
-			return getMockConversations();
+			return [];
 		}
 
 		try {
-			// Assuming the field is 'sharer' or 'reserver' in the model and stores the user's ObjectId
 			const result = await this.mongoDataSource.find(
 				{
 					$or: [
@@ -97,6 +92,8 @@ export class ConversationReadRepositoryImpl
 				},
 				options,
 			);
+			
+			// If no database records found, check mock data
 			if (!result || result.length === 0) {
 				// Return mock data when no real data exists (for development/testing)
 				// Update mock conversations to use the current userId for consistency

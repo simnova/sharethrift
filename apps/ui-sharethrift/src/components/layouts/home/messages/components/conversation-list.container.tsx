@@ -13,13 +13,17 @@ interface ConversationListContainerProps {
 export function ConversationListContainer({
   onConversationSelect,
 }: ConversationListContainerProps) {
+  // TODO: Replace with actual authenticated user ID
+  // This should come from authentication context
+  const currentUserId = "507f1f77bcf86cd799439099";
+
   const {
     data: currentUserConversationsData,
     loading: loadingConversations,
     error: conversationsError,
   } = useQuery(HomeConversationListContainerConversationsByUserDocument, {
     variables: {
-      userId: "507f1f77bcf86cd799439099",
+      userId: currentUserId,
     },
   });
 
