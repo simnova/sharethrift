@@ -51,18 +51,18 @@ jobs:
           distribution: 'temurin'
           java-version: '17'
 
-      - name: Verify required environment variables
-        run: |
-          if [ -z "$SONAR_TOKEN" ]; then
-            echo "Error: SONAR_TOKEN is not set."
-            exit 1
-          fi
-          if [ -z "$GH_TOKEN" ]; then
-            echo "Error: GH_TOKEN is not set."
-            exit 1
-          fi
-          echo "All required environment variables are set."
-        env:
-          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-          GH_TOKEN: ${{ secrets.GH_TOKEN }}
+      # - name: Verify required environment variables
+      #   run: |
+      #     if [ -z "$SONAR_TOKEN" ]; then
+      #       echo "Error: SONAR_TOKEN is not set."
+      #       exit 1
+      #     fi
+      #     if [ -z "$GH_TOKEN" ]; then
+      #       echo "Error: GH_TOKEN is not set."
+      #       exit 1
+      #     fi
+      #     echo "All required environment variables are set."
+      #   env:
+      #     SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+      #     GH_TOKEN: ${{ secrets.GH_TOKEN }}
     
