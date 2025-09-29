@@ -12,7 +12,7 @@ import { SendOutlined } from '@ant-design/icons';
 interface Message {
 	id: string;
 	twilioMessageSid: string;
-	conversationId: string;
+	// conversationId: string;
 	authorId: string;
 	content: string;
 	createdAt: string;

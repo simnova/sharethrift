@@ -5,6 +5,7 @@ import {
   type Conversation,
 } from "../../../../../generated.tsx";
 import { ComponentQueryLoader } from "@sthrift/ui-components";
+import { useEffect } from "react";
 
 interface ConversationListContainerProps {
   onConversationSelect: (conversationId: string) => void;
@@ -26,6 +27,12 @@ export function ConversationListContainer({
       userId: currentUserId,
     },
   });
+
+  useEffect(() => {
+    onConversationSelect(
+      currentUserConversationsData?.conversationsByUser?.[0]?.id || ""
+    );
+  }, [currentUserConversationsData]);
 
   return (
     <ComponentQueryLoader

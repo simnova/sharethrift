@@ -1,4 +1,5 @@
-import { ListingBannerContainer } from "./listing-banner.container.tsx";
+import type { Conversation } from "../../../../../generated.tsx";
+import { ListingBanner } from "./listing-banner.tsx";
 
 // const mockConversations = {
 //   "1": [
@@ -49,19 +50,20 @@ import { ListingBannerContainer } from "./listing-banner.container.tsx";
 //   ],
 // };
 
-interface ConversationBoxProps {}
+interface ConversationBoxProps {
+  data: Conversation;
+}
 
-export function ConversationBox({}: ConversationBoxProps) {
+export function ConversationBox({ data }: ConversationBoxProps) {
+  console.log("ConversationBox data------>:", data);
+
   return (
     <>
-      {/* Banner at the top */}
       {(() => {
-        // const conv = mockConversations.find((c) => c.id === "1");
-        const owner = "Unknown";
-        // const owner = conv?.participants.find((p) => p !== currentUserId) || "Unknown";
+        const owner = data?.sharer
         return true ? (
           <div style={{ marginBottom: 24 }}>
-            <ListingBannerContainer listingId={"1"} owner={owner} />
+            <ListingBanner owner={owner} />
           </div>
         ) : null;
       })()}
