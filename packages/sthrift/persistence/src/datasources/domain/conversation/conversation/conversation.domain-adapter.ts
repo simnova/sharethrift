@@ -21,7 +21,7 @@ export class ConversationDomainAdapter
 	extends MongooseSeedwork.MongooseDomainAdapter<Models.Conversation.Conversation>
 	implements Domain.Contexts.Conversation.Conversation.ConversationProps
 {
-	get sharer(): PersonalUserDomainAdapter {
+	get sharer() {
 		if (!this.doc.sharer) {
 			throw new Error('sharer is not populated');
 		}

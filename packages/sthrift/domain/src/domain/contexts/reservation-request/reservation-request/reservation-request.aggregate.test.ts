@@ -1,9 +1,9 @@
-import { describe, it, expect } from 'vitest';
+import { describe, it, expect, vi } from 'vitest';
 import { ReservationRequest } from './reservation-request.ts';
 import type { ReservationRequestProps } from './reservation-request.entity.ts';
 import type { ItemListingEntityReference } from '../../listing/item/item-listing.entity.ts';
-import type { PersonalUserEntityReference } from '../../user/personal-user/personal-user.entity.ts';
-// ...existing code...
+import { PersonalUser } from '../../user/personal-user/personal-user.ts';
+import type { PersonalUserProps } from '../../user/personal-user/personal-user.entity.ts';
 import {
 	ReservationRequestStates,
 	ReservationRequestStateValue,
@@ -95,42 +95,72 @@ describe('ReservationRequest', () => {
 		schemaVersion: '1',
 	};
 
-	const createMockReserver = (id = 'user-1'): PersonalUserEntityReference => {
-		return {
-			id,
-			userType: 'personal',
-			isBlocked: false,
-			schemaVersion: '1',
-			account: {
-				accountType: 'standard',
-				email: 'mock@example.com',
-				username: 'mockuser',
-				profile: {
-					firstName: 'Mock',
-					lastName: 'User',
-					location: {
-						address1: '123 Main St',
-						address2: null,
-						city: 'Springfield',
-						state: 'IL',
-						country: 'USA',
-						zipCode: '62704',
-					},
-					billing: {
-						subscriptionId: 'sub-123',
-						cybersourceCustomerId: 'cyber-456',
-						paymentState: 'active',
-						lastPaymentAmount: 49.99,
-						lastTransactionId: 'txn-789',
+	const createMockReserver = (id = 'user-1') => {
+		return new PersonalUser<PersonalUserProps>(
+			{
+				id,
+				userType: 'personal',
+				isBlocked: false,
+				schemaVersion: '1',
+				account: {
+					accountType: 'standard',
+					email: 'mock@example.com',
+					username: 'mockuser',
+					profile: {
+						firstName: 'Mock',
+						lastName: 'User',
+						location: {
+							address1: '123 Main St',
+							address2: null,
+							city: 'Springfield',
+							state: 'IL',
+							country: 'USA',
+							zipCode: '62704',
+						},
+						billing: {
+							cybersourceCustomerId: null,
+							subscription: {
+								planCode: 'basic',
+								status: '',
+								startDate: new Date('2020-01-01T00:00:00Z'),
+								subscriptionCode: 'sub_123',
+							},
+							transactions: {
+								items: [
+									{
+										id: '1',
+										transactionId: 'txn_123',
+										amount: 1000,
+										referenceId: 'ref_123',
+										status: 'completed',
+										completedAt: new Date('2020-01-01T00:00:00Z'),
+										errorMessage: null,
+									},
+								],
+								getNewItem: () => ({
+									id: '1',
+									transactionId: 'txn_123',
+									amount: 1000,
+									referenceId: 'ref_123',
+									status: 'completed',
+									completedAt: new Date('2020-01-01T00:00:00Z'),
+									errorMessage: null,
+								}),
+								addItem: vi.fn(),
+								removeItem: vi.fn(),
+								removeAll: vi.fn(),
+							},
+						},
 					},
 				},
+				createdAt: new Date(),
+				updatedAt: new Date(),
+				hasCompletedOnboarding: true,
+				role: mockRole,
+				loadRole: async () => mockRole,
 			},
-			createdAt: new Date(),
-			updatedAt: new Date(),
-			hasCompletedOnboarding: true,
-			role: mockRole,
-			loadRole: async () => mockRole,
-		};
+			mockPassport,
+		);
 	};
 
 	// Helper function to create full props for testing

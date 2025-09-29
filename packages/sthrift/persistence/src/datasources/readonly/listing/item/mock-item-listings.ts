@@ -95,12 +95,24 @@ export const getMockItemListings =
 						zipCode: '19101',
 					},
 					billing: {
-						// Minimal billing structure - just provide empty object for required properties
-						subscriptionId: '',
-						cybersourceCustomerId: '',
-						paymentState: '',
-						lastTransactionId: '',
-						lastPaymentAmount: 0,
+						cybersourceCustomerId: null,
+						subscription: {
+							planCode: 'basic',
+							status: '',
+							startDate: new Date('2020-01-01T00:00:00Z'),
+							subscriptionCode: 'sub_123',
+						},
+						transactions: [
+							{
+								id: '1',
+								transactionId: 'txn_123',
+								amount: 1000,
+								referenceId: 'ref_123',
+								status: 'completed',
+								completedAt: new Date('2020-01-01T00:00:00Z'),
+								errorMessage: null,
+							},
+						],
 					},
 				},
 			},

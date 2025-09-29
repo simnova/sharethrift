@@ -1,4 +1,5 @@
 import type { Domain } from '@sthrift/domain';
+
 import { Types } from 'mongoose';
 import type { ModelsContext } from '../../../../models-context.ts';
 import {
@@ -280,11 +281,24 @@ const getMockReservationRequests = (
 								zipCode: '02101',
 							},
 							billing: {
-								subscriptionId: '98765789',
-								cybersourceCustomerId: '87654345678',
-								paymentState: 'active',
-								lastTransactionId: 'txn-123456',
-								lastPaymentAmount: 100.0,
+								cybersourceCustomerId: null,
+								subscription: {
+									planCode: 'basic',
+									status: '',
+									startDate: new Date('2020-01-01T00:00:00Z'),
+									subscriptionCode: 'sub_123',
+								},
+								transactions: [
+									{
+										id: '1',
+										transactionId: 'txn_123',
+										amount: 1000,
+										referenceId: 'ref_123',
+										status: 'completed',
+										completedAt: new Date('2020-01-01T00:00:00Z'),
+										errorMessage: null,
+									},
+								],
 							},
 						},
 					},
@@ -371,11 +385,24 @@ const getMockReservationRequests = (
 							zipCode: '02101',
 						},
 						billing: {
-							subscriptionId: '98765789',
-							cybersourceCustomerId: '87654345678',
-							paymentState: 'active',
-							lastTransactionId: 'txn-123456',
-							lastPaymentAmount: 100.0,
+							cybersourceCustomerId: null,
+							subscription: {
+								planCode: 'basic',
+								status: '',
+								startDate: new Date('2020-01-01T00:00:00Z'),
+								subscriptionCode: 'sub_123',
+							},
+							transactions: [
+								{
+									id: '1',
+									transactionId: 'txn_123',
+									amount: 1000,
+									referenceId: 'ref_123',
+									status: 'completed',
+									completedAt: new Date('2020-01-01T00:00:00Z'),
+									errorMessage: null,
+								},
+							],
 						},
 					},
 				},
@@ -480,11 +507,24 @@ const getMockReservationRequests = (
 									zipCode: '02101',
 								},
 								billing: {
-									subscriptionId: '98765789',
-									cybersourceCustomerId: '87654345678',
-									paymentState: 'active',
-									lastTransactionId: 'txn-123456',
-									lastPaymentAmount: 100.0,
+									cybersourceCustomerId: null,
+									subscription: {
+										planCode: 'basic',
+										status: '',
+										startDate: new Date('2020-01-01T00:00:00Z'),
+										subscriptionCode: 'sub_123',
+									},
+									transactions: [
+										{
+											id: '1',
+											transactionId: 'txn_123',
+											amount: 1000,
+											referenceId: 'ref_123',
+											status: 'completed',
+											completedAt: new Date('2020-01-01T00:00:00Z'),
+											errorMessage: null,
+										},
+									],
 								},
 							},
 						},
@@ -603,11 +643,24 @@ const getMockReservationRequests = (
 								zipCode: '02101',
 							},
 							billing: {
-								subscriptionId: '98765789',
-								cybersourceCustomerId: '87654345678',
-								paymentState: 'active',
-								lastTransactionId: 'txn-123456',
-								lastPaymentAmount: 100.0,
+								cybersourceCustomerId: null,
+								subscription: {
+									planCode: 'basic',
+									status: '',
+									startDate: new Date('2020-01-01T00:00:00Z'),
+									subscriptionCode: 'sub_123',
+								},
+								transactions: [
+									{
+										id: '1',
+										transactionId: 'txn_123',
+										amount: 1000,
+										referenceId: 'ref_123',
+										status: 'completed',
+										completedAt: new Date('2020-01-01T00:00:00Z'),
+										errorMessage: null,
+									},
+								],
 							},
 						},
 					},

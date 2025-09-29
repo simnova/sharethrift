@@ -13,7 +13,6 @@ import type { ItemListingProps } from '../../listing/item/item-listing.entity.ts
 import { PersonalUserRolePermissions } from '../../role/personal-user-role/personal-user-role-permissions.ts';
 import { PersonalUserRole } from '../../role/personal-user-role/personal-user-role.ts';
 
-
 const test = { for: describeFeature };
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const feature = await loadFeature(
@@ -100,11 +99,38 @@ function makeBaseProps(
 						zipCode: '12345',
 					},
 					billing: {
-						subscriptionId: null,
 						cybersourceCustomerId: null,
-						paymentState: '',
-						lastTransactionId: null,
-						lastPaymentAmount: null,
+						subscription: {
+							planCode: 'basic',
+							status: '',
+							startDate: new Date('2020-01-01T00:00:00Z'),
+							subscriptionCode: 'sub_123',
+						},
+						transactions: {
+							items: [
+								{
+									id: '1',
+									transactionId: 'txn_123',
+									amount: 1000,
+									referenceId: 'ref_123',
+									status: 'completed',
+									completedAt: new Date('2020-01-01T00:00:00Z'),
+									errorMessage: null,
+								},
+							],
+							getNewItem: () => ({
+								id: '1',
+								transactionId: 'txn_123',
+								amount: 1000,
+								referenceId: 'ref_123',
+								status: 'completed',
+								completedAt: new Date('2020-01-01T00:00:00Z'),
+								errorMessage: null,
+							}),
+							addItem: vi.fn(),
+							removeItem: vi.fn(),
+							removeAll: vi.fn(),
+						},
 					},
 				},
 			},
@@ -138,11 +164,38 @@ function makeBaseProps(
 						zipCode: '12345',
 					},
 					billing: {
-						subscriptionId: null,
 						cybersourceCustomerId: null,
-						paymentState: '',
-						lastTransactionId: null,
-						lastPaymentAmount: null,
+						subscription: {
+							planCode: 'basic',
+							status: '',
+							startDate: new Date('2020-01-01T00:00:00Z'),
+							subscriptionCode: 'sub_456',
+						},
+						transactions: {
+							items: [
+								{
+									id: '1',
+									transactionId: 'txn_123',
+									amount: 1000,
+									referenceId: 'ref_123',
+									status: 'completed',
+									completedAt: new Date('2020-01-01T00:00:00Z'),
+									errorMessage: null,
+								},
+							],
+							getNewItem: () => ({
+								id: '1',
+								transactionId: 'txn_123',
+								amount: 1000,
+								referenceId: 'ref_123',
+								status: 'completed',
+								completedAt: new Date('2020-01-01T00:00:00Z'),
+								errorMessage: null,
+							}),
+							addItem: vi.fn(),
+							removeItem: vi.fn(),
+							removeAll: vi.fn(),
+						},
 					},
 				},
 			},
@@ -251,11 +304,32 @@ test.for(feature, ({ Scenario, Background, BeforeEachScenario }) => {
 				{
 					...conversation.sharer,
 					id: 'user-3',
-					externalId: 'user-external-3',
 					account: {
 						...conversation.sharer.account,
 						email: 'newsharer@cellix.com',
 						username: 'newsharer',
+						profile: {
+							...conversation.sharer.account.profile,
+							billing: {
+								...conversation.sharer.account.profile.billing,
+								transactions: {
+									...conversation.sharer.account.profile.billing.transactions,
+									items: [],
+									getNewItem: () => ({
+										id: '1',
+										transactionId: 'txn_123',
+										amount: 1000,
+										referenceId: 'ref_123',
+										status: 'completed',
+										completedAt: new Date('2020-01-01T00:00:00Z'),
+										errorMessage: null,
+									}),
+									addItem: vi.fn(),
+									removeItem: vi.fn(),
+									removeAll: vi.fn(),
+								},
+							},
+						},
 					},
 				},
 				passport,
@@ -285,10 +359,35 @@ test.for(feature, ({ Scenario, Background, BeforeEachScenario }) => {
 					conversation.sharer = new PersonalUser(
 						{
 							...conversation.sharer,
-							id: 'user-3',
-							externalId: 'user-external-3',
-							displayName: 'New Sharer',
-							email: 'newsharer@cellix.com',
+							id: 'user-4',
+							account: {
+								...conversation.sharer.account,
+								email: 'newsharer@cellix.com',
+								username: 'newsharer',
+								profile: {
+									...conversation.sharer.account.profile,
+									billing: {
+										...conversation.sharer.account.profile.billing,
+										transactions: {
+											...conversation.sharer.account.profile.billing
+												.transactions,
+											items: [],
+											getNewItem: () => ({
+												id: '1',
+												transactionId: 'txn_123',
+												amount: 1000,
+												referenceId: 'ref_123',
+												status: 'completed',
+												completedAt: new Date('2020-01-01T00:00:00Z'),
+												errorMessage: null,
+											}),
+											addItem: vi.fn(),
+											removeItem: vi.fn(),
+											removeAll: vi.fn(),
+										},
+									},
+								},
+							},
 						},
 						passport,
 					);
@@ -318,12 +417,33 @@ test.for(feature, ({ Scenario, Background, BeforeEachScenario }) => {
 			newReserver = new PersonalUser(
 				{
 					...conversation.reserver,
-					id: 'user-4',
-					externalId: 'user-external-4',
+					id: 'user-5',
 					account: {
-						...conversation.reserver.account,
-						email: 'newreserver@cellix.com',
-						username: 'newreserver',
+						...conversation.sharer.account,
+						email: 'newsharer@cellix.com',
+						username: 'newsharer',
+						profile: {
+							...conversation.sharer.account.profile,
+							billing: {
+								...conversation.sharer.account.profile.billing,
+								transactions: {
+									...conversation.sharer.account.profile.billing.transactions,
+									items: [],
+									getNewItem: () => ({
+										id: '1',
+										transactionId: 'txn_123',
+										amount: 1000,
+										referenceId: 'ref_123',
+										status: 'completed',
+										completedAt: new Date('2020-01-01T00:00:00Z'),
+										errorMessage: null,
+									}),
+									addItem: vi.fn(),
+									removeItem: vi.fn(),
+									removeAll: vi.fn(),
+								},
+							},
+						},
 					},
 				},
 				passport,
@@ -355,10 +475,35 @@ test.for(feature, ({ Scenario, Background, BeforeEachScenario }) => {
 					conversation.reserver = new PersonalUser(
 						{
 							...conversation.reserver,
-							id: 'user-4',
-							externalId: 'user-external-4',
-							displayName: 'New Reserver',
-							email: 'newreserver@cellix.com',
+							id: 'user-6',
+							account: {
+								...conversation.sharer.account,
+								email: 'newsharer@cellix.com',
+								username: 'newsharer',
+								profile: {
+									...conversation.sharer.account.profile,
+									billing: {
+										...conversation.sharer.account.profile.billing,
+										transactions: {
+											...conversation.sharer.account.profile.billing
+												.transactions,
+											items: [],
+											getNewItem: () => ({
+												id: '1',
+												transactionId: 'txn_123',
+												amount: 1000,
+												referenceId: 'ref_123',
+												status: 'completed',
+												completedAt: new Date('2020-01-01T00:00:00Z'),
+												errorMessage: null,
+											}),
+											addItem: vi.fn(),
+											removeItem: vi.fn(),
+											removeAll: vi.fn(),
+										},
+									},
+								},
+							},
 						},
 						passport,
 					);

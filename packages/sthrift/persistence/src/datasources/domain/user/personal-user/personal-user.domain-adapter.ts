@@ -1,6 +1,8 @@
 import { Domain } from '@sthrift/domain';
 import type { Models } from '@sthrift/data-sources-mongoose-models';
 import { MongooseSeedwork } from '@cellix/mongoose-seedwork';
+import type { DomainSeedwork } from '@cellix/domain-seedwork';
+
 import { PersonalUserRoleDomainAdapter } from '../../role/personal-user-role/personal-user-role.domain-adapter.ts';
 export class PersonalUserConverter extends MongooseSeedwork.MongoTypeConverter<
 	Models.User.PersonalUser,
@@ -20,6 +22,8 @@ export class PersonalUserDomainAdapter
 	extends MongooseSeedwork.MongooseDomainAdapter<Models.User.PersonalUser>
 	implements Domain.Contexts.User.PersonalUser.PersonalUserProps
 {
+	// In PersonalUserDomainAdapter
+
 	get userType() {
 		return this.doc.userType;
 	}
@@ -179,12 +183,6 @@ export class PersonalUserAccountProfileBillingDomainAdapter
 		this.props = props;
 	}
 	//Primitive Field Getters and Setters
-	get subscriptionId(): string | null {
-		return this.props.subscriptionId;
-	}
-	set subscriptionId(value: string) {
-		this.props.subscriptionId = value;
-	}
 	get cybersourceCustomerId(): string | null {
 		return this.props.cybersourceCustomerId;
 	}
@@ -192,25 +190,62 @@ export class PersonalUserAccountProfileBillingDomainAdapter
 		this.props.cybersourceCustomerId = value;
 	}
 
-	get paymentState(): string {
-		return this.props.paymentState;
-	}
-	set paymentState(value: string) {
-		this.props.paymentState = value;
+	// Nested Path Getters
+
+	get subscription() {
+		if (!this.props.subscription) {
+			this.props.set('subscription', {});
+		}
+		return new PersonalUserAccountProfileBillingSubscriptionDomainAdapter(
+			this.props.subscription,
+		);
 	}
 
-	get lastTransactionId(): string | null {
-		return this.props.lastTransactionId;
+	get transactions(): DomainSeedwork.PropArray<Domain.Contexts.User.PersonalUser.PersonalUserAccountProfileBillingTransactionsEntityReference> {
+		return new MongooseSeedwork.MongoosePropArray(
+			this.props.transactions,
+			PersonalUserAccountProfileBillingTransactionsDomainAdapter,
+		);
 	}
-	set lastTransactionId(value: string) {
-		this.props.lastTransactionId = value;
-	}
+	// Populated Doc Getters and Setters
 
-	get lastPaymentAmount(): number | null {
-		return this.props.lastPaymentAmount;
+	// Document Array Getters
+}
+
+export class PersonalUserAccountProfileBillingSubscriptionDomainAdapter
+	implements
+		Domain.Contexts.User.PersonalUser.PersonalUserAccountProfileBillingSubscriptionProps
+{
+	private readonly props: Models.User.PersonalUserAccountProfileBillingSubscription;
+	constructor(
+		props: Models.User.PersonalUserAccountProfileBillingSubscription,
+	) {
+		this.props = props;
 	}
-	set lastPaymentAmount(value: number) {
-		this.props.lastPaymentAmount = value;
+	//Primitive Field Getters and Setters
+	get subscriptionCode(): string {
+		return this.props.subscriptionCode;
+	}
+	set subscriptionCode(value: string) {
+		this.props.subscriptionCode = value;
+	}
+	get planCode(): string {
+		return this.props.planCode;
+	}
+	set planCode(value: string) {
+		this.props.planCode = value;
+	}
+	get status(): string {
+		return this.props.status;
+	}
+	set status(value: string) {
+		this.props.status = value;
+	}
+	get startDate(): Date {
+		return this.props.startDate;
+	}
+	set startDate(value: Date) {
+		this.props.startDate = value;
 	}
 
 	// Nested Path Getters
@@ -219,6 +254,63 @@ export class PersonalUserAccountProfileBillingDomainAdapter
 
 	// Document Array Getters
 }
+
+export class PersonalUserAccountProfileBillingTransactionsDomainAdapter
+	implements
+		Domain.Contexts.User.PersonalUser.PersonalUserAccountProfileBillingTransactionsProps
+{
+	public readonly doc: Models.User.PersonalUserAccountProfileBillingTransactions;
+	constructor(doc: Models.User.PersonalUserAccountProfileBillingTransactions) {
+		this.doc = doc;
+	}
+	public get id(): string {
+		return this.doc.id?.valueOf() as string;
+	}
+
+	//Primitive Field Getters and Setters
+	get transactionId(): string {
+		return this.doc.transactionId;
+	}
+	set transactionId(value: string) {
+		this.doc.transactionId = value;
+	}
+	get amount(): number {
+		return this.doc.amount;
+	}
+	set amount(value: number) {
+		this.doc.amount = value;
+	}
+	get referenceId(): string {
+		return this.doc.referenceId;
+	}
+	set referenceId(value: string) {
+		this.doc.referenceId = value;
+	}
+	get status(): string {
+		return this.doc.status;
+	}
+	set status(value: string) {
+		this.doc.status = value;
+	}
+	get completedAt(): Date {
+		return this.doc.completedAt;
+	}
+	set completedAt(value: Date) {
+		this.doc.completedAt = value;
+	}
+	get errorMessage(): string | null {
+		return this.doc.errorMessage;
+	}
+	set errorMessage(value: string) {
+		this.doc.errorMessage = value;
+	}
+
+	// Nested Path Getters
+
+	// Populated Doc Getters and Setters
+	// Document Array Getters
+}
+
 export class PersonalUserAccountProfileLocationDomainAdapter
 	implements
 		Domain.Contexts.User.PersonalUser.PersonalUserAccountProfileLocationProps

@@ -17,4 +17,8 @@ export interface ConversationProps extends DomainSeedwork.DomainEntityProps {
 }
 
 export interface ConversationEntityReference
-	extends Readonly<ConversationProps> {}
+	extends Readonly<Omit<ConversationProps, 'sharer' | 'reserver' | 'listing'>> {
+	readonly sharer: PersonalUserEntityReference;
+	readonly reserver: PersonalUserEntityReference;
+	readonly listing: ItemListingEntityReference;
+}
