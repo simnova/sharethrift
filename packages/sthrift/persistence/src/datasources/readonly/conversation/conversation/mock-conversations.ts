@@ -173,6 +173,20 @@ export const getMockConversations =
                             content: 'Hello, is the bike still available?',
                             createdAt: new Date('2025-08-08T10:05:00Z'),
                         },
+                        {
+                            id: '64f7a9c2d1e5b97f3c9d0c10',
+                            twilioMessageSid: '64f7a9c2d1e5b97f3c9d0c03',
+                            authorId: new ObjectId(currentUser.id),
+                            content: 'Yes, it is! When would you like to pick it up?',
+                            createdAt: new Date('2025-08-08T11:00:00Z'),
+                        },
+                        {
+                            id: '64f7a9c2d1e5b97f3c9d0c11',
+                            twilioMessageSid: '64f7a9c2d1e5b97f3c9d0c04',
+                            authorId: new ObjectId(alice.id),
+                            content: 'I can come by this Saturday morning.',
+                            createdAt: new Date('2025-08-08T11:30:00Z'),
+                        }
                     ],
 					createdAt: new Date('2025-08-08T10:00:00Z'),
 					updatedAt: new Date('2025-08-08T12:00:00Z'),
@@ -188,6 +202,20 @@ export const getMockConversations =
                             content: 'Hello, is the bike still available?',
                             createdAt: new Date('2025-08-08T10:05:00Z'),
                         },
+                        {
+                            id: '64f7a9c2d1e5b97f3c9d0c10',
+                            twilioMessageSid: '64f7a9c2d1e5b97f3c9d0c03',
+                            authorId: new ObjectId(currentUser.id),
+                            content: 'Yes, it is! When would you like to pick it up?',
+                            createdAt: new Date('2025-08-08T11:00:00Z'),
+                        },
+                        {
+                            id: '64f7a9c2d1e5b97f3c9d0c11',
+                            twilioMessageSid: '64f7a9c2d1e5b97f3c9d0c04',
+                            authorId: new ObjectId(alice.id),
+                            content: 'I can come by this Saturday morning.',
+                            createdAt: new Date('2025-08-08T11:30:00Z'),
+                        }
                     ]),
 				},
 				{

@@ -41,7 +41,7 @@ export const Default: Story = {
 		handleSendMessage: () => {
 			console.log('handle send message');
 		},
-		messagesEndRef: { current: null },
+		messagesEndRef: null,
 		currentUserId: 'user123',
 		contentContainerStyle: { paddingLeft: 24 },
 	},

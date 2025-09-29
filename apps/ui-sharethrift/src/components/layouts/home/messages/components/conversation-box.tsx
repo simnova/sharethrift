@@ -1,66 +1,20 @@
 import type { Conversation } from "../../../../../generated.tsx";
 import { ListingBanner } from "./listing-banner.tsx";
-
-// const mockConversations = {
-//   "1": [
-//     {
-//       id: "m1",
-//       twilioMessageSid: "SM1",
-//       conversationId: "1",
-//       authorId: "user123",
-//       content: "Hey Alice, is the bike still available?",
-//       createdAt: "2025-08-08T12:01:00Z",
-//     },
-//     {
-//       id: "m2",
-//       twilioMessageSid: "SM2",
-//       conversationId: "1",
-//       authorId: "Alice",
-//       content: "Yes, it is! Do you want to see it?",
-//       createdAt: "2025-08-08T12:02:00Z",
-//     },
-//   ],
-//   "2": [
-//     {
-//       id: "m3",
-//       twilioMessageSid: "SM3",
-//       conversationId: "2",
-//       authorId: "user123",
-//       content: "Hi Bob, is the camera in good condition?",
-//       createdAt: "2025-08-08T11:31:00Z",
-//     },
-//     {
-//       id: "m4",
-//       twilioMessageSid: "SM4",
-//       conversationId: "2",
-//       authorId: "Bob",
-//       content: "Absolutely, barely used.",
-//       createdAt: "2025-08-08T11:32:00Z",
-//     },
-//   ],
-//   "3": [
-//     {
-//       id: "m5",
-//       twilioMessageSid: "SM5",
-//       conversationId: "3",
-//       authorId: "Carol",
-//       content: "Tent is available for this weekend.",
-//       createdAt: "2025-08-08T10:46:00Z",
-//     },
-//   ],
-// };
+import { MessageThread } from "./index.ts";
 
 interface ConversationBoxProps {
   data: Conversation;
 }
 
 export function ConversationBox({ data }: ConversationBoxProps) {
-  console.log("ConversationBox data------>:", data);
+
+  const currentUserId = data?.sharer?.id;
+
 
   return (
     <>
       {(() => {
-        const owner = data?.sharer
+        const owner = data?.sharer;
         return true ? (
           <div style={{ marginBottom: 24 }}>
             <ListingBanner owner={owner} />
@@ -75,19 +29,19 @@ export function ConversationBox({ data }: ConversationBoxProps) {
           flexDirection: "column",
         }}
       >
-        {/* <MessageThread
-          conversationId={selectedConversationId}
-          messages={messagesMap[selectedConversationId] || []}
+        <MessageThread
+          conversationId={data.id}
+          messages={data.messages || []}
           loading={false}
           error={null}
-          messageText={messageText}
-          setMessageText={setMessageText}
-          sendingMessage={sendingMessage}
-          handleSendMessage={handleSendMessage}
-          messagesEndRef={messagesEndRef}
+          messageText={"messageText"}
+          setMessageText={() => {}}
+          sendingMessage={false}
+          handleSendMessage={() => {}}
+          messagesEndRef={null}
           currentUserId={currentUserId}
           contentContainerStyle={{ paddingLeft: 24 }}
-        /> */}
+        />
       </div>
     </>
   );
