@@ -1,5 +1,5 @@
-import { MockMessagesDemo } from '../components/mock-messages-demo.tsx';
+import { Messages } from '../components/messages.tsx';
 
 export default function MessagesMain() {
-	return <MockMessagesDemo />;
+	return <Messages />;
 }

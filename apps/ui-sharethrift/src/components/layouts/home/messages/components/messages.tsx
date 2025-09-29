@@ -5,7 +5,7 @@ import { ConversationListContainer } from "./conversation-list.container.tsx";
 import { ConversationBoxContainer } from "./conversation-box.container.tsx";
 
 
-export function MockMessagesDemo() {
+export function Messages() {
   const [selectedConversationId, setSelectedConversationId] = useState<
     string | null
   >(null);

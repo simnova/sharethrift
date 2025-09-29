@@ -1,12 +1,12 @@
 import type { Meta, StoryObj } from '@storybook/react';
-import { MockMessagesDemo } from '../components/mock-messages-demo.tsx';
+import { Messages } from '../components/messages.tsx';
 
-const meta: Meta<typeof MockMessagesDemo> = {
+const meta: Meta<typeof Messages> = {
 	title: 'Pages/MessagesPage',
-	component: MockMessagesDemo,
+	component: Messages,
 };
 export default meta;
-type Story = StoryObj<typeof MockMessagesDemo>;
+type Story = StoryObj<typeof Messages>;
 
 export const Default: Story = {
 	args: {},
