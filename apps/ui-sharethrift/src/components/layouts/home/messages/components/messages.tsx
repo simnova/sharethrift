@@ -52,6 +52,7 @@ export function Messages() {
           <div style={{ width: "100%", height: "100%" }}>
             <ConversationListContainer
               onConversationSelect={handleConversationSelect}
+              selectedConversationId={selectedConversationId}
             />
           </div>
         ) : (
@@ -129,6 +130,7 @@ export function Messages() {
       >
         <ConversationListContainer
           onConversationSelect={handleConversationSelect}
+          selectedConversationId={selectedConversationId}
         />
       </div>
       {/* Message Thread with Listing Banner */}

@@ -9,10 +9,12 @@ import { useEffect } from "react";
 
 interface ConversationListContainerProps {
   onConversationSelect: (conversationId: string) => void;
+  selectedConversationId: string | null;
 }
 
 export function ConversationListContainer({
   onConversationSelect,
+  selectedConversationId,
 }: ConversationListContainerProps) {
   // TODO: Replace with actual authenticated user ID
   // This should come from authentication context
@@ -42,7 +44,7 @@ export function ConversationListContainer({
       hasDataComponent={
         <ConversationList
           onConversationSelect={onConversationSelect}
-          selectedConversationId={null}
+          selectedConversationId={selectedConversationId}
           conversations={
             currentUserConversationsData?.conversationsByUser as Conversation[]
           }
