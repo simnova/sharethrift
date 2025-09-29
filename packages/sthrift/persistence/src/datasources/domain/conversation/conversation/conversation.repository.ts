@@ -78,6 +78,7 @@ export class ConversationRepository
 				sharer,
 				reserver,
 				listing,
+				[], // Empty messages array for new conversations
 				this.passport,
 			),
 		);
