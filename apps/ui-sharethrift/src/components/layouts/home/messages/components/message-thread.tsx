@@ -8,6 +8,7 @@ import {
   message as antdMessage,
 } from "antd";
 import { SendOutlined } from "@ant-design/icons";
+import { useRef } from "react";
 
 interface Message {
   id: string;
@@ -22,12 +23,10 @@ interface MessageThreadProps {
   messages: Message[];
   loading: boolean;
   error?: unknown;
+  sendingMessage: boolean;
   messageText: string;
   setMessageText: (text: string) => void;
-  sendingMessage: boolean;
   handleSendMessage: (e: React.FormEvent) => void;
-  // messagesEndRef: React.RefObject<HTMLDivElement | null>; todo
-  messagesEndRef: null;
   currentUserId: string;
   contentContainerStyle?: React.CSSProperties;
 }
@@ -36,16 +35,14 @@ export function MessageThread({
   messages,
   loading,
   error,
+  sendingMessage,
   messageText,
   setMessageText,
-  sendingMessage,
   handleSendMessage,
-  messagesEndRef,
   currentUserId,
   contentContainerStyle,
 }: MessageThreadProps) {
-  console.log("MessageThread messages------>:", messages);
-  //   const messagesEndRef = useRef<HTMLDivElement | null>(null);
+  const messagesEndRef = useRef<HTMLDivElement | null>(null);
 
   if (loading) {
     return (

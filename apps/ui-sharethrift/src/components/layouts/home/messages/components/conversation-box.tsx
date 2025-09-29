@@ -1,15 +1,21 @@
 import type { Conversation } from "../../../../../generated.tsx";
 import { ListingBanner } from "./listing-banner.tsx";
 import { MessageThread } from "./index.ts";
+import { useState } from "react";
 
 interface ConversationBoxProps {
   data: Conversation;
 }
 
 export function ConversationBox({ data }: ConversationBoxProps) {
-
   const currentUserId = data?.sharer?.id;
 
+  const [messageText, setMessageText] = useState("");
+
+  const handleSendMessage = (e: React.FormEvent) => {
+    e.preventDefault();
+    console.log("Send message logic to be implemented", messageText);
+  };
 
   return (
     <>
@@ -34,11 +40,10 @@ export function ConversationBox({ data }: ConversationBoxProps) {
           messages={data.messages || []}
           loading={false}
           error={null}
-          messageText={"messageText"}
-          setMessageText={() => {}}
           sendingMessage={false}
-          handleSendMessage={() => {}}
-          messagesEndRef={null}
+          messageText={messageText}
+          setMessageText={setMessageText}
+          handleSendMessage={handleSendMessage}
           currentUserId={currentUserId}
           contentContainerStyle={{ paddingLeft: 24 }}
         />
