@@ -7,8 +7,8 @@ interface ConversationBoxProps {
   data: Conversation;
 }
 
-export function ConversationBox({ data }: ConversationBoxProps) {
-  const currentUserId = data?.sharer?.id;
+export const ConversationBox: React.FC<ConversationBoxProps> = (props) => {
+  const currentUserId = props?.data?.sharer?.id;
 
   const [messageText, setMessageText] = useState("");
 
@@ -20,7 +20,7 @@ export function ConversationBox({ data }: ConversationBoxProps) {
   return (
     <>
       {(() => {
-        const owner = data?.sharer;
+        const owner = props.data?.sharer;
         return true ? (
           <div style={{ marginBottom: 24 }}>
             <ListingBanner owner={owner} />
@@ -36,8 +36,8 @@ export function ConversationBox({ data }: ConversationBoxProps) {
         }}
       >
         <MessageThread
-          conversationId={data.id}
-          messages={data.messages || []}
+          conversationId={props.data.id}
+          messages={props.data.messages || []}
           loading={false}
           error={null}
           sendingMessage={false}
@@ -45,9 +45,8 @@ export function ConversationBox({ data }: ConversationBoxProps) {
           setMessageText={setMessageText}
           handleSendMessage={handleSendMessage}
           currentUserId={currentUserId}
-          contentContainerStyle={{ paddingLeft: 24 }}
         />
       </div>
     </>
   );
-}
+};

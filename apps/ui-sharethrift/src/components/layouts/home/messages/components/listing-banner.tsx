@@ -9,7 +9,7 @@ export interface ListingBannerProps {
   owner: PersonalUser;
 }
 
-export function ListingBanner({ owner }: ListingBannerProps) {
+export const ListingBanner: React.FC<ListingBannerProps> = (props) => {
   const period = "1 Month"; //todo
   const status = "Request Submitted"; //todo
   const imageUrl = imgRectangle26; //todo
@@ -59,7 +59,7 @@ export function ListingBanner({ owner }: ListingBannerProps) {
                   textAlign: "left",
                 }}
               >
-                {owner?.account?.profile?.firstName || "Unknown"}'s Listing
+                {props.owner?.account?.profile?.firstName || "Unknown"}'s Listing
               </Typography.Title>
               <div
                 className="listingBannerOwnerRow"
@@ -79,7 +79,7 @@ export function ListingBanner({ owner }: ListingBannerProps) {
                     lineHeight: "20px",
                   }}
                 >
-                  {owner?.account?.profile?.firstName || "Unknown"}
+                  {props.owner?.account?.profile?.firstName || "Unknown"}
                 </span>
                 <Tag className="sharerIcon">
                   <SwapOutlined />

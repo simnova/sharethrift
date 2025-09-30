@@ -28,23 +28,12 @@ interface MessageThreadProps {
   setMessageText: (text: string) => void;
   handleSendMessage: (e: React.FormEvent) => void;
   currentUserId: string;
-  contentContainerStyle?: React.CSSProperties;
 }
 
-export function MessageThread({
-  messages,
-  loading,
-  error,
-  sendingMessage,
-  messageText,
-  setMessageText,
-  handleSendMessage,
-  currentUserId,
-  contentContainerStyle,
-}: MessageThreadProps) {
+export const MessageThread: React.FC<MessageThreadProps> = (props) => {
   const messagesEndRef = useRef<HTMLDivElement | null>(null);
 
-  if (loading) {
+  if (props.loading) {
     return (
       <Spin
         style={{
@@ -56,7 +45,7 @@ export function MessageThread({
       />
     );
   }
-  if (error) {
+  if (props.error) {
     antdMessage.error("Error loading messages");
     return (
       <Empty
@@ -90,11 +79,11 @@ export function MessageThread({
       >
         <div
           style={{
-            ...contentContainerStyle,
+            paddingLeft: 24,
             fontFamily: "var(--Urbanist, Arial, sans-serif)",
           }}
         >
-          {messages.length === 0 ? (
+          {props.messages.length === 0 ? (
             <Empty
               description="No messages yet"
               style={{
@@ -104,16 +93,16 @@ export function MessageThread({
             />
           ) : (
             <List
-              dataSource={messages}
+              dataSource={props.messages}
               renderItem={(message, index) => (
                 <MessageBubble
                   key={message.id}
                   message={message}
-                  isOwn={message.authorId === currentUserId}
+                  isOwn={message.authorId === props.currentUserId}
                   showAvatar={
                     index === 0 ||
                     (index > 0 &&
-                      messages[index - 1]?.authorId !== message.authorId)
+                      props.messages[index - 1]?.authorId !== message.authorId)
                   }
                 />
               )}
@@ -132,7 +121,7 @@ export function MessageThread({
         }}
       >
         <form
-          onSubmit={handleSendMessage}
+          onSubmit={props.handleSendMessage}
           style={{
             display: "flex",
             gap: 8,
@@ -140,13 +129,13 @@ export function MessageThread({
           }}
         >
           <Input
-            value={messageText}
+            value={props.messageText}
             onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
-              setMessageText(e.target.value)
+              props.setMessageText(e.target.value)
             }
             placeholder="Type a message..."
-            disabled={sendingMessage}
-            onPressEnter={handleSendMessage}
+            disabled={props.sendingMessage}
+            onPressEnter={props.handleSendMessage}
             style={{
               flex: 1,
               fontFamily: "var(--Urbanist, Arial, sans-serif)",
@@ -157,8 +146,8 @@ export function MessageThread({
             type="primary"
             htmlType="submit"
             icon={<SendOutlined />}
-            loading={sendingMessage}
-            disabled={!messageText.trim()}
+            loading={props.sendingMessage}
+            disabled={!props.messageText.trim()}
             style={{ fontFamily: "var(--Urbanist, Arial, sans-serif)" }}
           >
             Send
@@ -167,7 +156,7 @@ export function MessageThread({
       </div>
     </div>
   );
-}
+};
 
 interface MessageBubbleProps {
   message: Message;

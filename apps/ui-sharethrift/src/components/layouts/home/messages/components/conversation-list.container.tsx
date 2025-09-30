@@ -12,10 +12,7 @@ interface ConversationListContainerProps {
   selectedConversationId: string | null;
 }
 
-export function ConversationListContainer({
-  onConversationSelect,
-  selectedConversationId,
-}: ConversationListContainerProps) {
+export const ConversationListContainer: React.FC<ConversationListContainerProps> = (props) => {
   // TODO: Replace with actual authenticated user ID
   // This should come from authentication context
   const currentUserId = "507f1f77bcf86cd799439099";
@@ -32,14 +29,14 @@ export function ConversationListContainer({
 
   useEffect(() => {
     if (
-      !selectedConversationId &&
+      !props.selectedConversationId &&
       currentUserConversationsData?.conversationsByUser?.[0]?.id
     ) {
-      onConversationSelect(
+      props.onConversationSelect(
         currentUserConversationsData.conversationsByUser[0].id
       );
     }
-  }, [currentUserConversationsData, selectedConversationId]);
+  }, [currentUserConversationsData, props.selectedConversationId]);
 
   return (
     <ComponentQueryLoader
@@ -48,8 +45,8 @@ export function ConversationListContainer({
       error={conversationsError}
       hasDataComponent={
         <ConversationList
-          onConversationSelect={onConversationSelect}
-          selectedConversationId={selectedConversationId}
+          onConversationSelect={props.onConversationSelect}
+          selectedConversationId={props.selectedConversationId}
           conversations={
             currentUserConversationsData?.conversationsByUser as Conversation[]
           }

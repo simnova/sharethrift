@@ -10,16 +10,14 @@ interface ConversationBoxContainerProps {
   selectedConversationId: string;
 }
 
-export function ConversationBoxContainer({
-  selectedConversationId,
-}: ConversationBoxContainerProps) {
+export const ConversationBoxContainer: React.FC<ConversationBoxContainerProps> = (props) => {
   const {
     data: currentUserConversationsData,
     loading: loadingConversations,
     error: conversationsError,
   } = useQuery(ConversationBoxContainerConversationDocument, {
     variables: {
-      conversationId: selectedConversationId,
+      conversationId: props.selectedConversationId,
     },
   });
 
@@ -29,8 +27,10 @@ export function ConversationBoxContainer({
       hasData={currentUserConversationsData}
       error={conversationsError}
       hasDataComponent={
-        <ConversationBox data={currentUserConversationsData?.conversation as Conversation} />
+        <ConversationBox
+          data={currentUserConversationsData?.conversation as Conversation}
+        />
       }
     />
   );
-}
+};

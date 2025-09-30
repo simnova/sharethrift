@@ -4,8 +4,7 @@ import { ArrowLeftOutlined } from "@ant-design/icons";
 import { ConversationListContainer } from "./conversation-list.container.tsx";
 import { ConversationBoxContainer } from "./conversation-box.container.tsx";
 
-
-export function Messages() {
+export const Messages = () => {
   const [selectedConversationId, setSelectedConversationId] = useState<
     string | null
   >(null);
@@ -23,7 +22,7 @@ export function Messages() {
 
   useEffect(() => {
     if (!isMobile) {
-        setShowListOnMobile(true);
+      setShowListOnMobile(true);
     }
   }, [isMobile]);
 
@@ -31,8 +30,8 @@ export function Messages() {
     setSelectedConversationId(id);
 
     if (isMobile) {
-        setShowListOnMobile(false)
-    };
+      setShowListOnMobile(false);
+    }
   };
 
   // Responsive layout
@@ -155,4 +154,4 @@ export function Messages() {
       </div>
     </div>
   );
-}
+};

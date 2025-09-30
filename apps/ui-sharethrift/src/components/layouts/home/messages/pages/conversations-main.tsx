@@ -1,6 +1,5 @@
-import { Messages } from '../components/messages.tsx';
+import { Messages } from "../components/messages.tsx";
 
-export default function ConversationsMain() {
-	return <Messages />;
-}
-
+export const ConversationsMain: React.FC = () => {
+  return <Messages />;
+};

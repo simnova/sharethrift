@@ -10,15 +10,16 @@ interface ConversationListProps {
   error?: unknown;
 }
 
-export function ConversationList({
-  onConversationSelect,
-  selectedConversationId,
-  conversations,
-  loading,
-  error,
-}: ConversationListProps) {
-
+export const ConversationList: React.FC<ConversationListProps> = (props) => {
     
+  const {
+    onConversationSelect,
+    selectedConversationId,
+    conversations,
+    loading,
+    error,
+  } = props;
+
   if (loading) {
     return (
       <Spin
@@ -86,7 +87,7 @@ export function ConversationList({
       />
     </div>
   );
-}
+};
 
 interface ConversationItemProps {
   conversation: Conversation;
@@ -99,7 +100,6 @@ function ConversationItem({
   isSelected,
   onClick,
 }: ConversationItemProps) {
-
   const otherParticipant =
     conversation?.sharer?.account?.profile?.firstName ||
     conversation?.reserver?.account?.profile?.firstName ||
