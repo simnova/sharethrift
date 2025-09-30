@@ -56,7 +56,7 @@ export class PersonalUserDomainAdapter
 				},
 			},
 			loadRole: this.loadRole.bind(this),
-			schemaVersion: this.doc.schemaVersion ?? 1,
+			schemaVersion: this.doc.schemaVersion,
 			createdAt: this.doc.createdAt,
 			updatedAt: this.doc.updatedAt,
 		};
