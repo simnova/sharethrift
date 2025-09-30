@@ -8,9 +8,9 @@ interface ConversationBoxProps {
 }
 
 export const ConversationBox: React.FC<ConversationBoxProps> = (props) => {
-  const currentUserId = props?.data?.sharer?.id;
-
   const [messageText, setMessageText] = useState("");
+
+  const currentUserId = props?.data?.sharer?.id;
 
   const handleSendMessage = (e: React.FormEvent) => {
     e.preventDefault();
@@ -19,14 +19,10 @@ export const ConversationBox: React.FC<ConversationBoxProps> = (props) => {
 
   return (
     <>
-      {(() => {
-        const owner = props.data?.sharer;
-        return true ? (
-          <div style={{ marginBottom: 24 }}>
-            <ListingBanner owner={owner} />
-          </div>
-        ) : null;
-      })()}
+      <div style={{ marginBottom: 24 }}>
+        <ListingBanner owner={props.data?.sharer} />
+      </div>
+
       <div
         style={{
           flex: 1,
