@@ -24,22 +24,22 @@ export class PersonalUserAccountProfileLocation
 	}
 	// Primitive Field Getters
 	get address1() {
-		return this.props?.address1;
+		return this.props.address1;
 	}
 	get address2(): string | null {
-		return this.props?.address2;
+		return this.props.address2;
 	}
 	get city() {
-		return this.props?.city;
+		return this.props.city;
 	}
 	get state() {
-		return this.props?.state;
+		return this.props.state;
 	}
 	get country() {
-		return this.props?.country;
+		return this.props.country;
 	}
 	get zipCode() {
-		return this.props?.zipCode;
+		return this.props.zipCode;
 	}
 
 	private validateVisa(): void {

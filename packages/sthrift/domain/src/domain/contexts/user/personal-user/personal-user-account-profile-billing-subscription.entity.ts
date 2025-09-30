@@ -2,7 +2,7 @@ import type { DomainSeedwork } from '@cellix/domain-seedwork';
 
 export interface PersonalUserAccountProfileBillingSubscriptionProps
 	extends DomainSeedwork.ValueObjectProps {
-	subscriptionCode: string;
+	subscriptionId: string;
 	planCode: string;
 	status: string;
 	startDate: Date;

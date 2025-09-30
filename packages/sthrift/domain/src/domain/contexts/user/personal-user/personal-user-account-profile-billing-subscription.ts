@@ -23,8 +23,8 @@ export class PersonalUserAccountProfileBillingSubscription
 		this.root = root;
 	}
 
-	get subscriptionCode(): string {
-		return this.props.subscriptionCode;
+	get subscriptionId(): string {
+		return this.props.subscriptionId;
 	}
 	get planCode(): string {
 		return this.props.planCode;
@@ -47,9 +47,9 @@ export class PersonalUserAccountProfileBillingSubscription
 		}
 	}
 
-	set subscriptionCode(value: string) {
+	set subscriptionId(value: string) {
 		this.validateVisa();
-		this.props.subscriptionCode = value;
+		this.props.subscriptionId = value;
 	}
 	set planCode(value: string) {
 		this.validateVisa();

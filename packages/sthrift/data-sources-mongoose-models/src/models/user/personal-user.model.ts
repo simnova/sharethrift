@@ -46,7 +46,7 @@ export const SubscriptionStatus = {
 };
 export interface PersonalUserAccountProfileBillingSubscription
 	extends MongooseSeedwork.NestedPath {
-	subscriptionCode: string;
+	subscriptionId: string;
 	planCode: string;
 	status: string;
 	startDate: Date;
@@ -71,7 +71,7 @@ export interface PersonalUserAccountProfileBilling
 
 export const PersonalUserAccountProfileBillingSubscriptionType: SchemaDefinition<PersonalUserAccountProfileBillingSubscription> =
 	{
-		subscriptionCode: { type: String, required: true },
+		subscriptionId: { type: String, required: true },
 		planCode: { type: String, required: true },
 		status: {
 			type: String,

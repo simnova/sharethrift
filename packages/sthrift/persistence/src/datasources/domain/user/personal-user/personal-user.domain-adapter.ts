@@ -191,19 +191,18 @@ export class PersonalUserAccountProfileDomainAdapter
 
 	// Nested Path Getters
 	get location() {
-		// commented out for it is causing runtime error: this.props.set is not a function
-		// if (!this.props.location) {
-		// 	this.props.set('location', {});
-		// }
+		if (!this.props.location) {
+			this.props.location =
+				{} as Models.User.PersonalUserAccountProfileLocation;
+		}
 		return new PersonalUserAccountProfileLocationDomainAdapter(
 			this.props.location,
 		);
 	}
 	get billing() {
-		// commented out for it is causing runtime error: this.props.set is not a function
-		// if (!this.props.billing) {
-		// 	this.props.set('billing', {});
-		// }
+		if (!this.props.billing) {
+			this.props.billing = {} as Models.User.PersonalUserAccountProfileBilling;
+		}
 		return new PersonalUserAccountProfileBillingDomainAdapter(
 			this.props.billing,
 		);
@@ -223,7 +222,7 @@ export class PersonalUserAccountProfileBillingDomainAdapter
 	}
 	//Primitive Field Getters and Setters
 	get cybersourceCustomerId(): string | null {
-		return this.props.cybersourceCustomerId;
+		return this.props?.cybersourceCustomerId;
 	}
 	set cybersourceCustomerId(value: string) {
 		this.props.cybersourceCustomerId = value;
@@ -233,7 +232,8 @@ export class PersonalUserAccountProfileBillingDomainAdapter
 
 	get subscription() {
 		if (!this.props.subscription) {
-			this.props.set('subscription', {});
+			this.props.subscription =
+				{} as Models.User.PersonalUserAccountProfileBillingSubscription;
 		}
 		return new PersonalUserAccountProfileBillingSubscriptionDomainAdapter(
 			this.props.subscription,
@@ -262,11 +262,11 @@ export class PersonalUserAccountProfileBillingSubscriptionDomainAdapter
 		this.props = props;
 	}
 	//Primitive Field Getters and Setters
-	get subscriptionCode(): string {
-		return this.props.subscriptionCode;
+	get subscriptionId(): string {
+		return this.props.subscriptionId;
 	}
-	set subscriptionCode(value: string) {
-		this.props.subscriptionCode = value;
+	set subscriptionId(value: string) {
+		this.props.subscriptionId = value;
 	}
 	get planCode(): string {
 		return this.props.planCode;

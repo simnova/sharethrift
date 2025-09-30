@@ -100,7 +100,7 @@ export const getMockItemListings =
 							planCode: 'basic',
 							status: '',
 							startDate: new Date('2020-01-01T00:00:00Z'),
-							subscriptionCode: 'sub_123',
+							subscriptionId: 'sub_123',
 						},
 						transactions: [
 							{
