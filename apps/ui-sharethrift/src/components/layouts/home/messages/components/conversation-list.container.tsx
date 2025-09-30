@@ -36,7 +36,7 @@ export const ConversationListContainer: React.FC<ConversationListContainerProps>
         currentUserConversationsData.conversationsByUser[0].id
       );
     }
-  }, [currentUserConversationsData, props.selectedConversationId]);
+  }, [currentUserConversationsData, props.selectedConversationId, props.onConversationSelect]);
 
   return (
     <ComponentQueryLoader
