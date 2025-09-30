@@ -22,6 +22,6 @@ export interface PersonalUserAccountProfileBillingEntityReference
 			'subscription' | 'transactions'
 		>
 	> {
-	subscription: PersonalUserAccountProfileBillingSubscriptionEntityReference;
-	transactions: ReadonlyArray<PersonalUserAccountProfileBillingTransactionsEntityReference>;
+	readonly subscription: PersonalUserAccountProfileBillingSubscriptionEntityReference;
+	readonly transactions: ReadonlyArray<PersonalUserAccountProfileBillingTransactionsEntityReference>;
 }

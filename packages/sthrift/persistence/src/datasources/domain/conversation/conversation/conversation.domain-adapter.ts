@@ -21,35 +21,40 @@ export class ConversationDomainAdapter
 	extends MongooseSeedwork.MongooseDomainAdapter<Models.Conversation.Conversation>
 	implements Domain.Contexts.Conversation.Conversation.ConversationProps
 {
-	get sharer() {
+	get sharer(): Readonly<Domain.Contexts.User.PersonalUser.PersonalUserEntityReference> {
 		if (!this.doc.sharer) {
 			throw new Error('sharer is not populated');
 		}
 		if (this.doc.sharer instanceof MongooseSeedwork.ObjectId) {
 			throw new Error('sharer is not populated or is not of the correct type');
 		}
-		return new PersonalUserDomainAdapter(
+		// Assuming the domain adapter exposes an entityReference property or method
+		const adapter = new PersonalUserDomainAdapter(
 			this.doc.sharer as Models.User.PersonalUser,
 		);
+		return adapter.entityReference;
 	}
 
-	async loadSharer(): Promise<PersonalUserDomainAdapter> {
+	async loadSharer(): Promise<
+		Readonly<Domain.Contexts.User.PersonalUser.PersonalUserEntityReference>
+	> {
 		if (!this.doc.sharer) {
 			throw new Error('sharer is not populated');
 		}
 		if (this.doc.sharer instanceof MongooseSeedwork.ObjectId) {
 			await this.doc.populate('sharer');
 		}
-		return new PersonalUserDomainAdapter(
+		const adapter = new PersonalUserDomainAdapter(
 			this.doc.sharer as Models.User.PersonalUser,
 		);
+		return adapter.entityReference;
 	}
 
 	set sharer(user: PersonalUserDomainAdapter) {
 		this.doc.set('sharer', user.doc);
 	}
 
-	get reserver(): PersonalUserDomainAdapter {
+	get reserver(): Readonly<Domain.Contexts.User.PersonalUser.PersonalUserEntityReference> {
 		if (!this.doc.reserver) {
 			throw new Error('reserver is not populated');
 		}
@@ -58,21 +63,25 @@ export class ConversationDomainAdapter
 				'reserver is not populated or is not of the correct type',
 			);
 		}
-		return new PersonalUserDomainAdapter(
+		const adapter = new PersonalUserDomainAdapter(
 			this.doc.reserver as Models.User.PersonalUser,
 		);
+		return adapter.entityReference;
 	}
 
-	async loadReserver(): Promise<PersonalUserDomainAdapter> {
+	async loadReserver(): Promise<
+		Readonly<Domain.Contexts.User.PersonalUser.PersonalUserEntityReference>
+	> {
 		if (!this.doc.reserver) {
 			throw new Error('reserver is not populated');
 		}
 		if (this.doc.reserver instanceof MongooseSeedwork.ObjectId) {
 			await this.doc.populate('reserver');
 		}
-		return new PersonalUserDomainAdapter(
+		const adapter = new PersonalUserDomainAdapter(
 			this.doc.reserver as Models.User.PersonalUser,
 		);
+		return adapter.entityReference;
 	}
 
 	set reserver(user: PersonalUserDomainAdapter) {

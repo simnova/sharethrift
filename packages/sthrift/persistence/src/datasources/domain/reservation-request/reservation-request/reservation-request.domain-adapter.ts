@@ -100,9 +100,10 @@ export class ReservationRequestDomainAdapter
 				'reserver is not populated or is not of the correct type',
 			);
 		}
-		return new PersonalUserDomainAdapter(
+		const adapter = new PersonalUserDomainAdapter(
 			this.doc.reserver as Models.User.PersonalUser,
 		);
+		return adapter.entityReference as Domain.Contexts.User.PersonalUser.PersonalUserEntityReference;
 	}
 
 	async loadReserver(): Promise<Domain.Contexts.User.PersonalUser.PersonalUserEntityReference> {
@@ -112,9 +113,10 @@ export class ReservationRequestDomainAdapter
 		if (this.doc.reserver instanceof MongooseSeedwork.ObjectId) {
 			await this.doc.populate('reserver');
 		}
-		return new PersonalUserDomainAdapter(
+		const adapter = new PersonalUserDomainAdapter(
 			this.doc.reserver as Models.User.PersonalUser,
 		);
+		return adapter.entityReference as Domain.Contexts.User.PersonalUser.PersonalUserEntityReference;
 	}
 
 	set reserver(user: Domain.Contexts.User.PersonalUser.PersonalUserEntityReference) {

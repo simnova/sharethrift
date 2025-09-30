@@ -22,8 +22,45 @@ export class PersonalUserDomainAdapter
 	extends MongooseSeedwork.MongooseDomainAdapter<Models.User.PersonalUser>
 	implements Domain.Contexts.User.PersonalUser.PersonalUserProps
 {
-	// In PersonalUserDomainAdapter
-
+	public get entityReference(): Domain.Contexts.User.PersonalUser.PersonalUserEntityReference {
+		return {
+			id: this.id,
+			userType: this.userType,
+			isBlocked: this.isBlocked,
+			hasCompletedOnboarding: this.hasCompletedOnboarding,
+			role: this.role,
+			account: {
+				accountType: this.account.accountType,
+				email: this.account.email,
+				username: this.account.username,
+				profile: {
+					firstName: this.account.profile.firstName,
+					lastName: this.account.profile.lastName,
+					location: this.account.profile.location,
+					billing: {
+						cybersourceCustomerId:
+							this.account.profile.billing.cybersourceCustomerId,
+						subscription: this.account.profile.billing.subscription,
+						transactions: this.account.profile.billing.transactions.items.map(
+							(tx) => ({
+								id: tx.id,
+								transactionId: tx.transactionId,
+								amount: tx.amount,
+								referenceId: tx.referenceId,
+								status: tx.status,
+								completedAt: tx.completedAt,
+								errorMessage: tx.errorMessage,
+							}),
+						),
+					},
+				},
+			},
+			loadRole: this.loadRole.bind(this),
+			schemaVersion: this.doc.schemaVersion ?? 1,
+			createdAt: this.doc.createdAt,
+			updatedAt: this.doc.updatedAt,
+		};
+	}
 	get userType() {
 		return this.doc.userType;
 	}
@@ -201,15 +238,15 @@ export class PersonalUserAccountProfileBillingDomainAdapter
 		);
 	}
 
+	// Populated Doc Getters and Setters
+
+	// Document Array Getters
 	get transactions(): DomainSeedwork.PropArray<Domain.Contexts.User.PersonalUser.PersonalUserAccountProfileBillingTransactionsEntityReference> {
 		return new MongooseSeedwork.MongoosePropArray(
 			this.props.transactions,
 			PersonalUserAccountProfileBillingTransactionsDomainAdapter,
 		);
 	}
-	// Populated Doc Getters and Setters
-
-	// Document Array Getters
 }
 
 export class PersonalUserAccountProfileBillingSubscriptionDomainAdapter

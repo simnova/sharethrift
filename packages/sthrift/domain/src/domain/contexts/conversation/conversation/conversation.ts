@@ -51,7 +51,8 @@ export class Conversation<props extends ConversationProps>
 	}
 
 	get sharer(): PersonalUserEntityReference {
-		return this.props.sharer;
+		// return new PersonalUser(this.props.sharer, this.passport);
+		return this.props.sharer; // temporary fix for issue with nested prop array in entity reference
 	}
 
 	async loadSharer(): Promise<PersonalUserEntityReference> {
@@ -78,7 +79,8 @@ export class Conversation<props extends ConversationProps>
 	}
 
 	get reserver(): PersonalUserEntityReference {
-		return this.props.reserver;
+		// return new PersonalUser(this.props.reserver, this.passport);
+		return this.props.reserver; // temporary fix for issue with nested prop array in entity reference
 	}
 
 	async loadReserver(): Promise<PersonalUserEntityReference> {
