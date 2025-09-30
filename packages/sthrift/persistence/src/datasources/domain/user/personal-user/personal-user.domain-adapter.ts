@@ -191,17 +191,19 @@ export class PersonalUserAccountProfileDomainAdapter
 
 	// Nested Path Getters
 	get location() {
-		if (!this.props.location) {
-			this.props.set('location', {});
-		}
+		// commented out for it is causing runtime error: this.props.set is not a function
+		// if (!this.props.location) {
+		// 	this.props.set('location', {});
+		// }
 		return new PersonalUserAccountProfileLocationDomainAdapter(
 			this.props.location,
 		);
 	}
 	get billing() {
-		if (!this.props.billing) {
-			this.props.set('billing', {});
-		}
+		// commented out for it is causing runtime error: this.props.set is not a function
+		// if (!this.props.billing) {
+		// 	this.props.set('billing', {});
+		// }
 		return new PersonalUserAccountProfileBillingDomainAdapter(
 			this.props.billing,
 		);
@@ -357,37 +359,37 @@ export class PersonalUserAccountProfileLocationDomainAdapter
 		this.props = props;
 	} //Primitive Field Getters and Setters
 	get address1() {
-		return this.props.address1;
+		return this.props?.address1;
 	}
 	set address1(value: string) {
 		this.props.address1 = value;
 	}
 	get address2(): string | null {
-		return this.props.address2;
+		return this.props?.address2;
 	}
 	set address2(value: string) {
 		this.props.address2 = value;
 	}
 	get city() {
-		return this.props.city;
+		return this.props?.city;
 	}
 	set city(value: string) {
 		this.props.city = value;
 	}
 	get state() {
-		return this.props.state;
+		return this.props?.state;
 	}
 	set state(value: string) {
 		this.props.state = value;
 	}
 	get country() {
-		return this.props.country;
+		return this.props?.country;
 	}
 	set country(value: string) {
 		this.props.country = value;
 	}
 	get zipCode() {
-		return this.props.zipCode;
+		return this.props?.zipCode;
 	}
 	set zipCode(value: string) {
 		this.props.zipCode = value;
