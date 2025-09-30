@@ -31,10 +31,15 @@ export function ConversationListContainer({
   });
 
   useEffect(() => {
-    onConversationSelect(
-      currentUserConversationsData?.conversationsByUser?.[0]?.id || ""
-    );
-  }, [currentUserConversationsData]);
+    if (
+      !selectedConversationId &&
+      currentUserConversationsData?.conversationsByUser?.[0]?.id
+    ) {
+      onConversationSelect(
+        currentUserConversationsData.conversationsByUser[0].id
+      );
+    }
+  }, [currentUserConversationsData, selectedConversationId]);
 
   return (
     <ComponentQueryLoader
