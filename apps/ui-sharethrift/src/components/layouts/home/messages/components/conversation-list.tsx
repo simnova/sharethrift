@@ -1,4 +1,4 @@
-import { List, Avatar, Spin, Empty, Tag, message as antdMessage } from "antd";
+import { List, Avatar, Empty, Tag } from "antd";
 import { SwapOutlined } from "@ant-design/icons";
 import type { Conversation } from "../../../../../generated.tsx";
 
@@ -6,8 +6,6 @@ interface ConversationListProps {
   onConversationSelect: (conversationId: string) => void;
   selectedConversationId: string | null;
   conversations: Conversation[];
-  loading?: boolean;
-  error?: unknown;
 }
 
 export const ConversationList: React.FC<ConversationListProps> = (props) => {
@@ -15,28 +13,8 @@ export const ConversationList: React.FC<ConversationListProps> = (props) => {
   const {
     onConversationSelect,
     selectedConversationId,
-    conversations,
-    loading,
-    error,
+    conversations
   } = props;
-
-  if (loading) {
-    return (
-      <Spin
-        style={{ width: "100%", marginTop: 32 }}
-        tip="Loading conversations..."
-      />
-    );
-  }
-  if (error) {
-    antdMessage.error("Error loading conversations");
-    return (
-      <Empty
-        description="Failed to load conversations"
-        style={{ marginTop: 32 }}
-      />
-    );
-  }
 
   if (!conversations || conversations.length === 0) {
     return (
