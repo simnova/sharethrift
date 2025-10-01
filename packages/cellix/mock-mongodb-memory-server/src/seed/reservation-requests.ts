@@ -1,9 +1,10 @@
 import type { Models } from '@sthrift/data-sources-mongoose-models';
 import { ObjectId } from 'mongodb';
+import type { Document } from 'mongoose';
 
 type PlainReservationRequest = Omit<
 	Models.ReservationRequest.ReservationRequest,
-	keyof import('mongoose').Document
+	keyof Document
 > & { _id: string; discriminatorKey: string };
 
 export const reservationRequests: PlainReservationRequest[] = [

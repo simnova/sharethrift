@@ -1,10 +1,10 @@
 import type { Models } from '@sthrift/data-sources-mongoose-models';
 import { ObjectId } from 'mongodb';
+import type { Document } from 'mongoose';
 
-type PlainItemListing = Omit<
-	Models.Listing.ItemListing,
-	keyof import('mongoose').Document
-> & { _id: string };
+type PlainItemListing = Omit<Models.Listing.ItemListing, keyof Document> & {
+	_id: string;
+};
 
 export const itemListings: PlainItemListing[] = [
 	{

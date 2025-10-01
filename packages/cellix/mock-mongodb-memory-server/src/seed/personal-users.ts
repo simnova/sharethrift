@@ -1,10 +1,10 @@
 import type { Models } from '@sthrift/data-sources-mongoose-models';
 import { ObjectId } from 'mongodb';
+import type { Document } from 'mongoose';
 
-type PlainPersonalUser = Omit<
-	Models.User.PersonalUser,
-	keyof import('mongoose').Document
-> & { _id: string };
+type PlainPersonalUser = Omit<Models.User.PersonalUser, keyof Document> & {
+	_id: string;
+};
 
 export const personalUsers: PlainPersonalUser[] = [
 	{

@@ -1,9 +1,10 @@
 import type { Models } from '@sthrift/data-sources-mongoose-models';
 import { ObjectId } from 'mongodb';
+import type { Document } from 'mongoose';
 
 type PlainConversation = Omit<
 	Models.Conversation.Conversation,
-	keyof import('mongoose').Document
+	keyof Document
 > & { _id: string; discriminatorKey: string };
 
 export const conversations: PlainConversation[] = [
