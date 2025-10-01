@@ -1,10 +1,11 @@
 import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
 import "./index.css";
-import { App } from "./App.tsx";
 import { BrowserRouter } from "react-router-dom";
 import { AuthProvider } from "react-oidc-context";
 import { oidcConfig } from "./config/oidc-config.tsx";
+import { ApolloConnection } from "./components/shared/apollo-connection.tsx";
+import { AppContainer } from "./App.container.tsx";
 
 const rootElement = document.getElementById("root");
 if (rootElement) {
@@ -12,7 +13,9 @@ if (rootElement) {
     <StrictMode>
       <BrowserRouter>
         <AuthProvider {...oidcConfig}>
-          <App />
+          <ApolloConnection>
+            <AppContainer />
+          </ApolloConnection>
         </AuthProvider>
       </BrowserRouter>
     </StrictMode>
