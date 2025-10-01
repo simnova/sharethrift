@@ -17,7 +17,7 @@ export async function seedDatabase(connection: Connection) {
 		_id: toObjectId(u._id),
 		roles: [defaultRoleId],
 	}));
-	await connection.collection('personalusers').insertMany(usersWithRoles);
+	await connection.collection('users').insertMany(usersWithRoles);
 
 	// Insert listings
 	const listings = itemListings.map((l) => ({
@@ -25,7 +25,7 @@ export async function seedDatabase(connection: Connection) {
 		_id: toObjectId(l._id),
 		sharer: typeof l.sharer === 'string' ? toObjectId(l.sharer) : l.sharer,
 	}));
-	await connection.collection('itemlistings').insertMany(listings);
+	await connection.collection('listings').insertMany(listings);
 
 	// Insert conversations
 	const convs = conversations.map((c) => ({
@@ -46,7 +46,7 @@ export async function seedDatabase(connection: Connection) {
 		reserver:
 			typeof r.reserver === 'string' ? toObjectId(r.reserver) : r.reserver,
 	}));
-	await connection.collection('reservationrequests').insertMany(reservations);
+	await connection.collection('reservationRequests').insertMany(reservations);
 
 	// Optionally log
 	console.log('Seeded mock MongoDB memory server with initial data.');

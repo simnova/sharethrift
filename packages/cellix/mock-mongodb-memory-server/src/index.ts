@@ -29,25 +29,25 @@ await MongoMemoryReplSet.create({
 	instanceOpts: [{ port }],
 })
 	.then(async (replicaSet) => {
-		const uri = replicaSet.getUri(dbName);
+		// Use the correct URI for the 'sharethrift' database
+		const uri = replicaSet.getUri('sharethrift');
 		console.log('MongoDB Memory Replica Set ready at:', uri);
 
-		// Connect with mongoose and seed after collections are created
 		try {
 			const conn = await mongoose.connect(uri);
 
-			// Wait for all required collections to exist
+			// Seed the database immediately (collections will be created by insertMany)
+			await seedDatabase(conn.connection);
+			console.log('Seeding complete.');
+
+			// Optionally, poll for collections after seeding to verify
 			const requiredCollections = [
-				'personalusers',
-				'itemlistings',
+				'users',
+				'listings',
+				'reservationRequests',
 				'conversations',
-				'reservationrequests',
 			];
-
-			console.log('Waiting for required collections to be created...');
-
 			while (true) {
-				console.log('Checking for required collections...');
 				const { db } = conn.connection;
 				if (!db) {
 					throw new Error('Mongoose connection has no db instance');
@@ -55,16 +55,13 @@ await MongoMemoryReplSet.create({
 				const collections = (await db.listCollections().toArray()).map(
 					(c) => c.name,
 				);
+				console.log('Existing collections:', collections);
 				if (requiredCollections.every((name) => collections.includes(name))) {
 					break;
 				}
 				await new Promise((res) => setTimeout(res, 200));
 			}
-
-			console.log('All required collections exist, seeding database...');
-
-			await seedDatabase(conn.connection);
-			console.log('Seeding complete.');
+			console.log('All required collections exist.');
 		} catch (err) {
 			console.error('Seeding failed:', err);
 			process.exit(1);
