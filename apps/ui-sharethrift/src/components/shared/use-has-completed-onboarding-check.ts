@@ -1,14 +1,27 @@
 import { useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
-export const useHasCompletedOnboardingCheck = (
-	hasCompletedOnboarding?: boolean,
-) => {
+import { useNavigate, useLocation } from 'react-router-dom';
+
+export function useHasCompletedOnboardingCheck(
+	hasCompletedOnboarding: boolean,
+	isAuthenticated: boolean,
+) {
 	const navigate = useNavigate();
+	const location = useLocation();
+
 	useEffect(() => {
-		if (hasCompletedOnboarding) {
-			navigate(`/home`);
-		} else {
-			navigate(`/signup/select-account-type`);
+		const isOnOnboarding = location.pathname.startsWith('/signup');
+		const isOnHome = location.pathname.startsWith('/home');
+
+		if (isAuthenticated) {
+			if (!hasCompletedOnboarding && isOnHome) {
+				// User not onboarded, trying to access home: redirect to onboarding root
+				navigate('/signup/select-account-type', { replace: true });
+			} else if (hasCompletedOnboarding && isOnOnboarding) {
+				// User onboarded, trying to access any onboarding page: redirect to home
+				navigate('/home', { replace: true });
+			}
 		}
-	}, [hasCompletedOnboarding, navigate]);
-};
+
+		// Otherwise, allow navigation (including onboarding subpages)
+	}, [hasCompletedOnboarding, location.pathname, navigate, isAuthenticated]);
+}

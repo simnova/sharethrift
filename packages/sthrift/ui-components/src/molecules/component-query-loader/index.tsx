@@ -1,5 +1,5 @@
-import { message, Skeleton } from 'antd';
-import type { FC } from 'react';
+import { message, Skeleton } from "antd";
+import type { FC } from "react";
 
 export interface ComponentQueryLoaderProps {
   error?: Error | undefined;
@@ -9,7 +9,7 @@ export interface ComponentQueryLoaderProps {
   hasDataComponent: React.JSX.Element;
   noDataComponent?: React.JSX.Element;
   loadingRows?: number;
-  loadingComponent?: React.JSX.Element; 
+  loadingComponent?: React.JSX.Element;
 }
 
 export const ComponentQueryLoader: FC<ComponentQueryLoaderProps> = (props) => {
@@ -18,16 +18,16 @@ export const ComponentQueryLoader: FC<ComponentQueryLoaderProps> = (props) => {
       return props.errorComponent;
     }
     message.error(props.error.message);
-    return <Skeleton/>;
+    return <Skeleton />;
   }
   if (props.loading) {
     if (props.loadingComponent) {
       return props.loadingComponent;
     }
-    return <Skeleton active paragraph={{ rows: props.loadingRows ?? 3 }} title= {false}/>;
+    return <Skeleton active paragraph={{ rows: props.loadingRows ?? 3 }} title={false} />;
   }
   if (props.hasData) {
     return props.hasDataComponent;
   }
-  return props.noDataComponent ?? <Skeleton loading/>;
+  return props.noDataComponent ?? <Skeleton loading />;
 };

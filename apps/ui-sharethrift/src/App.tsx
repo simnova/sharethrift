@@ -12,10 +12,11 @@ const authSection = (
   </RequireAuth>
 );
 interface AppProps {
-  hasCompletedOnboarding?: boolean;
+  hasCompletedOnboarding: boolean;
+  isAuthenticated: boolean;
 }
 export const App: FC<AppProps> = (props) => {
-  useHasCompletedOnboardingCheck(props.hasCompletedOnboarding);
+  useHasCompletedOnboardingCheck(props.hasCompletedOnboarding, props.isAuthenticated);
   return (
     <Routes>
       <Route path="/*" element={<HomeRoutes />} />
