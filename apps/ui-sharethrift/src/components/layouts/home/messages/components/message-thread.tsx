@@ -28,6 +28,7 @@ interface MessageThreadProps {
   setMessageText: (text: string) => void;
   handleSendMessage: (e: React.FormEvent) => void;
   currentUserId: string;
+  contentContainerStyle?: React.CSSProperties;
 }
 
 export const MessageThread: React.FC<MessageThreadProps> = (props) => {
