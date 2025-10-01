@@ -11,12 +11,12 @@ interface AccountSetupFormData {
   confirmPassword: string;
 }
 
-export default function AccountSetup() {
+export const AccountSetup: React.FC = () => {
   const [form] = Form.useForm();
   const [submitting, setSubmitting] = useState(false);
   const navigate = useNavigate();
 
-  const handleSubmit = async (values: AccountSetupFormData) => {
+  const handleSubmit = (values: AccountSetupFormData) => {
     setSubmitting(true);
     try {
       console.log(values);
@@ -26,13 +26,6 @@ export default function AccountSetup() {
     } finally {
       setSubmitting(false);
     }
-  };
-
-  const validateConfirmPassword = (_: any, value: string) => {
-    if (!value || form.getFieldValue("password") === value) {
-      return Promise.resolve();
-    }
-    return Promise.reject(new Error("Passwords do not match"));
   };
 
   return (
@@ -67,12 +60,7 @@ export default function AccountSetup() {
           </Title>
         </div>
 
-        <Form
-          form={form}
-          layout="vertical"
-          onFinish={handleSubmit}
-          autoComplete="off"
-        >
+        <Form form={form} layout="vertical" onFinish={handleSubmit} autoComplete="off">
           <Form.Item
             label="Email"
             name="email"
@@ -82,12 +70,7 @@ export default function AccountSetup() {
               { type: "email", message: "Please enter a valid email address" },
             ]}
           >
-            <Input
-              placeholder="johndoe@email.com"
-              autoFocus
-              aria-label="Email"
-              autoComplete="email"
-            />
+            <Input placeholder="johndoe@email.com" autoFocus aria-label="Email" autoComplete="email" />
           </Form.Item>
 
           <Form.Item
@@ -100,61 +83,11 @@ export default function AccountSetup() {
               { max: 30, message: "Username must be less than 30 characters" },
               {
                 pattern: /^[a-zA-Z0-9_]+$/,
-                message:
-                  "Username can only contain letters, numbers, and underscores",
+                message: "Username can only contain letters, numbers, and underscores",
               },
             ]}
           >
-            <Input
-              placeholder="Your Username"
-              aria-label="Username"
-              autoComplete="username"
-            />
-          </Form.Item>
-
-          <Title
-            level={4}
-            style={{ marginTop: "1.5rem", marginBottom: "1rem" }}
-          >
-            Password
-          </Title>
-
-          <Form.Item
-            label="Create Password"
-            name="password"
-            style={{ marginBottom: 12 }}
-            rules={[
-              { required: true, message: "Password is required" },
-              { min: 8, message: "Password must be at least 8 characters" },
-              {
-                pattern: /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)/,
-                message:
-                  "Password must contain at least one uppercase letter, one lowercase letter, and one number",
-              },
-            ]}
-          >
-            <Input.Password
-              placeholder="Create Password"
-              aria-label="Create Password"
-              autoComplete="new-password"
-            />
-          </Form.Item>
-
-          <Form.Item
-            label="Confirm Password"
-            name="confirmPassword"
-            style={{ marginBottom: 12 }}
-            dependencies={["password"]}
-            rules={[
-              { required: true, message: "Please confirm your password" },
-              { validator: validateConfirmPassword },
-            ]}
-          >
-            <Input.Password
-              placeholder="Confirm Password"
-              aria-label="Confirm Password"
-              autoComplete="new-password"
-            />
+            <Input placeholder="Your Username" aria-label="Username" autoComplete="username" />
           </Form.Item>
 
           <Form.Item style={{ marginTop: "2rem", textAlign: "right" }}>
@@ -178,4 +111,4 @@ export default function AccountSetup() {
       </Card>
     </div>
   );
-}
+};
