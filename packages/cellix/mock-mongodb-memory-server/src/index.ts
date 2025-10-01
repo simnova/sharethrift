@@ -36,9 +36,6 @@ await MongoMemoryReplSet.create({
 		try {
 			const conn = await mongoose.connect(uri);
 
-			await seedDatabase(conn.connection);
-			console.log('Seeding complete.');
-
 			const requiredCollections = [
 				'users',
 				'listings',
@@ -53,13 +50,14 @@ await MongoMemoryReplSet.create({
 				const collections = (await db.listCollections().toArray()).map(
 					(c) => c.name,
 				);
-				console.log('Existing collections:', collections);
 				if (requiredCollections.every((name) => collections.includes(name))) {
 					break;
 				}
 				await new Promise((res) => setTimeout(res, 200));
 			}
-			console.log('All required collections exist.');
+			console.log('All required collections exist, begin seeding.');
+			await seedDatabase(conn.connection);
+			console.log('Seeding complete.');
 		} catch (err) {
 			console.error('Seeding failed:', err);
 			process.exit(1);
