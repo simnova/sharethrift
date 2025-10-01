@@ -5,6 +5,8 @@ import SignupRoutes from './components/layouts/signup/Index.tsx';
 import { RequireAuth } from './components/shared/require-auth.tsx';
 import { AuthLanding } from './components/shared/auth-landing.tsx';
 
+import lbhbhdjbf
+
 const authSection = (
 	<RequireAuth redirectPath="/" forceLogin={true}>
 		<AuthLanding />
