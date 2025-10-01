@@ -1,9 +1,9 @@
 {
-  "extends": "@cellix/typescript-config/node.json",
-  "compilerOptions": {
-    "rootDir": ".",
-
-    "outDir": "dist"
-  },
-  "include": ["src/**/*.ts"]
+	"extends": "@cellix/typescript-config/node.json",
+	"compilerOptions": {
+		"rootDir": ".",
+		"outDir": "dist"
+	},
+	"include": ["src/**/*.ts"],
+	"references": [{ "path": "../../sthrift/data-sources-mongoose-models" }]
 }
