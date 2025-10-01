@@ -21,7 +21,7 @@ const mockMessages = [
 ];
 
 const meta: Meta<typeof MessageThread> = {
-  title: "Messages/MessageThread",
+  title: "Components/Messages/MessageThread",
   component: MessageThread,
 };
 export default meta;

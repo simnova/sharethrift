@@ -4,7 +4,7 @@ import { ConversationList } from '../components/conversation-list.tsx';
 
 
 const meta: Meta<typeof ConversationList> = {
-	title: 'Messages/ConversationList',
+	title: 'Components/Messages/ConversationList',
 	component: ConversationList,
 };
 export default meta;

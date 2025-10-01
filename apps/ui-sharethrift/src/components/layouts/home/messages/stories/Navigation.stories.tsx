@@ -2,7 +2,7 @@ import type { Meta, StoryObj } from '@storybook/react';
 import { Navigation } from '@sthrift/ui-components';
 
 const meta: Meta<typeof Navigation> = {
-	title: "Messages/Navigation",
+	title: "Components/Messages/Navigation",
 	component: Navigation,
 	parameters: {
 		layout: 'fullscreen',
