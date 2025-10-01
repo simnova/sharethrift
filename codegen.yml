@@ -80,7 +80,7 @@ generates:
     plugins:
       - 'introspection'
   ./apps/ui-sharethrift/src/generated.tsx:
-    documents: './apps/ui-sharethrift/src/components/**/**.graphql'
+    documents: './apps/ui-sharethrift/src/**/**.graphql'
     config:
       withHooks: true
       withHOC: false
