@@ -36,11 +36,9 @@ await MongoMemoryReplSet.create({
 		try {
 			const conn = await mongoose.connect(uri);
 
-			// Seed the database immediately (collections will be created by insertMany)
 			await seedDatabase(conn.connection);
 			console.log('Seeding complete.');
 
-			// Optionally, poll for collections after seeding to verify
 			const requiredCollections = [
 				'users',
 				'listings',

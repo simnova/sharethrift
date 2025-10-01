@@ -10,7 +10,6 @@ function toObjectId(id: string) {
 }
 
 export async function seedDatabase(connection: Connection) {
-	// Insert users, referencing the default role
 	const defaultRoleId = new ObjectId(); // Placeholder ID since roles are not inserted
 	const usersWithRoles = personalUsers.map((u) => ({
 		...u,
@@ -19,7 +18,6 @@ export async function seedDatabase(connection: Connection) {
 	}));
 	await connection.collection('users').insertMany(usersWithRoles);
 
-	// Insert listings
 	const listings = itemListings.map((l) => ({
 		...l,
 		_id: toObjectId(l._id),
@@ -27,7 +25,6 @@ export async function seedDatabase(connection: Connection) {
 	}));
 	await connection.collection('listings').insertMany(listings);
 
-	// Insert conversations
 	const convs = conversations.map((c) => ({
 		...c,
 		_id: toObjectId(c._id),
@@ -38,7 +35,6 @@ export async function seedDatabase(connection: Connection) {
 	}));
 	await connection.collection('conversations').insertMany(convs);
 
-	// Insert reservation requests
 	const reservations = reservationRequests.map((r) => ({
 		...r,
 		_id: toObjectId(r._id),
@@ -48,6 +44,5 @@ export async function seedDatabase(connection: Connection) {
 	}));
 	await connection.collection('reservationRequests').insertMany(reservations);
 
-	// Optionally log
 	console.log('Seeded mock MongoDB memory server with initial data.');
 }
