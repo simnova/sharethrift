@@ -1,5 +1,5 @@
 ---
-applyTo: "packages/domain/src/domain/events/**/*.ts"
+applyTo: "packages/sthrift/domain/src/domain/events/**/*.ts"
 ---
 
 # Copilot Instructions: Domain and Integration Events

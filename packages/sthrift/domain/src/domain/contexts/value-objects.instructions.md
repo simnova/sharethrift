@@ -1,5 +1,5 @@
 ---
-applyTo: "packages/domain/src/domain/contexts/**/*.value-objects.ts"
+applyTo: "packages/sthrift/domain/src/domain/contexts/**/*.value-objects.ts"
 ---
 
 # Copilot Instructions: Value Objects

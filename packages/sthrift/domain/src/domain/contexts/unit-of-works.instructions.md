@@ -1,5 +1,5 @@
 ---
-applyTo: "packages/domain/src/domain/contexts/**/*.uow.ts"
+applyTo: "packages/sthrift/domain/src/domain/contexts/**/*.uow.ts"
 ---
 
 # Copilot Instructions: Unit of Works
