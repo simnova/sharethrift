@@ -13,6 +13,7 @@
         "build-storybook": "storybook build"
     },
     "dependencies": {
+        "@ant-design/v5-patch-for-react-19": "^1.0.3",
         "@apollo/client": "^3.14.0",
         "@sthrift/ui-components": "*",
         "@tailwindcss/vite": "^4.1.11",
@@ -31,6 +32,8 @@
         "tailwindcss": "^4.1.11"
     },
     "devDependencies": {
+        "@cellix/typescript-config": "*",
+        "@cellix/vitest-config": "*",
         "@chromatic-com/storybook": "^4.1.0",
         "@eslint/js": "^9.30.1",
         "@storybook/addon-a11y": "^9.1.1",
@@ -52,8 +55,6 @@
         "typescript": "~5.8.3",
         "typescript-eslint": "^8.35.1",
         "vite": "^7.1.2",
-        "vitest": "^3.2.4",
-        "@cellix/vitest-config": "*",
-        "@cellix/typescript-config": "*"
+        "vitest": "^3.2.4"
     }
 }
