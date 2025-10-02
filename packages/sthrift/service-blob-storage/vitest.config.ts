@@ -1,5 +1,5 @@
 import { defineConfig, mergeConfig } from 'vitest/config';
-import baseConfig from '@cellix/vitest-config';
+import { baseConfig } from '@cellix/vitest-config';
 
 export default mergeConfig(
 	baseConfig,
