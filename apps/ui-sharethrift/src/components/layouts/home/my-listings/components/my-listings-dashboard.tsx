@@ -69,30 +69,30 @@ export function MyListingsDashboard({
 		},
 	];
 
-	return (
-		<div className={styles['dashboardContainer']}>
-			<div
-				style={{
-					display: 'flex',
-					justifyContent: 'space-between',
-					alignItems: 'center',
-					marginBottom: '24px',
-				}}
-			>
-				<h1 className="title42" style={{ margin: 0 }}>
-					My Listings
-				</h1>
-				<Button
-					type="primary"
-					size="large"
-					onClick={onCreateListing}
-					className={styles['createListing']}
-				>
-					Create a Listing
-				</Button>
-			</div>
+  return (
+	<div className={styles['dashboardContainer']}>
+	  <div
+		style={{
+		  display: 'flex',
+		  justifyContent: 'space-between',
+		  alignItems: 'center',
+		  marginBottom: '24px',
+		}}
+	  >
+		<h1 className="title42" style={{ margin: 0 }}>
+		  My Listings
+		</h1>
+		<Button
+		  type="primary"
+		  size="large"
+		  onClick={onCreateListing}
+		  className={styles['createListing']}
+		>
+		  Create a Listing
+		</Button>
+	  </div>
 
-			<Tabs activeKey={activeTab} onChange={handleTabChange} items={items} />
-		</div>
-	);
+	  <Tabs activeKey={activeTab} onChange={handleTabChange} items={items} />
+	</div>
+  );
 }
