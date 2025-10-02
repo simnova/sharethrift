@@ -6,6 +6,7 @@ import { AuthProvider } from "react-oidc-context";
 import { oidcConfig } from "./config/oidc-config.tsx";
 import { ApolloConnection } from "./components/shared/apollo-connection.tsx";
 import { AppContainer } from "./App.container.tsx";
+import "@ant-design/v5-patch-for-react-19";
 
 const rootElement = document.getElementById("root");
 if (rootElement) {

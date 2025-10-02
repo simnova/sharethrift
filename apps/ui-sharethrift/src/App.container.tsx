@@ -7,7 +7,10 @@ import { useAuth } from "react-oidc-context";
 
 export const AppContainer: FC = () => {
   const auth = useAuth();
-  const { data, loading, error } = useQuery(AppCurrentPersonalUserAndCreateIfNotExistsDocument, { skip: auth.isAuthenticated === false });
+
+  const { data, loading, error } = useQuery(AppCurrentPersonalUserAndCreateIfNotExistsDocument, {
+    skip: auth.isAuthenticated === false,
+  });
 
   if (auth.isAuthenticated === false) {
     return <App hasCompletedOnboarding={false} isAuthenticated={auth.isAuthenticated} />;

@@ -1,8 +1,8 @@
 import { Route, Routes } from "react-router-dom";
 import SignupSelectAccountType from "./pages/signup-select-account-type.tsx";
 import { AccountSetup } from "./pages/account-setup.tsx";
-import ProfileSetup from "./pages/ProfileSetup.tsx";
-import { Payment } from "./pages/payment.tsx";
+import { ProfileSetup } from "./pages/profile-setup.tsx";
+import { Payment } from "./pages/Payment.tsx";
 import { SectionLayoutContainer } from "./section-layout.container.tsx";
 import Terms from "./pages/Terms.tsx";
 

@@ -1,6 +1,6 @@
 import type { Meta, StoryObj } from "@storybook/react";
 import { BrowserRouter } from "react-router-dom";
-import { Payment } from "./payment.tsx";
+import { Payment } from "./Payment.tsx";
 import type React from "react";
 
 const meta: Meta<typeof Payment> = {

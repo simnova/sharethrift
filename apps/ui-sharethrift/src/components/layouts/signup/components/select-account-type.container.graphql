@@ -1,14 +1,15 @@
-mutation SignupSelectAccountTypePersonalUserUpdate(
-  $input: PersonalUserUpdateInput!
-) {
+mutation SignupSelectAccountTypePersonalUserUpdate($input: PersonalUserUpdateInput!) {
   personalUserUpdate(input: $input) {
-    id
+    status {
+      success
+      errorMessage
+    }
+    personalUser {
+      id
 
-    schemaVersion
-    createdAt
-    updatedAt
-    account {
-      accountType
+      account {
+        accountType
+      }
     }
   }
 }
@@ -16,7 +17,7 @@ mutation SignupSelectAccountTypePersonalUserUpdate(
 query SignupSelectAccountTypeCurrentPersonalUserAndCreateIfNotExists {
   currentPersonalUserAndCreateIfNotExists {
     id
-    
+
     account {
       accountType
     }

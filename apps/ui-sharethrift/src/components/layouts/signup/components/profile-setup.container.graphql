@@ -1,0 +1,47 @@
+query ProfileSetupContainerCurrentPersonalUserAndCreateIfNotExists {
+  currentPersonalUserAndCreateIfNotExists {
+    id
+
+    account {
+      profile {
+        firstName
+        lastName
+        location {
+          address1
+          address2
+          city
+          state
+          country
+          zipCode
+        }
+      }
+    }
+  }
+}
+
+mutation ProfileSetUpContainerPersonalUserUpdate($input: PersonalUserUpdateInput!) {
+  personalUserUpdate(input: $input) {
+    status {
+      success
+      errorMessage
+    }
+    personalUser {
+      id
+
+      account {
+        profile {
+          firstName
+          lastName
+          location {
+            address1
+            address2
+            city
+            state
+            country
+            zipCode
+          }
+        }
+      }
+    }
+  }
+}

@@ -1,11 +1,9 @@
 import { useState, useEffect } from "react";
 import { Button, Card } from "antd";
 import { CheckOutlined, SafetyOutlined } from "@ant-design/icons";
+import type { PersonalUser } from "../../../../generated.tsx";
 
-type PersonalAccountSubType =
-  | "non-verified-personal"
-  | "verified-personal"
-  | "verified-personal-plus";
+type PersonalAccountSubType = "non-verified-personal" | "verified-personal" | "verified-personal-plus";
 
 interface AccountOption {
   id: string;
@@ -20,61 +18,39 @@ const personalOptions: AccountOption[] = [
     id: "non-verified-personal",
     title: "Non-Verified Personal",
     price: "$0/month",
-    features: [
-      "5 active reservations",
-      "3 bookmarks",
-      "15 items to share",
-      "5 friends",
-    ],
+    features: ["5 active reservations", "3 bookmarks", "15 items to share", "5 friends"],
     icon: "/assets/item-images/stool.png",
   },
   {
     id: "verified-personal",
     title: "Verified Personal",
     price: "$0/month",
-    features: [
-      "10 active reservations",
-      "10 bookmarks",
-      "30 items to share",
-      "10 friends",
-    ],
+    features: ["10 active reservations", "10 bookmarks", "30 items to share", "10 friends"],
     icon: "/assets/item-images/armchair.png",
   },
   {
     id: "verified-personal-plus",
     title: "Verified Personal Plus",
     price: "$4.99/month",
-    features: [
-      "30 active reservations",
-      "30 bookmarks",
-      "50 items to share",
-      "30 friends",
-    ],
+    features: ["30 active reservations", "30 bookmarks", "50 items to share", "30 friends"],
     icon: "/assets/item-images/bubble-chair.png",
   },
 ];
 
 interface SelectAccountTypeProps {
-  currentUserData: any;
+  currentUserData?: PersonalUser;
   loadingUser: boolean;
   handleUpdateAccountType: (accountType: string) => void;
   savingAccountType: boolean;
 }
 
 export const SelectAccountType: React.FC<SelectAccountTypeProps> = (props) => {
-
-  const [selectedPersonalType, setSelectedPersonalType] = useState<string>(
-    "non-verified-personal"
-  );
+  const [selectedPersonalType, setSelectedPersonalType] = useState<string>("non-verified-personal");
 
   useEffect(() => {
     if (
       props?.currentUserData?.account?.accountType &&
-      [
-        "non-verified-personal",
-        "verified-personal",
-        "verified-personal-plus",
-      ].includes(props?.currentUserData.account?.accountType)
+      ["non-verified-personal", "verified-personal", "verified-personal-plus"].includes(props?.currentUserData.account?.accountType)
     ) {
       setSelectedPersonalType(props?.currentUserData.account?.accountType);
     }
@@ -84,22 +60,14 @@ export const SelectAccountType: React.FC<SelectAccountTypeProps> = (props) => {
     setSelectedPersonalType(type);
   };
 
-  const renderAccountCard = (
-    option: AccountOption,
-    isSelected: boolean,
-    onSelect: () => void
-  ) => (
+  const renderAccountCard = (option: AccountOption, isSelected: boolean, onSelect: () => void) => (
     <Card
       key={option.id}
-      className={`cursor-pointer transition-all duration-200 ${
-        isSelected ? "shadow-lg" : "hover:shadow-md"
-      }`}
+      className={`cursor-pointer transition-all duration-200 ${isSelected ? "shadow-lg" : "hover:shadow-md"}`}
       style={{
         width: 280,
         position: "relative",
-        border: isSelected
-          ? "2px solid var(--color-secondary)"
-          : "1px solid var(--color-foreground-2)",
+        border: isSelected ? "2px solid var(--color-secondary)" : "1px solid var(--color-foreground-2)",
         borderRadius: "12px",
         overflow: "hidden",
       }}
@@ -143,12 +111,8 @@ export const SelectAccountType: React.FC<SelectAccountTypeProps> = (props) => {
         <div
           style={{
             marginLeft: 8,
-            border: `1px solid ${
-              isSelected ? "var(--color-secondary)" : "grey"
-            }`,
-            backgroundColor: isSelected
-              ? "var(--color-secondary)"
-              : "transparent",
+            border: `1px solid ${isSelected ? "var(--color-secondary)" : "grey"}`,
+            backgroundColor: isSelected ? "var(--color-secondary)" : "transparent",
             borderRadius: "50%",
             width: 18,
             height: 18,
@@ -175,11 +139,7 @@ export const SelectAccountType: React.FC<SelectAccountTypeProps> = (props) => {
           justifyContent: "center",
         }}
       >
-        <img
-          src={option.icon}
-          alt={option.title}
-          style={{ height: 150, width: "auto", objectFit: "contain" }}
-        />
+        <img src={option.icon} alt={option.title} style={{ height: 150, width: "auto", objectFit: "contain" }} />
       </div>
 
       <div
@@ -202,8 +162,8 @@ export const SelectAccountType: React.FC<SelectAccountTypeProps> = (props) => {
           color: "var(--color-message-text)",
         }}
       >
-        {option.features.map((feature, index) => (
-          <div key={index} style={{ marginBottom: "6px" }}>
+        {option.features.map((feature) => (
+          <div key={feature} style={{ marginBottom: "6px" }}>
             • {feature}
           </div>
         ))}
@@ -222,9 +182,7 @@ export const SelectAccountType: React.FC<SelectAccountTypeProps> = (props) => {
         }}
       >
         {personalOptions.map((option) =>
-          renderAccountCard(option, selectedPersonalType === option.id, () =>
-            handleSelectAccountType(option.id as PersonalAccountSubType)
-          )
+          renderAccountCard(option, selectedPersonalType === option.id, () => handleSelectAccountType(option.id as PersonalAccountSubType))
         )}
       </div>
 
