@@ -42,6 +42,7 @@ await MongoMemoryReplSet.create({
 				'reservationRequests',
 				'conversations',
 			];
+			console.log('Checking for required collections:', requiredCollections);
 			while (true) {
 				const { db } = conn.connection;
 				if (!db) {
