@@ -11,6 +11,13 @@ const authSection = (
     <AuthLanding />
   </RequireAuth>
 );
+
+const signupSection = (
+  <RequireAuth redirectPath="/" forceLogin={true}>
+    <SignupRoutes />
+  </RequireAuth>
+);
+
 interface AppProps {
   hasCompletedOnboarding: boolean;
   isAuthenticated: boolean;
@@ -21,7 +28,7 @@ export const App: FC<AppProps> = (props) => {
     <Routes>
       <Route path="/*" element={<HomeRoutes />} />
       <Route path="/auth-redirect" element={authSection} />
-      <Route path="/signup/*" element={<SignupRoutes />} />
+      <Route path="/signup/*" element={signupSection} />
       <Route path="/" element={<Navigate to="/home" replace />} />
     </Routes>
   );
