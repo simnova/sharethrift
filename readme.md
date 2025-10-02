@@ -42,24 +42,24 @@ npm i -D concurrently
 # - apps/ui-sharethrift/ (React frontend)  
 # - apps/docs/ (Documentation site)
 
-# Historical package examples (now moved to apps/):
-# npm init -w ./packages/graphql
+# Historical package examples (now moved to apps/ or reorganized under packages/sthrift/ and packages/cellix/):
+# npm init -w ./packages/sthrift/graphql
 # npm install @as-integrations/azure-functions @apollo/server graphql @azure/functions -w api-graphql
 
-# npm init -w ./packages/event-handler
+# npm init -w ./packages/sthrift/event-handler
 
-# npm init -w ./packages/api-services
-# npm init -w ./packages/rest
+# npm init -w ./packages/sthrift/api-services
+# npm init -w ./packages/sthrift/rest
 # npm install @azure/functions -w api-rest
 
-# npm init -w ./packages/api-data-sources-domain
+# npm init -w ./packages/sthrift/api-data-sources-domain
 
-# npm init -w ./packages/service-otel
+# npm init -w ./packages/sthrift/service-otel
 # npm install @azure/monitor-opentelemetry -w service-otel
 
-# npm init -w ./packages/persistence
+# npm init -w ./packages/sthrift/persistence
 
-# npm init -w ./packages/event-bus-seedwork-node
+# npm init -w ./packages/cellix/event-bus-seedwork-node
 
 
 
