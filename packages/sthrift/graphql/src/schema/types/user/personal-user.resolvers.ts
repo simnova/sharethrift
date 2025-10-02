@@ -7,6 +7,24 @@ import type {
 	Resolvers,
 } from '../../builder/generated.ts';
 import type { PersonalUserUpdateCommand } from '@sthrift/application-services';
+import { Domain } from '@sthrift/domain';
+
+const PersonalUserMutationResolver = async (
+	getPersonalUser: Promise<Domain.Contexts.User.PersonalUser.PersonalUserEntityReference>,
+) => {
+	try {
+		return {
+			status: { success: true },
+			personalUser: await getPersonalUser,
+		};
+	} catch (error) {
+		console.error('PersonalUser > Mutation  : ', error);
+		const { message } = error as Error;
+		return {
+			status: { success: false, errorMessage: message },
+		};
+	}
+};
 
 const personalUserResolvers: Resolvers = {
 	Query: {
@@ -56,8 +74,10 @@ const personalUserResolvers: Resolvers = {
 			}
 			console.log('personalUserUpdate resolver called with id:', args.input.id);
 			// Implement the logic to update the personal user
-			return await context.applicationServices.User.PersonalUser.update(
-				args.input as PersonalUserUpdateCommand,
+			return await PersonalUserMutationResolver(
+				context.applicationServices.User.PersonalUser.update(
+					args.input as PersonalUserUpdateCommand,
+				),
 			);
 		},
 		processPayment: async (_parent, { request }, context) => {

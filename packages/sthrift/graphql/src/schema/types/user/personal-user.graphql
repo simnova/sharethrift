@@ -82,12 +82,6 @@ input PersonalUserAccountProfileLocationUpdateInput {
   zipCode: String
 }
 
-extend type Query {
-  # Personal User queries
-  personalUserById(id: ObjectID!): PersonalUser
-  currentPersonalUserAndCreateIfNotExists: PersonalUser!
-}
-
 # Payment related input/output types
 input PaymentAmountDetails {
   totalAmount: Float!
@@ -172,9 +166,20 @@ type RefundResponse {
   orderInformation: PaymentResponseOrderInformation
 }
 
+type PersonalUserMutationResult implements MutationResult {
+  status: MutationStatus!
+  personalUser: PersonalUser
+}
+
+extend type Query {
+  # Personal User queries
+  personalUserById(id: ObjectID!): PersonalUser
+  currentPersonalUserAndCreateIfNotExists: PersonalUser!
+}
+
 extend type Mutation {
   # Personal User mutations
-  personalUserUpdate(input: PersonalUserUpdateInput!): PersonalUser!
+  personalUserUpdate(input: PersonalUserUpdateInput!): PersonalUserMutationResult!
 
   # Payment mutations
   processPayment(request: PaymentRequest!): PaymentResponse!
