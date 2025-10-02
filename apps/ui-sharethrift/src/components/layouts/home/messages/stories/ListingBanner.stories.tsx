@@ -25,7 +25,7 @@ const mockUser: PersonalUser = {
 };
 
 const meta: Meta<typeof ListingBanner> = {
-  title: "Components/Messages/ListingBanner",
+  title: "Components/Listings/ListingBanner",
   component: ListingBanner,
 };
 export default meta;
