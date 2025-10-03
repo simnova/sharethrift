@@ -30,6 +30,8 @@ const conversation: Resolvers = {
 			);
 		},
 		conversation: async (_parent, _args, context: GraphContext) => {
+
+            // todo : message will come from twilio service
 			return await context.applicationServices.Conversation.Conversation.queryById(
 				{ conversationId: _args.conversationId },
 			);
