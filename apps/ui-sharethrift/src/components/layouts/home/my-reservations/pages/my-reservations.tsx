@@ -21,14 +21,14 @@ export const MyReservationsMain: React.FC = () => {
 			children: <ReservationsViewHistoryContainer />,
 		},
 	];
-  return (
-	<div className={`p-6 ${styles['mainContent']}`}>
-	  <Title level={2} className={styles['pageTitle']}>
-		My Reservations
-	  </Title>
-	  <Tabs defaultActiveKey="active" items={tabItems} />
-	</div>
-  );
+	return (
+		<div className={`p-6 ${styles['mainContent']}`}>
+			<Title level={2} className={styles['pageTitle']}>
+				My Reservations
+			</Title>
+			<Tabs defaultActiveKey="active" items={tabItems} />
+		</div>
+	);
 };
 
 export default MyReservationsMain;

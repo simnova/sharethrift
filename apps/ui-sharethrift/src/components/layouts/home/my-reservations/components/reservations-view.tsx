@@ -51,7 +51,7 @@ export const ReservationsView: React.FC<ReservationsViewProps> = ({
 	return (
 		<div>
 			{/* Mobile Grid View */}
-	  <div className={styles['mobileOnly']}>
+			<div className={styles['mobileOnly']}>
 				<ReservationsGrid
 					reservations={reservations}
 					onCancel={onCancel}
@@ -65,7 +65,7 @@ export const ReservationsView: React.FC<ReservationsViewProps> = ({
 			</div>
 
 			{/* Desktop Table View */}
-	  <div className={styles['desktopOnly']}>
+			<div className={styles['desktopOnly']}>
 				<ReservationsTable
 					reservations={reservations}
 					onCancel={onCancel}

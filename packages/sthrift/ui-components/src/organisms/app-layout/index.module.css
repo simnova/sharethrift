@@ -1,4 +1,4 @@
-@import "../../styles/theme.css";
+@import "../theme.css";
 
 .appLayout {
 	min-height: 100vh;
@@ -12,8 +12,6 @@
 	flex-direction: column !important;
 }
 
-
-
 .bodyWrapper {
 	flex: 1 1 0;
 	display: flex;
@@ -21,18 +19,18 @@
 	min-height: 0;
 	overflow-x: hidden;
 }
-  .content {
+.content {
 	flex: 1 1 0;
 	padding: 32px;
 	background: var(--color-background);
 	min-height: 0;
 	overflow-x: hidden;
 	margin-top: 32px;
-  }
+}
 
-  :global(.ant-layout-has-sider) .content {
+:global(.ant-layout-has-sider) .content {
 	margin-left: 240px;
-  }
+}
 @media (max-width: 768px) {
 	.bodyWrapper {
 		flex-direction: column;
