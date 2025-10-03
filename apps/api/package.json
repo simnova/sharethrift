@@ -11,8 +11,6 @@
 		"prebuild": "biome lint",
 		"build": "tsc --build",
 		"watch": "tsc -w",
-		"test": "vitest run",
-		"test:coverage": "vitest run --coverage",
 		"test:watch": "vitest",
 		"lint": "biome lint",
 		"clean": "rimraf dist",

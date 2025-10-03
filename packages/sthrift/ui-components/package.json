@@ -8,9 +8,6 @@
 			"types": "./dist/src/index.d.ts",
 			"default": "./dist/src/index.js"
 		},
-		"./theme.css": {
-			"default": "./theme.css"
-		},
 		"./src/styles/theme.css": {
 			"default": "./src/styles/theme.css"
 		},
