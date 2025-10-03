@@ -4,6 +4,7 @@ import type { Domain } from '@sthrift/domain';
 export interface PersonalUserUpdateCommand {
 	id: string;
 	isBlocked?: boolean;
+	hasCompletedOnboarding?: boolean;
 	account: {
 		accountType?: string;
 		username?: string;
@@ -75,6 +76,11 @@ export const update = (datasources: DataSources) => {
 						command.account.profile.location.country;
 					existingPersonalUser.account.profile.location.zipCode =
 						command.account.profile.location.zipCode;
+				}
+
+				if (command.hasCompletedOnboarding !== undefined) {
+					existingPersonalUser.hasCompletedOnboarding =
+						command.hasCompletedOnboarding;
 				}
 
 				personalUserToReturn = await repo.save(existingPersonalUser);

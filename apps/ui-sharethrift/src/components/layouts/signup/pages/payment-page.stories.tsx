@@ -1,36 +1,36 @@
-import type { Meta, StoryObj } from '@storybook/react';
-import { BrowserRouter } from 'react-router-dom';
-import Payment from './Payment.tsx';
-import type React from 'react';
+import type { Meta, StoryObj } from "@storybook/react";
+import { BrowserRouter } from "react-router-dom";
+import { PaymentPage } from "./payment-page.tsx";
+import type React from "react";
 
-const meta: Meta<typeof Payment> = {
-	title: 'Pages/Signup/Payment',
-	component: Payment,
-	parameters: {
-		layout: 'fullscreen',
-	},
-	decorators: [
-		(Story) => (
-			<BrowserRouter>
-				<Story />
-			</BrowserRouter>
-		),
-	],
+const meta: Meta<typeof PaymentPage> = {
+  title: "Pages/Signup/Payment",
+  component: PaymentPage,
+  parameters: {
+    layout: "fullscreen",
+  },
+  decorators: [
+    (Story) => (
+      <BrowserRouter>
+        <Story />
+      </BrowserRouter>
+    ),
+  ],
 };
 
 export default meta;
-type Story = StoryObj<typeof Payment>;
+type Story = StoryObj<typeof PaymentPage>;
 
 export const Default: Story = {};
 
 export const WithPrefilledData: Story = {
-	decorators: [
-		(Story: React.FC) => (
-			<BrowserRouter>
-				<div>
-					<Story />
-					<script>
-						{`
+  decorators: [
+    (Story: React.FC) => (
+      <BrowserRouter>
+        <div>
+          <Story />
+          <script>
+            {`
               // This would normally be done via form initialization
               setTimeout(() => {
                 const form = document.querySelector('form');
@@ -51,9 +51,9 @@ export const WithPrefilledData: Story = {
                 }
               }, 100);
             `}
-					</script>
-				</div>
-			</BrowserRouter>
-		),
-	],
+          </script>
+        </div>
+      </BrowserRouter>
+    ),
+  ],
 };

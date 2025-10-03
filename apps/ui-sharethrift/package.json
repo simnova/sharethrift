@@ -13,6 +13,7 @@
         "build-storybook": "storybook build"
     },
     "dependencies": {
+        "@ant-design/v5-patch-for-react-19": "^1.0.3",
         "@apollo/client": "^3.14.0",
         "@sthrift/ui-components": "*",
         "@tailwindcss/vite": "^4.1.11",

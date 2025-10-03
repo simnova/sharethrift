@@ -81,9 +81,10 @@ export class ItemListingDomainAdapter
 				id: this.doc.sharer.toString(),
 			} as Domain.Contexts.User.PersonalUser.PersonalUserEntityReference;
 		}
-		return new PersonalUserDomainAdapter(
+		const adapter = new PersonalUserDomainAdapter(
 			this.doc.sharer as Models.User.PersonalUser,
 		);
+		return adapter.entityReference;
 	}
 	async loadSharer(): Promise<Domain.Contexts.User.PersonalUser.PersonalUserEntityReference> {
 		if (!this.doc.sharer) {
@@ -92,9 +93,10 @@ export class ItemListingDomainAdapter
 		if (this.doc.sharer instanceof MongooseSeedwork.ObjectId) {
 			await this.doc.populate('sharer');
 		}
-		return new PersonalUserDomainAdapter(
+		const adapter = new PersonalUserDomainAdapter(
 			this.doc.sharer as Models.User.PersonalUser,
 		);
+		return adapter.entityReference;
 	}
 	set sharer(user: Domain.Contexts.User.PersonalUser.PersonalUserEntityReference) {
 		if (!user?.id) {
