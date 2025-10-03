@@ -30,6 +30,7 @@ export function RequestsTableContainer({
 				searchText: searchText,
 				statusFilters: statusFilters,
 				sorter: { field: sorter.field ?? '', order: sorter.order ?? '' },
+                sharerId: '6324a3f1e3e4e1e6a8e1d8b1'
 			},
 			fetchPolicy: 'network-only',
 		},

@@ -2,11 +2,33 @@ import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { gql, useQuery } from '@apollo/client';
 import { ListingsPage } from './listings-page.tsx';
-import type { ItemListing } from './mock-listings.ts';
 // eslint-disable-next-line import/no-absolute-path, @typescript-eslint/ban-ts-comment
 // @ts-ignore - allow raw import string
 import ListingsPageQuerySource from './listings-page.container.graphql?raw';
 import { useCreateListingNavigation } from './create-listing/hooks/use-create-listing-navigation.ts';
+export interface ItemListing {
+	_id: string;
+	sharer: string; // User reference
+	title: string;
+	description: string;
+	category: string;
+	location: string;
+	sharingPeriodStart: Date;
+	sharingPeriodEnd: Date;
+	state?:
+		| 'Published'
+		| 'Paused'
+		| 'Cancelled'
+		| 'Drafted'
+		| 'Expired'
+		| 'Blocked'
+		| 'Appeal Requested';
+	updatedAt?: Date;
+	createdAt?: Date;
+	sharingHistory?: string[]; // objectid[]
+	reports?: number;
+	images?: string[]; // For UI purposes, we'll add image URLs
+}
 
 type ItemListingState =
 	| 'Published'
