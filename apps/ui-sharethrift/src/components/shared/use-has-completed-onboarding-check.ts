@@ -10,10 +10,9 @@ export function useHasCompletedOnboardingCheck(
 
 	useEffect(() => {
 		const isOnOnboarding = location.pathname.startsWith('/signup');
-		const isOnHome = location.pathname.startsWith('/home');
 
 		if (isAuthenticated) {
-			if (!hasCompletedOnboarding && isOnHome) {
+			if (!hasCompletedOnboarding && !isOnOnboarding) {
 				// User not onboarded, trying to access home: redirect to onboarding root
 				navigate('/signup/select-account-type', { replace: true });
 			} else if (hasCompletedOnboarding && isOnOnboarding) {
