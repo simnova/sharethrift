@@ -1,11 +1,10 @@
 import type { Meta, StoryObj } from "@storybook/react";
 import { MemoryRouter } from "react-router-dom";
-import { AccountSetup } from "./account-setup.tsx";
-import type React from "react";
+import { ProfileSetupPage } from "./profile-setup-page.tsx";
 
-const meta: Meta<typeof AccountSetup> = {
-  title: "Pages/Signup/AccountSetup",
-  component: AccountSetup,
+const meta: Meta<typeof ProfileSetupPage> = {
+  title: "Pages/Signup/ProfileSetup",
+  component: ProfileSetupPage,
   parameters: {
     layout: "fullscreen",
   },
@@ -23,7 +22,7 @@ type Story = StoryObj<typeof meta>;
 
 export const Default: Story = {};
 
-export const WithPrefilledData: Story = {
+export const WithAvatar: Story = {
   decorators: [
     (Story: React.FC) => (
       <MemoryRouter>

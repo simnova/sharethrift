@@ -1,11 +1,11 @@
 import type { Meta, StoryObj } from "@storybook/react";
 import { BrowserRouter } from "react-router-dom";
-import { Payment } from "./Payment.tsx";
+import { PaymentPage } from "./payment-page.tsx";
 import type React from "react";
 
-const meta: Meta<typeof Payment> = {
+const meta: Meta<typeof PaymentPage> = {
   title: "Pages/Signup/Payment",
-  component: Payment,
+  component: PaymentPage,
   parameters: {
     layout: "fullscreen",
   },
@@ -19,7 +19,7 @@ const meta: Meta<typeof Payment> = {
 };
 
 export default meta;
-type Story = StoryObj<typeof Payment>;
+type Story = StoryObj<typeof PaymentPage>;
 
 export const Default: Story = {};
 

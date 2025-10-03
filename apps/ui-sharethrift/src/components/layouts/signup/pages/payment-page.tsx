@@ -22,7 +22,7 @@ interface BillingFormData {
   acceptAgreement: boolean;
 }
 
-export const Payment = () => {
+export const PaymentPage = () => {
   const [form] = Form.useForm();
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);

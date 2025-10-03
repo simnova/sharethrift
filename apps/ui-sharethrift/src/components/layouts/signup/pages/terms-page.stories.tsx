@@ -1,15 +1,15 @@
 import type { Meta, StoryObj } from "@storybook/react";
 import { MemoryRouter } from "react-router-dom";
-import { ProfileSetup } from "./profile-setup.tsx";
+import { TermsPage } from "./terms-page.tsx";
 
-const meta: Meta<typeof ProfileSetup> = {
-  title: "Pages/Signup/ProfileSetup",
-  component: ProfileSetup,
+const meta: Meta<typeof TermsPage> = {
+  title: "Pages/Signup/Terms",
+  component: TermsPage,
   parameters: {
     layout: "fullscreen",
   },
   decorators: [
-    (Story) => (
+    (Story: React.FC) => (
       <MemoryRouter>
         <Story />
       </MemoryRouter>
@@ -22,7 +22,7 @@ type Story = StoryObj<typeof meta>;
 
 export const Default: Story = {};
 
-export const WithAvatar: Story = {
+export const WithoutNotifications: Story = {
   decorators: [
     (Story: React.FC) => (
       <MemoryRouter>
