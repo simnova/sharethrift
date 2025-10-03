@@ -17,9 +17,15 @@ export const LoggedOut: Story = {
 	render: () => (
 		<Header
 			isAuthenticated={false}
-			onLogin={() => {}}
-			onSignUp={() => {}}
-			onCreateListing={() => {}}
+			onLogin={() => {
+				/* intentionally empty for story */
+			}}
+			onSignUp={() => {
+				/* intentionally empty for story */
+			}}
+			onCreateListing={() => {
+				/* intentionally empty for story */
+			}}
 		/>
 	),
 };
@@ -35,7 +41,9 @@ export const ResponsiveHeaderDemo = () => {
 			isAuthenticated={isAuthenticated}
 			onLogin={() => setIsAuthenticated(true)}
 			onSignUp={() => setIsAuthenticated(true)}
-			onCreateListing={() => {}}
+			onCreateListing={() => {
+				/* intentionally empty for story */
+			}}
 		/>
 	);
 };

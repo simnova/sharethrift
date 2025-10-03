@@ -1,4 +1,3 @@
-import React from 'react';
 import { Table, Image } from 'antd';
 import styles from './reservations-table.module.css';
 import { ReservationStatusTag } from '@sthrift/ui-components';
@@ -32,19 +31,19 @@ export const ReservationsTable: React.FC<ReservationsTableProps> = ({
 			dataIndex: 'listing',
 			key: 'listing',
 			render: (listing: ReservationRequest['listing']) => (
-				<div className={styles['listingCell']}>
-					{listing?.imageUrl && (
-						<Image
-							src={listing.imageUrl}
-							alt={listing.title}
-							className={styles['listingImage']}
-							preview={false}
-						/>
-					)}
-					<span className={styles['tableText']}>
-						{listing?.title || 'Unknown Listing'}
-					</span>
-				</div>
+		<div className={styles['listingCell']}>
+		  {listing?.imageUrl && (
+			<Image
+			  src={listing.imageUrl}
+			  alt={listing.title}
+			  className={styles['listingImage']}
+			  preview={false}
+			/>
+		  )}
+		  <span className={styles['tableText']}>
+			{listing?.title || 'Unknown Listing'}
+		  </span>
+		</div>
 			),
 		},
 		{
@@ -52,9 +51,9 @@ export const ReservationsTable: React.FC<ReservationsTableProps> = ({
 			dataIndex: 'reserver',
 			key: 'sharer',
 			render: (reserver: ReservationRequest['reserver']) => (
-				<span className={styles['tableText']}>
-					{reserver?.name ? `@${reserver.name}` : 'Unknown'}
-				</span>
+		<span className={styles['tableText']}>
+		  {reserver?.name ? `@${reserver.name}` : 'Unknown'}
+		</span>
 			),
 		},
 		{

@@ -43,6 +43,7 @@
 		},
 		"//#gen": {
 			"cache": true,
+			"inputs": ["codegen.yml", "**/*.graphql"],
 			"outputs": [
 				"**/generated.ts",
 				"**/graphql.schema.json",

@@ -1,4 +1,3 @@
-import React from 'react';
 import { ReservationsTable } from './reservations-table.tsx';
 import { Alert, Spin } from 'antd';
 import styles from './reservations-view.module.css';

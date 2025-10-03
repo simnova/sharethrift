@@ -43,7 +43,7 @@ export const ReservationRequestSchema = new Schema<
 		closeRequestedBySharer: { type: Boolean, required: true, default: false },
 		closeRequestedByReserver: { type: Boolean, required: true, default: false },
 	},
-	{ collection: 'reservation_requests' },
+	{ collection: 'reservationRequests' },
 );
 
 export const ReservationRequestModelName: string = 'ReservationRequest';
