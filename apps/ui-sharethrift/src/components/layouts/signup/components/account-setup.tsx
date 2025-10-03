@@ -6,12 +6,13 @@ const { Title } = Typography;
 interface AccountSetupProps {
   currentPersonalUserData?: PersonalUser;
   onSaveAndContinue: (values: PersonalUserUpdateInput) => void;
+  loading: boolean;
 }
 
 export const AccountSetup: React.FC<AccountSetupProps> = (props) => {
   const [form] = Form.useForm();
 
-  const handleSubmit = (values: PersonalUserUpdateInput) => {
+  const handleSaveAndContinue = (values: PersonalUserUpdateInput) => {
     console.log("Form values before submitting:", values);
     props.onSaveAndContinue(values);
   };
@@ -48,7 +49,7 @@ export const AccountSetup: React.FC<AccountSetupProps> = (props) => {
           </Title>
         </div>
 
-        <Form initialValues={props.currentPersonalUserData} form={form} layout="vertical" onFinish={handleSubmit} autoComplete="off">
+        <Form initialValues={props.currentPersonalUserData} form={form} layout="vertical" onFinish={handleSaveAndContinue} autoComplete="off">
           {/* hidden field to store the user ID */}
           <Form.Item label="User ID" name={["id"]} style={{ display: "none" }}>
             <Input aria-label="User ID" autoComplete="off" />
@@ -86,6 +87,7 @@ export const AccountSetup: React.FC<AccountSetupProps> = (props) => {
                 fontSize: "16px",
                 fontWeight: 600,
               }}
+              loading={props.loading}
             >
               Save and Continue
             </Button>

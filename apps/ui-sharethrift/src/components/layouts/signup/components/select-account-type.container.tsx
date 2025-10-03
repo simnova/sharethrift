@@ -4,8 +4,9 @@ import { ComponentQueryLoader } from "@sthrift/ui-components";
 import { useQuery, useMutation } from "@apollo/client";
 import { useNavigate } from "react-router-dom";
 import {
-  SignupSelectAccountTypeCurrentPersonalUserAndCreateIfNotExistsDocument,
-  SignupSelectAccountTypePersonalUserUpdateDocument,
+  SelectAccountTypeCurrentPersonalUserAndCreateIfNotExistsDocument,
+  SelectAccountTypePersonalUserUpdateDocument,
+  type PersonalUserUpdateInput,
 } from "../../../../generated.tsx";
 import { message } from "antd";
 
@@ -16,13 +17,13 @@ export default function SelectAccountTypeContainer() {
     data: currentUserData,
     loading: loadingUser,
     error: userError,
-  } = useQuery(SignupSelectAccountTypeCurrentPersonalUserAndCreateIfNotExistsDocument);
+  } = useQuery(SelectAccountTypeCurrentPersonalUserAndCreateIfNotExistsDocument);
 
-  const [updateAccountType, { loading: savingAccountType, error: updateError }] = useMutation(SignupSelectAccountTypePersonalUserUpdateDocument);
+  const [updateUser, { loading: updateUserLoading, error: updateError }] = useMutation(SelectAccountTypePersonalUserUpdateDocument);
 
-  const handleUpdateAccountType = useCallback(
-    async (accountType: string) => {
-      if (savingAccountType) {
+  const handleSaveAndContinue = useCallback(
+    async (values: PersonalUserUpdateInput) => {
+      if (updateUserLoading) {
         return;
       }
       try {
@@ -30,12 +31,9 @@ export default function SelectAccountTypeContainer() {
         if (!userId) {
           return;
         }
-        const result = await updateAccountType({
+        const result = await updateUser({
           variables: {
-            input: {
-              account: { accountType },
-              id: userId,
-            },
+            input: values,
           },
         });
 
@@ -50,22 +48,21 @@ export default function SelectAccountTypeContainer() {
         message.error(`Failed to update account type`);
       }
     },
-    [currentUserData, updateAccountType, navigate, savingAccountType]
+    [currentUserData, updateUser, navigate, updateUserLoading]
   );
 
   const errorMessage = userError || updateError;
 
   return (
     <ComponentQueryLoader
-      loading={loadingUser || savingAccountType}
+      loading={loadingUser}
       hasData={currentUserData}
       error={errorMessage}
       hasDataComponent={
         <SelectAccountType
           currentUserData={currentUserData?.currentPersonalUserAndCreateIfNotExists}
-          loadingUser={loadingUser}
-          handleUpdateAccountType={handleUpdateAccountType}
-          savingAccountType={savingAccountType}
+          loading={updateUserLoading}
+          onSaveAndContinue={handleSaveAndContinue}
         />
       }
     />

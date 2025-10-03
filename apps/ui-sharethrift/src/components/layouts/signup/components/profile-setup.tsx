@@ -9,6 +9,7 @@ const { Title } = Typography;
 interface ProfileSetupProps {
   currentPersonalUserData?: PersonalUser;
   onSaveAndContinue: (values: PersonalUserUpdateInput) => void;
+  loading: boolean;
 }
 
 export const ProfileSetup: FC<ProfileSetupProps> = (props) => {
@@ -16,7 +17,7 @@ export const ProfileSetup: FC<ProfileSetupProps> = (props) => {
   const [avatarUrl, setAvatarUrl] = useState<string>("");
   const [fileList, setFileList] = useState<UploadFile[]>([]);
 
-  const handleSubmit = (values: PersonalUserUpdateInput) => {
+  const handleSaveAndContinue = (values: PersonalUserUpdateInput) => {
     console.log("Form Values:", values);
     props.onSaveAndContinue(values);
   };
@@ -124,7 +125,7 @@ export const ProfileSetup: FC<ProfileSetupProps> = (props) => {
           </div>
         </div>
 
-        <Form form={form} layout="vertical" onFinish={handleSubmit} autoComplete="off" initialValues={props.currentPersonalUserData}>
+        <Form form={form} layout="vertical" onFinish={handleSaveAndContinue} autoComplete="off" initialValues={props.currentPersonalUserData}>
           {/* hidden field to store the user ID */}
           <Form.Item label="User ID" name={["id"]} style={{ display: "none" }}>
             <Input aria-label="User ID" autoComplete="off" />
@@ -257,6 +258,7 @@ export const ProfileSetup: FC<ProfileSetupProps> = (props) => {
                 fontSize: "16px",
                 fontWeight: 600,
               }}
+              loading={props.loading}
             >
               Save and Continue
             </Button>

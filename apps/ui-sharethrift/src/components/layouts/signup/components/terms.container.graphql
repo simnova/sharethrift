@@ -1,14 +1,14 @@
-query SelectAccountTypeCurrentPersonalUserAndCreateIfNotExists {
+query TermsContainerCurrentPersonalUserAndCreateIfNotExists {
   currentPersonalUserAndCreateIfNotExists {
     id
-
+    hasCompletedOnboarding
     account {
       accountType
     }
   }
 }
 
-mutation SelectAccountTypePersonalUserUpdate($input: PersonalUserUpdateInput!) {
+mutation TermsContainerPersonalUserUpdate($input: PersonalUserUpdateInput!) {
   personalUserUpdate(input: $input) {
     status {
       success
@@ -16,7 +16,7 @@ mutation SelectAccountTypePersonalUserUpdate($input: PersonalUserUpdateInput!) {
     }
     personalUser {
       id
-
+      hasCompletedOnboarding
       account {
         accountType
       }

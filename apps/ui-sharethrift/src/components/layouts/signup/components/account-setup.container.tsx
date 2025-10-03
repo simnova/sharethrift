@@ -11,8 +11,8 @@ import { useNavigate } from "react-router-dom";
 import { message } from "antd";
 
 export const AccountSetUpContainer: FC = () => {
-  const { data, loading, error } = useQuery(AccountSetUpContainerCurrentPersonalUserAndCreateIfNotExistsDocument);
-  const [updateUser] = useMutation(AccountSetUpContainerPersonalUserUpdateDocument);
+  const { data, loading: userLoading, error } = useQuery(AccountSetUpContainerCurrentPersonalUserAndCreateIfNotExistsDocument);
+  const [updateUser, { loading: updateUserLoading }] = useMutation(AccountSetUpContainerPersonalUserUpdateDocument);
   const navigate = useNavigate();
 
   const handleSaveAndContinue = async (values: PersonalUserUpdateInput) => {
@@ -30,11 +30,15 @@ export const AccountSetUpContainer: FC = () => {
   };
   return (
     <ComponentQueryLoader
-      loading={loading}
+      loading={userLoading}
       hasData={data?.currentPersonalUserAndCreateIfNotExists}
       error={error}
       hasDataComponent={
-        <AccountSetup currentPersonalUserData={data?.currentPersonalUserAndCreateIfNotExists} onSaveAndContinue={handleSaveAndContinue} />
+        <AccountSetup
+          loading={updateUserLoading}
+          currentPersonalUserData={data?.currentPersonalUserAndCreateIfNotExists}
+          onSaveAndContinue={handleSaveAndContinue}
+        />
       }
     />
   );

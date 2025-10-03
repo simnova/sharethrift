@@ -58,6 +58,7 @@ type PersonalUserAccountProfileBillingTransaction {
 input PersonalUserUpdateInput {
   id: ObjectID!
   isBlocked: Boolean
+  hasCompletedOnboarding: Boolean
   account: PersonalUserAccountUpdateInput
 }
 

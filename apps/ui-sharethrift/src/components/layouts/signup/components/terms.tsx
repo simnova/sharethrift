@@ -1,22 +1,18 @@
-import { Form, Button, Card, Typography, Checkbox, Radio, Space, Divider } from "antd";
-import { useNavigate } from "react-router-dom";
+import { Form, Button, Card, Typography, Checkbox } from "antd";
+import type { FC } from "react";
 
 const { Title, Text } = Typography;
 
-interface AcceptTermsFormData {
-  acceptTerms: boolean;
-  listingNotifications: boolean;
-  reservationNotifications: boolean;
-  recommendations: string;
+interface TermsProps {
+  loading: boolean;
+  onSaveAndContinue: () => void;
 }
 
-export const Terms = () => {
+export const Terms: FC<TermsProps> = (props) => {
   const [form] = Form.useForm();
-  const navigate = useNavigate();
 
-  const handleSubmit = (values: AcceptTermsFormData) => {
-    console.log("Terms form submitted:", values);
-    navigate("/signup/payment");
+  const handleSaveAndContinue = () => {
+    props.onSaveAndContinue();
   };
 
   return (
@@ -98,7 +94,7 @@ export const Terms = () => {
           </div>
         </div>
 
-        <Form form={form} layout="vertical" onFinish={handleSubmit} autoComplete="off">
+        <Form form={form} layout="vertical" onFinish={handleSaveAndContinue} autoComplete="off">
           <Form.Item
             name="acceptTerms"
             valuePropName="checked"
@@ -115,7 +111,7 @@ export const Terms = () => {
             <Checkbox style={{ color: "var(--color-message-text)" }}>I accept these Terms and Conditions</Checkbox>
           </Form.Item>
 
-          <Divider />
+          {/* <Divider />
 
           <Title level={3} style={{ marginTop: "2rem", color: "var(--color-message-text)" }}>
             Communication Preferences
@@ -150,7 +146,7 @@ export const Terms = () => {
                 </Radio>
               </Space>
             </Radio.Group>
-          </Form.Item>
+          </Form.Item> */}
 
           <Form.Item style={{ marginTop: "2rem", textAlign: "right" }}>
             <Button
@@ -164,6 +160,7 @@ export const Terms = () => {
                 fontWeight: 600,
                 borderRadius: "20px",
               }}
+              loading={props.loading}
             >
               Save and Continue
             </Button>

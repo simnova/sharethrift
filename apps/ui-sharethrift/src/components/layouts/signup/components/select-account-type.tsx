@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { Button, Card } from "antd";
 import { CheckOutlined, SafetyOutlined } from "@ant-design/icons";
-import type { PersonalUser } from "../../../../generated.tsx";
+import type { PersonalUser, PersonalUserUpdateInput } from "../../../../generated.tsx";
 
 type PersonalAccountSubType = "non-verified-personal" | "verified-personal" | "verified-personal-plus";
 
@@ -39,9 +39,8 @@ const personalOptions: AccountOption[] = [
 
 interface SelectAccountTypeProps {
   currentUserData?: PersonalUser;
-  loadingUser: boolean;
-  handleUpdateAccountType: (accountType: string) => void;
-  savingAccountType: boolean;
+  loading: boolean;
+  onSaveAndContinue: (values: PersonalUserUpdateInput) => void;
 }
 
 export const SelectAccountType: React.FC<SelectAccountTypeProps> = (props) => {
@@ -58,6 +57,15 @@ export const SelectAccountType: React.FC<SelectAccountTypeProps> = (props) => {
 
   const handleSelectAccountType = (type: PersonalAccountSubType) => {
     setSelectedPersonalType(type);
+  };
+
+  const handleSaveAndContinue = () => {
+    props.onSaveAndContinue({
+      id: props?.currentUserData?.id,
+      account: {
+        accountType: selectedPersonalType as PersonalAccountSubType,
+      },
+    });
   };
 
   const renderAccountCard = (option: AccountOption, isSelected: boolean, onSelect: () => void) => (
@@ -228,13 +236,7 @@ export const SelectAccountType: React.FC<SelectAccountTypeProps> = (props) => {
           marginTop: "32px",
         }}
       >
-        <Button
-          type="default"
-          size="large"
-          onClick={() => props?.handleUpdateAccountType(selectedPersonalType)}
-          loading={props?.savingAccountType}
-          disabled={props?.loadingUser || props?.savingAccountType}
-        >
+        <Button type="default" size="large" onClick={handleSaveAndContinue} loading={props.loading}>
           Save and Continue
         </Button>
       </div>
