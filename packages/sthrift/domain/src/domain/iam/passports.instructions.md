@@ -1,5 +1,5 @@
 ---
-applyTo: "packages/domain/src/domain/iam/**/*.passport.ts"
+applyTo: "packages/sthrift/domain/src/domain/iam/**/*.passport.ts"
 ---
 
 # Copilot Instructions: Passports

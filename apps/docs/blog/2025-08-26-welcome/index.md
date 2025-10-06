@@ -18,7 +18,7 @@ Regular contributors can be added to the team through our development workflow.
 The project follows semantic versioning and clear release cycles:
 
 - Architecture Decision Records (ADRs) document key decisions
-- Domain contexts are organized under `packages/domain/src/domain/contexts/`
+- Domain contexts are organized under `packages/sthrift/domain/src/domain/contexts/`
 
 Sharethrift provides comprehensive examples for DDD implementation:
 

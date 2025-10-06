@@ -113,4 +113,16 @@ export class ConversationDomainAdapter
 	set twilioConversationId(value: string) {
 		this.doc.twilioConversationId = value;
 	}
+
+	get messages(): Domain.Contexts.Conversation.Conversation.MessageEntityReference[] {
+		// For now, return empty array since messages are not stored as subdocuments
+		// TODO: Implement proper message loading from separate collection
+		return [];
+	}
+
+	loadMessages(): Promise<Domain.Contexts.Conversation.Conversation.MessageEntityReference[]> {
+		// For now, return empty array since messages are not stored as subdocuments
+		// TODO: Implement proper message loading from separate collection or populate from subdocuments
+		return Promise.resolve([]);
+	}
 }
