@@ -1,5 +1,5 @@
 ---
-applyTo: "packages/domain/src/domain/contexts/**/*.ts"
+applyTo: "packages/sthrift/domain/src/domain/contexts/**/*.ts"
 ---
 
 # Copilot Instructions: Bounded Contexts

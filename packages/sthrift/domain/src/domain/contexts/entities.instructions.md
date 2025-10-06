@@ -1,5 +1,5 @@
 ---
-applyTo: "packages/domain/src/domain/contexts/**/*.entity.ts"
+applyTo: "packages/sthrift/domain/src/domain/contexts/**/*.entity.ts"
 ---
 
 # Copilot Instructions: Entities

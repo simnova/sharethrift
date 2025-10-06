@@ -234,6 +234,8 @@ function makeBaseProps(
 		loadReserver: async () => reserver,
 		listing,
 		loadListing: async () => listing,
+		messages: [],
+        loadMessages: async () => [],
 		twilioConversationId: 'twilio-123',
 		createdAt: new Date('2020-01-01T00:00:00Z'),
 		updatedAt: new Date('2020-01-02T00:00:00Z'),
@@ -272,6 +274,7 @@ test.for(feature, ({ Scenario, Background, BeforeEachScenario }) => {
 				baseProps.sharer,
 				baseProps.reserver,
 				baseProps.listing,
+				[],
 				passport,
 			);
 		});

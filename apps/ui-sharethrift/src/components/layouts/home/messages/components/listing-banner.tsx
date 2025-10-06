@@ -1,25 +1,19 @@
 import { Card, Typography, Avatar, Tag, Row, Col } from "antd";
 import { SwapOutlined, AppstoreAddOutlined } from "@ant-design/icons";
 import bikeListingImg from "@sthrift/ui-components/src/assets/item-images/bike-listing.png";
+import type { PersonalUser } from "../../../../../generated.tsx";
 
-// Listing banner assets (from Figma export)
 const imgRectangle26 = bikeListingImg;
 
 export interface ListingBannerProps {
-  title: string;
-  owner: string;
-  period: string;
-  status: string;
-  imageUrl?: string;
+  owner: PersonalUser;
 }
 
-export function ListingBanner({
-  title,
-  owner,
-  period,
-  status,
-  imageUrl,
-}: ListingBannerProps) {
+export const ListingBanner: React.FC<ListingBannerProps> = (props) => {
+  const period = "1 Month"; //todo
+  const status = "Request Submitted"; //todo
+  const imageUrl = imgRectangle26; //todo
+
   return (
     <Card
       bodyStyle={{ padding: 0 }}
@@ -42,7 +36,7 @@ export function ListingBanner({
           <Avatar
             shape="square"
             size={72}
-            src={imageUrl || imgRectangle26}
+            src={imageUrl}
             style={{
               borderRadius: 4,
               boxShadow: "0px 4px 5px 0px rgba(0,0,0,0.1)",
@@ -65,7 +59,7 @@ export function ListingBanner({
                   textAlign: "left",
                 }}
               >
-                {title}
+                {props.owner?.account?.profile?.firstName || "Unknown"}'s Listing
               </Typography.Title>
               <div
                 className="listingBannerOwnerRow"
@@ -85,7 +79,7 @@ export function ListingBanner({
                     lineHeight: "20px",
                   }}
                 >
-                  {owner}
+                  {props.owner?.account?.profile?.firstName || "Unknown"}
                 </span>
                 <Tag className="sharerIcon">
                   <SwapOutlined />
@@ -129,7 +123,7 @@ export function ListingBanner({
                 <AppstoreAddOutlined
                   style={{ color: "var(--color-background-2)", fontSize: 16 }}
                 />
-                {status}
+                {status} {/* TODO */}
               </Tag>
             </Col>
           </Row>
