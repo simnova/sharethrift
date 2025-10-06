@@ -20,7 +20,8 @@
 	},
 	"scripts": {
 		"prebuild": "biome lint",
-		"build": "tsc --build",
+		"build": "tsc --build && npm run copy-css",
+		"copy-css": "cpx \"src/**/*.{css,svg,png,jpg,jpeg,gif}\" dist/src",
 		"watch": "tsc- --watch",
 		"test": "vitest run",
 		"test:coverage": "vitest run --coverage",
