@@ -11,8 +11,8 @@ import {
 } from 'antd';
 import { ListingsGrid } from '@sthrift/ui-components';
 import { SettingOutlined, UserOutlined } from '@ant-design/icons';
-import './profile-view.overrides.css';
-import type { UserProfileData, UserListing } from './profile-view.types.ts';
+import '../components/profile-view.overrides.css';
+import type { UserProfileData, UserListing } from '../components/profile-view.types.ts';
 
 const { Text } = Typography;
 
