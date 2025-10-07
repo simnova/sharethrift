@@ -117,6 +117,11 @@ const mockTwoListings: UserListing[] = [
 // Story: Default profile view using container's fallback data
 // from error handler in profile-view.container.tsx
 export const DefaultView = Template.bind({});
+DefaultView.parameters = {
+  apolloClient: {
+    mocks: [], // Empty mocks - let query fail and use container fallback
+  },
+};
 
 // COMPONENT-ONLY STORIES
 // These show just the ProfileView component
