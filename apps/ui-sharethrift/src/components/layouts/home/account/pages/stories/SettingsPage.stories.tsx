@@ -1,82 +1,199 @@
 import type { Meta, StoryFn } from "@storybook/react";
-import { SettingsView } from "../settings-view.tsx";
-import type { SettingsUser } from "../settings-view.types.ts";
+import { MemoryRouter, Route, Routes } from "react-router-dom";
+import { AuthContext } from "react-oidc-context";
+import { type ReactNode, useMemo } from "react";
+import HomeRoutes from "../../../index.tsx";
+import { HomeAccountSettingsViewContainerCurrentUserDocument } from "../../../../../../generated.tsx";
 
 export default {
   title: "Pages/Account/Settings",
-  component: SettingsView,
+  component: HomeRoutes,
+  decorators: [
+    (Story) => (
+      <MockAuthWrapper>
+        <MemoryRouter initialEntries={["/account/settings"]}>
+          <Routes>
+            <Route path="*" element={<Story />} />
+          </Routes>
+        </MemoryRouter>
+      </MockAuthWrapper>
+    ),
+  ],
   parameters: {
     layout: "fullscreen",
+    // Note: Using /account/settings route highlights 'Account' menu item in navigation
+    // Similar to how /messages highlights 'Messages' menu item
   },
-} as Meta<typeof SettingsView>;
+} as Meta<typeof HomeRoutes>;
 
-// Mock user data with complete profile information
-const mockUserComplete: SettingsUser = {
-  id: "507f1f77bcf86cd799439099",
-  firstName: "Sarah",
-  lastName: "Williams",
-  username: "sarah_williams",
-  email: "sarah.williams@example.com",
-  accountType: "verified-plus",
-  location: {
-    address1: "123 Main Street",
-    address2: "Apt 4B",
-    city: "Philadelphia",
-    state: "PA",
-    country: "United States",
-    zipCode: "19105",
-  },
-  createdAt: "2024-01-15T10:00:00Z",
+// Mock authenticated user to bypass auth check in HomeRoutes
+const MockAuthWrapper = ({ children }: { children: ReactNode }) => {
+  const mockAuth: any = useMemo(
+    () => ({
+      isAuthenticated: true,
+      isLoading: false,
+      user: {
+        profile: {
+          sub: "507f1f77bcf86cd799439099",
+          name: "Test User",
+          email: "test@example.com",
+        },
+        access_token: "mock-access-token",
+      },
+      signinRedirect: async () => {},
+      signoutRedirect: async () => {},
+      removeUser: async () => {},
+      events: {},
+      settings: {},
+    }),
+    []
+  );
+
+  return (
+    <AuthContext.Provider value={mockAuth}>{children}</AuthContext.Provider>
+  );
 };
 
-// Mock user with partial profile information
-const mockUserPartial: SettingsUser = {
-  id: "507f1f77bcf86cd799439101",
-  firstName: "Jason",
-  lastName: "H",
-  username: "jay_hank",
-  email: "jay.hank@example.com",
-  accountType: "verified",
-  location: {
-    city: "New York",
-    state: "NY",
-    country: "United States",
-  },
-  billing: undefined,
-  createdAt: "2024-06-20T14:30:00Z",
-};
+const Template: StoryFn<typeof HomeRoutes> = () => <HomeRoutes />;
 
-const Template: StoryFn<typeof SettingsView> = (args) => (
-  <SettingsView {...args} />
-);
-
-// Story: Complete user profile with all fields filled
+// Story: Complete user profile with all fields filled (Verified account)
 export const CompleteProfile = Template.bind({});
-CompleteProfile.args = {
-  user: mockUserComplete,
-  onEditSection: (section: string) => console.log("Edit section:", section),
-  onChangePassword: () => console.log("Change password clicked"),
-};
-
-// Story: Partial user profile (some fields filled)
-export const PartialProfile = Template.bind({});
-PartialProfile.args = {
-  user: mockUserPartial,
-  onEditSection: (section: string) => console.log("Edit section:", section),
-  onChangePassword: () => console.log("Change password clicked"),
-};
-
-// Story: User with billing information (commented out for future reference)
-// NOTE: Billing display is not yet implemented in settings-view.tsx
-export const WithBillingInfo = Template.bind({});
-WithBillingInfo.args = {
-  user: {
-    ...mockUserComplete,
-    billing: {
-      subscriptionId: "sub_1234567890",
-      cybersourceCustomerId: "cust_abc123xyz",
-    },
+CompleteProfile.parameters = {
+  apolloClient: {
+    mocks: [
+      {
+        request: {
+          query: HomeAccountSettingsViewContainerCurrentUserDocument,
+        },
+        result: {
+          data: {
+            currentPersonalUserAndCreateIfNotExists: {
+              __typename: "PersonalUser",
+              id: "507f1f77bcf86cd799439099",
+              userType: "personal",
+              account: {
+                __typename: "PersonalUserAccount",
+                accountType: "verified",
+                email: "sarah.williams@example.com",
+                username: "sarah_williams",
+                profile: {
+                  __typename: "PersonalUserAccountProfile",
+                  firstName: "Sarah",
+                  lastName: "Williams",
+                  location: {
+                    __typename: "Location",
+                    address1: "123 Main Street",
+                    address2: "Apt 4B",
+                    city: "Philadelphia",
+                    state: "PA",
+                    country: "United States",
+                    zipCode: "19105",
+                  },
+                  billing: undefined,
+                },
+              },
+              createdAt: "2024-01-15T10:00:00Z",
+              updatedAt: "2025-10-01T08:30:00Z",
+            },
+          },
+        },
+      },
+    ],
   },
-  onEditSection: (section: string) => console.log("Edit section:", section),
-  onChangePassword: () => console.log("Change password clicked"),
+};
+
+// Story: Partial user profile
+export const PartialProfile = Template.bind({});
+PartialProfile.parameters = {
+  apolloClient: {
+    mocks: [
+      {
+        request: {
+          query: HomeAccountSettingsViewContainerCurrentUserDocument,
+        },
+        result: {
+          data: {
+            currentPersonalUserAndCreateIfNotExists: {
+              __typename: "PersonalUser",
+              id: "507f1f77bcf86cd799439101",
+              userType: "personal",
+              account: {
+                __typename: "PersonalUserAccount",
+                accountType: "verified-plus", // Note: Plan selection not yet dynamic
+                email: "john.doe@example.com",
+                username: "john_doe",
+                profile: {
+                  __typename: "PersonalUserAccountProfile",
+                  firstName: "John",
+                  lastName: "Doe",
+                  location: {
+                    __typename: "Location",
+                    address1: undefined,
+                    address2: undefined,
+                    city: "New York",
+                    state: "NY",
+                    country: "United States",
+                    zipCode: undefined,
+                  },
+                  billing: undefined,
+                },
+              },
+              createdAt: "2024-06-20T14:30:00Z",
+              updatedAt: "2025-09-15T11:20:00Z",
+            },
+          },
+        },
+      },
+    ],
+  },
+};
+
+// Story: Account with billing information (Billing to be implemented in settings-view)
+export const WithBillingInfo = Template.bind({});
+WithBillingInfo.parameters = {
+  apolloClient: {
+    mocks: [
+      {
+        request: {
+          query: HomeAccountSettingsViewContainerCurrentUserDocument,
+        },
+        result: {
+          data: {
+            currentPersonalUserAndCreateIfNotExists: {
+              __typename: "PersonalUser",
+              id: "507f1f77bcf86cd799439102",
+              userType: "personal",
+              account: {
+                __typename: "PersonalUserAccount",
+                accountType: "verified-plus", // Note: Plan selection implemented in settings-view
+                email: "emma.davis@example.com",
+                username: "emma_davis",
+                profile: {
+                  __typename: "PersonalUserAccountProfile",
+                  firstName: "Emma",
+                  lastName: "Davis",
+                  location: {
+                    __typename: "Location",
+                    address1: "456 Oak Avenue",
+                    address2: undefined,
+                    city: "Boston",
+                    state: "MA",
+                    country: "United States",
+                    zipCode: "02108",
+                  },
+                  billing: {
+                    __typename: "Billing",
+                    subscriptionId: "sub_1a2b3c4d5e6f",
+                    cybersourceCustomerId: "cust_xyz789abc123",
+                  },
+                },
+              },
+              createdAt: "2024-03-10T15:00:00Z",
+              updatedAt: "2025-10-05T14:20:00Z",
+            },
+          },
+        },
+      },
+    ],
+  },
 };
