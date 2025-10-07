@@ -2,7 +2,7 @@ import type { Meta, StoryFn } from "@storybook/react";
 import { MemoryRouter, Route, Routes } from "react-router-dom";
 import { AuthContext } from "react-oidc-context";
 import { type ReactNode, useMemo } from "react";
-import HomeRoutes from "../../index.tsx";
+import { HomeRoutes } from "../../index.tsx";
 import {
   HomeConversationListContainerConversationsByUserDocument,
   ConversationBoxContainerConversationDocument,
