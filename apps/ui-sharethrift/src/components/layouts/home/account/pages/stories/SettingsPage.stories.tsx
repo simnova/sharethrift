@@ -17,50 +17,32 @@ const mockUserComplete: SettingsUser = {
   lastName: "Williams",
   username: "sarah_williams",
   email: "sarah.williams@example.com",
-  accountType: "verified",
+  accountType: "verified-plus",
   location: {
     address1: "123 Main Street",
     address2: "Apt 4B",
     city: "Philadelphia",
     state: "PA",
     country: "United States",
-    zipCode: "19103",
-  },
-  billing: {
-    subscriptionId: "sub_1234567890",
-    cybersourceCustomerId: "cust_abc123xyz",
+    zipCode: "19105",
   },
   createdAt: "2024-01-15T10:00:00Z",
-};
-
-// Mock user with minimal profile information
-const mockUserMinimal: SettingsUser = {
-  id: "507f1f77bcf86cd799439100",
-  firstName: "",
-  lastName: "",
-  username: "new_user",
-  email: "new.user@example.com",
-  accountType: "non-verified",
-  location: {},
-  createdAt: "2025-10-01T08:00:00Z",
 };
 
 // Mock user with partial profile information
 const mockUserPartial: SettingsUser = {
   id: "507f1f77bcf86cd799439101",
-  firstName: "John",
-  lastName: "Doe",
-  username: "john_doe",
-  email: "john.doe@example.com",
-  accountType: "verified-plus",
+  firstName: "Jason",
+  lastName: "H",
+  username: "jay_hank",
+  email: "jay.hank@example.com",
+  accountType: "verified",
   location: {
     city: "New York",
     state: "NY",
     country: "United States",
   },
-  billing: {
-    subscriptionId: "sub_0987654321",
-  },
+  billing: undefined,
   createdAt: "2024-06-20T14:30:00Z",
 };
 
@@ -76,14 +58,6 @@ CompleteProfile.args = {
   onChangePassword: () => console.log("Change password clicked"),
 };
 
-// Story: Minimal user profile (new user with incomplete information)
-export const MinimalProfile = Template.bind({});
-MinimalProfile.args = {
-  user: mockUserMinimal,
-  onEditSection: (section: string) => console.log("Edit section:", section),
-  onChangePassword: () => console.log("Change password clicked"),
-};
-
 // Story: Partial user profile (some fields filled)
 export const PartialProfile = Template.bind({});
 PartialProfile.args = {
@@ -92,12 +66,16 @@ PartialProfile.args = {
   onChangePassword: () => console.log("Change password clicked"),
 };
 
-// Story: User without billing information
-export const NoBillingInfo = Template.bind({});
-NoBillingInfo.args = {
+// Story: User with billing information (commented out for future reference)
+// NOTE: Billing display is not yet implemented in settings-view.tsx
+export const WithBillingInfo = Template.bind({});
+WithBillingInfo.args = {
   user: {
     ...mockUserComplete,
-    billing: undefined,
+    billing: {
+      subscriptionId: "sub_1234567890",
+      cybersourceCustomerId: "cust_abc123xyz",
+    },
   },
   onEditSection: (section: string) => console.log("Edit section:", section),
   onChangePassword: () => console.log("Change password clicked"),
