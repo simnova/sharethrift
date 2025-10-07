@@ -61,125 +61,8 @@ const MockAuthWrapper = ({ children }: { children: ReactNode }) => {
 
 const Template: StoryFn<typeof HomeRoutes> = () => <HomeRoutes />;
 
-// Story: Default profile view with GraphQL mock data (3 listings)
-export const DefaultView = Template.bind({});
-DefaultView.parameters = {
-  apolloClient: {
-    mocks: [
-      {
-        request: {
-          query: HomeAccountProfileViewContainerCurrentUserDocument,
-        },
-        result: {
-          data: {
-            currentPersonalUserAndCreateIfNotExists: {
-              __typename: "PersonalUser",
-              id: "507f1f77bcf86cd799439099",
-              userType: "personal",
-              account: {
-                __typename: "PersonalUserAccount",
-                accountType: "verified",
-                email: "sarah.williams@example.com",
-                username: "sarah_williams",
-                profile: {
-                  __typename: "PersonalUserAccountProfile",
-                  firstName: "Sarah",
-                  lastName: "Williams",
-                  location: {
-                    __typename: "Location",
-                    city: "Philadelphia",
-                    state: "PA",
-                  },
-                },
-              },
-              createdAt: "2024-01-15T10:00:00Z",
-            },
-          },
-        },
-      },
-      {
-        request: {
-          query: HomeAccountProfileViewContainerUserListingsDocument,
-        },
-        result: {
-          data: {
-            itemListings: [
-              {
-                __typename: "ItemListing",
-                id: "64f7a9c2d1e5b97f3c9d0a41",
-                title: "City Bike",
-                description:
-                  "Perfect city bike for commuting and leisure rides around the neighborhood.",
-                category: "Vehicles & Transportation",
-                location: "Philadelphia, PA",
-                state: "Published",
-                images: ["/assets/item-images/bike.png"],
-                createdAt: "2024-08-01T00:00:00.000Z",
-                sharingPeriodStart: "2024-08-11T00:00:00.000Z",
-                sharingPeriodEnd: "2024-12-23T00:00:00.000Z",
-                sharer: "Sarah W.",
-                updatedAt: "2024-08-15T00:00:00.000Z",
-              },
-              {
-                __typename: "ItemListing",
-                id: "64f7a9c2d1e5b97f3c9d0a13",
-                title: "HD Projector",
-                description: "HD projector for movie nights and presentations.",
-                category: "Electronics",
-                location: "Philadelphia, PA",
-                state: "Published",
-                images: ["/assets/item-images/projector.png"],
-                createdAt: "2024-08-13T00:00:00.000Z",
-                sharingPeriodStart: "2024-08-13T00:00:00.000Z",
-                sharingPeriodEnd: "2024-12-23T00:00:00.000Z",
-                sharer: "Sarah W.",
-                updatedAt: "2024-08-20T00:00:00.000Z",
-              },
-              {
-                __typename: "ItemListing",
-                id: "64f7a9c2d1e5b97f3c9d0a25",
-                title: "Camping Tent",
-                description:
-                  "4-person camping tent, perfect for weekend adventures.",
-                category: "Sports & Outdoors",
-                location: "Philadelphia, PA",
-                state: "Published",
-                images: ["/assets/item-images/tent.png"],
-                createdAt: "2024-09-05T00:00:00.000Z",
-                sharingPeriodStart: "2024-09-10T00:00:00.000Z",
-                sharingPeriodEnd: "2024-11-30T00:00:00.000Z",
-                sharer: "Sarah W.",
-                updatedAt: "2024-09-06T00:00:00.000Z",
-              },
-            ],
-          },
-        },
-      },
-    ],
-  },
-};
-
-// ========================================
-// COMPONENT-ONLY STORIES (isolated testing)
-// These show just the ProfileView component
-// ========================================
-
-const ComponentTemplate: StoryFn<{
-  user: UserProfileData;
-  listings: UserListing[];
-}> = ({ user, listings }) => (
-  <ProfileView
-    user={user}
-    listings={listings}
-    isOwnProfile={true}
-    onEditSettings={() => console.log("Navigate to settings")}
-    onListingClick={(listingId: string) =>
-      console.log("Navigate to listing:", listingId)
-    }
-  />
-);
-
-const mockUserComplete: UserProfileData = {
+// SHARED MOCK DATA
+const mockUserSarah: UserProfileData = {
   id: "507f1f77bcf86cd799439099",
   firstName: "Sarah",
   lastName: "Williams",
@@ -193,7 +76,21 @@ const mockUserComplete: UserProfileData = {
   createdAt: "2024-01-15T10:00:00Z",
 };
 
-const mockListingsMultiple: UserListing[] = [
+const mockUserAlex: UserProfileData = {
+  id: "507f1f77bcf86cd799439102",
+  firstName: "Alex",
+  lastName: "",
+  username: "new_user",
+  email: "new.user@example.com",
+  accountType: "non-verified",
+  location: {
+    city: "Boston",
+    state: "MA",
+  },
+  createdAt: "2025-10-01T08:00:00Z",
+};
+
+const mockTwoListings: UserListing[] = [
   {
     id: "64f7a9c2d1e5b97f3c9d0a41",
     title: "City Bike",
@@ -221,28 +118,97 @@ const mockListingsMultiple: UserListing[] = [
   },
 ];
 
+// Story: Default profile view with GraphQL mock data (3 listings)
+export const DefaultView = Template.bind({});
+DefaultView.parameters = {
+  apolloClient: {
+    mocks: [
+      {
+        request: {
+          query: HomeAccountProfileViewContainerCurrentUserDocument,
+        },
+        result: {
+          data: {
+            currentPersonalUserAndCreateIfNotExists: {
+              __typename: "PersonalUser",
+              id: "507f1f77bcf86cd799439099",
+              userType: "personal",
+              account: {
+                __typename: "PersonalUserAccount",
+                accountType: mockUserSarah.accountType,
+                email: mockUserSarah.email,
+                username: mockUserSarah.username,
+                profile: {
+                  __typename: "PersonalUserAccountProfile",
+                  firstName: mockUserSarah.firstName,
+                  lastName: mockUserSarah.lastName,
+                  location: {
+                    __typename: "Location",
+                    city: mockUserSarah.location.city,
+                    state: mockUserSarah.location.state,
+                  },
+                },
+              },
+              createdAt: mockUserSarah.createdAt,
+            },
+          },
+        },
+      },
+      {
+        request: {
+          query: HomeAccountProfileViewContainerUserListingsDocument,
+        },
+        result: {
+          data: {
+            itemListings: [
+              {
+                __typename: "ItemListing",
+                ...mockTwoListings[0],
+                sharer: "Sarah W.",
+                updatedAt: "2024-08-15T00:00:00.000Z",
+              },
+              {
+                __typename: "ItemListing",
+                ...mockTwoListings[1],
+                sharer: "Sarah W.",
+                updatedAt: "2024-08-20T00:00:00.000Z",
+              },
+            ],
+          },
+        },
+      },
+    ],
+  },
+};
+
+// COMPONENT-ONLY STORIES (isolated testing)
+// These show just the ProfileView component
+
+const ComponentTemplate: StoryFn<{
+  user: UserProfileData;
+  listings: UserListing[];
+}> = ({ user, listings }) => (
+  <ProfileView
+    user={user}
+    listings={listings}
+    isOwnProfile={true}
+    onEditSettings={() => console.log("Navigate to settings")}
+    onListingClick={(listingId: string) =>
+      console.log("Navigate to listing:", listingId)
+    }
+  />
+);
+
 // Story: Component with two listings
 export const WithTwoListings = ComponentTemplate.bind({});
 WithTwoListings.args = {
-  user: mockUserComplete,
-  listings: mockListingsMultiple,
+  user: mockUserSarah,
+  listings: mockTwoListings,
 };
 
 // Story: Component with no listings (new user empty state)
 export const NoListings = ComponentTemplate.bind({});
 NoListings.args = {
-  user: {
-    id: "507f1f77bcf86cd799439102",
-    firstName: "Alex",
-    lastName: "Smith",
-    username: "new_user",
-    email: "new.user@example.com",
-    accountType: "non-verified",
-    location: {
-      city: "Boston",
-      state: "MA",
-    },
-    createdAt: "2025-10-01T08:00:00Z",
-  },
+  user: mockUserAlex,
   listings: [],
 };
