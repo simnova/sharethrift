@@ -3,10 +3,6 @@ import { MemoryRouter, Route, Routes } from "react-router-dom";
 import { AuthContext } from "react-oidc-context";
 import { type ReactNode, useMemo } from "react";
 import HomeRoutes from "../../../index.tsx";
-import {
-  HomeAccountProfileViewContainerCurrentUserDocument,
-  HomeAccountProfileViewContainerUserListingsDocument,
-} from "../../../../../../generated.tsx";
 import { ProfileView } from "../profile-view.tsx";
 import type { UserProfileData, UserListing } from "../profile-view.types.ts";
 
@@ -73,7 +69,7 @@ const mockUserSarah: UserProfileData = {
     city: "Philadelphia",
     state: "PA",
   },
-  createdAt: "2024-01-15T10:00:00Z",
+  createdAt: "2024-08-01T00:00:00Z",
 };
 
 const mockUserAlex: UserProfileData = {
@@ -106,7 +102,7 @@ const mockTwoListings: UserListing[] = [
   },
   {
     id: "64f7a9c2d1e5b97f3c9d0a13",
-    title: "HD Projector",
+    title: "Projector",
     description: "HD projector for movie nights and presentations.",
     category: "Electronics",
     location: "Philadelphia, PA",
@@ -118,70 +114,11 @@ const mockTwoListings: UserListing[] = [
   },
 ];
 
-// Story: Default profile view with GraphQL mock data (3 listings)
+// Story: Default profile view using container's fallback data
+// from error handler in profile-view.container.tsx
 export const DefaultView = Template.bind({});
-DefaultView.parameters = {
-  apolloClient: {
-    mocks: [
-      {
-        request: {
-          query: HomeAccountProfileViewContainerCurrentUserDocument,
-        },
-        result: {
-          data: {
-            currentPersonalUserAndCreateIfNotExists: {
-              __typename: "PersonalUser",
-              id: "507f1f77bcf86cd799439099",
-              userType: "personal",
-              account: {
-                __typename: "PersonalUserAccount",
-                accountType: mockUserSarah.accountType,
-                email: mockUserSarah.email,
-                username: mockUserSarah.username,
-                profile: {
-                  __typename: "PersonalUserAccountProfile",
-                  firstName: mockUserSarah.firstName,
-                  lastName: mockUserSarah.lastName,
-                  location: {
-                    __typename: "Location",
-                    city: mockUserSarah.location.city,
-                    state: mockUserSarah.location.state,
-                  },
-                },
-              },
-              createdAt: mockUserSarah.createdAt,
-            },
-          },
-        },
-      },
-      {
-        request: {
-          query: HomeAccountProfileViewContainerUserListingsDocument,
-        },
-        result: {
-          data: {
-            itemListings: [
-              {
-                __typename: "ItemListing",
-                ...mockTwoListings[0],
-                sharer: "Sarah W.",
-                updatedAt: "2024-08-15T00:00:00.000Z",
-              },
-              {
-                __typename: "ItemListing",
-                ...mockTwoListings[1],
-                sharer: "Sarah W.",
-                updatedAt: "2024-08-20T00:00:00.000Z",
-              },
-            ],
-          },
-        },
-      },
-    ],
-  },
-};
 
-// COMPONENT-ONLY STORIES (isolated testing)
+// COMPONENT-ONLY STORIES
 // These show just the ProfileView component
 
 const ComponentTemplate: StoryFn<{
