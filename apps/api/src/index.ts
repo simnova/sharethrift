@@ -37,7 +37,7 @@ Cellix.initializeInfrastructureServices<ApiContextSpec, ApplicationServices>(
 				new ServiceTokenValidation(TokenValidationConfig.portalTokens),
 			)
 			.registerInfrastructureService(new ServiceTwilio())
-            .registerInfrastructureService(new ServiceCybersource());
+			.registerInfrastructureService(new ServiceCybersource());
 	},
 )
 	.setContext((serviceRegistry) => {
@@ -52,9 +52,14 @@ Cellix.initializeInfrastructureServices<ApiContextSpec, ApplicationServices>(
 
 		return {
 			dataSourcesFactory,
-			tokenValidationService:serviceRegistry.getInfrastructureService<ServiceTokenValidation>(ServiceTokenValidation),
-			paymentService: serviceRegistry.getInfrastructureService<ServiceCybersource>(ServiceCybersource),
-
+			tokenValidationService:
+				serviceRegistry.getInfrastructureService<ServiceTokenValidation>(
+					ServiceTokenValidation,
+				),
+			paymentService:
+				serviceRegistry.getInfrastructureService<ServiceCybersource>(
+					ServiceCybersource,
+				),
 		};
 	})
 	.initializeApplicationServices((context) =>
