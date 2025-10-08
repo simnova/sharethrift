@@ -4,9 +4,6 @@ import { AllListingsTableContainer } from './all-listings-table.container.tsx';
 import { RequestsTableContainer } from './requests-table.container.tsx';
 import { useState } from 'react';
 import styles from './my-listings-dashboard.module.css';
-// eslint-disable-next-line import/no-absolute-path, @typescript-eslint/ban-ts-comment
-// @ts-ignore - allow raw import string
-// import MyListingsQuerySource from './my-listings-dashboard.container.graphql?raw';
 
 export interface MyListingsDashboardProps {
 	onCreateListing: () => void;

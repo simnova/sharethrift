@@ -74,7 +74,6 @@ const getMockListingReservationRequests = (
 	const base = getMockReservationRequests('507f1f77bcf86cd799439099', 'active');
 	return base.map((r) => ({
 		...r,
-		id: r.id,
 		listing: {
 			...r.listing,
 			sharer: {

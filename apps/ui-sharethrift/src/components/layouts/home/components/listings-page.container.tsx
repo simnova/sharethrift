@@ -1,68 +1,33 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { gql, useQuery } from '@apollo/client';
-import { ListingsPage } from './listings-page.tsx';
-// eslint-disable-next-line import/no-absolute-path, @typescript-eslint/ban-ts-comment
-// @ts-ignore - allow raw import string
-import ListingsPageQuerySource from './listings-page.container.graphql?raw';
+import { useQuery, gql } from '@apollo/client';
+import { ListingsPage, type ItemListing } from './listings-page.tsx';
+import { type GetListingsQuery } from '../../../../generated.tsx';
 import { useCreateListingNavigation } from './create-listing/hooks/use-create-listing-navigation.ts';
-export interface ItemListing {
-	_id: string;
-	sharer: string; // User reference
-	title: string;
-	description: string;
-	category: string;
-	location: string;
-	sharingPeriodStart: Date;
-	sharingPeriodEnd: Date;
-	state?:
-		| 'Published'
-		| 'Paused'
-		| 'Cancelled'
-		| 'Drafted'
-		| 'Expired'
-		| 'Blocked'
-		| 'Appeal Requested';
-	updatedAt?: Date;
-	createdAt?: Date;
-	sharingHistory?: string[]; // objectid[]
-	reports?: number;
-	images?: string[]; // For UI purposes, we'll add image URLs
-}
+// Inline GraphQL query using gql instead of generated DocumentNode
+const GET_LISTINGS = gql`
+	query GetListings {
+		itemListings {
+			id
+			title
+			description
+			category
+			location
+			state
+			images
+			createdAt
+			updatedAt
+			sharingPeriodStart
+			sharingPeriodEnd
+			schemaVersion
+			version
+			reports
+			sharingHistory
+		}
+	}
+`;
 
-type ItemListingState =
-	| 'Published'
-	| 'Paused'
-	| 'Cancelled'
-	| 'Drafted'
-	| 'Expired'
-	| 'Blocked'
-	| 'Appeal Requested';
-
-interface GraphQLItemListing {
-	id: string;
-	title: string;
-	description: string;
-	category: string;
-	location: string;
-	state: ItemListingState;
-	images: string[];
-	createdAt: string;
-	updatedAt: string;
-	sharingPeriodStart: string;
-	sharingPeriodEnd: string;
-	sharer: string;
-	schemaVersion: string;
-	version: number;
-	reports: number;
-	sharingHistory: string[];
-}
-
-interface ListingsQueryData {
-	itemListings: GraphQLItemListing[];
-}
-
-const GET_LISTINGS = gql(ListingsPageQuerySource);
+type GraphQLItemListing = GetListingsQuery['itemListings'][number];
 
 interface ListingsPageContainerProps {
 	isAuthenticated: boolean;
@@ -71,22 +36,27 @@ interface ListingsPageContainerProps {
 export function ListingsPageContainer({
 	isAuthenticated,
 }: ListingsPageContainerProps) {
-	// State for search query and pagination
 	const [searchQuery, setSearchQuery] = useState('');
 	const [currentPage, setCurrentPage] = useState(1);
 	const pageSize = 20;
 
 	const [selectedCategory, setSelectedCategory] = useState('');
-	const { data, loading, error } = useQuery<ListingsQueryData>(GET_LISTINGS);
+	const { data, loading, error } = useQuery<GetListingsQuery>(GET_LISTINGS);
 
 	const filteredListings = data?.itemListings
 		? data.itemListings.filter((listing: GraphQLItemListing) => {
-				if (selectedCategory && selectedCategory !== 'All') {
-					if (listing.category !== selectedCategory) return false;
+				if (
+					selectedCategory &&
+					selectedCategory !== 'All' &&
+					listing.category !== selectedCategory
+				) {
+					return false;
 				}
-				if (searchQuery) {
-					if (!listing.title.toLowerCase().includes(searchQuery.toLowerCase()))
-						return false;
+				if (
+					searchQuery &&
+					!listing.title.toLowerCase().includes(searchQuery.toLowerCase())
+				) {
+					return false;
 				}
 				return true;
 			})
@@ -135,22 +105,20 @@ export function ListingsPageContainer({
 			onSearch={handleSearch}
 			selectedCategory={selectedCategory}
 			onCategoryChange={handleCategoryChange}
-			listings={currentListings.map(
-				(listing: GraphQLItemListing): ItemListing => ({
-					_id: listing.id,
-					title: listing.title,
-					description: listing.description,
-					category: listing.category,
-					location: listing.location,
-					state: listing.state,
-					images: listing.images,
-					sharingPeriodStart: new Date(listing.sharingPeriodStart),
-					sharingPeriodEnd: new Date(listing.sharingPeriodEnd),
-					sharer: listing.sharer,
-					createdAt: new Date(listing.createdAt),
-					updatedAt: new Date(listing.updatedAt),
-				}),
-			)}
+			listings={currentListings.map((listing): ItemListing => ({
+				_id: String(listing.id),
+				title: listing.title,
+				description: listing.description,
+				category: listing.category,
+				location: listing.location,
+				state: (listing.state as ItemListing['state']) || undefined,
+				images: listing.images ?? [],
+				sharingPeriodStart: new Date(listing.sharingPeriodStart as unknown as string),
+				sharingPeriodEnd: new Date(listing.sharingPeriodEnd as unknown as string),
+				sharer: '',
+				createdAt: listing.createdAt ? new Date(listing.createdAt as unknown as string) : undefined,
+				updatedAt: listing.updatedAt ? new Date(listing.updatedAt as unknown as string) : undefined,
+			}))}
 			currentPage={currentPage}
 			pageSize={pageSize}
 			totalListings={totalListings}

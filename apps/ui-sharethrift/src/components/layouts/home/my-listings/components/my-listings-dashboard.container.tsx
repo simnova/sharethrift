@@ -24,7 +24,7 @@ export function MyListingsDashboardContainer() {
 			hasDataComponent={
 				<MyListingsDashboard
 					onCreateListing={handleCreateListing}
-					requestsCount={data?.myListingsAll.items.length ?? 0}
+					requestsCount={data?.myListingsAll.total ?? 0}
 				/>
 			}
 		/>
