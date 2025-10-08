@@ -13,7 +13,8 @@
 		"clean": "rimraf dist"
 	},
 	"dependencies": {
-		"mongodb-memory-server": "^10.1.4"
+		"mongodb-memory-server": "^10.1.4",
+		"mongoose": "8.18.0"
 	},
 	"devDependencies": {
 		"@cellix/typescript-config": "*",

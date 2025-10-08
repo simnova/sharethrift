@@ -46,6 +46,7 @@ export async function startMockMongoDB(config: MongoMemoryServerConfig) {
 						const collections = (await db.listCollections().toArray()).map(
 							(c) => c.name,
 						);
+
 						if (
 							config.collectionsToSeed.every((name) =>
 								collections.includes(name),

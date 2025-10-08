@@ -17,7 +17,7 @@ const collectionsToSeed = [
 // biome-ignore lint:useLiteralKeys
 const port = Number(process.env['PORT'] ?? 50000);
 // biome-ignore lint:useLiteralKeys
-const dbName = process.env['DB_NAME'] ?? 'test';
+const dbName = process.env['DB_NAME'] ?? 'sharethrift';
 // biome-ignore lint:useLiteralKeys
 const replSetName = process.env['REPL_SET_NAME'] ?? 'rs0';
 
