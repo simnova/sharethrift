@@ -1,0 +1,28 @@
+{
+	"IsEncrypted": false,
+	"Values": {
+		"FUNCTIONS_WORKER_RUNTIME": "node",
+		"NODE_ENV": "development",
+		"languageWorkers__node__arguments": "--inspect=5858",
+
+		"AzureWebJobsStorage": "UseDevelopmentStorage=true",
+		"AZURE_STORAGE_CONNECTION_STRING": "UseDevelopmentStorage=true",
+		"APPLICATIONINSIGHTS_CONNECTION_STRING": "",
+
+		"COSMOSDB_PORT": "50000",
+		"COSMOSDB_CONNECTION_STRING": "mongodb://127.0.0.1:50000/sharethrift",
+		"COSMOSDB_DBNAME": "sharethrift",
+
+		"USER_PORTAL_OIDC_AUDIENCE": "http://localhost:3000/auth-redirect",
+		"USER_PORTAL_OIDC_ENDPOINT": "http://localhost:4000/.well-known/jwks.json",
+		"USER_PORTAL_OIDC_ISSUER": "http://localhost:4000",
+
+		"TWILIO_ACCOUNT_SID": "ACTWILIO_ACCOUNT_SID",
+		"TWILIO_AUTH_TOKEN": "TWILIO_AUTH_TOKEN",
+		"PAYMENT_API_URL": "http://localhost:3001"
+	},
+	"Host": {
+		"LocalHttpPort": 7071,
+		"CORS": "*"
+	}
+}
