@@ -23,7 +23,8 @@
 	},
 	"dependencies": {
 		"@cellix/domain-seedwork": "*",
-		"@cellix/event-bus-seedwork-node": "*"
+		"@cellix/event-bus-seedwork-node": "*",
+		"@types/mongoose": "5.11.96"
 	},
 	"devDependencies": {
 		"@cellix/typescript-config": "*",
