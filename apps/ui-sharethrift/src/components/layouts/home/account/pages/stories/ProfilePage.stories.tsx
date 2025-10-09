@@ -1,4 +1,5 @@
 import type { Meta, StoryFn } from "@storybook/react";
+import { action } from "storybook/actions";
 import { MemoryRouter, Route, Routes } from "react-router-dom";
 import { AuthContext } from "react-oidc-context";
 import { type ReactNode, useMemo } from "react";
@@ -134,10 +135,8 @@ const ComponentTemplate: StoryFn<{
     user={user}
     listings={listings}
     isOwnProfile={true}
-    onEditSettings={() => console.log("Navigate to settings")}
-    onListingClick={(listingId: string) =>
-      console.log("Navigate to listing:", listingId)
-    }
+    onEditSettings={action("Navigate to settings")}
+    onListingClick={action("Navigate to listing:")} //#171: Implement Storybook 'Action" functionality
   />
 );
 
@@ -154,3 +153,4 @@ NoListings.args = {
   user: mockUserAlex,
   listings: [],
 };
+//NOTE: no listings story does not yet have button functionality in ProfileView
