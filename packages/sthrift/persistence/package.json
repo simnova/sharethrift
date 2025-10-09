@@ -24,7 +24,8 @@
         "@cellix/event-bus-seedwork-node": "*",
         "@cellix/mongoose-seedwork": "*",
         "@sthrift/domain": "*",
-        "@sthrift/data-sources-mongoose-models": "*"
+        "@sthrift/data-sources-mongoose-models": "*",
+        "@sthrift/service-blob-storage": "*"
     },
     "devDependencies": {
         "@cellix/typescript-config": "*",

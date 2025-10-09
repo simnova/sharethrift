@@ -19,7 +19,8 @@
     "dependencies": {
         "@sthrift/context-spec": "*",
         "@sthrift/domain": "*",
-        "@sthrift/persistence": "*"
+        "@sthrift/persistence": "*",
+        "@sthrift/service-blob-storage": "*"
     },
     "devDependencies": {
         "@cellix/typescript-config": "*",

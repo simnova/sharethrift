@@ -6,6 +6,9 @@ import type { BlobUploadCommonResponse } from '@azure/storage-blob';
 import type { ServiceBase } from "@cellix/api-services-spec";
 
 import type { BlobRequestSettings, BlobStorageBase, FileInfo } from './interface.ts';
+
+export * from './interface.ts';
+
 export class ServiceBlobStorage implements BlobStorageBase, ServiceBase<ServiceBlobStorage> {
 
   private readonly accountName:string;
@@ -13,11 +16,14 @@ export class ServiceBlobStorage implements BlobStorageBase, ServiceBase<ServiceB
 
 //   constructor(accountName:string, accountKey:string){
   constructor(){
-    if (!process.env['STORAGE_ACCOUNT_NAME'] || !process.env['STORAGE_ACCOUNT_KEY']) {
-      throw new Error('STORAGE_ACCOUNT_NAME and STORAGE_ACCOUNT_KEY must be set in environment variables');
-    }
-    this.accountName = process.env['STORAGE_ACCOUNT_NAME']
-    this.accountKey = process.env['STORAGE_ACCOUNT_KEY'];
+    
+    // if (!process.env['STORAGE_ACCOUNT_NAME'] || !process.env['STORAGE_ACCOUNT_KEY']) {
+    //   throw new Error('STORAGE_ACCOUNT_NAME and STORAGE_ACCOUNT_KEY must be set in environment variables');
+    // }
+    // this.accountName = process.env['STORAGE_ACCOUNT_NAME']
+    // this.accountKey = process.env['STORAGE_ACCOUNT_KEY'];
+      this.accountName = "teststorageaccount"
+    this.accountKey = "Eby8vdM02xNOcqFlqUwJPLlmEtlCDXJ1OUzFT50uSRZ6IFsuFq2UVErCz4I6tq/K1SZFPTOtr/KBHBeksoGMGw=="
   }
 
   public startUp(): Promise<Exclude<ServiceBlobStorage, ServiceBase>> {
