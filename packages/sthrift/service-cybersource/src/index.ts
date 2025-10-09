@@ -68,7 +68,7 @@ export class ServiceCybersource
 
 	async generatePublicKey(): Promise<string> {
 		try {
-			const { data } = await this.service.post('/pts/v2/public-key');
+			const { data } = await this.service.get('/pts/v2/public-key');
 			return data.publicKey;
 		} catch (error) {
 			console.error('Error generating public key:', error);

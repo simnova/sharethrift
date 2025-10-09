@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <style>
+      * {
+        background-color: transparent;
+        border: none;
+        -webkit-box-sizing: border-box;
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+      }
+
+      body,
+      form,
+      input {
+        height: 100%;
+        left: 0;
+        position: absolute;
+        top: 0;
+        width: 100%;
+      }
+
+      label {
+        left: -9999px;
+        position: absolute;
+      }
+
+      :focus {
+        outline: 0;
+      }
+
+      ::-ms-clear,
+      input::-ms-clear {
+        display: none;
+      }
+
+      .field-description,
+      .focus-helper {
+        height: 1px;
+        left: -1px;
+        opacity: 0;
+        pointer-events: none;
+        width: 1px;
+        z-index: -1;
+      }
+
+      .autocomplete {
+        height: 2px;
+        left: -2px;
+        pointer-events: none;
+        width: 2px;
+        z-index: -1;
+      }
+    </style>
+  </head>
+  <body>
+    <script defer="defer" src="iframe.min.js"></script>
+  </body>
+</html>

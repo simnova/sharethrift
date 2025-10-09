@@ -1,5 +1,6 @@
 import express from 'express';
 import type { Request, Response } from 'express';
+import jwt from 'jsonwebtoken';
 import type {
 	CustomerProfile,
 	PaymentTokenInfo,
@@ -18,22 +19,202 @@ import type {
 	SubscriptionsListResponse,
 	PaymentInstrumentInfo,
 } from './payment-interface.ts';
-
+import fs from 'fs';
+import path from 'path';
+import { fileURLToPath } from 'url';
+const __dirname = path.dirname(fileURLToPath(import.meta.url));
+// Serve static files for /microform/bundle/v2.7.1 (including iframe.min.js)
 const app = express();
 app.disable('x-powered-by');
 const port = 3001;
 
+// Enable CORS for all origins (or restrict to 'http://localhost:3000' if needed)
+app.use((req, res, next) => {
+	res.header('Access-Control-Allow-Origin', 'http://localhost:3000');
+	res.header(
+		'Access-Control-Allow-Methods',
+		'GET,POST,PUT,PATCH,DELETE,OPTIONS',
+	);
+	res.header(
+		'Access-Control-Allow-Headers',
+		'Origin, X-Requested-With, Content-Type, Accept, Authorization',
+	);
+	if (req.method === 'OPTIONS') {
+		res.sendStatus(200);
+		return;
+	}
+	next();
+});
+
 app.use(express.json());
+app.use('/microform/bundle/v2.7.1', express.static(__dirname));
+// Cybersource mock config
+const CYBERSOURCE_MERCHANT_ID = 'simnova_sharethrift';
+
+// Simulate /flex/v2/capture-contexts endpoint
+app.post('/flex/v2/capture-contexts', (_req, res) => {
+	const now = Math.floor(Date.now() / 1000);
+	const mockJwk = {
+		kty: 'RSA',
+		e: 'AQAB',
+		use: 'enc',
+		n: 'utMfPO70WAFJx5ccolGOi_UOhoa4ZVnEsBeJ67mDU2tSPpTDPCG9KojqNjk7-I0YZHrkHWK4V3fRVFBoOiGOM21MMDM5laoZIhvTTQD-bjuw6KTM75qLvkrYJfYKTFpP8U_xXWea_AySSSdtYlZi7ROnY-Lb97zgiurNJZ-XjHnnSoBNjS888YE_U0da7gVBSU-CDjajMOwAQi1ZNmjwyA_rd_UjTO8j5RyZjI60qpRstXok7T8mj3JozStZhbbcb7-c8WPZAv4y3xQ--kXSymtr2o0iyZBMRqf0xqHTNSYtWxDPKBF2fxu92-IxVr5s_uOno3CZDMSpb2-kADr8ow',
+		kid: '8ffbb5cebd99379fbc1aef7c3040e79d', // Replace with your Cybersource key ID
+	};
+	const payload = {
+		jti: 'QdJ3Tj3Kp0U6vC2m',
+		iss: 'Flex API',
+		iat: now,
+		exp: now + 900,
+		flx: {
+			path: '/flex/v2/tokens',
+			data: 'fTdsCnVFJpOHwltOD91CxRAAEOl5LzG2IXlGH/ZaA3jh+jbKzwCJxbb/0u6Gh9OlBXXtEfeCFoU5Y5emKN3d6eeq3WUfvXqswVm0Q9l6A1sMRk+xMCVFuUWN3SyFiyvDSNWF+jUsYfISkq2+dH+ttnH/hO/zn/FMNQQ64DRrCC+jR7sPOKITWwWAnpC84InJS4Nk',
+			origin: 'http://localhost:3001',
+			jwk: mockJwk,
+		},
+		ctx: [
+			{
+				type: 'mf-1.0.0',
+				data: {
+					clientLibrary:
+						'https://testflex.cybersource.com/microform/bundle/v1/flex-microform.min.js',
+					targetOrigins: ['http://localhost:3000'],
+					mfOrigin: 'http://localhost:3001',
+				},
+			},
+		],
+	};
+	const header = {
+		alg: 'RS256',
+		kid: 'zu',
+	};
+
+	const privateKey = fs.readFileSync(
+		path.join(__dirname, 'cybersource-private-key.pem'),
+		'utf8',
+	);
+	const token = jwt.sign(payload, privateKey, {
+		algorithm: 'RS256',
+		header,
+	});
+	res.json({ captureContext: token });
+});
+
+// Simulate /payments/v1/authorizations endpoint
+app.post('/payments/v1/authorizations', (req, res) => {
+	res.json({
+		status: 'AUTHORIZED',
+		id: 'mock-transaction-id',
+		amount: req.body.amount || '100.00',
+		currency: req.body.currency || 'USD',
+		merchantId: CYBERSOURCE_MERCHANT_ID,
+		decision: 'ACCEPT',
+		message: 'Mock authorization successful',
+	});
+});
+
+// Health check
+app.get('/health', (_req, res) => {
+	res.json({ status: 'ok', time: new Date().toISOString() });
+});
 
 app.get('/', (_req: Request, res: Response) => {
 	res.send('Payment Mock Server is running!');
 });
 
+// Serve iframe.min.js for /microform/bundle/v2.7.1/iframe.min.js with correct MIME type
+app.get('/microform/bundle/v2.7.1/iframe.min.js', (_req, res) => {
+	const __dirname = path.dirname(fileURLToPath(import.meta.url));
+	const jsPath = path.join(__dirname, 'iframe.min.js');
+	if (!fs.existsSync(jsPath)) {
+		res.status(404).send('iframe.min.js not found');
+		return;
+	}
+	res.setHeader('Content-Type', 'application/javascript');
+	res.send(fs.readFileSync(jsPath, 'utf8'));
+});
+
+// Serve static HTML for /microform/bundle/v2.7.1/iframe.html
+app.get('/microform/bundle/v2.7.1/iframe.html', (_req, res) => {
+	res.setHeader('Content-Type', 'text/html');
+	res.send(`<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8" />
+		<meta name="viewport" content="width=device-width,initial-scale=1" />
+		<style>
+			* {
+				background-color: transparent;
+				border: none;
+				-webkit-box-sizing: border-box;
+				box-sizing: border-box;
+				margin: 0;
+				padding: 0;
+			}
+
+			body,
+			form,
+			input {
+				height: 100%;
+				left: 0;
+				position: absolute;
+				top: 0;
+				width: 100%;
+			}
+
+			label {
+				left: -9999px;
+				position: absolute;
+			}
+
+			:focus {
+				outline: 0;
+			}
+
+			::-ms-clear,
+			input::-ms-clear {
+				display: none;
+			}
+
+			.field-description,
+			.focus-helper {
+				height: 1px;
+				left: -1px;
+				opacity: 0;
+				pointer-events: none;
+				width: 1px;
+				z-index: -1;
+			}
+
+			.autocomplete {
+				height: 2px;
+				left: -2px;
+				pointer-events: none;
+				width: 2px;
+				z-index: -1;
+			}
+		</style>
+	</head>
+	<body>
+		<script defer="defer" src="iframe.min.js"></script>
+	</body>
+</html>`);
+});
+
 // generatePublicKey endpoint
 app.get('/pts/v2/public-key', (_req: Request, res: Response) => {
-	return res.status(200).json({
-		publicKey: 'MOCK_PUBLIC_KEY_1234567890',
-	});
+	try {
+		const __dirname = path.dirname(fileURLToPath(import.meta.url));
+		const pubPath = path.join(__dirname, 'cybersource-public-key.pem');
+		if (!fs.existsSync(pubPath)) {
+			return res.status(500).json({ error: 'public key not found' });
+		}
+		const pem = fs.readFileSync(pubPath, 'utf8');
+		return res.status(200).json({ publicKey: pem });
+	} catch (err) {
+		console.error('Failed to read public key', err);
+		return res.status(500).json({ error: 'failed to read public key' });
+	}
 });
 
 // createCustomerProfile endpoint
@@ -1126,6 +1307,65 @@ app.post(
 		return res.status(200).json(mockResponse);
 	},
 );
+
+// Debug endpoint: generate and verify capture context using the public key
+app.get('/debug/verify-capture-context', (_req: Request, res: Response) => {
+	const now = Math.floor(Date.now() / 1000);
+	const mockJwk = {
+		kty: 'RSA',
+		e: 'AQAB',
+		use: 'enc',
+		n: 'utMfPO70WAFJx5ccolGOi_UOhoa4ZVnEsBeJ67mDU2tSPpTDPCG9KojqNjk7-I0YZHrkHWK4V3fRVFBoOiGOM21MMDM5laoZIhvTTQD-bjuw6KTM75qLvkrYJfYKTFpP8U_xXWea_AySSSdtYlZi7ROnY-Lb97zgiurNJZ-XjHnnSoBNjS888YE_U0da7gVBSU-CDjajMOwAQi1ZNmjwyA_rd_UjTO8j5RyZjI60qpRstXok7T8mj3JozStZhbbcb7-c8WPZAv4y3xQ--kXSymtr2o0iyZBMRqf0xqHTNSYtWxDPKBF2fxu92-IxVr5s_uOno3CZDMSpb2-kADr8ow',
+		kid: '8ffbb5cebd99379fbc1aef7c3040e79d',
+	};
+	const payload = {
+		jti: 'QdJ3Tj3Kp0U6vC2m',
+		iss: 'Flex API',
+		iat: now,
+		exp: now + 900,
+		flx: {
+			path: '/flex/v2/tokens',
+			data: 'fTdsCnVFJpOHwltOD91CxRAAEOl5LzG2IXlGH/ZaA3jh+jbKzwCJxbb/0u6Gh9OlBXXtEfeCFoU5Y5emKN3d6eeq3WUfvXqswVm0Q9l6A1sMRk+xMCVFuUWN3SyFiyvDSNWF+jUsYfISkq2+dH+ttnH/hO/zn/FMNQQ64DRrCC+jR7sPOKITWwWAnpC84InJS4Nk',
+			origin: 'http://localhost:3001',
+			jwk: mockJwk,
+		},
+		ctx: [
+			{
+				type: 'mf-1.0.0',
+				data: {
+					clientLibrary:
+						'https://testflex.cybersource.com/microform/bundle/v1/flex-microform.min.js',
+					targetOrigins: ['http://localhost:3000'],
+					mfOrigin: 'http://localhost:3001',
+				},
+			},
+		],
+	};
+	const header = { alg: 'RS256', kid: 'zu' };
+	try {
+		const privateKey = fs.readFileSync(
+			path.join(__dirname, 'cybersource-private-key.pem'),
+			'utf8',
+		);
+		const publicKey = fs.readFileSync(
+			path.join(__dirname, 'cybersource-public-key.pem'),
+			'utf8',
+		);
+		const token = jwt.sign(payload, privateKey, { algorithm: 'RS256', header });
+		try {
+			const decoded = jwt.verify(token, publicKey, { algorithms: ['RS256'] });
+			return res.status(200).json({ ok: true, captureContext: token, decoded });
+		} catch (err) {
+			const message = err instanceof Error ? err.message : String(err);
+			return res
+				.status(400)
+				.json({ ok: false, error: message, captureContext: token });
+		}
+	} catch (err) {
+		const message = err instanceof Error ? err.message : String(err);
+		return res.status(500).json({ ok: false, error: message });
+	}
+});
 
 app.listen(port, () => {
 	console.log(`Payment Mock Server listening on port ${port}`);

@@ -28,8 +28,16 @@ const PersonalUserMutationResolver = async (
 
 const personalUserResolvers: Resolvers = {
 	Query: {
+		personalUserCybersourcePublicKeyId: async (
+			_parent,
+			_args,
+			context,
+			_info,
+		) => {
+			return await context.applicationServices.Payment.generatePublicKey();
+		},
 		personalUserById: async (
-			_parent: unknown,
+			_parent,
 			args: { id: string },
 			context: GraphContext,
 			_info: GraphQLResolveInfo,

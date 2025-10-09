@@ -176,6 +176,7 @@ extend type Query {
   # Personal User queries
   personalUserById(id: ObjectID!): PersonalUser
   currentPersonalUserAndCreateIfNotExists: PersonalUser!
+  personalUserCybersourcePublicKeyId: String!
 }
 
 extend type Mutation {
