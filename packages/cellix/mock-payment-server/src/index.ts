@@ -122,18 +122,6 @@ app.get('/', (_req: Request, res: Response) => {
 	res.send('Payment Mock Server is running!');
 });
 
-// Serve iframe.min.js for /microform/bundle/v2.7.1/iframe.min.js with correct MIME type
-app.get('/microform/bundle/v2.7.1/iframe.min.js', (_req, res) => {
-	const __dirname = path.dirname(fileURLToPath(import.meta.url));
-	const jsPath = path.join(__dirname, 'iframe.min.js');
-	if (!fs.existsSync(jsPath)) {
-		res.status(404).send('iframe.min.js not found');
-		return;
-	}
-	res.setHeader('Content-Type', 'application/javascript');
-	res.send(fs.readFileSync(jsPath, 'utf8'));
-});
-
 // Serve static HTML for /microform/bundle/v2.7.1/iframe.html
 app.get('/microform/bundle/v2.7.1/iframe.html', (_req, res) => {
 	res.setHeader('Content-Type', 'text/html');
@@ -1307,65 +1295,6 @@ app.post(
 		return res.status(200).json(mockResponse);
 	},
 );
-
-// Debug endpoint: generate and verify capture context using the public key
-app.get('/debug/verify-capture-context', (_req: Request, res: Response) => {
-	const now = Math.floor(Date.now() / 1000);
-	const mockJwk = {
-		kty: 'RSA',
-		e: 'AQAB',
-		use: 'enc',
-		n: 'utMfPO70WAFJx5ccolGOi_UOhoa4ZVnEsBeJ67mDU2tSPpTDPCG9KojqNjk7-I0YZHrkHWK4V3fRVFBoOiGOM21MMDM5laoZIhvTTQD-bjuw6KTM75qLvkrYJfYKTFpP8U_xXWea_AySSSdtYlZi7ROnY-Lb97zgiurNJZ-XjHnnSoBNjS888YE_U0da7gVBSU-CDjajMOwAQi1ZNmjwyA_rd_UjTO8j5RyZjI60qpRstXok7T8mj3JozStZhbbcb7-c8WPZAv4y3xQ--kXSymtr2o0iyZBMRqf0xqHTNSYtWxDPKBF2fxu92-IxVr5s_uOno3CZDMSpb2-kADr8ow',
-		kid: '8ffbb5cebd99379fbc1aef7c3040e79d',
-	};
-	const payload = {
-		jti: 'QdJ3Tj3Kp0U6vC2m',
-		iss: 'Flex API',
-		iat: now,
-		exp: now + 900,
-		flx: {
-			path: '/flex/v2/tokens',
-			data: 'fTdsCnVFJpOHwltOD91CxRAAEOl5LzG2IXlGH/ZaA3jh+jbKzwCJxbb/0u6Gh9OlBXXtEfeCFoU5Y5emKN3d6eeq3WUfvXqswVm0Q9l6A1sMRk+xMCVFuUWN3SyFiyvDSNWF+jUsYfISkq2+dH+ttnH/hO/zn/FMNQQ64DRrCC+jR7sPOKITWwWAnpC84InJS4Nk',
-			origin: 'http://localhost:3001',
-			jwk: mockJwk,
-		},
-		ctx: [
-			{
-				type: 'mf-1.0.0',
-				data: {
-					clientLibrary:
-						'https://testflex.cybersource.com/microform/bundle/v1/flex-microform.min.js',
-					targetOrigins: ['http://localhost:3000'],
-					mfOrigin: 'http://localhost:3001',
-				},
-			},
-		],
-	};
-	const header = { alg: 'RS256', kid: 'zu' };
-	try {
-		const privateKey = fs.readFileSync(
-			path.join(__dirname, 'cybersource-private-key.pem'),
-			'utf8',
-		);
-		const publicKey = fs.readFileSync(
-			path.join(__dirname, 'cybersource-public-key.pem'),
-			'utf8',
-		);
-		const token = jwt.sign(payload, privateKey, { algorithm: 'RS256', header });
-		try {
-			const decoded = jwt.verify(token, publicKey, { algorithms: ['RS256'] });
-			return res.status(200).json({ ok: true, captureContext: token, decoded });
-		} catch (err) {
-			const message = err instanceof Error ? err.message : String(err);
-			return res
-				.status(400)
-				.json({ ok: false, error: message, captureContext: token });
-		}
-	} catch (err) {
-		const message = err instanceof Error ? err.message : String(err);
-		return res.status(500).json({ ok: false, error: message });
-	}
-});
 
 app.listen(port, () => {
 	console.log(`Payment Mock Server listening on port ${port}`);
