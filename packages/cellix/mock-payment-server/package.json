@@ -19,7 +19,7 @@
 	},
 	"scripts": {
 		"start": "node dist/src/index.js",
-		"build": "tsc --build && cp ./src/iframe.min.js ./dist/src/iframe.min.js && cp ./src/cybersource-private-key.pem ./dist/src/cybersource-private-key.pem && cp ./src/cybersource-public-key.pem ./dist/src/cybersource-public-key.pem",
+		"build": "tsc --build",
 		"clean": "rimraf node_modules package-lock.json dist"
 	}
 }
