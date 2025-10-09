@@ -5,10 +5,13 @@ import {
 	type ReadonlyDataSource,
 	ReadonlyDataSourceImplementation,
 } from './readonly/index.ts';
+import type { ServiceBlobStorage } from '@sthrift/service-blob-storage';
+import { BlobDataSourceImplementation, type BlobDataSource } from './blob-storage/index.ts';
 
 export type DataSources = {
 	domainDataSource: DomainDataSource;
 	readonlyDataSource: ReadonlyDataSource;
+	blobDataSource: BlobDataSource;
 };
 
 export type DataSourcesFactory = {
@@ -18,12 +21,14 @@ export type DataSourcesFactory = {
 
 export const DataSourcesFactoryImpl = (
 	models: ModelsContext,
+    blobStorageService: ServiceBlobStorage
 ): DataSourcesFactory => {
 	const withPassport = (passport: Domain.Passport): DataSources => {
 		return {
-			domainDataSource: DomainDataSourceImplementation(models, passport),
-			readonlyDataSource: ReadonlyDataSourceImplementation(models, passport),
-		};
+				domainDataSource: DomainDataSourceImplementation(models, passport),
+				readonlyDataSource: ReadonlyDataSourceImplementation(models, passport),
+				blobDataSource: BlobDataSourceImplementation(passport, blobStorageService),
+			};
 	};
 
 	const withSystemPassport = (): DataSources => {
@@ -33,10 +38,8 @@ export const DataSourcesFactoryImpl = (
 		});
 		return {
 			domainDataSource: DomainDataSourceImplementation(models, systemPassport),
-			readonlyDataSource: ReadonlyDataSourceImplementation(
-				models,
-				systemPassport,
-			),
+			readonlyDataSource: ReadonlyDataSourceImplementation(models, systemPassport),
+			blobDataSource: BlobDataSourceImplementation(systemPassport, blobStorageService),
 		};
 	};
 

@@ -1,14 +1,38 @@
-# fragment HomeConversationListContainerConversationFields on Conversation {
-#   id
-#   twilioConversationSid
-#   listingId
-#   participants
-#   createdAt
-#   updatedAt
-# }
+query HomeConversationListContainerConversationsByUser($userId: ObjectID!) {
+  conversationsByUser(userId: $userId) {
+    ...HomeConversationListContainerConversationFields
+  }
+}
 
-# query HomeConversationListContainerGetUserConversations($userId: ObjectID!) {
-#   getUserConversations(userId: $userId) {
-#     ...HomeConversationListContainerConversationFields
-#   }
-# }
+fragment HomeConversationListContainerConversationFields on Conversation {
+  id
+  twilioConversationId
+  sharer {
+    id
+    account {
+      profile {
+        firstName
+        lastName
+      }
+    }
+  }
+
+  reserver {
+    id
+    account {
+      profile {
+        firstName
+        lastName
+      }
+    }
+  }
+
+  listing {
+    id
+    title
+    images
+  }
+  
+  createdAt
+  updatedAt
+}

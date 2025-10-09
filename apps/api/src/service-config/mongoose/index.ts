@@ -1,6 +1,8 @@
 import type { MongooseSeedwork } from '@cellix/mongoose-seedwork';
 import { Persistence } from '@sthrift/persistence';
 import type { ServiceMongooseOptions } from '@sthrift/service-mongoose';
+import type { ServiceBlobStorage } from '@sthrift/service-blob-storage';
+
 
 const isUsingCosmosDBEmulator =
 	//biome-ignore lint:useLiteralKeys
@@ -26,9 +28,10 @@ export const mongooseConnectionString: string =
 	process.env['COSMOSDB_CONNECTION_STRING'] ?? ''; // need to throw an error if this is not set
 
 export const mongooseContextBuilder = (
-	initializedService: MongooseSeedwork.MongooseContextFactory,
+	initializedMongoService: MongooseSeedwork.MongooseContextFactory,
+    initializedBlobStorageService: ServiceBlobStorage
 ) => {
-	return Persistence(initializedService);
+	return Persistence(initializedMongoService, initializedBlobStorageService);
 };
 
 export type MongooseModels = ReturnType<typeof mongooseContextBuilder>;

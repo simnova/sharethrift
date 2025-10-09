@@ -1,5 +1,5 @@
 ---
-applyTo: "packages/ui-*/src/components/layouts/**/*"
+applyTo: "apps/ui-sharethrift/src/components/layouts/**/*"
 ---
 
 # Copilot Instructions: Layouts

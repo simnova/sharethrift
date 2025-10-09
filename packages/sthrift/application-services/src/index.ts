@@ -47,7 +47,7 @@ export interface VerifiedUser {
 	hints?: PrincipalHints | undefined;
 }
 
-export type PrincipalHints = {};
+export type PrincipalHints = Record<string, unknown>;
 
 export interface AppServicesHost<S> {
 	forRequest(rawAuthHeader?: string, hints?: PrincipalHints): Promise<S>;

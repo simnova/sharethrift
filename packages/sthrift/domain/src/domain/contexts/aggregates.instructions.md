@@ -1,5 +1,5 @@
 ---
-applyTo: "packages/domain/src/domain/contexts/**/*.aggregate.ts"
+applyTo: "packages/sthrift/domain/src/domain/contexts/**/*.aggregate.ts"
 ---
 
 # Copilot Instructions: Aggregates

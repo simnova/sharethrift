@@ -45,6 +45,7 @@ Cellix.initializeInfrastructureServices<ApiContextSpec, ApplicationServices>(
 			serviceRegistry.getInfrastructureService<ServiceMongoose>(
 				ServiceMongoose,
 			),
+            serviceRegistry.getInfrastructureService<ServiceBlobStorage>(ServiceBlobStorage)
 		);
 
 		const { domainDataSource } = dataSourcesFactory.withSystemPassport();

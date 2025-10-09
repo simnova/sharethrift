@@ -1,5 +1,5 @@
 ---
-applyTo: "packages/domain/**/*.ts"
+applyTo: "packages/sthrift/domain/**/*.ts"
 ---
 
 # Copilot Instructions: api-domain

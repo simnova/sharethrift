@@ -31,9 +31,9 @@ The Sharethrift platform is divided into several contexts, each of which represe
    - [GitHub][case-context]
 
 
-[community-context]: https://github.com/Sharethrift/sharethrift/tree/main/packages/domain/src/domain/contexts/community
-[iam-context]: https://github.com/Sharethrift/sharethrift/tree/main/packages/domain/src/domain/iam
-[property-context]: https://github.com/Sharethrift/sharethrift/tree/main/packages/domain/src/domain/contexts/property
-[service-context]: https://github.com/Sharethrift/sharethrift/tree/main/packages/domain/src/domain/contexts/service
-[user-context]: https://github.com/Sharethrift/sharethrift/tree/main/packages/domain/src/domain/contexts/user
-[case-context]: https://github.com/Sharethrift/sharethrift/tree/main/packages/domain/src/domain/contexts/case 
+[community-context]: https://github.com/Sharethrift/sharethrift/tree/main/packages/sthrift/domain/src/domain/contexts/community
+[iam-context]: https://github.com/Sharethrift/sharethrift/tree/main/packages/sthrift/domain/src/domain/iam
+[property-context]: https://github.com/Sharethrift/sharethrift/tree/main/packages/sthrift/domain/src/domain/contexts/property
+[service-context]: https://github.com/Sharethrift/sharethrift/tree/main/packages/sthrift/domain/src/domain/contexts/service
+[user-context]: https://github.com/Sharethrift/sharethrift/tree/main/packages/sthrift/domain/src/domain/contexts/user
+[case-context]: https://github.com/Sharethrift/sharethrift/tree/main/packages/sthrift/domain/src/domain/contexts/case 

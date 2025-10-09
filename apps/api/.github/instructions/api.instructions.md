@@ -1,5 +1,5 @@
 ---
-applyTo: "packages/api/**/*.ts"
+applyTo: "apps/api/**/*.ts"
 ---
 
 # @sthrift/api Package Instructions

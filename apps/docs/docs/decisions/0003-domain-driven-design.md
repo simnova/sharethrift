@@ -43,14 +43,14 @@ We will implement a DDD framework using the following components:
 ### Context
 It defines the scope of a model and ensures that terms and concepts are consistent within that scope. 
 - *Think of it as a microservice boundary, where each microservice has its own domain model and language.*
-- **Implementation:** src/app/domain/contexts/*
+- **Implementation:** packages/sthrift/domain/src/domain/contexts/*
 - **Example:** community
 
 ### Entity
 An entity is an object within the domain that has a unique identity and is identifiable throughout its lifetime. 
 An entity may have attributes and relationships with other entities.
 - *Think of it as a real-world object that can be uniquely identified by an Id.*
-- **Implementation:** src/app/domain/contexts/**/*.ts [..maybe, add '.entity.ts' extension]
+- **Implementation:** packages/sthrift/domain/src/domain/contexts/**/*.ts [..maybe, add '.entity.ts' extension]
 - **Example:** community, role, member, account
 
 #### Entity Props
@@ -62,26 +62,26 @@ An interface that governs how an entity refers to another entity. It could be a 
 ### Value Object
 Objects that are equal due to the value of their properties, are called value objects. They are immutable and can be shared across entities.
 - *Think of it as a compound attribute set where individual attributes don't have any meaning on their own, but together they represent a concept, like price = 5 USD where price is the value object consisting of amount and currency attributes*
-- **Implementation:** src/app/domain/contexts/**/*.value-objects.ts
+- **Implementation:** packages/sthrift/domain/src/domain/contexts/**/*.value-objects.ts
 - **Example:** community, account, profile *(Typically, one for each entity, with classes for individual value objects such as address, payment)*
 - [@lucaspaganini/value-objects](https://www.npmjs.com/package/@lucaspaganini/value-objects): provides framework to create and validate value objects.
 
 ### Aggregate-Root
 An entity that acts as a guardian for a group of related entities (known as an aggregate). It is responsible for maintaining the integrity and consistency of the aggregate and for enforcing business rules.
 - *Think of it as an entry point to access and manage a group of related entities.*
-- **Implementation:** src/app/domain/contexts/**/*.ts [...maybe, add '.aggregate-root.ts' extension]
+- **Implementation:** packages/sthrift/domain/src/domain/contexts/**/*.ts [...maybe, add '.aggregate-root.ts' extension]
 - **Example:** member (aggregate-root), managing the accounts, custom views, role, etc.
 
 ### Unit of Work
 It ensures that a set of changes to the domain model are treated as a single, atomic operation. If one part of the operation fails, the entire operation is rolled back, ensuring data consistency. 
 - *Think of it as a transaction boundary for data persistence.*
-- **Implementation:** src/app/domain/contexts/**/*.uow.ts
+- **Implementation:** packages/sthrift/domain/src/domain/contexts/**/*.uow.ts
 - **Example:** : member *(Typically, one for each aggregate-root.)*
 
 ### Repository
 An abstraction that provides access to the aggregate root, encapsulating the details of data storage and retrieval. Repositories make the system more modular and easier to test.
 - *Think of it as an interface that provides CRUD operations for aggregate root, typically a save and multiple purpose-specific get methods.*
-- **Implementation:** src/app/domain/contexts/**/*.uow.ts
+- **Implementation:** packages/sthrift/domain/src/domain/contexts/**/*.repository.ts
 - **Example:** : member *(Typically, one for each aggregate-root.)*
 
 

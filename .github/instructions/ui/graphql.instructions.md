@@ -1,5 +1,5 @@
 ---
-applyTo: "packages/ui-applicant/src/components/**/*.graphql"
+applyTo: "apps/ui-sharethrift/src/components/**/*.graphql"
 ---
 
 ## Copilot Instructions: GraphQL

@@ -1,5 +1,6 @@
+```instructions
 ---
-applyTo: "packages/persistence/**/*.ts"
+applyTo: "packages/sthrift/persistence/**/*.ts"
 ---
 
 # API Persistence Package Development Guide

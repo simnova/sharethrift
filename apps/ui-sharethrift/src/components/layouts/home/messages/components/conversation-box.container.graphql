@@ -1,0 +1,43 @@
+query ConversationBoxContainerConversation($conversationId: ObjectID!) {
+  conversation(conversationId: $conversationId) {
+    ...ConversationBoxContainerConversationFields
+  }
+}
+
+fragment ConversationBoxContainerConversationFields on Conversation {
+  id
+  schemaVersion
+  twilioConversationId
+  sharer {
+    id
+    account {
+      profile {
+        firstName
+        lastName
+      }
+    }
+  }
+  reserver {
+    id
+    account {
+      profile {
+        firstName
+        lastName
+      }
+    }
+  }
+  listing {
+    id
+    title
+    images
+  }
+  messages {
+    id
+    twilioMessageSid
+    authorId
+    content
+    createdAt
+  }
+  createdAt
+  updatedAt
+}

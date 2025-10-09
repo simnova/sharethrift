@@ -1,6 +1,7 @@
 import type { DomainSeedwork } from '@cellix/domain-seedwork';
 import type { PersonalUserEntityReference } from '../../user/personal-user/personal-user.entity.ts';
 import type { ItemListingEntityReference } from '../../listing/item/item-listing.entity.ts';
+import type { MessageEntityReference } from "./message.entity.ts";
 
 export interface ConversationProps extends DomainSeedwork.DomainEntityProps {
 	sharer: Readonly<PersonalUserEntityReference>;
@@ -10,6 +11,8 @@ export interface ConversationProps extends DomainSeedwork.DomainEntityProps {
 	listing: Readonly<ItemListingEntityReference>;
 	loadListing: () => Promise<Readonly<ItemListingEntityReference>>;
 	twilioConversationId: string;
+	messages: Readonly<MessageEntityReference[]>;
+    loadMessages: () => Promise<Readonly<MessageEntityReference[]>>;
 
 	get createdAt(): Date;
 	get updatedAt(): Date;

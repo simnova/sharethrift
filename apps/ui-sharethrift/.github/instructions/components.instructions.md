@@ -1,5 +1,5 @@
 ---
-applyTo: "packages/ui-applicant/src/components/**/*"
+applyTo: "apps/ui-sharethrift/src/components/**/*"
 ---
 # Copilot Instructions: UI Components
 
