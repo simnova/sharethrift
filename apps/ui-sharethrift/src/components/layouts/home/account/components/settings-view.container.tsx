@@ -1,6 +1,6 @@
 import { useQuery } from '@apollo/client';
 import { message } from 'antd';
-import { SettingsView } from './settings-view.tsx';
+import { SettingsView } from '../pages/settings-view.tsx';
 import type {
 	CurrentUserSettingsQueryData,
 	SettingsUser,

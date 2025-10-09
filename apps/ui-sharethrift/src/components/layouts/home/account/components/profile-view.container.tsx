@@ -1,5 +1,5 @@
 import { useNavigate } from 'react-router-dom';
-import { ProfileView } from './profile-view.tsx';
+import { ProfileView } from '../pages/profile-view.tsx';
 import { useQuery } from '@apollo/client';
 import type {
 	CurrentUserQueryData,
