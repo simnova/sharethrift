@@ -15,70 +15,70 @@ import ListingInformationQuerySource from './listing-information/listing-informa
 const GET_LISTING_IMAGES = gql(ListingImagesQuerySource);
 const GET_LISTING_INFORMATION = gql(ListingInformationQuerySource);
 
-const baseListingId = DUMMY_LISTINGS[0]?._id;
+// Local mock listing data (removed dependency on DUMMY_LISTINGS)
+const baseListingId = 'mock-listing-id-1';
+const MOCK_LISTING_BASE: ItemListing = {
+	id: baseListingId as any, // GraphQL generated type may treat id as scalar (any)
+	title: 'Cordless Drill',
+	description: '18V cordless drill with two batteries and charger.',
+	category: 'Tools',
+	location: 'Philadelphia, PA',
+	sharingPeriodStart: new Date(Date.now() - 1000 * 60 * 60 * 24 * 2), // 2 days ago
+	sharingPeriodEnd: new Date(Date.now() + 1000 * 60 * 60 * 24 * 10), // in 10 days
+	state: 'Published' as any,
+	images: [
+		'https://placehold.co/600x400?text=Drill+1',
+		'https://placehold.co/600x400?text=Drill+2',
+	],
+	createdAt: new Date(Date.now() - 1000 * 60 * 60 * 24 * 5),
+	updatedAt: new Date(),
+	reports: 0,
+	sharingHistory: [],
+	schemaVersion: '1.0',
+	sharer: {
+		__typename: 'PersonalUser',
+		id: 'mock-sharer-id',
+		account: {
+			username: 'patrickg',
+			profile: {
+				firstName: 'Patrick',
+				lastName: 'G.',
+				location: { city: 'Philadelphia', state: 'PA', country: 'USA' },
+			},
+		},
+		createdAt: new Date().toISOString(),
+		updatedAt: new Date().toISOString(),
+		isBlocked: false,
+		schemaVersion: '1.0',
+		userType: 'personal',
+	},
+};
 
 const mocks = [
 	{
-		request: {
-			query: GET_LISTING_IMAGES,
-			variables: { listingId: baseListingId },
-		},
-		result: {
-			data: {
-				itemListing: {
-					images: DUMMY_LISTINGS[0]?.images,
-				},
-			},
-		},
+		request: { query: GET_LISTING_IMAGES, variables: { listingId: baseListingId } },
+		result: { data: { itemListing: { images: MOCK_LISTING_BASE.images } } },
 	},
 	{
-		request: {
-			query: GET_LISTING_INFORMATION,
-			variables: { listingId: baseListingId },
-		},
+		request: { query: GET_LISTING_INFORMATION, variables: { listingId: baseListingId } },
 		result: {
 			data: {
 				itemListing: {
 					id: baseListingId,
-					title: DUMMY_LISTINGS[0]?.title,
-					description: DUMMY_LISTINGS[0]?.description,
-					category: DUMMY_LISTINGS[0]?.category,
-					location: DUMMY_LISTINGS[0]?.location,
-					sharingPeriodStart:
-						DUMMY_LISTINGS[0]?.sharingPeriodStart.toISOString(),
-					sharingPeriodEnd: DUMMY_LISTINGS[0]?.sharingPeriodEnd.toISOString(),
-					state: DUMMY_LISTINGS[0]?.state,
-					images: DUMMY_LISTINGS[0]?.images,
-					createdAt:
-						DUMMY_LISTINGS[0]?.createdAt?.toISOString() ??
-						new Date().toISOString(),
-					updatedAt:
-						DUMMY_LISTINGS[0]?.updatedAt?.toISOString() ??
-						new Date().toISOString(),
-					reports: 0,
-					sharingHistory: [],
-					sharer: {
-						__typename: 'PersonalUser',
-						id: 'dummy-sharer-id',
-						account: {
-							username: 'patrickg',
-							profile: {
-								firstName: 'Patrick',
-								lastName: 'G.',
-								location: {
-									city: 'Philadelphia',
-									state: 'PA',
-									country: 'USA',
-								},
-							},
-						},
-						createdAt: new Date().toISOString(),
-						updatedAt: new Date().toISOString(),
-						isBlocked: false,
-						schemaVersion: '1.0',
-						userType: 'personal',
-					},
-					schemaVersion: '1.0',
+					title: MOCK_LISTING_BASE.title,
+					description: MOCK_LISTING_BASE.description,
+					category: MOCK_LISTING_BASE.category,
+					location: MOCK_LISTING_BASE.location,
+					sharingPeriodStart: MOCK_LISTING_BASE.sharingPeriodStart.toISOString(),
+					sharingPeriodEnd: MOCK_LISTING_BASE.sharingPeriodEnd.toISOString(),
+					state: MOCK_LISTING_BASE.state,
+					images: MOCK_LISTING_BASE.images,
+					createdAt: MOCK_LISTING_BASE.createdAt?.toISOString(),
+					updatedAt: MOCK_LISTING_BASE.updatedAt?.toISOString(),
+					reports: MOCK_LISTING_BASE.reports,
+					sharingHistory: MOCK_LISTING_BASE.sharingHistory,
+					sharer: MOCK_LISTING_BASE.sharer,
+					schemaVersion: MOCK_LISTING_BASE.schemaVersion,
 				},
 			},
 		},
@@ -129,49 +129,7 @@ export default meta;
 
 type Story = StoryObj<typeof ViewListing>;
 
-import { DUMMY_LISTINGS } from '../mock-listings.ts';
-
-const baseListing: ItemListing = {
-	...DUMMY_LISTINGS[0],
-	id: DUMMY_LISTINGS[0]?._id ?? 'dummy-listing-id', // fallback to dummy id
-	category: DUMMY_LISTINGS[0]?.category ?? 'Miscellaneous',
-	description: DUMMY_LISTINGS[0]?.description ?? 'No description provided.',
-	location: DUMMY_LISTINGS[0]?.location ?? 'Unknown',
-	title: DUMMY_LISTINGS[0]?.title ?? 'Untitled Listing',
-	sharingPeriodStart: DUMMY_LISTINGS[0]?.sharingPeriodStart ?? new Date(),
-	sharingPeriodEnd: DUMMY_LISTINGS[0]?.sharingPeriodEnd ?? new Date(),
-	state:
-		DUMMY_LISTINGS[0]?.state === 'Appeal Requested'
-			? 'Appeal_Requested'
-			: (DUMMY_LISTINGS[0]?.state ?? 'Available'),
-	createdAt: DUMMY_LISTINGS[0]?.createdAt ?? new Date(),
-	updatedAt: DUMMY_LISTINGS[0]?.updatedAt ?? new Date(),
-	images: DUMMY_LISTINGS[0]?.images ?? [],
-	reports: DUMMY_LISTINGS[0]?.reports ?? 0,
-	sharingHistory: DUMMY_LISTINGS[0]?.sharingHistory ?? [],
-	schemaVersion: '1.0',
-	sharer: {
-		__typename: 'PersonalUser',
-		id: 'dummy-sharer-id',
-		account: {
-			username: 'patrickg',
-			profile: {
-				firstName: 'Patrick',
-				lastName: 'G.',
-				location: {
-					city: 'Philadelphia',
-					state: 'PA',
-					country: 'USA',
-				},
-			},
-		},
-		createdAt: new Date().toISOString(),
-		updatedAt: new Date().toISOString(),
-		isBlocked: false,
-		schemaVersion: '1.0',
-		userType: 'personal',
-	},
-};
+const baseListing: ItemListing = MOCK_LISTING_BASE as ItemListing;
 
 export const Default: Story = {
 	args: {
