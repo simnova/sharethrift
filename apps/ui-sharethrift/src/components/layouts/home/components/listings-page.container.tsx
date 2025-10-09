@@ -1,33 +1,14 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { useQuery, gql } from '@apollo/client';
+import { useQuery } from '@apollo/client';
 import { ListingsPage, type ItemListing } from './listings-page.tsx';
-import { type GetListingsQuery } from '../../../../generated.tsx';
+import {
+	ListingsPageContainerGetListingsDocument,
+	type ListingsPageContainerGetListingsQuery,
+} from '../../../../generated.tsx';
 import { useCreateListingNavigation } from './create-listing/hooks/use-create-listing-navigation.ts';
-// Inline GraphQL query using gql instead of generated DocumentNode
-const GET_LISTINGS = gql`
-	query GetListings {
-		itemListings {
-			id
-			title
-			description
-			category
-			location
-			state
-			images
-			createdAt
-			updatedAt
-			sharingPeriodStart
-			sharingPeriodEnd
-			schemaVersion
-			version
-			reports
-			sharingHistory
-		}
-	}
-`;
 
-type GraphQLItemListing = GetListingsQuery['itemListings'][number];
+type GraphQLItemListing = ListingsPageContainerGetListingsQuery['itemListings'][number];
 
 interface ListingsPageContainerProps {
 	isAuthenticated: boolean;
@@ -41,7 +22,13 @@ export function ListingsPageContainer({
 	const pageSize = 20;
 
 	const [selectedCategory, setSelectedCategory] = useState('');
-	const { data, loading, error } = useQuery<GetListingsQuery>(GET_LISTINGS);
+	const { data, loading, error } = useQuery<ListingsPageContainerGetListingsQuery>(
+		ListingsPageContainerGetListingsDocument,
+		{
+			fetchPolicy: 'cache-first',
+			nextFetchPolicy: 'cache-first',
+		},
+	);
 
 	const filteredListings = data?.itemListings
 		? data.itemListings.filter((listing: GraphQLItemListing) => {

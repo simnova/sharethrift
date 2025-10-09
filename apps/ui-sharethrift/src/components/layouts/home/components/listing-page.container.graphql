@@ -1,20 +1,23 @@
-query GetListings {
-	itemListings {
-		id
-		title
-		description
-		category
-		location
-		state
-		images
-		createdAt
-		updatedAt
-		sharingPeriodStart
-		sharingPeriodEnd
+query ListingsPageContainerGetListings {
+  itemListings {
+    ...ListingsPageContainerItemListingFields
+  }
+}
 
-		schemaVersion
-		version
-		reports
-		sharingHistory
-	}
+fragment ListingsPageContainerItemListingFields on ItemListing {
+  id
+  title
+  description
+  category
+  location
+  state
+  images
+  createdAt
+  updatedAt
+  sharingPeriodStart
+  sharingPeriodEnd
+  schemaVersion
+  version
+  reports
+  sharingHistory
 }
