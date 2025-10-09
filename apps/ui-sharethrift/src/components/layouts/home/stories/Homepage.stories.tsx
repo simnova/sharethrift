@@ -3,7 +3,7 @@ import { MemoryRouter, Route, Routes } from "react-router-dom";
 import { AuthContext } from "react-oidc-context";
 import { type ReactNode, useMemo } from "react";
 import HomeRoutes from "../index.tsx";
-import { ViewListingDocument } from "../../../../generated.tsx";
+import { ListingsPageContainerGetListingsDocument } from "../../../../generated.tsx";
 
 export default {
   title: "Pages/Home",
@@ -57,7 +57,7 @@ DefaultView.parameters = {
     mocks: [
       {
         request: {
-          query: ViewListingDocument,
+          query: ListingsPageContainerGetListingsDocument,
           variables: {},
         },
         result: {
