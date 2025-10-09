@@ -71,7 +71,7 @@ stages:
       condition: and(ne(variables.FUNC_TOOLS_CACHE_HIT, 'true'), ne(variables.FUNC_TOOLS_CACHE_HIT, 'inexact'))
       inputs:
         version: '4.2.1'
-
+        
     # Cache NPM packages to speed up build process.
     - task: Cache@2
       displayName: 'NPM: Restore Cache'
@@ -103,7 +103,7 @@ stages:
           npm ci
         workingDirectory: ''
 
-    # Playwright: Restore browsers cache
+        # Playwright: Restore browsers cache
     - task: Cache@2
       displayName: 'Playwright: Restore browsers cache'
       continueOnError: true
@@ -198,12 +198,12 @@ stages:
           # Audit npm packages for vulnerabilities
           echo "Running npm audit for vulnerabilities..."
           npm audit --audit-level=high --omit=dev
-          
+
           # Use Turbo's built-in --affected flag for accurate change detection
           if [ "$(Build.Reason)" = "PullRequest" ] || [ "$(Build.SourceBranch)" != "refs/heads/main" ]; then
             echo "Testing affected packages only using Turbo's --affected..."
             export TURBO_SCM_BASE="origin/$(System.PullRequest.TargetBranch)"
-            npm run test:coverage -- --affected
+            npm run test:coverage -- --affected && npm run merge-lcov-reports
           else
             echo "Testing all packages (main branch)..."
             export TURBO_SCM_BASE="HEAD~1"
