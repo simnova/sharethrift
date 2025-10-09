@@ -1,13 +1,7 @@
 import type { Models } from '@sthrift/data-sources-mongoose-models';
 import { ObjectId } from 'mongodb';
-import type { Document } from 'mongoose';
 
-type PlainConversation = Omit<
-	Models.Conversation.Conversation,
-	keyof Document
-> & { _id: string; discriminatorKey: string };
-
-export const conversations: PlainConversation[] = [
+export const conversations = [
 	{
 		_id: '807f1f77bcf86cd799439041',
 		sharer: new ObjectId('507f1f77bcf86cd799439011'), // Alice
@@ -32,4 +26,4 @@ export const conversations: PlainConversation[] = [
 		createdAt: new Date('2023-05-02T10:00:00Z'),
 		updatedAt: new Date('2023-05-02T10:00:00Z'),
 	},
-];
+] as unknown as Models.Conversation.Conversation[];

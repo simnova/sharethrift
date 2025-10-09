@@ -1,12 +1,7 @@
 import type { Models } from '@sthrift/data-sources-mongoose-models';
 import { ObjectId } from 'mongodb';
-import type { Document } from 'mongoose';
 
-type PlainItemListing = Omit<Models.Listing.ItemListing, keyof Document> & {
-	_id: string;
-};
-
-export const itemListings: PlainItemListing[] = [
+export const itemListings = [
 	{
 		_id: '707f1f77bcf86cd799439031',
 		sharer: new ObjectId('507f1f77bcf86cd799439011'), // Alice
@@ -45,4 +40,4 @@ export const itemListings: PlainItemListing[] = [
 		version: 1,
 		discriminatorKey: 'item-listing',
 	},
-];
+] as unknown as Models.Listing.ItemListing[];

@@ -1,13 +1,7 @@
 import type { Models } from '@sthrift/data-sources-mongoose-models';
 import { ObjectId } from 'mongodb';
-import type { Document } from 'mongoose';
 
-type PlainReservationRequest = Omit<
-	Models.ReservationRequest.ReservationRequest,
-	keyof Document
-> & { _id: string; discriminatorKey: string };
-
-export const reservationRequests: PlainReservationRequest[] = [
+export const reservationRequests = [
 	{
 		_id: '907f1f77bcf86cd799439051',
 		state: 'Pending',
@@ -38,4 +32,4 @@ export const reservationRequests: PlainReservationRequest[] = [
 		createdAt: new Date('2023-05-01T10:00:00Z'),
 		updatedAt: new Date('2023-05-01T10:00:00Z'),
 	},
-];
+] as unknown as Models.ReservationRequest.ReservationRequest[];

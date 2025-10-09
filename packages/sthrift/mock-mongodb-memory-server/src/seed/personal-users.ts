@@ -1,12 +1,7 @@
 import type { Models } from '@sthrift/data-sources-mongoose-models';
 import { ObjectId } from 'mongodb';
-import type { Document } from 'mongoose';
 
-type PlainPersonalUser = Omit<Models.User.PersonalUser, keyof Document> & {
-	_id: string;
-};
-
-export const personalUsers: PlainPersonalUser[] = [
+export const personalUsers = [
 	{
 		_id: '507f1f77bcf86cd799439011',
 		userType: 'personal',
@@ -79,4 +74,4 @@ export const personalUsers: PlainPersonalUser[] = [
 		createdAt: new Date('2023-01-02T11:00:00Z'),
 		updatedAt: new Date('2023-01-02T11:00:00Z'),
 	},
-];
+] as unknown as Models.User.PersonalUser[];
