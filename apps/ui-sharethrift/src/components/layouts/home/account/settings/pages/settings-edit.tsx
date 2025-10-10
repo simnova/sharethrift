@@ -18,28 +18,33 @@ import {
   CameraOutlined,
 } from "@ant-design/icons";
 import type { UploadFile } from "antd/es/upload/interface";
-import {
-  useEditSettingsContainer,
-  type EditSettingsFormData,
-} from "../components/edit-settings.container.tsx";
+// Container hook removed; using container component.
 import styles from "../components/settings-view.module.css";
 import "@sthrift/ui-components/src/styles/theme.css";
+import type {
+  SettingsEditProps,
+  SettingsUser,
+} from "../components/settings-view.types.ts";
 
 const { Title, Text } = Typography;
 const { TextArea } = Input;
 
-export default function EditSettings() {
-  const { initialValues, isLoading, isSaving, onSave, onCancel } =
-    useEditSettingsContainer();
-  const [form] = Form.useForm<EditSettingsFormData>();
+export const SettingsEdit: React.FC<SettingsEditProps> = ({
+  user,
+  onSave,
+  onCancel,
+  isSaving,
+  isLoading,
+}) => {
+  const [form] = Form.useForm<SettingsUser>();
   const [fileList, setFileList] = React.useState<UploadFile[]>([]);
 
   // Set initial form values
   useEffect(() => {
-    if (initialValues) {
-      form.setFieldsValue(initialValues);
+    if (user) {
+      form.setFieldsValue(user);
     }
-  }, [initialValues, form]);
+  }, [user, form]);
 
   const handleProfileImageChange = (info: { fileList: UploadFile[] }) => {
     setFileList(info.fileList);
@@ -50,7 +55,7 @@ export default function EditSettings() {
   };
 
   if (isLoading) {
-    return <div>Loading...</div>;
+    return <div>Loading account settings...</div>;
   }
 
   return (
@@ -191,7 +196,7 @@ export default function EditSettings() {
             <Col xs={24}>
               <Form.Item
                 label="Address Line 1"
-                name="address1"
+                name={["location", "address1"]}
                 rules={[
                   { max: 255, message: "Address cannot exceed 255 characters" },
                 ]}
@@ -203,7 +208,7 @@ export default function EditSettings() {
             <Col xs={24}>
               <Form.Item
                 label="Address Line 2"
-                name="address2"
+                name={["location", "address2"]}
                 rules={[
                   { max: 255, message: "Address cannot exceed 255 characters" },
                 ]}
@@ -215,7 +220,7 @@ export default function EditSettings() {
             <Col xs={24} sm={12}>
               <Form.Item
                 label="City"
-                name="city"
+                name={["location", "city"]}
                 rules={[
                   { max: 100, message: "City cannot exceed 100 characters" },
                 ]}
@@ -227,7 +232,7 @@ export default function EditSettings() {
             <Col xs={24} sm={12}>
               <Form.Item
                 label="State/Province"
-                name="state"
+                name={["location", "state"]}
                 rules={[
                   { max: 100, message: "State cannot exceed 100 characters" },
                 ]}
@@ -239,7 +244,7 @@ export default function EditSettings() {
             <Col xs={24} sm={12}>
               <Form.Item
                 label="Country"
-                name="country"
+                name={["location", "country"]}
                 rules={[
                   { max: 100, message: "Country cannot exceed 100 characters" },
                 ]}
@@ -251,7 +256,7 @@ export default function EditSettings() {
             <Col xs={24} sm={12}>
               <Form.Item
                 label="Zip Code"
-                name="zipCode"
+                name={["location", "zipCode"]}
                 rules={[
                   { max: 20, message: "Zip code cannot exceed 20 characters" },
                 ]}
@@ -291,4 +296,4 @@ export default function EditSettings() {
       </Form>
     </div>
   );
-}
+};

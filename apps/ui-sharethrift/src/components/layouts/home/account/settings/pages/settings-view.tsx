@@ -114,6 +114,13 @@ export const SettingsView: React.FC<SettingsViewProps> = ({
 								<p>{user.email}</p>
 							</div>
 						</Col>
+						<Col xs={24}>
+							<div>
+								<Text className="label">About Me</Text>
+								<br />
+								<p>{user.aboutMe || 'Not provided'}</p>
+							</div>
+						</Col>
 					</Row>
 				</Col>
 			</Row>
