@@ -1,0 +1,188 @@
+"""
+Search functionality for Item Listings
+"""
+type ItemListingSearchResult {
+	"""
+	List of matching item listings
+	"""
+	items: [ItemListingSearchDocument!]!
+
+	"""
+	Total number of matching items
+	"""
+	count: Int!
+
+	"""
+	Search facets for filtering
+	"""
+	facets: SearchFacets
+}
+
+type ItemListingSearchDocument {
+	"""
+	Unique identifier
+	"""
+	id: ID!
+
+	"""
+	Listing title
+	"""
+	title: String!
+
+	"""
+	Listing description
+	"""
+	description: String!
+
+	"""
+	Category of the item
+	"""
+	category: String!
+
+	"""
+	Location where the item is available
+	"""
+	location: String!
+
+	"""
+	Name of the person sharing the item
+	"""
+	sharerName: String!
+
+	"""
+	ID of the person sharing the item
+	"""
+	sharerId: ID!
+
+	"""
+	Current state of the listing
+	"""
+	state: String!
+
+	"""
+	Start date of the sharing period
+	"""
+	sharingPeriodStart: DateTime!
+
+	"""
+	End date of the sharing period
+	"""
+	sharingPeriodEnd: DateTime!
+
+	"""
+	When the listing was created
+	"""
+	createdAt: DateTime!
+
+	"""
+	When the listing was last updated
+	"""
+	updatedAt: DateTime!
+
+	"""
+	List of image URLs
+	"""
+	images: [String!]!
+}
+
+type SearchFacets {
+	"""
+	Facets grouped by field name
+	"""
+	category: [SearchFacet!]
+	state: [SearchFacet!]
+	sharerId: [SearchFacet!]
+	createdAt: [SearchFacet!]
+}
+
+type SearchFacet {
+	"""
+	Facet value
+	"""
+	value: String!
+
+	"""
+	Number of items with this facet value
+	"""
+	count: Int!
+}
+
+input ItemListingSearchInput {
+	"""
+	Search text to find in title, description, and location
+	"""
+	searchString: String
+
+	"""
+	Search options for filtering, sorting, and pagination
+	"""
+	options: SearchOptions
+}
+
+input SearchOptions {
+	"""
+	Filters to apply to the search
+	"""
+	filter: ItemListingSearchFilter
+
+	"""
+	Maximum number of results to return (default: 50, max: 100)
+	"""
+	top: Int
+
+	"""
+	Number of results to skip for pagination (default: 0)
+	"""
+	skip: Int
+
+	"""
+	Sort order (e.g., ['title asc', 'createdAt desc'])
+	"""
+	orderBy: [String!]
+}
+
+input ItemListingSearchFilter {
+	"""
+	Filter by category
+	"""
+	category: [String!]
+
+	"""
+	Filter by listing state
+	"""
+	state: [String!]
+
+	"""
+	Filter by sharer ID
+	"""
+	sharerId: [ID!]
+
+	"""
+	Filter by location
+	"""
+	location: String
+
+	"""
+	Filter by date range
+	"""
+	dateRange: DateRangeFilter
+}
+
+input DateRangeFilter {
+	"""
+	Start date (ISO string)
+	"""
+	start: DateTime
+
+	"""
+	End date (ISO string)
+	"""
+	end: DateTime
+}
+
+extend type Query {
+	"""
+	Search for item listings
+	"""
+	searchItemListings(input: ItemListingSearchInput!): ItemListingSearchResult!
+}

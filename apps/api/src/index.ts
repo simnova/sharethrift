@@ -22,6 +22,7 @@ import { ServiceTwilio } from '@sthrift/service-twilio';
 import { graphHandlerCreator } from '@sthrift/graphql';
 import { restHandlerCreator } from '@sthrift/rest';
 import { ServiceCybersource } from '@sthrift/service-cybersource';
+import { ServiceCognitiveSearch } from '@sthrift/service-cognitive-search';
 
 Cellix.initializeInfrastructureServices<ApiContextSpec, ApplicationServices>(
 	(serviceRegistry) => {
@@ -37,7 +38,8 @@ Cellix.initializeInfrastructureServices<ApiContextSpec, ApplicationServices>(
 				new ServiceTokenValidation(TokenValidationConfig.portalTokens),
 			)
 			.registerInfrastructureService(new ServiceTwilio())
-            .registerInfrastructureService(new ServiceCybersource());
+			.registerInfrastructureService(new ServiceCybersource())
+			.registerInfrastructureService(new ServiceCognitiveSearch());
 	},
 )
 	.setContext((serviceRegistry) => {
@@ -48,13 +50,26 @@ Cellix.initializeInfrastructureServices<ApiContextSpec, ApplicationServices>(
 		);
 
 		const { domainDataSource } = dataSourcesFactory.withSystemPassport();
-		RegisterEventHandlers(domainDataSource);
+		const searchService =
+			serviceRegistry.getInfrastructureService<ServiceCognitiveSearch>(
+				ServiceCognitiveSearch,
+			);
+		RegisterEventHandlers(domainDataSource, searchService);
 
 		return {
 			dataSourcesFactory,
-			tokenValidationService:serviceRegistry.getInfrastructureService<ServiceTokenValidation>(ServiceTokenValidation),
-			paymentService: serviceRegistry.getInfrastructureService<ServiceCybersource>(ServiceCybersource),
-
+			tokenValidationService:
+				serviceRegistry.getInfrastructureService<ServiceTokenValidation>(
+					ServiceTokenValidation,
+				),
+			paymentService:
+				serviceRegistry.getInfrastructureService<ServiceCybersource>(
+					ServiceCybersource,
+				),
+			searchService:
+				serviceRegistry.getInfrastructureService<ServiceCognitiveSearch>(
+					ServiceCognitiveSearch,
+				),
 		};
 	})
 	.initializeApplicationServices((context) =>
