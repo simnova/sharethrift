@@ -32,6 +32,9 @@ export default function HomeTabsLayout() {
 			if (subPath.startsWith('settings')) {
 				return 'settings';
 			}
+			if (subPath.startsWith('admin-dashboard')) {
+				return 'admin-dashboard';
+			}
 			// Add more subroutes as needed
 			return undefined; // nothing highlighted if not a known subroute
 		}
@@ -43,7 +46,7 @@ export default function HomeTabsLayout() {
 
 	const handleNavigate = (key: string) => {
 		// Handle account subroutes
-		const accountSubTabs = ['profile', 'bookmarks', 'settings'];
+		const accountSubTabs = ['profile', 'bookmarks', 'settings', 'admin-dashboard'];
 		if (accountSubTabs.includes(key)) {
 			navigate(`/account/${key}`);
 			return;
