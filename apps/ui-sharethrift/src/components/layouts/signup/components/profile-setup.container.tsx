@@ -4,7 +4,9 @@ import { useQuery, useMutation } from "@apollo/client";
 import {
   ProfileSetupContainerCurrentPersonalUserAndCreateIfNotExistsDocument,
   type PersonalUserUpdateInput,
-  ProfileSetUpContainerPersonalUserUpdateDocument,
+  ProfileSetUpContainerPersonalUserUpdateDocument, 
+ProfileSetUpContainerCreateAuthHeaderDocument, 
+type CreateAuthHeaderResult,
 } from "../../../../generated.tsx";
 import { ComponentQueryLoader } from "@sthrift/ui-components";
 import { message } from "antd";
@@ -13,6 +15,8 @@ import { useNavigate } from "react-router-dom";
 export const ProfileSetupContainer: FC = () => {
   const { data, loading, error } = useQuery(ProfileSetupContainerCurrentPersonalUserAndCreateIfNotExistsDocument);
   const [updateUser] = useMutation(ProfileSetUpContainerPersonalUserUpdateDocument);
+  const [createAuthHeader] = useMutation(ProfileSetUpContainerCreateAuthHeaderDocument);
+  
   const navigate = useNavigate();
   const handleSaveAndContinue = async (_values: PersonalUserUpdateInput) => {
     // Implement the save logic here, e.g., call a mutation to save the profile data
@@ -29,13 +33,41 @@ export const ProfileSetupContainer: FC = () => {
       message.error("Failed to save account setup");
     }
   };
+
+
+  const handleAuthorizeRequest = async (
+    fileData: File,
+    filename: string
+  ): Promise<CreateAuthHeaderResult> => {
+    return createAuthHeader({
+      variables: {
+        input: {
+          userId: "68e906b2eebc526b56484429",
+          fileName: filename,
+          contentType: fileData.type,
+          contentLength: fileData.size,
+        },
+      },
+    }).then((response) => {
+      return {
+        ...response?.data?.createAuthHeader
+      } as CreateAuthHeaderResult;
+    });
+    //   .catch((error) => {
+    //     console.error("Error uploading asset: ", error);
+    //     message.error("Error getting authorization");
+    //     return { isAuthorized: false } as CreateAuthHeaderResult;
+    //   });
+  };
   return (
     <ComponentQueryLoader
       loading={loading}
       error={error}
       hasData={data?.currentPersonalUserAndCreateIfNotExists}
       hasDataComponent={
-        <ProfileSetup currentPersonalUserData={data?.currentPersonalUserAndCreateIfNotExists} onSaveAndContinue={handleSaveAndContinue} />
+        <ProfileSetup currentPersonalUserData={data?.currentPersonalUserAndCreateIfNotExists} onSaveAndContinue={handleSaveAndContinue} 
+                  onAuthorizeRequest={handleAuthorizeRequest}
+/>
       }
     />
   );

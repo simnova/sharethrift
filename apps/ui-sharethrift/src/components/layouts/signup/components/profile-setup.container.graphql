@@ -45,3 +45,28 @@ mutation ProfileSetUpContainerPersonalUserUpdate($input: PersonalUserUpdateInput
     }
   }
 }
+
+
+mutation ProfileSetUpContainerCreateAuthHeader($input: CreateAuthHeaderInput!) {
+  createAuthHeader(input: $input) {
+    status {
+      success
+      errorMessage
+    }
+    userId
+    authHeader {
+      authHeader
+      requestDate
+      blobPath
+      blobName
+      indexTags {
+        name
+        value
+      }
+      metadataFields {
+        name
+        value
+      }
+    }
+  }
+}

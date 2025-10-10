@@ -9,6 +9,7 @@ const { Title } = Typography;
 interface ProfileSetupProps {
   currentPersonalUserData?: PersonalUser;
   onSaveAndContinue: (values: PersonalUserUpdateInput) => void;
+  onAuthorizeRequest: (file: File, fileName: string) => Promise<any>;
 }
 
 export const ProfileSetup: FC<ProfileSetupProps> = (props) => {
@@ -37,7 +38,8 @@ export const ProfileSetup: FC<ProfileSetupProps> = (props) => {
     }
   };
 
-  const beforeUpload = (file: File) => {
+
+  const beforeUpload = async (file: File): Promise<any> => {
     const isJpgOrPng = file.type === "image/jpeg" || file.type === "image/png";
     if (!isJpgOrPng) {
       message.error("You can only upload JPG/PNG files!");
@@ -48,7 +50,11 @@ export const ProfileSetup: FC<ProfileSetupProps> = (props) => {
       message.error("Image must be smaller than 2MB!");
       return Upload.LIST_IGNORE;
     }
-    return false; // Prevent actual upload
+
+    const result = await props?.onAuthorizeRequest(file, file.name);
+    console.log("beforeUpload | result=", result);
+
+    return result;
   };
 
   return (
