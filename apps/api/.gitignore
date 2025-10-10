@@ -23,6 +23,7 @@ appsettings.json
 
 node_modules
 dist
+local.settings.json
 
 # Local python packages
 .python_packages/
