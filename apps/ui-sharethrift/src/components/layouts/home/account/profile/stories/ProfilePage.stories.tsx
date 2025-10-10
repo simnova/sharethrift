@@ -3,7 +3,7 @@ import { action } from "storybook/actions";
 import { MemoryRouter, Route, Routes } from "react-router-dom";
 import { AuthContext } from "react-oidc-context";
 import { type ReactNode, useMemo } from "react";
-import HomeRoutes from "../../index.tsx";
+import HomeRoutes from "../../../index.tsx";
 import { ProfileView } from "../pages/profile-view.tsx";
 import type { UserProfileData, UserListing } from "../components/profile-view.types.ts";
 

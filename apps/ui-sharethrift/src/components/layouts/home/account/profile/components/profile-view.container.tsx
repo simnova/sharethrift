@@ -9,7 +9,7 @@ import type {
 import {
 	HomeAccountProfileViewContainerCurrentUserDocument,
 	HomeAccountProfileViewContainerUserListingsDocument,
-} from '../../../../../generated.tsx';
+} from '../../../../../../generated.tsx';
 
 function ProfileViewLoader() {
 	const navigate = useNavigate();

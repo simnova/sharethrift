@@ -1,6 +1,5 @@
 import { Route, Routes } from 'react-router-dom';
 import AccountRoutes from './account/index.tsx';
-import AdminDashboardRoutes from './admin-dashboard/index.tsx';
 import MessagesRoutes from './messages/Index.tsx';
 import MyListingsRoutes from './my-listings/Index.tsx';
 import MyReservationsRoutes from './my-reservations/Index.tsx';
@@ -20,7 +19,6 @@ export default function HomeRoutes() {
 				<Route path="my-reservations/*" element={<MyReservationsRoutes />} />
 				<Route path="messages/*" element={<MessagesRoutes />} />
 				<Route path="account/*" element={<AccountRoutes />} />
-				<Route path="admin-dashboard/*" element={<AdminDashboardRoutes />} />
 			</Route>
 		</Routes>
 	);

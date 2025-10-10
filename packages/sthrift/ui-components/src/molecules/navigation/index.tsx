@@ -34,6 +34,7 @@ const navItems = [
     children: [
       { key: "profile", label: "Profile" },
       { key: "settings", label: "Settings" },
+      { key: "admin-dashboard", label: "Admin Dashboard" },
     ],
   },
 ];
@@ -44,11 +45,13 @@ export const Navigation: React.FC<NavigationProps> = ({ isAuthenticated, onLogou
   const handleMenuClick = (e: any) => {
     // Use keyPath for nested menu items
     let { key } = e;
-    const accountSubTabs = ["profile", "settings"];
+    const accountSubTabs = ["profile", "settings", "admin-dashboard"];
     if (e.keyPath && e.keyPath.length > 1 && e.keyPath[1] === "account" && accountSubTabs.includes(e.key)) {
       key = `account/${e.key}`;
     }
-    if (onNavigate) onNavigate(key);
+    if (onNavigate) {
+      onNavigate(key);
+    }
     setMobileOpen(false);
   };
 

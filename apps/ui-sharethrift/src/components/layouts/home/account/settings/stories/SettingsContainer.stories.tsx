@@ -1,6 +1,6 @@
 import type { Meta, StoryObj } from "@storybook/react";
 import { SettingsViewContainer } from "../components/settings-view.container.tsx";
-import { HomeAccountSettingsViewContainerCurrentUserDocument } from "../../../../../generated.tsx";
+import { HomeAccountSettingsViewContainerCurrentUserDocument } from "../../../../../../generated.tsx";
 
 const meta: Meta<typeof SettingsViewContainer> = {
   title: "Components/Account/SettingsContainer",

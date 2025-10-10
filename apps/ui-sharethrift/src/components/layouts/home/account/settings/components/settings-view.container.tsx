@@ -5,7 +5,7 @@ import type {
 	CurrentUserSettingsQueryData,
 	SettingsUser,
 } from './settings-view.types.ts';
-import { HomeAccountSettingsViewContainerCurrentUserDocument } from '../../../../../generated.tsx';
+import { HomeAccountSettingsViewContainerCurrentUserDocument } from '../../../../../../generated.tsx';
 
 function SettingsViewLoader() {
 	const {
