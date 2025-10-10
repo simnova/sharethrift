@@ -15,7 +15,7 @@ export interface CreateAuthHeaderResult {
     blobName: string;
   };
 
-  status?: {
+  status: {
     success: boolean;
     errorMessage?: string;
   };

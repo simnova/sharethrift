@@ -4,9 +4,10 @@ import type {
 	PersonalUserUpdateInput,
 	PaymentResponse,
 	RefundResponse,
-	Resolvers,
+	Resolvers, 
+CreateAuthHeaderInput,
 } from '../../builder/generated.ts';
-import type { PersonalUserUpdateCommand } from '@sthrift/application-services';
+import type { PersonalUserUpdateCommand,CreateAuthHeaderCommand } from '@sthrift/application-services';
 import { Domain } from '@sthrift/domain';
 
 const PersonalUserMutationResolver = async (
@@ -153,6 +154,23 @@ const personalUserResolvers: Resolvers = {
 				} as RefundResponse;
 			}
 		},
+
+        createAuthHeader: async (
+            _parent: unknown,
+            args: { input: CreateAuthHeaderInput },
+            context: GraphContext,
+            _info: GraphQLResolveInfo,
+        ) => {
+            if (!context.applicationServices.verifiedUser?.verifiedJwt) {
+                throw new Error('Unauthorized');
+            }
+            console.log('createAuthHeader resolver called with input:', args.input);
+            // Implement the logic to create the auth header
+            return await context.applicationServices.User.PersonalUser.createAuthHeader(
+                args.input as CreateAuthHeaderCommand,
+            );
+        }
+
 	},
 };
 

@@ -171,6 +171,19 @@ type PersonalUserMutationResult implements MutationResult {
   personalUser: PersonalUser
 }
 
+input CreateAuthHeaderInput {
+    userId: ObjectID!
+    fileName: String!
+    contentType: String!
+    contentLength: Int!
+}
+
+type CreateAuthHeaderResult {
+    status: MutationStatus!
+    userId: ObjectID
+    authHeader: BlobAuthHeader
+}
+
 extend type Query {
   # Personal User queries
   personalUserById(id: ObjectID!): PersonalUser
@@ -184,4 +197,7 @@ extend type Mutation {
   # Payment mutations
   processPayment(request: PaymentRequest!): PaymentResponse!
   refundPayment(request: RefundRequest!): RefundResponse!
+
+  # Blob Storage Mutations
+  createAuthHeader(input: CreateAuthHeaderInput!): CreateAuthHeaderResult!
 }

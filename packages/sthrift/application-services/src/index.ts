@@ -111,3 +111,4 @@ export const buildApplicationServicesFactory = (
 };
 
 export type { PersonalUserUpdateCommand } from './contexts/user/personal-user/update.ts';
+export type { CreateAuthHeaderCommand } from './contexts/user/personal-user/create-auth-header.ts';
