@@ -1,0 +1,47 @@
+{
+	"name": "@cellix/mock-cognitive-search",
+	"version": "1.0.0",
+	"type": "module",
+	"description": "Mock implementation of Azure Cognitive Search for local development",
+	"main": "dist/index.js",
+	"types": "dist/index.d.ts",
+	"scripts": {
+		"build": "tsc",
+		"clean": "rm -rf dist",
+		"test": "vitest",
+		"lint": "biome check src/",
+		"format": "biome format --write src/"
+	},
+	"keywords": [
+		"cognitive-search",
+		"mock",
+		"development",
+		"azure"
+	],
+	"author": "ShareThrift Team",
+	"license": "MIT",
+	"dependencies": {},
+	"devDependencies": {
+		"@cellix/typescript-config": "*",
+		"@cellix/vitest-config": "*",
+		"typescript": "^5.3.0",
+		"vitest": "^1.6.0"
+	},
+	"peerDependencies": {
+		"typescript": "^5.0.0"
+	},
+	"files": [
+		"dist/**/*",
+		"README.md"
+	],
+	"exports": {
+		".": {
+			"types": "./dist/index.d.ts",
+			"import": "./dist/index.js",
+			"require": "./dist/index.js"
+		}
+	},
+	"publishConfig": {
+		"access": "restricted"
+	}
+}

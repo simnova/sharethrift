@@ -37,7 +37,8 @@
 		"@sthrift/service-twilio": "*",
 		"@sthrift/service-otel": "*",
 		"@sthrift/service-token-validation": "*",
-		"@sthrift/service-cybersource": "*"
+		"@sthrift/service-cybersource": "*",
+		"@sthrift/service-cognitive-search": "*"
 	},
 	"devDependencies": {
 		"@cellix/typescript-config": "*",

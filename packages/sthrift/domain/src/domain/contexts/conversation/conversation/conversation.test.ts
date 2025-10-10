@@ -13,7 +13,6 @@ import type { ItemListingProps } from '../../listing/item/item-listing.entity.ts
 import { PersonalUserRolePermissions } from '../../role/personal-user-role/personal-user-role-permissions.ts';
 import { PersonalUserRole } from '../../role/personal-user-role/personal-user-role.ts';
 
-
 const test = { for: describeFeature };
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const feature = await loadFeature(
@@ -182,7 +181,7 @@ function makeBaseProps(
 		listing,
 		loadListing: async () => listing,
 		messages: [],
-        loadMessages: async () => [],
+		loadMessages: async () => [],
 		twilioConversationId: 'twilio-123',
 		createdAt: new Date('2020-01-01T00:00:00Z'),
 		updatedAt: new Date('2020-01-02T00:00:00Z'),

@@ -8,7 +8,7 @@ export const ReservationRequestStates = {
 	ACCEPTED: 'Accepted',
 	REJECTED: 'Rejected',
 	CANCELLED: 'Cancelled',
-    CLOSED: 'Closed'
+	CLOSED: 'Closed',
 } as const;
 type StatesType =
 	(typeof ReservationRequestStates)[keyof typeof ReservationRequestStates];

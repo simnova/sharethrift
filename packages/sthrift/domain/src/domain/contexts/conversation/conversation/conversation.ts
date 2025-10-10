@@ -9,7 +9,7 @@ import type {
 	ConversationEntityReference,
 	ConversationProps,
 } from './conversation.entity.ts';
-import type { MessageEntityReference } from "./message.entity.ts";
+import type { MessageEntityReference } from './message.entity.ts';
 
 export class Conversation<props extends ConversationProps>
 	extends DomainSeedwork.AggregateRoot<props, Passport>
@@ -38,7 +38,7 @@ export class Conversation<props extends ConversationProps>
 				sharer,
 				reserver,
 				listing,
-                messages,
+				messages,
 			} as props,
 			passport,
 		);
@@ -114,7 +114,7 @@ export class Conversation<props extends ConversationProps>
 		return await this.props.loadMessages();
 	}
 
-    get messages(): readonly MessageEntityReference[] {
+	get messages(): readonly MessageEntityReference[] {
 		return this.props.messages;
 	}
 
