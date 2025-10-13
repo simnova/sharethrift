@@ -1,6 +1,13 @@
 import type { ServiceBase } from '@cellix/api-services-spec';
 import { InMemoryCognitiveSearch } from '@cellix/mock-cognitive-search';
-import type { CognitiveSearchService } from '@cellix/mock-cognitive-search';
+import { AzureCognitiveSearch } from './azure-search-service.js';
+import type {
+	CognitiveSearchService,
+	SearchIndex,
+	CognitiveSearchBase,
+	SearchOptions,
+	SearchDocumentsResult,
+} from '@cellix/mock-cognitive-search';
 
 /**
  * Cognitive Search Service for ShareThrift
@@ -8,7 +15,9 @@ import type { CognitiveSearchService } from '@cellix/mock-cognitive-search';
  * Automatically detects environment and chooses between Azure Cognitive Search
  * and Mock implementation based on available credentials and configuration.
  */
-export class ServiceCognitiveSearch implements ServiceBase<unknown> {
+export class ServiceCognitiveSearch
+	implements ServiceBase<unknown>, CognitiveSearchBase
+{
 	private searchService: CognitiveSearchService;
 	private implementationType: 'azure' | 'mock';
 
@@ -82,16 +91,24 @@ export class ServiceCognitiveSearch implements ServiceBase<unknown> {
 			});
 		}
 
-		// TODO: Implement Azure Cognitive Search wrapper when needed
-		// For now, fall back to mock if Azure is requested but not implemented
-		console.warn(
-			'ServiceCognitiveSearch: Azure implementation not yet available, falling back to mock',
-		);
-		return new InMemoryCognitiveSearch({
-			enablePersistence: process.env['ENABLE_SEARCH_PERSISTENCE'] === 'true',
-			persistencePath:
-				process.env['SEARCH_PERSISTENCE_PATH'] || './.dev-data/search-indexes',
-		});
+		// Use Azure Cognitive Search implementation
+		try {
+			return new AzureCognitiveSearch();
+		} catch (error) {
+			console.error(
+				'ServiceCognitiveSearch: Failed to create Azure implementation:',
+				error,
+			);
+			console.warn(
+				'ServiceCognitiveSearch: Falling back to mock implementation due to Azure configuration error',
+			);
+			return new InMemoryCognitiveSearch({
+				enablePersistence: process.env['ENABLE_SEARCH_PERSISTENCE'] === 'true',
+				persistencePath:
+					process.env['SEARCH_PERSISTENCE_PATH'] ||
+					'./.dev-data/search-indexes',
+			});
+		}
 	}
 
 	/**
@@ -112,17 +129,15 @@ export class ServiceCognitiveSearch implements ServiceBase<unknown> {
 	/**
 	 * Proxy methods to the underlying search service
 	 */
-	async createIndexIfNotExists(
-		indexDefinition: Record<string, unknown>,
-	): Promise<void> {
-		return (this.searchService as any).createIndexIfNotExists(indexDefinition);
+	async createIndexIfNotExists(indexDefinition: SearchIndex): Promise<void> {
+		return await this.searchService.createIndexIfNotExists(indexDefinition);
 	}
 
 	async createOrUpdateIndexDefinition(
 		indexName: string,
-		indexDefinition: Record<string, unknown>,
+		indexDefinition: SearchIndex,
 	): Promise<void> {
-		return (this.searchService as any).createOrUpdateIndexDefinition(
+		return await this.searchService.createOrUpdateIndexDefinition(
 			indexName,
 			indexDefinition,
 		);
@@ -132,29 +147,36 @@ export class ServiceCognitiveSearch implements ServiceBase<unknown> {
 		indexName: string,
 		document: Record<string, unknown>,
 	): Promise<void> {
-		return (this.searchService as any).indexDocument(indexName, document);
+		return await this.searchService.indexDocument(indexName, document);
 	}
 
 	async deleteDocument(
 		indexName: string,
 		document: Record<string, unknown>,
 	): Promise<void> {
-		return (this.searchService as any).deleteDocument(indexName, document);
+		return await this.searchService.deleteDocument(indexName, document);
 	}
 
 	async deleteIndex(indexName: string): Promise<void> {
-		return (this.searchService as any).deleteIndex(indexName);
+		return await this.searchService.deleteIndex(indexName);
 	}
 
 	async search(
 		indexName: string,
 		searchText: string,
-		options?: Record<string, unknown>,
-	): Promise<Record<string, unknown>> {
-		return (this.searchService as any).search(indexName, searchText, options);
+		options?: SearchOptions,
+	): Promise<SearchDocumentsResult> {
+		return await this.searchService.search(indexName, searchText, options);
 	}
 
 	async indexExists(indexName: string): Promise<boolean> {
-		return (this.searchService as any).indexExists(indexName);
+		// indexExists is not part of the CognitiveSearchService interface
+		// We'll implement this as a check if the index can be searched
+		try {
+			await this.searchService.search(indexName, '*', { top: 1 });
+			return true;
+		} catch {
+			return false;
+		}
 	}
 }

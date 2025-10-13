@@ -27,7 +27,8 @@ export const RegisterEventHandlers = (
 		console.log('Registering search index event handlers...');
 
 		// Get the item listing unit of work from domain data source
-		const itemListingUnitOfWork = domainDataSource.itemListingUnitOfWork;
+		const itemListingUnitOfWork =
+			domainDataSource.Listing.ItemListing.ItemListingUnitOfWork;
 
 		// Register search index update handlers
 		registerItemListingUpdatedUpdateSearchIndexHandler(

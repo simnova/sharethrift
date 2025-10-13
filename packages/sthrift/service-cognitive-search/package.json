@@ -22,7 +22,9 @@
 	"license": "MIT",
 	"dependencies": {
 		"@cellix/api-services-spec": "*",
-		"@cellix/mock-cognitive-search": "*"
+		"@cellix/mock-cognitive-search": "*",
+		"@azure/search-documents": "^12.2.0",
+		"@azure/identity": "^4.13.0"
 	},
 	"devDependencies": {
 		"@cellix/typescript-config": "*",
