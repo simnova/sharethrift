@@ -1,0 +1,33 @@
+query AdminUsersTableContainerAllUsers(
+	$page: Int!
+	$pageSize: Int!
+	$searchText: String
+	$statusFilters: [String!]
+	$sorter: SorterInput
+) {
+	allUsers(
+		page: $page
+		pageSize: $pageSize
+		searchText: $searchText
+		statusFilters: $statusFilters
+		sorter: $sorter
+	) {
+		items {
+			id
+			userType
+			isBlocked
+			createdAt
+			account {
+				username
+				email
+				profile {
+					firstName
+					lastName
+				}
+			}
+		}
+		total
+		page
+		pageSize
+	}
+}

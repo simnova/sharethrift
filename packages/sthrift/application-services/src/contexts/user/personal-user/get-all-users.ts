@@ -20,19 +20,22 @@ export const getAllUsers = (datasources: DataSources) => {
 	return async (
 		command: GetAllUsersCommand,
 	): Promise<PersonalUserPageResult> => {
+		const skip = (command.page - 1) * command.pageSize;
+		const limit = command.pageSize;
+		
 		// Use the read repository for queries
 		const users = await datasources.readonlyDataSource.User.PersonalUser.getAll({
-			limit: command.pageSize,
-			skip: (command.page - 1) * command.pageSize,
-			// Add search/filter logic here based on command.searchText and command.statusFilters
+			limit,
+			skip,
+			// TODO: Add search/filter logic here based on command.searchText and command.statusFilters
 		});
 		
 		// TODO: Implement search and filtering logic
-		// TODO: Get total count for pagination
+		// TODO: Get total count for pagination (this just returns the page count, not total)
 		
 		return {
 			items: users,
-			total: users.length, // TODO: Get actual total count
+			total: users.length, // TODO: Get actual total count from database
 			page: command.page,
 			pageSize: command.pageSize,
 		};

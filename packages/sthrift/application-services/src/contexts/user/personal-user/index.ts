@@ -9,7 +9,7 @@ import {
 	queryByEmail,
 	type PersonalUserQueryByEmailCommand,
 } from './query-by-email.ts';
-import { getAllUsers, type GetAllUsersCommand } from './get-all-users.ts';
+import { getAllUsers, type GetAllUsersCommand, type PersonalUserPageResult } from './get-all-users.ts';
 import { update, type PersonalUserUpdateCommand } from './update.ts';
 
 export interface PersonalUserApplicationService {
@@ -41,3 +41,5 @@ export const PersonalUser = (
         getAllUsers: getAllUsers(dataSources),
 	};
 };
+
+export type { GetAllUsersCommand, PersonalUserPageResult } from './get-all-users.ts';

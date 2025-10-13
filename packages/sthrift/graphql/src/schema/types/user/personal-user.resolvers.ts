@@ -63,15 +63,7 @@ const personalUserResolvers: Resolvers = {
             // const isAdmin = await checkIfUserIsAdmin(context);
             // if (!isAdmin) throw new Error('Forbidden: Admin access required');
             
-            return await context.applicationServices.User.PersonalUser.getAllUsers(
-                {
-                    page: args.page,
-                    pageSize: args.pageSize,
-                    searchText: args.searchText,
-                    statusFilters: args.statusFilters,
-                    sorter: args.sorter,
-                }
-            );
+            return await context.applicationServices.User.PersonalUser.getAllUsers(args);
 	    },
 	},
 

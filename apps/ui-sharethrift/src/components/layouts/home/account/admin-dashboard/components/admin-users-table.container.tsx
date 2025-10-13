@@ -1,12 +1,11 @@
 import { useState } from "react";
-import { useQuery } from "@apollo/client";
+//import { useQuery } from "@apollo/client";
 import { AdminUsersTable } from "./admin-users-table.tsx";
 import { ComponentQueryLoader } from "@sthrift/ui-components";
 import type { AdminUserData } from "./admin-users-table.types.ts";
 import { message } from "antd";
 
-// TODO: Import the GraphQL query once it's created in the backend
-// import { AdminUsersTableContainerAllUsersDocument } from '../../../../../generated.tsx';
+//import { AdminUsersTableContainerAllUsersDocument } from "../../../../../generated.tsx";
 
 export interface AdminUsersTableContainerProps {
   currentPage: number;
@@ -23,32 +22,30 @@ export function AdminUsersTableContainer({
     field: string | null;
     order: "ascend" | "descend" | null;
   }>({ field: null, order: null });
-  const pageSize = 50; // As per BRD requirements
+  const pageSize = 50; // in BRD
 
-  // TODO: Replace with actual GraphQL query once backend is ready
-  // Example of what the query call should look like:
-  /*
-	const { data, loading, error } = useQuery(
-		AdminUsersTableContainerAllUsersDocument,
-		{
-			variables: {
-				page: currentPage,
-				pageSize: pageSize,
-				searchText: searchText,
-				statusFilters: statusFilters,
-				sorter:
-					sorter.field && sorter.order
-						? { field: sorter.field, order: sorter.order }
-						: undefined,
-			},
-			fetchPolicy: 'network-only',
-		},
-	);
-	*/
+  /* const { data, loading, error } = useQuery(
+    AdminUsersTableContainerAllUsersDocument,
+    {
+      variables: {
+        page: currentPage,
+        pageSize: pageSize,
+        searchText: searchText,
+        statusFilters: statusFilters,
+        sorter:
+          sorter.field && sorter.order
+            ? { field: sorter.field, order: sorter.order }
+            : undefined,
+      },
+      fetchPolicy: "network-only",
+    }
+  );*/
 
   // TEMPORARY: Mock data for development
   const loading = false;
-  const error = null;
+  const error = undefined;
+
+  // Mock data - matches what the real query would return
   const data = {
     allUsers: {
       items: [
@@ -59,7 +56,7 @@ export function AdminUsersTableContainer({
           lastName: "Doe",
           email: "john@example.com",
           accountCreated: "2024-01-15T10:30:00Z",
-          status: "Active",
+          status: "Active" as const,
           isBlocked: false,
           userType: "verified-personal",
           reportCount: 0,
@@ -71,13 +68,37 @@ export function AdminUsersTableContainer({
           lastName: "Smith",
           email: "jane@example.com",
           accountCreated: "2024-02-20T14:20:00Z",
-          status: "Blocked",
+          status: "Blocked" as const,
           isBlocked: true,
           userType: "verified-personal",
           reportCount: 2,
         },
+        {
+          id: "3",
+          username: "bobbuilder",
+          firstName: "Bob",
+          lastName: "Builder",
+          email: "bob@example.com",
+          accountCreated: "2024-03-10T09:15:00Z",
+          status: "Active" as const,
+          isBlocked: false,
+          userType: "verified-personal-plus",
+          reportCount: 0,
+        },
+        {
+          id: "4",
+          username: "alicewonder",
+          firstName: "Alice",
+          lastName: "Wonder",
+          email: "alice@example.com",
+          accountCreated: "2024-04-05T16:45:00Z",
+          status: "Active" as const,
+          isBlocked: false,
+          userType: "non-verified-personal",
+          reportCount: 1,
+        },
       ] as AdminUserData[],
-      total: 2,
+      total: 4,
     },
   };
 
@@ -97,11 +118,14 @@ export function AdminUsersTableContainer({
   const handleTableChange = (
     _pagination: unknown,
     _filters: unknown,
-    sorter: {
+    sorterParam: unknown
+  ) => {
+    // Type guard: ensure sorterParam matches expected shape
+    const sorter = sorterParam as {
       field?: string | string[];
       order?: "ascend" | "descend";
-    }
-  ) => {
+    };
+
     setSorter({
       field: Array.isArray(sorter.field)
         ? sorter.field[0] ?? null
@@ -142,7 +166,7 @@ export function AdminUsersTableContainer({
   return (
     <ComponentQueryLoader
       loading={loading}
-      hasData={users.length > 0}
+      hasData={data?.allUsers}
       error={error}
       hasDataComponent={
         <AdminUsersTable

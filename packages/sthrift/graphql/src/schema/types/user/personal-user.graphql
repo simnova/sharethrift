@@ -10,6 +10,13 @@ type PersonalUser implements MongoBase {
 	updatedAt: DateTime
 }
 
+type PersonalUserPage {
+	items: [PersonalUser!]!
+	total: Int!
+	page: Int!
+	pageSize: Int!
+}
+
 type PersonalUserAccount {
 	accountType: String
 	email: String
@@ -89,13 +96,6 @@ extend type Query {
 		statusFilters: [String!]
 		sorter: SorterInput
 	): PersonalUserPage!
-}
-
-type PersonalUserPage {
-	items: [PersonalUser!]!
-	total: Int!
-	page: Int!
-	pageSize: Int!
 }
 
 # Payment related input/output types
