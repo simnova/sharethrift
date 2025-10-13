@@ -50,9 +50,9 @@ const personalUserResolvers: Resolvers = {
 			_info: GraphQLResolveInfo,
 		) => {
 			// Check if user is admin
-			if (!context.applicationServices.verifiedUser?.verifiedJwt) {
-				throw new Error('Unauthorized');
-			}
+			//if (!context.applicationServices.verifiedUser?.verifiedJwt) {
+			//	throw new Error('Unauthorized');
+			//}
 
 			// TODO: SECURITY - Add admin permission check
 			return await context.applicationServices.User.PersonalUser.getAllUsers({

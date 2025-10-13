@@ -1,12 +1,10 @@
 import { useState } from "react";
 import { AdminUsersTable } from "./admin-users-table.tsx";
 import { ComponentQueryLoader } from "@sthrift/ui-components";
-import type { AdminUserData } from "./admin-users-table.types.ts";
 import { message } from "antd";
 
-// TODO: Uncomment when backend is ready
-// import { useQuery } from "@apollo/client";
-// import { AdminUsersTableContainerAllUsersDocument } from "../../../../../generated.tsx";
+import { useQuery } from "@apollo/client";
+import { AdminUsersTableContainerAllUsersDocument } from "../../../../../../generated.tsx";
 
 export interface AdminUsersTableContainerProps {
   currentPage: number;
@@ -25,25 +23,24 @@ export function AdminUsersTableContainer({
   }>({ field: null, order: null });
   const pageSize = 50; // in BRD
 
-  // TODO: Uncomment when backend GraphQL query is tested
-  // const { data, loading, error } = useQuery(
-  //   AdminUsersTableContainerAllUsersDocument,
-  //   {
-  //     variables: {
-  //       page: currentPage,
-  //       pageSize: pageSize,
-  //       searchText: searchText,
-  //       statusFilters: statusFilters,
-  //       sorter:
-  //         sorter.field && sorter.order
-  //           ? { field: sorter.field, order: sorter.order }
-  //           : undefined,
-  //     },
-  //     fetchPolicy: "network-only",
-  //   }
-  // );
+  const { data, loading, error } = useQuery(
+    AdminUsersTableContainerAllUsersDocument,
+    {
+      variables: {
+        page: currentPage,
+        pageSize: pageSize,
+        searchText: searchText,
+        statusFilters: statusFilters,
+        sorter:
+          sorter.field && sorter.order
+            ? { field: sorter.field, order: sorter.order }
+            : undefined,
+      },
+      fetchPolicy: "network-only",
+    }
+  );
 
-  // TEMPORARY: Mock data for development
+  /*// TEMPORARY: Mock data for development
   const loading = false;
   const error = undefined;
 
@@ -99,12 +96,24 @@ export function AdminUsersTableContainer({
           userType: "non-verified-personal",
           reportCount: 1,
         },
-      ] as AdminUserData[],
+      ],
       total: 4,
     },
-  };
+  };*/
 
-  const users = data?.allUsers?.items ?? [];
+  // Transform GraphQL data to match AdminUserData structure
+  const users = (data?.allUsers?.items ?? []).map((user) => ({
+    id: user.id,
+    username: user.account?.username ?? "N/A",
+    firstName: user.account?.profile?.firstName ?? "N/A",
+    lastName: user.account?.profile?.lastName ?? "N/A",
+    email: user.account?.email ?? "N/A",
+    accountCreated: user.createdAt ?? new Date().toISOString(),
+    status: user.isBlocked ? ("Blocked" as const) : ("Active" as const),
+    isBlocked: user.isBlocked ?? false,
+    userType: user.userType ?? "unknown",
+    reportCount: 0, // TODO: Add reportCount to GraphQL query once available
+  }));
   const total = data?.allUsers?.total ?? 0;
 
   const handleSearch = (value: string) => {
