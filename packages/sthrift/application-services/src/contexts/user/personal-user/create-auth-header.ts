@@ -30,7 +30,7 @@ export const createAuthHeader = (dataSources: DataSources) => {
   return async (command: CreateAuthHeaderCommand): Promise<CreateAuthHeaderResult> => {
     const { userId, fileName, contentType, contentLength } = command;
     const maxSizeBytes = BlobFileSpecs.maxSizeMb * 1024 * 1024;
-    const blobName = `case/identity-verification/${userId}/1.0/${fileName}`;
+    const blobName = `user/profile/${userId}/${fileName}`;
 
     return await dataSources.blobDataSource.User.withStorage(async (_passport, blobStorage) => {
         await new Promise((resolve) => setTimeout(resolve, 1000)); //todo need to dlt
@@ -45,11 +45,19 @@ export const createAuthHeader = (dataSources: DataSources) => {
       }
 
       const blobContainerName = "private";
-      //   const blobDataStorageAccountName = process.env.STORAGE_ACCOUNT_NAME;
-      const blobDataStorageAccountName = "";
+      let blobPath = "";
+      const blobDataStorageAccountName = process.env["STORAGE_ACCOUNT_NAME"];
+
+      if(blobDataStorageAccountName && blobDataStorageAccountName === "devstoreaccount1") {
+        const localStorageUrl = process.env["STORAGE_BLOB_BASE_URL"]
+        blobPath = `${localStorageUrl}/${blobContainerName}/${blobName}`;
+      }else if(blobDataStorageAccountName!=="devstoreaccount1") {
+        blobPath = `https://${blobDataStorageAccountName}.blob.core.windows.net/${blobContainerName}/${blobName}`;
+      }else{
+        throw new Error("Storage account name is not defined in environment variables.");
+      }
 
       const currentTime = new Date().getTime();
-      const blobPath = `https://${blobDataStorageAccountName}.blob.core.windows.net/${blobContainerName}/${blobName}`;
       const requestDate = new Date(currentTime).toUTCString();
 
       const blobRequestSettings = {

@@ -21,7 +21,7 @@ export class BlobRequest {
 
     // HTTP Headers
     webResource.method = 'PUT';
-    webResource.url = `https://${accountName}.blob.core.windows.net/${containerName}/${blobName}`;
+    webResource.url = `http://127.0.0.1:10000/${accountName}/${containerName}/${blobName}`;
     webResource.headers.set(HeaderConstants.CONTENT_TYPE, requestSettings.mimeType??"application/octet-stream");
     if(requestSettings.fileSizeBytes) webResource.headers.set(HeaderConstants.CONTENT_LENGTH, requestSettings.fileSizeBytes);
     if(requestSettings.tags) webResource.headers.set(HeaderConstants.X_MS_TAGS, new URLSearchParams(requestSettings.tags).toString());
