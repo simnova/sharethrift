@@ -44,7 +44,7 @@
 		"packages/cellix/api-services-spec",
 		"packages/cellix/domain-seedwork",
 		"packages/cellix/event-bus-seedwork-node",
-		"packages/cellix/mock-mongodb-memory-server",
+		"packages/cellix/mock-mongodb-memory-server-seedwork",
 		"packages/cellix/mock-oauth2-server",
 		"packages/cellix/mock-payment-server",
 		"packages/cellix/mongoose-seedwork",
@@ -65,7 +65,8 @@
 		"packages/sthrift/service-sendgrid",
 		"packages/sthrift/service-token-validation",
 		"packages/sthrift/service-twilio",
-		"packages/sthrift/ui-components"
+		"packages/sthrift/ui-components",
+		"packages/sthrift/mock-mongodb-memory-server"
 	],
 	"devDependencies": {
 		"@amiceli/vitest-cucumber": "^5.1.2",

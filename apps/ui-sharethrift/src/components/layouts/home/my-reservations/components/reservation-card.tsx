@@ -1,4 +1,3 @@
-import React from 'react';
 import { Card, Typography } from 'antd';
 import styles from './reservation-card.module.css';
 import { ReservationStatusTag } from '@sthrift/ui-components';
