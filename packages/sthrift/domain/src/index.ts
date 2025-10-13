@@ -1,6 +1,10 @@
 export * from './domain/contexts/index.ts';
 import type { Contexts } from './domain/index.ts';
 export * as Domain from './domain/index.ts';
+export * from './domain/infrastructure/cognitive-search/index.ts';
+export * from './domain/events/types/index.ts';
+export { EventBusInstance } from './domain/events/index.ts';
+export type { ItemListingUnitOfWork } from './domain/contexts/listing/item/item-listing.uow.ts';
 
 export interface DomainDataSource {
 	User: {

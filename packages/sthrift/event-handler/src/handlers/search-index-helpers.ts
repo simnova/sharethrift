@@ -6,6 +6,7 @@
  */
 
 import * as crypto from 'node:crypto';
+import type { CognitiveSearchDomain, SearchIndex } from '@sthrift/domain';
 
 /**
  * Generate a hash for change detection
@@ -67,8 +68,8 @@ export async function retrySearchIndexOperation<T>(
 export async function updateSearchIndexWithRetry<
 	T extends { hash?: string; lastIndexed?: Date },
 >(
-	searchService: Record<string, unknown>,
-	indexDefinition: Record<string, unknown>,
+	searchService: CognitiveSearchDomain,
+	indexDefinition: SearchIndex,
 	document: Record<string, unknown>,
 	entity: T,
 	maxAttempts = 3,
@@ -112,12 +113,14 @@ export async function updateSearchIndexWithRetry<
  * Delete document from search index with retry logic
  */
 export async function deleteFromSearchIndexWithRetry(
-	searchService: Record<string, unknown>,
+	searchService: CognitiveSearchDomain,
 	indexName: string,
 	documentId: string,
 	maxAttempts = 3,
 ): Promise<void> {
 	await retrySearchIndexOperation(async () => {
-		await searchService.deleteDocument(indexName, { id: documentId });
+		await searchService.deleteDocument(indexName, {
+			id: documentId,
+		});
 	}, maxAttempts);
 }
