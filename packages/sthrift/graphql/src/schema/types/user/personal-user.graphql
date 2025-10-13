@@ -185,6 +185,8 @@ type RefundResponse {
 extend type Mutation {
 	# Personal User mutations
 	personalUserUpdate(input: PersonalUserUpdateInput!): PersonalUser!
+	blockUser(userId: ObjectID!): PersonalUser!
+	unblockUser(userId: ObjectID!): PersonalUser!
 
 	# Payment mutations
 	processPayment(request: PaymentRequest!): PaymentResponse!

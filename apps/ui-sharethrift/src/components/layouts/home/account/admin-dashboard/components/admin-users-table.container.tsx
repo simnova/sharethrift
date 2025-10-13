@@ -3,8 +3,12 @@ import { AdminUsersTable } from "./admin-users-table.tsx";
 import { ComponentQueryLoader } from "@sthrift/ui-components";
 import { message } from "antd";
 
-import { useQuery } from "@apollo/client";
-import { AdminUsersTableContainerAllUsersDocument } from "../../../../../../generated.tsx";
+import { useQuery, useMutation } from "@apollo/client";
+import {
+  AdminUsersTableContainerAllUsersDocument,
+  BlockUserDocument,
+  UnblockUserDocument,
+} from "../../../../../../generated.tsx";
 
 export interface AdminUsersTableContainerProps {
   currentPage: number;
@@ -23,7 +27,7 @@ export function AdminUsersTableContainer({
   }>({ field: null, order: null });
   const pageSize = 50; // in BRD
 
-  const { data, loading, error } = useQuery(
+  const { data, loading, error, refetch } = useQuery(
     AdminUsersTableContainerAllUsersDocument,
     {
       variables: {
@@ -39,6 +43,26 @@ export function AdminUsersTableContainer({
       fetchPolicy: "network-only",
     }
   );
+
+  const [blockUser] = useMutation(BlockUserDocument, {
+    onCompleted: () => {
+      message.success("User blocked successfully");
+      refetch();
+    },
+    onError: (err) => {
+      message.error(`Failed to block user: ${err.message}`);
+    },
+  });
+
+  const [unblockUser] = useMutation(UnblockUserDocument, {
+    onCompleted: () => {
+      message.success("User unblocked successfully");
+      refetch();
+    },
+    onError: (err) => {
+      message.error(`Failed to unblock user: ${err.message}`);
+    },
+  });
 
   // Transform GraphQL data to match AdminUserData structure
   const users = (data?.allUsers?.items ?? []).map((user) => ({
@@ -84,23 +108,28 @@ export function AdminUsersTableContainer({
     });
   };
 
-  const handleAction = (
+  const handleAction = async (
     action: "block" | "unblock" | "view-profile" | "view-report",
     userId: string
   ) => {
-    // TODO: Implement actual mutations for block/unblock
     console.log(`Action: ${action}, User ID: ${userId}`);
 
     switch (action) {
       case "block":
-        message.info(`TODO: Implement block user mutation for user ${userId}`);
-        // TODO: Call block mutation
+        try {
+          await blockUser({ variables: { userId } });
+        } catch (err) {
+          // Error handled by mutation onError callback
+          console.error("Block user error:", err);
+        }
         break;
       case "unblock":
-        message.info(
-          `TODO: Implement unblock user mutation for user ${userId}`
-        );
-        // TODO: Call unblock mutation
+        try {
+          await unblockUser({ variables: { userId } });
+        } catch (err) {
+          // Error handled by mutation onError callback
+          console.error("Unblock user error:", err);
+        }
         break;
       case "view-profile":
         message.info(`TODO: Navigate to user profile for user ${userId}`);

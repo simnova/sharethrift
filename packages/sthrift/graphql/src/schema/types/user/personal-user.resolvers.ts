@@ -78,10 +78,40 @@ const personalUserResolvers: Resolvers = {
 				throw new Error('Unauthorized');
 			}
 			console.log('personalUserUpdate resolver called with id:', args.input.id);
-			// Implement the logic to update the personal user
+			// TODO: SECURITY - Add admin permission check
 			return await context.applicationServices.User.PersonalUser.update(
 				args.input as PersonalUserUpdateCommand,
 			);
+		},
+		blockUser: async (
+			_parent: unknown,
+			args: { userId: string },
+			context: GraphContext,
+			_info: GraphQLResolveInfo,
+		) => {
+			if (!context.applicationServices.verifiedUser?.verifiedJwt) {
+				throw new Error('Unauthorized');
+			}
+			// TODO: SECURITY - Add admin permission check
+			return await context.applicationServices.User.PersonalUser.update({
+				id: args.userId,
+				isBlocked: true,
+			});
+		},
+		unblockUser: async (
+			_parent: unknown,
+			args: { userId: string },
+			context: GraphContext,
+			_info: GraphQLResolveInfo,
+		) => {
+			if (!context.applicationServices.verifiedUser?.verifiedJwt) {
+				throw new Error('Unauthorized');
+			}
+			// TODO: SECURITY - Add admin permission check
+			return await context.applicationServices.User.PersonalUser.update({
+				id: args.userId,
+				isBlocked: false,
+			});
 		},
 		processPayment: async (_parent, { request }, context) => {
 			console.log('Processing payment', request);
