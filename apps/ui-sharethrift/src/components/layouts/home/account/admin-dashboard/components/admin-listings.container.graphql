@@ -1,0 +1,36 @@
+query AdminListingsTableContainerAdminListings(
+  $page: Int!
+  $pageSize: Int!
+  $searchText: String
+  $statusFilters: [String!]
+  $sorter: SorterInput
+) {
+  adminListings(
+    page: $page
+    pageSize: $pageSize
+    searchText: $searchText
+    statusFilters: $statusFilters
+    sorter: $sorter
+  ) {
+    items {
+      id
+      title
+      status
+      image
+      pendingRequestsCount
+      publishedAt
+      reservationPeriod
+    }
+    total
+    page
+    pageSize
+  }
+}
+
+mutation AdminListingsTableContainerRemoveListing($id: ObjectID!) {
+  removeListing(id: $id)
+}
+
+mutation AdminListingsTableContainerUnblockListing($id: ObjectID!) {
+  unblockListing(id: $id)
+}

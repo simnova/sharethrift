@@ -38,6 +38,8 @@ export interface ItemListingApplicationService {
 		page: number;
 		pageSize: number;
 	}>;
+	remove: (command: { id: string }) => Promise<boolean>;
+	unblock: (command: { id: string }) => Promise<boolean>;
 }
 
 export const ItemListing = (
@@ -72,6 +74,30 @@ export const ItemListing = (
 				args.sorter = sorter;
 			}
 			return await dataSources.readonlyDataSource.Listing.ItemListing.ItemListingReadRepo.getPaged(args);
+		},
+		remove: async ({ id }) => {
+			let success = false;
+			await dataSources.domainDataSource.Listing.ItemListing.ItemListingUnitOfWork.withScopedTransaction(
+				async (repo) => {
+					const listing = await repo.get(id);
+					listing.requestDelete();
+					await repo.save(listing);
+					success = true;
+				},
+			);
+			return success;
+		},
+		unblock: async ({ id }) => {
+			let success = false;
+			await dataSources.domainDataSource.Listing.ItemListing.ItemListingUnitOfWork.withScopedTransaction(
+				async (repo) => {
+					const listing = await repo.get(id);
+					listing.unblock();
+					await repo.save(listing);
+					success = true;
+				},
+			);
+			return success;
 		},
 	};
 };

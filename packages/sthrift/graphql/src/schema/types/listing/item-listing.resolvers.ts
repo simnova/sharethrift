@@ -129,6 +129,62 @@ const itemListingResolvers = {
 				pageSize: result.pageSize,
 			};
 		},
+
+		adminListings: async (
+			_parent: unknown,
+			args: MyListingsArgs,
+			context: GraphContext,
+		) => {
+			// For now, use queryPaged and constrain statuses to Appealed/Blocked if not provided
+			const { page, pageSize, searchText, statusFilters, sorter } = args;
+			const effectiveStatuses =
+				statusFilters && statusFilters.length > 0
+					? statusFilters
+					: ['Appeal Requested', 'Blocked'];
+			const pagedArgs: {
+				page: number;
+				pageSize: number;
+				searchText?: string;
+				statusFilters?: string[];
+				sharerId?: string;
+				sorter?: { field: string; order: 'ascend' | 'descend' };
+			} = { page, pageSize };
+			if (searchText !== undefined) pagedArgs.searchText = searchText;
+			if (effectiveStatuses !== undefined)
+				pagedArgs.statusFilters = effectiveStatuses;
+			if (sorter !== undefined) pagedArgs.sorter = sorter;
+			const result = await context.applicationServices.Listing.ItemListing.queryPaged(
+				pagedArgs,
+			);
+
+			const mapStateToStatus = (state?: string): string => {
+				if (!state || state.trim() === '') return 'Unknown';
+				return state;
+			};
+
+			return {
+				items: result.items.map((listing) => {
+					const start = listing.sharingPeriodStart.toISOString();
+					const end = listing.sharingPeriodEnd.toISOString();
+					return {
+						id: listing.id,
+						title: listing.title,
+						image:
+							listing.images && listing.images.length > 0
+								? listing.images[0]
+								: null,
+						publishedAt: listing.createdAt?.toISOString?.() ?? null,
+						reservationPeriod: `${start.slice(0, 10)} - ${end.slice(0, 10)}`,
+						status: mapStateToStatus(listing?.state),
+						// Placeholder until reservation request counts are integrated
+						pendingRequestsCount: 0,
+					};
+				}),
+				total: result.total,
+				page: result.page,
+				pageSize: result.pageSize,
+			};
+		},
 	},
 	Mutation: {
 		createItemListing: async (
@@ -166,6 +222,26 @@ const itemListingResolvers = {
 			const result =
 				await context.applicationServices.Listing.ItemListing.create(command);
 			return toGraphItem(result);
+		},
+
+		removeListing: async (
+			_parent: unknown,
+			args: { id: string },
+			context: GraphContext,
+		) => {
+			// Authorization for admin removal can be layered via verifiedUser roles in future
+			const success = await context.applicationServices.Listing.ItemListing.remove({ id: args.id });
+			return success;
+		},
+
+		unblockListing: async (
+			_parent: unknown,
+			args: { id: string },
+			context: GraphContext,
+		) => {
+			// Authorization for admin unblock can be layered via verifiedUser roles in future
+			const success = await context.applicationServices.Listing.ItemListing.unblock({ id: args.id });
+			return success;
 		},
 	},
 };

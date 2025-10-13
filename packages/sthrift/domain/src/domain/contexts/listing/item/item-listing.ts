@@ -314,6 +314,49 @@ export class ItemListing<props extends ItemListingProps>
 	}
 
 	/**
+	 * Unblock a blocked listing and make it active again (Published).
+	 * Only allowed when the listing is currently in a blocked/appeal-requested state.
+	 */
+	public unblock(): void {
+		if (
+			!this.visa.determineIf((permissions) => permissions.canPublishItemListing)
+		) {
+			throw new DomainSeedwork.PermissionError(
+				'You do not have permission to unblock this listing',
+			);
+		}
+
+		const current = this.props.state.valueOf();
+		const isAllowed =
+			current === ValueObjects.ListingStateEnum.Blocked ||
+			current === ValueObjects.ListingStateEnum.AppealRequested;
+		if (!isAllowed) {
+			throw new Error(
+				`Cannot unblock a listing from state "${current}". Only Blocked or Appeal Requested listings can be unblocked.`,
+			);
+		}
+
+		this.props.state = new ValueObjects.ListingState('Published').valueOf();
+		this.props.updatedAt = new Date();
+	}
+
+	/**
+	 * Permanently remove this listing from the system.
+	 * Sets the aggregate's deleted flag so the repository deletes the record.
+	 */
+	public requestDelete(): void {
+		if (
+			!this.visa.determineIf((permissions) => permissions.canDeleteItemListing)
+		) {
+			throw new DomainSeedwork.PermissionError(
+				'You do not have permission to delete this listing',
+			);
+		}
+		// Mark aggregate as deleted; repository will issue a deleteOne on save
+		super.isDeleted = true;
+	}
+
+	/**
 	 * Create a reference to this entity for use in other contexts
 	 */
 	getEntityReference(): ItemListingEntityReference {
