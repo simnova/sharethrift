@@ -32,9 +32,12 @@ export function registerItemListingUpdatedUpdateSearchIndexHandler(
 
 			try {
 				// Get the updated item listing from the repository
-				const itemListing = await itemListingUnitOfWork.withTransaction(
+				let itemListing: Record<string, unknown> | undefined;
+				await itemListingUnitOfWork.withScopedTransaction(
 					async (repo: { getById: (id: string) => Promise<unknown> }) => {
-						return await repo.getById(payload.id);
+						itemListing = (await repo.getById(payload.id)) as
+							| Record<string, unknown>
+							| undefined;
 					},
 				);
 
