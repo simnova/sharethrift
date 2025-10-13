@@ -1,4 +1,4 @@
-import React from 'react';
+import type React from 'react';
 import { Layout } from 'antd';
 import { Header } from '../../molecules/header/index.js';
 import { Navigation } from '../../molecules/navigation/index.js';
@@ -27,22 +27,52 @@ export const AppLayout: React.FC<AppLayoutProps> = ({
 	children,
 }) => {
 	return (
-		<Layout className={styles['appLayout']}>
+		<Layout className={styles.appLayout}>
 			<Header
 				isAuthenticated={isAuthenticated}
-				onLogin={onLogin ?? (() => {})}
-				onSignUp={onSignUp ?? (() => {})}
-				onLogout={onLogout ?? (() => {})}
-				onCreateListing={onCreateListing ?? (() => {})}
+				onLogin={
+					onLogin ??
+					(() => {
+						/* intentionally empty for layout */
+					})
+				}
+				onSignUp={
+					onSignUp ??
+					(() => {
+						/* intentionally empty for layout */
+					})
+				}
+				onLogout={
+					onLogout ??
+					(() => {
+						/* intentionally empty for layout */
+					})
+				}
+				onCreateListing={
+					onCreateListing ??
+					(() => {
+						/* intentionally empty for layout */
+					})
+				}
 			/>
-			<div className={styles['bodyWrapper']}>
+			<div className={styles.bodyWrapper}>
 				<Navigation
 					isAuthenticated={isAuthenticated}
-					onLogout={onLogout ?? (() => {})}
-					onNavigate={onNavigate ?? (() => {})}
+					onLogout={
+						onLogout ??
+						(() => {
+							/* intentionally empty for layout */
+						})
+					}
+					onNavigate={
+						onNavigate ??
+						(() => {
+							/* intentionally empty for layout */
+						})
+					}
 					selectedKey={selectedKey ?? ''}
 				/>
-				<main className={styles['content']}>{children}</main>
+				<main className={styles.content}>{children}</main>
 			</div>
 			<Footer />
 		</Layout>
