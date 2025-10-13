@@ -48,7 +48,7 @@ export const Navigation: React.FC<NavigationProps> = ({
 	const [collapsed, setCollapsed] = useState(false);
 	const [mobileOpen, setMobileOpen] = useState(false);
 
-	const handleMenuClick = (e: any) => {
+	const handleMenuClick: React.ComponentProps<typeof Menu>['onClick'] = (e) => {
 		// Use keyPath for nested menu items
 		let { key } = e;
 		const accountSubTabs = ['profile', 'settings', 'admin-dashboard'];
