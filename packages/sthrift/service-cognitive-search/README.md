@@ -94,6 +94,7 @@ SEARCH_API_KEY=your-admin-api-key
 
 - In-memory search using the `@cellix/mock-cognitive-search` package
 - Supports all the same operations as Azure implementation
+- Integrates with `@cellix/mock-mongodb-memory-server` for database-driven mock data
 - Optional persistence to disk for development
 - Fast and lightweight for local development
 
@@ -239,11 +240,22 @@ The service provides comprehensive error handling:
 ## Development
 
 ### Running Examples
+
+#### Database-Driven Search (Recommended)
 ```bash
-# Mock mode
+# Start MongoDB Memory Server with mock data
+npm run start-emulator:mongo-memory-server
+
+# Run database-driven search example
+USE_MOCK_SEARCH=true node examples/database-driven-search.js
+```
+
+#### Hardcoded Data Examples
+```bash
+# Mock mode with hardcoded data
 USE_MOCK_SEARCH=true node examples/azure-vs-mock-comparison.js
 
-# Azure mode
+# Azure mode with hardcoded data
 SEARCH_API_ENDPOINT=https://your-service.search.windows.net \
 SEARCH_API_KEY=your-key \
 node examples/azure-vs-mock-comparison.js
