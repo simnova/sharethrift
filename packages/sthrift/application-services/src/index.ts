@@ -100,7 +100,10 @@ export const buildApplicationServicesFactory = (
 			},
 			Payment: paymentApplicationService,
 			ReservationRequest: ReservationRequest(dataSources),
-			Listing: Listing(dataSources),
+			Listing: Listing(
+				dataSources,
+				infrastructureServicesRegistry.searchService,
+			),
 			Conversation: Conversation(dataSources),
 		};
 	};

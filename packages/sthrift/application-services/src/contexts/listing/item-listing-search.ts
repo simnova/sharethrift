@@ -12,13 +12,21 @@ import type {
 	ItemListingSearchDocument,
 } from '@sthrift/domain';
 import type { CognitiveSearchDomain } from '@sthrift/domain';
+import type {
+	SearchOptions,
+	SearchDocumentsResult,
+} from '@cellix/mock-cognitive-search';
 import { ItemListingSearchIndexSpec } from '@sthrift/domain';
 
 /**
  * Application service for Item Listing search operations
  */
 export class ItemListingSearchApplicationService {
-	constructor(private searchService: CognitiveSearchDomain) {}
+	private searchService: CognitiveSearchDomain;
+
+	constructor(searchService: CognitiveSearchDomain) {
+		this.searchService = searchService;
+	}
 
 	/**
 	 * Search for item listings with the provided input
@@ -52,8 +60,8 @@ export class ItemListingSearchApplicationService {
 		top?: number;
 		skip?: number;
 		orderBy?: string[];
-	}) {
-		const options: any = {
+	}): SearchOptions {
+		const options: SearchOptions = {
 			queryType: 'full',
 			searchMode: 'all',
 			includeTotalCount: true,
@@ -118,9 +126,12 @@ export class ItemListingSearchApplicationService {
 	/**
 	 * Convert search results to application format
 	 */
-	private convertSearchResults(searchResults: any): ItemListingSearchResult {
+	private convertSearchResults(
+		searchResults: SearchDocumentsResult,
+	): ItemListingSearchResult {
 		const items: ItemListingSearchDocument[] = searchResults.results.map(
-			(result: any) => result.document,
+			(result: { document: Record<string, unknown> }) =>
+				result.document as unknown as ItemListingSearchDocument,
 		);
 
 		return {
