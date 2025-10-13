@@ -230,8 +230,7 @@ const itemListingResolvers = {
 			context: GraphContext,
 		) => {
 			// Authorization for admin removal can be layered via verifiedUser roles in future
-			const success = await context.applicationServices.Listing.ItemListing.remove({ id: args.id });
-			return success;
+			return await context.applicationServices.Listing.ItemListing.remove({ id: args.id });
 		},
 
 		unblockListing: async (
@@ -240,8 +239,7 @@ const itemListingResolvers = {
 			context: GraphContext,
 		) => {
 			// Authorization for admin unblock can be layered via verifiedUser roles in future
-			const success = await context.applicationServices.Listing.ItemListing.unblock({ id: args.id });
-			return success;
+			return await context.applicationServices.Listing.ItemListing.unblock({ id: args.id });
 		},
 	},
 };
