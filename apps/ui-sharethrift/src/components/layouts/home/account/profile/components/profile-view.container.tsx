@@ -1,5 +1,5 @@
 import { useNavigate } from 'react-router-dom';
-import { ProfileView } from './profile-view.tsx';
+import { ProfileView } from '../pages/profile-view.tsx';
 import { useQuery } from '@apollo/client';
 import type {
 	CurrentUserQueryData,
@@ -9,7 +9,7 @@ import type {
 import {
 	HomeAccountProfileViewContainerCurrentUserDocument,
 	HomeAccountProfileViewContainerUserListingsDocument,
-} from '../../../../../generated.tsx';
+} from '../../../../../../generated.tsx';
 
 function ProfileViewLoader() {
 	const navigate = useNavigate();

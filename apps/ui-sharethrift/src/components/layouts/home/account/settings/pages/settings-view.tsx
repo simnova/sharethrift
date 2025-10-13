@@ -11,8 +11,8 @@ import {
 	Tag,
 } from 'antd';
 import { EditOutlined, LockOutlined } from '@ant-design/icons';
-import type { SettingsViewProps, PlanOption } from './settings-view.types.ts';
-import styles from './settings-view.module.css';
+import type { SettingsViewProps, PlanOption } from '../components/settings-view.types.ts';
+import styles from '../components/settings-view.module.css';
 import '@sthrift/ui-components/src/styles/theme.css';
 
 const { Text } = Typography;
