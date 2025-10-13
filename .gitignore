@@ -16,3 +16,4 @@ local.settings.json
 **/generated.ts
 **/generated.tsx
 **/graphql.schema.json
+apps/ui-sharethrift/tsconfig.tsbuildinfo
