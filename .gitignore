@@ -16,3 +16,12 @@ local.settings.json
 **/generated.ts
 **/generated.tsx
 **/graphql.schema.json
+# Build artifacts
+dist/
+*.tsbuildinfo
+
+# Test results
+*.json
+
+# Temporary test files
+test-*.js
