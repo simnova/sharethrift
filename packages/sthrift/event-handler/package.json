@@ -17,7 +17,8 @@
 		"clean": "rimraf dist"
 	},
 	"dependencies": {
-		"@sthrift/domain": "*"
+		"@sthrift/domain": "*",
+		"@sthrift/service-cognitive-search": "*"
 	},
 	"devDependencies": {
 		"@cellix/typescript-config": "*",

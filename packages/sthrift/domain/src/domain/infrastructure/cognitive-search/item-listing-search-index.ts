@@ -152,28 +152,28 @@ export const ItemListingSearchIndexSpec: SearchIndex = {
 export function convertItemListingToSearchDocument(
 	itemListing: Record<string, unknown>,
 ): Record<string, unknown> {
-	const sharer = itemListing['sharer'] as Record<string, unknown> | undefined;
-	const account = sharer?.['account'] as Record<string, unknown> | undefined;
-	const profile = account?.['profile'] as Record<string, unknown> | undefined;
+	const sharer = itemListing.sharer as Record<string, unknown> | undefined;
+	const account = sharer?.account as Record<string, unknown> | undefined;
+	const profile = account?.profile as Record<string, unknown> | undefined;
 
 	return {
-		id: itemListing['id'],
-		title: itemListing['title'],
-		description: itemListing['description']?.toString() || '',
-		category: itemListing['category']?.toString() || '',
-		location: itemListing['location']?.toString() || '',
+		id: itemListing.id,
+		title: itemListing.title,
+		description: itemListing.description?.toString() || '',
+		category: itemListing.category?.toString() || '',
+		location: itemListing.location?.toString() || '',
 		sharerName:
-			(profile?.['firstName']?.toString() || '') +
+			(profile?.firstName?.toString() || '') +
 				' ' +
-				(profile?.['lastName']?.toString() || '') || '',
-		sharerId: sharer?.['id'] || '',
-		state: itemListing['state']?.toString() || '',
+				(profile?.lastName?.toString() || '') || '',
+		sharerId: sharer?.id || '',
+		state: itemListing.state?.toString() || '',
 		sharingPeriodStart:
-			(itemListing['sharingPeriodStart'] as Date)?.toISOString() || '',
+			(itemListing.sharingPeriodStart as Date)?.toISOString() || '',
 		sharingPeriodEnd:
-			(itemListing['sharingPeriodEnd'] as Date)?.toISOString() || '',
-		createdAt: (itemListing['createdAt'] as Date)?.toISOString() || '',
-		updatedAt: (itemListing['updatedAt'] as Date)?.toISOString() || '',
-		images: itemListing['images'] || [],
+			(itemListing.sharingPeriodEnd as Date)?.toISOString() || '',
+		createdAt: (itemListing.createdAt as Date)?.toISOString() || '',
+		updatedAt: (itemListing.updatedAt as Date)?.toISOString() || '',
+		images: itemListing.images || [],
 	};
 }
