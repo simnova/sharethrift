@@ -40,67 +40,6 @@ export function AdminUsersTableContainer({
     }
   );
 
-  /*// TEMPORARY: Mock data for development
-  const loading = false;
-  const error = undefined;
-
-  // Mock data - matches what the real query would return
-  const data = {
-    allUsers: {
-      items: [
-        {
-          id: "1",
-          username: "johndoe",
-          firstName: "John",
-          lastName: "Doe",
-          email: "john@example.com",
-          accountCreated: "2024-01-15T10:30:00Z",
-          status: "Active" as const,
-          isBlocked: false,
-          userType: "verified-personal",
-          reportCount: 0,
-        },
-        {
-          id: "2",
-          username: "janesmith",
-          firstName: "Jane",
-          lastName: "Smith",
-          email: "jane@example.com",
-          accountCreated: "2024-02-20T14:20:00Z",
-          status: "Blocked" as const,
-          isBlocked: true,
-          userType: "verified-personal",
-          reportCount: 2,
-        },
-        {
-          id: "3",
-          username: "bobbuilder",
-          firstName: "Bob",
-          lastName: "Builder",
-          email: "bob@example.com",
-          accountCreated: "2024-03-10T09:15:00Z",
-          status: "Active" as const,
-          isBlocked: false,
-          userType: "verified-personal-plus",
-          reportCount: 0,
-        },
-        {
-          id: "4",
-          username: "alicewonder",
-          firstName: "Alice",
-          lastName: "Wonder",
-          email: "alice@example.com",
-          accountCreated: "2024-04-05T16:45:00Z",
-          status: "Active" as const,
-          isBlocked: false,
-          userType: "non-verified-personal",
-          reportCount: 1,
-        },
-      ],
-      total: 4,
-    },
-  };*/
-
   // Transform GraphQL data to match AdminUserData structure
   const users = (data?.allUsers?.items ?? []).map((user) => ({
     id: user.id,
