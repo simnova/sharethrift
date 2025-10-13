@@ -81,6 +81,21 @@ extend type Query {
 	# Personal User queries
 	personalUserById(id: ObjectID!): PersonalUser
 	currentPersonalUserAndCreateIfNotExists: PersonalUser!
+
+    allUsers(
+		page: Int!
+		pageSize: Int!
+		searchText: String
+		statusFilters: [String!]
+		sorter: SorterInput
+	): PersonalUserPage!
+}
+
+type PersonalUserPage {
+	items: [PersonalUser!]!
+	total: Int!
+	page: Int!
+	pageSize: Int!
 }
 
 # Payment related input/output types

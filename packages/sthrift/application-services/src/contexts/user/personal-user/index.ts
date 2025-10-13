@@ -9,6 +9,7 @@ import {
 	queryByEmail,
 	type PersonalUserQueryByEmailCommand,
 } from './query-by-email.ts';
+import { getAllUsers, type GetAllUsersCommand } from './get-all-users.ts';
 import { update, type PersonalUserUpdateCommand } from './update.ts';
 
 export interface PersonalUserApplicationService {
@@ -24,6 +25,9 @@ export interface PersonalUserApplicationService {
 	queryByEmail: (
 		email: PersonalUserQueryByEmailCommand,
 	) => Promise<Domain.Contexts.User.PersonalUser.PersonalUserEntityReference | null>;
+    getAllUsers: (
+		command: GetAllUsersCommand,
+	) => Promise<PersonalUserPageResult>;
 }
 
 export const PersonalUser = (
@@ -34,5 +38,6 @@ export const PersonalUser = (
 		queryById: queryById(dataSources),
 		update: update(dataSources),
 		queryByEmail: queryByEmail(dataSources),
+        getAllUsers: getAllUsers(dataSources),
 	};
 };
