@@ -5,6 +5,7 @@ import type {
 	PaymentResponse,
 	RefundResponse,
 	Resolvers,
+	QueryAllUsersArgs,
 } from '../../builder/generated.ts';
 import type { PersonalUserUpdateCommand } from '@sthrift/application-services';
 
@@ -42,29 +43,28 @@ const personalUserResolvers: Resolvers = {
 				},
 			);
 		},
-    	allUsers: async (
-            _parent: unknown,
-            args: {
-                page: number;
-                pageSize: number;
-                searchText?: string;
-                statusFilters?: string[];
-                sorter?: { field: string; order: string };
-            },
-            context: GraphContext,
-            _info: GraphQLResolveInfo,
-	    ) => {
-            // Check if user is admin
-            if (!context.applicationServices.verifiedUser?.verifiedJwt) {
-                throw new Error('Unauthorized');
-            }
-            
-            // TODO: Add admin permission check here
-            // const isAdmin = await checkIfUserIsAdmin(context);
-            // if (!isAdmin) throw new Error('Forbidden: Admin access required');
-            
-            return await context.applicationServices.User.PersonalUser.getAllUsers(args);
-	    },
+		allUsers: async (
+			_parent: unknown,
+			args: QueryAllUsersArgs,
+			context: GraphContext,
+			_info: GraphQLResolveInfo,
+		) => {
+			// Check if user is admin
+			if (!context.applicationServices.verifiedUser?.verifiedJwt) {
+				throw new Error('Unauthorized');
+			}
+
+			// TODO: SECURITY - Add admin permission check
+			return await context.applicationServices.User.PersonalUser.getAllUsers({
+				page: args.page,
+				pageSize: args.pageSize,
+				searchText: args.searchText || undefined,
+				statusFilters: args.statusFilters
+					? [...args.statusFilters]
+					: undefined,
+				sorter: args.sorter || undefined,
+			});
+		},
 	},
 
 	Mutation: {

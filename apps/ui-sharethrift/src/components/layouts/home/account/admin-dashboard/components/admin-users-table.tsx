@@ -9,8 +9,7 @@ import type {
 import { AdminUsersCard } from "./admin-users-card.tsx";
 import { useState } from "react";
 
-const { Search } = Input;
-const { TextArea } = Input;
+const { Search, TextArea } = Input;
 
 const STATUS_OPTIONS = [
   { label: "Active", value: "Active" },
@@ -45,7 +44,7 @@ export function AdminUsersTable({
   onTableChange,
   onPageChange,
   onAction,
-}: AdminUsersTableProps) {
+}: Readonly<AdminUsersTableProps>) {
   const [blockModalVisible, setBlockModalVisible] = useState(false);
   const [unblockModalVisible, setUnblockModalVisible] = useState(false);
   const [selectedUser, setSelectedUser] = useState<AdminUserData | null>(null);

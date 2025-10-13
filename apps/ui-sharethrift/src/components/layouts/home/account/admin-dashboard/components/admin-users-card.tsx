@@ -6,7 +6,7 @@ export interface AdminUsersCardProps {
 	onAction: (action: 'block' | 'unblock' | 'view-profile' | 'view-report') => void;
 }
 
-export function AdminUsersCard({ user, onAction }: AdminUsersCardProps) {
+export function AdminUsersCard({ user, onAction }: Readonly<AdminUsersCardProps>) {
 	return (
 		<Card
 			style={{

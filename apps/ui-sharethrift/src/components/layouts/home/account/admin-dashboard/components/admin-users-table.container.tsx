@@ -1,11 +1,12 @@
 import { useState } from "react";
-//import { useQuery } from "@apollo/client";
 import { AdminUsersTable } from "./admin-users-table.tsx";
 import { ComponentQueryLoader } from "@sthrift/ui-components";
 import type { AdminUserData } from "./admin-users-table.types.ts";
 import { message } from "antd";
 
-//import { AdminUsersTableContainerAllUsersDocument } from "../../../../../generated.tsx";
+// TODO: Uncomment when backend is ready
+// import { useQuery } from "@apollo/client";
+// import { AdminUsersTableContainerAllUsersDocument } from "../../../../../generated.tsx";
 
 export interface AdminUsersTableContainerProps {
   currentPage: number;
@@ -15,7 +16,7 @@ export interface AdminUsersTableContainerProps {
 export function AdminUsersTableContainer({
   currentPage,
   onPageChange,
-}: AdminUsersTableContainerProps) {
+}: Readonly<AdminUsersTableContainerProps>) {
   const [searchText, setSearchText] = useState("");
   const [statusFilters, setStatusFilters] = useState<string[]>([]);
   const [sorter, setSorter] = useState<{
@@ -24,22 +25,23 @@ export function AdminUsersTableContainer({
   }>({ field: null, order: null });
   const pageSize = 50; // in BRD
 
-  /* const { data, loading, error } = useQuery(
-    AdminUsersTableContainerAllUsersDocument,
-    {
-      variables: {
-        page: currentPage,
-        pageSize: pageSize,
-        searchText: searchText,
-        statusFilters: statusFilters,
-        sorter:
-          sorter.field && sorter.order
-            ? { field: sorter.field, order: sorter.order }
-            : undefined,
-      },
-      fetchPolicy: "network-only",
-    }
-  );*/
+  // TODO: Uncomment when backend GraphQL query is tested
+  // const { data, loading, error } = useQuery(
+  //   AdminUsersTableContainerAllUsersDocument,
+  //   {
+  //     variables: {
+  //       page: currentPage,
+  //       pageSize: pageSize,
+  //       searchText: searchText,
+  //       statusFilters: statusFilters,
+  //       sorter:
+  //         sorter.field && sorter.order
+  //           ? { field: sorter.field, order: sorter.order }
+  //           : undefined,
+  //     },
+  //     fetchPolicy: "network-only",
+  //   }
+  // );
 
   // TEMPORARY: Mock data for development
   const loading = false;

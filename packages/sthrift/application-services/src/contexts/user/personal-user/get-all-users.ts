@@ -4,9 +4,9 @@ import type { Domain } from '@sthrift/domain';
 export interface GetAllUsersCommand {
 	page: number;
 	pageSize: number;
-	searchText?: string;
-	statusFilters?: string[];
-	sorter?: { field: string; order: string };
+	searchText?: string | undefined;
+	statusFilters?: string[] | undefined;
+	sorter?: { field: string; order: string } | undefined;
 }
 
 export interface PersonalUserPageResult {
@@ -24,7 +24,7 @@ export const getAllUsers = (datasources: DataSources) => {
 		const limit = command.pageSize;
 		
 		// Use the read repository for queries
-		const users = await datasources.readonlyDataSource.User.PersonalUser.getAll({
+		const users = await datasources.readonlyDataSource.User.PersonalUser.PersonalUserReadRepo.getAll({
 			limit,
 			skip,
 			// TODO: Add search/filter logic here based on command.searchText and command.statusFilters
