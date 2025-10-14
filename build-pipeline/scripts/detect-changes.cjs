@@ -63,7 +63,7 @@ async function detectChanges() {
 	// Define deployment app configurations (using path filters for reliability)
 	const appConfigs = [
 		{ filter: './apps/api', variable: 'HAS_BACKEND_CHANGES' },
-		{ filter: './apps/ui-community', variable: 'HAS_FRONTEND_CHANGES' },
+		{ filter: './apps/ui-sharethrift', variable: 'HAS_FRONTEND_CHANGES' },
 		{ filter: './apps/docs', variable: 'HAS_DOCS_CHANGES' },
 	];
 

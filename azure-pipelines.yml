@@ -61,4 +61,4 @@ stages:
       resourceGroupName: 'rg-sharethrift'
       appSettingsJsonFileRelativePathPri: 'apps/api/build-pipelines/config/dev-pri.json'
       frontDoorProfileName: 'simnova-afd'
-      frontDoorEndpointName: 'sth-fde-ged3a8gxcvfxafaf'
+      frontDoorEndpointName: 'sth-fde-bzbjd6edbfhmcnam'
