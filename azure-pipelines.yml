@@ -14,7 +14,7 @@ pool:
 variables:
   - group: sonarcloud-credential-sharethrift
   - group: github-credential-sharethrift
-  - group: ui-community-settings-sharethrift
+  - group: ui-sharethrift-settings-sharethrift
   - name: deploymentDefaultLocation
     value: 'eastus2'
   - name: ServiceConnectionName
