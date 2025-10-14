@@ -1,9 +1,9 @@
 import type { Meta, StoryObj } from '@storybook/react';
 import { ViewListing } from './view-listing.tsx';
-//import type { ViewListingProps } from "./view-listing";
 import type { ItemListing } from '../../../../../generated.tsx';
-import { MockedProvider } from "@apollo/client/testing/react";
-import { gql } from '@apollo/client';
+import { ApolloClient, InMemoryCache, gql } from '@apollo/client';
+import { ApolloProvider } from '@apollo/client/react';
+import { MockLink } from '@apollo/client/testing';
 
 // eslint-disable-next-line import/no-absolute-path, @typescript-eslint/ban-ts-comment
 // @ts-ignore - allow raw import string
@@ -93,6 +93,12 @@ const meta: Meta<typeof ViewListing> = {
 	},
 	decorators: [
 		(Story) => {
+			const mockLink = new MockLink(mocks);
+			const client = new ApolloClient({
+				link: mockLink,
+				cache: new InMemoryCache(),
+			});
+			
 			// Add a console log to debug the variables passed to the query
 			if (typeof window !== 'undefined') {
 				const origFetch = window.fetch;
@@ -118,9 +124,9 @@ const meta: Meta<typeof ViewListing> = {
 				};
 			}
 			return (
-				<MockedProvider mocks={mocks}>
+				<ApolloProvider client={client}>
 					<Story />
-				</MockedProvider>
+				</ApolloProvider>
 			);
 		},
 	],
@@ -129,7 +135,7 @@ export default meta;
 
 type Story = StoryObj<typeof ViewListing>;
 
-const baseListing: ItemListing = MOCK_LISTING_BASE as ItemListing;
+const baseListing = MOCK_LISTING_BASE;
 
 export const Default: Story = {
 	args: {

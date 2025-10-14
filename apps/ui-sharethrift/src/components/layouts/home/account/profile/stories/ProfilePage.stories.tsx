@@ -3,6 +3,9 @@ import { action } from "storybook/actions";
 import { MemoryRouter, Route, Routes } from "react-router-dom";
 import { AuthContext } from "react-oidc-context";
 import { type ReactNode, useMemo } from "react";
+import { ApolloClient, InMemoryCache } from "@apollo/client";
+import { ApolloProvider } from "@apollo/client/react";
+import { MockLink } from "@apollo/client/testing";
 import HomeRoutes from "../../../index.tsx";
 import { ProfileView } from "../pages/profile-view.tsx";
 import type { UserProfileData, UserListing } from "../components/profile-view.types.ts";
@@ -11,15 +14,26 @@ export default {
   title: "Pages/Account/Profile",
   component: HomeRoutes,
   decorators: [
-    (Story) => (
-      <MockAuthWrapper>
-        <MemoryRouter initialEntries={["/account/profile"]}>
-          <Routes>
-            <Route path="*" element={<Story />} />
-          </Routes>
-        </MemoryRouter>
-      </MockAuthWrapper>
-    ),
+    (Story, context) => {
+      const mocks = context.parameters['apolloClient']?.mocks || [];
+      const mockLink = new MockLink(mocks, { showWarnings: false });
+      const client = new ApolloClient({
+        link: mockLink,
+        cache: new InMemoryCache(),
+      });
+      
+      return (
+        <ApolloProvider client={client}>
+          <MockAuthWrapper>
+            <MemoryRouter initialEntries={["/account/profile"]}>
+              <Routes>
+                <Route path="*" element={<Story />} />
+              </Routes>
+            </MemoryRouter>
+          </MockAuthWrapper>
+        </ApolloProvider>
+      );
+    },
   ],
   parameters: {
     layout: "fullscreen",

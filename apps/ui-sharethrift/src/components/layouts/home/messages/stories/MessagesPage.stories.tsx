@@ -2,6 +2,9 @@ import type { Meta, StoryFn } from "@storybook/react";
 import { MemoryRouter, Route, Routes } from "react-router-dom";
 import { AuthContext } from "react-oidc-context";
 import { type ReactNode, useMemo } from "react";
+import { ApolloClient, InMemoryCache } from "@apollo/client";
+import { ApolloProvider } from "@apollo/client/react";
+import { MockLink } from "@apollo/client/testing";
 import HomeRoutes from "../../index.tsx";
 import {
   HomeConversationListContainerConversationsByUserDocument,
@@ -12,15 +15,26 @@ export default {
   title: "Pages/Messages",
   component: HomeRoutes,
   decorators: [
-    (Story) => (
-      <MockAuthWrapper>
-        <MemoryRouter initialEntries={["/messages"]}>
-          <Routes>
-            <Route path="*" element={<Story />} />
-          </Routes>
-        </MemoryRouter>
-      </MockAuthWrapper>
-    ),
+    (Story, context) => {
+      const mocks = context.parameters['apolloClient']?.mocks || [];
+      const mockLink = new MockLink(mocks);
+      const client = new ApolloClient({
+        link: mockLink,
+        cache: new InMemoryCache(),
+      });
+      
+      return (
+        <ApolloProvider client={client}>
+          <MockAuthWrapper>
+            <MemoryRouter initialEntries={["/messages"]}>
+              <Routes>
+                <Route path="*" element={<Story />} />
+              </Routes>
+            </MemoryRouter>
+          </MockAuthWrapper>
+        </ApolloProvider>
+      );
+    },
   ],
 } as Meta<typeof HomeRoutes>;
 

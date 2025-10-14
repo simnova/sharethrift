@@ -1,10 +1,29 @@
 import type { Meta, StoryObj } from "@storybook/react";
+import { ApolloClient, InMemoryCache } from "@apollo/client";
+import { ApolloProvider } from "@apollo/client/react";
+import { MockLink } from "@apollo/client/testing";
 import { SettingsViewContainer } from "../components/settings-view.container.tsx";
 import { HomeAccountSettingsViewContainerCurrentUserDocument } from "../../../../../../generated.tsx";
 
 const meta: Meta<typeof SettingsViewContainer> = {
   title: "Components/Account/SettingsContainer",
   component: SettingsViewContainer,
+  decorators: [
+    (Story, context) => {
+      const mocks = context.parameters['apolloClient']?.mocks || [];
+      const mockLink = new MockLink(mocks);
+      const client = new ApolloClient({
+        link: mockLink,
+        cache: new InMemoryCache(),
+      });
+      
+      return (
+        <ApolloProvider client={client}>
+          <Story />
+        </ApolloProvider>
+      );
+    },
+  ],
   parameters: {
     apolloClient: {
       mocks: [
@@ -31,8 +50,17 @@ const meta: Meta<typeof SettingsViewContainer> = {
                     lastName: "Garcia",
                     location: {
                       __typename: "PersonalUserAccountProfileLocation",
+                      address1: "123 Main Street",
+                      address2: "Apt 4B",
                       city: "Philadelphia",
                       state: "PA",
+                      country: "United States",
+                      zipCode: "19101",
+                    },
+                    billing: {
+                      __typename: "PersonalUserAccountProfileBilling",
+                      subscriptionId: "sub_123456789",
+                      cybersourceCustomerId: "cust_abc123",
                     },
                   },
                   settings: {
