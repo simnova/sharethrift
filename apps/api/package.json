@@ -21,9 +21,9 @@
     "dependencies": {
         "@azure/functions": "^4.0.0",
         "@azure/identity": "^4.8.0",
-        "twilio": "^5.8.0",
         "@cellix/api-services-spec": "workspace:*",
         "@cellix/mongoose-seedwork": "workspace:*",
+        "@opentelemetry/api": "^1.9.0",
         "@sthrift/application-services": "workspace:*",
         "@sthrift/context-spec": "workspace:*",
         "@sthrift/event-handler": "workspace:*",
@@ -31,11 +31,12 @@
         "@sthrift/persistence": "workspace:*",
         "@sthrift/rest": "workspace:*",
         "@sthrift/service-blob-storage": "workspace:*",
+        "@sthrift/service-cybersource": "workspace:*",
         "@sthrift/service-mongoose": "workspace:*",
-        "@sthrift/service-twilio": "workspace:*",
         "@sthrift/service-otel": "workspace:*",
         "@sthrift/service-token-validation": "workspace:*",
-        "@sthrift/service-cybersource": "workspace:*"
+        "@sthrift/service-twilio": "workspace:*",
+        "twilio": "^5.8.0"
     },
     "devDependencies": {
         "@cellix/typescript-config": "workspace:*",

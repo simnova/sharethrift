@@ -101,6 +101,9 @@ importers:
       '@cellix/mongoose-seedwork':
         specifier: workspace:*
         version: link:../../packages/cellix/mongoose-seedwork
+      '@opentelemetry/api':
+        specifier: ^1.9.0
+        version: 1.9.0
       '@sthrift/application-services':
         specifier: workspace:*
         version: link:../../packages/sthrift/application-services
@@ -223,6 +226,9 @@ importers:
 
   apps/ui-sharethrift:
     dependencies:
+      '@ant-design/icons':
+        specifier: ^6.1.0
+        version: 6.1.0(react-dom@19.2.0(react@19.2.0))(react@19.2.0)
       '@apollo/client':
         specifier: ^3.14.0
         version: 3.14.0(@types/react@19.2.2)(graphql-ws@6.0.6(graphql@16.11.0)(ws@8.18.3))(graphql@16.11.0)(react-dom@19.2.0(react@19.2.0))(react@19.2.0)
@@ -247,6 +253,9 @@ importers:
       crypto-hash:
         specifier: ^3.1.0
         version: 3.1.0
+      dayjs:
+        specifier: ^1.11.18
+        version: 1.11.18
       graphql:
         specifier: ^16.11.0
         version: 16.11.0
@@ -287,6 +296,9 @@ importers:
       '@eslint/js':
         specifier: ^9.30.1
         version: 9.37.0
+      '@graphql-typed-document-node/core':
+        specifier: ^3.2.0
+        version: 3.2.0(graphql@16.11.0)
       '@storybook/addon-a11y':
         specifier: ^9.1.1
         version: 9.1.10(storybook@9.1.10(@testing-library/dom@10.4.1)(vite@7.1.10(@types/node@24.7.2)(jiti@2.6.1)(lightningcss@1.30.1)(terser@5.44.0)(tsx@4.20.6)(yaml@2.8.1)))
@@ -296,6 +308,9 @@ importers:
       '@storybook/addon-vitest':
         specifier: ^9.1.1
         version: 9.1.10(@vitest/browser@3.2.4)(@vitest/runner@3.2.4)(react-dom@19.2.0(react@19.2.0))(react@19.2.0)(storybook@9.1.10(@testing-library/dom@10.4.1)(vite@7.1.10(@types/node@24.7.2)(jiti@2.6.1)(lightningcss@1.30.1)(terser@5.44.0)(tsx@4.20.6)(yaml@2.8.1)))(vitest@3.2.4)
+      '@storybook/react':
+        specifier: ^9.1.10
+        version: 9.1.10(react-dom@19.2.0(react@19.2.0))(react@19.2.0)(storybook@9.1.10(@testing-library/dom@10.4.1)(vite@7.1.10(@types/node@24.7.2)(jiti@2.6.1)(lightningcss@1.30.1)(terser@5.44.0)(tsx@4.20.6)(yaml@2.8.1)))(typescript@5.8.3)
       '@storybook/react-vite':
         specifier: ^9.1.1
         version: 9.1.10(react-dom@19.2.0(react@19.2.0))(react@19.2.0)(rollup@4.52.4)(storybook@9.1.10(@testing-library/dom@10.4.1)(vite@7.1.10(@types/node@24.7.2)(jiti@2.6.1)(lightningcss@1.30.1)(terser@5.44.0)(tsx@4.20.6)(yaml@2.8.1)))(typescript@5.8.3)(vite@7.1.10(@types/node@24.7.2)(jiti@2.6.1)(lightningcss@1.30.1)(terser@5.44.0)(tsx@4.20.6)(yaml@2.8.1))
@@ -611,6 +626,9 @@ importers:
       '@sthrift/persistence':
         specifier: workspace:*
         version: link:../persistence
+      '@sthrift/service-cybersource':
+        specifier: workspace:*
+        version: link:../service-cybersource
     devDependencies:
       '@cellix/typescript-config':
         specifier: workspace:*
@@ -627,6 +645,9 @@ importers:
       '@sthrift/persistence':
         specifier: workspace:*
         version: link:../persistence
+      '@sthrift/service-cybersource':
+        specifier: workspace:*
+        version: link:../service-cybersource
       '@sthrift/service-token-validation':
         specifier: workspace:*
         version: link:../service-token-validation
@@ -730,11 +751,14 @@ importers:
       '@apollo/server':
         specifier: ^4.11.3
         version: 4.12.2(graphql@16.11.0)
+      '@apollo/utils.withrequired':
+        specifier: ^3.0.0
+        version: 3.0.0
       '@as-integrations/azure-functions':
         specifier: ^0.2.0
         version: 0.2.2(@apollo/server@4.12.2(graphql@16.11.0))
       '@azure/functions':
-        specifier: ^4.6.0
+        specifier: ^4.0.0
         version: 4.8.0
       '@graphql-tools/json-file-loader':
         specifier: ^8.0.20
@@ -745,6 +769,15 @@ importers:
       '@graphql-tools/load-files':
         specifier: ^7.0.1
         version: 7.0.1(graphql@16.11.0)
+      '@graphql-tools/merge':
+        specifier: ^9.1.1
+        version: 9.1.1(graphql@16.11.0)
+      '@graphql-tools/schema':
+        specifier: ^10.0.25
+        version: 10.0.25(graphql@16.11.0)
+      '@opentelemetry/api':
+        specifier: ^1.9.0
+        version: 1.9.0
       '@sthrift/application-services':
         specifier: workspace:*
         version: link:../application-services
@@ -785,6 +818,9 @@ importers:
       dotenv:
         specifier: ^16.4.5
         version: 16.6.1
+      mongodb:
+        specifier: 'catalog:'
+        version: 6.18.0
     devDependencies:
       '@cellix/typescript-config':
         specifier: workspace:*
@@ -816,6 +852,9 @@ importers:
       '@sthrift/domain':
         specifier: workspace:*
         version: link:../domain
+      bson:
+        specifier: ^6.10.4
+        version: 6.10.4
     devDependencies:
       '@cellix/typescript-config':
         specifier: workspace:*
@@ -861,6 +900,9 @@ importers:
         specifier: workspace:*
         version: link:../domain
     devDependencies:
+      '@cellix/typescript-config':
+        specifier: workspace:*
+        version: link:../../cellix/typescript-config
       rimraf:
         specifier: ^6.0.1
         version: 6.0.1
@@ -1380,6 +1422,10 @@ packages:
   '@apollo/utils.withrequired@2.0.1':
     resolution: {integrity: sha512-YBDiuAX9i1lLc6GeTy1m7DGLFn/gMnvXqlalOIMjM7DeOgIacEjjfwPqb0M1CQ2v11HhR15d1NmxJoRCfrNqcA==}
     engines: {node: '>=14'}
+
+  '@apollo/utils.withrequired@3.0.0':
+    resolution: {integrity: sha512-aaxeavfJ+RHboh7c2ofO5HHtQobGX4AgUujXP4CXpREHp9fQ9jPi6K9T1jrAKe7HIipoP0OJ1gd6JamSkFIpvA==}
+    engines: {node: '>=16'}
 
   '@ardatan/relay-compiler@12.0.3':
     resolution: {integrity: sha512-mBDFOGvAoVlWaWqs3hm1AciGHSQE1rqFc/liZTyYz/Oek9yZdT5H26pH2zAFuEiTiBVPPyMuqf5VjOFPI2DGsQ==}
@@ -11583,6 +11629,8 @@ snapshots:
 
   '@apollo/utils.withrequired@2.0.1': {}
 
+  '@apollo/utils.withrequired@3.0.0': {}
+
   '@ardatan/relay-compiler@12.0.3(graphql@16.11.0)':
     dependencies:
       '@babel/generator': 7.28.3
@@ -14283,7 +14331,7 @@ snapshots:
       '@graphql-tools/utils': 8.9.0(graphql@16.11.0)
       dataloader: 2.1.0
       graphql: 16.11.0
-      tslib: 2.4.1
+      tslib: 2.8.1
       value-or-promise: 1.0.11
 
   '@graphql-tools/batch-execute@9.0.19(graphql@16.11.0)':
@@ -17083,7 +17131,7 @@ snapshots:
   camel-case@4.1.2:
     dependencies:
       pascal-case: 3.1.2
-      tslib: 2.6.3
+      tslib: 2.8.1
 
   camelcase@5.0.0: {}
 
@@ -17386,7 +17434,7 @@ snapshots:
   constant-case@3.0.4:
     dependencies:
       no-case: 3.0.4
-      tslib: 2.6.3
+      tslib: 2.8.1
       upper-case: 2.0.2
 
   content-disposition@0.5.2: {}
@@ -17848,7 +17896,7 @@ snapshots:
   dot-case@3.0.4:
     dependencies:
       no-case: 3.0.4
-      tslib: 2.6.3
+      tslib: 2.8.1
 
   dot-prop@6.0.1:
     dependencies:
@@ -18874,7 +18922,7 @@ snapshots:
   header-case@2.0.4:
     dependencies:
       capital-case: 1.0.4
-      tslib: 2.6.3
+      tslib: 2.8.1
 
   history@4.10.1:
     dependencies:
@@ -20755,7 +20803,7 @@ snapshots:
   param-case@3.0.4:
     dependencies:
       dot-case: 3.0.4
-      tslib: 2.6.3
+      tslib: 2.8.1
 
   parent-module@1.0.1:
     dependencies:
@@ -20808,14 +20856,14 @@ snapshots:
   pascal-case@3.1.2:
     dependencies:
       no-case: 3.0.4
-      tslib: 2.6.3
+      tslib: 2.8.1
 
   path-browserify@1.0.1: {}
 
   path-case@3.0.4:
     dependencies:
       dot-case: 3.0.4
-      tslib: 2.6.3
+      tslib: 2.8.1
 
   path-exists@4.0.0: {}
 
@@ -22353,7 +22401,7 @@ snapshots:
   sentence-case@3.0.4:
     dependencies:
       no-case: 3.0.4
-      tslib: 2.6.3
+      tslib: 2.8.1
       upper-case-first: 2.0.2
 
   seq-queue@0.0.5: {}
@@ -22563,7 +22611,7 @@ snapshots:
   snake-case@3.0.4:
     dependencies:
       dot-case: 3.0.4
-      tslib: 2.6.3
+      tslib: 2.8.1
 
   sockjs@0.3.24:
     dependencies:

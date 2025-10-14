@@ -12,6 +12,7 @@
     },
     "dependencies": {
         "dotenv": "^16.4.5",
+        "mongodb": "catalog:",
         "@sthrift/data-sources-mongoose-models": "workspace:*",
         "@cellix/mock-mongodb-memory-server-seedwork": "workspace:*"
     },

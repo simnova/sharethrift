@@ -13,6 +13,7 @@
         "build-storybook": "storybook build"
     },
     "dependencies": {
+        "@ant-design/icons": "^6.1.0",
         "@apollo/client": "^3.14.0",
         "@sthrift/ui-components": "workspace:*",
         "@tailwindcss/vite": "^4.1.11",
@@ -21,6 +22,7 @@
         "apollo-link-rest": "^0.9.0",
         "clean": "^4.0.2",
         "crypto-hash": "^3.1.0",
+        "dayjs": "^1.11.18",
         "graphql": "^16.11.0",
         "lodash": "^4.17.21",
         "react": "^19.1.1",
@@ -36,9 +38,11 @@
         "@cellix/vitest-config": "workspace:*",
         "@chromatic-com/storybook": "^4.1.0",
         "@eslint/js": "^9.30.1",
+        "@graphql-typed-document-node/core": "^3.2.0",
         "@storybook/addon-a11y": "^9.1.1",
         "@storybook/addon-docs": "^9.1.1",
         "@storybook/addon-vitest": "^9.1.1",
+        "@storybook/react": "^9.1.10",
         "@storybook/react-vite": "^9.1.1",
         "@types/lodash": "^4.17.20",
         "@types/react": "^19.1.9",

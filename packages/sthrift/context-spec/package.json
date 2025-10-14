@@ -21,6 +21,7 @@
     },
     "dependencies": {
         "@sthrift/persistence": "workspace:*",
+        "@sthrift/service-cybersource": "workspace:*",
         "@sthrift/service-token-validation": "workspace:*"
     },
     "devDependencies": {

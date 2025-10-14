@@ -22,7 +22,8 @@
     "dependencies": {
         "@sthrift/context-spec": "workspace:*",
         "@sthrift/domain": "workspace:*",
-        "@sthrift/persistence": "workspace:*"
+        "@sthrift/persistence": "workspace:*",
+        "@sthrift/service-cybersource": "workspace:*"
     },
     "devDependencies": {
         "@cellix/typescript-config": "workspace:*",

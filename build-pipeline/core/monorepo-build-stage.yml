@@ -422,15 +422,15 @@ stages:
           echo "✓ API artifact created at: $ZIP_PATH"
         workingDirectory: ''
 
-    # Package UI Community compiled assets into artifact
+    # Package UI ShareThrift compiled assets into artifact
     - task: ArchiveFiles@2
-      displayName: 'Artifact: Prepare UI Community'
+      displayName: 'Artifact: Prepare UI ShareThrift'
       condition: and(succeeded(), eq(variables['BuildJob.HAS_FRONTEND_CHANGES'], 'true'), ne(variables['Build.Reason'], 'PullRequest'))
       inputs:
-        rootFolderOrFile: 'apps/ui-community/dist'
+        rootFolderOrFile: 'apps/ui-sharethrift/dist'
         includeRootFolder: false
         archiveType: zip
-        archiveFile: $(Build.ArtifactStagingDirectory)/ui-community-$(Build.BuildId).zip
+        archiveFile: $(Build.ArtifactStagingDirectory)/ui-sharethrift-$(Build.BuildId).zip
         replaceExistingArchive: true
 
     # Package Docs compiled assets into artifact
@@ -450,11 +450,11 @@ stages:
       condition: and(succeeded(), eq(variables['BuildJob.HAS_BACKEND_CHANGES'], 'true'), ne(variables['Build.Reason'], 'PullRequest'))
       artifact: api
 
-    # Upload UI Community artifact as build result
-    - publish: $(Build.ArtifactStagingDirectory)/ui-community-$(Build.BuildId).zip
-      displayName: 'Artifact: Publish UI Community'
+    # Upload UI ShareThrift artifact as build result
+    - publish: $(Build.ArtifactStagingDirectory)/ui-sharethrift-$(Build.BuildId).zip
+      displayName: 'Artifact: Publish UI ShareThrift'
       condition: and(succeeded(), eq(variables['BuildJob.HAS_FRONTEND_CHANGES'], 'true'), ne(variables['Build.Reason'], 'PullRequest'))
-      artifact: ui-community
+      artifact: ui-sharethrift
 
     # Upload Docs artifact as build result
     - publish: $(Build.ArtifactStagingDirectory)/docs-$(Build.BuildId).zip
