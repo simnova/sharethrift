@@ -6,7 +6,6 @@ import {
 } from './personal-user.data.ts';
 import type { FindOneOptions, FindOptions } from '../../mongo-data-source.ts';
 import { PersonalUserConverter } from '../../../domain/user/personal-user/personal-user.domain-adapter.ts';
-import { getMockPersonalUsers } from './mock-personal-users.ts';
 
 export interface PersonalUserReadRepository {
 	getAll: (
@@ -42,8 +41,7 @@ export class PersonalUserReadRepositoryImpl
 	): Promise<Domain.Contexts.User.PersonalUser.PersonalUserEntityReference[]> {
 		const results = await this.mongoDataSource.find({}, options);
 		if (!results || results.length === 0) {
-			// Return mock data when no real data exists
-			return getMockPersonalUsers();
+			return [];
 		}
 		return results.map((doc) => this.converter.toDomain(doc, this.passport));
 	}

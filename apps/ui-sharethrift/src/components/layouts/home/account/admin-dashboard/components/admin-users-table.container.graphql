@@ -13,21 +13,43 @@ query AdminUsersTableContainerAllUsers(
 		sorter: $sorter
 	) {
 		items {
-			id
-			userType
-			isBlocked
-			createdAt
-			account {
-				username
-				email
-				profile {
-					firstName
-					lastName
-				}
+				...AdminUsersTableContainerUserFields
 			}
-		}
 		total
 		page
 		pageSize
+	}
+}
+
+fragment AdminUsersTableContainerUserFields on User {
+	... on MongoBase {
+		id
+		createdAt
+	}
+	... on PersonalUser {
+		userType
+		isBlocked
+		account {
+			username
+			email
+			profile {
+				firstName
+				lastName
+			}
+		}
+	}
+}
+
+mutation BlockUser($userId: ObjectID!) {
+	blockUser(userId: $userId) {
+		id
+		isBlocked
+	}
+}
+
+mutation UnblockUser($userId: ObjectID!) {
+	unblockUser(userId: $userId) {
+		id
+		isBlocked
 	}
 }
