@@ -2,8 +2,8 @@ import type { DomainSeedwork } from '@cellix/domain-seedwork';
 import type {
 	PersonalUserAccountEntityReference,
 	PersonalUserAccountProps,
-} from './personal-user-account.entity.ts';
-import type { PersonalUserRoleEntityReference } from '../../role/personal-user-role/personal-user-role.entity.ts';
+} from './personal-user-account.entity.js';
+import type { PersonalUserRoleEntityReference } from '../../role/personal-user-role/personal-user-role.entity.js';
 
 export interface PersonalUserProps extends DomainSeedwork.DomainEntityProps {
 	userType: string;

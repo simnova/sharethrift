@@ -1,7 +1,8 @@
 import type React from 'react';
 import { useState, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { gql, useMutation } from '@apollo/client';
+import { gql } from '@apollo/client';
+import { useMutation } from "@apollo/client/react";
 import { message } from 'antd';
 // eslint-disable-next-line import/no-absolute-path, @typescript-eslint/ban-ts-comment
 // @ts-ignore - allow raw import string
@@ -45,7 +46,7 @@ export const CreateListingContainer: React.FC<CreateListingContainerProps> = (
 	const [createItemListing, { loading: isCreating }] = useMutation(
 		CREATE_LISTING_MUTATION,
 		{
-			onCompleted: (data) => {
+			onCompleted: (data: any) => {
 				const isDraft = data.createItemListing.state === 'Drafted';
 				message.success(
 					isDraft

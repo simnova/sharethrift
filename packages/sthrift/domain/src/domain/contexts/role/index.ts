@@ -1,1 +1,1 @@
-export * as PersonalUserRole from './personal-user-role/index.ts';
+export * as PersonalUserRole from './personal-user-role/index.js';

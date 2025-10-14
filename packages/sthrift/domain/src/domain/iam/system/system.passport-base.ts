@@ -1,6 +1,6 @@
-import type { UserDomainPermissions } from '../../contexts/user/user.domain-permissions.ts';
-import type { ListingDomainPermissions } from '../../contexts/listing/listing.domain-permissions.ts';
-import type { ConversationDomainPermissions } from '../../contexts/conversation/conversation.domain-permissions.ts';
+import type { UserDomainPermissions } from '../../contexts/user/user.domain-permissions.js';
+import type { ListingDomainPermissions } from '../../contexts/listing/listing.domain-permissions.js';
+import type { ConversationDomainPermissions } from '../../contexts/conversation/conversation.domain-permissions.js';
 
 export type PermissionsSpec =
 	| UserDomainPermissions

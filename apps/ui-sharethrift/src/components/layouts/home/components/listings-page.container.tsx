@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { useQuery } from '@apollo/client';
+import { useQuery } from "@apollo/client/react";
 import { ListingsPage, type ItemListing } from './listings-page.tsx';
 import {
 	ListingsPageContainerGetListingsDocument,

@@ -1,7 +1,7 @@
 import { useCallback } from 'react';
 import { SelectAccountType } from './select-account-type.tsx';
 import { ComponentQueryLoader } from '@sthrift/ui-components';
-import { useQuery, useMutation } from '@apollo/client';
+import { useMutation, useQuery } from "@apollo/client/react";
 import { useNavigate } from 'react-router-dom';
 import {
 	SignupSelectAccountTypeCurrentPersonalUserAndCreateIfNotExistsDocument,

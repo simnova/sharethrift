@@ -1,6 +1,6 @@
 import type { DomainSeedwork } from '@cellix/domain-seedwork';
-import type { ItemListingEntityReference } from '../../listing/item/item-listing.entity.ts';
-import type { PersonalUserEntityReference } from '../../user/personal-user/personal-user.entity.ts';
+import type { ItemListingEntityReference } from '../../listing/item/item-listing.entity.js';
+import type { PersonalUserEntityReference } from '../../user/personal-user/personal-user.entity.js';
 
 export interface ReservationRequestProps
 	extends DomainSeedwork.DomainEntityProps {

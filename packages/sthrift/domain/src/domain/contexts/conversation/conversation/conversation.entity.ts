@@ -1,7 +1,7 @@
 import type { DomainSeedwork } from '@cellix/domain-seedwork';
-import type { PersonalUserEntityReference } from '../../user/personal-user/personal-user.entity.ts';
-import type { ItemListingEntityReference } from '../../listing/item/item-listing.entity.ts';
-import type { MessageEntityReference } from "./message.entity.ts";
+import type { PersonalUserEntityReference } from '../../user/personal-user/personal-user.entity.js';
+import type { ItemListingEntityReference } from '../../listing/item/item-listing.entity.js';
+import type { MessageEntityReference } from "./message.entity.js";
 
 export interface ConversationProps extends DomainSeedwork.DomainEntityProps {
 	sharer: Readonly<PersonalUserEntityReference>;

@@ -13,12 +13,11 @@
         "build-storybook": "storybook build"
     },
     "dependencies": {
-        "@apollo/client": "^3.14.0",
+        "@apollo/client": "^4.0.7",
         "@sthrift/ui-components": "*",
         "@tailwindcss/vite": "^4.1.11",
         "@twilio/conversations": "^2.6.3",
         "antd": "^5.27.1",
-        "apollo-link-rest": "^0.9.0",
         "clean": "^4.0.2",
         "crypto-hash": "^3.1.0",
         "graphql": "^16.11.0",

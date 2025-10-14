@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { useMutation } from '@apollo/client';
+import { useMutation } from "@apollo/client/react";
 import { gql } from '@apollo/client';
 import { useNavigate } from 'react-router-dom';
 
@@ -15,6 +15,17 @@ const CREATE_CONVERSATION = gql`
     }
   }
 `;
+
+interface CreateConversationData {
+	createConversation: {
+		id: string;
+		twilioConversationSid: string;
+		listingId: string;
+		participants: string[];
+		createdAt: string;
+		updatedAt: string;
+	};
+}
 
 interface MessageSharerButtonProps {
 	listingId: string;
@@ -33,7 +44,7 @@ export function MessageSharerButton({
 	// TODO: Get actual user ID from authentication context
 	const currentUserId = 'user123'; // Placeholder
 
-	const [createConversation] = useMutation(CREATE_CONVERSATION, {
+	const [createConversation] = useMutation<CreateConversationData>(CREATE_CONVERSATION, {
 		onCompleted: (data) => {
 			// Navigate to the messages page with the conversation
 			navigate(`/messages/user/${currentUserId}`, {

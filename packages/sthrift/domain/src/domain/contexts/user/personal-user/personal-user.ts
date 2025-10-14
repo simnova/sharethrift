@@ -1,13 +1,13 @@
 import { DomainSeedwork } from '@cellix/domain-seedwork';
-import type { Passport } from '../../passport.ts';
-import type { UserVisa } from '../user.visa.ts';
-import { PersonalUserAccount } from './personal-user-account.ts';
-import { PersonalUserRole } from '../../role/personal-user-role/personal-user-role.ts';
-import type { PersonalUserRoleEntityReference } from '../../role/personal-user-role/personal-user-role.entity.ts';
+import type { Passport } from '../../passport.js';
+import type { UserVisa } from '../user.visa.js';
+import { PersonalUserAccount } from './personal-user-account.js';
+import { PersonalUserRole } from '../../role/personal-user-role/personal-user-role.js';
+import type { PersonalUserRoleEntityReference } from '../../role/personal-user-role/personal-user-role.entity.js';
 import type {
 	PersonalUserEntityReference,
 	PersonalUserProps,
-} from './personal-user.entity.ts';
+} from './personal-user.entity.js';
 
 export interface PersonalUserAggregateRoot
 	extends DomainSeedwork.RootEventRegistry {

@@ -1,10 +1,10 @@
-export { Conversation } from './conversation.ts';
-export type {} from './conversation.ts';
+export { Conversation } from './conversation.js';
+export type {} from './conversation.js';
 export type {
 	ConversationProps,
 	ConversationEntityReference,
-} from './conversation.entity.ts';
-export type { ConversationRepository } from './conversation.repository.ts';
-export type { ConversationUnitOfWork } from './conversation.uow.ts';
-export { Message } from './message.entity.ts';
-export type { MessageEntityReference } from './message.entity.ts';
+} from './conversation.entity.js';
+export type { ConversationRepository } from './conversation.repository.js';
+export type { ConversationUnitOfWork } from './conversation.uow.js';
+export { Message } from './message.entity.js';
+export type { MessageEntityReference } from './message.entity.js';

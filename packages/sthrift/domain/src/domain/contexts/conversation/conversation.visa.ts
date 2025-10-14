@@ -1,4 +1,4 @@
-import type { ConversationDomainPermissions } from './conversation.domain-permissions.ts';
+import type { ConversationDomainPermissions } from './conversation.domain-permissions.js';
 
 export interface ConversationVisa {
 	determineIf(

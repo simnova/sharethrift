@@ -2,7 +2,7 @@ import type { Meta, StoryObj } from '@storybook/react';
 import { ViewListing } from './view-listing.tsx';
 //import type { ViewListingProps } from "./view-listing";
 import type { ItemListing } from '../../../../../generated.tsx';
-import { MockedProvider } from '@apollo/client/testing';
+import { MockedProvider } from "@apollo/client/testing/react";
 import { gql } from '@apollo/client';
 
 // eslint-disable-next-line import/no-absolute-path, @typescript-eslint/ban-ts-comment

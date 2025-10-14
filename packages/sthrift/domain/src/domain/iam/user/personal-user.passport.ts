@@ -1,7 +1,7 @@
-import { PersonalUserPassportBase } from './personal-user.passport-base.ts';
-import type { Passport } from '../../contexts/passport.ts';
-import type { UserPassport } from '../../contexts/user/user.passport.ts';
-import { PersonalUserUserPassport } from './personal-user.user.passport.ts';
+import { PersonalUserPassportBase } from './personal-user.passport-base.js';
+import type { Passport } from '../../contexts/passport.js';
+import type { UserPassport } from '../../contexts/user/user.passport.js';
+import { PersonalUserUserPassport } from './personal-user.user.passport.js';
 export class PersonalUserPassport
 	extends PersonalUserPassportBase
 	implements Passport

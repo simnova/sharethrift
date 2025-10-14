@@ -4,7 +4,7 @@ import type { AuthContextProps } from 'react-oidc-context';
 
 export const HandleLogout = (
 	auth: AuthContextProps,
-	apolloClient: ApolloClient<object>,
+	apolloClient: ApolloClient,
 	post_logout_redirect_uri?: string,
 ) => {
 	// Please do not put await before these 2 functions auth.removeUser() and auth.signoutRedirect() for it will break the logout

@@ -1,4 +1,4 @@
-import type { PersonalUserEntityReference } from '../../contexts/user/personal-user/personal-user.entity.ts';
+import type { PersonalUserEntityReference } from '../../contexts/user/personal-user/personal-user.entity.js';
 export class PersonalUserPassportBase {
 	protected readonly _user: PersonalUserEntityReference;
 	constructor(user: PersonalUserEntityReference) {

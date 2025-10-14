@@ -1,2 +1,2 @@
-export * as Conversation from './conversation/index.ts';
-export type { ConversationPassport } from './conversation.passport.ts';
+export * as Conversation from './conversation/index.js';
+export type { ConversationPassport } from './conversation.passport.js';

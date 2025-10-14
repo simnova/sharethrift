@@ -1,8 +1,8 @@
 import type { DomainSeedwork } from '@cellix/domain-seedwork';
-import type { ReservationRequest } from './reservation-request.ts';
-import type { ItemListingEntityReference } from '../../listing/item/item-listing.entity.ts';
-import type { PersonalUserEntityReference } from '../../user/personal-user/personal-user.entity.ts';
-import type { ReservationRequestProps } from './reservation-request.entity.ts';
+import type { ReservationRequest } from './reservation-request.js';
+import type { ItemListingEntityReference } from '../../listing/item/item-listing.entity.js';
+import type { PersonalUserEntityReference } from '../../user/personal-user/personal-user.entity.js';
+import type { ReservationRequestProps } from './reservation-request.entity.js';
 
 export interface ReservationRequestRepository<
 	props extends ReservationRequestProps,

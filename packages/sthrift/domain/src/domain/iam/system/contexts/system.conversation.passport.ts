@@ -1,8 +1,8 @@
-import type { ConversationEntityReference } from '../../../contexts/conversation/conversation/conversation.entity.ts';
-import type { ConversationPassport } from '../../../contexts/conversation/conversation.passport.ts';
-import { SystemPassportBase } from '../system.passport-base.ts';
-import type { ConversationVisa } from '../../../contexts/conversation/conversation.visa.ts';
-import type { ConversationDomainPermissions } from '../../../contexts/conversation/conversation.domain-permissions.ts';
+import type { ConversationEntityReference } from '../../../contexts/conversation/conversation/conversation.entity.js';
+import type { ConversationPassport } from '../../../contexts/conversation/conversation.passport.js';
+import { SystemPassportBase } from '../system.passport-base.js';
+import type { ConversationVisa } from '../../../contexts/conversation/conversation.visa.js';
+import type { ConversationDomainPermissions } from '../../../contexts/conversation/conversation.domain-permissions.js';
 export class SystemConversationPassport
 	extends SystemPassportBase
 	implements ConversationPassport

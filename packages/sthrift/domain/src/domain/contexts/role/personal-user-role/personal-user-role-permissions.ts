@@ -3,20 +3,20 @@ import { DomainSeedwork } from '@cellix/domain-seedwork';
 import type {
 	PersonalUserRoleListingPermissionsProps,
 	PersonalUserRoleListingPermissionsEntityReference,
-} from './personal-user-role-listing-permissions.ts';
-import { PersonalUserRoleListingPermissions } from './personal-user-role-listing-permissions.ts';
+} from './personal-user-role-listing-permissions.js';
+import { PersonalUserRoleListingPermissions } from './personal-user-role-listing-permissions.js';
 
 import type {
 	PersonalUserRoleConversationPermissionsProps,
 	PersonalUserRoleConversationPermissionsEntityReference,
-} from './personal-user-role-conversation-permissions.ts';
-import { PersonalUserRoleConversationPermissions } from './personal-user-role-conversation-permissions.ts';
+} from './personal-user-role-conversation-permissions.js';
+import { PersonalUserRoleConversationPermissions } from './personal-user-role-conversation-permissions.js';
 
 import type {
 	PersonalUserRoleReservationRequestPermissionsProps,
 	PersonalUserRoleReservationRequestPermissionsEntityReference,
-} from './personal-user-role-reservation-request-permissions.ts';
-import { PersonalUserRoleReservationRequestPermissions } from './personal-user-role-reservation-request-permissions.ts';
+} from './personal-user-role-reservation-request-permissions.js';
+import { PersonalUserRoleReservationRequestPermissions } from './personal-user-role-reservation-request-permissions.js';
 export interface PersonalUserRolePermissionsProps
 	extends DomainSeedwork.ValueObjectProps {
 	readonly listingPermissions: PersonalUserRoleListingPermissionsProps;

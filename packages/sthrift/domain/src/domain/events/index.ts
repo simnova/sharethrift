@@ -1,1 +1,1 @@
-export { EventBusInstance } from './event-bus.ts';
+export { EventBusInstance } from './event-bus.js';

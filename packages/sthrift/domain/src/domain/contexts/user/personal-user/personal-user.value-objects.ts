@@ -1,6 +1,6 @@
 import { DomainSeedwork } from '@cellix/domain-seedwork';
 import { VOOptional } from '@lucaspaganini/value-objects';
-import { Email as EmailBase } from '../../value-objects.ts';
+import { Email as EmailBase } from '../../value-objects.js';
 /**
  * Value objects for User aggregate validation and data integrity.
  */

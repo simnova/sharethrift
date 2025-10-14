@@ -1,12 +1,12 @@
 import { DomainSeedwork } from '@cellix/domain-seedwork';
-import type { Passport } from '../../passport.ts';
-import type { ListingVisa } from '../listing.visa.ts';
-import * as ValueObjects from './item-listing.value-objects.ts';
-import type { PersonalUserEntityReference } from '../../user/personal-user/personal-user.entity.ts';
+import type { Passport } from '../../passport.js';
+import type { ListingVisa } from '../listing.visa.js';
+import * as ValueObjects from './item-listing.value-objects.js';
+import type { PersonalUserEntityReference } from '../../user/personal-user/personal-user.entity.js';
 import type {
 	ItemListingEntityReference,
 	ItemListingProps,
-} from './item-listing.entity.ts';
+} from './item-listing.entity.js';
 export class ItemListing<props extends ItemListingProps>
 	extends DomainSeedwork.AggregateRoot<props, Passport>
 	implements ItemListingEntityReference

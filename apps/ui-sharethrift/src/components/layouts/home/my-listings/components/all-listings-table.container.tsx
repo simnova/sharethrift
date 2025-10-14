@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { useQuery } from '@apollo/client';
+import { useQuery } from "@apollo/client/react";
 import { AllListingsTable } from './all-listings-table.tsx';
 import { ComponentQueryLoader } from '@sthrift/ui-components';
 import { HomeAllListingsTableContainerMyListingsAllDocument } from '../../../../../generated.tsx';

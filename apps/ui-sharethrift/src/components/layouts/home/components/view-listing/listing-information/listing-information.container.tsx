@@ -1,4 +1,4 @@
-import { useQuery, useMutation, useApolloClient } from '@apollo/client';
+import { useApolloClient, useMutation, useQuery } from "@apollo/client/react";
 import { useState } from 'react';
 import { message } from 'antd';
 import { ListingInformation } from './listing-information.tsx';

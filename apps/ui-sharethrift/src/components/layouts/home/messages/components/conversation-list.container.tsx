@@ -1,5 +1,5 @@
 import { ConversationList } from "./conversation-list.tsx";
-import { useQuery } from "@apollo/client";
+import { useQuery } from "@apollo/client/react";
 import {
   HomeConversationListContainerConversationsByUserDocument,
   type Conversation,

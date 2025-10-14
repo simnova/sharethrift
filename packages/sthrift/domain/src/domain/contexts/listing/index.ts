@@ -1,1 +1,1 @@
-export * as ItemListing from './item/index.ts';
+export * as ItemListing from './item/index.js';

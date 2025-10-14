@@ -2,13 +2,13 @@ import {
 	GuestPassport,
 	SystemPassport,
 	PersonalUserPassport,
-} from '../iam/index.ts';
-import type { PermissionsSpec } from '../iam/system/system.passport-base.ts';
-import type { Contexts } from '../index.ts';
-import type { ConversationPassport } from './conversation/conversation.passport.ts';
-import type { ListingPassport } from './listing/listing.passport.ts';
-import type { ReservationRequestPassport } from './reservation-request/reservation-request.passport.ts';
-import type { UserPassport } from './user/user.passport.ts';
+} from '../iam/index.js';
+import type { PermissionsSpec } from '../iam/system/system.passport-base.js';
+import type { Contexts } from '../index.js';
+import type { ConversationPassport } from './conversation/conversation.passport.js';
+import type { ListingPassport } from './listing/listing.passport.js';
+import type { ReservationRequestPassport } from './reservation-request/reservation-request.passport.js';
+import type { UserPassport } from './user/user.passport.js';
 
 export interface Passport {
 	get user(): UserPassport;

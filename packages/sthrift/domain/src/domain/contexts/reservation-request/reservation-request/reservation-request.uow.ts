@@ -1,8 +1,8 @@
 import type { DomainSeedwork } from '@cellix/domain-seedwork';
-import type { Passport } from '../../passport.ts';
-import type { ReservationRequest } from './reservation-request.ts';
-import type { ReservationRequestRepository } from './reservation-request.repository.ts';
-import type { ReservationRequestProps } from './reservation-request.entity.ts';
+import type { Passport } from '../../passport.js';
+import type { ReservationRequest } from './reservation-request.js';
+import type { ReservationRequestRepository } from './reservation-request.repository.js';
+import type { ReservationRequestProps } from './reservation-request.entity.js';
 
 export interface ReservationRequestUnitOfWork
 	extends DomainSeedwork.UnitOfWork<
