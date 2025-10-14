@@ -36,10 +36,6 @@ export class BlobRequest {
       }
     }
     
-
-    // Canonicalized Resource
-    webResource.headers.set(accountName, `/${accountName}/${containerName}/${blobName}`);
-    
     return webResource;
   }
 

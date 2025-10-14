@@ -20,6 +20,7 @@
         "@twilio/conversations": "^2.6.3",
         "antd": "^5.27.1",
         "apollo-link-rest": "^0.9.0",
+        "axios": "^1.12.2",
         "clean": "^4.0.2",
         "crypto-hash": "^3.1.0",
         "graphql": "^16.11.0",
