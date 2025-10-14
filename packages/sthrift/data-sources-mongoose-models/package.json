@@ -1,27 +1,30 @@
 {
-	"name": "@sthrift/data-sources-mongoose-models",
-	"version": "1.0.0",
-	"private": true,
-	"type": "module",
-	"exports": {
-		".": {
-			"types": "./dist/src/index.d.ts",
-			"default": "./dist/src/index.js"
-		}
-	},
-	"scripts": {
-		"prebuild": "biome lint",
-		"build": "tsc --build",
-		"watch": "tsc- --watch",
-		"lint": "biome lint",
-		"clean": "rimraf dist"
-	},
-	"dependencies": {
-		"@cellix/mongoose-seedwork": "*"
-	},
-	"devDependencies": {
-		"@cellix/typescript-config": "*",
-		"typescript": "^5.8.3",
-		"rimraf": "^6.0.1"
-	}
+    "name": "@sthrift/data-sources-mongoose-models",
+    "version": "1.0.0",
+    "private": true,
+    "type": "module",
+    "files": [
+        "dist"
+    ],
+    "exports": {
+        ".": {
+            "types": "./dist/src/index.d.ts",
+            "default": "./dist/src/index.js"
+        }
+    },
+    "scripts": {
+        "prebuild": "biome lint",
+        "build": "tsc --build",
+        "watch": "tsc- --watch",
+        "lint": "biome lint",
+        "clean": "rimraf dist"
+    },
+    "dependencies": {
+        "@cellix/mongoose-seedwork": "workspace:*"
+    },
+    "devDependencies": {
+        "@cellix/typescript-config": "workspace:*",
+        "typescript": "^5.8.3",
+        "rimraf": "^6.0.1"
+    }
 }

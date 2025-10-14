@@ -3,6 +3,9 @@
     "version": "0.1.0",
     "description": "SendGrid email service for ShareThrift portals.",
     "type": "module",
+    "files": [
+        "dist"
+    ],
     "main": "dist/src/index.js",
     "types": "dist/src/index.d.ts",
     "license": "MIT",
@@ -24,7 +27,7 @@
     "devDependencies": {
         "@biomejs/biome": "2.0.0",
         "typescript": "^5.0.0",
-        "@cellix/typescript-config": "*"
+        "@cellix/typescript-config": "workspace:*"
     },
     "dependencies": {
         "@sendgrid/mail": "^8.0.0"
