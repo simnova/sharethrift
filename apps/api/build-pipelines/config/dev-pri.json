@@ -1,0 +1,67 @@
+[
+    {
+        "name": "ACCOUNT_PORTAL_OIDC_AUDIENCE",
+        "value": "https://sth-fde-ged3a8gxcvfxafaf.z02.azurefd.net/auth-redirect",
+        "slotSetting": false
+    },
+    {
+        "name": "ACCOUNT_PORTAL_OIDC_ENDPOINT",
+        "value": "https://sharethriftb2c.b2clogin.com/sharethriftb2c.onmicrosoft.com/b2c_1a_signup_signin/discovery/v2.0/keys",
+        "slotSetting": false
+    },
+    {
+        "name": "ACCOUNT_PORTAL_OIDC_ISSUER",
+        "value": "https://sharethriftb2c.b2clogin.com/95019a5a-8e95-4a18-ae60-17c9611a90b0/",
+        "slotSetting": false
+    },
+    {
+        "name": "APPLICATIONINSIGHTS_CONNECTION_STRING",
+        "value": "@Microsoft.KeyVault(SecretUri=https://sharethrift-keyvault.vault.azure.net/secrets/STH-APPLICATIONINSIGHTS-CONNECTION-STRING)",
+        "slotSetting": false
+    },
+    {
+        "name": "APPLICATION_NAME",
+        "value": "STH",
+        "slotSetting": false
+    },
+    {
+        "name": "AZURE_STORAGE_CONNECTION_STRING",
+        "value": "@Microsoft.KeyVault(SecretUri=https://sharethrift-keyvault.vault.azure.net/secrets/STH-AZURE-STORAGE-CONNECTION-STRING)",
+        "slotSetting": false
+    },
+    {
+        "name": "AZURE_SUBSCRIPTION_ID",
+        "value": "b46b070d-1eee-4d27-943a-32728cfca0b5",
+        "slotSetting": false
+    },
+    {
+        "name": "AZURE_RESOURCE_GROUP_NAME",
+        "value": "rg-sharethrift",
+        "slotSetting": false
+    },
+    {
+        "name": "BLACK_LISTED_EMAILS",
+        "value": "[]",
+        "slotSetting": false
+    },
+    {
+        "name": "COSMOSDB_CONNECTION_STRING",
+        "value": "@Microsoft.KeyVault(SecretUri=https://sharethrift-keyvault.vault.azure.net/secrets/STH-COSMOSDB-CONNECTION-STRING)",
+        "slotSetting": false
+    },
+    {
+        "name": "COSMOSDB_DBNAME",
+        "value": "sthdevcosmosdatbd52ztvowoqqe",
+        "slotSetting": false
+    },
+    {
+        "name": "KEY_VAULT_URL",
+        "value": "https://sharethrift-keyvault.vault.azure.net/",
+        "slotSetting": false
+    },
+    {
+        "name": "NODE_ENV",
+        "value": "production",
+        "slotSetting": false
+    }
+]
