@@ -64,7 +64,7 @@ export function AdminUsersTable({
     try {
       const values = await blockForm.validateFields();
       console.log("Block user with:", values);
-      // TODO: Implement actual block mutation
+      // Mutation is handled by the container via onAction
       onAction("block", selectedUser!.id);
       setBlockModalVisible(false);
       blockForm.resetFields();
@@ -93,19 +93,17 @@ export function AdminUsersTable({
       </Button>
     );
 
-    // View Report action (if user has reports)
-    if (record.reportCount && record.reportCount > 0) {
-      buttons.push(
-        <Button
-          key="view-report"
-          type="link"
-          size="small"
-          onClick={() => onAction("view-report", record.id)}
-        >
-          View Report
-        </Button>
-      );
-    }
+    // View Report action
+    buttons.push(
+      <Button
+        key="view-report"
+        type="link"
+        size="small"
+        onClick={() => onAction("view-report", record.id)}
+      >
+        View Report
+      </Button>
+    );
 
     // Block or Unblock action based on status
     if (record.status === "Blocked") {
@@ -188,8 +186,15 @@ export function AdminUsersTable({
       key: "accountCreated",
       sorter: true,
       sortOrder: sorter.field === "accountCreated" ? sorter.order : null,
-      render: (date: string) => {
+      render: (date?: string | null) => {
+        // Guard: handle missing/invalid dates gracefully
+        if (!date) return <span>N/A</span>;
+
         const d = new Date(date);
+        if (Number.isNaN(d.getTime())) {
+          return <span>N/A</span>;
+        }
+
         const yyyy = d.getFullYear();
         const mm = String(d.getMonth() + 1).padStart(2, "0");
         const dd = String(d.getDate()).padStart(2, "0");

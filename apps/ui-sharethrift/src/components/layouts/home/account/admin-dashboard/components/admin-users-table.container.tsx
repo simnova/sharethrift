@@ -71,7 +71,7 @@ export function AdminUsersTableContainer({
     firstName: user.account?.profile?.firstName ?? "N/A",
     lastName: user.account?.profile?.lastName ?? "N/A",
     email: user.account?.email ?? "N/A",
-    accountCreated: user.createdAt ?? new Date().toISOString(),
+    accountCreated: user.createdAt ?? "Unknown",
     status: user.isBlocked ? ("Blocked" as const) : ("Active" as const),
     isBlocked: user.isBlocked ?? false,
     userType: user.userType ?? "unknown",
