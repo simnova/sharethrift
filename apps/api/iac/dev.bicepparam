@@ -22,7 +22,7 @@ param functionExtensionVersion = '~4'
 param maxOldSpaceSizeMB = 3072
 param linuxFxVersion = 'NODE|22'
 param allowedOrigins = [
-  'https://sth-fde-bzbjd6edbfhmcnam.z02.azurefd.net'
+  'https://sharethrift.com'
 ]
 param keyVaultName = 'sharethrift-keyvault'
 
@@ -49,7 +49,7 @@ param enableQueueService = true
 param queues = []
 param cors = {
   allowedOrigins: [
-    'https://sth-fde-bzbjd6edbfhmcnam.z02.azurefd.net'
+    'https://sharethrift.com'
   ]
   allowedMethods: [
     'GET'

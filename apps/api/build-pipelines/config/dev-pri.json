@@ -1,20 +1,5 @@
 [
     {
-        "name": "ACCOUNT_PORTAL_OIDC_AUDIENCE",
-        "value": "https://sth-fde-bzbjd6edbfhmcnam.z02.azurefd.net/auth-redirect",
-        "slotSetting": false
-    },
-    {
-        "name": "ACCOUNT_PORTAL_OIDC_ENDPOINT",
-        "value": "https://sharethriftb2c.b2clogin.com/sharethriftb2c.onmicrosoft.com/b2c_1a_signup_signin/discovery/v2.0/keys",
-        "slotSetting": false
-    },
-    {
-        "name": "ACCOUNT_PORTAL_OIDC_ISSUER",
-        "value": "https://sharethriftb2c.b2clogin.com/95019a5a-8e95-4a18-ae60-17c9611a90b0/",
-        "slotSetting": false
-    },
-    {
         "name": "APPLICATIONINSIGHTS_CONNECTION_STRING",
         "value": "@Microsoft.KeyVault(SecretUri=https://sharethrift-keyvault.vault.azure.net/secrets/STH-APPLICATIONINSIGHTS-CONNECTION-STRING)",
         "slotSetting": false
@@ -62,6 +47,41 @@
     {
         "name": "NODE_ENV",
         "value": "production",
+        "slotSetting": false
+    },
+    {
+        "name": "PAYMENT_API_URL",
+        "value": "",
+        "slotSetting": false
+    },
+    {
+        "name": "SENDGRID_API_KEY",
+        "value": "@Microsoft.KeyVault(SecretUri=https://sharethrift-keyvault.vault.azure.net/secrets/STH-SENDGRID-API-KEY)",
+        "slotSetting": false
+    },
+    {
+        "name": "TWILIO_ACCOUNT_SID",
+        "value": "@Microsoft.KeyVault(SecretUri=https://sharethrift-keyvault.vault.azure.net/secrets/STH-TWILIO-ACCOUNT-SID)",
+        "slotSetting": false
+    },
+    {
+        "name": "TWILIO_AUTH_TOKEN",
+        "value": "@Microsoft.KeyVault(SecretUri=https://sharethrift-keyvault.vault.azure.net/secrets/STH-TWILIO-AUTH-TOKEN)",
+        "slotSetting": false
+    },
+    {
+        "name": "USER_PORTAL_OIDC_AUDIENCE",
+        "value": "https://sharethrift.com/auth-redirect",
+        "slotSetting": false
+    },
+    {
+        "name": "USER_PORTAL_OIDC_ENDPOINT",
+        "value": "https://sharethriftb2c.b2clogin.com/sharethriftb2c.onmicrosoft.com/b2c_1a_signup_signin/discovery/v2.0/keys",
+        "slotSetting": false
+    },
+    {
+        "name": "USER_PORTAL_OIDC_ISSUER",
+        "value": "https://sharethriftb2c.b2clogin.com/95019a5a-8e95-4a18-ae60-17c9611a90b0/",
         "slotSetting": false
     }
 ]
