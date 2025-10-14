@@ -19,9 +19,9 @@ import type {
 	SubscriptionsListResponse,
 	PaymentInstrumentInfo,
 } from './payment-interface.ts';
-import fs from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';
+
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 // Serve static files for /microform/bundle/v2.7.1 (including iframe.min.js)
 const app = express();
@@ -47,28 +47,28 @@ app.use((req, res, next) => {
 });
 
 app.use(express.json());
-app.use('/microform/bundle/v2.7.1', express.static(__dirname));
+app.use('/microform/bundle/v2.7.1', express.static(__dirname)); // Serve static files for /microform/bundle/v2.7.1/iframe.min.js
 // Cybersource mock config
 const CYBERSOURCE_MERCHANT_ID = 'simnova_sharethrift';
 
 // Simulate /flex/v2/capture-contexts endpoint
-app.post('/flex/v2/capture-contexts', (_req, res) => {
+app.get('/pts/v2/public-key', (_req, res) => {
 	const now = Math.floor(Date.now() / 1000);
 	const mockJwk = {
 		kty: 'RSA',
 		e: 'AQAB',
 		use: 'enc',
-		n: 'utMfPO70WAFJx5ccolGOi_UOhoa4ZVnEsBeJ67mDU2tSPpTDPCG9KojqNjk7-I0YZHrkHWK4V3fRVFBoOiGOM21MMDM5laoZIhvTTQD-bjuw6KTM75qLvkrYJfYKTFpP8U_xXWea_AySSSdtYlZi7ROnY-Lb97zgiurNJZ-XjHnnSoBNjS888YE_U0da7gVBSU-CDjajMOwAQi1ZNmjwyA_rd_UjTO8j5RyZjI60qpRstXok7T8mj3JozStZhbbcb7-c8WPZAv4y3xQ--kXSymtr2o0iyZBMRqf0xqHTNSYtWxDPKBF2fxu92-IxVr5s_uOno3CZDMSpb2-kADr8ow',
+		n: 'qtMfPO70WAFJx5ccolGOi_UOhoa4ZVnEsBeJ67mDU2tSPpTDPCG9KojqNjk7-I0YZHrkHWK4V3fRVFBoOiGOM21MMDM5laoZIhvTTQD-bjuw6KTM75qLvkrYJfYKTFpP8U_xXWea_AySSSdtYlZi7ROnY-Lb97zgiurNJZ-XjHnnSoBNjS888YE_U0da7gVBSU-CDjajMOwAQi1ZNmjwyA_rd_UjTO8j5RyZjI60qpRstXok7T8mj3JozStZhbbcb7-c8WPZAv4y3xQ--kXSymtr2o0iyZBMRqf0xqHTNSYtWxDPKBF2fxu92-IxVr5s_uOno3CZDMSpb2-kADr8ow',
 		kid: '8ffbb5cebd99379fbc1aef7c3040e79d', // Replace with your Cybersource key ID
 	};
 	const payload = {
-		jti: 'QdJ3Tj3Kp0U6vC2m',
+		jti: 'QdJ3Tj3Kp0U6vC2t',
 		iss: 'Flex API',
 		iat: now,
 		exp: now + 900,
 		flx: {
 			path: '/flex/v2/tokens',
-			data: 'fTdsCnVFJpOHwltOD91CxRAAEOl5LzG2IXlGH/ZaA3jh+jbKzwCJxbb/0u6Gh9OlBXXtEfeCFoU5Y5emKN3d6eeq3WUfvXqswVm0Q9l6A1sMRk+xMCVFuUWN3SyFiyvDSNWF+jUsYfISkq2+dH+ttnH/hO/zn/FMNQQ64DRrCC+jR7sPOKITWwWAnpC84InJS4Nk',
+			data: 'qTdsCnVFJpOHwltOD91CxRAAEOl5LzG2IXlGH/ZaA3jh+jbKzwCJxbb/0u6Gh9OlBXXtEfeCFoU5Y5emKN3d6eeq3WUfvXqswVm0Q9l6A1sMRk+xMCVFuUWN3SyFiyvDSNWF+jUsYfISkq2+dH+ttnH/hO/zn/FMNQQ64DRrCC+jR7sPOKITWwWAnpC84InJS4Nk',
 			origin: 'http://localhost:3001',
 			jwk: mockJwk,
 		},
@@ -77,7 +77,7 @@ app.post('/flex/v2/capture-contexts', (_req, res) => {
 				type: 'mf-1.0.0',
 				data: {
 					clientLibrary:
-						'https://testflex.cybersource.com/microform/bundle/v1/flex-microform.min.js',
+						'https://testflex.cybersource.com/microform/bundle/v2/flex-microform.min.js',
 					targetOrigins: ['http://localhost:3000'],
 					mfOrigin: 'http://localhost:3001',
 				},
@@ -89,15 +89,124 @@ app.post('/flex/v2/capture-contexts', (_req, res) => {
 		kid: 'zu',
 	};
 
-	const privateKey = fs.readFileSync(
-		path.join(__dirname, 'cybersource-private-key.pem'),
-		'utf8',
+	// dummy private key for testing only to work in development environment
+	const token = jwt.sign(
+		payload,
+		`Bag Attributes
+    localKeyID: 01 
+    friendlyName: serialNumber=1760020323575010431241,CN=sampleorgid_1759953326
+Key Attributes: <No Attributes>
+-----BEGIN PRIVATE KEY-----
+MIIEvQIBADANBgkqhkiG9w0BAQEFAASCBKcwggSjAgEAAoIBAQDfulPZ7g73DxX7
+i1jhrdRrST0NZA+BZkc66La9+AJWwTYSIEfYXCUABfyFZu/VrBRffGkSesIqztLN
+bTQvLra/TpXdz1Kt7C1uPpPnp/4FZs9kYfVENQ8uqasb4sV9qzdCo2ug+lRmWt0i
+HUad2wdDCDCa90XaLzp26TgenF1eZVQOar8dTFzTxrfsqQ0ULnDgWHhXg2UGFFXa
+QTh29YvTCwrFqmwPvOpHbLsvjGKGFaFjQryMDjCTZiHfN9AL8Oqn14lU9GB5/wLg
+4Yf2lHnlXS7sy8dJ0FsHyaaU6jih0ayo+39oA5Y943W21w3EnfK9yVDjx0jm9ewT
+aK4WiMF9AgMBAAECggEAMt11+vI4zMrNQKdpycVvqgS4sLazH8RVJXuLMJ2WSosa
+8/wK2ZH5h4vU4a+Jj5bT+vGaIe1u/7SOEM5nMuL4AX6obAmazpgHrCzmC6ESC8BY
+HoZ28M7vaLiCgpCIPg4TPj9RVQQU9EBsTjlBuNn3SLIv+suFQhnCvQ5BCBSc1bzf
+CdObexnT/39A5RHiYJPJiYfEtnoFfu/I3igj9kbKJI1/zdswVsR4N5lbmP5z5coe
+G3B4UlfgGCoRnJV3W2pt0CsQ9cCORy1RQvAw50myee9erLljQVBuA90cjYNOPJw0
+pvqxnjFMuDH0FYklat4xY1r+A9OQbpVTM+D/A8VgAQKBgQD01kchr75d3XQ3bzK/
+EbMeJAhJg1ga03oweAJ0NpUqgQ6OyxCAsjNeH9Qb71C/nLEpr3RAFFP+yEYbFqNj
+BkumtYO9Q9MUOPKBDJYb1knEEyGlZ/7VCJvV643sLoGBZiaqMm1Bi9S54czpU/OR
+wr3i2MXGkkf+VeifUQM1Pe6HfQKBgQDp7aon3KkFMYHYuirJH08YxyY45Iwfo/ni
+EZ0W4styPOTWOcbT5YekAEIuFuTj69T4z0CS0tpiczBaPRWPk1NTBXyIFYCeYoZZ
+RviuLf37pud56qZSxETRu8I3KMPq+/yiDmFJDAi8uHogOOBo5s3qEb9F44Kng7Bs
+AitrKBxCAQKBgQCy7dJILR6rjIc9Z/enKXFEqsKfrux5lmmq+FmawrUavfx8oKyr
+0Q+3Tv19eNUDY6kZtM75caG9BnIto8q+OMCa0fa4H9Qn6EJZy2/8YgvAztZ9AlZ7
+K/JvUNmEbKxae+Pv6DBugZlySzGsp5zOvop1OUS4jPkuR2xc2iDFDUDAJQKBgFeY
+zLfilFRChqn+hJkNpVPU90YkpygOAjuaduWkBaUAknx55C9i6xkJk76oigujOvv0
+t+yDEo39LmUMLK+37mLPUiOvUZt9r2ts/SBUTqBWjqWDrcaeglq7YW3AUSUEOUUB
+94IgBIGO3wSD59zAWOlGvgZQvJM35+96HIIi4foBAoGACHJI4GkS5SKg4Y3lA4T/
+4Sn4hdbkc/vlMySWDlcoP1F9bO/5hoAQixz8CBL4Ih9y1+iTVfXaMGNcFoUUbo9Q
+6wW9vSTBFZf7P0GLZylSdZnXavWd7+2zae4DWCCRgHj8+ERnS7t7bCWS2Jn6JTIB
+lF69z9kqDRUU7ucsp2pn1qI=
+-----END PRIVATE KEY-----`,
+		{
+			algorithm: 'RS256',
+			header,
+		},
 	);
-	const token = jwt.sign(payload, privateKey, {
-		algorithm: 'RS256',
-		header,
-	});
-	res.json({ captureContext: token });
+	res.json({ publicKey: token });
+});
+
+app.post('/flex/v2/tokens', (_req: Request, res: Response) => {
+	const now = Math.floor(Date.now() / 1000);
+	// Static payload and header as requested
+	const payload = {
+		data: {
+			expirationYear: '2025',
+			number: '411111XXXXXX1111',
+			expirationMonth: '11',
+		},
+		iss: 'Flex/08',
+		exp: now + 900,
+		type: 'mf-1.0.0',
+		iat: 1760113304,
+		jti: '1E1N6OZHLY9BP0WGZEIW9ED7G6096L1VXPYJVVOH4XGK0RUXV1KC68E9361BB449',
+		content: {
+			paymentInformation: {
+				card: {
+					expirationYear: { value: '2025' },
+					number: {
+						maskedValue: 'XXXXXXXXXXXX1111',
+						bin: '411111',
+					},
+					securityCode: {},
+					expirationMonth: { value: '11' },
+				},
+			},
+		},
+	};
+	const header = {
+		kid: '8ffbb5cebd99379fbc1aef7c3040e79d',
+		alg: 'RS256',
+	};
+	try {
+		const token = jwt.sign(
+			payload,
+			`Bag Attributes
+    localKeyID: 01 
+    friendlyName: serialNumber=1760020323575010431241,CN=sampleorgid_1759953326
+Key Attributes: <No Attributes>
+-----BEGIN PRIVATE KEY-----
+MIIEvQIBADANBgkqhkiG9w0BAQEFAASCBKcwggSjAgEAAoIBAQDfulPZ7g73DxX7
+i1jhrdRrST0NZA+BZkc66La9+AJWwTYSIEfYXCUABfyFZu/VrBRffGkSesIqztLN
+bTQvLra/TpXdz1Kt7C1uPpPnp/4FZs9kYfVENQ8uqasb4sV9qzdCo2ug+lRmWt0i
+HUad2wdDCDCa90XaLzp26TgenF1eZVQOar8dTFzTxrfsqQ0ULnDgWHhXg2UGFFXa
+QTh29YvTCwrFqmwPvOpHbLsvjGKGFaFjQryMDjCTZiHfN9AL8Oqn14lU9GB5/wLg
+4Yf2lHnlXS7sy8dJ0FsHyaaU6jih0ayo+39oA5Y943W21w3EnfK9yVDjx0jm9ewT
+aK4WiMF9AgMBAAECggEAMt11+vI4zMrNQKdpycVvqgS4sLazH8RVJXuLMJ2WSosa
+8/wK2ZH5h4vU4a+Jj5bT+vGaIe1u/7SOEM5nMuL4AX6obAmazpgHrCzmC6ESC8BY
+HoZ28M7vaLiCgpCIPg4TPj9RVQQU9EBsTjlBuNn3SLIv+suFQhnCvQ5BCBSc1bzf
+CdObexnT/39A5RHiYJPJiYfEtnoFfu/I3igj9kbKJI1/zdswVsR4N5lbmP5z5coe
+G3B4UlfgGCoRnJV3W2pt0CsQ9cCORy1RQvAw50myee9erLljQVBuA90cjYNOPJw0
+pvqxnjFMuDH0FYklat4xY1r+A9OQbpVTM+D/A8VgAQKBgQD01kchr75d3XQ3bzK/
+EbMeJAhJg1ga03oweAJ0NpUqgQ6OyxCAsjNeH9Qb71C/nLEpr3RAFFP+yEYbFqNj
+BkumtYO9Q9MUOPKBDJYb1knEEyGlZ/7VCJvV643sLoGBZiaqMm1Bi9S54czpU/OR
+wr3i2MXGkkf+VeifUQM1Pe6HfQKBgQDp7aon3KkFMYHYuirJH08YxyY45Iwfo/ni
+EZ0W4styPOTWOcbT5YekAEIuFuTj69T4z0CS0tpiczBaPRWPk1NTBXyIFYCeYoZZ
+RviuLf37pud56qZSxETRu8I3KMPq+/yiDmFJDAi8uHogOOBo5s3qEb9F44Kng7Bs
+AitrKBxCAQKBgQCy7dJILR6rjIc9Z/enKXFEqsKfrux5lmmq+FmawrUavfx8oKyr
+0Q+3Tv19eNUDY6kZtM75caG9BnIto8q+OMCa0fa4H9Qn6EJZy2/8YgvAztZ9AlZ7
+K/JvUNmEbKxae+Pv6DBugZlySzGsp5zOvop1OUS4jPkuR2xc2iDFDUDAJQKBgFeY
+zLfilFRChqn+hJkNpVPU90YkpygOAjuaduWkBaUAknx55C9i6xkJk76oigujOvv0
+t+yDEo39LmUMLK+37mLPUiOvUZt9r2ts/SBUTqBWjqWDrcaeglq7YW3AUSUEOUUB
+94IgBIGO3wSD59zAWOlGvgZQvJM35+96HIIi4foBAoGACHJI4GkS5SKg4Y3lA4T/
+4Sn4hdbkc/vlMySWDlcoP1F9bO/5hoAQixz8CBL4Ih9y1+iTVfXaMGNcFoUUbo9Q
+6wW9vSTBFZf7P0GLZylSdZnXavWd7+2zae4DWCCRgHj8+ERnS7t7bCWS2Jn6JTIB
+lF69z9kqDRUU7ucsp2pn1qI=
+-----END PRIVATE KEY-----`,
+			{ algorithm: 'RS256', header },
+		);
+		return res.status(200).send(token);
+	} catch (err) {
+		return res
+			.status(500)
+			.json({ error: 'failed to sign token', details: String(err) });
+	}
 });
 
 // Simulate /payments/v1/authorizations endpoint
@@ -187,22 +296,6 @@ app.get('/microform/bundle/v2.7.1/iframe.html', (_req, res) => {
 		<script defer="defer" src="iframe.min.js"></script>
 	</body>
 </html>`);
-});
-
-// generatePublicKey endpoint
-app.get('/pts/v2/public-key', (_req: Request, res: Response) => {
-	try {
-		const __dirname = path.dirname(fileURLToPath(import.meta.url));
-		const pubPath = path.join(__dirname, 'cybersource-public-key.pem');
-		if (!fs.existsSync(pubPath)) {
-			return res.status(500).json({ error: 'public key not found' });
-		}
-		const pem = fs.readFileSync(pubPath, 'utf8');
-		return res.status(200).json({ publicKey: pem });
-	} catch (err) {
-		console.error('Failed to read public key', err);
-		return res.status(500).json({ error: 'failed to read public key' });
-	}
 });
 
 // createCustomerProfile endpoint

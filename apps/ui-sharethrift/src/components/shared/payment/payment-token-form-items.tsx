@@ -131,7 +131,7 @@ export const PaymentTokenFormItems: FC<PaymentTokenFormItemsProps> = (props) => 
   return (
     <>
       <Form.Item<PaymentTokenFormFieldType>
-        label="Card Number:"
+        label={<span style={{ color: "var(--color-message-text)" }}>Card Number</span>}
         name="cardNumber"
         required={true}
         rules={[{ required: true, message: "Please provide the card number." }]}
@@ -143,7 +143,7 @@ export const PaymentTokenFormItems: FC<PaymentTokenFormItemsProps> = (props) => 
       <Row gutter={[16, 8]}>
         <Col xs={24} sm={12}>
           <Form.Item<PaymentTokenFormFieldType>
-            label="Card Expiration Date:"
+            label={<span style={{ color: "var(--color-message-text)" }}>Expiration Date</span>}
             required={true}
             name="expiration"
             rules={[
@@ -155,6 +155,7 @@ export const PaymentTokenFormItems: FC<PaymentTokenFormItemsProps> = (props) => 
           >
             {/** biome-ignore lint/nursery/useUniqueElementIds: <explanation> */}
             <DatePicker.MonthPicker
+              style={{ borderRadius: "3px" }}
               id="expirationMonthPicker"
               name="expirationMonthPicker"
               placeholder="Month-Year"
@@ -169,8 +170,8 @@ export const PaymentTokenFormItems: FC<PaymentTokenFormItemsProps> = (props) => 
 
         <Col xs={24} sm={12}>
           <Form.Item<PaymentTokenFormFieldType>
+            label={<span style={{ color: "var(--color-message-text)" }}>Security Code</span>}
             required={true}
-            label="Security Code:"
             name="securityCode"
             rules={[{ required: true }]}
             // help={securityCodeValidationHelpText}

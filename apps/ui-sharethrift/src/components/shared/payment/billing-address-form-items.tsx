@@ -4,7 +4,7 @@ import type { Country, State } from "./country-type.ts";
 
 const COLUMN_SPAN = 24 / 2;
 
-interface BillingAddressFormProps {
+interface BillingAddressFormItemsProps {
   countries: Country[];
 }
 
@@ -14,7 +14,7 @@ type Rule = {
   pattern?: RegExp;
 };
 
-export const BillingAddressForm: FC<BillingAddressFormProps> = (props) => {
+export const BillingAddressFormItems: FC<BillingAddressFormItemsProps> = (props) => {
   const [zipCodeRules, setZipCodeRules] = useState<Rule[]>([{ required: true, message: "Please enter the ZIP/Postal code." }]);
   const form = Form.useFormInstance();
   const selectedCountry = Form.useWatch("country", form);
@@ -89,7 +89,7 @@ export const BillingAddressForm: FC<BillingAddressFormProps> = (props) => {
         </Form.Item>
       </Row>
 
-      <Row gutter={[30, 16]}>
+      <Row>
         <Col span={COLUMN_SPAN * 2} xs={24}>
           <Form.Item
             label="Email Address"
@@ -110,7 +110,7 @@ export const BillingAddressForm: FC<BillingAddressFormProps> = (props) => {
         </Col>
       </Row>
 
-      <Row gutter={[30, 16]}>
+      <Row>
         <Col span={COLUMN_SPAN * 2} xs={24}>
           <Form.Item name={"country"} label={"Country"} rules={[{ required: true, message: "Please select the country." }]}>
             <Select placeholder="Country" onChange={onCountryChange} showSearch optionFilterProp="children">
@@ -124,7 +124,7 @@ export const BillingAddressForm: FC<BillingAddressFormProps> = (props) => {
         </Col>
       </Row>
 
-      <Row gutter={[30, 16]}>
+      <Row>
         <Col span={COLUMN_SPAN * 2} xs={24}>
           <Form.Item
             label="Billing Address"
@@ -141,7 +141,7 @@ export const BillingAddressForm: FC<BillingAddressFormProps> = (props) => {
         </Col>
       </Row>
 
-      <Row gutter={[30, 16]}>
+      <Row>
         <Col span={COLUMN_SPAN} xs={24}>
           <Form.Item
             label="Billing City"
@@ -157,12 +157,13 @@ export const BillingAddressForm: FC<BillingAddressFormProps> = (props) => {
             <Input placeholder="Billing City" />
           </Form.Item>
         </Col>
+      </Row>
+      <Row>
         <Col span={COLUMN_SPAN} xs={24}>
           {renderStateFormItem()}
         </Col>
       </Row>
-
-      <Row gutter={[30, 16]}>
+      <Row>
         <Col span={COLUMN_SPAN} xs={24}>
           <Form.Item label="Billing ZIP / Postal Code" name="billingPostalCode" rules={zipCodeRules}>
             <Input placeholder="Billing ZIP / Postal Code" />
