@@ -1,15 +1,15 @@
 import { DomainSeedwork } from '@cellix/domain-seedwork';
-import type { ConversationVisa } from '../conversation.visa.js';
-import type { Passport } from '../../passport.js';
-import type { PersonalUserEntityReference } from '../../user/personal-user/personal-user.entity.js';
-import { PersonalUser } from '../../user/personal-user/personal-user.js';
-import type { ItemListingEntityReference } from '../../listing/item/item-listing.entity.js';
-import { ItemListing } from '../../listing/item/item-listing.js';
+import type { ConversationVisa } from '../conversation.visa.ts';
+import type { Passport } from '../../passport.ts';
+import type { PersonalUserEntityReference } from '../../user/personal-user/personal-user.entity.ts';
+import { PersonalUser } from '../../user/personal-user/personal-user.ts';
+import type { ItemListingEntityReference } from '../../listing/item/item-listing.entity.ts';
+import { ItemListing } from '../../listing/item/item-listing.ts';
 import type {
 	ConversationEntityReference,
 	ConversationProps,
-} from './conversation.entity.js';
-import type { MessageEntityReference } from "./message.entity.js";
+} from './conversation.entity.ts';
+import type { MessageEntityReference } from "./message.entity.ts";
 
 export class Conversation<props extends ConversationProps>
 	extends DomainSeedwork.AggregateRoot<props, Passport>

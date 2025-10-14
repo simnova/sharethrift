@@ -1,1 +1,1 @@
-export * as PersonalUser from './personal-user/index.js';
+export * as PersonalUser from './personal-user/index.ts';

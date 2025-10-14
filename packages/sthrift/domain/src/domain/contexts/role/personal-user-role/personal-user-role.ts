@@ -1,11 +1,11 @@
 import { DomainSeedwork } from '@cellix/domain-seedwork';
-import type { Passport } from '../../passport.js';
-import { PersonalUserRolePermissions } from './personal-user-role-permissions.js';
-import * as ValueObjects from './personal-user-role.value-objects.js';
+import type { Passport } from '../../passport.ts';
+import { PersonalUserRolePermissions } from './personal-user-role-permissions.ts';
+import * as ValueObjects from './personal-user-role.value-objects.ts';
 import type {
 	PersonalUserRoleEntityReference,
 	PersonalUserRoleProps,
-} from './personal-user-role.entity.js';
+} from './personal-user-role.entity.ts';
 
 export class PersonalUserRole<props extends PersonalUserRoleProps>
 	extends DomainSeedwork.AggregateRoot<props, Passport>

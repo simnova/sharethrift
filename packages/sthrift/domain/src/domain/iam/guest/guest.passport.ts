@@ -1,13 +1,13 @@
-import type { ListingPassport } from '../../contexts/listing/listing.passport.js';
-import type { ReservationRequestPassport } from '../../contexts/reservation-request/reservation-request.passport.js';
-import type { Passport } from '../../contexts/passport.js';
-import type { UserPassport } from '../../contexts/user/user.passport.js';
-import { GuestUserPassport } from './contexts/guest.user.passport.js';
-import { GuestListingPassport } from './contexts/guest.listing.passport.js';
-import { GuestConversationPassport } from './contexts/guest.conversation.passport.js';
-import type { ConversationPassport } from '../../contexts/conversation/conversation.passport.js';
-import { GuestPassportBase } from './guest.passport-base.js';
-import { GuestReservationRequestPassport } from './contexts/guest.reservation-request.passport.js';
+import type { ListingPassport } from '../../contexts/listing/listing.passport.ts';
+import type { ReservationRequestPassport } from '../../contexts/reservation-request/reservation-request.passport.ts';
+import type { Passport } from '../../contexts/passport.ts';
+import type { UserPassport } from '../../contexts/user/user.passport.ts';
+import { GuestUserPassport } from './contexts/guest.user.passport.ts';
+import { GuestListingPassport } from './contexts/guest.listing.passport.ts';
+import { GuestConversationPassport } from './contexts/guest.conversation.passport.ts';
+import type { ConversationPassport } from '../../contexts/conversation/conversation.passport.ts';
+import { GuestPassportBase } from './guest.passport-base.ts';
+import { GuestReservationRequestPassport } from './contexts/guest.reservation-request.passport.ts';
 
 export class GuestPassport extends GuestPassportBase implements Passport {
 	private _userPassport: UserPassport | undefined;

@@ -2,7 +2,7 @@ import type { DomainSeedwork } from '@cellix/domain-seedwork';
 import type {
 	PersonalUserRolePermissionsEntityReference,
 	PersonalUserRolePermissionsProps,
-} from './personal-user-role-permissions.js';
+} from './personal-user-role-permissions.ts';
 
 export interface PersonalUserRoleProps
 	extends DomainSeedwork.DomainEntityProps {

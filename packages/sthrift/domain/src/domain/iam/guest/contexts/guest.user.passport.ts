@@ -1,7 +1,7 @@
-import type { PersonalUserEntityReference } from '../../../contexts/user/personal-user/index.js';
-import type { UserPassport } from '../../../contexts/user/user.passport.js';
-import type { UserVisa } from '../../../contexts/user/user.visa.js';
-import { GuestPassportBase } from '../guest.passport-base.js';
+import type { PersonalUserEntityReference } from '../../../contexts/user/personal-user/index.ts';
+import type { UserPassport } from '../../../contexts/user/user.passport.ts';
+import type { UserVisa } from '../../../contexts/user/user.visa.ts';
+import { GuestPassportBase } from '../guest.passport-base.ts';
 
 export class GuestUserPassport
 	extends GuestPassportBase

@@ -1,6 +1,6 @@
 import type { DomainSeedwork } from '@cellix/domain-seedwork';
-import type { PersonalUserRole } from './personal-user-role.js';
-import type { PersonalUserRoleProps } from './personal-user-role.entity.js';
+import type { PersonalUserRole } from './personal-user-role.ts';
+import type { PersonalUserRoleProps } from './personal-user-role.entity.ts';
 
 export interface PersonalUserRoleRepository<props extends PersonalUserRoleProps>
 	extends DomainSeedwork.Repository<PersonalUserRole<props>> {

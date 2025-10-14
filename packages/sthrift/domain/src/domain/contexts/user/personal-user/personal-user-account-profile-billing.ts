@@ -1,10 +1,10 @@
 import { DomainSeedwork } from '@cellix/domain-seedwork';
-import type { UserVisa } from '../user.visa.js';
-import type { PersonalUserAggregateRoot } from './personal-user.js';
+import type { UserVisa } from '../user.visa.ts';
+import type { PersonalUserAggregateRoot } from './personal-user.ts';
 import type {
 	PersonalUserAccountProfileBillingEntityReference,
 	PersonalUserAccountProfileBillingProps,
-} from './personal-user-account-profile-billing.entity.js';
+} from './personal-user-account-profile-billing.entity.ts';
 
 export class PersonalUserAccountProfileBilling
 	extends DomainSeedwork.ValueObject<PersonalUserAccountProfileBillingProps>

@@ -1,5 +1,5 @@
 import { DomainSeedwork } from '@cellix/domain-seedwork';
-import type * as ValueObjects from './message.value-objects.js';
+import type * as ValueObjects from './message.value-objects.ts';
 import type { ObjectId } from 'bson';
 
 export interface MessageProps extends DomainSeedwork.DomainEntityProps {

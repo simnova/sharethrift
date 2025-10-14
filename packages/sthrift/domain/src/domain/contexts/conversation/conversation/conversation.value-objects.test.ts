@@ -3,7 +3,7 @@ import { fileURLToPath } from 'node:url';
 import { describeFeature, loadFeature } from '@amiceli/vitest-cucumber';
 import { expect } from 'vitest';
 
-import * as ValueObjects from './conversation.value-objects.js';
+import * as ValueObjects from './conversation.value-objects.ts';
 
 
 const test = { for: describeFeature };

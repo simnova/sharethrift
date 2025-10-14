@@ -1,7 +1,7 @@
-import type { ConversationEntityReference } from '../../../contexts/conversation/conversation/index.js';
-import type { ConversationPassport } from './../../../contexts/conversation/conversation.passport.js';
-import type { ConversationVisa } from '../../../contexts/conversation/conversation.visa.js';
-import { GuestPassportBase } from '../guest.passport-base.js';
+import type { ConversationEntityReference } from '../../../contexts/conversation/conversation/index.ts';
+import type { ConversationPassport } from './../../../contexts/conversation/conversation.passport.ts';
+import type { ConversationVisa } from '../../../contexts/conversation/conversation.visa.ts';
+import { GuestPassportBase } from '../guest.passport-base.ts';
 
 export class GuestConversationPassport
 	extends GuestPassportBase

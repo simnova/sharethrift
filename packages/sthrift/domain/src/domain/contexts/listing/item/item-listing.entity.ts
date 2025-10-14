@@ -1,5 +1,5 @@
 import type { DomainSeedwork } from '@cellix/domain-seedwork';
-import type { PersonalUserEntityReference } from '../../user/personal-user/personal-user.entity.js';
+import type { PersonalUserEntityReference } from '../../user/personal-user/personal-user.entity.ts';
 
 export interface ItemListingProps extends DomainSeedwork.DomainEntityProps {
 	sharer: Readonly<PersonalUserEntityReference>;

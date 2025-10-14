@@ -1,6 +1,6 @@
-import type { UserDomainPermissions } from '../../contexts/user/user.domain-permissions.js';
-import type { PersonalUserEntityReference } from '../../contexts/user/personal-user/personal-user.entity.js';
-import type { UserVisa } from '../../contexts/user/user.visa.js';
+import type { UserDomainPermissions } from '../../contexts/user/user.domain-permissions.ts';
+import type { PersonalUserEntityReference } from '../../contexts/user/personal-user/personal-user.entity.ts';
+import type { UserVisa } from '../../contexts/user/user.visa.ts';
 export class PersonalUserUserVisa<root extends PersonalUserEntityReference>
 	implements UserVisa
 {

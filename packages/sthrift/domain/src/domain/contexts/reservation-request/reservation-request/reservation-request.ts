@@ -1,14 +1,14 @@
 import { DomainSeedwork } from '@cellix/domain-seedwork';
-import type { Passport } from '../../passport.js';
-import type { ReservationRequestVisa } from '../reservation-request.visa.js';
-import { ReservationRequestStates } from './reservation-request.value-objects.js';
-import * as ValueObjects from './reservation-request.value-objects.js';
-import type { ItemListingEntityReference } from '../../listing/item/item-listing.entity.js';
-import type { PersonalUserEntityReference } from '../../user/personal-user/personal-user.entity.js';
+import type { Passport } from '../../passport.ts';
+import type { ReservationRequestVisa } from '../reservation-request.visa.ts';
+import { ReservationRequestStates } from './reservation-request.value-objects.ts';
+import * as ValueObjects from './reservation-request.value-objects.ts';
+import type { ItemListingEntityReference } from '../../listing/item/item-listing.entity.ts';
+import type { PersonalUserEntityReference } from '../../user/personal-user/personal-user.entity.ts';
 import type {
 	ReservationRequestEntityReference,
 	ReservationRequestProps,
-} from './reservation-request.entity.js';
+} from './reservation-request.entity.ts';
 
 export class ReservationRequest<props extends ReservationRequestProps>
 	extends DomainSeedwork.AggregateRoot<props, Passport>

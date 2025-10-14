@@ -1,13 +1,13 @@
-import type { Passport } from '../../contexts/passport.js';
-import type { UserPassport } from '../../contexts/user/user.passport.js';
-import type { ListingPassport } from '../../contexts/listing/listing.passport.js';
-import type { ConversationPassport } from '../../contexts/conversation/conversation.passport.js';
-import type { ReservationRequestPassport } from '../../contexts/reservation-request/reservation-request.passport.js';
-import { SystemUserPassport } from './contexts/system.user.passport.js';
-import { SystemListingPassport } from './contexts/system.listing.passport.js';
-import { SystemConversationPassport } from './contexts/system.conversation.passport.js'; // Ensure this file exists and is named correctly
-import { SystemReservationRequestPassport } from './contexts/system.reservation-request.js';
-import { SystemPassportBase } from './system.passport-base.js';
+import type { Passport } from '../../contexts/passport.ts';
+import type { UserPassport } from '../../contexts/user/user.passport.ts';
+import type { ListingPassport } from '../../contexts/listing/listing.passport.ts';
+import type { ConversationPassport } from '../../contexts/conversation/conversation.passport.ts';
+import type { ReservationRequestPassport } from '../../contexts/reservation-request/reservation-request.passport.ts';
+import { SystemUserPassport } from './contexts/system.user.passport.ts';
+import { SystemListingPassport } from './contexts/system.listing.passport.ts';
+import { SystemConversationPassport } from './contexts/system.conversation.passport.ts'; // Ensure this file exists and is named correctly
+import { SystemReservationRequestPassport } from './contexts/system.reservation-request.ts';
+import { SystemPassportBase } from './system.passport-base.ts';
 
 export class SystemPassport extends SystemPassportBase implements Passport {
 	private _userPassport: UserPassport | undefined;

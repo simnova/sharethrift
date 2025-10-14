@@ -2,16 +2,16 @@ import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { describeFeature, loadFeature } from '@amiceli/vitest-cucumber';
 import { expect, vi } from 'vitest';
-import type { ConversationProps } from './conversation.entity.js';
-import { Conversation } from './conversation.js';
+import type { ConversationProps } from './conversation.entity.ts';
+import { Conversation } from './conversation.ts';
 import { DomainSeedwork } from '@cellix/domain-seedwork';
-import type { Passport } from '../../passport.js';
-import { PersonalUser } from '../../user/personal-user/personal-user.js';
-import type { PersonalUserProps } from '../../user/personal-user/personal-user.entity.js';
-import { ItemListing } from '../../listing/item/item-listing.js';
-import type { ItemListingProps } from '../../listing/item/item-listing.entity.js';
-import { PersonalUserRolePermissions } from '../../role/personal-user-role/personal-user-role-permissions.js';
-import { PersonalUserRole } from '../../role/personal-user-role/personal-user-role.js';
+import type { Passport } from '../../passport.ts';
+import { PersonalUser } from '../../user/personal-user/personal-user.ts';
+import type { PersonalUserProps } from '../../user/personal-user/personal-user.entity.ts';
+import { ItemListing } from '../../listing/item/item-listing.ts';
+import type { ItemListingProps } from '../../listing/item/item-listing.entity.ts';
+import { PersonalUserRolePermissions } from '../../role/personal-user-role/personal-user-role-permissions.ts';
+import { PersonalUserRole } from '../../role/personal-user-role/personal-user-role.ts';
 
 
 const test = { for: describeFeature };

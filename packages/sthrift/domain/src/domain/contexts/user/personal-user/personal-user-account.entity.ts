@@ -2,7 +2,7 @@ import type { DomainSeedwork } from '@cellix/domain-seedwork';
 import type {
 	PersonalUserProfileEntityReference,
 	PersonalUserProfileProps,
-} from './personal-user-account-profile.entity.js';
+} from './personal-user-account-profile.entity.ts';
 
 export interface PersonalUserAccountProps
 	extends DomainSeedwork.ValueObjectProps {
