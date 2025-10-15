@@ -21,6 +21,7 @@
 	"author": "ShareThrift Team",
 	"license": "MIT",
 	"dependencies": {
+		"liqe": "^3.8.3",
 		"lunr": "^2.3.9"
 	},
 	"devDependencies": {

@@ -5,9 +5,10 @@ import type {
 	SearchDocumentsResult,
 	SearchResult,
 } from './interfaces.js';
+import { LiQEFilterEngine } from './liqe-filter-engine.js';
 
 /**
- * Lunr.js Search Engine Wrapper
+ * Lunr.js Search Engine Wrapper with LiQE Integration
  *
  * Provides enhanced full-text search capabilities with:
  * - Relevance scoring based on TF-IDF
@@ -15,15 +16,22 @@ import type {
  * - Stemming and stop word filtering
  * - Fuzzy matching and wildcard support
  * - Multi-field search across all searchable fields
+ * - Advanced OData-like filtering via LiQE integration
  *
  * This class encapsulates the Lunr.js functionality and provides a clean interface
  * for building and querying search indexes with Azure Cognitive Search compatibility.
+ * Enhanced with LiQE for sophisticated filtering capabilities.
  */
 export class LunrSearchEngine {
 	private indexes: Map<string, lunr.Index> = new Map();
 	private documents: Map<string, Map<string, Record<string, unknown>>> =
 		new Map();
 	private indexDefinitions: Map<string, { fields: SearchField[] }> = new Map();
+	private liqeFilterEngine: LiQEFilterEngine;
+
+	constructor() {
+		this.liqeFilterEngine = new LiQEFilterEngine();
+	}
 
 	/**
 	 * Build a Lunr.js index for the given index name
@@ -157,12 +165,39 @@ export class LunrSearchEngine {
 		// Handle empty search - return all documents if no search text
 		if (!searchText || searchText.trim() === '' || searchText === '*') {
 			const allDocuments = Array.from(documentMap.values());
-			const results = this.applyPaginationAndSorting(allDocuments, options);
+
+			// Apply LiQE filters if provided, even for empty search
+			let filteredDocuments = allDocuments;
+			if (options?.filter) {
+				const searchResults = allDocuments.map((doc) => ({
+					document: doc,
+					score: 1.0,
+				}));
+				const filteredResults = this.liqeFilterEngine.applyAdvancedFilter(
+					searchResults,
+					options.filter,
+				);
+				filteredDocuments = filteredResults.map((result) => result.document);
+			}
+
+			const results = this.applyPaginationAndSorting(
+				filteredDocuments,
+				options,
+			);
+
+			// Process facets if requested
+			const facets =
+				options?.facets && options.facets.length > 0
+					? this.processFacets(
+							filteredDocuments.map((doc) => ({ document: doc, score: 1.0 })),
+							options.facets,
+						)
+					: {};
 
 			const result: SearchDocumentsResult = {
 				results: results.map((doc) => ({ document: doc, score: 1.0 })),
-				facets: {},
-				count: allDocuments.length, // Always include count for empty searches
+				facets,
+				count: filteredDocuments.length, // Always include count for empty searches
 			};
 
 			return result;
@@ -198,9 +233,9 @@ export class LunrSearchEngine {
 				(result): result is SearchResult => result !== null,
 			);
 
-			// Apply additional filters if provided
+			// Apply additional filters if provided using LiQE for advanced filtering
 			const filteredResults = options?.filter
-				? this.applyFilters(results, options.filter, indexName)
+				? this.liqeFilterEngine.applyAdvancedFilter(results, options.filter)
 				: results;
 
 			// Apply sorting, pagination, and facets
@@ -233,50 +268,6 @@ export class LunrSearchEngine {
 		// For simple queries, add wildcard for prefix matching
 		// This helps with partial word matches
 		return `${searchText}*`;
-	}
-
-	/**
-	 * Apply filters to search results using basic OData-style filtering
-	 *
-	 * @param results - The search results to filter
-	 * @param filterString - OData-style filter string (e.g., "field eq 'value'")
-	 * @param indexName - The index name for field validation
-	 * @returns Filtered search results
-	 * @private
-	 */
-	private applyFilters(
-		results: SearchResult[],
-		filterString: string,
-		indexName: string,
-	): SearchResult[] {
-		const indexDef = this.indexDefinitions.get(indexName);
-		if (!indexDef) {
-			return results;
-		}
-
-		const filterableFields = indexDef.fields
-			.filter((field) => field.filterable)
-			.map((field) => field.name);
-
-		// Parse basic OData-style filters
-		const filterRegex = /(\w+)\s+eq\s+['"]?([^'"]+)['"]?/g;
-		const filters: Array<{ field: string; value: string }> = [];
-
-		let match: RegExpExecArray | null = filterRegex.exec(filterString);
-		while (match !== null) {
-			const [, field, value] = match;
-			if (field && value && filterableFields.includes(field)) {
-				filters.push({ field, value });
-			}
-			match = filterRegex.exec(filterString);
-		}
-
-		return results.filter((result) => {
-			return filters.every((filter) => {
-				const fieldValue = this.getFieldValue(result.document, filter.field);
-				return String(fieldValue) === filter.value;
-			});
-		});
 	}
 
 	/**
@@ -482,5 +473,28 @@ export class LunrSearchEngine {
 			documentCount: documentMap.size,
 			fieldCount: indexDef.fields.length,
 		};
+	}
+
+	/**
+	 * Get information about supported LiQE filter capabilities
+	 *
+	 * @returns Object containing supported operators, functions, and examples
+	 */
+	getFilterCapabilities(): {
+		operators: string[];
+		functions: string[];
+		examples: string[];
+	} {
+		return this.liqeFilterEngine.getSupportedFeatures();
+	}
+
+	/**
+	 * Validate if a filter string is supported by LiQE
+	 *
+	 * @param filterString - Filter string to validate
+	 * @returns True if the filter can be parsed by LiQE, false otherwise
+	 */
+	isFilterSupported(filterString: string): boolean {
+		return this.liqeFilterEngine.isFilterSupported(filterString);
 	}
 }

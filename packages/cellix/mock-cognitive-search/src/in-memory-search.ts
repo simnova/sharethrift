@@ -10,12 +10,14 @@ import { LunrSearchEngine } from './lunr-search-engine.js';
 /**
  * In-memory implementation of Azure Cognitive Search
  *
- * Enhanced with Lunr.js for superior search capabilities:
+ * Enhanced with Lunr.js and LiQE for superior search capabilities:
  * - Full-text search with relevance scoring (TF-IDF)
  * - Field boosting (title gets higher weight than description)
  * - Fuzzy matching and wildcard support
  * - Stemming and stop word filtering
- * - Basic filtering and pagination support
+ * - Advanced OData-like filtering with LiQE integration
+ * - Complex filter expressions with logical operators
+ * - String functions (contains, startswith, endswith)
  *
  * Maintains Azure Cognitive Search API compatibility while providing
  * enhanced mock search functionality for development environments.
@@ -241,7 +243,7 @@ class InMemoryCognitiveSearch
 	/**
 	 * Debug method to inspect current state and statistics
 	 *
-	 * @returns Object containing debug information about indexes, document counts, and Lunr.js statistics
+	 * @returns Object containing debug information about indexes, document counts, Lunr.js statistics, and LiQE capabilities
 	 */
 	getDebugInfo(): {
 		indexes: string[];
@@ -250,6 +252,11 @@ class InMemoryCognitiveSearch
 			string,
 			{ documentCount: number; fieldCount: number } | null
 		>;
+		filterCapabilities: {
+			operators: string[];
+			functions: string[];
+			examples: string[];
+		};
 	} {
 		const documentCounts: Record<string, number> = {};
 		const lunrStats: Record<
@@ -266,7 +273,31 @@ class InMemoryCognitiveSearch
 			indexes: Array.from(this.indexes.keys()),
 			documentCounts,
 			lunrStats,
+			filterCapabilities: this.lunrEngine.getFilterCapabilities(),
 		};
+	}
+
+	/**
+	 * Get information about supported LiQE filter capabilities
+	 *
+	 * @returns Object containing supported operators, functions, and examples
+	 */
+	getFilterCapabilities(): {
+		operators: string[];
+		functions: string[];
+		examples: string[];
+	} {
+		return this.lunrEngine.getFilterCapabilities();
+	}
+
+	/**
+	 * Validate if a filter string is supported by LiQE
+	 *
+	 * @param filterString - Filter string to validate
+	 * @returns True if the filter can be parsed by LiQE, false otherwise
+	 */
+	isFilterSupported(filterString: string): boolean {
+		return this.lunrEngine.isFilterSupported(filterString);
 	}
 }
 
