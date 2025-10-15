@@ -13,27 +13,32 @@ query AdminUsersTableContainerAllUsers(
 		sorter: $sorter
 	) {
 		items {
-					#__typename
-					id
-					createdAt
-					userType
-					isBlocked
-					account {
-						username
-						email
-						profile {
-							firstName
-							lastName
-						}
-					}
-				}
+			...AdminUsersTableContainerUserFields
+		}
 		total
 		page
 		pageSize
 	}
 }
 
+fragment AdminUsersTableContainerUserFields on PersonalUser {
+	id
+	createdAt
+	userType
+	isBlocked
+	account {
+		...AdminUsersTableContainerAccountFields
+	}
+}
 
+fragment AdminUsersTableContainerAccountFields on PersonalUserAccount {
+	username
+	email
+	profile {
+		firstName
+		lastName
+	}
+}
 
 mutation BlockUser($userId: ObjectID!) {
 	blockUser(userId: $userId) {
