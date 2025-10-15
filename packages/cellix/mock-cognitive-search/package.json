@@ -10,7 +10,8 @@
 		"clean": "rm -rf dist",
 		"test": "vitest",
 		"lint": "biome check src/",
-		"format": "biome format --write src/"
+		"format": "biome format --write src/",
+		"examples": "node examples/run-examples.js"
 	},
 	"keywords": [
 		"cognitive-search",
