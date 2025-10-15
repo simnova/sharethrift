@@ -1,22 +1,27 @@
+import { LunrSearchEngine } from './lunr-search-engine.js';
 /**
  * In-memory implementation of Azure Cognitive Search
  *
- * Provides basic search functionality for development environments:
- * - Document storage and retrieval
- * - Simple text search
- * - Basic filtering
- * - Pagination support
+ * Enhanced with Lunr.js for superior search capabilities:
+ * - Full-text search with relevance scoring (TF-IDF)
+ * - Field boosting (title gets higher weight than description)
+ * - Fuzzy matching and wildcard support
+ * - Stemming and stop word filtering
+ * - Basic filtering and pagination support
  *
- * Note: This is intentionally simplified and does not implement
- * full OData filter parsing or complex search features.
+ * Maintains Azure Cognitive Search API compatibility while providing
+ * enhanced mock search functionality for development environments.
  */
 class InMemoryCognitiveSearch {
     indexes = new Map();
     documents = new Map();
+    lunrEngine;
     isInitialized = false;
     constructor(options = {}) {
         // Store options for future use
         void options;
+        // Initialize Lunr.js search engine
+        this.lunrEngine = new LunrSearchEngine();
     }
     startup() {
         if (this.isInitialized) {
@@ -42,6 +47,8 @@ class InMemoryCognitiveSearch {
         console.log(`Creating index: ${indexDefinition.name}`);
         this.indexes.set(indexDefinition.name, indexDefinition);
         this.documents.set(indexDefinition.name, new Map());
+        // Initialize Lunr index with empty documents
+        this.lunrEngine.buildIndex(indexDefinition.name, indexDefinition.fields, []);
         return Promise.resolve();
     }
     createOrUpdateIndexDefinition(indexName, indexDefinition) {
@@ -50,6 +57,10 @@ class InMemoryCognitiveSearch {
         if (!this.documents.has(indexName)) {
             this.documents.set(indexName, new Map());
         }
+        // Rebuild Lunr index with current documents
+        const documentMap = this.documents.get(indexName);
+        const documents = documentMap ? Array.from(documentMap.values()) : [];
+        this.lunrEngine.buildIndex(indexName, indexDefinition.fields, documents);
         return Promise.resolve();
     }
     indexDocument(indexName, document) {
@@ -66,6 +77,8 @@ class InMemoryCognitiveSearch {
         }
         console.log(`Indexing document ${documentId} in index ${indexName}`);
         documentMap.set(documentId, { ...document });
+        // Update Lunr index
+        this.lunrEngine.addDocument(indexName, document);
         return Promise.resolve();
     }
     deleteDocument(indexName, document) {
@@ -82,6 +95,8 @@ class InMemoryCognitiveSearch {
         }
         console.log(`Deleting document ${documentId} from index ${indexName}`);
         documentMap.delete(documentId);
+        // Update Lunr index
+        this.lunrEngine.removeDocument(indexName, documentId);
         return Promise.resolve();
     }
     deleteIndex(indexName) {
@@ -92,143 +107,26 @@ class InMemoryCognitiveSearch {
     }
     search(indexName, searchText, options) {
         if (!this.indexes.has(indexName)) {
-            throw new Error(`Index ${indexName} does not exist`);
-        }
-        const documentMap = this.documents.get(indexName);
-        if (!documentMap) {
             return Promise.resolve({ results: [], count: 0, facets: {} });
         }
-        const indexDefinition = this.indexes.get(indexName);
-        if (!indexDefinition) {
-            throw new Error(`Index ${indexName} not found`);
-        }
-        let allDocuments = Array.from(documentMap.values());
-        // Apply text search if searchText is provided
-        if (searchText && searchText.trim() !== '' && searchText !== '*') {
-            allDocuments = this.applyTextSearch(allDocuments, searchText, indexDefinition);
-        }
-        // Apply filters if provided
-        if (options?.filter) {
-            allDocuments = this.applyFilters(allDocuments, options.filter, indexDefinition);
-        }
-        // Apply sorting if provided
-        if (options?.orderBy && options.orderBy.length > 0) {
-            allDocuments = this.applySorting(allDocuments, options.orderBy);
-        }
-        // Apply pagination
-        const skip = options?.skip || 0;
-        const top = options?.top || 50;
-        const totalCount = allDocuments.length;
-        const paginatedResults = allDocuments.slice(skip, skip + top);
-        // Convert to SearchDocumentsResult format
-        const results = paginatedResults.map((doc) => ({
-            document: doc,
-            score: 1.0, // Mock score
-        }));
-        const result = {
-            results,
-            facets: {}, // Mock implementation doesn't support faceting
-        };
-        if (options?.includeTotalCount) {
-            result.count = totalCount;
-        }
+        // Use Lunr.js for enhanced search with relevance scoring
+        const result = this.lunrEngine.search(indexName, searchText, options);
         return Promise.resolve(result);
-    }
-    applyTextSearch(documents, searchText, indexDefinition) {
-        const searchableFields = indexDefinition.fields
-            .filter((field) => field.searchable)
-            .map((field) => field.name);
-        if (searchableFields.length === 0) {
-            return documents;
-        }
-        const searchTerms = searchText.toLowerCase().split(/\s+/);
-        return documents.filter((doc) => {
-            return searchableFields.some((fieldName) => {
-                const fieldValue = this.getFieldValue(doc, fieldName);
-                if (!fieldValue)
-                    return false;
-                const stringValue = String(fieldValue).toLowerCase();
-                return searchTerms.some((term) => stringValue.includes(term));
-            });
-        });
-    }
-    applyFilters(documents, filterString, indexDefinition) {
-        // Basic filter implementation - only supports simple equality filters
-        // Format: "fieldName eq 'value'" or "fieldName eq value"
-        const filterableFields = indexDefinition.fields
-            .filter((field) => field.filterable)
-            .map((field) => field.name);
-        // Simple regex to parse basic filters
-        const filterRegex = /(\w+)\s+eq\s+['"]?([^'"]+)['"]?/g;
-        const filters = [];
-        let match = filterRegex.exec(filterString);
-        while (match !== null) {
-            const [, field, value] = match;
-            if (field && value && filterableFields.includes(field)) {
-                filters.push({ field, value });
-            }
-            match = filterRegex.exec(filterString);
-        }
-        return documents.filter((doc) => {
-            return filters.every((filter) => {
-                const fieldValue = this.getFieldValue(doc, filter.field);
-                return String(fieldValue) === filter.value;
-            });
-        });
-    }
-    applySorting(documents, orderBy) {
-        return documents.sort((a, b) => {
-            for (const sortField of orderBy) {
-                const parts = sortField.split(' ');
-                const fieldName = parts[0];
-                const direction = parts[1] || 'asc';
-                if (!fieldName)
-                    continue;
-                const aValue = this.getFieldValue(a, fieldName);
-                const bValue = this.getFieldValue(b, fieldName);
-                let comparison = 0;
-                if (typeof aValue === 'string' && typeof bValue === 'string') {
-                    if (aValue < bValue)
-                        comparison = -1;
-                    else if (aValue > bValue)
-                        comparison = 1;
-                }
-                else if (typeof aValue === 'number' && typeof bValue === 'number') {
-                    if (aValue < bValue)
-                        comparison = -1;
-                    else if (aValue > bValue)
-                        comparison = 1;
-                }
-                if (direction.toLowerCase() === 'desc') {
-                    comparison = -comparison;
-                }
-                if (comparison !== 0) {
-                    return comparison;
-                }
-            }
-            return 0;
-        });
-    }
-    getFieldValue(document, fieldName) {
-        // Handle nested field access (e.g., "user.name")
-        return fieldName.split('.').reduce((obj, key) => {
-            if (obj && typeof obj === 'object' && key in obj) {
-                return obj[key];
-            }
-            return undefined;
-        }, document);
     }
     /**
      * Debug method to inspect current state
      */
     getDebugInfo() {
         const documentCounts = {};
+        const lunrStats = {};
         for (const [indexName, documentMap] of this.documents) {
             documentCounts[indexName] = documentMap.size;
+            lunrStats[indexName] = this.lunrEngine.getIndexStats(indexName);
         }
         return {
             indexes: Array.from(this.indexes.keys()),
             documentCounts,
+            lunrStats,
         };
     }
 }
