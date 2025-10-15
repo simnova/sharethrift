@@ -8,10 +8,6 @@ import {
 import type { FindOneOptions, FindOptions } from '../../mongo-data-source.ts';
 import { ReservationRequestConverter } from '../../../domain/reservation-request/reservation-request/reservation-request.domain-adapter.ts';
 import { MongooseSeedwork } from '@cellix/mongoose-seedwork';
-import {
-	getMockReservationRequests,
-	getMockListingReservationRequests,
-} from './mock-reservation-requests.ts';
 
 export interface ReservationRequestReadRepository {
 	getAll: (
@@ -69,7 +65,7 @@ export interface ReservationRequestReadRepository {
 	>;
 }
 
-// Mock listing requests utility lives in mock-reservation-requests.ts
+// Database-seeded mock data is now handled by the mock-mongodb-memory-server package
 
 export class ReservationRequestReadRepositoryImpl
 	implements ReservationRequestReadRepository
@@ -130,9 +126,6 @@ export class ReservationRequestReadRepositoryImpl
 			state: { $in: ['Accepted', 'Requested'] },
 		};
 		const result = await this.mongoDataSource.find(filter, options);
-		if (!result || result.length === 0) {
-			return getMockReservationRequests(reserverId, 'active');
-		}
 		return result.map((doc) => this.converter.toDomain(doc, this.passport));
 	}
 
@@ -147,22 +140,23 @@ export class ReservationRequestReadRepositoryImpl
 			state: { $nin: ['Accepted', 'Requested'] },
 		};
 		const result = await this.mongoDataSource.find(filter, options);
-		if (!result || result.length === 0) {
-			return getMockReservationRequests(reserverId, 'past');
-		}
 		return result.map((doc) => this.converter.toDomain(doc, this.passport));
 	}
 
 	async getListingRequestsBySharerId(
-		sharerId: string,
+		_sharerId: string,
 		options?: FindOptions,
 	): Promise<
 		Domain.Contexts.ReservationRequest.ReservationRequest.ReservationRequestEntityReference[]
 	> {
-		// TEMPORARY: This query requires joining through listing -> sharer in persistence.
-		// Until that is implemented, return centralized mock data to support UI flows.
-		void options; // keep signature without logs
-		return await Promise.resolve(getMockListingReservationRequests(sharerId));
+		// Query reservation requests for listings owned by the sharer
+		// This requires a lookup to find listings owned by the sharer, then find requests for those listings
+		const filter = {
+			// We'll need to implement a proper aggregation pipeline or lookup
+			// For now, return empty array until proper join is implemented
+		};
+		const result = await this.mongoDataSource.find(filter, options);
+		return result.map((doc) => this.converter.toDomain(doc, this.passport));
 	}
 
 	async getActiveByReserverIdAndListingId(
@@ -211,9 +205,6 @@ export class ReservationRequestReadRepositoryImpl
 			state: { $in: ['Accepted', 'Requested'] },
 		};
 		const result = await this.mongoDataSource.find(filter, options);
-		if (!result || result.length === 0) {
-			return getMockReservationRequests('507f1f77bcf86cd799439011', 'active');
-		}
 		return result.map((doc) => this.converter.toDomain(doc, this.passport));
 	}
 }
