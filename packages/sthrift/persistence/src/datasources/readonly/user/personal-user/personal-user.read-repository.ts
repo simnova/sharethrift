@@ -11,7 +11,7 @@ export interface PersonalUserReadRepository {
 	getAll: (
 		options?: FindOptions,
 	) => Promise<Domain.Contexts.User.PersonalUser.PersonalUserEntityReference[]>;
-	getPaged: (args: {
+	getAllUsers: (args: {
 		page: number;
 		pageSize: number;
 		searchText?: string;
@@ -58,7 +58,7 @@ export class PersonalUserReadRepositoryImpl
 		return results.map((doc) => this.converter.toDomain(doc, this.passport));
 	}
 
-	async getPaged(args: {
+	async getAllUsers(args: {
 		page: number;
 		pageSize: number;
 		searchText?: string;

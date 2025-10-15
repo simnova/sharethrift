@@ -20,7 +20,7 @@ export const getAllUsers = (datasources: DataSources) => {
 	return (
 		command: GetAllUsersCommand,
 	): Promise<PersonalUserPageResult> => {
-		return datasources.readonlyDataSource.User.PersonalUser.PersonalUserReadRepo.getPaged(
+		return datasources.readonlyDataSource.User.PersonalUser.PersonalUserReadRepo.getAllUsers(
 			{
 				page: command.page,
 				pageSize: command.pageSize,
