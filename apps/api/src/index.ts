@@ -17,7 +17,7 @@ import { ServiceBlobStorage } from '@sthrift/service-blob-storage';
 import { ServiceTokenValidation } from '@sthrift/service-token-validation';
 import * as TokenValidationConfig from './service-config/token-validation/index.ts';
 
-import { ServiceTwilio } from '@sthrift/service-twilio';
+// import { ServiceTwilio } from '@sthrift/service-twilio';
 
 import { graphHandlerCreator } from '@sthrift/graphql';
 import { restHandlerCreator } from '@sthrift/rest';
@@ -36,7 +36,7 @@ Cellix.initializeInfrastructureServices<ApiContextSpec, ApplicationServices>(
 			.registerInfrastructureService(
 				new ServiceTokenValidation(TokenValidationConfig.portalTokens),
 			)
-			.registerInfrastructureService(new ServiceTwilio())
+			// .registerInfrastructureService(new ServiceTwilio())
 			.registerInfrastructureService(new ServiceCybersource());
 	},
 )
