@@ -3,7 +3,9 @@
  * @param state - The GraphQL reservation state (e.g., 'Accepted', 'Requested', 'Closed')
  * @returns The corresponding ReservationStatusTag value
  */
-export function mapReservationState(state: string): 'REQUESTED' | 'ACCEPTED' | 'REJECTED' | 'CLOSED' | 'CANCELLED' {
+export function mapReservationState(
+	state: string,
+): 'REQUESTED' | 'ACCEPTED' | 'REJECTED' | 'CLOSED' | 'CANCELLED' {
 	switch (state) {
 		case 'Accepted':
 			return 'ACCEPTED';
