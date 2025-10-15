@@ -4,7 +4,7 @@ import type { Domain } from '@sthrift/domain';
 export interface PersonalUserUpdateCommand {
 	id: string;
 	isBlocked?: boolean;
-	account: {
+	account?: {
 		accountType?: string;
 		username?: string;
 		profile?: {
