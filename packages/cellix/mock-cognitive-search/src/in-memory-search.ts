@@ -4,20 +4,25 @@ import type {
 	SearchDocumentsResult,
 	SearchIndex,
 	SearchOptions,
-	SearchResult,
 } from './interfaces.js';
+import { LunrSearchEngine } from './lunr-search-engine.js';
 
 /**
  * In-memory implementation of Azure Cognitive Search
  *
- * Provides basic search functionality for development environments:
- * - Document storage and retrieval
- * - Simple text search
- * - Basic filtering
- * - Pagination support
+ * Enhanced with Lunr.js for superior search capabilities:
+ * - Full-text search with relevance scoring (TF-IDF)
+ * - Field boosting (title gets higher weight than description)
+ * - Fuzzy matching and wildcard support
+ * - Stemming and stop word filtering
+ * - Basic filtering and pagination support
  *
- * Note: This is intentionally simplified and does not implement
- * full OData filter parsing or complex search features.
+ * Maintains Azure Cognitive Search API compatibility while providing
+ * enhanced mock search functionality for development environments.
+ *
+ * This implementation serves as a drop-in replacement for Azure Cognitive Search
+ * in development and testing environments, offering realistic search behavior
+ * without requiring cloud services or external dependencies.
  */
 class InMemoryCognitiveSearch
 	implements CognitiveSearchBase, CognitiveSearchLifecycle
@@ -25,8 +30,16 @@ class InMemoryCognitiveSearch
 	private indexes: Map<string, SearchIndex> = new Map();
 	private documents: Map<string, Map<string, Record<string, unknown>>> =
 		new Map();
+	private lunrEngine: LunrSearchEngine;
 	private isInitialized = false;
 
+	/**
+	 * Creates a new instance of the in-memory cognitive search service
+	 *
+	 * @param options - Configuration options for the search service
+	 * @param options.enablePersistence - Whether to enable persistence (future feature)
+	 * @param options.persistencePath - Path for persistence storage (future feature)
+	 */
 	constructor(
 		options: {
 			enablePersistence?: boolean;
@@ -35,8 +48,15 @@ class InMemoryCognitiveSearch
 	) {
 		// Store options for future use
 		void options;
+		// Initialize Lunr.js search engine
+		this.lunrEngine = new LunrSearchEngine();
 	}
 
+	/**
+	 * Initializes the search service
+	 *
+	 * @returns Promise that resolves when startup is complete
+	 */
 	startup(): Promise<void> {
 		if (this.isInitialized) {
 			return Promise.resolve();
@@ -52,6 +72,11 @@ class InMemoryCognitiveSearch
 		return Promise.resolve();
 	}
 
+	/**
+	 * Shuts down the search service and cleans up resources
+	 *
+	 * @returns Promise that resolves when shutdown is complete
+	 */
 	shutdown(): Promise<void> {
 		console.log('InMemoryCognitiveSearch: Shutting down...');
 		this.isInitialized = false;
@@ -59,6 +84,12 @@ class InMemoryCognitiveSearch
 		return Promise.resolve();
 	}
 
+	/**
+	 * Creates a new search index if it doesn't already exist
+	 *
+	 * @param indexDefinition - The definition of the index to create
+	 * @returns Promise that resolves when the index is created or already exists
+	 */
 	createIndexIfNotExists(indexDefinition: SearchIndex): Promise<void> {
 		if (this.indexes.has(indexDefinition.name)) {
 			return Promise.resolve();
@@ -67,9 +98,23 @@ class InMemoryCognitiveSearch
 		console.log(`Creating index: ${indexDefinition.name}`);
 		this.indexes.set(indexDefinition.name, indexDefinition);
 		this.documents.set(indexDefinition.name, new Map());
+
+		// Initialize Lunr index with empty documents
+		this.lunrEngine.buildIndex(
+			indexDefinition.name,
+			indexDefinition.fields,
+			[],
+		);
 		return Promise.resolve();
 	}
 
+	/**
+	 * Creates or updates an existing search index definition
+	 *
+	 * @param indexName - The name of the index to create or update
+	 * @param indexDefinition - The definition of the index
+	 * @returns Promise that resolves when the index is created or updated
+	 */
 	createOrUpdateIndexDefinition(
 		indexName: string,
 		indexDefinition: SearchIndex,
@@ -80,9 +125,21 @@ class InMemoryCognitiveSearch
 		if (!this.documents.has(indexName)) {
 			this.documents.set(indexName, new Map());
 		}
+
+		// Rebuild Lunr index with current documents
+		const documentMap = this.documents.get(indexName);
+		const documents = documentMap ? Array.from(documentMap.values()) : [];
+		this.lunrEngine.buildIndex(indexName, indexDefinition.fields, documents);
 		return Promise.resolve();
 	}
 
+	/**
+	 * Adds or updates a document in the specified search index
+	 *
+	 * @param indexName - The name of the index to add the document to
+	 * @param document - The document to index (must have an 'id' field)
+	 * @returns Promise that resolves when the document is indexed
+	 */
 	indexDocument(
 		indexName: string,
 		document: Record<string, unknown>,
@@ -105,9 +162,19 @@ class InMemoryCognitiveSearch
 
 		console.log(`Indexing document ${documentId} in index ${indexName}`);
 		documentMap.set(documentId, { ...document });
+
+		// Update Lunr index
+		this.lunrEngine.addDocument(indexName, document);
 		return Promise.resolve();
 	}
 
+	/**
+	 * Removes a document from the specified search index
+	 *
+	 * @param indexName - The name of the index to remove the document from
+	 * @param document - The document to remove (must have an 'id' field)
+	 * @returns Promise that resolves when the document is removed
+	 */
 	deleteDocument(
 		indexName: string,
 		document: Record<string, unknown>,
@@ -130,9 +197,18 @@ class InMemoryCognitiveSearch
 
 		console.log(`Deleting document ${documentId} from index ${indexName}`);
 		documentMap.delete(documentId);
+
+		// Update Lunr index
+		this.lunrEngine.removeDocument(indexName, documentId);
 		return Promise.resolve();
 	}
 
+	/**
+	 * Deletes an entire search index and all its documents
+	 *
+	 * @param indexName - The name of the index to delete
+	 * @returns Promise that resolves when the index is deleted
+	 */
 	deleteIndex(indexName: string): Promise<void> {
 		console.log(`Deleting index: ${indexName}`);
 		this.indexes.delete(indexName);
@@ -140,196 +216,56 @@ class InMemoryCognitiveSearch
 		return Promise.resolve();
 	}
 
+	/**
+	 * Performs a search query on the specified index using Lunr.js
+	 *
+	 * @param indexName - The name of the index to search
+	 * @param searchText - The search query text
+	 * @param options - Optional search parameters (filters, pagination, facets, etc.)
+	 * @returns Promise that resolves with search results including relevance scores
+	 */
 	search(
 		indexName: string,
 		searchText: string,
 		options?: SearchOptions,
 	): Promise<SearchDocumentsResult> {
 		if (!this.indexes.has(indexName)) {
-			throw new Error(`Index ${indexName} does not exist`);
-		}
-
-		const documentMap = this.documents.get(indexName);
-		if (!documentMap) {
 			return Promise.resolve({ results: [], count: 0, facets: {} });
 		}
 
-		const indexDefinition = this.indexes.get(indexName);
-		if (!indexDefinition) {
-			throw new Error(`Index ${indexName} not found`);
-		}
-		let allDocuments = Array.from(documentMap.values());
-
-		// Apply text search if searchText is provided
-		if (searchText && searchText.trim() !== '' && searchText !== '*') {
-			allDocuments = this.applyTextSearch(
-				allDocuments,
-				searchText,
-				indexDefinition,
-			);
-		}
-
-		// Apply filters if provided
-		if (options?.filter) {
-			allDocuments = this.applyFilters(
-				allDocuments,
-				options.filter,
-				indexDefinition,
-			);
-		}
-
-		// Apply sorting if provided
-		if (options?.orderBy && options.orderBy.length > 0) {
-			allDocuments = this.applySorting(allDocuments, options.orderBy);
-		}
-
-		// Apply pagination
-		const skip = options?.skip || 0;
-		const top = options?.top || 50;
-		const totalCount = allDocuments.length;
-		const paginatedResults = allDocuments.slice(skip, skip + top);
-
-		// Convert to SearchDocumentsResult format
-		const results: SearchResult[] = paginatedResults.map((doc) => ({
-			document: doc,
-			score: 1.0, // Mock score
-		}));
-
-		const result: SearchDocumentsResult = {
-			results,
-			facets: {}, // Mock implementation doesn't support faceting
-		};
-
-		if (options?.includeTotalCount) {
-			result.count = totalCount;
-		}
-
+		// Use Lunr.js for enhanced search with relevance scoring
+		const result = this.lunrEngine.search(indexName, searchText, options);
 		return Promise.resolve(result);
 	}
 
-	private applyTextSearch(
-		documents: Record<string, unknown>[],
-		searchText: string,
-		indexDefinition: SearchIndex,
-	): Record<string, unknown>[] {
-		const searchableFields = indexDefinition.fields
-			.filter((field) => field.searchable)
-			.map((field) => field.name);
-
-		if (searchableFields.length === 0) {
-			return documents;
-		}
-
-		const searchTerms = searchText.toLowerCase().split(/\s+/);
-
-		return documents.filter((doc) => {
-			return searchableFields.some((fieldName) => {
-				const fieldValue = this.getFieldValue(doc, fieldName);
-				if (!fieldValue) return false;
-
-				const stringValue = String(fieldValue).toLowerCase();
-				return searchTerms.some((term) => stringValue.includes(term));
-			});
-		});
-	}
-
-	private applyFilters(
-		documents: Record<string, unknown>[],
-		filterString: string,
-		indexDefinition: SearchIndex,
-	): Record<string, unknown>[] {
-		// Basic filter implementation - only supports simple equality filters
-		// Format: "fieldName eq 'value'" or "fieldName eq value"
-
-		const filterableFields = indexDefinition.fields
-			.filter((field) => field.filterable)
-			.map((field) => field.name);
-
-		// Simple regex to parse basic filters
-		const filterRegex = /(\w+)\s+eq\s+['"]?([^'"]+)['"]?/g;
-		const filters: Array<{ field: string; value: string }> = [];
-
-		let match: RegExpExecArray | null = filterRegex.exec(filterString);
-		while (match !== null) {
-			const [, field, value] = match;
-			if (field && value && filterableFields.includes(field)) {
-				filters.push({ field, value });
-			}
-			match = filterRegex.exec(filterString);
-		}
-
-		return documents.filter((doc) => {
-			return filters.every((filter) => {
-				const fieldValue = this.getFieldValue(doc, filter.field);
-				return String(fieldValue) === filter.value;
-			});
-		});
-	}
-
-	private applySorting(
-		documents: Record<string, unknown>[],
-		orderBy: string[],
-	): Record<string, unknown>[] {
-		return documents.sort((a, b) => {
-			for (const sortField of orderBy) {
-				const parts = sortField.split(' ');
-				const fieldName = parts[0];
-				const direction = parts[1] || 'asc';
-
-				if (!fieldName) continue;
-
-				const aValue = this.getFieldValue(a, fieldName);
-				const bValue = this.getFieldValue(b, fieldName);
-
-				let comparison = 0;
-				if (typeof aValue === 'string' && typeof bValue === 'string') {
-					if (aValue < bValue) comparison = -1;
-					else if (aValue > bValue) comparison = 1;
-				} else if (typeof aValue === 'number' && typeof bValue === 'number') {
-					if (aValue < bValue) comparison = -1;
-					else if (aValue > bValue) comparison = 1;
-				}
-
-				if (direction.toLowerCase() === 'desc') {
-					comparison = -comparison;
-				}
-
-				if (comparison !== 0) {
-					return comparison;
-				}
-			}
-			return 0;
-		});
-	}
-
-	private getFieldValue(
-		document: Record<string, unknown>,
-		fieldName: string,
-	): unknown {
-		// Handle nested field access (e.g., "user.name")
-		return fieldName.split('.').reduce<unknown>((obj, key) => {
-			if (obj && typeof obj === 'object' && key in obj) {
-				return (obj as Record<string, unknown>)[key];
-			}
-			return undefined;
-		}, document);
-	}
-
 	/**
-	 * Debug method to inspect current state
+	 * Debug method to inspect current state and statistics
+	 *
+	 * @returns Object containing debug information about indexes, document counts, and Lunr.js statistics
 	 */
 	getDebugInfo(): {
 		indexes: string[];
 		documentCounts: Record<string, number>;
+		lunrStats: Record<
+			string,
+			{ documentCount: number; fieldCount: number } | null
+		>;
 	} {
 		const documentCounts: Record<string, number> = {};
+		const lunrStats: Record<
+			string,
+			{ documentCount: number; fieldCount: number } | null
+		> = {};
+
 		for (const [indexName, documentMap] of this.documents) {
 			documentCounts[indexName] = documentMap.size;
+			lunrStats[indexName] = this.lunrEngine.getIndexStats(indexName);
 		}
 
 		return {
 			indexes: Array.from(this.indexes.keys()),
 			documentCounts,
+			lunrStats,
 		};
 	}
 }

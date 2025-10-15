@@ -2,18 +2,20 @@ import type { CognitiveSearchBase, CognitiveSearchLifecycle, SearchDocumentsResu
 /**
  * In-memory implementation of Azure Cognitive Search
  *
- * Provides basic search functionality for development environments:
- * - Document storage and retrieval
- * - Simple text search
- * - Basic filtering
- * - Pagination support
+ * Enhanced with Lunr.js for superior search capabilities:
+ * - Full-text search with relevance scoring (TF-IDF)
+ * - Field boosting (title gets higher weight than description)
+ * - Fuzzy matching and wildcard support
+ * - Stemming and stop word filtering
+ * - Basic filtering and pagination support
  *
- * Note: This is intentionally simplified and does not implement
- * full OData filter parsing or complex search features.
+ * Maintains Azure Cognitive Search API compatibility while providing
+ * enhanced mock search functionality for development environments.
  */
 declare class InMemoryCognitiveSearch implements CognitiveSearchBase, CognitiveSearchLifecycle {
     private indexes;
     private documents;
+    private lunrEngine;
     private isInitialized;
     constructor(options?: {
         enablePersistence?: boolean;
@@ -27,16 +29,16 @@ declare class InMemoryCognitiveSearch implements CognitiveSearchBase, CognitiveS
     deleteDocument(indexName: string, document: Record<string, unknown>): Promise<void>;
     deleteIndex(indexName: string): Promise<void>;
     search(indexName: string, searchText: string, options?: SearchOptions): Promise<SearchDocumentsResult>;
-    private applyTextSearch;
-    private applyFilters;
-    private applySorting;
-    private getFieldValue;
     /**
      * Debug method to inspect current state
      */
     getDebugInfo(): {
         indexes: string[];
         documentCounts: Record<string, number>;
+        lunrStats: Record<string, {
+            documentCount: number;
+            fieldCount: number;
+        } | null>;
     };
 }
 export { InMemoryCognitiveSearch };
