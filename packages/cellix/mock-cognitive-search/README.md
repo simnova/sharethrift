@@ -1,10 +1,10 @@
 # Mock Cognitive Search
 
-Enhanced mock implementation of Azure Cognitive Search powered by Lunr.js for local development environments.
+Enhanced mock implementation of Azure Cognitive Search powered by Lunr.js and LiQE for local development environments.
 
 ## Overview
 
-This package provides a sophisticated drop-in replacement for Azure Cognitive Search that works entirely in memory, offering advanced search capabilities through Lunr.js integration. It allows developers to build and test search functionality with realistic relevance scoring and advanced features without requiring Azure credentials or external services.
+This package provides a sophisticated drop-in replacement for Azure Cognitive Search that works entirely in memory, offering advanced search capabilities through Lunr.js and LiQE integration. It allows developers to build and test search functionality with realistic relevance scoring, advanced filtering, and complex query capabilities without requiring Azure credentials or external services.
 
 ## Features
 
@@ -30,7 +30,8 @@ This package provides a sophisticated drop-in replacement for Azure Cognitive Se
 - ✅ **Wildcard Support**: Prefix matching with `*` operator
 - ✅ **Stemming**: Finds "rent" when searching "rental"
 - ✅ **Faceting**: Category, boolean, and numeric facet support
-- ✅ **Complex Filtering**: OData-style equality filters
+- ✅ **LiQE Integration**: Advanced OData-style filtering with complex expressions
+- ✅ **Advanced Filtering**: Comparison operators, logical operators, string functions
 - ✅ **Sorting & Pagination**: Full support for ordering and pagination
 
 ### Azure Compatibility
@@ -40,15 +41,23 @@ This package provides a sophisticated drop-in replacement for Azure Cognitive Se
 - ✅ Lifecycle management (startup/shutdown)
 - ✅ Debug information and statistics
 
-## Lunr.js Integration Architecture
+## Architecture Overview
 
-The mock implementation uses Lunr.js internally to provide:
+The mock implementation combines Lunr.js and LiQE to provide comprehensive search capabilities:
 
+### Lunr.js Integration
 1. **Relevance Scoring**: TF-IDF based scoring for realistic search results
 2. **Field Boosting**: Title fields weighted 10x, description 2x, others 1x
 3. **Query Enhancement**: Automatic wildcard and fuzzy matching
 4. **Index Rebuilding**: Automatic index updates when documents change
 5. **Performance**: Fast in-memory search with efficient indexing
+
+### LiQE Integration
+1. **OData Compatibility**: Full support for Azure Cognitive Search filter syntax
+2. **Advanced Operators**: Comparison (`eq`, `ne`, `gt`, `lt`, `ge`, `le`) and logical (`and`, `or`) operators
+3. **String Functions**: `contains()`, `startswith()`, `endswith()` for text filtering
+4. **Complex Expressions**: Nested logical expressions with proper precedence
+5. **Type Safety**: Robust parsing with validation and error handling
 
 ## Search Query Syntax
 
@@ -83,14 +92,74 @@ Titles are automatically boosted 10x over descriptions:
 await searchService.search('index', 'mountain bike');
 ```
 
+## Advanced Filtering with LiQE
+
+The mock implementation supports full OData-style filtering through LiQE integration:
+
+### Comparison Operators
+```typescript
+// Equality
+await searchService.search('index', '', { filter: "category eq 'Sports'" });
+
+// Inequality
+await searchService.search('index', '', { filter: "price ne 500" });
+
+// Greater than
+await searchService.search('index', '', { filter: "price gt 100" });
+
+// Less than or equal
+await searchService.search('index', '', { filter: "price le 1000" });
+```
+
+### String Functions
+```typescript
+// Contains (case-insensitive)
+await searchService.search('index', '', { filter: "contains(title, 'Bike')" });
+
+// Starts with
+await searchService.search('index', '', { filter: "startswith(title, 'Mountain')" });
+
+// Ends with
+await searchService.search('index', '', { filter: "endswith(title, 'Sale')" });
+```
+
+### Logical Operators
+```typescript
+// AND operator
+await searchService.search('index', '', { 
+  filter: "category eq 'Sports' and price gt 200" 
+});
+
+// OR operator
+await searchService.search('index', '', { 
+  filter: "category eq 'Sports' or category eq 'Urban'" 
+});
+
+// Complex nested expressions
+await searchService.search('index', '', { 
+  filter: "(category eq 'Sports' or category eq 'Urban') and price le 1000" 
+});
+```
+
+### Combined Search and Filtering
+```typescript
+// Full-text search with advanced filtering
+await searchService.search('index', 'bike', {
+  filter: "contains(title, 'Mountain') and price gt 300",
+  facets: ['category'],
+  top: 10,
+  includeTotalCount: true
+});
+```
+
 ## Limitations
 
 Current limitations (planned for future enhancement):
 
-- **Limited OData Support**: Only basic equality filters (`field eq 'value'`)
 - **No Geospatial Search**: GeographyPoint fields are not supported
-- **No Complex Queries**: No boolean operators or nested filters
+- **Limited Geospatial**: No `geo.distance()` or location-based filtering
 - **Memory Only**: No persistence across restarts
+- **No Custom Analyzers**: Uses default text analysis (planned for future)
 
 ## Usage
 
@@ -148,33 +217,62 @@ const fuzzyResults = await searchService.search('item-listings', 'bik'); // find
 // Wildcard prefix matching
 const wildcardResults = await searchService.search('item-listings', 'bik*');
 
-// Combined search with filters
-const filteredResults = await searchService.search('item-listings', 'bike', {
-  filter: "category eq 'Sports'",
+// Advanced filtering with LiQE
+const advancedFilteredResults = await searchService.search('item-listings', 'bike', {
+  filter: "contains(title, 'Mountain') and price gt 300",
   facets: ['category'],
   top: 10,
   includeTotalCount: true
 });
 
-// Sorting by price
-const sortedResults = await searchService.search('item-listings', 'bike', {
+// Complex logical expressions
+const complexResults = await searchService.search('item-listings', '', {
+  filter: "(category eq 'Sports' or category eq 'Urban') and price le 1000",
   orderBy: ['price desc'],
   top: 5
+});
+
+// String function filtering
+const stringFunctionResults = await searchService.search('item-listings', '', {
+  filter: "startswith(title, 'Mountain') or endswith(title, 'Bike')"
 });
 ```
 
 ### Debug Information
 ```typescript
-// Get detailed debug information including Lunr stats
+// Get detailed debug information including Lunr and LiQE stats
 const debugInfo = searchService.getDebugInfo();
 console.log(debugInfo.lunrStats); // Lunr index statistics
 console.log(debugInfo.documentCounts); // Document counts per index
+
+// Check LiQE filter capabilities
+const filterEngine = searchService.getFilterCapabilities();
+console.log(filterEngine.supportedFeatures); // Available operators and functions
+console.log(filterEngine.isFilterSupported("price gt 100")); // true
 ```
 
 ### Cleanup
 ```typescript
 await searchService.shutdown();
 ```
+
+## Examples
+
+The package includes comprehensive examples demonstrating all LiQE filtering capabilities:
+
+```bash
+# Run all examples
+npm run examples
+```
+
+The examples cover:
+- **Basic Comparison Operators**: `eq`, `ne`, `gt`, `lt`, `ge`, `le`
+- **String Functions**: `contains()`, `startswith()`, `endswith()`
+- **Logical Operators**: `and`, `or` with complex nested expressions
+- **Combined Search**: Full-text search with advanced filtering
+- **Filter Validation**: Capability checking and syntax validation
+
+See `examples/liqe-filtering-examples.ts` for detailed implementation examples.
 
 ## Integration
 
@@ -193,6 +291,9 @@ npm run build
 
 # Run tests
 npm test
+
+# Run LiQE filtering examples
+npm run examples
 
 # Lint code
 npm run lint
