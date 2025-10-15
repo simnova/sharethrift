@@ -1,3 +1,14 @@
 query PaymentContainerPersonalUserCybersourcePublicKeyId {
   personalUserCybersourcePublicKeyId
 }
+
+mutation SignUpPaymentContainerPersonalUserProcessPayment($input: ProcessPaymentInput!) {
+  processPayment(input: $input) {
+    success
+    cybersourceCustomerId
+    errorInformation {
+      reason
+      message
+    }
+  }
+}

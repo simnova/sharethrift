@@ -21,6 +21,8 @@ export default function SelectAccountTypeContainer() {
 
   const [updateUser, { loading: updateUserLoading, error: updateError }] = useMutation(SelectAccountTypePersonalUserUpdateDocument);
 
+  // TODO: add query to fetch available plans
+
   const handleSaveAndContinue = useCallback(
     async (values: PersonalUserUpdateInput) => {
       if (updateUserLoading) {

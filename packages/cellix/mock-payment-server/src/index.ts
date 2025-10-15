@@ -47,7 +47,7 @@ app.use((req, res, next) => {
 });
 
 app.use(express.json());
-app.use('/microform/bundle/v2.7.1', express.static(__dirname)); // Serve static files for /microform/bundle/v2.7.1/iframe.min.js
+app.use('/microform/bundle/v2.7.2', express.static(__dirname)); // Serve static files for /microform/bundle/v2.7.2/iframe.min.js
 // Cybersource mock config
 const CYBERSOURCE_MERCHANT_ID = 'simnova_sharethrift';
 
@@ -232,7 +232,7 @@ app.get('/', (_req: Request, res: Response) => {
 });
 
 // Serve static HTML for /microform/bundle/v2.7.1/iframe.html
-app.get('/microform/bundle/v2.7.1/iframe.html', (_req, res) => {
+app.get('/microform/bundle/v2.7.2/iframe.html', (_req, res) => {
 	res.setHeader('Content-Type', 'text/html');
 	res.send(`<!DOCTYPE html>
 <html>

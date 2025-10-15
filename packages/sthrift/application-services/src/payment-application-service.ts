@@ -5,42 +5,38 @@ export interface PaymentApplicationService {
 		request: ProcessPaymentRequest,
 	): Promise<ProcessPaymentResponse>;
 	refundPayment(request: RefundPaymentRequest): Promise<RefundPaymentResponse>;
+	createSubscription(request: {
+		userId: string;
+		planId: string;
+		cybersourceCustomerId: string;
+	}): Promise<SubscriptionResponse>;
 	generatePublicKey(): Promise<string>;
 }
 
 export interface ProcessPaymentRequest {
 	userId: string;
-	orderInformation: {
-		amountDetails: {
-			totalAmount: number;
-			currency: string;
-		};
-		billTo: {
-			firstName: string;
-			lastName: string;
-			address1: string;
-			address2?: string;
-			city: string;
-			state: string;
-			postalCode: string;
-			country: string;
-			phoneNumber?: string;
-			email?: string;
-		};
-	};
-	paymentInformation: {
-		card: {
-			number: string;
-			expirationMonth: string;
-			expirationYear: string;
-			securityCode: string;
-		};
+	paymentAmount: number;
+	currency: string;
+
+	paymentInstrument: {
+		billingFirstName: string;
+		billingLastName: string;
+		billingAddressLine1: string;
+		billingAddressLine2?: string;
+		billingCity: string;
+		billingState: string;
+		billingPostalCode: string;
+		billingCountry: string;
+		billingPhone?: string;
+		billingEmail: string;
+		paymentToken: string;
 	};
 }
 
 export interface ProcessPaymentResponse {
 	id?: string;
 	status?: string;
+	cybersourceCustomerId?: string;
 	errorInformation?: {
 		reason?: string;
 		message?: string;
@@ -80,6 +76,43 @@ export interface RefundPaymentResponse {
 	};
 }
 
+export interface Subscription {
+	subscriptionInformation: {
+		planId: string;
+		name: string;
+		startDate: string;
+	};
+	paymentInformation: {
+		customer: {
+			id: string;
+		};
+	};
+}
+
+export interface SubscriptionResponse {
+	_links: {
+		self: {
+			href: string;
+			method?: string;
+		};
+		update: {
+			href: string;
+			method?: string;
+		};
+		cancel: {
+			href: string;
+			method?: string;
+		};
+	};
+	id: string;
+	submitTimeUtc: string;
+	status: string;
+	subscriptionInformation: {
+		code?: string;
+		status: string;
+	};
+}
+
 export class DefaultPaymentApplicationService
 	implements PaymentApplicationService
 {
@@ -93,10 +126,39 @@ export class DefaultPaymentApplicationService
 		request: ProcessPaymentRequest,
 	): Promise<ProcessPaymentResponse> {
 		try {
-			const amount = request.orderInformation.amountDetails.totalAmount;
-			// For now we treat card.number as a temporary paymentInstrumentId placeholder.
-			// In future, a real payment instrument identifier should be provided by caller.
-			const paymentInstrumentId = request.paymentInformation.card.number;
+			const amount = request.paymentAmount;
+			// create cybersource customer using paymentInstrument info
+			const cybersourceCustomerProfile =
+				await this.paymentService.createCustomerProfile(
+					request.paymentInstrument,
+					{
+						paymentToken: request.paymentInstrument.paymentToken,
+						isDefault: true,
+					},
+				);
+			const cybersourceCustomerId =
+				cybersourceCustomerProfile?.tokenInformation.customer.id;
+
+			// get payment instrument info using cybersourceCustomerId
+			const paymentInstruments =
+				await this.paymentService.getCustomerPaymentInstruments(
+					cybersourceCustomerId,
+				);
+			const paymentInstrumentId =
+				paymentInstruments._embedded.paymentInstruments?.[0]?.id;
+
+			if (!paymentInstrumentId) {
+				const failure: ProcessPaymentResponse = {
+					status: 'FAILED',
+					errorInformation: {
+						reason: 'NO_PAYMENT_INSTRUMENT',
+						message: 'No valid payment instrument found',
+					},
+				};
+
+				return failure;
+			}
+
 			const receipt = await this.paymentService.processPayment(
 				request.userId,
 				paymentInstrumentId,
@@ -113,7 +175,7 @@ export class DefaultPaymentApplicationService
 					orderInformation: {
 						amountDetails: {
 							totalAmount: amount.toString(),
-							currency: request.orderInformation.amountDetails.currency,
+							currency: request.currency,
 						},
 					},
 				};
@@ -125,10 +187,11 @@ export class DefaultPaymentApplicationService
 
 			const success: ProcessPaymentResponse = {
 				status: 'SUCCEEDED',
+				cybersourceCustomerId: cybersourceCustomerId,
 				orderInformation: {
 					amountDetails: {
 						totalAmount: amount.toString(),
-						currency: request.orderInformation.amountDetails.currency,
+						currency: request.currency,
 					},
 				},
 			};
@@ -209,5 +272,25 @@ export class DefaultPaymentApplicationService
 
 	async generatePublicKey(): Promise<string> {
 		return await this.paymentService.generatePublicKey();
+	}
+
+	async createSubscription(request: {
+		userId: string;
+		cybersourceCustomerId: string;
+		planId: string;
+	}): Promise<SubscriptionResponse> {
+		const subscriptionInput: Subscription = {
+			subscriptionInformation: {
+				planId: request.planId,
+				name: request.planId,
+				startDate: new Date().toISOString(),
+			},
+			paymentInformation: {
+				customer: {
+					id: request.cybersourceCustomerId,
+				},
+			},
+		};
+		return await this.paymentService.createSubscription(subscriptionInput);
 	}
 }

@@ -20,9 +20,19 @@ export interface PersonalUserUpdateCommand {
 				country: string;
 				zipCode: string;
 			};
-		};
 
-		// TBD: Billing info
+			// TBD: Billing info
+
+			billing?: {
+				cybersourceCustomerId?: string | undefined;
+				subscription?: {
+					subscriptionId: string;
+					planCode: string;
+					status: string;
+					startDate: Date;
+				};
+			};
+		};
 	};
 }
 
@@ -50,9 +60,33 @@ export const update = (datasources: DataSources) => {
 				if (command.account) {
 					existingPersonalUser.account.accountType =
 						command.account.accountType ??
-						existingPersonalUser.account.accountType;
+						existingPersonalUser.account.accountType; // could be replaced by plan code
 					existingPersonalUser.account.username =
 						command.account.username ?? existingPersonalUser.account.username;
+				}
+
+				if (command.account.profile?.billing) {
+					existingPersonalUser.account.profile.billing.cybersourceCustomerId =
+						command.account.profile.billing.cybersourceCustomerId ??
+						existingPersonalUser.account.profile.billing.cybersourceCustomerId;
+
+					if (command.account.profile.billing.subscription) {
+						existingPersonalUser.account.profile.billing.subscription.subscriptionId =
+							command.account.profile.billing.subscription.subscriptionId ??
+							existingPersonalUser.account.profile.billing.subscription
+								.subscriptionId;
+						existingPersonalUser.account.profile.billing.subscription.planCode =
+							command.account.profile.billing.subscription.planCode ??
+							existingPersonalUser.account.profile.billing.subscription
+								.planCode;
+						existingPersonalUser.account.profile.billing.subscription.status =
+							command.account.profile.billing.subscription.status ??
+							existingPersonalUser.account.profile.billing.subscription.status;
+						existingPersonalUser.account.profile.billing.subscription.startDate =
+							command.account.profile.billing.subscription.startDate ??
+							existingPersonalUser.account.profile.billing.subscription
+								.startDate;
+					}
 				}
 
 				if (command.account?.profile) {

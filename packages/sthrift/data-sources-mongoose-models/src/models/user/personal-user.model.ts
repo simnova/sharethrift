@@ -39,10 +39,9 @@ export const PaymentState = {
 };
 
 export const SubscriptionStatus = {
-	COMPLETED: 'COMPLETED',
-	PENDING_REVIEW: 'PENDING_REVIEW',
-	DECLINED: 'DECLINED',
-	INVALID_REQUEST: 'INVALID_REQUEST',
+	ACTIVE: 'ACTIVE',
+	FAILED: 'FAILED',
+	PENDING: 'PENDING',
 };
 export interface PersonalUserAccountProfileBillingSubscription
 	extends MongooseSeedwork.NestedPath {
@@ -77,10 +76,9 @@ export const PersonalUserAccountProfileBillingSubscriptionType: SchemaDefinition
 			type: String,
 			required: true,
 			enum: [
-				SubscriptionStatus.COMPLETED,
-				SubscriptionStatus.PENDING_REVIEW,
-				SubscriptionStatus.DECLINED,
-				SubscriptionStatus.INVALID_REQUEST,
+				SubscriptionStatus.PENDING,
+				SubscriptionStatus.ACTIVE,
+				SubscriptionStatus.FAILED,
 			],
 		},
 		startDate: { type: Date, required: true, default: Date.now },

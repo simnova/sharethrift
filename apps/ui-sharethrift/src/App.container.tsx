@@ -4,6 +4,7 @@ import { AppCurrentPersonalUserAndCreateIfNotExistsDocument } from "./generated.
 import { App } from "./App.tsx";
 import { ComponentQueryLoader } from "@sthrift/ui-components";
 import { useAuth } from "react-oidc-context";
+import { UserIdProvider } from "./components/shared/user-context.tsx";
 
 export const AppContainer: FC = () => {
   const auth = useAuth();
@@ -22,10 +23,12 @@ export const AppContainer: FC = () => {
       hasData={data?.currentPersonalUserAndCreateIfNotExists}
       error={error}
       hasDataComponent={
-        <App
-          hasCompletedOnboarding={data?.currentPersonalUserAndCreateIfNotExists?.hasCompletedOnboarding === true}
-          isAuthenticated={auth.isAuthenticated}
-        />
+        <UserIdProvider userId={data?.currentPersonalUserAndCreateIfNotExists?.id}>
+          <App
+            hasCompletedOnboarding={data?.currentPersonalUserAndCreateIfNotExists?.hasCompletedOnboarding === true}
+            isAuthenticated={auth.isAuthenticated}
+          />
+        </UserIdProvider>
       }
     />
   );

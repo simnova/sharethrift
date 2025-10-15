@@ -7,7 +7,7 @@ import type {
 	Resolvers,
 } from '../../builder/generated.ts';
 import type { PersonalUserUpdateCommand } from '@sthrift/application-services';
-import { Domain } from '@sthrift/domain';
+import type { Domain } from '@sthrift/domain';
 
 const PersonalUserMutationResolver = async (
 	getPersonalUser: Promise<Domain.Contexts.User.PersonalUser.PersonalUserEntityReference>,
@@ -88,25 +88,85 @@ const personalUserResolvers: Resolvers = {
 				),
 			);
 		},
-		processPayment: async (_parent, { request }, context) => {
-			console.log('Processing payment', request);
+		processPayment: async (_parent, { input }, context) => {
+			console.log('Processing payment', input);
+
 			try {
+				const personalUser =
+					await context.applicationServices.User.PersonalUser.queryById({
+						id: input.userId,
+					});
+				if (!personalUser) {
+					return {
+						status: 'FAILED',
+						success: false,
+						message: 'User not found',
+					} as PaymentResponse;
+				}
+
 				const sanitizedRequest = {
-					...request,
-					orderInformation: {
-						...request.orderInformation,
-						billTo: {
-							...request.orderInformation.billTo,
-							address2: request.orderInformation.billTo.address2 ?? '',
-							phoneNumber: request.orderInformation.billTo.phoneNumber ?? '',
-							email: request.orderInformation.billTo.email ?? '',
-						},
+					...input,
+					paymentInstrument: {
+						...input.paymentInstrument,
+						billingAddressLine2:
+							input.paymentInstrument.billingAddressLine2 ?? '',
+						billingPhone: input.paymentInstrument.billingPhone ?? '',
+						billingEmail: input.paymentInstrument.billingEmail ?? '',
 					},
 				};
+
 				const response =
 					await context.applicationServices.Payment.processPayment(
 						sanitizedRequest,
 					);
+
+				if (
+					response.status === 'FAILED' ||
+					response.cybersourceCustomerId === undefined
+				) {
+					return {
+						status: 'FAILED',
+						success: false,
+						message: 'Payment failed',
+					} as PaymentResponse;
+				}
+
+				await context.applicationServices.User.PersonalUser.update({
+					id: personalUser.id,
+					account: {
+						profile: {
+							billing: {
+								cybersourceCustomerId: response.cybersourceCustomerId,
+							},
+						},
+					},
+				});
+
+				// create subscription
+				const subscription =
+					await context.applicationServices.Payment.createSubscription({
+						userId: input.userId,
+						planId: 'dummy-plan-id', // replace with actual plan ID when available
+						cybersourceCustomerId: response.cybersourceCustomerId,
+					});
+
+				// update user with subscription id
+				await context.applicationServices.User.PersonalUser.update({
+					id: personalUser.id,
+					account: {
+						profile: {
+							billing: {
+								subscription: {
+									subscriptionId: subscription.id,
+									planCode: 'dummy-plan-code', // replace with actual plan code when available
+									status: subscription.status,
+									startDate: new Date(),
+								},
+							},
+						},
+					},
+				});
+
 				return {
 					...response,
 					success: response.status === 'SUCCEEDED',

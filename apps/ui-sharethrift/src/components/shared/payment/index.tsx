@@ -5,14 +5,18 @@ import { PaymentTokenFormItems, type TokenOptions } from "./payment-token-form-i
 import { BillingAddressFormItems } from "./billing-address-form-items.tsx";
 import type { Country } from "./country-type.ts";
 import utc from "dayjs/plugin/utc.js";
+import type { ProcessPaymentInput } from "../../../generated.tsx";
+import { useUserId } from "../user-context.tsx";
 const { Title, Text } = Typography;
 dayjs.extend(utc);
 
 interface PaymentFormProps {
   cyberSourcePublicKey: string;
   countries: Country[];
+  onSubmitPayment: (paymentDetails: ProcessPaymentInput) => void;
 }
 export const PaymentForm: FC<PaymentFormProps> = (props) => {
+  const userId = useUserId();
   const [form] = Form.useForm();
   // biome-ignore lint/suspicious/noExplicitAny: <explanation>
   const [flexMicroform, setFlexMicroform] = useState<any>(null);
@@ -54,28 +58,24 @@ export const PaymentForm: FC<PaymentFormProps> = (props) => {
       }
       const values = form.getFieldsValue();
       console.log("Form values on submit:", values);
-      // const processPaymentDetails: any = {
-      //   id: props.caseId,
-      //   payment: {
-      //     paymentAmount: props.serviceFee,
-      //     paymentInstrumentId: props?.paymentInstrument?.paymentInstrumentId,
-      //   },
-      // };
-      // if (!props?.paymentInstrument?.paymentInstrumentId && processPaymentDetails.payment) {
-      //   processPaymentDetails.payment.paymentInstrument = {
-      //     billingAddressLine1: values.address,
-      //     billingAddressLine2: values.billingAddressLine2,
-      //     billingCity: values.city,
-      //     billingState: values.state,
-      //     billingPostalCode: values.billingPostalCode,
-      //     billingCountry: values.country,
-      //     billingEmail: values.billingEmail,
-      //     billingPhone: values.billingPhone,
-      //     billingFirstName: values.billingFirstName,
-      //     billingLastName: values.billingLastName,
-      //     paymentToken: values.paymentInstrumentToken,
-      //   };
-      // }
+      const processPaymentDetails: ProcessPaymentInput = {
+        userId: userId,
+        paymentAmount: 2.99, // This is a placeholder. Replace with actual amount as needed.
+        currency: "USD",
+        paymentInstrument: {
+          billingAddressLine1: values.address,
+          billingAddressLine2: values.billingAddressLine2,
+          billingCity: values.city,
+          billingState: values.state,
+          billingPostalCode: values.billingPostalCode,
+          billingCountry: values.country,
+          billingEmail: values.billingEmail,
+          billingFirstName: values.billingFirstName,
+          billingLastName: values.billingLastName,
+          paymentToken: values.paymentInstrumentToken,
+        },
+      };
+      props.onSubmitPayment(processPaymentDetails);
     });
   };
 
