@@ -18,7 +18,7 @@ import type {
 	SuspendSubscriptionResponse,
 	PlansListResponse,
 } from './cybersource-interface.js';
-// import axios from 'axios';
+import axios from 'axios';
 import type { AxiosInstance } from 'axios';
 
 export class ServiceCybersource
@@ -36,7 +36,9 @@ export class ServiceCybersource
 	> {
 		if (this.client) { throw new Error('ServiceCybersource is already started'); }
         console.log('ServiceCybersource started with baseUrl:', this.baseUrl);
-		// this.client = axios.create({ baseURL: this.baseUrl });
+        if (process.env['NODE_ENV'] === 'development') {
+            this.client = axios.create({ baseURL: this.baseUrl });
+        }
 		return this as Exclude<ServiceCybersource, ServiceBase<ServiceCybersource>>;
 	}
 

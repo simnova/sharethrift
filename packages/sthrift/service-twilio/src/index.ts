@@ -32,10 +32,10 @@ export class ServiceTwilio implements ServiceBase<ServiceTwilio> {
 				'TWILIO_ACCOUNT_SID and TWILIO_AUTH_TOKEN must be set in environment variables',
 			);
 		}
-		// this.client = new Twilio(
-		// 	process.env['TWILIO_ACCOUNT_SID'],
-		// 	process.env['TWILIO_AUTH_TOKEN'],
-		// );
+		this.client = new Twilio(
+			process.env['TWILIO_ACCOUNT_SID'],
+			process.env['TWILIO_AUTH_TOKEN'],
+		);
 		console.log('ServiceTwilio started');
 		return Promise.resolve(this as Exclude<ServiceTwilio, ServiceBase>);
 	}
