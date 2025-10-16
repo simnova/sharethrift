@@ -151,12 +151,8 @@ export class ReservationRequestReadRepositoryImpl
 	> {
 		// Query reservation requests for listings owned by the sharer
 		// This requires a lookup to find listings owned by the sharer, then find requests for those listings
-		const filter = {
-			// We'll need to implement a proper aggregation pipeline or lookup
-			// For now, return empty array until proper join is implemented
-		};
-		const result = await this.mongoDataSource.find(filter, options);
-		return result.map((doc) => this.converter.toDomain(doc, this.passport));
+		// For now, return empty array until proper join is implemented
+		return [];
 	}
 
 	async getActiveByReserverIdAndListingId(
