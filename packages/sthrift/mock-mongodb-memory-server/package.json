@@ -13,7 +13,9 @@
 	"dependencies": {
 		"dotenv": "^16.4.5",
 		"@sthrift/data-sources-mongoose-models": "*",
-		"@cellix/mock-mongodb-memory-server-seedwork": "*"
+		"@cellix/mock-mongodb-memory-server-seedwork": "*",
+        "mongoose": "8.18.0",
+        "mongodb": "^6.11.0"
 	},
 	"devDependencies": {
 		"@cellix/typescript-config": "*",
