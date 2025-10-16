@@ -143,11 +143,13 @@ const personalUserResolvers: Resolvers = {
 				});
 
 				// create subscription
+				const startDate = new Date();
 				const subscription =
 					await context.applicationServices.Payment.createSubscription({
 						userId: input.userId,
 						planId: 'dummy-plan-id', // replace with actual plan ID when available
 						cybersourceCustomerId: response.cybersourceCustomerId,
+						startDate: startDate,
 					});
 
 				// update user with subscription id
@@ -160,7 +162,7 @@ const personalUserResolvers: Resolvers = {
 									subscriptionId: subscription.id,
 									planCode: 'dummy-plan-code', // replace with actual plan code when available
 									status: subscription.status,
-									startDate: new Date(),
+									startDate: startDate,
 								},
 							},
 						},
