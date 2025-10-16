@@ -48,7 +48,7 @@ export function AdminUsersTableContainer({
       message.success("User blocked successfully");
       refetch();
     },
-    onError: (err: Error) => {
+    onError: (err) => {
       message.error(`Failed to block user: ${err.message}`);
     },
   });
@@ -58,13 +58,13 @@ export function AdminUsersTableContainer({
       message.success("User unblocked successfully");
       refetch();
     },
-    onError: (err: Error) => {
+    onError: (err) => {
       message.error(`Failed to unblock user: ${err.message}`);
     },
   });
 
   // Transform GraphQL data to match AdminUserData structure
-  const users = (data?.allUsers?.items ?? []).map((user: any) => ({
+  const users = (data?.allUsers?.items ?? []).map((user) => ({
     id: user.id,
     username: user.account?.username ?? "N/A",
     firstName: user.account?.profile?.firstName ?? "N/A",
