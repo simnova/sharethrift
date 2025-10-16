@@ -1,12 +1,19 @@
 import type { MongooseSeedwork } from '@cellix/mongoose-seedwork';
-import { PersonalUserModelFactory, UserModelFactory } from './user/index.ts';
+import {
+	PersonalUserModelFactory,
+	AdminUserModelFactory,
+	UserModelFactory,
+} from './user/index.ts';
 import { ReservationRequestModelFactory } from './reservation-request/index.ts';
 import {
 	ItemListingModelFactory,
 	ListingModelFactory,
 } from './listing/index.ts';
 import { ConversationModelFactory } from './conversations/conversation.model.ts';
-import { PersonalUserRoleModelFactory } from './role/personal-user-role.model.ts';
+import {
+	PersonalUserRoleModelFactory,
+	AdminRoleModelFactory,
+} from './role/index.ts';
 
 export * as User from './user/index.ts';
 export * as Conversation from './conversations/index.ts';
@@ -25,6 +32,7 @@ export const mongooseContextBuilder = (
 			PersonalUser: PersonalUserModelFactory(
 				UserModelFactory(initializedService),
 			),
+			AdminUser: AdminUserModelFactory(UserModelFactory(initializedService)),
 		},
 
 		Listing: {
@@ -42,6 +50,7 @@ export const mongooseContextBuilder = (
 			PersonalUserRole: PersonalUserRoleModelFactory(
 				UserModelFactory(initializedService),
 			),
+			AdminRole: AdminRoleModelFactory(UserModelFactory(initializedService)),
 		},
 	};
 };
