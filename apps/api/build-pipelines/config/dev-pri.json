@@ -76,7 +76,7 @@
     },
     {
         "name": "USER_PORTAL_OIDC_ISSUER",
-        "value": "https://sharethriftb2c.b2clogin.com/95019a5a-8e95-4a18-ae60-17c9611a90b0/v2.0/",
+        "value": "https://sharethriftb2c.b2clogin.com/961394d2-0a14-4946-9913-6eb4944419af/",
         "slotSetting": false
     }
 ]
