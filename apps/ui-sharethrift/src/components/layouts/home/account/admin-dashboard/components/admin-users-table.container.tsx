@@ -2,8 +2,7 @@ import { useState } from "react";
 import { AdminUsersTable } from "./admin-users-table.tsx";
 import { ComponentQueryLoader } from "@sthrift/ui-components";
 import { message } from "antd";
-
-import { useQuery, useMutation } from "@apollo/client";
+import { useQuery, useMutation } from "@apollo/client/react";
 import {
   AdminUsersTableContainerAllUsersDocument,
   BlockUserDocument,
@@ -49,7 +48,7 @@ export function AdminUsersTableContainer({
       message.success("User blocked successfully");
       refetch();
     },
-    onError: (err) => {
+    onError: (err: Error) => {
       message.error(`Failed to block user: ${err.message}`);
     },
   });
@@ -59,13 +58,13 @@ export function AdminUsersTableContainer({
       message.success("User unblocked successfully");
       refetch();
     },
-    onError: (err) => {
+    onError: (err: Error) => {
       message.error(`Failed to unblock user: ${err.message}`);
     },
   });
 
   // Transform GraphQL data to match AdminUserData structure
-  const users = (data?.allUsers?.items ?? []).map((user) => ({
+  const users = (data?.allUsers?.items ?? []).map((user: any) => ({
     id: user.id,
     username: user.account?.username ?? "N/A",
     firstName: user.account?.profile?.firstName ?? "N/A",
