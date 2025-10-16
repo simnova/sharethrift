@@ -1,18 +1,9 @@
-import { gql } from '@apollo/client';
 import { useQuery } from "@apollo/client/react";
-import { ListingImageGallery } from './listing-image-gallery.tsx';
-// eslint-disable-next-line import/no-absolute-path, @typescript-eslint/ban-ts-comment
-// @ts-ignore - allow raw import string
-import ListingImageGalleryQuerySource from './listing-image-gallery.graphql?raw';
-
-const GET_LISTING_IMAGES = gql(ListingImageGalleryQuerySource);
-
-interface ListingImagesResponse {
-	itemListing: {
-		images: string[];
-		title: string;
-	};
-}
+import { ListingImageGallery } from './listing-image-gallery';
+import {
+	ViewListingImageGalleryGetImagesDocument,
+	type ViewListingImageGalleryGetImagesQuery,
+} from '../../../../../../generated';
 
 interface ListingImageGalleryContainerProps {
 	listingId: string;
@@ -23,8 +14,8 @@ export default function ListingImageGalleryContainer({
 	listingId,
 	className,
 }: ListingImageGalleryContainerProps) {
-	const { data, loading, error } = useQuery<ListingImagesResponse>(
-		GET_LISTING_IMAGES,
+	const { data, loading, error } = useQuery<ViewListingImageGalleryGetImagesQuery>(
+		ViewListingImageGalleryGetImagesDocument,
 		{
 			variables: { listingId },
 		},

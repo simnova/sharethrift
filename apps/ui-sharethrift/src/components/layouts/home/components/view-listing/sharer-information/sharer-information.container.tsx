@@ -1,11 +1,9 @@
-import { gql } from '@apollo/client';
 import { useQuery } from "@apollo/client/react";
 import { SharerInformation } from './sharer-information.tsx';
-// eslint-disable-next-line import/no-absolute-path, @typescript-eslint/ban-ts-comment
-// @ts-ignore - allow raw import string
-import SharerInformationQuerySource from './sharer-information.graphql?raw';
-
-const GET_SHARER_INFORMATION = gql(SharerInformationQuerySource);
+import {
+	ViewListingSharerInformationGetSharerDocument,
+	type ViewListingSharerInformationGetSharerQuery,
+} from '../../../../../../generated.tsx';
 
 interface PersonalUser {
 	id: string;
@@ -65,8 +63,8 @@ export default function SharerInformationContainer({
 		);
 	}
 
-	const { data, loading, error } = useQuery<SharerQueryResponse>(
-		GET_SHARER_INFORMATION,
+	const { data, loading, error } = useQuery<ViewListingSharerInformationGetSharerQuery>(
+		ViewListingSharerInformationGetSharerDocument,
 		{
 			variables: { sharerId },
 		},

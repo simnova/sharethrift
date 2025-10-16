@@ -1,19 +1,13 @@
 import type { Meta, StoryObj } from '@storybook/react';
 import { ViewListing } from './view-listing.tsx';
-import type { ItemListing } from '../../../../../generated.tsx';
-import { ApolloClient, InMemoryCache, gql } from '@apollo/client';
+import {
+	type ItemListing,
+	ViewListingImageGalleryGetImagesDocument,
+	ViewListingInformationGetListingDocument,
+} from '../../../../../generated';
+import { ApolloClient, InMemoryCache } from '@apollo/client';
 import { ApolloProvider } from '@apollo/client/react';
 import { MockLink } from '@apollo/client/testing';
-
-// eslint-disable-next-line import/no-absolute-path, @typescript-eslint/ban-ts-comment
-// @ts-ignore - allow raw import string
-import ListingImagesQuerySource from './listing-image-gallery/listing-image-gallery.graphql?raw';
-// eslint-disable-next-line import/no-absolute-path, @typescript-eslint/ban-ts-comment
-// @ts-ignore - allow raw import string
-import ListingInformationQuerySource from './listing-information/listing-information.graphql?raw';
-
-const GET_LISTING_IMAGES = gql(ListingImagesQuerySource);
-const GET_LISTING_INFORMATION = gql(ListingInformationQuerySource);
 
 // Local mock listing data (removed dependency on DUMMY_LISTINGS)
 const baseListingId = 'mock-listing-id-1';
@@ -56,11 +50,11 @@ const MOCK_LISTING_BASE: ItemListing = {
 
 const mocks = [
 	{
-		request: { query: GET_LISTING_IMAGES, variables: { listingId: baseListingId } },
+		request: { query: ViewListingImageGalleryGetImagesDocument, variables: { listingId: baseListingId } },
 		result: { data: { itemListing: { images: MOCK_LISTING_BASE.images } } },
 	},
 	{
-		request: { query: GET_LISTING_INFORMATION, variables: { listingId: baseListingId } },
+		request: { query: ViewListingInformationGetListingDocument, variables: { listingId: baseListingId } },
 		result: {
 			data: {
 				itemListing: {
