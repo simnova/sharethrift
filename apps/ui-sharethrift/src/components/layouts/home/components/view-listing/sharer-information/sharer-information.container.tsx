@@ -5,26 +5,6 @@ import {
 	type ViewListingSharerInformationGetSharerQuery,
 } from '../../../../../../generated.tsx';
 
-interface PersonalUser {
-	id: string;
-	account: {
-		username: string;
-		profile: {
-			firstName: string;
-			lastName: string;
-			location: {
-				city: string;
-				state: string;
-				country: string;
-			};
-		};
-	};
-}
-
-interface SharerQueryResponse {
-	personalUserById: PersonalUser;
-}
-
 interface SharerInformationContainerProps {
 	sharerId: string;
 	listingId: string;
@@ -76,7 +56,7 @@ export default function SharerInformationContainer({
 
 	const sharer = {
 		id: data.personalUserById.id,
-		name: `${data.personalUserById.account.profile.firstName} ${data.personalUserById.account.profile.lastName}`,
+		name: `${data.personalUserById.account?.profile?.firstName ?? ''} ${data.personalUserById.account?.profile?.lastName ?? ''}`.trim(),
 	};
 
 	return (

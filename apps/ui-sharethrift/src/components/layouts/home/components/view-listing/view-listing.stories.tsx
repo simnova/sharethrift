@@ -4,7 +4,7 @@ import {
 	type ItemListing,
 	ViewListingImageGalleryGetImagesDocument,
 	ViewListingInformationGetListingDocument,
-} from '../../../../../generated';
+} from '../../../../../generated.tsx';
 import { ApolloClient, InMemoryCache } from '@apollo/client';
 import { ApolloProvider } from '@apollo/client/react';
 import { MockLink } from '@apollo/client/testing';

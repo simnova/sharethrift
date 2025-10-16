@@ -6,12 +6,12 @@ import { message } from 'antd';
 import {
 	CreateListing,
 	type CreateListingFormData,
-} from './create-listing';
+} from './create-listing.tsx';
 import {
 	HomeCreateListingContainerCreateItemListingDocument,
 	type HomeCreateListingContainerCreateItemListingMutation,
 	type HomeCreateListingContainerCreateItemListingMutationVariables,
-} from '../../../../../generated';
+} from '../../../../../generated.tsx';
 
 interface CreateListingContainerProps {
 	isAuthenticated?: boolean;
