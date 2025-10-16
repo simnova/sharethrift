@@ -821,6 +821,9 @@ importers:
       mongodb:
         specifier: 'catalog:'
         version: 6.18.0
+      mongoose:
+        specifier: 'catalog:'
+        version: 8.17.0
     devDependencies:
       '@cellix/typescript-config':
         specifier: workspace:*
