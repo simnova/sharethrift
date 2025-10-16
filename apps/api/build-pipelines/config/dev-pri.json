@@ -1,10 +1,5 @@
 [
     {
-        "name": "APPLICATIONINSIGHTS_CONNECTION_STRING",
-        "value": "@Microsoft.KeyVault(SecretUri=https://sharethrift-keyvault.vault.azure.net/secrets/STH-APPLICATIONINSIGHTS-CONNECTION-STRING)",
-        "slotSetting": false
-    },
-    {
         "name": "APPLICATION_NAME",
         "value": "STH",
         "slotSetting": false

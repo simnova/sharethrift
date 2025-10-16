@@ -8,6 +8,9 @@ param appServicePlanLocation string
 param appServicePlanOperatingSystem string
 param appServicePlanSku string
 
+// application insights
+param applicationInsightsLocation string
+
 // function app
 param functionAppLocation string
 param functionAppStorageAccountName string
@@ -61,6 +64,16 @@ module appServicePlan '../../../iac/app-service-plan/main.bicep' = {
   }
 }
 
+module applicationInsights '../../../iac/application-insights/main.bicep' = {
+  name: 'applicationInsights'
+  params: {
+    applicationPrefix: applicationPrefix
+    location: applicationInsightsLocation
+    tags: tags
+    env: env
+  }
+}
+
 module functionApp '../../../iac/function-app/main.bicep' = {
   name: 'functionApp'
   params: {
@@ -77,6 +90,7 @@ module functionApp '../../../iac/function-app/main.bicep' = {
     allowedOrigins: allowedOrigins
     keyVaultName: keyVaultName
     env: env
+    applicationInsightsConnectionString: applicationInsights.outputs.connectionString
   }
 }
 

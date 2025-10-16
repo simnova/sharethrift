@@ -18,6 +18,7 @@ param allowedOrigins array
 @description('Key Vault Name')
 param keyVaultName string
 param env string
+param applicationInsightsConnectionString string
 
 // variables
 var uniqueId = uniqueString(resourceGroup().id)
@@ -72,6 +73,7 @@ module functionApp 'br/public:avm/res/web/site:0.19.3' = {
           SCM_DO_BUILD_DURING_DEPLOYMENT: 'false'
           WEBSITE_RUN_FROM_PACKAGE: '1'
           languageWorkers__node__arguments: '--max-old-space-size=${maxOldSpaceSizeMB}' // Set max memory size for V8 old memory section
+          APPLICATIONINSIGHTS_CONNECTION_STRING: applicationInsightsConnectionString
         }
       }
       {
