@@ -111,3 +111,4 @@ export const buildApplicationServicesFactory = (
 };
 
 export type { PersonalUserUpdateCommand } from './contexts/user/personal-user/update.ts';
+export type { AdminUserUpdateCommand } from './contexts/user/admin-user/update.ts';

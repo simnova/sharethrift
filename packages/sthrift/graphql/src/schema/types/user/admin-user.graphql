@@ -1,0 +1,68 @@
+type AdminUser implements MongoBase {
+	userType: String
+	adminLevel: String!
+	isBlocked: Boolean
+	account: AdminUserAccount
+	role: AdminRole
+	id: ObjectID!
+	schemaVersion: String
+	createdAt: DateTime
+	updatedAt: DateTime
+}
+
+# #Uncomment if admin list view is needed
+# type AdminUserPage {
+# 	items: [AdminUser!]!
+# 	total: Int!
+# 	page: Int!
+# 	pageSize: Int!
+# }
+
+type AdminUserAccount {
+	accountType: String
+	email: String
+	username: String
+	firstName: String
+	lastName: String
+}
+
+input AdminUserUpdateInput {
+	id: ObjectID!
+	isBlocked: Boolean
+	adminLevel: String
+	account: AdminUserAccountUpdateInput
+}
+
+input AdminUserAccountUpdateInput {
+	accountType: String
+	username: String
+	firstName: String
+	lastName: String
+}
+
+extend type Query {
+	# Admin User queries
+	adminUserById(id: ObjectID!): AdminUser
+	adminUserByEmail(email: String!): AdminUser
+	adminUserByUsername(username: String!): AdminUser
+	currentAdminUser: AdminUser
+
+	# # The following code can be used to list all admin users in the database
+	# allAdminUsers(
+	# 	page: Int!
+	# 	pageSize: Int!
+	# 	searchText: String
+	# 	adminLevelFilters: [String!]
+	# 	statusFilters: [String!]
+	# 	sorter: SorterInput
+	# ): AdminUserPage!
+}
+
+extend type Mutation {
+	# Admin User mutations
+	adminUserUpdate(input: AdminUserUpdateInput!): AdminUser!
+	
+	# # Uncomment when admin blocking is needed
+	# blockAdminUser(userId: ObjectID!): AdminUser!
+	# unblockAdminUser(userId: ObjectID!): AdminUser!
+}
