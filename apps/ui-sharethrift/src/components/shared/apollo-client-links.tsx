@@ -1,8 +1,8 @@
 import { ApolloLink, type DefaultContext, HttpLink } from '@apollo/client';
 import { BatchHttpLink } from '@apollo/client/link/batch-http';
 import { SetContextLink } from '@apollo/client/link/context';
-// import { PersistedQueryLink } from '@apollo/client/link/persisted-queries';
-// import { sha256 } from 'crypto-hash';
+import { PersistedQueryLink } from '@apollo/client/link/persisted-queries';
+import { sha256 } from 'crypto-hash';
 
 // base apollo link with no customizations
 // could be used as a base for the link chain
@@ -52,28 +52,25 @@ export const ApolloLinkToAddCustomHeader = (
 export const TerminatingApolloBatchLinkForGraphqlServer = (
 	config: BatchHttpLink.Options,
 ) => {
-	return new BatchHttpLink({
+	const link = new BatchHttpLink({
 		uri: config.uri,
 		batchMax: config.batchMax, // No more than 15 operations per batch
 		batchInterval: config.batchInterval, // Wait no more than 50ms after first batched operation
 	});
-	// Disabled APQ - server not configured for persisted queries
-	// If enabling persisted queries in the future, use:
-	// const persistedQueryLink = new PersistedQueryLink({ sha256 });
-	// return ApolloLink.from([persistedQueryLink, link]);
+
+	return ApolloLink.from([link]);
 };
 
 export const TerminatingApolloHttpLinkForGraphqlServer = (
 	config: BatchHttpLink.Options,
 ) => {
-	return new HttpLink({
+	const link = new HttpLink({
 		uri: config.uri,
 	});
-	// Disabled APQ - server not configured for persisted queries
-	// If enabling persisted queries in the future, use:
-	// const persistedQueryLink = new PersistedQueryLink({
-	// 	sha256,
-	// 	useGETForHashedQueries: true,
-	// });
-	// return ApolloLink.from([persistedQueryLink, link]);
+
+	const persistedQueryLink = new PersistedQueryLink({
+		sha256,
+		useGETForHashedQueries: true,
+	});
+	return ApolloLink.from([persistedQueryLink, link]);
 };
