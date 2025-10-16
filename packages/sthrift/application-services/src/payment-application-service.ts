@@ -9,6 +9,7 @@ export interface PaymentApplicationService {
 		userId: string;
 		planId: string;
 		cybersourceCustomerId: string;
+		startDate: Date;
 	}): Promise<SubscriptionResponse>;
 	generatePublicKey(): Promise<string>;
 }
@@ -278,12 +279,13 @@ export class DefaultPaymentApplicationService
 		userId: string;
 		cybersourceCustomerId: string;
 		planId: string;
+		startDate: Date;
 	}): Promise<SubscriptionResponse> {
 		const subscriptionInput: Subscription = {
 			subscriptionInformation: {
 				planId: request.planId,
 				name: request.planId,
-				startDate: new Date().toISOString(),
+				startDate: request.startDate.toISOString(),
 			},
 			paymentInformation: {
 				customer: {
