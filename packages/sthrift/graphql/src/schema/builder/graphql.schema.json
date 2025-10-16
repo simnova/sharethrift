@@ -825,6 +825,17 @@
       },
       {
         "kind": "SCALAR",
+        "name": "Cuid2",
+        "description": null,
+        "isOneOf": null,
+        "fields": null,
+        "inputFields": null,
+        "interfaces": null,
+        "enumValues": null,
+        "possibleTypes": null
+      },
+      {
+        "kind": "SCALAR",
         "name": "Currency",
         "description": null,
         "isOneOf": null,
