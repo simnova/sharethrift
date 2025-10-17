@@ -1,6 +1,5 @@
 import type { Meta, StoryObj } from '@storybook/react';
 import { MockedProvider } from '@apollo/client/testing';
-import { action } from '@storybook/addon-actions';
 import { ReservationCard } from '../components/reservation-card.tsx';
 import {
 	reservationStoryMocks,
@@ -23,9 +22,9 @@ const meta: Meta<typeof ReservationCard> = {
 	],
 	// Default event handlers
 	args: {
-		onCancel: action('Cancel clicked'),
-		onClose: action('Close clicked'),
-		onMessage: action('Message clicked'),
+		onCancel: (id: string) => console.log('Cancel clicked', id),
+		onClose: (id: string) => console.log('Close clicked', id),
+		onMessage: (id: string) => console.log('Message clicked', id),
 	},
 	argTypes: {
 		cancelLoading: {
@@ -42,33 +41,37 @@ const meta: Meta<typeof ReservationCard> = {
 export default meta;
 type Story = StoryObj<typeof meta>;
 
-// Single Template
-const Template: Story = (args) => <ReservationCard {...args} />;
-
-// Bind stories with minimal boilerplate
-export const Requested = Template.bind({});
-Requested.args = { reservation: storyReservationsActive[0] };
-
-export const Accepted = Template.bind({});
-Accepted.args = { reservation: storyReservationsActive[1] };
-
-export const Rejected = Template.bind({});
-Rejected.args = { reservation: storyReservationsPast[0] };
-
-export const Cancelled = Template.bind({});
-Cancelled.args = { reservation: storyReservationsPast[1] };
-
-export const Closed = Template.bind({});
-Closed.args = { reservation: storyReservationsPast[2] };
-
-export const WithoutActions = Template.bind({});
-WithoutActions.args = {
-	reservation: storyReservationsActive[0],
-	showActions: false,
+// Stories using modern Storybook syntax
+export const Requested: Story = {
+	args: { reservation: storyReservationsActive[0] },
 };
 
-export const LoadingStates = Template.bind({});
-LoadingStates.args = {
-	reservation: storyReservationsActive[0],
-	cancelLoading: true,
+export const Accepted: Story = {
+	args: { reservation: storyReservationsActive[1] },
+};
+
+export const Rejected: Story = {
+	args: { reservation: storyReservationsPast[0] },
+};
+
+export const Cancelled: Story = {
+	args: { reservation: storyReservationsPast[1] },
+};
+
+export const Closed: Story = {
+	args: { reservation: storyReservationsPast[2] },
+};
+
+export const WithoutActions: Story = {
+	args: {
+		reservation: storyReservationsActive[0],
+		showActions: false,
+	},
+};
+
+export const LoadingStates: Story = {
+	args: {
+		reservation: storyReservationsActive[0],
+		cancelLoading: true,
+	},
 };
