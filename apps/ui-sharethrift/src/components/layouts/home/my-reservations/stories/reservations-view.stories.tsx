@@ -24,7 +24,11 @@ const meta: Meta<typeof ReservationsView> = {
 	tags: ['autodocs'],
 	// Global decorator for MockedProvider
 	decorators: [
-		(Story) => <MockedProvider mocks={reservationStoryMocks}><Story/></MockedProvider>,
+		(Story) => (
+			<MockedProvider mocks={reservationStoryMocks}>
+				<Story />
+			</MockedProvider>
+		),
 	],
 	// Default event handlers
 	args: {

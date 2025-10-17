@@ -8,9 +8,9 @@ import {
 import type { FindOneOptions, FindOptions } from '../../mongo-data-source.ts';
 import { ReservationRequestConverter } from '../../../domain/reservation-request/reservation-request/reservation-request.domain-adapter.ts';
 import { MongooseSeedwork } from '@cellix/mongoose-seedwork';
-import { 
-	getActiveReservationStateFilter, 
-	getInactiveReservationStateFilter 
+import {
+	getActiveReservationStateFilter,
+	getInactiveReservationStateFilter,
 } from './reservation-state-filters.ts';
 
 export interface ReservationRequestReadRepository {
@@ -158,20 +158,20 @@ export class ReservationRequestReadRepositoryImpl
 		// First, get all listing IDs owned by this sharer
 		const sharerListings = await this.models.Listing.ItemListingModel.find(
 			{ sharer: new Types.ObjectId(sharerId) },
-			{ _id: 1 }
+			{ _id: 1 },
 		).lean();
-		
-		const listingIds = sharerListings.map(listing => listing._id);
-		
+
+		const listingIds = sharerListings.map((listing) => listing._id);
+
 		if (listingIds.length === 0) {
 			return [];
 		}
-		
+
 		// Then find reservation requests for those listings
 		const filter = {
-			listing: { $in: listingIds }
+			listing: { $in: listingIds },
 		};
-		
+
 		const result = await this.mongoDataSource.find(filter, options);
 		return result.map((doc) => this.converter.toDomain(doc, this.passport));
 	}

@@ -22,7 +22,11 @@ const meta: Meta<typeof ReservationsGrid> = {
 	tags: ['autodocs'],
 	// Global decorator for MockedProvider
 	decorators: [
-		(Story) => <MockedProvider mocks={reservationStoryMocks}><Story/></MockedProvider>,
+		(Story) => (
+			<MockedProvider mocks={reservationStoryMocks}>
+				<Story />
+			</MockedProvider>
+		),
 	],
 	args: defaultHandlers, // apply to all stories by default
 	argTypes: {

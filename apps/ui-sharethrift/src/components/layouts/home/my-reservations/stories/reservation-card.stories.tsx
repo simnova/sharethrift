@@ -15,7 +15,11 @@ const meta: Meta<typeof ReservationCard> = {
 	tags: ['autodocs'],
 	// Global decorator for MockedProvider
 	decorators: [
-		(Story) => <MockedProvider mocks={reservationStoryMocks}><Story/></MockedProvider>,
+		(Story) => (
+			<MockedProvider mocks={reservationStoryMocks}>
+				<Story />
+			</MockedProvider>
+		),
 	],
 	// Default event handlers
 	args: {
@@ -58,7 +62,13 @@ export const Closed = Template.bind({});
 Closed.args = { reservation: storyReservationsPast[2] };
 
 export const WithoutActions = Template.bind({});
-WithoutActions.args = { reservation: storyReservationsActive[0], showActions: false };
+WithoutActions.args = {
+	reservation: storyReservationsActive[0],
+	showActions: false,
+};
 
 export const LoadingStates = Template.bind({});
-LoadingStates.args = { reservation: storyReservationsActive[0], cancelLoading: true };
+LoadingStates.args = {
+	reservation: storyReservationsActive[0],
+	cancelLoading: true,
+};
