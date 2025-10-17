@@ -1,29 +1,12 @@
 import type { Meta, StoryObj } from "@storybook/react";
-import { ApolloClient, InMemoryCache } from "@apollo/client";
-import { ApolloProvider } from "@apollo/client/react";
-import { MockLink } from "@apollo/client/testing";
 import { SettingsViewContainer } from "../components/settings-view.container.tsx";
 import { HomeAccountSettingsViewContainerCurrentUserDocument } from "../../../../../../generated.tsx";
+import { withMockApolloClient, withMockRouter } from "../../../../../../test-utils/storybook-decorators.tsx";
 
 const meta: Meta<typeof SettingsViewContainer> = {
   title: "Components/Account/SettingsContainer",
   component: SettingsViewContainer,
-  decorators: [
-    (Story, context) => {
-      const mocks = context.parameters['apolloClient']?.mocks || [];
-      const mockLink = new MockLink(mocks);
-      const client = new ApolloClient({
-        link: mockLink,
-        cache: new InMemoryCache(),
-      });
-      
-      return (
-        <ApolloProvider client={client}>
-          <Story />
-        </ApolloProvider>
-      );
-    },
-  ],
+  decorators: [withMockApolloClient, withMockRouter("/account/settings")],
   parameters: {
     apolloClient: {
       mocks: [
