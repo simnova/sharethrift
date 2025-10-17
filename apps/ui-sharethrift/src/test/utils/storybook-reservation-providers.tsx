@@ -46,10 +46,10 @@ export const withReservationMocks = (Story: React.ComponentType) => (
  * Higher-order decorator that allows merging additional mocks
  * Use this when you need to add story-specific mocks to the default ones
  */
-export const withReservationMocksAndCustom = (
-	customMocks: MockedResponse[] = [],
-) => (Story: React.ComponentType) => (
-	<MockedProvider mocks={[...reservationStoryMocks, ...customMocks]}>
-		<Story />
-	</MockedProvider>
-);
+export const withReservationMocksAndCustom =
+	(customMocks: MockedResponse[] = []) =>
+	(Story: React.ComponentType) => (
+		<MockedProvider mocks={[...reservationStoryMocks, ...customMocks]}>
+			<Story />
+		</MockedProvider>
+	);

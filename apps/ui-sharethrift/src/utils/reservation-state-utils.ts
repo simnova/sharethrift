@@ -11,7 +11,11 @@ export const ACTIVE_RESERVATION_STATES = ['Accepted', 'Requested'] as const;
 /**
  * Reservation states that are considered "inactive" (completed/cancelled reservations)
  */
-export const INACTIVE_RESERVATION_STATES = ['Cancelled', 'Closed', 'Rejected'] as const;
+export const INACTIVE_RESERVATION_STATES = [
+	'Cancelled',
+	'Closed',
+	'Rejected',
+] as const;
 
 /**
  * All possible reservation states
@@ -24,9 +28,10 @@ export const ALL_RESERVATION_STATES = [
 /**
  * Type definitions for reservation states
  */
-export type ActiveReservationState = typeof ACTIVE_RESERVATION_STATES[number];
-export type InactiveReservationState = typeof INACTIVE_RESERVATION_STATES[number];
-export type ReservationState = typeof ALL_RESERVATION_STATES[number];
+export type ActiveReservationState = (typeof ACTIVE_RESERVATION_STATES)[number];
+export type InactiveReservationState =
+	(typeof INACTIVE_RESERVATION_STATES)[number];
+export type ReservationState = (typeof ALL_RESERVATION_STATES)[number];
 
 /**
  * Check if a reservation state is considered active
@@ -43,7 +48,9 @@ export function isActiveReservationState(state: string): boolean {
  * @returns true if the state is inactive, false otherwise
  */
 export function isInactiveReservationState(state: string): boolean {
-	return INACTIVE_RESERVATION_STATES.includes(state as InactiveReservationState);
+	return INACTIVE_RESERVATION_STATES.includes(
+		state as InactiveReservationState,
+	);
 }
 
 /**
