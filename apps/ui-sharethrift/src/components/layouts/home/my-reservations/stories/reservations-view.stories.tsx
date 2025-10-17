@@ -1,6 +1,5 @@
 import type { Meta, StoryObj } from '@storybook/react';
 import { MockedProvider } from '@apollo/client/testing';
-import { action } from '@storybook/addon-actions';
 import { ReservationsView } from '../components/reservations-view.tsx';
 import {
 	reservationStoryMocks,
@@ -32,9 +31,9 @@ const meta: Meta<typeof ReservationsView> = {
 	],
 	// Default event handlers
 	args: {
-		onCancel: action('Cancel clicked'),
-		onClose: action('Close clicked'),
-		onMessage: action('Message clicked'),
+		onCancel: (id: string) => console.log('Cancel clicked', id),
+		onClose: (id: string) => console.log('Close clicked', id),
+		onMessage: (id: string) => console.log('Message clicked', id),
 	},
 	argTypes: {
 		cancelLoading: {

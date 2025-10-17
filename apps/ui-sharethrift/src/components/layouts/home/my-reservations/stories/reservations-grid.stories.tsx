@@ -1,6 +1,5 @@
 import type { Meta, StoryObj } from '@storybook/react';
 import { MockedProvider } from '@apollo/client/testing';
-import { action } from '@storybook/addon-actions';
 import { ReservationsGrid } from '../components/reservations-grid.tsx';
 import {
 	reservationStoryMocks,
@@ -10,9 +9,9 @@ import {
 } from './reservation-story-mocks.ts';
 
 const defaultHandlers = {
-	onCancel: action('Cancel clicked'),
-	onClose: action('Close clicked'),
-	onMessage: action('Message clicked'),
+	onCancel: (id: string) => console.log('Cancel clicked', id),
+	onClose: (id: string) => console.log('Close clicked', id),
+	onMessage: (id: string) => console.log('Message clicked', id),
 };
 
 const meta: Meta<typeof ReservationsGrid> = {
