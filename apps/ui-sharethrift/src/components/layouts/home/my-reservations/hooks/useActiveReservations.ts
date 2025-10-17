@@ -20,5 +20,3 @@ export function useActiveReservations(userId?: string) {
 
     return { reservations, loading, error };
 }
-
-
