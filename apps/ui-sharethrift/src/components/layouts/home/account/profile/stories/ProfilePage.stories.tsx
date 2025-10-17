@@ -1,74 +1,23 @@
 import type { Meta, StoryFn } from "@storybook/react";
 import { action } from "storybook/actions";
-import { MemoryRouter, Route, Routes } from "react-router-dom";
-import { AuthContext } from "react-oidc-context";
-import { type ReactNode, useMemo } from "react";
-import { ApolloClient, InMemoryCache } from "@apollo/client";
-import { ApolloProvider } from "@apollo/client/react";
-import { MockLink } from "@apollo/client/testing";
 import HomeRoutes from "../../../index.tsx";
 import { ProfileView } from "../pages/profile-view.tsx";
 import type { UserProfileData, UserListing } from "../components/profile-view.types.ts";
+import { withMockApolloClient, withMockRouter } from "../../../../../../test-utils/storybook-decorators.tsx";
 
 export default {
-  title: "Pages/Account/Profile",
-  component: HomeRoutes,
-  decorators: [
-    (Story, context) => {
-      const mocks = context.parameters['apolloClient']?.mocks || [];
-      const mockLink = new MockLink(mocks, { showWarnings: false });
-      const client = new ApolloClient({
-        link: mockLink,
-        cache: new InMemoryCache(),
-      });
-      
-      return (
-        <ApolloProvider client={client}>
-          <MockAuthWrapper>
-            <MemoryRouter initialEntries={["/account/profile"]}>
-              <Routes>
-                <Route path="*" element={<Story />} />
-              </Routes>
-            </MemoryRouter>
-          </MockAuthWrapper>
-        </ApolloProvider>
-      );
-    },
-  ],
-  parameters: {
-    layout: "fullscreen",
-    // Note: Using /account/profile route highlights 'Account' menu item in navigation
-    // However, the submenu is not initially expanded due to how the navigation state is currently managed
-  },
+	title: "Pages/Account/Profile",
+	component: HomeRoutes,
+	decorators: [
+		withMockApolloClient,
+		withMockRouter("/account/profile"),
+	],
+	parameters: {
+		layout: "fullscreen",
+		// Note: Using /account/profile route highlights 'Account' menu item in navigation
+		// However, the submenu is not initially expanded due to how the navigation state is currently managed
+	},
 } as Meta<typeof HomeRoutes>;
-
-// Mock authenticated user to bypass auth check in HomeRoutes
-const MockAuthWrapper = ({ children }: { children: ReactNode }) => {
-  const mockAuth: any = useMemo(
-    () => ({
-      isAuthenticated: true,
-      isLoading: false,
-      user: {
-        profile: {
-          sub: "507f1f77bcf86cd799439099",
-          name: "Test User",
-          email: "test@example.com",
-        },
-        access_token: "mock-access-token",
-      },
-      signinRedirect: async () => {},
-      signoutRedirect: async () => {},
-      removeUser: async () => {},
-      events: {},
-      settings: {},
-    }),
-    []
-  );
-
-  return (
-    <AuthContext.Provider value={mockAuth}>{children}</AuthContext.Provider>
-  );
-};
 
 const Template: StoryFn<typeof HomeRoutes> = () => <HomeRoutes />;
 

@@ -1,88 +1,23 @@
 import type { Meta, StoryFn } from "@storybook/react";
-import { MemoryRouter, Route, Routes } from "react-router-dom";
-import { AuthContext } from "react-oidc-context";
-import { type ReactNode, useMemo } from "react";
-import { ApolloClient, InMemoryCache } from "@apollo/client";
-import { ApolloProvider } from "@apollo/client/react";
-import { MockLink } from "@apollo/client/testing";
 import HomeRoutes from "../../index.tsx";
 import {
-  HomeConversationListContainerConversationsByUserDocument,
-  ConversationBoxContainerConversationDocument,
+	HomeConversationListContainerConversationsByUserDocument,
+	ConversationBoxContainerConversationDocument,
 } from "../../../../../generated.tsx";
+import { withMockApolloClient, withMockRouter } from "../../../../../test-utils/storybook-decorators.tsx";
 
 export default {
-  title: "Pages/Messages",
-  component: HomeRoutes,
-  decorators: [
-    (Story, context) => {
-      const mocks = context.parameters['apolloClient']?.mocks || [];
-      const mockLink = new MockLink(mocks);
-      const client = new ApolloClient({
-        link: mockLink,
-        cache: new InMemoryCache(),
-      });
-      
-      return (
-        <ApolloProvider client={client}>
-          <MockAuthWrapper>
-            <MemoryRouter initialEntries={["/messages"]}>
-              <Routes>
-                <Route path="*" element={<Story />} />
-              </Routes>
-            </MemoryRouter>
-          </MockAuthWrapper>
-        </ApolloProvider>
-      );
-    },
-  ],
+	title: "Pages/Messages",
+	component: HomeRoutes,
+	decorators: [
+		withMockApolloClient,
+		withMockRouter("/messages"),
+	],
 } as Meta<typeof HomeRoutes>;
 
 const Template: StoryFn<typeof HomeRoutes> = () => <HomeRoutes />;
 
 export const DefaultView = Template.bind({});
-
-// Mock authenticated user to bypass auth check in HomeRoutes
-// NOTE: We cannot use AuthProvider directly because it requires a real OIDC server.
-// AuthProvider from react-oidc-context attempts to connect to the authority URL,
-// perform OAuth2/OIDC flows, and validate tokens. Since we're using a fake authority
-// (https://mock-authority.com), the authentication fails and useAuth() returns
-// isAuthenticated: false, causing Navigation to not render. Instead, we use
-// AuthContext.Provider directly with a mocked auth object that has isAuthenticated: true.
-
-const MockAuthWrapper = ({ children }: { children: ReactNode }) => {
-  // Create a mocked auth context that simulates an authenticated user
-  // We cast as 'any' to avoid TypeScript errors with the full AuthContextProps interface
-  // HOW THIS EXPOSES useAuth():
-  // When any child component calls useAuth(), it uses React's useContext(AuthContext) internally.
-  // By wrapping with <AuthContext.Provider value={mockAuth}>, we're providing the mock data to
-  // that context. So when HomeRoutes calls useAuth(), it receives our mockAuth object with
-  // isAuthenticated: true instead of the default false from a failed AuthProvider.
-  const mockAuth: any = useMemo(
-    () => ({
-      isAuthenticated: true,
-      isLoading: false,
-      user: {
-        profile: {
-          sub: "507f1f77bcf86cd799439099",
-          name: "Test User",
-          email: "test@example.com",
-        },
-        access_token: "mock-access-token",
-      },
-      signinRedirect: async () => {},
-      signoutRedirect: async () => {},
-      removeUser: async () => {},
-      events: {},
-      settings: {},
-    }),
-    []
-  );
-
-  return (
-    <AuthContext.Provider value={mockAuth}>{children}</AuthContext.Provider>
-  );
-};
 
 DefaultView.parameters = {
   apolloClient: {

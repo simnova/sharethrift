@@ -58,7 +58,11 @@ export const TerminatingApolloBatchLinkForGraphqlServer = (
 		batchInterval: config.batchInterval, // Wait no more than 50ms after first batched operation
 	});
 
-	return ApolloLink.from([link]);
+    const persistedQueryLink = new PersistedQueryLink({
+		sha256,
+	}).concat(link);
+
+	return ApolloLink.from([persistedQueryLink]);
 };
 
 export const TerminatingApolloHttpLinkForGraphqlServer = (

@@ -5,9 +5,7 @@ import {
 	ViewListingImageGalleryGetImagesDocument,
 	ViewListingInformationGetListingDocument,
 } from '../../../../../generated.tsx';
-import { ApolloClient, InMemoryCache } from '@apollo/client';
-import { ApolloProvider } from '@apollo/client/react';
-import { MockLink } from '@apollo/client/testing';
+import { withMockApolloClient, withMockRouter } from '../../../../../test-utils/storybook-decorators.tsx';
 
 // Local mock listing data (removed dependency on DUMMY_LISTINGS)
 const baseListingId = 'mock-listing-id-1';
@@ -84,45 +82,13 @@ const meta: Meta<typeof ViewListing> = {
 	component: ViewListing,
 	parameters: {
 		layout: 'fullscreen',
+		apolloClient: {
+			mocks,
+		},
 	},
 	decorators: [
-		(Story) => {
-			const mockLink = new MockLink(mocks);
-			const client = new ApolloClient({
-				link: mockLink,
-				cache: new InMemoryCache(),
-			});
-			
-			// Add a console log to debug the variables passed to the query
-			if (typeof window !== 'undefined') {
-				const origFetch = window.fetch;
-				window.fetch = function (...args) {
-					if (
-						args[0] &&
-						typeof args[0] === 'string' &&
-						args[0].includes('/graphql')
-					) {
-						try {
-							const maybeBody = args[1]?.body;
-							if (typeof maybeBody === 'string') {
-								const body = JSON.parse(maybeBody);
-								if (body?.variables) {
-									console.log('[Storybook GraphQL Variables]', body.variables);
-								}
-							}
-						} catch (_error) {
-							// Ignore parsing errors for non-GraphQL requests
-						}
-					}
-					return origFetch.apply(this, args);
-				};
-			}
-			return (
-				<ApolloProvider client={client}>
-					<Story />
-				</ApolloProvider>
-			);
-		},
+		withMockApolloClient,
+		withMockRouter('/listing/mock-listing-id-1'),
 	],
 };
 export default meta;
@@ -136,6 +102,7 @@ export const Default: Story = {
 		listing: baseListing,
 		userIsSharer: false,
 		isAuthenticated: false,
+		userReservationRequest: null,
 		sharedTimeAgo: '2 days ago',
 	},
 };
@@ -145,6 +112,7 @@ export const AsReserver: Story = {
 		...Default.args,
 		userIsSharer: false,
 		isAuthenticated: true,
+		userReservationRequest: null,
 	},
 };
 
@@ -153,5 +121,6 @@ export const AsOwner: Story = {
 		...Default.args,
 		userIsSharer: true,
 		isAuthenticated: true,
+		userReservationRequest: null,
 	},
 };

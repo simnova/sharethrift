@@ -1,70 +1,20 @@
 import type { Meta, StoryFn } from "@storybook/react";
-import { MemoryRouter, Route, Routes } from "react-router-dom";
-import { AuthContext } from "react-oidc-context";
-import { type ReactNode, useMemo } from "react";
-import { ApolloClient, InMemoryCache } from "@apollo/client";
-import { ApolloProvider } from "@apollo/client/react";
-import { MockLink } from "@apollo/client/testing";
 import HomeRoutes from "../index.tsx";
 import { ListingsPageContainerGetListingsDocument } from "../../../../generated.tsx";
+import { withMockApolloClient, withMockRouter } from "../../../../test-utils/storybook-decorators.tsx";
 
 export default {
-  title: "Pages/Home",
-  component: HomeRoutes,
-  decorators: [
-    (Story, context) => {
-      const mocks = context.parameters['apolloClient']?.mocks || [];
-      const mockLink = new MockLink(mocks);
-      const client = new ApolloClient({
-        link: mockLink,
-        cache: new InMemoryCache(),
-      });
-      
-      return (
-        <ApolloProvider client={client}>
-          <MockAuthWrapper>
-            <MemoryRouter initialEntries={["/home"]}>
-              <Routes>
-                <Route path="*" element={<Story />} />
-              </Routes>
-            </MemoryRouter>
-          </MockAuthWrapper>
-        </ApolloProvider>
-      );
-    },
-  ],
+	title: "Pages/Home",
+	component: HomeRoutes,
+	decorators: [
+		withMockApolloClient,
+		withMockRouter("/home"),
+	],
 } as Meta<typeof HomeRoutes>;
 
 const Template: StoryFn<typeof HomeRoutes> = () => <HomeRoutes />;
 
 export const DefaultView = Template.bind({});
-
-const MockAuthWrapper = ({ children }: { children: ReactNode }) => {
-  const mockAuth: any = useMemo(
-    () => ({
-      isAuthenticated: true,
-      isLoading: false,
-      user: {
-        profile: {
-          sub: "507f1f77bcf86cd799439099",
-          name: "Test User",
-          email: "test@example.com",
-        },
-        access_token: "mock-access-token",
-      },
-      signinRedirect: async () => {},
-      signoutRedirect: async () => {},
-      removeUser: async () => {},
-      events: {},
-      settings: {},
-    }),
-    []
-  );
-
-  return (
-    <AuthContext.Provider value={mockAuth}>{children}</AuthContext.Provider>
-  );
-};
 
 DefaultView.parameters = {
   apolloClient: {
