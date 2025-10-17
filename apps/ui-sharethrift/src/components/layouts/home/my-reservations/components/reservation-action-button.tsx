@@ -9,7 +9,7 @@ export interface ReservationActionButtonProps {
 
 export const ReservationActionButton: React.FC<
 	ReservationActionButtonProps
-> = ({ action, onClick = () => {}, loading = false }) => {
+> = ({ action, onClick = () => { console.log('onClick'); }, loading = false }) => {
 	return (
 		<Button onClick={onClick} loading={loading} size="small" type="link">
 			{action}
