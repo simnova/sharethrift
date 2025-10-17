@@ -1,5 +1,5 @@
 import type { DomainSeedwork } from '@cellix/domain-seedwork';
-import type { AccountPlan } from './account-plan';
+import type { AccountPlan } from './account-plan.ts';
 import type { AccountPlanProps } from './account-plan.entity.ts';
 
 export interface AccountPlanRepository<props extends AccountPlanProps>
@@ -21,4 +21,5 @@ export interface AccountPlanRepository<props extends AccountPlanProps>
 		};
 	}): Promise<AccountPlan<props>>;
 	getById(id: string): Promise<AccountPlan<props> | undefined>;
+	getAll(): Promise<AccountPlan<props>[]>;
 }
