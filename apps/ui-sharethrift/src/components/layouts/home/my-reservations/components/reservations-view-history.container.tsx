@@ -6,21 +6,21 @@ import { usePastReservations } from '../hooks/usePastReservations.ts';
 export type ReservationsViewHistoryContainerProps = Record<string, never>;
 
 export const ReservationsViewHistoryContainer: React.FC<
-    ReservationsViewHistoryContainerProps
+	ReservationsViewHistoryContainerProps
 > = () => {
-    const { userId, loading: ul, error: ue } = useCurrentUserId();
-    const { reservations, loading: rl, error: re } = usePastReservations(userId);
-    const loading = ul || rl;
-    const error = ue || re;
+	const { userId, loading: userLoading, error: userError } = useCurrentUserId();
+	const { reservations, loading: reservationsLoading, error: reservationsError } = usePastReservations(userId);
+	const loading = userLoading || reservationsLoading;
+	const error = userError || reservationsError;
 
 	return (
 		<ComponentQueryLoader
 			loading={loading}
 			error={error}
-            hasData={reservations.length > 0}
+			hasData={reservations}
 			hasDataComponent={
 				<ReservationsView
-                    reservations={reservations}
+					reservations={reservations}
 					showActions={false}
 					emptyText="No past reservations"
 				/>

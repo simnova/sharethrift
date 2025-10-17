@@ -9,14 +9,17 @@ export type ReservationsViewActiveContainerProps = Record<string, never>;
 export const ReservationsViewActiveContainer: React.FC<
 	ReservationsViewActiveContainerProps
 > = () => {
-	const userId = useCurrentUserId();
+	const { userId, loading: userLoading, error: userError } = useCurrentUserId();
 	const {
 		reservations: activeReservations,
-		loading,
-		error,
+		loading: reservationsLoading,
+		error: reservationsError,
 	} = useActiveReservations(userId);
 	const { handleCancel, cancelLoading, handleClose, closeLoading } =
 		useReservationMutations();
+
+	const loading = userLoading || reservationsLoading;
+	const error = userError || reservationsError;
 
 	const handleMessage = (reservationId: string) => {
 		console.log('Message for reservation', reservationId);
@@ -26,7 +29,7 @@ export const ReservationsViewActiveContainer: React.FC<
 		<ComponentQueryLoader
 			loading={loading}
 			error={error}
-			hasData={activeReservations.length > 0}
+			hasData={activeReservations}
 			hasDataComponent={
 				<ReservationsView
 					reservations={activeReservations}
