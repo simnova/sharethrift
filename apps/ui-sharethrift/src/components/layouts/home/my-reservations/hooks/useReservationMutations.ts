@@ -4,6 +4,8 @@ import {
     HomeMyReservationsReservationsViewActiveContainerCloseReservationDocument,
 } from '../../../../../generated.tsx';
 
+const RESERVATION_REQUEST_TYPENAME = 'ReservationRequest';
+
 export function useReservationMutations() {
     const [cancel, { loading: cancelLoading }] = useMutation(
         HomeMyReservationsReservationsViewActiveContainerCancelReservationDocument,
@@ -11,7 +13,7 @@ export function useReservationMutations() {
             update(cache, { data }) {
                 const id = data?.cancelReservation?.id;
                 if (id) {
-                    const cacheId = cache.identify({ __typename: 'ReservationRequest', id });
+                    const cacheId = cache.identify({ __typename: RESERVATION_REQUEST_TYPENAME, id });
                     if (cacheId) {
                         cache.evict({ id: cacheId });
                         cache.gc();
@@ -27,7 +29,7 @@ export function useReservationMutations() {
             update(cache, { data }) {
                 const id = data?.closeReservation?.id;
                 if (id) {
-                    const cacheId = cache.identify({ __typename: 'ReservationRequest', id });
+                    const cacheId = cache.identify({ __typename: RESERVATION_REQUEST_TYPENAME, id });
                     if (cacheId) {
                         cache.evict({ id: cacheId });
                         cache.gc();

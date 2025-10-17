@@ -68,9 +68,15 @@ export interface ReservationRequestReadRepository {
 	>;
 }
 
-// Removed inline mock data generation in favor of database-seeded test data using the mock-mongodb-memory-server package.
-// This change improves test reliability and maintains separation of concerns between data setup and repository logic.
-
+/**
+ * ReservationRequestReadRepositoryImpl
+ *
+ * Architectural note:
+ * Inline mock data generation was removed in favor of database-seeded test data using the
+ * mock-mongodb-memory-server package.
+ * This change improves test reliability and maintains separation of concerns between data
+ * setup and repository logic.
+ */
 export class ReservationRequestReadRepositoryImpl
 	extends BaseReadRepository<
 		Domain.Contexts.ReservationRequest.ReservationRequest.ReservationRequestDocument,
