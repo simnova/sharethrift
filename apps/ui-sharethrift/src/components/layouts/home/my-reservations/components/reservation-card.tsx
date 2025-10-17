@@ -33,8 +33,8 @@ export const ReservationCard: React.FC<ReservationCardProps> = ({
 		sharerDisplay = `@${reservation.reserver.account.username}`;
 	}
 
-	return (
-		<Card className="mb-4" styles={{ body: { padding: 0 } }}>
+    return (
+        <Card className="mb-4" bodyStyle={{ padding: 0 }}>
 			{/* biome-ignore lint/complexity/useLiteralKeys: generated CSS module typing uses index signature */}
 			<div className={styles['cardRow']}>
 				<div className={styles['reservationImageWrapper']}>

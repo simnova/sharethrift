@@ -11,6 +11,8 @@ export function mapReservationState(
 			return 'ACCEPTED';
 		case 'Requested':
 			return 'REQUESTED';
+        case 'Rejected':
+            return 'REJECTED';
 		case 'Closed':
 			return 'CLOSED';
 		case 'Cancelled':
