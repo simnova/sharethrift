@@ -9,8 +9,8 @@ import type { FindOneOptions, FindOptions } from '../../mongo-data-source.ts';
 import { ReservationRequestConverter } from '../../../domain/reservation-request/reservation-request/reservation-request.domain-adapter.ts';
 import { MongooseSeedwork } from '@cellix/mongoose-seedwork';
 import {
-	getActiveReservationStateFilter,
-	getInactiveReservationStateFilter,
+	filterByStates,
+	RESERVATION_STATES,
 } from './reservation-state-filters.ts';
 
 export interface ReservationRequestReadRepository {
@@ -88,6 +88,32 @@ export class ReservationRequestReadRepositoryImpl
 		this.passport = passport;
 	}
 
+	/**
+	 * Helper method for querying multiple documents
+	 */
+	private async queryMany(
+		filter: Record<string, any>,
+		options?: FindOptions,
+	): Promise<
+		Domain.Contexts.ReservationRequest.ReservationRequest.ReservationRequestEntityReference[]
+	> {
+		const docs = await this.mongoDataSource.find(filter, options);
+		return docs.map((doc) => this.converter.toDomain(doc, this.passport));
+	}
+
+	/**
+	 * Helper method for querying a single document
+	 */
+	private async queryOne(
+		filter: Record<string, any>,
+		options?: FindOneOptions,
+	): Promise<
+		Domain.Contexts.ReservationRequest.ReservationRequest.ReservationRequestEntityReference | null
+	> {
+		const doc = await this.mongoDataSource.findOne(filter, options);
+		return doc ? this.converter.toDomain(doc, this.passport) : null;
+	}
+
 	async getAll(
 		options?: FindOptions,
 	): Promise<
@@ -129,10 +155,9 @@ export class ReservationRequestReadRepositoryImpl
 	> {
 		const filter = {
 			reserver: new Types.ObjectId(reserverId),
-			...getActiveReservationStateFilter(),
+			...filterByStates(RESERVATION_STATES.ACTIVE),
 		};
-		const result = await this.mongoDataSource.find(filter, options);
-		return result.map((doc) => this.converter.toDomain(doc, this.passport));
+		return this.queryMany(filter, options);
 	}
 
 	async getPastByReserverIdWithListingWithSharer(
@@ -143,10 +168,9 @@ export class ReservationRequestReadRepositoryImpl
 	> {
 		const filter = {
 			reserver: new Types.ObjectId(reserverId),
-			...getInactiveReservationStateFilter(),
+			...filterByStates(RESERVATION_STATES.INACTIVE),
 		};
-		const result = await this.mongoDataSource.find(filter, options);
-		return result.map((doc) => this.converter.toDomain(doc, this.passport));
+		return this.queryMany(filter, options);
 	}
 
 	async getListingRequestsBySharerId(
@@ -184,13 +208,9 @@ export class ReservationRequestReadRepositoryImpl
 		const filter = {
 			reserver: new MongooseSeedwork.ObjectId(reserverId),
 			listing: new MongooseSeedwork.ObjectId(listingId),
-			...getActiveReservationStateFilter(),
+			...filterByStates(RESERVATION_STATES.ACTIVE),
 		};
-		const result = await this.mongoDataSource.findOne(filter, options);
-		if (!result) {
-			return null;
-		}
-		return this.converter.toDomain(result, this.passport);
+		return this.queryOne(filter, options);
 	}
 
 	async getOverlapActiveReservationRequestsForListing(
@@ -203,12 +223,11 @@ export class ReservationRequestReadRepositoryImpl
 	> {
 		const filter = {
 			listing: new MongooseSeedwork.ObjectId(listingId),
-			...getActiveReservationStateFilter(),
+			...filterByStates(RESERVATION_STATES.ACTIVE),
 			reservationPeriodStart: { $lt: reservationPeriodEnd },
 			reservationPeriodEnd: { $gt: reservationPeriodStart },
 		};
-		const result = await this.mongoDataSource.find(filter, options);
-		return result.map((doc) => this.converter.toDomain(doc, this.passport));
+		return this.queryMany(filter, options);
 	}
 
 	async getActiveByListingId(
@@ -219,10 +238,9 @@ export class ReservationRequestReadRepositoryImpl
 	> {
 		const filter = {
 			listing: new MongooseSeedwork.ObjectId(listingId),
-			...getActiveReservationStateFilter(),
+			...filterByStates(RESERVATION_STATES.ACTIVE),
 		};
-		const result = await this.mongoDataSource.find(filter, options);
-		return result.map((doc) => this.converter.toDomain(doc, this.passport));
+		return this.queryMany(filter, options);
 	}
 }
 

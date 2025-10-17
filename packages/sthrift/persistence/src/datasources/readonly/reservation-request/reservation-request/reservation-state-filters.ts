@@ -9,22 +9,8 @@ export const RESERVATION_STATES = {
 } as const;
 
 /**
- * Returns a MongoDB filter for active reservation states (Accepted, Requested)
+ * Build a Mongo filter for any list of states.
  */
-export const getActiveReservationStateFilter = () => ({
-	state: { $in: RESERVATION_STATES.ACTIVE },
-});
-
-/**
- * Returns a MongoDB filter for inactive reservation states (Cancelled, Closed, Rejected)
- */
-export const getInactiveReservationStateFilter = () => ({
-	state: { $in: RESERVATION_STATES.INACTIVE },
-});
-
-/**
- * Returns a MongoDB filter for a specific reservation state
- */
-export const getSpecificReservationStateFilter = (state: string) => ({
-	state,
+export const filterByStates = (states: readonly string[]) => ({
+	state: { $in: states },
 });
