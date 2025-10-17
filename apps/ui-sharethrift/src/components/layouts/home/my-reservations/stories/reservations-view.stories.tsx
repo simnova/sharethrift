@@ -7,9 +7,8 @@ import {
 } from './reservation-story-mocks.ts';
 import {
 	defaultReservationActions,
-	defaultReservationArgTypes,
 	withReservationMocks,
-} from '../../../../test/utils/storybook-reservation-providers.tsx';
+} from '../../../../../test/utils/storybook-reservation-providers.tsx';
 
 const meta: Meta<typeof ReservationsView> = {
 	title: 'Organisms/ReservationsView',
@@ -28,7 +27,6 @@ const meta: Meta<typeof ReservationsView> = {
 	decorators: [withReservationMocks],
 	// Default event handlers
 	args: defaultReservationActions,
-	argTypes: defaultReservationArgTypes,
 };
 
 export default meta;
