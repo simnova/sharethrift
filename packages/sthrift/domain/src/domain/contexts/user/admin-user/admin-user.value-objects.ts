@@ -7,16 +7,6 @@ import { Email as EmailBase } from '../../value-objects.ts';
  */
 
 /**
- * Admin level enumeration
- */
-export const AdminLevel = {
-	ADMIN: 'Admin',
-	SITE_MAINTAINER: 'SiteMaintainer',
-} as const;
-
-export type AdminLevel = (typeof AdminLevel)[keyof typeof AdminLevel];
-
-/**
  * Email value object with validation
  */
 export class Email extends VOOptional(EmailBase, [undefined]) {}

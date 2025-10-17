@@ -9,7 +9,6 @@ export interface AdminUserRepository<props extends AdminUserProps>
 		username: string,
 		firstName: string,
 		lastName: string,
-		adminLevel: string,
 	): Promise<AdminUser<props>>;
 	getById(id: string): Promise<AdminUser<props>>;
 }

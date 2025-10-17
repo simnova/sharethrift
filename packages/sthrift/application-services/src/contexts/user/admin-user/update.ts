@@ -4,7 +4,6 @@ import type { Domain } from '@sthrift/domain';
 export interface AdminUserUpdateCommand {
 	id: string;
 	isBlocked?: boolean;
-	adminLevel?: Domain.Contexts.User.AdminUser.AdminLevel;
 	account?: {
 		accountType?: string;
 		username?: string;
@@ -25,23 +24,22 @@ export const update = (datasources: DataSources) => {
 				if (!command.id) {
 					throw new Error('admin user id is required');
 				}
-				const existingAdminUser = await repo.getById(command.id);
-				if (!existingAdminUser) {
+				const user = await repo.getById(command.id);
+				if (!user) {
 					throw new Error('admin user not found');
 				}
 
+				// Cast to correct type (TypeScript incorrectly infers union type from UnitOfWork)
+				const existingAdminUser = user as unknown as Domain.Contexts.User.AdminUser.AdminUser<Domain.Contexts.User.AdminUser.AdminUserProps>;
+
+				// Update fields
 				if (command.isBlocked !== undefined) {
 					existingAdminUser.isBlocked = command.isBlocked;
 				}
 
-				if (command.adminLevel !== undefined) {
-					existingAdminUser.adminLevel = command.adminLevel;
-				}
-
 				if (command.account) {
 					existingAdminUser.account.accountType =
-						command.account.accountType ??
-						existingAdminUser.account.accountType;
+						command.account.accountType ?? existingAdminUser.account.accountType;
 					existingAdminUser.account.username =
 						command.account.username ?? existingAdminUser.account.username;
 					existingAdminUser.account.firstName =
@@ -50,7 +48,8 @@ export const update = (datasources: DataSources) => {
 						command.account.lastName ?? existingAdminUser.account.lastName;
 				}
 
-				adminUserToReturn = await repo.save(existingAdminUser);
+				const saved = await repo.save(user);
+				adminUserToReturn = saved as unknown as Domain.Contexts.User.AdminUser.AdminUserEntityReference;
 			},
 		);
 		if (!adminUserToReturn) {

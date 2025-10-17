@@ -13,6 +13,7 @@ import { ConversationModelFactory } from './conversations/conversation.model.ts'
 import {
 	PersonalUserRoleModelFactory,
 	AdminRoleModelFactory,
+	RoleModelFactory,
 } from './role/index.ts';
 
 export * as User from './user/index.ts';
@@ -22,17 +23,20 @@ export * as ReservationRequest from './reservation-request/index.ts';
 export * as Role from './role/index.ts';
 
 // Explicit export for consumers
-export { ItemListingModelFactory };
+export { ItemListingModelFactory } from './listing/index.ts';
 
 export const mongooseContextBuilder = (
 	initializedService: MongooseSeedwork.MongooseContextFactory,
 ) => {
+	// Create base models first (needed for discriminators and populate refs)
+	const UserModel = UserModelFactory(initializedService);
+	const RoleModel = RoleModelFactory(initializedService);
+	
 	return {
 		User: {
-			PersonalUser: PersonalUserModelFactory(
-				UserModelFactory(initializedService),
-			),
-			AdminUser: AdminUserModelFactory(UserModelFactory(initializedService)),
+			User: UserModel,
+			PersonalUser: PersonalUserModelFactory(UserModel),
+			AdminUser: AdminUserModelFactory(UserModel),
 		},
 
 		Listing: {
@@ -47,10 +51,9 @@ export const mongooseContextBuilder = (
 			ReservationRequest: ReservationRequestModelFactory(initializedService),
 		},
 		Role: {
-			PersonalUserRole: PersonalUserRoleModelFactory(
-				UserModelFactory(initializedService),
-			),
-			AdminRole: AdminRoleModelFactory(UserModelFactory(initializedService)),
+			Role: RoleModel,
+			PersonalUserRole: PersonalUserRoleModelFactory(RoleModel),
+			AdminRole: AdminRoleModelFactory(RoleModel),
 		},
 	};
 };

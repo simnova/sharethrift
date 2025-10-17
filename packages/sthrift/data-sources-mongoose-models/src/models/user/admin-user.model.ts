@@ -29,7 +29,6 @@ export interface AdminUserAccount extends MongooseSeedwork.NestedPath {
  */
 export interface AdminUser extends User {
 	userType: string;
-	adminLevel: 'Admin' | 'SiteMaintainer';
 	isBlocked: boolean;
 	role?: PopulatedDoc<AdminRole.AdminRole> | ObjectId;
 	account: AdminUserAccount;
@@ -69,16 +68,10 @@ const AdminUserAccountType: SchemaDefinition<AdminUserAccount> = {
  */
 const AdminUserSchema = new Schema<AdminUser, Model<AdminUser>, AdminUser>(
 	{
-		adminLevel: {
-			type: String,
-			required: true,
-			enum: ['Admin', 'SiteMaintainer'],
-			index: true,
-		},
 		isBlocked: { type: Boolean, required: false, default: false },
 		role: {
 			type: Schema.Types.ObjectId,
-			ref: AdminRole.AdminRoleModelName,
+			ref: 'Role',
 			required: false,
 			index: true,
 		},

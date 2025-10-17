@@ -29,7 +29,6 @@ export class AdminUserRepository<
 		username: string,
 		firstName: string,
 		lastName: string,
-		adminLevel: Domain.Contexts.User.AdminUser.AdminLevel,
 	): Promise<Domain.Contexts.User.AdminUser.AdminUser<PropType>> {
 		const adapter = this.typeConverter.toAdapter(new this.model());
 		return Promise.resolve(
@@ -40,7 +39,6 @@ export class AdminUserRepository<
 				username,
 				firstName,
 				lastName,
-				adminLevel,
 			),
 		);
 	}

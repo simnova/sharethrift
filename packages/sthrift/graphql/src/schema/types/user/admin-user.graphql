@@ -1,22 +1,21 @@
 type AdminUser implements MongoBase {
+	id: ObjectID!
 	userType: String
-	adminLevel: String!
 	isBlocked: Boolean
 	account: AdminUserAccount
 	role: AdminRole
-	id: ObjectID!
 	schemaVersion: String
 	createdAt: DateTime
 	updatedAt: DateTime
 }
 
-# #Uncomment if admin list view is needed
-# type AdminUserPage {
-# 	items: [AdminUser!]!
-# 	total: Int!
-# 	page: Int!
-# 	pageSize: Int!
-# }
+ #if admin list view is needed to display on UI
+ type AdminUserPage {
+ 	items: [AdminUser!]!
+ 	total: Int!
+ 	page: Int!
+ 	pageSize: Int!
+ }
 
 type AdminUserAccount {
 	accountType: String
@@ -29,7 +28,6 @@ type AdminUserAccount {
 input AdminUserUpdateInput {
 	id: ObjectID!
 	isBlocked: Boolean
-	adminLevel: String
 	account: AdminUserAccountUpdateInput
 }
 
@@ -47,15 +45,14 @@ extend type Query {
 	adminUserByUsername(username: String!): AdminUser
 	currentAdminUser: AdminUser
 
-	# # The following code can be used to list all admin users in the database
-	# allAdminUsers(
-	# 	page: Int!
-	# 	pageSize: Int!
-	# 	searchText: String
-	# 	adminLevelFilters: [String!]
-	# 	statusFilters: [String!]
-	# 	sorter: SorterInput
-	# ): AdminUserPage!
+	 # The following code can be used to list all admin users in the database
+	 allAdminUsers(
+	 	page: Int!
+	 	pageSize: Int!
+	 	searchText: String
+	 	statusFilters: [String!]
+	 	sorter: SorterInput
+	 ): AdminUserPage!
 }
 
 extend type Mutation {

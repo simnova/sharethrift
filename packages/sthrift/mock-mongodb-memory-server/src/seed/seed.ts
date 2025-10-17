@@ -1,6 +1,8 @@
 import type { Connection } from 'mongoose';
 import { ObjectId } from 'mongodb';
 import { personalUsers } from './personal-users.js';
+import { adminUsers } from './admin-users.js';
+import { adminRoles } from './admin-roles.js';
 import { itemListings } from './item-listings.js';
 import { conversations } from './conversations.js';
 import { reservationRequests } from './reservation-requests.js';
@@ -11,7 +13,23 @@ function toObjectId(id: string) {
 }
 
 export async function seedDatabase(connection: Connection) {
-	const defaultRoleId = new ObjectId(); // Placeholder ID since roles are not inserted
+	// Insert admin roles first
+	const roles = adminRoles.map((r: Models.Role.AdminRole) => ({
+		...r,
+		_id: toObjectId(r._id as string),
+	}));
+	await connection.collection('roles').insertMany(roles);
+
+	// Insert admin users
+	const admins = adminUsers.map((u: Models.User.AdminUser) => ({
+		...u,
+		_id: toObjectId(u._id as string),
+		role: toObjectId(String(u.role)),
+	}));
+	await connection.collection('users').insertMany(admins);
+
+	// Insert personal users
+	const defaultRoleId = new ObjectId(); // Placeholder ID since personal user roles are not inserted
 	const usersWithRoles = personalUsers.map((u: Models.User.PersonalUser) => ({
 		...u,
 		_id: toObjectId(u._id as string),

@@ -5,7 +5,6 @@ export interface GetAllAdminUsersCommand {
 	page: number;
 	pageSize: number;
 	searchText?: string | undefined;
-	adminLevelFilters?: string[] | undefined;
 	statusFilters?: string[] | undefined;
 	sorter?: { field: string; order: string } | undefined;
 }
@@ -24,9 +23,6 @@ export const getAllUsers = (datasources: DataSources) => {
 				page: command.page,
 				pageSize: command.pageSize,
 				...(command.searchText && { searchText: command.searchText }),
-				...(command.adminLevelFilters && {
-					adminLevelFilters: command.adminLevelFilters,
-				}),
 				...(command.statusFilters && { statusFilters: command.statusFilters }),
 				...(command.sorter && {
 					sorter: {

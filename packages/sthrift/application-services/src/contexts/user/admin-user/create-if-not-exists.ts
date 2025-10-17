@@ -6,7 +6,6 @@ export interface AdminUserCreateCommand {
 	username: string;
 	firstName: string;
 	lastName: string;
-	adminLevel: Domain.Contexts.User.AdminUser.AdminLevel;
 }
 
 export const createIfNotExists = (dataSources: DataSources) => {
@@ -30,7 +29,6 @@ export const createIfNotExists = (dataSources: DataSources) => {
 					command.username,
 					command.firstName,
 					command.lastName,
-					command.adminLevel,
 				);
 				adminUserToReturn = await repo.save(newAdminUser);
 			},

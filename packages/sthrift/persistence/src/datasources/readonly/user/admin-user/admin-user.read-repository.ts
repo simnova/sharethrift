@@ -15,7 +15,6 @@ export interface AdminUserReadRepository {
 		page: number;
 		pageSize: number;
 		searchText?: string;
-		adminLevelFilters?: string[];
 		statusFilters?: string[];
 		sorter?: { field: string; order: 'ascend' | 'descend' };
 	}) => Promise<{
@@ -54,7 +53,10 @@ export class AdminUserReadRepositoryImpl implements AdminUserReadRepository {
 	async getAll(
 		options?: FindOptions,
 	): Promise<Domain.Contexts.User.AdminUser.AdminUserEntityReference[]> {
-		const results = await this.mongoDataSource.find({}, options);
+		const results = await this.mongoDataSource.find({}, {
+			...options,
+			populateFields: ['role'],
+		});
 		if (!results || results.length === 0) {
 			return [];
 		}
@@ -65,7 +67,6 @@ export class AdminUserReadRepositoryImpl implements AdminUserReadRepository {
 		page: number;
 		pageSize: number;
 		searchText?: string;
-		adminLevelFilters?: string[];
 		statusFilters?: string[];
 		sorter?: { field: string; order: 'ascend' | 'descend' };
 	}): Promise<{
@@ -86,13 +87,6 @@ export class AdminUserReadRepositoryImpl implements AdminUserReadRepository {
 					u.account?.firstName,
 					u.account?.lastName,
 				].some((s) => s?.toLowerCase().includes(query)),
-			);
-		}
-
-		// Apply admin level filters
-		if (args.adminLevelFilters?.length) {
-			users = users.filter((u) =>
-				args.adminLevelFilters?.includes(u.adminLevel),
 			);
 		}
 
@@ -124,7 +118,6 @@ export class AdminUserReadRepositoryImpl implements AdminUserReadRepository {
 				username: (u) => u.account?.username ?? '',
 				firstName: (u) => u.account?.firstName ?? '',
 				lastName: (u) => u.account?.lastName ?? '',
-				adminLevel: (u) => u.adminLevel ?? '',
 				accountCreated: (u) => (u.createdAt ? +new Date(u.createdAt) : 0),
 				createdAt: (u) => (u.createdAt ? +new Date(u.createdAt) : 0),
 				status: (u) => (u.isBlocked ? 1 : 0),
@@ -165,7 +158,10 @@ export class AdminUserReadRepositoryImpl implements AdminUserReadRepository {
 		id: string,
 		options?: FindOneOptions,
 	): Promise<Domain.Contexts.User.AdminUser.AdminUserEntityReference | null> {
-		const result = await this.mongoDataSource.findById(id, options);
+		const result = await this.mongoDataSource.findById(id, {
+			...options,
+			populateFields: ['role'],
+		});
 		if (!result) {
 			return null;
 		}
@@ -178,7 +174,7 @@ export class AdminUserReadRepositoryImpl implements AdminUserReadRepository {
 	): Promise<Domain.Contexts.User.AdminUser.AdminUserEntityReference | null> {
 		const result = await this.mongoDataSource.findOne(
 			{ 'account.email': email },
-			options,
+			{ ...options, populateFields: ['role'] },
 		);
 		if (!result) {
 			return null;
@@ -192,7 +188,7 @@ export class AdminUserReadRepositoryImpl implements AdminUserReadRepository {
 	): Promise<Domain.Contexts.User.AdminUser.AdminUserEntityReference | null> {
 		const result = await this.mongoDataSource.findOne(
 			{ 'account.username': username },
-			options,
+			{ ...options, populateFields: ['role'] },
 		);
 		if (!result) {
 			return null;

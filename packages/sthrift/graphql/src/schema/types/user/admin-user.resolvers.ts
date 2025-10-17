@@ -60,31 +60,28 @@ const adminUserResolvers: Resolvers = {
 				email: context.applicationServices.verifiedUser.verifiedJwt.email,
 			});
 		},
-		// //The following code can be used to list all admin users in the database
-		// allAdminUsers: async (
-		// 	_parent: unknown,
-		// 	args: QueryAllAdminUsersArgs,
-		// 	context: GraphContext,
-		// 	_info: GraphQLResolveInfo,
-		// ) => {
-		// 	if (!context.applicationServices.verifiedUser?.verifiedJwt) {
-		// 		throw new Error('Unauthorized');
-		// 	}
+        // The following code can be used to list all admin users in the database
+        allAdminUsers: async (
+            _parent: unknown,
+            args: QueryAllAdminUsersArgs,
+            context: GraphContext,
+            _info: GraphQLResolveInfo,
+        ) => {
+            //if (!context.applicationServices.verifiedUser?.verifiedJwt) {
+            //    throw new Error('Unauthorized');
+            //}
 
-		// 	// - Add admin permission check
-		// 	return await context.applicationServices.User.AdminUser.getAllUsers({
-		// 		page: args.page,
-		// 		pageSize: args.pageSize,
-		// 		searchText: args.searchText || undefined,
-		// 		adminLevelFilters: args.adminLevelFilters
-		// 			? [...args.adminLevelFilters]
-		// 			: undefined,
-		// 		statusFilters: args.statusFilters
-		// 			? [...args.statusFilters]
-		// 			: undefined,
-		// 		sorter: args.sorter || undefined,
-		// 	});
-		// },
+            // - Add admin permission check
+            return await context.applicationServices.User.AdminUser.getAllUsers({
+                page: args.page,
+                pageSize: args.pageSize,
+                searchText: args.searchText || undefined,
+                statusFilters: args.statusFilters
+                    ? [...args.statusFilters]
+                    : undefined,
+                sorter: args.sorter || undefined,
+            });
+        },
 	},
 
 	Mutation: {

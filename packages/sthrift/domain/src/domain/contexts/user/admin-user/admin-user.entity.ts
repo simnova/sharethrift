@@ -7,7 +7,6 @@ import type { AdminRoleEntityReference } from '../../role/admin-role/admin-role.
 
 export interface AdminUserProps extends DomainSeedwork.DomainEntityProps {
 	userType: string;
-	adminLevel: string;
 	isBlocked: boolean;
 	role: Readonly<AdminRoleEntityReference>;
 	loadRole: () => Promise<Readonly<AdminRoleEntityReference>>;

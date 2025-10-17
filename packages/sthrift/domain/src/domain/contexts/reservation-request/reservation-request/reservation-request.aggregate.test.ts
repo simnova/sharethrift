@@ -44,6 +44,9 @@ describe('ReservationRequest', () => {
 				forPersonalUser: () => ({
 					determineIf: () => true,
 				}),
+				forAdminUser: () => ({
+					determineIf: () => true,
+				}),
 			};
 		},
 	} as Passport;

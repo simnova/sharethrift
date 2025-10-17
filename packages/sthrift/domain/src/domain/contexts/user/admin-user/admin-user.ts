@@ -32,7 +32,6 @@ export class AdminUser<props extends AdminUserProps>
 		username: string,
 		firstName: string,
 		lastName: string,
-		adminLevel: string,
 	): AdminUser<props> {
 		const newInstance = new AdminUser(newProps, passport);
 		newInstance.markAsNew();
@@ -41,7 +40,6 @@ export class AdminUser<props extends AdminUserProps>
 		newInstance.account.username = username;
 		newInstance.account.firstName = firstName;
 		newInstance.account.lastName = lastName;
-		newInstance.adminLevel = adminLevel;
 		newInstance._isNew = false;
 		return newInstance;
 	}
@@ -65,9 +63,6 @@ export class AdminUser<props extends AdminUserProps>
 
 	get userType(): string {
 		return this.props.userType;
-	}
-	get adminLevel(): string {
-		return this.props.adminLevel;
 	}
 	get isBlocked(): boolean {
 		return this.props.isBlocked;
@@ -116,10 +111,6 @@ export class AdminUser<props extends AdminUserProps>
 	set userType(value: string) {
 		this.validateVisa();
 		this.props.userType = value;
-	}
-	set adminLevel(value: string) {
-		this.validateVisa();
-		this.props.adminLevel = value;
 	}
 	set isBlocked(value: boolean) {
 		this.validateVisa();

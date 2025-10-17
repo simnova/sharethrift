@@ -28,13 +28,6 @@ export class AdminUserDomainAdapter
 		this.doc.userType = value;
 	}
 
-	get adminLevel(): Domain.Contexts.User.AdminUser.AdminLevel {
-		return this.doc.adminLevel as Domain.Contexts.User.AdminUser.AdminLevel;
-	}
-	set adminLevel(value: Domain.Contexts.User.AdminUser.AdminLevel) {
-		this.doc.adminLevel = value;
-	}
-
 	get isBlocked() {
 		return this.doc.isBlocked;
 	}
@@ -46,8 +39,9 @@ export class AdminUserDomainAdapter
 		if (!this.doc.role) {
 			throw new Error('role is not populated');
 		}
-		if (this.doc.role instanceof MongooseSeedwork.ObjectId) {
-			throw new Error('role is not populated or is not of the correct type');
+		// Check if role is actually populated (has role properties) vs just an ObjectId reference
+		if (!('roleName' in this.doc.role)) {
+			throw new TypeError('role is not populated or is not of the correct type');
 		}
 		return new AdminRoleDomainAdapter(this.doc.role as Models.Role.AdminRole);
 	}
@@ -74,7 +68,7 @@ export class AdminUserDomainAdapter
 		if (!role?.id) {
 			throw new Error('role reference is missing id');
 		}
-		this.doc.set('role', new MongooseSeedwork.ObjectId(role.id));
+		this.doc.set('role', new MongooseSeedwork.ObjectId(String(role.id)));
 	}
 
 	get account() {
