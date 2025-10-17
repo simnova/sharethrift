@@ -1,5 +1,8 @@
 import { ComponentQueryLoader } from '@sthrift/ui-components';
 import { useMutation, useQuery } from '@apollo/client';
+import { useCurrentUserId } from '../hooks/useCurrentUserId.ts';
+import { useActiveReservations } from '../hooks/useActiveReservations.ts';
+import { useReservationMutations } from '../hooks/useReservationMutations.ts';
 import {
 	HomeMyReservationsReservationsViewActiveContainerActiveReservationsDocument,
 	HomeMyReservationsReservationsViewActiveContainerCancelReservationDocument,
@@ -13,23 +16,11 @@ import { ReservationsView } from './reservations-view.tsx';
 export type ReservationsViewActiveContainerProps = Record<string, never>;
 
 export const ReservationsViewActiveContainer: React.FC<
-	ReservationsViewActiveContainerProps
+    ReservationsViewActiveContainerProps
 > = () => {
-	const { data: currentUserData } = useQuery<ViewListingCurrentUserQuery>(
-		ViewListingCurrentUserDocument,
-	);
-
-	const userId = currentUserData?.currentPersonalUserAndCreateIfNotExists?.id;
-
-	const { data, loading, error } =
-		useQuery<HomeMyReservationsReservationsViewActiveContainerActiveReservationsQuery>(
-			HomeMyReservationsReservationsViewActiveContainerActiveReservationsDocument,
-			{
-				variables: { userId: userId || '' },
-				skip: !userId,
-				fetchPolicy: 'cache-first', // Use cache-first with proper filtering to avoid conflicts
-			},
-		);
+    const { userId } = useCurrentUserId();
+    const { reservations: activeReservations, loading, error } = useActiveReservations(userId);
+    const { handleCancel, cancelLoading, handleClose, closeLoading } = useReservationMutations();
 
 	const [cancelReservationMutation, { loading: cancelLoading }] = useMutation(
 		HomeMyReservationsReservationsViewActiveContainerCancelReservationDocument,
@@ -69,46 +60,20 @@ export const ReservationsViewActiveContainer: React.FC<
 		},
 	);
 
-	const handleCancel = async (reservationId: string) => {
-		try {
-			await cancelReservationMutation({
-				variables: { input: { id: reservationId } },
-			});
-		} catch (error_) {
-			console.error('Failed to cancel reservation:', error_);
-		}
-	};
-
-	const handleClose = async (reservationId: string) => {
-		try {
-			await closeReservationMutation({
-				variables: { input: { id: reservationId } },
-			});
-		} catch (error_) {
-			console.error('Failed to close reservation:', error_);
-		}
-	};
-
 	const handleMessage = (reservationId: string) => {
 		console.log('Message for reservation', reservationId);
 	};
-
-	// Filter to only include truly active states (safety net for backend bugs)
-	const activeReservations =
-		data?.myActiveReservations?.filter(
-			(r) => r.state === 'Accepted' || r.state === 'Requested',
-		) ?? [];
 
 	return (
 		<ComponentQueryLoader
 			loading={loading}
 			error={error}
-			hasData={data?.myActiveReservations}
+            hasData={activeReservations.length > 0}
 			hasDataComponent={
 				<ReservationsView
 					reservations={activeReservations}
-					onCancel={handleCancel}
-					onClose={handleClose}
+                    onCancel={handleCancel}
+                    onClose={handleClose}
 					onMessage={handleMessage}
 					cancelLoading={cancelLoading}
 					closeLoading={closeLoading}

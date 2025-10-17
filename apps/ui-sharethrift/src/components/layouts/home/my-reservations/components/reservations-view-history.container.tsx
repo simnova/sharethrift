@@ -1,44 +1,26 @@
 import { ComponentQueryLoader } from '@sthrift/ui-components';
-import { useQuery } from '@apollo/client';
-import {
-	HomeMyReservationsReservationsViewHistoryContainerPastReservationsDocument,
-	ViewListingCurrentUserDocument,
-	type HomeMyReservationsReservationsViewHistoryContainerPastReservationsQuery,
-	type ViewListingCurrentUserQuery,
-} from '../../../../../generated.tsx';
 import { ReservationsView } from './reservations-view.tsx';
+import { useCurrentUserId } from '../hooks/useCurrentUserId.ts';
+import { usePastReservations } from '../hooks/usePastReservations.ts';
 
 export type ReservationsViewHistoryContainerProps = Record<string, never>;
 
 export const ReservationsViewHistoryContainer: React.FC<
-	ReservationsViewHistoryContainerProps
+    ReservationsViewHistoryContainerProps
 > = () => {
-	// Get current user ID
-	const { data: currentUserData } = useQuery<ViewListingCurrentUserQuery>(
-		ViewListingCurrentUserDocument,
-	);
-
-	const userId = currentUserData?.currentPersonalUserAndCreateIfNotExists?.id;
-
-	// Fetch past reservations using GraphQL query
-	const { data, loading, error } =
-		useQuery<HomeMyReservationsReservationsViewHistoryContainerPastReservationsQuery>(
-			HomeMyReservationsReservationsViewHistoryContainerPastReservationsDocument,
-			{
-				variables: { userId: userId || '' },
-				skip: !userId,
-				fetchPolicy: 'cache-first', // Use cache-first with proper filtering to avoid conflicts
-			},
-		);
+    const { userId, loading: ul, error: ue } = useCurrentUserId();
+    const { reservations, loading: rl, error: re } = usePastReservations(userId);
+    const loading = ul || rl;
+    const error = ue || re;
 
 	return (
 		<ComponentQueryLoader
 			loading={loading}
 			error={error}
-			hasData={data?.myPastReservations}
+            hasData={reservations.length > 0}
 			hasDataComponent={
 				<ReservationsView
-					reservations={data?.myPastReservations ?? []}
+                    reservations={reservations}
 					showActions={false}
 					emptyText="No past reservations"
 				/>
