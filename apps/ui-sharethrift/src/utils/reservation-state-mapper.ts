@@ -2,6 +2,7 @@
  * Maps GraphQL reservation state enum values to ReservationStatusTag values
  * @param state - The GraphQL reservation state (e.g., 'Accepted', 'Requested', 'Closed')
  * @returns The corresponding ReservationStatusTag value
+ * @throws Error if the state is not recognized
  */
 export function mapReservationState(
 	state: string,
@@ -18,6 +19,8 @@ export function mapReservationState(
 		case 'Cancelled':
 			return 'CANCELLED';
 		default:
-			return 'REQUESTED'; // Default fallback
+			// Log the unexpected state for debugging
+			console.error(`Unexpected reservation state: "${state}". Expected one of: Accepted, Requested, Rejected, Closed, Cancelled`);
+			throw new Error(`Invalid reservation state: "${state}". Expected one of: Accepted, Requested, Rejected, Closed, Cancelled`);
 	}
 }

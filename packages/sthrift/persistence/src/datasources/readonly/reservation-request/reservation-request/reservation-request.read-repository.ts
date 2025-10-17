@@ -3,7 +3,6 @@ import { Types } from 'mongoose';
 import type { ModelsContext } from '../../../../models-context.ts';
 import {
 	ReservationRequestDataSourceImpl,
-	type ReservationRequestDataSource,
 } from './reservation-request.data.ts';
 import type { FindOneOptions, FindOptions } from '../../mongo-data-source.ts';
 import { ReservationRequestConverter } from '../../../domain/reservation-request/reservation-request/reservation-request.domain-adapter.ts';
@@ -12,6 +11,8 @@ import {
 	filterByStates,
 	RESERVATION_STATES,
 } from './reservation-state-filters.ts';
+import { BaseReadRepository } from '../../base-read-repository.ts';
+import type { FilterQuery } from 'mongoose';
 
 export interface ReservationRequestReadRepository {
 	getAll: (
@@ -72,66 +73,37 @@ export interface ReservationRequestReadRepository {
 // Database-seeded mock data is now handled by the mock-mongodb-memory-server package
 
 export class ReservationRequestReadRepositoryImpl
+	extends BaseReadRepository<
+		Domain.Contexts.ReservationRequest.ReservationRequest.ReservationRequestDocument,
+		Domain.Contexts.ReservationRequest.ReservationRequest.ReservationRequestEntityReference
+	>
 	implements ReservationRequestReadRepository
 {
-	private readonly mongoDataSource: ReservationRequestDataSource;
-	private readonly converter: ReservationRequestConverter;
-	private readonly passport: Domain.Passport;
 	private readonly models: ModelsContext;
 
 	constructor(models: ModelsContext, passport: Domain.Passport) {
-		this.models = models;
-		this.mongoDataSource = new ReservationRequestDataSourceImpl(
+		const mongoDataSource = new ReservationRequestDataSourceImpl(
 			models.ReservationRequest.ReservationRequest,
 		);
-		this.converter = new ReservationRequestConverter();
-		this.passport = passport;
+		const converter = new ReservationRequestConverter();
+		super(mongoDataSource, converter, passport);
+		this.models = models;
 	}
 
-	/**
-	 * Helper method for querying multiple documents
-	 */
-	private async queryMany(
-		filter: Record<string, any>,
-		options?: FindOptions,
-	): Promise<
-		Domain.Contexts.ReservationRequest.ReservationRequest.ReservationRequestEntityReference[]
-	> {
-		const docs = await this.mongoDataSource.find(filter, options);
-		return docs.map((doc) => this.converter.toDomain(doc, this.passport));
-	}
-
-	/**
-	 * Helper method for querying a single document
-	 */
-	private async queryOne(
-		filter: Record<string, any>,
-		options?: FindOneOptions,
-	): Promise<
-		Domain.Contexts.ReservationRequest.ReservationRequest.ReservationRequestEntityReference | null
-	> {
-		const doc = await this.mongoDataSource.findOne(filter, options);
-		return doc ? this.converter.toDomain(doc, this.passport) : null;
-	}
 
 	async getAll(
 		options?: FindOptions,
 	): Promise<
 		Domain.Contexts.ReservationRequest.ReservationRequest.ReservationRequestEntityReference[]
 	> {
-		const result = await this.mongoDataSource.find({}, options);
-		return result.map((doc) => this.converter.toDomain(doc, this.passport));
+		return this.queryMany({}, options);
 	}
 
 	async getById(
 		id: string,
 		options?: FindOneOptions,
 	): Promise<Domain.Contexts.ReservationRequest.ReservationRequest.ReservationRequestEntityReference | null> {
-		const result = await this.mongoDataSource.findById(id, options);
-		if (!result) {
-			return null;
-		}
-		return this.converter.toDomain(result, this.passport);
+		return this.queryById(id, options);
 	}
 
 	async getByReserverId(
@@ -140,11 +112,10 @@ export class ReservationRequestReadRepositoryImpl
 	): Promise<
 		Domain.Contexts.ReservationRequest.ReservationRequest.ReservationRequestEntityReference[]
 	> {
-		const filter = {
+		const filter: FilterQuery<Domain.Contexts.ReservationRequest.ReservationRequest.ReservationRequestDocument> = {
 			reserver: new Types.ObjectId(reserverId),
 		};
-		const result = await this.mongoDataSource.find(filter, options);
-		return result.map((doc) => this.converter.toDomain(doc, this.passport));
+		return this.queryMany(filter, options);
 	}
 
 	async getActiveByReserverIdWithListingWithSharer(
@@ -153,7 +124,7 @@ export class ReservationRequestReadRepositoryImpl
 	): Promise<
 		Domain.Contexts.ReservationRequest.ReservationRequest.ReservationRequestEntityReference[]
 	> {
-		const filter = {
+		const filter: FilterQuery<Domain.Contexts.ReservationRequest.ReservationRequest.ReservationRequestDocument> = {
 			reserver: new Types.ObjectId(reserverId),
 			...filterByStates(RESERVATION_STATES.ACTIVE),
 		};
@@ -166,7 +137,7 @@ export class ReservationRequestReadRepositoryImpl
 	): Promise<
 		Domain.Contexts.ReservationRequest.ReservationRequest.ReservationRequestEntityReference[]
 	> {
-		const filter = {
+		const filter: FilterQuery<Domain.Contexts.ReservationRequest.ReservationRequest.ReservationRequestDocument> = {
 			reserver: new Types.ObjectId(reserverId),
 			...filterByStates(RESERVATION_STATES.INACTIVE),
 		};
@@ -192,12 +163,11 @@ export class ReservationRequestReadRepositoryImpl
 		}
 
 		// Then find reservation requests for those listings
-		const filter = {
+		const filter: FilterQuery<Domain.Contexts.ReservationRequest.ReservationRequest.ReservationRequestDocument> = {
 			listing: { $in: listingIds },
 		};
 
-		const result = await this.mongoDataSource.find(filter, options);
-		return result.map((doc) => this.converter.toDomain(doc, this.passport));
+		return this.queryMany(filter, options);
 	}
 
 	async getActiveByReserverIdAndListingId(
@@ -205,7 +175,7 @@ export class ReservationRequestReadRepositoryImpl
 		listingId: string,
 		options?: FindOptions,
 	): Promise<Domain.Contexts.ReservationRequest.ReservationRequest.ReservationRequestEntityReference | null> {
-		const filter = {
+		const filter: FilterQuery<Domain.Contexts.ReservationRequest.ReservationRequest.ReservationRequestDocument> = {
 			reserver: new MongooseSeedwork.ObjectId(reserverId),
 			listing: new MongooseSeedwork.ObjectId(listingId),
 			...filterByStates(RESERVATION_STATES.ACTIVE),
@@ -221,7 +191,7 @@ export class ReservationRequestReadRepositoryImpl
 	): Promise<
 		Domain.Contexts.ReservationRequest.ReservationRequest.ReservationRequestEntityReference[]
 	> {
-		const filter = {
+		const filter: FilterQuery<Domain.Contexts.ReservationRequest.ReservationRequest.ReservationRequestDocument> = {
 			listing: new MongooseSeedwork.ObjectId(listingId),
 			...filterByStates(RESERVATION_STATES.ACTIVE),
 			reservationPeriodStart: { $lt: reservationPeriodEnd },
@@ -236,7 +206,7 @@ export class ReservationRequestReadRepositoryImpl
 	): Promise<
 		Domain.Contexts.ReservationRequest.ReservationRequest.ReservationRequestEntityReference[]
 	> {
-		const filter = {
+		const filter: FilterQuery<Domain.Contexts.ReservationRequest.ReservationRequest.ReservationRequestDocument> = {
 			listing: new MongooseSeedwork.ObjectId(listingId),
 			...filterByStates(RESERVATION_STATES.ACTIVE),
 		};
