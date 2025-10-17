@@ -7,7 +7,7 @@ import {
 } from 'mongoose';
 import { MongooseSeedwork } from '@cellix/mongoose-seedwork';
 import { type User, type UserModelType, userOptions } from './user.model.ts';
-import * as AdminRole from '../role/admin-role.model.ts';
+import type * as AdminRole from '../role/admin-role.model.ts';
 
 // Constants for email validation
 const EMAIL_PATTERN = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
