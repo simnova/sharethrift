@@ -59,7 +59,16 @@ export const TerminatingApolloBatchLinkForGraphqlServer = (
 	const persistedQueryLink = createPersistedQueryLink({
 		sha256,
 	}).concat(link);
-	return ApolloLink.from([removeTypenameFromVariables(), persistedQueryLink]);
+	return ApolloLink.from([
+		removeTypenameFromVariables(),
+		// Add CSRF protection header for Apollo Server
+		setContext((operation) => ({
+			headers: {
+				'x-apollo-operation-name': operation.operationName || '',
+			},
+		})),
+		persistedQueryLink,
+	]);
 };
 
 export const TerminatingApolloHttpLinkForGraphqlServer = (
@@ -73,5 +82,14 @@ export const TerminatingApolloHttpLinkForGraphqlServer = (
 		sha256,
 		useGETForHashedQueries: true, // use GET for hashed queries
 	}).concat(link);
-	return ApolloLink.from([removeTypenameFromVariables(), persistedQueryLink]);
+	return ApolloLink.from([
+		removeTypenameFromVariables(),
+		// Add CSRF protection header for Apollo Server
+		setContext((operation) => ({
+			headers: {
+				'x-apollo-operation-name': operation.operationName || '',
+			},
+		})),
+		persistedQueryLink,
+	]);
 };

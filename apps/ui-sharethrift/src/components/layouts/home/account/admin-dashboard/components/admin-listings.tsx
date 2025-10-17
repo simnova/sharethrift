@@ -31,6 +31,8 @@ export function AdminListings() {
 				statusFilters,
 				sorter: sorter.field && sorter.order ? { field: sorter.field, order: sorter.order } : undefined,
 			},
+			// Force this operation over the non-batched HTTP link to avoid servers that don't support batching
+			context: { headers: { 'Cache-Enabled': 'true' } },
 			fetchPolicy: 'network-only',
 		},
 	);

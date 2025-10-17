@@ -75,7 +75,7 @@ export class ItemListingRepository<
 		);
 	}
 
-	getBySharerIDWithPagination(
+	async getBySharerIDWithPagination(
 		_sharerId: string,
 		options: {
 			page: number;
@@ -90,179 +90,69 @@ export class ItemListingRepository<
 		page: number;
 		pageSize: number;
 	}> {
-		// TODO: Replace with real MongoDB implementation
-		// For now, using mock data to match the existing implementation pattern
-		return Promise.resolve(
-			this.getMockListingsWithPagination(_sharerId, options),
-		);
-	}
+		// Build MongoDB query
+		const query: Record<string, unknown> = {};
 
-	private getMockListingsWithPagination(
-		_sharerId: string,
-		options: {
-			page: number;
-			pageSize: number;
-			searchText?: string;
-			statusFilters?: string[];
-			sorter?: { field: string; order: 'ascend' | 'descend' };
-		},
-	) {
-		// Mock data for listings
-		const mockListings = [
-			{
-				id: '6324a3f1e3e4e1e6a8e1d8b1',
-				sharer: 'currentUser',
-				title: 'Cordless Drill',
-				description:
-					'Professional grade cordless drill with multiple attachments.',
-				category: 'Tools & Equipment',
-				location: 'Philadelphia, PA',
-				sharingPeriodStart: new Date('2020-11-08'),
-				sharingPeriodEnd: new Date('2020-12-23'),
-				publishedAt: new Date('2025-12-23').toISOString(),
-				status: 'Paused',
-				pendingRequestsCount: 0,
-				image: '/assets/item-images/projector.png',
-			},
-			{
-				id: '6324a3f1e3e4e1e6a8e1d8b7',
-				sharer: 'currentUser',
-				title: 'Electric Guitar',
-				description: 'Fender Stratocaster, perfect for gigs and practice.',
-				category: 'Music & Instruments',
-				location: 'Philadelphia, PA',
-				sharingPeriodStart: new Date('2025-09-01'),
-				sharingPeriodEnd: new Date('2025-09-30'),
-				publishedAt: new Date('2025-08-30').toISOString(),
-				status: 'Active',
-				pendingRequestsCount: 3,
-				image: '/assets/item-images/projector.png',
-			},
-			{
-				id: '6324a3f1e3e4e1e6a8e1d8b8',
-				sharer: 'currentUser',
-				title: 'Stand Mixer',
-				description: 'KitchenAid stand mixer, great for baking.',
-				category: 'Home & Kitchen',
-				location: 'Philadelphia, PA',
-				sharingPeriodStart: new Date('2025-10-01'),
-				sharingPeriodEnd: new Date('2025-10-15'),
-				publishedAt: new Date('2025-09-28').toISOString(),
-				status: 'Reserved',
-				pendingRequestsCount: 1,
-				image: '/assets/item-images/sewing-machine.png',
-			},
-			{
-				id: '6324a3f1e3e4e1e6a8e1d8b9',
-				sharer: 'currentUser',
-				title: 'Bubble Chair',
-				description: 'Modern bubble chair, transparent acrylic.',
-				category: 'Furniture',
-				location: 'Philadelphia, PA',
-				sharingPeriodStart: new Date('2025-11-01'),
-				sharingPeriodEnd: new Date('2025-11-15'),
-				publishedAt: new Date('2025-10-30').toISOString(),
-				status: 'Draft',
-				pendingRequestsCount: 0,
-				image: '/assets/item-images/bubble-chair.png',
-			},
-			{
-				id: '6324a3f1e3e4e1e6a8e1d8c0',
-				sharer: 'currentUser',
-				title: 'Projector',
-				description: 'HD projector, great for movie nights.',
-				category: 'Electronics',
-				location: 'Philadelphia, PA',
-				sharingPeriodStart: new Date('2025-12-01'),
-				sharingPeriodEnd: new Date('2025-12-10'),
-				publishedAt: new Date('2025-11-28').toISOString(),
-				status: 'Blocked',
-				pendingRequestsCount: 0,
-				image: '/assets/item-images/projector.png',
-			},
-			{
-				id: '6324a3f1e3e4e1e6a8e1d8b2',
-				sharer: 'currentUser',
-				title: 'City Bike',
-				description: 'Perfect city bike for commuting and leisure rides.',
-				category: 'Vehicles & Transportation',
-				location: 'Philadelphia, PA',
-				sharingPeriodStart: new Date('2020-11-08'),
-				sharingPeriodEnd: new Date('2020-12-23'),
-				publishedAt: new Date('2025-01-03').toISOString(),
-				status: 'Active',
-				pendingRequestsCount: 2,
-				image: '/assets/item-images/bike.png',
-			},
-			{
-				id: '6324a3f1e3e4e1e6a8e1d8b3',
-				sharer: 'currentUser',
-				title: 'Sewing Kit',
-				description:
-					'Complete sewing kit with threads, needles, and accessories.',
-				category: 'Home & Garden',
-				location: 'Philadelphia, PA',
-				sharingPeriodStart: new Date('2020-11-08'),
-				sharingPeriodEnd: new Date('2020-12-23'),
-				publishedAt: new Date('2025-01-12').toISOString(),
-				status: 'Expired',
-				pendingRequestsCount: 0,
-				image: '/assets/item-images/sewing-machine.png',
-			},
-		];
-
-		let filteredListings = mockListings;
-
-		// Apply search text filter
+		// Add search text filter
 		if (options.searchText) {
-			filteredListings = filteredListings.filter((listing) =>
-				listing.title
-					.toLowerCase()
-					.includes(options.searchText?.toLowerCase() || ''),
-			);
+			query['$or'] = [
+				{ title: { $regex: options.searchText, $options: 'i' } },
+				{ description: { $regex: options.searchText, $options: 'i' } },
+				{ category: { $regex: options.searchText, $options: 'i' } },
+				{ location: { $regex: options.searchText, $options: 'i' } },
+			];
 		}
 
-		// Apply status filters
+		// Add status filters
 		if (options.statusFilters && options.statusFilters.length > 0) {
-			filteredListings = filteredListings.filter((listing) =>
-				options.statusFilters?.includes(listing.status),
-			);
+			query['state'] = { $in: options.statusFilters };
 		}
 
-		// Apply sorter
-		if (options.sorter?.field) {
-			filteredListings.sort((a, b) => {
-				const fieldA = a[options.sorter?.field as keyof typeof a];
-				const fieldB = b[options.sorter?.field as keyof typeof b];
-
-				// Handle undefined cases for sorting
-				if (fieldA === undefined || fieldA === null) {
-					return options.sorter?.order === 'ascend' ? -1 : 1;
-				}
-				if (fieldB === undefined || fieldB === null) {
-					return options.sorter?.order === 'ascend' ? 1 : -1;
-				}
-
-				if (fieldA < fieldB) {
-					return options.sorter?.order === 'ascend' ? -1 : 1;
-				}
-				if (fieldA > fieldB) {
-					return options.sorter?.order === 'ascend' ? 1 : -1;
-				}
-				return 0;
-			});
+		// Build sort criteria
+		const sort: Record<string, 1 | -1> = {};
+		if (options.sorter) {
+			const direction = options.sorter.order === 'ascend' ? 1 : -1;
+			switch (options.sorter.field) {
+				case 'title':
+					sort['title'] = direction;
+					break;
+				case 'category':
+					sort['category'] = direction;
+					break;
+				case 'location':
+					sort['location'] = direction;
+					break;
+				case 'publishedAt':
+					sort['createdAt'] = direction;
+					break;
+				case 'status':
+					sort['state'] = direction;
+					break;
+				default:
+					sort['createdAt'] = -1; // Default sort by newest
+			}
+		} else {
+			sort['createdAt'] = -1; // Default sort by newest
 		}
 
-		const total = filteredListings.length;
-		const startIndex = (options.page - 1) * options.pageSize;
-		const endIndex = startIndex + options.pageSize;
-		const items = filteredListings.slice(startIndex, endIndex);
+		// Calculate pagination
+		const skip = (options.page - 1) * options.pageSize;
 
-		// Convert mock data to domain objects (simplified for now)
-		const domainItems = items.map((item) => ({
-			...item,
-			reservationPeriod: `${item.sharingPeriodStart.toISOString().slice(0, 10)} - ${item.sharingPeriodEnd.toISOString().slice(0, 10)}`,
-		})) as unknown as Domain.Contexts.Listing.ItemListing.ItemListing<PropType>[]; // TODO: Properly convert to domain objects
+		// Execute queries
+		const [mongoItems, total] = await Promise.all([
+			this.model
+				.find(query)
+				.sort(sort)
+				.skip(skip)
+				.limit(options.pageSize)
+				.exec(),
+			this.model.countDocuments(query).exec(),
+		]);
+
+		// Convert to domain objects
+		const domainItems = mongoItems.map((item: Models.Listing.ItemListing) =>
+			this.typeConverter.toDomain(item, this.passport),
+		);
 
 		return {
 			items: domainItems,
@@ -271,4 +161,5 @@ export class ItemListingRepository<
 			pageSize: options.pageSize,
 		};
 	}
+
 }
