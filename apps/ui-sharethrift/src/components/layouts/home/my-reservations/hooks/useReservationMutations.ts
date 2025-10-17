@@ -42,5 +42,3 @@ export function useReservationMutations() {
 
     return { handleCancel, cancelLoading, handleClose, closeLoading };
 }
-
-
