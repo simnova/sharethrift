@@ -14,5 +14,3 @@ export function usePastReservations(userId?: string) {
     });
     return { reservations: data?.myPastReservations ?? [], loading, error };
 }
-
-
