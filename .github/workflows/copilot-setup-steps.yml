@@ -66,7 +66,7 @@ jobs:
       - name: Install Playwright browsers
         run: |
           echo "Installing Playwright browsers for UI testing..."
-          npx playwright install --with-deps
+          pnpm exec playwright install --with-deps
         env:
           PLAYWRIGHT_BROWSERS_PATH: /home/runner/.cache/ms-playwright
         if: steps.playwright-cache.outputs.cache-hit != 'true'
