@@ -20,9 +20,15 @@ export interface DomainDataSource {
 		};
 	};
 
-    ReservationRequest: {
-        ReservationRequest: {
-            ReservationRequestUnitOfWork: Contexts.ReservationRequest.ReservationRequest.ReservationRequestUnitOfWork;
-        }
-    }
+	ReservationRequest: {
+		ReservationRequest: {
+			ReservationRequestUnitOfWork: Contexts.ReservationRequest.ReservationRequest.ReservationRequestUnitOfWork;
+		};
+	};
+
+	AccountPlan: {
+		AccountPlan: {
+			AccountPlanUnitOfWork: Contexts.AccountPlan.AccountPlan.AccountPlanUnitOfWork;
+		};
+	};
 }
