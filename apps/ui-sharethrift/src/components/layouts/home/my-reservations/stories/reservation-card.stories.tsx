@@ -1,11 +1,14 @@
 import type { Meta, StoryObj } from '@storybook/react';
-import { MockedProvider } from '@apollo/client/testing';
 import { ReservationCard } from '../components/reservation-card.tsx';
 import {
-	reservationStoryMocks,
 	storyReservationsActive,
 	storyReservationsPast,
 } from './reservation-story-mocks.ts';
+import {
+	defaultReservationActions,
+	defaultReservationArgTypes,
+	withReservationMocks,
+} from '../../../../test/utils/storybook-reservation-providers.tsx';
 
 const meta: Meta<typeof ReservationCard> = {
 	title: 'Molecules/ReservationCard',
@@ -13,30 +16,10 @@ const meta: Meta<typeof ReservationCard> = {
 	parameters: { layout: 'padded' },
 	tags: ['autodocs'],
 	// Global decorator for MockedProvider
-	decorators: [
-		(Story) => (
-			<MockedProvider mocks={reservationStoryMocks}>
-				<Story />
-			</MockedProvider>
-		),
-	],
+	decorators: [withReservationMocks],
 	// Default event handlers
-	args: {
-		onCancel: (id: string) => console.log('Cancel clicked', id),
-		onClose: (id: string) => console.log('Close clicked', id),
-		onMessage: (id: string) => console.log('Message clicked', id),
-	},
-	argTypes: {
-		cancelLoading: {
-			control: 'boolean',
-		},
-		closeLoading: {
-			control: 'boolean',
-		},
-		showActions: {
-			control: 'boolean',
-		},
-	},
+	args: defaultReservationActions,
+	argTypes: defaultReservationArgTypes,
 };
 export default meta;
 type Story = StoryObj<typeof meta>;

@@ -3,6 +3,7 @@ import {
     HomeMyReservationsReservationsViewActiveContainerActiveReservationsDocument,
     type HomeMyReservationsReservationsViewActiveContainerActiveReservationsQuery,
 } from '../../../../../generated.tsx';
+import { filterActiveReservations } from '../../../../../utils/reservation-state-utils.ts';
 
 export function useActiveReservations(userId?: string) {
     const { data, loading, error } = useQuery<
@@ -13,10 +14,7 @@ export function useActiveReservations(userId?: string) {
         fetchPolicy: 'cache-first',
     });
 
-    const reservations =
-        data?.myActiveReservations?.filter(
-            (r) => r.state === 'Accepted' || r.state === 'Requested',
-        ) ?? [];
+    const reservations = filterActiveReservations(data?.myActiveReservations ?? []);
 
     return { reservations, loading, error };
 }

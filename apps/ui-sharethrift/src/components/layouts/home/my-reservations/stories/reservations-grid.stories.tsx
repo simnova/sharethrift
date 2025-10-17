@@ -1,18 +1,15 @@
 import type { Meta, StoryObj } from '@storybook/react';
-import { MockedProvider } from '@apollo/client/testing';
 import { ReservationsGrid } from '../components/reservations-grid.tsx';
 import {
-	reservationStoryMocks,
 	storyReservationsActive,
 	storyReservationsAll,
 	storyReservationsPast,
 } from './reservation-story-mocks.ts';
-
-const defaultHandlers = {
-	onCancel: (id: string) => console.log('Cancel clicked', id),
-	onClose: (id: string) => console.log('Close clicked', id),
-	onMessage: (id: string) => console.log('Message clicked', id),
-};
+import {
+	defaultReservationActions,
+	defaultReservationArgTypes,
+	withReservationMocks,
+} from '../../../../test/utils/storybook-reservation-providers.tsx';
 
 const meta: Meta<typeof ReservationsGrid> = {
 	title: 'Organisms/ReservationsGrid',
@@ -20,25 +17,9 @@ const meta: Meta<typeof ReservationsGrid> = {
 	parameters: { layout: 'padded' },
 	tags: ['autodocs'],
 	// Global decorator for MockedProvider
-	decorators: [
-		(Story) => (
-			<MockedProvider mocks={reservationStoryMocks}>
-				<Story />
-			</MockedProvider>
-		),
-	],
-	args: defaultHandlers, // apply to all stories by default
-	argTypes: {
-		cancelLoading: {
-			control: 'boolean',
-		},
-		closeLoading: {
-			control: 'boolean',
-		},
-		showActions: {
-			control: 'boolean',
-		},
-	},
+	decorators: [withReservationMocks],
+	args: defaultReservationActions, // apply to all stories by default
+	argTypes: defaultReservationArgTypes,
 };
 export default meta;
 

@@ -1,5 +1,5 @@
 import type React from 'react';
-import { Table } from 'antd';
+import { Table, Image } from 'antd';
 import styles from './reservations-table.module.css';
 import { ReservationStatusTag } from '@sthrift/ui-components';
 import { ReservationActions } from './reservation-actions.tsx';
@@ -34,6 +34,44 @@ export const ReservationsTable: React.FC<ReservationsTableProps> = ({
 }) => {
 	const classes = styles as ReservationsTableStyles;
 	const columns = [
+		{
+			title: 'Image',
+			dataIndex: 'listing',
+			key: 'image',
+			width: 80,
+			render: (
+				listing: HomeMyReservationsReservationsViewReservationRequestFieldsFragment['listing'],
+			) => (
+				<div className={classes.listingCell}>
+					{listing?.images && listing.images.length > 0 ? (
+						<Image
+							src={listing.images[0]}
+							alt={listing.title || 'Listing image'}
+							width={60}
+							height={40}
+							style={{ objectFit: 'cover', borderRadius: '4px' }}
+							fallback="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAMIAAADDCAYAAADQvc6UAAABRWlDQ1BJQ0MgUHJvZmlsZQAAKJFjYGASSSwoyGFhYGDIzSspCnJ3UoiIjFJgf8LAwSDCIMogwMCcmFxc4BgQ4ANUwgCjUcG3awyMIPqyLsis7PPOq3QdDFcvjV3jOD1boQVTPQrgSkktTgbSf4A4LbmgqISBgTEFyFYuLykAsTuAbJEioKOA7DkgdjqEvQHEEwtkDvAbCLgBxJjNTkHOOkEyMwFBHwgwWLCk4TUwHQl0yBCBfF6QAosdP1AEiB0WQDA8Ccw8IXXQWpFUhgQNQ9VcC1kQQjA7l9gBDp2UgWDUUAX1J6lwI4Qxdaa4dGCiSxqKFaaaDAoW1ZkVmpeIZODAVVfsDAzOGDgWUyRWK4D4s0QEkHRiNg8QyBMz2BYUGiHuAHDOSsQ4P0JsdU4gR7T6eCsxMDAwYGAShGJ9BYuBxZnKhxpaBTl0jLi8vLF9fYuB2dA6PbbSxqDqOsKYzmpF0esLC6QvIA=="
+						/>
+					) : (
+						<div
+							style={{
+								width: 60,
+								height: 40,
+								backgroundColor: '#f5f5f5',
+								borderRadius: '4px',
+								display: 'flex',
+								alignItems: 'center',
+								justifyContent: 'center',
+								fontSize: '10px',
+								color: '#999',
+							}}
+						>
+							No Image
+						</div>
+					)}
+				</div>
+			),
+		},
 		{
 			title: 'Listing',
 			dataIndex: 'listing',

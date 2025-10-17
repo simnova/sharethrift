@@ -8,6 +8,7 @@ fragment HomeMyReservationsReservationsViewReservationRequestFields on Reservati
 	listing {
 		id
 		title
+		images
 	}
 	reserver {
 		id

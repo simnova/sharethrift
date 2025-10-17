@@ -5,10 +5,41 @@ import {
 	HomeMyReservationsReservationsViewHistoryContainerPastReservationsDocument,
 } from '../../../../../generated.tsx';
 
+/**
+ * Mock data and utilities for reservation-related Storybook stories
+ * 
+ * This file provides:
+ * - Factory function for creating reservation mock data with consistent defaults
+ * - Pre-defined mock reservations for different states (active/past)
+ * - Apollo Client mocks for GraphQL queries used in reservation stories
+ * 
+ * Structure:
+ * - makeReservation(): Factory function that creates reservation objects with sensible defaults
+ * - activeReservations: Mock data for active reservations (Requested, Accepted states)
+ * - pastReservations: Mock data for past reservations (Rejected, Cancelled, Closed states)
+ * - reservationStoryMocks: Apollo mocks for GraphQL queries
+ */
+
 export const STORYBOOK_RESERVATION_USER_ID = 'storybook-reserver-id';
 
 /**
  * Factory function to create reservation mock data with defaults
+ * 
+ * This function centralizes the creation of reservation mock objects, ensuring
+ * consistency across all stories and making it easy to add new mock reservations.
+ * 
+ * @param params - Configuration object for the reservation
+ * @param params.id - Unique identifier for the reservation
+ * @param params.state - Current state of the reservation (Requested, Accepted, etc.)
+ * @param params.listing - Listing information including id, title, and optional images
+ * @param params.user - User information for the reserver
+ * @param params.reservationPeriodStart - Start date of the reservation period
+ * @param params.reservationPeriodEnd - End date of the reservation period
+ * @param params.createdAt - When the reservation was created
+ * @param params.updatedAt - When the reservation was last updated
+ * @param params.closeRequestedByReserver - Whether the reserver requested to close
+ * @param params.closeRequestedBySharer - Whether the sharer requested to close
+ * @returns Complete reservation object ready for use in stories
  */
 function makeReservation({
 	id,
@@ -24,7 +55,7 @@ function makeReservation({
 }: {
 	id: string;
 	state: HomeMyReservationsReservationsViewReservationRequestFieldsFragment['state'];
-	listing: { id: string; title: string };
+	listing: { id: string; title: string; images?: string[] };
 	user: { id: string; username: string; firstName: string; lastName: string };
 	reservationPeriodStart?: string;
 	reservationPeriodEnd?: string;
@@ -60,11 +91,19 @@ function makeReservation({
 	};
 }
 
+/**
+ * Mock reservations in active states (Requested, Accepted)
+ * These represent ongoing reservations that users can interact with
+ */
 const activeReservations: HomeMyReservationsReservationsViewReservationRequestFieldsFragment[] = [
 	makeReservation({
 		id: 'res-001',
 		state: 'Requested',
-		listing: { id: 'listing-1', title: 'Power Drill Set' },
+		listing: { 
+			id: 'listing-1', 
+			title: 'Power Drill Set',
+			images: ['https://images.unsplash.com/photo-1558618047-3c8c76ca7d13?w=300&h=200&fit=crop']
+		},
 		user: {
 			id: 'user-1',
 			username: 'sarah.j',
@@ -79,7 +118,11 @@ const activeReservations: HomeMyReservationsReservationsViewReservationRequestFi
 	makeReservation({
 		id: 'res-002',
 		state: 'Accepted',
-		listing: { id: 'listing-2', title: 'Camping Tent' },
+		listing: { 
+			id: 'listing-2', 
+			title: 'Camping Tent',
+			images: ['https://images.unsplash.com/photo-1487730116645-74489c95b41b?w=300&h=200&fit=crop']
+		},
 		user: {
 			id: 'user-2',
 			username: 'mike.b',
@@ -93,11 +136,19 @@ const activeReservations: HomeMyReservationsReservationsViewReservationRequestFi
 	}),
 ];
 
+/**
+ * Mock reservations in inactive states (Rejected, Cancelled, Closed)
+ * These represent completed or cancelled reservations for history views
+ */
 const pastReservations: HomeMyReservationsReservationsViewReservationRequestFieldsFragment[] = [
 	makeReservation({
 		id: 'res-003',
 		state: 'Rejected',
-		listing: { id: 'listing-3', title: 'Mountain Bike' },
+		listing: { 
+			id: 'listing-3', 
+			title: 'Mountain Bike',
+			images: ['https://images.unsplash.com/photo-1558618047-3c8c76ca7d13?w=300&h=200&fit=crop']
+		},
 		user: {
 			id: 'user-3',
 			username: 'anna.l',
@@ -112,7 +163,11 @@ const pastReservations: HomeMyReservationsReservationsViewReservationRequestFiel
 	makeReservation({
 		id: 'res-004',
 		state: 'Cancelled',
-		listing: { id: 'listing-4', title: 'Kayak' },
+		listing: { 
+			id: 'listing-4', 
+			title: 'Kayak',
+			images: ['https://images.unsplash.com/photo-1487730116645-74489c95b41b?w=300&h=200&fit=crop']
+		},
 		user: {
 			id: 'user-4',
 			username: 'chris.g',
@@ -127,7 +182,11 @@ const pastReservations: HomeMyReservationsReservationsViewReservationRequestFiel
 	makeReservation({
 		id: 'res-005',
 		state: 'Closed',
-		listing: { id: 'listing-5', title: 'GoPro Camera' },
+		listing: { 
+			id: 'listing-5', 
+			title: 'GoPro Camera',
+			images: ['https://images.unsplash.com/photo-1558618047-3c8c76ca7d13?w=300&h=200&fit=crop']
+		},
 		user: {
 			id: 'user-5',
 			username: 'patricia.b',
@@ -142,6 +201,10 @@ const pastReservations: HomeMyReservationsReservationsViewReservationRequestFiel
 	}),
 ];
 
+/**
+ * Exported mock data for use in Storybook stories
+ * These provide consistent test data across all reservation-related stories
+ */
 export const storyReservationsActive = activeReservations;
 export const storyReservationsPast = pastReservations;
 export const storyReservationsAll = [
@@ -149,6 +212,16 @@ export const storyReservationsAll = [
 	...pastReservations,
 ];
 
+/**
+ * Apollo Client mocks for GraphQL queries used in reservation stories
+ * 
+ * These mocks provide realistic responses for:
+ * - Active reservations query (myActiveReservations)
+ * - Past reservations query (myPastReservations)
+ * 
+ * Each mock includes proper GraphQL response structure with __typename fields
+ * and realistic data that matches the expected query variables.
+ */
 export const reservationStoryMocks: MockedResponse[] = [
 	{
 		request: {
