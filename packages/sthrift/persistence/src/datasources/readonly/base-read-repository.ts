@@ -1,5 +1,9 @@
 import type { Domain } from '@sthrift/domain';
-import type { FindOneOptions, FindOptions, MongoDataSource } from './mongo-data-source.ts';
+import type {
+	FindOneOptions,
+	FindOptions,
+	MongoDataSource,
+} from './mongo-data-source.ts';
 import type { FilterQuery } from 'mongoose';
 
 /**

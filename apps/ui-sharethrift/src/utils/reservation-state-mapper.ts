@@ -12,15 +12,19 @@ export function mapReservationState(
 			return 'ACCEPTED';
 		case 'Requested':
 			return 'REQUESTED';
-        case 'Rejected':
-            return 'REJECTED';
+		case 'Rejected':
+			return 'REJECTED';
 		case 'Closed':
 			return 'CLOSED';
 		case 'Cancelled':
 			return 'CANCELLED';
 		default:
 			// Log the unexpected state for debugging
-			console.error(`Unexpected reservation state: "${state}". Expected one of: Accepted, Requested, Rejected, Closed, Cancelled`);
-			throw new Error(`Invalid reservation state: "${state}". Expected one of: Accepted, Requested, Rejected, Closed, Cancelled`);
+			console.error(
+				`Unexpected reservation state: "${state}". Expected one of: Accepted, Requested, Rejected, Closed, Cancelled`,
+			);
+			throw new Error(
+				`Invalid reservation state: "${state}". Expected one of: Accepted, Requested, Rejected, Closed, Cancelled`,
+			);
 	}
 }
