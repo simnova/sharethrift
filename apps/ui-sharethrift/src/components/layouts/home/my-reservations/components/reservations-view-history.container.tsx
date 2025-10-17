@@ -9,7 +9,11 @@ export const ReservationsViewHistoryContainer: React.FC<
 	ReservationsViewHistoryContainerProps
 > = () => {
 	const { userId, loading: userLoading, error: userError } = useCurrentUserId();
-	const { reservations, loading: reservationsLoading, error: reservationsError } = usePastReservations(userId);
+	const {
+		reservations,
+		loading: reservationsLoading,
+		error: reservationsError,
+	} = usePastReservations(userId);
 	const loading = userLoading || reservationsLoading;
 	const error = userError || reservationsError;
 
