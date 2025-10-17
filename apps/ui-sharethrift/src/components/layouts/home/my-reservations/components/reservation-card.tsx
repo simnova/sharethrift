@@ -33,11 +33,12 @@ export const ReservationCard: React.FC<ReservationCardProps> = ({
 		sharerDisplay = `@${reservation.reserver.account.username}`;
 	}
 
-    return (
-        <Card className="mb-4" bodyStyle={{ padding: 0 }}>
-			<div className={styles.cardRow}>
-				<div className={styles.reservationImageWrapper}>
-					<div className={styles.statusTagOverlay}>
+	return (
+		<Card className="mb-4" bodyStyle={{ padding: 0 }}>
+			{/* biome-ignore lint/complexity/useLiteralKeys: generated CSS module typing uses index signature */}
+			<div className={styles['cardRow']}>
+				<div className={styles['reservationImageWrapper']}>
+					<div className={styles['statusTagOverlay']}>
 						<ReservationStatusTag
 							status={
 								reservation.state
@@ -47,30 +48,30 @@ export const ReservationCard: React.FC<ReservationCardProps> = ({
 						/>
 					</div>
 				</div>
-				<div className={styles.cardContent}>
-					<div className={styles.cardTitle}>
+				<div className={styles['cardContent']}>
+					<div className={styles['cardTitle']}>
 						{reservation.listing?.title || 'Unknown Listing'}
 					</div>
-					<div className={styles.cardMeta}>
+					<div className={styles['cardMeta']}>
 						<div>
-							<Text strong className={styles.cardMetaLabel}>
+							<Text strong className={styles['cardMetaLabel']}>
 								Sharer:{' '}
 							</Text>
-							<Text className={styles.cardMetaValue}>{sharerDisplay}</Text>
+							<Text className={styles['cardMetaValue']}>{sharerDisplay}</Text>
 						</div>
 						<div>
-							<Text strong className={styles.cardMetaLabel}>
+							<Text strong className={styles['cardMetaLabel']}>
 								Requested On:{' '}
 							</Text>
-							<Text className={styles.cardMetaValue}>
+							<Text className={styles['cardMetaValue']}>
 								{new Date(reservation.createdAt).toLocaleDateString()}
 							</Text>
 						</div>
 						<div>
-							<Text strong className={styles.cardMetaLabel}>
+							<Text strong className={styles['cardMetaLabel']}>
 								Reservation Period:{' '}
 							</Text>
-							<Text className={styles.cardMetaValue}>
+							<Text className={styles['cardMetaValue']}>
 								{new Date(
 									reservation.reservationPeriodStart,
 								).toLocaleDateString()}{' '}
@@ -82,7 +83,7 @@ export const ReservationCard: React.FC<ReservationCardProps> = ({
 						</div>
 					</div>
 					{showActions && (
-						<div className={styles.cardActions}>
+						<div className={styles['cardActions']}>
 							<ReservationActions
 								status={
 									reservation.state
