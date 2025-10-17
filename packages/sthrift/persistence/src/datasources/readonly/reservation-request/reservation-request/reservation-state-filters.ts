@@ -19,7 +19,7 @@ export const getActiveReservationStateFilter = () => ({
  * Returns a MongoDB filter for inactive reservation states (Cancelled, Closed, Rejected)
  */
 export const getInactiveReservationStateFilter = () => ({
-	state: { $nin: RESERVATION_STATES.ACTIVE },
+	state: { $in: RESERVATION_STATES.INACTIVE },
 });
 
 /**
