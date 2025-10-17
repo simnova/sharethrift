@@ -3,4 +3,5 @@ import type { ApplicationServices } from '@sthrift/application-services';
 
 export interface GraphContext extends BaseContext {
     applicationServices: ApplicationServices;
+    systemApplicationServices: ApplicationServices;
 }

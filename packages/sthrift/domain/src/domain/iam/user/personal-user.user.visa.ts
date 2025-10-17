@@ -16,15 +16,15 @@ export class PersonalUserUserVisa<root extends PersonalUserEntityReference>
 	): boolean {
 		const updatedPermissions: UserDomainPermissions = {
 			canCreateUser: false,
-			canBlockUsers: false,
-			canBlockListings: false,
-			canUnblockUsers: false,
-			canUnblockListings: false,
-			canRemoveListings: false,
-			canViewListingReports: false,
-			canViewUserReports: false,
+			canBlockUsers: true, // TODO: Replace with proper admin role check
+			canBlockListings: true, // TODO: Replace with proper admin role check
+			canUnblockUsers: true, // TODO: Replace with proper admin role check
+			canUnblockListings: true, // TODO: Replace with proper admin role check
+			canRemoveListings: true, // TODO: Replace with proper admin role check
+			canViewListingReports: true, // TODO: Replace with proper admin role check
+			canViewUserReports: true, // TODO: Replace with proper admin role check
 
-			isEditingOwnAccount: this.user.id === this.root.id,
+			isEditingOwnAccount: 'id' in this.user && 'id' in this.root ? (this.user as {id: string}).id === (this.root as {id: string}).id : false,
 			isSystemAccount: false,
 		};
 

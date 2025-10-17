@@ -33,7 +33,14 @@ export function ViewListing({
 			? window.localStorage.getItem('userId')
 			: undefined;
 	const handleBack = () => {
-		window.location.href = '/';
+		// Check if we came from admin dashboard
+		const adminContext = sessionStorage.getItem('adminContext');
+		if (adminContext === 'true') {
+			sessionStorage.removeItem('adminContext');
+			window.location.href = '/account/admin-dashboard';
+		} else {
+			window.location.href = '/';
+		}
 	};
 
 	return (

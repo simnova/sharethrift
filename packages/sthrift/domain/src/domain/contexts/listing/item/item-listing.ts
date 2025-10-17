@@ -132,7 +132,7 @@ export class ItemListing<props extends ItemListingProps>
 			);
 		}
 		this.props.title = new ValueObjects.Title(value).valueOf();
-		this.props.updatedAt = new Date();
+		// Note: updatedAt is automatically handled by Mongoose timestamps
 	}
 
 	get description(): string {
@@ -148,7 +148,7 @@ export class ItemListing<props extends ItemListingProps>
 			);
 		}
 		this.props.description = new ValueObjects.Description(value).valueOf();
-		this.props.updatedAt = new Date();
+		// Note: updatedAt is automatically handled by Mongoose timestamps
 	}
 
 	get category(): string {
@@ -164,7 +164,7 @@ export class ItemListing<props extends ItemListingProps>
 			);
 		}
 		this.props.category = new ValueObjects.Category(value).valueOf();
-		this.props.updatedAt = new Date();
+		// Note: updatedAt is automatically handled by Mongoose timestamps
 	}
 
 	get location(): string {
@@ -180,7 +180,7 @@ export class ItemListing<props extends ItemListingProps>
 			);
 		}
 		this.props.location = new ValueObjects.Location(value).valueOf();
-		this.props.updatedAt = new Date();
+		// Note: updatedAt is automatically handled by Mongoose timestamps
 	}
 
 	get sharingPeriodStart(): Date {
@@ -196,7 +196,7 @@ export class ItemListing<props extends ItemListingProps>
 			);
 		}
 		this.props.sharingPeriodStart = value;
-		this.props.updatedAt = new Date();
+		// Note: updatedAt is automatically handled by Mongoose timestamps
 	}
 
 	get sharingPeriodEnd(): Date {
@@ -212,7 +212,7 @@ export class ItemListing<props extends ItemListingProps>
 			);
 		}
 		this.props.sharingPeriodEnd = value;
-		this.props.updatedAt = new Date();
+		// Note: updatedAt is automatically handled by Mongoose timestamps
 	}
 
 	get state(): string {
@@ -252,7 +252,7 @@ export class ItemListing<props extends ItemListingProps>
 			);
 		}
 		this.props.images = value;
-		this.props.updatedAt = new Date();
+		// Note: updatedAt is automatically handled by Mongoose timestamps
 	}
 
 	get isActive(): boolean {
@@ -282,7 +282,7 @@ export class ItemListing<props extends ItemListingProps>
 		}
 
 		this.props.state = new ValueObjects.ListingState('Published').valueOf();
-		this.props.updatedAt = new Date();
+		// Note: updatedAt is automatically handled by Mongoose timestamps
 	}
 
 	public pause(): void {
@@ -297,7 +297,7 @@ export class ItemListing<props extends ItemListingProps>
 		}
 
 		this.props.state = new ValueObjects.ListingState('Paused').valueOf();
-		this.props.updatedAt = new Date();
+		// Note: updatedAt is automatically handled by Mongoose timestamps
 	}
 
 	public cancel(): void {
@@ -310,12 +310,12 @@ export class ItemListing<props extends ItemListingProps>
 		}
 
 		this.props.state = new ValueObjects.ListingState('Cancelled').valueOf();
-		this.props.updatedAt = new Date();
+		// Note: updatedAt is automatically handled by Mongoose timestamps
 	}
 
 	/**
-	 * Unblock a blocked listing and make it active again (Published).
-	 * Only allowed when the listing is currently in a blocked/appeal-requested state.
+	 * Unblock a blocked listing by changing its state to Appeal Requested.
+	 * Only allowed when the listing is currently in a Blocked state.
 	 */
 	public unblock(): void {
 		if (
@@ -327,17 +327,15 @@ export class ItemListing<props extends ItemListingProps>
 		}
 
 		const current = this.props.state.valueOf();
-		const isAllowed =
-			current === ValueObjects.ListingStateEnum.Blocked ||
-			current === ValueObjects.ListingStateEnum.AppealRequested;
+		const isAllowed = current === ValueObjects.ListingStateEnum.Blocked;
 		if (!isAllowed) {
 			throw new Error(
-				`Cannot unblock a listing from state "${current}". Only Blocked or Appeal Requested listings can be unblocked.`,
+				`Cannot unblock a listing from state "${current}". Only Blocked listings can be unblocked.`,
 			);
 		}
 
-		this.props.state = new ValueObjects.ListingState('Published').valueOf();
-		this.props.updatedAt = new Date();
+		this.props.state = ValueObjects.ListingStateEnum.AppealRequested;
+		// Note: updatedAt is automatically handled by Mongoose timestamps when the document is saved
 	}
 
 	/**

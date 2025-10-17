@@ -1,5 +1,5 @@
 import { useState, useCallback } from 'react';
-import { message, Modal } from 'antd';
+import { message } from 'antd';
 import { useMutation, useQuery } from '@apollo/client';
 import {
 	AdminListingsTableContainerAdminListingsDocument,
@@ -37,11 +37,11 @@ export function AdminListings() {
 		},
 	);
 
-	const [removeListingMutation, { loading: removing }] = useMutation(
+	const [removeListingMutation] = useMutation(
 		AdminListingsTableContainerRemoveListingDocument,
 	);
 
-	const [unblockListingMutation, { loading: unblocking }] = useMutation(
+	const [unblockListingMutation] = useMutation(
 		AdminListingsTableContainerUnblockListingDocument,
 	);
 
@@ -69,56 +69,41 @@ export function AdminListings() {
 	}, []);
 
 	const onAction = useCallback(
-		async (action: string, listingId: string) => {
-					if (action === 'view') {
-						window.open(`/listing/${listingId}`, '_blank');
+		(action: string, listingId: string) => {
+			if (action === 'view') {
+				// Navigate in same tab with admin context stored for back navigation
+				sessionStorage.setItem('adminContext', 'true');
+				window.location.href = `/listing/${listingId}`;
+			}
+			
+			if (action === 'unblock') {
+				(async () => {
+					try {
+						await unblockListingMutation({ variables: { id: listingId } });
+						message.success('Listing unblocked');
+						refetch();
+					} catch (e: unknown) {
+						const msg = e instanceof Error ? e.message : String(e);
+						message.error(msg);
 					}
-					if (action === 'unblock') {
-						Modal.confirm({
-							title: 'Unblock this listing?',
-							content: 'This will make the listing active again.',
-							okText: 'Unblock',
-							okButtonProps: { loading: unblocking },
-							onOk: async () => {
-								try {
-									const { data } = await unblockListingMutation({ variables: { id: listingId } });
-									if (data?.unblockListing) {
-										message.success('Listing unblocked');
-										await refetch();
-									} else {
-										message.error('Failed to unblock listing');
-									}
-								} catch (e: unknown) {
-									const msg = e instanceof Error ? e.message : String(e);
-									message.error(msg);
-								}
-							},
-						});
-					}
+				})();
+			}
+			
 			if (action === 'delete' || action === 'remove') {
-				Modal.confirm({
-					title: 'Remove this listing?',
-					content: 'This action permanently deletes the listing.',
-					okText: 'Remove',
-					okButtonProps: { danger: true, loading: removing },
-					onOk: async () => {
-						try {
-							const { data } = await removeListingMutation({ variables: { id: listingId } });
-							if (data?.removeListing) {
-								message.success('Listing removed');
-								await refetch();
-							} else {
-								message.error('Failed to remove listing');
-							}
-						} catch (e: unknown) {
-							const msg = e instanceof Error ? e.message : String(e);
-							message.error(msg);
-						}
-					},
-				});
+				// Confirmation already handled by Popconfirm in the table
+				(async () => {
+					try {
+						await removeListingMutation({ variables: { id: listingId } });
+						message.success('Listing removed');
+						refetch();
+					} catch (e: unknown) {
+						const msg = e instanceof Error ? e.message : String(e);
+						message.error(msg);
+					}
+				})();
 			}
 		},
-		[refetch, removeListingMutation, removing, unblockListingMutation, unblocking],
+		[refetch, removeListingMutation, unblockListingMutation],
 	);
 
 		// Admin dashboard doesn't open request modal yet; will be implemented later

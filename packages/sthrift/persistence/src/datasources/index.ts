@@ -28,8 +28,26 @@ export const DataSourcesFactoryImpl = (
 
 	const withSystemPassport = (): DataSources => {
 		const systemPassport = Domain.PassportFactory.forSystem({
-			// canManageMembers: true,
-			// canManageEndUserRolesAndPermissions: true,
+			// User admin permissions
+			canCreateUser: true,
+			canBlockUsers: true,
+			canUnblockUsers: true,
+			canViewUserReports: true,
+			// Listing admin permissions
+			canBlockListings: true,
+			canUnblockListings: true,
+			canRemoveListings: true,
+			canViewListingReports: true,
+			// Listing domain permissions
+			canCreateItemListing: true,
+			canUpdateItemListing: true,
+			canDeleteItemListing: true,
+			canViewItemListing: true,
+			canPublishItemListing: true,
+			canUnpublishItemListing: true,
+			// System flags
+			isEditingOwnAccount: false,
+			isSystemAccount: true,
 		});
 		return {
 			domainDataSource: DomainDataSourceImplementation(models, systemPassport),

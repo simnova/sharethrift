@@ -22,9 +22,12 @@ const serverConfig = (securedSchema: GraphQLSchemaWithFragmentReplacements) => {
 	};
 };
 
+// Accept the framework's AppHost type but cast to our extended ApplicationServicesFactory
 export const graphHandlerCreator = (
-	applicationServicesFactory: ApplicationServicesFactory,
+	applicationServicesHost: { forRequest(rawAuthHeader?: string, hints?: unknown): Promise<unknown> },
 ): HttpHandler => {
+	// Cast to our extended interface that includes forSystem()
+	const applicationServicesFactory = applicationServicesHost as ApplicationServicesFactory;
 	// Set up Apollo Server
     const securedSchema = applyMiddleware(combinedSchema);
 	const server = new ApolloServer<GraphContext>({
@@ -39,6 +42,7 @@ export const graphHandlerCreator = (
             };
             return Promise.resolve({
                 applicationServices: await applicationServicesFactory.forRequest(authHeader, hints),
+                systemApplicationServices: applicationServicesFactory.forSystem(),
             });
 		},
 	};

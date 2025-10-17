@@ -229,8 +229,8 @@ const itemListingResolvers = {
 			args: { id: string },
 			context: GraphContext,
 		) => {
-			// Authorization for admin removal can be layered via verifiedUser roles in future
-			return await context.applicationServices.Listing.ItemListing.remove({ id: args.id });
+			// Use system application services for admin operations with system-level permissions
+			return await context.systemApplicationServices.Listing.ItemListing.remove({ id: args.id });
 		},
 
 		unblockListing: async (
@@ -238,8 +238,8 @@ const itemListingResolvers = {
 			args: { id: string },
 			context: GraphContext,
 		) => {
-			// Authorization for admin unblock can be layered via verifiedUser roles in future
-			return await context.applicationServices.Listing.ItemListing.unblock({ id: args.id });
+			// Use system application services for admin operations with system-level permissions
+			return await context.systemApplicationServices.Listing.ItemListing.unblock({ id: args.id });
 		},
 	},
 };

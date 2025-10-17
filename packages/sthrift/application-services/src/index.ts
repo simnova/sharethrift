@@ -51,9 +51,31 @@ export type PrincipalHints = Record<string, unknown>;
 
 export interface AppServicesHost<S> {
 	forRequest(rawAuthHeader?: string, hints?: PrincipalHints): Promise<S>;
+	forSystem(): S;
 }
 
 export type ApplicationServicesFactory = AppServicesHost<ApplicationServices>;
+
+export const buildSystemApplicationServices = (
+	infrastructureServicesRegistry: ApiContextSpec,
+): ApplicationServices => {
+	const paymentApplicationService = new DefaultPaymentApplicationService(
+		infrastructureServicesRegistry.paymentService,
+	);
+
+	const systemDataSources = infrastructureServicesRegistry.dataSourcesFactory.withSystemPassport();
+
+	return {
+		User: User(systemDataSources),
+		get verifiedUser(): VerifiedUser | null {
+			return null; // System services don't have a verified user context
+		},
+		Payment: paymentApplicationService,
+		ReservationRequest: ReservationRequest(systemDataSources),
+		Listing: Listing(systemDataSources),
+		Conversation: Conversation(systemDataSources),
+	};
+};
 
 export const buildApplicationServicesFactory = (
 	infrastructureServicesRegistry: ApiContextSpec,
@@ -107,6 +129,7 @@ export const buildApplicationServicesFactory = (
 
 	return {
 		forRequest,
+		forSystem: () => buildSystemApplicationServices(infrastructureServicesRegistry),
 	};
 };
 
