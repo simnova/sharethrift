@@ -1,6 +1,7 @@
 import type { GraphContext } from '../../../init/context.ts';
 import type { GraphQLResolveInfo } from 'graphql';
 import type {
+	AdminUserCreateInput,
 	AdminUserUpdateInput,
 	Resolvers,
 	QueryAllAdminUsersArgs,
@@ -85,6 +86,25 @@ const adminUserResolvers: Resolvers = {
 	},
 
 	Mutation: {
+		createAdminUser: async (
+			_parent: unknown,
+			args: { input: AdminUserCreateInput },
+			context: GraphContext,
+			_info: GraphQLResolveInfo,
+		) => {
+			//if (!context.applicationServices.verifiedUser?.verifiedJwt) {
+			//	throw new Error('Unauthorized');
+			//}
+			//console.log('createAdminUser resolver called with email:', args.input.email);
+			// TODO: SECURITY - Add admin permission check (e.g., only super admins can create admin users)
+			return await context.applicationServices.User.AdminUser.createIfNotExists({
+				email: args.input.email,
+				username: args.input.username,
+				firstName: args.input.firstName,
+				lastName: args.input.lastName,
+				roleId: args.input.roleId,
+			});
+		},
 		adminUserUpdate: async (
 			_parent: unknown,
 			args: { input: AdminUserUpdateInput },

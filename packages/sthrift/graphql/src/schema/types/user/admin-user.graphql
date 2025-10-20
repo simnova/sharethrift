@@ -25,9 +25,18 @@ type AdminUserAccount {
 	lastName: String
 }
 
+input AdminUserCreateInput {
+	email: String!
+	username: String!
+	firstName: String!
+	lastName: String!
+	roleId: ObjectID!
+}
+
 input AdminUserUpdateInput {
 	id: ObjectID!
 	isBlocked: Boolean
+	roleId: ObjectID
 	account: AdminUserAccountUpdateInput
 }
 
@@ -57,6 +66,7 @@ extend type Query {
 
 extend type Mutation {
 	# Admin User mutations
+	createAdminUser(input: AdminUserCreateInput!): AdminUser!
 	adminUserUpdate(input: AdminUserUpdateInput!): AdminUser!
 	
 	# # Uncomment when admin blocking is needed

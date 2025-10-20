@@ -4,6 +4,7 @@ import type { Domain } from '@sthrift/domain';
 export interface AdminUserUpdateCommand {
 	id: string;
 	isBlocked?: boolean;
+	roleId?: string;
 	account?: {
 		accountType?: string;
 		username?: string;
@@ -36,8 +37,13 @@ export const update = (datasources: DataSources) => {
 				if (command.isBlocked !== undefined) {
 					existingAdminUser.isBlocked = command.isBlocked;
 				}
+				
+			// Update role if provided (will be validated on save)
+			if (command.roleId) {
+				existingAdminUser.props.role = { id: command.roleId } as Domain.Contexts.Role.AdminRole.AdminRoleEntityReference;
+			}
 
-				if (command.account) {
+			if (command.account) {
 					existingAdminUser.account.accountType =
 						command.account.accountType ?? existingAdminUser.account.accountType;
 					existingAdminUser.account.username =

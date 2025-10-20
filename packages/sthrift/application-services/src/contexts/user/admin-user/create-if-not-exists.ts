@@ -6,6 +6,7 @@ export interface AdminUserCreateCommand {
 	username: string;
 	firstName: string;
 	lastName: string;
+	roleId: string;
 }
 
 export const createIfNotExists = (dataSources: DataSources) => {
@@ -19,6 +20,7 @@ export const createIfNotExists = (dataSources: DataSources) => {
 		if (existingAdminUser) {
 			return existingAdminUser;
 		}
+		
 		let adminUserToReturn:
 			| Domain.Contexts.User.AdminUser.AdminUserEntityReference
 			| undefined;
@@ -30,6 +32,10 @@ export const createIfNotExists = (dataSources: DataSources) => {
 					command.firstName,
 					command.lastName,
 				);
+
+				// Assign role by ID (will be validated on save)
+				newAdminUser.props.role = { id: command.roleId } as Domain.Contexts.Role.AdminRole.AdminRoleEntityReference;
+
 				adminUserToReturn = await repo.save(newAdminUser);
 			},
 		);
