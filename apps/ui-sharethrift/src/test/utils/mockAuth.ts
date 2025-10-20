@@ -1,12 +1,17 @@
 import type { AuthContextProps } from 'react-oidc-context';
-import { User } from 'oidc-client-ts';
 
-export function createMockUser(profile: Partial<User['profile']> = {}): User {
+// Mock User class to avoid dependency on oidc-client-ts
+class MockUser {
+	profile: Record<string, unknown>;
+	
+	constructor(data: { profile: Record<string, unknown> }) {
+		this.profile = data.profile;
+	}
+}
+
+export function createMockUser(profile: Partial<Record<string, unknown>> = {}): MockUser {
 	const nowInSeconds = Math.floor(Date.now() / 1000);
-	return new User({
-		access_token: 'mock-access-token',
-		token_type: 'Bearer',
-		session_state: null,
+	return new MockUser({
 		profile: {
 			sub: '507f1f77bcf86cd799439099',
 			name: 'Test User',

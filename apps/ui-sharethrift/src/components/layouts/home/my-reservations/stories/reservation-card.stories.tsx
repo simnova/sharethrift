@@ -8,7 +8,7 @@ import {
 	defaultReservationActions,
 	defaultReservationArgTypes,
 	withReservationMocks,
-} from '../../../../test/utils/storybook-reservation-providers.tsx';
+} from '../../../../../test/utils/storybook-reservation-providers.tsx';
 
 const meta: Meta<typeof ReservationCard> = {
 	title: 'Molecules/ReservationCard',

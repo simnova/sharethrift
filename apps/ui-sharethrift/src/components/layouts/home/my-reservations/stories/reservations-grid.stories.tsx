@@ -9,7 +9,7 @@ import {
 	defaultReservationActions,
 	defaultReservationArgTypes,
 	withReservationMocks,
-} from '../../../../test/utils/storybook-reservation-providers.tsx';
+} from '../../../../../test/utils/storybook-reservation-providers.tsx';
 
 const meta: Meta<typeof ReservationsGrid> = {
 	title: 'Organisms/ReservationsGrid',

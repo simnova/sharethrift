@@ -95,14 +95,14 @@ function makeReservation({
 /**
  * Helper to create Apollo mocks with consistent structure
  */
-function makeStoryMock<T>(
+function makeStoryMock(
 	query: DocumentNode,
-	responseField: keyof T,
-	data: T[keyof T],
+	responseField: string,
+	data: unknown,
 ): MockedResponse {
 	return {
 		request: { query, variables: { userId: STORYBOOK_RESERVATION_USER_ID } },
-		result: { data: { [responseField]: data } as T },
+		result: { data: { [responseField]: data } },
 	};
 }
 
