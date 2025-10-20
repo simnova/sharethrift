@@ -3,6 +3,9 @@
     "version": "1.0.0",
     "private": true,
     "type": "module",
+    "files": [
+        "dist"
+    ],
     "exports": {
         ".": {
             "types": "./dist/src/index.d.ts",
@@ -20,16 +23,18 @@
         "clean": "rimraf dist"
     },
     "dependencies": {
-        "@cellix/domain-seedwork": "*",
-        "@cellix/event-bus-seedwork-node": "*",
-        "@cellix/mongoose-seedwork": "*",
-        "@sthrift/domain": "*",
-        "@sthrift/data-sources-mongoose-models": "*"
+        "@cellix/domain-seedwork": "workspace:*",
+        "@cellix/event-bus-seedwork-node": "workspace:*",
+        "@cellix/mongoose-seedwork": "workspace:*",
+        "@sthrift/data-sources-mongoose-models": "workspace:*",
+        "@sthrift/domain": "workspace:*",
+        "bson": "^6.10.4",
+        "mongoose": "catalog:"
     },
     "devDependencies": {
-        "@cellix/typescript-config": "*",
-        "@cellix/vitest-config": "*",
-        "typescript": "^5.8.3",
-        "rimraf": "^6.0.1"
+        "@cellix/typescript-config": "workspace:*",
+        "@cellix/vitest-config": "workspace:*",
+        "rimraf": "^6.0.1",
+        "typescript": "^5.8.3"
     }
 }
