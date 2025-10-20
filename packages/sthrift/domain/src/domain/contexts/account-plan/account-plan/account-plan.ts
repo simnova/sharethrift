@@ -122,4 +122,16 @@ export class AccountPlan<props extends AccountPlanProps>
 	set cybersourcePlanId(value: string) {
 		this.props.cybersourcePlanId = value;
 	}
+
+	get createdAt(): Date {
+		return this.props.createdAt;
+	}
+
+	get updatedAt(): Date {
+		return this.props.updatedAt;
+	}
+
+	get schemaVersion(): string {
+		return this.props.schemaVersion;
+	}
 }

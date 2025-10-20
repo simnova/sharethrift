@@ -17,6 +17,10 @@ export interface AccountPlanProps extends DomainSeedwork.DomainEntityProps {
 	cybersourcePlanId: string;
 
 	readonly feature: AccountPlanFeatureProps;
+
+	get createdAt(): Date;
+	get updatedAt(): Date;
+	get schemaVersion(): string;
 }
 
 export interface AccountPlanEntityReference

@@ -9,7 +9,7 @@ export interface AccountPlanCreateCommand {
 	billingCycles: number;
 	billingAmount: number;
 	currency: string;
-	setupFee: number;
+	setupFee?: number | null;
 	feature: Domain.Contexts.AccountPlan.AccountPlan.AccountPlanFeatureProps;
 }
 
@@ -28,7 +28,7 @@ export const create = (dataSources: DataSources) => {
 					billingCycles: command.billingCycles,
 					billingAmount: command.billingAmount,
 					currency: command.currency,
-					setupFee: command.setupFee,
+					setupFee: command.setupFee || 0,
 					feature: command.feature,
 				});
 				accountPlanToReturn = await repo.save(newAccountPlan);

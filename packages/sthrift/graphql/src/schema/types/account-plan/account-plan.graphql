@@ -1,0 +1,72 @@
+type AccountPlan implements MongoBase {
+  name: String!
+  description: String
+  billingPeriodLength: Int!
+  billingPeriodUnit: String!
+  billingAmount: Float!
+  currency: String!
+  setupFee: Float
+  feature: AccountPlanFeature!
+  status: String
+  cybersourcePlanId: String
+
+  id: ObjectID!
+  schemaVersion: String!
+  createdAt: DateTime!
+  updatedAt: DateTime!
+}
+
+type AccountPlanFeature {
+  activeReservations: Int!
+  bookmarks: Int!
+  itemsToShare: Int!
+  friends: Int!
+}
+
+input AccountPlanCreateInput {
+  name: String!
+  description: String!
+  billingPeriodLength: Int!
+  billingPeriodUnit: String!
+  billingCycles: Int!
+  billingAmount: Float!
+  currency: String!
+  setupFee: Float
+  feature: AccountPlanFeatureInput!
+}
+
+input AccountPlanUpdateInput {
+  name: String
+  description: String
+  billingPeriodLength: Int
+  billingPeriodUnit: String
+  billingAmount: Float
+  currency: String
+  setupFee: Float
+  feature: AccountPlanFeatureInput
+
+  status: String
+  cybersourcePlanId: String
+}
+
+input AccountPlanFeatureInput {
+  activeReservations: Int!
+  bookmarks: Int!
+  itemsToShare: Int!
+  friends: Int!
+}
+
+type AccountPlanMutationResult implements MutationResult {
+  status: MutationStatus!
+  accountPlan: AccountPlan
+}
+
+extend type Query {
+  accountPlans: [AccountPlan]
+  accountPlan(accountPlanId: ObjectID!): AccountPlan
+}
+
+extend type Mutation {
+  accountPlanCreate(input: AccountPlanCreateInput!): AccountPlanMutationResult!
+  accountPlanUpdate(accountPlanId: ObjectID!, input: AccountPlanUpdateInput!): AccountPlanMutationResult!
+}
