@@ -106,7 +106,6 @@ export const buildApplicationServicesFactory = (
 					);
 
 				if (personalUser) {
-					console.log(passport);
 					passport = Domain.PassportFactory.forPersonalUser(personalUser);
 				}
 			}

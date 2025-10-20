@@ -112,8 +112,6 @@ export function AdminUsersTableContainer({
     action: "block" | "unblock" | "view-profile" | "view-report",
     userId: string
   ) => {
-    console.log(`Action: ${action}, User ID: ${userId}`);
-
     switch (action) {
       case "block":
         try {

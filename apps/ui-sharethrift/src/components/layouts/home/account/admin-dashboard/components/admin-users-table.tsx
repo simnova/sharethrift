@@ -62,9 +62,7 @@ export function AdminUsersTable({
 
   const handleBlockConfirm = async () => {
     try {
-      const values = await blockForm.validateFields();
-      console.log("Block user with:", values);
-      // Mutation is handled by the container via onAction
+      await blockForm.validateFields();
       onAction("block", selectedUser!.id);
       setBlockModalVisible(false);
       blockForm.resetFields();

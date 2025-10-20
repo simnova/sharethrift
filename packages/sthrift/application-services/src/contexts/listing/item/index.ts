@@ -76,36 +76,28 @@ export const ItemListing = (
 			return await dataSources.readonlyDataSource.Listing.ItemListing.ItemListingReadRepo.getPaged(args);
 		},
 		remove: async ({ id }) => {
-			try {
-				let success = false;
-				await dataSources.domainDataSource.Listing.ItemListing.ItemListingUnitOfWork.withScopedTransaction(
-					async (repo) => {
-						const listing = await repo.get(id);
-						listing.requestDelete();
-						await repo.save(listing);
-						success = true;
-					},
-				);
-				return success;
-			} catch (error) {
-				throw error;
-			}
+			let success = false;
+			await dataSources.domainDataSource.Listing.ItemListing.ItemListingUnitOfWork.withScopedTransaction(
+				async (repo) => {
+					const listing = await repo.get(id);
+					listing.requestDelete();
+					await repo.save(listing);
+					success = true;
+				},
+			);
+			return success;
 		},
 		unblock: async ({ id }) => {
-			try {
-				let success = false;
-				await dataSources.domainDataSource.Listing.ItemListing.ItemListingUnitOfWork.withScopedTransaction(
-					async (repo) => {
-						const listing = await repo.get(id);
-						listing.unblock();
-						await repo.save(listing);
-						success = true;
-					},
-				);
-				return success;
-			} catch (error) {
-				throw error;
-			}
+			let success = false;
+			await dataSources.domainDataSource.Listing.ItemListing.ItemListingUnitOfWork.withScopedTransaction(
+				async (repo) => {
+					const listing = await repo.get(id);
+					listing.unblock();
+					await repo.save(listing);
+					success = true;
+				},
+			);
+			return success;
 		},
 	};
 };

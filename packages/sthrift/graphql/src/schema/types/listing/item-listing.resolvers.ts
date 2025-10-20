@@ -121,7 +121,7 @@ const itemListingResolvers = {
 						publishedAt: listing.createdAt.toISOString(),
 						reservationPeriod: `${sharingStart.slice(0, 10)} - ${sharingEnd.slice(0, 10)}`,
 						status: mapStateToStatus(listing?.state),
-						pendingRequestsCount: 0, // TODO: integrate reservation request counts
+						pendingRequestsCount: 0, // Future: integrate with reservation request domain context
 					};
 				}),
 				total: result.total,
@@ -176,8 +176,7 @@ const itemListingResolvers = {
 						publishedAt: listing.createdAt?.toISOString?.() ?? null,
 						reservationPeriod: `${start.slice(0, 10)} - ${end.slice(0, 10)}`,
 						status: mapStateToStatus(listing?.state),
-						// Placeholder until reservation request counts are integrated
-						pendingRequestsCount: 0,
+						pendingRequestsCount: 0, // Future: integrate with reservation request domain context
 					};
 				}),
 				total: result.total,

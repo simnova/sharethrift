@@ -9,8 +9,6 @@ import {
 import { AdminListingsTable } from './admin-listings-table.tsx';
 import { ComponentQueryLoader } from '@sthrift/ui-components';
 
-export interface AdminListingsProps {}
-
 export function AdminListings() {
 	const [page, setPage] = useState(1);
 	const pageSize = 6;
@@ -105,8 +103,6 @@ export function AdminListings() {
 		},
 		[refetch, removeListingMutation, unblockListingMutation],
 	);
-
-		// Admin dashboard doesn't open request modal yet; will be implemented later
 
 	return (
 		<ComponentQueryLoader
