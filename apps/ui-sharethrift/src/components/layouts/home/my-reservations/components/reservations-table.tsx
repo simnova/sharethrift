@@ -3,7 +3,7 @@ import { Table, Image } from 'antd';
 import styles from './reservations-table.module.css';
 import { ReservationStatusTag } from '@sthrift/ui-components';
 import { ReservationActions } from './reservation-actions.tsx';
-import type { HomeMyReservationsReservationsViewReservationRequestFieldsFragment } from '../../../../../generated.tsx';
+import type { ReservationRequestFieldsFragment } from '../../../../../generated.tsx';
 import { mapReservationState } from '../../../../../utils/reservation-state-mapper.ts';
 
 type ReservationsTableStyles = {
@@ -12,7 +12,7 @@ type ReservationsTableStyles = {
 } & Record<string, string>;
 
 export interface ReservationsTableProps {
-	reservations: HomeMyReservationsReservationsViewReservationRequestFieldsFragment[]; // Type will eventually come from generated graphql files
+	reservations: ReservationRequestFieldsFragment[];
 	onCancel?: (id: string) => void;
 	onClose?: (id: string) => void;
 	onMessage?: (id: string) => void;
@@ -40,7 +40,7 @@ export const ReservationsTable: React.FC<ReservationsTableProps> = ({
 			key: 'image',
 			width: 80,
 			render: (
-				listing: HomeMyReservationsReservationsViewReservationRequestFieldsFragment['listing'],
+				listing: ReservationRequestFieldsFragment['listing'],
 			) => (
 				<div className={classes.listingCell}>
 					{listing?.images && listing.images.length > 0 ? (
@@ -77,7 +77,7 @@ export const ReservationsTable: React.FC<ReservationsTableProps> = ({
 			dataIndex: 'listing',
 			key: 'listing',
 			render: (
-				listing: HomeMyReservationsReservationsViewReservationRequestFieldsFragment['listing'],
+				listing: ReservationRequestFieldsFragment['listing'],
 			) => (
 				<div className={classes.listingCell}>
 					<span className={classes.tableText}>
@@ -91,7 +91,7 @@ export const ReservationsTable: React.FC<ReservationsTableProps> = ({
 			dataIndex: 'reserver',
 			key: 'sharer',
 			render: (
-				reserver: HomeMyReservationsReservationsViewReservationRequestFieldsFragment['reserver'],
+				reserver: ReservationRequestFieldsFragment['reserver'],
 			) => (
 				<span className={classes.tableText}>
 					{reserver?.account?.username
@@ -114,7 +114,7 @@ export const ReservationsTable: React.FC<ReservationsTableProps> = ({
 			title: 'Reservation Period',
 			key: 'period',
 			render: (
-				record: HomeMyReservationsReservationsViewReservationRequestFieldsFragment,
+				record: ReservationRequestFieldsFragment,
 			) => (
 				<span className={classes.tableText}>
 					{new Date(record.reservationPeriodStart).toLocaleDateString()} -{' '}
@@ -127,7 +127,7 @@ export const ReservationsTable: React.FC<ReservationsTableProps> = ({
 			dataIndex: 'state',
 			key: 'status',
 			render: (
-				state: HomeMyReservationsReservationsViewReservationRequestFieldsFragment['state'],
+				state: ReservationRequestFieldsFragment['state'],
 			) => (
 				<ReservationStatusTag
 					status={state ? mapReservationState(state) : 'REQUESTED'}
@@ -140,7 +140,7 @@ export const ReservationsTable: React.FC<ReservationsTableProps> = ({
 						title: 'Actions',
 						key: 'actions',
 						render: (
-							record: HomeMyReservationsReservationsViewReservationRequestFieldsFragment,
+							record: ReservationRequestFieldsFragment,
 						) => (
 							<ReservationActions
 								status={

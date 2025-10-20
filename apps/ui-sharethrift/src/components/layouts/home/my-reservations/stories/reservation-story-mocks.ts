@@ -1,6 +1,6 @@
 import type { MockedResponse } from '@apollo/client/testing';
 import type { DocumentNode } from '@apollo/client';
-import type { HomeMyReservationsReservationsViewReservationRequestFieldsFragment } from '../../../../../generated.tsx';
+import type { ReservationRequestFieldsFragment } from '../../../../../generated.tsx';
 import {
 	HomeMyReservationsReservationsViewActiveContainerActiveReservationsDocument,
 	HomeMyReservationsReservationsViewHistoryContainerPastReservationsDocument,
@@ -55,7 +55,7 @@ function makeReservation({
 	closeRequestedBySharer = false,
 }: {
 	id: string;
-	state: HomeMyReservationsReservationsViewReservationRequestFieldsFragment['state'];
+	state: ReservationRequestFieldsFragment['state'];
 	listing: { id: string; title: string; images?: string[] };
 	user: { id: string; username: string; firstName: string; lastName: string };
 	reservationPeriodStart?: string;
@@ -64,7 +64,7 @@ function makeReservation({
 	updatedAt?: string;
 	closeRequestedByReserver?: boolean;
 	closeRequestedBySharer?: boolean;
-}): HomeMyReservationsReservationsViewReservationRequestFieldsFragment {
+}): ReservationRequestFieldsFragment {
 	return {
 		__typename: 'ReservationRequest',
 		id,

@@ -2,7 +2,7 @@ import type React from 'react';
 import { ReservationsTable } from './reservations-table.tsx';
 import { Alert, Spin } from 'antd';
 import styles from './reservations-view.module.css';
-import type { HomeMyReservationsReservationsViewReservationRequestFieldsFragment } from '../../../../../generated.tsx';
+import type { ReservationRequestFieldsFragment } from '../../../../../generated.tsx';
 import { ReservationsGrid } from './reservations-grid.tsx';
 
 type ReservationsViewStyles = {
@@ -11,7 +11,7 @@ type ReservationsViewStyles = {
 } & Record<string, string>;
 
 export interface ReservationsViewProps {
-	reservations: HomeMyReservationsReservationsViewReservationRequestFieldsFragment[];
+	reservations: ReservationRequestFieldsFragment[];
 	onCancel?: (id: string) => void;
 	onClose?: (id: string) => void;
 	onMessage?: (id: string) => void;

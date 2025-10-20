@@ -1,34 +1,10 @@
-fragment HomeMyReservationsReservationsViewReservationRequestFields on ReservationRequest {
-	id
-	state
-	reservationPeriodStart
-	reservationPeriodEnd
-	createdAt
-	updatedAt
-	listing {
-		id
-		title
-		images
-	}
-	reserver {
-		id
-		account {
-			username
-			profile {
-				firstName
-				lastName
-			}
-		}
-	}
-	closeRequestedBySharer
-	closeRequestedByReserver
-}
+#import "../fragments/reservation-request-fields.graphql"
 
 query HomeMyReservationsReservationsViewActiveContainerActiveReservations(
 	$userId: ObjectID!
 ) {
 	myActiveReservations(userId: $userId) {
-		...HomeMyReservationsReservationsViewReservationRequestFields
+		...ReservationRequestFields
 	}
 }
 

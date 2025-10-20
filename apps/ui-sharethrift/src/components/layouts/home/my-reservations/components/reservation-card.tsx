@@ -3,13 +3,13 @@ import { Card, Typography, Image } from 'antd';
 import styles from './reservation-card.module.css';
 import { ReservationStatusTag } from '@sthrift/ui-components';
 import { ReservationActions } from './reservation-actions.tsx';
-import type { HomeMyReservationsReservationsViewReservationRequestFieldsFragment } from '../../../../../generated.tsx';
+import type { ReservationRequestFieldsFragment } from '../../../../../generated.tsx';
 import { mapReservationState } from '../../../../../utils/reservation-state-mapper.ts';
 
 const { Text } = Typography;
 
 export interface ReservationCardProps {
-	reservation: HomeMyReservationsReservationsViewReservationRequestFieldsFragment;
+	reservation: ReservationRequestFieldsFragment;
 	onCancel?: (id: string) => void;
 	onClose?: (id: string) => void;
 	onMessage?: (id: string) => void;

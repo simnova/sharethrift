@@ -9,6 +9,8 @@ import {
 	RESERVATION_STATES,
 } from './reservation-state-filters.ts';
 import type { FilterQuery } from 'mongoose';
+import { BaseReadRepository } from '../../base-read-repository.ts';
+import type { Models } from '@sthrift/data-sources-mongoose-models';
 
 export interface ReservationRequestReadRepository {
 	getAll: (
@@ -76,55 +78,21 @@ export interface ReservationRequestReadRepository {
  * setup and repository logic.
  */
 export class ReservationRequestReadRepositoryImpl
+	extends BaseReadRepository<
+		Models.ReservationRequest.ReservationRequest,
+		Domain.Contexts.ReservationRequest.ReservationRequest.ReservationRequestEntityReference
+	>
 	implements ReservationRequestReadRepository
 {
-	private readonly mongoDataSource: ReservationRequestDataSourceImpl;
-	private readonly converter: ReservationRequestConverter;
-	private readonly passport: Domain.Passport;
 	private readonly models: ModelsContext;
 
 	constructor(models: ModelsContext, passport: Domain.Passport) {
-		this.mongoDataSource = new ReservationRequestDataSourceImpl(
+		const mongoDataSource = new ReservationRequestDataSourceImpl(
 			models.ReservationRequest.ReservationRequest,
 		);
-		this.converter = new ReservationRequestConverter();
-		this.passport = passport;
+		const converter = new ReservationRequestConverter();
+		super(mongoDataSource, converter, passport);
 		this.models = models;
-	}
-
-	/**
-	 * Helper method for querying multiple documents
-	 */
-	private async queryMany(
-		filter: FilterQuery<Record<string, unknown>>,
-		options?: FindOptions,
-	): Promise<
-		Domain.Contexts.ReservationRequest.ReservationRequest.ReservationRequestEntityReference[]
-	> {
-		const docs = await this.mongoDataSource.find(filter, options);
-		return docs.map((doc) => this.converter.toDomain(doc, this.passport));
-	}
-
-	/**
-	 * Helper method for querying a single document
-	 */
-	private async queryOne(
-		filter: FilterQuery<Record<string, unknown>>,
-		options?: FindOneOptions,
-	): Promise<Domain.Contexts.ReservationRequest.ReservationRequest.ReservationRequestEntityReference | null> {
-		const doc = await this.mongoDataSource.findOne(filter, options);
-		return doc ? this.converter.toDomain(doc, this.passport) : null;
-	}
-
-	/**
-	 * Helper method for querying by ID
-	 */
-	private async queryById(
-		id: string,
-		options?: FindOneOptions,
-	): Promise<Domain.Contexts.ReservationRequest.ReservationRequest.ReservationRequestEntityReference | null> {
-		const doc = await this.mongoDataSource.findById(id, options);
-		return doc ? this.converter.toDomain(doc, this.passport) : null;
 	}
 
 	async getAll(
@@ -148,10 +116,9 @@ export class ReservationRequestReadRepositoryImpl
 	): Promise<
 		Domain.Contexts.ReservationRequest.ReservationRequest.ReservationRequestEntityReference[]
 	> {
-		const filter: FilterQuery<Record<string, unknown>> =
-			{
-				reserver: new MongooseSeedwork.ObjectId(reserverId),
-			};
+		const filter: FilterQuery<Models.ReservationRequest.ReservationRequest> = {
+			reserver: new MongooseSeedwork.ObjectId(reserverId),
+		};
 		return await this.queryMany(filter, options);
 	}
 
@@ -161,11 +128,10 @@ export class ReservationRequestReadRepositoryImpl
 	): Promise<
 		Domain.Contexts.ReservationRequest.ReservationRequest.ReservationRequestEntityReference[]
 	> {
-		const filter: FilterQuery<Record<string, unknown>> =
-			{
-				reserver: new MongooseSeedwork.ObjectId(reserverId),
-				...filterByStates(RESERVATION_STATES.ACTIVE),
-			};
+		const filter: FilterQuery<Models.ReservationRequest.ReservationRequest> = {
+			reserver: new MongooseSeedwork.ObjectId(reserverId),
+			...filterByStates(RESERVATION_STATES.ACTIVE),
+		};
 		return await this.queryMany(filter, options);
 	}
 
@@ -175,11 +141,10 @@ export class ReservationRequestReadRepositoryImpl
 	): Promise<
 		Domain.Contexts.ReservationRequest.ReservationRequest.ReservationRequestEntityReference[]
 	> {
-		const filter: FilterQuery<Record<string, unknown>> =
-			{
-				reserver: new MongooseSeedwork.ObjectId(reserverId),
-				...filterByStates(RESERVATION_STATES.INACTIVE),
-			};
+		const filter: FilterQuery<Models.ReservationRequest.ReservationRequest> = {
+			reserver: new MongooseSeedwork.ObjectId(reserverId),
+			...filterByStates(RESERVATION_STATES.INACTIVE),
+		};
 		return await this.queryMany(filter, options);
 	}
 
@@ -202,10 +167,9 @@ export class ReservationRequestReadRepositoryImpl
 		}
 
 		// Then find reservation requests for those listings
-		const filter: FilterQuery<Record<string, unknown>> =
-			{
-				listing: { $in: listingIds },
-			};
+		const filter: FilterQuery<Models.ReservationRequest.ReservationRequest> = {
+			listing: { $in: listingIds },
+		};
 
 		return await this.queryMany(filter, options);
 	}
@@ -215,12 +179,11 @@ export class ReservationRequestReadRepositoryImpl
 		listingId: string,
 		options?: FindOptions,
 	): Promise<Domain.Contexts.ReservationRequest.ReservationRequest.ReservationRequestEntityReference | null> {
-		const filter: FilterQuery<Record<string, unknown>> =
-			{
-				reserver: new MongooseSeedwork.ObjectId(reserverId),
-				listing: new MongooseSeedwork.ObjectId(listingId),
-				...filterByStates(RESERVATION_STATES.ACTIVE),
-			};
+		const filter: FilterQuery<Models.ReservationRequest.ReservationRequest> = {
+			reserver: new MongooseSeedwork.ObjectId(reserverId),
+			listing: new MongooseSeedwork.ObjectId(listingId),
+			...filterByStates(RESERVATION_STATES.ACTIVE),
+		};
 		return await this.queryOne(filter, options);
 	}
 
@@ -232,13 +195,12 @@ export class ReservationRequestReadRepositoryImpl
 	): Promise<
 		Domain.Contexts.ReservationRequest.ReservationRequest.ReservationRequestEntityReference[]
 	> {
-		const filter: FilterQuery<Record<string, unknown>> =
-			{
-				listing: new MongooseSeedwork.ObjectId(listingId),
-				...filterByStates(RESERVATION_STATES.ACTIVE),
-				reservationPeriodStart: { $lt: reservationPeriodEnd },
-				reservationPeriodEnd: { $gt: reservationPeriodStart },
-			};
+		const filter: FilterQuery<Models.ReservationRequest.ReservationRequest> = {
+			listing: new MongooseSeedwork.ObjectId(listingId),
+			...filterByStates(RESERVATION_STATES.ACTIVE),
+			reservationPeriodStart: { $lt: reservationPeriodEnd },
+			reservationPeriodEnd: { $gt: reservationPeriodStart },
+		};
 		return await this.queryMany(filter, options);
 	}
 
@@ -248,11 +210,10 @@ export class ReservationRequestReadRepositoryImpl
 	): Promise<
 		Domain.Contexts.ReservationRequest.ReservationRequest.ReservationRequestEntityReference[]
 	> {
-		const filter: FilterQuery<Record<string, unknown>> =
-			{
-				listing: new MongooseSeedwork.ObjectId(listingId),
-				...filterByStates(RESERVATION_STATES.ACTIVE),
-			};
+		const filter: FilterQuery<Models.ReservationRequest.ReservationRequest> = {
+			listing: new MongooseSeedwork.ObjectId(listingId),
+			...filterByStates(RESERVATION_STATES.ACTIVE),
+		};
 		return await this.queryMany(filter, options);
 	}
 }
