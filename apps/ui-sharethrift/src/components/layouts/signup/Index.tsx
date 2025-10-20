@@ -6,7 +6,7 @@ import Payment from './pages/Payment.tsx';
 import { SectionLayoutContainer } from './section-layout.container.tsx';
 import Terms from './pages/Terms.tsx';
 
-export default function SignupRoutes() {
+export const SignupRoutes: React.FC = () => {
 	return (
 		<Routes>
 			<Route element={<SectionLayoutContainer />}>

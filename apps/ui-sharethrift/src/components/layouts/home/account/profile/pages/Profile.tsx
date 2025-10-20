@@ -1,5 +1,5 @@
 import { ProfileViewContainer } from '../components/profile-view.container.tsx';
 
-export default function Profile() {
-	return <ProfileViewContainer />;
-}
+export const Profile: React.FC = () => {
+    return <ProfileViewContainer />;
+};

@@ -1,6 +1,6 @@
 import type { Meta, StoryFn } from "@storybook/react";
 import { action } from "storybook/actions";
-import HomeRoutes from "../../../index.tsx";
+import { HomeRoutes } from "../../../index.tsx";
 import { ProfileView } from "../pages/profile-view.tsx";
 import type { UserProfileData, UserListing } from "../components/profile-view.types.ts";
 import { withMockApolloClient, withMockRouter } from "../../../../../../test-utils/storybook-decorators.tsx";

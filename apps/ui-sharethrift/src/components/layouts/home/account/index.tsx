@@ -1,10 +1,10 @@
 import { Route, Routes } from 'react-router-dom';
 import EditSettings from './settings/pages/EditSettings.tsx';
-import Profile from './profile/pages/Profile.tsx';
+import { Profile } from './profile/pages/Profile.tsx';
 import Settings from './settings/pages/Settings.tsx';
 import AdminDashboardMain from './admin-dashboard/pages/admin-dashboard-main.tsx';
 
-export default function AccountRoutes() {
+export const AccountRoutes: React.FC = () => {
 	return (
 		<Routes>
 			<Route path="profile" element={<Profile />} />
@@ -13,4 +13,4 @@ export default function AccountRoutes() {
 			<Route path="admin-dashboard" element={<AdminDashboardMain />} />
 		</Routes>
 	);
-}
+};

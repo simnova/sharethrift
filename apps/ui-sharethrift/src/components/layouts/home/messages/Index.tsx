@@ -1,8 +1,8 @@
 import { Routes, Route } from "react-router-dom";
 import { ConversationsMain } from "./pages/conversations-main.tsx";
-import Conversation from "./pages/Conversation.tsx";
+import { Conversation } from "./pages/Conversation.tsx";
 
-export default function MessagesRoutes() {
+export const MessagesRoutes: React.FC = () => {
   return (
     <Routes>
       <Route path="" element={<ConversationsMain />} />
@@ -13,4 +13,4 @@ export default function MessagesRoutes() {
       />
     </Routes>
   );
-}
+};

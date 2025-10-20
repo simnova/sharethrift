@@ -1,5 +1,5 @@
 import type { Meta, StoryFn } from "@storybook/react";
-import HomeRoutes from "../../index.tsx";
+import { HomeRoutes } from "../../index.tsx";
 import {
 	HomeConversationListContainerConversationsByUserDocument,
 	ConversationBoxContainerConversationDocument,
