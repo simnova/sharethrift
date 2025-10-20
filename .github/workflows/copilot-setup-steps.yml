@@ -35,6 +35,13 @@ jobs:
           node-version: "22"
           cache: "pnpm"
 
+      - name: Install PNPM
+        run: |
+          npm install --global corepack@latest
+          corepack enable
+          corepack prepare pnpm@latest-10 --activate
+          pnpm --version
+
       - name: Cache pnpm store
         id: pnpm-cache
         uses: actions/cache@v4
