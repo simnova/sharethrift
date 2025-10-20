@@ -1,9 +1,10 @@
-import { type ReactNode, useMemo } from "react";
+import { type ReactNode, type ReactElement, useMemo } from "react";
 import { MemoryRouter, Route, Routes } from "react-router-dom";
 import { AuthContext } from "react-oidc-context";
 import { ApolloClient, InMemoryCache } from "@apollo/client";
 import { ApolloProvider } from "@apollo/client/react";
 import { MockLink } from "@apollo/client/testing";
+import type { Decorator } from "@storybook/react";
 
 /**
  * Reusable Apollo Client decorator for Storybook stories.
@@ -22,7 +23,7 @@ import { MockLink } from "@apollo/client/testing";
  * } as Meta;
  * ```
  */
-export const withMockApolloClient = (Story: any, context: any) => {
+export const withMockApolloClient: Decorator = (Story: any, context: any) => {
 	const mocks = context.parameters?.apolloClient?.mocks || [];
 	const showWarnings = context.parameters?.apolloClient?.showWarnings ?? false;
 	const mockLink = new MockLink(mocks, { showWarnings });
@@ -52,7 +53,7 @@ export const withMockApolloClient = (Story: any, context: any) => {
  * By wrapping with <AuthContext.Provider value={mockAuth}>, we provide the mock data to
  * that context, so components receive our mockAuth object with isAuthenticated: true.
  */
-export const MockAuthWrapper = ({ children }: { children: ReactNode }) => {
+export const MockAuthWrapper = ({ children }: { children: ReactNode }): ReactElement => {
 	const mockAuth: any = useMemo(
 		() => ({
 			isAuthenticated: true,
@@ -96,7 +97,7 @@ export const MockAuthWrapper = ({ children }: { children: ReactNode }) => {
  * } as Meta;
  * ```
  */
-export const withMockRouter = (initialRoute = "/") => (Story: any) => (
+export const withMockRouter = (initialRoute = "/"): Decorator => (Story: any) => (
 	<MockAuthWrapper>
 		<MemoryRouter initialEntries={[initialRoute]}>
 			<Routes>

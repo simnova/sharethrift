@@ -3,18 +3,20 @@ import HomeRoutes from "../../../index.tsx";
 import { HomeAccountSettingsViewContainerCurrentUserDocument } from "../../../../../../generated.tsx";
 import { withMockApolloClient, withMockRouter } from "../../../../../../test-utils/storybook-decorators.tsx";
 
-export default {
+const meta: Meta<typeof HomeRoutes> = {
 	title: "Pages/Account/Settings",
 	component: HomeRoutes,
 	decorators: [
 		withMockApolloClient,
 		withMockRouter("/account/settings"),
 	],
-} as Meta<typeof HomeRoutes>;
+};
+
+export default meta;
 
 const Template: StoryFn<typeof HomeRoutes> = () => <HomeRoutes />;
 
-export const DefaultView = Template.bind({});
+export const DefaultView: StoryFn<typeof HomeRoutes> = Template.bind({});
 
 DefaultView.parameters = {
   apolloClient: {

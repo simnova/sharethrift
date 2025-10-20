@@ -5,7 +5,7 @@ import { ProfileView } from "../pages/profile-view.tsx";
 import type { UserProfileData, UserListing } from "../components/profile-view.types.ts";
 import { withMockApolloClient, withMockRouter } from "../../../../../../test-utils/storybook-decorators.tsx";
 
-export default {
+const meta: Meta<typeof HomeRoutes> = {
 	title: "Pages/Account/Profile",
 	component: HomeRoutes,
 	decorators: [
@@ -17,7 +17,9 @@ export default {
 		// Note: Using /account/profile route highlights 'Account' menu item in navigation
 		// However, the submenu is not initially expanded due to how the navigation state is currently managed
 	},
-} as Meta<typeof HomeRoutes>;
+};
+
+export default meta;
 
 const Template: StoryFn<typeof HomeRoutes> = () => <HomeRoutes />;
 
@@ -80,7 +82,7 @@ const mockTwoListings: UserListing[] = [
 
 // Story: Default profile view using container's fallback data
 // from error handler in profile-view.container.tsx
-export const DefaultView = Template.bind({});
+export const DefaultView: StoryFn<typeof HomeRoutes> = Template.bind({});
 DefaultView.parameters = {
   apolloClient: {
     mocks: [], // Empty mocks - let query fail and use container fallback
@@ -104,14 +106,20 @@ const ComponentTemplate: StoryFn<{
 );
 
 // Story: Component with two listings
-export const WithTwoListings = ComponentTemplate.bind({});
+export const WithTwoListings: StoryFn<{
+	user: UserProfileData;
+	listings: UserListing[];
+}> = ComponentTemplate.bind({});
 WithTwoListings.args = {
   user: mockUserSarah,
   listings: mockTwoListings,
 };
 
 // Story: Component with no listings (new user empty state)
-export const NoListings = ComponentTemplate.bind({});
+export const NoListings: StoryFn<{
+	user: UserProfileData;
+	listings: UserListing[];
+}> = ComponentTemplate.bind({});
 NoListings.args = {
   user: mockUserAlex,
   listings: [],

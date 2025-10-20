@@ -6,18 +6,20 @@ import {
 } from "../../../../../generated.tsx";
 import { withMockApolloClient, withMockRouter } from "../../../../../test-utils/storybook-decorators.tsx";
 
-export default {
+const meta: Meta<typeof HomeRoutes> = {
 	title: "Pages/Messages",
 	component: HomeRoutes,
 	decorators: [
 		withMockApolloClient,
 		withMockRouter("/messages"),
 	],
-} as Meta<typeof HomeRoutes>;
+};
+
+export default meta;
 
 const Template: StoryFn<typeof HomeRoutes> = () => <HomeRoutes />;
 
-export const DefaultView = Template.bind({});
+export const DefaultView: StoryFn<typeof HomeRoutes> = Template.bind({});
 
 DefaultView.parameters = {
   apolloClient: {
