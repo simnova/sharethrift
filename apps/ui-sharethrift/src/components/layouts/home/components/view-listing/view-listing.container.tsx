@@ -21,9 +21,6 @@ export function ViewListingContainer({
 	isAuthenticated: boolean;
 }) {
 	const { listingId } = useParams();
-	
-	// Check if we're viewing as admin
-	const isAdminContext = globalThis.sessionStorage?.getItem('adminContext') === 'true';
 
 	const {
 		data: listingData,
@@ -34,27 +31,21 @@ export function ViewListingContainer({
 		{
 			variables: { id: listingId },
 			skip: !listingId,
-			// Use network-only for admin context to bypass permissions cache
-			fetchPolicy: isAdminContext ? 'network-only' : 'cache-first',
+			fetchPolicy: 'cache-first',
 		},
 	);
 
 	const { data: currentUserData } = useQuery<ViewListingCurrentUserQuery>(
 		ViewListingCurrentUserDocument,
-		{
-			skip: isAdminContext, // Skip user query if admin is viewing
-		},
 	);
 
 	const reserverId =
 		currentUserData?.currentPersonalUserAndCreateIfNotExists?.id ?? '';
 
-	const skip = !reserverId || !listingId || isAdminContext;
+	const skip = !reserverId || !listingId;
 
 	const {
 		data: userReservationData,
-		loading: userReservationLoading,
-		error: userReservationError,
 	} = useQuery<
 		ViewListingActiveReservationRequestForListingQuery,
 		ViewListingActiveReservationRequestForListingQueryVariables
@@ -63,35 +54,15 @@ export function ViewListingContainer({
 		skip,
 	});
 
-	console.log('userReservationLoading', userReservationLoading);
-	console.log('userReservationError', userReservationError);
-	console.log('isAdminContext', isAdminContext);
-	console.log('listingId', listingId);
-
 	if (!listingId) return <div>Missing listing id.</div>;
 	if (listingLoading) return <div>Loading listing...</div>;
-	if (listingError) {
-		console.error('Listing error:', listingError);
-		return (
-			<div>
-				<div>Error loading listing: {listingError.message}</div>
-				{isAdminContext && (
-					<div style={{ marginTop: 16, fontSize: '12px', color: '#666' }}>
-						<strong>Admin Note:</strong> You are viewing as admin. If this listing is 
-						blocked/appealed, ensure the backend resolver is using systemApplicationServices 
-						for admin users.
-					</div>
-				)}
-			</div>
-		);
-	}
+	if (listingError) return <div>Error loading listing.</div>;
 	if (!listingData?.itemListing) return <div>Listing not found.</div>;
 
 	const sharedTimeAgo = listingData.itemListing.createdAt
 		? computeTimeAgo(listingData.itemListing.createdAt)
 		: undefined;
 
-	// For admin context, userIsSharer is always false
 	const userIsSharer = false;
 
 	return (
