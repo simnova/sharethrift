@@ -37,7 +37,7 @@ For detailed API documentation, see:
 ## Folder structure
 
 ```
-packages/cellix-ui-core/
+packages/cellix/ui-core/
 ├── src/
 │   ├── components/                        # UI components organized by atomic design principles
 │   │   ├── molecules/                     # Smaller, focused components
@@ -74,7 +74,7 @@ To develop and test components in isolation:
 
 ```sh
 # Start Storybook development server
-npm run storybook -w @cellix/ui-core
+pnpm run storybook -w @cellix/ui-core
 ```
 
 ## Testing
@@ -83,25 +83,25 @@ Components are tested with Vitest:
 
 ```sh
 # Run tests
-npm run test -w @cellix/ui-core
+pnpm run test -w @cellix/ui-core
 
 # Run tests with coverage
-npm run test:coverage -w @cellix/ui-core
+pnpm run test:coverage -w @cellix/ui-core
 
 # Watch mode for development
-npm run test:watch -w @cellix/ui-core
+pnpm run test:watch -w @cellix/ui-core
 ```
 
 ## Scripts
 
 Common scripts from `package.json` (executed in this workspace):
 
-- Build: `npm run build -w @cellix/ui-core`
-- Clean: `npm run clean -w @cellix/ui-core`
-- Test: `npm run test -w @cellix/ui-core`
-- Lint/Format: `npm run lint -w @cellix/ui-core` / `npm run format -w @cellix/ui-core`
-- Storybook: `npm run storybook -w @cellix/ui-core`
-- Build Storybook: `npm run build-storybook -w @cellix/ui-core`
+- Build: `pnpm run build -w @cellix/ui-core`
+- Clean: `pnpm run clean -w @cellix/ui-core`
+- Test: `pnpm run test -w @cellix/ui-core`
+- Lint/Format: `pnpm run lint -w @cellix/ui-core` / `pnpm run format -w @cellix/ui-core`
+- Storybook: `pnpm run storybook -w @cellix/ui-core`
+- Build Storybook: `pnpm run build-storybook -w @cellix/ui-core`
 
 ## Dependencies
 
