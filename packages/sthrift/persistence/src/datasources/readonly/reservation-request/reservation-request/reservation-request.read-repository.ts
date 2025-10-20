@@ -1,5 +1,4 @@
 import type { Domain } from '@sthrift/domain';
-import { Types } from 'mongoose';
 import type { ModelsContext } from '../../../../models-context.ts';
 import { ReservationRequestDataSourceImpl } from './reservation-request.data.ts';
 import type { FindOneOptions, FindOptions } from '../../mongo-data-source.ts';
@@ -9,7 +8,6 @@ import {
 	filterByStates,
 	RESERVATION_STATES,
 } from './reservation-state-filters.ts';
-import { BaseReadRepository } from '../../base-read-repository.ts';
 import type { FilterQuery } from 'mongoose';
 
 export interface ReservationRequestReadRepository {
@@ -78,21 +76,55 @@ export interface ReservationRequestReadRepository {
  * setup and repository logic.
  */
 export class ReservationRequestReadRepositoryImpl
-	extends BaseReadRepository<
-		Domain.Contexts.ReservationRequest.ReservationRequest.ReservationRequestDocument,
-		Domain.Contexts.ReservationRequest.ReservationRequest.ReservationRequestEntityReference
-	>
 	implements ReservationRequestReadRepository
 {
+	private readonly mongoDataSource: ReservationRequestDataSourceImpl;
+	private readonly converter: ReservationRequestConverter;
+	private readonly passport: Domain.Passport;
 	private readonly models: ModelsContext;
 
 	constructor(models: ModelsContext, passport: Domain.Passport) {
-		const mongoDataSource = new ReservationRequestDataSourceImpl(
+		this.mongoDataSource = new ReservationRequestDataSourceImpl(
 			models.ReservationRequest.ReservationRequest,
 		);
-		const converter = new ReservationRequestConverter();
-		super(mongoDataSource, converter, passport);
+		this.converter = new ReservationRequestConverter();
+		this.passport = passport;
 		this.models = models;
+	}
+
+	/**
+	 * Helper method for querying multiple documents
+	 */
+	private async queryMany(
+		filter: FilterQuery<Record<string, unknown>>,
+		options?: FindOptions,
+	): Promise<
+		Domain.Contexts.ReservationRequest.ReservationRequest.ReservationRequestEntityReference[]
+	> {
+		const docs = await this.mongoDataSource.find(filter, options);
+		return docs.map((doc) => this.converter.toDomain(doc, this.passport));
+	}
+
+	/**
+	 * Helper method for querying a single document
+	 */
+	private async queryOne(
+		filter: FilterQuery<Record<string, unknown>>,
+		options?: FindOneOptions,
+	): Promise<Domain.Contexts.ReservationRequest.ReservationRequest.ReservationRequestEntityReference | null> {
+		const doc = await this.mongoDataSource.findOne(filter, options);
+		return doc ? this.converter.toDomain(doc, this.passport) : null;
+	}
+
+	/**
+	 * Helper method for querying by ID
+	 */
+	private async queryById(
+		id: string,
+		options?: FindOneOptions,
+	): Promise<Domain.Contexts.ReservationRequest.ReservationRequest.ReservationRequestEntityReference | null> {
+		const doc = await this.mongoDataSource.findById(id, options);
+		return doc ? this.converter.toDomain(doc, this.passport) : null;
 	}
 
 	async getAll(
@@ -100,14 +132,14 @@ export class ReservationRequestReadRepositoryImpl
 	): Promise<
 		Domain.Contexts.ReservationRequest.ReservationRequest.ReservationRequestEntityReference[]
 	> {
-		return this.queryMany({}, options);
+		return await this.queryMany({}, options);
 	}
 
 	async getById(
 		id: string,
 		options?: FindOneOptions,
 	): Promise<Domain.Contexts.ReservationRequest.ReservationRequest.ReservationRequestEntityReference | null> {
-		return this.queryById(id, options);
+		return await this.queryById(id, options);
 	}
 
 	async getByReserverId(
@@ -116,11 +148,11 @@ export class ReservationRequestReadRepositoryImpl
 	): Promise<
 		Domain.Contexts.ReservationRequest.ReservationRequest.ReservationRequestEntityReference[]
 	> {
-		const filter: FilterQuery<Domain.Contexts.ReservationRequest.ReservationRequest.ReservationRequestDocument> =
+		const filter: FilterQuery<Record<string, unknown>> =
 			{
-				reserver: new Types.ObjectId(reserverId),
+				reserver: new MongooseSeedwork.ObjectId(reserverId),
 			};
-		return this.queryMany(filter, options);
+		return await this.queryMany(filter, options);
 	}
 
 	async getActiveByReserverIdWithListingWithSharer(
@@ -129,12 +161,12 @@ export class ReservationRequestReadRepositoryImpl
 	): Promise<
 		Domain.Contexts.ReservationRequest.ReservationRequest.ReservationRequestEntityReference[]
 	> {
-		const filter: FilterQuery<Domain.Contexts.ReservationRequest.ReservationRequest.ReservationRequestDocument> =
+		const filter: FilterQuery<Record<string, unknown>> =
 			{
-				reserver: new Types.ObjectId(reserverId),
+				reserver: new MongooseSeedwork.ObjectId(reserverId),
 				...filterByStates(RESERVATION_STATES.ACTIVE),
 			};
-		return this.queryMany(filter, options);
+		return await this.queryMany(filter, options);
 	}
 
 	async getPastByReserverIdWithListingWithSharer(
@@ -143,12 +175,12 @@ export class ReservationRequestReadRepositoryImpl
 	): Promise<
 		Domain.Contexts.ReservationRequest.ReservationRequest.ReservationRequestEntityReference[]
 	> {
-		const filter: FilterQuery<Domain.Contexts.ReservationRequest.ReservationRequest.ReservationRequestDocument> =
+		const filter: FilterQuery<Record<string, unknown>> =
 			{
-				reserver: new Types.ObjectId(reserverId),
+				reserver: new MongooseSeedwork.ObjectId(reserverId),
 				...filterByStates(RESERVATION_STATES.INACTIVE),
 			};
-		return this.queryMany(filter, options);
+		return await this.queryMany(filter, options);
 	}
 
 	async getListingRequestsBySharerId(
@@ -159,7 +191,7 @@ export class ReservationRequestReadRepositoryImpl
 	> {
 		// First, get all listing IDs owned by this sharer
 		const sharerListings = await this.models.Listing.ItemListingModel.find(
-			{ sharer: new Types.ObjectId(sharerId) },
+			{ sharer: new MongooseSeedwork.ObjectId(sharerId) },
 			{ _id: 1 },
 		).lean();
 
@@ -170,12 +202,12 @@ export class ReservationRequestReadRepositoryImpl
 		}
 
 		// Then find reservation requests for those listings
-		const filter: FilterQuery<Domain.Contexts.ReservationRequest.ReservationRequest.ReservationRequestDocument> =
+		const filter: FilterQuery<Record<string, unknown>> =
 			{
 				listing: { $in: listingIds },
 			};
 
-		return this.queryMany(filter, options);
+		return await this.queryMany(filter, options);
 	}
 
 	async getActiveByReserverIdAndListingId(
@@ -183,13 +215,13 @@ export class ReservationRequestReadRepositoryImpl
 		listingId: string,
 		options?: FindOptions,
 	): Promise<Domain.Contexts.ReservationRequest.ReservationRequest.ReservationRequestEntityReference | null> {
-		const filter: FilterQuery<Domain.Contexts.ReservationRequest.ReservationRequest.ReservationRequestDocument> =
+		const filter: FilterQuery<Record<string, unknown>> =
 			{
 				reserver: new MongooseSeedwork.ObjectId(reserverId),
 				listing: new MongooseSeedwork.ObjectId(listingId),
 				...filterByStates(RESERVATION_STATES.ACTIVE),
 			};
-		return this.queryOne(filter, options);
+		return await this.queryOne(filter, options);
 	}
 
 	async getOverlapActiveReservationRequestsForListing(
@@ -200,14 +232,14 @@ export class ReservationRequestReadRepositoryImpl
 	): Promise<
 		Domain.Contexts.ReservationRequest.ReservationRequest.ReservationRequestEntityReference[]
 	> {
-		const filter: FilterQuery<Domain.Contexts.ReservationRequest.ReservationRequest.ReservationRequestDocument> =
+		const filter: FilterQuery<Record<string, unknown>> =
 			{
 				listing: new MongooseSeedwork.ObjectId(listingId),
 				...filterByStates(RESERVATION_STATES.ACTIVE),
 				reservationPeriodStart: { $lt: reservationPeriodEnd },
 				reservationPeriodEnd: { $gt: reservationPeriodStart },
 			};
-		return this.queryMany(filter, options);
+		return await this.queryMany(filter, options);
 	}
 
 	async getActiveByListingId(
@@ -216,12 +248,12 @@ export class ReservationRequestReadRepositoryImpl
 	): Promise<
 		Domain.Contexts.ReservationRequest.ReservationRequest.ReservationRequestEntityReference[]
 	> {
-		const filter: FilterQuery<Domain.Contexts.ReservationRequest.ReservationRequest.ReservationRequestDocument> =
+		const filter: FilterQuery<Record<string, unknown>> =
 			{
 				listing: new MongooseSeedwork.ObjectId(listingId),
 				...filterByStates(RESERVATION_STATES.ACTIVE),
 			};
-		return this.queryMany(filter, options);
+		return await this.queryMany(filter, options);
 	}
 }
 

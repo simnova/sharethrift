@@ -3,7 +3,6 @@ import {
 	HomeMyReservationsReservationsViewActiveContainerActiveReservationsDocument,
 	type HomeMyReservationsReservationsViewActiveContainerActiveReservationsQuery,
 } from '../../../../../generated.tsx';
-import { filterActiveReservations } from '../../../../../utils/reservation-state-utils.ts';
 
 export function useActiveReservations(userId?: string) {
 	const { data, loading, error } =
@@ -16,9 +15,9 @@ export function useActiveReservations(userId?: string) {
 			},
 		);
 
-	const reservations = filterActiveReservations(
-		data?.myActiveReservations ?? [],
-	);
-
-	return { reservations, loading, error };
+	return {
+		reservations: data?.myActiveReservations ?? [],
+		loading,
+		error,
+	};
 }

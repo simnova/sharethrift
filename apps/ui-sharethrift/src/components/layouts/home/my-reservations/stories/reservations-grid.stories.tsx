@@ -7,7 +7,6 @@ import {
 } from './reservation-story-mocks.ts';
 import {
 	defaultReservationActions,
-	defaultReservationArgTypes,
 	withReservationMocks,
 } from '../../../../../test/utils/storybook-reservation-providers.tsx';
 
@@ -19,7 +18,6 @@ const meta: Meta<typeof ReservationsGrid> = {
 	// Global decorator for MockedProvider
 	decorators: [withReservationMocks],
 	args: defaultReservationActions, // apply to all stories by default
-	argTypes: defaultReservationArgTypes,
 };
 export default meta;
 
