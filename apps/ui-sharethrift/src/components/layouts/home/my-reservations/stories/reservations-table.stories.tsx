@@ -8,7 +8,7 @@ import {
 import {
 	defaultReservationActions,
 	withReservationMocks,
-} from '../../../../../test/utils/storybook-reservation-providers.tsx';
+} from '../../../../../test/utils/storybook-providers.tsx';
 
 const meta: Meta<typeof ReservationsTable> = {
 	title: 'Organisms/ReservationsTable',
