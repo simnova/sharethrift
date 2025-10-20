@@ -425,13 +425,6 @@ importers:
         version: 5.8.3
 
   packages/cellix/mock-mongodb-memory-server-seedwork:
-    dependencies:
-      mongodb-memory-server:
-        specifier: ^10.1.4
-        version: 10.2.3
-      mongoose:
-        specifier: 'catalog:'
-        version: 8.17.0
     devDependencies:
       '@cellix/typescript-config':
         specifier: workspace:*
@@ -439,6 +432,12 @@ importers:
       '@types/semver':
         specifier: ^7.7.0
         version: 7.7.1
+      mongodb-memory-server:
+        specifier: ^10.1.4
+        version: 10.2.3
+      mongoose:
+        specifier: 'catalog:'
+        version: 8.17.0
       rimraf:
         specifier: ^6.0.1
         version: 6.0.1
@@ -667,6 +666,9 @@ importers:
       '@cellix/mongoose-seedwork':
         specifier: workspace:*
         version: link:../../cellix/mongoose-seedwork
+      mongoose:
+        specifier: 'catalog:'
+        version: 8.17.0
     devDependencies:
       '@cellix/typescript-config':
         specifier: workspace:*
@@ -821,6 +823,9 @@ importers:
       mongodb:
         specifier: 'catalog:'
         version: 6.18.0
+      mongodb-memory-server:
+        specifier: 10.1.4
+        version: 10.1.4
       mongoose:
         specifier: 'catalog:'
         version: 8.17.0
@@ -858,6 +863,9 @@ importers:
       bson:
         specifier: ^6.10.4
         version: 6.10.4
+      mongoose:
+        specifier: 'catalog:'
+        version: 8.17.0
     devDependencies:
       '@cellix/typescript-config':
         specifier: workspace:*
@@ -8152,8 +8160,16 @@ packages:
   mongodb-connection-string-url@3.0.2:
     resolution: {integrity: sha512-rMO7CGo/9BFwyZABcKAWL8UJwH/Kc2x0g72uhDWzG48URRax5TCIcJ7Rc3RZqffZzO/Gwff/jyKwCU9TN8gehA==}
 
+  mongodb-memory-server-core@10.1.4:
+    resolution: {integrity: sha512-o8fgY7ZalEd8pGps43fFPr/hkQu1L8i6HFEGbsTfA2zDOW0TopgpswaBCqDr0qD7ptibyPfB5DmC+UlIxbThzA==}
+    engines: {node: '>=16.20.1'}
+
   mongodb-memory-server-core@10.2.3:
     resolution: {integrity: sha512-a6OMGO2xJDvxCxNpRpxmy4roMGXQQRIB/2uZyoCWRdDQBIr4o6KMhRzWV5PTrKPk+BavQ+W46j4S1Dj4PpUGXQ==}
+    engines: {node: '>=16.20.1'}
+
+  mongodb-memory-server@10.1.4:
+    resolution: {integrity: sha512-+oKQ/kc3CX+816oPFRtaF0CN4vNcGKNjpOQe4bHo/21A3pMD+lC7Xz1EX5HP7siCX4iCpVchDMmCOFXVQSGkUg==}
     engines: {node: '>=16.20.1'}
 
   mongodb-memory-server@10.2.3:
@@ -14555,7 +14571,7 @@ snapshots:
   '@graphql-tools/optimize@2.0.0(graphql@16.11.0)':
     dependencies:
       graphql: 16.11.0
-      tslib: 2.6.3
+      tslib: 2.8.1
 
   '@graphql-tools/prisma-loader@8.0.17(@types/node@24.7.2)(graphql@16.11.0)':
     dependencies:
@@ -14591,7 +14607,7 @@ snapshots:
       '@ardatan/relay-compiler': 12.0.3(graphql@16.11.0)
       '@graphql-tools/utils': 10.9.1(graphql@16.11.0)
       graphql: 16.11.0
-      tslib: 2.6.3
+      tslib: 2.8.1
     transitivePeerDependencies:
       - encoding
 
@@ -17206,7 +17222,7 @@ snapshots:
       path-case: 3.0.4
       sentence-case: 3.0.4
       snake-case: 3.0.4
-      tslib: 2.6.3
+      tslib: 2.8.1
 
   char-regex@1.0.2: {}
 
@@ -19284,7 +19300,7 @@ snapshots:
 
   is-lower-case@2.0.2:
     dependencies:
-      tslib: 2.6.3
+      tslib: 2.8.1
 
   is-map@2.0.3: {}
 
@@ -19365,7 +19381,7 @@ snapshots:
 
   is-upper-case@2.0.2:
     dependencies:
-      tslib: 2.6.3
+      tslib: 2.8.1
 
   is-weakmap@2.0.2: {}
 
@@ -19778,11 +19794,11 @@ snapshots:
 
   lower-case-first@2.0.2:
     dependencies:
-      tslib: 2.6.3
+      tslib: 2.8.1
 
   lower-case@2.0.2:
     dependencies:
-      tslib: 2.6.3
+      tslib: 2.8.1
 
   lowercase-keys@3.0.0: {}
 
@@ -20427,6 +20443,32 @@ snapshots:
       '@types/whatwg-url': 11.0.5
       whatwg-url: 14.2.0
 
+  mongodb-memory-server-core@10.1.4:
+    dependencies:
+      async-mutex: 0.5.0
+      camelcase: 6.3.0
+      debug: 4.4.3(supports-color@8.1.1)
+      find-cache-dir: 3.3.2
+      follow-redirects: 1.15.11(debug@4.4.3)
+      https-proxy-agent: 7.0.6
+      mongodb: 6.20.0
+      new-find-package-json: 2.0.0
+      semver: 7.7.3
+      tar-stream: 3.1.7
+      tslib: 2.8.1
+      yauzl: 3.2.0
+    transitivePeerDependencies:
+      - '@aws-sdk/credential-providers'
+      - '@mongodb-js/zstd'
+      - bare-abort-controller
+      - gcp-metadata
+      - kerberos
+      - mongodb-client-encryption
+      - react-native-b4a
+      - snappy
+      - socks
+      - supports-color
+
   mongodb-memory-server-core@10.2.3:
     dependencies:
       async-mutex: 0.5.0
@@ -20441,6 +20483,22 @@ snapshots:
       tar-stream: 3.1.7
       tslib: 2.8.1
       yauzl: 3.2.0
+    transitivePeerDependencies:
+      - '@aws-sdk/credential-providers'
+      - '@mongodb-js/zstd'
+      - bare-abort-controller
+      - gcp-metadata
+      - kerberos
+      - mongodb-client-encryption
+      - react-native-b4a
+      - snappy
+      - socks
+      - supports-color
+
+  mongodb-memory-server@10.1.4:
+    dependencies:
+      mongodb-memory-server-core: 10.1.4
+      tslib: 2.8.1
     transitivePeerDependencies:
       - '@aws-sdk/credential-providers'
       - '@mongodb-js/zstd'
@@ -22682,7 +22740,7 @@ snapshots:
 
   sponge-case@1.0.1:
     dependencies:
-      tslib: 2.6.3
+      tslib: 2.8.1
 
   sprintf-js@1.0.3: {}
 
@@ -22902,7 +22960,7 @@ snapshots:
 
   swap-case@2.0.2:
     dependencies:
-      tslib: 2.6.3
+      tslib: 2.8.1
 
   symbol-observable@4.0.0: {}
 
@@ -23022,7 +23080,7 @@ snapshots:
 
   title-case@3.0.3:
     dependencies:
-      tslib: 2.6.3
+      tslib: 2.8.1
 
   tldts-core@6.1.86: {}
 
@@ -23455,11 +23513,11 @@ snapshots:
 
   upper-case-first@2.0.2:
     dependencies:
-      tslib: 2.6.3
+      tslib: 2.8.1
 
   upper-case@2.0.2:
     dependencies:
-      tslib: 2.6.3
+      tslib: 2.8.1
 
   uri-js@4.4.1:
     dependencies:

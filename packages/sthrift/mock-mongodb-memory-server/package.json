@@ -12,8 +12,9 @@
     },
     "dependencies": {
         "dotenv": "^16.4.5",
-        "mongoose": "catalog:",
         "mongodb": "catalog:",
+        "mongodb-memory-server": "10.1.4",
+        "mongoose": "catalog:",
         "@sthrift/data-sources-mongoose-models": "workspace:*",
         "@cellix/mock-mongodb-memory-server-seedwork": "workspace:*"
     },

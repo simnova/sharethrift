@@ -28,7 +28,8 @@
         "@cellix/mongoose-seedwork": "workspace:*",
         "@sthrift/data-sources-mongoose-models": "workspace:*",
         "@sthrift/domain": "workspace:*",
-        "bson": "^6.10.4"
+        "bson": "^6.10.4",
+        "mongoose": "catalog:"
     },
     "devDependencies": {
         "@cellix/typescript-config": "workspace:*",

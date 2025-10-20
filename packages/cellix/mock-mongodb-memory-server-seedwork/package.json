@@ -12,13 +12,15 @@
         "build": "tsc --build",
         "clean": "rimraf dist"
     },
-    "dependencies": {
-        "mongodb-memory-server": "^10.1.4",
-        "mongoose": "catalog:"
+    "peerDependencies": {
+        "mongodb-memory-server": "^10.0.0",
+        "mongoose": "^8.0.0"
     },
     "devDependencies": {
         "@cellix/typescript-config": "workspace:*",
         "@types/semver": "^7.7.0",
+        "mongodb-memory-server": "^10.1.4",
+        "mongoose": "catalog:",
         "rimraf": "^6.0.1",
         "typescript": "^5.8.3"
     }
