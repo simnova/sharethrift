@@ -58,9 +58,9 @@ export function isInactiveReservationState(state: string): boolean {
  * @param reservations - Array of reservations to filter
  * @returns Array of reservations with active states
  */
-export function filterActiveReservations<T extends { state: string | null | undefined }>(
-	reservations: T[],
-): T[] {
+export function filterActiveReservations<
+	T extends { state: string | null | undefined },
+>(reservations: T[]): T[] {
 	return reservations.filter((reservation) =>
 		reservation.state ? isActiveReservationState(reservation.state) : false,
 	);
@@ -71,9 +71,9 @@ export function filterActiveReservations<T extends { state: string | null | unde
  * @param reservations - Array of reservations to filter
  * @returns Array of reservations with inactive states
  */
-export function filterInactiveReservations<T extends { state: string | null | undefined }>(
-	reservations: T[],
-): T[] {
+export function filterInactiveReservations<
+	T extends { state: string | null | undefined },
+>(reservations: T[]): T[] {
 	return reservations.filter((reservation) =>
 		reservation.state ? isInactiveReservationState(reservation.state) : false,
 	);

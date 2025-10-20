@@ -8,12 +8,12 @@ import {
 
 /**
  * Mock data and utilities for reservation-related Storybook stories
- * 
+ *
  * This file provides:
  * - Factory function for creating reservation mock data with consistent defaults
  * - Pre-defined mock reservations for different states (active/past)
  * - Apollo Client mocks for GraphQL queries used in reservation stories
- * 
+ *
  * Structure:
  * - makeReservation(): Factory function that creates reservation objects with sensible defaults
  * - activeConfigs/pastConfigs: Concise configuration objects for reservations
@@ -25,10 +25,10 @@ export const STORYBOOK_RESERVATION_USER_ID = 'storybook-reserver-id';
 
 /**
  * Factory function to create reservation mock data with defaults
- * 
+ *
  * This function centralizes the creation of reservation mock objects, ensuring
  * consistency across all stories and making it easy to add new mock reservations.
- * 
+ *
  * @param params - Configuration object for the reservation
  * @param params.id - Unique identifier for the reservation
  * @param params.state - Current state of the reservation (Requested, Accepted, etc.)
@@ -114,10 +114,12 @@ const activeConfigs = [
 	{
 		id: 'res-001',
 		state: 'Requested' as const,
-		listing: { 
-			id: 'listing-1', 
+		listing: {
+			id: 'listing-1',
 			title: 'Power Drill Set',
-			images: ['https://images.unsplash.com/photo-1558618047-3c8c76ca7d13?w=300&h=200&fit=crop']
+			images: [
+				'https://images.unsplash.com/photo-1558618047-3c8c76ca7d13?w=300&h=200&fit=crop',
+			],
 		},
 		user: {
 			id: 'user-1',
@@ -125,8 +127,8 @@ const activeConfigs = [
 			firstName: 'Sarah',
 			lastName: 'Johnson',
 		},
-		dates: { 
-			start: '2024-02-15T00:00:00Z', 
+		dates: {
+			start: '2024-02-15T00:00:00Z',
 			end: '2024-02-22T00:00:00Z',
 			created: '2024-02-10T10:00:00Z',
 			updated: '2024-02-12T12:00:00Z',
@@ -135,10 +137,12 @@ const activeConfigs = [
 	{
 		id: 'res-002',
 		state: 'Accepted' as const,
-		listing: { 
-			id: 'listing-2', 
+		listing: {
+			id: 'listing-2',
 			title: 'Camping Tent',
-			images: ['https://images.unsplash.com/photo-1487730116645-74489c95b41b?w=300&h=200&fit=crop']
+			images: [
+				'https://images.unsplash.com/photo-1487730116645-74489c95b41b?w=300&h=200&fit=crop',
+			],
 		},
 		user: {
 			id: 'user-2',
@@ -146,8 +150,8 @@ const activeConfigs = [
 			firstName: 'Mike',
 			lastName: 'Brown',
 		},
-		dates: { 
-			start: '2024-03-01T00:00:00Z', 
+		dates: {
+			start: '2024-03-01T00:00:00Z',
 			end: '2024-03-05T00:00:00Z',
 			created: '2024-02-20T10:00:00Z',
 			updated: '2024-02-22T12:00:00Z',
@@ -163,10 +167,12 @@ const pastConfigs = [
 	{
 		id: 'res-003',
 		state: 'Rejected' as const,
-		listing: { 
-			id: 'listing-3', 
+		listing: {
+			id: 'listing-3',
 			title: 'Mountain Bike',
-			images: ['https://images.unsplash.com/photo-1558618047-3c8c76ca7d13?w=300&h=200&fit=crop']
+			images: [
+				'https://images.unsplash.com/photo-1558618047-3c8c76ca7d13?w=300&h=200&fit=crop',
+			],
 		},
 		user: {
 			id: 'user-3',
@@ -174,8 +180,8 @@ const pastConfigs = [
 			firstName: 'Anna',
 			lastName: 'Lee',
 		},
-		dates: { 
-			start: '2024-04-10T00:00:00Z', 
+		dates: {
+			start: '2024-04-10T00:00:00Z',
 			end: '2024-04-15T00:00:00Z',
 			created: '2024-04-01T10:00:00Z',
 			updated: '2024-04-02T12:00:00Z',
@@ -184,10 +190,12 @@ const pastConfigs = [
 	{
 		id: 'res-004',
 		state: 'Cancelled' as const,
-		listing: { 
-			id: 'listing-4', 
+		listing: {
+			id: 'listing-4',
 			title: 'Kayak',
-			images: ['https://images.unsplash.com/photo-1487730116645-74489c95b41b?w=300&h=200&fit=crop']
+			images: [
+				'https://images.unsplash.com/photo-1487730116645-74489c95b41b?w=300&h=200&fit=crop',
+			],
 		},
 		user: {
 			id: 'user-4',
@@ -195,8 +203,8 @@ const pastConfigs = [
 			firstName: 'Chris',
 			lastName: 'Green',
 		},
-		dates: { 
-			start: '2024-05-01T00:00:00Z', 
+		dates: {
+			start: '2024-05-01T00:00:00Z',
 			end: '2024-05-05T00:00:00Z',
 			created: '2024-04-20T10:00:00Z',
 			updated: '2024-04-22T12:00:00Z',
@@ -205,10 +213,12 @@ const pastConfigs = [
 	{
 		id: 'res-005',
 		state: 'Closed' as const,
-		listing: { 
-			id: 'listing-5', 
+		listing: {
+			id: 'listing-5',
 			title: 'GoPro Camera',
-			images: ['https://images.unsplash.com/photo-1558618047-3c8c76ca7d13?w=300&h=200&fit=crop']
+			images: [
+				'https://images.unsplash.com/photo-1558618047-3c8c76ca7d13?w=300&h=200&fit=crop',
+			],
 		},
 		user: {
 			id: 'user-5',
@@ -216,8 +226,8 @@ const pastConfigs = [
 			firstName: 'Patricia',
 			lastName: 'Black',
 		},
-		dates: { 
-			start: '2024-06-01T00:00:00Z', 
+		dates: {
+			start: '2024-06-01T00:00:00Z',
 			end: '2024-06-05T00:00:00Z',
 			created: '2024-05-20T10:00:00Z',
 			updated: '2024-05-22T12:00:00Z',
@@ -229,24 +239,26 @@ const pastConfigs = [
 /**
  * Generate reservation objects from configuration objects
  */
-export const storyReservationsActive = activeConfigs.map(({ dates: { start, end, created, updated }, ...cfg }) =>
-	makeReservation({ 
-		...cfg, 
-		reservationPeriodStart: start, 
-		reservationPeriodEnd: end,
-		createdAt: created,
-		updatedAt: updated,
-	})
+export const storyReservationsActive = activeConfigs.map(
+	({ dates: { start, end, created, updated }, ...cfg }) =>
+		makeReservation({
+			...cfg,
+			reservationPeriodStart: start,
+			reservationPeriodEnd: end,
+			createdAt: created,
+			updatedAt: updated,
+		}),
 );
 
-export const storyReservationsPast = pastConfigs.map(({ dates: { start, end, created, updated }, ...cfg }) =>
-	makeReservation({ 
-		...cfg, 
-		reservationPeriodStart: start, 
-		reservationPeriodEnd: end,
-		createdAt: created,
-		updatedAt: updated,
-	})
+export const storyReservationsPast = pastConfigs.map(
+	({ dates: { start, end, created, updated }, ...cfg }) =>
+		makeReservation({
+			...cfg,
+			reservationPeriodStart: start,
+			reservationPeriodEnd: end,
+			createdAt: created,
+			updatedAt: updated,
+		}),
 );
 
 export const storyReservationsAll = [
@@ -256,11 +268,11 @@ export const storyReservationsAll = [
 
 /**
  * Apollo Client mocks for GraphQL queries used in reservation stories
- * 
+ *
  * These mocks provide realistic responses for:
  * - Active reservations query (myActiveReservations)
  * - Past reservations query (myPastReservations)
- * 
+ *
  * Each mock includes proper GraphQL response structure with __typename fields
  * and realistic data that matches the expected query variables.
  */
