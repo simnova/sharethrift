@@ -1,4 +1,5 @@
 import type { MockedResponse } from '@apollo/client/testing';
+import type { DocumentNode } from '@apollo/client';
 import type { HomeMyReservationsReservationsViewReservationRequestFieldsFragment } from '../../../../../generated.tsx';
 import {
 	HomeMyReservationsReservationsViewActiveContainerActiveReservationsDocument,
@@ -15,8 +16,8 @@ import {
  * 
  * Structure:
  * - makeReservation(): Factory function that creates reservation objects with sensible defaults
- * - activeReservations: Mock data for active reservations (Requested, Accepted states)
- * - pastReservations: Mock data for past reservations (Rejected, Cancelled, Closed states)
+ * - activeConfigs/pastConfigs: Concise configuration objects for reservations
+ * - storyReservationsActive/Past: Generated reservation objects from configs
  * - reservationStoryMocks: Apollo mocks for GraphQL queries
  */
 
@@ -92,13 +93,27 @@ function makeReservation({
 }
 
 /**
- * Mock reservations in active states (Requested, Accepted)
+ * Helper to create Apollo mocks with consistent structure
+ */
+function makeStoryMock<T>(
+	query: DocumentNode,
+	responseField: keyof T,
+	data: T[keyof T],
+): MockedResponse {
+	return {
+		request: { query, variables: { userId: STORYBOOK_RESERVATION_USER_ID } },
+		result: { data: { [responseField]: data } as T },
+	};
+}
+
+/**
+ * Configuration objects for active reservations (Requested, Accepted)
  * These represent ongoing reservations that users can interact with
  */
-const activeReservations: HomeMyReservationsReservationsViewReservationRequestFieldsFragment[] = [
-	makeReservation({
+const activeConfigs = [
+	{
 		id: 'res-001',
-		state: 'Requested',
+		state: 'Requested' as const,
 		listing: { 
 			id: 'listing-1', 
 			title: 'Power Drill Set',
@@ -110,14 +125,16 @@ const activeReservations: HomeMyReservationsReservationsViewReservationRequestFi
 			firstName: 'Sarah',
 			lastName: 'Johnson',
 		},
-		reservationPeriodStart: '2024-02-15T00:00:00Z',
-		reservationPeriodEnd: '2024-02-22T00:00:00Z',
-		createdAt: '2024-02-10T10:00:00Z',
-		updatedAt: '2024-02-12T12:00:00Z',
-	}),
-	makeReservation({
+		dates: { 
+			start: '2024-02-15T00:00:00Z', 
+			end: '2024-02-22T00:00:00Z',
+			created: '2024-02-10T10:00:00Z',
+			updated: '2024-02-12T12:00:00Z',
+		},
+	},
+	{
 		id: 'res-002',
-		state: 'Accepted',
+		state: 'Accepted' as const,
 		listing: { 
 			id: 'listing-2', 
 			title: 'Camping Tent',
@@ -129,21 +146,23 @@ const activeReservations: HomeMyReservationsReservationsViewReservationRequestFi
 			firstName: 'Mike',
 			lastName: 'Brown',
 		},
-		reservationPeriodStart: '2024-03-01T00:00:00Z',
-		reservationPeriodEnd: '2024-03-05T00:00:00Z',
-		createdAt: '2024-02-20T10:00:00Z',
-		updatedAt: '2024-02-22T12:00:00Z',
-	}),
+		dates: { 
+			start: '2024-03-01T00:00:00Z', 
+			end: '2024-03-05T00:00:00Z',
+			created: '2024-02-20T10:00:00Z',
+			updated: '2024-02-22T12:00:00Z',
+		},
+	},
 ];
 
 /**
- * Mock reservations in inactive states (Rejected, Cancelled, Closed)
+ * Configuration objects for past reservations (Rejected, Cancelled, Closed)
  * These represent completed or cancelled reservations for history views
  */
-const pastReservations: HomeMyReservationsReservationsViewReservationRequestFieldsFragment[] = [
-	makeReservation({
+const pastConfigs = [
+	{
 		id: 'res-003',
-		state: 'Rejected',
+		state: 'Rejected' as const,
 		listing: { 
 			id: 'listing-3', 
 			title: 'Mountain Bike',
@@ -155,14 +174,16 @@ const pastReservations: HomeMyReservationsReservationsViewReservationRequestFiel
 			firstName: 'Anna',
 			lastName: 'Lee',
 		},
-		reservationPeriodStart: '2024-04-10T00:00:00Z',
-		reservationPeriodEnd: '2024-04-15T00:00:00Z',
-		createdAt: '2024-04-01T10:00:00Z',
-		updatedAt: '2024-04-02T12:00:00Z',
-	}),
-	makeReservation({
+		dates: { 
+			start: '2024-04-10T00:00:00Z', 
+			end: '2024-04-15T00:00:00Z',
+			created: '2024-04-01T10:00:00Z',
+			updated: '2024-04-02T12:00:00Z',
+		},
+	},
+	{
 		id: 'res-004',
-		state: 'Cancelled',
+		state: 'Cancelled' as const,
 		listing: { 
 			id: 'listing-4', 
 			title: 'Kayak',
@@ -174,14 +195,16 @@ const pastReservations: HomeMyReservationsReservationsViewReservationRequestFiel
 			firstName: 'Chris',
 			lastName: 'Green',
 		},
-		reservationPeriodStart: '2024-05-01T00:00:00Z',
-		reservationPeriodEnd: '2024-05-05T00:00:00Z',
-		createdAt: '2024-04-20T10:00:00Z',
-		updatedAt: '2024-04-22T12:00:00Z',
-	}),
-	makeReservation({
+		dates: { 
+			start: '2024-05-01T00:00:00Z', 
+			end: '2024-05-05T00:00:00Z',
+			created: '2024-04-20T10:00:00Z',
+			updated: '2024-04-22T12:00:00Z',
+		},
+	},
+	{
 		id: 'res-005',
-		state: 'Closed',
+		state: 'Closed' as const,
 		listing: { 
 			id: 'listing-5', 
 			title: 'GoPro Camera',
@@ -193,23 +216,42 @@ const pastReservations: HomeMyReservationsReservationsViewReservationRequestFiel
 			firstName: 'Patricia',
 			lastName: 'Black',
 		},
-		reservationPeriodStart: '2024-06-01T00:00:00Z',
-		reservationPeriodEnd: '2024-06-05T00:00:00Z',
-		createdAt: '2024-05-20T10:00:00Z',
-		updatedAt: '2024-05-22T12:00:00Z',
+		dates: { 
+			start: '2024-06-01T00:00:00Z', 
+			end: '2024-06-05T00:00:00Z',
+			created: '2024-05-20T10:00:00Z',
+			updated: '2024-05-22T12:00:00Z',
+		},
 		closeRequestedByReserver: true,
-	}),
+	},
 ];
 
 /**
- * Exported mock data for use in Storybook stories
- * These provide consistent test data across all reservation-related stories
+ * Generate reservation objects from configuration objects
  */
-export const storyReservationsActive = activeReservations;
-export const storyReservationsPast = pastReservations;
+export const storyReservationsActive = activeConfigs.map(({ dates: { start, end, created, updated }, ...cfg }) =>
+	makeReservation({ 
+		...cfg, 
+		reservationPeriodStart: start, 
+		reservationPeriodEnd: end,
+		createdAt: created,
+		updatedAt: updated,
+	})
+);
+
+export const storyReservationsPast = pastConfigs.map(({ dates: { start, end, created, updated }, ...cfg }) =>
+	makeReservation({ 
+		...cfg, 
+		reservationPeriodStart: start, 
+		reservationPeriodEnd: end,
+		createdAt: created,
+		updatedAt: updated,
+	})
+);
+
 export const storyReservationsAll = [
-	...activeReservations,
-	...pastReservations,
+	...storyReservationsActive,
+	...storyReservationsPast,
 ];
 
 /**
@@ -223,32 +265,14 @@ export const storyReservationsAll = [
  * and realistic data that matches the expected query variables.
  */
 export const reservationStoryMocks: MockedResponse[] = [
-	{
-		request: {
-			query:
-				HomeMyReservationsReservationsViewActiveContainerActiveReservationsDocument,
-			variables: {
-				userId: STORYBOOK_RESERVATION_USER_ID,
-			},
-		},
-		result: {
-			data: {
-				myActiveReservations: activeReservations,
-			},
-		},
-	},
-	{
-		request: {
-			query:
-				HomeMyReservationsReservationsViewHistoryContainerPastReservationsDocument,
-			variables: {
-				userId: STORYBOOK_RESERVATION_USER_ID,
-			},
-		},
-		result: {
-			data: {
-				myPastReservations: pastReservations,
-			},
-		},
-	},
+	makeStoryMock(
+		HomeMyReservationsReservationsViewActiveContainerActiveReservationsDocument,
+		'myActiveReservations',
+		storyReservationsActive,
+	),
+	makeStoryMock(
+		HomeMyReservationsReservationsViewHistoryContainerPastReservationsDocument,
+		'myPastReservations',
+		storyReservationsPast,
+	),
 ];
