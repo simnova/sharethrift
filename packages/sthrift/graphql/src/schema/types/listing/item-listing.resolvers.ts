@@ -41,8 +41,16 @@ const itemListingResolvers = {
 			args: { id: string },
 			context: GraphContext,
 		) => {
+			// Use system services for admin users to allow viewing blocked/appealed listings
+			const user = context.applicationServices.verifiedUser;
+			const isAdmin = user?.verifiedJwt?.roles?.includes('admin') ?? false;
+			
+			const services = isAdmin 
+				? context.systemApplicationServices 
+				: context.applicationServices;
+			
 			const listing =
-				await context.applicationServices.Listing.ItemListing.queryById({
+				await services.Listing.ItemListing.queryById({
 					id: args.id,
 				});
 
@@ -115,14 +123,15 @@ const itemListingResolvers = {
 						id: listing.id,
 						title: listing.title,
 						image:
-							listing.images && listing.images.length > 0
-								? listing.images[0]
-								: null,
-						publishedAt: listing.createdAt.toISOString(),
-						reservationPeriod: `${sharingStart.slice(0, 10)} - ${sharingEnd.slice(0, 10)}`,
-						status: mapStateToStatus(listing?.state),
-						pendingRequestsCount: 0, // Future: integrate with reservation request domain context
-					};
+						listing.images && listing.images.length > 0
+							? listing.images[0]
+							: null,
+					publishedAt: listing.createdAt.toISOString(),
+					reservationPeriod: `${sharingStart.slice(0, 10)} - ${sharingEnd.slice(0, 10)}`,
+					status: mapStateToStatus(listing?.state),
+					// TODO: integrate with reservation request domain context
+					pendingRequestsCount: 0,
+				};
 				}),
 				total: result.total,
 				page: result.page,
@@ -149,15 +158,13 @@ const itemListingResolvers = {
 				sharerId?: string;
 				sorter?: { field: string; order: 'ascend' | 'descend' };
 			} = { page, pageSize };
-			if (searchText !== undefined) pagedArgs.searchText = searchText;
-			if (effectiveStatuses !== undefined)
-				pagedArgs.statusFilters = effectiveStatuses;
-			if (sorter !== undefined) pagedArgs.sorter = sorter;
-			const result = await context.applicationServices.Listing.ItemListing.queryPaged(
-				pagedArgs,
-			);
-
-			const mapStateToStatus = (state?: string): string => {
+		if (searchText !== undefined) pagedArgs.searchText = searchText;
+		if (effectiveStatuses !== undefined)
+			pagedArgs.statusFilters = effectiveStatuses;
+		if (sorter !== undefined) pagedArgs.sorter = sorter;
+		const result = await context.systemApplicationServices.Listing.ItemListing.queryPaged(
+			pagedArgs,
+		);			const mapStateToStatus = (state?: string): string => {
 				if (!state || state.trim() === '') return 'Unknown';
 				return state;
 			};

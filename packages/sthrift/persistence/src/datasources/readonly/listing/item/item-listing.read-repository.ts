@@ -175,10 +175,10 @@ export class ItemListingReadRepositoryImpl
 			if (!result || result.length === 0) {
 				return [];
 			}
-			return result.map((doc) => this.converter.toDomain(doc, this.passport));
-		} catch (error) {
-			// If ObjectId creation fails or any error occurs, return empty results
-			console.warn('Error resolving sharer listings, returning empty set:', error);
+		return result.map((doc) => this.converter.toDomain(doc, this.passport));
+	} catch (_error) {
+		// If ObjectId creation fails or any error occurs, return empty results
+			// Error resolving sharer listings, returning empty set
 			return [];
 		}
 	}

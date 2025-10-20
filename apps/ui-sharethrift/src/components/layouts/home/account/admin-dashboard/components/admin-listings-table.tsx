@@ -1,10 +1,10 @@
 import { Input, Checkbox, Button, Image, Popconfirm, Tag } from 'antd';
 import type { TableProps } from 'antd';
 import { SearchOutlined, FilterOutlined } from '@ant-design/icons';
-import { Dashboard } from '@sthrift/ui-components';
-import type { MyListingData } from '../../../my-listings/components/my-listings-dashboard.types.ts';
 
 const { Search } = Input;
+import { Dashboard } from '@sthrift/ui-components';
+import type { MyListingData } from '../../../my-listings/components/my-listings-dashboard.types.ts';
 
 export interface AdminListingsTableProps {
   readonly data: ReadonlyArray<MyListingData>;
@@ -31,12 +31,12 @@ export function AdminListingsTable({
   data,
   searchText,
   statusFilters,
+  onSearch,
   sorter,
   currentPage,
   pageSize,
   total,
   loading = false,
-  onSearch,
   onStatusFilter,
   onTableChange,
   onPageChange,
@@ -60,7 +60,7 @@ export function AdminListingsTable({
                 confirm();
                 onSearch(value);
               }}
-              style={{ width: 200 }}
+              style={{ width: 250 }}
               allowClear
             />
           </div>
@@ -112,7 +112,7 @@ export function AdminListingsTable({
         title: 'Status',
         dataIndex: 'status',
         key: 'status',
-        filterDropdown: ({ confirm }) => (
+        filterDropdown: ({ confirm }: { confirm: () => void }) => (
           <div style={{ padding: 16, width: 200 }}>
             <div style={{ marginBottom: 8, fontWeight: 500 }}>Filter by Status</div>
             <Checkbox.Group
@@ -167,7 +167,7 @@ export function AdminListingsTable({
 
   return (
     <Dashboard
-      data={data as MyListingData[]}
+        data={data as MyListingData[]}
       columns={columns}
       loading={loading}
       currentPage={currentPage}

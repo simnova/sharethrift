@@ -1,4 +1,5 @@
 import { useState, useCallback } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { message } from 'antd';
 import { useMutation, useQuery } from '@apollo/client';
 import {
@@ -10,6 +11,7 @@ import { AdminListingsTable } from './admin-listings-table.tsx';
 import { ComponentQueryLoader } from '@sthrift/ui-components';
 
 export function AdminListings() {
+	const navigate = useNavigate();
 	const [page, setPage] = useState(1);
 	const pageSize = 6;
 	const [searchText, setSearchText] = useState('');
@@ -23,10 +25,10 @@ export function AdminListings() {
 		AdminListingsTableContainerAdminListingsDocument,
 		{
 			variables: {
-				page,
-				pageSize,
-				searchText,
-				statusFilters,
+			page,
+			pageSize,
+			searchText: searchText || undefined,
+			statusFilters,
 				sorter: sorter.field && sorter.order ? { field: sorter.field, order: sorter.order } : undefined,
 			},
 			// Force this operation over the non-batched HTTP link to avoid servers that don't support batching
@@ -70,8 +72,8 @@ export function AdminListings() {
 		(action: string, listingId: string) => {
 			if (action === 'view') {
 				// Navigate in same tab with admin context stored for back navigation
-				sessionStorage.setItem('adminContext', 'true');
-				window.location.href = `/listing/${listingId}`;
+				globalThis.sessionStorage.setItem('adminContext', 'true');
+				navigate(`/listing/${listingId}`);
 			}
 			
 			if (action === 'unblock') {
@@ -114,11 +116,11 @@ export function AdminListings() {
 					data={listings}
 					searchText={searchText}
 					statusFilters={statusFilters}
+					onSearch={onSearch}
 					sorter={sorter}
 					currentPage={page}
 					pageSize={pageSize}
 					total={total}
-					onSearch={onSearch}
 					onStatusFilter={onStatusFilter}
 					onTableChange={onTableChange}
 					onPageChange={setPage}
