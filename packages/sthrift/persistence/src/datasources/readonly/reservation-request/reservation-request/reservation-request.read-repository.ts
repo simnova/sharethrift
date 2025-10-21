@@ -154,24 +154,36 @@ export class ReservationRequestReadRepositoryImpl
 	): Promise<
 		Domain.Contexts.ReservationRequest.ReservationRequest.ReservationRequestEntityReference[]
 	> {
-		// First, get all listing IDs owned by this sharer
-		const sharerListings = await this.models.Listing.ItemListingModel.find(
-			{ sharer: new MongooseSeedwork.ObjectId(sharerId) },
-			{ _id: 1 },
-		).lean();
+		// Use aggregation pipeline to join listings and filter by sharerId
+		const pipeline: Record<string, unknown>[] = [
+			{
+				$lookup: {
+					from: this.models.Listing.ItemListingModel.collection.name,
+					localField: 'listing',
+					foreignField: '_id',
+					as: 'listingDoc',
+				},
+			},
+			{ $unwind: '$listingDoc' },
+			{
+				$match: {
+					'listingDoc.sharer': new MongooseSeedwork.ObjectId(sharerId),
+				},
+			},
+		];
 
-		const listingIds = sharerListings.map((listing) => listing._id);
-
-		if (listingIds.length === 0) {
-			return [];
+		// Apply additional options if provided (e.g., limit, sort)
+		if (options?.limit) {
+			pipeline.push({ $limit: options.limit });
+		}
+		if (options?.sort) {
+			pipeline.push({ $sort: options.sort });
 		}
 
-		// Then find reservation requests for those listings
-		const filter: FilterQuery<Models.ReservationRequest.ReservationRequest> = {
-			listing: { $in: listingIds },
-		};
+		const docs = await this.models.ReservationRequest.ReservationRequest.aggregate(pipeline).exec();
 
-		return await this.queryMany(filter, options);
+		// Convert to domain entities
+		return docs.map((doc: Record<string, unknown>) => this.converter.toDomain(doc, this.passport));
 	}
 
 	async getActiveByReserverIdAndListingId(
