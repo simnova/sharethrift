@@ -1,13 +1,11 @@
 import { ApolloLink, type DefaultContext, HttpLink } from '@apollo/client';
 import { BatchHttpLink } from '@apollo/client/link/batch-http';
 import { setContext } from '@apollo/client/link/context';
-import type { PersistedQueryLink } from '@apollo/client/link/persisted-queries';
-import { sha256 } from 'crypto-hash';
 
 // base apollo link with no customizations
 // could be used as a base for the link chain
 export const BaseApolloLink = (): ApolloLink =>
-	setContext((prevContext) => {
+	setContext((prevContext: any) => {
 		return {
 			...prevContext,
 			headers: {
@@ -20,7 +18,7 @@ export const BaseApolloLink = (): ApolloLink =>
 export const ApolloLinkToAddAuthHeaderIfAccessTokenAvailable = (
 	access_token: string | undefined,
 ): ApolloLink =>
-	setContext((prevContext) => {
+	setContext((prevContext: any) => {
 		return {
 			...prevContext,
 			headers: {

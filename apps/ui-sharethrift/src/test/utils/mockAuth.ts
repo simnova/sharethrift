@@ -2,7 +2,14 @@ import type { AuthContextProps } from 'react-oidc-context';
 
 // Mock User interface to match what react-oidc-context expects
 interface MockUser {
-	profile: Record<string, unknown>;
+	profile: {
+		sub: string;
+		iss: string;
+		aud: string;
+		exp: number;
+		iat: number;
+		[key: string]: unknown;
+	};
 	session_state: string | null;
 	access_token: string;
 	token_type: string;
@@ -18,7 +25,14 @@ interface MockUser {
 
 // Mock User class to avoid dependency on oidc-client-ts
 class MockUserImpl implements MockUser {
-	profile: Record<string, unknown>;
+	profile: {
+		sub: string;
+		iss: string;
+		aud: string;
+		exp: number;
+		iat: number;
+		[key: string]: unknown;
+	};
 	session_state: string | null = null;
 	access_token: string = 'mock-access-token';
 	token_type: string = 'Bearer';
@@ -31,7 +45,14 @@ class MockUserImpl implements MockUser {
 	scopes: string[] = ['openid', 'profile', 'email'];
 
 	constructor(data: { profile: Record<string, unknown> }) {
-		this.profile = data.profile;
+		this.profile = data.profile as {
+			sub: string;
+			iss: string;
+			aud: string;
+			exp: number;
+			iat: number;
+			[key: string]: unknown;
+		};
 	}
 
 	toStorageString(): string {
