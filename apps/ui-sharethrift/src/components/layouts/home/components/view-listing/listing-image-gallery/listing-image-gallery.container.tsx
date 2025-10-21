@@ -10,10 +10,10 @@ interface ListingImageGalleryContainerProps {
 	className?: string;
 }
 
-export default function ListingImageGalleryContainer({
+export const ListingImageGalleryContainer: React.FC<ListingImageGalleryContainerProps> = ({
 	listingId,
 	className,
-}: ListingImageGalleryContainerProps) {
+}) => {
 	const { data, loading, error } = useQuery<ViewListingImageGalleryGetImagesQuery>(
 		ViewListingImageGalleryGetImagesDocument,
 		{
@@ -32,4 +32,4 @@ export default function ListingImageGalleryContainer({
 			className={className}
 		/>
 	);
-}
+};

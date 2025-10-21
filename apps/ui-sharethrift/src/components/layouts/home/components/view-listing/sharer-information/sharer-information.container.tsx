@@ -14,13 +14,13 @@ interface SharerInformationContainerProps {
 	showIconOnly?: boolean;
 }
 
-export default function SharerInformationContainer({
+export const SharerInformationContainer: React.FC<SharerInformationContainerProps> = ({
 	sharerId,
 	listingId,
 	isOwner,
 	sharedTimeAgo,
 	className,
-}: SharerInformationContainerProps) {
+}) => {
 	// If sharerId looks like a name (contains spaces or letters), use it directly
 	// Otherwise, try to query for user data
 	const isNameOnly =
@@ -68,4 +68,4 @@ export default function SharerInformationContainer({
 			className={className}
 		/>
 	);
-}
+};

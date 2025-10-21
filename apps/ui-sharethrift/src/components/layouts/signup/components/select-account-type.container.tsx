@@ -5,10 +5,10 @@ import { useMutation, useQuery } from "@apollo/client/react";
 import { useNavigate } from 'react-router-dom';
 import {
 	SignupSelectAccountTypeCurrentPersonalUserAndCreateIfNotExistsDocument,
-	SignupSelectAccountTypePersonalUserUpdateDocument,
+		SignupSelectAccountTypePersonalUserUpdateDocument,
 } from '../../../../generated.tsx';
 
-export default function SelectAccountTypeContainer() {
+export const SelectAccountTypeContainer: React.FC = () => {
 	const navigate = useNavigate();
 
 	const {
@@ -76,8 +76,8 @@ export default function SelectAccountTypeContainer() {
 					loadingUser={loadingUser}
 					handleUpdateAccountType={handleUpdateAccountType}
 					savingAccountType={savingAccountType}
-				/>
-			}
+			/>
+		}
 		/>
 	);
-}
+};
