@@ -1,10 +1,10 @@
-import { type ReactNode, type ReactElement, useMemo } from "react";
-import { MemoryRouter, Route, Routes } from "react-router-dom";
-import { AuthContext } from "react-oidc-context";
-import { ApolloClient, InMemoryCache } from "@apollo/client";
-import { ApolloProvider } from "@apollo/client/react";
-import { MockLink } from "@apollo/client/testing";
-import type { Decorator } from "@storybook/react";
+import { type ReactNode, type ReactElement, useMemo } from 'react';
+import { MemoryRouter, Route, Routes } from 'react-router-dom';
+import { AuthContext } from 'react-oidc-context';
+import { ApolloClient, InMemoryCache } from '@apollo/client';
+import { ApolloProvider } from '@apollo/client/react';
+import { MockLink } from '@apollo/client/testing';
+import type { Decorator } from '@storybook/react';
 
 /**
  * Reusable Apollo Client decorator for Storybook stories.
@@ -53,18 +53,22 @@ export const withMockApolloClient: Decorator = (Story: any, context: any) => {
  * By wrapping with <AuthContext.Provider value={mockAuth}>, we provide the mock data to
  * that context, so components receive our mockAuth object with isAuthenticated: true.
  */
-export const MockAuthWrapper = ({ children }: { children: ReactNode }): ReactElement => {
+export const MockAuthWrapper = ({
+	children,
+}: {
+	children: ReactNode;
+}): ReactElement => {
 	const mockAuth: any = useMemo(
 		() => ({
 			isAuthenticated: true,
 			isLoading: false,
 			user: {
 				profile: {
-					sub: "507f1f77bcf86cd799439099",
-					name: "Test User",
-					email: "test@example.com",
+					sub: '507f1f77bcf86cd799439099',
+					name: 'Test User',
+					email: 'test@example.com',
 				},
-				access_token: "mock-access-token",
+				access_token: 'mock-access-token',
 			},
 			signinRedirect: async () => {},
 			signoutRedirect: async () => {},
@@ -72,7 +76,7 @@ export const MockAuthWrapper = ({ children }: { children: ReactNode }): ReactEle
 			events: {},
 			settings: {},
 		}),
-		[]
+		[],
 	);
 
 	return (
@@ -97,12 +101,14 @@ export const MockAuthWrapper = ({ children }: { children: ReactNode }): ReactEle
  * } as Meta;
  * ```
  */
-export const withMockRouter = (initialRoute = "/"): Decorator => (Story: any) => (
-	<MockAuthWrapper>
-		<MemoryRouter initialEntries={[initialRoute]}>
-			<Routes>
-				<Route path="*" element={<Story />} />
-			</Routes>
-		</MemoryRouter>
-	</MockAuthWrapper>
-);
+export const withMockRouter =
+	(initialRoute = '/'): Decorator =>
+	(Story: any) => (
+		<MockAuthWrapper>
+			<MemoryRouter initialEntries={[initialRoute]}>
+				<Routes>
+					<Route path="*" element={<Story />} />
+				</Routes>
+			</MemoryRouter>
+		</MockAuthWrapper>
+	);
