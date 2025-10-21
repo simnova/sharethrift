@@ -87,6 +87,16 @@ export const buildApplicationServicesFactory = (
 					console.log(passport);
 					passport = Domain.PassportFactory.forPersonalUser(personalUser);
 				}
+			} else if (openIdConfigKey === 'AdminPortal') {
+				const adminUser =
+					await readonlyDataSource.User.AdminUser.AdminUserReadRepo.getByEmail(
+						verifiedJwt.email,
+					);
+
+				if (adminUser) {
+                    console.log(passport);
+					passport = Domain.PassportFactory.forAdminUser(adminUser);
+				}
 			}
 		}
 

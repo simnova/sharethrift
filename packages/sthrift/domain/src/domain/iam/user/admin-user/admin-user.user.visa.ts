@@ -1,6 +1,6 @@
-import type { UserVisa } from '../../contexts/user/user.visa.ts';
-import type { UserDomainPermissions } from '../../contexts/user/user.domain-permissions.ts';
-import type { AdminUserEntityReference } from '../../contexts/user/admin-user/admin-user.entity.ts';
+import type { UserVisa } from '../../../contexts/user/user.visa.ts';
+import type { UserDomainPermissions } from '../../../contexts/user/user.domain-permissions.ts';
+import type { AdminUserEntityReference } from '../../../contexts/user/admin-user/admin-user.entity.ts';
 
 export class AdminUserUserVisa implements UserVisa {
 	private readonly _user: AdminUserEntityReference;

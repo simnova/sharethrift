@@ -50,4 +50,20 @@ export const adminUsers = [
 		createdAt: new Date('2023-01-03T08:00:00Z'),
 		updatedAt: new Date('2023-01-03T08:00:00Z'),
 	},
+	{
+		_id: '807f1f77bcf86cd799439044',
+		userType: 'admin-user',
+		isBlocked: false,
+		role: new ObjectId('707f1f77bcf86cd799439031'), // Super Admin
+		account: {
+			accountType: 'admin-user',
+			email: 'nkduy2011@gmail.com', // from mock OAuth2 server
+			username: 'duynguyen',
+			firstName: 'Duy',
+			lastName: 'Nguyen',
+		} as Models.User.AdminUserAccount,
+		schemaVersion: '1.0.0',
+		createdAt: new Date('2023-01-04T08:00:00Z'),
+		updatedAt: new Date('2023-01-04T08:00:00Z'),
+	},
 ] as unknown as Models.User.AdminUser[];

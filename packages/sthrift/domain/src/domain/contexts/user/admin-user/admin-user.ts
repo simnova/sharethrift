@@ -90,16 +90,6 @@ export class AdminUser<props extends AdminUserProps>
 	}
 
 	private set role(role: AdminRoleEntityReference) {
-		if (
-			!this.isNew &&
-			!this.visa.determineIf(
-				(domainPermissions) => domainPermissions.canCreateUser,
-			)
-		) {
-			throw new DomainSeedwork.PermissionError(
-				'You do not have permission to change the role of this admin user',
-			);
-		}
 		if (role === null || role === undefined) {
 			throw new DomainSeedwork.PermissionError(
 				'role cannot be null or undefined',

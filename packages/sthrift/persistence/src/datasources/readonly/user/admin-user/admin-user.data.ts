@@ -1,7 +1,6 @@
 import type { Models } from '@sthrift/data-sources-mongoose-models';
-import type { Model, Types } from 'mongoose';
+import type { Model, Types, FilterQuery, Require_id, FlattenMaps } from 'mongoose';
 import { isValidObjectId } from 'mongoose';
-import type { FilterQuery, Require_id, FlattenMaps } from 'mongoose';
 import type { FindOptions, FindOneOptions } from '../../mongo-data-source.ts';
 
 type LeanBase<T> = Readonly<Require_id<FlattenMaps<T>>>;

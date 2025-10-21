@@ -1,6 +1,6 @@
 import { AdminUserPassportBase } from './admin-user.passport-base.ts';
-import type { Passport } from '../../contexts/passport.ts';
-import type { UserPassport } from '../../contexts/user/user.passport.ts';
+import type { Passport } from '../../../contexts/passport.ts';
+import type { UserPassport } from '../../../contexts/user/user.passport.ts';
 import { AdminUserUserPassport } from './admin-user.user.passport.ts';
 export class AdminUserPassport
 	extends AdminUserPassportBase
