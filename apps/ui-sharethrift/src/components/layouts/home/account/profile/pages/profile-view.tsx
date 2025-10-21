@@ -26,13 +26,13 @@ interface ProfileViewProps {
 	onListingClick: (listingId: string) => void;
 }
 
-export function ProfileView({
+export const ProfileView: React.FC<Readonly<ProfileViewProps>> = ({
 	user,
 	listings,
 	isOwnProfile,
 	onEditSettings,
 	onListingClick,
-}: Readonly<ProfileViewProps>) {
+}) => {
 	const formatDate = (dateString: string) => {
 		return new Date(dateString).toLocaleDateString('en-US', {
 			year: 'numeric',

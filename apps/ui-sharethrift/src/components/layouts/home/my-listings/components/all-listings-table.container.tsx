@@ -9,10 +9,10 @@ export interface AllListingsTableContainerProps {
   onPageChange: (page: number) => void;
 }
 
-export function AllListingsTableContainer({
+export const AllListingsTableContainer: React.FC<AllListingsTableContainerProps> = ({
   currentPage,
   onPageChange,
-}: AllListingsTableContainerProps) {
+}) => {
   const [searchText, setSearchText] = useState("");
   const [statusFilters, setStatusFilters] = useState<string[]>([]);
   const [sorter, setSorter] = useState<{

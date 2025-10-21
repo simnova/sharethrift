@@ -32,7 +32,7 @@ export interface CreateListingProps {
 	onModalClose: () => void;
 }
 
-export function CreateListing({
+export const CreateListing: React.FC<CreateListingProps> = ({
 	categories,
 	isLoading,
 	onSubmit,
@@ -43,7 +43,7 @@ export function CreateListing({
 	onViewListing,
 	onViewDraft,
 	onModalClose,
-}: CreateListingProps) {
+}) => {
 	const [form] = Form.useForm();
 	const maxCharacters = 2000;
 	const mainFileInputRef = useRef<HTMLInputElement>(null);

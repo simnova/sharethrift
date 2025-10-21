@@ -9,10 +9,10 @@ export interface RequestsTableContainerProps {
 	onPageChange: (page: number) => void;
 }
 
-export function RequestsTableContainer({
+export const RequestsTableContainer: React.FC<RequestsTableContainerProps> = ({
 	currentPage,
 	onPageChange,
-}: RequestsTableContainerProps) {
+}) => {
 	const [searchText, setSearchText] = useState('');
 	const [statusFilters, setStatusFilters] = useState<string[]>([]);
 	const [sorter, setSorter] = useState<{

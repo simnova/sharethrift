@@ -15,11 +15,11 @@ import {
 	type ViewListingActiveReservationRequestForListingQueryVariables,
 } from '../../../../../generated.tsx';
 
-export function ViewListingContainer({
-	isAuthenticated,
-}: {
+export const ViewListingContainer: React.FC<{
 	isAuthenticated: boolean;
-}) {
+}> = ({
+	isAuthenticated,
+}) => {
 	const { listingId } = useParams();
 
 	const {

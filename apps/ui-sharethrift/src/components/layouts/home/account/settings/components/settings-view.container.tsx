@@ -97,6 +97,6 @@ function SettingsViewLoader() {
 	);
 }
 
-export function SettingsViewContainer() {
+export const SettingsViewContainer: React.FC = () => {
 	return <SettingsViewLoader />;
-}
+};

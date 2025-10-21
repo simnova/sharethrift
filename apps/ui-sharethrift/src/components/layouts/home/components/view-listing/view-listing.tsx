@@ -18,13 +18,13 @@ export interface ViewListingProps {
 	sharedTimeAgo?: string;
 }
 
-export function ViewListing({
+export const ViewListing: React.FC<ViewListingProps> = ({
 	listing,
 	userIsSharer,
 	isAuthenticated,
 	userReservationRequest,
 	sharedTimeAgo,
-}: ViewListingProps) {
+}) => {
 	// Mock sharer info (since ItemListing.sharer is just an ID)
 	const sharer = listing.sharer;
 	// Get userId from localStorage if available

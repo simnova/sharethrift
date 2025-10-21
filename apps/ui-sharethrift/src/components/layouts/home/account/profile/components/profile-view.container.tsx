@@ -147,6 +147,6 @@ function ProfileViewLoader() {
 	);
 }
 
-export function ProfileViewContainer() {
+export const ProfileViewContainer: React.FC = () => {
 	return <ProfileViewLoader />;
-}
+};

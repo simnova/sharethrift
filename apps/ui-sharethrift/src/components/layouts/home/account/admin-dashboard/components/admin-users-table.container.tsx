@@ -14,10 +14,10 @@ export interface AdminUsersTableContainerProps {
   onPageChange: (page: number) => void;
 }
 
-export function AdminUsersTableContainer({
+export const AdminUsersTableContainer: React.FC<Readonly<AdminUsersTableContainerProps>> = ({
   currentPage,
   onPageChange,
-}: Readonly<AdminUsersTableContainerProps>) {
+}) => {
   const [searchText, setSearchText] = useState("");
   const [statusFilters, setStatusFilters] = useState<string[]>([]);
   const [sorter, setSorter] = useState<{
