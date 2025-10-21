@@ -10,11 +10,11 @@ interface MessageSharerButtonProps {
 	className?: string;
 }
 
-export function MessageSharerButton({
+export const MessageSharerButton: React.FC<MessageSharerButtonProps> = ({
 	listingId,
 	sharerId,
 	className = '',
-}: MessageSharerButtonProps) {
+}) => {
 	const [isCreating, setIsCreating] = useState(false);
 	const navigate = useNavigate();
 

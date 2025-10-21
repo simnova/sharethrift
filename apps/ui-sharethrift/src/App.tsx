@@ -11,7 +11,7 @@ const authSection = (
 	</RequireAuth>
 );
 
-function App() {
+const App: React.FC = () => {
 	return (
 		<ApolloConnection>
 			<Routes>
