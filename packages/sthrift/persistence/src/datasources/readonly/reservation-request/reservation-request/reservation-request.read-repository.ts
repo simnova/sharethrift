@@ -8,7 +8,7 @@ import {
 	filterByStates,
 	RESERVATION_STATES,
 } from './reservation-state-filters.ts';
-import type { FilterQuery } from 'mongoose';
+import type { FilterQuery, PipelineStage } from 'mongoose';
 import { BaseReadRepository } from '../../base-read-repository.ts';
 import type { Models } from '@sthrift/data-sources-mongoose-models';
 
@@ -155,7 +155,7 @@ export class ReservationRequestReadRepositoryImpl
 		Domain.Contexts.ReservationRequest.ReservationRequest.ReservationRequestEntityReference[]
 	> {
 		// Use aggregation pipeline to join listings and filter by sharerId
-		const pipeline: Record<string, unknown>[] = [
+		const pipeline: PipelineStage[] = [
 			{
 				$lookup: {
 					from: this.models.Listing.ItemListingModel.collection.name,
@@ -174,16 +174,21 @@ export class ReservationRequestReadRepositoryImpl
 
 		// Apply additional options if provided (e.g., limit, sort)
 		if (options?.limit) {
-			pipeline.push({ $limit: options.limit });
+			pipeline.push({ $limit: options.limit } as PipelineStage);
 		}
 		if (options?.sort) {
-			pipeline.push({ $sort: options.sort });
+			pipeline.push({ $sort: options.sort } as PipelineStage);
 		}
 
-		const docs = await this.models.ReservationRequest.ReservationRequest.aggregate(pipeline).exec();
+		const docs =
+			await this.models.ReservationRequest.ReservationRequest.aggregate(
+				pipeline,
+			).exec();
 
 		// Convert to domain entities
-		return docs.map((doc: Record<string, unknown>) => this.converter.toDomain(doc, this.passport));
+		return docs.map((doc: Record<string, unknown>) =>
+			this.converter.toDomain(doc, this.passport),
+		);
 	}
 
 	async getActiveByReserverIdAndListingId(
