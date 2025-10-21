@@ -5,6 +5,7 @@ import { ReservationStatusTag } from '@sthrift/ui-components';
 import { ReservationActions } from './reservation-actions.tsx';
 import type { ReservationRequestFieldsFragment } from '../../../../../generated.tsx';
 import { mapReservationState } from '../../../../../utils/reservation-state-mapper.ts';
+import { BASE64_FALLBACK_IMAGE } from '../constants/ui-constants.ts';
 
 type ReservationsTableStyles = {
 	listingCell: string;
@@ -39,9 +40,7 @@ export const ReservationsTable: React.FC<ReservationsTableProps> = ({
 			dataIndex: 'listing',
 			key: 'image',
 			width: 80,
-			render: (
-				listing: ReservationRequestFieldsFragment['listing'],
-			) => (
+			render: (listing: ReservationRequestFieldsFragment['listing']) => (
 				<div className={classes.listingCell}>
 					{listing?.images && listing.images.length > 0 ? (
 						<Image
@@ -50,7 +49,7 @@ export const ReservationsTable: React.FC<ReservationsTableProps> = ({
 							width={60}
 							height={40}
 							style={{ objectFit: 'cover', borderRadius: '4px' }}
-							fallback="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAMIAAADDCAYAAADQvc6UAAABRWlDQ1BJQ0MgUHJvZmlsZQAAKJFjYGASSSwoyGFhYGDIzSspCnJ3UoiIjFJgf8LAwSDCIMogwMCcmFxc4BgQ4ANUwgCjUcG3awyMIPqyLsis7PPOq3QdDFcvjV3jOD1boQVTPQrgSkktTgbSf4A4LbmgqISBgTEFyFYuLykAsTuAbJEioKOA7DkgdjqEvQHEEwtkDvAbCLgBxJjNTkHOOkEyMwFBHwgwWLCk4TUwHQl0yBCBfF6QAosdP1AEiB0WQDA8Ccw8IXXQWpFUhgQNQ9VcC1kQQjA7l9gBDp2UgWDUUAX1J6lwI4Qxdaa4dGCiSxqKFaaaDAoW1ZkVmpeIZODAVVfsDAzOGDgWUyRWK4D4s0QEkHRiNg8QyBMz2BYUGiHuAHDOSsQ4P0JsdU4gR7T6eCsxMDAwYGAShGJ9BYuBxZnKhxpaBTl0jLi8vLF9fYuB2dA6PbbSxqDqOsKYzmpF0esLC6QvIA=="
+							fallback={BASE64_FALLBACK_IMAGE}
 						/>
 					) : (
 						<div
@@ -76,9 +75,7 @@ export const ReservationsTable: React.FC<ReservationsTableProps> = ({
 			title: 'Listing',
 			dataIndex: 'listing',
 			key: 'listing',
-			render: (
-				listing: ReservationRequestFieldsFragment['listing'],
-			) => (
+			render: (listing: ReservationRequestFieldsFragment['listing']) => (
 				<div className={classes.listingCell}>
 					<span className={classes.tableText}>
 						{listing?.title || 'Unknown Listing'}
@@ -90,9 +87,7 @@ export const ReservationsTable: React.FC<ReservationsTableProps> = ({
 			title: 'Sharer',
 			dataIndex: 'reserver',
 			key: 'sharer',
-			render: (
-				reserver: ReservationRequestFieldsFragment['reserver'],
-			) => (
+			render: (reserver: ReservationRequestFieldsFragment['reserver']) => (
 				<span className={classes.tableText}>
 					{reserver?.account?.username
 						? `@${reserver.account.username}`
@@ -113,9 +108,7 @@ export const ReservationsTable: React.FC<ReservationsTableProps> = ({
 		{
 			title: 'Reservation Period',
 			key: 'period',
-			render: (
-				record: ReservationRequestFieldsFragment,
-			) => (
+			render: (record: ReservationRequestFieldsFragment) => (
 				<span className={classes.tableText}>
 					{new Date(record.reservationPeriodStart).toLocaleDateString()} -{' '}
 					{new Date(record.reservationPeriodEnd).toLocaleDateString()}
@@ -126,9 +119,7 @@ export const ReservationsTable: React.FC<ReservationsTableProps> = ({
 			title: 'Status',
 			dataIndex: 'state',
 			key: 'status',
-			render: (
-				state: ReservationRequestFieldsFragment['state'],
-			) => (
+			render: (state: ReservationRequestFieldsFragment['state']) => (
 				<ReservationStatusTag
 					status={state ? mapReservationState(state) : 'REQUESTED'}
 				/>
@@ -139,9 +130,7 @@ export const ReservationsTable: React.FC<ReservationsTableProps> = ({
 					{
 						title: 'Actions',
 						key: 'actions',
-						render: (
-							record: ReservationRequestFieldsFragment,
-						) => (
+						render: (record: ReservationRequestFieldsFragment) => (
 							<ReservationActions
 								status={
 									record.state ? mapReservationState(record.state) : 'REQUESTED'
