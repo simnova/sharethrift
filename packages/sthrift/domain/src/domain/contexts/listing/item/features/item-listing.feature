@@ -10,7 +10,7 @@ Feature: <AggregateRoot>ItemListing
     When I create a new ItemListing aggregate using getNewInstance with sharer "user1" and title "New Listing"	
     Then the listing's title should be "New Listing"	
     And the listing's sharer should reference "user1"	
-    And the listing state should be "Published	
+    And the listing state should be "Published"	
         
   Scenario: Creating a new draft listing with missing fields	
     When I create a new ItemListing aggregate using getNewInstance with isDraft true and empty title, description, category, and location	

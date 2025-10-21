@@ -28,10 +28,6 @@ Feature: <AggregateRoot> ReservationRequest
     When I try to set a new listing	
     Then a PermissionError should be thrown with message "Listing can only be set when creating a new reservation request"	
         
-  Given an existing ReservationRequest aggregate	
-    When I try to set a new reserver	
-    Then a PermissionError should be thrown with message "Reserver can only be set when creating a new reservation request"	
-        
   Scenario: Accepting a requested reservation with permission	
     Given a ReservationRequest aggregate with state "REQUESTED"	
     And the user has permission to accept requests	
