@@ -1,5 +1,4 @@
-import TwilioPkg from 'twilio';
-const { Twilio } = TwilioPkg;
+import { Twilio } from 'twilio';
 import type { ServiceBase } from '@cellix/api-services-spec';
 
 type TwilioClient = InstanceType<typeof Twilio> | undefined;
@@ -60,7 +59,7 @@ export class ServiceTwilio implements ServiceBase<ServiceTwilio> {
 	public async getConversation(
 		conversationId: string,
 	): Promise<ConversationInstance> {
-		if (!this.client) throw new Error('Twilio client not initialized');
+		if (!this.client) { throw new Error('Twilio client not initialized'); }
 		return await this.client.conversations.v1
 			.conversations(conversationId)
 			.fetch();
@@ -71,16 +70,16 @@ export class ServiceTwilio implements ServiceBase<ServiceTwilio> {
 		body: string,
 		author?: string,
 	): Promise<MessageInstance> {
-		if (!this.client) throw new Error('Twilio client not initialized');
+		if (!this.client) { throw new Error('Twilio client not initialized'); }
 		const params: { body: string; author?: string } = { body };
-		if (author) params.author = author;
+		if (author) { params.author = author; }
 		return await this.client.conversations.v1
 			.conversations(conversationId)
 			.messages.create(params);
 	}
 
 	public async deleteConversation(conversationId: string): Promise<void> {
-		if (!this.client) throw new Error('Twilio client not initialized');
+		if (!this.client) { throw new Error('Twilio client not initialized'); }
 		await this.client.conversations.v1.conversations(conversationId).remove();
 	}
 }

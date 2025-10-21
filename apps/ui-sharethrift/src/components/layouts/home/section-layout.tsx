@@ -5,7 +5,7 @@ import { HandleLogoutMockForMockAuth } from "../../shared/handle-logout.ts";
 import { Footer, Header, Navigation } from "@sthrift/ui-components";
 import { useCreateListingNavigation } from "./components/create-listing/hooks/use-create-listing-navigation.ts";
 
-export const SectionLayout = () => {
+export const SectionLayout: React.FC = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const auth = useAuth();
@@ -32,6 +32,9 @@ export const SectionLayout = () => {
       if (subPath.startsWith("settings")) {
         return "settings";
       }
+      if (subPath.startsWith("admin-dashboard")) {
+        return "admin-dashboard";
+      }
       // Add more subroutes as needed
       return undefined; // nothing highlighted if not a known subroute
     }
@@ -41,7 +44,7 @@ export const SectionLayout = () => {
 
   const handleNavigate = (key: string) => {
     // Handle account subroutes
-    const accountSubTabs = ["profile", "bookmarks", "settings"];
+    const accountSubTabs = ["profile", "bookmarks", "settings", "admin-dashboard"];
     if (accountSubTabs.includes(key)) {
       navigate(`/account/${key}`);
       return;

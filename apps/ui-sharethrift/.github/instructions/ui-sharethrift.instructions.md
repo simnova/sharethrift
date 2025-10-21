@@ -1,7 +1,7 @@
 ---
-applyTo: "packages/ui-applicant/**/*"
+applyTo: "apps/ui-sharethrift/**/*"
 ---
-# Copilot Instructions: ui-applicant
+# Copilot Instructions: ui-sharethrift
 
 ## Purpose
 

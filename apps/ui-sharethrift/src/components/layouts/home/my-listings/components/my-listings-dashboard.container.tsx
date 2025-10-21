@@ -1,11 +1,14 @@
 import { MyListingsDashboard } from './my-listings-dashboard.tsx';
-import { useQuery } from '@apollo/client';
+import { useQuery } from "@apollo/client/react";
 import { ComponentQueryLoader } from '@sthrift/ui-components';
-import { HomeMyListingsDashboardContainerMyListingsRequestsCountDocument } from '../../../../../generated.tsx';
+import { HomeAllListingsTableContainerMyListingsAllDocument } from '../../../../../generated.tsx';
 
-export function MyListingsDashboardContainer() {
+export const MyListingsDashboardContainer: React.FC = () => {
 	const { data, loading, error } = useQuery(
-		HomeMyListingsDashboardContainerMyListingsRequestsCountDocument,
+		HomeAllListingsTableContainerMyListingsAllDocument, {
+            variables: { page: 1, pageSize: 6 },
+            fetchPolicy: 'network-only',
+        }
 	);
 
 	const handleCreateListing = () => {
@@ -17,11 +20,11 @@ export function MyListingsDashboardContainer() {
 		<ComponentQueryLoader
 			loading={loading}
 			error={error}
-			hasData={data?.myListingsRequests}
+			hasData={data}
 			hasDataComponent={
 				<MyListingsDashboard
 					onCreateListing={handleCreateListing}
-					requestsCount={data?.myListingsRequests.total ?? 0}
+					requestsCount={data?.myListingsAll.total ?? 0}
 				/>
 			}
 		/>

@@ -1,5 +1,5 @@
 import { useParams } from 'react-router-dom';
-import { useQuery } from '@apollo/client';
+import { useQuery } from "@apollo/client/react";
 // Import the GraphQL document (Vite raw import if needed)
 // eslint-disable-next-line import/no-absolute-path, @typescript-eslint/ban-ts-comment
 // @ts-ignore - allow raw import string
@@ -15,11 +15,11 @@ import {
 	type ViewListingActiveReservationRequestForListingQueryVariables,
 } from '../../../../../generated.tsx';
 
-export function ViewListingContainer({
-	isAuthenticated,
-}: {
+export const ViewListingContainer: React.FC<{
 	isAuthenticated: boolean;
-}) {
+}> = ({
+	isAuthenticated,
+}) => {
 	const { listingId } = useParams();
 
 	const {

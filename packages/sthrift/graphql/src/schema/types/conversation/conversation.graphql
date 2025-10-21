@@ -1,12 +1,30 @@
+type Message {
+  id: ObjectID!
+  twilioMessageSid: String!
+  authorId: ObjectID!
+  content: String!
+  createdAt: DateTime!
+}
+
 type Conversation implements MongoBase {
   sharer: PersonalUser!
   reserver: PersonalUser!
   listing: ItemListing!
   twilioConversationId: String!
+  messages: [Message!]!
   id: ObjectID!
   schemaVersion: String!
   createdAt: DateTime!
   updatedAt: DateTime!
+}
+
+extend type Query {
+  conversationsByUser(userId: ObjectID!): [Conversation]
+  conversation(conversationId: ObjectID!): Conversation
+}
+
+extend type Mutation {
+  createConversation(input: ConversationCreateInput!): ConversationMutationResult!
 }
 
 input ConversationCreateInput {
@@ -18,13 +36,4 @@ input ConversationCreateInput {
 type ConversationMutationResult implements MutationResult {
   status: MutationStatus!
   conversation: Conversation
-}
-
-extend type Query {
-  conversationsByUser(userId: ObjectID!): [Conversation]
-  conversation(conversationId: ObjectID!): Conversation
-}
-
-extend type Mutation {
-  createConversation(input: ConversationCreateInput!): ConversationMutationResult!
 }

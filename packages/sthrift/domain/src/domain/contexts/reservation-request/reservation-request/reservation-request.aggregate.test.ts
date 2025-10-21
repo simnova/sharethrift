@@ -250,8 +250,18 @@ describe('ReservationRequest', () => {
 		it('should throw error if start date is after end date', () => {
 			const { startDate, endDate } = getFutureDates();
 			expect(() => {
-				if (endDate <= startDate)
-					throw new Error('Reservation start date must be before end date');
+				ReservationRequest.getNewInstance(
+					createMockProps({
+						reservationPeriodStart: endDate,
+						reservationPeriodEnd: startDate,
+					}),
+					ReservationRequestStates.REQUESTED,
+					createMockListing(),
+					createMockReserver(),
+					endDate,
+					startDate,
+					mockPassport,
+				);
 			}).toThrow('Reservation start date must be before end date');
 		});
 	});

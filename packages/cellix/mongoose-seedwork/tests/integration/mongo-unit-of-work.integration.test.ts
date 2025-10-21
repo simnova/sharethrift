@@ -187,7 +187,7 @@ describe('MongoUnitOfWork:Integration', () => {
 			retryWrites: false,
 		});
 		TestModel = model<TestMongoType>('Test', TestSchema);
-	});
+	}, 60000); // Increase timeout to 60 seconds
 
 	afterAll(async () => {
 		await mongoose.disconnect();

@@ -10,6 +10,13 @@ type PersonalUser implements MongoBase {
   updatedAt: DateTime
 }
 
+type PersonalUserPage {
+  items: [PersonalUser!]!
+  total: Int!
+  page: Int!
+  pageSize: Int!
+}
+
 type PersonalUserAccount {
   accountType: String
   email: String
@@ -171,6 +178,8 @@ extend type Query {
 extend type Mutation {
   # Personal User mutations
   personalUserUpdate(input: PersonalUserUpdateInput!): PersonalUserMutationResult!
+  blockUser(userId: ObjectID!): PersonalUser!
+  unblockUser(userId: ObjectID!): PersonalUser!
 
   # Payment mutations
   processPayment(input: ProcessPaymentInput!): PaymentResponse!

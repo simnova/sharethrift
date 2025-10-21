@@ -1,0 +1,23 @@
+query ListingsPageContainerGetListings {
+  itemListings {
+    ...ListingsPageContainerItemListingFields
+  }
+}
+
+fragment ListingsPageContainerItemListingFields on ItemListing {
+  id
+  title
+  description
+  category
+  location
+  state
+  images
+  createdAt
+  updatedAt
+  sharingPeriodStart
+  sharingPeriodEnd
+  schemaVersion
+  version
+  reports
+  sharingHistory
+}

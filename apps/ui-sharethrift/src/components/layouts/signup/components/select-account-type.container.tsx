@@ -1,7 +1,7 @@
 import { useCallback } from "react";
 import { SelectAccountType } from "./select-account-type.tsx";
 import { ComponentQueryLoader } from "@sthrift/ui-components";
-import { useQuery, useMutation } from "@apollo/client";
+import { useQuery, useMutation } from "@apollo/client/react";
 import { useNavigate } from "react-router-dom";
 import {
   SelectAccountTypeCurrentPersonalUserAndCreateIfNotExistsDocument,
@@ -10,7 +10,7 @@ import {
 } from "../../../../generated.tsx";
 import { message } from "antd";
 
-export default function SelectAccountTypeContainer() {
+export const SelectAccountTypeContainer: React.FC = () => {
   const navigate = useNavigate();
 
   const {
@@ -69,4 +69,4 @@ export default function SelectAccountTypeContainer() {
       }
     />
   );
-}
+};

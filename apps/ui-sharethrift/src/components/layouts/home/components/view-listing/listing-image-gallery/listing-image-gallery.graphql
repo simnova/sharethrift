@@ -1,5 +1,6 @@
 query ViewListingImageGalleryGetImages($listingId: ObjectID!) {
   itemListing(id: $listingId) {
     images
+    title
   }
 }

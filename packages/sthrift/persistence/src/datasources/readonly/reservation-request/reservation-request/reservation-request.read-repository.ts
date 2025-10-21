@@ -73,9 +73,8 @@ const getMockListingReservationRequests = (
 ): Domain.Contexts.ReservationRequest.ReservationRequest.ReservationRequestEntityReference[] => {
 	// Reuse base mock and tweak reserver / listing ids for variety
 	const base = getMockReservationRequests('507f1f77bcf86cd799439099', 'active');
-	return base.map((r, idx) => ({
+	return base.map((r) => ({
 		...r,
-		id: `${r.id}-L${idx}`,
 		listing: {
 			...r.listing,
 			sharer: {

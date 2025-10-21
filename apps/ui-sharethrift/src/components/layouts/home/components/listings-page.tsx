@@ -3,8 +3,31 @@ import { EnvironmentFilled, PlusOutlined } from '@ant-design/icons';
 import { HeroSectionContainer } from './hero-section.container.tsx';
 import { CategoryFilterContainer } from './category-filter.container.tsx';
 import { SearchBar, ListingsGrid } from '@sthrift/ui-components';
-import type { ItemListing } from './mock-listings.ts';
 import styles from './listings-page.module.css';
+
+export interface ItemListing {
+	_id: string;
+	sharer: string; // User reference
+	title: string;
+	description: string;
+	category: string;
+	location: string;
+	sharingPeriodStart: Date;
+	sharingPeriodEnd: Date;
+	state?:
+		| 'Published'
+		| 'Paused'
+		| 'Cancelled'
+		| 'Drafted'
+		| 'Expired'
+		| 'Blocked'
+		| 'Appeal Requested';
+	updatedAt?: Date;
+	createdAt?: Date;
+	sharingHistory?: string[];
+	reports?: number;
+	images?: string[];
+}
 
 interface ListingsPageProps {
 	isAuthenticated: boolean;
@@ -22,7 +45,7 @@ interface ListingsPageProps {
 	onCreateListingClick: () => void;
 }
 
-export function ListingsPage({
+export const ListingsPage: React.FC<Readonly<ListingsPageProps>> = ({
 	isAuthenticated,
 	searchQuery,
 	onSearchChange,
@@ -36,7 +59,7 @@ export function ListingsPage({
 	onListingClick,
 	onPageChange,
 	onCreateListingClick,
-}: Readonly<ListingsPageProps>) {
+}) => {
 	return (
 		<div>
 			{/* Hero section */}

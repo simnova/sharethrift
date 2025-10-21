@@ -1,13 +1,12 @@
-import { ListingsPageContainer } from '../components/listings-page.container.tsx';
-import { useAuth } from 'react-oidc-context';
+import { ListingsPageContainer } from "../components/listings-page.container.tsx";
+import { useAuth } from "react-oidc-context";
 
 interface ListingsProps {
-	isAuthenticated?: boolean; // use for mock/testing purposes
+  isAuthenticated?: boolean; // use for mock/testing purposes
 }
 
-export default function Listings({ isAuthenticated }: ListingsProps) {
-	const auth = useAuth();
-	const isUserAuthenticated = isAuthenticated ?? auth.isAuthenticated;
-
-	return <ListingsPageContainer isAuthenticated={isUserAuthenticated} />;
-}
+export const Listings: React.FC<ListingsProps> = ({ isAuthenticated }) => {
+  const auth = useAuth();
+  const isUserAuthenticated = isAuthenticated ?? auth.isAuthenticated;
+  return <ListingsPageContainer isAuthenticated={isUserAuthenticated} />;
+};

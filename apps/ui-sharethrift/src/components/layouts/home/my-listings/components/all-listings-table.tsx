@@ -36,7 +36,7 @@ const STATUS_OPTIONS = [
 
 // getStatusTagClass moved to shared helper status-tag-class.ts
 
-export function AllListingsTable({
+export const AllListingsTable: React.FC<AllListingsTableProps> = ({
 	data,
 	searchText,
 	statusFilters,
@@ -51,7 +51,7 @@ export function AllListingsTable({
 	onPageChange,
 	onAction,
 	onViewAllRequests,
-}: AllListingsTableProps) {
+}) => {
 	const getActionButtons = (record: MyListingData) => {
 		const buttons = [];
 

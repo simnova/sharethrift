@@ -4,7 +4,7 @@
 	"private": true,
 	"scripts": {
 		"docusaurus": "docusaurus",
-		"start": "docusaurus start --port 3002 --no-open",
+		"start": "docusaurus start --port 3002",
 		"build": "docusaurus build",
 		"swizzle": "docusaurus swizzle",
 		"deploy": "docusaurus deploy",
@@ -27,8 +27,8 @@
 		"react-dom": "^19.0.0"
 	},
 	"devDependencies": {
-		"@cellix/typescript-config": "*",
-		"@cellix/vitest-config": "*",
+		"@cellix/typescript-config": "workspace:*",
+		"@cellix/vitest-config": "workspace:*",
 		"@docusaurus/module-type-aliases": "3.8.1",
 		"@docusaurus/tsconfig": "3.8.1",
 		"@docusaurus/types": "3.8.1",

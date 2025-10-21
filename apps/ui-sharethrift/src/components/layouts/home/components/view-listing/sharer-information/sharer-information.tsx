@@ -16,12 +16,12 @@ export interface SharerInformationProps {
   className?: string;
 }
 
-export function SharerInformation({
+export const SharerInformation: React.FC<SharerInformationProps> = ({
   sharer,
   isOwner = false,
   sharedTimeAgo = "2 days ago",
   className = ''
-}: SharerInformationProps) {
+}) => {
   const [isMobile, setIsMobile] = useState(false);
   useEffect(() => {
     const checkMobile = () => setIsMobile(window.innerWidth <= 600);

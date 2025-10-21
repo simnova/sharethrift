@@ -6,7 +6,7 @@ import { PaymentPage } from "./pages/payment-page.tsx";
 import { SectionLayoutContainer } from "./section-layout.container.tsx";
 import { TermsPage } from "./pages/terms-page.tsx";
 
-export const SignupRoutes = () => {
+export const SignupRoutes: React.FC = () => {
   return (
     <Routes>
       <Route element={<SectionLayoutContainer />}>

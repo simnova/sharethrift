@@ -1,18 +1,31 @@
 import type { Meta, StoryObj } from "@storybook/react";
-import { SelectAccountTypePage } from "./select-account-type-page.tsx";
-import { BrowserRouter } from "react-router-dom";
+import { SelectAccountType } from "../components/select-account-type.tsx";
+import { MemoryRouter } from "react-router-dom";
+import type { PersonalUserUpdateInput } from "../../../../generated.tsx";
+// Mock data matching the GraphQL query shape
+const mockUserData = {
+  id: "mock-user-id-1",
+  account: {
+    accountType: "non-verified-personal",
+  },
+};
 
-const meta: Meta<typeof SelectAccountTypePage> = {
-  title: "Signup/SelectAccountType",
-  component: SelectAccountTypePage,
+// Mock handler
+const handleUpdateAccountType = (values: PersonalUserUpdateInput) => {
+  console.log("Account type updated to:", values.account?.accountType);
+};
+
+const meta: Meta<typeof SelectAccountType> = {
+  title: "Pages/Signup/SelectAccountType",
+  component: SelectAccountType,
   parameters: {
     layout: "fullscreen",
   },
   decorators: [
     (Story) => (
-      <BrowserRouter>
+      <MemoryRouter>
         <Story />
-      </BrowserRouter>
+      </MemoryRouter>
     ),
   ],
 };
@@ -20,24 +33,9 @@ const meta: Meta<typeof SelectAccountTypePage> = {
 export default meta;
 type Story = StoryObj<typeof meta>;
 
-export const Default: Story = {};
-
-export const PersonalAccountSelected: Story = {
-  name: "Personal Account Tab",
-};
-
-export const BusinessAccountSelected: Story = {
-  name: "Business Account Tab",
-  play: async () => {
-    // This would automatically select the business tab when the story loads
-    // Implementation would require user interactions in Storybook
-  },
-};
-
-export const EnterpriseAccountSelected: Story = {
-  name: "Enterprise Account Tab",
-  play: async () => {
-    // This would automatically select the enterprise tab when the story loads
-    // Implementation would require user interactions in Storybook
+export const Default: Story = {
+  args: {
+    currentUserData: mockUserData,
+    onSaveAndContinue: handleUpdateAccountType,
   },
 };

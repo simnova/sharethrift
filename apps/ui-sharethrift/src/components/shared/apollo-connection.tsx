@@ -1,6 +1,7 @@
 import { type FC, useMemo } from 'react';
-import { ApolloClient, ApolloLink, ApolloProvider, from } from '@apollo/client';
-import { RestLink } from 'apollo-link-rest';
+import { ApolloClient, ApolloLink } from '@apollo/client';
+import { HttpLink } from '@apollo/client/link/http';
+import { ApolloProvider } from '@apollo/client/react';
 import { useAuth } from 'react-oidc-context';
 import {
 	ApolloLinkToAddAuthHeaderIfAccessTokenAvailable,
@@ -11,12 +12,13 @@ import {
 } from './apollo-client-links.tsx';
 import { ApolloManualMergeCacheFix } from './apollo-manual-merge-cache-fix.ts';
 
-const restLinkForCountryDataSource = new RestLink({
+const restLinkForCountryDataSource = new HttpLink({
 	uri: `${import.meta.env['VITE_BLOB_STORAGE_CONFIG_URL']}`,
 });
-const restLinkForHealthProfessionsDataSource = new RestLink({
+const restLinkForHealthProfessionsDataSource = new HttpLink({
 	uri: `${import.meta.env['VITE_BLOB_STORAGE_CONFIG_URL']}`,
-	customFetch: (uri, options) => fetch(uri, { ...options, cache: 'no-store' }),
+	fetch: (uri: RequestInfo | URL, options?: RequestInit) => 
+		fetch(uri, { ...options, cache: 'no-store' }),
 });
 const apolloBatchHttpLinkForGraphqlDataSource =
 	TerminatingApolloBatchLinkForGraphqlServer({
@@ -46,7 +48,7 @@ export const ApolloConnection: FC<ApolloConnectionProps> = (
 		return {
 			countries: restLinkForCountryDataSource,
 			healthProfession: restLinkForHealthProfessionsDataSource,
-			cacheEnabled: from([
+			cacheEnabled: ApolloLink.from([
 				BaseApolloLink(),
 				ApolloLinkToAddAuthHeaderIfAccessTokenAvailable(
 					auth.user?.access_token,
@@ -54,7 +56,7 @@ export const ApolloConnection: FC<ApolloConnectionProps> = (
 				ApolloLinkToAddCustomHeader('Cache-Enabled', 'true'),
 				apolloHttpLinkForGraphqlDataSource,
 			]),
-			default: from([
+			default: ApolloLink.from([
 				BaseApolloLink(),
 				ApolloLinkToAddAuthHeaderIfAccessTokenAvailable(
 					auth.user?.access_token,
@@ -73,12 +75,12 @@ export const ApolloConnection: FC<ApolloConnectionProps> = (
 					operation.getContext()['headers']?.['Cache-Enabled'] === 'true',
 				linkMap.cacheEnabled,
 				ApolloLink.split(
-					(operation) => operation.operationName in linkMap,
-					new ApolloLink((operation) => {
+					(operation) => !!operation.operationName && operation.operationName in linkMap,
+					new ApolloLink((operation, forward) => {
 						const link =
 							linkMap[operation.operationName as keyof typeof linkMap] ||
 							linkMap.default;
-						return link.request(operation);
+						return link.request(operation, forward);
 					}),
 					linkMap.default,
 				),

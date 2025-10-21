@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { useQuery } from '@apollo/client';
+import { useQuery } from "@apollo/client/react";
 import { RequestsTable } from './requests-table.tsx';
 import { ComponentQueryLoader } from '@sthrift/ui-components';
 import { HomeRequestsTableContainerMyListingsRequestsDocument } from '../../../../../generated.tsx';
@@ -9,10 +9,10 @@ export interface RequestsTableContainerProps {
 	onPageChange: (page: number) => void;
 }
 
-export function RequestsTableContainer({
+export const RequestsTableContainer: React.FC<RequestsTableContainerProps> = ({
 	currentPage,
 	onPageChange,
-}: RequestsTableContainerProps) {
+}) => {
 	const [searchText, setSearchText] = useState('');
 	const [statusFilters, setStatusFilters] = useState<string[]>([]);
 	const [sorter, setSorter] = useState<{
@@ -30,6 +30,7 @@ export function RequestsTableContainer({
 				searchText: searchText,
 				statusFilters: statusFilters,
 				sorter: { field: sorter.field ?? '', order: sorter.order ?? '' },
+                sharerId: '6324a3f1e3e4e1e6a8e1d8b1'
 			},
 			fetchPolicy: 'network-only',
 		},

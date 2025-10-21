@@ -7,6 +7,11 @@
 		"indentStyle": "tab",
 		"indentWidth": 2
 	},
+	"css": {
+		"parser": {
+			"cssModules": true
+		}
+	},
 	"linter": {
 		"enabled": true,
 		"rules": {
