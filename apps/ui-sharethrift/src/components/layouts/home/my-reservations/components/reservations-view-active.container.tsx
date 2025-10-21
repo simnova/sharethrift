@@ -35,11 +35,11 @@ export const ReservationsViewActiveContainer: React.FC<
 		HomeMyReservationsReservationsViewActiveContainerCancelReservationDocument,
 		{
 			update: (cache, { data }) => {
-				if (data?.cancelReservationRequest) {
+				if (data?.cancelReservation) {
 					// Remove the cancelled reservation from the active reservations cache
 					const cacheId = cache.identify({
 						__typename: 'ReservationRequest',
-						id: data.cancelReservationRequest.id,
+						id: data.cancelReservation.id,
 					});
 					if (cacheId) {
 						cache.evict({ id: cacheId });
@@ -54,11 +54,11 @@ export const ReservationsViewActiveContainer: React.FC<
 		HomeMyReservationsReservationsViewActiveContainerCloseReservationDocument,
 		{
 			update: (cache, { data }) => {
-				if (data?.closeReservationRequest) {
+				if (data?.closeReservation) {
 					// Remove the closed reservation from the active reservations cache
 					const cacheId = cache.identify({
 						__typename: 'ReservationRequest',
-						id: data.closeReservationRequest.id,
+						id: data.closeReservation.id,
 					});
 					if (cacheId) {
 						cache.evict({ id: cacheId });
@@ -103,7 +103,7 @@ export const ReservationsViewActiveContainer: React.FC<
 		<ComponentQueryLoader
 			loading={loading}
 			error={error}
-			hasData={activeReservations.length > 0}
+			hasData={data?.myActiveReservations}
 			hasDataComponent={
 				<ReservationsView
 					reservations={activeReservations}
