@@ -3,6 +3,9 @@
     "version": "1.0.0",
     "private": true,
     "type": "module",
+    "files": [
+        "dist"
+    ],
     "exports": {
         ".": {
             "types": "./dist/src/index.d.ts",
@@ -17,11 +20,12 @@
         "clean": "rimraf dist"
     },
     "dependencies": {
-        "@sthrift/persistence": "*",
-        "@sthrift/service-token-validation": "*"
+        "@sthrift/persistence": "workspace:*",
+        "@sthrift/service-cybersource": "workspace:*",
+        "@sthrift/service-token-validation": "workspace:*"
     },
     "devDependencies": {
-        "@cellix/typescript-config": "*",
+        "@cellix/typescript-config": "workspace:*",
         "typescript": "^5.8.3",
         "rimraf": "^6.0.1"
     }
