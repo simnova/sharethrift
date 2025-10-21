@@ -1,7 +1,23 @@
-import type { AuthContextProps, User } from 'react-oidc-context';
+import type { AuthContextProps } from 'react-oidc-context';
+
+// Mock User interface to match what react-oidc-context expects
+interface MockUser {
+	profile: Record<string, unknown>;
+	session_state: string | null;
+	access_token: string;
+	token_type: string;
+	state: string | null;
+	scope: string;
+	expires_at: number;
+	id_token: string;
+	expires_in: number;
+	expired: boolean;
+	scopes: string[];
+	toStorageString(): string;
+}
 
 // Mock User class to avoid dependency on oidc-client-ts
-class MockUser implements User {
+class MockUserImpl implements MockUser {
 	profile: Record<string, unknown>;
 	session_state: string | null = null;
 	access_token: string = 'mock-access-token';
@@ -10,9 +26,20 @@ class MockUser implements User {
 	scope: string = 'openid profile email';
 	expires_at: number = Date.now() / 1000 + 3600;
 	id_token: string = 'mock-id-token';
+	expires_in: number = 3600;
+	expired: boolean = false;
+	scopes: string[] = ['openid', 'profile', 'email'];
 
 	constructor(data: { profile: Record<string, unknown> }) {
 		this.profile = data.profile;
+	}
+
+	toStorageString(): string {
+		return JSON.stringify({
+			profile: this.profile,
+			access_token: this.access_token,
+			id_token: this.id_token,
+		});
 	}
 }
 
@@ -20,7 +47,7 @@ export function createMockUser(
 	profile: Partial<Record<string, unknown>> = {},
 ): MockUser {
 	const nowInSeconds = Math.floor(Date.now() / 1000);
-	return new MockUser({
+	return new MockUserImpl({
 		profile: {
 			sub: '507f1f77bcf86cd799439099',
 			name: 'Test User',

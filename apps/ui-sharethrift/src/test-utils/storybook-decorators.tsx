@@ -26,7 +26,7 @@ import type { Decorator } from "@storybook/react";
 export const withMockApolloClient: Decorator = (Story: any, context: any) => {
 	const mocks = context.parameters?.apolloClient?.mocks || [];
 	const showWarnings = context.parameters?.apolloClient?.showWarnings ?? false;
-	const mockLink = new MockLink(mocks, { showWarnings });
+	const mockLink = new MockLink(mocks, showWarnings);
 	const client = new ApolloClient({
 		link: mockLink,
 		cache: new InMemoryCache(),
