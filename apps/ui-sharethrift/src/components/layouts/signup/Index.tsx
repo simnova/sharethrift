@@ -1,12 +1,12 @@
 import { Route, Routes } from 'react-router-dom';
-import SignupSelectAccountType from './pages/signup-select-account-type.tsx';
-import AccountSetup from './pages/AccountSetup.tsx';
-import ProfileSetup from './pages/ProfileSetup.tsx';
-import Payment from './pages/Payment.tsx';
+import { SignupSelectAccountType } from './pages/signup-select-account-type.tsx';
+import { AccountSetup } from './pages/AccountSetup.tsx';
+import { ProfileSetup } from './pages/ProfileSetup.tsx';
+import { Payment } from './pages/Payment.tsx';
 import { SectionLayoutContainer } from './section-layout.container.tsx';
-import Terms from './pages/Terms.tsx';
+import { Terms } from './pages/Terms.tsx';
 
-export default function SignupRoutes() {
+export const SignupRoutes: React.FC = () => {
 	return (
 		<Routes>
 			<Route element={<SectionLayoutContainer />}>

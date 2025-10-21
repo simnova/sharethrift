@@ -10,10 +10,10 @@ export interface MyListingsDashboardProps {
 	requestsCount: number;
 }
 
-export function MyListingsDashboard({
+export const MyListingsDashboard: React.FC<MyListingsDashboardProps> = ({
 	onCreateListing,
 	requestsCount,
-}: MyListingsDashboardProps) {
+}) => {
 	const [activeTab, setActiveTab] = useState('all-listings');
 	const [allListingsPage, setAllListingsPage] = useState(1);
 	const [requestsPage, setRequestsPage] = useState(1);

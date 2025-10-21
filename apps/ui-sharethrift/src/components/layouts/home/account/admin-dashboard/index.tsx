@@ -1,10 +1,10 @@
 import { Routes, Route } from 'react-router-dom';
-import AdminDashboardMain from './pages/admin-dashboard-main.tsx';
+import { AdminDashboardMain } from './pages/admin-dashboard-main.tsx';
 
-export default function AdminDashboardRoutes() {
+export const AdminDashboardRoutes: React.FC = () => {
 	return (
 		<Routes>
 			<Route path="" element={<AdminDashboardMain />} />
 		</Routes>
 	);
-}
+};

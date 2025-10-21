@@ -8,10 +8,10 @@ export interface AdminUsersCardProps {
   ) => void;
 }
 
-export function AdminUsersCard({
+export const AdminUsersCard: React.FC<Readonly<AdminUsersCardProps>> = ({
   user,
   onAction,
-}: Readonly<AdminUsersCardProps>) {
+}) => {
   return (
     <Card
       style={{

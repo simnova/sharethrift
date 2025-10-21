@@ -5,7 +5,7 @@ function MyReservationsMainWrapper() {
 	return <MyReservationsMain />;
 }
 
-export default function MyReservationsRoutes() {
+export const MyReservationsRoutes: React.FC = () => {
 	return (
 		<Routes>
 			<Route path="" element={<MyReservationsMainWrapper />} />{' '}
@@ -13,4 +13,4 @@ export default function MyReservationsRoutes() {
 			<Route path="user/:userId" element={<MyReservationsMainWrapper />} />
 		</Routes>
 	);
-}
+};
