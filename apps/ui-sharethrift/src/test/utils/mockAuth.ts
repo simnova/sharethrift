@@ -1,8 +1,15 @@
-import type { AuthContextProps } from 'react-oidc-context';
+import type { AuthContextProps, User } from 'react-oidc-context';
 
 // Mock User class to avoid dependency on oidc-client-ts
-class MockUser {
+class MockUser implements User {
 	profile: Record<string, unknown>;
+	session_state: string | null = null;
+	access_token: string = 'mock-access-token';
+	token_type: string = 'Bearer';
+	state: string | null = null;
+	scope: string = 'openid profile email';
+	expires_at: number = Date.now() / 1000 + 3600;
+	id_token: string = 'mock-id-token';
 
 	constructor(data: { profile: Record<string, unknown> }) {
 		this.profile = data.profile;
