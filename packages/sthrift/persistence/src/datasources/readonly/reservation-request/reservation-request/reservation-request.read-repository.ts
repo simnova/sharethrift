@@ -8,6 +8,10 @@ import {
 import type { FindOneOptions, FindOptions } from '../../mongo-data-source.ts';
 import { ReservationRequestConverter } from '../../../domain/reservation-request/reservation-request/reservation-request.domain-adapter.ts';
 import { MongooseSeedwork } from '@cellix/mongoose-seedwork';
+import { 
+	getActiveReservationStateFilter, 
+	getInactiveReservationStateFilter 
+} from './reservation-state-filters.ts';
 
 export interface ReservationRequestReadRepository {
 	getAll: (
@@ -73,8 +77,10 @@ export class ReservationRequestReadRepositoryImpl
 	private readonly mongoDataSource: ReservationRequestDataSource;
 	private readonly converter: ReservationRequestConverter;
 	private readonly passport: Domain.Passport;
+	private readonly models: ModelsContext;
 
 	constructor(models: ModelsContext, passport: Domain.Passport) {
+		this.models = models;
 		this.mongoDataSource = new ReservationRequestDataSourceImpl(
 			models.ReservationRequest.ReservationRequest,
 		);
@@ -123,7 +129,7 @@ export class ReservationRequestReadRepositoryImpl
 	> {
 		const filter = {
 			reserver: new Types.ObjectId(reserverId),
-			state: { $in: ['Accepted', 'Requested'] },
+			...getActiveReservationStateFilter(),
 		};
 		const result = await this.mongoDataSource.find(filter, options);
 		return result.map((doc) => this.converter.toDomain(doc, this.passport));
@@ -137,22 +143,37 @@ export class ReservationRequestReadRepositoryImpl
 	> {
 		const filter = {
 			reserver: new Types.ObjectId(reserverId),
-			state: { $nin: ['Accepted', 'Requested'] },
+			...getInactiveReservationStateFilter(),
 		};
 		const result = await this.mongoDataSource.find(filter, options);
 		return result.map((doc) => this.converter.toDomain(doc, this.passport));
 	}
 
 	async getListingRequestsBySharerId(
-		_sharerId: string,
+		sharerId: string,
 		options?: FindOptions,
 	): Promise<
 		Domain.Contexts.ReservationRequest.ReservationRequest.ReservationRequestEntityReference[]
 	> {
-		// Query reservation requests for listings owned by the sharer
-		// This requires a lookup to find listings owned by the sharer, then find requests for those listings
-		// For now, return empty array until proper join is implemented
-		return [];
+		// First, get all listing IDs owned by this sharer
+		const sharerListings = await this.models.Listing.ItemListingModel.find(
+			{ sharer: new Types.ObjectId(sharerId) },
+			{ _id: 1 }
+		).lean();
+		
+		const listingIds = sharerListings.map(listing => listing._id);
+		
+		if (listingIds.length === 0) {
+			return [];
+		}
+		
+		// Then find reservation requests for those listings
+		const filter = {
+			listing: { $in: listingIds }
+		};
+		
+		const result = await this.mongoDataSource.find(filter, options);
+		return result.map((doc) => this.converter.toDomain(doc, this.passport));
 	}
 
 	async getActiveByReserverIdAndListingId(
@@ -163,7 +184,7 @@ export class ReservationRequestReadRepositoryImpl
 		const filter = {
 			reserver: new MongooseSeedwork.ObjectId(reserverId),
 			listing: new MongooseSeedwork.ObjectId(listingId),
-			state: { $in: ['Accepted', 'Requested'] },
+			...getActiveReservationStateFilter(),
 		};
 		const result = await this.mongoDataSource.findOne(filter, options);
 		if (!result) {
@@ -182,7 +203,7 @@ export class ReservationRequestReadRepositoryImpl
 	> {
 		const filter = {
 			listing: new MongooseSeedwork.ObjectId(listingId),
-			state: { $in: ['Accepted', 'Requested'] },
+			...getActiveReservationStateFilter(),
 			reservationPeriodStart: { $lt: reservationPeriodEnd },
 			reservationPeriodEnd: { $gt: reservationPeriodStart },
 		};
@@ -198,7 +219,7 @@ export class ReservationRequestReadRepositoryImpl
 	> {
 		const filter = {
 			listing: new MongooseSeedwork.ObjectId(listingId),
-			state: { $in: ['Accepted', 'Requested'] },
+			...getActiveReservationStateFilter(),
 		};
 		const result = await this.mongoDataSource.find(filter, options);
 		return result.map((doc) => this.converter.toDomain(doc, this.passport));

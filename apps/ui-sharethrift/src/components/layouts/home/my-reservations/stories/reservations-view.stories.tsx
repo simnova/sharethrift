@@ -1,6 +1,6 @@
-import type { ComponentProps, ReactElement } from 'react';
 import type { Meta, StoryObj } from '@storybook/react';
 import { MockedProvider } from '@apollo/client/testing';
+import { action } from '@storybook/addon-actions';
 import { ReservationsView } from '../components/reservations-view.tsx';
 import {
 	reservationStoryMocks,
@@ -22,6 +22,16 @@ const meta: Meta<typeof ReservationsView> = {
 		},
 	},
 	tags: ['autodocs'],
+	// Global decorator for MockedProvider
+	decorators: [
+		(Story) => <MockedProvider mocks={reservationStoryMocks}><Story/></MockedProvider>,
+	],
+	// Default event handlers
+	args: {
+		onCancel: action('Cancel clicked'),
+		onClose: action('Close clicked'),
+		onMessage: action('Message clicked'),
+	},
 	argTypes: {
 		cancelLoading: {
 			control: 'boolean',
@@ -36,64 +46,31 @@ const meta: Meta<typeof ReservationsView> = {
 };
 
 export default meta;
-type Story = StoryObj<typeof meta>;
-
-const wrapViewWithProvider = (
-	component: ReactElement,
-	mocks = reservationStoryMocks,
-) => <MockedProvider mocks={mocks}>{component}</MockedProvider>;
-
-const renderView = (props: ComponentProps<typeof ReservationsView>) =>
-	wrapViewWithProvider(<ReservationsView {...props} />);
+type Story = StoryObj<typeof ReservationsView>;
 
 export const AllReservations: Story = {
-	render: () =>
-		renderView({
-			reservations: storyReservationsAll,
-			onCancel: (id: string) => console.log('Cancel clicked for:', id),
-			onClose: (id: string) => console.log('Close clicked for:', id),
-			onMessage: (id: string) => console.log('Message clicked for:', id),
-		}),
+	args: { reservations: storyReservationsAll },
 };
 
 export const ActiveReservations: Story = {
-	render: () =>
-		renderView({
-			reservations: storyReservationsActive,
-			onCancel: (id: string) => console.log('Cancel clicked for:', id),
-			onClose: (id: string) => console.log('Close clicked for:', id),
-			onMessage: (id: string) => console.log('Message clicked for:', id),
-			emptyText: 'No active reservations found',
-		}),
+	args: {
+		reservations: storyReservationsActive,
+		emptyText: 'No active reservations found',
+	},
 };
 
 export const HistoryReservations: Story = {
-	render: () =>
-		renderView({
-			reservations: storyReservationsPast,
-			onCancel: (id: string) => console.log('Cancel clicked for:', id),
-			onClose: (id: string) => console.log('Close clicked for:', id),
-			onMessage: (id: string) => console.log('Message clicked for:', id),
-			showActions: false,
-			emptyText: 'No reservation history found',
-		}),
+	args: {
+		reservations: storyReservationsPast,
+		showActions: false,
+		emptyText: 'No reservation history found',
+	},
 };
 
 export const Empty: Story = {
-	render: () =>
-		renderView({
-			reservations: [],
-			emptyText: 'No reservations found',
-		}),
+	args: { reservations: [], emptyText: 'No reservations found' },
 };
 
 export const LoadingStates: Story = {
-	render: () =>
-		renderView({
-			reservations: storyReservationsActive,
-			onCancel: (id: string) => console.log('Cancel clicked for:', id),
-			onClose: (id: string) => console.log('Close clicked for:', id),
-			onMessage: (id: string) => console.log('Message clicked for:', id),
-			cancelLoading: true,
-		}),
+	args: { reservations: storyReservationsActive, cancelLoading: true },
 };
