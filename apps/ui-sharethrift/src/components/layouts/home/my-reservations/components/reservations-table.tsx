@@ -1,11 +1,18 @@
-import { Table, Image } from 'antd';
+import type React from 'react';
+import { Table } from 'antd';
 import styles from './reservations-table.module.css';
 import { ReservationStatusTag } from '@sthrift/ui-components';
 import { ReservationActions } from './reservation-actions.tsx';
-import type { ReservationRequest } from '../pages/index.ts';
+import type { HomeMyReservationsReservationsViewReservationRequestFieldsFragment } from '../../../../../generated.tsx';
+import { mapReservationState } from '../../../../../utils/reservation-state-mapper.ts';
+
+type ReservationsTableStyles = {
+	listingCell: string;
+	tableText: string;
+} & Record<string, string>;
 
 export interface ReservationsTableProps {
-	reservations: ReservationRequest[]; // Type will eventually come from generated graphql files
+	reservations: HomeMyReservationsReservationsViewReservationRequestFieldsFragment[]; // Type will eventually come from generated graphql files
 	onCancel?: (id: string) => void;
 	onClose?: (id: string) => void;
 	onMessage?: (id: string) => void;
@@ -25,35 +32,34 @@ export const ReservationsTable: React.FC<ReservationsTableProps> = ({
 	showActions = true,
 	emptyText = 'No reservations found',
 }) => {
+	const classes = styles as ReservationsTableStyles;
 	const columns = [
 		{
 			title: 'Listing',
 			dataIndex: 'listing',
 			key: 'listing',
-			render: (listing: ReservationRequest['listing']) => (
-		<div className={styles['listingCell']}>
-		  {listing?.imageUrl && (
-			<Image
-			  src={listing.imageUrl}
-			  alt={listing.title}
-			  className={styles['listingImage']}
-			  preview={false}
-			/>
-		  )}
-		  <span className={styles['tableText']}>
-			{listing?.title || 'Unknown Listing'}
-		  </span>
-		</div>
+			render: (
+				listing: HomeMyReservationsReservationsViewReservationRequestFieldsFragment['listing'],
+			) => (
+				<div className={classes.listingCell}>
+					<span className={classes.tableText}>
+						{listing?.title || 'Unknown Listing'}
+					</span>
+				</div>
 			),
 		},
 		{
 			title: 'Sharer',
 			dataIndex: 'reserver',
 			key: 'sharer',
-			render: (reserver: ReservationRequest['reserver']) => (
-		<span className={styles['tableText']}>
-		  {reserver?.name ? `@${reserver.name}` : 'Unknown'}
-		</span>
+			render: (
+				reserver: HomeMyReservationsReservationsViewReservationRequestFieldsFragment['reserver'],
+			) => (
+				<span className={classes.tableText}>
+					{reserver?.account?.username
+						? `@${reserver.account.username}`
+						: 'Unknown'}
+				</span>
 			),
 		},
 		{
@@ -61,7 +67,7 @@ export const ReservationsTable: React.FC<ReservationsTableProps> = ({
 			dataIndex: 'createdAt',
 			key: 'createdAt',
 			render: (createdAt: string) => (
-				<span className={styles['tableText']}>
+				<span className={classes.tableText}>
 					{new Date(createdAt).toLocaleDateString()}
 				</span>
 			),
@@ -69,8 +75,10 @@ export const ReservationsTable: React.FC<ReservationsTableProps> = ({
 		{
 			title: 'Reservation Period',
 			key: 'period',
-			render: (record: ReservationRequest) => (
-				<span className={styles['tableText']}>
+			render: (
+				record: HomeMyReservationsReservationsViewReservationRequestFieldsFragment,
+			) => (
+				<span className={classes.tableText}>
 					{new Date(record.reservationPeriodStart).toLocaleDateString()} -{' '}
 					{new Date(record.reservationPeriodEnd).toLocaleDateString()}
 				</span>
@@ -80,8 +88,12 @@ export const ReservationsTable: React.FC<ReservationsTableProps> = ({
 			title: 'Status',
 			dataIndex: 'state',
 			key: 'status',
-			render: (state: ReservationRequest['state']) => (
-				<ReservationStatusTag status={state} />
+			render: (
+				state: HomeMyReservationsReservationsViewReservationRequestFieldsFragment['state'],
+			) => (
+				<ReservationStatusTag
+					status={state ? mapReservationState(state) : 'REQUESTED'}
+				/>
 			),
 		},
 		...(showActions
@@ -89,9 +101,13 @@ export const ReservationsTable: React.FC<ReservationsTableProps> = ({
 					{
 						title: 'Actions',
 						key: 'actions',
-						render: (record: ReservationRequest) => (
+						render: (
+							record: HomeMyReservationsReservationsViewReservationRequestFieldsFragment,
+						) => (
 							<ReservationActions
-								status={record.state}
+								status={
+									record.state ? mapReservationState(record.state) : 'REQUESTED'
+								}
 								onCancel={() => onCancel?.(record.id)}
 								onClose={() => onClose?.(record.id)}
 								onMessage={() => onMessage?.(record.id)}

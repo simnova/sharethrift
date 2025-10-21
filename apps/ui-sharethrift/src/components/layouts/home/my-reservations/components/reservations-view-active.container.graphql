@@ -1,4 +1,4 @@
-fragment ReservationsViewActiveContainerReservationFields on ReservationRequest {
+fragment HomeMyReservationsReservationsViewReservationRequestFields on ReservationRequest {
 	id
 	state
 	reservationPeriodStart
@@ -10,6 +10,7 @@ fragment ReservationsViewActiveContainerReservationFields on ReservationRequest 
 		title
 	}
 	reserver {
+		id
 		account {
 			username
 			profile {
@@ -22,13 +23,15 @@ fragment ReservationsViewActiveContainerReservationFields on ReservationRequest 
 	closeRequestedByReserver
 }
 
-query ReservationsViewActiveContainerActiveReservations($userId: ObjectID!) {
+query HomeMyReservationsReservationsViewActiveContainerActiveReservations(
+	$userId: ObjectID!
+) {
 	myActiveReservations(userId: $userId) {
-		...ReservationsViewActiveContainerReservationFields
+		...HomeMyReservationsReservationsViewReservationRequestFields
 	}
 }
 
-mutation ReservationsViewActiveContainerCancelReservation(
+mutation HomeMyReservationsReservationsViewActiveContainerCancelReservation(
 	$input: CancelReservationInput!
 ) {
 	cancelReservation(input: $input) {
@@ -40,7 +43,7 @@ mutation ReservationsViewActiveContainerCancelReservation(
 	}
 }
 
-mutation ReservationsViewActiveContainerCloseReservation(
+mutation HomeMyReservationsReservationsViewActiveContainerCloseReservation(
 	$input: CloseReservationInput!
 ) {
 	closeReservation(input: $input) {

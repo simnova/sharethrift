@@ -1,11 +1,17 @@
+import type React from 'react';
 import { ReservationsTable } from './reservations-table.tsx';
 import { Alert, Spin } from 'antd';
 import styles from './reservations-view.module.css';
-import type { ReservationRequest } from '../pages/index.tsx';
+import type { HomeMyReservationsReservationsViewReservationRequestFieldsFragment } from '../../../../../generated.tsx';
 import { ReservationsGrid } from './reservations-grid.tsx';
 
+type ReservationsViewStyles = {
+	mobileOnly: string;
+	desktopOnly: string;
+} & Record<string, string>;
+
 export interface ReservationsViewProps {
-	reservations: ReservationRequest[]; // Will eventually come from generated graphql files
+	reservations: HomeMyReservationsReservationsViewReservationRequestFieldsFragment[];
 	onCancel?: (id: string) => void;
 	onClose?: (id: string) => void;
 	onMessage?: (id: string) => void;
@@ -29,6 +35,7 @@ export const ReservationsView: React.FC<ReservationsViewProps> = ({
 	loading = false,
 	error,
 }) => {
+	const classes = styles as ReservationsViewStyles;
 	if (loading) {
 		return (
 			<div className="flex justify-center items-center h-64">
@@ -51,7 +58,7 @@ export const ReservationsView: React.FC<ReservationsViewProps> = ({
 	return (
 		<div>
 			{/* Mobile Grid View */}
-			<div className={styles['mobileOnly']}>
+			<div className={classes.mobileOnly}>
 				<ReservationsGrid
 					reservations={reservations}
 					onCancel={onCancel}
@@ -65,7 +72,7 @@ export const ReservationsView: React.FC<ReservationsViewProps> = ({
 			</div>
 
 			{/* Desktop Table View */}
-			<div className={styles['desktopOnly']}>
+			<div className={classes.desktopOnly}>
 				<ReservationsTable
 					reservations={reservations}
 					onCancel={onCancel}
