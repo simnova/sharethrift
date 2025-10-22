@@ -1,4 +1,4 @@
-import { Row, Col, Button } from 'antd';
+import { Row, Col, Button, Alert } from 'antd';
 import { LeftOutlined } from '@ant-design/icons';
 import { ListingImageGalleryContainer } from './listing-image-gallery/listing-image-gallery.container.tsx';
 import { SharerInformationContainer } from './sharer-information/sharer-information.container.tsx';
@@ -35,6 +35,8 @@ export const ViewListing: React.FC<ViewListingProps> = ({
 	const handleBack = () => {
 		window.location.href = '/';
 	};
+
+	const isExpired = listing.state === 'Expired';
 
 	return (
 		<>
@@ -103,6 +105,15 @@ export const ViewListing: React.FC<ViewListingProps> = ({
 						Back
 					</Button>
 				</Col>
+			{userIsSharer && isExpired && (
+				<Col span={24} style={{ marginTop: 16, marginBottom: 0, paddingBottom: 0 }}>
+					<Alert
+						type="warning"
+						message="This listing has expired."
+						banner
+					/>
+				</Col>
+			)}
 				<Col span={24} style={{ marginBottom: 0, paddingBottom: 0 }}>
 					{/* Sharer Info at top, clickable to profile */}
 					<a
