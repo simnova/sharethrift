@@ -35,14 +35,14 @@ Users need to upload various file types (PDFs, images) along with metadata and t
 
 ## Decision Outcome
 
-Chosen option: **Option 2: Direct client uploads using Azure Blob SAS tokens (current approach)**, because it provides Offloads upload traffic from backend, reduces latency, lower cost, maintains security via short-lived tokens.
+Chosen option: **Option 2: Direct client uploads using Azure Blob SAS tokens (current approach)**, because it offloads upload traffic from the backend, reduces latency, lower cost, maintains security via short-lived tokens.
 
 
 ## Implementation Details
 
 **Frontend Components:**
-- `AzureUpload` The AzureUpload React component is designed to enable direct client-side uploads to Azure Blob Storage with built-in file validation,authentication, and post-upload malware scanning.
-- It have two handler `beforeUpload` and `customizeUpload`
+- `AzureUpload` The AzureUpload React component is designed to enable direct client-side uploads to Azure Blob Storage with built-in file validation, authentication, and post-upload malware scanning.
+- It has two handlers: `beforeUpload` and `customizeUpload`
     - `beforeUpload` Handler:
         - Sanitizes and normalizes the file name.
         - Validates the file size, type, and image dimensions using FileValidator.
@@ -57,7 +57,7 @@ Chosen option: **Option 2: Direct client uploads using Azure Blob SAS tokens (cu
 
 **Backend Services:**
 - SAS Token Generation:
-    - The backend handles SAS token generation and validation for Azure Blob Storage uploads, ensuring secure and controlled access for file uploads. There are different- different mutation (pdf & image files). The backend service encapsulates all business logic enforcing file upload restrictions and security requirements before enabling clients to upload files directly to Azure Blob Storage with short-lived and carefully permissioned SAS tokens. For exmple
+    - The backend handles SAS token generation and validation for Azure Blob Storage uploads, ensuring secure and controlled access for file uploads. There are different mutations for PDF and image files. The backend service encapsulates all business logic enforcing file upload restrictions and security requirements before enabling clients to upload files directly to Azure Blob Storage with short-lived and carefully permissioned SAS tokens. For example
         - `identityVerificationCaseV1CreateAuthHeader` method:
             - Accepts upload parameters such as case ID, file name, content type, content length, and file specifications (max size, permitted content types).
             - Validates the case status before proceeding.
