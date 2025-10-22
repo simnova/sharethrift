@@ -6,16 +6,17 @@ import type {
 } from './account-plan.entity.ts';
 import { AccountPlanFeature } from './account-plan-feature.ts';
 import type { AccountPlanFeatureProps } from './account-plan-feature.entity.ts';
+import type { AccountPlanVisa } from '../account-plan.visa.ts';
 export class AccountPlan<props extends AccountPlanProps>
 	extends DomainSeedwork.AggregateRoot<props, Passport>
 	implements AccountPlanEntityReference
 {
 	private isNew: boolean = false;
-	// private readonly visa: any; //AccountPlanVisa
+	private readonly visa: AccountPlanVisa;
 
 	constructor(props: props, passport: Passport) {
 		super(props, passport);
-		// this.visa = passport.accountPlan.forAccountPlan(this);
+		this.visa = passport.accountPlan.forAccountPlan(this);
 		console.log('AccountPlan created with props:', this.isNew); // temporary to suppress unused variable warning
 	}
 
@@ -58,68 +59,92 @@ export class AccountPlan<props extends AccountPlanProps>
 		this.isNew = true;
 	}
 
+	private validateVisa(): void {
+		if (
+			!this.isNew &&
+			!this.visa.determineIf(
+				(permissions) =>
+					permissions.canCreateAccountPlan || permissions.canUpdateAccountPlan,
+			)
+		) {
+			throw new DomainSeedwork.PermissionError(
+				'Unauthorized to modify account plan',
+			);
+		}
+	}
+
 	get name() {
 		return this.props.name;
 	}
 	set name(value: string) {
+		this.validateVisa();
 		this.props.name = value;
 	}
 	get description() {
 		return this.props.description;
 	}
 	set description(value: string) {
+		this.validateVisa();
 		this.props.description = value;
 	}
 	get billingPeriodLength() {
 		return this.props.billingPeriodLength;
 	}
 	set billingPeriodLength(value: number) {
+		this.validateVisa();
 		this.props.billingPeriodLength = value;
 	}
 	get billingPeriodUnit() {
 		return this.props.billingPeriodUnit;
 	}
 	set billingPeriodUnit(value: string) {
+		this.validateVisa();
 		this.props.billingPeriodUnit = value;
 	}
 	get billingCycles() {
 		return this.props.billingCycles;
 	}
 	set billingCycles(value: number) {
+		this.validateVisa();
 		this.props.billingCycles = value;
 	}
 	get billingAmount() {
 		return this.props.billingAmount;
 	}
 	set billingAmount(value: number) {
+		this.validateVisa();
 		this.props.billingAmount = value;
 	}
 	get currency() {
 		return this.props.currency;
 	}
 	set currency(value: string) {
+		this.validateVisa();
 		this.props.currency = value;
 	}
 	get setupFee() {
 		return this.props.setupFee;
 	}
 	set setupFee(value: number) {
+		this.validateVisa();
 		this.props.setupFee = value;
 	}
 	get feature(): AccountPlanFeature {
-		return new AccountPlanFeature(this.props.feature);
+		return new AccountPlanFeature(this.props.feature, this.visa);
 	}
 
 	get status() {
 		return this.props.status;
 	}
 	set status(value: string) {
+		this.validateVisa();
 		this.props.status = value;
 	}
 	get cybersourcePlanId() {
 		return this.props.cybersourcePlanId;
 	}
 	set cybersourcePlanId(value: string) {
+		this.validateVisa();
 		this.props.cybersourcePlanId = value;
 	}
 

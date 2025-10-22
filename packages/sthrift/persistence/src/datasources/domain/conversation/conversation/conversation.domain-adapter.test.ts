@@ -28,6 +28,19 @@ function makeUserDoc(overrides: Partial<Models.User.PersonalUser> = {}) {
 	return {
 		id: new MongooseSeedwork.ObjectId(),
 		role: makeEndUserRoleDoc(),
+		account: {
+			accountType: 'non-verified-personal',
+			email: 'test@example.com',
+			profile: {
+				firstName: 'Test',
+				location: {},
+				billing: {
+					cybersourceCustomerId: 'cust-123',
+					subscription: {},
+					transactions: [],
+				},
+			},
+		},
 		...overrides,
 	} as Models.User.PersonalUser;
 }
@@ -38,9 +51,9 @@ function makeConversationDoc(
 	overrides: Partial<Models.Conversation.Conversation> = {},
 ) {
 	const base = {
-		sharer: undefined,
-		reserver: undefined,
-		listing: undefined,
+		sharer: overrides.sharer ?? undefined,
+		reserver: overrides.reserver ?? undefined,
+		listing: overrides.listing ?? undefined,
 		twilioConversationId: 'twilio-123',
 		set(key: keyof Models.Conversation.Conversation, value: unknown) {
 			(this as Models.Conversation.Conversation)[key] = value as never;

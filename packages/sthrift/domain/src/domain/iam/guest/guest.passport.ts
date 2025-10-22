@@ -8,38 +8,37 @@ import { GuestConversationPassport } from './contexts/guest.conversation.passpor
 import type { ConversationPassport } from '../../contexts/conversation/conversation.passport.ts';
 import { GuestPassportBase } from './guest.passport-base.ts';
 import { GuestReservationRequestPassport } from './contexts/guest.reservation-request.passport.ts';
-
+import type { AccountPlanPassport } from '../../contexts/account-plan/index.ts';
+import { GuestAccountPlanPassport } from './contexts/guest.account-plan.passport.ts';
 export class GuestPassport extends GuestPassportBase implements Passport {
 	private _userPassport: UserPassport | undefined;
 	private _listingPassport: ListingPassport | undefined;
 	private _conversationPassport: ConversationPassport | undefined;
 	private _reservationRequestPassport: ReservationRequestPassport | undefined;
+	private _accountPlanPassport: AccountPlanPassport | undefined;
 
 	public get user(): UserPassport {
-		if (!this._userPassport) {
-			this._userPassport = new GuestUserPassport();
-		}
+		this._userPassport ??= new GuestUserPassport();
 		return this._userPassport;
 	}
 
 	public get listing(): ListingPassport {
-		if (!this._listingPassport) {
-			this._listingPassport = new GuestListingPassport();
-		}
+		this._listingPassport ??= new GuestListingPassport();
 		return this._listingPassport;
 	}
 
 	public get conversation(): ConversationPassport {
-		if (!this._conversationPassport) {
-			this._conversationPassport = new GuestConversationPassport();
-		}
+		this._conversationPassport ??= new GuestConversationPassport();
 		return this._conversationPassport;
 	}
 
 	public get reservationRequest(): ReservationRequestPassport {
-		if (!this._reservationRequestPassport) {
-			this._reservationRequestPassport = new GuestReservationRequestPassport();
-		}
+		this._reservationRequestPassport ??= new GuestReservationRequestPassport();
 		return this._reservationRequestPassport;
+	}
+
+	public get accountPlan(): AccountPlanPassport {
+		this._accountPlanPassport ??= new GuestAccountPlanPassport();
+		return this._accountPlanPassport;
 	}
 }
