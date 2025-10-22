@@ -1,9 +1,9 @@
 import { MyListingsDashboard } from './my-listings-dashboard.tsx';
-import { useQuery } from '@apollo/client';
+import { useQuery } from "@apollo/client/react";
 import { ComponentQueryLoader } from '@sthrift/ui-components';
 import { HomeAllListingsTableContainerMyListingsAllDocument } from '../../../../../generated.tsx';
 
-export function MyListingsDashboardContainer() {
+export const MyListingsDashboardContainer: React.FC = () => {
 	const { data, loading, error } = useQuery(
 		HomeAllListingsTableContainerMyListingsAllDocument, {
             variables: { page: 1, pageSize: 6 },

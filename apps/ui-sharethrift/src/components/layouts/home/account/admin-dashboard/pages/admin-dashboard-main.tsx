@@ -6,7 +6,7 @@ import '@sthrift/ui-components/src/styles/theme.css';
 
 export interface AdminDashboardMainProps {}
 
-export function AdminDashboardMain() {
+export const AdminDashboardMain: React.FC<AdminDashboardMainProps> = () => {
 	const tabItems = [
 		{
 			key: 'listings',

@@ -1,4 +1,4 @@
-import { useQuery, useMutation, useApolloClient } from '@apollo/client';
+import { useApolloClient, useMutation, useQuery } from "@apollo/client/react";
 import { useState } from 'react';
 import { message } from 'antd';
 import { ListingInformation } from './listing-information.tsx';
@@ -52,7 +52,7 @@ interface ListingInformationContainerProps {
 //   }
 // }
 
-export default function ListingInformationContainer({
+export const ListingInformationContainer: React.FC<ListingInformationContainerProps> = ({
 	listing,
 	userIsSharer,
 	isAuthenticated,
@@ -60,7 +60,7 @@ export default function ListingInformationContainer({
 	onLoginClick,
 	onSignUpClick,
 	className,
-}: ListingInformationContainerProps) {
+}) => {
 	const [reservationDates, setReservationDates] = useState<{
 		startDate: Date | null;
 		endDate: Date | null;
@@ -148,4 +148,4 @@ export default function ListingInformationContainer({
 			otherReservations={otherReservationsData?.queryActiveByListingId}
 		/>
 	);
-}
+};

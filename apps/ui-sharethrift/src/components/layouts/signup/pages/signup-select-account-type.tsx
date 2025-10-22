@@ -1,5 +1,5 @@
-import SelectAccountTypeContainer from '../components/select-account-type.container.tsx';
+import { SelectAccountTypeContainer } from '../components/select-account-type.container.tsx';
 
-export default function SignupSelectAccountType() {
+export const SignupSelectAccountType: React.FC = () => {
 	return <SelectAccountTypeContainer />;
-}
+};

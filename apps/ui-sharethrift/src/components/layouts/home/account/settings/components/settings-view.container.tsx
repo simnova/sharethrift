@@ -1,4 +1,4 @@
-import { useQuery } from '@apollo/client';
+import { useQuery } from "@apollo/client/react";
 import { message } from 'antd';
 import { SettingsView } from '../pages/settings-view.tsx';
 import type {
@@ -97,6 +97,6 @@ function SettingsViewLoader() {
 	);
 }
 
-export function SettingsViewContainer() {
+export const SettingsViewContainer: React.FC = () => {
 	return <SettingsViewLoader />;
-}
+};

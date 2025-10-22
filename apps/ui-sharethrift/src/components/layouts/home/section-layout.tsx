@@ -5,7 +5,7 @@ import { HandleLogoutMockForMockAuth } from '../../shared/handle-logout.ts';
 import { Footer, Header, Navigation } from '@sthrift/ui-components';
 import { useCreateListingNavigation } from './components/create-listing/hooks/use-create-listing-navigation.ts';
 
-export default function HomeTabsLayout() {
+export const HomeTabsLayout: React.FC = () => {
 	const navigate = useNavigate();
 	const location = useLocation();
 	const auth = useAuth();
@@ -133,4 +133,4 @@ export default function HomeTabsLayout() {
 			<Footer />
 		</div>
 	);
-}
+};

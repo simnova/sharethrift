@@ -54,7 +54,7 @@ export interface ListingInformationProps {
 	otherReservations?: ViewListingQueryActiveByListingIdQuery['queryActiveByListingId'];
 }
 
-export function ListingInformation({
+export const ListingInformation: React.FC<ListingInformationProps> = ({
 	listing,
 	onReserveClick,
 	onCancelClick,
@@ -68,7 +68,7 @@ export function ListingInformation({
 	otherReservationsLoading = false,
 	otherReservationsError,
 	otherReservations,
-}: ListingInformationProps) {
+}) => {
 	const navigate = useNavigate();
 	const [dateSelectionError, setDateSelectionError] = useState<string | null>(
 		null,

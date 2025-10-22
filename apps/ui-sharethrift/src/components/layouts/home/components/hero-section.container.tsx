@@ -6,11 +6,11 @@ interface HeroSectionContainerProps {
 	onSearch?: (query: string) => void;
 }
 
-export function HeroSectionContainer({
+export const HeroSectionContainer: React.FC<HeroSectionContainerProps> = ({
 	searchValue = '',
 	onSearchChange,
 	onSearch,
-}: HeroSectionContainerProps) {
+}) => {
 	// Add any logic here when needed
 	// For now, this is a simple pass-through container
 

@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { useQuery } from '@apollo/client';
+import { useQuery } from "@apollo/client/react";
 import { ListingsPage, type ItemListing } from './listings-page.tsx';
 import {
 	ListingsPageContainerGetListingsDocument,
@@ -14,9 +14,9 @@ interface ListingsPageContainerProps {
 	isAuthenticated: boolean;
 }
 
-export function ListingsPageContainer({
+export const ListingsPageContainer: React.FC<ListingsPageContainerProps> = ({
 	isAuthenticated,
-}: ListingsPageContainerProps) {
+}) => {
 	const [searchQuery, setSearchQuery] = useState('');
 	const [currentPage, setCurrentPage] = useState(1);
 	const pageSize = 20;

@@ -1,60 +1,25 @@
 import type { Meta, StoryFn } from "@storybook/react";
 import { action } from "storybook/actions";
-import { MemoryRouter, Route, Routes } from "react-router-dom";
-import { AuthContext } from "react-oidc-context";
-import { type ReactNode, useMemo } from "react";
-import HomeRoutes from "../../../index.tsx";
+import { HomeRoutes } from "../../../index.tsx";
 import { ProfileView } from "../pages/profile-view.tsx";
 import type { UserProfileData, UserListing } from "../components/profile-view.types.ts";
+import { withMockApolloClient, withMockRouter } from "../../../../../../test-utils/storybook-decorators.tsx";
 
-export default {
-  title: "Pages/Account/Profile",
-  component: HomeRoutes,
-  decorators: [
-    (Story) => (
-      <MockAuthWrapper>
-        <MemoryRouter initialEntries={["/account/profile"]}>
-          <Routes>
-            <Route path="*" element={<Story />} />
-          </Routes>
-        </MemoryRouter>
-      </MockAuthWrapper>
-    ),
-  ],
-  parameters: {
-    layout: "fullscreen",
-    // Note: Using /account/profile route highlights 'Account' menu item in navigation
-    // However, the submenu is not initially expanded due to how the navigation state is currently managed
-  },
-} as Meta<typeof HomeRoutes>;
-
-// Mock authenticated user to bypass auth check in HomeRoutes
-const MockAuthWrapper = ({ children }: { children: ReactNode }) => {
-  const mockAuth: any = useMemo(
-    () => ({
-      isAuthenticated: true,
-      isLoading: false,
-      user: {
-        profile: {
-          sub: "507f1f77bcf86cd799439099",
-          name: "Test User",
-          email: "test@example.com",
-        },
-        access_token: "mock-access-token",
-      },
-      signinRedirect: async () => {},
-      signoutRedirect: async () => {},
-      removeUser: async () => {},
-      events: {},
-      settings: {},
-    }),
-    []
-  );
-
-  return (
-    <AuthContext.Provider value={mockAuth}>{children}</AuthContext.Provider>
-  );
+const meta: Meta<typeof HomeRoutes> = {
+	title: "Pages/Account/Profile",
+	component: HomeRoutes,
+	decorators: [
+		withMockApolloClient,
+		withMockRouter("/account/profile"),
+	],
+	parameters: {
+		layout: "fullscreen",
+		// Note: Using /account/profile route highlights 'Account' menu item in navigation
+		// However, the submenu is not initially expanded due to how the navigation state is currently managed
+	},
 };
+
+export default meta;
 
 const Template: StoryFn<typeof HomeRoutes> = () => <HomeRoutes />;
 
@@ -117,7 +82,7 @@ const mockTwoListings: UserListing[] = [
 
 // Story: Default profile view using container's fallback data
 // from error handler in profile-view.container.tsx
-export const DefaultView = Template.bind({});
+export const DefaultView: StoryFn<typeof HomeRoutes> = Template.bind({});
 DefaultView.parameters = {
   apolloClient: {
     mocks: [], // Empty mocks - let query fail and use container fallback
@@ -141,14 +106,20 @@ const ComponentTemplate: StoryFn<{
 );
 
 // Story: Component with two listings
-export const WithTwoListings = ComponentTemplate.bind({});
+export const WithTwoListings: StoryFn<{
+	user: UserProfileData;
+	listings: UserListing[];
+}> = ComponentTemplate.bind({});
 WithTwoListings.args = {
   user: mockUserSarah,
   listings: mockTwoListings,
 };
 
 // Story: Component with no listings (new user empty state)
-export const NoListings = ComponentTemplate.bind({});
+export const NoListings: StoryFn<{
+	user: UserProfileData;
+	listings: UserListing[];
+}> = ComponentTemplate.bind({});
 NoListings.args = {
   user: mockUserAlex,
   listings: [],

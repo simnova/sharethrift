@@ -1,6 +1,5 @@
-// Global preview for Storybook in @ocom/ui-components
+// Global preview for Storybook in @sthrift/ui-components
 // Import Ant Design base styles so components render correctly
-import { MockedProvider } from '@apollo/client/testing';
 import type { Decorator, Parameters } from '@storybook/react';
 import { AuthProvider } from 'react-oidc-context';
 import { MemoryRouter } from 'react-router-dom';
@@ -12,17 +11,12 @@ export const decorators: Decorator[] = [
 		const initialEntries = context.parameters?.memoryRouter?.initialEntries ?? [
 			'/',
 		];
-		const apolloParams = context.parameters?.apolloClient ?? {};
-		const mocks = apolloParams.mocks ?? [];
-		const { defaultOptions } = apolloParams;
 
 		return (
 			<AuthProvider>
-				<MockedProvider mocks={mocks} defaultOptions={defaultOptions}>
-					<MemoryRouter initialEntries={initialEntries}>
-						<Story />
-					</MemoryRouter>
-				</MockedProvider>
+				<MemoryRouter initialEntries={initialEntries}>
+					<Story />
+				</MemoryRouter>
 			</AuthProvider>
 		);
 	},
@@ -37,8 +31,5 @@ export const parameters: Parameters = {
 			color: /(background|color)$/i,
 			date: /Date$/i,
 		},
-	},
-	apolloClient: {
-		MockedProvider,
 	},
 };

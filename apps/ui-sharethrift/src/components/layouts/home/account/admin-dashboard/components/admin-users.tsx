@@ -3,7 +3,7 @@ import { AdminUsersTableContainer } from "./admin-users-table.container.tsx";
 
 export interface AdminUsersProps {}
 
-export function AdminUsers() {
+export const AdminUsers: React.FC<AdminUsersProps> = () => {
   const [currentPage, setCurrentPage] = useState(1);
 
   return (

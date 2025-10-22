@@ -1,6 +1,6 @@
 import { useNavigate } from 'react-router-dom';
 import { ProfileView } from '../pages/profile-view.tsx';
-import { useQuery } from '@apollo/client';
+import { useQuery } from "@apollo/client/react";
 import type {
 	CurrentUserQueryData,
 	UserListingsQueryData,
@@ -147,6 +147,6 @@ function ProfileViewLoader() {
 	);
 }
 
-export function ProfileViewContainer() {
+export const ProfileViewContainer: React.FC = () => {
 	return <ProfileViewLoader />;
-}
+};

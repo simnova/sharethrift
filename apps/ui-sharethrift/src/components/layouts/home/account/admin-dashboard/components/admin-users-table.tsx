@@ -30,7 +30,7 @@ const BLOCK_DURATIONS = [
   { label: "Indefinite", value: "indefinite" },
 ];
 
-export function AdminUsersTable({
+export const AdminUsersTable: React.FC<Readonly<AdminUsersTableProps>> = ({
   data,
   searchText,
   statusFilters,
@@ -44,7 +44,7 @@ export function AdminUsersTable({
   onTableChange,
   onPageChange,
   onAction,
-}: Readonly<AdminUsersTableProps>) {
+}) => {
   const [blockModalVisible, setBlockModalVisible] = useState(false);
   const [unblockModalVisible, setUnblockModalVisible] = useState(false);
   const [selectedUser, setSelectedUser] = useState<AdminUserData | null>(null);

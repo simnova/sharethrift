@@ -45,7 +45,7 @@ interface ListingsPageProps {
 	onCreateListingClick: () => void;
 }
 
-export function ListingsPage({
+export const ListingsPage: React.FC<Readonly<ListingsPageProps>> = ({
 	isAuthenticated,
 	searchQuery,
 	onSearchChange,
@@ -59,7 +59,7 @@ export function ListingsPage({
 	onListingClick,
 	onPageChange,
 	onCreateListingClick,
-}: Readonly<ListingsPageProps>) {
+}) => {
 	return (
 		<div>
 			{/* Hero section */}
