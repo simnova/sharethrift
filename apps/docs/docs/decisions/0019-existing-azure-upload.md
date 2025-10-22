@@ -4,8 +4,8 @@ sidebar_label: 0019 Existing Azure Upload
 description: "Existing Azure Upload with Direct client uploads using Azure Blob SAS tokens."
 status: proposed
 date: 2025-10-21
-deciders:
-consulted:
+deciders: gidich
+consulted: nnoce14 jasonmorais
 informed:
 ---
 
