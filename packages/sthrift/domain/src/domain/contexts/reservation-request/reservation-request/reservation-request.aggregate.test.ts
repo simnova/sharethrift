@@ -46,6 +46,14 @@ describe('ReservationRequest', () => {
 				}),
 			};
 		},
+
+		get accountPlan() {
+			return {
+				forAccountPlan: () => ({
+					determineIf: () => true,
+				}),
+			};
+		},
 	} as Passport;
 
 	// Helper functions for creating mock entity references
