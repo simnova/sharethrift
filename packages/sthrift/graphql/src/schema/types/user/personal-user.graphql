@@ -3,7 +3,6 @@ type PersonalUser implements MongoBase {
 	isBlocked: Boolean
 	account: PersonalUserAccount
 	hasCompletedOnboarding: Boolean
-	role: PersonalUserRole
 	id: ObjectID!
 	schemaVersion: String
 	createdAt: DateTime

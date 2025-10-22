@@ -19,66 +19,6 @@ export const getMockItemListings =
 			isBlocked: false,
 			schemaVersion: '1',
 			hasCompletedOnboarding: true,
-
-			role: {
-				id: 'role-1',
-				permissions: {
-					listingPermissions: {
-						canCreateItemListing: true,
-						canUpdateItemListing: true,
-						canDeleteItemListing: true,
-						canViewItemListing: true,
-						canPublishItemListing: true,
-						canUnpublishItemListing: true,
-					},
-					conversationPermissions: {
-						canCreateConversation: true,
-						canManageConversation: true,
-						canViewConversation: true,
-					},
-					reservationRequestPermissions: {
-						canCreateReservationRequest: true,
-						canManageReservationRequest: true,
-						canViewReservationRequest: true,
-					},
-				},
-				createdAt: new Date('2024-01-01'),
-				updatedAt: new Date('2024-01-01'),
-				schemaVersion: '1',
-				roleName: 'User',
-				roleType: 'user',
-				isDefault: true,
-			},
-			loadRole: () =>
-				Promise.resolve({
-					id: 'role-1',
-					permissions: {
-						listingPermissions: {
-							canCreateItemListing: true,
-							canUpdateItemListing: true,
-							canDeleteItemListing: true,
-							canViewItemListing: true,
-							canPublishItemListing: true,
-							canUnpublishItemListing: true,
-						},
-						conversationPermissions: {
-							canCreateConversation: true,
-							canManageConversation: true,
-							canViewConversation: true,
-						},
-						reservationRequestPermissions: {
-							canCreateReservationRequest: true,
-							canManageReservationRequest: true,
-							canViewReservationRequest: true,
-						},
-					},
-					createdAt: new Date('2024-01-01'),
-					updatedAt: new Date('2024-01-01'),
-					schemaVersion: '1',
-					roleName: 'User',
-					roleType: 'user',
-					isDefault: true,
-				}),
 			account: {
 				accountType: 'email',
 				email,

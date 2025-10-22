@@ -1,14 +1,11 @@
 import {
 	type Model,
 	Schema,
-	type ObjectId,
 	type SchemaDefinition,
-	type PopulatedDoc,
 } from 'mongoose';
 import { MongooseSeedwork } from '@cellix/mongoose-seedwork';
 import { type User, type UserModelType, userOptions } from './user.model.ts';
 import { Patterns } from '../../patterns.ts';
-import * as PersonalUserRole from '../role/personal-user-role.model.ts';
 
 // Location
 export interface PersonalUserAccountProfileLocation
@@ -131,7 +128,6 @@ export const PersonalUserAccountType: SchemaDefinition<PersonalUserAccount> = {
 export interface PersonalUser extends User {
 	userType: string;
 	isBlocked: boolean;
-	role?: PopulatedDoc<PersonalUserRole.PersonalUserRole> | ObjectId;
 	account: PersonalUserAccount;
 	hasCompletedOnboarding: boolean;
 
@@ -147,12 +143,6 @@ const PersonalUserSchema = new Schema<
 >(
 	{
 		isBlocked: { type: Boolean, required: false, default: false },
-		role: {
-			type: Schema.Types.ObjectId,
-			ref: PersonalUserRole.PersonalUserRoleModelName,
-			required: false,
-			index: true,
-		},
 		account: {
 			type: PersonalUserAccountType,
 			required: false,

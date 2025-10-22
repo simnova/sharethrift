@@ -11,7 +11,6 @@ import {
 } from './listing/index.ts';
 import { ConversationModelFactory } from './conversations/conversation.model.ts';
 import {
-	PersonalUserRoleModelFactory,
 	AdminRoleModelFactory,
 	RoleModelFactory,
 } from './role/index.ts';
@@ -52,7 +51,6 @@ export const mongooseContextBuilder = (
 		},
 		Role: {
 			Role: RoleModel,
-			PersonalUserRole: PersonalUserRoleModelFactory(RoleModel),
 			AdminRole: AdminRoleModelFactory(RoleModel),
 		},
 	};

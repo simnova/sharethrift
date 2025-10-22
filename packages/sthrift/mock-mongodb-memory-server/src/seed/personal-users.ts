@@ -1,5 +1,4 @@
 import type { Models } from '@sthrift/data-sources-mongoose-models';
-import { ObjectId } from 'mongodb';
 
 export const personalUsers = [
 	{
@@ -7,7 +6,6 @@ export const personalUsers = [
 		userType: 'personal-users',
 		isBlocked: false,
 		hasCompletedOnboarding: true,
-		role: new ObjectId('607f1f77bcf86cd799439021'),
 		account: {
 			accountType: 'verified-personal',
 			email: 'alice@example.com',
@@ -43,7 +41,6 @@ export const personalUsers = [
 		userType: 'personal-users',
 		isBlocked: false,
 		hasCompletedOnboarding: true,
-		role: new ObjectId('607f1f77bcf86cd799439021'),
 		account: {
 			accountType: 'verified-personal',
 			email: 'bob@example.com',

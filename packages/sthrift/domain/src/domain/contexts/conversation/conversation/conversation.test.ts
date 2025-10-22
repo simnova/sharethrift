@@ -10,8 +10,6 @@ import { PersonalUser } from '../../user/personal-user/personal-user.ts';
 import type { PersonalUserProps } from '../../user/personal-user/personal-user.entity.ts';
 import { ItemListing } from '../../listing/item/item-listing.ts';
 import type { ItemListingProps } from '../../listing/item/item-listing.entity.ts';
-import { PersonalUserRolePermissions } from '../../role/personal-user-role/personal-user-role-permissions.ts';
-import { PersonalUserRole } from '../../role/personal-user-role/personal-user-role.ts';
 
 
 const test = { for: describeFeature };
@@ -44,39 +42,6 @@ function makePassport(canManageConversation = false): Passport {
 function makeBaseProps(
 	overrides: Partial<ConversationProps> = {},
 ): ConversationProps {
-	// Provide a valid PersonalUserPermissions value object for permissions
-	const permissions = new PersonalUserRolePermissions({
-		listingPermissions: {
-			canCreateItemListing: true,
-			canUpdateItemListing: true,
-			canDeleteItemListing: true,
-			canViewItemListing: true,
-			canPublishItemListing: true,
-			canUnpublishItemListing: true,
-		},
-		conversationPermissions: {
-			canCreateConversation: true,
-			canManageConversation: true,
-			canViewConversation: true,
-		},
-		reservationRequestPermissions: {
-			canCreateReservationRequest: true,
-			canManageReservationRequest: true,
-			canViewReservationRequest: true,
-		},
-	});
-	const roleProps = {
-		id: 'role-1',
-		name: 'default',
-		roleName: 'default',
-		isDefault: true,
-		roleType: 'personal',
-		permissions,
-		createdAt: new Date('2020-01-01T00:00:00Z'),
-		updatedAt: new Date('2020-01-02T00:00:00Z'),
-		schemaVersion: '1.0.0',
-	};
-	const role = new PersonalUserRole(roleProps, makePassport());
 	const user = new PersonalUser<PersonalUserProps>(
 		{
 			userType: 'end-user',
@@ -110,8 +75,6 @@ function makeBaseProps(
 			},
 			createdAt: new Date('2020-01-01T00:00:00Z'),
 			updatedAt: new Date('2020-01-02T00:00:00Z'),
-			role,
-			loadRole: async () => role,
 		},
 		makePassport(),
 	);
@@ -148,8 +111,6 @@ function makeBaseProps(
 			},
 			createdAt: new Date('2020-01-01T00:00:00Z'),
 			updatedAt: new Date('2020-01-02T00:00:00Z'),
-			role,
-			loadRole: async () => role,
 		},
 		makePassport(),
 	);
