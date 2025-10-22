@@ -103,7 +103,7 @@ export function AdminListings() {
 				})();
 			}
 		},
-		[refetch, removeListingMutation, unblockListingMutation],
+		[refetch, removeListingMutation, unblockListingMutation, navigate],
 	);
 
 	return (
@@ -131,4 +131,3 @@ export function AdminListings() {
 		/>
 	);
 }
-

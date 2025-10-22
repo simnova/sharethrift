@@ -1,18 +1,17 @@
 import type React from 'react';
 import { useState, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { gql, useMutation } from '@apollo/client';
+import { useMutation } from "@apollo/client/react";
 import { message } from 'antd';
-// eslint-disable-next-line import/no-absolute-path, @typescript-eslint/ban-ts-comment
-// @ts-ignore - allow raw import string
-import CreateListingMutationSource from './create-listing.container.graphql?raw';
 import {
 	CreateListing,
 	type CreateListingFormData,
 } from './create-listing.tsx';
-
-// Parse the GraphQL operations
-const CREATE_LISTING_MUTATION = gql(CreateListingMutationSource);
+import {
+	HomeCreateListingContainerCreateItemListingDocument,
+	type HomeCreateListingContainerCreateItemListingMutation,
+	type HomeCreateListingContainerCreateItemListingMutationVariables,
+} from '../../../../../generated.tsx';
 
 interface CreateListingContainerProps {
 	isAuthenticated?: boolean;
@@ -42,8 +41,11 @@ export const CreateListingContainer: React.FC<CreateListingContainerProps> = (
 	);
 
 	// Create listing mutation
-	const [createItemListing, { loading: isCreating }] = useMutation(
-		CREATE_LISTING_MUTATION,
+	const [createItemListing, { loading: isCreating }] = useMutation<
+		HomeCreateListingContainerCreateItemListingMutation,
+		HomeCreateListingContainerCreateItemListingMutationVariables
+	>(
+		HomeCreateListingContainerCreateItemListingDocument,
 		{
 			onCompleted: (data) => {
 				const isDraft = data.createItemListing.state === 'Drafted';

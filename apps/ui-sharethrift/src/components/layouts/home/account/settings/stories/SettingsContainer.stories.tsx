@@ -1,10 +1,12 @@
 import type { Meta, StoryObj } from "@storybook/react";
 import { SettingsViewContainer } from "../components/settings-view.container.tsx";
 import { HomeAccountSettingsViewContainerCurrentUserDocument } from "../../../../../../generated.tsx";
+import { withMockApolloClient, withMockRouter } from "../../../../../../test-utils/storybook-decorators.tsx";
 
 const meta: Meta<typeof SettingsViewContainer> = {
   title: "Components/Account/SettingsContainer",
   component: SettingsViewContainer,
+  decorators: [withMockApolloClient, withMockRouter("/account/settings")],
   parameters: {
     apolloClient: {
       mocks: [
@@ -31,8 +33,17 @@ const meta: Meta<typeof SettingsViewContainer> = {
                     lastName: "Garcia",
                     location: {
                       __typename: "PersonalUserAccountProfileLocation",
+                      address1: "123 Main Street",
+                      address2: "Apt 4B",
                       city: "Philadelphia",
                       state: "PA",
+                      country: "United States",
+                      zipCode: "19101",
+                    },
+                    billing: {
+                      __typename: "PersonalUserAccountProfileBilling",
+                      subscriptionId: "sub_123456789",
+                      cybersourceCustomerId: "cust_abc123",
                     },
                   },
                   settings: {

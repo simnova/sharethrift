@@ -1,56 +1,22 @@
 import type { Meta, StoryFn } from "@storybook/react";
-import { MemoryRouter, Route, Routes } from "react-router-dom";
-import { AuthContext } from "react-oidc-context";
-import { type ReactNode, useMemo } from "react";
-import HomeRoutes from "../../../index.tsx";
+import { HomeRoutes } from "../../../index.tsx";
 import { HomeAccountSettingsViewContainerCurrentUserDocument } from "../../../../../../generated.tsx";
+import { withMockApolloClient, withMockRouter } from "../../../../../../test-utils/storybook-decorators.tsx";
 
-export default {
-  title: "Pages/Account/Settings",
-  component: HomeRoutes,
-  decorators: [
-    (Story) => (
-      <MockAuthWrapper>
-        <MemoryRouter initialEntries={["/account/settings"]}>
-          <Routes>
-            <Route path="*" element={<Story />} />
-          </Routes>
-        </MemoryRouter>
-      </MockAuthWrapper>
-    ),
-  ],
-} as Meta<typeof HomeRoutes>;
+const meta: Meta<typeof HomeRoutes> = {
+	title: "Pages/Account/Settings",
+	component: HomeRoutes,
+	decorators: [
+		withMockApolloClient,
+		withMockRouter("/account/settings"),
+	],
+};
+
+export default meta;
 
 const Template: StoryFn<typeof HomeRoutes> = () => <HomeRoutes />;
 
-export const DefaultView = Template.bind({});
-
-const MockAuthWrapper = ({ children }: { children: ReactNode }) => {
-  const mockAuth: any = useMemo(
-    () => ({
-      isAuthenticated: true,
-      isLoading: false,
-      user: {
-        profile: {
-          sub: "507f1f77bcf86cd799439099",
-          name: "Test User",
-          email: "test@example.com",
-        },
-        access_token: "mock-access-token",
-      },
-      signinRedirect: async () => {},
-      signoutRedirect: async () => {},
-      removeUser: async () => {},
-      events: {},
-      settings: {},
-    }),
-    []
-  );
-
-  return (
-    <AuthContext.Provider value={mockAuth}>{children}</AuthContext.Provider>
-  );
-};
+export const DefaultView: StoryFn<typeof HomeRoutes> = Template.bind({});
 
 DefaultView.parameters = {
   apolloClient: {

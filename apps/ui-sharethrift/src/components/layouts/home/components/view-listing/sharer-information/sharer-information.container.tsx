@@ -1,30 +1,9 @@
-import { useQuery, gql } from '@apollo/client';
+import { useQuery } from "@apollo/client/react";
 import { SharerInformation } from './sharer-information.tsx';
-// eslint-disable-next-line import/no-absolute-path, @typescript-eslint/ban-ts-comment
-// @ts-ignore - allow raw import string
-import SharerInformationQuerySource from './sharer-information.graphql?raw';
-
-const GET_SHARER_INFORMATION = gql(SharerInformationQuerySource);
-
-interface PersonalUser {
-	id: string;
-	account: {
-		username: string;
-		profile: {
-			firstName: string;
-			lastName: string;
-			location: {
-				city: string;
-				state: string;
-				country: string;
-			};
-		};
-	};
-}
-
-interface SharerQueryResponse {
-	personalUserById: PersonalUser;
-}
+import {
+	ViewListingSharerInformationGetSharerDocument,
+	type ViewListingSharerInformationGetSharerQuery,
+} from '../../../../../../generated.tsx';
 
 interface SharerInformationContainerProps {
 	sharerId: string;
@@ -35,13 +14,13 @@ interface SharerInformationContainerProps {
 	showIconOnly?: boolean;
 }
 
-export default function SharerInformationContainer({
+export const SharerInformationContainer: React.FC<SharerInformationContainerProps> = ({
 	sharerId,
 	listingId,
 	isOwner,
 	sharedTimeAgo,
 	className,
-}: SharerInformationContainerProps) {
+}) => {
 	// If sharerId looks like a name (contains spaces or letters), use it directly
 	// Otherwise, try to query for user data
 	const isNameOnly =
@@ -64,8 +43,8 @@ export default function SharerInformationContainer({
 		);
 	}
 
-	const { data, loading, error } = useQuery<SharerQueryResponse>(
-		GET_SHARER_INFORMATION,
+	const { data, loading, error } = useQuery<ViewListingSharerInformationGetSharerQuery>(
+		ViewListingSharerInformationGetSharerDocument,
 		{
 			variables: { sharerId },
 		},
@@ -77,7 +56,7 @@ export default function SharerInformationContainer({
 
 	const sharer = {
 		id: data.personalUserById.id,
-		name: `${data.personalUserById.account.profile.firstName} ${data.personalUserById.account.profile.lastName}`,
+		name: `${data.personalUserById.account?.profile?.firstName ?? ''} ${data.personalUserById.account?.profile?.lastName ?? ''}`.trim(),
 	};
 
 	return (
@@ -89,4 +68,4 @@ export default function SharerInformationContainer({
 			className={className}
 		/>
 	);
-}
+};

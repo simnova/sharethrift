@@ -1,5 +1,5 @@
 import type { Meta, StoryObj } from '@storybook/react';
-import MyReservationsMain from '../pages/my-reservations.tsx';
+import { MyReservationsMain } from '../pages/my-reservations.tsx';
 
 const meta: Meta<typeof MyReservationsMain> = {
 	title: 'Pages/MyReservations/Main',

@@ -1,20 +1,8 @@
 import { useState } from 'react';
-import { useMutation } from '@apollo/client';
-import { gql } from '@apollo/client';
+import { useMutation } from "@apollo/client/react";
 import { useNavigate } from 'react-router-dom';
-
-const CREATE_CONVERSATION = gql`
-  mutation CreateConversation($input: CreateConversationInput!) {
-    createConversation(input: $input) {
-      id
-      twilioConversationSid
-      listingId
-      participants
-      createdAt
-      updatedAt
-    }
-  }
-`;
+import { CreateConversationDocument } from '../generated.tsx';
+import type { CreateConversationMutation, CreateConversationMutationVariables } from '../generated.tsx';
 
 interface MessageSharerButtonProps {
 	listingId: string;
@@ -22,29 +10,32 @@ interface MessageSharerButtonProps {
 	className?: string;
 }
 
-export function MessageSharerButton({
+export const MessageSharerButton: React.FC<MessageSharerButtonProps> = ({
 	listingId,
 	sharerId,
 	className = '',
-}: MessageSharerButtonProps) {
+}) => {
 	const [isCreating, setIsCreating] = useState(false);
 	const navigate = useNavigate();
 
 	// TODO: Get actual user ID from authentication context
 	const currentUserId = 'user123'; // Placeholder
 
-	const [createConversation] = useMutation(CREATE_CONVERSATION, {
-		onCompleted: (data) => {
-			// Navigate to the messages page with the conversation
-			navigate(`/messages/user/${currentUserId}`, {
-				state: { selectedConversationId: data.createConversation.id },
-			});
-		},
-		onError: (error) => {
-			console.error('Error creating conversation:', error);
-			setIsCreating(false);
-		},
-	});
+	const [createConversation] = useMutation<CreateConversationMutation, CreateConversationMutationVariables>(
+		CreateConversationDocument,
+		{
+			onCompleted: (data) => {
+				// Navigate to the messages page with the conversation
+				navigate(`/messages/user/${currentUserId}`, {
+					state: { selectedConversationId: data.createConversation.conversation?.id },
+				});
+			},
+			onError: (error) => {
+				console.error('Error creating conversation:', error);
+				setIsCreating(false);
+			},
+		}
+	);
 
 	const handleMessageSharer = async () => {
 		if (currentUserId === sharerId) {
@@ -59,7 +50,8 @@ export function MessageSharerButton({
 				variables: {
 					input: {
 						listingId,
-						participantIds: [currentUserId, sharerId],
+						sharerId: sharerId,
+						reserverId: currentUserId,
 					},
 				},
 			});
@@ -93,8 +85,7 @@ export function MessageSharerButton({
 						fill="none"
 						stroke="currentColor"
 						viewBox="0 0 24 24"
-						aria-label="Message icon"
-						role="img"
+						aria-hidden="true"
 					>
 						<title>Message</title>
 						<path

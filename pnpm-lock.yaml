@@ -230,8 +230,8 @@ importers:
         specifier: ^6.1.0
         version: 6.1.0(react-dom@19.2.0(react@19.2.0))(react@19.2.0)
       '@apollo/client':
-        specifier: ^3.14.0
-        version: 3.14.0(@types/react@19.2.2)(graphql-ws@6.0.6(graphql@16.11.0)(ws@8.18.3))(graphql@16.11.0)(react-dom@19.2.0(react@19.2.0))(react@19.2.0)
+        specifier: ^4.0.7
+        version: 4.0.7(graphql-ws@6.0.6(graphql@16.11.0)(ws@8.18.3))(graphql@16.11.0)(react-dom@19.2.0(react@19.2.0))(react@19.2.0)(rxjs@7.8.2)
       '@sthrift/ui-components':
         specifier: workspace:*
         version: link:../../packages/sthrift/ui-components
@@ -244,9 +244,6 @@ importers:
       antd:
         specifier: ^5.27.1
         version: 5.27.5(luxon@3.6.1)(moment@2.30.1)(react-dom@19.2.0(react@19.2.0))(react@19.2.0)
-      apollo-link-rest:
-        specifier: ^0.9.0
-        version: 0.9.0(@apollo/client@3.14.0(@types/react@19.2.2)(graphql-ws@6.0.6(graphql@16.11.0)(ws@8.18.3))(graphql@16.11.0)(react-dom@19.2.0(react@19.2.0))(react@19.2.0))(graphql@16.11.0)(qs@6.14.0)
       clean:
         specifier: ^4.0.2
         version: 4.0.2
@@ -277,9 +274,6 @@ importers:
       rxjs:
         specifier: ^7.8.2
         version: 7.8.2
-      storybook-addon-apollo-client:
-        specifier: ^9.0.0
-        version: 9.0.0(@apollo/client@3.14.0(@types/react@19.2.2)(graphql-ws@6.0.6(graphql@16.11.0)(ws@8.18.3))(graphql@16.11.0)(react-dom@19.2.0(react@19.2.0))(react@19.2.0))(graphql@16.11.0)(react@19.2.0)
       tailwindcss:
         specifier: ^4.1.11
         version: 4.1.14
@@ -1095,8 +1089,8 @@ importers:
         specifier: ^6.1.0
         version: 6.1.0(react-dom@19.2.0(react@19.2.0))(react@19.2.0)
       '@apollo/client':
-        specifier: ^3.13.9
-        version: 3.14.0(@types/react@19.2.2)(graphql-ws@6.0.6(graphql@16.11.0)(ws@8.18.3))(graphql@16.11.0)(react-dom@19.2.0(react@19.2.0))(react@19.2.0)
+        specifier: ^4.0.7
+        version: 4.0.7(graphql-ws@6.0.6(graphql@16.11.0)(ws@8.18.3))(graphql@16.11.0)(react-dom@19.2.0(react@19.2.0))(react@19.2.0)(rxjs@7.8.2)
       '@cellix/ui-core':
         specifier: workspace:*
         version: link:../../cellix/ui-core
@@ -1107,7 +1101,7 @@ importers:
         specifier: ^5.27.1
         version: 5.27.5(luxon@3.6.1)(moment@2.30.1)(react-dom@19.2.0(react@19.2.0))(react@19.2.0)
       graphql:
-        specifier: ^16.10.0
+        specifier: ^16.11.0
         version: 16.11.0
       react:
         specifier: ^19.1.1
@@ -1121,6 +1115,9 @@ importers:
       react-router-dom:
         specifier: ^7.8.2
         version: 7.9.4(react-dom@19.2.0(react@19.2.0))(react@19.2.0)
+      rxjs:
+        specifier: ^7.8.2
+        version: 7.8.2
     devDependencies:
       '@cellix/typescript-config':
         specifier: workspace:*
@@ -1176,9 +1173,6 @@ importers:
       storybook:
         specifier: ^9.1.3
         version: 9.1.10(@testing-library/dom@10.4.1)(vite@7.1.10(@types/node@24.7.2)(jiti@2.6.1)(lightningcss@1.30.1)(terser@5.44.0)(tsx@4.20.6)(yaml@2.8.1))
-      storybook-addon-apollo-client:
-        specifier: ^9.0.0
-        version: 9.0.0(@apollo/client@3.14.0(@types/react@19.2.2)(graphql-ws@6.0.6(graphql@16.11.0)(ws@8.18.3))(graphql@16.11.0)(react-dom@19.2.0(react@19.2.0))(react@19.2.0))(graphql@16.11.0)(react@19.2.0)
       typescript:
         specifier: ^5.8.3
         version: 5.8.3
@@ -1336,13 +1330,14 @@ packages:
     peerDependencies:
       graphql: 14.x || 15.x || 16.x
 
-  '@apollo/client@3.14.0':
-    resolution: {integrity: sha512-0YQKKRIxiMlIou+SekQqdCo0ZTHxOcES+K8vKB53cIDpwABNR0P0yRzPgsbgcj3zRJniD93S/ontsnZsCLZrxQ==}
+  '@apollo/client@4.0.7':
+    resolution: {integrity: sha512-hZp/mKtAqM+g6buUnu6Wqtyc33QebvfdY0SE46xWea4lU1CxwI57VORy2N2vA9CoCRgYM4ELNXzr6nNErAdhfg==}
     peerDependencies:
-      graphql: ^15.0.0 || ^16.0.0
+      graphql: ^16.0.0
       graphql-ws: ^5.5.5 || ^6.0.3
-      react: ^16.8.0 || ^17.0.0 || ^18.0.0 || >=19.0.0-rc
-      react-dom: ^16.8.0 || ^17.0.0 || ^18.0.0 || >=19.0.0-rc
+      react: ^17.0.0 || ^18.0.0 || >=19.0.0-rc
+      react-dom: ^17.0.0 || ^18.0.0 || >=19.0.0-rc
+      rxjs: ^7.3.0
       subscriptions-transport-ws: ^0.9.0 || ^0.11.0
     peerDependenciesMeta:
       graphql-ws:
@@ -5020,13 +5015,6 @@ packages:
   anymatch@3.1.3:
     resolution: {integrity: sha512-KMReFUr0B4t+D+OBkjR3KYqvocp2XaSzO55UcB6mgQMd3KbcE+mWTyvVV7D/zsdEbNnV6acZUutkiHQXvTr1Rw==}
     engines: {node: '>= 8'}
-
-  apollo-link-rest@0.9.0:
-    resolution: {integrity: sha512-kuXjR56Y12w0TZcqwVaONKlipB6g3Ya1dAy4NMCaylPpNXq6tO+qzQFPUyDJC7B0JoJPIFjxPV2rAet4uGM4UQ==}
-    peerDependencies:
-      '@apollo/client': '>=3'
-      graphql: '>=0.11'
-      qs: '>=6'
 
   applicationinsights@2.9.8:
     resolution: {integrity: sha512-eB/EtAXJ6mDLLvHrtZj/7h31qUfnC2Npr2pHGqds5+1OP7BFLsn5us+HCkwTj7Q+1sHXujLphE5Cyvq5grtV6g==}
@@ -9601,17 +9589,6 @@ packages:
     resolution: {integrity: sha512-NZQZdC5wOE/H3UT28fVGL+ikOZcEzfMGk/c3iN9UGxzWHMa1op7274oyiUVrAG4B2EuFhus8SvkaYnhvW92p9Q==}
     hasBin: true
 
-  rehackt@0.1.0:
-    resolution: {integrity: sha512-7kRDOuLHB87D/JESKxQoRwv4DzbIdwkAGQ7p6QKGdVlY1IZheUnVhlk/4UZlNUVxdAXpyxikE3URsG067ybVzw==}
-    peerDependencies:
-      '@types/react': '*'
-      react: '*'
-    peerDependenciesMeta:
-      '@types/react':
-        optional: true
-      react:
-        optional: true
-
   rehype-raw@7.0.0:
     resolution: {integrity: sha512-/aE8hCfKlQeA8LmyeyQvQF3eBiLRGNlfBJEvWH7ivp9sBqs7TNqBL5X3v157rM4IFETqDnIOO+z5M/biZbo9Ww==}
 
@@ -10173,13 +10150,6 @@ packages:
     resolution: {integrity: sha512-KXDYZ9dszj6bzvnEMRYvxgeTHU74QBFL54XKtP3nyMuJ81CFYtABZ3bAzL2EdFUaEwJOBOgENyFj3R7oTzDyyw==}
     engines: {node: '>=4', npm: '>=6'}
 
-  storybook-addon-apollo-client@9.0.0:
-    resolution: {integrity: sha512-TzbjC44xrVfDKkW77fMCyrfcQxp819HKqSMKqljqHDJn2Vs9VdCedE/wW/TvKVtLi3Or8wYfgT+0hljOq31lvg==}
-    peerDependencies:
-      '@apollo/client': ^3.0.0
-      graphql: ^16.0.0
-      react: ^16.8.0 || ^17.0.0 || ^18.0.0 || ^19.0.0
-
   storybook@9.1.10:
     resolution: {integrity: sha512-4+U7gF9hMpGilQmdVJwQaVZZEkD7XwC4ZDmBa51mobaPYelELEMoMfNM2hLyvB2x12gk1IJui1DnwOE4t+MXhw==}
     hasBin: true
@@ -10332,10 +10302,6 @@ packages:
 
   swap-case@2.0.2:
     resolution: {integrity: sha512-kc6S2YS/2yXbtkSMunBtKdah4VFETZ8Oh6ONSmSd9bRxhqTrtARUCBUiWXH3xVPpvR7tz2CSnkuXVE42EcGnMw==}
-
-  symbol-observable@4.0.0:
-    resolution: {integrity: sha512-b19dMThMV4HVFynSAM1++gBHAbk2Tc/osgLIBZMKsyqh34jb2e8Os7T6ZW/Bt3pJFdBTd2JwAnAAEQV7rSNvcQ==}
-    engines: {node: '>=0.10'}
 
   symbol-tree@3.2.4:
     resolution: {integrity: sha512-9QNk5KwDF+Bvz+PyObkmSYjI5ksVUYtjW7AU22r2NKcfLJcXp96hkDWU3+XndOsUb+AQ9QhfzfCT2O+CNWT5Tw==}
@@ -10530,10 +10496,6 @@ packages:
   ts-dedent@2.2.0:
     resolution: {integrity: sha512-q5W7tVM71e2xjHZTlgfTDoPF/SmqKG5hddq9SzR49CH2hayqRKJtQ4mtRlSxKaJlR/+9rEM+mnBHf7I2/BQcpQ==}
     engines: {node: '>=6.10'}
-
-  ts-invariant@0.10.3:
-    resolution: {integrity: sha512-uivwYcQaxAucv1CzRp2n/QdYPo4ILf9VXgH19zEIjFx2EJufV16P0JtJVpYHy89DItG6Kwj2oIUjrcK5au+4tQ==}
-    engines: {node: '>=8'}
 
   ts-log@2.2.7:
     resolution: {integrity: sha512-320x5Ggei84AxzlXp91QkIGSw5wgaLT6GeAH0KsqDmRZdVWW2OiSeVvElVoatk3f7nicwXlElXsoFkARiGE2yg==}
@@ -11310,12 +11272,6 @@ packages:
   yup@1.6.1:
     resolution: {integrity: sha512-JED8pB50qbA4FOkDol0bYF/p60qSEDQqBD0/qeIrUCG1KbPBIQ776fCUNb9ldbPcSTxA69g/47XTo4TqWiuXOA==}
 
-  zen-observable-ts@1.2.5:
-    resolution: {integrity: sha512-QZWQekv6iB72Naeake9hS1KxHlotfRpe+WGNbNx5/ta+R3DNjVO2bswf63gXlWDcs+EMd7XY8HfVQyP1X6T4Zg==}
-
-  zen-observable@0.8.15:
-    resolution: {integrity: sha512-PQ2PC7R9rslx84ndNBZB/Dkv8V8fZEpk83RLgXtYd0fwUgEjseMn1Dgajh2x6S8QbZAFa9p2qVCEuYZNgve0dQ==}
-
   zwitch@2.0.4:
     resolution: {integrity: sha512-bXE4cR/kVZhKZX/RjPEflHaKVhUVl85noU3v6b8apfQEc1x4A+zBxjZ4lN8LqGd6WZ3dl98pY4o717VFmoPp+A==}
 
@@ -11518,7 +11474,7 @@ snapshots:
     dependencies:
       graphql: 16.11.0
 
-  '@apollo/client@3.14.0(@types/react@19.2.2)(graphql-ws@6.0.6(graphql@16.11.0)(ws@8.18.3))(graphql@16.11.0)(react-dom@19.2.0(react@19.2.0))(react@19.2.0)':
+  '@apollo/client@4.0.7(graphql-ws@6.0.6(graphql@16.11.0)(ws@8.18.3))(graphql@16.11.0)(react-dom@19.2.0(react@19.2.0))(react@19.2.0)(rxjs@7.8.2)':
     dependencies:
       '@graphql-typed-document-node/core': 3.2.0(graphql@16.11.0)
       '@wry/caches': 1.0.1
@@ -11526,20 +11482,13 @@ snapshots:
       '@wry/trie': 0.5.0
       graphql: 16.11.0
       graphql-tag: 2.12.6(graphql@16.11.0)
-      hoist-non-react-statics: 3.3.2
       optimism: 0.18.1
-      prop-types: 15.8.1
-      rehackt: 0.1.0(@types/react@19.2.2)(react@19.2.0)
-      symbol-observable: 4.0.0
-      ts-invariant: 0.10.3
+      rxjs: 7.8.2
       tslib: 2.8.1
-      zen-observable-ts: 1.2.5
     optionalDependencies:
       graphql-ws: 6.0.6(graphql@16.11.0)(ws@8.18.3)
       react: 19.2.0
       react-dom: 19.2.0(react@19.2.0)
-    transitivePeerDependencies:
-      - '@types/react'
 
   '@apollo/protobufjs@1.2.7':
     dependencies:
@@ -16738,12 +16687,6 @@ snapshots:
     dependencies:
       normalize-path: 3.0.0
       picomatch: 2.3.1
-
-  apollo-link-rest@0.9.0(@apollo/client@3.14.0(@types/react@19.2.2)(graphql-ws@6.0.6(graphql@16.11.0)(ws@8.18.3))(graphql@16.11.0)(react-dom@19.2.0(react@19.2.0))(react@19.2.0))(graphql@16.11.0)(qs@6.14.0):
-    dependencies:
-      '@apollo/client': 3.14.0(@types/react@19.2.2)(graphql-ws@6.0.6(graphql@16.11.0)(ws@8.18.3))(graphql@16.11.0)(react-dom@19.2.0(react@19.2.0))(react@19.2.0)
-      graphql: 16.11.0
-      qs: 6.14.0
 
   applicationinsights@2.9.8:
     dependencies:
@@ -22124,11 +22067,6 @@ snapshots:
     dependencies:
       jsesc: 3.1.0
 
-  rehackt@0.1.0(@types/react@19.2.2)(react@19.2.0):
-    optionalDependencies:
-      '@types/react': 19.2.2
-      react: 19.2.0
-
   rehype-raw@7.0.0:
     dependencies:
       '@types/hast': 3.0.4
@@ -22775,12 +22713,6 @@ snapshots:
 
   stoppable@1.1.0: {}
 
-  storybook-addon-apollo-client@9.0.0(@apollo/client@3.14.0(@types/react@19.2.2)(graphql-ws@6.0.6(graphql@16.11.0)(ws@8.18.3))(graphql@16.11.0)(react-dom@19.2.0(react@19.2.0))(react@19.2.0))(graphql@16.11.0)(react@19.2.0):
-    dependencies:
-      '@apollo/client': 3.14.0(@types/react@19.2.2)(graphql-ws@6.0.6(graphql@16.11.0)(ws@8.18.3))(graphql@16.11.0)(react-dom@19.2.0(react@19.2.0))(react@19.2.0)
-      graphql: 16.11.0
-      react: 19.2.0
-
   storybook@9.1.10(@testing-library/dom@10.4.1)(vite@7.1.10(@types/node@24.7.2)(jiti@2.6.1)(lightningcss@1.30.1)(terser@5.44.0)(tsx@4.20.6)(yaml@2.8.1)):
     dependencies:
       '@storybook/global': 5.0.0
@@ -22962,8 +22894,6 @@ snapshots:
     dependencies:
       tslib: 2.8.1
 
-  symbol-observable@4.0.0: {}
-
   symbol-tree@3.2.4: {}
 
   sync-fetch@0.6.0-2:
@@ -23142,10 +23072,6 @@ snapshots:
       typescript: 5.8.3
 
   ts-dedent@2.2.0: {}
-
-  ts-invariant@0.10.3:
-    dependencies:
-      tslib: 2.8.1
 
   ts-log@2.2.7: {}
 
@@ -24053,11 +23979,5 @@ snapshots:
       tiny-case: 1.0.3
       toposort: 2.0.2
       type-fest: 2.19.0
-
-  zen-observable-ts@1.2.5:
-    dependencies:
-      zen-observable: 0.8.15
-
-  zen-observable@0.8.15: {}
 
   zwitch@2.0.4: {}

@@ -1,0 +1,15 @@
+mutation CreateConversation($input: ConversationCreateInput!) {
+	createConversation(input: $input) {
+		conversation {
+			id
+			twilioConversationId
+			listing {
+				id
+			}
+		}
+		status {
+			success
+			errorMessage
+		}
+	}
+}

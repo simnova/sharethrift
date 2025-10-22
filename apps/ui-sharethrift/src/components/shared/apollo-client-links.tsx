@@ -1,17 +1,17 @@
 import { ApolloLink, type DefaultContext, HttpLink } from '@apollo/client';
 import { BatchHttpLink } from '@apollo/client/link/batch-http';
-import { setContext } from '@apollo/client/link/context';
-import { removeTypenameFromVariables } from '@apollo/client/link/remove-typename';
-import { createPersistedQueryLink } from '@apollo/client/link/persisted-queries';
+import { SetContextLink } from '@apollo/client/link/context';
+import { PersistedQueryLink } from '@apollo/client/link/persisted-queries';
 import { sha256 } from 'crypto-hash';
 
 // base apollo link with no customizations
 // could be used as a base for the link chain
 export const BaseApolloLink = (): ApolloLink =>
-	setContext((_, { headers }) => {
+	new SetContextLink((prevContext) => {
 		return {
+			...prevContext,
 			headers: {
-				...headers,
+				...prevContext['headers'],
 			},
 		};
 	});
@@ -20,10 +20,11 @@ export const BaseApolloLink = (): ApolloLink =>
 export const ApolloLinkToAddAuthHeaderIfAccessTokenAvailable = (
 	access_token: string | undefined,
 ): ApolloLink =>
-	setContext((_, { headers }) => {
+	new SetContextLink((prevContext) => {
 		return {
+			...prevContext,
 			headers: {
-				...headers,
+				...prevContext['headers'],
 				...(access_token && { Authorization: `Bearer ${access_token}` }),
 			},
 		};
@@ -47,7 +48,7 @@ export const ApolloLinkToAddCustomHeader = (
 	});
 
 // apollo link to batch graphql requests
-// includes removeTypenameFromVariables link
+// Note: BatchHttpLink in v4 automatically strips __typename from variables
 export const TerminatingApolloBatchLinkForGraphqlServer = (
 	config: BatchHttpLink.Options,
 ) => {
@@ -56,10 +57,12 @@ export const TerminatingApolloBatchLinkForGraphqlServer = (
 		batchMax: config.batchMax, // No more than 15 operations per batch
 		batchInterval: config.batchInterval, // Wait no more than 50ms after first batched operation
 	});
-	const persistedQueryLink = createPersistedQueryLink({
+
+    const persistedQueryLink = new PersistedQueryLink({
 		sha256,
 	}).concat(link);
-	return ApolloLink.from([removeTypenameFromVariables(), persistedQueryLink]);
+
+	return ApolloLink.from([persistedQueryLink]);
 };
 
 export const TerminatingApolloHttpLinkForGraphqlServer = (
@@ -69,9 +72,9 @@ export const TerminatingApolloHttpLinkForGraphqlServer = (
 		uri: config.uri,
 	});
 
-	const persistedQueryLink = createPersistedQueryLink({
+	const persistedQueryLink = new PersistedQueryLink({
 		sha256,
-		useGETForHashedQueries: true, // use GET for hashed queries
-	}).concat(link);
-	return ApolloLink.from([removeTypenameFromVariables(), persistedQueryLink]);
+		useGETForHashedQueries: true,
+	});
+	return ApolloLink.from([persistedQueryLink, link]);
 };

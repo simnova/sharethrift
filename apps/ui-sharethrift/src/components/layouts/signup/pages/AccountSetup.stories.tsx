@@ -1,6 +1,6 @@
 import type { Meta, StoryObj } from '@storybook/react';
 import { MemoryRouter } from 'react-router-dom';
-import AccountSetup from './AccountSetup.tsx';
+import { AccountSetup } from './AccountSetup.tsx';
 import type React from 'react';
 
 const meta: Meta<typeof AccountSetup> = {
