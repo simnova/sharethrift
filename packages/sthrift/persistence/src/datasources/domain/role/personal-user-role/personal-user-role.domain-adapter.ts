@@ -84,7 +84,44 @@ export class PersonalUserRolePermissionsDomainAdapter
 			this.props.conversationPermissions,
 		);
 	}
+	get userPermissions(): Domain.Contexts.Role.PersonalUserRole.PersonalUserRoleUserPermissionsProps {
+		return this.props.userPermissions;
+	}
+
+	get accountPlanPermissions(): Domain.Contexts.Role.PersonalUserRole.PersonalUserRoleAccountPlanPermissionsProps {
+		return this.props.accountPlanPermissions;
+	}
 }
+
+export class PersonalUserRoleUserPermissionsDomainAdapter
+	implements
+		Domain.Contexts.Role.PersonalUserRole.PersonalUserRoleUserPermissionsProps
+{
+	public readonly props: Models.Role.PersonalUserRoleUserPermissions;
+	constructor(props: Models.Role.PersonalUserRoleUserPermissions) {
+		this.props = props;
+	}
+
+	get canCreateUser(): boolean {
+		return this.props.canCreateUser;
+	}
+	set canCreateUser(value: boolean) {
+		this.props.canCreateUser = value;
+	}
+	get canBlockUsers(): boolean {
+		return this.props.canBlockUsers;
+	}
+	set canBlockUsers(value: boolean) {
+		this.props.canBlockUsers = value;
+	}
+	get canUnblockUsers(): boolean {
+		return this.props.canUnblockUsers;
+	}
+	set canUnblockUsers(value: boolean) {
+		this.props.canUnblockUsers = value;
+	}
+}
+
 export class PersonalUserRoleReservationRequestPermissionsDomainAdapter
 	implements
 		Domain.Contexts.Role.PersonalUserRole.PersonalUserRoleReservationRequestPermissionsProps

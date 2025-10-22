@@ -14,16 +14,12 @@ export class PersonalUserUserVisa<root extends PersonalUserEntityReference>
 	determineIf(
 		func: (permissions: Readonly<UserDomainPermissions>) => boolean,
 	): boolean {
-		const updatedPermissions: UserDomainPermissions = {
-			canCreateUser: false,
-			canBlockUsers: false,
-			canUnblockUsers: false,
+		const { userPermissions } = this.user.role.permissions;
 
-			canBlockListings: false,
-			canUnblockListings: false,
-			canRemoveListings: false,
-			canViewListingReports: false,
-			canViewUserReports: false,
+		const updatedPermissions: UserDomainPermissions = {
+			canCreateUser: userPermissions.canCreateUser,
+			canBlockUsers: userPermissions.canBlockUsers,
+			canUnblockUsers: userPermissions.canUnblockUsers,
 
 			isEditingOwnAccount: this.user.id === this.root.id,
 			isSystemAccount: false,

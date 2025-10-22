@@ -1,6 +1,6 @@
 export interface AccountPlanDomainPermissions {
-	canCreatePlan: boolean;
-	canUpdatePlan: boolean;
-	canDeletePlan: boolean;
-	canViewPlan: boolean;
+	canCreateAccountPlan: boolean;
+	canUpdateAccountPlan: boolean;
+	canDeleteAccountPlan: boolean;
+	canViewAccountPlan: boolean;
 }

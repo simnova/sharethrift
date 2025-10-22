@@ -34,12 +34,30 @@ export interface PersonalUserRoleReservationRequestPermissions
 	canViewReservationRequest: boolean;
 }
 
+export interface PersonalUserRoleUserPermissions
+	extends MongooseSeedwork.NestedPath {
+	id?: ObjectId;
+	canCreateUser: boolean;
+	canBlockUsers: boolean;
+	canUnblockUsers: boolean;
+}
+export interface PersonalUserRoleAccountPlanPermissions
+	extends MongooseSeedwork.NestedPath {
+	id?: ObjectId;
+	canCreateAccountPlan: boolean;
+	canUpdateAccountPlan: boolean;
+	canDeleteAccountPlan: boolean;
+	canViewAccountPlan: boolean;
+}
+
 export interface PersonalUserRolePermissions
 	extends MongooseSeedwork.NestedPath {
 	id?: ObjectId;
 	listingPermissions: PersonalUserRoleListingPermissions;
 	conversationPermissions: PersonalUserRoleConversationPermissions;
 	reservationRequestPermissions: PersonalUserRoleReservationRequestPermissions;
+	userPermissions: PersonalUserRoleUserPermissions;
+	accountPlanPermissions: PersonalUserRoleAccountPlanPermissions;
 }
 
 export interface PersonalUserRole extends Role {
@@ -102,6 +120,17 @@ export const PersonalUserRoleSchema = new Schema<
 					default: true,
 				},
 			} as SchemaDefinition<PersonalUserRoleReservationRequestPermissions>,
+			user: {
+				canCreateUser: { type: Boolean, required: true, default: false },
+				canBlockUsers: { type: Boolean, required: true, default: false },
+				canUnblockUsers: { type: Boolean, required: true, default: false },
+			} as SchemaDefinition<PersonalUserRoleUserPermissions>,
+			accountPlan: {
+				canCreateAccountPlan: { type: Boolean, required: true, default: false },
+				canUpdateAccountPlan: { type: Boolean, required: true, default: false },
+				canDeleteAccountPlan: { type: Boolean, required: true, default: false },
+				canViewAccountPlan: { type: Boolean, required: true, default: false },
+			} as SchemaDefinition<PersonalUserRoleAccountPlanPermissions>,
 		} as SchemaDefinition<PersonalUserRolePermissions>,
 		schemaVersion: { type: String, default: '1.0.0' },
 		roleName: { type: String, required: true, maxlength: 50 },

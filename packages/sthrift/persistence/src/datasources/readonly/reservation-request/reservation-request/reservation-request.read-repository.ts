@@ -332,6 +332,17 @@ const getMockReservationRequests = (
 								canManageReservationRequest: true,
 								canViewReservationRequest: true,
 							},
+							userPermissions: {
+								canCreateUser: false,
+								canBlockUsers: false,
+								canUnblockUsers: false,
+							},
+							accountPlanPermissions: {
+								canCreateAccountPlan: false,
+								canUpdateAccountPlan: false,
+								canDeleteAccountPlan: false,
+								canViewAccountPlan: false,
+							},
 						},
 					},
 					loadRole: () =>
@@ -361,6 +372,17 @@ const getMockReservationRequests = (
 									canCreateReservationRequest: true,
 									canManageReservationRequest: true,
 									canViewReservationRequest: true,
+								},
+								userPermissions: {
+									canCreateUser: false,
+									canBlockUsers: false,
+									canUnblockUsers: false,
+								},
+								accountPlanPermissions: {
+									canCreateAccountPlan: false,
+									canUpdateAccountPlan: false,
+									canDeleteAccountPlan: false,
+									canViewAccountPlan: false,
 								},
 							},
 						}),
@@ -438,6 +460,17 @@ const getMockReservationRequests = (
 							canManageReservationRequest: true,
 							canViewReservationRequest: true,
 						},
+						userPermissions: {
+							canCreateUser: false,
+							canBlockUsers: false,
+							canUnblockUsers: false,
+						},
+						accountPlanPermissions: {
+							canCreateAccountPlan: false,
+							canUpdateAccountPlan: false,
+							canDeleteAccountPlan: false,
+							canViewAccountPlan: false,
+						},
 					},
 				},
 				loadRole: () =>
@@ -467,6 +500,17 @@ const getMockReservationRequests = (
 								canCreateReservationRequest: true,
 								canManageReservationRequest: true,
 								canViewReservationRequest: true,
+							},
+							userPermissions: {
+								canCreateUser: false,
+								canBlockUsers: false,
+								canUnblockUsers: false,
+							},
+							accountPlanPermissions: {
+								canCreateAccountPlan: false,
+								canUpdateAccountPlan: false,
+								canDeleteAccountPlan: false,
+								canViewAccountPlan: false,
 							},
 						},
 					}),
@@ -558,6 +602,17 @@ const getMockReservationRequests = (
 									canManageReservationRequest: true,
 									canViewReservationRequest: true,
 								},
+								userPermissions: {
+									canCreateUser: false,
+									canBlockUsers: false,
+									canUnblockUsers: false,
+								},
+								accountPlanPermissions: {
+									canCreateAccountPlan: false,
+									canUpdateAccountPlan: false,
+									canDeleteAccountPlan: false,
+									canViewAccountPlan: false,
+								},
 							},
 						},
 						loadRole: () =>
@@ -587,6 +642,17 @@ const getMockReservationRequests = (
 										canCreateReservationRequest: true,
 										canManageReservationRequest: true,
 										canViewReservationRequest: true,
+									},
+									userPermissions: {
+										canCreateUser: false,
+										canBlockUsers: false,
+										canUnblockUsers: false,
+									},
+									accountPlanPermissions: {
+										canCreateAccountPlan: false,
+										canUpdateAccountPlan: false,
+										canDeleteAccountPlan: false,
+										canViewAccountPlan: false,
 									},
 								},
 							}),
@@ -620,6 +686,17 @@ const getMockReservationRequests = (
 							canCreateReservationRequest: true,
 							canManageReservationRequest: true,
 							canViewReservationRequest: true,
+						},
+						userPermissions: {
+							canCreateUser: false,
+							canBlockUsers: false,
+							canUnblockUsers: false,
+						},
+						accountPlanPermissions: {
+							canCreateAccountPlan: false,
+							canUpdateAccountPlan: false,
+							canDeleteAccountPlan: false,
+							canViewAccountPlan: false,
 						},
 					},
 				};

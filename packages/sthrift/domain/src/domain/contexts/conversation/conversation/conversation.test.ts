@@ -63,6 +63,17 @@ function makeBaseProps(
 			canManageReservationRequest: true,
 			canViewReservationRequest: true,
 		},
+		userPermissions: {
+			canCreateUser: false,
+			canBlockUsers: false,
+			canUnblockUsers: false,
+		},
+		accountPlanPermissions: {
+			canCreateAccountPlan: false,
+			canUpdateAccountPlan: false,
+			canDeleteAccountPlan: false,
+			canViewAccountPlan: false,
+		},
 	});
 	const roleProps = {
 		id: 'role-1',

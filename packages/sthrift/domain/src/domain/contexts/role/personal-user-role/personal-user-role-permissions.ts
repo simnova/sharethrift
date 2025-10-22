@@ -1,3 +1,8 @@
+import type { PersonalUserRoleAccountPlanPermissionsProps } from './personal-user-role-account-plan-permissions.ts';
+import type {
+	PersonalUserRoleUserPermissionsProps,
+	PersonalUserRoleUserPermissionsEntityReference,
+} from './personal-user-role-user-permissions.ts';
 import { DomainSeedwork } from '@cellix/domain-seedwork';
 
 import type {
@@ -22,6 +27,8 @@ export interface PersonalUserRolePermissionsProps
 	readonly listingPermissions: PersonalUserRoleListingPermissionsProps;
 	readonly conversationPermissions: PersonalUserRoleConversationPermissionsProps;
 	readonly reservationRequestPermissions: PersonalUserRoleReservationRequestPermissionsProps;
+	readonly userPermissions: PersonalUserRoleUserPermissionsProps;
+	readonly accountPlanPermissions: PersonalUserRoleAccountPlanPermissionsProps;
 }
 
 export interface PersonalUserRolePermissionsEntityReference
@@ -31,11 +38,13 @@ export interface PersonalUserRolePermissionsEntityReference
 			| 'listingPermissions'
 			| 'conversationPermissions'
 			| 'reservationRequestPermissions'
+			| 'userPermissions'
 		>
 	> {
 	readonly listingPermissions: PersonalUserRoleListingPermissionsEntityReference;
 	readonly conversationPermissions: PersonalUserRoleConversationPermissionsEntityReference;
 	readonly reservationRequestPermissions: PersonalUserRoleReservationRequestPermissionsEntityReference;
+	readonly userPermissions: PersonalUserRoleUserPermissionsEntityReference;
 }
 
 export class PersonalUserRolePermissions
@@ -58,5 +67,13 @@ export class PersonalUserRolePermissions
 		return new PersonalUserRoleReservationRequestPermissions(
 			this.props.reservationRequestPermissions,
 		);
+	}
+
+	get userPermissions(): PersonalUserRoleUserPermissionsProps {
+		return this.props.userPermissions;
+	}
+
+	get accountPlanPermissions(): PersonalUserRoleAccountPlanPermissionsProps {
+		return this.props.accountPlanPermissions;
 	}
 }

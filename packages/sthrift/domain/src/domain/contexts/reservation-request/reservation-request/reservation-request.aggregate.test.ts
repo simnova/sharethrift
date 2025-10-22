@@ -88,6 +88,17 @@ describe('ReservationRequest', () => {
 				canManageReservationRequest: true,
 				canViewReservationRequest: true,
 			},
+			userPermissions: {
+				canCreateUser: false,
+				canBlockUsers: false,
+				canUnblockUsers: false,
+			},
+			accountPlanPermissions: {
+				canCreateAccountPlan: false,
+				canUpdateAccountPlan: false,
+				canDeleteAccountPlan: false,
+				canViewAccountPlan: false,
+			},
 		}),
 		roleType: 'mock-type',
 		createdAt: new Date(),
