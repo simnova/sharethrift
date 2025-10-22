@@ -7,16 +7,27 @@ import type { Models } from '@sthrift/data-sources-mongoose-models';
 import { ConversationDomainAdapter } from './conversation.domain-adapter.ts';
 import { PersonalUserDomainAdapter } from '../../user/personal-user/personal-user.domain-adapter.ts';
 
-
 const test = { for: describeFeature };
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const feature = await loadFeature(
 	path.resolve(__dirname, 'features/conversation.domain-adapter.feature'),
 );
 
+function makeEndUserRoleDoc(
+	overrides: Partial<Models.Role.PersonalUserRole> = {},
+) {
+	const base = {
+		id: '6898b0c34b4a2fbc01e9c698',
+		roleName: 'Test Role',
+		...overrides,
+	} as Models.Role.PersonalUserRole;
+	return vi.mocked(base);
+}
+
 function makeUserDoc(overrides: Partial<Models.User.PersonalUser> = {}) {
 	return {
 		id: new MongooseSeedwork.ObjectId(),
+		role: makeEndUserRoleDoc(),
 		...overrides,
 	} as Models.User.PersonalUser;
 }
