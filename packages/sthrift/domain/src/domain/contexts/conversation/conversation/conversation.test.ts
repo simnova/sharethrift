@@ -235,7 +235,7 @@ function makeBaseProps(
 		listing,
 		loadListing: async () => listing,
 		messages: [],
-        loadMessages: async () => [],
+		loadMessages: async () => [],
 		twilioConversationId: 'twilio-123',
 		createdAt: new Date('2020-01-01T00:00:00Z'),
 		updatedAt: new Date('2020-01-02T00:00:00Z'),
@@ -422,15 +422,15 @@ test.for(feature, ({ Scenario, Background, BeforeEachScenario }) => {
 					...conversation.reserver,
 					id: 'user-5',
 					account: {
-						...conversation.sharer.account,
-						email: 'newsharer@cellix.com',
-						username: 'newsharer',
+						...conversation.reserver.account,
+						email: 'newreserver@cellix.com',
+						username: 'newreserver',
 						profile: {
-							...conversation.sharer.account.profile,
+							...conversation.reserver.account.profile,
 							billing: {
-								...conversation.sharer.account.profile.billing,
+								...conversation.reserver.account.profile.billing,
 								transactions: {
-									...conversation.sharer.account.profile.billing.transactions,
+									...conversation.reserver.account.profile.billing.transactions,
 									items: [],
 									getNewItem: () => ({
 										id: '1',
@@ -480,15 +480,15 @@ test.for(feature, ({ Scenario, Background, BeforeEachScenario }) => {
 							...conversation.reserver,
 							id: 'user-6',
 							account: {
-								...conversation.sharer.account,
-								email: 'newsharer@cellix.com',
-								username: 'newsharer',
+								...conversation.reserver.account,
+								email: 'newreserver@cellix.com',
+								username: 'newreserver',
 								profile: {
-									...conversation.sharer.account.profile,
+									...conversation.reserver.account.profile,
 									billing: {
-										...conversation.sharer.account.profile.billing,
+										...conversation.reserver.account.profile.billing,
 										transactions: {
-											...conversation.sharer.account.profile.billing
+											...conversation.reserver.account.profile.billing
 												.transactions,
 											items: [],
 											getNewItem: () => ({
