@@ -4,7 +4,8 @@ import { AuthContext } from 'react-oidc-context';
 import { ApolloClient, InMemoryCache } from '@apollo/client';
 import { ApolloProvider } from '@apollo/client/react';
 import { MockLink } from '@apollo/client/testing';
-import type { Decorator } from '@storybook/react';
+import type { Decorator, StoryContext } from '@storybook/react';
+import { createMockAuth, createMockUser } from '../test/utils/mockAuth.ts';
 
 /**
  * Reusable Apollo Client decorator for Storybook stories.
@@ -23,9 +24,9 @@ import type { Decorator } from '@storybook/react';
  * } as Meta;
  * ```
  */
-export const withMockApolloClient: Decorator = (Story: any, context: any) => {
-	const mocks = context.parameters?.apolloClient?.mocks || [];
-	const showWarnings = context.parameters?.apolloClient?.showWarnings ?? false;
+export const withMockApolloClient: Decorator = (Story, context: StoryContext) => {
+	const mocks = context.parameters?.['apolloClient']?.['mocks'] || [];
+	const showWarnings = context.parameters?.['apolloClient']?.['showWarnings'] ?? false;
 	const mockLink = new MockLink(mocks, showWarnings);
 	const client = new ApolloClient({
 		link: mockLink,
@@ -52,30 +53,23 @@ export const withMockApolloClient: Decorator = (Story: any, context: any) => {
  * When any child component calls useAuth(), it uses React's useContext(AuthContext) internally.
  * By wrapping with <AuthContext.Provider value={mockAuth}>, we provide the mock data to
  * that context, so components receive our mockAuth object with isAuthenticated: true.
+ *
+ * IMPLEMENTATION NOTE: This component uses createMockAuth() and createMockUser() utilities
+ * from '../test/utils/mockAuth.ts' instead of manually constructing the auth object.
+ * This eliminates TypeScript 'any' types, ensures type safety, and reuses the shared
+ * mock implementation that properly types all required OIDC fields (profile, tokens, events, etc.).
  */
 export const MockAuthWrapper = ({
 	children,
 }: {
 	children: ReactNode;
 }): ReactElement => {
-	const mockAuth: any = useMemo(
-		() => ({
-			isAuthenticated: true,
-			isLoading: false,
-			user: {
-				profile: {
-					sub: '507f1f77bcf86cd799439099',
-					name: 'Test User',
-					email: 'test@example.com',
-				},
-				access_token: 'mock-access-token',
-			},
-			signinRedirect: async () => {},
-			signoutRedirect: async () => {},
-			removeUser: async () => {},
-			events: {},
-			settings: {},
-		}),
+	const mockAuth = useMemo(
+		() =>
+			createMockAuth({
+				isAuthenticated: true,
+				user: createMockUser(),
+			}),
 		[],
 	);
 
@@ -103,7 +97,7 @@ export const MockAuthWrapper = ({
  */
 export const withMockRouter =
 	(initialRoute = '/'): Decorator =>
-	(Story: any) => (
+	(Story) => (
 		<MockAuthWrapper>
 			<MemoryRouter initialEntries={[initialRoute]}>
 				<Routes>

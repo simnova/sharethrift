@@ -1,5 +1,5 @@
 import type { Meta, StoryObj } from '@storybook/react';
-import { MockedProvider } from '@apollo/client/testing';
+import { MockedProvider } from '@apollo/client/testing/react';
 import {
 	STORYBOOK_RESERVATION_USER_ID,
 	reservationStoryMocks,

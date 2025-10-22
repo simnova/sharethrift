@@ -5,7 +5,7 @@ import { setContext } from '@apollo/client/link/context';
 // base apollo link with no customizations
 // could be used as a base for the link chain
 export const BaseApolloLink = (): ApolloLink =>
-	setContext((prevContext: any) => {
+	setContext((prevContext: DefaultContext) => {
 		return {
 			...prevContext,
 			headers: {
@@ -18,7 +18,7 @@ export const BaseApolloLink = (): ApolloLink =>
 export const ApolloLinkToAddAuthHeaderIfAccessTokenAvailable = (
 	access_token: string | undefined,
 ): ApolloLink =>
-	setContext((prevContext: any) => {
+	setContext((prevContext: DefaultContext) => {
 		return {
 			...prevContext,
 			headers: {

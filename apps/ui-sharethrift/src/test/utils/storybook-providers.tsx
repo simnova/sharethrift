@@ -1,6 +1,6 @@
 import type React from 'react';
 import type { ReactNode } from 'react';
-import { MockedProvider } from '@apollo/client/testing';
+import { MockedProvider } from '@apollo/client/testing/react';
 import { InMemoryCache } from '@apollo/client';
 import type { MockedResponse } from '@apollo/client/testing';
 import { reservationStoryMocks } from '../../components/layouts/home/my-reservations/stories/reservation-story-mocks.ts';
@@ -12,15 +12,13 @@ export function createMockedProviderWrapper(
 	mocks: MockedResponse[] = [],
 	options: {
 		cache?: InMemoryCache;
-		addTypename?: boolean;
 	} = {},
-) {
+): React.ComponentType<{ children: ReactNode }> {
 	return function StoryWrapper({ children }: { children: ReactNode }) {
 		return (
 			<MockedProvider
 				cache={options.cache || new InMemoryCache()}
 				mocks={mocks}
-				addTypename={options.addTypename ?? true}
 			>
 				{children}
 			</MockedProvider>
@@ -36,9 +34,8 @@ export const withApolloMocks =
 		mocks: MockedResponse[],
 		options: {
 			cache?: InMemoryCache;
-			addTypename?: boolean;
 		} = {},
-	) =>
+	): ((Story: React.ComponentType) => React.JSX.Element) =>
 	(Story: React.ComponentType) => {
 		const Wrapper = createMockedProviderWrapper(mocks, options);
 		return (
@@ -53,7 +50,6 @@ export const withApolloMocks =
  */
 export const defaultApolloOptions = {
 	cache: new InMemoryCache(),
-	addTypename: true,
 } as const;
 
 /**
@@ -69,7 +65,9 @@ export const defaultReservationActions = {
  * Global decorator for MockedProvider with reservation mocks
  * Use this in story meta.decorators to provide Apollo Client mocks
  */
-export const withReservationMocks = (Story: React.ComponentType) => (
+export const withReservationMocks = (
+	Story: React.ComponentType,
+): React.JSX.Element => (
 	<MockedProvider mocks={reservationStoryMocks}>
 		<Story />
 	</MockedProvider>
@@ -80,7 +78,9 @@ export const withReservationMocks = (Story: React.ComponentType) => (
  * Use this when you need to add story-specific mocks to the default ones
  */
 export const withReservationMocksAndCustom =
-	(customMocks: MockedResponse[] = []) =>
+	(
+		customMocks: MockedResponse[] = [],
+	): ((Story: React.ComponentType) => React.JSX.Element) =>
 	(Story: React.ComponentType) => (
 		<MockedProvider mocks={[...reservationStoryMocks, ...customMocks]}>
 			<Story />

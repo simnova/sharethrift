@@ -28,13 +28,7 @@ export const RequireAuth: React.FC<RequireAuthProps> = (props) => {
 
 			auth.signinRedirect();
 		}
-	}, [
-		auth.isAuthenticated,
-		auth.activeNavigator,
-		auth.isLoading,
-		auth.signinRedirect,
-		auth.error,
-	]);
+	}, [auth, props.forceLogin]);
 
 	// automatically refresh token
 	useEffect(() => {
@@ -43,18 +37,7 @@ export const RequireAuth: React.FC<RequireAuthProps> = (props) => {
 				redirect_uri: import.meta.env['VITE_B2C_REDIRECT_URI'] ?? '',
 			});
 		});
-
-		// *** Suggestion from sourcery that needs investigation
-		// const handleAccessTokenExpiring = () => {
-		//   auth.signinSilent({
-		//     redirect_uri: import.meta.env.VITE_B2C_REDIRECT_URI ?? "",
-		//   });
-		// };
-		// auth.events.addAccessTokenExpiring(handleAccessTokenExpiring);
-		// return () => {
-		//   auth.events.removeAccessTokenExpiring(handleAccessTokenExpiring);
-		// };
-	}, [auth.events, auth.signinSilent]);
+	}, [auth]);
 
 	let result: JSX.Element;
 	if (auth.isAuthenticated) {
