@@ -69,7 +69,7 @@ participant Frontend
 participant Backend
 participant Blob
 
-User->>Frontend: Select image & click Save/Continue
+User->>Frontend: Click upload and select file
 Frontend->>Frontend: Sanitize & validate (type, size, dimensions)
 Frontend->>Backend: Request SAS token (name, type, size)
 Backend->>Backend: Build blob path + tags + metadata, validate upload rules
