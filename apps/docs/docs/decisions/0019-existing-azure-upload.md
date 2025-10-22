@@ -41,37 +41,14 @@ Chosen option: **Option 2: Direct client uploads using Azure Blob SAS tokens (cu
 ## Implementation Details
 
 **Frontend Components:**
-- `AzureUpload` The AzureUpload React component is designed to enable direct client-side uploads to Azure Blob Storage with built-in file validation, authentication, and post-upload malware scanning.
-- It has two handlers: `beforeUpload` and `customizeUpload`
-    - `beforeUpload` Handler:
-        - Sanitizes and normalizes the file name.
-        - Validates the file size, type, and image dimensions using FileValidator.
-        - Requests upload authorization (SAS token) from the backend.
-        - Returns the validated and authorized file for uploading or rejects on failure.
-    - `customizeUpload` Handler:
-        - Uses the SAS token and other auth headers to upload the file directly to Azure Blob Storage via an Axios PUT request.
-        - Applies additional headers for metadata, blob type, and versioning.
-        - Tracks upload progress and updates the UI accordingly.
-        - Invokes a backend mutation after upload to check Microsoft Defender for Cloud scan results and handle malicious files if detected..
-        - Handles malware scan results, showing messages or errors if malicious content is detected.
+- Handles client-side file validation (type, size, dimensions).
+- Requests authorization from the backend to upload a specific file.
+- Uses the received SAS token to upload the file directly to Azure Blob Storage.
+- After upload, notifies the backend to trigger malware scanning and persist upload metadata.
 
 **Backend Services:**
 - SAS Token Generation:
-    - The backend handles SAS token generation and validation for Azure Blob Storage uploads, ensuring secure and controlled access for file uploads. There are different mutations for PDF and image files. The backend service encapsulates all business logic enforcing file upload restrictions and security requirements before enabling clients to upload files directly to Azure Blob Storage with short-lived and carefully permissioned SAS tokens. For example
-        - `identityVerificationCaseV1CreateAuthHeader` method:
-            - Accepts upload parameters such as case ID, file name, content type, content length, and file specifications (max size, permitted content types).
-            - Validates the case status before proceeding.
-            - Constructs a blob name/path based on the case ID and file versioning scheme.
-            - Calls getHeader to perform detailed validation and token generation.
-        - `getHeader` method:
-            - Validates that the requested content type is allowed.
-            - Checks the content length against the maximum permitted size.
-            - Prepares metadata and indexing tag collections to enrich blob storage with contextual information, including uploader identity, upload timestamps, and case-related tags.
-            - Constructs the full URL path to the Azure Blob. 
-            - Generates a Shared Access Signature (SAS) token (auth header) with scoped permissions and request date using the blob storage client. 
-            - Returns a comprehensive authentication header bundle including the SAS authorization header, request date, blob path, metadata, and tags. 
-            - If validation fails (unsupported content type or size), returns failure status with meaningful error messages.
-
+    - The backend handles SAS token generation and validation for Azure Blob Storage uploads, ensuring secure and controlled access for file uploads. There are different mutations for PDF and image files. The backend service encapsulates all business logic enforcing file upload restrictions and security requirements before enabling clients to upload files directly to Azure Blob Storage with short-lived and carefully permissioned SAS tokens. 
 - Post-Upload Malware Handling:
     - The backend polls the blob for the Microsoft Defender for Cloud scan result tag: `No threats found` or `Malicious`.
         - `No threats found` → retain the blob.
@@ -111,6 +88,6 @@ Frontend-->>User: Show success / preview / error if malicious
 
 ## Technical Considerations and Known Limitations
 
-- Malware scanning occurs after upload using Azure Blob Storage’s capabilities. Files flagged as malicious are deleted or reverted to ensure data integrity. This introduces a small window where a malicious file may exist in storage before removal.
+- Malware scanning occurs after upload using Azure Blob Storage’s capabilities. Files flagged as malicious are deleted or reverted to ensure data integrity. The system uses Microsoft Defender for Storage to automatically scan uploaded blobs for malware. Defender checks for known malware signatures, embedded scripts, and other suspicious file patterns. This introduces a small window where a malicious file may exist in storage before removal.
 - At present, backend permission enforcement for blob upload is minimal. The frontend restricts upload actions according to application state, but users could potentially bypass this if they possess valid credentials.
 - Future improvements will focus on implementing domain-driven permission checks before SAS tokens are issued and exploring pre-upload scanning alternatives to further reduce risk.
