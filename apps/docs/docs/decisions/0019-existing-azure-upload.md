@@ -37,6 +37,11 @@ Users need to upload various file types (PDFs, images) along with metadata and t
 
 Chosen option: **Option 2: Direct client uploads using Azure Blob SAS tokens (current approach)**, because it offloads upload traffic from the backend, reduces latency, lower cost, maintains security via short-lived tokens.
 
+## Consequences
+
+- Good, because uploading directly from the client to Azure Blob Storage significantly reduces backend bandwidth usage and infrastructure costs.
+- Good, because versioning support allows easy rollback in case of corruption or malicious file detection.
+- Bad, because malware scanning occurs after upload, introducing a brief exposure window before a file is fully validated.
 
 ## Implementation Details
 
