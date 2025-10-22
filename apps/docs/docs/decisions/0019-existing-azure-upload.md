@@ -62,7 +62,9 @@ Chosen option: **Option 2: Direct client uploads using Azure Blob SAS tokens (cu
 
 
 **Sequence Diagram**
-```participant User
+```mermaid
+sequenceDiagram
+participant User
 participant Frontend
 participant Backend
 participant Blob
