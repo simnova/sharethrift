@@ -1,5 +1,5 @@
 import { useParams, useNavigate } from 'react-router-dom';
-import { useQuery, useMutation } from '@apollo/client';
+import { useQuery, useMutation } from '@apollo/client/react';
 import { Card, Descriptions, Image, Tag, Button, Space, message, Spin, Popconfirm } from 'antd';
 import { ArrowLeftOutlined } from '@ant-design/icons';
 import {
@@ -82,20 +82,19 @@ export function AdminViewListing() {
 				<div style={{ marginTop: 24, textAlign: 'center' }}>
 					<h2>Listing not found</h2>
 					<p>The listing with ID {listingId} could not be found.</p>
-				</div>
 			</div>
-		);
-	}
+		</div>
+	);
+}
 
-	const statusColor = listing.status === 'Appeal Requested' 
-		? 'gold' 
-		: listing.status === 'Blocked' 
-		? 'purple' 
-		: 'green';
+const getStatusColor = (status: string) => {
+	if (status === 'Appeal Requested') return 'gold';
+	if (status === 'Blocked') return 'purple';
+	return 'green';
+};
 
-	const statusLabel = listing.status === 'Appeal Requested' ? 'Appealed' : listing.status;
-
-	return (
+const statusColor = getStatusColor(listing.status);
+const statusLabel = listing.status === 'Appeal Requested' ? 'Appealed' : listing.status;	return (
 		<div style={{ padding: 24, maxWidth: 1200, margin: '0 auto' }}>
 			<Button 
 				icon={<ArrowLeftOutlined />} 

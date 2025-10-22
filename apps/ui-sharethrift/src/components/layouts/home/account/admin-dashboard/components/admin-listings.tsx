@@ -1,7 +1,7 @@
 import { useState, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { message } from 'antd';
-import { useMutation, useQuery } from '@apollo/client';
+import { useMutation, useQuery } from '@apollo/client/react';
 import {
 	AdminListingsTableContainerAdminListingsDocument,
 	AdminListingsTableContainerRemoveListingDocument,
@@ -33,9 +33,9 @@ export function AdminListings() {
 			},
 			// Force this operation over the non-batched HTTP link to avoid servers that don't support batching
 			context: { headers: { 'Cache-Enabled': 'true' } },
-			fetchPolicy: 'network-only',
-		},
-	);
+		fetchPolicy: 'network-only',
+	},
+);
 
 	const [removeListingMutation] = useMutation(
 		AdminListingsTableContainerRemoveListingDocument,
@@ -115,10 +115,10 @@ export function AdminListings() {
 				<AdminListingsTable
 					data={listings}
 					searchText={searchText}
-					statusFilters={statusFilters}
-					onSearch={onSearch}
-					sorter={sorter}
-					currentPage={page}
+				statusFilters={statusFilters}
+				onSearch={onSearch}
+				sorter={sorter ?? { field: null, order: null }}
+				currentPage={page}
 					pageSize={pageSize}
 					total={total}
 					onStatusFilter={onStatusFilter}

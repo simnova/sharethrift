@@ -42,6 +42,17 @@ export function AdminListingsTable({
   onPageChange,
   onAction,
 }: AdminListingsTableProps) {
+  // Compute sort orders outside of columns array to avoid nested ternaries
+  let publishedAtSortOrder: 'ascend' | 'descend' | null = null;
+  if (sorter?.field === 'publishedAt') {
+    publishedAtSortOrder = sorter.order === 'ascend' ? 'ascend' : 'descend';
+  }
+
+  let reservationPeriodSortOrder: 'ascend' | 'descend' | null = null;
+  if (sorter?.field === 'reservationPeriod') {
+    reservationPeriodSortOrder = sorter.order === 'ascend' ? 'ascend' : 'descend';
+  }
+
   const columns: TableProps<MyListingData>['columns'] = [
       {
         title: 'Listing',
@@ -87,37 +98,27 @@ export function AdminListingsTable({
         dataIndex: 'publishedAt',
         key: 'publishedAt',
         sorter: true,
-        sortOrder: sorter.field === 'publishedAt' ? sorter.order : null,
-        render: (date?: string) => {
-          if (!date) return 'N/A';
-          const d = new Date(date);
-          const yyyy = d.getFullYear();
-          const mm = String(d.getMonth() + 1).padStart(2, '0');
-          const dd = String(d.getDate()).padStart(2, '0');
-          return (
-            <span style={{ fontVariantNumeric: 'tabular-nums', minWidth: 100, display: 'inline-block' }}>
-              {`${yyyy}-${mm}-${dd}`}
-            </span>
-          );
-        },
+        sortOrder: publishedAtSortOrder,
+        render: (date: string) => (date ? new Date(date).toLocaleDateString() : 'N/A'),
       },
       {
         title: 'Reservation Period',
         dataIndex: 'reservationPeriod',
         key: 'reservationPeriod',
         sorter: true,
-        sortOrder: sorter.field === 'reservationPeriod' ? sorter.order : null,
+        sortOrder: reservationPeriodSortOrder,
+        render: (period: string) => period,
       },
       {
         title: 'Status',
         dataIndex: 'status',
         key: 'status',
-        filterDropdown: ({ confirm }: { confirm: () => void }) => (
+        filterDropdown: () => (
           <div style={{ padding: 16, width: 200 }}>
             <div style={{ marginBottom: 8, fontWeight: 500 }}>Filter by Status</div>
             <Checkbox.Group
               options={STATUS_OPTIONS}
-              value={statusFilters as string[]}
+              value={[...statusFilters]}
               onChange={(checkedValues: Array<string | number>) => {
                 onStatusFilter(checkedValues.map(String));
                 confirm();
@@ -167,7 +168,7 @@ export function AdminListingsTable({
 
   return (
     <Dashboard
-        data={data as MyListingData[]}
+        data={[...data]}
       columns={columns}
       loading={loading}
       currentPage={currentPage}

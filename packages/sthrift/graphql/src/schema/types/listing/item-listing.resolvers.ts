@@ -115,20 +115,22 @@ const itemListingResolvers = {
 				}
 			};
 
-			return {
-				items: result.items.map((listing) => {
-					const sharingStart = listing.sharingPeriodStart.toISOString();
-					const sharingEnd = listing.sharingPeriodEnd.toISOString();
-					return {
-						id: listing.id,
-						title: listing.title,
-						image:
-						listing.images && listing.images.length > 0
-							? listing.images[0]
-							: null,
-					publishedAt: listing.createdAt.toISOString(),
-					reservationPeriod: `${sharingStart.slice(0, 10)} - ${sharingEnd.slice(0, 10)}`,
-					status: mapStateToStatus(listing?.state),
+		return {
+			items: result.items.map((
+				//biome-ignore lint/suspicious/noExplicitAny: Mongoose document type is dynamic
+				listing: any) => {
+				const sharingStart = listing.sharingPeriodStart.toISOString();
+				const sharingEnd = listing.sharingPeriodEnd.toISOString();
+				return {
+					id: listing.id,
+					title: listing.title,
+					image:
+					listing.images && listing.images.length > 0
+						? listing.images[0]
+						: null,
+				publishedAt: listing.createdAt.toISOString(),
+				reservationPeriod: `${sharingStart.slice(0, 10)} - ${sharingEnd.slice(0, 10)}`,
+				status: mapStateToStatus(listing?.state),
 					// TODO: integrate with reservation request domain context
 					pendingRequestsCount: 0,
 				};
@@ -169,9 +171,11 @@ const itemListingResolvers = {
 				return state;
 			};
 
-			return {
-				items: result.items.map((listing) => {
-					const start = listing.sharingPeriodStart.toISOString();
+		return {
+			items: result.items.map((
+				//biome-ignore lint/suspicious/noExplicitAny: Mongoose document type is dynamic
+				listing: any) => {
+				const start = listing.sharingPeriodStart.toISOString();
 					const end = listing.sharingPeriodEnd.toISOString();
 					return {
 						id: listing.id,
