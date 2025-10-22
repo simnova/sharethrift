@@ -26,6 +26,7 @@ export const getMockConversations =
 						canViewItemListing: true,
 						canPublishItemListing: true,
 						canUnpublishItemListing: true,
+						canExpireItemListing: true,
 					},
 					conversationPermissions: {
 						canCreateConversation: true,
@@ -56,6 +57,7 @@ export const getMockConversations =
 							canViewItemListing: true,
 							canPublishItemListing: true,
 							canUnpublishItemListing: true,
+						canExpireItemListing: true,
 						},
 						conversationPermissions: {
 							canCreateConversation: true,

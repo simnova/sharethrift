@@ -160,6 +160,12 @@ export class PersonalUserRoleListingPermissionsDomainAdapter
 	set canUnpublishItemListing(value: boolean) {
 		this.props.canUnpublishItemListing = value;
 	}
+	get canExpireItemListing(): boolean {
+		return this.props.canExpireItemListing;
+	}
+	set canExpireItemListing(value: boolean) {
+		this.props.canExpireItemListing = value;
+	}
 }
 
 export class PersonalUserRoleConversationPermissionsDomainAdapter
