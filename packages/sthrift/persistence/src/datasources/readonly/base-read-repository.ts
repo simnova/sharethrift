@@ -11,14 +11,20 @@ import type { MongooseSeedwork } from '@cellix/mongoose-seedwork';
  * Interface for converters that transform documents to domain entities
  */
 export interface DomainConverter<TDoc, TEntity> {
-	toDomain(doc: TDoc | Record<string, unknown>, passport: Domain.Passport): TEntity;
+	toDomain(
+		doc: TDoc | Record<string, unknown>,
+		passport: Domain.Passport,
+	): TEntity;
 }
 
 /**
  * Base class for read repositories that provides common query helper methods
  * to reduce duplication across repository implementations
  */
-export abstract class BaseReadRepository<TDoc extends MongooseSeedwork.Base, TEntity> {
+export abstract class BaseReadRepository<
+	TDoc extends MongooseSeedwork.Base,
+	TEntity,
+> {
 	protected readonly mongoDataSource: MongoDataSource<TDoc>;
 	protected readonly converter: DomainConverter<TDoc, TEntity>;
 	protected readonly passport: Domain.Passport;
