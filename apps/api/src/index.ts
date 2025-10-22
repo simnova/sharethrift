@@ -23,6 +23,9 @@ import { graphHandlerCreator } from '@sthrift/graphql';
 import { restHandlerCreator } from '@sthrift/rest';
 import { ServiceCybersource } from '@sthrift/service-cybersource';
 
+// Import timer functions
+import { registerExpireListingsTimer } from './functions/expire-listings-timer.ts';
+
 Cellix.initializeInfrastructureServices<ApiContextSpec, ApplicationServices>(
 	(serviceRegistry) => {
 		serviceRegistry
@@ -50,7 +53,7 @@ Cellix.initializeInfrastructureServices<ApiContextSpec, ApplicationServices>(
 		const { domainDataSource } = dataSourcesFactory.withSystemPassport();
 		RegisterEventHandlers(domainDataSource);
 
-		return {
+		const context: ApiContextSpec = {
 			dataSourcesFactory,
 			tokenValidationService:
 				serviceRegistry.getInfrastructureService<ServiceTokenValidation>(
@@ -61,10 +64,17 @@ Cellix.initializeInfrastructureServices<ApiContextSpec, ApplicationServices>(
 					ServiceCybersource,
 				),
 		};
+
+		// Register timer functions with the context
+		registerExpireListingsTimer(context);
+
+		return context;
 	})
-	.initializeApplicationServices((context) =>
-		buildApplicationServicesFactory(context),
-	)
+	.initializeApplicationServices((context) => {
+		const appServicesFactory = buildApplicationServicesFactory(context);
+		
+		return appServicesFactory;
+	})
 	.registerAzureFunctionHttpHandler(
 		'graphql',
 		{
