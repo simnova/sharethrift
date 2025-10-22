@@ -1,6 +1,6 @@
 import { type FC, useCallback } from "react";
 import { ComponentQueryLoader } from "@sthrift/ui-components";
-import { useQuery, useMutation } from "@apollo/client";
+import { useQuery, useMutation } from "@apollo/client/react";
 import { Terms } from "./terms.tsx";
 import { TermsContainerCurrentPersonalUserAndCreateIfNotExistsDocument, TermsContainerPersonalUserUpdateDocument } from "../../../../generated.tsx";
 import { useNavigate } from "react-router-dom";

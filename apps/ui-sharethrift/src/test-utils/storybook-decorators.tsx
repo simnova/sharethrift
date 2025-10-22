@@ -24,19 +24,19 @@ import type { Decorator } from "@storybook/react";
  * ```
  */
 export const withMockApolloClient: Decorator = (Story: any, context: any) => {
-	const mocks = context.parameters?.apolloClient?.mocks || [];
-	const showWarnings = context.parameters?.apolloClient?.showWarnings ?? false;
-	const mockLink = new MockLink(mocks, { showWarnings });
-	const client = new ApolloClient({
-		link: mockLink,
-		cache: new InMemoryCache(),
-	});
+  const mocks = context.parameters?.apolloClient?.mocks || [];
+  const showWarnings = context.parameters?.apolloClient?.showWarnings ?? false;
+  const mockLink = new MockLink(mocks, { showWarnings });
+  const client = new ApolloClient({
+    link: mockLink,
+    cache: new InMemoryCache(),
+  });
 
-	return (
-		<ApolloProvider client={client}>
-			<Story />
-		</ApolloProvider>
-	);
+  return (
+    <ApolloProvider client={client}>
+      <Story />
+    </ApolloProvider>
+  );
 };
 
 /**
@@ -54,30 +54,28 @@ export const withMockApolloClient: Decorator = (Story: any, context: any) => {
  * that context, so components receive our mockAuth object with isAuthenticated: true.
  */
 export const MockAuthWrapper = ({ children }: { children: ReactNode }): ReactElement => {
-	const mockAuth: any = useMemo(
-		() => ({
-			isAuthenticated: true,
-			isLoading: false,
-			user: {
-				profile: {
-					sub: "507f1f77bcf86cd799439099",
-					name: "Test User",
-					email: "test@example.com",
-				},
-				access_token: "mock-access-token",
-			},
-			signinRedirect: async () => {},
-			signoutRedirect: async () => {},
-			removeUser: async () => {},
-			events: {},
-			settings: {},
-		}),
-		[]
-	);
+  const mockAuth: any = useMemo(
+    () => ({
+      isAuthenticated: true,
+      isLoading: false,
+      user: {
+        profile: {
+          sub: "507f1f77bcf86cd799439099",
+          name: "Test User",
+          email: "test@example.com",
+        },
+        access_token: "mock-access-token",
+      },
+      signinRedirect: async () => {},
+      signoutRedirect: async () => {},
+      removeUser: async () => {},
+      events: {},
+      settings: {},
+    }),
+    []
+  );
 
-	return (
-		<AuthContext.Provider value={mockAuth}>{children}</AuthContext.Provider>
-	);
+  return <AuthContext.Provider value={mockAuth}>{children}</AuthContext.Provider>;
 };
 
 /**
@@ -97,12 +95,15 @@ export const MockAuthWrapper = ({ children }: { children: ReactNode }): ReactEle
  * } as Meta;
  * ```
  */
-export const withMockRouter = (initialRoute = "/"): Decorator => (Story: any) => (
-	<MockAuthWrapper>
-		<MemoryRouter initialEntries={[initialRoute]}>
-			<Routes>
-				<Route path="*" element={<Story />} />
-			</Routes>
-		</MemoryRouter>
-	</MockAuthWrapper>
-);
+export const withMockRouter =
+  (initialRoute = "/"): Decorator =>
+  (Story: any) =>
+    (
+      <MockAuthWrapper>
+        <MemoryRouter initialEntries={[initialRoute]}>
+          <Routes>
+            <Route path="*" element={<Story />} />
+          </Routes>
+        </MemoryRouter>
+      </MockAuthWrapper>
+    );

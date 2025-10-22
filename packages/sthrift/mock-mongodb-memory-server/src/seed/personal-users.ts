@@ -1,7 +1,7 @@
 import type { Models } from '@sthrift/data-sources-mongoose-models';
 import { ObjectId } from 'mongodb';
 
-export const personalUsers = [
+export const personalUsers: Models.User.PersonalUser[] = [
 	{
 		_id: '507f1f77bcf86cd799439011',
 		userType: 'personal-users',
@@ -24,17 +24,19 @@ export const personalUsers = [
 					zipCode: '62701',
 				} as Models.User.PersonalUserAccountProfileLocation,
 				billing: {
-					subscriptionId: 'sub_001',
-					cybersourceCustomerId: 'cyber_001',
-					paymentState: 'SUCCEEDED',
-					lastTransactionId: 'txn_001',
-					lastPaymentAmount: 100,
-				} as Models.User.PersonalUserAccountProfileBilling,
+					cybersourceCustomerId: 'cust_123456780',
+					subscription: {
+						subscriptionId: 'sub_987654322',
+						planCode: 'basic-plan',
+						status: 'active',
+						startDate: new Date('2023-02-01T10:00:00Z'),
+					},
+				},
 			} as Models.User.PersonalUserAccountProfile,
 		} as Models.User.PersonalUserAccount,
 		schemaVersion: '1.0.0',
 		version: 1,
-			discriminatorKey: 'personal-users',
+		discriminatorKey: 'personal-users',
 		createdAt: new Date('2023-01-01T10:00:00Z'),
 		updatedAt: new Date('2023-01-01T10:00:00Z'),
 	},
@@ -60,17 +62,19 @@ export const personalUsers = [
 					zipCode: '62701',
 				} as Models.User.PersonalUserAccountProfileLocation,
 				billing: {
-					subscriptionId: 'sub_002',
-					cybersourceCustomerId: 'cyber_002',
-					paymentState: 'PENDING',
-					lastTransactionId: 'txn_002',
-					lastPaymentAmount: 50,
+					cybersourceCustomerId: 'cust_123456789',
+					subscription: {
+						subscriptionId: 'sub_987654321',
+						planCode: 'basic-plan',
+						status: 'active',
+						startDate: new Date('2023-02-01T10:00:00Z'),
+					},
 				} as Models.User.PersonalUserAccountProfileBilling,
 			} as Models.User.PersonalUserAccountProfile,
 		} as Models.User.PersonalUserAccount,
 		schemaVersion: '1.0.0',
 		version: 1,
-			discriminatorKey: 'personal-users',
+		discriminatorKey: 'personal-users',
 		createdAt: new Date('2023-01-02T11:00:00Z'),
 		updatedAt: new Date('2023-01-02T11:00:00Z'),
 	},

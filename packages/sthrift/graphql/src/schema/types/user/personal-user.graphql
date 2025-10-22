@@ -173,6 +173,7 @@ extend type Query {
   personalUserById(id: ObjectID!): PersonalUser
   currentPersonalUserAndCreateIfNotExists: PersonalUser!
   personalUserCybersourcePublicKeyId: String!
+  allUsers(page: Int!, pageSize: Int!, searchText: String, statusFilters: [String!], sorter: SorterInput): PersonalUserPage!
 }
 
 extend type Mutation {

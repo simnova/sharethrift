@@ -5,7 +5,7 @@ export interface PersonalUserUpdateCommand {
 	id: string;
 	isBlocked?: boolean;
 	hasCompletedOnboarding?: boolean;
-	account: {
+	account?: {
 		accountType?: string;
 		username?: string;
 		profile?: {
@@ -65,7 +65,7 @@ export const update = (datasources: DataSources) => {
 						command.account.username ?? existingPersonalUser.account.username;
 				}
 
-				if (command.account.profile?.billing) {
+				if (command.account?.profile?.billing) {
 					existingPersonalUser.account.profile.billing.cybersourceCustomerId =
 						command.account.profile.billing.cybersourceCustomerId ??
 						existingPersonalUser.account.profile.billing.cybersourceCustomerId;

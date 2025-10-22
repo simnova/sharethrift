@@ -5,7 +5,7 @@ import {
   AccountSetUpContainerPersonalUserUpdateDocument,
   type PersonalUserUpdateInput,
 } from "../../../../generated.tsx";
-import { useQuery, useMutation } from "@apollo/client";
+import { useQuery, useMutation } from "@apollo/client/react";
 import { ComponentQueryLoader } from "@sthrift/ui-components";
 import { useNavigate } from "react-router-dom";
 import { message } from "antd";

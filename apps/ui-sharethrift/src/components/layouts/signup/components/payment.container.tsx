@@ -5,7 +5,7 @@ import {
   type ProcessPaymentInput,
   SignUpPaymentContainerPersonalUserProcessPaymentDocument,
 } from "../../../../generated.tsx";
-import { useQuery, useMutation } from "@apollo/client";
+import { useQuery, useMutation } from "@apollo/client/react";
 import { ComponentQueryLoader } from "@sthrift/ui-components";
 import { countriesMockData } from "./countries-mock-data.ts";
 import { message } from "antd";

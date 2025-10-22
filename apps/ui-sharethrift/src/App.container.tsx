@@ -1,5 +1,5 @@
 import type { FC } from "react";
-import { useQuery } from "@apollo/client";
+import { useQuery } from "@apollo/client/react";
 import { AppCurrentPersonalUserAndCreateIfNotExistsDocument } from "./generated.tsx";
 import { App } from "./App.tsx";
 import { ComponentQueryLoader } from "@sthrift/ui-components";

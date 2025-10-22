@@ -1,6 +1,6 @@
 import { type FC, useCallback } from "react";
 import { ProfileSetup } from "./profile-setup.tsx";
-import { useQuery, useMutation } from "@apollo/client";
+import { useQuery, useMutation } from "@apollo/client/react";
 import {
   ProfileSetupContainerCurrentPersonalUserAndCreateIfNotExistsDocument,
   type PersonalUserUpdateInput,
