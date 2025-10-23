@@ -7,7 +7,7 @@ import {
   AdminUsersTableContainerAllUsersDocument,
   BlockUserDocument,
   UnblockUserDocument,
-} from "../../../../../../generated.tsx";
+} from '../../../../../../../generated.tsx';
 
 export interface AdminUsersTableContainerProps {
   currentPage: number;

@@ -5,8 +5,8 @@ import { Dashboard } from "@sthrift/ui-components";
 import type {
   AdminUserData,
   AdminUsersTableProps,
-} from "./admin-users-table/admin-users-table.types.ts";
-import { AdminUsersCard } from "./admin-users-card.tsx";
+} from "./admin-users-table.types.ts";
+import { AdminUsersCard } from '../admin-users-card.tsx';
 import { useState } from "react";
 
 const { Search, TextArea } = Input;

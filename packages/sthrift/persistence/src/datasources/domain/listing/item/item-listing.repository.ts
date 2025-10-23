@@ -104,45 +104,27 @@ export class ItemListingRepository<
 			];
 		}
 
-			// Add status filters
-			if (options.statusFilters && options.statusFilters.length > 0) {
-				// biome-ignore lint/complexity/useLiteralKeys: MongoDB query uses index signature
-				query['state'] = { $in: options.statusFilters };
-			}		// Build sort criteria
+		// Add status filters
+		if (options.statusFilters && options.statusFilters.length > 0) {
+			// biome-ignore lint/complexity/useLiteralKeys: MongoDB query uses index signature
+			query['state'] = { $in: options.statusFilters };
+		}
+
+		// Build sort criteria - simplified to use direct field assignment
 		const sort: Record<string, 1 | -1> = {};
 		if (options.sorter) {
 			const direction = options.sorter.order === 'ascend' ? 1 : -1;
-			switch (options.sorter.field) {
-				case 'title':
-					// biome-ignore lint/complexity/useLiteralKeys: MongoDB sort uses index signature
-					sort['title'] = direction;
-					break;
-				case 'category':
-					// biome-ignore lint/complexity/useLiteralKeys: MongoDB sort uses index signature
-					sort['category'] = direction;
-					break;
-				case 'location':
-					// biome-ignore lint/complexity/useLiteralKeys: MongoDB sort uses index signature
-					sort['location'] = direction;
-					break;
-				case 'publishedAt':
-					// biome-ignore lint/complexity/useLiteralKeys: MongoDB sort uses index signature
-					sort['createdAt'] = direction;
-					break;
-				case 'status':
-					// biome-ignore lint/complexity/useLiteralKeys: MongoDB sort uses index signature
-					sort['state'] = direction;
-					break;
-				default:
-					// biome-ignore lint/complexity/useLiteralKeys: MongoDB sort uses index signature
-					sort['createdAt'] = -1; // Default sort by newest
-			}
+			// Map GraphQL field names to MongoDB field names
+			const fieldMapping: Record<string, string> = {
+				publishedAt: 'createdAt',
+				status: 'state',
+			};
+			const mongoField = fieldMapping[options.sorter.field] || options.sorter.field;
+			sort[mongoField] = direction;
 		} else {
 			// biome-ignore lint/complexity/useLiteralKeys: MongoDB sort uses index signature
 			sort['createdAt'] = -1; // Default sort by newest
-		}
-
-		// Calculate pagination
+		}		// Calculate pagination
 		const skip = (options.page - 1) * options.pageSize;
 
 		// Execute queries

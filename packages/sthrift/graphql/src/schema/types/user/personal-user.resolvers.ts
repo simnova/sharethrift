@@ -46,8 +46,8 @@ const personalUserResolvers: Resolvers = {
 			context: GraphContext,
 			_info: GraphQLResolveInfo,
 		) => {
-			// Future: Add role-based admin authorization check
-			return await context.systemApplicationServices.User.PersonalUser.getAllUsers({
+			// TODO: SECURITY - Add admin role-based authorization check when admin role system is implemented
+			return await context.applicationServices.User.PersonalUser.getAllUsers({
 				page: args.page,
 				pageSize: args.pageSize,
 				searchText: args.searchText || undefined,
@@ -80,8 +80,9 @@ const personalUserResolvers: Resolvers = {
 			context: GraphContext,
 			_info: GraphQLResolveInfo,
 		) => {
-			// Use system services for admin operations with system-level permissions
-			return await context.systemApplicationServices.User.PersonalUser.update({
+			// TODO: SECURITY - Add admin role-based authorization check when admin role system is implemented
+			// Once implemented, use system-level permissions for admin operations
+			return await context.applicationServices.User.PersonalUser.update({
 				id: args.userId,
 				isBlocked: true,
 			});
@@ -92,8 +93,9 @@ const personalUserResolvers: Resolvers = {
 			context: GraphContext,
 			_info: GraphQLResolveInfo,
 		) => {
-			// Use system services for admin operations with system-level permissions
-			return await context.systemApplicationServices.User.PersonalUser.update({
+			// TODO: SECURITY - Add admin role-based authorization check when admin role system is implemented
+			// Once implemented, use system-level permissions for admin operations
+			return await context.applicationServices.User.PersonalUser.update({
 				id: args.userId,
 				isBlocked: false,
 			});

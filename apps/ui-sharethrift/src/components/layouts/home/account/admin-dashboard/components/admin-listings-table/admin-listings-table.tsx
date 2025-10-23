@@ -4,7 +4,7 @@ import { SearchOutlined, FilterOutlined } from '@ant-design/icons';
 
 const { Search } = Input;
 import { Dashboard } from '@sthrift/ui-components';
-import type { MyListingData } from '../../../my-listings/components/my-listings-dashboard.types.ts';
+import type { MyListingData } from '../../../../my-listings/components/my-listings-dashboard.types.ts';
 
 export interface AdminListingsTableProps {
   readonly data: ReadonlyArray<MyListingData>;

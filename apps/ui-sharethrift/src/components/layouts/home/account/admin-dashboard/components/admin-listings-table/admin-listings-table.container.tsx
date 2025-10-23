@@ -6,7 +6,7 @@ import {
 	AdminListingsTableContainerAdminListingsDocument,
 	AdminListingsTableContainerRemoveListingDocument,
     AdminListingsTableContainerUnblockListingDocument,
-} from '../../../../../../generated.tsx';
+} from '../../../../../../../generated.tsx';
 import { AdminListingsTable } from './admin-listings-table.tsx';
 import { ComponentQueryLoader } from '@sthrift/ui-components';
 

@@ -10,9 +10,9 @@ export type HttpHandler = (
 	context: InvocationContext,
 ) => Promise<HttpResponseInit>;
 
-// Accept the framework's AppHost type but cast to our extended ApplicationServicesFactory
-export const restHandlerCreator = (applicationServicesHost: { forRequest(rawAuthHeader?: string, hints?: unknown): Promise<unknown> }): HttpHandler => {
-	// Cast to our extended interface that includes forSystem()
+export const restHandlerCreator = (
+	applicationServicesHost: { forRequest(rawAuthHeader?: string, hints?: unknown): Promise<unknown> },
+): HttpHandler => {
 	const applicationServicesFactory = applicationServicesHost as ApplicationServicesFactory;
 	return async (request: HttpRequest, _context: InvocationContext) => {
 		const rawAuthHeader = request.headers.get('Authorization') ?? undefined;

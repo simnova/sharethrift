@@ -1,0 +1,9 @@
+fragment AdminListingFields on ListingAll {
+	id
+	title
+	status
+	image
+	pendingRequestsCount
+	publishedAt
+	reservationPeriod
+}

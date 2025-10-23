@@ -41,16 +41,9 @@ const itemListingResolvers = {
 			args: { id: string },
 			context: GraphContext,
 		) => {
-			// Use system services for admin users to allow viewing blocked/appealed listings
-			const user = context.applicationServices.verifiedUser;
-			const isAdmin = user?.verifiedJwt?.roles?.includes('admin') ?? false;
-			
-			const services = isAdmin 
-				? context.systemApplicationServices 
-				: context.applicationServices;
-			
+			// TODO: SECURITY - Add admin role-based authorization check when admin role system is implemented
 			const listing =
-				await services.Listing.ItemListing.queryById({
+				await context.applicationServices.Listing.ItemListing.queryById({
 					id: args.id,
 				});
 
@@ -94,51 +87,30 @@ const itemListingResolvers = {
 					pagedArgs,
 				);
 
-			// Map domain ItemListingEntityReference -> GraphQL ListingAll shape
-			// ListingAll requires: id, title, image, publishedAt, reservationPeriod, status, pendingRequestsCount
-			// Domain entity provides: images, createdAt, sharingPeriodStart/End, state
-			// We derive/transform where necessary and guarantee non-null status
-			const mapStateToStatus = (state?: string): string => {
-				if (!state || state.trim() === '') {
-					return 'Unknown';
-				}
-				// Normalize internal domain states to UI statuses
-				switch (state) {
-					case 'Published':
-						return 'Active';
-					case 'Drafted':
-						return 'Draft';
-					case 'Appeal Requested':
-						return 'Appeal_Requested';
-					default:
-						return state; // Paused, Cancelled, Expired, Blocked, Reserved (future), etc.
-				}
-			};
-
-		return {
-			items: result.items.map((
-				//biome-ignore lint/suspicious/noExplicitAny: Mongoose document type is dynamic
-				listing: any) => {
-				const sharingStart = listing.sharingPeriodStart.toISOString();
-				const sharingEnd = listing.sharingPeriodEnd.toISOString();
-				return {
-					id: listing.id,
-					title: listing.title,
-					image:
-					listing.images && listing.images.length > 0
-						? listing.images[0]
-						: null,
-				publishedAt: listing.createdAt.toISOString(),
-				reservationPeriod: `${sharingStart.slice(0, 10)} - ${sharingEnd.slice(0, 10)}`,
-				status: mapStateToStatus(listing?.state),
-					// TODO: integrate with reservation request domain context
-					pendingRequestsCount: 0,
+			return {
+				items: result.items.map((
+					//biome-ignore lint/suspicious/noExplicitAny: Mongoose document type is dynamic
+					listing: any) => {
+					const sharingStart = listing.sharingPeriodStart.toISOString();
+					const sharingEnd = listing.sharingPeriodEnd.toISOString();
+					return {
+						id: listing.id,
+						title: listing.title,
+						image:
+						listing.images && listing.images.length > 0
+							? listing.images[0]
+							: null,
+					publishedAt: listing.createdAt.toISOString(),
+					reservationPeriod: `${sharingStart.slice(0, 10)} - ${sharingEnd.slice(0, 10)}`,
+					status: listing?.state || 'Unknown',
+						// TODO: integrate with reservation request domain context
+						pendingRequestsCount: 0,
+					};
+					}),
+					total: result.total,
+					page: result.page,
+					pageSize: result.pageSize,
 				};
-				}),
-				total: result.total,
-				page: result.page,
-				pageSize: result.pageSize,
-			};
 		},
 
 		adminListings: async (
@@ -146,36 +118,28 @@ const itemListingResolvers = {
 			args: MyListingsArgs,
 			context: GraphContext,
 		) => {
-			// For now, use queryPaged and constrain statuses to Appealed/Blocked if not provided
+			// TODO: SECURITY - Add admin role-based authorization check when admin role system is implemented
 			const { page, pageSize, searchText, statusFilters, sorter } = args;
-			const effectiveStatuses =
-				statusFilters && statusFilters.length > 0
-					? statusFilters
-					: ['Appeal Requested', 'Blocked'];
 			const pagedArgs: {
 				page: number;
 				pageSize: number;
 				searchText?: string;
 				statusFilters?: string[];
-				sharerId?: string;
 				sorter?: { field: string; order: 'ascend' | 'descend' };
 			} = { page, pageSize };
-		if (searchText !== undefined) pagedArgs.searchText = searchText;
-		if (effectiveStatuses !== undefined)
-			pagedArgs.statusFilters = effectiveStatuses;
-		if (sorter !== undefined) pagedArgs.sorter = sorter;
-		const result = await context.systemApplicationServices.Listing.ItemListing.queryPaged(
-			pagedArgs,
-		);			const mapStateToStatus = (state?: string): string => {
-				if (!state || state.trim() === '') return 'Unknown';
-				return state;
-			};
+			if (searchText !== undefined) pagedArgs.searchText = searchText;
+			if (statusFilters !== undefined) pagedArgs.statusFilters = statusFilters;
+			if (sorter !== undefined) pagedArgs.sorter = sorter;
+			
+			const result = await context.applicationServices.Listing.ItemListing.queryPaged(
+				pagedArgs,
+			);
 
-		return {
-			items: result.items.map((
-				//biome-ignore lint/suspicious/noExplicitAny: Mongoose document type is dynamic
-				listing: any) => {
-				const start = listing.sharingPeriodStart.toISOString();
+			return {
+				items: result.items.map((
+					//biome-ignore lint/suspicious/noExplicitAny: Mongoose document type is dynamic
+					listing: any) => {
+					const start = listing.sharingPeriodStart.toISOString();
 					const end = listing.sharingPeriodEnd.toISOString();
 					return {
 						id: listing.id,
@@ -186,8 +150,8 @@ const itemListingResolvers = {
 								: null,
 						publishedAt: listing.createdAt?.toISOString?.() ?? null,
 						reservationPeriod: `${start.slice(0, 10)} - ${end.slice(0, 10)}`,
-						status: mapStateToStatus(listing?.state),
-						pendingRequestsCount: 0, // Future: integrate with reservation request domain context
+						status: listing?.state || 'Unknown',
+						pendingRequestsCount: 0,
 					};
 				}),
 				total: result.total,
@@ -239,8 +203,9 @@ const itemListingResolvers = {
 			args: { id: string },
 			context: GraphContext,
 		) => {
-			// Use system application services for admin operations with system-level permissions
-			return await context.systemApplicationServices.Listing.ItemListing.remove({ id: args.id });
+			// TODO: SECURITY - Add admin role-based authorization check when admin role system is implemented
+			// Once implemented, use system-level permissions for admin operations
+			return await context.applicationServices.Listing.ItemListing.remove({ id: args.id });
 		},
 
 		unblockListing: async (
@@ -248,8 +213,9 @@ const itemListingResolvers = {
 			args: { id: string },
 			context: GraphContext,
 		) => {
-			// Use system application services for admin operations with system-level permissions
-			return await context.systemApplicationServices.Listing.ItemListing.unblock({ id: args.id });
+			// TODO: SECURITY - Add admin role-based authorization check when admin role system is implemented
+			// Once implemented, use system-level permissions for admin operations
+			return await context.applicationServices.Listing.ItemListing.unblock({ id: args.id });
 		},
 	},
 };
