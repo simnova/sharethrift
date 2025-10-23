@@ -1,7 +1,9 @@
 import { Col, DatePicker, Form, Row } from "antd";
 import dayjs from "dayjs";
 import { useCallback, useEffect, useState, type FC } from "react";
+import utc from "dayjs/plugin/utc";
 
+dayjs.extend(utc);
 export type PaymentTokenFormFieldType = {
   cardNumber?: string;
   securityCode?: string;
