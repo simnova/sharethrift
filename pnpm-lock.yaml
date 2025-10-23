@@ -879,6 +879,9 @@ importers:
       '@sthrift/domain':
         specifier: workspace:*
         version: link:../domain
+      '@sthrift/service-twilio':
+        specifier: workspace:*
+        version: link:../service-twilio
       bson:
         specifier: ^6.10.4
         version: 6.10.4
