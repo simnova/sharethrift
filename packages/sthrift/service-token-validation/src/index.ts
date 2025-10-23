@@ -42,12 +42,17 @@ export class ServiceTokenValidation implements ServiceBase<TokenValidation> {
 	async verifyJwt<ClaimsType>(token: string): Promise<TokenValidationResult<ClaimsType> | null> {
 		// Try each config key for verification
 		for (const configKey of this.tokenSettings.keys()) {
-			const result = await this.tokenVerifier.getVerifiedJwt(token, configKey);
-			if (result?.payload) {
-				return {
-                    verifiedJwt: result.payload as ClaimsType,
-                    openIdConfigKey: configKey,
-                }
+			try {
+				const result = await this.tokenVerifier.getVerifiedJwt(token, configKey);
+				if (result?.payload) {
+					return {
+						verifiedJwt: result.payload as ClaimsType,
+						openIdConfigKey: configKey,
+					};
+				}
+			} catch (error) {
+				// Token validation failed for this config (wrong audience/issuer), log and try next
+				console.debug(`Token validation failed for config "${configKey}":`, error);
 			}
 		}
 		return null;

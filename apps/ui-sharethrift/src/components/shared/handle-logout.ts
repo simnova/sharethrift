@@ -25,5 +25,9 @@ export const HandleLogout = (
 export const HandleLogoutMockForMockAuth = (auth: AuthContextProps) => {
 	auth.removeUser();
 	clearStorage();
+	// Clear the portal type selection
+	globalThis.sessionStorage.removeItem('loginPortalType');
+	globalThis.sessionStorage.removeItem('redirectTo');
+	// Force a full page reload to reinitialize the AuthProvider with fresh config
 	window.location.href = '/';
 };

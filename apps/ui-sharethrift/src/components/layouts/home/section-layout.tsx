@@ -96,13 +96,12 @@ export const HomeTabsLayout: React.FC = () => {
   }, [auth.isAuthenticated]);
 
   const handleOnLogin = () => {
-    navigate("/auth-redirect");
+    navigate("/login");
   };
 
   const handleOnSignUp = () => {
     navigate("/auth-redirect");
   };
-
   const handleCreateListing = useCreateListingNavigation();
 
   const handleLogOut = () => {

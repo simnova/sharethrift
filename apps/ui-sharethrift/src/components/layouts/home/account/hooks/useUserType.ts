@@ -12,8 +12,18 @@ import {
  * happens on the backend via GraphQL resolvers and domain layer.
  */
 export const useIsAdmin = () => {
+	// Check which portal type the user logged in with
+	const loginPortalType = globalThis.sessionStorage?.getItem('loginPortalType');
+	
+	// If loginPortalType is not set (e.g., old session), query anyway and let backend decide
+	// If it's explicitly 'UserPortal', skip the query
+	const shouldSkipQuery = loginPortalType === 'UserPortal';
+
 	const { data, loading, error } = useQuery<GetCurrentAdminUserQuery>(
 		GetCurrentAdminUserDocument,
+		{
+			skip: shouldSkipQuery,
+		}
 	);
 
 	return {
