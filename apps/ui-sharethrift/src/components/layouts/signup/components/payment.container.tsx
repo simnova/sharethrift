@@ -1,5 +1,5 @@
 import type { FC } from "react";
-import { PaymentForm } from "../../../shared/payment/index.tsx";
+import { PaymentForm } from "../../../shared/payment/payment-form.tsx";
 import {
   PaymentContainerPersonalUserCybersourcePublicKeyIdDocument,
   type ProcessPaymentInput,
