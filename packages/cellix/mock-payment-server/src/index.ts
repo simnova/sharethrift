@@ -1,4 +1,8 @@
 import express from 'express';
+import crypto from 'node:crypto';
+import { generateKeyPair } from 'jose';
+import { exportPKCS8 } from 'jose';
+
 import type { Request, Response } from 'express';
 import jwt from 'jsonwebtoken';
 import type {
@@ -52,7 +56,7 @@ app.use('/microform/bundle/v2.7.2', express.static(__dirname)); // Serve static 
 const CYBERSOURCE_MERCHANT_ID = 'simnova_sharethrift';
 
 // Simulate /flex/v2/capture-contexts endpoint
-app.get('/pts/v2/public-key', (_req, res) => {
+app.get('/pts/v2/public-key', async (_req, res) => {
 	const now = Math.floor(Date.now() / 1000);
 	const mockJwk = {
 		kty: 'RSA',
@@ -90,49 +94,21 @@ app.get('/pts/v2/public-key', (_req, res) => {
 	};
 
 	// dummy private key for testing only to work in development environment
-	const token = jwt.sign(
-		payload,
-		`Bag Attributes
-    localKeyID: 01 
-    friendlyName: serialNumber=1760020323575010431241,CN=sampleorgid_1759953326
-Key Attributes: <No Attributes>
------BEGIN PRIVATE KEY-----
-MIIEvQIBADANBgkqhkiG9w0BAQEFAASCBKcwggSjAgEAAoIBAQDfulPZ7g73DxX7
-i1jhrdRrST0NZA+BZkc66La9+AJWwTYSIEfYXCUABfyFZu/VrBRffGkSesIqztLN
-bTQvLra/TpXdz1Kt7C1uPpPnp/4FZs9kYfVENQ8uqasb4sV9qzdCo2ug+lRmWt0i
-HUad2wdDCDCa90XaLzp26TgenF1eZVQOar8dTFzTxrfsqQ0ULnDgWHhXg2UGFFXa
-QTh29YvTCwrFqmwPvOpHbLsvjGKGFaFjQryMDjCTZiHfN9AL8Oqn14lU9GB5/wLg
-4Yf2lHnlXS7sy8dJ0FsHyaaU6jih0ayo+39oA5Y943W21w3EnfK9yVDjx0jm9ewT
-aK4WiMF9AgMBAAECggEAMt11+vI4zMrNQKdpycVvqgS4sLazH8RVJXuLMJ2WSosa
-8/wK2ZH5h4vU4a+Jj5bT+vGaIe1u/7SOEM5nMuL4AX6obAmazpgHrCzmC6ESC8BY
-HoZ28M7vaLiCgpCIPg4TPj9RVQQU9EBsTjlBuNn3SLIv+suFQhnCvQ5BCBSc1bzf
-CdObexnT/39A5RHiYJPJiYfEtnoFfu/I3igj9kbKJI1/zdswVsR4N5lbmP5z5coe
-G3B4UlfgGCoRnJV3W2pt0CsQ9cCORy1RQvAw50myee9erLljQVBuA90cjYNOPJw0
-pvqxnjFMuDH0FYklat4xY1r+A9OQbpVTM+D/A8VgAQKBgQD01kchr75d3XQ3bzK/
-EbMeJAhJg1ga03oweAJ0NpUqgQ6OyxCAsjNeH9Qb71C/nLEpr3RAFFP+yEYbFqNj
-BkumtYO9Q9MUOPKBDJYb1knEEyGlZ/7VCJvV643sLoGBZiaqMm1Bi9S54czpU/OR
-wr3i2MXGkkf+VeifUQM1Pe6HfQKBgQDp7aon3KkFMYHYuirJH08YxyY45Iwfo/ni
-EZ0W4styPOTWOcbT5YekAEIuFuTj69T4z0CS0tpiczBaPRWPk1NTBXyIFYCeYoZZ
-RviuLf37pud56qZSxETRu8I3KMPq+/yiDmFJDAi8uHogOOBo5s3qEb9F44Kng7Bs
-AitrKBxCAQKBgQCy7dJILR6rjIc9Z/enKXFEqsKfrux5lmmq+FmawrUavfx8oKyr
-0Q+3Tv19eNUDY6kZtM75caG9BnIto8q+OMCa0fa4H9Qn6EJZy2/8YgvAztZ9AlZ7
-K/JvUNmEbKxae+Pv6DBugZlySzGsp5zOvop1OUS4jPkuR2xc2iDFDUDAJQKBgFeY
-zLfilFRChqn+hJkNpVPU90YkpygOAjuaduWkBaUAknx55C9i6xkJk76oigujOvv0
-t+yDEo39LmUMLK+37mLPUiOvUZt9r2ts/SBUTqBWjqWDrcaeglq7YW3AUSUEOUUB
-94IgBIGO3wSD59zAWOlGvgZQvJM35+96HIIi4foBAoGACHJI4GkS5SKg4Y3lA4T/
-4Sn4hdbkc/vlMySWDlcoP1F9bO/5hoAQixz8CBL4Ih9y1+iTVfXaMGNcFoUUbo9Q
-6wW9vSTBFZf7P0GLZylSdZnXavWd7+2zae4DWCCRgHj8+ERnS7t7bCWS2Jn6JTIB
-lF69z9kqDRUU7ucsp2pn1qI=
------END PRIVATE KEY-----`,
-		{
-			algorithm: 'RS256',
-			header,
-		},
-	);
+	const { privateKey } = await generateKeyPair('RS256');
+	const pkcs8 = await exportPKCS8(privateKey);
+	const keyObject = crypto.createPrivateKey({
+		key: pkcs8,
+		format: 'pem',
+		type: 'pkcs8',
+	});
+	const token = jwt.sign(payload, keyObject, {
+		algorithm: 'RS256',
+		header,
+	});
 	res.json({ publicKey: token });
 });
 
-app.post('/flex/v2/tokens', (_req: Request, res: Response) => {
+app.post('/flex/v2/tokens', async (_req: Request, res: Response) => {
 	const now = Math.floor(Date.now() / 1000);
 	// Static payload and header as requested
 	const payload = {
@@ -164,43 +140,15 @@ app.post('/flex/v2/tokens', (_req: Request, res: Response) => {
 		kid: '8ffbb5cebd99379fbc1aef7c3040e79d',
 		alg: 'RS256',
 	};
+	const { privateKey } = await generateKeyPair('RS256');
+	const pkcs8 = await exportPKCS8(privateKey);
+	const keyObject = crypto.createPrivateKey({
+		key: pkcs8,
+		format: 'pem',
+		type: 'pkcs8',
+	});
 	try {
-		const token = jwt.sign(
-			payload,
-			`Bag Attributes
-    localKeyID: 01 
-    friendlyName: serialNumber=1760020323575010431241,CN=sampleorgid_1759953326
-Key Attributes: <No Attributes>
------BEGIN PRIVATE KEY-----
-MIIEvQIBADANBgkqhkiG9w0BAQEFAASCBKcwggSjAgEAAoIBAQDfulPZ7g73DxX7
-i1jhrdRrST0NZA+BZkc66La9+AJWwTYSIEfYXCUABfyFZu/VrBRffGkSesIqztLN
-bTQvLra/TpXdz1Kt7C1uPpPnp/4FZs9kYfVENQ8uqasb4sV9qzdCo2ug+lRmWt0i
-HUad2wdDCDCa90XaLzp26TgenF1eZVQOar8dTFzTxrfsqQ0ULnDgWHhXg2UGFFXa
-QTh29YvTCwrFqmwPvOpHbLsvjGKGFaFjQryMDjCTZiHfN9AL8Oqn14lU9GB5/wLg
-4Yf2lHnlXS7sy8dJ0FsHyaaU6jih0ayo+39oA5Y943W21w3EnfK9yVDjx0jm9ewT
-aK4WiMF9AgMBAAECggEAMt11+vI4zMrNQKdpycVvqgS4sLazH8RVJXuLMJ2WSosa
-8/wK2ZH5h4vU4a+Jj5bT+vGaIe1u/7SOEM5nMuL4AX6obAmazpgHrCzmC6ESC8BY
-HoZ28M7vaLiCgpCIPg4TPj9RVQQU9EBsTjlBuNn3SLIv+suFQhnCvQ5BCBSc1bzf
-CdObexnT/39A5RHiYJPJiYfEtnoFfu/I3igj9kbKJI1/zdswVsR4N5lbmP5z5coe
-G3B4UlfgGCoRnJV3W2pt0CsQ9cCORy1RQvAw50myee9erLljQVBuA90cjYNOPJw0
-pvqxnjFMuDH0FYklat4xY1r+A9OQbpVTM+D/A8VgAQKBgQD01kchr75d3XQ3bzK/
-EbMeJAhJg1ga03oweAJ0NpUqgQ6OyxCAsjNeH9Qb71C/nLEpr3RAFFP+yEYbFqNj
-BkumtYO9Q9MUOPKBDJYb1knEEyGlZ/7VCJvV643sLoGBZiaqMm1Bi9S54czpU/OR
-wr3i2MXGkkf+VeifUQM1Pe6HfQKBgQDp7aon3KkFMYHYuirJH08YxyY45Iwfo/ni
-EZ0W4styPOTWOcbT5YekAEIuFuTj69T4z0CS0tpiczBaPRWPk1NTBXyIFYCeYoZZ
-RviuLf37pud56qZSxETRu8I3KMPq+/yiDmFJDAi8uHogOOBo5s3qEb9F44Kng7Bs
-AitrKBxCAQKBgQCy7dJILR6rjIc9Z/enKXFEqsKfrux5lmmq+FmawrUavfx8oKyr
-0Q+3Tv19eNUDY6kZtM75caG9BnIto8q+OMCa0fa4H9Qn6EJZy2/8YgvAztZ9AlZ7
-K/JvUNmEbKxae+Pv6DBugZlySzGsp5zOvop1OUS4jPkuR2xc2iDFDUDAJQKBgFeY
-zLfilFRChqn+hJkNpVPU90YkpygOAjuaduWkBaUAknx55C9i6xkJk76oigujOvv0
-t+yDEo39LmUMLK+37mLPUiOvUZt9r2ts/SBUTqBWjqWDrcaeglq7YW3AUSUEOUUB
-94IgBIGO3wSD59zAWOlGvgZQvJM35+96HIIi4foBAoGACHJI4GkS5SKg4Y3lA4T/
-4Sn4hdbkc/vlMySWDlcoP1F9bO/5hoAQixz8CBL4Ih9y1+iTVfXaMGNcFoUUbo9Q
-6wW9vSTBFZf7P0GLZylSdZnXavWd7+2zae4DWCCRgHj8+ERnS7t7bCWS2Jn6JTIB
-lF69z9kqDRUU7ucsp2pn1qI=
------END PRIVATE KEY-----`,
-			{ algorithm: 'RS256', header },
-		);
+		const token = jwt.sign(payload, keyObject, { algorithm: 'RS256', header });
 		return res.status(200).send(token);
 	} catch (err) {
 		return res

@@ -475,6 +475,9 @@ importers:
       express:
         specifier: ^4.18.2
         version: 4.21.2
+      jose:
+        specifier: ^5.10.0
+        version: 5.10.0
       jsonwebtoken:
         specifier: ^9.0.2
         version: 9.0.2
