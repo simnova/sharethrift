@@ -58,6 +58,35 @@ Although it slightly delays the upload until user confirmation, the trade-off is
   - Requires additional UI state management to retain selected files before upload.
   - Slightly more complex frontend logic to manage pending uploads and confirmation triggers.
 
+## Implementation Details
+**Sequence Diagram**
+```mermaid
+sequenceDiagram
+participant User
+participant Frontend
+participant Backend
+participant Blob
+
+User->>Frontend: Click upload and select file
+Frontend->>Frontend: Sanitize & validate (type, size, dimensions)
+Frontend->>Frontend: Temporarily store file in local state (not uploaded yet)
+User->>Frontend: Click "Save and Continue"
+Frontend->>Backend: Request SAS token (name, type, size)
+Backend->>Backend: Build blob path + tags + metadata, validate upload rules
+Backend-->>Frontend: AuthResult (blob URL + SAS token + x-ms-date + tags + metadata)
+Frontend->>Blob: PUT file bytes (headers + auth + tags + metadata)
+Blob-->>Frontend: 201 Created (x-ms-version-id)
+Frontend->>Backend: Persist blob reference/version ID
+Backend->>Backend: Process blob (versionId and blobURL)
+alt Scan: No threats found
+    Backend->>Frontend: Acknowledge success, retain blob
+else Scan: Malicious
+    Backend->>Blob: Delete current malicious version, promote previous version
+    Backend->>Frontend: Acknowledge file replacement or deletion
+end
+    Frontend-->>User: Show success / preview / error if malicious
+```
+
 ## Technical Considerations
 
 - The frontend will temporarily hold selected files in memory or a local object store until “Save and Continue” is clicked.
