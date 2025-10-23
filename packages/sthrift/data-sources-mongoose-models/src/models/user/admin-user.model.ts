@@ -8,9 +8,7 @@ import {
 import { MongooseSeedwork } from '@cellix/mongoose-seedwork';
 import { type User, type UserModelType, userOptions } from './user.model.ts';
 import type * as AdminRole from '../role/admin-role.model.ts';
-
-// Constants for email validation
-const EMAIL_PATTERN = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+import { Patterns } from '../../patterns.ts';
 
 /**
  * Admin User Account interface
@@ -45,19 +43,18 @@ const AdminUserAccountType: SchemaDefinition<AdminUserAccount> = {
 	accountType: { type: String, required: true, default: 'admin-user' },
 	email: {
 		type: String,
+		match: Patterns.EMAIL_PATTERN,
+		maxlength: 254,
 		required: true,
 		unique: true,
 		lowercase: true,
 		trim: true,
-		match: [EMAIL_PATTERN, 'Please provide a valid email address'],
-		index: true,
 	},
 	username: {
 		type: String,
 		required: true,
 		unique: true,
 		trim: true,
-		index: true,
 	},
 	firstName: { type: String, required: true, trim: true },
 	lastName: { type: String, required: true, trim: true },
@@ -83,7 +80,7 @@ const AdminUserSchema = new Schema<AdminUser, Model<AdminUser>, AdminUser>(
 		schemaVersion: { type: String, required: true, default: '1.0.0' },
 	},
 	userOptions,
-).index({ 'account.email': 1 }, { sparse: true });
+);
 
 export const AdminUserModelName: string = 'admin-user';
 

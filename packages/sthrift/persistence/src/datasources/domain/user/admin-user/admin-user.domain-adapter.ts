@@ -43,7 +43,7 @@ export class AdminUserDomainAdapter
 		if (!('roleName' in this.doc.role)) {
 			throw new TypeError('role is not populated or is not of the correct type');
 		}
-		return new AdminRoleDomainAdapter(this.doc.role as Models.Role.AdminRole);
+		return new AdminRoleDomainAdapter(this.doc.role);
 	}
 
 	async loadRole(): Promise<Domain.Contexts.Role.AdminRole.AdminRoleProps> {

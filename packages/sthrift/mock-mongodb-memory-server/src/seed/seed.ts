@@ -24,7 +24,7 @@ export async function seedDatabase(connection: Connection) {
 	const admins = adminUsers.map((u: Models.User.AdminUser) => ({
 		...u,
 		_id: toObjectId(u._id as string),
-		role: toObjectId(String(u.role)),
+		role: u.role ? toObjectId(u.role.toString()) : undefined,
 	}));
 	await connection.collection('users').insertMany(admins);
 
