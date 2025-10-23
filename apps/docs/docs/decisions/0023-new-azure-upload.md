@@ -57,6 +57,7 @@ Although it slightly delays the upload until user confirmation, the trade-off is
   - Upload initiation is delayed until user confirmation, possibly increasing total save time.
   - Requires additional UI state management to retain selected files before upload.
   - Slightly more complex frontend logic to manage pending uploads and confirmation triggers.
+  - Require a local memory/state variable to store the file until the final save.
 
 ## Implementation Details
 **Sequence Diagram**
