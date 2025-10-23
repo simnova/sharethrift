@@ -837,6 +837,31 @@ importers:
         specifier: ^5.8.3
         version: 5.8.3
 
+  packages/sthrift/mock-twilio-server:
+    dependencies:
+      dotenv:
+        specifier: ^16.6.1
+        version: 16.6.1
+      express:
+        specifier: ^4.18.2
+        version: 4.21.2
+    devDependencies:
+      '@cellix/typescript-config':
+        specifier: workspace:*
+        version: link:../../cellix/typescript-config
+      '@types/express':
+        specifier: ^4.17.21
+        version: 4.17.23
+      rimraf:
+        specifier: ^6.0.1
+        version: 6.0.1
+      tsc-watch:
+        specifier: ^7.1.1
+        version: 7.2.0(typescript@5.8.3)
+      typescript:
+        specifier: ^5.8.3
+        version: 5.8.3
+
   packages/sthrift/persistence:
     dependencies:
       '@cellix/domain-seedwork':
@@ -1069,6 +1094,9 @@ importers:
       '@cellix/api-services-spec':
         specifier: workspace:*
         version: link:../../cellix/api-services-spec
+      axios:
+        specifier: ^1.7.9
+        version: 1.12.2
       twilio:
         specifier: ^4.0.0
         version: 4.23.0

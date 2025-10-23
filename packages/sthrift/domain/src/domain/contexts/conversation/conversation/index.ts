@@ -8,3 +8,4 @@ export type { ConversationRepository } from './conversation.repository.ts';
 export type { ConversationUnitOfWork } from './conversation.uow.ts';
 export { Message } from './message.entity.ts';
 export type { MessageEntityReference } from './message.entity.ts';
+export { TwilioMessageSid, MessageContent } from './message.value-objects.ts';

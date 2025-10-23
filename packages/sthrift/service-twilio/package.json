@@ -18,6 +18,7 @@
     },
     "dependencies": {
         "twilio": "^4.0.0",
+        "axios": "^1.7.9",
         "@cellix/api-services-spec": "workspace:*"
     },
     "devDependencies": {
