@@ -150,7 +150,7 @@ export class ServiceTwilio implements ServiceBase<ServiceTwilio> {
 		// biome-ignore lint/complexity/useLiteralKeys: Required by TypeScript noPropertyAccessFromIndexSignature
 		this.useMock = process.env['TWILIO_USE_MOCK'] === 'true';
 		// biome-ignore lint/complexity/useLiteralKeys: Required by TypeScript noPropertyAccessFromIndexSignature
-		this.mockBaseUrl = process.env['TWILIO_MOCK_URL'] ?? 'http://localhost:3004';
+		this.mockBaseUrl = process.env['TWILIO_MOCK_URL'] ?? 'http://localhost:10000';
 	}
 
 	public startUp(): Promise<Exclude<ServiceTwilio, ServiceBase>> {

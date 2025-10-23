@@ -15,7 +15,7 @@ const app = express();
 app.disable('x-powered-by');
 
 // biome-ignore lint/complexity/useLiteralKeys: Required by TypeScript noPropertyAccessFromIndexSignature
-const port = Number(process.env['PORT'] ?? 3004);
+const port = Number(process.env['PORT'] ?? 10000);
 // biome-ignore lint:useLiteralKeys
 const shouldSeed = process.env['SEED_DATA'] === 'true';
 

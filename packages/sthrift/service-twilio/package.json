@@ -14,7 +14,10 @@
         }
     },
     "scripts": {
-        "build": "tsc --project tsconfig.json"
+        "build": "tsc --project tsconfig.json",
+        "test": "vitest run",
+        "test:coverage": "vitest run --coverage",
+        "test:watch": "vitest"
     },
     "dependencies": {
         "twilio": "^4.0.0",
@@ -24,6 +27,9 @@
     "devDependencies": {
         "typescript": "^5.8.3",
         "url-parse": "^1.5.9",
-        "@cellix/typescript-config": "workspace:*"
+        "@cellix/typescript-config": "workspace:*",
+        "@cellix/vitest-config": "workspace:*",
+        "@amiceli/vitest-cucumber": "^5.2.1",
+        "@types/node": "^22.0.0"
     }
 }
