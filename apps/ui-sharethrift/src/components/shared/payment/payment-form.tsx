@@ -169,7 +169,7 @@ export const PaymentForm: FC<PaymentFormProps> = (props) => {
                 fontWeight: 600,
               }}
             >
-              $24.99/month
+              $4.99/month
             </Text>
           </div>
           <Form.Item
