@@ -86,6 +86,8 @@ export class ItemListingReadRepositoryImpl
 			listings = await this.getBySharer(args.sharerId);
 		} else {
 			listings = await this.getAll();
+			// If no sharerId is specified (public search), filter out expired listings
+			listings = listings.filter((l) => l.state !== 'Expired');
 		}
 
 		// Apply search filter

@@ -1,4 +1,4 @@
-import { Row, Col, DatePicker, Button } from 'antd';
+import { Row, Col, DatePicker, Button, Tag } from 'antd';
 import dayjs from 'dayjs';
 import type { Dayjs } from 'dayjs';
 import type {
@@ -74,7 +74,7 @@ export const ListingInformation: React.FC<ListingInformationProps> = ({
 		null,
 	);
 
-	if (listing.state !== 'Published') {
+	if (listing.state !== 'Published' && listing.state !== 'Expired') {
 		return (
 			<div className="p-4">
 				<button
@@ -159,8 +159,14 @@ export const ListingInformation: React.FC<ListingInformationProps> = ({
 	};
 
 	const reservationRequestStatus = userReservationRequest?.state ?? null;
+	const isExpired = listing.state === 'Expired';
 	return (
 		<Row gutter={[0, 12]} style={{ width: '100%' }} className={className}>
+			{userIsSharer && isExpired && (
+				<Col span={24}>
+					<Tag color="default">Expired</Tag>
+				</Col>
+			)}
 			<Col span={24}>
 				{/* Title at top, using title42 class */}
 				<div className="title42">{listing.title}</div>
@@ -229,7 +235,7 @@ export const ListingInformation: React.FC<ListingInformationProps> = ({
 					<Col span={24}>
 						{otherReservationsLoading ? (
 							<LoadingOutlined style={{ fontSize: 24, marginBottom: 8 }} />
-						) : isAuthenticated ? (
+						) : isAuthenticated && !isExpired ? (
 							<>
 								<h3 style={{ marginBottom: 8 }}>Reservation Period</h3>
 								<DatePicker.RangePicker
@@ -297,7 +303,7 @@ export const ListingInformation: React.FC<ListingInformationProps> = ({
 				{/* Reserve Button - Only show if authenticated */}
 				<Row>
 					<Col span={24}>
-						{!userIsSharer && isAuthenticated ? (
+						{!userIsSharer && isAuthenticated && !isExpired ? (
 							<Button
 								type={
 									reservationRequestStatus === 'Requested'

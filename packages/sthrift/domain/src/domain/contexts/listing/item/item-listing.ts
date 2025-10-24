@@ -313,6 +313,19 @@ export class ItemListing<props extends ItemListingProps>
 		this.props.updatedAt = new Date();
 	}
 
+	public expire(): void {
+		if (
+			!this.visa.determineIf((permissions) => permissions.canExpireItemListing)
+		) {
+			throw new DomainSeedwork.PermissionError(
+				'You do not have permission to expire this listing',
+			);
+		}
+
+		this.props.state = new ValueObjects.ListingState('Expired').valueOf();
+		this.props.updatedAt = new Date();
+	}
+
 	/**
 	 * Create a reference to this entity for use in other contexts
 	 */

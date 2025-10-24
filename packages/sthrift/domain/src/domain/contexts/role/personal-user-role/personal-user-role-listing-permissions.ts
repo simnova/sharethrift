@@ -8,6 +8,7 @@ export interface PersonalUserRoleListingPermissionsProps
 	canViewItemListing: boolean;
 	canPublishItemListing: boolean;
 	canUnpublishItemListing: boolean;
+	canExpireItemListing: boolean;
 }
 
 export interface PersonalUserRoleListingPermissionsEntityReference
@@ -57,5 +58,12 @@ export class PersonalUserRoleListingPermissions
 	}
 	set canUnpublishItemListing(value: boolean) {
 		this.props.canUnpublishItemListing = value;
+	}
+
+	get canExpireItemListing(): boolean {
+		return this.props.canExpireItemListing;
+	}
+	set canExpireItemListing(value: boolean) {
+		this.props.canExpireItemListing = value;
 	}
 }
