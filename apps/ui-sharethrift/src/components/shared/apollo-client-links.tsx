@@ -1,13 +1,11 @@
 import { ApolloLink, type DefaultContext, HttpLink } from '@apollo/client';
 import { BatchHttpLink } from '@apollo/client/link/batch-http';
-import { SetContextLink } from '@apollo/client/link/context';
-import { PersistedQueryLink } from '@apollo/client/link/persisted-queries';
-import { sha256 } from 'crypto-hash';
+import { setContext } from '@apollo/client/link/context';
 
 // base apollo link with no customizations
 // could be used as a base for the link chain
 export const BaseApolloLink = (): ApolloLink =>
-	new SetContextLink((prevContext) => {
+	setContext((prevContext: any) => {
 		return {
 			...prevContext,
 			headers: {
@@ -20,7 +18,7 @@ export const BaseApolloLink = (): ApolloLink =>
 export const ApolloLinkToAddAuthHeaderIfAccessTokenAvailable = (
 	access_token: string | undefined,
 ): ApolloLink =>
-	new SetContextLink((prevContext) => {
+	setContext((prevContext: any) => {
 		return {
 			...prevContext,
 			headers: {
@@ -58,11 +56,7 @@ export const TerminatingApolloBatchLinkForGraphqlServer = (
 		batchInterval: config.batchInterval, // Wait no more than 50ms after first batched operation
 	});
 
-    const persistedQueryLink = new PersistedQueryLink({
-		sha256,
-	}).concat(link);
-
-	return ApolloLink.from([persistedQueryLink]);
+	return link;
 };
 
 export const TerminatingApolloHttpLinkForGraphqlServer = (
@@ -71,10 +65,5 @@ export const TerminatingApolloHttpLinkForGraphqlServer = (
 	const link = new HttpLink({
 		uri: config.uri,
 	});
-
-	const persistedQueryLink = new PersistedQueryLink({
-		sha256,
-		useGETForHashedQueries: true,
-	});
-	return ApolloLink.from([persistedQueryLink, link]);
+	return link;
 };
