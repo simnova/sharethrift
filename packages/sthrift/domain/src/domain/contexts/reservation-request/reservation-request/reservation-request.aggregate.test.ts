@@ -274,6 +274,53 @@ describe('ReservationRequest', () => {
 			);
 		});
 
+		it('should emit ReservationAcceptedEvent when accepting', () => {
+			const { startDate, endDate } = getFutureDates();
+			const listing = createMockListing();
+			const reserver = createMockReserver();
+			const state = new ReservationRequestStateValue(
+				ReservationRequestStates.REQUESTED,
+			).valueOf();
+			const reservationPeriodStart = startDate;
+			const reservationPeriodEnd = endDate;
+
+			const props = createMockProps({
+				state,
+				listing,
+				reserver,
+				reservationPeriodStart,
+				reservationPeriodEnd,
+			});
+
+			const reservation = ReservationRequest.getNewInstance(
+				props,
+				state,
+				listing,
+				reserver,
+				reservationPeriodStart,
+				reservationPeriodEnd,
+				mockPassport,
+			);
+
+			reservation.state = ReservationRequestStates.ACCEPTED;
+
+			// Check that an integration event was added
+			const events = reservation.getIntegrationEvents();
+			expect(events.length).toBeGreaterThan(0);
+			
+			// Verify the event contains the expected data
+			const acceptedEvent = events[0];
+			expect(acceptedEvent).toBeDefined();
+			expect(acceptedEvent?.payload).toMatchObject({
+				reservationRequestId: reservation.id,
+				reserverId: reserver.id,
+				sharerId: listing.sharer.id,
+				listingId: listing.id,
+				reservationPeriodStart,
+				reservationPeriodEnd,
+			});
+		});
+
 		it('should throw error if not in REQUESTED state', () => {
 			const { startDate, endDate } = getFutureDates();
 			const listing = createMockListing();
