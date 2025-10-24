@@ -98,6 +98,9 @@ importers:
       '@cellix/api-services-spec':
         specifier: workspace:*
         version: link:../../packages/cellix/api-services-spec
+      '@cellix/messaging':
+        specifier: workspace:*
+        version: link:../../packages/cellix/messaging
       '@cellix/mongoose-seedwork':
         specifier: workspace:*
         version: link:../../packages/cellix/mongoose-seedwork
@@ -116,6 +119,9 @@ importers:
       '@sthrift/graphql':
         specifier: workspace:*
         version: link:../../packages/sthrift/graphql
+      '@sthrift/mock-service-twilio':
+        specifier: workspace:*
+        version: link:../../packages/sthrift/mock-service-twilio
       '@sthrift/persistence':
         specifier: workspace:*
         version: link:../../packages/sthrift/persistence
@@ -418,6 +424,22 @@ importers:
         specifier: ^5.8.3
         version: 5.8.3
 
+  packages/cellix/messaging:
+    dependencies:
+      '@cellix/api-services-spec':
+        specifier: workspace:*
+        version: link:../api-services-spec
+    devDependencies:
+      '@cellix/typescript-config':
+        specifier: workspace:*
+        version: link:../typescript-config
+      rimraf:
+        specifier: ^6.0.1
+        version: 6.0.1
+      typescript:
+        specifier: ^5.8.3
+        version: 5.8.3
+
   packages/cellix/mock-mongodb-memory-server-seedwork:
     devDependencies:
       '@cellix/typescript-config':
@@ -635,6 +657,9 @@ importers:
 
   packages/sthrift/context-spec:
     dependencies:
+      '@cellix/messaging':
+        specifier: workspace:*
+        version: link:../../cellix/messaging
       '@sthrift/persistence':
         specifier: workspace:*
         version: link:../persistence
@@ -837,6 +862,56 @@ importers:
         specifier: ^5.8.3
         version: 5.8.3
 
+  packages/sthrift/mock-service-twilio:
+    dependencies:
+      '@cellix/api-services-spec':
+        specifier: workspace:*
+        version: link:../../cellix/api-services-spec
+      '@cellix/messaging':
+        specifier: workspace:*
+        version: link:../../cellix/messaging
+      axios:
+        specifier: ^1.7.9
+        version: 1.12.2
+    devDependencies:
+      '@cellix/typescript-config':
+        specifier: workspace:*
+        version: link:../../cellix/typescript-config
+      '@cellix/vitest-config':
+        specifier: workspace:*
+        version: link:../../cellix/vitest-config
+      '@types/node':
+        specifier: ^22.0.0
+        version: 22.18.12
+      typescript:
+        specifier: ^5.8.3
+        version: 5.8.3
+
+  packages/sthrift/mock-twilio-server:
+    dependencies:
+      dotenv:
+        specifier: ^16.6.1
+        version: 16.6.1
+      express:
+        specifier: ^4.18.2
+        version: 4.21.2
+    devDependencies:
+      '@cellix/typescript-config':
+        specifier: workspace:*
+        version: link:../../cellix/typescript-config
+      '@types/express':
+        specifier: ^4.17.21
+        version: 4.17.23
+      rimraf:
+        specifier: ^6.0.1
+        version: 6.0.1
+      tsc-watch:
+        specifier: ^7.1.1
+        version: 7.2.0(typescript@5.8.3)
+      typescript:
+        specifier: ^5.8.3
+        version: 5.8.3
+
   packages/sthrift/persistence:
     dependencies:
       '@cellix/domain-seedwork':
@@ -845,6 +920,9 @@ importers:
       '@cellix/event-bus-seedwork-node':
         specifier: workspace:*
         version: link:../../cellix/event-bus-seedwork-node
+      '@cellix/messaging':
+        specifier: workspace:*
+        version: link:../../cellix/messaging
       '@cellix/mongoose-seedwork':
         specifier: workspace:*
         version: link:../../cellix/mongoose-seedwork
@@ -854,6 +932,9 @@ importers:
       '@sthrift/domain':
         specifier: workspace:*
         version: link:../domain
+      '@sthrift/service-twilio':
+        specifier: workspace:*
+        version: link:../service-twilio
       bson:
         specifier: ^6.10.4
         version: 6.10.4
@@ -1069,6 +1150,9 @@ importers:
       '@cellix/api-services-spec':
         specifier: workspace:*
         version: link:../../cellix/api-services-spec
+      '@cellix/messaging':
+        specifier: workspace:*
+        version: link:../../cellix/messaging
       twilio:
         specifier: ^4.0.0
         version: 4.23.0
@@ -1076,12 +1160,15 @@ importers:
       '@cellix/typescript-config':
         specifier: workspace:*
         version: link:../../cellix/typescript-config
+      '@cellix/vitest-config':
+        specifier: workspace:*
+        version: link:../../cellix/vitest-config
+      '@types/node':
+        specifier: ^22.0.0
+        version: 22.18.12
       typescript:
         specifier: ^5.8.3
         version: 5.8.3
-      url-parse:
-        specifier: ^1.5.9
-        version: 1.5.10
 
   packages/sthrift/ui-components:
     dependencies:
@@ -4567,6 +4654,9 @@ packages:
 
   '@types/node@17.0.45':
     resolution: {integrity: sha512-w+tIMs3rq2afQdsPJlODhoUEKzFP1ayaoyl1CcnwtIlsVe7K7bA1NGm4s3PraqTLlXnbIN84zuBlxBWo1u9BLw==}
+
+  '@types/node@22.18.12':
+    resolution: {integrity: sha512-BICHQ67iqxQGFSzfCFTT7MRQ5XcBjG5aeKh5Ok38UBbPe5fxTyE+aHFxwVrGyr8GNlqFMLKD1D3P2K/1ks8tog==}
 
   '@types/node@24.7.2':
     resolution: {integrity: sha512-/NbVmcGTP+lj5oa4yiYxxeBjRivKQ5Ns1eSZeB99ExsEQ6rX5XYU1Zy/gGxY/ilqtD4Etx9mKyrPxZRetiahhA==}
@@ -10689,6 +10779,9 @@ packages:
     resolution: {integrity: sha512-eXL4nmJT7oCpkZsHZUOJo8hcX3GbsiDOa0Qu9F646fi8dT3XuSVopVqAcEiVzSKKH7UoDti23wNX3qGFxcW5Qg==}
     engines: {node: '>=0.10.0'}
 
+  undici-types@6.21.0:
+    resolution: {integrity: sha512-iwDZqg0QAGrg9Rav5H4n0M64c3mkR59cJ6wQp+7C4nI0gsmExaedaYLNO44eT4AtBBwjbTiGPMlt2Md0T9H9JQ==}
+
   undici-types@7.14.0:
     resolution: {integrity: sha512-QQiYxHuyZ9gQUIrmPo3IA+hUl4KYk8uSA7cHrcKd/l3p1OTpZcM0Tbp9x7FAtXdAYhlasd60ncPpgu6ihG6TOA==}
 
@@ -16081,6 +16174,10 @@ snapshots:
       '@types/node': 24.7.2
 
   '@types/node@17.0.45': {}
+
+  '@types/node@22.18.12':
+    dependencies:
+      undici-types: 6.21.0
 
   '@types/node@24.7.2':
     dependencies:
@@ -23334,6 +23431,8 @@ snapshots:
       which-boxed-primitive: 1.1.1
 
   unc-path-regex@0.1.2: {}
+
+  undici-types@6.21.0: {}
 
   undici-types@7.14.0: {}
 
