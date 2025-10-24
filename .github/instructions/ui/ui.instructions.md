@@ -6,88 +6,70 @@ applyTo: "apps/ui-sharethrift/src/components/ui/**/*"
 
 ## Purpose
 
-- The `ui` folder implements the Atomic Design methodology for composing reusable UI components specific to this package.
-- Components are organized as **molecules** (small, focused, tailored Ant Design-based components) and **organisms** (composed, more complex components).
-- These components are intended to be shared across layouts and features within the package.
+- The `ui` folder implements the Atomic Design methodology to organize reusable UI components.
+- It contains **molecules** (small, focused components) and **organisms** (composed, higher-order components).
+- Components are shared across layouts and features within the package.
 
 ## Atomic Design Structure
 
-- **Molecules**:  
-  - Small, reusable components that extend or tailor Ant Design primitives for project-specific needs.
-  - Should encapsulate a single, focused piece of functionality.
-  - Can be used directly by other code or composed into organisms.
-  - Example: custom input fields, loaders, upload buttons, user status indicators.
-
-- **Organisms**:  
-  - More complex components composed of molecules (and possibly other organisms).
-  - Represent higher-level UI sections or widgets.
-  - Example: dropdown menus, form sections, headers, composite lists.
+- **Molecules**: Extend or customize Ant Design primitives. Examples: loaders, buttons, input fields.
+- **Organisms**: Built from molecules and represent more complex UI compositions. Examples: headers, dropdowns, form sections.
 
 ## Architecture & Patterns
 
-- Use **React** functional components with **TypeScript** for strict typing and maintainability.
+- Use React functional components with TypeScript.
 - Prefer composition over inheritance.
-- Use the **container pattern** for data-fetching and logic separation when needed (suffix with `Container`).
-- Use **Ant Design** components as the atomic base; extend with custom logic or styling as molecules.
-- Use **Tailwind CSS** for custom utility styles; use CSS modules for scoped, component-specific styles when Tailwind is not suitable.
+- Use Ant Design as the base for all UI components.
+- Use Tailwind CSS for utility styles; use CSS modules (`*.module.css`) for scoped component styles.
+- Use the container pattern for components that handle logic or data-fetching (suffix with `Container`).
 
 ## Coding Conventions
 
-- Component name must match file name in PascalCase. Each file should export a single component.
-- Each component must have a corresponding `{ComponentName}Props` type/interface.
-- Use kebab-case for file and directory names.
-- Co-locate tests (`.test.tsx`), stories (`.stories.tsx`), and styles (`.module.css`) with the component.
-- Place a `README.md` in each component folder to document purpose and usage.
+- Component name must match file name in PascalCase.
+- Use kebab-case for all file and directory names.
+- Define a `{ComponentName}Props` interface or type for every component.
+- Co-locate all related files: component (`index.tsx`), test (`index.test.tsx`), story (`index.stories.tsx`), styles (`index.module.css`), and README (`README.md`).
 
 ## Styling
 
-- Use Ant Design theming for UI consistency.
-- Use Tailwind CSS for utility-first custom styles.
-- Use CSS modules (`*.module.css`) for encapsulated, reusable component styles.
-- Place `.module.css` files next to their component, using the same base name.
+- Use Ant Design theming for consistency.
+- Use Tailwind CSS for custom utility styling.
+- Use CSS modules for encapsulated, reusable styles.
 
 ## Reusability & Composition
 
-- Design molecules to be reusable and composable.
+- Design molecules to be reusable across features and layouts.
 - Compose organisms from molecules and other organisms.
-- Avoid hardcoding values; use props and context for configuration.
+- Use props and context; avoid hardcoding values.
 
 ## Testing
 
-- Every component must have a corresponding Storybook story and unit test.
-- Use React Testing Library and Vitest for tests.
+- Every component must include a Storybook story and unit test.
+- Use React Testing Library and Vitest for all tests.
 
 ## Performance
 
-- Memoize expensive computations with `useMemo` or `React.memo`.
-- Avoid unnecessary re-renders.
+- Use `useMemo` or `React.memo` to avoid unnecessary re-renders.
 
 ## File/Folder Structure
 
-
 ```
 ui/
-  molecules/                   # Small, focused, reusable components
-    {component-name}/            # Co-locate all files related to the molecule
-      index.module.css            # Scoped CSS module (optional)
-      index.test.tsx              # Unit test (required)
-      index.stories.tsx           # Storybook story for molecule (required)
-      index.tsx                   # Entry point for the molecule (required)
-      component-name.test.tsx     # Unit test for {component-name} (optional)
-      component-name.stories.tsx  # Storybook story for {component-name} (optional)
-      component-name.tsx          # Component used in this molecule (optional)
-      README.md                   # Usage and API documentation (recommended)
-  organisms/                    # Composed, complex components made from molecules
-    {component-name}/             # Co-locate all files related to the organism
-      ...                         # Same as molecules
-
-  ui.instructions.md            # Copilot instructions for this folder
+  molecules/
+    {component-name}/
+      index.tsx
+      index.test.tsx
+      index.stories.tsx
+      index.module.css
+      README.md
+  organisms/
+    {component-name}/
+      ...
+  ui.instructions.md
 ```
 
-**Notes:**
-- Each component should have its own folder if it includes multiple files (component, styles, tests, stories, etc.).
-- Use kebab-case for directory names and file names.
-- Co-locate all related files (component, test, story, styles, README) for maintainability.
+- Each component gets its own folder if it includes multiple files.
+- Co-locate component, test, story, styles, and docs in the same folder.
 
 ## References
 
