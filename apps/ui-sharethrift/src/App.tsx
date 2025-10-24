@@ -5,6 +5,7 @@ import { RequireAuth } from "./components/shared/require-auth.tsx";
 import { AuthLanding } from "./components/shared/auth-landing.tsx";
 import type { FC } from "react";
 import { useHasCompletedOnboardingCheck } from "./components/shared/use-has-completed-onboarding-check.ts";
+import "./App.css";
 
 const authSection = (
   <RequireAuth redirectPath="/" forceLogin={true}>
