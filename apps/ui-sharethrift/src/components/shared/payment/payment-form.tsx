@@ -150,7 +150,7 @@ export const PaymentForm: FC<PaymentFormProps> = (props) => {
           </Title>
           <BillingAddressFormItems countries={props.countries} />
 
-          {props.additionalContent && props.additionalContent}
+          {props.additionalContent}
 
           <Form.Item style={{ textAlign: "right", marginTop: "32px" }}>
             <Button
