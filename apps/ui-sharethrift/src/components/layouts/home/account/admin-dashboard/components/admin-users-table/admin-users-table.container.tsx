@@ -7,7 +7,7 @@ import {
   AdminUsersTableContainerAllUsersDocument,
   BlockUserDocument,
   UnblockUserDocument,
-} from '../../../../../../../generated.tsx';
+} from "../../../../../../generated.tsx";
 
 export interface AdminUsersTableContainerProps {
   currentPage: number;
@@ -111,6 +111,8 @@ export const AdminUsersTableContainer: React.FC<Readonly<AdminUsersTableContaine
     action: "block" | "unblock" | "view-profile" | "view-report",
     userId: string
   ) => {
+    console.log(`Action: ${action}, User ID: ${userId}`);
+
     switch (action) {
       case "block":
         try {

@@ -1,5 +1,5 @@
 import { Card, Button, Tag } from "antd";
-import type { AdminUserData } from './admin-users-table/admin-users-table.types.ts';
+import type { AdminUserData } from "./admin-users-table.types.ts";
 
 export interface AdminUsersCardProps {
   user: AdminUserData;

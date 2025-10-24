@@ -6,7 +6,7 @@ import type {
   AdminUserData,
   AdminUsersTableProps,
 } from "./admin-users-table.types.ts";
-import { AdminUsersCard } from '../admin-users-card.tsx';
+import { AdminUsersCard } from "./admin-users-card.tsx";
 import { useState } from "react";
 
 const { Search, TextArea } = Input;
@@ -62,7 +62,9 @@ export const AdminUsersTable: React.FC<Readonly<AdminUsersTableProps>> = ({
 
   const handleBlockConfirm = async () => {
     try {
-      await blockForm.validateFields();
+      const values = await blockForm.validateFields();
+      console.log("Block user with:", values);
+      // Mutation is handled by the container via onAction
       onAction("block", selectedUser!.id);
       setBlockModalVisible(false);
       blockForm.resetFields();
