@@ -11,8 +11,7 @@ const port = 4000;
 const allowedRedirectUri =
 	// biome-ignore lint:useLiteralKeys
 	process.env['ALLOWED_REDIRECT_URI'] || 'http://localhost:3000/auth-redirect';
-// Extract base URL for audience claim (without path)
-const aud = new URL(allowedRedirectUri).origin;
+const aud = allowedRedirectUri;
 // Type for user profile used in token claims
 interface TokenProfile {
 	aud: string;
