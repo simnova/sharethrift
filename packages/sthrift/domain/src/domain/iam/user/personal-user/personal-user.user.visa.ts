@@ -24,7 +24,7 @@ export class PersonalUserUserVisa<root extends PersonalUserEntityReference>
 			canViewListingReports: false,
 			canViewUserReports: false,
 
-			isEditingOwnAccount: 'id' in this.user && 'id' in this.root ? (this.user as {id: string}).id === (this.root as {id: string}).id : false,
+			isEditingOwnAccount: this.user.id === this.root.id,
 			isSystemAccount: false,
 		};
 
