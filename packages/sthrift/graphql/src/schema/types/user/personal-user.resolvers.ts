@@ -17,6 +17,7 @@ const personalUserResolvers: Resolvers = {
 			context: GraphContext,
 			_info: GraphQLResolveInfo,
 		) => {
+			console.log('personalUser resolver called with id:', args.id);
 			return await context.applicationServices.User.PersonalUser.queryById({
 				id: args.id,
 			});
@@ -30,6 +31,8 @@ const personalUserResolvers: Resolvers = {
 			if (!context.applicationServices.verifiedUser?.verifiedJwt) {
 				throw new Error('Unauthorized');
 			}
+			console.log('currentPersonalUserAndCreateIfNotExists resolver called');
+			// Implement the logic to get the current personal user or create a new one
 			return await context.applicationServices.User.PersonalUser.createIfNotExists(
 				{
 					email: context.applicationServices.verifiedUser.verifiedJwt.email,
@@ -46,7 +49,12 @@ const personalUserResolvers: Resolvers = {
 			context: GraphContext,
 			_info: GraphQLResolveInfo,
 		) => {
-			// TODO: SECURITY - Add admin role-based authorization check when admin role system is implemented
+			// Check if user is admin
+			//if (!context.applicationServices.verifiedUser?.verifiedJwt) {
+			//	throw new Error('Unauthorized');
+			//}
+
+			// TODO: SECURITY - Add admin permission check
 			return await context.applicationServices.User.PersonalUser.getAllUsers({
 				page: args.page,
 				pageSize: args.pageSize,
@@ -69,7 +77,8 @@ const personalUserResolvers: Resolvers = {
 			if (!context.applicationServices.verifiedUser?.verifiedJwt) {
 				throw new Error('Unauthorized');
 			}
-			// Future: Determine if user is editing own profile or admin editing another user
+			console.log('personalUserUpdate resolver called with id:', args.input.id);
+			// TODO: SECURITY - Add admin permission check
 			return await context.applicationServices.User.PersonalUser.update(
 				args.input as PersonalUserUpdateCommand,
 			);
@@ -80,8 +89,10 @@ const personalUserResolvers: Resolvers = {
 			context: GraphContext,
 			_info: GraphQLResolveInfo,
 		) => {
-			// TODO: SECURITY - Add admin role-based authorization check when admin role system is implemented
-			// Once implemented, use system-level permissions for admin operations
+			if (!context.applicationServices.verifiedUser?.verifiedJwt) {
+				throw new Error('Unauthorized');
+			}
+			// TODO: SECURITY - Add admin permission check
 			return await context.applicationServices.User.PersonalUser.update({
 				id: args.userId,
 				isBlocked: true,
@@ -93,14 +104,17 @@ const personalUserResolvers: Resolvers = {
 			context: GraphContext,
 			_info: GraphQLResolveInfo,
 		) => {
-			// TODO: SECURITY - Add admin role-based authorization check when admin role system is implemented
-			// Once implemented, use system-level permissions for admin operations
+			if (!context.applicationServices.verifiedUser?.verifiedJwt) {
+				throw new Error('Unauthorized');
+			}
+			// TODO: SECURITY - Add admin permission check
 			return await context.applicationServices.User.PersonalUser.update({
 				id: args.userId,
 				isBlocked: false,
 			});
 		},
 		processPayment: async (_parent, { request }, context) => {
+			console.log('Processing payment', request);
 			try {
 				const sanitizedRequest = {
 					...request,
@@ -142,6 +156,7 @@ const personalUserResolvers: Resolvers = {
 			}
 		},
 		refundPayment: async (_parent, { request }, context) => {
+			console.log('Refunding payment', request);
 			try {
 				const response =
 					await context.applicationServices.Payment.refundPayment({
