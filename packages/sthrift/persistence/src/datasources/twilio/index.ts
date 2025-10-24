@@ -1,4 +1,4 @@
-import { Domain } from '@sthrift/domain';
+import type { Domain } from '@sthrift/domain';
 import type { IMessagingService } from '@cellix/messaging';
 import { TwilioConversationContext } from './conversation/index.ts';
 import type { ConversationDataSource } from './conversation/index.ts';
