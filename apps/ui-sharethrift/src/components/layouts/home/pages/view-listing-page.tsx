@@ -1,5 +1,5 @@
 import { ViewListingContainer } from '../components/view-listing/view-listing.container.tsx';
-import { AdminViewListing } from '../account/admin-dashboard/components/admin-view-listing.tsx';
+import { AdminViewListing } from '../account/admin-dashboard/components/admin-listings-table/admin-listings-table.view-listing.tsx';
 import { useAuth } from 'react-oidc-context';
 
 export default function ViewListing() {

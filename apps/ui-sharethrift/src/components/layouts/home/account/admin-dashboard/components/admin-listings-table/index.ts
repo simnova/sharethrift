@@ -1,2 +1,2 @@
-export { AdminListings } from './admin-listings-table.container.tsx';
-export { AdminListingsTable } from './admin-listings-table.tsx';
+export { AdminListings } from './admin-listings-table.container';
+export { AdminListingsTable } from './admin-listings-table';

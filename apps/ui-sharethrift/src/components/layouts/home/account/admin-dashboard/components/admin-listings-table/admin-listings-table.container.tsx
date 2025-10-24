@@ -115,10 +115,10 @@ export function AdminListings() {
 				<AdminListingsTable
 					data={listings}
 					searchText={searchText}
-				statusFilters={statusFilters}
-				onSearch={onSearch}
-				sorter={sorter ?? { field: null, order: null }}
-				currentPage={page}
+                    statusFilters={statusFilters}
+                    onSearch={onSearch}
+                    sorter={sorter ?? { field: null, order: null }}
+                    currentPage={page}
 					pageSize={pageSize}
 					total={total}
 					onStatusFilter={onStatusFilter}
@@ -131,3 +131,5 @@ export function AdminListings() {
 		/>
 	);
 }
+
+export default AdminListings;
