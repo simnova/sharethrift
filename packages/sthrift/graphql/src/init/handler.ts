@@ -9,16 +9,26 @@ import {
 import type { GraphContext } from './context.ts';
 import { combinedSchema } from '../schema/builder/schema-builder.ts';
 import { applyMiddleware } from 'graphql-middleware';
+import type { GraphQLSchemaWithFragmentReplacements } from 'graphql-middleware/types';
+
+const serverConfig = (securedSchema: GraphQLSchemaWithFragmentReplacements) => {
+	return {
+		schema: securedSchema,
+        cors: {
+            origin: true,
+            credentials: true,
+        },
+        allowBatchedHttpRequests: true,
+	};
+};
 
 export const graphHandlerCreator = (
-	applicationServicesHost: { forRequest(rawAuthHeader?: string, hints?: unknown): Promise<unknown> },
+	applicationServicesFactory: ApplicationServicesFactory,
 ): HttpHandler => {
-	const applicationServicesFactory = applicationServicesHost as ApplicationServicesFactory;
 	// Set up Apollo Server
     const securedSchema = applyMiddleware(combinedSchema);
 	const server = new ApolloServer<GraphContext>({
-		schema: securedSchema,
-        allowBatchedHttpRequests: true,
+        ...serverConfig(securedSchema)
 	});
 	const functionOptions: WithRequired<AzureFunctionsMiddlewareOptions<GraphContext>, 'context'> = {
 		context: async ({ req }) => {
@@ -27,9 +37,9 @@ export const graphHandlerCreator = (
                 memberId: req.headers.get('x-member-id') ?? undefined,
                 communityId: req.headers.get('x-community-id') ?? undefined,
             };
-            return {
+            return Promise.resolve({
                 applicationServices: await applicationServicesFactory.forRequest(authHeader, hints),
-            };
+            });
 		},
 	};
 	return startServerAndCreateHandler<GraphContext>(server, functionOptions);
