@@ -1,34 +1,14 @@
-fragment ReservationsViewActiveContainerReservationFields on ReservationRequest {
-	id
-	state
-	reservationPeriodStart
-	reservationPeriodEnd
-	createdAt
-	updatedAt
-	listing {
-		id
-		title
-	}
-	reserver {
-		account {
-			username
-			profile {
-				firstName
-				lastName
-			}
-		}
-	}
-	closeRequestedBySharer
-	closeRequestedByReserver
-}
+#import "../fragments/reservation-request-fields.graphql"
 
-query ReservationsViewActiveContainerActiveReservations($userId: ObjectID!) {
+query HomeMyReservationsReservationsViewActiveContainerActiveReservations(
+	$userId: ObjectID!
+) {
 	myActiveReservations(userId: $userId) {
-		...ReservationsViewActiveContainerReservationFields
+		...ReservationRequestFields
 	}
 }
 
-mutation ReservationsViewActiveContainerCancelReservation(
+mutation HomeMyReservationsReservationsViewActiveContainerCancelReservation(
 	$input: CancelReservationInput!
 ) {
 	cancelReservation(input: $input) {
@@ -40,7 +20,7 @@ mutation ReservationsViewActiveContainerCancelReservation(
 	}
 }
 
-mutation ReservationsViewActiveContainerCloseReservation(
+mutation HomeMyReservationsReservationsViewActiveContainerCloseReservation(
 	$input: CloseReservationInput!
 ) {
 	closeReservation(input: $input) {
