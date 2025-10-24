@@ -49,14 +49,22 @@ function toAdminListing(listing: Record<string, unknown>) {
 		}
 	};
 
-	// Cast to any locally so we can use dot-notation while preserving the
-	// original dynamic shape coming from Mongoose documents.
-	const l = listing as any;
+	// Small local shape so we can use dot-notation without `any`.
+	type ListingLike = {
+		sharingPeriodStart?: unknown;
+		sharingPeriodEnd?: unknown;
+		images?: string[];
+		createdAt?: unknown;
+		state?: string;
+		id?: string;
+		title?: string;
+	};
+	const l = listing as ListingLike;
 	const start = getIso(l.sharingPeriodStart);
 	const end = getIso(l.sharingPeriodEnd);
-	const images = l.images as string[] | undefined;
+	const images = l.images;
 	const createdAt = getIso(l.createdAt);
-	const state = (l.state as string | undefined) ?? undefined;
+	const state = l.state ?? undefined;
 	return {
 		id: (l.id as string) ?? '',
 		title: (l.title as string) ?? '',
