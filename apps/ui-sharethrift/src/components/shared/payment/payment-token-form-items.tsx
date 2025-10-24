@@ -2,7 +2,7 @@ import { Col, DatePicker, Form, Row } from "antd";
 import dayjs from "dayjs";
 import { useCallback, useEffect, useState, type FC } from "react";
 import utc from "dayjs/plugin/utc";
-
+import "./flex-microform.css";
 dayjs.extend(utc);
 export type PaymentTokenFormFieldType = {
   cardNumber?: string;
@@ -26,6 +26,7 @@ interface PaymentTokenFormItemsProps {
 export const PaymentTokenFormItems: FC<PaymentTokenFormItemsProps> = (props) => {
   const cyberSourceUrl = "https://testflex.cybersource.com/microform/bundle/v2/flex-microform.min.js";
   const [hasMounted, setHasMounted] = useState(false);
+
   useEffect(() => {
     setHasMounted(true);
   }, []);
@@ -88,19 +89,11 @@ export const PaymentTokenFormItems: FC<PaymentTokenFormItemsProps> = (props) => 
   // biome-ignore lint/correctness/useExhaustiveDependencies: <explanation>
   useEffect(() => {
     let microformScript: HTMLScriptElement;
-    let cssScript: HTMLScriptElement;
 
     if (props.cyberSourcePublicKey && hasMounted && cyberSourceUrl) {
-      console.log(`${window.location.origin.toString()}/scripts/microform-css.js`);
-
       microformScript = document.createElement("script");
-      cssScript = document.createElement("script");
-      cssScript.src = `${window.location.origin.toString()}/scripts/microform-css.js`;
       microformScript.src = cyberSourceUrl;
       microformScript.async = true;
-      cssScript.defer = true;
-      document.body.appendChild(microformScript);
-      document.body.appendChild(cssScript);
       microformScript.onload = () => {
         // biome-ignore lint/suspicious/noExplicitAny: <explanation>
         createFlexObj(props.cyberSourcePublicKey || "", (data: any, field: string) => {
@@ -115,17 +108,12 @@ export const PaymentTokenFormItems: FC<PaymentTokenFormItemsProps> = (props) => 
         });
       };
 
-      cssScript.onload = () => {
-        console.log("css loaded");
-      };
+      document.body.appendChild(microformScript);
     }
 
     return () => {
       if (microformScript) {
-        document.body.removeChild(microformScript);
-      }
-      if (cssScript) {
-        document.body.removeChild(cssScript);
+        microformScript.remove();
       }
     };
   }, [hasMounted, props.cyberSourcePublicKey, cyberSourceUrl]);
