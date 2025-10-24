@@ -13,7 +13,7 @@ export class PersonalUserUserPassport
 		return new PersonalUserUserVisa(root, this._user);
 	}
 
-    forAdminUser(_root: AdminUserEntityReference): UserVisa {
-        return { determineIf: () => false };
-    }
+  forAdminUser(_root: AdminUserEntityReference): UserVisa {
+    return { determineIf: () => false };
+  }
 }
