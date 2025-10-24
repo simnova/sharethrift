@@ -9,6 +9,7 @@ import type {
 	ReservationRequestEntityReference,
 	ReservationRequestProps,
 } from './reservation-request.entity.ts';
+import { ReservationAcceptedEvent } from './reservation-request.events.ts';
 
 export class ReservationRequest<props extends ReservationRequestProps>
 	extends DomainSeedwork.AggregateRoot<props, Passport>
@@ -269,6 +270,16 @@ export class ReservationRequest<props extends ReservationRequestProps>
 		this.props.state = new ValueObjects.ReservationRequestStateValue(
 			ReservationRequestStates.ACCEPTED,
 		).valueOf();
+
+		// Emit domain event for acceptance
+		this.addIntegrationEvent(ReservationAcceptedEvent, {
+			reservationRequestId: this.props.id,
+			reserverId: this.props.reserver.id,
+			sharerId: this.props.listing.sharer.id,
+			listingId: this.props.listing.id,
+			reservationPeriodStart: this.props.reservationPeriodStart,
+			reservationPeriodEnd: this.props.reservationPeriodEnd,
+		});
 	}
 
 	private reject(): void {

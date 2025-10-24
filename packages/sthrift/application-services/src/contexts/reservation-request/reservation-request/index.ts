@@ -5,6 +5,7 @@ import { type ReservationRequestQueryPastByReserverIdCommand, queryPastByReserve
 import { type ReservationRequestQueryActiveByReserverIdAndListingIdCommand, queryActiveByReserverIdAndListingId } from './query-active-by-reserver-id-and-listing-id.ts';
 import { type ReservationRequestQueryByIdCommand, queryById } from './query-by-id.ts';
 import { type ReservationRequestCreateCommand, create } from './create.ts';
+import { type ReservationRequestAcceptCommand, accept } from './accept.ts';
 import { type ReservationRequestQueryOverlapByListingIdAndReservationPeriodCommand, queryOverlapByListingIdAndReservationPeriod } from './query-overlap-by-listing-id-and-reservation-period.ts';
 import { type ReservationRequestQueryActiveByListingIdCommand, queryActiveByListingId } from './query-active-by-listing-id.ts';
 import { type ReservationRequestQueryListingRequestsBySharerIdCommand, queryListingRequestsBySharerId } from './query-listing-requests-by-sharer-id.ts';
@@ -18,6 +19,7 @@ export interface ReservationRequestApplicationService {
     queryActiveByListingId: (command: ReservationRequestQueryActiveByListingIdCommand) => Promise<Domain.Contexts.ReservationRequest.ReservationRequest.ReservationRequestEntityReference[]>,
     queryListingRequestsBySharerId: (command: ReservationRequestQueryListingRequestsBySharerIdCommand) => Promise<Domain.Contexts.ReservationRequest.ReservationRequest.ReservationRequestEntityReference[]>,
     create: (command: ReservationRequestCreateCommand) => Promise<Domain.Contexts.ReservationRequest.ReservationRequest.ReservationRequestEntityReference>,
+    accept: (command: ReservationRequestAcceptCommand) => Promise<Domain.Contexts.ReservationRequest.ReservationRequest.ReservationRequestEntityReference>,
 }
 
 export const ReservationRequest = (
@@ -32,5 +34,6 @@ export const ReservationRequest = (
         queryActiveByListingId: queryActiveByListingId(dataSources),
     queryListingRequestsBySharerId: queryListingRequestsBySharerId(dataSources),
         create: create(dataSources),
+        accept: accept(dataSources),
     }
 }
