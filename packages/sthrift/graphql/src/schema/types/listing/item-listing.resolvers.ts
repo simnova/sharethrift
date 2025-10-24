@@ -61,6 +61,67 @@ const itemListingResolvers = {
 			const currentUser = context.applicationServices.verifiedUser;
 			const sharerId = currentUser?.verifiedJwt?.sub;
 			const { page, pageSize, searchText, statusFilters, sorter } = args;
+
+			// If search text is provided, use cognitive search
+			if (searchText && searchText.trim() !== '') {
+				try {
+					const searchInput = {
+						searchString: searchText,
+						options: {
+							top: pageSize,
+							skip: (page - 1) * pageSize,
+							filter: {
+								sharerId: sharerId ? [sharerId] : undefined,
+								state: statusFilters,
+							},
+							orderBy: sorter
+								? [
+										`${sorter.field} ${sorter.order === 'ascend' ? 'asc' : 'desc'}`,
+									]
+								: ['updatedAt desc'],
+						},
+					};
+
+					const searchResult =
+						await context.applicationServices.Listing.ItemListingSearch.searchItemListings(
+							searchInput,
+						);
+
+					// Convert search results to the expected format
+					const items = searchResult.items.map((item) => {
+						const sharingStart = new Date(
+							item.sharingPeriodStart,
+						).toISOString();
+						const sharingEnd = new Date(item.sharingPeriodEnd).toISOString();
+
+						return {
+							id: item.id,
+							title: item.title,
+							image:
+								item.images && item.images.length > 0 ? item.images[0] : null,
+							publishedAt: item.createdAt,
+							reservationPeriod: `${sharingStart.slice(0, 10)} - ${sharingEnd.slice(0, 10)}`,
+							status: mapStateToStatus(item.state),
+							pendingRequestsCount: 0, // TODO: integrate reservation request counts
+						};
+					});
+
+					return {
+						items,
+						total: searchResult.count,
+						page,
+						pageSize,
+					};
+				} catch (error) {
+					console.error(
+						'Cognitive search failed, falling back to database query:',
+						error,
+					);
+					// Fall back to database query if cognitive search fails
+				}
+			}
+
+			// Fallback to database query (original logic)
 			const pagedArgs: {
 				page: number;
 				pageSize: number;

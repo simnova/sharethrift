@@ -4,7 +4,6 @@ import { describeFeature, loadFeature } from '@amiceli/vitest-cucumber';
 import { expect } from 'vitest';
 import * as ValueObjects from './value-objects.ts';
 
-
 const test = { for: describeFeature };
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const feature = await loadFeature(
@@ -174,7 +173,9 @@ test.for(feature, ({ Scenario }) => {
 				'I try to create a nullable email with a string of 255 characters ending with "@e.com"',
 				() => {
 					createNullableEmail = () => {
-						new ValueObjects.NullableEmail(`${'a'.repeat(249)}@e.com`).valueOf();
+						new ValueObjects.NullableEmail(
+							`${'a'.repeat(249)}@e.com`,
+						).valueOf();
 					};
 				},
 			);
