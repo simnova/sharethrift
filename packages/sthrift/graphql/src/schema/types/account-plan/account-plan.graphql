@@ -3,6 +3,7 @@ type AccountPlan implements MongoBase {
   description: String
   billingPeriodLength: Int!
   billingPeriodUnit: String!
+  billingCycles: Int!
   billingAmount: Float!
   currency: String!
   setupFee: Float

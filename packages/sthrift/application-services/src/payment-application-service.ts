@@ -6,12 +6,12 @@ export interface PaymentApplicationService {
 	): Promise<ProcessPaymentResponse>;
 	refundPayment(request: RefundPaymentRequest): Promise<RefundPaymentResponse>;
 	createSubscription(request: {
-		userId: string;
 		planId: string;
 		cybersourceCustomerId: string;
 		startDate: Date;
 	}): Promise<SubscriptionResponse>;
 	generatePublicKey(): Promise<string>;
+	createPlan(request: PlanCreation): Promise<PlanResponse>;
 }
 
 export interface ProcessPaymentRequest {
@@ -112,6 +112,54 @@ export interface SubscriptionResponse {
 		code?: string;
 		status: string;
 	};
+}
+
+export interface PlanResponse {
+	_links: {
+		self: {
+			href: string;
+			method?: string;
+		};
+		update: {
+			href: string;
+			method?: string;
+		};
+		deactivate: {
+			href: string;
+			method?: string;
+		};
+	};
+	id: string;
+	submitTimeUtc: string;
+	planInformation?: {
+		code?: string;
+		status?: string;
+		name?: string;
+		description?: string;
+		billingPeriod?: {
+			length?: number;
+			unit?: string;
+		};
+		billingCycles?: {
+			total?: number;
+		};
+	};
+	orderInformation?: {
+		amountDetails?: {
+			currency?: string;
+			billingAmount?: string;
+		};
+	};
+}
+
+export interface PlanCreation {
+	name: string;
+	description: string;
+	periodLength: number;
+	periodUnit: 'day' | 'week' | 'month' | 'year';
+	billingCycles: number;
+	amount: number;
+	currency: string;
 }
 
 export class DefaultPaymentApplicationService
@@ -276,7 +324,6 @@ export class DefaultPaymentApplicationService
 	}
 
 	async createSubscription(request: {
-		userId: string;
 		cybersourceCustomerId: string;
 		planId: string;
 		startDate: Date;
@@ -294,5 +341,9 @@ export class DefaultPaymentApplicationService
 			},
 		};
 		return await this.paymentService.createSubscription(subscriptionInput);
+	}
+
+	async createPlan(request: PlanCreation): Promise<PlanResponse> {
+		return await this.paymentService.createPlan(request);
 	}
 }

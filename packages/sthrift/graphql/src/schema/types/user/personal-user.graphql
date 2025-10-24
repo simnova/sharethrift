@@ -48,7 +48,7 @@ type PersonalUserAccountProfileBilling {
 
 type PersonalUserAccountProfileBillingSubscription {
   subscriptionId: String
-  planCode: String
+  planCode: String # code from cybersource
   status: String
   startDate: DateTime
 }
@@ -134,6 +134,8 @@ type PaymentResponse {
   success: Boolean
   message: String
   cybersourceCustomerId: String
+  cybersourceSubscriptionId: String
+  cybersourcePlanId: String
   errorInformation: PaymentErrorInformation
   orderInformation: PaymentResponseOrderInformation
 }

@@ -6,6 +6,8 @@ mutation SignUpPaymentContainerPersonalUserProcessPayment($input: ProcessPayment
   processPayment(input: $input) {
     success
     cybersourceCustomerId
+    cybersourceSubscriptionId
+    cybersourcePlanId
     errorInformation {
       reason
       message

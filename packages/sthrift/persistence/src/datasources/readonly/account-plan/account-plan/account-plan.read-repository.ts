@@ -17,6 +17,9 @@ export interface AccountPlanReadRepository {
 		id: string,
 		options?: FindOneOptions,
 	) => Promise<Domain.Contexts.AccountPlan.AccountPlan.AccountPlanEntityReference | null>;
+	getByName: (
+		name: string,
+	) => Promise<Domain.Contexts.AccountPlan.AccountPlan.AccountPlanEntityReference | null>;
 }
 
 export class AccountPlanReadRepositoryImpl
@@ -47,6 +50,16 @@ export class AccountPlanReadRepositoryImpl
 		options?: FindOneOptions,
 	): Promise<Domain.Contexts.AccountPlan.AccountPlan.AccountPlanEntityReference | null> {
 		const result = await this.mongoDataSource.findById(id, options);
+		if (!result) {
+			return null;
+		}
+		return this.converter.toDomain(result, this.passport);
+	}
+
+	async getByName(
+		name: string,
+	): Promise<Domain.Contexts.AccountPlan.AccountPlan.AccountPlanEntityReference | null> {
+		const result = await this.mongoDataSource.findOne({ name });
 		if (!result) {
 			return null;
 		}

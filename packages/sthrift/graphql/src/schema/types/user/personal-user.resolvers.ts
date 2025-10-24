@@ -155,6 +155,17 @@ const personalUserResolvers: Resolvers = {
 					} as PaymentResponse;
 				}
 
+				// check if plan choosen by user exists; if not, create a new one
+				const accountPlan =
+					await context.applicationServices.AccountPlan.AccountPlan.queryByName(
+						{
+							planName: personalUser.account.accountType,
+						},
+					);
+				if (!accountPlan) {
+					// TBDcreate a new plan
+				}
+
 				const sanitizedRequest = {
 					...input,
 					paymentInstrument: {
@@ -182,23 +193,11 @@ const personalUserResolvers: Resolvers = {
 					} as PaymentResponse;
 				}
 
-				await context.applicationServices.User.PersonalUser.update({
-					id: personalUser.id,
-					account: {
-						profile: {
-							billing: {
-								cybersourceCustomerId: response.cybersourceCustomerId,
-							},
-						},
-					},
-				});
-
 				// create subscription
 				const startDate = new Date();
 				const subscription =
 					await context.applicationServices.Payment.createSubscription({
-						userId: input.userId,
-						planId: 'dummy-plan-id', // replace with actual plan ID when available
+						planId: accountPlan?.cybersourcePlanId ?? '', // cybersource plan ID when available
 						cybersourceCustomerId: response.cybersourceCustomerId,
 						startDate: startDate,
 					});
@@ -209,9 +208,10 @@ const personalUserResolvers: Resolvers = {
 					account: {
 						profile: {
 							billing: {
+								cybersourceCustomerId: response.cybersourceCustomerId,
 								subscription: {
 									subscriptionId: subscription.id,
-									planCode: 'dummy-plan-code', // replace with actual plan code when available
+									planCode: accountPlan?.cybersourcePlanId ?? '', // cybersource plan ID when available
 									status: subscription.status,
 									startDate: startDate,
 								},
@@ -223,6 +223,9 @@ const personalUserResolvers: Resolvers = {
 				return {
 					...response,
 					success: response.status === 'SUCCEEDED',
+					cybersourceCustomerId: response.cybersourceCustomerId,
+					cybersourceSubscriptionId: subscription.id,
+					cybersourcePlanId: accountPlan?.cybersourcePlanId ?? '',
 					message:
 						response.status === 'SUCCEEDED'
 							? 'Payment processed successfully'
