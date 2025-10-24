@@ -1,75 +1,81 @@
-# @sthrift/mock-service-twilio
+# Mock Service Twilio
 
-Mock implementation of Twilio messaging service for local development and testing.
-
-## Overview
-
-This package provides `ServiceTwilioMock`, an HTTP-based mock implementation of the `IMessagingService` interface from `@cellix/messaging`. It communicates with the `@sthrift/mock-twilio-server` instead of the real Twilio API.
+HTTP client implementation of `IMessagingService` that calls the mock Twilio server.
 
 ## Installation
 
 ```bash
-pnpm add @sthrift/mock-service-twilio
+npm install @sthrift/mock-service-twilio
 ```
 
-## Usage
+## Quick Start
 
 ```typescript
 import { ServiceTwilioMock } from '@sthrift/mock-service-twilio';
 
-// Create mock service pointing to local mock server
 const mockService = new ServiceTwilioMock('http://localhost:10000');
-
-// Start the service
 await mockService.startUp();
 
-// Use the service
-const conversation = await mockService.createConversation('Test Chat');
-await mockService.sendMessage(conversation.sid, 'Hello!', 'user@example.com');
-
-// Clean up
+const conversations = await mockService.listConversations();
 await mockService.shutDown();
 ```
 
-## Requirements
+## Constructor
 
-Requires `@sthrift/mock-twilio-server` to be running on the specified URL (default: `http://localhost:10000`).
-
-Start the mock server:
-```bash
-pnpm --filter @sthrift/mock-twilio-server run dev
+```typescript
+constructor(baseUrl: string)
 ```
 
-## API
+Uses `TWILIO_MOCK_URL` environment variable or default `http://localhost:10000`.
 
-Implements all methods from `IMessagingService`:
+## IMessagingService Methods
 
-- `startUp()` - Initialize the mock service
-- `shutDown()` - Stop the mock service
-- `getConversation(id)` - Get a conversation by ID
-- `sendMessage(conversationId, body, author?)` - Send a message
-- `deleteConversation(id)` - Delete a conversation
-- `listConversations()` - List all conversations
-- `createConversation(friendlyName?, uniqueName?)` - Create a new conversation
+### Conversations
+- `listConversations()`
+- `createConversation(friendlyName)`
+- `getConversation(conversationSid)`
+- `updateConversation(conversationSid, friendlyName)`
+- `deleteConversation(conversationSid)`
 
-## Testing
+### Messages
+- `listMessages(conversationSid)`
+- `createMessage(conversationSid, body, author?)`
+- `getMessage(conversationSid, messageSid)`
+- `updateMessage(conversationSid, messageSid, body)`
+- `deleteMessage(conversationSid, messageSid)`
 
-```bash
-pnpm test                    # Run tests
-pnpm test:watch             # Watch mode
-pnpm test:coverage          # Coverage report
+### Participants
+- `listParticipants(conversationSid)`
+- `createParticipant(conversationSid, identity)`
+- `getParticipant(conversationSid, participantSid)`
+- `updateParticipant(conversationSid, participantSid, ...)`
+- `deleteParticipant(conversationSid, participantSid)`
+
+## Usage with Persistence
+
+```typescript
+import { Persistence } from '@sthrift/persistence';
+import { ServiceTwilioMock } from '@sthrift/mock-service-twilio';
+
+const mockService = new ServiceTwilioMock('http://localhost:10000');
+await mockService.startUp();
+
+const dataSources = Persistence(mongooseService).withPassport(passport, mockService);
+const conversations = await dataSources.twilioDataSource
+  ?.Conversation.Conversation.TwilioConversationRepo.listConversations();
 ```
 
-## Architecture
+## Switching Mock/Real
 
-This package is part of the messaging architecture:
+```typescript
+import type { IMessagingService } from '@cellix/messaging';
+import { ServiceTwilioReal } from '@sthrift/service-twilio';
+import { ServiceTwilioMock } from '@sthrift/mock-service-twilio';
 
+function createMessagingService(): IMessagingService {
+  if (process.env.USE_TWILIO_MOCK === 'true') {
+    return new ServiceTwilioMock(process.env.TWILIO_MOCK_URL || 'http://localhost:10000');
+  }
+  return new ServiceTwilioReal();
+}
 ```
-@cellix/messaging (generic interface)
-    ↓
-@sthrift/mock-service-twilio (mock implementation)
-    ↓
-@sthrift/mock-twilio-server (HTTP server)
-```
-
-For production, use `@sthrift/service-twilio` which implements the real Twilio API.
