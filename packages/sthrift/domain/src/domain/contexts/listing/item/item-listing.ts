@@ -1,3 +1,4 @@
+import { randomUUID } from 'node:crypto';
 import { DomainSeedwork } from '@cellix/domain-seedwork';
 import type { Passport } from '../../passport.ts';
 import type { ListingVisa } from '../listing.visa.ts';
@@ -38,7 +39,7 @@ export class ItemListing<props extends ItemListingProps>
 		},
 		passport: Passport,
 	): ItemListing<props> {
-		const id = crypto.randomUUID();
+		const id = randomUUID();
 		const now = new Date();
 		const isDraft = fields.isDraft ?? false;
 
@@ -132,7 +133,7 @@ export class ItemListing<props extends ItemListingProps>
 			);
 		}
 		this.props.title = new ValueObjects.Title(value).valueOf();
-		this.props.updatedAt = new Date();
+		// Note: updatedAt is automatically handled by Mongoose timestamps
 	}
 
 	get description(): string {
@@ -148,7 +149,7 @@ export class ItemListing<props extends ItemListingProps>
 			);
 		}
 		this.props.description = new ValueObjects.Description(value).valueOf();
-		this.props.updatedAt = new Date();
+		// Note: updatedAt is automatically handled by Mongoose timestamps
 	}
 
 	get category(): string {
@@ -164,7 +165,7 @@ export class ItemListing<props extends ItemListingProps>
 			);
 		}
 		this.props.category = new ValueObjects.Category(value).valueOf();
-		this.props.updatedAt = new Date();
+		// Note: updatedAt is automatically handled by Mongoose timestamps
 	}
 
 	get location(): string {
@@ -180,7 +181,7 @@ export class ItemListing<props extends ItemListingProps>
 			);
 		}
 		this.props.location = new ValueObjects.Location(value).valueOf();
-		this.props.updatedAt = new Date();
+		// Note: updatedAt is automatically handled by Mongoose timestamps
 	}
 
 	get sharingPeriodStart(): Date {
@@ -196,7 +197,7 @@ export class ItemListing<props extends ItemListingProps>
 			);
 		}
 		this.props.sharingPeriodStart = value;
-		this.props.updatedAt = new Date();
+		// Note: updatedAt is automatically handled by Mongoose timestamps
 	}
 
 	get sharingPeriodEnd(): Date {
@@ -212,7 +213,7 @@ export class ItemListing<props extends ItemListingProps>
 			);
 		}
 		this.props.sharingPeriodEnd = value;
-		this.props.updatedAt = new Date();
+		// Note: updatedAt is automatically handled by Mongoose timestamps
 	}
 
 	get state(): string {
@@ -252,7 +253,7 @@ export class ItemListing<props extends ItemListingProps>
 			);
 		}
 		this.props.images = value;
-		this.props.updatedAt = new Date();
+		// Note: updatedAt is automatically handled by Mongoose timestamps
 	}
 
 	get isActive(): boolean {
@@ -282,7 +283,7 @@ export class ItemListing<props extends ItemListingProps>
 		}
 
 		this.props.state = new ValueObjects.ListingState('Published').valueOf();
-		this.props.updatedAt = new Date();
+		// Note: updatedAt is automatically handled by Mongoose timestamps
 	}
 
 	public pause(): void {
@@ -297,7 +298,7 @@ export class ItemListing<props extends ItemListingProps>
 		}
 
 		this.props.state = new ValueObjects.ListingState('Paused').valueOf();
-		this.props.updatedAt = new Date();
+		// Note: updatedAt is automatically handled by Mongoose timestamps
 	}
 
 	public cancel(): void {
@@ -310,7 +311,48 @@ export class ItemListing<props extends ItemListingProps>
 		}
 
 		this.props.state = new ValueObjects.ListingState('Cancelled').valueOf();
-		this.props.updatedAt = new Date();
+		// Note: updatedAt is automatically handled by Mongoose timestamps
+	}
+
+	/**
+	 * Unblock a blocked listing by changing its state to Appeal Requested.
+	 * Only allowed when the listing is currently in a Blocked state.
+	 */
+	public unblock(): void {
+		if (
+			!this.visa.determineIf((permissions) => permissions.canPublishItemListing)
+		) {
+			throw new DomainSeedwork.PermissionError(
+				'You do not have permission to unblock this listing',
+			);
+		}
+
+		const current = this.props.state.valueOf();
+		const isAllowed = current === ValueObjects.ListingStateEnum.Blocked;
+		if (!isAllowed) {
+			throw new Error(
+				`Cannot unblock a listing from state "${current}". Only Blocked listings can be unblocked.`,
+			);
+		}
+
+		this.props.state = ValueObjects.ListingStateEnum.AppealRequested;
+		// Note: updatedAt is automatically handled by Mongoose timestamps when the document is saved
+	}
+
+	/**
+	 * Permanently remove this listing from the system.
+	 * Sets the aggregate's deleted flag so the repository deletes the record.
+	 */
+	public requestDelete(): void {
+		if (
+			!this.visa.determineIf((permissions) => permissions.canDeleteItemListing)
+		) {
+			throw new DomainSeedwork.PermissionError(
+				'You do not have permission to delete this listing',
+			);
+		}
+		// Mark aggregate as deleted; repository will issue a deleteOne on save
+		super.isDeleted = true;
 	}
 
 	/**

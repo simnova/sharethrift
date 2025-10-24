@@ -70,11 +70,13 @@ input CreateItemListingInput {
 
 extend type Mutation {
   createItemListing(input: CreateItemListingInput!): ItemListing!
+  removeListing(id: ObjectID!): Boolean!
+  unblockListing(id: ObjectID!): Boolean!
 }
 
 extend type Query {
   itemListings: [ItemListing!]!
   itemListing(id: ObjectID!): ItemListing
-  itemListings: [ItemListing!]!
   myListingsAll(page: Int!, pageSize: Int!, searchText: String, statusFilters: [String!], sorter: SorterInput): ListingAllPage!
+  adminListings(page: Int!, pageSize: Int!, searchText: String, statusFilters: [String!], sorter: SorterInput): ListingAllPage!
 }

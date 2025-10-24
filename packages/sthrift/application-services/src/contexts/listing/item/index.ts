@@ -38,11 +38,33 @@ export interface ItemListingApplicationService {
 		page: number;
 		pageSize: number;
 	}>;
+	remove: (command: { id: string }) => Promise<boolean>;
+	unblock: (command: { id: string }) => Promise<boolean>;
 }
 
 export const ItemListing = (
 	dataSources: DataSources,
 ): ItemListingApplicationService => {
+	const uow = dataSources.domainDataSource.Listing.ItemListing.ItemListingUnitOfWork;
+
+	// helper for mutate–save in a scoped transaction
+	type ListingMutator = { requestDelete?: () => void; unblock?: () => void } & Record<string, unknown>;
+
+	const applyToListing = async (
+		id: string,
+		mutate: (listing: ListingMutator) => void,
+	): Promise<boolean> => {
+		let success = false;
+		await uow.withScopedTransaction(async (repo) => {
+			const listing = await repo.get(id);
+			// cast repository entity to the light mutator type for the callback
+			mutate(listing as unknown as ListingMutator);
+			await repo.save(listing);
+			success = true;
+		});
+		return success;
+	};
+
 	return {
 		create: create(dataSources),
 		queryById: queryById(dataSources),
@@ -72,6 +94,12 @@ export const ItemListing = (
 				args.sorter = sorter;
 			}
 			return await dataSources.readonlyDataSource.Listing.ItemListing.ItemListingReadRepo.getPaged(args);
+		},
+		remove: async ({ id }) => {
+			return await applyToListing(id, (listing) => listing.requestDelete?.());
+		},
+		unblock: async ({ id }) => {
+			return await applyToListing(id, (listing) => listing.unblock?.());
 		},
 	};
 };
