@@ -10,10 +10,7 @@ export type HttpHandler = (
 	context: InvocationContext,
 ) => Promise<HttpResponseInit>;
 
-export const restHandlerCreator = (
-	applicationServicesHost: { forRequest(rawAuthHeader?: string, hints?: unknown): Promise<unknown> },
-): HttpHandler => {
-	const applicationServicesFactory = applicationServicesHost as ApplicationServicesFactory;
+export const restHandlerCreator = (applicationServicesFactory: ApplicationServicesFactory): HttpHandler => {
 	return async (request: HttpRequest, _context: InvocationContext) => {
 		const rawAuthHeader = request.headers.get('Authorization') ?? undefined;
 		const hints: PrincipalHints = {
