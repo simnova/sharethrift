@@ -29,7 +29,6 @@ export class AccountPlanFeature
 	}
 
 	get activeReservations(): number {
-		this.validateVisa();
 		return this.props.activeReservations;
 	}
 	set activeReservations(value: number) {
@@ -42,7 +41,6 @@ export class AccountPlanFeature
 	}
 	set bookmarks(value: number) {
 		this.validateVisa();
-
 		this.props.bookmarks = value;
 	}
 

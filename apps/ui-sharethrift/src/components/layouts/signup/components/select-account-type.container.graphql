@@ -23,3 +23,27 @@ mutation SelectAccountTypePersonalUserUpdate($input: PersonalUserUpdateInput!) {
     }
   }
 }
+
+query SelectAccountTypeContainerAccountPlans {
+  accountPlans {
+    name
+    description
+    billingPeriodLength
+    billingPeriodUnit
+    billingAmount
+    currency
+    setupFee
+    feature {
+      activeReservations
+      bookmarks
+      itemsToShare
+      friends
+    }
+    status
+    cybersourcePlanId
+    id
+    schemaVersion
+    createdAt
+    updatedAt
+  }
+}

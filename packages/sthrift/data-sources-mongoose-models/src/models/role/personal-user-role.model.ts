@@ -47,7 +47,6 @@ export interface PersonalUserRoleAccountPlanPermissions
 	canCreateAccountPlan: boolean;
 	canUpdateAccountPlan: boolean;
 	canDeleteAccountPlan: boolean;
-	canViewAccountPlan: boolean;
 }
 
 export interface PersonalUserRolePermissions
@@ -129,7 +128,6 @@ export const PersonalUserRoleSchema = new Schema<
 				canCreateAccountPlan: { type: Boolean, required: true, default: false },
 				canUpdateAccountPlan: { type: Boolean, required: true, default: false },
 				canDeleteAccountPlan: { type: Boolean, required: true, default: false },
-				canViewAccountPlan: { type: Boolean, required: true, default: false },
 			} as SchemaDefinition<PersonalUserRoleAccountPlanPermissions>,
 		} as SchemaDefinition<PersonalUserRolePermissions>,
 		schemaVersion: { type: String, default: '1.0.0' },

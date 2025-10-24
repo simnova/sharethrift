@@ -4,6 +4,8 @@ import { ComponentQueryLoader } from "@sthrift/ui-components";
 import { useQuery, useMutation } from "@apollo/client/react";
 import { useNavigate } from "react-router-dom";
 import {
+  type AccountPlan,
+  SelectAccountTypeContainerAccountPlansDocument,
   SelectAccountTypeCurrentPersonalUserAndCreateIfNotExistsDocument,
   SelectAccountTypePersonalUserUpdateDocument,
   type PersonalUserUpdateInput,
@@ -18,6 +20,8 @@ export const SelectAccountTypeContainer: React.FC = () => {
     loading: loadingUser,
     error: userError,
   } = useQuery(SelectAccountTypeCurrentPersonalUserAndCreateIfNotExistsDocument);
+
+  const { data: accountPlansData, loading: loadingAccountPlans, error: accountPlansError } = useQuery(SelectAccountTypeContainerAccountPlansDocument);
 
   const [updateUser, { loading: updateUserLoading, error: updateError }] = useMutation(SelectAccountTypePersonalUserUpdateDocument);
 
@@ -53,15 +57,16 @@ export const SelectAccountTypeContainer: React.FC = () => {
     [currentUserData, updateUser, navigate, updateUserLoading]
   );
 
-  const errorMessage = userError || updateError;
+  const error = userError || updateError || accountPlansError;
 
   return (
     <ComponentQueryLoader
-      loading={loadingUser}
-      hasData={currentUserData}
-      error={errorMessage}
+      loading={loadingUser || loadingAccountPlans}
+      hasData={currentUserData && accountPlansData}
+      error={error}
       hasDataComponent={
         <SelectAccountType
+          accountPlans={accountPlansData?.accountPlans as AccountPlan[]}
           currentUserData={currentUserData?.currentPersonalUserAndCreateIfNotExists}
           loading={updateUserLoading}
           onSaveAndContinue={handleSaveAndContinue}

@@ -105,7 +105,6 @@ describe('ReservationRequest', () => {
 				canCreateAccountPlan: false,
 				canUpdateAccountPlan: false,
 				canDeleteAccountPlan: false,
-				canViewAccountPlan: false,
 			},
 		}),
 		roleType: 'mock-type',

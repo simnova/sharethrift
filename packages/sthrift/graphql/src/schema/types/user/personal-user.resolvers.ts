@@ -155,15 +155,19 @@ const personalUserResolvers: Resolvers = {
 					} as PaymentResponse;
 				}
 
-				// check if plan choosen by user exists; if not, create a new one
 				const accountPlan =
 					await context.applicationServices.AccountPlan.AccountPlan.queryByName(
 						{
 							planName: personalUser.account.accountType,
 						},
 					);
+
 				if (!accountPlan) {
-					// TBDcreate a new plan
+					return {
+						status: 'FAILED',
+						success: false,
+						message: 'Account plan not found',
+					} as PaymentResponse;
 				}
 
 				const sanitizedRequest = {

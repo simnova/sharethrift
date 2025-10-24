@@ -72,7 +72,6 @@ function makeBaseProps(
 			canCreateAccountPlan: false,
 			canUpdateAccountPlan: false,
 			canDeleteAccountPlan: false,
-			canViewAccountPlan: false,
 		},
 	});
 	const roleProps = {

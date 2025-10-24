@@ -17,13 +17,17 @@ export class PersonalUserAccountPlanVisa<
 	determineIf(
 		func: (permissions: Readonly<AccountPlanDomainPermissions>) => boolean,
 	): boolean {
-		const { accountPlanPermissions } = this.user.role.permissions;
+		// const { accountPlanPermissions } = this.user.role.permissions;
+		console.log(this.user);
 
 		const updatedPermissions: AccountPlanDomainPermissions = {
-			canCreateAccountPlan: accountPlanPermissions.canCreateAccountPlan,
-			canUpdateAccountPlan: accountPlanPermissions.canUpdateAccountPlan,
-			canDeleteAccountPlan: accountPlanPermissions.canDeleteAccountPlan,
-			canViewAccountPlan: accountPlanPermissions.canViewAccountPlan,
+			// canCreateAccountPlan: accountPlanPermissions.canCreateAccountPlan,
+			// canUpdateAccountPlan: accountPlanPermissions.canUpdateAccountPlan,
+			// canDeleteAccountPlan: accountPlanPermissions.canDeleteAccountPlan,
+
+			canCreateAccountPlan: false,
+			canUpdateAccountPlan: false,
+			canDeleteAccountPlan: false,
 		};
 
 		return func(updatedPermissions);

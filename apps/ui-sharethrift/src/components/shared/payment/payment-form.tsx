@@ -1,4 +1,4 @@
-import { Button, Form, message, Card, Typography, Checkbox } from "antd";
+import { Button, Form, message, Card, Typography } from "antd";
 import dayjs from "dayjs";
 import { useState, type FC } from "react";
 import { PaymentTokenFormItems, type TokenOptions } from "./payment-token-form-items.tsx";
@@ -7,13 +7,14 @@ import type { Country } from "./country-type.ts";
 import utc from "dayjs/plugin/utc.js";
 import type { ProcessPaymentInput } from "../../../generated.tsx";
 import { useUserId } from "../user-context.tsx";
-const { Title, Text } = Typography;
+const { Title } = Typography;
 dayjs.extend(utc);
 
 interface PaymentFormProps {
   cyberSourcePublicKey: string;
   countries: Country[];
   onSubmitPayment: (paymentDetails: ProcessPaymentInput) => void;
+  additionalContent?: React.JSX.Element;
 }
 export const PaymentForm: FC<PaymentFormProps> = (props) => {
   const userId = useUserId();
@@ -148,47 +149,7 @@ export const PaymentForm: FC<PaymentFormProps> = (props) => {
           </Title>
           <BillingAddressFormItems countries={props.countries} />
 
-          {/* Order Confirmation */}
-          <Title level={3} style={{ color: "var(--color-message-text)", marginBottom: "16px" }}>
-            Order Confirmation
-          </Title>
-
-          <div
-            style={{
-              display: "flex",
-              justifyContent: "space-between",
-              alignItems: "center",
-              marginBottom: "16px",
-            }}
-          >
-            <Text style={{ color: "var(--color-message-text)", fontSize: "16px" }}>Verified Personal Plus</Text>
-            <Text
-              style={{
-                color: "var(--color-message-text)",
-                fontSize: "16px",
-                fontWeight: 600,
-              }}
-            >
-              $4.99/month
-            </Text>
-          </div>
-          <Form.Item
-            name="acceptAgreement"
-            valuePropName="checked"
-            rules={[
-              {
-                required: true,
-                message: "You must accept the agreement to continue",
-                transform: (value) => value || undefined,
-                type: "boolean",
-              },
-            ]}
-            style={{ marginBottom: "24px" }}
-          >
-            <Checkbox style={{ color: "var(--color-message-text)" }}>
-              I understand this amount will be charged once my identity or business is verified and the account goes live.
-            </Checkbox>
-          </Form.Item>
+          {props.additionalContent && props.additionalContent}
 
           <Form.Item style={{ textAlign: "right", marginTop: "32px" }}>
             <Button

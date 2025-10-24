@@ -22,7 +22,4 @@ export class PersonalUserRoleAccountPlanPermissions
 	get canDeleteAccountPlan(): boolean {
 		return this.props.canDeleteAccountPlan;
 	}
-	get canViewAccountPlan(): boolean {
-		return this.props.canViewAccountPlan;
-	}
 }
