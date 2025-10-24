@@ -1,7 +1,7 @@
-import type { Domain } from '@sthrift/domain';
-import type { ServiceTwilio } from '@sthrift/service-twilio';
+import { Domain } from '@sthrift/domain';
+import type { IMessagingService } from '@cellix/messaging';
 import { TwilioConversationContext } from './conversation/index.ts';
-import type * as TwilioConversation from './conversation/conversation/index.ts';
+import type { ConversationDataSource } from './conversation/index.ts';
 
 /**
  * Twilio DataSource Interface
@@ -17,23 +17,14 @@ import type * as TwilioConversation from './conversation/conversation/index.ts';
  * This is controlled via the TWILIO_USE_MOCK environment variable.
  */
 export interface TwilioDataSource {
-	Conversation: {
-		Conversation: {
-			TwilioConversationRepo: TwilioConversation.TwilioConversationRepository;
-		};
-	};
+	Conversation: ConversationDataSource;
 }
 
-/**
- * Create Twilio DataSource Implementation
- * 
- * @param twilioService - The Twilio service instance (handles mock/real switching)
- * @param passport - Domain passport for authorization
- * @returns TwilioDataSource with all Twilio-backed repositories
- */
 export const TwilioDataSourceImplementation = (
-	twilioService: ServiceTwilio,
+	messagingService: IMessagingService,
 	passport: Domain.Passport,
-): TwilioDataSource => ({
-	Conversation: TwilioConversationContext(twilioService, passport),
-});
+): TwilioDataSource => {
+	return {
+		Conversation: TwilioConversationContext(messagingService, passport),
+	};
+};

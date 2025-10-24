@@ -1,23 +1,19 @@
 import { describe, it, expect, beforeAll, afterAll } from 'vitest';
-import { ServiceTwilio } from './index.ts';
+import { ServiceTwilioMock } from './index.ts';
 
 /**
- * Integration Tests for ServiceTwilio with Mock Server
+ * Integration Tests for ServiceTwilioMock with Mock Server
  * 
  * These tests require the mock-twilio-server to be running.
  * Start it with: pnpm --filter @sthrift/mock-twilio-server run dev
- * 
- * Set SEED_DATA=true to use pre-seeded conversations
- * Set SEED_DATA=false to test with a fresh (empty) server
  */
 
-describe('ServiceTwilio Integration Tests - Mock Server', () => {
-	let service: ServiceTwilio;
+describe('ServiceTwilioMock Integration Tests', () => {
+	let service: ServiceTwilioMock;
 	const originalEnv = { ...process.env };
 
 	beforeAll(() => {
 		// Configure for mock mode
-		process.env['TWILIO_USE_MOCK'] = 'true';
 		process.env['TWILIO_MOCK_URL'] = 'http://localhost:10000';
 	});
 
@@ -28,25 +24,25 @@ describe('ServiceTwilio Integration Tests - Mock Server', () => {
 
 	describe('Service Lifecycle', () => {
 		it('should start up successfully in mock mode', async () => {
-			service = new ServiceTwilio();
+			service = new ServiceTwilioMock('http://localhost:10000');
 			await service.startUp();
 			expect(service).toBeDefined();
 			await service.shutDown();
 		});
 
 		it('should throw error when starting up twice', async () => {
-			service = new ServiceTwilio();
+			service = new ServiceTwilioMock('http://localhost:10000');
 			await service.startUp();
 			await expect(service.startUp()).rejects.toThrow(
-				'ServiceTwilio is already started',
+				'ServiceTwilioMock is already started',
 			);
 			await service.shutDown();
 		});
 
 		it('should throw error when shutting down without starting', async () => {
-			service = new ServiceTwilio();
+			service = new ServiceTwilioMock('http://localhost:10000');
 			await expect(service.shutDown()).rejects.toThrow(
-				'ServiceTwilio is not started - shutdown cannot proceed',
+				'ServiceTwilioMock is not started - shutdown cannot proceed',
 			);
 		});
 	});
@@ -55,7 +51,7 @@ describe('ServiceTwilio Integration Tests - Mock Server', () => {
 		let conversationId: string;
 
 		beforeAll(async () => {
-			service = new ServiceTwilio();
+			service = new ServiceTwilioMock('http://localhost:10000');
 			await service.startUp();
 		});
 
@@ -120,7 +116,7 @@ describe('ServiceTwilio Integration Tests - Mock Server', () => {
 		let createdConversationId: string;
 
 		beforeAll(async () => {
-			service = new ServiceTwilio();
+			service = new ServiceTwilioMock('http://localhost:10000');
 			await service.startUp();
 		});
 
@@ -156,7 +152,7 @@ describe('ServiceTwilio Integration Tests - Mock Server', () => {
 
 	describe('End-to-End Workflow', () => {
 		beforeAll(async () => {
-			service = new ServiceTwilio();
+			service = new ServiceTwilioMock('http://localhost:10000');
 			await service.startUp();
 		});
 
@@ -205,7 +201,7 @@ describe('ServiceTwilio Integration Tests - Mock Server', () => {
 
 	describe('Error Handling', () => {
 		beforeAll(async () => {
-			service = new ServiceTwilio();
+			service = new ServiceTwilioMock('http://localhost:10000');
 			await service.startUp();
 		});
 
@@ -225,45 +221,6 @@ describe('ServiceTwilio Integration Tests - Mock Server', () => {
 
 		it('should handle deleting a non-existent conversation', async () => {
 			await expect(service.deleteConversation('CH_NONEXISTENT')).rejects.toThrow();
-		});
-	});
-});
-
-describe('ServiceTwilio Integration Tests - Real Twilio (Optional)', () => {
-	/**
-	 * These tests are skipped by default. To run them:
-	 * 1. Set TWILIO_USE_MOCK=false
-	 * 2. Set TWILIO_ACCOUNT_SID and TWILIO_AUTH_TOKEN
-	 * 3. Run: SKIP_REAL_TESTS=false pnpm test
-	 */
-	const skipRealTests = process.env['SKIP_REAL_TESTS'] !== 'false';
-
-	describe.skipIf(skipRealTests)('Real Twilio API', () => {
-		let service: ServiceTwilio;
-		const originalEnv = { ...process.env };
-
-		beforeAll(() => {
-			process.env['TWILIO_USE_MOCK'] = 'false';
-		});
-
-		afterAll(() => {
-			process.env = originalEnv;
-		});
-
-		it('should start up with real Twilio credentials', async () => {
-			service = new ServiceTwilio();
-			await service.startUp();
-			expect(service).toBeDefined();
-			expect(service.service).toBeDefined(); // Real client should be available
-			await service.shutDown();
-		});
-
-		it('should list real conversations', async () => {
-			service = new ServiceTwilio();
-			await service.startUp();
-			const conversations = await service.listConversations();
-			expect(Array.isArray(conversations)).toBe(true);
-			await service.shutDown();
 		});
 	});
 });

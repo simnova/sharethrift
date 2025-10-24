@@ -1,5 +1,5 @@
 import { Domain, type DomainDataSource } from '@sthrift/domain';
-import type { ServiceTwilio } from '@sthrift/service-twilio';
+import type { IMessagingService } from '@cellix/messaging';
 import type { ModelsContext } from '../models-context.ts';
 import { DomainDataSourceImplementation } from './domain/index.ts';
 import {
@@ -18,28 +18,28 @@ export type DataSources = {
 };
 
 export type DataSourcesFactory = {
-	withPassport: (passport: Domain.Passport, twilioService?: ServiceTwilio) => DataSources;
-	withSystemPassport: (twilioService?: ServiceTwilio) => DataSources;
+	withPassport: (passport: Domain.Passport, messagingService?: IMessagingService) => DataSources;
+	withSystemPassport: (messagingService?: IMessagingService) => DataSources;
 };
 
 export const DataSourcesFactoryImpl = (
 	models: ModelsContext,
 ): DataSourcesFactory => {
-	const withPassport = (passport: Domain.Passport, twilioService?: ServiceTwilio): DataSources => {
+	const withPassport = (passport: Domain.Passport, messagingService?: IMessagingService): DataSources => {
 		const dataSources: DataSources = {
 			domainDataSource: DomainDataSourceImplementation(models, passport),
 			readonlyDataSource: ReadonlyDataSourceImplementation(models, passport),
 		};
 
-		// Only include twilioDataSource if twilioService is provided
-		if (twilioService) {
-			dataSources.twilioDataSource = TwilioDataSourceImplementation(twilioService, passport);
+		// Only include twilioDataSource if messagingService is provided
+		if (messagingService) {
+			dataSources.twilioDataSource = TwilioDataSourceImplementation(messagingService, passport);
 		}
 
 		return dataSources;
 	};
 
-	const withSystemPassport = (twilioService?: ServiceTwilio): DataSources => {
+	const withSystemPassport = (messagingService?: IMessagingService): DataSources => {
 		const systemPassport = Domain.PassportFactory.forSystem({
 			// canManageMembers: true,
 			// canManageEndUserRolesAndPermissions: true,
@@ -50,9 +50,9 @@ export const DataSourcesFactoryImpl = (
 			readonlyDataSource: ReadonlyDataSourceImplementation(models, systemPassport),
 		};
 
-		// Only include twilioDataSource if twilioService is provided
-		if (twilioService) {
-			dataSources.twilioDataSource = TwilioDataSourceImplementation(twilioService, systemPassport);
+		// Only include twilioDataSource if messagingService is provided
+		if (messagingService) {
+			dataSources.twilioDataSource = TwilioDataSourceImplementation(messagingService, systemPassport);
 		}
 
 		return dataSources;

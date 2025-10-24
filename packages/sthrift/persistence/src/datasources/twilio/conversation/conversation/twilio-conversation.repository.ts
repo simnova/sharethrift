@@ -1,5 +1,5 @@
 import { Domain } from '@sthrift/domain';
-import type { ServiceTwilio } from '@sthrift/service-twilio';
+import type { IMessagingService } from '@cellix/messaging';
 import { toDomainConversationProps, toDomainMessage } from './twilio-conversation.domain-adapter.ts';
 import type {
 	TwilioConversationResponse,
@@ -56,11 +56,11 @@ export interface TwilioConversationRepository {
 }
 
 export class TwilioConversationRepositoryImpl implements TwilioConversationRepository {
-	private readonly twilioService: ServiceTwilio;
+	private readonly messagingService: IMessagingService;
 	private readonly passport: Domain.Passport;
 
-	constructor(twilioService: ServiceTwilio, passport: Domain.Passport) {
-		this.twilioService = twilioService;
+	constructor(messagingService: IMessagingService, passport: Domain.Passport) {
+		this.messagingService = messagingService;
 		this.passport = passport;
 	}
 
@@ -80,7 +80,7 @@ export class TwilioConversationRepositoryImpl implements TwilioConversationRepos
 	): Promise<Domain.Contexts.Conversation.Conversation.ConversationEntityReference | null> {
 		try {
 			// Fetch from Twilio (mock or real, depending on TWILIO_USE_MOCK environment variable)
-			const twilioConv = await this.twilioService.getConversation(twilioSid) as unknown as TwilioConversationResponse;
+			const twilioConv = await this.messagingService.getConversation(twilioSid) as unknown as TwilioConversationResponse;
 
 			// TODO: In a real implementation, fetch actual user and listing data
 			// For now, create stub entities
@@ -113,7 +113,7 @@ export class TwilioConversationRepositoryImpl implements TwilioConversationRepos
 	 */
 	async listConversations(): Promise<Domain.Contexts.Conversation.Conversation.ConversationEntityReference[]> {
 		try {
-			const conversations = await this.twilioService.listConversations();
+			const conversations = await this.messagingService.listConversations();
 
 			// TODO: Fetch actual user and listing data for each conversation
 			const stubSharer = this.createStubUser('sharer-id');
@@ -156,7 +156,7 @@ export class TwilioConversationRepositoryImpl implements TwilioConversationRepos
 	): Promise<Domain.Contexts.Conversation.Conversation.MessageEntityReference> {
 		try {
 			// Send message via Twilio (mock or real)
-			const twilioMsg = await this.twilioService.sendMessage(
+			const twilioMsg = await this.messagingService.sendMessage(
 				_twilioConversationSid,
 				body,
 				author,
@@ -182,7 +182,7 @@ export class TwilioConversationRepositoryImpl implements TwilioConversationRepos
 	 */
 	async deleteConversation(twilioSid: string): Promise<void> {
 		try {
-			await this.twilioService.deleteConversation(twilioSid);
+			await this.messagingService.deleteConversation(twilioSid);
 		} catch (error) {
 			console.error('Error deleting conversation from Twilio:', error);
 			throw error;
@@ -197,7 +197,7 @@ export class TwilioConversationRepositoryImpl implements TwilioConversationRepos
 		uniqueName?: string,
 	): Promise<Domain.Contexts.Conversation.Conversation.ConversationEntityReference> {
 		try {
-			const twilioConv = await this.twilioService.createConversation(friendlyName, uniqueName);
+			const twilioConv = await this.messagingService.createConversation(friendlyName, uniqueName);
 
 			// TODO: Get actual user and listing data
 			const stubSharer = this.createStubUser('sharer-id');
@@ -254,8 +254,8 @@ export class TwilioConversationRepositoryImpl implements TwilioConversationRepos
 }
 
 export const getTwilioConversationRepository = (
-	twilioService: ServiceTwilio,
+	messagingService: IMessagingService,
 	passport: Domain.Passport,
 ): TwilioConversationRepository => {
-	return new TwilioConversationRepositoryImpl(twilioService, passport);
+	return new TwilioConversationRepositoryImpl(messagingService, passport);
 };

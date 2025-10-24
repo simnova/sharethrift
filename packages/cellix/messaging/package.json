@@ -1,0 +1,30 @@
+{
+	"name": "@cellix/messaging",
+	"version": "1.0.0",
+	"private": true,
+	"type": "module",
+	"files": [
+		"dist"
+	],
+	"exports": {
+		".": {
+			"types": "./dist/src/index.d.ts",
+			"default": "./dist/src/index.js"
+		}
+	},
+	"scripts": {
+		"prebuild": "biome lint",
+		"build": "tsc --build",
+		"watch": "tsc --watch",
+		"lint": "biome lint",
+		"clean": "rimraf dist"
+	},
+	"dependencies": {
+		"@cellix/api-services-spec": "workspace:*"
+	},
+	"devDependencies": {
+		"rimraf": "^6.0.1",
+		"typescript": "^5.8.3",
+		"@cellix/typescript-config": "workspace:*"
+	}
+}

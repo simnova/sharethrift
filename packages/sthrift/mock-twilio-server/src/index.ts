@@ -3,7 +3,6 @@ import type { Request, Response } from 'express';
 import { config } from 'dotenv';
 import { setupConversationRoutes } from './routes/conversations.ts';
 import { setupMessageRoutes } from './routes/messages.ts';
-import { setupParticipantRoutes } from './routes/participants.ts';
 import { setupMockUtilRoutes } from './routes/mock-utils.ts';
 import { seedMockData } from './seed/seed-data.ts';
 
@@ -38,7 +37,6 @@ app.get('/', (_req: Request, res: Response) => {
 		endpoints: {
 			conversations: '/v1/Conversations',
 			messages: '/v1/Conversations/:conversationSid/Messages',
-			participants: '/v1/Conversations/:conversationSid/Participants',
 			mockUtils: '/mock/*',
 		},
 	});
@@ -48,7 +46,6 @@ app.get('/', (_req: Request, res: Response) => {
 const router = express.Router();
 setupConversationRoutes(router);
 setupMessageRoutes(router);
-setupParticipantRoutes(router);
 setupMockUtilRoutes(router);
 
 app.use(router);
@@ -76,8 +73,6 @@ app.use((err: Error, _req: Request, res: Response) => {
 // Start server
 app.listen(port, () => {
 	console.log(`Mock Twilio Server listening on port ${port}`);
-	console.log(`Health check: http://localhost:${port}/`);
-	console.log(`API Base URL: http://localhost:${port}/v1`);
 	
 	if (shouldSeed) {
 		seedMockData();
