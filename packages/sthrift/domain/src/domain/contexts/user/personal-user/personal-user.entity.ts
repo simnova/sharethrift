@@ -20,6 +20,7 @@ export interface PersonalUserProps extends DomainSeedwork.DomainEntityProps {
 }
 
 export interface PersonalUserEntityReference
-	extends Readonly<Omit<PersonalUserProps, 'account'>> {
+	extends Readonly<Omit<PersonalUserProps, 'account' | 'role'>> {
 	readonly account: PersonalUserAccountEntityReference;
+	readonly role: PersonalUserRoleEntityReference;
 }

@@ -1,83 +1,77 @@
-import { useCallback } from 'react';
-import { SelectAccountType } from './select-account-type.tsx';
-import { ComponentQueryLoader } from '@sthrift/ui-components';
-import { useMutation, useQuery } from "@apollo/client/react";
-import { useNavigate } from 'react-router-dom';
+import { useCallback } from "react";
+import { SelectAccountType } from "./select-account-type.tsx";
+import { ComponentQueryLoader } from "@sthrift/ui-components";
+import { useQuery, useMutation } from "@apollo/client/react";
+import { useNavigate } from "react-router-dom";
 import {
-	SignupSelectAccountTypeCurrentPersonalUserAndCreateIfNotExistsDocument,
-		SignupSelectAccountTypePersonalUserUpdateDocument,
-} from '../../../../generated.tsx';
+  type AccountPlan,
+  SelectAccountTypeContainerAccountPlansDocument,
+  SelectAccountTypeCurrentPersonalUserAndCreateIfNotExistsDocument,
+  SelectAccountTypePersonalUserUpdateDocument,
+  type PersonalUserUpdateInput,
+} from "../../../../generated.tsx";
+import { message } from "antd";
 
 export const SelectAccountTypeContainer: React.FC = () => {
-	const navigate = useNavigate();
+  const navigate = useNavigate();
 
-	const {
-		data: currentUserData,
-		loading: loadingUser,
-		error: userError,
-	} = useQuery(
-		SignupSelectAccountTypeCurrentPersonalUserAndCreateIfNotExistsDocument,
-	);
+  const {
+    data: currentUserData,
+    loading: loadingUser,
+    error: userError,
+  } = useQuery(SelectAccountTypeCurrentPersonalUserAndCreateIfNotExistsDocument);
 
-	const [
-		updateAccountType,
-		{ loading: savingAccountType, error: updateError },
-	] = useMutation(SignupSelectAccountTypePersonalUserUpdateDocument);
+  const { data: accountPlansData, loading: loadingAccountPlans, error: accountPlansError } = useQuery(SelectAccountTypeContainerAccountPlansDocument);
 
-	const handleUpdateAccountType = useCallback(
-		async (accountType: string) => {
-			if (savingAccountType) {
-				return;
-			}
-			try {
-				const userId =
-					currentUserData?.currentPersonalUserAndCreateIfNotExists?.id;
-				if (!userId) {
-					return;
-				}
-				const result = await updateAccountType({
-					variables: {
-						input: {
-							account: { accountType },
-							id: userId,
-						},
-					},
-					refetchQueries: [
-						{
-							query:
-								SignupSelectAccountTypeCurrentPersonalUserAndCreateIfNotExistsDocument,
-						},
-					],
-				});
+  const [updateUser, { loading: updateUserLoading, error: updateError }] = useMutation(SelectAccountTypePersonalUserUpdateDocument);
 
-				if (result.data?.personalUserUpdate) {
-					navigate('/signup/account-setup');
-				}
-			} catch (e) {
-				// Error is handled below
-				console.log('Error updating account type:', e);
-			}
-		},
-		[currentUserData, updateAccountType, navigate, savingAccountType],
-	);
+  // TODO: add query to fetch available plans
 
-	const errorMessage = userError || updateError;
+  const handleSaveAndContinue = useCallback(
+    async (values: PersonalUserUpdateInput) => {
+      if (updateUserLoading) {
+        return;
+      }
+      try {
+        const userId = currentUserData?.currentPersonalUserAndCreateIfNotExists?.id;
+        if (!userId) {
+          return;
+        }
+        const result = await updateUser({
+          variables: {
+            input: values,
+          },
+        });
 
-	return (
-		<ComponentQueryLoader
-			loading={loadingUser || savingAccountType}
-			hasData={currentUserData}
-			error={errorMessage}
-			hasDataComponent={
-				<SelectAccountType
-					currentUserData={
-						currentUserData?.currentPersonalUserAndCreateIfNotExists
-					}
-					loadingUser={loadingUser}
-					handleUpdateAccountType={handleUpdateAccountType}
-					savingAccountType={savingAccountType}
-			/>
-		}
-		/>
-	);
+        if (result.data?.personalUserUpdate.status.success) {
+          message.success("Account type updated successfully");
+          navigate("/signup/account-setup");
+        } else {
+          message.error(`Failed to update account type: ${result.data?.personalUserUpdate.status.errorMessage}`);
+        }
+      } catch {
+        // Error is handled below
+        message.error(`Failed to update account type`);
+      }
+    },
+    [currentUserData, updateUser, navigate, updateUserLoading]
+  );
+
+  const error = userError || updateError || accountPlansError;
+
+  return (
+    <ComponentQueryLoader
+      loading={loadingUser || loadingAccountPlans}
+      hasData={currentUserData && accountPlansData}
+      error={error}
+      hasDataComponent={
+        <SelectAccountType
+          accountPlans={accountPlansData?.accountPlans as AccountPlan[]}
+          currentUserData={currentUserData?.currentPersonalUserAndCreateIfNotExists}
+          loading={updateUserLoading}
+          onSaveAndContinue={handleSaveAndContinue}
+        />
+      }
+    />
+  );
 };

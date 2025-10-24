@@ -22,6 +22,11 @@ import {
 	type ListingContextApplicationService,
 } from './contexts/listing/index.ts';
 
+import {
+	AccountPlan,
+	type AccountPlanContextApplicationService,
+} from './contexts/account-plan/index.ts';
+
 export interface ApplicationServices {
 	User: UserContextApplicationService;
 	Conversation: ConversationContextApplicationService;
@@ -29,6 +34,7 @@ export interface ApplicationServices {
 	ReservationRequest: ReservationRequestContextApplicationService;
 	get verifiedUser(): VerifiedUser | null;
 	Payment: PaymentApplicationService;
+	AccountPlan: AccountPlanContextApplicationService;
 }
 
 export interface VerifiedJwt {
@@ -102,6 +108,7 @@ export const buildApplicationServicesFactory = (
 			ReservationRequest: ReservationRequest(dataSources),
 			Listing: Listing(dataSources),
 			Conversation: Conversation(dataSources),
+			AccountPlan: AccountPlan(dataSources),
 		};
 	};
 

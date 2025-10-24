@@ -25,3 +25,15 @@ export {
 } from './personal-user-role-conversation-permissions.ts';
 export type { PersonalUserRoleRepository } from './personal-user-role.repository.ts';
 export type { PersonalUserRoleUnitOfWork } from './personal-user-role.uow.ts';
+
+export {
+	PersonalUserRoleUserPermissions,
+	type PersonalUserRoleUserPermissionsEntityReference,
+	type PersonalUserRoleUserPermissionsProps,
+} from './personal-user-role-user-permissions.ts';
+
+export {
+	PersonalUserRoleAccountPlanPermissions,
+	type PersonalUserRoleAccountPlanPermissionsEntityReference,
+	type PersonalUserRoleAccountPlanPermissionsProps,
+} from './personal-user-role-account-plan-permissions.ts';
