@@ -1,0 +1,12 @@
+{
+	"extends": "@cellix/typescript-config/node.json",
+	"compilerOptions": {
+		"rootDir": ".",
+		"outDir": "dist"
+	},
+	"include": ["src/**/*.ts"],
+	"references": [
+		{ "path": "../data-sources-mongoose-models" },
+		{ "path": "../../cellix/mock-mongodb-memory-server-seedwork" }
+	]
+}

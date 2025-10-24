@@ -1,4 +1,3 @@
-import React from 'react';
 import styles from './hero-section.module.css';
 import { SearchBar } from '@sthrift/ui-components';
 import heroImg from '@sthrift/ui-components/src/assets/hero/hero.png';

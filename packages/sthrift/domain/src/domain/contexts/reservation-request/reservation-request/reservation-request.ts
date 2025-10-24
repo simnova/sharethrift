@@ -36,6 +36,14 @@ export class ReservationRequest<props extends ReservationRequestProps>
 		reservationPeriodEnd: Date,
 		passport: Passport,
 	): ReservationRequest<props> {
+		// Validate reservation period
+		if (
+			reservationPeriodStart &&
+			reservationPeriodEnd &&
+			reservationPeriodStart.getTime() >= reservationPeriodEnd.getTime()
+		) {
+			throw new Error('Reservation start date must be before end date');
+		}
 		const instance = new ReservationRequest(newProps, passport);
 		instance.markAsNew();
 		instance.state = state;
@@ -294,7 +302,10 @@ export class ReservationRequest<props extends ReservationRequestProps>
 			);
 		}
 
-		if (this.props.state.valueOf() !== ReservationRequestStates.REQUESTED) {
+		if (
+			this.props.state.valueOf() !== ReservationRequestStates.REQUESTED &&
+			this.props.state.valueOf() !== ReservationRequestStates.REJECTED
+		) {
 			throw new Error('Cannot cancel reservation in current state');
 		}
 

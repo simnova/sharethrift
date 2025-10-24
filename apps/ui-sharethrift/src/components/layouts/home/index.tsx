@@ -1,15 +1,14 @@
 import { Route, Routes } from 'react-router-dom';
-import AccountRoutes from './account/index.tsx';
-import AdminDashboardRoutes from './admin-dashboard/index.tsx';
-import MessagesRoutes from './messages/Index.tsx';
-import MyListingsRoutes from './my-listings/Index.tsx';
-import MyReservationsRoutes from './my-reservations/Index.tsx';
-import Listings from './pages/all-listings-page.tsx';
-import ViewListing from './pages/view-listing-page.tsx';
-import CreateListing from './pages/create-listing-page.tsx';
-import HomeTabsLayout from './section-layout.tsx';
+import { AccountRoutes } from './account/index.tsx';
+import { MessagesRoutes } from './messages/Index.tsx';
+import { MyListingsRoutes } from './my-listings/Index.tsx';
+import { MyReservationsRoutes } from './my-reservations/Index.tsx';
+import { Listings } from './pages/all-listings-page.tsx';
+import { ViewListing } from './pages/view-listing-page.tsx';
+import { CreateListing } from './pages/create-listing-page.tsx';
+import { HomeTabsLayout } from './section-layout.tsx';
 
-export default function HomeRoutes() {
+export const HomeRoutes: React.FC = () => {
 	return (
 		<Routes>
 			<Route path="" element={<HomeTabsLayout />}>
@@ -20,7 +19,6 @@ export default function HomeRoutes() {
 				<Route path="my-reservations/*" element={<MyReservationsRoutes />} />
 				<Route path="messages/*" element={<MessagesRoutes />} />
 				<Route path="account/*" element={<AccountRoutes />} />
-				<Route path="admin-dashboard/*" element={<AdminDashboardRoutes />} />
 			</Route>
 		</Routes>
 	);

@@ -1,161 +1,108 @@
----
-applyTo: "apps/ui-sharethrift/src/components/layouts/**/*"
----
-
 # Copilot Instructions: Layouts
 
-## Internal References
-- ui.instructions.md
-- components.instructions.md
-- pages.instructions.md
-- container-components.instructions.md
-- presentational-components.instructions.md
+The `layouts/` directory defines shared page scaffolding and route structures for the applicant-facing UI. Layouts wrap content in consistent structure (headers, sidebars, footers) and control top-level routing.
 
 ## Purpose
 
-- The `layouts` directory provides reusable layout components and containers for structuring pages and feature flows in the applicant-facing web UI.
-- Layouts define page scaffolding, routing, and shared UI regions (headers, footers, sidebars).
+- Define reusable layout components for app sections.
+- Encapsulate routing, navigation, and shared UI regions.
+- Use for authenticated and unauthenticated flows (e.g., `root/` layout).
 
-## Architecture & Patterns
+## Patterns & Structure
 
-- **React + TypeScript**: Use functional components with strict typing for reliability and maintainability.
-- **Feature-based Structure**: Organize layouts by feature or domain concept (e.g., applicant, cases, shared).
-- **Composition**: Prefer composition over inheritance; layouts should wrap or compose child components.
+- **React + TypeScript**: Use functional components with strict typing.
+- **Feature-Based Layouts**: Organize by domain (e.g., `applicant/`, `cases/`, `shared/`).
+- **Composition over Inheritance**: Wrap child content using layout components.
 
-## Coding Conventions
+## File Conventions
 
-- Use functional components and React hooks.
-- Each layout component must have a corresponding `{ComponentName}Props` type.
-- Component name must match file name in PascalCase. Each file should export a single component.
-- Use kebab-case for file and directory names.
+- Use **PascalCase** for component names and matching file names.
+- Use **kebab-case** for file/folder paths.
 - Suffix container components with `Container` (e.g., `SectionLayoutContainer`).
-- Use absolute imports from the `src` root.
-- Group imports: external libraries first, then internal modules.
+- Use absolute imports from `src/`.
 
 ## Routing & Navigation
 
-- **Each layout must have an `index.tsx` file that defines all top-level routes for that layout.**
-    - These routes are mapped to page components from the `pages/` folder.
-    - The top-level routes in `index.tsx` appear in the sidebar navigation menu.
-    - Each route uses a page component from `pages/` as its `element`.
-    - The sidebar navigation is built from the layout's route configuration and reflects these top-level routes.
-	- The component name in `index.tsx` should match the layout name in PascalCase.
-- **Page components in `pages/` must be mapped in `index.tsx` to be accessible via navigation.**
+- Each layout must include an `index.tsx` that defines all top-level routes.
+- These routes:
+  - Map to page components from `pages/`.
+  - Drive the sidebar navigation menu.
+  - Use the layout’s main component as the top-level wrapper (e.g., `SectionLayoutContainer`).
+- Route config (`pageLayouts`) includes path, title, icon, ID, and optional `parent` key.
 
-### Example: Mapping Routes to Page Components in `index.tsx`
+### Example Route Mapping
 
 ```tsx
-import { Routes, Route } from 'react-router-dom';
-import { SectionLayoutContainer } from './section-layout.container';
-import { Home } from './pages/home';
-import { Members } from './pages/members';
-// ...other imports
-
-const pageLayouts = [
-	{ path: '', title: 'Home', icon: <HomeOutlined />, id: 'ROOT' },
-	{ path: 'members/*', title: 'Members', icon: <ContactsOutlined />, id: 5, parent: 'ROOT' },
-	// ...other layouts
-];
-
-export const Admin = () => (
-	<Routes>
-		<Route path="" element={<SectionLayoutContainer pageLayouts={pageLayouts} />}>
-			<Route path="" element={<Home />} />
-			<Route path="members/*" element={<Members />} />
-			{/* ...other routes */}
-		</Route>
-	</Routes>
-);
+<Route path="" element={<SectionLayoutContainer pageLayouts={pageLayouts} />}>
+  <Route path="" element={<Home />} />
+  <Route path="members/*" element={<Members />} />
+</Route>
 ```
-
-This pattern ensures each top-level route in `index.tsx` is mapped to a page component from the `pages/` folder and appears in the sidebar navigation.
 
 ## Styling
 
-- Use Ant Design components and theming for UI consistency.
-- Use Tailwind CSS for custom styles as needed.
-- Prefer CSS modules or scoped styles for custom styles if Tailwind inline styles become extensive.
+- Use **Ant Design** for consistent components.
+- Use **Tailwind CSS** for custom styles.
+- Use scoped styles or CSS modules if Tailwind isn't sufficient.
 
-## State Management
+## State & Data
 
-- Use React hooks (`useState`, `useEffect`, etc.) for local state. 
-- Use context or state management libraries only when necessary for shared/global state.
-
-## Accessibility
-
-- Ensure layouts are accessible (ARIA attributes, keyboard navigation, semantic HTML).
-- Use accessible Ant Design components for navigation and structure.
+- Use React hooks (`useState`, `useEffect`) for local state.
+- Use context or external state libraries only when necessary.
+- Use GraphQL via Apollo hooks in containers (if needed).
 
 ## Error Handling
 
-- Handle loading and error states gracefully (e.g., `<Skeleton />`, `<Empty />`, `<Alert />`).
-- Provide fallback UI for errors and blocked access.
+- Handle loading and error states with `<Skeleton />`, `<Empty />`, `<Alert />`, etc.
+- Provide fallback UI for blocked access or no data.
 
-## Reusability
+## Accessibility
 
-- Make layouts reusable and composable for different page types and flows.
-- Avoid hardcoding values; use props and context.
+- Ensure layouts and nav are accessible (ARIA, keyboard support, semantic HTML).
+- Use accessible Ant Design components.
 
 ## Testing
 
-- Write unit tests for layout components.
-- Every layout should have a corresponding Storybook story.
+- Each layout should have:
+  - Unit tests
+  - A Storybook story
+  - Optional container tests if logic is non-trivial
 
 ## Performance
 
-- Memoize expensive computations with `useMemo` or `React.memo`.
+- Memoize layout components or logic-heavy sections (`useMemo`, `React.memo`).
 - Avoid unnecessary re-renders.
 
 ## Folder Structure
 
 ```
 layouts/
-|-- root/                                       # Required: unauthenticated entry point for the application
-|   |-- index.tsx                               # Required: defines page layouts and configures available routes
-|   |-- section-layout.tsx                      # Required: shared structure for all pages in this layout
-|   |-- sub-page-layout.tsx                     # Optional: additional shared layout structure for sub-pages
-|   |-- components/                             # Required: supporting components
-|   |   |-- {component-name}.container.graphql   # Optional: GraphQL queries/mutations/fragments
-|   |   |-- {component-name}.container.tsx       # Optional: container for data fetching and logic
-|   |   |-- {component-name}.stories.tsx         # Required: Storybook stories for the presentational component
-|   |   |-- {component-name}.tsx                 # Required: presentational component for rendering the data
-|   |-- pages/                                   # Required: page components using container components to render full pages
-|   |   |-- {component-name}.tsx                 # Required: page component for rendering the full page
-|   |   |-- {component-name}.stories.tsx         # Required: Storybook stories for the page component
-|   |-- ...
-|-- {layout-name}/                          # Optional: layouts for a specific section of the application
-|   |-- index.tsx                           # Required: defines page layouts and configures available routes
-|   |-- section-layout.container.graphql    # Optional: GraphQL queries/mutations/fragments for section layout
-|   |-- section-layout.container.tsx        # Optional: container for data fetching and logic for section layout
-|   |-- section-layout.tsx                  # Required: shared structure for all pages in this layout
-|   |-- sub-page-layout.tsx                 # Optional: additional shared layout structure for sub-pages
-|   |-- components/                         # Required: supporting components
-|   |   |-- ...
-|   |-- pages/                              # Optional: page components using container components to render full pages
-|   |   |-- ...
-|   |-- ...
-|-- ...
+  root/
+    index.tsx                    # Required: route config
+    section-layout.tsx           # Required: shared layout wrapper
+    sub-page-layout.tsx          # Optional
+    components/                  # Supporting layout components
+    pages/                       # Page components rendered by routes
+  {layout-name}/
+    index.tsx
+    section-layout.tsx
+    components/
+    pages/
 ```
 
-- The `root` layout is always required and provides the global scaffolding and entry points for the application (e.g., top-level routing, authentication, global UI regions).
-- Additional layout folders (for features, roles, or business domains) are included as needed, based on the application's business requirements and structure.
-- Every layout folder must include:
-	- `section-layout.tsx`: The shared structure component that all pages in the layout must use.
-	- `index.tsx`: The entry point for the layout, defining available routes and ensuring each route uses the section layout.
-- Each feature folder may also include:
-	- Supporting components (e.g., header.tsx, footer.tsx, navigation, etc.).
-	- GraphQL fragments/queries, if applicable.
-	- Storybook stories and tests for each layout component.
-	- Container components for data fetching and logic separation.
-	- Sub-page layouts for additional structure.
-	- Page components for individual views.
-- Use kebab-case for file and directory names.
-- Use PascalCase for component names.
-- Avoid deeply nested folders; keep structure clear and maintainable.
+- `root/` is always required as the unauthenticated/global entry point.
+- Each layout must include `section-layout.tsx` and `index.tsx`.
+- Layouts may also include:
+  - GraphQL queries/mutations (`*.container.graphql`)
+  - Container components for layout-level logic
+  - Presentational components
+  - Storybook stories
+  - Sub-page layouts for complex flows
+
 ## References
 
-- [React Documentation](https://react.dev/)
-- [Ant Design Documentation](https://ant.design/docs/react/introduce)
-- [Storybook Documentation](https://storybook.js.org/docs/react/get-started/introduction)
+- [React Docs](https://react.dev/)
+- [Ant Design](https://ant.design/docs/react/introduce)
+- [Storybook Docs](https://storybook.js.org/docs/react/get-started/introduction)
 - [TypeScript Handbook](https://www.typescriptlang.org/docs/)
-- [MDN Accessibility Guide](https://developer.mozilla.org/en-US/docs/Web/Accessibility)
+- [MDN Accessibility](https://developer.mozilla.org/en-US/docs/Web/Accessibility)

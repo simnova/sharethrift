@@ -34,8 +34,11 @@ export class ServiceCybersource
 	public startUp(): Promise<
 		Exclude<ServiceCybersource, ServiceBase<ServiceCybersource>>
 	> {
-		if (this.client) throw new Error('ServiceCybersource is already started');
-		this.client = axios.create({ baseURL: this.baseUrl });
+		if (this.client) { throw new Error('ServiceCybersource is already started'); }
+        console.log('ServiceCybersource started with baseUrl:', this.baseUrl);
+        if (process.env['NODE_ENV'] === 'development') {
+            this.client = axios.create({ baseURL: this.baseUrl });
+        }
 		return this as Exclude<ServiceCybersource, ServiceBase<ServiceCybersource>>;
 	}
 
@@ -46,10 +49,11 @@ export class ServiceCybersource
 
 	//   ========== This code will get deleted ===========
 	public get service(): AxiosInstance {
-		if (!this.client)
+		if (!this.client) {
 			throw new Error(
 				'ServiceCybersource is not started - cannot access service',
 			);
+		}
 		return this.client;
 	}
 

@@ -4,7 +4,6 @@ node_modules
 # .gitignore template - https://github.com/github/gitignore/blob/main/Node.gitignore
 lcov-report
 __*
-local.settings.json
 
 # Turborepo
 .turbo
@@ -16,6 +15,7 @@ local.settings.json
 **/generated.ts
 **/generated.tsx
 **/graphql.schema.json
+
 # Build artifacts
 dist/
 *.tsbuildinfo

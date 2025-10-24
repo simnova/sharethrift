@@ -20,10 +20,10 @@ project.lock.json
 /data
 .secrets
 appsettings.json
-local.settings.json
 
 node_modules
 dist
+local.settings.json
 
 # Local python packages
 .python_packages/
