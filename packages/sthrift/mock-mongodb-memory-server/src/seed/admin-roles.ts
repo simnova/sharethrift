@@ -1,0 +1,100 @@
+import type { Models } from '@sthrift/data-sources-mongoose-models';
+
+export const adminRoles = [
+	{
+		_id: '707f1f77bcf86cd799439031',
+		roleType: 'admin-role',
+		roleName: 'Super Admin',
+		isDefault: false,
+		permissions: {
+			userPermissions: {
+				canBlockUsers: true,
+				canViewAllUsers: true,
+				canEditUsers: true,
+				canDeleteUsers: true,
+				canManageUserRoles: true,
+			} as Models.Role.AdminRoleUserPermissions,
+			contentPermissions: {
+				canViewReports: true,
+				canModerateListings: true,
+				canModerateConversations: true,
+				canModerateReservations: true,
+				canDeleteContent: true,
+			} as Models.Role.AdminRoleContentPermissions,
+			systemPermissions: {
+				canAccessAnalytics: true,
+				canManageRoles: true,
+				canViewSystemLogs: true,
+				canManageSystemSettings: true,
+				canAccessDatabaseTools: true,
+			} as Models.Role.AdminRoleSystemPermissions,
+		} as Models.Role.AdminRolePermissions,
+		schemaVersion: '1.0.0',
+		createdAt: new Date('2023-01-01T09:00:00Z'),
+		updatedAt: new Date('2023-01-01T09:00:00Z'),
+	},
+	{
+		_id: '707f1f77bcf86cd799439032',
+		roleType: 'admin-role',
+		roleName: 'Content Moderator',
+		isDefault: false,
+		permissions: {
+			userPermissions: {
+				canBlockUsers: false,
+				canViewAllUsers: true,
+				canEditUsers: false,
+				canDeleteUsers: false,
+				canManageUserRoles: false,
+			} as Models.Role.AdminRoleUserPermissions,
+			contentPermissions: {
+				canViewReports: true,
+				canModerateListings: true,
+				canModerateConversations: true,
+				canModerateReservations: true,
+				canDeleteContent: false,
+			} as Models.Role.AdminRoleContentPermissions,
+			systemPermissions: {
+				canAccessAnalytics: false,
+				canManageRoles: false,
+				canViewSystemLogs: false,
+				canManageSystemSettings: false,
+				canAccessDatabaseTools: false,
+			} as Models.Role.AdminRoleSystemPermissions,
+		} as Models.Role.AdminRolePermissions,
+		schemaVersion: '1.0.0',
+		createdAt: new Date('2023-01-01T09:00:00Z'),
+		updatedAt: new Date('2023-01-01T09:00:00Z'),
+	},
+	{
+		_id: '707f1f77bcf86cd799439033',
+		roleType: 'admin-role',
+		roleName: 'Read Only Admin',
+		isDefault: true,
+		permissions: {
+			userPermissions: {
+				canBlockUsers: false,
+				canViewAllUsers: true,
+				canEditUsers: false,
+				canDeleteUsers: false,
+				canManageUserRoles: false,
+			} as Models.Role.AdminRoleUserPermissions,
+			contentPermissions: {
+				canViewReports: true,
+				canModerateListings: false,
+				canModerateConversations: false,
+				canModerateReservations: false,
+				canDeleteContent: false,
+			} as Models.Role.AdminRoleContentPermissions,
+			systemPermissions: {
+				canAccessAnalytics: true,
+				canManageRoles: false,
+				canViewSystemLogs: true,
+				canManageSystemSettings: false,
+				canAccessDatabaseTools: false,
+			} as Models.Role.AdminRoleSystemPermissions,
+		} as Models.Role.AdminRolePermissions,
+		schemaVersion: '1.0.0',
+		createdAt: new Date('2023-01-01T09:00:00Z'),
+		updatedAt: new Date('2023-01-01T09:00:00Z'),
+	},
+] as unknown as Models.Role.AdminRole[];

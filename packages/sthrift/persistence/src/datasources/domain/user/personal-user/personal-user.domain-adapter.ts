@@ -1,7 +1,6 @@
 import { Domain } from '@sthrift/domain';
 import type { Models } from '@sthrift/data-sources-mongoose-models';
 import { MongooseSeedwork } from '@cellix/mongoose-seedwork';
-import { PersonalUserRoleDomainAdapter } from '../../role/personal-user-role/personal-user-role.domain-adapter.ts';
 export class PersonalUserConverter extends MongooseSeedwork.MongoTypeConverter<
 	Models.User.PersonalUser,
 	PersonalUserDomainAdapter,
@@ -31,43 +30,6 @@ export class PersonalUserDomainAdapter
 	}
 	set isBlocked(value: boolean) {
 		this.doc.isBlocked = value;
-	}
-
-	get role(): Domain.Contexts.Role.PersonalUserRole.PersonalUserRoleProps {
-		if (!this.doc.role) {
-			throw new Error('role is not populated');
-		}
-		if (this.doc.role instanceof MongooseSeedwork.ObjectId) {
-			throw new Error('role is not populated or is not of the correct type');
-		}
-		return new PersonalUserRoleDomainAdapter(
-			this.doc.role as Models.Role.PersonalUserRole,
-		);
-	}
-	async loadRole(): Promise<Domain.Contexts.Role.PersonalUserRole.PersonalUserRoleProps> {
-		if (!this.doc.role) {
-			throw new Error('role is not populated');
-		}
-		if (this.doc.role instanceof MongooseSeedwork.ObjectId) {
-			await this.doc.populate('role');
-		}
-		return new PersonalUserRoleDomainAdapter(
-			this.doc.role as Models.Role.PersonalUserRole,
-		);
-	}
-	set role(role:
-		| Domain.Contexts.Role.PersonalUserRole.PersonalUserRoleEntityReference
-		| Domain.Contexts.Role.PersonalUserRole.PersonalUserRole<PersonalUserRoleDomainAdapter>) {
-		if (
-			role instanceof Domain.Contexts.Role.PersonalUserRole.PersonalUserRole
-		) {
-			this.doc.set('role', role.props.doc);
-			return;
-		}
-		if (!role?.id) {
-			throw new Error('role reference is missing id');
-		}
-		this.doc.set('role', new MongooseSeedwork.ObjectId(role.id));
 	}
 
 	get account() {

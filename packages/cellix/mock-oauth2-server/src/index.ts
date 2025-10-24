@@ -8,10 +8,14 @@ setupEnvironment();
 const app = express();
 app.disable('x-powered-by');
 const port = 4000;
+const allowedRedirectUris = new Set([
+	'http://localhost:3000/auth-redirect',      // Personal User
+	'http://localhost:3000/auth-redirect-login', // Admin User
+]);
+// Deprecated: kept for backwards compatibility
 const allowedRedirectUri =
 	// biome-ignore lint:useLiteralKeys
 	process.env['ALLOWED_REDIRECT_URI'] || 'http://localhost:3000/auth-redirect';
-const aud = allowedRedirectUri;
 // Type for user profile used in token claims
 interface TokenProfile {
 	aud: string;
@@ -146,7 +150,22 @@ async function main() {
 		const given_name = process.env['Given_Name'] ?? '';
 		// biome-ignore lint:useLiteralKeys
 		const family_name = process.env['Family_Name'] ?? '';
-		const { tid } = req.body;
+		const { tid, code } = req.body;
+		
+		// Extract redirect_uri from code (encoded in base64)
+		let aud = allowedRedirectUri; // default fallback
+		if (code && code.startsWith('mock-auth-code-')) {
+			try {
+				const base64Part = code.replace('mock-auth-code-', '');
+				const decodedRedirectUri = Buffer.from(base64Part, 'base64').toString('utf-8');
+				if (allowedRedirectUris.has(decodedRedirectUri)) {
+					aud = decodedRedirectUri;
+				}
+			} catch (e) {
+				console.error('Failed to decode redirect_uri from code:', e);
+			}
+		}
+		
 		const profile: TokenProfile = {
 			aud: aud,
 			sub: crypto.randomUUID(),
@@ -182,12 +201,17 @@ async function main() {
 
 	app.get('/authorize', (req, res) => {
 		const { redirect_uri, state } = req.query;
-		if (redirect_uri !== allowedRedirectUri) {
+		const requestedRedirectUri = redirect_uri as string;
+		
+		// Check if the requested redirect_uri is in our allowed list
+		if (!allowedRedirectUris.has(requestedRedirectUri) && requestedRedirectUri !== allowedRedirectUri) {
 			res.status(400).send('Invalid redirect_uri');
 			return;
 		}
-		const code = 'mock-auth-code';
-		const redirectUrl = `${allowedRedirectUri}?code=${code}${state ? `&state=${state}` : ''}`;
+		
+		// Store the redirect_uri in the session/state for the token endpoint
+		const code = `mock-auth-code-${Buffer.from(requestedRedirectUri).toString('base64')}`;
+		const redirectUrl = `${requestedRedirectUri}?code=${code}${state ? `&state=${state}` : ''}`;
 		res.redirect(redirectUrl);
 		return;
 	});
