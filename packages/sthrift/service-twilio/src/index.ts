@@ -12,52 +12,60 @@ type TwilioClient = InstanceType<typeof Twilio.Twilio> | undefined;
 export type { ConversationInstance, MessageInstance, IMessagingService } from '@cellix/messaging';
 
 /**
- * Real Twilio Service - uses official Twilio SDK
+ * Twilio Service - uses official Twilio SDK
  * 
  * This service implements the IMessagingService interface using the official Twilio SDK.
  * It requires valid Twilio credentials (Account SID and Auth Token) to function.
  * 
- * For development/testing with a mock server, use @sthrift/mock-service-twilio instead.
+ * For development/testing with a mock server, use MockServiceTwilio from @sthrift/mock-service-twilio instead.
  * 
  * @example
  * ```typescript
- * const service = new ServiceTwilioReal('AC123...', 'auth_token_123');
+ * const service = new ServiceTwilio('AC123...', 'auth_token_123');
  * await service.startUp();
  * const conversation = await service.createConversation('Support Chat');
  * await service.sendMessage(conversation.sid, 'Hello!', 'agent@example.com');
  * ```
  */
-export class ServiceTwilioReal implements IMessagingService {
+export class ServiceTwilio implements IMessagingService {
 	private client: TwilioClient;
 	private readonly accountSid: string;
 	private readonly authToken: string;
 
-	constructor(accountSid: string, authToken: string) {
-		this.accountSid = accountSid;
-		this.authToken = authToken;
+	constructor(accountSid?: string, authToken?: string) {
+		// biome-ignore lint/complexity/useLiteralKeys: Required by TypeScript noPropertyAccessFromIndexSignature
+		this.accountSid = accountSid ?? process.env['TWILIO_ACCOUNT_SID'] ?? '';
+		// biome-ignore lint/complexity/useLiteralKeys: Required by TypeScript noPropertyAccessFromIndexSignature
+		this.authToken = authToken ?? process.env['TWILIO_AUTH_TOKEN'] ?? '';
+		
+		if (!this.accountSid || !this.authToken) {
+			throw new Error(
+				'ServiceTwilio requires TWILIO_ACCOUNT_SID and TWILIO_AUTH_TOKEN (via constructor or environment variables)'
+			);
+		}
 	}
 
-	public async startUp(): Promise<Exclude<ServiceTwilioReal, ServiceBase>> {
+	public async startUp(): Promise<Exclude<ServiceTwilio, ServiceBase>> {
 		if (this.client) {
-			throw new Error('ServiceTwilioReal is already started');
+			throw new Error('ServiceTwilio is already started');
 		}
 
 		this.client = new Twilio.Twilio(this.accountSid, this.authToken);
-		console.log('ServiceTwilioReal started with real Twilio client');
-		return this as Exclude<ServiceTwilioReal, ServiceBase>;
+		console.log('ServiceTwilio started with real Twilio client');
+		return this as Exclude<ServiceTwilio, ServiceBase>;
 	}
 
 	public async shutDown(): Promise<void> {
 		if (!this.client) {
-			throw new Error('ServiceTwilioReal is not started - shutdown cannot proceed');
+			throw new Error('ServiceTwilio is not started - shutdown cannot proceed');
 		}
 		this.client = undefined;
-		console.log('ServiceTwilioReal stopped');
+		console.log('ServiceTwilio stopped');
 	}
 
 	public get service(): TwilioClient {
 		if (!this.client) {
-			throw new Error('ServiceTwilioReal is not started - cannot access service');
+			throw new Error('ServiceTwilio is not started - cannot access service');
 		}
 		return this.client;
 	}

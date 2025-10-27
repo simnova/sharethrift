@@ -20,35 +20,36 @@ export type { ConversationInstance, MessageInstance, IMessagingService } from '@
  * 
  * @example
  * ```typescript
- * const mockService = new ServiceTwilioMock('http://localhost:10000');
+ * const mockService = new MockServiceTwilio('http://localhost:10000');
  * await mockService.startUp();
  * const conversation = await mockService.createConversation('Test Chat');
  * ```
  */
-export class ServiceTwilioMock implements IMessagingService {
+export class MockServiceTwilio implements IMessagingService {
 	private http: AxiosInstance | undefined;
 	private readonly mockBaseUrl: string;
 
-	constructor(mockBaseUrl: string) {
-		this.mockBaseUrl = mockBaseUrl;
+	constructor(mockBaseUrl?: string) {
+		// biome-ignore lint/complexity/useLiteralKeys: Required by TypeScript noPropertyAccessFromIndexSignature
+		this.mockBaseUrl = mockBaseUrl ?? process.env['TWILIO_MOCK_URL'] ?? 'http://localhost:10000';
 	}
 
-	public async startUp(): Promise<Exclude<ServiceTwilioMock, ServiceBase>> {
+	public async startUp(): Promise<Exclude<MockServiceTwilio, ServiceBase>> {
 		if (this.http) {
-			throw new Error('ServiceTwilioMock is already started');
+			throw new Error('MockServiceTwilio is already started');
 		}
 
 		this.http = axios.create({ baseURL: this.mockBaseUrl });
-		console.log(`ServiceTwilioMock started in MOCK mode (${this.mockBaseUrl})`);
-		return this as Exclude<ServiceTwilioMock, ServiceBase>;
+		console.log(`MockServiceTwilio started in MOCK mode (${this.mockBaseUrl})`);
+		return this as Exclude<MockServiceTwilio, ServiceBase>;
 	}
 
 	public async shutDown(): Promise<void> {
 		if (!this.http) {
-			throw new Error('ServiceTwilioMock is not started - shutdown cannot proceed');
+			throw new Error('MockServiceTwilio is not started - shutdown cannot proceed');
 		}
 		this.http = undefined;
-		console.log('ServiceTwilioMock stopped');
+		console.log('MockServiceTwilio stopped');
 	}
 
 	public async getConversation(conversationId: string): Promise<ConversationInstance> {

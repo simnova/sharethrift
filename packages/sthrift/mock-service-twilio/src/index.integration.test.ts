@@ -1,16 +1,16 @@
 import { describe, it, expect, beforeAll, afterAll } from 'vitest';
 import type { Server } from 'node:http';
-import { ServiceTwilioMock } from './index.ts';
+import { MockServiceTwilio } from './index.ts';
 import { startServer, stopServer } from '@sthrift/mock-twilio-server';
 
 /**
- * Integration Tests for ServiceTwilioMock with Mock Server
+ * Integration Tests for MockServiceTwilio with Mock Server
  * 
  * These tests automatically start and stop the mock Twilio server.
  */
 
-describe('ServiceTwilioMock Integration Tests', () => {
-	let service: ServiceTwilioMock;
+describe('MockServiceTwilio Integration Tests', () => {
+	let service: MockServiceTwilio;
 	let mockServer: Server;
 	const originalEnv = { ...process.env };
 	const MOCK_SERVER_PORT = 10000;
@@ -39,25 +39,25 @@ describe('ServiceTwilioMock Integration Tests', () => {
 
 	describe('Service Lifecycle', () => {
 		it('should start up successfully in mock mode', async () => {
-			service = new ServiceTwilioMock(MOCK_SERVER_URL);
+			service = new MockServiceTwilio(MOCK_SERVER_URL);
 			await service.startUp();
 			expect(service).toBeDefined();
 			await service.shutDown();
 		});
 
 		it('should throw error when starting up twice', async () => {
-			service = new ServiceTwilioMock(MOCK_SERVER_URL);
+			service = new MockServiceTwilio(MOCK_SERVER_URL);
 			await service.startUp();
 			await expect(service.startUp()).rejects.toThrow(
-				'ServiceTwilioMock is already started',
+				'MockServiceTwilio is already started',
 			);
 			await service.shutDown();
 		});
 
 		it('should throw error when shutting down without starting', async () => {
-			service = new ServiceTwilioMock(MOCK_SERVER_URL);
+			service = new MockServiceTwilio(MOCK_SERVER_URL);
 			await expect(service.shutDown()).rejects.toThrow(
-				'ServiceTwilioMock is not started - shutdown cannot proceed',
+				'MockServiceTwilio is not started - shutdown cannot proceed',
 			);
 		});
 	});
@@ -66,7 +66,7 @@ describe('ServiceTwilioMock Integration Tests', () => {
 		let conversationId: string;
 
 		beforeAll(async () => {
-			service = new ServiceTwilioMock(MOCK_SERVER_URL);
+			service = new MockServiceTwilio(MOCK_SERVER_URL);
 			await service.startUp();
 		});
 
@@ -131,7 +131,7 @@ describe('ServiceTwilioMock Integration Tests', () => {
 		let createdConversationId: string;
 
 		beforeAll(async () => {
-			service = new ServiceTwilioMock(MOCK_SERVER_URL);
+			service = new MockServiceTwilio(MOCK_SERVER_URL);
 			await service.startUp();
 		});
 
@@ -167,7 +167,7 @@ describe('ServiceTwilioMock Integration Tests', () => {
 
 	describe('End-to-End Workflow', () => {
 		beforeAll(async () => {
-			service = new ServiceTwilioMock(MOCK_SERVER_URL);
+			service = new MockServiceTwilio(MOCK_SERVER_URL);
 			await service.startUp();
 		});
 
@@ -216,7 +216,7 @@ describe('ServiceTwilioMock Integration Tests', () => {
 
 	describe('Error Handling', () => {
 		beforeAll(async () => {
-			service = new ServiceTwilioMock(MOCK_SERVER_URL);
+			service = new MockServiceTwilio(MOCK_SERVER_URL);
 			await service.startUp();
 		});
 
