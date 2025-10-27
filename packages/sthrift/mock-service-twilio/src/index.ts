@@ -76,6 +76,18 @@ export class MockServiceTwilio implements IMessagingService {
 			...(data.date_created && { dateCreated: new Date(data.date_created) }),
 		};
 	}
+	
+	public async getMessages(conversationId: string): Promise<MessageInstance[]> {
+		if (!this.http) throw new Error('Mock client not initialized');
+		const { data } = await this.http.get(`/v1/Conversations/${conversationId}/Messages`);
+		const messages = data.messages || [];
+		return messages.map((msg: any) => ({
+			sid: msg.sid,
+			body: msg.body,
+			...(msg.author !== undefined && { author: msg.author }),
+			...(msg.date_created && { dateCreated: new Date(msg.date_created) }),
+		}));
+	}
 
 	public async deleteConversation(conversationId: string): Promise<void> {
 		if (!this.http) throw new Error('Mock client not initialized');

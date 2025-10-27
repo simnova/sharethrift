@@ -632,6 +632,9 @@ importers:
 
   packages/sthrift/application-services:
     dependencies:
+      '@cellix/messaging':
+        specifier: workspace:*
+        version: link:../../cellix/messaging
       '@sthrift/context-spec':
         specifier: workspace:*
         version: link:../context-spec

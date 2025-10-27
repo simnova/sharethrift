@@ -44,6 +44,11 @@ export interface IMessagingService extends ServiceBase<IMessagingService> {
 		body: string,
 		author?: string,
 	): Promise<MessageInstance>;
+	
+	/**
+	 * Get messages from a conversation
+	 */
+	getMessages(conversationId: string): Promise<MessageInstance[]>;
 
 	/**
 	 * Delete a conversation

@@ -205,6 +205,12 @@ describe('MockServiceTwilio Integration Tests', () => {
 			const fetchedConv = await service.getConversation(conversation.sid);
 			expect(fetchedConv.sid).toBe(conversation.sid);
 			expect(fetchedConv.friendlyName).toBe('E2E Test Conversation');
+			
+			// 4b. Get messages for the conversation
+			const messages = await service.getMessages(conversation.sid);
+			expect(messages).toHaveLength(2);
+			expect(messages[0]?.body).toBe('First message');
+			expect(messages[1]?.body).toBe('Second message');
 
 			// 5. Delete the conversation
 			await service.deleteConversation(conversation.sid);

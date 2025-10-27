@@ -81,6 +81,17 @@ export class ServiceTwilio implements IMessagingService {
 		if (author) params.author = author;
 		return await this.client.conversations.v1.conversations(conversationId).messages.create(params);
 	}
+	
+	public async getMessages(conversationId: string): Promise<MessageInstance[]> {
+		if (!this.client) throw new Error('Twilio client not initialized');
+		const messagesList = await this.client.conversations.v1.conversations(conversationId).messages.list();
+		return messagesList.map(msg => ({
+			sid: msg.sid,
+			body: msg.body,
+			...(msg.author !== undefined && { author: msg.author }),
+			...(msg.dateCreated && { dateCreated: msg.dateCreated }),
+		}));
+	}
 
 	public async deleteConversation(conversationId: string): Promise<void> {
 		if (!this.client) throw new Error('Twilio client not initialized');

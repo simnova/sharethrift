@@ -101,7 +101,7 @@ export const buildApplicationServicesFactory = (
 			Payment: paymentApplicationService,
 			ReservationRequest: ReservationRequest(dataSources),
 			Listing: Listing(dataSources),
-			Conversation: Conversation(dataSources),
+			Conversation: Conversation(dataSources, infrastructureServicesRegistry.messagingService),
 		};
 	};
 
