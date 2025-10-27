@@ -537,9 +537,6 @@ importers:
       '@cellix/typescript-config':
         specifier: workspace:*
         version: link:../typescript-config
-      '@cellix/vitest-config':
-        specifier: workspace:*
-        version: link:../vitest-config
 
   packages/cellix/typescript-config: {}
 
