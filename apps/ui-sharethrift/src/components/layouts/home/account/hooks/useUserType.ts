@@ -4,26 +4,22 @@ import {
 	type GetCurrentAdminUserQuery,
 } from '../../../../../generated.tsx';
 
-/**
- * Hook to check if current user is an admin.
+/*
+ * Hook to check if current user is an admin to display UI components conditionally.
  * Returns null for currentAdminUser if user is not an admin.
- * 
- * Note: This is only for UI convenience - actual authorization
- * happens on the backend via GraphQL resolvers and domain layer.
  */
 export const useIsAdmin = () => {
 	// Check which portal type the user logged in with
 	const loginPortalType = globalThis.sessionStorage?.getItem('loginPortalType');
-	
-	// If loginPortalType is not set (e.g., old session), query anyway and let backend decide
-	// If it's explicitly 'UserPortal', skip the query
-	const shouldSkipQuery = loginPortalType === 'UserPortal';
+
+	// Only query if explicitly logged in through AdminPortal
+	const shouldQueryAdmin = loginPortalType === 'AdminPortal';
 
 	const { data, loading, error } = useQuery<GetCurrentAdminUserQuery>(
 		GetCurrentAdminUserDocument,
 		{
-			skip: shouldSkipQuery,
-		}
+			skip: !shouldQueryAdmin,
+		},
 	);
 
 	return {

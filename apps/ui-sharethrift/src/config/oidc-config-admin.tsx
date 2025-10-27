@@ -23,6 +23,6 @@ export const oidcConfigAdmin = {
 			globalThis.sessionStorage.removeItem('redirectTo');
 		}
 		// Clear the portal type after successful login
-		globalThis.sessionStorage.removeItem('loginPortalType');
+		//globalThis.sessionStorage.removeItem('loginPortalType');
 	},
 };
