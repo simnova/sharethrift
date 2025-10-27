@@ -1,4 +1,4 @@
-import type { ServiceCybersource } from '@sthrift/service-cybersource';
+import type { MockServiceCybersource } from '@sthrift/service-cybersource';
 
 export interface PaymentApplicationService {
 	processPayment(
@@ -165,9 +165,9 @@ export interface PlanCreation {
 export class DefaultPaymentApplicationService
 	implements PaymentApplicationService
 {
-	private readonly paymentService: ServiceCybersource;
+	private readonly paymentService: MockServiceCybersource;
 
-	constructor(paymentService: ServiceCybersource) {
+	constructor(paymentService: MockServiceCybersource) {
 		this.paymentService = paymentService;
 	}
 

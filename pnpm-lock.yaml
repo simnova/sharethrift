@@ -532,6 +532,15 @@ importers:
         specifier: ^6.0.1
         version: 6.0.1
 
+  packages/cellix/payment-seedwork:
+    devDependencies:
+      '@cellix/typescript-config':
+        specifier: workspace:*
+        version: link:../typescript-config
+      '@cellix/vitest-config':
+        specifier: workspace:*
+        version: link:../vitest-config
+
   packages/cellix/typescript-config: {}
 
   packages/cellix/ui-core:
@@ -932,6 +941,9 @@ importers:
       '@cellix/api-services-spec':
         specifier: workspace:*
         version: link:../../cellix/api-services-spec
+      '@cellix/payment-seedwork':
+        specifier: workspace:*
+        version: link:../../cellix/payment-seedwork
       axios:
         specifier: ^1.6.0
         version: 1.12.2
