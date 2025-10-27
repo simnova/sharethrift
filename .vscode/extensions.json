@@ -5,6 +5,7 @@
     "azurite.azurite",
     "biomejs.biome",
     "vitest.explorer",
-    "TypeScriptTeam.native-preview"
+    "sourcery.sourcery",
+    "SonarSource.sonarlint-vscode"
   ]
 }
