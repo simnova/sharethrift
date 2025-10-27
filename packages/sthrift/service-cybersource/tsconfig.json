@@ -6,5 +6,8 @@
 	},
 	"include": ["src/**/*.ts"],
 	"exclude": ["node_modules", "dist"],
-	"references": [{ "path": "../../cellix/api-services-spec" }]
+	"references": [
+		{ "path": "../../cellix/api-services-spec" },
+		{ "path": "../../cellix/payment-seedwork" }
+	]
 }
