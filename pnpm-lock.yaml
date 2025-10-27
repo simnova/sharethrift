@@ -880,6 +880,9 @@ importers:
       '@cellix/vitest-config':
         specifier: workspace:*
         version: link:../../cellix/vitest-config
+      '@sthrift/mock-twilio-server':
+        specifier: workspace:*
+        version: link:../mock-twilio-server
       '@types/node':
         specifier: ^22.0.0
         version: 22.18.12
@@ -902,6 +905,9 @@ importers:
       '@types/express':
         specifier: ^4.17.21
         version: 4.17.23
+      '@types/node':
+        specifier: ^22.0.0
+        version: 22.18.12
       rimraf:
         specifier: ^6.0.1
         version: 6.0.1
