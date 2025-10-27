@@ -1,3 +1,4 @@
+import { randomBytes } from 'node:crypto';
 import type {
 	Conversation,
 	Message,
@@ -17,12 +18,11 @@ class MockTwilioStore {
 	readonly ACCOUNT_SID = `AC${'0'.repeat(32)}`;
 
 	/**
-	 * Generate a Twilio-like SID
+	 * Generate a Twilio-like SID using cryptographically secure random bytes
 	 */
 	generateSid(prefix: 'CH' | 'IM' | 'MB'): string {
-		const randomHex = Array.from({ length: 32 }, () =>
-			Math.floor(Math.random() * 16).toString(16),
-		).join('');
+		// Use crypto.randomBytes for secure random generation (16 bytes = 32 hex chars)
+		const randomHex = randomBytes(16).toString('hex');
 		return `${prefix}${randomHex}`;
 	}
 
