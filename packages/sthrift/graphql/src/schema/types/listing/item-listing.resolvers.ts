@@ -12,14 +12,7 @@ interface MyListingsArgs {
 	sorter?: { field: string; order: 'ascend' | 'descend' };
 }
 
-// Utility to safely convert date-like values to ISO strings
-const getIso = (v: unknown) => {
-	try {
-		return (v as { toISOString?: () => string })?.toISOString?.() ?? '';
-	} catch {
-		return '';
-	}
-};
+
 
 const itemListingResolvers = {
 	Query: {
@@ -35,35 +28,9 @@ const itemListingResolvers = {
 			if (sharerId !== undefined) pagedArgs.sharerId = sharerId;
 			const result = await context.applicationServices.Listing.ItemListing.queryPaged(pagedArgs);
 
+			// Persistence now returns admin DTOs directly, forward through
 			return {
-				items: result.items.map((listing) => {
-					// Map listing entity reference directly — mapping helpers removed per request
-					type ListingLike = {
-						sharingPeriodStart?: unknown;
-						sharingPeriodEnd?: unknown;
-						images?: string[];
-						createdAt?: unknown;
-						state?: string;
-						id?: string;
-						title?: string;
-					};
-					const l = listing as unknown as ListingLike;
-					// use shared getIso helper above
-					const start = getIso(l.sharingPeriodStart);
-					const end = getIso(l.sharingPeriodEnd);
-					const images = l.images;
-					const createdAt = getIso(l.createdAt);
-					const state = l.state ?? undefined;
-					return {
-						id: (l.id as string) ?? '',
-						title: (l.title as string) ?? '',
-						image: images && images.length > 0 ? images[0] : null,
-						publishedAt: createdAt || null,
-						reservationPeriod: `${start.slice(0, 10)} - ${end.slice(0, 10)}`,
-						status: state?.toString?.().trim?.() || 'Unknown',
-						pendingRequestsCount: 0,
-					};
-				}),
+				items: result.items,
 				total: result.total,
 				page: result.page,
 				pageSize: result.pageSize,
@@ -95,39 +62,13 @@ const itemListingResolvers = {
 			const pagedArgs = buildPagedArgs(args, { useDefaultStatuses: true });
 			const result = await context.applicationServices.Listing.ItemListing.queryPaged(pagedArgs);
 
-			return {
-				items: result.items.map((listing) => {
-					// Map listing entity reference directly — mapping helpers removed per request
-					type ListingLike = {
-						sharingPeriodStart?: unknown;
-						sharingPeriodEnd?: unknown;
-						images?: string[];
-						createdAt?: unknown;
-						state?: string;
-						id?: string;
-						title?: string;
-					};
-					const l = listing as unknown as ListingLike;
-					// use shared getIso helper above
-					const start = getIso(l.sharingPeriodStart);
-					const end = getIso(l.sharingPeriodEnd);
-					const images = l.images;
-					const createdAt = getIso(l.createdAt);
-					const state = l.state ?? undefined;
-					return {
-						id: (l.id as string) ?? '',
-						title: (l.title as string) ?? '',
-						image: images && images.length > 0 ? images[0] : null,
-						publishedAt: createdAt || null,
-						reservationPeriod: `${start.slice(0, 10)} - ${end.slice(0, 10)}`,
-						status: state?.toString?.().trim?.() || 'Unknown',
-						pendingRequestsCount: 0,
-					};
-				}),
-				total: result.total,
-				page: result.page,
-				pageSize: result.pageSize,
-			};
+				// Persistence now returns admin DTOs directly, forward through
+				return {
+					items: result.items,
+					total: result.total,
+					page: result.page,
+					pageSize: result.pageSize,
+				};
 		},
 	},
 	Mutation: {

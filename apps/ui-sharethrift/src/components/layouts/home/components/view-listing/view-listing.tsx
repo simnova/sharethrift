@@ -11,7 +11,7 @@ import type {
 export interface ViewListingProps {
 	listing: ItemListing;
 	userIsSharer: boolean;
-	isAuthenticated: boolean;
+	isAuthenticated?: boolean;
 	userReservationRequest:
 		| ViewListingActiveReservationRequestForListingQuery['myActiveReservationForListing']
 		| null;
@@ -21,7 +21,7 @@ export interface ViewListingProps {
 export const ViewListing: React.FC<ViewListingProps> = ({
 	listing,
 	userIsSharer,
-	isAuthenticated,
+	isAuthenticated = true,
 	userReservationRequest,
 	sharedTimeAgo,
 }) => {

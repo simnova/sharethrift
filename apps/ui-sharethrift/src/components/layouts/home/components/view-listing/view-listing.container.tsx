@@ -16,9 +16,9 @@ import {
 } from '../../../../../generated.tsx';
 
 export const ViewListingContainer: React.FC<{
-	isAuthenticated: boolean;
+	isAuthenticated?: boolean;
 }> = ({
-	isAuthenticated,
+	isAuthenticated = true,
 }) => {
 	const { listingId } = useParams();
 

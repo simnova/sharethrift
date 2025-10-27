@@ -3,10 +3,13 @@ import type { DataSources } from '@sthrift/persistence';
 import { type ItemListingCreateCommand, create } from './create.ts';
 import { type ItemListingQueryByIdCommand, queryById } from './query-by-id.ts';
 import {
-	type ItemListingQueryBySharerCommand,
-	queryBySharer,
+  type ItemListingQueryBySharerCommand,
+  queryBySharer,
 } from './query-by-sharer.ts';
 import { type ItemListingQueryAllCommand, queryAll } from './query-all.ts';
+import { queryPaged } from './query-paged.ts';
+import { remove } from './remove.ts';
+import { unblock } from './unblock.ts';
 
 export interface ItemListingApplicationService {
 	create: (
@@ -33,7 +36,15 @@ export interface ItemListingApplicationService {
 		sharerId?: string;
 		sorter?: { field: string; order: 'ascend' | 'descend' };
 	}) => Promise<{
-		items: Domain.Contexts.Listing.ItemListing.ItemListingEntityReference[];
+		items: Array<{
+			id: string;
+			title: string;
+			image: string | null;
+			publishedAt: string | null;
+			reservationPeriod: string;
+			status: string;
+			pendingRequestsCount: number;
+		}>;
 		total: number;
 		page: number;
 		pageSize: number;
@@ -43,63 +54,15 @@ export interface ItemListingApplicationService {
 }
 
 export const ItemListing = (
-	dataSources: DataSources,
+  dataSources: DataSources,
 ): ItemListingApplicationService => {
-	const uow = dataSources.domainDataSource.Listing.ItemListing.ItemListingUnitOfWork;
-
-	// helper for mutate–save in a scoped transaction
-	type ListingMutator = { requestDelete?: () => void; unblock?: () => void } & Record<string, unknown>;
-
-	const applyToListing = async (
-		id: string,
-		mutate: (listing: ListingMutator) => void,
-	): Promise<boolean> => {
-		let success = false;
-		await uow.withScopedTransaction(async (repo) => {
-			const listing = await repo.get(id);
-			// cast repository entity to the light mutator type for the callback
-			mutate(listing as unknown as ListingMutator);
-			await repo.save(listing);
-			success = true;
-		});
-		return success;
-	};
-
-	return {
-		create: create(dataSources),
-		queryById: queryById(dataSources),
-		queryBySharer: queryBySharer(dataSources),
-		queryAll: queryAll(dataSources),
-		queryPaged: async (command) => {
-			// Build args object without including undefined optional properties (exactOptionalPropertyTypes)
-			const { page, pageSize, searchText, statusFilters, sharerId, sorter } = command;
-			const args: {
-				page: number;
-				pageSize: number;
-				searchText?: string;
-				statusFilters?: string[];
-				sharerId?: string;
-				sorter?: { field: string; order: 'ascend' | 'descend' };
-			} = { page, pageSize };
-			if (searchText !== undefined) {
-				args.searchText = searchText;
-			}
-			if (statusFilters !== undefined) {
-				args.statusFilters = statusFilters;
-			}
-			if (sharerId !== undefined) {
-				args.sharerId = sharerId;
-			}
-			if (sorter !== undefined) {
-				args.sorter = sorter;
-			}
-			return await dataSources.readonlyDataSource.Listing.ItemListing.ItemListingReadRepo.getPaged(args);
-		},
-		remove: async ({ id }) => {
-			return await applyToListing(id, (listing) => listing.requestDelete?.());
-		},
-		unblock: async ({ id }) => {
-			return await applyToListing(id, (listing) => listing.unblock?.());
-		},
-	};
+  return {
+	create: create(dataSources),
+	queryById: queryById(dataSources),
+	queryBySharer: queryBySharer(dataSources),
+	queryAll: queryAll(dataSources),
+	queryPaged: queryPaged(dataSources),
+	remove: remove(dataSources),
+	unblock: unblock(dataSources),
+  };
 };
