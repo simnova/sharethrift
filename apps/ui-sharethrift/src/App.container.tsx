@@ -1,6 +1,6 @@
 import type { FC } from "react";
 import { useQuery } from "@apollo/client/react";
-import { AppCurrentPersonalUserAndCreateIfNotExistsDocument } from "./generated.tsx";
+import { AppContainerCurrentPersonalUserAndCreateIfNotExistsDocument } from "./generated.tsx";
 import { App } from "./App.tsx";
 import { ComponentQueryLoader } from "@sthrift/ui-components";
 import { useAuth } from "react-oidc-context";
@@ -9,7 +9,7 @@ import { UserIdProvider } from "./components/shared/user-context.tsx";
 export const AppContainer: FC = () => {
   const auth = useAuth();
 
-  const { data, loading, error } = useQuery(AppCurrentPersonalUserAndCreateIfNotExistsDocument, {
+  const { data, loading, error } = useQuery(AppContainerCurrentPersonalUserAndCreateIfNotExistsDocument, {
     skip: auth.isAuthenticated === false,
   });
 

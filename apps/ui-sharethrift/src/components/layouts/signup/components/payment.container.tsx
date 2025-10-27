@@ -3,6 +3,7 @@ import {
   type PaymentContainerAccountPlansFieldsFragment,
   PaymentContainerPersonalUserCybersourcePublicKeyIdDocument,
   type ProcessPaymentInput,
+  AppContainerCurrentPersonalUserAndCreateIfNotExistsDocument,
   PaymentContainerAccountPlansDocument,
   PaymentContainerCurrentPersonalUserAndCreateIfNotExistsDocument,
   SignUpPaymentContainerPersonalUserProcessPaymentDocument,
@@ -12,8 +13,11 @@ import { ComponentQueryLoader } from "@sthrift/ui-components";
 import { countriesMockData } from "./countries-mock-data.ts";
 import { message } from "antd";
 import { Payment } from "./payment.tsx";
+import { useNavigate } from "react-router-dom";
 
 export const PaymentContainer: FC = () => {
+  const navigate = useNavigate();
+
   const {
     data: personalUserCybersourcePublicKeyIdData,
     loading: personalUserCybersourcePublicKeyIdLoading,
@@ -28,13 +32,17 @@ export const PaymentContainer: FC = () => {
 
   const { data: accountPlansData, loading: accountPlansLoading, error: accountPlansError } = useQuery(PaymentContainerAccountPlansDocument);
 
-  const [processPayment] = useMutation(SignUpPaymentContainerPersonalUserProcessPaymentDocument);
+  const [processPayment] = useMutation(SignUpPaymentContainerPersonalUserProcessPaymentDocument, {
+    refetchQueries: [AppContainerCurrentPersonalUserAndCreateIfNotExistsDocument],
+  });
 
   const handleSubmitPayment = async (paymentData: ProcessPaymentInput) => {
     console.log("Payment data submitted:", paymentData);
     const result = await processPayment({ variables: { input: paymentData } });
     if (result.data?.processPayment.success) {
       message.success("Payment processed successfully");
+      // navigate to home
+      navigate("/home");
     } else {
       message.error(`Payment failed: ${result.data?.processPayment || "Unknown error"}`);
     }

@@ -209,6 +209,7 @@ const personalUserResolvers: Resolvers = {
 				// update user with subscription id
 				await context.applicationServices.User.PersonalUser.update({
 					id: personalUser.id,
+					hasCompletedOnboarding: true,
 					account: {
 						profile: {
 							billing: {

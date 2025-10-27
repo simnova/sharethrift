@@ -13,9 +13,15 @@ export function useHasCompletedOnboardingCheck(
 
 		if (isAuthenticated) {
 			if (!hasCompletedOnboarding && !isOnOnboarding) {
+				console.log(
+					'Redirecting to onboarding because user has not completed onboarding',
+				);
 				// User not onboarded, trying to access home: redirect to onboarding root
 				navigate('/signup/select-account-type', { replace: true });
 			} else if (hasCompletedOnboarding && isOnOnboarding) {
+				console.log(
+					'Redirecting to home because user has completed onboarding',
+				);
 				// User onboarded, trying to access any onboarding page: redirect to home
 				navigate('/home', { replace: true });
 			}

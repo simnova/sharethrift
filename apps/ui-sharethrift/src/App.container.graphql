@@ -1,4 +1,4 @@
-query AppCurrentPersonalUserAndCreateIfNotExists {
+query AppContainerCurrentPersonalUserAndCreateIfNotExists {
   currentPersonalUserAndCreateIfNotExists {
     id
     hasCompletedOnboarding
