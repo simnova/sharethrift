@@ -28,11 +28,7 @@ const { Sider } = Layout;
 const defaultNavItems: MenuProps['items'] = [
 	{ key: 'home', icon: <HomeOutlined />, label: 'Home' },
 	{ key: 'listings', icon: <ContainerOutlined />, label: 'My Listings' },
-	{
-		key: 'reservations',
-		icon: <CalendarOutlined />,
-		label: 'My Reservations',
-	},
+	{ key: 'reservations', icon: <CalendarOutlined />, label: 'My Reservations' },
 	{ key: 'messages', icon: <MessageOutlined />, label: 'Messages' },
 	{
 		key: 'account',
@@ -58,9 +54,7 @@ export const Navigation: React.FC<NavigationProps> = ({
 
 	const navItems = customNavItems || defaultNavItems;
 
-	const handleMenuClick: React.ComponentProps<typeof Menu>['onClick'] = (
-		e
-	) => {
+	const handleMenuClick: React.ComponentProps<typeof Menu>['onClick'] = (e) => {
 		// Use keyPath for nested menu items
 		let { key } = e;
 		const accountSubTabs = ['profile', 'settings', 'admin-dashboard'];
@@ -83,18 +77,13 @@ export const Navigation: React.FC<NavigationProps> = ({
 		<>
 			{/* Hamburger for mobile (top right) - only if authenticated */}
 			{isAuthenticated && (
-				<div
-					className={styles.hamburgerContainer}
-					style={{ zIndex: 1020 }}
-				>
+				<div className={styles.hamburgerContainer} style={{ zIndex: 1020 }}>
 					<Button
 						className={styles.hamburger ?? ''}
 						icon={mobileOpen ? <CloseOutlined /> : <MenuOutlined />}
 						onClick={() => setMobileOpen(!mobileOpen)}
 						type="text"
-						aria-label={
-							mobileOpen ? 'Close navigation' : 'Open navigation'
-						}
+						aria-label={mobileOpen ? 'Close navigation' : 'Open navigation'}
 					/>
 				</div>
 			)}
@@ -109,12 +98,7 @@ export const Navigation: React.FC<NavigationProps> = ({
 					collapsible
 					collapsed={collapsed}
 					onCollapse={setCollapsed}
-					style={{
-						position: 'fixed',
-						left: 0,
-						top: 64,
-						zIndex: 1000,
-					}}
+					style={{ position: 'fixed', left: 0, top: 64, zIndex: 1000 }}
 				>
 					<Menu
 						mode="inline"

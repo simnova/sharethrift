@@ -7,15 +7,13 @@ export const oidcConfig = {
 	response_type: 'code',
 	scope: import.meta.env['VITE_B2C_SCOPE'],
 	onSigninCallback: (): void => {
-		globalThis.history.replaceState(
-			{},
-			document.title,
-			globalThis.location.pathname
-		);
+		globalThis.history.replaceState({}, document.title, globalThis.location.pathname);
 		const redirectToPath = globalThis.sessionStorage.getItem('redirectTo');
 		if (redirectToPath) {
 			globalThis.location.pathname = redirectToPath;
 			globalThis.sessionStorage.removeItem('redirectTo');
 		}
+		// Clear the portal type after successful login
+		globalThis.sessionStorage.removeItem('loginPortalType');
 	},
 };

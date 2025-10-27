@@ -56,12 +56,7 @@ export const HomeTabsLayout: React.FC = () => {
 
 	const handleNavigate = (key: string) => {
 		// Handle account subroutes
-		const accountSubTabs = [
-			'profile',
-			'bookmarks',
-			'settings',
-			'admin-dashboard',
-		];
+		const accountSubTabs = ['profile', 'bookmarks', 'settings', 'admin-dashboard'];
 		if (accountSubTabs.includes(key)) {
 			navigate(`/account/${key}`);
 			return;
@@ -81,9 +76,7 @@ export const HomeTabsLayout: React.FC = () => {
 		}
 	};
 	// Responsive margin for main content: no margin if sidebar is hidden (logged out), else responsive
-	const [mainMargin, setMainMargin] = useState(
-		auth.isAuthenticated ? 240 : 0
-	);
+	const [mainMargin, setMainMargin] = useState(auth.isAuthenticated ? 240 : 0);
 	useEffect(() => {
 		const handleResize = () => {
 			if (!auth.isAuthenticated) {

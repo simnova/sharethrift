@@ -14,15 +14,9 @@ export const oidcConfigAdmin = {
 	code_verifier: true,
 	noonce: true,
 	response_type: 'code',
-	scope:
-		import.meta.env['VITE_B2C_ADMIN_SCOPE'] ??
-		import.meta.env['VITE_B2C_SCOPE'],
+	scope: import.meta.env['VITE_B2C_ADMIN_SCOPE'] ?? import.meta.env['VITE_B2C_SCOPE'],
 	onSigninCallback: (): void => {
-		globalThis.history.replaceState(
-			{},
-			document.title,
-			globalThis.location.pathname
-		);
+		globalThis.history.replaceState({}, document.title, globalThis.location.pathname);
 		const redirectToPath = globalThis.sessionStorage.getItem('redirectTo');
 		if (redirectToPath) {
 			globalThis.location.pathname = redirectToPath;
