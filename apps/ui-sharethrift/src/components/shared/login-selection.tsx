@@ -1,10 +1,12 @@
-import { Form, Input, Button, Card, Typography, Space } from 'antd';
+import { Form, Input, Button, Card, Typography, Space, Divider, Grid } from 'antd';
 import { useNavigate } from 'react-router-dom';
 import { useState } from 'react';
 import { useAuth } from 'react-oidc-context';
 import { Footer, Header } from '@sthrift/ui-components';
+import heroImg from '@sthrift/ui-components/src/assets/hero/hero-small.png';
 
 const { Title } = Typography;
+const { useBreakpoint } = Grid;
 
 interface LoginFormData {
 	username: string;
@@ -16,8 +18,10 @@ export const LoginSelection: React.FC = () => {
 	const [submitting, setSubmitting] = useState(false);
 	const navigate = useNavigate();
 	const auth = useAuth();
+	const screens = useBreakpoint();
+	const isMobile = !screens.md;
 
-	const handleLogin = async (_values: LoginFormData, isAdmin: boolean) => {
+	const handleLogin = (_values: LoginFormData, isAdmin: boolean) => {
 		setSubmitting(true);
 		try {
 			// Store the portal type for OAuth config selection
@@ -53,9 +57,9 @@ export const LoginSelection: React.FC = () => {
 			<Header
 				isAuthenticated={auth.isAuthenticated}
 				onLogin={() => navigate('/login')}
-				onLogout={() => {}}
+				onLogout={() => {'/'}}
 				onSignUp={handleOnSignUp}
-				onCreateListing={() => {}}
+				onCreateListing={() => {'/login'}}
 			/>
 			<div
 				style={{
@@ -64,6 +68,10 @@ export const LoginSelection: React.FC = () => {
 					flex: 1,
 					height: '100vh',
 					paddingTop: 64,
+					backgroundImage: `url(${heroImg})`,
+					backgroundSize: 'cover',
+					backgroundPosition: 'center',
+					backgroundRepeat: 'no-repeat',
 				}}
 			>
 				<main style={{ width: '100%' }}>
@@ -77,11 +85,15 @@ export const LoginSelection: React.FC = () => {
 						}}
 					>
 						<Card
-							style={{
-								maxWidth: 500,
-								width: '100%',
-								backgroundColor: 'transparent',
-								border: 'none',
+						style={{
+							maxWidth: 500,
+							width: '100%',
+							backgroundColor: 'rgba(232, 229, 220, 0.85)',
+							backdropFilter: 'blur(10px)',
+							border: '1px solid rgba(255, 255, 255, 0.3)',
+								borderRadius: '12px',
+								padding: '32px',
+								boxShadow: '0 8px 32px 0 rgba(31, 38, 135, 0.15)',
 							}}
 						>
 							<div
@@ -99,7 +111,7 @@ export const LoginSelection: React.FC = () => {
 										color: 'var(--color-message-text)',
 									}}
 								>
-									Login
+									Log in or Sign up
 								</Title>
 							</div>
 
@@ -112,21 +124,21 @@ export const LoginSelection: React.FC = () => {
 								autoComplete="off"
 							>
 								<Form.Item
-									label="Username"
-									name="username"
+									label="Email"
+									name="email"
 									style={{ marginBottom: 12 }}
 									rules={[
 										{
 											required: true,
-											message: 'Username is required',
+											message: 'Email is required',
 										},
 									]}
 								>
 									<Input
-										placeholder="Your Username"
+										placeholder="johndoe@email.com"
 										autoFocus
-										aria-label="Username"
-										autoComplete="username"
+										aria-label="Email"
+										autoComplete="email"
 									/>
 								</Form.Item>
 
@@ -152,16 +164,17 @@ export const LoginSelection: React.FC = () => {
 									<Space
 										style={{
 											width: '100%',
-											justifyContent: 'space-between',
+											justifyContent: 'center',
+											gap: isMobile ? '8px' : '12px',
 										}}
 									>
 										<Button
 											type="default"
-											size="large"
+											size={isMobile ? 'middle' : 'large'}
 											style={{
-												width: '180px',
-												height: '38px',
-												fontSize: '16px',
+												width: isMobile ? '140px' : '180px',
+												height: isMobile ? '36px' : '38px',
+												fontSize: isMobile ? '14px' : '16px',
 												fontWeight: 600,
 											}}
 											loading={submitting}
@@ -182,11 +195,11 @@ export const LoginSelection: React.FC = () => {
 										<Button
 											type="primary"
 											htmlType="submit"
-											size="large"
+											size={isMobile ? 'middle' : 'large'}
 											style={{
-												width: '180px',
-												height: '38px',
-												fontSize: '16px',
+												width: isMobile ? '140px' : '180px',
+												height: isMobile ? '36px' : '38px',
+												fontSize: isMobile ? '14px' : '16px',
 												fontWeight: 600,
 											}}
 											loading={submitting}
@@ -199,15 +212,37 @@ export const LoginSelection: React.FC = () => {
 
 								<div
 									style={{
-										textAlign: 'center',
+										display: 'flex',
+										justifyContent: 'space-between',
 										marginTop: '1rem',
 									}}
 								>
-									<Button type="link" onClick={handleBack}>
+									<Button type="link" onClick={handleBack} style={{ padding: 0 }}>
 										← Back to Home
+									</Button>
+									<Button type="link" onClick={() => navigate('/forgot-password')} style={{ padding: 0 }}>
+										Forgot password?
 									</Button>
 								</div>
 							</Form>
+
+							<Divider style={{ margin: '24px 0' }}>or</Divider>
+                            <br />
+							<Button
+								block
+								size="large"
+								onClick={handleOnSignUp}
+								style={{
+									height: '48px',
+									fontSize: '16px',
+									fontWeight: 600,
+									backgroundColor: '#5c8a8a',
+									borderColor: '#5c8a8a',
+									color: '#fff',
+								}}
+							>
+							Sign Up
+							</Button>
 						</Card>
 					</div>
 				</main>
