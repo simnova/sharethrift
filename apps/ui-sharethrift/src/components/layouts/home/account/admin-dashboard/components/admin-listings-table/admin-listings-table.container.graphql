@@ -1,4 +1,13 @@
-#import './admin-listings-table.fragment.graphql'
+# Inline fragment (previously in admin-listings-table.fragment.graphql)
+fragment AdminListingFields on ListingAll {
+    id
+    title
+    status
+    image
+    pendingRequestsCount
+    publishedAt
+    reservationPeriod
+}
 
 query AdminListingsTableContainerAdminListings(
   $page: Int!

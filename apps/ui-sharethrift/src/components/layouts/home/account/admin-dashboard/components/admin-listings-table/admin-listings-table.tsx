@@ -12,7 +12,7 @@ export interface AdminListingsTableProps {
   readonly data: ReadonlyArray<MyListingData>;
   readonly searchText: string;
   readonly statusFilters: ReadonlyArray<string>;
-  readonly sorter: { readonly field: string | null; readonly order: 'ascend' | 'descend' | null };
+  readonly sorter: { readonly field: string | null; readonly order: 'ascend' |  'descend' | null };
   readonly currentPage: number;
   readonly pageSize: number;
   readonly total: number;
