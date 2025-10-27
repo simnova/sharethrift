@@ -111,3 +111,4 @@ export const buildApplicationServicesFactory = (
 };
 
 export type { PersonalUserUpdateCommand } from './contexts/user/personal-user/update.ts';
+export { buildPagedArgs } from './contexts/listing/item/query-adapter.ts';
