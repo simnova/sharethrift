@@ -1,82 +1,54 @@
+import { ComponentQueryLoader } from '@sthrift/ui-components';
+import { useCurrentUserId } from '../hooks/useCurrentUserId.ts';
+import { useActiveReservations } from '../hooks/useActiveReservations.ts';
+import { useReservationMutations } from '../hooks/useReservationMutations.ts';
 import { ReservationsView } from './reservations-view.tsx';
-import type { ReservationRequest } from '../pages/index.ts';
 
-export const MOCK_ACTIVE_RESERVATIONS: ReservationRequest[] = [
-	{
-		id: '1',
-		state: 'REQUESTED',
-		reservationPeriodStart: '2025-08-15',
-		reservationPeriodEnd: '2025-08-20',
-		createdAt: '2025-08-10',
-		updatedAt: '2025-08-10',
-		listingId: 'listing1',
-		reserverId: 'user1',
-		closeRequested: false,
-		listing: {
-			id: 'listing1',
-			title: 'Canon EOS R5 Camera',
-			imageUrl:
-				'https://cdn.citymapia.com/kottayam/canon-image-square/16939/Portfolio.jpg?width=400&biz=2881&v=20191029082248',
-		},
-		reserver: {
-			id: 'user1',
-			firstName: 'Alice',
-			lastName: 'Johnson',
-			name: 'Alice Johnson',
-		},
-	},
-	{
-		id: '2',
-		state: 'ACCEPTED',
-		reservationPeriodStart: '2025-08-22',
-		reservationPeriodEnd: '2025-08-25',
-		createdAt: '2025-08-12',
-		updatedAt: '2025-08-13',
-		listingId: 'listing2',
-		reserverId: 'user2',
-		closeRequested: false,
-		listing: {
-			id: 'listing2',
-			title: 'Shure SM7B Microphone',
-			imageUrl:
-				'https://traceaudio.com/cdn/shop/products/NewSM7BwithAnserModcopy_1200x1200.jpg?v=1662083374',
-		},
-		reserver: {
-			id: 'user2',
-			firstName: 'Bob',
-			lastName: 'Smith',
-			name: 'Bob Smith',
-		},
-	},
-];
+export type ReservationsViewActiveContainerProps = Record<string, never>;
 
-export const ReservationsViewActiveContainer: React.FC = () => {
-	const onCancel = (reservationId: string) => {
-		// mock: do nothing
-		console.log('Cancel reservation', reservationId);
-	};
+export const ReservationsViewActiveContainer: React.FC<
+	ReservationsViewActiveContainerProps
+> = () => {
+	const { userId, loading: userLoading, error: userError } = useCurrentUserId();
+	const {
+		reservations: activeReservations,
+		loading: reservationsLoading,
+		error: reservationsError,
+	} = useActiveReservations(userId);
+	const { handleCancel, cancelLoading, handleClose, closeLoading } =
+		useReservationMutations();
 
-	const onClose = (reservationId: string) => {
-		// mock: do nothing
-		console.log('Close reservation', reservationId);
-	};
+	const loading = userLoading || reservationsLoading;
+	const error = userError || reservationsError;
 
-	const onMessage = (reservationId: string) => {
-		// mock: do nothing
+	const handleMessage = (reservationId: string) => {
 		console.log('Message for reservation', reservationId);
 	};
+
 	return (
-		<ReservationsView
-			reservations={MOCK_ACTIVE_RESERVATIONS}
-			onCancel={onCancel}
-			onClose={onClose}
-			onMessage={onMessage}
-			showActions={true}
-			emptyText="No active reservations"
-			loading={false} //temporarily literal values
-			error={null}
-			cancelLoading={false}
-			closeLoading={false}
+		<ComponentQueryLoader
+			loading={loading}
+			error={error}
+			hasData={activeReservations}
+			hasDataComponent={
+				<ReservationsView
+					reservations={activeReservations}
+					onCancel={handleCancel}
+					onClose={handleClose}
+					onMessage={handleMessage}
+					cancelLoading={cancelLoading}
+					closeLoading={closeLoading}
+					showActions
+					emptyText="No active reservations"
+				/>
+			}
+			noDataComponent={
+				<ReservationsView
+					reservations={[]}
+					showActions
+					emptyText="No active reservations"
+				/>
+			}
 		/>
 	);
 };
