@@ -27,3 +27,26 @@ query HomeAccountSettingsViewContainerCurrentUser {
     updatedAt
   }
 }
+
+mutation HomeAccountSettingsViewContainerUpdatePersonalUser($input: PersonalUserUpdateInput!) {
+  personalUserUpdate(input: $input) {
+    id
+    account {
+      accountType
+      email
+      username
+      profile {
+        firstName
+        lastName
+        location {
+          address1
+          address2
+          city
+          state
+          country
+          zipCode
+        }
+      }
+    }
+  }
+}

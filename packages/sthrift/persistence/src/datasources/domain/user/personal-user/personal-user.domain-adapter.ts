@@ -118,7 +118,7 @@ export class PersonalUserAccountDomainAdapter
 	// Nested Path Getters
 	get profile() {
 		if (!this.props.profile) {
-			this.props.set('profile', {});
+			this.props.profile = {} as Models.User.PersonalUserAccountProfile;
 		}
 		return new PersonalUserAccountProfileDomainAdapter(this.props.profile);
 	}
@@ -151,7 +151,8 @@ export class PersonalUserAccountProfileDomainAdapter
 	// Nested Path Getters
 	get location() {
 		if (!this.props.location) {
-			this.props.set('location', {});
+			this.props.location =
+        {} as Models.User.PersonalUserAccountProfileLocation;
 		}
 		return new PersonalUserAccountProfileLocationDomainAdapter(
 			this.props.location,
@@ -159,7 +160,8 @@ export class PersonalUserAccountProfileDomainAdapter
 	}
 	get billing() {
 		if (!this.props.billing) {
-			this.props.set('billing', {});
+			this.props.billing =
+        {} as Models.User.PersonalUserAccountProfileBilling;
 		}
 		return new PersonalUserAccountProfileBillingDomainAdapter(
 			this.props.billing,

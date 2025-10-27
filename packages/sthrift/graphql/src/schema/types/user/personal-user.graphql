@@ -65,6 +65,7 @@ input PersonalUserAccountProfileUpdateInput {
 	lastName: String
 	location: PersonalUserAccountProfileLocationUpdateInput
 	billing: PersonalUserAccountProfileBillingUpdateInput
+    aboutMe: String
 }
 
 input PersonalUserAccountProfileLocationUpdateInput {

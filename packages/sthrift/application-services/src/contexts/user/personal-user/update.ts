@@ -19,6 +19,11 @@ export interface PersonalUserUpdateCommand {
 				country: string;
 				zipCode: string;
 			};
+
+            billing?: {
+				subscriptionId: string;
+				cybersourceCustomerId: string;
+			};
 		};
 
 		// TBD: Billing info
@@ -76,6 +81,13 @@ export const update = (datasources: DataSources) => {
 					existingPersonalUser.account.profile.location.zipCode =
 						command.account.profile.location.zipCode;
 				}
+
+                if (command.account?.profile?.billing) {
+                    existingPersonalUser.account.profile.billing.subscriptionId =
+                        command.account.profile.billing.subscriptionId;
+                    existingPersonalUser.account.profile.billing.cybersourceCustomerId =
+                        command.account.profile.billing.cybersourceCustomerId;
+                }
 
 				personalUserToReturn = await repo.save(existingPersonalUser);
 			},

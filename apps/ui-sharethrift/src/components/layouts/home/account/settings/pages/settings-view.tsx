@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import {
   Card,
   Button,
@@ -16,7 +16,7 @@ import type {
   PlanOption,
   SettingsUser,
 } from "../components/settings-view.types.ts";
-import { Form, Input, Radio } from "antd";
+import { Form, Input } from "antd";
 import styles from "../components/settings-view.module.css";
 import "@sthrift/ui-components/src/styles/theme.css";
 
@@ -25,7 +25,7 @@ const { Text } = Typography;
 // Mock plan data - this would come from API in real implementation
 const PLAN_OPTIONS: PlanOption[] = [
   {
-    id: "non-verified",
+    id: "non-verified-personal",
     name: "Non-Verified Personal",
     price: "$0/month",
     features: [
@@ -34,10 +34,9 @@ const PLAN_OPTIONS: PlanOption[] = [
       "15 items to share",
       "5 friends",
     ],
-    isSelected: false,
   },
   {
-    id: "verified",
+    id: "verified-personal",
     name: "Verified Personal",
     price: "$0/month",
     features: [
@@ -46,11 +45,10 @@ const PLAN_OPTIONS: PlanOption[] = [
       "30 items to share",
       "10 friends",
     ],
-    isSelected: true,
     isPopular: true,
   },
   {
-    id: "verified-plus",
+    id: "verified-personal-plus",
     name: "Verified Personal Plus",
     price: "$4.99/month",
     features: [
@@ -59,7 +57,6 @@ const PLAN_OPTIONS: PlanOption[] = [
       "50 items to share",
       "30 friends",
     ],
-    isSelected: false,
   },
 ];
 
@@ -86,28 +83,14 @@ export const SettingsView: React.FC<SettingsViewProps> = ({
     confirmPassword: string;
   }>();
 
-  // ...existing state hooks...
-  //   const computedPlanOptions = React.useMemo(
-  //     () =>
-  //       PLAN_OPTIONS.map((plan) => ({
-  //         ...plan,
-  //         isSelected:
-  //           editingSection === "plan"
-  //             ? selectedPlan === plan.id
-  //             : user.accountType === plan.id,
-  //       })),
-  //     [editingSection, selectedPlan, user.accountType]
-  //   );
-
   const computedPlanOptions = React.useMemo(
     () =>
       PLAN_OPTIONS.map((plan) => {
+        const effectiveSelection = selectedPlan ?? user.accountType ?? null;
         const isSelected =
           editingSection === "plan"
-            ? selectedPlan === null
-              ? plan.isSelected
-              : selectedPlan === plan.id
-            : plan.isSelected; // always fall back to user.accountType outside edit
+            ? effectiveSelection === plan.id
+            : user.accountType === plan.id; // show persisted accountType outside edit
         return { ...plan, isSelected };
       }),
     [editingSection, selectedPlan, user.accountType]
@@ -124,8 +107,8 @@ export const SettingsView: React.FC<SettingsViewProps> = ({
       locationForm.setFieldsValue(user);
     }
     if (section === "plan") {
-      console.log("user.accountType:", user.accountType);
-      //   setSelectedPlan(user.accountType || null);
+      // initialize transient selection from persisted accountType
+      setSelectedPlan(user.accountType || null);
     }
     if (section === "billing") {
       billingForm.setFieldsValue({
@@ -145,9 +128,9 @@ export const SettingsView: React.FC<SettingsViewProps> = ({
   };
 
   const cancelEdit = () => {
-    // Revert plan selection if cancelling plan edit
     if (editingSection === "plan") {
-      setSelectedPlan(user.accountType || null);
+      // discard transient selection; rely on persisted value
+      setSelectedPlan(null);
     }
     setEditingSection(null);
   };
@@ -171,7 +154,9 @@ export const SettingsView: React.FC<SettingsViewProps> = ({
   const savePlan = async () => {
     if (!selectedPlan) return; // nothing selected
     await onSaveSection?.("plan", { accountType: selectedPlan });
+    // after save, clear transient selection; outside edit mode computedPlanOptions uses updated user.accountType
     setEditingSection(null);
+    setSelectedPlan(null);
   };
 
   const saveBilling = async () => {
@@ -420,9 +405,9 @@ export const SettingsView: React.FC<SettingsViewProps> = ({
 
   // Plan icons to match SelectAccountType.tsx
   const planIcons: Record<string, string> = {
-    "non-verified": "/assets/item-images/stool.png",
-    verified: "/assets/item-images/armchair.png",
-    "verified-plus": "/assets/item-images/bubble-chair.png",
+    "non-verified-personal": "/assets/item-images/stool.png",
+    "verified-personal": "/assets/item-images/armchair.png",
+    "verified-personal-plus": "/assets/item-images/bubble-chair.png",
   };
 
   const renderPlanCard = (plan: PlanOption) => (
@@ -629,8 +614,6 @@ export const SettingsView: React.FC<SettingsViewProps> = ({
 
   const renderBillingSection = () => {
     const billing = user.billing;
-    const hasCard = false;
-    /*const hasCard = billing && billing.cardNumber && billing.nameOnCard;*/
     return (
       <Card className={styles["sectionCard"]}>
         <div className={styles["sectionHeader"]}>

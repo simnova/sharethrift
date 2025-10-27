@@ -26,10 +26,10 @@ export interface SettingsViewProps {
   user: SettingsUser;
   onEditSection: (section: string) => void;
   onChangePassword: () => void;
-  onSaveProfile?: (values: Partial<SettingsUser>) => Promise<void>;
-  onSaveLocation?: (values: Partial<SettingsUser['location']>) => Promise<void>;
-  isSavingProfile?: boolean;
-  isSavingLocation?: boolean;
+
+  onSaveSection?: (section: string, values: any) => Promise<void>;
+  isSavingSection?: boolean;
+  mutationErrorMessage?: string;
 }
 
 export interface SettingsEditProps {

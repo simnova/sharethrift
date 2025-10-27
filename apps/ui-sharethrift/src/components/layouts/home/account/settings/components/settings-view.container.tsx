@@ -1,14 +1,16 @@
 import { useQuery, useMutation } from "@apollo/client/react";
+import { message } from "antd";
 import React, { useState } from "react";
-import { useNavigate } from "react-router-dom";
 import { SettingsView } from "../pages/settings-view.tsx";
+import { useNavigate } from "react-router-dom"; // retained for potential future navigation, not used after save now
+import { ComponentQueryLoader } from "@sthrift/ui-components";
 import type {
   CurrentUserSettingsQueryData,
   SettingsUser,
 } from "./settings-view.types.ts";
 import {
   HomeAccountSettingsViewContainerCurrentUserDocument,
-  HomeAccountSettingsEditContainerUpdatePersonalUserDocument,
+  HomeAccountSettingsViewContainerUpdatePersonalUserDocument,
 } from "../../../../../../generated.tsx";
 
 function SettingsViewLoader() {
@@ -20,12 +22,21 @@ function SettingsViewLoader() {
   } = useQuery<CurrentUserSettingsQueryData>(
     HomeAccountSettingsViewContainerCurrentUserDocument
   );
-  const [updateUserMutation] = useMutation(
-    HomeAccountSettingsEditContainerUpdatePersonalUserDocument
-  );
-  const [isSavingSection, setIsSavingSection] = useState(false);
 
-  console.log("SettingsViewLoader userDaya:", userData);
+  const [mutationErrorMessage, setMutationErrorMessage] = useState<
+    string | undefined
+  >(undefined);
+  const [updateUserMutation, { loading: updateLoading, error: updateError }] =
+    useMutation(HomeAccountSettingsViewContainerUpdatePersonalUserDocument, {
+      onError: (err) => {
+        // eslint-disable-next-line no-console
+        console.error("[SettingsView] update mutation error", err);
+        const msg = err?.message || "Update failed";
+        message.error(msg);
+      },
+    });
+
+  const [isSavingSection, setIsSavingSection] = useState(false);
 
   const handleEditSection = () => {
     const currentPath = location.pathname;
@@ -43,72 +54,80 @@ function SettingsViewLoader() {
     if (!userData?.currentPersonalUserAndCreateIfNotExists) return;
     const user = userData.currentPersonalUserAndCreateIfNotExists;
     setIsSavingSection(true);
+    setMutationErrorMessage(undefined);
+    if (updateLoading) {
+      setIsSavingSection(false);
+      return;
+    }
+    // Password change not implemented yet; short-circuit
+    if (section === "password") {
+      window.alert("Password change is not implemented yet.");
+      setIsSavingSection(false);
+      return;
+    }
     try {
-      // Password change not implemented yet; short-circuit
-      if (section === "password") {
-        window.alert("Password change is not implemented yet.");
-        return;
-      }
       const base = user.account.profile;
       const nextProfile = {
         firstName:
           section === "profile"
-            ? values.firstName ?? base.firstName
+            ? values["firstName"] ?? base.firstName
             : base.firstName,
         lastName:
           section === "profile"
-            ? values.lastName ?? base.lastName
+            ? values["lastName"] ?? base.lastName
             : base.lastName,
         aboutMe:
           section === "profile"
-            ? values.aboutMe ?? base.aboutMe ?? ""
+            ? values["aboutMe"] ?? base.aboutMe ?? ""
             : base.aboutMe ?? "",
         location: {
           address1:
             section === "location"
-              ? values.address1 ?? base.location.address1 ?? ""
+              ? values["address1"] ?? base.location.address1 ?? ""
               : base.location.address1,
           address2:
             section === "location"
-              ? values.address2 ?? base.location.address2 ?? ""
+              ? values["address2"] ?? base.location.address2 ?? ""
               : base.location.address2,
           city:
             section === "location"
-              ? values.city ?? base.location.city ?? ""
+              ? values["city"] ?? base.location.city ?? ""
               : base.location.city,
           state:
             section === "location"
-              ? values.state ?? base.location.state ?? ""
+              ? values["state"] ?? base.location.state ?? ""
               : base.location.state,
           country:
             section === "location"
-              ? values.country ?? base.location.country ?? ""
+              ? values["country"] ?? base.location.country ?? ""
               : base.location.country,
           zipCode:
             section === "location"
-              ? values.zipCode ?? base.location.zipCode ?? ""
+              ? values["zipCode"] ?? base.location.zipCode ?? ""
               : base.location.zipCode,
         },
-        billing:
-          section === "billing"
-            ? {
-                subscriptionId:
-                  values.subscriptionId ?? base.billing?.subscriptionId,
-                cybersourceCustomerId:
-                  values.cybersourceCustomerId ??
-                  base.billing?.cybersourceCustomerId,
-              }
-            : base.billing,
+        billing: {
+          subscriptionId:
+            section === "billing"
+              ? values["subscriptionId"] ?? base.billing?.subscriptionId ?? ""
+              : base.billing?.subscriptionId,
+          cybersourceCustomerId:
+            section === "billing"
+              ? values["cybersourceCustomerId"] ??
+                base.billing?.cybersourceCustomerId ??
+                ""
+              : base.billing?.cybersourceCustomerId,
+        },
       };
       const username =
         section === "profile"
-          ? values.username ?? user.account.username
+          ? values["username"] ?? user.account.username
           : user.account.username;
       const accountType =
         section === "plan"
-          ? values.accountType ?? user.account.accountType
+          ? values["accountType"] ?? user.account.accountType
           : user.account.accountType;
-      await updateUserMutation({
+      const result = await updateUserMutation({
         variables: {
           input: {
             id: user.id,
@@ -123,6 +142,18 @@ function SettingsViewLoader() {
           { query: HomeAccountSettingsViewContainerCurrentUserDocument },
         ],
       });
+      // Success: allow caller (view component) to close edit mode; no navigation here
+      // If result missing, throw to keep edit section open
+      if (!result.data?.personalUserUpdate) {
+        throw new Error("Update failed");
+      }
+    } catch (err: any) {
+      // eslint-disable-next-line no-console
+      console.error("[SettingsView] update mutation error", err);
+      const msg = err?.message || "Update failed";
+      setMutationErrorMessage(msg);
+      message.error(msg);
+      throw err; // propagate so view's save handler catch preserves edit mode
     } finally {
       setIsSavingSection(false);
     }
@@ -194,15 +225,25 @@ function SettingsViewLoader() {
     },
     billing: user.account.profile.billing,
     createdAt: user.createdAt,
+    password: user.account.password,
   };
 
+  const errorMessage = userError || updateError;
+
   return (
-    <SettingsView
-      user={mappedUser}
-      onEditSection={handleEditSection}
-      onChangePassword={handleChangePassword}
-      onSaveSection={handleSaveSection}
-      isSavingSection={isSavingSection}
+    <ComponentQueryLoader
+      loading={userLoading || updateLoading}
+      error={errorMessage}
+      hasData={userData}
+      hasDataComponent={
+        <SettingsView
+          user={mappedUser}
+          onEditSection={handleEditSection}
+          onChangePassword={handleChangePassword}
+          onSaveSection={handleSaveSection}
+          isSavingSection={isSavingSection}
+        />
+      }
     />
   );
 }
