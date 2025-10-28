@@ -32,11 +32,19 @@ export const create = (dataSources: DataSources) => {
   return async (
     command: ItemListingCreateCommand,
   ): Promise<Domain.Contexts.Listing.ItemListing.ItemListingEntityReference> => {
-    const helper = dataSources.domainDataSource.Listing.ItemListing.create;
+    type CreateHelper = (
+      c: ItemListingCreateCommand,
+    ) => Promise<Domain.Contexts.Listing.ItemListing.ItemListingEntityReference>;
+
+    const helper =
+      dataSources.domainDataSource.Listing.ItemListing.create as
+        | CreateHelper
+        | undefined;
     if (!helper) {
       throw new Error('persistence helper ItemListing.create not implemented');
     }
-    const res = await helper(command as any);
-    return res as Domain.Contexts.Listing.ItemListing.ItemListingEntityReference;
+
+    const res = await helper(command);
+    return res;
   };
 };
