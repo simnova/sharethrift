@@ -8,7 +8,7 @@ import {
  * Hook to check if current user is an admin to display UI components conditionally.
  * Returns null for currentAdminUser if user is not an admin.
  */
-export const useIsAdmin = () => {
+export const useUserIsAdmin = () => {
 	// Check which portal type the user logged in with
 	const loginPortalType = globalThis.sessionStorage?.getItem('loginPortalType');
 

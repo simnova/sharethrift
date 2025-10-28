@@ -12,13 +12,13 @@ import {
 import { HandleLogoutMockForMockAuth } from '../../shared/handle-logout.ts';
 import { Footer, Header, Navigation } from '@sthrift/ui-components';
 import { useCreateListingNavigation } from './components/create-listing/hooks/use-create-listing-navigation.ts';
-import { useIsAdmin } from './account/hooks/useUserType.ts';
+import { useUserIsAdmin } from './account/hooks/useUserType.ts';
 
 export const HomeTabsLayout: React.FC = () => {
 	const navigate = useNavigate();
 	const location = useLocation();
 	const auth = useAuth();
-	const { isAdmin } = useIsAdmin();
+	const { isAdmin } = useUserIsAdmin();
 
 	// Map nav keys to routes as defined in index.tsx
 	const routeMap: Record<string, string> = {

@@ -9,7 +9,7 @@ const app = express();
 app.disable('x-powered-by');
 const port = 4000;
 const allowedRedirectUris = new Set([
-	'http://localhost:3000/auth-redirect',      // Personal User
+	'http://localhost:3000/auth-redirect', // Personal User
 	'http://localhost:3000/auth-redirect-login', // Admin User
 ]);
 // Deprecated: kept for backwards compatibility
@@ -151,13 +151,15 @@ async function main() {
 		// biome-ignore lint:useLiteralKeys
 		const family_name = process.env['Family_Name'] ?? '';
 		const { tid, code } = req.body;
-		
+
 		// Extract redirect_uri from code (encoded in base64)
 		let aud = allowedRedirectUri; // default fallback
 		if (code && code.startsWith('mock-auth-code-')) {
 			try {
 				const base64Part = code.replace('mock-auth-code-', '');
-				const decodedRedirectUri = Buffer.from(base64Part, 'base64').toString('utf-8');
+				const decodedRedirectUri = Buffer.from(base64Part, 'base64').toString(
+					'utf-8',
+				);
 				if (allowedRedirectUris.has(decodedRedirectUri)) {
 					aud = decodedRedirectUri;
 				}
@@ -165,7 +167,7 @@ async function main() {
 				console.error('Failed to decode redirect_uri from code:', e);
 			}
 		}
-		
+
 		const profile: TokenProfile = {
 			aud: aud,
 			sub: crypto.randomUUID(),
@@ -202,13 +204,16 @@ async function main() {
 	app.get('/authorize', (req, res) => {
 		const { redirect_uri, state } = req.query;
 		const requestedRedirectUri = redirect_uri as string;
-		
+
 		// Check if the requested redirect_uri is in our allowed list
-		if (!allowedRedirectUris.has(requestedRedirectUri) && requestedRedirectUri !== allowedRedirectUri) {
+		if (
+			!allowedRedirectUris.has(requestedRedirectUri) &&
+			requestedRedirectUri !== allowedRedirectUri
+		) {
 			res.status(400).send('Invalid redirect_uri');
 			return;
 		}
-		
+
 		// Store the redirect_uri in the session/state for the token endpoint
 		const code = `mock-auth-code-${Buffer.from(requestedRedirectUri).toString('base64')}`;
 		const redirectUrl = `${requestedRedirectUri}?code=${code}${state ? `&state=${state}` : ''}`;

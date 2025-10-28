@@ -10,10 +10,7 @@ import {
 	ListingModelFactory,
 } from './listing/index.ts';
 import { ConversationModelFactory } from './conversations/conversation.model.ts';
-import {
-	AdminRoleModelFactory,
-	RoleModelFactory,
-} from './role/index.ts';
+import { AdminRoleModelFactory, RoleModelFactory } from './role/index.ts';
 
 export * as User from './user/index.ts';
 export * as Conversation from './conversations/index.ts';
@@ -30,10 +27,9 @@ export const mongooseContextBuilder = (
 	// Create base models first (needed for discriminators and populate refs)
 	const UserModel = UserModelFactory(initializedService);
 	const RoleModel = RoleModelFactory(initializedService);
-	
+
 	return {
 		User: {
-			User: UserModel,
 			PersonalUser: PersonalUserModelFactory(UserModel),
 			AdminUser: AdminUserModelFactory(UserModel),
 		},
