@@ -1,5 +1,4 @@
-export interface AdminListingsProps {}
 
-export const AdminListings: React.FC<AdminListingsProps> = () => {
+export const AdminListings: React.FC = () => {
 	return <div>Admin Listings Component</div>;
 };
