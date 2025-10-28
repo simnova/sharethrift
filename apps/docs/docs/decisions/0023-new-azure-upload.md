@@ -35,11 +35,13 @@ To resolve this, we need a flow where upload and database commit are strictly li
 - **Option 2: Deferred upload triggered by user confirmation. Transactional Upload + Scan + Save (proposed)**
   - User selects file(s) and enters form data; files are held locally, nothing is uploaded yet.
   - On **Save/Continue** the backend generates a SAS token and the frontend uploads the file.
-  - **Malware scan** runs immediately after upload.
-  - If the file passes, backend commits the database record and links the blob.
-  - If scan fails, save is aborted, the blob is deleted, and the user is alerted to retry.
-  - If save fails, the uploaded blob is deleted right away to prevent orphans.
-
+  - A **malware scan** runs immediately after upload.
+  - If the file passes, the backend performs a database transaction that saves both:
+    - The user’s form data, and
+    - The blob reference metadata (file path etc.).
+  - If the malware scan fails, the transaction is never started — the blob is deleted, and the user is prompted to re-upload a clean file.
+  - If the database save or transaction commit fails (e.g., validation or integrity error), the uploaded blob is deleted immediately to prevent unlinked or orphaned files.
+  
 ## Decision Outcome
 
 Chosen option: **Option 2: Deferred upload triggered by user confirmation. Transactional Upload + Scan + Save.**  
