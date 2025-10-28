@@ -10,6 +10,9 @@ import { ListingContext } from './listing/index.ts';
 import type * as ItemListing from './listing/item/index.ts';
 import type * as Conversation from './conversation/conversation/index.ts';
 import { ReservationRequestContext } from './reservation-request/index.ts';
+import { AppealRequestContext } from './appeal-request/index.ts';
+import type * as ListingAppealRequest from './appeal-request/listing-appeal-request/index.ts';
+import type * as UserAppealRequest from './appeal-request/user-appeal-request/index.ts';
 
 export interface ReadonlyDataSource {
 	User: {
@@ -32,6 +35,14 @@ export interface ReadonlyDataSource {
 			ConversationReadRepo: Conversation.ConversationReadRepository;
 		};
 	};
+	AppealRequest: {
+		ListingAppealRequest: {
+			ListingAppealRequestReadRepo: ListingAppealRequest.ListingAppealRequestReadRepository;
+		};
+		UserAppealRequest: {
+			UserAppealRequestReadRepo: UserAppealRequest.UserAppealRequestReadRepository;
+		};
+	};
 }
 
 export const ReadonlyDataSourceImplementation = (
@@ -42,4 +53,5 @@ export const ReadonlyDataSourceImplementation = (
 	ReservationRequest: ReservationRequestContext(models, passport),
 	Listing: ListingContext(models, passport),
 	Conversation: ConversationContext(models, passport),
+	AppealRequest: AppealRequestContext(models, passport),
 });
