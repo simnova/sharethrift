@@ -259,7 +259,7 @@ export const AllListingsTable: React.FC<AllListingsTableProps> = ({
 				// Try to format both as yyyy-mm-dd
 				function formatDate(str: string) {
 					const d = new Date(str);
-					if (isNaN(d.getTime())) {
+					if (Number.isNaN(d.getTime())) {
 						return str;
 					}
 					const yyyy = d.getFullYear();
