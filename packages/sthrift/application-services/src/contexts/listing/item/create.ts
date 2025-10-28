@@ -32,19 +32,43 @@ export const create = (dataSources: DataSources) => {
   return async (
     command: ItemListingCreateCommand,
   ): Promise<Domain.Contexts.Listing.ItemListing.ItemListingEntityReference> => {
-    type CreateHelper = (
-      c: ItemListingCreateCommand,
-    ) => Promise<Domain.Contexts.Listing.ItemListing.ItemListingEntityReference>;
+    let itemListingToReturn:
+      | Domain.Contexts.Listing.ItemListing.ItemListingEntityReference
+      | undefined;
 
-    const helper =
-      dataSources.domainDataSource.Listing.ItemListing.create as
-        | CreateHelper
-        | undefined;
-    if (!helper) {
-      throw new Error('persistence helper ItemListing.create not implemented');
+    const uow = dataSources.domainDataSource.Listing.ItemListing.ItemListingUnitOfWork;
+    if (!uow) throw new Error('ItemListingUnitOfWork not available on dataSources.domainDataSource.Listing.ItemListing');
+
+    await uow.withScopedTransaction(async (repo) => {
+      const fields: {
+        title: string;
+        description: string;
+        category: string;
+        location: string;
+        sharingPeriodStart: Date;
+        sharingPeriodEnd: Date;
+        images?: string[];
+        isDraft?: boolean;
+      } = {
+        title: command.title,
+        description: command.description,
+        category: command.category,
+        location: command.location,
+        sharingPeriodStart: command.sharingPeriodStart,
+        sharingPeriodEnd: command.sharingPeriodEnd,
+      };
+      if (command.images) fields.images = command.images;
+      if (command.isDraft !== undefined) fields.isDraft = command.isDraft;
+
+      const newItemListing = await repo.getNewInstance(command.sharer, fields);
+      const savedAggregate = await repo.save(newItemListing);
+      itemListingToReturn = savedAggregate.getEntityReference();
+    });
+
+    if (!itemListingToReturn) {
+      throw new Error('ItemListing not created');
     }
 
-    const res = await helper(command);
-    return res;
+    return itemListingToReturn;
   };
 };

@@ -5,13 +5,14 @@ export type ItemListingRemoveCommand = { id: string };
 export const remove = (dataSources: DataSources) => async (
   command: ItemListingRemoveCommand,
 ): Promise<boolean> => {
-  // Prefer a persistence helper; if it's not present at runtime, fail explicitly.
-  const helper = dataSources.domainDataSource.Listing.ItemListing.remove;
-  if (!helper) {
-    throw new Error('persistence helper ItemListing.remove not implemented');
-  }
-  await helper(command.id);
+  const uow = dataSources.domainDataSource.Listing.ItemListing.ItemListingUnitOfWork;
+  if (!uow) throw new Error('ItemListingUnitOfWork not available on dataSources.domainDataSource.Listing.ItemListing');
+
+  await uow.withScopedTransactionById(command.id, async (repo) => {
+    const listing = await repo.get(command.id);
+    listing.requestDelete?.();
+  });
+
   return true;
 };
 
-export default { remove };
