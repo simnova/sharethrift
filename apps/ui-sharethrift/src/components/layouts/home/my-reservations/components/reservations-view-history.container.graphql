@@ -1,9 +1,29 @@
-#import "../fragments/reservation-request-fields.graphql"
-
 query HomeMyReservationsReservationsViewHistoryContainerPastReservations(
 	$userId: ObjectID!
 ) {
 	myPastReservations(userId: $userId) {
-		...ReservationRequestFields
+		id
+		state
+		reservationPeriodStart
+		reservationPeriodEnd
+		createdAt
+		updatedAt
+		listing {
+			id
+			title
+			images
+		}
+		reserver {
+			id
+			account {
+				username
+				profile {
+					firstName
+					lastName
+				}
+			}
+		}
+		closeRequestedBySharer
+		closeRequestedByReserver
 	}
 }

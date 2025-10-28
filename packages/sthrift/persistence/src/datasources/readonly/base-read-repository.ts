@@ -25,7 +25,7 @@ export abstract class BaseReadRepository<
 	TDoc extends MongooseSeedwork.Base,
 	TEntity,
 > {
-	protected readonly mongoDataSource: MongoDataSource<TDoc>;
+	private readonly mongoDataSource: MongoDataSource<TDoc>;
 	protected readonly converter: DomainConverter<TDoc, TEntity>;
 	protected readonly passport: Domain.Passport;
 
@@ -42,7 +42,7 @@ export abstract class BaseReadRepository<
 	/**
 	 * Helper method for querying multiple documents
 	 */
-	protected async queryMany(
+	async queryMany(
 		filter: FilterQuery<TDoc>,
 		options?: FindOptions,
 	): Promise<TEntity[]> {
@@ -53,7 +53,7 @@ export abstract class BaseReadRepository<
 	/**
 	 * Helper method for querying a single document
 	 */
-	protected async queryOne(
+	async queryOne(
 		filter: FilterQuery<TDoc>,
 		options?: FindOneOptions,
 	): Promise<TEntity | null> {
@@ -64,7 +64,7 @@ export abstract class BaseReadRepository<
 	/**
 	 * Helper method for querying by ID
 	 */
-	protected async queryById(
+	async queryById(
 		id: string,
 		options?: FindOneOptions,
 	): Promise<TEntity | null> {

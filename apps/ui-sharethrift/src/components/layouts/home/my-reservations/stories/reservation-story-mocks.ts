@@ -1,4 +1,4 @@
-import type { MockedResponse } from '@apollo/client/testing';
+import type { MockLink } from '@apollo/client/testing';
 import type { DocumentNode } from '@apollo/client';
 import type { ReservationRequestFieldsFragment } from '../../../../../generated.tsx';
 import {
@@ -99,7 +99,7 @@ function makeStoryMock(
 	query: DocumentNode,
 	responseField: string,
 	data: unknown,
-): MockedResponse {
+): MockLink.MockedResponse {
 	return {
 		request: { query, variables: { userId: STORYBOOK_RESERVATION_USER_ID } },
 		result: { data: { [responseField]: data } },
@@ -276,7 +276,7 @@ export const storyReservationsAll = [
  * Each mock includes proper GraphQL response structure with __typename fields
  * and realistic data that matches the expected query variables.
  */
-export const reservationStoryMocks: MockedResponse[] = [
+export const reservationStoryMocks: MockLink.MockedResponse[] = [
 	makeStoryMock(
 		HomeMyReservationsReservationsViewActiveContainerActiveReservationsDocument,
 		'myActiveReservations',
