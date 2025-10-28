@@ -4,6 +4,7 @@ import { personalUsers } from './personal-users.js';
 import { itemListings } from './item-listings.js';
 import { conversations } from './conversations.js';
 import { reservationRequests } from './reservation-requests.js';
+import { appealRequests } from './appeal-requests.js';
 import type { Models } from '@sthrift/data-sources-mongoose-models';
 
 function toObjectId(id: string) {
@@ -44,6 +45,15 @@ export async function seedDatabase(connection: Connection) {
 		}),
 	);
 	await connection.collection('reservationRequests').insertMany(reservations);
+
+	const appeals = appealRequests.map((a) => ({
+		...a,
+		_id: toObjectId(a._id as string),
+		user: a.user as ObjectId,
+		blocker: a.blocker as ObjectId,
+		...(a.listing && { listing: a.listing as ObjectId }),
+	}));
+	await connection.collection('appealRequests').insertMany(appeals);
 
 	console.log('Seeded mock MongoDB memory server with initial data.');
 }

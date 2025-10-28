@@ -1,0 +1,58 @@
+type ListingAppealRequest {
+	id: ID!
+	user: PersonalUser!
+	listing: Property!
+	reason: String!
+	state: AppealRequestState!
+	type: AppealRequestType!
+	blocker: PersonalUser!
+	createdAt: String!
+	updatedAt: String!
+}
+
+type ListingAppealRequestPageResult {
+	items: [ListingAppealRequest!]!
+	total: Int!
+	page: Int!
+	pageSize: Int!
+}
+
+input CreateListingAppealRequestInput {
+	userId: ID!
+	listingId: ID!
+	reason: String!
+	blockerId: ID!
+}
+
+input UpdateListingAppealRequestStateInput {
+	id: ID!
+	state: AppealRequestState!
+}
+
+input GetAllListingAppealRequestsInput {
+	page: Int!
+	pageSize: Int!
+	stateFilters: [String!]
+	sorter: SorterInput
+}
+
+input SorterInput {
+	field: String!
+	order: String!
+}
+
+extend type Query {
+	getListingAppealRequest(id: ID!): ListingAppealRequest
+	getAllListingAppealRequests(
+		input: GetAllListingAppealRequestsInput!
+	): ListingAppealRequestPageResult!
+}
+
+extend type Mutation {
+	createListingAppealRequest(
+		input: CreateListingAppealRequestInput!
+	): ListingAppealRequest!
+	updateListingAppealRequestState(
+		input: UpdateListingAppealRequestStateInput!
+	): ListingAppealRequest!
+}
