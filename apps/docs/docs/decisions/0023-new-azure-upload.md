@@ -51,7 +51,7 @@ No data is finalized unless every stage succeeds. Cleanup and user feedback happ
 - **Positive:**
   - Orphaned and unreferenced files are eliminated.
   - Ensures consistent and secure linkage between uploaded blobs and saved data.
-  - Regulatory and operational risks are minimized.
+  - Regulatory and operational risks are minimized (by ensuring that only properly scanned, malware-free files are stored and linked to committed database records).
   - No background sweeps or delayed cleanups required.
 
 - **Negative:**
