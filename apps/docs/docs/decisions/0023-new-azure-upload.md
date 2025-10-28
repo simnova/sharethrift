@@ -41,7 +41,7 @@ To resolve this, we need a flow where upload and database commit are strictly li
     - The blob reference metadata (file path etc.).
   - If the malware scan fails, the transaction is never started — the blob is deleted, and the user is prompted to re-upload a clean file.
   - If the database save or transaction commit fails (e.g., validation or integrity error), the uploaded blob is deleted immediately to prevent unlinked or orphaned files.
-  
+
 ## Decision Outcome
 
 Chosen option: **Option 2: Deferred upload triggered by user confirmation. Transactional Upload + Scan + Save.**  
@@ -55,6 +55,7 @@ No data is finalized unless every stage succeeds. Cleanup and user feedback happ
   - Ensures consistent and secure linkage between uploaded blobs and saved data.
   - Regulatory and operational risks are minimized (by ensuring that only properly scanned, malware-free files are stored and linked to committed database records).
   - No background sweeps or delayed cleanups required.
+  - Improves user clarity by creating a direct, predictable link between user actions (“Save”) and data persistence — users know their file and form are saved together, or not at all.
 
 - **Negative:**
   - Upload initiation is delayed until user confirmation, possibly increasing total save time.
