@@ -102,8 +102,10 @@ const itemListingResolvers = {
 						return 'Draft';
 					case 'Appeal Requested':
 						return 'Appeal_Requested';
+					case 'Cancelled':
+						return 'Cancelled';
 					default:
-						return state; // Paused, Cancelled, Expired, Blocked, Reserved (future), etc.
+						return state; // Paused, Expired, Blocked, Reserved (future), etc.
 				}
 			};
 
@@ -165,6 +167,23 @@ const itemListingResolvers = {
 
 			const result =
 				await context.applicationServices.Listing.ItemListing.create(command);
+			return toGraphItem(result);
+		},
+		cancelItemListing: async (
+			_parent: unknown,
+			args: { id: string },
+			context: GraphContext,
+		) => {
+			const userEmail =
+				context.applicationServices.verifiedUser?.verifiedJwt?.email;
+			if (!userEmail) {
+				throw new Error('Authentication required');
+			}
+
+			const result =
+				await context.applicationServices.Listing.ItemListing.cancel({
+					id: args.id,
+				});
 			return toGraphItem(result);
 		},
 	},

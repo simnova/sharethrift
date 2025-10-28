@@ -70,6 +70,7 @@ input CreateItemListingInput {
 
 extend type Mutation {
   createItemListing(input: CreateItemListingInput!): ItemListing!
+  cancelItemListing(id: ObjectID!): ItemListing!
 }
 
 extend type Query {

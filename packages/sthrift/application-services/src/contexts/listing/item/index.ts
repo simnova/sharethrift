@@ -7,6 +7,7 @@ import {
 	queryBySharer,
 } from './query-by-sharer.ts';
 import { type ItemListingQueryAllCommand, queryAll } from './query-all.ts';
+import { type ItemListingCancelCommand, cancel } from './cancel.ts';
 
 export interface ItemListingApplicationService {
 	create: (
@@ -25,6 +26,9 @@ export interface ItemListingApplicationService {
 	) => Promise<
 		Domain.Contexts.Listing.ItemListing.ItemListingEntityReference[]
 	>;
+	cancel: (
+		command: ItemListingCancelCommand,
+	) => Promise<Domain.Contexts.Listing.ItemListing.ItemListingEntityReference>;
 	queryPaged: (command: {
 		page: number;
 		pageSize: number;
@@ -48,6 +52,7 @@ export const ItemListing = (
 		queryById: queryById(dataSources),
 		queryBySharer: queryBySharer(dataSources),
 		queryAll: queryAll(dataSources),
+		cancel: cancel(dataSources),
 		queryPaged: async (command) => {
 			// Build args object without including undefined optional properties (exactOptionalPropertyTypes)
 			const { page, pageSize, searchText, statusFilters, sharerId, sorter } = command;
