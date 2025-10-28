@@ -57,7 +57,7 @@ No data is finalized unless every stage succeeds. Cleanup and user feedback happ
 - **Negative:**
   - Upload initiation is delayed until user confirmation, possibly increasing total save time.
   - Slightly more complex frontend logic to manage pending uploads and confirmation triggers.
-  - Require a local memory/state variable to store the file until the final save.
+  - Requires a local memory/state variable to store the file until the final save.
 
 ## Implementation Details
 
@@ -77,7 +77,7 @@ Backend->>Backend: Build blob path + tags + metadata, validate upload rules
 Backend-->>Frontend: AuthResult (blob URL + SAS token + x-ms-date + tags + metadata)
 Frontend->>Blob: PUT file bytes (headers + auth + tags + metadata)
 Blob-->>Frontend: 201 Created (x-ms-version-id)
-Frontend->>Backend: Notify upload completion & trigger malware scan
+Frontend->>Backend: Notify upload completion and trigger malware scan
 alt Scan: No threats found
     Backend->>Backend: Proceed with database save (link blob + persist form data)
     alt DB Save Success
@@ -97,7 +97,7 @@ end
 
 ## Technical Considerations
 
-- The entire operation — upload, malware scan, and database save — functions as a single logical transaction. If any step fails, the process is rolled back, and no partial or orphaned data remains in the system.
+- The entire operation — upload, malware scan, and database save — functions as a single atomic transaction. If any step fails, the process is rolled back, and no partial or orphaned data remains in the system.
 - If a database transaction fails after a successful scan and blob upload, the backend immediately deletes the blob version to maintain consistency between the database and storage. Similarly, failed or malicious uploads never reach the committed state, ensuring there are no unreferenced blobs.
 - The frontend will temporarily hold selected files in memory or a local object store until “Save and Continue” is clicked.
 - The backend will continue to issue SAS tokens on-demand but only after the confirmation action.
