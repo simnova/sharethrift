@@ -27,7 +27,10 @@ export interface SettingsViewProps {
   onEditSection: (section: string) => void;
   onChangePassword: () => void;
 
-  onSaveSection?: (section: string, values: any) => Promise<void>;
+  onSaveSection?: (
+    section: "profile" | "location" | "plan" | "billing" | "password",
+    values: any
+  ) => Promise<void>;
   isSavingSection?: boolean;
   mutationErrorMessage?: string;
 }

@@ -42,8 +42,14 @@ function SettingsViewLoader() {
     //navigate(newPath);
   };
 
+  type EditableSection =
+    | "profile"
+    | "location"
+    | "plan"
+    | "billing"
+    | "password";
   const handleSaveSection = async (
-    section: "profile" | "location" | "plan" | "billing" | "password" | string,
+    section: EditableSection,
     values: Record<string, any>
   ) => {
     if (!userData?.currentPersonalUserAndCreateIfNotExists) return;
@@ -55,7 +61,7 @@ function SettingsViewLoader() {
     }
     // Password change not implemented yet; short-circuit
     if (section === "password") {
-      window.alert("Password change is not implemented yet.");
+      globalThis.alert?.("Password change is not implemented yet.");
       setIsSavingSection(false);
       return;
     }
@@ -144,7 +150,7 @@ function SettingsViewLoader() {
     } catch (err: any) {
       // eslint-disable-next-line no-console
       console.error("[SettingsView] update mutation error", err);
-      const msg = err?.message || "Update failed";
+      const msg = err?.message ?? "Update failed";
       message.error(msg);
       throw err; // propagate so view's save handler catch preserves edit mode
     } finally {
@@ -154,7 +160,7 @@ function SettingsViewLoader() {
 
   const handleChangePassword = () => {
     // TODO: Implement password change logic - likely redirect to auth provider
-    window.alert("Password change functionality will be implemented");
+    globalThis.alert?.("Password change functionality will be implemented");
   };
 
   if (userError) {
@@ -222,7 +228,7 @@ function SettingsViewLoader() {
     password: user.account.password,
   };
 
-  const errorMessage = userError || updateError;
+  const errorMessage = userError ?? updateError;
 
   return (
     <ComponentQueryLoader
