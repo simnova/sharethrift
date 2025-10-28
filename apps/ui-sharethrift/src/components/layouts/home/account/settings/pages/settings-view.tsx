@@ -475,7 +475,8 @@ export const SettingsView: React.FC<SettingsViewProps> = ({
           </Tag>
         )}
         <Button
-          type="button"
+          htmlType="button"
+          type={plan.isSelected ? "primary" : "default"}
           aria-pressed={plan.isSelected}
           tabIndex={0}
           onClick={(e) => {
