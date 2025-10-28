@@ -13,12 +13,9 @@ informed:
 
 ## Context and Problem Statement
 
-In the current implementation, as soon as a user selects a file in the upload interface, the file is immediately uploaded to Azure Blob Storage using a short-lived SAS token.
-While this approach ensures that uploads are quick and responsive, it introduces several issues in scenarios where a user decides **not to save or proceed** after selecting a file.
+In the previous implementation, files selected by users were uploaded immediately to Azure Blob Storage using a short-lived SAS token, before the user confirmed saving their form. While this offered quick feedback, it often resulted in orphaned files that were never referenced by a saved record, leading to potential storage bloat, premature file exposure, and inconsistent application state.
 
-This results in **orphaned files** — uploaded to Azure but not referenced in any saved entity(user collection). These unreferenced blobs still consume storage and may accumulate over time, increasing storage costs and cluttering the container. And instant uploads may also expose sensitive files before they're officially committed.
-
-Therefore, we need a flow where files are only uploaded **after explicit user confirmation** — such as clicking **“Save and Continue or Proceed”** — ensuring that every uploaded blob corresponds to a committed change in the application.
+To resolve this, we need a flow where upload and database commit are strictly linked: files are uploaded and scanned only after the user clicks "Save," ensuring every accepted blob is both safe and linked to a committed database row. Any failed step triggers cleanup and instant user feedback.
 
 ## Decision Drivers
 
@@ -30,36 +27,40 @@ Therefore, we need a flow where files are only uploaded **after explicit user co
 
 ## Considered Options
 
-- **Option 1: Immediate upload on file select (current approach)**  
+- **Option 1: Immediate upload on file select (current approach)**
   - Uploads start as soon as the user selects a file.
   - Backend issues SAS token and file is persisted to Azure instantly.
+  - Blob may exist without ever being referenced or committed by the application.
 
-- **Option 2: Deferred upload triggered by Save and Continue (proposed)**  
-  - Files are temporarily stored in memory or local state after selection.
-  - Upload to Azure Blob Storage only begins once the user explicitly confirms the action (e.g., clicks “Save and Continue”).
-  - If the user cancels or navigates away, the file is discarded locally and never uploaded.
+- **Option 2: Deferred upload triggered by user confirmation. Transactional Upload + Scan + Save (proposed)**
+  - User selects file(s) and enters form data; files are held locally, nothing is uploaded yet.
+  - On **Save/Continue** the backend generates a SAS token and the frontend uploads the file.
+  - **Malware scan** runs immediately after upload.
+  - If the file passes, backend commits the database record and links the blob.
+  - If scan fails, save is aborted, the blob is deleted, and the user is alerted to retry.
+  - If save fails, the uploaded blob is deleted right away to prevent orphans.
 
 ## Decision Outcome
 
-Chosen option: **Option 2: Deferred upload triggered by user confirmation.**  
-This approach prevents orphaned files, aligns uploads with intentional user actions, and reduces unnecessary storage utilization.
-Although it slightly delays the upload until user confirmation, the trade-off is acceptable given the improvements in data consistency and maintainability.
+Chosen option: **Option 2: Deferred upload triggered by user confirmation. Transactional Upload + Scan + Save.**  
+Upload, scan, and save now execute as a single atomic workflow.  
+No data is finalized unless every stage succeeds. Cleanup and user feedback happen immediately on failure.
 
 ## Consequences
 
-- **Positive:**  
-  - Eliminates orphaned or unreferenced blobs.
-  - Reduces storage costs and maintenance overhead.
-  - Improves logical consistency between UI actions and stored data.
-  - Simplifies cleanup and version management.
+- **Positive:**
+  - Orphaned and unreferenced files are eliminated.
+  - Ensures consistent and secure linkage between uploaded blobs and saved data.
+  - Regulatory and operational risks are minimized.
+  - No background sweeps or delayed cleanups required.
 
-- **Negative:**  
+- **Negative:**
   - Upload initiation is delayed until user confirmation, possibly increasing total save time.
-  - Requires additional UI state management to retain selected files before upload.
   - Slightly more complex frontend logic to manage pending uploads and confirmation triggers.
   - Require a local memory/state variable to store the file until the final save.
 
 ## Implementation Details
+
 **Sequence Diagram**
 ```mermaid
 sequenceDiagram
@@ -68,28 +69,36 @@ participant Frontend
 participant Backend
 participant Blob
 
-User->>Frontend: Click upload and select file
-Frontend->>Frontend: Sanitize & validate (type, size, dimensions)
-Frontend->>Frontend: Temporarily store file in local state (not uploaded yet)
+User->>Frontend: Select file and fill form
+Frontend->>Frontend: Validate (type, size, dimensions) and store locally
 User->>Frontend: Click "Save and Continue"
 Frontend->>Backend: Request SAS token (name, type, size)
 Backend->>Backend: Build blob path + tags + metadata, validate upload rules
 Backend-->>Frontend: AuthResult (blob URL + SAS token + x-ms-date + tags + metadata)
 Frontend->>Blob: PUT file bytes (headers + auth + tags + metadata)
 Blob-->>Frontend: 201 Created (x-ms-version-id)
-Frontend->>Backend: Persist blob reference/version ID
-Backend->>Backend: Process blob (versionId and blobURL)
+Frontend->>Backend: Notify upload completion & trigger malware scan
 alt Scan: No threats found
-    Backend->>Frontend: Acknowledge success, retain blob
+    Backend->>Backend: Proceed with database save (link blob + persist form data)
+    alt DB Save Success
+        Backend-->>Frontend: Return success (record and blob committed)
+        Frontend-->>User: Show success message and continue
+    else DB Save Failure
+        Backend->>Blob: Delete uploaded blob
+        Backend-->>Frontend: Return error (DB failure, blob cleaned)
+        Frontend-->>User: Show error, form preserved for retry
+    end
 else Scan: Malicious
-    Backend->>Blob: Delete current malicious version, promote previous version
-    Backend->>Frontend: Acknowledge file replacement or deletion
+    Backend->>Blob: Delete uploaded blob
+    Backend-->>Frontend: Return error (malicious file detected)
+    Frontend-->>User: Show re-upload prompt (form preserved)
 end
-    Frontend-->>User: Show success / preview / error if malicious
 ```
 
 ## Technical Considerations
 
+- The entire operation — upload, malware scan, and database save — functions as a single logical transaction. If any step fails, the process is rolled back, and no partial or orphaned data remains in the system.
+- If a database transaction fails after a successful scan and blob upload, the backend immediately deletes the blob version to maintain consistency between the database and storage. Similarly, failed or malicious uploads never reach the committed state, ensuring there are no unreferenced blobs.
 - The frontend will temporarily hold selected files in memory or a local object store until “Save and Continue” is clicked.
 - The backend will continue to issue SAS tokens on-demand but only after the confirmation action.
 - Cleanup will no longer be required for abandoned uploads, as no file is stored remotely without user confirmation.
