@@ -11,6 +11,9 @@ import type * as ItemListing from './listing/item/index.ts';
 import type * as Conversation from './conversation/conversation/index.ts';
 import { ReservationRequestContext } from './reservation-request/index.ts';
 
+import { AccountPlanContext } from './account-plan/index.ts';
+import type * as AccountPlan from './account-plan/account-plan/index.ts';
+
 export interface ReadonlyDataSource {
 	User: {
 		PersonalUser: {
@@ -32,6 +35,11 @@ export interface ReadonlyDataSource {
 			ConversationReadRepo: Conversation.ConversationReadRepository;
 		};
 	};
+	AccountPlan: {
+		AccountPlan: {
+			AccountPlanReadRepo: AccountPlan.AccountPlanReadRepository;
+		};
+	};
 }
 
 export const ReadonlyDataSourceImplementation = (
@@ -42,4 +50,5 @@ export const ReadonlyDataSourceImplementation = (
 	ReservationRequest: ReservationRequestContext(models, passport),
 	Listing: ListingContext(models, passport),
 	Conversation: ConversationContext(models, passport),
+	AccountPlan: AccountPlanContext(models, passport),
 });

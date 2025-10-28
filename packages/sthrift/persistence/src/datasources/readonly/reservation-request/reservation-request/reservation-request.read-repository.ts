@@ -1,4 +1,5 @@
 import type { Domain } from '@sthrift/domain';
+
 import { Types } from 'mongoose';
 import type { ModelsContext } from '../../../../models-context.ts';
 import {
@@ -279,11 +280,24 @@ const getMockReservationRequests = (
 								zipCode: '02101',
 							},
 							billing: {
-								subscriptionId: '98765789',
-								cybersourceCustomerId: '87654345678',
-								paymentState: 'active',
-								lastTransactionId: 'txn-123456',
-								lastPaymentAmount: 100.0,
+								cybersourceCustomerId: null,
+								subscription: {
+									planCode: 'basic',
+									status: '',
+									startDate: new Date('2020-01-01T00:00:00Z'),
+									subscriptionId: 'sub_123',
+								},
+								transactions: [
+									{
+										id: '1',
+										transactionId: 'txn_123',
+										amount: 1000,
+										referenceId: 'ref_123',
+										status: 'completed',
+										completedAt: new Date('2020-01-01T00:00:00Z'),
+										errorMessage: null,
+									},
+								],
 							},
 						},
 					},
@@ -318,6 +332,16 @@ const getMockReservationRequests = (
 								canManageReservationRequest: true,
 								canViewReservationRequest: true,
 							},
+							userPermissions: {
+								canCreateUser: false,
+								canBlockUsers: false,
+								canUnblockUsers: false,
+							},
+							accountPlanPermissions: {
+								canCreateAccountPlan: false,
+								canUpdateAccountPlan: false,
+								canDeleteAccountPlan: false,
+							},
 						},
 					},
 					loadRole: () =>
@@ -348,6 +372,16 @@ const getMockReservationRequests = (
 									canManageReservationRequest: true,
 									canViewReservationRequest: true,
 								},
+								userPermissions: {
+									canCreateUser: false,
+									canBlockUsers: false,
+									canUnblockUsers: false,
+								},
+								accountPlanPermissions: {
+									canCreateAccountPlan: false,
+									canUpdateAccountPlan: false,
+									canDeleteAccountPlan: false,
+								},
 							},
 						}),
 				},
@@ -370,11 +404,24 @@ const getMockReservationRequests = (
 							zipCode: '02101',
 						},
 						billing: {
-							subscriptionId: '98765789',
-							cybersourceCustomerId: '87654345678',
-							paymentState: 'active',
-							lastTransactionId: 'txn-123456',
-							lastPaymentAmount: 100.0,
+							cybersourceCustomerId: null,
+							subscription: {
+								planCode: 'basic',
+								status: '',
+								startDate: new Date('2020-01-01T00:00:00Z'),
+								subscriptionId: 'sub_123',
+							},
+							transactions: [
+								{
+									id: '1',
+									transactionId: 'txn_123',
+									amount: 1000,
+									referenceId: 'ref_123',
+									status: 'completed',
+									completedAt: new Date('2020-01-01T00:00:00Z'),
+									errorMessage: null,
+								},
+							],
 						},
 					},
 				},
@@ -411,6 +458,16 @@ const getMockReservationRequests = (
 							canManageReservationRequest: true,
 							canViewReservationRequest: true,
 						},
+						userPermissions: {
+							canCreateUser: false,
+							canBlockUsers: false,
+							canUnblockUsers: false,
+						},
+						accountPlanPermissions: {
+							canCreateAccountPlan: false,
+							canUpdateAccountPlan: false,
+							canDeleteAccountPlan: false,
+						},
 					},
 				},
 				loadRole: () =>
@@ -440,6 +497,16 @@ const getMockReservationRequests = (
 								canCreateReservationRequest: true,
 								canManageReservationRequest: true,
 								canViewReservationRequest: true,
+							},
+							userPermissions: {
+								canCreateUser: false,
+								canBlockUsers: false,
+								canUnblockUsers: false,
+							},
+							accountPlanPermissions: {
+								canCreateAccountPlan: false,
+								canUpdateAccountPlan: false,
+								canDeleteAccountPlan: false,
 							},
 						},
 					}),
@@ -479,11 +546,24 @@ const getMockReservationRequests = (
 									zipCode: '02101',
 								},
 								billing: {
-									subscriptionId: '98765789',
-									cybersourceCustomerId: '87654345678',
-									paymentState: 'active',
-									lastTransactionId: 'txn-123456',
-									lastPaymentAmount: 100.0,
+									cybersourceCustomerId: null,
+									subscription: {
+										planCode: 'basic',
+										status: '',
+										startDate: new Date('2020-01-01T00:00:00Z'),
+										subscriptionId: 'sub_123',
+									},
+									transactions: [
+										{
+											id: '1',
+											transactionId: 'txn_123',
+											amount: 1000,
+											referenceId: 'ref_123',
+											status: 'completed',
+											completedAt: new Date('2020-01-01T00:00:00Z'),
+											errorMessage: null,
+										},
+									],
 								},
 							},
 						},
@@ -518,6 +598,16 @@ const getMockReservationRequests = (
 									canManageReservationRequest: true,
 									canViewReservationRequest: true,
 								},
+								userPermissions: {
+									canCreateUser: false,
+									canBlockUsers: false,
+									canUnblockUsers: false,
+								},
+								accountPlanPermissions: {
+									canCreateAccountPlan: false,
+									canUpdateAccountPlan: false,
+									canDeleteAccountPlan: false,
+								},
 							},
 						},
 						loadRole: () =>
@@ -547,6 +637,16 @@ const getMockReservationRequests = (
 										canCreateReservationRequest: true,
 										canManageReservationRequest: true,
 										canViewReservationRequest: true,
+									},
+									userPermissions: {
+										canCreateUser: false,
+										canBlockUsers: false,
+										canUnblockUsers: false,
+									},
+									accountPlanPermissions: {
+										canCreateAccountPlan: false,
+										canUpdateAccountPlan: false,
+										canDeleteAccountPlan: false,
 									},
 								},
 							}),
@@ -581,6 +681,16 @@ const getMockReservationRequests = (
 							canManageReservationRequest: true,
 							canViewReservationRequest: true,
 						},
+						userPermissions: {
+							canCreateUser: false,
+							canBlockUsers: false,
+							canUnblockUsers: false,
+						},
+						accountPlanPermissions: {
+							canCreateAccountPlan: false,
+							canUpdateAccountPlan: false,
+							canDeleteAccountPlan: false,
+						},
 					},
 				};
 				return Promise.resolve({
@@ -602,11 +712,24 @@ const getMockReservationRequests = (
 								zipCode: '02101',
 							},
 							billing: {
-								subscriptionId: '98765789',
-								cybersourceCustomerId: '87654345678',
-								paymentState: 'active',
-								lastTransactionId: 'txn-123456',
-								lastPaymentAmount: 100.0,
+								cybersourceCustomerId: null,
+								subscription: {
+									planCode: 'basic',
+									status: '',
+									startDate: new Date('2020-01-01T00:00:00Z'),
+									subscriptionId: 'sub_123',
+								},
+								transactions: [
+									{
+										id: '1',
+										transactionId: 'txn_123',
+										amount: 1000,
+										referenceId: 'ref_123',
+										status: 'completed',
+										completedAt: new Date('2020-01-01T00:00:00Z'),
+										errorMessage: null,
+									},
+								],
 							},
 						},
 					},

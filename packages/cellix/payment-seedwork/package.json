@@ -1,0 +1,25 @@
+{
+	"name": "@cellix/payment-seedwork",
+	"version": "1.0.0",
+	"private": true,
+	"type": "module",
+	"files": [
+		"dist"
+	],
+	"exports": {
+		".": {
+			"types": "./dist/src/index.d.ts",
+			"default": "./dist/src/index.js"
+		}
+	},
+	"scripts": {
+		"prebuild": "biome lint",
+		"build": "tsc --build",
+		"watch": "tsc --watch",
+		"clean": "rimraf dist"
+	},
+
+	"devDependencies": {
+		"@cellix/typescript-config": "workspace:*"
+	}
+}

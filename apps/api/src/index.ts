@@ -21,7 +21,9 @@ import * as TokenValidationConfig from './service-config/token-validation/index.
 
 import { graphHandlerCreator } from '@sthrift/graphql';
 import { restHandlerCreator } from '@sthrift/rest';
-import { ServiceCybersource } from '@sthrift/service-cybersource';
+import { MockServiceCybersource } from '@sthrift/service-cybersource';
+
+const paymentService = new MockServiceCybersource(); // add condition to switch services here later
 
 Cellix.initializeInfrastructureServices<ApiContextSpec, ApplicationServices>(
 	(serviceRegistry) => {
@@ -37,7 +39,7 @@ Cellix.initializeInfrastructureServices<ApiContextSpec, ApplicationServices>(
 				new ServiceTokenValidation(TokenValidationConfig.portalTokens),
 			)
 			// .registerInfrastructureService(new ServiceTwilio())
-			.registerInfrastructureService(new ServiceCybersource());
+			.registerInfrastructureService(paymentService);
 	},
 )
 	.setContext((serviceRegistry) => {
@@ -56,10 +58,7 @@ Cellix.initializeInfrastructureServices<ApiContextSpec, ApplicationServices>(
 				serviceRegistry.getInfrastructureService<ServiceTokenValidation>(
 					ServiceTokenValidation,
 				),
-			paymentService:
-				serviceRegistry.getInfrastructureService<ServiceCybersource>(
-					ServiceCybersource,
-				),
+			paymentService: paymentService,
 		};
 	})
 	.initializeApplicationServices((context) =>

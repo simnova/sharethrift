@@ -1,9 +1,8 @@
 import { useState } from "react";
 import { AdminUsersTableContainer } from "./admin-users-table.container.tsx";
 
-export interface AdminUsersProps {}
 
-export const AdminUsers: React.FC<AdminUsersProps> = () => {
+export const AdminUsers: React.FC = () => {
   const [currentPage, setCurrentPage] = useState(1);
 
   return (
