@@ -9,6 +9,8 @@ import {
   Divider,
   Space,
   Tag,
+  Form,
+  Input,
 } from "antd";
 import { EditOutlined, LockOutlined } from "@ant-design/icons";
 import type {
@@ -16,7 +18,6 @@ import type {
   PlanOption,
   SettingsUser,
 } from "../components/settings-view.types.ts";
-import { Form, Input } from "antd";
 import styles from "../components/settings-view.module.css";
 import "@sthrift/ui-components/src/styles/theme.css";
 
@@ -120,8 +121,6 @@ export const SettingsView: React.FC<SettingsViewProps> = ({
       });
     }
     if (section === "password") {
-      console.log("Initializing password form for editing");
-      console.log("user:", user);
       passwordForm.setFieldsValue({
         currentPassword: user.password,
         newPassword: "",
@@ -188,7 +187,14 @@ export const SettingsView: React.FC<SettingsViewProps> = ({
     <Card className={styles["sectionCard"]}>
       <div className={styles["sectionHeader"]}>
         <h2>Profile Information</h2>
-        {editingSection !== "profile" ? (
+        {editingSection === "profile" ? (
+          <Space>
+            <Button onClick={saveProfile} type="primary">
+              Save
+            </Button>
+            <Button onClick={cancelEdit}>Cancel</Button>
+          </Space>
+        ) : (
           <Button
             icon={<EditOutlined />}
             onClick={() => beginEdit("profile")}
@@ -196,62 +202,10 @@ export const SettingsView: React.FC<SettingsViewProps> = ({
           >
             Edit Profile
           </Button>
-        ) : (
-          <Space>
-            <Button onClick={saveProfile} type="primary">
-              Save
-            </Button>
-            <Button onClick={cancelEdit}>Cancel</Button>
-          </Space>
         )}
       </div>
 
-      {editingSection !== "profile" ? (
-        <Row gutter={[16, 16]} align="middle">
-          <Col xs={24} sm={6} className={styles["profileImageCol"]}>
-            <Avatar className={styles["profileAvatar"]} />
-          </Col>
-          <Col xs={24} sm={18}>
-            <Row>
-              <Col xs={24} sm={12}>
-                <div>
-                  <Text className="label">First Name</Text>
-                  <br />
-                  <p>{user.firstName || "Not provided"}</p>
-                </div>
-              </Col>
-              <Col xs={24} sm={12}>
-                <div>
-                  <Text className="label">Last Name</Text>
-                  <br />
-                  <p>{user.lastName || "Not provided"}</p>
-                </div>
-              </Col>
-              <Col xs={24} sm={12}>
-                <div>
-                  <Text className="label">Username</Text>
-                  <br />
-                  <p>{user.username}</p>
-                </div>
-              </Col>
-              <Col xs={24} sm={12}>
-                <div>
-                  <Text className="label">Email</Text>
-                  <br />
-                  <p>{user.email}</p>
-                </div>
-              </Col>
-              <Col xs={24}>
-                <div>
-                  <Text className="label">About Me</Text>
-                  <br />
-                  <p>{user.aboutMe || "Not provided"}</p>
-                </div>
-              </Col>
-            </Row>
-          </Col>
-        </Row>
-      ) : (
+      {editingSection === "profile" ? (
         <Form form={profileForm} layout="vertical">
           <Row gutter={[16, 16]}>
             <Col xs={24} sm={12}>
@@ -297,6 +251,51 @@ export const SettingsView: React.FC<SettingsViewProps> = ({
             </Col>
           </Row>
         </Form>
+      ) : (
+        <Row gutter={[16, 16]} align="middle">
+          <Col xs={24} sm={6} className={styles["profileImageCol"]}>
+            <Avatar className={styles["profileAvatar"]} />
+          </Col>
+          <Col xs={24} sm={18}>
+            <Row>
+              <Col xs={24} sm={12}>
+                <div>
+                  <Text className="label">First Name</Text>
+                  <br />
+                  <p>{user.firstName || "Not provided"}</p>
+                </div>
+              </Col>
+              <Col xs={24} sm={12}>
+                <div>
+                  <Text className="label">Last Name</Text>
+                  <br />
+                  <p>{user.lastName || "Not provided"}</p>
+                </div>
+              </Col>
+              <Col xs={24} sm={12}>
+                <div>
+                  <Text className="label">Username</Text>
+                  <br />
+                  <p>{user.username}</p>
+                </div>
+              </Col>
+              <Col xs={24} sm={12}>
+                <div>
+                  <Text className="label">Email</Text>
+                  <br />
+                  <p>{user.email}</p>
+                </div>
+              </Col>
+              <Col xs={24}>
+                <div>
+                  <Text className="label">About Me</Text>
+                  <br />
+                  <p>{user.aboutMe || "Not provided"}</p>
+                </div>
+              </Col>
+            </Row>
+          </Col>
+        </Row>
       )}
     </Card>
   );
@@ -305,7 +304,14 @@ export const SettingsView: React.FC<SettingsViewProps> = ({
     <Card className={styles["sectionCard"]}>
       <div className={styles["sectionHeader"]}>
         <h2>Location</h2>
-        {editingSection !== "location" ? (
+        {editingSection === "location" ? (
+          <Space>
+            <Button onClick={saveLocation} type="primary">
+              Save
+            </Button>
+            <Button onClick={cancelEdit}>Cancel</Button>
+          </Space>
+        ) : (
           <Button
             icon={<EditOutlined />}
             onClick={() => beginEdit("location")}
@@ -313,16 +319,44 @@ export const SettingsView: React.FC<SettingsViewProps> = ({
           >
             Edit Location
           </Button>
-        ) : (
-          <Space>
-            <Button onClick={saveLocation} type="primary">
-              Save
-            </Button>
-            <Button onClick={cancelEdit}>Cancel</Button>
-          </Space>
         )}
       </div>
-      {editingSection !== "location" ? (
+      {editingSection === "location" ? (
+        <Form form={locationForm} layout="vertical">
+          <Row gutter={[16, 16]}>
+            <Col xs={24}>
+              <Form.Item name={["location", "address1"]} label="Address Line 1">
+                <Input />
+              </Form.Item>
+            </Col>
+            <Col xs={24}>
+              <Form.Item name={["location", "address2"]} label="Address Line 2">
+                <Input />
+              </Form.Item>
+            </Col>
+            <Col xs={24} sm={6}>
+              <Form.Item name={["location", "city"]} label="City">
+                <Input />
+              </Form.Item>
+            </Col>
+            <Col xs={24} sm={6}>
+              <Form.Item name={["location", "state"]} label="State">
+                <Input />
+              </Form.Item>
+            </Col>
+            <Col xs={24} sm={6}>
+              <Form.Item name={["location", "country"]} label="Country">
+                <Input />
+              </Form.Item>
+            </Col>
+            <Col xs={24} sm={6}>
+              <Form.Item name={["location", "zipCode"]} label="Zip Code">
+                <Input />
+              </Form.Item>
+            </Col>
+          </Row>
+        </Form>
+      ) : (
         <Row gutter={[16, 16]}>
           <Col xs={24} sm={12}>
             <div>
@@ -367,41 +401,6 @@ export const SettingsView: React.FC<SettingsViewProps> = ({
             </div>
           </Col>
         </Row>
-      ) : (
-        <Form form={locationForm} layout="vertical">
-          <Row gutter={[16, 16]}>
-            <Col xs={24}>
-              <Form.Item name={["location", "address1"]} label="Address Line 1">
-                <Input />
-              </Form.Item>
-            </Col>
-            <Col xs={24}>
-              <Form.Item name={["location", "address2"]} label="Address Line 2">
-                <Input />
-              </Form.Item>
-            </Col>
-            <Col xs={24} sm={6}>
-              <Form.Item name={["location", "city"]} label="City">
-                <Input />
-              </Form.Item>
-            </Col>
-            <Col xs={24} sm={6}>
-              <Form.Item name={["location", "state"]} label="State">
-                <Input />
-              </Form.Item>
-            </Col>
-            <Col xs={24} sm={6}>
-              <Form.Item name={["location", "country"]} label="Country">
-                <Input />
-              </Form.Item>
-            </Col>
-            <Col xs={24} sm={6}>
-              <Form.Item name={["location", "zipCode"]} label="Zip Code">
-                <Input />
-              </Form.Item>
-            </Col>
-          </Row>
-        </Form>
       )}
     </Card>
   );
@@ -475,8 +474,8 @@ export const SettingsView: React.FC<SettingsViewProps> = ({
             Popular
           </Tag>
         )}
-        <div
-          role="button"
+        <Button
+          type="button"
           aria-pressed={plan.isSelected}
           tabIndex={0}
           onClick={(e) => {
@@ -516,7 +515,7 @@ export const SettingsView: React.FC<SettingsViewProps> = ({
           }}
         >
           {plan.isSelected ? <span style={{ fontSize: 14 }}>✓</span> : null}
-        </div>
+        </Button>
       </div>
 
       <div
@@ -580,15 +579,7 @@ export const SettingsView: React.FC<SettingsViewProps> = ({
     <Card className={styles["sectionCard"]}>
       <div className={styles["sectionHeader"]}>
         <h2>Plan</h2>
-        {editingSection !== "plan" ? (
-          <Button
-            icon={<EditOutlined />}
-            onClick={() => beginEdit("plan")}
-            type="primary"
-          >
-            Edit Plan
-          </Button>
-        ) : (
+        {editingSection === "plan" ? (
           <Space>
             <Button
               onClick={savePlan}
@@ -599,6 +590,14 @@ export const SettingsView: React.FC<SettingsViewProps> = ({
             </Button>
             <Button onClick={cancelEdit}>Cancel</Button>
           </Space>
+        ) : (
+          <Button
+            icon={<EditOutlined />}
+            onClick={() => beginEdit("plan")}
+            type="primary"
+          >
+            Edit Plan
+          </Button>
         )}
       </div>
       <div
@@ -621,15 +620,7 @@ export const SettingsView: React.FC<SettingsViewProps> = ({
       <Card className={styles["sectionCard"]}>
         <div className={styles["sectionHeader"]}>
           <h2>Billing</h2>
-          {editingSection !== "billing" ? (
-            <Button
-              icon={<EditOutlined />}
-              onClick={() => beginEdit("billing")}
-              type="primary"
-            >
-              Edit Billing
-            </Button>
-          ) : (
+          {editingSection === "billing" ? (
             <Space>
               <Button
                 onClick={saveBilling}
@@ -640,9 +631,32 @@ export const SettingsView: React.FC<SettingsViewProps> = ({
               </Button>
               <Button onClick={cancelEdit}>Cancel</Button>
             </Space>
+          ) : (
+            <Button
+              icon={<EditOutlined />}
+              onClick={() => beginEdit("billing")}
+              type="primary"
+            >
+              Edit Billing
+            </Button>
           )}
         </div>
-        {editingSection !== "billing" ? (
+        {editingSection === "billing" ? (
+          <Form form={billingForm} layout="vertical" style={{ maxWidth: 480 }}>
+            <Form.Item name="subscriptionId" label="Subscription ID">
+              <Input placeholder="Enter subscription id" />
+            </Form.Item>
+            <Form.Item
+              name="cybersourceCustomerId"
+              label="Cybersource Customer ID"
+            >
+              <Input placeholder="Enter cybersource customer id" />
+            </Form.Item>
+            <p style={{ fontSize: 12 }}>
+              Payment instrument management coming soon.
+            </p>
+          </Form>
+        ) : (
           <Space
             direction="vertical"
             size="large"
@@ -664,21 +678,6 @@ export const SettingsView: React.FC<SettingsViewProps> = ({
               <p>No payment method on file</p>
             </div>
           </Space>
-        ) : (
-          <Form form={billingForm} layout="vertical" style={{ maxWidth: 480 }}>
-            <Form.Item name="subscriptionId" label="Subscription ID">
-              <Input placeholder="Enter subscription id" />
-            </Form.Item>
-            <Form.Item
-              name="cybersourceCustomerId"
-              label="Cybersource Customer ID"
-            >
-              <Input placeholder="Enter cybersource customer id" />
-            </Form.Item>
-            <p style={{ fontSize: 12 }}>
-              Payment instrument management coming soon.
-            </p>
-          </Form>
         )}
       </Card>
     );
@@ -688,15 +687,7 @@ export const SettingsView: React.FC<SettingsViewProps> = ({
     <Card className={styles["sectionCard"]}>
       <div className={styles["sectionHeader"]}>
         <h2>Change Password</h2>
-        {editingSection !== "password" ? (
-          <Button
-            icon={<EditOutlined />}
-            onClick={() => beginEdit("password")}
-            type="primary"
-          >
-            Edit Password
-          </Button>
-        ) : (
+        {editingSection === "password" ? (
           <Space>
             <Button
               onClick={savePassword}
@@ -707,22 +698,17 @@ export const SettingsView: React.FC<SettingsViewProps> = ({
             </Button>
             <Button onClick={cancelEdit}>Cancel</Button>
           </Space>
+        ) : (
+          <Button
+            icon={<EditOutlined />}
+            onClick={() => beginEdit("password")}
+            type="primary"
+          >
+            Edit Password
+          </Button>
         )}
       </div>
-      {editingSection !== "password" ? (
-        <Space direction="vertical" size="middle">
-          <Text className="label">
-            Use the Edit button to change your password.
-          </Text>
-          <Button
-            type="primary"
-            icon={<LockOutlined />}
-            onClick={onChangePassword}
-          >
-            Change Password
-          </Button>
-        </Space>
-      ) : (
+      {editingSection === "password" ? (
         <Form form={passwordForm} layout="vertical" style={{ maxWidth: 480 }}>
           <Form.Item
             name="currentPassword"
@@ -749,6 +735,19 @@ export const SettingsView: React.FC<SettingsViewProps> = ({
             Password change will be processed after save (placeholder).
           </p>
         </Form>
+      ) : (
+        <Space direction="vertical" size="middle">
+          <Text className="label">
+            Use the Edit button to change your password.
+          </Text>
+          <Button
+            type="primary"
+            icon={<LockOutlined />}
+            onClick={onChangePassword}
+          >
+            Change Password
+          </Button>
+        </Space>
       )}
     </Card>
   );
