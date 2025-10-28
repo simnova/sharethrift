@@ -34,6 +34,7 @@ const PLAN_OPTIONS: PlanOption[] = [
       "15 items to share",
       "5 friends",
     ],
+    isSelected: false,
   },
   {
     id: "verified-personal",
@@ -45,6 +46,7 @@ const PLAN_OPTIONS: PlanOption[] = [
       "30 items to share",
       "10 friends",
     ],
+    isSelected: true,
     isPopular: true,
   },
   {
@@ -57,6 +59,7 @@ const PLAN_OPTIONS: PlanOption[] = [
       "50 items to share",
       "30 friends",
     ],
+    isSelected: false,
   },
 ];
 

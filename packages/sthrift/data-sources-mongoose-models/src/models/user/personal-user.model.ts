@@ -71,6 +71,7 @@ export interface PersonalUserAccountProfile
 	extends MongooseSeedwork.NestedPath {
 	firstName: string;
 	lastName: string;
+	aboutMe: string;
 	location: PersonalUserAccountProfileLocation;
 	billing: PersonalUserAccountProfileBilling;
 }
@@ -78,6 +79,7 @@ export const PersonalUserAccountProfileType: SchemaDefinition<PersonalUserAccoun
 	{
 		firstName: { type: String, required: true },
 		lastName: { type: String, required: true },
+		aboutMe: { type: String, required: false },
 		location: {
 			type: PersonalUserAccountProfileLocationType,
 			required: false,

@@ -27,6 +27,7 @@ type PersonalUserAccount {
 type PersonalUserAccountProfile {
 	firstName: String
 	lastName: String
+	aboutMe: String
 	location: PersonalUserAccountProfileLocation
 	billing: PersonalUserAccountProfileBilling
 }

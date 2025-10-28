@@ -147,6 +147,12 @@ export class PersonalUserAccountProfileDomainAdapter
 	set lastName(value: string) {
 		this.props.lastName = value;
 	}
+	get aboutMe() {
+		return this.props.aboutMe;
+	}
+	set aboutMe(value: string) {
+		this.props.aboutMe = value;
+	}
 
 	// Nested Path Getters
 	get location() {

@@ -2,7 +2,6 @@ import { useQuery, useMutation } from "@apollo/client/react";
 import { message } from "antd";
 import React, { useState } from "react";
 import { SettingsView } from "../pages/settings-view.tsx";
-import { useNavigate } from "react-router-dom"; // retained for potential future navigation, not used after save now
 import { ComponentQueryLoader } from "@sthrift/ui-components";
 import type {
   CurrentUserSettingsQueryData,
@@ -14,7 +13,6 @@ import {
 } from "../../../../../../generated.tsx";
 
 function SettingsViewLoader() {
-  const navigate = useNavigate();
   const {
     data: userData,
     loading: userLoading,
@@ -23,9 +21,6 @@ function SettingsViewLoader() {
     HomeAccountSettingsViewContainerCurrentUserDocument
   );
 
-  const [mutationErrorMessage, setMutationErrorMessage] = useState<
-    string | undefined
-  >(undefined);
   const [updateUserMutation, { loading: updateLoading, error: updateError }] =
     useMutation(HomeAccountSettingsViewContainerUpdatePersonalUserDocument, {
       onError: (err) => {
@@ -54,7 +49,6 @@ function SettingsViewLoader() {
     if (!userData?.currentPersonalUserAndCreateIfNotExists) return;
     const user = userData.currentPersonalUserAndCreateIfNotExists;
     setIsSavingSection(true);
-    setMutationErrorMessage(undefined);
     if (updateLoading) {
       setIsSavingSection(false);
       return;
@@ -67,7 +61,7 @@ function SettingsViewLoader() {
     }
     try {
       const base = user.account.profile;
-      const nextProfile = {
+      const nextProfile: any = {
         firstName:
           section === "profile"
             ? values["firstName"] ?? base.firstName
@@ -76,10 +70,6 @@ function SettingsViewLoader() {
           section === "profile"
             ? values["lastName"] ?? base.lastName
             : base.lastName,
-        aboutMe:
-          section === "profile"
-            ? values["aboutMe"] ?? base.aboutMe ?? ""
-            : base.aboutMe ?? "",
         location: {
           address1:
             section === "location"
@@ -119,6 +109,10 @@ function SettingsViewLoader() {
               : base.billing?.cybersourceCustomerId,
         },
       };
+      if (section === "profile") {
+        // Only include aboutMe when editing profile; preserve existing without fallback
+        nextProfile.aboutMe = values["aboutMe"] ?? base.aboutMe;
+      }
       const username =
         section === "profile"
           ? values["username"] ?? user.account.username
@@ -151,7 +145,6 @@ function SettingsViewLoader() {
       // eslint-disable-next-line no-console
       console.error("[SettingsView] update mutation error", err);
       const msg = err?.message || "Update failed";
-      setMutationErrorMessage(msg);
       message.error(msg);
       throw err; // propagate so view's save handler catch preserves edit mode
     } finally {
@@ -212,6 +205,7 @@ function SettingsViewLoader() {
     id: user.id,
     firstName: user.account.profile.firstName,
     lastName: user.account.profile.lastName,
+    aboutMe: user.account.profile.aboutMe,
     username: user.account.username,
     email: user.account.email,
     accountType: user.account.accountType,

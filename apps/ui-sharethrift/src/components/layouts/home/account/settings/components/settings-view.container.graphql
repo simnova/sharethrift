@@ -9,6 +9,7 @@ query HomeAccountSettingsViewContainerCurrentUser {
       profile {
         firstName
         lastName
+        aboutMe
         location {
           address1
           address2
@@ -38,6 +39,7 @@ mutation HomeAccountSettingsViewContainerUpdatePersonalUser($input: PersonalUser
       profile {
         firstName
         lastName
+        aboutMe
         location {
           address1
           address2
