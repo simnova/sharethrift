@@ -1,12 +1,15 @@
-import React from 'react';
+import type React from 'react';
 import { Typography } from 'antd';
 import { ReservationCard } from './reservation-card.tsx';
-import type { ReservationRequest } from '../pages/index.ts';
+import type { HomeMyReservationsReservationsViewActiveContainerActiveReservationsQuery } from '../../../../../generated.tsx';
+
+type ReservationRequestFieldsFragment =
+	HomeMyReservationsReservationsViewActiveContainerActiveReservationsQuery['myActiveReservations'][number];
 
 const { Text } = Typography;
 
 export interface ReservationsGridProps {
-	reservations: ReservationRequest[]; // Will eventually come from generated graphql files
+	reservations: ReservationRequestFieldsFragment[]; // Type will eventually come from generated graphql files
 	onCancel?: (id: string) => void;
 	onClose?: (id: string) => void;
 	onMessage?: (id: string) => void;
