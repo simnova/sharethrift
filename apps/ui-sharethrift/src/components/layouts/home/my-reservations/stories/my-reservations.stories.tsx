@@ -52,7 +52,6 @@ export const Loading: Story = {
 	parameters: {
 		apolloClient: {
 			mocks: [
-				...defaultMocks,
 				{
 					request: {
 						query:
@@ -62,6 +61,7 @@ export const Loading: Story = {
 					delay: 3000,
 					result: { data: { myActiveReservations: [] } },
 				},
+				...defaultMocks,
 			],
 		},
 	},
@@ -72,7 +72,6 @@ export const ReservationError: Story = {
 	parameters: {
 		apolloClient: {
 			mocks: [
-				...defaultMocks,
 				{
 					request: {
 						query:
@@ -81,6 +80,7 @@ export const ReservationError: Story = {
 					},
 					error: new Error('Failed to fetch reservations'),
 				},
+				...defaultMocks,
 			],
 		},
 	},
@@ -91,7 +91,6 @@ export const Empty: Story = {
 	parameters: {
 		apolloClient: {
 			mocks: [
-				...defaultMocks,
 				{
 					request: {
 						query:
@@ -108,6 +107,7 @@ export const Empty: Story = {
 					},
 					result: { data: { myPastReservations: [] } },
 				},
+				...defaultMocks,
 			],
 		},
 	},

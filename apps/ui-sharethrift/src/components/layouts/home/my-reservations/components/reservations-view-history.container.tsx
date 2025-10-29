@@ -1,4 +1,5 @@
 import { ComponentQueryLoader } from '@sthrift/ui-components';
+import { Alert } from 'antd';
 import { useQuery } from '@apollo/client/react';
 import {
 	HomeMyReservationsReservationsViewHistoryContainerPastReservationsDocument,
@@ -44,6 +45,14 @@ export const ReservationsViewHistoryContainer: React.FC<
 		<ComponentQueryLoader
 			loading={loading}
 			error={error}
+			errorComponent={
+				<Alert
+					message="Error Loading Reservations"
+					description="There was an error loading your reservations. Please try again later."
+					type="error"
+					showIcon
+				/>
+			}
 			hasData={reservations}
 			hasDataComponent={
 				<ReservationsView
