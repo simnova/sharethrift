@@ -7,34 +7,45 @@ import type {
 import { AdminRoleUserPermissions } from './admin-role-user-permissions.ts';
 
 import type {
-	AdminRoleContentPermissionsProps,
-	AdminRoleContentPermissionsEntityReference,
-} from './admin-role-content-permissions.ts';
-import { AdminRoleContentPermissions } from './admin-role-content-permissions.ts';
+	AdminRoleConversationPermissionsProps,
+	AdminRoleConversationPermissionsEntityReference,
+} from './admin-role-conversation-permissions.ts';
+import { AdminRoleConversationPermissions } from './admin-role-conversation-permissions.ts';
 
 import type {
-	AdminRoleSystemPermissionsProps,
-	AdminRoleSystemPermissionsEntityReference,
-} from './admin-role-system-permissions.ts';
-import { AdminRoleSystemPermissions } from './admin-role-system-permissions.ts';
+	AdminRoleListingPermissionsProps,
+	AdminRoleListingPermissionsEntityReference,
+} from './admin-role-listing-permissions.ts';
+import { AdminRoleListingPermissions } from './admin-role-listing-permissions.ts';
+
+import type {
+	AdminRoleReservationRequestPermissionsProps,
+	AdminRoleReservationRequestPermissionsEntityReference,
+} from './admin-role-reservation-request-permissions.ts';
+import { AdminRoleReservationRequestPermissions } from './admin-role-reservation-request-permissions.ts';
 
 export interface AdminRolePermissionsProps
 	extends DomainSeedwork.ValueObjectProps {
 	readonly userPermissions: AdminRoleUserPermissionsProps;
-	readonly contentPermissions: AdminRoleContentPermissionsProps;
-	readonly systemPermissions: AdminRoleSystemPermissionsProps;
+	readonly conversationPermissions: AdminRoleConversationPermissionsProps;
+	readonly listingPermissions: AdminRoleListingPermissionsProps;
+	readonly reservationRequestPermissions: AdminRoleReservationRequestPermissionsProps;
 }
 
 export interface AdminRolePermissionsEntityReference
 	extends Readonly<
 		Omit<
 			AdminRolePermissionsProps,
-			'userPermissions' | 'contentPermissions' | 'systemPermissions'
+			| 'userPermissions'
+			| 'conversationPermissions'
+			| 'listingPermissions'
+			| 'reservationRequestPermissions'
 		>
 	> {
 	readonly userPermissions: AdminRoleUserPermissionsEntityReference;
-	readonly contentPermissions: AdminRoleContentPermissionsEntityReference;
-	readonly systemPermissions: AdminRoleSystemPermissionsEntityReference;
+	readonly conversationPermissions: AdminRoleConversationPermissionsEntityReference;
+	readonly listingPermissions: AdminRoleListingPermissionsEntityReference;
+	readonly reservationRequestPermissions: AdminRoleReservationRequestPermissionsEntityReference;
 }
 
 export class AdminRolePermissions
@@ -45,11 +56,19 @@ export class AdminRolePermissions
 		return new AdminRoleUserPermissions(this.props.userPermissions);
 	}
 
-	get contentPermissions(): AdminRoleContentPermissionsProps {
-		return new AdminRoleContentPermissions(this.props.contentPermissions);
+	get conversationPermissions(): AdminRoleConversationPermissionsProps {
+		return new AdminRoleConversationPermissions(
+			this.props.conversationPermissions,
+		);
 	}
 
-	get systemPermissions(): AdminRoleSystemPermissionsProps {
-		return new AdminRoleSystemPermissions(this.props.systemPermissions);
+	get listingPermissions(): AdminRoleListingPermissionsProps {
+		return new AdminRoleListingPermissions(this.props.listingPermissions);
+	}
+
+	get reservationRequestPermissions(): AdminRoleReservationRequestPermissionsProps {
+		return new AdminRoleReservationRequestPermissions(
+			this.props.reservationRequestPermissions,
+		);
 	}
 }

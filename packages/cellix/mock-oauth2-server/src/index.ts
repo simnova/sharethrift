@@ -154,7 +154,7 @@ async function main() {
 
 		// Extract redirect_uri from code (encoded in base64)
 		let aud = allowedRedirectUri; // default fallback
-		if (code && code.startsWith('mock-auth-code-')) {
+		if (code?.startsWith('mock-auth-code-')) {
 			try {
 				const base64Part = code.replace('mock-auth-code-', '');
 				const decodedRedirectUri = Buffer.from(base64Part, 'base64').toString(

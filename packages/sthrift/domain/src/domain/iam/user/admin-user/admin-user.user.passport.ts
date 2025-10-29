@@ -10,7 +10,10 @@ import type { UserDomainPermissions } from '../../../contexts/user/user.domain-p
 class AdminToPersonalUserVisa implements UserVisa {
 	private readonly admin: AdminUserEntityReference;
 
-	constructor(admin: AdminUserEntityReference, _root: PersonalUserEntityReference) {
+	constructor(
+		admin: AdminUserEntityReference,
+		_root: PersonalUserEntityReference,
+	) {
 		this.admin = admin;
 	}
 
@@ -21,14 +24,20 @@ class AdminToPersonalUserVisa implements UserVisa {
 		const permissions: UserDomainPermissions = {
 			canCreateUser: rolePermissions?.userPermissions?.canEditUsers ?? false,
 			canBlockUsers: rolePermissions?.userPermissions?.canBlockUsers ?? false,
-			canBlockListings: rolePermissions?.contentPermissions?.canModerateListings ?? false,
+			canBlockListings:
+				rolePermissions?.listingPermissions?.canModerateListings ?? false,
 			canUnblockUsers: rolePermissions?.userPermissions?.canBlockUsers ?? false,
-			canUnblockListings: rolePermissions?.contentPermissions?.canModerateListings ?? false,
-			canRemoveListings: rolePermissions?.contentPermissions?.canDeleteContent ?? false,
-			canViewListingReports: rolePermissions?.contentPermissions?.canViewReports ?? false,
-			canViewUserReports: rolePermissions?.userPermissions?.canViewAllUsers ?? false,
+			canUnblockListings:
+				rolePermissions?.listingPermissions?.canModerateListings ?? false,
+			canRemoveListings:
+				rolePermissions?.userPermissions?.canDeleteContent ?? false,
+			canViewListingReports:
+				rolePermissions?.userPermissions?.canViewReports ?? false,
+			canViewUserReports:
+				rolePermissions?.userPermissions?.canViewAllUsers ?? false,
 			isEditingOwnAccount: false, // Admin is not editing their own personal account
-			isSystemAccount: rolePermissions?.systemPermissions?.canManageRoles ?? false,
+			isSystemAccount:
+				rolePermissions?.userPermissions?.canManageRoles ?? false,
 		};
 		return func(permissions);
 	}

@@ -60,21 +60,30 @@ export class AdminRolePermissionsDomainAdapter
 		);
 	}
 
-	get contentPermissions(): Domain.Contexts.Role.AdminRole.AdminRoleContentPermissionsProps {
-		if (!this.props.contentPermissions) {
-			this.props.set('contentPermissions', {});
+	get conversationPermissions(): Domain.Contexts.Role.AdminRole.AdminRoleConversationPermissionsProps {
+		if (!this.props.conversationPermissions) {
+			this.props.set('conversationPermissions', {});
 		}
-		return new AdminRoleContentPermissionsDomainAdapter(
-			this.props.contentPermissions,
+		return new AdminRoleConversationPermissionsDomainAdapter(
+			this.props.conversationPermissions,
 		);
 	}
 
-	get systemPermissions(): Domain.Contexts.Role.AdminRole.AdminRoleSystemPermissionsProps {
-		if (!this.props.systemPermissions) {
-			this.props.set('systemPermissions', {});
+	get listingPermissions(): Domain.Contexts.Role.AdminRole.AdminRoleListingPermissionsProps {
+		if (!this.props.listingPermissions) {
+			this.props.set('listingPermissions', {});
 		}
-		return new AdminRoleSystemPermissionsDomainAdapter(
-			this.props.systemPermissions,
+		return new AdminRoleListingPermissionsDomainAdapter(
+			this.props.listingPermissions,
+		);
+	}
+
+	get reservationRequestPermissions(): Domain.Contexts.Role.AdminRole.AdminRoleReservationRequestPermissionsProps {
+		if (!this.props.reservationRequestPermissions) {
+			this.props.set('reservationRequestPermissions', {});
+		}
+		return new AdminRoleReservationRequestPermissionsDomainAdapter(
+			this.props.reservationRequestPermissions,
 		);
 	}
 }
@@ -121,59 +130,6 @@ export class AdminRoleUserPermissionsDomainAdapter
 	set canManageUserRoles(value: boolean) {
 		this.props.canManageUserRoles = value;
 	}
-}
-
-export class AdminRoleContentPermissionsDomainAdapter
-	implements Domain.Contexts.Role.AdminRole.AdminRoleContentPermissionsProps
-{
-	public readonly props: Models.Role.AdminRoleContentPermissions;
-	constructor(props: Models.Role.AdminRoleContentPermissions) {
-		this.props = props;
-	}
-
-	get canViewReports(): boolean {
-		return this.props.canViewReports;
-	}
-	set canViewReports(value: boolean) {
-		this.props.canViewReports = value;
-	}
-
-	get canModerateListings(): boolean {
-		return this.props.canModerateListings;
-	}
-	set canModerateListings(value: boolean) {
-		this.props.canModerateListings = value;
-	}
-
-	get canModerateConversations(): boolean {
-		return this.props.canModerateConversations;
-	}
-	set canModerateConversations(value: boolean) {
-		this.props.canModerateConversations = value;
-	}
-
-	get canModerateReservations(): boolean {
-		return this.props.canModerateReservations;
-	}
-	set canModerateReservations(value: boolean) {
-		this.props.canModerateReservations = value;
-	}
-
-	get canDeleteContent(): boolean {
-		return this.props.canDeleteContent;
-	}
-	set canDeleteContent(value: boolean) {
-		this.props.canDeleteContent = value;
-	}
-}
-
-export class AdminRoleSystemPermissionsDomainAdapter
-	implements Domain.Contexts.Role.AdminRole.AdminRoleSystemPermissionsProps
-{
-	public readonly props: Models.Role.AdminRoleSystemPermissions;
-	constructor(props: Models.Role.AdminRoleSystemPermissions) {
-		this.props = props;
-	}
 
 	get canAccessAnalytics(): boolean {
 		return this.props.canAccessAnalytics;
@@ -189,24 +145,67 @@ export class AdminRoleSystemPermissionsDomainAdapter
 		this.props.canManageRoles = value;
 	}
 
-	get canViewSystemLogs(): boolean {
-		return this.props.canViewSystemLogs;
+	get canViewReports(): boolean {
+		return this.props.canViewReports;
 	}
-	set canViewSystemLogs(value: boolean) {
-		this.props.canViewSystemLogs = value;
-	}
-
-	get canManageSystemSettings(): boolean {
-		return this.props.canManageSystemSettings;
-	}
-	set canManageSystemSettings(value: boolean) {
-		this.props.canManageSystemSettings = value;
+	set canViewReports(value: boolean) {
+		this.props.canViewReports = value;
 	}
 
-	get canAccessDatabaseTools(): boolean {
-		return this.props.canAccessDatabaseTools;
+	get canDeleteContent(): boolean {
+		return this.props.canDeleteContent;
 	}
-	set canAccessDatabaseTools(value: boolean) {
-		this.props.canAccessDatabaseTools = value;
+	set canDeleteContent(value: boolean) {
+		this.props.canDeleteContent = value;
+	}
+}
+
+export class AdminRoleConversationPermissionsDomainAdapter
+	implements
+		Domain.Contexts.Role.AdminRole.AdminRoleConversationPermissionsProps
+{
+	public readonly props: Models.Role.AdminRoleConversationPermissions;
+	constructor(props: Models.Role.AdminRoleConversationPermissions) {
+		this.props = props;
+	}
+
+	get canModerateConversations(): boolean {
+		return this.props.canModerateConversations;
+	}
+	set canModerateConversations(value: boolean) {
+		this.props.canModerateConversations = value;
+	}
+}
+
+export class AdminRoleListingPermissionsDomainAdapter
+	implements Domain.Contexts.Role.AdminRole.AdminRoleListingPermissionsProps
+{
+	public readonly props: Models.Role.AdminRoleListingPermissions;
+	constructor(props: Models.Role.AdminRoleListingPermissions) {
+		this.props = props;
+	}
+
+	get canModerateListings(): boolean {
+		return this.props.canModerateListings;
+	}
+	set canModerateListings(value: boolean) {
+		this.props.canModerateListings = value;
+	}
+}
+
+export class AdminRoleReservationRequestPermissionsDomainAdapter
+	implements
+		Domain.Contexts.Role.AdminRole.AdminRoleReservationRequestPermissionsProps
+{
+	public readonly props: Models.Role.AdminRoleReservationRequestPermissions;
+	constructor(props: Models.Role.AdminRoleReservationRequestPermissions) {
+		this.props = props;
+	}
+
+	get canModerateReservations(): boolean {
+		return this.props.canModerateReservations;
+	}
+	set canModerateReservations(value: boolean) {
+		this.props.canModerateReservations = value;
 	}
 }

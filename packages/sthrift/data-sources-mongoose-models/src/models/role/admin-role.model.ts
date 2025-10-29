@@ -14,33 +14,36 @@ export interface AdminRoleUserPermissions extends MongooseSeedwork.NestedPath {
 	canEditUsers: boolean;
 	canDeleteUsers: boolean;
 	canManageUserRoles: boolean;
-}
-
-export interface AdminRoleContentPermissions
-	extends MongooseSeedwork.NestedPath {
-	id?: ObjectId;
+	canAccessAnalytics: boolean;
+	canManageRoles: boolean;
 	canViewReports: boolean;
-	canModerateListings: boolean;
-	canModerateConversations: boolean;
-	canModerateReservations: boolean;
 	canDeleteContent: boolean;
 }
 
-export interface AdminRoleSystemPermissions
+export interface AdminRoleConversationPermissions
 	extends MongooseSeedwork.NestedPath {
 	id?: ObjectId;
-	canAccessAnalytics: boolean;
-	canManageRoles: boolean;
-	canViewSystemLogs: boolean;
-	canManageSystemSettings: boolean;
-	canAccessDatabaseTools: boolean;
+	canModerateConversations: boolean;
+}
+
+export interface AdminRoleListingPermissions
+	extends MongooseSeedwork.NestedPath {
+	id?: ObjectId;
+	canModerateListings: boolean;
+}
+
+export interface AdminRoleReservationRequestPermissions
+	extends MongooseSeedwork.NestedPath {
+	id?: ObjectId;
+	canModerateReservations: boolean;
 }
 
 export interface AdminRolePermissions extends MongooseSeedwork.NestedPath {
 	id?: ObjectId;
 	userPermissions: AdminRoleUserPermissions;
-	contentPermissions: AdminRoleContentPermissions;
-	systemPermissions: AdminRoleSystemPermissions;
+	conversationPermissions: AdminRoleConversationPermissions;
+	listingPermissions: AdminRoleListingPermissions;
+	reservationRequestPermissions: AdminRoleReservationRequestPermissions;
 }
 
 export interface AdminRole extends Role {
@@ -63,37 +66,28 @@ export const AdminRoleSchema = new Schema<
 				canEditUsers: { type: Boolean, required: true, default: false },
 				canDeleteUsers: { type: Boolean, required: true, default: false },
 				canManageUserRoles: { type: Boolean, required: true, default: false },
-			} as SchemaDefinition<AdminRoleUserPermissions>,
-			contentPermissions: {
+				canAccessAnalytics: { type: Boolean, required: true, default: false },
+				canManageRoles: { type: Boolean, required: true, default: false },
 				canViewReports: { type: Boolean, required: true, default: false },
-				canModerateListings: { type: Boolean, required: true, default: false },
+				canDeleteContent: { type: Boolean, required: true, default: false },
+			} as SchemaDefinition<AdminRoleUserPermissions>,
+			conversationPermissions: {
 				canModerateConversations: {
 					type: Boolean,
 					required: true,
 					default: false,
 				},
+			} as SchemaDefinition<AdminRoleConversationPermissions>,
+			listingPermissions: {
+				canModerateListings: { type: Boolean, required: true, default: false },
+			} as SchemaDefinition<AdminRoleListingPermissions>,
+			reservationRequestPermissions: {
 				canModerateReservations: {
 					type: Boolean,
 					required: true,
 					default: false,
 				},
-				canDeleteContent: { type: Boolean, required: true, default: false },
-			} as SchemaDefinition<AdminRoleContentPermissions>,
-			systemPermissions: {
-				canAccessAnalytics: { type: Boolean, required: true, default: false },
-				canManageRoles: { type: Boolean, required: true, default: false },
-				canViewSystemLogs: { type: Boolean, required: true, default: false },
-				canManageSystemSettings: {
-					type: Boolean,
-					required: true,
-					default: false,
-				},
-				canAccessDatabaseTools: {
-					type: Boolean,
-					required: true,
-					default: false,
-				},
-			} as SchemaDefinition<AdminRoleSystemPermissions>,
+			} as SchemaDefinition<AdminRoleReservationRequestPermissions>,
 		} as SchemaDefinition<AdminRolePermissions>,
 		schemaVersion: { type: String, default: '1.0.0' },
 		roleName: { type: String, required: true, maxlength: 50 },

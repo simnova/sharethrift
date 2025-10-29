@@ -9,15 +9,20 @@ export {
 	type AdminRoleUserPermissionsProps,
 } from './admin-role-user-permissions.ts';
 export {
-	AdminRoleContentPermissions,
-	type AdminRoleContentPermissionsEntityReference,
-	type AdminRoleContentPermissionsProps,
-} from './admin-role-content-permissions.ts';
+	AdminRoleConversationPermissions,
+	type AdminRoleConversationPermissionsEntityReference,
+	type AdminRoleConversationPermissionsProps,
+} from './admin-role-conversation-permissions.ts';
 export {
-	AdminRoleSystemPermissions,
-	type AdminRoleSystemPermissionsEntityReference,
-	type AdminRoleSystemPermissionsProps,
-} from './admin-role-system-permissions.ts';
+	AdminRoleListingPermissions,
+	type AdminRoleListingPermissionsEntityReference,
+	type AdminRoleListingPermissionsProps,
+} from './admin-role-listing-permissions.ts';
+export {
+	AdminRoleReservationRequestPermissions,
+	type AdminRoleReservationRequestPermissionsEntityReference,
+	type AdminRoleReservationRequestPermissionsProps,
+} from './admin-role-reservation-request-permissions.ts';
 export {
 	AdminRolePermissions,
 	type AdminRolePermissionsEntityReference,

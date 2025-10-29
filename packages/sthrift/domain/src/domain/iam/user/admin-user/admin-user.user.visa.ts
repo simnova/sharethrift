@@ -28,14 +28,20 @@ export class AdminUserUserVisa implements UserVisa {
 		return {
 			canCreateUser: rolePermissions?.userPermissions?.canEditUsers ?? false,
 			canBlockUsers: rolePermissions?.userPermissions?.canBlockUsers ?? false,
-			canBlockListings: rolePermissions?.contentPermissions?.canModerateListings ?? false,
+			canBlockListings:
+				rolePermissions?.listingPermissions?.canModerateListings ?? false,
 			canUnblockUsers: rolePermissions?.userPermissions?.canBlockUsers ?? false,
-			canUnblockListings: rolePermissions?.contentPermissions?.canModerateListings ?? false,
-			canRemoveListings: rolePermissions?.contentPermissions?.canDeleteContent ?? false,
-			canViewListingReports: rolePermissions?.contentPermissions?.canViewReports ?? false,
-			canViewUserReports: rolePermissions?.userPermissions?.canViewAllUsers ?? false,
+			canUnblockListings:
+				rolePermissions?.listingPermissions?.canModerateListings ?? false,
+			canRemoveListings:
+				rolePermissions?.userPermissions?.canDeleteContent ?? false,
+			canViewListingReports:
+				rolePermissions?.userPermissions?.canViewReports ?? false,
+			canViewUserReports:
+				rolePermissions?.userPermissions?.canViewAllUsers ?? false,
 			isEditingOwnAccount: isSelf,
-			isSystemAccount: rolePermissions?.systemPermissions?.canManageRoles ?? false,
+			isSystemAccount:
+				rolePermissions?.userPermissions?.canManageRoles ?? false,
 		};
 	}
 }

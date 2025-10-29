@@ -7,6 +7,10 @@ export interface AdminRoleUserPermissionsProps
 	canEditUsers: boolean;
 	canDeleteUsers: boolean;
 	canManageUserRoles: boolean;
+	canAccessAnalytics: boolean;
+	canManageRoles: boolean;
+	canViewReports: boolean;
+	canDeleteContent: boolean;
 }
 
 export interface AdminRoleUserPermissionsEntityReference
@@ -49,5 +53,33 @@ export class AdminRoleUserPermissions
 	}
 	set canManageUserRoles(value: boolean) {
 		this.props.canManageUserRoles = value;
+	}
+
+	get canAccessAnalytics(): boolean {
+		return this.props.canAccessAnalytics;
+	}
+	set canAccessAnalytics(value: boolean) {
+		this.props.canAccessAnalytics = value;
+	}
+
+	get canManageRoles(): boolean {
+		return this.props.canManageRoles;
+	}
+	set canManageRoles(value: boolean) {
+		this.props.canManageRoles = value;
+	}
+
+	get canViewReports(): boolean {
+		return this.props.canViewReports;
+	}
+	set canViewReports(value: boolean) {
+		this.props.canViewReports = value;
+	}
+
+	get canDeleteContent(): boolean {
+		return this.props.canDeleteContent;
+	}
+	set canDeleteContent(value: boolean) {
+		this.props.canDeleteContent = value;
 	}
 }
