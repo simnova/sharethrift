@@ -2,38 +2,54 @@ import type { Meta, StoryFn, StoryObj } from '@storybook/react';
 import { action } from 'storybook/actions';
 import { HomeRoutes } from '../../../index.tsx';
 import { ProfileView } from '../components/profile-view.tsx';
-import type { UserProfileData } from '../components/profile-view.types.ts';
 import {
 	withMockApolloClient,
 	withMockRouter,
 } from '../../../../../../test-utils/storybook-decorators.tsx';
-import type { ItemListing } from '../../../../../../generated.tsx';
+import {
+	HomeAccountProfileViewContainerCurrentUserDocument,
+	HomeAccountProfileViewContainerUserListingsDocument,
+	type ItemListing,
+	type PersonalUser,
+} from '../../../../../../generated.tsx';
 
 // SHARED MOCK DATA
-const mockUserSarah: UserProfileData = {
+const mockUserSarah: PersonalUser = {
 	id: '507f1f77bcf86cd799439099',
-	firstName: 'Sarah',
-	lastName: 'Williams',
-	username: 'sarah_williams',
-	email: 'sarah.williams@example.com',
-	accountType: 'verified',
-	location: {
-		city: 'Philadelphia',
-		state: 'PA',
+	userType: 'personal',
+	account: {
+		accountType: 'verified-personal',
+
+		username: 'sarah_williams',
+		email: 'sarah.williams@example.com',
+		profile: {
+			firstName: 'Sarah',
+			lastName: 'Williams',
+			location: {
+				city: 'Philadelphia',
+				state: 'PA',
+			},
+		},
 	},
+
 	createdAt: '2024-08-01T00:00:00Z',
 };
 
-const mockUserAlex: UserProfileData = {
+const mockUserAlex: PersonalUser = {
 	id: '507f1f77bcf86cd799439102',
-	firstName: 'Alex',
-	lastName: '',
-	username: 'new_user',
-	email: 'new.user@example.com',
-	accountType: 'non-verified',
-	location: {
-		city: 'Boston',
-		state: 'MA',
+	userType: 'personal',
+	account: {
+		profile: {
+			firstName: 'Alex',
+			lastName: '',
+			location: {
+				city: 'Boston',
+				state: 'MA',
+			},
+		},
+		username: 'new_user',
+		email: 'new.user@example.com',
+		accountType: 'non-verified-personal',
 	},
 	createdAt: '2025-10-01T08:00:00Z',
 };
@@ -81,12 +97,32 @@ export default meta;
 
 type Template = StoryObj<typeof meta>;
 
-// Story: Default profile view using container's fallback data
-// from error handler in profile-view.container.tsx
 export const DefaultView: Template = {
 	parameters: {
 		apolloClient: {
-			mocks: [], // Empty mocks - let query fail and use container fallback
+			mocks: [
+				{
+					request: {
+						query: HomeAccountProfileViewContainerCurrentUserDocument,
+					},
+					result: {
+						data: {
+							currentPersonalUserAndCreateIfNotExists: mockUserSarah,
+						},
+					},
+				},
+
+				{
+					request: {
+						query: HomeAccountProfileViewContainerUserListingsDocument,
+					},
+					result: {
+						data: {
+							itemListings: mockTwoListings,
+						},
+					},
+				},
+			],
 		},
 	},
 };
@@ -95,7 +131,7 @@ export const DefaultView: Template = {
 // These show just the ProfileView component
 
 const ComponentTemplate: StoryFn<{
-	user: UserProfileData;
+	user: PersonalUser;
 	listings: ItemListing[];
 }> = ({ user, listings }) => (
 	<ProfileView
@@ -109,7 +145,7 @@ const ComponentTemplate: StoryFn<{
 
 // Story: Component with two listings
 export const WithTwoListings: StoryFn<{
-	user: UserProfileData;
+	user: PersonalUser;
 	listings: ItemListing[];
 }> = ComponentTemplate.bind({});
 WithTwoListings.args = {
@@ -119,7 +155,7 @@ WithTwoListings.args = {
 
 // Story: Component with no listings (new user empty state)
 export const NoListings: StoryFn<{
-	user: UserProfileData;
+	user: PersonalUser;
 	listings: ItemListing[];
 }> = ComponentTemplate.bind({});
 NoListings.args = {
