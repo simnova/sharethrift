@@ -4,6 +4,7 @@ import { DataSourcesFactoryImpl } from './datasources/index.ts';
 import type { ModelsContext } from './models-context.ts';
 
 export type { DataSources, DataSourcesFactory } from './datasources/index.ts';
+export type { AdminListingDto, AdminPagedResult } from './dtos/listing.ts';
 
 export const Persistence = (
 	initializedService: MongooseSeedwork.MongooseContextFactory,

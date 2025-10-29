@@ -315,44 +315,72 @@ export class ItemListing<props extends ItemListingProps>
 	}
 
 	/**
-	 * Unblock a blocked listing by changing its state to Appeal Requested.
-	 * Only allowed when the listing is currently in a Blocked state.
+	 * Set whether this listing is blocked.
+	 * - When setting blocked=false and the listing is currently Blocked, this will move the
+	 *   listing to AppealRequested (the previous `unblock()` behaviour).
+	 * - When setting blocked=true it will mark the listing as Blocked.
+	 * This is intentionally a setter-style API so callers can use a single update mutation
+	 * to toggle the blocked state.
 	 */
-	public unblock(): void {
+	public setBlocked(blocked: boolean): void {
+		const current = this.props.state.valueOf();
+
+		if (!blocked) {
+			// unblocking: require publish permission (keeps previous behaviour)
+			if (
+				!this.visa.determineIf((permissions) => permissions.canPublishItemListing)
+			) {
+				throw new DomainSeedwork.PermissionError(
+					'You do not have permission to unblock this listing',
+				);
+			}
+
+			const isBlocked = current === ValueObjects.ListingStateEnum.Blocked;
+			if (!isBlocked) return; // no-op if not blocked
+
+			this.props.state = ValueObjects.ListingStateEnum.AppealRequested;
+			return;
+		}
+
+		// setting blocked=true
 		if (
 			!this.visa.determineIf((permissions) => permissions.canPublishItemListing)
 		) {
 			throw new DomainSeedwork.PermissionError(
-				'You do not have permission to unblock this listing',
+				'You do not have permission to block this listing',
 			);
 		}
 
-		const current = this.props.state.valueOf();
-		const isAllowed = current === ValueObjects.ListingStateEnum.Blocked;
-		if (!isAllowed) {
-			throw new Error(
-				`Cannot unblock a listing from state "${current}". Only Blocked listings can be unblocked.`,
-			);
-		}
-
-		this.props.state = ValueObjects.ListingStateEnum.AppealRequested;
-		// Note: updatedAt is automatically handled by Mongoose timestamps when the document is saved
+		if (current === ValueObjects.ListingStateEnum.Blocked) return; // already blocked
+		this.props.state = ValueObjects.ListingStateEnum.Blocked;
 	}
 
 	/**
-	 * Permanently remove this listing from the system.
-	 * Sets the aggregate's deleted flag so the repository deletes the record.
+	 * Mark or unmark this aggregate as deleted. Setting deleted to true will cause the
+	 * repository to remove the record on save. This replaces the previous `requestDelete()` helper.
 	 */
-	public requestDelete(): void {
+	public setDeleted(deleted: boolean): void {
+		if (deleted) {
+			if (
+				!this.visa.determineIf((permissions) => permissions.canDeleteItemListing)
+			) {
+				throw new DomainSeedwork.PermissionError(
+					'You do not have permission to delete this listing',
+				);
+			}
+			super.isDeleted = true;
+			return;
+		}
+
+		// Allow unmarking deletion only if caller has delete permission as well
 		if (
 			!this.visa.determineIf((permissions) => permissions.canDeleteItemListing)
 		) {
 			throw new DomainSeedwork.PermissionError(
-				'You do not have permission to delete this listing',
+				'You do not have permission to modify deleted flag for this listing',
 			);
 		}
-		// Mark aggregate as deleted; repository will issue a deleteOne on save
-		super.isDeleted = true;
+		super.isDeleted = false;
 	}
 
 	/**

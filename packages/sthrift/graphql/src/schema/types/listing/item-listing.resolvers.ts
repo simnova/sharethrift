@@ -116,7 +116,11 @@ const itemListingResolvers = {
 		) => {
 			// Admin-note: role-based authorization should be implemented here (security)
 			// Once implemented, use system-level permissions for admin operations
-			return await context.applicationServices.Listing.ItemListing.remove({ id: args.id });
+			await context.applicationServices.Listing.ItemListing.update({
+				id: args.id,
+				isDeleted: true,
+			});
+			return true;
 		},
 
 		unblockListing: async (
@@ -126,7 +130,11 @@ const itemListingResolvers = {
 		) => {
 			// Admin-note: role-based authorization should be implemented here (security)
 			// Once implemented, use system-level permissions for admin operations
-			return await context.applicationServices.Listing.ItemListing.unblock({ id: args.id });
+			await context.applicationServices.Listing.ItemListing.update({
+				id: args.id,
+				isBlocked: false,
+			});
+			return true;
 		},
 	},
 };

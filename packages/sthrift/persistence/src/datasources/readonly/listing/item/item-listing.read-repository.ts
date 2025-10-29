@@ -1,5 +1,6 @@
 import type { Domain } from '@sthrift/domain';
 import type { ModelsContext } from '../../../../models-context.ts';
+import type { AdminListingDto } from '../../../../dtos/listing.ts';
 import {
   ItemListingDataSourceImpl,
   type ItemListingDataSource,
@@ -36,15 +37,7 @@ export interface ItemListingReadRepository {
     sharerId?: string;
     sorter?: { field: string; order: 'ascend' | 'descend' };
   }) => Promise<{
-    items: Array<{
-      id: string;
-      title: string;
-      image: string | null;
-      publishedAt: string | null;
-      reservationPeriod: string;
-      status: string;
-      pendingRequestsCount: number;
-    }>;
+    items: AdminListingDto[];
     total: number;
     page: number;
     pageSize: number;
@@ -139,15 +132,7 @@ export class ItemListingReadRepositoryImpl implements ItemListingReadRepository 
     sharerId?: string;
     sorter?: { field: string; order: 'ascend' | 'descend' };
   }): Promise<{
-    items: Array<{
-      id: string;
-      title: string;
-      image: string | null;
-      publishedAt: string | null;
-      reservationPeriod: string;
-      status: string;
-      pendingRequestsCount: number;
-    }>;
+    items: AdminListingDto[];
     total: number;
     page: number;
     pageSize: number;
@@ -197,7 +182,7 @@ export class ItemListingReadRepositoryImpl implements ItemListingReadRepository 
       };
     });
 
-    return { items, total: result.total, page: result.page, pageSize: result.pageSize };
+    return { items: items as AdminListingDto[], total: result.total, page: result.page, pageSize: result.pageSize };
   }
 
   async getById(id: string, options?: FindOneOptions): Promise<Domain.Contexts.Listing.ItemListing.ItemListingEntityReference | null> {
