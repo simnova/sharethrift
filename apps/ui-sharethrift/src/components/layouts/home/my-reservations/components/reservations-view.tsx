@@ -2,8 +2,11 @@ import type React from 'react';
 import { ReservationsTable } from './reservations-table.tsx';
 import { Alert, Spin } from 'antd';
 import styles from './reservations-view.module.css';
-import type { ReservationRequestFieldsFragment } from '../../../../../generated.tsx';
+import type { HomeMyReservationsReservationsViewActiveContainerActiveReservationsQuery } from '../../../../../generated.tsx';
 import { ReservationsGrid } from './reservations-grid.tsx';
+
+type ReservationRequestFieldsFragment =
+	HomeMyReservationsReservationsViewActiveContainerActiveReservationsQuery['myActiveReservations'][number];
 
 type ReservationsViewStyles = {
 	mobileOnly: string;

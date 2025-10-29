@@ -1,6 +1,9 @@
 import type { MockLink } from '@apollo/client/testing';
 import type { DocumentNode } from '@apollo/client';
-import type { ReservationRequestFieldsFragment } from '../../../../../generated.tsx';
+import type { HomeMyReservationsReservationsViewActiveContainerActiveReservationsQuery } from '../../../../../generated.tsx';
+
+type ReservationRequestFieldsFragment =
+	HomeMyReservationsReservationsViewActiveContainerActiveReservationsQuery['myActiveReservations'][number];
 import {
 	HomeMyReservationsReservationsViewActiveContainerActiveReservationsDocument,
 	HomeMyReservationsReservationsViewHistoryContainerPastReservationsDocument,

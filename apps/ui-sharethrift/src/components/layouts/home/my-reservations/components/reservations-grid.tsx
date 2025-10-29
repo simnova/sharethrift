@@ -1,7 +1,10 @@
 import type React from 'react';
 import { Typography } from 'antd';
 import { ReservationCard } from './reservation-card.tsx';
-import type { ReservationRequestFieldsFragment } from '../../../../../generated.tsx';
+import type { HomeMyReservationsReservationsViewActiveContainerActiveReservationsQuery } from '../../../../../generated.tsx';
+
+type ReservationRequestFieldsFragment =
+	HomeMyReservationsReservationsViewActiveContainerActiveReservationsQuery['myActiveReservations'][number];
 
 const { Text } = Typography;
 

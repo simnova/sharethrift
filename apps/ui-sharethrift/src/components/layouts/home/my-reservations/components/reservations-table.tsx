@@ -3,9 +3,12 @@ import { Table, Image } from 'antd';
 import styles from './reservations-table.module.css';
 import { ReservationStatusTag } from '@sthrift/ui-components';
 import { ReservationActions } from './reservation-actions.tsx';
-import type { ReservationRequestFieldsFragment } from '../../../../../generated.tsx';
+import type { HomeMyReservationsReservationsViewActiveContainerActiveReservationsQuery } from '../../../../../generated.tsx';
 import { mapReservationState } from '../../../../../utils/reservation-state-mapper.ts';
 import { BASE64_FALLBACK_IMAGE } from '../constants/ui-constants.ts';
+
+type ReservationRequestFieldsFragment =
+	HomeMyReservationsReservationsViewActiveContainerActiveReservationsQuery['myActiveReservations'][number];
 
 type ReservationsTableStyles = {
 	listingCell: string;
