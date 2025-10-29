@@ -67,66 +67,59 @@ function SettingsViewLoader() {
     }
     try {
       const base = user.account.profile;
-      const nextProfile: any = {
-        firstName:
-          section === "profile"
-            ? values["firstName"] ?? base.firstName
-            : base.firstName,
-        lastName:
-          section === "profile"
-            ? values["lastName"] ?? base.lastName
-            : base.lastName,
+      const isProfile = section === "profile";
+      const isLocation = section === "location";
+      const isBilling = section === "billing";
+      const isPlan = section === "plan";
+
+      // Start from existing profile, then override selected segment
+      const nextProfile = {
+        firstName: isProfile
+          ? values["firstName"] ?? base.firstName
+          : base.firstName,
+        lastName: isProfile
+          ? values["lastName"] ?? base.lastName
+          : base.lastName,
         location: {
-          address1:
-            section === "location"
-              ? values["address1"] ?? base.location.address1 ?? ""
-              : base.location.address1,
-          address2:
-            section === "location"
-              ? values["address2"] ?? base.location.address2 ?? ""
-              : base.location.address2,
-          city:
-            section === "location"
-              ? values["city"] ?? base.location.city ?? ""
-              : base.location.city,
-          state:
-            section === "location"
-              ? values["state"] ?? base.location.state ?? ""
-              : base.location.state,
-          country:
-            section === "location"
-              ? values["country"] ?? base.location.country ?? ""
-              : base.location.country,
-          zipCode:
-            section === "location"
-              ? values["zipCode"] ?? base.location.zipCode ?? ""
-              : base.location.zipCode,
+          address1: isLocation
+            ? values["address1"] ?? base.location.address1 ?? ""
+            : base.location.address1,
+          address2: isLocation
+            ? values["address2"] ?? base.location.address2 ?? ""
+            : base.location.address2,
+          city: isLocation
+            ? values["city"] ?? base.location.city ?? ""
+            : base.location.city,
+          state: isLocation
+            ? values["state"] ?? base.location.state ?? ""
+            : base.location.state,
+          country: isLocation
+            ? values["country"] ?? base.location.country ?? ""
+            : base.location.country,
+          zipCode: isLocation
+            ? values["zipCode"] ?? base.location.zipCode ?? ""
+            : base.location.zipCode,
         },
         billing: {
-          subscriptionId:
-            section === "billing"
-              ? values["subscriptionId"] ?? base.billing?.subscriptionId ?? ""
-              : base.billing?.subscriptionId,
-          cybersourceCustomerId:
-            section === "billing"
-              ? values["cybersourceCustomerId"] ??
-                base.billing?.cybersourceCustomerId ??
-                ""
-              : base.billing?.cybersourceCustomerId,
+          subscriptionId: isBilling
+            ? values["subscriptionId"] ?? base.billing?.subscriptionId ?? ""
+            : base.billing?.subscriptionId,
+          cybersourceCustomerId: isBilling
+            ? values["cybersourceCustomerId"] ??
+              base.billing?.cybersourceCustomerId ??
+              ""
+            : base.billing?.cybersourceCustomerId,
         },
-      };
-      if (section === "profile") {
-        // Only include aboutMe when editing profile; preserve existing without fallback
-        nextProfile.aboutMe = values["aboutMe"] ?? base.aboutMe;
-      }
-      const username =
-        section === "profile"
-          ? values["username"] ?? user.account.username
-          : user.account.username;
-      const accountType =
-        section === "plan"
-          ? values["accountType"] ?? user.account.accountType
-          : user.account.accountType;
+        ...(isProfile && { aboutMe: values["aboutMe"] ?? base.aboutMe }),
+      } as typeof base;
+
+      const username = isProfile
+        ? values["username"] ?? user.account.username
+        : user.account.username;
+      const accountType = isPlan
+        ? values["accountType"] ?? user.account.accountType
+        : user.account.accountType;
+
       const result = await updateUserMutation({
         variables: {
           input: {
@@ -142,8 +135,7 @@ function SettingsViewLoader() {
           { query: HomeAccountSettingsViewContainerCurrentUserDocument },
         ],
       });
-      // Success: allow caller (view component) to close edit mode; no navigation here
-      // If result missing, throw to keep edit section open
+
       if (!result.data?.personalUserUpdate) {
         throw new Error("Update failed");
       }
