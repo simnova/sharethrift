@@ -1,4 +1,4 @@
-import { useQuery } from "@apollo/client/react";
+import { useQuery } from '@apollo/client/react';
 import { message } from 'antd';
 import { SettingsView } from '../pages/settings-view.tsx';
 import type {
@@ -7,7 +7,7 @@ import type {
 } from './settings-view.types.ts';
 import { HomeAccountSettingsViewContainerCurrentUserDocument } from '../../../../../../generated.tsx';
 
-function SettingsViewLoader() {
+export const SettingsViewContainer: React.FC = () => {
 	const {
 		data: userData,
 		loading: userLoading,
@@ -95,8 +95,4 @@ function SettingsViewLoader() {
 			onChangePassword={handleChangePassword}
 		/>
 	);
-}
-
-export const SettingsViewContainer: React.FC = () => {
-	return <SettingsViewLoader />;
 };
