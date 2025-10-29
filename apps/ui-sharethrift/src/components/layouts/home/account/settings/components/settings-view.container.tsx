@@ -48,6 +48,58 @@ function SettingsViewLoader() {
     | "plan"
     | "billing"
     | "password";
+  // Profile type alias for clarity
+  type UserProfile = NonNullable<
+    CurrentUserSettingsQueryData["currentPersonalUserAndCreateIfNotExists"]
+  >["account"]["profile"];
+
+  // Helper to construct the next profile given the section being edited
+  const buildNextProfile = (
+    section: EditableSection,
+    values: Record<string, any>,
+    base: UserProfile
+  ): UserProfile => {
+    const isProfile = section === "profile";
+    const isLocation = section === "location";
+    const isBilling = section === "billing";
+    return {
+      firstName: isProfile
+        ? values["firstName"] ?? base.firstName
+        : base.firstName,
+      lastName: isProfile ? values["lastName"] ?? base.lastName : base.lastName,
+      location: {
+        address1: isLocation
+          ? values["address1"] ?? base.location.address1 ?? ""
+          : base.location.address1,
+        address2: isLocation
+          ? values["address2"] ?? base.location.address2 ?? ""
+          : base.location.address2,
+        city: isLocation
+          ? values["city"] ?? base.location.city ?? ""
+          : base.location.city,
+        state: isLocation
+          ? values["state"] ?? base.location.state ?? ""
+          : base.location.state,
+        country: isLocation
+          ? values["country"] ?? base.location.country ?? ""
+          : base.location.country,
+        zipCode: isLocation
+          ? values["zipCode"] ?? base.location.zipCode ?? ""
+          : base.location.zipCode,
+      },
+      billing: {
+        subscriptionId: isBilling
+          ? values["subscriptionId"] ?? base.billing?.subscriptionId ?? ""
+          : base.billing?.subscriptionId,
+        cybersourceCustomerId: isBilling
+          ? values["cybersourceCustomerId"] ??
+            base.billing?.cybersourceCustomerId ??
+            ""
+          : base.billing?.cybersourceCustomerId,
+      },
+      ...(isProfile && { aboutMe: values["aboutMe"] ?? base.aboutMe }),
+    };
+  };
   const handleSaveSection = async (
     section: EditableSection,
     values: Record<string, any>
@@ -67,58 +119,15 @@ function SettingsViewLoader() {
     }
     try {
       const base = user.account.profile;
-      const isProfile = section === "profile";
-      const isLocation = section === "location";
-      const isBilling = section === "billing";
-      const isPlan = section === "plan";
-
-      // Start from existing profile, then override selected segment
-      const nextProfile = {
-        firstName: isProfile
-          ? values["firstName"] ?? base.firstName
-          : base.firstName,
-        lastName: isProfile
-          ? values["lastName"] ?? base.lastName
-          : base.lastName,
-        location: {
-          address1: isLocation
-            ? values["address1"] ?? base.location.address1 ?? ""
-            : base.location.address1,
-          address2: isLocation
-            ? values["address2"] ?? base.location.address2 ?? ""
-            : base.location.address2,
-          city: isLocation
-            ? values["city"] ?? base.location.city ?? ""
-            : base.location.city,
-          state: isLocation
-            ? values["state"] ?? base.location.state ?? ""
-            : base.location.state,
-          country: isLocation
-            ? values["country"] ?? base.location.country ?? ""
-            : base.location.country,
-          zipCode: isLocation
-            ? values["zipCode"] ?? base.location.zipCode ?? ""
-            : base.location.zipCode,
-        },
-        billing: {
-          subscriptionId: isBilling
-            ? values["subscriptionId"] ?? base.billing?.subscriptionId ?? ""
-            : base.billing?.subscriptionId,
-          cybersourceCustomerId: isBilling
-            ? values["cybersourceCustomerId"] ??
-              base.billing?.cybersourceCustomerId ??
-              ""
-            : base.billing?.cybersourceCustomerId,
-        },
-        ...(isProfile && { aboutMe: values["aboutMe"] ?? base.aboutMe }),
-      } as typeof base;
-
-      const username = isProfile
-        ? values["username"] ?? user.account.username
-        : user.account.username;
-      const accountType = isPlan
-        ? values["accountType"] ?? user.account.accountType
-        : user.account.accountType;
+      const nextProfile = buildNextProfile(section, values, base);
+      const username =
+        section === "profile"
+          ? values["username"] ?? user.account.username
+          : user.account.username;
+      const accountType =
+        section === "plan"
+          ? values["accountType"] ?? user.account.accountType
+          : user.account.accountType;
 
       const result = await updateUserMutation({
         variables: {
