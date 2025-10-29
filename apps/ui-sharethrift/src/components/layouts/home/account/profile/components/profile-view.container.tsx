@@ -1,5 +1,5 @@
 import { useNavigate } from 'react-router-dom';
-import { ProfileView } from '../pages/profile-view.tsx';
+import { ProfileView } from './profile-view.tsx';
 import { useQuery } from '@apollo/client/react';
 import { ComponentQueryLoader } from '@sthrift/ui-components';
 
@@ -10,7 +10,7 @@ import {
 	HomeAccountProfileViewContainerUserListingsDocument,
 } from '../../../../../../generated.tsx';
 
-function ProfileViewLoader() {
+export const ProfileViewContainer: React.FC = () => {
 	const navigate = useNavigate();
 
 	const {
@@ -31,19 +31,6 @@ function ProfileViewLoader() {
 	const handleListingClick = (listingId: string) => {
 		navigate(`/listing/${listingId}`);
 	};
-
-	// const user = userData.currentPersonalUserAndCreateIfNotExists;
-	// const userListings =
-	// 	listingsData?.itemListings?.filter(
-	// 		(listing: UserListing & { sharer: string; updatedAt: string }) => {
-	// 			if (user?.account?.profile) {
-	// 				const { firstName, lastName } = user.account.profile;
-	// 				const userDisplayName = `${firstName} ${lastName.charAt(0)}.`;
-	// 				return listing.sharer === userDisplayName;
-	// 			}
-	// 			return false;
-	// 		},
-	// 	) || [];
 
 	return (
 		<ComponentQueryLoader
@@ -66,8 +53,4 @@ function ProfileViewLoader() {
 			}
 		/>
 	);
-}
-
-export const ProfileViewContainer: React.FC = () => {
-	return <ProfileViewLoader />;
 };
