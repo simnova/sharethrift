@@ -33,6 +33,7 @@ const mockUserSarah: PersonalUser = {
 	},
 
 	createdAt: '2024-08-01T00:00:00Z',
+	updatedAt: '2024-08-15T12:00:00Z',
 };
 
 const mockUserAlex: PersonalUser = {
@@ -52,6 +53,7 @@ const mockUserAlex: PersonalUser = {
 		accountType: 'non-verified-personal',
 	},
 	createdAt: '2025-10-01T08:00:00Z',
+	updatedAt: '2025-10-01T08:00:00Z',
 };
 
 const mockTwoListings: ItemListing[] = [
@@ -67,6 +69,7 @@ const mockTwoListings: ItemListing[] = [
 		createdAt: '2024-08-01T00:00:00.000Z',
 		sharingPeriodStart: '2024-08-11T00:00:00.000Z',
 		sharingPeriodEnd: '2024-12-23T00:00:00.000Z',
+		updatedAt: '2024-08-15T12:00:00.000Z',
 	},
 	{
 		id: '64f7a9c2d1e5b97f3c9d0a13',
@@ -79,6 +82,7 @@ const mockTwoListings: ItemListing[] = [
 		createdAt: '2024-08-13T00:00:00.000Z',
 		sharingPeriodStart: '2024-08-13T00:00:00.000Z',
 		sharingPeriodEnd: '2024-12-23T00:00:00.000Z',
+		updatedAt: '2024-08-15T12:00:00.000Z',
 	},
 ];
 

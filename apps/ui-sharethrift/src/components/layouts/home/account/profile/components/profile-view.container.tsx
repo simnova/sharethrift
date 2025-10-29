@@ -32,9 +32,6 @@ export const ProfileViewContainer: React.FC = () => {
 		navigate(`/listing/${listingId}`);
 	};
 
-	console.log('userError:', userError);
-	console.log('listingsError:', listingsError);
-
 	return (
 		<ComponentQueryLoader
 			loading={userLoading || listingsLoading}
