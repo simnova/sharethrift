@@ -86,40 +86,65 @@ export class ItemListingReadRepositoryImpl implements ItemListingReadRepository 
     page: number;
     pageSize: number;
   }> {
-    let listings: Domain.Contexts.Listing.ItemListing.ItemListingEntityReference[];
+    // Build MongoDB query
+    const query: Record<string, unknown> = {};
 
-    if (args.sharerId) listings = await this.getBySharer(args.sharerId);
-    else listings = await this.getAll();
+    // Add sharerId filter
+    if (args.sharerId) {
+      try {
+        // biome-ignore lint/complexity/useLiteralKeys: MongoDB query uses index signature
+        query['sharer'] = new MongooseSeedwork.ObjectId(args.sharerId);
+      } catch {
+        return { items: [], total: 0, page: args.page, pageSize: args.pageSize };
+      }
+    }
 
+    // Add search text filter (search across multiple fields)
     if (args.searchText) {
-      const text = args.searchText.toLowerCase();
-      listings = listings.filter((l) => l.title.toLowerCase().includes(text));
+      const searchRegex = { $regex: args.searchText, $options: 'i' };
+      // biome-ignore lint/complexity/useLiteralKeys: MongoDB query uses index signature
+      query['$or'] = [
+        { title: searchRegex },
+        { description: searchRegex },
+        { category: searchRegex },
+        { location: searchRegex },
+      ];
     }
 
+    // Add status filters
     if (args.statusFilters && args.statusFilters.length > 0) {
-      listings = listings.filter((l) => (l.state ? args.statusFilters?.includes(l.state) === true : true));
+      // biome-ignore lint/complexity/useLiteralKeys: MongoDB query uses index signature
+      query['state'] = { $in: args.statusFilters };
     }
 
+    // Build sort criteria
+    const sort: Record<string, 1 | -1> = {};
     if (args.sorter?.field) {
-      const { field, order } = args.sorter;
-      listings = [...listings].sort((a, b) => {
-        const key = field as keyof typeof a & keyof typeof b;
-        type Indexable<T> = { [K in keyof T]: T[K] };
-        const fieldA = (a as unknown as Indexable<typeof a>)[key] as string | number | Date | undefined;
-        const fieldB = (b as unknown as Indexable<typeof b>)[key] as string | number | Date | undefined;
-        if (fieldA == null && fieldB == null) return 0;
-        if (fieldA == null) return order === 'ascend' ? -1 : 1;
-        if (fieldB == null) return order === 'ascend' ? 1 : -1;
-        if (fieldA < fieldB) return order === 'ascend' ? -1 : 1;
-        if (fieldA > fieldB) return order === 'ascend' ? 1 : -1;
-        return 0;
-      });
+      const direction = args.sorter.order === 'ascend' ? 1 : -1;
+      // Map GraphQL field names to MongoDB field names
+      const fieldMapping: Record<string, string> = {
+        publishedAt: 'createdAt',
+        reservationPeriod: 'sharingPeriodStart', // Sort by start date
+        status: 'state',
+      };
+      const mongoField = fieldMapping[args.sorter.field] || args.sorter.field;
+      sort[mongoField] = direction;
+    } else {
+      // biome-ignore lint/complexity/useLiteralKeys: MongoDB sort uses index signature
+      sort['createdAt'] = -1; // Default: newest first
     }
 
-    const total = listings.length;
-    const startIndex = (args.page - 1) * args.pageSize;
-    const endIndex = startIndex + args.pageSize;
-    const items = listings.slice(startIndex, endIndex);
+    // Calculate pagination
+    const skip = (args.page - 1) * args.pageSize;
+
+    // Execute MongoDB queries in parallel
+    const [mongoItems, total] = await Promise.all([
+      this.mongoDataSource.find(query, { sort, skip, limit: args.pageSize }),
+      this.mongoDataSource.find(query).then((result) => result?.length ?? 0), // Use find + length since count() not available
+    ]);
+
+    // Convert to domain objects
+    const items = (mongoItems || []).map((doc) => this.converter.toDomain(doc, this.passport));
 
     return { items, total, page: args.page, pageSize: args.pageSize };
   }
@@ -139,50 +164,39 @@ export class ItemListingReadRepositoryImpl implements ItemListingReadRepository 
   }> {
     const result = await this.getPaged(args);
 
-    const toIso = (v: unknown): string => {
-      if (v == null) return '';
-      if (typeof v === 'string') return v;
-      if (v instanceof Date) return v.toISOString();
-      if (typeof v === 'object' && v !== null && 'toISOString' in v) {
-        const maybe = v as { toISOString?: unknown };
-        if (typeof maybe.toISOString === 'function') return (maybe.toISOString as () => string)();
-      }
+    // Map domain entities to lightweight admin DTOs
+    const items = result.items.map((listing) => this.toAdminListingDto(listing));
+
+    return { items, total: result.total, page: result.page, pageSize: result.pageSize };
+  }
+
+  /**
+   * Convert a domain ItemListing entity to an AdminListingDto
+   */
+  private toAdminListingDto(listing: Domain.Contexts.Listing.ItemListing.ItemListingEntityReference): AdminListingDto {
+    const formatDate = (date: Date | string | null | undefined): string => {
+      if (!date) return '';
       try {
-        return String(v);
+        const d = date instanceof Date ? date : new Date(date);
+        return d.toISOString();
       } catch {
         return '';
       }
     };
 
-    type ListingLike = {
-      id?: string;
-      title?: string;
-      images?: string[] | undefined;
-      createdAt?: Date | string | null;
-      sharingPeriodStart?: Date | string | null;
-      sharingPeriodEnd?: Date | string | null;
-      state?: string | undefined;
-      pendingRequestsCount?: number | undefined;
+    const firstImage = listing.images && listing.images.length > 0 ? listing.images[0] : null;
+    const startDate = formatDate(listing.sharingPeriodStart);
+    const endDate = formatDate(listing.sharingPeriodEnd);
+
+    return {
+      id: listing.id,
+      title: listing.title,
+      image: firstImage ?? null, // Ensure null, not undefined
+      publishedAt: formatDate(listing.createdAt),
+      reservationPeriod: `${startDate.slice(0, 10)} - ${endDate.slice(0, 10)}`,
+      status: listing.state || 'Unknown',
+      pendingRequestsCount: 0, // TODO: Implement reservation request counting
     };
-
-    const items = result.items.map((it) => {
-      const l = it as unknown as ListingLike;
-      const images = l.images;
-      const img = images && images.length > 0 && images[0] ? images[0] : null;
-      const start = toIso(l.sharingPeriodStart);
-      const end = toIso(l.sharingPeriodEnd);
-      return {
-        id: l.id ?? '',
-        title: l.title ?? '',
-        image: img,
-        publishedAt: toIso(l.createdAt) || null,
-        reservationPeriod: `${start.slice(0, 10)} - ${end.slice(0, 10)}`,
-        status: l.state ?? 'Unknown',
-        pendingRequestsCount: l.pendingRequestsCount ?? 0,
-      };
-    });
-
-    return { items: items as AdminListingDto[], total: result.total, page: result.page, pageSize: result.pageSize };
   }
 
   async getById(id: string, options?: FindOneOptions): Promise<Domain.Contexts.Listing.ItemListing.ItemListingEntityReference | null> {

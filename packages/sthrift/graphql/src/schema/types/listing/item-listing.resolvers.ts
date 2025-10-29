@@ -2,7 +2,7 @@ import type { GraphContext } from '../../../init/context.ts';
 // Domain types not needed in this file after refactor
 import { toGraphItem } from '../../../helpers/mapping.js';
 import type { CreateItemListingInput } from '../../builder/generated.js';
-import { buildPagedArgs } from '@sthrift/application-services';
+import { buildPagedArgs } from './query-adapter.ts';
 
 interface MyListingsArgs {
 	page: number;
