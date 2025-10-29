@@ -160,7 +160,6 @@ function SettingsViewLoader() {
   };
 
   const handleChangePassword = () => {
-    // TODO: Implement password change logic - likely redirect to auth provider
     globalThis.alert?.("Password change functionality will be implemented");
   };
 
