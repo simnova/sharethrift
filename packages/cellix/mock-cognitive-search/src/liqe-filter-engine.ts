@@ -81,17 +81,36 @@ export class LiQEFilterEngine {
 		results: SearchResult[],
 		filterString: string,
 	): SearchResult[] {
-		// Parse basic OData-style filters (e.g., "field eq 'value'")
-		const filterRegex = /(\w+)\s+eq\s+['"]?([^'"]+)['"]?/g;
-		const filters: Array<{ field: string; value: string }> = [];
+		// Safety: cap input size to avoid expensive parsing on untrusted input
+		if (filterString.length > 2048) {
+			console.warn('Filter string too long; skipping basic filter for safety.');
+			return results;
+		}
 
-		let match: RegExpExecArray | null = filterRegex.exec(filterString);
-		while (match !== null) {
-			const [, field, value] = match;
-			if (field && value) {
-				filters.push({ field, value });
+		// Linear-time parse for basic patterns like: "field eq 'value'" joined by "and"
+		const filters: Array<{ field: string; value: string }> = [];
+		const parts = filterString.trim().split(/\s+and\s+/i);
+		for (const rawPart of parts) {
+			const part = rawPart.trim();
+			const eqIndex = part.toLowerCase().indexOf(' eq ');
+			if (eqIndex === -1) continue;
+
+			const field = part.slice(0, eqIndex).trim();
+			let value = part.slice(eqIndex + 4).trim(); // after ' eq '
+			if (!field || value.length === 0) continue;
+
+			// Strip one pair of surrounding quotes if present
+			if (
+				(value.startsWith("'") && value.endsWith("'")) ||
+				(value.startsWith('"') && value.endsWith('"'))
+			) {
+				value = value.slice(1, -1);
 			}
-			match = filterRegex.exec(filterString);
+
+			// Skip if internal quotes remain to keep parsing simple and safe
+			if (value.includes("'") || value.includes('"')) continue;
+
+			filters.push({ field, value });
 		}
 
 		return results.filter((result) => {
@@ -222,7 +241,11 @@ export class LiQEFilterEngine {
 			}
 
 			// Check if it's a valid LiQE query structure
-			return parsed.type === 'Tag' || parsed.type === 'LogicalExpression';
+			if ('type' in (parsed as Record<string, unknown>)) {
+				const t = (parsed as Record<string, unknown>).type;
+				return t === 'Tag' || t === 'LogicalExpression';
+			}
+			return false;
 		} catch {
 			return false;
 		}
