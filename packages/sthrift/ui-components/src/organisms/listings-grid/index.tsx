@@ -36,6 +36,7 @@ export interface ListingsGridProps {
 	total?: number;
 	onPageChange: (page: number, pageSize: number) => void;
 	showPagination?: boolean;
+	isOnSearchingPage?: boolean;
 }
 
 export const ListingsGrid: React.FC<ListingsGridProps> = ({
@@ -47,6 +48,7 @@ export const ListingsGrid: React.FC<ListingsGridProps> = ({
 	total,
 	onPageChange,
 	showPagination = true,
+	isOnSearchingPage = false,
 }) => {
 	if (!loading && listings.length === 0) {
 		return (
@@ -55,10 +57,12 @@ export const ListingsGrid: React.FC<ListingsGridProps> = ({
 					image={Empty.PRESENTED_IMAGE_SIMPLE}
 					description="No Listings Found"
 				/>
-				<p className={styles.emptyDescription}>
-					Try adjusting your search or category filters to find what you're
-					looking for.
-				</p>
+				{isOnSearchingPage ? (
+					<p className={styles.emptyDescription}>
+						Try adjusting your search or category filters to find what you're
+						looking for.
+					</p>
+				) : null}
 			</div>
 		);
 	}

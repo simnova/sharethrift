@@ -95,9 +95,9 @@ const meta: Meta<typeof HomeRoutes> = {
 
 export default meta;
 
-type Template = StoryObj<typeof meta>;
+type Story = StoryObj<typeof meta>;
 
-export const DefaultView: Template = {
+export const DefaultView: Story = {
 	parameters: {
 		apolloClient: {
 			mocks: [
@@ -127,39 +127,32 @@ export const DefaultView: Template = {
 	},
 };
 
-// COMPONENT-ONLY STORIES
-// These show just the ProfileView component
-
-const ComponentTemplate: StoryFn<{
-	user: PersonalUser;
-	listings: ItemListing[];
-}> = ({ user, listings }) => (
-	<ProfileView
-		user={user}
-		listings={listings}
-		isOwnProfile={true}
-		onEditSettings={action('Navigate to settings')}
-		onListingClick={action('Navigate to listing:')} //#171: Implement Storybook 'Action" functionality
-	/>
-);
-
-// Story: Component with two listings
-export const WithTwoListings: StoryFn<{
-	user: PersonalUser;
-	listings: ItemListing[];
-}> = ComponentTemplate.bind({});
-WithTwoListings.args = {
-	user: mockUserSarah,
-	listings: mockTwoListings,
-};
-
 // Story: Component with no listings (new user empty state)
-export const NoListings: StoryFn<{
-	user: PersonalUser;
-	listings: ItemListing[];
-}> = ComponentTemplate.bind({});
-NoListings.args = {
-	user: mockUserAlex,
-	listings: [],
+export const NoListings: Story = {
+	parameters: {
+		apolloClient: {
+			mocks: [
+				{
+					request: {
+						query: HomeAccountProfileViewContainerCurrentUserDocument,
+					},
+					result: {
+						data: {
+							currentPersonalUserAndCreateIfNotExists: mockUserAlex,
+						},
+					},
+				},
+				{
+					request: {
+						query: HomeAccountProfileViewContainerUserListingsDocument,
+					},
+					result: {
+						data: {
+							itemListings: [],
+						},
+					},
+				},
+			],
+		},
+	},
 };
-//NOTE: no listings story does not yet have button functionality in ProfileView
