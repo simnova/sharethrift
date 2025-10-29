@@ -184,7 +184,7 @@ function SettingsViewLoader() {
         subscriptionId: "sub_123456789",
         cybersourceCustomerId: "cust_abc123",
       },
-      password: "sharethrift123",
+      password: "",
       createdAt: new Date("2024-08-01").toISOString(),
     };
 
