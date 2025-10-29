@@ -15,6 +15,7 @@ type ItemListing implements MongoBase {
   createdAt: DateTime
   updatedAt: DateTime
   version: Int
+  listingType: String!
 }
 
 type ListingAllPage {

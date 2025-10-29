@@ -19,7 +19,7 @@ export const itemListings = [
 		images: ['lawnmower.jpg'],
 		schemaVersion: '1.0.0',
 		version: 1,
-		discriminatorKey: 'item-listing',
+		listingType: 'item-listing',
 	},
 	{
 		_id: '707f1f77bcf86cd799439032',
@@ -38,6 +38,6 @@ export const itemListings = [
 		images: ['mountainbike.jpg'],
 		schemaVersion: '1.0.0',
 		version: 1,
-		discriminatorKey: 'item-listing',
+		listingType: 'item-listing',
 	},
 ] as unknown as Models.Listing.ItemListing[];

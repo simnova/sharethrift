@@ -351,6 +351,7 @@ const getMockReservationRequests = (
 							},
 						}),
 				},
+                listingType: 'item-listing',
 			},
 			reserver: {
 				id: reserverId,
@@ -551,6 +552,7 @@ const getMockReservationRequests = (
 								},
 							}),
 					},
+                    listingType: 'item-listing',
 				});
 			},
 			loadReserver: () => {

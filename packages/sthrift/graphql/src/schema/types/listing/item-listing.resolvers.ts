@@ -59,7 +59,12 @@ const itemListingResolvers = {
 			context: GraphContext,
 		) => {
 			const currentUser = context.applicationServices.verifiedUser;
-			const sharerId = currentUser?.verifiedJwt?.sub;
+			const email = currentUser?.verifiedJwt?.email;
+            let sharerId: string | undefined;
+            if(email) {
+               sharerId = await context.applicationServices.User.PersonalUser.queryByEmail({email: email}).then(user => user ? user.id : undefined);
+            }
+
 			const { page, pageSize, searchText, statusFilters, sorter } = args;
 			const pagedArgs: {
 				page: number;

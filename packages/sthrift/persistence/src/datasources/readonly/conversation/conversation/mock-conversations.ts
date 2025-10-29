@@ -104,29 +104,28 @@ export const getMockConversations =
 		});
 
 		// Create mock listing
-		const createMockListing = (
-			id: string,
-			title: string,
-			sharer: Domain.Contexts.User.PersonalUser.PersonalUserEntityReference,
-		): Domain.Contexts.Listing.ItemListing.ItemListingEntityReference => ({
-			id,
-			sharer,
-			title,
-			description: `Mock description for ${title}`,
-			category: 'Electronics',
-			location: 'Philadelphia, PA',
-			sharingPeriodStart: new Date('2024-08-11'),
-			sharingPeriodEnd: new Date('2024-12-23'),
-			state: 'Published',
-			images: ['/assets/item-images/bike.png'],
-			createdAt: new Date('2024-08-01'),
-			updatedAt: new Date('2024-08-01'),
-			schemaVersion: '1',
-			sharingHistory: [],
-			reports: 0,
-		});
-
-		// Create mock users
+	const createMockListing = (
+		id: string,
+		title: string,
+		sharer: Domain.Contexts.User.PersonalUser.PersonalUserEntityReference,
+	): Domain.Contexts.Listing.ItemListing.ItemListingEntityReference => ({
+		id,
+		sharer,
+		title,
+		description: `Mock description for ${title}`,
+		category: 'Electronics',
+		location: 'Philadelphia, PA',
+		sharingPeriodStart: new Date('2024-08-11'),
+		sharingPeriodEnd: new Date('2024-12-23'),
+		state: 'Published',
+		images: ['/assets/item-images/bike.png'],
+		createdAt: new Date('2024-08-01'),
+		updatedAt: new Date('2024-08-01'),
+		schemaVersion: '1',
+		sharingHistory: [],
+		reports: 0,
+		listingType: 'item-listing',
+	});		// Create mock users
 		const alice = createMockUser(
 			'507f1f77bcf86cd799439011',
 			'alice@example.com',
