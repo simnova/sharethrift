@@ -1,7 +1,8 @@
-import { AdminViewListing } from '../account/admin-dashboard/components/admin-listings-table/admin-listings-table.view-listing.tsx';
-import type { ReactElement } from 'react';
+import { ViewListingContainer } from "../components/view-listing/view-listing.container.tsx";
+import { useAuth } from "react-oidc-context";
 
-export default function ViewListing(): ReactElement {
-	// Always open the admin view for now per request.
-	return <AdminViewListing />;
-}
+export const ViewListing: React.FC = () => {
+  const { isAuthenticated } = useAuth();
+  // Pass required prop to fix TS2741
+  return <ViewListingContainer isAuthenticated={isAuthenticated} />;
+};

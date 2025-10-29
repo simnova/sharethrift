@@ -11,7 +11,7 @@ import type {
 export interface ViewListingProps {
 	listing: ItemListing;
 	userIsSharer: boolean;
-	isAuthenticated?: boolean;
+	isAuthenticated: boolean;
 	userReservationRequest:
 		| ViewListingActiveReservationRequestForListingQuery['myActiveReservationForListing']
 		| null;
@@ -21,7 +21,7 @@ export interface ViewListingProps {
 export const ViewListing: React.FC<ViewListingProps> = ({
 	listing,
 	userIsSharer,
-	isAuthenticated = true,
+	isAuthenticated,
 	userReservationRequest,
 	sharedTimeAgo,
 }) => {
@@ -33,14 +33,7 @@ export const ViewListing: React.FC<ViewListingProps> = ({
 			? window.localStorage.getItem('userId')
 			: undefined;
 	const handleBack = () => {
-		// Check if we came from admin dashboard
-		const adminContext = sessionStorage.getItem('adminContext');
-		if (adminContext === 'true') {
-			sessionStorage.removeItem('adminContext');
-			window.location.href = '/account/admin-dashboard';
-		} else {
-			window.location.href = '/';
-		}
+		window.location.href = '/';
 	};
 
 	return (
@@ -169,6 +162,7 @@ export const ViewListing: React.FC<ViewListingProps> = ({
 					</Row>
 				</Col>
 			</Row>
+			{/* TODO: Add login modal here for unauthenticated users attempting to reserve a listing. */}
 		</>
 	);
 }

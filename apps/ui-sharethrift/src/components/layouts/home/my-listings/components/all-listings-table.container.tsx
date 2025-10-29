@@ -38,8 +38,11 @@ export const AllListingsTableContainer: React.FC<AllListingsTableContainerProps>
     }
   );
 
-	const listings = data?.myListingsAll?.items ?? [];
-	const total = data?.myListingsAll?.total ?? 0;  const handleSearch = (value: string) => {
+  const listings = data?.myListingsAll?.items ?? [];
+  console.log("Listings data:", data);
+  const total = data?.myListingsAll?.total ?? 0;
+
+  const handleSearch = (value: string) => {
     setSearchText(value);
     onPageChange(1);
   };
@@ -65,12 +68,14 @@ export const AllListingsTableContainer: React.FC<AllListingsTableContainerProps>
     onPageChange(1);
   };
 
-  const handleAction = (_action: string, _listingId: string) => {
-    // Future: Implement edit, pause, and delete actions
+  const handleAction = (action: string, listingId: string) => {
+    // TODO: Implement actual actions in future PRs
+    console.log(`Action: ${action}, Listing ID: ${listingId}`);
   };
 
-  const handleViewAllRequests = (_listingId: string) => {
-    // Future: Open requests modal or navigate to requests view
+  const handleViewAllRequests = (listingId: string) => {
+    // TODO: Open requests modal or navigate to requests view
+    console.log(`View all requests for listing: ${listingId}`);
   };
 
   if (error) return <p>Error: {error.message}</p>;

@@ -16,9 +16,9 @@ import {
 } from '../../../../../generated.tsx';
 
 export const ViewListingContainer: React.FC<{
-	isAuthenticated?: boolean;
+	isAuthenticated: boolean;
 }> = ({
-	isAuthenticated = true,
+	isAuthenticated,
 }) => {
 	const { listingId } = useParams();
 
@@ -46,6 +46,8 @@ export const ViewListingContainer: React.FC<{
 
 	const {
 		data: userReservationData,
+		loading: userReservationLoading,
+		error: userReservationError,
 	} = useQuery<
 		ViewListingActiveReservationRequestForListingQuery,
 		ViewListingActiveReservationRequestForListingQueryVariables
@@ -53,6 +55,9 @@ export const ViewListingContainer: React.FC<{
 		variables: { listingId: listingId ?? '', reserverId },
 		skip,
 	});
+
+	console.log('userReservationLoading', userReservationLoading);
+	console.log('userReservationError', userReservationError);
 
 	if (!listingId) return <div>Missing listing id.</div>;
 	if (listingLoading) return <div>Loading listing...</div>;
@@ -64,6 +69,8 @@ export const ViewListingContainer: React.FC<{
 		: undefined;
 
 	const userIsSharer = false;
+	// currentUserData?.currentPersonalUserAndCreateIfNotExists.id ===
+	// (listingData.itemListing.sharer?.id as { id: string }).id;
 
 	return (
 		<ViewListing
