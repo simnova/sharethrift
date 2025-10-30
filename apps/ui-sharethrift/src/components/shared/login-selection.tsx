@@ -30,7 +30,7 @@ export const LoginSelection: React.FC = () => {
 				isAdmin ? 'AdminPortal' : 'UserPortal'
 			);
 			// Force page reload to apply new OAuth config
-			globalThis.location.href = '/auth-redirect-login';
+			globalThis.location.href = isAdmin ? '/auth-redirect-admin' : '/auth-redirect-user';
 		} finally {
 			setSubmitting(false);
 		}
@@ -41,7 +41,7 @@ export const LoginSelection: React.FC = () => {
 	};
 
 	const handleOnSignUp = () => {
-		navigate('/auth-redirect');
+		navigate('/auth-redirect-user');
 	};
 
 	return (

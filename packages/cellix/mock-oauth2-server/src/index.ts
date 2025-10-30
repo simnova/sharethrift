@@ -9,18 +9,19 @@ const app = express();
 app.disable('x-powered-by');
 const port = 4000;
 const allowedRedirectUris = new Set([
-	'http://localhost:3000/auth-redirect',
-	'http://localhost:3000/auth-redirect-login',
+	'http://localhost:3000/auth-redirect-user',
+	'http://localhost:3000/auth-redirect-admin',
 ]);
 // Map redirect URIs to their corresponding audience identifiers
 const redirectUriToAudience = new Map([
-	['http://localhost:3000/auth-redirect', 'user-portal'],
-	['http://localhost:3000/auth-redirect-login', 'admin-portal'],
+	['http://localhost:3000/auth-redirect-user', 'user-portal'],
+	['http://localhost:3000/auth-redirect-admin', 'admin-portal'],
 ]);
 // Deprecated: kept for backwards compatibility
 const allowedRedirectUri =
 	// biome-ignore lint:useLiteralKeys
-	process.env['ALLOWED_REDIRECT_URI'] || 'http://localhost:3000/auth-redirect';
+	process.env['ALLOWED_REDIRECT_URI'] ||
+	'http://localhost:3000/auth-redirect-user';
 // Type for user profile used in token claims
 interface TokenProfile {
 	aud: string;

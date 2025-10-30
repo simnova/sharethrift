@@ -2,7 +2,7 @@ import { useEffect } from 'react';
 import { useAuth } from 'react-oidc-context';
 import { Navigate } from 'react-router-dom';
 
-export const AuthRedirectLogin: React.FC = () => {
+export const AuthRedirectAdmin: React.FC = () => {
 	const auth = useAuth();
 
 	useEffect(() => {
@@ -16,7 +16,7 @@ export const AuthRedirectLogin: React.FC = () => {
 		}
 	}, [auth]);
 
-	// If authenticated, redirect to home
+	// If authenticated, redirect
 	if (auth.isAuthenticated) {
 		const redirectTo =
 			globalThis.sessionStorage.getItem('redirectTo') || '/home';
