@@ -8,6 +8,7 @@ import {
 	CalendarOutlined,
 	MessageOutlined,
 	UserOutlined,
+	BarChartOutlined,
 } from '@ant-design/icons';
 import { HandleLogoutMockForMockAuth } from '../../shared/handle-logout.ts';
 import { Footer, Header, Navigation } from '@sthrift/ui-components';
@@ -27,6 +28,7 @@ export const HomeTabsLayout: React.FC = () => {
 		reservations: 'my-reservations',
 		messages: 'messages',
 		account: 'account',
+		adminDashboard: 'admin-dashboard',
 		// subnavs can be handled in account/*
 	};
 
@@ -42,9 +44,6 @@ export const HomeTabsLayout: React.FC = () => {
 			if (subPath.startsWith('settings')) {
 				return 'settings';
 			}
-			if (subPath.startsWith('admin-dashboard')) {
-				return 'admin-dashboard';
-			}
 			// Add more subroutes as needed
 			return undefined; // nothing highlighted if not a known subroute
 		}
@@ -56,7 +55,7 @@ export const HomeTabsLayout: React.FC = () => {
 
 	const handleNavigate = (key: string) => {
 		// Handle account subroutes
-		const accountSubTabs = ['profile', 'bookmarks', 'settings', 'admin-dashboard'];
+		const accountSubTabs = ['profile', 'bookmarks', 'settings'];
 		if (accountSubTabs.includes(key)) {
 			navigate(`/account/${key}`);
 			return;
@@ -105,20 +104,12 @@ export const HomeTabsLayout: React.FC = () => {
 
 	// Build navigation items dynamically based on user role
 	const navItems: MenuProps['items'] = useMemo(() => {
-		const accountChildren = [
+		const accountChildren: MenuProps['items'] = [
 			{ key: 'profile', label: 'Profile' },
 			{ key: 'settings', label: 'Settings' },
 		];
 
-		// Only add admin dashboard for admin users
-		if (isAdmin) {
-			accountChildren.push({
-				key: 'admin-dashboard',
-				label: 'Admin Dashboard',
-			});
-		}
-
-		return [
+		const baseItems: MenuProps['items'] = [
 			{ key: 'home', icon: <HomeOutlined />, label: 'Home' },
 			{
 				key: 'listings',
@@ -131,13 +122,25 @@ export const HomeTabsLayout: React.FC = () => {
 				label: 'My Reservations',
 			},
 			{ key: 'messages', icon: <MessageOutlined />, label: 'Messages' },
-			{
-				key: 'account',
-				icon: <UserOutlined />,
-				label: 'Account',
-				children: accountChildren,
-			},
 		];
+
+		baseItems.push({
+			key: 'account',
+			icon: <UserOutlined />,
+			label: 'Account',
+			children: accountChildren,
+		});
+
+        // Add admin dashboard as a top-level item for admin users conditionally
+		if (isAdmin) {
+			baseItems.push({
+				key: 'adminDashboard',
+				icon: <BarChartOutlined />,
+				label: 'Admin Dashboard',
+			});
+		}
+
+		return baseItems;
 	}, [isAdmin]);
 
 	return (
