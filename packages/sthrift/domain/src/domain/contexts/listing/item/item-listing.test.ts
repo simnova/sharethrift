@@ -207,7 +207,7 @@ test.for(feature, ({ Scenario, Background, BeforeEachScenario }) => {
 			const stateValue =
 				typeof newListing.state === 'string'
 					? newListing.state
-					: newListing.state.valueOf();
+					: (newListing.state as { valueOf: () => string }).valueOf();
 			expect(stateValue).toBe('Published');
 		});
 	});
@@ -248,7 +248,7 @@ test.for(feature, ({ Scenario, Background, BeforeEachScenario }) => {
 				const categoryValue =
 					typeof newListing.category === 'string'
 						? newListing.category
-						: newListing.category.valueOf();
+						: (newListing.category as { valueOf: () => string }).valueOf();
 				expect(categoryValue).toBe('Miscellaneous');
 			});
 			And('the listing\'s location should default to "Draft Location"', () => {
@@ -256,7 +256,7 @@ test.for(feature, ({ Scenario, Background, BeforeEachScenario }) => {
 				const locationValue =
 					typeof newListing.location === 'string'
 						? newListing.location
-						: newListing.location.valueOf();
+						: (newListing.location as { valueOf: () => string }).valueOf();
 				expect(locationValue).toBe('Draft Location');
 			});
 			And('the listing state should be "Drafted"', () => {
@@ -264,7 +264,7 @@ test.for(feature, ({ Scenario, Background, BeforeEachScenario }) => {
 				const stateValue =
 					typeof newListing.state === 'string'
 						? newListing.state
-						: newListing.state.valueOf();
+						: (newListing.state as { valueOf: () => string }).valueOf();
 				expect(stateValue).toBe('Drafted');
 			});
 		},

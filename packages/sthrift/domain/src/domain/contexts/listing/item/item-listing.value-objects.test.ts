@@ -16,17 +16,10 @@ const feature = await loadFeature(
 	path.resolve(__dirname, 'features/item-listing.value-objects.feature'),
 );
 
-test.for(feature, ({ Scenario, Given, When, Then, And }) => {
-	let listingState: ListingState;
-	let category: Category;
-	let location: Location;
-	let title: Title;
-	let description: Description;
-	let error: Error | undefined;
-	let result: boolean | undefined;
-
+test.for(feature, ({ Scenario }) => {
 	// ListingState scenarios
 	Scenario('Creating a ListingState with a valid predefined value', ({ When, Then }) => {
+		let listingState: ListingState;
 		When('I create a ListingState with "Published"', () => {
 			listingState = new ListingState('Published');
 		});
@@ -36,15 +29,11 @@ test.for(feature, ({ Scenario, Given, When, Then, And }) => {
 	});
 
 	Scenario('Creating a ListingState with an invalid value', ({ When, Then }) => {
+		let listingState: ListingState;
 		When('I try to create a ListingState with "InvalidState"', () => {
-			try {
-				// ListingState accepts any string value within length constraints
-				// This test verifies that custom values are allowed
-				listingState = new ListingState('InvalidState');
-				error = undefined;
-			} catch (e) {
-				error = e as Error;
-			}
+			// ListingState accepts any string value within length constraints
+			// This test verifies that custom values are allowed
+			listingState = new ListingState('InvalidState');
 		});
 		Then('an error should be thrown indicating the value is invalid', () => {
 			// Note: ListingState uses VOString which validates length, not predefined values
@@ -55,6 +44,8 @@ test.for(feature, ({ Scenario, Given, When, Then, And }) => {
 	});
 
 	Scenario('Checking if a ListingState is active', ({ Given, When, Then }) => {
+		let listingState: ListingState;
+		let result: boolean;
 		Given('a ListingState with value "Published"', () => {
 			listingState = new ListingState('Published');
 		});
@@ -67,6 +58,8 @@ test.for(feature, ({ Scenario, Given, When, Then, And }) => {
 	});
 
 	Scenario('Checking if a ListingState is inactive', ({ Given, When, Then }) => {
+		let listingState: ListingState;
+		let result: boolean;
 		Given('a ListingState with value "Drafted"', () => {
 			listingState = new ListingState('Drafted');
 		});
@@ -79,9 +72,10 @@ test.for(feature, ({ Scenario, Given, When, Then, And }) => {
 	});
 
 	Scenario('Creating a ListingState with an empty string', ({ When, Then }) => {
+		let error: Error | undefined;
 		When('I try to create a ListingState with an empty string', () => {
 			try {
-				listingState = new ListingState('');
+				new ListingState('');
 				error = undefined;
 			} catch (e) {
 				error = e as Error;
@@ -94,9 +88,10 @@ test.for(feature, ({ Scenario, Given, When, Then, And }) => {
 	});
 
 	Scenario('Creating a ListingState with too long a string', ({ When, Then }) => {
+		let error: Error | undefined;
 		When('I try to create a ListingState with a string longer than 50 characters', () => {
 			try {
-				listingState = new ListingState('a'.repeat(51));
+				new ListingState('a'.repeat(51));
 				error = undefined;
 			} catch (e) {
 				error = e as Error;
@@ -110,6 +105,7 @@ test.for(feature, ({ Scenario, Given, When, Then, And }) => {
 
 	// Category scenarios
 	Scenario('Creating a Category with a valid value', ({ When, Then }) => {
+		let category: Category;
 		When('I create a Category with "Electronics"', () => {
 			category = new Category('Electronics');
 		});
@@ -119,9 +115,10 @@ test.for(feature, ({ Scenario, Given, When, Then, And }) => {
 	});
 
 	Scenario('Creating a Category with an empty string', ({ When, Then }) => {
+		let error: Error | undefined;
 		When('I try to create a Category with an empty string', () => {
 			try {
-				category = new Category('');
+				new Category('');
 				error = undefined;
 			} catch (e) {
 				error = e as Error;
@@ -134,9 +131,10 @@ test.for(feature, ({ Scenario, Given, When, Then, And }) => {
 	});
 
 	Scenario('Creating a Category with too long a value', ({ When, Then }) => {
+		let error: Error | undefined;
 		When('I try to create a Category with a string longer than 100 characters', () => {
 			try {
-				category = new Category('a'.repeat(101));
+				new Category('a'.repeat(101));
 				error = undefined;
 			} catch (e) {
 				error = e as Error;
@@ -150,6 +148,7 @@ test.for(feature, ({ Scenario, Given, When, Then, And }) => {
 
 	// Location scenarios
 	Scenario('Creating a Location with a valid city and state', ({ When, Then, And }) => {
+		let location: Location;
 		When('I create a Location with "Philadelphia, PA"', () => {
 			location = new Location('Philadelphia, PA');
 		});
@@ -162,9 +161,10 @@ test.for(feature, ({ Scenario, Given, When, Then, And }) => {
 	});
 
 	Scenario('Creating a Location with an empty string', ({ When, Then }) => {
+		let error: Error | undefined;
 		When('I try to create a Location with an empty string', () => {
 			try {
-				location = new Location('');
+				new Location('');
 				error = undefined;
 			} catch (e) {
 				error = e as Error;
@@ -177,9 +177,10 @@ test.for(feature, ({ Scenario, Given, When, Then, And }) => {
 	});
 
 	Scenario('Creating a Location with too long a value', ({ When, Then }) => {
+		let error: Error | undefined;
 		When('I try to create a Location with a string longer than 255 characters', () => {
 			try {
-				location = new Location('a'.repeat(256));
+				new Location('a'.repeat(256));
 				error = undefined;
 			} catch (e) {
 				error = e as Error;
@@ -193,6 +194,7 @@ test.for(feature, ({ Scenario, Given, When, Then, And }) => {
 
 	// Title scenarios
 	Scenario('Creating a Title with valid text', ({ When, Then }) => {
+		let title: Title;
 		When('I create a Title with "Cordless Drill"', () => {
 			title = new Title('Cordless Drill');
 		});
@@ -202,9 +204,10 @@ test.for(feature, ({ Scenario, Given, When, Then, And }) => {
 	});
 
 	Scenario('Creating a Title with an empty string', ({ When, Then }) => {
+		let error: Error | undefined;
 		When('I try to create a Title with an empty string', () => {
 			try {
-				title = new Title('');
+				new Title('');
 				error = undefined;
 			} catch (e) {
 				error = e as Error;
@@ -217,9 +220,10 @@ test.for(feature, ({ Scenario, Given, When, Then, And }) => {
 	});
 
 	Scenario('Creating a Title with too long a value', ({ When, Then }) => {
+		let error: Error | undefined;
 		When('I try to create a Title with a string longer than 200 characters', () => {
 			try {
-				title = new Title('a'.repeat(201));
+				new Title('a'.repeat(201));
 				error = undefined;
 			} catch (e) {
 				error = e as Error;
@@ -233,6 +237,7 @@ test.for(feature, ({ Scenario, Given, When, Then, And }) => {
 
 	// Description scenarios
 	Scenario('Creating a Description with valid text', ({ When, Then }) => {
+		let description: Description;
 		When('I create a Description with "Professional-grade cordless drill with multiple attachments."', () => {
 			description = new Description(
 				'Professional-grade cordless drill with multiple attachments.',
@@ -246,9 +251,10 @@ test.for(feature, ({ Scenario, Given, When, Then, And }) => {
 	});
 
 	Scenario('Creating a Description with an empty string', ({ When, Then }) => {
+		let error: Error | undefined;
 		When('I try to create a Description with an empty string', () => {
 			try {
-				description = new Description('');
+				new Description('');
 				error = undefined;
 			} catch (e) {
 				error = e as Error;
@@ -261,9 +267,10 @@ test.for(feature, ({ Scenario, Given, When, Then, And }) => {
 	});
 
 	Scenario('Creating a Description with too long a value', ({ When, Then }) => {
+		let error: Error | undefined;
 		When('I try to create a Description with a string longer than 2000 characters', () => {
 			try {
-				description = new Description('a'.repeat(2001));
+				new Description('a'.repeat(2001));
 				error = undefined;
 			} catch (e) {
 				error = e as Error;
@@ -275,3 +282,4 @@ test.for(feature, ({ Scenario, Given, When, Then, And }) => {
 		});
 	});
 });
+
