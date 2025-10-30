@@ -84,8 +84,16 @@ export const buildApplicationServicesFactory = (
 					);
 
 				if (personalUser) {
-					console.log(passport);
 					passport = Domain.PassportFactory.forPersonalUser(personalUser);
+				}
+			} else if (openIdConfigKey === 'AdminPortal') {
+				const adminUser =
+					await readonlyDataSource.User.AdminUser.AdminUserReadRepo.getByEmail(
+						verifiedJwt.email,
+					);
+
+				if (adminUser) {
+					passport = Domain.PassportFactory.forAdminUser(adminUser);
 				}
 			}
 		}
@@ -111,3 +119,5 @@ export const buildApplicationServicesFactory = (
 };
 
 export type { PersonalUserUpdateCommand } from './contexts/user/personal-user/update.ts';
+export type { AdminUserUpdateCommand } from './contexts/user/admin-user/update.ts';
+export type { AdminUserCreateCommand } from './contexts/user/admin-user/create-if-not-exists.ts';

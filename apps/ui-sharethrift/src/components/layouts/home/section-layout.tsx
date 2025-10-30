@@ -1,14 +1,25 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useMemo } from 'react';
 import { useAuth } from 'react-oidc-context';
 import { Outlet, useLocation, useNavigate } from 'react-router-dom';
+import type { MenuProps } from 'antd';
+import {
+	HomeOutlined,
+	ContainerOutlined,
+	CalendarOutlined,
+	MessageOutlined,
+	UserOutlined,
+	BarChartOutlined,
+} from '@ant-design/icons';
 import { HandleLogoutMockForMockAuth } from '../../shared/handle-logout.ts';
 import { Footer, Header, Navigation } from '@sthrift/ui-components';
 import { useCreateListingNavigation } from './components/create-listing/hooks/use-create-listing-navigation.ts';
+import { useUserIsAdmin } from './account/hooks/useUserType.ts';
 
 export const HomeTabsLayout: React.FC = () => {
 	const navigate = useNavigate();
 	const location = useLocation();
 	const auth = useAuth();
+	const { isAdmin } = useUserIsAdmin();
 
 	// Map nav keys to routes as defined in index.tsx
 	const routeMap: Record<string, string> = {
@@ -17,6 +28,7 @@ export const HomeTabsLayout: React.FC = () => {
 		reservations: 'my-reservations',
 		messages: 'messages',
 		account: 'account',
+		adminDashboard: 'admin-dashboard',
 		// subnavs can be handled in account/*
 	};
 
@@ -32,21 +44,18 @@ export const HomeTabsLayout: React.FC = () => {
 			if (subPath.startsWith('settings')) {
 				return 'settings';
 			}
-			if (subPath.startsWith('admin-dashboard')) {
-				return 'admin-dashboard';
-			}
 			// Add more subroutes as needed
 			return undefined; // nothing highlighted if not a known subroute
 		}
 		const found = Object.entries(routeMap).find(([, route]) =>
-			path.startsWith(route),
+			path.startsWith(route)
 		);
 		return found ? found[0] : 'home';
 	};
 
 	const handleNavigate = (key: string) => {
 		// Handle account subroutes
-		const accountSubTabs = ['profile', 'bookmarks', 'settings', 'admin-dashboard'];
+		const accountSubTabs = ['profile', 'bookmarks', 'settings'];
 		if (accountSubTabs.includes(key)) {
 			navigate(`/account/${key}`);
 			return;
@@ -81,18 +90,58 @@ export const HomeTabsLayout: React.FC = () => {
 	}, [auth.isAuthenticated]);
 
 	const handleOnLogin = () => {
-		navigate('/auth-redirect');
+		navigate('/login');
 	};
 
 	const handleOnSignUp = () => {
-		navigate('/auth-redirect');
+		navigate('/auth-redirect-user');
 	};
-
 	const handleCreateListing = useCreateListingNavigation();
 
 	const handleLogOut = () => {
 		HandleLogoutMockForMockAuth(auth);
 	};
+
+	// Build navigation items dynamically based on user role
+	const navItems: MenuProps['items'] = useMemo(() => {
+		const accountChildren: MenuProps['items'] = [
+			{ key: 'profile', label: 'Profile' },
+			{ key: 'settings', label: 'Settings' },
+		];
+
+		const baseItems: MenuProps['items'] = [
+			{ key: 'home', icon: <HomeOutlined />, label: 'Home' },
+			{
+				key: 'listings',
+				icon: <ContainerOutlined />,
+				label: 'My Listings',
+			},
+			{
+				key: 'reservations',
+				icon: <CalendarOutlined />,
+				label: 'My Reservations',
+			},
+			{ key: 'messages', icon: <MessageOutlined />, label: 'Messages' },
+		];
+
+		baseItems.push({
+			key: 'account',
+			icon: <UserOutlined />,
+			label: 'Account',
+			children: accountChildren,
+		});
+
+        // Add admin dashboard as a top-level item for admin users conditionally
+		if (isAdmin) {
+			baseItems.push({
+				key: 'adminDashboard',
+				icon: <BarChartOutlined />,
+				label: 'Admin Dashboard',
+			});
+		}
+
+		return baseItems;
+	}, [isAdmin]);
 
 	return (
 		<div
@@ -125,6 +174,7 @@ export const HomeTabsLayout: React.FC = () => {
 					onNavigate={handleNavigate}
 					onLogout={handleLogOut}
 					selectedKey={getSelectedKey()}
+					customNavItems={navItems}
 				/>
 				<main style={{ marginLeft: mainMargin, width: '100%' }}>
 					<Outlet />

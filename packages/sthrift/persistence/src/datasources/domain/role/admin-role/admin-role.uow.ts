@@ -5,19 +5,19 @@ import {
 } from '@cellix/event-bus-seedwork-node';
 import type { Models } from '@sthrift/data-sources-mongoose-models';
 import type { Domain } from '@sthrift/domain';
-import { PersonalUserRoleConverter } from './personal-user-role.domain-adapter.ts';
-import { PersonalUserRoleRepository } from './personal-user-role.repository.ts';
+import { AdminRoleConverter } from './admin-role.domain-adapter.ts';
+import { AdminRoleRepository } from './admin-role.repository.ts';
 
-export const getPersonalUserRoleUnitOfWork = (
-	endUserRoleModel: Models.Role.PersonalUserRoleModelType,
+export const getAdminRoleUnitOfWork = (
+	adminRoleModel: Models.Role.AdminRoleModelType,
 	passport: Domain.Passport,
-): Domain.Contexts.Role.PersonalUserRole.PersonalUserRoleUnitOfWork => {
+): Domain.Contexts.Role.AdminRole.AdminRoleUnitOfWork => {
 	const unitOfWork = new MongooseSeedwork.MongoUnitOfWork(
 		InProcEventBusInstance,
 		NodeEventBusInstance,
-		endUserRoleModel,
-		new PersonalUserRoleConverter(),
-		PersonalUserRoleRepository,
+		adminRoleModel,
+		new AdminRoleConverter(),
+		AdminRoleRepository,
 	);
 	return MongooseSeedwork.getInitializedUnitOfWork(unitOfWork, passport);
 };

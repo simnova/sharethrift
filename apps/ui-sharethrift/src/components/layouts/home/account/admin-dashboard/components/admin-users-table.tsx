@@ -79,10 +79,7 @@ export const AdminUsersTable: React.FC<Readonly<AdminUsersTableProps>> = ({
   };
 
   const getActionButtons = (record: AdminUserData) => {
-    const buttons = [];
-
-    // View Profile action (always available)
-    buttons.push(
+    const commonActions = [
       <Button
         key="view-profile"
         type="link"
@@ -90,11 +87,7 @@ export const AdminUsersTable: React.FC<Readonly<AdminUsersTableProps>> = ({
         onClick={() => onAction("view-profile", record.id)}
       >
         View Profile
-      </Button>
-    );
-
-    // View Report action
-    buttons.push(
+      </Button>,
       <Button
         key="view-report"
         type="link"
@@ -102,12 +95,11 @@ export const AdminUsersTable: React.FC<Readonly<AdminUsersTableProps>> = ({
         onClick={() => onAction("view-report", record.id)}
       >
         View Report
-      </Button>
-    );
+      </Button>,
+    ];
 
-    // Block or Unblock action based on status
-    if (record.status === "Blocked") {
-      buttons.push(
+    const statusAction =
+      record.status === "Blocked" ? (
         <Button
           key="unblock"
           type="link"
@@ -116,9 +108,7 @@ export const AdminUsersTable: React.FC<Readonly<AdminUsersTableProps>> = ({
         >
           Unblock
         </Button>
-      );
-    } else {
-      buttons.push(
+      ) : (
         <Button
           key="block"
           type="link"
@@ -129,9 +119,8 @@ export const AdminUsersTable: React.FC<Readonly<AdminUsersTableProps>> = ({
           Block
         </Button>
       );
-    }
 
-    return buttons;
+    return [...commonActions, statusAction];
   };
 
   const columns: TableProps<AdminUserData>["columns"] = [

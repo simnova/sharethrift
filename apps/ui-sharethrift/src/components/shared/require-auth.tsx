@@ -21,7 +21,7 @@ export const RequireAuth: React.FC<RequireAuthProps> = (props) => {
 			!auth.isLoading &&
 			!auth.error
 		) {
-			window.sessionStorage.setItem(
+			globalThis.sessionStorage.setItem(
 				'redirectTo',
 				`${location.pathname}${location.search}`,
 			);

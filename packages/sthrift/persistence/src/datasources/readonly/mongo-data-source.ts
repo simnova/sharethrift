@@ -6,10 +6,11 @@ import {
 	type Model,
 	type QueryOptions,
 	type Require_id,
+	type Types,
 } from 'mongoose';
 
 type LeanBase<T> = Readonly<Require_id<FlattenMaps<T>>>;
-type Lean<T> = LeanBase<T> & { id: string };
+type Lean<T> = LeanBase<T> & { id: Types.ObjectId };
 
 export type FindOptions = {
 	fields?: string[] | undefined;
@@ -61,7 +62,7 @@ export class MongoDataSourceImpl<TDoc extends MongooseSeedwork.Base>
 	private appendId(doc: LeanBase<TDoc>): Lean<TDoc> {
 		return {
 			...doc,
-			id: String(doc._id),
+			id: doc._id as Types.ObjectId,
 		};
 	}
 
@@ -84,13 +85,25 @@ export class MongoDataSourceImpl<TDoc extends MongooseSeedwork.Base>
 		options?: FindOptions,
 	): Promise<Lean<TDoc>[]> {
 		const queryOptions = this.buildQueryOptions(options);
-		const docs = await this.model
-			.find(
-				this.buildFilterQuery(filter),
-				this.buildProjection(options?.fields, options?.projectionMode),
-				queryOptions,
-			)
-			.lean<LeanBase<TDoc>[]>();
+		let query = this.model.find(
+			this.buildFilterQuery(filter),
+			this.buildProjection(options?.fields, options?.projectionMode),
+			queryOptions,
+		);
+
+		const populateFields = options?.populateFields;
+		const shouldPopulate = populateFields && populateFields.length > 0;
+
+		if (shouldPopulate) {
+			for (const field of populateFields) {
+				query = query.populate(field);
+			}
+			// Don't use lean when populating - domain adapters need Mongoose documents
+			const docs = await query.exec();
+			return docs as unknown as Lean<TDoc>[];
+		}
+
+		const docs = await query.lean<LeanBase<TDoc>[]>({ defaults: true });
 		return docs.map((doc) => this.appendId(doc));
 	}
 
@@ -98,15 +111,24 @@ export class MongoDataSourceImpl<TDoc extends MongooseSeedwork.Base>
 		filter: FilterQuery<TDoc>,
 		options?: FindOneOptions,
 	): Promise<Lean<TDoc> | null> {
-		const doc = await this.model
-			.findOne(
-				this.buildFilterQuery(filter),
-				this.buildProjection(options?.fields, options?.projectionMode),
-			)
-			.lean<LeanBase<TDoc>>();
-		if (options?.populateFields?.length) {
-			await doc?.populate(options.populateFields);
+		let query = this.model.findOne(
+			this.buildFilterQuery(filter),
+			this.buildProjection(options?.fields, options?.projectionMode),
+		);
+
+		const populateFields = options?.populateFields;
+		const shouldPopulate = populateFields && populateFields.length > 0;
+
+		if (shouldPopulate) {
+			for (const field of populateFields) {
+				query = query.populate(field);
+			}
+			// Don't use lean when populating - domain adapters need Mongoose documents
+			const doc = await query.exec();
+			return doc as unknown as Lean<TDoc>;
 		}
+
+		const doc = await query.lean<LeanBase<TDoc>>({ defaults: true });
 		return doc ? this.appendId(doc) : null;
 	}
 
@@ -117,12 +139,25 @@ export class MongoDataSourceImpl<TDoc extends MongooseSeedwork.Base>
 		if (!isValidObjectId(id)) {
 			return null;
 		}
-		const doc = await this.model
-			.findById(
-				id,
-				this.buildProjection(options?.fields, options?.projectionMode),
-			)
-			.lean<LeanBase<TDoc>>();
+
+		let query = this.model.findById(
+			id,
+			this.buildProjection(options?.fields, options?.projectionMode),
+		);
+
+		const populateFields = options?.populateFields;
+		const shouldPopulate = populateFields && populateFields.length > 0;
+
+		if (shouldPopulate) {
+			for (const field of populateFields) {
+				query = query.populate(field);
+			}
+			// Don't use lean when populating - domain adapters need Mongoose documents
+			const doc = await query.exec();
+			return doc as unknown as Lean<TDoc>;
+		}
+
+		const doc = await query.lean<LeanBase<TDoc>>({ defaults: true });
 		return doc ? this.appendId(doc) : null;
 	}
 }

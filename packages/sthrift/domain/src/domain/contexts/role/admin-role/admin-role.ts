@@ -1,25 +1,25 @@
 import { DomainSeedwork } from '@cellix/domain-seedwork';
 import type { Passport } from '../../passport.ts';
-import { PersonalUserRolePermissions } from './personal-user-role-permissions.ts';
-import * as ValueObjects from './personal-user-role.value-objects.ts';
+import { AdminRolePermissions } from './admin-role-permissions.ts';
+import * as ValueObjects from './admin-role.value-objects.ts';
 import type {
-	PersonalUserRoleEntityReference,
-	PersonalUserRoleProps,
-} from './personal-user-role.entity.ts';
+	AdminRoleEntityReference,
+	AdminRoleProps,
+} from './admin-role.entity.ts';
 
-export class PersonalUserRole<props extends PersonalUserRoleProps>
+export class AdminRole<props extends AdminRoleProps>
 	extends DomainSeedwork.AggregateRoot<props, Passport>
-	implements PersonalUserRoleEntityReference
+	implements AdminRoleEntityReference
 {
 	protected isNew: boolean = false;
 
-	public static getNewInstance<props extends PersonalUserRoleProps>(
+	public static getNewInstance<props extends AdminRoleProps>(
 		newProps: props,
 		passport: Passport,
 		roleName: string,
 		isDefault: boolean,
-	): PersonalUserRole<props> {
-		const role = new PersonalUserRole(newProps, passport);
+	): AdminRole<props> {
+		const role = new AdminRole(newProps, passport);
 		role.isNew = true;
 		role.roleName = roleName;
 		role.isDefault = isDefault;
@@ -42,7 +42,7 @@ export class PersonalUserRole<props extends PersonalUserRoleProps>
 	}
 
 	get permissions() {
-		return new PersonalUserRolePermissions(this.props.permissions);
+		return new AdminRolePermissions(this.props.permissions);
 	}
 
 	get roleType() {

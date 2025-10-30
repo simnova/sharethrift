@@ -1,6 +1,7 @@
 import type React from 'react';
 import { useState } from 'react';
 import { Layout, Menu, Button, Drawer } from 'antd';
+import type { MenuProps } from 'antd';
 import {
 	HomeOutlined,
 	ContainerOutlined,
@@ -19,11 +20,12 @@ export interface NavigationProps {
 	onLogout?: () => void;
 	onNavigate?: (route: string) => void;
 	selectedKey?: string;
+	customNavItems?: MenuProps['items'];
 }
 
 const { Sider } = Layout;
 
-const navItems = [
+const defaultNavItems: MenuProps['items'] = [
 	{ key: 'home', icon: <HomeOutlined />, label: 'Home' },
 	{ key: 'listings', icon: <ContainerOutlined />, label: 'My Listings' },
 	{ key: 'reservations', icon: <CalendarOutlined />, label: 'My Reservations' },
@@ -39,14 +41,18 @@ const navItems = [
 		],
 	},
 ];
+
 export const Navigation: React.FC<NavigationProps> = ({
 	isAuthenticated,
 	onLogout,
 	onNavigate,
 	selectedKey,
+	customNavItems,
 }) => {
 	const [collapsed, setCollapsed] = useState(false);
 	const [mobileOpen, setMobileOpen] = useState(false);
+
+	const navItems = customNavItems || defaultNavItems;
 
 	const handleMenuClick: React.ComponentProps<typeof Menu>['onClick'] = (e) => {
 		// Use keyPath for nested menu items

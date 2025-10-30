@@ -12,11 +12,11 @@ export const SectionLayout: React.FC<SectionLayoutProps> = (_props) => {
 	const navigate = useNavigate();
 
 	const handleOnLogin = () => {
-		navigate('/auth-redirect');
+		navigate('/auth-redirect-user');
 	};
 
 	const handleOnSignUp = () => {
-		navigate('/auth-redirect');
+		navigate('/auth-redirect-user');
 	};
 
 	const handleCreateListing = useCreateListingNavigation();
