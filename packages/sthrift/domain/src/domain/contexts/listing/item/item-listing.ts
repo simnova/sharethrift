@@ -133,7 +133,7 @@ export class ItemListing<props extends ItemListingProps>
 			);
 		}
 		this.props.title = new ValueObjects.Title(value).valueOf();
-		this.props.updatedAt = new Date();
+        this.props.updatedAt = new Date();
 	}
 
 	get description(): string {
@@ -149,7 +149,7 @@ export class ItemListing<props extends ItemListingProps>
 			);
 		}
 		this.props.description = new ValueObjects.Description(value).valueOf();
-		this.props.updatedAt = new Date();
+        this.props.updatedAt = new Date();
 	}
 
 	get category(): string {
@@ -165,7 +165,7 @@ export class ItemListing<props extends ItemListingProps>
 			);
 		}
 		this.props.category = new ValueObjects.Category(value).valueOf();
-		this.props.updatedAt = new Date();
+        this.props.updatedAt = new Date();
 	}
 
 	get location(): string {
@@ -181,7 +181,6 @@ export class ItemListing<props extends ItemListingProps>
 			);
 		}
 		this.props.location = new ValueObjects.Location(value).valueOf();
-		this.props.updatedAt = new Date();
 	}
 
 	get sharingPeriodStart(): Date {
@@ -311,7 +310,6 @@ export class ItemListing<props extends ItemListingProps>
 		}
 
 		this.props.state = new ValueObjects.ListingState('Cancelled').valueOf();
-		this.props.updatedAt = new Date();
 	}
 
 	get listingType(): string {

@@ -59,7 +59,10 @@ export class ItemListingReadRepositoryImpl
 		options?: FindOptions,
 	): Promise<Domain.Contexts.Listing.ItemListing.ItemListingEntityReference[]> {
 		const result = await this.mongoDataSource.find({}, options);
+        console.log('ItemListingReadRepositoryImpl.getAll - fetched items:', result);
 		if (!result || result.length === 0) {
+        console.log('ItemListingReadRepositoryImpl.getAll - fetched items:', result);
+
 			// Return mock data when no real data exists
 			return getMockItemListings();
 		}
@@ -83,7 +86,7 @@ export class ItemListingReadRepositoryImpl
 		let listings: Domain.Contexts.Listing.ItemListing.ItemListingEntityReference[];
 
 		if (args.sharerId) {
-			listings = await this.getBySharer(args.sharerId);
+			listings = await this.getAll();
 		} else {
 			listings = await this.getAll();
 		}
