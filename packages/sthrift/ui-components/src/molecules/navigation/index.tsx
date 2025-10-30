@@ -1,5 +1,5 @@
 import type React from 'react';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Layout, Menu, Button, Drawer } from 'antd';
 import {
 	HomeOutlined,
@@ -13,6 +13,7 @@ import {
 } from '@ant-design/icons';
 import styles from './index.module.css';
 import '../../styles/theme.css';
+import { useMatch } from 'react-router-dom';
 
 export interface NavigationProps {
 	isAuthenticated: boolean;
@@ -47,23 +48,27 @@ export const Navigation: React.FC<NavigationProps> = ({
 }) => {
 	const [collapsed, setCollapsed] = useState(false);
 	const [mobileOpen, setMobileOpen] = useState(false);
+	const [openKeys, setOpenKeys] = useState<string[]>([]);
+	const accountPath = useMatch('/account/*');
+
+	useEffect(() => {
+		if (accountPath) {
+			setOpenKeys(['account']);
+		}
+	}, [accountPath]);
 
 	const handleMenuClick: React.ComponentProps<typeof Menu>['onClick'] = (e) => {
 		// Use keyPath for nested menu items
-		let { key } = e;
-		const accountSubTabs = ['profile', 'settings', 'admin-dashboard'];
-		if (
-			e.keyPath &&
-			e.keyPath.length > 1 &&
-			e.keyPath[1] === 'account' &&
-			accountSubTabs.includes(e.key)
-		) {
-			key = `account/${e.key}`;
-		}
+		const { key } = e;
+		setOpenKeys(e.keyPath);
 		if (onNavigate) {
 			onNavigate(key);
 		}
 		setMobileOpen(false);
+	};
+
+	const onMenuOpenChange = (keys: string[]) => {
+		setOpenKeys(keys);
 	};
 
 	// Responsive: show Drawer on mobile, Sider on desktop
@@ -100,6 +105,8 @@ export const Navigation: React.FC<NavigationProps> = ({
 						onClick={handleMenuClick}
 						style={{ border: 'none', flex: 1 }}
 						selectedKeys={[selectedKey || 'home']}
+						openKeys={openKeys}
+						onOpenChange={onMenuOpenChange}
 					/>
 					<Button
 						className={styles.logoutDesktop ?? ''}
