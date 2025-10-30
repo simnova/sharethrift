@@ -1,7 +1,5 @@
-import type { Meta, StoryFn, StoryObj } from '@storybook/react';
-import { action } from 'storybook/actions';
+import type { Meta, StoryObj } from '@storybook/react';
 import { HomeRoutes } from '../../../index.tsx';
-import { ProfileView } from '../components/profile-view.tsx';
 import {
 	withMockApolloClient,
 	withMockRouter,

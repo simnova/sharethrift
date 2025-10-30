@@ -161,7 +161,8 @@ export class PersonalUserAccountProfileDomainAdapter
 	}
 	get billing() {
 		if (!this.props.billing) {
-			this.props.set('billing', {});
+			// this.props.set('billing', {});
+			this.props.billing = {} as Models.User.PersonalUserAccountProfileBilling;
 		}
 		return new PersonalUserAccountProfileBillingDomainAdapter(
 			this.props.billing,

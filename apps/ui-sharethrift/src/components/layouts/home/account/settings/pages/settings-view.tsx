@@ -1,21 +1,27 @@
-import React from 'react';
+import { EditOutlined, LockOutlined } from '@ant-design/icons';
+import '@sthrift/ui-components/src/styles/theme.css';
 import {
-	Card,
-	Button,
 	Avatar,
-	Typography,
-	Row,
+	Button,
+	Card,
 	Col,
 	Divider,
+	Row,
 	Space,
 	Tag,
+	Typography,
 } from 'antd';
-import { EditOutlined, LockOutlined } from '@ant-design/icons';
-import type { SettingsViewProps, PlanOption } from '../components/settings-view.types.ts';
+import type { PersonalUser } from '../../../../../../generated.tsx';
 import styles from '../components/settings-view.module.css';
-import '@sthrift/ui-components/src/styles/theme.css';
+import type { PlanOption } from '../components/settings-view.types.ts';
 
 const { Text } = Typography;
+
+interface SettingsViewProps {
+	user: PersonalUser;
+	onEditSection: (section: string) => void;
+	onChangePassword: () => void;
+}
 
 // Mock plan data - this would come from API in real implementation
 const PLAN_OPTIONS: PlanOption[] = [
@@ -90,28 +96,28 @@ export const SettingsView: React.FC<SettingsViewProps> = ({
 							<div>
 								<Text className="label">First Name</Text>
 								<br />
-								<p>{user.firstName || 'Not provided'}</p>
+								<p>{user.account?.profile?.firstName || 'Not provided'}</p>
 							</div>
 						</Col>
 						<Col xs={24} sm={12}>
 							<div>
 								<Text className="label">Last Name</Text>
 								<br />
-								<p>{user.lastName || 'Not provided'}</p>
+								<p>{user.account?.profile?.lastName || 'Not provided'}</p>
 							</div>
 						</Col>
 						<Col xs={24} sm={12}>
 							<div>
 								<Text className="label">Username</Text>
 								<br />
-								<p>{user.username}</p>
+								<p>{user.account?.username || 'Not provided'}</p>
 							</div>
 						</Col>
 						<Col xs={24} sm={12}>
 							<div>
 								<Text className="label">Email</Text>
 								<br />
-								<p>{user.email}</p>
+								<p>{user.account?.email || 'Not provided'}</p>
 							</div>
 						</Col>
 					</Row>
@@ -138,42 +144,42 @@ export const SettingsView: React.FC<SettingsViewProps> = ({
 					<div>
 						<Text className="label">Address Line 1</Text>
 						<br />
-						<p>{user.location.address1 || 'Not provided'}</p>
+						<p>{user.account?.profile?.location?.address1 || 'Not provided'}</p>
 					</div>
 				</Col>
 				<Col xs={24} sm={12}>
 					<div>
 						<Text className="label">Address Line 2</Text>
 						<br />
-						<p>{user.location.address2 || 'Not provided'}</p>
+						<p>{user.account?.profile?.location?.address2 || 'Not provided'}</p>
 					</div>
 				</Col>
 				<Col xs={24} sm={6}>
 					<div>
 						<Text className="label">City</Text>
 						<br />
-						<p>{user.location.city || 'Not provided'}</p>
+						<p>{user.account?.profile?.location?.city || 'Not provided'}</p>
 					</div>
 				</Col>
 				<Col xs={24} sm={6}>
 					<div>
 						<Text className="label">State</Text>
 						<br />
-						<p>{user.location.state || 'Not provided'}</p>
+						<p>{user.account?.profile?.location?.state || 'Not provided'}</p>
 					</div>
 				</Col>
 				<Col xs={24} sm={6}>
 					<div>
 						<Text className="label">Country</Text>
 						<br />
-						<p>{user.location.country || 'Not provided'}</p>
+						<p>{user.account?.profile?.location?.country || 'Not provided'}</p>
 					</div>
 				</Col>
 				<Col xs={24} sm={6}>
 					<div>
 						<Text className="label">Zip Code</Text>
 						<br />
-						<p>{user.location.zipCode || 'Not provided'}</p>
+						<p>{user.account?.profile?.location?.zipCode || 'Not provided'}</p>
 					</div>
 				</Col>
 			</Row>
@@ -203,14 +209,16 @@ export const SettingsView: React.FC<SettingsViewProps> = ({
 				overflow: 'hidden',
 				margin: '0 auto',
 			}}
-			bodyStyle={{
-				padding: '10px 20px',
-				display: 'flex',
-				flexDirection: 'column',
-				alignItems: 'center',
-				textAlign: 'center',
-				height: '100%',
-				position: 'relative',
+			styles={{
+				body: {
+					padding: '10px 20px',
+					display: 'flex',
+					flexDirection: 'column',
+					alignItems: 'center',
+					textAlign: 'center',
+					height: '100%',
+					position: 'relative',
+				},
 			}}
 		>
 			<div
@@ -352,7 +360,7 @@ export const SettingsView: React.FC<SettingsViewProps> = ({
 	);
 
 	const renderBillingSection = () => {
-		const billing = user.billing;
+		const billing = user.account?.profile?.billing;
 		const hasCard = false;
 		/*const hasCard = billing && billing.cardNumber && billing.nameOnCard;*/
 		return (
@@ -408,7 +416,7 @@ export const SettingsView: React.FC<SettingsViewProps> = ({
 									{/*billing.country*/}
 								</p>
 							</div>
-							{billing && billing.subscriptionId && (
+							{billing?.subscriptionId && (
 								<div>
 									<Text className="label">Subscription ID</Text>
 									<br />
@@ -417,13 +425,11 @@ export const SettingsView: React.FC<SettingsViewProps> = ({
 							)}
 						</>
 					) : (
-						<>
-							<div>
-								<Text className="label">Payment Method</Text>
-								<br />
-								<p>No payment method on file</p>
-							</div>
-						</>
+						<div>
+							<Text className="label">Payment Method</Text>
+							<br />
+							<p>No payment method on file</p>
+						</div>
 					)}
 				</Space>
 			</Card>

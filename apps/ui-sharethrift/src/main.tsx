@@ -7,7 +7,12 @@ import { AuthProvider } from 'react-oidc-context';
 import { oidcConfig } from './config/oidc-config.tsx';
 import '@ant-design/v5-patch-for-react-19';
 
-createRoot(document.getElementById('root')!).render(
+const rootElement = document.getElementById('root');
+if (!rootElement) {
+	throw new Error('Root element not found');
+}
+
+createRoot(rootElement).render(
 	<StrictMode>
 		<BrowserRouter>
 			<AuthProvider {...oidcConfig}>
