@@ -49,18 +49,14 @@ Upload, scan, and save now execute as a single atomic workflow.
 No data is finalized unless every stage succeeds. Cleanup and user feedback happen immediately on failure.
 
 ## Consequences
-
-- **Positive:**
-  - Orphaned and unreferenced files are eliminated.
-  - Ensures consistent and secure linkage between uploaded blobs and saved data.
-  - Regulatory and operational risks are minimized (by ensuring that only properly scanned, malware-free files are stored and linked to committed database records).
-  - No background sweeps or delayed cleanups required.
-  - Improves user clarity by creating a direct, predictable link between user actions (“Save”) and data persistence — users know their file and form are saved together, or not at all.
-
-- **Negative:**
-  - Upload initiation is delayed until user confirmation, possibly increasing total save time.
-  - Slightly more complex frontend logic to manage pending uploads and confirmation triggers.
-  - Requires a local memory/state variable to store the file until the final save.
+- Good: Orphaned and unreferenced files are eliminated.
+- Good: Ensures consistent and secure linkage between uploaded blobs and saved data.
+- Good: Regulatory and operational risks are minimized (by ensuring that only properly scanned: malware-free files are stored and linked to committed database records).
+- Good: No background sweeps or delayed cleanups required.
+- Good: Improves user clarity by creating a direct, predictable link between user actions (“Save”) and data persistence — users know their file and form are saved together, or not at all.
+- Bad: Upload initiation is delayed until user confirmation, possibly increasing total save time.
+- Bad: Slightly more complex frontend logic to manage pending uploads and confirmation triggers.
+- Bad: Requires a local memory/state variable to store the file until the final save.
 
 ## Implementation Details
 
