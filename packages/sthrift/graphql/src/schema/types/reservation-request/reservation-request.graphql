@@ -12,7 +12,7 @@ type ReservationRequest {
 }
 
 enum ReservationRequestState {
-	Requested
+	Pending
 	Accepted
 	Rejected
 	Closed

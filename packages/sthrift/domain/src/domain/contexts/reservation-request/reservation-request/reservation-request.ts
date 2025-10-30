@@ -78,7 +78,7 @@ export class ReservationRequest<props extends ReservationRequestProps>
 			case ReservationRequestStates.CLOSED:
 				this.close();
 				break;
-			case ReservationRequestStates.REQUESTED:
+			case ReservationRequestStates.PENDING:
 				this.request();
 				break;
 		}
@@ -263,8 +263,8 @@ export class ReservationRequest<props extends ReservationRequestProps>
 			);
 		}
 
-		if (this.props.state.valueOf() !== ReservationRequestStates.REQUESTED) {
-			throw new Error('Can only accept requested reservations');
+		if (this.props.state.valueOf() !== ReservationRequestStates.PENDING) {
+			throw new Error('Can only accept pending reservations');
 		}
 
 		this.props.state = new ValueObjects.ReservationRequestStateValue(
@@ -293,8 +293,8 @@ export class ReservationRequest<props extends ReservationRequestProps>
 			);
 		}
 
-		if (this.props.state.valueOf() !== ReservationRequestStates.REQUESTED) {
-			throw new Error('Can only reject requested reservations');
+		if (this.props.state.valueOf() !== ReservationRequestStates.PENDING) {
+			throw new Error('Can only reject pending reservations');
 		}
 
 		this.props.state = new ValueObjects.ReservationRequestStateValue(
@@ -314,7 +314,7 @@ export class ReservationRequest<props extends ReservationRequestProps>
 		}
 
 		if (
-			this.props.state.valueOf() !== ReservationRequestStates.REQUESTED &&
+			this.props.state.valueOf() !== ReservationRequestStates.PENDING &&
 			this.props.state.valueOf() !== ReservationRequestStates.REJECTED
 		) {
 			throw new Error('Cannot cancel reservation in current state');
@@ -358,18 +358,18 @@ export class ReservationRequest<props extends ReservationRequestProps>
 	private request(): void {
 		if (!this.isNew) {
 			throw new DomainSeedwork.PermissionError(
-				'Can only set state to requested when creating new reservation requests',
+				'Can only set state to pending when creating new reservation requests',
 			);
 		}
 
 		if (!this.isNew) {
 			throw new Error(
-				'Can only set state to requested when creating new reservation requests',
+				'Can only set state to pending when creating new reservation requests',
 			);
 		}
 
 		this.props.state = new ValueObjects.ReservationRequestStateValue(
-			ReservationRequestStates.REQUESTED,
+			ReservationRequestStates.PENDING,
 		).valueOf();
 	}
 }

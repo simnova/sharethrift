@@ -152,7 +152,7 @@ describe('ReservationRequest', () => {
 			updatedAt: new Date(),
 			schemaVersion: '1',
 			state: new ReservationRequestStateValue(
-				ReservationRequestStates.REQUESTED,
+				ReservationRequestStates.PENDING,
 			).valueOf(),
 			listing,
 			reserver,
@@ -175,12 +175,12 @@ describe('ReservationRequest', () => {
 	};
 
 	describe('getNewInstance', () => {
-		it('should create a new reservation request with REQUESTED state', () => {
+		it('should create a new reservation request with PENDING state', () => {
 			const { startDate, endDate } = getFutureDates();
 			const listing = createMockListing();
 			const reserver = createMockReserver();
 			const state = new ReservationRequestStateValue(
-				ReservationRequestStates.REQUESTED,
+				ReservationRequestStates.PENDING,
 			).valueOf();
 			const reservationPeriodStart = startDate;
 			const reservationPeriodEnd = endDate;
@@ -207,7 +207,7 @@ describe('ReservationRequest', () => {
 
 			expect(reservation.state.valueOf()).toBe(
 				new ReservationRequestStateValue(
-					ReservationRequestStates.REQUESTED,
+					ReservationRequestStates.PENDING,
 				).valueOf(),
 			);
 			expect(reservation.listing.id).toBe('listing-1');
@@ -225,7 +225,7 @@ describe('ReservationRequest', () => {
 						reservationPeriodStart: endDate,
 						reservationPeriodEnd: startDate,
 					}),
-					ReservationRequestStates.REQUESTED,
+					ReservationRequestStates.PENDING,
 					createMockListing(),
 					createMockReserver(),
 					endDate,
@@ -237,12 +237,12 @@ describe('ReservationRequest', () => {
 	});
 
 	describe('accept', () => {
-		it('should change state from REQUESTED to ACCEPTED', () => {
+		it('should change state from PENDING to ACCEPTED', () => {
 			const { startDate, endDate } = getFutureDates();
 			const listing = createMockListing();
 			const reserver = createMockReserver();
 			const state = new ReservationRequestStateValue(
-				ReservationRequestStates.REQUESTED,
+				ReservationRequestStates.PENDING,
 			).valueOf();
 			const reservationPeriodStart = startDate;
 			const reservationPeriodEnd = endDate;
@@ -279,7 +279,7 @@ describe('ReservationRequest', () => {
 			const listing = createMockListing();
 			const reserver = createMockReserver();
 			const state = new ReservationRequestStateValue(
-				ReservationRequestStates.REQUESTED,
+				ReservationRequestStates.PENDING,
 			).valueOf();
 			const reservationPeriodStart = startDate;
 			const reservationPeriodEnd = endDate;
@@ -326,7 +326,7 @@ describe('ReservationRequest', () => {
 			const listing = createMockListing();
 			const reserver = createMockReserver();
 			const state = new ReservationRequestStateValue(
-				ReservationRequestStates.REQUESTED,
+				ReservationRequestStates.PENDING,
 			).valueOf();
 			const reservationPeriodStart = startDate;
 			const reservationPeriodEnd = endDate;
@@ -353,7 +353,7 @@ describe('ReservationRequest', () => {
 
 			expect(() => {
 				reservation.state = ReservationRequestStates.ACCEPTED;
-			}).toThrow('Can only accept requested reservations');
+			}).toThrow('Can only accept pending reservations');
 		});
 	});
 
@@ -363,7 +363,7 @@ describe('ReservationRequest', () => {
 			const listing = createMockListing();
 			const reserver = createMockReserver();
 			const state = new ReservationRequestStateValue(
-				ReservationRequestStates.REQUESTED,
+				ReservationRequestStates.PENDING,
 			).valueOf();
 			const reservationPeriodStart = startDate;
 			const reservationPeriodEnd = endDate;
@@ -400,7 +400,7 @@ describe('ReservationRequest', () => {
 			const listing = createMockListing();
 			const reserver = createMockReserver();
 			const state = new ReservationRequestStateValue(
-				ReservationRequestStates.REQUESTED,
+				ReservationRequestStates.PENDING,
 			).valueOf();
 			const reservationPeriodStart = startDate;
 			const reservationPeriodEnd = endDate;
@@ -440,7 +440,7 @@ describe('ReservationRequest', () => {
 			const listing = createMockListing();
 			const reserver = createMockReserver();
 			const state = new ReservationRequestStateValue(
-				ReservationRequestStates.REQUESTED,
+				ReservationRequestStates.PENDING,
 			).valueOf();
 			const reservationPeriodStart = startDate;
 			const reservationPeriodEnd = endDate;
@@ -481,7 +481,7 @@ describe('ReservationRequest', () => {
 			const listing = createMockListing();
 			const reserver = createMockReserver();
 			const state = new ReservationRequestStateValue(
-				ReservationRequestStates.REQUESTED,
+				ReservationRequestStates.PENDING,
 			).valueOf();
 			const reservationPeriodStart = startDate;
 			const reservationPeriodEnd = endDate;
@@ -522,7 +522,7 @@ describe('ReservationRequest', () => {
 			const listing = createMockListing();
 			const reserver = createMockReserver();
 			const state = new ReservationRequestStateValue(
-				ReservationRequestStates.REQUESTED,
+				ReservationRequestStates.PENDING,
 			).valueOf();
 			const reservationPeriodStart = startDate;
 			const reservationPeriodEnd = endDate;
@@ -557,7 +557,7 @@ describe('ReservationRequest', () => {
 			const listing = createMockListing();
 			const reserver = createMockReserver();
 			const state = new ReservationRequestStateValue(
-				ReservationRequestStates.REQUESTED,
+				ReservationRequestStates.PENDING,
 			).valueOf();
 			const reservationPeriodStart = startDate;
 			const reservationPeriodEnd = endDate;
@@ -597,7 +597,7 @@ describe('ReservationRequest', () => {
 			const listing = createMockListing();
 			const reserver = createMockReserver();
 			const state = new ReservationRequestStateValue(
-				ReservationRequestStates.REQUESTED,
+				ReservationRequestStates.PENDING,
 			).valueOf();
 			const reservationPeriodStart = startDate;
 			const reservationPeriodEnd = endDate;

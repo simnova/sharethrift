@@ -7,10 +7,10 @@ This document describes the implementation of the reservation request acceptance
 ## Business Rules
 
 1. Only sharers who own the listing can accept reservation requests
-2. Only requests in "Requested" state can be accepted
+2. Only requests in "Pending" state can be accepted
 3. Double booking is prevented - no overlapping accepted reservations for the same listing
 4. Upon acceptance:
-   - Status changes from "Requested" to "Accepted"
+   - Status changes from "Pending" to "Accepted"
    - A domain event `ReservationAcceptedEvent` is emitted
    - Both parties (reserver and sharer) should be notified
    - A message thread should be created for coordination
@@ -87,7 +87,7 @@ Future event handlers should:
 ## Testing
 
 - **Unit Tests**: `reservation-request.aggregate.test.ts` validates:
-  - State transition from "Requested" to "Accepted"
+  - State transition from "Pending" to "Accepted"
   - Event emission with correct payload
   - Permission enforcement
   - Invalid state transition rejection
@@ -125,7 +125,7 @@ mutation AcceptReservation {
 
 ## Related Documentation
 
-- BRD/SRD: "Reservation Request – Requested" and "Reservation Request – Accepted"
+- BRD/SRD: "Reservation Request – Pending" and "Reservation Request – Accepted"
 - ADR: Domain-Driven Design (`docs/decisions/0003-domain-driven-design.md`)
 - ADR: OpenTelemetry for observability
 

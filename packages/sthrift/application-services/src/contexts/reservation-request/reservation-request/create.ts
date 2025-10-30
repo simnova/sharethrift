@@ -38,7 +38,7 @@ export const create = (
         await dataSources.domainDataSource.ReservationRequest.ReservationRequest.ReservationRequestUnitOfWork.withScopedTransaction(
             async (repo) => {
                 const newReservationRequest = await repo.getNewInstance(
-                    'Requested',
+                    'Pending',
                     listing,
                     reserver,
                     command.reservationPeriodStart,
