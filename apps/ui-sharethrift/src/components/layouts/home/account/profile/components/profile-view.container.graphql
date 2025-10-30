@@ -19,6 +19,21 @@ query HomeAccountProfileViewContainerCurrentUser {
 	}
 }
 
+query HomeAccountProfileViewContainerCurrentAdminUser {
+	currentAdminUser {
+		id
+		userType
+		account {
+			accountType
+			email
+			username
+			firstName
+			lastName
+		}
+		createdAt
+	}
+}
+
 query HomeAccountProfileViewContainerUserListings {
 	itemListings {
 		id

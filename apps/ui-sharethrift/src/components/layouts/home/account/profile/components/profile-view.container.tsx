@@ -8,18 +8,37 @@ import type {
 } from './profile-view.types.ts';
 import {
 	HomeAccountProfileViewContainerCurrentUserDocument,
+	HomeAccountProfileViewContainerCurrentAdminUserDocument,
 	HomeAccountProfileViewContainerUserListingsDocument,
 } from '../../../../../../generated.tsx';
+import { useUserIsAdmin } from '../../hooks/useUserType.ts';
 
 function ProfileViewLoader() {
 	const navigate = useNavigate();
+	const { isAdmin } = useUserIsAdmin();
 
+	// Query personal user if not admin
 	const {
-		data: userData,
-		loading: userLoading,
-		error: userError,
+		data: personalUserData,
+		loading: personalUserLoading,
+		error: personalUserError,
 	} = useQuery<CurrentUserQueryData>(
 		HomeAccountProfileViewContainerCurrentUserDocument,
+		{
+			skip: isAdmin,
+		},
+	);
+
+	// Query admin user if admin
+	const {
+		data: adminUserData,
+		loading: adminUserLoading,
+		error: adminUserError,
+	} = useQuery(
+		HomeAccountProfileViewContainerCurrentAdminUserDocument,
+		{
+			skip: !isAdmin,
+		},
 	);
 
 	const {
@@ -28,7 +47,13 @@ function ProfileViewLoader() {
 		error: listingsError,
 	} = useQuery<UserListingsQueryData>(
 		HomeAccountProfileViewContainerUserListingsDocument,
+		{
+			skip: isAdmin, // Admins don't have listings
+		},
 	);
+
+	const userLoading = isAdmin ? adminUserLoading : personalUserLoading;
+	const userError = isAdmin ? adminUserError : personalUserError;
 
 	const handleEditSettings = () => {
 		navigate('/account/settings');
@@ -94,11 +119,39 @@ function ProfileViewLoader() {
 		return <div>Loading profile...</div>;
 	}
 
-	if (!userData?.currentPersonalUserAndCreateIfNotExists) {
+	// Handle admin users
+	if (isAdmin) {
+		const user = adminUserData?.currentAdminUser;
+		if (!user) {
+			return <div>User not found</div>;
+		}
+
+		return (
+			<ProfileView
+				user={{
+					id: user.id,
+					firstName: user.account?.firstName || 'Admin',
+					lastName: user.account?.lastName || 'User',
+					username: user.account?.username || '',
+					email: user.account?.email || '',
+					accountType: user.account?.accountType || 'admin',
+					location: { city: 'N/A', state: 'N/A' },
+					createdAt: user.createdAt,
+				}}
+				listings={[]}
+				isOwnProfile={true}
+				onEditSettings={handleEditSettings}
+				onListingClick={handleListingClick}
+			/>
+		);
+	}
+
+	// Handle personal users
+	const user = personalUserData?.currentPersonalUserAndCreateIfNotExists;
+	if (!user) {
 		return <div>User not found</div>;
 	}
 
-	const user = userData.currentPersonalUserAndCreateIfNotExists;
 	const userListings =
 		listingsData?.itemListings?.filter(
 			(listing: UserListing & { sharer: string; updatedAt: string }) => {
