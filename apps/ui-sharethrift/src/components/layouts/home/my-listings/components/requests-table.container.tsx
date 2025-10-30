@@ -1,8 +1,11 @@
 import { useState } from 'react';
-import { useQuery } from "@apollo/client/react";
+import { useQuery, useMutation } from "@apollo/client/react";
 import { RequestsTable } from './requests-table.tsx';
 import { ComponentQueryLoader } from '@sthrift/ui-components';
-import { HomeRequestsTableContainerMyListingsRequestsDocument } from '../../../../../generated.tsx';
+import { 
+	HomeRequestsTableContainerMyListingsRequestsDocument,
+	HomeRequestsTableContainerAcceptReservationRequestDocument
+} from '../../../../../generated.tsx';
 
 export interface RequestsTableContainerProps {
 	currentPage: number;
@@ -21,7 +24,7 @@ export const RequestsTableContainer: React.FC<RequestsTableContainerProps> = ({
 	}>({ field: null, order: null });
 	const pageSize = 6;
 
-	const { data, loading, error } = useQuery(
+	const { data, loading, error, refetch } = useQuery(
 		HomeRequestsTableContainerMyListingsRequestsDocument,
 		{
 			variables: {
@@ -34,6 +37,10 @@ export const RequestsTableContainer: React.FC<RequestsTableContainerProps> = ({
 			},
 			fetchPolicy: 'network-only',
 		},
+	);
+
+	const [acceptReservationRequest] = useMutation(
+		HomeRequestsTableContainerAcceptReservationRequestDocument
 	);
 
 	const requests = data?.myListingsRequests?.items ?? [];
@@ -65,9 +72,28 @@ export const RequestsTableContainer: React.FC<RequestsTableContainerProps> = ({
 		onPageChange(1);
 	};
 
-	const handleAction = (action: string, requestId: string) => {
-		// TODO: Implement actual actions in future PRs
-		console.log(`Action: ${action}, Request ID: ${requestId}`);
+	const handleAction = async (action: string, requestId: string) => {
+		try {
+			if (action === 'accept') {
+				// Use the real GraphQL mutation to accept the reservation request
+				await acceptReservationRequest({
+					variables: {
+						reservationRequestId: requestId,
+					},
+				});
+				
+				// Refetch the data to update the UI with the new status
+				await refetch();
+				
+				// TODO: Add user-facing success notification
+			} else {
+				// TODO: Implement other actions (reject, close, message) in future PRs
+				console.log(`Action: ${action}, Request ID: ${requestId}`);
+			}
+		} catch (error) {
+			console.error('Error handling action:', error);
+			// TODO: Add user-facing error notification
+		}
 	};
 
 	if (error) return <p>Error: {error.message}</p>;
