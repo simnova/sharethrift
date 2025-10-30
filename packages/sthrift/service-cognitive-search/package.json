@@ -21,14 +21,14 @@
 	"author": "ShareThrift Team",
 	"license": "MIT",
 	"dependencies": {
-		"@cellix/api-services-spec": "*",
-		"@cellix/mock-cognitive-search": "*",
+		"@cellix/api-services-spec": "workspace:*",
+		"@cellix/mock-cognitive-search": "workspace:*",
 		"@azure/search-documents": "^12.2.0",
 		"@azure/identity": "^4.13.0"
 	},
 	"devDependencies": {
-		"@cellix/typescript-config": "*",
-		"@cellix/vitest-config": "*",
+		"@cellix/typescript-config": "workspace:*",
+		"@cellix/vitest-config": "workspace:*",
 		"typescript": "^5.3.0",
 		"vitest": "^1.6.0"
 	},
