@@ -1,8 +1,8 @@
-import { Button } from 'antd';
 import { EnvironmentFilled, PlusOutlined } from '@ant-design/icons';
-import { HeroSectionContainer } from './hero-section.container.tsx';
+import { ListingsGrid, SearchBar } from '@sthrift/ui-components';
+import { Button } from 'antd';
 import { CategoryFilterContainer } from './category-filter.container.tsx';
-import { SearchBar, ListingsGrid } from '@sthrift/ui-components';
+import { HeroSectionContainer } from './hero-section.container.tsx';
 import styles from './listings-page.module.css';
 
 export interface ItemListing {
@@ -73,7 +73,6 @@ export const ListingsPage: React.FC<Readonly<ListingsPageProps>> = ({
 			<div
 				className={styles['listingsPage']}
 				style={{ padding: isAuthenticated ? '36px' : '100px' }}
-				id="listings-content"
 			>
 				<div
 					className={styles['listingsHeader']}
@@ -177,4 +176,4 @@ export const ListingsPage: React.FC<Readonly<ListingsPageProps>> = ({
 			</button>
 		</div>
 	);
-}
+};
