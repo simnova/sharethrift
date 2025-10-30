@@ -3,9 +3,8 @@ import { Empty, Pagination } from 'antd';
 import { ListingCard } from '../../molecules/listing-card/index.js';
 import styles from './index.module.css';
 
-export interface ItemListing {
-	_id: string;
-	sharer: string; // User reference
+export interface UIItemListing {
+	id: string;
 	title: string;
 	description: string;
 	category: string;
@@ -28,9 +27,9 @@ export interface ItemListing {
 }
 
 export interface ListingsGridProps {
-	listings: ItemListing[];
+	listings: UIItemListing[];
 	loading?: boolean;
-	onListingClick?: (listing: ItemListing) => void;
+	onListingClick?: (listing: UIItemListing) => void;
 	currentPage?: number;
 	pageSize?: number;
 	total?: number;
@@ -71,7 +70,7 @@ export const ListingsGrid: React.FC<ListingsGridProps> = ({
 		<div className={styles.gridContainer}>
 			<div className={styles.grid}>
 				{listings.map((listing) => (
-					<div key={listing._id} className={styles.gridItem}>
+					<div key={listing.id} className={styles.gridItem}>
 						<ListingCard
 							listing={listing}
 							onClick={() => onListingClick?.(listing)}

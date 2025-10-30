@@ -132,8 +132,7 @@ export const ProfileView: React.FC<Readonly<ProfileViewProps>> = ({
 				<ListingsGrid
 					listings={listings.map((l) => ({
 						...l,
-						_id: l.id,
-						sharer: user.account?.username ?? '',
+						id: l.id,
 						sharingPeriodStart: new Date(l.sharingPeriodStart),
 						sharingPeriodEnd: new Date(l.sharingPeriodEnd),
 						state: [
@@ -160,7 +159,7 @@ export const ProfileView: React.FC<Readonly<ProfileViewProps>> = ({
 						reports: 0, // Placeholder
 						images: l.images ? [...l.images] : [], // Placeholder
 					}))}
-					onListingClick={(listing) => onListingClick(listing._id)}
+					onListingClick={(listing) => onListingClick(listing.id)}
 					currentPage={1}
 					pageSize={20}
 					total={listings.length}

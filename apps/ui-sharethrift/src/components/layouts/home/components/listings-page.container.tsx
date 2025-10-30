@@ -4,13 +4,10 @@ import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import {
 	ListingsPageContainerGetListingsDocument,
-	type ListingsPageContainerGetListingsQuery,
+	type ItemListing,
 } from '../../../../generated.tsx';
 import { useCreateListingNavigation } from './create-listing/hooks/use-create-listing-navigation.ts';
-import { type ItemListing, ListingsPage } from './listings-page.tsx';
-
-type GraphQLItemListing =
-	ListingsPageContainerGetListingsQuery['itemListings'][number];
+import { ListingsPage } from './listings-page.tsx';
 
 interface ListingsPageContainerProps {
 	isAuthenticated: boolean;
@@ -23,17 +20,16 @@ export const ListingsPageContainer: React.FC<ListingsPageContainerProps> = ({
 	const [currentPage, setCurrentPage] = useState(1);
 	const pageSize = 20;
 	const [selectedCategory, setSelectedCategory] = useState('');
-	const { data, loading, error } =
-		useQuery<ListingsPageContainerGetListingsQuery>(
-			ListingsPageContainerGetListingsDocument,
-			{
-				fetchPolicy: 'cache-first',
-				nextFetchPolicy: 'cache-first',
-			},
-		);
+	const { data, loading, error } = useQuery(
+		ListingsPageContainerGetListingsDocument,
+		{
+			fetchPolicy: 'cache-first',
+			nextFetchPolicy: 'cache-first',
+		},
+	);
 
 	const filteredListings = data?.itemListings
-		? data.itemListings.filter((listing: GraphQLItemListing) => {
+		? data.itemListings.filter((listing: ItemListing) => {
 				if (
 					selectedCategory &&
 					selectedCategory !== 'All' &&
@@ -63,7 +59,7 @@ export const ListingsPageContainer: React.FC<ListingsPageContainerProps> = ({
 
 	const navigate = useNavigate();
 	const handleListingClick = (listing: ItemListing) => {
-		navigate(`/listing/${listing._id}`);
+		navigate(`/listing/${listing.id}`);
 	};
 
 	const handleCreateListingClick = useCreateListingNavigation();
@@ -98,7 +94,7 @@ export const ListingsPageContainer: React.FC<ListingsPageContainerProps> = ({
 					onCategoryChange={handleCategoryChange}
 					listings={currentListings.map(
 						(listing): ItemListing => ({
-							_id: String(listing.id),
+							id: String(listing.id),
 							title: listing.title,
 							description: listing.description,
 							category: listing.category,
@@ -111,7 +107,6 @@ export const ListingsPageContainer: React.FC<ListingsPageContainerProps> = ({
 							sharingPeriodEnd: new Date(
 								listing.sharingPeriodEnd as unknown as string,
 							),
-							sharer: '',
 							createdAt: listing.createdAt
 								? new Date(listing.createdAt as unknown as string)
 								: undefined,
