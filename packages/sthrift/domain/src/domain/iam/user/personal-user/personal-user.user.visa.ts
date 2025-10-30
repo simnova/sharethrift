@@ -25,7 +25,6 @@ export class PersonalUserUserVisa<root extends PersonalUserEntityReference>
 			canViewUserReports: false,
 
 			isEditingOwnAccount: this.user.id === this.root.id,
-			isSystemAccount: false,
 		};
 
 		return func(updatedPermissions);

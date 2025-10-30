@@ -40,8 +40,6 @@ export class AdminUserUserVisa implements UserVisa {
 			canViewUserReports:
 				rolePermissions?.userPermissions?.canViewAllUsers ?? false,
 			isEditingOwnAccount: isSelf,
-			isSystemAccount:
-				rolePermissions?.userPermissions?.canManageRoles ?? false,
 		};
 	}
 }

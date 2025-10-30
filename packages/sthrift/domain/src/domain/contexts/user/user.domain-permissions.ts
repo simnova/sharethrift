@@ -14,5 +14,4 @@ export interface UserDomainPermissions {
 	canViewUserReports: boolean;
 
 	isEditingOwnAccount: boolean;
-	isSystemAccount: boolean; //delete
 }
