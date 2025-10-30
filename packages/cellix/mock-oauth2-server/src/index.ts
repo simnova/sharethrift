@@ -9,8 +9,13 @@ const app = express();
 app.disable('x-powered-by');
 const port = 4000;
 const allowedRedirectUris = new Set([
-	'http://localhost:3000/auth-redirect', // Personal User
-	'http://localhost:3000/auth-redirect-login', // Admin User
+	'http://localhost:3000/auth-redirect',
+	'http://localhost:3000/auth-redirect-login',
+]);
+// Map redirect URIs to their corresponding audience identifiers
+const redirectUriToAudience = new Map([
+	['http://localhost:3000/auth-redirect', 'user-portal'],
+	['http://localhost:3000/auth-redirect-login', 'admin-portal'],
 ]);
 // Deprecated: kept for backwards compatibility
 const allowedRedirectUri =
@@ -143,17 +148,12 @@ async function main() {
 
 	// Simulate sign up endpoint
 	app.post('/token', async (req, res) => {
-		// In a real app, validate and create user here
-		// biome-ignore lint:useLiteralKeys
-		const email = process.env['Email'] ?? '';
-		// biome-ignore lint:useLiteralKeys
-		const given_name = process.env['Given_Name'] ?? '';
-		// biome-ignore lint:useLiteralKeys
-		const family_name = process.env['Family_Name'] ?? '';
 		const { tid, code } = req.body;
 
 		// Extract redirect_uri from code (encoded in base64)
-		let aud = allowedRedirectUri; // default fallback
+		let aud = 'user-portal'; // default audience
+		let isAdminPortal = false;
+
 		if (code?.startsWith('mock-auth-code-')) {
 			try {
 				const base64Part = code.replace('mock-auth-code-', '');
@@ -161,15 +161,28 @@ async function main() {
 					'utf-8',
 				);
 				if (allowedRedirectUris.has(decodedRedirectUri)) {
-					aud = decodedRedirectUri;
+					// Map redirect URI to proper audience identifier
+					aud = redirectUriToAudience.get(decodedRedirectUri) || 'user-portal';
+					isAdminPortal = aud === 'admin-portal';
 				}
 			} catch (e) {
 				console.error('Failed to decode redirect_uri from code:', e);
 			}
 		}
 
+		// Use different credentials based on portal type
+		const email = isAdminPortal
+			? process.env['Admin_Email'] || process.env['Email'] || ''
+			: process.env['Email'] || '';
+		const given_name = isAdminPortal
+			? process.env['Admin_Given_Name'] || process.env['Given_Name'] || ''
+			: process.env['Given_Name'] || '';
+		const family_name = isAdminPortal
+			? process.env['Admin_Family_Name'] || process.env['Family_Name'] || ''
+			: process.env['Family_Name'] || '';
+
 		const profile: TokenProfile = {
-			aud: aud,
+			aud: aud, // Now using proper audience identifier
 			sub: crypto.randomUUID(),
 			iss: `http://localhost:${port}`,
 			email,
@@ -195,9 +208,15 @@ async function main() {
 			response_types_supported: ['code', 'token'],
 			subject_types_supported: ['public'],
 			id_token_signing_alg_values_supported: ['RS256'],
-			scopes_supported: ['openid', 'profile', 'email'],
+			scopes_supported: [
+				'openid',
+				'profile',
+				'email',
+				'user-portal',
+				'admin-portal',
+			],
 			token_endpoint_auth_methods_supported: ['client_secret_post'],
-			claims_supported: ['sub', 'email', 'name'],
+			claims_supported: ['sub', 'email', 'name', 'aud'],
 		});
 	});
 

@@ -84,7 +84,6 @@ export const buildApplicationServicesFactory = (
 					);
 
 				if (personalUser) {
-					console.log(passport);
 					passport = Domain.PassportFactory.forPersonalUser(personalUser);
 				}
 			} else if (openIdConfigKey === 'AdminPortal') {
@@ -94,7 +93,6 @@ export const buildApplicationServicesFactory = (
 					);
 
 				if (adminUser) {
-                    console.log(passport);
 					passport = Domain.PassportFactory.forAdminUser(adminUser);
 				}
 			}

@@ -57,8 +57,8 @@ export const adminUsers = [
 		role: new ObjectId('707f1f77bcf86cd799439031'), // Super Admin
 		account: {
 			accountType: 'admin-user',
-			email: 'nkduy2010@gmail.com', // from mock OAuth2 server
-			username: 'duynguyen',
+			email: 'nkduy2010+admin@gmail.com', // from mock OAuth2 server (Admin_Email)
+			username: 'duynguyen_admin',
 			firstName: 'Duy',
 			lastName: 'Nguyen',
 		} as Models.User.AdminUserAccount,
