@@ -18,7 +18,6 @@ export interface SettingsUser {
     subscriptionId?: string;
     cybersourceCustomerId?: string;
   };
-  password: string;
   createdAt: string;
 }
 
@@ -68,7 +67,6 @@ export interface CurrentUserSettingsQueryData {
           cybersourceCustomerId?: string;
         };
       };
-      password: string;
     };
     createdAt: string;
     updatedAt: string;

@@ -122,7 +122,7 @@ export const SettingsView: React.FC<SettingsViewProps> = ({
     }
     if (section === "password") {
       passwordForm.setFieldsValue({
-        currentPassword: user.password,
+        currentPassword: "",
         newPassword: "",
         confirmPassword: "",
       });

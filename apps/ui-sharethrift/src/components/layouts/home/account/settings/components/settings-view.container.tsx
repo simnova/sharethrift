@@ -184,7 +184,6 @@ function SettingsViewLoader() {
         subscriptionId: "sub_123456789",
         cybersourceCustomerId: "cust_abc123",
       },
-      password: "",
       createdAt: new Date("2024-08-01").toISOString(),
     };
 
@@ -225,7 +224,6 @@ function SettingsViewLoader() {
     },
     billing: user.account.profile.billing,
     createdAt: user.createdAt,
-    password: user.account.password,
   };
 
   const errorMessage = userError ?? updateError;
