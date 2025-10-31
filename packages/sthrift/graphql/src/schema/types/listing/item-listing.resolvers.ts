@@ -65,21 +65,23 @@ const itemListingResolvers = {
 			// If search text is provided, use cognitive search
 			if (searchText && searchText.trim() !== '') {
 				try {
+					const options: Record<string, unknown> = {
+						top: pageSize,
+						skip: (page - 1) * pageSize,
+						orderBy: sorter
+							? [
+								`${sorter.field} ${sorter.order === 'ascend' ? 'asc' : 'desc'}`,
+							]
+							: ['updatedAt desc'],
+					};
+					const filter: Record<string, unknown> = {};
+					if (sharerId) filter.sharerId = [sharerId];
+					if (statusFilters) filter.state = statusFilters;
+					if (Object.keys(filter).length > 0) options.filter = filter;
+
 					const searchInput = {
 						searchString: searchText,
-						options: {
-							top: pageSize,
-							skip: (page - 1) * pageSize,
-							filter: {
-								sharerId: sharerId ? [sharerId] : undefined,
-								state: statusFilters,
-							},
-							orderBy: sorter
-								? [
-										`${sorter.field} ${sorter.order === 'ascend' ? 'asc' : 'desc'}`,
-									]
-								: ['updatedAt desc'],
-						},
+						options: options,
 					};
 
 					const searchResult =

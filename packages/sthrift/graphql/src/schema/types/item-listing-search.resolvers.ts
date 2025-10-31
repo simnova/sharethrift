@@ -6,9 +6,7 @@
 
 import type { GraphContext } from '../../../init/context.ts';
 import type { GraphQLResolveInfo } from 'graphql';
-import type { Resolvers } from '../../builder/generated.ts';
-import { ItemListingSearchApplicationService } from '@sthrift/application-services';
-import type { ServiceCognitiveSearch } from '@sthrift/service-cognitive-search';
+import type { Resolvers } from '../../builder/generated.js';
 import type {
 	ItemListingSearchInput,
 	ItemListingSearchResult,
@@ -26,22 +24,10 @@ const itemListingSearchResolvers: Resolvers = {
 			console.log('searchItemListings resolver called with input:', args.input);
 
 			try {
-				// Get the search service from context
-				const searchService = context.apiContext
-					.searchService as ServiceCognitiveSearch;
-
-				if (!searchService) {
-					throw new Error('Search service not available in context');
-				}
-
-				// Create the search application service
-				const searchApplicationService =
-					new ItemListingSearchApplicationService(searchService);
-
-				// Execute the search
-				const result = await searchApplicationService.searchItemListings(
-					args.input,
-				);
+				const result =
+					await context.applicationServices.Listing.ItemListingSearch.searchItemListings(
+						args.input,
+					);
 
 				return result;
 			} catch (error) {
@@ -56,7 +42,7 @@ const itemListingSearchResolvers: Resolvers = {
 			facets: ItemListingSearchResult['facets'] | null | undefined,
 		) => {
 			return (
-				facets?.category?.map((facet: { value: unknown; count: number }) => ({
+				facets?.['category']?.map((facet: { value: unknown; count: number }) => ({
 					value: String(facet.value),
 					count: facet.count,
 				})) || []
@@ -65,7 +51,7 @@ const itemListingSearchResolvers: Resolvers = {
 
 		state: (facets: ItemListingSearchResult['facets'] | null | undefined) => {
 			return (
-				facets?.state?.map((facet: { value: unknown; count: number }) => ({
+				facets?.['state']?.map((facet: { value: unknown; count: number }) => ({
 					value: String(facet.value),
 					count: facet.count,
 				})) || []
@@ -76,7 +62,7 @@ const itemListingSearchResolvers: Resolvers = {
 			facets: ItemListingSearchResult['facets'] | null | undefined,
 		) => {
 			return (
-				facets?.sharerId?.map((facet: { value: unknown; count: number }) => ({
+				facets?.['sharerId']?.map((facet: { value: unknown; count: number }) => ({
 					value: String(facet.value),
 					count: facet.count,
 				})) || []
@@ -87,7 +73,7 @@ const itemListingSearchResolvers: Resolvers = {
 			facets: ItemListingSearchResult['facets'] | null | undefined,
 		) => {
 			return (
-				facets?.createdAt?.map((facet: { value: unknown; count: number }) => ({
+				facets?.['createdAt']?.map((facet: { value: unknown; count: number }) => ({
 					value: String(facet.value),
 					count: facet.count,
 				})) || []
