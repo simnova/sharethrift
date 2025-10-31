@@ -1,76 +1,13 @@
-import { useParams } from 'react-router-dom';
-import { ViewListing } from './view-listing';
-import {
-	ViewListingCurrentUserDocument,
-	type ViewListingCurrentUserQuery,
-	ViewListingDocument,
-	type ViewListingQuery,
-	type ViewListingQueryVariables,
-	ViewListingActiveReservationRequestForListingDocument,
-} from '../../../../../generated.tsx';
 import { useQuery } from '@apollo/client/react';
-
-export const ViewListingContainer: React.FC<{
-	isAuthenticated: boolean;
-}> = ({ isAuthenticated }) => {
-	const { listingId } = useParams();
-	const {
-		data: listingData,
-		loading: listingLoading,
-		error: listingError,
-	} = useQuery<ViewListingQuery, ViewListingQueryVariables>(
-		ViewListingDocument,
-		{
-			variables: { id: listingId },
-			skip: !listingId,
-			fetchPolicy: 'cache-first',
-		},
-	);
-
-	const { data: currentUserData } = useQuery<ViewListingCurrentUserQuery>(
-		ViewListingCurrentUserDocument,
-	);
-
-	const reserverId =
-		currentUserData?.currentPersonalUserAndCreateIfNotExists?.id ?? '';
-
-	const skip = !reserverId || !listingId;
-
-	const {
-		data: userReservationData,
-		loading: userReservationLoading,
-		error: userReservationError,
-	} = useQuery(ViewListingActiveReservationRequestForListingDocument, {
-		variables: { listingId: listingId ?? '', reserverId },
-		skip,
-	});
-
-	console.log('userReservationLoading', userReservationLoading);
-	console.log('userReservationError', userReservationError);
-
-	if (!listingId) return <div>Missing listing id.</div>;
-	if (listingLoading) return <div>Loading listing...</div>;
-	if (listingError) return <div>Error loading listing.</div>;
-	if (!listingData?.itemListing) return <div>Listing not found.</div>;
-
-	const sharedTimeAgo = listingData.itemListing.createdAt
-		? computeTimeAgo(listingData.itemListing.createdAt)
-		: undefined;
-
-	const userIsSharer = false;
-
-	return (
-		<ViewListing
-			listing={listingData.itemListing}
-			userIsSharer={userIsSharer}
-			isAuthenticated={isAuthenticated}
-			sharedTimeAgo={sharedTimeAgo}
-			userReservationRequest={
-				userReservationData?.myActiveReservationForListing
-			}
-		/>
-	);
-};
+import { ComponentQueryLoader } from '@sthrift/ui-components';
+import { useParams } from 'react-router-dom';
+import {
+	type ItemListing,
+	ViewListingActiveReservationRequestForListingDocument,
+	ViewListingCurrentUserDocument,
+	ViewListingDocument,
+} from '../../../../../generated.tsx';
+import { ViewListing } from './view-listing';
 
 function computeTimeAgo(isoDate: string): string {
 	try {
@@ -85,3 +22,69 @@ function computeTimeAgo(isoDate: string): string {
 		return '';
 	}
 }
+
+interface ViewListingContainerProps {
+	isAuthenticated: boolean;
+}
+
+export const ViewListingContainer: React.FC<ViewListingContainerProps> = (
+	props,
+) => {
+	const { listingId } = useParams();
+	const {
+		data: listingData,
+		loading: listingLoading,
+		error: listingError,
+	} = useQuery(ViewListingDocument, {
+		variables: { id: listingId },
+		skip: !listingId,
+		fetchPolicy: 'cache-first',
+	});
+
+	const {
+		data: currentUserData,
+		loading: currentUserLoading,
+		error: currentUserError,
+	} = useQuery(ViewListingCurrentUserDocument);
+
+	const reserverId =
+		currentUserData?.currentPersonalUserAndCreateIfNotExists?.id ?? '';
+
+	const skip = !reserverId || !listingId;
+	const {
+		data: userReservationData,
+		loading: userReservationLoading,
+		error: userReservationError,
+	} = useQuery(ViewListingActiveReservationRequestForListingDocument, {
+		variables: { listingId: listingId ?? '', reserverId },
+		skip,
+	});
+
+	const sharedTimeAgo = listingData?.itemListing?.createdAt
+		? computeTimeAgo(listingData.itemListing.createdAt)
+		: undefined;
+
+	const userIsSharer = false;
+	return (
+		<ComponentQueryLoader
+			loading={userReservationLoading || listingLoading || currentUserLoading}
+			error={userReservationError || listingError || currentUserError}
+			errorComponent={<div>Error loading user reservation.</div>}
+			hasData={
+				listingData?.itemListing &&
+				currentUserData?.currentPersonalUserAndCreateIfNotExists
+			}
+			hasDataComponent={
+				<ViewListing
+					listing={listingData?.itemListing as ItemListing}
+					userIsSharer={userIsSharer}
+					isAuthenticated={props.isAuthenticated}
+					sharedTimeAgo={sharedTimeAgo}
+					userReservationRequest={
+						userReservationData?.myActiveReservationForListing
+					}
+				/>
+			}
+		/>
+	);
+};

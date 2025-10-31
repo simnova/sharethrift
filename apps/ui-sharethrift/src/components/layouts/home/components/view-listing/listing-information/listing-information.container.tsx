@@ -1,4 +1,4 @@
-import { useApolloClient, useMutation, useQuery } from "@apollo/client/react";
+import { useApolloClient, useMutation, useQuery } from '@apollo/client/react';
 import { useState } from 'react';
 import { message } from 'antd';
 import { ListingInformation } from './listing-information.tsx';
@@ -52,7 +52,9 @@ interface ListingInformationContainerProps {
 //   }
 // }
 
-export const ListingInformationContainer: React.FC<ListingInformationContainerProps> = ({
+export const ListingInformationContainer: React.FC<
+	ListingInformationContainerProps
+> = ({
 	listing,
 	userIsSharer,
 	isAuthenticated,
