@@ -638,6 +638,9 @@ importers:
 
   packages/sthrift/application-services:
     dependencies:
+      '@cellix/mock-cognitive-search':
+        specifier: workspace:*
+        version: link:../../cellix/mock-cognitive-search
       '@sthrift/context-spec':
         specifier: workspace:*
         version: link:../context-spec
