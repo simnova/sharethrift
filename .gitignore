@@ -1,4 +1,4 @@
-/node_modules
+node_modules
 .DS_Store
 **/coverage
 # .gitignore template - https://github.com/github/gitignore/blob/main/Node.gitignore
@@ -15,4 +15,13 @@ __*
 **/generated.ts
 **/generated.tsx
 **/graphql.schema.json
-apps/ui-sharethrift/tsconfig.tsbuildinfo
+
+# Build artifacts
+dist/
+*.tsbuildinfo
+
+# Test results
+*.json
+
+# Temporary test files
+test-*.js

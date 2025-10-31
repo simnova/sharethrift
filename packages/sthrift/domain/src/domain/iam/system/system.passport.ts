@@ -13,7 +13,7 @@ export class SystemPassport extends SystemPassportBase implements Passport {
 	private _userPassport: UserPassport | undefined;
 	private _listingPassport: ListingPassport | undefined;
 	private _conversationPassport: ConversationPassport | undefined;
-    private _reservationRequestPassport: ReservationRequestPassport | undefined;
+	private _reservationRequestPassport: ReservationRequestPassport | undefined;
 
 	public get user(): UserPassport {
 		if (!this._userPassport) {
@@ -38,9 +38,11 @@ export class SystemPassport extends SystemPassportBase implements Passport {
 		return this._conversationPassport;
 	}
 
-    public get reservationRequest(): ReservationRequestPassport {
+	public get reservationRequest(): ReservationRequestPassport {
 		if (!this._reservationRequestPassport) {
-			this._reservationRequestPassport = new SystemReservationRequestPassport(this.permissions);
+			this._reservationRequestPassport = new SystemReservationRequestPassport(
+				this.permissions,
+			);
 		}
 		return this._reservationRequestPassport;
 	}
