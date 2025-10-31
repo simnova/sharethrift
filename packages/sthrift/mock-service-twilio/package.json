@@ -1,5 +1,5 @@
 {
-    "name": "@sthrift/service-twilio",
+    "name": "@sthrift/mock-service-twilio",
     "version": "1.0.0",
     "main": "dist/src/index.js",
     "types": "dist/src/index.d.ts",
@@ -14,16 +14,21 @@
         }
     },
     "scripts": {
-        "build": "tsc --project tsconfig.json"
+        "build": "tsc --project tsconfig.json",
+        "test": "vitest run",
+        "test:coverage": "vitest run --coverage",
+        "test:watch": "vitest"
     },
     "dependencies": {
-        "twilio": "^4.0.0",
+        "axios": "^1.7.9",
         "@cellix/api-services-spec": "workspace:*",
         "@cellix/messaging": "workspace:*"
     },
     "devDependencies": {
         "typescript": "^5.8.3",
         "@cellix/typescript-config": "workspace:*",
-        "@types/node": "^22.0.0"
+        "@cellix/vitest-config": "workspace:*",
+        "@types/node": "^22.0.0",
+        "@sthrift/mock-twilio-server": "workspace:*"
     }
 }
