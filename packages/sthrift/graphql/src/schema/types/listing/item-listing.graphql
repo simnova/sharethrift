@@ -35,11 +35,11 @@ type ListingRequestPage {
 type ListingAll {
   id: ObjectID!
   title: String!
-  image: String
-  publishedAt: String
-  reservationPeriod: String
-  status: String!
-  pendingRequestsCount: Int!
+  images: [String!]
+  createdAt: DateTime
+  sharingPeriodStart: DateTime
+  sharingPeriodEnd: DateTime
+  state: String
 }
 
 type ListingRequest {

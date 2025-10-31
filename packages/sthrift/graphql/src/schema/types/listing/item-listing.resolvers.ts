@@ -18,42 +18,11 @@ const itemListingResolvers = {
 			args: MyListingsArgs,
 			context: GraphContext,
 		) => {
-			const currentUser = context.applicationServices.verifiedUser;
-			const sharerId = currentUser?.verifiedJwt?.sub;
-			
-			// Build command args, including sharerId for personal listings
-			const command: MyListingsArgs & { sharerId?: string } = {
-				page: args.page,
-				pageSize: args.pageSize,
-			};
-			if (args.searchText) command.searchText = args.searchText;
-			if (args.statusFilters) command.statusFilters = args.statusFilters;
-			if (args.sorter) command.sorter = args.sorter;
-			if (sharerId) command.sharerId = sharerId;
-
-			const result = await context.applicationServices.Listing.ItemListing.queryPaged(command);
-
-			// Map domain entities to GraphQL ListingAll type
-			return {
-				items: result.items.map(listing => {
-					const startDate = listing.sharingPeriodStart?.toISOString() ?? '';
-					const endDate = listing.sharingPeriodEnd?.toISOString() ?? '';
-					const reservationPeriod = startDate && endDate ? `${startDate.slice(0, 10)} - ${endDate.slice(0, 10)}` : '';
-
-					return {
-						id: listing.id,
-						title: listing.title,
-						image: listing.images?.[0] ?? null,
-						publishedAt: listing.createdAt?.toISOString() ?? null,
-						reservationPeriod,
-						status: listing.state || 'Unknown',
-						pendingRequestsCount: 0, // TODO: implement pending requests count
-					};
-				}),
-				total: result.total,
-				page: result.page,
-				pageSize: result.pageSize,
-			};
+			const sharerId = context.applicationServices.verifiedUser?.verifiedJwt?.sub;
+			return await context.applicationServices.Listing.ItemListing.queryPaged({
+				...args,
+				...(sharerId && { sharerId }),
+			});
 		},
 
 		itemListing: async (
@@ -74,49 +43,12 @@ const itemListingResolvers = {
 			return toGraphItem(listing);
 		},
 
-
-
 		adminListings: async (_parent: unknown, args: MyListingsArgs, context: GraphContext) => {
 			// Admin-note: role-based authorization should be implemented here (security)
-			
-			// Build command args with default status filters for admin
-			const command: MyListingsArgs = {
-				page: args.page,
-				pageSize: args.pageSize,
-			};
-			if (args.searchText) command.searchText = args.searchText;
-			if (args.sorter) command.sorter = args.sorter;
-			
-			// Use provided status filters or default to admin-relevant statuses
-			if (args.statusFilters && args.statusFilters.length > 0) {
-				command.statusFilters = args.statusFilters;
-			} else {
-				command.statusFilters = ['Appeal Requested', 'Blocked'];
-			}
-
-			const result = await context.applicationServices.Listing.ItemListing.queryPaged(command);
-
-			// Map domain entities to GraphQL ListingAll type
-			return {
-				items: result.items.map(listing => {
-					const startDate = listing.sharingPeriodStart?.toISOString() ?? '';
-					const endDate = listing.sharingPeriodEnd?.toISOString() ?? '';
-					const reservationPeriod = startDate && endDate ? `${startDate.slice(0, 10)} - ${endDate.slice(0, 10)}` : '';
-
-					return {
-						id: listing.id,
-						title: listing.title,
-						image: listing.images?.[0] ?? null,
-						publishedAt: listing.createdAt?.toISOString() ?? null,
-						reservationPeriod,
-						status: listing.state || 'Unknown',
-						pendingRequestsCount: 0, // TODO: implement pending requests count
-					};
-				}),
-				total: result.total,
-				page: result.page,
-				pageSize: result.pageSize,
-			};
+			return await context.applicationServices.Listing.ItemListing.queryPaged({
+				...args,
+				statusFilters: args.statusFilters || ['Appeal Requested', 'Blocked'],
+			});
 		},
 	},
 	Mutation: {

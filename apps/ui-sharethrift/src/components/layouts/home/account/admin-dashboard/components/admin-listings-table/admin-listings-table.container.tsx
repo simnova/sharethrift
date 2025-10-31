@@ -10,7 +10,7 @@ import {
 import { AdminListingsTable } from './admin-listings-table.tsx';
 import { ComponentQueryLoader } from '@sthrift/ui-components';
 
-export function AdminListings() {
+export function AdminListings(): React.JSX.Element {
 	const navigate = useNavigate();
 	const [page, setPage] = useState(1);
 	const pageSize = 6;
@@ -47,6 +47,25 @@ export function AdminListings() {
 
 	const listings = data?.adminListings?.items ?? [];
 	const total = data?.adminListings?.total ?? 0;
+
+	// Transform domain fields to UI format
+	const transformedListings = listings.map(listing => {
+		const startDate = listing.sharingPeriodStart ?? '';
+		const endDate = listing.sharingPeriodEnd ?? '';
+		const reservationPeriod = startDate && endDate 
+			? `${startDate.slice(0, 10)} - ${endDate.slice(0, 10)}` 
+			: '';
+
+		return {
+			id: listing.id,
+			title: listing.title,
+			image: listing.images?.[0] ?? null,
+			publishedAt: listing.createdAt ?? null,
+			reservationPeriod,
+			status: listing.state ?? 'Unknown',
+			pendingRequestsCount: 0, // TODO: implement in future
+		};
+	});
 
 	const onSearch = useCallback((value: string) => {
 		setSearchText(value);
@@ -113,7 +132,7 @@ export function AdminListings() {
 			hasData={data?.adminListings}
 			hasDataComponent={
 				<AdminListingsTable
-					data={listings}
+					data={transformedListings}
 					searchText={searchText}
                     statusFilters={statusFilters}
                     onSearch={onSearch}

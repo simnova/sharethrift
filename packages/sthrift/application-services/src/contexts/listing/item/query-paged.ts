@@ -19,8 +19,7 @@ export const queryPaged = (dataSources: DataSources) => {
 		page: number;
 		pageSize: number;
 	}> => {
-		const { page, pageSize, searchText, statusFilters, sharerId, sorter } =
-			command;
+		// Build query args from command, only including defined values
 		const args: {
 			page: number;
 			pageSize: number;
@@ -28,22 +27,24 @@ export const queryPaged = (dataSources: DataSources) => {
 			statusFilters?: string[];
 			sharerId?: string;
 			sorter?: { field: string; order: 'ascend' | 'descend' };
-		} = { page, pageSize };
-		if (searchText !== undefined) {
-			args.searchText = searchText;
+		} = { 
+			page: command.page, 
+			pageSize: command.pageSize 
+		};
+
+		if (command.searchText) {
+			args.searchText = command.searchText;
 		}
-		if (statusFilters !== undefined) {
-			args.statusFilters = statusFilters;
+		if (command.statusFilters) {
+			args.statusFilters = command.statusFilters;
 		}
-		if (sharerId !== undefined) {
-			args.sharerId = sharerId;
+		if (command.sharerId) {
+			args.sharerId = command.sharerId;
 		}
-		if (sorter !== undefined) {
-			args.sorter = sorter;
+		if (command.sorter) {
+			args.sorter = command.sorter;
 		}
 
-		return await dataSources.readonlyDataSource.Listing.ItemListing.ItemListingReadRepo.getPaged(
-			args,
-		);
+		return await dataSources.readonlyDataSource.Listing.ItemListing.ItemListingReadRepo.getPaged(args);
 	};
 };

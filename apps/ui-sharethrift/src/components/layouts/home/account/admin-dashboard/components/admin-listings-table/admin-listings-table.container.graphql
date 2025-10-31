@@ -2,11 +2,11 @@
 fragment AdminListingFields on ListingAll {
     id
     title
-    status
-    image
-    pendingRequestsCount
-    publishedAt
-    reservationPeriod
+    state
+    images
+    createdAt
+    sharingPeriodStart
+    sharingPeriodEnd
 }
 
 query AdminListingsTableContainerAdminListings(
