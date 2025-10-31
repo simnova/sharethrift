@@ -4,9 +4,9 @@
  * Provides GraphQL resolvers for item listing search functionality.
  */
 
-import type { GraphContext } from '../../../init/context.ts';
+import type { GraphContext } from '../../init/context.ts';
 import type { GraphQLResolveInfo } from 'graphql';
-import type { Resolvers } from '../../builder/generated.ts';
+import type { Resolvers } from '../builder/generated.ts';
 import type {
 	ItemListingSearchInput,
 	ItemListingSearchResult,
