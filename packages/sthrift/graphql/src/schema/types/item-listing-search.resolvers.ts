@@ -9,12 +9,17 @@ import type { GraphQLResolveInfo } from 'graphql';
 import type { Resolvers } from '../../builder/generated.ts';
 import { ItemListingSearchApplicationService } from '@sthrift/application-services';
 import type { ServiceCognitiveSearch } from '@sthrift/service-cognitive-search';
+import type {
+	ItemListingSearchInput,
+	ItemListingSearchResult,
+	ItemListingSearchDocument,
+} from '@sthrift/domain';
 
 const itemListingSearchResolvers: Resolvers = {
 	Query: {
 		searchItemListings: async (
 			_parent: unknown,
-			args: { input: any },
+			args: { input: ItemListingSearchInput },
 			context: GraphContext,
 			_info: GraphQLResolveInfo,
 		) => {
@@ -47,37 +52,43 @@ const itemListingSearchResolvers: Resolvers = {
 	},
 
 	SearchFacets: {
-		category: (facets: any) => {
+		category: (
+			facets: ItemListingSearchResult['facets'] | null | undefined,
+		) => {
 			return (
-				facets.category?.map((facet: any) => ({
-					value: facet.value,
+				facets?.category?.map((facet: { value: unknown; count: number }) => ({
+					value: String(facet.value),
 					count: facet.count,
 				})) || []
 			);
 		},
 
-		state: (facets: any) => {
+		state: (facets: ItemListingSearchResult['facets'] | null | undefined) => {
 			return (
-				facets.state?.map((facet: any) => ({
-					value: facet.value,
+				facets?.state?.map((facet: { value: unknown; count: number }) => ({
+					value: String(facet.value),
 					count: facet.count,
 				})) || []
 			);
 		},
 
-		sharerId: (facets: any) => {
+		sharerId: (
+			facets: ItemListingSearchResult['facets'] | null | undefined,
+		) => {
 			return (
-				facets.sharerId?.map((facet: any) => ({
-					value: facet.value,
+				facets?.sharerId?.map((facet: { value: unknown; count: number }) => ({
+					value: String(facet.value),
 					count: facet.count,
 				})) || []
 			);
 		},
 
-		createdAt: (facets: any) => {
+		createdAt: (
+			facets: ItemListingSearchResult['facets'] | null | undefined,
+		) => {
 			return (
-				facets.createdAt?.map((facet: any) => ({
-					value: facet.value,
+				facets?.createdAt?.map((facet: { value: unknown; count: number }) => ({
+					value: String(facet.value),
 					count: facet.count,
 				})) || []
 			);
@@ -85,19 +96,19 @@ const itemListingSearchResolvers: Resolvers = {
 	},
 
 	ItemListingSearchDocument: {
-		id: (doc: any) => doc.id,
-		title: (doc: any) => doc.title,
-		description: (doc: any) => doc.description,
-		category: (doc: any) => doc.category,
-		location: (doc: any) => doc.location,
-		sharerName: (doc: any) => doc.sharerName,
-		sharerId: (doc: any) => doc.sharerId,
-		state: (doc: any) => doc.state,
-		sharingPeriodStart: (doc: any) => doc.sharingPeriodStart,
-		sharingPeriodEnd: (doc: any) => doc.sharingPeriodEnd,
-		createdAt: (doc: any) => doc.createdAt,
-		updatedAt: (doc: any) => doc.updatedAt,
-		images: (doc: any) => doc.images || [],
+		id: (doc: ItemListingSearchDocument) => doc.id,
+		title: (doc: ItemListingSearchDocument) => doc.title,
+		description: (doc: ItemListingSearchDocument) => doc.description,
+		category: (doc: ItemListingSearchDocument) => doc.category,
+		location: (doc: ItemListingSearchDocument) => doc.location,
+		sharerName: (doc: ItemListingSearchDocument) => doc.sharerName,
+		sharerId: (doc: ItemListingSearchDocument) => doc.sharerId,
+		state: (doc: ItemListingSearchDocument) => doc.state,
+		sharingPeriodStart: (doc: ItemListingSearchDocument) => doc.sharingPeriodStart,
+		sharingPeriodEnd: (doc: ItemListingSearchDocument) => doc.sharingPeriodEnd,
+		createdAt: (doc: ItemListingSearchDocument) => doc.createdAt,
+		updatedAt: (doc: ItemListingSearchDocument) => doc.updatedAt,
+		images: (doc: ItemListingSearchDocument) => doc.images || [],
 	},
 };
 
