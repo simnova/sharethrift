@@ -666,6 +666,9 @@ importers:
       '@sthrift/persistence':
         specifier: workspace:*
         version: link:../persistence
+      '@sthrift/service-cognitive-search':
+        specifier: workspace:*
+        version: link:../service-cognitive-search
       '@sthrift/service-cybersource':
         specifier: workspace:*
         version: link:../service-cybersource
