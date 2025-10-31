@@ -82,6 +82,7 @@ export const getMockConversations =
 				profile: {
 					firstName,
 					lastName,
+					aboutMe: "Hello",
 					location: {
 						address1: '123 Main St',
 						address2: null,
