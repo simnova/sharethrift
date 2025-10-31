@@ -4,7 +4,7 @@
  * Provides GraphQL resolvers for item listing search functionality.
  */
 
-import type { GraphContext } from '../../../init/context.ts';
+import type { GraphContext } from '../../../init/context.js';
 import type { GraphQLResolveInfo } from 'graphql';
 import type { Resolvers } from '../../builder/generated.js';
 import type {
@@ -42,6 +42,7 @@ const itemListingSearchResolvers: Resolvers = {
 			facets: ItemListingSearchResult['facets'] | null | undefined,
 		) => {
 			return (
+				// biome-ignore lint/complexity/useLiteralKeys: bracket notation required for TS4111 (index signature access)
 				facets?.['category']?.map((facet: { value: unknown; count: number }) => ({
 					value: String(facet.value),
 					count: facet.count,
@@ -51,6 +52,7 @@ const itemListingSearchResolvers: Resolvers = {
 
 		state: (facets: ItemListingSearchResult['facets'] | null | undefined) => {
 			return (
+				// biome-ignore lint/complexity/useLiteralKeys: bracket notation required for TS4111 (index signature access)
 				facets?.['state']?.map((facet: { value: unknown; count: number }) => ({
 					value: String(facet.value),
 					count: facet.count,
@@ -62,6 +64,7 @@ const itemListingSearchResolvers: Resolvers = {
 			facets: ItemListingSearchResult['facets'] | null | undefined,
 		) => {
 			return (
+				// biome-ignore lint/complexity/useLiteralKeys: bracket notation required for TS4111 (index signature access)
 				facets?.['sharerId']?.map((facet: { value: unknown; count: number }) => ({
 					value: String(facet.value),
 					count: facet.count,
@@ -73,6 +76,7 @@ const itemListingSearchResolvers: Resolvers = {
 			facets: ItemListingSearchResult['facets'] | null | undefined,
 		) => {
 			return (
+				// biome-ignore lint/complexity/useLiteralKeys: bracket notation required for TS4111 (index signature access)
 				facets?.['createdAt']?.map((facet: { value: unknown; count: number }) => ({
 					value: String(facet.value),
 					count: facet.count,

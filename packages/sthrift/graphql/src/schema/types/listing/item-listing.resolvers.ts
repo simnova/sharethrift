@@ -1,7 +1,7 @@
 import type { GraphContext } from '../../../init/context.ts';
 import type { Domain } from '@sthrift/domain';
 import { toGraphItem } from '../../../helpers/mapping.js';
-import type { CreateItemListingInput } from '../../builder/generated.js';
+import type { CreateItemListingInput } from '../../builder/generated.ts';
 
 interface MyListingsArgs {
 	page: number;
@@ -75,9 +75,12 @@ const itemListingResolvers = {
 							: ['updatedAt desc'],
 					};
 					const filter: Record<string, unknown> = {};
-					if (sharerId) filter.sharerId = [sharerId];
-					if (statusFilters) filter.state = statusFilters;
-					if (Object.keys(filter).length > 0) options.filter = filter;
+					// biome-ignore lint/complexity/useLiteralKeys: bracket notation required for TS4111 (index signature access)
+					if (sharerId) filter['sharerId'] = [sharerId];
+					// biome-ignore lint/complexity/useLiteralKeys: bracket notation required for TS4111 (index signature access)
+					if (statusFilters) filter['state'] = statusFilters;
+					// biome-ignore lint/complexity/useLiteralKeys: bracket notation required for TS4111 (index signature access)
+					if (Object.keys(filter).length > 0) options['filter'] = filter;
 
 					const searchInput = {
 						searchString: searchText,
