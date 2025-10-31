@@ -125,4 +125,8 @@ export class ItemListingDomainAdapter
 	set images(value: string[]) {
 		this.doc.images = value;
 	}
+
+	get listingType(): string {
+		return this.doc.get('listingType') || 'item-listing';
+	}
 }

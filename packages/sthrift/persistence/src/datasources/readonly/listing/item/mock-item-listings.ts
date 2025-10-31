@@ -133,6 +133,7 @@ export const getMockItemListings =
 					schemaVersion: '1',
 					sharingHistory: [],
 					reports: 0,
+                    listingType: 'item-listing',
 				},
 				{
 					id: '64f7a9c2d1e5b97f3c9d0a42',
@@ -156,6 +157,7 @@ export const getMockItemListings =
 					schemaVersion: '1',
 					sharingHistory: [],
 					reports: 0,
+                    listingType: 'item-listing',
 				},
 				{
 					id: '64f7a9c2d1e5b97f3c9d0a43',
@@ -179,6 +181,7 @@ export const getMockItemListings =
 					schemaVersion: '1',
 					sharingHistory: [],
 					reports: 0,
+                    listingType: 'item-listing',
 				},
 			];
 

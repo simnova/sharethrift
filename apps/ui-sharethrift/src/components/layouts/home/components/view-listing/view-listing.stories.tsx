@@ -44,6 +44,7 @@ const MOCK_LISTING_BASE: ItemListing = {
 		schemaVersion: '1.0',
 		userType: 'personal',
 	},
+    listingType: 'item-listing',
 };
 
 const mocks = [

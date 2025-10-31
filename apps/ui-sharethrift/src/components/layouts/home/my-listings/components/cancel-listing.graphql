@@ -1,0 +1,7 @@
+mutation HomeAllListingsTableContainerCancelItemListing($id: ObjectID!) {
+  cancelItemListing(id: $id) {
+    id
+    state
+    updatedAt
+  }
+}
