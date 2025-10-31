@@ -1,5 +1,4 @@
 import type { GraphContext } from '../../../init/context.ts';
-import { toGraphItem } from '../../../helpers/mapping.js';
 import type { CreateItemListingInput } from '../../builder/generated.js';
 
 interface MyListingsArgs {
@@ -31,24 +30,14 @@ const itemListingResolvers = {
 			context: GraphContext,
 		) => {
 			// Admin-note: role-based authorization should be implemented here (security)
-			const listing =
-				await context.applicationServices.Listing.ItemListing.queryById({
-					id: args.id,
-				});
-
-			if (!listing) {
-				return null;
-			}
-
-			return toGraphItem(listing);
+			return await context.applicationServices.Listing.ItemListing.queryById({
+				id: args.id,
+			});
 		},
 
 		adminListings: async (_parent: unknown, args: MyListingsArgs, context: GraphContext) => {
 			// Admin-note: role-based authorization should be implemented here (security)
-			return await context.applicationServices.Listing.ItemListing.queryPaged({
-				...args,
-				statusFilters: args.statusFilters || ['Appeal Requested', 'Blocked'],
-			});
+			return await context.applicationServices.Listing.ItemListing.queryPaged(args);
 		},
 	},
 	Mutation: {

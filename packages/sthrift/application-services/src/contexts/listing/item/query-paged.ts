@@ -35,9 +35,16 @@ export const queryPaged = (dataSources: DataSources) => {
 		if (command.searchText) {
 			args.searchText = command.searchText;
 		}
+		
+		// Apply status filters with admin defaults
+		// If no sharerId (admin query) and no explicit filters, default to admin-relevant statuses
 		if (command.statusFilters) {
 			args.statusFilters = command.statusFilters;
+		} else if (!command.sharerId) {
+			// Admin query without explicit filters: default to showing items needing attention
+			args.statusFilters = ['Appeal Requested', 'Blocked'];
 		}
+		
 		if (command.sharerId) {
 			args.sharerId = command.sharerId;
 		}
