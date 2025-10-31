@@ -163,39 +163,6 @@ function SettingsViewLoader() {
     globalThis.alert?.("Password change functionality will be implemented");
   };
 
-  if (userError) {
-    // When API is not available, show mock data for demonstration
-    const mockUser: SettingsUser = {
-      id: "mock-user-id",
-      firstName: "Patrick",
-      lastName: "Garcia",
-      username: "patrick_g",
-      email: "patrick.g@example.com",
-      accountType: "personal",
-      location: {
-        address1: "123 Main Street",
-        address2: "Apt 4B",
-        city: "Philadelphia",
-        state: "PA",
-        country: "United States",
-        zipCode: "19101",
-      },
-      billing: {
-        subscriptionId: "sub_123456789",
-        cybersourceCustomerId: "cust_abc123",
-      },
-      createdAt: new Date("2024-08-01").toISOString(),
-    };
-
-    return (
-      <SettingsView
-        user={mockUser}
-        onEditSection={handleEditSection}
-        onChangePassword={handleChangePassword}
-      />
-    );
-  }
-
   if (userLoading) {
     return <div>Loading account settings...</div>;
   }
