@@ -35,6 +35,8 @@ class AdminToPersonalUserVisa implements UserVisa {
 				rolePermissions?.userPermissions?.canViewReports ?? false,
 			canViewUserReports:
 				rolePermissions?.userPermissions?.canViewAllUsers ?? false,
+			canManageUserRoles:
+				rolePermissions?.userPermissions?.canManageUserRoles ?? false,
 			isEditingOwnAccount: false, // Admin is not editing their own personal account
 		};
 		return func(permissions);

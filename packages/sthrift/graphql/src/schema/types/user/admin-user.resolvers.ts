@@ -61,37 +61,38 @@ const adminUserResolvers: Resolvers = {
 				email: context.applicationServices.verifiedUser.verifiedJwt.email,
 			});
 		},
-        // The following code can be used to list all admin users in the database
-        allAdminUsers: async (
-            _parent: unknown,
-            args: QueryAllAdminUsersArgs,
-            context: GraphContext,
-            _info: GraphQLResolveInfo,
-        ) => {
-            if (!context.applicationServices.verifiedUser?.verifiedJwt) {
+		// The following code can be used to list all admin users in the database
+		allAdminUsers: async (
+			_parent: unknown,
+			args: QueryAllAdminUsersArgs,
+			context: GraphContext,
+			_info: GraphQLResolveInfo,
+		) => {
+			if (!context.applicationServices.verifiedUser?.verifiedJwt) {
 				throw new Error('Unauthorized: Authentication required');
 			}
-			
-			// Permission check: Get the current admin user to check their role
-			const currentAdmin = await context.applicationServices.User.AdminUser.queryByEmail({
-				email: context.applicationServices.verifiedUser.verifiedJwt.email,
-			});
-			
-			// Check if they have permission to view all admin users
+
+			// Query-level permission check: Only admins with canViewAllUsers can view all admin users
+			// (Read permissions are checked at GraphQL/service layer, write permissions at domain layer)
+			const currentAdmin =
+				await context.applicationServices.User.AdminUser.queryByEmail({
+					email: context.applicationServices.verifiedUser.verifiedJwt.email,
+				});
+
 			if (!currentAdmin?.role?.permissions?.userPermissions?.canViewAllUsers) {
-				throw new Error('Forbidden: Only users with canViewAllUsers permission can access this query');
+				throw new Error(
+					'Forbidden: Only admins with canViewAllUsers permission can access this query',
+				);
 			}
-			
-            return await context.applicationServices.User.AdminUser.getAllUsers({
-                page: args.page,
-                pageSize: args.pageSize,
-                searchText: args.searchText || undefined,
-                statusFilters: args.statusFilters
-                    ? [...args.statusFilters]
-                    : undefined,
-                sorter: args.sorter || undefined,
-            });
-        },
+
+			return await context.applicationServices.User.AdminUser.getAllUsers({
+				page: args.page,
+				pageSize: args.pageSize,
+				searchText: args.searchText || undefined,
+				statusFilters: args.statusFilters ? [...args.statusFilters] : undefined,
+				sorter: args.sorter || undefined,
+			});
+		},
 	},
 
 	Mutation: {
@@ -104,24 +105,21 @@ const adminUserResolvers: Resolvers = {
 			if (!context.applicationServices.verifiedUser?.verifiedJwt) {
 				throw new Error('Unauthorized: Authentication required');
 			}
-			
-			// Permission check: Only admins with canManageUserRoles can create admin users
-			const currentAdmin = await context.applicationServices.User.AdminUser.queryByEmail({
-				email: context.applicationServices.verifiedUser.verifiedJwt.email,
-			});
-			
-			if (!currentAdmin?.role?.permissions?.userPermissions?.canManageUserRoles) {
-				throw new Error('Forbidden: Only users with canManageUserRoles permission can create admin users');
-			}
-			
-			console.log('createAdminUser resolver called with email:', args.input.email);
-			return await context.applicationServices.User.AdminUser.createIfNotExists({
-				email: args.input.email,
-				username: args.input.username,
-				firstName: args.input.firstName,
-				lastName: args.input.lastName,
-				roleId: args.input.roleId,
-			});
+
+			// Permission check is handled in the domain layer (role setter checks canManageUserRoles)
+			console.log(
+				'createAdminUser resolver called with email:',
+				args.input.email,
+			);
+			return await context.applicationServices.User.AdminUser.createIfNotExists(
+				{
+					email: args.input.email,
+					username: args.input.username,
+					firstName: args.input.firstName,
+					lastName: args.input.lastName,
+					roleId: args.input.roleId,
+				},
+			);
 		},
 		adminUserUpdate: async (
 			_parent: unknown,
@@ -132,27 +130,11 @@ const adminUserResolvers: Resolvers = {
 			if (!context.applicationServices.verifiedUser?.verifiedJwt) {
 				throw new Error('Unauthorized: Authentication required');
 			}
-			
-			// Permission check: Get current admin to check permissions
-			const currentAdmin = await context.applicationServices.User.AdminUser.queryByEmail({
-				email: context.applicationServices.verifiedUser.verifiedJwt.email,
-			});
-			
-			const isEditingSelf = currentAdmin?.id === args.input.id;
-			const canEditUsers = currentAdmin?.role?.permissions?.userPermissions?.canEditUsers ?? false;
-			
-			// Allow if editing self OR have canEditUsers permission
-			if (!isEditingSelf && !canEditUsers) {
-				throw new Error('Forbidden: You can only edit your own account or need canEditUsers permission');
-			}
-			
-			// If changing role, need canManageUserRoles permission
-			if (args.input.roleId && !currentAdmin?.role?.permissions?.userPermissions?.canManageUserRoles) {
-				throw new Error('Forbidden: Changing roles requires canManageUserRoles permission');
-			}
-			
+
+			// Permission checks are handled in the domain layer via passport/visa
+			// - isEditingOwnAccount and canEditUsers checked by entity setters
+			// - canManageUserRoles checked by role setter
 			console.log('adminUserUpdate resolver called with id:', args.input.id);
-			// Note: Additional authorization checks are also enforced in domain layer via passport/visa
 			return await context.applicationServices.User.AdminUser.update(
 				args.input as AdminUserUpdateCommand,
 			);

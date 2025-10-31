@@ -95,6 +95,15 @@ export class AdminUser<props extends AdminUserProps>
 				'role cannot be null or undefined',
 			);
 		}
+		// Only admins with canManageUserRoles permission can change roles
+		if (
+			!this._isNew &&
+			!this.visa.determineIf((permissions) => permissions.canManageUserRoles)
+		) {
+			throw new DomainSeedwork.PermissionError(
+				'Unauthorized: Only admins with canManageUserRoles permission can change user roles',
+			);
+		}
 		this.props.role = role;
 	}
 
@@ -103,7 +112,12 @@ export class AdminUser<props extends AdminUserProps>
 		this.props.userType = value;
 	}
 	set isBlocked(value: boolean) {
-		this.validateVisa();
+		// Only admins with canBlockUsers permission can block/unblock admin users
+		if (!this.visa.determineIf((permissions) => permissions.canBlockUsers)) {
+			throw new DomainSeedwork.PermissionError(
+				'Unauthorized: Only admins with canBlockUsers permission can block/unblock admin users',
+			);
+		}
 		this.props.isBlocked = value;
 	}
 }

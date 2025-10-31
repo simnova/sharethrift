@@ -12,6 +12,7 @@ export interface UserDomainPermissions {
 	canRemoveListings: boolean;
 	canViewListingReports: boolean;
 	canViewUserReports: boolean;
+	canManageUserRoles: boolean;
 
 	isEditingOwnAccount: boolean;
 }

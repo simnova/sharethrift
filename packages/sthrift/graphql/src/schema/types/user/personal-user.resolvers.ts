@@ -53,22 +53,24 @@ const personalUserResolvers: Resolvers = {
 				throw new Error('Unauthorized: Authentication required');
 			}
 
-			// Permission check: Only admins with canViewAllUsers can view all personal users
-			const currentAdmin = await context.applicationServices.User.AdminUser.queryByEmail({
-				email: context.applicationServices.verifiedUser.verifiedJwt.email,
-			});
-			
+			// Query-level permission check: Only admins with canViewAllUsers can view all personal users
+			// (Read permissions are checked at GraphQL/service layer, write permissions at domain layer)
+			const currentAdmin =
+				await context.applicationServices.User.AdminUser.queryByEmail({
+					email: context.applicationServices.verifiedUser.verifiedJwt.email,
+				});
+
 			if (!currentAdmin?.role?.permissions?.userPermissions?.canViewAllUsers) {
-				throw new Error('Forbidden: Only admins with canViewAllUsers permission can access this query');
+				throw new Error(
+					'Forbidden: Only admins with canViewAllUsers permission can access this query',
+				);
 			}
 
 			return await context.applicationServices.User.PersonalUser.getAllUsers({
 				page: args.page,
 				pageSize: args.pageSize,
 				searchText: args.searchText || undefined,
-				statusFilters: args.statusFilters
-					? [...args.statusFilters]
-					: undefined,
+				statusFilters: args.statusFilters ? [...args.statusFilters] : undefined,
 				sorter: args.sorter || undefined,
 			});
 		},
@@ -84,25 +86,8 @@ const personalUserResolvers: Resolvers = {
 			if (!context.applicationServices.verifiedUser?.verifiedJwt) {
 				throw new Error('Unauthorized');
 			}
-			
-			// Permission check: Get current user (could be admin or personal user)
-			const currentPersonalUser = await context.applicationServices.User.PersonalUser.queryByEmail({
-				email: context.applicationServices.verifiedUser.verifiedJwt.email,
-			});
-			
-			const isEditingSelf = currentPersonalUser?.id === args.input.id;
-			
-			// If not editing self, check if user is an admin with canEditUsers permission
-			if (!isEditingSelf) {
-				const currentAdmin = await context.applicationServices.User.AdminUser.queryByEmail({
-					email: context.applicationServices.verifiedUser.verifiedJwt.email,
-				});
-				
-				if (!currentAdmin?.role?.permissions?.userPermissions?.canEditUsers) {
-					throw new Error('Forbidden: You can only edit your own account or need admin canEditUsers permission');
-				}
-			}
-			
+
+			// Permission checks are handled in the domain layer (entity setters)
 			console.log('personalUserUpdate resolver called with id:', args.input.id);
 			return await context.applicationServices.User.PersonalUser.update(
 				args.input as PersonalUserUpdateCommand,
@@ -117,16 +102,8 @@ const personalUserResolvers: Resolvers = {
 			if (!context.applicationServices.verifiedUser?.verifiedJwt) {
 				throw new Error('Unauthorized');
 			}
-			
-			// Permission check: Only admins with canBlockUsers can block users
-			const currentAdmin = await context.applicationServices.User.AdminUser.queryByEmail({
-				email: context.applicationServices.verifiedUser.verifiedJwt.email,
-			});
-			
-			if (!currentAdmin?.role?.permissions?.userPermissions?.canBlockUsers) {
-				throw new Error('Forbidden: Only admins with canBlockUsers permission can block users');
-			}
-			
+
+			// Permission check is handled in the domain layer (isBlocked setter)
 			return await context.applicationServices.User.PersonalUser.update({
 				id: args.userId,
 				isBlocked: true,
@@ -141,16 +118,8 @@ const personalUserResolvers: Resolvers = {
 			if (!context.applicationServices.verifiedUser?.verifiedJwt) {
 				throw new Error('Unauthorized');
 			}
-			
-			// Permission check: Only admins with canBlockUsers can unblock users
-			const currentAdmin = await context.applicationServices.User.AdminUser.queryByEmail({
-				email: context.applicationServices.verifiedUser.verifiedJwt.email,
-			});
-			
-			if (!currentAdmin?.role?.permissions?.userPermissions?.canBlockUsers) {
-				throw new Error('Forbidden: Only admins with canBlockUsers permission can unblock users');
-			}
-			
+
+			// Permission check is handled in the domain layer (isBlocked setter)
 			return await context.applicationServices.User.PersonalUser.update({
 				id: args.userId,
 				isBlocked: false,

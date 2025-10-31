@@ -84,7 +84,12 @@ export class PersonalUser<props extends PersonalUserProps>
 		this.props.userType = value;
 	}
 	set isBlocked(value: boolean) {
-		this.validateVisa();
+		// Only admins with canBlockUsers permission can block/unblock users
+		if (!this.visa.determineIf((permissions) => permissions.canBlockUsers)) {
+			throw new DomainSeedwork.PermissionError(
+				'Unauthorized: Only admins with canBlockUsers permission can block/unblock users',
+			);
+		}
 		this.props.isBlocked = value;
 	}
 	set hasCompletedOnboarding(value: boolean) {

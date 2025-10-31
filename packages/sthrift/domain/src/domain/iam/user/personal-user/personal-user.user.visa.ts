@@ -23,6 +23,7 @@ export class PersonalUserUserVisa<root extends PersonalUserEntityReference>
 			canRemoveListings: false,
 			canViewListingReports: false,
 			canViewUserReports: false,
+			canManageUserRoles: false,
 
 			isEditingOwnAccount: this.user.id === this.root.id,
 		};
