@@ -1,5 +1,5 @@
 import type { GraphContext } from '../../../init/context.ts';
-import type { CreateItemListingInput } from '../../builder/generated.js';
+import type { CreateItemListingInput, Resolvers } from '../../builder/generated.js';
 
 interface MyListingsArgs {
 	page: number;
@@ -75,7 +75,8 @@ const itemListingResolvers = {
 
 			const result =
 				await context.applicationServices.Listing.ItemListing.create(command);
-			return toGraphItem(result);
+			// Return domain object directly; formatting/mapping belongs in UI or app-services
+			return result;
 		},
 
 		removeListing: async (
@@ -108,4 +109,4 @@ const itemListingResolvers = {
 	},
 };
 
-export default itemListingResolvers;
+export default itemListingResolvers as unknown as Resolvers;

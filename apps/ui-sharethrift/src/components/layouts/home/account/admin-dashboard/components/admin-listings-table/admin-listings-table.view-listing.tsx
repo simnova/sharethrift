@@ -1,4 +1,5 @@
 import { useParams, useNavigate } from 'react-router-dom';
+import type { ReactElement } from 'react';
 import { useQuery, useMutation } from '@apollo/client/react';
 import { Card, Descriptions, Image, Tag, Button, Space, message, Spin, Popconfirm } from 'antd';
 import { ArrowLeftOutlined } from '@ant-design/icons';
@@ -8,7 +9,7 @@ import {
     AdminListingsTableContainerRemoveListingDocument,
 } from '../../../../../../../generated.tsx';
 
-export function AdminViewListing() {
+export function AdminViewListing(): ReactElement {
     const { listingId } = useParams();
     const navigate = useNavigate();
 
@@ -87,14 +88,14 @@ export function AdminViewListing() {
         );
     }
 
-    const getStatusColor = (status: string) => {
-        if (status === 'Appeal Requested') return 'gold';
-        if (status === 'Blocked') return 'purple';
+    const getStatusColor = (state?: string) => {
+        if (state === 'Appeal Requested') return 'gold';
+        if (state === 'Blocked') return 'purple';
         return 'green';
     };
 
-    const statusColor = getStatusColor(listing.status);
-    const statusLabel = listing.status === 'Appeal Requested' ? 'Appealed' : listing.status;
+    const statusColor = getStatusColor(listing.state ?? undefined);
+    const statusLabel = listing.state === 'Appeal Requested' ? 'Appealed' : (listing.state ?? 'Unknown');
 
     return (
         <div style={{ padding: 24, maxWidth: 1200, margin: '0 auto' }}>
@@ -113,9 +114,9 @@ export function AdminViewListing() {
                 </div>
 
                 <div style={{ display: 'flex', gap: 24, marginBottom: 24 }}>
-                    {listing.image && (
+                    {listing.images && listing.images.length > 0 && (
                         <Image
-                            src={listing.image}
+                            src={listing.images[0]}
                             alt={listing.title}
                             width={300}
                             height={300}
@@ -130,8 +131,8 @@ export function AdminViewListing() {
                                 {listing.id}
                             </Descriptions.Item>
                             <Descriptions.Item label="Published At">
-                                {listing.publishedAt 
-                                    ? new Date(listing.publishedAt).toLocaleDateString('en-US', {
+                                {listing.createdAt 
+                                    ? new Date(listing.createdAt).toLocaleDateString('en-US', {
                                         year: 'numeric',
                                         month: 'long',
                                         day: 'numeric',
@@ -141,13 +142,16 @@ export function AdminViewListing() {
                                     : 'N/A'}
                             </Descriptions.Item>
                             <Descriptions.Item label="Reservation Period">
-                                {listing.reservationPeriod || 'N/A'}
+                                {listing.sharingPeriodStart && listing.sharingPeriodEnd
+                                    ? `${new Date(listing.sharingPeriodStart).toLocaleDateString()} - ${new Date(listing.sharingPeriodEnd).toLocaleDateString()}`
+                                    : 'N/A'}
                             </Descriptions.Item>
                             <Descriptions.Item label="Status">
                                 <Tag color={statusColor}>{statusLabel}</Tag>
                             </Descriptions.Item>
                             <Descriptions.Item label="Pending Requests">
-                                {listing.pendingRequestsCount}
+                                { /* Field not present on ListingAll; show placeholder */ }
+                                {'-'}
                             </Descriptions.Item>
                         </Descriptions>
                     </div>
@@ -156,7 +160,7 @@ export function AdminViewListing() {
                 <div style={{ marginTop: 24, borderTop: '1px solid #f0f0f0', paddingTop: 24 }}>
                     <h3>Admin Actions</h3>
                     <Space>
-                        {(listing.status === 'Blocked' || listing.status === 'Appeal Requested') && (
+                        {(listing.state === 'Blocked' || listing.state === 'Appeal Requested') && (
                             <Button type="primary" onClick={handleUnblock}>
                                 Unblock Listing
                             </Button>
