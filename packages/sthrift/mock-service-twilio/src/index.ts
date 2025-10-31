@@ -7,9 +7,6 @@ import type {
 import axios from 'axios';
 import type { AxiosInstance } from 'axios';
 
-// Re-export types from @cellix/messaging for convenience
-export type { ConversationInstance, MessageInstance, IMessagingService } from '@cellix/messaging';
-
 /**
  * Mock Twilio Service - uses mock HTTP server
  * 

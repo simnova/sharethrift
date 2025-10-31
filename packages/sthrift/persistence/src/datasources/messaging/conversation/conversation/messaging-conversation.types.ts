@@ -1,10 +1,10 @@
 /**
- * Twilio API Response Types
- * These types match the responses from Twilio's Conversations API
+ * Messaging API Response Types
+ * These types match the responses from messaging services like Twilio's Conversations API
  * (or our mock server that mimics Twilio's API)
  */
 
-export interface TwilioConversationResponse {
+export interface MessagingConversationResponse {
 	sid: string;
 	account_sid: string;
 	friendly_name?: string;
@@ -18,7 +18,7 @@ export interface TwilioConversationResponse {
 	links?: Record<string, string>;
 }
 
-export interface TwilioMessageResponse {
+export interface MessagingMessageResponse {
 	sid: string;
 	account_sid: string;
 	conversation_sid: string;
@@ -33,7 +33,7 @@ export interface TwilioMessageResponse {
 	links?: Record<string, string>;
 }
 
-export interface TwilioParticipantResponse {
+export interface MessagingParticipantResponse {
 	sid: string;
 	account_sid: string;
 	conversation_sid: string;
@@ -50,7 +50,7 @@ export interface TwilioParticipantResponse {
 	links?: Record<string, string>;
 }
 
-export interface TwilioPaginatedResponse<_T> {
+export interface MessagingPaginatedResponse<_T> {
 	meta: {
 		page: number;
 		page_size: number;
@@ -62,14 +62,14 @@ export interface TwilioPaginatedResponse<_T> {
 	};
 }
 
-export interface TwilioConversationsListResponse extends TwilioPaginatedResponse<TwilioConversationResponse> {
-	conversations: TwilioConversationResponse[];
+export interface MessagingConversationsListResponse extends MessagingPaginatedResponse<MessagingConversationResponse> {
+	conversations: MessagingConversationResponse[];
 }
 
-export interface TwilioMessagesListResponse extends TwilioPaginatedResponse<TwilioMessageResponse> {
-	messages: TwilioMessageResponse[];
+export interface MessagingMessagesListResponse extends MessagingPaginatedResponse<MessagingMessageResponse> {
+	messages: MessagingMessageResponse[];
 }
 
-export interface TwilioParticipantsListResponse extends TwilioPaginatedResponse<TwilioParticipantResponse> {
-	participants: TwilioParticipantResponse[];
+export interface MessagingParticipantsListResponse extends MessagingPaginatedResponse<MessagingParticipantResponse> {
+	participants: MessagingParticipantResponse[];
 }

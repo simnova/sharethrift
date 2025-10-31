@@ -1,61 +1,50 @@
 import { Domain } from '@sthrift/domain';
 import type { IMessagingService } from '@cellix/messaging';
-import { toDomainConversationProps, toDomainMessage } from './twilio-conversation.domain-adapter.ts';
+import { toDomainConversationProps, toDomainMessage } from './messaging-conversation.domain-adapter.ts';
 import type {
-	TwilioConversationResponse,
-	TwilioMessageResponse,
-} from './twilio-conversation.types.ts';
+	MessagingConversationResponse,
+	MessagingMessageResponse,
+} from './messaging-conversation.types.ts';
 import { ObjectId } from 'bson';
 
 /**
- * Repository for Twilio Conversation Operations
+ * Repository for Messaging Conversation Operations
  * 
- * This repository acts as a bridge between the Twilio API (real or mock) and the domain layer.
- * It fetches data from Twilio via ServiceTwilio and converts it to domain entities.
+ * This repository acts as a bridge between the messaging service API (real or mock) and the domain layer.
+ * It fetches data from the messaging service and converts it to domain entities.
  * 
  * Key Responsibilities:
- * 1. Call ServiceTwilio to fetch conversation data (uses mock or real based on environment)
- * 2. Convert Twilio API responses to domain entities using the adapter
+ * 1. Call messaging service to fetch conversation data (uses mock or real based on environment)
+ * 2. Convert messaging API responses to domain entities using the adapter
  * 3. Handle errors and edge cases
  * 4. Provide a clean interface for the application layer
  */
-export interface TwilioConversationRepository {
-	/**
-	 * Get a conversation from Twilio by its SID
-	 */
+export interface MessagingConversationRepository {
 	getConversationBySid: (
 		twilioSid: string,
 	) => Promise<Domain.Contexts.Conversation.Conversation.ConversationEntityReference | null>;
 
-	/**
-	 * List all conversations from Twilio
-	 */
 	listConversations: () => Promise<Domain.Contexts.Conversation.Conversation.ConversationEntityReference[]>;
 
-	/**
-	 * Send a message to a Twilio conversation
-	 */
+	getMessages: (
+		conversationSid: string,
+	) => Promise<Domain.Contexts.Conversation.Conversation.MessageEntityReference[]>;
+
 	sendMessage: (
 		twilioConversationSid: string,
 		body: string,
 		author: string,
 	) => Promise<Domain.Contexts.Conversation.Conversation.MessageEntityReference>;
 
-	/**
-	 * Delete a conversation from Twilio
-	 */
 	deleteConversation: (twilioSid: string) => Promise<void>;
 
-	/**
-	 * Create a new conversation in Twilio
-	 */
 	createConversation: (
 		friendlyName?: string,
 		uniqueName?: string,
 	) => Promise<Domain.Contexts.Conversation.Conversation.ConversationEntityReference>;
 }
 
-export class TwilioConversationRepositoryImpl implements TwilioConversationRepository {
+export class MessagingConversationRepositoryImpl implements MessagingConversationRepository {
 	private readonly messagingService: IMessagingService;
 	private readonly passport: Domain.Passport;
 
@@ -65,11 +54,11 @@ export class TwilioConversationRepositoryImpl implements TwilioConversationRepos
 	}
 
 	/**
-	 * Get a conversation from Twilio by its SID and convert to domain entity
+	 * Get a conversation from messaging service by its SID and convert to domain entity
 	 * 
 	 * This method:
-	 * 1. Calls ServiceTwilio.getConversation() which routes to mock or real Twilio
-	 * 2. Converts the Twilio API response to domain ConversationProps
+	 * 1. Calls messaging service getConversation() which routes to mock or real service
+	 * 2. Converts the messaging API response to domain ConversationProps
 	 * 3. Returns a Conversation domain entity
 	 * 
 	 * Note: Currently creates stub entities for sharer, reserver, and listing.
@@ -79,8 +68,8 @@ export class TwilioConversationRepositoryImpl implements TwilioConversationRepos
 		twilioSid: string,
 	): Promise<Domain.Contexts.Conversation.Conversation.ConversationEntityReference | null> {
 		try {
-			// Fetch from Twilio (mock or real, depending on TWILIO_USE_MOCK environment variable)
-			const twilioConv = await this.messagingService.getConversation(twilioSid) as unknown as TwilioConversationResponse;
+			// Fetch from messaging service (mock or real, depending on configuration)
+			const twilioConv = await this.messagingService.getConversation(twilioSid) as unknown as MessagingConversationResponse;
 
 			// TODO: In a real implementation, fetch actual user and listing data
 			// For now, create stub entities
@@ -109,7 +98,42 @@ export class TwilioConversationRepositoryImpl implements TwilioConversationRepos
 	}
 
 	/**
-	 * List all conversations from Twilio
+	 * Get messages for a conversation from messaging service
+	 * 
+	 * This method fetches messages from Twilio and converts them to domain Message entities.
+	 * It returns raw messages without user context - the caller should map authors to users.
+	 */
+	async getMessages(
+		conversationSid: string,
+	): Promise<Domain.Contexts.Conversation.Conversation.MessageEntityReference[]> {
+		try {
+			const twilioMessages = await this.messagingService.getMessages(conversationSid);
+			
+			// Convert Twilio messages to domain Message entities
+			// Note: authorId is set to a placeholder - caller should map to real user IDs
+			return twilioMessages.map((msg) => {
+				const twilioMessageSid = new Domain.Contexts.Conversation.Conversation.TwilioMessageSid(msg.sid);
+				const content = new Domain.Contexts.Conversation.Conversation.MessageContent(msg.body);
+				
+				// Use placeholder authorId - caller will map based on conversation context
+				const authorId = new ObjectId(msg.author);
+				
+				return new Domain.Contexts.Conversation.Conversation.Message({
+					id: msg.sid,
+					twilioMessageSid,
+					authorId,
+					content,
+					createdAt: msg.dateCreated ?? new Date(),
+				});
+			});
+		} catch (error) {
+			console.error(`Error fetching messages for conversation ${conversationSid}:`, error);
+			return [];
+		}
+	}
+
+	/**
+	 * List all conversations from messaging service
 	 */
 	async listConversations(): Promise<Domain.Contexts.Conversation.Conversation.ConversationEntityReference[]> {
 		try {
@@ -127,7 +151,7 @@ export class TwilioConversationRepositoryImpl implements TwilioConversationRepos
 						friendly_name: twilioConv.friendlyName ?? '',
 						date_created: twilioConv.dateCreated?.toISOString() ?? new Date().toISOString(),
 						date_updated: twilioConv.dateUpdated?.toISOString() ?? new Date().toISOString(),
-					} as TwilioConversationResponse,
+					} as MessagingConversationResponse,
 					stubSharer,
 					stubReserver,
 					stubListing,
@@ -142,11 +166,11 @@ export class TwilioConversationRepositoryImpl implements TwilioConversationRepos
 	}
 
 	/**
-	 * Send a message to a Twilio conversation
+	 * Send a message to a messaging conversation
 	 * 
 	 * This method:
-	 * 1. Calls ServiceTwilio.sendMessage() which routes to mock or real Twilio
-	 * 2. Converts the Twilio message response to a domain Message entity
+	 * 1. Calls messaging service sendMessage() which routes to mock or real service
+	 * 2. Converts the messaging message response to a domain Message entity
 	 * 3. Returns the Message entity
 	 */
 	async sendMessage(
@@ -155,12 +179,12 @@ export class TwilioConversationRepositoryImpl implements TwilioConversationRepos
 		author: string,
 	): Promise<Domain.Contexts.Conversation.Conversation.MessageEntityReference> {
 		try {
-			// Send message via Twilio (mock or real)
+			// Send message via messaging service (mock or real)
 			const twilioMsg = await this.messagingService.sendMessage(
 				_twilioConversationSid,
 				body,
 				author,
-			) as unknown as TwilioMessageResponse;
+			) as unknown as MessagingMessageResponse;
 
 			// TODO: Map author email to actual user ObjectId
 			// For now, create a stub ObjectId
@@ -178,19 +202,19 @@ export class TwilioConversationRepositoryImpl implements TwilioConversationRepos
 	}
 
 	/**
-	 * Delete a conversation from Twilio
+	 * Delete a conversation from messaging service
 	 */
 	async deleteConversation(twilioSid: string): Promise<void> {
 		try {
 			await this.messagingService.deleteConversation(twilioSid);
 		} catch (error) {
-			console.error('Error deleting conversation from Twilio:', error);
+			console.error('Error deleting conversation from messaging service:', error);
 			throw error;
 		}
 	}
 
 	/**
-	 * Create a new conversation in Twilio
+	 * Create a new conversation in messaging service
 	 */
 	async createConversation(
 		friendlyName?: string,
@@ -210,7 +234,7 @@ export class TwilioConversationRepositoryImpl implements TwilioConversationRepos
 					friendly_name: twilioConv.friendlyName ?? '',
 					date_created: twilioConv.dateCreated?.toISOString() ?? new Date().toISOString(),
 					date_updated: twilioConv.dateUpdated?.toISOString() ?? new Date().toISOString(),
-				} as TwilioConversationResponse,
+				} as MessagingConversationResponse,
 				stubSharer,
 				stubReserver,
 				stubListing,
@@ -222,7 +246,7 @@ export class TwilioConversationRepositoryImpl implements TwilioConversationRepos
 				this.passport,
 			);
 		} catch (error) {
-			console.error('Error creating conversation in Twilio:', error);
+			console.error('Error creating conversation in messaging service:', error);
 			throw error;
 		}
 	}
@@ -253,9 +277,9 @@ export class TwilioConversationRepositoryImpl implements TwilioConversationRepos
 	}
 }
 
-export const getTwilioConversationRepository = (
+export const getMessagingConversationRepository = (
 	messagingService: IMessagingService,
 	passport: Domain.Passport,
-): TwilioConversationRepository => {
-	return new TwilioConversationRepositoryImpl(messagingService, passport);
+): MessagingConversationRepository => {
+	return new MessagingConversationRepositoryImpl(messagingService, passport);
 };

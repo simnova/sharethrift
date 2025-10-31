@@ -59,6 +59,45 @@ class MockTwilioStore {
 	}
 
 	/**
+	 * Create a conversation using a provided SID.
+	 *
+	 * Useful for seeding the mock Twilio store with pre-existing SIDs (for example,
+	 * when other mock data already references specific conversation IDs).
+	 */
+	createConversationWithSid(
+		sid: string,
+		friendlyName?: string,
+		uniqueName?: string,
+	): Conversation {
+		// If the conversation already exists, return it
+		const existing = this.conversations.get(sid);
+		if (existing) return existing;
+
+		const now = new Date().toISOString();
+
+		const conversation: Conversation = {
+			sid,
+			account_sid: this.ACCOUNT_SID,
+			...(friendlyName !== undefined && { friendly_name: friendlyName }),
+			...(uniqueName !== undefined && { unique_name: uniqueName }),
+			date_created: now,
+			date_updated: now,
+			state: 'active',
+			url: `/v1/Conversations/${sid}`,
+			links: {
+				participants: `/v1/Conversations/${sid}/Participants`,
+				messages: `/v1/Conversations/${sid}/Messages`,
+			},
+		};
+
+		this.conversations.set(sid, conversation);
+		this.messages.set(sid, []);
+		this.participants.set(sid, []);
+
+		return conversation;
+	}
+
+	/**
 	 * Get a conversation by SID
 	 */
 	getConversation(sid: string): Conversation | undefined {

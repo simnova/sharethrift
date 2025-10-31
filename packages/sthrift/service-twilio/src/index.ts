@@ -8,9 +8,6 @@ import type {
 
 type TwilioClient = InstanceType<typeof Twilio.Twilio> | undefined;
 
-// Re-export types from @cellix/messaging for convenience
-export type { ConversationInstance, MessageInstance, IMessagingService } from '@cellix/messaging';
-
 /**
  * Twilio Service - uses official Twilio SDK
  * 

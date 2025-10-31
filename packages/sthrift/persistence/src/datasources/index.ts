@@ -7,19 +7,19 @@ import {
 	ReadonlyDataSourceImplementation,
 } from './readonly/index.ts';
 import {
-	type TwilioDataSource,
-	TwilioDataSourceImplementation,
-} from './twilio/index.ts';
+	type MessagingDataSource,
+	MessagingDataSourceImplementation,
+} from './messaging/index.ts';
 
 export type DataSources = {
 	domainDataSource: DomainDataSource;
 	readonlyDataSource: ReadonlyDataSource;
-	twilioDataSource?: TwilioDataSource;
+	messagingDataSource?: MessagingDataSource;
 };
 
 export type DataSourcesFactory = {
 	withPassport: (passport: Domain.Passport, messagingService?: IMessagingService) => DataSources;
-	withSystemPassport: (messagingService?: IMessagingService) => DataSources;
+	withSystemPassport: () => DataSources;
 };
 
 export const DataSourcesFactoryImpl = (
@@ -31,31 +31,24 @@ export const DataSourcesFactoryImpl = (
 			readonlyDataSource: ReadonlyDataSourceImplementation(models, passport),
 		};
 
-		// Only include twilioDataSource if messagingService is provided
+		// Only include messagingDataSource if messagingService is provided
 		if (messagingService) {
-			dataSources.twilioDataSource = TwilioDataSourceImplementation(messagingService, passport);
+			dataSources.messagingDataSource = MessagingDataSourceImplementation(messagingService, passport);
 		}
 
 		return dataSources;
 	};
 
-	const withSystemPassport = (messagingService?: IMessagingService): DataSources => {
+	const withSystemPassport = (): DataSources => {
 		const systemPassport = Domain.PassportFactory.forSystem({
 			// canManageMembers: true,
 			// canManageEndUserRolesAndPermissions: true,
 		});
 
-		const dataSources: DataSources = {
+		return {
 			domainDataSource: DomainDataSourceImplementation(models, systemPassport),
 			readonlyDataSource: ReadonlyDataSourceImplementation(models, systemPassport),
 		};
-
-		// Only include twilioDataSource if messagingService is provided
-		if (messagingService) {
-			dataSources.twilioDataSource = TwilioDataSourceImplementation(messagingService, systemPassport);
-		}
-
-		return dataSources;
 	};
 
 	return {

@@ -91,7 +91,10 @@ export const buildApplicationServicesFactory = (
 		}
 
 		const dataSources =
-			infrastructureServicesRegistry.dataSourcesFactory.withPassport(passport);
+			infrastructureServicesRegistry.dataSourcesFactory.withPassport(
+				passport,
+				infrastructureServicesRegistry.messagingService,
+			);
 
 		return {
 			User: User(dataSources),
@@ -101,7 +104,7 @@ export const buildApplicationServicesFactory = (
 			Payment: paymentApplicationService,
 			ReservationRequest: ReservationRequest(dataSources),
 			Listing: Listing(dataSources),
-			Conversation: Conversation(dataSources, infrastructureServicesRegistry.messagingService),
+			Conversation: Conversation(dataSources),
 		};
 	};
 
