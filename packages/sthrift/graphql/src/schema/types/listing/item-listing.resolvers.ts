@@ -1,52 +1,70 @@
 import type { GraphContext } from '../../../init/context.ts';
-import type { CreateItemListingInput } from '../../builder/generated.js';
-import { toGraphItem } from '../../../helpers/mapping.js';
+import type {
+	Resolvers,
+	QueryMyListingsAllArgs,
+	QueryAdminListingsArgs,
+	QueryItemListingArgs,
+	MutationCreateItemListingArgs,
+	MutationRemoveListingArgs,
+	MutationUnblockListingArgs,
+} from '../../builder/generated.js';
 
-interface MyListingsArgs {
-	page: number;
-	pageSize: number;
-	searchText?: string;
-	statusFilters?: string[];
-	sorter?: { field: string; order: 'ascend' | 'descend' };
-}
 
-
-const itemListingResolvers = {
+const itemListingResolvers: Resolvers<GraphContext> = {
 	Query: {
-		myListingsAll: async (
-			_parent: unknown,
-			args: MyListingsArgs,
-			context: GraphContext,
-		) => {
+		myListingsAll: async (_parent: unknown, args: QueryMyListingsAllArgs, context: GraphContext) => {
 			const sharerId = context.applicationServices.verifiedUser?.verifiedJwt?.sub;
-			return await context.applicationServices.Listing.ItemListing.queryPaged({
-				...args,
+
+			type PagedArgs = {
+				page: number;
+				pageSize: number;
+				searchText?: string;
+				statusFilters?: string[];
+				sorter?: { field: string; order: 'ascend' | 'descend' };
+				sharerId?: string;
+			};
+
+			const pagedArgs: PagedArgs = {
+				page: args.page,
+				pageSize: args.pageSize,
+				...(args.searchText != null ? { searchText: args.searchText } : {}),
+				...(args.statusFilters != null ? { statusFilters: [...args.statusFilters] } : {}),
+				...(args.sorter != null ? { sorter: { field: args.sorter.field, order: args.sorter.order as 'ascend' | 'descend' } } : {}),
 				...(sharerId && { sharerId }),
-			});
+			};
+
+			return await context.applicationServices.Listing.ItemListing.queryPaged(pagedArgs);
 		},
 
-		itemListing: async (
-			_parent: unknown,
-			args: { id: string },
-			context: GraphContext,
-		) => {
+		itemListing: async (_parent: unknown, args: QueryItemListingArgs, context: GraphContext) => {
 			// Admin-note: role-based authorization should be implemented here (security)
 			return await context.applicationServices.Listing.ItemListing.queryById({
 				id: args.id,
 			});
 		},
-
-		adminListings: async (_parent: unknown, args: MyListingsArgs, context: GraphContext) => {
+		adminListings: async (_parent: unknown, args: QueryAdminListingsArgs, context: GraphContext) => {
 			// Admin-note: role-based authorization should be implemented here (security)
-			return await context.applicationServices.Listing.ItemListing.queryPaged(args);
+			type PagedArgs = {
+				page: number;
+				pageSize: number;
+				searchText?: string;
+				statusFilters?: string[];
+				sorter?: { field: string; order: 'ascend' | 'descend' };
+			};
+
+			const pagedArgs: PagedArgs = {
+				page: args.page,
+				pageSize: args.pageSize,
+				...(args.searchText != null ? { searchText: args.searchText } : {}),
+				...(args.statusFilters != null ? { statusFilters: [...args.statusFilters] } : {}),
+				...(args.sorter != null ? { sorter: { field: args.sorter.field, order: args.sorter.order as 'ascend' | 'descend' } } : {}),
+			};
+
+			return await context.applicationServices.Listing.ItemListing.queryPaged(pagedArgs);
 		},
 	},
 	Mutation: {
-		createItemListing: async (
-			_parent: unknown,
-			args: { input: CreateItemListingInput },
-			context: GraphContext,
-		) => {
+		createItemListing: async (_parent: unknown, args: MutationCreateItemListingArgs, context: GraphContext) => {
 			const userEmail =
 				context.applicationServices.verifiedUser?.verifiedJwt?.email;
 			if (!userEmail) {
@@ -74,16 +92,12 @@ const itemListingResolvers = {
 				isDraft: args.input.isDraft ?? false,
 			};
 
-			const result =
-				await context.applicationServices.Listing.ItemListing.create(command);
-			return toGraphItem(result);
+			const result = await context.applicationServices.Listing.ItemListing.create(command);
+			// Return the domain entity reference directly — generated types expect the domain reference
+			return result;
 		},
 
-		removeListing: async (
-			_parent: unknown,
-			args: { id: string },
-			context: GraphContext,
-		) => {
+		removeListing: async (_parent: unknown, args: MutationRemoveListingArgs, context: GraphContext) => {
 			// Admin-note: role-based authorization should be implemented here (security)
 			// Once implemented, use system-level permissions for admin operations
 			await context.applicationServices.Listing.ItemListing.update({
@@ -93,11 +107,7 @@ const itemListingResolvers = {
 			return true;
 		},
 
-		unblockListing: async (
-			_parent: unknown,
-			args: { id: string },
-			context: GraphContext,
-		) => {
+		unblockListing: async (_parent: unknown, args: MutationUnblockListingArgs, context: GraphContext) => {
 			// Admin-note: role-based authorization should be implemented here (security)
 			// Once implemented, use system-level permissions for admin operations
 			await context.applicationServices.Listing.ItemListing.update({
