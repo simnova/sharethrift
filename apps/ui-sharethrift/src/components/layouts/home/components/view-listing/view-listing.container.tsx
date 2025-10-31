@@ -1,8 +1,4 @@
 import { useParams } from 'react-router-dom';
-import { useQuery } from "@apollo/client/react";
-// Import the GraphQL document (Vite raw import if needed)
-// eslint-disable-next-line import/no-absolute-path, @typescript-eslint/ban-ts-comment
-// @ts-ignore - allow raw import string
 import { ViewListing } from './view-listing';
 import {
 	ViewListingCurrentUserDocument,
@@ -11,17 +7,13 @@ import {
 	type ViewListingQuery,
 	type ViewListingQueryVariables,
 	ViewListingActiveReservationRequestForListingDocument,
-	type ViewListingActiveReservationRequestForListingQuery,
-	type ViewListingActiveReservationRequestForListingQueryVariables,
 } from '../../../../../generated.tsx';
+import { useQuery } from '@apollo/client/react';
 
 export const ViewListingContainer: React.FC<{
 	isAuthenticated: boolean;
-}> = ({
-	isAuthenticated,
-}) => {
+}> = ({ isAuthenticated }) => {
 	const { listingId } = useParams();
-
 	const {
 		data: listingData,
 		loading: listingLoading,
@@ -48,10 +40,7 @@ export const ViewListingContainer: React.FC<{
 		data: userReservationData,
 		loading: userReservationLoading,
 		error: userReservationError,
-	} = useQuery<
-		ViewListingActiveReservationRequestForListingQuery,
-		ViewListingActiveReservationRequestForListingQueryVariables
-	>(ViewListingActiveReservationRequestForListingDocument, {
+	} = useQuery(ViewListingActiveReservationRequestForListingDocument, {
 		variables: { listingId: listingId ?? '', reserverId },
 		skip,
 	});
@@ -69,8 +58,6 @@ export const ViewListingContainer: React.FC<{
 		: undefined;
 
 	const userIsSharer = false;
-	// currentUserData?.currentPersonalUserAndCreateIfNotExists.id ===
-	// (listingData.itemListing.sharer?.id as { id: string }).id;
 
 	return (
 		<ViewListing
@@ -83,7 +70,7 @@ export const ViewListingContainer: React.FC<{
 			}
 		/>
 	);
-}
+};
 
 function computeTimeAgo(isoDate: string): string {
 	try {

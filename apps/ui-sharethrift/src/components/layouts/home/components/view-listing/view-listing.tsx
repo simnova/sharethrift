@@ -165,4 +165,4 @@ export const ViewListing: React.FC<ViewListingProps> = ({
 			{/* TODO: Add login modal here for unauthenticated users attempting to reserve a listing. */}
 		</>
 	);
-}
+};
