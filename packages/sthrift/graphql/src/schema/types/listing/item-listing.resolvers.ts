@@ -1,5 +1,6 @@
 import type { GraphContext } from '../../../init/context.ts';
 import type { CreateItemListingInput } from '../../builder/generated.js';
+import { toGraphItem } from '../../../helpers/mapping.js';
 
 interface MyListingsArgs {
 	page: number;
