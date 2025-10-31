@@ -11,30 +11,30 @@ graph TD
   %% Infrastructure Services (split for clarity, spaced for linearity)
 
   subgraph Payment Infra
-    sthrft-service-cybersource["@sthrift/service-cybersource"]
-    sthrft-service-mock-cybersource["@sthrift/service-mock-cybersource"]
+    sthrft-service-cybersource["@sthrift/payment-service-cybersource"]
+    sthrft-service-mock-cybersource["@sthrift/payment-service-mock"]
   end
 
   %% vertical space
 
   subgraph Messaging Infra
-    sthrft-service-twilio["@sthrift/service-twilio"]
-    sthrft-mock-service-twilio["@sthrift/mock-service-twilio"]
+    sthrft-service-twilio["@sthrift/messaging-service-twilio"]
+    sthrft-mock-service-twilio["@sthrift/messaging-service-mock"]
   end
 
   %% vertical space
 
   subgraph Mailing Infra
-    sthrft-service-sendgrid["@sthrift/service-sendgrid"]
-    sthrft-mock-service-sendgrid["@sthrift/mock-service-sendgrid"]
+    sthrft-service-sendgrid["@sthrift/mail-service-sendgrid"]
+    sthrft-mock-service-sendgrid["@sthrift/mail-service-mock"]
   end
 
   %% extra vertical space
 
   subgraph FacadeServices["Facade Services"]
-    cellix-payment["@cellix/payment"]
-    cellix-messaging["@cellix/messaging"]
-    cellix-mailing["@cellix/mailing"]
+    cellix-payment["@cellix/payment-service"]
+    cellix-messaging["@cellix/messaging-service"]
+    cellix-mailing["@cellix/mail-service"]
   end
 
   %% Domain Layer
