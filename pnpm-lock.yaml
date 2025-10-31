@@ -710,6 +710,9 @@ importers:
       '@cellix/event-bus-seedwork-node':
         specifier: workspace:*
         version: link:../../cellix/event-bus-seedwork-node
+      '@cellix/mock-cognitive-search':
+        specifier: workspace:*
+        version: link:../../cellix/mock-cognitive-search
       '@lucaspaganini/value-objects':
         specifier: ^1.3.1
         version: 1.3.1
