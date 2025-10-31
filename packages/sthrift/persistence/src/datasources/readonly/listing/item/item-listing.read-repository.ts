@@ -1,6 +1,5 @@
 import type { Domain } from '@sthrift/domain';
 import type { ModelsContext } from '../../../../models-context.ts';
-import type { AdminListingDto } from '../../../../dtos/listing.ts';
 import {
   ItemListingDataSourceImpl,
   type ItemListingDataSource,
@@ -23,21 +22,6 @@ export interface ItemListingReadRepository {
     sorter?: { field: string; order: 'ascend' | 'descend' };
   }) => Promise<{
     items: Domain.Contexts.Listing.ItemListing.ItemListingEntityReference[];
-    total: number;
-    page: number;
-    pageSize: number;
-  }>;
-
-  // Admin-focused paged result: lightweight DTOs for admin UI
-  getPagedAdmin: (args: {
-    page: number;
-    pageSize: number;
-    searchText?: string;
-    statusFilters?: string[];
-    sharerId?: string;
-    sorter?: { field: string; order: 'ascend' | 'descend' };
-  }) => Promise<{
-    items: AdminListingDto[];
     total: number;
     page: number;
     pageSize: number;
@@ -147,56 +131,6 @@ export class ItemListingReadRepositoryImpl implements ItemListingReadRepository 
     const items = (mongoItems || []).map((doc) => this.converter.toDomain(doc, this.passport));
 
     return { items, total, page: args.page, pageSize: args.pageSize };
-  }
-
-  async getPagedAdmin(args: {
-    page: number;
-    pageSize: number;
-    searchText?: string;
-    statusFilters?: string[];
-    sharerId?: string;
-    sorter?: { field: string; order: 'ascend' | 'descend' };
-  }): Promise<{
-    items: AdminListingDto[];
-    total: number;
-    page: number;
-    pageSize: number;
-  }> {
-    const result = await this.getPaged(args);
-
-    // Map domain entities to lightweight admin DTOs
-    const items = result.items.map((listing) => this.toAdminListingDto(listing));
-
-    return { items, total: result.total, page: result.page, pageSize: result.pageSize };
-  }
-
-  /**
-   * Convert a domain ItemListing entity to an AdminListingDto
-   */
-  private toAdminListingDto(listing: Domain.Contexts.Listing.ItemListing.ItemListingEntityReference): AdminListingDto {
-    const formatDate = (date: Date | string | null | undefined): string => {
-      if (!date) return '';
-      try {
-        const d = date instanceof Date ? date : new Date(date);
-        return d.toISOString();
-      } catch {
-        return '';
-      }
-    };
-
-    const firstImage = listing.images && listing.images.length > 0 ? listing.images[0] : null;
-    const startDate = formatDate(listing.sharingPeriodStart);
-    const endDate = formatDate(listing.sharingPeriodEnd);
-
-    return {
-      id: listing.id,
-      title: listing.title,
-      image: firstImage ?? null, // Ensure null, not undefined
-      publishedAt: formatDate(listing.createdAt),
-      reservationPeriod: `${startDate.slice(0, 10)} - ${endDate.slice(0, 10)}`,
-      status: listing.state || 'Unknown',
-      pendingRequestsCount: 0, // TODO: Implement reservation request counting
-    };
   }
 
   async getById(id: string, options?: FindOneOptions): Promise<Domain.Contexts.Listing.ItemListing.ItemListingEntityReference | null> {

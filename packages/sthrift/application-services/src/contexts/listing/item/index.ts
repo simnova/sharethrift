@@ -1,5 +1,5 @@
 import type { Domain } from '@sthrift/domain';
-import type { DataSources, AdminPagedResult } from '@sthrift/persistence';
+import type { DataSources } from '@sthrift/persistence';
 import { type ItemListingCreateCommand, create } from './create.ts';
 import { type ItemListingQueryByIdCommand, queryById } from './query-by-id.ts';
 import {
@@ -30,7 +30,12 @@ export interface ItemListingApplicationService {
 		statusFilters?: string[];
 		sharerId?: string;
 		sorter?: { field: string; order: 'ascend' | 'descend' };
-	}) => Promise<AdminPagedResult>;
+	}) => Promise<{
+		items: Domain.Contexts.Listing.ItemListing.ItemListingEntityReference[];
+		total: number;
+		page: number;
+		pageSize: number;
+	}>;
 	update: (command: ItemListingUpdateCommand) => Promise<void>;
 }
 
