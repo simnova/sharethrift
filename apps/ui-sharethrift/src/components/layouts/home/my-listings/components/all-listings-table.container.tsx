@@ -42,6 +42,25 @@ export const AllListingsTableContainer: React.FC<AllListingsTableContainerProps>
   console.log("Listings data:", data);
   const total = data?.myListingsAll?.total ?? 0;
 
+  // Transform domain fields to UI format
+  const transformedListings = listings.map(listing => {
+    const startDate = listing.sharingPeriodStart ?? '';
+    const endDate = listing.sharingPeriodEnd ?? '';
+    const reservationPeriod = startDate && endDate 
+      ? `${startDate.slice(0, 10)} - ${endDate.slice(0, 10)}` 
+      : '';
+
+    return {
+      id: listing.id,
+      title: listing.title,
+      image: listing.images?.[0] ?? null,
+      publishedAt: listing.createdAt ?? null,
+      reservationPeriod,
+      status: listing.state ?? 'Unknown',
+      pendingRequestsCount: 0, // TODO: implement in future
+    };
+  });
+
   const handleSearch = (value: string) => {
     setSearchText(value);
     onPageChange(1);
@@ -87,7 +106,7 @@ export const AllListingsTableContainer: React.FC<AllListingsTableContainerProps>
       hasData={data?.myListingsAll}
       hasDataComponent={
         <AllListingsTable
-          data={listings}
+          data={transformedListings}
           searchText={searchText}
           statusFilters={statusFilters}
           sorter={sorter}
