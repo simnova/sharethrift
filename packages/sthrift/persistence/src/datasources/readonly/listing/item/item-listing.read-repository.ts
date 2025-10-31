@@ -86,7 +86,7 @@ export class ItemListingReadRepositoryImpl
 		let listings: Domain.Contexts.Listing.ItemListing.ItemListingEntityReference[];
 
 		if (args.sharerId) {
-			listings = await this.getAll();
+			listings = await this.getBySharer(args.sharerId);
 		} else {
 			listings = await this.getAll();
 		}
