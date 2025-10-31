@@ -23,6 +23,17 @@ query HomeRequestsTableContainerMyListingsRequests(
   }
 }
 
+mutation HomeRequestsTableContainerAcceptReservationRequest(
+  $reservationRequestId: ObjectID!
+) {
+  acceptReservationRequest(
+    input: { reservationRequestId: $reservationRequestId }
+  ) {
+    id
+    state
+  }
+}
+
 fragment HomeRequestsTableContainerRequestFields on ListingRequest {
   id
   title

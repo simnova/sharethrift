@@ -300,22 +300,22 @@ export const ListingInformation: React.FC<ListingInformationProps> = ({
 						{!userIsSharer && isAuthenticated ? (
 							<Button
 								type={
-									reservationRequestStatus === 'Requested'
+									reservationRequestStatus === 'Pending'
 										? 'default'
 										: 'primary'
 								}
 								block
 								onClick={
-									reservationRequestStatus === 'Requested'
+									reservationRequestStatus === 'Pending'
 										? onCancelClick
 										: onReserveClick
 								}
 								disabled={
-									!areDatesSelected && reservationRequestStatus !== 'Requested'
+									!areDatesSelected && reservationRequestStatus !== 'Pending'
 								}
 								icon={reservationLoading ? <LoadingOutlined /> : undefined}
 							>
-								{reservationRequestStatus === 'Requested'
+								{reservationRequestStatus === 'Pending'
 									? 'Cancel Request'
 									: 'Reserve'}
 							</Button>

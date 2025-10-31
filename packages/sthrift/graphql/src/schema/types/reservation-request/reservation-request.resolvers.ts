@@ -211,6 +211,30 @@ const reservationRequest: Resolvers = {
 				},
 			);
 		},
+		acceptReservationRequest: async (
+			_parent: unknown,
+			args: {
+				input: {
+					reservationRequestId: string;
+				};
+			},
+			context: GraphContext,
+			_info: GraphQLResolveInfo,
+		) => {
+			const verifiedJwt = context.applicationServices.verifiedUser?.verifiedJwt;
+			if (!verifiedJwt) {
+				throw new Error(
+					'User must be authenticated to accept a reservation request',
+				);
+			}
+
+			return await context.applicationServices.ReservationRequest.ReservationRequest.accept(
+				{
+					reservationRequestId: args.input.reservationRequestId,
+					sharerEmail: verifiedJwt.email,
+				},
+			);
+		},
 	},
 };
 
