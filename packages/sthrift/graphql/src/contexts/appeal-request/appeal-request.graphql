@@ -1,0 +1,10 @@
+enum AppealRequestState {
+	REQUESTED
+	DENIED
+	ACCEPTED
+}
+
+enum AppealRequestType {
+	USER
+	LISTING
+}

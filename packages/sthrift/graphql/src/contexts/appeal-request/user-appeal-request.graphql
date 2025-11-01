@@ -1,0 +1,49 @@
+type UserAppealRequest {
+	id: ID!
+	user: PersonalUser!
+	reason: String!
+	state: AppealRequestState!
+	type: AppealRequestType!
+	blocker: PersonalUser!
+	createdAt: String!
+	updatedAt: String!
+}
+
+type UserAppealRequestPageResult {
+	items: [UserAppealRequest!]!
+	total: Int!
+	page: Int!
+	pageSize: Int!
+}
+
+input CreateUserAppealRequestInput {
+	userId: ID!
+	reason: String!
+	blockerId: ID!
+}
+
+input UpdateUserAppealRequestStateInput {
+	id: ID!
+	state: AppealRequestState!
+}
+
+input GetAllUserAppealRequestsInput {
+	page: Int!
+	pageSize: Int!
+	stateFilters: [String!]
+	sorter: SorterInput
+}
+
+extend type Query {
+	getUserAppealRequest(id: ID!): UserAppealRequest
+	getAllUserAppealRequests(
+		input: GetAllUserAppealRequestsInput!
+	): UserAppealRequestPageResult!
+}
+
+extend type Mutation {
+	createUserAppealRequest(input: CreateUserAppealRequestInput!): UserAppealRequest!
+	updateUserAppealRequestState(
+		input: UpdateUserAppealRequestStateInput!
+	): UserAppealRequest!
+}
