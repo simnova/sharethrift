@@ -22,6 +22,7 @@ const feature = await loadFeature(
 function makeListingDoc(
 	overrides: Partial<Models.Listing.ItemListing> = {},
 ): Models.Listing.ItemListing {
+	const userDoc = makeUserDoc();
 	const base = {
 		_id: 'listing-1',
 		title: 'Test Listing',
@@ -31,13 +32,14 @@ function makeListingDoc(
 		sharingPeriodStart: new Date('2025-10-06'),
 		sharingPeriodEnd: new Date('2025-11-06'),
 		state: 'Published',
-		sharer: undefined,
+		sharer: userDoc._id,
 		images: [],
 		reports: 0,
 		sharingHistory: [],
 		createdAt: new Date('2020-01-01T00:00:00Z'),
 		updatedAt: new Date('2020-01-02T00:00:00Z'),
 		schemaVersion: '1.0.0',
+		id: 'listing-1',
 		set(key: keyof Models.Listing.ItemListing, value: unknown) {
 			(this as Models.Listing.ItemListing)[key] = value as never;
 		},
@@ -49,12 +51,14 @@ function makeListingDoc(
 function makeUserDoc(
 	overrides: Partial<Models.User.PersonalUser> = {},
 ): Models.User.PersonalUser {
-	return {
+	const base = {
 		_id: 'user-1',
 		displayName: 'Test User',
 		email: 'test@example.com',
+		id: 'user-1',
 		...overrides,
 	} as Models.User.PersonalUser;
+	return vi.mocked(base);
 }
 
 function makeMockPassport(): Domain.Passport {
@@ -115,11 +119,11 @@ test.for(feature, ({ Scenario, Background, BeforeEachScenario }) => {
 			})),
 			find: vi.fn((filter?: Record<string, string>) => ({
 				exec: vi.fn(async () => {
-					if (!filter || filter.state === 'Published') {
+					if (!filter || filter['state'] === 'Published') {
 						return [listingDoc];
 					}
-					if (filter.sharer) {
-						return filter.sharer === 'user-1' ? [listingDoc] : [];
+					if (filter['sharer']) {
+						return filter['sharer'] === 'user-1' ? [listingDoc] : [];
 					}
 					return [];
 				}),
