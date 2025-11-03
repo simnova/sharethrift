@@ -1,3 +1,4 @@
+import { randomUUID } from 'node:crypto';
 import { DomainSeedwork } from '@cellix/domain-seedwork';
 import type { Passport } from '../../passport.ts';
 import type { ListingVisa } from '../listing.visa.ts';
@@ -38,7 +39,7 @@ export class ItemListing<props extends ItemListingProps>
 		},
 		passport: Passport,
 	): ItemListing<props> {
-		const id = crypto.randomUUID();
+		const id = randomUUID();
 		const now = new Date();
 		const isDraft = fields.isDraft ?? false;
 
@@ -133,7 +134,7 @@ export class ItemListing<props extends ItemListingProps>
 			);
 		}
 		this.props.title = new ValueObjects.Title(value).valueOf();
-		this.props.updatedAt = new Date();
+		// Note: updatedAt is automatically handled by Mongoose timestamps
 	}
 
 	get description(): string {
@@ -149,7 +150,7 @@ export class ItemListing<props extends ItemListingProps>
 			);
 		}
 		this.props.description = new ValueObjects.Description(value).valueOf();
-		this.props.updatedAt = new Date();
+		// Note: updatedAt is automatically handled by Mongoose timestamps
 	}
 
 	get category(): string {
@@ -165,7 +166,7 @@ export class ItemListing<props extends ItemListingProps>
 			);
 		}
 		this.props.category = new ValueObjects.Category(value).valueOf();
-		this.props.updatedAt = new Date();
+		// Note: updatedAt is automatically handled by Mongoose timestamps
 	}
 
 	get location(): string {
@@ -181,7 +182,7 @@ export class ItemListing<props extends ItemListingProps>
 			);
 		}
 		this.props.location = new ValueObjects.Location(value).valueOf();
-		this.props.updatedAt = new Date();
+		// Note: updatedAt is automatically handled by Mongoose timestamps
 	}
 
 	get sharingPeriodStart(): Date {
@@ -197,7 +198,7 @@ export class ItemListing<props extends ItemListingProps>
 			);
 		}
 		this.props.sharingPeriodStart = value;
-		this.props.updatedAt = new Date();
+		// Note: updatedAt is automatically handled by Mongoose timestamps
 	}
 
 	get sharingPeriodEnd(): Date {
@@ -213,7 +214,7 @@ export class ItemListing<props extends ItemListingProps>
 			);
 		}
 		this.props.sharingPeriodEnd = value;
-		this.props.updatedAt = new Date();
+		// Note: updatedAt is automatically handled by Mongoose timestamps
 	}
 
 	get state(): string {
@@ -253,7 +254,7 @@ export class ItemListing<props extends ItemListingProps>
 			);
 		}
 		this.props.images = value;
-		this.props.updatedAt = new Date();
+		// Note: updatedAt is automatically handled by Mongoose timestamps
 	}
 
 	get isActive(): boolean {
@@ -283,7 +284,7 @@ export class ItemListing<props extends ItemListingProps>
 		}
 
 		this.props.state = new ValueObjects.ListingState('Published').valueOf();
-		this.props.updatedAt = new Date();
+		// Note: updatedAt is automatically handled by Mongoose timestamps
 	}
 
 	public pause(): void {
@@ -298,7 +299,7 @@ export class ItemListing<props extends ItemListingProps>
 		}
 
 		this.props.state = new ValueObjects.ListingState('Paused').valueOf();
-		this.props.updatedAt = new Date();
+		// Note: updatedAt is automatically handled by Mongoose timestamps
 	}
 
 	public cancel(): void {
@@ -315,6 +316,76 @@ export class ItemListing<props extends ItemListingProps>
 
 	get listingType(): string {
 		return this.props.listingType;
+		// Note: updatedAt is automatically handled by Mongoose timestamps
+	}
+
+	/**
+	 * Set whether this listing is blocked.
+	 * - When setting blocked=false and the listing is currently Blocked, this will move the
+	 *   listing to AppealRequested (the previous `unblock()` behaviour).
+	 * - When setting blocked=true it will mark the listing as Blocked.
+	 * This is intentionally a setter-style API so callers can use a single update mutation
+	 * to toggle the blocked state.
+	 */
+	public setBlocked(blocked: boolean): void {
+		const current = this.props.state.valueOf();
+
+		if (!blocked) {
+			// unblocking: require publish permission (keeps previous behaviour)
+			if (
+				!this.visa.determineIf((permissions) => permissions.canPublishItemListing)
+			) {
+				throw new DomainSeedwork.PermissionError(
+					'You do not have permission to unblock this listing',
+				);
+			}
+
+			const isBlocked = current === ValueObjects.ListingStateEnum.Blocked;
+			if (!isBlocked) return; // no-op if not blocked
+
+			this.props.state = ValueObjects.ListingStateEnum.AppealRequested;
+			return;
+		}
+
+		// setting blocked=true
+		if (
+			!this.visa.determineIf((permissions) => permissions.canPublishItemListing)
+		) {
+			throw new DomainSeedwork.PermissionError(
+				'You do not have permission to block this listing',
+			);
+		}
+
+		if (current === ValueObjects.ListingStateEnum.Blocked) return; // already blocked
+		this.props.state = ValueObjects.ListingStateEnum.Blocked;
+	}
+
+	/**
+	 * Mark or unmark this aggregate as deleted. Setting deleted to true will cause the
+	 * repository to remove the record on save. This replaces the previous `requestDelete()` helper.
+	 */
+	public setDeleted(deleted: boolean): void {
+		if (deleted) {
+			if (
+				!this.visa.determineIf((permissions) => permissions.canDeleteItemListing)
+			) {
+				throw new DomainSeedwork.PermissionError(
+					'You do not have permission to delete this listing',
+				);
+			}
+			super.isDeleted = true;
+			return;
+		}
+
+		// Allow unmarking deletion only if caller has delete permission as well
+		if (
+			!this.visa.determineIf((permissions) => permissions.canDeleteItemListing)
+		) {
+			throw new DomainSeedwork.PermissionError(
+				'You do not have permission to modify deleted flag for this listing',
+			);
+		}
+		super.isDeleted = false;
 	}
 
 	/**

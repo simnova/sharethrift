@@ -1,148 +1,70 @@
 import type { GraphContext } from '../../../init/context.ts';
-import type { Domain } from '@sthrift/domain';
-import { toGraphItem } from '../../../helpers/mapping.js';
-import type { CreateItemListingInput } from '../../builder/generated.js';
+import type {
+	Resolvers,
+	QueryMyListingsAllArgs,
+	QueryAdminListingsArgs,
+	QueryItemListingArgs,
+	MutationCreateItemListingArgs,
+	MutationRemoveListingArgs,
+	MutationUnblockListingArgs,
+} from '../../builder/generated.js';
 
-interface MyListingsArgs {
-	page: number;
-	pageSize: number;
-	searchText?: string;
-	statusFilters?: string[];
-	sorter?: { field: string; order: 'ascend' | 'descend' };
-}
 
-const itemListingResolvers = {
+const itemListingResolvers: Resolvers<GraphContext> = {
 	Query: {
-		itemListings: async (
-			_parent: unknown,
-			_args: unknown,
-			context: GraphContext,
-		) => {
-			const currentUser = context.applicationServices.verifiedUser;
-			const user = currentUser?.verifiedJwt?.sub;
+		myListingsAll: async (_parent: unknown, args: QueryMyListingsAllArgs, context: GraphContext) => {
+			const sharerId = context.applicationServices.verifiedUser?.verifiedJwt?.sub;
 
-			let listings: Domain.Contexts.Listing.ItemListing.ItemListingEntityReference[];
-
-			if (user) {
-				listings =
-					await context.applicationServices.Listing.ItemListing.queryBySharer({
-						personalUser: user,
-					});
-			} else {
-				listings =
-					await context.applicationServices.Listing.ItemListing.queryAll({});
-			}
-
-			return listings.map(toGraphItem);
-		},
-
-		itemListing: async (
-			_parent: unknown,
-			args: { id: string },
-			context: GraphContext,
-		) => {
-			const listing =
-				await context.applicationServices.Listing.ItemListing.queryById({
-					id: args.id,
-				});
-
-			if (!listing) {
-				return null;
-			}
-
-			return toGraphItem(listing);
-		},
-
-		myListingsAll: async (
-			_parent: unknown,
-			args: MyListingsArgs,
-			context: GraphContext,
-		) => {
-			const currentUser = context.applicationServices.verifiedUser;
-			const email = currentUser?.verifiedJwt?.email;
-            let sharerId: string | undefined;
-            if(email) {
-               sharerId = await context.applicationServices.User.PersonalUser.queryByEmail({email: email}).then(user => user ? user.id : undefined);
-            }
-
-			const { page, pageSize, searchText, statusFilters, sorter } = args;
-			const pagedArgs: {
+			type PagedArgs = {
 				page: number;
 				pageSize: number;
 				searchText?: string;
 				statusFilters?: string[];
-				sharerId?: string;
 				sorter?: { field: string; order: 'ascend' | 'descend' };
-			} = { page, pageSize };
-			if (searchText !== undefined) {
-				pagedArgs.searchText = searchText;
-			}
-			if (statusFilters !== undefined) {
-				pagedArgs.statusFilters = statusFilters;
-			}
-			if (sorter !== undefined) {
-				pagedArgs.sorter = sorter;
-			}
-			if (sharerId !== undefined) {
-				pagedArgs.sharerId = sharerId;
-			}
-			const result =
-				await context.applicationServices.Listing.ItemListing.queryPaged(
-					pagedArgs,
-				);
-
-			// Map domain ItemListingEntityReference -> GraphQL ListingAll shape
-			// ListingAll requires: id, title, image, publishedAt, reservationPeriod, status, pendingRequestsCount
-			// Domain entity provides: images, createdAt, sharingPeriodStart/End, state
-			// We derive/transform where necessary and guarantee non-null status
-			const mapStateToStatus = (state?: string): string => {
-				if (!state || state.trim() === '') {
-					return 'Unknown';
-				}
-				// Normalize internal domain states to UI statuses
-				switch (state) {
-					case 'Published':
-						return 'Active';
-					case 'Drafted':
-						return 'Draft';
-					case 'Appeal Requested':
-						return 'Appeal_Requested';
-					case 'Cancelled':
-						return 'Cancelled';
-					default:
-						return state; // Paused, Expired, Blocked, Reserved (future), etc.
-				}
+				sharerId?: string;
 			};
 
-			return {
-				items: result.items.map((listing) => {
-					const sharingStart = listing.sharingPeriodStart.toISOString();
-					const sharingEnd = listing.sharingPeriodEnd.toISOString();
-					return {
-						id: listing.id,
-						title: listing.title,
-						image:
-							listing.images && listing.images.length > 0
-								? listing.images[0]
-								: null,
-						publishedAt: listing.createdAt.toISOString(),
-						reservationPeriod: `${sharingStart.slice(0, 10)} - ${sharingEnd.slice(0, 10)}`,
-						status: mapStateToStatus(listing?.state),
-						pendingRequestsCount: 0, // TODO: integrate reservation request counts
-					};
-				}),
-				total: result.total,
-				page: result.page,
-				pageSize: result.pageSize,
+			const pagedArgs: PagedArgs = {
+				page: args.page,
+				pageSize: args.pageSize,
+				...(args.searchText != null ? { searchText: args.searchText } : {}),
+				...(args.statusFilters != null ? { statusFilters: [...args.statusFilters] } : {}),
+				...(args.sorter != null ? { sorter: { field: args.sorter.field, order: args.sorter.order as 'ascend' | 'descend' } } : {}),
+				...(sharerId && { sharerId }),
 			};
+
+			return await context.applicationServices.Listing.ItemListing.queryPaged(pagedArgs);
+		},
+
+		itemListing: async (_parent: unknown, args: QueryItemListingArgs, context: GraphContext) => {
+			// Admin-note: role-based authorization should be implemented here (security)
+			return await context.applicationServices.Listing.ItemListing.queryById({
+				id: args.id,
+			});
+		},
+		adminListings: async (_parent: unknown, args: QueryAdminListingsArgs, context: GraphContext) => {
+			// Admin-note: role-based authorization should be implemented here (security)
+			type PagedArgs = {
+				page: number;
+				pageSize: number;
+				searchText?: string;
+				statusFilters?: string[];
+				sorter?: { field: string; order: 'ascend' | 'descend' };
+			};
+
+			const pagedArgs: PagedArgs = {
+				page: args.page,
+				pageSize: args.pageSize,
+				...(args.searchText != null ? { searchText: args.searchText } : {}),
+				...(args.statusFilters != null ? { statusFilters: [...args.statusFilters] } : {}),
+				...(args.sorter != null ? { sorter: { field: args.sorter.field, order: args.sorter.order as 'ascend' | 'descend' } } : {}),
+			};
+
+			return await context.applicationServices.Listing.ItemListing.queryPaged(pagedArgs);
 		},
 	},
 	Mutation: {
-		createItemListing: async (
-			_parent: unknown,
-			args: { input: CreateItemListingInput },
-			context: GraphContext,
-		) => {
+		createItemListing: async (_parent: unknown, args: MutationCreateItemListingArgs, context: GraphContext) => {
 			const userEmail =
 				context.applicationServices.verifiedUser?.verifiedJwt?.email;
 			if (!userEmail) {
@@ -170,9 +92,29 @@ const itemListingResolvers = {
 				isDraft: args.input.isDraft ?? false,
 			};
 
-			const result =
-				await context.applicationServices.Listing.ItemListing.create(command);
-			return toGraphItem(result);
+			const result = await context.applicationServices.Listing.ItemListing.create(command);
+			// Return the domain entity reference directly — generated types expect the domain reference
+			return result;
+		},
+
+		removeListing: async (_parent: unknown, args: MutationRemoveListingArgs, context: GraphContext) => {
+			// Admin-note: role-based authorization should be implemented here (security)
+			// Once implemented, use system-level permissions for admin operations
+			await context.applicationServices.Listing.ItemListing.update({
+				id: args.id,
+				isDeleted: true,
+			});
+			return true;
+		},
+
+		unblockListing: async (_parent: unknown, args: MutationUnblockListingArgs, context: GraphContext) => {
+			// Admin-note: role-based authorization should be implemented here (security)
+			// Once implemented, use system-level permissions for admin operations
+			await context.applicationServices.Listing.ItemListing.update({
+				id: args.id,
+				isBlocked: false,
+			});
+			return true;
 		},
 		cancelItemListing: async (
 			_parent: unknown,
