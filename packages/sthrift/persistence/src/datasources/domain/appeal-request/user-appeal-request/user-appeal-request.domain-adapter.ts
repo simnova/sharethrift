@@ -23,15 +23,7 @@ export class UserAppealRequestDomainAdapter
 		Domain.Contexts.AppealRequest.UserAppealRequest.UserAppealRequestProps
 {
 	get user(): Domain.Contexts.User.PersonalUser.PersonalUserEntityReference {
-		if (!this.doc.user) {
-			throw new Error('user is not populated');
-		}
-		if (this.doc.user instanceof MongooseSeedwork.ObjectId) {
-			throw new TypeError('user is not populated or is not of the correct type');
-		}
-		return new PersonalUserDomainAdapter(
-			this.doc.user as Models.User.PersonalUser,
-		);
+		return this.ref('user', PersonalUserDomainAdapter);
 	}
 
 	set user(
@@ -39,16 +31,19 @@ export class UserAppealRequestDomainAdapter
 			| Domain.Contexts.User.PersonalUser.PersonalUserEntityReference
 			| Domain.Contexts.User.PersonalUser.PersonalUser<PersonalUserDomainAdapter>,
 	) {
-		if (
-			user instanceof Domain.Contexts.User.PersonalUser.PersonalUser
-		) {
-			this.doc.set('user', user.props.doc);
-			return;
-		}
-		if (!user?.id) {
-			throw new Error('user reference is missing id');
-		}
-		this.doc.set('user', new MongooseSeedwork.ObjectId(user.id));
+		this.ref('user', PersonalUserDomainAdapter, user);
+	}
+
+	get blocker(): Domain.Contexts.User.PersonalUser.PersonalUserEntityReference {
+		return this.ref('blocker', PersonalUserDomainAdapter);
+	}
+
+	set blocker(
+		blocker:
+			| Domain.Contexts.User.PersonalUser.PersonalUserEntityReference
+			| Domain.Contexts.User.PersonalUser.PersonalUser<PersonalUserDomainAdapter>,
+	) {
+		this.ref('blocker', PersonalUserDomainAdapter, blocker);
 	}
 
 	get reason(): string {
@@ -69,34 +64,5 @@ export class UserAppealRequestDomainAdapter
 
 	get type(): string {
 		return this.doc.type;
-	}
-
-	get blocker(): Domain.Contexts.User.PersonalUser.PersonalUserEntityReference {
-		if (!this.doc.blocker) {
-			throw new Error('blocker is not populated');
-		}
-		if (this.doc.blocker instanceof MongooseSeedwork.ObjectId) {
-			throw new TypeError('blocker is not populated or is not of the correct type');
-		}
-		return new PersonalUserDomainAdapter(
-			this.doc.blocker as Models.User.PersonalUser,
-		);
-	}
-
-	set blocker(
-		blocker:
-			| Domain.Contexts.User.PersonalUser.PersonalUserEntityReference
-			| Domain.Contexts.User.PersonalUser.PersonalUser<PersonalUserDomainAdapter>,
-	) {
-		if (
-			blocker instanceof Domain.Contexts.User.PersonalUser.PersonalUser
-		) {
-			this.doc.set('blocker', blocker.props.doc);
-			return;
-		}
-		if (!blocker?.id) {
-			throw new Error('blocker reference is missing id');
-		}
-		this.doc.set('blocker', new MongooseSeedwork.ObjectId(blocker.id));
 	}
 }
