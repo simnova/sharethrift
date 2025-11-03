@@ -5,6 +5,7 @@ export interface SettingsUser {
   username: string;
   email: string;
   accountType: string;
+  aboutMe?: string;
   location: {
     address1?: string;
     address2?: string;
@@ -24,6 +25,21 @@ export interface SettingsViewProps {
   user: SettingsUser;
   onEditSection: (section: string) => void;
   onChangePassword: () => void;
+
+  onSaveSection?: (
+    section: "profile" | "location" | "plan" | "billing" | "password",
+    values: any
+  ) => Promise<void>;
+  isSavingSection?: boolean;
+  mutationErrorMessage?: string;
+}
+
+export interface SettingsEditProps {
+  user: SettingsUser;
+  onSave: (values: SettingsUser) => Promise<void>;
+  onCancel: () => void;
+  isSaving?: boolean;
+  isLoading?: boolean;
 }
 
 export interface CurrentUserSettingsQueryData {
@@ -37,6 +53,7 @@ export interface CurrentUserSettingsQueryData {
       profile: {
         firstName: string;
         lastName: string;
+        aboutMe?: string;
         location: {
           address1?: string;
           address2?: string;
