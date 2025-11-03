@@ -792,6 +792,9 @@ importers:
       graphql-scalars:
         specifier: ^1.24.2
         version: 1.25.0(graphql@16.11.0)
+      mongoose:
+        specifier: 'catalog:'
+        version: 8.17.0
     devDependencies:
       '@cellix/typescript-config':
         specifier: workspace:*

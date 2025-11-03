@@ -68,6 +68,7 @@ const mockTwoListings: ItemListing[] = [
 		sharingPeriodStart: '2024-08-11T00:00:00.000Z',
 		sharingPeriodEnd: '2024-12-23T00:00:00.000Z',
 		updatedAt: '2024-08-15T12:00:00.000Z',
+		listingType: 'item-listing',
 	},
 	{
 		id: '64f7a9c2d1e5b97f3c9d0a13',
@@ -81,6 +82,7 @@ const mockTwoListings: ItemListing[] = [
 		sharingPeriodStart: '2024-08-13T00:00:00.000Z',
 		sharingPeriodEnd: '2024-12-23T00:00:00.000Z',
 		updatedAt: '2024-08-15T12:00:00.000Z',
+		listingType: 'item-listing',
 	},
 ];
 

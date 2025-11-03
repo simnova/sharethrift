@@ -30,28 +30,6 @@ interface ListingInformationContainerProps {
 	className?: string;
 }
 
-// Map backend ItemListingState to frontend ListingStatus
-// function mapListingStateToStatus(state: string | null | undefined): ListingStatus {
-//   switch (state) {
-//     case 'Published':
-//       return 'Active';
-//     case 'Paused':
-//       return 'Paused';
-//     case 'Blocked':
-//       return 'Blocked';
-//     case 'Cancelled':
-//       return 'Cancelled';
-//     case 'Expired':
-//       return 'Expired';
-//     case 'Drafted':
-//       return 'Cancelled';
-//     case 'Appeal_Requested':
-//       return 'Blocked';
-//     default:
-//       return 'Active';
-//   }
-// }
-
 export const ListingInformationContainer: React.FC<
 	ListingInformationContainerProps
 > = ({

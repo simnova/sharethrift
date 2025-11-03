@@ -59,10 +59,6 @@ export class ItemListingReadRepositoryImpl
 		options?: FindOptions,
 	): Promise<Domain.Contexts.Listing.ItemListing.ItemListingEntityReference[]> {
 		const result = await this.mongoDataSource.find({}, options);
-		if (!result || result.length === 0) {
-			// Return mock data when no real data exists
-			return getMockItemListings();
-		}
 		return result.map((doc) => this.converter.toDomain(doc, this.passport));
 	}
 

@@ -1,5 +1,5 @@
-import { List, Avatar, Empty, Tag } from 'antd';
 import { SwapOutlined } from '@ant-design/icons';
+import { Avatar, List, Tag } from 'antd';
 import type { Conversation } from '../../../../../generated.tsx';
 
 interface ConversationListProps {

@@ -1,5 +1,8 @@
 import { useQuery } from '@apollo/client/react';
-import { ComponentQueryLoader } from '@sthrift/ui-components';
+import {
+	ComponentQueryLoader,
+	type UIItemListing,
+} from '@sthrift/ui-components';
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import {
@@ -29,7 +32,7 @@ export const ListingsPageContainer: React.FC<ListingsPageContainerProps> = ({
 	);
 
 	const filteredListings = data?.itemListings
-		? data.itemListings.filter((listing: ItemListing) => {
+		? data.itemListings.filter((listing) => {
 				if (
 					selectedCategory &&
 					selectedCategory !== 'All' &&
@@ -58,7 +61,7 @@ export const ListingsPageContainer: React.FC<ListingsPageContainerProps> = ({
 	};
 
 	const navigate = useNavigate();
-	const handleListingClick = (listing: ItemListing) => {
+	const handleListingClick = (listing: UIItemListing) => {
 		navigate(`/listing/${listing.id}`);
 	};
 
@@ -94,6 +97,7 @@ export const ListingsPageContainer: React.FC<ListingsPageContainerProps> = ({
 					onCategoryChange={handleCategoryChange}
 					listings={currentListings.map(
 						(listing): ItemListing => ({
+							listingType: 'item-listing',
 							id: String(listing.id),
 							title: listing.title,
 							description: listing.description,

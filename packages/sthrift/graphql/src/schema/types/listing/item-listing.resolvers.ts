@@ -1,7 +1,7 @@
-import type { GraphContext } from '../../../init/context.ts';
-import type { Domain } from '@sthrift/domain';
 import { toGraphItem } from '../../../helpers/mapping.js';
+import type { GraphContext } from '../../../init/context.ts';
 import type { CreateItemListingInput } from '../../builder/generated.js';
+import { PopulatePersonalUserFromField } from '../../resolver-helper.ts';
 
 interface MyListingsArgs {
 	page: number;
@@ -12,26 +12,17 @@ interface MyListingsArgs {
 }
 
 const itemListingResolvers = {
+	ItemListing: {
+		sharer: PopulatePersonalUserFromField('sharer'),
+	},
 	Query: {
 		itemListings: async (
 			_parent: unknown,
 			_args: unknown,
 			context: GraphContext,
 		) => {
-			const currentUser = context.applicationServices.verifiedUser;
-			const user = currentUser?.verifiedJwt?.sub;
-
-			let listings: Domain.Contexts.Listing.ItemListing.ItemListingEntityReference[];
-
-			if (user) {
-				listings =
-					await context.applicationServices.Listing.ItemListing.queryBySharer({
-						personalUser: user,
-					});
-			} else {
-				listings =
-					await context.applicationServices.Listing.ItemListing.queryAll({});
-			}
+			const listings =
+				await context.applicationServices.Listing.ItemListing.queryAll({});
 
 			return listings.map(toGraphItem);
 		},

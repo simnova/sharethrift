@@ -124,6 +124,7 @@ export const getMockConversations =
 			schemaVersion: '1',
 			sharingHistory: [],
 			reports: 0,
+			listingType: 'item-listing',
 		});
 
 		// Create mock users
@@ -153,9 +154,21 @@ export const getMockConversations =
 		);
 
 		// Create mock listings
-		const bikeListing = createMockListing('64f7a9c2d1e5b97f3c9d0a41', 'City Bike', alice);
-		const cameraListing = createMockListing('64f7a9c2d1e5b97f3c9d0a42', 'Camera', bob);
-		const tentListing = createMockListing('64f7a9c2d1e5b97f3c9d0a43', 'Camping Tent', carol);
+		const bikeListing = createMockListing(
+			'64f7a9c2d1e5b97f3c9d0a41',
+			'City Bike',
+			alice,
+		);
+		const cameraListing = createMockListing(
+			'64f7a9c2d1e5b97f3c9d0a42',
+			'Camera',
+			bob,
+		);
+		const tentListing = createMockListing(
+			'64f7a9c2d1e5b97f3c9d0a43',
+			'Camping Tent',
+			carol,
+		);
 
 		const mockConversations: Domain.Contexts.Conversation.Conversation.ConversationEntityReference[] =
 			[
@@ -166,57 +179,58 @@ export const getMockConversations =
 					listing: bikeListing,
 					twilioConversationId: 'CH123',
 					messages: [
-                        {
-                            id: '64f7a9c2d1e5b97f3c9d0c09',
-                            twilioMessageSid: '64f7a9c2d1e5b97f3c9d0c02',
-                            authorId: new ObjectId(alice.id),
-                            content: 'Hello, is the bike still available?',
-                            createdAt: new Date('2025-08-08T10:05:00Z'),
-                        },
-                        {
-                            id: '64f7a9c2d1e5b97f3c9d0c10',
-                            twilioMessageSid: '64f7a9c2d1e5b97f3c9d0c03',
-                            authorId: new ObjectId(currentUser.id),
-                            content: 'Yes, it is! When would you like to pick it up?',
-                            createdAt: new Date('2025-08-08T11:00:00Z'),
-                        },
-                        {
-                            id: '64f7a9c2d1e5b97f3c9d0c11',
-                            twilioMessageSid: '64f7a9c2d1e5b97f3c9d0c04',
-                            authorId: new ObjectId(alice.id),
-                            content: 'I can come by this Saturday morning.',
-                            createdAt: new Date('2025-08-08T11:30:00Z'),
-                        }
-                    ],
+						{
+							id: '64f7a9c2d1e5b97f3c9d0c09',
+							twilioMessageSid: '64f7a9c2d1e5b97f3c9d0c02',
+							authorId: new ObjectId(alice.id),
+							content: 'Hello, is the bike still available?',
+							createdAt: new Date('2025-08-08T10:05:00Z'),
+						},
+						{
+							id: '64f7a9c2d1e5b97f3c9d0c10',
+							twilioMessageSid: '64f7a9c2d1e5b97f3c9d0c03',
+							authorId: new ObjectId(currentUser.id),
+							content: 'Yes, it is! When would you like to pick it up?',
+							createdAt: new Date('2025-08-08T11:00:00Z'),
+						},
+						{
+							id: '64f7a9c2d1e5b97f3c9d0c11',
+							twilioMessageSid: '64f7a9c2d1e5b97f3c9d0c04',
+							authorId: new ObjectId(alice.id),
+							content: 'I can come by this Saturday morning.',
+							createdAt: new Date('2025-08-08T11:30:00Z'),
+						},
+					],
 					createdAt: new Date('2025-08-08T10:00:00Z'),
 					updatedAt: new Date('2025-08-08T12:00:00Z'),
 					schemaVersion: '1',
 					loadSharer: () => Promise.resolve(alice),
 					loadReserver: () => Promise.resolve(currentUser),
 					loadListing: () => Promise.resolve(bikeListing),
-					loadMessages: () => Promise.resolve([
-                        {
-                            id: '64f7a9c2d1e5b97f3c9d0c09',
-                            twilioMessageSid: '64f7a9c2d1e5b97f3c9d0c02',
-                            authorId: new ObjectId(alice.id),
-                            content: 'Hello, is the bike still available?',
-                            createdAt: new Date('2025-08-08T10:05:00Z'),
-                        },
-                        {
-                            id: '64f7a9c2d1e5b97f3c9d0c10',
-                            twilioMessageSid: '64f7a9c2d1e5b97f3c9d0c03',
-                            authorId: new ObjectId(currentUser.id),
-                            content: 'Yes, it is! When would you like to pick it up?',
-                            createdAt: new Date('2025-08-08T11:00:00Z'),
-                        },
-                        {
-                            id: '64f7a9c2d1e5b97f3c9d0c11',
-                            twilioMessageSid: '64f7a9c2d1e5b97f3c9d0c04',
-                            authorId: new ObjectId(alice.id),
-                            content: 'I can come by this Saturday morning.',
-                            createdAt: new Date('2025-08-08T11:30:00Z'),
-                        }
-                    ]),
+					loadMessages: () =>
+						Promise.resolve([
+							{
+								id: '64f7a9c2d1e5b97f3c9d0c09',
+								twilioMessageSid: '64f7a9c2d1e5b97f3c9d0c02',
+								authorId: new ObjectId(alice.id),
+								content: 'Hello, is the bike still available?',
+								createdAt: new Date('2025-08-08T10:05:00Z'),
+							},
+							{
+								id: '64f7a9c2d1e5b97f3c9d0c10',
+								twilioMessageSid: '64f7a9c2d1e5b97f3c9d0c03',
+								authorId: new ObjectId(currentUser.id),
+								content: 'Yes, it is! When would you like to pick it up?',
+								createdAt: new Date('2025-08-08T11:00:00Z'),
+							},
+							{
+								id: '64f7a9c2d1e5b97f3c9d0c11',
+								twilioMessageSid: '64f7a9c2d1e5b97f3c9d0c04',
+								authorId: new ObjectId(alice.id),
+								content: 'I can come by this Saturday morning.',
+								createdAt: new Date('2025-08-08T11:30:00Z'),
+							},
+						]),
 				},
 				{
 					id: '64f7a9c2d1e5b97f3c9d0c02',
@@ -225,17 +239,20 @@ export const getMockConversations =
 					listing: cameraListing,
 					twilioConversationId: 'CH124',
 					messages: [
-						{ id: '64f7a9c2d1e5b97f3c9d0c00',
+						{
+							id: '64f7a9c2d1e5b97f3c9d0c00',
 							twilioMessageSid: '64f7a9c2d1e5b97f3c9d0c00',
 							authorId: new ObjectId(currentUser.id),
-							content: 'Hi! I\'m interested in borrowing your camera. When is it available?',
+							content:
+								"Hi! I'm interested in borrowing your camera. When is it available?",
 							createdAt: new Date('2025-08-07T09:15:00Z'),
 						},
 						{
 							id: '64f7a9c2d1e5b97f3c9d0c01',
 							twilioMessageSid: '64f7a9c2d1e5b97f3c9d0c01',
 							authorId: new ObjectId(bob.id),
-							content: 'Hi! Yes, it\'s available from tomorrow onwards. What do you plan to use it for?',
+							content:
+								"Hi! Yes, it's available from tomorrow onwards. What do you plan to use it for?",
 							createdAt: new Date('2025-08-07T10:00:00Z'),
 						},
 					],
@@ -245,22 +262,25 @@ export const getMockConversations =
 					loadSharer: () => Promise.resolve(bob),
 					loadReserver: () => Promise.resolve(currentUser),
 					loadListing: () => Promise.resolve(cameraListing),
-					loadMessages: () => Promise.resolve([
-						{
-							id: '64f7a9c2d1e5b97f3c9d0c00',
-							twilioMessageSid: 'SM124',
-							authorId: new ObjectId(currentUser.id),
-							content: 'Hi! I\'m interested in borrowing your camera. When is it available?',
-							createdAt: new Date('2025-08-07T09:15:00Z'),
-						},
-						{
-							id: '64f7a9c2d1e5b97f3c9d0c00',
-							twilioMessageSid: 'SM125',
-							authorId: new ObjectId(bob.id),
-							content: 'Hi! Yes, it\'s available from tomorrow onwards. What do you plan to use it for?',
-							createdAt: new Date('2025-08-07T10:00:00Z'),
-						},
-					]),
+					loadMessages: () =>
+						Promise.resolve([
+							{
+								id: '64f7a9c2d1e5b97f3c9d0c00',
+								twilioMessageSid: 'SM124',
+								authorId: new ObjectId(currentUser.id),
+								content:
+									"Hi! I'm interested in borrowing your camera. When is it available?",
+								createdAt: new Date('2025-08-07T09:15:00Z'),
+							},
+							{
+								id: '64f7a9c2d1e5b97f3c9d0c00',
+								twilioMessageSid: 'SM125',
+								authorId: new ObjectId(bob.id),
+								content:
+									"Hi! Yes, it's available from tomorrow onwards. What do you plan to use it for?",
+								createdAt: new Date('2025-08-07T10:00:00Z'),
+							},
+						]),
 				},
 				{
 					id: '64f7a9c2d1e5b97f3c9d0c03',
@@ -273,14 +293,16 @@ export const getMockConversations =
 							id: '64f7a9c2d1e5b97f3c9d0c03',
 							twilioMessageSid: '64f7a9c2d1e5b97f3c9d0c03',
 							authorId: new ObjectId(currentUser.id),
-							content: 'Hello! I need a tent for a weekend camping trip. Is yours still available?',
+							content:
+								'Hello! I need a tent for a weekend camping trip. Is yours still available?',
 							createdAt: new Date('2025-08-06T08:30:00Z'),
 						},
 						{
 							id: '64f7a9c2d1e5b97f3c9d0c04',
 							twilioMessageSid: '64f7a9c2d1e5b97f3c9d0c04',
 							authorId: new ObjectId(carol.id),
-							content: 'Hi! Yes, it\'s available. It\'s a 4-person tent, perfect for camping!',
+							content:
+								"Hi! Yes, it's available. It's a 4-person tent, perfect for camping!",
 							createdAt: new Date('2025-08-06T09:15:00Z'),
 						},
 						{
@@ -297,29 +319,32 @@ export const getMockConversations =
 					loadSharer: () => Promise.resolve(carol),
 					loadReserver: () => Promise.resolve(currentUser),
 					loadListing: () => Promise.resolve(tentListing),
-					loadMessages: () => Promise.resolve([
-						{
-							id: '64f7a9c2d1e5b97f3c9d0c00',
-							twilioMessageSid: 'SM126',
-							authorId: new ObjectId(currentUser.id),
-							content: 'Hello! I need a tent for a weekend camping trip. Is yours still available?',
-							createdAt: new Date('2025-08-06T08:30:00Z'),
-						},
-						{
-							id: '64f7a9c2d1e5b97f3c9d0c00',
-							twilioMessageSid: 'SM127',
-							authorId: new ObjectId(carol.id),
-							content: 'Hi! Yes, it\'s available. It\'s a 4-person tent, perfect for camping!',
-							createdAt: new Date('2025-08-06T09:15:00Z'),
-						},
-						{
-							id: '64f7a9c2d1e5b97f3c9d0c00',
-							twilioMessageSid: 'SM128',
-							authorId: new ObjectId(currentUser.id),
-							content: 'Perfect! When can I pick it up?',
-							createdAt: new Date('2025-08-06T09:45:00Z'),
-						},
-					]),
+					loadMessages: () =>
+						Promise.resolve([
+							{
+								id: '64f7a9c2d1e5b97f3c9d0c00',
+								twilioMessageSid: 'SM126',
+								authorId: new ObjectId(currentUser.id),
+								content:
+									'Hello! I need a tent for a weekend camping trip. Is yours still available?',
+								createdAt: new Date('2025-08-06T08:30:00Z'),
+							},
+							{
+								id: '64f7a9c2d1e5b97f3c9d0c00',
+								twilioMessageSid: 'SM127',
+								authorId: new ObjectId(carol.id),
+								content:
+									"Hi! Yes, it's available. It's a 4-person tent, perfect for camping!",
+								createdAt: new Date('2025-08-06T09:15:00Z'),
+							},
+							{
+								id: '64f7a9c2d1e5b97f3c9d0c00',
+								twilioMessageSid: 'SM128',
+								authorId: new ObjectId(currentUser.id),
+								content: 'Perfect! When can I pick it up?',
+								createdAt: new Date('2025-08-06T09:45:00Z'),
+							},
+						]),
 				},
 			];
 

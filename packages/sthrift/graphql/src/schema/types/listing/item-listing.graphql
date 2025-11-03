@@ -10,6 +10,7 @@ type ItemListing implements MongoBase {
   sharingHistory: [String!]
   reports: Int
   images: [String!] # Array of image URLs
+  listingType: String!
   id: ObjectID!
   schemaVersion: String
   createdAt: DateTime
