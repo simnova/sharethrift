@@ -79,6 +79,7 @@ describe('ReservationRequest', () => {
 				profile: {
 					firstName: 'Mock',
 					lastName: 'User',
+                    aboutMe: 'Hello',
 					location: {
 						address1: '123 Main St',
 						address2: null,

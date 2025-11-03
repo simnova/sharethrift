@@ -13,6 +13,7 @@ export const personalUsers = [
 			profile: {
 				firstName: 'Alice',
 				lastName: 'Smith',
+                aboutMe: 'Hello',
 				location: {
 					address1: '123 Main St',
 					address2: null,
@@ -48,6 +49,7 @@ export const personalUsers = [
 			profile: {
 				firstName: 'Bob',
 				lastName: 'Johnson',
+                aboutMe: 'Hello',
 				location: {
 					address1: '456 Oak Ave',
 					address2: 'Apt 2',

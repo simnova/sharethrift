@@ -26,6 +26,7 @@ type PersonalUserAccount {
 type PersonalUserAccountProfile {
 	firstName: String
 	lastName: String
+	aboutMe: String
 	location: PersonalUserAccountProfileLocation
 	billing: PersonalUserAccountProfileBilling
 }
@@ -64,6 +65,7 @@ input PersonalUserAccountProfileUpdateInput {
 	lastName: String
 	location: PersonalUserAccountProfileLocationUpdateInput
 	billing: PersonalUserAccountProfileBillingUpdateInput
+    aboutMe: String
 }
 
 input PersonalUserAccountProfileLocationUpdateInput {
