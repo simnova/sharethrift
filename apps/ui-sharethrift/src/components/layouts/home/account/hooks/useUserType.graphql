@@ -1,6 +1,12 @@
-query GetCurrentAdminUser {
-	currentAdminUser {
-		id
-		userType
+query GetCurrentUser {
+	currentUser {
+		... on PersonalUser {
+			id
+			userType
+		}
+		... on AdminUser {
+			id
+			userType
+		}
 	}
 }

@@ -1,1 +1,23 @@
-union User = PersonalUser
+union User = PersonalUser | AdminUser
+
+type UserPage {
+	items: [User!]!
+	total: Int!
+	page: Int!
+	pageSize: Int!
+}
+
+extend type Query {
+	# Unified query - returns current user regardless of type
+	currentUser: User!
+
+	# List all users (both PersonalUser and AdminUser) for admin dashboard
+	allSystemUsers(
+		page: Int!
+		pageSize: Int!
+		searchText: String
+		userTypeFilter: [String!] # ["personal", "admin"]
+		statusFilters: [String!]
+		sorter: SorterInput
+	): UserPage!
+}

@@ -1,36 +1,46 @@
 query HomeAccountProfileViewContainerCurrentUser {
-	currentPersonalUserAndCreateIfNotExists {
-		id
-		userType
-		account {
-			accountType
-			email
-			username
-			profile {
-				firstName
-				lastName
-				location {
-					city
-					state
+	currentUser {
+		... on PersonalUser {
+			id
+			userType
+			createdAt
+			account {
+				accountType
+				email
+				username
+				profile {
+					firstName
+					lastName
+					location {
+						city
+						state
+					}
 				}
 			}
 		}
-		createdAt
-	}
-}
-
-query HomeAccountProfileViewContainerCurrentAdminUser {
-	currentAdminUser {
-		id
-		userType
-		account {
-			accountType
-			email
-			username
-			firstName
-			lastName
+		... on AdminUser {
+			id
+			userType
+			createdAt
+			account {
+				accountType
+				email
+				username
+				firstName
+				lastName
+			}
+			role {
+				id
+				roleName
+				permissions {
+					userPermissions {
+						canViewAllUsers
+						canEditUsers
+						canBlockUsers
+					}
+				}
+			}
 		}
-		createdAt
 	}
 }
 
