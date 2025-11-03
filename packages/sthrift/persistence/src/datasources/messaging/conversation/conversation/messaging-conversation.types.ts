@@ -1,75 +1,54 @@
 /**
  * Messaging API Response Types
- * These types match the responses from messaging services like Twilio's Conversations API
- * (or our mock server that mimics Twilio's API)
+ * 
+ * These types define what the persistence layer expects from messaging services
+ * for domain entity mapping. They align with the facade ConversationInstance/MessageInstance
+ * but include additional fields needed for domain construction.
+ * 
+ * The repository layer receives facade types from services and casts them to these
+ * types to access metadata and additional fields preserved by the providers.
  */
 
 export interface MessagingConversationResponse {
-	sid: string;
-	account_sid: string;
-	friendly_name?: string;
-	unique_name?: string;
-	date_created: string;
-	date_updated: string;
-	state: 'active' | 'inactive' | 'closed';
-	timers?: Record<string, unknown>;
-	messaging_service_sid?: string;
-	url?: string;
-	links?: Record<string, string>;
+	id: string;
+	displayName?: string;
+	createdAt: string;
+	updatedAt: string;
+	state?: 'active' | 'inactive' | 'closed';
+	metadata?: {
+		originalSid?: string;
+		accountSid?: string;
+		uniqueName?: string;
+		[key: string]: unknown;
+	};
 }
 
 export interface MessagingMessageResponse {
-	sid: string;
-	account_sid: string;
-	conversation_sid: string;
+	id: string;
 	body: string;
 	author?: string;
-	participant_sid?: string;
-	date_created: string;
-	date_updated?: string;
-	index: number;
-	delivery?: Record<string, unknown>;
-	url?: string;
-	links?: Record<string, string>;
+	createdAt: string;
+	metadata?: {
+		originalSid?: string;
+		conversationId?: string;
+		participantSid?: string;
+		index?: number;
+		[key: string]: unknown;
+	};
 }
 
 export interface MessagingParticipantResponse {
-	sid: string;
-	account_sid: string;
-	conversation_sid: string;
+	id: string;
 	identity?: string;
-	messaging_binding?: {
-		type: string;
-		address: string;
-		proxy_address?: string;
+	createdAt: string;
+	metadata?: {
+		originalSid?: string;
+		conversationId?: string;
+		messagingBinding?: {
+			type: string;
+			address: string;
+			[key: string]: unknown;
+		};
+		[key: string]: unknown;
 	};
-	date_created: string;
-	date_updated?: string;
-	role_sid?: string;
-	url?: string;
-	links?: Record<string, string>;
-}
-
-export interface MessagingPaginatedResponse<_T> {
-	meta: {
-		page: number;
-		page_size: number;
-		first_page_url: string;
-		previous_page_url?: string;
-		next_page_url?: string;
-		url: string;
-		key?: string;
-	};
-}
-
-export interface MessagingConversationsListResponse extends MessagingPaginatedResponse<MessagingConversationResponse> {
-	conversations: MessagingConversationResponse[];
-}
-
-export interface MessagingMessagesListResponse extends MessagingPaginatedResponse<MessagingMessageResponse> {
-	messages: MessagingMessageResponse[];
-}
-
-export interface MessagingParticipantsListResponse extends MessagingPaginatedResponse<MessagingParticipantResponse> {
-	participants: MessagingParticipantResponse[];
 }

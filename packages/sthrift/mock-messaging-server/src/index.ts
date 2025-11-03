@@ -8,28 +8,21 @@ import { setupParticipantRoutes } from './routes/participants.ts';
 import { setupMockUtilRoutes } from './routes/mock-utils.ts';
 import { seedMockData } from './seed/seed-data.ts';
 
-// Load environment variables from .env file
 config();
 
-/**
- * Create and configure the Express application
- */
 export function createApp(): Application {
 	const app = express();
 
 	app.disable('x-powered-by');
 
-	// Middleware
 	app.use(express.json());
 	app.use(express.urlencoded({ extended: true }));
 
-	// Basic logging middleware
 	app.use((req: Request, _res: Response, next) => {
 		console.log(`${req.method} ${req.path}`);
 		next();
 	});
 
-	// Health check endpoint
 	app.get('/', (_req: Request, res: Response) => {
 		res.json({
 			service: 'Mock Twilio Server',
@@ -44,7 +37,6 @@ export function createApp(): Application {
 		});
 	});
 
-	// Setup routes
 	const router = express.Router();
 	setupConversationRoutes(router);
 	setupMessageRoutes(router);
@@ -53,7 +45,6 @@ export function createApp(): Application {
 
 	app.use(router);
 
-	// 404 handler
 	app.use((_req: Request, res: Response) => {
 		res.status(404).json({
 			status: 404,
@@ -63,7 +54,6 @@ export function createApp(): Application {
 		});
 	});
 
-	// Error handler
 	app.use((err: Error, _req: Request, res: Response) => {
 		console.error('Unhandled error:', err);
 		res.status(500).json({
@@ -76,9 +66,6 @@ export function createApp(): Application {
 	return app;
 }
 
-/**
- * Start the mock Twilio server programmatically
- */
 export function startServer(port = 10000, seedData = false): Promise<Server> {
 	return new Promise((resolve) => {
 		const app = createApp();
@@ -96,9 +83,6 @@ export function startServer(port = 10000, seedData = false): Promise<Server> {
 	});
 }
 
-/**
- * Stop the mock Twilio server
- */
 export function stopServer(server: Server): Promise<void> {
 	return new Promise((resolve, reject) => {
 		server.close((err) => {

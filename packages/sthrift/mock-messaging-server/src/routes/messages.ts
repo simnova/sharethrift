@@ -3,39 +3,33 @@ import { store } from '../store.ts';
 import type { MessagesListResponse } from '../types.ts';
 
 export function setupMessageRoutes(router: Router): void {
-	/**
-	 * Create a new message in a conversation
-	 * POST /v1/Conversations/:conversationSid/Messages
-	 */
 	router.post(
-		'/v1/Conversations/:conversationSid/Messages',
+		'/v1/Conversations/:conversationId/Messages',
 		(req: Request, res: Response) => {
 		try {
-			const { conversationSid } = req.params as { conversationSid: string };
-			const { Body, Author, ParticipantSid } = req.body;				if (!Body) {
+			const { conversationId } = req.params as { conversationId: string };
+			const { Body, Author, ParticipantId } = req.body;				if (!Body) {
 					return res.status(400).json({
 						status: 400,
 						message: 'Body is required',
 						code: 20001,
-						more_info: 'https://www.twilio.com/docs/errors/20001',
 					});
 				}
 
-				const conversation = store.getConversation(conversationSid);
+				const conversation = store.getConversation(conversationId);
 				if (!conversation) {
 					return res.status(404).json({
 						status: 404,
 						message: 'The requested resource was not found',
 						code: 20404,
-						more_info: 'https://www.twilio.com/docs/errors/20404',
 					});
 				}
 
 				const message = store.createMessage(
-					conversationSid,
+					conversationId,
 					Body,
 					Author,
-					ParticipantSid,
+					ParticipantId,
 				);
 
 				return res.status(201).json(message);
@@ -49,32 +43,27 @@ export function setupMessageRoutes(router: Router): void {
 		},
 	);
 	
-	/**
-	 * List messages in a conversation
-	 * GET /v1/Conversations/:conversationSid/Messages
-	 */
 	router.get(
-		'/v1/Conversations/:conversationSid/Messages',
+		'/v1/Conversations/:conversationId/Messages',
 		(req: Request, res: Response) => {
 			try {
-				const { conversationSid } = req.params as { conversationSid: string };
+				const { conversationId } = req.params as { conversationId: string };
 				// biome-ignore lint/complexity/useLiteralKeys: Required by TypeScript noPropertyAccessFromIndexSignature
 				const page = Number.parseInt((req.query['Page'] as string) ?? '0', 10) || 0;
 				// biome-ignore lint/complexity/useLiteralKeys: Required by TypeScript noPropertyAccessFromIndexSignature
 				const pageSize = Number.parseInt((req.query['PageSize'] as string) ?? '50', 10) || 50;
 
-				const conversation = store.getConversation(conversationSid);
+				const conversation = store.getConversation(conversationId);
 				if (!conversation) {
 					return res.status(404).json({
 						status: 404,
 						message: 'The requested resource was not found',
 						code: 20404,
-						more_info: 'https://www.twilio.com/docs/errors/20404',
 					});
 				}
 
-				const messages = store.getMessages(conversationSid, page, pageSize);
-				const totalCount = store.getMessageCount(conversationSid);
+				const messages = store.getMessages(conversationId, page, pageSize);
+				const totalCount = store.getMessageCount(conversationId);
 				const hasNextPage = (page + 1) * pageSize < totalCount;
 				const hasPreviousPage = page > 0;
 
@@ -83,18 +72,18 @@ export function setupMessageRoutes(router: Router): void {
 					meta: {
 						page,
 						page_size: pageSize,
-						first_page_url: `/v1/Conversations/${conversationSid}/Messages?PageSize=${pageSize}&Page=0`,
-						url: `/v1/Conversations/${conversationSid}/Messages?PageSize=${pageSize}&Page=${page}`,
+						first_page_url: `/v1/Conversations/${conversationId}/Messages?PageSize=${pageSize}&Page=0`,
+						url: `/v1/Conversations/${conversationId}/Messages?PageSize=${pageSize}&Page=${page}`,
 						key: 'messages',
 					},
 				};
 
 				if (hasNextPage) {
-					response.meta.next_page_url = `/v1/Conversations/${conversationSid}/Messages?PageSize=${pageSize}&Page=${page + 1}`;
+					response.meta.next_page_url = `/v1/Conversations/${conversationId}/Messages?PageSize=${pageSize}&Page=${page + 1}`;
 				}
 
 				if (hasPreviousPage) {
-					response.meta.previous_page_url = `/v1/Conversations/${conversationSid}/Messages?PageSize=${pageSize}&Page=${page - 1}`;
+					response.meta.previous_page_url = `/v1/Conversations/${conversationId}/Messages?PageSize=${pageSize}&Page=${page - 1}`;
 				}
 
 				return res.status(200).json(response);

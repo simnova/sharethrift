@@ -37,7 +37,7 @@ DefaultView.parameters = {
               {
                 __typename: "Conversation",
                 id: "64f7a9c2d1e5b97f3c9d0c01",
-                twilioConversationId: "CH123",
+                messagingConversationId: "CH123",
                 createdAt: "2025-08-08T10:00:00Z",
                 updatedAt: "2025-08-08T12:00:00Z",
                 sharer: {
@@ -74,7 +74,7 @@ DefaultView.parameters = {
               {
                 __typename: "Conversation",
                 id: "64f7a9c2d1e5b97f3c9d0c02",
-                twilioConversationId: "CH124",
+                messagingConversationId: "CH124",
                 createdAt: "2025-08-07T09:00:00Z",
                 updatedAt: "2025-08-08T11:30:00Z",
                 sharer: {
@@ -124,7 +124,7 @@ DefaultView.parameters = {
             conversation: {
               __typename: "Conversation",
               id: "64f7a9c2d1e5b97f3c9d0c01",
-              twilioConversationId: "CH123",
+              messagingConversationId: "CH123",
               createdAt: "2025-08-08T10:00:00Z",
               updatedAt: "2025-08-08T12:00:00Z",
               schemaVersion: "1",
@@ -167,7 +167,7 @@ DefaultView.parameters = {
                 {
                   __typename: "Message",
                   id: "64f7a9c2d1e5b97f3c9d0c09",
-                  twilioMessageSid: "SM001",
+                  messagingMessageId: "SM001",
                   authorId: "507f1f77bcf86cd799439099",
                   content: "Hi Alice! I'm interested in borrowing your bike.",
                   createdAt: "2025-08-08T10:05:00Z",
@@ -175,7 +175,7 @@ DefaultView.parameters = {
                 {
                   __typename: "Message",
                   id: "64f7a9c2d1e5b97f3c9d0c10",
-                  twilioMessageSid: "SM002",
+                  messagingMessageId: "SM002",
                   authorId: "507f1f77bcf86cd799439011",
                   content: "Hi! Yes, it's available.",
                   createdAt: "2025-08-08T10:15:00Z",

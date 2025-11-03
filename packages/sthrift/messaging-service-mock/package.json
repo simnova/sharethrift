@@ -1,5 +1,5 @@
 {
-    "name": "@sthrift/mock-service-twilio",
+    "name": "@sthrift/messaging-service-mock",
     "version": "1.0.0",
     "main": "dist/src/index.js",
     "types": "dist/src/index.d.ts",
@@ -29,6 +29,6 @@
         "@cellix/typescript-config": "workspace:*",
         "@cellix/vitest-config": "workspace:*",
         "@types/node": "^22.0.0",
-        "@sthrift/mock-twilio-server": "workspace:*"
+        "@sthrift/mock-messaging-server": "workspace:*"
     }
 }

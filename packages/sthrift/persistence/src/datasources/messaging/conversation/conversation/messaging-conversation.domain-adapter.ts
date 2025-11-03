@@ -15,58 +15,59 @@ import { ObjectId } from 'bson';
  * Note: This creates a simplified adapter that can be used to construct domain entities
  */
 export function toDomainConversationProps(
-		twilioConversation: MessagingConversationResponse,
+		messagingConversation: MessagingConversationResponse,
 		sharer: Domain.Contexts.User.PersonalUser.PersonalUserEntityReference,
 		reserver: Domain.Contexts.User.PersonalUser.PersonalUserEntityReference,
 		listing: Domain.Contexts.Listing.ItemListing.ItemListingEntityReference,
 		messages: Domain.Contexts.Conversation.Conversation.MessageEntityReference[],
 	): Domain.Contexts.Conversation.Conversation.ConversationProps {
+
+		const messagingId = messagingConversation.metadata?.originalSid || messagingConversation.id;
+		
 		return {
-			id: twilioConversation.sid, // Use Twilio SID as the ID
+			id: messagingConversation.id,
 			sharer,
 			loadSharer: async () => sharer,
 			reserver,
 			loadReserver: async () => reserver,
 			listing,
 			loadListing: async () => listing,
-			twilioConversationId: twilioConversation.sid,
+			messagingConversationId: messagingId,
 			messages,
 			loadMessages: async () => messages,
-			createdAt: new Date(twilioConversation.date_created),
-			updatedAt: new Date(twilioConversation.date_updated),
+			createdAt: new Date(messagingConversation.createdAt),
+			updatedAt: new Date(messagingConversation.updatedAt),
 			schemaVersion: '1.0.0',
 		};
 	}
 
-/**
- * Convert messaging message response to domain Message entity
- */
 export function toDomainMessage(
-		twilioMessage: MessagingMessageResponse,
+		messagingMessage: MessagingMessageResponse,
 		authorId: ObjectId,
 	): Domain.Contexts.Conversation.Conversation.MessageEntityReference {
-		const twilioMessageSid = new Domain.Contexts.Conversation.Conversation.TwilioMessageSid(
-			twilioMessage.sid,
+		const messagingId = messagingMessage.metadata?.originalSid || messagingMessage.id;
+		
+		const messagingMessageId = new Domain.Contexts.Conversation.Conversation.MessagingMessageId(
+			messagingId,
 		);
 		const content = new Domain.Contexts.Conversation.Conversation.MessageContent(
-			twilioMessage.body,
+			messagingMessage.body,
 		);
 
 		return new Domain.Contexts.Conversation.Conversation.Message({
-			id: twilioMessage.sid,
-			twilioMessageSid,
+			id: messagingMessage.id,
+			messagingMessageId,
 			authorId,
 			content,
-			createdAt: new Date(twilioMessage.date_created),
+			createdAt: new Date(messagingMessage.createdAt),
 		});
-	}/**
- * Convert array of messaging messages to domain Message entities
- */
+	}
+
 export function toDomainMessages(
-	twilioMessages: MessagingMessageResponse[],
-	authorIdMap: Map<string, ObjectId>, // Maps author email/identity to ObjectId
+	messagingMessages: MessagingMessageResponse[],
+	authorIdMap: Map<string, ObjectId>,
 ): Domain.Contexts.Conversation.Conversation.MessageEntityReference[] {
-	return twilioMessages.map((msg) => {
+	return messagingMessages.map((msg) => {
 		const authorId = msg.author
 			? (authorIdMap.get(msg.author) ?? new ObjectId())
 			: new ObjectId();

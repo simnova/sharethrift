@@ -3,15 +3,10 @@ import { store } from '../store.ts';
 import type { ConversationsListResponse } from '../types.ts';
 
 export function setupConversationRoutes(router: Router): void {
-	/**
-	 * Create a new conversation
-	 * POST /v1/Conversations
-	 */
 	router.post('/v1/Conversations', (req: Request, res: Response) => {
 		try {
-			const { FriendlyName, UniqueName } = req.body;
+			const { DisplayName, UniqueName } = req.body;
 
-			// Check if unique name already exists
 			if (UniqueName) {
 				const existing = store.getConversationByUniqueName(UniqueName);
 				if (existing) {
@@ -19,12 +14,11 @@ export function setupConversationRoutes(router: Router): void {
 						status: 409,
 						message: 'A conversation with this unique name already exists',
 						code: 60201,
-						more_info: 'https://www.twilio.com/docs/errors/60201',
 					});
 				}
 			}
 
-			const conversation = store.createConversation(FriendlyName, UniqueName);
+			const conversation = store.createConversation(DisplayName, UniqueName);
 			return res.status(201).json(conversation);
 		} catch (error) {
 			console.error('Error creating conversation:', error);
@@ -35,21 +29,16 @@ export function setupConversationRoutes(router: Router): void {
 		}
 	});
 
-	/**
-	 * Get a conversation by SID
-	 * GET /v1/Conversations/:conversationSid
-	 */
-	router.get('/v1/Conversations/:conversationSid', (req: Request, res: Response) => {
+	router.get('/v1/Conversations/:conversationId', (req: Request, res: Response) => {
 		try {
-			const { conversationSid } = req.params as { conversationSid: string };
-			const conversation = store.getConversation(conversationSid);
+			const { conversationId } = req.params as { conversationId: string };
+			const conversation = store.getConversation(conversationId);
 
 			if (!conversation) {
 				return res.status(404).json({
 					status: 404,
 					message: 'The requested resource was not found',
 					code: 20404,
-					more_info: 'https://www.twilio.com/docs/errors/20404',
 				});
 			}
 
@@ -63,10 +52,6 @@ export function setupConversationRoutes(router: Router): void {
 		}
 	});
 
-	/**
-	 * List conversations
-	 * GET /v1/Conversations
-	 */
 	router.get('/v1/Conversations', (req: Request, res: Response) => {
 		try {
 			// biome-ignore lint/complexity/useLiteralKeys: Required by TypeScript noPropertyAccessFromIndexSignature
@@ -108,34 +93,29 @@ export function setupConversationRoutes(router: Router): void {
 		}
 	});
 
-	/**
-	 * Update a conversation
-	 * POST /v1/Conversations/:conversationSid
-	 */
-	router.post('/v1/Conversations/:conversationSid', (req: Request, res: Response) => {
+	router.post('/v1/Conversations/:conversationId', (req: Request, res: Response) => {
 		try {
-			const { conversationSid } = req.params as { conversationSid: string };
-			const { FriendlyName, State } = req.body;
+			const { conversationId } = req.params as { conversationId: string };
+			const { DisplayName, State } = req.body;
 
-			const conversation = store.getConversation(conversationSid);
+			const conversation = store.getConversation(conversationId);
 			if (!conversation) {
 				return res.status(404).json({
 					status: 404,
 					message: 'The requested resource was not found',
 					code: 20404,
-					more_info: 'https://www.twilio.com/docs/errors/20404',
 				});
 			}
 
 			const updates: Partial<typeof conversation> = {};
-			if (FriendlyName !== undefined) {
-				updates.friendly_name = FriendlyName;
+			if (DisplayName !== undefined) {
+				updates.display_name = DisplayName;
 			}
 			if (State !== undefined) {
 				updates.state = State;
 			}
 
-			const updated = store.updateConversation(conversationSid, updates);
+			const updated = store.updateConversation(conversationId, updates);
 			return res.status(200).json(updated);
 		} catch (error) {
 			console.error('Error updating conversation:', error);
@@ -146,21 +126,16 @@ export function setupConversationRoutes(router: Router): void {
 		}
 	});
 
-	/**
-	 * Delete a conversation
-	 * DELETE /v1/Conversations/:conversationSid
-	 */
-	router.delete('/v1/Conversations/:conversationSid', (req: Request, res: Response) => {
+	router.delete('/v1/Conversations/:conversationId', (req: Request, res: Response) => {
 		try {
-			const { conversationSid } = req.params as { conversationSid: string };
-			const deleted = store.deleteConversation(conversationSid);
+			const { conversationId } = req.params as { conversationId: string };
+			const deleted = store.deleteConversation(conversationId);
 
 			if (!deleted) {
 				return res.status(404).json({
 					status: 404,
 					message: 'The requested resource was not found',
 					code: 20404,
-					more_info: 'https://www.twilio.com/docs/errors/20404',
 				});
 			}
 

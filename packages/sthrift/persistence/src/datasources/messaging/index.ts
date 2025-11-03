@@ -1,5 +1,5 @@
 import type { Domain } from '@sthrift/domain';
-import type { IMessagingService } from '@cellix/messaging';
+import type { MessagingService } from '@cellix/messaging';
 import { MessagingConversationContext } from './conversation/index.ts';
 import type * as Conversation from './conversation/conversation/index.ts';
 
@@ -11,10 +11,10 @@ import type * as Conversation from './conversation/conversation/index.ts';
  * but specifically handles messaging API interactions.
  * 
  * The messaging service can be configured to use either:
- * - Mock Twilio server (for local development/testing)
+ * - Mock messaging server (for local development/testing)
  * - Real Twilio API (for production)
  * 
- * This is controlled via the TWILIO_USE_MOCK environment variable.
+ * This is controlled via the MESSAGING_USE_MOCK environment variable.
  */
 export interface MessagingDataSource {
 	Conversation: {
@@ -25,7 +25,7 @@ export interface MessagingDataSource {
 }
 
 export const MessagingDataSourceImplementation = (
-	messagingService: IMessagingService,
+	messagingService: MessagingService,
 	passport: Domain.Passport,
 ): MessagingDataSource => {
 	return {

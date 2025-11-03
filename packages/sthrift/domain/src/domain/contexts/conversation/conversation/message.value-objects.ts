@@ -1,11 +1,10 @@
 import { VOString } from '@lucaspaganini/value-objects';
 
-// Twilio Message SID value object
-export class TwilioMessageSid extends VOString({
+// Messaging provider message ID value object
+export class MessagingMessageId extends VOString({
 	trim: true,
-	minLength: 34,
-	maxLength: 34,
-	pattern: /^IM[a-zA-Z0-9]{32}$/,
+	minLength: 1,
+	maxLength: 255,
 }) {}
 
 // Message content value object

@@ -24,7 +24,7 @@ All packages except frontend and excluded packages (see below).
 These packages are not included in standard build/test pipelines:
 - `service-mongodb-memory-server` - Test MongoDB server
 - `service-oauth2-mock-server` - Test OAuth2 server
-- `mock-twilio-server` - Mock Twilio messaging server
+- `mock-messaging-server` - Mock messaging server for local development
 
 ## Local Development
 

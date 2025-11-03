@@ -24,7 +24,7 @@
         "start-emulator:mongo-memory-server": "pnpm run start --workspace=@cellix/mock-mongodb-memory-server",
         "start-emulator:auth-server": "pnpm run start --workspace=@cellix/mock-oauth2-server",
         "start-emulator:payment-server": "pnpm run start --workspace=@cellix/mock-payment-server",
-        "start-emulator:twilio-server": "pnpm run start --workspace=@sthrift/mock-twilio-server",
+        "start-emulator:messaging-server": "pnpm run start --workspace=@sthrift/mock-messaging-server",
         "test:all": "turbo run test:all",
         "test:coverage": "turbo run test:coverage",
         "test:coverage:merge": "pnpm run test:coverage && pnpm run merge-lcov-reports",

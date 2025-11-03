@@ -1,7 +1,7 @@
 import Twilio from 'twilio';
 import type { ServiceBase } from '@cellix/api-services-spec';
 import type {
-	IMessagingService,
+	MessagingService,
 	ConversationInstance,
 	MessageInstance,
 } from '@cellix/messaging';
@@ -9,22 +9,33 @@ import type {
 type TwilioClient = InstanceType<typeof Twilio.Twilio> | undefined;
 
 /**
- * Twilio Service - uses official Twilio SDK
+ * Twilio Messaging Service - uses official Twilio SDK
  * 
- * This service implements the IMessagingService interface using the official Twilio SDK.
- * It requires valid Twilio credentials (Account SID and Auth Token) to function.
+ * This service implements the MessagingService interface using the official Twilio SDK.
+ * It requires valid Twilio credentials to function.
  * 
- * For development/testing with a mock server, use MockServiceTwilio from @sthrift/mock-service-twilio instead.
+ * Configuration:
+ * - Can be provided via constructor parameters (useful for testing)
+ * - Or read from environment variables:
+ *   - TWILIO_ACCOUNT_SID: Your Twilio Account SID
+ *   - TWILIO_AUTH_TOKEN: Your Twilio Auth Token
+ * 
+ * For development/testing with a mock server, use MockServiceTwilio from @sthrift/messaging-service-mock instead.
  * 
  * @example
  * ```typescript
+ * // Using environment variables
+ * const service = new ServiceTwilio();
+ * await service.startUp();
+ * 
+ * // Or specify credentials explicitly (useful for testing)
  * const service = new ServiceTwilio('AC123...', 'auth_token_123');
  * await service.startUp();
  * const conversation = await service.createConversation('Support Chat');
- * await service.sendMessage(conversation.sid, 'Hello!', 'agent@example.com');
+ * await service.sendMessage(conversation.id, 'Hello!', 'agent@example.com');
  * ```
  */
-export class ServiceTwilio implements IMessagingService {
+export class ServiceTwilio implements MessagingService {
 	private client: TwilioClient;
 	private readonly accountSid: string;
 	private readonly authToken: string;
@@ -67,27 +78,74 @@ export class ServiceTwilio implements IMessagingService {
 		return this.client;
 	}
 
+	private mapConversation(twilioConv: any): ConversationInstance {
+		const mapped: ConversationInstance = {
+			id: twilioConv.sid,
+			metadata: {
+				twilioSid: twilioConv.sid,
+				accountSid: twilioConv.accountSid,
+				uniqueName: twilioConv.uniqueName,
+				// Preserve other Twilio-specific fields
+			},
+		};
+		
+		if (twilioConv.friendlyName !== undefined) {
+			mapped.displayName = twilioConv.friendlyName;
+		}
+		if (twilioConv.dateCreated !== undefined) {
+			mapped.createdAt = twilioConv.dateCreated;
+		}
+		if (twilioConv.dateUpdated !== undefined) {
+			mapped.updatedAt = twilioConv.dateUpdated;
+		}
+		if (twilioConv.state !== undefined) {
+			mapped.state = twilioConv.state as 'active' | 'inactive' | 'closed';
+		}
+		
+		return mapped;
+	}
+
+	private mapMessage(twilioMsg: any): MessageInstance {
+		const mapped: MessageInstance = {
+			id: twilioMsg.sid,
+			body: twilioMsg.body || '',
+			metadata: {
+				twilioSid: twilioMsg.sid,
+				conversationSid: twilioMsg.conversationSid,
+				participantSid: twilioMsg.participantSid,
+				index: twilioMsg.index,
+				// Preserve other Twilio-specific fields
+			},
+		};
+		
+		if (twilioMsg.author !== undefined) {
+			mapped.author = twilioMsg.author;
+		}
+		if (twilioMsg.dateCreated !== undefined) {
+			mapped.createdAt = twilioMsg.dateCreated;
+		}
+		
+		return mapped;
+	}
+
 	public async getConversation(conversationId: string): Promise<ConversationInstance> {
 		if (!this.client) throw new Error('Twilio client not initialized');
-		return await this.client.conversations.v1.conversations(conversationId).fetch();
+		const twilioConv = await this.client.conversations.v1.conversations(conversationId).fetch();
+		return this.mapConversation(twilioConv);
 	}
 
 	public async sendMessage(conversationId: string, body: string, author?: string): Promise<MessageInstance> {
 		if (!this.client) throw new Error('Twilio client not initialized');
 		const params: { body: string; author?: string } = { body };
 		if (author) params.author = author;
-		return await this.client.conversations.v1.conversations(conversationId).messages.create(params);
+		const twilioMsg = await this.client.conversations.v1.conversations(conversationId).messages.create(params);
+		return this.mapMessage(twilioMsg);
 	}
 	
 	public async getMessages(conversationId: string): Promise<MessageInstance[]> {
 		if (!this.client) throw new Error('Twilio client not initialized');
 		const messagesList = await this.client.conversations.v1.conversations(conversationId).messages.list();
-		return messagesList.map(msg => ({
-			sid: msg.sid,
-			body: msg.body,
-			...(msg.author !== undefined && { author: msg.author }),
-			...(msg.dateCreated && { dateCreated: msg.dateCreated }),
-		}));
+		return messagesList.map(msg => this.mapMessage(msg));
 	}
 
 	public async deleteConversation(conversationId: string): Promise<void> {
@@ -98,19 +156,15 @@ export class ServiceTwilio implements IMessagingService {
 	public async listConversations(): Promise<ConversationInstance[]> {
 		if (!this.client) throw new Error('Twilio client not initialized');
 		const conversationsList = await this.client.conversations.v1.conversations.list();
-		return conversationsList.map(conv => ({
-			sid: conv.sid,
-			...(conv.friendlyName !== undefined && { friendlyName: conv.friendlyName }),
-			...(conv.dateCreated && { dateCreated: conv.dateCreated }),
-			...(conv.dateUpdated && { dateUpdated: conv.dateUpdated }),
-		}));
+		return conversationsList.map(conv => this.mapConversation(conv));
 	}
 
-	public async createConversation(friendlyName?: string, uniqueName?: string): Promise<ConversationInstance> {
+	public async createConversation(displayName?: string, uniqueIdentifier?: string): Promise<ConversationInstance> {
 		if (!this.client) throw new Error('Twilio client not initialized');
 		const params: { friendlyName?: string; uniqueName?: string } = {};
-		if (friendlyName) params.friendlyName = friendlyName;
-		if (uniqueName) params.uniqueName = uniqueName;
-		return await this.client.conversations.v1.conversations.create(params);
+		if (displayName) params.friendlyName = displayName;
+		if (uniqueIdentifier) params.uniqueName = uniqueIdentifier;
+		const twilioConv = await this.client.conversations.v1.conversations.create(params);
+		return this.mapConversation(twilioConv);
 	}
 }

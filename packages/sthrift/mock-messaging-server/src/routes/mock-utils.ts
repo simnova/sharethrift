@@ -2,14 +2,7 @@ import type { Request, Response, Router } from 'express';
 import { store } from '../store.ts';
 import { seedMockData } from '../seed/seed-data.ts';
 
-/**
- * Utility routes for managing the mock server
- */
 export function setupMockUtilRoutes(router: Router): void {
-	/**
-	 * Reset all mock data
-	 * POST /mock/reset
-	 */
 	router.post('/mock/reset', (_req: Request, res: Response) => {
 		try {
 			store.reset();
@@ -25,10 +18,6 @@ export function setupMockUtilRoutes(router: Router): void {
 		}
 	});
 
-	/**
-	 * Reseed mock data
-	 * POST /mock/seed
-	 */
 	router.post('/mock/seed', (_req: Request, res: Response) => {
 		try {
 			store.reset();
@@ -48,10 +37,6 @@ export function setupMockUtilRoutes(router: Router): void {
 		}
 	});
 
-	/**
-	 * Get statistics about mock data
-	 * GET /mock/stats
-	 */
 	router.get('/mock/stats', (_req: Request, res: Response) => {
 		try {
 			const stats = store.getStats();

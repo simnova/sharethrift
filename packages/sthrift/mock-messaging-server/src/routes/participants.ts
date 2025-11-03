@@ -3,10 +3,6 @@ import { store } from '../store.ts';
 import type { ParticipantsListResponse } from '../types.ts';
 
 export function setupParticipantRoutes(router: Router): void {
-	/**
-	 * Add a participant to a conversation
-	 * POST /v1/Conversations/:conversationSid/Participants
-	 */
 	router.post(
 		'/v1/Conversations/:conversationSid/Participants',
 		(req: Request, res: Response) => {
@@ -41,10 +37,6 @@ export function setupParticipantRoutes(router: Router): void {
 		},
 	);
 
-	/**
-	 * Get a specific participant
-	 * GET /v1/Conversations/:conversationSid/Participants/:participantSid
-	 */
 	router.get(
 		'/v1/Conversations/:conversationSid/Participants/:participantSid',
 		(req: Request, res: Response) => {
@@ -80,10 +72,6 @@ export function setupParticipantRoutes(router: Router): void {
 		},
 	);
 
-	/**
-	 * List participants in a conversation
-	 * GET /v1/Conversations/:conversationSid/Participants
-	 */
 	router.get(
 		'/v1/Conversations/:conversationSid/Participants',
 		(req: Request, res: Response) => {
@@ -139,10 +127,6 @@ export function setupParticipantRoutes(router: Router): void {
 		},
 	);
 
-	/**
-	 * Remove a participant from a conversation
-	 * DELETE /v1/Conversations/:conversationSid/Participants/:participantSid
-	 */
 	router.delete(
 		'/v1/Conversations/:conversationSid/Participants/:participantSid',
 		(req: Request, res: Response) => {

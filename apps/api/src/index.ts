@@ -17,18 +17,19 @@ import { ServiceBlobStorage } from '@sthrift/service-blob-storage';
 import { ServiceTokenValidation } from '@sthrift/service-token-validation';
 import * as TokenValidationConfig from './service-config/token-validation/index.ts';
 
-import type { IMessagingService } from '@cellix/messaging';
-import { ServiceTwilio } from '@sthrift/service-twilio';
-import { MockServiceTwilio } from '@sthrift/mock-service-twilio';
+import type { MessagingService } from '@cellix/messaging';
+import { ServiceTwilio } from '@sthrift/messaging-service-twilio';
+import { MockServiceTwilio } from '@sthrift/messaging-service-mock';
 
 import { graphHandlerCreator } from '@sthrift/graphql';
 import { restHandlerCreator } from '@sthrift/rest';
 import { ServiceCybersource } from '@sthrift/service-cybersource';
 
+// biome-ignore lint/complexity/useLiteralKeys: Required by TypeScript noPropertyAccessFromIndexSignature
+const USE_MOCK_MESSAGING = process.env['MESSAGING_USE_MOCK'] === 'true';
+
 Cellix.initializeInfrastructureServices<ApiContextSpec, ApplicationServices>(
 	(serviceRegistry) => {
-		// biome-ignore lint/complexity/useLiteralKeys: Required by TypeScript noPropertyAccessFromIndexSignature
-		const useMockTwilio = process.env['TWILIO_USE_MOCK'] === 'true';
 		
 		serviceRegistry
 			.registerInfrastructureService(
@@ -42,7 +43,7 @@ Cellix.initializeInfrastructureServices<ApiContextSpec, ApplicationServices>(
 				new ServiceTokenValidation(TokenValidationConfig.portalTokens),
 			)
 			.registerInfrastructureService(
-				useMockTwilio ? new MockServiceTwilio() : new ServiceTwilio(),
+				USE_MOCK_MESSAGING ? new MockServiceTwilio() : new ServiceTwilio(),
 			)
 			.registerInfrastructureService(new ServiceCybersource());
 	},
@@ -57,16 +58,10 @@ Cellix.initializeInfrastructureServices<ApiContextSpec, ApplicationServices>(
 		const { domainDataSource } = dataSourcesFactory.withSystemPassport();
 		RegisterEventHandlers(domainDataSource);
 		
-		// Get messaging service with fallback logic
-		let messagingService: IMessagingService | undefined;
-		// biome-ignore lint/complexity/useLiteralKeys: Required by TypeScript noPropertyAccessFromIndexSignature
-		const useMockTwilio = process.env['TWILIO_USE_MOCK'] === 'true';
-		
-		if (useMockTwilio) {
-			messagingService = serviceRegistry.getInfrastructureService<IMessagingService>(MockServiceTwilio);
-		} else {
-			messagingService = serviceRegistry.getInfrastructureService<IMessagingService>(ServiceTwilio);
-		}
+		// Get messaging service based on configuration
+		const messagingService = USE_MOCK_MESSAGING
+			? serviceRegistry.getInfrastructureService<MessagingService>(MockServiceTwilio)
+			: serviceRegistry.getInfrastructureService<MessagingService>(ServiceTwilio);
 		
 		if (!messagingService) {
 			throw new Error('Messaging service not properly registered');

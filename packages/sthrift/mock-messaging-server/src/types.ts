@@ -1,45 +1,44 @@
 export interface Conversation {
-	sid: string;
-	account_sid: string;
-	friendly_name?: string;
+	id: string;
+	account_id: string;
+	display_name?: string;
 	unique_name?: string;
-	date_created: string;
-	date_updated: string;
+	created_at: string;
+	updated_at: string;
 	state: 'active' | 'inactive' | 'closed';
-	timers?: Record<string, unknown>;
-	messaging_service_sid?: string;
+	metadata?: Record<string, unknown>;
 	url?: string;
 	links?: Record<string, string>;
 }
 
 export interface Message {
-	sid: string;
-	account_sid: string;
-	conversation_sid: string;
+	id: string;
+	account_id: string;
+	conversation_id: string;
 	body: string;
 	author?: string;
-	participant_sid?: string;
-	date_created: string;
-	date_updated?: string;
+	participant_id?: string;
+	created_at: string;
+	updated_at?: string;
 	index: number;
-	delivery?: Record<string, unknown>;
+	metadata?: Record<string, unknown>;
 	url?: string;
 	links?: Record<string, string>;
 }
 
 export interface Participant {
-	sid: string;
-	account_sid: string;
-	conversation_sid: string;
+	id: string;
+	account_id: string;
+	conversation_id: string;
 	identity?: string;
 	messaging_binding?: {
 		type: string;
 		address: string;
 		proxy_address?: string;
 	};
-	date_created: string;
-	date_updated?: string;
-	role_sid?: string;
+	created_at: string;
+	updated_at?: string;
+	role_id?: string;
 	url?: string;
 	links?: Record<string, string>;
 }

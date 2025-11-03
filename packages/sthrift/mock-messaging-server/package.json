@@ -1,5 +1,5 @@
 {
-	"name": "@sthrift/mock-twilio-server",
+	"name": "@sthrift/mock-messaging-server",
 	"version": "1.0.0",
 	"private": true,
 	"type": "module",

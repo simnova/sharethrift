@@ -22,7 +22,7 @@ graph TD
   sthrft-service-blob["@sthrift/service-blob-storage"]
   sthrft-service-cybersource["@sthrift/service-cybersource"]
   sthrft-service-sendgrid["@sthrift/service-sendgrid"]
-  sthrft-service-twilio["@sthrift/service-twilio"]
+  sthrft-messaging-service-twilio["@sthrift/messaging-service-twilio"]
   end
 
   %% Infrastructure Layer
@@ -30,7 +30,7 @@ graph TD
   sthrft-service-blob["@sthrift/service-blob-storage"]
   sthrft-service-cybersource["@sthrift/service-cybersource"]
   sthrft-service-sendgrid["@sthrift/service-sendgrid"]
-  sthrft-service-twilio["@sthrift/service-twilio"]
+  sthrft-messaging-service-twilio["@sthrift/messaging-service-twilio"]
 
   %% API Layer
   subgraph Api Services
@@ -48,7 +48,7 @@ graph TD
   cellix-mongoose-seedwork --> sthrft-data-sources-mongoose-models
   cellix-mongoose-seedwork --> sthrft-service-mongoose
   cellix-api-services-spec --> sthrft-service-blob
-  cellix-api-services-spec --> sthrft-service-twilio
+  cellix-api-services-spec --> sthrft-messaging-service-twilio
   cellix-api-services-spec --> sthrft-service-sendgrid
   cellix-api-services-spec --> sthrft-service-cybersource
 
@@ -61,7 +61,7 @@ graph TD
   sthrft-service-blob --> sthrft-application-services
   sthrft-service-cybersource --> sthrft-application-services
   sthrft-service-sendgrid --> sthrft-application-services
-  sthrft-service-twilio --> sthrft-application-services
+  sthrft-messaging-service-twilio --> sthrft-application-services
   sthrft-persistence --> sthrft-service-mongoose
 
   sthrft-application-services --> sthrft-graphql

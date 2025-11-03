@@ -26,16 +26,16 @@ export const queryByUser = (dataSources: DataSources) => {
 						return conversation;
 					}
 
-					const twilioMessages = await dataSources.messagingDataSource.Conversation.Conversation.MessagingConversationRepo.getMessages(
-						conversation.twilioConversationId
+					const messagingMessages = await dataSources.messagingDataSource.Conversation.Conversation.MessagingConversationRepo.getMessages(
+						conversation.messagingConversationId
 					);
 
-					const domainMessages = twilioMessages.map((msg) => {
+					const domainMessages = messagingMessages.map((msg) => {
 						const authorId = new ObjectId(msg.authorId);
 
 						return new Domain.Contexts.Conversation.Conversation.Message({
 							id: msg.id,
-							twilioMessageSid: msg.twilioMessageSid,
+							messagingMessageId: msg.messagingMessageId,
 							authorId,
 							content: msg.content,
 							createdAt: msg.createdAt,
@@ -48,7 +48,7 @@ export const queryByUser = (dataSources: DataSources) => {
 						loadMessages: async () => domainMessages,
 					};
 				} catch (error) {
-					console.warn(`[Conversation ${conversation.id}] Failed to fetch Twilio messages, using MongoDB fallback:`, error);
+					console.warn(`[Conversation ${conversation.id}] Failed to fetch messaging messages, using MongoDB fallback:`, error);
 					return conversation;
 				}
 			})

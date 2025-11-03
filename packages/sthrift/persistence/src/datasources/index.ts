@@ -1,5 +1,5 @@
 import { Domain, type DomainDataSource } from '@sthrift/domain';
-import type { IMessagingService } from '@cellix/messaging';
+import type { MessagingService } from '@cellix/messaging';
 import type { ModelsContext } from '../models-context.ts';
 import { DomainDataSourceImplementation } from './domain/index.ts';
 import {
@@ -18,14 +18,14 @@ export type DataSources = {
 };
 
 export type DataSourcesFactory = {
-	withPassport: (passport: Domain.Passport, messagingService?: IMessagingService) => DataSources;
+	withPassport: (passport: Domain.Passport, messagingService?: MessagingService) => DataSources;
 	withSystemPassport: () => DataSources;
 };
 
 export const DataSourcesFactoryImpl = (
 	models: ModelsContext,
 ): DataSourcesFactory => {
-	const withPassport = (passport: Domain.Passport, messagingService?: IMessagingService): DataSources => {
+	const withPassport = (passport: Domain.Passport, messagingService?: MessagingService): DataSources => {
 		const dataSources: DataSources = {
 			domainDataSource: DomainDataSourceImplementation(models, passport),
 			readonlyDataSource: ReadonlyDataSourceImplementation(models, passport),

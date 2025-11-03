@@ -1,7 +1,7 @@
 import { describe, it, expect, beforeAll, afterAll } from 'vitest';
 import type { Server } from 'node:http';
 import { MockServiceTwilio } from './index.ts';
-import { startServer, stopServer } from '@sthrift/mock-twilio-server';
+import { startServer, stopServer } from '@sthrift/mock-messaging-server';
 
 /**
  * Integration Tests for MockServiceTwilio with Mock Server
@@ -18,7 +18,7 @@ describe('MockServiceTwilio Integration Tests', () => {
 
 	beforeAll(async () => {
 		// Configure for mock mode
-		process.env['TWILIO_MOCK_URL'] = MOCK_SERVER_URL;
+		process.env['MESSAGING_MOCK_URL'] = MOCK_SERVER_URL;
 		
 		// Start the mock server with seeded data
 		mockServer = await startServer(MOCK_SERVER_PORT, true);
@@ -84,9 +84,9 @@ describe('MockServiceTwilio Integration Tests', () => {
 			if (!firstConv) {
 				throw new Error('No conversations found in seed data');
 			}
-			expect(firstConv).toHaveProperty('sid');
-			expect(firstConv).toHaveProperty('friendlyName');
-			expect(typeof firstConv.sid).toBe('string');
+			expect(firstConv).toHaveProperty('id');
+			expect(firstConv).toHaveProperty('displayName');
+			expect(typeof firstConv.id).toBe('string');
 		});
 
 		it('should get a specific conversation by ID', async () => {
@@ -97,12 +97,12 @@ describe('MockServiceTwilio Integration Tests', () => {
 			if (!firstConv) {
 				throw new Error('No conversations found');
 			}
-			conversationId = firstConv.sid;
+			conversationId = firstConv.id;
 
 			const conversation = await service.getConversation(conversationId);
 			expect(conversation).toBeDefined();
-			expect(conversation.sid).toBe(conversationId);
-			expect(conversation).toHaveProperty('friendlyName');
+			expect(conversation.id).toBe(conversationId);
+			expect(conversation).toHaveProperty('displayName');
 		});
 
 		it('should send a message to an existing conversation', async () => {
@@ -112,7 +112,7 @@ describe('MockServiceTwilio Integration Tests', () => {
 			if (!firstConv) {
 				throw new Error('No conversations found');
 			}
-			const testConvId = firstConv.sid;
+			const testConvId = firstConv.id;
 
 			const message = await service.sendMessage(
 				testConvId,
@@ -121,7 +121,7 @@ describe('MockServiceTwilio Integration Tests', () => {
 			);
 
 			expect(message).toBeDefined();
-			expect(message).toHaveProperty('sid');
+			expect(message).toHaveProperty('id');
 			expect(message.body).toBe('Integration test message');
 			expect(message.author).toBe('test@example.com');
 		});
@@ -147,11 +147,11 @@ describe('MockServiceTwilio Integration Tests', () => {
 			);
 
 			expect(conversation).toBeDefined();
-			expect(conversation).toHaveProperty('sid');
-			expect(conversation.friendlyName).toBe('Test Conversation');
-			expect(conversation).toHaveProperty('dateCreated');
+			expect(conversation).toHaveProperty('id');
+			expect(conversation.displayName).toBe('Test Conversation');
+			expect(conversation).toHaveProperty('createdAt');
 
-			createdConversationId = conversation.sid;
+			createdConversationId = conversation.id;
 		});
 
 		it('should delete a conversation', async () => {
@@ -182,11 +182,11 @@ describe('MockServiceTwilio Integration Tests', () => {
 				'E2E Test Conversation',
 				uniqueName,
 			);
-			expect(conversation.sid).toBeDefined();
+			expect(conversation.id).toBeDefined();
 
 			// 2. Send a message
 			const message1 = await service.sendMessage(
-				conversation.sid,
+				conversation.id,
 				'First message',
 				'user1@example.com',
 			);
@@ -194,7 +194,7 @@ describe('MockServiceTwilio Integration Tests', () => {
 
 			// 3. Send another message
 			const message2 = await service.sendMessage(
-				conversation.sid,
+				conversation.id,
 				'Second message',
 				'user2@example.com',
 			);
@@ -202,21 +202,21 @@ describe('MockServiceTwilio Integration Tests', () => {
 			expect(message2.author).toBe('user2@example.com');
 
 			// 4. Get the conversation and verify it exists
-			const fetchedConv = await service.getConversation(conversation.sid);
-			expect(fetchedConv.sid).toBe(conversation.sid);
-			expect(fetchedConv.friendlyName).toBe('E2E Test Conversation');
+			const fetchedConv = await service.getConversation(conversation.id);
+			expect(fetchedConv.id).toBe(conversation.id);
+			expect(fetchedConv.displayName).toBe('E2E Test Conversation');
 			
 			// 4b. Get messages for the conversation
-			const messages = await service.getMessages(conversation.sid);
+			const messages = await service.getMessages(conversation.id);
 			expect(messages).toHaveLength(2);
 			expect(messages[0]?.body).toBe('First message');
 			expect(messages[1]?.body).toBe('Second message');
 
 			// 5. Delete the conversation
-			await service.deleteConversation(conversation.sid);
+			await service.deleteConversation(conversation.id);
 
 			// 6. Verify deletion
-			await expect(service.getConversation(conversation.sid)).rejects.toThrow();
+			await expect(service.getConversation(conversation.id)).rejects.toThrow();
 		});
 	});
 
