@@ -389,4 +389,11 @@ export class ItemListing<props extends ItemListingProps>
 	getEntityReference(): ItemListingEntityReference {
 		return this.props as ItemListingEntityReference;
 	}
+
+	get listingType(): string {
+		return this.props.listingType;
+	}
+	set listingType(value: string) {
+		this.props.listingType = value;
+	}
 }
