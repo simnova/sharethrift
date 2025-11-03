@@ -4,6 +4,7 @@ import { UserAppealRequestRepository } from '../../../domain/appeal-request/user
 import { UserAppealRequestConverter } from '../../../domain/appeal-request/user-appeal-request/user-appeal-request.domain-adapter.ts';
 import { InProcEventBusInstance } from '@cellix/event-bus-seedwork-node';
 import { Types } from 'mongoose';
+import type { ClientSession } from 'mongoose';
 
 export interface UserAppealRequestPageResult {
 	items: Domain.Contexts.AppealRequest.UserAppealRequest.UserAppealRequestEntityReference[];
@@ -15,10 +16,7 @@ export interface UserAppealRequestPageResult {
 export interface UserAppealRequestReadRepository {
 	getById: (
 		id: string,
-	) => Promise<
-		// biome-ignore lint/suspicious/noExplicitAny: Generic type parameter from domain aggregate
-		Domain.Contexts.AppealRequest.UserAppealRequest.UserAppealRequest<any> | null
-	>;
+	) => Promise<Domain.Contexts.AppealRequest.UserAppealRequest.UserAppealRequestEntityReference | null>;
 
 	getAll: (args: {
 		page: number;
@@ -33,13 +31,15 @@ export const getUserAppealRequestReadRepository = (
 	passport: Domain.Passport,
 ): UserAppealRequestReadRepository => {
 	const converter = new UserAppealRequestConverter();
+	const placeholderSession = {
+		_id: new Types.ObjectId('000000000000000000000000'),
+	} as unknown as ClientSession;
 	const repository = new UserAppealRequestRepository(
 		passport,
 		models.AppealRequest.UserAppealRequest,
 		converter,
 		InProcEventBusInstance,
-		// biome-ignore lint/suspicious/noExplicitAny: Placeholder session for read-only repository
-		new Types.ObjectId('000000000000000000000000') as any,
+		placeholderSession,
 	);
 
 	return {

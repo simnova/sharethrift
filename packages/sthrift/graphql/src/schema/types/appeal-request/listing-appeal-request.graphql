@@ -1,7 +1,7 @@
 type ListingAppealRequest {
 	id: ID!
 	user: PersonalUser!
-	listing: Property!
+	listing: ItemListing!
 	reason: String!
 	state: AppealRequestState!
 	type: AppealRequestType!
@@ -34,11 +34,6 @@ input GetAllListingAppealRequestsInput {
 	pageSize: Int!
 	stateFilters: [String!]
 	sorter: SorterInput
-}
-
-input SorterInput {
-	field: String!
-	order: String!
 }
 
 extend type Query {

@@ -4,6 +4,7 @@ import { ListingAppealRequestRepository } from '../../../domain/appeal-request/l
 import { ListingAppealRequestConverter } from '../../../domain/appeal-request/listing-appeal-request/listing-appeal-request.domain-adapter.ts';
 import { InProcEventBusInstance } from '@cellix/event-bus-seedwork-node';
 import { Types } from 'mongoose';
+import type { ClientSession } from 'mongoose';
 
 export interface ListingAppealRequestPageResult {
 	items: Domain.Contexts.AppealRequest.ListingAppealRequest.ListingAppealRequestEntityReference[];
@@ -15,10 +16,7 @@ export interface ListingAppealRequestPageResult {
 export interface ListingAppealRequestReadRepository {
 	getById: (
 		id: string,
-	) => Promise<
-		// biome-ignore lint/suspicious/noExplicitAny: Generic type parameter from domain aggregate
-		Domain.Contexts.AppealRequest.ListingAppealRequest.ListingAppealRequest<any> | null
-	>;
+	) => Promise<Domain.Contexts.AppealRequest.ListingAppealRequest.ListingAppealRequestEntityReference | null>;
 
 	getAll: (args: {
 		page: number;
@@ -33,13 +31,15 @@ export const getListingAppealRequestReadRepository = (
 	passport: Domain.Passport,
 ): ListingAppealRequestReadRepository => {
 	const converter = new ListingAppealRequestConverter();
+	const placeholderSession = {
+		_id: new Types.ObjectId('000000000000000000000000'),
+	} as unknown as ClientSession;
 	const repository = new ListingAppealRequestRepository(
 		passport,
 		models.AppealRequest.ListingAppealRequest,
 		converter,
 		InProcEventBusInstance,
-		// biome-ignore lint/suspicious/noExplicitAny: Placeholder session for read-only repository
-		new Types.ObjectId('000000000000000000000000') as any,
+		placeholderSession,
 	);
 
 	return {
