@@ -21,7 +21,7 @@ export class PersonalUserConversationVisa<
 			canManageConversation: false, // no one can manage conversations for now
 			canViewConversation:
 				this.root.reserver.id === this.user.id ||
-				this.root.reserver.id === this.user.id, // only participants can view
+				this.root.sharer.id === this.user.id, // only participants can view
 		};
 
 		return func(updatedPermissions);
