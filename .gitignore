@@ -28,3 +28,9 @@ test-*.js
 
 # Ignore TypeScript build info files
 **/tsconfig.tsbuildinfo
+
+# Ignore generated artifacts
+**/dist/
+**/*.map
+# TypeScript packages should not commit compiled JS in src
+packages/**/src/*.js
