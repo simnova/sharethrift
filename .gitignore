@@ -25,3 +25,6 @@ dist/
 
 # Temporary test files
 test-*.js
+
+# Ignore TypeScript build info files
+**/tsconfig.tsbuildinfo
