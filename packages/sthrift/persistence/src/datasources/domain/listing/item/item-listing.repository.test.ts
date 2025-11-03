@@ -117,13 +117,13 @@ test.for(feature, ({ Scenario, Background, BeforeEachScenario }) => {
 					filter._id === 'listing-1' ? listingDoc : null,
 				),
 			})),
-			find: vi.fn((filter?: Record<string, string>) => ({
-				exec: vi.fn(async () => {
-					if (!filter || filter['state'] === 'Published') {
+			find: vi.fn((filter?: { state?: string; sharer?: string }) => ({
+				exec: vi.fn(() => {
+					if (!filter || filter.state === 'Published') {
 						return [listingDoc];
 					}
-					if (filter['sharer']) {
-						return filter['sharer'] === 'user-1' ? [listingDoc] : [];
+					if (filter.sharer) {
+						return filter.sharer === 'user-1' ? [listingDoc] : [];
 					}
 					return [];
 				}),

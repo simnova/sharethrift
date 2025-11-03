@@ -13,6 +13,13 @@ export const getItemListingUnitOfWork = (
 	itemListingModel: Models.Listing.ItemListingModelType,
 	passport: Domain.Passport,
 ): Domain.Contexts.Listing.ItemListing.ItemListingUnitOfWork => {
+	if (!itemListingModel) {
+		throw new Error('ItemListing model is required');
+	}
+	if (!passport) {
+		throw new Error('Passport is required');
+	}
+	
 	const unitOfWork = new MongooseSeedwork.MongoUnitOfWork(
 		InProcEventBusInstance,
 		NodeEventBusInstance,
