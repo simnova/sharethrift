@@ -118,7 +118,7 @@ export class PersonalUserAccountDomainAdapter
 	// Nested Path Getters
 	get profile() {
 		if (!this.props.profile) {
-			this.props.set('profile', {});
+			this.props.profile = {} as Models.User.PersonalUserAccountProfile;
 		}
 		return new PersonalUserAccountProfileDomainAdapter(this.props.profile);
 	}
@@ -146,6 +146,12 @@ export class PersonalUserAccountProfileDomainAdapter
 	}
 	set lastName(value: string) {
 		this.props.lastName = value;
+	}
+	get aboutMe() {
+		return this.props.aboutMe;
+	}
+	set aboutMe(value: string) {
+		this.props.aboutMe = value;
 	}
 
 	// Nested Path Getters

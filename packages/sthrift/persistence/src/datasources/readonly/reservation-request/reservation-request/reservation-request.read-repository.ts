@@ -271,6 +271,7 @@ const getMockReservationRequests = (
 						profile: {
 							firstName: 'Jane',
 							lastName: 'Reserver',
+                            aboutMe: 'Hello',
 							location: {
 								address1: '123 Main St',
 								address2: null,
@@ -362,6 +363,7 @@ const getMockReservationRequests = (
 					profile: {
 						firstName: 'Jane',
 						lastName: 'Reserver',
+                        aboutMe: 'Hello',
 						location: {
 							address1: '123 Main St',
 							address2: null,
@@ -472,6 +474,7 @@ const getMockReservationRequests = (
 							profile: {
 								firstName: 'Jane',
 								lastName: 'Reserver',
+                                aboutMe: 'Hello',
 								location: {
 									address1: '123 Main St',
 									address2: null,
@@ -595,6 +598,7 @@ const getMockReservationRequests = (
 						profile: {
 							firstName: 'Jane',
 							lastName: 'Reserver',
+                            aboutMe: 'Hello',
 							location: {
 								address1: '123 Main St',
 								address2: null,

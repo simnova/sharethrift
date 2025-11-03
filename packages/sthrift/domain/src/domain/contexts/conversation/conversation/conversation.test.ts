@@ -90,6 +90,7 @@ function makeBaseProps(
 				profile: {
 					firstName: 'Sharer',
 					lastName: 'Sharer',
+                    aboutMe: 'Hello',
 					location: {
 						address1: '123 Main St',
 						address2: null,
@@ -128,6 +129,7 @@ function makeBaseProps(
 				profile: {
 					firstName: 'Reserver',
 					lastName: 'Reserver',
+                    aboutMe: 'Hello',
 					location: {
 						address1: '456 Main St',
 						address2: null,

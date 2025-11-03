@@ -7,7 +7,6 @@ import {
 import type { FindOneOptions, FindOptions } from '../../mongo-data-source.ts';
 import { ItemListingConverter } from '../../../domain/listing/item/item-listing.domain-adapter.ts';
 import { MongooseSeedwork } from '@cellix/mongoose-seedwork';
-import { getMockItemListings } from './mock-item-listings.js';
 
 export interface ItemListingReadRepository {
 	getAll: (
@@ -15,12 +14,13 @@ export interface ItemListingReadRepository {
 	) => Promise<
 		Domain.Contexts.Listing.ItemListing.ItemListingEntityReference[]
 	>;
+
 	getPaged: (args: {
 		page: number;
 		pageSize: number;
 		searchText?: string;
 		statusFilters?: string[];
-		sharerId?: string; // optional filter by sharer
+		sharerId?: string;
 		sorter?: { field: string; order: 'ascend' | 'descend' };
 	}) => Promise<{
 		items: Domain.Contexts.Listing.ItemListing.ItemListingEntityReference[];
@@ -28,10 +28,12 @@ export interface ItemListingReadRepository {
 		page: number;
 		pageSize: number;
 	}>;
+
 	getById: (
 		id: string,
 		options?: FindOneOptions,
 	) => Promise<Domain.Contexts.Listing.ItemListing.ItemListingEntityReference | null>;
+
 	getBySharer: (
 		sharerId: string,
 		options?: FindOptions,
@@ -59,6 +61,7 @@ export class ItemListingReadRepositoryImpl
 		options?: FindOptions,
 	): Promise<Domain.Contexts.Listing.ItemListing.ItemListingEntityReference[]> {
 		const result = await this.mongoDataSource.find({}, options);
+		if (!result || result.length === 0) return [];
 		return result.map((doc) => this.converter.toDomain(doc, this.passport));
 	}
 
@@ -75,70 +78,74 @@ export class ItemListingReadRepositoryImpl
 		page: number;
 		pageSize: number;
 	}> {
-		// Basic in-memory filtering using existing repository methods & mock fallback
-		let listings: Domain.Contexts.Listing.ItemListing.ItemListingEntityReference[];
+		// Build MongoDB query
+		const query: Record<string, unknown> = {};
 
+		// Add sharerId filter
 		if (args.sharerId) {
-			listings = await this.getBySharer(args.sharerId);
-		} else {
-			listings = await this.getAll();
+			try {
+				// biome-ignore lint/complexity/useLiteralKeys: MongoDB query uses index signature
+				query['sharer'] = new MongooseSeedwork.ObjectId(args.sharerId);
+			} catch {
+				return {
+					items: [],
+					total: 0,
+					page: args.page,
+					pageSize: args.pageSize,
+				};
+			}
 		}
 
-		// Apply search filter
+		// Add search text filter (search across multiple fields)
 		if (args.searchText) {
-			const text = args.searchText.toLowerCase();
-			listings = listings.filter((l) => l.title.toLowerCase().includes(text));
+			const searchRegex = { $regex: args.searchText, $options: 'i' };
+			// biome-ignore lint/complexity/useLiteralKeys: MongoDB query uses index signature
+			query['$or'] = [
+				{ title: searchRegex },
+				{ description: searchRegex },
+				{ category: searchRegex },
+				{ location: searchRegex },
+			];
 		}
 
-		// Apply status filters (map to domain state property if present)
+		// Add status filters
 		if (args.statusFilters && args.statusFilters.length > 0) {
-			listings = listings.filter((l) =>
-				l.state ? args.statusFilters?.includes(l.state) === true : true,
-			);
+			// biome-ignore lint/complexity/useLiteralKeys: MongoDB query uses index signature
+			query['state'] = { $in: args.statusFilters };
 		}
 
-		// Apply sorter
+		// Build sort criteria
+		const sort: Record<string, 1 | -1> = {};
 		if (args.sorter?.field) {
-			const { field, order } = args.sorter;
-			listings = [...listings].sort((a, b) => {
-				// Access dynamic field in a type-safe way by narrowing via keyof
-				// Cast through unknown to satisfy exactOptionalPropertyTypes without asserting broad index signature
-				const key = field as keyof typeof a & keyof typeof b;
-				// Use a generic indexable helper type instead of Record<any, unknown>
-				type Indexable<T> = { [K in keyof T]: T[K] };
-				const fieldA = (a as unknown as Indexable<typeof a>)[key] as
-					| string
-					| number
-					| Date
-					| undefined;
-				const fieldB = (b as unknown as Indexable<typeof b>)[key] as
-					| string
-					| number
-					| Date
-					| undefined;
-				if (fieldA == null && fieldB == null) {
-					return 0;
-				}
-				if (fieldA == null) {
-					return order === 'ascend' ? -1 : 1;
-				}
-				if (fieldB == null) {
-					return order === 'ascend' ? 1 : -1;
-				}
-				if (fieldA < fieldB) {
-					return order === 'ascend' ? -1 : 1;
-				}
-				if (fieldA > fieldB) {
-					return order === 'ascend' ? 1 : -1;
-				}
-				return 0;
-			});
+			const direction = args.sorter.order === 'ascend' ? 1 : -1;
+			// Map GraphQL field names to MongoDB field names
+			const fieldMapping: Record<string, string> = {
+				publishedAt: 'createdAt',
+				reservationPeriod: 'sharingPeriodStart', // Sort by start date
+				status: 'state',
+			};
+			const mongoField = fieldMapping[args.sorter.field] || args.sorter.field;
+			sort[mongoField] = direction;
+		} else {
+			// biome-ignore lint/complexity/useLiteralKeys: MongoDB sort uses index signature
+			sort['createdAt'] = -1; // Default: newest first
 		}
 
-		const total = listings.length;
-		const startIndex = (args.page - 1) * args.pageSize;
-		const endIndex = startIndex + args.pageSize;
-		const items = listings.slice(startIndex, endIndex);
+		// Calculate pagination
+		const skip = (args.page - 1) * args.pageSize;
+
+		// Execute MongoDB queries in parallel
+		const [mongoItems, total] = await Promise.all([
+			this.mongoDataSource.find(query, { sort, skip, limit: args.pageSize }),
+			this.mongoDataSource
+				.find(query)
+				.then((result) => result?.length ?? 0), // Use find + length since count() not available
+		]);
+
+		// Convert to domain objects
+		const items = (mongoItems || []).map((doc) =>
+			this.converter.toDomain(doc, this.passport),
+		);
 
 		return { items, total, page: args.page, pageSize: args.pageSize };
 	}
@@ -148,18 +155,7 @@ export class ItemListingReadRepositoryImpl
 		options?: FindOneOptions,
 	): Promise<Domain.Contexts.Listing.ItemListing.ItemListingEntityReference | null> {
 		const result = await this.mongoDataSource.findById(id, options);
-		if (!result) {
-			// Try to find in mock data
-			const mockResult = getMockItemListings().find(
-				(
-					listing: Domain.Contexts.Listing.ItemListing.ItemListingEntityReference,
-				) => listing.id === id,
-			);
-			if (mockResult) {
-				return mockResult;
-			}
-			return null;
-		}
+		if (!result) return null;
 		return this.converter.toDomain(result, this.passport);
 	}
 
@@ -167,49 +163,16 @@ export class ItemListingReadRepositoryImpl
 		sharerId: string,
 		options?: FindOptions,
 	): Promise<Domain.Contexts.Listing.ItemListing.ItemListingEntityReference[]> {
-		// Handle empty or invalid sharerId (for development/testing)
-		if (!sharerId || sharerId.trim() === '') {
-			return getMockItemListings();
-		}
-
+		if (!sharerId || sharerId.trim() === '') return [];
 		try {
-			// Assuming the field is 'sharer' in the model and stores the user's ObjectId or externalId
 			const result = await this.mongoDataSource.find(
 				{ sharer: new MongooseSeedwork.ObjectId(sharerId) },
 				options,
 			);
-			if (!result || result.length === 0) {
-				// Return all mock data when no real data exists (for development/testing)
-				// Update mock users to use the current sharerId for consistency
-				const mockListings = getMockItemListings();
-				return mockListings.map(
-					(
-						listing: Domain.Contexts.Listing.ItemListing.ItemListingEntityReference,
-					) => ({
-						...listing,
-						sharer: {
-							...listing.sharer,
-							id: sharerId, // Use the actual sharerId from the request
-						},
-					}),
-				);
-			}
+			if (!result || result.length === 0) return [];
 			return result.map((doc) => this.converter.toDomain(doc, this.passport));
-		} catch (error) {
-			// If ObjectId creation fails, return mock data
-			console.warn('Error with ObjectId, returning mock data:', error);
-			const mockListings = getMockItemListings();
-			return mockListings.map(
-				(
-					listing: Domain.Contexts.Listing.ItemListing.ItemListingEntityReference,
-				) => ({
-					...listing,
-					sharer: {
-						...listing.sharer,
-						id: sharerId, // Use the actual sharerId from the request
-					},
-				}),
-			);
+		} catch (_error) {
+			return [];
 		}
 	}
 }
