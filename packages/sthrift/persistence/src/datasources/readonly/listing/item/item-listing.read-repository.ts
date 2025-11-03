@@ -7,7 +7,6 @@ import {
 import type { FindOneOptions, FindOptions } from '../../mongo-data-source.ts';
 import { ItemListingConverter } from '../../../domain/listing/item/item-listing.domain-adapter.ts';
 import { MongooseSeedwork } from '@cellix/mongoose-seedwork';
-import { getMockItemListings } from './mock-item-listings.js';
 
 export interface ItemListingReadRepository {
 	getAll: (
@@ -59,10 +58,6 @@ export class ItemListingReadRepositoryImpl
 		options?: FindOptions,
 	): Promise<Domain.Contexts.Listing.ItemListing.ItemListingEntityReference[]> {
 		const result = await this.mongoDataSource.find({}, options);
-		if (!result || result.length === 0) {
-			// Return mock data when no real data exists
-			return getMockItemListings();
-		}
 		return result.map((doc) => this.converter.toDomain(doc, this.passport));
 	}
 
@@ -153,15 +148,6 @@ export class ItemListingReadRepositoryImpl
 	): Promise<Domain.Contexts.Listing.ItemListing.ItemListingEntityReference | null> {
 		const result = await this.mongoDataSource.findById(id, options);
 		if (!result) {
-			// Try to find in mock data
-			const mockResult = getMockItemListings().find(
-				(
-					listing: Domain.Contexts.Listing.ItemListing.ItemListingEntityReference,
-				) => listing.id === id,
-			);
-			if (mockResult) {
-				return mockResult;
-			}
 			return null;
 		}
 		return this.converter.toDomain(result, this.passport);
@@ -171,9 +157,9 @@ export class ItemListingReadRepositoryImpl
 		sharerId: string,
 		options?: FindOptions,
 	): Promise<Domain.Contexts.Listing.ItemListing.ItemListingEntityReference[]> {
-		// Handle empty or invalid sharerId (for development/testing)
+		// Handle empty or invalid sharerId
 		if (!sharerId || sharerId.trim() === '') {
-			return getMockItemListings();
+			return [];
 		}
 
 		try {
@@ -182,38 +168,11 @@ export class ItemListingReadRepositoryImpl
 				{ sharer: new MongooseSeedwork.ObjectId(sharerId) },
 				options,
 			);
-			if (!result || result.length === 0) {
-				// Return all mock data when no real data exists (for development/testing)
-				// Update mock users to use the current sharerId for consistency
-				const mockListings = getMockItemListings();
-				return mockListings.map(
-					(
-						listing: Domain.Contexts.Listing.ItemListing.ItemListingEntityReference,
-					) => ({
-						...listing,
-						sharer: {
-							...listing.sharer,
-							id: sharerId, // Use the actual sharerId from the request
-						},
-					}),
-				);
-			}
 			return result.map((doc) => this.converter.toDomain(doc, this.passport));
 		} catch (error) {
-			// If ObjectId creation fails, return mock data
-			console.warn('Error with ObjectId, returning mock data:', error);
-			const mockListings = getMockItemListings();
-			return mockListings.map(
-				(
-					listing: Domain.Contexts.Listing.ItemListing.ItemListingEntityReference,
-				) => ({
-					...listing,
-					sharer: {
-						...listing.sharer,
-						id: sharerId, // Use the actual sharerId from the request
-					},
-				}),
-			);
+			// If ObjectId creation fails, return empty array
+			console.warn('Error with ObjectId in getBySharer:', error);
+			return [];
 		}
 	}
 }
