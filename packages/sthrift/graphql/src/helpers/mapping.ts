@@ -24,5 +24,6 @@ export function toGraphItem(
 		createdAt: listing.createdAt.toISOString(),
 		updatedAt: listing.updatedAt.toISOString(),
 		version: 1,
+		listingType: listing.listingType,
 	};
 }

@@ -90,6 +90,7 @@ const itemListingResolvers: Resolvers<GraphContext> = {
 				sharingPeriodEnd: new Date(args.input.sharingPeriodEnd),
 				images: [...(args.input.images ?? [])],
 				isDraft: args.input.isDraft ?? false,
+				listingType: 'item-listing',
 			};
 
 			const result = await context.applicationServices.Listing.ItemListing.create(command);
@@ -131,7 +132,7 @@ const itemListingResolvers: Resolvers<GraphContext> = {
 				await context.applicationServices.Listing.ItemListing.cancel({
 					id: args.id,
 				});
-			return toGraphItem(result);
+			return result
 		},
 	},
 };
