@@ -41,6 +41,7 @@ function createMockListing(
 		createdAt: new Date('2020-01-01T00:00:00Z'),
 		updatedAt: new Date('2020-01-02T00:00:00Z'),
 		schemaVersion: '1.0.0',
+		listingType: 'item',
 		...overrides,
 	};
 	return baseListing;
@@ -134,7 +135,7 @@ test.for(feature, ({ Scenario }) => {
 				).mockResolvedValue([createMockListing()]);
 			});
 			When('the itemListings query is executed', async () => {
-				result = await itemListingResolvers.Query.itemListings(
+				result = await itemListingResolvers.Query?.itemListings?.(
 					{},
 					{},
 					context,
@@ -172,7 +173,7 @@ test.for(feature, ({ Scenario }) => {
 				).mockResolvedValue([createMockListing()]);
 			});
 			When('the itemListings query is executed', async () => {
-				result = await itemListingResolvers.Query.itemListings(
+				result = await itemListingResolvers.Query?.itemListings?.(
 					{},
 					{},
 					context,
@@ -203,7 +204,7 @@ test.for(feature, ({ Scenario }) => {
 		});
 		When('the itemListings query is executed', async () => {
 			try {
-				await itemListingResolvers.Query.itemListings({}, {}, context, {} as never);
+				await itemListingResolvers.Query?.itemListings?.({}, {}, context, {} as never);
 			} catch (e) {
 				error = e as Error;
 			}
@@ -222,7 +223,7 @@ test.for(feature, ({ Scenario }) => {
 			).mockResolvedValue(createMockListing());
 		});
 		When('the itemListing query is executed with that ID', async () => {
-			result = await itemListingResolvers.Query.itemListing(
+			result = await itemListingResolvers.Query?.itemListing?.(
 				{},
 				{ id: 'listing-1' },
 				context,
@@ -254,7 +255,7 @@ test.for(feature, ({ Scenario }) => {
 				).mockResolvedValue(null);
 			});
 			When('the itemListing query is executed', async () => {
-				result = await itemListingResolvers.Query.itemListing(
+				result = await itemListingResolvers.Query?.itemListing?.(
 					{},
 					{ id: 'nonexistent-id' },
 					context,
@@ -282,7 +283,7 @@ test.for(feature, ({ Scenario }) => {
 			});
 		});
 		When('the myListingsAll query is executed', async () => {
-			result = await itemListingResolvers.Query.myListingsAll(
+			result = await itemListingResolvers.Query?.myListingsAll?.(
 				{},
 				{ page: 1, pageSize: 10 },
 				context,
@@ -326,7 +327,7 @@ test.for(feature, ({ Scenario }) => {
 			});
 		});
 		When('the myListingsAll query is executed', async () => {
-			result = await itemListingResolvers.Query.myListingsAll(
+			result = await itemListingResolvers.Query?.myListingsAll?.(
 				{},
 				{ page: 1, pageSize: 10 },
 				context,
@@ -371,7 +372,7 @@ test.for(feature, ({ Scenario }) => {
 			},
 		);
 		When('the createItemListing mutation is executed', async () => {
-			result = await itemListingResolvers.Mutation.createItemListing(
+			result = await itemListingResolvers.Mutation?.createItemListing?.(
 				{},
 				{ input },
 				context,
@@ -413,7 +414,7 @@ test.for(feature, ({ Scenario }) => {
 			});
 			When('the createItemListing mutation is executed', async () => {
 				try {
-					await itemListingResolvers.Mutation.createItemListing(
+					await itemListingResolvers.Mutation?.createItemListing?.(
 						{},
 						{
 							input: {
@@ -453,7 +454,7 @@ test.for(feature, ({ Scenario }) => {
 			);
 			When('the createItemListing mutation is executed', async () => {
 				try {
-					await itemListingResolvers.Mutation.createItemListing(
+					await itemListingResolvers.Mutation?.createItemListing?.(
 						{},
 						{
 							input: {
