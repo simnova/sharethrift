@@ -8,7 +8,7 @@ export function toGraphItem(
 	listing: Domain.Contexts.Listing.ItemListing.ItemListingEntityReference,
 ) {
 	return {
-		sharer: listing.sharer.id,
+		sharer: listing.sharer,
 		title: listing.title,
 		description: listing.description,
 		category: listing.category,
@@ -24,5 +24,6 @@ export function toGraphItem(
 		createdAt: listing.createdAt.toISOString(),
 		updatedAt: listing.updatedAt.toISOString(),
 		version: 1,
+		listingType: listing.listingType,
 	};
 }
