@@ -1,17 +1,17 @@
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { describeFeature, loadFeature } from '@amiceli/vitest-cucumber';
+import { DomainSeedwork } from '@cellix/domain-seedwork';
 import { expect, vi } from 'vitest';
+import type { ItemListingProps } from '../../listing/item/item-listing.entity.ts';
+import { ItemListing } from '../../listing/item/item-listing.ts';
+import type { Passport } from '../../passport.ts';
+import { PersonalUserRole } from '../../role/personal-user-role/personal-user-role.ts';
+import { PersonalUserRolePermissions } from '../../role/personal-user-role/personal-user-role-permissions.ts';
+import type { PersonalUserProps } from '../../user/personal-user/personal-user.entity.ts';
+import { PersonalUser } from '../../user/personal-user/personal-user.ts';
 import type { ConversationProps } from './conversation.entity.ts';
 import { Conversation } from './conversation.ts';
-import { DomainSeedwork } from '@cellix/domain-seedwork';
-import type { Passport } from '../../passport.ts';
-import { PersonalUser } from '../../user/personal-user/personal-user.ts';
-import type { PersonalUserProps } from '../../user/personal-user/personal-user.entity.ts';
-import { ItemListing } from '../../listing/item/item-listing.ts';
-import type { ItemListingProps } from '../../listing/item/item-listing.entity.ts';
-import { PersonalUserRolePermissions } from '../../role/personal-user-role/personal-user-role-permissions.ts';
-import { PersonalUserRole } from '../../role/personal-user-role/personal-user-role.ts';
 
 const test = { for: describeFeature };
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
@@ -182,14 +182,14 @@ function makeBaseProps(
 		reserver,
 		loadReserver: async () => reserver,
 		listing,
-		loadListing: async () => listing,
-		messages: [],
-		loadMessages: async () => [],
-		messagingConversationId: 'twilio-123',
-		createdAt: new Date('2020-01-01T00:00:00Z'),
-		updatedAt: new Date('2020-01-02T00:00:00Z'),
-		schemaVersion: '1.0.0',
-		...overrides,
+	loadListing: async () => listing,
+	messages: [],
+	loadMessages: async () => [],
+	messagingConversationId: 'twilio-123',
+	createdAt: new Date('2020-01-01T00:00:00Z'),
+	updatedAt: new Date('2020-01-02T00:00:00Z'),
+	schemaVersion: '1.0.0',
+	...overrides,
 	};
 }
 
