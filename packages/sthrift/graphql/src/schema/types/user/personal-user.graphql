@@ -80,7 +80,6 @@ input PersonalUserAccountProfileUpdateInput {
 	firstName: String
 	lastName: String
 	location: PersonalUserAccountProfileLocationUpdateInput
-	billing: PersonalUserAccountProfileBillingUpdateInput
 	aboutMe: String
 }
 
