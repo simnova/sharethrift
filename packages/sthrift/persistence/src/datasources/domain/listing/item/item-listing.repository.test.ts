@@ -117,16 +117,26 @@ test.for(feature, ({ Scenario, Background, BeforeEachScenario }) => {
 					filter._id === 'listing-1' ? listingDoc : null,
 				),
 			})),
-			find: vi.fn((filter?: { state?: string; sharer?: string }) => ({
-				exec: vi.fn(() => {
-					if (!filter || filter.state === 'Published') {
-						return [listingDoc];
-					}
-					if (filter.sharer) {
-						return filter.sharer === 'user-1' ? [listingDoc] : [];
-					}
-					return [];
-				}),
+			find: vi.fn((filter?: { state?: string; sharer?: string }) => {
+				// Create chainable query object
+				const query = {
+					sort: vi.fn(() => query),
+					skip: vi.fn(() => query),
+					limit: vi.fn(() => query),
+					exec: vi.fn(async () => {
+						if (!filter || filter.state === 'Published') {
+							return [listingDoc];
+						}
+						if (filter.sharer) {
+							return filter.sharer === 'user-1' ? [listingDoc] : [];
+						}
+						return [];
+					}),
+				};
+				return query;
+			}),
+			countDocuments: vi.fn(() => ({
+				exec: vi.fn(async () => 1),
 			})),
 		});
 
