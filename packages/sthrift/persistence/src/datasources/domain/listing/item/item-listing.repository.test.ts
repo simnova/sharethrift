@@ -123,7 +123,7 @@ test.for(feature, ({ Scenario, Background, BeforeEachScenario }) => {
 					sort: vi.fn(() => query),
 					skip: vi.fn(() => query),
 					limit: vi.fn(() => query),
-					exec: vi.fn(async () => {
+					exec: vi.fn( () => {
 						if (!filter || filter.state === 'Published') {
 							return [listingDoc];
 						}
