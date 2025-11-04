@@ -5,19 +5,22 @@ import {
 	ViewListingImageGalleryGetImagesDocument,
 	ViewListingInformationGetListingDocument,
 } from '../../../../../generated.tsx';
-import { withMockApolloClient, withMockRouter } from '../../../../../test-utils/storybook-decorators.tsx';
+import {
+	withMockApolloClient,
+	withMockRouter,
+} from '../../../../../test-utils/storybook-decorators.tsx';
 
 // Local mock listing data (removed dependency on DUMMY_LISTINGS)
 const baseListingId = 'mock-listing-id-1';
 const MOCK_LISTING_BASE: ItemListing = {
-	id: baseListingId as any, // GraphQL generated type may treat id as scalar (any)
+	id: baseListingId as string, // GraphQL generated type may treat id as scalar (any)
 	title: 'Cordless Drill',
 	description: '18V cordless drill with two batteries and charger.',
 	category: 'Tools',
 	location: 'Philadelphia, PA',
 	sharingPeriodStart: new Date(Date.now() - 1000 * 60 * 60 * 24 * 2), // 2 days ago
 	sharingPeriodEnd: new Date(Date.now() + 1000 * 60 * 60 * 24 * 10), // in 10 days
-	state: 'Published' as any,
+	state: 'Published' as string,
 	images: [
 		'https://placehold.co/600x400?text=Drill+1',
 		'https://placehold.co/600x400?text=Drill+2',
@@ -49,11 +52,17 @@ const MOCK_LISTING_BASE: ItemListing = {
 
 const mocks = [
 	{
-		request: { query: ViewListingImageGalleryGetImagesDocument, variables: { listingId: baseListingId } },
+		request: {
+			query: ViewListingImageGalleryGetImagesDocument,
+			variables: { listingId: baseListingId },
+		},
 		result: { data: { itemListing: { images: MOCK_LISTING_BASE.images } } },
 	},
 	{
-		request: { query: ViewListingInformationGetListingDocument, variables: { listingId: baseListingId } },
+		request: {
+			query: ViewListingInformationGetListingDocument,
+			variables: { listingId: baseListingId },
+		},
 		result: {
 			data: {
 				itemListing: {
@@ -62,7 +71,8 @@ const mocks = [
 					description: MOCK_LISTING_BASE.description,
 					category: MOCK_LISTING_BASE.category,
 					location: MOCK_LISTING_BASE.location,
-					sharingPeriodStart: MOCK_LISTING_BASE.sharingPeriodStart.toISOString(),
+					sharingPeriodStart:
+						MOCK_LISTING_BASE.sharingPeriodStart.toISOString(),
 					sharingPeriodEnd: MOCK_LISTING_BASE.sharingPeriodEnd.toISOString(),
 					state: MOCK_LISTING_BASE.state,
 					images: MOCK_LISTING_BASE.images,

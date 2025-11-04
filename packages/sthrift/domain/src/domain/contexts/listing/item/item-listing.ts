@@ -314,11 +314,6 @@ export class ItemListing<props extends ItemListingProps>
 		this.props.state = new ValueObjects.ListingState('Cancelled').valueOf();
 	}
 
-	get listingType(): string {
-		return this.props.listingType;
-		// Note: updatedAt is automatically handled by Mongoose timestamps
-	}
-
 	/**
 	 * Set whether this listing is blocked.
 	 * - When setting blocked=false and the listing is currently Blocked, this will move the
@@ -393,5 +388,12 @@ export class ItemListing<props extends ItemListingProps>
 	 */
 	getEntityReference(): ItemListingEntityReference {
 		return this.props as ItemListingEntityReference;
+	}
+
+	get listingType(): string {
+		return this.props.listingType;
+	}
+	set listingType(value: string) {
+		this.props.listingType = value;
 	}
 }

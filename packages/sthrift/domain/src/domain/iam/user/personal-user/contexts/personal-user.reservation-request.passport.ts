@@ -1,4 +1,4 @@
-import type { ReservationRequestEntityReference } from '../../../../contexts/reservation-request/reservation-request/index.ts';
+import type { ReservationRequestEntityReference } from '../../../../contexts/reservation-request/reservation-request/reservation-request.entity.ts';
 import type { ReservationRequestPassport } from '../../../../contexts/reservation-request/reservation-request.passport.ts';
 import type { ReservationRequestVisa } from '../../../../contexts/reservation-request/reservation-request.visa.ts';
 import { PersonalUserPassportBase } from '../personal-user.passport-base.ts';
@@ -8,7 +8,9 @@ export class PersonalUserReservationRequestPassport
 	extends PersonalUserPassportBase
 	implements ReservationRequestPassport
 {
-	forReservationRequest(root: ReservationRequestEntityReference): ReservationRequestVisa {
+	forReservationRequest(
+		root: ReservationRequestEntityReference,
+	): ReservationRequestVisa {
 		return new PersonalUserReservationRequestVisa(root, this._user);
 	}
 }

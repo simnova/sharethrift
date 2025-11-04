@@ -127,6 +127,9 @@ export class ItemListingDomainAdapter
 	}
 
 	get listingType(): string {
-		return this.doc.get('listingType') || 'item-listing';
-	}
+    return this.doc.listingType;
+  }
+  set listingType(value: string) {
+    this.doc.listingType = value;
+  }
 }

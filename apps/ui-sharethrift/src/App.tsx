@@ -22,6 +22,6 @@ const App: React.FC = () => {
 			</Routes>
 		</ApolloConnection>
 	);
-}
+};
 
 export default App;
