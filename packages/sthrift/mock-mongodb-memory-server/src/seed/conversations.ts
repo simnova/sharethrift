@@ -31,7 +31,7 @@ export const conversations = [
 		sharer: new ObjectId('507f1f77bcf86cd799439011'), // Alice
 		reserver: new ObjectId('507f1f77bcf86cd799439012'), // Bob
 		listing: new ObjectId('707f1f77bcf86cd799439033'), // City Bike
-		twilioConversationId: 'twilio_003',
+		messagingConversationId: 'twilio_003',
 		schemaVersion: '1.0.0',
 		version: 1,
 		discriminatorKey: 'conversation',
@@ -43,7 +43,7 @@ export const conversations = [
 		sharer: new ObjectId('507f1f77bcf86cd799439012'), // Bob
 		reserver: new ObjectId('507f1f77bcf86cd799439011'), // Alice
 		listing: new ObjectId('707f1f77bcf86cd799439034'), // Power Drill
-		twilioConversationId: 'twilio_004',
+		messagingConversationId: 'twilio_004',
 		schemaVersion: '1.0.0',
 		version: 1,
 		discriminatorKey: 'conversation',
