@@ -1,8 +1,9 @@
 import { useState } from "react";
-import { useQuery } from "@apollo/client/react";
+import { useQuery, useMutation } from "@apollo/client/react";
 import { AllListingsTable } from "./all-listings-table.tsx";
 import { ComponentQueryLoader } from "@sthrift/ui-components";
-import { HomeAllListingsTableContainerMyListingsAllDocument } from "../../../../../generated.tsx";
+import { HomeAllListingsTableContainerMyListingsAllDocument, HomeAllListingsTableContainerCancelItemListingDocument } from "../../../../../generated.tsx";
+import { message } from "antd";
 
 export interface AllListingsTableContainerProps {
   currentPage: number;
@@ -21,7 +22,7 @@ export const AllListingsTableContainer: React.FC<AllListingsTableContainerProps>
   }>({ field: null, order: null });
   const pageSize = 6;
 
-  const { data, loading, error } = useQuery(
+  const { data, loading, error, refetch } = useQuery(
     HomeAllListingsTableContainerMyListingsAllDocument,
     {
       variables: {
@@ -38,9 +39,38 @@ export const AllListingsTableContainer: React.FC<AllListingsTableContainerProps>
     }
   );
 
+  const [cancelListing] = useMutation(HomeAllListingsTableContainerCancelItemListingDocument, {
+    onCompleted: () => {
+      message.success("Listing cancelled successfully");
+      refetch();
+    },
+    onError: (error) => {
+      message.error(`Failed to cancel listing: ${error.message}`);
+    },
+  });
+
   const listings = data?.myListingsAll?.items ?? [];
   console.log("Listings data:", data);
   const total = data?.myListingsAll?.total ?? 0;
+
+  // Transform domain fields to UI format
+  const transformedListings = listings.map(listing => {
+    const startDate = listing.sharingPeriodStart ?? '';
+    const endDate = listing.sharingPeriodEnd ?? '';
+    const reservationPeriod = startDate && endDate 
+      ? `${startDate.slice(0, 10)} - ${endDate.slice(0, 10)}` 
+      : '';
+
+    return {
+      id: listing.id,
+      title: listing.title,
+      image: listing.images?.[0] ?? null,
+      publishedAt: listing.createdAt ?? null,
+      reservationPeriod,
+      status: listing.state ?? 'Unknown',
+      pendingRequestsCount: 0, // TODO: implement in future
+    };
+  });
 
   const handleSearch = (value: string) => {
     setSearchText(value);
@@ -68,9 +98,17 @@ export const AllListingsTableContainer: React.FC<AllListingsTableContainerProps>
     onPageChange(1);
   };
 
-  const handleAction = (action: string, listingId: string) => {
-    // TODO: Implement actual actions in future PRs
-    console.log(`Action: ${action}, Listing ID: ${listingId}`);
+  const handleAction = async (action: string, listingId: string) => {
+    if (action === "cancel") {
+      try {
+        await cancelListing({ variables: { id: listingId } });
+      } catch (error) {
+        console.error("Cancel listing error:", error);
+      }
+    } else {
+      // TODO: Implement other actions in future PRs
+      console.log(`Action: ${action}, Listing ID: ${listingId}`);
+    }
   };
 
   const handleViewAllRequests = (listingId: string) => {
@@ -87,7 +125,7 @@ export const AllListingsTableContainer: React.FC<AllListingsTableContainerProps>
       hasData={data?.myListingsAll}
       hasDataComponent={
         <AllListingsTable
-          data={listings}
+          data={transformedListings}
           searchText={searchText}
           statusFilters={statusFilters}
           sorter={sorter}

@@ -63,6 +63,7 @@ describe('ReservationRequest', () => {
 		createdAt: new Date(),
 		updatedAt: new Date(),
 		schemaVersion: '1',
+		listingType: 'item-listing',
 	});
 
 	const mockRole: Readonly<PersonalUserRoleEntityReference> = {
@@ -108,6 +109,7 @@ describe('ReservationRequest', () => {
 				profile: {
 					firstName: 'Mock',
 					lastName: 'User',
+                    aboutMe: 'Hello',
 					location: {
 						address1: '123 Main St',
 						address2: null,

@@ -1,4 +1,4 @@
-query ViewListingSharerInformationGetSharer($sharerId: ObjectID!) {
+query ViewListingSharerInformationContainerPersonalUserById($sharerId: ObjectID!) {
   personalUserById(id: $sharerId) {
     id
     userType

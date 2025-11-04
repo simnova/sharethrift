@@ -1,33 +1,10 @@
 import type { Meta, StoryObj } from '@storybook/react';
+import type { UIItemListing } from '../../organisms/listings-grid/index.tsx';
 import { ListingCard } from './index.tsx';
 
-export interface ItemListing {
-	_id: string;
-	sharer: string; // User reference
-	title: string;
-	description: string;
-	category: string;
-	location: string;
-	sharingPeriodStart: Date;
-	sharingPeriodEnd: Date;
-	state?:
-		| 'Published'
-		| 'Paused'
-		| 'Cancelled'
-		| 'Drafted'
-		| 'Expired'
-		| 'Blocked'
-		| 'Appeal Requested';
-	updatedAt?: Date;
-	createdAt?: Date;
-	sharingHistory?: string[]; // objectid[]
-	reports?: number;
-	images?: string[]; // For UI purposes, we'll add image URLs
-}
+const sampleListing: UIItemListing = {
+	id: '1',
 
-const sampleListing: ItemListing = {
-	_id: '1',
-	sharer: 'user1',
 	title: 'City Bike',
 	description:
 		'Perfect city bike for commuting and leisure rides around the neighborhood.',
@@ -56,7 +33,7 @@ export default meta;
 type Story = StoryObj<typeof ListingCard>;
 
 export const Default: Story = {
-	render: (args: { listing: ItemListing }) => (
+	render: (args: { listing: UIItemListing }) => (
 		<div style={{ width: 280 }}>
 			<ListingCard {...args} />
 		</div>
