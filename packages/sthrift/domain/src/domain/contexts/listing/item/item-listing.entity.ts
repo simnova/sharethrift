@@ -16,7 +16,7 @@ export interface ItemListingProps extends DomainSeedwork.DomainEntityProps {
 	sharingHistory?: string[]; // Array of reservation/sharing IDs
 	reports?: number;
 	images?: string[]; // Array of image URLs
-	listingType: string;
+    listingType: string;
 }
 
 export interface ItemListingEntityReference
