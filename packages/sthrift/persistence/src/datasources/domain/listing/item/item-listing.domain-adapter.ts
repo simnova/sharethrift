@@ -127,11 +127,9 @@ export class ItemListingDomainAdapter
 	}
 
 	get listingType(): string {
-		return this.doc.listingType || 'General';
+		return this.doc.listingType;
 	}
 	set listingType(value: string) {
-		this.doc.listingType = value as NonNullable<
-			Models.Listing.ItemListing['listingType']
-		>;
+		this.doc.listingType = value;
 	}
 }
