@@ -249,6 +249,7 @@ const getMockReservationRequests = (
 			updatedAt: new Date('2024-09-05T12:00:00Z'),
 			schemaVersion: '1',
 			listing: {
+				listingType: 'item-listing',
 				id: '60ddc9732f8fb814c89b6789',
 				title: 'Professional Microphone',
 				description: 'A high-quality microphone for professional use.',
@@ -271,6 +272,7 @@ const getMockReservationRequests = (
 						profile: {
 							firstName: 'Jane',
 							lastName: 'Reserver',
+                            aboutMe: 'Hello',
 							location: {
 								address1: '123 Main St',
 								address2: null,
@@ -395,6 +397,7 @@ const getMockReservationRequests = (
 					profile: {
 						firstName: 'Jane',
 						lastName: 'Reserver',
+                        aboutMe: 'Hello',
 						location: {
 							address1: '123 Main St',
 							address2: null,
@@ -526,6 +529,7 @@ const getMockReservationRequests = (
 					schemaVersion: '1',
 					createdAt: new Date('2024-01-05T09:00:00Z'),
 					updatedAt: new Date('2024-01-13T09:00:00Z'),
+					listingType: 'item-listing',
 					sharer: {
 						id: 'mock-sharer-id',
 						userType: 'personal',
@@ -537,6 +541,7 @@ const getMockReservationRequests = (
 							profile: {
 								firstName: 'Jane',
 								lastName: 'Reserver',
+                                aboutMe: 'Hello',
 								location: {
 									address1: '123 Main St',
 									address2: null,
@@ -703,6 +708,7 @@ const getMockReservationRequests = (
 						profile: {
 							firstName: 'Jane',
 							lastName: 'Reserver',
+                            aboutMe: 'Hello',
 							location: {
 								address1: '123 Main St',
 								address2: null,

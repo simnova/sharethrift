@@ -127,4 +127,13 @@ export class ItemListingDomainAdapter
 	set images(value: string[]) {
 		this.doc.images = value;
 	}
+
+	get listingType(): string {
+		return this.doc.listingType || 'General';
+	}
+	set listingType(value: string) {
+		this.doc.listingType = value as NonNullable<
+			Models.Listing.ItemListing['listingType']
+		>;
+	}
 }

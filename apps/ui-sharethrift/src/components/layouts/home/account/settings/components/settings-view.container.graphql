@@ -3,26 +3,53 @@ query HomeAccountSettingsViewContainerCurrentUser {
     id
     userType
     account {
-      accountType
-      email
-      username
-      profile {
-        firstName
-        lastName
-        location {
-          address1
-          address2
-          city
-          state
-          country
-          zipCode
-        }
-        billing {
-          cybersourceCustomerId
-        }
-      }
+        ...PersonalUserAccountFields
     }
     createdAt
     updatedAt
+  }
+}
+
+mutation HomeAccountSettingsViewContainerUpdatePersonalUser($input: PersonalUserUpdateInput!) {
+  personalUserUpdate(input: $input) {
+    id
+    account {
+        ...PersonalUserAccountFields
+    }
+  }
+}
+
+fragment PersonalUserLocationFields on PersonalUserAccountProfileLocation {
+  address1
+  address2
+  city
+  state
+  country
+  zipCode
+}
+
+fragment PersonalUserBillingFields on PersonalUserAccountProfileBilling {
+  subscriptionId
+  cybersourceCustomerId
+}
+
+fragment PersonalUserProfileFields on PersonalUserAccountProfile {
+  firstName
+  lastName
+  aboutMe
+  location {
+    ...PersonalUserLocationFields
+  }
+  billing {
+    ...PersonalUserBillingFields
+  }
+}
+
+fragment PersonalUserAccountFields on PersonalUserAccount {
+  accountType
+  email
+  username
+  profile {
+    ...PersonalUserProfileFields
   }
 }

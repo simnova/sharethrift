@@ -102,6 +102,7 @@ export const getMockConversations =
 				profile: {
 					firstName,
 					lastName,
+					aboutMe: "Hello",
 					location: {
 						address1: '123 Main St',
 						address2: null,
@@ -147,6 +148,7 @@ export const getMockConversations =
 			schemaVersion: '1',
 			sharingHistory: [],
 			reports: 0,
+			listingType: 'item-listing',
 		});
 
 		// Create mock users

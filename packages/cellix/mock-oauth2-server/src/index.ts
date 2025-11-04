@@ -137,7 +137,6 @@ async function main() {
 
 	// Simulate sign up endpoint
 	app.post('/token', async (req, res) => {
-		// In a real app, validate and create user here
 		// biome-ignore lint:useLiteralKeys
 		const email = process.env['Email'] ?? '';
 		// biome-ignore lint:useLiteralKeys

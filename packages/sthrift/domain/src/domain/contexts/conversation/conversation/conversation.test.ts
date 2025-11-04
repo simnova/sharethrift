@@ -100,6 +100,7 @@ function makeBaseProps(
 				profile: {
 					firstName: 'Sharer',
 					lastName: 'Sharer',
+                    aboutMe: 'Hello',
 					location: {
 						address1: '123 Main St',
 						address2: null,
@@ -165,6 +166,7 @@ function makeBaseProps(
 				profile: {
 					firstName: 'Reserver',
 					lastName: 'Reserver',
+                    aboutMe: 'Hello',
 					location: {
 						address1: '456 Main St',
 						address2: null,
@@ -233,6 +235,7 @@ function makeBaseProps(
 			createdAt: new Date('2020-01-01T00:00:00Z'),
 			updatedAt: new Date('2020-01-02T00:00:00Z'),
 			schemaVersion: '1.0.0',
+			listingType: 'item-listing',
 		},
 		makePassport(),
 	);

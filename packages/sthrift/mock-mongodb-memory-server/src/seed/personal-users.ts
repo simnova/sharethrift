@@ -3,7 +3,7 @@ import { ObjectId } from 'mongodb';
 
 export const personalUsers: Models.User.PersonalUser[] = [
 	{
-		_id: '507f1f77bcf86cd799439011',
+		_id: new ObjectId('507f1f77bcf86cd799439011'),
 		userType: 'personal-users',
 		isBlocked: false,
 		hasCompletedOnboarding: true,
@@ -15,6 +15,7 @@ export const personalUsers: Models.User.PersonalUser[] = [
 			profile: {
 				firstName: 'Alice',
 				lastName: 'Smith',
+                aboutMe: 'Hello',
 				location: {
 					address1: '123 Main St',
 					address2: null,
@@ -41,7 +42,7 @@ export const personalUsers: Models.User.PersonalUser[] = [
 		updatedAt: new Date('2023-01-01T10:00:00Z'),
 	},
 	{
-		_id: '507f1f77bcf86cd799439012',
+		_id: new ObjectId('507f1f77bcf86cd799439012'),
 		userType: 'personal-users',
 		isBlocked: false,
 		hasCompletedOnboarding: true,
@@ -53,6 +54,7 @@ export const personalUsers: Models.User.PersonalUser[] = [
 			profile: {
 				firstName: 'Bob',
 				lastName: 'Johnson',
+                aboutMe: 'Hello',
 				location: {
 					address1: '456 Oak Ave',
 					address2: 'Apt 2',

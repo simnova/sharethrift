@@ -1,190 +1,201 @@
 type PersonalUser implements MongoBase {
-  userType: String
-  isBlocked: Boolean
-  account: PersonalUserAccount
-  hasCompletedOnboarding: Boolean
-  role: PersonalUserRole
-  id: ObjectID!
-  schemaVersion: String
-  createdAt: DateTime
-  updatedAt: DateTime
+	userType: String
+	isBlocked: Boolean
+	account: PersonalUserAccount
+	hasCompletedOnboarding: Boolean
+	role: PersonalUserRole
+	id: ObjectID!
+	schemaVersion: String
+	createdAt: DateTime
+	updatedAt: DateTime
 }
 
 type PersonalUserPage {
-  items: [PersonalUser!]!
-  total: Int!
-  page: Int!
-  pageSize: Int!
+	items: [PersonalUser!]!
+	total: Int!
+	page: Int!
+	pageSize: Int!
 }
 
 type PersonalUserAccount {
-  accountType: String
-  email: String
-  username: String
-  profile: PersonalUserAccountProfile
+	accountType: String
+	email: String
+	username: String
+	profile: PersonalUserAccountProfile
 }
 
 type PersonalUserAccountProfile {
-  firstName: String
-  lastName: String
-  location: PersonalUserAccountProfileLocation
-  billing: PersonalUserAccountProfileBilling
+	firstName: String
+	lastName: String
+	aboutMe: String
+	location: PersonalUserAccountProfileLocation
+	billing: PersonalUserAccountProfileBilling
 }
 
 type PersonalUserAccountProfileLocation {
-  address1: String
-  address2: String
-  city: String
-  state: String
-  country: String
-  zipCode: String
+	address1: String
+	address2: String
+	city: String
+	state: String
+	country: String
+	zipCode: String
 }
 
 type PersonalUserAccountProfileBilling {
-  cybersourceCustomerId: String
-  subscription: PersonalUserAccountProfileBillingSubscription
-  transactions: [PersonalUserAccountProfileBillingTransaction]
+	cybersourceCustomerId: String
+	subscription: PersonalUserAccountProfileBillingSubscription
+	transactions: [PersonalUserAccountProfileBillingTransaction]
 }
 
 type PersonalUserAccountProfileBillingSubscription {
-  subscriptionId: String
-  planCode: String # code from cybersource
-  status: String
-  startDate: DateTime
+	subscriptionId: String
+	planCode: String # code from cybersource
+	status: String
+	startDate: DateTime
 }
 
 type PersonalUserAccountProfileBillingTransaction {
-  transactionId: String
-  amount: Float
-  referenceId: String
-  status: String
-  completedAt: DateTime
-  errorMessage: String
+	transactionId: String
+	amount: Float
+	referenceId: String
+	status: String
+	completedAt: DateTime
+	errorMessage: String
 }
 
 input PersonalUserUpdateInput {
-  id: ObjectID!
-  isBlocked: Boolean
-  hasCompletedOnboarding: Boolean
-  account: PersonalUserAccountUpdateInput
+	id: ObjectID!
+	isBlocked: Boolean
+	hasCompletedOnboarding: Boolean
+	account: PersonalUserAccountUpdateInput
 }
 
 input PersonalUserAccountUpdateInput {
-  accountType: String
-  username: String
-  profile: PersonalUserAccountProfileUpdateInput
+	accountType: String
+	username: String
+	profile: PersonalUserAccountProfileUpdateInput
 }
 
 input PersonalUserAccountProfileUpdateInput {
-  firstName: String
-  lastName: String
-  location: PersonalUserAccountProfileLocationUpdateInput
+	firstName: String
+	lastName: String
+	location: PersonalUserAccountProfileLocationUpdateInput
+	billing: PersonalUserAccountProfileBillingUpdateInput
+	aboutMe: String
 }
 
 input PersonalUserAccountProfileLocationUpdateInput {
-  address1: String
-  address2: String
-  city: String
-  state: String
-  country: String
-  zipCode: String
+	address1: String
+	address2: String
+	city: String
+	state: String
+	country: String
+	zipCode: String
 }
 
 # Payment related input/output types
 input ProcessPaymentPaymentInstrumentInput {
-  billingFirstName: String!
-  billingLastName: String!
-  billingEmail: String!
-  billingPhone: String
-  billingAddressLine1: String!
-  billingAddressLine2: String
-  billingCity: String!
-  billingState: String!
-  billingPostalCode: String!
-  billingCountry: String!
-  paymentToken: String!
+	billingFirstName: String!
+	billingLastName: String!
+	billingEmail: String!
+	billingPhone: String
+	billingAddressLine1: String!
+	billingAddressLine2: String
+	billingCity: String!
+	billingState: String!
+	billingPostalCode: String!
+	billingCountry: String!
+	paymentToken: String!
 }
 
 input ProcessPaymentInput {
-  userId: ObjectID!
+	userId: ObjectID!
 
-  paymentAmount: Float!
-  currency: String!
+	paymentAmount: Float!
+	currency: String!
 
-  paymentInstrument: ProcessPaymentPaymentInstrumentInput!
+	paymentInstrument: ProcessPaymentPaymentInstrumentInput!
 }
 
 type PaymentErrorInformation {
-  reason: String
-  message: String
+	reason: String
+	message: String
 }
 
 type PaymentResponseAmountDetails {
-  totalAmount: String
-  currency: String
+	totalAmount: String
+	currency: String
 }
 
 type PaymentResponseOrderInformation {
-  amountDetails: PaymentResponseAmountDetails
+	amountDetails: PaymentResponseAmountDetails
 }
 
 type PaymentResponse {
-  id: String
-  status: String!
-  success: Boolean
-  message: String
-  cybersourceCustomerId: String
-  cybersourceSubscriptionId: String
-  cybersourcePlanId: String
-  errorInformation: PaymentErrorInformation
-  orderInformation: PaymentResponseOrderInformation
+	id: String
+	status: String!
+	success: Boolean
+	message: String
+	cybersourceCustomerId: String
+	cybersourceSubscriptionId: String
+	cybersourcePlanId: String
+	errorInformation: PaymentErrorInformation
+	orderInformation: PaymentResponseOrderInformation
 }
 
 input RefundRequestOrderInformationAmountDetailsInput {
-  totalAmount: Float!
-  currency: String!
+	totalAmount: Float!
+	currency: String!
 }
 
 input RefundOrderInformationInput {
-  amountDetails: RefundRequestOrderInformationAmountDetailsInput!
+	amountDetails: RefundRequestOrderInformationAmountDetailsInput!
 }
 
 input RefundRequestInput {
-  userId: ObjectID!
-  transactionId: String!
-  amount: Float
-  orderInformation: RefundOrderInformationInput!
+	userId: ObjectID!
+	transactionId: String!
+	amount: Float
+	orderInformation: RefundOrderInformationInput!
 }
 
 type RefundResponse {
-  id: String
-  status: String!
-  success: Boolean
-  message: String
-  errorInformation: PaymentErrorInformation
-  orderInformation: PaymentResponseOrderInformation
+	id: String
+	status: String!
+	success: Boolean
+	message: String
+	errorInformation: PaymentErrorInformation
+	orderInformation: PaymentResponseOrderInformation
 }
 
 type PersonalUserMutationResult implements MutationResult {
-  status: MutationStatus!
-  personalUser: PersonalUser
+	status: MutationStatus!
+	personalUser: PersonalUser
 }
 
 extend type Query {
-  # Personal User queries
-  personalUserById(id: ObjectID!): PersonalUser
-  currentPersonalUserAndCreateIfNotExists: PersonalUser!
-  personalUserCybersourcePublicKeyId: String!
-  allUsers(page: Int!, pageSize: Int!, searchText: String, statusFilters: [String!], sorter: SorterInput): PersonalUserPage!
+	# Personal User queries
+	personalUserById(id: ObjectID!): PersonalUser
+	currentPersonalUserAndCreateIfNotExists: PersonalUser!
+	personalUserCybersourcePublicKeyId: String!
+	allUsers(
+		page: Int!
+		pageSize: Int!
+		searchText: String
+		statusFilters: [String!]
+		sorter: SorterInput
+	): PersonalUserPage!
 }
 
 extend type Mutation {
-  # Personal User mutations
-  personalUserUpdate(input: PersonalUserUpdateInput!): PersonalUserMutationResult!
-  blockUser(userId: ObjectID!): PersonalUser!
-  unblockUser(userId: ObjectID!): PersonalUser!
+	# Personal User mutations
+	personalUserUpdate(
+		input: PersonalUserUpdateInput!
+	): PersonalUserMutationResult!
+	blockUser(userId: ObjectID!): PersonalUser!
+	unblockUser(userId: ObjectID!): PersonalUser!
 
-  # Payment mutations
-  processPayment(input: ProcessPaymentInput!): PaymentResponse!
-  refundPayment(request: RefundRequestInput!): RefundResponse!
+	# Payment mutations
+	processPayment(input: ProcessPaymentInput!): PaymentResponse!
+	refundPayment(request: RefundRequestInput!): RefundResponse!
 }

@@ -11,6 +11,7 @@ export interface PersonalUserUpdateCommand {
 		profile?: {
 			firstName?: string;
 			lastName?: string;
+			aboutMe?: string;
 
 			location?: {
 				address1: string;
@@ -90,13 +91,18 @@ export const update = (datasources: DataSources) => {
 				}
 
 				if (command.account?.profile) {
+					console.log('about me', command.account?.profile.aboutMe);
 					existingPersonalUser.account.profile.firstName =
 						command.account.profile.firstName ??
 						existingPersonalUser.account.profile.firstName;
 					existingPersonalUser.account.profile.lastName =
 						command.account.profile.lastName ??
 						existingPersonalUser.account.profile.lastName;
+					existingPersonalUser.account.profile.aboutMe =
+						command.account.profile.aboutMe ??
+						existingPersonalUser.account.profile.aboutMe;
 				}
+
 				if (command.account?.profile?.location) {
 					existingPersonalUser.account.profile.location.address1 =
 						command.account.profile.location.address1;
