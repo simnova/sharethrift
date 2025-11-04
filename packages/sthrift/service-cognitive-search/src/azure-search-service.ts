@@ -215,9 +215,7 @@ export class AzureCognitiveSearch implements CognitiveSearchBase {
 			if (keyFieldValue === undefined || keyFieldValue === null) {
 				throw new Error('Document must have an id or key field for deletion');
 			}
-			await client.deleteDocuments([
-				{ [keyFieldName]: keyFieldValue },
-			]);
+			await client.deleteDocuments([{ [keyFieldName]: keyFieldValue }]);
 			console.log(`AzureCognitiveSearch: Document deleted from ${indexName}`);
 		} catch (error) {
 			console.error(
@@ -282,36 +280,45 @@ export class AzureCognitiveSearch implements CognitiveSearchBase {
 			'orderBy',
 			'includeTotalCount',
 		];
-		return optionKeys.reduce((acc, key) => {
-			if (options[key] != null) {
-				acc[key] = options[key];
-			}
-			return acc;
-		}, {} as Record<string, unknown>);
+		return optionKeys.reduce(
+			(acc, key) => {
+				if (options[key] != null) {
+					acc[key] = options[key];
+				}
+				return acc;
+			},
+			{} as Record<string, unknown>,
+		);
 	}
 
 	/**
 	 * Map Azure facets to our facets format
 	 */
 	private mapFacets(
-		facets?: Record<
-			string,
-			Array<{ value?: unknown; count?: number }>
-		>,
-	): Record<string, Array<{ value: string | number | boolean; count: number }>> {
+		facets?: Record<string, Array<{ value?: unknown; count?: number }>>,
+	): Record<
+		string,
+		Array<{ value: string | number | boolean; count: number }>
+	> {
 		if (!facets) {
 			return {};
 		}
-		return Object.entries(facets).reduce((acc, [key, facetArray]) => {
-			acc[key] = facetArray.map((facet) => {
-				const value = facet.value ?? '';
-				// Type assertion: Azure facets return string, number, or boolean values
-				return {
-					value: value as string | number | boolean,
-					count: facet.count ?? 0,
-				};
-			});
-			return acc;
-		}, {} as Record<string, Array<{ value: string | number | boolean; count: number }>>);
+		return Object.entries(facets).reduce(
+			(acc, [key, facetArray]) => {
+				acc[key] = facetArray.map((facet) => {
+					const value = facet.value ?? '';
+					// Type assertion: Azure facets return string, number, or boolean values
+					return {
+						value: value as string | number | boolean,
+						count: facet.count ?? 0,
+					};
+				});
+				return acc;
+			},
+			{} as Record<
+				string,
+				Array<{ value: string | number | boolean; count: number }>
+			>,
+		);
 	}
 }

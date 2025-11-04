@@ -5,7 +5,9 @@ import type {
 	SearchIndex,
 	SearchOptions,
 } from './interfaces.js';
-import { LunrSearchEngine } from './lunr-search-engine.js';
+import { IndexManager } from './index-manager.js';
+import { DocumentStore } from './document-store.js';
+import { SearchEngineAdapter } from './search-engine-adapter.js';
 
 /**
  * In-memory implementation of Azure Cognitive Search
@@ -25,14 +27,18 @@ import { LunrSearchEngine } from './lunr-search-engine.js';
  * This implementation serves as a drop-in replacement for Azure Cognitive Search
  * in development and testing environments, offering realistic search behavior
  * without requiring cloud services or external dependencies.
+ *
+ * Refactored into focused modules for better separation of concerns:
+ * - IndexManager: Manages index definitions
+ * - DocumentStore: Manages document storage
+ * - SearchEngineAdapter: Wraps Lunr/LiQE search engine
  */
 class InMemoryCognitiveSearch
 	implements CognitiveSearchBase, CognitiveSearchLifecycle
 {
-	private indexes: Map<string, SearchIndex> = new Map();
-	private documents: Map<string, Map<string, Record<string, unknown>>> =
-		new Map();
-	private lunrEngine: LunrSearchEngine;
+	private indexManager: IndexManager;
+	private documentStore: DocumentStore;
+	private searchEngine: SearchEngineAdapter;
 	private isInitialized = false;
 
 	/**
@@ -50,8 +56,10 @@ class InMemoryCognitiveSearch
 	) {
 		// Store options for future use
 		void options;
-		// Initialize Lunr.js search engine
-		this.lunrEngine = new LunrSearchEngine();
+		// Initialize focused modules
+		this.indexManager = new IndexManager();
+		this.documentStore = new DocumentStore();
+		this.searchEngine = new SearchEngineAdapter();
 	}
 
 	/**
@@ -93,16 +101,16 @@ class InMemoryCognitiveSearch
 	 * @returns Promise that resolves when the index is created or already exists
 	 */
 	createIndexIfNotExists(indexDefinition: SearchIndex): Promise<void> {
-		if (this.indexes.has(indexDefinition.name)) {
+		if (this.indexManager.has(indexDefinition.name)) {
 			return Promise.resolve();
 		}
 
 		console.log(`Creating index: ${indexDefinition.name}`);
-		this.indexes.set(indexDefinition.name, indexDefinition);
-		this.documents.set(indexDefinition.name, new Map());
+		this.indexManager.create(indexDefinition);
+		this.documentStore.create(indexDefinition.name);
 
-		// Initialize Lunr index with empty documents
-		this.lunrEngine.buildIndex(
+		// Initialize search engine index with empty documents
+		this.searchEngine.build(
 			indexDefinition.name,
 			indexDefinition.fields,
 			[],
@@ -122,16 +130,15 @@ class InMemoryCognitiveSearch
 		indexDefinition: SearchIndex,
 	): Promise<void> {
 		console.log(`Creating/updating index: ${indexName}`);
-		this.indexes.set(indexName, indexDefinition);
+		this.indexManager.create(indexDefinition);
 
-		if (!this.documents.has(indexName)) {
-			this.documents.set(indexName, new Map());
+		if (!this.documentStore.has(indexName)) {
+			this.documentStore.create(indexName);
 		}
 
-		// Rebuild Lunr index with current documents
-		const documentMap = this.documents.get(indexName);
-		const documents = documentMap ? Array.from(documentMap.values()) : [];
-		this.lunrEngine.buildIndex(indexName, indexDefinition.fields, documents);
+		// Rebuild search engine index with current documents
+		const documents = Array.from(this.documentStore.getDocs(indexName).values());
+		this.searchEngine.build(indexName, indexDefinition.fields, documents);
 		return Promise.resolve();
 	}
 
@@ -146,12 +153,11 @@ class InMemoryCognitiveSearch
 		indexName: string,
 		document: Record<string, unknown>,
 	): Promise<void> {
-		if (!this.indexes.has(indexName)) {
+		if (!this.indexManager.has(indexName)) {
 			return Promise.reject(new Error(`Index ${indexName} does not exist`));
 		}
 
-		const documentMap = this.documents.get(indexName);
-		if (!documentMap) {
+		if (!this.documentStore.has(indexName)) {
 			return Promise.reject(
 				new Error(`Document storage not found for index ${indexName}`),
 			);
@@ -163,10 +169,10 @@ class InMemoryCognitiveSearch
 		}
 
 		console.log(`Indexing document ${documentId} in index ${indexName}`);
-		documentMap.set(documentId, { ...document });
+		this.documentStore.set(indexName, documentId, { ...document });
 
-		// Update Lunr index
-		this.lunrEngine.addDocument(indexName, document);
+		// Update search engine index
+		this.searchEngine.add(indexName, document);
 		return Promise.resolve();
 	}
 
@@ -181,12 +187,11 @@ class InMemoryCognitiveSearch
 		indexName: string,
 		document: Record<string, unknown>,
 	): Promise<void> {
-		if (!this.indexes.has(indexName)) {
+		if (!this.indexManager.has(indexName)) {
 			return Promise.reject(new Error(`Index ${indexName} does not exist`));
 		}
 
-		const documentMap = this.documents.get(indexName);
-		if (!documentMap) {
+		if (!this.documentStore.has(indexName)) {
 			return Promise.reject(
 				new Error(`Document storage not found for index ${indexName}`),
 			);
@@ -198,10 +203,10 @@ class InMemoryCognitiveSearch
 		}
 
 		console.log(`Deleting document ${documentId} from index ${indexName}`);
-		documentMap.delete(documentId);
+		this.documentStore.delete(indexName, documentId);
 
-		// Update Lunr index
-		this.lunrEngine.removeDocument(indexName, documentId);
+		// Update search engine index
+		this.searchEngine.remove(indexName, documentId);
 		return Promise.resolve();
 	}
 
@@ -213,8 +218,8 @@ class InMemoryCognitiveSearch
 	 */
 	deleteIndex(indexName: string): Promise<void> {
 		console.log(`Deleting index: ${indexName}`);
-		this.indexes.delete(indexName);
-		this.documents.delete(indexName);
+		this.indexManager.delete(indexName);
+		this.documentStore.deleteStore(indexName);
 		return Promise.resolve();
 	}
 
@@ -231,12 +236,12 @@ class InMemoryCognitiveSearch
 		searchText: string,
 		options?: SearchOptions,
 	): Promise<SearchDocumentsResult> {
-		if (!this.indexes.has(indexName)) {
+		if (!this.indexManager.has(indexName)) {
 			return Promise.resolve({ results: [], count: 0, facets: {} });
 		}
 
-		// Use Lunr.js for enhanced search with relevance scoring
-		const result = this.lunrEngine.search(indexName, searchText, options);
+		// Use search engine adapter for enhanced search with relevance scoring
+		const result = this.searchEngine.search(indexName, searchText, options);
 		return Promise.resolve(result);
 	}
 
@@ -258,22 +263,22 @@ class InMemoryCognitiveSearch
 			examples: string[];
 		};
 	} {
-		const documentCounts: Record<string, number> = {};
+		const indexes = this.indexManager.listIndexes();
+		const documentCounts = this.documentStore.getAllCounts();
 		const lunrStats: Record<
 			string,
 			{ documentCount: number; fieldCount: number } | null
 		> = {};
 
-		for (const [indexName, documentMap] of this.documents) {
-			documentCounts[indexName] = documentMap.size;
-			lunrStats[indexName] = this.lunrEngine.getIndexStats(indexName);
+		for (const indexName of indexes) {
+			lunrStats[indexName] = this.searchEngine.getStats(indexName);
 		}
 
 		return {
-			indexes: Array.from(this.indexes.keys()),
+			indexes,
 			documentCounts,
 			lunrStats,
-			filterCapabilities: this.lunrEngine.getFilterCapabilities(),
+			filterCapabilities: this.searchEngine.getFilterCapabilities(),
 		};
 	}
 
@@ -287,7 +292,7 @@ class InMemoryCognitiveSearch
 		functions: string[];
 		examples: string[];
 	} {
-		return this.lunrEngine.getFilterCapabilities();
+		return this.searchEngine.getFilterCapabilities();
 	}
 
 	/**
@@ -297,7 +302,7 @@ class InMemoryCognitiveSearch
 	 * @returns True if the filter can be parsed by LiQE, false otherwise
 	 */
 	isFilterSupported(filterString: string): boolean {
-		return this.lunrEngine.isFilterSupported(filterString);
+		return this.searchEngine.isFilterSupported(filterString);
 	}
 }
 

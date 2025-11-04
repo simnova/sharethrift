@@ -10,4 +10,5 @@ export * from './in-memory-search.js';
 // Default export for convenience
 export { InMemoryCognitiveSearch as default } from './in-memory-search.js';
 export * from './interfaces.js';
-// Advanced engines are excluded from this PR to minimize diff size
+export * from './lunr-search-engine.js';
+export * from './liqe-filter-engine.js';
