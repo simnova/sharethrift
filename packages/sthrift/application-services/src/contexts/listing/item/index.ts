@@ -1,5 +1,6 @@
 import type { Domain } from '@sthrift/domain';
 import type { DataSources } from '@sthrift/persistence';
+import type { CognitiveSearchDomain } from '@sthrift/domain';
 import { type ItemListingCreateCommand, create } from './create.ts';
 import { type ItemListingQueryByIdCommand, queryById } from './query-by-id.ts';
 import {
@@ -8,6 +9,10 @@ import {
 } from './query-by-sharer.ts';
 import { type ItemListingQueryAllCommand, queryAll } from './query-all.ts';
 import { queryPaged } from './query-paged.ts';
+import {
+	type ItemListingQueryPagedWithSearchCommand,
+	queryPagedWithSearchFallback,
+} from './query-paged-with-search.ts';
 import { type ItemListingUpdateCommand, update } from './update.ts';
 
 export interface ItemListingApplicationService {
@@ -36,11 +41,20 @@ export interface ItemListingApplicationService {
 		page: number;
 		pageSize: number;
 	}>;
+	queryPagedWithSearchFallback: (
+		command: ItemListingQueryPagedWithSearchCommand,
+	) => Promise<{
+		items: Domain.Contexts.Listing.ItemListing.ItemListingEntityReference[];
+		total: number;
+		page: number;
+		pageSize: number;
+	}>;
 	update: (command: ItemListingUpdateCommand) => Promise<void>;
 }
 
 export const ItemListing = (
 	dataSources: DataSources,
+	searchService?: CognitiveSearchDomain,
 ): ItemListingApplicationService => {
 	return {
 		create: create(dataSources),
@@ -48,6 +62,10 @@ export const ItemListing = (
 		queryBySharer: queryBySharer(dataSources),
 		queryAll: queryAll(dataSources),
 		queryPaged: queryPaged(dataSources),
+		queryPagedWithSearchFallback: queryPagedWithSearchFallback(
+			dataSources,
+			searchService,
+		),
 		update: update(dataSources),
 	};
 };

@@ -16,6 +16,19 @@ import type {
 const DOCUMENT_ID_FIELD = 'id';
 const DOCUMENT_KEY_FIELD = 'key';
 
+// Azure type mapping constant
+const AZURE_TYPE_MAP: Record<string, string> = {
+	'Edm.String': 'Edm.String',
+	'Edm.Int32': 'Edm.Int32',
+	'Edm.Double': 'Edm.Double',
+	'Edm.Boolean': 'Edm.Boolean',
+	'Edm.DateTimeOffset': 'Edm.DateTimeOffset',
+	'Edm.GeographyPoint': 'Edm.GeographyPoint',
+	'Collection(Edm.String)': 'Collection(Edm.String)',
+	'Collection(Edm.ComplexType)': 'Collection(Edm.ComplexType)',
+	'Edm.ComplexType': 'Edm.ComplexType',
+};
+
 /**
  * Azure Cognitive Search implementation
  *
@@ -73,40 +86,26 @@ export class AzureCognitiveSearch implements CognitiveSearchBase {
 	private convertToAzureIndex(
 		indexDefinition: SearchIndex,
 	): Record<string, unknown> {
-		const azureFields = indexDefinition.fields.map((field: SearchField) => ({
-			name: field.name,
-			type: this.convertFieldType(field.type),
-			searchable: field.searchable || false,
-			filterable: field.filterable || false,
-			sortable: field.sortable || false,
-			facetable: field.facetable || false,
-			key: field.key || false,
-			retrievable: field.retrievable !== false, // Default to true
-		}));
-
 		return {
 			name: indexDefinition.name,
-			fields: azureFields,
+			fields: indexDefinition.fields.map(this.mapField.bind(this)),
 		};
 	}
 
 	/**
-	 * Convert our field types to Azure field types
+	 * Map a single SearchField to Azure field format
 	 */
-	private convertFieldType(type: string): string {
-		const typeMap: Record<string, string> = {
-			'Edm.String': 'Edm.String',
-			'Edm.Int32': 'Edm.Int32',
-			'Edm.Double': 'Edm.Double',
-			'Edm.Boolean': 'Edm.Boolean',
-			'Edm.DateTimeOffset': 'Edm.DateTimeOffset',
-			'Edm.GeographyPoint': 'Edm.GeographyPoint',
-			'Collection(Edm.String)': 'Collection(Edm.String)',
-			'Collection(Edm.ComplexType)': 'Collection(Edm.ComplexType)',
-			'Edm.ComplexType': 'Edm.ComplexType',
+	private mapField(field: SearchField): Record<string, unknown> {
+		return {
+			name: field.name,
+			type: AZURE_TYPE_MAP[field.type] ?? 'Edm.String',
+			searchable: !!field.searchable,
+			filterable: !!field.filterable,
+			sortable: !!field.sortable,
+			facetable: !!field.facetable,
+			key: !!field.key,
+			retrievable: field.retrievable !== false,
 		};
-
-		return typeMap[type] || 'Edm.String';
 	}
 
 	/**
@@ -239,31 +238,7 @@ export class AzureCognitiveSearch implements CognitiveSearchBase {
 	): Promise<SearchDocumentsResult> {
 		try {
 			const client = this.getSearchClient(indexName);
-
-			// Convert our options to Azure search options
-			const azureOptions: Record<string, unknown> = {};
-
-			if (options && 'top' in options) {
-				azureOptions['top'] = (options as any)['top'];
-			}
-			if (options && 'skip' in options) {
-				azureOptions['skip'] = (options as any)['skip'];
-			}
-			if (options && 'filter' in options) {
-				azureOptions['filter'] = (options as any)['filter'];
-			}
-			if (options && 'facets' in options) {
-				azureOptions['facets'] = (options as any)['facets'];
-			}
-			if (options && 'orderBy' in options) {
-				azureOptions['orderBy'] = (options as any)['orderBy'];
-			}
-			if (options && 'includeTotalCount' in options) {
-				azureOptions['includeTotalCount'] = (options as any)[
-					'includeTotalCount'
-				];
-			}
-
+			const azureOptions = this.mapOptions(options);
 			const result = await client.search(searchText, azureOptions);
 
 			// Convert Azure result to our format
@@ -278,24 +253,10 @@ export class AzureCognitiveSearch implements CognitiveSearchBase {
 				});
 			}
 
-			// Convert Azure facets to our format
-			const convertedFacets: Record<
-				string,
-				Array<{ value: string | number | boolean; count: number }>
-			> = {};
-			if (result.facets) {
-				for (const [key, facetArray] of Object.entries(result.facets)) {
-					convertedFacets[key] = facetArray.map((facet) => ({
-						value: facet['value'] || '',
-						count: facet['count'] || 0,
-					}));
-				}
-			}
-
 			return {
 				results: documents,
 				count: result.count || 0,
-				facets: convertedFacets,
+				facets: this.mapFacets(result.facets),
 			};
 		} catch (error) {
 			console.error(
@@ -304,5 +265,49 @@ export class AzureCognitiveSearch implements CognitiveSearchBase {
 			);
 			throw error;
 		}
+	}
+
+	/**
+	 * Map SearchOptions to Azure search options format
+	 */
+	private mapOptions(options?: SearchOptions): Record<string, unknown> {
+		if (!options) {
+			return {};
+		}
+		const optionKeys: Array<keyof SearchOptions> = [
+			'top',
+			'skip',
+			'filter',
+			'facets',
+			'orderBy',
+			'includeTotalCount',
+		];
+		return optionKeys.reduce((acc, key) => {
+			if (options[key] != null) {
+				acc[key] = options[key];
+			}
+			return acc;
+		}, {} as Record<string, unknown>);
+	}
+
+	/**
+	 * Map Azure facets to our facets format
+	 */
+	private mapFacets(
+		facets?: Record<
+			string,
+			Array<{ value?: unknown; count?: number }>
+		>,
+	): Record<string, Array<{ value: string | number | boolean; count: number }>> {
+		if (!facets) {
+			return {};
+		}
+		return Object.entries(facets).reduce((acc, [key, facetArray]) => {
+			acc[key] = facetArray.map((facet) => ({
+				value: facet.value ?? '',
+				count: facet.count ?? 0,
+			}));
+			return acc;
+		}, {} as Record<string, Array<{ value: string | number | boolean; count: number }>>);
 	}
 }

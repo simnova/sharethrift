@@ -68,7 +68,7 @@ function toDomainItemListingSearchInput(
 				domainInput.options.filter.dateRange = {};
 				
 				if (input.options.filter.dateRange.start != null && input.options.filter.dateRange.start !== undefined) {
-					const start = input.options.filter.dateRange.start;
+					const { start } = input.options.filter.dateRange;
 					domainInput.options.filter.dateRange.start =
 						start instanceof Date
 							? start.toISOString()
@@ -78,7 +78,7 @@ function toDomainItemListingSearchInput(
 				}
 				
 				if (input.options.filter.dateRange.end != null && input.options.filter.dateRange.end !== undefined) {
-					const end = input.options.filter.dateRange.end;
+					const { end } = input.options.filter.dateRange;
 					domainInput.options.filter.dateRange.end =
 						end instanceof Date
 							? end.toISOString()

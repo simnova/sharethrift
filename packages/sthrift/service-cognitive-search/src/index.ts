@@ -9,3 +9,5 @@
 export * from './search-service.js';
 export { ServiceCognitiveSearch as default } from './search-service.js';
 export { AzureCognitiveSearch } from './azure-search-service.js';
+export { SearchServiceFactory } from './search-service-factory.js';
+export type { SearchServiceConfig } from './search-service-factory.js';

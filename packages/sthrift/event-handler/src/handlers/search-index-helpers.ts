@@ -10,13 +10,16 @@ import type { CognitiveSearchDomain, SearchIndex } from '@sthrift/domain';
 
 /**
  * Generate a hash for change detection
- * Excludes the updatedAt field from hash calculation to avoid unnecessary updates
+ * Excludes volatile fields from hash calculation to avoid unnecessary updates
  */
 export function generateSearchDocumentHash(
 	document: Record<string, unknown>,
 ): string {
 	const docCopy = JSON.parse(JSON.stringify(document));
-	delete docCopy.updatedAt;
+	const volatileFields = ['updatedAt', 'lastIndexed', 'hash'];
+	for (const field of volatileFields) {
+		delete docCopy[field];
+	}
 
 	return crypto
 		.createHash('sha256')

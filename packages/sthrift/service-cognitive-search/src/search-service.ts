@@ -1,6 +1,4 @@
 import type { ServiceBase } from '@cellix/api-services-spec';
-import { InMemoryCognitiveSearch } from '@cellix/mock-cognitive-search';
-import { AzureCognitiveSearch } from './azure-search-service.js';
 import type {
 	CognitiveSearchService,
 	SearchIndex,
@@ -8,6 +6,7 @@ import type {
 	SearchOptions,
 	SearchDocumentsResult,
 } from '@cellix/mock-cognitive-search';
+import { SearchServiceFactory } from './search-service-factory.js';
 
 /**
  * Cognitive Search Service for ShareThrift
@@ -21,93 +20,34 @@ export class ServiceCognitiveSearch
 	private searchService: CognitiveSearchService;
 	private implementationType: 'azure' | 'mock';
 
-	constructor() {
-		this.implementationType = this.detectImplementation();
-		this.searchService = this.createSearchService();
-	}
-
-	/**
-	 * Detects which implementation to use based on environment variables
-	 */
-	private detectImplementation(): 'azure' | 'mock' {
-		// Force mock mode
-		if (process.env['USE_MOCK_SEARCH'] === 'true') {
-			console.log('ServiceCognitiveSearch: Using mock implementation (forced)');
-			return 'mock';
-		}
-
-		// Force Azure mode
-		if (process.env['USE_AZURE_SEARCH'] === 'true') {
-			console.log(
-				'ServiceCognitiveSearch: Using Azure implementation (forced)',
+	constructor(config?: {
+		useMockSearch?: boolean;
+		useAzureSearch?: boolean;
+		nodeEnv?: string;
+		searchApiEndpoint?: string;
+		enablePersistence?: boolean;
+		persistencePath?: string;
+	}) {
+		// Use factory for environment detection and service creation
+		// If no config provided, use environment variables (backward compatibility)
+		if (config) {
+			this.implementationType = SearchServiceFactory.detectImplementation(
+				config,
 			);
-			return 'azure';
-		}
-
-		// Auto-detect based on environment and credentials
-		const hasAzureEndpoint = !!process.env['SEARCH_API_ENDPOINT'];
-		const isDevelopment =
-			process.env['NODE_ENV'] === 'development' ||
-			process.env['NODE_ENV'] === 'test';
-
-		if (isDevelopment && !hasAzureEndpoint) {
-			console.log(
-				'ServiceCognitiveSearch: Using mock implementation (development mode, no Azure endpoint)',
+			this.searchService = SearchServiceFactory.createSearchService(
+				this.implementationType,
+				config,
 			);
-			return 'mock';
-		}
-
-		if (hasAzureEndpoint) {
-			console.log(
-				'ServiceCognitiveSearch: Using Azure implementation (endpoint configured)',
-			);
-			return 'azure';
-		}
-
-		// Default to mock in development, Azure in production
-		if (isDevelopment) {
-			console.log(
-				'ServiceCognitiveSearch: Using mock implementation (development default)',
-			);
-			return 'mock';
-		}
-
-		console.log(
-			'ServiceCognitiveSearch: Using Azure implementation (production default)',
-		);
-		return 'azure';
-	}
-
-	/**
-	 * Creates the appropriate search service implementation
-	 */
-	private createSearchService(): CognitiveSearchService {
-		if (this.implementationType === 'mock') {
-			return new InMemoryCognitiveSearch({
+		} else {
+			this.implementationType = SearchServiceFactory.detectImplementation({
+				useMockSearch: process.env['USE_MOCK_SEARCH'] === 'true',
+				useAzureSearch: process.env['USE_AZURE_SEARCH'] === 'true',
+				nodeEnv: process.env['NODE_ENV'],
+				searchApiEndpoint: process.env['SEARCH_API_ENDPOINT'],
 				enablePersistence: process.env['ENABLE_SEARCH_PERSISTENCE'] === 'true',
-				persistencePath:
-					process.env['SEARCH_PERSISTENCE_PATH'] ||
-					'./.dev-data/search-indexes',
+				persistencePath: process.env['SEARCH_PERSISTENCE_PATH'],
 			});
-		}
-
-		// Use Azure Cognitive Search implementation
-		try {
-			return new AzureCognitiveSearch();
-		} catch (error) {
-			console.error(
-				'ServiceCognitiveSearch: Failed to create Azure implementation:',
-				error,
-			);
-			console.warn(
-				'ServiceCognitiveSearch: Falling back to mock implementation due to Azure configuration error',
-			);
-			return new InMemoryCognitiveSearch({
-				enablePersistence: process.env['ENABLE_SEARCH_PERSISTENCE'] === 'true',
-				persistencePath:
-					process.env['SEARCH_PERSISTENCE_PATH'] ||
-					'./.dev-data/search-indexes',
-			});
+			this.searchService = SearchServiceFactory.createFromEnvironment();
 		}
 	}
 

@@ -37,99 +37,43 @@ const itemListingResolvers: Resolvers<GraphContext> = {
 			const sharerId = currentUser?.verifiedJwt?.sub;
 			const { page, pageSize, searchText, statusFilters, sorter } = args;
 
-			// If search text is provided, use cognitive search
-			if (searchText && searchText.trim() !== '') {
-				try {
-					const options: Record<string, unknown> = {
-						top: pageSize,
-						skip: (page - 1) * pageSize,
-						orderBy: sorter
-							? [
-								`${sorter.field} ${sorter.order === 'ascend' ? 'asc' : 'desc'}`,
-							]
-							: ['updatedAt desc'],
-					};
-					const filter: Record<string, unknown> = {};
-					// biome-ignore lint/complexity/useLiteralKeys: bracket notation required for TS4111 (index signature access)
-					if (sharerId) filter['sharerId'] = [sharerId];
-					// biome-ignore lint/complexity/useLiteralKeys: bracket notation required for TS4111 (index signature access)
-					if (statusFilters) filter['state'] = statusFilters;
-					// biome-ignore lint/complexity/useLiteralKeys: bracket notation required for TS4111 (index signature access)
-					if (Object.keys(filter).length > 0) options['filter'] = filter;
-
-					const searchInput = {
-						searchString: searchText,
-						options: options,
-					};
-
-					const searchResult =
-						await context.applicationServices.Listing.ItemListingSearch.searchItemListings(
-							searchInput,
-						);
-
-					// Convert search results to the expected format
-					const items = searchResult.items.map((item) => {
-						const sharingStart = new Date(
-							item.sharingPeriodStart,
-						).toISOString();
-						const sharingEnd = new Date(item.sharingPeriodEnd).toISOString();
-
-						return {
-							id: item.id,
-							title: item.title,
-							image:
-								item.images && item.images.length > 0 ? item.images[0] : null,
-							publishedAt: item.createdAt,
-							reservationPeriod: `${sharingStart.slice(0, 10)} - ${sharingEnd.slice(0, 10)}`,
-							status: mapStateToStatus(item.state),
-							pendingRequestsCount: 0, // TODO: integrate reservation request counts
-						};
-					});
-
-					return {
-						items,
-						total: searchResult.count,
-						page,
-						pageSize,
-					};
-				} catch (error) {
-					console.error(
-						'Cognitive search failed, falling back to database query:',
-						error,
-					);
-					// Fall back to database query if cognitive search fails
-				}
-			}
-
-			// Fallback to database query
-			type PagedArgs = {
-				page: number;
-				pageSize: number;
-				searchText?: string;
-				statusFilters?: string[];
-				sorter?: { field: string; order: 'ascend' | 'descend' };
-				sharerId?: string;
-			};
-
-			const pagedArgs: PagedArgs = {
-				page: args.page,
-				pageSize: args.pageSize,
-				...(args.searchText != null ? { searchText: args.searchText } : {}),
-				...(args.statusFilters != null ? { statusFilters: [...args.statusFilters] } : {}),
-				...(args.sorter != null
-					? {
-						sorter: {
-							field: args.sorter.field,
-							order: args.sorter.order as 'ascend' | 'descend',
-						},
-					}
-					: {}),
-				...(sharerId && { sharerId }),
-			};
-
-			return await context.applicationServices.Listing.ItemListing.queryPaged(
-				pagedArgs,
+			// Use the service method that handles search-vs-database flow
+			const result = await context.applicationServices.Listing.ItemListing.queryPagedWithSearchFallback(
+				{
+					page,
+					pageSize,
+					searchText,
+					statusFilters,
+					sorter,
+					...(sharerId ? { sharerId } : {}),
+				},
 			);
+
+			// Convert domain entities to GraphQL format
+			const items = result.items.map((item) => {
+				const sharingStart = new Date(
+					item.sharingPeriodStart,
+				).toISOString();
+				const sharingEnd = new Date(item.sharingPeriodEnd).toISOString();
+
+				return {
+					id: item.id,
+					title: item.title,
+					image:
+						item.images && item.images.length > 0 ? item.images[0] : null,
+					publishedAt: item.createdAt,
+					reservationPeriod: `${sharingStart.slice(0, 10)} - ${sharingEnd.slice(0, 10)}`,
+					status: mapStateToStatus(item.state),
+					pendingRequestsCount: 0, // TODO: integrate reservation request counts
+				};
+			});
+
+			return {
+				items,
+				total: result.total,
+				page: result.page,
+				pageSize: result.pageSize,
+			};
 		},
 
 		itemListing: async (
@@ -210,10 +154,8 @@ const itemListingResolvers: Resolvers<GraphContext> = {
 				isDraft: args.input.isDraft ?? false,
 			};
 
-			const result =
-				await context.applicationServices.Listing.ItemListing.create(command);
 			// Return the domain entity reference directly — generated types expect the domain reference
-			return result;
+			return await context.applicationServices.Listing.ItemListing.create(command);
 		},
 
 		removeListing: async (

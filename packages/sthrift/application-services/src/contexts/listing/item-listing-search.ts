@@ -113,10 +113,12 @@ export class ItemListingSearchApplicationService {
 		// Date range filter
 		if (filter.dateRange) {
 			if (filter.dateRange.start) {
-				filterParts.push(`sharingPeriodStart ge ${filter.dateRange.start}`);
+				// OData requires date strings to be quoted
+				filterParts.push(`sharingPeriodStart ge '${filter.dateRange.start}'`);
 			}
 			if (filter.dateRange.end) {
-				filterParts.push(`sharingPeriodEnd le ${filter.dateRange.end}`);
+				// OData requires date strings to be quoted
+				filterParts.push(`sharingPeriodEnd le '${filter.dateRange.end}'`);
 			}
 		}
 
