@@ -3,7 +3,7 @@ import { ObjectId } from 'mongodb';
 
 export const personalUsers = [
 	{
-		_id: '507f1f77bcf86cd799439011',
+		_id: new ObjectId('507f1f77bcf86cd799439011'),
 		userType: 'personal-users',
 		isBlocked: false,
 		hasCompletedOnboarding: true,
@@ -35,12 +35,12 @@ export const personalUsers = [
 		} as Models.User.PersonalUserAccount,
 		schemaVersion: '1.0.0',
 		version: 1,
-			discriminatorKey: 'personal-users',
+		discriminatorKey: 'personal-users',
 		createdAt: new Date('2023-01-01T10:00:00Z'),
 		updatedAt: new Date('2023-01-01T10:00:00Z'),
 	},
 	{
-		_id: '507f1f77bcf86cd799439012',
+		_id: new ObjectId('507f1f77bcf86cd799439012'),
 		userType: 'personal-users',
 		isBlocked: false,
 		hasCompletedOnboarding: true,
@@ -72,7 +72,7 @@ export const personalUsers = [
 		} as Models.User.PersonalUserAccount,
 		schemaVersion: '1.0.0',
 		version: 1,
-			discriminatorKey: 'personal-users',
+		discriminatorKey: 'personal-users',
 		createdAt: new Date('2023-01-02T11:00:00Z'),
 		updatedAt: new Date('2023-01-02T11:00:00Z'),
 	},

@@ -3,9 +3,8 @@ import { Empty, Pagination } from 'antd';
 import { ListingCard } from '../../molecules/listing-card/index.js';
 import styles from './index.module.css';
 
-export interface ItemListing {
-	_id: string;
-	sharer: string; // User reference
+export interface UIItemListing {
+	id: string;
 	title: string;
 	description: string;
 	category: string;
@@ -28,14 +27,15 @@ export interface ItemListing {
 }
 
 export interface ListingsGridProps {
-	listings: ItemListing[];
+	listings: UIItemListing[];
 	loading?: boolean;
-	onListingClick?: (listing: ItemListing) => void;
+	onListingClick?: (listing: UIItemListing) => void;
 	currentPage?: number;
 	pageSize?: number;
 	total?: number;
 	onPageChange: (page: number, pageSize: number) => void;
 	showPagination?: boolean;
+	isOnSearchingPage?: boolean;
 }
 
 export const ListingsGrid: React.FC<ListingsGridProps> = ({
@@ -47,6 +47,7 @@ export const ListingsGrid: React.FC<ListingsGridProps> = ({
 	total,
 	onPageChange,
 	showPagination = true,
+	isOnSearchingPage = false,
 }) => {
 	if (!loading && listings.length === 0) {
 		return (
@@ -55,10 +56,12 @@ export const ListingsGrid: React.FC<ListingsGridProps> = ({
 					image={Empty.PRESENTED_IMAGE_SIMPLE}
 					description="No Listings Found"
 				/>
-				<p className={styles.emptyDescription}>
-					Try adjusting your search or category filters to find what you're
-					looking for.
-				</p>
+				{isOnSearchingPage ? (
+					<p className={styles.emptyDescription}>
+						Try adjusting your search or category filters to find what you're
+						looking for.
+					</p>
+				) : null}
 			</div>
 		);
 	}
@@ -67,7 +70,7 @@ export const ListingsGrid: React.FC<ListingsGridProps> = ({
 		<div className={styles.gridContainer}>
 			<div className={styles.grid}>
 				{listings.map((listing) => (
-					<div key={listing._id} className={styles.gridItem}>
+					<div key={listing.id} className={styles.gridItem}>
 						<ListingCard
 							listing={listing}
 							onClick={() => onListingClick?.(listing)}

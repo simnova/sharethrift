@@ -3,6 +3,9 @@
 query ViewListing($id: ObjectID!) {
 	itemListing(id: $id) {
 		id
+    sharer {
+      id
+    }
 		title
 		description
 		category
