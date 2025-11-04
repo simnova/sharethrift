@@ -115,7 +115,7 @@ function toGraphQLSearchFacets(
 	
 	// biome-ignore lint/complexity/useLiteralKeys: bracket notation required for TS4111 (index signature access)
 	const categoryFacets = domainFacets['category'];
-	if (categoryFacets != null && categoryFacets !== undefined) {
+	if (categoryFacets != null) {
 		graphQLFacets.category = categoryFacets.map((facet: { value: unknown; count: number }) => ({
 			__typename: 'SearchFacet' as const,
 			value: String(facet.value),
@@ -125,7 +125,7 @@ function toGraphQLSearchFacets(
 	
 	// biome-ignore lint/complexity/useLiteralKeys: bracket notation required for TS4111 (index signature access)
 	const stateFacets = domainFacets['state'];
-	if (stateFacets != null && stateFacets !== undefined) {
+	if (stateFacets != null) {
 		graphQLFacets.state = stateFacets.map((facet: { value: unknown; count: number }) => ({
 			__typename: 'SearchFacet' as const,
 			value: String(facet.value),
@@ -135,7 +135,7 @@ function toGraphQLSearchFacets(
 	
 	// biome-ignore lint/complexity/useLiteralKeys: bracket notation required for TS4111 (index signature access)
 	const sharerIdFacets = domainFacets['sharerId'];
-	if (sharerIdFacets != null && sharerIdFacets !== undefined) {
+	if (sharerIdFacets != null) {
 		graphQLFacets.sharerId = sharerIdFacets.map((facet: { value: unknown; count: number }) => ({
 			__typename: 'SearchFacet' as const,
 			value: String(facet.value),
@@ -145,7 +145,7 @@ function toGraphQLSearchFacets(
 	
 	// biome-ignore lint/complexity/useLiteralKeys: bracket notation required for TS4111 (index signature access)
 	const createdAtFacets = domainFacets['createdAt'];
-	if (createdAtFacets != null && createdAtFacets !== undefined) {
+	if (createdAtFacets != null) {
 		graphQLFacets.createdAt = createdAtFacets.map((facet: { value: unknown; count: number }) => ({
 			__typename: 'SearchFacet' as const,
 			value: String(facet.value),

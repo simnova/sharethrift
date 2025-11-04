@@ -12,6 +12,10 @@ import type {
 	SearchField,
 } from '@cellix/mock-cognitive-search';
 
+// Constants for document key field names
+const DOCUMENT_ID_FIELD = 'id';
+const DOCUMENT_KEY_FIELD = 'key';
+
 /**
  * Azure Cognitive Search implementation
  *
@@ -203,12 +207,17 @@ export class AzureCognitiveSearch implements CognitiveSearchBase {
 		try {
 			const client = this.getSearchClient(indexName);
 			// Azure requires the key field for deletion
-			const keyField = document['id'] || document['key'];
-			if (!keyField) {
+			// Determine the field name (not the value)
+			const keyFieldName =
+				document[DOCUMENT_ID_FIELD] !== undefined
+					? DOCUMENT_ID_FIELD
+					: DOCUMENT_KEY_FIELD;
+			const keyFieldValue = document[keyFieldName];
+			if (keyFieldValue === undefined || keyFieldValue === null) {
 				throw new Error('Document must have an id or key field for deletion');
 			}
 			await client.deleteDocuments([
-				{ [keyField as string]: document[keyField as string] },
+				{ [keyFieldName]: keyFieldValue },
 			]);
 			console.log(`AzureCognitiveSearch: Document deleted from ${indexName}`);
 		} catch (error) {

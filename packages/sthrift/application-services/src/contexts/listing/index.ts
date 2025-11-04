@@ -15,10 +15,13 @@ export const Listing = (
 	dataSources: DataSources,
 	searchService?: CognitiveSearchDomain,
 ): ListingContextApplicationService => {
+	if (!searchService) {
+		throw new Error(
+			'searchService is required for Listing context. ItemListingSearch requires a valid CognitiveSearchDomain instance.',
+		);
+	}
 	return {
 		ItemListing: ItemListingApi(dataSources),
-		ItemListingSearch: new ItemListingSearchApplicationService(
-			searchService || ({} as CognitiveSearchDomain), // Fallback for when search service is not available
-		),
+		ItemListingSearch: new ItemListingSearchApplicationService(searchService),
 	};
 };

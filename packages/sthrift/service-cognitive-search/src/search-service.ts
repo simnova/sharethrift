@@ -170,8 +170,15 @@ export class ServiceCognitiveSearch
 	}
 
 	async indexExists(indexName: string): Promise<boolean> {
-		// indexExists is not part of the CognitiveSearchService interface
-		// We'll implement this as a check if the index can be searched
+		// Delegate to underlying service if it has indexExists method
+		// (AzureCognitiveSearch implements this efficiently)
+		if (
+			'indexExists' in this.searchService &&
+			typeof this.searchService.indexExists === 'function'
+		) {
+			return await this.searchService.indexExists(indexName);
+		}
+		// Fallback: check if index can be searched (for mock implementation)
 		try {
 			await this.searchService.search(indexName, '*', { top: 1 });
 			return true;
