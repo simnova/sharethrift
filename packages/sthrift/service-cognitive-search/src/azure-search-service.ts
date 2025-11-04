@@ -303,10 +303,14 @@ export class AzureCognitiveSearch implements CognitiveSearchBase {
 			return {};
 		}
 		return Object.entries(facets).reduce((acc, [key, facetArray]) => {
-			acc[key] = facetArray.map((facet) => ({
-				value: facet.value ?? '',
-				count: facet.count ?? 0,
-			}));
+			acc[key] = facetArray.map((facet) => {
+				const value = facet.value ?? '';
+				// Type assertion: Azure facets return string, number, or boolean values
+				return {
+					value: value as string | number | boolean,
+					count: facet.count ?? 0,
+				};
+			});
 			return acc;
 		}, {} as Record<string, Array<{ value: string | number | boolean; count: number }>>);
 	}
