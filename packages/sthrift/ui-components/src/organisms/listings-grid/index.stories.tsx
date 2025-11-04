@@ -1,24 +1,23 @@
 import type { Meta, StoryObj } from '@storybook/react';
 import { useState } from 'react';
-import { ListingsGrid, type ItemListing } from './index.tsx';
+import { ListingsGrid, type UIItemListing } from './index.tsx';
 
-import bikeImg from '../../assets/item-images/bike.png';
-import projectorImg from '../../assets/item-images/projector.png';
-import sewingMachineImg from '../../assets/item-images/sewing-machine.png';
-import backpackImg from '../../assets/item-images/backpack.png';
-import umbrellaImg from '../../assets/item-images/umbrella.png';
 import airpodsImg from '../../assets/item-images/airpods.png';
-import tentImg from '../../assets/item-images/tent.png';
+import armchairImg from '../../assets/item-images/armchair.png';
+import backpackImg from '../../assets/item-images/backpack.png';
+import bikeImg from '../../assets/item-images/bike.png';
+import bubbleChairImg from '../../assets/item-images/bubble-chair.png';
 import deskLampImg from '../../assets/item-images/desk-lamp.png';
 import fanImg from '../../assets/item-images/fan.png';
 import hammockImg from '../../assets/item-images/hammock.png';
-import armchairImg from '../../assets/item-images/armchair.png';
-import bubbleChairImg from '../../assets/item-images/bubble-chair.png';
+import projectorImg from '../../assets/item-images/projector.png';
+import sewingMachineImg from '../../assets/item-images/sewing-machine.png';
+import tentImg from '../../assets/item-images/tent.png';
+import umbrellaImg from '../../assets/item-images/umbrella.png';
 
-const DUMMY_LISTINGS: ItemListing[] = [
+const DUMMY_LISTINGS: UIItemListing[] = [
 	{
-		_id: '1',
-		sharer: 'user1',
+		id: '1',
 		title: 'City Bike',
 		description:
 			'Perfect city bike for commuting and leisure rides around the neighborhood.',
@@ -32,8 +31,7 @@ const DUMMY_LISTINGS: ItemListing[] = [
 		updatedAt: new Date('2024-08-01'),
 	},
 	{
-		_id: '2',
-		sharer: 'user2',
+		id: '2',
 		title: 'Cordless Drill',
 		description:
 			'Professional grade cordless drill with multiple attachments. Perfect for home improvement projects.',
@@ -47,8 +45,7 @@ const DUMMY_LISTINGS: ItemListing[] = [
 		updatedAt: new Date('2024-08-02'),
 	},
 	{
-		_id: '3',
-		sharer: 'user3',
+		id: '3',
 		title: 'Hand Mixer',
 		description:
 			'Electric hand mixer with multiple speed settings. Great for baking and cooking.',
@@ -62,8 +59,7 @@ const DUMMY_LISTINGS: ItemListing[] = [
 		updatedAt: new Date('2024-08-03'),
 	},
 	{
-		_id: '4',
-		sharer: 'user4',
+		id: '4',
 		title: 'Golf Clubs',
 		description:
 			'Complete set of golf clubs including driver, irons, and putter. Perfect for beginners.',
@@ -77,8 +73,7 @@ const DUMMY_LISTINGS: ItemListing[] = [
 		updatedAt: new Date('2024-08-04'),
 	},
 	{
-		_id: '5',
-		sharer: 'user5',
+		id: '5',
 		title: 'Beach Gear',
 		description:
 			'Beach umbrella, chairs, and accessories for a perfect day at the beach.',
@@ -92,8 +87,7 @@ const DUMMY_LISTINGS: ItemListing[] = [
 		updatedAt: new Date('2024-08-05'),
 	},
 	{
-		_id: '6',
-		sharer: 'user6',
+		id: '6',
 		title: 'AirPods Pro',
 		description:
 			'Noise-cancelling wireless earbuds with spatial audio. Perfect for music and calls.',
@@ -107,8 +101,7 @@ const DUMMY_LISTINGS: ItemListing[] = [
 		updatedAt: new Date('2024-08-06'),
 	},
 	{
-		_id: '7',
-		sharer: 'user7',
+		id: '7',
 		title: 'Camping Tent',
 		description:
 			'4-person camping tent with easy setup. Great for weekend camping trips.',
@@ -122,8 +115,7 @@ const DUMMY_LISTINGS: ItemListing[] = [
 		updatedAt: new Date('2024-08-07'),
 	},
 	{
-		_id: '8',
-		sharer: 'user8',
+		id: '8',
 		title: 'Desk Lamp',
 		description:
 			'Adjustable LED desk lamp with multiple brightness settings. Perfect for studying or working.',
@@ -137,8 +129,7 @@ const DUMMY_LISTINGS: ItemListing[] = [
 		updatedAt: new Date('2024-08-08'),
 	},
 	{
-		_id: '9',
-		sharer: 'user9',
+		id: '9',
 		title: 'Portable Fan',
 		description:
 			'Quiet portable fan with multiple speed settings. Great for hot summer days.',
@@ -152,8 +143,7 @@ const DUMMY_LISTINGS: ItemListing[] = [
 		updatedAt: new Date('2024-08-09'),
 	},
 	{
-		_id: '10',
-		sharer: 'user10',
+		id: '10',
 		title: 'Garden Hammock',
 		description:
 			'Comfortable hammock perfect for relaxing in the garden or backyard.',
@@ -167,8 +157,7 @@ const DUMMY_LISTINGS: ItemListing[] = [
 		updatedAt: new Date('2024-08-10'),
 	},
 	{
-		_id: '11',
-		sharer: 'user11',
+		id: '11',
 		title: 'Comfortable Armchair',
 		description:
 			'Ergonomic armchair perfect for reading or relaxing. Great condition.',
@@ -182,8 +171,7 @@ const DUMMY_LISTINGS: ItemListing[] = [
 		updatedAt: new Date('2024-08-11'),
 	},
 	{
-		_id: '12',
-		sharer: 'user12',
+		id: '12',
 		title: 'Bubble Chair',
 		description:
 			'Unique bubble-style hanging chair. Perfect statement piece for any room.',
@@ -197,8 +185,7 @@ const DUMMY_LISTINGS: ItemListing[] = [
 		updatedAt: new Date('2024-08-12'),
 	},
 	{
-		_id: '13',
-		sharer: 'user13',
+		id: '13',
 		title: 'Projector',
 		description: 'HD projector for movie nights and presentations.',
 		category: 'Electronics',
@@ -211,8 +198,7 @@ const DUMMY_LISTINGS: ItemListing[] = [
 		updatedAt: new Date('2024-08-13'),
 	},
 	{
-		_id: '14',
-		sharer: 'user14',
+		id: '14',
 		title: 'Sewing Machine',
 		description: 'Easy-to-use sewing machine for beginners and pros.',
 		category: 'Home & Garden',
@@ -225,8 +211,7 @@ const DUMMY_LISTINGS: ItemListing[] = [
 		updatedAt: new Date('2024-08-14'),
 	},
 	{
-		_id: '15',
-		sharer: 'user15',
+		id: '15',
 		title: 'Kids Backpack',
 		description: 'Colorful backpack for school or travel.',
 		category: 'Kids & Baby',
@@ -239,8 +224,7 @@ const DUMMY_LISTINGS: ItemListing[] = [
 		updatedAt: new Date('2024-08-15'),
 	},
 	{
-		_id: '16',
-		sharer: 'user16',
+		id: '16',
 		title: 'Umbrella',
 		description: 'Large umbrella for rainy days or sunny outings.',
 		category: 'Miscellaneous',
@@ -253,8 +237,7 @@ const DUMMY_LISTINGS: ItemListing[] = [
 		updatedAt: new Date('2024-08-16'),
 	},
 	{
-		_id: '17',
-		sharer: 'user17',
+		id: '17',
 		title: 'Reading Lamp',
 		description: 'LED reading lamp with adjustable brightness.',
 		category: 'Home & Garden',
@@ -267,8 +250,7 @@ const DUMMY_LISTINGS: ItemListing[] = [
 		updatedAt: new Date('2024-08-17'),
 	},
 	{
-		_id: '18',
-		sharer: 'user18',
+		id: '18',
 		title: 'Bluetooth Speaker',
 		description: 'Portable Bluetooth speaker with great sound.',
 		category: 'Electronics',
@@ -281,8 +263,7 @@ const DUMMY_LISTINGS: ItemListing[] = [
 		updatedAt: new Date('2024-08-18'),
 	},
 	{
-		_id: '19',
-		sharer: 'user19',
+		id: '19',
 		title: 'Garden Tools Set',
 		description: 'Complete set of tools for gardening.',
 		category: 'Home & Garden',
@@ -295,8 +276,7 @@ const DUMMY_LISTINGS: ItemListing[] = [
 		updatedAt: new Date('2024-08-19'),
 	},
 	{
-		_id: '20',
-		sharer: 'user20',
+		id: '20',
 		title: 'Hammock Stand',
 		description: 'Sturdy stand for your garden hammock.',
 		category: 'Home & Garden',
@@ -330,32 +310,32 @@ export const Default: Story = {
 };
 
 export const WithPagination: Story = {
-render: (args) => {
-	function WithPaginationComponent(props: typeof args) {
-		const [currentPage, setCurrentPage] = useState(1);
-		const pageSize = 8;
-		// Guard: ensure listings is always an array
-		const listingsArr = Array.isArray(args.listings) ? args.listings : [];
-		const pagedListings = listingsArr.slice(
-			(currentPage - 1) * pageSize,
-			currentPage * pageSize,
-		);
-		return (
-			<ListingsGrid
-				{...props}
-				listings={pagedListings}
-				total={listingsArr.length}
-				currentPage={currentPage}
-				pageSize={pageSize}
-				onListingClick={(listing) =>
-					console.log('Clicked listing:', listing.title)
-				}
-				onPageChange={(page) => setCurrentPage(page)}
-			/>
-		);
-	}
-	return <WithPaginationComponent {...args} />;
-},
+	render: (args) => {
+		function WithPaginationComponent(props: typeof args) {
+			const [currentPage, setCurrentPage] = useState(1);
+			const pageSize = 8;
+			// Guard: ensure listings is always an array
+			const listingsArr = Array.isArray(args.listings) ? args.listings : [];
+			const pagedListings = listingsArr.slice(
+				(currentPage - 1) * pageSize,
+				currentPage * pageSize,
+			);
+			return (
+				<ListingsGrid
+					{...props}
+					listings={pagedListings}
+					total={listingsArr.length}
+					currentPage={currentPage}
+					pageSize={pageSize}
+					onListingClick={(listing) =>
+						console.log('Clicked listing:', listing.title)
+					}
+					onPageChange={(page) => setCurrentPage(page)}
+				/>
+			);
+		}
+		return <WithPaginationComponent {...args} />;
+	},
 };
 
 export const Empty: Story = {
