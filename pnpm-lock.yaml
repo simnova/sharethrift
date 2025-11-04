@@ -16078,7 +16078,7 @@ snapshots:
   '@types/jsonwebtoken@9.0.10':
     dependencies:
       '@types/ms': 2.1.0
-      '@types/node': 24.9.1
+      '@types/node': 24.9.2
 
   '@types/lodash@4.17.20': {}
 

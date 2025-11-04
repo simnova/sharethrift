@@ -34,6 +34,7 @@ export class PersonalUserDomainAdapter
 				email: this.account.email,
 				username: this.account.username,
 				profile: {
+					aboutMe: this.account.profile.aboutMe,
 					firstName: this.account.profile.firstName,
 					lastName: this.account.profile.lastName,
 					location: this.account.profile.location,
