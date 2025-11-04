@@ -6,8 +6,10 @@ export const ItemListingPersistence = (
 	models: ModelsContext,
 	passport: Domain.Passport,
 ) => {
-	const itemListingModel = models.Listing.ItemListingModel;
 	return {
-		ItemListingUnitOfWork: getItemListingUnitOfWork(itemListingModel, passport),
+		ItemListingUnitOfWork: getItemListingUnitOfWork(
+			models.Listing.ItemListingModel,
+			passport,
+		),
 	};
 };

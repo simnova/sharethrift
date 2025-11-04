@@ -3,8 +3,8 @@ import { ObjectId } from 'mongodb';
 
 export const itemListings = [
 	{
-		_id: '707f1f77bcf86cd799439031',
-		sharer: new ObjectId('507f1f77bcf86cd799439011'), // Alice
+		_id: new ObjectId('707f1f77bcf86cd799439031'),
+		sharer: new ObjectId('507f1f77bcf86cd799439011'), // (Alice)
 		title: 'Lawn Mower',
 		description: 'A reliable lawn mower for your yard.',
 		category: 'Garden',
@@ -19,11 +19,11 @@ export const itemListings = [
 		images: ['lawnmower.jpg'],
 		schemaVersion: '1.0.0',
 		version: 1,
-		discriminatorKey: 'item-listing',
+		listingType: 'item-listing',
 	},
 	{
-		_id: '707f1f77bcf86cd799439032',
-		sharer: new ObjectId('507f1f77bcf86cd799439012'), // Bob
+		_id: new ObjectId('707f1f77bcf86cd799439032'),
+		sharer: new ObjectId('507f1f77bcf86cd799439012'), // (Bob)
 		title: 'Mountain Bike',
 		description: 'A sturdy mountain bike for off-road adventures.',
 		category: 'Sports',
@@ -38,6 +38,6 @@ export const itemListings = [
 		images: ['mountainbike.jpg'],
 		schemaVersion: '1.0.0',
 		version: 1,
-		discriminatorKey: 'item-listing',
+		listingType: 'item-listing',
 	},
 ] as unknown as Models.Listing.ItemListing[];
