@@ -2,7 +2,6 @@
 
 # Assigns code ownership of all CellixJS framework files to the core team
 /packages/cellix/                           @jasonmorais @nnoce14
-/packages/sthrift/service-                  @jasonmorais @nnoce14
 
 # Assigns code ownership of configuration files to the admin team
 /tsconfig.json                              @jasonmorais @nnoce14
@@ -15,8 +14,9 @@
 /.github/workflows/*                        @jasonmorais @nnoce14
 /pnpm-workspace.yaml                        @jasonmorais @nnoce14
 /turbo.json                                 @jasonmorais @nnoce14
-/codegen.yml                                @jasonmorais @nnoce14
-/azure-pipelines.yml                        @jasonmorais @nnoce14
+codegen.yml                                 @jasonmorais @nnoce14
+azure-pipelines.yml                         @jasonmorais @nnoce14
+sonar-project.properties                    @jasonmorais @nnoce14
 
 # Assigns ownership of infrastructure as code files to the admin team
 /iac/*                                      @jasonmorais @nnoce14
