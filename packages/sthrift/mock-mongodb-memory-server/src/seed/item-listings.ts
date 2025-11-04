@@ -61,7 +61,7 @@ export const itemListings = [
 	},
 	{
 		_id: '707f1f77bcf86cd799439034',
-		sharer: new ObjectId('507f1f77bcf86cd799439012'), // Bob
+		sharer: new ObjectId('507f1f77bcf86cd799439014'), // Bob
 		title: 'Cordless Drill',
 		description: 'Professional grade cordless drill with multiple attachments. Perfect for home improvement projects.',
 		category: 'Tools & Equipment',
@@ -80,7 +80,7 @@ export const itemListings = [
 	},
 	{
 		_id: '707f1f77bcf86cd799439035',
-		sharer: new ObjectId('507f1f77bcf86cd799439013'), // Assuming Charlie exists
+		sharer: new ObjectId('507f1f77bcf86cd799439014'), // Assuming Charlie exists
 		title: 'Hand Mixer',
 		description: 'Electric hand mixer with multiple speed settings. Great for baking and cooking.',
 		category: 'Home & Garden',

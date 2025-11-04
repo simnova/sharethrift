@@ -13,8 +13,12 @@ import type {
 const itemListingResolvers: Resolvers<GraphContext> = {
 	Query: {
 		myListingsAll: async (_parent: unknown, args: QueryMyListingsAllArgs, context: GraphContext) => {
-			const sharerId = context.applicationServices.verifiedUser?.verifiedJwt?.sub;
-
+            const currentUser = context.applicationServices.verifiedUser;
+            const email = currentUser?.verifiedJwt?.email;
+            let sharerId: string | undefined;
+            if(email) {
+               sharerId = await context.applicationServices.User.PersonalUser.queryByEmail({email: email}).then(user => user ? user.id : undefined);
+            }
 			type PagedArgs = {
 				page: number;
 				pageSize: number;
