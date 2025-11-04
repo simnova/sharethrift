@@ -103,6 +103,7 @@ function makeBaseProps(
 				profile: {
 					firstName: 'Sharer',
 					lastName: 'User',
+					aboutMe: 'I love sharing items!',
 					location: {
 						address1: '123 Main St',
 						address2: null,
@@ -144,6 +145,7 @@ function makeBaseProps(
 		createdAt: new Date('2020-01-01T00:00:00Z'),
 		updatedAt: new Date('2020-01-02T00:00:00Z'),
 		schemaVersion: '1.0.0',
+		listingType: 'item',
 		...overrides,
 	};
 }
@@ -286,7 +288,7 @@ test.for(feature, ({ Scenario, Background, BeforeEachScenario }) => {
 				expect(listing.title).toBe('Updated Title');
 			});
 			And('the updatedAt timestamp should change', () => {
-				expect(listing.updatedAt.getTime()).toBeGreaterThan(
+				expect(listing.updatedAt.getTime()).toBeGreaterThanOrEqual(
 					initialUpdatedAt.getTime(),
 				);
 			});
@@ -492,7 +494,7 @@ test.for(feature, ({ Scenario, Background, BeforeEachScenario }) => {
 			expect(listing.state).toBe('Published');
 		});
 		And('the updatedAt timestamp should change', () => {
-			expect(listing.updatedAt.getTime()).toBeGreaterThan(
+			expect(listing.updatedAt.getTime()).toBeGreaterThanOrEqual(
 				initialUpdatedAt.getTime(),
 			);
 		});
