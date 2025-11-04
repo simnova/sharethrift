@@ -4,7 +4,7 @@ import { describeFeature, loadFeature } from '@amiceli/vitest-cucumber';
 import { Types } from 'mongoose';
 import { expect, vi } from 'vitest';
 import type { Base } from './base.ts';
-import type { MongooseDomainAdapter } from './mongo-domain-adapter.ts';
+import { MongooseDomainAdapter } from './mongo-domain-adapter.ts';
 import { MongoosePropArray } from './mongoose-prop-array.ts';
 
 
@@ -19,17 +19,12 @@ interface TestDoc extends Base {
   foo: string;
 }
 
-class TestAdapter implements MongooseDomainAdapter<TestDoc> {
-  public readonly doc: TestDoc;
+class TestAdapter extends MongooseDomainAdapter<TestDoc> {
   public readonly props: TestDoc;
   constructor(doc: TestDoc) {
-    this.doc = doc;
+    super(doc);
     this.props = doc;
   }
-  get id() { return this.doc._id.toString(); }
-  get createdAt() { return this.doc.createdAt; }
-  get updatedAt() { return this.doc.updatedAt; }
-  get schemaVersion() { return this.doc.schemaVersion; }
 }
 
 test.for(feature, ({ Scenario }) => {

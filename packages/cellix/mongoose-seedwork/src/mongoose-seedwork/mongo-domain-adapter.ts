@@ -34,15 +34,18 @@ export abstract class MongooseDomainAdapter<T extends Base>
 	 * existing public API and is protected for use by subclasses.
 	 */
 	protected refFromDoc(doc: unknown): ObjectId {
-		// biome-ignore lint/suspicious/noExplicitAny: duck-typed runtime checks
-		const d = doc as any;
-		if (!d) {
+			// Narrow the incoming `doc` into a discriminated shape to avoid `any`.
+			type DocLike =
+				| { doc?: { _id?: ObjectId } | null; _id?: ObjectId; id?: string }
+				| { _id?: ObjectId; id?: string };
+			const d = doc as DocLike;
+			if (!d) {
 			throw new Error('ref: missing document');
 		}
 		// If adapter-like object with `.doc` (our MongooseDomainAdapter instances)
-		if (d.doc && (d.doc as any)._id) {
-			return (d.doc as any)._id as ObjectId;
-		}
+				if ('doc' in d && d.doc && d.doc._id) {
+					return d.doc._id as ObjectId;
+				}
 		// If object already has _id (Mongoose document or plain object)
 		if (d._id) {
 			return d._id as ObjectId;
