@@ -10,6 +10,7 @@ type ItemListing implements MongoBase {
   sharingHistory: [String!]
   reports: Int
   images: [String!] # Array of image URLs
+  listingType: String!
   id: ObjectID!
   schemaVersion: String
   createdAt: DateTime
@@ -70,6 +71,7 @@ input CreateItemListingInput {
 
 extend type Mutation {
   createItemListing(input: CreateItemListingInput!): ItemListing!
+  cancelItemListing(id: ObjectID!): ItemListing!
   removeListing(id: ObjectID!): Boolean!
   unblockListing(id: ObjectID!): Boolean!
 }

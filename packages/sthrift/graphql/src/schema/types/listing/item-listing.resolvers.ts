@@ -1,20 +1,18 @@
-import type { GraphContext } from '../../../init/context.ts';
-import type {
-	Resolvers,
-	QueryMyListingsAllArgs,
-	QueryAdminListingsArgs,
-	QueryItemListingArgs,
-	MutationCreateItemListingArgs,
-	MutationRemoveListingArgs,
-	MutationUnblockListingArgs,
-} from '../../builder/generated.js';
+import type { Resolvers } from '../../builder/generated.js';
+import { PopulatePersonalUserFromField } from '../../resolver-helper.ts';
 
-
-const itemListingResolvers: Resolvers<GraphContext> = {
+const itemListingResolvers: Resolvers = {
+	ItemListing: {
+		sharer: PopulatePersonalUserFromField('sharer'),
+	},
 	Query: {
-		myListingsAll: async (_parent: unknown, args: QueryMyListingsAllArgs, context: GraphContext) => {
-			const sharerId = context.applicationServices.verifiedUser?.verifiedJwt?.sub;
-
+		myListingsAll: async (_parent: unknown, args, context) => {
+            const currentUser = context.applicationServices.verifiedUser;
+            const email = currentUser?.verifiedJwt?.email;
+            let sharerId: string | undefined;
+            if(email) {
+               sharerId = await context.applicationServices.User.PersonalUser.queryByEmail({email: email}).then(user => user ? user.id : undefined);
+            }
 			type PagedArgs = {
 				page: number;
 				pageSize: number;
@@ -28,21 +26,34 @@ const itemListingResolvers: Resolvers<GraphContext> = {
 				page: args.page,
 				pageSize: args.pageSize,
 				...(args.searchText != null ? { searchText: args.searchText } : {}),
-				...(args.statusFilters != null ? { statusFilters: [...args.statusFilters] } : {}),
-				...(args.sorter != null ? { sorter: { field: args.sorter.field, order: args.sorter.order as 'ascend' | 'descend' } } : {}),
+				...(args.statusFilters != null
+					? { statusFilters: [...args.statusFilters] }
+					: {}),
+				...(args.sorter != null
+					? {
+							sorter: {
+								field: args.sorter.field,
+								order: args.sorter.order as 'ascend' | 'descend',
+							},
+						}
+					: {}),
 				...(sharerId && { sharerId }),
 			};
 
-			return await context.applicationServices.Listing.ItemListing.queryPaged(pagedArgs);
+			return await context.applicationServices.Listing.ItemListing.queryPaged(
+				pagedArgs,
+			);
+		},
+        itemListings: async (_parent, _args, context) => {
+			return await context.applicationServices.Listing.ItemListing.queryAll({});
 		},
 
-		itemListing: async (_parent: unknown, args: QueryItemListingArgs, context: GraphContext) => {
-			// Admin-note: role-based authorization should be implemented here (security)
+		itemListing: async (_parent, args, context) => {
 			return await context.applicationServices.Listing.ItemListing.queryById({
 				id: args.id,
 			});
 		},
-		adminListings: async (_parent: unknown, args: QueryAdminListingsArgs, context: GraphContext) => {
+		adminListings: async (_parent, args, context) => {
 			// Admin-note: role-based authorization should be implemented here (security)
 			type PagedArgs = {
 				page: number;
@@ -56,15 +67,26 @@ const itemListingResolvers: Resolvers<GraphContext> = {
 				page: args.page,
 				pageSize: args.pageSize,
 				...(args.searchText != null ? { searchText: args.searchText } : {}),
-				...(args.statusFilters != null ? { statusFilters: [...args.statusFilters] } : {}),
-				...(args.sorter != null ? { sorter: { field: args.sorter.field, order: args.sorter.order as 'ascend' | 'descend' } } : {}),
+				...(args.statusFilters != null
+					? { statusFilters: [...args.statusFilters] }
+					: {}),
+				...(args.sorter != null
+					? {
+							sorter: {
+								field: args.sorter.field,
+								order: args.sorter.order as 'ascend' | 'descend',
+							},
+						}
+					: {}),
 			};
 
-			return await context.applicationServices.Listing.ItemListing.queryPaged(pagedArgs);
+			return await context.applicationServices.Listing.ItemListing.queryPaged(
+				pagedArgs,
+			);
 		},
 	},
 	Mutation: {
-		createItemListing: async (_parent: unknown, args: MutationCreateItemListingArgs, context: GraphContext) => {
+		createItemListing: async (_parent, args, context) => {
 			const userEmail =
 				context.applicationServices.verifiedUser?.verifiedJwt?.email;
 			if (!userEmail) {
@@ -90,14 +112,15 @@ const itemListingResolvers: Resolvers<GraphContext> = {
 				sharingPeriodEnd: new Date(args.input.sharingPeriodEnd),
 				images: [...(args.input.images ?? [])],
 				isDraft: args.input.isDraft ?? false,
+				listingType: 'item-listing',
 			};
 
-			const result = await context.applicationServices.Listing.ItemListing.create(command);
-			// Return the domain entity reference directly — generated types expect the domain reference
-			return result;
+			return await context.applicationServices.Listing.ItemListing.create(
+				command,
+			);
 		},
 
-		removeListing: async (_parent: unknown, args: MutationRemoveListingArgs, context: GraphContext) => {
+		removeListing: async (_parent, args, context) => {
 			// Admin-note: role-based authorization should be implemented here (security)
 			// Once implemented, use system-level permissions for admin operations
 			await context.applicationServices.Listing.ItemListing.update({
@@ -107,7 +130,7 @@ const itemListingResolvers: Resolvers<GraphContext> = {
 			return true;
 		},
 
-		unblockListing: async (_parent: unknown, args: MutationUnblockListingArgs, context: GraphContext) => {
+		unblockListing: async (_parent, args, context) => {
 			// Admin-note: role-based authorization should be implemented here (security)
 			// Once implemented, use system-level permissions for admin operations
 			await context.applicationServices.Listing.ItemListing.update({
@@ -115,6 +138,23 @@ const itemListingResolvers: Resolvers<GraphContext> = {
 				isBlocked: false,
 			});
 			return true;
+		},
+		cancelItemListing: async (
+			_parent: unknown,
+			args: { id: string },
+			context,
+		) => {
+			const userEmail =
+				context.applicationServices.verifiedUser?.verifiedJwt?.email;
+			if (!userEmail) {
+				throw new Error('Authentication required');
+			}
+
+			const result =
+				await context.applicationServices.Listing.ItemListing.cancel({
+					id: args.id,
+				});
+			return result
 		},
 	},
 };

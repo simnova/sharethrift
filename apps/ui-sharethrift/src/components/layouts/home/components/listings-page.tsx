@@ -1,34 +1,11 @@
-import { Button } from 'antd';
 import { EnvironmentFilled, PlusOutlined } from '@ant-design/icons';
-import { HeroSectionContainer } from './hero-section.container.tsx';
+import { ListingsGrid, SearchBar } from '@sthrift/ui-components';
+import { Button } from 'antd';
+import type { ItemListing } from '../../../../generated.tsx';
 import { CategoryFilterContainer } from './category-filter.container.tsx';
-import { SearchBar, ListingsGrid } from '@sthrift/ui-components';
+import { HeroSectionContainer } from './hero-section.container.tsx';
 import styles from './listings-page.module.css';
-
-export interface ItemListing {
-	_id: string;
-	sharer: string; // User reference
-	title: string;
-	description: string;
-	category: string;
-	location: string;
-	sharingPeriodStart: Date;
-	sharingPeriodEnd: Date;
-	state?:
-		| 'Published'
-		| 'Paused'
-		| 'Cancelled'
-		| 'Drafted'
-		| 'Expired'
-		| 'Blocked'
-		| 'Appeal Requested';
-	updatedAt?: Date;
-	createdAt?: Date;
-	sharingHistory?: string[];
-	reports?: number;
-	images?: string[];
-}
-
+import type { UIItemListing } from '@sthrift/ui-components';
 interface ListingsPageProps {
 	isAuthenticated: boolean;
 	searchQuery: string;
@@ -40,7 +17,7 @@ interface ListingsPageProps {
 	currentPage: number;
 	pageSize: number;
 	totalListings: number;
-	onListingClick: (listing: ItemListing) => void;
+	onListingClick: (listing: UIItemListing) => void;
 	onPageChange: (page: number) => void;
 	onCreateListingClick: () => void;
 }
@@ -73,7 +50,6 @@ export const ListingsPage: React.FC<Readonly<ListingsPageProps>> = ({
 			<div
 				className={styles['listingsPage']}
 				style={{ padding: isAuthenticated ? '36px' : '100px' }}
-				id="listings-content"
 			>
 				<div
 					className={styles['listingsHeader']}
@@ -129,7 +105,7 @@ export const ListingsPage: React.FC<Readonly<ListingsPageProps>> = ({
 				{/* Listings grid */}
 				<div className={styles['listingsGridWrapper']}>
 					<ListingsGrid
-						listings={listings}
+						listings={listings as UIItemListing[]}
 						onListingClick={onListingClick}
 						currentPage={currentPage}
 						pageSize={pageSize}
@@ -177,4 +153,4 @@ export const ListingsPage: React.FC<Readonly<ListingsPageProps>> = ({
 			</button>
 		</div>
 	);
-}
+};

@@ -98,6 +98,7 @@ export class ItemListing<props extends ItemListingProps>
 			schemaVersion: 1,
 			reports: 0,
 			sharingHistory: [],
+			listingType: 'item-listing',
 		} as unknown as props;
 
 		const aggregate = new ItemListing(itemListingProps, passport);
@@ -311,7 +312,6 @@ export class ItemListing<props extends ItemListingProps>
 		}
 
 		this.props.state = new ValueObjects.ListingState('Cancelled').valueOf();
-		// Note: updatedAt is automatically handled by Mongoose timestamps
 	}
 
 	/**
@@ -388,5 +388,12 @@ export class ItemListing<props extends ItemListingProps>
 	 */
 	getEntityReference(): ItemListingEntityReference {
 		return this.props as ItemListingEntityReference;
+	}
+
+	get listingType(): string {
+		return this.props.listingType;
+	}
+	set listingType(value: string) {
+		this.props.listingType = value;
 	}
 }
