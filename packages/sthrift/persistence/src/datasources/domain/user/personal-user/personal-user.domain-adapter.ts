@@ -119,8 +119,9 @@ export class PersonalUserAccountProfileDomainAdapter
 	// Nested Path Getters
 	get location() {
 		if (!this.props.location) {
+			// this.props.set('location', {}); // this is causing runtime error "this.props.set is not a function"
 			this.props.location =
-        {} as Models.User.PersonalUserAccountProfileLocation;
+				{} as Models.User.PersonalUserAccountProfileLocation;
 		}
 		return new PersonalUserAccountProfileLocationDomainAdapter(
 			this.props.location,
@@ -128,8 +129,8 @@ export class PersonalUserAccountProfileDomainAdapter
 	}
 	get billing() {
 		if (!this.props.billing) {
-			this.props.billing =
-        {} as Models.User.PersonalUserAccountProfileBilling;
+			// this.props.set('billing', {});
+			this.props.billing = {} as Models.User.PersonalUserAccountProfileBilling;
 		}
 		return new PersonalUserAccountProfileBillingDomainAdapter(
 			this.props.billing,

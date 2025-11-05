@@ -11,7 +11,6 @@ import type { PersonalUserProps } from '../../user/personal-user/personal-user.e
 import { ItemListing } from '../../listing/item/item-listing.ts';
 import type { ItemListingProps } from '../../listing/item/item-listing.entity.ts';
 
-
 const test = { for: describeFeature };
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const feature = await loadFeature(
@@ -133,6 +132,7 @@ function makeBaseProps(
 			createdAt: new Date('2020-01-01T00:00:00Z'),
 			updatedAt: new Date('2020-01-02T00:00:00Z'),
 			schemaVersion: '1.0.0',
+			listingType: 'item-listing',
 		},
 		makePassport(),
 	);
@@ -145,7 +145,7 @@ function makeBaseProps(
 		listing,
 		loadListing: async () => listing,
 		messages: [],
-        loadMessages: async () => [],
+		loadMessages: async () => [],
 		twilioConversationId: 'twilio-123',
 		createdAt: new Date('2020-01-01T00:00:00Z'),
 		updatedAt: new Date('2020-01-02T00:00:00Z'),

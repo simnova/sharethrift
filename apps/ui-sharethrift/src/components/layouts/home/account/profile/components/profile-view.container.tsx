@@ -1,21 +1,18 @@
 import { useNavigate } from 'react-router-dom';
-import { ProfileView } from '../pages/profile-view.tsx';
-import { useQuery } from "@apollo/client/react";
-import type {
-	UserListingsQueryData,
-	UserListing,
-} from './profile-view.types.ts';
+import { ProfileView } from './profile-view.tsx';
+import { useQuery } from '@apollo/client/react';
+import { ComponentQueryLoader } from '@sthrift/ui-components';
 import {
+	type ItemListing,
 	HomeAccountProfileViewContainerCurrentUserDocument,
 	HomeAccountProfileViewContainerUserListingsDocument,
 } from '../../../../../../generated.tsx';
 
-function ProfileViewLoader() {
+export const ProfileViewContainer: React.FC = () => {
 	const navigate = useNavigate();
 
-	// Single query using union type
 	const {
-		data: userData,
+		data: userQueryData,
 		loading: userLoading,
 		error: userError,
 	} = useQuery(HomeAccountProfileViewContainerCurrentUserDocument);
@@ -24,9 +21,7 @@ function ProfileViewLoader() {
 		data: listingsData,
 		loading: listingsLoading,
 		error: listingsError,
-	} = useQuery<UserListingsQueryData>(
-		HomeAccountProfileViewContainerUserListingsDocument,
-	);
+	} = useQuery(HomeAccountProfileViewContainerUserListingsDocument);
 
 	const handleEditSettings = () => {
 		navigate('/account/settings');
@@ -49,89 +44,53 @@ function ProfileViewLoader() {
 		return <div>Loading profile...</div>;
 	}
 
-	const currentUser = userData?.currentUser;
+	const currentUser = userQueryData?.currentUser;
 	if (!currentUser) {
 		return <div>User not found</div>;
 	}
 
-	// Get all listings
-	const allListings = listingsData?.itemListings || [];
+	// Prepare user data based on user type
+	const isAdmin = currentUser.__typename === 'AdminUser';
+	const profileUser = {
+		id: currentUser.id,
+		firstName: isAdmin
+			? currentUser.account?.firstName || 'Admin'
+			: (currentUser.__typename === 'PersonalUser' && currentUser.account?.profile?.firstName) || '',
+		lastName: isAdmin
+			? currentUser.account?.lastName || 'User'
+			: (currentUser.__typename === 'PersonalUser' && currentUser.account?.profile?.lastName) || '',
+		username: currentUser.account?.username || '',
+		email: currentUser.account?.email || '',
+		accountType: currentUser.account?.accountType || (isAdmin ? 'admin' : 'personal'),
+		location: isAdmin
+			? { city: 'N/A', state: 'N/A' }
+			: {
+					city: (currentUser.__typename === 'PersonalUser' && currentUser.account?.profile?.location?.city) || '',
+					state: (currentUser.__typename === 'PersonalUser' && currentUser.account?.profile?.location?.state) || '',
+				},
+		createdAt: currentUser.createdAt || '',
+	};
 
-	// Handle AdminUser 
-	if (currentUser.__typename === 'AdminUser') {
-		return (
-			<ProfileView
-				user={{
-					id: currentUser.id,
-					firstName: currentUser.account?.firstName || 'Admin',
-					lastName: currentUser.account?.lastName || 'User',
-					username: currentUser.account?.username || '',
-					email: currentUser.account?.email || '',
-					accountType: currentUser.account?.accountType || 'admin',
-					location: { city: 'N/A', state: 'N/A' },
-					createdAt: currentUser.createdAt,
-				}}
-				listings={[]}
-				isOwnProfile={true}
-				onEditSettings={handleEditSettings}
-				onListingClick={handleListingClick}
-			/>
-		);
-	}
+	// Prepare listings with required fields
+	const listings = (listingsData?.itemListings || []).map((listing) => ({
+		...listing,
+		listingType: 'item',
+	})) as ItemListing[];
 
-	// Handle PersonalUser
-	if (currentUser.__typename === 'PersonalUser') {
-		// Filter listings by current user
-		const userListings = allListings.filter(
-			(listing: UserListing & { sharer?: string; updatedAt: string }) => {
-				const profile = currentUser?.account?.profile;
-				if (profile?.firstName && profile?.lastName && listing.sharer) {
-					const userDisplayName = `${profile.firstName} ${profile.lastName.charAt(0)}.`;
-					return listing.sharer === userDisplayName;
-				}
-				return false;
-			},
-		);
-
-		return (
-			<ProfileView
-				user={{
-					id: currentUser.id,
-					firstName: currentUser.account?.profile?.firstName || '',
-					lastName: currentUser.account?.profile?.lastName || '',
-					username: currentUser.account?.username || '',
-					email: currentUser.account?.email || '',
-					accountType: currentUser.account?.accountType || 'personal',
-					location: {
-						city: currentUser.account?.profile?.location?.city || '',
-						state: currentUser.account?.profile?.location?.state || '',
-					},
-					createdAt: currentUser.createdAt,
-				}}
-				listings={userListings.map(
-					(listing: UserListing & { sharer?: string; updatedAt: string }) => ({
-						id: listing.id,
-						title: listing.title,
-						description: listing.description,
-						category: listing.category,
-						location: listing.location,
-						state: listing.state,
-						images: listing.images,
-						createdAt: listing.createdAt,
-						sharingPeriodStart: listing.sharingPeriodStart,
-						sharingPeriodEnd: listing.sharingPeriodEnd,
-					}),
-				)}
-				isOwnProfile={true}
-				onEditSettings={handleEditSettings}
-				onListingClick={handleListingClick}
-			/>
-		);
-	}
-
-	return <div>Unknown user type</div>;
-}
-
-export const ProfileViewContainer: React.FC = () => {
-	return <ProfileViewLoader />;
+	return (
+		<ComponentQueryLoader
+			loading={userLoading || listingsLoading}
+			error={userError ?? listingsError}
+			hasData={userQueryData?.currentUser || listingsData?.itemListings}
+			hasDataComponent={
+				<ProfileView
+					user={profileUser}
+					listings={listings}
+					isOwnProfile={true}
+					onEditSettings={handleEditSettings}
+					onListingClick={handleListingClick}
+				/>
+			}
+		/>
+	);
 };

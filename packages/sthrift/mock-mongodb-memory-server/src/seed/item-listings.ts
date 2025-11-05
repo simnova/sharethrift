@@ -3,10 +3,10 @@ import { ObjectId } from 'mongodb';
 
 export const itemListings = [
 	{
-		_id: '707f1f77bcf86cd799439031',
-		sharer: new ObjectId('507f1f77bcf86cd799439011'), // Alice
-		title: 'Lawn Mower',
-		description: 'A reliable lawn mower for your yard.',
+		_id: new ObjectId('707f1f77bcf86cd799439031'),
+		sharer: new ObjectId('507f1f77bcf86cd799439011'), // (Alice)
+		title: 'Fan',
+		description: 'A reliable fan for your house.',
 		category: 'Garden',
 		location: 'Springfield, IL',
 		sharingPeriodStart: new Date('2023-04-01T08:00:00Z'),
@@ -16,14 +16,14 @@ export const itemListings = [
 		updatedAt: new Date('2023-03-25T09:00:00Z'),
 		sharingHistory: [],
 		reports: 0,
-		images: ['lawnmower.jpg'],
+		images: ['/assets/item-images/fan.png'],
 		schemaVersion: '1.0.0',
 		version: 1,
-		discriminatorKey: 'item-listing',
+		listingType: 'item-listing',
 	},
 	{
-		_id: '707f1f77bcf86cd799439032',
-		sharer: new ObjectId('507f1f77bcf86cd799439012'), // Bob
+		_id: new ObjectId('707f1f77bcf86cd799439032'),
+		sharer: new ObjectId('507f1f77bcf86cd799439012'), // (Bob)
 		title: 'Mountain Bike',
 		description: 'A sturdy mountain bike for off-road adventures.',
 		category: 'Sports',
@@ -35,9 +35,9 @@ export const itemListings = [
 		updatedAt: new Date('2023-04-20T10:00:00Z'),
 		sharingHistory: [],
 		reports: 0,
-		images: ['mountainbike.jpg'],
+		images: ['/assets/item-images/bike.png'],
 		schemaVersion: '1.0.0',
 		version: 1,
-		discriminatorKey: 'item-listing',
+		listingType: 'item-listing',
 	},
 ] as unknown as Models.Listing.ItemListing[];

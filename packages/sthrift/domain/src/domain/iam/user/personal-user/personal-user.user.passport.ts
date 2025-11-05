@@ -1,4 +1,4 @@
-import { PersonalUserUserVisa } from './personal-user.user.visa.ts';
+import { PersonalUserUserVisa } from './contexts/personal-user.user.visa.ts';
 import { PersonalUserPassportBase } from './personal-user.passport-base.ts';
 import type { UserPassport } from '../../../contexts/user/user.passport.ts';
 import type { PersonalUserEntityReference } from '../../../contexts/user/personal-user/personal-user.entity.ts';
@@ -13,7 +13,7 @@ export class PersonalUserUserPassport
 		return new PersonalUserUserVisa(root, this._user);
 	}
 
-  forAdminUser(_root: AdminUserEntityReference): UserVisa {
-    return { determineIf: () => false };
-  }
+	forAdminUser(_root: AdminUserEntityReference): UserVisa {
+		return { determineIf: () => false };
+	}
 }

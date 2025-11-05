@@ -1,9 +1,6 @@
-import { useQuery } from "@apollo/client/react";
+import { useQuery } from '@apollo/client/react';
 import { SharerInformation } from './sharer-information.tsx';
-import {
-	ViewListingSharerInformationGetSharerDocument,
-	type ViewListingSharerInformationGetSharerQuery,
-} from '../../../../../../generated.tsx';
+import { ViewListingSharerInformationContainerPersonalUserByIdDocument } from '../../../../../../generated.tsx';
 
 interface SharerInformationContainerProps {
 	sharerId: string;
@@ -14,13 +11,16 @@ interface SharerInformationContainerProps {
 	showIconOnly?: boolean;
 }
 
-export const SharerInformationContainer: React.FC<SharerInformationContainerProps> = ({
-	sharerId,
-	listingId,
-	isOwner,
-	sharedTimeAgo,
-	className,
-}) => {
+export const SharerInformationContainer: React.FC<
+	SharerInformationContainerProps
+> = ({ sharerId, listingId, isOwner, sharedTimeAgo, className }) => {
+	const { data, loading, error } = useQuery(
+		ViewListingSharerInformationContainerPersonalUserByIdDocument,
+		{
+			variables: { sharerId },
+		},
+	);
+
 	// If sharerId looks like a name (contains spaces or letters), use it directly
 	// Otherwise, try to query for user data
 	const isNameOnly =
@@ -42,13 +42,6 @@ export const SharerInformationContainer: React.FC<SharerInformationContainerProp
 			/>
 		);
 	}
-
-	const { data, loading, error } = useQuery<ViewListingSharerInformationGetSharerQuery>(
-		ViewListingSharerInformationGetSharerDocument,
-		{
-			variables: { sharerId },
-		},
-	);
 
 	if (loading) return <div>Loading...</div>;
 	if (error) return <div>Error loading sharer information</div>;

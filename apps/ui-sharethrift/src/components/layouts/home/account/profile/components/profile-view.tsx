@@ -12,15 +12,16 @@ import {
 import { ListingsGrid } from '@sthrift/ui-components';
 import { SettingOutlined, UserOutlined } from '@ant-design/icons';
 import '../components/profile-view.overrides.css';
-import type { UserProfileData, UserListing } from '../components/profile-view.types.ts';
+import type { ItemListing } from '../../../../../../generated';
+import type { ProfileUser } from './profile-view.types';
 
 const { Text } = Typography;
 
 // ...interfaces now imported from profile-view.types.ts
 
 interface ProfileViewProps {
-	user: UserProfileData;
-	listings: UserListing[];
+	user: ProfileUser;
+	listings: ItemListing[];
 	isOwnProfile: boolean;
 	onEditSettings: () => void;
 	onListingClick: (listingId: string) => void;
@@ -70,9 +71,10 @@ export const ProfileView: React.FC<Readonly<ProfileViewProps>> = ({
 									gap: '1rem',
 								}}
 							>
-								<div className="title42">
-									{user.firstName} {user.lastName.charAt(0)}.
-								</div>
+							<div className="title42">
+								{user.firstName}{' '}
+								{user.lastName?.charAt(0)}.
+							</div>
 								{/* Desktop Account Settings Button */}
 								{isOwnProfile && (
 									<div className="profile-settings-desktop">
@@ -90,16 +92,19 @@ export const ProfileView: React.FC<Readonly<ProfileViewProps>> = ({
 						</div>
 						<div className="profile-info-center">
 							<Space className="mb-3" wrap>
-								<Tag className="personalAccount">
-									<UserOutlined
-										style={{ color: 'var(--color-background)', fontSize: 16 }}
-									/>
-									{user.accountType.charAt(0).toUpperCase() +
-										user.accountType.slice(1)}
-								</Tag>
+							<Tag className="personalAccount">
+								<UserOutlined
+									style={{ color: 'var(--color-background)', fontSize: 16 }}
+								/>
+								{user.accountType
+									? user.accountType.charAt(0).toUpperCase() +
+										user.accountType?.slice(1)
+									: ''}
+							</Tag>
 								<span>|</span>
 								<p>
-									{user.location.city}, {user.location.state}
+									{user.location?.city},{' '}
+									{user.location?.state}
 								</p>
 								<span>|</span>
 								<p>Sharing since {formatDate(user.createdAt)}</p>
@@ -128,8 +133,7 @@ export const ProfileView: React.FC<Readonly<ProfileViewProps>> = ({
 				<ListingsGrid
 					listings={listings.map((l) => ({
 						...l,
-						_id: l.id,
-						sharer: user.username,
+						id: l.id,
 						sharingPeriodStart: new Date(l.sharingPeriodStart),
 						sharingPeriodEnd: new Date(l.sharingPeriodEnd),
 						state: [
@@ -140,7 +144,7 @@ export const ProfileView: React.FC<Readonly<ProfileViewProps>> = ({
 							'Expired',
 							'Blocked',
 							'Appeal Requested',
-						].includes(l.state)
+						].includes(l.state ?? '')
 							? (l.state as
 									| 'Published'
 									| 'Paused'
@@ -152,8 +156,11 @@ export const ProfileView: React.FC<Readonly<ProfileViewProps>> = ({
 									| undefined)
 							: undefined,
 						createdAt: l.createdAt ? new Date(l.createdAt) : undefined,
+						sharingHistory: [], // Placeholder
+						reports: 0, // Placeholder
+						images: l.images ? [...l.images] : [], // Placeholder
 					}))}
-					onListingClick={(listing) => onListingClick(listing._id)}
+					onListingClick={(listing) => onListingClick(listing.id)}
 					currentPage={1}
 					pageSize={20}
 					total={listings.length}
@@ -177,4 +184,4 @@ export const ProfileView: React.FC<Readonly<ProfileViewProps>> = ({
 			</div>
 		</div>
 	);
-}
+};

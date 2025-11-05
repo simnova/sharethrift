@@ -65,7 +65,7 @@ export const AdminUsersTable: React.FC<Readonly<AdminUsersTableProps>> = ({
       const values = await blockForm.validateFields();
       console.log("Block user with:", values);
       // Mutation is handled by the container via onAction
-      onAction("block", selectedUser!.id);
+      onAction("block", selectedUser?.id ?? "");
       setBlockModalVisible(false);
       blockForm.resetFields();
     } catch (error) {
@@ -74,7 +74,7 @@ export const AdminUsersTable: React.FC<Readonly<AdminUsersTableProps>> = ({
   };
 
   const handleUnblockConfirm = () => {
-    onAction("unblock", selectedUser!.id);
+    onAction("unblock", selectedUser?.id ?? "");
     setUnblockModalVisible(false);
   };
 

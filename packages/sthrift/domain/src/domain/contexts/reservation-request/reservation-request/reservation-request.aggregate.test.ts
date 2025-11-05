@@ -64,6 +64,7 @@ describe('ReservationRequest', () => {
 		createdAt: new Date(),
 		updatedAt: new Date(),
 		schemaVersion: '1',
+		listingType: 'item-listing',
 	});
 
 	const createMockReserver = (id = 'user-1'): PersonalUserEntityReference => {
