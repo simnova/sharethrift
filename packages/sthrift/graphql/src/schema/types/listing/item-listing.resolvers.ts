@@ -33,9 +33,18 @@ const itemListingResolvers: Resolvers = {
 			});
 		},
 
-		myListingsAll: async (_parent, args, context) => {
-			const sharerId =
+		myListingsAll: async (_parent: unknown, args, context) => {
+			const currentUser = context.applicationServices.verifiedUser;
+			const email = currentUser?.verifiedJwt?.email;
+			let sharerId: string | undefined =
 				context.applicationServices.verifiedUser?.verifiedJwt?.sub;
+			if (email) {
+				const user = await context.applicationServices.User.PersonalUser.queryByEmail({
+					email,
+				});
+				sharerId = user ? user.id : sharerId;
+			}
+
 			const { page, pageSize, searchText, statusFilters, sorter } = args;
 
 			// Use the service method that handles search-vs-database flow
@@ -76,7 +85,6 @@ const itemListingResolvers: Resolvers = {
 				pageSize: result.pageSize,
 			};
 		},
-
 		adminListings: async (_parent, args, context) => {
 			// Admin-note: role-based authorization should be implemented here (security)
 			type PagedArgs = {
@@ -136,6 +144,7 @@ const itemListingResolvers: Resolvers = {
 				sharingPeriodEnd: new Date(args.input.sharingPeriodEnd),
 				images: [...(args.input.images ?? [])],
 				isDraft: args.input.isDraft ?? false,
+				listingType: 'item-listing',
 			};
 
 			return await context.applicationServices.Listing.ItemListing.create(
@@ -161,6 +170,23 @@ const itemListingResolvers: Resolvers = {
 				isBlocked: false,
 			});
 			return true;
+		},
+		cancelItemListing: async (
+			_parent: unknown,
+			args: { id: string },
+			context,
+		) => {
+			const userEmail =
+				context.applicationServices.verifiedUser?.verifiedJwt?.email;
+			if (!userEmail) {
+				throw new Error('Authentication required');
+			}
+
+			const result =
+				await context.applicationServices.Listing.ItemListing.cancel({
+					id: args.id,
+				});
+			return result
 		},
 	},
 };

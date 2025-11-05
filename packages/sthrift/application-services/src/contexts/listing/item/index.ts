@@ -8,6 +8,7 @@ import {
 	queryBySharer,
 } from './query-by-sharer.ts';
 import { type ItemListingQueryAllCommand, queryAll } from './query-all.ts';
+import { type ItemListingCancelCommand, cancel } from './cancel.ts';
 import { queryPaged } from './query-paged.ts';
 import {
 	type ItemListingQueryPagedWithSearchCommand,
@@ -27,7 +28,12 @@ export interface ItemListingApplicationService {
 	) => Promise<Domain.Contexts.Listing.ItemListing.ItemListingEntityReference[]>;
 	queryAll: (
 		command: ItemListingQueryAllCommand,
-	) => Promise<Domain.Contexts.Listing.ItemListing.ItemListingEntityReference[]>;
+	) => Promise<
+		Domain.Contexts.Listing.ItemListing.ItemListingEntityReference[]
+	>;
+	cancel: (
+		command: ItemListingCancelCommand,
+	) => Promise<Domain.Contexts.Listing.ItemListing.ItemListingEntityReference>;
 	queryPaged: (command: {
 		page: number;
 		pageSize: number;
@@ -61,6 +67,7 @@ export const ItemListing = (
 		queryById: queryById(dataSources),
 		queryBySharer: queryBySharer(dataSources),
 		queryAll: queryAll(dataSources),
+		cancel: cancel(dataSources),
 		queryPaged: queryPaged(dataSources),
 		queryPagedWithSearchFallback: queryPagedWithSearchFallback(
 			dataSources,
