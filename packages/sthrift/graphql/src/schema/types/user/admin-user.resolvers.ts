@@ -102,11 +102,28 @@ const adminUserResolvers: Resolvers = {
 			context: GraphContext,
 			_info: GraphQLResolveInfo,
 		) => {
-			if (!context.applicationServices.verifiedUser?.verifiedJwt) {
+			const { verifiedUser } = context.applicationServices;
+			if (!verifiedUser?.verifiedJwt) {
 				throw new Error('Unauthorized: Authentication required');
 			}
 
-			// Permission check is handled in the domain layer (role setter checks canManageUserRoles)
+			// Only admins with canManageUserRoles permission can create admin users
+			const { email } = verifiedUser.verifiedJwt;
+
+			// Check if current user is an admin with proper permissions
+			const currentAdmin =
+				await context.applicationServices.User.AdminUser.queryByEmail({
+					email,
+				});
+
+			if (
+				!currentAdmin?.role?.permissions?.userPermissions?.canManageUserRoles
+			) {
+				throw new Error(
+					'Forbidden: Only admins with canManageUserRoles permission can create admin accounts',
+				);
+			}
+
 			console.log(
 				'createAdminUser resolver called with email:',
 				args.input.email,

@@ -121,11 +121,24 @@ const userUnionResolvers: Resolvers = {
 	},
 
 	// Union type resolver - tells GraphQL which concrete type to use
+	// frontend can check __typename === 'AdminUser' without custom hooks
 	User: {
 		__resolveType(obj: unknown): 'AdminUser' | 'PersonalUser' {
-			// Detect type by structure
-			// AdminUser has a 'role' field, PersonalUser has 'hasCompletedOnboarding'
+			// Detect type by structure or userType field
 			if (typeof obj === 'object' && obj !== null) {
+				// Check userType field first (most reliable)
+				if ('userType' in obj && typeof obj.userType === 'string') {
+					const userType = obj.userType.toLowerCase();
+					if (userType === 'admin' || userType === 'adminuser') {
+						return 'AdminUser' as const;
+					}
+					if (userType === 'personal' || userType === 'personaluser') {
+						return 'PersonalUser' as const;
+					}
+				}
+
+				// Fallback: check for distinctive fields
+				// AdminUser has a 'role' field, PersonalUser has 'hasCompletedOnboarding'
 				if ('role' in obj) {
 					return 'AdminUser' as const;
 				}
@@ -135,6 +148,7 @@ const userUnionResolvers: Resolvers = {
 			}
 
 			// Default fallback
+			console.warn('Unable to resolve User union type', obj);
 			return 'PersonalUser' as const;
 		},
 	},
