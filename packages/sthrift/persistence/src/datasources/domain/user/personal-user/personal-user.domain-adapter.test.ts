@@ -185,7 +185,7 @@ test.for(feature, ({ Scenario, Background, BeforeEachScenario }) => {
 			'it should return a PersonalUserAccountDomainAdapter with the correct data',
 			() => {
 				expect(result).toBeDefined();
-				expect((result as any).email).toBe('test@example.com');
+				expect((result as { email: string }).email).toBe('test@example.com');
 			},
 		);
 	});

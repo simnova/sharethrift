@@ -3,7 +3,7 @@ import { fileURLToPath } from 'node:url';
 import { describeFeature, loadFeature } from '@amiceli/vitest-cucumber';
 import { expect, vi } from 'vitest';
 import type { Models } from '@sthrift/data-sources-mongoose-models';
-import { Domain } from '@sthrift/domain';
+import type { Domain } from '@sthrift/domain';
 import { getPersonalUserUnitOfWork } from './personal-user.uow.ts';
 import { PersonalUserRepository } from './personal-user.repository.ts';
 
@@ -65,16 +65,16 @@ test.for(feature, ({ Scenario, Background, BeforeEachScenario }) => {
 				expect(result).toHaveProperty('commit');
 			});
 			And('the Unit of Work should have the correct repository type', () => {
-				expect((result as any).repository).toBeInstanceOf(
+				expect((result as { repository: unknown }).repository).toBeInstanceOf(
 					PersonalUserRepository,
 				);
 			});
 			And('the Unit of Work should have the correct converter type', () => {
-				expect((result as any).typeConverter).toBeDefined();
+				expect((result as { typeConverter: unknown }).typeConverter).toBeDefined();
 			});
 			And('the Unit of Work should have the correct event buses', () => {
-				expect((result as any).nodeEventBus).toBeDefined();
-				expect((result as any).inProcEventBus).toBeDefined();
+				expect((result as { nodeEventBus: unknown }).nodeEventBus).toBeDefined();
+				expect((result as { inProcEventBus: unknown }).inProcEventBus).toBeDefined();
 			});
 		},
 	);

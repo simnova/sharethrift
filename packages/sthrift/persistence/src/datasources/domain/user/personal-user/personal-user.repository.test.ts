@@ -1,12 +1,11 @@
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { describeFeature, loadFeature } from '@amiceli/vitest-cucumber';
-import { expect, vi, beforeEach, afterEach } from 'vitest';
+import { expect, vi } from 'vitest';
 import type { Models } from '@sthrift/data-sources-mongoose-models';
 import { Domain } from '@sthrift/domain';
 import { PersonalUserRepository } from './personal-user.repository.ts';
 import { PersonalUserConverter } from './personal-user.domain-adapter.ts';
-import { MongooseSeedwork } from '@cellix/mongoose-seedwork';
 
 const test = { for: describeFeature };
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
@@ -67,8 +66,8 @@ test.for(feature, ({ Scenario, Background, BeforeEachScenario }) => {
 			role: {
 				id: 'role-1',
 			},
-			populate: vi.fn(async function () {
-				return this;
+			populate: vi.fn(function () {
+				return Promise.resolve(this);
 			}),
 			set: vi.fn(),
 		} as unknown as Models.User.PersonalUser;
@@ -136,10 +135,10 @@ test.for(feature, ({ Scenario, Background, BeforeEachScenario }) => {
 	Scenario(
 		'Getting a personal user by a nonexistent ID',
 		({ When, Then }) => {
-			When('I call getById with "nonexistent-id"', async () => {
+			When('I call getById with "nonexistent-id"', () => {
 				mockModel = {
 					findOne: vi.fn(() => ({
-						exec: vi.fn(async () => null),
+						exec: vi.fn(() => Promise.resolve(null)),
 					})),
 				} as unknown as Models.User.PersonalUserModelType;
 				repository = new PersonalUserRepository(
@@ -171,9 +170,7 @@ test.for(feature, ({ Scenario, Background, BeforeEachScenario }) => {
 						constructor: vi.fn(() => newDoc),
 					} as unknown as Models.User.PersonalUserModelType;
 					// Override the mockModel with a constructor function
-					const ModelConstructor = function () {
-						return newDoc;
-					};
+					const ModelConstructor = () => newDoc;
 					Object.setPrototypeOf(
 						ModelConstructor,
 						mockModel as Models.User.PersonalUserModelType,

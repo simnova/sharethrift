@@ -61,8 +61,8 @@ function makeMockUser(overrides: Partial<Models.User.PersonalUser> = {}): Models
 		},
 		createdAt: new Date('2020-01-01'),
 		updatedAt: new Date('2020-01-02'),
-		populate: vi.fn(async function () {
-			return this;
+		populate: vi.fn(function () {
+			return Promise.resolve(this);
 		}),
 		set: vi.fn(),
 		...overrides,
@@ -147,7 +147,7 @@ test.for(feature, ({ Scenario, Background, BeforeEachScenario }) => {
 					expect(result).toHaveProperty('total');
 					expect(result).toHaveProperty('page', 1);
 					expect(result).toHaveProperty('pageSize', 10);
-					expect(Array.isArray((result as any).items)).toBe(true);
+					expect(Array.isArray((result as { items: unknown[] }).items)).toBe(true);
 				},
 			);
 		},
@@ -190,7 +190,7 @@ test.for(feature, ({ Scenario, Background, BeforeEachScenario }) => {
 				});
 			});
 			Then('I should receive only users matching the search text', () => {
-				expect((result as any).items.length).toBeGreaterThanOrEqual(0);
+				expect((result as { items: unknown[] }).items.length).toBeGreaterThanOrEqual(0);
 				// The filtering logic would filter to John, but since we're mocking,
 				// we just verify the result structure
 				expect(result).toHaveProperty('items');
@@ -218,7 +218,7 @@ test.for(feature, ({ Scenario, Background, BeforeEachScenario }) => {
 				},
 			);
 			Then('I should receive only active users', () => {
-				expect((result as any).items.length).toBeGreaterThanOrEqual(0);
+				expect((result as { items: unknown[] }).items.length).toBeGreaterThanOrEqual(0);
 				expect(result).toHaveProperty('items');
 			});
 		},
