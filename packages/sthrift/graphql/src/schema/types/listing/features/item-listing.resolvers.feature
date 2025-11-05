@@ -32,17 +32,34 @@ So that I can view, filter, and create listings through the GraphQL API
 		When the itemListing query is executed
 		Then it should return null
 
+    Scenario: Error while querying a single item listing
+		Given Listing.ItemListing.queryById throws an error
+		When the itemListing query is executed
+		Then it should propagate the error message
+
 	Scenario: Querying paginated listings for the current user
 		Given a user with a verifiedJwt in their context
 		And valid pagination arguments (page, pageSize)
 		When the myListingsAll query is executed
 		Then it should call Listing.ItemListing.queryPaged with sharerId, page, and pageSize
 		And it should return items, total, page, and pageSize in the response
+    
+    Scenario: Querying myListingsAll with search and filters
+		Given a verified user and valid pagination arguments
+		And a searchText "camera" and statusFilters ["Published"]
+		When the myListingsAll query is executed
+		Then it should call Listing.ItemListing.queryPaged with those filters
+		And it should return matching listings only
 
 	Scenario: Querying myListingsAll without authentication
 		Given a user without a verifiedJwt in their context
 		When the myListingsAll query is executed
 		Then it should call Listing.ItemListing.queryPaged without sharerId
+
+	Scenario: Error while querying myListingsAll
+		Given Listing.ItemListing.queryPaged throws an error
+		When the myListingsAll query is executed
+		Then it should propagate the error message
 
 	Scenario: Creating an item listing successfully
 		Given a user with a verifiedJwt containing email
@@ -61,3 +78,8 @@ So that I can view, filter, and create listings through the GraphQL API
 		Given a user with a verifiedJwt containing an email not found in the database
 		When the createItemListing mutation is executed
 		Then it should throw a "User not found" error
+
+    Scenario: Error while creating an item listing
+		Given Listing.ItemListing.create throws an error
+		When the createItemListing mutation is executed
+		Then it should propagate the error message
