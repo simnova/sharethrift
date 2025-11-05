@@ -6,6 +6,26 @@ import { expect, vi } from 'vitest';
 import type { GraphContext } from '../../../init/context.ts';
 import itemListingResolvers from './item-listing.resolvers.ts';
 
+// Generic GraphQL resolver type for tests (avoids banned 'Function' and non-null assertions)
+type TestResolver<Args extends object = Record<string, unknown>, Return = unknown> = (
+	parent: unknown,
+	args: Args,
+	context: GraphContext,
+	info: unknown,
+) => Promise<Return>;
+
+// Shared input type for createItemListing across scenarios
+interface CreateItemListingInput {
+	title: string;
+	description: string;
+	category: string;
+	location: string;
+	sharingPeriodStart: string;
+	sharingPeriodEnd: string;
+	images?: string[];
+	isDraft?: boolean;
+}
+
 const test = { for: describeFeature };
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const feature = await loadFeature(
@@ -134,7 +154,7 @@ test.for(feature, ({ Scenario }) => {
 				).mockResolvedValue([createMockListing()]);
 			});
 			When('the itemListings query is executed', async () => {
-				const resolver = itemListingResolvers.Query!.itemListings as Function;
+				const resolver = itemListingResolvers.Query?.itemListings as TestResolver;
 				result = await resolver({}, {}, context, {} as never);
 			});
 			Then(
@@ -168,7 +188,7 @@ test.for(feature, ({ Scenario }) => {
 				).mockResolvedValue([createMockListing()]);
 			});
 			When('the itemListings query is executed', async () => {
-				const resolver = itemListingResolvers.Query!.itemListings as Function;
+				const resolver = itemListingResolvers.Query?.itemListings as TestResolver;
 				result = await resolver({}, {}, context, {} as never);
 			});
 			Then('it should call Listing.ItemListing.queryAll', () => {
@@ -195,7 +215,7 @@ test.for(feature, ({ Scenario }) => {
 		});
 		When('the itemListings query is executed', async () => {
 			try {
-				const resolver = itemListingResolvers.Query!.itemListings as Function;
+				const resolver = itemListingResolvers.Query?.itemListings as TestResolver;
 				await resolver({}, {}, context, {} as never);
 			} catch (e) {
 				error = e as Error;
@@ -215,7 +235,7 @@ test.for(feature, ({ Scenario }) => {
 			).mockResolvedValue(createMockListing());
 		});
 		When('the itemListing query is executed with that ID', async () => {
-			const resolver = itemListingResolvers.Query!.itemListing as Function;
+			const resolver = itemListingResolvers.Query?.itemListing as TestResolver<{ id: string }>;
 			result = await resolver({}, { id: 'listing-1' }, context, {} as never);
 		});
 		Then(
@@ -243,7 +263,7 @@ test.for(feature, ({ Scenario }) => {
 				).mockResolvedValue(null);
 			});
 			When('the itemListing query is executed', async () => {
-				const resolver = itemListingResolvers.Query!.itemListing as Function;
+				const resolver = itemListingResolvers.Query?.itemListing as TestResolver<{ id: string }>;
 				result = await resolver({}, { id: 'nonexistent-id' }, context, {} as never);
 			});
 			Then('it should return null', () => {
@@ -267,7 +287,7 @@ test.for(feature, ({ Scenario }) => {
 			});
 		});
 		When('the myListingsAll query is executed', async () => {
-			const resolver = itemListingResolvers.Query!.myListingsAll as Function;
+			const resolver = itemListingResolvers.Query?.myListingsAll as TestResolver<{ page: number; pageSize: number }>;
 			result = await resolver({}, { page: 1, pageSize: 10 }, context, {} as never);
 		});
 		Then('it should call Listing.ItemListing.queryPaged with sharerId, page, and pageSize', () => {
@@ -307,7 +327,7 @@ test.for(feature, ({ Scenario }) => {
 			});
 		});
 		When('the myListingsAll query is executed', async () => {
-			const resolver = itemListingResolvers.Query!.myListingsAll as Function;
+			const resolver = itemListingResolvers.Query?.myListingsAll as TestResolver<{ page: number; pageSize: number }>;
 			result = await resolver({}, { page: 1, pageSize: 10 }, context, {} as never);
 		});
 		Then('it should call Listing.ItemListing.queryPaged without sharerId', () => {
@@ -322,16 +342,6 @@ test.for(feature, ({ Scenario }) => {
 	});
 
 	Scenario('Creating an item listing successfully', ({ Given, And, When, Then }) => {
-		interface CreateItemListingInput {
-			title: string;
-			description: string;
-			category: string;
-			location: string;
-			sharingPeriodStart: string;
-			sharingPeriodEnd: string;
-			images?: string[];
-			isDraft?: boolean;
-		}
 		let input: CreateItemListingInput;
 		Given('a user with a verifiedJwt containing email', () => {
 			context = makeMockGraphContext();
@@ -358,7 +368,7 @@ test.for(feature, ({ Scenario }) => {
 			},
 		);
 		When('the createItemListing mutation is executed', async () => {
-			const resolver = itemListingResolvers.Mutation!.createItemListing as Function;
+			const resolver = itemListingResolvers.Mutation?.createItemListing as TestResolver<{ input: CreateItemListingInput }>;
 			result = await resolver({}, { input }, context, {} as never);
 		});
 		Then(
@@ -396,7 +406,7 @@ test.for(feature, ({ Scenario }) => {
 			});
 			When('the createItemListing mutation is executed', async () => {
 				try {
-					const resolver = itemListingResolvers.Mutation!.createItemListing as Function;
+					const resolver = itemListingResolvers.Mutation?.createItemListing as TestResolver<{ input: CreateItemListingInput }>;
 					await resolver(
 						{},
 						{
@@ -437,7 +447,7 @@ test.for(feature, ({ Scenario }) => {
 			);
 			When('the createItemListing mutation is executed', async () => {
 				try {
-					const resolver = itemListingResolvers.Mutation!.createItemListing as Function;
+					const resolver = itemListingResolvers.Mutation?.createItemListing as TestResolver<{ input: { title: string; description: string; category: string; location: string; sharingPeriodStart: string; sharingPeriodEnd: string } }>;
 					await resolver(
 						{},
 						{
