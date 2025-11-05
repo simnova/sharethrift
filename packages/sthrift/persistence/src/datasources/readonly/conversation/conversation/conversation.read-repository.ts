@@ -55,7 +55,10 @@ export class ConversationReadRepositoryImpl
 		id: string,
 		options?: FindOneOptions,
 	): Promise<Domain.Contexts.Conversation.Conversation.ConversationEntityReference | null> {
-		const result = await this.mongoDataSource.findById(id, options);
+		const result = await this.mongoDataSource.findById(id, {
+			...options,
+			populateFields: ['sharer', 'reserver', 'listing'],
+		});
 		if (!result) {
 			return null;
 		}
@@ -80,9 +83,11 @@ export class ConversationReadRepositoryImpl
 						{ reserver: new MongooseSeedwork.ObjectId(userId) },
 					],
 				},
-				options,
+				{
+					...options,
+					populateFields: ['sharer', 'reserver', 'listing'],
+				},
 			);
-			
 			return result.map((doc) => this.converter.toDomain(doc, this.passport));
 		} catch (error) {
 			console.warn('Error with ObjectId:', error);

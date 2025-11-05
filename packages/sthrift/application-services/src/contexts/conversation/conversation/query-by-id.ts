@@ -34,7 +34,7 @@ export const queryById = (dataSources: DataSources) => {
 				const authorId = new ObjectId(msg.authorId);
 
 				return new Domain.Contexts.Conversation.Conversation.Message({
-					id: new ObjectId().toHexString(),
+					id: msg.id,
 					messagingMessageId: msg.messagingMessageId,
 					authorId,
 					content: msg.content,
@@ -42,11 +42,22 @@ export const queryById = (dataSources: DataSources) => {
 				});
 			});
 
-			return {
-				...conversation,
-				messages: domainMessages,
-				loadMessages: async () => domainMessages,
-			};
+			const result: Domain.Contexts.Conversation.Conversation.ConversationEntityReference = {
+                id: conversation.id,
+                sharer: conversation.sharer,
+                loadSharer: conversation.loadSharer.bind(conversation),
+                reserver: conversation.reserver,
+                loadReserver: conversation.loadReserver.bind(conversation),
+                listing: conversation.listing,
+                loadListing: conversation.loadListing.bind(conversation),
+                messagingConversationId: conversation.messagingConversationId,
+                messages: domainMessages,
+                loadMessages: async () => domainMessages,
+                createdAt: conversation.createdAt,
+                updatedAt: conversation.updatedAt,
+                schemaVersion: conversation.schemaVersion,
+            };
+            return result;
 		} catch (error) {
 			console.warn(`[Conversation ${conversation.id}] Failed to fetch messaging messages, using MongoDB fallback:`, error);
 			return conversation;

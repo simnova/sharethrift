@@ -18,7 +18,7 @@ export const ConversationListContainer: React.FC<
 > = (props) => {
 	// TODO: Replace with actual authenticated user ID
 	// This should come from authentication context
-	const currentUserId = '507f1f77bcf86cd799439099';
+	const currentUserId = '507f1f77bcf86cd799439011';
 
 	const {
 		data: currentUserConversationsData,

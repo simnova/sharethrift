@@ -5,86 +5,132 @@ export function seedMockData(): void {
 
 	const conv1 = store.createConversationWithId(
 		'CH123',
-		'Customer Support Chat',
-		'support_chat_001',
+		'Lawn Mower Chat',
 	);
 	const conv2 = store.createConversationWithId(
 		'CH124',
-		'Product Inquiry',
-		'inquiry_002',
+		'Mountain Bike Chat',
 	);
 	const conv3 = store.createConversationWithId(
 		'CH125',
-		'Order #12345 Discussion',
+		'City Bike Chat',
+	);
+
+    const conv4 = store.createConversationWithId(
+		'CH126',
+		'Power Drill Chat',
 	);
 
 	if (conv1) {
-		store.addParticipant(conv1.id, '507f1f77bcf86cd799439099');
 		store.addParticipant(conv1.id, '507f1f77bcf86cd799439011');
+		store.addParticipant(conv1.id, '507f1f77bcf86cd799439012');
 	}
 
 	if (conv2) {
-		store.addParticipant(conv2.id, '507f1f77bcf86cd799439099');
 		store.addParticipant(conv2.id, '507f1f77bcf86cd799439012');
+		store.addParticipant(conv2.id, '507f1f77bcf86cd799439011');
 	}
 
 	if (conv3) {
-		store.addParticipant(conv3.id, '507f1f77bcf86cd799439099');
 		store.addParticipant(conv3.id, '507f1f77bcf86cd799439013');
+		store.addParticipant(conv3.id, '507f1f77bcf86cd799439011');
+	}
+
+    if (conv4) {
+		store.addParticipant(conv4.id, '507f1f77bcf86cd799439014');
+		store.addParticipant(conv4.id, '507f1f77bcf86cd799439011');
 	}
 
 	if (conv1) {
 		store.createMessage(
 			conv1.id,
-			'Hello, I need help with my account',
-			'507f1f77bcf86cd799439099',
-		);
-		store.createMessage(
-			conv1.id,
-			'Hi! I\'d be happy to help you with that. What seems to be the issue?',
+			"Hi, I'm interested in the lawn mower. Is it suitable for a large backyard?",
 			'507f1f77bcf86cd799439011',
 		);
 		store.createMessage(
 			conv1.id,
-			'I can\'t access my order history',
-			'507f1f77bcf86cd799439099',
+			"Absolutely! It's designed for yards up to half an acre. Do you have any specific grass type?",
+			'507f1f77bcf86cd799439012',
 		);
 		store.createMessage(
 			conv1.id,
-			'Let me look into that for you. Can you provide your order number?',
+			"Mostly Bermuda grass. Does it handle thick patches well?",
 			'507f1f77bcf86cd799439011',
+		);
+		store.createMessage(
+			conv1.id,
+			"Yes, the mower has adjustable blades and a powerful motor for thick grass.",
+			'507f1f77bcf86cd799439012',
 		);
 	}
 
 	if (conv2) {
 		store.createMessage(
 			conv2.id,
-			'Do you have this item in blue?',
-			'507f1f77bcf86cd799439099',
-		);
-		store.createMessage(
-			conv2.id,
-			'Yes! We have that available in blue. Would you like me to add it to your cart?',
+			"Hey, is the mountain bike good for rocky trails?",
 			'507f1f77bcf86cd799439012',
 		);
 		store.createMessage(
 			conv2.id,
-			'Yes please, and what\'s the shipping time?',
-			'507f1f77bcf86cd799439099',
+			"Yes, it has full suspension and durable tires for rough terrain.",
+			'507f1f77bcf86cd799439011',
+		);
+		store.createMessage(
+			conv2.id,
+			"Does it come with a repair kit or do I need to buy one separately?",
+			'507f1f77bcf86cd799439012',
+		);
+		store.createMessage(
+			conv2.id,
+			"A basic kit is included, but you can upgrade for more tools.",
+			'507f1f77bcf86cd799439011',
 		);
 	}
 
 	if (conv3) {
 		store.createMessage(
 			conv3.id,
-			'When will my order ship?',
-			'507f1f77bcf86cd799439099',
+			"Is the city bike comfortable for daily commutes?",
+			'507f1f77bcf86cd799439013',
 		);
 		store.createMessage(
 			conv3.id,
-			'Your order is scheduled to ship tomorrow. You\'ll receive a tracking number via email.',
+			"Definitely! It has a padded seat and upright handlebars for comfort.",
+			'507f1f77bcf86cd799439011',
+		);
+		store.createMessage(
+			conv3.id,
+			"Can I attach a basket or rack to it?",
 			'507f1f77bcf86cd799439013',
 		);
+		store.createMessage(
+			conv3.id,
+			"Yes, it comes with mounting points for both accessories.",
+			'507f1f77bcf86cd799439011',
+		);
+	}
+
+    if (conv4) {
+			store.createMessage(
+				conv4.id,
+				"Hi, does the power drill work on concrete walls?",
+				'507f1f77bcf86cd799439014',
+			);
+			store.createMessage(
+				conv4.id,
+				"Yes, it comes with masonry bits and has enough torque for concrete.",
+				'507f1f77bcf86cd799439011',
+			);
+			store.createMessage(
+				conv4.id,
+				"How long does the battery last on a full charge?",
+				'507f1f77bcf86cd799439014',
+			);
+			store.createMessage(
+				conv4.id,
+				"About 2 hours of continuous use. It also has a fast-charging feature.",
+				'507f1f77bcf86cd799439011',
+			);
 	}
 
 	const stats = store.getStats();

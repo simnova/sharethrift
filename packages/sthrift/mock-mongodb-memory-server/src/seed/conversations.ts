@@ -7,7 +7,7 @@ export const conversations = [
 		sharer: new ObjectId('507f1f77bcf86cd799439011'), // Alice
 		reserver: new ObjectId('507f1f77bcf86cd799439012'), // Bob
 		listing: new ObjectId('707f1f77bcf86cd799439031'), // Lawn Mower
-		messagingConversationId: 'twilio_001',
+		messagingConversationId: 'CH123',
 		schemaVersion: '1.0.0',
 		version: 1,
 		discriminatorKey: 'conversation',
@@ -19,7 +19,7 @@ export const conversations = [
 		sharer: new ObjectId('507f1f77bcf86cd799439012'), // Bob
 		reserver: new ObjectId('507f1f77bcf86cd799439011'), // Alice
 		listing: new ObjectId('707f1f77bcf86cd799439032'), // Mountain Bike
-		messagingConversationId: 'twilio_002',
+		messagingConversationId: 'CH124',
 		schemaVersion: '1.0.0',
 		version: 1,
 		discriminatorKey: 'conversation',
@@ -28,10 +28,10 @@ export const conversations = [
 	},
 	{
 		_id: '807f1f77bcf86cd799439043',
-		sharer: new ObjectId('507f1f77bcf86cd799439011'), // Alice
-		reserver: new ObjectId('507f1f77bcf86cd799439012'), // Bob
+		sharer: new ObjectId('507f1f77bcf86cd799439013'), // Charlie
+		reserver: new ObjectId('507f1f77bcf86cd799439011'), // Alice
 		listing: new ObjectId('707f1f77bcf86cd799439033'), // City Bike
-		messagingConversationId: 'twilio_003',
+		messagingConversationId: 'CH125',
 		schemaVersion: '1.0.0',
 		version: 1,
 		discriminatorKey: 'conversation',
@@ -40,10 +40,10 @@ export const conversations = [
 	},
 	{
 		_id: '807f1f77bcf86cd799439044',
-		sharer: new ObjectId('507f1f77bcf86cd799439012'), // Bob
+		sharer: new ObjectId('507f1f77bcf86cd799439014'), // Duy
 		reserver: new ObjectId('507f1f77bcf86cd799439011'), // Alice
 		listing: new ObjectId('707f1f77bcf86cd799439034'), // Power Drill
-		messagingConversationId: 'twilio_004',
+		messagingConversationId: 'CH126',
 		schemaVersion: '1.0.0',
 		version: 1,
 		discriminatorKey: 'conversation',

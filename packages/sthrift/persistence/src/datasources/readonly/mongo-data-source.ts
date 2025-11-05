@@ -59,10 +59,24 @@ export class MongoDataSourceImpl<TDoc extends MongooseSeedwork.Base>
 	}
 
 	private appendId(doc: LeanBase<TDoc>): Lean<TDoc> {
-		return {
+		// Recursively add id field to populated subdocuments
+		const result = {
 			...doc,
 			id: String(doc._id),
-		};
+		}
+		
+		// Handle populated fields (which are objects with _id but no id)
+		for (const key in result) {
+			const value = result[key as keyof typeof result];
+			if (value && typeof value === 'object' && '_id' in value && !('id' in value)) {
+				(result[key as keyof typeof result] as Record<string, unknown>) = {
+					...value,
+					id: String(value['_id']),
+				};
+			}
+		}
+		
+		return result;
 	}
 
 	private buildQueryOptions(options?: FindOptions): QueryOptions {
@@ -84,13 +98,20 @@ export class MongoDataSourceImpl<TDoc extends MongooseSeedwork.Base>
 		options?: FindOptions,
 	): Promise<Lean<TDoc>[]> {
 		const queryOptions = this.buildQueryOptions(options);
-		const docs = await this.model
+		let query = this.model
 			.find(
 				this.buildFilterQuery(filter),
 				this.buildProjection(options?.fields, options?.projectionMode),
 				queryOptions,
-			)
-			.lean<LeanBase<TDoc>[]>();
+			);
+		
+		if (options?.populateFields?.length) {
+			for (const field of options.populateFields) {
+				query = query.populate(field);
+			}
+		}
+		
+		const docs = await query.lean<LeanBase<TDoc>[]>();
 		return docs.map((doc) => this.appendId(doc));
 	}
 
@@ -117,12 +138,19 @@ export class MongoDataSourceImpl<TDoc extends MongooseSeedwork.Base>
 		if (!isValidObjectId(id)) {
 			return null;
 		}
-		const doc = await this.model
+		let query = this.model
 			.findById(
 				id,
 				this.buildProjection(options?.fields, options?.projectionMode),
-			)
-			.lean<LeanBase<TDoc>>();
+			);
+		
+		if (options?.populateFields?.length) {
+			for (const field of options.populateFields) {
+				query = query.populate(field);
+			}
+		}
+		
+		const doc = await query.lean<LeanBase<TDoc>>();
 		return doc ? this.appendId(doc) : null;
 	}
 }

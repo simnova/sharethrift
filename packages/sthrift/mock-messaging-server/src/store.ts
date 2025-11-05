@@ -1,4 +1,4 @@
-import { randomUUID } from 'node:crypto';
+import { ObjectId } from 'mongodb';
 import type {
 	Conversation,
 	Message,
@@ -14,7 +14,7 @@ class MockMessagingStore {
 	readonly ACCOUNT_ID = 'mock-account-00000000';
 
 	generateId(): string {
-		return randomUUID();
+		return new ObjectId().toHexString();
 	}
 
 	createConversation(
