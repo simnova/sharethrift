@@ -1,12 +1,12 @@
-import { Input, Checkbox, Image, Tag } from 'antd';
-import { SearchOutlined, FilterOutlined } from '@ant-design/icons';
-import type { TableProps } from 'antd';
+import { FilterOutlined, SearchOutlined } from '@ant-design/icons';
 import { Dashboard } from '@sthrift/ui-components';
-import { RequestsCard } from './requests-card.tsx';
+import type { TableProps } from 'antd';
+import { Checkbox, Image, Input, Tag } from 'antd';
 import type { ListingRequestData } from './my-listings-dashboard.types.tsx';
+import { RequestsCard } from './requests-card.tsx';
 import {
-	getStatusTagClass,
 	getActionButtons,
+	getStatusTagClass,
 } from './requests-status-helpers.tsx';
 
 const { Search } = Input;
@@ -28,11 +28,12 @@ export interface RequestsTableProps {
 }
 
 const REQUEST_STATUS_OPTIONS = [
+	{ label: 'Pending', value: 'Pending' },
 	{ label: 'Accepted', value: 'Accepted' },
 	{ label: 'Rejected', value: 'Rejected' },
 	{ label: 'Closed', value: 'Closed' },
-	{ label: 'Pending', value: 'Pending' },
 	{ label: 'Closing', value: 'Closing' },
+	{ label: 'Expired', value: 'Expired' },
 ];
 
 // getStatusTagClass and getActionButtons moved to requests-status-helpers.tsx
@@ -143,7 +144,7 @@ export const RequestsTable: React.FC<RequestsTableProps> = ({
 				// Try to format both as yyyy-mm-dd
 				function formatDate(str: string) {
 					const d = new Date(str);
-					if (isNaN(d.getTime())) {
+					if (Number.isNaN(d.getTime())) {
 						return str;
 					}
 					const yyyy = d.getFullYear();
@@ -224,4 +225,4 @@ export const RequestsTable: React.FC<RequestsTableProps> = ({
 			)}
 		/>
 	);
-}
+};

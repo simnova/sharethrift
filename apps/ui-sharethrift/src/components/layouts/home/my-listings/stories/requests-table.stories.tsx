@@ -20,6 +20,33 @@ const MOCK_REQUESTS = [
 		status: 'Accepted',
 		requestedBy: 'Jane Smith',
 	},
+	{
+		id: '3',
+		title: 'Camping Tent',
+		image: '/assets/item-images/tent.png',
+		requestedOn: '2025-07-15',
+		reservationPeriod: '2025-08-01 - 2025-08-15',
+		status: 'Rejected',
+		requestedBy: 'Bob Wilson',
+	},
+	{
+		id: '4',
+		title: 'Projector',
+		image: '/assets/item-images/projector.png',
+		requestedOn: '2025-06-10',
+		reservationPeriod: '2025-07-01 - 2025-07-31',
+		status: 'Closed',
+		requestedBy: 'Alice Johnson',
+	},
+	{
+		id: '5',
+		title: 'Ladder',
+		image: '/assets/item-images/ladder.png',
+		requestedOn: '2025-05-20',
+		reservationPeriod: '2025-06-01 - 2025-06-15',
+		status: 'Expired',
+		requestedBy: 'Charlie Brown',
+	},
 ];
 
 const meta: Meta<typeof RequestsTable> = {

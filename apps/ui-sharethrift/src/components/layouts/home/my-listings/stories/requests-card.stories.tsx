@@ -24,4 +24,32 @@ const meta: Meta<typeof RequestsCard> = {
 export default meta;
 type Story = StoryObj<typeof meta>;
 
-export const Default: Story = {};
+export const Pending: Story = {
+	args: {
+		listing: { ...MOCK_REQUEST, status: 'Pending' },
+	},
+};
+
+export const Accepted: Story = {
+	args: {
+		listing: { ...MOCK_REQUEST, status: 'Accepted' },
+	},
+};
+
+export const Rejected: Story = {
+	args: {
+		listing: { ...MOCK_REQUEST, status: 'Rejected' },
+	},
+};
+
+export const Closed: Story = {
+	args: {
+		listing: { ...MOCK_REQUEST, status: 'Closed' },
+	},
+};
+
+export const Expired: Story = {
+	args: {
+		listing: { ...MOCK_REQUEST, status: 'Expired' },
+	},
+};
