@@ -1,7 +1,10 @@
-import { useQuery } from '@apollo/client/react';
+import { useMutation, useQuery } from '@apollo/client/react';
 import { ComponentQueryLoader } from '@sthrift/ui-components';
 import { useState } from 'react';
-import { HomeRequestsTableContainerMyListingsRequestsDocument } from '../../../../../generated.tsx';
+import {
+	HomeRequestsTableContainerAcceptReservationRequestDocument,
+	HomeRequestsTableContainerMyListingsRequestsDocument,
+} from '../../../../../generated.tsx';
 import { RequestsTable } from './requests-table.tsx';
 
 export interface RequestsTableContainerProps {
@@ -21,7 +24,7 @@ export const RequestsTableContainer: React.FC<RequestsTableContainerProps> = ({
 	}>({ field: null, order: null });
 	const pageSize = 6;
 
-	const { data, loading, error } = useQuery(
+	const { data, loading, error, refetch } = useQuery(
 		HomeRequestsTableContainerMyListingsRequestsDocument,
 		{
 			variables: {
@@ -34,6 +37,10 @@ export const RequestsTableContainer: React.FC<RequestsTableContainerProps> = ({
 			},
 			fetchPolicy: 'network-only',
 		},
+	);
+
+	const [acceptReservationRequest, { loading: acceptLoading }] = useMutation(
+		HomeRequestsTableContainerAcceptReservationRequestDocument,
 	);
 
 	const requests = data?.myListingsRequests?.items ?? [];
@@ -65,14 +72,24 @@ export const RequestsTableContainer: React.FC<RequestsTableContainerProps> = ({
 		onPageChange(1);
 	};
 
-	const handleAction = (action: string, requestId: string) => {
+	const handleAction = async (action: string, requestId: string) => {
 		// Implement actions based on status
 		switch (action) {
 			case 'accept':
-				// TODO: Call acceptReservationRequest mutation
-				console.log(`Accepting request ${requestId}`);
-				// Future: Trigger GraphQL mutation to accept reservation
-				// This will also auto-reject overlapping pending requests
+				try {
+					await acceptReservationRequest({
+						variables: {
+							input: {
+								id: requestId,
+							},
+						},
+					});
+					// Refetch the list to show updated status
+					await refetch();
+				} catch (error) {
+					console.error('Error accepting request:', error);
+					// TODO: Show error message to user
+				}
 				break;
 			case 'reject':
 				// TODO: Call rejectReservationRequest mutation
@@ -125,7 +142,7 @@ export const RequestsTableContainer: React.FC<RequestsTableContainerProps> = ({
 					onTableChange={handleTableChange}
 					onPageChange={onPageChange}
 					onAction={handleAction}
-					loading={loading}
+					loading={loading || acceptLoading}
 				/>
 			}
 		/>
