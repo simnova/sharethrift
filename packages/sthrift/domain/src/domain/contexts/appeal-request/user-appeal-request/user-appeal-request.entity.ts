@@ -9,6 +9,8 @@ export interface UserAppealRequestProps
 	extends DomainSeedwork.DomainEntityProps {
 	/** The user who filed the appeal request */
 	user: Readonly<PersonalUserEntityReference>;
+	/** Lazy load the user who filed the appeal request */
+	loadUser: () => Promise<Readonly<PersonalUserEntityReference>>;
 	/** The reason for the appeal */
 	reason: string;
 	/** The current state of the appeal request */
@@ -17,6 +19,8 @@ export interface UserAppealRequestProps
 	type: string;
 	/** The admin/user who blocked the account (temporary: PersonalUser, future: AdminUser) */
 	blocker: Readonly<PersonalUserEntityReference>;
+	/** Lazy load the admin/user who blocked the account */
+	loadBlocker: () => Promise<Readonly<PersonalUserEntityReference>>;
 	/** Timestamp when the appeal was created */
 	readonly createdAt: Date;
 	/** Timestamp when the appeal was last updated */

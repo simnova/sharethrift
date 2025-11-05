@@ -10,8 +10,12 @@ export interface ListingAppealRequestProps
 	extends DomainSeedwork.DomainEntityProps {
 	/** The user who filed the appeal request */
 	user: Readonly<PersonalUserEntityReference>;
+	/** Lazy load the user who filed the appeal request */
+	loadUser: () => Promise<Readonly<PersonalUserEntityReference>>;
 	/** The blocked listing being appealed */
 	listing: Readonly<ItemListingEntityReference>;
+	/** Lazy load the blocked listing being appealed */
+	loadListing: () => Promise<Readonly<ItemListingEntityReference>>;
 	/** The reason for the appeal */
 	reason: string;
 	/** The current state of the appeal request */
@@ -20,6 +24,8 @@ export interface ListingAppealRequestProps
 	type: string;
 	/** The admin/user who blocked the listing (temporary: PersonalUser, future: AdminUser) */
 	blocker: Readonly<PersonalUserEntityReference>;
+	/** Lazy load the admin/user who blocked the listing */
+	loadBlocker: () => Promise<Readonly<PersonalUserEntityReference>>;
 	/** Timestamp when the appeal was created */
 	readonly createdAt: Date;
 	/** Timestamp when the appeal was last updated */

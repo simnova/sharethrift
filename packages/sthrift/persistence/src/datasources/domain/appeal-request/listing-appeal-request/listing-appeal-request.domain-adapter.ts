@@ -35,6 +35,18 @@ export class ListingAppealRequestDomainAdapter
 		return new PersonalUserDomainAdapter(this.doc.user as Models.User.PersonalUser);
 	}
 
+	async loadUser(): Promise<Domain.Contexts.User.PersonalUser.PersonalUserEntityReference> {
+		if (!this.doc.user) {
+			throw new Error('user is not populated');
+		}
+		if (this.doc.user instanceof MongooseSeedwork.ObjectId) {
+			await this.doc.populate('user');
+		}
+		return new PersonalUserDomainAdapter(
+			this.doc.user as Models.User.PersonalUser,
+		);
+	}
+
 	set user(
 		user:
 			| Domain.Contexts.User.PersonalUser.PersonalUserEntityReference
@@ -58,6 +70,18 @@ export class ListingAppealRequestDomainAdapter
 		return new ItemListingDomainAdapter(this.doc.listing as Models.Listing.ItemListing);
 	}
 
+	async loadListing(): Promise<Domain.Contexts.Listing.ItemListing.ItemListingEntityReference> {
+		if (!this.doc.listing) {
+			throw new Error('listing is not populated');
+		}
+		if (this.doc.listing instanceof MongooseSeedwork.ObjectId) {
+			await this.doc.populate('listing');
+		}
+		return new ItemListingDomainAdapter(
+			this.doc.listing as Models.Listing.ItemListing,
+		);
+	}
+
 	set listing(
 		listing:
 			| Domain.Contexts.Listing.ItemListing.ItemListingEntityReference
@@ -79,6 +103,18 @@ export class ListingAppealRequestDomainAdapter
 			} as Domain.Contexts.User.PersonalUser.PersonalUserEntityReference;
 		}
 		return new PersonalUserDomainAdapter(this.doc.blocker as Models.User.PersonalUser);
+	}
+
+	async loadBlocker(): Promise<Domain.Contexts.User.PersonalUser.PersonalUserEntityReference> {
+		if (!this.doc.blocker) {
+			throw new Error('blocker is not populated');
+		}
+		if (this.doc.blocker instanceof MongooseSeedwork.ObjectId) {
+			await this.doc.populate('blocker');
+		}
+		return new PersonalUserDomainAdapter(
+			this.doc.blocker as Models.User.PersonalUser,
+		);
 	}
 
 	set blocker(

@@ -55,6 +55,10 @@ export class UserAppealRequest<props extends UserAppealRequestProps>
 		) as PersonalUserEntityReference;
 	}
 
+	async loadUser(): Promise<PersonalUserEntityReference> {
+		return await this.props.loadUser();
+	}
+
 	get reason(): string {
 		return this.props.reason;
 	}
@@ -79,6 +83,10 @@ export class UserAppealRequest<props extends UserAppealRequestProps>
 			this.props.blocker as any,
 			this.passport,
 		) as PersonalUserEntityReference;
+	}
+
+	async loadBlocker(): Promise<PersonalUserEntityReference> {
+		return await this.props.loadBlocker();
 	}
 
 	get createdAt(): Date {
