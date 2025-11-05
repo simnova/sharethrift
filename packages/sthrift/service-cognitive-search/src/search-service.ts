@@ -42,10 +42,16 @@ export class ServiceCognitiveSearch
 			this.implementationType = SearchServiceFactory.detectImplementation({
 				useMockSearch: process.env['USE_MOCK_SEARCH'] === 'true',
 				useAzureSearch: process.env['USE_AZURE_SEARCH'] === 'true',
-				nodeEnv: process.env['NODE_ENV'],
-				searchApiEndpoint: process.env['SEARCH_API_ENDPOINT'],
+				...(process.env['NODE_ENV'] !== undefined && {
+					nodeEnv: process.env['NODE_ENV'],
+				}),
+				...(process.env['SEARCH_API_ENDPOINT'] !== undefined && {
+					searchApiEndpoint: process.env['SEARCH_API_ENDPOINT'],
+				}),
 				enablePersistence: process.env['ENABLE_SEARCH_PERSISTENCE'] === 'true',
-				persistencePath: process.env['SEARCH_PERSISTENCE_PATH'],
+				...(process.env['SEARCH_PERSISTENCE_PATH'] !== undefined && {
+					persistencePath: process.env['SEARCH_PERSISTENCE_PATH'],
+				}),
 			});
 			this.searchService = SearchServiceFactory.createFromEnvironment();
 		}
