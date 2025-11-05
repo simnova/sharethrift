@@ -8,30 +8,26 @@ import type { GraphContext } from '../init/context.ts';
 import type { PersonalUser } from './builder/generated.ts';
 
 export const PopulatePersonalUserFromField = (fieldName: string) => {
-	// biome-ignore lint/suspicious/noExplicitAny: GraphQL parent can be any generated entity type
+	// biome-ignore lint/suspicious/noExplicitAny: <explanation>
 	return async (parent: any, _: unknown, context: GraphContext) => {
-		const raw = parent[fieldName];
-		const value = typeof raw === 'string' ? raw : raw?.toString?.();
-		if (typeof value === 'string' && isValidObjectId(value)) {
+		if (parent[fieldName] && isValidObjectId(parent[fieldName].toString())) {
 			return (await context.applicationServices.User.PersonalUser.queryById({
-				id: value,
+				id: parent[fieldName].toString(),
 			})) as PersonalUser;
 		}
-		return raw;
+		return parent[fieldName];
 	};
 };
 
 export const PopulateItemListingFromField = (fieldName: string) => {
-	// biome-ignore lint/suspicious/noExplicitAny: GraphQL parent can be any generated entity type
+	// biome-ignore lint/suspicious/noExplicitAny: <explanation>
 	return async (parent: any, _: unknown, context: GraphContext) => {
-		const raw = parent[fieldName];
-		const value = typeof raw === 'string' ? raw : raw?.toString?.();
-		if (typeof value === 'string' && isValidObjectId(value)) {
+		if (parent[fieldName] && isValidObjectId(parent[fieldName].toString())) {
 			return await context.applicationServices.Listing.ItemListing.queryById({
-				id: value,
+				id: parent[fieldName].toString(),
 			});
 		}
-		return raw;
+		return parent[fieldName];
 	};
 };
 
