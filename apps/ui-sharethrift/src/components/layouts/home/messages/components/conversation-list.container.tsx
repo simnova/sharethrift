@@ -1,6 +1,7 @@
 import { ConversationList } from './conversation-list.tsx';
 import { useQuery } from '@apollo/client/react';
 import {
+	HomeConversationListContainerCurrentPersonalUserAndCreateIfNotExistsDocument,
 	HomeConversationListContainerConversationsByUserDocument,
 	type Conversation,
 } from '../../../../../generated.tsx';
@@ -16,9 +17,13 @@ interface ConversationListContainerProps {
 export const ConversationListContainer: React.FC<
 	ConversationListContainerProps
 > = (props) => {
-	// TODO: Replace with actual authenticated user ID
-	// This should come from authentication context
-	const currentUserId = '507f1f77bcf86cd799439099';
+	const {
+		data: currentPersonalUserData,
+		loading: currentPersonalUserLoading,
+		error: currentPersonalUserError,
+	} = useQuery(
+		HomeConversationListContainerCurrentPersonalUserAndCreateIfNotExistsDocument,
+	);
 
 	const {
 		data: currentUserConversationsData,
@@ -26,8 +31,10 @@ export const ConversationListContainer: React.FC<
 		error: conversationsError,
 	} = useQuery(HomeConversationListContainerConversationsByUserDocument, {
 		variables: {
-			userId: currentUserId,
+			userId:
+				currentPersonalUserData?.currentPersonalUserAndCreateIfNotExists.id,
 		},
+		skip: !currentPersonalUserData?.currentPersonalUserAndCreateIfNotExists.id,
 	});
 
 	useEffect(() => {
@@ -43,13 +50,17 @@ export const ConversationListContainer: React.FC<
 		currentUserConversationsData,
 		props.selectedConversationId,
 		props.onConversationSelect,
+		props,
 	]);
 
 	return (
 		<ComponentQueryLoader
-			loading={loadingConversations}
-			hasData={currentUserConversationsData}
-			error={conversationsError}
+			loading={loadingConversations || currentPersonalUserLoading}
+			hasData={
+				currentUserConversationsData?.conversationsByUser &&
+				currentPersonalUserData?.currentPersonalUserAndCreateIfNotExists
+			}
+			error={conversationsError || currentPersonalUserError}
 			noDataComponent={
 				<Empty description="No conversations yet" style={{ marginTop: 32 }} />
 			}

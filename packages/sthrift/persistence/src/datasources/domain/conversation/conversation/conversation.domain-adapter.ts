@@ -21,12 +21,14 @@ export class ConversationDomainAdapter
 	extends MongooseSeedwork.MongooseDomainAdapter<Models.Conversation.Conversation>
 	implements Domain.Contexts.Conversation.Conversation.ConversationProps
 {
-	get sharer(): PersonalUserDomainAdapter {
+	get sharer(): Domain.Contexts.User.PersonalUser.PersonalUserEntityReference {
 		if (!this.doc.sharer) {
 			throw new Error('sharer is not populated');
 		}
 		if (this.doc.sharer instanceof MongooseSeedwork.ObjectId) {
-			throw new Error('sharer is not populated or is not of the correct type');
+			return {
+				id: this.doc.sharer.toString(),
+			} as Domain.Contexts.User.PersonalUser.PersonalUserEntityReference;
 		}
 		return new PersonalUserDomainAdapter(
 			this.doc.sharer as Models.User.PersonalUser,
@@ -49,14 +51,14 @@ export class ConversationDomainAdapter
 		this.doc.set('sharer', user.doc);
 	}
 
-	get reserver(): PersonalUserDomainAdapter {
+	get reserver(): Domain.Contexts.User.PersonalUser.PersonalUserEntityReference {
 		if (!this.doc.reserver) {
 			throw new Error('reserver is not populated');
 		}
 		if (this.doc.reserver instanceof MongooseSeedwork.ObjectId) {
-			throw new Error(
-				'reserver is not populated or is not of the correct type',
-			);
+			return {
+				id: this.doc.reserver.toString(),
+			} as Domain.Contexts.User.PersonalUser.PersonalUserEntityReference;
 		}
 		return new PersonalUserDomainAdapter(
 			this.doc.reserver as Models.User.PersonalUser,
@@ -79,12 +81,14 @@ export class ConversationDomainAdapter
 		this.doc.set('reserver', user.doc);
 	}
 
-	get listing(): ItemListingDomainAdapter {
+	get listing(): Domain.Contexts.Listing.ItemListing.ItemListingEntityReference {
 		if (!this.doc.listing) {
 			throw new Error('listing is not populated');
 		}
 		if (this.doc.listing instanceof MongooseSeedwork.ObjectId) {
-			throw new Error('listing is not populated or is not of the correct type');
+			return {
+				id: this.doc.listing.toString(),
+			} as Domain.Contexts.Listing.ItemListing.ItemListingEntityReference;
 		}
 		return new ItemListingDomainAdapter(
 			this.doc.listing as Models.Listing.ItemListing,
@@ -120,7 +124,9 @@ export class ConversationDomainAdapter
 		return [];
 	}
 
-	loadMessages(): Promise<Domain.Contexts.Conversation.Conversation.MessageEntityReference[]> {
+	loadMessages(): Promise<
+		Domain.Contexts.Conversation.Conversation.MessageEntityReference[]
+	> {
 		// For now, return empty array since messages are not stored as subdocuments
 		// TODO: Implement proper message loading from separate collection or populate from subdocuments
 		return Promise.resolve([]);

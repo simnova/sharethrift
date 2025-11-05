@@ -15,7 +15,7 @@ export const personalUsers = [
 			profile: {
 				firstName: 'Alice',
 				lastName: 'Smith',
-                aboutMe: 'Hello',
+				aboutMe: 'Hello',
 				location: {
 					address1: '123 Main St',
 					address2: null,
@@ -52,7 +52,7 @@ export const personalUsers = [
 			profile: {
 				firstName: 'Bob',
 				lastName: 'Johnson',
-                aboutMe: 'Hello',
+				aboutMe: 'Hello',
 				location: {
 					address1: '456 Oak Ave',
 					address2: 'Apt 2',
@@ -108,11 +108,11 @@ export const personalUsers = [
 		} as Models.User.PersonalUserAccount,
 		schemaVersion: '1.0.0',
 		version: 1,
-			discriminatorKey: 'personal-users',
+		discriminatorKey: 'personal-users',
 		createdAt: new Date('2023-01-03T12:00:00Z'),
 		updatedAt: new Date('2023-01-03T12:00:00Z'),
 	},
-    {
+	{
 		_id: '507f1f77bcf86cd799439014',
 		userType: 'personal-users',
 		isBlocked: false,
@@ -144,7 +144,7 @@ export const personalUsers = [
 		} as Models.User.PersonalUserAccount,
 		schemaVersion: '1.0.0',
 		version: 1,
-			discriminatorKey: 'personal-users',
+		discriminatorKey: 'personal-users',
 		createdAt: new Date('2023-01-03T12:00:00Z'),
 		updatedAt: new Date('2023-01-03T12:00:00Z'),
 	},
