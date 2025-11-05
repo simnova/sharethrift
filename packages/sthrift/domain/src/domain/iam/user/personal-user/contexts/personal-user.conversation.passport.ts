@@ -1,8 +1,8 @@
 import type { ConversationPassport } from '../../../../contexts/conversation/conversation.passport.ts';
 import type { ConversationVisa } from '../../../../contexts/conversation/conversation.visa.ts';
-import type { ConversationEntityReference } from '../../../../contexts/conversation/conversation/conversation.entity.ts';
 import { PersonalUserPassportBase } from '../personal-user.passport-base.ts';
-import { PersonalUserConversationVisa } from './personal-user.converstaion.visa.ts';
+import { PersonalUserConversationVisa } from './personal-user.conversation.visa.ts';
+import type { ConversationEntityReference } from '../../../../contexts/conversation/conversation/conversation.entity.ts';
 
 export class PersonalUserConversationPassport
 	extends PersonalUserPassportBase

@@ -7,7 +7,6 @@ import {
 import type { FindOneOptions, FindOptions } from '../../mongo-data-source.ts';
 import { ConversationConverter } from '../../../domain/conversation/conversation/conversation.domain-adapter.ts';
 import { MongooseSeedwork } from '@cellix/mongoose-seedwork';
-import { getMockConversations } from './mock-conversations.js';
 
 export interface ConversationReadRepository {
 	getAll: (
@@ -49,10 +48,6 @@ export class ConversationReadRepositoryImpl
 		Domain.Contexts.Conversation.Conversation.ConversationEntityReference[]
 	> {
 		const result = await this.mongoDataSource.find({}, options);
-		if (!result || result.length === 0) {
-			// Return mock data when no real data exists
-			return getMockConversations();
-		}
 		return result.map((doc) => this.converter.toDomain(doc, this.passport));
 	}
 
@@ -62,12 +57,7 @@ export class ConversationReadRepositoryImpl
 	): Promise<Domain.Contexts.Conversation.Conversation.ConversationEntityReference | null> {
 		const result = await this.mongoDataSource.findById(id, options);
 		if (!result) {
-			// Try to find in mock data if no database record exists
-			const mockResult = getMockConversations().find(
-				(conversation: Domain.Contexts.Conversation.Conversation.ConversationEntityReference) => 
-					conversation.id === id,
-			);
-			return mockResult || null;
+			return null;
 		}
 		return this.converter.toDomain(result, this.passport);
 	}
@@ -93,35 +83,10 @@ export class ConversationReadRepositoryImpl
 				options,
 			);
 			
-			// If no database records found, check mock data
-			if (!result || result.length === 0) {
-				// Return mock data when no real data exists (for development/testing)
-				// Update mock conversations to use the current userId for consistency
-				const mockConversations = getMockConversations();
-				return mockConversations.map(
-					(conversation: Domain.Contexts.Conversation.Conversation.ConversationEntityReference) => ({
-						...conversation,
-						reserver: {
-							...conversation.reserver,
-							id: userId, // Use the actual userId from the request
-						},
-					}),
-				);
-			}
 			return result.map((doc) => this.converter.toDomain(doc, this.passport));
 		} catch (error) {
-			// If ObjectId creation fails, return mock data
-			console.warn('Error with ObjectId, returning mock data:', error);
-			const mockConversations = getMockConversations();
-			return mockConversations.map(
-				(conversation: Domain.Contexts.Conversation.Conversation.ConversationEntityReference) => ({
-					...conversation,
-					reserver: {
-						...conversation.reserver,
-						id: userId, // Use the actual userId from the request
-					},
-				}),
-			);
+			console.warn('Error with ObjectId:', error);
+			return [];
 		}
 	}
 }
