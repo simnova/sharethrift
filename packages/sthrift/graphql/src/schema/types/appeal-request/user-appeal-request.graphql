@@ -1,12 +1,13 @@
-type UserAppealRequest {
-	id: ID!
+type UserAppealRequest implements MongoBase {
+	id: ObjectID!
 	user: PersonalUser!
 	reason: String!
 	state: AppealRequestState!
 	type: AppealRequestType!
 	blocker: PersonalUser!
-	createdAt: String!
-	updatedAt: String!
+	schemaVersion: String
+	createdAt: DateTime
+	updatedAt: DateTime
 }
 
 type UserAppealRequestPageResult {
@@ -17,13 +18,13 @@ type UserAppealRequestPageResult {
 }
 
 input CreateUserAppealRequestInput {
-	userId: ID!
+	userId: ObjectID!
 	reason: String!
-	blockerId: ID!
+	blockerId: ObjectID!
 }
 
 input UpdateUserAppealRequestStateInput {
-	id: ID!
+	id: ObjectID!
 	state: AppealRequestState!
 }
 
@@ -35,7 +36,7 @@ input GetAllUserAppealRequestsInput {
 }
 
 extend type Query {
-	getUserAppealRequest(id: ID!): UserAppealRequest
+	getUserAppealRequest(id: ObjectID!): UserAppealRequest
 	getAllUserAppealRequests(
 		input: GetAllUserAppealRequestsInput!
 	): UserAppealRequestPageResult!
