@@ -4,6 +4,7 @@ import type {
 	Resolvers,
 	QueryAllSystemUsersArgs,
 } from '../../builder/generated.ts';
+import { getUserByEmail } from '../../resolver-helper.ts';
 
 const userUnionResolvers: Resolvers = {
 	Query: {
@@ -18,34 +19,13 @@ const userUnionResolvers: Resolvers = {
 			}
 
 			const { email } = context.applicationServices.verifiedUser.verifiedJwt;
+			const user = await getUserByEmail(email, context);
 
-			// Try AdminUser first
-			try {
-				const adminUser =
-					await context.applicationServices.User.AdminUser.queryByEmail({
-						email,
-					});
-				if (adminUser) {
-					return adminUser;
-				}
-			} catch {
-				// AdminUser not found, continue to PersonalUser
+			if (!user) {
+				throw new Error('User not found');
 			}
 
-			// Try PersonalUser
-			try {
-				const personalUser =
-					await context.applicationServices.User.PersonalUser.queryByEmail({
-						email,
-					});
-				if (personalUser) {
-					return personalUser;
-				}
-			} catch {
-				// PersonalUser not found
-			}
-
-			throw new Error('User not found');
+			return user;
 		},
 
 		allSystemUsers: async (

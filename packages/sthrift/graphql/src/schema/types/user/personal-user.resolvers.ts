@@ -8,6 +8,7 @@ import type {
 	QueryAllUsersArgs,
 } from '../../builder/generated.ts';
 import type { PersonalUserUpdateCommand } from '@sthrift/application-services';
+import { getUserByEmail } from '../../resolver-helper.ts';
 
 const personalUserResolvers: Resolvers = {
 	Query: {
@@ -55,12 +56,14 @@ const personalUserResolvers: Resolvers = {
 
 			// Query-level permission check: Only admins with canViewAllUsers can view all personal users
 			// (Read permissions are checked at GraphQL/service layer, write permissions at domain layer)
-			const currentAdmin =
-				await context.applicationServices.User.AdminUser.queryByEmail({
-					email: context.applicationServices.verifiedUser.verifiedJwt.email,
-				});
+			const { email } = context.applicationServices.verifiedUser.verifiedJwt;
+			const currentUser = await getUserByEmail(email, context);
+			const isAdmin = currentUser && 'role' in currentUser;
 
-			if (!currentAdmin?.role?.permissions?.userPermissions?.canViewAllUsers) {
+			if (
+				!isAdmin ||
+				!currentUser?.role?.permissions?.userPermissions?.canViewAllUsers
+			) {
 				throw new Error(
 					'Forbidden: Only admins with canViewAllUsers permission can access this query',
 				);

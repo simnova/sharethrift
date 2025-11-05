@@ -7,6 +7,7 @@ import type {
 	QueryAllAdminUsersArgs,
 } from '../../builder/generated.ts';
 import type { AdminUserUpdateCommand } from '@sthrift/application-services';
+import { getUserByEmail } from '../../resolver-helper.ts';
 
 const adminUserResolvers: Resolvers = {
 	Query: {
@@ -74,12 +75,14 @@ const adminUserResolvers: Resolvers = {
 
 			// Query-level permission check: Only admins with canViewAllUsers can view all admin users
 			// (Read permissions are checked at GraphQL/service layer, write permissions at domain layer)
-			const currentAdmin =
-				await context.applicationServices.User.AdminUser.queryByEmail({
-					email: context.applicationServices.verifiedUser.verifiedJwt.email,
-				});
+			const { email } = context.applicationServices.verifiedUser.verifiedJwt;
+			const currentUser = await getUserByEmail(email, context);
+			const isAdmin = currentUser && 'role' in currentUser;
 
-			if (!currentAdmin?.role?.permissions?.userPermissions?.canViewAllUsers) {
+			if (
+				!isAdmin ||
+				!currentUser?.role?.permissions?.userPermissions?.canViewAllUsers
+			) {
 				throw new Error(
 					'Forbidden: Only admins with canViewAllUsers permission can access this query',
 				);
@@ -109,21 +112,17 @@ const adminUserResolvers: Resolvers = {
 
 			// Only admins with canManageUserRoles permission can create admin users
 			const { email } = verifiedUser.verifiedJwt;
-
-			// Check if current user is an admin with proper permissions
-			const currentAdmin =
-				await context.applicationServices.User.AdminUser.queryByEmail({
-					email,
-				});
+			const currentUser = await getUserByEmail(email, context);
+			const isAdmin = currentUser && 'role' in currentUser;
 
 			if (
-				!currentAdmin?.role?.permissions?.userPermissions?.canManageUserRoles
+				!isAdmin ||
+				!currentUser?.role?.permissions?.userPermissions?.canManageUserRoles
 			) {
 				throw new Error(
 					'Forbidden: Only admins with canManageUserRoles permission can create admin accounts',
 				);
 			}
-
 			console.log(
 				'createAdminUser resolver called with email:',
 				args.input.email,

@@ -6,6 +6,46 @@ import type {
 import { isValidObjectId } from 'mongoose';
 import type { GraphContext } from '../init/context.ts';
 import type { PersonalUser } from './builder/generated.ts';
+import type { Domain } from '@sthrift/domain';
+
+/**
+ * Helper function to get the current user from email, checking both AdminUser and PersonalUser.
+ * Returns null if user not found.
+ */
+export const getUserByEmail = async (
+	email: string,
+	context: GraphContext,
+): Promise<
+	| Domain.Contexts.User.AdminUser.AdminUserEntityReference
+	| Domain.Contexts.User.PersonalUser.PersonalUserEntityReference
+	| null
+> => {
+	// Try AdminUser first
+	try {
+		const adminUser =
+			await context.applicationServices.User.AdminUser.queryByEmail({ email });
+		if (adminUser) {
+			return adminUser;
+		}
+	} catch {
+		// AdminUser not found, continue to PersonalUser
+	}
+
+	// Try PersonalUser
+	try {
+		const personalUser =
+			await context.applicationServices.User.PersonalUser.queryByEmail({
+				email,
+			});
+		if (personalUser) {
+			return personalUser;
+		}
+	} catch {
+		// PersonalUser not found
+	}
+
+	return null;
+};
 
 export const PopulatePersonalUserFromField = (fieldName: string) => {
 	// biome-ignore lint/suspicious/noExplicitAny: <explanation>

@@ -1,5 +1,8 @@
 import type { Resolvers } from '../../builder/generated.js';
-import { PopulatePersonalUserFromField } from '../../resolver-helper.ts';
+import {
+	PopulatePersonalUserFromField,
+	getUserByEmail,
+} from '../../resolver-helper.ts';
 
 const itemListingResolvers: Resolvers = {
 	ItemListing: {
@@ -12,23 +15,9 @@ const itemListingResolvers: Resolvers = {
 			let sharerId: string | undefined;
 
 			if (email) {
-				// Try PersonalUser first
-				const personalUser =
-					await context.applicationServices.User.PersonalUser.queryByEmail({
-						email,
-					});
-
-				if (personalUser) {
-					sharerId = personalUser.id;
-				} else {
-					// If not PersonalUser, try AdminUser
-					const adminUser =
-						await context.applicationServices.User.AdminUser.queryByEmail({
-							email,
-						});
-					if (adminUser) {
-						sharerId = adminUser.id;
-					}
+				const user = await getUserByEmail(email, context);
+				if (user) {
+					sharerId = user.id;
 				}
 			}
 			type PagedArgs = {
