@@ -5,15 +5,6 @@ import type {
 } from '@cellix/messaging';
 import { ObjectId } from 'bson';
 
-/**
- * Adapter to convert messaging API responses to Domain entities
- * This bridges the gap between external messaging service data structure and internal domain models
- */
-
-/**
- * Convert messaging conversation response to domain Conversation props
- * Note: This creates a simplified adapter that can be used to construct domain entities
- */
 export function toDomainConversationProps(
 		messagingConversation: ConversationInstance,
 		sharer: Domain.Contexts.User.PersonalUser.PersonalUserEntityReference,

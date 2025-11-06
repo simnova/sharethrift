@@ -1,20 +1,14 @@
-# Dependencies
 node_modules/
 
-# Build output
 dist/
 *.tsbuildinfo
 
-# Test coverage
 coverage/
 
-# Environment variables
 .env
 .env.local
 
-# IDE
 .vscode/
 .idea/
 
-# OS
 .DS_Store

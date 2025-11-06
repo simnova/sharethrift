@@ -3,12 +3,6 @@ import type { Server } from 'node:http';
 import { MockMessagingService } from './index.ts';
 import { startServer, stopServer } from '@sthrift/mock-messaging-server';
 
-/**
- * Integration Tests for MockMessagingService with Mock Server
- * 
- * These tests automatically start and stop the mock messaging server.
- */
-
 describe('MockMessagingService Integration Tests', () => {
 	let service: MockMessagingService;
 	let mockServer: Server;
@@ -17,23 +11,17 @@ describe('MockMessagingService Integration Tests', () => {
 	const MOCK_SERVER_URL = `http://localhost:${MOCK_SERVER_PORT}`;
 
 	beforeAll(async () => {
-		// Configure for mock mode
 		process.env['MESSAGING_MOCK_URL'] = MOCK_SERVER_URL;
 		
-		// Start the mock server with seeded data
 		mockServer = await startServer(MOCK_SERVER_PORT, true);
 		
-		// Wait for server to be fully ready
 		await new Promise((resolve) => setTimeout(resolve, 500));
 	}, 15000);
 
 	afterAll(async () => {
-		// Stop the mock server
 		if (mockServer) {
 			await stopServer(mockServer);
 		}
-		
-		// Restore original environment
 		process.env = originalEnv;
 	}, 10000);
 
@@ -79,7 +67,6 @@ describe('MockMessagingService Integration Tests', () => {
 			expect(Array.isArray(conversations)).toBe(true);
 			expect(conversations.length).toBeGreaterThan(0);
 
-			// Verify structure of first conversation
 			const firstConv = conversations[0];
 			if (!firstConv) {
 				throw new Error('No conversations found in seed data');
@@ -90,7 +77,6 @@ describe('MockMessagingService Integration Tests', () => {
 		});
 
 		it('should get a specific conversation by ID', async () => {
-			// First get a list to find a valid ID
 			const conversations = await service.listConversations();
 			expect(conversations.length).toBeGreaterThan(0);
 			const firstConv = conversations[0];
@@ -106,7 +92,6 @@ describe('MockMessagingService Integration Tests', () => {
 		});
 
 		it('should send a message to an existing conversation', async () => {
-			// Use conversation from previous test
 			const conversations = await service.listConversations();
 			const firstConv = conversations[0];
 			if (!firstConv) {
@@ -155,12 +140,10 @@ describe('MockMessagingService Integration Tests', () => {
 		});
 
 		it('should delete a conversation', async () => {
-			// Delete the conversation created in previous test
 			await expect(
 				service.deleteConversation(createdConversationId),
 			).resolves.not.toThrow();
 
-			// Verify it's deleted by trying to get it (should fail)
 			await expect(service.getConversation(createdConversationId)).rejects.toThrow();
 		});
 	});
@@ -176,7 +159,6 @@ describe('MockMessagingService Integration Tests', () => {
 		});
 
 		it('should complete a full conversation lifecycle', async () => {
-			// 1. Create a conversation
 			const uniqueName = `e2e-test-${Date.now()}`;
 			const conversation = await service.createConversation(
 				'E2E Test Conversation',
@@ -184,7 +166,6 @@ describe('MockMessagingService Integration Tests', () => {
 			);
 			expect(conversation.id).toBeDefined();
 
-			// 2. Send a message
 			const message1 = await service.sendMessage(
 				conversation.id,
 				'First message',
@@ -192,7 +173,6 @@ describe('MockMessagingService Integration Tests', () => {
 			);
 			expect(message1.body).toBe('First message');
 
-			// 3. Send another message
 			const message2 = await service.sendMessage(
 				conversation.id,
 				'Second message',
@@ -201,21 +181,17 @@ describe('MockMessagingService Integration Tests', () => {
 			expect(message2.body).toBe('Second message');
 			expect(message2.author).toBe('user2@example.com');
 
-			// 4. Get the conversation and verify it exists
 			const fetchedConv = await service.getConversation(conversation.id);
 			expect(fetchedConv.id).toBe(conversation.id);
 			expect(fetchedConv.displayName).toBe('E2E Test Conversation');
 			
-			// 4b. Get messages for the conversation
 			const messages = await service.getMessages(conversation.id);
 			expect(messages).toHaveLength(2);
 			expect(messages[0]?.body).toBe('First message');
 			expect(messages[1]?.body).toBe('Second message');
 
-			// 5. Delete the conversation
 			await service.deleteConversation(conversation.id);
 
-			// 6. Verify deletion
 			await expect(service.getConversation(conversation.id)).rejects.toThrow();
 		});
 	});
