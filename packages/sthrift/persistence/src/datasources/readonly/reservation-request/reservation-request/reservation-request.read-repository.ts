@@ -65,31 +65,13 @@ export interface ReservationRequestReadRepository {
 	>;
 }
 
-// Mock data for reservation requests targeting listings owned by a sharer
-// (used by GraphQL myListingsRequests resolver until real query implemented)
-const getMockListingReservationRequests = (
-	sharerId: string,
-): Domain.Contexts.ReservationRequest.ReservationRequest.ReservationRequestEntityReference[] => {
-	// Reuse base mock and tweak reserver / listing ids for variety
-	const base = getMockReservationRequests('507f1f77bcf86cd799439099', 'active');
-	return base.map((r) => ({
-		...r,
-		listing: {
-			...r.listing,
-			sharer: {
-				...r.listing.sharer,
-				id: sharerId,
-			},
-		},
-	}));
-};
-
 export class ReservationRequestReadRepositoryImpl
 	implements ReservationRequestReadRepository
 {
 	private readonly mongoDataSource: ReservationRequestDataSource;
 	private readonly converter: ReservationRequestConverter;
 	private readonly passport: Domain.Passport;
+	private readonly models: ModelsContext;
 
 	constructor(models: ModelsContext, passport: Domain.Passport) {
 		this.mongoDataSource = new ReservationRequestDataSourceImpl(
@@ -97,6 +79,7 @@ export class ReservationRequestReadRepositoryImpl
 		);
 		this.converter = new ReservationRequestConverter();
 		this.passport = passport;
+		this.models = models;
 	}
 
 	async getAll(
@@ -164,12 +147,39 @@ export class ReservationRequestReadRepositoryImpl
 	): Promise<
 		Domain.Contexts.ReservationRequest.ReservationRequest.ReservationRequestEntityReference[]
 	> {
-		// For now reuse mock generator using sharerId to seed distinct ids
-		const mockResult = await Promise.resolve(
-			getMockListingReservationRequests(sharerId),
+		console.log('sharer Id : ', sharerId);
+
+		// First, get all listings owned by this sharer
+		const listingsOwnedBySharer =
+			await this.models.Listing.ItemListingModel.find({
+				sharer: new Types.ObjectId(sharerId),
+			})
+				.select('_id')
+				.lean();
+
+		const listingIds = listingsOwnedBySharer.map(
+			(listing: { _id: unknown }) => listing._id,
 		);
-		console.log(options); // silence unused
-		return Promise.resolve(mockResult);
+		console.log('Listing IDs owned by sharer:', listingIds);
+
+		// Now find all reservation requests for these listings
+		const filter = {
+			listing: { $in: listingIds },
+		};
+
+		// Merge populateFields option to ensure listing and reserver are populated
+		const findOptions: FindOptions = {
+			...options,
+			populateFields: [
+				'listing',
+				'reserver',
+				...(options?.populateFields || []),
+			],
+		};
+
+		const result = await this.mongoDataSource.find(filter, findOptions);
+		console.log('Result from getListingRequestsBySharerId:', result);
+		return result.map((doc) => this.converter.toDomain(doc, this.passport));
 	}
 
 	async getActiveByReserverIdAndListingId(
@@ -237,7 +247,7 @@ const getMockReservationRequests = (
 	reserverId: string,
 	type: string,
 ): Domain.Contexts.ReservationRequest.ReservationRequest.ReservationRequestEntityReference[] => {
-	const reservationState = type === 'active' ? 'Accepted' : 'Closed';
+	const reservationState = type === 'active' ? 'Pending' : 'Closed';
 	return [
 		{
 			id: '507f1f77bcf86cd799439011',
@@ -271,7 +281,7 @@ const getMockReservationRequests = (
 						profile: {
 							firstName: 'Jane',
 							lastName: 'Reserver',
-                            aboutMe: 'Hello',
+							aboutMe: 'Hello',
 							location: {
 								address1: '123 Main St',
 								address2: null,
@@ -363,7 +373,7 @@ const getMockReservationRequests = (
 					profile: {
 						firstName: 'Jane',
 						lastName: 'Reserver',
-                        aboutMe: 'Hello',
+						aboutMe: 'Hello',
 						location: {
 							address1: '123 Main St',
 							address2: null,
@@ -474,7 +484,7 @@ const getMockReservationRequests = (
 							profile: {
 								firstName: 'Jane',
 								lastName: 'Reserver',
-                                aboutMe: 'Hello',
+								aboutMe: 'Hello',
 								location: {
 									address1: '123 Main St',
 									address2: null,
@@ -598,7 +608,7 @@ const getMockReservationRequests = (
 						profile: {
 							firstName: 'Jane',
 							lastName: 'Reserver',
-                            aboutMe: 'Hello',
+							aboutMe: 'Hello',
 							location: {
 								address1: '123 Main St',
 								address2: null,

@@ -1,150 +1,140 @@
-import { useMutation, useQuery } from '@apollo/client/react';
-import { ComponentQueryLoader } from '@sthrift/ui-components';
-import { useState } from 'react';
+import { useState } from "react";
+import { useQuery, useMutation } from "@apollo/client/react";
+import { RequestsTable } from "./requests-table.tsx";
+import { ComponentQueryLoader } from "@sthrift/ui-components";
 import {
-	HomeRequestsTableContainerAcceptReservationRequestDocument,
-	HomeRequestsTableContainerMyListingsRequestsDocument,
-} from '../../../../../generated.tsx';
-import { RequestsTable } from './requests-table.tsx';
+  HomeRequestsTableContainerMyListingsRequestsDocument,
+  HomeRequestsTableContainerAcceptReservationRequestDocument,
+} from "../../../../../generated.tsx";
+import { message } from "antd";
 
 export interface RequestsTableContainerProps {
-	currentPage: number;
-	onPageChange: (page: number) => void;
+  currentPage: number;
+  onPageChange: (page: number) => void;
+  sharerId: string;
 }
 
 export const RequestsTableContainer: React.FC<RequestsTableContainerProps> = ({
-	currentPage,
-	onPageChange,
+  currentPage,
+  onPageChange,
+  sharerId,
 }) => {
-	const [searchText, setSearchText] = useState('');
-	const [statusFilters, setStatusFilters] = useState<string[]>([]);
-	const [sorter, setSorter] = useState<{
-		field: string | null;
-		order: 'ascend' | 'descend' | null;
-	}>({ field: null, order: null });
-	const pageSize = 6;
+  const [searchText, setSearchText] = useState("");
+  const [statusFilters, setStatusFilters] = useState<string[]>([]);
+  const [sorter, setSorter] = useState<{
+    field: string | null;
+    order: "ascend" | "descend" | null;
+  }>({ field: null, order: null });
+  const pageSize = 6;
 
-	const { data, loading, error, refetch } = useQuery(
-		HomeRequestsTableContainerMyListingsRequestsDocument,
-		{
-			variables: {
-				page: currentPage,
-				pageSize: pageSize,
-				searchText: searchText,
-				statusFilters: statusFilters,
-				sorter: { field: sorter.field ?? '', order: sorter.order ?? '' },
-				sharerId: '6324a3f1e3e4e1e6a8e1d8b1',
-			},
-			fetchPolicy: 'network-only',
-		},
-	);
+  const { data, loading, error, refetch } = useQuery(
+    HomeRequestsTableContainerMyListingsRequestsDocument,
+    {
+      variables: {
+        page: currentPage,
+        pageSize: pageSize,
+        searchText: searchText,
+        statusFilters: statusFilters,
+        sorter: {
+          field: sorter.field || "",
+          order: sorter.order || "",
+        },
+        sharerId: sharerId,
+      },
+      fetchPolicy: "network-only",
+    }
+  );
 
-	const [acceptReservationRequest, { loading: acceptLoading }] = useMutation(
-		HomeRequestsTableContainerAcceptReservationRequestDocument,
-	);
+  const [acceptRequest] = useMutation(
+    HomeRequestsTableContainerAcceptReservationRequestDocument,
+    {
+      onCompleted: () => {
+        message.success("Request accepted successfully");
+        refetch();
+      },
+      onError: (error) => {
+        message.error(`Failed to accept request: ${error.message}`);
+      },
+    }
+  );
 
-	const requests = data?.myListingsRequests?.items ?? [];
-	const total = data?.myListingsRequests?.total ?? 0;
+  const requests = data?.myListingsRequests?.items ?? [];
+  const total = data?.myListingsRequests?.total ?? 0;
 
-	const handleSearch = (value: string) => {
-		setSearchText(value);
-		onPageChange(1);
-	};
+  console.log("Requests data:", data);
+  console.log("SharerID being used:", sharerId);
 
-	const handleStatusFilter = (checkedValues: string[]) => {
-		setStatusFilters(checkedValues);
-		onPageChange(1);
-	};
+  // Transform domain fields to UI format
+  const transformedRequests = requests.map((request) => ({
+    id: request.id,
+    title: request.title,
+    image: request.image ?? null,
+    requestedBy: request.requestedBy ?? "Unknown",
+    requestedOn: request.requestedOn ?? null,
+    reservationPeriod: request.reservationPeriod ?? "",
+    status: request.status ?? "Unknown",
+  }));
 
-	const handleTableChange = (
-		_pagination: unknown,
-		_filters: unknown,
-		sorter: unknown,
-	) => {
-		const typedSorter = sorter as {
-			field?: string;
-			order?: 'ascend' | 'descend';
-		};
-		setSorter({
-			field: typedSorter.field || null,
-			order: typedSorter.order || null,
-		});
-		onPageChange(1);
-	};
+  const handleSearch = (value: string) => {
+    setSearchText(value);
+    onPageChange(1);
+  };
 
-	const handleAction = async (action: string, requestId: string) => {
-		// Implement actions based on status
-		switch (action) {
-			case 'accept':
-				try {
-					await acceptReservationRequest({
-						variables: {
-							input: {
-								id: requestId,
-							},
-						},
-					});
-					// Refetch the list to show updated status
-					await refetch();
-				} catch (error) {
-					console.error('Error accepting request:', error);
-					// TODO: Show error message to user
-				}
-				break;
-			case 'reject':
-				// TODO: Call rejectReservationRequest mutation
-				console.log(`Rejecting request ${requestId}`);
-				// Future: Trigger GraphQL mutation to reject reservation
-				break;
-			case 'close':
-				// TODO: Call closeReservation mutation (already exists)
-				console.log(`Closing request ${requestId}`);
-				// Future: Trigger GraphQL mutation to close reservation
-				break;
-			case 'message':
-				// TODO: Navigate to messaging interface
-				console.log(`Opening message interface for request ${requestId}`);
-				// Future: Navigate to message page or open messaging modal
-				break;
-			case 'delete':
-				// TODO: Call delete mutation (soft delete or remove from list)
-				console.log(`Deleting request ${requestId}`);
-				// Future: Trigger GraphQL mutation or local state update
-				break;
-			case 'archive':
-				// TODO: Call archive mutation (move to archived state)
-				console.log(`Archiving request ${requestId}`);
-				// Future: Trigger GraphQL mutation to archive or hide request
-				break;
-			default:
-				console.warn(`Unknown action: ${action}`);
-		}
-	};
+  const handleStatusFilter = (checkedValues: string[]) => {
+    setStatusFilters(checkedValues);
+    onPageChange(1);
+  };
 
-	if (error) return <p>Error: {error.message}</p>;
+  const handleTableChange = (
+    _pagination: unknown,
+    _filters: unknown,
+    sorter: unknown
+  ) => {
+    const typedSorter = sorter as {
+      field?: string;
+      order?: "ascend" | "descend";
+    };
+    setSorter({
+      field: typedSorter.field || null,
+      order: typedSorter.order || null,
+    });
+    onPageChange(1);
+  };
 
-	return (
-		<ComponentQueryLoader
-			loading={loading}
-			error={error}
-			hasData={data?.myListingsRequests}
-			hasDataComponent={
-				<RequestsTable
-					data={requests}
-					searchText={searchText}
-					statusFilters={statusFilters}
-					sorter={sorter}
-					currentPage={currentPage}
-					pageSize={pageSize}
-					total={total}
-					onSearch={handleSearch}
-					onStatusFilter={handleStatusFilter}
-					onTableChange={handleTableChange}
-					onPageChange={onPageChange}
-					onAction={handleAction}
-					loading={loading || acceptLoading}
-				/>
-			}
-		/>
-	);
+  const handleAction = async (action: string, requestId: string) => {
+    try {
+      if (action === "approve" || action === "accept") {
+        await acceptRequest({ variables: { input: { id: requestId } } });
+      }
+    } catch (error) {
+      console.error(`${action} request error:`, error);
+    }
+  };
+
+  if (error) return <p>Error: {error.message}</p>;
+
+  return (
+    <ComponentQueryLoader
+      loading={loading}
+      error={error}
+      hasData={data?.myListingsRequests}
+      hasDataComponent={
+        <RequestsTable
+          data={transformedRequests}
+          searchText={searchText}
+          statusFilters={statusFilters}
+          sorter={sorter}
+          currentPage={currentPage}
+          pageSize={pageSize}
+          total={total}
+          onSearch={handleSearch}
+          onStatusFilter={handleStatusFilter}
+          onTableChange={handleTableChange}
+          onPageChange={onPageChange}
+          onAction={handleAction}
+          loading={loading}
+        />
+      }
+    />
+  );
 };
