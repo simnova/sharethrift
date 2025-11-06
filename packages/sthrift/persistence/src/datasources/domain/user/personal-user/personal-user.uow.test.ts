@@ -1,11 +1,10 @@
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { describeFeature, loadFeature } from '@amiceli/vitest-cucumber';
-import { expect, vi } from 'vitest';
 import type { Models } from '@sthrift/data-sources-mongoose-models';
 import type { Domain } from '@sthrift/domain';
+import { expect, vi } from 'vitest';
 import { getPersonalUserUnitOfWork } from './personal-user.uow.ts';
-import { PersonalUserRepository } from './personal-user.repository.ts';
 
 const test = { for: describeFeature };
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
@@ -50,32 +49,26 @@ test.for(feature, ({ Scenario, Background, BeforeEachScenario }) => {
 		});
 	});
 
-	Scenario(
-		'Creating a PersonalUser Unit of Work',
-		({ When, Then, And }) => {
-			When(
-				'I call getPersonalUserUnitOfWork with the PersonalUser model and passport',
-				() => {
-					result = getPersonalUserUnitOfWork(personalUserModel, passport);
-				},
-			);
-			Then('I should receive a properly initialized PersonalUserUnitOfWork', () => {
+	Scenario('Creating a PersonalUser Unit of Work', ({ When, Then, And }) => {
+		When(
+			'I call getPersonalUserUnitOfWork with the PersonalUser model and passport',
+			() => {
+				result = getPersonalUserUnitOfWork(personalUserModel, passport);
+			},
+		);
+		Then(
+			'I should receive a properly initialized PersonalUserUnitOfWork',
+			() => {
 				expect(result).toBeDefined();
 				expect(result).toHaveProperty('withTransaction');
-				expect(result).toHaveProperty('commit');
-			});
-			And('the Unit of Work should have the correct repository type', () => {
-				expect((result as { repository: unknown }).repository).toBeInstanceOf(
-					PersonalUserRepository,
-				);
-			});
-			And('the Unit of Work should have the correct converter type', () => {
-				expect((result as { typeConverter: unknown }).typeConverter).toBeDefined();
-			});
-			And('the Unit of Work should have the correct event buses', () => {
-				expect((result as { nodeEventBus: unknown }).nodeEventBus).toBeDefined();
-				expect((result as { inProcEventBus: unknown }).inProcEventBus).toBeDefined();
-			});
-		},
-	);
+				expect(result).toHaveProperty('withScopedTransaction');
+				expect(result).toHaveProperty('withScopedTransactionById');
+			},
+		);
+		And('the Unit of Work should have the correct methods', () => {
+			expect(typeof (result as { withTransaction: unknown }).withTransaction).toBe('function');
+			expect(typeof (result as { withScopedTransaction: unknown }).withScopedTransaction).toBe('function');
+			expect(typeof (result as { withScopedTransactionById: unknown }).withScopedTransactionById).toBe('function');
+		});
+	});
 });

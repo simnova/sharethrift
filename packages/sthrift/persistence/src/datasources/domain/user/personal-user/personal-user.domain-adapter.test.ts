@@ -1,11 +1,11 @@
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { describeFeature, loadFeature } from '@amiceli/vitest-cucumber';
-import { expect, vi } from 'vitest';
 import { MongooseSeedwork } from '@cellix/mongoose-seedwork';
 import type { Models } from '@sthrift/data-sources-mongoose-models';
-import { PersonalUserDomainAdapter } from './personal-user.domain-adapter.ts';
+import { expect, vi } from 'vitest';
 import { PersonalUserRoleDomainAdapter } from '../../role/personal-user-role/personal-user-role.domain-adapter.ts';
+import { PersonalUserDomainAdapter } from './personal-user.domain-adapter.ts';
 
 const test = { for: describeFeature };
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
@@ -59,7 +59,9 @@ function makeUserDoc(
 		set(key: keyof Models.User.PersonalUser, value: unknown) {
 			(this as Models.User.PersonalUser)[key] = value as never;
 		},
-		populate: vi.fn(async () => this),
+		populate: vi.fn(function (this: Models.User.PersonalUser) {
+			return this;
+		}),
 		...overrides,
 	} as Models.User.PersonalUser;
 	return vi.mocked(base);

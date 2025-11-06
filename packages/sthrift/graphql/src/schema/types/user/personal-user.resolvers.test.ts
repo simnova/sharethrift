@@ -3,7 +3,65 @@ import { fileURLToPath } from 'node:url';
 import { describeFeature, loadFeature } from '@amiceli/vitest-cucumber';
 import { expect, vi } from 'vitest';
 import type { GraphContext } from '../../../init/context.ts';
+import type { GraphQLResolveInfo } from 'graphql';
 import personalUserResolvers from './personal-user.resolvers.ts';
+
+// Type definitions for resolver functions
+type PersonalUserByIdResolver = (
+	parent: unknown,
+	args: { id: string },
+	context: GraphContext,
+	info: GraphQLResolveInfo,
+) => Promise<unknown>;
+
+type CurrentPersonalUserAndCreateIfNotExistsResolver = (
+	parent: unknown,
+	args: unknown,
+	context: GraphContext,
+	info: GraphQLResolveInfo,
+) => Promise<unknown>;
+
+type AllUsersResolver = (
+	parent: unknown,
+	args: { page: number; pageSize: number },
+	context: GraphContext,
+	info: GraphQLResolveInfo,
+) => Promise<unknown>;
+
+type PersonalUserUpdateResolver = (
+	parent: unknown,
+	args: { input: { id: string; [key: string]: unknown } },
+	context: GraphContext,
+	info: GraphQLResolveInfo,
+) => Promise<unknown>;
+
+type BlockUserResolver = (
+	parent: unknown,
+	args: { userId: string },
+	context: GraphContext,
+	info: GraphQLResolveInfo,
+) => Promise<unknown>;
+
+type UnblockUserResolver = (
+	parent: unknown,
+	args: { userId: string },
+	context: GraphContext,
+	info: GraphQLResolveInfo,
+) => Promise<unknown>;
+
+type ProcessPaymentResolver = (
+	parent: unknown,
+	args: { request: { [key: string]: unknown } },
+	context: GraphContext,
+	info?: GraphQLResolveInfo,
+) => Promise<unknown>;
+
+type RefundPaymentResolver = (
+	parent: unknown,
+	args: { request: { transactionId: string; amount: number } },
+	context: GraphContext,
+	info?: GraphQLResolveInfo,
+) => Promise<unknown>;
 
 const test = { for: describeFeature };
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
@@ -87,11 +145,11 @@ test.for(feature, ({ Scenario, Background, BeforeEachScenario }) => {
 			// User ID will be passed in the resolver call
 		});
 		When('I execute the query "personalUserById"', async () => {
-			result = await personalUserResolvers.Query.personalUserById(
+			result = await (personalUserResolvers.Query?.personalUserById as PersonalUserByIdResolver)(
 				{},
 				{ id: 'user-123' },
 				context,
-				{} as any,
+				{} as GraphQLResolveInfo,
 			);
 		});
 		Then(
@@ -104,7 +162,7 @@ test.for(feature, ({ Scenario, Background, BeforeEachScenario }) => {
 		);
 		And('it should return the corresponding PersonalUser object', () => {
 			expect(result).toBeDefined();
-			expect((result as any).id).toBe('user-123');
+			expect((result as { id: string }).id).toBe('user-123');
 		});
 	});
 
@@ -118,11 +176,11 @@ test.for(feature, ({ Scenario, Background, BeforeEachScenario }) => {
 				'I execute the query "currentPersonalUserAndCreateIfNotExists"',
 				async () => {
 					result =
-						await personalUserResolvers.Query.currentPersonalUserAndCreateIfNotExists(
+						await (personalUserResolvers.Query?.currentPersonalUserAndCreateIfNotExists as CurrentPersonalUserAndCreateIfNotExistsResolver)(
 							{},
 							{},
 							context,
-							{} as any,
+							{} as GraphQLResolveInfo,
 						);
 				},
 			);
@@ -142,7 +200,7 @@ test.for(feature, ({ Scenario, Background, BeforeEachScenario }) => {
 				'it should return the existing or newly created PersonalUser entity',
 				() => {
 					expect(result).toBeDefined();
-					expect((result as any).account.email).toBe('john.doe@example.com');
+					expect((result as { account: { email: string } }).account.email).toBe('john.doe@example.com');
 				},
 			);
 		},
@@ -155,11 +213,11 @@ test.for(feature, ({ Scenario, Background, BeforeEachScenario }) => {
 				// Args will be passed in the resolver call
 			});
 			When('I execute the query "allUsers"', async () => {
-				result = await personalUserResolvers.Query.allUsers(
+				result = await (personalUserResolvers.Query?.allUsers as AllUsersResolver)(
 					{},
 					{ page: 1, pageSize: 20 },
 					context,
-					{} as any,
+					{} as GraphQLResolveInfo,
 				);
 			});
 			Then('the resolver should call "User.PersonalUser.getAllUsers"', () => {
@@ -177,8 +235,8 @@ test.for(feature, ({ Scenario, Background, BeforeEachScenario }) => {
 				expect(result).toBeDefined();
 				expect(result).toHaveProperty('items');
 				expect(result).toHaveProperty('total');
-				expect((result as any).page).toBe(1);
-				expect((result as any).pageSize).toBe(20);
+				expect((result as { page: number }).page).toBe(1);
+				expect((result as { pageSize: number }).pageSize).toBe(20);
 			});
 		},
 	);
@@ -193,7 +251,7 @@ test.for(feature, ({ Scenario, Background, BeforeEachScenario }) => {
 				},
 			);
 			When('I execute the mutation "personalUserUpdate"', async () => {
-				result = await personalUserResolvers.Mutation.personalUserUpdate(
+				result = await (personalUserResolvers.Mutation?.personalUserUpdate as PersonalUserUpdateResolver)(
 					{},
 					{
 						input: {
@@ -202,7 +260,7 @@ test.for(feature, ({ Scenario, Background, BeforeEachScenario }) => {
 						},
 					},
 					context,
-					{} as any,
+					{} as GraphQLResolveInfo,
 				);
 			});
 			Then('the resolver should call "User.PersonalUser.update"', () => {
@@ -212,7 +270,7 @@ test.for(feature, ({ Scenario, Background, BeforeEachScenario }) => {
 			});
 			And('it should update the record and return the updated user', () => {
 				expect(result).toBeDefined();
-				expect((result as any).id).toBe('user-123');
+				expect((result as { id: string }).id).toBe('user-123');
 			});
 		},
 	);
@@ -222,11 +280,11 @@ test.for(feature, ({ Scenario, Background, BeforeEachScenario }) => {
 			// User ID will be passed in the resolver call
 		});
 		When('I execute the mutation "blockUser"', async () => {
-			result = await personalUserResolvers.Mutation.blockUser(
+			result = await (personalUserResolvers.Mutation?.blockUser as BlockUserResolver)(
 				{},
 				{ userId: 'user-456' },
 				context,
-				{} as any,
+				{} as GraphQLResolveInfo,
 			);
 		});
 		Then(
@@ -242,7 +300,7 @@ test.for(feature, ({ Scenario, Background, BeforeEachScenario }) => {
 		);
 		And('the user should be marked as blocked', () => {
 			expect(result).toBeDefined();
-			expect((result as any).isBlocked).toBe(true);
+			expect((result as { isBlocked: boolean }).isBlocked).toBe(true);
 		});
 	});
 
@@ -251,11 +309,11 @@ test.for(feature, ({ Scenario, Background, BeforeEachScenario }) => {
 			// User ID will be passed in the resolver call
 		});
 		When('I execute the mutation "unblockUser"', async () => {
-			result = await personalUserResolvers.Mutation.unblockUser(
+			result = await (personalUserResolvers.Mutation?.unblockUser as UnblockUserResolver)(
 				{},
 				{ userId: 'user-456' },
 				context,
-				{} as any,
+				{} as GraphQLResolveInfo,
 			);
 		});
 		Then(
@@ -271,7 +329,7 @@ test.for(feature, ({ Scenario, Background, BeforeEachScenario }) => {
 		);
 		And('the user should be unblocked successfully', () => {
 			expect(result).toBeDefined();
-			expect((result as any).isBlocked).toBe(false);
+			expect((result as { isBlocked: boolean }).isBlocked).toBe(false);
 		});
 	});
 
@@ -287,7 +345,7 @@ test.for(feature, ({ Scenario, Background, BeforeEachScenario }) => {
 				);
 			});
 			When('I execute the mutation "processPayment"', async () => {
-				result = await personalUserResolvers.Mutation.processPayment(
+				result = await (personalUserResolvers.Mutation?.processPayment as ProcessPaymentResolver)(
 					{},
 					{
 						request: {
@@ -309,7 +367,7 @@ test.for(feature, ({ Scenario, Background, BeforeEachScenario }) => {
 						},
 					},
 					context,
-					{} as any,
+					{} as GraphQLResolveInfo,
 				);
 			});
 			Then(
@@ -324,8 +382,8 @@ test.for(feature, ({ Scenario, Background, BeforeEachScenario }) => {
 				'return a PaymentResponse with status "SUCCEEDED" and success true',
 				() => {
 					expect(result).toBeDefined();
-					expect((result as any).status).toBe('SUCCEEDED');
-					expect((result as any).success).toBe(true);
+					expect((result as { status: string; success: boolean }).status).toBe('SUCCEEDED');
+					expect((result as { status: string; success: boolean }).success).toBe(true);
 				},
 			);
 		},
@@ -336,13 +394,13 @@ test.for(feature, ({ Scenario, Background, BeforeEachScenario }) => {
 		({ Given, When, Then, And }) => {
 			Given('a payment request that causes an error', () => {
 				context.applicationServices.Payment.processPayment = vi.fn(
-					async () => {
+					() => {
 						throw new Error('Payment failed');
 					},
 				);
 			});
 			When('I execute the mutation "processPayment"', async () => {
-				result = await personalUserResolvers.Mutation.processPayment(
+				result = await (personalUserResolvers.Mutation?.processPayment as ProcessPaymentResolver)(
 					{},
 					{
 						request: {
@@ -364,18 +422,18 @@ test.for(feature, ({ Scenario, Background, BeforeEachScenario }) => {
 						},
 					},
 					context,
-					{} as any,
+					{} as GraphQLResolveInfo,
 				);
 			});
 			Then('it should return a PaymentResponse with status "FAILED"', () => {
-				expect((result as any).status).toBe('FAILED');
-				expect((result as any).success).toBe(false);
+				expect((result as { status: string; success: boolean }).status).toBe('FAILED');
+				expect((result as { status: string; success: boolean }).success).toBe(false);
 			});
 			And(
 				'include errorInformation with reason "PROCESSING_ERROR"',
 				() => {
-					expect((result as any).errorInformation).toBeDefined();
-					expect((result as any).errorInformation.reason).toBe(
+					expect((result as { errorInformation: { reason: string } }).errorInformation).toBeDefined();
+					expect((result as { errorInformation: { reason: string } }).errorInformation.reason).toBe(
 						'PROCESSING_ERROR',
 					);
 				},
@@ -398,7 +456,7 @@ test.for(feature, ({ Scenario, Background, BeforeEachScenario }) => {
 				},
 			);
 			When('I execute the mutation "refundPayment"', async () => {
-				result = await personalUserResolvers.Mutation.refundPayment(
+				result = await (personalUserResolvers.Mutation?.refundPayment as RefundPaymentResolver)(
 					{},
 					{
 						request: {
@@ -407,7 +465,7 @@ test.for(feature, ({ Scenario, Background, BeforeEachScenario }) => {
 						},
 					},
 					context,
-					{} as any,
+					{} as GraphQLResolveInfo,
 				);
 			});
 			Then('it should call "Payment.refundPayment"', () => {
@@ -419,8 +477,8 @@ test.for(feature, ({ Scenario, Background, BeforeEachScenario }) => {
 				'return a RefundResponse with status "REFUNDED" and success true',
 				() => {
 					expect(result).toBeDefined();
-					expect((result as any).status).toBe('REFUNDED');
-					expect((result as any).success).toBe(true);
+					expect((result as { status: string; success: boolean }).status).toBe('REFUNDED');
+					expect((result as { status: string; success: boolean }).success).toBe(true);
 				},
 			);
 		},
@@ -428,12 +486,12 @@ test.for(feature, ({ Scenario, Background, BeforeEachScenario }) => {
 
 	Scenario('Handling refund failure', ({ Given, When, Then, And }) => {
 		Given('a refund request that causes an error', () => {
-			context.applicationServices.Payment.refundPayment = vi.fn(async () => {
+			context.applicationServices.Payment.refundPayment = vi.fn(() => {
 				throw new Error('Refund failed');
 			});
 		});
 		When('I execute the mutation "refundPayment"', async () => {
-			result = await personalUserResolvers.Mutation.refundPayment(
+			result = await (personalUserResolvers.Mutation?.refundPayment as RefundPaymentResolver)(
 				{},
 				{
 					request: {
@@ -442,16 +500,16 @@ test.for(feature, ({ Scenario, Background, BeforeEachScenario }) => {
 					},
 				},
 				context,
-				{} as any,
+				{} as GraphQLResolveInfo,
 			);
 		});
 		Then('it should return a RefundResponse with status "FAILED"', () => {
-			expect((result as any).status).toBe('FAILED');
-			expect((result as any).success).toBe(false);
+			expect((result as { status: string; success: boolean }).status).toBe('FAILED');
+			expect((result as { status: string; success: boolean }).success).toBe(false);
 		});
 		And('include errorInformation with reason "PROCESSING_ERROR"', () => {
-			expect((result as any).errorInformation).toBeDefined();
-			expect((result as any).errorInformation.reason).toBe('PROCESSING_ERROR');
+			expect((result as { errorInformation: { reason: string } }).errorInformation).toBeDefined();
+			expect((result as { errorInformation: { reason: string } }).errorInformation.reason).toBe('PROCESSING_ERROR');
 		});
 	});
 });

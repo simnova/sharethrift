@@ -25,7 +25,7 @@ function makePassport(): Domain.Passport {
 }
 
 function makeMockUser(overrides: Partial<Models.User.PersonalUser> = {}): Models.User.PersonalUser {
-	return {
+	const base = {
 		_id: new MongooseSeedwork.ObjectId(),
 		id: 'user-1',
 		userType: 'end-user',
@@ -46,27 +46,28 @@ function makeMockUser(overrides: Partial<Models.User.PersonalUser> = {}): Models
 					state: 'TS',
 					country: 'Testland',
 					zipCode: '12345',
-				},
+				} as unknown as Models.User.PersonalUserAccountProfileLocation,
 				billing: {
 					subscriptionId: null,
 					cybersourceCustomerId: null,
 					paymentState: '',
 					lastTransactionId: null,
 					lastPaymentAmount: null,
-				},
-			},
-		},
+				} as unknown as Models.User.PersonalUserAccountProfileBilling,
+			} as unknown as Models.User.PersonalUserAccountProfile,
+		} as unknown as Models.User.PersonalUserAccount,
 		role: {
 			id: 'role-1',
 		},
 		createdAt: new Date('2020-01-01'),
 		updatedAt: new Date('2020-01-02'),
-		populate: vi.fn(function () {
-			return Promise.resolve(this);
+		populate: vi.fn(function (this: Models.User.PersonalUser) {
+			return this;
 		}),
 		set: vi.fn(),
 		...overrides,
-	} as unknown as Models.User.PersonalUser;
+	} as Models.User.PersonalUser;
+	return vi.mocked(base);
 }
 
 test.for(feature, ({ Scenario, Background, BeforeEachScenario }) => {
@@ -82,13 +83,13 @@ test.for(feature, ({ Scenario, Background, BeforeEachScenario }) => {
 
 		mockModel = {
 			find: vi.fn(() => ({
-				exec: vi.fn(async () => mockUsers),
+				lean: vi.fn(() => mockUsers),
 			})),
 			findById: vi.fn(() => ({
-				exec: vi.fn(async () => mockUsers[0]),
+				lean: vi.fn(() => mockUsers[0]),
 			})),
 			findOne: vi.fn(() => ({
-				exec: vi.fn(async () => mockUsers[0]),
+				lean: vi.fn(() => mockUsers[0]),
 			})),
 		} as unknown as Models.User.PersonalUserModelType;
 
@@ -132,9 +133,9 @@ test.for(feature, ({ Scenario, Background, BeforeEachScenario }) => {
 		({ Given, When, Then }) => {
 			Given('multiple PersonalUser documents exist in the database', () => {
 				mockUsers = [
-					makeMockUser({ id: 'user-1' }),
-					makeMockUser({ id: 'user-2' }),
-					makeMockUser({ id: 'user-3' }),
+					makeMockUser({ id: new MongooseSeedwork.ObjectId('507f1f77bcf86cd799439011') }),
+					makeMockUser({ id: new MongooseSeedwork.ObjectId('507f1f77bcf86cd799439012') }),
+					makeMockUser({ id: new MongooseSeedwork.ObjectId('507f1f77bcf86cd799439013') }),
 				];
 			});
 			When('I call getAllUsers with page 1 and pageSize 10', async () => {
@@ -159,26 +160,26 @@ test.for(feature, ({ Scenario, Background, BeforeEachScenario }) => {
 			Given('PersonalUser documents with various emails and names', () => {
 				mockUsers = [
 					makeMockUser({
-						id: 'user-1',
+						id: new MongooseSeedwork.ObjectId('507f1f77bcf86cd799439011'),
 						account: {
 							...makeMockUser().account,
 							email: 'john@example.com',
 							profile: {
 								...makeMockUser().account.profile,
 								firstName: 'John',
-							},
-						},
+							} as unknown as Models.User.PersonalUserAccountProfile,
+						} as unknown as Models.User.PersonalUserAccount,
 					}),
 					makeMockUser({
-						id: 'user-2',
+						id: new MongooseSeedwork.ObjectId('507f1f77bcf86cd799439012'),
 						account: {
 							...makeMockUser().account,
 							email: 'jane@example.com',
 							profile: {
 								...makeMockUser().account.profile,
 								firstName: 'Jane',
-							},
-						},
+							} as unknown as Models.User.PersonalUserAccountProfile,
+						} as unknown as Models.User.PersonalUserAccount,
 					}),
 				];
 			});
@@ -203,8 +204,8 @@ test.for(feature, ({ Scenario, Background, BeforeEachScenario }) => {
 		({ Given, When, Then }) => {
 			Given('PersonalUser documents with different statuses', () => {
 				mockUsers = [
-					makeMockUser({ id: 'user-1', isBlocked: false }),
-					makeMockUser({ id: 'user-2', isBlocked: true }),
+					makeMockUser({ id: new MongooseSeedwork.ObjectId('507f1f77bcf86cd799439011'), isBlocked: false }),
+					makeMockUser({ id: new MongooseSeedwork.ObjectId('507f1f77bcf86cd799439012'), isBlocked: true }),
 				];
 			});
 			When(
@@ -226,10 +227,10 @@ test.for(feature, ({ Scenario, Background, BeforeEachScenario }) => {
 
 	Scenario('Getting a personal user by ID', ({ Given, When, Then }) => {
 		Given('a PersonalUser document with id "user-1"', () => {
-			mockUsers = [makeMockUser({ id: 'user-1' })];
+			mockUsers = [makeMockUser({ id: new MongooseSeedwork.ObjectId('507f1f77bcf86cd799439011') })];
 		});
 		When('I call getById with "user-1"', async () => {
-			result = await repository.getById('user-1');
+			result = await repository.getById('507f1f77bcf86cd799439011');
 		});
 		Then('I should receive a PersonalUser domain object with that ID', () => {
 			expect(result).toBeInstanceOf(
@@ -270,7 +271,7 @@ test.for(feature, ({ Scenario, Background, BeforeEachScenario }) => {
 			Given('a PersonalUser document with email "test@example.com"', () => {
 				mockUsers = [
 					makeMockUser({
-						account: { ...makeMockUser().account, email: 'test@example.com' },
+						account: { ...makeMockUser().account, email: 'test@example.com' } as unknown as Models.User.PersonalUserAccount,
 					}),
 				];
 			});
@@ -297,7 +298,7 @@ test.for(feature, ({ Scenario, Background, BeforeEachScenario }) => {
 					mockModel = {
 						...mockModel,
 						findOne: vi.fn(() => ({
-							exec: vi.fn(async () => null),
+							lean: vi.fn(() => null),
 						})),
 					} as unknown as Models.User.PersonalUserModelType;
 
