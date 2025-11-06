@@ -7,7 +7,7 @@ import {
 } from '../../../../../generated.tsx';
 import { ComponentQueryLoader } from '@sthrift/ui-components';
 import { useEffect } from 'react';
-import { Empty } from 'antd';
+import { Empty, Result } from 'antd';
 
 interface ConversationListContainerProps {
 	onConversationSelect: (conversationId: string) => void;
@@ -61,6 +61,18 @@ export const ConversationListContainer: React.FC<
 				currentPersonalUserData?.currentPersonalUserAndCreateIfNotExists
 			}
 			error={conversationsError || currentPersonalUserError}
+			errorComponent={
+				<Result
+					status="error"
+					title={
+						conversationsError
+							? conversationsError.message
+							: currentPersonalUserError
+								? currentPersonalUserError.message
+								: 'Unknown error'
+					}
+				/>
+			}
 			noDataComponent={
 				<Empty description="No conversations yet" style={{ marginTop: 32 }} />
 			}
