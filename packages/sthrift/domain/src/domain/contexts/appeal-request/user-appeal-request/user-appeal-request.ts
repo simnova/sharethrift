@@ -1,5 +1,6 @@
 import { DomainSeedwork } from '@cellix/domain-seedwork';
 import type { Passport } from '../../passport.ts';
+import type { AppealRequestVisa } from '../appeal-request.visa.ts';
 import * as ValueObjects from './user-appeal-request.value-objects.ts';
 import type {
 	UserAppealRequestEntityReference,
@@ -8,24 +9,17 @@ import type {
 import type { PersonalUserEntityReference } from '../../user/personal-user/personal-user.entity.ts';
 import { PersonalUser } from '../../user/personal-user/personal-user.ts';
 
-/**
- * UserAppealRequest aggregate root.
- * Represents an appeal request for a blocked user account with all business logic and invariants.
- */
 export class UserAppealRequest<props extends UserAppealRequestProps>
 	extends DomainSeedwork.AggregateRoot<props, Passport>
 	implements UserAppealRequestEntityReference
 {
-	//#region Methods
-	/**
-	 * Creates a new instance of UserAppealRequest.
-	 * @param newProps - The props for the new instance
-	 * @param passport - The authentication passport
-	 * @param userId - The ID of the user filing the appeal
-	 * @param reason - The reason for the appeal
-	 * @param blockerId - The ID of the admin/user who blocked the user
-	 * @returns A new UserAppealRequest instance
-	 */
+	private readonly visa: AppealRequestVisa;
+
+	constructor(props: props, passport: Passport) {
+		super(props, passport);
+		this.visa = passport.appealRequest.forUserAppealRequest(this);
+	}
+
 	public static getNewInstance<props extends UserAppealRequestProps>(
 		newProps: props,
 		passport: Passport,
@@ -35,7 +29,6 @@ export class UserAppealRequest<props extends UserAppealRequestProps>
 	): UserAppealRequest<props> {
 		const newInstance = new UserAppealRequest(newProps, passport);
 
-		// Set required fields
 		newInstance.props.user = { id: userId } as PersonalUserEntityReference;
 		newInstance.reason = reason;
 		newInstance.props.state = ValueObjects.AppealRequestState.REQUESTED;
@@ -44,9 +37,6 @@ export class UserAppealRequest<props extends UserAppealRequestProps>
 
 		return newInstance;
 	}
-	//#endregion Methods
-
-	//#region Properties
 	get user(): PersonalUserEntityReference {
 		return new PersonalUser(
 			// biome-ignore lint/suspicious/noExplicitAny: Required for cross-context entity references
@@ -63,6 +53,15 @@ export class UserAppealRequest<props extends UserAppealRequestProps>
 		return this.props.reason;
 	}
 	set reason(value: string) {
+		if (
+			!this.visa.determineIf(
+				(permissions) => permissions.canUpdateAppealRequestState,
+			)
+		) {
+			throw new DomainSeedwork.PermissionError(
+				'You do not have permission to update the reason',
+			);
+		}
 		this.props.reason = new ValueObjects.Reason(value).valueOf();
 	}
 
@@ -70,6 +69,15 @@ export class UserAppealRequest<props extends UserAppealRequestProps>
 		return this.props.state;
 	}
 	set state(value: string) {
+		if (
+			!this.visa.determineIf(
+				(permissions) => permissions.canUpdateAppealRequestState,
+			)
+		) {
+			throw new DomainSeedwork.PermissionError(
+				'You do not have permission to update the state',
+			);
+		}
 		this.props.state = new ValueObjects.State(value).valueOf();
 	}
 
@@ -100,5 +108,4 @@ export class UserAppealRequest<props extends UserAppealRequestProps>
 	get schemaVersion(): string {
 		return this.props.schemaVersion;
 	}
-	//#endregion Properties
 }

@@ -37,11 +37,3 @@ export const UserAppealRequest = (
 		updateState: updateState(dataSources),
 	};
 };
-
-export type {
-	CreateUserAppealRequestCommand,
-	GetUserAppealRequestByIdCommand,
-	GetAllUserAppealRequestsCommand,
-	UserAppealRequestPageResult,
-	UpdateUserAppealRequestStateCommand,
-};

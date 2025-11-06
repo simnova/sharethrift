@@ -2,10 +2,12 @@ import type { ConversationPassport } from '../../../contexts/conversation/conver
 import type { ListingPassport } from '../../../contexts/listing/listing.passport.ts';
 import type { Passport } from '../../../contexts/passport.ts';
 import type { ReservationRequestPassport } from '../../../contexts/reservation-request/reservation-request.passport.ts';
+import type { AppealRequestPassport } from '../../../contexts/appeal-request/appeal-request.passport.ts';
 import type { UserPassport } from '../../../contexts/user/user.passport.ts';
 import { PersonalUserConversationPassport } from './contexts/personal-user.conversation.passport.ts';
 import { PersonalUserListingPassport } from './contexts/personal-user.listing.passport.ts';
 import { PersonalUserReservationRequestPassport } from './contexts/personal-user.reservation-request.passport.ts';
+import { PersonalUserAppealRequestPassport } from './contexts/personal-user.appeal-request.passport.ts';
 import { PersonalUserUserPassport } from './contexts/personal-user.user.passport.ts';
 import { PersonalUserPassportBase } from './personal-user.passport-base.ts';
 export class PersonalUserPassport
@@ -16,6 +18,7 @@ export class PersonalUserPassport
 	private _listingPassport: ListingPassport | undefined;
 	private _reservationRequestPassport: ReservationRequestPassport | undefined;
 	private _conversationPassport: ConversationPassport | undefined;
+	private _appealRequestPassport: AppealRequestPassport | undefined;
 
 	get user(): UserPassport {
 		this._userPassport ??= new PersonalUserUserPassport(this._user);
@@ -36,5 +39,11 @@ export class PersonalUserPassport
 		this._reservationRequestPassport ??=
 			new PersonalUserReservationRequestPassport(this._user);
 		return this._reservationRequestPassport;
+	}
+	get appealRequest(): AppealRequestPassport {
+		this._appealRequestPassport ??= new PersonalUserAppealRequestPassport(
+			this._user,
+		);
+		return this._appealRequestPassport;
 	}
 }

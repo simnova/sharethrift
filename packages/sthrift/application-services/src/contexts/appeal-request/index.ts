@@ -21,19 +21,3 @@ export const AppealRequest = (
 		UserAppealRequest: UserAppealRequestApi(dataSources),
 	};
 };
-
-export type {
-	ListingAppealRequestPageResult,
-	CreateListingAppealRequestCommand,
-	GetListingAppealRequestByIdCommand,
-	GetAllListingAppealRequestsCommand,
-	UpdateListingAppealRequestStateCommand,
-} from './listing-appeal-request/index.ts';
-
-export type {
-	UserAppealRequestPageResult,
-	CreateUserAppealRequestCommand,
-	GetUserAppealRequestByIdCommand,
-	GetAllUserAppealRequestsCommand,
-	UpdateUserAppealRequestStateCommand,
-} from './user-appeal-request/index.ts';

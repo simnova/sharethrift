@@ -37,11 +37,3 @@ export const ListingAppealRequest = (
 		updateState: updateState(dataSources),
 	};
 };
-
-export type {
-	CreateListingAppealRequestCommand,
-	GetListingAppealRequestByIdCommand,
-	GetAllListingAppealRequestsCommand,
-	ListingAppealRequestPageResult,
-	UpdateListingAppealRequestStateCommand,
-};

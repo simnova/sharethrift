@@ -1,5 +1,6 @@
 import { DomainSeedwork } from '@cellix/domain-seedwork';
 import type { Passport } from '../../passport.ts';
+import type { AppealRequestVisa } from '../appeal-request.visa.ts';
 import * as ValueObjects from './listing-appeal-request.value-objects.ts';
 import type {
 	ListingAppealRequestEntityReference,
@@ -10,25 +11,17 @@ import type { ItemListingEntityReference } from '../../listing/item/item-listing
 import { PersonalUser } from '../../user/personal-user/personal-user.ts';
 import { ItemListing } from '../../listing/item/item-listing.ts';
 
-/**
- * ListingAppealRequest aggregate root.
- * Represents an appeal request for a blocked listing with all business logic and invariants.
- */
 export class ListingAppealRequest<props extends ListingAppealRequestProps>
 	extends DomainSeedwork.AggregateRoot<props, Passport>
 	implements ListingAppealRequestEntityReference
 {
-	//#region Methods
-	/**
-	 * Creates a new instance of ListingAppealRequest.
-	 * @param newProps - The props for the new instance
-	 * @param passport - The authentication passport
-	 * @param userId - The ID of the user filing the appeal
-	 * @param listingId - The ID of the blocked listing
-	 * @param reason - The reason for the appeal
-	 * @param blockerId - The ID of the admin/user who blocked the listing
-	 * @returns A new ListingAppealRequest instance
-	 */
+	private readonly visa: AppealRequestVisa;
+
+	constructor(props: props, passport: Passport) {
+		super(props, passport);
+		this.visa = passport.appealRequest.forListingAppealRequest(this);
+	}
+
 	public static getNewInstance<props extends ListingAppealRequestProps>(
 		newProps: props,
 		passport: Passport,
@@ -39,7 +32,6 @@ export class ListingAppealRequest<props extends ListingAppealRequestProps>
 	): ListingAppealRequest<props> {
 		const newInstance = new ListingAppealRequest(newProps, passport);
 
-		// Set required fields
 		newInstance.props.user = { id: userId } as PersonalUserEntityReference;
 		newInstance.props.listing = { id: listingId } as ItemListingEntityReference;
 		newInstance.reason = reason;
@@ -49,9 +41,6 @@ export class ListingAppealRequest<props extends ListingAppealRequestProps>
 
 		return newInstance;
 	}
-	//#endregion Methods
-
-	//#region Properties
 	get user(): PersonalUserEntityReference {
 		return new PersonalUser(
 			// biome-ignore lint/suspicious/noExplicitAny: Required for cross-context entity references
@@ -80,14 +69,15 @@ export class ListingAppealRequest<props extends ListingAppealRequestProps>
 		return this.props.reason;
 	}
 	set reason(value: string) {
-		// TODO: Add visa permission check when passport/visa are implemented
-		// if (!this.isNew && !this.visa.determineIf(
-		//   permissions => permissions.canUpdateAppealRequest
-		// )) {
-		//   throw new DomainSeedwork.PermissionError(
-		//     'You do not have permission to update the reason'
-		//   );
-		// }
+		if (
+			!this.visa.determineIf(
+				(permissions) => permissions.canUpdateAppealRequestState,
+			)
+		) {
+			throw new DomainSeedwork.PermissionError(
+				'You do not have permission to update the reason',
+			);
+		}
 		this.props.reason = new ValueObjects.Reason(value).valueOf();
 	}
 
@@ -95,14 +85,15 @@ export class ListingAppealRequest<props extends ListingAppealRequestProps>
 		return this.props.state;
 	}
 	set state(value: string) {
-		// TODO: Add visa permission check when passport/visa are implemented
-		// if (!this.isNew && !this.visa.determineIf(
-		//   permissions => permissions.canUpdateAppealRequestState
-		// )) {
-		//   throw new DomainSeedwork.PermissionError(
-		//     'You do not have permission to update the state'
-		//   );
-		// }
+		if (
+			!this.visa.determineIf(
+				(permissions) => permissions.canUpdateAppealRequestState,
+			)
+		) {
+			throw new DomainSeedwork.PermissionError(
+				'You do not have permission to update the state',
+			);
+		}
 		this.props.state = new ValueObjects.State(value).valueOf();
 	}
 
@@ -133,5 +124,4 @@ export class ListingAppealRequest<props extends ListingAppealRequestProps>
 	get schemaVersion(): string {
 		return this.props.schemaVersion;
 	}
-	//#endregion Properties
 }
