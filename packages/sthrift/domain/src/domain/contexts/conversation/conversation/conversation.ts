@@ -1,15 +1,16 @@
 import { DomainSeedwork } from '@cellix/domain-seedwork';
 import type { ConversationVisa } from '../conversation.visa.ts';
 import type { Passport } from '../../passport.ts';
-import type { PersonalUserEntityReference } from '../../user/personal-user/personal-user.entity.ts';
+import type { UserEntityReference } from '../../user/index.ts';
 import { PersonalUser } from '../../user/personal-user/personal-user.ts';
+import { AdminUser } from '../../user/admin-user/admin-user.ts';
 import type { ItemListingEntityReference } from '../../listing/item/item-listing.entity.ts';
 import { ItemListing } from '../../listing/item/item-listing.ts';
 import type {
 	ConversationEntityReference,
 	ConversationProps,
 } from './conversation.entity.ts';
-import type { MessageEntityReference } from "./message.entity.ts";
+import type { MessageEntityReference } from './message.entity.ts';
 
 export class Conversation<props extends ConversationProps>
 	extends DomainSeedwork.AggregateRoot<props, Passport>
@@ -26,8 +27,8 @@ export class Conversation<props extends ConversationProps>
 
 	public static getNewInstance<props extends ConversationProps>(
 		newProps: props,
-		sharer: PersonalUserEntityReference,
-		reserver: PersonalUserEntityReference,
+		sharer: UserEntityReference,
+		reserver: UserEntityReference,
 		listing: ItemListingEntityReference,
 		messages: MessageEntityReference[],
 		passport: Passport,
@@ -38,7 +39,7 @@ export class Conversation<props extends ConversationProps>
 				sharer,
 				reserver,
 				listing,
-                messages,
+				messages,
 			} as props,
 			passport,
 		);
@@ -53,15 +54,19 @@ export class Conversation<props extends ConversationProps>
 		// this.addIntegrationEvent(ConversationCreatedEvent, { conversationId: this.props.id });
 	}
 
-	get sharer(): PersonalUserEntityReference {
+	get sharer(): UserEntityReference {
+		// Polymorphic instantiation based on userType
+		if ('role' in this.props.sharer) {
+			return new AdminUser(this.props.sharer, this.passport);
+		}
 		return new PersonalUser(this.props.sharer, this.passport);
 	}
 
-	async loadSharer(): Promise<PersonalUserEntityReference> {
+	async loadSharer(): Promise<UserEntityReference> {
 		return await this.props.loadSharer();
 	}
 
-	private set sharer(sharer: PersonalUserEntityReference | null | undefined) {
+	private set sharer(sharer: UserEntityReference | null | undefined) {
 		if (
 			!this.isNew &&
 			!this.visa.determineIf(
@@ -80,18 +85,19 @@ export class Conversation<props extends ConversationProps>
 		this.props.sharer = sharer;
 	}
 
-	get reserver(): PersonalUserEntityReference {
+	get reserver(): UserEntityReference {
+		// Polymorphic instantiation based on userType
+		if ('role' in this.props.reserver) {
+			return new AdminUser(this.props.reserver, this.passport);
+		}
 		return new PersonalUser(this.props.reserver, this.passport);
 	}
 
-	async loadReserver(): Promise<PersonalUserEntityReference> {
+	async loadReserver(): Promise<UserEntityReference> {
 		return await this.props.loadReserver();
 	}
 
-	private set reserver(reserver:
-		| PersonalUserEntityReference
-		| null
-		| undefined) {
+	private set reserver(reserver: UserEntityReference | null | undefined) {
 		if (
 			!this.isNew &&
 			!this.visa.determineIf(
@@ -114,7 +120,7 @@ export class Conversation<props extends ConversationProps>
 		return await this.props.loadMessages();
 	}
 
-    get messages(): readonly MessageEntityReference[] {
+	get messages(): readonly MessageEntityReference[] {
 		return this.props.messages;
 	}
 

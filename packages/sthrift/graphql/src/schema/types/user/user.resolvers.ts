@@ -28,6 +28,41 @@ const userUnionResolvers: Resolvers = {
 			return user;
 		},
 
+		userById: async (
+			_parent: unknown,
+			args: { id: string },
+			context: GraphContext,
+			_info: GraphQLResolveInfo,
+		) => {
+			// Try AdminUser first
+			try {
+				const adminUser =
+					await context.applicationServices.User.AdminUser.queryById({
+						id: args.id,
+					});
+				if (adminUser) {
+					return adminUser;
+				}
+			} catch {
+				// AdminUser not found, try PersonalUser
+			}
+
+			// Try PersonalUser
+			try {
+				const personalUser =
+					await context.applicationServices.User.PersonalUser.queryById({
+						id: args.id,
+					});
+				if (personalUser) {
+					return personalUser;
+				}
+			} catch {
+				// PersonalUser not found
+			}
+
+			return null;
+		},
+
 		allSystemUsers: async (
 			_parent: unknown,
 			args: QueryAllSystemUsersArgs,

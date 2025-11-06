@@ -1,6 +1,6 @@
 import { useQuery } from '@apollo/client/react';
 import { SharerInformation } from './sharer-information.tsx';
-import { ViewListingSharerInformationContainerPersonalUserByIdDocument } from '../../../../../../generated.tsx';
+import { ViewListingSharerInformationContainerUserByIdDocument } from '../../../../../../generated.tsx';
 
 interface SharerInformationContainerProps {
 	sharerId: string;
@@ -15,7 +15,7 @@ export const SharerInformationContainer: React.FC<
 	SharerInformationContainerProps
 > = ({ sharerId, listingId, isOwner, sharedTimeAgo, className }) => {
 	const { data, loading, error } = useQuery(
-		ViewListingSharerInformationContainerPersonalUserByIdDocument,
+		ViewListingSharerInformationContainerUserByIdDocument,
 		{
 			variables: { sharerId },
 		},
@@ -45,11 +45,23 @@ export const SharerInformationContainer: React.FC<
 
 	if (loading) return <div>Loading...</div>;
 	if (error) return <div>Error loading sharer information</div>;
-	if (!data?.personalUserById) return null;
+	if (!data?.userById) return null;
+
+	// Handle both PersonalUser and AdminUser
+	let firstName = '';
+	let lastName = '';
+
+	if (data.userById.__typename === 'PersonalUser') {
+		firstName = data.userById.account?.profile?.firstName ?? '';
+		lastName = data.userById.account?.profile?.lastName ?? '';
+	} else if (data.userById.__typename === 'AdminUser') {
+		firstName = data.userById.account?.firstName ?? '';
+		lastName = data.userById.account?.lastName ?? '';
+	}
 
 	const sharer = {
-		id: data.personalUserById.id,
-		name: `${data.personalUserById.account?.profile?.firstName ?? ''} ${data.personalUserById.account?.profile?.lastName ?? ''}`.trim(),
+		id: data.userById.id,
+		name: `${firstName} ${lastName}`.trim(),
 	};
 
 	return (

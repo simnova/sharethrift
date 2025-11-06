@@ -55,7 +55,7 @@ function makeBaseProps(
 				profile: {
 					firstName: 'Sharer',
 					lastName: 'Sharer',
-                    aboutMe: 'Hello',
+					aboutMe: 'Hello',
 					location: {
 						address1: '123 Main St',
 						address2: null,
@@ -92,7 +92,7 @@ function makeBaseProps(
 				profile: {
 					firstName: 'Reserver',
 					lastName: 'Reserver',
-                    aboutMe: 'Hello',
+					aboutMe: 'Hello',
 					location: {
 						address1: '456 Main St',
 						address2: null,
@@ -213,16 +213,23 @@ test.for(feature, ({ Scenario, Background, BeforeEachScenario }) => {
 			},
 		);
 		When('I set the sharer to a new user', () => {
+			const originalSharer =
+				conversation.sharer as PersonalUser<PersonalUserProps>;
 			newSharer = new PersonalUser(
 				{
-					...conversation.sharer,
+					userType: 'end-user',
 					id: 'user-3',
-					externalId: 'user-external-3',
+					isBlocked: false,
+					schemaVersion: '1.0.0',
+					hasCompletedOnboarding: false,
 					account: {
-						...conversation.sharer.account,
+						accountType: originalSharer.account.accountType,
 						email: 'newsharer@cellix.com',
 						username: 'newsharer',
+						profile: originalSharer.account.profile,
 					},
+					createdAt: originalSharer.createdAt,
+					updatedAt: originalSharer.updatedAt,
 				},
 				passport,
 			);
@@ -247,14 +254,24 @@ test.for(feature, ({ Scenario, Background, BeforeEachScenario }) => {
 			);
 			When('I try to set the sharer to a new user', () => {
 				setSharerWithoutPermission = () => {
+					const originalSharer =
+						conversation.sharer as PersonalUser<PersonalUserProps>;
 					// @ts-expect-error: testing private setter
 					conversation.sharer = new PersonalUser(
 						{
-							...conversation.sharer,
+							userType: 'end-user',
 							id: 'user-3',
-							externalId: 'user-external-3',
-							displayName: 'New Sharer',
-							email: 'newsharer@cellix.com',
+							isBlocked: false,
+							schemaVersion: '1.0.0',
+							hasCompletedOnboarding: false,
+							account: {
+								accountType: originalSharer.account.accountType,
+								email: 'newsharer@cellix.com',
+								username: 'newsharer',
+								profile: originalSharer.account.profile,
+							},
+							createdAt: originalSharer.createdAt,
+							updatedAt: originalSharer.updatedAt,
 						},
 						passport,
 					);
@@ -281,16 +298,23 @@ test.for(feature, ({ Scenario, Background, BeforeEachScenario }) => {
 			},
 		);
 		When('I set the reserver to a new user', () => {
+			const originalReserver =
+				conversation.reserver as PersonalUser<PersonalUserProps>;
 			newReserver = new PersonalUser(
 				{
-					...conversation.reserver,
+					userType: 'end-user',
 					id: 'user-4',
-					externalId: 'user-external-4',
+					isBlocked: false,
+					schemaVersion: '1.0.0',
+					hasCompletedOnboarding: false,
 					account: {
-						...conversation.reserver.account,
+						accountType: originalReserver.account.accountType,
 						email: 'newreserver@cellix.com',
 						username: 'newreserver',
+						profile: originalReserver.account.profile,
 					},
+					createdAt: originalReserver.createdAt,
+					updatedAt: originalReserver.updatedAt,
 				},
 				passport,
 			);
@@ -317,14 +341,24 @@ test.for(feature, ({ Scenario, Background, BeforeEachScenario }) => {
 			);
 			When('I try to set the reserver to a new user', () => {
 				setReserverWithoutPermission = () => {
+					const originalReserver =
+						conversation.reserver as PersonalUser<PersonalUserProps>;
 					// @ts-expect-error: testing private setter
 					conversation.reserver = new PersonalUser(
 						{
-							...conversation.reserver,
+							userType: 'end-user',
 							id: 'user-4',
-							externalId: 'user-external-4',
-							displayName: 'New Reserver',
-							email: 'newreserver@cellix.com',
+							isBlocked: false,
+							schemaVersion: '1.0.0',
+							hasCompletedOnboarding: false,
+							account: {
+								accountType: originalReserver.account.accountType,
+								email: 'newreserver@cellix.com',
+								username: 'newreserver',
+								profile: originalReserver.account.profile,
+							},
+							createdAt: originalReserver.createdAt,
+							updatedAt: originalReserver.updatedAt,
 						},
 						passport,
 					);

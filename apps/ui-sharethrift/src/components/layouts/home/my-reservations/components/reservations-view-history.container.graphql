@@ -1,30 +1,40 @@
 fragment ReservationsViewHistoryContainerReservationFields on ReservationRequest {
-  id
-  state
-  reservationPeriodStart
-  reservationPeriodEnd
-  createdAt
-  updatedAt
-  listing {
-    id
-    title
-  }
-  reserver {
-    id
-    account {
-      username
-      profile {
-        firstName
-        lastName
-      }
-    }
-  }
-  closeRequestedBySharer
-  closeRequestedByReserver
+	id
+	state
+	reservationPeriodStart
+	reservationPeriodEnd
+	createdAt
+	updatedAt
+	listing {
+		id
+		title
+	}
+	reserver {
+		... on PersonalUser {
+			id
+			account {
+				username
+				profile {
+					firstName
+					lastName
+				}
+			}
+		}
+		... on AdminUser {
+			id
+			account {
+				username
+				firstName
+				lastName
+			}
+		}
+	}
+	closeRequestedBySharer
+	closeRequestedByReserver
 }
 
 query ReservationsViewHistoryContainerPastReservations($userId: ObjectID!) {
-  myPastReservations(userId: $userId) {
-    ...ReservationsViewHistoryContainerReservationFields
-  }
+	myPastReservations(userId: $userId) {
+		...ReservationsViewHistoryContainerReservationFields
+	}
 }

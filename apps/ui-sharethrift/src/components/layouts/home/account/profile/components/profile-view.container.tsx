@@ -21,7 +21,9 @@ export const ProfileViewContainer: React.FC = () => {
 		data: listingsData,
 		loading: listingsLoading,
 		error: listingsError,
-	} = useQuery(HomeAccountProfileViewContainerUserListingsDocument);
+	} = useQuery(HomeAccountProfileViewContainerUserListingsDocument, {
+		variables: { page: 1, pageSize: 100 },
+	});
 
 	const handleEditSettings = () => {
 		navigate('/account/settings');
@@ -71,9 +73,13 @@ export const ProfileViewContainer: React.FC = () => {
 		createdAt: currentUser.createdAt || '',
 	};
 
-	// Prepare listings with required fields
-	const listings = (listingsData?.itemListings || []).map((listing) => ({
+	// Prepare listings with required fields from myListingsAll
+	const listings = (listingsData?.myListingsAll?.items || []).map((listing) => ({
 		...listing,
+		description: '', // ListingAll doesn't have description
+		category: '',
+		location: '',
+		updatedAt: listing.createdAt,
 		listingType: 'item',
 	})) as ItemListing[];
 
@@ -81,7 +87,7 @@ export const ProfileViewContainer: React.FC = () => {
 		<ComponentQueryLoader
 			loading={userLoading || listingsLoading}
 			error={userError ?? listingsError}
-			hasData={userQueryData?.currentUser || listingsData?.itemListings}
+			hasData={userQueryData?.currentUser || listingsData?.myListingsAll}
 			hasDataComponent={
 				<ProfileView
 					user={profileUser}

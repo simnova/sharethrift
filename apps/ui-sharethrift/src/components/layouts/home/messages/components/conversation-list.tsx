@@ -67,9 +67,21 @@ function ConversationItem({
 	isSelected,
 	onClick,
 }: ConversationItemProps) {
+	// Extract firstName from sharer or reserver based on User union type
+	const getFirstName = (user: typeof conversation.sharer | typeof conversation.reserver) => {
+		if (!user) return 'Unknown';
+		if (user.__typename === 'PersonalUser') {
+			return user.account?.profile?.firstName;
+		}
+		if (user.__typename === 'AdminUser') {
+			return user.account?.firstName;
+		}
+		return 'Unknown';
+	};
+
 	const otherParticipant =
-		conversation?.sharer?.account?.profile?.firstName ||
-		conversation?.reserver?.account?.profile?.firstName ||
+		getFirstName(conversation?.sharer) ||
+		getFirstName(conversation?.reserver) ||
 		'Unknown';
 	const formatTime = (dateString: string) => {
 		const date = new Date(dateString);

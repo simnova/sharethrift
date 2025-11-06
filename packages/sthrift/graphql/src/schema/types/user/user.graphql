@@ -11,6 +11,9 @@ extend type Query {
 	# Unified query - returns current user regardless of type
 	currentUser: User!
 
+	# Get any user by ID (PersonalUser or AdminUser)
+	userById(id: ObjectID!): User
+
 	# List all users (both PersonalUser and AdminUser) for admin dashboard
 	allSystemUsers(
 		page: Int!

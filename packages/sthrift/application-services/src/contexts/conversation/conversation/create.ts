@@ -11,27 +11,21 @@ export const create = (dataSources: DataSources) => {
 	return async (
 		command: ConversationCreateCommand,
 	): Promise<Domain.Contexts.Conversation.Conversation.ConversationEntityReference> => {
-		const sharer =
-			await dataSources.readonlyDataSource.User.PersonalUser.PersonalUserReadRepo.getById(
-				command.reserverId,
-			);
-		const reserver =
-			await dataSources.readonlyDataSource.User.PersonalUser.PersonalUserReadRepo.getById(
-				command.sharerId,
-			);
+		const sharer = await dataSources.readonlyDataSource.User.getUserById(
+			command.reserverId,
+		);
+		const reserver = await dataSources.readonlyDataSource.User.getUserById(
+			command.sharerId,
+		);
 		const listing =
 			await dataSources.readonlyDataSource.Listing.ItemListing.ItemListingReadRepo.getById(
 				command.listingId,
 			);
 		if (!sharer) {
-			throw new Error(
-				`Personal user (sharer) not found for external id ${command.reserverId}`,
-			);
+			throw new Error(`User (sharer) not found for id ${command.reserverId}`);
 		}
 		if (!reserver) {
-			throw new Error(
-				`Personal user (reserver) not found for external id ${command.sharerId}`,
-			);
+			throw new Error(`User (reserver) not found for id ${command.sharerId}`);
 		}
 		if (!listing) {
 			throw new Error(`Listing not found for id ${command.listingId}`);

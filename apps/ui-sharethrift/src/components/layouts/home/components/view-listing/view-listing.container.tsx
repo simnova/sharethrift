@@ -44,8 +44,9 @@ export const ViewListingContainer: React.FC<ViewListingContainerProps> = (
 	const {
 		data: currentUserData,
 		loading: currentUserLoading,
-		error: currentUserError,
-	} = useQuery(ViewListingCurrentUserDocument);
+	} = useQuery(ViewListingCurrentUserDocument, {
+		skip: !props.isAuthenticated, // Skip if not authenticated
+	});
 
 	const reserverId =
 		currentUserData?.currentPersonalUserAndCreateIfNotExists?.id ?? '';
@@ -54,7 +55,6 @@ export const ViewListingContainer: React.FC<ViewListingContainerProps> = (
 	const {
 		data: userReservationData,
 		loading: userReservationLoading,
-		error: userReservationError,
 	} = useQuery(ViewListingActiveReservationRequestForListingDocument, {
 		variables: { listingId: listingId ?? '', reserverId },
 		skip,
@@ -68,12 +68,9 @@ export const ViewListingContainer: React.FC<ViewListingContainerProps> = (
 	return (
 		<ComponentQueryLoader
 			loading={userReservationLoading || listingLoading || currentUserLoading}
-			error={userReservationError || listingError || currentUserError}
-			errorComponent={<div>Error loading user reservation.</div>}
-			hasData={
-				listingData?.itemListing &&
-				currentUserData?.currentPersonalUserAndCreateIfNotExists
-			}
+			error={listingError}
+			errorComponent={<div>Error loading listing.</div>}
+			hasData={listingData?.itemListing}
 			hasDataComponent={
 				<ViewListing
 					listing={listingData?.itemListing as ItemListing}

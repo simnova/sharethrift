@@ -47,6 +47,46 @@ export const getUserByEmail = async (
 	return null;
 };
 
+/**
+ * Helper function to populate a User field (PersonalUser or AdminUser) by ID.
+ * Used for GraphQL field resolvers that need to resolve User union types.
+ */
+export const PopulateUserFromField = (fieldName: string) => {
+	// biome-ignore lint/suspicious/noExplicitAny: <explanation>
+	return async (parent: any, _: unknown, context: GraphContext) => {
+		if (parent[fieldName] && isValidObjectId(parent[fieldName].toString())) {
+			const userId = parent[fieldName].toString();
+
+			// Try AdminUser first
+			try {
+				const adminUser =
+					await context.applicationServices.User.AdminUser.queryById({
+						id: userId,
+					});
+				if (adminUser) {
+					return adminUser;
+				}
+			} catch {
+				// AdminUser not found, try PersonalUser
+			}
+
+			// Try PersonalUser
+			try {
+				const personalUser =
+					await context.applicationServices.User.PersonalUser.queryById({
+						id: userId,
+					});
+				if (personalUser) {
+					return personalUser;
+				}
+			} catch {
+				// PersonalUser not found
+			}
+		}
+		return parent[fieldName];
+	};
+};
+
 export const PopulatePersonalUserFromField = (fieldName: string) => {
 	// biome-ignore lint/suspicious/noExplicitAny: <explanation>
 	return async (parent: any, _: unknown, context: GraphContext) => {

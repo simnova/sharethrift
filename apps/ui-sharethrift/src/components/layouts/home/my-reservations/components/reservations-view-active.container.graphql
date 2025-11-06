@@ -10,9 +10,18 @@ fragment ReservationsViewActiveContainerReservationFields on ReservationRequest 
 		title
 	}
 	reserver {
-		account {
-			username
-			profile {
+		... on PersonalUser {
+			account {
+				username
+				profile {
+					firstName
+					lastName
+				}
+			}
+		}
+		... on AdminUser {
+			account {
+				username
 				firstName
 				lastName
 			}

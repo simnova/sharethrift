@@ -44,19 +44,22 @@ query HomeAccountProfileViewContainerCurrentUser {
 	}
 }
 
-query HomeAccountProfileViewContainerUserListings {
-	itemListings {
-		id
-		title
-		description
-		category
-		location
-		state
-		images
-
-		createdAt
-		updatedAt
-		sharingPeriodStart
-		sharingPeriodEnd
+query HomeAccountProfileViewContainerUserListings(
+	$page: Int!
+	$pageSize: Int!
+) {
+	myListingsAll(page: $page, pageSize: $pageSize) {
+		items {
+			id
+			title
+			state
+			images
+			createdAt
+			sharingPeriodStart
+			sharingPeriodEnd
+		}
+		total
+		page
+		pageSize
 	}
 }

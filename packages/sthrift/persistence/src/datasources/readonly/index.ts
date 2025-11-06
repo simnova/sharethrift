@@ -17,9 +17,15 @@ export interface ReadonlyDataSource {
 		PersonalUser: {
 			PersonalUserReadRepo: PersonalUser.PersonalUserReadRepository;
 		};
-        AdminUser: {
+		AdminUser: {
 			AdminUserReadRepo: AdminUser.AdminUserReadRepository;
 		};
+		getUserById: (
+			id: string,
+		) => Promise<Domain.Contexts.User.UserEntityReference | null>;
+		getUserByEmail: (
+			email: string,
+		) => Promise<Domain.Contexts.User.UserEntityReference | null>;
 	};
 	ReservationRequest: {
 		ReservationRequest: {

@@ -6,7 +6,7 @@ import type {
 } from '../../builder/generated.ts';
 import {
 	PopulateItemListingFromField,
-	PopulatePersonalUserFromField,
+	PopulateUserFromField,
 } from '../../resolver-helper.ts';
 
 const ConversationMutationResolver = async (
@@ -28,8 +28,8 @@ const ConversationMutationResolver = async (
 
 const conversation: Resolvers = {
 	Conversation: {
-		sharer: PopulatePersonalUserFromField('sharer'),
-		reserver: PopulatePersonalUserFromField('reserver'),
+		sharer: PopulateUserFromField('sharer'),
+		reserver: PopulateUserFromField('reserver'),
 		listing: PopulateItemListingFromField('listing'),
 	},
 	Query: {

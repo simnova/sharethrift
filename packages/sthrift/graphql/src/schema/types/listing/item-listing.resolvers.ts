@@ -1,12 +1,12 @@
 import type { Resolvers } from '../../builder/generated.js';
 import {
-	PopulatePersonalUserFromField,
+	PopulateUserFromField,
 	getUserByEmail,
 } from '../../resolver-helper.ts';
 
 const itemListingResolvers: Resolvers = {
 	ItemListing: {
-		sharer: PopulatePersonalUserFromField('sharer'),
+		sharer: PopulateUserFromField('sharer'),
 	},
 	Query: {
 		myListingsAll: async (_parent: unknown, args, context) => {
@@ -99,15 +99,11 @@ const itemListingResolvers: Resolvers = {
 				throw new Error('Authentication required');
 			}
 
-			// Find the user by email to get their database ID
-			const user =
-				await context.applicationServices.User.PersonalUser.queryByEmail({
-					email: userEmail,
-				});
+			// Find the user by email (supports both PersonalUser and AdminUser)
+			const user = await getUserByEmail(userEmail, context);
 			if (!user) {
 				throw new Error(`User not found for email ${userEmail}`);
 			}
-
 			const command = {
 				sharer: user,
 				title: args.input.title,
