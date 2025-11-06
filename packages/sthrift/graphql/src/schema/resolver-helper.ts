@@ -10,9 +10,7 @@ import type { PersonalUser } from './builder/generated.ts';
 export const PopulatePersonalUserFromField = (fieldName: string) => {
 	// biome-ignore lint/suspicious/noExplicitAny: <explanation>
 	return async (parent: any, _: unknown, context: GraphContext) => {
-		const temp = parent[fieldName];
-		const temp2 = isValidObjectId(parent[fieldName].id);
-		if (temp && temp2) {
+		if (parent[fieldName] && isValidObjectId(parent[fieldName].id)) {
 			return (await context.applicationServices.User.PersonalUser.queryById({
 				id: parent[fieldName].id,
 			})) as PersonalUser;
