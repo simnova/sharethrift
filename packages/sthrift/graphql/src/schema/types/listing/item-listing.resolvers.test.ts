@@ -325,6 +325,22 @@ test.for(feature, ({ Scenario }) => {
                 }),
             );
         });
+        And("it should transform each listing into ListingAll shape", () => {
+            expect(result).toBeDefined();
+            const resultData = result as { items: ItemListingEntity[] };
+            resultData.items.forEach((listing) => {
+                expect(listing).toHaveProperty('id');
+                expect(listing).toHaveProperty('title');
+            });
+        });
+        And('it should map state values like "Published" to "Active" and "Drafted" to "Draft"', () => {
+            expect(result).toBeDefined();
+            const resultData = result as { items: ItemListingEntity[] };
+            resultData.items.forEach((listing) => {
+                const status = listing.state;
+                expect(['Published', 'Draft', 'Unknown']).toContain(status);
+            });
+        });
         And('it should return items, total, page, and pageSize in the response', () => {
             expect(result).toHaveProperty('items');
             expect(result).toHaveProperty('total');

@@ -42,6 +42,8 @@ So that I can view, filter, and create listings through the GraphQL API
 		And valid pagination arguments (page, pageSize)
 		When the myListingsAll query is executed
 		Then it should call Listing.ItemListing.queryPaged with sharerId, page, and pageSize
+        And it should transform each listing into ListingAll shape
+		And it should map state values like "Published" to "Active" and "Drafted" to "Draft"
 		And it should return items, total, page, and pageSize in the response
     
     Scenario: Querying myListingsAll with search and filters
