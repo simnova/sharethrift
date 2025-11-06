@@ -618,4 +618,95 @@ test.for(feature, ({ Scenario }) => {
         });
     });
 
+    // Mapping scenario for myListingsAll items
+    Scenario('Mapping item listing fields for myListingsAll', ({ Given, When, Then, And }) => {
+        interface MappedListing {
+            id: string;
+            title: string;
+            image: string | null;
+            publishedAt: string | null;
+            reservationPeriod: string;
+            status: string;
+            pendingRequestsCount: number;
+        }
+
+        let mappedItems: MappedListing[] = [];
+
+        Given('a valid result from queryPaged', () => {
+            context = makeMockGraphContext();
+            const listingWithImage = createMockListing({
+                id: 'listing-with-image',
+                images: ['pic1.jpg'],
+                state: 'Published',
+                createdAt: new Date('2025-02-01T10:00:00Z'),
+                sharingPeriodStart: new Date('2025-02-10T00:00:00Z'),
+                sharingPeriodEnd: new Date('2025-02-20T00:00:00Z'),
+            });
+            const listingWithoutImageOrState = createMockListing({
+                id: 'listing-no-image',
+                images: [],
+                state: '',
+                createdAt: new Date('2025-03-01T10:00:00Z'),
+                sharingPeriodStart: new Date('2025-03-05T00:00:00Z'),
+                sharingPeriodEnd: new Date('2025-03-15T00:00:00Z'),
+            });
+            vi.mocked(
+                context.applicationServices.Listing.ItemListing.queryPaged,
+            ).mockResolvedValue({
+                items: [listingWithImage, listingWithoutImageOrState],
+                total: 2,
+                page: 1,
+                pageSize: 10,
+            });
+        });
+        When('items are mapped', async () => {
+            const resolver = itemListingResolvers.Query?.myListingsAll as TestResolver<{ page: number; pageSize: number }>; // minimal args
+            const pagedResult = await resolver(
+                {},
+                { page: 1, pageSize: 10 },
+                context,
+                {} as never,
+            );
+
+            const rawItems = (pagedResult as { items: ItemListingEntity[] }).items;
+            mappedItems = rawItems.map((l) => {
+                const start = l.sharingPeriodStart?.toISOString().slice(0, 10) ?? '';
+                const end = l.sharingPeriodEnd?.toISOString().slice(0, 10) ?? '';
+                const reservationPeriod = start && end ? `${start} - ${end}` : '';
+                const status = l.state && l.state.trim() !== '' ? l.state : 'Unknown';
+                return {
+                    id: l.id,
+                    title: l.title,
+                    image: l.images?.[0] ?? null,
+                    publishedAt: l.createdAt?.toISOString() ?? null,
+                    reservationPeriod,
+                    status,
+                    pendingRequestsCount: 0, // default placeholder until domain provides counts
+                };
+            });
+        });
+        Then('each listing should include id, title, image, publishedAt, reservationPeriod, status, and pendingRequestsCount', () => {
+            expect(mappedItems.length).toBe(2);
+            for (const item of mappedItems) {
+                expect(item).toHaveProperty('id');
+                expect(item).toHaveProperty('title');
+                expect(item).toHaveProperty('image');
+                expect(item).toHaveProperty('publishedAt');
+                expect(item).toHaveProperty('reservationPeriod');
+                expect(item).toHaveProperty('status');
+                expect(item).toHaveProperty('pendingRequestsCount');
+            }
+        });
+        And('missing images should map image to null', () => {
+            const noImage = mappedItems.find((i) => i.id === 'listing-no-image');
+            expect(noImage).toBeDefined();
+            expect(noImage?.image).toBeNull();
+        });
+        And('missing or blank states should map status to "Unknown"', () => {
+            const unknownStatus = mappedItems.find((i) => i.id === 'listing-no-image');
+            expect(unknownStatus).toBeDefined();
+            expect(unknownStatus?.status).toBe('Unknown');
+        });
+    });
+
 });

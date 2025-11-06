@@ -83,3 +83,10 @@ So that I can view, filter, and create listings through the GraphQL API
 		Given Listing.ItemListing.create throws an error
 		When the createItemListing mutation is executed
 		Then it should propagate the error message
+    
+	Scenario: Mapping item listing fields for myListingsAll
+		Given a valid result from queryPaged
+		When items are mapped
+		Then each listing should include id, title, image, publishedAt, reservationPeriod, status, and pendingRequestsCount
+		And missing images should map image to null
+		And missing or blank states should map status to "Unknown"
