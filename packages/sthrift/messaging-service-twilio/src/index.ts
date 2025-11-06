@@ -8,33 +8,6 @@ import type {
 
 type TwilioClient = InstanceType<typeof Twilio.Twilio> | undefined;
 
-/**
- * Twilio Messaging Service - uses official Twilio SDK
- * 
- * This service implements the MessagingService interface using the official Twilio SDK.
- * It requires valid Twilio credentials to function.
- * 
- * Configuration:
- * - Can be provided via constructor parameters (useful for testing)
- * - Or read from environment variables:
- *   - TWILIO_ACCOUNT_SID: Your Twilio Account SID
- *   - TWILIO_AUTH_TOKEN: Your Twilio Auth Token
- * 
- * For development/testing with a mock server, use MockServiceTwilio from @sthrift/messaging-service-mock instead.
- * 
- * @example
- * ```typescript
- * // Using environment variables
- * const service = new ServiceTwilio();
- * await service.startUp();
- * 
- * // Or specify credentials explicitly (useful for testing)
- * const service = new ServiceTwilio('AC123...', 'auth_token_123');
- * await service.startUp();
- * const conversation = await service.createConversation('Support Chat');
- * await service.sendMessage(conversation.id, 'Hello!', 'agent@example.com');
- * ```
- */
 export class ServiceTwilio implements MessagingService {
 	private client: TwilioClient;
 	private readonly accountSid: string;

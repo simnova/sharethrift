@@ -18,25 +18,19 @@ export type DataSources = {
 };
 
 export type DataSourcesFactory = {
-	withPassport: (passport: Domain.Passport, messagingService?: MessagingService) => DataSources;
+	withPassport: (passport: Domain.Passport, messagingService: MessagingService) => DataSources;
 	withSystemPassport: () => DataSources;
 };
 
 export const DataSourcesFactoryImpl = (
 	models: ModelsContext,
 ): DataSourcesFactory => {
-	const withPassport = (passport: Domain.Passport, messagingService?: MessagingService): DataSources => {
-		const dataSources: DataSources = {
+	const withPassport = (passport: Domain.Passport, messagingService: MessagingService): DataSources => {
+		return {
 			domainDataSource: DomainDataSourceImplementation(models, passport),
 			readonlyDataSource: ReadonlyDataSourceImplementation(models, passport),
+			messagingDataSource: MessagingDataSourceImplementation(messagingService, passport),
 		};
-
-		// Only include messagingDataSource if messagingService is provided
-		if (messagingService) {
-			dataSources.messagingDataSource = MessagingDataSourceImplementation(messagingService, passport);
-		}
-
-		return dataSources;
 	};
 
 	const withSystemPassport = (): DataSources => {

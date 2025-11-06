@@ -21,14 +21,13 @@ export const queryByUser = (dataSources: DataSources) => {
 		return await Promise.all(
 			mongoConversations.map(async (conversation) => {
 				try {
-					if (!dataSources.messagingDataSource) {
-						console.warn(`[Conversation ${conversation.id}] Messaging datasource not available, using MongoDB messages`);
-						return conversation;
-					}
-
-					const messagingMessages = await dataSources.messagingDataSource.Conversation.Conversation.MessagingConversationRepo.getMessages(
+					const messagingMessages = await dataSources.messagingDataSource?.Conversation.Conversation.MessagingConversationRepo.getMessages(
 						conversation.messagingConversationId
 					);
+
+                    if (!messagingMessages) {
+                        return conversation;
+                    }
 
 					const domainMessages = messagingMessages.map((msg) => {
 						const authorId = new ObjectId(msg.authorId);
@@ -42,8 +41,6 @@ export const queryByUser = (dataSources: DataSources) => {
 						});
 					});
 					
-					// Return a plain object that implements ConversationEntityReference
-					// by evaluating all getters from the conversation aggregate
 					const result: Domain.Contexts.Conversation.Conversation.ConversationEntityReference = {
 						id: conversation.id,
 						sharer: conversation.sharer,

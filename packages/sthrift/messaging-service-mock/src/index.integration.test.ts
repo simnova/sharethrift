@@ -1,16 +1,16 @@
 import { describe, it, expect, beforeAll, afterAll } from 'vitest';
 import type { Server } from 'node:http';
-import { MockServiceTwilio } from './index.ts';
+import { MockMessagingService } from './index.ts';
 import { startServer, stopServer } from '@sthrift/mock-messaging-server';
 
 /**
- * Integration Tests for MockServiceTwilio with Mock Server
+ * Integration Tests for MockMessagingService with Mock Server
  * 
- * These tests automatically start and stop the mock Twilio server.
+ * These tests automatically start and stop the mock messaging server.
  */
 
-describe('MockServiceTwilio Integration Tests', () => {
-	let service: MockServiceTwilio;
+describe('MockMessagingService Integration Tests', () => {
+	let service: MockMessagingService;
 	let mockServer: Server;
 	const originalEnv = { ...process.env };
 	const MOCK_SERVER_PORT = 10000;
@@ -39,25 +39,25 @@ describe('MockServiceTwilio Integration Tests', () => {
 
 	describe('Service Lifecycle', () => {
 		it('should start up successfully in mock mode', async () => {
-			service = new MockServiceTwilio(MOCK_SERVER_URL);
+			service = new MockMessagingService(MOCK_SERVER_URL);
 			await service.startUp();
 			expect(service).toBeDefined();
 			await service.shutDown();
 		});
 
 		it('should throw error when starting up twice', async () => {
-			service = new MockServiceTwilio(MOCK_SERVER_URL);
+			service = new MockMessagingService(MOCK_SERVER_URL);
 			await service.startUp();
 			await expect(service.startUp()).rejects.toThrow(
-				'MockServiceTwilio is already started',
+				'MockMessagingService is already started',
 			);
 			await service.shutDown();
 		});
 
 		it('should throw error when shutting down without starting', async () => {
-			service = new MockServiceTwilio(MOCK_SERVER_URL);
+			service = new MockMessagingService(MOCK_SERVER_URL);
 			await expect(service.shutDown()).rejects.toThrow(
-				'MockServiceTwilio is not started - shutdown cannot proceed',
+				'MockMessagingService is not started - shutdown cannot proceed',
 			);
 		});
 	});
@@ -66,7 +66,7 @@ describe('MockServiceTwilio Integration Tests', () => {
 		let conversationId: string;
 
 		beforeAll(async () => {
-			service = new MockServiceTwilio(MOCK_SERVER_URL);
+			service = new MockMessagingService(MOCK_SERVER_URL);
 			await service.startUp();
 		});
 
@@ -131,7 +131,7 @@ describe('MockServiceTwilio Integration Tests', () => {
 		let createdConversationId: string;
 
 		beforeAll(async () => {
-			service = new MockServiceTwilio(MOCK_SERVER_URL);
+			service = new MockMessagingService(MOCK_SERVER_URL);
 			await service.startUp();
 		});
 
@@ -167,7 +167,7 @@ describe('MockServiceTwilio Integration Tests', () => {
 
 	describe('End-to-End Workflow', () => {
 		beforeAll(async () => {
-			service = new MockServiceTwilio(MOCK_SERVER_URL);
+			service = new MockMessagingService(MOCK_SERVER_URL);
 			await service.startUp();
 		});
 
@@ -222,7 +222,7 @@ describe('MockServiceTwilio Integration Tests', () => {
 
 	describe('Error Handling', () => {
 		beforeAll(async () => {
-			service = new MockServiceTwilio(MOCK_SERVER_URL);
+			service = new MockMessagingService(MOCK_SERVER_URL);
 			await service.startUp();
 		});
 

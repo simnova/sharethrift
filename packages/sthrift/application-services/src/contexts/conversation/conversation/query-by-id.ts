@@ -21,14 +21,13 @@ export const queryById = (dataSources: DataSources) => {
 		}
 
 		try {
-			if (!dataSources.messagingDataSource) {
-				console.warn(`[Conversation ${conversation.id}] Messaging datasource not available, using MongoDB messages`);
-				return conversation;
-			}
-
-			const messagingMessages = await dataSources.messagingDataSource.Conversation.Conversation.MessagingConversationRepo.getMessages(
+			const messagingMessages = await dataSources.messagingDataSource?.Conversation.Conversation.MessagingConversationRepo.getMessages(
 				conversation.messagingConversationId
 			);
+
+            if (!messagingMessages) {
+                return conversation;
+            }
 
 			const domainMessages = messagingMessages.map((msg) => {
 				const authorId = new ObjectId(msg.authorId);

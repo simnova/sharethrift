@@ -1,8 +1,8 @@
 import { Domain } from '@sthrift/domain';
 import type {
-	MessagingConversationResponse,
-	MessagingMessageResponse,
-} from './messaging-conversation.types.ts';
+	ConversationInstance,
+	MessageInstance,
+} from '@cellix/messaging';
 import { ObjectId } from 'bson';
 
 /**
@@ -15,14 +15,14 @@ import { ObjectId } from 'bson';
  * Note: This creates a simplified adapter that can be used to construct domain entities
  */
 export function toDomainConversationProps(
-		messagingConversation: MessagingConversationResponse,
+		messagingConversation: ConversationInstance,
 		sharer: Domain.Contexts.User.PersonalUser.PersonalUserEntityReference,
 		reserver: Domain.Contexts.User.PersonalUser.PersonalUserEntityReference,
 		listing: Domain.Contexts.Listing.ItemListing.ItemListingEntityReference,
 		messages: Domain.Contexts.Conversation.Conversation.MessageEntityReference[],
 	): Domain.Contexts.Conversation.Conversation.ConversationProps {
 
-		const messagingId = messagingConversation.metadata?.originalSid || messagingConversation.id;
+		const messagingId = (messagingConversation.metadata?.['originalSid'] as string) || messagingConversation.id;
 		
 		return {
 			id: messagingConversation.id,
@@ -35,17 +35,17 @@ export function toDomainConversationProps(
 			messagingConversationId: messagingId,
 			messages,
 			loadMessages: async () => messages,
-			createdAt: new Date(messagingConversation.createdAt),
-			updatedAt: new Date(messagingConversation.updatedAt),
+			createdAt: messagingConversation.createdAt ?? new Date(),
+			updatedAt: messagingConversation.updatedAt ?? new Date(),
 			schemaVersion: '1.0.0',
 		};
 	}
 
 export function toDomainMessage(
-		messagingMessage: MessagingMessageResponse,
+		messagingMessage: MessageInstance,
 		authorId: ObjectId,
 	): Domain.Contexts.Conversation.Conversation.MessageEntityReference {
-		const messagingId = messagingMessage.metadata?.originalSid || messagingMessage.id;
+		const messagingId = (messagingMessage.metadata?.['originalSid'] as string) || messagingMessage.id;
 		
 		const messagingMessageId = new Domain.Contexts.Conversation.Conversation.MessagingMessageId(
 			messagingId,
@@ -59,12 +59,12 @@ export function toDomainMessage(
 			messagingMessageId,
 			authorId,
 			content,
-			createdAt: new Date(messagingMessage.createdAt),
+			createdAt: messagingMessage.createdAt ?? new Date(),
 		});
 	}
 
 export function toDomainMessages(
-	messagingMessages: MessagingMessageResponse[],
+	messagingMessages: MessageInstance[],
 	authorIdMap: Map<string, ObjectId>,
 ): Domain.Contexts.Conversation.Conversation.MessageEntityReference[] {
 	return messagingMessages.map((msg) => {

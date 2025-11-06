@@ -65,18 +65,18 @@ export class MongoDataSourceImpl<TDoc extends MongooseSeedwork.Base>
 			id: String(doc._id),
 		}
 		
-		// Handle populated fields (which are objects with _id but no id)
-		for (const key in result) {
-			const value = result[key as keyof typeof result];
-			if (value && typeof value === 'object' && '_id' in value && !('id' in value)) {
-				(result[key as keyof typeof result] as Record<string, unknown>) = {
-					...value,
-					id: String(value['_id']),
-				};
-			}
-		}
-		
-		return result;
+        // Handle populated fields (which are objects with _id but no id)
+        for (const key in result) {
+            const value = result[key as keyof typeof result];
+            if (value && typeof value === 'object' && '_id' in value && !('id' in value)) {
+                (result[key as keyof typeof result] as Record<string, unknown>) = {
+                    ...value,
+                    id: String(value['_id']),
+                };
+            }
+        }		
+        
+        return result;
 	}
 
 	private buildQueryOptions(options?: FindOptions): QueryOptions {

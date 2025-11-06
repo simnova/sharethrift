@@ -7,32 +7,7 @@ import type {
 import axios from 'axios';
 import type { AxiosInstance } from 'axios';
 
-/**
- * Mock Messaging Service - uses mock HTTP server
- * 
- * This service implements the MessagingService interface by making HTTP requests
- * to a mock messaging server instead of calling a real provider API.
- * 
- * Requires the @sthrift/mock-messaging-server to be running.
- * 
- * Configuration:
- * - Can be provided via constructor parameter (useful for testing)
- * - Or read from MESSAGING_MOCK_URL environment variable
- * - Default: http://localhost:10000
- * 
- * @example
- * ```typescript
- * // Using environment variables
- * const mockService = new MockServiceTwilio();
- * await mockService.startUp();
- * 
- * // Or specify URL explicitly (useful for testing)
- * const mockService = new MockServiceTwilio('http://localhost:9999');
- * await mockService.startUp();
- * const conversation = await mockService.createConversation('Test Chat');
- * ```
- */
-export class MockServiceTwilio implements MessagingService {
+export class MockMessagingService implements MessagingService {
 	private http: AxiosInstance | undefined;
 	private readonly mockBaseUrl: string;
 
@@ -41,22 +16,22 @@ export class MockServiceTwilio implements MessagingService {
 		this.mockBaseUrl = mockBaseUrl ?? process.env['MESSAGING_MOCK_URL'] ?? 'http://localhost:10000';
 	}
 
-	public async startUp(): Promise<Exclude<MockServiceTwilio, ServiceBase>> {
+	public async startUp(): Promise<Exclude<MockMessagingService, ServiceBase>> {
 		if (this.http) {
-			throw new Error('MockServiceTwilio is already started');
+			throw new Error('MockMessagingService is already started');
 		}
 
 		this.http = axios.create({ baseURL: this.mockBaseUrl });
-		console.log(`MockServiceTwilio started in MOCK mode (${this.mockBaseUrl})`);
-		return this as Exclude<MockServiceTwilio, ServiceBase>;
+		console.log(`MockMessagingService started in MOCK mode (${this.mockBaseUrl})`);
+		return this as Exclude<MockMessagingService, ServiceBase>;
 	}
 
 	public async shutDown(): Promise<void> {
 		if (!this.http) {
-			throw new Error('MockServiceTwilio is not started - shutdown cannot proceed');
+			throw new Error('MockMessagingService is not started - shutdown cannot proceed');
 		}
 		this.http = undefined;
-		console.log('MockServiceTwilio stopped');
+		console.log('MockMessagingService stopped');
 	}
 
 	private mapConversation(mockData: any): ConversationInstance {

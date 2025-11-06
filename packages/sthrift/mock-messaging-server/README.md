@@ -4,48 +4,15 @@ Mock HTTP server for local messaging provider emulation during development and t
 
 ## Purpose
 
-Provides a REST API compatible with messaging service clients, eliminating the need for real provider credentials during development.
-
-## Usage
-
-### Start Server
-
-```bash
-# From monorepo root
-pnpm run start-emulator:messaging-server
-
-# Or standalone
-pnpm run start
-```
-
-Server starts on `http://localhost:10000` with seeded test data.
-
-### Programmatic Usage
-
-```typescript
-import { startServer, stopServer } from '@sthrift/mock-messaging-server';
-
-const server = await startServer(10000, true); // port, seedData
-// ... your tests
-await stopServer(server);
-```
-
-## API Endpoints
-
-- `POST /v1/Conversations` - Create conversation
-- `GET /v1/Conversations` - List conversations
-- `GET /v1/Conversations/:sid` - Get conversation
-- `DELETE /v1/Conversations/:sid` - Delete conversation
-- `POST /v1/Conversations/:sid/Messages` - Send message
-- `GET /v1/Conversations/:sid/Messages` - Get messages
-- `GET /v1/Conversations/:sid/Participants` - Get participants
+Provides a REST API compatible with messaging service clients, eliminating the need for real provider credentials during development. Implements conversation and message management endpoints that mirror the structure of production messaging APIs.
 
 ## Seeded Test Data
 
-Automatically seeds on startup:
-- **CH123**: General Discussion (3 participants, 4 messages)
-- **CH124**: Project Updates (2 participants, 3 messages)
-- **CH125**: Support Tickets (1 participant, 2 messages)
+Automatically seeds on startup when enabled:
+- **CH123**: Lawn Mower Chat
+- **CH124**: Mountain Bike Chat
+- **CH125**: City Bike Chat
+- **CH126**: Power Drill Chat
 
 ## Configuration
 

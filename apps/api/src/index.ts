@@ -19,7 +19,7 @@ import * as TokenValidationConfig from './service-config/token-validation/index.
 
 import type { MessagingService } from '@cellix/messaging';
 import { ServiceTwilio } from '@sthrift/messaging-service-twilio';
-import { MockServiceTwilio } from '@sthrift/messaging-service-mock';
+import { MockMessagingService } from '@sthrift/messaging-service-mock';
 
 import { graphHandlerCreator } from '@sthrift/graphql';
 import { restHandlerCreator } from '@sthrift/rest';
@@ -43,7 +43,7 @@ Cellix.initializeInfrastructureServices<ApiContextSpec, ApplicationServices>(
 				new ServiceTokenValidation(TokenValidationConfig.portalTokens),
 			)
 			.registerInfrastructureService(
-				USE_MOCK_MESSAGING ? new MockServiceTwilio() : new ServiceTwilio(),
+				USE_MOCK_MESSAGING ? new MockMessagingService() : new ServiceTwilio(),
 			)
 			.registerInfrastructureService(new ServiceCybersource());
 	},
@@ -55,17 +55,12 @@ Cellix.initializeInfrastructureServices<ApiContextSpec, ApplicationServices>(
 			),
 		);
 
+		const messagingService = USE_MOCK_MESSAGING
+			? serviceRegistry.getInfrastructureService<MessagingService>(MockMessagingService)
+			: serviceRegistry.getInfrastructureService<MessagingService>(ServiceTwilio);
+
 		const { domainDataSource } = dataSourcesFactory.withSystemPassport();
 		RegisterEventHandlers(domainDataSource);
-		
-		// Get messaging service based on configuration
-		const messagingService = USE_MOCK_MESSAGING
-			? serviceRegistry.getInfrastructureService<MessagingService>(MockServiceTwilio)
-			: serviceRegistry.getInfrastructureService<MessagingService>(ServiceTwilio);
-		
-		if (!messagingService) {
-			throw new Error('Messaging service not properly registered');
-		}
 
 		return {
 			dataSourcesFactory,
