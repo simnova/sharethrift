@@ -57,6 +57,7 @@ So that I can view, filter, and create listings through the GraphQL API
 		Given a user without a verifiedJwt in their context
 		When the myListingsAll query is executed
 		Then it should call Listing.ItemListing.queryPaged without sharerId
+        And it should still return paged results
 
 	Scenario: Error while querying myListingsAll
 		Given Listing.ItemListing.queryPaged throws an error

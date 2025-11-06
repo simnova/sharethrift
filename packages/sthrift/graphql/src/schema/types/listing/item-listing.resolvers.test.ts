@@ -403,7 +403,7 @@ test.for(feature, ({ Scenario }) => {
         });
     });
 
-    Scenario('Querying myListingsAll without authentication', ({ Given, When, Then }) => {
+    Scenario('Querying myListingsAll without authentication', ({ Given, When, Then, And }) => {
         Given('a user without a verifiedJwt in their context', () => {
             context = makeMockGraphContext({
                 applicationServices: {
@@ -433,6 +433,12 @@ test.for(feature, ({ Scenario }) => {
                 }),
             );
         });
+        And('it should still return paged results', () => {
+            expect(result).toBeDefined();
+            const resultData = result as { items: ItemListingEntity[] };
+            expect(resultData.items.length).toBeGreaterThan(0);
+        });
+
     });
 
     Scenario('Error while querying myListingsAll', ({ Given, When, Then }) => {
