@@ -60,10 +60,18 @@ function paginateAndFilterListingRequests(
 			r.reservationPeriodEnd instanceof Date
 				? r.reservationPeriodEnd
 				: undefined;
+
+		// Get the first image from the listing's images array, or use placeholder
+		const images = r.listing?.['images'];
+		const listingImage =
+			Array.isArray(images) && images.length > 0
+				? images[0]
+				: '/assets/item-images/placeholder.png';
+
 		return {
 			id: r.id,
 			title: r.listing?.title ?? 'Unknown',
-			image: '/assets/item-images/placeholder.png', // TODO: map real image when available
+			image: listingImage,
 			requestedBy: r.reserver?.account?.username
 				? `@${r.reserver.account.username}`
 				: '@unknown',

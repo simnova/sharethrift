@@ -3,6 +3,7 @@ import { useQuery } from "@apollo/client/react";
 import { ComponentQueryLoader } from "@sthrift/ui-components";
 import {
   HomeAllListingsTableContainerMyListingsAllDocument,
+  HomeMyListingsDashboardContainerMyListingsRequestsCountDocument,
   ViewListingCurrentUserDocument,
   type ViewListingCurrentUserQuery,
 } from "../../../../../generated.tsx";
@@ -11,6 +12,8 @@ export const MyListingsDashboardContainer: React.FC = () => {
   const { data: userData } = useQuery<ViewListingCurrentUserQuery>(
     ViewListingCurrentUserDocument
   );
+
+  const sharerId = userData?.currentPersonalUserAndCreateIfNotExists?.id;
 
   const { data, loading, error } = useQuery(
     HomeAllListingsTableContainerMyListingsAllDocument,
@@ -29,12 +32,21 @@ export const MyListingsDashboardContainer: React.FC = () => {
     }
   );
 
+  const { data: requestsCountData } = useQuery(
+    HomeMyListingsDashboardContainerMyListingsRequestsCountDocument,
+    {
+      variables: {
+        sharerId: sharerId ?? "",
+      },
+      skip: !sharerId,
+      fetchPolicy: "network-only",
+    }
+  );
+
   const handleCreateListing = () => {
     // TODO: Navigate to listing creation page
     console.log("Navigate to create listing");
   };
-
-  const sharerId = userData?.currentPersonalUserAndCreateIfNotExists?.id;
 
   return (
     <ComponentQueryLoader
@@ -44,7 +56,7 @@ export const MyListingsDashboardContainer: React.FC = () => {
       hasDataComponent={
         <MyListingsDashboard
           onCreateListing={handleCreateListing}
-          requestsCount={data?.myListingsAll?.total ?? 0}
+          requestsCount={requestsCountData?.myListingsRequests?.total ?? 0}
           sharerId={sharerId}
         />
       }
