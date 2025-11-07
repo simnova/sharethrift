@@ -60,7 +60,10 @@ export class ItemListingReadRepositoryImpl
 	async getAll(
 		options?: FindOptions,
 	): Promise<Domain.Contexts.Listing.ItemListing.ItemListingEntityReference[]> {
-		const result = await this.mongoDataSource.find({}, options);
+		const result = await this.mongoDataSource.find({}, {
+			...options,
+			populateFields: ['sharer'],
+		});
 		if (!result || result.length === 0) return [];
 		return result.map((doc) => this.converter.toDomain(doc, this.passport));
 	}
@@ -154,7 +157,10 @@ export class ItemListingReadRepositoryImpl
 		id: string,
 		options?: FindOneOptions,
 	): Promise<Domain.Contexts.Listing.ItemListing.ItemListingEntityReference | null> {
-		const result = await this.mongoDataSource.findById(id, options);
+		const result = await this.mongoDataSource.findById(id, {
+			...options,
+			populateFields: ['sharer'],
+		});
 		if (!result) return null;
 		return this.converter.toDomain(result, this.passport);
 	}
@@ -167,7 +173,10 @@ export class ItemListingReadRepositoryImpl
 		try {
 			const result = await this.mongoDataSource.find(
 				{ sharer: new MongooseSeedwork.ObjectId(sharerId) },
-				options,
+				{
+					...options,
+					populateFields: ['sharer'],
+				},
 			);
 			if (!result || result.length === 0) return [];
 			return result.map((doc) => this.converter.toDomain(doc, this.passport));
