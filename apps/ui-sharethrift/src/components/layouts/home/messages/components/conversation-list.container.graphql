@@ -1,3 +1,9 @@
+query HomeConversationListContainerCurrentPersonalUserAndCreateIfNotExists {
+  currentPersonalUserAndCreateIfNotExists {
+    id
+  }
+}
+
 query HomeConversationListContainerConversationsByUser($userId: ObjectID!) {
   conversationsByUser(userId: $userId) {
     ...HomeConversationListContainerConversationFields

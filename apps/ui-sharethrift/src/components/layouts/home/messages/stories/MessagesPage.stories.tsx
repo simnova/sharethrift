@@ -1,6 +1,7 @@
 import type { Meta, StoryFn } from "@storybook/react";
 import { HomeRoutes } from "../../index.tsx";
 import {
+    HomeConversationListContainerCurrentPersonalUserAndCreateIfNotExistsDocument,
 	HomeConversationListContainerConversationsByUserDocument,
 	ConversationBoxContainerConversationDocument,
 } from "../../../../../generated.tsx";
@@ -24,6 +25,28 @@ export const DefaultView: StoryFn<typeof HomeRoutes> = Template.bind({});
 DefaultView.parameters = {
   apolloClient: {
     mocks: [
+        {
+        request: {
+          query: HomeConversationListContainerCurrentPersonalUserAndCreateIfNotExistsDocument,
+        },
+        result: {
+          data: {
+            currentPersonalUserAndCreateIfNotExists: {
+              __typename: "PersonalUser",
+              id: "507f1f77bcf86cd799439011", // Alice
+              account: {
+                __typename: "PersonalUserAccount",
+                username: "alice_johnson",
+                profile: {
+                  __typename: "PersonalUserAccountProfile",
+                  firstName: "Alice",
+                  lastName: "Johnson",
+                },
+              },
+            },
+          },
+        },
+      },
       {
         request: {
           query: HomeConversationListContainerConversationsByUserDocument,

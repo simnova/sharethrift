@@ -59,24 +59,24 @@ export class MongoDataSourceImpl<TDoc extends MongooseSeedwork.Base>
 	}
 
 	private appendId(doc: LeanBase<TDoc>): Lean<TDoc> {
-		// Recursively add id field to populated subdocuments
-		const result = {
+		const result: Lean<TDoc> = {
 			...doc,
 			id: String(doc._id),
 		}
 		
-        // Handle populated fields (which are objects with _id but no id)
-        for (const key in result) {
-            const value = result[key as keyof typeof result];
-            if (value && typeof value === 'object' && '_id' in value && !('id' in value)) {
-                (result[key as keyof typeof result] as Record<string, unknown>) = {
-                    ...value,
-                    id: String(value['_id']),
-                };
-            }
-        }		
-        
-        return result;
+        // Also append id to any populated subdocuments
+		const resultAsRecord = result as Record<string, unknown>;
+		for (const key in resultAsRecord) {
+			const value = resultAsRecord[key];
+			if (value && typeof value === 'object' && '_id' in value && !('id' in value)) {
+				resultAsRecord[key] = {
+					...(value as Record<string, unknown>),
+					id: String((value as { _id: unknown })._id),
+				};
+			}
+		}
+		
+		return result;
 	}
 
 	private buildQueryOptions(options?: FindOptions): QueryOptions {
@@ -103,15 +103,12 @@ export class MongoDataSourceImpl<TDoc extends MongooseSeedwork.Base>
 				this.buildFilterQuery(filter),
 				this.buildProjection(options?.fields, options?.projectionMode),
 				queryOptions,
-			);
-		
+			)
+			.lean<LeanBase<TDoc>[]>();
 		if (options?.populateFields?.length) {
-			for (const field of options.populateFields) {
-				query = query.populate(field);
-			}
+			query = query.populate(options.populateFields);
 		}
-		
-		const docs = await query.lean<LeanBase<TDoc>[]>();
+		const docs = await query;
 		return docs.map((doc) => this.appendId(doc));
 	}
 
@@ -119,15 +116,16 @@ export class MongoDataSourceImpl<TDoc extends MongooseSeedwork.Base>
 		filter: FilterQuery<TDoc>,
 		options?: FindOneOptions,
 	): Promise<Lean<TDoc> | null> {
-		const doc = await this.model
+		let query = this.model
 			.findOne(
 				this.buildFilterQuery(filter),
 				this.buildProjection(options?.fields, options?.projectionMode),
 			)
 			.lean<LeanBase<TDoc>>();
 		if (options?.populateFields?.length) {
-			await doc?.populate(options.populateFields);
+			query = query.populate(options.populateFields);
 		}
+		const doc = await query;
 		return doc ? this.appendId(doc) : null;
 	}
 

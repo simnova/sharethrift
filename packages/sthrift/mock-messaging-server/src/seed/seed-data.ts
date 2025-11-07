@@ -45,22 +45,22 @@ export function seedMockData(): void {
 		store.createMessage(
 			conv1.id,
 			"Hi, I'm interested in the lawn mower. Is it suitable for a large backyard?",
-			'507f1f77bcf86cd799439014',
+			'507f1f77bcf86cd799439011',
 		);
 		store.createMessage(
 			conv1.id,
 			"Absolutely! It's designed for yards up to half an acre. Do you have any specific grass type?",
-			'507f1f77bcf86cd799439011',
-		);
-		store.createMessage(
-			conv1.id,
-			"Mostly Bermuda grass. Does it handle thick patches well?",
 			'507f1f77bcf86cd799439014',
 		);
 		store.createMessage(
 			conv1.id,
-			"Yes, the mower has adjustable blades and a powerful motor for thick grass.",
+			"Mostly Bermuda grass. Does it handle thick patches well?",
 			'507f1f77bcf86cd799439011',
+		);
+		store.createMessage(
+			conv1.id,
+			"Yes, the mower has adjustable blades and a powerful motor for thick grass.",
+			'507f1f77bcf86cd799439014',
 		);
 	}
 
@@ -68,22 +68,22 @@ export function seedMockData(): void {
 		store.createMessage(
 			conv2.id,
 			"Hey, is the mountain bike good for rocky trails?",
-			'507f1f77bcf86cd799439014',
+			'507f1f77bcf86cd799439012',
 		);
 		store.createMessage(
 			conv2.id,
 			"Yes, it has full suspension and durable tires for rough terrain.",
-			'507f1f77bcf86cd799439012',
-		);
-		store.createMessage(
-			conv2.id,
-			"Does it come with a repair kit or do I need to buy one separately?",
 			'507f1f77bcf86cd799439014',
 		);
 		store.createMessage(
 			conv2.id,
-			"A basic kit is included, but you can upgrade for more tools.",
+			"Does it come with a repair kit or do I need to buy one separately?",
 			'507f1f77bcf86cd799439012',
+		);
+		store.createMessage(
+			conv2.id,
+			"A basic kit is included, but you can upgrade for more tools.",
+			'507f1f77bcf86cd799439014',
 		);
 	}
 
@@ -91,22 +91,22 @@ export function seedMockData(): void {
 		store.createMessage(
 			conv3.id,
 			"Is the city bike comfortable for daily commutes?",
-			'507f1f77bcf86cd799439014',
+			'507f1f77bcf86cd799439013',
 		);
 		store.createMessage(
 			conv3.id,
 			"Definitely! It has a padded seat and upright handlebars for comfort.",
-			'507f1f77bcf86cd799439013',
-		);
-		store.createMessage(
-			conv3.id,
-			"Can I attach a basket or rack to it?",
 			'507f1f77bcf86cd799439014',
 		);
 		store.createMessage(
 			conv3.id,
-			"Yes, it comes with mounting points for both accessories.",
+			"Can I attach a basket or rack to it?",
 			'507f1f77bcf86cd799439013',
+		);
+		store.createMessage(
+			conv3.id,
+			"Yes, it comes with mounting points for both accessories.",
+			'507f1f77bcf86cd799439014',
 		);
 	}
 
