@@ -1,6 +1,6 @@
-import { MongooseSeedwork } from '@cellix/mongoose-seedwork';
-import type { Models } from '@sthrift/data-sources-mongoose-models';
 import { Domain } from '@sthrift/domain';
+import type { Models } from '@sthrift/data-sources-mongoose-models';
+import { MongooseSeedwork } from '@cellix/mongoose-seedwork';
 import { PersonalUserRoleDomainAdapter } from '../../role/personal-user-role/personal-user-role.domain-adapter.ts';
 export class PersonalUserConverter extends MongooseSeedwork.MongoTypeConverter<
 	Models.User.PersonalUser,
@@ -57,16 +57,11 @@ export class PersonalUserDomainAdapter
 	}
 	set role(role:
 		| Domain.Contexts.Role.PersonalUserRole.PersonalUserRoleEntityReference
-		| Domain.Contexts.Role.PersonalUserRole.PersonalUserRole<PersonalUserRoleDomainAdapter>
-		| PersonalUserRoleDomainAdapter) {
+		| Domain.Contexts.Role.PersonalUserRole.PersonalUserRole<PersonalUserRoleDomainAdapter>) {
 		if (
 			role instanceof Domain.Contexts.Role.PersonalUserRole.PersonalUserRole
 		) {
 			this.doc.set('role', role.props.doc);
-			return;
-		}
-		if (role instanceof PersonalUserRoleDomainAdapter) {
-			this.doc.set('role', role.doc);
 			return;
 		}
 		if (!role?.id) {

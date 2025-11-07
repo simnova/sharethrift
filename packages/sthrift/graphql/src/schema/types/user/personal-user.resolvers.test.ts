@@ -3,65 +3,7 @@ import { fileURLToPath } from 'node:url';
 import { describeFeature, loadFeature } from '@amiceli/vitest-cucumber';
 import { expect, vi } from 'vitest';
 import type { GraphContext } from '../../../init/context.ts';
-import type { GraphQLResolveInfo } from 'graphql';
 import personalUserResolvers from './personal-user.resolvers.ts';
-
-// Type definitions for resolver functions
-type PersonalUserByIdResolver = (
-	parent: unknown,
-	args: { id: string },
-	context: GraphContext,
-	info: GraphQLResolveInfo,
-) => Promise<unknown>;
-
-type CurrentPersonalUserAndCreateIfNotExistsResolver = (
-	parent: unknown,
-	args: unknown,
-	context: GraphContext,
-	info: GraphQLResolveInfo,
-) => Promise<unknown>;
-
-type AllUsersResolver = (
-	parent: unknown,
-	args: { page: number; pageSize: number },
-	context: GraphContext,
-	info: GraphQLResolveInfo,
-) => Promise<unknown>;
-
-type PersonalUserUpdateResolver = (
-	parent: unknown,
-	args: { input: { id: string; [key: string]: unknown } },
-	context: GraphContext,
-	info: GraphQLResolveInfo,
-) => Promise<unknown>;
-
-type BlockUserResolver = (
-	parent: unknown,
-	args: { userId: string },
-	context: GraphContext,
-	info: GraphQLResolveInfo,
-) => Promise<unknown>;
-
-type UnblockUserResolver = (
-	parent: unknown,
-	args: { userId: string },
-	context: GraphContext,
-	info: GraphQLResolveInfo,
-) => Promise<unknown>;
-
-type ProcessPaymentResolver = (
-	parent: unknown,
-	args: { request: { [key: string]: unknown } },
-	context: GraphContext,
-	info?: GraphQLResolveInfo,
-) => Promise<unknown>;
-
-type RefundPaymentResolver = (
-	parent: unknown,
-	args: { request: { transactionId: string; amount: number } },
-	context: GraphContext,
-	info?: GraphQLResolveInfo,
-) => Promise<unknown>;
 
 const test = { for: describeFeature };
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
@@ -69,43 +11,20 @@ const feature = await loadFeature(
 	path.resolve(__dirname, 'features/personal-user.resolvers.feature'),
 );
 
-function makeGraphContext(overrides: Partial<GraphContext> = {}): GraphContext {
+function makeMockGraphContext(overrides: Partial<GraphContext> = {}): GraphContext {
 	return {
 		applicationServices: {
 			User: {
 				PersonalUser: {
-					queryById: vi.fn(async ({ id }) => ({
-						id,
-						account: { email: 'test@example.com' },
-					})),
-					createIfNotExists: vi.fn(async ({ email, firstName, lastName }) => ({
-						id: 'user-1',
-						account: {
-							email,
-							profile: { firstName, lastName },
-						},
-					})),
-					getAllUsers: vi.fn(async (args) => ({
-						items: [],
-						total: 0,
-						page: args.page,
-						pageSize: args.pageSize,
-					})),
-					update: vi.fn(async (input) => ({
-						id: input.id,
-						...input,
-					})),
+					queryById: vi.fn(),
+					createIfNotExists: vi.fn(),
+					getAllUsers: vi.fn(),
+					update: vi.fn(),
 				},
 			},
 			Payment: {
-				processPayment: vi.fn(async () => ({
-					status: 'SUCCEEDED',
-					transactionId: 'txn-123',
-				})),
-				refundPayment: vi.fn(async () => ({
-					status: 'REFUNDED',
-					transactionId: 'txn-123',
-				})),
+				processPayment: vi.fn(),
+				refundPayment: vi.fn(),
 			},
 			verifiedUser: {
 				verifiedJwt: {
@@ -114,9 +33,10 @@ function makeGraphContext(overrides: Partial<GraphContext> = {}): GraphContext {
 					family_name: 'Doe',
 				},
 			},
+			...overrides.applicationServices,
 		},
 		...overrides,
-	} as unknown as GraphContext;
+	} as GraphContext;
 }
 
 test.for(feature, ({ Scenario, Background, BeforeEachScenario }) => {
@@ -124,18 +44,18 @@ test.for(feature, ({ Scenario, Background, BeforeEachScenario }) => {
 	let result: unknown;
 
 	BeforeEachScenario(() => {
-		context = makeGraphContext();
-		result = undefined;
+		context = makeMockGraphContext();
+		vi.clearAllMocks();
 	});
 
 	Background(({ Given, And }) => {
 		Given('a verified JWT user context exists', () => {
-			context = makeGraphContext();
+			// Already set up in BeforeEachScenario
 		});
 		And(
 			'the GraphContext is initialized with User and Payment application services',
 			() => {
-				// Already set up in makeGraphContext
+				// Already set up in BeforeEachScenario
 			},
 		);
 	});
@@ -145,11 +65,15 @@ test.for(feature, ({ Scenario, Background, BeforeEachScenario }) => {
 			// User ID will be passed in the resolver call
 		});
 		When('I execute the query "personalUserById"', async () => {
-			result = await (personalUserResolvers.Query?.personalUserById as PersonalUserByIdResolver)(
+			vi.mocked(context.applicationServices.User.PersonalUser.queryById).mockResolvedValue({
+				id: 'user-123',
+				account: { email: 'test@example.com' },
+			});
+			result = await personalUserResolvers.Query.personalUserById(
 				{},
 				{ id: 'user-123' },
 				context,
-				{} as GraphQLResolveInfo,
+				{} as never,
 			);
 		});
 		Then(
@@ -170,17 +94,26 @@ test.for(feature, ({ Scenario, Background, BeforeEachScenario }) => {
 		'Creating or fetching the current personal user',
 		({ Given, When, Then, And }) => {
 			Given('a verified user with email "john.doe@example.com"', () => {
-				// Already set up in makeGraphContext
+				// Already set up in BeforeEachScenario
 			});
 			When(
 				'I execute the query "currentPersonalUserAndCreateIfNotExists"',
 				async () => {
+					vi.mocked(
+						context.applicationServices.User.PersonalUser.createIfNotExists,
+					).mockResolvedValue({
+						id: 'user-1',
+						account: {
+							email: 'john.doe@example.com',
+							profile: { firstName: 'John', lastName: 'Doe' },
+						},
+					});
 					result =
-						await (personalUserResolvers.Query?.currentPersonalUserAndCreateIfNotExists as CurrentPersonalUserAndCreateIfNotExistsResolver)(
+						await personalUserResolvers.Query.currentPersonalUserAndCreateIfNotExists(
 							{},
 							{},
 							context,
-							{} as GraphQLResolveInfo,
+							{} as never,
 						);
 				},
 			);
@@ -200,7 +133,9 @@ test.for(feature, ({ Scenario, Background, BeforeEachScenario }) => {
 				'it should return the existing or newly created PersonalUser entity',
 				() => {
 					expect(result).toBeDefined();
-					expect((result as { account: { email: string } }).account.email).toBe('john.doe@example.com');
+					expect(
+						(result as { account: { email: string } }).account.email,
+					).toBe('john.doe@example.com');
 				},
 			);
 		},
@@ -213,11 +148,19 @@ test.for(feature, ({ Scenario, Background, BeforeEachScenario }) => {
 				// Args will be passed in the resolver call
 			});
 			When('I execute the query "allUsers"', async () => {
-				result = await (personalUserResolvers.Query?.allUsers as AllUsersResolver)(
+				vi.mocked(
+					context.applicationServices.User.PersonalUser.getAllUsers,
+				).mockResolvedValue({
+					items: [],
+					total: 0,
+					page: 1,
+					pageSize: 20,
+				});
+				result = await personalUserResolvers.Query.allUsers(
 					{},
 					{ page: 1, pageSize: 20 },
 					context,
-					{} as GraphQLResolveInfo,
+					{} as never,
 				);
 			});
 			Then('the resolver should call "User.PersonalUser.getAllUsers"', () => {
@@ -251,7 +194,13 @@ test.for(feature, ({ Scenario, Background, BeforeEachScenario }) => {
 				},
 			);
 			When('I execute the mutation "personalUserUpdate"', async () => {
-				result = await (personalUserResolvers.Mutation?.personalUserUpdate as PersonalUserUpdateResolver)(
+				vi.mocked(
+					context.applicationServices.User.PersonalUser.update,
+				).mockResolvedValue({
+					id: 'user-123',
+					account: { profile: { firstName: 'Alice' } },
+				});
+				result = await personalUserResolvers.Mutation.personalUserUpdate(
 					{},
 					{
 						input: {
@@ -260,7 +209,7 @@ test.for(feature, ({ Scenario, Background, BeforeEachScenario }) => {
 						},
 					},
 					context,
-					{} as GraphQLResolveInfo,
+					{} as never,
 				);
 			});
 			Then('the resolver should call "User.PersonalUser.update"', () => {
@@ -280,11 +229,17 @@ test.for(feature, ({ Scenario, Background, BeforeEachScenario }) => {
 			// User ID will be passed in the resolver call
 		});
 		When('I execute the mutation "blockUser"', async () => {
-			result = await (personalUserResolvers.Mutation?.blockUser as BlockUserResolver)(
+			vi.mocked(
+				context.applicationServices.User.PersonalUser.update,
+			).mockResolvedValue({
+				id: 'user-456',
+				isBlocked: true,
+			});
+			result = await personalUserResolvers.Mutation.blockUser(
 				{},
 				{ userId: 'user-456' },
 				context,
-				{} as GraphQLResolveInfo,
+				{} as never,
 			);
 		});
 		Then(
@@ -309,11 +264,17 @@ test.for(feature, ({ Scenario, Background, BeforeEachScenario }) => {
 			// User ID will be passed in the resolver call
 		});
 		When('I execute the mutation "unblockUser"', async () => {
-			result = await (personalUserResolvers.Mutation?.unblockUser as UnblockUserResolver)(
+			vi.mocked(
+				context.applicationServices.User.PersonalUser.update,
+			).mockResolvedValue({
+				id: 'user-456',
+				isBlocked: false,
+			});
+			result = await personalUserResolvers.Mutation.unblockUser(
 				{},
 				{ userId: 'user-456' },
 				context,
-				{} as GraphQLResolveInfo,
+				{} as never,
 			);
 		});
 		Then(
@@ -337,15 +298,15 @@ test.for(feature, ({ Scenario, Background, BeforeEachScenario }) => {
 		'Processing a payment successfully',
 		({ Given, When, Then, And }) => {
 			Given('a valid payment request with order and billing information', () => {
-				context.applicationServices.Payment.processPayment = vi.fn(
-					async () => ({
-						status: 'SUCCEEDED',
-						transactionId: 'txn-123',
-					}),
-				);
+				vi.mocked(
+					context.applicationServices.Payment.processPayment,
+				).mockResolvedValue({
+					status: 'SUCCEEDED',
+					transactionId: 'txn-123',
+				});
 			});
 			When('I execute the mutation "processPayment"', async () => {
-				result = await (personalUserResolvers.Mutation?.processPayment as ProcessPaymentResolver)(
+				result = await personalUserResolvers.Mutation.processPayment(
 					{},
 					{
 						request: {
@@ -367,7 +328,7 @@ test.for(feature, ({ Scenario, Background, BeforeEachScenario }) => {
 						},
 					},
 					context,
-					{} as GraphQLResolveInfo,
+					{} as never,
 				);
 			});
 			Then(
@@ -382,8 +343,8 @@ test.for(feature, ({ Scenario, Background, BeforeEachScenario }) => {
 				'return a PaymentResponse with status "SUCCEEDED" and success true',
 				() => {
 					expect(result).toBeDefined();
-					expect((result as { status: string; success: boolean }).status).toBe('SUCCEEDED');
-					expect((result as { status: string; success: boolean }).success).toBe(true);
+					expect((result as { status: string }).status).toBe('SUCCEEDED');
+					expect((result as { success: boolean }).success).toBe(true);
 				},
 			);
 		},
@@ -393,14 +354,12 @@ test.for(feature, ({ Scenario, Background, BeforeEachScenario }) => {
 		'Handling payment processing failure',
 		({ Given, When, Then, And }) => {
 			Given('a payment request that causes an error', () => {
-				context.applicationServices.Payment.processPayment = vi.fn(
-					() => {
-						throw new Error('Payment failed');
-					},
-				);
+				vi.mocked(
+					context.applicationServices.Payment.processPayment,
+				).mockRejectedValue(new Error('Payment failed'));
 			});
 			When('I execute the mutation "processPayment"', async () => {
-				result = await (personalUserResolvers.Mutation?.processPayment as ProcessPaymentResolver)(
+				result = await personalUserResolvers.Mutation.processPayment(
 					{},
 					{
 						request: {
@@ -422,20 +381,23 @@ test.for(feature, ({ Scenario, Background, BeforeEachScenario }) => {
 						},
 					},
 					context,
-					{} as GraphQLResolveInfo,
+					{} as never,
 				);
 			});
 			Then('it should return a PaymentResponse with status "FAILED"', () => {
-				expect((result as { status: string; success: boolean }).status).toBe('FAILED');
-				expect((result as { status: string; success: boolean }).success).toBe(false);
+				expect((result as { status: string }).status).toBe('FAILED');
+				expect((result as { success: boolean }).success).toBe(false);
 			});
 			And(
 				'include errorInformation with reason "PROCESSING_ERROR"',
 				() => {
-					expect((result as { errorInformation: { reason: string } }).errorInformation).toBeDefined();
-					expect((result as { errorInformation: { reason: string } }).errorInformation.reason).toBe(
-						'PROCESSING_ERROR',
-					);
+					expect(
+						(result as { errorInformation: { reason: string } }).errorInformation,
+					).toBeDefined();
+					expect(
+						(result as { errorInformation: { reason: string } }).errorInformation
+							.reason,
+					).toBe('PROCESSING_ERROR');
 				},
 			);
 		},
@@ -447,16 +409,16 @@ test.for(feature, ({ Scenario, Background, BeforeEachScenario }) => {
 			Given(
 				'a valid refund request with transactionId "txn-789" and amount "100.00"',
 				() => {
-					context.applicationServices.Payment.refundPayment = vi.fn(
-						async () => ({
-							status: 'REFUNDED',
-							transactionId: 'txn-789',
-						}),
-					);
+					vi.mocked(
+						context.applicationServices.Payment.refundPayment,
+					).mockResolvedValue({
+						status: 'REFUNDED',
+						transactionId: 'txn-789',
+					});
 				},
 			);
 			When('I execute the mutation "refundPayment"', async () => {
-				result = await (personalUserResolvers.Mutation?.refundPayment as RefundPaymentResolver)(
+				result = await personalUserResolvers.Mutation.refundPayment(
 					{},
 					{
 						request: {
@@ -465,7 +427,7 @@ test.for(feature, ({ Scenario, Background, BeforeEachScenario }) => {
 						},
 					},
 					context,
-					{} as GraphQLResolveInfo,
+					{} as never,
 				);
 			});
 			Then('it should call "Payment.refundPayment"', () => {
@@ -477,8 +439,8 @@ test.for(feature, ({ Scenario, Background, BeforeEachScenario }) => {
 				'return a RefundResponse with status "REFUNDED" and success true',
 				() => {
 					expect(result).toBeDefined();
-					expect((result as { status: string; success: boolean }).status).toBe('REFUNDED');
-					expect((result as { status: string; success: boolean }).success).toBe(true);
+					expect((result as { status: string }).status).toBe('REFUNDED');
+					expect((result as { success: boolean }).success).toBe(true);
 				},
 			);
 		},
@@ -486,12 +448,12 @@ test.for(feature, ({ Scenario, Background, BeforeEachScenario }) => {
 
 	Scenario('Handling refund failure', ({ Given, When, Then, And }) => {
 		Given('a refund request that causes an error', () => {
-			context.applicationServices.Payment.refundPayment = vi.fn(() => {
-				throw new Error('Refund failed');
-			});
+			vi.mocked(
+				context.applicationServices.Payment.refundPayment,
+			).mockRejectedValue(new Error('Refund failed'));
 		});
 		When('I execute the mutation "refundPayment"', async () => {
-			result = await (personalUserResolvers.Mutation?.refundPayment as RefundPaymentResolver)(
+			result = await personalUserResolvers.Mutation.refundPayment(
 				{},
 				{
 					request: {
@@ -500,16 +462,21 @@ test.for(feature, ({ Scenario, Background, BeforeEachScenario }) => {
 					},
 				},
 				context,
-				{} as GraphQLResolveInfo,
+				{} as never,
 			);
 		});
 		Then('it should return a RefundResponse with status "FAILED"', () => {
-			expect((result as { status: string; success: boolean }).status).toBe('FAILED');
-			expect((result as { status: string; success: boolean }).success).toBe(false);
+			expect((result as { status: string }).status).toBe('FAILED');
+			expect((result as { success: boolean }).success).toBe(false);
 		});
 		And('include errorInformation with reason "PROCESSING_ERROR"', () => {
-			expect((result as { errorInformation: { reason: string } }).errorInformation).toBeDefined();
-			expect((result as { errorInformation: { reason: string } }).errorInformation.reason).toBe('PROCESSING_ERROR');
+			expect(
+				(result as { errorInformation: { reason: string } }).errorInformation,
+			).toBeDefined();
+			expect(
+				(result as { errorInformation: { reason: string } }).errorInformation
+					.reason,
+			).toBe('PROCESSING_ERROR');
 		});
 	});
 });
