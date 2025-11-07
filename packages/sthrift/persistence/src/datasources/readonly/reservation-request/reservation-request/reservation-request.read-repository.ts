@@ -9,6 +9,7 @@ import type { FindOneOptions, FindOptions } from '../../mongo-data-source.ts';
 import { ReservationRequestConverter } from '../../../domain/reservation-request/reservation-request/reservation-request.domain-adapter.ts';
 import { MongooseSeedwork } from '@cellix/mongoose-seedwork';
 
+const PopulatedFields = ['listing', 'reserver'];
 export interface ReservationRequestReadRepository {
 	getAll: (
 		options?: FindOptions,
@@ -104,7 +105,10 @@ export class ReservationRequestReadRepositoryImpl
 	): Promise<
 		Domain.Contexts.ReservationRequest.ReservationRequest.ReservationRequestEntityReference[]
 	> {
-		const result = await this.mongoDataSource.find({}, options);
+		const result = await this.mongoDataSource.find(
+			{},
+			{ ...options, populateFields: PopulatedFields },
+		);
 		return result.map((doc) => this.converter.toDomain(doc, this.passport));
 	}
 
@@ -112,7 +116,10 @@ export class ReservationRequestReadRepositoryImpl
 		id: string,
 		options?: FindOneOptions,
 	): Promise<Domain.Contexts.ReservationRequest.ReservationRequest.ReservationRequestEntityReference | null> {
-		const result = await this.mongoDataSource.findById(id, options);
+		const result = await this.mongoDataSource.findById(id, {
+			...options,
+			populateFields: PopulatedFields,
+		});
 		if (!result) {
 			return null;
 		}
@@ -128,7 +135,10 @@ export class ReservationRequestReadRepositoryImpl
 		const filter = {
 			reserver: new Types.ObjectId(reserverId),
 		};
-		const result = await this.mongoDataSource.find(filter, options);
+		const result = await this.mongoDataSource.find(filter, {
+			...options,
+			populateFields: PopulatedFields,
+		});
 		return result.map((doc) => this.converter.toDomain(doc, this.passport));
 	}
 
@@ -182,7 +192,10 @@ export class ReservationRequestReadRepositoryImpl
 			listing: new MongooseSeedwork.ObjectId(listingId),
 			state: { $in: ['Accepted', 'Requested'] },
 		};
-		const result = await this.mongoDataSource.findOne(filter, options);
+		const result = await this.mongoDataSource.findOne(filter, {
+			...options,
+			populateFields: PopulatedFields,
+		});
 		if (!result) {
 			return null;
 		}
@@ -203,7 +216,10 @@ export class ReservationRequestReadRepositoryImpl
 			reservationPeriodStart: { $lt: reservationPeriodEnd },
 			reservationPeriodEnd: { $gt: reservationPeriodStart },
 		};
-		const result = await this.mongoDataSource.find(filter, options);
+		const result = await this.mongoDataSource.find(filter, {
+			...options,
+			populateFields: PopulatedFields,
+		});
 		return result.map((doc) => this.converter.toDomain(doc, this.passport));
 	}
 
@@ -271,7 +287,7 @@ const getMockReservationRequests = (
 						profile: {
 							firstName: 'Jane',
 							lastName: 'Reserver',
-                            aboutMe: 'Hello',
+							aboutMe: 'Hello',
 							location: {
 								address1: '123 Main St',
 								address2: null,
@@ -363,7 +379,7 @@ const getMockReservationRequests = (
 					profile: {
 						firstName: 'Jane',
 						lastName: 'Reserver',
-                        aboutMe: 'Hello',
+						aboutMe: 'Hello',
 						location: {
 							address1: '123 Main St',
 							address2: null,
@@ -474,7 +490,7 @@ const getMockReservationRequests = (
 							profile: {
 								firstName: 'Jane',
 								lastName: 'Reserver',
-                                aboutMe: 'Hello',
+								aboutMe: 'Hello',
 								location: {
 									address1: '123 Main St',
 									address2: null,
@@ -598,7 +614,7 @@ const getMockReservationRequests = (
 						profile: {
 							firstName: 'Jane',
 							lastName: 'Reserver',
-                            aboutMe: 'Hello',
+							aboutMe: 'Hello',
 							location: {
 								address1: '123 Main St',
 								address2: null,

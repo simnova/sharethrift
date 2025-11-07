@@ -26,16 +26,14 @@ export class ConversationDomainAdapter
 			throw new Error('sharer is not populated');
 		}
 		if (this.doc.sharer instanceof MongooseSeedwork.ObjectId) {
-			return {
-				id: this.doc.sharer.toString(),
-			} as Domain.Contexts.User.PersonalUser.PersonalUserEntityReference;
+			throw new Error('sharer is not populated or is not of the correct type');
 		}
 		return new PersonalUserDomainAdapter(
 			this.doc.sharer as Models.User.PersonalUser,
 		);
 	}
 
-	async loadSharer(): Promise<PersonalUserDomainAdapter> {
+	async loadSharer(): Promise<Domain.Contexts.User.PersonalUser.PersonalUserEntityReference> {
 		if (!this.doc.sharer) {
 			throw new Error('sharer is not populated');
 		}
@@ -56,16 +54,16 @@ export class ConversationDomainAdapter
 			throw new Error('reserver is not populated');
 		}
 		if (this.doc.reserver instanceof MongooseSeedwork.ObjectId) {
-			return {
-				id: this.doc.reserver.toString(),
-			} as Domain.Contexts.User.PersonalUser.PersonalUserEntityReference;
+			throw new Error(
+				'reserver is not populated or is not of the correct type',
+			);
 		}
 		return new PersonalUserDomainAdapter(
 			this.doc.reserver as Models.User.PersonalUser,
 		);
 	}
 
-	async loadReserver(): Promise<PersonalUserDomainAdapter> {
+	async loadReserver(): Promise<Domain.Contexts.User.PersonalUser.PersonalUserEntityReference> {
 		if (!this.doc.reserver) {
 			throw new Error('reserver is not populated');
 		}
@@ -86,16 +84,14 @@ export class ConversationDomainAdapter
 			throw new Error('listing is not populated');
 		}
 		if (this.doc.listing instanceof MongooseSeedwork.ObjectId) {
-			return {
-				id: this.doc.listing.toString(),
-			} as Domain.Contexts.Listing.ItemListing.ItemListingEntityReference;
+			throw new Error('listing is not populated or is not of the correct type');
 		}
 		return new ItemListingDomainAdapter(
 			this.doc.listing as Models.Listing.ItemListing,
 		);
 	}
 
-	async loadListing(): Promise<ItemListingDomainAdapter> {
+	async loadListing(): Promise<Domain.Contexts.Listing.ItemListing.ItemListingEntityReference> {
 		if (!this.doc.listing) {
 			throw new Error('listing is not populated');
 		}

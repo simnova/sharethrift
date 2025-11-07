@@ -60,7 +60,7 @@ export class ReservationRequestDomainAdapter
 		this.doc.reservationPeriodEnd = value;
 	}
 
-	get listing(): Domain.Contexts.Listing.ItemListing.ItemListingEntityReference {
+	get listing(): ItemListingDomainAdapter {
 		if (!this.doc.listing) {
 			throw new Error('listing is not populated');
 		}
@@ -105,7 +105,7 @@ export class ReservationRequestDomainAdapter
 		);
 	}
 
-	async loadReserver(): Promise<Domain.Contexts.User.PersonalUser.PersonalUserEntityReference> {
+	async loadReserver(): Promise<PersonalUserDomainAdapter> {
 		if (!this.doc.reserver) {
 			throw new Error('reserver is not populated');
 		}

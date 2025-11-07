@@ -4,10 +4,6 @@ import type {
 	ConversationCreateInput,
 	Resolvers,
 } from '../../builder/generated.ts';
-import {
-	PopulateItemListingFromField,
-	PopulatePersonalUserFromField,
-} from '../../resolver-helper.ts';
 
 const ConversationMutationResolver = async (
 	getConversation: Promise<Domain.Contexts.Conversation.Conversation.ConversationEntityReference>,
@@ -27,11 +23,6 @@ const ConversationMutationResolver = async (
 };
 
 const conversation: Resolvers = {
-	Conversation: {
-		sharer: PopulatePersonalUserFromField('sharer'),
-		reserver: PopulatePersonalUserFromField('reserver'),
-		listing: PopulateItemListingFromField('listing'),
-	},
 	Query: {
 		conversationsByUser: async (_parent, _args, context: GraphContext) => {
 			return await context.applicationServices.Conversation.Conversation.queryByUser(
