@@ -6,7 +6,7 @@ export const oidcConfig = {
 	noonce: true,
 	response_type: 'code',
 	scope: import.meta.env['VITE_B2C_SCOPE'],
-	onSigninCallback: (): void => {
+	onSigninCallback: (_user: any | void): void => {
 		window.history.replaceState({}, document.title, window.location.pathname);
 		const redirectToPath = window.sessionStorage.getItem('redirectTo');
 		if (redirectToPath) {
