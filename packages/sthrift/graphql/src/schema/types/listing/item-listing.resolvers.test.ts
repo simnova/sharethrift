@@ -125,7 +125,7 @@ function makeMockGraphContext(
             },
             User: {
                 PersonalUser: {
-                    queryByEmail: vi.fn(),
+                    queryByEmail: vi.fn().mockResolvedValue(createMockUser()),
                 },
             },
             verifiedUser: {
