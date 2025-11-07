@@ -31,7 +31,8 @@
         "@sthrift/domain": "workspace:*",
         "@sthrift/messaging-service-twilio": "workspace:*",
         "bson": "^6.10.4",
-        "mongoose": "catalog:"
+        "mongoose": "catalog:",
+        "mongodb": "catalog:"
     },
     "devDependencies": {
         "@cellix/typescript-config": "workspace:*",

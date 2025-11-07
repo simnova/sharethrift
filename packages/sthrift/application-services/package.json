@@ -25,7 +25,7 @@
         "@sthrift/domain": "workspace:*",
         "@sthrift/persistence": "workspace:*",
         "@sthrift/service-cybersource": "workspace:*",
-        "bson": "^6.10.4"
+        "mongodb": "catalog:"
     },
     "devDependencies": {
         "@cellix/typescript-config": "workspace:*",

@@ -3,7 +3,7 @@ import type {
 	ConversationInstance,
 	MessageInstance,
 } from '@cellix/messaging';
-import { ObjectId } from 'bson';
+import { ObjectId } from 'mongodb';
 
 export function toDomainConversationProps(
 		messagingConversation: ConversationInstance,

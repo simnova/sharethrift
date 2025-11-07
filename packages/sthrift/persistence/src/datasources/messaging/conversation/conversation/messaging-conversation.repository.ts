@@ -1,7 +1,7 @@
 import type { Domain } from '@sthrift/domain';
 import type { MessagingService } from '@cellix/messaging';
 import { toDomainMessage } from './messaging-conversation.domain-adapter.ts';
-import { ObjectId } from 'bson';
+import { ObjectId } from 'mongodb';
 
 export interface MessagingConversationRepository {
 	getMessages: (

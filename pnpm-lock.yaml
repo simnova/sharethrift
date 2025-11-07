@@ -650,9 +650,9 @@ importers:
       '@sthrift/service-cybersource':
         specifier: workspace:*
         version: link:../service-cybersource
-      bson:
-        specifier: ^6.10.4
-        version: 6.10.4
+      mongodb:
+        specifier: 'catalog:'
+        version: 6.18.0
     devDependencies:
       '@cellix/typescript-config':
         specifier: workspace:*
@@ -981,6 +981,9 @@ importers:
       bson:
         specifier: ^6.10.4
         version: 6.10.4
+      mongodb:
+        specifier: 'catalog:'
+        version: 6.18.0
       mongoose:
         specifier: 'catalog:'
         version: 8.17.0

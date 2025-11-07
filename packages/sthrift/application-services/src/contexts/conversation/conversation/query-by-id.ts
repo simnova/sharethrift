@@ -1,6 +1,6 @@
 import { Domain } from '@sthrift/domain';
 import type { DataSources } from '@sthrift/persistence';
-import { ObjectId } from 'bson';
+import { ObjectId } from 'mongodb';
 
 export interface ConversationQueryByIdCommand {
 	conversationId: string;
