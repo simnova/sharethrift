@@ -20,8 +20,25 @@ export const accept = (dataSources: DataSources) => {
 			throw new Error('Reservation request not found');
 		}
 
+		// Get the listing ID from the reservation request
+		const listingId =
+			reservationRequest.listing?.id || reservationRequest.listing;
+
+		if (!listingId) {
+			throw new Error('Listing not found in reservation request');
+		}
+
+		// Load the listing separately
+		const listing =
+			await dataSources.readonlyDataSource.Listing.ItemListing.ItemListingReadRepo.getById(
+				listingId.toString(),
+			);
+
+		if (!listing) {
+			throw new Error('Listing not found');
+		}
+
 		// Verify the sharer owns the listing
-		const listing = await reservationRequest.loadListing();
 		const sharer =
 			await dataSources.readonlyDataSource.User.PersonalUser.PersonalUserReadRepo.getByEmail(
 				command.sharerEmail,

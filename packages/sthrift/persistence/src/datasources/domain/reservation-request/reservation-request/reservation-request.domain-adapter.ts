@@ -3,6 +3,7 @@ import { Domain } from '@sthrift/domain';
 import type { Models } from '@sthrift/data-sources-mongoose-models';
 import { ItemListingDomainAdapter } from '../../listing/item/item-listing.domain-adapter.ts';
 import { PersonalUserDomainAdapter } from '../../user/personal-user/personal-user.domain-adapter.ts';
+import { dbToDomainState, domainToDbState } from '../../../state-mappings.ts';
 
 export class ReservationRequestConverter extends MongooseSeedwork.MongoTypeConverter<
 	Models.ReservationRequest.ReservationRequest,
@@ -25,11 +26,13 @@ export class ReservationRequestDomainAdapter
 {
 	// Primitive Fields Getters and Setters
 	get state() {
-		return this.doc.state;
+		// Map database state to domain state
+		return dbToDomainState(this.doc.state);
 	}
 
 	set state(value: string) {
-		this.doc.state = value;
+		// Map domain state to database state
+		this.doc.state = domainToDbState(value);
 	}
 
 	get closeRequestedBySharer() {

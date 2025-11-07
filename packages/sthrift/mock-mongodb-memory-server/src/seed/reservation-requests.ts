@@ -32,4 +32,20 @@ export const reservationRequests = [
 		createdAt: new Date('2023-05-01T10:00:00Z'),
 		updatedAt: new Date('2023-05-01T10:00:00Z'),
 	},
+	{
+		// New reservation request for City Bike
+		_id: '707f1f77bcf86cd799431111',
+		state: 'Pending',
+		reservationPeriodStart: new Date('2024-09-01T08:00:00Z'),
+		reservationPeriodEnd: new Date('2024-09-10T20:00:00Z'),
+		schemaVersion: '1.0.0',
+		listing: new ObjectId('707f1f77bcf86cd799439035'), // City Bike
+		reserver: new ObjectId('507f1f77bcf86cd799439013'), // Charlie
+		closeRequestedBySharer: false,
+		closeRequestedByReserver: false,
+		version: 1,
+		discriminatorKey: 'reservation-request',
+		createdAt: new Date('2024-08-15T10:00:00Z'),
+		updatedAt: new Date('2024-08-15T10:00:00Z'),
+	},
 ] as unknown as Models.ReservationRequest.ReservationRequest[];

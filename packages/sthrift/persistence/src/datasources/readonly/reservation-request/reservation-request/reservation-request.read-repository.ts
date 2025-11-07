@@ -8,6 +8,7 @@ import {
 import type { FindOneOptions, FindOptions } from '../../mongo-data-source.ts';
 import { ReservationRequestConverter } from '../../../domain/reservation-request/reservation-request/reservation-request.domain-adapter.ts';
 import { MongooseSeedwork } from '@cellix/mongoose-seedwork';
+import { domainToDbStates } from '../../../state-mappings.ts';
 
 export interface ReservationRequestReadRepository {
 	getAll: (
@@ -190,7 +191,7 @@ export class ReservationRequestReadRepositoryImpl
 		const filter = {
 			reserver: new MongooseSeedwork.ObjectId(reserverId),
 			listing: new MongooseSeedwork.ObjectId(listingId),
-			state: { $in: ['Accepted', 'Requested'] },
+			state: { $in: domainToDbStates(['Accepted', 'Requested']) },
 		};
 		const result = await this.mongoDataSource.findOne(filter, options);
 		if (!result) {
@@ -209,7 +210,7 @@ export class ReservationRequestReadRepositoryImpl
 	> {
 		const filter = {
 			listing: new MongooseSeedwork.ObjectId(listingId),
-			state: { $in: ['Accepted', 'Requested'] },
+			state: { $in: domainToDbStates(['Accepted', 'Requested']) },
 			reservationPeriodStart: { $lt: reservationPeriodEnd },
 			reservationPeriodEnd: { $gt: reservationPeriodStart },
 		};
