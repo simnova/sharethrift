@@ -132,7 +132,10 @@ export class ReservationRequestReadRepositoryImpl
 			reserver: new MongooseSeedwork.ObjectId(reserverId),
 			...filterByStates(RESERVATION_STATES.ACTIVE),
 		};
-		return await this.queryMany(filter, options);
+		return await this.queryMany(filter, {
+			...options,
+			populateFields: ['listing', 'reserver'],
+		});
 	}
 
 	async getPastByReserverIdWithListingWithSharer(
@@ -145,7 +148,10 @@ export class ReservationRequestReadRepositoryImpl
 			reserver: new MongooseSeedwork.ObjectId(reserverId),
 			...filterByStates(RESERVATION_STATES.INACTIVE),
 		};
-		return await this.queryMany(filter, options);
+		return await this.queryMany(filter, {
+			...options,
+			populateFields: ['listing', 'reserver'],
+		});
 	}
 
 	async getListingRequestsBySharerId(
