@@ -59,6 +59,7 @@ export const RequestsTableContainer: React.FC<RequestsTableContainerProps> = ({
   );
 
   const requests = data?.myListingsRequests?.items ?? [];
+
   const total = data?.myListingsRequests?.total ?? 0;
 
   console.log("Requests data:", data);
