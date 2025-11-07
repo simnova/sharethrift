@@ -4,12 +4,145 @@ import { describeFeature, loadFeature } from '@amiceli/vitest-cucumber';
 import { expect, vi } from 'vitest';
 import type { GraphContext } from '../../../init/context.ts';
 import personalUserResolvers from './personal-user.resolvers.ts';
+import type { Domain } from '@sthrift/domain';
+// Define a type for the payment response based on the interface structure
+interface ProcessPaymentResponse {
+	id?: string;
+	status?: string;
+	errorInformation?: {
+		reason?: string;
+		message?: string;
+	};
+	orderInformation?: {
+		amountDetails?: {
+			totalAmount?: string;
+			currency?: string;
+		};
+	};
+}
 
 const test = { for: describeFeature };
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const feature = await loadFeature(
 	path.resolve(__dirname, 'features/personal-user.resolvers.feature'),
 );
+
+// Mock data factories
+function createMockLocation(): Domain.Contexts.User.PersonalUser.PersonalUserAccountProfileLocationProps {
+	return {
+		address1: '123 Main St',
+		address2: null,
+		city: 'New York',
+		state: 'NY',
+		country: 'USA',
+		zipCode: '10001',
+	};
+}
+
+function createMockBilling(): Domain.Contexts.User.PersonalUser.PersonalUserAccountProfileBillingProps {
+	return {
+		subscriptionId: null,
+		cybersourceCustomerId: null,
+		paymentState: 'inactive',
+		lastTransactionId: null,
+		lastPaymentAmount: null,
+	};
+}
+
+function createMockProfile(overrides: Partial<Domain.Contexts.User.PersonalUser.PersonalUserProfileProps> = {}): Domain.Contexts.User.PersonalUser.PersonalUserProfileProps {
+	return {
+		firstName: 'John',
+		lastName: 'Doe',
+		aboutMe: 'Test user',
+		location: createMockLocation(),
+		billing: createMockBilling(),
+		...overrides,
+	};
+}
+
+function createMockAccount(overrides: Partial<Domain.Contexts.User.PersonalUser.PersonalUserAccountProps> = {}): Domain.Contexts.User.PersonalUser.PersonalUserAccountProps {
+	return {
+		accountType: 'personal',
+		email: 'test@example.com',
+		username: 'testuser',
+		profile: createMockProfile(),
+		...overrides,
+	};
+}
+
+function createMockRole(): Domain.Contexts.Role.PersonalUserRole.PersonalUserRoleEntityReference {
+	return {
+		id: 'role-123',
+		roleName: 'user',
+		isDefault: true,
+		roleType: 'personal',
+		createdAt: new Date(),
+		updatedAt: new Date(),
+		schemaVersion: '1.0',
+		permissions: {
+			listingPermissions: {
+				canCreateItemListing: true,
+				canUpdateItemListing: true,
+				canDeleteItemListing: true,
+				canViewItemListing: true,
+				canPublishItemListing: true,
+				canUnpublishItemListing: true,
+			},
+			conversationPermissions: {
+				canCreateConversation: true,
+				canManageConversation: true,
+				canViewConversation: true,
+			},
+			reservationRequestPermissions: {
+				canCreateReservationRequest: true,
+				canManageReservationRequest: true,
+				canViewReservationRequest: true,
+			},
+		},
+	};
+}
+
+function createMockPersonalUser(overrides: Partial<Domain.Contexts.User.PersonalUser.PersonalUserEntityReference> = {}): Domain.Contexts.User.PersonalUser.PersonalUserEntityReference {
+	const mockAccount = createMockAccount();
+	const mockProfile = createMockProfile();
+	const mockLocation = createMockLocation();
+	const mockBilling = createMockBilling();
+	
+	return {
+		id: 'user-123',
+		userType: 'personal',
+		isBlocked: false,
+		hasCompletedOnboarding: true,
+		role: createMockRole(),
+		loadRole: vi.fn().mockResolvedValue(createMockRole()),
+		account: {
+			...mockAccount,
+			profile: {
+				...mockProfile,
+				location: mockLocation,
+				billing: mockBilling,
+			},
+		},
+		schemaVersion: '1.0',
+		createdAt: new Date(),
+		updatedAt: new Date(),
+		...overrides,
+	};
+}
+
+function createMockProcessPaymentResponse(overrides: Partial<ProcessPaymentResponse> = {}): ProcessPaymentResponse {
+	return {
+		id: 'payment-123',
+		status: 'SUCCEEDED',
+		orderInformation: {
+			amountDetails: {
+				totalAmount: '100.00',
+				currency: 'USD',
+			},
+		},
+		...overrides,
+	};
+}
 
 function makeMockGraphContext(overrides: Partial<GraphContext> = {}): GraphContext {
 	return {
@@ -65,16 +198,13 @@ test.for(feature, ({ Scenario, Background, BeforeEachScenario }) => {
 			// User ID will be passed in the resolver call
 		});
 		When('I execute the query "personalUserById"', async () => {
-			vi.mocked(context.applicationServices.User.PersonalUser.queryById).mockResolvedValue({
-				id: 'user-123',
-				account: { email: 'test@example.com' },
-			});
-			result = await personalUserResolvers.Query.personalUserById(
-				{},
-				{ id: 'user-123' },
-				context,
-				{} as never,
-			);
+			const mockUser = createMockPersonalUser({ id: 'user-123' });
+			vi.mocked(context.applicationServices.User.PersonalUser.queryById).mockResolvedValue(mockUser);
+			
+			const resolver = personalUserResolvers.Query?.personalUserById;
+			if (typeof resolver === 'function') {
+				result = await resolver({}, { id: 'user-123' }, context, {} as never);
+			}
 		});
 		Then(
 			'the resolver should call "User.PersonalUser.queryById" with id "user-123"',
@@ -99,22 +229,21 @@ test.for(feature, ({ Scenario, Background, BeforeEachScenario }) => {
 			When(
 				'I execute the query "currentPersonalUserAndCreateIfNotExists"',
 				async () => {
+					const mockUser = createMockPersonalUser({ 
+						id: 'user-456',
+						account: createMockAccount({ 
+							email: 'john.doe@example.com',
+							profile: createMockProfile({ firstName: 'John', lastName: 'Doe' })
+						})
+					});
 					vi.mocked(
 						context.applicationServices.User.PersonalUser.createIfNotExists,
-					).mockResolvedValue({
-						id: 'user-1',
-						account: {
-							email: 'john.doe@example.com',
-							profile: { firstName: 'John', lastName: 'Doe' },
-						},
-					});
-					result =
-						await personalUserResolvers.Query.currentPersonalUserAndCreateIfNotExists(
-							{},
-							{},
-							context,
-							{} as never,
-						);
+					).mockResolvedValue(mockUser);
+
+					const resolver = personalUserResolvers.Query?.currentPersonalUserAndCreateIfNotExists;
+					if (typeof resolver === 'function') {
+						result = await resolver({}, {}, context, {} as never);
+					}
 				},
 			);
 			Then(
@@ -156,12 +285,11 @@ test.for(feature, ({ Scenario, Background, BeforeEachScenario }) => {
 					page: 1,
 					pageSize: 20,
 				});
-				result = await personalUserResolvers.Query.allUsers(
-					{},
-					{ page: 1, pageSize: 20 },
-					context,
-					{} as never,
-				);
+				
+				const resolver = personalUserResolvers.Query?.allUsers;
+				if (typeof resolver === 'function') {
+					result = await resolver({}, { page: 1, pageSize: 20 }, context, {} as never);
+				}
 			});
 			Then('the resolver should call "User.PersonalUser.getAllUsers"', () => {
 				expect(
@@ -194,23 +322,30 @@ test.for(feature, ({ Scenario, Background, BeforeEachScenario }) => {
 				},
 			);
 			When('I execute the mutation "personalUserUpdate"', async () => {
+				const mockUser = createMockPersonalUser({ 
+					id: 'user-123',
+					account: createMockAccount({ 
+						profile: createMockProfile({ firstName: 'Alice' })
+					})
+				});
 				vi.mocked(
 					context.applicationServices.User.PersonalUser.update,
-				).mockResolvedValue({
-					id: 'user-123',
-					account: { profile: { firstName: 'Alice' } },
-				});
-				result = await personalUserResolvers.Mutation.personalUserUpdate(
-					{},
-					{
-						input: {
-							id: 'user-123',
-							account: { profile: { firstName: 'Alice' } },
+				).mockResolvedValue(mockUser);
+				
+				const resolver = personalUserResolvers.Mutation?.personalUserUpdate;
+				if (typeof resolver === 'function') {
+					result = await resolver(
+						{},
+						{
+							input: {
+								id: 'user-123',
+								account: { profile: { firstName: 'Alice' } },
+							},
 						},
-					},
-					context,
-					{} as never,
-				);
+						context,
+						{} as never,
+					);
+				}
 			});
 			Then('the resolver should call "User.PersonalUser.update"', () => {
 				expect(
@@ -229,18 +364,18 @@ test.for(feature, ({ Scenario, Background, BeforeEachScenario }) => {
 			// User ID will be passed in the resolver call
 		});
 		When('I execute the mutation "blockUser"', async () => {
+			const mockUser = createMockPersonalUser({ 
+				id: 'user-456',
+				isBlocked: true
+			});
 			vi.mocked(
 				context.applicationServices.User.PersonalUser.update,
-			).mockResolvedValue({
-				id: 'user-456',
-				isBlocked: true,
-			});
-			result = await personalUserResolvers.Mutation.blockUser(
-				{},
-				{ userId: 'user-456' },
-				context,
-				{} as never,
-			);
+			).mockResolvedValue(mockUser);
+			
+			const resolver = personalUserResolvers.Mutation?.blockUser;
+			if (typeof resolver === 'function') {
+				result = await resolver({}, { userId: 'user-456' }, context, {} as never);
+			}
 		});
 		Then(
 			'the resolver should call "User.PersonalUser.update" with "isBlocked" set to true',
@@ -264,18 +399,18 @@ test.for(feature, ({ Scenario, Background, BeforeEachScenario }) => {
 			// User ID will be passed in the resolver call
 		});
 		When('I execute the mutation "unblockUser"', async () => {
+			const mockUser = createMockPersonalUser({ 
+				id: 'user-456',
+				isBlocked: false
+			});
 			vi.mocked(
 				context.applicationServices.User.PersonalUser.update,
-			).mockResolvedValue({
-				id: 'user-456',
-				isBlocked: false,
-			});
-			result = await personalUserResolvers.Mutation.unblockUser(
-				{},
-				{ userId: 'user-456' },
-				context,
-				{} as never,
-			);
+			).mockResolvedValue(mockUser);
+			
+			const resolver = personalUserResolvers.Mutation?.unblockUser;
+			if (typeof resolver === 'function') {
+				result = await resolver({}, { userId: 'user-456' }, context, {} as never);
+			}
 		});
 		Then(
 			'the resolver should call "User.PersonalUser.update" with "isBlocked" set to false',
@@ -298,31 +433,43 @@ test.for(feature, ({ Scenario, Background, BeforeEachScenario }) => {
 		'Processing a payment successfully',
 		({ Given, When, Then, And }) => {
 			Given('a valid payment request with order and billing information', () => {
+				const mockResponse = createMockProcessPaymentResponse({
+					status: 'SUCCEEDED',
+					id: 'txn-123',
+				});
 				vi.mocked(
 					context.applicationServices.Payment.processPayment,
-				).mockResolvedValue({
-					status: 'SUCCEEDED',
-					transactionId: 'txn-123',
-				});
+				).mockResolvedValue(mockResponse);
 			});
 			When('I execute the mutation "processPayment"', async () => {
-				result = await personalUserResolvers.Mutation.processPayment(
+				const resolver = personalUserResolvers.Mutation?.processPayment;
+				if (typeof resolver === 'function') {
+					result = await resolver(
 					{},
 					{
 						request: {
+							userId: 'user-123',
 							orderInformation: {
 								billTo: {
 									firstName: 'John',
 									lastName: 'Doe',
 									address1: '123 Main St',
-									locality: 'City',
-									administrativeArea: 'State',
+									city: 'City',
 									postalCode: '12345',
 									country: 'US',
+									state: 'State',
 								},
 								amountDetails: {
-									totalAmount: '100.00',
+									totalAmount: 100.00,
 									currency: 'USD',
+								},
+							},
+							paymentInformation: {
+								card: {
+									number: '4111111111111111',
+									expirationMonth: '12',
+									expirationYear: '2025',
+									securityCode: '123',
 								},
 							},
 						},
@@ -330,9 +477,10 @@ test.for(feature, ({ Scenario, Background, BeforeEachScenario }) => {
 					context,
 					{} as never,
 				);
-			});
-			Then(
-				'it should call "Payment.processPayment" with sanitized fields',
+			}
+		});
+		Then(
+			'it should call "Payment.processPayment" with sanitized fields',
 				() => {
 					expect(
 						context.applicationServices.Payment.processPayment,
@@ -359,23 +507,34 @@ test.for(feature, ({ Scenario, Background, BeforeEachScenario }) => {
 				).mockRejectedValue(new Error('Payment failed'));
 			});
 			When('I execute the mutation "processPayment"', async () => {
-				result = await personalUserResolvers.Mutation.processPayment(
+				const resolver = personalUserResolvers.Mutation?.processPayment;
+				if (typeof resolver === 'function') {
+					result = await resolver(
 					{},
 					{
 						request: {
+							userId: 'user-123',
 							orderInformation: {
 								billTo: {
 									firstName: 'John',
 									lastName: 'Doe',
 									address1: '123 Main St',
-									locality: 'City',
-									administrativeArea: 'State',
 									postalCode: '12345',
 									country: 'US',
+									state: 'State',
+									city: 'City',
 								},
 								amountDetails: {
-									totalAmount: '100.00',
+									totalAmount: 100.00,
 									currency: 'USD',
+								},
+							},
+							paymentInformation: {
+								card: {
+									number: '4111111111111111',
+									expirationMonth: '12',
+									expirationYear: '2025',
+									securityCode: '123',
 								},
 							},
 						},
@@ -383,8 +542,9 @@ test.for(feature, ({ Scenario, Background, BeforeEachScenario }) => {
 					context,
 					{} as never,
 				);
-			});
-			Then('it should return a PaymentResponse with status "FAILED"', () => {
+			}
+		});
+		Then('it should return a PaymentResponse with status "FAILED"', () => {
 				expect((result as { status: string }).status).toBe('FAILED');
 				expect((result as { success: boolean }).success).toBe(false);
 			});
@@ -412,25 +572,35 @@ test.for(feature, ({ Scenario, Background, BeforeEachScenario }) => {
 					vi.mocked(
 						context.applicationServices.Payment.refundPayment,
 					).mockResolvedValue({
+						id: 'txn-789',
 						status: 'REFUNDED',
-						transactionId: 'txn-789',
 					});
 				},
 			);
-			When('I execute the mutation "refundPayment"', async () => {
-				result = await personalUserResolvers.Mutation.refundPayment(
+		When('I execute the mutation "refundPayment"', async () => {
+			const resolver = personalUserResolvers.Mutation?.refundPayment;
+			if (typeof resolver === 'function') {
+				result = await resolver(
 					{},
 					{
 						request: {
+							userId: 'user-123',
 							transactionId: 'txn-789',
 							amount: 100.0,
+							orderInformation: {
+								amountDetails: {
+									totalAmount: 100.00,
+									currency: 'USD',
+								},
+							},
 						},
 					},
 					context,
 					{} as never,
 				);
-			});
-			Then('it should call "Payment.refundPayment"', () => {
+			}
+		});
+		Then('it should call "Payment.refundPayment"', () => {
 				expect(
 					context.applicationServices.Payment.refundPayment,
 				).toHaveBeenCalled();
@@ -453,19 +623,29 @@ test.for(feature, ({ Scenario, Background, BeforeEachScenario }) => {
 			).mockRejectedValue(new Error('Refund failed'));
 		});
 		When('I execute the mutation "refundPayment"', async () => {
-			result = await personalUserResolvers.Mutation.refundPayment(
+			const resolver = personalUserResolvers.Mutation?.refundPayment;
+			if (typeof resolver === 'function') {
+				result = await resolver(
 				{},
 				{
 					request: {
+						userId: 'user-123',
 						transactionId: 'txn-789',
 						amount: 100.0,
+						orderInformation: {
+							amountDetails: {
+								totalAmount: 100.00,
+								currency: 'USD',
+							},
+						},
 					},
 				},
 				context,
 				{} as never,
 			);
-		});
-		Then('it should return a RefundResponse with status "FAILED"', () => {
+		}
+	});
+	Then('it should return a RefundResponse with status "FAILED"', () => {
 			expect((result as { status: string }).status).toBe('FAILED');
 			expect((result as { success: boolean }).success).toBe(false);
 		});
