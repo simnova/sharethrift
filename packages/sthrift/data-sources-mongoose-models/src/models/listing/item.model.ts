@@ -4,10 +4,13 @@ import {
 	type ListingModelType,
 	listingOptions,
 } from './listing.model.ts';
-import * as PersonalUser from '../user/personal-user.model.ts';
+import type * as PersonalUser from '../user/personal-user.model.ts';
+import type * as AdminUser from '../user/admin-user.model.ts';
 
 export interface ItemListing extends Listing {
-	sharer: PopulatedDoc<PersonalUser.PersonalUser> | ObjectId;
+	sharer:
+		| PopulatedDoc<PersonalUser.PersonalUser | AdminUser.AdminUser>
+		| ObjectId;
 	title: string;
 	description: string;
 	category: string;
@@ -27,7 +30,7 @@ export interface ItemListing extends Listing {
 	sharingHistory?: ObjectId[];
 	reports?: number;
 	images?: string[];
-    listingType: string;
+	listingType: string;
 }
 
 export const LISTING_STATE_ENUM = [
@@ -48,7 +51,7 @@ export const ItemListingSchema = new Schema<
 	{
 		sharer: {
 			type: Schema.Types.ObjectId,
-			ref: PersonalUser.PersonalUserModelName,
+			ref: 'User',
 			required: true,
 		},
 		title: { type: String, required: false, maxlength: 200 },
