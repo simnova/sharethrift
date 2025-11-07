@@ -73,6 +73,7 @@ export class ReservationRequestDomainAdapter
 				id: this.doc.listing.toString(),
 			} as Domain.Contexts.Listing.ItemListing.ItemListingEntityReference;
 		}
+
 		return new ItemListingDomainAdapter(
 			this.doc.listing as Models.Listing.ItemListing,
 		);
