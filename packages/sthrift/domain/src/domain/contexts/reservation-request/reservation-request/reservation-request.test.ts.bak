@@ -1,0 +1,618 @@
+import path from 'node:path';
+import { fileURLToPath } from 'node:url';
+import { describeFeature, loadFeature } from '@amiceli/vitest-cucumber';
+import { expect, vi } from 'vitest';
+import type { ReservationRequestProps } from './reservation-request.entity.ts';
+import { ReservationRequest } from './reservation-request.ts';
+import { DomainSeedwork } from '@cellix/domain-seedwork';
+import type { Passport } from '../../passport.ts';
+import type { ItemListingEntityReference } from '../../listing/item/item-listing.entity.ts';
+import type { PersonalUserEntityReference } from '../../user/personal-user/personal-user.entity.ts';
+import { ReservationRequestStates } from './reservation-request.value-objects.ts';
+import type { PersonalUserRoleEntityReference } from '../../role/personal-user-role/personal-user-role.entity.ts';
+import { PersonalUserRolePermissions } from '../../role/personal-user-role/personal-user-role-permissions.ts';
+
+const test = { for: describeFeature };
+const __dirname = path.dirname(fileURLToPath(import.meta.url));
+const feature = await loadFeature(
+	path.resolve(__dirname, 'features/reservation-request.feature'),
+);
+
+function makePassport(permissions = {
+	canAcceptRequest: true,
+	canRejectRequest: true,
+	canCancelRequest: true,
+	canCloseRequest: true,
+}): Passport {
+	return vi.mocked({
+		reservationRequest: {
+			forReservationRequest: vi.fn(() => ({
+				determineIf: (fn: (p: typeof permissions) => boolean) =>
+					fn(permissions),
+			})),
+		},
+		listing: {
+			forItemListing: vi.fn(() => ({
+				determineIf: () => true,
+			})),
+		},
+		user: {
+			forPersonalUser: vi.fn(() => ({
+				determineIf: () => true,
+			})),
+		},
+	} as unknown as Passport);
+}
+
+const mockRole: Readonly<PersonalUserRoleEntityReference> = {
+	id: 'role-1',
+	roleName: 'mock-role',
+	isDefault: false,
+	permissions: new PersonalUserRolePermissions({
+		listingPermissions: {
+			canCreateItemListing: true,
+			canUpdateItemListing: true,
+			canDeleteItemListing: true,
+			canViewItemListing: true,
+			canPublishItemListing: true,
+			canUnpublishItemListing: true,
+		},
+		conversationPermissions: {
+			canCreateConversation: true,
+			canManageConversation: true,
+			canViewConversation: true,
+		},
+		reservationRequestPermissions: {
+			canCreateReservationRequest: true,
+			canManageReservationRequest: true,
+			canViewReservationRequest: true,
+		},
+	}),
+	roleType: 'mock-type',
+	createdAt: new Date(),
+	updatedAt: new Date(),
+	schemaVersion: '1',
+};
+
+function makeReserver(id = 'user-1'): PersonalUserEntityReference {
+	return {
+		id,
+		userType: 'personal',
+		isBlocked: false,
+		schemaVersion: '1',
+		account: {
+			accountType: 'standard',
+			email: 'reserver@example.com',
+			username: 'reserver',
+			profile: {
+				firstName: 'Test',
+				lastName: 'Reserver',
+				aboutMe: 'Hello',
+				location: {
+					address1: '123 Main St',
+					address2: null,
+					city: 'Springfield',
+					state: 'IL',
+					country: 'USA',
+					zipCode: '62704',
+				},
+				billing: {
+					subscriptionId: 'sub-123',
+					cybersourceCustomerId: 'cyber-456',
+					paymentState: 'active',
+					lastPaymentAmount: 49.99,
+					lastTransactionId: 'txn-789',
+				},
+			},
+		},
+		createdAt: new Date(),
+		updatedAt: new Date(),
+		hasCompletedOnboarding: true,
+		role: mockRole,
+		loadRole: async () => mockRole,
+	};
+}
+
+function makeListing(
+	id = 'listing-1',
+	state: 'Published' | 'Draft' = 'Published',
+): ItemListingEntityReference {
+	return {
+		id,
+		sharer: makeReserver('sharer-1'),
+		title: 'Test Listing',
+		description: 'A test listing',
+		category: 'Tools & Equipment',
+		location: '123 Main St, Springfield',
+		sharingPeriodStart: new Date(),
+		sharingPeriodEnd: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000),
+		state,
+		createdAt: new Date(),
+		updatedAt: new Date(),
+		schemaVersion: '1',
+		listingType: 'item-listing',
+	};
+}
+
+function makeBaseProps(
+	overrides: Partial<ReservationRequestProps> = {},
+): ReservationRequestProps {
+	const listing = overrides.listing || makeListing();
+	const reserver = overrides.reserver || makeReserver();
+	const now = new Date();
+	const tomorrow = new Date(now.getTime() + 24 * 60 * 60 * 1000);
+	const nextMonth = new Date(now.getTime() + 30 * 24 * 60 * 60 * 1000);
+
+	return {
+		id: 'reservation-1',
+		state: ReservationRequestStates.REQUESTED,
+		reservationPeriodStart: tomorrow,
+		reservationPeriodEnd: nextMonth,
+		createdAt: new Date('2020-01-01T00:00:00Z'),
+		updatedAt: new Date('2020-01-02T00:00:00Z'),
+		schemaVersion: '1.0.0',
+		listing,
+		loadListing: async () => listing,
+		reserver,
+		loadReserver: async () => reserver,
+		closeRequestedBySharer: false,
+		closeRequestedByReserver: false,
+		...overrides,
+	};
+}
+
+test.for(feature, ({ Scenario, BeforeEachScenario }) => {
+	let passport: Passport;
+	let baseProps: ReservationRequestProps;
+	let reservationRequest: ReservationRequest<ReservationRequestProps>;
+	let reserver: PersonalUserEntityReference;
+	let listing: ItemListingEntityReference;
+
+	BeforeEachScenario(() => {
+		passport = makePassport();
+		reserver = makeReserver('reserverUser');
+		listing = makeListing('listing1', 'Published');
+		baseProps = makeBaseProps({ listing, reserver });
+		reservationRequest = new ReservationRequest(baseProps, passport);
+	});
+
+	Scenario('Creating a new reservation request instance', ({ When, Then, And }) => {
+		let newReservationRequest: ReservationRequest<ReservationRequestProps>;
+		When(
+			'I create a new ReservationRequest aggregate using getNewInstance with state "REQUESTED", listing "listing1", reserver "reserverUser", reservationPeriodStart "tomorrow", and reservationPeriodEnd "next month"',
+			() => {
+				const now = new Date();
+				const tomorrow = new Date(now.getTime() + 24 * 60 * 60 * 1000);
+				const nextMonth = new Date(now.getTime() + 30 * 24 * 60 * 60 * 1000);
+
+				newReservationRequest = ReservationRequest.getNewInstance(
+					baseProps,
+					ReservationRequestStates.REQUESTED,
+					listing,
+					reserver,
+					tomorrow,
+					nextMonth,
+					passport,
+				);
+			},
+		);
+		Then('the reservation request\'s state should be "REQUESTED"', () => {
+			expect(newReservationRequest.state).toBe(ReservationRequestStates.REQUESTED);
+		});
+		And('the reservation request\'s listing should reference "listing1"', () => {
+			expect(newReservationRequest.listing.id).toBe('listing1');
+		});
+		And('the reservation request\'s reserver should reference "reserverUser"', () => {
+			expect(newReservationRequest.reserver.id).toBe('reserverUser');
+		});
+	});
+
+	Scenario('Setting reservation period start in the past', ({ Given, When, Then }) => {
+		let throwError: () => void;
+		Given('a new ReservationRequest aggregate being created', () => {
+			// Setup done in background
+		});
+		When('I try to set the reservationPeriodStart to a past date', () => {
+			throwError = () => {
+				const yesterday = new Date(Date.now() - 24 * 60 * 60 * 1000);
+				const nextMonth = new Date(Date.now() + 30 * 24 * 60 * 60 * 1000);
+				ReservationRequest.getNewInstance(
+					baseProps,
+					ReservationRequestStates.REQUESTED,
+					listing,
+					reserver,
+					yesterday,
+					nextMonth,
+					passport,
+				);
+			};
+		});
+		Then(
+			'an error should be thrown indicating "Reservation period start date must be today or in the future"',
+			() => {
+				expect(throwError).toThrow(
+					'Reservation period start date must be today or in the future',
+				);
+			},
+		);
+	});
+
+	Scenario('Setting reservation period end before start', ({ Given, When, Then }) => {
+		let throwError: () => void;
+		Given('a new ReservationRequest aggregate being created', () => {
+			// Setup done in background
+		});
+		When(
+			'I try to set reservationPeriodEnd to a date before reservationPeriodStart',
+			() => {
+				throwError = () => {
+					const tomorrow = new Date(Date.now() + 24 * 60 * 60 * 1000);
+					const yesterday = new Date(Date.now() - 24 * 60 * 60 * 1000);
+					ReservationRequest.getNewInstance(
+						baseProps,
+						ReservationRequestStates.REQUESTED,
+						listing,
+						reserver,
+						tomorrow,
+						yesterday,
+						passport,
+					);
+				};
+			},
+		);
+		Then(
+			'an error should be thrown indicating "Reservation period end date must be after the start date"',
+			() => {
+				expect(throwError).toThrow(
+					'Reservation start date must be before end date',
+				);
+			},
+		);
+	});
+
+	Scenario('Setting reserver after creation', ({ Given, When, Then }) => {
+		let throwError: () => void;
+		Given('an existing ReservationRequest aggregate', () => {
+			reservationRequest = new ReservationRequest(baseProps, passport);
+		});
+		When('I try to set a new listing', () => {
+			throwError = () => {
+				reservationRequest.listing = makeListing('listing-2');
+			};
+		});
+		Then(
+			'a PermissionError should be thrown with message "Listing can only be set when creating a new reservation request"',
+			() => {
+				expect(throwError).toThrow(DomainSeedwork.PermissionError);
+				expect(throwError).toThrow(
+					'Listing can only be set when creating a new reservation request',
+				);
+			},
+		);
+	});
+
+	Scenario(
+		'Accepting a requested reservation with permission',
+		({ Given, And, When, Then }) => {
+			Given('a ReservationRequest aggregate with state "REQUESTED"', () => {
+				reservationRequest = new ReservationRequest(
+					makeBaseProps({ state: ReservationRequestStates.REQUESTED }),
+					passport,
+				);
+			});
+			And('the user has permission to accept requests', () => {
+				passport = makePassport({ canAcceptRequest: true, canRejectRequest: true, canCancelRequest: true, canCloseRequest: true });
+				reservationRequest = new ReservationRequest(
+					makeBaseProps({ state: ReservationRequestStates.REQUESTED }),
+					passport,
+				);
+			});
+			When('I set state to "ACCEPTED"', () => {
+				reservationRequest.state = ReservationRequestStates.ACCEPTED;
+			});
+			Then('the reservation request\'s state should be "ACCEPTED"', () => {
+				expect(reservationRequest.state).toBe(ReservationRequestStates.ACCEPTED);
+			});
+		},
+	);
+
+	Scenario(
+		'Accepting a reservation without permission',
+		({ Given, And, When, Then }) => {
+			let throwError: () => void;
+			Given('a ReservationRequest aggregate with state "REQUESTED"', () => {
+				reservationRequest = new ReservationRequest(
+					makeBaseProps({ state: ReservationRequestStates.REQUESTED }),
+					passport,
+				);
+			});
+			And('the user does not have permission to accept requests', () => {
+				passport = makePassport({ canAcceptRequest: false, canRejectRequest: true, canCancelRequest: true, canCloseRequest: true });
+				reservationRequest = new ReservationRequest(
+					makeBaseProps({ state: ReservationRequestStates.REQUESTED }),
+					passport,
+				);
+			});
+			When('I try to set state to "ACCEPTED"', () => {
+				throwError = () => {
+					reservationRequest.state = ReservationRequestStates.ACCEPTED;
+				};
+			});
+			Then('a PermissionError should be thrown', () => {
+				expect(throwError).toThrow(DomainSeedwork.PermissionError);
+			});
+		},
+	);
+
+	Scenario(
+		'Rejecting a requested reservation with permission',
+		({ Given, And, When, Then }) => {
+			Given('a ReservationRequest aggregate with state "REQUESTED"', () => {
+				reservationRequest = new ReservationRequest(
+					makeBaseProps({ state: ReservationRequestStates.REQUESTED }),
+					passport,
+				);
+			});
+			And('the user has permission to reject requests', () => {
+				passport = makePassport({ canAcceptRequest: true, canRejectRequest: true, canCancelRequest: true, canCloseRequest: true });
+				reservationRequest = new ReservationRequest(
+					makeBaseProps({ state: ReservationRequestStates.REQUESTED }),
+					passport,
+				);
+			});
+			When('I set state to "REJECTED"', () => {
+				reservationRequest.state = ReservationRequestStates.REJECTED;
+			});
+			Then('the reservation request\'s state should be "REJECTED"', () => {
+				expect(reservationRequest.state).toBe(ReservationRequestStates.REJECTED);
+			});
+		},
+	);
+
+	Scenario(
+		'Rejecting a reservation without permission',
+		({ Given, And, When, Then }) => {
+			let throwError: () => void;
+			Given('a ReservationRequest aggregate with state "REQUESTED"', () => {
+				reservationRequest = new ReservationRequest(
+					makeBaseProps({ state: ReservationRequestStates.REQUESTED }),
+					passport,
+				);
+			});
+			And('the user does not have permission to reject requests', () => {
+				passport = makePassport({ canAcceptRequest: true, canRejectRequest: false, canCancelRequest: true, canCloseRequest: true });
+				reservationRequest = new ReservationRequest(
+					makeBaseProps({ state: ReservationRequestStates.REQUESTED }),
+					passport,
+				);
+			});
+			When('I try to set state to "REJECTED"', () => {
+				throwError = () => {
+					reservationRequest.state = ReservationRequestStates.REJECTED;
+				};
+			});
+			Then('a PermissionError should be thrown', () => {
+				expect(throwError).toThrow(DomainSeedwork.PermissionError);
+			});
+		},
+	);
+
+	Scenario(
+		'Cancelling a requested reservation with permission',
+		({ Given, And, When, Then }) => {
+			Given('a ReservationRequest aggregate with state "REQUESTED"', () => {
+				reservationRequest = new ReservationRequest(
+					makeBaseProps({ state: ReservationRequestStates.REQUESTED }),
+					passport,
+				);
+			});
+			And('the user has permission to cancel requests', () => {
+				passport = makePassport({ canAcceptRequest: true, canRejectRequest: true, canCancelRequest: true, canCloseRequest: true });
+				reservationRequest = new ReservationRequest(
+					makeBaseProps({ state: ReservationRequestStates.REQUESTED }),
+					passport,
+				);
+			});
+			When('I set state to "CANCELLED"', () => {
+				reservationRequest.state = ReservationRequestStates.CANCELLED;
+			});
+			Then('the reservation request\'s state should be "CANCELLED"', () => {
+				expect(reservationRequest.state).toBe(ReservationRequestStates.CANCELLED);
+			});
+		},
+	);
+
+	Scenario(
+		'Cancelling a reservation without permission',
+		({ Given, And, When, Then }) => {
+			let throwError: () => void;
+			Given('a ReservationRequest aggregate with state "REQUESTED"', () => {
+				reservationRequest = new ReservationRequest(
+					makeBaseProps({ state: ReservationRequestStates.REQUESTED }),
+					passport,
+				);
+			});
+			And('the user does not have permission to cancel requests', () => {
+				passport = makePassport({ canAcceptRequest: true, canRejectRequest: true, canCancelRequest: false, canCloseRequest: true });
+				reservationRequest = new ReservationRequest(
+					makeBaseProps({ state: ReservationRequestStates.REQUESTED }),
+					passport,
+				);
+			});
+			When('I try to set state to "CANCELLED"', () => {
+				throwError = () => {
+					reservationRequest.state = ReservationRequestStates.CANCELLED;
+				};
+			});
+			Then('a PermissionError should be thrown', () => {
+				expect(throwError).toThrow(DomainSeedwork.PermissionError);
+			});
+		},
+	);
+
+	Scenario(
+		'Closing an accepted reservation when both parties requested close',
+		({ Given, And, When, Then }) => {
+			Given('a ReservationRequest aggregate with state "ACCEPTED"', () => {
+				reservationRequest = new ReservationRequest(
+					makeBaseProps({ state: ReservationRequestStates.ACCEPTED }),
+					passport,
+				);
+			});
+			And('closeRequestedBySharer is true Or closeRequestedByReserver is true', () => {
+				reservationRequest.closeRequestedBySharer = true;
+			});
+			And('the user has permission to close requests', () => {
+				passport = makePassport({ canAcceptRequest: true, canRejectRequest: true, canCancelRequest: true, canCloseRequest: true });
+				reservationRequest = new ReservationRequest(
+					makeBaseProps({
+						state: ReservationRequestStates.ACCEPTED,
+						closeRequestedBySharer: true,
+					}),
+					passport,
+				);
+			});
+			When('I set state to "CLOSED"', () => {
+				reservationRequest.state = ReservationRequestStates.CLOSED;
+			});
+			Then('the reservation request\'s state should be "CLOSED"', () => {
+				expect(reservationRequest.state).toBe(ReservationRequestStates.CLOSED);
+			});
+		},
+	);
+
+	Scenario(
+		'Closing an accepted reservation without any close request',
+		({ Given, And, When, Then }) => {
+			let throwError: () => void;
+			Given('a ReservationRequest aggregate with state "ACCEPTED"', () => {
+				reservationRequest = new ReservationRequest(
+					makeBaseProps({ state: ReservationRequestStates.ACCEPTED }),
+					passport,
+				);
+			});
+			And(
+				'neither closeRequestedBySharer nor closeRequestedByReserver is true',
+				() => {
+					reservationRequest = new ReservationRequest(
+						makeBaseProps({
+							state: ReservationRequestStates.ACCEPTED,
+							closeRequestedBySharer: false,
+							closeRequestedByReserver: false,
+						}),
+						passport,
+					);
+				},
+			);
+			When('I try to set state to "CLOSED"', () => {
+				throwError = () => {
+					reservationRequest.state = ReservationRequestStates.CLOSED;
+				};
+			});
+			Then(
+				'an error should be thrown indicating "Can only close reservation requests if at least one user requested it"',
+				() => {
+					expect(throwError).toThrow(
+						'Can only close reservation requests if at least one user requested it',
+					);
+				},
+			);
+		},
+	);
+
+	Scenario('Requesting close without permission', ({ Given, And, When, Then }) => {
+		let throwError: () => void;
+		Given('a ReservationRequest aggregate with state "ACCEPTED"', () => {
+			reservationRequest = new ReservationRequest(
+				makeBaseProps({ state: ReservationRequestStates.ACCEPTED }),
+				passport,
+			);
+		});
+		And('the user does not have permission to close requests', () => {
+			passport = makePassport({ canAcceptRequest: true, canRejectRequest: true, canCancelRequest: true, canCloseRequest: false });
+			reservationRequest = new ReservationRequest(
+				makeBaseProps({ state: ReservationRequestStates.ACCEPTED }),
+				passport,
+			);
+		});
+		When('I try to set closeRequestedBySharer to true', () => {
+			throwError = () => {
+				reservationRequest.closeRequestedBySharer = true;
+			};
+		});
+		Then('a PermissionError should be thrown', () => {
+			expect(throwError).toThrow(DomainSeedwork.PermissionError);
+		});
+	});
+
+	Scenario('Requesting close in invalid state', ({ Given, And, When, Then }) => {
+		let throwError: () => void;
+		Given('a ReservationRequest aggregate with state "REQUESTED"', () => {
+			reservationRequest = new ReservationRequest(
+				makeBaseProps({ state: ReservationRequestStates.REQUESTED }),
+				passport,
+			);
+		});
+		And('the user has permission to close requests', () => {
+			passport = makePassport({ canAcceptRequest: true, canRejectRequest: true, canCancelRequest: true, canCloseRequest: true });
+			reservationRequest = new ReservationRequest(
+				makeBaseProps({ state: ReservationRequestStates.REQUESTED }),
+				passport,
+			);
+		});
+		When('I try to set closeRequestedByReserver to true', () => {
+			throwError = () => {
+				reservationRequest.closeRequestedByReserver = true;
+			};
+		});
+		Then(
+			'an error should be thrown indicating "Cannot close reservation in current state"',
+			() => {
+				expect(throwError).toThrow('Cannot close reservation in current state');
+			},
+		);
+	});
+
+	Scenario('Loading linked entities', ({ Given, When, Then }) => {
+		let loadedListing: ItemListingEntityReference;
+		let loadedReserver: PersonalUserEntityReference;
+		Given('a ReservationRequest aggregate', () => {
+			reservationRequest = new ReservationRequest(baseProps, passport);
+		});
+		When('I call loadListing', async () => {
+			loadedListing = await reservationRequest.loadListing();
+		});
+		Then('it should return the associated listing', () => {
+			expect(loadedListing).toBeDefined();
+			expect(loadedListing.id).toBe(listing.id);
+		});
+		When('I call loadReserver', async () => {
+			loadedReserver = await reservationRequest.loadReserver();
+		});
+		Then('it should return the associated reserver', () => {
+			expect(loadedReserver).toBeDefined();
+			expect(loadedReserver.id).toBe(reserver.id);
+		});
+	});
+
+	Scenario('Reading audit fields', ({ Given, Then, And }) => {
+		Given('a ReservationRequest aggregate', () => {
+			reservationRequest = new ReservationRequest(baseProps, passport);
+		});
+		Then('createdAt should return the correct date', () => {
+			expect(reservationRequest.createdAt).toEqual(expect.any(Date));
+			expect(reservationRequest.createdAt.toISOString()).toBe(
+				'2020-01-01T00:00:00.000Z',
+			);
+		});
+		And('updatedAt should return the correct date', () => {
+			expect(reservationRequest.updatedAt).toEqual(expect.any(Date));
+			expect(reservationRequest.updatedAt.toISOString()).toBe(
+				'2020-01-02T00:00:00.000Z',
+			);
+		});
+		And('schemaVersion should return the correct version', () => {
+			expect(reservationRequest.schemaVersion).toBe('1.0.0');
+		});
+	});
+});
