@@ -204,6 +204,11 @@ export const EditListingContainer: React.FC<EditListingContainerProps> = (
 	const isLoading =
 		isLoadingListing || isUpdating || isPausing || isDeleting || isCancelling;
 
+	// Early return if no listing data
+	if (!data?.itemListing && !isLoadingListing && !error) {
+		return <div>Listing not found</div>;
+	}
+
 	return (
 		<ComponentQueryLoader
 			loading={isLoadingListing}
@@ -211,19 +216,23 @@ export const EditListingContainer: React.FC<EditListingContainerProps> = (
 			hasData={data?.itemListing}
 			noDataComponent={<div>Listing not found</div>}
 			hasDataComponent={
-				<EditListing
-					listing={data?.itemListing!}
-					categories={categories}
-					isLoading={isLoading}
-					onSubmit={handleSubmit}
-					onPause={handlePause}
-					onDelete={handleDelete}
-					onCancel={handleCancel}
-					onNavigateBack={handleNavigateBack}
-					uploadedImages={uploadedImages}
-					onImageAdd={handleImageAdd}
-					onImageRemove={handleImageRemove}
-				/>
+				data?.itemListing ? (
+					<EditListing
+						listing={data.itemListing}
+						categories={categories}
+						isLoading={isLoading}
+						onSubmit={handleSubmit}
+						onPause={handlePause}
+						onDelete={handleDelete}
+						onCancel={handleCancel}
+						onNavigateBack={handleNavigateBack}
+						uploadedImages={uploadedImages}
+						onImageAdd={handleImageAdd}
+						onImageRemove={handleImageRemove}
+					/>
+				) : (
+					<div>Loading...</div>
+				)
 			}
 		/>
 	);
