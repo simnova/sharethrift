@@ -20,10 +20,8 @@ export const createIfNotExists = (dataSources: DataSources) => {
 		if (existingAdminUser) {
 			return existingAdminUser;
 		}
-		
-		let adminUserToReturn:
-			| Domain.Contexts.User.AdminUser.AdminUserEntityReference
-			| undefined;
+
+		let savedAdminUserId: string | undefined;
 		await dataSources.domainDataSource.User.AdminUser.AdminUserUnitOfWork.withScopedTransaction(
 			async (repo) => {
 				const newAdminUser = await repo.getNewInstance(
@@ -34,13 +32,25 @@ export const createIfNotExists = (dataSources: DataSources) => {
 				);
 
 				// Assign role by ID (will be validated on save)
-				newAdminUser.props.role = { id: command.roleId } as Domain.Contexts.Role.AdminRole.AdminRoleEntityReference;
+				newAdminUser.props.role = {
+					id: command.roleId,
+				} as Domain.Contexts.Role.AdminRole.AdminRoleEntityReference;
 
-				adminUserToReturn = await repo.save(newAdminUser);
+				const saved = await repo.save(newAdminUser);
+				savedAdminUserId = saved.id;
 			},
 		);
+		if (!savedAdminUserId) {
+			throw new Error('admin user not created');
+		}
+
+		// Re-query with populated role to avoid "role is not populated" errors
+		const adminUserToReturn =
+			await dataSources.readonlyDataSource.User.AdminUser.AdminUserReadRepo.getById(
+				savedAdminUserId,
+			);
 		if (!adminUserToReturn) {
-			throw new Error('admin user not found');
+			throw new Error('admin user not found after creation');
 		}
 		return adminUserToReturn;
 	};

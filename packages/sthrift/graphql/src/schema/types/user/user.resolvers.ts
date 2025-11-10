@@ -144,10 +144,12 @@ const userUnionResolvers: Resolvers = {
 				// Try accessing userType directly (domain aggregate has getter)
 				if ('userType' in obj) {
 					const userType = (obj.userType as string)?.toLowerCase();
-					if (userType === 'admin' || userType === 'adminuser') {
+					// Match actual Mongoose discriminator values: 'admin-user' and 'personal-users'
+					if (userType === 'admin-user' || userType === 'admin' || userType === 'adminuser') {
 						return 'AdminUser' as const;
 					}
 					if (
+						userType === 'personal-users' ||
 						userType === 'personal' ||
 						userType === 'personaluser' ||
 						userType === 'end-user'
