@@ -41,14 +41,14 @@ export class SystemPassport extends SystemPassportBase implements Passport {
 		return this._conversationPassport;
 	}
 
-	get reservationRequest(): ReservationRequestPassport {
+	public get reservationRequest(): ReservationRequestPassport {
 		if (!this._reservationRequestPassport) {
 			this._reservationRequestPassport = new SystemReservationRequestPassport(this.permissions);
 		}
 		return this._reservationRequestPassport;
 	}
 
-	get appealRequest(): AppealRequestPassport {
+	public get appealRequest(): AppealRequestPassport {
 		if (!this._appealRequestPassport) {
 			this._appealRequestPassport = new SystemAppealRequestPassport(this.permissions);
 		}
