@@ -172,7 +172,7 @@ test.for(feature, ({ Scenario, Background, BeforeEachScenario }) => {
 					DomainSeedwork.PermissionError,
 				);
 				expect(blockUserWithoutPermission).throws(
-					'Unauthorized to modify user',
+					'Unauthorized: Only admins with canBlockUsers permission can block/unblock users',
 				);
 			});
 		},
