@@ -318,6 +318,7 @@ test.for(feature, ({ Scenario, BeforeEachScenario }) => {
 		'Unexpected error during any query or mutation',
 		({ Given, When, Then, And }) => {
 			let error: Error;
+			// biome-ignore lint/suspicious/noEmptyBlockStatements: Mock implementation doesn't need to do anything
 			const consoleErrorSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
 
 			Given('any unexpected error occurs inside the resolver', () => {

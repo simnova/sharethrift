@@ -45,7 +45,7 @@ function makeMockModel(
 				Promise.resolve(
 					docs.find((d) => {
 						const docId = typeof d._id === 'string' ? d._id : d._id?.toString();
-						return docId === id || d.id === id;
+						return docId === id || String(d.id) === id;
 					}) || null,
 				),
 			),

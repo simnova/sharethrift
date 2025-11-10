@@ -12,6 +12,8 @@ import {
 import { PersonalUserDomainAdapter } from '../../user/personal-user/personal-user.domain-adapter.ts';
 import { ItemListingDomainAdapter } from '../../listing/item/item-listing.domain-adapter.ts';
 import { MongooseSeedwork } from '@cellix/mongoose-seedwork';
+import type { DomainSeedwork } from '@cellix/domain-seedwork';
+import type { ClientSession } from 'mongoose';
 
 const test = { for: describeFeature };
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
@@ -118,12 +120,30 @@ function makeMockModel(
 	return ModelMock;
 }
 
+function makeMockEventBus(): DomainSeedwork.EventBus {
+	return {
+		dispatch: vi.fn(() => Promise.resolve()),
+		register: vi.fn(),
+	} as unknown as DomainSeedwork.EventBus;
+}
+
+function makeMockSession(): ClientSession {
+	return {
+		startTransaction: vi.fn(),
+		commitTransaction: vi.fn(),
+		abortTransaction: vi.fn(),
+		endSession: vi.fn(),
+	} as unknown as ClientSession;
+}
+
 test.for(feature, ({ Scenario, Background, BeforeEachScenario }) => {
 	let repo: ConversationRepository;
 	let converter: ConversationConverter;
 	let passport: Domain.Passport;
 	let conversationDoc: Models.Conversation.Conversation;
 	let model: Models.Conversation.ConversationModelType;
+	let eventBus: DomainSeedwork.EventBus;
+	let session: ClientSession;
 	let result: Domain.Contexts.Conversation.Conversation.Conversation<ConversationDomainAdapter> | null;
 
 	BeforeEachScenario(() => {
@@ -131,7 +151,9 @@ test.for(feature, ({ Scenario, Background, BeforeEachScenario }) => {
 		model = makeMockModel(conversationDoc);
 		converter = new ConversationConverter();
 		passport = makeMockPassport();
-		repo = new ConversationRepository(passport, model, converter);
+		eventBus = makeMockEventBus();
+		session = makeMockSession();
+		repo = new ConversationRepository(passport, model, converter, eventBus, session);
 		result = null;
 	});
 
@@ -139,7 +161,7 @@ test.for(feature, ({ Scenario, Background, BeforeEachScenario }) => {
 		Given(
 			'a ConversationRepository instance with a configured Mongoose model, type converter, and authentication passport',
 			() => {
-				repo = new ConversationRepository(passport, model, converter);
+				repo = new ConversationRepository(passport, model, converter, eventBus, session);
 			},
 		);
 		And('a valid Conversation document exists in the database', () => {
@@ -183,7 +205,7 @@ test.for(feature, ({ Scenario, Background, BeforeEachScenario }) => {
 						exec: execMock,
 					// biome-ignore lint/suspicious/noExplicitAny: Need to mock Mongoose query chain
 					})) as any;
-					repo = new ConversationRepository(passport, model, converter);
+					repo = new ConversationRepository(passport, model, converter, eventBus, session);
 					
 					try {
 						await repo.getByIdWithReferences('invalid-id');
@@ -234,7 +256,7 @@ test.for(feature, ({ Scenario, Background, BeforeEachScenario }) => {
 					exec: execMock,
 				// biome-ignore lint/suspicious/noExplicitAny: Need to mock Mongoose query chain
 				})) as any;
-				repo = new ConversationRepository(passport, model, converter);
+				repo = new ConversationRepository(passport, model, converter, eventBus, session);
 				
 				result = await repo.getByTwilioSid(twilioSid);
 			});
@@ -287,7 +309,7 @@ test.for(feature, ({ Scenario, Background, BeforeEachScenario }) => {
 					exec: execMock,
 				// biome-ignore lint/suspicious/noExplicitAny: Need to mock Mongoose query chain
 				})) as any;
-				repo = new ConversationRepository(passport, model, converter);
+				repo = new ConversationRepository(passport, model, converter, eventBus, session);
 				
 				result = await repo.getByIdWithSharerReserver(sharerId, reserverId);
 			});
