@@ -3,7 +3,7 @@ import { ObjectId } from 'mongodb';
 
 export const personalUsers: Models.User.PersonalUser[] = [
 	{
-		_id: new ObjectId('507f1f77bcf86cd799439011'),
+		_id: '507f1f77bcf86cd799439011',
 		userType: 'personal-users',
 		isBlocked: false,
 		hasCompletedOnboarding: true,
@@ -15,7 +15,7 @@ export const personalUsers: Models.User.PersonalUser[] = [
 			profile: {
 				firstName: 'Alice',
 				lastName: 'Smith',
-                aboutMe: 'Hello',
+				aboutMe: 'Hello',
 				location: {
 					address1: '123 Main St',
 					address2: null,
@@ -42,7 +42,7 @@ export const personalUsers: Models.User.PersonalUser[] = [
 		updatedAt: new Date('2023-01-01T10:00:00Z'),
 	},
 	{
-		_id: new ObjectId('507f1f77bcf86cd799439012'),
+		_id: '507f1f77bcf86cd799439012',
 		userType: 'personal-users',
 		isBlocked: false,
 		hasCompletedOnboarding: true,
@@ -54,7 +54,7 @@ export const personalUsers: Models.User.PersonalUser[] = [
 			profile: {
 				firstName: 'Bob',
 				lastName: 'Johnson',
-                aboutMe: 'Hello',
+				aboutMe: 'Hello',
 				location: {
 					address1: '456 Oak Ave',
 					address2: 'Apt 2',
@@ -67,8 +67,8 @@ export const personalUsers: Models.User.PersonalUser[] = [
 					cybersourceCustomerId: 'cust_123456789',
 					subscription: {
 						subscriptionId: 'sub_987654321',
-						planCode: 'basic-plan',
-						status: 'active',
+						planCode: 'verified-personal',
+						status: 'ACTIVE',
 						startDate: new Date('2023-02-01T10:00:00Z'),
 					},
 				} as Models.User.PersonalUserAccountProfileBilling,
@@ -102,25 +102,27 @@ export const personalUsers: Models.User.PersonalUser[] = [
 					zipCode: '19101',
 				} as Models.User.PersonalUserAccountProfileLocation,
 				billing: {
-					subscriptionId: 'sub_003',
-					cybersourceCustomerId: 'cyber_003',
-					paymentState: 'SUCCEEDED',
-					lastTransactionId: 'txn_003',
-					lastPaymentAmount: 75,
+					cybersourceCustomerId: 'cust_123456780',
+					subscription: {
+						subscriptionId: 'sub_987654321',
+						planCode: 'non-verified-personal',
+						status: 'ACTIVE',
+						startDate: new Date('2023-02-01T10:00:00Z'),
+					},
 				} as Models.User.PersonalUserAccountProfileBilling,
 			} as Models.User.PersonalUserAccountProfile,
 		} as Models.User.PersonalUserAccount,
 		schemaVersion: '1.0.0',
 		version: 1,
-			discriminatorKey: 'personal-users',
+		discriminatorKey: 'personal-users',
 		createdAt: new Date('2023-01-03T12:00:00Z'),
 		updatedAt: new Date('2023-01-03T12:00:00Z'),
 	},
-    {
+	{
 		_id: '507f1f77bcf86cd799439014',
 		userType: 'personal-users',
 		isBlocked: false,
-		hasCompletedOnboarding: true,
+		hasCompletedOnboarding: false,
 		role: new ObjectId('607f1f77bcf86cd799439021'),
 		account: {
 			accountType: 'verified-personal',
@@ -138,17 +140,19 @@ export const personalUsers: Models.User.PersonalUser[] = [
 					zipCode: '19101',
 				} as Models.User.PersonalUserAccountProfileLocation,
 				billing: {
-					subscriptionId: 'sub_003',
-					cybersourceCustomerId: 'cyber_003',
-					paymentState: 'SUCCEEDED',
-					lastTransactionId: 'txn_003',
-					lastPaymentAmount: 75,
+					cybersourceCustomerId: 'cust_123456790',
+					subscription: {
+						subscriptionId: 'sub_987654321',
+						planCode: 'non-verified-personal',
+						status: 'ACTIVE',
+						startDate: new Date('2023-02-01T10:00:00Z'),
+					},
 				} as Models.User.PersonalUserAccountProfileBilling,
 			} as Models.User.PersonalUserAccountProfile,
 		} as Models.User.PersonalUserAccount,
 		schemaVersion: '1.0.0',
 		version: 1,
-			discriminatorKey: 'personal-users',
+		discriminatorKey: 'personal-users',
 		createdAt: new Date('2023-01-03T12:00:00Z'),
 		updatedAt: new Date('2023-01-03T12:00:00Z'),
 	},
