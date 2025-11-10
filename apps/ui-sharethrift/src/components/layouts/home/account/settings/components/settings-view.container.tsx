@@ -6,6 +6,7 @@ import { useState } from 'react';
 import {
 	HomeAccountSettingsViewContainerCurrentUserDocument,
 	HomeAccountSettingsViewContainerUpdatePersonalUserDocument,
+	HomeAccountSettingsViewContainerUpdateAdminUserDocument,
 } from '../../../../../../generated.tsx';
 import { SettingsView } from '../pages/settings-view.tsx';
 import type {
@@ -32,6 +33,18 @@ function SettingsViewLoader() {
 			},
 		});
 
+	const [
+		updateAdminUserMutation,
+		{ loading: updateAdminLoading, error: updateAdminError },
+	] = useMutation(HomeAccountSettingsViewContainerUpdateAdminUserDocument, {
+		onError: (err) => {
+			// eslint-disable-next-line no-console
+			console.error('[SettingsView] admin update mutation error', err);
+			const msg = err?.message || 'Update failed';
+			message.error(msg);
+		},
+	});
+
 	const [isSavingSection, setIsSavingSection] = useState(false);
 
 	const handleEditSection = () => {
@@ -49,10 +62,24 @@ function SettingsViewLoader() {
 		| 'plan'
 		| 'billing'
 		| 'password';
-	// Profile type alias for clarity
-	type UserProfile = NonNullable<
-		CurrentUserSettingsQueryData['currentPersonalUserAndCreateIfNotExists']
-	>['account']['profile'];
+	// Profile type alias for clarity (only PersonalUser has nested profile)
+	type UserProfile = {
+		firstName: string;
+		lastName: string;
+		location: {
+			address1?: string;
+			address2?: string;
+			city?: string;
+			state?: string;
+			country?: string;
+			zipCode?: string;
+		};
+		billing?: {
+			subscriptionId?: string;
+			cybersourceCustomerId?: string;
+		};
+		aboutMe?: string;
+	};
 
 	// Helper to construct the next profile given the section being edited
 	const buildNextProfile = (
@@ -107,9 +134,71 @@ function SettingsViewLoader() {
 		section: EditableSection,
 		values: Record<string, any>,
 	) => {
-		if (!userData?.currentPersonalUserAndCreateIfNotExists) return;
-		const user = userData.currentPersonalUserAndCreateIfNotExists;
+		if (!userData?.currentUser) return;
+		const user = userData.currentUser;
+		
 		setIsSavingSection(true);
+		
+		// Admin users can only edit basic account info (firstName, lastName, username)
+		if (user.__typename === 'AdminUser') {
+			if (updateAdminLoading) {
+				setIsSavingSection(false);
+				return;
+			}
+			
+			// Password change not implemented yet
+			if (section === 'password') {
+				globalThis.alert?.('Password change is not implemented yet.');
+				setIsSavingSection(false);
+				return;
+			}
+			
+			// Admin users can only edit profile section (firstName, lastName, username)
+			if (section !== 'profile') {
+				message.info('Admin users can only edit their profile information');
+				setIsSavingSection(false);
+				return;
+			}
+			
+			try {
+				const username = values['username'] ?? user.account.username;
+				const firstName = values['firstName'] ?? user.account.firstName;
+				const lastName = values['lastName'] ?? user.account.lastName;
+				
+				const result = await updateAdminUserMutation({
+					variables: {
+						input: {
+							id: user.id,
+							account: {
+								username,
+								firstName,
+								lastName,
+							},
+						},
+					},
+					refetchQueries: [
+						{ query: HomeAccountSettingsViewContainerCurrentUserDocument },
+					],
+				});
+				
+				if (!result.data?.adminUserUpdate) {
+					throw new Error('Admin user update failed');
+				}
+				
+				message.success('Profile updated successfully');
+			} catch (err: unknown) {
+				// eslint-disable-next-line no-console
+				console.error('[SettingsView] admin update mutation error', err);
+				const msg =
+					err instanceof Error ? err.message : 'Admin user update failed';
+				message.error(msg);
+				throw err;
+			} finally {
+				setIsSavingSection(false);
+			}
+			return;
+		}
+		
 		if (updateLoading) {
 			setIsSavingSection(false);
 			return;
@@ -151,10 +240,10 @@ function SettingsViewLoader() {
 			if (!result.data?.personalUserUpdate) {
 				throw new Error('Update failed');
 			}
-		} catch (err: any) {
+		} catch (err: unknown) {
 			// eslint-disable-next-line no-console
 			console.error('[SettingsView] update mutation error', err);
-			const msg = err?.message ?? 'Update failed';
+			const msg = err instanceof Error ? err.message : 'Update failed';
 			message.error(msg);
 			throw err; // propagate so view's save handler catch preserves edit mode
 		} finally {
@@ -170,37 +259,57 @@ function SettingsViewLoader() {
 		return <div>Loading account settings...</div>;
 	}
 
-	if (!userData?.currentPersonalUserAndCreateIfNotExists) {
+	if (!userData?.currentUser) {
 		return <div>User not found</div>;
 	}
 
-	const user = userData.currentPersonalUserAndCreateIfNotExists;
+	const user = userData.currentUser;
 
-	const mappedUser: SettingsUser = {
-		id: user.id,
-		firstName: user.account.profile.firstName,
-		lastName: user.account.profile.lastName,
-		aboutMe: user.account.profile.aboutMe,
-		username: user.account.username,
-		email: user.account.email,
-		accountType: user.account.accountType,
-		location: {
-			address1: user.account.profile.location.address1,
-			address2: user.account.profile.location.address2,
-			city: user.account.profile.location.city,
-			state: user.account.profile.location.state,
-			country: user.account.profile.location.country,
-			zipCode: user.account.profile.location.zipCode,
-		},
-		billing: user.account.profile.billing,
-		createdAt: user.createdAt,
-	};
+	// Map user data based on type
+	const mappedUser: SettingsUser =
+		user.__typename === 'AdminUser'
+			? {
+					id: user.id,
+					firstName: user.account.firstName,
+					lastName: user.account.lastName,
+					username: user.account.username,
+					email: user.account.email,
+					accountType: user.account.accountType,
+					location: {
+						address1: '',
+						address2: '',
+						city: '',
+						state: '',
+						country: '',
+						zipCode: '',
+					},
+					createdAt: user.createdAt,
+				}
+			: {
+					id: user.id,
+					firstName: user.account.profile.firstName,
+					lastName: user.account.profile.lastName,
+					aboutMe: user.account.profile.aboutMe,
+					username: user.account.username,
+					email: user.account.email,
+					accountType: user.account.accountType,
+					location: {
+						address1: user.account.profile.location.address1,
+						address2: user.account.profile.location.address2,
+						city: user.account.profile.location.city,
+						state: user.account.profile.location.state,
+						country: user.account.profile.location.country,
+						zipCode: user.account.profile.location.zipCode,
+					},
+					billing: user.account.profile.billing,
+					createdAt: user.createdAt,
+				};
 
-	const errorMessage = userError ?? updateError;
+	const errorMessage = userError ?? updateError ?? updateAdminError;
 
 	return (
 		<ComponentQueryLoader
-			loading={userLoading || updateLoading}
+			loading={userLoading || updateLoading || updateAdminLoading}
 			error={errorMessage}
 			hasData={userData}
 			hasDataComponent={

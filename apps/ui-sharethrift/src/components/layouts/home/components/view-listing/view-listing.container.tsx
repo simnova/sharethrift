@@ -48,8 +48,7 @@ export const ViewListingContainer: React.FC<ViewListingContainerProps> = (
 		skip: !props.isAuthenticated, // Skip if not authenticated
 	});
 
-	const reserverId =
-		currentUserData?.currentPersonalUserAndCreateIfNotExists?.id ?? '';
+	const reserverId = currentUserData?.currentUser?.id ?? '';
 
 	const skip = !reserverId || !listingId;
 	const {
