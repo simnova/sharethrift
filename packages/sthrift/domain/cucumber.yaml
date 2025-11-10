@@ -6,7 +6,6 @@ default:
   # Step definitions location
   require:
     - tests/acceptance/step-definitions/**/*.steps.ts
-    - tests/acceptance/support/serenity-config.ts
 
   # TypeScript support
   requireModule:
@@ -15,9 +14,6 @@ default:
   # Format options
   format:
     - pretty
-    - '@serenity-js/cucumber'
-    - json:target/site/serenity/cucumber-report.json
-    - html:target/site/serenity/cucumber-report.html
     - summary
 
   # Parallel execution

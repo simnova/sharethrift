@@ -38,11 +38,11 @@ export class ReservationRequest<props extends ReservationRequestProps>
 	): ReservationRequest<props> {
 		const instance = new ReservationRequest(newProps, passport);
 		instance.markAsNew();
-		instance.state = state;
 		instance.listing = listing;
 		instance.reserver = reserver;
 		instance.reservationPeriodStart = reservationPeriodStart;
 		instance.reservationPeriodEnd = reservationPeriodEnd;
+		instance.props.state = state; // Set initial state directly
 		instance.isNew = false;
 		return instance;
 	}
@@ -56,20 +56,27 @@ export class ReservationRequest<props extends ReservationRequestProps>
 		return this.props.state;
 	}
 	set state(value: string) {
+		console.log('Setting state to:', value);
+		console.log('Current permissions:', this.passport?.reservationRequest);
 		switch (value) {
 			case ReservationRequestStates.ACCEPTED:
+				console.log('Accepting request...');
 				this.accept();
 				break;
 			case ReservationRequestStates.REJECTED:
+				console.log('Rejecting request...');
 				this.reject();
 				break;
 			case ReservationRequestStates.CANCELLED:
+				console.log('Cancelling request...');
 				this.cancel();
 				break;
 			case ReservationRequestStates.CLOSED:
+				console.log('Closing request...');
 				this.close();
 				break;
             case ReservationRequestStates.REQUESTED:
+				console.log('Setting to requested...');
                 this.request();
                 break;
 		}
@@ -79,28 +86,25 @@ export class ReservationRequest<props extends ReservationRequestProps>
     return this.props.reservationPeriodStart;
   }
   set reservationPeriodStart(value: Date) {
-    if (
-      !this.isNew
-    ) {
-      throw new DomainSeedwork.PermissionError(
-        "Reservation period start date cannot be updated after creation"
-      );
-    }
-    if (!value) {
-      throw new DomainSeedwork.PermissionError(
-        "value cannot be null or undefined"
-      );
-    }
-
-    if (value.getTime() < Date.now()) {
-        throw new DomainSeedwork.PermissionError(
-            "Reservation period start date must be today or in the future"
-        );
-    }
+		if (!value) {
+			throw new DomainSeedwork.PermissionError(
+				"value cannot be null or undefined"
+			);
+		}
+		if (value.getTime() < Date.now()) {
+			throw new DomainSeedwork.PermissionError(
+				"Reservation period start date must be today or in the future"
+			);
+		}
+		if (!this.isNew) {
+			throw new DomainSeedwork.PermissionError(
+				"Reservation period start date cannot be updated after creation"
+			);
+		}
 
     if (this.props.reservationPeriodEnd && value.getTime() >= this.props.reservationPeriodEnd.getTime()) {
         throw new DomainSeedwork.PermissionError(
-            "Reservation period start date must be before the end date"
+            "Reservation period end date must be after the start date"
         );
     }
     this.props.reservationPeriodStart = value;
@@ -110,29 +114,25 @@ export class ReservationRequest<props extends ReservationRequestProps>
     return this.props.reservationPeriodEnd;
   }
   set reservationPeriodEnd(value: Date) {
-    if (
-      !this.isNew
-    ) {
-      throw new DomainSeedwork.PermissionError(
-        "You do not have permission to update this reservation period"
-      );
-    }
     if (!value) {
       throw new DomainSeedwork.PermissionError(
         "value cannot be null or undefined"
       );
     }
-
     if (value.getTime() < Date.now()) {
-        throw new DomainSeedwork.PermissionError(
-            "Reservation period end date must be in the future"
-        );
+      throw new DomainSeedwork.PermissionError(
+        "Reservation period end date must be in the future"
+      );
     }
-
     if (this.props.reservationPeriodStart && value.getTime() <= this.props.reservationPeriodStart.getTime()) {
-        throw new DomainSeedwork.PermissionError(
-            "Reservation period end date must be after the start date"
-        );
+      throw new DomainSeedwork.PermissionError(
+        "Reservation period end date must be after the start date"
+      );
+    }
+    if (!this.isNew) {
+      throw new DomainSeedwork.PermissionError(
+        "You do not have permission to update this reservation period"
+      );
     }
     this.props.reservationPeriodEnd = value;
   }
@@ -207,7 +207,7 @@ export class ReservationRequest<props extends ReservationRequestProps>
 			);
 		}
 
-		if (this.props.state.valueOf() !== ReservationRequestStates.ACCEPTED) {
+		if (this.props.state !== ReservationRequestStates.ACCEPTED) {
 			throw new Error('Cannot close reservation in current state');
 		}
 
@@ -228,7 +228,7 @@ export class ReservationRequest<props extends ReservationRequestProps>
 			);
 		}
 
-		if (this.props.state.valueOf() !== ReservationRequestStates.ACCEPTED) {
+		if (this.props.state !== ReservationRequestStates.ACCEPTED) {
 			throw new Error('Cannot close reservation in current state');
 		}
 
@@ -246,23 +246,23 @@ export class ReservationRequest<props extends ReservationRequestProps>
 	}
 
 	private accept(): void {
-		if (
-			!this.visa.determineIf(
-				(domainPermissions) => domainPermissions.canAcceptRequest,
-			)
-		) {
+		console.log('In accept()...');
+		console.log('Visa:', this.visa);
+		const hasPermission = this.visa.determineIf(
+			(domainPermissions) => domainPermissions.canAcceptRequest,
+		);
+		console.log('Has permission:', hasPermission);
+		if (!hasPermission) {
 			throw new DomainSeedwork.PermissionError(
 				'You do not have permission to accept this reservation request',
 			);
 		}
 
-		if (this.props.state.valueOf() !== ReservationRequestStates.REQUESTED) {
-			throw new Error('Can only accept requested reservations');
+		if (this.props.state !== ReservationRequestStates.REQUESTED) {
+			throw new DomainSeedwork.PermissionError('Can only accept requested reservations');
 		}
 
-		this.props.state = new ValueObjects.ReservationRequestStateValue(
-			ReservationRequestStates.ACCEPTED,
-		).valueOf();
+		this.props.state = ReservationRequestStates.ACCEPTED;
 	}
 
 	private reject(): void {
@@ -276,13 +276,11 @@ export class ReservationRequest<props extends ReservationRequestProps>
 			);
 		}
 
-		if (this.props.state.valueOf() !== ReservationRequestStates.REQUESTED) {
-			throw new Error('Can only reject requested reservations');
+		if (this.props.state !== ReservationRequestStates.REQUESTED) {
+			throw new DomainSeedwork.PermissionError('Can only reject requested reservations');
 		}
 
-		this.props.state = new ValueObjects.ReservationRequestStateValue(
-			ReservationRequestStates.REJECTED,
-		).valueOf();
+		this.props.state = ReservationRequestStates.REJECTED;
 	}
 
 	private cancel(): void {
@@ -296,13 +294,11 @@ export class ReservationRequest<props extends ReservationRequestProps>
 			);
 		}
 
-		if (this.props.state.valueOf() !== ReservationRequestStates.REQUESTED) {
-			throw new Error('Cannot cancel reservation in current state');
+		if (this.props.state !== ReservationRequestStates.REQUESTED) {
+			throw new DomainSeedwork.PermissionError('Cannot cancel reservation in current state');
 		}
 
-		this.props.state = new ValueObjects.ReservationRequestStateValue(
-			ReservationRequestStates.CANCELLED,
-		).valueOf();
+		this.props.state = ReservationRequestStates.CANCELLED;
 	}
 
 	private close(): void {
@@ -316,8 +312,8 @@ export class ReservationRequest<props extends ReservationRequestProps>
 			);
 		}
 
-		if (this.props.state.valueOf() !== ReservationRequestStates.ACCEPTED) {
-			throw new Error('Can only close accepted reservations');
+		if (this.props.state !== ReservationRequestStates.ACCEPTED) {
+			throw new DomainSeedwork.PermissionError('Can only close accepted reservations');
 		}
 
 		if (
@@ -325,13 +321,13 @@ export class ReservationRequest<props extends ReservationRequestProps>
 				this.props.closeRequestedBySharer || this.props.closeRequestedByReserver
 			)
 		) {
-			throw new Error(
+			throw new DomainSeedwork.PermissionError(
 				'Can only close reservation requests if at least one user requested it',
 			);
 		}
 
-    this.props.state =  new ValueObjects.ReservationRequestStateValue(ReservationRequestStates.CLOSED).valueOf();
-  }
+		this.props.state = ReservationRequestStates.CLOSED;
+	}
 
   private request(): void {
     if (
@@ -343,7 +339,7 @@ export class ReservationRequest<props extends ReservationRequestProps>
     }
 
     if (!this.isNew) {
-        throw new Error("Can only set state to requested when creating new reservation requests");
+        throw new DomainSeedwork.PermissionError("Can only set state to requested when creating new reservation requests");
     }
     
     this.props.state = new ValueObjects.ReservationRequestStateValue(ReservationRequestStates.REQUESTED).valueOf();

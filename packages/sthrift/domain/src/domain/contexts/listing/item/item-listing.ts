@@ -90,8 +90,8 @@ export class ItemListing<props extends ItemListingProps>
 			sharingPeriodEnd: sharingPeriodEnd,
 			images: fields.images ?? [],
 			state: isDraft
-				? ValueObjects.ListingState.Drafted
-				: ValueObjects.ListingState.Published,
+				? ValueObjects.ListingState.Drafted.valueOf()
+				: ValueObjects.ListingState.Published.valueOf(),
 			createdAt: now,
 			updatedAt: now,
 			schemaVersion: 1,
@@ -106,6 +106,30 @@ export class ItemListing<props extends ItemListingProps>
 
 	private markAsNew(): void {
 		this.isNew = true;
+	}
+
+	public async reserve(reservingUser: PersonalUserEntityReference): Promise<void> {
+		// Validate listing state
+		if (this.state !== ValueObjects.ListingState.Published.valueOf()) {
+			throw new Error('Only published listings can be reserved');
+		}
+
+		// Validate not reserved
+		if (this.props.reservedBy) {
+			throw new Error('This listing is already reserved');
+		}
+
+		// Validate user has permission to create reservations
+		const permissions = this.visa.determineIf((p) => {
+			console.log('Listing permissions:', p);
+			return p.canReserveItemListing;
+		});
+		if (!permissions) {
+			throw new Error('You do not have permission to reserve this listing');
+		}		// Update state and reserving user
+		this.props.state = ValueObjects.ListingState.Reserved.valueOf();
+		this.props.reservedBy = reservingUser;
+		this.props.updatedAt = new Date();
 	}
 
 	//#endregion Methods
@@ -217,6 +241,10 @@ export class ItemListing<props extends ItemListingProps>
 
 	get state(): string {
 		return this.props.state;
+	}
+
+	get reservedBy(): PersonalUserEntityReference | null {
+		return this.props.reservedBy || null;
 	}
 
 	get updatedAt(): Date {
