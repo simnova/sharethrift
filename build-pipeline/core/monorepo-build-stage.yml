@@ -356,8 +356,7 @@ stages:
     # SonarCloud: Break the build if it doesn't pass the Quality Gate
     - task: sonarcloud-buildbreaker@2
       displayName: 'SonarCloud: Break the build if it does not pass the Quality'
-      # Do not fail PR builds on Quality Gate; enforce only on main/non-PR builds
-      condition: and(succeeded(), eq(${{parameters.disableSonarCloudTasks}}, False), ne(variables['Build.Reason'], 'PullRequest'))
+      condition: and(succeeded(), eq(${{parameters.disableSonarCloudTasks}}, False))
       inputs:
         SonarCloud: ${{parameters.SonarCloud}}
         organization: ${{parameters.SonarCloud_organization}}
