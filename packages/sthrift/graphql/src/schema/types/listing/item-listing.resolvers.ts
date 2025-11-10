@@ -120,6 +120,78 @@ const itemListingResolvers: Resolvers = {
 			);
 		},
 
+		updateItemListing: async (_parent, args, context) => {
+			const userEmail =
+				context.applicationServices.verifiedUser?.verifiedJwt?.email;
+			if (!userEmail) {
+				throw new Error('Authentication required');
+			}
+
+			const command: {
+				id: string;
+				title?: string;
+				description?: string;
+				category?: string;
+				location?: string;
+				sharingPeriodStart?: Date;
+				sharingPeriodEnd?: Date;
+				images?: string[];
+			} = {
+				id: args.id,
+			};
+
+			if (args.input.title !== undefined && args.input.title !== null) {
+				command.title = args.input.title;
+			}
+			if (args.input.description !== undefined && args.input.description !== null) {
+				command.description = args.input.description;
+			}
+			if (args.input.category !== undefined && args.input.category !== null) {
+				command.category = args.input.category;
+			}
+			if (args.input.location !== undefined && args.input.location !== null) {
+				command.location = args.input.location;
+			}
+			if (args.input.sharingPeriodStart !== undefined && args.input.sharingPeriodStart !== null) {
+				command.sharingPeriodStart = new Date(args.input.sharingPeriodStart);
+			}
+			if (args.input.sharingPeriodEnd !== undefined && args.input.sharingPeriodEnd !== null) {
+				command.sharingPeriodEnd = new Date(args.input.sharingPeriodEnd);
+			}
+			if (args.input.images !== undefined && args.input.images !== null) {
+				command.images = [...args.input.images];
+			}
+
+			return await context.applicationServices.Listing.ItemListing.update(
+				command,
+			);
+		},
+
+		pauseItemListing: async (_parent, args, context) => {
+			const userEmail =
+				context.applicationServices.verifiedUser?.verifiedJwt?.email;
+			if (!userEmail) {
+				throw new Error('Authentication required');
+			}
+
+			return await context.applicationServices.Listing.ItemListing.pause({
+				id: args.id,
+			});
+		},
+
+		deleteItemListing: async (_parent, args, context) => {
+			const userEmail =
+				context.applicationServices.verifiedUser?.verifiedJwt?.email;
+			if (!userEmail) {
+				throw new Error('Authentication required');
+			}
+
+			return await context.applicationServices.Listing.ItemListing.update({
+				id: args.id,
+				isDeleted: true,
+			});
+		},
+
 		removeListing: async (_parent, args, context) => {
 			// Admin-note: role-based authorization should be implemented here (security)
 			// Once implemented, use system-level permissions for admin operations
