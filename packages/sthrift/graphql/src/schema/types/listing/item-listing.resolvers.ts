@@ -6,20 +6,13 @@ const itemListingResolvers: Resolvers = {
 		sharer: PopulatePersonalUserFromField('sharer'),
 	},
 	Query: {
-		itemListings: async (_parent, _args, context) => {
-			return await context.applicationServices.Listing.ItemListing.queryAll({});
-		},
-
-		itemListing: async (_parent, args, context) => {
-			return await context.applicationServices.Listing.ItemListing.queryById({
-				id: args.id,
-			});
-		},
-
-		myListingsAll: async (_parent, args, context) => {
-			const sharerId =
-				context.applicationServices.verifiedUser?.verifiedJwt?.sub;
-
+		myListingsAll: async (_parent: unknown, args, context) => {
+            const currentUser = context.applicationServices.verifiedUser;
+            const email = currentUser?.verifiedJwt?.email;
+            let sharerId: string | undefined;
+            if(email) {
+               sharerId = await context.applicationServices.User.PersonalUser.queryByEmail({email: email}).then(user => user ? user.id : undefined);
+            }
 			type PagedArgs = {
 				page: number;
 				pageSize: number;
@@ -50,6 +43,15 @@ const itemListingResolvers: Resolvers = {
 			return await context.applicationServices.Listing.ItemListing.queryPaged(
 				pagedArgs,
 			);
+		},
+        itemListings: async (_parent, _args, context) => {
+			return await context.applicationServices.Listing.ItemListing.queryAll({});
+		},
+
+		itemListing: async (_parent, args, context) => {
+			return await context.applicationServices.Listing.ItemListing.queryById({
+				id: args.id,
+			});
 		},
 		adminListings: async (_parent, args, context) => {
 			// Admin-note: role-based authorization should be implemented here (security)
@@ -110,6 +112,7 @@ const itemListingResolvers: Resolvers = {
 				sharingPeriodEnd: new Date(args.input.sharingPeriodEnd),
 				images: [...(args.input.images ?? [])],
 				isDraft: args.input.isDraft ?? false,
+				listingType: 'item-listing',
 			};
 
 			return await context.applicationServices.Listing.ItemListing.create(
@@ -135,6 +138,23 @@ const itemListingResolvers: Resolvers = {
 				isBlocked: false,
 			});
 			return true;
+		},
+		cancelItemListing: async (
+			_parent: unknown,
+			args: { id: string },
+			context,
+		) => {
+			const userEmail =
+				context.applicationServices.verifiedUser?.verifiedJwt?.email;
+			if (!userEmail) {
+				throw new Error('Authentication required');
+			}
+
+			const result =
+				await context.applicationServices.Listing.ItemListing.cancel({
+					id: args.id,
+				});
+			return result
 		},
 	},
 };
