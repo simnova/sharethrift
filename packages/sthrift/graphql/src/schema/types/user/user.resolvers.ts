@@ -139,49 +139,20 @@ const userUnionResolvers: Resolvers = {
 	// frontend can check __typename === 'AdminUser' without custom hooks
 	User: {
 		__resolveType(obj: unknown): 'AdminUser' | 'PersonalUser' {
-			// Check if it's a domain aggregate with userType getter or props.userType
-			if (typeof obj === 'object' && obj !== null) {
-				// Try accessing userType directly (domain aggregate has getter)
-				if ('userType' in obj) {
-					const userType = (obj.userType as string)?.toLowerCase();
-					// Match actual Mongoose discriminator values: 'admin-user' and 'personal-users'
-					if (userType === 'admin-user' || userType === 'admin' || userType === 'adminuser') {
-						return 'AdminUser' as const;
-					}
-					if (
-						userType === 'personal-users' ||
-						userType === 'personal' ||
-						userType === 'personaluser' ||
-						userType === 'end-user'
-					) {
-						return 'PersonalUser' as const;
-					}
-				}
+			if (typeof obj === 'object' && obj !== null && 'userType' in obj) {
+				const userType = (obj.userType as string)?.toLowerCase();
 
-				// Fallback: check for role property (AdminUser has role, PersonalUser doesn't)
-				if ('role' in obj && 'account' in obj) {
+				// Matching Mongoose discriminator values for AdminUser and PersonalUser
+				if (userType === 'admin-user') {
 					return 'AdminUser' as const;
 				}
-
-				// Fallback: check for profile property (PersonalUser has account.profile)
-				if ('account' in obj) {
-					const objWithAccount = obj as { account: unknown };
-					if (
-						objWithAccount.account &&
-						typeof objWithAccount.account === 'object' &&
-						'profile' in objWithAccount.account
-					) {
-						return 'PersonalUser' as const;
-					}
+				if (userType === 'personal-users') {
+					return 'PersonalUser' as const;
 				}
 			}
-
-			// Default fallback
-			console.warn(
-				'Unable to resolve User union type, defaulting to PersonalUser',
-				obj,
+			throw new Error(
+				`Unable to resolve User union type. Invalid userType: ${JSON.stringify(obj)}`,
 			);
-			return 'PersonalUser' as const;
 		},
 	},
 };

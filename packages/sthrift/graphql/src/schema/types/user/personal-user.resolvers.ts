@@ -32,6 +32,14 @@ const personalUserResolvers: Resolvers = {
 			if (!context.applicationServices.verifiedUser?.verifiedJwt) {
 				throw new Error('Unauthorized');
 			}
+			
+			// Block admin users - they should use currentUser query instead
+			const { email } = context.applicationServices.verifiedUser.verifiedJwt;
+			const existingUser = await getUserByEmail(email, context);
+			if (existingUser?.userType === 'admin-user') {
+				throw new Error('Admin users cannot use this query. Use currentUser instead.');
+			}
+			
 			console.log('currentPersonalUserAndCreateIfNotExists resolver called');
 			// Implement the logic to get the current personal user or create a new one
 			return await context.applicationServices.User.PersonalUser.createIfNotExists(
