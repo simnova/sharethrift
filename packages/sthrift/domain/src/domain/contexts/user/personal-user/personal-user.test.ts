@@ -6,8 +6,6 @@ import type { PersonalUserProps } from './personal-user.entity.ts';
 import { PersonalUser } from './personal-user.ts';
 import { DomainSeedwork } from '@cellix/domain-seedwork';
 import type { Passport } from '../../passport.ts';
-import { PersonalUserRolePermissions } from '../../role/personal-user-role/personal-user-role-permissions.ts';
-import { PersonalUserRole } from '../../role/personal-user-role/personal-user-role.ts';
 
 const test = { for: describeFeature };
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
@@ -19,8 +17,12 @@ function makePassport(canCreateUser = false): Passport {
 	return vi.mocked({
 		user: {
 			forPersonalUser: vi.fn(() => ({
-				determineIf: (fn: (p: { isEditingOwnAccount: boolean; canCreateUser: boolean }) => boolean) =>
-					fn({ isEditingOwnAccount: true, canCreateUser }),
+				determineIf: (
+					fn: (p: {
+						isEditingOwnAccount: boolean;
+						canCreateUser: boolean;
+					}) => boolean,
+				) => fn({ isEditingOwnAccount: true, canCreateUser }),
 			})),
 		},
 	} as unknown as Passport);
@@ -29,40 +31,6 @@ function makePassport(canCreateUser = false): Passport {
 function makeBaseProps(
 	overrides: Partial<PersonalUserProps> = {},
 ): PersonalUserProps {
-	// Provide a valid PersonalUserPermissions value object for permissions
-	const permissions = new PersonalUserRolePermissions({
-		listingPermissions: {
-			canCreateItemListing: true,
-			canUpdateItemListing: true,
-			canDeleteItemListing: true,
-			canViewItemListing: true,
-			canPublishItemListing: true,
-			canUnpublishItemListing: true,
-		},
-		conversationPermissions: {
-			canCreateConversation: true,
-			canManageConversation: true,
-			canViewConversation: true,
-		},
-		reservationRequestPermissions: {
-			canCreateReservationRequest: true,
-			canManageReservationRequest: true,
-			canViewReservationRequest: true,
-		},
-	});
-	const roleProps = {
-		id: 'role-1',
-		name: 'default',
-		roleName: 'default',
-		isDefault: true,
-		roleType: 'personal',
-		permissions,
-		createdAt: new Date('2020-01-01T00:00:00Z'),
-		updatedAt: new Date('2020-01-02T00:00:00Z'),
-		schemaVersion: '1.0.0',
-	};
-	const role = new PersonalUserRole(roleProps, makePassport());
-
 	return {
 		userType: 'end-user',
 		id: 'user-1',
@@ -96,8 +64,6 @@ function makeBaseProps(
 		},
 		createdAt: new Date('2020-01-01T00:00:00Z'),
 		updatedAt: new Date('2020-01-02T00:00:00Z'),
-		role,
-		loadRole: async () => role,
 		...overrides,
 	};
 }
@@ -157,10 +123,6 @@ test.for(feature, ({ Scenario, Background, BeforeEachScenario }) => {
 			expect(newUser.account).toBeDefined();
 			expect(newUser.account.email).toBe('john@example.com');
 		});
-		And('it should expose a valid PersonalUserRole instance', () => {
-			expect(newUser.role).toBeDefined();
-			expect(newUser.role.id).toBe('role-1');
-		});
 	});
 
 	Scenario(
@@ -209,7 +171,9 @@ test.for(feature, ({ Scenario, Background, BeforeEachScenario }) => {
 				expect(blockUserWithoutPermission).toThrow(
 					DomainSeedwork.PermissionError,
 				);
-				expect(blockUserWithoutPermission).throws('Unauthorized to modify user');
+				expect(blockUserWithoutPermission).throws(
+					'Unauthorized to modify user',
+				);
 			});
 		},
 	);
@@ -228,23 +192,26 @@ test.for(feature, ({ Scenario, Background, BeforeEachScenario }) => {
 		});
 	});
 
-	Scenario('Attempting to complete onboarding twice', ({ Given, When, Then }) => {
-		let completeOnboardingAgain: () => void;
-		Given('a PersonalUser that has already completed onboarding', () => {
-			passport = makePassport(true);
-			baseProps = makeBaseProps({ hasCompletedOnboarding: true });
-			user = new PersonalUser(baseProps, passport);
-		});
-		When('I set hasCompletedOnboarding to true again', () => {
-			completeOnboardingAgain = () => {
-				user.hasCompletedOnboarding = true;
-			};
-		});
-		Then('it should throw a PermissionError', () => {
-			expect(completeOnboardingAgain).toThrow(DomainSeedwork.PermissionError);
-			expect(completeOnboardingAgain).throws(
-				'Users can only be onboarded once.',
-			);
-		});
-	});
+	Scenario(
+		'Attempting to complete onboarding twice',
+		({ Given, When, Then }) => {
+			let completeOnboardingAgain: () => void;
+			Given('a PersonalUser that has already completed onboarding', () => {
+				passport = makePassport(true);
+				baseProps = makeBaseProps({ hasCompletedOnboarding: true });
+				user = new PersonalUser(baseProps, passport);
+			});
+			When('I set hasCompletedOnboarding to true again', () => {
+				completeOnboardingAgain = () => {
+					user.hasCompletedOnboarding = true;
+				};
+			});
+			Then('it should throw a PermissionError', () => {
+				expect(completeOnboardingAgain).toThrow(DomainSeedwork.PermissionError);
+				expect(completeOnboardingAgain).throws(
+					'Users can only be onboarded once.',
+				);
+			});
+		},
+	);
 });
