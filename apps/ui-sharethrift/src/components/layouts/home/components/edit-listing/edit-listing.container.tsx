@@ -23,6 +23,10 @@ import {
 import { ComponentQueryLoader } from '@sthrift/ui-components';
 import { useAuth } from 'react-oidc-context';
 
+/**
+ * Container component for the Edit Listing page
+ * Manages GraphQL queries, mutations, and business logic for editing listings
+ */
 interface EditListingContainerProps {
 	isAuthenticated?: boolean;
 }
