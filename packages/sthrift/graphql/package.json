@@ -17,11 +17,17 @@
     "prebuild": "biome lint",
     "build": "tsc --build",
     "watch": "tsc- --watch",
+    "test": "vitest run",
+    "test:coverage": "vitest run --coverage",
     "test:watch": "vitest",
     "lint": "biome lint",
-    "clean": "rimraf dist",
-    "test": "vitest run",
-    "test:coverage": "vitest run --coverage"
+    "clean": "rimraf dist"
+  },
+  "devDependencies": {
+    "@cellix/typescript-config": "workspace:*",
+    "@cellix/vitest-config": "workspace:*",
+    "rimraf": "^6.0.1",
+    "typescript": "^5.8.3"
   },
   "dependencies": {
     "@apollo/server": "^4.11.3",
@@ -40,11 +46,5 @@
     "graphql-middleware": "^6.1.35",
     "graphql-scalars": "^1.24.2",
     "mongoose": "catalog:"
-  },
-  "devDependencies": {
-    "@cellix/typescript-config": "workspace:*",
-    "@cellix/vitest-config": "workspace:*",
-    "rimraf": "^6.0.1",
-    "typescript": "^5.8.3"
   }
 }
