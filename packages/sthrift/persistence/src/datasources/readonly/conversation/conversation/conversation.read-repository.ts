@@ -8,6 +8,8 @@ import type { FindOneOptions, FindOptions } from '../../mongo-data-source.ts';
 import { ConversationConverter } from '../../../domain/conversation/conversation/conversation.domain-adapter.ts';
 import { MongooseSeedwork } from '@cellix/mongoose-seedwork';
 
+const populateFields = ['sharer', 'reserver', 'listing'];
+
 export interface ConversationReadRepository {
 	getAll: (
 		options?: FindOptions,
@@ -57,7 +59,7 @@ export class ConversationReadRepositoryImpl
 	): Promise<Domain.Contexts.Conversation.Conversation.ConversationEntityReference | null> {
 		const result = await this.mongoDataSource.findById(id, {
 			...options,
-			populateFields: ['sharer', 'reserver', 'listing'],
+			populateFields: populateFields,
 		});
 		if (!result) {
 			return null;
@@ -85,7 +87,7 @@ export class ConversationReadRepositoryImpl
 				},
 				{
 					...options,
-					populateFields: ['sharer', 'reserver', 'listing'],
+					populateFields: populateFields,
 				},
 			);
 			return result.map((doc) => this.converter.toDomain(doc, this.passport));
