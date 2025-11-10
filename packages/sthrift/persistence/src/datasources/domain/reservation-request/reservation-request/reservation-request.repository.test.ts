@@ -10,19 +10,28 @@ describe('ReservationRequestRepository', () => {
 	let mockModel: Partial<Model<Models.ReservationRequest.ReservationRequest>>;
 	let mockPassport: Domain.Passport;
 	let mockConverter: ReservationRequestConverter;
+		let mockEventBus: { dispatch: ReturnType<typeof vi.fn> };
+		let mockSession: unknown;
 
-	beforeEach(() => {
-		// Create minimal mocks
-		mockModel = {};
-		mockPassport = {} as Domain.Passport;
-		mockConverter = new ReservationRequestConverter();
+		beforeEach(() => {
+			// Reset mocks each test
+			mockModel = {
+				findById: vi.fn().mockReturnValue({ populate: vi.fn().mockReturnValue({ exec: vi.fn() }) }),
+				find: vi.fn().mockReturnValue({ populate: vi.fn().mockReturnValue({ exec: vi.fn() }) }),
+			} as unknown as Partial<Model<Models.ReservationRequest.ReservationRequest>>;
+			mockPassport = {} as Domain.Passport;
+			mockConverter = new ReservationRequestConverter();
+			mockEventBus = { dispatch: vi.fn().mockResolvedValue(undefined) } as any;
+			mockSession = {} as any;
 
-		repository = new ReservationRequestRepository(
-			mockModel as Model<Models.ReservationRequest.ReservationRequest>,
-			mockConverter,
-			mockPassport,
-		);
-	});
+			repository = new ReservationRequestRepository(
+				mockPassport,
+				mockModel as Model<Models.ReservationRequest.ReservationRequest>,
+				mockConverter,
+				mockEventBus as any,
+				mockSession as any,
+			);
+		});
 
 	it('should be instantiated with correct parameters', () => {
 		expect(repository).toBeDefined();
@@ -33,12 +42,71 @@ describe('ReservationRequestRepository', () => {
 		expect(typeof repository.getById).toBe('function');
 	});
 
-	it('should have getAll method', () => {
-		expect(typeof repository.getAll).toBe('function');
-	});
+  it('should have getAll method', () => {
+    expect(typeof repository.getAll).toBe('function');
+  });
 
 	it('should have getNewInstance method', () => {
 		expect(typeof repository.getNewInstance).toBe('function');
+	});
+
+	it('getById should throw when not found', async () => {
+		// simulate exec returning null
+		const populateMock = vi.fn().mockReturnValue({ exec: vi.fn().mockResolvedValue(null) });
+		(mockModel.findById as any).mockReturnValue({ populate: populateMock });
+		await expect(repository.getById('missing-id')).rejects.toThrow(/not found/);
+	});
+
+	it('getById should return converted domain object', async () => {
+		const fakeDoc = { _id: 'abc', listing: {}, reserver: {} };
+		const converted = { id: 'abc' } as unknown as Domain.Contexts.ReservationRequest.ReservationRequest.ReservationRequest<any>;
+		vi.spyOn(mockConverter, 'toDomain').mockReturnValue(converted);
+		const execMock = vi.fn().mockResolvedValue(fakeDoc);
+		const populateMock = vi.fn().mockReturnValue({ exec: execMock });
+		(mockModel.findById as any).mockReturnValue({ populate: populateMock });
+		const result = await repository.getById('abc');
+		expect(result).toBe(converted);
+		expect(mockConverter.toDomain).toHaveBeenCalledWith(fakeDoc, mockPassport);
+	});
+
+	it('getAll should return converted domain objects', async () => {
+		const fakeDocs = [
+			{ _id: '1', listing: {}, reserver: {} },
+			{ _id: '2', listing: {}, reserver: {} },
+		];
+		vi.spyOn(mockConverter, 'toDomain').mockImplementation((doc) => ({ id: (doc as any)._id }) as any);
+		const execMock = vi.fn().mockResolvedValue(fakeDocs);
+		const populateMock = vi.fn().mockReturnValue({ exec: execMock });
+		(mockModel.find as any).mockReturnValue({ populate: populateMock });
+		const result = await repository.getAll();
+		expect(result).toHaveLength(2);
+		expect(result.map(r => (r as any).id)).toEqual(['1', '2']);
+	});
+
+	it('getByReserverId should filter and convert', async () => {
+		const fakeDocs = [
+			{ _id: '1', reserver: 'res1', listing: {} },
+			{ _id: '2', reserver: 'res1', listing: {} },
+		];
+		vi.spyOn(mockConverter, 'toDomain').mockImplementation((doc) => ({ id: (doc as any)._id }) as any);
+		const execMock = vi.fn().mockResolvedValue(fakeDocs);
+		const populateMock = vi.fn().mockReturnValue({ exec: execMock });
+		(mockModel.find as any).mockReturnValue({ populate: populateMock });
+		const result = await repository.getByReserverId('res1');
+		expect(result).toHaveLength(2);
+	});
+
+	it('getByListingId should filter and convert', async () => {
+		const fakeDocs = [
+			{ _id: '1', listing: 'list1', reserver: {} },
+			{ _id: '2', listing: 'list1', reserver: {} },
+		];
+		vi.spyOn(mockConverter, 'toDomain').mockImplementation((doc) => ({ id: (doc as any)._id }) as any);
+		const execMock = vi.fn().mockResolvedValue(fakeDocs);
+		const populateMock = vi.fn().mockReturnValue({ exec: execMock });
+		(mockModel.find as any).mockReturnValue({ populate: populateMock });
+		const result = await repository.getByListingId('list1');
+		expect(result).toHaveLength(2);
 	});
 
 	it('should have getByReserverId method', () => {
