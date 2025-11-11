@@ -81,7 +81,10 @@ export abstract class MongoRepositoryBase<
 			}
 		} catch (error) {
 			console.log(`Error saving item : ${String(error)}`);
-			throw new Error(`Error saving item  ${String(item)}: ${String(error)}`);
+      // temporary update to debug E11000 error in deployed env
+			throw new Error(
+				`Error saving item  ${JSON.stringify(item)}: ${String(error)}`,
+			);
 		}
 	}
 
