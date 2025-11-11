@@ -10,14 +10,14 @@ Feature: ConversationConverter
     And the domain object's sharer should be a PersonalUserDomainAdapter with the correct doc
     And the domain object's reserver should be a PersonalUserDomainAdapter with the correct doc
     And the domain object's listing should be an ItemListingDomainAdapter with the correct doc
-    And the domain object's twilioConversationId should be the correct value
+    And the domain object's messagingConversationId should be the correct value
 
   Scenario: Converting a domain object to a Mongoose Conversation document
     Given a ConversationConverter instance
-    And a Conversation domain object with valid sharer, reserver, listing, and twilioConversationId
+    And a Conversation domain object with valid sharer, reserver, listing, and messagingConversationId
     When I call toPersistence with the Conversation domain object
     Then I should receive a Mongoose Conversation document
     And the document's sharer should be set to the correct user document
     And the document's reserver should be set to the correct user document
     And the document's listing should be set to the correct listing document
-    And the document's twilioConversationId should be set to the correct value
+    And the document's messagingConversationId should be set to the correct value

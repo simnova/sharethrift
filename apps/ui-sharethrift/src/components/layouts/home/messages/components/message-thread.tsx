@@ -12,7 +12,7 @@ import { useRef } from "react";
 
 interface Message {
   id: string;
-  twilioMessageSid: string;
+  messagingMessageId: string;
   authorId: string;
   content: string;
   createdAt: string;

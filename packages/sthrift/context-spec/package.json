@@ -22,7 +22,8 @@
     "dependencies": {
         "@sthrift/persistence": "workspace:*",
         "@sthrift/service-cybersource": "workspace:*",
-        "@sthrift/service-token-validation": "workspace:*"
+        "@sthrift/service-token-validation": "workspace:*",
+        "@cellix/messaging-service": "workspace:*"
     },
     "devDependencies": {
         "@cellix/typescript-config": "workspace:*",
