@@ -1,6 +1,7 @@
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { describeFeature, loadFeature } from '@amiceli/vitest-cucumber';
+import type { Domain } from '@sthrift/domain';
 import { expect, vi } from 'vitest';
 import type { GraphContext } from '../../../init/context.ts';
 import reservationRequestResolvers from './reservation-request.resolvers.ts';
@@ -18,6 +19,45 @@ const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const feature = await loadFeature(
 	path.resolve(__dirname, 'features/reservation-request.resolvers.feature'),
 );
+
+// Types for test entities
+type ReservationRequestEntity =
+	Domain.Contexts.ReservationRequest.ReservationRequest.ReservationRequestEntityReference;
+type ItemListingEntity =
+	Domain.Contexts.Listing.ItemListing.ItemListingEntityReference;
+type PersonalUserEntity =
+	Domain.Contexts.User.PersonalUser.PersonalUserEntityReference;
+
+// Helper function to create mock reservation request
+function createMockReservationRequest(
+	overrides: Partial<ReservationRequestEntity> = {},
+): ReservationRequestEntity {
+	const baseRequest: ReservationRequestEntity = {
+		id: 'request-1',
+		state: 'Pending',
+		reservationPeriodStart: new Date('2025-10-15'),
+		reservationPeriodEnd: new Date('2025-10-20'),
+		createdAt: new Date('2025-10-01T00:00:00Z'),
+		updatedAt: new Date('2025-10-01T00:00:00Z'),
+		schemaVersion: '1.0.0',
+		listing: {
+			id: 'listing-1',
+			title: 'Test Listing',
+		} as ItemListingEntity,
+		reserver: {
+			id: 'user-1',
+			account: {
+				username: 'testuser',
+			},
+		} as PersonalUserEntity,
+		loadListing: vi.fn(),
+		loadReserver: vi.fn(),
+		closeRequestedBySharer: false,
+		closeRequestedByReserver: false,
+		...overrides,
+	};
+	return baseRequest;
+}
 
 function makeMockGraphContext(
 	overrides: Partial<GraphContext> = {},
@@ -56,7 +96,7 @@ test.for(feature, ({ Scenario }) => {
 			const userId = 'user-123';
 			Given('a valid userId', () => {
 				context = makeMockGraphContext();
-				const mockReservations = [{ id: '1', state: 'Accepted' }];
+				const mockReservations = [createMockReservationRequest({ id: '1', state: 'Accepted' })];
 				vi.mocked(
 					context.applicationServices.ReservationRequest.ReservationRequest
 						.queryActiveByReserverId,
@@ -153,7 +193,7 @@ test.for(feature, ({ Scenario }) => {
 			const userId = 'user-123';
 			Given('a valid userId', () => {
 				context = makeMockGraphContext();
-				const mockReservations = [{ id: '1', state: 'Closed' }];
+				const mockReservations = [createMockReservationRequest({ id: '1', state: 'Closed' })];
 				vi.mocked(
 					context.applicationServices.ReservationRequest.ReservationRequest
 						.queryPastByReserverId,
@@ -241,15 +281,15 @@ test.for(feature, ({ Scenario }) => {
 			});
 			And('valid pagination arguments (page, pageSize)', () => {
 				const mockRequests = [
-					{
+					createMockReservationRequest({
 						id: '1',
 						state: 'Requested',
 						createdAt: new Date('2024-01-01'),
 						reservationPeriodStart: new Date('2024-02-01'),
 						reservationPeriodEnd: new Date('2024-02-10'),
-						listing: { title: 'Test Item' },
-						reserver: { account: { username: 'testuser' } },
-					},
+						listing: { title: 'Test Item' } as ItemListingEntity,
+						reserver: { account: { username: 'testuser' } } as PersonalUserEntity,
+					}),
 				];
 				vi.mocked(
 					context.applicationServices.ReservationRequest.ReservationRequest
@@ -300,20 +340,20 @@ test.for(feature, ({ Scenario }) => {
 			Given('reservation requests for a sharer', () => {
 				context = makeMockGraphContext();
 				const mockRequests = [
-					{
+					createMockReservationRequest({
 						id: '1',
 						state: 'Requested',
 						createdAt: new Date(),
-						listing: { title: 'Camera' },
-						reserver: { account: { username: 'user1' } },
-					},
-					{
+						listing: { title: 'Camera' } as ItemListingEntity,
+						reserver: { account: { username: 'user1' } } as PersonalUserEntity,
+					}),
+					createMockReservationRequest({
 						id: '2',
 						state: 'Requested',
 						createdAt: new Date(),
-						listing: { title: 'Drone' },
-						reserver: { account: { username: 'user2' } },
-					},
+						listing: { title: 'Drone' } as ItemListingEntity,
+						reserver: { account: { username: 'user2' } } as PersonalUserEntity,
+					}),
 				];
 				vi.mocked(
 					context.applicationServices.ReservationRequest.ReservationRequest
@@ -346,7 +386,7 @@ test.for(feature, ({ Scenario }) => {
 			Then('only listings whose titles include "camera" should be returned', () => {
 				const items = (result as { items: { title: string }[] }).items;
 				expect(items).toHaveLength(1);
-				expect(items[0].title).toBe('Camera');
+				expect(items[0]?.title).toBe('Camera');
 			});
 		},
 	);
@@ -357,20 +397,20 @@ test.for(feature, ({ Scenario }) => {
 			Given('reservation requests with mixed statuses ["Pending", "Approved"]', () => {
 				context = makeMockGraphContext();
 				const mockRequests = [
-					{
+					createMockReservationRequest({
 						id: '1',
 						state: 'Accepted',
 						createdAt: new Date(),
-						listing: { title: 'Item 1' },
-						reserver: { account: { username: 'user1' } },
-					},
-					{
+						listing: { title: 'Item 1' } as ItemListingEntity,
+						reserver: { account: { username: 'user1' } } as PersonalUserEntity,
+					}),
+					createMockReservationRequest({
 						id: '2',
 						state: 'Requested',
 						createdAt: new Date(),
-						listing: { title: 'Item 2' },
-						reserver: { account: { username: 'user2' } },
-					},
+						listing: { title: 'Item 2' } as ItemListingEntity,
+						reserver: { account: { username: 'user2' } } as PersonalUserEntity,
+					}),
 				];
 				vi.mocked(
 					context.applicationServices.ReservationRequest.ReservationRequest
@@ -382,7 +422,7 @@ test.for(feature, ({ Scenario }) => {
 			});
 			When('the myListingsRequests query is executed', async () => {
 				const resolver =
-					reservationRequestResolvers.Query?.myListingsRequests as TestResolver<{
+					reservationRequestResolvers.Query?.myListingsRequests as unknown as TestResolver<{
 						sharerId: string;
 						page: number;
 						pageSize: number;
@@ -403,7 +443,7 @@ test.for(feature, ({ Scenario }) => {
 			Then('only requests with status "Approved" should be included', () => {
 				const items = (result as { items: { status: string }[] }).items;
 				expect(items).toHaveLength(1);
-				expect(items[0].status).toBe('Accepted');
+				expect(items[0]?.status).toBe('Accepted');
 			});
 		},
 	);
@@ -415,7 +455,7 @@ test.for(feature, ({ Scenario }) => {
 			const userId = 'user-456';
 			Given('a valid listingId and userId', () => {
 				context = makeMockGraphContext();
-				const mockReservation = { id: '1', state: 'Accepted' };
+				const mockReservation = createMockReservationRequest({ id: '1', state: 'Accepted' });
 				vi.mocked(
 					context.applicationServices.ReservationRequest.ReservationRequest
 						.queryActiveByReserverIdAndListingId,
@@ -519,8 +559,8 @@ test.for(feature, ({ Scenario }) => {
 			Given('a valid listingId', () => {
 				context = makeMockGraphContext();
 				const mockReservations = [
-					{ id: '1', state: 'Accepted' },
-					{ id: '2', state: 'Requested' },
+					createMockReservationRequest({ id: '1', state: 'Accepted' }),
+					createMockReservationRequest({ id: '2', state: 'Requested' }),
 				];
 				vi.mocked(
 					context.applicationServices.ReservationRequest.ReservationRequest
@@ -624,10 +664,10 @@ test.for(feature, ({ Scenario }) => {
 				context = makeMockGraphContext();
 			});
 			And('a valid input with listingId and reservationPeriod dates', () => {
-				const mockCreatedReservation = {
+				const mockCreatedReservation = createMockReservationRequest({
 					id: 'new-reservation',
 					state: 'Requested',
-				};
+				});
 				vi.mocked(
 					context.applicationServices.ReservationRequest.ReservationRequest.create,
 				).mockResolvedValue(mockCreatedReservation);
@@ -675,7 +715,7 @@ test.for(feature, ({ Scenario }) => {
 				context = makeMockGraphContext({
 					applicationServices: {
 						...makeMockGraphContext().applicationServices,
-						verifiedUser: undefined,
+						verifiedUser: null,
 					},
 				});
 			});
@@ -752,27 +792,27 @@ test.for(feature, ({ Scenario }) => {
 			Given('reservation requests with varying createdAt timestamps', () => {
 				context = makeMockGraphContext();
 				const mockRequests = [
-					{
+					createMockReservationRequest({
 						id: '1',
 						state: 'Requested',
 						createdAt: new Date('2024-01-01'),
-						listing: { title: 'Item 1' },
-						reserver: { account: { username: 'user1' } },
-					},
-					{
+						listing: { title: 'Item 1' } as ItemListingEntity,
+						reserver: { account: { username: 'user1' } } as PersonalUserEntity,
+					}),
+					createMockReservationRequest({
 						id: '2',
 						state: 'Requested',
 						createdAt: new Date('2024-01-03'),
-						listing: { title: 'Item 2' },
-						reserver: { account: { username: 'user2' } },
-					},
-					{
+						listing: { title: 'Item 2' } as ItemListingEntity,
+						reserver: { account: { username: 'user2' } } as PersonalUserEntity,
+					}),
+					createMockReservationRequest({
 						id: '3',
 						state: 'Requested',
 						createdAt: new Date('2024-01-02'),
-						listing: { title: 'Item 3' },
-						reserver: { account: { username: 'user3' } },
-					},
+						listing: { title: 'Item 3' } as ItemListingEntity,
+						reserver: { account: { username: 'user3' } } as PersonalUserEntity,
+					}),
 				];
 				vi.mocked(
 					context.applicationServices.ReservationRequest.ReservationRequest
@@ -901,15 +941,15 @@ test.for(feature, ({ Scenario }) => {
 			() => {
 				context = makeMockGraphContext();
 				const mockRequests = [
-					{
+					createMockReservationRequest({
 						id: '1',
 						state: 'Requested',
 						createdAt: new Date('2024-01-01'),
 						reservationPeriodStart: new Date('2024-02-01'),
 						reservationPeriodEnd: new Date('2024-02-10'),
-						listing: { title: 'Test Item' },
-						reserver: { account: { username: 'testuser' } },
-					},
+						listing: { title: 'Test Item' } as ItemListingEntity,
+						reserver: { account: { username: 'testuser' } } as PersonalUserEntity,
+					}),
 				];
 				vi.mocked(
 					context.applicationServices.ReservationRequest.ReservationRequest
@@ -961,9 +1001,9 @@ test.for(feature, ({ Scenario }) => {
 						status: string;
 					}[];
 				}).items;
-				expect(items[0].title).toBe('Test Item');
-				expect(items[0].requestedBy).toBe('@testuser');
-				expect(items[0].status).toBe('Requested');
+				expect(items[0]?.title).toBe('Test Item');
+				expect(items[0]?.requestedBy).toBe('@testuser');
+				expect(items[0]?.status).toBe('Requested');
 			},
 		);
 	});
@@ -971,13 +1011,15 @@ test.for(feature, ({ Scenario }) => {
 	Scenario('Paginating listing requests', ({ Given, When, Then }) => {
 		Given('25 listing requests and a pageSize of 10', () => {
 			context = makeMockGraphContext();
-			const mockRequests = Array.from({ length: 25 }, (_, i) => ({
-				id: `${i + 1}`,
-				state: 'Requested',
-				createdAt: new Date(),
-				listing: { title: `Item ${i + 1}` },
-				reserver: { account: { username: `user${i + 1}` } },
-			}));
+			const mockRequests = Array.from({ length: 25 }, (_, i) => 
+				createMockReservationRequest({
+					id: `${i + 1}`,
+					state: 'Requested',
+					createdAt: new Date(),
+					listing: { title: `Item ${i + 1}` } as ItemListingEntity,
+					reserver: { account: { username: `user${i + 1}` } } as PersonalUserEntity,
+				})
+			);
 			vi.mocked(
 				context.applicationServices.ReservationRequest.ReservationRequest
 					.queryListingRequestsBySharerId,
@@ -1020,27 +1062,27 @@ test.for(feature, ({ Scenario }) => {
 			Given('multiple listing requests with varying titles', () => {
 				context = makeMockGraphContext();
 				const mockRequests = [
-					{
+					createMockReservationRequest({
 						id: '1',
 						state: 'Requested',
 						createdAt: new Date(),
-						listing: { title: 'Zebra Camera' },
-						reserver: { account: { username: 'user1' } },
-					},
-					{
+						listing: { title: 'Zebra Camera' } as ItemListingEntity,
+						reserver: { account: { username: 'user1' } } as PersonalUserEntity,
+					}),
+					createMockReservationRequest({
 						id: '2',
 						state: 'Requested',
 						createdAt: new Date(),
-						listing: { title: 'Apple Drone' },
-						reserver: { account: { username: 'user2' } },
-					},
-					{
+						listing: { title: 'Apple Drone' } as ItemListingEntity,
+						reserver: { account: { username: 'user2' } } as PersonalUserEntity,
+					}),
+					createMockReservationRequest({
 						id: '3',
 						state: 'Requested',
 						createdAt: new Date(),
-						listing: { title: 'Microphone Beta' },
-						reserver: { account: { username: 'user3' } },
-					},
+						listing: { title: 'Microphone Beta' } as ItemListingEntity,
+						reserver: { account: { username: 'user3' } } as PersonalUserEntity,
+					}),
 				];
 				vi.mocked(
 					context.applicationServices.ReservationRequest.ReservationRequest

@@ -8,7 +8,7 @@ import type { GraphContext } from '../init/context.ts';
 import type { PersonalUser } from './builder/generated.ts';
 
 export const PopulatePersonalUserFromField = (fieldName: string) => {
-	// biome-ignore lint/suspicious/noExplicitAny: <explanation>
+	// biome-ignore lint/suspicious/noExplicitAny: parent can be any resolver parent type
 	return async (parent: any, _: unknown, context: GraphContext) => {
 		if (parent[fieldName] && isValidObjectId(parent[fieldName].toString())) {
 			return (await context.applicationServices.User.PersonalUser.queryById({
@@ -20,7 +20,7 @@ export const PopulatePersonalUserFromField = (fieldName: string) => {
 };
 
 export const PopulateItemListingFromField = (fieldName: string) => {
-	// biome-ignore lint/suspicious/noExplicitAny: <explanation>
+	// biome-ignore lint/suspicious/noExplicitAny: parent can be any resolver parent type
 	return async (parent: any, _: unknown, context: GraphContext) => {
 		if (parent[fieldName] && isValidObjectId(parent[fieldName].toString())) {
 			return await context.applicationServices.Listing.ItemListing.queryById({
