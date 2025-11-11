@@ -22,7 +22,6 @@ export class ServiceMessagingTwilio implements MessagingService {
 		
 		this.accountSid = accountSid ?? '';
 		this.authToken = authToken ?? '';
-		
 		if (!this.accountSid || !this.authToken) {
 			console.warn(
 				'ServiceMessagingTwilio: TWILIO_ACCOUNT_SID and TWILIO_AUTH_TOKEN not configured. Service will not function until credentials are provided.'
@@ -34,7 +33,10 @@ export class ServiceMessagingTwilio implements MessagingService {
 		if (this.client) {
 			throw new Error('ServiceMessagingTwilio is already started');
 		}
-
+		if (process.env['NODE_ENV'] === 'development') {
+			console.log('ServiceMessagingTwilio: Skipping Twilio SDK initialization in development mode.');
+			return this as Exclude<ServiceMessagingTwilio, ServiceBase>;
+		}
 		this.client = new Twilio.Twilio(this.accountSid, this.authToken);
 		console.log('ServiceMessagingTwilio started with real Twilio client');
 		return this as Exclude<ServiceMessagingTwilio, ServiceBase>;
