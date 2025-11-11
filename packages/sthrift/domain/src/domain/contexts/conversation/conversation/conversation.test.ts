@@ -112,8 +112,8 @@ function makeBaseProps(
 					billing: {
 						cybersourceCustomerId: null,
 						subscription: {
-							planCode: 'basic',
-							status: '',
+							planCode: 'verified-personal',
+							status: 'ACTIVE',
 							startDate: new Date('2020-01-01T00:00:00Z'),
 							subscriptionId: 'sub_123',
 						},
@@ -179,7 +179,7 @@ function makeBaseProps(
 						cybersourceCustomerId: null,
 						subscription: {
 							planCode: 'basic',
-							status: '',
+							status: 'ACTIVE',
 							startDate: new Date('2020-01-01T00:00:00Z'),
 							subscriptionId: 'sub_456',
 						},
