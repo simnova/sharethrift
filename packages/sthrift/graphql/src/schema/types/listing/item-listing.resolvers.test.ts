@@ -75,7 +75,7 @@ function createMockUser(
 ): PersonalUserEntity {
 	return {
 		id: 'user-1',
-		userType: 'end-user',
+		userType: 'personal-users',
 		isBlocked: false,
 		hasCompletedOnboarding: true,
 		schemaVersion: '1.0.0',

@@ -17,7 +17,7 @@ function makeUserDoc(
 ): Models.User.PersonalUser {
 	const base = {
 		id: new MongooseSeedwork.ObjectId(),
-		userType: 'end-user',
+		userType: 'personal-users',
 		isBlocked: false,
 		hasCompletedOnboarding: false,
 		account: {

@@ -55,7 +55,7 @@ function makeBaseProps(
 ): ItemListingProps {
 	const user = new PersonalUser<PersonalUserProps>(
 		{
-			userType: 'end-user',
+			userType: 'personal-users',
 			id: 'user-1',
 			isBlocked: false,
 			schemaVersion: '1.0.0',

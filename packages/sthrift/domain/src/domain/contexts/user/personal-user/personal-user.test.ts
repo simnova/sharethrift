@@ -32,7 +32,7 @@ function makeBaseProps(
 	overrides: Partial<PersonalUserProps> = {},
 ): PersonalUserProps {
 	return {
-		userType: 'end-user',
+		userType: 'personal-users',
 		id: 'user-1',
 		isBlocked: false,
 		schemaVersion: '1.0.0',

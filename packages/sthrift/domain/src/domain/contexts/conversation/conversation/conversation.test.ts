@@ -43,7 +43,7 @@ function makeBaseProps(
 ): ConversationProps {
 	const user = new PersonalUser<PersonalUserProps>(
 		{
-			userType: 'end-user',
+			userType: 'personal-users',
 			id: 'user-1',
 			isBlocked: false,
 			schemaVersion: '1.0.0',
@@ -80,7 +80,7 @@ function makeBaseProps(
 	);
 	const reserver = new PersonalUser<PersonalUserProps>(
 		{
-			userType: 'end-user',
+			userType: 'personal-users',
 			id: 'user-2',
 			isBlocked: false,
 			schemaVersion: '1.0.0',
@@ -217,7 +217,7 @@ test.for(feature, ({ Scenario, Background, BeforeEachScenario }) => {
 				conversation.sharer as PersonalUser<PersonalUserProps>;
 			newSharer = new PersonalUser(
 				{
-					userType: 'end-user',
+					userType: 'personal-users',
 					id: 'user-3',
 					isBlocked: false,
 					schemaVersion: '1.0.0',
@@ -259,7 +259,7 @@ test.for(feature, ({ Scenario, Background, BeforeEachScenario }) => {
 					// @ts-expect-error: testing private setter
 					conversation.sharer = new PersonalUser(
 						{
-							userType: 'end-user',
+							userType: 'personal-users',
 							id: 'user-3',
 							isBlocked: false,
 							schemaVersion: '1.0.0',
@@ -302,7 +302,7 @@ test.for(feature, ({ Scenario, Background, BeforeEachScenario }) => {
 				conversation.reserver as PersonalUser<PersonalUserProps>;
 			newReserver = new PersonalUser(
 				{
-					userType: 'end-user',
+					userType: 'personal-users',
 					id: 'user-4',
 					isBlocked: false,
 					schemaVersion: '1.0.0',
@@ -346,7 +346,7 @@ test.for(feature, ({ Scenario, Background, BeforeEachScenario }) => {
 					// @ts-expect-error: testing private setter
 					conversation.reserver = new PersonalUser(
 						{
-							userType: 'end-user',
+							userType: 'personal-users',
 							id: 'user-4',
 							isBlocked: false,
 							schemaVersion: '1.0.0',
