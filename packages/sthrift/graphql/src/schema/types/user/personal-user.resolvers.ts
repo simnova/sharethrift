@@ -1,6 +1,8 @@
 import type { GraphContext } from '../../../init/context.ts';
 import type { GraphQLResolveInfo } from 'graphql';
 import type {
+	PersonalUser,
+	PersonalUserAccount,
 	PersonalUserUpdateInput,
 	PaymentResponse,
 	RefundResponse,
@@ -11,6 +13,36 @@ import type { PersonalUserUpdateCommand } from '@sthrift/application-services';
 import { getUserByEmail } from '../../resolver-helper.ts';
 
 const personalUserResolvers: Resolvers = {
+	PersonalUser: {
+		account: (rootObj: PersonalUser, _args, _context: GraphContext) => {
+			// Basic account info (email, username) is visible to authenticated users
+			return rootObj.account ?? null;
+		},
+	},
+	PersonalUserAccount: {
+		profile: async (
+			rootObj: PersonalUserAccount,
+			_args,
+			context: GraphContext,
+		) => {
+			// Profile info only visible to the user themselves or admins with canViewAllUsers
+			const currentUserEmail =
+				context.applicationServices.verifiedUser?.verifiedJwt?.email;
+			if (!currentUserEmail) return null;
+
+			const currentUser = await getUserByEmail(currentUserEmail, context);
+			const isViewingSelf = currentUser?.account?.email === rootObj.email;
+			const isAdmin = currentUser && 'role' in currentUser;
+			const canViewAllUsers =
+				isAdmin &&
+				currentUser?.role?.permissions?.userPermissions?.canViewAllUsers;
+
+			if (isViewingSelf || canViewAllUsers) {
+				return rootObj.profile ?? null;
+			}
+			return null;
+		},
+	},
 	Query: {
 		personalUserById: async (
 			_parent: unknown,
@@ -32,14 +64,16 @@ const personalUserResolvers: Resolvers = {
 			if (!context.applicationServices.verifiedUser?.verifiedJwt) {
 				throw new Error('Unauthorized');
 			}
-			
+
 			// Block admin users - they should use currentUser query instead
 			const { email } = context.applicationServices.verifiedUser.verifiedJwt;
 			const existingUser = await getUserByEmail(email, context);
 			if (existingUser?.userType === 'admin-user') {
-				throw new Error('Admin users cannot use this query. Use currentUser instead.');
+				throw new Error(
+					'Admin users cannot use this query. Use currentUser instead.',
+				);
 			}
-			
+
 			console.log('currentPersonalUserAndCreateIfNotExists resolver called');
 			// Implement the logic to get the current personal user or create a new one
 			return await context.applicationServices.User.PersonalUser.createIfNotExists(
