@@ -56,7 +56,9 @@ export abstract class MongoRepositoryBase<
 			console.log(`Repo dispatching DomainEvent : ${JSON.stringify(event)}`);
 			// [NN] [ESLINT] will come back to this with refactoring and unit tests to implement similar to QueueSenderApi<T>
 			await this.bus.dispatch(
-				event.constructor as new (aggregateId: string) => typeof event,
+				event.constructor as new (
+					aggregateId: string,
+				) => typeof event,
 				event.payload,
 			);
 		}
@@ -64,7 +66,7 @@ export abstract class MongoRepositoryBase<
 		this.itemsInTransaction.push(item);
 		try {
 			if (item.isDeleted) {
-                console.log('deleting item id', item.id);
+				console.log('deleting item id', item.id);
 				await this.model
 					.deleteOne({ _id: item.id }, { session: this.session })
 					.exec();
@@ -79,7 +81,7 @@ export abstract class MongoRepositoryBase<
 			}
 		} catch (error) {
 			console.log(`Error saving item : ${String(error)}`);
-			throw error;
+			throw new Error(`Error saving item  ${String(item)}: ${String(error)}`);
 		}
 	}
 
