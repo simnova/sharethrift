@@ -82,9 +82,9 @@ export const SectionLayout: React.FC = () => {
     navigate("/auth-redirect");
   };
 
-  const handleOnSignUp = () => {
-    navigate("/auth-redirect");
-  };
+	const handleOnSignUp = () => {
+		navigate('/auth-redirect?option=signup');
+	};
 
   const handleCreateListing = useCreateListingNavigation();
 

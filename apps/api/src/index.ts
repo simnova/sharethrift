@@ -17,7 +17,9 @@ import { ServiceBlobStorage } from '@sthrift/service-blob-storage';
 import { ServiceTokenValidation } from '@sthrift/service-token-validation';
 import * as TokenValidationConfig from './service-config/token-validation/index.ts';
 
-// import { ServiceTwilio } from '@sthrift/service-twilio';
+import type { MessagingService } from '@cellix/messaging-service';
+import { ServiceMessagingTwilio } from '@sthrift/messaging-service-twilio';
+import { ServiceMessagingMock } from '@sthrift/messaging-service-mock';
 
 import { graphHandlerCreator } from '@sthrift/graphql';
 import { restHandlerCreator } from '@sthrift/rest';
@@ -25,8 +27,12 @@ import { MockServiceCybersource } from '@sthrift/service-cybersource';
 
 const paymentService = new MockServiceCybersource(); // add condition to switch services here later
 
+const { NODE_ENV } = process.env;
+const isDevelopment = NODE_ENV === 'development';
+
 Cellix.initializeInfrastructureServices<ApiContextSpec, ApplicationServices>(
 	(serviceRegistry) => {
+		
 		serviceRegistry
 			.registerInfrastructureService(
 				new ServiceMongoose(
@@ -38,7 +44,9 @@ Cellix.initializeInfrastructureServices<ApiContextSpec, ApplicationServices>(
 			.registerInfrastructureService(
 				new ServiceTokenValidation(TokenValidationConfig.portalTokens),
 			)
-			// .registerInfrastructureService(new ServiceTwilio())
+			.registerInfrastructureService(
+				isDevelopment ? new ServiceMessagingMock() : new ServiceMessagingTwilio(),
+			)
 			.registerInfrastructureService(paymentService);
 	},
 )
@@ -48,6 +56,10 @@ Cellix.initializeInfrastructureServices<ApiContextSpec, ApplicationServices>(
 				ServiceMongoose,
 			),
 		);
+
+		const messagingService = isDevelopment
+			? serviceRegistry.getInfrastructureService<MessagingService>(ServiceMessagingMock)
+			: serviceRegistry.getInfrastructureService<MessagingService>(ServiceMessagingTwilio);
 
 		const { domainDataSource } = dataSourcesFactory.withSystemPassport();
 		RegisterEventHandlers(domainDataSource);
@@ -59,6 +71,7 @@ Cellix.initializeInfrastructureServices<ApiContextSpec, ApplicationServices>(
 					ServiceTokenValidation,
 				),
 			paymentService: paymentService,
+      messagingService,
 		};
 	})
 	.initializeApplicationServices((context) =>

@@ -22,10 +22,10 @@ Feature: ConversationDomainAdapter
 
   # Repeat similar scenarios for reserver and listing as needed
 
-  Scenario: Getting the twilioConversationId property
-    When I get the twilioConversationId property
+  Scenario: Getting the messagingConversationId property
+    When I get the messagingConversationId property
     Then it should return the correct value
 
-  Scenario: Setting the twilioConversationId property
-    When I set the twilioConversationId property to "twilio-456"
-    Then the document's twilioConversationId should be "twilio-456"
+  Scenario: Setting the messagingConversationId property
+    When I set the messagingConversationId property to "twilio-456"
+    Then the document's messagingConversationId should be "twilio-456"
