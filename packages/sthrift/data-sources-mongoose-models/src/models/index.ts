@@ -11,12 +11,18 @@ import {
 } from './listing/index.ts';
 import { ConversationModelFactory } from './conversations/conversation.model.ts';
 import { AdminRoleModelFactory, RoleModelFactory } from './role/index.ts';
+import {
+	AppealRequestModelFactory,
+	ListingAppealRequestModelFactory,
+	UserAppealRequestModelFactory,
+} from './appeal-request/index.ts';
 
 export * as User from './user/index.ts';
 export * as Conversation from './conversations/index.ts';
 export * as Listing from './listing/index.ts';
 export * as ReservationRequest from './reservation-request/index.ts';
 export * as Role from './role/index.ts';
+export * as AppealRequest from './appeal-request/index.ts';
 
 // Explicit export for consumers
 export { ItemListingModelFactory } from './listing/index.ts';
@@ -48,6 +54,14 @@ export const mongooseContextBuilder = (
 		Role: {
 			Role: RoleModel,
 			AdminRole: AdminRoleModelFactory(RoleModel),
+		},
+		AppealRequest: {
+			ListingAppealRequest: ListingAppealRequestModelFactory(
+				AppealRequestModelFactory(initializedService),
+			),
+			UserAppealRequest: UserAppealRequestModelFactory(
+				AppealRequestModelFactory(initializedService),
+			),
 		},
 	};
 };

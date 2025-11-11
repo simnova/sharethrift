@@ -23,9 +23,18 @@ export interface DomainDataSource {
 		};
 	};
 
-    ReservationRequest: {
-        ReservationRequest: {
-            ReservationRequestUnitOfWork: Contexts.ReservationRequest.ReservationRequest.ReservationRequestUnitOfWork;
-        }
-    }
+	ReservationRequest: {
+		ReservationRequest: {
+			ReservationRequestUnitOfWork: Contexts.ReservationRequest.ReservationRequest.ReservationRequestUnitOfWork;
+		};
+	};
+
+	AppealRequest: {
+		ListingAppealRequest: {
+			ListingAppealRequestUnitOfWork: Contexts.AppealRequest.ListingAppealRequest.ListingAppealRequestUnitOfWork;
+		};
+		UserAppealRequest: {
+			UserAppealRequestUnitOfWork: Contexts.AppealRequest.UserAppealRequest.UserAppealRequestUnitOfWork;
+		};
+	};
 }

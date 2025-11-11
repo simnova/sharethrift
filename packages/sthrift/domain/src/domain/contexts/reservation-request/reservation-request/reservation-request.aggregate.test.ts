@@ -27,6 +27,16 @@ describe('ReservationRequest', () => {
 				}),
 			};
 		},
+		get appealRequest() {
+			return {
+				forListingAppealRequest: () => ({
+					determineIf: () => true,
+				}),
+				forUserAppealRequest: () => ({
+					determineIf: () => true,
+				}),
+			};
+		},
 		get conversation() {
 			return {
 				forConversation: () => ({
