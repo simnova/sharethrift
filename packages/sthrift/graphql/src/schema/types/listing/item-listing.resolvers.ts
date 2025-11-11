@@ -1,5 +1,6 @@
 import type { Resolvers } from '../../builder/generated.js';
 import { PopulatePersonalUserFromField } from '../../resolver-helper.ts';
+import type { GraphContext } from '../../../init/context.ts';
 
 const itemListingResolvers: Resolvers = {
 	ItemListing: {
@@ -150,11 +151,68 @@ const itemListingResolvers: Resolvers = {
 				throw new Error('Authentication required');
 			}
 
-			const result =
-				await context.applicationServices.Listing.ItemListing.cancel({
+			return await context.applicationServices.Listing.ItemListing.cancel({
+				id: args.id,
+			});
+		},
+
+		deleteItemListing: async (
+			_parent: unknown,
+			args: { id: string },
+			context: GraphContext,
+		) => {
+			const userEmail =
+				context.applicationServices.verifiedUser?.verifiedJwt?.email;
+			if (!userEmail) {
+				throw new Error('Authentication required');
+			}
+
+			// Get the listing to verify ownership
+			const listing =
+				await context.applicationServices.Listing.ItemListing.queryById({
 					id: args.id,
 				});
-			return result
+
+			if (!listing) {
+				throw new Error('Listing not found');
+			}
+
+			// Get the current user
+			const user =
+				await context.applicationServices.User.PersonalUser.queryByEmail({
+					email: userEmail,
+				});
+
+			if (!user) {
+				throw new Error('User not found');
+			}
+
+			// Verify ownership
+			if (listing.sharer.id !== user.id) {
+				throw new Error('You do not have permission to delete this listing');
+			}
+
+			// Check if listing has active reservation requests
+			const activeReservations =
+				await context.applicationServices.ReservationRequest.ReservationRequest.queryActiveByListingId(
+					{
+						listingId: args.id,
+					},
+				);
+
+			if (activeReservations && activeReservations.length > 0) {
+				throw new Error(
+					'Cannot delete listing with active reservation requests. Please cancel or resolve all reservation requests first.',
+				);
+			}
+
+			// Proceed with deletion
+			await context.applicationServices.Listing.ItemListing.update({
+				id: args.id,
+				isDeleted: true,
+			});
+
+			return true;
 		},
 	},
 };

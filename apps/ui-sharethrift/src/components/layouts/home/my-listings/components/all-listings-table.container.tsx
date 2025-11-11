@@ -2,7 +2,7 @@ import { useState } from "react";
 import { useQuery, useMutation } from "@apollo/client/react";
 import { AllListingsTable } from "./all-listings-table.tsx";
 import { ComponentQueryLoader } from "@sthrift/ui-components";
-import { HomeAllListingsTableContainerMyListingsAllDocument, HomeAllListingsTableContainerCancelItemListingDocument } from "../../../../../generated.tsx";
+import { HomeAllListingsTableContainerMyListingsAllDocument, HomeAllListingsTableContainerCancelItemListingDocument, HomeAllListingsTableContainerDeleteListingDocument } from "../../../../../generated.tsx";
 import { message } from "antd";
 
 export interface AllListingsTableContainerProps {
@@ -46,6 +46,16 @@ export const AllListingsTableContainer: React.FC<AllListingsTableContainerProps>
     },
     onError: (error) => {
       message.error(`Failed to cancel listing: ${error.message}`);
+    },
+  });
+
+  const [deleteListing] = useMutation(HomeAllListingsTableContainerDeleteListingDocument, {
+    onCompleted: () => {
+      message.success("Listing deleted successfully");
+      refetch();
+    },
+    onError: (error) => {
+      message.error(`Failed to delete listing: ${error.message}`);
     },
   });
 
@@ -104,6 +114,12 @@ export const AllListingsTableContainer: React.FC<AllListingsTableContainerProps>
         await cancelListing({ variables: { id: listingId } });
       } catch (error) {
         console.error("Cancel listing error:", error);
+      }
+    } else if (action === "delete") {
+      try {
+        await deleteListing({ variables: { id: listingId } });
+      } catch (error) {
+        console.error("Delete listing error:", error);
       }
     } else {
       // TODO: Implement other actions in future PRs
