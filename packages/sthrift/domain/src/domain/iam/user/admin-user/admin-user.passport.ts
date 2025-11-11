@@ -4,10 +4,12 @@ import type { UserPassport } from '../../../contexts/user/user.passport.ts';
 import type { ListingPassport } from '../../../contexts/listing/listing.passport.ts';
 import type { ConversationPassport } from '../../../contexts/conversation/conversation.passport.ts';
 import type { ReservationRequestPassport } from '../../../contexts/reservation-request/reservation-request.passport.ts';
+import type { AppealRequestPassport } from '../../../contexts/appeal-request/appeal-request.passport.ts';
 import { AdminUserUserPassport } from './admin-user.user.passport.ts';
 import { AdminUserListingPassport } from './contexts/admin-user.listing.passport.ts';
 import { AdminUserConversationPassport } from './contexts/admin-user.conversation.passport.ts';
 import { AdminUserReservationRequestPassport } from './contexts/admin-user.reservation-request.passport.ts';
+import { AdminUserAppealRequestPassport } from './contexts/admin-user.appeal-request.passport.ts';
 
 export class AdminUserPassport
 	extends AdminUserPassportBase
@@ -17,6 +19,7 @@ export class AdminUserPassport
 	private _listingPassport: ListingPassport | undefined;
 	private _conversationPassport: ConversationPassport | undefined;
 	private _reservationRequestPassport: ReservationRequestPassport | undefined;
+	private _appealRequestPassport: AppealRequestPassport | undefined;
 
 	get user(): UserPassport {
 		this._userPassport ??= new AdminUserUserPassport(this._user);
@@ -39,5 +42,12 @@ export class AdminUserPassport
 		this._reservationRequestPassport ??=
 			new AdminUserReservationRequestPassport(this._user);
 		return this._reservationRequestPassport;
+	}
+
+	get appealRequest(): AppealRequestPassport {
+		this._appealRequestPassport ??= new AdminUserAppealRequestPassport(
+			this._user,
+		);
+		return this._appealRequestPassport;
 	}
 }
