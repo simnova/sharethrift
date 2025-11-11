@@ -31,7 +31,10 @@ export class UserAppealRequestDomainAdapter
 				id: this.doc.user.toString(),
 			} as Domain.Contexts.User.PersonalUser.PersonalUserEntityReference;
 		}
-		return new PersonalUserDomainAdapter(this.doc.user as Models.User.PersonalUser);
+		const adapter = new PersonalUserDomainAdapter(
+			this.doc.user as Models.User.PersonalUser,
+		);
+		return adapter.entityReference as Domain.Contexts.User.PersonalUser.PersonalUserEntityReference;
 	}
 
 	async loadUser(): Promise<Domain.Contexts.User.PersonalUser.PersonalUserEntityReference> {
@@ -41,9 +44,10 @@ export class UserAppealRequestDomainAdapter
 		if (this.doc.user instanceof MongooseSeedwork.ObjectId) {
 			await this.doc.populate('user');
 		}
-		return new PersonalUserDomainAdapter(
+		const adapter = new PersonalUserDomainAdapter(
 			this.doc.user as Models.User.PersonalUser,
 		);
+		return adapter.entityReference as Domain.Contexts.User.PersonalUser.PersonalUserEntityReference;
 	}
 
 	set user(
@@ -66,7 +70,10 @@ export class UserAppealRequestDomainAdapter
 				id: this.doc.blocker.toString(),
 			} as Domain.Contexts.User.PersonalUser.PersonalUserEntityReference;
 		}
-		return new PersonalUserDomainAdapter(this.doc.blocker as Models.User.PersonalUser);
+		const adapter = new PersonalUserDomainAdapter(
+			this.doc.user as Models.User.PersonalUser,
+		);
+		return adapter.entityReference as Domain.Contexts.User.PersonalUser.PersonalUserEntityReference;
 	}
 
 	async loadBlocker(): Promise<Domain.Contexts.User.PersonalUser.PersonalUserEntityReference> {
@@ -76,9 +83,10 @@ export class UserAppealRequestDomainAdapter
 		if (this.doc.blocker instanceof MongooseSeedwork.ObjectId) {
 			await this.doc.populate('blocker');
 		}
-		return new PersonalUserDomainAdapter(
+		const adapter = new PersonalUserDomainAdapter(
 			this.doc.blocker as Models.User.PersonalUser,
 		);
+		return adapter.entityReference as Domain.Contexts.User.PersonalUser.PersonalUserEntityReference;
 	}
 
 	set blocker(

@@ -19,8 +19,12 @@ function makePassport(canCreateUser = false): Passport {
 	return vi.mocked({
 		user: {
 			forPersonalUser: vi.fn(() => ({
-				determineIf: (fn: (p: { isEditingOwnAccount: boolean; canCreateUser: boolean }) => boolean) =>
-					fn({ isEditingOwnAccount: true, canCreateUser }),
+				determineIf: (
+					fn: (p: {
+						isEditingOwnAccount: boolean;
+						canCreateUser: boolean;
+					}) => boolean,
+				) => fn({ isEditingOwnAccount: true, canCreateUser }),
 			})),
 		},
 	} as unknown as Passport);
@@ -48,6 +52,16 @@ function makeBaseProps(
 			canCreateReservationRequest: true,
 			canManageReservationRequest: true,
 			canViewReservationRequest: true,
+		},
+		userPermissions: {
+			canCreateUser: false,
+			canBlockUsers: false,
+			canUnblockUsers: false,
+		},
+		accountPlanPermissions: {
+			canCreateAccountPlan: false,
+			canUpdateAccountPlan: false,
+			canDeleteAccountPlan: false,
 		},
 	});
 	const roleProps = {
@@ -86,11 +100,38 @@ function makeBaseProps(
 					zipCode: '12345',
 				},
 				billing: {
-					subscriptionId: null,
-					cybersourceCustomerId: null,
-					paymentState: '',
-					lastTransactionId: null,
-					lastPaymentAmount: null,
+					cybersourceCustomerId: 'cust-12345',
+					subscription: {
+						planCode: 'verified-personal',
+						status: 'ACTIVE',
+						startDate: new Date('2023-01-01T00:00:00Z'),
+						subscriptionId: 'sub-12345',
+					},
+					transactions: {
+						items: [
+							{
+								id: '1',
+								transactionId: 'txn_123',
+								amount: 1000,
+								referenceId: 'ref_123',
+								status: 'completed',
+								completedAt: new Date('2020-01-01T00:00:00Z'),
+								errorMessage: null,
+							},
+						],
+						getNewItem: () => ({
+							id: '1',
+							transactionId: 'txn_123',
+							amount: 1000,
+							referenceId: 'ref_123',
+							status: 'completed',
+							completedAt: new Date('2020-01-01T00:00:00Z'),
+							errorMessage: null,
+						}),
+						addItem: vi.fn(),
+						removeItem: vi.fn(),
+						removeAll: vi.fn(),
+					},
 				},
 			},
 		},
@@ -209,7 +250,9 @@ test.for(feature, ({ Scenario, Background, BeforeEachScenario }) => {
 				expect(blockUserWithoutPermission).toThrow(
 					DomainSeedwork.PermissionError,
 				);
-				expect(blockUserWithoutPermission).throws('Unauthorized to modify user');
+				expect(blockUserWithoutPermission).throws(
+					'Unauthorized to modify user',
+				);
 			});
 		},
 	);
@@ -228,23 +271,26 @@ test.for(feature, ({ Scenario, Background, BeforeEachScenario }) => {
 		});
 	});
 
-	Scenario('Attempting to complete onboarding twice', ({ Given, When, Then }) => {
-		let completeOnboardingAgain: () => void;
-		Given('a PersonalUser that has already completed onboarding', () => {
-			passport = makePassport(true);
-			baseProps = makeBaseProps({ hasCompletedOnboarding: true });
-			user = new PersonalUser(baseProps, passport);
-		});
-		When('I set hasCompletedOnboarding to true again', () => {
-			completeOnboardingAgain = () => {
-				user.hasCompletedOnboarding = true;
-			};
-		});
-		Then('it should throw a PermissionError', () => {
-			expect(completeOnboardingAgain).toThrow(DomainSeedwork.PermissionError);
-			expect(completeOnboardingAgain).throws(
-				'Users can only be onboarded once.',
-			);
-		});
-	});
+	Scenario(
+		'Attempting to complete onboarding twice',
+		({ Given, When, Then }) => {
+			let completeOnboardingAgain: () => void;
+			Given('a PersonalUser that has already completed onboarding', () => {
+				passport = makePassport(true);
+				baseProps = makeBaseProps({ hasCompletedOnboarding: true });
+				user = new PersonalUser(baseProps, passport);
+			});
+			When('I set hasCompletedOnboarding to true again', () => {
+				completeOnboardingAgain = () => {
+					user.hasCompletedOnboarding = true;
+				};
+			});
+			Then('it should throw a PermissionError', () => {
+				expect(completeOnboardingAgain).toThrow(DomainSeedwork.PermissionError);
+				expect(completeOnboardingAgain).throws(
+					'Users can only be onboarded once.',
+				);
+			});
+		},
+	);
 });
