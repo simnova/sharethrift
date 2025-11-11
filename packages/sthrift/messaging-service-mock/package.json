@@ -22,7 +22,7 @@
     "dependencies": {
         "axios": "^1.7.9",
         "@cellix/api-services-spec": "workspace:*",
-        "@cellix/messaging": "workspace:*"
+        "@cellix/messaging-service": "workspace:*"
     },
     "devDependencies": {
         "typescript": "^5.8.3",

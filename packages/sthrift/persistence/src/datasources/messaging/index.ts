@@ -1,5 +1,5 @@
 import type { Domain } from '@sthrift/domain';
-import type { MessagingService } from '@cellix/messaging';
+import type { MessagingService } from '@cellix/messaging-service';
 import { MessagingConversationContext } from './conversation/index.ts';
 import type * as Conversation from './conversation/conversation/index.ts';
 

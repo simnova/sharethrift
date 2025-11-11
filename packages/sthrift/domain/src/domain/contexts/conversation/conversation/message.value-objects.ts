@@ -1,4 +1,10 @@
 import { VOString } from '@lucaspaganini/value-objects';
+import { ObjectId } from '../../value-objects.ts';
+
+// Constant for messages with unknown/anonymous authors
+export const ANONYMOUS_AUTHOR_ID = '000000000000000000000000';
+
+export class AuthorId extends ObjectId {}
 
 // Messaging provider message ID value object
 export class MessagingMessageId extends VOString({

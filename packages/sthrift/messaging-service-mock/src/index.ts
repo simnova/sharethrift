@@ -3,11 +3,11 @@ import type {
 	MessagingService,
 	ConversationInstance,
 	MessageInstance,
-} from '@cellix/messaging';
+} from '@cellix/messaging-service';
 import axios from 'axios';
 import type { AxiosInstance } from 'axios';
 
-export class MockMessagingService implements MessagingService {
+export class ServiceMessagingMock implements MessagingService {
 	private http: AxiosInstance | undefined;
 	private readonly mockBaseUrl: string;
 
@@ -16,22 +16,22 @@ export class MockMessagingService implements MessagingService {
 		this.mockBaseUrl = mockBaseUrl ?? process.env['MESSAGING_MOCK_URL'] ?? 'http://localhost:10000';
 	}
 
-	public async startUp(): Promise<Exclude<MockMessagingService, ServiceBase>> {
+	public async startUp(): Promise<Exclude<ServiceMessagingMock, ServiceBase>> {
 		if (this.http) {
-			throw new Error('MockMessagingService is already started');
+			throw new Error('ServiceMessagingMock is already started');
 		}
 
 		this.http = axios.create({ baseURL: this.mockBaseUrl });
-		console.log(`MockMessagingService started in MOCK mode (${this.mockBaseUrl})`);
-		return this as Exclude<MockMessagingService, ServiceBase>;
+		console.log(`ServiceMessagingMock started in MOCK mode (${this.mockBaseUrl})`);
+		return this as Exclude<ServiceMessagingMock, ServiceBase>;
 	}
 
 	public async shutDown(): Promise<void> {
 		if (!this.http) {
-			throw new Error('MockMessagingService is not started - shutdown cannot proceed');
+			throw new Error('ServiceMessagingMock is not started - shutdown cannot proceed');
 		}
 		this.http = undefined;
-		console.log('MockMessagingService stopped');
+		console.log('ServiceMessagingMock stopped');
 	}
 
 	private mapConversation(mockData: any): ConversationInstance {

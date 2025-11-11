@@ -20,12 +20,11 @@
         "clean": "rimraf dist"
     },
     "dependencies": {
-        "@cellix/messaging": "workspace:*",
+        "@cellix/messaging-service": "workspace:*",
         "@sthrift/context-spec": "workspace:*",
         "@sthrift/domain": "workspace:*",
         "@sthrift/persistence": "workspace:*",
-        "@sthrift/service-cybersource": "workspace:*",
-        "mongodb": "catalog:"
+        "@sthrift/service-cybersource": "workspace:*"
     },
     "devDependencies": {
         "@cellix/typescript-config": "workspace:*",

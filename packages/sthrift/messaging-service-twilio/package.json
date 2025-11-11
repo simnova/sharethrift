@@ -19,7 +19,7 @@
     "dependencies": {
         "twilio": "^4.0.0",
         "@cellix/api-services-spec": "workspace:*",
-        "@cellix/messaging": "workspace:*"
+        "@cellix/messaging-service": "workspace:*"
     },
     "devDependencies": {
         "typescript": "^5.8.3",

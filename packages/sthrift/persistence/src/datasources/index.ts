@@ -1,5 +1,5 @@
 import { Domain, type DomainDataSource } from '@sthrift/domain';
-import type { MessagingService } from '@cellix/messaging';
+import type { MessagingService } from '@cellix/messaging-service';
 import type { ModelsContext } from '../models-context.ts';
 import { DomainDataSourceImplementation } from './domain/index.ts';
 import {

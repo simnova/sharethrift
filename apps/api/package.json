@@ -22,7 +22,7 @@
         "@azure/functions": "^4.0.0",
         "@azure/identity": "^4.8.0",
         "@cellix/api-services-spec": "workspace:*",
-        "@cellix/messaging": "workspace:*",
+        "@cellix/messaging-service": "workspace:*",
         "@cellix/mongoose-seedwork": "workspace:*",
         "@opentelemetry/api": "^1.9.0",
         "@sthrift/application-services": "workspace:*",

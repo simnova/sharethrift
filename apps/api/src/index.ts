@@ -17,16 +17,16 @@ import { ServiceBlobStorage } from '@sthrift/service-blob-storage';
 import { ServiceTokenValidation } from '@sthrift/service-token-validation';
 import * as TokenValidationConfig from './service-config/token-validation/index.ts';
 
-import type { MessagingService } from '@cellix/messaging';
-import { ServiceTwilio } from '@sthrift/messaging-service-twilio';
-import { MockMessagingService } from '@sthrift/messaging-service-mock';
+import type { MessagingService } from '@cellix/messaging-service';
+import { ServiceMessagingTwilio } from '@sthrift/messaging-service-twilio';
+import { ServiceMessagingMock } from '@sthrift/messaging-service-mock';
 
 import { graphHandlerCreator } from '@sthrift/graphql';
 import { restHandlerCreator } from '@sthrift/rest';
 import { ServiceCybersource } from '@sthrift/service-cybersource';
 
 // biome-ignore lint/complexity/useLiteralKeys: Required by TypeScript noPropertyAccessFromIndexSignature
-const USE_MOCK_MESSAGING = process.env['MESSAGING_USE_MOCK'] === 'true';
+const { MESSAGING_USE_MOCK } = process.env;
 
 Cellix.initializeInfrastructureServices<ApiContextSpec, ApplicationServices>(
 	(serviceRegistry) => {
@@ -43,7 +43,7 @@ Cellix.initializeInfrastructureServices<ApiContextSpec, ApplicationServices>(
 				new ServiceTokenValidation(TokenValidationConfig.portalTokens),
 			)
 			.registerInfrastructureService(
-				USE_MOCK_MESSAGING ? new MockMessagingService() : new ServiceTwilio(),
+				MESSAGING_USE_MOCK ? new ServiceMessagingMock() : new ServiceMessagingTwilio(),
 			)
 			.registerInfrastructureService(new ServiceCybersource());
 	},
@@ -55,9 +55,9 @@ Cellix.initializeInfrastructureServices<ApiContextSpec, ApplicationServices>(
 			),
 		);
 
-		const messagingService = USE_MOCK_MESSAGING
-			? serviceRegistry.getInfrastructureService<MessagingService>(MockMessagingService)
-			: serviceRegistry.getInfrastructureService<MessagingService>(ServiceTwilio);
+		const messagingService = MESSAGING_USE_MOCK
+			? serviceRegistry.getInfrastructureService<MessagingService>(ServiceMessagingMock)
+			: serviceRegistry.getInfrastructureService<MessagingService>(ServiceMessagingTwilio);
 
 		const { domainDataSource } = dataSourcesFactory.withSystemPassport();
 		RegisterEventHandlers(domainDataSource);

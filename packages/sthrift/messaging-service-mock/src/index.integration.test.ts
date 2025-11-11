@@ -1,10 +1,10 @@
 import { describe, it, expect, beforeAll, afterAll } from 'vitest';
 import type { Server } from 'node:http';
-import { MockMessagingService } from './index.ts';
+import { ServiceMessagingMock } from './index.ts';
 import { startServer, stopServer } from '@sthrift/mock-messaging-server';
 
-describe('MockMessagingService Integration Tests', () => {
-	let service: MockMessagingService;
+describe('ServiceMessagingMock Integration Tests', () => {
+	let service: ServiceMessagingMock;
 	let mockServer: Server;
 	const originalEnv = { ...process.env };
 	const MOCK_SERVER_PORT = 10000;
@@ -27,25 +27,25 @@ describe('MockMessagingService Integration Tests', () => {
 
 	describe('Service Lifecycle', () => {
 		it('should start up successfully in mock mode', async () => {
-			service = new MockMessagingService(MOCK_SERVER_URL);
+			service = new ServiceMessagingMock(MOCK_SERVER_URL);
 			await service.startUp();
 			expect(service).toBeDefined();
 			await service.shutDown();
 		});
 
 		it('should throw error when starting up twice', async () => {
-			service = new MockMessagingService(MOCK_SERVER_URL);
+			service = new ServiceMessagingMock(MOCK_SERVER_URL);
 			await service.startUp();
 			await expect(service.startUp()).rejects.toThrow(
-				'MockMessagingService is already started',
+				'ServiceMessagingMock is already started',
 			);
 			await service.shutDown();
 		});
 
 		it('should throw error when shutting down without starting', async () => {
-			service = new MockMessagingService(MOCK_SERVER_URL);
+			service = new ServiceMessagingMock(MOCK_SERVER_URL);
 			await expect(service.shutDown()).rejects.toThrow(
-				'MockMessagingService is not started - shutdown cannot proceed',
+				'ServiceMessagingMock is not started - shutdown cannot proceed',
 			);
 		});
 	});
@@ -54,7 +54,7 @@ describe('MockMessagingService Integration Tests', () => {
 		let conversationId: string;
 
 		beforeAll(async () => {
-			service = new MockMessagingService(MOCK_SERVER_URL);
+			service = new ServiceMessagingMock(MOCK_SERVER_URL);
 			await service.startUp();
 		});
 
@@ -116,7 +116,7 @@ describe('MockMessagingService Integration Tests', () => {
 		let createdConversationId: string;
 
 		beforeAll(async () => {
-			service = new MockMessagingService(MOCK_SERVER_URL);
+			service = new ServiceMessagingMock(MOCK_SERVER_URL);
 			await service.startUp();
 		});
 
@@ -150,7 +150,7 @@ describe('MockMessagingService Integration Tests', () => {
 
 	describe('End-to-End Workflow', () => {
 		beforeAll(async () => {
-			service = new MockMessagingService(MOCK_SERVER_URL);
+			service = new ServiceMessagingMock(MOCK_SERVER_URL);
 			await service.startUp();
 		});
 
@@ -198,7 +198,7 @@ describe('MockMessagingService Integration Tests', () => {
 
 	describe('Error Handling', () => {
 		beforeAll(async () => {
-			service = new MockMessagingService(MOCK_SERVER_URL);
+			service = new ServiceMessagingMock(MOCK_SERVER_URL);
 			await service.startUp();
 		});
 

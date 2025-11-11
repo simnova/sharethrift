@@ -1,6 +1,5 @@
 import { Domain } from '@sthrift/domain';
 import type { DataSources } from '@sthrift/persistence';
-import { ObjectId } from 'mongodb';
 
 export interface ConversationQueryByIdCommand {
 	conversationId: string;
@@ -30,12 +29,10 @@ export const queryById = (dataSources: DataSources) => {
             }
 
 			const domainMessages = messagingMessages.map((msg) => {
-				const authorId = new ObjectId(msg.authorId);
-
 				return new Domain.Contexts.Conversation.Conversation.Message({
 					id: msg.id,
 					messagingMessageId: msg.messagingMessageId,
-					authorId,
+					authorId: msg.authorId,
 					content: msg.content,
 					createdAt: msg.createdAt,
 				});

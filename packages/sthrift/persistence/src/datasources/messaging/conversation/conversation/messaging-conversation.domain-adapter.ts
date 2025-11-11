@@ -2,8 +2,7 @@ import { Domain } from '@sthrift/domain';
 import type {
 	ConversationInstance,
 	MessageInstance,
-} from '@cellix/messaging';
-import { ObjectId } from 'mongodb';
+} from '@cellix/messaging-service';
 
 export function toDomainConversationProps(
 		messagingConversation: ConversationInstance,
@@ -34,7 +33,7 @@ export function toDomainConversationProps(
 
 export function toDomainMessage(
 		messagingMessage: MessageInstance,
-		authorId: ObjectId,
+		authorId: Domain.Contexts.Conversation.Conversation.AuthorId,
 	): Domain.Contexts.Conversation.Conversation.MessageEntityReference {
 		const messagingId = (messagingMessage.metadata?.['originalSid'] as string) || messagingMessage.id;
 		
@@ -56,12 +55,12 @@ export function toDomainMessage(
 
 export function toDomainMessages(
 	messagingMessages: MessageInstance[],
-	authorIdMap: Map<string, ObjectId>,
+	authorIdMap: Map<string, Domain.Contexts.Conversation.Conversation.AuthorId>,
 ): Domain.Contexts.Conversation.Conversation.MessageEntityReference[] {
 	return messagingMessages.map((msg) => {
 		const authorId = msg.author
-			? (authorIdMap.get(msg.author) ?? new ObjectId())
-			: new ObjectId();
+			? (authorIdMap.get(msg.author) ?? new Domain.Contexts.Conversation.Conversation.AuthorId(Domain.Contexts.Conversation.Conversation.ANONYMOUS_AUTHOR_ID))
+			: new Domain.Contexts.Conversation.Conversation.AuthorId(Domain.Contexts.Conversation.Conversation.ANONYMOUS_AUTHOR_ID);
 		return toDomainMessage(msg, authorId);
 	});
 }

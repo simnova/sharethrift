@@ -98,9 +98,9 @@ importers:
       '@cellix/api-services-spec':
         specifier: workspace:*
         version: link:../../packages/cellix/api-services-spec
-      '@cellix/messaging':
+      '@cellix/messaging-service':
         specifier: workspace:*
-        version: link:../../packages/cellix/messaging
+        version: link:../../packages/cellix/messaging-service
       '@cellix/mongoose-seedwork':
         specifier: workspace:*
         version: link:../../packages/cellix/mongoose-seedwork
@@ -427,7 +427,7 @@ importers:
         specifier: ^5.8.3
         version: 5.8.3
 
-  packages/cellix/messaging:
+  packages/cellix/messaging-service:
     dependencies:
       '@cellix/api-services-spec':
         specifier: workspace:*
@@ -635,9 +635,9 @@ importers:
 
   packages/sthrift/application-services:
     dependencies:
-      '@cellix/messaging':
+      '@cellix/messaging-service':
         specifier: workspace:*
-        version: link:../../cellix/messaging
+        version: link:../../cellix/messaging-service
       '@sthrift/context-spec':
         specifier: workspace:*
         version: link:../context-spec
@@ -650,9 +650,6 @@ importers:
       '@sthrift/service-cybersource':
         specifier: workspace:*
         version: link:../service-cybersource
-      mongodb:
-        specifier: 'catalog:'
-        version: 6.18.0
     devDependencies:
       '@cellix/typescript-config':
         specifier: workspace:*
@@ -666,9 +663,9 @@ importers:
 
   packages/sthrift/context-spec:
     dependencies:
-      '@cellix/messaging':
+      '@cellix/messaging-service':
         specifier: workspace:*
-        version: link:../../cellix/messaging
+        version: link:../../cellix/messaging-service
       '@sthrift/persistence':
         specifier: workspace:*
         version: link:../persistence
@@ -719,9 +716,6 @@ importers:
       '@lucaspaganini/value-objects':
         specifier: ^1.3.1
         version: 1.3.1
-      bson:
-        specifier: ^6.10.4
-        version: 6.10.4
     devDependencies:
       '@cellix/typescript-config':
         specifier: workspace:*
@@ -845,9 +839,9 @@ importers:
       '@cellix/api-services-spec':
         specifier: workspace:*
         version: link:../../cellix/api-services-spec
-      '@cellix/messaging':
+      '@cellix/messaging-service':
         specifier: workspace:*
-        version: link:../../cellix/messaging
+        version: link:../../cellix/messaging-service
       axios:
         specifier: ^1.7.9
         version: 1.12.2
@@ -873,9 +867,9 @@ importers:
       '@cellix/api-services-spec':
         specifier: workspace:*
         version: link:../../cellix/api-services-spec
-      '@cellix/messaging':
+      '@cellix/messaging-service':
         specifier: workspace:*
-        version: link:../../cellix/messaging
+        version: link:../../cellix/messaging-service
       twilio:
         specifier: ^4.0.0
         version: 4.23.0
@@ -963,9 +957,9 @@ importers:
       '@cellix/event-bus-seedwork-node':
         specifier: workspace:*
         version: link:../../cellix/event-bus-seedwork-node
-      '@cellix/messaging':
+      '@cellix/messaging-service':
         specifier: workspace:*
-        version: link:../../cellix/messaging
+        version: link:../../cellix/messaging-service
       '@cellix/mongoose-seedwork':
         specifier: workspace:*
         version: link:../../cellix/mongoose-seedwork

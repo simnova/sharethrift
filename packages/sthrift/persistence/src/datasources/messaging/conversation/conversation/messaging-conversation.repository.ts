@@ -1,7 +1,6 @@
-import type { Domain } from '@sthrift/domain';
-import type { MessagingService } from '@cellix/messaging';
+import { Domain } from '@sthrift/domain';
+import type { MessagingService } from '@cellix/messaging-service';
 import { toDomainMessage } from './messaging-conversation.domain-adapter.ts';
-import { ObjectId } from 'mongodb';
 
 export interface MessagingConversationRepository {
 	getMessages: (
@@ -31,7 +30,9 @@ export class MessagingConversationRepositoryImpl implements MessagingConversatio
 			const messages = await this.messagingService.getMessages(conversationId);
 			
 			return messages.map((msg) => {
-				const authorId = msg.author ? new ObjectId(msg.author) : new ObjectId();
+				const authorId = msg.author 
+					? new Domain.Contexts.Conversation.Conversation.AuthorId(msg.author) 
+					: new Domain.Contexts.Conversation.Conversation.AuthorId(Domain.Contexts.Conversation.Conversation.ANONYMOUS_AUTHOR_ID);
 				return toDomainMessage(msg, authorId);
 			});
 		} catch (error) {
@@ -52,7 +53,7 @@ export class MessagingConversationRepositoryImpl implements MessagingConversatio
 				author,
 			);
 
-			const authorId = new ObjectId(author);
+			const authorId = new Domain.Contexts.Conversation.Conversation.AuthorId(author);
 			return toDomainMessage(message, authorId);
 		} catch (error) {
 			console.error('Error sending message to messaging service:', error);

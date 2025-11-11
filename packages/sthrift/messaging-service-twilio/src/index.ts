@@ -4,11 +4,11 @@ import type {
 	MessagingService,
 	ConversationInstance,
 	MessageInstance,
-} from '@cellix/messaging';
+} from '@cellix/messaging-service';
 
 type TwilioClient = InstanceType<typeof Twilio.Twilio> | undefined;
 
-export class ServiceTwilio implements MessagingService {
+export class ServiceMessagingTwilio implements MessagingService {
 	private client: TwilioClient;
 	private readonly accountSid: string;
 	private readonly authToken: string;
@@ -21,32 +21,32 @@ export class ServiceTwilio implements MessagingService {
 		
 		if (!this.accountSid || !this.authToken) {
 			throw new Error(
-				'ServiceTwilio requires TWILIO_ACCOUNT_SID and TWILIO_AUTH_TOKEN (via constructor or environment variables)'
+				'ServiceMessagingTwilio requires TWILIO_ACCOUNT_SID and TWILIO_AUTH_TOKEN (via constructor or environment variables)'
 			);
 		}
 	}
 
-	public async startUp(): Promise<Exclude<ServiceTwilio, ServiceBase>> {
+	public async startUp(): Promise<Exclude<ServiceMessagingTwilio, ServiceBase>> {
 		if (this.client) {
-			throw new Error('ServiceTwilio is already started');
+			throw new Error('ServiceMessagingTwilio is already started');
 		}
 
 		this.client = new Twilio.Twilio(this.accountSid, this.authToken);
-		console.log('ServiceTwilio started with real Twilio client');
-		return this as Exclude<ServiceTwilio, ServiceBase>;
+		console.log('ServiceMessagingTwilio started with real Twilio client');
+		return this as Exclude<ServiceMessagingTwilio, ServiceBase>;
 	}
 
 	public async shutDown(): Promise<void> {
 		if (!this.client) {
-			throw new Error('ServiceTwilio is not started - shutdown cannot proceed');
+			throw new Error('ServiceMessagingTwilio is not started - shutdown cannot proceed');
 		}
 		this.client = undefined;
-		console.log('ServiceTwilio stopped');
+		console.log('ServiceMessagingTwilio stopped');
 	}
 
 	public get service(): TwilioClient {
 		if (!this.client) {
-			throw new Error('ServiceTwilio is not started - cannot access service');
+			throw new Error('ServiceMessagingTwilio is not started - cannot access service');
 		}
 		return this.client;
 	}
