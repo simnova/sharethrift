@@ -13,6 +13,7 @@ const collectionsToSeed = [
 	'conversations',
 	'reservationRequests',
 	'accountplans',
+	'appealRequests',
 ];
 
 // biome-ignore lint:useLiteralKeys

@@ -3,7 +3,7 @@ Feature: <AggregateRoot> PersonalUser
   Background:
     Given a valid Passport with user permissions
     And a valid UserVisa allowing account creation and self-editing
-    And base user properties with email ""john@example.com"", firstName ""John"", lastName ""Doe""
+    And base user properties with email "john@example.com", firstName "John", lastName "Doe"
 
   Scenario: Creating a new personal user instance
     When I create a new PersonalUser aggregate using getNewInstance

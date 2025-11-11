@@ -25,10 +25,17 @@ export interface DomainDataSource {
 			ReservationRequestUnitOfWork: Contexts.ReservationRequest.ReservationRequest.ReservationRequestUnitOfWork;
 		};
 	};
-
-	AccountPlan: {
+AccountPlan: {
 		AccountPlan: {
 			AccountPlanUnitOfWork: Contexts.AccountPlan.AccountPlan.AccountPlanUnitOfWork;
+		};
+	};
+	AppealRequest: {
+		ListingAppealRequest: {
+			ListingAppealRequestUnitOfWork: Contexts.AppealRequest.ListingAppealRequest.ListingAppealRequestUnitOfWork;
+		};
+		UserAppealRequest: {
+			UserAppealRequestUnitOfWork: Contexts.AppealRequest.UserAppealRequest.UserAppealRequestUnitOfWork;
 		};
 	};
 }

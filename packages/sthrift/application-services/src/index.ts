@@ -27,11 +27,17 @@ import {
 	type AccountPlanContextApplicationService,
 } from './contexts/account-plan/index.ts';
 
+import {
+	AppealRequest,
+	type AppealRequestContextApplicationService,
+} from './contexts/appeal-request/index.ts';
+
 export interface ApplicationServices {
 	User: UserContextApplicationService;
 	Conversation: ConversationContextApplicationService;
 	Listing: ListingContextApplicationService;
 	ReservationRequest: ReservationRequestContextApplicationService;
+	AppealRequest: AppealRequestContextApplicationService;
 	get verifiedUser(): VerifiedUser | null;
 	Payment: PaymentApplicationService;
 	AccountPlan: AccountPlanContextApplicationService;
@@ -109,6 +115,7 @@ export const buildApplicationServicesFactory = (
 			Listing: Listing(dataSources),
 			Conversation: Conversation(dataSources),
 			AccountPlan: AccountPlan(dataSources),
+			AppealRequest: AppealRequest(dataSources),
 		};
 	};
 

@@ -1,0 +1,50 @@
+type UserAppealRequest implements MongoBase {
+	id: ObjectID!
+	user: PersonalUser!
+	reason: String!
+	state: AppealRequestState!
+	type: AppealRequestType!
+	blocker: PersonalUser!
+	schemaVersion: String
+	createdAt: DateTime
+	updatedAt: DateTime
+}
+
+type UserAppealRequestPageResult {
+	items: [UserAppealRequest!]!
+	total: Int!
+	page: Int!
+	pageSize: Int!
+}
+
+input CreateUserAppealRequestInput {
+	userId: ObjectID!
+	reason: String!
+	blockerId: ObjectID!
+}
+
+input UpdateUserAppealRequestStateInput {
+	id: ObjectID!
+	state: AppealRequestState!
+}
+
+input GetAllUserAppealRequestsInput {
+	page: Int!
+	pageSize: Int!
+	stateFilters: [String!]
+	sorter: SorterInput
+}
+
+extend type Query {
+	getUserAppealRequest(id: ObjectID!): UserAppealRequest
+	getAllUserAppealRequests(
+		input: GetAllUserAppealRequestsInput!
+	): UserAppealRequestPageResult!
+}
+
+extend type Mutation {
+	createUserAppealRequest(input: CreateUserAppealRequestInput!): UserAppealRequest!
+	updateUserAppealRequestState(
+		input: UpdateUserAppealRequestStateInput!
+	): UserAppealRequest!
+}

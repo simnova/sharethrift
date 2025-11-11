@@ -5,6 +5,7 @@ import {
 } from '../iam/index.ts';
 import type { PermissionsSpec } from '../iam/system/system.passport-base.ts';
 import type { Contexts } from '../index.ts';
+import type { AppealRequestPassport } from './appeal-request/appeal-request.passport.ts';
 import type { ConversationPassport } from './conversation/conversation.passport.ts';
 import type { ListingPassport } from './listing/listing.passport.ts';
 import type { ReservationRequestPassport } from './reservation-request/reservation-request.passport.ts';
@@ -17,6 +18,7 @@ export interface Passport {
 	get conversation(): ConversationPassport;
 	get reservationRequest(): ReservationRequestPassport;
 	get accountPlan(): AccountPlanPassport;
+	get appealRequest(): AppealRequestPassport;
 }
 
 export const PassportFactory = {

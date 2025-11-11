@@ -5,6 +5,7 @@ import { ListingContextPersistence } from './listing/index.ts';
 import { ConversationContextPersistence } from './conversation/index.ts';
 import { ReservationRequestContextPersistence } from './reservation-request/index.ts';
 import { AccountPlanContextPersistence } from './account-plan/index.ts';
+import { AppealRequestContextPersistence } from './appeal-request/index.ts';
 
 export const DomainDataSourceImplementation = (
 	models: ModelsContext,
@@ -15,4 +16,5 @@ export const DomainDataSourceImplementation = (
 	Conversation: ConversationContextPersistence(models, passport),
 	ReservationRequest: ReservationRequestContextPersistence(models, passport),
 	AccountPlan: AccountPlanContextPersistence(models, passport),
+	AppealRequest: AppealRequestContextPersistence(models, passport),
 });

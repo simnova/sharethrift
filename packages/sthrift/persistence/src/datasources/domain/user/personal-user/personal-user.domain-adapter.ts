@@ -106,6 +106,11 @@ export class PersonalUserDomainAdapter
 			this.doc.set('role', role.props.doc);
 			return;
 		}
+		// Handle PersonalUserRoleDomainAdapter (has a doc property)
+		if (role && 'doc' in role && role.doc) {
+			this.doc.set('role', role.doc);
+			return;
+		}
 		if (!role?.id) {
 			throw new Error('role reference is missing id');
 		}
