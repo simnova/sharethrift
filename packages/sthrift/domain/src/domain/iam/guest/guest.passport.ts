@@ -8,12 +8,15 @@ import { GuestConversationPassport } from './contexts/guest.conversation.passpor
 import type { ConversationPassport } from '../../contexts/conversation/conversation.passport.ts';
 import { GuestPassportBase } from './guest.passport-base.ts';
 import { GuestReservationRequestPassport } from './contexts/guest.reservation-request.passport.ts';
+import { GuestAppealRequestPassport } from './contexts/guest.appeal-request.passport.ts';
+import type { AppealRequestPassport } from '../../contexts/appeal-request/appeal-request.passport.ts';
 
 export class GuestPassport extends GuestPassportBase implements Passport {
 	private _userPassport: UserPassport | undefined;
 	private _listingPassport: ListingPassport | undefined;
 	private _conversationPassport: ConversationPassport | undefined;
     private _reservationRequestPassport: ReservationRequestPassport | undefined;
+	private _appealRequestPassport: AppealRequestPassport | undefined;
 
 	public get user(): UserPassport {
 		if (!this._userPassport) {
@@ -41,5 +44,12 @@ export class GuestPassport extends GuestPassportBase implements Passport {
 			this._reservationRequestPassport = new GuestReservationRequestPassport();
 		}
 		return this._reservationRequestPassport;
+	}
+
+	public get appealRequest(): AppealRequestPassport {
+		if (!this._appealRequestPassport) {
+			this._appealRequestPassport = new GuestAppealRequestPassport();
+		}
+		return this._appealRequestPassport;
 	}
 }
