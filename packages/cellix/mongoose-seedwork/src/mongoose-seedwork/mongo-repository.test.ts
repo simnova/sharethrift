@@ -282,7 +282,7 @@ test.for(mongoRepositoryFeature, ({ Background, Scenario, BeforeEachScenario }) 
 	});
 	Then('it should throw if mongoObj.save throws', () => {
 	  expect(thrownError).toBeInstanceOf(Error);
-	  expect(thrownError?.message).toContain('save failed'); // temporary update from tobe to toContain to debug E11000 error in deployed env
+	  expect(thrownError?.message).toBe('save failed');
 	});
   });
 
