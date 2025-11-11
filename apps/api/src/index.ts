@@ -25,8 +25,8 @@ import { graphHandlerCreator } from '@sthrift/graphql';
 import { restHandlerCreator } from '@sthrift/rest';
 import { ServiceCybersource } from '@sthrift/service-cybersource';
 
-// biome-ignore lint/complexity/useLiteralKeys: Required by TypeScript noPropertyAccessFromIndexSignature
-const { MESSAGING_USE_MOCK } = process.env;
+const { NODE_ENV } = process.env;
+const isDevelopment = NODE_ENV === 'development';
 
 Cellix.initializeInfrastructureServices<ApiContextSpec, ApplicationServices>(
 	(serviceRegistry) => {
@@ -43,7 +43,7 @@ Cellix.initializeInfrastructureServices<ApiContextSpec, ApplicationServices>(
 				new ServiceTokenValidation(TokenValidationConfig.portalTokens),
 			)
 			.registerInfrastructureService(
-				MESSAGING_USE_MOCK ? new ServiceMessagingMock() : new ServiceMessagingTwilio(),
+				isDevelopment ? new ServiceMessagingMock() : new ServiceMessagingTwilio(),
 			)
 			.registerInfrastructureService(new ServiceCybersource());
 	},
@@ -55,7 +55,7 @@ Cellix.initializeInfrastructureServices<ApiContextSpec, ApplicationServices>(
 			),
 		);
 
-		const messagingService = MESSAGING_USE_MOCK
+		const messagingService = isDevelopment
 			? serviceRegistry.getInfrastructureService<MessagingService>(ServiceMessagingMock)
 			: serviceRegistry.getInfrastructureService<MessagingService>(ServiceMessagingTwilio);
 

@@ -19,14 +19,14 @@ TWILIO_AUTH_TOKEN=your_auth_token_here
 |----------|-------------|----------|
 | `TWILIO_ACCOUNT_SID` | Twilio Account SID | Yes |
 | `TWILIO_AUTH_TOKEN` | Twilio Auth Token | Yes |
-| `MESSAGING_USE_MOCK` | Use mock service | No (default: `false`) |
+| `NODE_ENV` | Use mock service (set to `development`) | No (default: `production`) |
 
 ## Local Development
 
 Use mock service for local development:
 
 ```bash
-MESSAGING_USE_MOCK=true
+NODE_ENV=development
 ```
 
 ## Related Packages

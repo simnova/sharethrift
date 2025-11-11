@@ -10,17 +10,17 @@ HTTP client that communicates with `@sthrift/mock-messaging-server`, eliminating
 
 ```bash
 # Enable mock mode
-MESSAGING_USE_MOCK=true
+NODE_ENV=development
 ```
 
-The application automatically uses this mock service instead of the production service.
+The application automatically uses this mock service instead of the production service when `NODE_ENV` is set to `development`.
 
 ## Configuration
 
 | Variable | Description | Default |
 |----------|-------------|---------|
 | `MESSAGING_MOCK_URL` | Mock server URL | `http://localhost:10000` |
-| `MESSAGING_USE_MOCK` | Enable mock mode | `false` |
+| `NODE_ENV` | Enable mock mode (set to `development`) | `production` |
 
 ## Related Packages
 

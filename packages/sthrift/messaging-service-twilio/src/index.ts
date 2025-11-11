@@ -14,14 +14,18 @@ export class ServiceMessagingTwilio implements MessagingService {
 	private readonly authToken: string;
 
 	constructor(accountSid?: string, authToken?: string) {
+		// TODO: Uncomment when Twilio API keys are configured in deployed environment
 		// biome-ignore lint/complexity/useLiteralKeys: Required by TypeScript noPropertyAccessFromIndexSignature
-		this.accountSid = accountSid ?? process.env['TWILIO_ACCOUNT_SID'] ?? '';
+		// this.accountSid = accountSid ?? process.env['TWILIO_ACCOUNT_SID'] ?? '';
 		// biome-ignore lint/complexity/useLiteralKeys: Required by TypeScript noPropertyAccessFromIndexSignature
-		this.authToken = authToken ?? process.env['TWILIO_AUTH_TOKEN'] ?? '';
+		// this.authToken = authToken ?? process.env['TWILIO_AUTH_TOKEN'] ?? '';
+		
+		this.accountSid = accountSid ?? '';
+		this.authToken = authToken ?? '';
 		
 		if (!this.accountSid || !this.authToken) {
-			throw new Error(
-				'ServiceMessagingTwilio requires TWILIO_ACCOUNT_SID and TWILIO_AUTH_TOKEN (via constructor or environment variables)'
+			console.warn(
+				'ServiceMessagingTwilio: TWILIO_ACCOUNT_SID and TWILIO_AUTH_TOKEN not configured. Service will not function until credentials are provided.'
 			);
 		}
 	}
