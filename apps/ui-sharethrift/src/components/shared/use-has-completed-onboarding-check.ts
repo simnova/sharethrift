@@ -1,7 +1,7 @@
 import { useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 
-export function useHasCompletedOnboardingCheck(
+export function useOnboardingRedirect(
 	hasCompletedOnboarding: boolean,
 	isAuthenticated: boolean,
 ) {

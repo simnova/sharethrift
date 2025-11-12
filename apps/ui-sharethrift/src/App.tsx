@@ -4,7 +4,7 @@ import { SignupRoutes } from './components/layouts/signup/Index.tsx';
 import { RequireAuth } from './components/shared/require-auth.tsx';
 import { AuthLanding } from './components/shared/auth-landing.tsx';
 import type { FC } from 'react';
-import { useHasCompletedOnboardingCheck } from './components/shared/use-has-completed-onboarding-check.ts';
+import { useOnboardingRedirect } from './components/shared/use-has-completed-onboarding-check.ts';
 import './App.css';
 
 const authSection = (
@@ -24,7 +24,7 @@ interface AppProps {
 	isAuthenticated: boolean;
 }
 export const App: FC<AppProps> = (props) => {
-	useHasCompletedOnboardingCheck(
+	useOnboardingRedirect(
 		props.hasCompletedOnboarding,
 		props.isAuthenticated,
 	);
