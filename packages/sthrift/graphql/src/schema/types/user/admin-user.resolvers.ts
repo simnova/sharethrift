@@ -36,7 +36,7 @@ const adminUserResolvers: Resolvers = {
 			// Account info (email, username, firstName, lastName) is public
 			return rootObj.account ?? null;
 		},
-		isAdmin: async (
+		userIsAdmin: async (
 			_rootObj: AdminUser,
 			_args: unknown,
 			context: GraphContext,
