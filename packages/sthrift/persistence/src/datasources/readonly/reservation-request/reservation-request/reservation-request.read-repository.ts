@@ -223,15 +223,18 @@ export class ReservationRequestReadRepositoryImpl
 			pipeline.push({ $sort: options.sort } as PipelineStage);
 		}
 
-		const docs =
-			await this.models.ReservationRequest.ReservationRequest.aggregate(
-				pipeline,
-			).exec();
+	const docs =
+		await this.models.ReservationRequest.ReservationRequest.aggregate(
+			pipeline,
+		).exec();
 
-		// Convert to domain entities
-		return docs.map((doc: Record<string, unknown>) =>
-			this.converter.toDomain(doc, this.passport),
-		);
+	// Convert to domain entities
+	return docs.map((doc) =>
+		this.converter.toDomain(
+			doc as Models.ReservationRequest.ReservationRequest,
+			this.passport,
+		),
+	);
 	}
 
 	async getActiveByReserverIdAndListingId(
