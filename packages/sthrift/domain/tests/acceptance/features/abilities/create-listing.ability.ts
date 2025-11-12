@@ -138,17 +138,25 @@ export class CreateListingAbility extends Ability {
   }
 
   async updateListingState(listingId: string, newState: string): Promise<void> {
-    const listing = this.listings.find(l => l.id === listingId);
-    if (listing) {
-      (listing as any).state = newState;
+    const index = this.listings.findIndex(l => l.id === listingId);
+    if (index !== -1) {
+      const listing = this.listings[index];
+      this.listings[index] = {
+        ...listing,
+        state: newState,
+      };
     }
   }
 
   async updateListingDates(listingId: string, createdAt: Date, updatedAt: Date): Promise<void> {
-    const listing = this.listings.find(l => l.id === listingId);
-    if (listing) {
-      (listing as any).createdAt = createdAt;
-      (listing as any).updatedAt = updatedAt;
+    const index = this.listings.findIndex(l => l.id === listingId);
+    if (index !== -1) {
+      const listing = this.listings[index];
+      this.listings[index] = {
+        ...listing,
+        createdAt,
+        updatedAt,
+      };
     }
   }
 }

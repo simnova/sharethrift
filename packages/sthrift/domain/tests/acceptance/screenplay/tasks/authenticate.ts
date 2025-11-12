@@ -1,5 +1,5 @@
 import { Task, Interaction } from '@serenity-js/core';
-import axios from 'axios';
+import { GraphQLClient, gql } from 'graphql-request';
 
 export class Authenticate {
 
@@ -7,7 +7,20 @@ export class Authenticate {
         Task.where(`#actor authenticates as a registered user`,
             Interaction.where(`#actor sends POST to login`,
                 async (actor) => {
-                    await axios.post('http://localhost:3000/api/auth/login', {
+                    const endpoint = 'http://localhost:7071/api/graphql'; // update the endpoint
+                    const client = new GraphQLClient(endpoint);
+                    const mutation = gql`
+                        mutation Login($email: String!, $password: String!) {
+                            login(email: $email, password: $password) {
+                                token
+                                user {
+                                    id
+                                    email
+                                }
+                            }
+                        }
+                    `;
+                    await client.request(mutation, {
                         email: 'test@example.com',
                         password: 'password123'
                     });

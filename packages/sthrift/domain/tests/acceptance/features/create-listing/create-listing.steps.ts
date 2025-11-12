@@ -28,8 +28,7 @@ When('I create a listing with:', async function (dataTable) {
     title: listing.Title,
     description: listing.Description,
     category: listing.Category,
-    price: parseFloat(listing.Price),
-    userId: this.currentUser.id,
+  // ...existing code...
   } as any);
 
   // Store the result for later assertions
@@ -42,8 +41,7 @@ When('I try to create a listing without a title', async function () {
       title: '', // Empty title
       description: 'Test description',
       category: 'Other',
-      price: 10.00,
-      userId: this.currentUser.id,
+  // ...existing code...
     } as any);
   } catch (error) {
     // Store the error for later assertions

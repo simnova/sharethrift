@@ -108,22 +108,19 @@ export class ItemListing<props extends ItemListingProps>
 		this.isNew = true;
 	}
 
-	public async reserve(reservingUser: PersonalUserEntityReference): Promise<void> {
+		public reserve(reservingUser: PersonalUserEntityReference): void {
 		// Validate listing state
 		if (this.state !== ValueObjects.ListingState.Published.valueOf()) {
-			throw new Error('Only published listings can be reserved');
+			throw new DomainSeedwork.PermissionError('Only published listings can be reserved');
 		}
 
 		// Validate not reserved
 		if (this.props.reservedBy) {
-			throw new Error('This listing is already reserved');
+			throw new DomainSeedwork.PermissionError('This listing is already reserved');
 		}
 
 		// Validate user has permission to create reservations
-		const permissions = this.visa.determineIf((p) => {
-			console.log('Listing permissions:', p);
-			return p.canReserveItemListing;
-		});
+		const permissions = this.visa.determineIf((p) => p.canReserveItemListing);
 		if (!permissions) {
 			throw new Error('You do not have permission to reserve this listing');
 		}		// Update state and reserving user
