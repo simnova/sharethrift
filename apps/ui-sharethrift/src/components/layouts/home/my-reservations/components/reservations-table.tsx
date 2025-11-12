@@ -4,10 +4,7 @@ import styles from './reservations-table.module.css';
 import { ReservationStatusTag } from '@sthrift/ui-components';
 import { ReservationActions } from './reservation-actions.tsx';
 import type { HomeMyReservationsReservationsViewActiveContainerActiveReservationsQuery } from '../../../../../generated.tsx';
-import {
-	mapReservationState,
-	BASE64_FALLBACK_IMAGE,
-} from '../constants/ui-constants.ts';
+import { BASE64_FALLBACK_IMAGE } from '../constants/ui-constants.ts';
 
 type ReservationRequestFieldsFragment =
 	HomeMyReservationsReservationsViewActiveContainerActiveReservationsQuery['myActiveReservations'][number];
@@ -126,7 +123,19 @@ export const ReservationsTable: React.FC<ReservationsTableProps> = ({
 			key: 'status',
 			render: (state: ReservationRequestFieldsFragment['state']) => (
 				<ReservationStatusTag
-					status={state ? mapReservationState(state) : 'REQUESTED'}
+					status={
+						state === 'Accepted'
+							? 'ACCEPTED'
+							: state === 'Requested'
+								? 'REQUESTED'
+								: state === 'Rejected'
+									? 'REJECTED'
+									: state === 'Closed'
+										? 'CLOSED'
+										: state === 'Cancelled'
+											? 'CANCELLED'
+											: 'REQUESTED'
+					}
 				/>
 			),
 		},
@@ -138,7 +147,17 @@ export const ReservationsTable: React.FC<ReservationsTableProps> = ({
 						render: (record: ReservationRequestFieldsFragment) => (
 							<ReservationActions
 								status={
-									record.state ? mapReservationState(record.state) : 'REQUESTED'
+									record.state === 'Accepted'
+										? 'ACCEPTED'
+										: record.state === 'Requested'
+											? 'REQUESTED'
+											: record.state === 'Rejected'
+												? 'REJECTED'
+												: record.state === 'Closed'
+													? 'CLOSED'
+													: record.state === 'Cancelled'
+														? 'CANCELLED'
+														: 'REQUESTED'
 								}
 								onCancel={() => onCancel?.(record.id)}
 								onClose={() => onClose?.(record.id)}

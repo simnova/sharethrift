@@ -4,10 +4,7 @@ import styles from './reservation-card.module.css';
 import { ReservationStatusTag } from '@sthrift/ui-components';
 import { ReservationActions } from './reservation-actions.tsx';
 import type { HomeMyReservationsReservationsViewActiveContainerActiveReservationsQuery } from '../../../../../generated.tsx';
-import {
-	mapReservationState,
-	BASE64_FALLBACK_IMAGE,
-} from '../constants/ui-constants.ts';
+import { BASE64_FALLBACK_IMAGE } from '../constants/ui-constants.ts';
 
 type ReservationRequestFieldsFragment =
 	HomeMyReservationsReservationsViewActiveContainerActiveReservationsQuery['myActiveReservations'][number];
@@ -57,15 +54,23 @@ export const ReservationCard: React.FC<ReservationCardProps> = ({
 							<span className={styles['noImageText']}>No Image</span>
 						</div>
 					)}
-					<div className={styles['statusTagOverlay']}>
-						<ReservationStatusTag
-							status={
-								reservation.state
-									? mapReservationState(reservation.state)
-									: 'REQUESTED'
-							}
-						/>
-					</div>
+				<div className={styles['statusTagOverlay']}>
+					<ReservationStatusTag
+						status={
+							reservation.state === 'Accepted'
+								? 'ACCEPTED'
+								: reservation.state === 'Requested'
+									? 'REQUESTED'
+									: reservation.state === 'Rejected'
+										? 'REJECTED'
+										: reservation.state === 'Closed'
+											? 'CLOSED'
+											: reservation.state === 'Cancelled'
+												? 'CANCELLED'
+												: 'REQUESTED'
+						}
+					/>
+				</div>
 				</div>
 				<div className={styles['cardContent']}>
 					<div className={styles['cardTitle']}>
@@ -101,22 +106,30 @@ export const ReservationCard: React.FC<ReservationCardProps> = ({
 							</Text>
 						</div>
 					</div>
-					{showActions && (
-						<div className={styles['cardActions']}>
-							<ReservationActions
-								status={
-									reservation.state
-										? mapReservationState(reservation.state)
-										: 'REQUESTED'
-								}
-								onCancel={() => onCancel?.(reservation.id)}
-								onClose={() => onClose?.(reservation.id)}
-								onMessage={() => onMessage?.(reservation.id)}
-								cancelLoading={cancelLoading}
-								closeLoading={closeLoading}
-							/>
-						</div>
-					)}
+				{showActions && (
+					<div className={styles['cardActions']}>
+						<ReservationActions
+							status={
+								reservation.state === 'Accepted'
+									? 'ACCEPTED'
+									: reservation.state === 'Requested'
+										? 'REQUESTED'
+										: reservation.state === 'Rejected'
+											? 'REJECTED'
+											: reservation.state === 'Closed'
+												? 'CLOSED'
+												: reservation.state === 'Cancelled'
+													? 'CANCELLED'
+													: 'REQUESTED'
+							}
+							onCancel={() => onCancel?.(reservation.id)}
+							onClose={() => onClose?.(reservation.id)}
+							onMessage={() => onMessage?.(reservation.id)}
+							cancelLoading={cancelLoading}
+							closeLoading={closeLoading}
+						/>
+					</div>
+				)}
 				</div>
 			</div>
 		</Card>
