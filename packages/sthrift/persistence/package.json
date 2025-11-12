@@ -25,11 +25,14 @@
     "dependencies": {
         "@cellix/domain-seedwork": "workspace:*",
         "@cellix/event-bus-seedwork-node": "workspace:*",
+        "@cellix/messaging-service": "workspace:*",
         "@cellix/mongoose-seedwork": "workspace:*",
         "@sthrift/data-sources-mongoose-models": "workspace:*",
         "@sthrift/domain": "workspace:*",
+        "@sthrift/messaging-service-twilio": "workspace:*",
         "bson": "^6.10.4",
-        "mongoose": "catalog:"
+        "mongoose": "catalog:",
+        "mongodb": "catalog:"
     },
     "devDependencies": {
         "@cellix/typescript-config": "workspace:*",

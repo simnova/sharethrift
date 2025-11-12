@@ -1,5 +1,5 @@
 {
-    "name": "@sthrift/service-twilio",
+    "name": "@sthrift/messaging-service-twilio",
     "version": "1.0.0",
     "main": "dist/src/index.js",
     "types": "dist/src/index.d.ts",
@@ -18,11 +18,12 @@
     },
     "dependencies": {
         "twilio": "^4.0.0",
-        "@cellix/api-services-spec": "workspace:*"
+        "@cellix/api-services-spec": "workspace:*",
+        "@cellix/messaging-service": "workspace:*"
     },
     "devDependencies": {
         "typescript": "^5.8.3",
-        "url-parse": "^1.5.9",
-        "@cellix/typescript-config": "workspace:*"
+        "@cellix/typescript-config": "workspace:*",
+        "@types/node": "^22.0.0"
     }
 }

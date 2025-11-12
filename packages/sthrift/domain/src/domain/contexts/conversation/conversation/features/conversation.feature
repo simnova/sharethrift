@@ -1,14 +1,14 @@
 
 Feature: Conversation aggregate
 
-  Scenario: Setting the twilioConversationId with permission
+  Scenario: Setting the messagingConversationId with permission
     Given a Conversation aggregate with permission to manage conversation
-    When I set the twilioConversationId to a new value
-    Then the twilioConversationId should be updated
+    When I set the messagingConversationId to a new value
+    Then the messagingConversationId should be updated
 
-  Scenario: Setting the twilioConversationId without permission
+  Scenario: Setting the messagingConversationId without permission
     Given a Conversation aggregate without permission to manage conversation
-    When I try to set the twilioConversationId to a new value
+    When I try to set the messagingConversationId to a new value
     Then a PermissionError should be thrown
 
   Background:
@@ -18,7 +18,7 @@ Feature: Conversation aggregate
   Scenario: Creating a new conversation instance
     When I create a new Conversation aggregate using getNewInstance
     Then the conversation should have the correct sharer, reserver, and listing
-    Then the conversation should have a twilioConversationId
+    Then the conversation should have a messagingConversationId
 
   Scenario: Changing the sharer with permission
     Given a Conversation aggregate with permission to manage conversation
@@ -52,6 +52,6 @@ Feature: Conversation aggregate
 
   Scenario: Getting readonly properties
     Given a Conversation aggregate
-    Then the twilioConversationId property should return the correct value
+    Then the messagingConversationId property should return the correct value
     And the createdAt property should return the correct date
     And the updatedAt property should return the correct date
