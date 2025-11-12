@@ -8,7 +8,7 @@ import type {
 	QueryAllAdminUsersArgs,
 } from '../../builder/generated.ts';
 import type { AdminUserUpdateCommand } from '@sthrift/application-services';
-import { getUserByEmail } from '../../resolver-helper.ts';
+import { getUserByEmail, currentViewerIsAdmin } from '../../resolver-helper.ts';
 
 const adminUserResolvers: Resolvers = {
 	AdminUser: {
@@ -35,6 +35,13 @@ const adminUserResolvers: Resolvers = {
 		account: (rootObj: AdminUser, _args, _context: GraphContext) => {
 			// Account info (email, username, firstName, lastName) is public
 			return rootObj.account ?? null;
+		},
+		isAdmin: async (
+			_rootObj: AdminUser,
+			_args: unknown,
+			context: GraphContext,
+		) => {
+			return await currentViewerIsAdmin(context);
 		},
 	},
 	Query: {
@@ -182,35 +189,6 @@ const adminUserResolvers: Resolvers = {
 				args.input as AdminUserUpdateCommand,
 			);
 		},
-		// //If necessary, the following code can block and unblock admins
-		// blockAdminUser: async (
-		// 	_parent: unknown,
-		// 	args: { userId: string },
-		// 	context: GraphContext,
-		// 	_info: GraphQLResolveInfo,
-		// ) => {
-		// 	if (!context.applicationServices.verifiedUser?.verifiedJwt) {
-		// 		throw new Error('Unauthorized');
-		// 	}
-		// 	// SECURITY - Add admin permission check
-		// 	return await context.applicationServices.User.AdminUser.blockUser({
-		// 		userId: args.userId,
-		// 	});
-		// },
-		// unblockAdminUser: async (
-		// 	_parent: unknown,
-		// 	args: { userId: string },
-		// 	context: GraphContext,
-		// 	_info: GraphQLResolveInfo,
-		// ) => {
-		// 	if (!context.applicationServices.verifiedUser?.verifiedJwt) {
-		// 		throw new Error('Unauthorized');
-		// 	}
-		// 	// SECURITY - Add admin permission check
-		// 	return await context.applicationServices.User.AdminUser.unblockUser({
-		// 		userId: args.userId,
-		// 	});
-		// },
 	},
 };
 

@@ -7,6 +7,7 @@ type PersonalUser implements MongoBase {
 	schemaVersion: String
 	createdAt: DateTime
 	updatedAt: DateTime
+	userIsAdmin: Boolean
 }
 
 type PersonalUserPage {
@@ -65,7 +66,7 @@ input PersonalUserAccountProfileUpdateInput {
 	lastName: String
 	location: PersonalUserAccountProfileLocationUpdateInput
 	billing: PersonalUserAccountProfileBillingUpdateInput
-    aboutMe: String
+	aboutMe: String
 }
 
 input PersonalUserAccountProfileLocationUpdateInput {
@@ -90,7 +91,7 @@ extend type Query {
 	personalUserById(id: ObjectID!): PersonalUser
 	currentPersonalUserAndCreateIfNotExists: PersonalUser!
 
-    allUsers(
+	allUsers(
 		page: Int!
 		pageSize: Int!
 		searchText: String

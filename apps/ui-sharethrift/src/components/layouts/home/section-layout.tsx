@@ -13,7 +13,7 @@ import {
 import { HandleLogoutMockForMockAuth } from '../../shared/handle-logout.ts';
 import { Footer, Header, Navigation } from '@sthrift/ui-components';
 import { useCreateListingNavigation } from './components/create-listing/hooks/use-create-listing-navigation.ts';
-import { useUserIsAdmin } from './account/hooks/useUserType.ts';
+import { useUserIsAdmin } from './account/hooks/useUserIsAdmin.ts';
 
 export const HomeTabsLayout: React.FC = () => {
 	const navigate = useNavigate();

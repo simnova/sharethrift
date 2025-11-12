@@ -10,13 +10,21 @@ import type {
 	QueryAllUsersArgs,
 } from '../../builder/generated.ts';
 import type { PersonalUserUpdateCommand } from '@sthrift/application-services';
-import { getUserByEmail } from '../../resolver-helper.ts';
+import { getUserByEmail, currentViewerIsAdmin } from '../../resolver-helper.ts';
 
 const personalUserResolvers: Resolvers = {
 	PersonalUser: {
 		account: (rootObj: PersonalUser, _args, _context: GraphContext) => {
 			// Basic account info (email, username) is visible to authenticated users
 			return rootObj.account ?? null;
+		},
+
+		userIsAdmin: async (
+			_rootObj: PersonalUser,
+			_args: unknown,
+			context: GraphContext,
+		) => {
+			return await currentViewerIsAdmin(context);
 		},
 	},
 	PersonalUserAccount: {

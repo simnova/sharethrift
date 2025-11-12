@@ -5,13 +5,8 @@ import type {
 } from 'graphql';
 import { isValidObjectId } from 'mongoose';
 import type { GraphContext } from '../init/context.ts';
-import type { PersonalUser } from './builder/generated.ts';
 import type { Domain } from '@sthrift/domain';
 
-/**
- * Helper function to get the current user from email, checking both AdminUser and PersonalUser.
- * Returns null if user not found.
- */
 export const getUserByEmail = async (
 	email: string,
 	context: GraphContext,
@@ -47,12 +42,31 @@ export const getUserByEmail = async (
 	return null;
 };
 
+// Boolean check if the current viewer is an admin user
+export const currentViewerIsAdmin = async (
+	context: GraphContext,
+): Promise<boolean> => {
+	const currentUserEmail =
+		context.applicationServices.verifiedUser?.verifiedJwt?.email;
+	if (!currentUserEmail) {
+		return false;
+	}
+
+	const currentUser = await getUserByEmail(currentUserEmail, context);
+	const isAdmin =
+		currentUser &&
+		'role' in currentUser &&
+		currentUser.userType === 'admin-user';
+
+	return !!isAdmin;
+};
+
 /**
  * Helper function to populate a User field (PersonalUser or AdminUser) by ID.
  * Used for GraphQL field resolvers that need to resolve User union types.
  */
 export const PopulateUserFromField = (fieldName: string) => {
-	// biome-ignore lint/suspicious/noExplicitAny: <explanation>
+	// biome-ignore lint/suspicious/noExplicitAny: parent type comes from GraphQL resolver parent which varies by context
 	return async (parent: any, _: unknown, context: GraphContext) => {
 		if (parent[fieldName] && isValidObjectId(parent[fieldName].toString())) {
 			const userId = parent[fieldName].toString();
@@ -82,18 +96,6 @@ export const PopulateUserFromField = (fieldName: string) => {
 			} catch {
 				// PersonalUser not found
 			}
-		}
-		return parent[fieldName];
-	};
-};
-
-export const PopulatePersonalUserFromField = (fieldName: string) => {
-	// biome-ignore lint/suspicious/noExplicitAny: parent type comes from GraphQL resolver parent which varies by context
-	return async (parent: any, _: unknown, context: GraphContext) => {
-		if (parent[fieldName] && isValidObjectId(parent[fieldName].toString())) {
-			return (await context.applicationServices.User.PersonalUser.queryById({
-				id: parent[fieldName].toString(),
-			})) as PersonalUser;
 		}
 		return parent[fieldName];
 	};

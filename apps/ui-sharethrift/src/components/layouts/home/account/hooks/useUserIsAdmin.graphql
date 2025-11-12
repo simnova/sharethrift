@@ -1,12 +1,10 @@
-query GetCurrentUser {
+query useUserIsAdmin {
 	currentUser {
 		... on PersonalUser {
-			id
-			userType
+			userIsAdmin
 		}
 		... on AdminUser {
-			id
-			userType
+			userIsAdmin
 		}
 	}
 }

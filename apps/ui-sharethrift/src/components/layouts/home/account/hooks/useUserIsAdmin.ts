@@ -1,7 +1,7 @@
 import { useQuery } from '@apollo/client/react';
 import {
-	GetCurrentUserDocument,
-	type GetCurrentUserQuery,
+	UseUserIsAdminDocument,
+	type UseUserIsAdminQuery,
 } from '../../../../../generated.tsx';
 
 /*
@@ -9,8 +9,8 @@ import {
  * Uses the User union type to determine user type from the backend.
  */
 export const useUserIsAdmin = () => {
-	const { data, loading, error } = useQuery<GetCurrentUserQuery>(
-		GetCurrentUserDocument,
+	const { data, loading, error } = useQuery<UseUserIsAdminQuery>(
+		UseUserIsAdminDocument,
 	);
 
 	return {
