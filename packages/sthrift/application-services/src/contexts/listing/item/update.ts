@@ -4,6 +4,7 @@ export interface ItemListingUpdateCommand {
 	id: string;
 	isBlocked?: boolean;
 	isDeleted?: boolean;
+	isDeletedByAdmin?: boolean;
 }
 
 export const update = (datasources: DataSources) => {
@@ -15,26 +16,28 @@ export const update = (datasources: DataSources) => {
 				'ItemListingUnitOfWork not available on dataSources.domainDataSource.Listing.ItemListing',
 			);
 
-		// For deletion operations, bypass domain layer due to circular reference in visa pattern
-		// Permission checks are enforced in GraphQL resolver layer (ownership validation)
-		// Per BRD requirements, deletion removes data directly from the system
+		// Admin deletion: uses domain flow with visa permission checks
+		if (command.isDeletedByAdmin === true) {
+			await uow.withScopedTransactionById(command.id, async (repo) => {
+				const listing = await repo.get(command.id);
+				listing.setDeleted(true);
+				await repo.save(listing);
+			});
+			return;
+		}
+
+
 		if (command.isDeleted === true) {
-			// Access MongoDB model directly through UOW without loading domain entity
 			await uow.withScopedTransaction(async (repo) => {
-				// Cast to access internal model property - bypasses domain layer to avoid circular ref
-				type RepoWithModel = { model: { deleteOne: (filter: { _id: string }) => { exec: () => Promise<{ deletedCount: number }> } } };
-				const result = await (repo as unknown as RepoWithModel).model.deleteOne({ 
-					_id: command.id 
-				}).exec();
-				
-				if (result.deletedCount === 0) {
+				const deleted = await repo.hardDeleteById(command.id);
+				if (!deleted) {
 					throw new Error(`Listing ${command.id} not found or already deleted`);
 				}
 			});
 			return;
 		}
 
-		// For all non-deletion updates, use standard domain flow
+		// All other updates use standard domain flow
 		await uow.withScopedTransactionById(command.id, async (repo) => {
 			const listing = await repo.get(command.id);
 
