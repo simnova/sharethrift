@@ -1,6 +1,13 @@
 import { Button, Avatar, Row, Col } from 'antd';
 import { useEffect, useState } from 'react';
 import { MessageOutlined } from '@ant-design/icons';
+import { useMutation } from '@apollo/client/react';
+import { useNavigate } from 'react-router-dom';
+import { CreateConversationDocument } from '../../../../../../generated.tsx';
+import type {
+	CreateConversationMutation,
+	CreateConversationMutationVariables,
+} from '../../../../../../generated.tsx';
 
 export type Sharer = {
 	id: string;
@@ -14,15 +21,68 @@ export interface SharerInformationProps {
 	isOwner?: boolean;
 	sharedTimeAgo?: string;
 	className?: string;
+	currentUserId?: string | null;
 }
 
 export const SharerInformation: React.FC<SharerInformationProps> = ({
 	sharer,
+	listingId,
 	isOwner = false,
 	sharedTimeAgo = '2 days ago',
 	className = '',
+	currentUserId,
 }) => {
 	const [isMobile, setIsMobile] = useState(false);
+	const navigate = useNavigate();
+
+	const [createConversation, { loading: isCreating }] = useMutation<
+		CreateConversationMutation,
+		CreateConversationMutationVariables
+	>(CreateConversationDocument, {
+			onCompleted: (data) => {
+			if (data.createConversation.status.success) {
+				console.log('Conversation created successfully');
+				navigate('/messages', {
+					state: {
+						selectedConversationId: data.createConversation.conversation?.id,
+					},
+				});
+			} else {
+				console.log('Failed to create conversation:', data.createConversation.status.errorMessage);
+			}
+		},
+		onError: (error) => {
+			console.error('Error creating conversation:', error);
+		},
+	});
+
+    const handleMessageSharer = async () => {
+        if (!currentUserId) {
+            console.log('No currentUserId, cannot create conversation');
+            return;
+        }
+        
+        console.log('Creating conversation with:', {
+            listingId,
+            sharerId: sharer.id,
+            reserverId: currentUserId,
+        });
+        
+        try {
+            await createConversation({
+                variables: {
+                    input: {
+                        listingId,
+                        sharerId: sharer.id,
+                        reserverId: currentUserId,
+                    },
+                },
+            });
+        } catch (error) {
+            console.error('Failed to create conversation:', error);
+        }
+    };
+
 	useEffect(() => {
 		const checkMobile = () => setIsMobile(window.innerWidth <= 600);
 		checkMobile();
@@ -81,11 +141,13 @@ export const SharerInformation: React.FC<SharerInformationProps> = ({
 				</div>
 			</Col>
 			<Col>
-				{!isOwner && (
+				{!isOwner && currentUserId && (
 					<Button
 						className="secondaryButton"
 						type="default"
 						icon={<MessageOutlined />}
+						loading={isCreating}
+						onClick={handleMessageSharer}
 					>
 						{!isMobile && 'Message Sharer'}
 					</Button>

@@ -29,20 +29,18 @@ export class Conversation<props extends ConversationProps>
 		sharer: PersonalUserEntityReference,
 		reserver: PersonalUserEntityReference,
 		listing: ItemListingEntityReference,
-		messages: MessageEntityReference[],
+		_messages: MessageEntityReference[],
+		messagingConversationId: string | undefined,
 		passport: Passport,
 	): Conversation<props> {
-		const instance = new Conversation(
-			{
-				...newProps,
-				sharer,
-				reserver,
-				listing,
-                messages,
-			} as props,
-			passport,
-		);
+		const instance = new Conversation(newProps, passport);
 		instance.markAsNew();
+		instance.sharer = sharer;
+		instance.reserver = reserver;
+		instance.listing = listing;
+		if (messagingConversationId) {
+			instance.messagingConversationId = messagingConversationId;
+		}
 		instance.isNew = false;
 		return instance;
 	}
@@ -172,5 +170,13 @@ export class Conversation<props extends ConversationProps>
 
 	get schemaVersion(): string {
 		return this.props.schemaVersion;
+	}
+
+	/**
+	 * Mark this conversation as deleted. This is typically used when cascading deletes
+	 * from a listing deletion.
+	 */
+	public setDeleted(deleted: boolean): void {
+		super.isDeleted = deleted;
 	}
 }

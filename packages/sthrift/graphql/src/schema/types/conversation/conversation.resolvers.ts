@@ -13,9 +13,26 @@ const ConversationMutationResolver = async (
 	getConversation: Promise<Domain.Contexts.Conversation.Conversation.ConversationEntityReference>,
 ) => {
 	try {
+		const conversation = await getConversation;
+		// Return just the IDs for relational fields - GraphQL field resolvers will populate them
+		const cleanConversation = {
+			id: conversation.id,
+			// biome-ignore lint/suspicious/noExplicitAny: Accessing internal props structure to get ObjectIds
+			sharer: (conversation as any).props.doc.sharer,
+			// biome-ignore lint/suspicious/noExplicitAny: Accessing internal props structure to get ObjectIds
+			reserver: (conversation as any).props.doc.reserver,
+			// biome-ignore lint/suspicious/noExplicitAny: Accessing internal props structure to get ObjectIds
+			listing: (conversation as any).props.doc.listing,
+			messagingConversationId: conversation.messagingConversationId,
+			messages: conversation.messages || [],
+			createdAt: conversation.createdAt,
+			updatedAt: conversation.updatedAt,
+			schemaVersion: conversation.schemaVersion,
+		};
 		return {
 			status: { success: true },
-			conversation: await getConversation,
+			// biome-ignore lint/suspicious/noExplicitAny: GraphQL resolvers will properly populate this
+			conversation: cleanConversation as any,
 		};
 	} catch (error) {
 		console.error('Conversation > Mutation  : ', error);

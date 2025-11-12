@@ -6,6 +6,10 @@ import {
 	type ConversationQueryByUserCommand,
 	queryByUser,
 } from './query-by-user.ts';
+import {
+	type ConversationDeleteByListingIdCommand,
+	deleteByListingId,
+} from './delete-by-listing-id.ts';
 
 export interface ConversationApplicationService {
 	create: (
@@ -19,6 +23,9 @@ export interface ConversationApplicationService {
 	) => Promise<
 		Domain.Contexts.Conversation.Conversation.ConversationEntityReference[]
 	>;
+	deleteByListingId: (
+		command: ConversationDeleteByListingIdCommand,
+	) => Promise<number>;
 }
 
 export const Conversation = (
@@ -28,5 +35,6 @@ export const Conversation = (
 		create: create(dataSources),
 		queryById: queryById(dataSources),
 		queryByUser: queryByUser(dataSources),
+		deleteByListingId: deleteByListingId(dataSources),
 	};
 };
