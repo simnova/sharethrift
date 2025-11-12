@@ -1,9 +1,9 @@
 Feature: <AggregateRoot> ReservationRequest
 
   Background : Given a valid Passport with reservation request permissions
-    And a valid PersonalUserEntityReference for ""reserverUser""
-    And a valid ItemListingEntityReference for ""listing1"" with state ""Published""
-    And base reservation request properties with state ""REQUESTED"", listing ""listing1"", reserver ""reserverUser"", valid reservation period, and timestamps"	
+    And a valid PersonalUserEntityReference for "reserverUser"
+    And a valid ItemListingEntityReference for "listing1" with state "Published"
+    And base reservation request properties with state "REQUESTED", listing "listing1", reserver "reserverUser", valid reservation period, and timestamps	
         
   Scenario: Creating a new reservation request instance	
     When I create a new ReservationRequest aggregate using getNewInstance	
