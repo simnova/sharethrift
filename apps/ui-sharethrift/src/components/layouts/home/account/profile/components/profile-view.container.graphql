@@ -2,43 +2,23 @@ query HomeAccountProfileViewContainerCurrentUser {
 	currentUser {
 		... on PersonalUser {
 			id
+			userIsAdmin
 			userType
 			createdAt
 			account {
-				accountType
-				email
-				username
-				profile {
-					firstName
-					lastName
-					location {
-						city
-						state
-					}
-				}
+				...PersonalUserProfileViewAccountFields
 			}
 		}
 		... on AdminUser {
 			id
+			userIsAdmin
 			userType
 			createdAt
 			account {
-				accountType
-				email
-				username
-				firstName
-				lastName
+				...AdminUserProfileViewAccountFields
 			}
 			role {
-				id
-				roleName
-				permissions {
-					userPermissions {
-						canViewAllUsers
-						canEditUsers
-						canBlockUsers
-					}
-				}
+				...AdminUserRoleFields
 			}
 		}
 	}
@@ -61,5 +41,43 @@ query HomeAccountProfileViewContainerUserListings(
 		total
 		page
 		pageSize
+	}
+}
+
+fragment PersonalUserProfileViewAccountFields on PersonalUserAccount {
+	accountType
+	email
+	username
+	profile {
+		...PersonalUserProfileViewAccountProfileFields
+	}
+}
+
+fragment PersonalUserProfileViewAccountProfileFields on PersonalUserAccountProfile {
+	firstName
+	lastName
+	location {
+		city
+		state
+	}
+}
+
+fragment AdminUserProfileViewAccountFields on AdminUserAccount {
+	accountType
+	email
+	username
+	firstName
+	lastName
+}
+
+fragment AdminUserRoleFields on AdminRole {
+	id
+	roleName
+	permissions {
+		userPermissions {
+			canViewAllUsers
+			canEditUsers
+			canBlockUsers
+		}
 	}
 }

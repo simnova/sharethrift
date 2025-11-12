@@ -52,26 +52,46 @@ export const ProfileViewContainer: React.FC = () => {
 	}
 
 	// Prepare user data based on user type
-	const isAdmin = currentUser.__typename === 'AdminUser';
-	const profileUser = {
-		id: currentUser.id,
-		firstName: isAdmin
-			? currentUser.account?.firstName || 'Admin'
-			: (currentUser.__typename === 'PersonalUser' && currentUser.account?.profile?.firstName) || '',
-		lastName: isAdmin
-			? currentUser.account?.lastName || 'User'
-			: (currentUser.__typename === 'PersonalUser' && currentUser.account?.profile?.lastName) || '',
-		username: currentUser.account?.username || '',
-		email: currentUser.account?.email || '',
-		accountType: currentUser.account?.accountType || (isAdmin ? 'admin' : 'personal'),
-		location: isAdmin
-			? { city: 'N/A', state: 'N/A' }
-			: {
-					city: (currentUser.__typename === 'PersonalUser' && currentUser.account?.profile?.location?.city) || '',
-					state: (currentUser.__typename === 'PersonalUser' && currentUser.account?.profile?.location?.state) || '',
-				},
-		createdAt: currentUser.createdAt || '',
-	};
+	const isAdmin = currentUser.userIsAdmin;
+	const account = currentUser.account;
+	let profileUser;
+	if (account && isAdmin && account.__typename === 'AdminUserAccount') {
+		profileUser = {
+			id: currentUser.id,
+			firstName: account.firstName || 'Admin',
+			lastName: account.lastName || 'User',
+			username: account.username || '',
+			email: account.email || '',
+			accountType: account.accountType || 'admin',
+			location: { city: 'N/A', state: 'N/A' },
+			createdAt: currentUser.createdAt || '',
+		};
+	} else if (account && !isAdmin && account.__typename === 'PersonalUserAccount') {
+		profileUser = {
+			id: currentUser.id,
+			firstName: account.profile?.firstName || '',
+			lastName: account.profile?.lastName || '',
+			username: account.username || '',
+			email: account.email || '',
+			accountType: account.accountType || 'personal',
+			location: {
+				city: account.profile?.location?.city || '',
+				state: account.profile?.location?.state || '',
+			},
+			createdAt: currentUser.createdAt || '',
+		};
+	} else {
+		profileUser = {
+			id: currentUser.id,
+			firstName: '',
+			lastName: '',
+			username: '',
+			email: '',
+			accountType: '',
+			location: { city: '', state: '' },
+			createdAt: '',
+		};
+	}
 
 	// Prepare listings with required fields from myListingsAll
 	const listings = (listingsData?.myListingsAll?.items || []).map((listing) => ({

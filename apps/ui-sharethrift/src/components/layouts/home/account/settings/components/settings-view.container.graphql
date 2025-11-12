@@ -15,11 +15,7 @@ query HomeAccountSettingsViewContainerCurrentUser {
 			createdAt
 			updatedAt
 			account {
-				accountType
-				email
-				username
-				firstName
-				lastName
+				...AdminUserAccountFields
 			}
 			role {
 				id
@@ -46,11 +42,7 @@ mutation HomeAccountSettingsViewContainerUpdateAdminUser(
 	adminUserUpdate(input: $input) {
 		id
 		account {
-			accountType
-			email
-			username
-			firstName
-			lastName
+			...AdminUserAccountFields
 		}
 	}
 }
@@ -88,4 +80,12 @@ fragment PersonalUserAccountFields on PersonalUserAccount {
 	profile {
 		...PersonalUserProfileFields
 	}
+}
+
+fragment AdminUserAccountFields on AdminUserAccount {
+	accountType
+	email
+	username
+	firstName
+	lastName
 }

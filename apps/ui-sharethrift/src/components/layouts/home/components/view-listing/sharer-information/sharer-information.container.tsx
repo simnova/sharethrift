@@ -1,6 +1,6 @@
 import { useQuery } from '@apollo/client/react';
 import { SharerInformation } from './sharer-information.tsx';
-import { ViewListingSharerInformationContainerUserByIdDocument } from '../../../../../../generated.tsx';
+import { SharerInformationContainerDocument } from '../../../../../../generated.tsx';
 
 interface SharerInformationContainerProps {
 	sharerId: string;
@@ -15,7 +15,7 @@ export const SharerInformationContainer: React.FC<
 	SharerInformationContainerProps
 > = ({ sharerId, listingId, isOwner, sharedTimeAgo, className }) => {
 	const { data, loading, error } = useQuery(
-		ViewListingSharerInformationContainerUserByIdDocument,
+		SharerInformationContainerDocument,
 		{
 			variables: { sharerId },
 		},

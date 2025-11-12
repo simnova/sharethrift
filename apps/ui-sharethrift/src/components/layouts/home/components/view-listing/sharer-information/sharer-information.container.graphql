@@ -1,32 +1,48 @@
-query ViewListingSharerInformationContainerUserById($sharerId: ObjectID!) {
+query SharerInformationContainer($sharerId: ObjectID!) {
 	userById(id: $sharerId) {
 		__typename
-		... on PersonalUser {
-			id
-			userType
-			isBlocked
-			account {
-				username
-				profile {
-					firstName
-					lastName
-					location {
-						city
-						state
-						country
-					}
-				}
-			}
-		}
-		... on AdminUser {
-			id
-			userType
-			isBlocked
-			account {
-				username
-				firstName
-				lastName
-			}
-		}
+		...SharerPersonalUserFields
+		...SharerAdminUserFields
 	}
+}
+
+fragment SharerPersonalUserFields on PersonalUser {
+	id
+	userType
+	isBlocked
+	account {
+		...SharerPersonalUserAccountFields
+	}
+}
+
+fragment SharerPersonalUserAccountFields on PersonalUserAccount {
+	username
+	profile {
+		...SharerPersonalUserProfileFields
+	}
+}
+
+fragment SharerPersonalUserProfileFields on PersonalUserAccountProfile {
+	firstName
+	lastName
+	location {
+		city
+		state
+		country
+	}
+}
+
+fragment SharerAdminUserFields on AdminUser {
+	id
+	userType
+	isBlocked
+	account {
+		...SharerAdminUserAccountFields
+	}
+}
+
+fragment SharerAdminUserAccountFields on AdminUserAccount {
+	username
+	firstName
+	lastName
 }
