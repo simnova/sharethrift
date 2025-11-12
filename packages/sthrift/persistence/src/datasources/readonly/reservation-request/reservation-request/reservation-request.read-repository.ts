@@ -1,7 +1,11 @@
 import type { Domain } from '@sthrift/domain';
 import type { ModelsContext } from '../../../../models-context.ts';
 import { ReservationRequestDataSourceImpl } from './reservation-request.data.ts';
-import type { FindOneOptions, FindOptions } from '../../mongo-data-source.ts';
+import type {
+	FindOneOptions,
+	FindOptions,
+	MongoDataSource,
+} from '../../mongo-data-source.ts';
 import { ReservationRequestConverter } from '../../../domain/reservation-request/reservation-request/reservation-request.domain-adapter.ts';
 import { MongooseSeedwork } from '@cellix/mongoose-seedwork';
 import {
@@ -9,7 +13,6 @@ import {
 	RESERVATION_STATES,
 } from './reservation-state-filters.ts';
 import type { FilterQuery, PipelineStage } from 'mongoose';
-import { BaseReadRepository } from '../../base-read-repository.ts';
 import type { Models } from '@sthrift/data-sources-mongoose-models';
 
 export interface ReservationRequestReadRepository {
@@ -78,21 +81,55 @@ export interface ReservationRequestReadRepository {
  * setup and repository logic.
  */
 export class ReservationRequestReadRepositoryImpl
-	extends BaseReadRepository<
-		Models.ReservationRequest.ReservationRequest,
-		Domain.Contexts.ReservationRequest.ReservationRequest.ReservationRequestEntityReference
-	>
 	implements ReservationRequestReadRepository
 {
 	private readonly models: ModelsContext;
+	private readonly mongoDataSource: MongoDataSource<Models.ReservationRequest.ReservationRequest>;
+	private readonly converter: ReservationRequestConverter;
+	private readonly passport: Domain.Passport;
 
 	constructor(models: ModelsContext, passport: Domain.Passport) {
-		const mongoDataSource = new ReservationRequestDataSourceImpl(
+		this.models = models;
+		this.mongoDataSource = new ReservationRequestDataSourceImpl(
 			models.ReservationRequest.ReservationRequest,
 		);
-		const converter = new ReservationRequestConverter();
-		super(mongoDataSource, converter, passport);
-		this.models = models;
+		this.converter = new ReservationRequestConverter();
+		this.passport = passport;
+	}
+
+	/**
+	 * Helper method for querying multiple documents
+	 */
+	private async queryMany(
+		filter: FilterQuery<Models.ReservationRequest.ReservationRequest>,
+		options?: FindOptions,
+	): Promise<
+		Domain.Contexts.ReservationRequest.ReservationRequest.ReservationRequestEntityReference[]
+	> {
+		const docs = await this.mongoDataSource.find(filter, options);
+		return docs.map((doc) => this.converter.toDomain(doc, this.passport));
+	}
+
+	/**
+	 * Helper method for querying a single document
+	 */
+	private async queryOne(
+		filter: FilterQuery<Models.ReservationRequest.ReservationRequest>,
+		options?: FindOneOptions,
+	): Promise<Domain.Contexts.ReservationRequest.ReservationRequest.ReservationRequestEntityReference | null> {
+		const doc = await this.mongoDataSource.findOne(filter, options);
+		return doc ? this.converter.toDomain(doc, this.passport) : null;
+	}
+
+	/**
+	 * Helper method for querying by ID
+	 */
+	private async queryById(
+		id: string,
+		options?: FindOneOptions,
+	): Promise<Domain.Contexts.ReservationRequest.ReservationRequest.ReservationRequestEntityReference | null> {
+		const doc = await this.mongoDataSource.findById(id, options);
+		return doc ? this.converter.toDomain(doc, this.passport) : null;
 	}
 
 	async getAll(

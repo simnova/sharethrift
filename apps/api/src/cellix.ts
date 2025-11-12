@@ -279,17 +279,6 @@ export class Cellix<ContextType, AppServices = unknown>
 	): AzureFunctionHandlerRegistry<ContextType, AppServices> {
 		this.ensurePhase('app-services', 'handlers');
 		this.pendingHandlers.push({ name, options, handlerCreator });
-		app.http(name, {
-			authLevel: 'anonymous',
-			...options,
-			handler: (request, context) => {
-				if (!this.appServicesHostInternal) {
-					throw new Error('Application not started yet. Services are still initializing.');
-				}
-				return handlerCreator(this.appServicesHostInternal)(request, context);
-			},
-		});
-		console.log(`Registered function: ${name} with route: ${options.route ?? 'default'}`);
 		this.phase = 'handlers';
 		return this;
 	}
@@ -305,6 +294,19 @@ export class Cellix<ContextType, AppServices = unknown>
 	}
 
 	private setupLifecycle(): void {
+		// Register function handlers (deferred execution of creators)
+		for (const h of this.pendingHandlers) {
+			app.http(h.name, {
+				...h.options,
+				handler: (request, context) => {
+					if (!this.appServicesHostInternal) {
+						throw new Error('Application not started yet');
+					}
+					return h.handlerCreator(this.appServicesHostInternal)(request, context);
+				},
+			});
+		}
+
 		// appStart hook
 		app.hook.appStart(async () => {
 			const root = api.context.active();

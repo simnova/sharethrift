@@ -4,8 +4,10 @@ import styles from './reservation-card.module.css';
 import { ReservationStatusTag } from '@sthrift/ui-components';
 import { ReservationActions } from './reservation-actions.tsx';
 import type { HomeMyReservationsReservationsViewActiveContainerActiveReservationsQuery } from '../../../../../generated.tsx';
-import { mapReservationState } from '../../../../../utils/reservation-state-mapper.ts';
-import { BASE64_FALLBACK_IMAGE } from '../constants/ui-constants.ts';
+import {
+	mapReservationState,
+	BASE64_FALLBACK_IMAGE,
+} from '../constants/ui-constants.ts';
 
 type ReservationRequestFieldsFragment =
 	HomeMyReservationsReservationsViewActiveContainerActiveReservationsQuery['myActiveReservations'][number];
