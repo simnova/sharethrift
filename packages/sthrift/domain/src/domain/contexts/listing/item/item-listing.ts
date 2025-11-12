@@ -383,6 +383,10 @@ export class ItemListing<props extends ItemListingProps>
 		super.isDeleted = false;
 	}
 
+	public requestDeleteByOwner(): void {
+		super.isDeleted = true;
+	}
+
 	/**
 	 * Create a reference to this entity for use in other contexts
 	 */
