@@ -4,8 +4,8 @@ import { AdminUsers } from '../components/admin-users-table/index.ts';
 import styles from './admin-dashboard-main.module.css';
 import '@sthrift/ui-components/src/styles/theme.css';
 
-
-export const AdminDashboardMain: React.FC = () => {
+interface AdminDashboardMainProps {}
+export const AdminDashboardMain: React.FC<AdminDashboardMainProps> = () => {
 	const tabItems = [
 		{
 			key: 'listings',
