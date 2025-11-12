@@ -2,7 +2,6 @@
 /** biome-ignore-all lint/suspicious/useAwait: temporary ignore warning for we are reusing current implementation in AHP; will address in future */
 import type { ServiceBase } from '@cellix/api-services-spec';
 
-// @ts-ignore
 import cybersource from 'cybersource-rest-client';
 
 import { randomUUID } from 'crypto';
@@ -26,14 +25,17 @@ import type {
 	SubscriptionsListResponse,
 	SuspendSubscriptionResponse,
 	PlansListResponse,
-  TransactionSearchResponse
+	TransactionSearchResponse,
 } from '@cellix/payment-service';
 
 export class PaymentServiceCybersource
 	implements ServiceBase<PaymentServiceCybersource>, PaymentService
 {
-	private client: cybersource.ApiClient | undefined;
-	private configObject: cybersource.Configuration;
+	// private client: cybersource.ApiClient | undefined;
+	// private configObject: cybersource.Configuration;
+
+	private client: any | undefined; // temporary use any because of cybersource-rest-client typescript support issues
+	private configObject: any; // temporary use any because of cybersource-rest-client typescript support issues
 	private readonly authenticationType: string = 'http_signature';
 	private readonly applicationName: string = 'CYBERSOURCE_APP_NAME';
 	private readonly merchantId: string = 'CYBERSOURCE_MERCHANT_ID';
@@ -92,13 +94,13 @@ export class PaymentServiceCybersource
 		if (this.client) {
 			throw new Error('PaymentServiceCybersource is already started');
 		}
-		if (process.env['NODE_ENV'] === 'development') {
-			this.client = new cybersource.ApiClient();
-		}
-		return this as Exclude<
-			PaymentServiceCybersource,
-			ServiceBase<PaymentServiceCybersource>
-		>;
+		this.client = new cybersource.ApiClient();
+		return Promise.resolve(
+			this as Exclude<
+				PaymentServiceCybersource,
+				ServiceBase<PaymentServiceCybersource>
+			>,
+		);
 	}
 
 	public shutDown(): Promise<void> {
@@ -106,10 +108,10 @@ export class PaymentServiceCybersource
 		return Promise.resolve();
 	}
 
-	public get service(): cybersource.ApiClient {
+	public get service(): any {
 		if (!this.client) {
 			throw new Error(
-				'ServiceMessagingTwilio is not started - cannot access service',
+				'PaymentServiceCybersource is not started - cannot access service',
 			);
 		}
 		return this.client;
@@ -907,13 +909,16 @@ export class PaymentServiceCybersource
 		searchRequest.save = false;
 
 		return new Promise((resolve, reject) => {
-			instance.createSearch(searchRequest, (error: any, data: any, response: any) => {
-				if (!error) {
-					resolve(data as TransactionSearchResponse);
-				} else {
-					reject(new Error(response));
-				}
-			});
+			instance.createSearch(
+				searchRequest,
+				(error: any, data: any, response: any) => {
+					if (!error) {
+						resolve(data as TransactionSearchResponse);
+					} else {
+						reject(new Error(response));
+					}
+				},
+			);
 		});
 	}
 
@@ -960,11 +965,13 @@ export class PaymentServiceCybersource
 				} as TransactionReceipt;
 			}
 		} catch (error) {
-			return this.createErrorReceipt(error as {
-        timestamp?: Date;
-        code?: string;
-        message?: string;
-      });
+			return this.createErrorReceipt(
+				error as {
+					timestamp?: Date;
+					code?: string;
+					message?: string;
+				},
+			);
 		}
 	}
 

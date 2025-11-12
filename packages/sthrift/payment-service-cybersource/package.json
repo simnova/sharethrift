@@ -14,7 +14,7 @@
 		}
 	},
 	"scripts": {
-		"build": "tsc --project tsconfig.json"
+		"build": "tsc --project tsconfig.json && cp -r src/types dist/src/types"
 	},
 	"dependencies": {
 		"@cellix/api-services-spec": "workspace:*",
