@@ -141,7 +141,12 @@ export class ItemListingReadRepositoryImpl
 
 		// Execute MongoDB queries in parallel
 		const [mongoItems, total] = await Promise.all([
-			this.mongoDataSource.find(query, { sort, skip, limit: args.pageSize }),
+			this.mongoDataSource.find(query, {
+				sort,
+				skip,
+				limit: args.pageSize,
+				populateFields: populateFields,
+			}),
 			this.mongoDataSource
 				.find(query)
 				.then((result) => result?.length ?? 0), // Use find + length since count() not available

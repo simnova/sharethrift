@@ -1,18 +1,17 @@
 import type { Resolvers } from '../../builder/generated.js';
-import { PopulatePersonalUserFromField } from '../../resolver-helper.ts';
 
 const itemListingResolvers: Resolvers = {
-	ItemListing: {
-		sharer: PopulatePersonalUserFromField('sharer'),
-	},
 	Query: {
 		myListingsAll: async (_parent: unknown, args, context) => {
-            const currentUser = context.applicationServices.verifiedUser;
-            const email = currentUser?.verifiedJwt?.email;
-            let sharerId: string | undefined;
-            if(email) {
-               sharerId = await context.applicationServices.User.PersonalUser.queryByEmail({email: email}).then(user => user ? user.id : undefined);
-            }
+			const currentUser = context.applicationServices.verifiedUser;
+			const email = currentUser?.verifiedJwt?.email;
+			let sharerId: string | undefined;
+			if (email) {
+				sharerId =
+					await context.applicationServices.User.PersonalUser.queryByEmail({
+						email: email,
+					}).then((user) => (user ? user.id : undefined));
+			}
 			type PagedArgs = {
 				page: number;
 				pageSize: number;
@@ -44,7 +43,7 @@ const itemListingResolvers: Resolvers = {
 				pagedArgs,
 			);
 		},
-        itemListings: async (_parent, _args, context) => {
+		itemListings: async (_parent, _args, context) => {
 			return await context.applicationServices.Listing.ItemListing.queryAll({});
 		},
 
@@ -154,7 +153,7 @@ const itemListingResolvers: Resolvers = {
 				await context.applicationServices.Listing.ItemListing.cancel({
 					id: args.id,
 				});
-			return result
+			return result;
 		},
 	},
 };

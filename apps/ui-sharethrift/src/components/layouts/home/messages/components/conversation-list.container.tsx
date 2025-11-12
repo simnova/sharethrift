@@ -1,7 +1,7 @@
 import { ConversationList } from './conversation-list.tsx';
 import { useQuery } from '@apollo/client/react';
 import {
-    HomeConversationListContainerCurrentPersonalUserAndCreateIfNotExistsDocument,
+	HomeConversationListContainerCurrentPersonalUserAndCreateIfNotExistsDocument,
 	HomeConversationListContainerConversationsByUserDocument,
 	type Conversation,
 } from '../../../../../generated.tsx';
@@ -34,7 +34,7 @@ export const ConversationListContainer: React.FC<
 			userId:
 				currentPersonalUserData?.currentPersonalUserAndCreateIfNotExists.id,
 		},
-        skip: !currentPersonalUserData?.currentPersonalUserAndCreateIfNotExists.id,
+		skip: !currentPersonalUserData?.currentPersonalUserAndCreateIfNotExists.id,
 	});
 
 	useEffect(() => {
@@ -50,7 +50,7 @@ export const ConversationListContainer: React.FC<
 		currentUserConversationsData,
 		props.selectedConversationId,
 		props.onConversationSelect,
-        props,
+		props,
 	]);
 
 	return (

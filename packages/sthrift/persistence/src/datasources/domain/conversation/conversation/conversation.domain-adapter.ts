@@ -21,7 +21,7 @@ export class ConversationDomainAdapter
 	extends MongooseSeedwork.MongooseDomainAdapter<Models.Conversation.Conversation>
 	implements Domain.Contexts.Conversation.Conversation.ConversationProps
 {
-	get sharer(): PersonalUserDomainAdapter {
+	get sharer(): Domain.Contexts.User.PersonalUser.PersonalUserEntityReference {
 		if (!this.doc.sharer) {
 			throw new Error('sharer is not populated');
 		}
@@ -33,7 +33,7 @@ export class ConversationDomainAdapter
 		);
 	}
 
-	async loadSharer(): Promise<PersonalUserDomainAdapter> {
+	async loadSharer(): Promise<Domain.Contexts.User.PersonalUser.PersonalUserEntityReference> {
 		if (!this.doc.sharer) {
 			throw new Error('sharer is not populated');
 		}
@@ -49,7 +49,7 @@ export class ConversationDomainAdapter
 		this.doc.set('sharer', user.doc);
 	}
 
-	get reserver(): PersonalUserDomainAdapter {
+	get reserver(): Domain.Contexts.User.PersonalUser.PersonalUserEntityReference {
 		if (!this.doc.reserver) {
 			throw new Error('reserver is not populated');
 		}
@@ -63,7 +63,7 @@ export class ConversationDomainAdapter
 		);
 	}
 
-	async loadReserver(): Promise<PersonalUserDomainAdapter> {
+	async loadReserver(): Promise<Domain.Contexts.User.PersonalUser.PersonalUserEntityReference> {
 		if (!this.doc.reserver) {
 			throw new Error('reserver is not populated');
 		}
@@ -79,7 +79,7 @@ export class ConversationDomainAdapter
 		this.doc.set('reserver', user.doc);
 	}
 
-	get listing(): ItemListingDomainAdapter {
+	get listing(): Domain.Contexts.Listing.ItemListing.ItemListingEntityReference {
 		if (!this.doc.listing) {
 			throw new Error('listing is not populated');
 		}
@@ -91,7 +91,7 @@ export class ConversationDomainAdapter
 		);
 	}
 
-	async loadListing(): Promise<ItemListingDomainAdapter> {
+	async loadListing(): Promise<Domain.Contexts.Listing.ItemListing.ItemListingEntityReference> {
 		if (!this.doc.listing) {
 			throw new Error('listing is not populated');
 		}
@@ -120,7 +120,9 @@ export class ConversationDomainAdapter
 		return [];
 	}
 
-	loadMessages(): Promise<Domain.Contexts.Conversation.Conversation.MessageEntityReference[]> {
+	loadMessages(): Promise<
+		Domain.Contexts.Conversation.Conversation.MessageEntityReference[]
+	> {
 		// For now, return empty array since messages are not stored as subdocuments
 		// TODO: Implement proper message loading from separate collection or populate from subdocuments
 		return Promise.resolve([]);

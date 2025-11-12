@@ -140,15 +140,12 @@ export class MongoDataSourceImpl<TDoc extends MongooseSeedwork.Base>
 			.findById(
 				id,
 				this.buildProjection(options?.fields, options?.projectionMode),
-			);
-		
+			)
+			.lean<LeanBase<TDoc>>();
 		if (options?.populateFields?.length) {
-			for (const field of options.populateFields) {
-				query = query.populate(field);
-			}
+			query = query.populate(options.populateFields);
 		}
-		
-		const doc = await query.lean<LeanBase<TDoc>>();
+		const doc = await query;
 		return doc ? this.appendId(doc) : null;
 	}
 }

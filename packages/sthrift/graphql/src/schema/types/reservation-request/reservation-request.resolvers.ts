@@ -1,10 +1,6 @@
 import type { GraphContext } from '../../../init/context.ts';
 import type { GraphQLResolveInfo } from 'graphql';
 import type { Resolvers } from '../../builder/generated.ts';
-import {
-	PopulateItemListingFromField,
-	PopulatePersonalUserFromField,
-} from '../../resolver-helper.ts';
 
 interface ListingRequestDomainShape {
 	id: string;
@@ -112,11 +108,6 @@ function paginateAndFilterListingRequests(
 }
 
 const reservationRequest: Resolvers = {
-	ReservationRequest: {
-		reserver: PopulatePersonalUserFromField('reserver'),
-		listing: PopulateItemListingFromField('listing'),
-	},
-
 	Query: {
 		myActiveReservations: async (
 			_parent: unknown,
