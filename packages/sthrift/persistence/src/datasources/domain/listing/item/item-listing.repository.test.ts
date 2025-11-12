@@ -51,11 +51,74 @@ function makeListingDoc(
 function makeUserDoc(
 	overrides: Partial<Models.User.PersonalUser> = {},
 ): Models.User.PersonalUser {
+	const mockRole = {
+		_id: 'role-1',
+		id: 'role-1',
+		roleName: 'PersonalUser',
+		displayName: 'Personal User',
+		isDefault: true,
+		listing: {
+			canCreateItemListing: true,
+			canUpdateItemListing: true,
+			canDeleteItemListing: true,
+			canViewItemListing: true,
+			canPublishItemListing: true,
+			canUnpublishItemListing: true,
+		},
+		conversation: {
+			canCreateConversation: true,
+			canUpdateConversation: true,
+			canDeleteConversation: true,
+			canViewConversation: true,
+		},
+		reservationRequest: {
+			canCreateReservationRequest: true,
+			canUpdateReservationRequest: true,
+			canDeleteReservationRequest: true,
+			canViewReservationRequest: true,
+		},
+		createdAt: new Date(),
+		updatedAt: new Date(),
+		schemaVersion: '1.0.0',
+	} as unknown as Models.Role.PersonalUserRole;
+
 	const base = {
 		_id: 'user-1',
 		displayName: 'Test User',
 		email: 'test@example.com',
 		id: 'user-1',
+		role: mockRole,
+		account: {
+			accountType: 'verified-personal',
+			email: 'test@example.com',
+			username: 'testuser',
+			profile: {
+				firstName: 'Test',
+				lastName: 'User',
+				aboutMe: 'Test user description',
+				location: {
+					address1: '123 Test St',
+					address2: null,
+					city: 'Test City',
+					state: 'Test State',
+					country: 'Test Country',
+					zipCode: '12345',
+				},
+				billing: {
+					cybersourceCustomerId: 'cust-test-123',
+					subscription: {
+						subscriptionId: 'sub-test-123',
+						planCode: 'test-plan',
+						status: 'ACTIVE',
+						startDate: new Date(),
+					},
+					transactions: [],
+				},
+			},
+		},
+		set: vi.fn((key: string, value: unknown) => {
+			(base as unknown as Record<string, unknown>)[key] = value;
+		}),
 		...overrides,
 	} as Models.User.PersonalUser;
 	return vi.mocked(base);
