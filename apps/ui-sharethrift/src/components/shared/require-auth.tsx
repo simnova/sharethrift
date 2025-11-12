@@ -1,4 +1,6 @@
 import { useEffect, type JSX } from 'react';
+
+const { VITE_B2C_REDIRECT_URI } = import.meta.env;
 import { hasAuthParams, useAuth } from 'react-oidc-context';
 import { Navigate } from 'react-router-dom';
 
@@ -40,7 +42,7 @@ export const RequireAuth: React.FC<RequireAuthProps> = (props) => {
 	useEffect(() => {
 		return auth.events.addAccessTokenExpiring(() => {
 			auth.signinSilent({
-				redirect_uri: import.meta.env['VITE_B2C_REDIRECT_URI'] ?? '',
+				redirect_uri: VITE_B2C_REDIRECT_URI ?? '',
 			});
 		});
 

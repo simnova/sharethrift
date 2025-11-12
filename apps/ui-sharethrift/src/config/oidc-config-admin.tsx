@@ -1,20 +1,22 @@
+const {
+	VITE_B2C_ADMIN_AUTHORITY,
+	VITE_B2C_AUTHORITY,
+	VITE_B2C_ADMIN_CLIENTID,
+	VITE_B2C_CLIENTID,
+	VITE_B2C_ADMIN_REDIRECT_URI,
+	VITE_B2C_REDIRECT_URI,
+	VITE_B2C_ADMIN_SCOPE,
+	VITE_B2C_SCOPE,
+} = import.meta.env;
+
 export const oidcConfigAdmin = {
-	authority:
-		import.meta.env['VITE_B2C_ADMIN_AUTHORITY'] ??
-		import.meta.env['VITE_B2C_AUTHORITY'] ??
-		'',
-	client_id:
-		import.meta.env['VITE_B2C_ADMIN_CLIENTID'] ??
-		import.meta.env['VITE_B2C_CLIENTID'] ??
-		'',
-	redirect_uri:
-		import.meta.env['VITE_B2C_ADMIN_REDIRECT_URI'] ??
-		import.meta.env['VITE_B2C_REDIRECT_URI'] ??
-		'',
+	authority: VITE_B2C_ADMIN_AUTHORITY ?? VITE_B2C_AUTHORITY ?? '',
+	client_id: VITE_B2C_ADMIN_CLIENTID ?? VITE_B2C_CLIENTID ?? '',
+	redirect_uri: VITE_B2C_ADMIN_REDIRECT_URI ?? VITE_B2C_REDIRECT_URI ?? '',
 	code_verifier: true,
 	noonce: true,
 	response_type: 'code',
-	scope: import.meta.env['VITE_B2C_ADMIN_SCOPE'] ?? import.meta.env['VITE_B2C_SCOPE'],
+	scope: VITE_B2C_ADMIN_SCOPE ?? VITE_B2C_SCOPE,
 	onSigninCallback: (): void => {
 		globalThis.history.replaceState({}, document.title, globalThis.location.pathname);
 		const redirectToPath = globalThis.sessionStorage.getItem('redirectTo');
