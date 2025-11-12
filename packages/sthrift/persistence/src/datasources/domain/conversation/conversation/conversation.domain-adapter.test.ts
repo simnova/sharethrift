@@ -29,7 +29,7 @@ function makeConversationDoc(
 		sharer: undefined,
 		reserver: undefined,
 		listing: undefined,
-		twilioConversationId: 'twilio-123',
+		messagingConversationId: 'twilio-123',
 		set(key: keyof Models.Conversation.Conversation, value: unknown) {
 			(this as Models.Conversation.Conversation)[key] = value as never;
 		},
@@ -140,21 +140,21 @@ test.for(feature, ({ Scenario, Background, BeforeEachScenario }) => {
 
 	// Repeat similar scenarios for reserver and listing...
 
-	Scenario('Getting the twilioConversationId property', ({ When, Then }) => {
-		When('I get the twilioConversationId property', () => {
-			result = adapter.twilioConversationId;
+	Scenario('Getting the messagingConversationId property', ({ When, Then }) => {
+		When('I get the messagingConversationId property', () => {
+			result = adapter.messagingConversationId;
 		});
 		Then('it should return the correct value', () => {
 			expect(result).toBe('twilio-123');
 		});
 	});
 
-	Scenario('Setting the twilioConversationId property', ({ When, Then }) => {
-		When('I set the twilioConversationId property to "twilio-456"', () => {
-			adapter.twilioConversationId = 'twilio-456';
+	Scenario('Setting the messagingConversationId property', ({ When, Then }) => {
+		When('I set the messagingConversationId property to "twilio-456"', () => {
+			adapter.messagingConversationId = 'twilio-456';
 		});
-		Then('the document\'s twilioConversationId should be "twilio-456"', () => {
-			expect(doc.twilioConversationId).toBe('twilio-456');
+		Then('the document\'s messagingConversationId should be "twilio-456"', () => {
+			expect(doc.messagingConversationId).toBe('twilio-456');
 		});
 	});
 });

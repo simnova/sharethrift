@@ -13,7 +13,7 @@ query HomeConversationListContainerConversationsByUser($userId: ObjectID!) {
 
 fragment HomeConversationListContainerConversationFields on Conversation {
   id
-  twilioConversationId
+  messagingConversationId
   sharer {
     id
     account {

@@ -5,9 +5,9 @@ export const conversations = [
 	{
 		_id: '807f1f77bcf86cd799439041',
 		sharer: new ObjectId('507f1f77bcf86cd799439011'), // Alice
-		reserver: new ObjectId('507f1f77bcf86cd799439012'), // Bob
+		reserver: new ObjectId('507f1f77bcf86cd799439014'), // Duy
 		listing: new ObjectId('707f1f77bcf86cd799439031'), // Lawn Mower
-		twilioConversationId: 'twilio_001',
+		messagingConversationId: 'CH123',
 		schemaVersion: '1.0.0',
 		version: 1,
 		discriminatorKey: 'conversation',
@@ -17,9 +17,9 @@ export const conversations = [
 	{
 		_id: '807f1f77bcf86cd799439042',
 		sharer: new ObjectId('507f1f77bcf86cd799439012'), // Bob
-		reserver: new ObjectId('507f1f77bcf86cd799439011'), // Alice
+		reserver: new ObjectId('507f1f77bcf86cd799439014'), // Duy
 		listing: new ObjectId('707f1f77bcf86cd799439032'), // Mountain Bike
-		twilioConversationId: 'twilio_002',
+		messagingConversationId: 'CH124',
 		schemaVersion: '1.0.0',
 		version: 1,
 		createdAt: new Date('2023-05-02T10:00:00Z'),
@@ -27,10 +27,10 @@ export const conversations = [
 	},
 	{
 		_id: '807f1f77bcf86cd799439043',
-		sharer: new ObjectId('507f1f77bcf86cd799439011'), // Alice
-		reserver: new ObjectId('507f1f77bcf86cd799439012'), // Bob
+		sharer: new ObjectId('507f1f77bcf86cd799439013'), // Charlie
+		reserver: new ObjectId('507f1f77bcf86cd799439014'), // Duy
 		listing: new ObjectId('707f1f77bcf86cd799439033'), // City Bike
-		twilioConversationId: 'twilio_003',
+		messagingConversationId: 'CH125',
 		schemaVersion: '1.0.0',
 		version: 1,
 		createdAt: new Date('2024-08-15T14:30:00Z'),
@@ -38,10 +38,10 @@ export const conversations = [
 	},
 	{
 		_id: '807f1f77bcf86cd799439044',
-		sharer: new ObjectId('507f1f77bcf86cd799439012'), // Bob
-		reserver: new ObjectId('507f1f77bcf86cd799439011'), // Alice
+		sharer: new ObjectId('507f1f77bcf86cd799439014'), // Duy
+		reserver: new ObjectId('507f1f77bcf86cd799439013'), // Charlie
 		listing: new ObjectId('707f1f77bcf86cd799439034'), // Power Drill
-		twilioConversationId: 'twilio_004',
+		messagingConversationId: 'CH126',
 		schemaVersion: '1.0.0',
 		version: 1,
 		createdAt: new Date('2024-09-01T09:15:00Z'),

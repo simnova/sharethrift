@@ -2,7 +2,7 @@ mutation CreateConversation($input: ConversationCreateInput!) {
 	createConversation(input: $input) {
 		conversation {
 			id
-			twilioConversationId
+			messagingConversationId
 			listing {
 				id
 			}

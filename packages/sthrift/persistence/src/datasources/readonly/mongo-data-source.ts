@@ -62,25 +62,20 @@ export class MongoDataSourceImpl<TDoc extends MongooseSeedwork.Base>
 		const result: Lean<TDoc> = {
 			...doc,
 			id: String(doc._id),
-		};
-
-		// Also append id to any populated subdocuments
+		}
+		
+        // Also append id to any populated subdocuments
 		const resultAsRecord = result as Record<string, unknown>;
 		for (const key in resultAsRecord) {
 			const value = resultAsRecord[key];
-			if (
-				value &&
-				typeof value === 'object' &&
-				'_id' in value &&
-				!('id' in value)
-			) {
+			if (value && typeof value === 'object' && '_id' in value && !('id' in value)) {
 				resultAsRecord[key] = {
 					...(value as Record<string, unknown>),
 					id: String((value as { _id: unknown })._id),
 				};
 			}
 		}
-
+		
 		return result;
 	}
 
