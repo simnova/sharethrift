@@ -1,3 +1,9 @@
+query HomeConversationListContainerCurrentPersonalUserAndCreateIfNotExists {
+  currentPersonalUserAndCreateIfNotExists {
+    id
+  }
+}
+
 query HomeConversationListContainerConversationsByUser($userId: ObjectID!) {
   conversationsByUser(userId: $userId) {
     ...HomeConversationListContainerConversationFields
@@ -6,7 +12,7 @@ query HomeConversationListContainerConversationsByUser($userId: ObjectID!) {
 
 fragment HomeConversationListContainerConversationFields on Conversation {
   id
-  twilioConversationId
+  messagingConversationId
   sharer {
     id
     account {
