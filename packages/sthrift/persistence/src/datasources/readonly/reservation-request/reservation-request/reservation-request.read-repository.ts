@@ -8,12 +8,12 @@ import type {
 } from '../../mongo-data-source.ts';
 import { ReservationRequestConverter } from '../../../domain/reservation-request/reservation-request/reservation-request.domain-adapter.ts';
 import { MongooseSeedwork } from '@cellix/mongoose-seedwork';
-import {
-	filterByStates,
-	RESERVATION_STATES,
-} from './reservation-state-filters.ts';
 import type { FilterQuery, PipelineStage } from 'mongoose';
 import type { Models } from '@sthrift/data-sources-mongoose-models';
+
+// Reservation state constants for filtering (inline per codebase patterns)
+const ACTIVE_STATES = ['Accepted', 'Requested'];
+const INACTIVE_STATES = ['Cancelled', 'Closed', 'Rejected'];
 
 export interface ReservationRequestReadRepository {
 	getAll: (
@@ -167,7 +167,7 @@ export class ReservationRequestReadRepositoryImpl
 	> {
 		const filter: FilterQuery<Models.ReservationRequest.ReservationRequest> = {
 			reserver: new MongooseSeedwork.ObjectId(reserverId),
-			...filterByStates(RESERVATION_STATES.ACTIVE),
+			state: { $in: ACTIVE_STATES },
 		};
 		return await this.queryMany(filter, {
 			...options,
@@ -183,7 +183,7 @@ export class ReservationRequestReadRepositoryImpl
 	> {
 		const filter: FilterQuery<Models.ReservationRequest.ReservationRequest> = {
 			reserver: new MongooseSeedwork.ObjectId(reserverId),
-			...filterByStates(RESERVATION_STATES.INACTIVE),
+			state: { $in: INACTIVE_STATES },
 		};
 		return await this.queryMany(filter, {
 			...options,
@@ -242,7 +242,7 @@ export class ReservationRequestReadRepositoryImpl
 		const filter: FilterQuery<Models.ReservationRequest.ReservationRequest> = {
 			reserver: new MongooseSeedwork.ObjectId(reserverId),
 			listing: new MongooseSeedwork.ObjectId(listingId),
-			...filterByStates(RESERVATION_STATES.ACTIVE),
+			state: { $in: ACTIVE_STATES },
 		};
 		return await this.queryOne(filter, options);
 	}
@@ -257,7 +257,7 @@ export class ReservationRequestReadRepositoryImpl
 	> {
 		const filter: FilterQuery<Models.ReservationRequest.ReservationRequest> = {
 			listing: new MongooseSeedwork.ObjectId(listingId),
-			...filterByStates(RESERVATION_STATES.ACTIVE),
+			state: { $in: ACTIVE_STATES },
 			reservationPeriodStart: { $lt: reservationPeriodEnd },
 			reservationPeriodEnd: { $gt: reservationPeriodStart },
 		};
@@ -272,7 +272,7 @@ export class ReservationRequestReadRepositoryImpl
 	> {
 		const filter: FilterQuery<Models.ReservationRequest.ReservationRequest> = {
 			listing: new MongooseSeedwork.ObjectId(listingId),
-			...filterByStates(RESERVATION_STATES.ACTIVE),
+			state: { $in: ACTIVE_STATES },
 		};
 		return await this.queryMany(filter, options);
 	}
