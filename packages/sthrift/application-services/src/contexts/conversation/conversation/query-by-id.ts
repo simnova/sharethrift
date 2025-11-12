@@ -1,4 +1,4 @@
-import { Domain } from '@sthrift/domain';
+import type { Domain } from '@sthrift/domain';
 import type { DataSources } from '@sthrift/persistence';
 
 export interface ConversationQueryByIdCommand {
@@ -28,16 +28,6 @@ export const queryById = (dataSources: DataSources) => {
                 return conversation;
             }
 
-			const domainMessages = messagingMessages.map((msg) => {
-				return new Domain.Contexts.Conversation.Conversation.Message({
-					id: msg.id,
-					messagingMessageId: msg.messagingMessageId,
-					authorId: msg.authorId,
-					content: msg.content,
-					createdAt: msg.createdAt,
-				});
-			});
-
 			const result: Domain.Contexts.Conversation.Conversation.ConversationEntityReference = {
                 id: conversation.id,
                 sharer: conversation.sharer,
@@ -47,8 +37,9 @@ export const queryById = (dataSources: DataSources) => {
                 listing: conversation.listing,
                 loadListing: conversation.loadListing.bind(conversation),
                 messagingConversationId: conversation.messagingConversationId,
-                messages: domainMessages,
-                loadMessages: async () => domainMessages,
+                twilioConversationId: conversation.twilioConversationId,
+                messages: messagingMessages,
+                loadMessages: async () => messagingMessages,
                 createdAt: conversation.createdAt,
                 updatedAt: conversation.updatedAt,
                 schemaVersion: conversation.schemaVersion,
