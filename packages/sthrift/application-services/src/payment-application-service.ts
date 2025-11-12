@@ -1,4 +1,4 @@
-import type { MockServiceCybersource } from '@sthrift/service-cybersource';
+import type { PaymentService } from '@cellix/payment-service';
 
 export interface PaymentApplicationService {
 	processPayment(
@@ -165,9 +165,9 @@ export interface PlanCreation {
 export class DefaultPaymentApplicationService
 	implements PaymentApplicationService
 {
-	private readonly paymentService: MockServiceCybersource;
+	private readonly paymentService: PaymentService;
 
-	constructor(paymentService: MockServiceCybersource) {
+	constructor(paymentService: PaymentService) {
 		this.paymentService = paymentService;
 	}
 

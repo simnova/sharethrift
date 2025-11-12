@@ -1,4 +1,6 @@
-export interface CybersourceBase {
+import type { ServiceBase } from '@cellix/api-services-spec';
+
+export interface PaymentService extends ServiceBase<PaymentService> {
 	generatePublicKey(): Promise<string>;
 	createCustomerProfile(
 		customerProfile: CustomerProfile,
@@ -46,7 +48,7 @@ export interface CybersourceBase {
 	//   ): Promise<PaymentTransactionResponse>;
 	getSuccessOrLatestFailedTransactionsByReferenceId(
 		referenceId: string,
-	): Promise<TransactionReceipt>;
+	): Promise<TransactionReceipt | null>;
 	createPlan(plan: PlanCreation): Promise<PlanCreationResponse>;
 	listOfPlans(): Promise<PlansListResponse>;
 	getPlan(planId: string): Promise<PlanResponse>;

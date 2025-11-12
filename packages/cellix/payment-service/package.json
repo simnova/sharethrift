@@ -1,5 +1,5 @@
 {
-	"name": "@cellix/payment-seedwork",
+	"name": "@cellix/payment-service",
 	"version": "1.0.0",
 	"private": true,
 	"type": "module",
@@ -17,6 +17,9 @@
 		"build": "tsc --build",
 		"watch": "tsc --watch",
 		"clean": "rimraf dist"
+	},
+  "dependencies": {
+		"@cellix/api-services-spec": "workspace:*"
 	},
 
 	"devDependencies": {

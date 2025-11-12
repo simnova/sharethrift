@@ -2,12 +2,13 @@
 	"extends": "@cellix/typescript-config/node.json",
 	"compilerOptions": {
 		"outDir": "dist",
-		"rootDir": "."
+		"rootDir": ".",
+		// "typeRoots": ["./src/types", "./node_modules/@types"]
 	},
 	"include": ["src/**/*.ts"],
 	"exclude": ["node_modules", "dist"],
 	"references": [
-		{ "path": "../persistence" },
-		{ "path": "../service-token-validation" }
+		{ "path": "../../cellix/api-services-spec" },
+		{ "path": "../../cellix/payment-service" }
 	]
 }

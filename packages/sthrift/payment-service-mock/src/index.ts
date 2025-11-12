@@ -1,6 +1,6 @@
 import type { ServiceBase } from '@cellix/api-services-spec';
 import type {
-	CybersourceBase,
+	PaymentService,
 	CustomerProfile,
 	PaymentTokenInfo,
 	PaymentTransactionResponse,
@@ -17,49 +17,53 @@ import type {
 	SubscriptionsListResponse,
 	SuspendSubscriptionResponse,
 	PlansListResponse,
-} from '@cellix/payment-seedwork';
+} from '@cellix/payment-service';
 import axios from 'axios';
 import type { AxiosInstance } from 'axios';
 
-export class MockServiceCybersource
-	implements ServiceBase<MockServiceCybersource>, CybersourceBase
+export class PaymentServiceMock
+	implements ServiceBase<PaymentServiceMock>, PaymentService
 {
-	private client: AxiosInstance | undefined;
-	private baseUrl: string;
+	private http: AxiosInstance | undefined;
+	private readonly mockBaseUrl: string;
 
-	constructor(baseUrl: string = process.env['PAYMENT_API_URL'] ?? '') {
-		this.baseUrl = baseUrl;
+	constructor(mockBaseUrl?: string) {
+		this.mockBaseUrl =
+			mockBaseUrl ?? process.env['PAYMENT_MOCK_URL'] ?? 'http://localhost:3001';
 	}
 
 	public startUp(): Promise<
-		Exclude<MockServiceCybersource, ServiceBase<MockServiceCybersource>>
+		Exclude<PaymentServiceMock, ServiceBase<PaymentServiceMock>>
 	> {
-		if (this.client) {
-			throw new Error('Mock ServiceCybersource is already started');
+		if (this.http) {
+			throw new Error('Mock PaymentService is already started');
 		}
-		console.log('Mock ServiceCybersource started with baseUrl:', this.baseUrl);
-		if (process.env['NODE_ENV'] === 'development') {
-			this.client = axios.create({ baseURL: this.baseUrl });
-		}
-		return this as Exclude<
-			MockServiceCybersource,
-			ServiceBase<MockServiceCybersource>
-		>;
+
+		this.http = axios.create({ baseURL: this.mockBaseUrl });
+		console.log(`PaymentServiceMock started in MOCK mode: ${this.mockBaseUrl}`);
+		return Promise.resolve(this as Exclude<
+			PaymentServiceMock,
+			ServiceBase<PaymentServiceMock>
+		>);
 	}
 
 	public shutDown(): Promise<void> {
-		this.client = undefined;
+		if (!this.http) {
+			throw new Error('PaymentServiceMock is not started - shutdown cannot proceed');
+		}
+		this.http = undefined;
+		console.log('PaymentServiceMock stopped');
 		return Promise.resolve();
 	}
 
 	//   ========== This code will get deleted ===========
 	public get service(): AxiosInstance {
-		if (!this.client) {
+		if (!this.http) {
 			throw new Error(
 				'Mock ServiceCybersource is not started - cannot access service',
 			);
 		}
-		return this.client;
+		return this.http;
 	}
 
 	//   public async createPayment(_req: unknown): Promise<unknown> {

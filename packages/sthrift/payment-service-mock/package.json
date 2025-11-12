@@ -1,5 +1,5 @@
 {
-	"name": "@sthrift/service-cybersource",
+	"name": "@sthrift/payment-service-mock",
 	"version": "1.0.0",
 	"main": "dist/src/index.js",
 	"types": "dist/src/index.d.ts",
@@ -19,7 +19,7 @@
 	"dependencies": {
 		"axios": "^1.6.0",
 		"@cellix/api-services-spec": "workspace:*",
-		"@cellix/payment-seedwork": "workspace:*"
+		"@cellix/payment-service": "workspace:*"
 	},
 	"devDependencies": {
 		"@cellix/typescript-config": "workspace:*",
