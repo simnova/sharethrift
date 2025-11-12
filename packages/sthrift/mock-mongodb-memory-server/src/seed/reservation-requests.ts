@@ -4,7 +4,7 @@ import { ObjectId } from 'mongodb';
 export const reservationRequests = [
 	{
 		_id: '907f1f77bcf86cd799439051',
-		state: 'Pending',
+		state: 'Requested',
 		reservationPeriodStart: new Date('2023-04-05T08:00:00Z'),
 		reservationPeriodEnd: new Date('2023-04-10T20:00:00Z'),
 		schemaVersion: '1.0.0',
@@ -19,7 +19,7 @@ export const reservationRequests = [
 	},
 	{
 		_id: '907f1f77bcf86cd799439052',
-		state: 'Approved',
+		state: 'Accepted',
 		reservationPeriodStart: new Date('2023-05-10T08:00:00Z'),
 		reservationPeriodEnd: new Date('2023-05-15T20:00:00Z'),
 		schemaVersion: '1.0.0',
@@ -35,7 +35,7 @@ export const reservationRequests = [
 	{
 		// New reservation request for City Bike
 		_id: '707f1f77bcf86cd799431111',
-		state: 'Pending',
+		state: 'Requested',
 		reservationPeriodStart: new Date('2024-09-01T08:00:00Z'),
 		reservationPeriodEnd: new Date('2024-09-10T20:00:00Z'),
 		schemaVersion: '1.0.0',

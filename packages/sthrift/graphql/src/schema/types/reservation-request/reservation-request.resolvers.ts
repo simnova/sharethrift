@@ -6,9 +6,9 @@ import {
 	PopulatePersonalUserFromField,
 } from '../../resolver-helper.ts';
 
-// Map domain states to UI-friendly display states
+// Map domain states to UI display states (now 1:1, all aligned)
 const DOMAIN_TO_UI_STATE: Record<string, string> = {
-	Requested: 'Pending',
+	Requested: 'Requested',
 	Accepted: 'Accepted',
 	Rejected: 'Rejected',
 	Cancelled: 'Cancelled',
@@ -80,7 +80,7 @@ function paginateAndFilterListingRequests(
 					? r.createdAt.toISOString()
 					: new Date().toISOString(),
 			reservationPeriod: `${start ? start.toISOString().slice(0, 10) : 'N/A'} - ${end ? end.toISOString().slice(0, 10) : 'N/A'}`,
-			status: DOMAIN_TO_UI_STATE[r.state ?? ''] ?? r.state ?? 'Pending',
+			status: DOMAIN_TO_UI_STATE[r.state ?? ''] ?? r.state ?? 'Requested',
 			_raw: r,
 		};
 	});

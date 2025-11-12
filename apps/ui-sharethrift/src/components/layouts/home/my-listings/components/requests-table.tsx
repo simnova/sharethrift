@@ -28,7 +28,7 @@ export interface RequestsTableProps {
 }
 
 const REQUEST_STATUS_OPTIONS = [
-	{ label: 'Pending', value: 'Pending' },
+	{ label: 'Requested', value: 'Requested' },
 	{ label: 'Accepted', value: 'Accepted' },
 	{ label: 'Rejected', value: 'Rejected' },
 	{ label: 'Closed', value: 'Closed' },

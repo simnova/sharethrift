@@ -8,7 +8,7 @@ const MOCK_REQUESTS = [
 		image: '/assets/item-images/projector.png',
 		requestedOn: '2025-12-23',
 		reservationPeriod: '2020-11-08 - 2020-12-23',
-		status: 'Pending',
+		status: 'Requested',
 		requestedBy: 'John Doe',
 	},
 	{

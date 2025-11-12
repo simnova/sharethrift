@@ -1,23 +1,24 @@
 /**
  * State mappings between database values and domain values
- * Database uses UI-friendly names, domain uses business logic names
+ * All layers now use consistent terminology: Requested and Accepted
  */
 
-// Database -> Domain mapping
+// Database -> Domain mapping (now 1:1)
 export const DB_TO_DOMAIN_STATE: Record<string, string> = {
-	Pending: 'Requested',
-	Approved: 'Accepted',
-	Requested: 'Requested', // Support both formats
+	Requested: 'Requested',
 	Accepted: 'Accepted',
 	Rejected: 'Rejected',
 	Cancelled: 'Cancelled',
 	Closed: 'Closed',
+	// Backward compatibility with old database values
+	Pending: 'Requested',
+	Approved: 'Accepted',
 };
 
-// Domain -> Database mapping
+// Domain -> Database mapping (now 1:1)
 export const DOMAIN_TO_DB_STATE: Record<string, string> = {
-	Requested: 'Pending',
-	Accepted: 'Approved',
+	Requested: 'Requested',
+	Accepted: 'Accepted',
 	Rejected: 'Rejected',
 	Cancelled: 'Cancelled',
 	Closed: 'Closed',

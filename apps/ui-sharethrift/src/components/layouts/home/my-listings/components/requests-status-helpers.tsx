@@ -13,7 +13,7 @@ export const getStatusTagClass = (status: string): string => {
 			return 'requestRejectedTag';
 		case 'Closed':
 			return 'expiredTag';
-		case 'Pending':
+		case 'Requested':
 			return 'pendingTag';
 		case 'Closing':
 			return 'closingTag';
@@ -30,8 +30,8 @@ export const getActionButtons = (
 ) => {
 	const buttons: React.ReactNode[] = [];
 
-	// Pending → Accept / Reject
-	if (record.status === 'Pending') {
+	// Requested → Accept / Reject
+	if (record.status === 'Requested') {
 		buttons.push(
 			<Button
 				key="accept"
