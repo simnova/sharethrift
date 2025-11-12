@@ -14,7 +14,7 @@ export const useUserIsAdmin = () => {
 	);
 
 	return {
-		isAdmin: data?.currentUser?.__typename === 'AdminUser',
+		isAdmin: data?.currentUser?.userIsAdmin ?? false,
 		loading,
 		error,
 	};
