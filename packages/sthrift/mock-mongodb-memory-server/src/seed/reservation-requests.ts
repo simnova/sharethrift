@@ -9,7 +9,7 @@ export const reservationRequests = [
 		reservationPeriodEnd: new Date('2023-04-10T20:00:00Z'),
 		schemaVersion: '1.0.0',
 		listing: new ObjectId('707f1f77bcf86cd799439031'), // Lawn Mower
-		reserver: new ObjectId('6324a3f1e3e4e1e6a8e1d8b1'), // Bob
+		reserver: new ObjectId('507f1f77bcf86cd799439012'), // Bob
 		closeRequestedBySharer: false,
 		closeRequestedByReserver: false,
 		version: 1,
@@ -24,7 +24,7 @@ export const reservationRequests = [
 		reservationPeriodEnd: new Date('2023-05-15T20:00:00Z'),
 		schemaVersion: '1.0.0',
 		listing: new ObjectId('707f1f77bcf86cd799439032'), // Mountain Bike
-		reserver: new ObjectId('6324a3f1e3e4e1e6a8e1d8b1'), // Alice
+		reserver: new ObjectId('507f1f77bcf86cd799439011'), // Alice
 		closeRequestedBySharer: false,
 		closeRequestedByReserver: false,
 		version: 1,

@@ -10,52 +10,6 @@ export const accept = (dataSources: DataSources) => {
 	return async (
 		command: ReservationRequestAcceptCommand,
 	): Promise<Domain.Contexts.ReservationRequest.ReservationRequest.ReservationRequestEntityReference> => {
-		// Get the reservation request
-		const reservationRequest =
-			await dataSources.readonlyDataSource.ReservationRequest.ReservationRequest.ReservationRequestReadRepo.getById(
-				command.id,
-			);
-
-		if (!reservationRequest) {
-			throw new Error('Reservation request not found');
-		}
-
-		// Get the listing ID from the reservation request
-		const listingId =
-			reservationRequest.listing?.id || reservationRequest.listing;
-
-		if (!listingId) {
-			throw new Error('Listing not found in reservation request');
-		}
-
-		// Load the listing separately
-		const listing =
-			await dataSources.readonlyDataSource.Listing.ItemListing.ItemListingReadRepo.getById(
-				listingId.toString(),
-			);
-
-		if (!listing) {
-			throw new Error('Listing not found');
-		}
-
-		// Verify the sharer owns the listing
-		const sharer =
-			await dataSources.readonlyDataSource.User.PersonalUser.PersonalUserReadRepo.getByEmail(
-				command.sharerEmail,
-			);
-
-		if (!sharer) {
-			throw new Error(
-				'Sharer not found. Ensure that you are logged in as the listing owner.',
-			);
-		}
-
-		if (listing.sharer?.id !== sharer.id) {
-			throw new Error(
-				'You do not have permission to accept this reservation request',
-			);
-		}
-
 		// Accept the reservation request
 		let acceptedReservationRequest:
 			| Domain.Contexts.ReservationRequest.ReservationRequest.ReservationRequestEntityReference
@@ -66,6 +20,30 @@ export const accept = (dataSources: DataSources) => {
 				const reservationRequestToAccept = await repo.getById(command.id);
 				if (!reservationRequestToAccept) {
 					throw new Error('Reservation request not found');
+				}
+
+				// Load the listing to verify sharer ownership
+				const listing = await reservationRequestToAccept.loadListing();
+				if (!listing) {
+					throw new Error('Listing not found');
+				}
+
+				// Verify the sharer owns the listing
+				const sharer =
+					await dataSources.readonlyDataSource.User.PersonalUser.PersonalUserReadRepo.getByEmail(
+						command.sharerEmail,
+					);
+
+				if (!sharer) {
+					throw new Error(
+						'Sharer not found. Ensure that you are logged in as the listing owner.',
+					);
+				}
+
+				if (listing.sharer?.id !== sharer.id) {
+					throw new Error(
+						'You do not have permission to accept this reservation request',
+					);
 				}
 
 				// Accept the reservation (this will call the accept() method in the domain)

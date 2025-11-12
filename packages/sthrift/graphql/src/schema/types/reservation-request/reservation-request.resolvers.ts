@@ -62,7 +62,7 @@ function paginateAndFilterListingRequests(
 				: undefined;
 
 		// Get the first image from the listing's images array, or use placeholder
-		const images = r.listing?.['images'];
+		const images = r.listing?.images;
 		const listingImage =
 			Array.isArray(images) && images.length > 0
 				? images[0]
