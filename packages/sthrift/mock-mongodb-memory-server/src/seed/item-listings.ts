@@ -116,4 +116,23 @@ export const itemListings = [
 		version: 1,
 		listingType: 'item-listing',
 	},
+	{
+		_id: new ObjectId('707f1f77bcf86cd799439039'),
+		sharer: new ObjectId('507f1f77bcf86cd799439014'), // Duy (for delete testing)
+		title: 'Camping Tent',
+		description: 'Four-person camping tent in excellent condition. Perfect for weekend trips.',
+		category: 'Outdoor & Recreation',
+		location: 'San Francisco, CA',
+		sharingPeriodStart: new Date('2024-06-01T08:00:00Z'),
+		sharingPeriodEnd: new Date('2024-12-31T20:00:00Z'),
+		state: 'Published',
+		createdAt: new Date('2024-05-15T10:00:00Z'),
+		updatedAt: new Date('2024-05-15T10:00:00Z'),
+		sharingHistory: [],
+		reports: 0,
+		images: ['/assets/item-images/tent.png'],
+		schemaVersion: '1.0.0',
+		version: 1,
+		listingType: 'item-listing',
+	},
 ] as unknown as Models.Listing.ItemListing[];

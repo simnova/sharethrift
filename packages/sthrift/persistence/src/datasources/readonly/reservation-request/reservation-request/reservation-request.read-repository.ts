@@ -213,16 +213,12 @@ export class ReservationRequestReadRepositoryImpl
 	): Promise<
 		Domain.Contexts.ReservationRequest.ReservationRequest.ReservationRequestEntityReference[]
 	> {
-		// const filter = {
-		//     listing: new MongooseSeedwork.ObjectId(listingId),
-		// };
-		// const result = await this.mongoDataSource.find(filter, options);
-		// return result.map((doc) => this.converter.toDomain(doc, this.passport));
-		const mockResult = await Promise.resolve(
-			getMockReservationRequests('507f1f77bcf86cd799439011', 'active'),
-		);
-		console.log(options, listingId); //gets rid of unused error
-		return Promise.resolve(mockResult);
+		const filter = {
+			listing: new MongooseSeedwork.ObjectId(listingId),
+			state: { $in: ['Requested', 'Accepted'] },
+		};
+		const result = await this.mongoDataSource.find(filter, options);
+		return result.map((doc) => this.converter.toDomain(doc, this.passport));
 	}
 }
 
