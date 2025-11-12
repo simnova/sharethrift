@@ -14,6 +14,9 @@ export interface ConversationRepository<props extends ConversationProps>
 	getByMessagingId(
 		messagingConversationId: string,
 	): Promise<Conversation<props> | null>;
+	getByTwilioSid(
+		twilioConversationId: string,
+	): Promise<Conversation<props> | null>;
 	getByIdWithSharerReserver(
 		sharer: string,
 		reserver: string,

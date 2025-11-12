@@ -12,6 +12,7 @@ import type { PersonalUserProps } from '../../user/personal-user/personal-user.e
 import { PersonalUser } from '../../user/personal-user/personal-user.ts';
 import type { ConversationProps } from './conversation.entity.ts';
 import { Conversation } from './conversation.ts';
+import { TwilioConversationSid } from './conversation.value-objects.ts';
 
 const test = { for: describeFeature };
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
@@ -186,6 +187,7 @@ function makeBaseProps(
 	messages: [],
 	loadMessages: async () => [],
 	messagingConversationId: 'twilio-123',
+	twilioConversationId: new TwilioConversationSid('CH12345678901234567890123456789012'),
 	createdAt: new Date('2020-01-01T00:00:00Z'),
 	updatedAt: new Date('2020-01-02T00:00:00Z'),
 	schemaVersion: '1.0.0',

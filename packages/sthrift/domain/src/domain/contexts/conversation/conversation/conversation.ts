@@ -10,6 +10,7 @@ import type {
 	ConversationProps,
 } from './conversation.entity.ts';
 import type { MessageEntityReference } from "./message.entity.ts";
+import type * as ValueObjects from './conversation.value-objects.ts';
 
 export class Conversation<props extends ConversationProps>
 	extends DomainSeedwork.AggregateRoot<props, Passport>
@@ -160,6 +161,23 @@ export class Conversation<props extends ConversationProps>
 			);
 		}
 		this.props.messagingConversationId = value;
+	}
+
+	get twilioConversationId(): ValueObjects.TwilioConversationSid {
+		return this.props.twilioConversationId;
+	}
+	set twilioConversationId(value: ValueObjects.TwilioConversationSid) {
+		if (
+			!this.isNew &&
+			!this.visa.determineIf(
+				(domainPermissions) => domainPermissions.canManageConversation,
+			)
+		) {
+			throw new DomainSeedwork.PermissionError(
+				'You do not have permission to change the twilioConversationId of this conversation',
+			);
+		}
+		this.props.twilioConversationId = value;
 	}
 
 	get createdAt(): Date {
