@@ -9,6 +9,7 @@ import type { Domain } from '@sthrift/domain';
 interface ProcessPaymentResponse {
 	id?: string;
 	status?: string;
+	cybersourceCustomerId?: string;
 	errorInformation?: {
 		reason?: string;
 		message?: string;
@@ -184,6 +185,7 @@ function createMockProcessPaymentResponse(
 	return {
 		id: 'payment-123',
 		status: 'SUCCEEDED',
+		cybersourceCustomerId: 'cust-12345',
 		orderInformation: {
 			amountDetails: {
 				totalAmount: '100.00',
@@ -191,6 +193,53 @@ function createMockProcessPaymentResponse(
 			},
 		},
 		...overrides,
+	};
+}
+
+function createMockAccountPlan() {
+	return {
+		id: 'plan-123',
+		planName: 'verified-personal',
+		cybersourcePlanId: 'cs-plan-456',
+		monthlyRate: 29.99,
+		isDefault: true,
+		feature: {
+			activeReservations: 5,
+			bookmarks: 20,
+			itemsToShare: 10,
+			friends: 50
+		},
+		name: 'Verified Personal Plan',
+		description: 'A verified personal account plan',
+		billingPeriodLength: 1,
+		billingPeriodUnit: 'MONTH',
+		currency: 'USD',
+		billingCycles: 0,
+		billingAmount: 29.99,
+		setupFee: 0,
+		status: 'ACTIVE',
+		createdAt: new Date(),
+		updatedAt: new Date(),
+		schemaVersion: '1.0',
+	};
+}
+
+function createMockSubscription() {
+	return {
+		id: 'sub-789',
+		status: 'ACTIVE',
+		startDate: new Date(),
+		_links: {
+			self: { href: '/v2/subscriptions/sub-789' },
+			update: { href: '/v2/subscriptions/sub-789' },
+			cancel: { href: '/v2/subscriptions/sub-789/cancel' }
+		},
+		submitTimeUtc: new Date().toISOString(),
+		subscriptionInformation: {
+			code: 'SUCCESS',
+			status: 'ACTIVE',
+			subscriptionId: 'sub-789'
+		}
 	};
 }
 
@@ -210,6 +259,13 @@ function makeMockGraphContext(
 			Payment: {
 				processPayment: vi.fn(),
 				refundPayment: vi.fn(),
+				createSubscription: vi.fn(),
+				generatePublicKey: vi.fn(),
+			},
+			AccountPlan: {
+				AccountPlan: {
+					queryByName: vi.fn(),
+				},
 			},
 			verifiedUser: {
 				verifiedJwt: {
@@ -421,7 +477,7 @@ test.for(feature, ({ Scenario, Background, BeforeEachScenario }) => {
 			});
 			And('it should update the record and return the updated user', () => {
 				expect(result).toBeDefined();
-				expect((result as { id: string }).id).toBe('user-123');
+				expect((result as { personalUser: { id: string } }).personalUser.id).toBe('user-123');
 			});
 		},
 	);
@@ -512,13 +568,41 @@ test.for(feature, ({ Scenario, Background, BeforeEachScenario }) => {
 			Given(
 				'a valid payment request with order and billing information',
 				() => {
-					const mockResponse = createMockProcessPaymentResponse({
+					// Mock user lookup
+					const mockUser = createMockPersonalUser({
+						id: 'user-123',
+						account: createMockAccount({ accountType: 'verified-personal' }),
+					});
+					vi.mocked(
+						context.applicationServices.User.PersonalUser.queryById,
+					).mockResolvedValue(mockUser);
+
+					// Mock account plan lookup
+					const mockAccountPlan = createMockAccountPlan();
+					vi.mocked(
+						context.applicationServices.AccountPlan.AccountPlan.queryByName,
+					).mockResolvedValue(mockAccountPlan);
+
+					// Mock payment processing
+					const mockPaymentResponse = createMockProcessPaymentResponse({
 						status: 'SUCCEEDED',
 						id: 'txn-123',
+						cybersourceCustomerId: 'cust-12345',
 					});
 					vi.mocked(
 						context.applicationServices.Payment.processPayment,
-					).mockResolvedValue(mockResponse);
+					).mockResolvedValue(mockPaymentResponse);
+
+					// Mock subscription creation
+					const mockSubscription = createMockSubscription();
+					vi.mocked(
+						context.applicationServices.Payment.createSubscription,
+					).mockResolvedValue(mockSubscription);
+
+					// Mock user update
+					vi.mocked(
+						context.applicationServices.User.PersonalUser.update,
+					).mockResolvedValue(mockUser);
 				},
 			);
 			When('I execute the mutation "processPayment"', async () => {
@@ -541,8 +625,8 @@ test.for(feature, ({ Scenario, Background, BeforeEachScenario }) => {
 									billingFirstName: 'John',
 									billingLastName: 'Doe',
 									paymentToken: 'token-abc-123',
-									billingAddressLine2: '',
-									billingPhone: '123-456-7890',
+									billingAddressLine2: null,
+									billingPhone: null,
 								},
 							},
 						},
@@ -551,14 +635,11 @@ test.for(feature, ({ Scenario, Background, BeforeEachScenario }) => {
 					);
 				}
 			});
-			Then(
-				'it should call "Payment.processPayment" with sanitized fields',
-				() => {
-					expect(
-						context.applicationServices.Payment.processPayment,
-					).toHaveBeenCalled();
-				},
-			);
+			Then('it should call "Payment.processPayment" with sanitized fields', () => {
+				expect(
+					context.applicationServices.Payment.processPayment,
+				).toHaveBeenCalled();
+			});
 			And(
 				'return a PaymentResponse with status "SUCCEEDED" and success true',
 				() => {
@@ -574,6 +655,22 @@ test.for(feature, ({ Scenario, Background, BeforeEachScenario }) => {
 		'Handling payment processing failure',
 		({ Given, When, Then, And }) => {
 			Given('a payment request that causes an error', () => {
+				// Mock user lookup
+				const mockUser = createMockPersonalUser({
+					id: 'user-123',
+					account: createMockAccount({ accountType: 'verified-personal' }),
+				});
+				vi.mocked(
+					context.applicationServices.User.PersonalUser.queryById,
+				).mockResolvedValue(mockUser);
+
+				// Mock account plan lookup
+				const mockAccountPlan = createMockAccountPlan();
+				vi.mocked(
+					context.applicationServices.AccountPlan.AccountPlan.queryByName,
+				).mockResolvedValue(mockAccountPlan);
+
+				// Mock payment processing error
 				vi.mocked(
 					context.applicationServices.Payment.processPayment,
 				).mockRejectedValue(new Error('Payment failed'));
@@ -598,8 +695,8 @@ test.for(feature, ({ Scenario, Background, BeforeEachScenario }) => {
 									billingFirstName: 'John',
 									billingLastName: 'Doe',
 									paymentToken: 'token-abc-123',
-									billingAddressLine2: '',
-									billingPhone: '123-456-7890',
+									billingAddressLine2: null,
+									billingPhone: null,
 								},
 							},
 						},
