@@ -12,6 +12,7 @@ fragment ConversationBoxContainerConversationFields on Conversation {
 		... on PersonalUser {
 			id
 			account {
+				username
 				profile {
 					firstName
 					lastName
@@ -21,6 +22,7 @@ fragment ConversationBoxContainerConversationFields on Conversation {
 		... on AdminUser {
 			id
 			account {
+				username
 				profile {
 					firstName
 					lastName
@@ -32,6 +34,7 @@ fragment ConversationBoxContainerConversationFields on Conversation {
 		... on PersonalUser {
 			id
 			account {
+				username
 				profile {
 					firstName
 					lastName
@@ -41,6 +44,7 @@ fragment ConversationBoxContainerConversationFields on Conversation {
 		... on AdminUser {
 			id
 			account {
+				username
 				profile {
 					firstName
 					lastName

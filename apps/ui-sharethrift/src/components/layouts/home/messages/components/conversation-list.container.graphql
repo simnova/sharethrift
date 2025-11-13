@@ -1,6 +1,11 @@
-query HomeConversationListContainerCurrentPersonalUserAndCreateIfNotExists {
-	currentPersonalUserAndCreateIfNotExists {
-		id
+query HomeConversationListContainerCurrentUser {
+	currentUser {
+		... on AdminUser {
+			id
+		}
+		... on PersonalUser {
+			id
+		}
 	}
 }
 
@@ -17,6 +22,7 @@ fragment HomeConversationListContainerConversationFields on Conversation {
 		... on PersonalUser {
 			id
 			account {
+				username
 				profile {
 					firstName
 					lastName
@@ -26,6 +32,7 @@ fragment HomeConversationListContainerConversationFields on Conversation {
 		... on AdminUser {
 			id
 			account {
+				username
 				profile {
 					firstName
 					lastName
@@ -38,6 +45,7 @@ fragment HomeConversationListContainerConversationFields on Conversation {
 		... on PersonalUser {
 			id
 			account {
+				username
 				profile {
 					firstName
 					lastName
@@ -47,6 +55,7 @@ fragment HomeConversationListContainerConversationFields on Conversation {
 		... on AdminUser {
 			id
 			account {
+				username
 				profile {
 					firstName
 					lastName

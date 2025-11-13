@@ -93,6 +93,7 @@ export const HomeTabsLayout: React.FC = () => {
 		navigate('/login');
 	};
 	
+    //Removed in AdminUser PR
     //auth.signinRedirect();
 	//const handleOnSignUp = () => {
 	//	auth.signinRedirect({ extraQueryParams: { option: "signup" } })};
