@@ -528,7 +528,7 @@ When('I set state to {string}', function (state: string) {
 // Test: Setting state to REQUESTED after creation should raise PermissionError
 Then('setting state to REQUESTED on an existing reservation should raise a PermissionError', function () {
     const actor = actorCalled('User');
-    let errorCaught = null;
+    let errorCaught: unknown = null;
     try {
         if (actor.currentReservationRequest) {
             actor.currentReservationRequest.state = ReservationRequestStates.REQUESTED;
@@ -536,11 +536,11 @@ Then('setting state to REQUESTED on an existing reservation should raise a Permi
     } catch (e) {
         errorCaught = e;
     }
-    if (!errorCaught || errorCaught.name !== 'PermissionError') {
+    if (!errorCaught || (errorCaught as any)?.name !== 'PermissionError') {
         throw new Error('PermissionError was not raised when setting state to REQUESTED on an existing reservation');
     }
 });
-
+  
 When('I try to set state to {string}', function (state: string) {
     const actor = actorCalled('User');
     try {
