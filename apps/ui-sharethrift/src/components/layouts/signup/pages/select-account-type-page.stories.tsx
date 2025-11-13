@@ -4,7 +4,7 @@ import {
 	withMockApolloClient,
 	withMockRouter,
 } from '../../../../test-utils/storybook-decorators.tsx';
-import type { PersonalUserUpdateInput } from '../../../../generated.tsx';
+import type { PersonalUserUpdateInput , AccountPlan} from '../../../../generated.tsx';
 const meta: Meta<typeof SelectAccountType> = {
 	title: 'Pages/Signup/SelectAccountType',
 	component: SelectAccountType,
