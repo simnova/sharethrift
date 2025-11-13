@@ -52,6 +52,16 @@ export const accept = (dataSources: DataSources) => {
 				acceptedReservationRequest = await repo.save(
 					reservationRequestToAccept,
 				);
+
+				// Auto-reject overlapping pending requests
+				if (acceptedReservationRequest) {
+					await autoRejectOverlappingRequests(
+						acceptedReservationRequest,
+						listing.id,
+						repo,
+						dataSources,
+					);
+				}
 			},
 		);
 
@@ -59,9 +69,76 @@ export const accept = (dataSources: DataSources) => {
 			throw new Error('Reservation request not accepted');
 		}
 
-		// TODO: Auto-reject overlapping pending requests
-		// This should be implemented in a separate service or as part of the domain event handling
-
 		return acceptedReservationRequest;
 	};
 };
+
+/**
+ * Automatically reject overlapping pending reservation requests for the same listing
+ * @param acceptedRequest - The reservation request that was just accepted
+ * @param listingId - The ID of the listing
+ * @param repo - The reservation request repository
+ * @param dataSources - Data sources for querying overlapping requests
+ */
+async function autoRejectOverlappingRequests(
+	acceptedRequest: Domain.Contexts.ReservationRequest.ReservationRequest.ReservationRequestEntityReference,
+	listingId: string,
+	repo: Domain.Contexts.ReservationRequest.ReservationRequest.ReservationRequestRepository,
+	dataSources: DataSources,
+): Promise<void> {
+	try {
+		// Query all overlapping pending requests for the same listing
+		const overlappingRequests =
+			await dataSources.readonlyDataSource.ReservationRequest.ReservationRequest.ReservationRequestReadRepo.queryOverlapByListingIdAndReservationPeriod(
+				{
+					listingId,
+					reservationPeriodStart: acceptedRequest.reservationPeriodStart,
+					reservationPeriodEnd: acceptedRequest.reservationPeriodEnd,
+				},
+			);
+
+		// Filter out the accepted request and only process requests in "Requested" state
+		const requestsToReject = overlappingRequests.filter(
+			(request) =>
+				request.id !== acceptedRequest.id && request.state === 'Requested',
+		);
+
+		// Reject each overlapping request
+		for (const request of requestsToReject) {
+			try {
+				// Load the full aggregate from the write repository
+				const requestToReject = await repo.getById(request.id);
+
+				if (requestToReject && requestToReject.state === 'Requested') {
+					// Set state to "Rejected" - the domain will validate permissions
+					requestToReject.state = 'Rejected';
+					await repo.save(requestToReject);
+
+					// TODO: Trigger notification to reserver about automatic rejection
+					// This should be handled by domain events or a separate notification service
+					console.log(
+						`Auto-rejected overlapping request ${request.id} due to acceptance of request ${acceptedRequest.id}`,
+					);
+				}
+			} catch (error) {
+				// Log error but don't fail the entire operation if one rejection fails
+				console.error(
+					`Failed to auto-reject overlapping request ${request.id}:`,
+					error,
+				);
+			}
+		}
+
+		if (requestsToReject.length > 0) {
+			console.log(
+				`Auto-rejected ${requestsToReject.length} overlapping request(s) for listing ${listingId}`,
+			);
+		}
+	} catch (error) {
+		// Log error but don't fail the acceptance operation
+		console.error(
+			`Error while auto-rejecting overlapping requests for listing ${listingId}:`,
+			error,
+		);
+	}
+}
