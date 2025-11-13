@@ -29,13 +29,30 @@ type AdminRoleUserPermissions {
 }
 
 type AdminRoleConversationPermissions {
+	canViewAllConversations: Boolean
+	canEditConversations: Boolean
+	canDeleteConversations: Boolean
+	canCloseConversations: Boolean
 	canModerateConversations: Boolean
 }
 
 type AdminRoleListingPermissions {
+	canViewAllListings: Boolean
+	canManageAllListings: Boolean
+	canEditListings: Boolean
+	canDeleteListings: Boolean
+	canApproveListings: Boolean
+	canRejectListings: Boolean
+	canBlockListings: Boolean
+	canUnblockListings: Boolean
 	canModerateListings: Boolean
 }
 
 type AdminRoleReservationRequestPermissions {
+	canViewAllReservations: Boolean
+	canApproveReservations: Boolean
+	canRejectReservations: Boolean
+	canCancelReservations: Boolean
+	canEditReservations: Boolean
 	canModerateReservations: Boolean
 }

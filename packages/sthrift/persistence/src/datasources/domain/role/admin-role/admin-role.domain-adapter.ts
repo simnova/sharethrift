@@ -169,6 +169,34 @@ export class AdminRoleConversationPermissionsDomainAdapter
 		this.props = props;
 	}
 
+	get canViewAllConversations(): boolean {
+		return this.props.canViewAllConversations;
+	}
+	set canViewAllConversations(value: boolean) {
+		this.props.canViewAllConversations = value;
+	}
+
+	get canEditConversations(): boolean {
+		return this.props.canEditConversations;
+	}
+	set canEditConversations(value: boolean) {
+		this.props.canEditConversations = value;
+	}
+
+	get canDeleteConversations(): boolean {
+		return this.props.canDeleteConversations;
+	}
+	set canDeleteConversations(value: boolean) {
+		this.props.canDeleteConversations = value;
+	}
+
+	get canCloseConversations(): boolean {
+		return this.props.canCloseConversations;
+	}
+	set canCloseConversations(value: boolean) {
+		this.props.canCloseConversations = value;
+	}
+
 	get canModerateConversations(): boolean {
 		return this.props.canModerateConversations;
 	}
@@ -183,6 +211,62 @@ export class AdminRoleListingPermissionsDomainAdapter
 	public readonly props: Models.Role.AdminRoleListingPermissions;
 	constructor(props: Models.Role.AdminRoleListingPermissions) {
 		this.props = props;
+	}
+
+	get canViewAllListings(): boolean {
+		return this.props.canViewAllListings;
+	}
+	set canViewAllListings(value: boolean) {
+		this.props.canViewAllListings = value;
+	}
+
+	get canManageAllListings(): boolean {
+		return this.props.canManageAllListings;
+	}
+	set canManageAllListings(value: boolean) {
+		this.props.canManageAllListings = value;
+	}
+
+	get canEditListings(): boolean {
+		return this.props.canEditListings;
+	}
+	set canEditListings(value: boolean) {
+		this.props.canEditListings = value;
+	}
+
+	get canDeleteListings(): boolean {
+		return this.props.canDeleteListings;
+	}
+	set canDeleteListings(value: boolean) {
+		this.props.canDeleteListings = value;
+	}
+
+	get canApproveListings(): boolean {
+		return this.props.canApproveListings;
+	}
+	set canApproveListings(value: boolean) {
+		this.props.canApproveListings = value;
+	}
+
+	get canRejectListings(): boolean {
+		return this.props.canRejectListings;
+	}
+	set canRejectListings(value: boolean) {
+		this.props.canRejectListings = value;
+	}
+
+	get canBlockListings(): boolean {
+		return this.props.canBlockListings;
+	}
+	set canBlockListings(value: boolean) {
+		this.props.canBlockListings = value;
+	}
+
+	get canUnblockListings(): boolean {
+		return this.props.canUnblockListings;
+	}
+	set canUnblockListings(value: boolean) {
+		this.props.canUnblockListings = value;
 	}
 
 	get canModerateListings(): boolean {
@@ -200,6 +284,41 @@ export class AdminRoleReservationRequestPermissionsDomainAdapter
 	public readonly props: Models.Role.AdminRoleReservationRequestPermissions;
 	constructor(props: Models.Role.AdminRoleReservationRequestPermissions) {
 		this.props = props;
+	}
+
+	get canViewAllReservations(): boolean {
+		return this.props.canViewAllReservations;
+	}
+	set canViewAllReservations(value: boolean) {
+		this.props.canViewAllReservations = value;
+	}
+
+	get canApproveReservations(): boolean {
+		return this.props.canApproveReservations;
+	}
+	set canApproveReservations(value: boolean) {
+		this.props.canApproveReservations = value;
+	}
+
+	get canRejectReservations(): boolean {
+		return this.props.canRejectReservations;
+	}
+	set canRejectReservations(value: boolean) {
+		this.props.canRejectReservations = value;
+	}
+
+	get canCancelReservations(): boolean {
+		return this.props.canCancelReservations;
+	}
+	set canCancelReservations(value: boolean) {
+		this.props.canCancelReservations = value;
+	}
+
+	get canEditReservations(): boolean {
+		return this.props.canEditReservations;
+	}
+	set canEditReservations(value: boolean) {
+		this.props.canEditReservations = value;
 	}
 
 	get canModerateReservations(): boolean {

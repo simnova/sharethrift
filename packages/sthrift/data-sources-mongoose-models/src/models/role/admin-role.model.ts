@@ -23,18 +23,35 @@ export interface AdminRoleUserPermissions extends MongooseSeedwork.NestedPath {
 export interface AdminRoleConversationPermissions
 	extends MongooseSeedwork.NestedPath {
 	id?: ObjectId;
+	canViewAllConversations: boolean;
+	canEditConversations: boolean;
+	canDeleteConversations: boolean;
+	canCloseConversations: boolean;
 	canModerateConversations: boolean;
 }
 
 export interface AdminRoleListingPermissions
 	extends MongooseSeedwork.NestedPath {
 	id?: ObjectId;
+	canViewAllListings: boolean;
+	canManageAllListings: boolean;
+	canEditListings: boolean;
+	canDeleteListings: boolean;
+	canApproveListings: boolean;
+	canRejectListings: boolean;
+	canBlockListings: boolean;
+	canUnblockListings: boolean;
 	canModerateListings: boolean;
 }
 
 export interface AdminRoleReservationRequestPermissions
 	extends MongooseSeedwork.NestedPath {
 	id?: ObjectId;
+	canViewAllReservations: boolean;
+	canApproveReservations: boolean;
+	canRejectReservations: boolean;
+	canCancelReservations: boolean;
+	canEditReservations: boolean;
 	canModerateReservations: boolean;
 }
 
@@ -72,6 +89,26 @@ export const AdminRoleSchema = new Schema<
 				canDeleteContent: { type: Boolean, required: true, default: false },
 			} as SchemaDefinition<AdminRoleUserPermissions>,
 			conversationPermissions: {
+				canViewAllConversations: {
+					type: Boolean,
+					required: true,
+					default: false,
+				},
+				canEditConversations: {
+					type: Boolean,
+					required: true,
+					default: false,
+				},
+				canDeleteConversations: {
+					type: Boolean,
+					required: true,
+					default: false,
+				},
+				canCloseConversations: {
+					type: Boolean,
+					required: true,
+					default: false,
+				},
 				canModerateConversations: {
 					type: Boolean,
 					required: true,
@@ -79,9 +116,42 @@ export const AdminRoleSchema = new Schema<
 				},
 			} as SchemaDefinition<AdminRoleConversationPermissions>,
 			listingPermissions: {
+				canViewAllListings: { type: Boolean, required: true, default: false },
+				canManageAllListings: { type: Boolean, required: true, default: false },
+				canEditListings: { type: Boolean, required: true, default: false },
+				canDeleteListings: { type: Boolean, required: true, default: false },
+				canApproveListings: { type: Boolean, required: true, default: false },
+				canRejectListings: { type: Boolean, required: true, default: false },
+				canBlockListings: { type: Boolean, required: true, default: false },
+				canUnblockListings: { type: Boolean, required: true, default: false },
 				canModerateListings: { type: Boolean, required: true, default: false },
 			} as SchemaDefinition<AdminRoleListingPermissions>,
 			reservationRequestPermissions: {
+				canViewAllReservations: {
+					type: Boolean,
+					required: true,
+					default: false,
+				},
+				canApproveReservations: {
+					type: Boolean,
+					required: true,
+					default: false,
+				},
+				canRejectReservations: {
+					type: Boolean,
+					required: true,
+					default: false,
+				},
+				canCancelReservations: {
+					type: Boolean,
+					required: true,
+					default: false,
+				},
+				canEditReservations: {
+					type: Boolean,
+					required: true,
+					default: false,
+				},
 				canModerateReservations: {
 					type: Boolean,
 					required: true,
