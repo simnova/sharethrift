@@ -79,7 +79,7 @@ test.for(feature, ({ Scenario, Background, BeforeEachScenario }) => {
 			result = adapter.userType;
 		});
 		Then('it should return the correct value', () => {
-			expect(result).toBe('end-user');
+			expect(result).toBe('personal-users');
 		});
 	});
 
