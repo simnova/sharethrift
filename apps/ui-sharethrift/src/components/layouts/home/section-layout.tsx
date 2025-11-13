@@ -1,14 +1,18 @@
 import { useEffect, useState } from 'react';
 import { useAuth } from 'react-oidc-context';
 import { Outlet, useLocation, useNavigate } from 'react-router-dom';
-import { HandleLogoutMockForMockAuth } from '../../shared/handle-logout.ts';
+import { HandleLogout,
+HandleLogoutMockForMockAuth } from '../../shared/handle-logout.ts';
 import { Footer, Header, Navigation } from '@sthrift/ui-components';
 import { useCreateListingNavigation } from './components/create-listing/hooks/use-create-listing-navigation.ts';
+import { useApolloClient } from '@apollo/client/react';
 
 export const HomeTabsLayout: React.FC = () => {
 	const navigate = useNavigate();
 	const location = useLocation();
 	const auth = useAuth();
+    const apolloClient = useApolloClient();
+    const { NODE_ENV } = process.env
 
 	// Map nav keys to routes as defined in index.tsx
 	const routeMap: Record<string, string> = {
@@ -91,7 +95,11 @@ export const HomeTabsLayout: React.FC = () => {
 	const handleCreateListing = useCreateListingNavigation();
 
 	const handleLogOut = () => {
-		HandleLogoutMockForMockAuth(auth);
+		if (NODE_ENV === 'development') {
+			HandleLogoutMockForMockAuth(auth);
+			return;
+		}
+		HandleLogout(auth, apolloClient);
 	};
 
 	return (

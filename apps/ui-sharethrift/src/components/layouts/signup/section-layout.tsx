@@ -1,4 +1,4 @@
-import { Outlet, useNavigate } from 'react-router-dom';
+import { Outlet } from 'react-router-dom';
 import { Footer, Header } from '@sthrift/ui-components';
 import { useAuth } from 'react-oidc-context';
 import { HandleLogout, HandleLogoutMockForMockAuth } from '../../shared/handle-logout.ts';
@@ -10,21 +10,21 @@ interface SectionLayoutProps {}
 
 export const SectionLayout: React.FC<SectionLayoutProps> = (_props) => {
 	const auth = useAuth();
-	const navigate = useNavigate();
 	const apolloClient = useApolloClient();
+    const { NODE_ENV } = process.env
 
 	const handleOnLogin = () => {
-		navigate('/auth-redirect');
+		auth.signinRedirect();
 	};
 
 	const handleOnSignUp = () => {
-		navigate('/auth-redirect');
+		auth.signinRedirect({ extraQueryParams: { option: "signup" } })
 	};
 
 	const handleCreateListing = useCreateListingNavigation();
 
 	const handleLogOut = () => {
-		if (process.env['NODE_ENV'] === 'development') {
+		if (NODE_ENV === 'development') {
 			HandleLogoutMockForMockAuth(auth);
 			return;
 		}
