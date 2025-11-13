@@ -87,7 +87,6 @@ export class ReservationRequestReadRepositoryImpl
 	private readonly mongoDataSource: MongoDataSource<Models.ReservationRequest.ReservationRequest>;
 	private readonly converter: ReservationRequestConverter;
 	private readonly passport: Domain.Passport;
-	private readonly models: ModelsContext;
 
 	constructor(models: ModelsContext, passport: Domain.Passport) {
 		this.models = models;
