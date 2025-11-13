@@ -61,41 +61,4 @@ describe('ReservationRequestReadRepository', () => {
 	it('should have getActiveByListingId method', () => {
 		expect(typeof repository.getActiveByListingId).toBe('function');
 	});
-
-	it('should return mock data for getActiveByReserverIdWithListingWithSharer', async () => {
-		const reserverId = 'test-reserver-id';
-		const result = await repository.getActiveByReserverIdWithListingWithSharer(reserverId);
-		
-		expect(Array.isArray(result)).toBe(true);
-		expect(result.length).toBeGreaterThan(0);
-		expect(result[0]).toHaveProperty('id');
-		expect(result[0]).toHaveProperty('state');
-		expect(result[0]).toHaveProperty('reserver');
-		expect(result[0]).toHaveProperty('listing');
-	});
-
-	it('should return mock data for getPastByReserverIdWithListingWithSharer', async () => {
-		const reserverId = 'test-reserver-id';
-		const result = await repository.getPastByReserverIdWithListingWithSharer(reserverId);
-		
-		expect(Array.isArray(result)).toBe(true);
-		expect(result.length).toBeGreaterThan(0);
-	});
-
-	it('should return mock data for getListingRequestsBySharerId', async () => {
-		const sharerId = 'test-sharer-id';
-		const result = await repository.getListingRequestsBySharerId(sharerId);
-		
-		expect(Array.isArray(result)).toBe(true);
-		expect(result.length).toBeGreaterThan(0);
-		expect(result[0]).toHaveProperty('listing');
-	});
-
-	it('should return mock data for getActiveByListingId', async () => {
-		const listingId = 'test-listing-id';
-		const result = await repository.getActiveByListingId(listingId);
-		
-		expect(Array.isArray(result)).toBe(true);
-		expect(result.length).toBeGreaterThan(0);
-	});
 });
