@@ -27,6 +27,9 @@ const ConversationMutationResolver = async (
 };
 
 const conversation: Resolvers = {
+	Message: {
+		authorId: (parent) => parent.authorId.valueOf(),
+	},
 	Conversation: {
 		sharer: PopulatePersonalUserFromField('sharer'),
 		reserver: PopulatePersonalUserFromField('reserver'),
