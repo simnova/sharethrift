@@ -1,7 +1,7 @@
 import { Outlet } from 'react-router-dom';
 import { Footer, Header } from '@sthrift/ui-components';
 import { useAuth } from 'react-oidc-context';
-import { HandleLogout, HandleLogoutMockForMockAuth } from '../../shared/handle-logout.ts';
+import { HandleLogout } from '../../shared/handle-logout.ts';
 import { useApolloClient } from '@apollo/client/react';
 import { useCreateListingNavigation } from '../home/components/create-listing/hooks/use-create-listing-navigation.ts';
 
@@ -11,7 +11,6 @@ interface SectionLayoutProps {}
 export const SectionLayout: React.FC<SectionLayoutProps> = (_props) => {
 	const auth = useAuth();
 	const apolloClient = useApolloClient();
-    const { NODE_ENV } = process.env
 
 	const handleOnLogin = () => {
 		auth.signinRedirect();
@@ -24,11 +23,7 @@ export const SectionLayout: React.FC<SectionLayoutProps> = (_props) => {
 	const handleCreateListing = useCreateListingNavigation();
 
 	const handleLogOut = () => {
-		if (NODE_ENV === 'development') {
-			HandleLogoutMockForMockAuth(auth);
-			return;
-		}
-		HandleLogout(auth, apolloClient);
+        HandleLogout(auth, apolloClient, window.location.origin);
 	};
 
 	return (
