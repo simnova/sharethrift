@@ -2,7 +2,6 @@ import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { describeFeature, loadFeature } from '@amiceli/vitest-cucumber';
 import { expect } from 'vitest';
-import { ObjectId } from 'bson';
 import { Message, type MessageProps } from './message.entity.ts';
 import * as ValueObjects from './message.value-objects.ts';
 
@@ -24,7 +23,7 @@ test.for(feature, ({ Scenario, Background, BeforeEachScenario }) => {
 		twilioMessageSid = new ValueObjects.TwilioMessageSid(
 			'IM12345678901234567890123456789012',
 		);
-		authorId = new ValueObjects.AuthorId(new ObjectId().toHexString());
+		authorId = new ValueObjects.AuthorId('507f1f77bcf86cd799439011');
 		content = new ValueObjects.MessageContent('Hello, this is a test message');
 		createdAt = new Date('2020-01-01T00:00:00Z');
 		messageProps = {
@@ -93,7 +92,7 @@ test.for(feature, ({ Scenario, Background, BeforeEachScenario }) => {
 				);
 			});
 			And('an authorId ObjectId', () => {
-				newAuthorId = new ValueObjects.AuthorId(new ObjectId().toHexString());
+				newAuthorId = new ValueObjects.AuthorId('507f1f77bcf86cd799439012');
 			});
 			And('MessageContent "Hello, this is a test message"', () => {
 				newContent = new ValueObjects.MessageContent('Hello, this is a test message');
