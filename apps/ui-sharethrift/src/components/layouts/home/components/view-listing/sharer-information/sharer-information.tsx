@@ -48,8 +48,6 @@ export const SharerInformation: React.FC<SharerInformationProps> = ({
 		awaitRefetchQueries: true,
 		onCompleted: (data) => {
 			if (data.createConversation.status.success) {
-				console.log('Conversation created successfully:', data.createConversation.conversation?.id);
-                
 				navigate('/messages', {
 					state: {
 						selectedConversationId: data.createConversation.conversation?.id,
@@ -67,15 +65,8 @@ export const SharerInformation: React.FC<SharerInformationProps> = ({
 
     const handleMessageSharer = async () => {
         if (!currentUserId) {
-            console.log('No currentUserId, cannot create conversation');
             return;
         }
-        
-        console.log('Creating conversation with:', {
-            listingId,
-            sharerId: sharer.id,
-            reserverId: currentUserId,
-        });
         
         try {
             await createConversation({

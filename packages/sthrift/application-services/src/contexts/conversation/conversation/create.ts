@@ -11,7 +11,6 @@ export const create = (dataSources: DataSources) => {
 	return async (
 		command: ConversationCreateCommand,
 	): Promise<Domain.Contexts.Conversation.Conversation.ConversationEntityReference> => {
-		// Check if conversation already exists between these users for this listing
 		const existingConversation =
 			await dataSources.readonlyDataSource.Conversation.Conversation.ConversationReadRepo.getBySharerReserverListing(
 				command.sharerId,
@@ -19,11 +18,9 @@ export const create = (dataSources: DataSources) => {
 				command.listingId,
 			);
 		if (existingConversation) {
-            console.log('Conversation already exists between these users for this listing:', existingConversation);
 			return existingConversation;
 		}
 
-		// Fetch the users and listing - FIXED: Use correct IDs
 		const sharer =
 			await dataSources.readonlyDataSource.User.PersonalUser.PersonalUserReadRepo.getById(
 				command.sharerId,
@@ -49,19 +46,15 @@ export const create = (dataSources: DataSources) => {
 	if (!listing) {
 		throw new Error(`Listing not found for id ${command.listingId}`);
 	}
-	// Create messaging conversation first (Twilio/Mock)
+
 	let messagingConversationId: string;
 	try {
 		if (!dataSources.messagingDataSource) {
-			console.error('Messaging data source is undefined');
 			throw new Error('Messaging data source is not available');
 		}
 		
 		const displayName = `${sharer.account.username} & ${reserver.account.username}`;
-		// Include all three IDs to ensure uniqueness per conversation
 		const uniqueName = `conversation-${listing.id}-${sharer.id}-${reserver.id}`;
-		
-		console.log('Creating messaging conversation with:', { displayName, uniqueName });
 		
 		const messagingConversation =
 			await dataSources.messagingDataSource.Conversation.Conversation.MessagingConversationRepo.createConversation(
@@ -69,7 +62,6 @@ export const create = (dataSources: DataSources) => {
 				uniqueName,
 			);
 		
-		console.log('Messaging conversation created:', messagingConversation);
 		messagingConversationId = messagingConversation.id;
 	} catch (error) {
 		console.error('Failed to create messaging conversation - Full error:', error);
@@ -93,8 +85,7 @@ export const create = (dataSources: DataSources) => {
 	if (!conversationToReturn) {
 		throw new Error('Conversation not found');
 	}
-	// Return conversationToReturn directly - GraphQL resolvers will handle population
-    console.log('Conversation created successfully:', conversationToReturn);
+    
 	return conversationToReturn;
 	};
 };

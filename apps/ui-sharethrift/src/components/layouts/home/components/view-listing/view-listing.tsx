@@ -103,16 +103,6 @@ export const ViewListing: React.FC<ViewListingProps> = ({
 				</Col>
 				<Col span={24} style={{ marginBottom: 0, paddingBottom: 0 }}>
 					{/* Sharer Info at top, clickable to profile */}
-					{/* <a
-						href={`/account/profile`}
-						style={{
-							textDecoration: 'none',
-							color: 'inherit',
-							cursor: 'pointer',
-							display: 'block',
-						}}
-						aria-label="View sharer profile"
-					> */}
 					<SharerInformationContainer
 						sharerId={sharer?.id}
 						listingId={listing.id}
@@ -121,7 +111,6 @@ export const ViewListing: React.FC<ViewListingProps> = ({
 						sharedTimeAgo={sharedTimeAgo}
 						currentUserId={currentUserId}
 					/>
-					{/* </a> */}
 				</Col>
 				<Col span={24} style={{ marginTop: 0, paddingTop: 0 }}>
 					{/* Main content: 2 columns on desktop, stacked on mobile */}
