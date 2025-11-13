@@ -1,4 +1,4 @@
-fragment ReservationsViewHistoryContainerReservationFields on ReservationRequest {
+fragment HomeMyReservationsReservationsViewHistoryContainerReservationFields on ReservationRequest {
 	id
 	state
 	reservationPeriodStart
@@ -35,8 +35,10 @@ fragment ReservationsViewHistoryContainerReservationFields on ReservationRequest
 	closeRequestedByReserver
 }
 
-query ReservationsViewHistoryContainerPastReservations($userId: ObjectID!) {
+query HomeMyReservationsReservationsViewHistoryContainerPastReservations(
+	$userId: ObjectID!
+) {
 	myPastReservations(userId: $userId) {
-		...ReservationsViewHistoryContainerReservationFields
+		...HomeMyReservationsReservationsViewHistoryContainerReservationFields
 	}
 }

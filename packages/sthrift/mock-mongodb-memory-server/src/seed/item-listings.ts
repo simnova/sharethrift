@@ -220,10 +220,11 @@ export const itemListings = [
 		listingType: 'item-listing',
 	},
 	{
-		_id: '707f1f77bcf86cd799439037',
+		_id: '707f1f77bcf86cd799439042',
 		sharer: new ObjectId('507f1f77bcf86cd799439011'), // Alice
 		title: 'Canon EOS R5 Camera',
-		description: 'Professional mirrorless camera with 45MP full-frame sensor. Perfect for photography and videography.',
+		description:
+			'Professional mirrorless camera with 45MP full-frame sensor. Perfect for photography and videography.',
 		category: 'Electronics',
 		location: 'Springfield, IL',
 		sharingPeriodStart: new Date('2025-08-01T08:00:00Z'),
@@ -239,10 +240,11 @@ export const itemListings = [
 		listingType: 'item-listing',
 	},
 	{
-		_id: '707f1f77bcf86cd799439038',
+		_id: '707f1f77bcf86cd799439043',
 		sharer: new ObjectId('507f1f77bcf86cd799439012'), // Bob
 		title: 'Shure SM7B Microphone',
-		description: 'Professional studio microphone, perfect for podcasting, streaming, and vocal recording.',
+		description:
+			'Professional studio microphone, perfect for podcasting, streaming, and vocal recording.',
 		category: 'Electronics',
 		location: 'Springfield, IL',
 		sharingPeriodStart: new Date('2025-08-15T08:00:00Z'),
@@ -252,7 +254,9 @@ export const itemListings = [
 		updatedAt: new Date('2025-08-01T10:00:00Z'),
 		sharingHistory: [],
 		reports: 0,
-		images: ['https://traceaudio.com/cdn/shop/products/NewSM7BwithAnserModcopy_1200x1200.jpg?v=1662083374'],
+		images: [
+			'https://traceaudio.com/cdn/shop/products/NewSM7BwithAnserModcopy_1200x1200.jpg?v=1662083374',
+		],
 		schemaVersion: '1.0.0',
 		version: 1,
 		listingType: 'item-listing',
