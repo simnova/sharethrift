@@ -7,7 +7,7 @@ query ConversationBoxContainerConversation($conversationId: ObjectID!) {
 fragment ConversationBoxContainerConversationFields on Conversation {
 	id
 	schemaVersion
-	twilioConversationId
+	messagingConversationId
 	sharer {
 		... on PersonalUser {
 			id
@@ -55,7 +55,7 @@ fragment ConversationBoxContainerConversationFields on Conversation {
 	}
 	messages {
 		id
-		twilioMessageSid
+		messagingMessageId
 		authorId
 		content
 		createdAt

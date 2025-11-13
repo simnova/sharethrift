@@ -10,7 +10,7 @@ export interface ConversationProps extends DomainSeedwork.DomainEntityProps {
 	loadReserver: () => Promise<Readonly<UserEntityReference>>;
 	listing: Readonly<ItemListingEntityReference>;
 	loadListing: () => Promise<Readonly<ItemListingEntityReference>>;
-	twilioConversationId: string;
+	messagingConversationId: string;
 	messages: Readonly<MessageEntityReference[]>;
 	loadMessages: () => Promise<Readonly<MessageEntityReference[]>>;
 

@@ -148,11 +148,11 @@ export class ConversationDomainAdapter
 		this.doc.set('listing', listing.doc);
 	}
 
-	get twilioConversationId(): string {
-		return this.doc.twilioConversationId;
+	get messagingConversationId(): string {
+		return this.doc.messagingConversationId;
 	}
-	set twilioConversationId(value: string) {
-		this.doc.twilioConversationId = value;
+	set messagingConversationId(value: string) {
+		this.doc.messagingConversationId = value;
 	}
 
 	get messages(): Domain.Contexts.Conversation.Conversation.MessageEntityReference[] {

@@ -1,8 +1,4 @@
-import {
-	type Model,
-	Schema,
-	type SchemaDefinition,
-} from 'mongoose';
+import { type Model, Schema, type SchemaDefinition } from 'mongoose';
 import { MongooseSeedwork } from '@cellix/mongoose-seedwork';
 import { type User, type UserModelType, userOptions } from './user.model.ts';
 import { Patterns } from '../../patterns.ts';
@@ -113,11 +109,12 @@ export const PersonalUserAccountType: SchemaDefinition<PersonalUserAccount> = {
 		match: Patterns.EMAIL_PATTERN,
 		maxlength: 254,
 		required: true,
+		unique: true,
+		index: true,
 	},
 	username: {
 		type: String,
 		required: false,
-		unique: true,
 	},
 	profile: {
 		type: PersonalUserAccountProfileType,
@@ -153,7 +150,13 @@ const PersonalUserSchema = new Schema<
 		schemaVersion: { type: String, required: true, default: '1.0.0' },
 	},
 	userOptions,
-).index({ 'account.email': 1 }, { sparse: true, unique: true });
+).index(
+	{ 'account.username': 1 },
+	{
+		unique: true,
+		partialFilterExpression: { 'account.username': { $exists: true } },
+	}, // enforce unique only when username exists
+);
 
 export const PersonalUserModelName: string = 'personal-users'; //TODO: This should be in singular form
 

@@ -1,12 +1,13 @@
 import { ConversationList } from './conversation-list.tsx';
 import { useQuery } from '@apollo/client/react';
 import {
+    HomeConversationListContainerCurrentPersonalUserAndCreateIfNotExistsDocument,
 	HomeConversationListContainerConversationsByUserDocument,
 	type Conversation,
 } from '../../../../../generated.tsx';
 import { ComponentQueryLoader } from '@sthrift/ui-components';
 import { useEffect } from 'react';
-import { Empty } from 'antd';
+import { Empty, Result } from 'antd';
 
 interface ConversationListContainerProps {
 	onConversationSelect: (conversationId: string) => void;
@@ -16,9 +17,13 @@ interface ConversationListContainerProps {
 export const ConversationListContainer: React.FC<
 	ConversationListContainerProps
 > = (props) => {
-	// TODO: Replace with actual authenticated user ID
-	// This should come from authentication context
-	const currentUserId = '507f1f77bcf86cd799439099';
+	const {
+		data: currentPersonalUserData,
+		loading: currentPersonalUserLoading,
+		error: currentPersonalUserError,
+	} = useQuery(
+		HomeConversationListContainerCurrentPersonalUserAndCreateIfNotExistsDocument,
+	);
 
 	const {
 		data: currentUserConversationsData,
@@ -26,8 +31,10 @@ export const ConversationListContainer: React.FC<
 		error: conversationsError,
 	} = useQuery(HomeConversationListContainerConversationsByUserDocument, {
 		variables: {
-			userId: currentUserId,
+			userId:
+				currentPersonalUserData?.currentPersonalUserAndCreateIfNotExists.id,
 		},
+        skip: !currentPersonalUserData?.currentPersonalUserAndCreateIfNotExists.id,
 	});
 
 	useEffect(() => {
@@ -43,13 +50,29 @@ export const ConversationListContainer: React.FC<
 		currentUserConversationsData,
 		props.selectedConversationId,
 		props.onConversationSelect,
+        props,
 	]);
 
 	return (
 		<ComponentQueryLoader
-			loading={loadingConversations}
-			hasData={currentUserConversationsData}
-			error={conversationsError}
+			loading={loadingConversations || currentPersonalUserLoading}
+			hasData={
+				currentUserConversationsData?.conversationsByUser &&
+				currentPersonalUserData?.currentPersonalUserAndCreateIfNotExists
+			}
+			error={conversationsError || currentPersonalUserError}
+			errorComponent={
+				<Result
+					status="error"
+					title={
+						conversationsError
+							? conversationsError.message
+							: currentPersonalUserError
+								? currentPersonalUserError.message
+								: 'Unknown error'
+					}
+				/>
+			}
 			noDataComponent={
 				<Empty description="No conversations yet" style={{ marginTop: 32 }} />
 			}

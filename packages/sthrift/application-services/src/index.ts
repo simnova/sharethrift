@@ -105,7 +105,10 @@ export const buildApplicationServicesFactory = (
 		}
 
 		const dataSources =
-			infrastructureServicesRegistry.dataSourcesFactory.withPassport(passport);
+			infrastructureServicesRegistry.dataSourcesFactory.withPassport(
+				passport,
+				infrastructureServicesRegistry.messagingService,
+			);
 
 		return {
 			User: User(dataSources),

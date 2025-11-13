@@ -92,6 +92,10 @@ export const HomeTabsLayout: React.FC = () => {
 	const handleOnLogin = () => {
 		navigate('/login');
 	};
+	
+    //auth.signinRedirect();
+	//const handleOnSignUp = () => {
+	//	auth.signinRedirect({ extraQueryParams: { option: "signup" } })};
 
 	const handleOnSignUp = () => {
 		navigate('/auth-redirect-user');

@@ -1,15 +1,15 @@
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { describeFeature, loadFeature } from '@amiceli/vitest-cucumber';
+import { DomainSeedwork } from '@cellix/domain-seedwork';
 import { expect, vi } from 'vitest';
+import type { ItemListingProps } from '../../listing/item/item-listing.entity.ts';
+import { ItemListing } from '../../listing/item/item-listing.ts';
+import type { Passport } from '../../passport.ts';
+import type { PersonalUserProps } from '../../user/personal-user/personal-user.entity.ts';
+import { PersonalUser } from '../../user/personal-user/personal-user.ts';
 import type { ConversationProps } from './conversation.entity.ts';
 import { Conversation } from './conversation.ts';
-import { DomainSeedwork } from '@cellix/domain-seedwork';
-import type { Passport } from '../../passport.ts';
-import { PersonalUser } from '../../user/personal-user/personal-user.ts';
-import type { PersonalUserProps } from '../../user/personal-user/personal-user.entity.ts';
-import { ItemListing } from '../../listing/item/item-listing.ts';
-import type { ItemListingProps } from '../../listing/item/item-listing.entity.ts';
 
 const test = { for: describeFeature };
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
@@ -146,7 +146,7 @@ function makeBaseProps(
 		loadListing: async () => listing,
 		messages: [],
 		loadMessages: async () => [],
-		twilioConversationId: 'twilio-123',
+		messagingConversationId: 'twilio-123',
 		createdAt: new Date('2020-01-01T00:00:00Z'),
 		updatedAt: new Date('2020-01-02T00:00:00Z'),
 		schemaVersion: '1.0.0',
@@ -198,8 +198,8 @@ test.for(feature, ({ Scenario, Background, BeforeEachScenario }) => {
 				expect(newConversation.listing.id).toBe('listing-1');
 			},
 		);
-		Then('the conversation should have a twilioConversationId', () => {
-			expect(newConversation.twilioConversationId).toBe('twilio-123');
+		Then('the conversation should have a messagingConversationId', () => {
+			expect(newConversation.messagingConversationId).toBe('twilio-123');
 		});
 	});
 
@@ -442,9 +442,9 @@ test.for(feature, ({ Scenario, Background, BeforeEachScenario }) => {
 			conversation = new Conversation(makeBaseProps(), passport);
 		});
 		Then(
-			'the twilioConversationId property should return the correct value',
+			'the messagingConversationId property should return the correct value',
 			() => {
-				expect(conversation.twilioConversationId).toBe('twilio-123');
+				expect(conversation.messagingConversationId).toBe('twilio-123');
 			},
 		);
 		And('the createdAt property should return the correct date', () => {
@@ -462,7 +462,7 @@ test.for(feature, ({ Scenario, Background, BeforeEachScenario }) => {
 	});
 
 	Scenario(
-		'Setting the twilioConversationId with permission',
+		'Setting the messagingConversationId with permission',
 		({ Given, When, Then }) => {
 			Given(
 				'a Conversation aggregate with permission to manage conversation',
@@ -471,17 +471,17 @@ test.for(feature, ({ Scenario, Background, BeforeEachScenario }) => {
 					conversation = new Conversation(makeBaseProps(), passport);
 				},
 			);
-			When('I set the twilioConversationId to a new value', () => {
-				conversation.twilioConversationId = 'twilio-456';
+			When('I set the messagingConversationId to a new value', () => {
+				conversation.messagingConversationId = 'twilio-456';
 			});
-			Then('the twilioConversationId should be updated', () => {
-				expect(conversation.twilioConversationId).toBe('twilio-456');
+			Then('the messagingConversationId should be updated', () => {
+				expect(conversation.messagingConversationId).toBe('twilio-456');
 			});
 		},
 	);
 
 	Scenario(
-		'Setting the twilioConversationId without permission',
+		'Setting the messagingConversationId without permission',
 		({ Given, When, Then }) => {
 			let setTwilioIdWithoutPermission: () => void;
 			Given(
@@ -491,9 +491,9 @@ test.for(feature, ({ Scenario, Background, BeforeEachScenario }) => {
 					conversation = new Conversation(makeBaseProps(), passport);
 				},
 			);
-			When('I try to set the twilioConversationId to a new value', () => {
+			When('I try to set the messagingConversationId to a new value', () => {
 				setTwilioIdWithoutPermission = () => {
-					conversation.twilioConversationId = 'twilio-789';
+					conversation.messagingConversationId = 'twilio-789';
 				};
 			});
 			Then('a PermissionError should be thrown', () => {
@@ -501,7 +501,7 @@ test.for(feature, ({ Scenario, Background, BeforeEachScenario }) => {
 					DomainSeedwork.PermissionError,
 				);
 				expect(setTwilioIdWithoutPermission).throws(
-					'You do not have permission to change the twilioConversationId of this conversation',
+					'You do not have permission to change the messagingConversationId of this conversation',
 				);
 			});
 		},
