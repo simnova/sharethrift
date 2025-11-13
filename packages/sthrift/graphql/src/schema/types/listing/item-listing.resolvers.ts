@@ -124,9 +124,17 @@ const itemListingResolvers: Resolvers = {
 		removeListing: async (_parent, args, context) => {
 			// Admin-note: role-based authorization should be implemented here (security)
 			// Once implemented, use system-level permissions for admin operations
-			await context.applicationServices.Listing.ItemListing.update({
+			// For now, admin can delete without ownership check (will use SystemPassport visa)
+			// TODO: Implement proper admin authorization check here
+			// TODO: Use SystemPassport context for admin operations
+			
+			// Temporary admin deletion - bypasses ownership check
+			// This should be replaced with proper admin flow using SystemPassport
+			const adminUserId = 'system-admin'; // Placeholder until proper admin auth implemented
+			
+			await context.applicationServices.Listing.ItemListing.deleteByOwner({
 				id: args.id,
-				isDeleted: true,
+				userId: adminUserId,
 			});
 			return true;
 		},
@@ -134,7 +142,7 @@ const itemListingResolvers: Resolvers = {
 		unblockListing: async (_parent, args, context) => {
 			// Admin-note: role-based authorization should be implemented here (security)
 			// Once implemented, use system-level permissions for admin operations
-			await context.applicationServices.Listing.ItemListing.update({
+			await context.applicationServices.Listing.ItemListing.unblock({
 				id: args.id,
 				isBlocked: false,
 			});
@@ -158,23 +166,13 @@ const itemListingResolvers: Resolvers = {
 
 		deleteItemListing: async (
 			_parent: unknown,
-			args: { id: string },
+			args: { id: string},
 			context: GraphContext,
 		) => {
 			const userEmail =
 				context.applicationServices.verifiedUser?.verifiedJwt?.email;
 			if (!userEmail) {
 				throw new Error('Authentication required');
-			}
-
-			// Get the listing to verify ownership
-			const listing =
-				await context.applicationServices.Listing.ItemListing.queryById({
-					id: args.id,
-				});
-
-			if (!listing) {
-				throw new Error('Listing not found');
 			}
 
 			// Get the current user
@@ -187,32 +185,11 @@ const itemListingResolvers: Resolvers = {
 				throw new Error('User not found');
 			}
 
-			// Verify ownership
-			if (listing.sharer.id !== user.id) {
-				throw new Error('You do not have permission to delete this listing');
-			}
-
-			// Check if listing has active reservation requests
-			const activeReservations =
-				await context.applicationServices.ReservationRequest.ReservationRequest.queryActiveByListingId(
-					{
-						listingId: args.id,
-					},
-				);
-
-			if (activeReservations && activeReservations.length > 0) {
-				throw new Error(
-					'Cannot delete listing with active reservation requests. Please cancel or resolve all reservation requests first.',
-				);
-			}
-
-			// Proceed with deletion
-			await context.applicationServices.Listing.ItemListing.update({
+			// Application service handles all business logic
+			return await context.applicationServices.Listing.ItemListing.deleteByOwner({
 				id: args.id,
-				isDeleted: true,
+				userId: user.id,
 			});
-
-			return true;
 		},
 	},
 };

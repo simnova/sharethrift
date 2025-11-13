@@ -8,8 +8,9 @@ import {
 } from './query-by-sharer.ts';
 import { type ItemListingQueryAllCommand, queryAll } from './query-all.ts';
 import { type ItemListingCancelCommand, cancel } from './cancel.ts';
+import { type ItemListingDeleteCommand, deleteByOwner } from './delete.ts';
+import { type ItemListingUnblockCommand, unblock } from './unblock.ts';
 import { queryPaged } from './query-paged.ts';
-import { type ItemListingUpdateCommand, update } from './update.ts';
 
 export interface ItemListingApplicationService {
 	create: (
@@ -29,6 +30,10 @@ export interface ItemListingApplicationService {
 	cancel: (
 		command: ItemListingCancelCommand,
 	) => Promise<Domain.Contexts.Listing.ItemListing.ItemListingEntityReference>;
+	deleteByOwner: (command: ItemListingDeleteCommand) => Promise<boolean>;
+	unblock: (
+		command: ItemListingUnblockCommand,
+	) => Promise<Domain.Contexts.Listing.ItemListing.ItemListingEntityReference>;
 	queryPaged: (command: {
 		page: number;
 		pageSize: number;
@@ -42,7 +47,6 @@ export interface ItemListingApplicationService {
 		page: number;
 		pageSize: number;
 	}>;
-	update: (command: ItemListingUpdateCommand) => Promise<void>;
 }
 
 export const ItemListing = (
@@ -54,7 +58,8 @@ export const ItemListing = (
 		queryBySharer: queryBySharer(dataSources),
 		queryAll: queryAll(dataSources),
 		cancel: cancel(dataSources),
+		deleteByOwner: deleteByOwner(dataSources),
+		unblock: unblock(dataSources),
 		queryPaged: queryPaged(dataSources),
-		update: update(dataSources),
 	};
 };

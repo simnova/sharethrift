@@ -150,13 +150,4 @@ export class ItemListingRepository<
 			pageSize: options.pageSize,
 		};
 	}
-
-	/**
-	 * Hard delete a listing by ID without loading the domain aggregate.
-	 * See interface documentation for preconditions and warnings.
-	 */
-	async hardDeleteById(id: string): Promise<boolean> {
-		const result = await this.model.deleteOne({ _id: id }).exec();
-		return result.deletedCount > 0;
-	}
 }

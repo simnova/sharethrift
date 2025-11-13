@@ -30,9 +30,4 @@ export interface ItemListingRepository<props extends ItemListingProps>
 			isDraft?: boolean;
 		},
 	): Promise<ItemListing<props>>;
-
-	/**
-	 * Hard delete a listing by ID, bypassing domain aggregate loading.
-	 */
-	hardDeleteById(id: string): Promise<boolean>;
 }
