@@ -9,6 +9,7 @@ const COLUMN_SPAN = 24 / 2;
 
 interface BillingAddressFormItemsProps {
 	countries: Country[];
+  isBillingFormItem?: boolean;
 }
 
 export type ZipcodeRule = {
@@ -84,7 +85,7 @@ export const BillingAddressFormItems: FC<BillingAddressFormItemsProps> = (
 			<Row>
 				<Col span={COLUMN_SPAN * 2} xs={24}>
 					<CountryFormItem
-						fieldPath="country"
+						fieldPath="billingCountry"
 						onCountryChange={onCountryChange}
 						countries={props.countries}
 					/>
@@ -95,7 +96,7 @@ export const BillingAddressFormItems: FC<BillingAddressFormItemsProps> = (
 				<Col span={COLUMN_SPAN * 2} xs={24}>
 					<Form.Item
 						label="Billing Address"
-						name="address"
+						name="billingAddress"
 						rules={[
 							{
 								required: true,
@@ -112,7 +113,7 @@ export const BillingAddressFormItems: FC<BillingAddressFormItemsProps> = (
 				<Col span={COLUMN_SPAN} xs={24}>
 					<Form.Item
 						label="Billing City"
-						name="city"
+						name="billingCity"
 						rules={[
 							{ required: true, message: 'Please enter the billing city.' },
 							{
@@ -128,9 +129,10 @@ export const BillingAddressFormItems: FC<BillingAddressFormItemsProps> = (
 			<Row>
 				<Col span={COLUMN_SPAN} xs={24}>
 					<StateProvinceFormItem
-						fieldPath="state"
+						fieldPath="billingState"
 						countries={props.countries}
 						selectedCountry={selectedCountry}
+            isBillingFormItem={true}
 					/>
 				</Col>
 			</Row>

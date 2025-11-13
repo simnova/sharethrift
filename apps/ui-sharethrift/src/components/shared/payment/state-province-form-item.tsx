@@ -6,7 +6,13 @@ interface StateProvinceFormItemProps {
 	countries: Country[];
 	selectedCountry: string;
 	fieldPath: string | string[];
+  isBillingFormItem?: boolean;
 }
+
+const getStateProvinceLabel = (isBillingFormItem?: boolean) => {
+  return isBillingFormItem ? "Billing State / Province" : "State / Province";
+}
+
 export const StateProvinceFormItem: FC<StateProvinceFormItemProps> = (
 	props,
 ) => {
@@ -16,12 +22,12 @@ export const StateProvinceFormItem: FC<StateProvinceFormItemProps> = (
 	if (states && states.length > 0) {
 		return (
 			<Form.Item
-				label="State / Province"
+				label= {getStateProvinceLabel(props.isBillingFormItem)}
 				name={props.fieldPath}
 				rules={[{ required: true, message: 'Please enter the state.' }]}
 			>
 				<Select
-					placeholder="State / Province"
+					placeholder={getStateProvinceLabel(props.isBillingFormItem)}
 					optionFilterProp="children"
 					showSearch
 					filterOption={(input, option) =>
@@ -42,11 +48,11 @@ export const StateProvinceFormItem: FC<StateProvinceFormItemProps> = (
 	} else {
 		return (
 			<Form.Item
-				label="Billing State / Province"
+				label={getStateProvinceLabel(props.isBillingFormItem)}
 				name={props.fieldPath}
 				rules={[{ required: true, message: 'Please enter the state.' }]}
 			>
-				<Input type="text" placeholder="Billing State / Province" />
+				<Input type="text" placeholder={getStateProvinceLabel(props.isBillingFormItem)} />
 			</Form.Item>
 		);
 	}

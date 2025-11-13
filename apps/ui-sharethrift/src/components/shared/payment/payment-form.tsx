@@ -65,12 +65,12 @@ export const PaymentForm: FC<PaymentFormProps> = (props) => {
         paymentAmount: 2.99, // This is a placeholder. Replace with actual amount as needed.
         currency: "USD",
         paymentInstrument: {
-          billingAddressLine1: values.address,
+          billingAddressLine1: values.billingAddress,
           billingAddressLine2: values.billingAddressLine2,
-          billingCity: values.city,
-          billingState: values.state,
+          billingCity: values.billingCity,
+          billingState: values.billingState,
           billingPostalCode: values.billingPostalCode,
-          billingCountry: values.country,
+          billingCountry: values.billingCountry,
           billingEmail: values.billingEmail,
           billingFirstName: values.billingFirstName,
           billingLastName: values.billingLastName,
@@ -78,6 +78,16 @@ export const PaymentForm: FC<PaymentFormProps> = (props) => {
         },
       };
       props.onSubmitPayment(processPaymentDetails);
+    }).catch((error) => {
+      // Use Ant Design Form API to scroll to first error field
+      if (error?.errorFields && error.errorFields.length > 0) {
+        form.scrollToField(error.errorFields[0].name, {
+          behavior: 'smooth',
+          block: 'center',
+        });
+      }
+      console.log("Validation Failed:", error);
+      message.error("Please complete all required fields before submitting the form.");
     });
   };
 
