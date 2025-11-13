@@ -282,6 +282,9 @@ This package is designed to be used as part of the ShareThrift infrastructure se
 
 - `USE_MOCK_SEARCH=true` - Force use of mock implementation
 - `NODE_ENV=development` - Automatically use mock if no Azure credentials
+- `AZURE_SEARCH_ENDPOINT` - Azure Cognitive Search endpoint (required for production)
+- `SEARCH_API_KEY` - Azure Cognitive Search API key (optional, uses DefaultAzureCredential if not provided)
+- `LOG_LEVEL` - Set logging verbosity: `error`, `warn`, `info` (default in dev), or `debug` (defaults to `error` in production)
 
 ## Development
 

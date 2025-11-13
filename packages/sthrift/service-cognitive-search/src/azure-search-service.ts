@@ -11,6 +11,7 @@ import type {
 	SearchDocumentsResult,
 	SearchField,
 } from '@cellix/mock-cognitive-search';
+import { logger } from './logger.js';
 
 // Constants for document key field names
 const DOCUMENT_ID_FIELD = 'id';
@@ -43,10 +44,10 @@ export class AzureCognitiveSearch implements CognitiveSearchBase {
 	private credential: AzureKeyCredential | DefaultAzureCredential;
 
 	constructor() {
-		this.endpoint = process.env['SEARCH_API_ENDPOINT'] || '';
+		this.endpoint = process.env['AZURE_SEARCH_ENDPOINT'] || '';
 		if (!this.endpoint) {
 			throw new Error(
-				'SEARCH_API_ENDPOINT environment variable is required for Azure Cognitive Search',
+				'AZURE_SEARCH_ENDPOINT environment variable is required for Azure Cognitive Search',
 			);
 		}
 
@@ -54,10 +55,10 @@ export class AzureCognitiveSearch implements CognitiveSearchBase {
 		const apiKey = process.env['SEARCH_API_KEY'];
 		if (apiKey) {
 			this.credential = new AzureKeyCredential(apiKey);
-			console.log('AzureCognitiveSearch: Using API key authentication');
+			logger.info('AzureCognitiveSearch: Using API key authentication');
 		} else {
 			this.credential = new DefaultAzureCredential();
-			console.log(
+			logger.info(
 				'AzureCognitiveSearch: Using Azure credential authentication',
 			);
 		}
@@ -69,13 +70,13 @@ export class AzureCognitiveSearch implements CognitiveSearchBase {
 	 * Service lifecycle methods
 	 */
 	async startup(): Promise<void> {
-		console.log('AzureCognitiveSearch: Starting up');
+		logger.info('AzureCognitiveSearch: Starting up');
 		// Azure client doesn't need explicit startup - connection is lazy
 		await Promise.resolve();
 	}
 
 	async shutdown(): Promise<void> {
-		console.log('AzureCognitiveSearch: Shutting down');
+		logger.info('AzureCognitiveSearch: Shutting down');
 		this.searchClients.clear();
 		await Promise.resolve();
 	}
@@ -136,11 +137,11 @@ export class AzureCognitiveSearch implements CognitiveSearchBase {
 		try {
 			const azureIndex = this.convertToAzureIndex(indexDefinition);
 			await this.indexClient.createOrUpdateIndex(azureIndex as any);
-			console.log(
+			logger.info(
 				`AzureCognitiveSearch: Index ${indexDefinition.name} created or updated`,
 			);
 		} catch (error) {
-			console.error(
+			logger.error(
 				`AzureCognitiveSearch: Failed to create index ${indexDefinition.name}:`,
 				error,
 			);
@@ -159,9 +160,9 @@ export class AzureCognitiveSearch implements CognitiveSearchBase {
 		try {
 			await this.indexClient.deleteIndex(indexName);
 			this.searchClients.delete(indexName);
-			console.log(`AzureCognitiveSearch: Index ${indexName} deleted`);
+			logger.info(`AzureCognitiveSearch: Index ${indexName} deleted`);
 		} catch (error) {
-			console.error(
+			logger.error(
 				`AzureCognitiveSearch: Failed to delete index ${indexName}:`,
 				error,
 			);
@@ -189,9 +190,9 @@ export class AzureCognitiveSearch implements CognitiveSearchBase {
 		try {
 			const client = this.getSearchClient(indexName);
 			await client.mergeOrUploadDocuments([document]);
-			console.log(`AzureCognitiveSearch: Document indexed in ${indexName}`);
+			logger.debug(`AzureCognitiveSearch: Document indexed in ${indexName}`);
 		} catch (error) {
-			console.error(
+			logger.error(
 				`AzureCognitiveSearch: Failed to index document in ${indexName}:`,
 				error,
 			);
@@ -216,9 +217,9 @@ export class AzureCognitiveSearch implements CognitiveSearchBase {
 				throw new Error('Document must have an id or key field for deletion');
 			}
 			await client.deleteDocuments([{ [keyFieldName]: keyFieldValue }]);
-			console.log(`AzureCognitiveSearch: Document deleted from ${indexName}`);
+			logger.debug(`AzureCognitiveSearch: Document deleted from ${indexName}`);
 		} catch (error) {
-			console.error(
+			logger.error(
 				`AzureCognitiveSearch: Failed to delete document from ${indexName}:`,
 				error,
 			);
@@ -257,7 +258,7 @@ export class AzureCognitiveSearch implements CognitiveSearchBase {
 				facets: this.mapFacets(result.facets),
 			};
 		} catch (error) {
-			console.error(
+			logger.error(
 				`AzureCognitiveSearch: Failed to search ${indexName}:`,
 				error,
 			);

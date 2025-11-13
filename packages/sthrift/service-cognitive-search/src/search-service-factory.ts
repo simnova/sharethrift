@@ -1,6 +1,7 @@
 import { InMemoryCognitiveSearch } from '@cellix/mock-cognitive-search';
 import { AzureCognitiveSearch } from './azure-search-service.js';
 import type { CognitiveSearchService } from '@cellix/mock-cognitive-search';
+import { logger } from './logger.js';
 
 /**
  * Configuration for search service factory
@@ -25,13 +26,13 @@ export class SearchServiceFactory {
 	static detectImplementation(config: SearchServiceConfig): 'azure' | 'mock' {
 		// Force mock mode
 		if (config.useMockSearch === true) {
-			console.log('SearchServiceFactory: Using mock implementation (forced)');
+			logger.info('SearchServiceFactory: Using mock implementation (forced)');
 			return 'mock';
 		}
 
 		// Force Azure mode
 		if (config.useAzureSearch === true) {
-			console.log(
+			logger.info(
 				'SearchServiceFactory: Using Azure implementation (forced)',
 			);
 			return 'azure';
@@ -43,14 +44,14 @@ export class SearchServiceFactory {
 			config.nodeEnv === 'development' || config.nodeEnv === 'test';
 
 		if (isDevelopment && !hasAzureEndpoint) {
-			console.log(
+			logger.info(
 				'SearchServiceFactory: Using mock implementation (development mode, no Azure endpoint)',
 			);
 			return 'mock';
 		}
 
 		if (hasAzureEndpoint) {
-			console.log(
+			logger.info(
 				'SearchServiceFactory: Using Azure implementation (endpoint configured)',
 			);
 			return 'azure';
@@ -58,13 +59,13 @@ export class SearchServiceFactory {
 
 		// Default to mock in development, Azure in production
 		if (isDevelopment) {
-			console.log(
+			logger.info(
 				'SearchServiceFactory: Using mock implementation (development default)',
 			);
 			return 'mock';
 		}
 
-		console.log(
+		logger.info(
 			'SearchServiceFactory: Using Azure implementation (production default)',
 		);
 		return 'azure';
@@ -89,11 +90,11 @@ export class SearchServiceFactory {
 		try {
 			return new AzureCognitiveSearch();
 		} catch (error) {
-			console.error(
+			logger.error(
 				'SearchServiceFactory: Failed to create Azure implementation:',
 				error,
 			);
-			console.warn(
+			logger.warn(
 				'SearchServiceFactory: Falling back to mock implementation due to Azure configuration error',
 			);
 			return new InMemoryCognitiveSearch({
@@ -114,8 +115,8 @@ export class SearchServiceFactory {
 			...(process.env['NODE_ENV'] !== undefined && {
 				nodeEnv: process.env['NODE_ENV'],
 			}),
-			...(process.env['SEARCH_API_ENDPOINT'] !== undefined && {
-				searchApiEndpoint: process.env['SEARCH_API_ENDPOINT'],
+			...(process.env['AZURE_SEARCH_ENDPOINT'] !== undefined && {
+				searchApiEndpoint: process.env['AZURE_SEARCH_ENDPOINT'],
 			}),
 			enablePersistence: process.env['ENABLE_SEARCH_PERSISTENCE'] === 'true',
 			...(process.env['SEARCH_PERSISTENCE_PATH'] !== undefined && {

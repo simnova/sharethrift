@@ -7,6 +7,7 @@ import type {
 	SearchDocumentsResult,
 } from '@cellix/mock-cognitive-search';
 import { SearchServiceFactory } from './search-service-factory.js';
+import { logger } from './logger.js';
 
 /**
  * Cognitive Search Service for ShareThrift
@@ -45,8 +46,8 @@ export class ServiceCognitiveSearch
 				...(process.env['NODE_ENV'] !== undefined && {
 					nodeEnv: process.env['NODE_ENV'],
 				}),
-				...(process.env['SEARCH_API_ENDPOINT'] !== undefined && {
-					searchApiEndpoint: process.env['SEARCH_API_ENDPOINT'],
+			...(process.env['AZURE_SEARCH_ENDPOINT'] !== undefined && {
+				searchApiEndpoint: process.env['AZURE_SEARCH_ENDPOINT'],
 				}),
 				enablePersistence: process.env['ENABLE_SEARCH_PERSISTENCE'] === 'true',
 				...(process.env['SEARCH_PERSISTENCE_PATH'] !== undefined && {
@@ -61,14 +62,14 @@ export class ServiceCognitiveSearch
 	 * ServiceBase implementation
 	 */
 	async startUp(): Promise<void> {
-		console.log(
+		logger.info(
 			`ServiceCognitiveSearch: Starting up with ${this.implementationType} implementation`,
 		);
 		await this.searchService.startup();
 	}
 
 	async shutDown(): Promise<void> {
-		console.log('ServiceCognitiveSearch: Shutting down');
+		logger.info('ServiceCognitiveSearch: Shutting down');
 		await this.searchService.shutdown();
 	}
 
