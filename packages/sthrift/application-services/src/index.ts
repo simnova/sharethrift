@@ -22,11 +22,17 @@ import {
 	type ListingContextApplicationService,
 } from './contexts/listing/index.ts';
 
+import {
+	AppealRequest,
+	type AppealRequestContextApplicationService,
+} from './contexts/appeal-request/index.ts';
+
 export interface ApplicationServices {
 	User: UserContextApplicationService;
 	Conversation: ConversationContextApplicationService;
 	Listing: ListingContextApplicationService;
 	ReservationRequest: ReservationRequestContextApplicationService;
+	AppealRequest: AppealRequestContextApplicationService;
 	get verifiedUser(): VerifiedUser | null;
 	Payment: PaymentApplicationService;
 }
@@ -91,7 +97,10 @@ export const buildApplicationServicesFactory = (
 		}
 
 		const dataSources =
-			infrastructureServicesRegistry.dataSourcesFactory.withPassport(passport);
+			infrastructureServicesRegistry.dataSourcesFactory.withPassport(
+				passport,
+				infrastructureServicesRegistry.messagingService,
+			);
 
 		return {
 			User: User(dataSources),
@@ -105,6 +114,7 @@ export const buildApplicationServicesFactory = (
 				infrastructureServicesRegistry.searchService,
 			),
 			Conversation: Conversation(dataSources),
+			AppealRequest: AppealRequest(dataSources),
 		};
 	};
 
