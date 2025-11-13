@@ -20,8 +20,10 @@ fragment HomeConversationListContainerConversationFields on Conversation {
 		... on AdminUser {
 			id
 			account {
-				firstName
-				lastName
+				profile {
+					firstName
+					lastName
+				}
 			}
 		}
 	}
@@ -39,8 +41,10 @@ fragment HomeConversationListContainerConversationFields on Conversation {
 		... on AdminUser {
 			id
 			account {
-				firstName
-				lastName
+				profile {
+					firstName
+					lastName
+				}
 			}
 		}
 	}

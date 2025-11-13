@@ -24,8 +24,10 @@ fragment ReservationsViewHistoryContainerReservationFields on ReservationRequest
 			id
 			account {
 				username
-				firstName
-				lastName
+				profile {
+					firstName
+					lastName
+				}
 			}
 		}
 	}

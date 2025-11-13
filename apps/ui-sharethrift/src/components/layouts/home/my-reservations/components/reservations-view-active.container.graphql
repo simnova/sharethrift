@@ -22,8 +22,10 @@ fragment ReservationsViewActiveContainerReservationFields on ReservationRequest 
 		... on AdminUser {
 			account {
 				username
-				firstName
-				lastName
+				profile {
+					firstName
+					lastName
+				}
 			}
 		}
 	}

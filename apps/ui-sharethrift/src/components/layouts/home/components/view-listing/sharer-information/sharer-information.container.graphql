@@ -43,6 +43,17 @@ fragment SharerAdminUserFields on AdminUser {
 
 fragment SharerAdminUserAccountFields on AdminUserAccount {
 	username
+	profile {
+		...SharerAdminUserProfileFields
+	}
+}
+
+fragment SharerAdminUserProfileFields on AdminUserAccountProfile {
 	firstName
 	lastName
+	location {
+		city
+		state
+		country
+	}
 }

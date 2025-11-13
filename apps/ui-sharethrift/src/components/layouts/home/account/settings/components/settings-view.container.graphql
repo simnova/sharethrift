@@ -86,6 +86,25 @@ fragment AdminUserAccountFields on AdminUserAccount {
 	accountType
 	email
 	username
+	profile {
+		...AdminUserProfileFields
+	}
+}
+
+fragment AdminUserProfileFields on AdminUserAccountProfile {
 	firstName
 	lastName
+	aboutMe
+	location {
+		...AdminUserLocationFields
+	}
+}
+
+fragment AdminUserLocationFields on AdminUserAccountProfileLocation {
+	address1
+	address2
+	city
+	state
+	country
+	zipCode
 }

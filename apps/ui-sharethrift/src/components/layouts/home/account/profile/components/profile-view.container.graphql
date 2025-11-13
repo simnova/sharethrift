@@ -66,8 +66,18 @@ fragment AdminUserProfileViewAccountFields on AdminUserAccount {
 	accountType
 	email
 	username
+	profile {
+		...AdminUserProfileViewAccountProfileFields
+	}
+}
+
+fragment AdminUserProfileViewAccountProfileFields on AdminUserAccountProfile {
 	firstName
 	lastName
+	location {
+		city
+		state
+	}
 }
 
 fragment AdminUserRoleFields on AdminRole {
