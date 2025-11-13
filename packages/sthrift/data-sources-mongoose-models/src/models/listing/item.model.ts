@@ -4,13 +4,10 @@ import {
 	type ListingModelType,
 	listingOptions,
 } from './listing.model.ts';
-import type * as PersonalUser from '../user/personal-user.model.ts';
-import type * as AdminUser from '../user/admin-user.model.ts';
+import type * as User from '../user/user.model.ts';
 
 export interface ItemListing extends Listing {
-	sharer:
-		| PopulatedDoc<PersonalUser.PersonalUser | AdminUser.AdminUser>
-		| ObjectId;
+	sharer: PopulatedDoc<User.User> | ObjectId;
 	title: string;
 	description: string;
 	category: string;

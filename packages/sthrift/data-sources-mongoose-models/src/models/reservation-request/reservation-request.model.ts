@@ -2,8 +2,7 @@ import type { PopulatedDoc, ObjectId, Model } from 'mongoose';
 import { Schema } from 'mongoose';
 import { MongooseSeedwork } from '@cellix/mongoose-seedwork';
 import * as ItemListing from '../listing/item.model.ts';
-import type * as PersonalUser from '../user/personal-user.model.ts';
-import type * as AdminUser from '../user/admin-user.model.ts';
+import type * as User from '../user/user.model.ts';
 
 export interface ReservationRequest extends MongooseSeedwork.Base {
 	state: string;
@@ -11,9 +10,7 @@ export interface ReservationRequest extends MongooseSeedwork.Base {
 	reservationPeriodEnd: Date;
 	schemaVersion: string;
 	listing: PopulatedDoc<ItemListing.ItemListing> | ObjectId;
-	reserver:
-		| PopulatedDoc<PersonalUser.PersonalUser | AdminUser.AdminUser>
-		| ObjectId;
+	reserver: PopulatedDoc<User.User> | ObjectId;
 	closeRequestedBySharer: boolean;
 	closeRequestedByReserver: boolean;
 }
