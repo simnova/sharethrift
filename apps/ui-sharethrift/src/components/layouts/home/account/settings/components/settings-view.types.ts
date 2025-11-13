@@ -81,8 +81,19 @@ type AdminUserSettings = {
 		accountType: string;
 		email: string;
 		username: string;
-		firstName: string;
-		lastName: string;
+		profile: {
+			firstName: string;
+			lastName: string;
+			aboutMe?: string;
+			location: {
+				address1?: string;
+				address2?: string;
+				city?: string;
+				state?: string;
+				country?: string;
+				zipCode?: string;
+			};
+		};
 	};
 	role: {
 		id: string;

@@ -47,17 +47,9 @@ export const SharerInformationContainer: React.FC<
 	if (error) return <div>Error loading sharer information</div>;
 	if (!data?.userById) return null;
 
-	// Handle both PersonalUser and AdminUser
-	let firstName = '';
-	let lastName = '';
-
-	if (data.userById.__typename === 'PersonalUser') {
-		firstName = data.userById.account?.profile?.firstName ?? '';
-		lastName = data.userById.account?.profile?.lastName ?? '';
-	} else if (data.userById.__typename === 'AdminUser') {
-		firstName = data.userById.account?.firstName ?? '';
-		lastName = data.userById.account?.lastName ?? '';
-	}
+	// Both PersonalUser and AdminUser now have the same profile structure
+	const firstName = data.userById.account?.profile?.firstName ?? '';
+	const lastName = data.userById.account?.profile?.lastName ?? '';
 
 	const sharer = {
 		id: data.userById.id,

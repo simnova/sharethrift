@@ -14,15 +14,7 @@ export const ListingBanner: React.FC<ListingBannerProps> = (props) => {
   const status = "Request Submitted"; //todo
   const imageUrl = imgRectangle26; //todo
 
-  // Extract firstName based on User union type
-  let firstName = 'Unknown';
-  if (props.owner?.__typename === 'PersonalUser') {
-    firstName = props.owner.account?.profile?.firstName || 'Unknown';
-  } else if (props.owner?.__typename === 'AdminUser') {
-    firstName = props.owner.account?.firstName || 'Unknown';
-  }
-
-  return (
+	const firstName = props.owner?.account?.profile?.firstName || 'Unknown';  return (
     <Card
       bodyStyle={{ padding: 0 }}
       style={{

@@ -139,7 +139,7 @@ function SettingsViewLoader() {
 		
 		setIsSavingSection(true);
 		
-		// Admin users can only edit basic account info (firstName, lastName, username)
+		// Admin users can edit profile and location (but not billing or plan)
 		if (user.__typename === 'AdminUser') {
 			if (updateAdminLoading) {
 				setIsSavingSection(false);
@@ -153,39 +153,42 @@ function SettingsViewLoader() {
 				return;
 			}
 			
-			// Admin users can only edit profile section (firstName, lastName, username)
-			if (section !== 'profile') {
-				message.info('Admin users can only edit their profile information');
+			// Admin users cannot edit plan or billing
+			if (section === 'plan' || section === 'billing') {
+				message.info('Admin users cannot edit plan or billing information');
 				setIsSavingSection(false);
 				return;
 			}
 			
-			try {
-				const username = values['username'] ?? user.account.username;
-				const firstName = values['firstName'] ?? user.account.firstName;
-				const lastName = values['lastName'] ?? user.account.lastName;
-				
-				const result = await updateAdminUserMutation({
-					variables: {
-						input: {
-							id: user.id,
-							account: {
-								username,
-								firstName,
-								lastName,
-							},
+		try {
+			const base = user.account.profile;
+			const nextProfile = buildNextProfile(section, values, base);
+			const username =
+				section === 'profile'
+					? (values['username'] ?? user.account.username)
+					: user.account.username;
+			
+			// Remove billing field for admin users as it's not in the GraphQL schema
+			const { billing: _billing, ...adminProfile } = nextProfile;
+			
+			const result = await updateAdminUserMutation({
+				variables: {
+					input: {
+						id: user.id,
+						account: {
+							username,
+							profile: adminProfile,
 						},
 					},
-					refetchQueries: [
-						{ query: HomeAccountSettingsViewContainerCurrentUserDocument },
-					],
-				});
-				
-				if (!result.data?.adminUserUpdate) {
+				},
+				refetchQueries: [
+					{ query: HomeAccountSettingsViewContainerCurrentUserDocument },
+				],
+			});				if (!result.data?.adminUserUpdate) {
 					throw new Error('Admin user update failed');
 				}
 				
-				message.success('Profile updated successfully');
+				message.success('Updated successfully');
 			} catch (err: unknown) {
 				// eslint-disable-next-line no-console
 				console.error('[SettingsView] admin update mutation error', err);
@@ -265,45 +268,25 @@ function SettingsViewLoader() {
 
 	const user = userData.currentUser;
 
-	// Map user data based on type
-	const mappedUser: SettingsUser =
-		user.__typename === 'AdminUser'
-			? {
-					id: user.id,
-					firstName: user.account.firstName,
-					lastName: user.account.lastName,
-					username: user.account.username,
-					email: user.account.email,
-					accountType: user.account.accountType,
-					location: {
-						address1: '',
-						address2: '',
-						city: '',
-						state: '',
-						country: '',
-						zipCode: '',
-					},
-					createdAt: user.createdAt,
-				}
-			: {
-					id: user.id,
-					firstName: user.account.profile.firstName,
-					lastName: user.account.profile.lastName,
-					aboutMe: user.account.profile.aboutMe,
-					username: user.account.username,
-					email: user.account.email,
-					accountType: user.account.accountType,
-					location: {
-						address1: user.account.profile.location.address1,
-						address2: user.account.profile.location.address2,
-						city: user.account.profile.location.city,
-						state: user.account.profile.location.state,
-						country: user.account.profile.location.country,
-						zipCode: user.account.profile.location.zipCode,
-					},
-					billing: user.account.profile.billing,
-					createdAt: user.createdAt,
-				};
+	const mappedUser: SettingsUser = {
+		id: user.id,
+		firstName: user.account.profile.firstName,
+		lastName: user.account.profile.lastName,
+		aboutMe: user.account.profile.aboutMe,
+		username: user.account.username,
+		email: user.account.email,
+		accountType: user.account.accountType,
+		location: {
+			address1: user.account.profile.location.address1 ?? '',
+			address2: user.account.profile.location.address2 ?? '',
+			city: user.account.profile.location.city ?? '',
+			state: user.account.profile.location.state ?? '',
+			country: user.account.profile.location.country ?? '',
+			zipCode: user.account.profile.location.zipCode ?? '',
+		},
+		billing: user.__typename === 'PersonalUser' ? user.account.profile.billing : undefined,
+		createdAt: user.createdAt,
+	};
 
 	const errorMessage = userError ?? updateError ?? updateAdminError;
 

@@ -43,9 +43,7 @@ export class AdminUserReadRepositoryImpl implements AdminUserReadRepository {
 	private readonly passport: Domain.Passport;
 
 	constructor(models: ModelsContext, passport: Domain.Passport) {
-		this.mongoDataSource = new AdminUserDataSourceImpl(
-			models.User.AdminUser,
-		);
+		this.mongoDataSource = new AdminUserDataSourceImpl(models.User.AdminUser);
 		this.converter = new AdminUserConverter();
 		this.passport = passport;
 	}
@@ -53,10 +51,13 @@ export class AdminUserReadRepositoryImpl implements AdminUserReadRepository {
 	async getAll(
 		options?: FindOptions,
 	): Promise<Domain.Contexts.User.AdminUser.AdminUserEntityReference[]> {
-		const results = await this.mongoDataSource.find({}, {
-			...options,
-			populateFields: ['role'],
-		});
+		const results = await this.mongoDataSource.find(
+			{},
+			{
+				...options,
+				populateFields: ['role'],
+			},
+		);
 		if (!results || results.length === 0) {
 			return [];
 		}
@@ -84,8 +85,8 @@ export class AdminUserReadRepositoryImpl implements AdminUserReadRepository {
 				[
 					u.account?.email,
 					u.account?.username,
-					u.account?.firstName,
-					u.account?.lastName,
+					u.account?.profile?.firstName,
+					u.account?.profile?.lastName,
 				].some((s) => s?.toLowerCase().includes(query)),
 			);
 		}
@@ -112,12 +113,14 @@ export class AdminUserReadRepositoryImpl implements AdminUserReadRepository {
 
 			const fieldGetters: Record<
 				string,
-				(u: Domain.Contexts.User.AdminUser.AdminUserEntityReference) => string | number
+				(
+					u: Domain.Contexts.User.AdminUser.AdminUserEntityReference,
+				) => string | number
 			> = {
 				email: (u) => u.account?.email ?? '',
 				username: (u) => u.account?.username ?? '',
-				firstName: (u) => u.account?.firstName ?? '',
-				lastName: (u) => u.account?.lastName ?? '',
+				firstName: (u) => u.account?.profile?.firstName ?? '',
+				lastName: (u) => u.account?.profile?.lastName ?? '',
 				accountCreated: (u) => (u.createdAt ? +new Date(u.createdAt) : 0),
 				createdAt: (u) => (u.createdAt ? +new Date(u.createdAt) : 0),
 				status: (u) => (u.isBlocked ? 1 : 0),

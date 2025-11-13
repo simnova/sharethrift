@@ -51,46 +51,20 @@ export const ProfileViewContainer: React.FC = () => {
 		return <div>User not found</div>;
 	}
 
-	// Prepare user data based on user type
-	const isAdmin = currentUser.userIsAdmin;
-	const account = currentUser.account;
-	let profileUser;
-	if (account && isAdmin && account.__typename === 'AdminUserAccount') {
-		profileUser = {
-			id: currentUser.id,
-			firstName: account.firstName || 'Admin',
-			lastName: account.lastName || 'User',
-			username: account.username || '',
-			email: account.email || '',
-			accountType: account.accountType || 'admin',
-			location: { city: 'N/A', state: 'N/A' },
-			createdAt: currentUser.createdAt || '',
-		};
-	} else if (account && !isAdmin && account.__typename === 'PersonalUserAccount') {
-		profileUser = {
-			id: currentUser.id,
-			firstName: account.profile?.firstName || '',
-			lastName: account.profile?.lastName || '',
-			username: account.username || '',
-			email: account.email || '',
-			accountType: account.accountType || 'personal',
-			location: {
-				city: account.profile?.location?.city || '',
-				state: account.profile?.location?.state || '',
-			},
-			createdAt: currentUser.createdAt || '',
-		};
-	} else {
-		profileUser = {
-			id: currentUser.id,
-			firstName: '',
-			lastName: '',
-			username: '',
-			email: '',
-			accountType: '',
-			location: { city: '', state: '' },
-			createdAt: '',
-		};
+	// Prepare user data - both AdminUser and PersonalUser now have profile structure
+	const { account, createdAt } = currentUser;
+	const profileUser = {
+		id: currentUser.id,
+		firstName: account?.profile?.firstName || '',
+		lastName: account?.profile?.lastName || '',
+		username: account?.username || '',
+		email: account?.email || '',
+		accountType: account?.accountType || '',
+		location: {
+			city: account?.profile?.location?.city || '',
+			state: account?.profile?.location?.state || '',
+		},
+		createdAt: createdAt || '',
 	}
 
 	// Prepare listings with required fields from myListingsAll

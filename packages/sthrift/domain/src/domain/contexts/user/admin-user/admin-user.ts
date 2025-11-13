@@ -38,8 +38,8 @@ export class AdminUser<props extends AdminUserProps>
 		// Field assignments
 		newInstance.account.email = email;
 		newInstance.account.username = username;
-		newInstance.account.firstName = firstName;
-		newInstance.account.lastName = lastName;
+		newInstance.account.profile.firstName = firstName;
+		newInstance.account.profile.lastName = lastName;
 		newInstance._isNew = false;
 		return newInstance;
 	}

@@ -67,16 +67,10 @@ function ConversationItem({
 	isSelected,
 	onClick,
 }: ConversationItemProps) {
-	// Extract firstName from sharer or reserver based on User union type
+	// Extract firstName from sharer or reserver (both user types have same profile structure)
 	const getFirstName = (user: typeof conversation.sharer | typeof conversation.reserver) => {
 		if (!user) return 'Unknown';
-		if (user.__typename === 'PersonalUser') {
-			return user.account?.profile?.firstName;
-		}
-		if (user.__typename === 'AdminUser') {
-			return user.account?.firstName;
-		}
-		return 'Unknown';
+		return user.account?.profile?.firstName ?? 'Unknown';
 	};
 
 	const otherParticipant =
