@@ -42,14 +42,10 @@ export const deleteListings = (dataSources: DataSources) => {
 			// Visa grants canDeleteItemListing when user.id === listing.sharer.id
 			listing.setDeleted(true);
 
-			// Repository detects isDeleted=true and performs hard delete
-			await repo.save(listing);
-		});
+		// Repository detects isDeleted=true and performs hard delete
+		await repo.save(listing);
+	});
 
-		return true;
-	};
-	};
-
-	// Export the implementation as `deleteListings` so the application service and
-	// call sites can use a plural, descriptive API name.
-	export { deleteListings };
+	return true;
+};
+};
