@@ -45,19 +45,19 @@ const itemListingResolvers: Resolvers = {
 				sharerId = user ? user.id : sharerId;
 			}
 
-			const { page, pageSize, searchText, statusFilters, sorter } = args;
+		const { page, pageSize, searchText, statusFilters, sorter } = args;
 
-			// Use the service method that handles search-vs-database flow
-			const result = await context.applicationServices.Listing.ItemListing.queryPagedWithSearchFallback(
-				{
-					page,
-					pageSize,
-					searchText,
-					statusFilters,
-					sorter,
-					...(sharerId ? { sharerId } : {}),
-				},
-			);
+		// Use the service method that handles search-vs-database flow
+		const result = await context.applicationServices.Listing.ItemListing.queryPagedWithSearchFallback(
+			{
+				page,
+				pageSize,
+				...(searchText ? { searchText } : {}),
+				...(statusFilters ? { statusFilters: [...statusFilters] } : {}),
+				...(sorter ? { sorter: { field: sorter.field, order: sorter.order as 'ascend' | 'descend' } } : {}),
+				...(sharerId ? { sharerId } : {}),
+			},
+		);
 
 			// Convert domain entities to GraphQL format
 			const items = result.items.map((item) => {

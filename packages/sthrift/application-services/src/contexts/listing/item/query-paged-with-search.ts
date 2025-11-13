@@ -48,21 +48,19 @@ export const queryPagedWithSearchFallback = (
 						: ['updatedAt desc'],
 				};
 
-				const filter: Record<string, unknown> = {};
-				if (command.sharerId) {
-					filter['sharerId'] = [command.sharerId];
-				}
-				if (command.statusFilters) {
-					filter['state'] = command.statusFilters;
-				}
-				if (Object.keys(filter).length > 0) {
-					options['filter'] = filter;
-				}
-
-				const searchInput = {
-					searchString: searchText,
-					options,
-				};
+			const filter: Record<string, unknown> = {};
+			if (command.sharerId) {
+				// biome-ignore lint/complexity/useLiteralKeys: filter is Record<string, unknown> requiring bracket notation
+				filter['sharerId'] = [command.sharerId];
+			}
+			if (command.statusFilters) {
+				// biome-ignore lint/complexity/useLiteralKeys: filter is Record<string, unknown> requiring bracket notation
+				filter['state'] = command.statusFilters;
+			}
+			if (Object.keys(filter).length > 0) {
+				// biome-ignore lint/complexity/useLiteralKeys: options is Record<string, unknown> requiring bracket notation
+				options['filter'] = filter;
+			}
 
 				// Ensure the search index exists
 				await searchService.createIndexIfNotExists(ItemListingSearchIndexSpec);
