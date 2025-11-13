@@ -78,12 +78,12 @@ export const SectionLayout: React.FC = () => {
     return () => window.removeEventListener("resize", handleResize);
   }, [auth.isAuthenticated]);
 
-  const handleOnLogin = () => {
-    navigate("/auth-redirect");
-  };
+	const handleOnLogin = () => {
+		auth.signinRedirect();
+	};
 
 	const handleOnSignUp = () => {
-		navigate('/auth-redirect?option=signup');
+		auth.signinRedirect({ extraQueryParams: { option: "signup" } })
 	};
 
   const handleCreateListing = useCreateListingNavigation();
