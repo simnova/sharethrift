@@ -150,4 +150,5 @@ export class ItemListingRepository<
 			pageSize: options.pageSize,
 		};
 	}
+
 }
