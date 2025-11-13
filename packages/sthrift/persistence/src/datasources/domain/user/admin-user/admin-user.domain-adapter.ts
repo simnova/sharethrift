@@ -41,7 +41,9 @@ export class AdminUserDomainAdapter
 		}
 		// Check if role is actually populated (has role properties) vs just an ObjectId reference
 		if (!('roleName' in this.doc.role)) {
-			throw new TypeError('role is not populated or is not of the correct type');
+			throw new TypeError(
+				'role is not populated or is not of the correct type',
+			);
 		}
 		return new AdminRoleDomainAdapter(this.doc.role);
 	}
@@ -56,11 +58,9 @@ export class AdminUserDomainAdapter
 		return new AdminRoleDomainAdapter(this.doc.role as Models.Role.AdminRole);
 	}
 
-	set role(
-		role:
-			| Domain.Contexts.Role.AdminRole.AdminRoleEntityReference
-			| Domain.Contexts.Role.AdminRole.AdminRole<AdminRoleDomainAdapter>,
-	) {
+	set role(role:
+		| Domain.Contexts.Role.AdminRole.AdminRoleEntityReference
+		| Domain.Contexts.Role.AdminRole.AdminRole<AdminRoleDomainAdapter>,) {
 		if (role instanceof Domain.Contexts.Role.AdminRole.AdminRole) {
 			this.doc.set('role', role.props.doc);
 			return;
@@ -81,7 +81,6 @@ export class AdminUserDomainAdapter
 
 /**
  * Admin User Account Domain Adapter
- * Simpler than PersonalUser - no nested Profile/Location/Billing
  */
 export class AdminUserAccountDomainAdapter
 	implements Domain.Contexts.User.AdminUser.AdminUserAccountProps
@@ -113,6 +112,26 @@ export class AdminUserAccountDomainAdapter
 		this.props.username = value;
 	}
 
+	get profile() {
+		if (!this.props.profile) {
+			this.props.set('profile', {});
+		}
+		return new AdminUserAccountProfileDomainAdapter(this.props.profile);
+	}
+}
+
+/**
+ * Admin User Account Profile Domain Adapter
+ */
+export class AdminUserAccountProfileDomainAdapter
+	implements Domain.Contexts.User.AdminUser.AdminUserProfileProps
+{
+	private readonly props: Models.User.AdminUserAccountProfile;
+
+	constructor(props: Models.User.AdminUserAccountProfile) {
+		this.props = props;
+	}
+
 	get firstName() {
 		return this.props.firstName;
 	}
@@ -125,5 +144,76 @@ export class AdminUserAccountDomainAdapter
 	}
 	set lastName(value: string) {
 		this.props.lastName = value;
+	}
+
+	get aboutMe() {
+		return this.props.aboutMe;
+	}
+	set aboutMe(value: string) {
+		this.props.aboutMe = value;
+	}
+
+	get location() {
+		if (!this.props.location) {
+			this.props.set('location', {});
+		}
+		return new AdminUserAccountProfileLocationDomainAdapter(
+			this.props.location,
+		);
+	}
+}
+
+/**
+ * Admin User Account Profile Location Domain Adapter
+ */
+export class AdminUserAccountProfileLocationDomainAdapter
+	implements Domain.Contexts.User.AdminUser.AdminUserAccountProfileLocationProps
+{
+	private readonly props: Models.User.AdminUserAccountProfileLocation;
+
+	constructor(props: Models.User.AdminUserAccountProfileLocation) {
+		this.props = props;
+	}
+
+	get address1() {
+		return this.props.address1;
+	}
+	set address1(value: string) {
+		this.props.address1 = value;
+	}
+
+	get address2() {
+		return this.props.address2;
+	}
+	set address2(value: string | null) {
+		this.props.address2 = value;
+	}
+
+	get city() {
+		return this.props.city;
+	}
+	set city(value: string) {
+		this.props.city = value;
+	}
+
+	get state() {
+		return this.props.state;
+	}
+	set state(value: string) {
+		this.props.state = value;
+	}
+
+	get country() {
+		return this.props.country;
+	}
+	set country(value: string) {
+		this.props.country = value;
+	}
+
+	get zipCode() {
+		return this.props.zipCode;
+	}
+	set zipCode(value: string) {
+		this.props.zipCode = value;
 	}
 }

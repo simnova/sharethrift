@@ -22,8 +22,23 @@ type AdminUserAccount {
 	accountType: String
 	email: String
 	username: String
+	profile: AdminUserAccountProfile
+}
+
+type AdminUserAccountProfile {
 	firstName: String
 	lastName: String
+	aboutMe: String
+	location: AdminUserAccountProfileLocation
+}
+
+type AdminUserAccountProfileLocation {
+	address1: String
+	address2: String
+	city: String
+	state: String
+	country: String
+	zipCode: String
 }
 
 input AdminUserCreateInput {
@@ -44,8 +59,23 @@ input AdminUserUpdateInput {
 input AdminUserAccountUpdateInput {
 	accountType: String
 	username: String
+	profile: AdminUserAccountProfileUpdateInput
+}
+
+input AdminUserAccountProfileUpdateInput {
 	firstName: String
 	lastName: String
+	aboutMe: String
+	location: AdminUserAccountProfileLocationUpdateInput
+}
+
+input AdminUserAccountProfileLocationUpdateInput {
+	address1: String
+	address2: String
+	city: String
+	state: String
+	country: String
+	zipCode: String
 }
 
 extend type Query {

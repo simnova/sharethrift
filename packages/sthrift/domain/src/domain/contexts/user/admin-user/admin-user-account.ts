@@ -5,6 +5,7 @@ import type {
 	AdminUserAccountEntityReference,
 	AdminUserAccountProps,
 } from './admin-user-account.entity.ts';
+import { AdminUserProfile } from './admin-user-account-profile.ts';
 
 export class AdminUserAccount
 	extends DomainSeedwork.ValueObject<AdminUserAccountProps>
@@ -33,7 +34,7 @@ export class AdminUserAccount
 		}
 	}
 
-	// Getters
+	// Primitive Field Getters
 	get accountType() {
 		return this.props.accountType;
 	}
@@ -43,14 +44,12 @@ export class AdminUserAccount
 	get username() {
 		return this.props.username;
 	}
-	get firstName() {
-		return this.props.firstName;
-	}
-	get lastName() {
-		return this.props.lastName;
+
+	// NestedPath Field Getters
+	get profile() {
+		return new AdminUserProfile(this.props.profile, this.visa, this.root);
 	}
 
-	// Setters
 	set accountType(value: string) {
 		this.validateVisa();
 		this.props.accountType = value;
@@ -62,13 +61,5 @@ export class AdminUserAccount
 	set username(value: string) {
 		this.validateVisa();
 		this.props.username = value;
-	}
-	set firstName(value: string) {
-		this.validateVisa();
-		this.props.firstName = value;
-	}
-	set lastName(value: string) {
-		this.validateVisa();
-		this.props.lastName = value;
 	}
 }

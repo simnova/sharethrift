@@ -10,4 +10,14 @@ export type {
 	AdminUserAccountEntityReference,
 } from './admin-user-account.entity.ts';
 export { AdminUserAccount } from './admin-user-account.ts';
+export type {
+	AdminUserProfileProps,
+	AdminUserProfileEntityReference,
+} from './admin-user-account-profile.entity.ts';
+export { AdminUserProfile } from './admin-user-account-profile.ts';
+export type {
+	AdminUserAccountProfileLocationProps,
+	AdminUserAccountProfileLocationEntityReference,
+} from './admin-user-account-profile-location.entity.ts';
+export { AdminUserAccountProfileLocation } from './admin-user-account-profile-location.ts';
 export * as AdminUserValueObjects from './admin-user.value-objects.ts';

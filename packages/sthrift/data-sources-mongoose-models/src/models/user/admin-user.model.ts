@@ -11,15 +11,58 @@ import type * as AdminRole from '../role/admin-role.model.ts';
 import { Patterns } from '../../patterns.ts';
 
 /**
+ * Admin User Account Profile Location interface
+ */
+export interface AdminUserAccountProfileLocation
+	extends MongooseSeedwork.NestedPath {
+	address1: string;
+	address2: string | null;
+	city: string;
+	state: string;
+	country: string;
+	zipCode: string;
+}
+
+export const AdminUserAccountProfileLocationType: SchemaDefinition<AdminUserAccountProfileLocation> =
+	{
+		address1: { type: String, required: true },
+		address2: { type: String, required: false },
+		city: { type: String, required: true },
+		state: { type: String, required: true },
+		country: { type: String, required: true },
+		zipCode: { type: String, required: true },
+	};
+
+/**
+ * Admin User Account Profile interface
+ */
+export interface AdminUserAccountProfile extends MongooseSeedwork.NestedPath {
+	firstName: string;
+	lastName: string;
+	aboutMe: string;
+	location: AdminUserAccountProfileLocation;
+}
+
+export const AdminUserAccountProfileType: SchemaDefinition<AdminUserAccountProfile> =
+	{
+		firstName: { type: String, required: true },
+		lastName: { type: String, required: true },
+		aboutMe: { type: String, required: false },
+		location: {
+			type: AdminUserAccountProfileLocationType,
+			required: false,
+			...MongooseSeedwork.NestedPathOptions,
+		},
+	};
+
+/**
  * Admin User Account interface
- * Simpler than PersonalUser - no nested Profile/Location/Billing
  */
 export interface AdminUserAccount extends MongooseSeedwork.NestedPath {
 	accountType: string;
 	email: string;
 	username: string;
-	firstName: string;
-	lastName: string;
+	profile: AdminUserAccountProfile;
 }
 
 /**
@@ -56,8 +99,11 @@ const AdminUserAccountType: SchemaDefinition<AdminUserAccount> = {
 		unique: true,
 		trim: true,
 	},
-	firstName: { type: String, required: true, trim: true },
-	lastName: { type: String, required: true, trim: true },
+	profile: {
+		type: AdminUserAccountProfileType,
+		required: false,
+		...MongooseSeedwork.NestedPathOptions,
+	},
 };
 
 /**
