@@ -11,24 +11,26 @@ export function handleCountryChange(
 	value: string,
 	form: FormInstance,
 	setZipCodeRules: (rules: ZipcodeRule[]) => void,
+	stateFieldPath: string | string[],
 ) {
-	form.resetFields(['state']);
+	// Reset the state/province field when country changes
+	form.setFieldValue(stateFieldPath, undefined);
 	switch (value) {
 		case 'US':
 			setZipCodeRules([
-				{ required: true, message: 'Please enter the ZIP/Postal code' },
+				{ required: true, message: 'Please enter your US ZIP code' },
 				{
 					pattern: /^\d{5}(?:[-\s]\d{4})?$/,
-					message: 'Please enter a valid ZIP/Postal code',
+					message: 'US ZIP code format: 12345 or 12345-6789',
 				},
 			]);
 			break;
 		case 'CA':
 			setZipCodeRules([
-				{ required: true, message: 'Please enter the ZIP/Postal code' },
+				{ required: true, message: 'Please enter your Canadian postal code' },
 				{
 					pattern: /^[A-Za-z]\d[A-Za-z] ?\d[A-Za-z]\d$/,
-					message: 'Please enter a valid ZIP/Postal code',
+					message: 'Canadian postal code format: A1A1A1 or A1A 1A1',
 				},
 			]);
 			break;

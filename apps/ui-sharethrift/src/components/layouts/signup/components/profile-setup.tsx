@@ -42,6 +42,10 @@ export const ProfileSetup: FC<ProfileSetupProps> = (props) => {
 	const [zipCodeRules, setZipCodeRules] = useState<ZipcodeRule[]>([
 		{ required: true, message: 'Please enter the ZIP/Postal code.' },
 	]);
+	const selectedCountry = Form.useWatch(
+		['account', 'profile', 'location', 'country'],
+		form,
+	);
 
 	const handleSaveAndContinue = (values: PersonalUserUpdateInput) => {
 		console.log('Form Values:', values);
@@ -68,7 +72,7 @@ export const ProfileSetup: FC<ProfileSetupProps> = (props) => {
 	};
 
 	const onCountryChange = (value: string) => {
-		handleCountryChange(value, form, setZipCodeRules);
+		handleCountryChange(value, form, setZipCodeRules, ['account', 'profile', 'location', 'state']);
 	};
 
 	const beforeUpload = (file: File) => {
@@ -280,13 +284,12 @@ export const ProfileSetup: FC<ProfileSetupProps> = (props) => {
 						>
 							<StateProvinceFormItem
 								fieldPath={['account', 'profile', 'location', 'state']}
-								countries={props.countries}
-								selectedCountry={form.getFieldValue([
-									'account',
-									'profile',
-									'location',
-									'country',
-								])}
+								states={
+									props.countries.find(
+										(country) => country.countryCode === selectedCountry,
+									)?.states || []
+								}
+								isBillingFormItem={false}
 							/>
 						</Col>
 						<Col

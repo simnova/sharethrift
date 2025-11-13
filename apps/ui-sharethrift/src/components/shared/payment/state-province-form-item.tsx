@@ -1,10 +1,9 @@
 import type { FC } from 'react';
-import type { Country, State } from './country-type.ts';
+import type { State } from './country-type.ts';
 import { Form, Select, Input } from 'antd';
 
 interface StateProvinceFormItemProps {
-	countries: Country[];
-	selectedCountry: string;
+	states: State[];
 	fieldPath: string | string[];
   isBillingFormItem?: boolean;
 }
@@ -16,9 +15,7 @@ const getStateProvinceLabel = (isBillingFormItem?: boolean) => {
 export const StateProvinceFormItem: FC<StateProvinceFormItemProps> = (
 	props,
 ) => {
-	const states = props.countries?.find(
-		(country: Country) => country.countryCode === props.selectedCountry,
-	)?.states;
+	const { states } = props;
 	if (states && states.length > 0) {
 		return (
 			<Form.Item

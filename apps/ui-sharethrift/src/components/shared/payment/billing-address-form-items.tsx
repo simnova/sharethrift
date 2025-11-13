@@ -9,7 +9,7 @@ const COLUMN_SPAN = 24 / 2;
 
 interface BillingAddressFormItemsProps {
 	countries: Country[];
-  isBillingFormItem?: boolean;
+	isBillingFormItem?: boolean;
 }
 
 export type ZipcodeRule = {
@@ -18,6 +18,8 @@ export type ZipcodeRule = {
 	pattern?: RegExp;
 };
 
+const CountryFieldPath = 'billingCountry';
+
 export const BillingAddressFormItems: FC<BillingAddressFormItemsProps> = (
 	props,
 ) => {
@@ -25,10 +27,10 @@ export const BillingAddressFormItems: FC<BillingAddressFormItemsProps> = (
 		{ required: true, message: 'Please enter the ZIP/Postal code.' },
 	]);
 	const form = Form.useFormInstance();
-	const selectedCountry = Form.useWatch('country', form);
+	const selectedCountry = Form.useWatch(CountryFieldPath, form);
 
 	const onCountryChange = (value: string) => {
-		handleCountryChange(value, form, setZipCodeRules);
+		handleCountryChange(value, form, setZipCodeRules, 'billingState');
 	};
 
 	return (
@@ -85,7 +87,7 @@ export const BillingAddressFormItems: FC<BillingAddressFormItemsProps> = (
 			<Row>
 				<Col span={COLUMN_SPAN * 2} xs={24}>
 					<CountryFormItem
-						fieldPath="billingCountry"
+						fieldPath={CountryFieldPath}
 						onCountryChange={onCountryChange}
 						countries={props.countries}
 					/>
@@ -130,9 +132,12 @@ export const BillingAddressFormItems: FC<BillingAddressFormItemsProps> = (
 				<Col span={COLUMN_SPAN} xs={24}>
 					<StateProvinceFormItem
 						fieldPath="billingState"
-						countries={props.countries}
-						selectedCountry={selectedCountry}
-            isBillingFormItem={true}
+						states={
+							props.countries?.find(
+								(country: Country) => country.countryCode === selectedCountry,
+							)?.states || []
+						}
+						isBillingFormItem={true}
 					/>
 				</Col>
 			</Row>

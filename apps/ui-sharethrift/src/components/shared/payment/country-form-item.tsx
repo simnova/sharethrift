@@ -18,14 +18,13 @@ export const CountryFormItem: FC<CountryFormItemProps> = (props) => {
 				placeholder="Country"
 				onChange={props.onCountryChange}
 				showSearch
-				optionFilterProp="children"
-			>
-				{props.countries?.map((item: Country) => (
-					<Select.Option key={item.countryCode} value={item.countryCode}>
-						{item.countryName}
-					</Select.Option>
-				))}
-			</Select>
+        optionFilterProp='label'
+				options={props.countries.map((c) => ({
+          key: c.countryCode,
+					label: c.countryName,
+					value: c.countryCode,
+				}))}
+			/>
 		</Form.Item>
 	);
 };

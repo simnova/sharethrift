@@ -55,7 +55,12 @@ export const PaymentForm: FC<PaymentFormProps> = (props) => {
         await createToken(tokenOption);
       } catch (error) {
         console.log("Error creating token:", error);
-        message.error("An error occurred while creating the payment token.");
+        message.error("Card information is invalid.");
+        // scroll to card number field
+        form.scrollToField("cardNumber", {
+          behavior: 'smooth',
+          block: 'center',
+        });
         return;
       }
       const values = form.getFieldsValue();
