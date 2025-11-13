@@ -122,14 +122,8 @@ const itemListingResolvers: Resolvers = {
 		},
 
 		removeListing: async (_parent, args, context) => {
-			// Admin-note: role-based authorization should be implemented here (security)
-			// Once implemented, use system-level permissions for admin operations
-			// For now, admin can delete without ownership check (will use SystemPassport visa)
 			// TODO: Implement proper admin authorization check here
-			// TODO: Use SystemPassport context for admin operations
-			
-			// Temporary admin deletion - bypasses ownership check
-			// This should be replaced with proper admin flow using SystemPassport
+
 			const adminUserId = 'system-admin'; // Placeholder until proper admin auth implemented
 			
 			await context.applicationServices.Listing.ItemListing.deleteListings({
@@ -141,7 +135,6 @@ const itemListingResolvers: Resolvers = {
 
 		unblockListing: async (_parent, args, context) => {
 			// Admin-note: role-based authorization should be implemented here (security)
-			// Once implemented, use system-level permissions for admin operations
 			await context.applicationServices.Listing.ItemListing.unblock({
 				id: args.id,
 				isBlocked: false,
@@ -185,8 +178,7 @@ const itemListingResolvers: Resolvers = {
 				throw new Error('User not found');
 			}
 
-			// Application service handles all business logic
-			return await context.applicationServices.Listing.ItemListing.deleteListings({
+            return await context.applicationServices.Listing.ItemListing.deleteListings({
 				id: args.id,
 				userId: user.id,
 			});
