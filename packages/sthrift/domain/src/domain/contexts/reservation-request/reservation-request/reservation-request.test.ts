@@ -51,8 +51,11 @@ function makeUser(): PersonalUserEntityReference {
 		userType: 'personal',
 		isBlocked: false,
 		hasCompletedOnboarding: true,
+		// biome-ignore lint/suspicious/noExplicitAny: Test mock requires any for complex types
 		role: {} as any,
+		// biome-ignore lint/suspicious/noExplicitAny: Test mock requires any for complex types
 		loadRole: async () => ({} as any),
+		// biome-ignore lint/suspicious/noExplicitAny: Test mock requires any for complex types
 		account: {} as any,
 		schemaVersion: '1',
 		createdAt: new Date('2024-01-01T00:00:00Z'),
@@ -105,6 +108,7 @@ test.for(feature, ({ Background, Scenario, BeforeEachScenario }) => {
 	});
 
 	Scenario('Setting reservation period start in the past', ({ Given, When, Then }) => {
+		// biome-ignore lint/suspicious/noEmptyBlockStatements: Background already sets up the context
 		Given('a new ReservationRequest aggregate being created', () => {});
 		When('I try to set the reservationPeriodStart to a past date', () => {
 			const past = new Date(Date.now() - 86_400_000);
@@ -119,7 +123,7 @@ test.for(feature, ({ Background, Scenario, BeforeEachScenario }) => {
 			const endBefore = new Date(Date.now() + 86_400_000 * 2);
 			try { ReservationRequest.getNewInstance({ ...baseProps, reservationPeriodStart: start, reservationPeriodEnd: endBefore }, toStateEnum('REQUESTED'), listing, reserver, start, endBefore, passport); } catch (e) { error = e; }
 		});
-		Then('an error should be thrown indicating "Reservation period end date must be after the start date"', () => { expect(String((error as Error).message)).toMatch(/Reservation period end date must be after the start date/); });
+		Then('an error should be thrown indicating "Reservation start date must be before end date"', () => { expect(String((error as Error).message)).toMatch(/Reservation start date must be before end date/); });
 	});
 
 	Scenario('Setting reserver after creation', ({ Given, When, Then }) => {
