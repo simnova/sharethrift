@@ -14,6 +14,10 @@ export function toDomainConversationProps(
 
 		const messagingId = (messagingConversation.metadata?.['originalSid'] as string) || messagingConversation.id;
 		
+		// Extract Twilio conversation SID from metadata or use the messaging ID
+		const twilioSid = (messagingConversation.metadata?.['twilioSid'] as string) || messagingId;
+		const twilioConversationId = new Domain.Contexts.Conversation.Conversation.TwilioConversationSid(twilioSid);
+		
 		return {
 			id: messagingConversation.id,
 			sharer,
@@ -23,6 +27,7 @@ export function toDomainConversationProps(
 			listing,
 			loadListing: async () => listing,
 			messagingConversationId: messagingId,
+			twilioConversationId,
 			messages,
 			loadMessages: async () => messages,
 			createdAt: messagingConversation.createdAt ?? new Date(),
@@ -44,8 +49,13 @@ export function toDomainMessage(
 			messagingMessage.body,
 		);
 
+		// Extract Twilio message SID from metadata or use the messaging ID
+		const twilioSid = (messagingMessage.metadata?.['twilioSid'] as string) || messagingId;
+		const twilioMessageSid = new Domain.Contexts.Conversation.Conversation.TwilioMessageSid(twilioSid);
+
 		return new Domain.Contexts.Conversation.Conversation.Message({
 			id: messagingMessage.id,
+			twilioMessageSid,
 			messagingMessageId,
 			authorId,
 			content,

@@ -8,6 +8,7 @@ export const conversations = [
 		reserver: new ObjectId('507f1f77bcf86cd799439014'), // Duy
 		listing: new ObjectId('707f1f77bcf86cd799439031'), // Lawn Mower
 		messagingConversationId: 'CH123',
+		twilioConversationId: 'CHabcdef123456789012345678901234',
 		schemaVersion: '1.0.0',
 		version: 1,
 		discriminatorKey: 'conversation',
@@ -20,6 +21,7 @@ export const conversations = [
 		reserver: new ObjectId('507f1f77bcf86cd799439014'), // Duy
 		listing: new ObjectId('707f1f77bcf86cd799439032'), // Mountain Bike
 		messagingConversationId: 'CH124',
+		twilioConversationId: 'CHbcdefg234567890123456789012345',
 		schemaVersion: '1.0.0',
 		version: 1,
 		discriminatorKey: 'conversation',
@@ -32,6 +34,7 @@ export const conversations = [
 		reserver: new ObjectId('507f1f77bcf86cd799439014'), // Duy
 		listing: new ObjectId('707f1f77bcf86cd799439033'), // City Bike
 		messagingConversationId: 'CH125',
+		twilioConversationId: 'CHcdefgh345678901234567890123456',
 		schemaVersion: '1.0.0',
 		version: 1,
 		discriminatorKey: 'conversation',
@@ -44,6 +47,7 @@ export const conversations = [
 		reserver: new ObjectId('507f1f77bcf86cd799439013'), // Charlie
 		listing: new ObjectId('707f1f77bcf86cd799439034'), // Power Drill
 		messagingConversationId: 'CH126',
+		twilioConversationId: 'CHdefghi456789012345678901234567',
 		schemaVersion: '1.0.0',
 		version: 1,
 		discriminatorKey: 'conversation',

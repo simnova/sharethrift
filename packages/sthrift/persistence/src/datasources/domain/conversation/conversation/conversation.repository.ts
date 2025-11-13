@@ -65,6 +65,21 @@ export class ConversationRepository
 		return this.typeConverter.toDomain(mongoConversation, this.passport);
 	}
 
+	async getByTwilioSid(
+		twilioConversationId: string,
+	): Promise<Domain.Contexts.Conversation.Conversation.Conversation<PropType> | null> {
+		const mongoConversation = await this.model
+			.findOne({ twilioConversationId })
+			.populate('sharer')
+			.populate('reserver')
+			.populate('listing')
+			.exec();
+		if (!mongoConversation) {
+			return null;
+		}
+		return this.typeConverter.toDomain(mongoConversation, this.passport);
+	}
+
 	// biome-ignore lint:noRequireAwait
 	async getNewInstance(
 		sharer: Domain.Contexts.User.PersonalUser.PersonalUserEntityReference,

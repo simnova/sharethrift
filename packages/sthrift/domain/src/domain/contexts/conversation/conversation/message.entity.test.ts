@@ -16,7 +16,7 @@ test.for(feature, ({ Scenario, Background, BeforeEachScenario }) => {
 	let messageProps: MessageProps;
 	let message: Message;
 	let twilioMessageSid: ValueObjects.TwilioMessageSid;
-	let authorId: ObjectId;
+	let authorId: ValueObjects.AuthorId;
 	let content: ValueObjects.MessageContent;
 	let createdAt: Date;
 
@@ -24,12 +24,13 @@ test.for(feature, ({ Scenario, Background, BeforeEachScenario }) => {
 		twilioMessageSid = new ValueObjects.TwilioMessageSid(
 			'IM12345678901234567890123456789012',
 		);
-		authorId = new ObjectId();
+		authorId = new ValueObjects.AuthorId(new ObjectId().toHexString());
 		content = new ValueObjects.MessageContent('Hello, this is a test message');
 		createdAt = new Date('2020-01-01T00:00:00Z');
 		messageProps = {
 			id: 'message-1',
 			twilioMessageSid,
+			messagingMessageId: new ValueObjects.MessagingMessageId('msg-123'),
 			authorId,
 			content,
 			createdAt,
@@ -58,7 +59,7 @@ test.for(feature, ({ Scenario, Background, BeforeEachScenario }) => {
 			// No action needed
 		});
 		Then('it should return the ObjectId', () => {
-			expect(message.authorId).toBeInstanceOf(ObjectId);
+			expect(message.authorId).toBeInstanceOf(ValueObjects.AuthorId);
 			expect(message.authorId).toBe(authorId);
 		});
 		And('when I access the content property', () => {
@@ -81,7 +82,7 @@ test.for(feature, ({ Scenario, Background, BeforeEachScenario }) => {
 		'Creating a Message entity with valid properties',
 		({ Given, And, When, Then }) => {
 			let newTwilioMessageSid: ValueObjects.TwilioMessageSid;
-			let newAuthorId: ObjectId;
+			let newAuthorId: ValueObjects.AuthorId;
 			let newContent: ValueObjects.MessageContent;
 			let newCreatedAt: Date;
 			let newMessage: Message;
@@ -92,7 +93,7 @@ test.for(feature, ({ Scenario, Background, BeforeEachScenario }) => {
 				);
 			});
 			And('an authorId ObjectId', () => {
-				newAuthorId = new ObjectId();
+				newAuthorId = new ValueObjects.AuthorId(new ObjectId().toHexString());
 			});
 			And('MessageContent "Hello, this is a test message"', () => {
 				newContent = new ValueObjects.MessageContent('Hello, this is a test message');
@@ -104,6 +105,7 @@ test.for(feature, ({ Scenario, Background, BeforeEachScenario }) => {
 				const props: MessageProps = {
 					id: 'message-2',
 					twilioMessageSid: newTwilioMessageSid,
+					messagingMessageId: new ValueObjects.MessagingMessageId('msg-456'),
 					authorId: newAuthorId,
 					content: newContent,
 					createdAt: newCreatedAt,

@@ -13,6 +13,14 @@ export class MessagingMessageId extends VOString({
 	maxLength: 255,
 }) {}
 
+// Twilio-specific message ID value object
+export class TwilioMessageSid extends VOString({
+	trim: true,
+	minLength: 34,
+	maxLength: 34,
+	pattern: /^IM[a-zA-Z0-9]{32}$/,
+}) {}
+
 // Message content value object
 export class MessageContent extends VOString({
 	trim: true,

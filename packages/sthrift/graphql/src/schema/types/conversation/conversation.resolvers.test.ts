@@ -43,6 +43,7 @@ function createMockConversation(
 		loadReserver: async () => ({ id: 'user-2' } as Domain.Contexts.User.PersonalUser.PersonalUserEntityReference),
 		listing: { id: 'listing-1' } as Domain.Contexts.Listing.ItemListing.ItemListingEntityReference,
 		loadListing: async () => ({ id: 'listing-1' } as Domain.Contexts.Listing.ItemListing.ItemListingEntityReference),
+		messagingConversationId: 'messaging-conv-123',
 		messages: [],
 		loadMessages: async () => [],
 		twilioConversationId: 'twilio-123',

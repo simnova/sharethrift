@@ -114,6 +114,13 @@ export class ConversationDomainAdapter
 		this.doc.messagingConversationId = value;
 	}
 
+	get twilioConversationId(): Domain.Contexts.Conversation.Conversation.TwilioConversationSid {
+		return new Domain.Contexts.Conversation.Conversation.TwilioConversationSid(this.doc.twilioConversationId);
+	}
+	set twilioConversationId(value: Domain.Contexts.Conversation.Conversation.TwilioConversationSid) {
+		this.doc.twilioConversationId = value.valueOf();
+	}
+
 	get messages(): Domain.Contexts.Conversation.Conversation.MessageEntityReference[] {
 		// For now, return empty array since messages are not stored as subdocuments
 		// TODO: Implement proper message loading from separate collection
