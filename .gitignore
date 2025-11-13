@@ -16,7 +16,3 @@ __*
 **/generated.tsx
 **/graphql.schema.json
 apps/ui-sharethrift/tsconfig.tsbuildinfo
-
-# ignore service-twilio build outputs
-/packages/sthrift/service-twilio/dist/
-/packages/sthrift/service-twilio/node_modules/
