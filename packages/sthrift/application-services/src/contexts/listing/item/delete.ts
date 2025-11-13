@@ -5,7 +5,7 @@ export interface ItemListingDeleteCommand {
 	userId: string;
 }
 
-export const deleteByOwner = (dataSources: DataSources) => {
+export const deleteListings = (dataSources: DataSources) => {
 	return async (command: ItemListingDeleteCommand): Promise<boolean> => {
 		const uow =
 			dataSources.domainDataSource.Listing.ItemListing.ItemListingUnitOfWork;
@@ -48,4 +48,8 @@ export const deleteByOwner = (dataSources: DataSources) => {
 
 		return true;
 	};
-};
+	};
+
+	// Export the implementation as `deleteListings` so the application service and
+	// call sites can use a plural, descriptive API name.
+	export { deleteListings };

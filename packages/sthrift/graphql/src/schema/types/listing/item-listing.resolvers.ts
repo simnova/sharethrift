@@ -132,7 +132,7 @@ const itemListingResolvers: Resolvers = {
 			// This should be replaced with proper admin flow using SystemPassport
 			const adminUserId = 'system-admin'; // Placeholder until proper admin auth implemented
 			
-			await context.applicationServices.Listing.ItemListing.deleteByOwner({
+			await context.applicationServices.Listing.ItemListing.deleteListings({
 				id: args.id,
 				userId: adminUserId,
 			});
@@ -186,7 +186,7 @@ const itemListingResolvers: Resolvers = {
 			}
 
 			// Application service handles all business logic
-			return await context.applicationServices.Listing.ItemListing.deleteByOwner({
+			return await context.applicationServices.Listing.ItemListing.deleteListings({
 				id: args.id,
 				userId: user.id,
 			});

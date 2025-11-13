@@ -8,7 +8,7 @@ import {
 } from './query-by-sharer.ts';
 import { type ItemListingQueryAllCommand, queryAll } from './query-all.ts';
 import { type ItemListingCancelCommand, cancel } from './cancel.ts';
-import { type ItemListingDeleteCommand, deleteByOwner } from './delete.ts';
+import { type ItemListingDeleteCommand, deleteListings } from './delete.ts';
 import { type ItemListingUnblockCommand, unblock } from './unblock.ts';
 import { queryPaged } from './query-paged.ts';
 
@@ -30,7 +30,7 @@ export interface ItemListingApplicationService {
 	cancel: (
 		command: ItemListingCancelCommand,
 	) => Promise<Domain.Contexts.Listing.ItemListing.ItemListingEntityReference>;
-	deleteByOwner: (command: ItemListingDeleteCommand) => Promise<boolean>;
+	deleteListings: (command: ItemListingDeleteCommand) => Promise<boolean>;
 	unblock: (
 		command: ItemListingUnblockCommand,
 	) => Promise<Domain.Contexts.Listing.ItemListing.ItemListingEntityReference>;
@@ -58,7 +58,7 @@ export const ItemListing = (
 		queryBySharer: queryBySharer(dataSources),
 		queryAll: queryAll(dataSources),
 		cancel: cancel(dataSources),
-		deleteByOwner: deleteByOwner(dataSources),
+	deleteListings: deleteListings(dataSources),
 		unblock: unblock(dataSources),
 		queryPaged: queryPaged(dataSources),
 	};
