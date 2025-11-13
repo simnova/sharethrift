@@ -19,6 +19,7 @@ export const create = (dataSources: DataSources) => {
 				command.listingId,
 			);
 		if (existingConversation) {
+            console.log('Conversation already exists between these users for this listing:', existingConversation);
 			return existingConversation;
 		}
 
@@ -57,7 +58,8 @@ export const create = (dataSources: DataSources) => {
 		}
 		
 		const displayName = `${sharer.account.username} & ${reserver.account.username}`;
-		const uniqueName = `conversation-${listing.id}`;
+		// Include all three IDs to ensure uniqueness per conversation
+		const uniqueName = `conversation-${listing.id}-${sharer.id}-${reserver.id}`;
 		
 		console.log('Creating messaging conversation with:', { displayName, uniqueName });
 		
@@ -71,10 +73,6 @@ export const create = (dataSources: DataSources) => {
 		messagingConversationId = messagingConversation.id;
 	} catch (error) {
 		console.error('Failed to create messaging conversation - Full error:', error);
-		if (error instanceof Error) {
-			console.error('Error message:', error.message);
-			console.error('Error stack:', error.stack);
-		}
 		throw new Error(`Failed to create messaging conversation: ${error instanceof Error ? error.message : String(error)}`);
 	}
 
@@ -96,6 +94,7 @@ export const create = (dataSources: DataSources) => {
 		throw new Error('Conversation not found');
 	}
 	// Return conversationToReturn directly - GraphQL resolvers will handle population
+    console.log('Conversation created successfully:', conversationToReturn);
 	return conversationToReturn;
 	};
 };

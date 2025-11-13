@@ -118,7 +118,7 @@ export const itemListings = [
 	},
 	{
 		_id: '707f1f77bcf86cd799439037',
-		sharer: new ObjectId('507f1f77bcf86cd799439012'), // Bob - Different from logged-in user (Duy)
+		sharer: new ObjectId('507f1f77bcf86cd799439012'), // Bob
 		title: 'Camping Tent - 4 Person',
 		description: 'Spacious 4-person camping tent with waterproof design. Perfect for weekend adventures and family camping trips.',
 		category: 'Outdoor & Recreation',
@@ -137,7 +137,7 @@ export const itemListings = [
 	},
 	{
 		_id: '707f1f77bcf86cd799439038',
-		sharer: new ObjectId('507f1f77bcf86cd799439013'), // Charlie - Another different sharer
+		sharer: new ObjectId('507f1f77bcf86cd799439013'), // Charlie
 		title: 'Professional Camera Kit',
 		description: 'Canon DSLR camera with multiple lenses and accessories. Great for photography enthusiasts and events.',
 		category: 'Electronics',

@@ -171,12 +171,4 @@ export class Conversation<props extends ConversationProps>
 	get schemaVersion(): string {
 		return this.props.schemaVersion;
 	}
-
-	/**
-	 * Mark this conversation as deleted. This is typically used when cascading deletes
-	 * from a listing deletion.
-	 */
-	public setDeleted(deleted: boolean): void {
-		super.isDeleted = deleted;
-	}
 }

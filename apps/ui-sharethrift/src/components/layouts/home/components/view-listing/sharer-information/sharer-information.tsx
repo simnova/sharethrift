@@ -3,7 +3,7 @@ import { useEffect, useState } from 'react';
 import { MessageOutlined } from '@ant-design/icons';
 import { useMutation } from '@apollo/client/react';
 import { useNavigate } from 'react-router-dom';
-import { CreateConversationDocument } from '../../../../../../generated.tsx';
+import { CreateConversationDocument, HomeConversationListContainerConversationsByUserDocument } from '../../../../../../generated.tsx';
 import type {
 	CreateConversationMutation,
 	CreateConversationMutationVariables,
@@ -39,13 +39,22 @@ export const SharerInformation: React.FC<SharerInformationProps> = ({
 		CreateConversationMutation,
 		CreateConversationMutationVariables
 	>(CreateConversationDocument, {
-			onCompleted: (data) => {
+		refetchQueries: [
+			{
+				query: HomeConversationListContainerConversationsByUserDocument,
+				variables: { userId: currentUserId },
+			}
+		],
+		awaitRefetchQueries: true,
+		onCompleted: (data) => {
 			if (data.createConversation.status.success) {
-				console.log('Conversation created successfully');
+				console.log('Conversation created successfully:', data.createConversation.conversation?.id);
+                
 				navigate('/messages', {
 					state: {
 						selectedConversationId: data.createConversation.conversation?.id,
 					},
+					replace: false,
 				});
 			} else {
 				console.log('Failed to create conversation:', data.createConversation.status.errorMessage);
