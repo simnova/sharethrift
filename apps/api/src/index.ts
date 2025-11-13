@@ -8,6 +8,7 @@ import {
 	buildApplicationServicesFactory,
 } from '@sthrift/application-services';
 import { RegisterEventHandlers } from '@sthrift/event-handler';
+import { Domain } from '@sthrift/domain';
 
 import { ServiceMongoose } from '@sthrift/service-mongoose';
 import * as MongooseConfig from './service-config/mongoose/index.ts';
@@ -30,7 +31,6 @@ const isDevelopment = NODE_ENV === 'development';
 
 Cellix.initializeInfrastructureServices<ApiContextSpec, ApplicationServices>(
 	(serviceRegistry) => {
-		
 		serviceRegistry
 			.registerInfrastructureService(
 				new ServiceMongoose(
@@ -43,7 +43,9 @@ Cellix.initializeInfrastructureServices<ApiContextSpec, ApplicationServices>(
 				new ServiceTokenValidation(TokenValidationConfig.portalTokens),
 			)
 			.registerInfrastructureService(
-				isDevelopment ? new ServiceMessagingMock() : new ServiceMessagingTwilio(),
+				isDevelopment
+					? new ServiceMessagingMock()
+					: new ServiceMessagingTwilio(),
 			)
 			.registerInfrastructureService(new ServiceCybersource());
 	},
@@ -56,11 +58,19 @@ Cellix.initializeInfrastructureServices<ApiContextSpec, ApplicationServices>(
 		);
 
 		const messagingService = isDevelopment
-			? serviceRegistry.getInfrastructureService<MessagingService>(ServiceMessagingMock)
-			: serviceRegistry.getInfrastructureService<MessagingService>(ServiceMessagingTwilio);
+			? serviceRegistry.getInfrastructureService<MessagingService>(
+					ServiceMessagingMock,
+				)
+			: serviceRegistry.getInfrastructureService<MessagingService>(
+					ServiceMessagingTwilio,
+				);
 
-		const { domainDataSource } = dataSourcesFactory.withSystemPassport();
-		RegisterEventHandlers(domainDataSource);
+		const systemPassport = Domain.PassportFactory.forSystem();
+		const dataSources = dataSourcesFactory.withPassport(
+			systemPassport,
+			messagingService,
+		);
+		RegisterEventHandlers(dataSources);
 
 		return {
 			dataSourcesFactory,
