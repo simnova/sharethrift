@@ -20,8 +20,12 @@ __*
 dist/
 *.tsbuildinfo
 
-# Test results
-*.json
+# Test results (be specific to avoid ignoring config files)
+**/coverage/**/*.json
+**/test-results/**/*.json
+vitest-results.json
+junit.json
+test-report.json
 
 # Temporary test files
 test-*.js

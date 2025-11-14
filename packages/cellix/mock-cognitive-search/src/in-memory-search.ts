@@ -74,8 +74,14 @@ class InMemoryCognitiveSearch
 
 		console.log('InMemoryCognitiveSearch: Starting up...');
 
-		// TODO: Add optional file persistence here if needed
-		// For now, we'll keep everything in memory
+		/**
+		 * Note: File persistence is intentionally not implemented as the in-memory
+		 * store is sufficient for development and testing environments.
+		 * Production deployments use Azure Cognitive Search which provides its own
+		 * persistence. If persistence becomes necessary for development workflows,
+		 * it can be added by implementing a DocumentStore persistence layer that
+		 * serializes/deserializes the document store to disk.
+		 */
 
 		this.isInitialized = true;
 		console.log('InMemoryCognitiveSearch: Started successfully');

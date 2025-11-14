@@ -144,6 +144,10 @@ stages:
           echo "PW_CACHE_HIT=${PW_CACHE_HIT:-unset}"
           echo "Installing Playwright browsers into: $(PLAYWRIGHT_BROWSERS_PATH)"
           mkdir -p "$(PLAYWRIGHT_BROWSERS_PATH)"
+          # Use 'pnpm dlx playwright@latest' instead of 'pnpm exec playwright' to ensure
+          # Playwright binaries are available even when the workspace installation is incomplete.
+          # 'pnpm dlx' downloads the tool on-demand, avoiding "command not found" errors in CI
+          # that can occur when workspace bins are not yet properly linked during cache restoration.
           pnpm dlx playwright@latest install --with-deps
       env:
         PLAYWRIGHT_BROWSERS_PATH: $(PLAYWRIGHT_BROWSERS_PATH)
@@ -162,12 +166,14 @@ stages:
           if [ ! -d "$(PLAYWRIGHT_BROWSERS_PATH)" ] || [ -z "$(ls -A "$(PLAYWRIGHT_BROWSERS_PATH)" 2>/dev/null || echo '')" ]; then
             echo "Browsers not found in cache, installing them..."
             mkdir -p "$(PLAYWRIGHT_BROWSERS_PATH)"
+            # Using 'pnpm dlx' for the same reason as above (see line 147)
             pnpm dlx playwright@latest install --with-deps
           fi
 
           # Explicitly ensure chromium headless shell is available (used by Vitest browser provider)
           if ! find "$(PLAYWRIGHT_BROWSERS_PATH)" -maxdepth 2 -type d -name 'chromium_headless_shell-*' | grep -q chromium_headless_shell; then
             echo "chromium_headless_shell not found; reinstalling browsers to fetch it..."
+            # Using 'pnpm dlx' for the same reason as above (see line 147)
             pnpm dlx playwright@latest install --with-deps
           fi
 
