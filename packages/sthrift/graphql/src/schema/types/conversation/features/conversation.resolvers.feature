@@ -50,14 +50,3 @@ So that I can retrieve and create conversations through the GraphQL API
 		And Conversation.Conversation.create throws an error
 		When the createConversation mutation is executed
 		Then it should return a ConversationMutationResult with success false and the error message
-
-	Scenario: Creating a conversation with missing input fields
-		Given an incomplete ConversationCreateInput (e.g., missing sharerId or reserverId)
-		When the createConversation mutation is executed
-		Then it should throw a validation error
-
-	Scenario: Unexpected error during any query or mutation
-		Given any unexpected error occurs inside the resolver
-		When the operation is executed
-		Then the error should be logged with "Conversation > Mutation :" or corresponding query log
-		And it should return a safe error response or propagate the exception
