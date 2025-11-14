@@ -8,6 +8,19 @@ import type { Domain } from '@sthrift/domain';
 import { ConversationReadRepositoryImpl } from './conversation.read-repository.ts';
 import { MongooseSeedwork } from '@cellix/mongoose-seedwork';
 
+// Helper to create a valid 24-character hex string from a simple ID
+function createValidObjectId(id: string): string {
+	// Convert string to a hex representation and pad to 24 characters
+	const hexChars = '0123456789abcdef';
+	let hex = '';
+	for (let i = 0; i < id.length && hex.length < 24; i++) {
+		const charCode = id.charCodeAt(i);
+		hex += hexChars[charCode % 16];
+	}
+	// Pad with zeros if needed
+	return hex.padEnd(24, '0').substring(0, 24);
+}
+
 const test = { for: describeFeature };
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const feature = await loadFeature(
@@ -36,7 +49,7 @@ function makePassport(): Domain.Passport {
 
 function makeMockUser(id: string): Models.User.PersonalUser {
 	return {
-		_id: new MongooseSeedwork.ObjectId(),
+		_id: new MongooseSeedwork.ObjectId(createValidObjectId(id)),
 		id: id,
 		userType: 'end-user',
 		isBlocked: false,
@@ -74,7 +87,7 @@ function makeMockUser(id: string): Models.User.PersonalUser {
 
 function makeMockListing(id: string): Models.Listing.ItemListing {
 	return {
-		_id: new MongooseSeedwork.ObjectId(),
+		_id: new MongooseSeedwork.ObjectId(createValidObjectId(id)),
 		id: id,
 		title: 'Test Listing',
 		description: 'Test Description',
@@ -84,9 +97,10 @@ function makeMockListing(id: string): Models.Listing.ItemListing {
 function makeMockConversation(
 	overrides: Partial<Models.Conversation.Conversation> = {},
 ): Models.Conversation.Conversation {
+	const conversationId = overrides.id || 'conv-1';
 	const defaultConv = {
-		_id: new MongooseSeedwork.ObjectId(),
-		id: new MongooseSeedwork.ObjectId(),
+		_id: new MongooseSeedwork.ObjectId(createValidObjectId(conversationId as string)),
+		id: conversationId,
 		sharer: makeMockUser('user-1'),
 		reserver: makeMockUser('user-2'),
 		listing: makeMockListing('listing-1'),
@@ -112,25 +126,30 @@ test.for(feature, ({ Scenario, Background, BeforeEachScenario }) => {
 		passport = makePassport();
 		mockConversations = [makeMockConversation()];
 
+		// Create mock query that supports chaining and is thenable
+		const createMockQuery = (result: unknown) => {
+			const mockQuery = {
+				lean: vi.fn(),
+				populate: vi.fn(),
+				exec: vi.fn().mockResolvedValue(result),
+				catch: vi.fn((onReject) => Promise.resolve(result).catch(onReject)),
+			};
+			// Configure methods to return the query object for chaining
+			mockQuery.lean.mockReturnValue(mockQuery);
+			mockQuery.populate.mockReturnValue(mockQuery);
+			
+			// Make the query thenable (like Mongoose queries are) by adding then as property
+			Object.defineProperty(mockQuery, 'then', {
+				value: vi.fn((onResolve) => Promise.resolve(result).then(onResolve)),
+				enumerable: false,
+			});
+			return mockQuery;
+		};
+
 		mockModel = {
-			find: vi.fn(() => ({
-				populate: vi.fn(() => ({
-					populate: vi.fn(() => ({
-						populate: vi.fn(() => ({
-							lean: vi.fn(async () => mockConversations),
-						})),
-					})),
-				})),
-			})),
-			findById: vi.fn(() => ({
-				populate: vi.fn(() => ({
-					populate: vi.fn(() => ({
-						populate: vi.fn(() => ({
-							lean: vi.fn(async () => mockConversations[0]),
-						})),
-					})),
-				})),
-			})),
+			find: vi.fn(() => createMockQuery(mockConversations)),
+			findById: vi.fn(() => createMockQuery(mockConversations[0])),
+			findOne: vi.fn(() => createMockQuery(mockConversations[0] || null)),
 		} as unknown as Models.Conversation.ConversationModelType;
 
 		const modelsContext = {
@@ -181,7 +200,9 @@ test.for(feature, ({ Scenario, Background, BeforeEachScenario }) => {
 			mockConversations = [makeMockConversation()];
 		});
 		When('I call getById with "conv-1"', async () => {
-			result = await repository.getById('conv-1');
+			// Use the same ObjectId format as the mock conversation
+			const validObjectId = createValidObjectId('conv-1');
+			result = await repository.getById(validObjectId);
 		});
 		Then('I should receive a Conversation entity', () => {
 			expect(result).toBeDefined();
@@ -224,7 +245,7 @@ test.for(feature, ({ Scenario, Background, BeforeEachScenario }) => {
 				];
 			});
 			When('I call getByUser with "user-1"', async () => {
-				result = await repository.getByUser('user-1');
+				result = await repository.getByUser(createValidObjectId('user-1'));
 			});
 			Then('I should receive an array of Conversation entities', () => {
 				expect(Array.isArray(result)).toBe(true);
@@ -248,7 +269,7 @@ test.for(feature, ({ Scenario, Background, BeforeEachScenario }) => {
 				];
 			});
 			When('I call getByUser with "user-2"', async () => {
-				result = await repository.getByUser('user-2');
+				result = await repository.getByUser(createValidObjectId('user-2'));
 			});
 			Then('I should receive an array of Conversation entities', () => {
 				expect(Array.isArray(result)).toBe(true);
@@ -275,7 +296,7 @@ test.for(feature, ({ Scenario, Background, BeforeEachScenario }) => {
 					})),
 				})) as unknown as typeof mockModel.find;
 
-				result = await repository.getByUser('user-without-conversations');
+				result = await repository.getByUser(createValidObjectId('user-without-conversations'));
 			});
 			Then('I should receive an empty array', () => {
 				expect(Array.isArray(result)).toBe(true);

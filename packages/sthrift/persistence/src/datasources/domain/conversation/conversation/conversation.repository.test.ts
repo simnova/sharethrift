@@ -47,9 +47,23 @@ function makeSession(): mongoose.ClientSession {
 	return vi.mocked({} as mongoose.ClientSession);
 }
 
+// Helper to create a valid 24-character hex string from a simple ID
+function createValidObjectId(id: string): string {
+	// Convert string to a hex representation and pad to 24 characters
+	const hexChars = '0123456789abcdef';
+	let hex = '';
+	for (let i = 0; i < id.length && hex.length < 24; i++) {
+		const charCode = id.charCodeAt(i);
+		hex += hexChars[charCode % 16];
+	}
+	// Pad with zeros if needed
+	return hex.padEnd(24, '0').substring(0, 24);
+}
+
 function makeUserDoc(id: string): Models.User.PersonalUser {
+	const validId = createValidObjectId(id);
 	return {
-		_id: new MongooseSeedwork.ObjectId(id),
+		_id: new MongooseSeedwork.ObjectId(validId),
 		id: id,
 		userType: 'end-user',
 		isBlocked: false,
@@ -84,8 +98,9 @@ function makeUserDoc(id: string): Models.User.PersonalUser {
 }
 
 function makeListingDoc(id: string): Models.Listing.ItemListing {
+	const validId = createValidObjectId(id);
 	return {
-		_id: new MongooseSeedwork.ObjectId(id),
+		_id: new MongooseSeedwork.ObjectId(validId),
 		id: id,
 		title: 'Test Listing',
 		description: 'Test Description',
@@ -96,6 +111,16 @@ function makeListingDoc(id: string): Models.Listing.ItemListing {
 		sharingPeriodEnd: new Date(),
 		sharer: makeUserDoc('user-1'),
 	} as unknown as Models.Listing.ItemListing;
+}
+
+// Create chainable query mock that supports multiple populate calls
+function createChainableQuery(result: unknown) {
+	const query = {
+		populate: vi.fn(),
+		exec: vi.fn().mockResolvedValue(result),
+	};
+	query.populate.mockReturnValue(query);
+	return query;
 }
 
 test.for(feature, ({ Scenario, Background, BeforeEachScenario }) => {
@@ -117,7 +142,7 @@ test.for(feature, ({ Scenario, Background, BeforeEachScenario }) => {
 		const listingDoc = makeListingDoc('listing-1');
 
 		mockDoc = {
-			_id: new MongooseSeedwork.ObjectId('conv-1'),
+			_id: new MongooseSeedwork.ObjectId(createValidObjectId('conv-1')),
 			id: 'conv-1',
 			sharer: sharerDoc,
 			reserver: reserverDoc,
@@ -129,24 +154,8 @@ test.for(feature, ({ Scenario, Background, BeforeEachScenario }) => {
 		} as unknown as Models.Conversation.Conversation;
 
 		mockModel = {
-			findById: vi.fn(() => ({
-				populate: vi.fn(() => ({
-					populate: vi.fn(() => ({
-						populate: vi.fn(() => ({
-							exec: vi.fn(async () => mockDoc),
-						})),
-					})),
-				})),
-			})),
-			findOne: vi.fn(() => ({
-				populate: vi.fn(() => ({
-					populate: vi.fn(() => ({
-						populate: vi.fn(() => ({
-							exec: vi.fn(async () => mockDoc),
-						})),
-					})),
-				})),
-			})),
+			findById: vi.fn(() => createChainableQuery(mockDoc)),
+			findOne: vi.fn(() => createChainableQuery(mockDoc)),
 		} as unknown as Models.Conversation.ConversationModelType;
 
 		repository = new ConversationRepository(
@@ -216,15 +225,7 @@ test.for(feature, ({ Scenario, Background, BeforeEachScenario }) => {
 		'Getting a conversation by nonexistent ID',
 		({ When, Then }) => {
 			When('I call getByIdWithReferences with "nonexistent-id"', async () => {
-				mockModel.findById = vi.fn(() => ({
-					populate: vi.fn(() => ({
-						populate: vi.fn(() => ({
-							populate: vi.fn(() => ({
-								exec: vi.fn(async () => null),
-							})),
-						})),
-					})),
-				})) as unknown as typeof mockModel.findById;
+				mockModel.findById = vi.fn(() => createChainableQuery(null)) as unknown as typeof mockModel.findById;
 
 				try {
 					result = await repository.getByIdWithReferences('nonexistent-id');
@@ -278,15 +279,7 @@ test.for(feature, ({ Scenario, Background, BeforeEachScenario }) => {
 		'Getting a conversation by nonexistent messaging ID',
 		({ When, Then }) => {
 			When('I call getByMessagingId with "nonexistent-twilio-id"', async () => {
-				mockModel.findOne = vi.fn(() => ({
-					populate: vi.fn(() => ({
-						populate: vi.fn(() => ({
-							populate: vi.fn(() => ({
-								exec: vi.fn(async () => null),
-							})),
-						})),
-					})),
-				})) as unknown as typeof mockModel.findOne;
+				mockModel.findOne = vi.fn(() => createChainableQuery(null)) as unknown as typeof mockModel.findOne;
 
 				result = await repository.getByMessagingId('nonexistent-twilio-id');
 			});
@@ -309,8 +302,8 @@ test.for(feature, ({ Scenario, Background, BeforeEachScenario }) => {
 				'I call getByIdWithSharerReserver with sharer "user-1" and reserver "user-2"',
 				async () => {
 					result = await repository.getByIdWithSharerReserver(
-						'user-1',
-						'user-2',
+						createValidObjectId('user-1'),
+						createValidObjectId('user-2'),
 					);
 				},
 			);
@@ -342,17 +335,11 @@ test.for(feature, ({ Scenario, Background, BeforeEachScenario }) => {
 			When(
 				'I call getByIdWithSharerReserver with sharer "nonexistent-1" and reserver "nonexistent-2"',
 				async () => {
-					mockModel.findOne = vi.fn(() => ({
-						populate: vi.fn(() => ({
-							populate: vi.fn(() => ({
-								exec: vi.fn(async () => null),
-							})),
-						})),
-					})) as unknown as typeof mockModel.findOne;
+					mockModel.findOne = vi.fn(() => createChainableQuery(null)) as unknown as typeof mockModel.findOne;
 
 					result = await repository.getByIdWithSharerReserver(
-						'nonexistent-1',
-						'nonexistent-2',
+						createValidObjectId('nonexistent-1'),
+						createValidObjectId('nonexistent-2'),
 					);
 				},
 			);
@@ -387,8 +374,26 @@ test.for(feature, ({ Scenario, Background, BeforeEachScenario }) => {
 			When(
 				'I call getNewInstance with the sharer, reserver, and listing',
 				async () => {
-					// Mock the model constructor
-					mockModel = vi.fn() as unknown as Models.Conversation.ConversationModelType;
+					// Mock the model constructor to return a document with required properties
+					// Create a proper mock that allows property assignment
+					const mockNewDoc = {
+						id: { toString: () => 'new-conversation-id' },
+						messagingConversationId: '',
+						createdAt: new Date(),
+						updatedAt: new Date(),
+						schemaVersion: '1.0.0',
+						set: vi.fn(),
+					};
+					
+					// Allow dynamic property assignment (like a real Mongoose document)
+					Object.defineProperty(mockNewDoc, 'messagingConversationId', {
+						writable: true,
+						configurable: true,
+						enumerable: true,
+						value: ''
+					});
+					
+					mockModel = vi.fn(() => mockNewDoc) as unknown as Models.Conversation.ConversationModelType;
 					repository = new ConversationRepository(
 						passport,
 						mockModel,

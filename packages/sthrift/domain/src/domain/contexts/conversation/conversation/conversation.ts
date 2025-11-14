@@ -32,16 +32,23 @@ export class Conversation<props extends ConversationProps>
 		messages: MessageEntityReference[],
 		passport: Passport,
 	): Conversation<props> {
-		const instance = new Conversation(
-			{
-				...newProps,
-				sharer,
-				reserver,
-				listing,
-                messages,
-			} as props,
-			passport,
-		);
+		// Create a props object that has access to both the adapter's methods and the new properties
+		const combinedProps = {
+			...newProps, // Copy all properties from the adapter
+			sharer,
+			reserver,
+			listing,
+			messages,
+			// Explicitly copy the messagingConversationId value from the adapter
+			messagingConversationId: newProps.messagingConversationId,
+			// Copy methods from the adapter that we need
+			loadSharer: newProps.loadSharer?.bind(newProps),
+			loadReserver: newProps.loadReserver?.bind(newProps), 
+			loadListing: newProps.loadListing?.bind(newProps),
+			loadMessages: newProps.loadMessages?.bind(newProps),
+		} as props;
+		
+		const instance = new Conversation(combinedProps, passport);
 		instance.markAsNew();
 		instance.isNew = false;
 		return instance;
