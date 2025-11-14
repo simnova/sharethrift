@@ -4,7 +4,7 @@ import type { ServiceBase } from '@cellix/api-services-spec';
 
 import cybersource from 'cybersource-rest-client';
 
-import { randomUUID } from 'crypto';
+import { randomUUID } from 'node:crypto'
 
 import type {
 	PaymentService,
