@@ -1,4 +1,10 @@
-import type { PaymentService } from '@cellix/payment-service';
+import type {
+	PaymentService,
+	PlanCreation,
+	SubscriptionResponse,
+	PlanResponse,
+	Subscription,
+} from '@cellix/payment-service';
 
 export interface PaymentApplicationService {
 	processPayment(
@@ -75,91 +81,6 @@ export interface RefundPaymentResponse {
 			currency?: string;
 		};
 	};
-}
-
-export interface Subscription {
-	subscriptionInformation: {
-		planId: string;
-		name: string;
-		startDate: string;
-	};
-	paymentInformation: {
-		customer: {
-			id: string;
-		};
-	};
-}
-
-export interface SubscriptionResponse {
-	_links: {
-		self: {
-			href: string;
-			method?: string;
-		};
-		update: {
-			href: string;
-			method?: string;
-		};
-		cancel: {
-			href: string;
-			method?: string;
-		};
-	};
-	id: string;
-	submitTimeUtc: string;
-	status: string;
-	subscriptionInformation: {
-		code?: string;
-		status: string;
-	};
-}
-
-export interface PlanResponse {
-	_links: {
-		self: {
-			href: string;
-			method?: string;
-		};
-		update: {
-			href: string;
-			method?: string;
-		};
-		deactivate: {
-			href: string;
-			method?: string;
-		};
-	};
-	id: string;
-	submitTimeUtc: string;
-	planInformation?: {
-		code?: string;
-		status?: string;
-		name?: string;
-		description?: string;
-		billingPeriod?: {
-			length?: number;
-			unit?: string;
-		};
-		billingCycles?: {
-			total?: number;
-		};
-	};
-	orderInformation?: {
-		amountDetails?: {
-			currency?: string;
-			billingAmount?: string;
-		};
-	};
-}
-
-export interface PlanCreation {
-	name: string;
-	description: string;
-	periodLength: number;
-	periodUnit: 'day' | 'week' | 'month' | 'year';
-	billingCycles: number;
-	amount: number;
-	currency: string;
 }
 
 export class DefaultPaymentApplicationService

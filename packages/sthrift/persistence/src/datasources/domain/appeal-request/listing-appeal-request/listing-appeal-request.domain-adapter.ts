@@ -28,9 +28,7 @@ export class ListingAppealRequestDomainAdapter
 			throw new Error('user is not populated');
 		}
 		if (this.doc.user instanceof MongooseSeedwork.ObjectId) {
-			return {
-				id: this.doc.user.toString(),
-			} as Domain.Contexts.User.PersonalUser.PersonalUserEntityReference;
+			throw new Error('user is not populated');
 		}
 		const adapter = new PersonalUserDomainAdapter(
 			this.doc.user as Models.User.PersonalUser,
