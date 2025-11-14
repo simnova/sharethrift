@@ -18,13 +18,15 @@
 	"scripts": {
 		"build": "tsc --build",
 		"lint": "biome lint .",
-		"test": "echo 'No tests yet'"
+		"test": "vitest run"
 	},
 	"devDependencies": {
 		"@biomejs/biome": "2.0.0",
 		"typescript": "^5.0.0",
 		"@cellix/typescript-config": "workspace:*",
-		"@types/node": "^24.7.2"
+		"@cellix/vitest-config": "workspace:*",
+		"@types/node": "^24.7.2",
+		"vitest": "^3.2.4"
 	},
 	"dependencies": {
 		"@cellix/api-services-spec": "workspace:*",

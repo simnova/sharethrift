@@ -56,7 +56,7 @@ export class ServiceTransactionalEmailMock implements TransactionalEmailService 
 
 		try {
 			// Sanitize the recipient email for use in filename
-			const sanitizedEmail = message.to.replace(/[@/\\:*?"<>|]/g, '_');
+			const sanitizedEmail = message.to.replace(/[@/\\:*?"<>|+]/g, '_');
 			const timestamp = Date.now();
 			const fileName = `${sanitizedEmail}_${timestamp}.html`;
 			const filePath = path.join(this.outputDir, fileName);
