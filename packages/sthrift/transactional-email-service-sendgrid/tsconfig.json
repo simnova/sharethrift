@@ -1,0 +1,18 @@
+{
+	"extends": "@cellix/typescript-config/base.json",
+	"compilerOptions": {
+		"outDir": "dist",
+		"rootDir": "."
+	},
+	"include": [
+		"src/**/*"
+	],
+	"references": [
+		{
+			"path": "../../cellix/api-services-spec"
+		},
+		{
+			"path": "../../cellix/transactional-email-service"
+		}
+	]
+}
