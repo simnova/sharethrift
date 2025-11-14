@@ -1,5 +1,89 @@
 import type { Country } from './../../../shared/payment/country-type.ts';
 
+// Extracted US states
+const US_STATES = [
+	{ stateCode: 'AL', stateName: 'Alabama' },
+	{ stateCode: 'AK', stateName: 'Alaska' },
+	{ stateCode: 'AS', stateName: 'American Samoa' },
+	{ stateCode: 'AZ', stateName: 'Arizona' },
+	{ stateCode: 'AR', stateName: 'Arkansas' },
+	{ stateCode: 'AA', stateName: 'Armed Forces Americas' },
+	{ stateCode: 'AE', stateName: 'Armed Forces Europe' },
+	{ stateCode: 'AP', stateName: 'Armed Forces Pacific' },
+	{ stateCode: 'CA', stateName: 'California' },
+	{ stateCode: 'CO', stateName: 'Colorado' },
+	{ stateCode: 'CT', stateName: 'Connecticut' },
+	{ stateCode: 'DE', stateName: 'Delaware' },
+	{ stateCode: 'DC', stateName: 'District of Columbia' },
+	{ stateCode: 'FM', stateName: 'Federated Micronesia' },
+	{ stateCode: 'FL', stateName: 'Florida' },
+	{ stateCode: 'GA', stateName: 'Georgia' },
+	{ stateCode: 'GU', stateName: 'Guam' },
+	{ stateCode: 'HI', stateName: 'Hawaii' },
+	{ stateCode: 'ID', stateName: 'Idaho' },
+	{ stateCode: 'IL', stateName: 'Illinois' },
+	{ stateCode: 'IN', stateName: 'Indiana' },
+	{ stateCode: 'IA', stateName: 'Iowa' },
+	{ stateCode: 'KS', stateName: 'Kansas' },
+	{ stateCode: 'KY', stateName: 'Kentucky' },
+	{ stateCode: 'LA', stateName: 'Louisiana' },
+	{ stateCode: 'ME', stateName: 'Maine' },
+	{ stateCode: 'MH', stateName: 'Marshall Islands' },
+	{ stateCode: 'MD', stateName: 'Maryland' },
+	{ stateCode: 'MA', stateName: 'Massachusetts' },
+	{ stateCode: 'MI', stateName: 'Michigan' },
+	{ stateCode: 'MN', stateName: 'Minnesota' },
+	{ stateCode: 'MS', stateName: 'Mississippi' },
+	{ stateCode: 'MO', stateName: 'Missouri' },
+	{ stateCode: 'MT', stateName: 'Montana' },
+	{ stateCode: 'NE', stateName: 'Nebraska' },
+	{ stateCode: 'NV', stateName: 'Nevada' },
+	{ stateCode: 'NH', stateName: 'New Hampshire' },
+	{ stateCode: 'NJ', stateName: 'New Jersey' },
+	{ stateCode: 'NM', stateName: 'New Mexico' },
+	{ stateCode: 'NY', stateName: 'New York' },
+	{ stateCode: 'NC', stateName: 'North Carolina' },
+	{ stateCode: 'ND', stateName: 'North Dakota' },
+	{ stateCode: 'MP', stateName: 'Northern Mariana Islands' },
+	{ stateCode: 'OH', stateName: 'Ohio' },
+	{ stateCode: 'OK', stateName: 'Oklahoma' },
+	{ stateCode: 'OR', stateName: 'Oregon' },
+	{ stateCode: 'PW', stateName: 'Palau' },
+	{ stateCode: 'PA', stateName: 'Pennsylvania' },
+	{ stateCode: 'PR', stateName: 'Puerto Rico' },
+	{ stateCode: 'RI', stateName: 'Rhode Island' },
+	{ stateCode: 'SC', stateName: 'South Carolina' },
+	{ stateCode: 'SD', stateName: 'South Dakota' },
+	{ stateCode: 'TN', stateName: 'Tennessee' },
+	{ stateCode: 'TX', stateName: 'Texas' },
+	{ stateCode: 'UM', stateName: 'United States Minor Outlying Islands' },
+	{ stateCode: 'VI', stateName: 'US Virgin Islands' },
+	{ stateCode: 'UT', stateName: 'Utah' },
+	{ stateCode: 'VT', stateName: 'Vermont' },
+	{ stateCode: 'VA', stateName: 'Virginia' },
+	{ stateCode: 'WA', stateName: 'Washington' },
+	{ stateCode: 'WV', stateName: 'West Virginia' },
+	{ stateCode: 'WI', stateName: 'Wisconsin' },
+	{ stateCode: 'WY', stateName: 'Wyoming' },
+];
+
+// Extracted Canada provinces/territories
+const CA_STATES = [
+	{ stateCode: 'AB', stateName: 'Alberta' },
+	{ stateCode: 'BC', stateName: 'British Columbia' },
+	{ stateCode: 'MB', stateName: 'Manitoba' },
+	{ stateCode: 'NB', stateName: 'New Brunswick' },
+	{ stateCode: 'NL', stateName: 'Newfoundland and Labrador' },
+	{ stateCode: 'NT', stateName: 'Northwest Territories' },
+	{ stateCode: 'NS', stateName: 'Nova Scotia' },
+	{ stateCode: 'NU', stateName: 'Nunavut' },
+	{ stateCode: 'ON', stateName: 'Ontario' },
+	{ stateCode: 'PE', stateName: 'Prince Edward Island' },
+	{ stateCode: 'QC', stateName: 'Quebec' },
+	{ stateCode: 'SK', stateName: 'Saskatchewan' },
+	{ stateCode: 'YT', stateName: 'Yukon Territories' },
+];
+
 export const countriesMockData: Country[] = [
 	{
 		countryCode: 'AF',
@@ -196,64 +280,11 @@ export const countriesMockData: Country[] = [
 		countryName: 'Cameroon',
 		states: null,
 	},
-	{
-		countryCode: 'CA',
-		countryName: 'Canada',
-		states: [
-			{
-				stateCode: 'AB',
-				stateName: 'Alberta',
-			},
-			{
-				stateCode: 'BC',
-				stateName: 'British Columbia',
-			},
-			{
-				stateCode: 'MB',
-				stateName: 'Manitoba',
-			},
-			{
-				stateCode: 'NB',
-				stateName: 'New Brunswick',
-			},
-			{
-				stateCode: 'NL',
-				stateName: 'Newfoundland and Labrador',
-			},
-			{
-				stateCode: 'NT',
-				stateName: 'Northwest Territories',
-			},
-			{
-				stateCode: 'NS',
-				stateName: 'Nova Scotia',
-			},
-			{
-				stateCode: 'NU',
-				stateName: 'Nunavut',
-			},
-			{
-				stateCode: 'ON',
-				stateName: 'Ontario',
-			},
-			{
-				stateCode: 'PE',
-				stateName: 'Prince Edward Island',
-			},
-			{
-				stateCode: 'QC',
-				stateName: 'Quebec',
-			},
-			{
-				stateCode: 'SK',
-				stateName: 'Saskatchewan',
-			},
-			{
-				stateCode: 'YT',
-				stateName: 'Yukon Territories',
-			},
-		],
-	},
+  {
+    countryCode: 'CA',
+    countryName: 'Canada',
+    states: CA_STATES,
+  },
 	{
 		countryCode: 'IC',
 		countryName: 'Canary Islands',
@@ -1229,264 +1260,11 @@ export const countriesMockData: Country[] = [
 		countryName: 'United Kingdom',
 		states: null,
 	},
-	{
-		countryCode: 'US',
-		countryName: 'United States',
-		states: [
-			{
-				stateCode: 'AL',
-				stateName: 'Alabama',
-			},
-			{
-				stateCode: 'AK',
-				stateName: 'Alaska',
-			},
-			{
-				stateCode: 'AS',
-				stateName: 'American Samoa',
-			},
-			{
-				stateCode: 'AZ',
-				stateName: 'Arizona',
-			},
-			{
-				stateCode: 'AR',
-				stateName: 'Arkansas',
-			},
-			{
-				stateCode: 'AA',
-				stateName: 'Armed Forces Americas',
-			},
-			{
-				stateCode: 'AE',
-				stateName: 'Armed Forces Europe',
-			},
-			{
-				stateCode: 'AP',
-				stateName: 'Armed Forces Pacific',
-			},
-			{
-				stateCode: 'CA',
-				stateName: 'California',
-			},
-			{
-				stateCode: 'CO',
-				stateName: 'Colorado',
-			},
-			{
-				stateCode: 'CT',
-				stateName: 'Connecticut',
-			},
-			{
-				stateCode: 'DE',
-				stateName: 'Delaware',
-			},
-			{
-				stateCode: 'DC',
-				stateName: 'District of Columbia',
-			},
-			{
-				stateCode: 'FM',
-				stateName: 'Federated Micronesia',
-			},
-			{
-				stateCode: 'FL',
-				stateName: 'Florida',
-			},
-			{
-				stateCode: 'GA',
-				stateName: 'Georgia',
-			},
-			{
-				stateCode: 'GU',
-				stateName: 'Guam',
-			},
-			{
-				stateCode: 'HI',
-				stateName: 'Hawaii',
-			},
-			{
-				stateCode: 'ID',
-				stateName: 'Idaho',
-			},
-			{
-				stateCode: 'IL',
-				stateName: 'Illinois',
-			},
-			{
-				stateCode: 'IN',
-				stateName: 'Indiana',
-			},
-			{
-				stateCode: 'IA',
-				stateName: 'Iowa',
-			},
-			{
-				stateCode: 'KS',
-				stateName: 'Kansas',
-			},
-			{
-				stateCode: 'KY',
-				stateName: 'Kentucky',
-			},
-			{
-				stateCode: 'LA',
-				stateName: 'Louisiana',
-			},
-			{
-				stateCode: 'ME',
-				stateName: 'Maine',
-			},
-			{
-				stateCode: 'MH',
-				stateName: 'Marshall Islands',
-			},
-			{
-				stateCode: 'MD',
-				stateName: 'Maryland',
-			},
-			{
-				stateCode: 'MA',
-				stateName: 'Massachusetts',
-			},
-			{
-				stateCode: 'MI',
-				stateName: 'Michigan',
-			},
-			{
-				stateCode: 'MN',
-				stateName: 'Minnesota',
-			},
-			{
-				stateCode: 'MS',
-				stateName: 'Mississippi',
-			},
-			{
-				stateCode: 'MO',
-				stateName: 'Missouri',
-			},
-			{
-				stateCode: 'MT',
-				stateName: 'Montana',
-			},
-			{
-				stateCode: 'NE',
-				stateName: 'Nebraska',
-			},
-			{
-				stateCode: 'NV',
-				stateName: 'Nevada',
-			},
-			{
-				stateCode: 'NH',
-				stateName: 'New Hampshire',
-			},
-			{
-				stateCode: 'NJ',
-				stateName: 'New Jersey',
-			},
-			{
-				stateCode: 'NM',
-				stateName: 'New Mexico',
-			},
-			{
-				stateCode: 'NY',
-				stateName: 'New York',
-			},
-			{
-				stateCode: 'NC',
-				stateName: 'North Carolina',
-			},
-			{
-				stateCode: 'ND',
-				stateName: 'North Dakota',
-			},
-			{
-				stateCode: 'MP',
-				stateName: 'Northern Mariana Islands',
-			},
-			{
-				stateCode: 'OH',
-				stateName: 'Ohio',
-			},
-			{
-				stateCode: 'OK',
-				stateName: 'Oklahoma',
-			},
-			{
-				stateCode: 'OR',
-				stateName: 'Oregon',
-			},
-			{
-				stateCode: 'PW',
-				stateName: 'Palau',
-			},
-			{
-				stateCode: 'PA',
-				stateName: 'Pennsylvania',
-			},
-			{
-				stateCode: 'PR',
-				stateName: 'Puerto Rico',
-			},
-			{
-				stateCode: 'RI',
-				stateName: 'Rhode Island',
-			},
-			{
-				stateCode: 'SC',
-				stateName: 'South Carolina',
-			},
-			{
-				stateCode: 'SD',
-				stateName: 'South Dakota',
-			},
-			{
-				stateCode: 'TN',
-				stateName: 'Tennessee',
-			},
-			{
-				stateCode: 'TX',
-				stateName: 'Texas',
-			},
-			{
-				stateCode: 'UM',
-				stateName: 'United States Minor Outlying Islands',
-			},
-			{
-				stateCode: 'VI',
-				stateName: 'US Virgin Islands',
-			},
-			{
-				stateCode: 'UT',
-				stateName: 'Utah',
-			},
-			{
-				stateCode: 'VT',
-				stateName: 'Vermont',
-			},
-			{
-				stateCode: 'VA',
-				stateName: 'Virginia',
-			},
-			{
-				stateCode: 'WA',
-				stateName: 'Washington',
-			},
-			{
-				stateCode: 'WV',
-				stateName: 'West Virginia',
-			},
-			{
-				stateCode: 'WI',
-				stateName: 'Wisconsin',
-			},
-			{
-				stateCode: 'WY',
-				stateName: 'Wyoming',
-			},
-		],
-	},
+  {
+    countryCode: 'US',
+    countryName: 'United States',
+    states: US_STATES,
+  },
 	{
 		countryCode: 'UM',
 		countryName: 'United States Minor Outlying Islands (the)',
@@ -1556,30 +1334,5 @@ export const countriesMockData: Country[] = [
 		countryCode: 'ZW',
 		countryName: 'Zimbabwe',
 		states: null,
-	},
-	{
-		countryCode: '23',
-		countryName: '33',
-		states: [],
-	},
-	{
-		countryCode: '334',
-		countryName: '44',
-		states: [],
-	},
-	{
-		countryCode: '2111',
-		countryName: '122',
-		states: [],
-	},
-	{
-		countryCode: '31',
-		countryName: '21',
-		states: [],
-	},
-	{
-		countryCode: '91',
-		countryName: 'aaa',
-		states: [],
 	},
 ];
