@@ -33,14 +33,14 @@ export const deleteListings = (dataSources: DataSources) => {
 		await uow.withScopedTransaction(async (repo) => {
 			const listing = await repo.get(command.id);
 
-			// Verify ownership (will be double-checked by visa in setDeleted)
+			// Verify ownership (visa inside requestDelete double-checks)
 			if (listing.sharer.id !== command.userId) {
 				throw new Error('You do not have permission to delete this listing');
 			}
 
 			// Domain method with visa permission check
 			// Visa grants canDeleteItemListing when user.id === listing.sharer.id
-			listing.setDeleted(true);
+			listing.requestDelete();
 
 			// Repository detects isDeleted=true and performs hard delete
 			await repo.save(listing);

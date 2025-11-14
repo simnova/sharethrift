@@ -356,31 +356,25 @@ export class ItemListing<props extends ItemListingProps>
 	}
 
 	/**
-	 * Mark or unmark this aggregate as deleted. Setting deleted to true will cause the
-	 * repository to remove the record on save. This replaces the previous `requestDelete()` helper.
+	 * Request deletion for this aggregate. The repository will perform the hard delete
+	 * when it detects `isDeleted=true` on save.
 	 */
-	public setDeleted(deleted: boolean): void {
-		if (deleted) {
-			if (
-				!this.visa.determineIf((permissions) => permissions.canDeleteItemListing)
-			) {
-				throw new DomainSeedwork.PermissionError(
-					'You do not have permission to delete this listing',
-				);
-			}
-			super.isDeleted = true;
-			return;
-		}
-
-		// Allow unmarking deletion only if caller has delete permission as well
+	public requestDelete(): void {
 		if (
 			!this.visa.determineIf((permissions) => permissions.canDeleteItemListing)
 		) {
 			throw new DomainSeedwork.PermissionError(
-				'You do not have permission to modify deleted flag for this listing',
+				'You do not have permission to delete this listing',
 			);
 		}
-		super.isDeleted = false;
+
+		if (this.isDeleted) {
+			throw new DomainSeedwork.PermissionError(
+				'This listing has already been deleted',
+			);
+		}
+
+		super.isDeleted = true;
 	}
 
 	/**
