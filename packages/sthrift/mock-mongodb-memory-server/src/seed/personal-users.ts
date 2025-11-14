@@ -1,6 +1,74 @@
 import type { Models } from '@sthrift/data-sources-mongoose-models';
 import { ObjectId } from 'mongodb';
 
+// Extracted repeated address and billing objects to avoid duplicated blocks
+const addressSpringfieldIL = {
+	address1: '123 Main St',
+	address2: null,
+	city: 'Springfield',
+	state: 'IL',
+	country: 'USA',
+	zipCode: '62701',
+} as Models.User.PersonalUserAccountProfileLocation;
+
+const addressOakAveIL = {
+	address1: '456 Oak Ave',
+	address2: 'Apt 2',
+	city: 'Springfield',
+	state: 'IL',
+	country: 'USA',
+	zipCode: '62701',
+} as Models.User.PersonalUserAccountProfileLocation;
+
+const addressPineRdPA = {
+	address1: '789 Pine Rd',
+	address2: null,
+	city: 'Philadelphia',
+	state: 'PA',
+	country: 'USA',
+	zipCode: '19101',
+} as Models.User.PersonalUserAccountProfileLocation;
+
+const billingAlice = {
+	cybersourceCustomerId: 'cust_123456780',
+	subscription: {
+		subscriptionId: 'sub_987654322',
+		planCode: 'basic-plan',
+		status: 'active',
+		startDate: new Date('2023-02-01T10:00:00Z'),
+	},
+} as Models.User.PersonalUserAccountProfileBilling;
+
+const billingBob = {
+	cybersourceCustomerId: 'cust_123456789',
+	subscription: {
+		subscriptionId: 'sub_987654321',
+		planCode: 'verified-personal',
+		status: 'ACTIVE',
+		startDate: new Date('2023-02-01T10:00:00Z'),
+	},
+} as Models.User.PersonalUserAccountProfileBilling;
+
+const billingCharlie = {
+	cybersourceCustomerId: 'cust_123456780',
+	subscription: {
+		subscriptionId: 'sub_987654321',
+		planCode: 'non-verified-personal',
+		status: 'ACTIVE',
+		startDate: new Date('2023-02-01T10:00:00Z'),
+	},
+} as Models.User.PersonalUserAccountProfileBilling;
+
+const billingDuy = {
+	cybersourceCustomerId: 'cust_123456790',
+	subscription: {
+		subscriptionId: 'sub_987654321',
+		planCode: 'non-verified-personal',
+		status: 'ACTIVE',
+		startDate: new Date('2023-02-01T10:00:00Z'),
+	},
+} as Models.User.PersonalUserAccountProfileBilling;
+
 export const personalUsers: Models.User.PersonalUser[] = [
 	{
 		_id: '507f1f77bcf86cd799439011',
@@ -16,23 +84,8 @@ export const personalUsers: Models.User.PersonalUser[] = [
 				firstName: 'Alice',
 				lastName: 'Smith',
 				aboutMe: 'Hello',
-				location: {
-					address1: '123 Main St',
-					address2: null,
-					city: 'Springfield',
-					state: 'IL',
-					country: 'USA',
-					zipCode: '62701',
-				} as Models.User.PersonalUserAccountProfileLocation,
-				billing: {
-					cybersourceCustomerId: 'cust_123456780',
-					subscription: {
-						subscriptionId: 'sub_987654322',
-						planCode: 'basic-plan',
-						status: 'active',
-						startDate: new Date('2023-02-01T10:00:00Z'),
-					},
-				},
+				location: addressSpringfieldIL,
+				billing: billingAlice,
 			} as Models.User.PersonalUserAccountProfile,
 		} as Models.User.PersonalUserAccount,
 		schemaVersion: '1.0.0',
@@ -55,23 +108,8 @@ export const personalUsers: Models.User.PersonalUser[] = [
 				firstName: 'Bob',
 				lastName: 'Johnson',
 				aboutMe: 'Hello',
-				location: {
-					address1: '456 Oak Ave',
-					address2: 'Apt 2',
-					city: 'Springfield',
-					state: 'IL',
-					country: 'USA',
-					zipCode: '62701',
-				} as Models.User.PersonalUserAccountProfileLocation,
-				billing: {
-					cybersourceCustomerId: 'cust_123456789',
-					subscription: {
-						subscriptionId: 'sub_987654321',
-						planCode: 'verified-personal',
-						status: 'ACTIVE',
-						startDate: new Date('2023-02-01T10:00:00Z'),
-					},
-				} as Models.User.PersonalUserAccountProfileBilling,
+				location: addressOakAveIL,
+				billing: billingBob,
 			} as Models.User.PersonalUserAccountProfile,
 		} as Models.User.PersonalUserAccount,
 		schemaVersion: '1.0.0',
@@ -93,23 +131,8 @@ export const personalUsers: Models.User.PersonalUser[] = [
 			profile: {
 				firstName: 'Charlie',
 				lastName: 'Brown',
-				location: {
-					address1: '789 Pine Rd',
-					address2: null,
-					city: 'Philadelphia',
-					state: 'PA',
-					country: 'USA',
-					zipCode: '19101',
-				} as Models.User.PersonalUserAccountProfileLocation,
-				billing: {
-					cybersourceCustomerId: 'cust_123456780',
-					subscription: {
-						subscriptionId: 'sub_987654321',
-						planCode: 'non-verified-personal',
-						status: 'ACTIVE',
-						startDate: new Date('2023-02-01T10:00:00Z'),
-					},
-				} as Models.User.PersonalUserAccountProfileBilling,
+				location: addressPineRdPA,
+				billing: billingCharlie,
 			} as Models.User.PersonalUserAccountProfile,
 		} as Models.User.PersonalUserAccount,
 		schemaVersion: '1.0.0',
@@ -131,23 +154,8 @@ export const personalUsers: Models.User.PersonalUser[] = [
 			profile: {
 				firstName: 'Duy',
 				lastName: 'Nguyen',
-				location: {
-					address1: '789 Pine Rd',
-					address2: null,
-					city: 'Philadelphia',
-					state: 'PA',
-					country: 'USA',
-					zipCode: '19101',
-				} as Models.User.PersonalUserAccountProfileLocation,
-				billing: {
-					cybersourceCustomerId: 'cust_123456790',
-					subscription: {
-						subscriptionId: 'sub_987654321',
-						planCode: 'non-verified-personal',
-						status: 'ACTIVE',
-						startDate: new Date('2023-02-01T10:00:00Z'),
-					},
-				} as Models.User.PersonalUserAccountProfileBilling,
+				location: addressPineRdPA,
+				billing: billingDuy,
 			} as Models.User.PersonalUserAccountProfile,
 		} as Models.User.PersonalUserAccount,
 		schemaVersion: '1.0.0',
