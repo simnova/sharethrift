@@ -28,9 +28,9 @@ export const deleteListings = (dataSources: DataSources) => {
 			);
 		}
 
-		// Use standard domain flow with visa permissions
-		// The PersonalUserListingItemListingVisa grants canDeleteItemListing to owners
-		await uow.withScopedTransactionById(command.id, async (repo) => {
+		// Use standard domain flow with visa permissions inside a scoped transaction
+		// We manage persistence explicitly to avoid duplicate saves when deleting
+		await uow.withScopedTransaction(async (repo) => {
 			const listing = await repo.get(command.id);
 
 			// Verify ownership (will be double-checked by visa in setDeleted)
@@ -42,10 +42,10 @@ export const deleteListings = (dataSources: DataSources) => {
 			// Visa grants canDeleteItemListing when user.id === listing.sharer.id
 			listing.setDeleted(true);
 
-		// Repository detects isDeleted=true and performs hard delete
-		await repo.save(listing);
-	});
+			// Repository detects isDeleted=true and performs hard delete
+			await repo.save(listing);
+		});
 
-	return true;
-};
+		return true;
+	};
 };
