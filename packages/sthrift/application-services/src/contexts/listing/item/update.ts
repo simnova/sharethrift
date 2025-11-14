@@ -1,13 +1,23 @@
+import type { Domain } from '@sthrift/domain';
 import type { DataSources } from '@sthrift/persistence';
 
 export interface ItemListingUpdateCommand {
 	id: string;
+	title?: string;
+	description?: string;
+	category?: string;
+	location?: string;
+	sharingPeriodStart?: Date;
+	sharingPeriodEnd?: Date;
+	images?: string[];
 	isBlocked?: boolean;
 	isDeleted?: boolean;
 }
 
 export const update = (datasources: DataSources) => {
-	return async (command: ItemListingUpdateCommand): Promise<void> => {
+	return async (
+		command: ItemListingUpdateCommand,
+	): Promise<Domain.Contexts.Listing.ItemListing.ItemListingEntityReference> => {
 		const uow =
 			datasources.domainDataSource.Listing.ItemListing.ItemListingUnitOfWork;
 		if (!uow)
@@ -15,8 +25,41 @@ export const update = (datasources: DataSources) => {
 				'ItemListingUnitOfWork not available on dataSources.domainDataSource.Listing.ItemListing',
 			);
 
+		let updatedListing:
+			| Domain.Contexts.Listing.ItemListing.ItemListingEntityReference
+			| undefined;
+
 		await uow.withScopedTransactionById(command.id, async (repo) => {
 			const listing = await repo.get(command.id);
+
+			// Update listing fields
+			if (command.title !== undefined) {
+				listing.title = command.title;
+			}
+
+			if (command.description !== undefined) {
+				listing.description = command.description;
+			}
+
+			if (command.category !== undefined) {
+				listing.category = command.category;
+			}
+
+			if (command.location !== undefined) {
+				listing.location = command.location;
+			}
+
+			if (command.sharingPeriodStart !== undefined) {
+				listing.sharingPeriodStart = command.sharingPeriodStart;
+			}
+
+			if (command.sharingPeriodEnd !== undefined) {
+				listing.sharingPeriodEnd = command.sharingPeriodEnd;
+			}
+
+			if (command.images !== undefined) {
+				listing.images = command.images;
+			}
 
 			if (command.isBlocked !== undefined) {
 				listing.setBlocked(command.isBlocked);
@@ -26,7 +69,13 @@ export const update = (datasources: DataSources) => {
 				listing.setDeleted(command.isDeleted);
 			}
 
-			await repo.save(listing);
+			updatedListing = await repo.save(listing);
 		});
+
+		if (!updatedListing) {
+			throw new Error('ItemListing not updated');
+		}
+
+		return updatedListing;
 	};
 };

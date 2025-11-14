@@ -69,8 +69,21 @@ input CreateItemListingInput {
   isDraft: Boolean
 }
 
+input UpdateItemListingInput {
+  title: String
+  description: String
+  category: String
+  location: String
+  sharingPeriodStart: DateTime
+  sharingPeriodEnd: DateTime
+  images: [String!]
+}
+
 extend type Mutation {
   createItemListing(input: CreateItemListingInput!): ItemListing!
+  updateItemListing(id: ObjectID!, input: UpdateItemListingInput!): ItemListing!
+  pauseItemListing(id: ObjectID!): ItemListing!
+  deleteItemListing(id: ObjectID!): ItemListing!
   cancelItemListing(id: ObjectID!): ItemListing!
   removeListing(id: ObjectID!): Boolean!
   unblockListing(id: ObjectID!): Boolean!

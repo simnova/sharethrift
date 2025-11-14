@@ -1,0 +1,49 @@
+fragment EditListingItemListingFields on ItemListing {
+	id
+	title
+	description
+	category
+	location
+	sharingPeriodStart
+	sharingPeriodEnd
+	state
+	images
+	createdAt
+	updatedAt
+	sharer {
+		id
+	}
+}
+
+query HomeEditListingContainerItemListing($id: ObjectID!) {
+	itemListing(id: $id) {
+		...EditListingItemListingFields
+	}
+}
+
+mutation HomeEditListingContainerUpdateItemListing(
+	$id: ObjectID!
+	$input: UpdateItemListingInput!
+) {
+	updateItemListing(id: $id, input: $input) {
+		...EditListingItemListingFields
+	}
+}
+
+mutation HomeEditListingContainerPauseItemListing($id: ObjectID!) {
+	pauseItemListing(id: $id) {
+		...EditListingItemListingFields
+	}
+}
+
+mutation HomeEditListingContainerDeleteItemListing($id: ObjectID!) {
+	deleteItemListing(id: $id) {
+		...EditListingItemListingFields
+	}
+}
+
+mutation HomeEditListingContainerCancelItemListing($id: ObjectID!) {
+	cancelItemListing(id: $id) {
+		...EditListingItemListingFields
+	}
+}
