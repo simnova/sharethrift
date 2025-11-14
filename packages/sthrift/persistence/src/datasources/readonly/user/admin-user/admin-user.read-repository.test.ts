@@ -106,6 +106,7 @@ test.for(feature, ({ Scenario, Background, BeforeEachScenario }) => {
 				sort: vi.fn(() => chain),
 				countDocuments: vi.fn(() => chain),
 				exec: vi.fn(async () => getValue()),
+				// biome-ignore lint/suspicious/noThenProperty: Mongoose queries are thenable
 				then: vi.fn((resolve) => Promise.resolve(getValue()).then(resolve)),
 			};
 			return chain;
@@ -281,6 +282,8 @@ test.for(feature, ({ Scenario, Background, BeforeEachScenario }) => {
 					populate: vi.fn(() => nullQueryChain),
 					lean: vi.fn(() => nullQueryChain),
 					exec: vi.fn(async () => null),
+					// biome-ignore lint/suspicious/noThenProperty: Mongoose queries are thenable
+					then: vi.fn((resolve) => Promise.resolve(null).then(resolve)),
 				};
 
 				mockModel = {
@@ -330,6 +333,7 @@ test.for(feature, ({ Scenario, Background, BeforeEachScenario }) => {
 					populate: vi.fn(() => nullQueryChain),
 					lean: vi.fn(() => nullQueryChain),
 					exec: vi.fn(async () => null),
+					// biome-ignore lint/suspicious/noThenProperty: Mongoose queries are thenable
 					then: vi.fn((resolve) => Promise.resolve(null).then(resolve)),
 				};
 
