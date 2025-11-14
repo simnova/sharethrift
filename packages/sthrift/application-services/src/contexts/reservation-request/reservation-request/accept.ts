@@ -83,7 +83,7 @@ export const accept = (dataSources: DataSources) => {
 async function autoRejectOverlappingRequests(
 	acceptedRequest: Domain.Contexts.ReservationRequest.ReservationRequest.ReservationRequestEntityReference,
 	listingId: string,
-	repo: Domain.Contexts.ReservationRequest.ReservationRequest.ReservationRequestRepository,
+	repo: Domain.Contexts.ReservationRequest.ReservationRequest.ReservationRequestRepository<Domain.Contexts.ReservationRequest.ReservationRequest.ReservationRequestProps>,
 	dataSources: DataSources,
 ): Promise<void> {
 	try {
@@ -99,8 +99,9 @@ async function autoRejectOverlappingRequests(
 
 		// Filter out the accepted request and only process requests in "Requested" state
 		const requestsToReject = overlappingRequests.filter(
-			(request) =>
-				request.id !== acceptedRequest.id && request.state === 'Requested',
+			(
+				request: Domain.Contexts.ReservationRequest.ReservationRequest.ReservationRequestEntityReference,
+			) => request.id !== acceptedRequest.id && request.state === 'Requested',
 		);
 
 		// Reject each overlapping request
