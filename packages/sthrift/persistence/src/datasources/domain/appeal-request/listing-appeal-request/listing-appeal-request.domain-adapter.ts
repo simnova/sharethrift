@@ -2,6 +2,11 @@ import { Domain } from '@sthrift/domain';
 import type { Models } from '@sthrift/data-sources-mongoose-models';
 import { MongooseSeedwork } from '@cellix/mongoose-seedwork';
 import { PersonalUserDomainAdapter } from '../../user/personal-user/personal-user.domain-adapter.ts';
+import { getUser, loadUser, setUser } from '../user-appeal-request-helpers.ts';
+
+
+// Helper functions for user getter/setter/loadUser
+// Removed helper functions for user getter/setter/loadUser
 import { ItemListingDomainAdapter } from '../../listing/item/item-listing.domain-adapter.ts';
 
 export class ListingAppealRequestConverter extends MongooseSeedwork.MongoTypeConverter<
@@ -18,49 +23,29 @@ export class ListingAppealRequestConverter extends MongooseSeedwork.MongoTypeCon
 	}
 }
 
+
 export class ListingAppealRequestDomainAdapter
 	extends MongooseSeedwork.MongooseDomainAdapter<Models.AppealRequest.ListingAppealRequest>
 	implements
 		Domain.Contexts.AppealRequest.ListingAppealRequest.ListingAppealRequestProps
 {
 	get user(): Domain.Contexts.User.PersonalUser.PersonalUserEntityReference {
-		if (!this.doc.user) {
-			throw new Error('user is not populated');
-		}
-		if (this.doc.user instanceof MongooseSeedwork.ObjectId) {
-			throw new Error('user is not populated');
-		}
-		const adapter = new PersonalUserDomainAdapter(
-			this.doc.user as Models.User.PersonalUser,
-		);
-		return adapter.entityReference as Domain.Contexts.User.PersonalUser.PersonalUserEntityReference;
+		return getUser(this.doc);
 	}
 
-	async loadUser(): Promise<Domain.Contexts.User.PersonalUser.PersonalUserEntityReference> {
-		if (!this.doc.user) {
-			throw new Error('user is not populated');
+		async loadUser(): Promise<Domain.Contexts.User.PersonalUser.PersonalUserEntityReference> {
+			return await loadUser(this.doc);
 		}
-		if (this.doc.user instanceof MongooseSeedwork.ObjectId) {
-			await this.doc.populate('user');
-		}
-		const adapter = new PersonalUserDomainAdapter(
-			this.doc.user as Models.User.PersonalUser,
-		);
-		return adapter.entityReference as Domain.Contexts.User.PersonalUser.PersonalUserEntityReference;
-	}
 
 	set user(
 		user:
 			| Domain.Contexts.User.PersonalUser.PersonalUserEntityReference
 			| Domain.Contexts.User.PersonalUser.PersonalUser<PersonalUserDomainAdapter>,
 	) {
-		if (!user?.id) {
-			throw new Error('user reference is missing id');
-		}
-		this.doc.set('user', new MongooseSeedwork.ObjectId(user.id));
+		setUser(this.doc, user);
 	}
 
-	get listing(): Domain.Contexts.Listing.ItemListing.ItemListingEntityReference {
+		get listing(): Domain.Contexts.Listing.ItemListing.ItemListingEntityReference {
 		if (!this.doc.listing) {
 			throw new Error('listing is not populated');
 		}

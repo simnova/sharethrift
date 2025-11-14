@@ -3,7 +3,6 @@ import {
 	Form,
 	Input,
 	Button,
-	Card,
 	Typography,
 	Upload,
 	Avatar,
@@ -72,7 +71,12 @@ export const ProfileSetup: FC<ProfileSetupProps> = (props) => {
 	};
 
 	const onCountryChange = (value: string) => {
-		handleCountryChange(value, form, setZipCodeRules, ['account', 'profile', 'location', 'state']);
+		handleCountryChange(value, form, setZipCodeRules, [
+			'account',
+			'profile',
+			'location',
+			'state',
+		]);
 	};
 
 	const beforeUpload = (file: File) => {
@@ -90,246 +94,226 @@ export const ProfileSetup: FC<ProfileSetupProps> = (props) => {
 	};
 
 	return (
-		<div
-			style={{
-				display: 'flex',
-				justifyContent: 'center',
-				alignItems: 'center',
-				minHeight: 'calc(100vh - 128px)',
-				padding: '20px',
-			}}
-		>
-			<Card
-				style={{
-					maxWidth: 600,
-					width: '100%',
-					backgroundColor: 'transparent',
-					border: 'none',
-				}}
-			>
-				<div style={{ textAlign: 'center', marginBottom: '2rem' }}>
-					<Title
-						level={1}
-						className="title36"
-						style={{
-							textAlign: 'center',
-							marginBottom: '32px',
-							color: 'var(--color-message-text)',
-						}}
-					>
-						Profile Setup
-					</Title>
-				</div>
-
-				<div style={{ textAlign: 'center', marginBottom: '2rem' }}>
-					<Avatar
-						size={100}
-						src={avatarUrl || undefined}
-						alt="Profile Avatar"
-						style={{
-							backgroundColor: '#f0f0f0',
-							border: '3px solid #e0e0e0',
-							marginBottom: '1rem',
-							objectFit: 'cover',
-						}}
-					/>
-					<div>
-						<Upload
-							name="avatar"
-							listType="text"
-							fileList={fileList}
-							onChange={handleAvatarChange}
-							beforeUpload={beforeUpload}
-							showUploadList={false}
-							accept="image/jpeg,image/png"
-							maxCount={1}
-						>
-							<Button
-								type="default"
-								icon={<UploadOutlined />}
-								style={{
-									backgroundColor: 'var(--color-secondary)',
-									borderColor: 'var(--color-secondary)',
-									color: 'white',
-									borderRadius: '20px',
-									paddingLeft: '20px',
-									paddingRight: '20px',
-								}}
-							>
-								{avatarUrl ? 'Change Image' : 'Choose Image'}
-							</Button>
-						</Upload>
-					</div>
-				</div>
-
-				<Form
-					form={form}
-					layout="vertical"
-					onFinish={handleSaveAndContinue}
-					autoComplete="off"
-					initialValues={props.currentPersonalUserData}
+		<div style={{maxWidth:500, margin: '0 auto'}}>
+			<div style={{ textAlign: 'center', marginBottom: '2rem' }}>
+				<Title
+					level={1}
+					className="title36"
+					style={{
+						textAlign: 'center',
+						marginBottom: '32px',
+						color: 'var(--color-message-text)',
+					}}
 				>
-					{/* hidden field to store the user ID */}
-					<Form.Item label="User ID" name={['id']} style={{ display: 'none' }}>
-						<Input aria-label="User ID" autoComplete="off" />
-					</Form.Item>
+					Profile Setup
+				</Title>
+			</div>
 
-					<Row gutter={16} style={{ flexWrap: 'nowrap' }}>
-						<Col
-							xs={12}
-							sm={12}
-							style={{
-								paddingRight: 8,
-								paddingLeft: 0,
-								flex: 1,
-								maxWidth: '50%',
-							}}
-						>
-							<Form.Item
-								label="First Name"
-								name={['account', 'profile', 'firstName']}
-								style={{ marginBottom: 5 }}
-							>
-								<Input placeholder="Your First Name" />
-							</Form.Item>
-						</Col>
-						<Col
-							xs={12}
-							sm={12}
-							style={{
-								paddingLeft: 8,
-								paddingRight: 0,
-								flex: 1,
-								maxWidth: '50%',
-							}}
-						>
-							<Form.Item
-								label="Last Name"
-								name={['account', 'profile', 'lastName']}
-								style={{ marginBottom: 5 }}
-							>
-								<Input placeholder="Your Last Name" />
-							</Form.Item>
-						</Col>
-					</Row>
-
-					<Title
-						level={4}
-						style={{ marginTop: '1.5rem', marginBottom: '1rem' }}
+			<div style={{ textAlign: 'center', marginBottom: '2rem' }}>
+				<Avatar
+					size={100}
+					src={avatarUrl || undefined}
+					alt="Profile Avatar"
+					style={{
+						backgroundColor: '#f0f0f0',
+						border: '3px solid #e0e0e0',
+						marginBottom: '1rem',
+						objectFit: 'cover',
+					}}
+				/>
+				<div>
+					<Upload
+						name="avatar"
+						listType="text"
+						fileList={fileList}
+						onChange={handleAvatarChange}
+						beforeUpload={beforeUpload}
+						showUploadList={false}
+						accept="image/jpeg,image/png"
+						maxCount={1}
 					>
-						Location
-					</Title>
-
-					<Form.Item
-						label="Address Line 1"
-						name={['account', 'profile', 'location', 'address1']}
-						rules={[{ required: true, message: 'Address is required' }]}
-					>
-						<Input placeholder="Address Line 1" />
-					</Form.Item>
-
-					<Form.Item
-						label="Address Line 2"
-						name={['account', 'profile', 'location', 'address2']}
-					>
-						<Input placeholder="Address Line 2" />
-					</Form.Item>
-
-					<Row gutter={16} style={{ flexWrap: 'nowrap', marginLeft: 0 }}>
-						<Col
-							xs={12}
-							sm={12}
-							style={{
-								paddingRight: 8,
-								paddingLeft: 0,
-								flex: 1,
-								maxWidth: '50%',
-							}}
-						>
-							<Form.Item
-								label="City"
-								name={['account', 'profile', 'location', 'city']}
-								rules={[{ required: true, message: 'City is required' }]}
-							>
-								<Input placeholder="City" />
-							</Form.Item>
-						</Col>
-						<Col
-							xs={12}
-							sm={12}
-							style={{
-								paddingLeft: 0,
-								paddingRight: 8,
-								flex: 1,
-								maxWidth: '50%',
-							}}
-						>
-							<CountryFormItem
-								fieldPath={['account', 'profile', 'location', 'country']}
-								onCountryChange={onCountryChange}
-								countries={props.countries}
-							/>
-						</Col>
-					</Row>
-					<Row gutter={16} style={{ flexWrap: 'nowrap', marginLeft: 0 }}>
-						<Col
-							xs={12}
-							sm={12}
-							style={{
-								paddingLeft: 0,
-								paddingRight: 8,
-								flex: 1,
-								maxWidth: '50%',
-							}}
-						>
-							<StateProvinceFormItem
-								fieldPath={['account', 'profile', 'location', 'state']}
-								states={
-									props.countries.find(
-										(country) => country.countryCode === selectedCountry,
-									)?.states || []
-								}
-								isBillingFormItem={false}
-							/>
-						</Col>
-						<Col
-							xs={12}
-							sm={12}
-							style={{
-								paddingLeft: 0,
-								paddingRight: 8,
-								flex: 1,
-								maxWidth: '50%',
-							}}
-						>
-							<Form.Item
-								label="Zip Code"
-								name={['account', 'profile', 'location', 'zipCode']}
-								rules={zipCodeRules}
-							>
-								<Input placeholder="Zip Code" />
-							</Form.Item>
-						</Col>
-					</Row>
-
-					<Form.Item style={{ marginTop: '2rem', textAlign: 'right' }}>
 						<Button
-							type="primary"
-							htmlType="submit"
-							size="large"
+							type="default"
+							icon={<UploadOutlined />}
 							style={{
-								width: '180px',
-								height: '38px',
-								fontSize: '16px',
-								fontWeight: 600,
+								backgroundColor: 'var(--color-secondary)',
+								borderColor: 'var(--color-secondary)',
+								color: 'white',
+								borderRadius: '20px',
+								paddingLeft: '20px',
+								paddingRight: '20px',
 							}}
-							loading={props.loading}
 						>
-							Save and Continue
+							{avatarUrl ? 'Change Image' : 'Choose Image'}
 						</Button>
-					</Form.Item>
-				</Form>
-			</Card>
+					</Upload>
+				</div>
+			</div>
+
+			<Form
+				form={form}
+				layout="vertical"
+				onFinish={handleSaveAndContinue}
+				autoComplete="off"
+				initialValues={props.currentPersonalUserData}
+			>
+				{/* hidden field to store the user ID */}
+				<Form.Item label="User ID" name={['id']} style={{ display: 'none' }}>
+					<Input aria-label="User ID" autoComplete="off" />
+				</Form.Item>
+
+				<Row gutter={16} style={{ flexWrap: 'nowrap' }}>
+					<Col
+						xs={12}
+						sm={12}
+						style={{
+							paddingRight: 8,
+							paddingLeft: 0,
+							flex: 1,
+							maxWidth: '50%',
+						}}
+					>
+						<Form.Item
+							label="First Name"
+							name={['account', 'profile', 'firstName']}
+							style={{ marginBottom: 5 }}
+						>
+							<Input placeholder="Your First Name" />
+						</Form.Item>
+					</Col>
+					<Col
+						xs={12}
+						sm={12}
+						style={{
+							paddingLeft: 8,
+							paddingRight: 0,
+							flex: 1,
+							maxWidth: '50%',
+						}}
+					>
+						<Form.Item
+							label="Last Name"
+							name={['account', 'profile', 'lastName']}
+							style={{ marginBottom: 5 }}
+						>
+							<Input placeholder="Your Last Name" />
+						</Form.Item>
+					</Col>
+				</Row>
+
+				<Title level={4} style={{ marginTop: '1.5rem', marginBottom: '1rem' }}>
+					Location
+				</Title>
+
+				<Form.Item
+					label="Address Line 1"
+					name={['account', 'profile', 'location', 'address1']}
+					rules={[{ required: true, message: 'Address is required' }]}
+				>
+					<Input placeholder="Address Line 1" />
+				</Form.Item>
+
+				<Form.Item
+					label="Address Line 2"
+					name={['account', 'profile', 'location', 'address2']}
+				>
+					<Input placeholder="Address Line 2" />
+				</Form.Item>
+
+				<Row gutter={16} style={{ flexWrap: 'nowrap', marginLeft: 0 }}>
+					<Col
+						xs={12}
+						sm={12}
+						style={{
+							paddingRight: 8,
+							paddingLeft: 0,
+							flex: 1,
+							maxWidth: '50%',
+						}}
+					>
+						<Form.Item
+							label="City"
+							name={['account', 'profile', 'location', 'city']}
+							rules={[{ required: true, message: 'City is required' }]}
+						>
+							<Input placeholder="City" />
+						</Form.Item>
+					</Col>
+					<Col
+						xs={12}
+						sm={12}
+						style={{
+							paddingLeft: 0,
+							paddingRight: 8,
+							flex: 1,
+							maxWidth: '50%',
+						}}
+					>
+						<CountryFormItem
+							fieldPath={['account', 'profile', 'location', 'country']}
+							onCountryChange={onCountryChange}
+							countries={props.countries}
+						/>
+					</Col>
+				</Row>
+				<Row gutter={16} style={{ flexWrap: 'nowrap', marginLeft: 0 }}>
+					<Col
+						xs={12}
+						sm={12}
+						style={{
+							paddingLeft: 0,
+							paddingRight: 8,
+							flex: 1,
+							maxWidth: '50%',
+						}}
+					>
+						<StateProvinceFormItem
+							fieldPath={['account', 'profile', 'location', 'state']}
+							states={
+								props.countries.find(
+									(country) => country.countryCode === selectedCountry,
+								)?.states || []
+							}
+							isBillingFormItem={false}
+						/>
+					</Col>
+					<Col
+						xs={12}
+						sm={12}
+						style={{
+							paddingLeft: 0,
+							paddingRight: 8,
+							flex: 1,
+							maxWidth: '50%',
+						}}
+					>
+						<Form.Item
+							label="Zip Code"
+							name={['account', 'profile', 'location', 'zipCode']}
+							rules={zipCodeRules}
+						>
+							<Input placeholder="Zip Code" />
+						</Form.Item>
+					</Col>
+				</Row>
+
+				<Form.Item style={{ marginTop: '2rem', textAlign: 'right' }}>
+					<Button
+						type="primary"
+						htmlType="submit"
+						size="large"
+						style={{
+							width: '180px',
+							height: '38px',
+							fontSize: '16px',
+							fontWeight: 600,
+						}}
+						loading={props.loading}
+					>
+						Save and Continue
+					</Button>
+				</Form.Item>
+			</Form>
 		</div>
 	);
 };
