@@ -6,6 +6,7 @@ import type {
 	AdminUserAccountProps,
 } from './admin-user-account.entity.ts';
 import { AdminUserProfile } from './admin-user-account-profile.ts';
+import { createValidatedStringAccessors } from './admin-user.helpers.ts';
 
 export class AdminUserAccount
 	extends DomainSeedwork.ValueObject<AdminUserAccountProps>
@@ -13,6 +14,10 @@ export class AdminUserAccount
 {
 	private readonly visa: UserVisa;
 	private readonly root: AdminUserAggregateRoot;
+	accountType!: string;
+	email!: string;
+	username!: string;
+
 	constructor(
 		props: AdminUserAccountProps,
 		visa: UserVisa,
@@ -21,6 +26,11 @@ export class AdminUserAccount
 		super(props);
 		this.visa = visa;
 		this.root = root;
+		createValidatedStringAccessors(this, () => this.validateVisa(), [
+			'accountType',
+			'email',
+			'username',
+		]);
 	}
 
 	private validateVisa(): void {
@@ -34,32 +44,7 @@ export class AdminUserAccount
 		}
 	}
 
-	// Primitive Field Getters
-	get accountType() {
-		return this.props.accountType;
-	}
-	get email() {
-		return this.props.email;
-	}
-	get username() {
-		return this.props.username;
-	}
-
-	// NestedPath Field Getters
 	get profile() {
 		return new AdminUserProfile(this.props.profile, this.visa, this.root);
-	}
-
-	set accountType(value: string) {
-		this.validateVisa();
-		this.props.accountType = value;
-	}
-	set email(value: string) {
-		this.validateVisa();
-		this.props.email = value;
-	}
-	set username(value: string) {
-		this.validateVisa();
-		this.props.username = value;
 	}
 }

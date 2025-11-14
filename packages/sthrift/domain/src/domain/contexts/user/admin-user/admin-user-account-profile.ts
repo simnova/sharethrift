@@ -6,6 +6,7 @@ import type {
 	AdminUserProfileProps,
 } from './admin-user-account-profile.entity.ts';
 import { AdminUserAccountProfileLocation } from './admin-user-account-profile-location.ts';
+import { createValidatedStringAccessors } from './admin-user.helpers.ts';
 
 export class AdminUserProfile
 	extends DomainSeedwork.ValueObject<AdminUserProfileProps>
@@ -13,6 +14,10 @@ export class AdminUserProfile
 {
 	private readonly visa: UserVisa;
 	private readonly root: AdminUserAggregateRoot;
+	firstName!: string;
+	lastName!: string;
+	aboutMe!: string;
+
 	constructor(
 		props: AdminUserProfileProps,
 		visa: UserVisa,
@@ -21,19 +26,13 @@ export class AdminUserProfile
 		super(props);
 		this.visa = visa;
 		this.root = root;
-	}
-	// Primitive Field Getters
-	get firstName() {
-		return this.props.firstName;
-	}
-	get lastName() {
-		return this.props.lastName;
-	}
-	get aboutMe() {
-		return this.props.aboutMe;
+		createValidatedStringAccessors(this, () => this.validateVisa(), [
+			'firstName',
+			'lastName',
+			'aboutMe',
+		]);
 	}
 
-	// NestedPath Field Getters
 	get location() {
 		return new AdminUserAccountProfileLocation(
 			this.props.location,
@@ -51,19 +50,5 @@ export class AdminUserProfile
 				'Unauthorized to set account profile details',
 			);
 		}
-	}
-
-	// Primitive Field Setters
-	set firstName(value: string) {
-		this.validateVisa();
-		this.props.firstName = value;
-	}
-	set lastName(value: string) {
-		this.validateVisa();
-		this.props.lastName = value;
-	}
-	set aboutMe(value: string) {
-		this.validateVisa();
-		this.props.aboutMe = value;
 	}
 }
