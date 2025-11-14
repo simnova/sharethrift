@@ -1,6 +1,8 @@
 import { Ability } from '@serenity-js/core';
 import type { Domain } from '@sthrift/domain';
 
+const SCHEMA_VERSION = '1.0.0';
+
 interface ListingCreationParams {
   title: string;
   description: string;
@@ -31,7 +33,7 @@ export class CreateListingAbility extends Ability {
       state: 'Published',
       createdAt: new Date(),
       updatedAt: new Date(),
-      schemaVersion: '1.0.0',
+  schemaVersion: SCHEMA_VERSION,
       images: params.images,
       listingType: 'item-listing',
       sharingHistory: [],
@@ -39,7 +41,7 @@ export class CreateListingAbility extends Ability {
         id: 'test-user',
         userType: 'personal-user',
         isBlocked: false,
-        schemaVersion: '1.0.0',
+  schemaVersion: SCHEMA_VERSION,
         hasCompletedOnboarding: true,
         role: {
           id: 'test-role',
@@ -48,7 +50,7 @@ export class CreateListingAbility extends Ability {
           roleType: 'personal-user-role',
           createdAt: new Date(),
           updatedAt: new Date(),
-          schemaVersion: '1.0.0',
+          schemaVersion: SCHEMA_VERSION,
           permissions: {
             listingPermissions: {
               canCreateItemListing: true,
@@ -77,7 +79,7 @@ export class CreateListingAbility extends Ability {
           roleType: 'personal-user-role',
           createdAt: new Date(),
           updatedAt: new Date(),
-          schemaVersion: '1.0.0',
+          schemaVersion: SCHEMA_VERSION,
           permissions: {
             listingPermissions: {
               canCreateItemListing: true,
