@@ -12,14 +12,15 @@ import {
 import { ListingsGrid } from '@sthrift/ui-components';
 import { SettingOutlined, UserOutlined } from '@ant-design/icons';
 import '../components/profile-view.overrides.css';
-import type { ItemListing, PersonalUser } from '../../../../../../generated';
+import type { ItemListing } from '../../../../../../generated';
+import type { ProfileUser } from './profile-view.types';
 
 const { Text } = Typography;
 
 // ...interfaces now imported from profile-view.types.ts
 
 interface ProfileViewProps {
-	user: PersonalUser;
+	user: ProfileUser;
 	listings: ItemListing[];
 	isOwnProfile: boolean;
 	onEditSettings: () => void;
@@ -70,10 +71,10 @@ export const ProfileView: React.FC<Readonly<ProfileViewProps>> = ({
 									gap: '1rem',
 								}}
 							>
-								<div className="title42">
-									{user.account?.profile?.firstName}{' '}
-									{user.account?.profile?.lastName?.charAt(0)}.
-								</div>
+							<div className="title42">
+								{user.firstName}{' '}
+								{user.lastName?.charAt(0)}.
+							</div>
 								{/* Desktop Account Settings Button */}
 								{isOwnProfile && (
 									<div className="profile-settings-desktop">
@@ -87,23 +88,23 @@ export const ProfileView: React.FC<Readonly<ProfileViewProps>> = ({
 									</div>
 								)}
 							</div>
-							<h3 className="block mb-2">@{user.account?.username}</h3>
+							<h3 className="block mb-2">@{user.username}</h3>
 						</div>
 						<div className="profile-info-center">
 							<Space className="mb-3" wrap>
-								<Tag className="personalAccount">
-									<UserOutlined
-										style={{ color: 'var(--color-background)', fontSize: 16 }}
-									/>
-									{user.account?.accountType
-										? user.account?.accountType.charAt(0).toUpperCase() +
-											user.account?.accountType?.slice(1)
-										: ''}
-								</Tag>
+							<Tag className="personalAccount">
+								<UserOutlined
+									style={{ color: 'var(--color-background)', fontSize: 16 }}
+								/>
+								{user.accountType
+									? user.accountType.charAt(0).toUpperCase() +
+										user.accountType?.slice(1)
+									: ''}
+							</Tag>
 								<span>|</span>
 								<p>
-									{user.account?.profile?.location?.city},{' '}
-									{user.account?.profile?.location?.state}
+									{user.location?.city},{' '}
+									{user.location?.state}
 								</p>
 								<span>|</span>
 								<p>Sharing since {formatDate(user.createdAt)}</p>

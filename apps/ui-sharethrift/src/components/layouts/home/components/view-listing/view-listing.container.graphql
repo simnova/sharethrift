@@ -1,51 +1,54 @@
 # View Listing Query (backend-aligned)
 
 fragment ViewListingContainerListingFields on ItemListing {
-  id
-  title
-  description
-  category
-  listingType
-  location
-  sharingPeriodStart
-  sharingPeriodEnd
-  state
-  images
-  createdAt
-  updatedAt
-  reports
-  sharingHistory
-  schemaVersion
+	id
+	title
+	description
+	category
+	listingType
+	location
+	sharingPeriodStart
+	sharingPeriodEnd
+	state
+	images
+	createdAt
+	updatedAt
+	reports
+	sharingHistory
+	schemaVersion
 }
 
 query ViewListing($id: ObjectID!) {
-  itemListing(id: $id) {
-    ...ViewListingContainerListingFields
-  }
+	itemListing(id: $id) {
+		...ViewListingContainerListingFields
+	}
 }
 
 query ViewListingCurrentUser {
-  currentPersonalUserAndCreateIfNotExists {
-    ...ViewListingContainerUserFields
-  }
-}
-
-fragment ViewListingContainerUserFields on PersonalUser {
-  id
+	currentUser {
+		... on PersonalUser {
+			id
+			userType
+		}
+		... on AdminUser {
+			id
+			userType
+		}
+	}
 }
 
 fragment ViewListingContainerReservationFields on ReservationRequest {
-  id
-  state
-  reservationPeriodStart
-  reservationPeriodEnd
+	id
+	state
+	reservationPeriodStart
+	reservationPeriodEnd
 }
 
 query ViewListingActiveReservationRequestForListing(
-  $listingId: ObjectID!
-  $reserverId: ObjectID!
+	$listingId: ObjectID!
+	$reserverId: ObjectID!
 ) {
-  myActiveReservationForListing(listingId: $listingId, userId: $reserverId) {
-    ...ViewListingContainerReservationFields
-  }
+	myActiveReservationForListing(listingId: $listingId, userId: $reserverId) {
+		...ViewListingContainerReservationFields
+	}
 }

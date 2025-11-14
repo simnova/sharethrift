@@ -4,7 +4,7 @@
  */
 export interface UserDomainPermissions {
 	// Admin Permissions
-	canCreateUser: boolean;
+	canCreateUser: boolean; //delete
 	canBlockUsers: boolean;
 	canBlockListings: boolean;
 	canUnblockUsers: boolean;
@@ -12,7 +12,7 @@ export interface UserDomainPermissions {
 	canRemoveListings: boolean;
 	canViewListingReports: boolean;
 	canViewUserReports: boolean;
+	canManageUserRoles: boolean;
 
 	isEditingOwnAccount: boolean;
-	isSystemAccount: boolean;
 }

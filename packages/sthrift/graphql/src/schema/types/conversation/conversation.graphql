@@ -1,9 +1,9 @@
 type Conversation implements MongoBase {
-	sharer: PersonalUser!
-	reserver: PersonalUser!
+	sharer: User!
+	reserver: User!
 	listing: ItemListing!
 	messagingConversationId: String!
-    messages: [Message!]!
+	messages: [Message!]!
 	id: ObjectID!
 	schemaVersion: String!
 	createdAt: DateTime!
@@ -11,13 +11,12 @@ type Conversation implements MongoBase {
 }
 
 type Message {
-    id: ObjectID!
-    messagingMessageId: String!
-    authorId: ObjectID!
-    content: String!
-    createdAt: DateTime!
+	id: ObjectID!
+	messagingMessageId: String!
+	authorId: ObjectID!
+	content: String!
+	createdAt: DateTime!
 }
-
 
 extend type Query {
 	conversationsByUser(userId: ObjectID!): [Conversation]

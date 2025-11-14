@@ -52,7 +52,7 @@ test.for(feature, ({ Scenario, Background, BeforeEachScenario }) => {
 		mockDoc = {
 			_id: 'user-1',
 			id: 'user-1',
-			userType: 'end-user',
+			userType: 'personal-users',
 			isBlocked: false,
 			hasCompletedOnboarding: false,
 			account: {
@@ -185,7 +185,7 @@ test.for(feature, ({ Scenario, Background, BeforeEachScenario }) => {
 					findOne: mockModel.findOne,
 					findById: mockModel.findById,
 				});
-				
+
 				repository = new PersonalUserRepository(
 					passport,
 					ModelConstructor as unknown as Models.User.PersonalUserModelType,

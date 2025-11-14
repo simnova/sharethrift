@@ -1,7 +1,7 @@
 import type { DomainSeedwork } from '@cellix/domain-seedwork';
 import type { ItemListing } from './item-listing.ts';
 import type { ItemListingProps } from './item-listing.entity.ts';
-import type { PersonalUserEntityReference } from '../../user/personal-user/personal-user.entity.ts';
+import type { UserEntityReference } from '../../user/index.ts';
 
 export interface ItemListingRepository<props extends ItemListingProps>
 	extends DomainSeedwork.Repository<ItemListing<props>> {
@@ -18,7 +18,7 @@ export interface ItemListingRepository<props extends ItemListingProps>
 	getBySharerID(sharerId: string): Promise<ItemListing<props>[]>;
 
 	getNewInstance(
-		sharer: PersonalUserEntityReference,
+		sharer: UserEntityReference,
 		fields: {
 			title: string;
 			description: string;

@@ -1,44 +1,75 @@
-query HomeConversationListContainerCurrentPersonalUserAndCreateIfNotExists {
-  currentPersonalUserAndCreateIfNotExists {
-    id
-  }
+query HomeConversationListContainerCurrentUser {
+	currentUser {
+		... on AdminUser {
+			id
+		}
+		... on PersonalUser {
+			id
+		}
+	}
 }
 
 query HomeConversationListContainerConversationsByUser($userId: ObjectID!) {
-  conversationsByUser(userId: $userId) {
-    ...HomeConversationListContainerConversationFields
-  }
+	conversationsByUser(userId: $userId) {
+		...HomeConversationListContainerConversationFields
+	}
 }
 
 fragment HomeConversationListContainerConversationFields on Conversation {
-  id
-  messagingConversationId
-  sharer {
-    id
-    account {
-      profile {
-        firstName
-        lastName
-      }
-    }
-  }
+	id
+	messagingConversationId
+	sharer {
+		... on PersonalUser {
+			id
+			account {
+				username
+				profile {
+					firstName
+					lastName
+				}
+			}
+		}
+		... on AdminUser {
+			id
+			account {
+				username
+				profile {
+					firstName
+					lastName
+				}
+			}
+		}
+	}
 
-  reserver {
-    id
-    account {
-      profile {
-        firstName
-        lastName
-      }
-    }
-  }
+	reserver {
+		... on PersonalUser {
+			id
+			account {
+				username
+				profile {
+					firstName
+					lastName
+				}
+			}
+		}
+		... on AdminUser {
+			id
+			account {
+				username
+				profile {
+					firstName
+					lastName
+				}
+			}
+		}
+	}
 
-  listing {
-    id
-    title
-    images
-  }
-  
-  createdAt
-  updatedAt
+	listing {
+		id
+		title
+		images
+	}
+
+	createdAt
+	updatedAt
 }

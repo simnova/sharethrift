@@ -1,0 +1,106 @@
+type AdminUser implements MongoBase {
+	id: ObjectID!
+	userType: String
+	isBlocked: Boolean
+	account: AdminUserAccount
+	role: AdminRole
+	schemaVersion: String
+	createdAt: DateTime
+	updatedAt: DateTime
+	userIsAdmin: Boolean
+}
+
+#if admin list view is needed to display on UI
+type AdminUserPage {
+	items: [AdminUser!]!
+	total: Int!
+	page: Int!
+	pageSize: Int!
+}
+
+type AdminUserAccount {
+	accountType: String
+	email: String
+	username: String
+	profile: AdminUserAccountProfile
+}
+
+type AdminUserAccountProfile {
+	firstName: String
+	lastName: String
+	aboutMe: String
+	location: AdminUserAccountProfileLocation
+}
+
+type AdminUserAccountProfileLocation {
+	address1: String
+	address2: String
+	city: String
+	state: String
+	country: String
+	zipCode: String
+}
+
+input AdminUserCreateInput {
+	email: String!
+	username: String!
+	firstName: String!
+	lastName: String!
+	roleId: ObjectID!
+}
+
+input AdminUserUpdateInput {
+	id: ObjectID!
+	isBlocked: Boolean
+	roleId: ObjectID
+	account: AdminUserAccountUpdateInput
+}
+
+input AdminUserAccountUpdateInput {
+	accountType: String
+	username: String
+	profile: AdminUserAccountProfileUpdateInput
+}
+
+input AdminUserAccountProfileUpdateInput {
+	firstName: String
+	lastName: String
+	aboutMe: String
+	location: AdminUserAccountProfileLocationUpdateInput
+}
+
+input AdminUserAccountProfileLocationUpdateInput {
+	address1: String
+	address2: String
+	city: String
+	state: String
+	country: String
+	zipCode: String
+}
+
+extend type Query {
+	# Admin User queries
+	adminUserById(id: ObjectID!): AdminUser
+	adminUserByEmail(email: String!): AdminUser
+	adminUserByUsername(username: String!): AdminUser
+	currentAdminUser: AdminUser
+
+	# The following code can be used to list all admin users in the database
+	allAdminUsers(
+		page: Int!
+		pageSize: Int!
+		searchText: String
+		statusFilters: [String!]
+		sorter: SorterInput
+	): AdminUserPage!
+}
+
+extend type Mutation {
+	# Admin User mutations
+	createAdminUser(input: AdminUserCreateInput!): AdminUser!
+	adminUserUpdate(input: AdminUserUpdateInput!): AdminUser!
+
+	# # Uncomment when admin blocking is needed
+	# blockAdminUser(userId: ObjectID!): AdminUser!
+	# unblockAdminUser(userId: ObjectID!): AdminUser!
+}

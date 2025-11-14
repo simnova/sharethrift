@@ -22,7 +22,7 @@ export const ReservationsViewHistoryContainer: React.FC<
 	} = useQuery<ViewListingCurrentUserQuery>(ViewListingCurrentUserDocument, {
 		fetchPolicy: 'cache-first',
 	});
-	const userId = userData?.currentPersonalUserAndCreateIfNotExists?.id;
+	const userId = userData?.currentUser?.id;
 
 	// Get past reservations
 	const {

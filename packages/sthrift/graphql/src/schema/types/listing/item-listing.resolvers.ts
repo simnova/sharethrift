@@ -1,18 +1,25 @@
 import type { Resolvers } from '../../builder/generated.js';
-import { PopulatePersonalUserFromField } from '../../resolver-helper.ts';
+import {
+	PopulateUserFromField,
+	getUserByEmail,
+} from '../../resolver-helper.ts';
 
 const itemListingResolvers: Resolvers = {
 	ItemListing: {
-		sharer: PopulatePersonalUserFromField('sharer'),
+		sharer: PopulateUserFromField('sharer'),
 	},
 	Query: {
 		myListingsAll: async (_parent: unknown, args, context) => {
-            const currentUser = context.applicationServices.verifiedUser;
-            const email = currentUser?.verifiedJwt?.email;
-            let sharerId: string | undefined;
-            if(email) {
-               sharerId = await context.applicationServices.User.PersonalUser.queryByEmail({email: email}).then(user => user ? user.id : undefined);
-            }
+			const currentUser = context.applicationServices.verifiedUser;
+			const email = currentUser?.verifiedJwt?.email;
+			let sharerId: string | undefined;
+
+			if (email) {
+				const user = await getUserByEmail(email, context);
+				if (user) {
+					sharerId = user.id;
+				}
+			}
 			type PagedArgs = {
 				page: number;
 				pageSize: number;
@@ -25,11 +32,11 @@ const itemListingResolvers: Resolvers = {
 			const pagedArgs: PagedArgs = {
 				page: args.page,
 				pageSize: args.pageSize,
-				...(args.searchText != null ? { searchText: args.searchText } : {}),
-				...(args.statusFilters != null
+				...(args.searchText ? { searchText: args.searchText } : {}),
+				...(args.statusFilters
 					? { statusFilters: [...args.statusFilters] }
 					: {}),
-				...(args.sorter != null
+				...(args.sorter
 					? {
 							sorter: {
 								field: args.sorter.field,
@@ -39,12 +46,11 @@ const itemListingResolvers: Resolvers = {
 					: {}),
 				...(sharerId && { sharerId }),
 			};
-
 			return await context.applicationServices.Listing.ItemListing.queryPaged(
 				pagedArgs,
 			);
 		},
-        itemListings: async (_parent, _args, context) => {
+		itemListings: async (_parent, _args, context) => {
 			return await context.applicationServices.Listing.ItemListing.queryAll({});
 		},
 
@@ -66,11 +72,11 @@ const itemListingResolvers: Resolvers = {
 			const pagedArgs: PagedArgs = {
 				page: args.page,
 				pageSize: args.pageSize,
-				...(args.searchText != null ? { searchText: args.searchText } : {}),
-				...(args.statusFilters != null
+				...(args.searchText ? { searchText: args.searchText } : {}),
+				...(args.statusFilters
 					? { statusFilters: [...args.statusFilters] }
 					: {}),
-				...(args.sorter != null
+				...(args.sorter
 					? {
 							sorter: {
 								field: args.sorter.field,
@@ -93,15 +99,11 @@ const itemListingResolvers: Resolvers = {
 				throw new Error('Authentication required');
 			}
 
-			// Find the user by email to get their database ID
-			const user =
-				await context.applicationServices.User.PersonalUser.queryByEmail({
-					email: userEmail,
-				});
+			// Find the user by email (supports both PersonalUser and AdminUser)
+			const user = await getUserByEmail(userEmail, context);
 			if (!user) {
 				throw new Error(`User not found for email ${userEmail}`);
 			}
-
 			const command = {
 				sharer: user,
 				title: args.input.title,
@@ -150,11 +152,9 @@ const itemListingResolvers: Resolvers = {
 				throw new Error('Authentication required');
 			}
 
-			const result =
-				await context.applicationServices.Listing.ItemListing.cancel({
-					id: args.id,
-				});
-			return result
+			return await context.applicationServices.Listing.ItemListing.cancel({
+				id: args.id,
+			});
 		},
 	},
 };
