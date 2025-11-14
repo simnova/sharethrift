@@ -500,6 +500,9 @@ importers:
 
   packages/cellix/mock-payment-server:
     dependencies:
+      '@cellix/payment-service':
+        specifier: workspace:*
+        version: link:../payment-service
       express:
         specifier: ^4.18.2
         version: 4.21.2

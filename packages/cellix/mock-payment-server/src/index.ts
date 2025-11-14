@@ -22,7 +22,7 @@ import type {
 	SuspendSubscriptionResponse,
 	SubscriptionsListResponse,
 	PaymentInstrumentInfo,
-} from './payment-interface.ts';
+} from '@cellix/payment-service';
 import path from 'path';
 import { fileURLToPath } from 'url';
 
