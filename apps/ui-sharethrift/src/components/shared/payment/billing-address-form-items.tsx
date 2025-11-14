@@ -9,7 +9,6 @@ const COLUMN_SPAN = 24 / 2;
 
 interface BillingAddressFormItemsProps {
 	countries: Country[];
-	isBillingFormItem?: boolean;
 }
 
 export type ZipcodeRule = {
