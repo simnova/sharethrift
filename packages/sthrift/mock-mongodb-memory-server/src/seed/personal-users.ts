@@ -34,7 +34,7 @@ export const personalUsers = [
 		} as Models.User.PersonalUserAccount,
 		schemaVersion: '1.0.0',
 		version: 1,
-		discriminatorKey: 'personal-users',
+
 		createdAt: new Date('2023-01-01T10:00:00Z'),
 		updatedAt: new Date('2023-01-01T10:00:00Z'),
 	},
@@ -70,7 +70,7 @@ export const personalUsers = [
 		} as Models.User.PersonalUserAccount,
 		schemaVersion: '1.0.0',
 		version: 1,
-		discriminatorKey: 'personal-users',
+
 		createdAt: new Date('2023-01-02T11:00:00Z'),
 		updatedAt: new Date('2023-01-02T11:00:00Z'),
 	},
@@ -105,7 +105,7 @@ export const personalUsers = [
 		} as Models.User.PersonalUserAccount,
 		schemaVersion: '1.0.0',
 		version: 1,
-		discriminatorKey: 'personal-users',
+
 		createdAt: new Date('2023-01-04T10:00:00Z'),
 		updatedAt: new Date('2023-01-04T10:00:00Z'),
 	},

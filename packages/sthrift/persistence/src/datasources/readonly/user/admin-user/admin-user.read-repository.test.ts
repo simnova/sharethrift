@@ -14,6 +14,30 @@ const feature = await loadFeature(
 	path.resolve(__dirname, 'features/admin-user.read-repository.feature'),
 );
 
+function makeRoleDoc(
+	overrides: Partial<Models.Role.AdminRole> = {},
+): Models.Role.AdminRole {
+	return {
+		id: new MongooseSeedwork.ObjectId(),
+		roleName: 'Test Role',
+		isDefault: false,
+		roleType: 'admin',
+		permissions: {
+			userPermissions: {
+				canManageUsers: true,
+				canViewAllUsers: true,
+			},
+			rolePermissions: {
+				canManageRoles: false,
+			},
+		},
+		createdAt: new Date(),
+		updatedAt: new Date(),
+		schemaVersion: '1.0.0',
+		...overrides,
+	} as Models.Role.AdminRole;
+}
+
 function makePassport(): Domain.Passport {
 	return vi.mocked({
 		user: {
@@ -50,9 +74,7 @@ function makeMockUser(
 				} as unknown as Models.User.AdminUserAccountProfileLocation,
 			} as unknown as Models.User.AdminUserAccountProfile,
 		} as unknown as Models.User.AdminUserAccount,
-		role: {
-			id: 'role-1',
-		},
+		role: makeRoleDoc(),
 		createdAt: new Date('2020-01-01'),
 		updatedAt: new Date('2020-01-02'),
 		populate: vi.fn(function (this: Models.User.AdminUser) {
@@ -75,16 +97,25 @@ test.for(feature, ({ Scenario, Background, BeforeEachScenario }) => {
 		passport = makePassport();
 		mockUsers = [makeMockUser()];
 
+		const createQueryChain = (getValue: () => unknown) => {
+			const chain = {
+				populate: vi.fn(() => chain),
+				lean: vi.fn(() => chain),
+				skip: vi.fn(() => chain),
+				limit: vi.fn(() => chain),
+				sort: vi.fn(() => chain),
+				countDocuments: vi.fn(() => chain),
+				exec: vi.fn(async () => getValue()),
+				then: vi.fn((resolve) => Promise.resolve(getValue()).then(resolve)),
+			};
+			return chain;
+		};
+
 		mockModel = {
-			find: vi.fn(() => ({
-				lean: vi.fn(() => mockUsers),
-			})),
-			findById: vi.fn(() => ({
-				lean: vi.fn(() => mockUsers[0]),
-			})),
-			findOne: vi.fn(() => ({
-				lean: vi.fn(() => mockUsers[0]),
-			})),
+			find: vi.fn(() => createQueryChain(() => mockUsers)),
+			findById: vi.fn(() => createQueryChain(() => mockUsers[0])),
+			findOne: vi.fn(() => createQueryChain(() => mockUsers[0])),
+			countDocuments: vi.fn(() => createQueryChain(() => mockUsers.length)),
 		} as unknown as Models.User.AdminUserModelType;
 
 		const modelsContext = {
@@ -246,11 +277,15 @@ test.for(feature, ({ Scenario, Background, BeforeEachScenario }) => {
 		"Getting an admin user by ID that doesn't exist",
 		({ When, Then }) => {
 			When('I call getById with "nonexistent-id"', async () => {
+				const nullQueryChain = {
+					populate: vi.fn(() => nullQueryChain),
+					lean: vi.fn(() => nullQueryChain),
+					exec: vi.fn(async () => null),
+				};
+
 				mockModel = {
 					...mockModel,
-					findById: vi.fn(() => ({
-						exec: vi.fn(async () => null),
-					})),
+					findById: vi.fn(() => nullQueryChain),
 				} as unknown as Models.User.AdminUserModelType;
 
 				const modelsContext = {
@@ -291,13 +326,17 @@ test.for(feature, ({ Scenario, Background, BeforeEachScenario }) => {
 		"Getting an admin user by email that doesn't exist",
 		({ When, Then }) => {
 			When('I call getByEmail with "nonexistent@example.com"', async () => {
+				const nullQueryChain = {
+					populate: vi.fn(() => nullQueryChain),
+					lean: vi.fn(() => nullQueryChain),
+					exec: vi.fn(async () => null),
+					then: vi.fn((resolve) => Promise.resolve(null).then(resolve)),
+				};
+
 				mockModel = {
 					...mockModel,
-					findOne: vi.fn(() => ({
-						lean: vi.fn(() => null),
-					})),
+					findOne: vi.fn(() => nullQueryChain),
 				} as unknown as Models.User.AdminUserModelType;
-
 				const modelsContext = {
 					User: {
 						AdminUser: mockModel,

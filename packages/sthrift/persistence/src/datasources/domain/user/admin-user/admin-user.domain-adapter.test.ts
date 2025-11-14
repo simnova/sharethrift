@@ -12,6 +12,30 @@ const feature = await loadFeature(
 	path.resolve(__dirname, 'features/admin-user.domain-adapter.feature'),
 );
 
+function makeRoleDoc(
+	overrides: Partial<Models.Role.AdminRole> = {},
+): Models.Role.AdminRole {
+	return {
+		id: new MongooseSeedwork.ObjectId(),
+		roleName: 'Test Role',
+		isDefault: false,
+		roleType: 'admin',
+		permissions: {
+			userPermissions: {
+				canManageUsers: true,
+				canViewAllUsers: true,
+			},
+			rolePermissions: {
+				canManageRoles: false,
+			},
+		},
+		createdAt: new Date(),
+		updatedAt: new Date(),
+		schemaVersion: '1.0.0',
+		...overrides,
+	} as Models.Role.AdminRole;
+}
+
 function makeUserDoc(
 	overrides: Partial<Models.User.AdminUser> = {},
 ): Models.User.AdminUser {
@@ -37,9 +61,7 @@ function makeUserDoc(
 				},
 			},
 		},
-		role: {
-			id: 'role-1',
-		},
+		role: makeRoleDoc(),
 		set<K extends keyof Models.User.AdminUser>(
 			key: K,
 			value: Models.User.AdminUser[K],
@@ -127,16 +149,20 @@ test.for(feature, ({ Scenario, Background, BeforeEachScenario }) => {
 		});
 		Then('it should return the correct role reference', () => {
 			expect(result).toBeDefined();
-			expect((result as { id: string }).id).toBe('role-1');
+			expect((result as { roleName: string }).roleName).toBe('Test Role');
 		});
 	});
 
 	Scenario('Setting the role property', ({ When, Then }) => {
+		const newRoleId = new MongooseSeedwork.ObjectId();
 		When('I set the role property to a new role', () => {
-			adapter.role = { id: 'role-2' } as never;
+			adapter.role = { id: newRoleId } as never;
 		});
 		Then("the document's role should be updated", () => {
-			expect((doc.role as unknown as { id: string }).id).toBe('role-2');
+			expect(doc.role).toBeInstanceOf(MongooseSeedwork.ObjectId);
+			expect((doc.role as MongooseSeedwork.ObjectId).toString()).toBe(
+				newRoleId.toString(),
+			);
 		});
 	});
 });
