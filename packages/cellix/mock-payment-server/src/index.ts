@@ -27,7 +27,6 @@ import path from 'path';
 import { fileURLToPath } from 'url';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
-// Serve static files for /microform/bundle/v2.7.1 (including iframe.min.js)
 const app = express();
 app.disable('x-powered-by');
 const port = 3001;
@@ -51,7 +50,7 @@ app.use((req, res, next) => {
 });
 
 app.use(express.json());
-app.use('/microform/bundle/v2.7.2', express.static(__dirname)); // Serve static files for /microform/bundle/v2.7.2/iframe.min.js
+app.use('/microform/bundle/:version', express.static(__dirname)); // Serve static files for iframe.min.js
 // Cybersource mock config
 const CYBERSOURCE_MERCHANT_ID = 'simnova_sharethrift';
 
@@ -179,8 +178,8 @@ app.get('/', (_req: Request, res: Response) => {
 	res.send('Payment Mock Server is running!');
 });
 
-// Serve static HTML for /microform/bundle/v2.7.1/iframe.html
-app.get('/microform/bundle/v2.7.2/iframe.html', (_req, res) => {
+// Serve static HTML for iframe.html
+app.get('/microform/bundle/:version/iframe.html', (_req, res) => {
 	res.setHeader('Content-Type', 'text/html');
 	res.send(`<!DOCTYPE html>
 <html>
