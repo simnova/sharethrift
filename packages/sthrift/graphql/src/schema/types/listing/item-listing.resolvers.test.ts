@@ -119,6 +119,7 @@ function makeMockGraphContext(
                     queryById: vi.fn(),
                     queryBySharer: vi.fn(),
                     queryPaged: vi.fn(),
+                    queryPagedWithSearchFallback: vi.fn(),
                     create: vi.fn(),
                     update: vi.fn(),
                 },
@@ -302,7 +303,7 @@ test.for(feature, ({ Scenario }) => {
         });
         And('valid pagination arguments (page, pageSize)', () => {
             vi.mocked(
-                context.applicationServices.Listing.ItemListing.queryPaged,
+                context.applicationServices.Listing.ItemListing.queryPagedWithSearchFallback,
             ).mockResolvedValue({
                 items: [createMockListing()],
                 total: 1,
@@ -314,9 +315,9 @@ test.for(feature, ({ Scenario }) => {
             const resolver = itemListingResolvers.Query?.myListingsAll as TestResolver<{ page: number; pageSize: number }>;
             result = await resolver({}, { page: 1, pageSize: 10 }, context, {} as never);
         });
-        Then('it should call Listing.ItemListing.queryPaged with sharerId, page, and pageSize', () => {
+        Then('it should call Listing.ItemListing.queryPagedWithSearchFallback with sharerId, page, and pageSize', () => {
             expect(
-                context.applicationServices.Listing.ItemListing.queryPaged,
+                context.applicationServices.Listing.ItemListing.queryPagedWithSearchFallback,
             ).toHaveBeenCalledWith(
                 expect.objectContaining({
                     page: 1,
@@ -335,10 +336,10 @@ test.for(feature, ({ Scenario }) => {
         });
         And('it should map state values like "Published" to "Active" and "Drafted" to "Draft"', () => {
             expect(result).toBeDefined();
-            const resultData = result as { items: ItemListingEntity[] };
+            const resultData = result as { items: { status: string }[] };
             resultData.items.forEach((listing) => {
-                const status = listing.state;
-                expect(['Published', 'Draft', 'Unknown']).toContain(status);
+                const status = listing.status;
+                expect(['Active', 'Draft', 'Unknown']).toContain(status);
             });
         });
         And('it should return items, total, page, and pageSize in the response', () => {
@@ -355,7 +356,7 @@ test.for(feature, ({ Scenario }) => {
         });
         And('a searchText "camera" and statusFilters ["Published"]', () => {
             vi.mocked(
-                context.applicationServices.Listing.ItemListing.queryPaged,
+                context.applicationServices.Listing.ItemListing.queryPagedWithSearchFallback,
             ).mockResolvedValue({
                 items: [createMockListing({ title: 'Camera Listing' })],
                 total: 1,
@@ -382,9 +383,9 @@ test.for(feature, ({ Scenario }) => {
                 {} as never
             );
         });
-        Then('it should call Listing.ItemListing.queryPaged with those filters', () => {
+        Then('it should call Listing.ItemListing.queryPagedWithSearchFallback with those filters', () => {
             expect(
-                context.applicationServices.Listing.ItemListing.queryPaged,
+                context.applicationServices.Listing.ItemListing.queryPagedWithSearchFallback,
             ).toHaveBeenCalledWith(
                 expect.objectContaining({
                     page: 1,
@@ -412,7 +413,7 @@ test.for(feature, ({ Scenario }) => {
                 },
             });
             vi.mocked(
-                context.applicationServices.Listing.ItemListing.queryPaged,
+                context.applicationServices.Listing.ItemListing.queryPagedWithSearchFallback,
             ).mockResolvedValue({
                 items: [createMockListing()],
                 total: 1,
@@ -424,9 +425,9 @@ test.for(feature, ({ Scenario }) => {
             const resolver = itemListingResolvers.Query?.myListingsAll as TestResolver<{ page: number; pageSize: number }>;
             result = await resolver({}, { page: 1, pageSize: 10 }, context, {} as never);
         });
-        Then('it should call Listing.ItemListing.queryPaged without sharerId', () => {
+        Then('it should call Listing.ItemListing.queryPagedWithSearchFallback without sharerId', () => {
             expect(
-                context.applicationServices.Listing.ItemListing.queryPaged,
+                context.applicationServices.Listing.ItemListing.queryPagedWithSearchFallback,
             ).toHaveBeenCalledWith(
                 expect.not.objectContaining({
                     sharerId: expect.anything(),
@@ -442,10 +443,10 @@ test.for(feature, ({ Scenario }) => {
     });
 
     Scenario('Error while querying myListingsAll', ({ Given, When, Then }) => {
-        Given('Listing.ItemListing.queryPaged throws an error', () => {
+        Given('Listing.ItemListing.queryPagedWithSearchFallback throws an error', () => {
             context = makeMockGraphContext();
             vi.mocked(
-                context.applicationServices.Listing.ItemListing.queryPaged,
+                context.applicationServices.Listing.ItemListing.queryPagedWithSearchFallback,
             ).mockRejectedValue(new Error('Query failed'));
         });
         When('the myListingsAll query is executed', async () => {
@@ -654,7 +655,7 @@ test.for(feature, ({ Scenario }) => {
 
         let mappedItems: MappedListing[] = [];
 
-        Given('a valid result from queryPaged', () => {
+        Given('a valid result from queryPagedWithSearchFallback', () => {
             context = makeMockGraphContext();
             const listingWithImage = createMockListing({
                 id: 'listing-with-image',
@@ -673,7 +674,7 @@ test.for(feature, ({ Scenario }) => {
                 sharingPeriodEnd: new Date('2025-03-15T00:00:00Z'),
             });
             vi.mocked(
-                context.applicationServices.Listing.ItemListing.queryPaged,
+                context.applicationServices.Listing.ItemListing.queryPagedWithSearchFallback,
             ).mockResolvedValue({
                 items: [listingWithImage, listingWithoutImageOrState],
                 total: 2,

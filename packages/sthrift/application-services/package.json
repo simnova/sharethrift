@@ -21,6 +21,7 @@
     },
     "dependencies": {
         "@cellix/messaging-service": "workspace:*",
+        "@cellix/mock-cognitive-search": "workspace:*",
         "@sthrift/context-spec": "workspace:*",
         "@sthrift/domain": "workspace:*",
         "@sthrift/persistence": "workspace:*",

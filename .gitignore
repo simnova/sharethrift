@@ -1,4 +1,4 @@
-/node_modules
+node_modules
 .DS_Store
 **/coverage
 # .gitignore template - https://github.com/github/gitignore/blob/main/Node.gitignore
@@ -15,4 +15,26 @@ __*
 **/generated.ts
 **/generated.tsx
 **/graphql.schema.json
-apps/ui-sharethrift/tsconfig.tsbuildinfo
+
+# Build artifacts
+dist/
+*.tsbuildinfo
+
+# Test results (be specific to avoid ignoring config files)
+**/coverage/**/*.json
+**/test-results/**/*.json
+vitest-results.json
+junit.json
+test-report.json
+
+# Temporary test files
+test-*.js
+
+# Ignore TypeScript build info files
+**/tsconfig.tsbuildinfo
+
+# Ignore generated artifacts
+**/dist/
+**/*.map
+# TypeScript packages should not commit compiled JS in src
+packages/**/src/*.js

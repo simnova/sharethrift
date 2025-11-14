@@ -24,6 +24,7 @@ import { ServiceMessagingMock } from '@sthrift/messaging-service-mock';
 import { graphHandlerCreator } from '@sthrift/graphql';
 import { restHandlerCreator } from '@sthrift/rest';
 import { ServiceCybersource } from '@sthrift/service-cybersource';
+import { ServiceCognitiveSearch } from '@sthrift/service-cognitive-search';
 
 const { NODE_ENV } = process.env;
 const isDevelopment = NODE_ENV === 'development';
@@ -45,7 +46,8 @@ Cellix.initializeInfrastructureServices<ApiContextSpec, ApplicationServices>(
 			.registerInfrastructureService(
 				isDevelopment ? new ServiceMessagingMock() : new ServiceMessagingTwilio(),
 			)
-			.registerInfrastructureService(new ServiceCybersource());
+			.registerInfrastructureService(new ServiceCybersource())
+			.registerInfrastructureService(new ServiceCognitiveSearch());
 	},
 )
 	.setContext((serviceRegistry) => {
@@ -60,7 +62,11 @@ Cellix.initializeInfrastructureServices<ApiContextSpec, ApplicationServices>(
 			: serviceRegistry.getInfrastructureService<MessagingService>(ServiceMessagingTwilio);
 
 		const { domainDataSource } = dataSourcesFactory.withSystemPassport();
-		RegisterEventHandlers(domainDataSource);
+		const searchService =
+			serviceRegistry.getInfrastructureService<ServiceCognitiveSearch>(
+				ServiceCognitiveSearch,
+			);
+		RegisterEventHandlers(domainDataSource, searchService);
 
 		return {
 			dataSourcesFactory,
@@ -71,6 +77,10 @@ Cellix.initializeInfrastructureServices<ApiContextSpec, ApplicationServices>(
 			paymentService:
 				serviceRegistry.getInfrastructureService<ServiceCybersource>(
 					ServiceCybersource,
+				),
+			searchService:
+				serviceRegistry.getInfrastructureService<ServiceCognitiveSearch>(
+					ServiceCognitiveSearch,
 				),
 			messagingService,
 		};
