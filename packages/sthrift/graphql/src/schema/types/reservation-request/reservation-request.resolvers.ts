@@ -1,10 +1,19 @@
-import type { GraphContext } from '../../../init/context.ts';
 import type { GraphQLResolveInfo } from 'graphql';
+import type { GraphContext } from '../../../init/context.ts';
 import type { Resolvers } from '../../builder/generated.ts';
 import {
 	PopulateItemListingFromField,
 	PopulatePersonalUserFromField,
 } from '../../resolver-helper.ts';
+
+// Map domain states to UI display states (now 1:1, all aligned)
+const DOMAIN_TO_UI_STATE: Record<string, string> = {
+	Requested: 'Requested',
+	Accepted: 'Accepted',
+	Rejected: 'Rejected',
+	Cancelled: 'Cancelled',
+	Closed: 'Closed',
+};
 
 interface ListingRequestDomainShape {
 	id: string;
@@ -51,10 +60,18 @@ function paginateAndFilterListingRequests(
 			r.reservationPeriodEnd instanceof Date
 				? r.reservationPeriodEnd
 				: undefined;
+
+		// Get the first image from the listing's images array, or use placeholder
+		const images = r.listing?.['images'];
+		const listingImage =
+			Array.isArray(images) && images.length > 0
+				? images[0]
+				: '/assets/item-images/placeholder.png';
+
 		return {
 			id: r.id,
 			title: r.listing?.title ?? 'Unknown',
-			image: '/assets/item-images/placeholder.png', // TODO: map real image when available
+			image: listingImage,
 			requestedBy: r.reserver?.account?.username
 				? `@${r.reserver.account.username}`
 				: '@unknown',
@@ -63,7 +80,7 @@ function paginateAndFilterListingRequests(
 					? r.createdAt.toISOString()
 					: new Date().toISOString(),
 			reservationPeriod: `${start ? start.toISOString().slice(0, 10) : 'N/A'} - ${end ? end.toISOString().slice(0, 10) : 'N/A'}`,
-			status: r.state ?? 'Pending',
+			status: DOMAIN_TO_UI_STATE[r.state ?? ''] ?? r.state ?? 'Requested',
 			_raw: r,
 		};
 	});
@@ -217,6 +234,30 @@ const reservationRequest: Resolvers = {
 					reservationPeriodStart: new Date(args.input.reservationPeriodStart),
 					reservationPeriodEnd: new Date(args.input.reservationPeriodEnd),
 					reserverEmail: verifiedJwt.email,
+				},
+			);
+		},
+		acceptReservationRequest: async (
+			_parent: unknown,
+			args: {
+				input: {
+					id: string;
+				};
+			},
+			context: GraphContext,
+			_info: GraphQLResolveInfo,
+		) => {
+			const verifiedJwt = context.applicationServices.verifiedUser?.verifiedJwt;
+			if (!verifiedJwt) {
+				throw new Error(
+					'User must be authenticated to accept a reservation request',
+				);
+			}
+
+			return await context.applicationServices.ReservationRequest.ReservationRequest.accept(
+				{
+					id: args.input.id,
+					sharerEmail: verifiedJwt.email,
 				},
 			);
 		},

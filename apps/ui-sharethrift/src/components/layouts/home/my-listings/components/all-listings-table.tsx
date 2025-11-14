@@ -360,7 +360,7 @@ export const AllListingsTable: React.FC<AllListingsTableProps> = ({
 			},
 		},
 		{
-			title: 'Pending Requests',
+			title: 'Requests',
 			dataIndex: 'pendingRequestsCount',
 			key: 'pendingRequestsCount',
 			sorter: true,
