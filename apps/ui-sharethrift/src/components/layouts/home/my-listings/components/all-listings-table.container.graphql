@@ -21,6 +21,12 @@ query HomeAllListingsTableContainerMyListingsAll(
   }
 }
 
+query HomeAllListingsTableContainerCurrentUser {
+  currentPersonalUserAndCreateIfNotExists {
+    ...HomeAllListingsTableContainerUserFields
+  }
+}
+
 fragment HomeAllListingsTableContainerListingFields on ListingAll {
   id
   title
@@ -29,4 +35,8 @@ fragment HomeAllListingsTableContainerListingFields on ListingAll {
   createdAt
   sharingPeriodStart
   sharingPeriodEnd
+}
+
+fragment HomeAllListingsTableContainerUserFields on PersonalUser {
+  id
 }

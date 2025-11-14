@@ -42,7 +42,8 @@ export const EditListingForm: React.FC<EditListingFormProps> = ({
 				return false;
 			}
 
-			return maybeDay.isBefore(dayjs(), 'day');
+			// Don't disable any dates - allow full range for editing
+			return false;
 		} catch (_err) {
 			return false;
 		}
@@ -98,6 +99,10 @@ export const EditListingForm: React.FC<EditListingFormProps> = ({
 						style={{ width: '100%' }}
 						placeholder={['Start date', 'End date']}
 						disabledDate={disabledDate}
+						format="YYYY-MM-DD"
+						picker="date"
+						needConfirm={false}
+						changeOnBlur
 					/>
 				</Form.Item>
 

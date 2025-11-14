@@ -1,6 +1,7 @@
 import { Row, Col, Button, Form, Modal } from 'antd';
 import { LeftOutlined } from '@ant-design/icons';
 import { useRef, useState, useEffect } from 'react';
+import dayjs from 'dayjs';
 import { ImageGallery } from '../create-listing/create-listing-image-gallery.tsx';
 import { EditListingForm } from './edit-listing-form.tsx';
 import '../view-listing/listing-image-gallery/listing-image-gallery.overrides.css';
@@ -60,8 +61,8 @@ export const EditListing: React.FC<EditListingProps> = ({
 				category: listing.category,
 				location: listing.location,
 				sharingPeriod: [
-					new Date(listing.sharingPeriodStart),
-					new Date(listing.sharingPeriodEnd),
+					dayjs(listing.sharingPeriodStart),
+					dayjs(listing.sharingPeriodEnd),
 				],
 			});
 		}
