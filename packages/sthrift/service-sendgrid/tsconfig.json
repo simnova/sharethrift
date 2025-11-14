@@ -1,14 +1,23 @@
 {
-  "extends": "@cellix/typescript-config/node.json",
-  "compilerOptions": {
-    "outDir": "dist",
-    "rootDir": "."
-  },
-  "include": [
-    "src/**/*.ts"
-  ],
-  "exclude": [
-    "node_modules",
-    "dist"
-  ]
+	"extends": "@cellix/typescript-config/node.json",
+	"compilerOptions": {
+		"outDir": "dist",
+		"rootDir": "."
+	},
+	"include": ["src/**/*.ts"],
+	"exclude": ["node_modules", "dist"],
+	"references": [
+		{
+			"path": "../../cellix/api-services-spec"
+		},
+		{
+			"path": "../../cellix/transactional-email-service"
+		},
+		{
+			"path": "../transactional-email-service-sendgrid"
+		},
+		{
+			"path": "../transactional-email-service-mock"
+		}
+	]
 }

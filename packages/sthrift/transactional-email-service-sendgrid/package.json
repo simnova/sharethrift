@@ -1,7 +1,7 @@
 {
-	"name": "@sthrift/service-sendgrid",
+	"name": "@sthrift/transactional-email-service-sendgrid",
 	"version": "0.1.0",
-	"description": "SendGrid email service for ShareThrift portals (Facade).",
+	"description": "SendGrid implementation for transactional email service",
 	"type": "module",
 	"files": [
 		"dist"
@@ -23,14 +23,11 @@
 	"devDependencies": {
 		"@biomejs/biome": "2.0.0",
 		"typescript": "^5.0.0",
-		"@cellix/typescript-config": "workspace:*",
-		"@types/node": "^24.7.2"
+		"@cellix/typescript-config": "workspace:*"
 	},
 	"dependencies": {
 		"@cellix/api-services-spec": "workspace:*",
 		"@cellix/transactional-email-service": "workspace:*",
-		"@sthrift/transactional-email-service-sendgrid": "workspace:*",
-		"@sthrift/transactional-email-service-mock": "workspace:*",
 		"@sendgrid/mail": "^8.0.0"
 	}
 }

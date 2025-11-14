@@ -1,7 +1,7 @@
 {
-	"name": "@sthrift/service-sendgrid",
+	"name": "@sthrift/transactional-email-service-mock",
 	"version": "0.1.0",
-	"description": "SendGrid email service for ShareThrift portals (Facade).",
+	"description": "Mock implementation for transactional email service (local development)",
 	"type": "module",
 	"files": [
 		"dist"
@@ -28,9 +28,6 @@
 	},
 	"dependencies": {
 		"@cellix/api-services-spec": "workspace:*",
-		"@cellix/transactional-email-service": "workspace:*",
-		"@sthrift/transactional-email-service-sendgrid": "workspace:*",
-		"@sthrift/transactional-email-service-mock": "workspace:*",
-		"@sendgrid/mail": "^8.0.0"
+		"@cellix/transactional-email-service": "workspace:*"
 	}
 }
