@@ -70,6 +70,7 @@ export class ConversationRepository
 		sharer: Domain.Contexts.User.PersonalUser.PersonalUserEntityReference,
 		reserver: Domain.Contexts.User.PersonalUser.PersonalUserEntityReference,
 		listing: Domain.Contexts.Listing.ItemListing.ItemListingEntityReference,
+		messagingConversationId?: string,
 	): Promise<Domain.Contexts.Conversation.Conversation.Conversation<PropType>> {
 		const adapter = this.typeConverter.toAdapter(new this.model());
 		return Promise.resolve(
@@ -79,6 +80,7 @@ export class ConversationRepository
 				reserver,
 				listing,
 				[], // Empty messages array for new conversations
+				messagingConversationId,
 				this.passport,
 			),
 		);

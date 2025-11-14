@@ -157,4 +157,87 @@ test.for(feature, ({ Scenario, Background, BeforeEachScenario }) => {
 			expect(doc.messagingConversationId).toBe('twilio-456');
 		});
 	});
+
+	Scenario('Loading sharer when already populated', ({ When, Then }) => {
+		When('I call loadSharer on an adapter with populated sharer', async () => {
+			result = await adapter.loadSharer();
+		});
+		Then('it should return a PersonalUserDomainAdapter', () => {
+			expect(result).toBeInstanceOf(PersonalUserDomainAdapter);
+		});
+	});
+
+	Scenario('Loading sharer when it is an ObjectId', ({ When, Then }) => {
+		When('I call loadSharer on an adapter with sharer as ObjectId', async () => {
+			const oid = new MongooseSeedwork.ObjectId();
+			doc = makeConversationDoc({ 
+				sharer: oid,
+				populate: vi.fn().mockResolvedValue({
+					...doc,
+					sharer: sharerDoc,
+				}),
+			});
+			adapter = new ConversationDomainAdapter(doc);
+			result = await adapter.loadSharer();
+		});
+		Then('it should populate and return a PersonalUserDomainAdapter', () => {
+			expect(doc.populate).toHaveBeenCalledWith('sharer');
+			expect(result).toBeInstanceOf(PersonalUserDomainAdapter);
+		});
+	});
+
+	Scenario('Getting the reserver property when populated', ({ When, Then }) => {
+		When('I get the reserver property', () => {
+			result = adapter.reserver;
+		});
+		Then('it should return a PersonalUserDomainAdapter with the correct doc', () => {
+			expect(result).toBeInstanceOf(PersonalUserDomainAdapter);
+			expect((result as PersonalUserDomainAdapter).doc).toBe(reserverDoc);
+		});
+	});
+
+	Scenario('Loading reserver when already populated', ({ When, Then }) => {
+		When('I call loadReserver on an adapter with populated reserver', async () => {
+			result = await adapter.loadReserver();
+		});
+		Then('it should return a PersonalUserDomainAdapter', () => {
+			expect(result).toBeInstanceOf(PersonalUserDomainAdapter);
+		});
+	});
+
+	Scenario('Getting the listing property when populated', ({ When, Then }) => {
+		When('I get the listing property', () => {
+			result = adapter.listing;
+		});
+		Then('it should return an ItemListingDomainAdapter', () => {
+			expect(result).toBeDefined();
+		});
+	});
+
+	Scenario('Loading listing when already populated', ({ When, Then }) => {
+		When('I call loadListing on an adapter with populated listing', async () => {
+			result = await adapter.loadListing();
+		});
+		Then('it should return an ItemListingDomainAdapter', () => {
+			expect(result).toBeDefined();
+		});
+	});
+
+	Scenario('Getting messages property', ({ When, Then }) => {
+		When('I get the messages property', () => {
+			result = adapter.messages;
+		});
+		Then('it should return an empty array', () => {
+			expect(result).toEqual([]);
+		});
+	});
+
+	Scenario('Loading messages', ({ When, Then }) => {
+		When('I call loadMessages', async () => {
+			result = await adapter.loadMessages();
+		});
+		Then('it should return an empty array', () => {
+			expect(result).toEqual([]);
+		});
+	});
 });

@@ -14,6 +14,11 @@ export interface MessagingConversationRepository {
 	) => Promise<Domain.Contexts.Conversation.Conversation.MessageEntityReference>;
 
 	deleteConversation: (conversationId: string) => Promise<void>;
+
+	createConversation: (
+		displayName: string,
+		uniqueIdentifier: string,
+	) => Promise<{ id: string; displayName?: string }>;
 }
 
 export class MessagingConversationRepositoryImpl implements MessagingConversationRepository {
@@ -66,6 +71,28 @@ export class MessagingConversationRepositoryImpl implements MessagingConversatio
 			await this.messagingService.deleteConversation(conversationId);
 		} catch (error) {
 			console.error('Error deleting conversation from messaging service:', error);
+			throw error;
+		}
+	}
+
+	async createConversation(
+		displayName: string,
+		uniqueIdentifier: string,
+	): Promise<{ id: string; displayName?: string }> {
+		try {
+			const conversation = await this.messagingService.createConversation(
+				displayName,
+				uniqueIdentifier,
+			);
+			const result: { id: string; displayName?: string } = {
+				id: conversation.id,
+			};
+			if (conversation.displayName) {
+				result.displayName = conversation.displayName;
+			}
+			return result;
+		} catch (error) {
+			console.error('Error creating conversation in messaging service:', error);
 			throw error;
 		}
 	}
