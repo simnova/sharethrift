@@ -8,6 +8,8 @@ export {
 	type PersonalUserRoleModelType,
 	PersonalUserRoleModelName,
 	PersonalUserRoleSchema,
+	type PersonalUserRoleUserPermissions,
+	type PersonalUserRoleAccountPlanPermissions,
 } from './personal-user-role.model.ts';
 
 export { RoleModelFactory } from './role.model.ts';

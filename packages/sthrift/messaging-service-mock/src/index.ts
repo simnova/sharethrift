@@ -26,7 +26,7 @@ export class ServiceMessagingMock implements MessagingService {
 		return this as Exclude<ServiceMessagingMock, ServiceBase>;
 	}
 
-	public async shutDown(): Promise<void> {
+	public  async shutDown(): Promise<void> {
 		if (!this.http) {
 			throw new Error('ServiceMessagingMock is not started - shutdown cannot proceed');
 		}

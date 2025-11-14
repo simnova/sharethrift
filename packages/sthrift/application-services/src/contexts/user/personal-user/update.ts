@@ -4,13 +4,14 @@ import type { Domain } from '@sthrift/domain';
 export interface PersonalUserUpdateCommand {
 	id: string;
 	isBlocked?: boolean;
+	hasCompletedOnboarding?: boolean;
 	account?: {
 		accountType?: string;
 		username?: string;
 		profile?: {
 			firstName?: string;
 			lastName?: string;
-            aboutMe?: string;
+			aboutMe?: string;
 
 			location?: {
 				address1: string;
@@ -21,13 +22,18 @@ export interface PersonalUserUpdateCommand {
 				zipCode: string;
 			};
 
-            billing?: {
-				subscriptionId: string;
-				cybersourceCustomerId: string;
+			// TBD: Billing info
+
+			billing?: {
+				cybersourceCustomerId?: string | undefined;
+				subscription?: {
+					subscriptionId: string;
+					planCode: string;
+					status: string;
+					startDate: Date;
+				};
 			};
 		};
-
-		// TBD: Billing info
 	};
 }
 
@@ -55,22 +61,46 @@ export const update = (datasources: DataSources) => {
 				if (command.account) {
 					existingPersonalUser.account.accountType =
 						command.account.accountType ??
-						existingPersonalUser.account.accountType;
+						existingPersonalUser.account.accountType; // could be replaced by plan code
 					existingPersonalUser.account.username =
 						command.account.username ?? existingPersonalUser.account.username;
 				}
 
+				if (command.account?.profile?.billing) {
+					existingPersonalUser.account.profile.billing.cybersourceCustomerId =
+						command.account.profile.billing.cybersourceCustomerId ??
+						existingPersonalUser.account.profile.billing.cybersourceCustomerId;
+
+					if (command.account.profile.billing.subscription) {
+						existingPersonalUser.account.profile.billing.subscription.subscriptionId =
+							command.account.profile.billing.subscription.subscriptionId ??
+							existingPersonalUser.account.profile.billing.subscription
+								.subscriptionId;
+						existingPersonalUser.account.profile.billing.subscription.planCode =
+							command.account.profile.billing.subscription.planCode ??
+							existingPersonalUser.account.profile.billing.subscription
+								.planCode;
+						existingPersonalUser.account.profile.billing.subscription.status =
+							command.account.profile.billing.subscription.status ??
+							existingPersonalUser.account.profile.billing.subscription.status;
+						existingPersonalUser.account.profile.billing.subscription.startDate =
+							command.account.profile.billing.subscription.startDate ??
+							existingPersonalUser.account.profile.billing.subscription
+								.startDate;
+					}
+				}
+
 				if (command.account?.profile) {
-                    console.log("about me", command.account?.profile.aboutMe);
+					console.log('about me', command.account?.profile.aboutMe);
 					existingPersonalUser.account.profile.firstName =
 						command.account.profile.firstName ??
 						existingPersonalUser.account.profile.firstName;
 					existingPersonalUser.account.profile.lastName =
 						command.account.profile.lastName ??
 						existingPersonalUser.account.profile.lastName;
-                    existingPersonalUser.account.profile.aboutMe =
-                        command.account.profile.aboutMe ??
-                        existingPersonalUser.account.profile.aboutMe;
+					existingPersonalUser.account.profile.aboutMe =
+						command.account.profile.aboutMe ??
+						existingPersonalUser.account.profile.aboutMe;
 				}
 
 				if (command.account?.profile?.location) {
@@ -88,12 +118,10 @@ export const update = (datasources: DataSources) => {
 						command.account.profile.location.zipCode;
 				}
 
-                if (command.account?.profile?.billing) {
-                    existingPersonalUser.account.profile.billing.subscriptionId =
-                        command.account.profile.billing.subscriptionId;
-                    existingPersonalUser.account.profile.billing.cybersourceCustomerId =
-                        command.account.profile.billing.cybersourceCustomerId;
-                }
+				if (command.hasCompletedOnboarding !== undefined) {
+					existingPersonalUser.hasCompletedOnboarding =
+						command.hasCompletedOnboarding;
+				}
 
 				personalUserToReturn = await repo.save(existingPersonalUser);
 			},

@@ -1,9 +1,11 @@
 import { Route, Routes, Navigate } from 'react-router-dom';
 import { HomeRoutes } from './components/layouts/home/index.tsx';
-import { ApolloConnection } from './components/shared/apollo-connection.tsx';
 import { SignupRoutes } from './components/layouts/signup/Index.tsx';
 import { RequireAuth } from './components/shared/require-auth.tsx';
 import { AuthLanding } from './components/shared/auth-landing.tsx';
+import type { FC } from 'react';
+import { useOnboardingRedirect } from './components/shared/use-has-completed-onboarding-check.ts';
+import './App.css';
 
 const authSection = (
 	<RequireAuth redirectPath="/" forceLogin={true}>
@@ -11,17 +13,27 @@ const authSection = (
 	</RequireAuth>
 );
 
-const App: React.FC = () => {
+const signupSection = (
+	<RequireAuth redirectPath="/" forceLogin={true}>
+		<SignupRoutes />
+	</RequireAuth>
+);
+
+interface AppProps {
+	hasCompletedOnboarding: boolean;
+	isAuthenticated: boolean;
+}
+export const App: FC<AppProps> = (props) => {
+	useOnboardingRedirect(
+		props.hasCompletedOnboarding,
+		props.isAuthenticated,
+	);
 	return (
-		<ApolloConnection>
-			<Routes>
-				<Route path="/*" element={<HomeRoutes />} />
-				<Route path="/auth-redirect" element={authSection} />
-				<Route path="/signup/*" element={<SignupRoutes />} />
-				<Route path="/" element={<Navigate to="/home" replace />} />
-			</Routes>
-		</ApolloConnection>
+		<Routes>
+			<Route path="/*" element={<HomeRoutes />} />
+			<Route path="/auth-redirect" element={authSection} />
+			<Route path="/signup/*" element={signupSection} />
+			<Route path="/" element={<Navigate to="/home" replace />} />
+		</Routes>
 	);
 };
-
-export default App;

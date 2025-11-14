@@ -6,7 +6,7 @@ export const ConversationPersistence = (
 	models: ModelsContext,
 	passport: Domain.Passport,
 ) => {
-	const ConversationModel = models.Conversation.ConversationModel;
+	const { ConversationModel } = models.Conversation;
 	return {
 		ConversationUnitOfWork: getConversationUnitOfWork(
 			ConversationModel,

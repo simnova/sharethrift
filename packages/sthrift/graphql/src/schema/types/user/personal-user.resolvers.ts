@@ -8,11 +8,37 @@ import type {
 	QueryAllUsersArgs,
 } from '../../builder/generated.ts';
 import type { PersonalUserUpdateCommand } from '@sthrift/application-services';
+import type { Domain } from '@sthrift/domain';
+
+const PersonalUserMutationResolver = async (
+	getPersonalUser: Promise<Domain.Contexts.User.PersonalUser.PersonalUserEntityReference>,
+) => {
+	try {
+		return {
+			status: { success: true },
+			personalUser: await getPersonalUser,
+		};
+	} catch (error) {
+		console.error('PersonalUser > Mutation  : ', error);
+		const { message } = error as Error;
+		return {
+			status: { success: false, errorMessage: message },
+		};
+	}
+};
 
 const personalUserResolvers: Resolvers = {
 	Query: {
+		personalUserCybersourcePublicKeyId: async (
+			_parent,
+			_args,
+			context,
+			_info,
+		) => {
+			return await context.applicationServices.Payment.generatePublicKey();
+		},
 		personalUserById: async (
-			_parent: unknown,
+			_parent,
 			args: { id: string },
 			context: GraphContext,
 			_info: GraphQLResolveInfo,
@@ -59,9 +85,7 @@ const personalUserResolvers: Resolvers = {
 				page: args.page,
 				pageSize: args.pageSize,
 				searchText: args.searchText || undefined,
-				statusFilters: args.statusFilters
-					? [...args.statusFilters]
-					: undefined,
+				statusFilters: args.statusFilters ? [...args.statusFilters] : undefined,
 				sorter: args.sorter || undefined,
 			});
 		},
@@ -78,9 +102,11 @@ const personalUserResolvers: Resolvers = {
 				throw new Error('Unauthorized');
 			}
 			console.log('personalUserUpdate resolver called with id:', args.input.id);
-			// TODO: SECURITY - Add admin permission check
-			return await context.applicationServices.User.PersonalUser.update(
-				args.input as PersonalUserUpdateCommand,
+			/// TODO: SECURITY - Add admin permission check
+			return await PersonalUserMutationResolver(
+				context.applicationServices.User.PersonalUser.update(
+					args.input as PersonalUserUpdateCommand,
+				),
 			);
 		},
 		blockUser: async (
@@ -113,28 +139,98 @@ const personalUserResolvers: Resolvers = {
 				isBlocked: false,
 			});
 		},
-		processPayment: async (_parent, { request }, context) => {
-			console.log('Processing payment', request);
+		processPayment: async (_parent, { input }, context) => {
+			console.log('Processing payment', input);
+
 			try {
-				const sanitizedRequest = {
-					...request,
-					orderInformation: {
-						...request.orderInformation,
-						billTo: {
-							...request.orderInformation.billTo,
-							address2: request.orderInformation.billTo.address2 ?? '',
-							phoneNumber: request.orderInformation.billTo.phoneNumber ?? '',
-							email: request.orderInformation.billTo.email ?? '',
+				const personalUser =
+					await context.applicationServices.User.PersonalUser.queryById({
+						id: input.userId,
+					});
+				if (!personalUser) {
+					return {
+						status: 'FAILED',
+						success: false,
+						message: 'User not found',
+					} as PaymentResponse;
+				}
+
+				const accountPlan =
+					await context.applicationServices.AccountPlan.AccountPlan.queryByName(
+						{
+							planName: personalUser.account.accountType,
 						},
+					);
+
+				if (!accountPlan) {
+					return {
+						status: 'FAILED',
+						success: false,
+						message: 'Account plan not found',
+					} as PaymentResponse;
+				}
+
+				const sanitizedRequest = {
+					...input,
+					paymentInstrument: {
+						...input.paymentInstrument,
+						billingAddressLine2:
+							input.paymentInstrument.billingAddressLine2 ?? '',
+						billingPhone: input.paymentInstrument.billingPhone ?? '',
+						billingEmail: input.paymentInstrument.billingEmail ?? '',
 					},
 				};
+
 				const response =
 					await context.applicationServices.Payment.processPayment(
 						sanitizedRequest,
 					);
+
+				if (
+					response.status === 'FAILED' ||
+					response.cybersourceCustomerId === undefined
+				) {
+					return {
+						status: 'FAILED',
+						success: false,
+						message: 'Payment failed',
+					} as PaymentResponse;
+				}
+
+				// create subscription
+				const startDate = new Date();
+				const subscription =
+					await context.applicationServices.Payment.createSubscription({
+						planId: accountPlan?.cybersourcePlanId ?? '', // cybersource plan ID when available
+						cybersourceCustomerId: response.cybersourceCustomerId,
+						startDate: startDate,
+					});
+
+				// update user with subscription id
+				await context.applicationServices.User.PersonalUser.update({
+					id: personalUser.id,
+					hasCompletedOnboarding: true,
+					account: {
+						profile: {
+							billing: {
+								cybersourceCustomerId: response.cybersourceCustomerId,
+								subscription: {
+									subscriptionId: subscription.id,
+									planCode: accountPlan?.cybersourcePlanId ?? '', // cybersource plan ID when available
+									status: subscription.status,
+									startDate: startDate,
+								},
+							},
+						},
+					},
+				});
+
 				return {
 					...response,
 					success: response.status === 'SUCCEEDED',
+					cybersourceCustomerId: response.cybersourceCustomerId,
+					cybersourceSubscriptionId: subscription.id,
+					cybersourcePlanId: accountPlan?.cybersourcePlanId ?? '',
 					message:
 						response.status === 'SUCCEEDED'
 							? 'Payment processed successfully'

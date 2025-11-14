@@ -18,7 +18,6 @@ type Message {
     createdAt: DateTime!
 }
 
-
 extend type Query {
 	conversationsByUser(userId: ObjectID!): [Conversation]
 	conversation(conversationId: ObjectID!): Conversation

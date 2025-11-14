@@ -23,6 +23,11 @@ import {
 } from './contexts/listing/index.ts';
 
 import {
+	AccountPlan,
+	type AccountPlanContextApplicationService,
+} from './contexts/account-plan/index.ts';
+
+import {
 	AppealRequest,
 	type AppealRequestContextApplicationService,
 } from './contexts/appeal-request/index.ts';
@@ -35,6 +40,7 @@ export interface ApplicationServices {
 	AppealRequest: AppealRequestContextApplicationService;
 	get verifiedUser(): VerifiedUser | null;
 	Payment: PaymentApplicationService;
+	AccountPlan: AccountPlanContextApplicationService;
 }
 
 export interface VerifiedJwt {
@@ -111,6 +117,7 @@ export const buildApplicationServicesFactory = (
 			ReservationRequest: ReservationRequest(dataSources),
 			Listing: Listing(dataSources),
 			Conversation: Conversation(dataSources),
+			AccountPlan: AccountPlan(dataSources),
 			AppealRequest: AppealRequest(dataSources),
 		};
 	};

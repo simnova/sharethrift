@@ -76,14 +76,12 @@ export class ItemListingDomainAdapter
 			throw new Error('listing is not populated');
 		}
 		if (this.doc.sharer instanceof MongooseSeedwork.ObjectId) {
-			// Return a minimal entity reference when sharer is not populated
-			return {
-				id: this.doc.sharer.toString(),
-			} as Domain.Contexts.User.PersonalUser.PersonalUserEntityReference;
+			throw new Error('sharer is not populated');
 		}
-		return new PersonalUserDomainAdapter(
+		const adapter = new PersonalUserDomainAdapter(
 			this.doc.sharer as Models.User.PersonalUser,
 		);
+		return adapter.entityReference;
 	}
 	async loadSharer(): Promise<Domain.Contexts.User.PersonalUser.PersonalUserEntityReference> {
 		if (!this.doc.sharer) {
@@ -92,9 +90,10 @@ export class ItemListingDomainAdapter
 		if (this.doc.sharer instanceof MongooseSeedwork.ObjectId) {
 			await this.doc.populate('sharer');
 		}
-		return new PersonalUserDomainAdapter(
+		const adapter = new PersonalUserDomainAdapter(
 			this.doc.sharer as Models.User.PersonalUser,
 		);
+		return adapter.entityReference;
 	}
 	set sharer(user: Domain.Contexts.User.PersonalUser.PersonalUserEntityReference) {
 		if (!user?.id) {
