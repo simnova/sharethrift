@@ -30,3 +30,15 @@ fragment HomeAllListingsTableContainerListingFields on ListingAll {
   sharingPeriodStart
   sharingPeriodEnd
 }
+
+mutation HomeAllListingsTableContainerCancelItemListing($id: ObjectID!) {
+  cancelItemListing(id: $id) {
+    id
+    state
+    updatedAt
+  }
+}
+
+mutation HomeAllListingsTableContainerDeleteListing($id: ObjectID!) {
+  deleteItemListing(id: $id)
+}

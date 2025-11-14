@@ -1,5 +1,6 @@
 import type { Resolvers } from '../../builder/generated.js';
 import { PopulatePersonalUserFromField } from '../../resolver-helper.ts';
+import type { GraphContext } from '../../../init/context.ts';
 
 const itemListingResolvers: Resolvers = {
 	ItemListing: {
@@ -121,19 +122,20 @@ const itemListingResolvers: Resolvers = {
 		},
 
 		removeListing: async (_parent, args, context) => {
-			// Admin-note: role-based authorization should be implemented here (security)
-			// Once implemented, use system-level permissions for admin operations
-			await context.applicationServices.Listing.ItemListing.update({
+			// TODO: Implement proper admin authorization check here
+
+			const adminUserId = 'system-admin'; // Placeholder until proper admin auth implemented
+			
+			await context.applicationServices.Listing.ItemListing.deleteListings({
 				id: args.id,
-				isDeleted: true,
+				userId: adminUserId,
 			});
 			return true;
 		},
 
 		unblockListing: async (_parent, args, context) => {
 			// Admin-note: role-based authorization should be implemented here (security)
-			// Once implemented, use system-level permissions for admin operations
-			await context.applicationServices.Listing.ItemListing.update({
+			await context.applicationServices.Listing.ItemListing.unblock({
 				id: args.id,
 				isBlocked: false,
 			});
@@ -150,11 +152,36 @@ const itemListingResolvers: Resolvers = {
 				throw new Error('Authentication required');
 			}
 
-			const result =
-				await context.applicationServices.Listing.ItemListing.cancel({
-					id: args.id,
+			return await context.applicationServices.Listing.ItemListing.cancel({
+				id: args.id,
+			});
+		},
+
+		deleteItemListing: async (
+			_parent: unknown,
+			args: { id: string},
+			context: GraphContext,
+		) => {
+			const userEmail =
+				context.applicationServices.verifiedUser?.verifiedJwt?.email;
+			if (!userEmail) {
+				throw new Error('Authentication required');
+			}
+
+			// Get the current user
+			const user =
+				await context.applicationServices.User.PersonalUser.queryByEmail({
+					email: userEmail,
 				});
-			return result
+
+			if (!user) {
+				throw new Error('User not found');
+			}
+
+            return await context.applicationServices.Listing.ItemListing.deleteListings({
+				id: args.id,
+				userId: user.id,
+			});
 		},
 	},
 };

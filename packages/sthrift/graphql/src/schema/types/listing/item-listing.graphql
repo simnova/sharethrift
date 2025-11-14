@@ -72,6 +72,7 @@ input CreateItemListingInput {
 extend type Mutation {
   createItemListing(input: CreateItemListingInput!): ItemListing!
   cancelItemListing(id: ObjectID!): ItemListing!
+  deleteItemListing(id: ObjectID!): Boolean!
   removeListing(id: ObjectID!): Boolean!
   unblockListing(id: ObjectID!): Boolean!
 }
