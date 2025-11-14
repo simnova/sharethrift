@@ -74,7 +74,7 @@ export class ConversationRepository
 		const newDoc = new this.model();
 		// Set a placeholder messagingConversationId for new conversations
 		// In production, this would typically be set when creating the messaging conversation
-		newDoc.messagingConversationId = `temp-${Date.now()}-${Math.random().toString(36).substring(2, 15)}`;
+		newDoc.messagingConversationId = `temp-${Date.now()}-${crypto.randomUUID()}`;
 		
 		const adapter = this.typeConverter.toAdapter(newDoc);
 		
