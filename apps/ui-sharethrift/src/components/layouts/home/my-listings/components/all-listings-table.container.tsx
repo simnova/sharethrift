@@ -60,7 +60,6 @@ export const AllListingsTableContainer: React.FC<AllListingsTableContainerProps>
   });
 
   const listings = data?.myListingsAll?.items ?? [];
-  console.log("Listings data:", data);
   const total = data?.myListingsAll?.total ?? 0;
 
   // Transform domain fields to UI format
@@ -110,20 +109,11 @@ export const AllListingsTableContainer: React.FC<AllListingsTableContainerProps>
 
   const handleAction = async (action: string, listingId: string) => {
     if (action === "cancel") {
-      try {
-        await cancelListing({ variables: { id: listingId } });
-      } catch (error) {
-        console.error("Cancel listing error:", error);
-      }
+      await cancelListing({ variables: { id: listingId } });
     } else if (action === "delete") {
-      try {
-        await deleteListing({ variables: { id: listingId } });
-      } catch (error) {
-        console.error("Delete listing error:", error);
-      }
+      await deleteListing({ variables: { id: listingId } });
     } else {
-      // TODO: Implement other actions in future PRs
-      console.log(`Action: ${action}, Listing ID: ${listingId}`);
+      message.info(`Action "${action}" for listing ${listingId} coming soon.`);
     }
   };
 
