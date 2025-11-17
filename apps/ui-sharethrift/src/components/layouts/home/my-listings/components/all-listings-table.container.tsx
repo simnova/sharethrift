@@ -2,13 +2,34 @@ import { useState } from "react";
 import { useQuery, useMutation } from "@apollo/client/react";
 import { AllListingsTable } from "./all-listings-table.tsx";
 import { ComponentQueryLoader } from "@sthrift/ui-components";
-import { HomeAllListingsTableContainerMyListingsAllDocument, HomeAllListingsTableContainerCancelItemListingDocument } from "../../../../../generated.tsx";
+import { HomeAllListingsTableContainerMyListingsAllDocument, HomeAllListingsTableContainerCancelItemListingDocument, HomeAllListingsTableContainerPauseItemListingDocument } from "../../../../../generated.tsx";
 import { message } from "antd";
 
 export interface AllListingsTableContainerProps {
   currentPage: number;
   onPageChange: (page: number) => void;
 }
+
+/**
+ * Maps domain listing state to UI status
+ * Domain states: Published, Paused, Cancelled, Drafted, Expired, Blocked, Appeal Requested
+ * UI statuses: Active, Paused, Cancelled, Draft, Expired, Blocked, Cancelled
+ */
+const mapDomainStateToUIStatus = (state: string | null | undefined): string => {
+  if (!state) return 'Unknown';
+  
+  const stateMap: Record<string, string> = {
+    'Published': 'Active',
+    'Paused': 'Paused',
+    'Cancelled': 'Cancelled',
+    'Drafted': 'Draft',
+    'Expired': 'Expired',
+    'Blocked': 'Blocked',
+    'Appeal Requested': 'Blocked', // Map appeal requested to blocked for UI
+  };
+  
+  return stateMap[state] || state;
+};
 
 export const AllListingsTableContainer: React.FC<AllListingsTableContainerProps> = ({
   currentPage,
@@ -49,6 +70,16 @@ export const AllListingsTableContainer: React.FC<AllListingsTableContainerProps>
     },
   });
 
+  const [pauseListing] = useMutation(HomeAllListingsTableContainerPauseItemListingDocument, {
+    onCompleted: () => {
+      message.success("Listing paused successfully");
+      refetch();
+    },
+    onError: (error) => {
+      message.error(`Failed to pause listing: ${error.message}`);
+    },
+  });
+
   const listings = data?.myListingsAll?.items ?? [];
   console.log("Listings data:", data);
   const total = data?.myListingsAll?.total ?? 0;
@@ -67,7 +98,7 @@ export const AllListingsTableContainer: React.FC<AllListingsTableContainerProps>
       image: listing.images?.[0] ?? null,
       publishedAt: listing.createdAt ?? null,
       reservationPeriod,
-      status: listing.state ?? 'Unknown',
+      status: mapDomainStateToUIStatus(listing.state),
       pendingRequestsCount: 0, // TODO: implement in future
     };
   });
@@ -104,6 +135,12 @@ export const AllListingsTableContainer: React.FC<AllListingsTableContainerProps>
         await cancelListing({ variables: { id: listingId } });
       } catch (error) {
         console.error("Cancel listing error:", error);
+      }
+    } else if (action === "pause") {
+      try {
+        await pauseListing({ variables: { id: listingId } });
+      } catch (error) {
+        console.error("Pause listing error:", error);
       }
     } else {
       // TODO: Implement other actions in future PRs

@@ -45,7 +45,10 @@ const itemListingResolvers: Resolvers = {
 			);
 		},
         itemListings: async (_parent, _args, context) => {
-			return await context.applicationServices.Listing.ItemListing.queryAll({});
+			const allListings = await context.applicationServices.Listing.ItemListing.queryAll({});
+			// Filter out paused listings from search results for reservers
+			// Paused listings should not be visible to reservers
+			return allListings.filter(listing => listing.state !== 'Paused');
 		},
 
 		itemListing: async (_parent, args, context) => {
@@ -155,6 +158,23 @@ const itemListingResolvers: Resolvers = {
 					id: args.id,
 				});
 			return result
+		},
+		pauseItemListing: async (
+			_parent: unknown,
+			args: { id: string },
+			context,
+		) => {
+			const userEmail =
+				context.applicationServices.verifiedUser?.verifiedJwt?.email;
+			if (!userEmail) {
+				throw new Error('Authentication required');
+			}
+
+			const result =
+				await context.applicationServices.Listing.ItemListing.pause({
+					id: args.id,
+				});
+			return result;
 		},
 	},
 };

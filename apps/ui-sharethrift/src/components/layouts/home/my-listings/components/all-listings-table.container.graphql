@@ -30,3 +30,11 @@ fragment HomeAllListingsTableContainerListingFields on ListingAll {
   sharingPeriodStart
   sharingPeriodEnd
 }
+
+mutation HomeAllListingsTableContainerPauseItemListing($id: ObjectID!) {
+  pauseItemListing(id: $id) {
+    id
+    state
+    updatedAt
+  }
+}
