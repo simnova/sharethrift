@@ -114,15 +114,21 @@ export class ConversationDomainAdapter
 		this.doc.messagingConversationId = value;
 	}
 
+	private _messages: Domain.Contexts.Conversation.Conversation.MessageEntityReference[] = [];
+
 	get messages(): Domain.Contexts.Conversation.Conversation.MessageEntityReference[] {
 		// For now, return empty array since messages are not stored as subdocuments
 		// TODO: Implement proper message loading from separate collection
-		return [];
+		return this._messages;
+	}
+
+	set messages(value: Domain.Contexts.Conversation.Conversation.MessageEntityReference[]) {
+		this._messages = value;
 	}
 
 	loadMessages(): Promise<Domain.Contexts.Conversation.Conversation.MessageEntityReference[]> {
 		// For now, return empty array since messages are not stored as subdocuments
 		// TODO: Implement proper message loading from separate collection or populate from subdocuments
-		return Promise.resolve([]);
+		return Promise.resolve(this._messages);
 	}
 }

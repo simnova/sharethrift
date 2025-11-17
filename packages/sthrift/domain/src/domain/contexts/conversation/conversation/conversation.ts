@@ -32,19 +32,14 @@ export class Conversation<props extends ConversationProps>
 		messages: MessageEntityReference[],
 		passport: Passport,
 	): Conversation<props> {
-		const instance = new Conversation(
-			{
-				...newProps,
-				sharer,
-				reserver,
-				listing,
-                messages,
-			} as props,
-			passport,
-		);
-		instance.markAsNew();
-		instance.isNew = false;
-		return instance;
+		const newInstance = new Conversation(newProps, passport);
+		newInstance.markAsNew();
+		newInstance.sharer = sharer;
+		newInstance.reserver = reserver;
+		newInstance.listing = listing;
+		newInstance.props.messages = messages;
+		newInstance.isNew = false;
+		return newInstance;
 	}
 
 	private markAsNew(): void {
