@@ -121,7 +121,7 @@ Before(function() {
     actor.error = undefined;
 });
 
-Given('a valid Passport with reservation request permissions', function () {
+Given('a valid Passport with reservation request permissions', () => {
     const actor = actorCalled('User');
     const permissions: Partial<ReservationRequestDomainPermissions> = {
         canCloseRequest: true,
@@ -134,7 +134,7 @@ Given('a valid Passport with reservation request permissions', function () {
 
 // Note: Using shared step definition for "a valid PersonalUserEntityReference for {string}"
 
-Given('a ReservationRequest aggregate with state {string}', function (state: string) {
+Given('a ReservationRequest aggregate with state {string}', (state: string) => {
     const actor = actorCalled('User');
     const tomorrow = new Date();
     tomorrow.setDate(tomorrow.getDate() + 1);
@@ -187,7 +187,7 @@ Given('a ReservationRequest aggregate with state {string}', function (state: str
     }
 });
 
-Given('a ReservationRequest aggregate', function () {
+Given('a ReservationRequest aggregate', () => {
     const actor = actorCalled('User');
     const tomorrow = new Date();
     tomorrow.setDate(tomorrow.getDate() + 1);
@@ -219,12 +219,12 @@ Given('a ReservationRequest aggregate', function () {
     );
 });
 
-Given('a valid ItemListingEntityReference for {string} with state {string}', function (listingId: string, state: string) {
+Given('a valid ItemListingEntityReference for {string} with state {string}', (listingId: string, state: string) => {
     const actor = actorCalled('User');
     actor.itemListing = { ...testListingRef, id: listingId.replace(/^"|"$/g, ''), state: state.replace(/^"|"$/g, '') };
 });
 
-Given('base reservation request properties with state {string}, listing {string}, reserver {string}, valid reservation period, and timestamps', function (state: string, listingId: string, reserverId: string) {
+Given('base reservation request properties with state {string}, listing {string}, reserver {string}, valid reservation period, and timestamps', (state: string, listingId: string, reserverId: string) => {
     const actor = actorCalled('User');
     const tomorrow = new Date();
     tomorrow.setDate(tomorrow.getDate() + 1);
@@ -245,7 +245,7 @@ Given('base reservation request properties with state {string}, listing {string}
     };
 });
 
-When('I create a new ReservationRequest aggregate using getNewInstance with state {string}, listing {string}, reserver {string}, reservationPeriodStart {string}, and reservationPeriodEnd {string}', function (state: string, listingId: string, reserverId: string, periodStart: string, periodEnd: string) {
+When('I create a new ReservationRequest aggregate using getNewInstance with state {string}, listing {string}, reserver {string}, reservationPeriodStart {string}, and reservationPeriodEnd {string}', (state: string, listingId: string, reserverId: string, periodStart: string, periodEnd: string) => {
     const actor = actorCalled('User');
     try {
         const startDate = periodStart === "tomorrow" ? 
@@ -291,7 +291,7 @@ When('I create a new ReservationRequest aggregate using getNewInstance with stat
     }
 });
 
-Given('a new ReservationRequest aggregate being created', function () {
+Given('a new ReservationRequest aggregate being created', () => {
     const actor = actorCalled('User');
     
     // Set up initial dates - far enough in the future to avoid any timing issues
@@ -328,7 +328,7 @@ Given('a new ReservationRequest aggregate being created', function () {
     );
 });
 
-When('I try to set the reservationPeriodStart to a past date', function () {
+When('I try to set the reservationPeriodStart to a past date', () => {
     const actor = actorCalled('User');
     try {
         if (actor.currentReservationRequest) {
@@ -343,7 +343,7 @@ When('I try to set the reservationPeriodStart to a past date', function () {
     }
 });
 
-When('I try to set reservationPeriodEnd to a date before reservationPeriodStart', function () {
+When('I try to set reservationPeriodEnd to a date before reservationPeriodStart', () => {
     const actor = actorCalled('User');
     try {
         if (actor.currentReservationRequest) {
@@ -385,7 +385,7 @@ When('I try to set reservationPeriodEnd to a date before reservationPeriodStart'
     }
 });
 
-Given('an existing ReservationRequest aggregate', function () {
+Given('an existing ReservationRequest aggregate', () => {
     const actor = actorCalled('User');
     const tomorrow = new Date();
     tomorrow.setDate(tomorrow.getDate() + 1);
@@ -417,7 +417,7 @@ Given('an existing ReservationRequest aggregate', function () {
     );
 });
 
-When('I try to set a new listing', function () {
+When('I try to set a new listing', () => {
     const actor = actorCalled('User');
     try {
         if (actor.currentReservationRequest) {
@@ -429,7 +429,7 @@ When('I try to set a new listing', function () {
     }
 });
 
-When('I try to set a new reserver', function () {
+When('I try to set a new reserver', () => {
     const actor = actorCalled('User');
     try {
         if (actor.currentReservationRequest) {
@@ -441,7 +441,7 @@ When('I try to set a new reserver', function () {
     }
 });
 
-Given('the user has permission to {word} requests', function (action: string) {
+Given('the user has permission to {word} requests', (action: string) =>  {
     const actor = actorCalled('User');
     if (!actor.currentReservationRequest) {
         throw new Error('No reservation request was created');
@@ -463,7 +463,7 @@ Given('the user has permission to {word} requests', function (action: string) {
     actor.currentReservationRequest = new ReservationRequest(props, actor.passport);
 });
 
-Given('the user does not have permission to {word} requests', function (action: string) {
+Given('the user does not have permission to {word} requests', (action: string) => {
     const actor = actorCalled('User');
     if (!actor.currentReservationRequest) {
         throw new Error('No reservation request was created');
@@ -485,7 +485,7 @@ Given('the user does not have permission to {word} requests', function (action: 
     actor.currentReservationRequest = new ReservationRequest(props, actor.passport);
 });
 
-Given('closeRequestedBySharer is true', function () {
+Given('closeRequestedBySharer is true', () => {
     const actor = actorCalled('User');
     if (actor.currentReservationRequest) {
         // The domain requires state to be ACCEPTED before setting closeRequested flags
@@ -493,7 +493,7 @@ Given('closeRequestedBySharer is true', function () {
     }
 });
 
-Given('closeRequestedByReserver is true', function () {
+Given('closeRequestedByReserver is true', () => {
     const actor = actorCalled('User');
     if (actor.currentReservationRequest) {
         // The domain requires state to be ACCEPTED before setting closeRequested flags
@@ -501,7 +501,7 @@ Given('closeRequestedByReserver is true', function () {
     }
 });
 
-Given('neither closeRequestedBySharer nor closeRequestedByReserver is true', function () {
+Given('neither closeRequestedBySharer nor closeRequestedByReserver is true', () => {
     const actor = actorCalled('User');
     if (actor.currentReservationRequest) {
         actor.currentReservationRequest.closeRequestedBySharer = false;
@@ -509,7 +509,7 @@ Given('neither closeRequestedBySharer nor closeRequestedByReserver is true', fun
     }
 });
 
-When('I set state to {string}', function (state: string) {
+When('I set state to {string}', (state: string) => {
     const actor = actorCalled('User');
     try {
         if (actor.currentReservationRequest) {
@@ -526,7 +526,7 @@ When('I set state to {string}', function (state: string) {
     }
 });
 // Test: Setting state to REQUESTED after creation should raise PermissionError
-Then('setting state to REQUESTED on an existing reservation should raise a PermissionError', function () {
+Then('setting state to REQUESTED on an existing reservation should raise a PermissionError', () => {
     const actor = actorCalled('User');
     let errorCaught: unknown = null;
     try {
@@ -540,8 +540,8 @@ Then('setting state to REQUESTED on an existing reservation should raise a Permi
         throw new Error('PermissionError was not raised when setting state to REQUESTED on an existing reservation');
     }
 });
-  
-When('I try to set state to {string}', function (state: string) {
+
+When('I try to set state to {string}', (state: string) => {
     const actor = actorCalled('User');
     try {
         if (!actor.currentReservationRequest) {
@@ -560,7 +560,7 @@ When('I try to set state to {string}', function (state: string) {
 });
 
 // Test: Setting state to REQUESTED after creation should raise PermissionError
-Then('setting state to REQUESTED on an existing reservation should raise a PermissionError', function () {
+Then('setting state to REQUESTED on an existing reservation should raise a PermissionError', () => {
     const actor = actorCalled('User');
     let errorCaught = null;
     try {
@@ -575,7 +575,7 @@ Then('setting state to REQUESTED on an existing reservation should raise a Permi
     }
 });
 
-When('I try to set closeRequestedBySharer to true', function () {
+When('I try to set closeRequestedBySharer to true', () => {
     const actor = actorCalled('User');
     try {
         if (actor.currentReservationRequest) {
@@ -586,7 +586,7 @@ When('I try to set closeRequestedBySharer to true', function () {
     }
 });
 
-When('I try to set closeRequestedByReserver to true', function () {
+When('I try to set closeRequestedByReserver to true', () => {
     const actor = actorCalled('User');
     try {
         if (actor.currentReservationRequest) {
@@ -597,21 +597,21 @@ When('I try to set closeRequestedByReserver to true', function () {
     }
 });
 
-When('I call loadListing', async function () {
+When('I call loadListing', async () => {
     const actor = actorCalled('User');
     if (actor.currentReservationRequest) {
         actor.loadedListing = await actor.currentReservationRequest.loadListing();
     }
 });
 
-When('I call loadReserver', async function () {
+When('I call loadReserver', async () => {
     const actor = actorCalled('User');
     if (actor.currentReservationRequest) {
         actor.loadedReserver = await actor.currentReservationRequest.loadReserver();
     }
 });
 
-Then('the reservation request\'s state should be {string}', function (expectedState: string) {
+Then('the reservation request\'s state should be {string}', (expectedState: string) => {
     const actor = actorCalled('User');
     const request = actor.currentReservationRequest;
     
@@ -631,7 +631,7 @@ Then('the reservation request\'s state should be {string}', function (expectedSt
     );
 });
 
-Then('the reservation request\'s listing should reference {string}', function (listingId: string) {
+Then('the reservation request\'s listing should reference {string}', (listingId: string) => {
     const actor = actorCalled('User');
     const request = actor.currentReservationRequest;
     
@@ -644,7 +644,7 @@ Then('the reservation request\'s listing should reference {string}', function (l
     );
 });
 
-Then('the reservation request\'s reserver should reference {string}', function (reserverId: string) {
+Then('the reservation request\'s reserver should reference {string}', (reserverId: string) => {
     const actor = actorCalled('User');
     const request = actor.currentReservationRequest;
     
@@ -657,7 +657,7 @@ Then('the reservation request\'s reserver should reference {string}', function (
     );
 });
 
-Then('an error should be thrown indicating {string}', function (errorMessage: string) {
+Then('an error should be thrown indicating {string}', (errorMessage: string) => {
     const actor = actorCalled('User');
     actor.attemptsTo(
         Ensure.that(actor.error?.message || '', equals(errorMessage.replace(/^"|"$/g, '')))
@@ -666,7 +666,7 @@ Then('an error should be thrown indicating {string}', function (errorMessage: st
 
 // Note: Using shared step definition for "a PermissionError should be thrown"
 
-Then('a PermissionError should be thrown with message {string}', function (message: string) {
+Then('a PermissionError should be thrown with message {string}', (message: string) => {
     const actor = actorCalled('User');
     actor.attemptsTo(
         Ensure.that(actor.error instanceof DomainSeedwork.PermissionError, equals(true)),
@@ -674,21 +674,21 @@ Then('a PermissionError should be thrown with message {string}', function (messa
     );
 });
 
-Then('it should return the associated listing', function () {
+Then('it should return the associated listing', () => {
     const actor = actorCalled('User');
     actor.attemptsTo(
         Ensure.that(actor.loadedListing?.id || '', equals(actor.currentReservationRequest?.listing.id || ''))
     );
 });
 
-Then('it should return the associated reserver', function () {
+Then('it should return the associated reserver', () => {
     const actor = actorCalled('User');
     actor.attemptsTo(
         Ensure.that(actor.loadedReserver?.id || '', equals(actor.currentReservationRequest?.reserver.id || ''))
     );
 });
 
-Then('createdAt should return the correct date', function () {
+Then('createdAt should return the correct date', () => {
     const actor = actorCalled('User');
     const request = actor.currentReservationRequest;
     
@@ -701,7 +701,7 @@ Then('createdAt should return the correct date', function () {
     );
 });
 
-Then('updatedAt should return the correct date', function () {
+Then('updatedAt should return the correct date', () => {
     const actor = actorCalled('User');
     const request = actor.currentReservationRequest;
     
@@ -714,7 +714,7 @@ Then('updatedAt should return the correct date', function () {
     );
 });
 
-Then('schemaVersion should return the correct version', function () {
+Then('schemaVersion should return the correct version', () => {
     const actor = actorCalled('User');
     const request = actor.currentReservationRequest;
     
