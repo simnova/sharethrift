@@ -11,8 +11,9 @@ export function toDomainConversationProps(
 		listing: Domain.Contexts.Listing.ItemListing.ItemListingEntityReference,
 		messages: Domain.Contexts.Conversation.Conversation.MessageEntityReference[],
 	): Domain.Contexts.Conversation.Conversation.ConversationProps {
-		// biome-ignore lint/complexity/useLiteralKeys: TypeScript requires bracket notation for index signature
-		const messagingId = (messagingConversation.metadata?.['originalSid'] as string) || messagingConversation.id;
+
+		// biome-ignore lint/complexity/useLiteralKeys: metadata is an index signature requiring bracket notation
+		const messagingId = (messagingConversation.metadata?.["originalSid"] as string) || messagingConversation.id;
 		
 		return {
 			id: messagingConversation.id,
@@ -35,8 +36,8 @@ export function toDomainMessage(
 		messagingMessage: MessageInstance,
 		authorId: Domain.Contexts.Conversation.Conversation.AuthorId,
 	): Domain.Contexts.Conversation.Conversation.MessageEntityReference {
-		// biome-ignore lint/complexity/useLiteralKeys: TypeScript requires bracket notation for index signature
-		const messagingId = (messagingMessage.metadata?.['originalSid'] as string) || messagingMessage.id;
+		// biome-ignore lint/complexity/useLiteralKeys: metadata is an index signature requiring bracket notation
+		const messagingId = (messagingMessage.metadata?.["originalSid"] as string) || messagingMessage.id;
 		
 		const messagingMessageId = new Domain.Contexts.Conversation.Conversation.MessagingMessageId(
 			messagingId,

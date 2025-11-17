@@ -1,10 +1,21 @@
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { describeFeature, loadFeature } from '@amiceli/vitest-cucumber';
+import type { Domain } from '@sthrift/domain';
 import { expect, vi } from 'vitest';
 import type { GraphContext } from '../../../init/context.ts';
 import conversationResolvers from './conversation.resolvers.ts';
-import type { Domain } from '@sthrift/domain';
+
+// Generic GraphQL resolver type for tests
+type TestResolver<
+	Args extends object = Record<string, unknown>,
+	Return = unknown,
+> = (
+	parent: unknown,
+	args: Args,
+	context: GraphContext,
+	info: unknown,
+) => Promise<Return>;
 
 const test = { for: describeFeature };
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
@@ -12,26 +23,46 @@ const feature = await loadFeature(
 	path.resolve(__dirname, 'features/conversation.resolvers.feature'),
 );
 
-function createMockConversation(overrides: Partial<Domain.Contexts.Conversation.Conversation.ConversationEntityReference> = {}): Domain.Contexts.Conversation.Conversation.ConversationEntityReference {
-	return {
-		id: 'conversation-123',
-		sharer: {} as Domain.Contexts.User.PersonalUser.PersonalUserEntityReference,
-		reserver: {} as Domain.Contexts.User.PersonalUser.PersonalUserEntityReference,
-		listing: {} as Domain.Contexts.Listing.ItemListing.ItemListingEntityReference,
-		messagingConversationId: 'messaging-123',
+// Types for test results
+type ConversationEntity =
+	Domain.Contexts.Conversation.Conversation.ConversationEntityReference;
+type PersonalUserEntity =
+	Domain.Contexts.User.PersonalUser.PersonalUserEntityReference;
+type ItemListingEntity =
+	Domain.Contexts.Listing.ItemListing.ItemListingEntityReference;
+
+// Helper function to create mock conversation
+function createMockConversation(
+	overrides: Partial<ConversationEntity> = {},
+): ConversationEntity {
+	const baseConversation: ConversationEntity = {
+		id: 'conv-1',
+		sharer: {
+			id: 'user-1',
+		} as PersonalUserEntity,
+		loadSharer: vi.fn().mockResolvedValue({ id: 'user-1' }),
+		reserver: {
+			id: 'user-2',
+		} as PersonalUserEntity,
+		loadReserver: vi.fn().mockResolvedValue({ id: 'user-2' }),
+		listing: {
+			id: 'listing-1',
+		} as ItemListingEntity,
+		loadListing: vi.fn().mockResolvedValue({ id: 'listing-1' }),
+		messagingConversationId: 'twilio-123',
 		messages: [],
-		loadSharer: vi.fn(),
-		loadReserver: vi.fn(),
-		loadListing: vi.fn(),
-		loadMessages: vi.fn(),
-		schemaVersion: '1.0',
-		createdAt: new Date(),
-		updatedAt: new Date(),
+		loadMessages: vi.fn().mockResolvedValue([]),
+		createdAt: new Date('2020-01-01T00:00:00Z'),
+		updatedAt: new Date('2020-01-02T00:00:00Z'),
+		schemaVersion: '1.0.0',
 		...overrides,
 	};
+	return baseConversation;
 }
 
-function makeMockGraphContext(overrides: Partial<GraphContext> = {}): GraphContext {
+function makeMockGraphContext(
+	overrides: Partial<GraphContext> = {},
+): GraphContext {
 	return {
 		applicationServices: {
 			Conversation: {
@@ -41,280 +72,280 @@ function makeMockGraphContext(overrides: Partial<GraphContext> = {}): GraphConte
 					create: vi.fn(),
 				},
 			},
-			...overrides.applicationServices,
 		},
 		...overrides,
-	} as GraphContext;
+	} as unknown as GraphContext;
 }
 
-test.for(feature, ({ Scenario, BeforeEachScenario }) => {
+// Helper function to reduce repetition in conversation queries
+function executeConversationsByUser(
+	userId: string,
+	// biome-ignore lint/suspicious/noExplicitAny: Test helper function needs flexible mock setup
+	setup: (svc: any) => void,
+): Promise<unknown> {
+	const context = makeMockGraphContext();
+	const svc = context.applicationServices.Conversation.Conversation;
+	setup(svc);
+	const resolver = conversationResolvers.Query
+		?.conversationsByUser as TestResolver<{ userId: string }>;
+	return resolver?.(null, { userId }, context, null);
+}
+
+test.for(feature, ({ Scenario }) => {
 	let context: GraphContext;
 	let result: unknown;
+	let error: Error | undefined;
 
-	BeforeEachScenario(() => {
-		context = makeMockGraphContext();
-		vi.clearAllMocks();
-	});
+	Scenario(
+		'Querying conversations by user ID',
+		({ When, Then }) => {
+			When('the conversationsByUser query is executed with that ID', async () => {
+				result = await executeConversationsByUser('user-1', (svc) => {
+					svc.queryByUser.mockResolvedValue([createMockConversation()]);
+				});
+			});
+			Then(
+				'it should return a list of Conversation entities',
+				() => {
+					expect(Array.isArray(result)).toBe(true);
+					expect((result as ConversationEntity[]).length).toBeGreaterThan(0);
+				},
+			);
+		},
+	);
 
-	Scenario('Querying conversations by user ID', ({ Given, When, Then, And }) => {
-		Given('a valid user ID', () => {
-			// User ID will be passed in the resolver call
-		});
-		When('the conversationsByUser query is executed with that ID', async () => {
-			const mockConversation = createMockConversation();
-			vi.mocked(context.applicationServices.Conversation.Conversation.queryByUser).mockResolvedValue([mockConversation]);
-			
-			const resolver = conversationResolvers.Query?.conversationsByUser;
-			if (typeof resolver === 'function') {
-				result = await resolver({}, { userId: 'user-123' }, context, {} as never);
-			}
-		});
-		Then('it should call Conversation.Conversation.queryByUser with the provided userId', () => {
-			expect(context.applicationServices.Conversation.Conversation.queryByUser).toHaveBeenCalledWith({ userId: 'user-123' });
-		});
-		And('it should return a list of Conversation entities', () => {
-			expect(result).toBeDefined();
-			expect(Array.isArray(result)).toBe(true);
-			expect((result as unknown[]).length).toBeGreaterThan(0);
-		});
-	});
+	Scenario(
+		'Querying conversations by user ID with no conversations',
+		({ When, Then }) => {
+			When('the conversationsByUser query is executed', async () => {
+				result = await executeConversationsByUser('user-1', (svc) => {
+					svc.queryByUser.mockResolvedValue([]);
+				});
+			});
+			Then('it should return an empty list', () => {
+				expect(Array.isArray(result)).toBe(true);
+				expect((result as ConversationEntity[]).length).toBe(0);
+			});
+		},
+	);
 
-	Scenario('Querying conversations by user ID with no conversations', ({ Given, And, When, Then }) => {
-		Given('a valid user ID', () => {
-			// User ID will be passed in the resolver call
-		});
-		And('Conversation.Conversation.queryByUser returns an empty array', () => {
-			vi.mocked(context.applicationServices.Conversation.Conversation.queryByUser).mockResolvedValue([]);
-		});
-		When('the conversationsByUser query is executed', async () => {
-			const resolver = conversationResolvers.Query?.conversationsByUser;
-			if (typeof resolver === 'function') {
-				result = await resolver({}, { userId: 'user-123' }, context, {} as never);
-			}
-		});
-		Then('it should return an empty list', () => {
-			expect(result).toBeDefined();
-			expect(Array.isArray(result)).toBe(true);
-			expect((result as unknown[]).length).toBe(0);
-		});
-	});
-
-	Scenario('Querying conversations by user ID when an error occurs', ({ Given, And, When, Then }) => {
-		Given('a valid user ID', () => {
-			// User ID will be passed in the resolver call
-		});
-		And('Conversation.Conversation.queryByUser throws an error', () => {
-			vi.mocked(context.applicationServices.Conversation.Conversation.queryByUser).mockRejectedValue(new Error('Query failed'));
-		});
-		When('the conversationsByUser query is executed', async () => {
-			const resolver = conversationResolvers.Query?.conversationsByUser;
-			if (typeof resolver === 'function') {
+	Scenario(
+		'Querying conversations by user ID when an error occurs',
+		({ When, Then }) => {
+			When('the conversationsByUser query is executed', async () => {
 				try {
-					await resolver({}, { userId: 'user-123' }, context, {} as never);
-				} catch (error) {
-					result = error;
+					result = await executeConversationsByUser('user-1', (svc) => {
+						svc.queryByUser.mockRejectedValue(new Error('Database error'));
+					});
+				} catch (e) {
+					error = e as Error;
 				}
-			}
-		});
-		Then('it should propagate the error message', () => {
-			expect(result).toBeDefined();
-			expect((result as Error).message).toBe('Query failed');
-		});
-	});
+			});
+			Then('it should propagate the error message', () => {
+				expect(error).toBeDefined();
+				expect(error?.message).toContain('Database error');
+			});
+		},
+	);
 
 	Scenario('Querying a conversation by ID', ({ Given, When, Then, And }) => {
 		Given('a valid conversation ID', () => {
-			// Conversation ID will be passed in the resolver call
+			context = makeMockGraphContext();
+			(
+				context.applicationServices.Conversation.Conversation
+					.queryById as ReturnType<typeof vi.fn>
+			).mockResolvedValue(createMockConversation());
 		});
 		When('the conversation query is executed with that ID', async () => {
-			const mockConversation = createMockConversation({ id: 'conversation-123' });
-			vi.mocked(context.applicationServices.Conversation.Conversation.queryById).mockResolvedValue(mockConversation);
-			
-			const resolver = conversationResolvers.Query?.conversation;
-			if (typeof resolver === 'function') {
-				result = await resolver({}, { conversationId: 'conversation-123' }, context, {} as never);
-			}
+			const resolver = conversationResolvers.Query
+				?.conversation as TestResolver<{ conversationId: string }>;
+			result = await resolver(
+				null,
+				{ conversationId: 'conv-1' },
+				context,
+				null,
+			);
 		});
-		Then('it should call Conversation.Conversation.queryById with the provided conversationId', () => {
-			expect(context.applicationServices.Conversation.Conversation.queryById).toHaveBeenCalledWith({ conversationId: 'conversation-123' });
-		});
+		Then(
+			'it should call Conversation.Conversation.queryById with the provided conversationId',
+			() => {
+				expect(
+					context.applicationServices.Conversation.Conversation.queryById,
+				).toHaveBeenCalledWith({ conversationId: 'conv-1' });
+			},
+		);
 		And('it should return the corresponding Conversation entity', () => {
 			expect(result).toBeDefined();
-			expect((result as { id: string }).id).toBe('conversation-123');
+			expect((result as ConversationEntity).id).toBe('conv-1');
 		});
 	});
 
-	Scenario('Querying a conversation by ID that does not exist', ({ Given, When, Then }) => {
-		Given('a conversation ID that does not match any record', () => {
-			vi.mocked(context.applicationServices.Conversation.Conversation.queryById).mockResolvedValue(null);
-		});
-		When('the conversation query is executed', async () => {
-			const resolver = conversationResolvers.Query?.conversation;
-			if (typeof resolver === 'function') {
-				result = await resolver({}, { conversationId: 'nonexistent-123' }, context, {} as never);
-			}
-		});
-		Then('it should return null', () => {
-			expect(result).toBeNull();
-		});
-	});
+	Scenario(
+		'Querying a conversation by ID that does not exist',
+		({ Given, When, Then }) => {
+			Given('a conversation ID that does not match any record', () => {
+				context = makeMockGraphContext();
+				(
+					context.applicationServices.Conversation.Conversation
+						.queryById as ReturnType<typeof vi.fn>
+				).mockResolvedValue(null);
+			});
+			When('the conversation query is executed', async () => {
+				const resolver = conversationResolvers.Query
+					?.conversation as TestResolver<{ conversationId: string }>;
+				result = await resolver(
+					null,
+					{ conversationId: 'nonexistent' },
+					context,
+					null,
+				);
+			});
+			Then('it should return null', () => {
+				expect(result).toBeNull();
+			});
+		},
+	);
 
-	Scenario('Querying a conversation by ID when an error occurs', ({ Given, And, When, Then }) => {
-		Given('a valid conversation ID', () => {
-			// Conversation ID will be passed in the resolver call
-		});
-		And('Conversation.Conversation.queryById throws an error', () => {
-			vi.mocked(context.applicationServices.Conversation.Conversation.queryById).mockRejectedValue(new Error('Query failed'));
-		});
-		When('the conversation query is executed', async () => {
-			const resolver = conversationResolvers.Query?.conversation;
-			if (typeof resolver === 'function') {
+	Scenario(
+		'Querying a conversation by ID when an error occurs',
+		({ Given, And, When, Then }) => {
+			Given('a valid conversation ID', () => {
+				context = makeMockGraphContext();
+			});
+			And('Conversation.Conversation.queryById throws an error', () => {
+				(
+					context.applicationServices.Conversation.Conversation
+						.queryById as ReturnType<typeof vi.fn>
+				).mockRejectedValue(new Error('Database error'));
+			});
+			When('the conversation query is executed', async () => {
+				const resolver = conversationResolvers.Query
+					?.conversation as TestResolver<{ conversationId: string }>;
 				try {
-					await resolver({}, { conversationId: 'conversation-123' }, context, {} as never);
-				} catch (error) {
-					result = error;
+					result = await resolver(
+						null,
+						{ conversationId: 'conv-1' },
+						context,
+						null,
+					);
+				} catch (e) {
+					error = e as Error;
 				}
-			}
-		});
-		Then('it should propagate the error message', () => {
-			expect(result).toBeDefined();
-			expect((result as Error).message).toBe('Query failed');
-		});
-	});
+			});
+			Then('it should propagate the error message', () => {
+				expect(error).toBeDefined();
+				expect(error?.message).toContain('Database error');
+			});
+		},
+	);
 
 	Scenario('Creating a conversation', ({ Given, When, Then, And }) => {
-		Given('a valid ConversationCreateInput with sharerId, reserverId, and listingId', () => {
-			// Input will be passed in the resolver call
-		});
-		When('the createConversation mutation is executed with that input', async () => {
-			const mockConversation = createMockConversation();
-			vi.mocked(context.applicationServices.Conversation.Conversation.create).mockResolvedValue(mockConversation);
-			
-			const resolver = conversationResolvers.Mutation?.createConversation;
-			if (typeof resolver === 'function') {
+		Given(
+			'a valid ConversationCreateInput with sharerId, reserverId, and listingId',
+			() => {
+				context = makeMockGraphContext();
+				(
+					context.applicationServices.Conversation.Conversation
+						.create as ReturnType<typeof vi.fn>
+				).mockResolvedValue(createMockConversation());
+			},
+		);
+		When(
+			'the createConversation mutation is executed with that input',
+			async () => {
+				const resolver = conversationResolvers.Mutation
+					?.createConversation as TestResolver<{
+					input: {
+						sharerId: string;
+						reserverId: string;
+						listingId: string;
+					};
+				}>;
 				result = await resolver(
-					{},
+					null,
 					{
 						input: {
-							sharerId: 'sharer-123',
-							reserverId: 'reserver-123',
-							listingId: 'listing-123',
+							sharerId: 'user-1',
+							reserverId: 'user-2',
+							listingId: 'listing-1',
 						},
 					},
 					context,
-					{} as never,
+					null,
 				);
-			}
-		});
-		Then('it should call Conversation.Conversation.create with the provided input fields', () => {
-			expect(context.applicationServices.Conversation.Conversation.create).toHaveBeenCalledWith({
-				sharerId: 'sharer-123',
-				reserverId: 'reserver-123',
-				listingId: 'listing-123',
+			},
+		);
+		Then(
+			'it should call Conversation.Conversation.create with the provided input fields',
+			() => {
+				expect(
+					context.applicationServices.Conversation.Conversation.create,
+				).toHaveBeenCalledWith({
+					sharerId: 'user-1',
+					reserverId: 'user-2',
+					listingId: 'listing-1',
+				});
+			},
+		);
+		And(
+			'it should return a ConversationMutationResult with success true and the created conversation',
+			() => {
+				expect(result).toBeDefined();
+				expect(
+					(result as { status: { success: boolean } }).status.success,
+				).toBe(true);
+				expect((result as { conversation: ConversationEntity }).conversation).toBeDefined();
+			},
+		);
+	});
+
+	Scenario(
+		'Creating a conversation when Conversation.Conversation.create throws an error',
+		({ Given, And, When, Then }) => {
+			Given('a valid ConversationCreateInput', () => {
+				context = makeMockGraphContext();
 			});
-		});
-		And('it should return a ConversationMutationResult with success true and the created conversation', () => {
-			expect(result).toBeDefined();
-			expect((result as { status: { success: boolean } }).status.success).toBe(true);
-			expect((result as { conversation: unknown }).conversation).toBeDefined();
-		});
-	});
-
-	Scenario('Creating a conversation when Conversation.Conversation.create throws an error', ({ Given, And, When, Then }) => {
-		Given('a valid ConversationCreateInput', () => {
-			// Input will be passed in the resolver call
-		});
-		And('Conversation.Conversation.create throws an error', () => {
-			vi.mocked(context.applicationServices.Conversation.Conversation.create).mockRejectedValue(new Error('Creation failed'));
-		});
-		When('the createConversation mutation is executed', async () => {
-			const resolver = conversationResolvers.Mutation?.createConversation;
-			if (typeof resolver === 'function') {
-				result = await resolver(
-					{},
-					{
-						input: {
-							sharerId: 'sharer-123',
-							reserverId: 'reserver-123',
-							listingId: 'listing-123',
-						},
-					},
-					context,
-					{} as never,
-				);
-			}
-		});
-		Then('it should return a ConversationMutationResult with success false and the error message', () => {
-			expect(result).toBeDefined();
-			expect((result as { status: { success: boolean } }).status.success).toBe(false);
-			expect((result as { status: { errorMessage: string } }).status.errorMessage).toBe('Creation failed');
-		});
-	});
-
-	Scenario('Creating a conversation with missing input fields', ({ Given, When, Then }) => {
-		Given('an incomplete ConversationCreateInput (e.g., missing sharerId or reserverId)', () => {
-			// Incomplete input will be passed in the resolver call
-		});
-		When('the createConversation mutation is executed', async () => {
-			const mockConversation = createMockConversation();
-			vi.mocked(context.applicationServices.Conversation.Conversation.create).mockResolvedValue(mockConversation);
-			
-			const resolver = conversationResolvers.Mutation?.createConversation;
-			if (typeof resolver === 'function') {
-				result = await resolver(
-					{},
-					{
-						input: {
-							sharerId: '',
-							reserverId: '',
-							listingId: 'listing-123',
-						},
-					},
-					context,
-					{} as never,
-				);
-			}
-		});
-		Then('it should throw a validation error', () => {
-			// GraphQL schema validation would catch this in real scenario
-			expect(result).toBeDefined();
-		});
-	});
-
-	Scenario('Unexpected error during any query or mutation', ({ Given, When, Then, And }) => {
-		Given('any unexpected error occurs inside the resolver', () => {
-			vi.mocked(context.applicationServices.Conversation.Conversation.create).mockRejectedValue(new Error('Unexpected error'));
-		});
-		When('the operation is executed', async () => {
-			const consoleErrorSpy = vi.spyOn(console, 'error').mockImplementation(() => {
-				// Mock implementation to suppress error logs during tests
+			And('Conversation.Conversation.create throws an error', () => {
+				(
+					context.applicationServices.Conversation.Conversation
+						.create as ReturnType<typeof vi.fn>
+				).mockRejectedValue(new Error('Creation failed'));
 			});
-			
-			const resolver = conversationResolvers.Mutation?.createConversation;
-			if (typeof resolver === 'function') {
+			When('the createConversation mutation is executed', async () => {
+				const resolver = conversationResolvers.Mutation
+					?.createConversation as TestResolver<{
+					input: {
+						sharerId: string;
+						reserverId: string;
+						listingId: string;
+					};
+				}>;
 				result = await resolver(
-					{},
+					null,
 					{
 						input: {
-							sharerId: 'sharer-123',
-							reserverId: 'reserver-123',
-							listingId: 'listing-123',
+							sharerId: 'user-1',
+							reserverId: 'user-2',
+							listingId: 'listing-1',
 						},
 					},
 					context,
-					{} as never,
+					null,
 				);
-			}
-			
-			consoleErrorSpy.mockRestore();
-		});
-		Then('the error should be logged with "Conversation > Mutation :" or corresponding query log', () => {
-			// Error logging is verified through the mutation return value
-			expect(result).toBeDefined();
-		});
-		And('it should return a safe error response or propagate the exception', () => {
-			expect((result as { status: { success: boolean } }).status.success).toBe(false);
-			expect((result as { status: { errorMessage: string } }).status.errorMessage).toBeDefined();
-		});
-	});
+			});
+			Then(
+				'it should return a ConversationMutationResult with success false and the error message',
+				() => {
+					expect(result).toBeDefined();
+					expect(
+						(result as { status: { success: boolean } }).status.success,
+					).toBe(false);
+					expect(
+						(result as { status: { errorMessage?: string } }).status
+							.errorMessage,
+					).toContain('Creation failed');
+				},
+			);
+		},
+	);
 });

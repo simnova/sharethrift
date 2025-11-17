@@ -33,16 +33,17 @@ export class Conversation<props extends ConversationProps>
 		messagingConversationId: string | undefined,
 		passport: Passport,
 	): Conversation<props> {
-		const instance = new Conversation(newProps, passport);
-		instance.markAsNew();
-		instance.sharer = sharer;
-		instance.reserver = reserver;
-		instance.listing = listing;
+		const newInstance = new Conversation(newProps, passport);
+		newInstance.markAsNew();
+		newInstance.sharer = sharer;
+		newInstance.reserver = reserver;
+		newInstance.listing = listing;
+		newInstance.props.messages = _messages;
 		if (messagingConversationId) {
-			instance.messagingConversationId = messagingConversationId;
+			newInstance.messagingConversationId = messagingConversationId;
 		}
-		instance.isNew = false;
-		return instance;
+		newInstance.isNew = false;
+		return newInstance;
 	}
 
 	private markAsNew(): void {

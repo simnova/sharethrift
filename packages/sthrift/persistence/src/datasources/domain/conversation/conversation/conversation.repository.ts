@@ -72,7 +72,13 @@ export class ConversationRepository
 		listing: Domain.Contexts.Listing.ItemListing.ItemListingEntityReference,
 		messagingConversationId?: string,
 	): Promise<Domain.Contexts.Conversation.Conversation.Conversation<PropType>> {
-		const adapter = this.typeConverter.toAdapter(new this.model());
+		const newDoc = new this.model();
+		// Set a placeholder messagingConversationId for new conversations
+		// In production, this would typically be set when creating the messaging conversation
+		newDoc.messagingConversationId = `temp-${Date.now()}-${crypto.randomUUID()}`;
+		
+		const adapter = this.typeConverter.toAdapter(newDoc);
+		
 		return Promise.resolve(
 			Domain.Contexts.Conversation.Conversation.Conversation.getNewInstance(
 				adapter,
