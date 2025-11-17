@@ -65,6 +65,9 @@ export class Conversation<props extends ConversationProps>
 	}
 
 	async loadSharer(): Promise<PersonalUserEntityReference> {
+		if (!this.props.loadSharer) {
+			throw new Error('loadSharer method is not available on this conversation instance');
+		}
 		return await this.props.loadSharer();
 	}
 
@@ -92,6 +95,9 @@ export class Conversation<props extends ConversationProps>
 	}
 
 	async loadReserver(): Promise<PersonalUserEntityReference> {
+		if (!this.props.loadReserver) {
+			throw new Error('loadReserver method is not available on this conversation instance');
+		}
 		return await this.props.loadReserver();
 	}
 
@@ -118,6 +124,9 @@ export class Conversation<props extends ConversationProps>
 	}
 
 	async loadMessages(): Promise<readonly MessageEntityReference[]> {
+		if (!this.props.loadMessages) {
+			throw new Error('loadMessages method is not available on this conversation instance');
+		}
 		return await this.props.loadMessages();
 	}
 
@@ -130,6 +139,9 @@ export class Conversation<props extends ConversationProps>
 	}
 
 	async loadListing(): Promise<ItemListingEntityReference> {
+		if (!this.props.loadListing) {
+			throw new Error('loadListing method is not available on this conversation instance');
+		}
 		return await this.props.loadListing();
 	}
 

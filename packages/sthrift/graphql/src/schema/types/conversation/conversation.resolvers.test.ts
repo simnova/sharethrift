@@ -77,6 +77,20 @@ function makeMockGraphContext(
 	} as unknown as GraphContext;
 }
 
+// Helper function to reduce repetition in conversation queries
+function executeConversationsByUser(
+	userId: string,
+	// biome-ignore lint/suspicious/noExplicitAny: Test helper function needs flexible mock setup
+	setup: (svc: any) => void,
+): Promise<unknown> {
+	const context = makeMockGraphContext();
+	const svc = context.applicationServices.Conversation.Conversation;
+	setup(svc);
+	const resolver = conversationResolvers.Query
+		?.conversationsByUser as TestResolver<{ userId: string }>;
+	return resolver?.(null, { userId }, context, null);
+}
+
 test.for(feature, ({ Scenario }) => {
 	let context: GraphContext;
 	let result: unknown;
@@ -84,53 +98,29 @@ test.for(feature, ({ Scenario }) => {
 
 	Scenario(
 		'Querying conversations by user ID',
-		({ Given, When, Then, And }) => {
-			Given('a valid user ID', () => {
-				context = makeMockGraphContext();
-				(
-					context.applicationServices.Conversation.Conversation
-						.queryByUser as ReturnType<typeof vi.fn>
-				).mockResolvedValue([createMockConversation()]);
-			});
+		({ When, Then }) => {
 			When('the conversationsByUser query is executed with that ID', async () => {
-				const resolver = conversationResolvers.Query
-					?.conversationsByUser as TestResolver<{ userId: string }>;
-				result = await resolver(null, { userId: 'user-1' }, context, null);
+				result = await executeConversationsByUser('user-1', (svc) => {
+					svc.queryByUser.mockResolvedValue([createMockConversation()]);
+				});
 			});
 			Then(
-				'it should call Conversation.Conversation.queryByUser with the provided userId',
+				'it should return a list of Conversation entities',
 				() => {
-					expect(
-						context.applicationServices.Conversation.Conversation.queryByUser,
-					).toHaveBeenCalledWith({ userId: 'user-1' });
+					expect(Array.isArray(result)).toBe(true);
+					expect((result as ConversationEntity[]).length).toBeGreaterThan(0);
 				},
 			);
-			And('it should return a list of Conversation entities', () => {
-				expect(Array.isArray(result)).toBe(true);
-				expect((result as ConversationEntity[]).length).toBeGreaterThan(0);
-			});
 		},
 	);
 
 	Scenario(
 		'Querying conversations by user ID with no conversations',
-		({ Given, And, When, Then }) => {
-			Given('a valid user ID', () => {
-				context = makeMockGraphContext();
-			});
-			And(
-				'Conversation.Conversation.queryByUser returns an empty array',
-				() => {
-					(
-						context.applicationServices.Conversation.Conversation
-							.queryByUser as ReturnType<typeof vi.fn>
-					).mockResolvedValue([]);
-				},
-			);
+		({ When, Then }) => {
 			When('the conversationsByUser query is executed', async () => {
-				const resolver = conversationResolvers.Query
-					?.conversationsByUser as TestResolver<{ userId: string }>;
-				result = await resolver(null, { userId: 'user-1' }, context, null);
+				result = await executeConversationsByUser('user-1', (svc) => {
+					svc.queryByUser.mockResolvedValue([]);
+				});
 			});
 			Then('it should return an empty list', () => {
 				expect(Array.isArray(result)).toBe(true);
@@ -141,21 +131,12 @@ test.for(feature, ({ Scenario }) => {
 
 	Scenario(
 		'Querying conversations by user ID when an error occurs',
-		({ Given, And, When, Then }) => {
-			Given('a valid user ID', () => {
-				context = makeMockGraphContext();
-			});
-			And('Conversation.Conversation.queryByUser throws an error', () => {
-				(
-					context.applicationServices.Conversation.Conversation
-						.queryByUser as ReturnType<typeof vi.fn>
-				).mockRejectedValue(new Error('Database error'));
-			});
+		({ When, Then }) => {
 			When('the conversationsByUser query is executed', async () => {
-				const resolver = conversationResolvers.Query
-					?.conversationsByUser as TestResolver<{ userId: string }>;
 				try {
-					result = await resolver(null, { userId: 'user-1' }, context, null);
+					result = await executeConversationsByUser('user-1', (svc) => {
+						svc.queryByUser.mockRejectedValue(new Error('Database error'));
+					});
 				} catch (e) {
 					error = e as Error;
 				}

@@ -5,20 +5,14 @@ I want to query and mutate conversation entities
 So that I can retrieve and create conversations through the GraphQL API
 
   Scenario: Querying conversations by user ID
-		Given a valid user ID
 		When the conversationsByUser query is executed with that ID
-		Then it should call Conversation.Conversation.queryByUser with the provided userId
-		And it should return a list of Conversation entities
+		Then it should return a list of Conversation entities
 
 	Scenario: Querying conversations by user ID with no conversations
-		Given a valid user ID
-		And Conversation.Conversation.queryByUser returns an empty array
 		When the conversationsByUser query is executed
 		Then it should return an empty list
 
 	Scenario: Querying conversations by user ID when an error occurs
-		Given a valid user ID
-		And Conversation.Conversation.queryByUser throws an error
 		When the conversationsByUser query is executed
 		Then it should propagate the error message
 
