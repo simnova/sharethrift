@@ -57,3 +57,16 @@ fragment SharerAdminUserProfileFields on AdminUserAccountProfile {
 		country
 	}
 }
+
+mutation CreateConversation($input: ConversationCreateInput!) {
+	createConversation(input: $input) {
+		status {
+			success
+			errorMessage
+		}
+		conversation {
+			id
+			messagingConversationId
+		}
+	}
+}

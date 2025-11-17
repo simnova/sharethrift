@@ -75,6 +75,7 @@ export const ViewListingContainer: React.FC<ViewListingContainerProps> = (
 					listing={listingData?.itemListing as ItemListing}
 					userIsSharer={userIsSharer}
 					isAuthenticated={props.isAuthenticated}
+					currentUserId={reserverId}
 					sharedTimeAgo={sharedTimeAgo}
 					userReservationRequest={
 						userReservationData?.myActiveReservationForListing

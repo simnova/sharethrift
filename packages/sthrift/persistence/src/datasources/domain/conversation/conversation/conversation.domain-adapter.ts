@@ -27,7 +27,9 @@ export class ConversationDomainAdapter
 			throw new Error('sharer is not populated');
 		}
 		if (this.doc.sharer instanceof MongooseSeedwork.ObjectId) {
-			throw new Error('sharer is not populated or is not of the correct type');
+			throw new TypeError(
+				'sharer is not populated or is not of the correct type',
+			);
 		}
 		// Check userType discriminator to determine which adapter to use
 		const sharerDoc = this.doc.sharer as
@@ -66,8 +68,23 @@ export class ConversationDomainAdapter
 		);
 	}
 
-	set sharer(user: PersonalUserDomainAdapter | AdminUserDomainAdapter) {
-		this.doc.set('sharer', user.doc);
+	set sharer(user:
+		| PersonalUserDomainAdapter
+		| AdminUserDomainAdapter
+		| Domain.Contexts.User.PersonalUser.PersonalUserEntityReference
+		| Domain.Contexts.User.AdminUser.AdminUserEntityReference) {
+		if (
+			user instanceof Domain.Contexts.User.PersonalUser.PersonalUser ||
+			user instanceof Domain.Contexts.User.AdminUser.AdminUser
+		) {
+			this.doc.set('sharer', user.props.doc);
+			return;
+		}
+
+		if (!user?.id) {
+			throw new Error('sharer reference is missing id');
+		}
+		this.doc.set('sharer', new MongooseSeedwork.ObjectId(user.id));
 	}
 
 	get reserver(): PersonalUserDomainAdapter | AdminUserDomainAdapter {
@@ -75,7 +92,7 @@ export class ConversationDomainAdapter
 			throw new Error('reserver is not populated');
 		}
 		if (this.doc.reserver instanceof MongooseSeedwork.ObjectId) {
-			throw new Error(
+			throw new TypeError(
 				'reserver is not populated or is not of the correct type',
 			);
 		}
@@ -116,8 +133,23 @@ export class ConversationDomainAdapter
 		);
 	}
 
-	set reserver(user: PersonalUserDomainAdapter | AdminUserDomainAdapter) {
-		this.doc.set('reserver', user.doc);
+	set reserver(user:
+		| PersonalUserDomainAdapter
+		| AdminUserDomainAdapter
+		| Domain.Contexts.User.PersonalUser.PersonalUserEntityReference
+		| Domain.Contexts.User.AdminUser.AdminUserEntityReference) {
+		if (
+			user instanceof Domain.Contexts.User.PersonalUser.PersonalUser ||
+			user instanceof Domain.Contexts.User.AdminUser.AdminUser
+		) {
+			this.doc.set('reserver', user.props.doc);
+			return;
+		}
+
+		if (!user?.id) {
+			throw new Error('reserver reference is missing id');
+		}
+		this.doc.set('reserver', new MongooseSeedwork.ObjectId(user.id));
 	}
 
 	get listing(): ItemListingDomainAdapter {
@@ -125,7 +157,9 @@ export class ConversationDomainAdapter
 			throw new Error('listing is not populated');
 		}
 		if (this.doc.listing instanceof MongooseSeedwork.ObjectId) {
-			throw new Error('listing is not populated or is not of the correct type');
+			throw new TypeError(
+				'listing is not populated or is not of the correct type',
+			);
 		}
 		return new ItemListingDomainAdapter(
 			this.doc.listing as Models.Listing.ItemListing,
@@ -144,8 +178,18 @@ export class ConversationDomainAdapter
 		);
 	}
 
-	set listing(listing: ItemListingDomainAdapter) {
-		this.doc.set('listing', listing.doc);
+	set listing(listing:
+		| ItemListingDomainAdapter
+		| Domain.Contexts.Listing.ItemListing.ItemListingEntityReference) {
+		if (listing instanceof Domain.Contexts.Listing.ItemListing.ItemListing) {
+			this.doc.set('listing', listing.props.doc);
+			return;
+		}
+
+		if (!listing?.id) {
+			throw new Error('listing reference is missing id');
+		}
+		this.doc.set('listing', new MongooseSeedwork.ObjectId(listing.id));
 	}
 
 	get messagingConversationId(): string {
@@ -155,10 +199,17 @@ export class ConversationDomainAdapter
 		this.doc.messagingConversationId = value;
 	}
 
+	private _messages: Domain.Contexts.Conversation.Conversation.MessageEntityReference[] =
+		[];
+
 	get messages(): Domain.Contexts.Conversation.Conversation.MessageEntityReference[] {
 		// For now, return empty array since messages are not stored as subdocuments
 		// TODO: Implement proper message loading from separate collection
-		return [];
+		return this._messages;
+	}
+
+	set messages(value: Domain.Contexts.Conversation.Conversation.MessageEntityReference[]) {
+		this._messages = value;
 	}
 
 	loadMessages(): Promise<
@@ -166,6 +217,6 @@ export class ConversationDomainAdapter
 	> {
 		// For now, return empty array since messages are not stored as subdocuments
 		// TODO: Implement proper message loading from separate collection or populate from subdocuments
-		return Promise.resolve([]);
+		return Promise.resolve(this._messages);
 	}
 }
