@@ -29,12 +29,12 @@ declare module '@serenity-js/core' {
 
 // Keep the existing testUserRef definition here
 
-Before(function() {
+Before(() => {
     const actor = actorCalled('User');
     actor.error = undefined;
 });
 
-Given('a valid Passport with listing permissions', function () {
+Given('a valid Passport with listing permissions', () => {
     const actor = actorCalled('User');
     actor.passport = new SystemPassport({
         canCreateItemListing: true,
@@ -144,7 +144,7 @@ const testUserRef = {
 
 // Note: Using shared step definition for "a valid PersonalUserEntityReference for {string}"
 
-Given('base item listing fields with title {string}, description {string}, category {string}, location {string}, sharingPeriodStart {string}, sharingPeriodEnd {string}, and valid timestamps', function (title: string, description: string, category: string, location: string, start: string, end: string) {
+Given('base item listing fields with title {string}, description {string}, category {string}, location {string}, sharingPeriodStart {string}, sharingPeriodEnd {string}, and valid timestamps',  (title: string, description: string, category: string, location: string, start: string, end: string) => {
     const actor = actorCalled('User');
     actor.listingFields = {
         title,
@@ -156,7 +156,7 @@ Given('base item listing fields with title {string}, description {string}, categ
     };
 });
 
-Given('an ItemListing aggregate with permission to update item listing', function () {
+Given('an ItemListing aggregate with permission to update item listing',  () => {
     const actor = actorCalled('User');
     const passport = new SystemPassport({ canUpdateItemListing: true });
     if (actor.currentListing) {
@@ -166,7 +166,7 @@ Given('an ItemListing aggregate with permission to update item listing', functio
     }
 });
 
-Given('an ItemListing aggregate without permission to update item listing', function () {
+Given('an ItemListing aggregate without permission to update item listing',  () => {
     const actor = actorCalled('User');
     const passport = new SystemPassport({ canUpdateItemListing: false });
     if (actor.currentListing) {
@@ -175,7 +175,7 @@ Given('an ItemListing aggregate without permission to update item listing', func
     }
 });
 
-Given('an ItemListing aggregate with permission to publish item listing', function () {
+Given('an ItemListing aggregate with permission to publish item listing',  () => {
     const actor = actorCalled('User');
     const passport = new SystemPassport({ canPublishItemListing: true });
     if (actor.currentListing) {
@@ -185,7 +185,7 @@ Given('an ItemListing aggregate with permission to publish item listing', functi
     }
 });
 
-When('I create a new ItemListing aggregate using getNewInstance with sharer {string} and title {string}', function (sharerId: string, title: string) {
+When('I create a new ItemListing aggregate using getNewInstance with sharer {string} and title {string}', (sharerId: string, title: string) => {
     const actor = actorCalled('User');
     actor.currentListing = ItemListing.getNewInstance<ItemListingProps>(
         actor.personalUser,
@@ -201,7 +201,7 @@ When('I create a new ItemListing aggregate using getNewInstance with sharer {str
     );
 });
 
-When('I create a new ItemListing aggregate using getNewInstance with isDraft true and empty title, description, category, and location', function () {
+When('I create a new ItemListing aggregate using getNewInstance with isDraft true and empty title, description, category, and location', () => {
     const actor = actorCalled('User');
     const now = new Date();
     const tomorrow = new Date();
@@ -222,7 +222,7 @@ When('I create a new ItemListing aggregate using getNewInstance with isDraft tru
     );
 });
 
-When('I set the title to {string}', function (title: string) {
+When('I set the title to {string}', (title: string) => {
     const actor = actorCalled('User');
     try {
         if (actor.currentListing) {
@@ -233,7 +233,7 @@ When('I set the title to {string}', function (title: string) {
     }
 });
 
-When('I try to set the title to {string}', function (title: string) {
+When('I try to set the title to {string}', (title: string) => {
     const actor = actorCalled('User');
     try {
         if (actor.currentListing) {
@@ -244,7 +244,7 @@ When('I try to set the title to {string}', function (title: string) {
     }
 });
 
-When('I set the description to {string}', function (description: string) {
+When('I set the description to {string}', (description: string) => {
     const actor = actorCalled('User');
     try {
         if (actor.currentListing) {
@@ -255,7 +255,7 @@ When('I set the description to {string}', function (description: string) {
     }
 });
 
-When('I try to set the description to {string}', function (description: string) {
+When('I try to set the description to {string}', (description: string) => {
     const actor = actorCalled('User');
     try {
         if (actor.currentListing) {
@@ -266,7 +266,7 @@ When('I try to set the description to {string}', function (description: string) 
     }
 });
 
-When('I set the category to {string}', function (category: string) {
+When('I set the category to {string}', (category: string) => {
     const actor = actorCalled('User');
     try {
         if (actor.currentListing) {
@@ -277,7 +277,7 @@ When('I set the category to {string}', function (category: string) {
     }
 });
 
-When('I try to set the category to {string}', function (category: string) {
+When('I try to set the category to {string}', (category: string) => {
     const actor = actorCalled('User');
     try {
         if (actor.currentListing) {
@@ -288,7 +288,7 @@ When('I try to set the category to {string}', function (category: string) {
     }
 });
 
-When('I set the location to {string}', function (location: string) {
+When('I set the location to {string}', (location: string) => {
     const actor = actorCalled('User');
     try {
         if (actor.currentListing) {
@@ -299,7 +299,7 @@ When('I set the location to {string}', function (location: string) {
     }
 });
 
-When('I try to set the location to {string}', function (location: string) {
+When('I try to set the location to {string}', (location: string) => {
     const actor = actorCalled('User');
     try {
         if (actor.currentListing) {
@@ -310,7 +310,7 @@ When('I try to set the location to {string}', function (location: string) {
     }
 });
 
-When('I set the sharingPeriodStart to {string}', function (start: string) {
+When('I set the sharingPeriodStart to {string}', (start: string) => {
     const actor = actorCalled('User');
     try {
         if (actor.currentListing) {
@@ -321,7 +321,7 @@ When('I set the sharingPeriodStart to {string}', function (start: string) {
     }
 });
 
-When('I set the sharingPeriodEnd to {string}', function (end: string) {
+When('I set the sharingPeriodEnd to {string}', (end: string) => {
     const actor = actorCalled('User');
     try {
         if (actor.currentListing) {
@@ -332,7 +332,7 @@ When('I set the sharingPeriodEnd to {string}', function (end: string) {
     }
 });
 
-When('I try to set the sharingPeriodStart or sharingPeriodEnd', function () {
+When('I try to set the sharingPeriodStart or sharingPeriodEnd', (start: string, end: string) => {
     const actor = actorCalled('User');
     try {
         if (actor.currentListing) {
@@ -343,7 +343,7 @@ When('I try to set the sharingPeriodStart or sharingPeriodEnd', function () {
     }
 });
 
-When('I set images to [{string}, {string}]', function (image1: string, image2: string) {
+When('I set images to [{string}, {string}]', (image1: string, image2: string) => {
     const actor = actorCalled('User');
     try {
         if (actor.currentListing) {
@@ -354,7 +354,7 @@ When('I set images to [{string}, {string}]', function (image1: string, image2: s
     }
 });
 
-When('I try to set images to [{string}, {string}]', function (image1: string, image2: string) {
+When('I try to set images to [{string}, {string}]', (image1: string, image2: string) => {
     const actor = actorCalled('User');
     try {
         if (actor.currentListing) {
@@ -365,7 +365,7 @@ When('I try to set images to [{string}, {string}]', function (image1: string, im
     }
 });
 
-When('I call publish\\(\\)', function () {
+When('I call publish\\(\\)', () => {
     const actor = actorCalled('User');
     try {
         if (actor.currentListing) {
@@ -376,7 +376,7 @@ When('I call publish\\(\\)', function () {
     }
 });
 
-Then(/^the listing(?:'s)? state should be "(.*)"$/, function (expectedState: string) {
+Then(/^the listing(?:'s)? state should be "(.*)"$/, (expectedState: string) => {
     const actor = actorCalled('User');
     const listing = actor.currentListing;
     
@@ -389,7 +389,7 @@ Then(/^the listing(?:'s)? state should be "(.*)"$/, function (expectedState: str
     );
 });
 
-Then('the listing\'s title should be {string}', function (title: string) {
+Then('the listing\'s title should be {string}', (title: string) => {
     const actor = actorCalled('User');
     const listing = actor.currentListing;
     if (!listing) {
@@ -400,7 +400,7 @@ Then('the listing\'s title should be {string}', function (title: string) {
     );
 });
 
-Then('the listing\'s sharer should reference {string}', function (userId: string) {
+Then('the listing\'s sharer should reference {string}', (userId: string) => {
     const actor = actorCalled('User');
     const listing = actor.currentListing;
     if (!listing) {
@@ -411,7 +411,7 @@ Then('the listing\'s sharer should reference {string}', function (userId: string
     );
 });
 
-Then('the listing\'s title should default to {string}', function (title: string) {
+Then('the listing\'s title should default to {string}', (title: string) => {
     const actor = actorCalled('User');
     const listing = actor.currentListing;
     if (!listing) {
@@ -422,7 +422,7 @@ Then('the listing\'s title should default to {string}', function (title: string)
     );
 });
 
-Then('the listing\'s description should default to {string}', function (description: string) {
+Then('the listing\'s description should default to {string}', (description: string) => {
     const actor = actorCalled('User');
     const listing = actor.currentListing;
     if (!listing) {
@@ -433,7 +433,7 @@ Then('the listing\'s description should default to {string}', function (descript
     );
 });
 
-Then('the listing\'s category should default to {string}', function (category: string) {
+Then('the listing\'s category should default to {string}', (category: string) => {
     const actor = actorCalled('User');
     const listing = actor.currentListing;
     if (!listing) {
@@ -444,7 +444,7 @@ Then('the listing\'s category should default to {string}', function (category: s
     );
 });
 
-Then('the listing\'s location should default to {string}', function (location: string) {
+Then('the listing\'s location should default to {string}', (location: string) => {
     const actor = actorCalled('User');
     const listing = actor.currentListing;
     if (!listing) {
@@ -455,7 +455,7 @@ Then('the listing\'s location should default to {string}', function (location: s
     );
 });
 
-Then('the title should remain unchanged', function () {
+Then('the title should remain unchanged', () => {
     const actor = actorCalled('User');
     const listing = actor.currentListing;
     if (!listing) {
@@ -466,7 +466,7 @@ Then('the title should remain unchanged', function () {
     );
 });
 
-Then('the listing\'s description should be {string}', function (description: string) {
+Then('the listing\'s description should be {string}', (description: string) => {
     const actor = actorCalled('User');
     const listing = actor.currentListing;
     if (!listing) {
@@ -477,7 +477,7 @@ Then('the listing\'s description should be {string}', function (description: str
     );
 });
 
-Then('the listing\'s category should be {string}', function (category: string) {
+Then('the listing\'s category should be {string}', (category: string) => {
     const actor = actorCalled('User');
     const listing = actor.currentListing;
     if (!listing) {
@@ -488,7 +488,7 @@ Then('the listing\'s category should be {string}', function (category: string) {
     );
 });
 
-Then('the listing\'s location should be {string}', function (location: string) {
+Then('the listing\'s location should be {string}', (location: string) => {
     const actor = actorCalled('User');
     const listing = actor.currentListing;
     if (!listing) {
@@ -499,7 +499,7 @@ Then('the listing\'s location should be {string}', function (location: string) {
     );
 });
 
-Then('the sharing period should update accordingly', function () {
+Then('the sharing period should update accordingly', () => {
     const actor = actorCalled('User');
     const listing = actor.currentListing;
     if (!listing) {
@@ -511,7 +511,7 @@ Then('the sharing period should update accordingly', function () {
     );
 });
 
-Then('the listing\'s images should be [{string}, {string}]', function (image1: string, image2: string) {
+Then('the listing\'s images should be [{string}, {string}]', (image1: string, image2: string) => {
     const actor = actorCalled('User');
     const listing = actor.currentListing;
     if (!listing) {
@@ -524,7 +524,7 @@ Then('the listing\'s images should be [{string}, {string}]', function (image1: s
 
 // Note: Using shared step definition for "a PermissionError should be thrown"
 
-Then('the updatedAt timestamp should change', function () {
+Then('the updatedAt timestamp should change', () => {
     const actor = actorCalled('User');
     const listing = actor.currentListing;
     if (!listing) {

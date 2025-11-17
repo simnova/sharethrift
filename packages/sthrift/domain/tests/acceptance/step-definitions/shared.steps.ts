@@ -72,12 +72,12 @@ const baseUserRef = {
     updatedAt: new Date()
 };
 
-Given('a valid PersonalUserEntityReference for {string}', function (userId: string) {
+Given('a valid PersonalUserEntityReference for {string}',  (userId: string) => {
     const actor = actorCalled('User');
     actor.personalUser = { ...baseUserRef, id: userId.replace(/^"|"$/g, '') };
 });
 
-Then('a PermissionError should be thrown', function () {
+Then('a PermissionError should be thrown', () => {
     const actor = actorCalled('User');
     if (!actor.error) {
         throw new Error('Expected an error to be thrown but no error was captured');

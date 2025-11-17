@@ -5,11 +5,9 @@ import { DomainSeedwork } from '@cellix/domain-seedwork';
 import './shared.steps';
 import { SystemPassport } from '../../../src/domain/iam/system/system.passport';
 import { ReservationRequest } from '../../../src/domain/contexts/reservation-request/reservation-request/reservation-request';
-import { ReservationRequestProps } from '../../../src/domain/contexts/reservation-request/reservation-request/reservation-request.entity';
-import { ReservationRequestEntityReference } from '../../../src/domain/contexts/reservation-request/reservation-request/reservation-request.entity';
-import { PersonalUserEntityReference } from '../../../src/domain/contexts/user/personal-user/personal-user.entity';
-import { ItemListingEntityReference } from '../../../src/domain/contexts/listing/item/item-listing.entity';
-import * as ValueObjects from '../../../src/domain/contexts/reservation-request/reservation-request/reservation-request.value-objects';
+import type { ReservationRequestProps } from '../../../src/domain/contexts/reservation-request/reservation-request/reservation-request.entity';
+import type { PersonalUserEntityReference } from '../../../src/domain/contexts/user/personal-user/personal-user.entity';
+import type { ItemListingEntityReference } from '../../../src/domain/contexts/listing/item/item-listing.entity';
 import { ReservationRequestStates } from '../../../src/domain/contexts/reservation-request/reservation-request/reservation-request.value-objects';
 import type { ReservationRequestDomainPermissions } from '../../../src/domain/contexts/reservation-request/reservation-request.domain-permissions';
 
@@ -224,7 +222,7 @@ Given('a valid ItemListingEntityReference for {string} with state {string}', (li
     actor.itemListing = { ...testListingRef, id: listingId.replace(/^"|"$/g, ''), state: state.replace(/^"|"$/g, '') };
 });
 
-Given('base reservation request properties with state {string}, listing {string}, reserver {string}, valid reservation period, and timestamps', (state: string, listingId: string, reserverId: string) => {
+Given('base reservation request properties with state {string}, listing {string}, reserver {string}, valid reservation period, and timestamps', (state: string, _listingId: string, _reserverId: string) => {
     const actor = actorCalled('User');
     const tomorrow = new Date();
     tomorrow.setDate(tomorrow.getDate() + 1);
