@@ -7,11 +7,6 @@
     "license": "MIT",
     "packageManager": "pnpm@10.18.2",
     "main": "apps/api/dist/src/index.js",
-    "pnpm": {
-        "overrides": {
-            "glob@>=10.3.7 <=11.0.3": "^11.1.0"
-        }
-    },
     "scripts": {
         "build": "turbo run build",
         "test": "turbo run test",
@@ -60,7 +55,7 @@
         "azurite": "^3.35.0",
         "concurrently": "^9.1.2",
         "cpx2": "^3.0.2",
-        "rimraf": "^6.1.0",
+        "rimraf": "^6.0.1",
         "rollup": "3.29.4",
         "tsx": "^4.20.3",
         "turbo": "^2.5.8",
