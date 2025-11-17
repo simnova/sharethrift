@@ -657,18 +657,12 @@ importers:
       '@cellix/vitest-config':
         specifier: workspace:*
         version: link:../../cellix/vitest-config
-      '@vitest/coverage-v8':
-        specifier: ^3.2.4
-        version: 3.2.4(@vitest/browser@3.2.4)(vitest@3.2.4)
       rimraf:
         specifier: ^6.0.1
         version: 6.0.1
       typescript:
         specifier: ^5.8.3
         version: 5.8.3
-      vitest:
-        specifier: ^3.2.4
-        version: 3.2.4(@types/debug@4.1.12)(@types/node@24.9.1)(@vitest/browser@3.2.4)(jiti@2.6.1)(jsdom@26.1.0)(lightningcss@1.30.2)(terser@5.44.0)(tsx@4.20.6)(yaml@2.8.1)
 
   packages/sthrift/context-spec:
     dependencies:
