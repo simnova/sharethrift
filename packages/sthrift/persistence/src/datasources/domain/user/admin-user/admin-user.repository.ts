@@ -16,9 +16,11 @@ export class AdminUserRepository<
 	async getById(
 		id: string,
 	): Promise<Domain.Contexts.User.AdminUser.AdminUser<PropType>> {
-		const user = await this.model.findOne({ _id: id }).exec();
+		const user = await this.model
+			.findOne({ _id: id, userType: 'admin-user' })
+			.exec();
 		if (!user) {
-			throw new Error(`AdminUser with id ${id} not found`);
+			throw new Error(`User with id ${id} not found`);
 		}
 		return this.typeConverter.toDomain(user, this.passport);
 	}

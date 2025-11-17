@@ -107,7 +107,7 @@ export class ReservationRequestDomainAdapter
 		const reserverDoc = this.doc.reserver as
 			| Models.User.PersonalUser
 			| Models.User.AdminUser;
-		if (reserverDoc.userType === 'admin') {
+		if (reserverDoc.userType === 'admin-user') {
 			return new AdminUserDomainAdapter(
 				this.doc.reserver as Models.User.AdminUser,
 			);
@@ -131,7 +131,7 @@ export class ReservationRequestDomainAdapter
 		const reserverDoc = this.doc.reserver as
 			| Models.User.PersonalUser
 			| Models.User.AdminUser;
-		if (reserverDoc.userType === 'admin') {
+		if (reserverDoc.userType === 'admin-user') {
 			return new AdminUserDomainAdapter(
 				this.doc.reserver as Models.User.AdminUser,
 			);

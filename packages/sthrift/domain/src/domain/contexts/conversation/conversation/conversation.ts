@@ -57,7 +57,7 @@ export class Conversation<props extends ConversationProps>
 
 	get sharer(): UserEntityReference {
 		// Polymorphic instantiation based on userType
-		if (this.props.sharer.userType === 'admin') {
+		if (this.props.sharer.userType === 'admin-user') {
 			return new AdminUser(
 				this.props.sharer as unknown as AdminUserProps,
 				this.passport,
@@ -94,7 +94,7 @@ export class Conversation<props extends ConversationProps>
 
 	get reserver(): UserEntityReference {
 		// Polymorphic instantiation based on userType
-		if (this.props.reserver.userType === 'admin') {
+		if (this.props.reserver.userType === 'admin-user') {
 			return new AdminUser(
 				this.props.reserver as unknown as AdminUserProps,
 				this.passport,

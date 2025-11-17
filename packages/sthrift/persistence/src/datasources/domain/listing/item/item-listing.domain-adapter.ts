@@ -88,7 +88,7 @@ export class ItemListingDomainAdapter
 		const sharerDoc = this.doc.sharer as
 			| Models.User.PersonalUser
 			| Models.User.AdminUser;
-		if (sharerDoc.userType === 'admin') {
+		if (sharerDoc.userType === 'admin-user') {
 			return new AdminUserDomainAdapter(
 				this.doc.sharer as Models.User.AdminUser,
 			);
@@ -111,7 +111,7 @@ export class ItemListingDomainAdapter
 		const sharerDoc = this.doc.sharer as
 			| Models.User.PersonalUser
 			| Models.User.AdminUser;
-		if (sharerDoc.userType === 'admin') {
+		if (sharerDoc.userType === 'admin-user') {
 			return new AdminUserDomainAdapter(
 				this.doc.sharer as Models.User.AdminUser,
 			);
