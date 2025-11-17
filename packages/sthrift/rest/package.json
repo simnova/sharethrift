@@ -21,13 +21,13 @@
     },
     "dependencies": {
         "@azure/functions": "^4.6.0",
-        "rimraf": "^6.1.0",
+        "rimraf": "^6.0.1",
         "typescript": "^5.8.3",
         "@sthrift/application-services": "workspace:*"
     },
     "devDependencies": {
         "@cellix/typescript-config": "workspace:*",
         "typescript": "^5.8.3",
-        "rimraf": "^6.1.0"
+        "rimraf": "^6.0.1"
     }
 }
