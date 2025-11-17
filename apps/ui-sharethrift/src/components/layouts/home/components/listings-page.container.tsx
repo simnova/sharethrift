@@ -1,70 +1,50 @@
+import { useQuery } from '@apollo/client/react';
+import {
+	ComponentQueryLoader,
+	type UIItemListing,
+} from '@sthrift/ui-components';
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { gql, useQuery } from '@apollo/client';
-import { ListingsPage } from './listings-page.tsx';
-import type { ItemListing } from './mock-listings.ts';
-// eslint-disable-next-line import/no-absolute-path, @typescript-eslint/ban-ts-comment
-// @ts-ignore - allow raw import string
-import ListingsPageQuerySource from './listings-page.container.graphql?raw';
+import {
+	ListingsPageContainerGetListingsDocument,
+	type ItemListing,
+} from '../../../../generated.tsx';
 import { useCreateListingNavigation } from './create-listing/hooks/use-create-listing-navigation.ts';
-
-type ItemListingState =
-	| 'Published'
-	| 'Paused'
-	| 'Cancelled'
-	| 'Drafted'
-	| 'Expired'
-	| 'Blocked'
-	| 'Appeal Requested';
-
-interface GraphQLItemListing {
-	id: string;
-	title: string;
-	description: string;
-	category: string;
-	location: string;
-	state: ItemListingState;
-	images: string[];
-	createdAt: string;
-	updatedAt: string;
-	sharingPeriodStart: string;
-	sharingPeriodEnd: string;
-	sharer: string;
-	schemaVersion: string;
-	version: number;
-	reports: number;
-	sharingHistory: string[];
-}
-
-interface ListingsQueryData {
-	itemListings: GraphQLItemListing[];
-}
-
-const GET_LISTINGS = gql(ListingsPageQuerySource);
+import { ListingsPage } from './listings-page.tsx';
 
 interface ListingsPageContainerProps {
 	isAuthenticated: boolean;
 }
 
-export function ListingsPageContainer({
+export const ListingsPageContainer: React.FC<ListingsPageContainerProps> = ({
 	isAuthenticated,
-}: ListingsPageContainerProps) {
-	// State for search query and pagination
+}) => {
 	const [searchQuery, setSearchQuery] = useState('');
 	const [currentPage, setCurrentPage] = useState(1);
 	const pageSize = 20;
-
 	const [selectedCategory, setSelectedCategory] = useState('');
-	const { data, loading, error } = useQuery<ListingsQueryData>(GET_LISTINGS);
+	const { data, loading, error } = useQuery(
+		ListingsPageContainerGetListingsDocument,
+		{
+			fetchPolicy: 'cache-first',
+			nextFetchPolicy: 'cache-first',
+		},
+	);
 
 	const filteredListings = data?.itemListings
-		? data.itemListings.filter((listing: GraphQLItemListing) => {
-				if (selectedCategory && selectedCategory !== 'All') {
-					if (listing.category !== selectedCategory) return false;
+		? data.itemListings.filter((listing) => {
+				if (
+					selectedCategory &&
+					selectedCategory !== 'All' &&
+					listing.category !== selectedCategory
+				) {
+					return false;
 				}
-				if (searchQuery) {
-					if (!listing.title.toLowerCase().includes(searchQuery.toLowerCase()))
-						return false;
+				if (
+					searchQuery &&
+					!listing.title.toLowerCase().includes(searchQuery.toLowerCase())
+				) {
+					return false;
 				}
 				return true;
 			})
@@ -81,8 +61,8 @@ export function ListingsPageContainer({
 	};
 
 	const navigate = useNavigate();
-	const handleListingClick = (listing: ItemListing) => {
-		navigate(`/listing/${listing._id}`);
+	const handleListingClick = (listing: UIItemListing) => {
+		navigate(`/listing/${listing.id}`);
 	};
 
 	const handleCreateListingClick = useCreateListingNavigation();
@@ -102,39 +82,51 @@ export function ListingsPageContainer({
 		setCurrentPage(1); // Reset to first page when changing category
 	};
 
-	if (error) return <div>Error loading listings</div>;
-	if (loading) return <div>Loading listings...</div>;
-
 	return (
-		<ListingsPage
-			isAuthenticated={isAuthenticated}
-			searchQuery={searchQuery}
-			onSearchChange={setSearchQuery}
-			onSearch={handleSearch}
-			selectedCategory={selectedCategory}
-			onCategoryChange={handleCategoryChange}
-			listings={currentListings.map(
-				(listing: GraphQLItemListing): ItemListing => ({
-					_id: listing.id,
-					title: listing.title,
-					description: listing.description,
-					category: listing.category,
-					location: listing.location,
-					state: listing.state,
-					images: listing.images,
-					sharingPeriodStart: new Date(listing.sharingPeriodStart),
-					sharingPeriodEnd: new Date(listing.sharingPeriodEnd),
-					sharer: listing.sharer,
-					createdAt: new Date(listing.createdAt),
-					updatedAt: new Date(listing.updatedAt),
-				}),
-			)}
-			currentPage={currentPage}
-			pageSize={pageSize}
-			totalListings={totalListings}
-			onListingClick={handleListingClick}
-			onPageChange={handlePageChange}
-			onCreateListingClick={handleCreateListingClick}
+		<ComponentQueryLoader
+			loading={loading}
+			error={error}
+			hasData={data?.itemListings}
+			hasDataComponent={
+				<ListingsPage
+					isAuthenticated={isAuthenticated}
+					searchQuery={searchQuery}
+					onSearchChange={setSearchQuery}
+					onSearch={handleSearch}
+					selectedCategory={selectedCategory}
+					onCategoryChange={handleCategoryChange}
+					listings={currentListings.map(
+						(listing): ItemListing => ({
+							listingType: 'item-listing',
+							id: String(listing.id),
+							title: listing.title,
+							description: listing.description,
+							category: listing.category,
+							location: listing.location,
+							state: (listing.state as ItemListing['state']) || undefined,
+							images: listing.images ?? [],
+							sharingPeriodStart: new Date(
+								listing.sharingPeriodStart as unknown as string,
+							),
+							sharingPeriodEnd: new Date(
+								listing.sharingPeriodEnd as unknown as string,
+							),
+							createdAt: listing.createdAt
+								? new Date(listing.createdAt as unknown as string)
+								: undefined,
+							updatedAt: listing.updatedAt
+								? new Date(listing.updatedAt as unknown as string)
+								: undefined,
+						}),
+					)}
+					currentPage={currentPage}
+					pageSize={pageSize}
+					totalListings={totalListings}
+					onListingClick={handleListingClick}
+					onPageChange={handlePageChange}
+					onCreateListingClick={handleCreateListingClick}
+				/>
+			}
 		/>
 	);
-}
+};

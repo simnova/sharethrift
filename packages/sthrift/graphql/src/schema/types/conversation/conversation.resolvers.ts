@@ -4,6 +4,10 @@ import type {
 	ConversationCreateInput,
 	Resolvers,
 } from '../../builder/generated.ts';
+import {
+	PopulateItemListingFromField,
+	PopulatePersonalUserFromField,
+} from '../../resolver-helper.ts';
 
 const ConversationMutationResolver = async (
 	getConversation: Promise<Domain.Contexts.Conversation.Conversation.ConversationEntityReference>,
@@ -23,6 +27,14 @@ const ConversationMutationResolver = async (
 };
 
 const conversation: Resolvers = {
+	Message: {
+		authorId: (parent) => parent.authorId.valueOf(),
+	},
+	Conversation: {
+		sharer: PopulatePersonalUserFromField('sharer'),
+		reserver: PopulatePersonalUserFromField('reserver'),
+		listing: PopulateItemListingFromField('listing'),
+	},
 	Query: {
 		conversationsByUser: async (_parent, _args, context: GraphContext) => {
 			return await context.applicationServices.Conversation.Conversation.queryByUser(
@@ -30,8 +42,7 @@ const conversation: Resolvers = {
 			);
 		},
 		conversation: async (_parent, _args, context: GraphContext) => {
-
-            // todo : message will come from twilio service
+			// todo : message will come from twilio service
 			return await context.applicationServices.Conversation.Conversation.queryById(
 				{ conversationId: _args.conversationId },
 			);

@@ -1,12 +1,21 @@
-import React from 'react';
+import type React from 'react';
 import { Table, Image } from 'antd';
 import styles from './reservations-table.module.css';
 import { ReservationStatusTag } from '@sthrift/ui-components';
 import { ReservationActions } from './reservation-actions.tsx';
-import type { ReservationRequest } from '../pages/index.ts';
+import type { HomeMyReservationsReservationsViewActiveContainerActiveReservationsQuery } from '../../../../../generated.tsx';
+import { BASE64_FALLBACK_IMAGE } from '../constants/ui-constants.ts';
+
+type ReservationRequestFieldsFragment =
+	HomeMyReservationsReservationsViewActiveContainerActiveReservationsQuery['myActiveReservations'][number];
+
+type ReservationsTableStyles = {
+	listingCell: string;
+	tableText: string;
+} & Record<string, string>;
 
 export interface ReservationsTableProps {
-	reservations: ReservationRequest[]; // Type will eventually come from generated graphql files
+	reservations: ReservationRequestFieldsFragment[];
 	onCancel?: (id: string) => void;
 	onClose?: (id: string) => void;
 	onMessage?: (id: string) => void;
@@ -26,22 +35,51 @@ export const ReservationsTable: React.FC<ReservationsTableProps> = ({
 	showActions = true,
 	emptyText = 'No reservations found',
 }) => {
+	const classes = styles as ReservationsTableStyles;
 	const columns = [
+		{
+			title: 'Image',
+			dataIndex: 'listing',
+			key: 'image',
+			width: 80,
+			render: (listing: ReservationRequestFieldsFragment['listing']) => (
+				<div className={classes.listingCell}>
+					{listing?.images && listing.images.length > 0 ? (
+						<Image
+							src={listing.images[0]}
+							alt={listing.title || 'Listing image'}
+							width={60}
+							height={40}
+							style={{ objectFit: 'cover', borderRadius: '4px' }}
+							fallback={BASE64_FALLBACK_IMAGE}
+						/>
+					) : (
+						<div
+							style={{
+								width: 60,
+								height: 40,
+								backgroundColor: '#f5f5f5',
+								borderRadius: '4px',
+								display: 'flex',
+								alignItems: 'center',
+								justifyContent: 'center',
+								fontSize: '10px',
+								color: '#999',
+							}}
+						>
+							No Image
+						</div>
+					)}
+				</div>
+			),
+		},
 		{
 			title: 'Listing',
 			dataIndex: 'listing',
 			key: 'listing',
-			render: (listing: ReservationRequest['listing']) => (
-				<div className={styles['listingCell']}>
-					{listing?.imageUrl && (
-						<Image
-							src={listing.imageUrl}
-							alt={listing.title}
-							className={styles['listingImage']}
-							preview={false}
-						/>
-					)}
-					<span className={styles['tableText']}>
+			render: (listing: ReservationRequestFieldsFragment['listing']) => (
+				<div className={classes.listingCell}>
+					<span className={classes.tableText}>
 						{listing?.title || 'Unknown Listing'}
 					</span>
 				</div>
@@ -51,9 +89,11 @@ export const ReservationsTable: React.FC<ReservationsTableProps> = ({
 			title: 'Sharer',
 			dataIndex: 'reserver',
 			key: 'sharer',
-			render: (reserver: ReservationRequest['reserver']) => (
-				<span className={styles['tableText']}>
-					{reserver?.name ? `@${reserver.name}` : 'Unknown'}
+			render: (reserver: ReservationRequestFieldsFragment['reserver']) => (
+				<span className={classes.tableText}>
+					{reserver?.account?.username
+						? `@${reserver.account.username}`
+						: 'Unknown'}
 				</span>
 			),
 		},
@@ -62,7 +102,7 @@ export const ReservationsTable: React.FC<ReservationsTableProps> = ({
 			dataIndex: 'createdAt',
 			key: 'createdAt',
 			render: (createdAt: string) => (
-				<span className={styles['tableText']}>
+				<span className={classes.tableText}>
 					{new Date(createdAt).toLocaleDateString()}
 				</span>
 			),
@@ -70,8 +110,8 @@ export const ReservationsTable: React.FC<ReservationsTableProps> = ({
 		{
 			title: 'Reservation Period',
 			key: 'period',
-			render: (record: ReservationRequest) => (
-				<span className={styles['tableText']}>
+			render: (record: ReservationRequestFieldsFragment) => (
+				<span className={classes.tableText}>
 					{new Date(record.reservationPeriodStart).toLocaleDateString()} -{' '}
 					{new Date(record.reservationPeriodEnd).toLocaleDateString()}
 				</span>
@@ -81,8 +121,22 @@ export const ReservationsTable: React.FC<ReservationsTableProps> = ({
 			title: 'Status',
 			dataIndex: 'state',
 			key: 'status',
-			render: (state: ReservationRequest['state']) => (
-				<ReservationStatusTag status={state} />
+			render: (state: ReservationRequestFieldsFragment['state']) => (
+				<ReservationStatusTag
+					status={
+						state === 'Accepted'
+							? 'ACCEPTED'
+							: state === 'Requested'
+								? 'REQUESTED'
+								: state === 'Rejected'
+									? 'REJECTED'
+									: state === 'Closed'
+										? 'CLOSED'
+										: state === 'Cancelled'
+											? 'CANCELLED'
+											: 'REQUESTED'
+					}
+				/>
 			),
 		},
 		...(showActions
@@ -90,9 +144,21 @@ export const ReservationsTable: React.FC<ReservationsTableProps> = ({
 					{
 						title: 'Actions',
 						key: 'actions',
-						render: (record: ReservationRequest) => (
+						render: (record: ReservationRequestFieldsFragment) => (
 							<ReservationActions
-								status={record.state}
+								status={
+									record.state === 'Accepted'
+										? 'ACCEPTED'
+										: record.state === 'Requested'
+											? 'REQUESTED'
+											: record.state === 'Rejected'
+												? 'REJECTED'
+												: record.state === 'Closed'
+													? 'CLOSED'
+													: record.state === 'Cancelled'
+														? 'CANCELLED'
+														: 'REQUESTED'
+								}
 								onCancel={() => onCancel?.(record.id)}
 								onClose={() => onClose?.(record.id)}
 								onMessage={() => onMessage?.(record.id)}

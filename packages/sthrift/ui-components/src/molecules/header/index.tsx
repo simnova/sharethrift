@@ -1,4 +1,4 @@
-import React from 'react';
+import type React from 'react';
 import { Layout, Button } from 'antd';
 import styles from './index.module.css';
 import '../../styles/theme.css';
@@ -22,32 +22,32 @@ export const Header: React.FC<HeaderProps> = ({
 	onCreateListing,
 }) => {
 	return (
-		<AntHeader className={styles['header']}>
-			<div className={styles['logoSection']}>
-				<img src={logoIcon} alt="Sharethrift Logo" className={styles['logo']} />
-				<span className={styles['logoText']}>sharethrift</span>
+		<AntHeader className={styles.header}>
+			<div className={styles.logoSection}>
+				<img src={logoIcon} alt="Sharethrift Logo" className={styles.logo} />
+				<span className={styles.logoText}>sharethrift</span>
 			</div>
-			<nav className={styles['authSection']}>
+			<nav className={styles.authSection}>
 				{!isAuthenticated ? (
 					<>
 						<Button
 							type="primary"
-							className={styles['createListing'] ?? ''}
+							className={styles.createListing ?? ''}
 							onClick={onCreateListing}
 						>
 							Create a Listing
 						</Button>
 						<Button
 							type="link"
-							className={styles['authButton'] ?? ''}
+							className={styles.authButton ?? ''}
 							onClick={onSignUp}
 						>
 							Sign Up
 						</Button>
-						<span className={styles['divider']}>|</span>
+						<span className={styles.divider}>|</span>
 						<Button
 							type="link"
-							className={styles['authButton'] ?? ''}
+							className={styles.authButton ?? ''}
 							onClick={onLogin}
 						>
 							Log In
@@ -56,7 +56,7 @@ export const Header: React.FC<HeaderProps> = ({
 				) : (
 					<Button
 						type="link"
-						className={styles['authButton'] ?? ''}
+						className={styles.authButton ?? ''}
 						onClick={onLogout}
 					>
 						Log Out

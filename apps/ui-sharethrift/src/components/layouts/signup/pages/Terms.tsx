@@ -10,7 +10,7 @@ interface AcceptTermsFormData {
   recommendations: string;
 }
 
-export default function Terms() {
+export const Terms: React.FC = () => {
   const [form] = Form.useForm();
   const navigate = useNavigate();
 
@@ -193,4 +193,4 @@ export default function Terms() {
       </Card>
     </div>
   );
-}
+};

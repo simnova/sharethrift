@@ -1,0 +1,19 @@
+query ViewListingSharerInformationContainerPersonalUserById($sharerId: ObjectID!) {
+  personalUserById(id: $sharerId) {
+    id
+    userType
+    isBlocked
+    account {
+      username
+      profile {
+        firstName
+        lastName
+        location {
+          city
+          state
+          country
+        }
+      }
+    }
+  }
+}

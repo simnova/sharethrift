@@ -3,8 +3,8 @@ import { LeftOutlined } from '@ant-design/icons';
 import { useRef, useState, useEffect } from 'react';
 import { SuccessPublished } from './create-listing-success.tsx';
 import { SuccessDraft } from './create-draft-success.tsx';
-import ImageGallery from './create-listing-image-gallery.tsx';
-import ListingForm from './create-listing-form.tsx';
+import { ImageGallery } from './create-listing-image-gallery.tsx';
+import { ListingForm } from './create-listing-form.tsx';
 import '../view-listing/listing-image-gallery/listing-image-gallery.overrides.css';
 import './create-listing.overrides.css';
 
@@ -32,7 +32,7 @@ export interface CreateListingProps {
 	onModalClose: () => void;
 }
 
-export function CreateListing({
+export const CreateListing: React.FC<CreateListingProps> = ({
 	categories,
 	isLoading,
 	onSubmit,
@@ -43,7 +43,7 @@ export function CreateListing({
 	onViewListing,
 	onViewDraft,
 	onModalClose,
-}: CreateListingProps) {
+}) => {
 	const [form] = Form.useForm();
 	const maxCharacters = 2000;
 	const mainFileInputRef = useRef<HTMLInputElement>(null);

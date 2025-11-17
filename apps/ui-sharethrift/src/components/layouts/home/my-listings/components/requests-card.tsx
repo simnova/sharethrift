@@ -1,4 +1,3 @@
-import React from 'react';
 import { Card, Tag, Space } from 'antd';
 import styles from './all-listings-card.module.css';
 import type { ListingRequestData } from './my-listings-dashboard.types.ts';

@@ -5,7 +5,7 @@ import { HandleLogoutMockForMockAuth } from '../../shared/handle-logout.ts';
 import { Footer, Header, Navigation } from '@sthrift/ui-components';
 import { useCreateListingNavigation } from './components/create-listing/hooks/use-create-listing-navigation.ts';
 
-export default function HomeTabsLayout() {
+export const HomeTabsLayout: React.FC = () => {
 	const navigate = useNavigate();
 	const location = useLocation();
 	const auth = useAuth();
@@ -32,6 +32,9 @@ export default function HomeTabsLayout() {
 			if (subPath.startsWith('settings')) {
 				return 'settings';
 			}
+			if (subPath.startsWith('admin-dashboard')) {
+				return 'admin-dashboard';
+			}
 			// Add more subroutes as needed
 			return undefined; // nothing highlighted if not a known subroute
 		}
@@ -43,7 +46,7 @@ export default function HomeTabsLayout() {
 
 	const handleNavigate = (key: string) => {
 		// Handle account subroutes
-		const accountSubTabs = ['profile', 'bookmarks', 'settings'];
+		const accountSubTabs = ['profile', 'bookmarks', 'settings', 'admin-dashboard'];
 		if (accountSubTabs.includes(key)) {
 			navigate(`/account/${key}`);
 			return;
@@ -78,11 +81,11 @@ export default function HomeTabsLayout() {
 	}, [auth.isAuthenticated]);
 
 	const handleOnLogin = () => {
-		navigate('/auth-redirect');
+		auth.signinRedirect();
 	};
 
 	const handleOnSignUp = () => {
-		navigate('/auth-redirect');
+		auth.signinRedirect({ extraQueryParams: { option: "signup" } })
 	};
 
 	const handleCreateListing = useCreateListingNavigation();
@@ -130,4 +133,4 @@ export default function HomeTabsLayout() {
 			<Footer />
 		</div>
 	);
-}
+};

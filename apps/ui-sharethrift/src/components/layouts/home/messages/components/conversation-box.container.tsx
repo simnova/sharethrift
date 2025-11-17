@@ -4,7 +4,7 @@ import {
   ConversationBoxContainerConversationDocument,
   type Conversation,
 } from "../../../../../generated.tsx";
-import { useQuery } from "@apollo/client";
+import { useQuery } from "@apollo/client/react";
 
 interface ConversationBoxContainerProps {
   selectedConversationId: string;

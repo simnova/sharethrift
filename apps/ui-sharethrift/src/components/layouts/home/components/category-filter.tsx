@@ -1,5 +1,5 @@
-import React from 'react';
 import { Select } from 'antd';
+import { useId } from 'react';
 import styles from './category-filter.module.css';
 
 const { Option } = Select;
@@ -17,11 +17,12 @@ export const CategoryFilter: React.FC<CategoryFilterProps> = ({
 	selectedCategory,
 	onCategoryChange,
 }) => {
+	const selectId = useId();
 	return (
 		<div className={styles['categoryFilter']}>
-			<label htmlFor="category-filter-select">{`${label}: `}</label>
+			<label htmlFor={selectId}>{`${label}: `}</label>
 			<Select
-				id="category-filter-select"
+				id={selectId}
 				value={selectedCategory || 'All'} // Default to 'All'
 				onChange={(value) => onCategoryChange(value)}
 				placeholder="Select a category"

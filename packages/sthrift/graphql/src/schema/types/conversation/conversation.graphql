@@ -1,22 +1,23 @@
-type Message {
-    id: ObjectID!
-    twilioMessageSid: String!
-    authorId: ObjectID!
-    content: String!
-    createdAt: DateTime!
-}
-
 type Conversation implements MongoBase {
 	sharer: PersonalUser!
 	reserver: PersonalUser!
 	listing: ItemListing!
-	twilioConversationId: String!
+	messagingConversationId: String!
     messages: [Message!]!
 	id: ObjectID!
 	schemaVersion: String!
 	createdAt: DateTime!
 	updatedAt: DateTime!
 }
+
+type Message {
+    id: ObjectID!
+    messagingMessageId: String!
+    authorId: ObjectID!
+    content: String!
+    createdAt: DateTime!
+}
+
 
 extend type Query {
 	conversationsByUser(userId: ObjectID!): [Conversation]

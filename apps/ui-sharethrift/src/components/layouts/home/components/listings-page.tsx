@@ -1,11 +1,11 @@
-import { Button } from 'antd';
 import { EnvironmentFilled, PlusOutlined } from '@ant-design/icons';
-import { HeroSectionContainer } from './hero-section.container.tsx';
+import { ListingsGrid, SearchBar } from '@sthrift/ui-components';
+import { Button } from 'antd';
+import type { ItemListing } from '../../../../generated.tsx';
 import { CategoryFilterContainer } from './category-filter.container.tsx';
-import { SearchBar, ListingsGrid } from '@sthrift/ui-components';
-import type { ItemListing } from './mock-listings.ts';
+import { HeroSectionContainer } from './hero-section.container.tsx';
 import styles from './listings-page.module.css';
-
+import type { UIItemListing } from '@sthrift/ui-components';
 interface ListingsPageProps {
 	isAuthenticated: boolean;
 	searchQuery: string;
@@ -17,12 +17,12 @@ interface ListingsPageProps {
 	currentPage: number;
 	pageSize: number;
 	totalListings: number;
-	onListingClick: (listing: ItemListing) => void;
+	onListingClick: (listing: UIItemListing) => void;
 	onPageChange: (page: number) => void;
 	onCreateListingClick: () => void;
 }
 
-export function ListingsPage({
+export const ListingsPage: React.FC<Readonly<ListingsPageProps>> = ({
 	isAuthenticated,
 	searchQuery,
 	onSearchChange,
@@ -36,7 +36,7 @@ export function ListingsPage({
 	onListingClick,
 	onPageChange,
 	onCreateListingClick,
-}: Readonly<ListingsPageProps>) {
+}) => {
 	return (
 		<div>
 			{/* Hero section */}
@@ -50,7 +50,6 @@ export function ListingsPage({
 			<div
 				className={styles['listingsPage']}
 				style={{ padding: isAuthenticated ? '36px' : '100px' }}
-				id="listings-content"
 			>
 				<div
 					className={styles['listingsHeader']}
@@ -106,7 +105,7 @@ export function ListingsPage({
 				{/* Listings grid */}
 				<div className={styles['listingsGridWrapper']}>
 					<ListingsGrid
-						listings={listings}
+						listings={listings as UIItemListing[]}
 						onListingClick={onListingClick}
 						currentPage={currentPage}
 						pageSize={pageSize}
@@ -154,4 +153,4 @@ export function ListingsPage({
 			</button>
 		</div>
 	);
-}
+};

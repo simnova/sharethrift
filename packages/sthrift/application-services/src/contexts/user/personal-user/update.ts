@@ -4,12 +4,13 @@ import type { Domain } from '@sthrift/domain';
 export interface PersonalUserUpdateCommand {
 	id: string;
 	isBlocked?: boolean;
-	account: {
+	account?: {
 		accountType?: string;
 		username?: string;
 		profile?: {
 			firstName?: string;
 			lastName?: string;
+            aboutMe?: string;
 
 			location?: {
 				address1: string;
@@ -18,6 +19,11 @@ export interface PersonalUserUpdateCommand {
 				state: string;
 				country: string;
 				zipCode: string;
+			};
+
+            billing?: {
+				subscriptionId: string;
+				cybersourceCustomerId: string;
 			};
 		};
 
@@ -55,13 +61,18 @@ export const update = (datasources: DataSources) => {
 				}
 
 				if (command.account?.profile) {
+                    console.log("about me", command.account?.profile.aboutMe);
 					existingPersonalUser.account.profile.firstName =
 						command.account.profile.firstName ??
 						existingPersonalUser.account.profile.firstName;
 					existingPersonalUser.account.profile.lastName =
 						command.account.profile.lastName ??
 						existingPersonalUser.account.profile.lastName;
+                    existingPersonalUser.account.profile.aboutMe =
+                        command.account.profile.aboutMe ??
+                        existingPersonalUser.account.profile.aboutMe;
 				}
+
 				if (command.account?.profile?.location) {
 					existingPersonalUser.account.profile.location.address1 =
 						command.account.profile.location.address1;
@@ -76,6 +87,13 @@ export const update = (datasources: DataSources) => {
 					existingPersonalUser.account.profile.location.zipCode =
 						command.account.profile.location.zipCode;
 				}
+
+                if (command.account?.profile?.billing) {
+                    existingPersonalUser.account.profile.billing.subscriptionId =
+                        command.account.profile.billing.subscriptionId;
+                    existingPersonalUser.account.profile.billing.cybersourceCustomerId =
+                        command.account.profile.billing.cybersourceCustomerId;
+                }
 
 				personalUserToReturn = await repo.save(existingPersonalUser);
 			},

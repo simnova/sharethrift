@@ -17,6 +17,7 @@ export interface ItemListingProps extends DomainSeedwork.DomainEntityProps {
 	reports?: number;
 	images?: string[]; // Array of image URLs
 	reservedBy?: PersonalUserEntityReference | null; // User who currently has this item reserved
+    listingType: string;
 }
 
 export interface ItemListingEntityReference

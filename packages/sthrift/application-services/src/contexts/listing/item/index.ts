@@ -7,6 +7,9 @@ import {
 	queryBySharer,
 } from './query-by-sharer.ts';
 import { type ItemListingQueryAllCommand, queryAll } from './query-all.ts';
+import { type ItemListingCancelCommand, cancel } from './cancel.ts';
+import { queryPaged } from './query-paged.ts';
+import { type ItemListingUpdateCommand, update } from './update.ts';
 
 export interface ItemListingApplicationService {
 	create: (
@@ -17,14 +20,15 @@ export interface ItemListingApplicationService {
 	) => Promise<Domain.Contexts.Listing.ItemListing.ItemListingEntityReference | null>;
 	queryBySharer: (
 		command: ItemListingQueryBySharerCommand,
-	) => Promise<
-		Domain.Contexts.Listing.ItemListing.ItemListingEntityReference[]
-	>;
+	) => Promise<Domain.Contexts.Listing.ItemListing.ItemListingEntityReference[]>;
 	queryAll: (
 		command: ItemListingQueryAllCommand,
 	) => Promise<
 		Domain.Contexts.Listing.ItemListing.ItemListingEntityReference[]
 	>;
+	cancel: (
+		command: ItemListingCancelCommand,
+	) => Promise<Domain.Contexts.Listing.ItemListing.ItemListingEntityReference>;
 	queryPaged: (command: {
 		page: number;
 		pageSize: number;
@@ -38,6 +42,7 @@ export interface ItemListingApplicationService {
 		page: number;
 		pageSize: number;
 	}>;
+	update: (command: ItemListingUpdateCommand) => Promise<void>;
 }
 
 export const ItemListing = (
@@ -48,30 +53,8 @@ export const ItemListing = (
 		queryById: queryById(dataSources),
 		queryBySharer: queryBySharer(dataSources),
 		queryAll: queryAll(dataSources),
-		queryPaged: async (command) => {
-			// Build args object without including undefined optional properties (exactOptionalPropertyTypes)
-			const { page, pageSize, searchText, statusFilters, sharerId, sorter } = command;
-			const args: {
-				page: number;
-				pageSize: number;
-				searchText?: string;
-				statusFilters?: string[];
-				sharerId?: string;
-				sorter?: { field: string; order: 'ascend' | 'descend' };
-			} = { page, pageSize };
-			if (searchText !== undefined) {
-				args.searchText = searchText;
-			}
-			if (statusFilters !== undefined) {
-				args.statusFilters = statusFilters;
-			}
-			if (sharerId !== undefined) {
-				args.sharerId = sharerId;
-			}
-			if (sorter !== undefined) {
-				args.sorter = sorter;
-			}
-			return await dataSources.readonlyDataSource.Listing.ItemListing.ItemListingReadRepo.getPaged(args);
-		},
+		cancel: cancel(dataSources),
+		queryPaged: queryPaged(dataSources),
+		update: update(dataSources),
 	};
 };
