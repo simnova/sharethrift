@@ -17,7 +17,12 @@ fragment ViewListingContainerListingFields on ItemListing {
 	sharingHistory
 	schemaVersion
 	sharer {
-		id
+		... on PersonalUser {
+			id
+		}
+		... on AdminUser {
+			id
+		}
 	}
 }
 
