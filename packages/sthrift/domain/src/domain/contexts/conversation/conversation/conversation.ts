@@ -29,7 +29,8 @@ export class Conversation<props extends ConversationProps>
 		sharer: PersonalUserEntityReference,
 		reserver: PersonalUserEntityReference,
 		listing: ItemListingEntityReference,
-		messages: MessageEntityReference[],
+		_messages: MessageEntityReference[],
+		messagingConversationId: string | undefined,
 		passport: Passport,
 	): Conversation<props> {
 		const newInstance = new Conversation(newProps, passport);
@@ -37,7 +38,10 @@ export class Conversation<props extends ConversationProps>
 		newInstance.sharer = sharer;
 		newInstance.reserver = reserver;
 		newInstance.listing = listing;
-		newInstance.props.messages = messages;
+		newInstance.props.messages = _messages;
+		if (messagingConversationId) {
+			newInstance.messagingConversationId = messagingConversationId;
+		}
 		newInstance.isNew = false;
 		return newInstance;
 	}

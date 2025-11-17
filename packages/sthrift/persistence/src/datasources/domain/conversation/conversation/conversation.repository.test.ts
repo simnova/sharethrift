@@ -297,17 +297,17 @@ test.for(feature, ({ Scenario, Background, BeforeEachScenario }) => {
 
 			Given('a sharer PersonalUser with id "user-1"', () => {
 				sharer = vi.mocked({
-					id: 'user-1',
+					id: createValidObjectId('user-1'),
 				} as Domain.Contexts.User.PersonalUser.PersonalUserEntityReference);
 			});
 			And('a reserver PersonalUser with id "user-2"', () => {
 				reserver = vi.mocked({
-					id: 'user-2',
+					id: createValidObjectId('user-2'),
 				} as Domain.Contexts.User.PersonalUser.PersonalUserEntityReference);
 			});
 			And('a listing ItemListing with id "listing-1"', () => {
 				listing = vi.mocked({
-					id: 'listing-1',
+					id: createValidObjectId('listing-1'),
 				} as Domain.Contexts.Listing.ItemListing.ItemListingEntityReference);
 			});
 			When(
