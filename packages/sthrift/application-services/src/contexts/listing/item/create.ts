@@ -50,7 +50,7 @@ export const create = (dataSources: DataSources) => {
 					fields,
 				);
 
-				itemListingToReturn = await repo.save(newItemListing);
+				itemListingToReturn = await repo.save(newItemListing, ['sharer']);
 			},
 		);
 		if (!itemListingToReturn) {

@@ -62,7 +62,7 @@ describe('ReservationRequest', () => {
 	// ...existing code...
 	const createMockListing = (id = 'listing-1'): ItemListingEntityReference => ({
 		id,
-		sharer: createMockReserver('sharer-1'),
+		sharer: createMockPersonalUser('sharer-1'),
 		title: 'Mock Listing',
 		description: 'Mock listing description',
 		category: 'Tools & Equipment',
@@ -74,6 +74,7 @@ describe('ReservationRequest', () => {
 		updatedAt: new Date(),
 		schemaVersion: '1',
 		listingType: 'item-listing',
+		loadSharer: async () => createMockPersonalUser('sharer-1'),
 	});
 
 	const mockRole: Readonly<PersonalUserRoleEntityReference> = {
@@ -106,7 +107,9 @@ describe('ReservationRequest', () => {
 		schemaVersion: '1',
 	};
 
-	const createMockReserver = (id = 'user-1'): PersonalUserEntityReference => {
+	const createMockPersonalUser = (
+		id = 'user-1',
+	): PersonalUserEntityReference => {
 		return {
 			id,
 			userType: 'personal',
@@ -119,7 +122,7 @@ describe('ReservationRequest', () => {
 				profile: {
 					firstName: 'Mock',
 					lastName: 'User',
-                    aboutMe: 'Hello',
+					aboutMe: 'Hello',
 					location: {
 						address1: '123 Main St',
 						address2: null,
@@ -150,7 +153,7 @@ describe('ReservationRequest', () => {
 		overrides: Partial<ReservationRequestProps> = {},
 	) => {
 		const listing = overrides.listing || createMockListing();
-		const reserver = overrides.reserver || createMockReserver();
+		const reserver = overrides.reserver || createMockPersonalUser();
 		const now = new Date();
 		const startDate =
 			overrides.reservationPeriodStart ||
@@ -190,7 +193,7 @@ describe('ReservationRequest', () => {
 		it('should create a new reservation request with REQUESTED state', () => {
 			const { startDate, endDate } = getFutureDates();
 			const listing = createMockListing();
-			const reserver = createMockReserver();
+			const reserver = createMockPersonalUser();
 			const state = new ReservationRequestStateValue(
 				ReservationRequestStates.REQUESTED,
 			).valueOf();
@@ -239,7 +242,7 @@ describe('ReservationRequest', () => {
 					}),
 					ReservationRequestStates.REQUESTED,
 					createMockListing(),
-					createMockReserver(),
+					createMockPersonalUser(),
 					endDate,
 					startDate,
 					mockPassport,
@@ -252,7 +255,7 @@ describe('ReservationRequest', () => {
 		it('should change state from REQUESTED to ACCEPTED', () => {
 			const { startDate, endDate } = getFutureDates();
 			const listing = createMockListing();
-			const reserver = createMockReserver();
+			const reserver = createMockPersonalUser();
 			const state = new ReservationRequestStateValue(
 				ReservationRequestStates.REQUESTED,
 			).valueOf();
@@ -289,7 +292,7 @@ describe('ReservationRequest', () => {
 		it('should throw error if not in REQUESTED state', () => {
 			const { startDate, endDate } = getFutureDates();
 			const listing = createMockListing();
-			const reserver = createMockReserver();
+			const reserver = createMockPersonalUser();
 			const state = new ReservationRequestStateValue(
 				ReservationRequestStates.REQUESTED,
 			).valueOf();
@@ -326,7 +329,7 @@ describe('ReservationRequest', () => {
 		it('should cancel a REQUESTED reservation', () => {
 			const { startDate, endDate } = getFutureDates();
 			const listing = createMockListing();
-			const reserver = createMockReserver();
+			const reserver = createMockPersonalUser();
 			const state = new ReservationRequestStateValue(
 				ReservationRequestStates.REQUESTED,
 			).valueOf();
@@ -363,7 +366,7 @@ describe('ReservationRequest', () => {
 		it('should cancel a REJECTED reservation', () => {
 			const { startDate, endDate } = getFutureDates();
 			const listing = createMockListing();
-			const reserver = createMockReserver();
+			const reserver = createMockPersonalUser();
 			const state = new ReservationRequestStateValue(
 				ReservationRequestStates.REQUESTED,
 			).valueOf();
@@ -403,7 +406,7 @@ describe('ReservationRequest', () => {
 		it('should close an ACCEPTED reservation if closeRequestedBySharer is true', () => {
 			const { startDate, endDate } = getFutureDates();
 			const listing = createMockListing();
-			const reserver = createMockReserver();
+			const reserver = createMockPersonalUser();
 			const state = new ReservationRequestStateValue(
 				ReservationRequestStates.REQUESTED,
 			).valueOf();
@@ -444,7 +447,7 @@ describe('ReservationRequest', () => {
 		it('should close an ACCEPTED reservation if closeRequestedByReserver is true', () => {
 			const { startDate, endDate } = getFutureDates();
 			const listing = createMockListing();
-			const reserver = createMockReserver();
+			const reserver = createMockPersonalUser();
 			const state = new ReservationRequestStateValue(
 				ReservationRequestStates.REQUESTED,
 			).valueOf();
@@ -485,7 +488,7 @@ describe('ReservationRequest', () => {
 		it('should throw error if not in ACCEPTED state', () => {
 			const { startDate, endDate } = getFutureDates();
 			const listing = createMockListing();
-			const reserver = createMockReserver();
+			const reserver = createMockPersonalUser();
 			const state = new ReservationRequestStateValue(
 				ReservationRequestStates.REQUESTED,
 			).valueOf();
@@ -520,7 +523,7 @@ describe('ReservationRequest', () => {
 		it('should throw error if neither closeRequestedBySharer nor closeRequestedByReserver is true', () => {
 			const { startDate, endDate } = getFutureDates();
 			const listing = createMockListing();
-			const reserver = createMockReserver();
+			const reserver = createMockPersonalUser();
 			const state = new ReservationRequestStateValue(
 				ReservationRequestStates.REQUESTED,
 			).valueOf();
@@ -560,7 +563,7 @@ describe('ReservationRequest', () => {
 		it('should set closeRequestedByReserver to true for ACCEPTED reservation', () => {
 			const { startDate, endDate } = getFutureDates();
 			const listing = createMockListing();
-			const reserver = createMockReserver();
+			const reserver = createMockPersonalUser();
 			const state = new ReservationRequestStateValue(
 				ReservationRequestStates.REQUESTED,
 			).valueOf();

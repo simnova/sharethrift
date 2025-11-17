@@ -111,7 +111,6 @@ const itemListingResolvers: Resolvers = {
 				sharingPeriodEnd: new Date(args.input.sharingPeriodEnd),
 				images: [...(args.input.images ?? [])],
 				isDraft: args.input.isDraft ?? false,
-				listingType: 'item-listing',
 			};
 
 			return await context.applicationServices.Listing.ItemListing.create(

@@ -20,7 +20,7 @@ export const cancel = (dataSources: DataSources) => {
 				}
 
 				listing.cancel();
-				itemListingToReturn = await repo.save(listing);
+				itemListingToReturn = await repo.save(listing, ['sharer']);
 			},
 		);
 		if (!itemListingToReturn) {

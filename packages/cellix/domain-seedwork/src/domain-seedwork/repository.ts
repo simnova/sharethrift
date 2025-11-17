@@ -1,6 +1,6 @@
 export interface Repository<T> {
 	get(id: string): Promise<T>;
-	save(item: T): Promise<T>;
+	save(item: T, populateFields?: string[]): Promise<T>;
 }
 
 export class NotFoundError extends Error {

@@ -1,7 +1,11 @@
 import { Domain } from '@sthrift/domain';
 import type { Models } from '@sthrift/data-sources-mongoose-models';
 import { MongooseSeedwork } from '@cellix/mongoose-seedwork';
-import { PersonalUserDomainAdapter } from '../../user/personal-user/personal-user.domain-adapter.ts';
+import {
+	getSharer,
+	loadSharer,
+	setSharer,
+} from '../../domain-adapter-helpers.ts';
 
 export class ItemListingConverter extends MongooseSeedwork.MongoTypeConverter<
 	Models.Listing.ItemListing,
@@ -72,32 +76,13 @@ export class ItemListingDomainAdapter
 	}
 
 	get sharer(): Domain.Contexts.User.PersonalUser.PersonalUserEntityReference {
-		if (!this.doc.sharer) {
-			throw new Error('listing is not populated');
-		}
-		if (this.doc.sharer instanceof MongooseSeedwork.ObjectId) {
-			throw new Error('sharer is not populated or is not of the correct type');
-		}
-		return new PersonalUserDomainAdapter(
-			this.doc.sharer as Models.User.PersonalUser,
-		);
+		return getSharer(this.doc.sharer);
 	}
 	async loadSharer(): Promise<Domain.Contexts.User.PersonalUser.PersonalUserEntityReference> {
-		if (!this.doc.sharer) {
-			throw new Error('sharer is not populated');
-		}
-		if (this.doc.sharer instanceof MongooseSeedwork.ObjectId) {
-			await this.doc.populate('sharer');
-		}
-		return new PersonalUserDomainAdapter(
-			this.doc.sharer as Models.User.PersonalUser,
-		);
+		return await loadSharer(this.doc);
 	}
 	set sharer(user: Domain.Contexts.User.PersonalUser.PersonalUserEntityReference) {
-		if (!user?.id) {
-			throw new Error('user reference is missing id');
-		}
-		this.doc.set('sharer', new MongooseSeedwork.ObjectId(user.id));
+		setSharer(this.doc, user);
 	}
 
 	get sharingHistory(): string[] {
