@@ -7,7 +7,10 @@ import { ConversationBoxContainer } from "./conversation-box.container.tsx";
 
 export const Messages: React.FC = () => {
   const location = useLocation();
-  const preselectedConversationId = (location.state as { selectedConversationId?: string })?.selectedConversationId;
+  const preselectedConversationId =
+  typeof location.state === "object" && location.state !== null && "selectedConversationId" in location.state
+    ? (location.state as { selectedConversationId?: string }).selectedConversationId
+    : undefined;
   const [selectedConversationId, setSelectedConversationId] = useState<
     string | null
   >(preselectedConversationId || null);

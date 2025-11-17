@@ -50,10 +50,7 @@ export class ConversationDomainAdapter
 			this.doc.set('sharer', user.props.doc);
 			return;
 		}
-		if (user && 'doc' in user && user.doc) {
-			this.doc.set('sharer', user.doc);
-			return;
-		}
+
 		if (!user?.id) {
 			throw new Error('sharer reference is missing id');
 		}
@@ -91,10 +88,7 @@ export class ConversationDomainAdapter
 			this.doc.set('reserver', user.props.doc);
 			return;
 		}
-		if (user && 'doc' in user && user.doc) {
-			this.doc.set('reserver', user.doc);
-			return;
-		}
+
 		if (!user?.id) {
 			throw new Error('reserver reference is missing id');
 		}
@@ -130,10 +124,7 @@ export class ConversationDomainAdapter
 			this.doc.set('listing', listing.props.doc);
 			return;
 		}
-		if (listing && 'doc' in listing && listing.doc) {
-			this.doc.set('listing', listing.doc);
-			return;
-		}
+
 		if (!listing?.id) {
 			throw new Error('listing reference is missing id');
 		}
