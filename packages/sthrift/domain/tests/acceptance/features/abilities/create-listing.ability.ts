@@ -17,7 +17,7 @@ interface ListingCreationParams {
 export class CreateListingAbility extends Ability {
   private listings: Domain.Contexts.Listing.ItemListing.ItemListingEntityReference[] = [];
 
-  async createListing(params: ListingCreationParams): Promise<Domain.Contexts.Listing.ItemListing.ItemListingEntityReference> {
+  createListing(params: ListingCreationParams): Promise<Domain.Contexts.Listing.ItemListing.ItemListingEntityReference> {
     if (!params.title) {
       throw new Error('title is required');
     }
@@ -58,7 +58,8 @@ export class CreateListingAbility extends Ability {
               canDeleteItemListing: true,
               canViewItemListing: true,
               canPublishItemListing: true,
-              canUnpublishItemListing: true
+              canUnpublishItemListing: true,
+              canReserveItemListing: true
             },
             conversationPermissions: {
               canCreateConversation: true,
@@ -87,7 +88,8 @@ export class CreateListingAbility extends Ability {
               canDeleteItemListing: true,
               canViewItemListing: true,
               canPublishItemListing: true,
-              canUnpublishItemListing: true
+              canUnpublishItemListing: true,
+              canReserveItemListing: true
             },
             conversationPermissions: {
               canCreateConversation: true,
@@ -110,6 +112,7 @@ export class CreateListingAbility extends Ability {
           profile: {
             firstName: 'Test',
             lastName: 'User',
+            aboutMe: '',
             location: {
               address1: '123 Main St',
               address2: null,
@@ -131,15 +134,15 @@ export class CreateListingAbility extends Ability {
     };
 
     this.listings.push(listing);
-    return listing;
+    return Promise.resolve(listing);
   }
 
-  async getUserListings(userId: string): Promise<Domain.Contexts.Listing.ItemListing.ItemListingEntityReference[]> {
+  getUserListings(userId: string): Promise<Domain.Contexts.Listing.ItemListing.ItemListingEntityReference[]> {
     // Return listings for the given user
-    return this.listings.filter(l => l.sharer.id === userId);
+    return Promise.resolve(this.listings.filter(l => l.sharer.id === userId));
   }
 
-  async updateListingState(listingId: string, newState: string): Promise<void> {
+  updateListingState(listingId: string, newState: string): void {
     const index = this.listings.findIndex(l => l.id === listingId);
     if (index !== -1) {
       const listing = this.listings[index];
@@ -150,7 +153,7 @@ export class CreateListingAbility extends Ability {
     }
   }
 
-  async updateListingDates(listingId: string, createdAt: Date, updatedAt: Date): Promise<void> {
+  updateListingDates(listingId: string, createdAt: Date, updatedAt: Date): void {
     const index = this.listings.findIndex(l => l.id === listingId);
     if (index !== -1) {
       const listing = this.listings[index];
