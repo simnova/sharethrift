@@ -24,6 +24,74 @@ export interface AdminUserUpdateCommand {
 	};
 }
 
+const updateBasicFields = (
+	user: Domain.Contexts.User.AdminUser.AdminUser<Domain.Contexts.User.AdminUser.AdminUserProps>,
+	command: AdminUserUpdateCommand,
+) => {
+	if (command.isBlocked !== undefined) {
+		user.isBlocked = command.isBlocked;
+	}
+
+	if (command.roleId) {
+		user.props.role = {
+			id: command.roleId,
+		} as Domain.Contexts.Role.AdminRole.AdminRoleEntityReference;
+	}
+};
+
+const updateAccountFields = (
+	user: Domain.Contexts.User.AdminUser.AdminUser<Domain.Contexts.User.AdminUser.AdminUserProps>,
+	account: NonNullable<AdminUserUpdateCommand['account']>,
+) => {
+	user.account.accountType = account.accountType ?? user.account.accountType;
+	user.account.username = account.username ?? user.account.username;
+};
+
+const updateProfileFields = (
+	profile: Domain.Contexts.User.AdminUser.AdminUserProfile,
+	commandProfile: NonNullable<
+		NonNullable<AdminUserUpdateCommand['account']>['profile']
+	>,
+) => {
+	if (commandProfile.firstName !== undefined) {
+		profile.firstName = commandProfile.firstName;
+	}
+	if (commandProfile.lastName !== undefined) {
+		profile.lastName = commandProfile.lastName;
+	}
+	if (commandProfile.aboutMe !== undefined) {
+		profile.aboutMe = commandProfile.aboutMe;
+	}
+};
+
+const updateLocationFields = (
+	location: Domain.Contexts.User.AdminUser.AdminUserAccountProfileLocation,
+	commandLocation: NonNullable<
+		NonNullable<
+			NonNullable<AdminUserUpdateCommand['account']>['profile']
+		>['location']
+	>,
+) => {
+	if (commandLocation.address1 !== undefined) {
+		location.address1 = commandLocation.address1;
+	}
+	if (commandLocation.address2 !== undefined) {
+		location.address2 = commandLocation.address2;
+	}
+	if (commandLocation.city !== undefined) {
+		location.city = commandLocation.city;
+	}
+	if (commandLocation.state !== undefined) {
+		location.state = commandLocation.state;
+	}
+	if (commandLocation.country !== undefined) {
+		location.country = commandLocation.country;
+	}
+	if (commandLocation.zipCode !== undefined) {
+		location.zipCode = commandLocation.zipCode;
+	}
+};
+
 export const update = (datasources: DataSources) => {
 	return async (
 		command: AdminUserUpdateCommand,
@@ -41,70 +109,29 @@ export const update = (datasources: DataSources) => {
 					throw new Error('admin user not found');
 				}
 
-				// Cast to correct type (TypeScript incorrectly infers union type from UnitOfWork)
 				const existingAdminUser =
 					user as unknown as Domain.Contexts.User.AdminUser.AdminUser<Domain.Contexts.User.AdminUser.AdminUserProps>;
 
-				// Update fields
-				if (command.isBlocked !== undefined) {
-					existingAdminUser.isBlocked = command.isBlocked;
-				}
-
-				// Update role if provided (will be validated on save)
-				if (command.roleId) {
-					existingAdminUser.props.role = {
-						id: command.roleId,
-					} as Domain.Contexts.Role.AdminRole.AdminRoleEntityReference;
-				}
+				updateBasicFields(existingAdminUser, command);
 
 				if (command.account) {
-					existingAdminUser.account.accountType =
-						command.account.accountType ??
-						existingAdminUser.account.accountType;
-					existingAdminUser.account.username =
-						command.account.username ?? existingAdminUser.account.username;
+					updateAccountFields(existingAdminUser, command.account);
 
 					if (command.account.profile) {
-						if (command.account.profile.firstName !== undefined) {
-							existingAdminUser.account.profile.firstName =
-								command.account.profile.firstName;
-						}
-						if (command.account.profile.lastName !== undefined) {
-							existingAdminUser.account.profile.lastName =
-								command.account.profile.lastName;
-						}
-						if (command.account.profile.aboutMe !== undefined) {
-							existingAdminUser.account.profile.aboutMe =
-								command.account.profile.aboutMe;
-						}
+						updateProfileFields(
+							existingAdminUser.account.profile,
+							command.account.profile,
+						);
+
 						if (command.account.profile.location) {
-							if (command.account.profile.location.address1 !== undefined) {
-								existingAdminUser.account.profile.location.address1 =
-									command.account.profile.location.address1;
-							}
-							if (command.account.profile.location.address2 !== undefined) {
-								existingAdminUser.account.profile.location.address2 =
-									command.account.profile.location.address2;
-							}
-							if (command.account.profile.location.city !== undefined) {
-								existingAdminUser.account.profile.location.city =
-									command.account.profile.location.city;
-							}
-							if (command.account.profile.location.state !== undefined) {
-								existingAdminUser.account.profile.location.state =
-									command.account.profile.location.state;
-							}
-							if (command.account.profile.location.country !== undefined) {
-								existingAdminUser.account.profile.location.country =
-									command.account.profile.location.country;
-							}
-							if (command.account.profile.location.zipCode !== undefined) {
-								existingAdminUser.account.profile.location.zipCode =
-									command.account.profile.location.zipCode;
-							}
+							updateLocationFields(
+								existingAdminUser.account.profile.location,
+								command.account.profile.location,
+							);
 						}
 					}
 				}
+
 				const saved = await repo.save(user);
 				adminUserToReturn =
 					saved as unknown as Domain.Contexts.User.AdminUser.AdminUserEntityReference;

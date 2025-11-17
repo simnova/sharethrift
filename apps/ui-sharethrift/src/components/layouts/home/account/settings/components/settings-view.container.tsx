@@ -130,36 +130,31 @@ function SettingsViewLoader() {
 			...(isProfile && { aboutMe: values['aboutMe'] ?? base.aboutMe }),
 		};
 	};
-	const handleSaveSection = async (
+	const handlePasswordChange = (section: EditableSection) => {
+		if (section === 'password') {
+			globalThis.alert?.('Password change is not implemented yet.');
+			setIsSavingSection(false);
+			return true;
+		}
+		return false;
+	};
+
+	const handleAdminUserSave = async (
 		section: EditableSection,
 		values: Record<string, any>,
+		user: CurrentUserSettingsQueryData['currentUser'],
 	) => {
-		if (!userData?.currentUser) return;
-		const user = userData.currentUser;
-		
-		setIsSavingSection(true);
-		
-		// Admin users can edit profile and location (but not billing or plan)
-		if (user.__typename === 'AdminUser') {
-			if (updateAdminLoading) {
-				setIsSavingSection(false);
-				return;
-			}
-			
-			// Password change not implemented yet
-			if (section === 'password') {
-				globalThis.alert?.('Password change is not implemented yet.');
-				setIsSavingSection(false);
-				return;
-			}
-			
-			// Admin users cannot edit plan or billing
-			if (section === 'plan' || section === 'billing') {
-				message.info('Admin users cannot edit plan or billing information');
-				setIsSavingSection(false);
-				return;
-			}
-			
+		if (updateAdminLoading) {
+			setIsSavingSection(false);
+			return;
+		}
+
+		if (section === 'plan' || section === 'billing') {
+			message.info('Admin users cannot edit plan or billing information');
+			setIsSavingSection(false);
+			return;
+		}
+
 		try {
 			const base = user.account.profile;
 			const nextProfile = buildNextProfile(section, values, base);
@@ -167,10 +162,9 @@ function SettingsViewLoader() {
 				section === 'profile'
 					? (values['username'] ?? user.account.username)
 					: user.account.username;
-			
-			// Remove billing field for admin users as it's not in the GraphQL schema
+
 			const { billing: _billing, ...adminProfile } = nextProfile;
-			
+
 			const result = await updateAdminUserMutation({
 				variables: {
 					input: {
@@ -184,34 +178,34 @@ function SettingsViewLoader() {
 				refetchQueries: [
 					{ query: HomeAccountSettingsViewContainerCurrentUserDocument },
 				],
-			});				if (!result.data?.adminUserUpdate) {
-					throw new Error('Admin user update failed');
-				}
-				
-				message.success('Updated successfully');
-			} catch (err: unknown) {
-				// eslint-disable-next-line no-console
-				console.error('[SettingsView] admin update mutation error', err);
-				const msg =
-					err instanceof Error ? err.message : 'Admin user update failed';
-				message.error(msg);
-				throw err;
-			} finally {
-				setIsSavingSection(false);
+			});
+
+			if (!result.data?.adminUserUpdate) {
+				throw new Error('Admin user update failed');
 			}
-			return;
+
+			message.success('Updated successfully');
+		} catch (err: unknown) {
+			console.error('[SettingsView] admin update mutation error', err);
+			const msg =
+				err instanceof Error ? err.message : 'Admin user update failed';
+			message.error(msg);
+			throw err;
+		} finally {
+			setIsSavingSection(false);
 		}
-		
+	};
+
+	const handlePersonalUserSave = async (
+		section: EditableSection,
+		values: Record<string, any>,
+		user: CurrentUserSettingsQueryData['currentUser'],
+	) => {
 		if (updateLoading) {
 			setIsSavingSection(false);
 			return;
 		}
-		// Password change not implemented yet; short-circuit
-		if (section === 'password') {
-			globalThis.alert?.('Password change is not implemented yet.');
-			setIsSavingSection(false);
-			return;
-		}
+
 		try {
 			const base = user.account.profile;
 			const nextProfile = buildNextProfile(section, values, base);
@@ -244,13 +238,30 @@ function SettingsViewLoader() {
 				throw new Error('Update failed');
 			}
 		} catch (err: unknown) {
-			// eslint-disable-next-line no-console
 			console.error('[SettingsView] update mutation error', err);
 			const msg = err instanceof Error ? err.message : 'Update failed';
 			message.error(msg);
-			throw err; // propagate so view's save handler catch preserves edit mode
+			throw err;
 		} finally {
 			setIsSavingSection(false);
+		}
+	};
+
+	const handleSaveSection = async (
+		section: EditableSection,
+		values: Record<string, any>,
+	) => {
+		if (!userData?.currentUser) return;
+		const user = userData.currentUser;
+
+		setIsSavingSection(true);
+
+		if (handlePasswordChange(section)) return;
+
+		if (user.__typename === 'AdminUser') {
+			await handleAdminUserSave(section, values, user);
+		} else {
+			await handlePersonalUserSave(section, values, user);
 		}
 	};
 
