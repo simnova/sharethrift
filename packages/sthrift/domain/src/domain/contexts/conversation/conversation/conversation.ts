@@ -32,26 +32,14 @@ export class Conversation<props extends ConversationProps>
 		messages: MessageEntityReference[],
 		passport: Passport,
 	): Conversation<props> {
-		// Create a props object that has access to both the adapter's methods and the new properties
-		const combinedProps = {
-			...newProps, // Copy all properties from the adapter
-			sharer,
-			reserver,
-			listing,
-			messages,
-			// Explicitly copy the messagingConversationId value from the adapter
-			messagingConversationId: newProps.messagingConversationId,
-			// Copy methods from the adapter that we need
-			loadSharer: newProps.loadSharer?.bind(newProps),
-			loadReserver: newProps.loadReserver?.bind(newProps), 
-			loadListing: newProps.loadListing?.bind(newProps),
-			loadMessages: newProps.loadMessages?.bind(newProps),
-		} as props;
-		
-		const instance = new Conversation(combinedProps, passport);
-		instance.markAsNew();
-		instance.isNew = false;
-		return instance;
+		const newInstance = new Conversation(newProps, passport);
+		newInstance.markAsNew();
+		newInstance.sharer = sharer;
+		newInstance.reserver = reserver;
+		newInstance.listing = listing;
+		newInstance.props.messages = messages;
+		newInstance.isNew = false;
+		return newInstance;
 	}
 
 	private markAsNew(): void {
@@ -65,9 +53,6 @@ export class Conversation<props extends ConversationProps>
 	}
 
 	async loadSharer(): Promise<PersonalUserEntityReference> {
-		if (!this.props.loadSharer) {
-			throw new Error('loadSharer method is not available on this conversation instance');
-		}
 		return await this.props.loadSharer();
 	}
 
@@ -95,9 +80,6 @@ export class Conversation<props extends ConversationProps>
 	}
 
 	async loadReserver(): Promise<PersonalUserEntityReference> {
-		if (!this.props.loadReserver) {
-			throw new Error('loadReserver method is not available on this conversation instance');
-		}
 		return await this.props.loadReserver();
 	}
 
@@ -124,9 +106,6 @@ export class Conversation<props extends ConversationProps>
 	}
 
 	async loadMessages(): Promise<readonly MessageEntityReference[]> {
-		if (!this.props.loadMessages) {
-			throw new Error('loadMessages method is not available on this conversation instance');
-		}
 		return await this.props.loadMessages();
 	}
 
@@ -139,9 +118,6 @@ export class Conversation<props extends ConversationProps>
 	}
 
 	async loadListing(): Promise<ItemListingEntityReference> {
-		if (!this.props.loadListing) {
-			throw new Error('loadListing method is not available on this conversation instance');
-		}
 		return await this.props.loadListing();
 	}
 
