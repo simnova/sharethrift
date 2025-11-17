@@ -4,6 +4,8 @@ import type { Passport } from '../../passport.ts';
 import type { UserEntityReference } from '../../user/index.ts';
 import { PersonalUser } from '../../user/personal-user/personal-user.ts';
 import { AdminUser } from '../../user/admin-user/admin-user.ts';
+import type { AdminUserProps } from '../../user/admin-user/admin-user.entity.ts';
+import type { PersonalUserProps } from '../../user/personal-user/personal-user.entity.ts';
 import type { ItemListingEntityReference } from '../../listing/item/item-listing.entity.ts';
 import { ItemListing } from '../../listing/item/item-listing.ts';
 import type {
@@ -55,10 +57,16 @@ export class Conversation<props extends ConversationProps>
 
 	get sharer(): UserEntityReference {
 		// Polymorphic instantiation based on userType
-		if ('role' in this.props.sharer) {
-			return new AdminUser(this.props.sharer, this.passport);
+		if (this.props.sharer.userType === 'admin') {
+			return new AdminUser(
+				this.props.sharer as unknown as AdminUserProps,
+				this.passport,
+			);
 		}
-		return new PersonalUser(this.props.sharer, this.passport);
+		return new PersonalUser(
+			this.props.sharer as unknown as PersonalUserProps,
+			this.passport,
+		);
 	}
 
 	async loadSharer(): Promise<UserEntityReference> {
@@ -86,10 +94,16 @@ export class Conversation<props extends ConversationProps>
 
 	get reserver(): UserEntityReference {
 		// Polymorphic instantiation based on userType
-		if ('role' in this.props.reserver) {
-			return new AdminUser(this.props.reserver, this.passport);
+		if (this.props.reserver.userType === 'admin') {
+			return new AdminUser(
+				this.props.reserver as unknown as AdminUserProps,
+				this.passport,
+			);
 		}
-		return new PersonalUser(this.props.reserver, this.passport);
+		return new PersonalUser(
+			this.props.reserver as unknown as PersonalUserProps,
+			this.passport,
+		);
 	}
 
 	async loadReserver(): Promise<UserEntityReference> {

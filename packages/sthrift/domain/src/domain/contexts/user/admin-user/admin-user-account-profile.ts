@@ -33,14 +33,6 @@ export class AdminUserProfile
 		]);
 	}
 
-	get location() {
-		return new AdminUserAccountProfileLocation(
-			this.props.location,
-			this.visa,
-			this.root,
-		);
-	}
-
 	private validateVisa(): void {
 		if (
 			!this.root.isNew &&
@@ -50,5 +42,13 @@ export class AdminUserProfile
 				'Unauthorized to set account profile details',
 			);
 		}
+	}
+
+	get location() {
+		return new AdminUserAccountProfileLocation(
+			this.props.location,
+			this.visa,
+			this.root,
+		);
 	}
 }

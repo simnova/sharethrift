@@ -258,7 +258,7 @@ function SettingsViewLoader() {
 
 		if (handlePasswordChange(section)) return;
 
-		if (user.__typename === 'AdminUser') {
+		if (user.userType === 'admin') {
 			await handleAdminUserSave(section, values, user);
 		} else {
 			await handlePersonalUserSave(section, values, user);
@@ -295,7 +295,9 @@ function SettingsViewLoader() {
 			country: user.account.profile.location.country ?? '',
 			zipCode: user.account.profile.location.zipCode ?? '',
 		},
-		billing: user.__typename === 'PersonalUser' ? user.account.profile.billing : undefined,
+		billing: user.userType === 'personal' && 'billing' in user.account.profile
+			? user.account.profile.billing
+			: undefined,
 		createdAt: user.createdAt,
 	};
 

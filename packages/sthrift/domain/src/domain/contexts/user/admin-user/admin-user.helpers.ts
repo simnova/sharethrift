@@ -1,11 +1,3 @@
-/**
- * Helper to create validated string accessors for admin user entities.
- * Reduces boilerplate code for simple getter/setter patterns with visa validation.
- *
- * @param target - The entity instance
- * @param validateFn - The validation function to call before setting
- * @param propertyNames - Array of property names to create accessors for
- */
 export function createValidatedStringAccessors<
 	T extends Record<string, string | null | undefined>,
 >(

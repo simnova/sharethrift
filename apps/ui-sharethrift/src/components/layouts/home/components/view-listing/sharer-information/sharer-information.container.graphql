@@ -1,6 +1,5 @@
 query SharerInformationContainer($sharerId: ObjectID!) {
 	userById(id: $sharerId) {
-		__typename
 		...SharerPersonalUserFields
 		...SharerAdminUserFields
 	}

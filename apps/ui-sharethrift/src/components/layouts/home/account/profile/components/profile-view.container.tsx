@@ -32,27 +32,13 @@ export const ProfileViewContainer: React.FC = () => {
 		navigate(`/listing/${listingId}`);
 	};
 
-	if (userError) {
-		console.error('User query error:', userError);
-		return <div>Error loading user: {userError.message}</div>;
-	}
-
-	if (listingsError) {
-		console.error('Listings query error:', listingsError);
-		// Continue rendering with empty listings instead of failing
-	}
-
-	if (userLoading || listingsLoading) {
-		return <div>Loading profile...</div>;
-	}
-
 	const currentUser = userQueryData?.currentUser;
+	const { account, createdAt } = currentUser || {};
+
 	if (!currentUser) {
-		return <div>User not found</div>;
+		return null;
 	}
 
-	// Prepare user data - both AdminUser and PersonalUser now have profile structure
-	const { account, createdAt } = currentUser;
 	const profileUser = {
 		id: currentUser.id,
 		firstName: account?.profile?.firstName || '',
@@ -65,12 +51,11 @@ export const ProfileViewContainer: React.FC = () => {
 			state: account?.profile?.location?.state || '',
 		},
 		createdAt: createdAt || '',
-	}
+	};
 
-	// Prepare listings with required fields from myListingsAll
 	const listings = (listingsData?.myListingsAll?.items || []).map((listing) => ({
 		...listing,
-		description: '', // ListingAll doesn't have description
+		description: '',
 		category: '',
 		location: '',
 		updatedAt: listing.createdAt,
@@ -81,7 +66,7 @@ export const ProfileViewContainer: React.FC = () => {
 		<ComponentQueryLoader
 			loading={userLoading || listingsLoading}
 			error={userError ?? listingsError}
-			hasData={userQueryData?.currentUser || listingsData?.myListingsAll}
+			hasData={currentUser && listingsData?.myListingsAll}
 			hasDataComponent={
 				<ProfileView
 					user={profileUser}
