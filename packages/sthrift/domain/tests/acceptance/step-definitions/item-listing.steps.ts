@@ -109,7 +109,7 @@ const _testUserRef = {
             }
         }
     },
-    loadRole: async () => ({
+    loadRole: () => Promise.resolve({
         id: 'test-role',
         roleName: 'standard',
         isDefault: true,

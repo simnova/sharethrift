@@ -2,7 +2,7 @@ import { Given, Then, When } from '@cucumber/cucumber';
 import { createListingAbility } from '../abilities/create-listing.ability';
 import { expect } from 'chai';
 
-Given('I am a registered user', async function () {
+Given('I am a registered user', function () {
   // Set up a registered user context
   this.currentUser = {
     id: 'test-user-1',
@@ -11,7 +11,7 @@ Given('I am a registered user', async function () {
   };
 });
 
-Given('I am logged in', async function () {
+Given('I am logged in', function () {
   // Verify user is logged in
   expect(this.currentUser).to.exist;
 });
@@ -28,8 +28,12 @@ When('I create a listing with:', async function (dataTable) {
     title: listing.Title,
     description: listing.Description,
     category: listing.Category,
-  // ...existing code...
-  } as any);
+    location: listing.Location || 'Test Location',
+    sharingPeriodStart: new Date(),
+    sharingPeriodEnd: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000), // 30 days from now
+    images: [],
+    isDraft: false
+  });
 
   // Store the result for later assertions
   this.listingResult = result;
@@ -41,8 +45,12 @@ When('I try to create a listing without a title', async function () {
       title: '', // Empty title
       description: 'Test description',
       category: 'Other',
-  // ...existing code...
-    } as any);
+      location: 'Test Location',
+      sharingPeriodStart: new Date(),
+      sharingPeriodEnd: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000), // 30 days from now
+      images: [],
+      isDraft: false
+    });
   } catch (error) {
     // Store the error for later assertions
     this.lastError = error;

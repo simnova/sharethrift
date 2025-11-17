@@ -292,7 +292,7 @@ When('I create a new ReservationRequest aggregate using getNewInstance with stat
 Given('a new ReservationRequest aggregate being created', () => {
     const actor = actorCalled('User');
     
-    // Set up initial dates - far enough in the future to avoid any timing issues
+    // Set up initial dates - far enough in the future to avoid timing issues
     const now = new Date();
     const start = new Date(now.getTime() + 86400000 * 5);  // 5 days from now
     const end = new Date(now.getTime() + 86400000 * 35);   // 35 days from now
