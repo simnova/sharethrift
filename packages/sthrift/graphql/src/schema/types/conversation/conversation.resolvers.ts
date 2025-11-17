@@ -1,26 +1,8 @@
 import type { GraphContext } from '../../../init/context.ts';
-import type { Domain } from '@sthrift/domain';
 import type {
 	ConversationCreateInput,
 	Resolvers,
 } from '../../builder/generated.ts';
-
-const ConversationMutationResolver = async (
-	getConversation: Promise<Domain.Contexts.Conversation.Conversation.ConversationEntityReference>,
-) => {
-	try {
-		return {
-			status: { success: true },
-			conversation: await getConversation,
-		};
-	} catch (error) {
-		console.error('Conversation > Mutation  : ', error);
-		const { message } = error as Error;
-		return {
-			status: { success: false, errorMessage: message },
-		};
-	}
-};
 
 const conversation: Resolvers = {
 	Query: {
@@ -42,13 +24,23 @@ const conversation: Resolvers = {
 			_args: { input: ConversationCreateInput },
 			context: GraphContext,
 		) => {
-			return await ConversationMutationResolver(
-				context.applicationServices.Conversation.Conversation.create({
+			try {
+				const conversation = await context.applicationServices.Conversation.Conversation.create({
 					sharerId: _args.input.sharerId,
 					reserverId: _args.input.reserverId,
 					listingId: _args.input.listingId,
-				}),
-			);
+				});
+				return {
+					status: { success: true },
+					conversation,
+				};
+			} catch (error) {
+				console.error('Conversation > Mutation  : ', error);
+				const { message } = error as Error;
+				return {
+					status: { success: false, errorMessage: message },
+				};
+			}
 		},
 	},
 };

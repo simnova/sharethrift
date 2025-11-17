@@ -10,6 +10,7 @@ export interface ConversationRepository<props extends ConversationProps>
 		sharer: PersonalUserEntityReference,
 		reserver: PersonalUserEntityReference,
 		listing: ItemListingEntityReference,
+		messagingConversationId?: string,
 	): Promise<Conversation<props>>;
 	getByMessagingId(
 		messagingConversationId: string,

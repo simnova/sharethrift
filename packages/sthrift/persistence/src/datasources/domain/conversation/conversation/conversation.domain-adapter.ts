@@ -77,8 +77,18 @@ export class ConversationDomainAdapter
 		);
 	}
 
-	set listing(listing: ItemListingDomainAdapter) {
-		this.doc.set('listing', listing.doc);
+	set listing(listing:
+		| ItemListingDomainAdapter
+		| Domain.Contexts.Listing.ItemListing.ItemListingEntityReference) {
+		if (listing instanceof Domain.Contexts.Listing.ItemListing.ItemListing) {
+			this.doc.set('listing', listing.props.doc);
+			return;
+		}
+
+		if (!listing?.id) {
+			throw new Error('listing reference is missing id');
+		}
+		this.doc.set('listing', new MongooseSeedwork.ObjectId(listing.id));
 	}
 
 	get messagingConversationId(): string {
@@ -88,10 +98,17 @@ export class ConversationDomainAdapter
 		this.doc.messagingConversationId = value;
 	}
 
+	private _messages: Domain.Contexts.Conversation.Conversation.MessageEntityReference[] =
+		[];
+
 	get messages(): Domain.Contexts.Conversation.Conversation.MessageEntityReference[] {
 		// For now, return empty array since messages are not stored as subdocuments
 		// TODO: Implement proper message loading from separate collection
-		return [];
+		return this._messages;
+	}
+
+	set messages(value: Domain.Contexts.Conversation.Conversation.MessageEntityReference[]) {
+		this._messages = value;
 	}
 
 	loadMessages(): Promise<
@@ -99,6 +116,6 @@ export class ConversationDomainAdapter
 	> {
 		// For now, return empty array since messages are not stored as subdocuments
 		// TODO: Implement proper message loading from separate collection or populate from subdocuments
-		return Promise.resolve([]);
+		return Promise.resolve(this._messages);
 	}
 }
