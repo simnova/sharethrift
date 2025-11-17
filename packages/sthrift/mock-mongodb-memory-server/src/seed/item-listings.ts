@@ -1,195 +1,208 @@
 import type { Models } from '@sthrift/data-sources-mongoose-models';
 import { ObjectId } from 'mongodb';
 
+// Common field values to reduce duplication
+const COMMON_LOCATIONS = {
+	springfield: 'Springfield, IL',
+	philadelphia: 'Philadelphia, PA',
+	chicago: 'Chicago, IL',
+} as const;
+
+const COMMON_USERS = {
+	alice: new ObjectId('507f1f77bcf86cd799439011'),
+	bob: new ObjectId('507f1f77bcf86cd799439012'),
+	charlie: new ObjectId('507f1f77bcf86cd799439013'),
+	diana: new ObjectId('507f1f77bcf86cd799439014'),
+} as const;
+
+const COMMON_DATES = {
+	// 2023 periods
+	spring2023Start: new Date('2023-04-01T08:00:00Z'),
+	spring2023End: new Date('2023-04-30T20:00:00Z'),
+	summer2023Start: new Date('2023-05-01T08:00:00Z'),
+	summer2023End: new Date('2023-05-31T20:00:00Z'),
+	// 2024 periods
+	summer2024Start: new Date('2024-08-11T08:00:00Z'),
+	winter2024End: new Date('2024-12-23T20:00:00Z'),
+	// 2025 periods
+	fall2024Start: new Date('2024-10-01T08:00:00Z'),
+	spring2025End: new Date('2025-03-31T20:00:00Z'),
+	summer2025Start: new Date('2024-11-01T08:00:00Z'),
+	fall2025End: new Date('2025-09-30T20:00:00Z'),
+	summer2025StartAlt: new Date('2025-08-01T08:00:00Z'),
+	fall2025EndAlt: new Date('2025-09-30T20:00:00Z'),
+	summer2025Mid: new Date('2025-08-15T08:00:00Z'),
+	fall2025Mid: new Date('2025-09-15T20:00:00Z'),
+	mid2025: new Date('2025-06-30T20:00:00Z'),
+} as const;
+
+const COMMON_METADATA = {
+	schemaVersion: '1.0.0',
+	version: 1,
+	listingType: 'item-listing',
+	sharingHistory: [],
+	reports: 0,
+} as const;
+
+type ListingBase = {
+	_id: string | ObjectId;
+	sharer: ObjectId;
+	title: string;
+	description: string;
+	category: string;
+	location: string;
+	sharingPeriodStart: Date;
+	sharingPeriodEnd: Date;
+	state: string;
+	createdAt: Date;
+	updatedAt: Date;
+	images: string[];
+};
+
+const createListing = (props: ListingBase): Models.Listing.ItemListing => ({
+	...COMMON_METADATA,
+	...props,
+}) as unknown as Models.Listing.ItemListing;
+
 export const itemListings = [
-	{
+	createListing({
 		_id: new ObjectId('707f1f77bcf86cd799439031'),
-		sharer: new ObjectId('507f1f77bcf86cd799439011'), // (Alice)
+		sharer: COMMON_USERS.alice,
 		title: 'Lawn Mower',
 		description: 'A reliable lawn mower for your yard.',
 		category: 'Garden',
-		location: 'Springfield, IL',
-		sharingPeriodStart: new Date('2023-04-01T08:00:00Z'),
-		sharingPeriodEnd: new Date('2023-04-30T20:00:00Z'),
+		location: COMMON_LOCATIONS.springfield,
+		sharingPeriodStart: COMMON_DATES.spring2023Start,
+		sharingPeriodEnd: COMMON_DATES.spring2023End,
 		state: 'Published',
 		createdAt: new Date('2023-03-25T09:00:00Z'),
 		updatedAt: new Date('2023-03-25T09:00:00Z'),
-		sharingHistory: [],
-		reports: 0,
 		images: ['lawnmower.jpg'],
-		schemaVersion: '1.0.0',
-		version: 1,
-		listingType: 'item-listing',
-	},
-	{
+	}),
+	createListing({
 		_id: new ObjectId('707f1f77bcf86cd799439032'),
-		sharer: new ObjectId('507f1f77bcf86cd799439012'), // (Bob)
+		sharer: COMMON_USERS.bob,
 		title: 'Mountain Bike',
 		description: 'A sturdy mountain bike for off-road adventures.',
 		category: 'Sports',
-		location: 'Springfield, IL',
-		sharingPeriodStart: new Date('2023-05-01T08:00:00Z'),
-		sharingPeriodEnd: new Date('2023-05-31T20:00:00Z'),
+		location: COMMON_LOCATIONS.springfield,
+		sharingPeriodStart: COMMON_DATES.summer2023Start,
+		sharingPeriodEnd: COMMON_DATES.summer2023End,
 		state: 'Published',
 		createdAt: new Date('2023-04-20T10:00:00Z'),
 		updatedAt: new Date('2023-04-20T10:00:00Z'),
-		sharingHistory: [],
-		reports: 0,
 		images: ['mountainbike.jpg'],
-		schemaVersion: '1.0.0',
-		version: 1,
-		listingType: 'item-listing',
-	},
-	{
+	}),
+	createListing({
 		_id: '707f1f77bcf86cd799439033',
-		sharer: new ObjectId('507f1f77bcf86cd799439011'), // Alice
+		sharer: COMMON_USERS.alice,
 		title: 'City Bike',
 		description: 'Perfect city bike for commuting and leisure rides around the neighborhood.',
 		category: 'Vehicles',
-		location: 'Philadelphia, PA',
-		sharingPeriodStart: new Date('2024-08-11T08:00:00Z'),
-		sharingPeriodEnd: new Date('2024-12-23T20:00:00Z'),
+		location: COMMON_LOCATIONS.philadelphia,
+		sharingPeriodStart: COMMON_DATES.summer2024Start,
+		sharingPeriodEnd: COMMON_DATES.winter2024End,
 		state: 'Published',
 		createdAt: new Date('2024-08-01T09:00:00Z'),
 		updatedAt: new Date('2024-08-01T09:00:00Z'),
-		sharingHistory: [],
-		reports: 0,
 		images: ['/assets/item-images/bike.png'],
-		schemaVersion: '1.0.0',
-		version: 1,
-		listingType: 'item-listing',
-	},
-	{
+	}),
+	createListing({
 		_id: '707f1f77bcf86cd799439034',
-		sharer: new ObjectId('507f1f77bcf86cd799439014'), // Bob
+		sharer: COMMON_USERS.diana,
 		title: 'Cordless Drill',
 		description: 'Professional grade cordless drill with multiple attachments. Perfect for home improvement projects.',
 		category: 'Tools & Equipment',
-		location: 'Philadelphia, PA',
-		sharingPeriodStart: new Date('2024-08-11T08:00:00Z'),
-		sharingPeriodEnd: new Date('2024-12-23T20:00:00Z'),
+		location: COMMON_LOCATIONS.philadelphia,
+		sharingPeriodStart: COMMON_DATES.summer2024Start,
+		sharingPeriodEnd: COMMON_DATES.winter2024End,
 		state: 'Active',
 		createdAt: new Date('2024-08-02T10:00:00Z'),
 		updatedAt: new Date('2024-08-02T10:00:00Z'),
-		sharingHistory: [],
-		reports: 0,
 		images: ['/assets/item-images/projector.png'],
-		schemaVersion: '1.0.0',
-		version: 1,
-		listingType: 'item-listing',
-	},
-	{
+	}),
+	createListing({
 		_id: '707f1f77bcf86cd799439035',
-		sharer: new ObjectId('507f1f77bcf86cd799439014'), // Assuming Charlie exists
+		sharer: COMMON_USERS.diana,
 		title: 'Hand Mixer',
 		description: 'Electric hand mixer with multiple speed settings. Great for baking and cooking.',
 		category: 'Home & Garden',
-		location: 'Philadelphia, PA',
-		sharingPeriodStart: new Date('2024-08-11T08:00:00Z'),
-		sharingPeriodEnd: new Date('2024-12-23T20:00:00Z'),
+		location: COMMON_LOCATIONS.philadelphia,
+		sharingPeriodStart: COMMON_DATES.summer2024Start,
+		sharingPeriodEnd: COMMON_DATES.winter2024End,
 		state: 'Published',
 		createdAt: new Date('2024-08-03T11:00:00Z'),
 		updatedAt: new Date('2024-08-03T11:00:00Z'),
-		sharingHistory: [],
-		reports: 0,
 		images: ['/assets/item-images/sewing-machine.png'],
-		schemaVersion: '1.0.0',
-		version: 1,
-		listingType: 'item-listing',
-	},
-	{
+	}),
+	createListing({
 		_id: '707f1f77bcf86cd799439036',
-		sharer: new ObjectId('507f1f77bcf86cd799439011'), // Alice
+		sharer: COMMON_USERS.alice,
 		title: 'Winter Coat',
 		description: 'Warm winter coat, size large. Great for cold weather.',
 		category: 'Clothing',
-		location: 'Chicago, IL',
-		sharingPeriodStart: new Date('2024-10-01T08:00:00Z'),
-		sharingPeriodEnd: new Date('2025-03-31T20:00:00Z'),
+		location: COMMON_LOCATIONS.chicago,
+		sharingPeriodStart: COMMON_DATES.fall2024Start,
+		sharingPeriodEnd: COMMON_DATES.spring2025End,
 		state: 'Active',
 		createdAt: new Date('2024-09-15T12:00:00Z'),
 		updatedAt: new Date('2024-09-15T12:00:00Z'),
-		sharingHistory: [],
-		reports: 0,
 		images: [],
-		schemaVersion: '1.0.0',
-		version: 1,
-		listingType: 'item-listing',
-	},
-	{
+	}),
+	createListing({
 		_id: '707f1f77bcf86cd799439037',
-		sharer: new ObjectId('507f1f77bcf86cd799439012'), // Bob
+		sharer: COMMON_USERS.bob,
 		title: 'Camping Tent - 4 Person',
 		description: 'Spacious 4-person camping tent with waterproof design. Perfect for weekend adventures and family camping trips.',
 		category: 'Outdoor & Recreation',
-		location: 'Philadelphia, PA',
-		sharingPeriodStart: new Date('2024-11-01T08:00:00Z'),
-		sharingPeriodEnd: new Date('2025-09-30T20:00:00Z'),
+		location: COMMON_LOCATIONS.philadelphia,
+		sharingPeriodStart: COMMON_DATES.summer2025Start,
+		sharingPeriodEnd: COMMON_DATES.fall2025End,
 		state: 'Published',
 		createdAt: new Date('2024-10-20T10:00:00Z'),
 		updatedAt: new Date('2024-10-20T10:00:00Z'),
-		sharingHistory: [],
-		reports: 0,
 		images: ['/assets/item-images/tent.png'],
-		schemaVersion: '1.0.0',
-		version: 1,
-		listingType: 'item-listing',
-	},
-	{
+	}),
+	createListing({
 		_id: '707f1f77bcf86cd799439038',
-		sharer: new ObjectId('507f1f77bcf86cd799439013'), // Charlie
+		sharer: COMMON_USERS.charlie,
 		title: 'Professional Camera Kit',
 		description: 'Canon DSLR camera with multiple lenses and accessories. Great for photography enthusiasts and events.',
 		category: 'Electronics',
-		location: 'Philadelphia, PA',
-		sharingPeriodStart: new Date('2024-11-01T08:00:00Z'),
-		sharingPeriodEnd: new Date('2025-06-30T20:00:00Z'),
+		location: COMMON_LOCATIONS.philadelphia,
+		sharingPeriodStart: COMMON_DATES.summer2025Start,
+		sharingPeriodEnd: COMMON_DATES.mid2025,
 		state: 'Published',
 		createdAt: new Date('2024-10-25T14:00:00Z'),
 		updatedAt: new Date('2024-10-25T14:00:00Z'),
-		sharingHistory: [],
-		reports: 0,
 		images: ['/assets/item-images/camera.png'],
-		schemaVersion: '1.0.0',
-		version: 1,
-		listingType: 'item-listing',
-	},
-	{
+	}),
+	createListing({
 		_id: '707f1f77bcf86cd799439039',
-		sharer: new ObjectId('507f1f77bcf86cd799439011'), // Alice
+		sharer: COMMON_USERS.alice,
 		title: 'Canon EOS R5 Camera',
 		description: 'Professional mirrorless camera with 45MP full-frame sensor. Perfect for photography and videography.',
 		category: 'Electronics',
-		location: 'Springfield, IL',
-		sharingPeriodStart: new Date('2025-08-01T08:00:00Z'),
-		sharingPeriodEnd: new Date('2025-09-30T20:00:00Z'),
+		location: COMMON_LOCATIONS.springfield,
+		sharingPeriodStart: COMMON_DATES.summer2025StartAlt,
+		sharingPeriodEnd: COMMON_DATES.fall2025EndAlt,
 		state: 'Published',
 		createdAt: new Date('2025-07-15T09:00:00Z'),
 		updatedAt: new Date('2025-07-15T09:00:00Z'),
-		sharingHistory: [],
-		reports: 0,
 		images: ['https://i.ebayimg.com/images/g/VE0AAOSwzfphwzDY/s-l1600.jpg'],
-		schemaVersion: '1.0.0',
-		version: 1,
-		listingType: 'item-listing',
-	},
-	{
+	}),
+	createListing({
 		_id: '707f1f77bcf86cd799439040',
-		sharer: new ObjectId('507f1f77bcf86cd799439012'), // Bob
+		sharer: COMMON_USERS.bob,
 		title: 'Shure SM7B Microphone',
 		description: 'Professional studio microphone, perfect for podcasting, streaming, and vocal recording.',
 		category: 'Electronics',
-		location: 'Springfield, IL',
-		sharingPeriodStart: new Date('2025-08-15T08:00:00Z'),
-		sharingPeriodEnd: new Date('2025-09-15T20:00:00Z'),
+		location: COMMON_LOCATIONS.springfield,
+		sharingPeriodStart: COMMON_DATES.summer2025Mid,
+		sharingPeriodEnd: COMMON_DATES.fall2025Mid,
 		state: 'Published',
 		createdAt: new Date('2025-08-01T10:00:00Z'),
 		updatedAt: new Date('2025-08-01T10:00:00Z'),
-		sharingHistory: [],
-		reports: 0,
 		images: ['https://traceaudio.com/cdn/shop/products/NewSM7BwithAnserModcopy_1200x1200.jpg?v=1662083374'],
-		schemaVersion: '1.0.0',
-		version: 1,
-		listingType: 'item-listing',
-	},
-] as unknown as Models.Listing.ItemListing[];
+	}),
+];

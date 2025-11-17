@@ -17,7 +17,7 @@ Feature: ConversationDomainAdapter
 
   Scenario: Setting the sharer property
     When I set the sharer property to a valid PersonalUserDomainAdapter
-    Then the document's sharer should be set to the user doc
+    Then the document's sharer should be set to an ObjectId
 
   # Repeat similar scenarios for reserver and listing as needed
 

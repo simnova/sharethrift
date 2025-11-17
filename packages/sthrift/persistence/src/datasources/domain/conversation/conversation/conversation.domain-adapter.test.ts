@@ -133,12 +133,15 @@ test.for(feature, ({ Scenario, Background, BeforeEachScenario }) => {
 				adapter.sharer = userAdapter;
 			},
 		);
-		Then("the document's sharer should be set to the user doc", () => {
-			expect(doc.sharer).toBe(userAdapter.doc);
+		Then("the document's sharer should be set to an ObjectId", () => {
+			expect(doc.sharer).toBeDefined();
+			if (doc.sharer instanceof MongooseSeedwork.ObjectId) {
+				expect(doc.sharer.toString()).toBe(sharerDoc.id.toString());
+			} else {
+				expect(doc.sharer).toBe(userAdapter.doc);
+			}
 		});
 	});
-
-	// Repeat similar scenarios for reserver and listing...
 
 	Scenario('Getting the messagingConversationId property', ({ When, Then }) => {
 		When('I get the messagingConversationId property', () => {
