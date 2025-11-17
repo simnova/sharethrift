@@ -1,12 +1,11 @@
 import { Given, When, Then, Before } from '@cucumber/cucumber';
 import { actorCalled } from '@serenity-js/core';
 import { Ensure, equals } from '@serenity-js/assertions';
-import { DomainSeedwork } from '@cellix/domain-seedwork';
 import './shared.steps';
 import { SystemPassport } from '../../../src/domain/iam/system/system.passport';
 import { ItemListing } from '../../../src/domain/contexts/listing/item/item-listing';
-import { ItemListingProps } from '../../../src/domain/contexts/listing/item/item-listing.entity';
-import { PersonalUserEntityReference } from '../../../src/domain/contexts/user/personal-user/personal-user.entity';
+import type { ItemListingProps } from '../../../src/domain/contexts/listing/item/item-listing.entity';
+import type { PersonalUserEntityReference } from '../../../src/domain/contexts/user/personal-user/personal-user.entity';
 import * as ValueObjects from '../../../src/domain/contexts/listing/item/item-listing.value-objects';
 
 declare module '@serenity-js/core' {
@@ -48,7 +47,7 @@ Given('a valid Passport with listing permissions', () => {
 });
 
 // Define test user reference
-const testUserRef = {
+const _testUserRef = {
     id: 'user1',
     userType: 'personal-user',
     isBlocked: false,
@@ -185,7 +184,7 @@ Given('an ItemListing aggregate with permission to publish item listing',  () =>
     }
 });
 
-When('I create a new ItemListing aggregate using getNewInstance with sharer {string} and title {string}', (sharerId: string, title: string) => {
+When('I create a new ItemListing aggregate using getNewInstance with sharer {string} and title {string}', (_sharerId: string, title: string) => {
     const actor = actorCalled('User');
     actor.currentListing = ItemListing.getNewInstance<ItemListingProps>(
         actor.personalUser,
@@ -203,7 +202,7 @@ When('I create a new ItemListing aggregate using getNewInstance with sharer {str
 
 When('I create a new ItemListing aggregate using getNewInstance with isDraft true and empty title, description, category, and location', () => {
     const actor = actorCalled('User');
-    const now = new Date();
+    const _now = new Date();
     const tomorrow = new Date();
     tomorrow.setDate(tomorrow.getDate() + 1);
     
@@ -332,7 +331,7 @@ When('I set the sharingPeriodEnd to {string}', (end: string) => {
     }
 });
 
-When('I try to set the sharingPeriodStart or sharingPeriodEnd', (start: string, end: string) => {
+When('I try to set the sharingPeriodStart or sharingPeriodEnd', (_start: string, _end: string) => {
     const actor = actorCalled('User');
     try {
         if (actor.currentListing) {

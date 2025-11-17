@@ -114,7 +114,7 @@ const testListingRef: ItemListingEntityReference = {
     reservedBy: null
 };
 
-Before(function() {
+Before(() => {
     const actor = actorCalled('User');
     actor.error = undefined;
 });
@@ -526,15 +526,15 @@ When('I set state to {string}', (state: string) => {
 // Test: Setting state to REQUESTED after creation should raise PermissionError
 Then('setting state to REQUESTED on an existing reservation should raise a PermissionError', () => {
     const actor = actorCalled('User');
-    let errorCaught: unknown = null;
+    let errorCaught: Error | null = null;
     try {
         if (actor.currentReservationRequest) {
             actor.currentReservationRequest.state = ReservationRequestStates.REQUESTED;
         }
     } catch (e) {
-        errorCaught = e;
+        errorCaught = e as Error;
     }
-    if (!errorCaught || (errorCaught as any)?.name !== 'PermissionError') {
+    if (!errorCaught || errorCaught.name !== 'PermissionError') {
         throw new Error('PermissionError was not raised when setting state to REQUESTED on an existing reservation');
     }
 });
@@ -560,15 +560,15 @@ When('I try to set state to {string}', (state: string) => {
 // Test: Setting state to REQUESTED after creation should raise PermissionError
 Then('setting state to REQUESTED on an existing reservation should raise a PermissionError', () => {
     const actor = actorCalled('User');
-    let errorCaught = null;
+    let errorCaught: Error | null = null;
     try {
         if (actor.currentReservationRequest) {
             actor.currentReservationRequest.state = ReservationRequestStates.REQUESTED;
         }
     } catch (e) {
-        errorCaught = e;
+        errorCaught = e as Error;
     }
-    if (!errorCaught || (errorCaught as any)?.name !== 'PermissionError') {
+    if (!errorCaught || errorCaught.name !== 'PermissionError') {
         throw new Error('PermissionError was not raised when setting state to REQUESTED on an existing reservation');
     }
 });

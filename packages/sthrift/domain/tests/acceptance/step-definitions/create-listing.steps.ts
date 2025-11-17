@@ -1,23 +1,18 @@
 import { Before, Given, Then, When } from '@cucumber/cucumber';
-import { actorCalled, Actor } from '@serenity-js/core';
+import { actorCalled } from '@serenity-js/core';
 import { Ensure, equals } from '@serenity-js/assertions';
-import { DomainSeedwork } from '@cellix/domain-seedwork';
 import { CreateListingAbility } from '../features/abilities/create-listing.ability';
-
-// Import from domain source directly
-import type { ItemListingEntityReference } from '../../../src/domain/contexts/listing/item/item-listing.entity';
-import { SystemPassport } from '../../../src/domain/iam/system/system.passport';
+import type { Domain } from '@sthrift/domain';
 
 declare module '@serenity-js/core' {
   interface Actor {
     createListingAbility: CreateListingAbility;
-    // Use a permissive type to avoid cross-build (src vs dist) type incompatibilities in tests
-    currentListings: any[];
+    currentListings: Domain.Contexts.Listing.ItemListing.ItemListingEntityReference[];
   }
 }
 
 // Initialize actor before each scenario
-Before(async () => {
+Before(() => {
     const actor = actorCalled('User');
     
     // Give the actor ability to create listings
@@ -26,7 +21,7 @@ Before(async () => {
 });
 
 // Step Definitions
-Given('a registered user is authenticated', async () => {
+Given('a registered user is authenticated', () => {
     // In domain layer tests, we're using a SystemPassport which is always authenticated
     return Promise.resolve();
 });
