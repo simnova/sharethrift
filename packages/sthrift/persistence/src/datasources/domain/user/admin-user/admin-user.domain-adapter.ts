@@ -2,6 +2,7 @@ import { Domain } from '@sthrift/domain';
 import type { Models } from '@sthrift/data-sources-mongoose-models';
 import { MongooseSeedwork } from '@cellix/mongoose-seedwork';
 import { AdminRoleDomainAdapter } from '../../role/admin-role/admin-role.domain-adapter.ts';
+import { createStringAccessors } from '../user-adapter.helpers.ts';
 
 export class AdminUserConverter extends MongooseSeedwork.MongoTypeConverter<
 	Models.User.AdminUser,
@@ -86,30 +87,13 @@ export class AdminUserAccountDomainAdapter
 	implements Domain.Contexts.User.AdminUser.AdminUserAccountProps
 {
 	private readonly props: Models.User.AdminUserAccount;
+	accountType!: string;
+	email!: string;
+	username!: string;
 
 	constructor(props: Models.User.AdminUserAccount) {
 		this.props = props;
-	}
-
-	get accountType() {
-		return this.props.accountType;
-	}
-	set accountType(value: string) {
-		this.props.accountType = value;
-	}
-
-	get email() {
-		return this.props.email;
-	}
-	set email(value: string) {
-		this.props.email = value;
-	}
-
-	get username() {
-		return this.props.username;
-	}
-	set username(value: string) {
-		this.props.username = value;
+		createStringAccessors(this, ['accountType', 'email', 'username']);
 	}
 
 	get profile() {
@@ -127,30 +111,13 @@ export class AdminUserAccountProfileDomainAdapter
 	implements Domain.Contexts.User.AdminUser.AdminUserProfileProps
 {
 	private readonly props: Models.User.AdminUserAccountProfile;
+	firstName!: string;
+	lastName!: string;
+	aboutMe!: string;
 
 	constructor(props: Models.User.AdminUserAccountProfile) {
 		this.props = props;
-	}
-
-	get firstName() {
-		return this.props.firstName;
-	}
-	set firstName(value: string) {
-		this.props.firstName = value;
-	}
-
-	get lastName() {
-		return this.props.lastName;
-	}
-	set lastName(value: string) {
-		this.props.lastName = value;
-	}
-
-	get aboutMe() {
-		return this.props.aboutMe;
-	}
-	set aboutMe(value: string) {
-		this.props.aboutMe = value;
+		createStringAccessors(this, ['firstName', 'lastName', 'aboutMe']);
 	}
 
 	get location() {
@@ -169,51 +136,23 @@ export class AdminUserAccountProfileDomainAdapter
 export class AdminUserAccountProfileLocationDomainAdapter
 	implements Domain.Contexts.User.AdminUser.AdminUserAccountProfileLocationProps
 {
-	private readonly props: Models.User.AdminUserAccountProfileLocation;
+	readonly props: Models.User.AdminUserAccountProfileLocation;
+	address1!: string;
+	address2!: string | null;
+	city!: string;
+	state!: string;
+	country!: string;
+	zipCode!: string;
 
 	constructor(props: Models.User.AdminUserAccountProfileLocation) {
 		this.props = props;
-	}
-
-	get address1() {
-		return this.props.address1;
-	}
-	set address1(value: string) {
-		this.props.address1 = value;
-	}
-
-	get address2() {
-		return this.props.address2;
-	}
-	set address2(value: string | null) {
-		this.props.address2 = value;
-	}
-
-	get city() {
-		return this.props.city;
-	}
-	set city(value: string) {
-		this.props.city = value;
-	}
-
-	get state() {
-		return this.props.state;
-	}
-	set state(value: string) {
-		this.props.state = value;
-	}
-
-	get country() {
-		return this.props.country;
-	}
-	set country(value: string) {
-		this.props.country = value;
-	}
-
-	get zipCode() {
-		return this.props.zipCode;
-	}
-	set zipCode(value: string) {
-		this.props.zipCode = value;
+		createStringAccessors(this, [
+			'address1',
+			'address2',
+			'city',
+			'state',
+			'country',
+			'zipCode',
+		]);
 	}
 }
