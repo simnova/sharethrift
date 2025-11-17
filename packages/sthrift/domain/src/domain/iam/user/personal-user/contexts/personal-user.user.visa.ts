@@ -15,7 +15,6 @@ export class PersonalUserUserVisa<root extends PersonalUserEntityReference>
 		func: (permissions: Readonly<UserDomainPermissions>) => boolean,
 	): boolean {
 		const updatedPermissions: UserDomainPermissions = {
-			canCreateUser: false,
 			canBlockUsers: false,
 			canBlockListings: false,
 			canUnblockUsers: false,

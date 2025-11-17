@@ -26,7 +26,6 @@ export class AdminUserUserVisa implements UserVisa {
 		const rolePermissions = this._executingUser.role?.permissions;
 
 		return {
-			canCreateUser: rolePermissions?.userPermissions?.canEditUsers ?? false,
 			canBlockUsers: rolePermissions?.userPermissions?.canBlockUsers ?? false,
 			canBlockListings:
 				rolePermissions?.listingPermissions?.canModerateListings ?? false,

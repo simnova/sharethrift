@@ -22,7 +22,6 @@ class AdminToPersonalUserVisa implements UserVisa {
 	): boolean {
 		const rolePermissions = this.admin.role?.permissions;
 		const permissions: UserDomainPermissions = {
-			canCreateUser: rolePermissions?.userPermissions?.canEditUsers ?? false,
 			canBlockUsers: rolePermissions?.userPermissions?.canBlockUsers ?? false,
 			canBlockListings:
 				rolePermissions?.listingPermissions?.canModerateListings ?? false,
