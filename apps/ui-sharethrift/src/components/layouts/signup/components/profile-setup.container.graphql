@@ -1,47 +1,37 @@
-query ProfileSetupContainerCurrentPersonalUserAndCreateIfNotExists {
-  currentPersonalUserAndCreateIfNotExists {
-    id
-
-    account {
-      profile {
-        firstName
-        lastName
-        location {
-          address1
-          address2
-          city
-          state
-          country
-          zipCode
-        }
-      }
-    }
-  }
+fragment ProfileSetupContainerPersonalUserFields on PersonalUser {
+	id
+	account {
+		profile {
+			firstName
+			lastName
+			location {
+				address1
+				address2
+				city
+				state
+				country
+				zipCode
+			}
+		}
+	}
 }
 
-mutation ProfileSetUpContainerPersonalUserUpdate($input: PersonalUserUpdateInput!) {
-  personalUserUpdate(input: $input) {
-    status {
-      success
-      errorMessage
-    }
-    personalUser {
-      id
+query ProfileSetupContainerCurrentPersonalUserAndCreateIfNotExists {
+	currentPersonalUserAndCreateIfNotExists {
+		...ProfileSetupContainerPersonalUserFields
+	}
+}
 
-      account {
-        profile {
-          firstName
-          lastName
-          location {
-            address1
-            address2
-            city
-            state
-            country
-            zipCode
-          }
-        }
-      }
-    }
-  }
+mutation ProfileSetUpContainerPersonalUserUpdate(
+	$input: PersonalUserUpdateInput!
+) {
+	personalUserUpdate(input: $input) {
+		status {
+			success
+			errorMessage
+		}
+		personalUser {
+			...ProfileSetupContainerPersonalUserFields
+		}
+	}
 }

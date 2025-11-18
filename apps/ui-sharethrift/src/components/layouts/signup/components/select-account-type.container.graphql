@@ -1,49 +1,53 @@
 query SelectAccountTypeCurrentPersonalUserAndCreateIfNotExists {
-  currentPersonalUserAndCreateIfNotExists {
-    id
+	currentPersonalUserAndCreateIfNotExists {
+		id
 
-    account {
-      accountType
-    }
-  }
+		account {
+			accountType
+		}
+	}
 }
 
 mutation SelectAccountTypePersonalUserUpdate($input: PersonalUserUpdateInput!) {
-  personalUserUpdate(input: $input) {
-    status {
-      success
-      errorMessage
-    }
-    personalUser {
-      id
+	personalUserUpdate(input: $input) {
+		status {
+			success
+			errorMessage
+		}
+		personalUser {
+			id
 
-      account {
-        accountType
-      }
-    }
-  }
+			account {
+				accountType
+			}
+		}
+	}
+}
+
+fragment SelectAccountTypeContainerAccountPlanFields on AccountPlan {
+	name
+	description
+	billingPeriodLength
+	billingPeriodUnit
+	billingAmount
+	currency
+	setupFee
+	feature {
+		activeReservations
+		bookmarks
+		itemsToShare
+		friends
+	}
+	status
+	cybersourcePlanId
+	id
+	schemaVersion
+	createdAt
+	updatedAt
 }
 
 query SelectAccountTypeContainerAccountPlans {
-  accountPlans {
-    name
-    description
-    billingPeriodLength
-    billingPeriodUnit
-    billingAmount
-    currency
-    setupFee
-    feature {
-      activeReservations
-      bookmarks
-      itemsToShare
-      friends
-    }
-    status
-    cybersourcePlanId
-    id
-    schemaVersion
-    createdAt
-    updatedAt
+	accountPlans {
+    ...SelectAccountTypeContainerAccountPlanFields
   }
 }
