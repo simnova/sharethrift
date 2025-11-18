@@ -22,6 +22,16 @@ And each ReservationRequest document includes populated 'listing' and 'reserver'
     Then I should receive a list of ReservationRequest domain objects
     And each reservation request should include populated reserver and listing domain objects
 
+  Scenario: Creating a new reservation request instance
+    Given a valid Listing domain entity reference
+    And a valid PersonalUser domain entity reference as reserver
+    And reservation period from "2025-10-20" to "2025-10-25"
+    When I call getNewInstance with state "PENDING", the listing, the reserver, and the reservation period
+    Then I should receive a new ReservationRequest domain object
+    And the domain object's state should be "PENDING"
+    And the reservation period should be from "2025-10-20" to "2025-10-25"
+    And the reserver should be the given user
+
   Scenario: Getting reservation requests by reserver ID
     Given a reserver with id "user-123"
     When I call getByReserverId with "user-123"

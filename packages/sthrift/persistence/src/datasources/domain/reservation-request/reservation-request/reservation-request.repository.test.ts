@@ -247,6 +247,64 @@ test.for(feature, ({ Scenario, Background, BeforeEachScenario }) => {
 		},
 	);
 
+    Scenario(
+        'Creating a new reservation request instance',
+        ({ Given, When, Then, And }) => {
+            let reserver: Domain.Contexts.User.PersonalUser.PersonalUserEntityReference;
+            let listing: Domain.Contexts.Listing.ItemListing.ItemListingEntityReference;
+            Given("a valid Listing domain entity reference", () => {
+                listing = vi.mocked({
+                    id: createValidObjectId('listing-1'),
+                    isPublished: true,
+                } as unknown as Domain.Contexts.Listing.ItemListing.ItemListingEntityReference);
+            });
+            And('a valid PersonalUser domain entity reference as reserver', () => {
+                reserver = vi.mocked({
+                    id: createValidObjectId('user-1'),
+                } as unknown as Domain.Contexts.User.PersonalUser.PersonalUserEntityReference);
+            });
+            And('reservation period from "2025-10-20" to "2025-10-25"', () => {
+                // Dates are provided in the When step
+            });
+            When('I call getNewInstance with state "PENDING", the listing, the reserver, and the reservation period', async () => {
+                result = await repository.getNewInstance(
+                    'PENDING',
+                    listing,
+                    reserver,
+                    new Date('2025-10-20'),
+                    new Date('2025-10-25')
+                );
+            });
+            Then('I should receive a new ReservationRequest domain object', () => {
+                expect(result).toBeInstanceOf(
+                    Domain.Contexts.ReservationRequest.ReservationRequest.ReservationRequest,
+                );
+            });
+            And('the domain object\'s state should be "PENDING"', () => {
+                const reservationRequest =
+                    result as Domain.Contexts.ReservationRequest.ReservationRequest.ReservationRequest<
+                        Domain.Contexts.ReservationRequest.ReservationRequest.ReservationRequestProps
+                    >;
+                expect(reservationRequest.state).toBe('PENDING');
+            });
+            And('the reservation period should be from "2025-10-20" to "2025-10-25"', () => {
+                const reservationRequest =
+                    result as Domain.Contexts.ReservationRequest.ReservationRequest.ReservationRequest<
+                        Domain.Contexts.ReservationRequest.ReservationRequest.ReservationRequestProps
+                    >;
+                expect(reservationRequest.reservationPeriodStart.toISOString()).toBe(new Date('2025-10-20').toISOString());
+                expect(reservationRequest.reservationPeriodEnd.toISOString()).toBe(new Date('2025-10-25').toISOString());
+            });
+            And('the reserver should be the given user', () => {
+                const reservationRequest =
+                    result as Domain.Contexts.ReservationRequest.ReservationRequest.ReservationRequest<
+                        Domain.Contexts.ReservationRequest.ReservationRequest.ReservationRequestProps
+                    >;
+                expect(reservationRequest.reserver.id).toBe(reserver.id);
+            });
+        },
+    );
+
 	Scenario(
 		'Getting reservation requests by reserver ID',
 		({ Given, When, Then, And }) => {
