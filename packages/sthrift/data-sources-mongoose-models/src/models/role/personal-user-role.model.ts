@@ -16,6 +16,7 @@ export interface PersonalUserRoleListingPermissions
 	canViewItemListing: boolean;
 	canPublishItemListing: boolean;
 	canUnpublishItemListing: boolean;
+	canReserveItemListing: boolean;
 }
 
 export interface PersonalUserRoleConversationPermissions
@@ -67,6 +68,11 @@ export const PersonalUserRoleSchema = new Schema<
 					default: false,
 				},
 				canUnpublishItemListing: {
+					type: Boolean,
+					required: true,
+					default: false,
+				},
+				canReserveItemListing: {
 					type: Boolean,
 					required: true,
 					default: false,

@@ -87,6 +87,7 @@ function createMockRole(): Domain.Contexts.Role.PersonalUserRole.PersonalUserRol
 				canViewItemListing: true,
 				canPublishItemListing: true,
 				canUnpublishItemListing: true,
+				canReserveItemListing: true,
 			},
 			conversationPermissions: {
 				canCreateConversation: true,
