@@ -2,7 +2,15 @@ import { MongooseSeedwork } from '@cellix/mongoose-seedwork';
 import type { Models } from '@sthrift/data-sources-mongoose-models';
 import { Domain } from '@sthrift/domain';
 import { ItemListingDomainAdapter } from '../../listing/item/item-listing.domain-adapter.ts';
-import { PersonalUserDomainAdapter } from '../../user/personal-user/personal-user.domain-adapter.ts';
+import type { PersonalUserDomainAdapter } from '../../user/personal-user/personal-user.domain-adapter.ts';
+import {
+	getReserver,
+	loadReserver,
+	setReserver,
+	getSharer,
+	loadSharer,
+	setSharer,
+} from '../../domain-adapter-helpers.ts';
 export class ConversationConverter extends MongooseSeedwork.MongoTypeConverter<
 	Models.Conversation.Conversation,
 	ConversationDomainAdapter,
@@ -21,93 +29,45 @@ export class ConversationDomainAdapter
 	extends MongooseSeedwork.MongooseDomainAdapter<Models.Conversation.Conversation>
 	implements Domain.Contexts.Conversation.Conversation.ConversationProps
 {
-	get sharer(): PersonalUserDomainAdapter {
-		if (!this.doc.sharer) {
-			throw new Error('sharer is not populated');
-		}
-		if (this.doc.sharer instanceof MongooseSeedwork.ObjectId) {
-			throw new Error('sharer is not populated or is not of the correct type');
-		}
-		return new PersonalUserDomainAdapter(
-			this.doc.sharer as Models.User.PersonalUser,
-		);
+	get sharer(): Domain.Contexts.User.PersonalUser.PersonalUserEntityReference {
+		return getSharer(this.doc.sharer);
 	}
 
-	async loadSharer(): Promise<PersonalUserDomainAdapter> {
-		if (!this.doc.sharer) {
-			throw new Error('sharer is not populated');
-		}
-		if (this.doc.sharer instanceof MongooseSeedwork.ObjectId) {
-			await this.doc.populate('sharer');
-		}
-		return new PersonalUserDomainAdapter(
-			this.doc.sharer as Models.User.PersonalUser,
-		);
+	async loadSharer(): Promise<Domain.Contexts.User.PersonalUser.PersonalUserEntityReference> {
+		return await loadSharer(this.doc);
 	}
 
-	set sharer(user: PersonalUserDomainAdapter | Domain.Contexts.User.PersonalUser.PersonalUserEntityReference) {
-		if (user instanceof Domain.Contexts.User.PersonalUser.PersonalUser) {
-			this.doc.set('sharer', user.props.doc);
-			return;
-		}
-
-		if (!user?.id) {
-			throw new Error('sharer reference is missing id');
-		}
-		this.doc.set('sharer', new MongooseSeedwork.ObjectId(user.id));
+	set sharer(user: PersonalUserDomainAdapter) {
+		setSharer(this.doc, user);
 	}
 
-	get reserver(): PersonalUserDomainAdapter {
-		if (!this.doc.reserver) {
-			throw new Error('reserver is not populated');
-		}
-		if (this.doc.reserver instanceof MongooseSeedwork.ObjectId) {
-			throw new Error(
-				'reserver is not populated or is not of the correct type',
-			);
-		}
-		return new PersonalUserDomainAdapter(
-			this.doc.reserver as Models.User.PersonalUser,
-		);
+	get reserver(): Domain.Contexts.User.PersonalUser.PersonalUserEntityReference {
+		return getReserver(this.doc.reserver);
 	}
 
-	async loadReserver(): Promise<PersonalUserDomainAdapter> {
-		if (!this.doc.reserver) {
-			throw new Error('reserver is not populated');
-		}
-		if (this.doc.reserver instanceof MongooseSeedwork.ObjectId) {
-			await this.doc.populate('reserver');
-		}
-		return new PersonalUserDomainAdapter(
-			this.doc.reserver as Models.User.PersonalUser,
-		);
+	async loadReserver(): Promise<Domain.Contexts.User.PersonalUser.PersonalUserEntityReference> {
+		return await loadReserver(this.doc);
 	}
 
-	set reserver(user: PersonalUserDomainAdapter | Domain.Contexts.User.PersonalUser.PersonalUserEntityReference) {
-		if (user instanceof Domain.Contexts.User.PersonalUser.PersonalUser) {
-			this.doc.set('reserver', user.props.doc);
-			return;
-		}
-
-		if (!user?.id) {
-			throw new Error('reserver reference is missing id');
-		}
-		this.doc.set('reserver', new MongooseSeedwork.ObjectId(user.id));
+	set reserver(user: PersonalUserDomainAdapter) {
+		setReserver(this.doc, user);
 	}
 
-	get listing(): ItemListingDomainAdapter {
+	get listing(): Domain.Contexts.Listing.ItemListing.ItemListingEntityReference {
 		if (!this.doc.listing) {
 			throw new Error('listing is not populated');
 		}
 		if (this.doc.listing instanceof MongooseSeedwork.ObjectId) {
-			throw new Error('listing is not populated or is not of the correct type');
+			return {
+				id: this.doc.listing.toString(),
+			} as Domain.Contexts.Listing.ItemListing.ItemListingEntityReference;
 		}
 		return new ItemListingDomainAdapter(
 			this.doc.listing as Models.Listing.ItemListing,
 		);
 	}
 
-	async loadListing(): Promise<ItemListingDomainAdapter> {
+	async loadListing(): Promise<Domain.Contexts.Listing.ItemListing.ItemListingEntityReference> {
 		if (!this.doc.listing) {
 			throw new Error('listing is not populated');
 		}
@@ -119,7 +79,9 @@ export class ConversationDomainAdapter
 		);
 	}
 
-	set listing(listing: ItemListingDomainAdapter | Domain.Contexts.Listing.ItemListing.ItemListingEntityReference) {
+	set listing(listing:
+		| ItemListingDomainAdapter
+		| Domain.Contexts.Listing.ItemListing.ItemListingEntityReference) {
 		if (listing instanceof Domain.Contexts.Listing.ItemListing.ItemListing) {
 			this.doc.set('listing', listing.props.doc);
 			return;
@@ -138,7 +100,8 @@ export class ConversationDomainAdapter
 		this.doc.messagingConversationId = value;
 	}
 
-	private _messages: Domain.Contexts.Conversation.Conversation.MessageEntityReference[] = [];
+	private _messages: Domain.Contexts.Conversation.Conversation.MessageEntityReference[] =
+		[];
 
 	get messages(): Domain.Contexts.Conversation.Conversation.MessageEntityReference[] {
 		// For now, return empty array since messages are not stored as subdocuments
@@ -150,7 +113,9 @@ export class ConversationDomainAdapter
 		this._messages = value;
 	}
 
-	loadMessages(): Promise<Domain.Contexts.Conversation.Conversation.MessageEntityReference[]> {
+	loadMessages(): Promise<
+		Domain.Contexts.Conversation.Conversation.MessageEntityReference[]
+	> {
 		// For now, return empty array since messages are not stored as subdocuments
 		// TODO: Implement proper message loading from separate collection or populate from subdocuments
 		return Promise.resolve(this._messages);

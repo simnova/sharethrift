@@ -56,7 +56,10 @@ export class ConversationReadRepositoryImpl
 	): Promise<
 		Domain.Contexts.Conversation.Conversation.ConversationEntityReference[]
 	> {
-		const result = await this.mongoDataSource.find({}, options);
+		const result = await this.mongoDataSource.find(
+			{},
+			{ ...options, populateFields: populateFields },
+		);
 		return result.map((doc) => this.converter.toDomain(doc, this.passport));
 	}
 

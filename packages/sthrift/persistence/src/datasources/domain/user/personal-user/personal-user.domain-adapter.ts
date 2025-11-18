@@ -33,12 +33,14 @@ export class PersonalUserDomainAdapter
 		this.doc.isBlocked = value;
 	}
 
-	get role(): Domain.Contexts.Role.PersonalUserRole.PersonalUserRoleProps {
+	get role(): Domain.Contexts.Role.PersonalUserRole.PersonalUserRoleEntityReference {
 		if (!this.doc.role) {
 			throw new Error('role is not populated');
 		}
 		if (this.doc.role instanceof MongooseSeedwork.ObjectId) {
-			throw new Error('role is not populated or is not of the correct type');
+			return {
+				id: this.doc.role.toString(),
+			} as Domain.Contexts.Role.PersonalUserRole.PersonalUserRoleEntityReference;
 		}
 		return new PersonalUserRoleDomainAdapter(
 			this.doc.role as Models.Role.PersonalUserRole,

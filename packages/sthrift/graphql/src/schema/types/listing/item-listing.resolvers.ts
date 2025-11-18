@@ -7,12 +7,15 @@ const itemListingResolvers: Resolvers = {
 	},
 	Query: {
 		myListingsAll: async (_parent: unknown, args, context) => {
-            const currentUser = context.applicationServices.verifiedUser;
-            const email = currentUser?.verifiedJwt?.email;
-            let sharerId: string | undefined;
-            if(email) {
-               sharerId = await context.applicationServices.User.PersonalUser.queryByEmail({email: email}).then(user => user ? user.id : undefined);
-            }
+			const currentUser = context.applicationServices.verifiedUser;
+			const email = currentUser?.verifiedJwt?.email;
+			let sharerId: string | undefined;
+			if (email) {
+				sharerId =
+					await context.applicationServices.User.PersonalUser.queryByEmail({
+						email: email,
+					}).then((user) => (user ? user.id : undefined));
+			}
 			type PagedArgs = {
 				page: number;
 				pageSize: number;
@@ -44,7 +47,7 @@ const itemListingResolvers: Resolvers = {
 				pagedArgs,
 			);
 		},
-        itemListings: async (_parent, _args, context) => {
+		itemListings: async (_parent, _args, context) => {
 			return await context.applicationServices.Listing.ItemListing.queryAll({});
 		},
 
@@ -112,7 +115,6 @@ const itemListingResolvers: Resolvers = {
 				sharingPeriodEnd: new Date(args.input.sharingPeriodEnd),
 				images: [...(args.input.images ?? [])],
 				isDraft: args.input.isDraft ?? false,
-				listingType: 'item-listing',
 			};
 
 			return await context.applicationServices.Listing.ItemListing.create(
@@ -154,7 +156,7 @@ const itemListingResolvers: Resolvers = {
 				await context.applicationServices.Listing.ItemListing.cancel({
 					id: args.id,
 				});
-			return result
+			return result;
 		},
 	},
 };

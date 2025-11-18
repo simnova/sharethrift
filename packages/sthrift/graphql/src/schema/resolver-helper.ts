@@ -1,3 +1,4 @@
+/** biome-ignore-all lint/suspicious/noExplicitAny: <explanation> */
 import type {
 	FragmentDefinitionNode,
 	GraphQLResolveInfo,
@@ -8,11 +9,10 @@ import type { GraphContext } from '../init/context.ts';
 import type { PersonalUser } from './builder/generated.ts';
 
 export const PopulatePersonalUserFromField = (fieldName: string) => {
-	// biome-ignore lint/suspicious/noExplicitAny: parent type comes from GraphQL resolver parent which varies by context
 	return async (parent: any, _: unknown, context: GraphContext) => {
-		if (parent[fieldName] && isValidObjectId(parent[fieldName].toString())) {
+		if (parent[fieldName] && isValidObjectId(parent[fieldName].id)) {
 			return (await context.applicationServices.User.PersonalUser.queryById({
-				id: parent[fieldName].toString(),
+				id: parent[fieldName].id,
 			})) as PersonalUser;
 		}
 		return parent[fieldName];
@@ -20,16 +20,27 @@ export const PopulatePersonalUserFromField = (fieldName: string) => {
 };
 
 export const PopulateItemListingFromField = (fieldName: string) => {
-	// biome-ignore lint/suspicious/noExplicitAny: parent type comes from GraphQL resolver parent which varies by context
 	return async (parent: any, _: unknown, context: GraphContext) => {
-		if (parent[fieldName] && isValidObjectId(parent[fieldName].toString())) {
+		if (parent[fieldName] && isValidObjectId(parent[fieldName].id)) {
 			return await context.applicationServices.Listing.ItemListing.queryById({
-				id: parent[fieldName].toString(),
+				id: parent[fieldName].id,
 			});
 		}
 		return parent[fieldName];
 	};
 };
+
+// export const PopulateRoleFromField = (fieldName: string) => {
+// 	// biome-ignore lint/suspicious/noExplicitAny: parent type comes from GraphQL resolver parent which varies by context
+// 	return async (parent: any, _: unknown, context: GraphContext) => {
+// 		if (parent[fieldName] && isValidObjectId(parent[fieldName].id)) {
+// 			return await context.applicationServices.Role.PersonalUserRole.queryById({
+// 				id: parent[fieldName].id,
+// 			});
+// 		}
+// 		return parent[fieldName];
+// 	};
+// };
 
 export function getRequestedFieldPaths(info: GraphQLResolveInfo): string[] {
 	const out = new Set<string>();

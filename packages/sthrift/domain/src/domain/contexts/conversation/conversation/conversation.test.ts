@@ -90,7 +90,7 @@ function makeBaseProps(
 				profile: {
 					firstName: 'Sharer',
 					lastName: 'Sharer',
-                    aboutMe: 'Hello',
+					aboutMe: 'Hello',
 					location: {
 						address1: '123 Main St',
 						address2: null,
@@ -129,7 +129,7 @@ function makeBaseProps(
 				profile: {
 					firstName: 'Reserver',
 					lastName: 'Reserver',
-                    aboutMe: 'Hello',
+					aboutMe: 'Hello',
 					location: {
 						address1: '456 Main St',
 						address2: null,
@@ -172,6 +172,7 @@ function makeBaseProps(
 			updatedAt: new Date('2020-01-02T00:00:00Z'),
 			schemaVersion: '1.0.0',
 			listingType: 'item-listing',
+			loadSharer: async () => user,
 		},
 		makePassport(),
 	);
@@ -182,14 +183,14 @@ function makeBaseProps(
 		reserver,
 		loadReserver: async () => reserver,
 		listing,
-	loadListing: async () => listing,
-	messages: [],
-	loadMessages: async () => [],
-	messagingConversationId: 'twilio-123',
-	createdAt: new Date('2020-01-01T00:00:00Z'),
-	updatedAt: new Date('2020-01-02T00:00:00Z'),
-	schemaVersion: '1.0.0',
-	...overrides,
+		loadListing: async () => listing,
+		messages: [],
+		loadMessages: async () => [],
+		messagingConversationId: 'twilio-123',
+		createdAt: new Date('2020-01-01T00:00:00Z'),
+		updatedAt: new Date('2020-01-02T00:00:00Z'),
+		schemaVersion: '1.0.0',
+		...overrides,
 	};
 }
 
