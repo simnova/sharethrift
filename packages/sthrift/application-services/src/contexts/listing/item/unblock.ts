@@ -3,7 +3,6 @@ import type { DataSources } from '@sthrift/persistence';
 
 export interface ItemListingUnblockCommand {
 	id: string;
-	isBlocked: boolean;
 }
 
 export const unblock = (dataSources: DataSources) => {
@@ -20,7 +19,7 @@ export const unblock = (dataSources: DataSources) => {
 					throw new Error('Listing not found');
 				}
 
-				listing.setBlocked(command.isBlocked);
+				listing.setBlocked(false);
 				itemListingToReturn = await repo.save(listing);
 			},
 		);

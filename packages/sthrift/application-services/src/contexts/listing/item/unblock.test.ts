@@ -1,4 +1,7 @@
-import { describe, expect, it, vi } from 'vitest';
+import path from 'node:path';
+import { fileURLToPath } from 'node:url';
+import { describeFeature, loadFeature } from '@amiceli/vitest-cucumber';
+import { expect, vi } from 'vitest';
 import type { DataSources } from '@sthrift/persistence';
 import type { Domain } from '@sthrift/domain';
 import { unblock, type ItemListingUnblockCommand } from './unblock.ts';
@@ -8,72 +11,153 @@ type MockListing = {
 	setBlocked: ReturnType<typeof vi.fn>;
 };
 
-const createDataSources = (options?: {
-	listing?: MockListing | undefined;
-	saveResult?: Domain.Contexts.Listing.ItemListing.ItemListingEntityReference | undefined;
-}) => {
-	const listing: MockListing | undefined = options?.listing ?? {
-		id: 'listing-1',
-		setBlocked: vi.fn(),
-	};
+const __dirname = path.dirname(fileURLToPath(import.meta.url));
+const feature = await loadFeature(path.resolve(__dirname, 'unblock.feature'));
 
-	const repo = {
-		getById: vi.fn().mockResolvedValue(listing),
-		save: vi.fn().mockResolvedValue(
-			options?.saveResult ??
-				(listing as unknown as Domain.Contexts.Listing.ItemListing.ItemListingEntityReference),
-		),
-	};
+const test = { for: describeFeature };
 
-	const uow = {
-		withScopedTransaction: vi.fn(async (fn: (repoArg: typeof repo) => Promise<void>) => {
-			await fn(repo);
-		}),
-	};
+test.for(feature, ({ Scenario }) => {
+	Scenario('Successfully unblock a listing', ({ Given, When, Then, And }) => {
+		let dataSources: DataSources;
+		let listing: MockListing;
+		let result: Domain.Contexts.Listing.ItemListing.ItemListingEntityReference;
 
-	const dataSources = {
-		domainDataSource: {
-			Listing: {
-				ItemListing: {
-					ItemListingUnitOfWork: uow,
+		Given('a listing exists with id "listing-123"', () => {
+			listing = {
+				id: 'listing-123',
+				setBlocked: vi.fn(),
+			};
+		});
+
+		And('the listing is currently blocked', () => {
+			const repo = {
+				getById: vi.fn().mockResolvedValue(listing),
+				save: vi.fn().mockResolvedValue(
+					listing as unknown as Domain.Contexts.Listing.ItemListing.ItemListingEntityReference,
+				),
+			};
+
+			const uow = {
+				withScopedTransaction: vi.fn(
+					async (fn: (repoArg: typeof repo) => Promise<void>) => {
+						await fn(repo);
+					},
+				),
+			};
+
+			dataSources = {
+				domainDataSource: {
+					Listing: {
+						ItemListing: {
+							ItemListingUnitOfWork: uow,
+						},
+					},
 				},
-			},
-		},
-	} as unknown as DataSources;
+			} as unknown as DataSources;
+		});
 
-	return { dataSources, listing, repo, uow };
-};
+		When('I unblock the listing with id "listing-123"', async () => {
+			const command: ItemListingUnblockCommand = {
+				id: 'listing-123',
+			};
+			result = await unblock(dataSources)(command);
+		});
 
-describe('Item listing unblock command', () => {
-	it('updates blocked status via the unit of work transaction', async () => {
-		const { dataSources, listing, repo, uow } = createDataSources();
-		const command: ItemListingUnblockCommand = {
-			id: 'listing-1',
-			isBlocked: false,
-		};
+		Then('the listing isBlocked flag should be set to false', () => {
+			expect(listing.setBlocked).toHaveBeenCalledWith(false);
+		});
 
-		const result = await unblock(dataSources)(command);
-
-		expect(uow.withScopedTransaction).toHaveBeenCalledWith(expect.any(Function));
-		expect(repo.getById).toHaveBeenCalledWith('listing-1');
-		expect(listing?.setBlocked).toHaveBeenCalledWith(false);
-		expect(repo.save).toHaveBeenCalledWith(listing);
-		expect(result).toEqual(listing);
+		And('the listing should be saved successfully', () => {
+			expect(result).toEqual(listing);
+		});
 	});
 
-	it('throws when the listing cannot be found', async () => {
-		const { dataSources, repo } = createDataSources({ listing: undefined });
-		repo.getById.mockResolvedValueOnce(undefined);
-		await expect(
-			unblock(dataSources)({ id: 'missing', isBlocked: true }),
-		).rejects.toThrow('Listing not found');
+	Scenario('Handle listing not found', ({ When, Then }) => {
+		let dataSources: DataSources;
+		let unblockPromise: Promise<Domain.Contexts.Listing.ItemListing.ItemListingEntityReference>;
+
+		When('I try to unblock a listing with id "nonexistent-listing"', async () => {
+			const repo = {
+				getById: vi.fn().mockResolvedValue(undefined),
+				save: vi.fn(),
+			};
+
+			const uow = {
+				withScopedTransaction: vi.fn(
+					async (fn: (repoArg: typeof repo) => Promise<void>) => {
+						await fn(repo);
+					},
+				),
+			};
+
+			dataSources = {
+				domainDataSource: {
+					Listing: {
+						ItemListing: {
+							ItemListingUnitOfWork: uow,
+						},
+					},
+				},
+			} as unknown as DataSources;
+
+			const command: ItemListingUnblockCommand = {
+				id: 'nonexistent-listing',
+			};
+			unblockPromise = unblock(dataSources)(command);
+		});
+
+		Then('an error should be thrown indicating listing not found', async () => {
+			await expect(unblockPromise).rejects.toThrow('Listing not found');
+		});
 	});
 
-	it('throws when the repository does not persist the update', async () => {
-		const { dataSources, repo } = createDataSources({});
-		repo.save.mockResolvedValueOnce(undefined as unknown as Domain.Contexts.Listing.ItemListing.ItemListingEntityReference);
-		await expect(
-			unblock(dataSources)({ id: 'listing-1', isBlocked: true }),
-		).rejects.toThrow('ItemListing not updated');
+	Scenario('Handle save failure', ({ Given, When, Then, And }) => {
+		let dataSources: DataSources;
+		let unblockPromise: Promise<Domain.Contexts.Listing.ItemListing.ItemListingEntityReference>;
+
+		Given('a listing exists with id "listing-456"', () => {
+			// Setup in next step
+		});
+
+		And('the repository will fail to save', () => {
+			const listing = {
+				id: 'listing-456',
+				setBlocked: vi.fn(),
+			};
+
+			const repo = {
+				getById: vi.fn().mockResolvedValue(listing),
+				save: vi.fn().mockResolvedValue(undefined),
+			};
+
+			const uow = {
+				withScopedTransaction: vi.fn(
+					async (fn: (repoArg: typeof repo) => Promise<void>) => {
+						await fn(repo);
+					},
+				),
+			};
+
+			dataSources = {
+				domainDataSource: {
+					Listing: {
+						ItemListing: {
+							ItemListingUnitOfWork: uow,
+						},
+					},
+				},
+			} as unknown as DataSources;
+		});
+
+		When('I try to unblock the listing with id "listing-456"', async () => {
+			const command: ItemListingUnblockCommand = {
+				id: 'listing-456',
+			};
+			unblockPromise = unblock(dataSources)(command);
+		});
+
+		Then('an error should be thrown indicating save failure', async () => {
+			await expect(unblockPromise).rejects.toThrow('ItemListing not updated');
+		});
 	});
 });

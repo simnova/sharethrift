@@ -2,7 +2,7 @@ import type { DataSources } from '@sthrift/persistence';
 
 export interface ItemListingDeleteCommand {
 	id: string;
-	userId: string;
+	userEmail: string;
 }
 
 export const deleteListings = (dataSources: DataSources) => {
@@ -13,6 +13,16 @@ export const deleteListings = (dataSources: DataSources) => {
 			throw new Error(
 				'ItemListingUnitOfWork not available on dataSources.domainDataSource.Listing.ItemListing',
 			);
+		}
+
+		// Get the current user
+		const user =
+			await dataSources.readonlyDataSource.User.PersonalUser.PersonalUserReadRepo.getByEmail(
+				command.userEmail,
+			);
+
+		if (!user) {
+			throw new Error('User not found');
 		}
 
 		// Check for active reservation requests before attempting deletion
@@ -32,11 +42,6 @@ export const deleteListings = (dataSources: DataSources) => {
 		// We manage persistence explicitly to avoid duplicate saves when deleting
 		await uow.withScopedTransaction(async (repo) => {
 			const listing = await repo.get(command.id);
-
-			// Verify ownership (visa inside requestDelete double-checks)
-			if (listing.sharer.id !== command.userId) {
-				throw new Error('You do not have permission to delete this listing');
-			}
 
 			// Domain method with visa permission check
 			// Visa grants canDeleteItemListing when user.id === listing.sharer.id

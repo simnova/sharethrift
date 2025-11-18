@@ -368,12 +368,6 @@ export class ItemListing<props extends ItemListingProps>
 			);
 		}
 
-		if (this.isDeleted) {
-			throw new DomainSeedwork.PermissionError(
-				'This listing has already been deleted',
-			);
-		}
-
 		super.isDeleted = true;
 	}
 

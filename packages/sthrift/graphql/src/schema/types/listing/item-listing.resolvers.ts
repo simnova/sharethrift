@@ -123,12 +123,12 @@ const itemListingResolvers: Resolvers = {
 
 		removeListing: async (_parent, args, context) => {
 			// TODO: Implement proper admin authorization check here
+			const userEmail =
+				context.applicationServices.verifiedUser?.verifiedJwt?.email ?? '';
 
-			const adminUserId = 'system-admin'; // Placeholder until proper admin auth implemented
-			
 			await context.applicationServices.Listing.ItemListing.deleteListings({
 				id: args.id,
-				userId: adminUserId,
+				userEmail,
 			});
 			return true;
 		},
@@ -137,51 +137,22 @@ const itemListingResolvers: Resolvers = {
 			// Admin-note: role-based authorization should be implemented here (security)
 			await context.applicationServices.Listing.ItemListing.unblock({
 				id: args.id,
-				isBlocked: false,
 			});
 			return true;
 		},
-		cancelItemListing: async (
-			_parent: unknown,
-			args: { id: string },
-			context,
-		) => {
-			const userEmail =
-				context.applicationServices.verifiedUser?.verifiedJwt?.email;
-			if (!userEmail) {
-				throw new Error('Authentication required');
-			}
-
-			return await context.applicationServices.Listing.ItemListing.cancel({
+		cancelItemListing: async (_parent: unknown, args: { id: string }, context) => ({
+			status: { success: true },
+			listing: await context.applicationServices.Listing.ItemListing.cancel({
 				id: args.id,
-			});
-		},
+			}),
+		}),
 
-		deleteItemListing: async (
-			_parent: unknown,
-			args: { id: string},
-			context: GraphContext,
-		) => {
-			const userEmail =
-				context.applicationServices.verifiedUser?.verifiedJwt?.email;
-			if (!userEmail) {
-				throw new Error('Authentication required');
-			}
-
-			// Get the current user
-			const user =
-				await context.applicationServices.User.PersonalUser.queryByEmail({
-					email: userEmail,
-				});
-
-			if (!user) {
-				throw new Error('User not found');
-			}
-
-            return await context.applicationServices.Listing.ItemListing.deleteListings({
+		deleteItemListing: async (_parent: unknown, args: { id: string }, context: GraphContext) => {
+			await context.applicationServices.Listing.ItemListing.deleteListings({
 				id: args.id,
-				userId: user.id,
+				userEmail: context.applicationServices.verifiedUser?.verifiedJwt?.email ?? '',
 			});
+			return { status: { success: true } };
 		},
 	},
 };

@@ -2,14 +2,14 @@ import { Input, Checkbox, Button, Image, Popconfirm, Tag, Badge } from 'antd';
 import type { TableProps } from 'antd';
 import { SearchOutlined, FilterOutlined } from '@ant-design/icons';
 import { Dashboard } from '@sthrift/ui-components';
-import type { MyListingData } from './my-listings-dashboard.types.ts';
+import type { HomeAllListingsTableContainerListingFieldsFragment } from '../../../../../generated.tsx';
 import { AllListingsCard } from './all-listings-card.tsx';
 import { getStatusTagClass } from './status-tag-class.ts';
 
 const { Search } = Input;
 
 export interface AllListingsTableProps {
-	data: MyListingData[];
+	data: HomeAllListingsTableContainerListingFieldsFragment[];
 	searchText: string;
 	statusFilters: string[];
 	sorter: { field: string | null; order: 'ascend' | 'descend' | null };
@@ -19,7 +19,7 @@ export interface AllListingsTableProps {
 	loading?: boolean;
 	onSearch: (value: string) => void;
 	onStatusFilter: (checkedValues: string[]) => void;
-	onTableChange: TableProps<MyListingData>['onChange'];
+	onTableChange: TableProps<HomeAllListingsTableContainerListingFieldsFragment>['onChange'];
 	onPageChange: (page: number) => void;
 	onAction: (action: string, listingId: string) => void;
 	onViewAllRequests: (listingId: string) => void;
@@ -53,11 +53,13 @@ export const AllListingsTable: React.FC<AllListingsTableProps> = ({
 	onAction,
 	onViewAllRequests,
 }) => {
-	const getActionButtons = (record: MyListingData) => {
+	const getActionButtons = (record: HomeAllListingsTableContainerListingFieldsFragment) => {
 		const buttons = [];
 
+		const status = record.state ?? 'Unknown';
+
 		// Conditional actions based on status
-		if (record.status === 'Active' || record.status === 'Reserved') {
+		if (status === 'Active' || status === 'Reserved') {
 			buttons.push(
 				<Button
 					key="pause"
@@ -70,7 +72,7 @@ export const AllListingsTable: React.FC<AllListingsTableProps> = ({
 			);
 		}
 
-		if (record.status === 'Paused' || record.status === 'Expired') {
+		if (status === 'Paused' || status === 'Expired') {
 			buttons.push(
 				<Button
 					key="reinstate"
@@ -83,7 +85,7 @@ export const AllListingsTable: React.FC<AllListingsTableProps> = ({
 			);
 		}
 
-		if (record.status === 'Blocked') {
+		if (status === 'Blocked') {
 			buttons.push(
 				<Popconfirm
 					key="appeal"
@@ -100,7 +102,7 @@ export const AllListingsTable: React.FC<AllListingsTableProps> = ({
 			);
 		}
 
-		if (record.status === 'Draft') {
+		if (status === 'Draft') {
 			buttons.push(
 				<Button
 					key="publish"
@@ -114,7 +116,7 @@ export const AllListingsTable: React.FC<AllListingsTableProps> = ({
 		}
 
 		// Cancel button for active listings
-		if (record.status === 'Active' || record.status === 'Paused') {
+		if (status === 'Active' || status === 'Paused') {
 			buttons.push(
 				<Popconfirm
 					key="cancel"
@@ -161,7 +163,7 @@ export const AllListingsTable: React.FC<AllListingsTableProps> = ({
 		return buttons;
 	};
 
-	const columns: TableProps<MyListingData>['columns'] = [
+	const columns: TableProps<HomeAllListingsTableContainerListingFieldsFragment>['columns'] = [
 		{
 			title: 'Listing',
 			dataIndex: 'title',
@@ -189,10 +191,10 @@ export const AllListingsTable: React.FC<AllListingsTableProps> = ({
 			filterIcon: (filtered: boolean) => (
 				<SearchOutlined style={{ color: filtered ? '#1890ff' : undefined }} />
 			),
-			render: (title: string, record: MyListingData) => (
+			render: (title: string, record: HomeAllListingsTableContainerListingFieldsFragment) => (
 				<div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
 					<Image
-						src={record.image ?? ''}
+						src={record.images?.[0] ?? ''}
 						alt={title}
 						width={72}
 						height={72}
@@ -205,10 +207,10 @@ export const AllListingsTable: React.FC<AllListingsTableProps> = ({
 		},
 		{
 			title: 'Published At',
-			dataIndex: 'publishedAt',
-			key: 'publishedAt',
+			dataIndex: 'createdAt',
+			key: 'createdAt',
 			sorter: true,
-			sortOrder: sorter.field === 'publishedAt' ? sorter.order : null,
+			sortOrder: sorter.field === 'createdAt' ? sorter.order : null,
 			render: (date?: string) => {
 				if (!date) {
 					return 'N/A';
@@ -236,59 +238,41 @@ export const AllListingsTable: React.FC<AllListingsTableProps> = ({
 		},
 		{
 			title: 'Reservation Period',
-			dataIndex: 'reservationPeriod',
 			key: 'reservationPeriod',
 			sorter: true,
 			sortOrder: sorter.field === 'reservationPeriod' ? sorter.order : null,
-			render: (period?: string) => {
-				if (!period) {
+			render: (_: unknown, record: HomeAllListingsTableContainerListingFieldsFragment) => {
+				const startDate = record.sharingPeriodStart;
+				const endDate = record.sharingPeriodEnd;
+				
+				if (!startDate || !endDate) {
 					return 'N/A';
 				}
-				// Expect format 'yyyy-mm-dd - yyyy-mm-dd' or similar
-				// If not, try to parse and format
-				let start = '',
-					end = '';
-				const safePeriod = period ?? '';
-				if (safePeriod.includes(' - ')) {
-					const parts = safePeriod.split(' - ');
-					start = parts[0] ?? '';
-					end = parts[1] ?? '';
-				} else {
-					start = safePeriod;
-				}
-				// Try to format both as yyyy-mm-dd
-				function formatDate(str: string) {
-					const d = new Date(str);
-					if (Number.isNaN(d.getTime())) {
-						return str;
-					}
-					const yyyy = d.getFullYear();
-					const mm = String(d.getMonth() + 1).padStart(2, '0');
-					const dd = String(d.getDate()).padStart(2, '0');
-					return `${yyyy}-${mm}-${dd}`;
-				}
-				const formattedStart = formatDate(start);
-				const formattedEnd = end ? formatDate(end) : '';
+				
+				// Format dates as yyyy-mm-dd
+				const start = typeof startDate === 'string' ? startDate.slice(0, 10) : new Date(startDate).toISOString().slice(0, 10);
+				const end = typeof endDate === 'string' ? endDate.slice(0, 10) : new Date(endDate).toISOString().slice(0, 10);
+				const period = `${start} - ${end}`;
+				
 				return (
 					<span
 						style={{
 							fontVariantNumeric: 'tabular-nums',
 							fontFamily: 'inherit',
-							minWidth: 220,
+							minWidth: 200,
 							display: 'inline-block',
 							textAlign: 'left',
 						}}
 					>
-						{formattedStart}
-						{formattedEnd ? ` - ${formattedEnd}` : ''}
+						{period}
 					</span>
 				);
 			},
 		},
 		{
 			title: 'Status',
-			dataIndex: 'status',
-			key: 'status',
+			dataIndex: 'state',
+			key: 'state',
 			filterDropdown: ({ confirm }) => (
 				<div style={{ padding: 16, width: 200 }}>
 					<div style={{ marginBottom: 8, fontWeight: 500 }}>
@@ -316,7 +300,7 @@ export const AllListingsTable: React.FC<AllListingsTableProps> = ({
 			title: 'Actions',
 			key: 'actions',
 			width: 200,
-			render: (_: unknown, record: MyListingData) => {
+			render: (_: unknown, record: HomeAllListingsTableContainerListingFieldsFragment) => {
 				const actions = getActionButtons(record);
 				// Ensure at least 3 slots for alignment (first, middle, last)
 				const minActions = 3;
@@ -361,49 +345,35 @@ export const AllListingsTable: React.FC<AllListingsTableProps> = ({
 		},
 		{
 			title: 'Pending Requests',
-			dataIndex: 'pendingRequestsCount',
 			key: 'pendingRequestsCount',
 			sorter: true,
 			sortOrder: sorter.field === 'pendingRequestsCount' ? sorter.order : null,
-			render: (count: number, record: MyListingData) => (
-				<div
-					style={{
-						display: 'flex',
-						flexDirection: 'column',
-						alignItems: 'center',
-						justifyContent: 'center',
-						minHeight: 60,
-					}}
-				>
-					<Badge
-						count={count}
-						showZero
+			render: (_: unknown, record: HomeAllListingsTableContainerListingFieldsFragment) => {
+				const count = 0; // TODO: implement in future
+				return (
+					<div
 						style={{
-							backgroundColor: count > 0 ? '#ff4d4f' : '#f5f5f5',
-							color: count > 0 ? 'white' : '#808080',
-							minWidth: 32,
-							fontSize: 14,
+							display: 'flex',
+							flexDirection: 'column',
+							alignItems: 'center',
+							justifyContent: 'center',
+							minHeight: 60,
 						}}
-					/>
-					{count > 0 && (
-						<Button
-							type="link"
-							size="small"
-							style={{ padding: 0, height: 'auto', marginTop: 0 }}
-							onClick={() => onViewAllRequests(record.id)}
-						>
-							<span
-								style={{
-									color: 'var(--color-action-foreground)',
-									fontSize: 12,
-								}}
+					>
+						<Badge count={count} showZero />
+						{count > 0 && (
+							<Button
+								type="link"
+								size="small"
+								onClick={() => onViewAllRequests(record.id)}
+								style={{ marginTop: 4 }}
 							>
-								View all
-							</span>
-						</Button>
-					)}
-				</div>
-			),
+								View All
+							</Button>
+						)}
+					</div>
+				);
+			},
 		},
 	];
 
