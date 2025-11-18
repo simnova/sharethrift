@@ -4,8 +4,11 @@ import {
 	User,
 	type UserContextApplicationService,
 } from './contexts/user/index.ts';
-import type { PaymentApplicationService } from './payment-application-service.js';
-import { DefaultPaymentApplicationService } from './payment-application-service.js';
+
+import {
+	DefaultPaymentApplicationService,
+	type PaymentApplicationService,
+} from './contexts/payment/index.ts';
 
 import {
 	ReservationRequest,
