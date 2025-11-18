@@ -87,7 +87,8 @@ export class ServiceSendGrid implements ServiceBase<ServiceSendGrid> {
 		// Add subject suffix if configured
 		// biome-ignore lint/complexity/useLiteralKeys: Required by TypeScript noPropertyAccessFromIndexSignature
 		const subjectSuffix = process.env['SENDGRID_MAGICLINK_SUBJECT_SUFFIX'] || '';
-		const subject = `${template.subject}${subjectSuffix ? ` ${subjectSuffix}` : ''}`;
+		const subjectWithSuffix = subjectSuffix ? ` ${subjectSuffix}` : '';
+		const subject = `${template.subject}${subjectWithSuffix}`;
 
 		// Send email using the selected implementation
 		await this.emailService.sendEmail({

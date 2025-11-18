@@ -116,4 +116,8 @@ async function demo() {
 }
 
 // Run demo
-demo().catch(console.error);
+try {
+	await demo();
+} catch (error) {
+	console.error(error);
+}
