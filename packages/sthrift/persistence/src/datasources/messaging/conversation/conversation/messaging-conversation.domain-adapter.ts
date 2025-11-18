@@ -11,11 +11,9 @@ export function toDomainConversationProps(
 	listing: Domain.Contexts.Listing.ItemListing.ItemListingEntityReference,
 	messages: Domain.Contexts.Conversation.Conversation.MessageEntityReference[],
 ): Domain.Contexts.Conversation.Conversation.ConversationProps {
-	const messagingId =
-		// biome-ignore lint/complexity/useLiteralKeys: metadata is Record<string, unknown> requiring bracket notation
-		(messagingConversation.metadata?.['originalSid'] as string) ||
-		messagingConversation.id;
-
+	// biome-ignore lint/complexity/useLiteralKeys: metadata is an index signature requiring bracket notation
+	const messagingId = (messagingConversation.metadata?.["originalSid"] as string) || messagingConversation.id;
+	
 	return {
 		id: messagingConversation.id,
 		sharer,
@@ -37,15 +35,12 @@ export function toDomainMessage(
 	messagingMessage: MessageInstance,
 	authorId: Domain.Contexts.Conversation.Conversation.AuthorId,
 ): Domain.Contexts.Conversation.Conversation.MessageEntityReference {
-	const messagingId =
-		// biome-ignore lint/complexity/useLiteralKeys: metadata is Record<string, unknown> requiring bracket notation
-		(messagingMessage.metadata?.['originalSid'] as string) ||
-		messagingMessage.id;
-
-	const messagingMessageId =
-		new Domain.Contexts.Conversation.Conversation.MessagingMessageId(
-			messagingId,
-		);
+	// biome-ignore lint/complexity/useLiteralKeys: metadata is an index signature requiring bracket notation
+	const messagingId = (messagingMessage.metadata?.["originalSid"] as string) || messagingMessage.id;
+	
+	const messagingMessageId = new Domain.Contexts.Conversation.Conversation.MessagingMessageId(
+		messagingId,
+	);
 	const content = new Domain.Contexts.Conversation.Conversation.MessageContent(
 		messagingMessage.body,
 	);

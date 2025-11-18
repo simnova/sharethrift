@@ -29,22 +29,21 @@ export class Conversation<props extends ConversationProps>
 		sharer: PersonalUserEntityReference,
 		reserver: PersonalUserEntityReference,
 		listing: ItemListingEntityReference,
-		messages: MessageEntityReference[],
+		_messages: MessageEntityReference[],
+		messagingConversationId: string | undefined,
 		passport: Passport,
 	): Conversation<props> {
-		const instance = new Conversation(
-			{
-				...newProps,
-				sharer,
-				reserver,
-				listing,
-				messages,
-			} as props,
-			passport,
-		);
-		instance.markAsNew();
-		instance.isNew = false;
-		return instance;
+		const newInstance = new Conversation(newProps, passport);
+		newInstance.markAsNew();
+		newInstance.sharer = sharer;
+		newInstance.reserver = reserver;
+		newInstance.listing = listing;
+		newInstance.props.messages = _messages;
+		if (messagingConversationId) {
+			newInstance.messagingConversationId = messagingConversationId;
+		}
+		newInstance.isNew = false;
+		return newInstance;
 	}
 
 	private markAsNew(): void {
