@@ -7,6 +7,7 @@ import { ItemListing } from '../../../src/domain/contexts/listing/item/item-list
 import type { ItemListingProps } from '../../../src/domain/contexts/listing/item/item-listing.entity';
 import type { PersonalUserEntityReference } from '../../../src/domain/contexts/user/personal-user/personal-user.entity';
 import * as ValueObjects from '../../../src/domain/contexts/listing/item/item-listing.value-objects';
+import { createTestUserRef } from '../fixtures/test-user-fixtures';
 
 declare module '@serenity-js/core' {
     interface Actor {
@@ -26,7 +27,8 @@ declare module '@serenity-js/core' {
     }
 }
 
-// Keep the existing testUserRef definition here
+// Define test user reference using shared fixture
+const _testUserRef = createTestUserRef('user1');
 
 Before(() => {
     const actor = actorCalled('User');
@@ -45,101 +47,6 @@ Given('a valid Passport with listing permissions', () => {
         canReserveItemListing: true
     });
 });
-
-// Define test user reference
-const _testUserRef = {
-    id: 'user1',
-    userType: 'personal-user',
-    isBlocked: false,
-    schemaVersion: '1.0.0',
-    hasCompletedOnboarding: true,
-    role: {
-        id: 'test-role',
-        roleName: 'standard',
-        isDefault: true,
-        roleType: 'personal-user-role',
-        createdAt: new Date(),
-        updatedAt: new Date(),
-        schemaVersion: '1.0.0',
-        permissions: {
-            listingPermissions: {
-                canCreateItemListing: true,
-                canUpdateItemListing: true,
-                canDeleteItemListing: true,
-                canViewItemListing: true,
-                canPublishItemListing: true,
-                canUnpublishItemListing: true,
-                canReserveItemListing: true
-            },
-            conversationPermissions: {
-                canCreateConversation: true,
-                canManageConversation: true,
-                canViewConversation: true
-            },
-            reservationRequestPermissions: {
-                canCreateReservationRequest: true,
-                canManageReservationRequest: true,
-                canViewReservationRequest: true
-            }
-        }
-    },
-    createdAt: new Date(),
-    updatedAt: new Date(),
-    account: {
-        accountType: 'standard',
-        email: 'test@example.com',
-        username: 'testuser',
-        profile: {
-            firstName: 'Test',
-            lastName: 'User',
-            location: {
-                address1: '123 Main St',
-                address2: null,
-                city: 'Test City', 
-                state: 'TS',
-                country: 'Testland',
-                zipCode: '12345'
-            },
-            billing: {
-                subscriptionId: null,
-                cybersourceCustomerId: null,
-                paymentState: '',
-                lastTransactionId: null,
-                lastPaymentAmount: null
-            }
-        }
-    },
-    loadRole: () => Promise.resolve({
-        id: 'test-role',
-        roleName: 'standard',
-        isDefault: true,
-        roleType: 'personal-user-role',
-        createdAt: new Date(),
-        updatedAt: new Date(),
-        schemaVersion: '1.0.0',
-        permissions: {
-            listingPermissions: {
-                canCreateItemListing: true,
-                canUpdateItemListing: true,
-                canDeleteItemListing: true,
-                canViewItemListing: true,
-                canPublishItemListing: true,
-                canUnpublishItemListing: true,
-                canReserveItemListing: true
-            },
-            conversationPermissions: {
-                canCreateConversation: true,
-                canManageConversation: true,
-                canViewConversation: true
-            },
-            reservationRequestPermissions: {
-                canCreateReservationRequest: true,
-                canManageReservationRequest: true,
-                canViewReservationRequest: true
-            }
-        }
-    })
-};
 
 // Note: Using shared step definition for "a valid PersonalUserEntityReference for {string}"
 

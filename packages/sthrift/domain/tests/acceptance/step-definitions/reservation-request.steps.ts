@@ -10,6 +10,7 @@ import type { PersonalUserEntityReference } from '../../../src/domain/contexts/u
 import type { ItemListingEntityReference } from '../../../src/domain/contexts/listing/item/item-listing.entity';
 import { ReservationRequestStates } from '../../../src/domain/contexts/reservation-request/reservation-request/reservation-request.value-objects';
 import type { ReservationRequestDomainPermissions } from '../../../src/domain/contexts/reservation-request/reservation-request.domain-permissions';
+import { createTestUserRef } from '../fixtures/test-user-fixtures';
 
 declare module '@serenity-js/core' {
     interface Actor {
@@ -29,75 +30,7 @@ declare module '@serenity-js/core' {
 }
 
 // Test data setup
-const testUserRolePermissions = {
-    listingPermissions: {
-        canCreateItemListing: true,
-        canUpdateItemListing: true,
-        canDeleteItemListing: true,
-        canViewItemListing: true,
-        canPublishItemListing: true,
-        canUnpublishItemListing: true,
-        canReserveItemListing: true
-    },
-    conversationPermissions: {
-        canCreateConversation: true,
-        canManageConversation: true,
-        canViewConversation: true
-    },
-    reservationRequestPermissions: {
-        canCreateReservationRequest: true,
-        canManageReservationRequest: true,
-        canViewReservationRequest: true
-    }
-};
-
-const testUserRole = {
-    id: 'test-role',
-    roleName: 'standard',
-    isDefault: true,
-    roleType: 'personal-user-role',
-    createdAt: new Date(),
-    updatedAt: new Date(),
-    schemaVersion: '1.0.0',
-    permissions: testUserRolePermissions
-};
-
-const testUserRef: PersonalUserEntityReference = {
-    id: 'reserverUser',
-    userType: 'personal-user',
-    isBlocked: false,
-    schemaVersion: '1.0.0',
-    hasCompletedOnboarding: true,
-    role: testUserRole,
-    loadRole: async () => testUserRole,
-    account: {
-        accountType: 'personal',
-        email: 'test@example.com',
-        username: 'testuser',
-        profile: {
-            firstName: 'Test',
-            lastName: 'User',
-            aboutMe: '',
-            location: {
-                address1: '123 Test St',
-                address2: null,
-                city: 'Test City',
-                state: 'Test State',
-                country: 'Test Country',
-                zipCode: '12345'
-            },
-            billing: {
-                subscriptionId: null,
-                cybersourceCustomerId: null,
-                paymentState: 'none',
-                lastTransactionId: null,
-                lastPaymentAmount: null
-            }
-        }
-    },
-    createdAt: new Date(),
-    updatedAt: new Date()
-};
+const testUserRef = createTestUserRef('reserverUser');
 
 const testListingRef: ItemListingEntityReference = {
     id: 'listing1',
