@@ -36,14 +36,13 @@ export class ServiceTransactionalEmailSendGrid implements TransactionalEmailServ
 		sendgrid.setApiKey(this.apiKey);
 		this.isStarted = true;
 		console.log('ServiceTransactionalEmailSendGrid started');
-		return Promise.resolve(this as Exclude<ServiceTransactionalEmailSendGrid, ServiceBase>);
+		return this as Exclude<ServiceTransactionalEmailSendGrid, ServiceBase>;
 	}
 
 	// biome-ignore lint/suspicious/useAwait: Required by interface
 	public async shutDown(): Promise<void> {
 		this.isStarted = false;
 		console.log('ServiceTransactionalEmailSendGrid stopped');
-		return Promise.resolve();
 	}
 
 	/**
