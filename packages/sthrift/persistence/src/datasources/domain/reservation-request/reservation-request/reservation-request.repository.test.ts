@@ -43,7 +43,7 @@ function makeUserDoc(id: string): Models.User.PersonalUser {
 	const validId = createValidObjectId(id);
 	return {
 		_id: new MongooseSeedwork.ObjectId(validId),
-		id: id,
+		id: new MongooseSeedwork.ObjectId(validId),
 		userType: 'end-user',
 		isBlocked: false,
 		hasCompletedOnboarding: false,
@@ -277,7 +277,6 @@ test.for(feature, ({ Scenario, Background, BeforeEachScenario }) => {
                 
                 // Create user doc with matching ID
                 const userDocWithMatchingId = makeUserDoc('user-1');
-                userDocWithMatchingId.id = reserver.id;
                 
                 // Mock the model constructor to return a document with required properties
                 const mockNewDoc = {
@@ -361,7 +360,7 @@ test.for(feature, ({ Scenario, Background, BeforeEachScenario }) => {
 						Domain.Contexts.ReservationRequest.ReservationRequest.ReservationRequestProps
 					>[];
 				for (const req of reservationRequests) {
-					expect(req.reserver.id).toBe('user-123');
+					expect(req.reserver.account.username).toBe('user-123');
 				}
 			});
 		},
