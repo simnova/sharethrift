@@ -67,7 +67,7 @@ importers:
         version: 3.0.2
       rimraf:
         specifier: ^6.0.1
-        version: 6.0.1
+        version: 6.1.0
       rollup:
         specifier: 3.29.4
         version: 3.29.4
