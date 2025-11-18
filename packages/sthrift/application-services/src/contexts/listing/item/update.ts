@@ -26,7 +26,7 @@ export const update = (datasources: DataSources) => {
 				listing.setDeleted(command.isDeleted);
 			}
 
-			await repo.save(listing, ['sharer']);
+			await repo.save(listing);
 		});
 	};
 };
