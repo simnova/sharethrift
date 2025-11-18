@@ -150,16 +150,16 @@ test.for(feature, ({ Scenario, Background, BeforeEachScenario }) => {
 	Scenario(
 		'Getting the role property when it is an ObjectId',
 		({ When, Then }) => {
+			const roleId = new MongooseSeedwork.ObjectId();
+
 			When('I get the role property on a doc with role as ObjectId', () => {
-				doc = makeUserDoc({ role: new MongooseSeedwork.ObjectId() });
+				doc = makeUserDoc({ role: roleId });
 				adapter = new PersonalUserDomainAdapter(doc);
 			});
 			Then(
-				'an error should be thrown indicating role is not populated or is not of the correct type',
+				'it should return a PersonalUserRoleEntityReference with the correct id',
 				() => {
-					expect(() => adapter.role).toThrow(
-						/role is not populated or is not of the correct type/,
-					);
+					expect(adapter.role.id).toBe(roleId.toString());
 				},
 			);
 		},

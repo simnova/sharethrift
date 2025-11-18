@@ -29,7 +29,7 @@ Feature: PersonalUserDomainAdapter
 
   Scenario: Getting the role property when it is an ObjectId
     When I get the role property on a doc with role as ObjectId
-    Then an error should be thrown indicating role is not populated or is not of the correct type
+    Then it should return a PersonalUserRoleEntityReference with the correct id
 
   Scenario: Setting the role property
     When I set the role property to a valid PersonalUserRoleDomainAdapter
