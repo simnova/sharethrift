@@ -177,8 +177,8 @@ this.props.state = new ValueObjects.ReservationRequestStateValue(
    ```
 
    **Notification Recipients**:
-   - **Reserver**: "Your request for {listing.title} has been accepted!"
-   - **Sharer**: "You accepted the request from {reserver.name}"
+   - **Reserver**: "Your request for [listing.title] has been accepted!"
+   - **Sharer**: "You accepted the request from [reserver.name]"
 
 2. **ReservationRequestAutoRejected** (for each rejected request)
    ```typescript
@@ -193,29 +193,31 @@ this.props.state = new ValueObjects.ReservationRequestStateValue(
    ```
 
    **Notification Recipients**:
-   - **Reserver**: "Your request for {listing.title} was declined because the dates are no longer available"
+   - **Reserver**: "Your request for [listing.title] was declined because the dates are no longer available"
 
 ### 6. Messaging Integration (Future Implementation)
 
 **Automated Message Content**:
 
 **To Reserver (Acceptance)**:
-```
-Great news! {sharer.firstName} has accepted your request for "{listing.title}".
 
-Reservation Period: {reservationPeriodStart} - {reservationPeriodEnd}
+```text
+Great news! [sharer.firstName] has accepted your request for "[listing.title]".
+
+Reservation Period: [reservationPeriodStart] - [reservationPeriodEnd]
 
 Next Steps:
-1. Coordinate pickup details with {sharer.firstName}
+1. Coordinate pickup details with [sharer.firstName]
 2. Review the listing location and description
 3. Enjoy your reservation!
 
-[Message {sharer.firstName}] [View Listing]
+[Message [sharer.firstName]] [View Listing]
 ```
 
 **To Reserver (Auto-Rejection)**:
-```
-Unfortunately, your request for "{listing.title}" is no longer available.
+
+```text
+Unfortunately, your request for "[listing.title]" is no longer available.
 
 The dates you selected have been reserved by another user.
 
@@ -326,8 +328,8 @@ Would you like to:
 ## Related Documentation
 
 - [ADR-0023: Reservation Request Acceptance Flow](../decisions/0023-reservation-request-acceptance-flow.md)
-- [Business Requirements: Reservation Lifecycle](../../documents/share-thrift-brd.md#reservation-lifecycle)
-- [Domain Feature: Reservation Request](../../../../../packages/sthrift/domain/src/domain/contexts/reservation-request/reservation-request/features/reservation-request.feature)
+- Business Requirements: Reservation Lifecycle (see share-thrift-brd.md#reservation-lifecycle)
+- Domain Feature: Reservation Request (see packages/sthrift/domain/src/domain/contexts/reservation-request/reservation-request/features/reservation-request.feature)
 
 ## Future Enhancements
 

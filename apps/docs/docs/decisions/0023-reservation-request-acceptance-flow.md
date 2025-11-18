@@ -132,9 +132,9 @@ Requested --[auto-reject due to overlap]--> Rejected
 
 ### Related Documentation
 
-- [Business Requirements Document - Reservation Lifecycle](../../documents/share-thrift-brd.md#reservation-lifecycle)
-- [System Requirements Document - Reservation Request](../../documents/share-thrift-srd-bronze.md#reservation-request)
-- [Domain Feature File - Reservation Request](../../../../../packages/sthrift/domain/src/domain/contexts/reservation-request/reservation-request/features/reservation-request.feature)
+- Business Requirements Document - Reservation Lifecycle (see share-thrift-brd.md#reservation-lifecycle)
+- System Requirements Document - Reservation Request (see share-thrift-srd-bronze.md#reservation-request)
+- Domain Feature File - Reservation Request (see packages/sthrift/domain/src/domain/contexts/reservation-request/reservation-request/features/reservation-request.feature)
 
 ### Future Enhancements
 

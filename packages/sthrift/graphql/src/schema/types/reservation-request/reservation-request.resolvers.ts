@@ -5,6 +5,8 @@ import {
 	PopulateItemListingFromField,
 	PopulatePersonalUserFromField,
 } from '../../resolver-helper.ts';
+type ReservationRequestEntityReference =
+	import('@sthrift/domain').Domain.Contexts.ReservationRequest.ReservationRequest.ReservationRequestEntityReference;
 
 // Map domain states to UI display states (now 1:1, all aligned)
 const DOMAIN_TO_UI_STATE: Record<string, string> = {
@@ -19,6 +21,7 @@ interface ListingRequestDomainShape {
 	id: string;
 	state?: string;
 	createdAt?: Date;
+	updatedAt?: Date;
 	reservationPeriodStart?: Date;
 	reservationPeriodEnd?: Date;
 	listing?: { title?: string; [k: string]: unknown };
@@ -37,6 +40,103 @@ interface ListingRequestUiShape {
 	_raw: ListingRequestDomainShape;
 	[k: string]: unknown; // enable dynamic field sorting access
 }
+
+const DUMMY_MY_LISTINGS_SHARER_ID = '507f1f77bcf86cd799439014';
+
+const DEV_DUMMY_LISTING_REQUESTS: ListingRequestDomainShape[] = [
+	{
+		id: '64f1f77bcf86cd7994390011',
+		state: 'Requested',
+		createdAt: new Date('2025-01-12T10:00:00.000Z'),
+		reservationPeriodStart: new Date('2025-01-20T00:00:00.000Z'),
+		reservationPeriodEnd: new Date('2025-01-24T00:00:00.000Z'),
+		listing: {
+			title: 'Canon EOS R5 Mirrorless Camera',
+			thumbnailUrl: '/assets/item-images/camera-r5.png',
+			sharer: { id: DUMMY_MY_LISTINGS_SHARER_ID },
+		},
+		reserver: { account: { username: 'jane.photog' } },
+	},
+	{
+		id: '64f1f77bcf86cd7994390012',
+		state: 'Accepted',
+		createdAt: new Date('2025-01-10T15:30:00.000Z'),
+		reservationPeriodStart: new Date('2025-01-28T00:00:00.000Z'),
+		reservationPeriodEnd: new Date('2025-02-02T00:00:00.000Z'),
+		listing: {
+			title: 'Nanlite MixPanel 150 LED Kit',
+			thumbnailUrl: '/assets/item-images/nanlite-mixpanel.png',
+			sharer: { id: DUMMY_MY_LISTINGS_SHARER_ID },
+		},
+		reserver: { account: { username: 'studiojoe' } },
+	},
+];
+
+const isDevEnvironment = () => {
+	const nodeEnv = process.env['NODE_ENV'];
+	return (
+		nodeEnv === undefined || nodeEnv === 'development' || nodeEnv === 'test'
+	);
+};
+
+const findDevDummyListingRequestById = (id: string) => {
+	if (!isDevEnvironment()) {
+		return undefined;
+	}
+	return DEV_DUMMY_LISTING_REQUESTS.find((request) => request.id === id);
+};
+
+const acceptDevDummyListingRequestById = (id: string) => {
+	const request = findDevDummyListingRequestById(id);
+	if (!request) {
+		return undefined;
+	}
+	request.state = 'Accepted';
+	request.updatedAt = new Date();
+	return request;
+};
+
+const createDummyListingRequestsIfNeeded = (
+	requests: ListingRequestDomainShape[],
+	sharerId: string,
+): ListingRequestDomainShape[] => {
+	if (!isDevEnvironment()) {
+		return requests;
+	}
+	if (requests.length > 0) {
+		return requests;
+	}
+	if (sharerId !== DUMMY_MY_LISTINGS_SHARER_ID) {
+		return requests;
+	}
+	return DEV_DUMMY_LISTING_REQUESTS.map((request) => ({
+		...request,
+		createdAt: new Date(request.createdAt ?? new Date()),
+		reservationPeriodStart: new Date(
+			request.reservationPeriodStart ?? new Date(),
+		),
+		reservationPeriodEnd: new Date(request.reservationPeriodEnd ?? new Date()),
+	}));
+};
+
+const buildAcceptedDummyReservationRequest = (
+	request: ListingRequestDomainShape,
+): ReservationRequestEntityReference => {
+	const now = new Date();
+	return {
+		...request,
+		state: 'Accepted',
+		createdAt: new Date(request.createdAt ?? now),
+		reservationPeriodStart: new Date(request.reservationPeriodStart ?? now),
+		reservationPeriodEnd: new Date(request.reservationPeriodEnd ?? now),
+		updatedAt: now,
+		schemaVersion: 'dummy-0.0.1',
+		closeRequestedBySharer: false,
+		closeRequestedByReserver: false,
+		loadListing: async () => request.listing as never,
+		loadReserver: async () => request.reserver as never,
+	} as unknown as ReservationRequestEntityReference;
+};
 
 function paginateAndFilterListingRequests(
 	requests: ListingRequestDomainShape[],
@@ -171,15 +271,16 @@ const reservationRequest: Resolvers = {
 						sharerId: args.sharerId,
 					},
 				);
-			return paginateAndFilterListingRequests(
+			const hydratedRequests = createDummyListingRequestsIfNeeded(
 				requests as unknown as ListingRequestDomainShape[],
-				{
-					page: args.page,
-					pageSize: args.pageSize,
-					searchText: args.searchText,
-					statusFilters: [...(args.statusFilters ?? [])],
-				},
+				args.sharerId,
 			);
+			return paginateAndFilterListingRequests(hydratedRequests, {
+				page: args.page,
+				pageSize: args.pageSize,
+				searchText: args.searchText,
+				statusFilters: [...(args.statusFilters ?? [])],
+			});
 		},
 		myActiveReservationForListing: async (
 			_parent,
@@ -252,6 +353,13 @@ const reservationRequest: Resolvers = {
 				throw new Error(
 					'User must be authenticated to accept a reservation request',
 				);
+			}
+
+			const acceptedDevDummyRequest = acceptDevDummyListingRequestById(
+				args.input.id,
+			);
+			if (acceptedDevDummyRequest) {
+				return buildAcceptedDummyReservationRequest(acceptedDevDummyRequest);
 			}
 
 			return await context.applicationServices.ReservationRequest.ReservationRequest.accept(
