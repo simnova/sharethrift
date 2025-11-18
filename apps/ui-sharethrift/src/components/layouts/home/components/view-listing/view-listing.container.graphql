@@ -16,6 +16,9 @@ fragment ViewListingContainerListingFields on ItemListing {
   reports
   sharingHistory
   schemaVersion
+  sharer {
+    id
+  }
 }
 
 query ViewListing($id: ObjectID!) {
