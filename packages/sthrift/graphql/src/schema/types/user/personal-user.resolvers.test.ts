@@ -5,6 +5,7 @@ import { expect, vi } from 'vitest';
 import type { GraphContext } from '../../../init/context.ts';
 import personalUserResolvers from './personal-user.resolvers.ts';
 import type { Domain } from '@sthrift/domain';
+import { DEFAULT_PERMISSIONS_PROPS } from '@sthrift/domain';
 // Define a type for the payment response based on the interface structure
 interface ProcessPaymentResponse {
 	id?: string;
@@ -79,27 +80,7 @@ function createMockRole(): Domain.Contexts.Role.PersonalUserRole.PersonalUserRol
 		createdAt: new Date(),
 		updatedAt: new Date(),
 		schemaVersion: '1.0',
-		permissions: {
-			listingPermissions: {
-				canCreateItemListing: true,
-				canUpdateItemListing: true,
-				canDeleteItemListing: true,
-				canViewItemListing: true,
-				canPublishItemListing: true,
-				canUnpublishItemListing: true,
-				canReserveItemListing: true,
-			},
-			conversationPermissions: {
-				canCreateConversation: true,
-				canManageConversation: true,
-				canViewConversation: true,
-			},
-			reservationRequestPermissions: {
-				canCreateReservationRequest: true,
-				canManageReservationRequest: true,
-				canViewReservationRequest: true,
-			},
-		},
+		permissions: DEFAULT_PERMISSIONS_PROPS,
 	};
 }
 

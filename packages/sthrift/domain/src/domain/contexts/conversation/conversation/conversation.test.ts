@@ -7,11 +7,11 @@ import type { ItemListingProps } from '../../listing/item/item-listing.entity.ts
 import { ItemListing } from '../../listing/item/item-listing.ts';
 import type { Passport } from '../../passport.ts';
 import { PersonalUserRole } from '../../role/personal-user-role/personal-user-role.ts';
-import { PersonalUserRolePermissions } from '../../role/personal-user-role/personal-user-role-permissions.ts';
 import type { PersonalUserProps } from '../../user/personal-user/personal-user.entity.ts';
 import { PersonalUser } from '../../user/personal-user/personal-user.ts';
 import type { ConversationProps } from './conversation.entity.ts';
 import { Conversation } from './conversation.ts';
+import { createDefaultRolePermissions } from '../../role/role-permissions.factory.ts';
 
 const test = { for: describeFeature };
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
@@ -44,27 +44,7 @@ function makeBaseProps(
 	overrides: Partial<ConversationProps> = {},
 ): ConversationProps {
 	// Provide a valid PersonalUserPermissions value object for permissions
-	const permissions = new PersonalUserRolePermissions({
-		listingPermissions: {
-			canCreateItemListing: true,
-			canUpdateItemListing: true,
-			canDeleteItemListing: true,
-			canViewItemListing: true,
-			canPublishItemListing: true,
-			canUnpublishItemListing: true,
-			canReserveItemListing: true,
-		},
-		conversationPermissions: {
-			canCreateConversation: true,
-			canManageConversation: true,
-			canViewConversation: true,
-		},
-		reservationRequestPermissions: {
-			canCreateReservationRequest: true,
-			canManageReservationRequest: true,
-			canViewReservationRequest: true,
-		},
-	});
+	const permissions = createDefaultRolePermissions();
 	const roleProps = {
 		id: 'role-1',
 		name: 'default',

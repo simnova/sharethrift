@@ -10,7 +10,7 @@ import {
 } from './reservation-request.value-objects.ts';
 import type { Passport } from '../../passport.ts';
 import type { PersonalUserRoleEntityReference } from '../../role/personal-user-role/personal-user-role.entity.ts';
-import { PersonalUserRolePermissions } from '../../role/personal-user-role/personal-user-role-permissions.ts';
+import { createDefaultRolePermissions } from '../../role/role-permissions.factory.ts';
 // Minimal test-only mocks for missing domain value objects
 
 describe('ReservationRequest', () => {
@@ -80,27 +80,7 @@ describe('ReservationRequest', () => {
 		id: 'role-1',
 		roleName: 'mock-role',
 		isDefault: false,
-		permissions: new PersonalUserRolePermissions({
-			listingPermissions: {
-				canCreateItemListing: true,
-				canUpdateItemListing: true,
-				canDeleteItemListing: true,
-				canViewItemListing: true,
-				canPublishItemListing: true,
-				canUnpublishItemListing: true,
-				canReserveItemListing: true,
-			},
-			conversationPermissions: {
-				canCreateConversation: true,
-				canManageConversation: true,
-				canViewConversation: true,
-			},
-			reservationRequestPermissions: {
-				canCreateReservationRequest: true,
-				canManageReservationRequest: true,
-				canViewReservationRequest: true,
-			},
-		}),
+		permissions: createDefaultRolePermissions(),
 		roleType: 'mock-type',
 		createdAt: new Date(),
 		updatedAt: new Date(),
