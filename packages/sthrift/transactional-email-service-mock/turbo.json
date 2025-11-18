@@ -1,5 +1,4 @@
 {
-	"extends": [
-		"//turbo.json"
-	]
+  "extends": ["//"],
+  "tags": ["backend"]
 }
