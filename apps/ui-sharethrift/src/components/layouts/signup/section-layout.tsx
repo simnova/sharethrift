@@ -1,7 +1,8 @@
 import { Outlet, useNavigate } from 'react-router-dom';
 import { Footer, Header } from '@sthrift/ui-components';
 import { useAuth } from 'react-oidc-context';
-import { HandleLogoutMockForMockAuth } from '../../shared/handle-logout.ts';
+import { HandleLogout } from '../../shared/handle-logout.ts';
+import { useApolloClient } from '@apollo/client/react';
 import { useCreateListingNavigation } from '../home/components/create-listing/hooks/use-create-listing-navigation.ts';
 
 // biome-ignore lint/suspicious/noEmptyInterface: <explanation>
@@ -9,8 +10,8 @@ interface SectionLayoutProps {}
 
 export const SectionLayout: React.FC<SectionLayoutProps> = (_props) => {
 	const auth = useAuth();
-	const navigate = useNavigate();
-
+	const apolloClient = useApolloClient();
+    const navigate = useNavigate();
 	const handleOnLogin = () => {
 		navigate('/auth-redirect-user');
 	};
@@ -22,7 +23,7 @@ export const SectionLayout: React.FC<SectionLayoutProps> = (_props) => {
 	const handleCreateListing = useCreateListingNavigation();
 
 	const handleLogOut = () => {
-		HandleLogoutMockForMockAuth(auth);
+        HandleLogout(auth, apolloClient, globalThis.location.origin);
 	};
 
 	return (

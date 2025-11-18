@@ -10,15 +10,17 @@ import {
 	UserOutlined,
 	BarChartOutlined,
 } from '@ant-design/icons';
-import { HandleLogoutMockForMockAuth } from '../../shared/handle-logout.ts';
+import { HandleLogout } from '../../shared/handle-logout.ts';
 import { Footer, Header, Navigation } from '@sthrift/ui-components';
 import { useCreateListingNavigation } from './components/create-listing/hooks/use-create-listing-navigation.ts';
+import { useApolloClient } from '@apollo/client/react';
 import { useUserIsAdmin } from './account/hooks/useUserIsAdmin.ts';
 
 export const HomeTabsLayout: React.FC = () => {
 	const navigate = useNavigate();
 	const location = useLocation();
 	const auth = useAuth();
+    const apolloClient = useApolloClient();
 	const { isAdmin } = useUserIsAdmin();
 
 	// Map nav keys to routes as defined in index.tsx
@@ -104,7 +106,7 @@ export const HomeTabsLayout: React.FC = () => {
 	const handleCreateListing = useCreateListingNavigation();
 
 	const handleLogOut = () => {
-		HandleLogoutMockForMockAuth(auth);
+		HandleLogout(auth, apolloClient, window.location.origin);
 	};
 
 	// Build navigation items dynamically based on user role

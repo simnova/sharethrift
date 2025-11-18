@@ -11,6 +11,8 @@ export const HandleLogout = (
 	auth.removeUser();
 	apolloClient.clearStore();
 	clearStorage();
+	globalThis.sessionStorage.removeItem('loginPortalType');
+	globalThis.sessionStorage.removeItem('redirectTo');
 	if (post_logout_redirect_uri) {
 		auth.signoutRedirect({
 			post_logout_redirect_uri: post_logout_redirect_uri,
@@ -20,14 +22,5 @@ export const HandleLogout = (
 	}
 
 	auth.signoutRedirect();
-};
-
-export const HandleLogoutMockForMockAuth = (auth: AuthContextProps) => {
-	auth.removeUser();
-	clearStorage();
-	// Clear the portal type selection
-	globalThis.sessionStorage.removeItem('loginPortalType');
-	globalThis.sessionStorage.removeItem('redirectTo');
-	// Force a full page reload to reinitialize the AuthProvider with fresh config
-	window.location.href = '/';
+	//globalThis.location.href = '/'; //would return to home page after logout
 };
