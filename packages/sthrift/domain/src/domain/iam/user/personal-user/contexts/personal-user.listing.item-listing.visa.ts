@@ -23,6 +23,7 @@ export class PersonalUserListingItemListingVisa<
 			canViewItemListing: true,
 			canPublishItemListing: this.user.id === this.root.sharer.id,
 			canUnpublishItemListing: this.user.id === this.root.sharer.id,
+			canReserveItemListing: this.user.isBlocked === false && this.user.id !== this.root.sharer.id,
 		};
 
 		return func(updatedPermissions);

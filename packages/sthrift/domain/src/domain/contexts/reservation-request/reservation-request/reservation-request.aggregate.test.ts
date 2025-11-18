@@ -88,6 +88,7 @@ describe('ReservationRequest', () => {
 				canViewItemListing: true,
 				canPublishItemListing: true,
 				canUnpublishItemListing: true,
+				canReserveItemListing: true,
 			},
 			conversationPermissions: {
 				canCreateConversation: true,

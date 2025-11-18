@@ -63,6 +63,7 @@ function makeBaseProps(
 			canViewItemListing: true,
 			canPublishItemListing: true,
 			canUnpublishItemListing: true,
+			canReserveItemListing: true,
 		},
 		conversationPermissions: {
 			canCreateConversation: true,
