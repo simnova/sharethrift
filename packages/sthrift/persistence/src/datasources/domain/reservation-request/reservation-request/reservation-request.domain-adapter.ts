@@ -60,12 +60,14 @@ export class ReservationRequestDomainAdapter
 		this.doc.reservationPeriodEnd = value;
 	}
 
-	get listing(): ItemListingDomainAdapter {
+	get listing(): Domain.Contexts.Listing.ItemListing.ItemListingEntityReference {
 		if (!this.doc.listing) {
 			throw new Error('listing is not populated');
 		}
 		if (this.doc.listing instanceof MongooseSeedwork.ObjectId) {
-			throw new Error('listing is not populated or is not of the correct type');
+			return {
+				id: this.doc.listing.toString(),
+			} as Domain.Contexts.Listing.ItemListing.ItemListingEntityReference;
 		}
 		return new ItemListingDomainAdapter(
 			this.doc.listing as Models.Listing.ItemListing,
@@ -96,9 +98,9 @@ export class ReservationRequestDomainAdapter
 			throw new Error('reserver is not populated');
 		}
 		if (this.doc.reserver instanceof MongooseSeedwork.ObjectId) {
-			throw new Error(
-				'reserver is not populated or is not of the correct type',
-			);
+			return {
+				id: this.doc.reserver.toString(),
+			} as Domain.Contexts.User.PersonalUser.PersonalUserEntityReference;
 		}
 		return new PersonalUserDomainAdapter(
 			this.doc.reserver as Models.User.PersonalUser,

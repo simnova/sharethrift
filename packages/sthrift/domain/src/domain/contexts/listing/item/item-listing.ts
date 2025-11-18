@@ -43,7 +43,7 @@ export class ItemListing<props extends ItemListingProps>
 		const newInstance = new ItemListing(newProps, passport);
 		newInstance.markAsNew();
 		newInstance.sharer = sharer;
-		newInstance.title = fields.title;
+		newInstance.title = new ValueObjects.Title(fields.title).valueOf();
 		newInstance.description = new ValueObjects.Description(
 			fields.description,
 		).valueOf();

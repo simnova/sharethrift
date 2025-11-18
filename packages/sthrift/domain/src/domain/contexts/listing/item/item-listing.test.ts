@@ -239,30 +239,27 @@ test.for(feature, ({ Scenario, Background, BeforeEachScenario }) => {
 					);
 				},
 			);
-			Then('the listing\'s title should default to "Draft Title"', () => {
-				expect(newListing.title).toBe('Draft Title');
+			Then("the listing's title should default to empty", () => {
+				expect(newListing.title).toBe('');
 			});
-			And(
-				'the listing\'s description should default to "Draft Description"',
-				() => {
-					expect(newListing.description).toBe('Draft Description');
-				},
-			);
-			And('the listing\'s category should default to "Miscellaneous"', () => {
+			And("the listing's description should default to empty", () => {
+				expect(newListing.description).toBe('');
+			});
+			And("the listing's category should default to empty", () => {
 				// Note: getNewInstance stores category as a ValueObject, not a string
 				const categoryValue =
 					typeof newListing.category === 'string'
 						? newListing.category
 						: (newListing.category as { valueOf: () => string }).valueOf();
-				expect(categoryValue).toBe('Miscellaneous');
+				expect(categoryValue).toBe('');
 			});
-			And('the listing\'s location should default to "Draft Location"', () => {
+			And("the listing's location should default to empty", () => {
 				// Note: getNewInstance stores location as a ValueObject, not a string
 				const locationValue =
 					typeof newListing.location === 'string'
 						? newListing.location
 						: (newListing.location as { valueOf: () => string }).valueOf();
-				expect(locationValue).toBe('Draft Location');
+				expect(locationValue).toBe('');
 			});
 			And('the listing state should be "Drafted"', () => {
 				// Note: getNewInstance stores state as a ValueObject, not a string

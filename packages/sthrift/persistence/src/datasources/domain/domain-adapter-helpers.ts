@@ -9,10 +9,12 @@ export const getSharer = (
 	docSharer: Schema.Types.ObjectId | PopulatedDoc<Models.User.PersonalUser>,
 ): Domain.Contexts.User.PersonalUser.PersonalUserEntityReference => {
 	if (!docSharer) {
-		throw new Error('listing is not populated');
+		throw new Error('sharer is not populated');
 	}
 	if (docSharer instanceof MongooseSeedwork.ObjectId) {
-		throw new Error('sharer is not populated or is not of the correct type');
+		return {
+			id: docSharer.toString(),
+		} as Domain.Contexts.User.PersonalUser.PersonalUserEntityReference;
 	}
 	return new PersonalUserDomainAdapter(docSharer as Models.User.PersonalUser);
 };
@@ -55,7 +57,9 @@ export const getReserver = (
 		throw new Error('reserver is not populated');
 	}
 	if (docReserver instanceof MongooseSeedwork.ObjectId) {
-		throw new Error('reserver is not populated or is not of the correct type');
+		return {
+			id: docReserver.toString(),
+		} as Domain.Contexts.User.PersonalUser.PersonalUserEntityReference;
 	}
 	return new PersonalUserDomainAdapter(docReserver as Models.User.PersonalUser);
 };

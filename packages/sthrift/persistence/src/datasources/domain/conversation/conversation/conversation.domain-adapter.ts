@@ -58,7 +58,9 @@ export class ConversationDomainAdapter
 			throw new Error('listing is not populated');
 		}
 		if (this.doc.listing instanceof MongooseSeedwork.ObjectId) {
-			throw new Error('listing is not populated or is not of the correct type');
+			return {
+				id: this.doc.listing.toString(),
+			} as Domain.Contexts.Listing.ItemListing.ItemListingEntityReference;
 		}
 		return new ItemListingDomainAdapter(
 			this.doc.listing as Models.Listing.ItemListing,

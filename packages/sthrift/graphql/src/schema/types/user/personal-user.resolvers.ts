@@ -8,8 +8,13 @@ import type {
 	QueryAllUsersArgs,
 } from '../../builder/generated.ts';
 import type { PersonalUserUpdateCommand } from '@sthrift/application-services';
+// import { PopulateRoleFromField } from '../../resolver-helper.ts';
 
 const personalUserResolvers: Resolvers = {
+	// PersonalUser:{
+	//   role: PopulateRoleFromField('role'),
+	// },
+
 	Query: {
 		personalUserById: async (
 			_parent: unknown,
@@ -59,9 +64,7 @@ const personalUserResolvers: Resolvers = {
 				page: args.page,
 				pageSize: args.pageSize,
 				searchText: args.searchText || undefined,
-				statusFilters: args.statusFilters
-					? [...args.statusFilters]
-					: undefined,
+				statusFilters: args.statusFilters ? [...args.statusFilters] : undefined,
 				sorter: args.sorter || undefined,
 			});
 		},

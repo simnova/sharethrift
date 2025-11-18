@@ -30,7 +30,7 @@ function makeUserDoc(
 		userType: 'end-user',
 		isBlocked: false,
 		hasCompletedOnboarding: false,
-		role: undefined,
+		role: null,
 		account: {
 			accountType: 'standard',
 			email: 'test@example.com',

@@ -1,6 +1,10 @@
 import type { Resolvers } from '../../builder/generated.js';
+import { PopulatePersonalUserFromField } from '../../resolver-helper.ts';
 
 const itemListingResolvers: Resolvers = {
+	ItemListing: {
+		sharer: PopulatePersonalUserFromField('sharer'),
+	},
 	Query: {
 		myListingsAll: async (_parent: unknown, args, context) => {
 			const currentUser = context.applicationServices.verifiedUser;
