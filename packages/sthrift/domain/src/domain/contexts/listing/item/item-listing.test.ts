@@ -21,6 +21,7 @@ function makePassport(
 	canUpdateItemListing = true,
 	canPublishItemListing = true,
 	canUnpublishItemListing = true,
+	canDeleteItemListing = true,
 ): Passport {
 	return vi.mocked({
 		listing: {
@@ -30,12 +31,14 @@ function makePassport(
 						canUpdateItemListing: boolean;
 						canPublishItemListing: boolean;
 						canUnpublishItemListing: boolean;
+						canDeleteItemListing: boolean;
 					}) => boolean,
 				) =>
 					fn({
 						canUpdateItemListing,
 						canPublishItemListing,
 						canUnpublishItemListing,
+						canDeleteItemListing,
 					}),
 			})),
 		},
@@ -559,6 +562,75 @@ test.for(feature, ({ Scenario, Background, BeforeEachScenario }) => {
 				expect(listing.updatedAt.getTime()).toBeGreaterThanOrEqual(
 					initialUpdatedAt.getTime(),
 				);
+			});
+		},
+	);
+
+	Scenario('Requesting delete with permission', ({ Given, When, Then }) => {
+		Given(
+			'an ItemListing aggregate with permission to delete item listing',
+			() => {
+				passport = makePassport(true, true, true, true);
+				listing = new ItemListing(makeBaseProps(), passport);
+			},
+		);
+		When('I call requestDelete()', () => {
+			listing.requestDelete();
+		});
+		Then("the listing's isDeleted flag should be true", () => {
+			expect(listing.isDeleted).toBe(true);
+		});
+	});
+
+	Scenario(
+		'Requesting delete without permission',
+		({ Given, When, Then, And }) => {
+			let requestDeleteWithoutPermission: () => void;
+			Given(
+				'an ItemListing aggregate without permission to delete item listing',
+				() => {
+					passport = makePassport(true, true, true, false);
+					listing = new ItemListing(makeBaseProps(), passport);
+				},
+			);
+			When('I try to call requestDelete()', () => {
+				requestDeleteWithoutPermission = () => {
+					listing.requestDelete();
+				};
+			});
+			Then('a PermissionError should be thrown', () => {
+				expect(requestDeleteWithoutPermission).toThrow(
+					DomainSeedwork.PermissionError,
+				);
+			});
+			And("the listing's isDeleted flag should remain false", () => {
+				expect(listing.isDeleted).toBe(false);
+			});
+		},
+	);
+
+	Scenario(
+		'Requesting delete when already deleted',
+		({ Given, When, Then, And }) => {
+			Given(
+				'an ItemListing aggregate with permission to delete item listing',
+				() => {
+					passport = makePassport(true, true, true, true);
+					listing = new ItemListing(makeBaseProps(), passport);
+				},
+			);
+			And('the listing is already marked as deleted', () => {
+				listing.requestDelete();
+			});
+			When('I call requestDelete() again', () => {
+				listing.requestDelete();
+			});
+			Then("the listing's isDeleted flag should remain true", () => {
+				expect(listing.isDeleted).toBe(true);
+			});
+			And('no error should be thrown', () => {
+				// Test passes if no error was thrown
+				expect(listing.isDeleted).toBe(true);
 			});
 		},
 	);
