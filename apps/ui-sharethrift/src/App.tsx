@@ -11,13 +11,19 @@ const authSection = (
 	</RequireAuth>
 );
 
+const signupSection = (
+    <RequireAuth redirectPath="/" forceLogin={true}>
+        <SignupRoutes />
+    </RequireAuth>
+);
+
 const App: React.FC = () => {
 	return (
 		<ApolloConnection>
 			<Routes>
 				<Route path="/*" element={<HomeRoutes />} />
 				<Route path="/auth-redirect" element={authSection} />
-				<Route path="/signup/*" element={<SignupRoutes />} />
+				<Route path="/signup/*" element={signupSection} />
 				<Route path="/" element={<Navigate to="/home" replace />} />
 			</Routes>
 		</ApolloConnection>

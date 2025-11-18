@@ -21,9 +21,3 @@ export const HandleLogout = (
 
 	auth.signoutRedirect();
 };
-
-export const HandleLogoutMockForMockAuth = (auth: AuthContextProps) => {
-	auth.removeUser();
-	clearStorage();
-	window.location.href = '/';
-};
