@@ -124,18 +124,6 @@ const itemListingResolvers: Resolvers = {
 			);
 		},
 
-		removeListing: async (_parent, args, context) => {
-			// TODO: Implement proper admin authorization check here
-			const userEmail =
-				context.applicationServices.verifiedUser?.verifiedJwt?.email ?? '';
-
-			await context.applicationServices.Listing.ItemListing.deleteListings({
-				id: args.id,
-				userEmail,
-			});
-			return true;
-		},
-
 		unblockListing: async (_parent, args, context) => {
 			// Admin-note: role-based authorization should be implemented here (security)
 			await context.applicationServices.Listing.ItemListing.unblock({

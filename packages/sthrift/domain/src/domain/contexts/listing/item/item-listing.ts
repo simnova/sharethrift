@@ -1,13 +1,13 @@
 import { randomUUID } from 'node:crypto';
 import { DomainSeedwork } from '@cellix/domain-seedwork';
 import type { Passport } from '../../passport.ts';
-import type { ListingVisa } from '../listing.visa.ts';
-import * as ValueObjects from './item-listing.value-objects.ts';
 import type { PersonalUserEntityReference } from '../../user/personal-user/personal-user.entity.ts';
+import type { ListingVisa } from '../listing.visa.ts';
 import type {
 	ItemListingEntityReference,
 	ItemListingProps,
 } from './item-listing.entity.ts';
+import * as ValueObjects from './item-listing.value-objects.ts';
 export class ItemListing<props extends ItemListingProps>
 	extends DomainSeedwork.AggregateRoot<props, Passport>
 	implements ItemListingEntityReference
@@ -328,7 +328,9 @@ export class ItemListing<props extends ItemListingProps>
 		if (!blocked) {
 			// unblocking: require publish permission (keeps previous behaviour)
 			if (
-				!this.visa.determineIf((permissions) => permissions.canPublishItemListing)
+				!this.visa.determineIf(
+					(permissions) => permissions.canPublishItemListing,
+				)
 			) {
 				throw new DomainSeedwork.PermissionError(
 					'You do not have permission to unblock this listing',
@@ -368,7 +370,9 @@ export class ItemListing<props extends ItemListingProps>
 			);
 		}
 
-		super.isDeleted = true;
+		if (!this.isDeleted) {
+			super.isDeleted = true;
+		}
 	}
 
 	/**
