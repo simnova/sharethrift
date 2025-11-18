@@ -1,10 +1,10 @@
-import { describeFeature, loadFeature } from '@amiceli/vitest-cucumber';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { expect, vi } from 'vitest';
-import type { DataSources } from '@sthrift/persistence';
+import { describeFeature, loadFeature } from '@amiceli/vitest-cucumber';
 import type { Domain } from '@sthrift/domain';
-import { update, type ItemListingUpdateCommand } from './update.ts';
+import type { DataSources } from '@sthrift/persistence';
+import { expect, vi } from 'vitest';
+import { type ItemListingUpdateCommand, update } from './update.ts';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const feature = await loadFeature(path.resolve(__dirname, 'update.feature'));
@@ -30,7 +30,9 @@ test.for(feature, ({ Scenario }) => {
 		let repo: { get: ReturnType<typeof vi.fn>; save: ReturnType<typeof vi.fn> };
 		let uow: { withScopedTransactionById: ReturnType<typeof vi.fn> };
 		let command: ItemListingUpdateCommand;
-		let result: Domain.Contexts.Listing.ItemListing.ItemListingEntityReference | undefined;
+		let result:
+			| Domain.Contexts.Listing.ItemListing.ItemListingEntityReference
+			| undefined;
 
 		Given('a listing exists with id "listing-1"', () => {
 			listing = {
@@ -47,15 +49,19 @@ test.for(feature, ({ Scenario }) => {
 
 			repo = {
 				get: vi.fn().mockResolvedValue(listing),
-				save: vi.fn().mockResolvedValue(
-					listing as unknown as Domain.Contexts.Listing.ItemListing.ItemListingEntityReference,
-				),
+				save: vi
+					.fn()
+					.mockResolvedValue(
+						listing as unknown as Domain.Contexts.Listing.ItemListing.ItemListingEntityReference,
+					),
 			};
 
 			uow = {
-				withScopedTransactionById: vi.fn(async (_id: string, fn: (repoArg: typeof repo) => Promise<void>) => {
-					await fn(repo);
-				}),
+				withScopedTransactionById: vi.fn(
+					async (_id: string, fn: (repoArg: typeof repo) => Promise<void>) => {
+						await fn(repo);
+					},
+				),
 			};
 
 			dataSources = {
@@ -86,13 +92,20 @@ test.for(feature, ({ Scenario }) => {
 		});
 
 		Then('the listing should be saved with all updated fields', () => {
-			expect(uow.withScopedTransactionById).toHaveBeenCalledWith('listing-1', expect.any(Function));
+			expect(uow.withScopedTransactionById).toHaveBeenCalledWith(
+				'listing-1',
+				expect.any(Function),
+			);
 			expect(listing.title).toBe('Updated Title');
 			expect(listing.description).toBe('Updated Description');
 			expect(listing.category).toBe('Books');
 			expect(listing.location).toBe('Remote');
-			expect(listing.sharingPeriodStart.toISOString()).toBe('2025-01-01T00:00:00.000Z');
-			expect(listing.sharingPeriodEnd.toISOString()).toBe('2025-02-01T00:00:00.000Z');
+			expect(listing.sharingPeriodStart.toISOString()).toBe(
+				'2025-01-01T00:00:00.000Z',
+			);
+			expect(listing.sharingPeriodEnd.toISOString()).toBe(
+				'2025-02-01T00:00:00.000Z',
+			);
 			expect(listing.images).toEqual(['new-image']);
 			expect(listing.setBlocked).toHaveBeenCalledWith(true);
 			expect(result?.title).toBe('Updated Title');
@@ -130,15 +143,19 @@ test.for(feature, ({ Scenario }) => {
 
 			repo = {
 				get: vi.fn().mockResolvedValue(listing),
-				save: vi.fn().mockResolvedValue(
-					listing as unknown as Domain.Contexts.Listing.ItemListing.ItemListingEntityReference,
-				),
+				save: vi
+					.fn()
+					.mockResolvedValue(
+						listing as unknown as Domain.Contexts.Listing.ItemListing.ItemListingEntityReference,
+					),
 			};
 
 			uow = {
-				withScopedTransactionById: vi.fn(async (_id: string, fn: (repoArg: typeof repo) => Promise<void>) => {
-					await fn(repo);
-				}),
+				withScopedTransactionById: vi.fn(
+					async (_id: string, fn: (repoArg: typeof repo) => Promise<void>) => {
+						await fn(repo);
+					},
+				),
 			};
 
 			dataSources = {
@@ -162,8 +179,12 @@ test.for(feature, ({ Scenario }) => {
 		});
 
 		Then('the dates should be converted to Date objects correctly', () => {
-			expect(listing.sharingPeriodStart.toISOString()).toBe('2025-06-01T00:00:00.000Z');
-			expect(listing.sharingPeriodEnd.toISOString()).toBe('2025-07-01T00:00:00.000Z');
+			expect(listing.sharingPeriodStart.toISOString()).toBe(
+				'2025-06-01T00:00:00.000Z',
+			);
+			expect(listing.sharingPeriodEnd.toISOString()).toBe(
+				'2025-07-01T00:00:00.000Z',
+			);
 		});
 	});
 
@@ -186,15 +207,19 @@ test.for(feature, ({ Scenario }) => {
 
 			const repo = {
 				get: vi.fn().mockResolvedValue(listing),
-				save: vi.fn().mockResolvedValue(
-					listing as unknown as Domain.Contexts.Listing.ItemListing.ItemListingEntityReference,
-				),
+				save: vi
+					.fn()
+					.mockResolvedValue(
+						listing as unknown as Domain.Contexts.Listing.ItemListing.ItemListingEntityReference,
+					),
 			};
 
 			const uow = {
-				withScopedTransactionById: vi.fn(async (_id: string, fn: (repoArg: typeof repo) => Promise<void>) => {
-					await fn(repo);
-				}),
+				withScopedTransactionById: vi.fn(
+					async (_id: string, fn: (repoArg: typeof repo) => Promise<void>) => {
+						await fn(repo);
+					},
+				),
 			};
 
 			dataSources = {
@@ -210,16 +235,22 @@ test.for(feature, ({ Scenario }) => {
 
 		When('I update the listing with invalid date "not-a-date"', async () => {
 			try {
-				await update(dataSources)({ id: 'listing-3', sharingPeriodStart: 'not-a-date' });
+				await update(dataSources)({
+					id: 'listing-3',
+					sharingPeriodStart: 'not-a-date',
+				});
 			} catch (e) {
 				error = e as Error;
 			}
 		});
 
-		Then('the update should fail with "Invalid date supplied for listing update"', () => {
-			expect(error).toBeDefined();
-			expect(error?.message).toBe('Invalid date supplied for listing update');
-		});
+		Then(
+			'the update should fail with "Invalid date supplied for listing update"',
+			() => {
+				expect(error).toBeDefined();
+				expect(error?.message).toBe('Invalid date supplied for listing update');
+			},
+		);
 	});
 
 	Scenario('Save fails due to repository error', ({ Given, When, Then }) => {
@@ -243,13 +274,17 @@ test.for(feature, ({ Scenario }) => {
 				get: vi.fn().mockResolvedValue(listing),
 				save: vi
 					.fn()
-					.mockResolvedValueOnce(undefined as unknown as Domain.Contexts.Listing.ItemListing.ItemListingEntityReference),
+					.mockResolvedValueOnce(
+						undefined as unknown as Domain.Contexts.Listing.ItemListing.ItemListingEntityReference,
+					),
 			};
 
 			const uow = {
-				withScopedTransactionById: vi.fn(async (_id: string, fn: (repoArg: typeof repo) => Promise<void>) => {
-					await fn(repo);
-				}),
+				withScopedTransactionById: vi.fn(
+					async (_id: string, fn: (repoArg: typeof repo) => Promise<void>) => {
+						await fn(repo);
+					},
+				),
 			};
 
 			dataSources = {

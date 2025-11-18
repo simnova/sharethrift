@@ -1,8 +1,8 @@
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { describeFeature, loadFeature } from '@amiceli/vitest-cucumber';
-import { expect, vi } from 'vitest';
 import type { DataSources } from '@sthrift/persistence';
+import { expect, vi } from 'vitest';
 import { deleteListings, type ItemListingDeleteCommand } from './delete.ts';
 
 type MockListing = {
@@ -159,7 +159,7 @@ test.for(feature, ({ Scenario }) => {
 
 			When(
 				'I try to delete the listing with id "listing-456" as user "user@example.com"',
-				async () => {
+				() => {
 					const command: ItemListingDeleteCommand = {
 						id: 'listing-456',
 						userEmail: 'user@example.com',
@@ -167,7 +167,6 @@ test.for(feature, ({ Scenario }) => {
 					deletePromise = deleteListings(dataSources)(command);
 				},
 			);
-
 			Then(
 				'an error should be thrown indicating active reservations must be resolved',
 				async () => {
@@ -194,7 +193,9 @@ test.for(feature, ({ Scenario }) => {
 					id: 'listing-789',
 					sharer: { id: 'owner-789' },
 					requestDelete: vi.fn().mockImplementation(() => {
-						throw new Error('You do not have permission to delete this listing');
+						throw new Error(
+							'You do not have permission to delete this listing',
+						);
 					}),
 				};
 
@@ -212,9 +213,10 @@ test.for(feature, ({ Scenario }) => {
 				};
 
 				const userRepo = {
-					getByEmail: vi
-						.fn()
-						.mockResolvedValue({ id: 'other-user', email: 'other@example.com' }),
+					getByEmail: vi.fn().mockResolvedValue({
+						id: 'other-user',
+						email: 'other@example.com',
+					}),
 				};
 
 				const reservationRepo = {
@@ -246,7 +248,7 @@ test.for(feature, ({ Scenario }) => {
 
 			When(
 				'I try to delete the listing with id "listing-789" as user "other@example.com"',
-				async () => {
+				() => {
 					const command: ItemListingDeleteCommand = {
 						id: 'listing-789',
 						userEmail: 'other@example.com',
@@ -254,7 +256,6 @@ test.for(feature, ({ Scenario }) => {
 					deletePromise = deleteListings(dataSources)(command);
 				},
 			);
-
 			Then('a permission error should be thrown', async () => {
 				await expect(deletePromise).rejects.toThrow(
 					'You do not have permission to delete this listing',
@@ -299,7 +300,7 @@ test.for(feature, ({ Scenario }) => {
 
 		When(
 			'I try to delete the listing with id "listing-999" as user "nonexistent@example.com"',
-			async () => {
+			() => {
 				const command: ItemListingDeleteCommand = {
 					id: 'listing-999',
 					userEmail: 'nonexistent@example.com',
@@ -307,7 +308,6 @@ test.for(feature, ({ Scenario }) => {
 				deletePromise = deleteListings(dataSources)(command);
 			},
 		);
-
 		Then('an error should be thrown indicating user not found', async () => {
 			await expect(deletePromise).rejects.toThrow('User not found');
 		});

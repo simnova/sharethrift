@@ -1,10 +1,10 @@
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { describeFeature, loadFeature } from '@amiceli/vitest-cucumber';
-import { expect, vi } from 'vitest';
-import type { DataSources } from '@sthrift/persistence';
 import type { Domain } from '@sthrift/domain';
-import { unblock, type ItemListingUnblockCommand } from './unblock.ts';
+import type { DataSources } from '@sthrift/persistence';
+import { expect, vi } from 'vitest';
+import { type ItemListingUnblockCommand, unblock } from './unblock.ts';
 
 type MockListing = {
 	id: string;
@@ -32,9 +32,11 @@ test.for(feature, ({ Scenario }) => {
 		And('the listing is currently blocked', () => {
 			const repo = {
 				getById: vi.fn().mockResolvedValue(listing),
-				save: vi.fn().mockResolvedValue(
-					listing as unknown as Domain.Contexts.Listing.ItemListing.ItemListingEntityReference,
-				),
+				save: vi
+					.fn()
+					.mockResolvedValue(
+						listing as unknown as Domain.Contexts.Listing.ItemListing.ItemListingEntityReference,
+					),
 			};
 
 			const uow = {
@@ -76,7 +78,7 @@ test.for(feature, ({ Scenario }) => {
 		let dataSources: DataSources;
 		let unblockPromise: Promise<Domain.Contexts.Listing.ItemListing.ItemListingEntityReference>;
 
-		When('I try to unblock a listing with id "nonexistent-listing"', async () => {
+		When('I try to unblock a listing with id "nonexistent-listing"', () => {
 			const repo = {
 				getById: vi.fn().mockResolvedValue(undefined),
 				save: vi.fn(),
@@ -149,13 +151,12 @@ test.for(feature, ({ Scenario }) => {
 			} as unknown as DataSources;
 		});
 
-		When('I try to unblock the listing with id "listing-456"', async () => {
+		When('I try to unblock the listing with id "listing-456"', () => {
 			const command: ItemListingUnblockCommand = {
 				id: 'listing-456',
 			};
 			unblockPromise = unblock(dataSources)(command);
 		});
-
 		Then('an error should be thrown indicating save failure', async () => {
 			await expect(unblockPromise).rejects.toThrow('ItemListing not updated');
 		});

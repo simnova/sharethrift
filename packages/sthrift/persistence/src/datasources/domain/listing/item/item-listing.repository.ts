@@ -93,11 +93,11 @@ export class ItemListingRepository<
 		// Build MongoDB query
 		const query: Record<string, unknown> = {};
 
-			// Add search text filter
-			if (options.searchText) {
-				// biome-ignore lint/complexity/useLiteralKeys: MongoDB query uses index signature
-				query['$or'] = [
-					{ title: { $regex: options.searchText, $options: 'i' } },
+		// Add search text filter
+		if (options.searchText) {
+			// biome-ignore lint/complexity/useLiteralKeys: MongoDB query uses index signature
+			query['$or'] = [
+				{ title: { $regex: options.searchText, $options: 'i' } },
 				{ description: { $regex: options.searchText, $options: 'i' } },
 				{ category: { $regex: options.searchText, $options: 'i' } },
 				{ location: { $regex: options.searchText, $options: 'i' } },
@@ -119,12 +119,13 @@ export class ItemListingRepository<
 				publishedAt: 'createdAt',
 				status: 'state',
 			};
-			const mongoField = fieldMapping[options.sorter.field] || options.sorter.field;
+			const mongoField =
+				fieldMapping[options.sorter.field] || options.sorter.field;
 			sort[mongoField] = direction;
 		} else {
 			// biome-ignore lint/complexity/useLiteralKeys: MongoDB sort uses index signature
 			sort['createdAt'] = -1; // Default sort by newest
-		}		// Calculate pagination
+		} // Calculate pagination
 		const skip = (options.page - 1) * options.pageSize;
 
 		// Execute queries
@@ -150,5 +151,4 @@ export class ItemListingRepository<
 			pageSize: options.pageSize,
 		};
 	}
-
 }
