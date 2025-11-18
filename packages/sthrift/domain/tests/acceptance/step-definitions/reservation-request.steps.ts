@@ -77,6 +77,7 @@ const testUserRef: PersonalUserEntityReference = {
         profile: {
             firstName: 'Test',
             lastName: 'User',
+            aboutMe: '',
             location: {
                 address1: '123 Test St',
                 address2: null,
@@ -108,6 +109,7 @@ const testListingRef: ItemListingEntityReference = {
     sharingPeriodStart: new Date(),
     sharingPeriodEnd: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000),
     sharer: { ...testUserRef, id: 'sharerUser' },
+    listingType: 'item-listing',
     schemaVersion: '1.0.0',
     createdAt: new Date(),
     updatedAt: new Date(),
