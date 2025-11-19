@@ -46,7 +46,8 @@ To resolve this, we need a flow where upload and database commit are strictly li
 
 Chosen option: **Option 2: Deferred upload triggered by user confirmation. Transactional Upload + Scan + Save.**  
 Upload, scan, and save now execute as a single atomic workflow.  
-No data is finalized unless every stage succeeds. Cleanup and user feedback happen immediately on failure.
+Additionally, no data is finalized unless every stage succeeds. Cleanup and user feedback happen immediately on failure.
+Even in flows where uploads fail, the frontend retains all validated form inputs in local state. Because the user is not redirected until the workflow succeeds, no data is lost. The user only needs to retry the upload, not re-enter the remaining form fields. This supports a smooth UX even when the upload is tightly linked to the save transaction.
 
 ## Consequences
 - Good: Orphaned and unreferenced files are eliminated.
