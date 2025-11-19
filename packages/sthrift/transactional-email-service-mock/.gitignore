@@ -2,5 +2,5 @@
 /node_modules
 /tmp
 
-tsconfig.tsbuidinfo
+tsconfig.tsbuildinfo
 .turbo

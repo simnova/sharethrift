@@ -1,0 +1,29 @@
+{
+	"name": "@sthrift/transactional-email-service-sendgrid",
+	"version": "1.0.0",
+	"main": "dist/src/index.js",
+	"types": "dist/src/index.d.ts",
+	"type": "module",
+	"files": [
+		"dist"
+	],
+	"exports": {
+		".": {
+			"types": "./dist/src/index.d.ts",
+			"default": "./dist/src/index.js"
+		}
+	},
+	"scripts": {
+		"build": "tsc --project tsconfig.json"
+	},
+	"dependencies": {
+		"@sendgrid/mail": "^8.0.0",
+		"@cellix/api-services-spec": "workspace:*",
+		"@cellix/transactional-email-service": "workspace:*"
+	},
+	"devDependencies": {
+		"typescript": "^5.8.3",
+		"@cellix/typescript-config": "workspace:*",
+		"@types/node": "^22.0.0"
+	}
+}

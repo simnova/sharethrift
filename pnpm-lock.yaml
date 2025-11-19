@@ -545,6 +545,22 @@ importers:
         specifier: ^6.0.1
         version: 6.0.1
 
+  packages/cellix/transactional-email-service:
+    dependencies:
+      '@cellix/api-services-spec':
+        specifier: workspace:*
+        version: link:../api-services-spec
+    devDependencies:
+      '@cellix/typescript-config':
+        specifier: workspace:*
+        version: link:../typescript-config
+      '@types/node':
+        specifier: ^22.0.0
+        version: 22.18.12
+      typescript:
+        specifier: ^5.8.3
+        version: 5.8.3
+
   packages/cellix/typescript-config: {}
 
   packages/cellix/ui-core:
@@ -1143,9 +1159,15 @@ importers:
 
   packages/sthrift/service-sendgrid:
     dependencies:
-      '@sendgrid/mail':
-        specifier: ^8.0.0
-        version: 8.1.6
+      '@cellix/transactional-email-service':
+        specifier: workspace:*
+        version: link:../../cellix/transactional-email-service
+      '@sthrift/transactional-email-service-mock':
+        specifier: workspace:*
+        version: link:../transactional-email-service-mock
+      '@sthrift/transactional-email-service-sendgrid':
+        specifier: workspace:*
+        version: link:../transactional-email-service-sendgrid
       react:
         specifier: '>=17.0.0'
         version: 19.2.0
@@ -1181,6 +1203,47 @@ importers:
       rimraf:
         specifier: ^6.0.1
         version: 6.0.1
+      typescript:
+        specifier: ^5.8.3
+        version: 5.8.3
+
+  packages/sthrift/transactional-email-service-mock:
+    dependencies:
+      '@cellix/api-services-spec':
+        specifier: workspace:*
+        version: link:../../cellix/api-services-spec
+      '@cellix/transactional-email-service':
+        specifier: workspace:*
+        version: link:../../cellix/transactional-email-service
+    devDependencies:
+      '@cellix/typescript-config':
+        specifier: workspace:*
+        version: link:../../cellix/typescript-config
+      '@types/node':
+        specifier: ^22.0.0
+        version: 22.18.12
+      typescript:
+        specifier: ^5.8.3
+        version: 5.8.3
+
+  packages/sthrift/transactional-email-service-sendgrid:
+    dependencies:
+      '@cellix/api-services-spec':
+        specifier: workspace:*
+        version: link:../../cellix/api-services-spec
+      '@cellix/transactional-email-service':
+        specifier: workspace:*
+        version: link:../../cellix/transactional-email-service
+      '@sendgrid/mail':
+        specifier: ^8.0.0
+        version: 8.1.6
+    devDependencies:
+      '@cellix/typescript-config':
+        specifier: workspace:*
+        version: link:../../cellix/typescript-config
+      '@types/node':
+        specifier: ^22.0.0
+        version: 22.18.12
       typescript:
         specifier: ^5.8.3
         version: 5.8.3

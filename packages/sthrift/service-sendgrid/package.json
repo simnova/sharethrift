@@ -1,7 +1,7 @@
 {
     "name": "@sthrift/service-sendgrid",
     "version": "0.1.0",
-    "description": "SendGrid email service for ShareThrift portals.",
+    "description": "SendGrid email service facade for ShareThrift portals - automatically selects implementation based on environment.",
     "type": "module",
     "files": [
         "dist"
@@ -30,6 +30,8 @@
         "@cellix/typescript-config": "workspace:*"
     },
     "dependencies": {
-        "@sendgrid/mail": "^8.0.0"
+        "@cellix/transactional-email-service": "workspace:*",
+        "@sthrift/transactional-email-service-sendgrid": "workspace:*",
+        "@sthrift/transactional-email-service-mock": "workspace:*"
     }
 }

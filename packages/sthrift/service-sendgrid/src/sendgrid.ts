@@ -1,67 +1,39 @@
-import sendgrid from '@sendgrid/mail';
-import { readHtmlFile } from './get-email-template.js';
-import fs from 'fs';
-import path from 'path';
+import type { TransactionalEmailService } from '@cellix/transactional-email-service';
+import { ServiceTransactionalEmailSendGrid } from '@sthrift/transactional-email-service-sendgrid';
+import { ServiceTransactionalEmailMock } from '@sthrift/transactional-email-service-mock';
 
+/**
+ * Facade class that maintains backward compatibility with the original SendGrid interface
+ * while delegating to either the real SendGrid implementation or the mock implementation
+ * based on environment configuration.
+ */
 export default class SendGrid {
-  emailTemplateName: string;
+	private service: TransactionalEmailService;
 
-  constructor(emailTemplateName: string) {
-    const apiKey = process.env['SENDGRID_API_KEY'];
-    if (!apiKey) {
-      throw new Error('SENDGRID_API_KEY environment variable is missing. Please set it to use SendGrid.');
-    }
-    sendgrid.setApiKey(apiKey);
-    this.emailTemplateName = emailTemplateName;
-  }
+	constructor(emailTemplateName: string) {
+		// biome-ignore lint/complexity/useLiteralKeys: Required by TypeScript noPropertyAccessFromIndexSignature
+		const apiKey = process.env['SENDGRID_API_KEY'];
+		// biome-ignore lint/complexity/useLiteralKeys: Required by TypeScript noPropertyAccessFromIndexSignature
+		const nodeEnv = process.env['NODE_ENV'];
 
-  sendEmailWithMagicLink = async (userEmail: string, magicLink: string) => {
-    console.log('SendGrid.sendEmail() - email: ', userEmail);
-    let template: { fromEmail: string; subject: string; body: string };
-    try {
-      template = JSON.parse(readHtmlFile(this.emailTemplateName));
-    } catch (err) {
-      console.error(`Failed to parse email template JSON for "${this.emailTemplateName}":`, err);
-      throw new Error(`Invalid email template JSON: ${this.emailTemplateName}`);
-    }
-    const templateBodyWithMagicLink = this.replaceMagicLink(template.body, magicLink);
-    const subject = `${template.subject} ${process.env['SENDGRID_MAGICLINK_SUBJECT_SUFFIX']}`;
-    await this.sendEmail(userEmail, template, templateBodyWithMagicLink, subject);
-  };
+		// Use mock in development mode or when API key is explicitly set to 'mock'
+		if (nodeEnv === 'development' || apiKey === 'mock') {
+			console.log('Using ServiceTransactionalEmailMock (development mode)');
+			this.service = new ServiceTransactionalEmailMock(emailTemplateName);
+		} else {
+			console.log('Using ServiceTransactionalEmailSendGrid (production mode)');
+			this.service = new ServiceTransactionalEmailSendGrid(emailTemplateName, apiKey);
+		}
 
-  private replaceMagicLink = (html: string, link: string): string => {
-    const magicLinkPlaceholder = /\{\{magicLink\}\}/g;
-    return html.replace(magicLinkPlaceholder, link);
-  };
+		// Start the service immediately to maintain backward compatibility
+		this.service.startUp().catch((err) => {
+			console.error('Failed to start email service:', err);
+			throw err;
+		});
+	}
 
-  private async sendEmail(
-    userEmail: string,
-    template: { fromEmail: string; subject: string; body: string },
-    htmlContent: string,
-    subject: string
-  ) {
-    if (process.env["NODE_ENV"] === 'development') {
-      const outDir = path.join(process.cwd(), 'tmp-emails');
-      if (!fs.existsSync(outDir)) fs.mkdirSync(outDir);
-
-      const sanitizedEmail = userEmail.replace(/[@/\\:*?"<>|]/g, '_')
-      const outFile = path.join(outDir, `${sanitizedEmail}_${Date.now()}.html`);
-      fs.writeFileSync(outFile, htmlContent, 'utf-8');
-      console.log(`Email saved to ${outFile}`);
-      return;
-    }
-    try {
-      const response = await sendgrid.send({
-        to: userEmail,
-        from: template.fromEmail,
-        subject: subject,
-        html: htmlContent,
-      });
-      console.log('Email sent successfully');
-      console.log(response);
-    } catch (error) {
-      console.log('Error sending email');
-      console.log(error);
-    }
-  }
+	sendEmailWithMagicLink = async (userEmail: string, magicLink: string): Promise<void> => {
+		return await this.service.sendEmailWithMagicLink(userEmail, magicLink);
+	};
 }
+
