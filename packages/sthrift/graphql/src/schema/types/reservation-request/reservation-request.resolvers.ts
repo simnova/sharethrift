@@ -24,7 +24,12 @@ interface ListingRequestDomainShape {
 	updatedAt?: Date;
 	reservationPeriodStart?: Date;
 	reservationPeriodEnd?: Date;
-	listing?: { title?: string; [k: string]: unknown };
+	listing?: {
+		title?: string;
+		thumbnailUrl?: string;
+		images?: string[];
+		[k: string]: unknown;
+	};
 	reserver?: { account?: { username?: string } };
 	[k: string]: unknown; // allow passthrough
 }
@@ -80,7 +85,11 @@ const DEV_DUMMY_LISTING_REQUESTS: ListingRequestDomainShape[] = [
 ];
 
 const isDevEnvironment = () => {
-	const nodeEnv = process.env['NODE_ENV'];
+	const nodeEnv = (
+		process.env as NodeJS.ProcessEnv & {
+			NODE_ENV?: string;
+		}
+	).NODE_ENV;
 	return (
 		nodeEnv === undefined || nodeEnv === 'development' || nodeEnv === 'test'
 	);
@@ -169,10 +178,10 @@ function paginateAndFilterListingRequests(
 				: undefined;
 
 		// Get the first image from the listing's images array, fall back to thumbnail, then placeholder
-		const images = r.listing?.['images'];
+		const images = r.listing?.images;
 		const thumbnail =
-			typeof r.listing?.['thumbnailUrl'] === 'string'
-				? (r.listing?.['thumbnailUrl'] as string)
+			typeof r.listing?.thumbnailUrl === 'string'
+				? (r.listing?.thumbnailUrl as string)
 				: undefined;
 		const firstImage =
 			Array.isArray(images) && images.length > 0 ? images[0] : undefined;

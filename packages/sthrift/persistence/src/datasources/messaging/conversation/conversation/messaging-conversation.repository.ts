@@ -20,7 +20,7 @@ export interface MessagingConversationRepository {
 	createConversation: (
 		displayName: string,
 		uniqueIdentifier: string,
-	) => Promise<{ id: string; displayName: string }>;
+	) => Promise<{ id: string; displayName?: string }>;
 }
 
 export class MessagingConversationRepositoryImpl
@@ -94,16 +94,19 @@ export class MessagingConversationRepositoryImpl
 	async createConversation(
 		displayName: string,
 		uniqueIdentifier: string,
-	): Promise<{ id: string; displayName: string }> {
+	): Promise<{ id: string; displayName?: string }> {
 		try {
 			const conversation = await this.messagingService.createConversation(
 				displayName,
 				uniqueIdentifier,
 			);
-			return {
-				id: conversation.id,
-				displayName: conversation.displayName || displayName,
-			};
+			if (conversation.displayName) {
+				return {
+					id: conversation.id,
+					displayName: conversation.displayName,
+				};
+			}
+			return { id: conversation.id };
 		} catch (error) {
 			console.error('Error creating conversation in messaging service:', error);
 			throw error;
