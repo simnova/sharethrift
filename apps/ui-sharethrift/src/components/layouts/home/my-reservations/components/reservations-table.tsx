@@ -5,6 +5,7 @@ import { ReservationStatusTag } from '@sthrift/ui-components';
 import { ReservationActions } from './reservation-actions.tsx';
 import type { HomeMyReservationsReservationsViewActiveContainerActiveReservationsQuery } from '../../../../../generated.tsx';
 import { BASE64_FALLBACK_IMAGE } from '../constants/ui-constants.ts';
+import { formatGraphQLDate, formatGraphQLDateRange } from '../../../../../utils/date-utils.ts';
 
 type ReservationRequestFieldsFragment =
 	HomeMyReservationsReservationsViewActiveContainerActiveReservationsQuery['myActiveReservations'][number];
@@ -103,7 +104,7 @@ export const ReservationsTable: React.FC<ReservationsTableProps> = ({
 			key: 'createdAt',
 			render: (createdAt: string) => (
 				<span className={classes.tableText}>
-					{new Date(createdAt).toLocaleDateString()}
+					{formatGraphQLDate(createdAt)}
 				</span>
 			),
 		},
@@ -112,8 +113,13 @@ export const ReservationsTable: React.FC<ReservationsTableProps> = ({
 			key: 'period',
 			render: (record: ReservationRequestFieldsFragment) => (
 				<span className={classes.tableText}>
-					{new Date(Number(record.reservationPeriodStart)).toLocaleDateString()} -{' '}
-					{new Date(Number(record.reservationPeriodEnd)).toLocaleDateString()}
+					{formatGraphQLDateRange(
+						record.reservationPeriodStart,
+						record.reservationPeriodEnd,
+						undefined,
+						' - ',
+						'No dates available'
+					)}
 				</span>
 			),
 		},
