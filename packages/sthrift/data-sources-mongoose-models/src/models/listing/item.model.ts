@@ -27,10 +27,11 @@ export interface ItemListing extends Listing {
 	sharingHistory?: ObjectId[];
 	reports?: number;
 	images?: string[];
-    listingType: string;
+	listingType: string;
 }
 
 export const LISTING_STATE_ENUM = [
+	'Active',
 	'Published',
 	'Paused',
 	'Cancelled',
