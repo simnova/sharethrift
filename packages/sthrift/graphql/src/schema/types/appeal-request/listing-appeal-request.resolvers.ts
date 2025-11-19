@@ -7,14 +7,16 @@ import type {
 	MutationCreateListingAppealRequestArgs,
 	MutationUpdateListingAppealRequestStateArgs,
 } from '../../builder/generated.ts';
-import { PopulatePersonalUserFromField } from '../../resolver-helper.ts';
-import { PopulateItemListingFromField } from '../../resolver-helper.ts';
+import {
+	PopulateUserFromField,
+	PopulateItemListingFromField,
+} from '../../resolver-helper.ts';
 
 const listingAppealRequestResolvers: Resolvers = {
 	ListingAppealRequest: {
-		user: PopulatePersonalUserFromField('user'),
+		user: PopulateUserFromField('user'),
 		listing: PopulateItemListingFromField('listing'),
-		blocker: PopulatePersonalUserFromField('blocker'),
+		blocker: PopulateUserFromField('blocker'),
 	},
 	Query: {
 		getListingAppealRequest: async (

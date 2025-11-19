@@ -11,6 +11,9 @@ export interface DomainDataSource {
 		PersonalUser: {
 			PersonalUserUnitOfWork: Contexts.User.PersonalUser.PersonalUserUnitOfWork;
 		};
+		AdminUser: {
+			AdminUserUnitOfWork: Contexts.User.AdminUser.AdminUserUnitOfWork;
+		};
 	};
 
 	Listing: {

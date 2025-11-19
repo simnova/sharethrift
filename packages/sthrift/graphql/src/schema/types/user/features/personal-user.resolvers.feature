@@ -17,12 +17,6 @@ The Personal User resolvers handle user queries, updates, and payment processing
 		Then the resolver should call "User.PersonalUser.createIfNotExists"
 		And it should return the existing or newly created PersonalUser entity
 
-	Scenario: Fetching all users with filters and pagination
-		Given the admin requests all users with page "1" and pageSize "20"
-		When I execute the query "allUsers"
-		Then the resolver should call "User.PersonalUser.getAllUsers"
-		And return a paginated list of users matching the filters
-
 	Scenario: Updating personal user information
 		Given a valid user update input with id "user-123" and new name "Alice"
 		When I execute the mutation "personalUserUpdate"

@@ -1,5 +1,8 @@
 import type { Resolvers } from '../../builder/generated.js';
-import { PopulatePersonalUserFromField } from '../../resolver-helper.ts';
+import {
+	PopulateUserFromField,
+	getUserByEmail,
+} from '../../resolver-helper.ts';
 
 const mapStateToStatus = (state?: string): string => {
 	if (!state || state.trim() === '') {
@@ -20,7 +23,7 @@ const mapStateToStatus = (state?: string): string => {
 
 const itemListingResolvers: Resolvers = {
 	ItemListing: {
-		sharer: PopulatePersonalUserFromField('sharer'),
+		sharer: PopulateUserFromField('sharer'),
 	},
 	Query: {
 		itemListings: async (_parent, _args, context) => {
@@ -98,11 +101,11 @@ const itemListingResolvers: Resolvers = {
 			const pagedArgs: PagedArgs = {
 				page: args.page,
 				pageSize: args.pageSize,
-				...(args.searchText != null ? { searchText: args.searchText } : {}),
-				...(args.statusFilters != null
+				...(args.searchText ? { searchText: args.searchText } : {}),
+				...(args.statusFilters
 					? { statusFilters: [...args.statusFilters] }
 					: {}),
-				...(args.sorter != null
+				...(args.sorter
 					? {
 							sorter: {
 								field: args.sorter.field,
@@ -125,15 +128,11 @@ const itemListingResolvers: Resolvers = {
 				throw new Error('Authentication required');
 			}
 
-			// Find the user by email to get their database ID
-			const user =
-				await context.applicationServices.User.PersonalUser.queryByEmail({
-					email: userEmail,
-				});
+			// Find the user by email (supports both PersonalUser and AdminUser)
+			const user = await getUserByEmail(userEmail, context);
 			if (!user) {
 				throw new Error(`User not found for email ${userEmail}`);
 			}
-
 			const command = {
 				sharer: user,
 				title: args.input.title,
@@ -182,11 +181,9 @@ const itemListingResolvers: Resolvers = {
 				throw new Error('Authentication required');
 			}
 
-			const result =
-				await context.applicationServices.Listing.ItemListing.cancel({
-					id: args.id,
-				});
-			return result
+			return await context.applicationServices.Listing.ItemListing.cancel({
+				id: args.id,
+			});
 		},
 	},
 };

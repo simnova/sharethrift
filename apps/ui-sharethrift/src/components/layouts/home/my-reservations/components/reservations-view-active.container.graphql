@@ -14,12 +14,24 @@ query HomeMyReservationsReservationsViewActiveContainerActiveReservations(
 			images
 		}
 		reserver {
-			id
-			account {
-				username
-				profile {
-					firstName
-					lastName
+			... on PersonalUser {
+				id
+				account {
+					username
+					profile {
+						firstName
+						lastName
+					}
+				}
+			}
+			... on AdminUser {
+				id
+				account {
+					username
+					profile {
+						firstName
+						lastName
+					}
 				}
 			}
 		}
