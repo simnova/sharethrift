@@ -24,6 +24,7 @@ import { ServiceMessagingMock } from '@sthrift/messaging-service-mock';
 import { graphHandlerCreator } from '@sthrift/graphql';
 import { restHandlerCreator } from '@sthrift/rest';
 import { ServiceCybersource } from '@sthrift/service-cybersource';
+import { SendGrid } from '@sthrift/service-sendgrid';
 
 const { NODE_ENV } = process.env;
 const isDevelopment = NODE_ENV === 'development';
@@ -45,7 +46,8 @@ Cellix.initializeInfrastructureServices<ApiContextSpec, ApplicationServices>(
 			.registerInfrastructureService(
 				isDevelopment ? new ServiceMessagingMock() : new ServiceMessagingTwilio(),
 			)
-			.registerInfrastructureService(new ServiceCybersource());
+			.registerInfrastructureService(new ServiceCybersource())
+			.registerInfrastructureService(new SendGrid('magic-link-email'));
 	},
 )
 	.setContext((serviceRegistry) => {
@@ -59,8 +61,10 @@ Cellix.initializeInfrastructureServices<ApiContextSpec, ApplicationServices>(
 			? serviceRegistry.getInfrastructureService<MessagingService>(ServiceMessagingMock)
 			: serviceRegistry.getInfrastructureService<MessagingService>(ServiceMessagingTwilio);
 
+		const sendGridService = serviceRegistry.getInfrastructureService<SendGrid>(SendGrid);
+
 		const { domainDataSource } = dataSourcesFactory.withSystemPassport();
-		RegisterEventHandlers(domainDataSource);
+		RegisterEventHandlers(domainDataSource, sendGridService);
 
 		return {
 			dataSourcesFactory,
