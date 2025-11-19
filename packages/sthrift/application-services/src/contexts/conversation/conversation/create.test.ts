@@ -42,7 +42,7 @@ test.for(feature, ({ Scenario, BeforeEachScenario }) => {
 	};
 
 	// Create wrapper functions that delegate to getById
-	const getUserByIdSpy = vi.fn(async (id: string) => {
+	const getUserByIdSpy = vi.fn((id: string) => {
 		return mockUserReadRepo.getById(id);
 	});
 	const getUserByEmailSpy = vi.fn();
