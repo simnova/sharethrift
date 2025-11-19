@@ -97,11 +97,11 @@ export const ReservationCard: React.FC<ReservationCardProps> = ({
 							</Text>
 							<Text className={styles['cardMetaValue']}>
 								{new Date(
-									reservation.reservationPeriodStart,
+									Number(reservation.reservationPeriodStart),
 								).toLocaleDateString()}{' '}
 								-{' '}
 								{new Date(
-									reservation.reservationPeriodEnd,
+									Number(reservation.reservationPeriodEnd),
 								).toLocaleDateString()}
 							</Text>
 						</div>

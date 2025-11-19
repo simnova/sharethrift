@@ -112,8 +112,8 @@ export const ReservationsTable: React.FC<ReservationsTableProps> = ({
 			key: 'period',
 			render: (record: ReservationRequestFieldsFragment) => (
 				<span className={classes.tableText}>
-					{new Date(record.reservationPeriodStart).toLocaleDateString()} -{' '}
-					{new Date(record.reservationPeriodEnd).toLocaleDateString()}
+					{new Date(Number(record.reservationPeriodStart)).toLocaleDateString()} -{' '}
+					{new Date(Number(record.reservationPeriodEnd)).toLocaleDateString()}
 				</span>
 			),
 		},
