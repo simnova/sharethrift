@@ -147,7 +147,7 @@ export const EditListing: React.FC<EditListingProps> = ({
 				>
 					<Form form={form} layout="vertical" requiredMark="optional">
 						<Row
-							gutter={0}
+							gutter={[48, 32]}
 							align="top"
 							style={{ marginTop: 0, paddingTop: 0 }}
 							className="create-listing-main-responsive"
