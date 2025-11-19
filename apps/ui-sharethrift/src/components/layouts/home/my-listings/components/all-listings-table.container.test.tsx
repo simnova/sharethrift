@@ -1,11 +1,8 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { render, screen, waitFor } from '@testing-library/react';
-import { MockedProvider } from '@apollo/client/testing';
-import { AllListingsTableContainer } from './all-listings-table.container.tsx';
-import {
-	HomeAllListingsTableContainerMyListingsAllDocument,
-	HomeAllListingsTableContainerPauseItemListingDocument,
-} from '../../../../../generated.tsx';
+import { MockedProvider } from '@apollo/client/testing/react';
+import { AllListingsTableContainer } from './all-listings-table.container';
+import { HomeAllListingsTableContainerMyListingsAllDocument } from '../../../../../generated.tsx';
 
 // Mock Ant Design message
 vi.mock('antd', async () => {
@@ -16,7 +13,7 @@ vi.mock('antd', async () => {
 			success: vi.fn(),
 			error: vi.fn(),
 		},
-	});
+	};
 });
 
 describe('AllListingsTableContainer', () => {
@@ -63,13 +60,13 @@ describe('AllListingsTableContainer', () => {
 
 	it('should render and display listings', async () => {
 		render(
-			<MockedProvider mocks={mocks} addTypename={false}>
+			<MockedProvider mocks={mocks}>
 				<AllListingsTableContainer currentPage={1} onPageChange={vi.fn()} />
 			</MockedProvider>,
 		);
 
 		await waitFor(() => {
-			expect(screen.getByText('Test Listing')).toBeInTheDocument();
+			expect(screen.getByText('Test Listing')).toBeTruthy();
 		});
 	});
 
@@ -119,15 +116,14 @@ describe('AllListingsTableContainer', () => {
 		];
 
 		render(
-			<MockedProvider mocks={mocksWithPaused} addTypename={false}>
+			<MockedProvider mocks={mocksWithPaused}>
 				<AllListingsTableContainer currentPage={1} onPageChange={vi.fn()} />
 			</MockedProvider>,
 		);
 
 		await waitFor(() => {
-			expect(screen.getByText('Published Listing')).toBeInTheDocument();
-			expect(screen.getByText('Paused Listing')).toBeInTheDocument();
+			expect(screen.getByText('Published Listing')).toBeTruthy();
+			expect(screen.getByText('Paused Listing')).toBeTruthy();
 		});
 	});
 });
-
