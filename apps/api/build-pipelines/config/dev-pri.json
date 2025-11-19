@@ -1,5 +1,20 @@
 [
 	{
+		"name": "ADMIN_PORTAL_OIDC_AUDIENCE",
+		"value": "api://cf68059c-a1d0-4e92-a7ae-a294da4d6bf1",
+		"slotSetting": false
+	},
+	{
+		"name": "ADMIN_PORTAL_OIDC_ENDPOINT",
+		"value": "https://login.microsoftonline.com/09c41a9c-ccbc-4c76-87fc-50d2767a0739/discovery/v2.0/keys",
+		"slotSetting": false
+	},
+	{
+		"name": "ADMIN_PORTAL_OIDC_ISSUER",
+		"value": "https://sts.windows.net/09c41a9c-ccbc-4c76-87fc-50d2767a0739/",
+		"slotSetting": false
+	},
+	{
 		"name": "APPLICATION_NAME",
 		"value": "STH",
 		"slotSetting": false
@@ -77,21 +92,6 @@
 	{
 		"name": "USER_PORTAL_OIDC_ISSUER",
 		"value": "https://sharethriftb2c.b2clogin.com/961394d2-0a14-4946-9913-6eb4944419af/",
-		"slotSetting": false
-	},
-	{
-		"name": "ADMIN_PORTAL_OIDC_AUDIENCE",
-		"value": "api://cf68059c-a1d0-4e92-a7ae-a294da4d6bf1",
-		"slotSetting": false
-	},
-	{
-		"name": "ADMIN_PORTAL_OIDC_ENDPOINT",
-		"value": "https://login.microsoftonline.com/09c41a9c-ccbc-4c76-87fc-50d2767a0739/discovery/v2.0/keys",
-		"slotSetting": false
-	},
-	{
-		"name": "ADMIN_PORTAL_OIDC_ISSUER",
-		"value": "https://sts.windows.net/09c41a9c-ccbc-4c76-87fc-50d2767a0739/",
 		"slotSetting": false
 	}
 ]
