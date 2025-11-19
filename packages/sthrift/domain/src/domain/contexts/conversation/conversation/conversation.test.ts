@@ -288,6 +288,7 @@ test.for(feature, ({ Scenario, Background, BeforeEachScenario }) => {
 				baseProps.reserver,
 				baseProps.listing,
 				[],
+				'mock-messaging-conversation-id',
 				passport,
 			);
 		});
@@ -302,7 +303,7 @@ test.for(feature, ({ Scenario, Background, BeforeEachScenario }) => {
 			},
 		);
 		Then('the conversation should have a messagingConversationId', () => {
-			expect(newConversation.messagingConversationId).toBe('twilio-123');
+			expect(newConversation.messagingConversationId).toBe('mock-messaging-conversation-id');
 		});
 	});
 

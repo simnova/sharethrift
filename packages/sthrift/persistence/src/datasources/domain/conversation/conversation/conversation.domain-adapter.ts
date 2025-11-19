@@ -50,8 +50,16 @@ export class ConversationDomainAdapter
 		return adapter.entityReference;
 	}
 
-	set sharer(user: PersonalUserDomainAdapter) {
-		this.doc.set('sharer', user.doc);
+	set sharer(user: PersonalUserDomainAdapter | Domain.Contexts.User.PersonalUser.PersonalUserEntityReference) {
+		if (user instanceof Domain.Contexts.User.PersonalUser.PersonalUser) {
+			this.doc.set('sharer', user.props.doc);
+			return;
+		}
+
+		if (!user?.id) {
+			throw new Error('sharer reference is missing id');
+		}
+		this.doc.set('sharer', new MongooseSeedwork.ObjectId(user.id));
 	}
 
 	get reserver(): Readonly<Domain.Contexts.User.PersonalUser.PersonalUserEntityReference> {
@@ -84,8 +92,16 @@ export class ConversationDomainAdapter
 		return adapter.entityReference;
 	}
 
-	set reserver(user: PersonalUserDomainAdapter) {
-		this.doc.set('reserver', user.doc);
+	set reserver(user: PersonalUserDomainAdapter | Domain.Contexts.User.PersonalUser.PersonalUserEntityReference) {
+		if (user instanceof Domain.Contexts.User.PersonalUser.PersonalUser) {
+			this.doc.set('reserver', user.props.doc);
+			return;
+		}
+
+		if (!user?.id) {
+			throw new Error('reserver reference is missing id');
+		}
+		this.doc.set('reserver', new MongooseSeedwork.ObjectId(user.id));
 	}
 
 	get listing(): ItemListingDomainAdapter {
@@ -112,8 +128,16 @@ export class ConversationDomainAdapter
 		);
 	}
 
-	set listing(listing: ItemListingDomainAdapter) {
-		this.doc.set('listing', listing.doc);
+	set listing(listing: ItemListingDomainAdapter | Domain.Contexts.Listing.ItemListing.ItemListingEntityReference) {
+		if (listing instanceof Domain.Contexts.Listing.ItemListing.ItemListing) {
+			this.doc.set('listing', listing.props.doc);
+			return;
+		}
+
+		if (!listing?.id) {
+			throw new Error('listing reference is missing id');
+		}
+		this.doc.set('listing', new MongooseSeedwork.ObjectId(listing.id));
 	}
 
 	get messagingConversationId(): string {
@@ -123,15 +147,21 @@ export class ConversationDomainAdapter
 		this.doc.messagingConversationId = value;
 	}
 
+	private _messages: Domain.Contexts.Conversation.Conversation.MessageEntityReference[] = [];
+
 	get messages(): Domain.Contexts.Conversation.Conversation.MessageEntityReference[] {
 		// For now, return empty array since messages are not stored as subdocuments
 		// TODO: Implement proper message loading from separate collection
-		return [];
+		return this._messages;
+	}
+
+	set messages(value: Domain.Contexts.Conversation.Conversation.MessageEntityReference[]) {
+		this._messages = value;
 	}
 
 	loadMessages(): Promise<Domain.Contexts.Conversation.Conversation.MessageEntityReference[]> {
 		// For now, return empty array since messages are not stored as subdocuments
 		// TODO: Implement proper message loading from separate collection or populate from subdocuments
-		return Promise.resolve([]);
+		return Promise.resolve(this._messages);
 	}
 }
