@@ -12,7 +12,8 @@ export function toDomainConversationProps(
 		messages: Domain.Contexts.Conversation.Conversation.MessageEntityReference[],
 	): Domain.Contexts.Conversation.Conversation.ConversationProps {
 
-		const messagingId = (messagingConversation.metadata?.['originalSid'] as string) || messagingConversation.id;
+		// biome-ignore lint/complexity/useLiteralKeys: metadata is an index signature requiring bracket notation
+		const messagingId = (messagingConversation.metadata?.["originalSid"] as string) || messagingConversation.id;
 		
 		return {
 			id: messagingConversation.id,
@@ -35,7 +36,8 @@ export function toDomainMessage(
 		messagingMessage: MessageInstance,
 		authorId: Domain.Contexts.Conversation.Conversation.AuthorId,
 	): Domain.Contexts.Conversation.Conversation.MessageEntityReference {
-		const messagingId = (messagingMessage.metadata?.['originalSid'] as string) || messagingMessage.id;
+		// biome-ignore lint/complexity/useLiteralKeys: metadata is an index signature requiring bracket notation
+		const messagingId = (messagingMessage.metadata?.["originalSid"] as string) || messagingMessage.id;
 		
 		const messagingMessageId = new Domain.Contexts.Conversation.Conversation.MessagingMessageId(
 			messagingId,
