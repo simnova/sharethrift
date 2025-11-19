@@ -67,7 +67,7 @@ export class ServiceTransactionalEmailMock implements TransactionalEmailService 
 	private async saveEmailToFile(userEmail: string, subject: string, htmlContent: string): Promise<void> {
 		try {
 			// Sanitize email for filename
-			const sanitizedEmail = userEmail.replace(/[@/\\:*?"<>|]/g, '_');
+			const sanitizedEmail = userEmail.replace(/[@/\\:*?"<>|+]/g, '_');
 			const timestamp = Date.now();
 			const fileName = `${sanitizedEmail}_${timestamp}.html`;
 			const filePath = path.join(this.outputDir, fileName);

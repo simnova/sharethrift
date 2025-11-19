@@ -14,7 +14,10 @@
 		}
 	},
 	"scripts": {
-		"build": "tsc --project tsconfig.json"
+		"build": "tsc --project tsconfig.json",
+		"test": "vitest run",
+		"test:coverage": "vitest run --coverage",
+		"test:watch": "vitest"
 	},
 	"dependencies": {
 		"@cellix/api-services-spec": "workspace:*",
@@ -23,6 +26,7 @@
 	"devDependencies": {
 		"typescript": "^5.8.3",
 		"@cellix/typescript-config": "workspace:*",
+		"@cellix/vitest-config": "workspace:*",
 		"@types/node": "^22.0.0"
 	}
 }
