@@ -1158,6 +1158,9 @@ importers:
       '@sendgrid/mail':
         specifier: ^8.0.0
         version: 8.1.6
+      '@sthrift/domain':
+        specifier: workspace:*
+        version: link:../domain
       react:
         specifier: '>=17.0.0'
         version: 19.2.0

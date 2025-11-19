@@ -30,6 +30,7 @@
         "@cellix/typescript-config": "workspace:*"
     },
     "dependencies": {
-        "@sendgrid/mail": "^8.0.0"
+        "@sendgrid/mail": "^8.0.0",
+        "@sthrift/domain": "workspace:*"
     }
 }
