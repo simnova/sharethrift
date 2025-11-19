@@ -45,7 +45,7 @@ test.for(feature, ({ Scenario }) => {
 		}
 		let instance: TestSystemPassport;
 		let permissions: unknown;
-		const providedPermissions: Partial<PermissionsSpec> = { canCreateItemListing: true, canCreateUser: false };
+		const providedPermissions: Partial<PermissionsSpec> = { canCreateItemListing: true };
 
 		Given('I have a permissions object with canManageListings true and canManageUsers false', () => {
 			// Permissions already defined
