@@ -38,7 +38,7 @@ export const RequireAuth: React.FC<RequireAuthProps> = (props) => {
     // return () => {
     //   auth.events.removeAccessTokenExpiring(handleAccessTokenExpiring);
     // };
-  }, [auth.events, auth.signinSilent]);
+  }, [auth, auth.events, auth.signinSilent]);
 
   let result: JSX.Element;
   if (auth.isAuthenticated) {
