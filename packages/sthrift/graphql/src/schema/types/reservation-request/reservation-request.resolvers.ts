@@ -13,7 +13,7 @@ interface ListingRequestDomainShape {
 	reservationPeriodStart?: Date;
 	reservationPeriodEnd?: Date;
 	listing?: { title?: string; [k: string]: unknown };
-	reserver?: { account?: { username?: string } };
+	reserver?: { id?: string; account?: { username?: string } };
 	[k: string]: unknown; // allow passthrough
 }
 
@@ -22,6 +22,7 @@ interface ListingRequestUiShape {
 	title: string;
 	image: string;
 	requestedBy: string;
+	requestedById?: string | null;
 	requestedOn: string;
 	reservationPeriod: string;
 	status: string;
@@ -58,6 +59,7 @@ function paginateAndFilterListingRequests(
 			requestedBy: r.reserver?.account?.username
 				? `@${r.reserver.account.username}`
 				: '@unknown',
+			requestedById: r.reserver?.id ?? null,
 			requestedOn:
 				r.createdAt instanceof Date
 					? r.createdAt.toISOString()
