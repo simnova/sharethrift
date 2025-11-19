@@ -46,8 +46,7 @@ Cellix.initializeInfrastructureServices<ApiContextSpec, ApplicationServices>(
 			.registerInfrastructureService(
 				isDevelopment ? new ServiceMessagingMock() : new ServiceMessagingTwilio(),
 			)
-			.registerInfrastructureService(new ServiceCybersource())
-			.registerInfrastructureService(new SendGrid('magic-link-email'));
+			.registerInfrastructureService(new ServiceCybersource());
 	},
 )
 	.setContext((serviceRegistry) => {
@@ -61,7 +60,7 @@ Cellix.initializeInfrastructureServices<ApiContextSpec, ApplicationServices>(
 			? serviceRegistry.getInfrastructureService<MessagingService>(ServiceMessagingMock)
 			: serviceRegistry.getInfrastructureService<MessagingService>(ServiceMessagingTwilio);
 
-		const sendGridService = serviceRegistry.getInfrastructureService<SendGrid>(SendGrid);
+		const sendGridService = new SendGrid('magic-link-email');
 
 		RegisterEventHandlers(dataSourcesFactory, sendGridService);
 

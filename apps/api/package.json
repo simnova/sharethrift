@@ -36,6 +36,7 @@
         "@sthrift/service-cybersource": "workspace:*",
         "@sthrift/service-mongoose": "workspace:*",
         "@sthrift/service-otel": "workspace:*",
+        "@sthrift/service-sendgrid": "workspace:*",
         "@sthrift/service-token-validation": "workspace:*",
         "@sthrift/messaging-service-twilio": "workspace:*",
         "twilio": "^5.8.0"

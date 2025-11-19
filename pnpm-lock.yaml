@@ -143,6 +143,9 @@ importers:
       '@sthrift/service-otel':
         specifier: workspace:*
         version: link:../../packages/sthrift/service-otel
+      '@sthrift/service-sendgrid':
+        specifier: workspace:*
+        version: link:../../packages/sthrift/service-sendgrid
       '@sthrift/service-token-validation':
         specifier: workspace:*
         version: link:../../packages/sthrift/service-token-validation
