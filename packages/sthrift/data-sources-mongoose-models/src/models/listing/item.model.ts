@@ -4,10 +4,10 @@ import {
 	type ListingModelType,
 	listingOptions,
 } from './listing.model.ts';
-import * as PersonalUser from '../user/personal-user.model.ts';
+import type * as User from '../user/user.model.ts';
 
 export interface ItemListing extends Listing {
-	sharer: PopulatedDoc<PersonalUser.PersonalUser> | ObjectId;
+	sharer: PopulatedDoc<User.User> | ObjectId;
 	title: string;
 	description: string;
 	category: string;
@@ -49,7 +49,7 @@ export const ItemListingSchema = new Schema<
 	{
 		sharer: {
 			type: Schema.Types.ObjectId,
-			ref: PersonalUser.PersonalUserModelName,
+			ref: 'User',
 			required: true,
 		},
 		title: { type: String, required: false, maxlength: 200 },

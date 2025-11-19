@@ -2,8 +2,6 @@ import { DomainSeedwork } from '@cellix/domain-seedwork';
 import type { Passport } from '../../passport.ts';
 import type { UserVisa } from '../user.visa.ts';
 import { PersonalUserAccount } from './personal-user-account.ts';
-import { PersonalUserRole } from '../../role/personal-user-role/personal-user-role.ts';
-import type { PersonalUserRoleEntityReference } from '../../role/personal-user-role/personal-user-role.entity.ts';
 import type {
 	PersonalUserEntityReference,
 	PersonalUserProps,
@@ -81,39 +79,17 @@ export class PersonalUser<props extends PersonalUserProps>
 		return new PersonalUserAccount(this.props.account, this.visa, this);
 	}
 
-	get role(): PersonalUserRoleEntityReference {
-		return new PersonalUserRole(this.props.role, this.passport);
-	}
-
-	async loadRole(): Promise<PersonalUserRoleEntityReference> {
-		return await this.props.loadRole();
-	}
-
-	private set role(role: PersonalUserRoleEntityReference) {
-		if (
-			!this.isNew &&
-			!this.visa.determineIf(
-				(domainPermissions) => domainPermissions.canCreateUser,
-			)
-		) {
-			throw new DomainSeedwork.PermissionError(
-				'You do not have permission to change the sharer of this conversation',
-			);
-		}
-		if (role === null || role === undefined) {
-			throw new DomainSeedwork.PermissionError(
-				'sharer cannot be null or undefined',
-			);
-		}
-		this.props.role = role;
-	}
-
 	set userType(value: string) {
 		this.validateVisa();
 		this.props.userType = value;
 	}
 	set isBlocked(value: boolean) {
-		this.validateVisa();
+		// Only admins with canBlockUsers permission can block/unblock users
+		if (!this.visa.determineIf((permissions) => permissions.canBlockUsers)) {
+			throw new DomainSeedwork.PermissionError(
+				'Unauthorized: Only admins with canBlockUsers permission can block/unblock users',
+			);
+		}
 		this.props.isBlocked = value;
 	}
 	set hasCompletedOnboarding(value: boolean) {
