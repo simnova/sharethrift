@@ -17,4 +17,10 @@ export interface ReservationRequestRepository<
 	getById(id: string): Promise<ReservationRequest<props> | undefined>;
 	getByReserverId(reserverId: string): Promise<ReservationRequest<props>[]>;
 	getByListingId(listingId: string): Promise<ReservationRequest<props>[]>;
+	queryOverlapByListingIdAndReservationPeriod(
+		listingId: string,
+		reservationPeriodStart: Date,
+		reservationPeriodEnd: Date,
+		excludeState: string,
+	): Promise<ReservationRequest<props>[]>;
 }

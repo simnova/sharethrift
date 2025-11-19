@@ -94,4 +94,30 @@ export class ReservationRequestRepository
 			this.typeConverter.toDomain(doc, this.passport),
 		);
 	}
+
+	async queryOverlapByListingIdAndReservationPeriod(
+		listingId: string,
+		reservationPeriodStart: Date,
+		reservationPeriodEnd: Date,
+		excludeState: string,
+	): Promise<
+		Domain.Contexts.ReservationRequest.ReservationRequest.ReservationRequest<PropType>[]
+	> {
+		const mongoReservations = await this.model
+			.find({
+				listing: listingId,
+				state: { $ne: excludeState },
+				$or: [
+					{
+						reservationPeriodStart: { $lt: reservationPeriodEnd },
+						reservationPeriodEnd: { $gt: reservationPeriodStart },
+					},
+				],
+			})
+			.populate(['listing', 'reserver'])
+			.exec();
+		return mongoReservations.map((doc) =>
+			this.typeConverter.toDomain(doc, this.passport),
+		);
+	}
 }

@@ -3,6 +3,7 @@ import { Domain } from '@sthrift/domain';
 import type { Models } from '@sthrift/data-sources-mongoose-models';
 import { ItemListingDomainAdapter } from '../../listing/item/item-listing.domain-adapter.ts';
 import { PersonalUserDomainAdapter } from '../../user/personal-user/personal-user.domain-adapter.ts';
+import { dbToDomainState, domainToDbState } from '../../../state-mappings.ts';
 
 export class ReservationRequestConverter extends MongooseSeedwork.MongoTypeConverter<
 	Models.ReservationRequest.ReservationRequest,
@@ -25,11 +26,13 @@ export class ReservationRequestDomainAdapter
 {
 	// Primitive Fields Getters and Setters
 	get state() {
-		return this.doc.state;
+		// Map database state to domain state
+		return dbToDomainState(this.doc.state);
 	}
 
 	set state(value: string) {
-		this.doc.state = value;
+		// Map domain state to database state
+		this.doc.state = domainToDbState(value);
 	}
 
 	get closeRequestedBySharer() {
@@ -64,9 +67,13 @@ export class ReservationRequestDomainAdapter
 		if (!this.doc.listing) {
 			throw new Error('listing is not populated');
 		}
+		console.log('Type of listing:', this.doc.listing);
 		if (this.doc.listing instanceof MongooseSeedwork.ObjectId) {
-			throw new Error('listing is not populated or is not of the correct type');
+			return {
+				id: this.doc.listing.toString(),
+			} as Domain.Contexts.Listing.ItemListing.ItemListingEntityReference;
 		}
+
 		return new ItemListingDomainAdapter(
 			this.doc.listing as Models.Listing.ItemListing,
 		);
@@ -96,9 +103,9 @@ export class ReservationRequestDomainAdapter
 			throw new Error('reserver is not populated');
 		}
 		if (this.doc.reserver instanceof MongooseSeedwork.ObjectId) {
-			throw new Error(
-				'reserver is not populated or is not of the correct type',
-			);
+			return {
+				id: this.doc.reserver.toString(),
+			} as Domain.Contexts.User.PersonalUser.PersonalUserEntityReference;
 		}
 		return new PersonalUserDomainAdapter(
 			this.doc.reserver as Models.User.PersonalUser,

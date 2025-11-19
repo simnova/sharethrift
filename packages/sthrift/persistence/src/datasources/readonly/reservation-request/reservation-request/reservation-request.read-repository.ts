@@ -69,6 +69,13 @@ export interface ReservationRequestReadRepository {
 	) => Promise<
 		Domain.Contexts.ReservationRequest.ReservationRequest.ReservationRequestEntityReference[]
 	>;
+	queryOverlapByListingIdAndReservationPeriod: (params: {
+		listingId: string;
+		reservationPeriodStart: Date;
+		reservationPeriodEnd: Date;
+	}) => Promise<
+		Domain.Contexts.ReservationRequest.ReservationRequest.ReservationRequestEntityReference[]
+	>;
 }
 
 /**
@@ -223,18 +230,18 @@ export class ReservationRequestReadRepositoryImpl
 			pipeline.push({ $sort: options.sort } as PipelineStage);
 		}
 
-	const docs =
-		await this.models.ReservationRequest.ReservationRequest.aggregate(
-			pipeline,
-		).exec();
+		const docs =
+			await this.models.ReservationRequest.ReservationRequest.aggregate(
+				pipeline,
+			).exec();
 
-	// Convert to domain entities
-	return docs.map((doc) =>
-		this.converter.toDomain(
-			doc as Models.ReservationRequest.ReservationRequest,
-			this.passport,
-		),
-	);
+		// Convert to domain entities
+		return docs.map((doc) =>
+			this.converter.toDomain(
+				doc as Models.ReservationRequest.ReservationRequest,
+				this.passport,
+			),
+		);
 	}
 
 	async getActiveByReserverIdAndListingId(
@@ -278,6 +285,22 @@ export class ReservationRequestReadRepositoryImpl
 			state: { $in: ACTIVE_STATES },
 		};
 		return await this.queryMany(filter, options);
+	}
+
+	async queryOverlapByListingIdAndReservationPeriod(params: {
+		listingId: string;
+		reservationPeriodStart: Date;
+		reservationPeriodEnd: Date;
+	}): Promise<
+		Domain.Contexts.ReservationRequest.ReservationRequest.ReservationRequestEntityReference[]
+	> {
+		const filter: FilterQuery<Models.ReservationRequest.ReservationRequest> = {
+			listing: new MongooseSeedwork.ObjectId(params.listingId),
+			state: { $in: ACTIVE_STATES },
+			reservationPeriodStart: { $lt: params.reservationPeriodEnd },
+			reservationPeriodEnd: { $gt: params.reservationPeriodStart },
+		};
+		return await this.queryMany(filter);
 	}
 }
 

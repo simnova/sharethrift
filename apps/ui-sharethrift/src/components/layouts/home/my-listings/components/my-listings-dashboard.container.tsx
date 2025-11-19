@@ -1,14 +1,46 @@
-import { MyListingsDashboard } from './my-listings-dashboard.tsx';
-import { useQuery } from "@apollo/client/react";
+import { useQuery } from '@apollo/client/react';
 import { ComponentQueryLoader } from '@sthrift/ui-components';
-import { HomeAllListingsTableContainerMyListingsAllDocument } from '../../../../../generated.tsx';
+import {
+	HomeAllListingsTableContainerMyListingsAllDocument,
+	HomeMyListingsDashboardContainerMyListingsRequestsCountDocument,
+	ViewListingCurrentUserDocument,
+	type ViewListingCurrentUserQuery,
+} from '../../../../../generated.tsx';
+import { MyListingsDashboard } from './my-listings-dashboard.tsx';
 
 export const MyListingsDashboardContainer: React.FC = () => {
+	const { data: userData } = useQuery<ViewListingCurrentUserQuery>(
+		ViewListingCurrentUserDocument,
+	);
+
+	const sharerId = userData?.currentPersonalUserAndCreateIfNotExists?.id;
+
 	const { data, loading, error } = useQuery(
-		HomeAllListingsTableContainerMyListingsAllDocument, {
-            variables: { page: 1, pageSize: 6 },
-            fetchPolicy: 'network-only',
-        }
+		HomeAllListingsTableContainerMyListingsAllDocument,
+		{
+			variables: {
+				page: 1,
+				pageSize: 6,
+				searchText: '',
+				statusFilters: [],
+				sorter: {
+					field: '',
+					order: '',
+				},
+			},
+			fetchPolicy: 'network-only',
+		},
+	);
+
+	const { data: requestsCountData } = useQuery(
+		HomeMyListingsDashboardContainerMyListingsRequestsCountDocument,
+		{
+			variables: {
+				sharerId: sharerId ?? '',
+			},
+			skip: !sharerId,
+			fetchPolicy: 'network-only',
+		},
 	);
 
 	const handleCreateListing = () => {
@@ -20,13 +52,14 @@ export const MyListingsDashboardContainer: React.FC = () => {
 		<ComponentQueryLoader
 			loading={loading}
 			error={error}
-			hasData={data}
+			hasData={data && sharerId}
 			hasDataComponent={
 				<MyListingsDashboard
 					onCreateListing={handleCreateListing}
-					requestsCount={data?.myListingsAll.total ?? 0}
+					requestsCount={requestsCountData?.myListingsRequests?.total ?? 0}
+					sharerId={sharerId}
 				/>
 			}
 		/>
 	);
-}
+};

@@ -1,34 +1,47 @@
 query HomeRequestsTableContainerMyListingsRequests(
-  $page: Int!
-  $pageSize: Int!
-  $searchText: String!
-  $statusFilters: [String!]!
-  $sorter: SorterInput!
-  $sharerId: ObjectID!
+	$page: Int!
+	$pageSize: Int!
+	$searchText: String!
+	$statusFilters: [String!]!
+	$sorter: SorterInput!
+	$sharerId: ObjectID!
 ) {
-  myListingsRequests(
-    page: $page
-    pageSize: $pageSize
-    searchText: $searchText
-    statusFilters: $statusFilters
-    sorter: $sorter
-    sharerId: $sharerId
-  ) {
-    items {
-      ...HomeRequestsTableContainerRequestFields
-    }
-    total
-    page
-    pageSize
-  }
+	myListingsRequests(
+		page: $page
+		pageSize: $pageSize
+		searchText: $searchText
+		statusFilters: $statusFilters
+		sorter: $sorter
+		sharerId: $sharerId
+	) {
+		items {
+			...HomeRequestsTableContainerRequestFields
+		}
+		total
+		page
+		pageSize
+	}
+}
+
+mutation HomeRequestsTableContainerAcceptReservationRequest(
+	$input: AcceptReservationRequestInput!
+) {
+	acceptReservationRequest(input: $input) {
+		id
+		state
+		reservationPeriodStart
+		reservationPeriodEnd
+		createdAt
+		updatedAt
+	}
 }
 
 fragment HomeRequestsTableContainerRequestFields on ListingRequest {
-  id
-  title
-  image
-  requestedBy
-  requestedOn
-  reservationPeriod
-  status
+	id
+	title
+	image
+	requestedBy
+	requestedOn
+	reservationPeriod
+	status
 }
