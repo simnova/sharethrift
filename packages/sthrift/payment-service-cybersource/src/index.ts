@@ -1011,10 +1011,10 @@ export class PaymentServiceCybersource
 		return {
 			isSuccess: true,
 			vendor: 'Cybersource',
-			completedAt: new Date(refundResponse.submitTimeUtc),
-			amount: Number(refundResponse.refundAmountDetails.refundAmount),
-			transactionId: refundResponse.id,
-			reconciliationId: refundResponse.reconciliationId,
+			completedAt: new Date(refundResponse.submitTimeUtc ?? ''),
+			amount: Number(refundResponse.refundAmountDetails?.refundAmount ?? 0),
+			transactionId: refundResponse.id ?? '',
+			reconciliationId: refundResponse.reconciliationId ?? '',
 		};
 	}
 

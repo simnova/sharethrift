@@ -4,6 +4,10 @@ import type {
 	SubscriptionResponse,
 	PlanResponse,
 	Subscription,
+	ProcessPaymentRequest,
+	ProcessPaymentResponse,
+	RefundPaymentRequest,
+	RefundPaymentResponse,
 } from '@cellix/payment-service';
 
 export interface PaymentApplicationService {
@@ -18,69 +22,6 @@ export interface PaymentApplicationService {
 	}): Promise<SubscriptionResponse>;
 	generatePublicKey(): Promise<string>;
 	createPlan(request: PlanCreation): Promise<PlanResponse>;
-}
-
-export interface ProcessPaymentRequest {
-	userId: string;
-	paymentAmount: number;
-	currency: string;
-
-	paymentInstrument: {
-		billingFirstName: string;
-		billingLastName: string;
-		billingAddressLine1: string;
-		billingAddressLine2?: string;
-		billingCity: string;
-		billingState: string;
-		billingPostalCode: string;
-		billingCountry: string;
-		billingPhone?: string;
-		billingEmail: string;
-		paymentToken: string;
-	};
-}
-
-export interface ProcessPaymentResponse {
-	id?: string;
-	status?: string;
-	cybersourceCustomerId?: string;
-	errorInformation?: {
-		reason?: string;
-		message?: string;
-	};
-	orderInformation?: {
-		amountDetails?: {
-			totalAmount?: string;
-			currency?: string;
-		};
-	};
-}
-
-export interface RefundPaymentRequest {
-	userId: string;
-	transactionId: string;
-	amount?: number;
-	orderInformation: {
-		amountDetails: {
-			totalAmount: number;
-			currency: string;
-		};
-	};
-}
-
-export interface RefundPaymentResponse {
-	id?: string;
-	status: string;
-	errorInformation?: {
-		reason?: string;
-		message?: string;
-	};
-	orderInformation?: {
-		amountDetails?: {
-			totalAmount?: string;
-			currency?: string;
-		};
-	};
 }
 
 export class DefaultPaymentApplicationService

@@ -270,7 +270,7 @@ export interface CustomerPaymentInstrumentsResponse {
 }
 
 export interface RefundPaymentResponse {
-	_links: {
+	_links?: {
 		self: {
 			href: string;
 			method?: string;
@@ -280,14 +280,23 @@ export interface RefundPaymentResponse {
 			method?: string;
 		};
 	};
-	id: string;
-	submitTimeUtc: string;
-	status: string;
-	reconciliationId: string;
-	clientReferenceInformation: { code: string };
-	refundAmountDetails: { refundAmount: string; currency: string };
-	processorInformation: { approvalCode: string; responseCode: string };
-	orderInformation: {};
+	id?: string;
+	submitTimeUtc?: string;
+	status?: string;
+	reconciliationId?: string;
+	clientReferenceInformation?: { code: string };
+	refundAmountDetails?: { refundAmount: string; currency: string };
+	processorInformation?: { approvalCode: string; responseCode: string };
+  errorInformation?: {
+		reason?: string;
+		message?: string;
+	};
+	orderInformation?: {
+		amountDetails?: {
+			totalAmount?: string;
+			currency?: string;
+		};
+	};
 }
 
 export interface TransactionSearchResponse {
@@ -624,6 +633,54 @@ export interface SinglePlan {
 			currency: string; // e.g. "USD"
 			billingAmount: string; // e.g. "7.00"
 			setupFee: string; // e.g. "0.00"
+		};
+	};
+}
+
+export interface ProcessPaymentRequest {
+	userId: string;
+	paymentAmount: number;
+	currency: string;
+
+	paymentInstrument: {
+		billingFirstName: string;
+		billingLastName: string;
+		billingAddressLine1: string;
+		billingAddressLine2?: string;
+		billingCity: string;
+		billingState: string;
+		billingPostalCode: string;
+		billingCountry: string;
+		billingPhone?: string;
+		billingEmail: string;
+		paymentToken: string;
+	};
+}
+
+export interface ProcessPaymentResponse {
+	id?: string;
+	status?: string;
+	cybersourceCustomerId?: string;
+	errorInformation?: {
+		reason?: string;
+		message?: string;
+	};
+	orderInformation?: {
+		amountDetails?: {
+			totalAmount?: string;
+			currency?: string;
+		};
+	};
+}
+
+export interface RefundPaymentRequest {
+	userId: string;
+	transactionId: string;
+	amount?: number;
+	orderInformation: {
+		amountDetails: {
+			totalAmount: number;
+			currency: string;
 		};
 	};
 }
