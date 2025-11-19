@@ -9,8 +9,17 @@ import {
 	queryByEmail,
 	type PersonalUserQueryByEmailCommand,
 } from './query-by-email.ts';
-import { getAllUsers, type GetAllUsersCommand, type PersonalUserPageResult } from './get-all-users.ts';
+import {
+	getAllUsers,
+	type GetAllUsersCommand,
+	type PersonalUserPageResult,
+} from './get-all-users.ts';
 import { update, type PersonalUserUpdateCommand } from './update.ts';
+import type {ProcessPaymentResponse} from '@cellix/payment-service';
+import {
+	type ProcessPaymentCommand,
+	processPayment,
+} from './process-payment.ts';
 
 export interface PersonalUserApplicationService {
 	createIfNotExists: (
@@ -25,9 +34,8 @@ export interface PersonalUserApplicationService {
 	queryByEmail: (
 		email: PersonalUserQueryByEmailCommand,
 	) => Promise<Domain.Contexts.User.PersonalUser.PersonalUserEntityReference | null>;
-    getAllUsers: (
-		command: GetAllUsersCommand,
-	) => Promise<PersonalUserPageResult>;
+	getAllUsers: (command: GetAllUsersCommand) => Promise<PersonalUserPageResult>;
+	processPayment: (command: ProcessPaymentCommand) => Promise<ProcessPaymentResponse>;
 }
 
 export const PersonalUser = (
@@ -38,8 +46,12 @@ export const PersonalUser = (
 		queryById: queryById(dataSources),
 		update: update(dataSources),
 		queryByEmail: queryByEmail(dataSources),
-        getAllUsers: getAllUsers(dataSources),
+		getAllUsers: getAllUsers(dataSources),
+		processPayment: processPayment(dataSources),
 	};
 };
 
-export type { GetAllUsersCommand, PersonalUserPageResult } from './get-all-users.ts';
+export type {
+	GetAllUsersCommand,
+	PersonalUserPageResult,
+} from './get-all-users.ts';

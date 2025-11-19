@@ -3,6 +3,7 @@ import type { GraphQLResolveInfo } from 'graphql';
 import type {
 	PersonalUserUpdateInput,
 	PaymentResponse,
+	ProcessPaymentInput,
 	RefundResponse,
 	Resolvers,
 	QueryAllUsersArgs,
@@ -139,13 +140,13 @@ const personalUserResolvers: Resolvers = {
 				isBlocked: false,
 			});
 		},
-		processPayment: async (_parent, { input }, context) => {
-			console.log('Processing payment', input);
+		processPayment: async (_parent, args: { input: ProcessPaymentInput }, context) => {
+          console.log('Processing payment', args.input);
 
-			try {
-				const personalUser =
-					await context.applicationServices.User.PersonalUser.queryById({
-						id: input.userId,
+          try {
+            const personalUser =
+              await context.applicationServices.User.PersonalUser.queryById({
+                id: args.input.userId,
 					});
 				if (!personalUser) {
 					return {
@@ -171,13 +172,13 @@ const personalUserResolvers: Resolvers = {
 				}
 
 				const sanitizedRequest = {
-					...input,
+					...args.input,
 					paymentInstrument: {
-						...input.paymentInstrument,
+						...args.input.paymentInstrument,
 						billingAddressLine2:
-							input.paymentInstrument.billingAddressLine2 ?? '',
-						billingPhone: input.paymentInstrument.billingPhone ?? '',
-						billingEmail: input.paymentInstrument.billingEmail ?? '',
+							args.input.paymentInstrument.billingAddressLine2 ?? '',
+						billingPhone: args.input.paymentInstrument.billingPhone ?? '',
+						billingEmail: args.input.paymentInstrument.billingEmail ?? '',
 					},
 				};
 
