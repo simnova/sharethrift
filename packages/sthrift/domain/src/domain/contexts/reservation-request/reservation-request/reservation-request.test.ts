@@ -117,6 +117,26 @@ test.for(feature, ({ Background, Scenario, BeforeEachScenario }) => {
 		Then('an error should be thrown indicating "Reservation period start date must be today or in the future"', () => { expect(String((error as Error).message)).toMatch(/Reservation period start date must be today or in the future/); });
 	});
 
+	Scenario('Setting reservation period start to today', ({ Given, When, Then }) => {
+		// biome-ignore lint/suspicious/noEmptyBlockStatements: Background already sets up the context
+		Given('a new ReservationRequest aggregate being created', () => {});
+		When('I set the reservationPeriodStart to today\'s date', () => {
+			const today = new Date();
+			today.setHours(12, 0, 0, 0); // Set to noon today
+			const endDate = new Date(Date.now() + 86_400_000 * 7); // One week from now
+			try { 
+				aggregate = ReservationRequest.getNewInstance({ ...baseProps, reservationPeriodStart: today, reservationPeriodEnd: endDate }, toStateEnum('REQUESTED'), listing, reserver, today, endDate, passport); 
+			} catch (e) { 
+				error = e; 
+			}
+		});
+		Then('the reservation request should be created successfully with today\'s date', () => { 
+			expect(error).toBeUndefined(); 
+			expect(aggregate).toBeDefined();
+			expect(aggregate.reservationPeriodStart).toBeInstanceOf(Date);
+		});
+	});
+
 	Scenario('Setting reservation period end before start', ({ When, Then }) => {
 		When('I try to set reservationPeriodEnd to a date before reservationPeriodStart', () => {
 			const start = new Date(Date.now() + 86_400_000 * 3);

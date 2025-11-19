@@ -17,6 +17,11 @@ Feature: <AggregateRoot> ReservationRequest
     When I try to set the reservationPeriodStart to a past date	
     Then an error should be thrown indicating "Reservation period start date must be today or in the future"	
         
+  Scenario: Setting reservation period start to today
+    Given a new ReservationRequest aggregate being created
+    When I set the reservationPeriodStart to today's date
+    Then the reservation request should be created successfully with today's date
+        
   Scenario: Setting reservation period end before start
     When I try to set reservationPeriodEnd to a date before reservationPeriodStart
     Then an error should be thrown indicating "Reservation start date must be before end date"	
