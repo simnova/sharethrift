@@ -16,3 +16,7 @@ __*
 **/generated.tsx
 **/graphql.schema.json
 apps/ui-sharethrift/tsconfig.tsbuildinfo
+
+# Mock email service output
+tmp/
+**/tmp/
