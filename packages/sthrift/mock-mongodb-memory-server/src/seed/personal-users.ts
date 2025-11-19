@@ -7,7 +7,6 @@ export const personalUsers = [
 		userType: 'personal-users',
 		isBlocked: false,
 		hasCompletedOnboarding: true,
-		role: new ObjectId('607f1f77bcf86cd799439021'),
 		account: {
 			accountType: 'verified-personal',
 			email: 'alice@example.com',
@@ -15,7 +14,7 @@ export const personalUsers = [
 			profile: {
 				firstName: 'Alice',
 				lastName: 'Smith',
-                aboutMe: 'Hello',
+				aboutMe: 'Hello',
 				location: {
 					address1: '123 Main St',
 					address2: null,
@@ -35,7 +34,7 @@ export const personalUsers = [
 		} as Models.User.PersonalUserAccount,
 		schemaVersion: '1.0.0',
 		version: 1,
-		discriminatorKey: 'personal-users',
+
 		createdAt: new Date('2023-01-01T10:00:00Z'),
 		updatedAt: new Date('2023-01-01T10:00:00Z'),
 	},
@@ -44,7 +43,6 @@ export const personalUsers = [
 		userType: 'personal-users',
 		isBlocked: false,
 		hasCompletedOnboarding: true,
-		role: new ObjectId('607f1f77bcf86cd799439021'),
 		account: {
 			accountType: 'verified-personal',
 			email: 'bob@example.com',
@@ -52,7 +50,7 @@ export const personalUsers = [
 			profile: {
 				firstName: 'Bob',
 				lastName: 'Johnson',
-                aboutMe: 'Hello',
+				aboutMe: 'Hello',
 				location: {
 					address1: '456 Oak Ave',
 					address2: 'Apt 2',
@@ -72,7 +70,7 @@ export const personalUsers = [
 		} as Models.User.PersonalUserAccount,
 		schemaVersion: '1.0.0',
 		version: 1,
-		discriminatorKey: 'personal-users',
+
 		createdAt: new Date('2023-01-02T11:00:00Z'),
 		updatedAt: new Date('2023-01-02T11:00:00Z'),
 	},
@@ -81,57 +79,20 @@ export const personalUsers = [
 		userType: 'personal-users',
 		isBlocked: false,
 		hasCompletedOnboarding: true,
-		role: new ObjectId('607f1f77bcf86cd799439021'),
 		account: {
 			accountType: 'verified-personal',
-			email: 'charlie@example.com',
-			username: 'charlie',
-			profile: {
-				firstName: 'Charlie',
-				lastName: 'Brown',
-				location: {
-					address1: '789 Pine Rd',
-					address2: null,
-					city: 'Philadelphia',
-					state: 'PA',
-					country: 'USA',
-					zipCode: '19101',
-				} as Models.User.PersonalUserAccountProfileLocation,
-				billing: {
-					subscriptionId: 'sub_003',
-					cybersourceCustomerId: 'cyber_003',
-					paymentState: 'SUCCEEDED',
-					lastTransactionId: 'txn_003',
-					lastPaymentAmount: 75,
-				} as Models.User.PersonalUserAccountProfileBilling,
-			} as Models.User.PersonalUserAccountProfile,
-		} as Models.User.PersonalUserAccount,
-		schemaVersion: '1.0.0',
-		version: 1,
-			discriminatorKey: 'personal-users',
-		createdAt: new Date('2023-01-03T12:00:00Z'),
-		updatedAt: new Date('2023-01-03T12:00:00Z'),
-	},
-    {
-		_id: '507f1f77bcf86cd799439014',
-		userType: 'personal-users',
-		isBlocked: false,
-		hasCompletedOnboarding: true,
-		role: new ObjectId('607f1f77bcf86cd799439021'),
-		account: {
-			accountType: 'verified-personal',
-			email: 'nkduy2010@gmail.com',
-			username: 'duynguyen',
+			email: 'nkduy2010@gmail.com', // from mock OAuth2 server
+			username: 'duynguyen_personal',
 			profile: {
 				firstName: 'Duy',
 				lastName: 'Nguyen',
 				location: {
-					address1: '789 Pine Rd',
+					address1: '789 Personal St',
 					address2: null,
-					city: 'Philadelphia',
-					state: 'PA',
+					city: 'Springfield',
+					state: 'IL',
 					country: 'USA',
-					zipCode: '19101',
+					zipCode: '62701',
 				} as Models.User.PersonalUserAccountProfileLocation,
 				billing: {
 					subscriptionId: 'sub_003',
@@ -144,8 +105,8 @@ export const personalUsers = [
 		} as Models.User.PersonalUserAccount,
 		schemaVersion: '1.0.0',
 		version: 1,
-			discriminatorKey: 'personal-users',
-		createdAt: new Date('2023-01-03T12:00:00Z'),
-		updatedAt: new Date('2023-01-03T12:00:00Z'),
+
+		createdAt: new Date('2023-01-04T10:00:00Z'),
+		updatedAt: new Date('2023-01-04T10:00:00Z'),
 	},
 ] as unknown as Models.User.PersonalUser[];

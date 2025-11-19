@@ -5,7 +5,7 @@ import type {
 } from '../../builder/generated.ts';
 import {
 	PopulateItemListingFromField,
-	PopulatePersonalUserFromField,
+	PopulateUserFromField,
 } from '../../resolver-helper.ts';
 
 const conversation: Resolvers = {
@@ -13,8 +13,8 @@ const conversation: Resolvers = {
 		authorId: (parent) => parent.authorId.valueOf(),
 	},
 	Conversation: {
-		sharer: PopulatePersonalUserFromField('sharer'),
-		reserver: PopulatePersonalUserFromField('reserver'),
+		sharer: PopulateUserFromField('sharer'),
+		reserver: PopulateUserFromField('reserver'),
 		listing: PopulateItemListingFromField('listing'),
 	},
 	Query: {

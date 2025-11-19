@@ -12,7 +12,6 @@ Feature: <AggregateRoot> PersonalUser
     And lastName should be "Doe"
     And isNew should be false after creation
     And it should expose a valid PersonalUserAccount instance
-    And it should expose a valid PersonalUserRole instance
 
   Scenario: Updating userType with valid permission
     Given an existing PersonalUser aggregate
