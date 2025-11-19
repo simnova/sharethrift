@@ -8,6 +8,8 @@ import type { FindOneOptions, FindOptions } from '../../mongo-data-source.ts';
 import { ConversationConverter } from '../../../domain/conversation/conversation/conversation.domain-adapter.ts';
 import { MongooseSeedwork } from '@cellix/mongoose-seedwork';
 
+const populateFields = ['sharer', 'reserver', 'listing'];
+
 export interface ConversationReadRepository {
 	getAll: (
 		options?: FindOptions,
@@ -25,6 +27,13 @@ export interface ConversationReadRepository {
 	) => Promise<
 		Domain.Contexts.Conversation.Conversation.ConversationEntityReference[]
 	>;
+
+	getBySharerReserverListing: (
+		sharerId: string,
+		reserverId: string,
+		listingId: string,
+		options?: FindOneOptions,
+	) => Promise<Domain.Contexts.Conversation.Conversation.ConversationEntityReference | null>;
 }
 
 export class ConversationReadRepositoryImpl
@@ -55,7 +64,10 @@ export class ConversationReadRepositoryImpl
 		id: string,
 		options?: FindOneOptions,
 	): Promise<Domain.Contexts.Conversation.Conversation.ConversationEntityReference | null> {
-		const result = await this.mongoDataSource.findById(id, options);
+		const result = await this.mongoDataSource.findById(id, {
+			...options,
+			populateFields: populateFields,
+		});
 		if (!result) {
 			return null;
 		}
@@ -80,13 +92,47 @@ export class ConversationReadRepositoryImpl
 						{ reserver: new MongooseSeedwork.ObjectId(userId) },
 					],
 				},
-				options,
+				{
+					...options,
+					populateFields: populateFields,
+				},
 			);
-			
 			return result.map((doc) => this.converter.toDomain(doc, this.passport));
 		} catch (error) {
 			console.warn('Error with ObjectId:', error);
 			return [];
+		}
+	}
+
+	async getBySharerReserverListing(
+		sharerId: string,
+		reserverId: string,
+		listingId: string,
+		options?: FindOneOptions,
+	): Promise<Domain.Contexts.Conversation.Conversation.ConversationEntityReference | null> {
+		if (!sharerId || !reserverId || !listingId) {
+			return null;
+		}
+
+		try {
+			const result = await this.mongoDataSource.findOne(
+				{
+					sharer: new MongooseSeedwork.ObjectId(sharerId),
+					reserver: new MongooseSeedwork.ObjectId(reserverId),
+					listing: new MongooseSeedwork.ObjectId(listingId),
+				},
+				{
+					...options,
+					populateFields: populateFields,
+				},
+			);
+			if (!result) {
+				return null;
+			}
+			return this.converter.toDomain(result, this.passport);
+		} catch (error) {
+			console.warn('Error with ObjectId in getBySharerReserverListing:', error);
+			return null;
 		}
 	}
 }

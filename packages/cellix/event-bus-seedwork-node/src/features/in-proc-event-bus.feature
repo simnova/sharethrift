@@ -34,4 +34,3 @@ Feature: InProcEventBus
     When both handlers are registered for different events
     And each event is dispatched
     Then only the correct handler should be called for each event
->>>>>>> REPLACE

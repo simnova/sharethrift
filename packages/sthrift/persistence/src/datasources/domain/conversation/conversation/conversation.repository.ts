@@ -31,11 +31,11 @@ export class ConversationRepository
 		return this.typeConverter.toDomain(mongoConversation, this.passport);
 	}
 
-	async getByTwilioSid(
-		twilioConversationId: string,
+	async getByMessagingId(
+		messagingConversationId: string,
 	): Promise<Domain.Contexts.Conversation.Conversation.Conversation<PropType> | null> {
 		const mongoConversation = await this.model
-			.findOne({ twilioConversationId })
+			.findOne({ messagingConversationId })
 			.populate('sharer')
 			.populate('reserver')
 			.populate('listing')
@@ -70,8 +70,15 @@ export class ConversationRepository
 		sharer: Domain.Contexts.User.PersonalUser.PersonalUserEntityReference,
 		reserver: Domain.Contexts.User.PersonalUser.PersonalUserEntityReference,
 		listing: Domain.Contexts.Listing.ItemListing.ItemListingEntityReference,
+		messagingConversationId?: string,
 	): Promise<Domain.Contexts.Conversation.Conversation.Conversation<PropType>> {
-		const adapter = this.typeConverter.toAdapter(new this.model());
+		const newDoc = new this.model();
+		// Set a placeholder messagingConversationId for new conversations
+		// In production, this would typically be set when creating the messaging conversation
+		newDoc.messagingConversationId = `temp-${Date.now()}-${crypto.randomUUID()}`;
+		
+		const adapter = this.typeConverter.toAdapter(newDoc);
+		
 		return Promise.resolve(
 			Domain.Contexts.Conversation.Conversation.Conversation.getNewInstance(
 				adapter,
@@ -79,6 +86,7 @@ export class ConversationRepository
 				reserver,
 				listing,
 				[], // Empty messages array for new conversations
+				messagingConversationId,
 				this.passport,
 			),
 		);

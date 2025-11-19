@@ -10,9 +10,10 @@ export interface ConversationRepository<props extends ConversationProps>
 		sharer: PersonalUserEntityReference,
 		reserver: PersonalUserEntityReference,
 		listing: ItemListingEntityReference,
+		messagingConversationId?: string,
 	): Promise<Conversation<props>>;
-	getByTwilioSid(
-		twilioConversationId: string,
+	getByMessagingId(
+		messagingConversationId: string,
 	): Promise<Conversation<props> | null>;
 	getByIdWithSharerReserver(
 		sharer: string,

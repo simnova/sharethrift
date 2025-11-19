@@ -29,22 +29,21 @@ export class Conversation<props extends ConversationProps>
 		sharer: PersonalUserEntityReference,
 		reserver: PersonalUserEntityReference,
 		listing: ItemListingEntityReference,
-		messages: MessageEntityReference[],
+		_messages: MessageEntityReference[],
+		messagingConversationId: string | undefined,
 		passport: Passport,
 	): Conversation<props> {
-		const instance = new Conversation(
-			{
-				...newProps,
-				sharer,
-				reserver,
-				listing,
-                messages,
-			} as props,
-			passport,
-		);
-		instance.markAsNew();
-		instance.isNew = false;
-		return instance;
+		const newInstance = new Conversation(newProps, passport);
+		newInstance.markAsNew();
+		newInstance.sharer = sharer;
+		newInstance.reserver = reserver;
+		newInstance.listing = listing;
+		newInstance.props.messages = _messages;
+		if (messagingConversationId) {
+			newInstance.messagingConversationId = messagingConversationId;
+		}
+		newInstance.isNew = false;
+		return newInstance;
 	}
 
 	private markAsNew(): void {
@@ -145,10 +144,10 @@ export class Conversation<props extends ConversationProps>
 		this.props.listing = listing;
 	}
 
-	get twilioConversationId(): string {
-		return this.props.twilioConversationId;
+	get messagingConversationId(): string {
+		return this.props.messagingConversationId;
 	}
-	set twilioConversationId(value: string) {
+	set messagingConversationId(value: string) {
 		if (
 			!this.isNew &&
 			!this.visa.determineIf(
@@ -156,10 +155,10 @@ export class Conversation<props extends ConversationProps>
 			)
 		) {
 			throw new DomainSeedwork.PermissionError(
-				'You do not have permission to change the twilioConversationId of this conversation',
+				'You do not have permission to change the messagingConversationId of this conversation',
 			);
 		}
-		this.props.twilioConversationId = value;
+		this.props.messagingConversationId = value;
 	}
 
 	get createdAt(): Date {
