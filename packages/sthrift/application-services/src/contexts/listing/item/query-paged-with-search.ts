@@ -85,6 +85,11 @@ export const queryPagedWithSearchFallback = (
 								id,
 							);
 						if (!entity) {
+							console.error(
+								`Search index consistency issue: Document ID "${id}" returned from search index but not found in database. ` +
+								`This may indicate search index is out of sync with the database. ` +
+								`Consider triggering a reindex or investigating why the entity was deleted without updating the search index.`
+							);
 							throw new Error(`Listing entity not found for ID: ${id}`);
 						}
 						return entity;
