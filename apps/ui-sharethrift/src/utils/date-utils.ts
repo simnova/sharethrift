@@ -21,21 +21,21 @@ export function parseGraphQLDateTime(dateValue: any): Date | null {
 
 	// If it's already a Date object, return it
 	if (dateValue instanceof Date) {
-		return isNaN(dateValue.getTime()) ? null : dateValue;
+		return Number.isNaN(dateValue.getTime()) ? null : dateValue;
 	}
 
 	// Try parsing as is (works for ISO strings and valid numbers)
 	const parsed = new Date(dateValue);
-	if (!isNaN(parsed.getTime())) {
+	if (!Number.isNaN(parsed.getTime())) {
 		return parsed;
 	}
 
 	// If direct parsing failed, try parsing as number (for string timestamps)
 	if (typeof dateValue === 'string') {
 		const numValue = Number(dateValue);
-		if (!isNaN(numValue)) {
+		if (!Number.isNaN(numValue)) {
 			const numParsed = new Date(numValue);
-			if (!isNaN(numParsed.getTime())) {
+			if (!Number.isNaN(numParsed.getTime())) {
 				return numParsed;
 			}
 		}
