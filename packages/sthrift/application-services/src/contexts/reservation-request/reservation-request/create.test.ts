@@ -20,8 +20,20 @@ test.for(feature, ({ Scenario, BeforeEachScenario }) => {
 		| undefined;
 	// biome-ignore lint/suspicious/noExplicitAny: Test mock variable
 	let error: any;
+	// biome-ignore lint/suspicious/noExplicitAny: Test mock variable
+	let mockUserReadRepo: any;
 
 	BeforeEachScenario(() => {
+		mockUserReadRepo = {
+			getByEmail: vi.fn(),
+		};
+
+		// Create wrapper functions that delegate to getByEmail
+		const getUserByIdSpy = vi.fn();
+		const getUserByEmailSpy = vi.fn(async (email: string) => {
+			return mockUserReadRepo.getByEmail(email);
+		});
+
 		mockDataSources = {
 			readonlyDataSource: {
 				Listing: {
@@ -33,10 +45,10 @@ test.for(feature, ({ Scenario, BeforeEachScenario }) => {
 				},
 				User: {
 					PersonalUser: {
-						PersonalUserReadRepo: {
-							getByEmail: vi.fn(),
-						},
+						PersonalUserReadRepo: mockUserReadRepo,
 					},
+					getUserById: getUserByIdSpy,
+					getUserByEmail: getUserByEmailSpy,
 				},
 				ReservationRequest: {
 					ReservationRequest: {

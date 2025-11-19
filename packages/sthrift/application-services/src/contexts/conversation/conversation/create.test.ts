@@ -37,31 +37,35 @@ test.for(feature, ({ Scenario, BeforeEachScenario }) => {
 			getBySharerReserverListing: vi.fn(),
 		};
 
-		mockUserReadRepo = {
-			getById: vi.fn(),
-		};
+	mockUserReadRepo = {
+		getById: vi.fn(),
+	};
 
-		mockListingReadRepo = {
-			getById: vi.fn(),
-		};
+	// Create wrapper functions that delegate to getById
+	const getUserByIdSpy = vi.fn(async (id: string) => {
+		return mockUserReadRepo.getById(id);
+	});
+	const getUserByEmailSpy = vi.fn();
 
-		mockMessagingRepo = {
-			createConversation: vi.fn(),
-		};
+	mockListingReadRepo = {
+		getById: vi.fn(),
+	};
 
-		mockRepo = {
-			getNewInstance: vi.fn(),
-			save: vi.fn(),
-		};
+	mockMessagingRepo = {
+		createConversation: vi.fn(),
+	};
 
-		mockUnitOfWork = {
-			// biome-ignore lint/suspicious/noExplicitAny: Test mock callback
-			withScopedTransaction: vi.fn(async (callback: any) => {
-				return await callback(mockRepo);
-			}),
-		};
+	mockRepo = {
+		getNewInstance: vi.fn(),
+		save: vi.fn(),
+	};
 
-		mockDataSources = {
+	mockUnitOfWork = {
+		// biome-ignore lint/suspicious/noExplicitAny: Test mock callback
+		withScopedTransaction: vi.fn(async (callback: any) => {
+			return await callback(mockRepo);
+		}),
+	};		mockDataSources = {
 			domainDataSource: {
 				Conversation: {
 					Conversation: {
@@ -75,11 +79,13 @@ test.for(feature, ({ Scenario, BeforeEachScenario }) => {
 						ConversationReadRepo: mockReadRepo,
 					},
 				},
-				User: {
-					PersonalUser: {
-						PersonalUserReadRepo: mockUserReadRepo,
-					},
+			User: {
+				PersonalUser: {
+					PersonalUserReadRepo: mockUserReadRepo,
 				},
+				getUserById: getUserByIdSpy,
+				getUserByEmail: getUserByEmailSpy,
+			},
 				Listing: {
 					ItemListing: {
 						ItemListingReadRepo: mockListingReadRepo,
