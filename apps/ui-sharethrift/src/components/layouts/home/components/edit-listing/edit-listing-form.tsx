@@ -5,7 +5,7 @@ import {
 	StopOutlined,
 } from '@ant-design/icons';
 import type { ConfigType } from 'dayjs';
-import dayjs from 'dayjs';
+import type dayjs from 'dayjs';
 
 const { TextArea } = Input;
 const { RangePicker } = DatePicker;
@@ -44,7 +44,7 @@ export const EditListingForm: React.FC<EditListingFormProps> = ({
 
 			// Don't disable any dates - allow full range for editing
 			return false;
-		} catch (_err) {
+		} catch {
 			return false;
 		}
 	};
@@ -145,7 +145,6 @@ export const EditListingForm: React.FC<EditListingFormProps> = ({
 					<Col>
 						<Button
 							className="secondaryButton"
-							danger
 							icon={<DeleteOutlined />}
 							onClick={onDelete}
 							disabled={isLoading}

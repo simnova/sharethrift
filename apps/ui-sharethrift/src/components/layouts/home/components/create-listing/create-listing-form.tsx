@@ -37,7 +37,7 @@ export const ListingForm: React.FC<ListingFormProps> = ({
 			}
 
 			return maybeDay.isBefore(dayjs(), 'day');
-		} catch (_err) {
+		} catch {
 			return false;
 		}
 	};

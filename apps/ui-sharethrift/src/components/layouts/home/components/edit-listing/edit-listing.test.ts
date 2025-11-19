@@ -1,9 +1,9 @@
-import { describe, it, expect, vi, beforeEach } from 'vitest';
+import { describe, it, expect } from 'vitest';
 import dayjs from 'dayjs';
 
 /**
  * Edit Listing Feature Tests
- * 
+ *
  * These tests cover the complete edit listing functionality including:
  * - Form field rendering and editability
  * - Date picker configuration
@@ -18,10 +18,10 @@ describe('Edit Listing Feature - Task 221', () => {
 		it('should allow editing of Title field', () => {
 			// Given a listing is loaded with existing title
 			const existingTitle = 'Cordless Drill';
-			
+
 			// When user modifies the title
 			const newTitle = 'Professional Cordless Drill';
-			
+
 			// Then form should accept the new value
 			expect(newTitle).not.toEqual(existingTitle);
 			expect(newTitle.length).toBeLessThanOrEqual(200);
@@ -30,10 +30,10 @@ describe('Edit Listing Feature - Task 221', () => {
 		it('should allow editing of Location field', () => {
 			// Given a listing with existing location
 			const existingLocation = 'Philadelphia, PA';
-			
+
 			// When user modifies location
 			const newLocation = 'New York, NY';
-			
+
 			// Then form should accept the new value
 			expect(newLocation).not.toEqual(existingLocation);
 			expect(newLocation.length).toBeLessThanOrEqual(255);
@@ -42,7 +42,7 @@ describe('Edit Listing Feature - Task 221', () => {
 		it('should allow editing of Category field', () => {
 			// Given a listing with existing category
 			const existingCategory = 'Tools & Equipment';
-			
+
 			// When user selects new category
 			const newCategory = 'Electronics';
 			const availableCategories = [
@@ -51,7 +51,7 @@ describe('Edit Listing Feature - Task 221', () => {
 				'Home & Garden',
 				'Tools & Equipment',
 			];
-			
+
 			// Then form should accept the new value from available options
 			expect(availableCategories).toContain(newCategory);
 			expect(newCategory).not.toEqual(existingCategory);
@@ -61,14 +61,15 @@ describe('Edit Listing Feature - Task 221', () => {
 			// Given a listing with existing sharing period
 			const existingStart = dayjs('2024-08-11');
 			const existingEnd = dayjs('2024-12-23');
-			
+
 			// When user selects new dates
 			const newStart = dayjs('2025-01-01');
 			const newEnd = dayjs('2025-03-31');
-			
+
 			// Then new dates should be valid dayjs objects
 			expect(newStart.isValid()).toBe(true);
 			expect(newEnd.isValid()).toBe(true);
+			expect(existingEnd.isAfter(existingStart)).toBe(true);
 			expect(newStart.isBefore(newEnd)).toBe(true);
 			expect(newStart).not.toEqual(existingStart);
 		});
@@ -76,11 +77,11 @@ describe('Edit Listing Feature - Task 221', () => {
 		it('should allow editing of Description field', () => {
 			// Given a listing with existing description
 			const existingDescription = 'Professional grade cordless drill...';
-			
+
 			// When user updates description
 			const newDescription =
 				'Heavy-duty professional grade cordless drill with multiple attachments...';
-			
+
 			// Then form should accept the new value
 			expect(newDescription).not.toEqual(existingDescription);
 			expect(newDescription.length).toBeLessThanOrEqual(2000);
@@ -92,7 +93,7 @@ describe('Edit Listing Feature - Task 221', () => {
 			// Given a listing with dates in the past
 			const pastStartDate = dayjs('2024-08-11');
 			const pastEndDate = dayjs('2024-12-23');
-			
+
 			// When date picker is rendered
 			// Then past dates should be selectable (not disabled)
 			expect(pastStartDate.isBefore(dayjs())).toBe(true);
@@ -104,7 +105,7 @@ describe('Edit Listing Feature - Task 221', () => {
 			// When user selects future dates
 			const futureStart = dayjs().add(1, 'month');
 			const futureEnd = dayjs().add(3, 'months');
-			
+
 			// Then future dates should be allowed
 			expect(futureStart.isAfter(dayjs())).toBe(true);
 			expect(futureEnd.isAfter(dayjs())).toBe(true);
@@ -113,10 +114,10 @@ describe('Edit Listing Feature - Task 221', () => {
 		it('should format dates as YYYY-MM-DD', () => {
 			// Given dates from the form
 			const formDate = dayjs('2024-08-11');
-			
+
 			// When date is formatted
 			const formatted = formDate.format('YYYY-MM-DD');
-			
+
 			// Then format should be YYYY-MM-DD
 			expect(formatted).toMatch(/^\d{4}-\d{2}-\d{2}$/);
 			expect(formatted).toEqual('2024-08-11');
@@ -126,7 +127,7 @@ describe('Edit Listing Feature - Task 221', () => {
 			// Given a date range
 			const startDate = dayjs('2024-08-11');
 			const endDate = dayjs('2024-12-23');
-			
+
 			// When validating
 			// Then start date should be before end date
 			expect(startDate.isBefore(endDate)).toBe(true);
@@ -144,20 +145,24 @@ describe('Edit Listing Feature - Task 221', () => {
 				sharingPeriod: [dayjs('2024-08-11'), dayjs('2024-12-23')],
 				images: ['/assets/item-images/drill.png'],
 			};
-			
+
 			// When transforming for submission
+			const [sharingPeriodStart, sharingPeriodEnd] = formValues.sharingPeriod;
+			if (!sharingPeriodStart || !sharingPeriodEnd) {
+				throw new Error('Sharing period dates are required');
+			}
 			const submitData = {
 				title: formValues.title,
 				description: formValues.description,
 				category: formValues.category,
 				location: formValues.location,
 				sharingPeriod: [
-					formValues.sharingPeriod[0].toISOString(),
-					formValues.sharingPeriod[1].toISOString(),
+					sharingPeriodStart.toISOString(),
+					sharingPeriodEnd.toISOString(),
 				],
 				images: formValues.images,
 			};
-			
+
 			// Then should convert to ISO strings
 			expect(submitData.sharingPeriod[0]).toMatch(/^\d{4}-\d{2}-\d{2}T/);
 			expect(submitData.sharingPeriod[1]).toMatch(/^\d{4}-\d{2}-\d{2}T/);
@@ -173,7 +178,7 @@ describe('Edit Listing Feature - Task 221', () => {
 				'sharingPeriod',
 				'images',
 			];
-			
+
 			// When submitting form
 			const submitData = {
 				title: 'Item Title',
@@ -183,7 +188,7 @@ describe('Edit Listing Feature - Task 221', () => {
 				sharingPeriod: ['2024-08-11T00:00:00Z', '2024-12-23T00:00:00Z'],
 				images: ['image.png'],
 			};
-			
+
 			// Then all required fields should be present
 			requiredFields.forEach((field) => {
 				expect(submitData).toHaveProperty(field);
@@ -200,7 +205,7 @@ describe('Edit Listing Feature - Task 221', () => {
 				sharingPeriod: ['start', 'end'],
 				images: ['image.png'],
 			};
-			
+
 			// When validating
 			const isValid = {
 				title: incompleteForm.title.length > 0,
@@ -208,7 +213,7 @@ describe('Edit Listing Feature - Task 221', () => {
 				category: incompleteForm.category.length > 0,
 				location: incompleteForm.location.length > 0,
 			};
-			
+
 			// Then should fail validation for empty title
 			expect(isValid.title).toBe(false);
 		});
@@ -219,7 +224,7 @@ describe('Edit Listing Feature - Task 221', () => {
 			// Given user is on edit listing page
 			// When user clicks Cancel button
 			const navigateBackCalled = true;
-			
+
 			// Then should navigate back to listings
 			expect(navigateBackCalled).toBe(true);
 		});
@@ -228,10 +233,10 @@ describe('Edit Listing Feature - Task 221', () => {
 			// Given user wants to edit a listing
 			const userId = '507f1f77bcf86cd799439014';
 			const listingId = '707f1f77bcf86cd799439034';
-			
+
 			// When constructing edit URL
 			const editUrl = `/my-listings/user/${userId}/${listingId}/edit`;
-			
+
 			// Then URL should follow correct pattern
 			expect(editUrl).toMatch(/\/my-listings\/user\/[^/]+\/[^/]+\/edit$/);
 			expect(editUrl).toEqual(`/my-listings/user/${userId}/${listingId}/edit`);
@@ -242,10 +247,10 @@ describe('Edit Listing Feature - Task 221', () => {
 		it('should show Pause button for Published listings', () => {
 			// Given a Published listing
 			const listingState = 'Published';
-			
+
 			// When rendering edit page
 			const canPause = listingState === 'Published';
-			
+
 			// Then Pause button should be visible
 			expect(canPause).toBe(true);
 		});
@@ -253,13 +258,19 @@ describe('Edit Listing Feature - Task 221', () => {
 		it('should show Cancel Listing button for Published, Drafted, or Paused listings', () => {
 			// Given different listing states
 			const cancelableStates = ['Published', 'Drafted', 'Paused'];
-			
+
 			// When checking visibility
-			const testStates = ['Published', 'Drafted', 'Paused', 'Cancelled', 'Active'];
+			const testStates = [
+				'Published',
+				'Drafted',
+				'Paused',
+				'Cancelled',
+				'Active',
+			];
 			const visibleForState = testStates.map((state) =>
 				cancelableStates.includes(state),
 			);
-			
+
 			// Then button should be visible for correct states
 			expect(visibleForState[0]).toBe(true); // Published
 			expect(visibleForState[1]).toBe(true); // Drafted
@@ -270,10 +281,10 @@ describe('Edit Listing Feature - Task 221', () => {
 		it('should always show Delete button', () => {
 			// Given any listing state
 			const states = ['Published', 'Drafted', 'Paused', 'Cancelled'];
-			
+
 			// When rendering edit page
 			const deleteVisible = states.map(() => true);
-			
+
 			// Then Delete button should always be visible
 			deleteVisible.forEach((visible) => {
 				expect(visible).toBe(true);
@@ -283,7 +294,7 @@ describe('Edit Listing Feature - Task 221', () => {
 		it('should always show Save Changes button', () => {
 			// Given any listing state
 			const isLoading = false;
-			
+
 			// When rendering form
 			// Then Save Changes button should be visible and enabled
 			expect(isLoading).toBe(false);
@@ -294,11 +305,11 @@ describe('Edit Listing Feature - Task 221', () => {
 		it('should enforce Title max length of 200 characters', () => {
 			// Given a title field
 			const maxLength = 200;
-			
+
 			// When entering text
 			const validTitle = 'a'.repeat(200);
 			const invalidTitle = 'a'.repeat(201);
-			
+
 			// Then should validate max length
 			expect(validTitle.length).toBeLessThanOrEqual(maxLength);
 			expect(invalidTitle.length).toBeGreaterThan(maxLength);
@@ -307,11 +318,11 @@ describe('Edit Listing Feature - Task 221', () => {
 		it('should enforce Location max length of 255 characters', () => {
 			// Given a location field
 			const maxLength = 255;
-			
+
 			// When entering location
 			const validLocation = 'a'.repeat(255);
 			const invalidLocation = 'a'.repeat(256);
-			
+
 			// Then should validate max length
 			expect(validLocation.length).toBeLessThanOrEqual(maxLength);
 			expect(invalidLocation.length).toBeGreaterThan(maxLength);
@@ -320,11 +331,11 @@ describe('Edit Listing Feature - Task 221', () => {
 		it('should enforce Description max length of 2000 characters', () => {
 			// Given a description field
 			const maxLength = 2000;
-			
+
 			// When entering description
 			const validDescription = 'a'.repeat(2000);
 			const invalidDescription = 'a'.repeat(2001);
-			
+
 			// Then should validate max length
 			expect(validDescription.length).toBeLessThanOrEqual(maxLength);
 			expect(invalidDescription.length).toBeGreaterThan(maxLength);
@@ -334,10 +345,10 @@ describe('Edit Listing Feature - Task 221', () => {
 			// Given form validation rules
 			const titleRequired = true;
 			const emptyTitle = '';
-			
+
 			// When validating
 			const isValid = titleRequired && emptyTitle.length > 0;
-			
+
 			// Then validation should fail
 			expect(isValid).toBe(false);
 		});
@@ -346,10 +357,10 @@ describe('Edit Listing Feature - Task 221', () => {
 			// Given form validation rules
 			const categoryRequired = true;
 			const noCategory = '';
-			
+
 			// When validating
 			const isValid = categoryRequired && noCategory.length > 0;
-			
+
 			// Then validation should fail
 			expect(isValid).toBe(false);
 		});
@@ -358,10 +369,10 @@ describe('Edit Listing Feature - Task 221', () => {
 			// Given form validation rules
 			const periodRequired = true;
 			const noPeriod = null;
-			
+
 			// When validating
 			const isValid = periodRequired && noPeriod !== null;
-			
+
 			// Then validation should fail
 			expect(isValid).toBe(false);
 		});
@@ -370,10 +381,10 @@ describe('Edit Listing Feature - Task 221', () => {
 			// Given form validation rules
 			const descriptionRequired = true;
 			const emptyDescription = '';
-			
+
 			// When validating
 			const isValid = descriptionRequired && emptyDescription.length > 0;
-			
+
 			// Then validation should fail
 			expect(isValid).toBe(false);
 		});
@@ -383,18 +394,17 @@ describe('Edit Listing Feature - Task 221', () => {
 		it('should query existing listing data on page load', () => {
 			// Given a listing ID in URL
 			const listingId = '707f1f77bcf86cd799439034';
-			
+
 			// When page loads
 			// Then should query itemListing(id: listingId)
 			const query = `itemListing(id: "${listingId}")`;
-			
+
 			expect(listingId).toBeDefined();
 			expect(query).toContain(listingId);
 		});
 
 		it('should send update mutation with correct structure', () => {
 			// Given form data to submit
-			const listingId = '707f1f77bcf86cd799439034';
 			const updateInput = {
 				title: 'Updated Title',
 				description: 'Updated description',
@@ -404,7 +414,7 @@ describe('Edit Listing Feature - Task 221', () => {
 				sharingPeriodEnd: '2025-03-31T00:00:00Z',
 				images: ['/assets/image.png'],
 			};
-			
+
 			// When submitting
 			// Then mutation should include correct variables
 			expect(updateInput.title).toBeDefined();
@@ -421,7 +431,7 @@ describe('Edit Listing Feature - Task 221', () => {
 		it('should show loading state while submitting', () => {
 			// Given form is being submitted
 			const isLoading = true;
-			
+
 			// When buttons are rendered
 			// Then all buttons should be disabled
 			expect(isLoading).toBe(true);
@@ -430,7 +440,7 @@ describe('Edit Listing Feature - Task 221', () => {
 		it('should show success message after successful update', () => {
 			// Given form submission completes
 			const updateSuccessful = true;
-			
+
 			// When update completes
 			// Then should show "Listing updated successfully!"
 			expect(updateSuccessful).toBe(true);
@@ -439,7 +449,7 @@ describe('Edit Listing Feature - Task 221', () => {
 		it('should navigate back after successful update', () => {
 			// Given successful form submission
 			const updateSuccessful = true;
-			
+
 			// When submission completes
 			// Then should navigate to /my-listings
 			expect(updateSuccessful).toBe(true);
@@ -449,7 +459,7 @@ describe('Edit Listing Feature - Task 221', () => {
 			// Given form submission fails
 			const updateFailed = true;
 			const errorMessage = 'Failed to update listing. Please try again.';
-			
+
 			// When update fails
 			// Then should display error message
 			expect(updateFailed).toBe(true);
@@ -464,7 +474,7 @@ describe('Edit Listing Feature - Task 221', () => {
 				'/assets/item-images/drill.png',
 				'/assets/item-images/drill-detail.png',
 			];
-			
+
 			// When rendering edit page
 			// Then should display all images
 			expect(uploadedImages.length).toBeGreaterThan(0);
@@ -476,11 +486,13 @@ describe('Edit Listing Feature - Task 221', () => {
 				'/assets/item-images/drill.png',
 				'/assets/item-images/drill-detail.png',
 			];
-			
+
 			// When user removes an image
 			const imageToRemove = initialImages[0];
-			const remainingImages = initialImages.filter((img) => img !== imageToRemove);
-			
+			const remainingImages = initialImages.filter(
+				(img) => img !== imageToRemove,
+			);
+
 			// Then image should be removed from list
 			expect(remainingImages).not.toContain(imageToRemove);
 			expect(remainingImages.length).toBe(initialImages.length - 1);
@@ -489,11 +501,11 @@ describe('Edit Listing Feature - Task 221', () => {
 		it('should require at least one image', () => {
 			// Given image validation
 			const minImages = 1;
-			
+
 			// When validating
 			const images = [] as string[];
 			const isValid = images.length >= minImages;
-			
+
 			// Then validation should fail with no images
 			expect(isValid).toBe(false);
 		});
@@ -506,11 +518,13 @@ describe('Edit Listing Feature - Task 221', () => {
 				title: 'Modified Title',
 				description: 'Modified description',
 			};
-			
+
 			// When user clicks Cancel
 			const navigateBack = true;
-			
+
 			// Then changes should not be saved
+			expect(formData.title).toBe('Modified Title');
+			expect(formData.description).toBe('Modified description');
 			expect(navigateBack).toBe(true);
 		});
 	});
@@ -532,7 +546,7 @@ describe('Edit Listing Feature - Task 221', () => {
 				'updatedAt',
 				'sharer',
 			];
-			
+
 			// When querying itemListing
 			// Then should include all required fields
 			requiredFields.forEach((field) => {
@@ -545,7 +559,7 @@ describe('Edit Listing Feature - Task 221', () => {
 			// When loading edit page
 			// Then should query currentPersonalUserAndCreateIfNotExists
 			const currentUserQuery = 'currentPersonalUserAndCreateIfNotExists';
-			
+
 			expect(currentUserQuery).toBeDefined();
 		});
 	});
