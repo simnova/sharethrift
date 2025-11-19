@@ -43,6 +43,11 @@ interface ListingRequestUiShape {
 
 const DUMMY_MY_LISTINGS_SHARER_ID = '507f1f77bcf86cd799439014';
 
+const DEV_DUMMY_CAMERA_IMAGE =
+	'https://images.unsplash.com/photo-1504215680853-026ed2a45def?auto=format&fit=crop&w=800&q=80';
+const DEV_DUMMY_LIGHT_IMAGE =
+	'https://images.unsplash.com/photo-1524492412937-b28074a5d7da?auto=format&fit=crop&w=800&q=80';
+
 const DEV_DUMMY_LISTING_REQUESTS: ListingRequestDomainShape[] = [
 	{
 		id: '64f1f77bcf86cd7994390011',
@@ -52,7 +57,8 @@ const DEV_DUMMY_LISTING_REQUESTS: ListingRequestDomainShape[] = [
 		reservationPeriodEnd: new Date('2025-01-24T00:00:00.000Z'),
 		listing: {
 			title: 'Canon EOS R5 Mirrorless Camera',
-			thumbnailUrl: '/assets/item-images/camera-r5.png',
+			thumbnailUrl: DEV_DUMMY_CAMERA_IMAGE,
+			images: [DEV_DUMMY_CAMERA_IMAGE],
 			sharer: { id: DUMMY_MY_LISTINGS_SHARER_ID },
 		},
 		reserver: { account: { username: 'jane.photog' } },
@@ -65,7 +71,8 @@ const DEV_DUMMY_LISTING_REQUESTS: ListingRequestDomainShape[] = [
 		reservationPeriodEnd: new Date('2025-02-02T00:00:00.000Z'),
 		listing: {
 			title: 'Nanlite MixPanel 150 LED Kit',
-			thumbnailUrl: '/assets/item-images/nanlite-mixpanel.png',
+			thumbnailUrl: DEV_DUMMY_LIGHT_IMAGE,
+			images: [DEV_DUMMY_LIGHT_IMAGE],
 			sharer: { id: DUMMY_MY_LISTINGS_SHARER_ID },
 		},
 		reserver: { account: { username: 'studiojoe' } },
@@ -161,12 +168,16 @@ function paginateAndFilterListingRequests(
 				? r.reservationPeriodEnd
 				: undefined;
 
-		// Get the first image from the listing's images array, or use placeholder
+		// Get the first image from the listing's images array, fall back to thumbnail, then placeholder
 		const images = r.listing?.['images'];
+		const thumbnail =
+			typeof r.listing?.['thumbnailUrl'] === 'string'
+				? (r.listing?.['thumbnailUrl'] as string)
+				: undefined;
+		const firstImage =
+			Array.isArray(images) && images.length > 0 ? images[0] : undefined;
 		const listingImage =
-			Array.isArray(images) && images.length > 0
-				? images[0]
-				: '/assets/item-images/placeholder.png';
+			firstImage ?? thumbnail ?? '/assets/item-images/placeholder.png';
 
 		return {
 			id: r.id,
