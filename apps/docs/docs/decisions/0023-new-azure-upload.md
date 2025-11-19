@@ -76,7 +76,7 @@ Backend->>Backend: Build blob path + tags + metadata, validate upload rules
 Backend-->>Frontend: AuthResult (blob URL + SAS token + x-ms-date + tags + metadata)
 Frontend->>Blob: PUT file bytes (headers + auth + tags + metadata)
 Blob-->>Frontend: 201 Created (x-ms-version-id)
-Frontend->>Backend: Notify upload completion and trigger malware scan
+Blob->>Blob: trigger malware scan
 alt Scan: No threats found
     Backend->>Backend: Proceed with database save (link blob + persist form data)
     alt DB Save Success
