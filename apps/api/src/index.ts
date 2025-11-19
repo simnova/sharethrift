@@ -63,8 +63,7 @@ Cellix.initializeInfrastructureServices<ApiContextSpec, ApplicationServices>(
 
 		const sendGridService = serviceRegistry.getInfrastructureService<SendGrid>(SendGrid);
 
-		const { domainDataSource } = dataSourcesFactory.withSystemPassport();
-		RegisterEventHandlers(domainDataSource, sendGridService);
+		RegisterEventHandlers(dataSourcesFactory, sendGridService);
 
 		return {
 			dataSourcesFactory,

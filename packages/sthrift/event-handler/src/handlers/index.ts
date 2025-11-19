@@ -1,12 +1,12 @@
-import type { DomainDataSource } from "@sthrift/domain";
+import type { DataSourcesFactory } from '@sthrift/persistence';
 import type { SendGrid } from '@sthrift/service-sendgrid';
 import { RegisterDomainEventHandlers } from "./domain/index.ts";
 import { RegisterIntegrationEventHandlers } from "./integration/index.ts";
 
 export const RegisterEventHandlers = (
-    domainDataSource: DomainDataSource,
+    dataSourcesFactory: DataSourcesFactory,
     sendGridService: SendGrid
 ) => {
-    RegisterDomainEventHandlers(domainDataSource);
-    RegisterIntegrationEventHandlers(domainDataSource, sendGridService);
+    RegisterDomainEventHandlers(dataSourcesFactory);
+    RegisterIntegrationEventHandlers(dataSourcesFactory, sendGridService);
 }

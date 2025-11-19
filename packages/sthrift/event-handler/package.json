@@ -20,7 +20,10 @@
         "clean": "rimraf dist"
     },
     "dependencies": {
-        "@sthrift/domain": "workspace:*"
+        "@sthrift/domain": "workspace:*",
+        "@sthrift/persistence": "workspace:*",
+        "@sthrift/service-sendgrid": "workspace:*",
+        "@cellix/event-bus-seedwork-node": "workspace:*"
     },
     "devDependencies": {
         "@cellix/typescript-config": "workspace:*",
