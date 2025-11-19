@@ -15,20 +15,20 @@ const COMMON_USERS = {
 } as const;
 
 const COMMON_DATES = {
-  Apr2023Start: new Date('2023-04-01T08:00:00Z'),
-  Apr2023End: new Date('2023-04-30T20:00:00Z'),
-  May2023Start: new Date('2023-05-01T08:00:00Z'),
-  May2023End: new Date('2023-05-31T20:00:00Z'),
-  Aug2024Start: new Date('2024-08-11T08:00:00Z'),
-  Oct2024Start: new Date('2024-10-01T08:00:00Z'),
-  Nov2024Start: new Date('2024-11-01T08:00:00Z'),
-  Dec2024End: new Date('2024-12-23T20:00:00Z'),
-  Mar2025End: new Date('2025-03-31T20:00:00Z'),
-  Jun2025Mid: new Date('2025-06-30T20:00:00Z'),
-  Aug2025Start: new Date('2025-08-01T08:00:00Z'),
-  Aug2025Mid: new Date('2025-08-15T08:00:00Z'),
-  Sep2025Mid: new Date('2025-09-15T20:00:00Z'),
-  Sep2025End: new Date('2025-09-30T20:00:00Z'),
+	Apr2023Start: new Date('2023-04-01T08:00:00Z'),
+	Apr2023End: new Date('2023-04-30T20:00:00Z'),
+	May2023Start: new Date('2023-05-01T08:00:00Z'),
+	May2023End: new Date('2023-05-31T20:00:00Z'),
+	Aug2024Start: new Date('2024-08-11T08:00:00Z'),
+	Oct2024Start: new Date('2024-10-01T08:00:00Z'),
+	Nov2024Start: new Date('2024-11-01T08:00:00Z'),
+	Dec2024End: new Date('2024-12-23T20:00:00Z'),
+	Mar2025End: new Date('2025-03-31T20:00:00Z'),
+	Jun2025Mid: new Date('2025-06-30T20:00:00Z'),
+	Aug2025Start: new Date('2025-08-01T08:00:00Z'),
+	Aug2025Mid: new Date('2025-08-15T08:00:00Z'),
+	Sep2025Mid: new Date('2025-09-15T20:00:00Z'),
+	Sep2025End: new Date('2025-09-30T20:00:00Z'),
 } as const;
 
 const COMMON_METADATA = {
@@ -54,10 +54,11 @@ type ListingBase = {
 	images: string[];
 };
 
-const createListing = (props: ListingBase): Models.Listing.ItemListing => ({
-	...COMMON_METADATA,
-	...props,
-}) as unknown as Models.Listing.ItemListing;
+const createListing = (props: ListingBase): Models.Listing.ItemListing =>
+	({
+		...COMMON_METADATA,
+		...props,
+	}) as unknown as Models.Listing.ItemListing;
 
 export const itemListings = [
 	createListing({
@@ -92,7 +93,8 @@ export const itemListings = [
 		_id: '707f1f77bcf86cd799439033',
 		sharer: COMMON_USERS.alice,
 		title: 'City Bike',
-		description: 'Perfect city bike for commuting and leisure rides around the neighborhood.',
+		description:
+			'Perfect city bike for commuting and leisure rides around the neighborhood.',
 		category: 'Vehicles',
 		location: COMMON_LOCATIONS.philadelphia,
 		sharingPeriodStart: COMMON_DATES.Aug2024Start,
@@ -106,7 +108,8 @@ export const itemListings = [
 		_id: '707f1f77bcf86cd799439034',
 		sharer: COMMON_USERS.diana,
 		title: 'Cordless Drill',
-		description: 'Professional grade cordless drill with multiple attachments. Perfect for home improvement projects.',
+		description:
+			'Professional grade cordless drill with multiple attachments. Perfect for home improvement projects.',
 		category: 'Tools & Equipment',
 		location: COMMON_LOCATIONS.philadelphia,
 		sharingPeriodStart: COMMON_DATES.Aug2024Start,
@@ -120,7 +123,8 @@ export const itemListings = [
 		_id: '707f1f77bcf86cd799439035',
 		sharer: COMMON_USERS.diana,
 		title: 'Hand Mixer',
-		description: 'Electric hand mixer with multiple speed settings. Great for baking and cooking.',
+		description:
+			'Electric hand mixer with multiple speed settings. Great for baking and cooking.',
 		category: 'Home & Garden',
 		location: COMMON_LOCATIONS.philadelphia,
 		sharingPeriodStart: COMMON_DATES.Aug2024Start,
@@ -148,7 +152,8 @@ export const itemListings = [
 		_id: '707f1f77bcf86cd799439037',
 		sharer: COMMON_USERS.bob,
 		title: 'Camping Tent - 4 Person',
-		description: 'Spacious 4-person camping tent with waterproof design. Perfect for weekend adventures and family camping trips.',
+		description:
+			'Spacious 4-person camping tent with waterproof design. Perfect for weekend adventures and family camping trips.',
 		category: 'Outdoor & Recreation',
 		location: COMMON_LOCATIONS.philadelphia,
 		sharingPeriodStart: COMMON_DATES.Nov2024Start,
@@ -162,7 +167,8 @@ export const itemListings = [
 		_id: '707f1f77bcf86cd799439038',
 		sharer: COMMON_USERS.charlie,
 		title: 'Professional Camera Kit',
-		description: 'Canon DSLR camera with multiple lenses and accessories. Great for photography enthusiasts and events.',
+		description:
+			'Canon DSLR camera with multiple lenses and accessories. Great for photography enthusiasts and events.',
 		category: 'Electronics',
 		location: COMMON_LOCATIONS.philadelphia,
 		sharingPeriodStart: COMMON_DATES.Nov2024Start,
@@ -176,7 +182,8 @@ export const itemListings = [
 		_id: '707f1f77bcf86cd799439039',
 		sharer: COMMON_USERS.alice,
 		title: 'Canon EOS R5 Camera',
-		description: 'Professional mirrorless camera with 45MP full-frame sensor. Perfect for photography and videography.',
+		description:
+			'Professional mirrorless camera with 45MP full-frame sensor. Perfect for photography and videography.',
 		category: 'Electronics',
 		location: COMMON_LOCATIONS.springfield,
 		sharingPeriodStart: COMMON_DATES.Aug2025Start,
@@ -190,7 +197,8 @@ export const itemListings = [
 		_id: '707f1f77bcf86cd799439040',
 		sharer: COMMON_USERS.bob,
 		title: 'Shure SM7B Microphone',
-		description: 'Professional studio microphone, perfect for podcasting, streaming, and vocal recording.',
+		description:
+			'Professional studio microphone, perfect for podcasting, streaming, and vocal recording.',
 		category: 'Electronics',
 		location: COMMON_LOCATIONS.springfield,
 		sharingPeriodStart: COMMON_DATES.Aug2025Mid,
@@ -198,6 +206,8 @@ export const itemListings = [
 		state: 'Published',
 		createdAt: new Date('2025-08-01T10:00:00Z'),
 		updatedAt: new Date('2025-08-01T10:00:00Z'),
-		images: ['https://traceaudio.com/cdn/shop/products/NewSM7BwithAnserModcopy_1200x1200.jpg?v=1662083374'],
+		images: [
+			'https://traceaudio.com/cdn/shop/products/NewSM7BwithAnserModcopy_1200x1200.jpg?v=1662083374',
+		],
 	}),
 ];

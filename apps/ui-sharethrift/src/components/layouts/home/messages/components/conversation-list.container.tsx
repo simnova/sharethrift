@@ -1,7 +1,7 @@
 import { ConversationList } from './conversation-list.tsx';
 import { useQuery } from '@apollo/client/react';
 import {
-    HomeConversationListContainerCurrentPersonalUserAndCreateIfNotExistsDocument,
+    HomeConversationListContainerCurrentUserDocument,
 	HomeConversationListContainerConversationsByUserDocument,
 	type Conversation,
 } from '../../../../../generated.tsx';
@@ -18,11 +18,11 @@ export const ConversationListContainer: React.FC<
 	ConversationListContainerProps
 > = (props) => {
 	const {
-		data: currentPersonalUserData,
-		loading: currentPersonalUserLoading,
-		error: currentPersonalUserError,
+		data: currentUserData,
+		loading: currentUserLoading,
+		error: currentUserError,
 	} = useQuery(
-		HomeConversationListContainerCurrentPersonalUserAndCreateIfNotExistsDocument,
+		HomeConversationListContainerCurrentUserDocument,
 	);
 
 	const {
@@ -32,9 +32,9 @@ export const ConversationListContainer: React.FC<
 	} = useQuery(HomeConversationListContainerConversationsByUserDocument, {
 		variables: {
 			userId:
-				currentPersonalUserData?.currentPersonalUserAndCreateIfNotExists.id,
+				currentUserData?.currentUser.id,
 		},
-        skip: !currentPersonalUserData?.currentPersonalUserAndCreateIfNotExists.id,
+        skip: !currentUserData?.currentUser.id,
 	});
 
 	useEffect(() => {
@@ -55,20 +55,20 @@ export const ConversationListContainer: React.FC<
 
 	return (
 		<ComponentQueryLoader
-			loading={loadingConversations || currentPersonalUserLoading}
+			loading={loadingConversations || currentUserLoading}
 			hasData={
 				currentUserConversationsData?.conversationsByUser &&
-				currentPersonalUserData?.currentPersonalUserAndCreateIfNotExists
+				currentUserData?.currentUser
 			}
-			error={conversationsError || currentPersonalUserError}
+			error={conversationsError || currentUserError}
 			errorComponent={
 				<Result
 					status="error"
 					title={
 						conversationsError
 							? conversationsError.message
-							: currentPersonalUserError
-								? currentPersonalUserError.message
+							: currentUserError
+								? currentUserError.message
 								: 'Unknown error'
 					}
 				/>

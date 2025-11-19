@@ -1,6 +1,6 @@
 import { useQuery } from '@apollo/client/react';
 import { SharerInformation } from './sharer-information.tsx';
-import { ViewListingSharerInformationContainerPersonalUserByIdDocument } from '../../../../../../generated.tsx';
+import { SharerInformationContainerDocument } from '../../../../../../generated.tsx';
 
 interface SharerInformationContainerProps {
 	sharerId: string;
@@ -16,7 +16,7 @@ export const SharerInformationContainer: React.FC<
 	SharerInformationContainerProps
 > = ({ sharerId, listingId, isOwner, sharedTimeAgo, className, currentUserId }) => {
 	const { data, loading, error } = useQuery(
-		ViewListingSharerInformationContainerPersonalUserByIdDocument,
+		SharerInformationContainerDocument,
 		{
 			variables: { sharerId },
 		},
@@ -47,11 +47,15 @@ export const SharerInformationContainer: React.FC<
 
 	if (loading) return <div>Loading...</div>;
 	if (error) return <div>Error loading sharer information</div>;
-	if (!data?.personalUserById) return null;
+	if (!data?.userById) return null;
+
+	// Both PersonalUser and AdminUser now have the same profile structure
+	const firstName = data.userById.account?.profile?.firstName ?? '';
+	const lastName = data.userById.account?.profile?.lastName ?? '';
 
 	const sharer = {
-		id: data.personalUserById.id,
-		name: `${data.personalUserById.account?.profile?.firstName ?? ''} ${data.personalUserById.account?.profile?.lastName ?? ''}`.trim(),
+		id: data.userById.id,
+		name: `${firstName} ${lastName}`.trim(),
 	};
 
 	return (

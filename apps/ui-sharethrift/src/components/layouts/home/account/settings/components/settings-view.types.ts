@@ -42,35 +42,69 @@ export interface SettingsEditProps {
 	isLoading?: boolean;
 }
 
-export interface CurrentUserSettingsQueryData {
-	currentPersonalUserAndCreateIfNotExists: {
-		id: string;
-		userType: string;
-		account: {
-			accountType: string;
-			email: string;
-			username: string;
-			profile: {
-				firstName: string;
-				lastName: string;
-				aboutMe?: string;
-				location: {
-					address1?: string;
-					address2?: string;
-					city?: string;
-					state?: string;
-					country?: string;
-					zipCode?: string;
-				};
-				billing?: {
-					subscriptionId?: string;
-					cybersourceCustomerId?: string;
-				};
+// Union type for current user
+type PersonalUserSettings = {
+	__typename: 'PersonalUser';
+	id: string;
+	userType: string;
+	account: {
+		accountType: string;
+		email: string;
+		username: string;
+		profile: {
+			firstName: string;
+			lastName: string;
+			aboutMe?: string;
+			location: {
+				address1?: string;
+				address2?: string;
+				city?: string;
+				state?: string;
+				country?: string;
+				zipCode?: string;
+			};
+			billing?: {
+				subscriptionId?: string;
+				cybersourceCustomerId?: string;
 			};
 		};
-		createdAt: string;
-		updatedAt: string;
 	};
+	createdAt: string;
+	updatedAt: string;
+};
+
+type AdminUserSettings = {
+	__typename: 'AdminUser';
+	id: string;
+	userType: string;
+	account: {
+		accountType: string;
+		email: string;
+		username: string;
+		profile: {
+			firstName: string;
+			lastName: string;
+			aboutMe?: string;
+			location: {
+				address1?: string;
+				address2?: string;
+				city?: string;
+				state?: string;
+				country?: string;
+				zipCode?: string;
+			};
+		};
+	};
+	role: {
+		id: string;
+		roleName: string;
+	};
+	createdAt: string;
+	updatedAt: string;
+};
+
+export interface CurrentUserSettingsQueryData {
+	currentUser: PersonalUserSettings | AdminUserSettings;
 }
 
 export interface PlanOption {

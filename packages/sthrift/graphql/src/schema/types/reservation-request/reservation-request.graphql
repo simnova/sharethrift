@@ -6,7 +6,7 @@ type ReservationRequest {
 	createdAt: DateTime
 	updatedAt: DateTime
 	listing: ItemListing
-	reserver: PersonalUser
+	reserver: User
 	closeRequestedBySharer: Boolean
 	closeRequestedByReserver: Boolean
 }
