@@ -18,7 +18,7 @@ export const RequireAuth: React.FC<RequireAuthProps> = (props) => {
 
       auth.signinRedirect();
     }
-  }, [auth.isAuthenticated, auth.activeNavigator, auth.isLoading, auth.signinRedirect, auth.error, props.forceLogin]);
+  }, [auth.isAuthenticated, auth.activeNavigator, auth.isLoading, auth.signinRedirect, auth.error, props.forceLogin, auth]);
 
   // automatically refresh token
   useEffect(() => {
