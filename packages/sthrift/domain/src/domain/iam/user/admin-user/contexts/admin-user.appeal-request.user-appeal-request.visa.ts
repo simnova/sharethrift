@@ -8,19 +8,19 @@ export class AdminUserAppealRequestUserAppealRequestVisa<
 > implements AppealRequestVisa
 {
 	private readonly root: root;
-	private readonly user: AdminUserEntityReference;
+	private readonly admin: AdminUserEntityReference;
 	constructor(root: root, user: AdminUserEntityReference) {
 		this.root = root;
-		this.user = user;
+		this.admin = user;
 	}
 
 	determineIf(
 		func: (permissions: Readonly<AppealRequestDomainPermissions>) => boolean,
 	): boolean {
 		const updatedPermissions: AppealRequestDomainPermissions = {
-			canCreateAppealRequest: this.user.isBlocked === false,
-			canUpdateAppealRequestState: this.user.id === this.root.user.id,
-			canViewAppealRequest: this.user.id === this.root.user.id,
+			canCreateAppealRequest: this.admin.isBlocked === false,
+			canUpdateAppealRequestState: this.admin.id === this.root.user.id,
+			canViewAppealRequest: this.admin.id === this.root.user.id,
 			canViewAllAppealRequests: false,
 		};
 

@@ -3,15 +3,15 @@ import type { UserDomainPermissions } from '../../../contexts/user/user.domain-p
 import type { AdminUserEntityReference } from '../../../contexts/user/admin-user/admin-user.entity.ts';
 
 export class AdminUserUserVisa implements UserVisa {
-	private readonly _user: AdminUserEntityReference;
-	private readonly _executingUser: AdminUserEntityReference;
+	private readonly root: AdminUserEntityReference;
+	private readonly admin: AdminUserEntityReference;
 
 	constructor(
 		user: AdminUserEntityReference,
 		executingUser: AdminUserEntityReference,
 	) {
-		this._user = user;
-		this._executingUser = executingUser;
+		this.root = user;
+		this.admin = executingUser;
 	}
 
 	determineIf(
@@ -22,8 +22,8 @@ export class AdminUserUserVisa implements UserVisa {
 	}
 
 	private getPermissions(): UserDomainPermissions {
-		const isSelf = this._user.id === this._executingUser.id;
-		const rolePermissions = this._executingUser.role?.permissions;
+		const isSelf = this.root.id === this.admin.id;
+		const rolePermissions = this.admin.role?.permissions;
 
 		return {
 			canBlockUsers: rolePermissions?.userPermissions?.canBlockUsers ?? false,
