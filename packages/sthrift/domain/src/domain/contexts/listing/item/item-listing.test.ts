@@ -4,10 +4,8 @@ import { describeFeature, loadFeature } from '@amiceli/vitest-cucumber';
 import { DomainSeedwork } from '@cellix/domain-seedwork';
 import { expect, vi } from 'vitest';
 import type { Passport } from '../../passport.ts';
-import { PersonalUserRole } from '../../role/personal-user-role/personal-user-role.ts';
-import { PersonalUserRolePermissions } from '../../role/personal-user-role/personal-user-role-permissions.ts';
-import type { PersonalUserProps } from '../../user/personal-user/personal-user.entity.ts';
 import { PersonalUser } from '../../user/personal-user/personal-user.ts';
+import type { PersonalUserProps } from '../../user/personal-user/personal-user.entity.ts';
 import type { ItemListingProps } from './item-listing.entity.ts';
 import { ItemListing } from './item-listing.ts';
 
@@ -58,43 +56,9 @@ function makePassport(
 function makeBaseProps(
 	overrides: Partial<ItemListingProps> = {},
 ): ItemListingProps {
-	const permissions = new PersonalUserRolePermissions({
-		listingPermissions: {
-			canCreateItemListing: true,
-			canUpdateItemListing: true,
-			canDeleteItemListing: true,
-			canViewItemListing: true,
-			canPublishItemListing: true,
-			canUnpublishItemListing: true,
-		},
-		conversationPermissions: {
-			canCreateConversation: true,
-			canManageConversation: true,
-			canViewConversation: true,
-		},
-		reservationRequestPermissions: {
-			canCreateReservationRequest: true,
-			canManageReservationRequest: true,
-			canViewReservationRequest: true,
-		},
-	});
-
-	const roleProps = {
-		id: 'role-1',
-		name: 'default',
-		roleName: 'default',
-		isDefault: true,
-		roleType: 'personal',
-		permissions,
-		createdAt: new Date('2020-01-01T00:00:00Z'),
-		updatedAt: new Date('2020-01-02T00:00:00Z'),
-		schemaVersion: '1.0.0',
-	};
-
-	const role = new PersonalUserRole(roleProps, makePassport());
 	const user = new PersonalUser<PersonalUserProps>(
 		{
-			userType: 'end-user',
+			userType: 'personal-users',
 			id: 'user-1',
 			isBlocked: false,
 			schemaVersion: '1.0.0',
@@ -126,8 +90,6 @@ function makeBaseProps(
 			},
 			createdAt: new Date('2020-01-01T00:00:00Z'),
 			updatedAt: new Date('2020-01-02T00:00:00Z'),
-			role,
-			loadRole: async () => role,
 		},
 		makePassport(),
 	);
@@ -563,10 +525,55 @@ test.for(feature, ({ Scenario, Background, BeforeEachScenario }) => {
 					initialUpdatedAt.getTime(),
 				);
 			});
+	},
+);
+
+Scenario('Requesting delete with permission', ({ Given, When, Then }) => {
+	Given(
+		'an ItemListing aggregate with permission to delete item listing',
+		() => {
+			passport = makePassport(true, true, true, true);
+			listing = new ItemListing(makeBaseProps(), passport);
 		},
 	);
+	When('I call requestDelete()', () => {
+		listing.requestDelete();
+	});
+	Then("the listing's isDeleted flag should be true", () => {
+		expect(listing.isDeleted).toBe(true);
+	});
+});
 
-	Scenario('Requesting delete with permission', ({ Given, When, Then }) => {
+Scenario(
+	'Requesting delete without permission',
+	({ Given, When, Then, And }) => {
+		let requestDeleteWithoutPermission: () => void;
+		Given(
+			'an ItemListing aggregate without permission to delete item listing',
+			() => {
+				passport = makePassport(true, true, true, false);
+				listing = new ItemListing(makeBaseProps(), passport);
+			},
+		);
+		When('I try to call requestDelete()', () => {
+			requestDeleteWithoutPermission = () => {
+				listing.requestDelete();
+			};
+		});
+		Then('a PermissionError should be thrown', () => {
+			expect(requestDeleteWithoutPermission).toThrow(
+				DomainSeedwork.PermissionError,
+			);
+		});
+		And("the listing's isDeleted flag should remain false", () => {
+			expect(listing.isDeleted).toBe(false);
+		});
+	},
+);
+
+Scenario(
+	'Requesting delete when already deleted',
+	({ Given, When, Then, And }) => {
 		Given(
 			'an ItemListing aggregate with permission to delete item listing',
 			() => {
@@ -574,64 +581,19 @@ test.for(feature, ({ Scenario, Background, BeforeEachScenario }) => {
 				listing = new ItemListing(makeBaseProps(), passport);
 			},
 		);
-		When('I call requestDelete()', () => {
+		And('the listing is already marked as deleted', () => {
 			listing.requestDelete();
 		});
-		Then("the listing's isDeleted flag should be true", () => {
+		When('I call requestDelete() again', () => {
+			listing.requestDelete();
+		});
+		Then("the listing's isDeleted flag should remain true", () => {
 			expect(listing.isDeleted).toBe(true);
 		});
-	});
-
-	Scenario(
-		'Requesting delete without permission',
-		({ Given, When, Then, And }) => {
-			let requestDeleteWithoutPermission: () => void;
-			Given(
-				'an ItemListing aggregate without permission to delete item listing',
-				() => {
-					passport = makePassport(true, true, true, false);
-					listing = new ItemListing(makeBaseProps(), passport);
-				},
-			);
-			When('I try to call requestDelete()', () => {
-				requestDeleteWithoutPermission = () => {
-					listing.requestDelete();
-				};
-			});
-			Then('a PermissionError should be thrown', () => {
-				expect(requestDeleteWithoutPermission).toThrow(
-					DomainSeedwork.PermissionError,
-				);
-			});
-			And("the listing's isDeleted flag should remain false", () => {
-				expect(listing.isDeleted).toBe(false);
-			});
-		},
-	);
-
-	Scenario(
-		'Requesting delete when already deleted',
-		({ Given, When, Then, And }) => {
-			Given(
-				'an ItemListing aggregate with permission to delete item listing',
-				() => {
-					passport = makePassport(true, true, true, true);
-					listing = new ItemListing(makeBaseProps(), passport);
-				},
-			);
-			And('the listing is already marked as deleted', () => {
-				listing.requestDelete();
-			});
-			When('I call requestDelete() again', () => {
-				listing.requestDelete();
-			});
-			Then("the listing's isDeleted flag should remain true", () => {
-				expect(listing.isDeleted).toBe(true);
-			});
-			And('no error should be thrown', () => {
-				// Test passes if no error was thrown
-				expect(listing.isDeleted).toBe(true);
-			});
-		},
-	);
+		And('no error should be thrown', () => {
+			// Test passes if no error was thrown
+			expect(listing.isDeleted).toBe(true);
+		});
+	},
+);
 });

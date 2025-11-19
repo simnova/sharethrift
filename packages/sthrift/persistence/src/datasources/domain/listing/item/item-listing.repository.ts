@@ -25,7 +25,7 @@ export class ItemListingRepository<
 
 	// biome-ignore lint:noRequireAwait
 	async getNewInstance(
-		sharer: Domain.Contexts.User.PersonalUser.PersonalUserEntityReference,
+		sharer: Domain.Contexts.User.UserEntityReference,
 		fields: {
 			title: string;
 			description: string;

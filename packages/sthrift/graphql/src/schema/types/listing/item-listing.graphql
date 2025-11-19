@@ -1,72 +1,72 @@
 type ItemListing implements MongoBase {
-  sharer: PersonalUser
-  title: String!
-  description: String!
-  category: String!
-  location: String!
-  sharingPeriodStart: DateTime!
-  sharingPeriodEnd: DateTime!
-  state: String
-  sharingHistory: [String!]
-  reports: Int
-  images: [String!] # Array of image URLs
-  listingType: String!
-  id: ObjectID!
-  schemaVersion: String
-  createdAt: DateTime
-  updatedAt: DateTime
-  version: Int
+	sharer: User
+	title: String!
+	description: String!
+	category: String!
+	location: String!
+	sharingPeriodStart: DateTime!
+	sharingPeriodEnd: DateTime!
+	state: String
+	sharingHistory: [String!]
+	reports: Int
+	images: [String!] # Array of image URLs
+	listingType: String!
+	id: ObjectID!
+	schemaVersion: String
+	createdAt: DateTime
+	updatedAt: DateTime
+	version: Int
 }
 
 type ListingAllPage {
-  items: [ListingAll!]!
-  total: Int!
-  page: Int!
-  pageSize: Int!
+	items: [ListingAll!]!
+	total: Int!
+	page: Int!
+	pageSize: Int!
 }
 
 type ListingRequestPage {
-  items: [ListingRequest!]!
-  total: Int!
-  page: Int!
-  pageSize: Int!
+	items: [ListingRequest!]!
+	total: Int!
+	page: Int!
+	pageSize: Int!
 }
 
 # Listing types for dashboard
 type ListingAll {
-  id: ObjectID!
-  title: String!
-  images: [String!]
-  createdAt: DateTime
-  sharingPeriodStart: DateTime
-  sharingPeriodEnd: DateTime
-  state: String
+	id: ObjectID!
+	title: String!
+	images: [String!]
+	createdAt: DateTime
+	sharingPeriodStart: DateTime
+	sharingPeriodEnd: DateTime
+	state: String
 }
 
 type ListingRequest {
-  id: ObjectID!
-  title: String!
-  image: String
-  requestedBy: String!
-  requestedOn: String!
-  reservationPeriod: String!
-  status: String!
+	id: ObjectID!
+	title: String!
+	image: String
+	requestedBy: String!
+	requestedOn: String!
+	reservationPeriod: String!
+	status: String!
 }
 
 input SorterInput {
-  field: String!
-  order: String!
+	field: String!
+	order: String!
 }
 
 input CreateItemListingInput {
-  title: String!
-  description: String!
-  category: String!
-  location: String!
-  sharingPeriodStart: DateTime!
-  sharingPeriodEnd: DateTime!
-  images: [String!]
-  isDraft: Boolean
+	title: String!
+	description: String!
+	category: String!
+	location: String!
+	sharingPeriodStart: DateTime!
+	sharingPeriodEnd: DateTime!
+	images: [String!]
+	isDraft: Boolean
 }
 
 type ItemListingMutationResult implements MutationResult {
@@ -75,15 +75,27 @@ type ItemListingMutationResult implements MutationResult {
 }
 
 extend type Mutation {
-  createItemListing(input: CreateItemListingInput!): ItemListing!
-  cancelItemListing(id: ObjectID!): ItemListingMutationResult!
-  deleteItemListing(id: ObjectID!): ItemListingMutationResult!
-  unblockListing(id: ObjectID!): Boolean!
+	createItemListing(input: CreateItemListingInput!): ItemListing!
+	cancelItemListing(id: ObjectID!): ItemListingMutationResult!
+	deleteItemListing(id: ObjectID!): ItemListingMutationResult!
+	unblockListing(id: ObjectID!): Boolean!
 }
 
 extend type Query {
-  itemListings: [ItemListing!]!
-  itemListing(id: ObjectID!): ItemListing
-  myListingsAll(page: Int!, pageSize: Int!, searchText: String, statusFilters: [String!], sorter: SorterInput): ListingAllPage!
-  adminListings(page: Int!, pageSize: Int!, searchText: String, statusFilters: [String!], sorter: SorterInput): ListingAllPage!
+	itemListings: [ItemListing!]!
+	itemListing(id: ObjectID!): ItemListing
+	myListingsAll(
+		page: Int!
+		pageSize: Int!
+		searchText: String
+		statusFilters: [String!]
+		sorter: SorterInput
+	): ListingAllPage!
+	adminListings(
+		page: Int!
+		pageSize: Int!
+		searchText: String
+		statusFilters: [String!]
+		sorter: SorterInput
+	): ListingAllPage!
 }

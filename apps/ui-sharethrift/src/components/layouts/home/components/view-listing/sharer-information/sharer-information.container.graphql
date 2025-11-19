@@ -1,32 +1,71 @@
-query ViewListingSharerInformationContainerPersonalUserById($sharerId: ObjectID!) {
-  personalUserById(id: $sharerId) {
-    id
-    userType
-    isBlocked
-    account {
-      username
-      profile {
-        firstName
-        lastName
-        location {
-          city
-          state
-          country
-        }
-      }
-    }
-  }
+query SharerInformationContainer($sharerId: ObjectID!) {
+	userById(id: $sharerId) {
+		...SharerPersonalUserFields
+		...SharerAdminUserFields
+	}
+}
+
+fragment SharerPersonalUserFields on PersonalUser {
+	id
+	userType
+	isBlocked
+	account {
+		...SharerPersonalUserAccountFields
+	}
+}
+
+fragment SharerPersonalUserAccountFields on PersonalUserAccount {
+	username
+	profile {
+		...SharerPersonalUserProfileFields
+	}
+}
+
+fragment SharerPersonalUserProfileFields on PersonalUserAccountProfile {
+	firstName
+	lastName
+	location {
+		city
+		state
+		country
+	}
+}
+
+fragment SharerAdminUserFields on AdminUser {
+	id
+	userType
+	isBlocked
+	account {
+		...SharerAdminUserAccountFields
+	}
+}
+
+fragment SharerAdminUserAccountFields on AdminUserAccount {
+	username
+	profile {
+		...SharerAdminUserProfileFields
+	}
+}
+
+fragment SharerAdminUserProfileFields on AdminUserAccountProfile {
+	firstName
+	lastName
+	location {
+		city
+		state
+		country
+	}
 }
 
 mutation CreateConversation($input: ConversationCreateInput!) {
-  createConversation(input: $input) {
-    status {
-      success
-      errorMessage
-    }
-    conversation {
-      id
-      messagingConversationId
-    }
-  }
+	createConversation(input: $input) {
+		status {
+			success
+			errorMessage
+		}
+		conversation {
+			id
+			messagingConversationId
+		}
+	}
 }

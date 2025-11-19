@@ -1,13 +1,13 @@
 import { randomUUID } from 'node:crypto';
 import { DomainSeedwork } from '@cellix/domain-seedwork';
 import type { Passport } from '../../passport.ts';
-import type { PersonalUserEntityReference } from '../../user/personal-user/personal-user.entity.ts';
 import type { ListingVisa } from '../listing.visa.ts';
+import * as ValueObjects from './item-listing.value-objects.ts';
+import type { UserEntityReference } from '../../user/index.ts';
 import type {
 	ItemListingEntityReference,
 	ItemListingProps,
 } from './item-listing.entity.ts';
-import * as ValueObjects from './item-listing.value-objects.ts';
 export class ItemListing<props extends ItemListingProps>
 	extends DomainSeedwork.AggregateRoot<props, Passport>
 	implements ItemListingEntityReference
@@ -26,7 +26,7 @@ export class ItemListing<props extends ItemListingProps>
 
 	//#region Methods
 	public static getNewInstance<props extends ItemListingProps>(
-		sharer: PersonalUserEntityReference,
+		sharer: UserEntityReference,
 		fields: {
 			title: string;
 			description: string;
@@ -113,11 +113,11 @@ export class ItemListing<props extends ItemListingProps>
 	//#endregion Methods
 
 	//#region Properties
-	get sharer(): PersonalUserEntityReference {
+	get sharer(): UserEntityReference {
 		return this.props.sharer;
 	}
 
-	set sharer(value: PersonalUserEntityReference) {
+	set sharer(value: UserEntityReference) {
 		this.props.sharer = value;
 	}
 
@@ -357,18 +357,19 @@ export class ItemListing<props extends ItemListingProps>
 		this.props.state = ValueObjects.ListingStateEnum.Blocked;
 	}
 
-	/**
-	 * Request deletion for this aggregate. The repository will perform the hard delete
-	 * when it detects `isDeleted=true` on save.
-	 */
-	public requestDelete(): void {
-		if (
-			!this.visa.determineIf((permissions) => permissions.canDeleteItemListing)
-		) {
-			throw new DomainSeedwork.PermissionError(
-				'You do not have permission to delete this listing',
-			);
-		}
+/**
+ * Request deletion of this item listing (marks as deleted).
+ */
+public requestDelete(): void {
+	if (
+		!this.visa.determineIf(
+			(permissions) => permissions.canDeleteItemListing,
+		)
+	) {
+		throw new DomainSeedwork.PermissionError(
+			'You do not have permission to delete this listing',
+		);
+	}
 
 		if (!this.isDeleted) {
 			super.isDeleted = true;

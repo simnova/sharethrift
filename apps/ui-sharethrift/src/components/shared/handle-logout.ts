@@ -11,6 +11,8 @@ export const HandleLogout = (
 	auth.removeUser();
 	apolloClient.clearStore();
 	clearStorage();
+	globalThis.sessionStorage.removeItem('loginPortalType');
+	globalThis.sessionStorage.removeItem('redirectTo');
 	if (post_logout_redirect_uri) {
 		auth.signoutRedirect({
 			post_logout_redirect_uri: post_logout_redirect_uri,
@@ -20,4 +22,5 @@ export const HandleLogout = (
 	}
 
 	auth.signoutRedirect();
+	//globalThis.location.href = '/'; //would return to home page after logout
 };

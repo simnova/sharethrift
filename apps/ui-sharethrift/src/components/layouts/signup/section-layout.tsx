@@ -1,4 +1,4 @@
-import { Outlet } from 'react-router-dom';
+import { Outlet} from 'react-router-dom';
 import { Footer, Header } from '@sthrift/ui-components';
 import { useAuth } from 'react-oidc-context';
 import { HandleLogout } from '../../shared/handle-logout.ts';
@@ -11,19 +11,18 @@ interface SectionLayoutProps {}
 export const SectionLayout: React.FC<SectionLayoutProps> = (_props) => {
 	const auth = useAuth();
 	const apolloClient = useApolloClient();
-
 	const handleOnLogin = () => {
-		auth.signinRedirect();
+        auth.signinRedirect();
 	};
 
 	const handleOnSignUp = () => {
-		auth.signinRedirect({ extraQueryParams: { option: "signup" } })
+        auth.signinRedirect({ extraQueryParams: { option: "signup" } });
 	};
 
 	const handleCreateListing = useCreateListingNavigation();
 
 	const handleLogOut = () => {
-        HandleLogout(auth, apolloClient, window.location.origin);
+        HandleLogout(auth, apolloClient, globalThis.location.origin);
 	};
 
 	return (
