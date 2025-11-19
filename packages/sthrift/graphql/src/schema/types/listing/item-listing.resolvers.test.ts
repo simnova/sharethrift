@@ -102,8 +102,6 @@ function createMockUser(
         },
         createdAt: new Date(),
         updatedAt: new Date(),
-        role: {} as Domain.Contexts.Role.PersonalUserRole.PersonalUserRoleEntityReference,
-        loadRole: vi.fn(),
         ...overrides,
     } as PersonalUserEntity;
 }
@@ -329,18 +327,18 @@ test.for(feature, ({ Scenario }) => {
         And("it should transform each listing into ListingAll shape", () => {
             expect(result).toBeDefined();
             const resultData = result as { items: ItemListingEntity[] };
-            resultData.items.forEach((listing) => {
+            for (const listing of resultData.items) {
                 expect(listing).toHaveProperty('id');
                 expect(listing).toHaveProperty('title');
-            });
+            }
         });
         And('it should map state values like "Published" to "Active" and "Drafted" to "Draft"', () => {
             expect(result).toBeDefined();
             const resultData = result as { items: { status: string }[] };
-            resultData.items.forEach((listing) => {
-                const status = listing.status;
+            for (const listing of resultData.items) {
+                const { status } = listing;
                 expect(['Active', 'Draft', 'Unknown']).toContain(status);
-            });
+            }
         });
         And('it should return items, total, page, and pageSize in the response', () => {
             expect(result).toHaveProperty('items');
