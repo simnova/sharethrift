@@ -59,9 +59,9 @@ export class ServiceTransactionalEmailMock
 		);
 
 		// Save to file
-		const sanitizedEmail = recipient.email.replace(/[@/\\:*?"<>|]/g, '_');
+		const sanitizedEmail = recipient.email.replaceAll(/[@/\\:*?"<>|]/g, '_');
 		const timestamp = Date.now();
-		const fileName = `${sanitizedEmail}_${templateName.replace('.json', '')}_${timestamp}.html`;
+		const fileName = `${sanitizedEmail}_${templateName.replaceAll('.json', '')}_${timestamp}.html`;
 		const filePath = path.join(this.outputDir, fileName);
 
 		fs.writeFileSync(filePath, fullHtml, 'utf-8');
@@ -112,7 +112,7 @@ export class ServiceTransactionalEmailMock
 		let result = template;
 		for (const [key, value] of Object.entries(data)) {
 			const placeholder = new RegExp(`\\{\\{${key}\\}\\}`, 'g');
-			result = result.replace(placeholder, String(value));
+			result = result.replaceAll(placeholder, String(value));
 		}
 		return result;
 	}
@@ -161,6 +161,6 @@ export class ServiceTransactionalEmailMock
 			'"': '&quot;',
 			"'": '&#039;',
 		};
-		return text.replace(/[&<>"']/g, (m) => map[m] || m);
+		return text.replaceAll(/[&<>"']/g, (m) => map[m] || m);
 	}
 }

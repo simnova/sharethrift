@@ -31,7 +31,7 @@ export default class SendGrid {
 
   private replaceMagicLink = (html: string, link: string): string => {
     const magicLinkPlaceholder = /\{\{magicLink\}\}/g;
-    return html.replace(magicLinkPlaceholder, link);
+    return html.replaceAll(magicLinkPlaceholder, link);
   };
 
   private async sendEmail(
@@ -44,7 +44,7 @@ export default class SendGrid {
       const outDir = path.join(process.cwd(), 'tmp-emails');
       if (!fs.existsSync(outDir)) fs.mkdirSync(outDir);
 
-      const sanitizedEmail = userEmail.replace(/[@/\\:*?"<>|]/g, '_')
+      const sanitizedEmail = userEmail.replaceAll(/[@/\\:*?"<>|]/g, '_')
       const outFile = path.join(outDir, `${sanitizedEmail}_${Date.now()}.html`);
       fs.writeFileSync(outFile, htmlContent, 'utf-8');
       console.log(`Email saved to ${outFile}`);
