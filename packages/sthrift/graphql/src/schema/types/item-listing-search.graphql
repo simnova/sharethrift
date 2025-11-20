@@ -186,3 +186,28 @@ extend type Query {
 	"""
 	searchItemListings(input: ItemListingSearchInput!): ItemListingSearchResult!
 }
+
+extend type Mutation {
+	"""
+	Bulk index all existing listings into the search index.
+	This is useful for initial setup or re-indexing after changes.
+	"""
+	bulkIndexItemListings: BulkIndexResult!
+}
+
+type BulkIndexResult {
+	"""
+	Number of listings successfully indexed
+	"""
+	successCount: Int!
+
+	"""
+	Total number of listings processed
+	"""
+	totalCount: Int!
+
+	"""
+	Success message
+	"""
+	message: String!
+}

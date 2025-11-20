@@ -22,6 +22,9 @@ export const Listing = (
 	}
 	return {
 		ItemListing: ItemListingApi(dataSources, searchService),
-		ItemListingSearch: new ItemListingSearchApplicationService(searchService),
+		ItemListingSearch: new ItemListingSearchApplicationService(
+			searchService,
+			dataSources,
+		),
 	};
 };

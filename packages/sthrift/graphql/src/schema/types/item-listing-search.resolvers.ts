@@ -25,49 +25,71 @@ function toDomainItemListingSearchInput(
 	input: QuerySearchItemListingsArgs['input'],
 ): DomainItemListingSearchInput {
 	const domainInput: DomainItemListingSearchInput = {};
-	
+
 	if (input.searchString != null && input.searchString !== undefined) {
 		domainInput.searchString = input.searchString;
 	}
-	
+
 	if (input.options != null && input.options !== undefined) {
 		domainInput.options = {};
-		
+
 		if (input.options.top != null && input.options.top !== undefined) {
 			domainInput.options.top = input.options.top;
 		}
-		
+
 		if (input.options.skip != null && input.options.skip !== undefined) {
 			domainInput.options.skip = input.options.skip;
 		}
-		
+
 		if (input.options.orderBy != null && input.options.orderBy !== undefined) {
 			domainInput.options.orderBy = [...input.options.orderBy];
 		}
-		
+
 		if (input.options.filter != null && input.options.filter !== undefined) {
 			domainInput.options.filter = {};
-			
-			if (input.options.filter.category != null && input.options.filter.category !== undefined) {
-				domainInput.options.filter.category = [...input.options.filter.category];
+
+			if (
+				input.options.filter.category != null &&
+				input.options.filter.category !== undefined
+			) {
+				domainInput.options.filter.category = [
+					...input.options.filter.category,
+				];
 			}
-			
-			if (input.options.filter.state != null && input.options.filter.state !== undefined) {
+
+			if (
+				input.options.filter.state != null &&
+				input.options.filter.state !== undefined
+			) {
 				domainInput.options.filter.state = [...input.options.filter.state];
 			}
-			
-			if (input.options.filter.sharerId != null && input.options.filter.sharerId !== undefined) {
-				domainInput.options.filter.sharerId = [...input.options.filter.sharerId];
+
+			if (
+				input.options.filter.sharerId != null &&
+				input.options.filter.sharerId !== undefined
+			) {
+				domainInput.options.filter.sharerId = [
+					...input.options.filter.sharerId,
+				];
 			}
-			
-			if (input.options.filter.location != null && input.options.filter.location !== undefined) {
+
+			if (
+				input.options.filter.location != null &&
+				input.options.filter.location !== undefined
+			) {
 				domainInput.options.filter.location = input.options.filter.location;
 			}
-			
-			if (input.options.filter.dateRange != null && input.options.filter.dateRange !== undefined) {
+
+			if (
+				input.options.filter.dateRange != null &&
+				input.options.filter.dateRange !== undefined
+			) {
 				domainInput.options.filter.dateRange = {};
-				
-				if (input.options.filter.dateRange.start != null && input.options.filter.dateRange.start !== undefined) {
+
+				if (
+					input.options.filter.dateRange.start != null &&
+					input.options.filter.dateRange.start !== undefined
+				) {
 					const { start } = input.options.filter.dateRange;
 					domainInput.options.filter.dateRange.start =
 						start instanceof Date
@@ -76,8 +98,11 @@ function toDomainItemListingSearchInput(
 								? start
 								: String(start);
 				}
-				
-				if (input.options.filter.dateRange.end != null && input.options.filter.dateRange.end !== undefined) {
+
+				if (
+					input.options.filter.dateRange.end != null &&
+					input.options.filter.dateRange.end !== undefined
+				) {
 					const { end } = input.options.filter.dateRange;
 					domainInput.options.filter.dateRange.end =
 						end instanceof Date
@@ -89,7 +114,7 @@ function toDomainItemListingSearchInput(
 			}
 		}
 	}
-	
+
 	return domainInput;
 }
 
@@ -102,57 +127,77 @@ function toGraphQLSearchFacets(
 	if (!domainFacets) {
 		return null;
 	}
-	
+
 	const graphQLFacets: {
 		__typename: 'SearchFacets';
-		category?: Array<{ __typename: 'SearchFacet'; value: string; count: number }>;
+		category?: Array<{
+			__typename: 'SearchFacet';
+			value: string;
+			count: number;
+		}>;
 		state?: Array<{ __typename: 'SearchFacet'; value: string; count: number }>;
-		sharerId?: Array<{ __typename: 'SearchFacet'; value: string; count: number }>;
-		createdAt?: Array<{ __typename: 'SearchFacet'; value: string; count: number }>;
+		sharerId?: Array<{
+			__typename: 'SearchFacet';
+			value: string;
+			count: number;
+		}>;
+		createdAt?: Array<{
+			__typename: 'SearchFacet';
+			value: string;
+			count: number;
+		}>;
 	} = {
 		__typename: 'SearchFacets',
 	};
-	
+
 	// biome-ignore lint/complexity/useLiteralKeys: bracket notation required for TS4111 (index signature access)
 	const categoryFacets = domainFacets['category'];
 	if (categoryFacets != null) {
-		graphQLFacets.category = categoryFacets.map((facet: { value: unknown; count: number }) => ({
-			__typename: 'SearchFacet' as const,
-			value: String(facet.value),
-			count: facet.count,
-		}));
+		graphQLFacets.category = categoryFacets.map(
+			(facet: { value: unknown; count: number }) => ({
+				__typename: 'SearchFacet' as const,
+				value: String(facet.value),
+				count: facet.count,
+			}),
+		);
 	}
-	
+
 	// biome-ignore lint/complexity/useLiteralKeys: bracket notation required for TS4111 (index signature access)
 	const stateFacets = domainFacets['state'];
 	if (stateFacets != null) {
-		graphQLFacets.state = stateFacets.map((facet: { value: unknown; count: number }) => ({
-			__typename: 'SearchFacet' as const,
-			value: String(facet.value),
-			count: facet.count,
-		}));
+		graphQLFacets.state = stateFacets.map(
+			(facet: { value: unknown; count: number }) => ({
+				__typename: 'SearchFacet' as const,
+				value: String(facet.value),
+				count: facet.count,
+			}),
+		);
 	}
-	
+
 	// biome-ignore lint/complexity/useLiteralKeys: bracket notation required for TS4111 (index signature access)
 	const sharerIdFacets = domainFacets['sharerId'];
 	if (sharerIdFacets != null) {
-		graphQLFacets.sharerId = sharerIdFacets.map((facet: { value: unknown; count: number }) => ({
-			__typename: 'SearchFacet' as const,
-			value: String(facet.value),
-			count: facet.count,
-		}));
+		graphQLFacets.sharerId = sharerIdFacets.map(
+			(facet: { value: unknown; count: number }) => ({
+				__typename: 'SearchFacet' as const,
+				value: String(facet.value),
+				count: facet.count,
+			}),
+		);
 	}
-	
+
 	// biome-ignore lint/complexity/useLiteralKeys: bracket notation required for TS4111 (index signature access)
 	const createdAtFacets = domainFacets['createdAt'];
 	if (createdAtFacets != null) {
-		graphQLFacets.createdAt = createdAtFacets.map((facet: { value: unknown; count: number }) => ({
-			__typename: 'SearchFacet' as const,
-			value: String(facet.value),
-			count: facet.count,
-		}));
+		graphQLFacets.createdAt = createdAtFacets.map(
+			(facet: { value: unknown; count: number }) => ({
+				__typename: 'SearchFacet' as const,
+				value: String(facet.value),
+				count: facet.count,
+			}),
+		);
 	}
-	
+
 	return graphQLFacets as SearchFacets;
 }
 
@@ -168,7 +213,7 @@ function toGraphQLItemListingSearchResult(
 } {
 	// Convert facets from Record format to SearchFacets structure for GraphQL
 	const facets = toGraphQLSearchFacets(result.facets);
-	
+
 	return {
 		items: result.items,
 		count: result.count,
@@ -189,7 +234,7 @@ const itemListingSearchResolvers: Resolvers = {
 			try {
 				// Convert GraphQL input to domain input
 				const domainInput = toDomainItemListingSearchInput(args.input);
-				
+
 				// Call domain service
 				const domainResult =
 					await context.applicationServices.Listing.ItemListingSearch.searchItemListings(
@@ -201,6 +246,25 @@ const itemListingSearchResolvers: Resolvers = {
 			} catch (error) {
 				console.error('Error in searchItemListings resolver:', error);
 				throw new Error('Failed to search item listings');
+			}
+		},
+	},
+
+	Mutation: {
+		bulkIndexItemListings: async (
+			_parent: unknown,
+			_args: unknown,
+			context: GraphContext,
+			_info: GraphQLResolveInfo,
+		) => {
+			console.log('bulkIndexItemListings mutation called');
+
+			try {
+				// Call the application service to bulk index listings
+				return await context.applicationServices.Listing.ItemListingSearch.bulkIndexItemListings();
+			} catch (error) {
+				console.error('Error in bulkIndexItemListings mutation:', error);
+				throw new Error('Failed to bulk index item listings');
 			}
 		},
 	},

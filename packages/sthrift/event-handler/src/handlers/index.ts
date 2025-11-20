@@ -12,6 +12,7 @@ import { registerItemListingDeletedUpdateSearchIndexHandler as registerDeletedHa
 export * from './search-index-helpers.js';
 export * from './item-listing-updated-update-search-index.js';
 export * from './item-listing-deleted-update-search-index.js';
+export * from './bulk-index-existing-listings.js';
 
 /**
  * Register all event handlers for the ShareThrift application

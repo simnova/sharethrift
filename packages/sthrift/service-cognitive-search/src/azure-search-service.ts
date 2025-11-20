@@ -136,6 +136,7 @@ export class AzureCognitiveSearch implements CognitiveSearchBase {
 	async createIndexIfNotExists(indexDefinition: SearchIndex): Promise<void> {
 		try {
 			const azureIndex = this.convertToAzureIndex(indexDefinition);
+			// biome-ignore lint/suspicious/noExplicitAny: Azure SDK requires dynamic index structure
 			await this.indexClient.createOrUpdateIndex(azureIndex as any);
 			logger.info(
 				`AzureCognitiveSearch: Index ${indexDefinition.name} created or updated`,

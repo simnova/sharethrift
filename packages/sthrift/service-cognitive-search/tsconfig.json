@@ -3,12 +3,7 @@
 	"compilerOptions": {
 		"outDir": "./dist",
 		"rootDir": "./src",
-		"baseUrl": ".",
-		"skipLibCheck": true,
-		"paths": {
-			"@cellix/*": ["../../cellix/*/src"],
-			"@sthrift/*": ["../*/src"]
-		}
+		"skipLibCheck": true
 	},
 	"include": ["src/**/*"],
 	"exclude": ["dist", "node_modules", "**/*.test.ts"]
