@@ -1,3 +1,4 @@
+import { DomainSeedwork } from '@cellix/domain-seedwork';
 import type { Passport } from '../../passport.ts';
 import type { AppealRequestVisa } from '../appeal-request.visa.ts';
 import * as ValueObjects from './listing-appeal-request.value-objects.ts';
@@ -7,25 +8,28 @@ import type {
 } from './listing-appeal-request.entity.ts';
 import type { PersonalUserEntityReference } from '../../user/personal-user/personal-user.entity.ts';
 import type { ItemListingEntityReference } from '../../listing/item/item-listing.entity.ts';
+import { PersonalUser } from '../../user/personal-user/personal-user.ts';
 import { ItemListing } from '../../listing/item/item-listing.ts';
-import { AppealRequestBase } from '../base-appeal-request.ts';
 
-export class ListingAppealRequest<props extends ListingAppealRequestProps>
-	extends AppealRequestBase<props>
+export class ListingAppealRequest
+	extends DomainSeedwork.AggregateRoot<ListingAppealRequestProps, Passport>
 	implements ListingAppealRequestEntityReference
 {
-	protected createVisa(passport: Passport): AppealRequestVisa {
-		return passport.appealRequest.forListingAppealRequest(this);
+	private readonly visa: AppealRequestVisa;
+
+	constructor(props: ListingAppealRequestProps, passport: Passport) {
+		super(props, passport);
+		this.visa = passport.appealRequest.forListingAppealRequest(this);
 	}
 
-	public static getNewInstance<props extends ListingAppealRequestProps>(
-		newProps: props,
+	public static getNewInstance(
+		newProps: ListingAppealRequestProps,
 		passport: Passport,
 		userId: string,
 		listingId: string,
 		reason: string,
 		blockerId: string,
-	): ListingAppealRequest<props> {
+	): ListingAppealRequest {
 		const newInstance = new ListingAppealRequest(newProps, passport);
 
 		newInstance.props.user = { id: userId } as PersonalUserEntityReference;
@@ -38,6 +42,18 @@ export class ListingAppealRequest<props extends ListingAppealRequestProps>
 		return newInstance;
 	}
 
+	get user(): PersonalUserEntityReference {
+		return new PersonalUser(
+			// biome-ignore lint/suspicious/noExplicitAny: Required for cross-context entity references
+			this.props.user as any,
+			this.passport,
+		) as PersonalUserEntityReference;
+	}
+
+	async loadUser(): Promise<PersonalUserEntityReference> {
+		return await this.props.loadUser();
+	}
+
 	get listing(): ItemListingEntityReference {
 		return new ItemListing(
 			// biome-ignore lint/suspicious/noExplicitAny: Required for cross-context entity references
@@ -48,5 +64,67 @@ export class ListingAppealRequest<props extends ListingAppealRequestProps>
 
 	async loadListing(): Promise<ItemListingEntityReference> {
 		return await this.props.loadListing();
+	}
+
+	get reason(): string {
+		return this.props.reason;
+	}
+	
+	set reason(value: string) {
+		if (
+			!this.visa.determineIf(
+				(permissions) => permissions.canUpdateAppealRequestState,
+			)
+		) {
+			throw new DomainSeedwork.PermissionError(
+				'You do not have permission to update the reason',
+			);
+		}
+		this.props.reason = new ValueObjects.Reason(value).valueOf();
+	}
+
+	get state(): string {
+		return this.props.state;
+	}
+	
+	set state(value: string) {
+		if (
+			!this.visa.determineIf(
+				(permissions) => permissions.canUpdateAppealRequestState,
+			)
+		) {
+			throw new DomainSeedwork.PermissionError(
+				'You do not have permission to update the state',
+			);
+		}
+		this.props.state = new ValueObjects.State(value).valueOf();
+	}
+
+	get type(): string {
+		return this.props.type;
+	}
+
+	get blocker(): PersonalUserEntityReference {
+		return new PersonalUser(
+			// biome-ignore lint/suspicious/noExplicitAny: Required for cross-context entity references
+			this.props.blocker as any,
+			this.passport,
+		) as PersonalUserEntityReference;
+	}
+
+	async loadBlocker(): Promise<PersonalUserEntityReference> {
+		return await this.props.loadBlocker();
+	}
+
+	get createdAt(): Date {
+		return this.props.createdAt;
+	}
+
+	get updatedAt(): Date {
+		return this.props.updatedAt;
+	}
+
+	get schemaVersion(): string {
+		return this.props.schemaVersion;
 	}
 }
