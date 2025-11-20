@@ -10,9 +10,9 @@ export const registerReservationRequestCreatedHandler = (
 	domainDataSource: DomainDataSource,
 	emailService: TransactionalEmailService,
 ): void => {
-	domainDataSource.eventBus.register(
+	domainDataSource.eventBus?.register(
 		ReservationRequestCreated,
-		async (event) => {
+		async (event: ReservationRequestCreated) => {
 			console.log(
 				`Processing ReservationRequestCreated event for reservation ${event.payload.reservationRequestId}`,
 			);
@@ -20,6 +20,10 @@ export const registerReservationRequestCreatedHandler = (
 			try {
 				// Fetch the sharer (listing owner) information
 				const sharerRepository = domainDataSource.userRepository;
+				if (!sharerRepository) {
+					console.error('User repository not available in domain data source');
+					return;
+				}
 				const sharer = await sharerRepository.getById(event.payload.sharerId);
 
 				if (!sharer) {
@@ -31,6 +35,10 @@ export const registerReservationRequestCreatedHandler = (
 
 				// Fetch the reserver information
 				const reserverRepository = domainDataSource.userRepository;
+				if (!reserverRepository) {
+					console.error('User repository not available in domain data source');
+					return;
+				}
 				const reserver = await reserverRepository.getById(
 					event.payload.reserverId,
 				);
@@ -44,6 +52,10 @@ export const registerReservationRequestCreatedHandler = (
 
 				// Fetch the listing information
 				const listingRepository = domainDataSource.itemListingRepository;
+				if (!listingRepository) {
+					console.error('Item listing repository not available in domain data source');
+					return;
+				}
 				const listing = await listingRepository.getById(event.payload.listingId);
 
 				if (!listing) {
@@ -54,7 +66,7 @@ export const registerReservationRequestCreatedHandler = (
 				}
 
 				// Get sharer email
-				const sharerEmail = sharer.email;
+				const sharerEmail = sharer.email || sharer.account?.email;
 				if (!sharerEmail) {
 					console.error(
 						`Sharer ${event.payload.sharerId} has no email address`,
@@ -67,13 +79,13 @@ export const registerReservationRequestCreatedHandler = (
 					'reservation-request-notification',
 					{
 						email: sharerEmail,
-						name: sharer.displayName || sharer.firstName || 'User',
+						name: sharer.displayName || sharer.firstName || sharer.account?.profile?.firstName || 'User',
 					},
 					{
-						sharerName: sharer.displayName || sharer.firstName || 'User',
+						sharerName: sharer.displayName || sharer.firstName || sharer.account?.profile?.firstName || 'User',
 						reserverName:
-							reserver.displayName || reserver.firstName || 'Someone',
-						listingTitle: listing.title,
+							reserver.displayName || reserver.firstName || reserver.account?.profile?.firstName || 'Someone',
+						listingTitle: listing.title || 'Unknown Listing',
 						reservationStart: event.payload.reservationPeriodStart.toLocaleDateString(),
 						reservationEnd: event.payload.reservationPeriodEnd.toLocaleDateString(),
 						reservationRequestId: event.payload.reservationRequestId,
