@@ -799,6 +799,9 @@ importers:
       '@sthrift/domain':
         specifier: workspace:*
         version: link:../domain
+      '@sthrift/persistence':
+        specifier: workspace:*
+        version: link:../persistence
       '@sthrift/service-cognitive-search':
         specifier: workspace:*
         version: link:../service-cognitive-search
