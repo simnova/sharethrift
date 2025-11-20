@@ -171,9 +171,13 @@ const itemListingResolvers: Resolvers = {
 			args: { id: string },
 			context,
 		) => {
-			return await context.applicationServices.Listing.ItemListing.cancel({
+			const listing = await context.applicationServices.Listing.ItemListing.cancel({
 				id: args.id,
 			});
+			return {
+				status: { success: true },
+				listing,
+			};
 		},
 
 		deleteItemListing: async (
@@ -181,12 +185,18 @@ const itemListingResolvers: Resolvers = {
 			args: { id: string },
 			context: GraphContext,
 		) => {
+			const listing = await context.applicationServices.Listing.ItemListing.queryById({
+				id: args.id,
+			});
 			await context.applicationServices.Listing.ItemListing.deleteListings({
 				id: args.id,
 				userEmail:
 					context.applicationServices.verifiedUser?.verifiedJwt?.email ?? '',
 			});
-			return { status: { success: true } };
+			return {
+				status: { success: true },
+				listing,
+			};
 		},
 	},
 };
