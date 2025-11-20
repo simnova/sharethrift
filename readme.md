@@ -15,11 +15,17 @@ ShareThrift is a web‑based peer‑to‑peer sharing platform that enables peop
 - This project is built using Domain-Driven Design (DDD), event-driven communication, and modular application boundaries as specified in the official BRD/SRD.
 
 ## 🗂 Table of Contents
+
 - Features
 - Architecture
 - Monorepo Structure
 - Tech Stack
 - Getting Started
+- Local Endpoints
+- Domain & DDD Conventions
+- Testing
+- Architecture Decisions (ADRs)
+- Contributing
 
 ## ✨ Features
 
@@ -70,6 +76,7 @@ Key patterns:
 - Service Registry (Cellix.initializeServices) for dependency injection
 
 ## 🧬 Monorepo Structure
+
 ```
 apps/
   api/            # Azure Functions host (GraphQL + future REST)
@@ -83,6 +90,7 @@ documents/        # BRD, SRD, ADRs, architecture diagrams
 ```
 
 ## 🛠 Tech Stack
+
 - Runtime: Node.js 22.12.0 / Azure Functions v4
 - Package Manager: pnpm
 - Language: TypeScript (strict config)
@@ -94,14 +102,15 @@ documents/        # BRD, SRD, ADRs, architecture diagrams
 - Observability: OpenTelemetry + Azure Monitor integration
 - Quality Gates: Sonar + coverage thresholds per package
 
-
 ## 🚀 Getting Started
+
 Prerequisites
 
 - Node.js v22.12.0 (use nvm)
 - Azurite
 
 Install & Build
+
 ```
 nvm use v22
 pnpm install
@@ -109,14 +118,62 @@ pnpm run build
 ```
 
 Run (Dev)
+
 ```
 pnpm run dev
 ```
 
 ## 🔗 Local Endpoints
 
-| Portal | Endpoint |
-| --- | --- |
-| Frontend | http://localhost:3000 |
-| Doc | http://localhost:3002 |
-| Graphql | http://localhost:7071/api/graphql |
+| Portal   | Endpoint                          |
+| -------- | --------------------------------- |
+| Frontend | http://localhost:3000             |
+| Doc      | http://localhost:3002             |
+| Graphql  | http://localhost:7071/api/graphql |
+
+## 🧩 Domain & DDD Conventions
+
+- Bounded contexts under packages/sthrift/domain/src/domain/contexts/\*
+- Each context exposes a clear ubiquitous language via exports
+- Passports/Visas enforce permission checks at aggregate boundaries
+- Value Objects: pure data + validation (no side effects)
+- Aggregates: guard invariants, emit domain events (future integration bus)
+- Repositories: interfaces only in domain; adapters reside outside
+- Unit of Work: orchestrates aggregate persistence + event publication plans
+
+## 🧪 Testing
+
+```
+pnpm run test
+```
+
+Guidelines:
+
+- Every aggregate, entity, and value object requires coverage
+- Use descriptive test names expressing business rules
+- Feature files (\*.feature) for higher-level domain scenario documentation
+
+## 🧾 Architecture Decisions (ADRs)
+
+Located in `apps/docs/decisions`:
+
+- 0001-madr-architecture-decisions.md
+- adr-short-template.md
+- adr-template.md
+- 0022-existing-azure-upload.md
+
+Add a new ADR for any significant platform, pattern, or model/idea change (e.g., Azure Upload - Enhancement).
+
+## 🤝 Contributing
+
+1. Fork / branch from main (e.g., feature/listing-lifecycle)
+2. Implement domain changes first (aggregate, permissions)
+3. Add tests & update docs
+4. Run: `pnpm run build` and `pnpm run test`
+5. Submit PR referencing ADRs if relevant
+
+Coding Guidelines:
+
+- Explicit domain terminology > generic names
+- Keep functions small & intention-revealing
+- Avoid leaking infrastructure concerns into domain layer
