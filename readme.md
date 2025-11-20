@@ -16,16 +16,16 @@ ShareThrift is a web‑based peer‑to‑peer sharing platform that enables peop
 
 ## 🗂 Table of Contents
 
-- Features
-- Architecture
-- Monorepo Structure
-- Tech Stack
-- Getting Started
-- Local Endpoints
-- Domain & DDD Conventions
-- Testing
-- Architecture Decisions (ADRs)
-- Contributing
+- [Features](#-features)
+- [Architecture](#-architecture)
+- [Monorepo Structure](#-monorepo-structure)
+- [Tech Stack](#-tech-stack)
+- [Getting Started](#-getting-started)
+- [Local Endpoints](#-local-endpoints)
+- [Domain & DDD Conventions](#-domain--ddd-conventions)
+- [Testing](#-testing)
+- [Architecture Decisions (ADRs)](#-architecture-decisions-adrs)
+- [Contributing](#-contributing)
 
 ## ✨ Features
 
