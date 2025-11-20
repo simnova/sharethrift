@@ -57,9 +57,10 @@ export const LoginSelection: React.FC = () => {
 			<Header
 				isAuthenticated={auth.isAuthenticated}
 				onLogin={() => navigate('/login')}
-				onLogout={() => {'/'}}
+				onAdminLogin={() => navigate('/login')}
+				onLogout={() => navigate('/')}
 				onSignUp={handleOnSignUp}
-				onCreateListing={() => {'/login'}}
+				onCreateListing={() => navigate('/login')}
 			/>
 			<div
 				style={{

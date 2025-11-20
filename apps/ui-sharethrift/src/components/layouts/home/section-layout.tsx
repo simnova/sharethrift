@@ -100,8 +100,28 @@ export const HomeTabsLayout: React.FC = () => {
 		return () => window.removeEventListener('resize', handleResize);
 	}, [auth.isAuthenticated]);
 
+	const isProduction = import.meta.env.MODE === 'production';
+
 	const handleOnLogin = () => {
-		navigate('/login');
+		if (isProduction) {
+			// Production: trigger B2C auth flow directly
+			globalThis.sessionStorage.setItem('loginPortalType', 'UserPortal');
+			globalThis.location.href = '/auth-redirect-user';
+		} else {
+			// Local dev: go to fake login screen
+			navigate('/login');
+		}
+	};
+
+	const handleOnAdminLogin = () => {
+		if (isProduction) {
+			// Production: trigger AAD auth flow directly
+			globalThis.sessionStorage.setItem('loginPortalType', 'AdminPortal');
+			globalThis.location.href = '/auth-redirect-admin';
+		} else {
+			// Local dev: go to fake login screen
+			navigate('/login');
+		}
 	};
 	
     //Removed in AdminUser PR
@@ -172,6 +192,7 @@ export const HomeTabsLayout: React.FC = () => {
 			<Header
 				isAuthenticated={auth.isAuthenticated}
 				onLogin={handleOnLogin}
+				onAdminLogin={handleOnAdminLogin}
 				onLogout={handleLogOut}
 				onSignUp={handleOnSignUp}
 				onCreateListing={handleCreateListing}

@@ -11,8 +11,24 @@ interface SectionLayoutProps {}
 export const SectionLayout: React.FC<SectionLayoutProps> = (_props) => {
 	const auth = useAuth();
 	const apolloClient = useApolloClient();
+	const isProduction = import.meta.env.MODE === 'production';
+
 	const handleOnLogin = () => {
-        auth.signinRedirect();
+		if (isProduction) {
+			globalThis.sessionStorage.setItem('loginPortalType', 'UserPortal');
+			globalThis.location.href = '/auth-redirect-user';
+		} else {
+			auth.signinRedirect();
+		}
+	};
+
+	const handleOnAdminLogin = () => {
+		if (isProduction) {
+			globalThis.sessionStorage.setItem('loginPortalType', 'AdminPortal');
+			globalThis.location.href = '/auth-redirect-admin';
+		} else {
+			auth.signinRedirect();
+		}
 	};
 
 	const handleOnSignUp = () => {
@@ -38,6 +54,7 @@ export const SectionLayout: React.FC<SectionLayoutProps> = (_props) => {
 			<Header
 				isAuthenticated={auth.isAuthenticated}
 				onLogin={handleOnLogin}
+				onAdminLogin={handleOnAdminLogin}
 				onSignUp={handleOnSignUp}
 				onLogout={handleLogOut}
 				onCreateListing={handleCreateListing}
