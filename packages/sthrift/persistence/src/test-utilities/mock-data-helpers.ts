@@ -98,20 +98,26 @@ export function makeMockListing(id: string): Models.Listing.ItemListing {
  * Create mock query that supports chaining and is thenable
  */
 export const createMockQuery = (result: unknown) => {
-	const mockQuery = {
-		lean: vi.fn(),
-		populate: vi.fn(),
-		exec: vi.fn().mockResolvedValue(result),
-		catch: vi.fn((onReject) => Promise.resolve(result).catch(onReject)),
-	};
-	// Configure methods to return the query object for chaining
-	mockQuery.lean.mockReturnValue(mockQuery);
-	mockQuery.populate.mockReturnValue(mockQuery);
+	// Create a promise-based mock that mimics Mongoose query behavior
+	const promise = Promise.resolve(result);
 	
-	// Make the query thenable (like Mongoose queries are) by adding then as property
-	Object.defineProperty(mockQuery, 'then', {
-		value: vi.fn((onResolve) => Promise.resolve(result).then(onResolve)),
-		enumerable: false,
+	// Create chainable mock methods
+	const lean = vi.fn();
+	const populate = vi.fn();
+	const exec = vi.fn().mockResolvedValue(result);
+	const catchFn = vi.fn((onReject) => promise.catch(onReject));
+	
+	// Create thenable mock that implements the Promise interface
+	const thenableMock = Object.assign(promise, {
+		lean,
+		populate,
+		exec,
+		catch: catchFn,
 	});
-	return mockQuery;
+	
+	// Configure methods to return the mock object for chaining
+	lean.mockReturnValue(thenableMock);
+	populate.mockReturnValue(thenableMock);
+	
+	return thenableMock;
 };
