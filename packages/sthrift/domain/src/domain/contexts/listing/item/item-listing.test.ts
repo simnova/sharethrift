@@ -1,15 +1,13 @@
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { describeFeature, loadFeature } from '@amiceli/vitest-cucumber';
-import { expect, vi } from 'vitest';
-import type { ItemListingProps } from './item-listing.entity.ts';
-import { ItemListing } from './item-listing.ts';
 import { DomainSeedwork } from '@cellix/domain-seedwork';
+import { expect, vi } from 'vitest';
 import type { Passport } from '../../passport.ts';
 import { PersonalUser } from '../../user/personal-user/personal-user.ts';
 import type { PersonalUserProps } from '../../user/personal-user/personal-user.entity.ts';
-import { PersonalUserRolePermissions } from '../../role/personal-user-role/personal-user-role-permissions.ts';
-import { PersonalUserRole } from '../../role/personal-user-role/personal-user-role.ts';
+import type { ItemListingProps } from './item-listing.entity.ts';
+import { ItemListing } from './item-listing.ts';
 
 const test = { for: describeFeature };
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
@@ -21,6 +19,7 @@ function makePassport(
 	canUpdateItemListing = true,
 	canPublishItemListing = true,
 	canUnpublishItemListing = true,
+	canDeleteItemListing = true,
 ): Passport {
 	return vi.mocked({
 		listing: {
@@ -30,12 +29,14 @@ function makePassport(
 						canUpdateItemListing: boolean;
 						canPublishItemListing: boolean;
 						canUnpublishItemListing: boolean;
+						canDeleteItemListing: boolean;
 					}) => boolean,
 				) =>
 					fn({
 						canUpdateItemListing,
 						canPublishItemListing,
 						canUnpublishItemListing,
+						canDeleteItemListing,
 					}),
 			})),
 		},
@@ -55,43 +56,9 @@ function makePassport(
 function makeBaseProps(
 	overrides: Partial<ItemListingProps> = {},
 ): ItemListingProps {
-	const permissions = new PersonalUserRolePermissions({
-		listingPermissions: {
-			canCreateItemListing: true,
-			canUpdateItemListing: true,
-			canDeleteItemListing: true,
-			canViewItemListing: true,
-			canPublishItemListing: true,
-			canUnpublishItemListing: true,
-		},
-		conversationPermissions: {
-			canCreateConversation: true,
-			canManageConversation: true,
-			canViewConversation: true,
-		},
-		reservationRequestPermissions: {
-			canCreateReservationRequest: true,
-			canManageReservationRequest: true,
-			canViewReservationRequest: true,
-		},
-	});
-
-	const roleProps = {
-		id: 'role-1',
-		name: 'default',
-		roleName: 'default',
-		isDefault: true,
-		roleType: 'personal',
-		permissions,
-		createdAt: new Date('2020-01-01T00:00:00Z'),
-		updatedAt: new Date('2020-01-02T00:00:00Z'),
-		schemaVersion: '1.0.0',
-	};
-
-	const role = new PersonalUserRole(roleProps, makePassport());
 	const user = new PersonalUser<PersonalUserProps>(
 		{
-			userType: 'end-user',
+			userType: 'personal-users',
 			id: 'user-1',
 			isBlocked: false,
 			schemaVersion: '1.0.0',
@@ -123,8 +90,6 @@ function makeBaseProps(
 			},
 			createdAt: new Date('2020-01-01T00:00:00Z'),
 			updatedAt: new Date('2020-01-02T00:00:00Z'),
-			role,
-			loadRole: async () => role,
 		},
 		makePassport(),
 	);
@@ -276,11 +241,14 @@ test.for(feature, ({ Scenario, Background, BeforeEachScenario }) => {
 		'Changing the title with permission to update listings',
 		({ Given, When, Then, And }) => {
 			let initialUpdatedAt: Date;
-			Given('an ItemListing aggregate with permission to update item listing', () => {
-				passport = makePassport(true, true, true);
-				listing = new ItemListing(makeBaseProps(), passport);
-				initialUpdatedAt = listing.updatedAt;
-			});
+			Given(
+				'an ItemListing aggregate with permission to update item listing',
+				() => {
+					passport = makePassport(true, true, true);
+					listing = new ItemListing(makeBaseProps(), passport);
+					initialUpdatedAt = listing.updatedAt;
+				},
+			);
 			When('I set the title to "Updated Title"', () => {
 				listing.title = 'Updated Title';
 			});
@@ -295,63 +263,84 @@ test.for(feature, ({ Scenario, Background, BeforeEachScenario }) => {
 		},
 	);
 
-	Scenario('Changing the title without permission', ({ Given, When, Then, And }) => {
-		let changingTitleWithoutPermission: () => void;
-		Given('an ItemListing aggregate without permission to update item listing', () => {
-			passport = makePassport(false, false, false);
-			listing = new ItemListing(makeBaseProps(), passport);
-		});
-		When('I try to set the title to "Updated Title"', () => {
-			changingTitleWithoutPermission = () => {
-				listing.title = 'Updated Title';
-			};
-		});
-		Then('a PermissionError should be thrown', () => {
-			expect(changingTitleWithoutPermission).toThrow(
-				DomainSeedwork.PermissionError,
+	Scenario(
+		'Changing the title without permission',
+		({ Given, When, Then, And }) => {
+			let changingTitleWithoutPermission: () => void;
+			Given(
+				'an ItemListing aggregate without permission to update item listing',
+				() => {
+					passport = makePassport(false, false, false);
+					listing = new ItemListing(makeBaseProps(), passport);
+				},
 			);
-		});
-		And('the title should remain unchanged', () => {
-			expect(listing.title).toBe('Old Title');
-		});
-	});
+			When('I try to set the title to "Updated Title"', () => {
+				changingTitleWithoutPermission = () => {
+					listing.title = 'Updated Title';
+				};
+			});
+			Then('a PermissionError should be thrown', () => {
+				expect(changingTitleWithoutPermission).toThrow(
+					DomainSeedwork.PermissionError,
+				);
+			});
+			And('the title should remain unchanged', () => {
+				expect(listing.title).toBe('Old Title');
+			});
+		},
+	);
 
-	Scenario('Changing the description with permission', ({ Given, When, Then }) => {
-		Given('an ItemListing aggregate with permission to update item listing', () => {
-			passport = makePassport(true, true, true);
-			listing = new ItemListing(makeBaseProps(), passport);
-		});
-		When('I set the description to "Updated Description"', () => {
-			listing.description = 'Updated Description';
-		});
-		Then('the listing\'s description should be "Updated Description"', () => {
-			expect(listing.description).toBe('Updated Description');
-		});
-	});
-
-	Scenario('Changing the description without permission', ({ Given, When, Then }) => {
-		let changingDescriptionWithoutPermission: () => void;
-		Given('an ItemListing aggregate without permission to update item listing', () => {
-			passport = makePassport(false, false, false);
-			listing = new ItemListing(makeBaseProps(), passport);
-		});
-		When('I try to set the description to "Updated Description"', () => {
-			changingDescriptionWithoutPermission = () => {
+	Scenario(
+		'Changing the description with permission',
+		({ Given, When, Then }) => {
+			Given(
+				'an ItemListing aggregate with permission to update item listing',
+				() => {
+					passport = makePassport(true, true, true);
+					listing = new ItemListing(makeBaseProps(), passport);
+				},
+			);
+			When('I set the description to "Updated Description"', () => {
 				listing.description = 'Updated Description';
-			};
-		});
-		Then('a PermissionError should be thrown', () => {
-			expect(changingDescriptionWithoutPermission).toThrow(
-				DomainSeedwork.PermissionError,
+			});
+			Then('the listing\'s description should be "Updated Description"', () => {
+				expect(listing.description).toBe('Updated Description');
+			});
+		},
+	);
+
+	Scenario(
+		'Changing the description without permission',
+		({ Given, When, Then }) => {
+			let changingDescriptionWithoutPermission: () => void;
+			Given(
+				'an ItemListing aggregate without permission to update item listing',
+				() => {
+					passport = makePassport(false, false, false);
+					listing = new ItemListing(makeBaseProps(), passport);
+				},
 			);
-		});
-	});
+			When('I try to set the description to "Updated Description"', () => {
+				changingDescriptionWithoutPermission = () => {
+					listing.description = 'Updated Description';
+				};
+			});
+			Then('a PermissionError should be thrown', () => {
+				expect(changingDescriptionWithoutPermission).toThrow(
+					DomainSeedwork.PermissionError,
+				);
+			});
+		},
+	);
 
 	Scenario('Changing the category with permission', ({ Given, When, Then }) => {
-		Given('an ItemListing aggregate with permission to update item listing', () => {
-			passport = makePassport(true, true, true);
-			listing = new ItemListing(makeBaseProps(), passport);
-		});
+		Given(
+			'an ItemListing aggregate with permission to update item listing',
+			() => {
+				passport = makePassport(true, true, true);
+				listing = new ItemListing(makeBaseProps(), passport);
+			},
+		);
 		When('I set the category to "Books"', () => {
 			listing.category = 'Books';
 		});
@@ -360,29 +349,38 @@ test.for(feature, ({ Scenario, Background, BeforeEachScenario }) => {
 		});
 	});
 
-	Scenario('Changing the category without permission', ({ Given, When, Then }) => {
-		let changingCategoryWithoutPermission: () => void;
-		Given('an ItemListing aggregate without permission to update item listing', () => {
-			passport = makePassport(false, false, false);
-			listing = new ItemListing(makeBaseProps(), passport);
-		});
-		When('I try to set the category to "Books"', () => {
-			changingCategoryWithoutPermission = () => {
-				listing.category = 'Books';
-			};
-		});
-		Then('a PermissionError should be thrown', () => {
-			expect(changingCategoryWithoutPermission).toThrow(
-				DomainSeedwork.PermissionError,
+	Scenario(
+		'Changing the category without permission',
+		({ Given, When, Then }) => {
+			let changingCategoryWithoutPermission: () => void;
+			Given(
+				'an ItemListing aggregate without permission to update item listing',
+				() => {
+					passport = makePassport(false, false, false);
+					listing = new ItemListing(makeBaseProps(), passport);
+				},
 			);
-		});
-	});
+			When('I try to set the category to "Books"', () => {
+				changingCategoryWithoutPermission = () => {
+					listing.category = 'Books';
+				};
+			});
+			Then('a PermissionError should be thrown', () => {
+				expect(changingCategoryWithoutPermission).toThrow(
+					DomainSeedwork.PermissionError,
+				);
+			});
+		},
+	);
 
 	Scenario('Changing the location with permission', ({ Given, When, Then }) => {
-		Given('an ItemListing aggregate with permission to update item listing', () => {
-			passport = makePassport(true, true, true);
-			listing = new ItemListing(makeBaseProps(), passport);
-		});
+		Given(
+			'an ItemListing aggregate with permission to update item listing',
+			() => {
+				passport = makePassport(true, true, true);
+				listing = new ItemListing(makeBaseProps(), passport);
+			},
+		);
 		When('I set the location to "Mumbai"', () => {
 			listing.location = 'Mumbai';
 		});
@@ -391,68 +389,89 @@ test.for(feature, ({ Scenario, Background, BeforeEachScenario }) => {
 		});
 	});
 
-	Scenario('Changing the location without permission', ({ Given, When, Then }) => {
-		let changingLocationWithoutPermission: () => void;
-		Given('an ItemListing aggregate without permission to update item listing', () => {
-			passport = makePassport(false, false, false);
-			listing = new ItemListing(makeBaseProps(), passport);
-		});
-		When('I try to set the location to "Mumbai"', () => {
-			changingLocationWithoutPermission = () => {
-				listing.location = 'Mumbai';
-			};
-		});
-		Then('a PermissionError should be thrown', () => {
-			expect(changingLocationWithoutPermission).toThrow(
-				DomainSeedwork.PermissionError,
+	Scenario(
+		'Changing the location without permission',
+		({ Given, When, Then }) => {
+			let changingLocationWithoutPermission: () => void;
+			Given(
+				'an ItemListing aggregate without permission to update item listing',
+				() => {
+					passport = makePassport(false, false, false);
+					listing = new ItemListing(makeBaseProps(), passport);
+				},
 			);
-		});
-	});
+			When('I try to set the location to "Mumbai"', () => {
+				changingLocationWithoutPermission = () => {
+					listing.location = 'Mumbai';
+				};
+			});
+			Then('a PermissionError should be thrown', () => {
+				expect(changingLocationWithoutPermission).toThrow(
+					DomainSeedwork.PermissionError,
+				);
+			});
+		},
+	);
 
-	Scenario('Changing sharing period with permission', ({ Given, When, And, Then }) => {
-		Given('an ItemListing aggregate with permission to update item listing', () => {
-			passport = makePassport(true, true, true);
-			listing = new ItemListing(makeBaseProps(), passport);
-		});
-		When('I set the sharingPeriodStart to "2025-10-10"', () => {
-			listing.sharingPeriodStart = new Date('2025-10-10T00:00:00Z');
-		});
-		And('I set the sharingPeriodEnd to "2025-12-10"', () => {
-			listing.sharingPeriodEnd = new Date('2025-12-10T00:00:00Z');
-		});
-		Then('the sharing period should update accordingly', () => {
-			expect(listing.sharingPeriodStart.toISOString()).toBe(
-				'2025-10-10T00:00:00.000Z',
+	Scenario(
+		'Changing sharing period with permission',
+		({ Given, When, And, Then }) => {
+			Given(
+				'an ItemListing aggregate with permission to update item listing',
+				() => {
+					passport = makePassport(true, true, true);
+					listing = new ItemListing(makeBaseProps(), passport);
+				},
 			);
-			expect(listing.sharingPeriodEnd.toISOString()).toBe(
-				'2025-12-10T00:00:00.000Z',
-			);
-		});
-	});
-
-	Scenario('Changing sharing period without permission', ({ Given, When, Then }) => {
-		let changingSharingPeriodWithoutPermission: () => void;
-		Given('an ItemListing aggregate without permission to update item listing', () => {
-			passport = makePassport(false, false, false);
-			listing = new ItemListing(makeBaseProps(), passport);
-		});
-		When('I try to set the sharingPeriodStart or sharingPeriodEnd', () => {
-			changingSharingPeriodWithoutPermission = () => {
+			When('I set the sharingPeriodStart to "2025-10-10"', () => {
 				listing.sharingPeriodStart = new Date('2025-10-10T00:00:00Z');
-			};
-		});
-		Then('a PermissionError should be thrown', () => {
-			expect(changingSharingPeriodWithoutPermission).toThrow(
-				DomainSeedwork.PermissionError,
+			});
+			And('I set the sharingPeriodEnd to "2025-12-10"', () => {
+				listing.sharingPeriodEnd = new Date('2025-12-10T00:00:00Z');
+			});
+			Then('the sharing period should update accordingly', () => {
+				expect(listing.sharingPeriodStart.toISOString()).toBe(
+					'2025-10-10T00:00:00.000Z',
+				);
+				expect(listing.sharingPeriodEnd.toISOString()).toBe(
+					'2025-12-10T00:00:00.000Z',
+				);
+			});
+		},
+	);
+
+	Scenario(
+		'Changing sharing period without permission',
+		({ Given, When, Then }) => {
+			let changingSharingPeriodWithoutPermission: () => void;
+			Given(
+				'an ItemListing aggregate without permission to update item listing',
+				() => {
+					passport = makePassport(false, false, false);
+					listing = new ItemListing(makeBaseProps(), passport);
+				},
 			);
-		});
-	});
+			When('I try to set the sharingPeriodStart or sharingPeriodEnd', () => {
+				changingSharingPeriodWithoutPermission = () => {
+					listing.sharingPeriodStart = new Date('2025-10-10T00:00:00Z');
+				};
+			});
+			Then('a PermissionError should be thrown', () => {
+				expect(changingSharingPeriodWithoutPermission).toThrow(
+					DomainSeedwork.PermissionError,
+				);
+			});
+		},
+	);
 
 	Scenario('Changing images with permission', ({ Given, When, Then }) => {
-		Given('an ItemListing aggregate with permission to update item listing', () => {
-			passport = makePassport(true, true, true);
-			listing = new ItemListing(makeBaseProps(), passport);
-		});
+		Given(
+			'an ItemListing aggregate with permission to update item listing',
+			() => {
+				passport = makePassport(true, true, true);
+				listing = new ItemListing(makeBaseProps(), passport);
+			},
+		);
 		When('I set images to ["img1.png", "img2.png"]', () => {
 			listing.images = ['img1.png', 'img2.png'];
 		});
@@ -463,10 +482,13 @@ test.for(feature, ({ Scenario, Background, BeforeEachScenario }) => {
 
 	Scenario('Changing images without permission', ({ Given, When, Then }) => {
 		let changingImagesWithoutPermission: () => void;
-		Given('an ItemListing aggregate without permission to update item listing', () => {
-			passport = makePassport(false, false, false);
-			listing = new ItemListing(makeBaseProps(), passport);
-		});
+		Given(
+			'an ItemListing aggregate without permission to update item listing',
+			() => {
+				passport = makePassport(false, false, false);
+				listing = new ItemListing(makeBaseProps(), passport);
+			},
+		);
 		When('I try to set images to ["img1.png", "img2.png"]', () => {
 			changingImagesWithoutPermission = () => {
 				listing.images = ['img1.png', 'img2.png'];
@@ -479,24 +501,99 @@ test.for(feature, ({ Scenario, Background, BeforeEachScenario }) => {
 		});
 	});
 
-	Scenario('Publishing a listing with permission', ({ Given, When, Then, And }) => {
-		let initialUpdatedAt: Date;
-		Given('an ItemListing aggregate with permission to publish item listing', () => {
-			passport = makePassport(true, true, true);
-			const draftProps = makeBaseProps({ state: 'Drafted' });
-			listing = new ItemListing(draftProps, passport);
-			initialUpdatedAt = listing.updatedAt;
+	Scenario(
+		'Publishing a listing with permission',
+		({ Given, When, Then, And }) => {
+			let initialUpdatedAt: Date;
+			Given(
+				'an ItemListing aggregate with permission to publish item listing',
+				() => {
+					passport = makePassport(true, true, true);
+					const draftProps = makeBaseProps({ state: 'Drafted' });
+					listing = new ItemListing(draftProps, passport);
+					initialUpdatedAt = listing.updatedAt;
+				},
+			);
+			When('I call publish()', () => {
+				listing.publish();
+			});
+			Then('the listing\'s state should be "Published"', () => {
+				expect(listing.state).toBe('Published');
+			});
+			And('the updatedAt timestamp should change', () => {
+				expect(listing.updatedAt.getTime()).toBeGreaterThanOrEqual(
+					initialUpdatedAt.getTime(),
+				);
+			});
+	},
+);
+
+Scenario('Requesting delete with permission', ({ Given, When, Then }) => {
+	Given(
+		'an ItemListing aggregate with permission to delete item listing',
+		() => {
+			passport = makePassport(true, true, true, true);
+			listing = new ItemListing(makeBaseProps(), passport);
+		},
+	);
+	When('I call requestDelete()', () => {
+		listing.requestDelete();
+	});
+	Then("the listing's isDeleted flag should be true", () => {
+		expect(listing.isDeleted).toBe(true);
+	});
+});
+
+Scenario(
+	'Requesting delete without permission',
+	({ Given, When, Then, And }) => {
+		let requestDeleteWithoutPermission: () => void;
+		Given(
+			'an ItemListing aggregate without permission to delete item listing',
+			() => {
+				passport = makePassport(true, true, true, false);
+				listing = new ItemListing(makeBaseProps(), passport);
+			},
+		);
+		When('I try to call requestDelete()', () => {
+			requestDeleteWithoutPermission = () => {
+				listing.requestDelete();
+			};
 		});
-		When('I call publish()', () => {
-			listing.publish();
-		});
-		Then('the listing\'s state should be "Published"', () => {
-			expect(listing.state).toBe('Published');
-		});
-		And('the updatedAt timestamp should change', () => {
-			expect(listing.updatedAt.getTime()).toBeGreaterThanOrEqual(
-				initialUpdatedAt.getTime(),
+		Then('a PermissionError should be thrown', () => {
+			expect(requestDeleteWithoutPermission).toThrow(
+				DomainSeedwork.PermissionError,
 			);
 		});
-	});
+		And("the listing's isDeleted flag should remain false", () => {
+			expect(listing.isDeleted).toBe(false);
+		});
+	},
+);
+
+Scenario(
+	'Requesting delete when already deleted',
+	({ Given, When, Then, And }) => {
+		Given(
+			'an ItemListing aggregate with permission to delete item listing',
+			() => {
+				passport = makePassport(true, true, true, true);
+				listing = new ItemListing(makeBaseProps(), passport);
+			},
+		);
+		And('the listing is already marked as deleted', () => {
+			listing.requestDelete();
+		});
+		When('I call requestDelete() again', () => {
+			listing.requestDelete();
+		});
+		Then("the listing's isDeleted flag should remain true", () => {
+			expect(listing.isDeleted).toBe(true);
+		});
+		And('no error should be thrown', () => {
+			// Test passes if no error was thrown
+			expect(listing.isDeleted).toBe(true);
+		});
+	},
+);
 });

@@ -3,7 +3,7 @@ import { DomainSeedwork } from '@cellix/domain-seedwork';
 import type { Passport } from '../../passport.ts';
 import type { ListingVisa } from '../listing.visa.ts';
 import * as ValueObjects from './item-listing.value-objects.ts';
-import type { PersonalUserEntityReference } from '../../user/personal-user/personal-user.entity.ts';
+import type { UserEntityReference } from '../../user/index.ts';
 import type {
 	ItemListingEntityReference,
 	ItemListingProps,
@@ -26,7 +26,7 @@ export class ItemListing<props extends ItemListingProps>
 
 	//#region Methods
 	public static getNewInstance<props extends ItemListingProps>(
-		sharer: PersonalUserEntityReference,
+		sharer: UserEntityReference,
 		fields: {
 			title: string;
 			description: string;
@@ -113,11 +113,11 @@ export class ItemListing<props extends ItemListingProps>
 	//#endregion Methods
 
 	//#region Properties
-	get sharer(): PersonalUserEntityReference {
+	get sharer(): UserEntityReference {
 		return this.props.sharer;
 	}
 
-	set sharer(value: PersonalUserEntityReference) {
+	set sharer(value: UserEntityReference) {
 		this.props.sharer = value;
 	}
 
@@ -328,7 +328,9 @@ export class ItemListing<props extends ItemListingProps>
 		if (!blocked) {
 			// unblocking: require publish permission (keeps previous behaviour)
 			if (
-				!this.visa.determineIf((permissions) => permissions.canPublishItemListing)
+				!this.visa.determineIf(
+					(permissions) => permissions.canPublishItemListing,
+				)
 			) {
 				throw new DomainSeedwork.PermissionError(
 					'You do not have permission to unblock this listing',
@@ -355,32 +357,23 @@ export class ItemListing<props extends ItemListingProps>
 		this.props.state = ValueObjects.ListingStateEnum.Blocked;
 	}
 
-	/**
-	 * Mark or unmark this aggregate as deleted. Setting deleted to true will cause the
-	 * repository to remove the record on save. This replaces the previous `requestDelete()` helper.
-	 */
-	public setDeleted(deleted: boolean): void {
-		if (deleted) {
-			if (
-				!this.visa.determineIf((permissions) => permissions.canDeleteItemListing)
-			) {
-				throw new DomainSeedwork.PermissionError(
-					'You do not have permission to delete this listing',
-				);
-			}
-			super.isDeleted = true;
-			return;
-		}
+/**
+ * Request deletion of this item listing (marks as deleted).
+ */
+public requestDelete(): void {
+	if (
+		!this.visa.determineIf(
+			(permissions) => permissions.canDeleteItemListing,
+		)
+	) {
+		throw new DomainSeedwork.PermissionError(
+			'You do not have permission to delete this listing',
+		);
+	}
 
-		// Allow unmarking deletion only if caller has delete permission as well
-		if (
-			!this.visa.determineIf((permissions) => permissions.canDeleteItemListing)
-		) {
-			throw new DomainSeedwork.PermissionError(
-				'You do not have permission to modify deleted flag for this listing',
-			);
+		if (!this.isDeleted) {
+			super.isDeleted = true;
 		}
-		super.isDeleted = false;
 	}
 
 	/**

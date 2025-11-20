@@ -67,8 +67,8 @@ export class ConversationRepository
 
 	// biome-ignore lint:noRequireAwait
 	async getNewInstance(
-		sharer: Domain.Contexts.User.PersonalUser.PersonalUserEntityReference,
-		reserver: Domain.Contexts.User.PersonalUser.PersonalUserEntityReference,
+		sharer: Domain.Contexts.User.UserEntityReference,
+		reserver: Domain.Contexts.User.UserEntityReference,
 		listing: Domain.Contexts.Listing.ItemListing.ItemListingEntityReference,
 		messagingConversationId?: string,
 	): Promise<Domain.Contexts.Conversation.Conversation.Conversation<PropType>> {

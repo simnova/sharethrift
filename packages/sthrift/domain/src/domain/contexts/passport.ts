@@ -2,6 +2,7 @@ import {
 	GuestPassport,
 	SystemPassport,
 	PersonalUserPassport,
+	AdminUserPassport,
 } from '../iam/index.ts';
 import type { PermissionsSpec } from '../iam/system/system.passport-base.ts';
 import type { Contexts } from '../index.ts';
@@ -32,5 +33,11 @@ export const PassportFactory = {
 		user: Contexts.User.PersonalUser.PersonalUserEntityReference,
 	): Passport {
 		return new PersonalUserPassport(user);
+	},
+
+	forAdminUser(
+		user: Contexts.User.AdminUser.AdminUserEntityReference,
+	): Passport {
+		return new AdminUserPassport(user);
 	},
 };

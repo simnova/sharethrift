@@ -1,12 +1,12 @@
 import { Card, Typography, Avatar, Tag, Row, Col } from "antd";
 import { SwapOutlined, AppstoreAddOutlined } from "@ant-design/icons";
 import bikeListingImg from "@sthrift/ui-components/src/assets/item-images/bike-listing.png";
-import type { PersonalUser } from "../../../../../generated.tsx";
+import type { User } from "../../../../../generated.tsx";
 
 const imgRectangle26 = bikeListingImg;
 
 export interface ListingBannerProps {
-  owner: PersonalUser;
+  owner: User;
 }
 
 export const ListingBanner: React.FC<ListingBannerProps> = (props) => {
@@ -14,7 +14,7 @@ export const ListingBanner: React.FC<ListingBannerProps> = (props) => {
   const status = "Request Submitted"; //todo
   const imageUrl = imgRectangle26; //todo
 
-  return (
+	const firstName = props.owner?.account?.profile?.firstName || 'Unknown';  return (
     <Card
       bodyStyle={{ padding: 0 }}
       style={{
@@ -59,7 +59,7 @@ export const ListingBanner: React.FC<ListingBannerProps> = (props) => {
                   textAlign: "left",
                 }}
               >
-                {props.owner?.account?.profile?.firstName || "Unknown"}'s Listing
+                {firstName}'s Listing
               </Typography.Title>
               <div
                 className="listingBannerOwnerRow"
@@ -79,7 +79,7 @@ export const ListingBanner: React.FC<ListingBannerProps> = (props) => {
                     lineHeight: "20px",
                   }}
                 >
-                  {props.owner?.account?.profile?.firstName || "Unknown"}
+                  {firstName}
                 </span>
                 <Tag className="sharerIcon">
                   <SwapOutlined />

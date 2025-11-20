@@ -73,7 +73,7 @@ export const CreateListingContainer: React.FC<CreateListingContainerProps> = (
 		if (!props.isAuthenticated) {
 			// Store the intended destination for after login
 			sessionStorage.setItem('redirectTo', '/create-listing');
-			navigate('/auth-redirect');
+			navigate('/auth-redirect-user');
 			return;
 		}
 

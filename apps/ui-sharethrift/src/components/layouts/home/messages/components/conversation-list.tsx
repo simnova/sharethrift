@@ -67,9 +67,15 @@ function ConversationItem({
 	isSelected,
 	onClick,
 }: ConversationItemProps) {
+	// Extract firstName from sharer or reserver (both user types have same profile structure)
+	const getFirstName = (user: typeof conversation.sharer | typeof conversation.reserver) => {
+		if (!user) return 'Unknown';
+		return user.account?.profile?.firstName ?? 'Unknown';
+	};
+
 	const otherParticipant =
-		conversation?.sharer?.account?.profile?.firstName ||
-		conversation?.reserver?.account?.profile?.firstName ||
+		getFirstName(conversation?.sharer) ||
+		getFirstName(conversation?.reserver) ||
 		'Unknown';
 	const formatTime = (dateString: string) => {
 		const date = new Date(dateString);

@@ -9,8 +9,10 @@ import {
 import { type ItemListingQueryAllCommand, queryAll } from './query-all.ts';
 import { type ItemListingCancelCommand, cancel } from './cancel.ts';
 import { type ItemListingPauseCommand, pause } from './pause.ts';
-import { queryPaged } from './query-paged.ts';
+import { type ItemListingDeleteCommand, deleteListings } from './delete.ts';
 import { type ItemListingUpdateCommand, update } from './update.ts';
+import { type ItemListingUnblockCommand, unblock } from './unblock.ts';
+import { queryPaged } from './query-paged.ts';
 
 export interface ItemListingApplicationService {
 	create: (
@@ -33,6 +35,13 @@ export interface ItemListingApplicationService {
 	pause: (
 		command: ItemListingPauseCommand,
 	) => Promise<Domain.Contexts.Listing.ItemListing.ItemListingEntityReference>;
+	update: (
+		command: ItemListingUpdateCommand,
+	) => Promise<Domain.Contexts.Listing.ItemListing.ItemListingEntityReference>;
+	deleteListings: (command: ItemListingDeleteCommand) => Promise<boolean>;
+	unblock: (
+		command: ItemListingUnblockCommand,
+	) => Promise<Domain.Contexts.Listing.ItemListing.ItemListingEntityReference>;
 	queryPaged: (command: {
 		page: number;
 		pageSize: number;
@@ -46,7 +55,6 @@ export interface ItemListingApplicationService {
 		page: number;
 		pageSize: number;
 	}>;
-	update: (command: ItemListingUpdateCommand) => Promise<void>;
 }
 
 export const ItemListing = (
@@ -59,7 +67,9 @@ export const ItemListing = (
 		queryAll: queryAll(dataSources),
 		cancel: cancel(dataSources),
 		pause: pause(dataSources),
-		queryPaged: queryPaged(dataSources),
 		update: update(dataSources),
+		deleteListings: deleteListings(dataSources),
+		unblock: unblock(dataSources),
+		queryPaged: queryPaged(dataSources),
 	};
 };
