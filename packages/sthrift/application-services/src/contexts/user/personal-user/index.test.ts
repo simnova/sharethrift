@@ -17,7 +17,6 @@ import { update } from './update.ts';
 import { queryByEmail } from './query-by-email.ts';
 import { getAllUsers } from './get-all-users.ts';
 
-// @ts-expect-error - Required for Vitest Cucumber syntax support
 const _test = { for: describeFeature };
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const feature = await loadFeature(
