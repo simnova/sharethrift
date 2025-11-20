@@ -30,6 +30,46 @@ Startup:
 nvm use v20
 npm run start
 
+## Scripts
+
+Available npm scripts for development and CI/CD:
+
+### Development
+- `pnpm run dev` - Full local development environment (builds, starts emulators, and runs the app)
+- `pnpm run build` - Build all packages in the monorepo
+- `pnpm run test` - Run all tests
+- `pnpm run lint` - Lint all packages
+- `pnpm run format` - Format all code using Biome
+
+### Code Quality & Analysis
+- `pnpm run analyze` - Run e18e CLI analysis across all packages to audit configuration and identify non-performant dependencies
+  - Checks package.json exports, module types, and dependency performance
+  - **Non-blocking** - builds will not fail if issues are reported
+  - Issues should be reviewed and resolved by developers as part of ongoing code quality improvements
+
+### Testing
+- `pnpm run test:coverage` - Run tests with coverage reporting
+- `pnpm run test:coverage:merge` - Run tests and merge coverage reports
+- `pnpm run test:integration` - Run integration tests
+- `pnpm run test:serenity` - Run Serenity.js acceptance tests
+- `pnpm run test:unit` - Run unit tests
+- `pnpm run test:watch` - Run tests in watch mode
+
+### Starting Applications
+- `pnpm run start:api` - Start the API (Azure Functions)
+- `pnpm run start:ui-sharethrift` - Start the UI frontend
+
+### Emulators
+- `pnpm run start-emulator:mongo-memory-server` - Start MongoDB in-memory replica set
+- `pnpm run start-emulator:auth-server` - Start OAuth2/OIDC mock server
+- `pnpm run start-emulator:payment-server` - Start payment mock server
+- `pnpm run start-emulator:messaging-server` - Start messaging mock server
+
+### CI/CD
+- `pnpm run verify` - Run full CI pipeline locally (test coverage, SonarCloud scan, quality gate)
+- `pnpm run sonar` - Run SonarCloud analysis
+- `pnpm run sonar:pr` - Run SonarCloud analysis for pull requests
+
 
 
 Recipe:
