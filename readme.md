@@ -1,90 +1,46 @@
+# ShareThrift
 
+A modern, community‑driven platform designed to reduce waste and enable the sharing of items, services, and classes — empowering individuals and organizations to participate in the circular economy.
 
-VSCode Extensions Required:
+## 📌 Introduction
 
-Azurite - used for storage emulation
+ShareThrift is a web‑based peer‑to‑peer sharing platform that enables people and organizations to lend, borrow, or offer items, services, and classes. Inspired by platforms like Turo, Airbnb, and Facebook Marketplace — but built specifically for the sharing economy — ShareThrift provides a structured, trusted, and community-first way to exchange goods.
 
+### ShareThrift exists to:
 
-Ideas:
+- Reduce consumer waste by extending item lifecycles
+- Enable cost‑efficient access to tools, equipment, and skills
+- Support individuals, small businesses, and partners with flexible sharing models
+- Explore modern technology and product design patterns through an MVP implementation
+- This project is built using Domain-Driven Design (DDD), event-driven communication, and modular application boundaries as specified in the official BRD/SRD.
 
-VSCode Sorter Plugin
-https://marketplace.visualstudio.com/items?itemName=aljazsim.tsco
+## ✨ Features
 
-Decisions:
+### 🔍 Browse, Search & Filter Listings
 
-Use [TSConfig Bases](https://github.com/tsconfig/bases) for TS Configuration
+- Filter by location, date availability, and category
+- View active, inactive, and upcoming listings
 
+### 🧰 Create & Manage Listings
 
-Begin
+- Support for Item, Service, and Class listings
+- Draft, publish, pause, cancel, appeal, and reinstate listings
+- AI‑assisted draft creation using the integrated chatbot
 
-nvm install v20
-nvm install-latest-npm
+### 📅 Reservation Lifecycle
 
-nvm use v20
-npm run clean
-npm install
-npm run build
+- Calendar‑based booking
+- Accept, reject, cancel, and close reservation flows
+- Email notifications for all major events
 
-Startup:
+### 💬 Messaging
 
-nvm use v20
-npm run start
+- In‑platform messaging between sharers and reservers
+- Auto‑expiring conversation threads tied to listings
 
+### 🛡 Admin Tools
 
-
-Recipe:
-
-npm i -D concurrently
-
-# Note: These are historical examples - current structure uses apps/ and packages/
-# Current apps structure:
-# - apps/api/ (Azure Functions API)
-# - apps/ui-sharethrift/ (React frontend)  
-# - apps/docs/ (Documentation site)
-
-# Historical package examples (now moved to apps/ or reorganized under packages/sthrift/ and packages/cellix/):
-# npm init -w ./packages/sthrift/graphql
-# npm install @as-integrations/azure-functions @apollo/server graphql @azure/functions -w api-graphql
-
-# npm init -w ./packages/sthrift/event-handler
-
-# npm init -w ./packages/sthrift/api-services
-# npm init -w ./packages/sthrift/rest
-# npm install @azure/functions -w api-rest
-
-# npm init -w ./packages/sthrift/api-data-sources-domain
-
-# npm init -w ./packages/sthrift/service-otel
-# npm install @azure/monitor-opentelemetry -w service-otel
-
-# npm init -w ./packages/sthrift/persistence
-
-# npm init -w ./packages/cellix/event-bus-seedwork-node
-
-
-
-npm install --save-dev @tsconfig/node20
-npm install --save-dev @tsconfig/node-ts
-npm install --save-dev vitest @vitest/coverage-v8
-
-## Your feedback matters!
-
-Do you find Sharethrift useful? [Give it a ⭐ star on GitHub](https://github.com/simnova/sharethrift)!
-
-[![GitHub stars](https://img.shields.io/github/stars/simnova/sharethrift)](https://github.com/simnova/sharethrift)
-
-Found a bug? Need a feature? Raise [an issue](https://github.com/simnova/sharethrift/issues?state=open)
-or submit a pull request.
-
-Have feedback? Leave a comment in [ShareThrift discussions on GitHub](https://github.com/simnova/sharethrift/discussions)
-
-## Project Status
-
-[![Build Status](https://dev.azure.com/simnova/ShareThrift/_apis/build/status%2FShareThrift?branchName=refs%2Fpull%2F120%2Fmerge)](https://dev.azure.com/simnova/ShareThrift/_build/latest?definitionId=13&branchName=refs%2Fpull%2F120%2Fmerge)
-
-
-## Thanks to all our contributors
-
-[![sharethrift contributors](https://contrib.rocks/image?repo=simnova/sharethrift)](https://github.com/simnova/sharethrift/graphs/contributors)
-
-[⬆ Back to Top](#table-of-contents)
+- Listing moderation
+- User blocking/unblocking
+- Feature flag management
+- Embedded analytics and reporting
