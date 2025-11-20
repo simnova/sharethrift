@@ -36,6 +36,7 @@ export const RequireAuth: React.FC<RequireAuthProps> = (props) => {
 		auth.isLoading,
 		auth.signinRedirect,
 		auth.error,
+		props.forceLogin,
 	]);
 
 	// automatically refresh token
@@ -62,7 +63,10 @@ export const RequireAuth: React.FC<RequireAuthProps> = (props) => {
 	if (auth.isAuthenticated) {
 		result = props.children;
 	} else if (auth.error) {
-		result = <Navigate to="/" />;
+		result = <Navigate to="/login" replace />;
+	} else if (!auth.isLoading && !auth.activeNavigator && props.forceLogin !== true) {
+		// If not loading, not in the middle of auth flow, and not forcing login redirect
+		result = <Navigate to="/login" replace />;
 	} else {
 		return <div>Checking auth2...</div>;
 	}

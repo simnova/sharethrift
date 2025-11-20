@@ -8,6 +8,8 @@ import { ViewListing } from './pages/view-listing-page.tsx';
 import { CreateListing } from './pages/create-listing-page.tsx';
 import { HomeTabsLayout } from './section-layout.tsx';
 import { AdminDashboardMain } from './account/admin-dashboard/pages/admin-dashboard-main.tsx';
+import { RequireAuth } from '../../shared/require-auth.tsx';
+import { RequireAdmin } from '../../shared/require-admin.tsx';
 
 export const HomeRoutes: React.FC = () => {
 	return (
@@ -15,12 +17,12 @@ export const HomeRoutes: React.FC = () => {
 			<Route path="" element={<HomeTabsLayout />}>
                 <Route path="" element={<Listings />} />
                 <Route path="listing/:listingId" element={<ViewListing />} />
-                <Route path="create-listing" element={<CreateListing />} />
-                <Route path="my-listings/*" element={<MyListingsRoutes />} />
-                <Route path="my-reservations/*" element={<MyReservationsRoutes />} />
-                <Route path="messages/*" element={<MessagesRoutes />} />
-                <Route path="account/*" element={<AccountRoutes />} />
-                <Route path="admin-dashboard" element={<AdminDashboardMain />} />
+                <Route path="create-listing" element={<RequireAuth redirectPath="/"><CreateListing /></RequireAuth>} />
+                <Route path="my-listings/*" element={<RequireAuth redirectPath="/"><MyListingsRoutes /></RequireAuth>} />
+                <Route path="my-reservations/*" element={<RequireAuth redirectPath="/"><MyReservationsRoutes /></RequireAuth>} />
+                <Route path="messages/*" element={<RequireAuth redirectPath="/"><MessagesRoutes /></RequireAuth>} />
+                <Route path="account/*" element={<RequireAuth redirectPath="/"><AccountRoutes /></RequireAuth>} />
+                <Route path="admin-dashboard" element={<RequireAuth redirectPath="/"><RequireAdmin><AdminDashboardMain /></RequireAdmin></RequireAuth>} />
 			</Route>
 		</Routes>
 	);
