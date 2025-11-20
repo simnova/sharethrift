@@ -30,13 +30,15 @@ export interface PersonalUserUpdateCommand {
 					status: string;
 					startDate: Date;
 				};
-				transactions?: {
-					transactionId: string;
-					amount: number;
-					referenceId: string;
-					status: string;
-					completedAt: Date;
-				}[] | undefined;
+				transactions?:
+					| {
+							transactionId: string;
+							amount: number;
+							referenceId: string;
+							status: string;
+							completedAt: Date;
+					  }[]
+					| undefined;
 			};
 		};
 	};
@@ -127,6 +129,9 @@ export const update = (datasources: DataSources) => {
 					existingPersonalUser.hasCompletedOnboarding =
 						command.hasCompletedOnboarding;
 				}
+
+				// update transactions if provided
+				
 
 				personalUserToReturn = await repo.save(existingPersonalUser);
 			},

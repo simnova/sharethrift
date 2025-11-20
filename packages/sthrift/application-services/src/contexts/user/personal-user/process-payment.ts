@@ -6,7 +6,7 @@ export interface ProcessPaymentCommand {
 	request: ProcessPaymentRequest;
 }
 
-interface PaymentResponse {
+export interface PaymentResponse {
 	id?: string;
 	status: string;
 	success: boolean;

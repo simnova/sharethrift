@@ -15,8 +15,8 @@ import {
 	type PersonalUserPageResult,
 } from './get-all-users.ts';
 import { update, type PersonalUserUpdateCommand } from './update.ts';
-import type {ProcessPaymentResponse} from '@cellix/payment-service';
 import {
+type PaymentResponse,
 	type ProcessPaymentCommand,
 	processPayment,
 } from './process-payment.ts';
@@ -35,7 +35,7 @@ export interface PersonalUserApplicationService {
 		email: PersonalUserQueryByEmailCommand,
 	) => Promise<Domain.Contexts.User.PersonalUser.PersonalUserEntityReference | null>;
 	getAllUsers: (command: GetAllUsersCommand) => Promise<PersonalUserPageResult>;
-	processPayment: (command: ProcessPaymentCommand) => Promise<ProcessPaymentResponse>;
+	processPayment: (command: ProcessPaymentCommand) => Promise<PaymentResponse>;
 }
 
 export const PersonalUser = (
@@ -55,3 +55,5 @@ export type {
 	GetAllUsersCommand,
 	PersonalUserPageResult,
 } from './get-all-users.ts';
+
+export type { PaymentResponse } from './process-payment.ts';

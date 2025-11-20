@@ -5,7 +5,7 @@ import { expect, vi } from 'vitest';
 import type { GraphContext } from '../../../init/context.ts';
 import personalUserResolvers from './personal-user.resolvers.ts';
 import type { Domain } from '@sthrift/domain';
-import type { PaymentResponse } from '../../builder/generated.ts';
+import type { PaymentResponse } from '@sthrift/application-services';
 // Define a type for the payment response based on the interface structure
 
 const test = { for: describeFeature };
@@ -167,10 +167,12 @@ function createMockPersonalUser(
 
 function createMockProcessPaymentResponse(
 	overrides: Partial<PaymentResponse> = {},
-): PaymentResponse {
+) {
 	return {
 		id: 'payment-123',
 		status: 'SUCCEEDED',
+    success: true,
+    message: 'Payment processed successfully',
 		cybersourceCustomerId: 'cust-12345',
 		orderInformation: {
 			amountDetails: {
@@ -579,7 +581,7 @@ test.for(feature, ({ Scenario, Background, BeforeEachScenario }) => {
 					});
 					vi.mocked(
 						context.applicationServices.User.PersonalUser.processPayment,
-					).mockResolvedValue(mockPaymentResponse);
+					).mockResolvedValue(mockPaymentResponse as PaymentResponse);
 
 					// Mock subscription creation
 					const mockSubscription = createMockSubscription();
@@ -627,7 +629,7 @@ test.for(feature, ({ Scenario, Background, BeforeEachScenario }) => {
 				'it should call "Payment.processPayment" with sanitized fields',
 				() => {
 					expect(
-						context.applicationServices.Payment.processPayment,
+						context.applicationServices.User.PersonalUser.processPayment,
 					).toHaveBeenCalled();
 				},
 			);
