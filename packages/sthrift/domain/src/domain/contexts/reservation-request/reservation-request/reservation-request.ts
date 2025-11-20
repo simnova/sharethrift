@@ -63,30 +63,97 @@ export class ReservationRequest<props extends ReservationRequestProps>
 	get state(): string {
 		return this.props.state;
 	}
+	
 	set state(value: string) {
-		console.log('Setting state to:', value);
-		console.log('Current permissions:', this.passport?.reservationRequest);
-		switch (value) {
+		// Validate state transition permissions
+		const stateValue = value.valueOf ? value.valueOf() : value;
+		
+		switch (stateValue) {
 			case ReservationRequestStates.ACCEPTED:
-				console.log('Accepting request...');
-				this.accept();
+				if (
+					!this.visa.determineIf(
+						(domainPermissions) => domainPermissions.canAcceptRequest,
+					)
+				) {
+					throw new DomainSeedwork.PermissionError(
+						'You do not have permission to accept this reservation request',
+					);
+				}
+				if (this.props.state !== ReservationRequestStates.REQUESTED) {
+					throw new DomainSeedwork.PermissionError('Can only accept requested reservations');
+				}
 				break;
+				
 			case ReservationRequestStates.REJECTED:
-				console.log('Rejecting request...');
-				this.reject();
+				if (
+					!this.visa.determineIf(
+						(domainPermissions) => domainPermissions.canRejectRequest,
+					)
+				) {
+					throw new DomainSeedwork.PermissionError(
+						'You do not have permission to reject this reservation request',
+					);
+				}
+				if (this.props.state !== ReservationRequestStates.REQUESTED) {
+					throw new DomainSeedwork.PermissionError('Can only reject requested reservations');
+				}
 				break;
+				
 			case ReservationRequestStates.CANCELLED:
-				console.log('Cancelling request...');
-				this.cancel();
+				if (
+					!this.visa.determineIf(
+						(domainPermissions) => domainPermissions.canCancelRequest,
+					)
+				) {
+					throw new DomainSeedwork.PermissionError(
+						'You do not have permission to cancel this reservation request',
+					);
+				}
+				if (
+					this.props.state.valueOf() !== ReservationRequestStates.REQUESTED &&
+					this.props.state.valueOf() !== ReservationRequestStates.REJECTED
+				) {
+					throw new Error('Cannot cancel reservation in current state');
+				}
 				break;
+				
 			case ReservationRequestStates.CLOSED:
-				console.log('Closing request...');
-				this.close();
+				if (
+					!this.visa.determineIf(
+						(domainPermissions) => domainPermissions.canCloseRequest,
+					)
+				) {
+					throw new DomainSeedwork.PermissionError(
+						'You do not have permission to close this reservation request',
+					);
+				}
+				if (this.props.state !== ReservationRequestStates.ACCEPTED) {
+					throw new DomainSeedwork.PermissionError('Can only close accepted reservations');
+				}
+				if (
+					!(
+						this.props.closeRequestedBySharer || this.props.closeRequestedByReserver
+					)
+				) {
+					throw new DomainSeedwork.PermissionError(
+						'Can only close reservation requests if at least one user requested it',
+					);
+				}
 				break;
+				
 			case ReservationRequestStates.REQUESTED:
-				this.request();
+				if (!this.isNew) {
+					throw new DomainSeedwork.PermissionError(
+						'Can only set state to requested when creating new reservation requests',
+					);
+				}
 				break;
 		}
+		
+		// Set the state
+		this.props.state = new ValueObjects.ReservationRequestStateValue(
+			stateValue,
+		).valueOf();
 	}
 
 	get reservationPeriodStart(): Date {
@@ -255,112 +322,5 @@ export class ReservationRequest<props extends ReservationRequestProps>
 
 	async loadListing(): Promise<ItemListingEntityReference> {
 		return await this.props.loadListing();
-	}
-
-	private accept(): void {
-		console.log('In accept()...');
-		console.log('Visa:', this.visa);
-		const hasPermission = this.visa.determineIf(
-			(domainPermissions) => domainPermissions.canAcceptRequest,
-		);
-		console.log('Has permission:', hasPermission);
-		if (!hasPermission) {
-			throw new DomainSeedwork.PermissionError(
-				'You do not have permission to accept this reservation request',
-			);
-		}
-
-		if (this.props.state !== ReservationRequestStates.REQUESTED) {
-			throw new DomainSeedwork.PermissionError('Can only accept requested reservations');
-		}
-
-		this.props.state = ReservationRequestStates.ACCEPTED;
-	}
-
-	private reject(): void {
-		if (
-			!this.visa.determineIf(
-				(domainPermissions) => domainPermissions.canRejectRequest,
-			)
-		) {
-			throw new DomainSeedwork.PermissionError(
-				'You do not have permission to reject this reservation request',
-			);
-		}
-
-		if (this.props.state !== ReservationRequestStates.REQUESTED) {
-			throw new DomainSeedwork.PermissionError('Can only reject requested reservations');
-		}
-
-		this.props.state = ReservationRequestStates.REJECTED;
-	}
-
-	private cancel(): void {
-		if (
-			!this.visa.determineIf(
-				(domainPermissions) => domainPermissions.canCancelRequest,
-			)
-		) {
-			throw new DomainSeedwork.PermissionError(
-				'You do not have permission to cancel this reservation request',
-			);
-		}
-
-		if (
-			this.props.state.valueOf() !== ReservationRequestStates.REQUESTED &&
-			this.props.state.valueOf() !== ReservationRequestStates.REJECTED
-		) {
-			throw new Error('Cannot cancel reservation in current state');
-		}
-
-		this.props.state = ReservationRequestStates.CANCELLED;
-	}
-
-	private close(): void {
-		if (
-			!this.visa.determineIf(
-				(domainPermissions) => domainPermissions.canCloseRequest,
-			)
-		) {
-			throw new DomainSeedwork.PermissionError(
-				'You do not have permission to close this reservation request',
-			);
-		}
-
-		if (this.props.state !== ReservationRequestStates.ACCEPTED) {
-			throw new DomainSeedwork.PermissionError('Can only close accepted reservations');
-		}
-
-		if (
-			!(
-				this.props.closeRequestedBySharer || this.props.closeRequestedByReserver
-			)
-		) {
-			throw new DomainSeedwork.PermissionError(
-				'Can only close reservation requests if at least one user requested it',
-			);
-		}
-
-		this.props.state = new ValueObjects.ReservationRequestStateValue(
-			ReservationRequestStates.CLOSED,
-		).valueOf();
-	}
-
-	private request(): void {
-		if (!this.isNew) {
-			throw new DomainSeedwork.PermissionError(
-				'Can only set state to requested when creating new reservation requests',
-			);
-		}
-
-		if (!this.isNew) {
-			throw new Error(
-				'Can only set state to requested when creating new reservation requests',
-			);
-		}
-
-		this.props.state = new ValueObjects.ReservationRequestStateValue(
-			ReservationRequestStates.REQUESTED,
-		).valueOf();
 	}
 }

@@ -45,8 +45,7 @@ const testListingRef: ItemListingEntityReference = {
     listingType: 'item-listing',
     schemaVersion: '1.0.0',
     createdAt: new Date(),
-    updatedAt: new Date(),
-    reservedBy: null
+    updatedAt: new Date()
 };
 
 Before(() => {

@@ -110,27 +110,6 @@ export class ItemListing<props extends ItemListingProps>
 		this.isNew = true;
 	}
 
-		public reserve(reservingUser: PersonalUserEntityReference): void {
-		// Validate listing state
-		if (this.state !== ValueObjects.ListingState.Published.valueOf()) {
-			throw new DomainSeedwork.PermissionError('Only published listings can be reserved');
-		}
-
-		// Validate not reserved
-		if (this.props.reservedBy) {
-			throw new DomainSeedwork.PermissionError('This listing is already reserved');
-		}
-
-		// Validate user has permission to create reservations
-		const permissions = this.visa.determineIf((p) => p.canReserveItemListing);
-		if (!permissions) {
-			throw new Error('You do not have permission to reserve this listing');
-		}		// Update state and reserving user
-		this.props.state = ValueObjects.ListingState.Reserved.valueOf();
-		this.props.reservedBy = reservingUser;
-		this.props.updatedAt = new Date();
-	}
-
 	//#endregion Methods
 
 	//#region Properties
@@ -242,8 +221,23 @@ export class ItemListing<props extends ItemListingProps>
 		return this.props.state;
 	}
 
-	get reservedBy(): PersonalUserEntityReference | null {
-		return this.props.reservedBy || null;
+	set state(value: string) {
+		// State transition logic - determines what transitions are valid
+		switch (value) {
+			case ValueObjects.ListingStateEnum.Published:
+				this.publish();
+				break;
+			case ValueObjects.ListingStateEnum.Paused:
+				this.pause();
+				break;
+			case ValueObjects.ListingStateEnum.Cancelled:
+				this.cancel();
+				break;
+			default:
+				throw new DomainSeedwork.PermissionError(
+					`Cannot transition to state: ${value}`,
+				);
+		}
 	}
 
 	get updatedAt(): Date {
