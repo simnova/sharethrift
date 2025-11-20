@@ -14,6 +14,11 @@ ShareThrift is a web‑based peer‑to‑peer sharing platform that enables peop
 - Explore modern technology and product design patterns through an MVP implementation
 - This project is built using Domain-Driven Design (DDD), event-driven communication, and modular application boundaries as specified in the official BRD/SRD.
 
+## 🗂 Table of Contents
+- Features
+- Monorepo Structure
+- Tech Stack
+
 ## ✨ Features
 
 ### 🔍 Browse, Search & Filter Listings
@@ -44,3 +49,27 @@ ShareThrift is a web‑based peer‑to‑peer sharing platform that enables peop
 - User blocking/unblocking
 - Feature flag management
 - Embedded analytics and reporting
+
+## 🧬 Monorepo Structure
+```
+apps/
+  api/            # Azure Functions host (GraphQL + future REST)
+  docs/           # Docusaurus docs site
+  ui-sharethrift/ # Front-end (Vite + TypeScript)
+packages/
+  sthrift/        # Domain + adapters (graphql, mongoose, etc.)
+  cellix/         # Seedwork abstractions
+iac/              # Bicep infrastructure modules
+documents/        # BRD, SRD, ADRs, architecture diagrams
+```
+
+## 🛠 Tech Stack
+- Runtime: Node.js 22.12.0 / Azure Functions v4
+- Language: TypeScript (strict config)
+- API: Apollo GraphQL
+- Persistence: MongoDB (Mongoose); Cosmos MongoDB target in cloud
+- Infra as Code: Bicep modules (iac)
+- Tooling: Turborepo, Vitest, Biome, SonarQube, Sourcery
+- Local Azure Emulation: Azurite (blob/queue)
+- Observability: OpenTelemetry + Azure Monitor integration
+- Quality Gates: Sonar + coverage thresholds per package
