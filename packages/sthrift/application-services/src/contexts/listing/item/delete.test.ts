@@ -3,11 +3,11 @@ import { fileURLToPath } from 'node:url';
 import { describeFeature, loadFeature } from '@amiceli/vitest-cucumber';
 import { expect, vi } from 'vitest';
 import type { DataSources } from '@sthrift/persistence';
-import { deleteListings } from '../delete.ts';
+import { deleteListings } from './delete.ts';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const feature = await loadFeature(
-path.resolve(__dirname, 'delete.feature'),
+	path.resolve(__dirname, 'features/delete.feature'),
 );
 
 describeFeature(feature, (f) => {

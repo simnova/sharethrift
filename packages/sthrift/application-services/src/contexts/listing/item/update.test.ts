@@ -3,11 +3,11 @@ import { fileURLToPath } from 'node:url';
 import { describeFeature, loadFeature } from '@amiceli/vitest-cucumber';
 import { expect, vi } from 'vitest';
 import type { DataSources } from '@sthrift/persistence';
-import { update, type ItemListingUpdateCommand } from '../update.ts';
+import { update, type ItemListingUpdateCommand } from './update.ts';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const feature = await loadFeature(
-path.resolve(__dirname, 'update.feature'),
+	path.resolve(__dirname, 'features/update.feature'),
 );
 
 describeFeature(feature, (f) => {

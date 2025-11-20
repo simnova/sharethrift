@@ -3,11 +3,11 @@ import { fileURLToPath } from 'node:url';
 import { describeFeature, loadFeature } from '@amiceli/vitest-cucumber';
 import { expect, vi } from 'vitest';
 import type { DataSources } from '@sthrift/persistence';
-import { unblock } from '../unblock.ts';
+import { unblock } from './unblock.ts';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const feature = await loadFeature(
-path.resolve(__dirname, 'unblock.feature'),
+	path.resolve(__dirname, 'features/unblock.feature'),
 );
 
 describeFeature(feature, (f) => {
