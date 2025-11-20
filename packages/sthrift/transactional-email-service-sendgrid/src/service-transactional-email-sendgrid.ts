@@ -102,8 +102,8 @@ export class ServiceTransactionalEmailSendGrid
 	): string {
 		let result = template;
 		for (const [key, value] of Object.entries(data)) {
-			const placeholder = new RegExp(`\\{\\{${key}\\}\\}`, 'g');
-			result = result.replace(placeholder, String(value));
+			const placeholder = new RegExp(String.raw`\{\{${key}\}\}`, 'g');
+			result = result.replaceAll(placeholder, String(value));
 		}
 		return result;
 	}
