@@ -106,6 +106,7 @@ export const buildApplicationServicesFactory = (
 			infrastructureServicesRegistry.dataSourcesFactory.withPassport(
 				passport,
 				infrastructureServicesRegistry.messagingService,
+        infrastructureServicesRegistry.paymentService,
 			);
 
 		return {

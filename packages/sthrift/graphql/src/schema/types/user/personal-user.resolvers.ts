@@ -1,8 +1,8 @@
 import type { GraphContext } from '../../../init/context.ts';
 import type { GraphQLResolveInfo } from 'graphql';
 import type {
+PaymentResponse,
 	PersonalUserUpdateInput,
-	PaymentResponse,
 	ProcessPaymentInput,
 	RefundResponse,
 	Resolvers,
@@ -140,117 +140,29 @@ const personalUserResolvers: Resolvers = {
 				isBlocked: false,
 			});
 		},
-		processPayment: async (_parent, args: { input: ProcessPaymentInput }, context) => {
-          console.log('Processing payment', args.input);
+		processPayment: async (
+			_parent,
+			args: { input: ProcessPaymentInput },
+			context,
+		) => {
+			console.log('Processing payment', args.input);
 
-          try {
-            const personalUser =
-              await context.applicationServices.User.PersonalUser.queryById({
-                id: args.input.userId,
-					});
-				if (!personalUser) {
-					return {
-						status: 'FAILED',
-						success: false,
-						message: 'User not found',
-					} as PaymentResponse;
-				}
-
-				const accountPlan =
-					await context.applicationServices.AccountPlan.AccountPlan.queryByName(
-						{
-							planName: personalUser.account.accountType,
+			return await context.applicationServices.User.PersonalUser.processPayment(
+				{
+					request: {
+						userId: args.input.userId,
+						paymentInstrument: {
+							...args.input.paymentInstrument,
+							billingAddressLine2:
+								args.input.paymentInstrument.billingAddressLine2 ?? '',
+							billingPhone: args.input.paymentInstrument.billingPhone ?? '',
+							billingEmail: args.input.paymentInstrument.billingEmail ?? '',
 						},
-					);
-
-				if (!accountPlan) {
-					return {
-						status: 'FAILED',
-						success: false,
-						message: 'Account plan not found',
-					} as PaymentResponse;
-				}
-
-				const sanitizedRequest = {
-					...args.input,
-					paymentInstrument: {
-						...args.input.paymentInstrument,
-						billingAddressLine2:
-							args.input.paymentInstrument.billingAddressLine2 ?? '',
-						billingPhone: args.input.paymentInstrument.billingPhone ?? '',
-						billingEmail: args.input.paymentInstrument.billingEmail ?? '',
+						paymentAmount: args.input.paymentAmount,
+						currency: args.input.currency,
 					},
-				};
-
-				const response =
-					await context.applicationServices.Payment.processPayment(
-						sanitizedRequest,
-					);
-
-				if (
-					response.status === 'FAILED' ||
-					response.cybersourceCustomerId === undefined
-				) {
-					return {
-						status: 'FAILED',
-						success: false,
-						message: 'Payment failed',
-					} as PaymentResponse;
-				}
-
-				// create subscription
-				const startDate = new Date();
-				const subscription =
-					await context.applicationServices.Payment.createSubscription({
-						planId: accountPlan?.cybersourcePlanId ?? '', // cybersource plan ID when available
-						cybersourceCustomerId: response.cybersourceCustomerId,
-						startDate: startDate,
-					});
-
-				// update user with subscription id
-				await context.applicationServices.User.PersonalUser.update({
-					id: personalUser.id,
-					hasCompletedOnboarding: true,
-					account: {
-						profile: {
-							billing: {
-								cybersourceCustomerId: response.cybersourceCustomerId,
-								subscription: {
-									subscriptionId: subscription.id,
-									planCode: accountPlan?.cybersourcePlanId ?? '', // cybersource plan ID when available
-									status: subscription.status,
-									startDate: startDate,
-								},
-							},
-						},
-					},
-				});
-
-				return {
-					...response,
-					success: response.status === 'SUCCEEDED',
-					cybersourceCustomerId: response.cybersourceCustomerId,
-					cybersourceSubscriptionId: subscription.id,
-					cybersourcePlanId: accountPlan?.cybersourcePlanId ?? '',
-					message:
-						response.status === 'SUCCEEDED'
-							? 'Payment processed successfully'
-							: undefined,
-				} as PaymentResponse;
-			} catch (error) {
-				console.error('Payment processing error:', error);
-				return {
-					status: 'FAILED',
-					success: false,
-					message:
-						error instanceof Error ? error.message : 'Unknown error occurred',
-					errorInformation: {
-						reason: 'PROCESSING_ERROR',
-						message:
-							error instanceof Error ? error.message : 'Unknown error occurred',
-					},
-				};
-			}
+				},
+			) as PaymentResponse;
 		},
 		refundPayment: async (_parent, { request }, context) => {
 			console.log('Refunding payment', request);

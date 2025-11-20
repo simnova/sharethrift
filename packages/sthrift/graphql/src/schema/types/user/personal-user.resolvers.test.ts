@@ -5,22 +5,8 @@ import { expect, vi } from 'vitest';
 import type { GraphContext } from '../../../init/context.ts';
 import personalUserResolvers from './personal-user.resolvers.ts';
 import type { Domain } from '@sthrift/domain';
+import type { PaymentResponse } from '../../builder/generated.ts';
 // Define a type for the payment response based on the interface structure
-interface ProcessPaymentResponse {
-	id?: string;
-	status?: string;
-	cybersourceCustomerId?: string;
-	errorInformation?: {
-		reason?: string;
-		message?: string;
-	};
-	orderInformation?: {
-		amountDetails?: {
-			totalAmount?: string;
-			currency?: string;
-		};
-	};
-}
 
 const test = { for: describeFeature };
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
@@ -180,8 +166,8 @@ function createMockPersonalUser(
 }
 
 function createMockProcessPaymentResponse(
-	overrides: Partial<ProcessPaymentResponse> = {},
-): ProcessPaymentResponse {
+	overrides: Partial<PaymentResponse> = {},
+): PaymentResponse {
 	return {
 		id: 'payment-123',
 		status: 'SUCCEEDED',
@@ -207,7 +193,7 @@ function createMockAccountPlan() {
 			activeReservations: 5,
 			bookmarks: 20,
 			itemsToShare: 10,
-			friends: 50
+			friends: 50,
 		},
 		name: 'Verified Personal Plan',
 		description: 'A verified personal account plan',
@@ -232,14 +218,14 @@ function createMockSubscription() {
 		_links: {
 			self: { href: '/v2/subscriptions/sub-789' },
 			update: { href: '/v2/subscriptions/sub-789' },
-			cancel: { href: '/v2/subscriptions/sub-789/cancel' }
+			cancel: { href: '/v2/subscriptions/sub-789/cancel' },
 		},
 		submitTimeUtc: new Date().toISOString(),
 		subscriptionInformation: {
 			code: 'SUCCESS',
 			status: 'ACTIVE',
-			subscriptionId: 'sub-789'
-		}
+			subscriptionId: 'sub-789',
+		},
 	};
 }
 
@@ -477,7 +463,9 @@ test.for(feature, ({ Scenario, Background, BeforeEachScenario }) => {
 			});
 			And('it should update the record and return the updated user', () => {
 				expect(result).toBeDefined();
-				expect((result as { personalUser: { id: string } }).personalUser.id).toBe('user-123');
+				expect(
+					(result as { personalUser: { id: string } }).personalUser.id,
+				).toBe('user-123');
 			});
 		},
 	);
@@ -590,7 +578,7 @@ test.for(feature, ({ Scenario, Background, BeforeEachScenario }) => {
 						cybersourceCustomerId: 'cust-12345',
 					});
 					vi.mocked(
-						context.applicationServices.Payment.processPayment,
+						context.applicationServices.User.PersonalUser.processPayment,
 					).mockResolvedValue(mockPaymentResponse);
 
 					// Mock subscription creation
@@ -635,11 +623,14 @@ test.for(feature, ({ Scenario, Background, BeforeEachScenario }) => {
 					);
 				}
 			});
-			Then('it should call "Payment.processPayment" with sanitized fields', () => {
-				expect(
-					context.applicationServices.Payment.processPayment,
-				).toHaveBeenCalled();
-			});
+			Then(
+				'it should call "Payment.processPayment" with sanitized fields',
+				() => {
+					expect(
+						context.applicationServices.Payment.processPayment,
+					).toHaveBeenCalled();
+				},
+			);
 			And(
 				'return a PaymentResponse with status "SUCCEEDED" and success true',
 				() => {

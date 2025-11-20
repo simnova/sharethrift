@@ -658,8 +658,8 @@ export interface ProcessPaymentRequest {
 }
 
 export interface ProcessPaymentResponse {
-	id?: string;
-	status?: string;
+	id?: string | undefined;
+	status: string;
 	cybersourceCustomerId?: string;
 	errorInformation?: {
 		reason?: string;
@@ -671,6 +671,9 @@ export interface ProcessPaymentResponse {
 			currency?: string;
 		};
 	};
+  referenceId?: string;
+  completedAt?: Date | undefined;
+  transactionId?: string;
 }
 
 export interface RefundPaymentRequest {

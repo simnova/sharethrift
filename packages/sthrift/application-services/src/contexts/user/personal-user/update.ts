@@ -22,8 +22,6 @@ export interface PersonalUserUpdateCommand {
 				zipCode: string;
 			};
 
-			// TBD: Billing info
-
 			billing?: {
 				cybersourceCustomerId?: string | undefined;
 				subscription?: {
@@ -32,6 +30,13 @@ export interface PersonalUserUpdateCommand {
 					status: string;
 					startDate: Date;
 				};
+				transactions?: {
+					transactionId: string;
+					amount: number;
+					referenceId: string;
+					status: string;
+					completedAt: Date;
+				}[] | undefined;
 			};
 		};
 	};

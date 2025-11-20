@@ -70,8 +70,9 @@ export class DefaultPaymentApplicationService
 				return failure;
 			}
 
+      const referenceId = `sharethrift-${request.userId}`;
 			const receipt = await this.paymentService.processPayment(
-				request.userId,
+				referenceId,
 				paymentInstrumentId,
 				amount,
 			);
@@ -105,6 +106,9 @@ export class DefaultPaymentApplicationService
 						currency: request.currency,
 					},
 				},
+        referenceId: referenceId,
+        completedAt: receipt.completedAt,
+        transactionId: receipt.transactionId ?? "",
 			};
 			if (receipt.transactionId) {
 				success.id = receipt.transactionId;
