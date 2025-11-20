@@ -1,5 +1,6 @@
 import { Card, Button, Tag } from "antd";
 import type { AdminUserData } from "./admin-users-table.types.ts";
+import { formatGraphQLDate } from "../../../../../../../utils/date-utils.ts";
 
 export interface AdminUsersCardProps {
   user: AdminUserData;
@@ -40,19 +41,7 @@ export const AdminUsersCard: React.FC<Readonly<AdminUsersCardProps>> = ({
         </div>
         <div>
           <strong>Created:</strong>{" "}
-          {
-            // Guard against missing/invalid dates
-            (() => {
-              if (!user?.accountCreated) {
-                return "N/A";
-              }
-              const d = new Date(user.accountCreated);
-              if (Number.isNaN(d.getTime())) {
-                return "N/A";
-              }
-              return d.toLocaleDateString();
-            })()
-          }
+          {formatGraphQLDate(user?.accountCreated, undefined, "N/A")}
         </div>
         {user.email && (
           <div>

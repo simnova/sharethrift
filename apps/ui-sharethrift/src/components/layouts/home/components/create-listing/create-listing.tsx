@@ -7,6 +7,7 @@ import { ImageGallery } from './create-listing-image-gallery.tsx';
 import { ListingForm } from './create-listing-form.tsx';
 import '../view-listing/listing-image-gallery/listing-image-gallery.overrides.css';
 import './create-listing.overrides.css';
+import { dayjsToGraphQLDate } from '../../../../../utils/date-utils.ts';
 
 // Date handling and detailed form controls live inside ListingForm component
 
@@ -67,10 +68,12 @@ export const CreateListing: React.FC<CreateListingProps> = ({
 				location: values.location || '',
 				sharingPeriod: values.sharingPeriod
 					? [
-							values.sharingPeriod[0]?.toISOString?.() ||
-								defaultStartDate.toISOString(),
-							values.sharingPeriod[1]?.toISOString?.() ||
-								defaultEndDate.toISOString(),
+							values.sharingPeriod[0] 
+								? dayjsToGraphQLDate(values.sharingPeriod[0])
+								: defaultStartDate.toISOString(),
+							values.sharingPeriod[1] 
+								? dayjsToGraphQLDate(values.sharingPeriod[1])
+								: defaultEndDate.toISOString(),
 						]
 					: [defaultStartDate.toISOString(), defaultEndDate.toISOString()],
 				images: uploadedImages,
@@ -93,8 +96,8 @@ export const CreateListing: React.FC<CreateListingProps> = ({
 					location: values.location,
 					sharingPeriod: values.sharingPeriod
 						? [
-								values.sharingPeriod[0].toISOString(),
-								values.sharingPeriod[1].toISOString(),
+								dayjsToGraphQLDate(values.sharingPeriod[0]),
+								dayjsToGraphQLDate(values.sharingPeriod[1]),
 							]
 						: ['', ''],
 					images: uploadedImages,

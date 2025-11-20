@@ -5,6 +5,7 @@ import { ReservationStatusTag } from '@sthrift/ui-components';
 import { ReservationActions } from './reservation-actions.tsx';
 import type { HomeMyReservationsReservationsViewActiveContainerActiveReservationsQuery } from '../../../../../generated.tsx';
 import { BASE64_FALLBACK_IMAGE } from '../constants/ui-constants.ts';
+import { formatGraphQLDate, formatGraphQLDateRange } from '../../../../../utils/date-utils.ts';
 
 type ReservationRequestFieldsFragment =
 	HomeMyReservationsReservationsViewActiveContainerActiveReservationsQuery['myActiveReservations'][number];
@@ -88,7 +89,7 @@ export const ReservationCard: React.FC<ReservationCardProps> = ({
 								Requested On:{' '}
 							</Text>
 							<Text className={styles['cardMetaValue']}>
-								{new Date(reservation.createdAt).toLocaleDateString()}
+								{formatGraphQLDate(reservation.createdAt)}
 							</Text>
 						</div>
 						<div>
@@ -96,13 +97,13 @@ export const ReservationCard: React.FC<ReservationCardProps> = ({
 								Reservation Period:{' '}
 							</Text>
 							<Text className={styles['cardMetaValue']}>
-								{new Date(
+								{formatGraphQLDateRange(
 									reservation.reservationPeriodStart,
-								).toLocaleDateString()}{' '}
-								-{' '}
-								{new Date(
 									reservation.reservationPeriodEnd,
-								).toLocaleDateString()}
+									undefined,
+									' - ',
+									'No dates available'
+								)}
 							</Text>
 						</div>
 					</div>

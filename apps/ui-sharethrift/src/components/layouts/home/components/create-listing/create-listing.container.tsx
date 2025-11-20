@@ -3,6 +3,7 @@ import { useState, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useMutation } from "@apollo/client/react";
 import { message } from 'antd';
+import { parseGraphQLDateTime } from '../../../../../utils/date-utils.ts';
 import {
 	CreateListing,
 	type CreateListingFormData,
@@ -82,8 +83,8 @@ export const CreateListingContainer: React.FC<CreateListingContainerProps> = (
 			description: formData.description,
 			category: formData.category,
 			location: formData.location,
-			sharingPeriodStart: new Date(formData.sharingPeriod[0]),
-			sharingPeriodEnd: new Date(formData.sharingPeriod[1]),
+			sharingPeriodStart: parseGraphQLDateTime(formData.sharingPeriod[0]) || new Date(),
+			sharingPeriodEnd: parseGraphQLDateTime(formData.sharingPeriod[1]) || new Date(),
 			images: formData.images,
 			isDraft,
 		};

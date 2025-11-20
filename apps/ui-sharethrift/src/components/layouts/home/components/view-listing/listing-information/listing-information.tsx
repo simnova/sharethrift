@@ -9,6 +9,7 @@ import type {
 import { LoadingOutlined } from '@ant-design/icons';
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { parseGraphQLDateTime } from '../../../../../../utils/date-utils.ts';
 
 // Manual isBetween logic for Dayjs
 function isBetweenManual(
@@ -123,8 +124,15 @@ export const ListingInformation: React.FC<ListingInformationProps> = ({
 				currentDate.isSame(endDate, 'day')
 			) {
 				const isDisabled = otherReservations.some((otherRes) => {
-					const otherResStart = dayjs(Number(otherRes?.reservationPeriodStart));
-					const otherResEnd = dayjs(Number(otherRes?.reservationPeriodEnd));
+					const startDate = parseGraphQLDateTime(otherRes?.reservationPeriodStart);
+					const endDate = parseGraphQLDateTime(otherRes?.reservationPeriodEnd);
+					
+					if (!startDate || !endDate) {
+						return false; // Skip invalid dates
+					}
+					
+					const otherResStart = dayjs(startDate);
+					const otherResEnd = dayjs(endDate);
 					return isBetweenManual(
 						currentDate,
 						otherResStart,
@@ -247,18 +255,11 @@ export const ListingInformation: React.FC<ListingInformationProps> = ({
 										value={
 											userReservationRequest?.reservationPeriodStart != null &&
 											userReservationRequest?.reservationPeriodEnd
-												? [
-														dayjs(
-															Number(
-																userReservationRequest.reservationPeriodStart,
-															),
-														),
-														dayjs(
-															Number(
-																userReservationRequest.reservationPeriodEnd,
-															),
-														),
-													]
+												? (() => {
+													const startDate = parseGraphQLDateTime(userReservationRequest.reservationPeriodStart);
+													const endDate = parseGraphQLDateTime(userReservationRequest.reservationPeriodEnd);
+													return startDate && endDate ? [dayjs(startDate), dayjs(endDate)] : null;
+												})() || [null, null]
 												: [
 														reservationDates?.startDate
 															? dayjs(reservationDates.startDate)
@@ -278,12 +279,15 @@ export const ListingInformation: React.FC<ListingInformationProps> = ({
 												return false;
 											}
 											return otherReservations.some((reservation) => {
-												const resStart = dayjs(
-													Number(reservation?.reservationPeriodStart),
-												);
-												const resEnd = dayjs(
-													Number(reservation?.reservationPeriodEnd),
-												);
+												const startDate = parseGraphQLDateTime(reservation?.reservationPeriodStart);
+												const endDate = parseGraphQLDateTime(reservation?.reservationPeriodEnd);
+												
+												if (!startDate || !endDate) {
+													return false; // Skip invalid dates
+												}
+												
+												const resStart = dayjs(startDate);
+												const resEnd = dayjs(endDate);
 												return isBetweenManual(
 													current,
 													resStart,

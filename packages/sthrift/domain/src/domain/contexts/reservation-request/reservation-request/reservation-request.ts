@@ -98,7 +98,10 @@ export class ReservationRequest<props extends ReservationRequestProps>
 			);
 		}
 
-		if (value.getTime() < Date.now()) {
+		// Compare against start of today to allow same-day reservations
+		const startOfToday = new Date();
+		startOfToday.setHours(0, 0, 0, 0);
+		if (value.getTime() < startOfToday.getTime()) {
 			throw new DomainSeedwork.PermissionError(
 				'Reservation period start date must be today or in the future',
 			);
@@ -130,9 +133,12 @@ export class ReservationRequest<props extends ReservationRequestProps>
 			);
 		}
 
-		if (value.getTime() < Date.now()) {
+		// Compare against start of today to allow same-day reservations
+		const startOfToday = new Date();
+		startOfToday.setHours(0, 0, 0, 0);
+		if (value.getTime() < startOfToday.getTime()) {
 			throw new DomainSeedwork.PermissionError(
-				'Reservation period end date must be in the future',
+				'Reservation period end date must be today or in the future',
 			);
 		}
 

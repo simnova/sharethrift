@@ -8,6 +8,7 @@ import {
     AdminListingsTableContainerUnblockListingDocument,
     AdminListingsTableContainerRemoveListingDocument,
 } from '../../../../../../../generated.tsx';
+import { formatGraphQLDate, formatGraphQLDateRange } from '../../../../../../../utils/date-utils.ts';
 
 export function AdminViewListing(): ReactElement {
     const { listingId } = useParams();
@@ -131,20 +132,26 @@ export function AdminViewListing(): ReactElement {
                                 {listing.id}
                             </Descriptions.Item>
                             <Descriptions.Item label="Published At">
-                                {listing.createdAt 
-                                    ? new Date(listing.createdAt).toLocaleDateString('en-US', {
+                                {formatGraphQLDate(
+                                    listing.createdAt, 
+                                    {
                                         year: 'numeric',
                                         month: 'long',
                                         day: 'numeric',
                                         hour: '2-digit',
                                         minute: '2-digit',
-                                    })
-                                    : 'N/A'}
+                                    },
+                                    'N/A'
+                                )}
                             </Descriptions.Item>
-                            <Descriptions.Item label="Reservation Period">
-                                {listing.sharingPeriodStart && listing.sharingPeriodEnd
-                                    ? `${new Date(listing.sharingPeriodStart).toLocaleDateString()} - ${new Date(listing.sharingPeriodEnd).toLocaleDateString()}`
-                                    : 'N/A'}
+                            <Descriptions.Item label="Sharing Period">
+                                {formatGraphQLDateRange(
+                                    listing.sharingPeriodStart,
+                                    listing.sharingPeriodEnd,
+                                    undefined,
+                                    ' - ',
+                                    'N/A'
+                                )}
                             </Descriptions.Item>
                             <Descriptions.Item label="Status">
                                 <Tag color={statusColor}>{statusLabel}</Tag>
