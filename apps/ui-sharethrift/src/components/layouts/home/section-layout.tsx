@@ -50,6 +50,11 @@ export const HomeTabsLayout: React.FC = () => {
 	};
 
 	const handleNavigate = (key: string) => {
+		// Handle account subroutes
+		const accountSubTabs = ['profile', 'bookmarks', 'settings'];
+		if (accountSubTabs.includes(key)) {
+			return navigate(`/account/${key}`);
+		}
 		// If key is already in the form 'account/profile', 'account/settings', etc.
 		if (key.startsWith('account/')) {
 			return navigate(`/${key}`);
