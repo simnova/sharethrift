@@ -69,10 +69,15 @@ input CreateItemListingInput {
 	isDraft: Boolean
 }
 
+type ItemListingMutationResult implements MutationResult {
+  status: MutationStatus!
+  listing: ItemListing
+}
+
 extend type Mutation {
 	createItemListing(input: CreateItemListingInput!): ItemListing!
-	cancelItemListing(id: ObjectID!): ItemListing!
-	removeListing(id: ObjectID!): Boolean!
+	cancelItemListing(id: ObjectID!): ItemListingMutationResult!
+	deleteItemListing(id: ObjectID!): ItemListingMutationResult!
 	unblockListing(id: ObjectID!): Boolean!
 }
 

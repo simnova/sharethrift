@@ -1,8 +1,6 @@
+import type { GraphContext } from '../../../init/context.ts';
 import type { Resolvers } from '../../builder/generated.js';
-import {
-	PopulateUserFromField,
-	getUserByEmail,
-} from '../../resolver-helper.ts';
+import { PopulateUserFromField } from '../../resolver-helper.ts';
 
 const itemListingResolvers: Resolvers = {
 	ItemListing: {
@@ -13,12 +11,11 @@ const itemListingResolvers: Resolvers = {
 			const currentUser = context.applicationServices.verifiedUser;
 			const email = currentUser?.verifiedJwt?.email;
 			let sharerId: string | undefined;
-
 			if (email) {
-				const user = await getUserByEmail(email, context);
-				if (user) {
-					sharerId = user.id;
-				}
+				sharerId =
+					await context.applicationServices.User.PersonalUser.queryByEmail({
+						email: email,
+					}).then((user) => (user ? user.id : undefined));
 			}
 			type PagedArgs = {
 				page: number;
@@ -32,11 +29,11 @@ const itemListingResolvers: Resolvers = {
 			const pagedArgs: PagedArgs = {
 				page: args.page,
 				pageSize: args.pageSize,
-				...(args.searchText ? { searchText: args.searchText } : {}),
-				...(args.statusFilters
+				...(args.searchText != null ? { searchText: args.searchText } : {}),
+				...(args.statusFilters != null
 					? { statusFilters: [...args.statusFilters] }
 					: {}),
-				...(args.sorter
+				...(args.sorter != null
 					? {
 							sorter: {
 								field: args.sorter.field,
@@ -46,6 +43,7 @@ const itemListingResolvers: Resolvers = {
 					: {}),
 				...(sharerId && { sharerId }),
 			};
+
 			return await context.applicationServices.Listing.ItemListing.queryPaged(
 				pagedArgs,
 			);
@@ -72,11 +70,11 @@ const itemListingResolvers: Resolvers = {
 			const pagedArgs: PagedArgs = {
 				page: args.page,
 				pageSize: args.pageSize,
-				...(args.searchText ? { searchText: args.searchText } : {}),
-				...(args.statusFilters
+				...(args.searchText != null ? { searchText: args.searchText } : {}),
+				...(args.statusFilters != null
 					? { statusFilters: [...args.statusFilters] }
 					: {}),
-				...(args.sorter
+				...(args.sorter != null
 					? {
 							sorter: {
 								field: args.sorter.field,
@@ -99,11 +97,15 @@ const itemListingResolvers: Resolvers = {
 				throw new Error('Authentication required');
 			}
 
-			// Find the user by email (supports both PersonalUser and AdminUser)
-			const user = await getUserByEmail(userEmail, context);
+			// Find the user by email to get their database ID
+			const user =
+				await context.applicationServices.User.PersonalUser.queryByEmail({
+					email: userEmail,
+				});
 			if (!user) {
 				throw new Error(`User not found for email ${userEmail}`);
 			}
+
 			const command = {
 				sharer: user,
 				title: args.input.title,
@@ -122,22 +124,10 @@ const itemListingResolvers: Resolvers = {
 			);
 		},
 
-		removeListing: async (_parent, args, context) => {
-			// Admin-note: role-based authorization should be implemented here (security)
-			// Once implemented, use system-level permissions for admin operations
-			await context.applicationServices.Listing.ItemListing.update({
-				id: args.id,
-				isDeleted: true,
-			});
-			return true;
-		},
-
 		unblockListing: async (_parent, args, context) => {
 			// Admin-note: role-based authorization should be implemented here (security)
-			// Once implemented, use system-level permissions for admin operations
-			await context.applicationServices.Listing.ItemListing.update({
+			await context.applicationServices.Listing.ItemListing.unblock({
 				id: args.id,
-				isBlocked: false,
 			});
 			return true;
 		},
@@ -145,16 +135,24 @@ const itemListingResolvers: Resolvers = {
 			_parent: unknown,
 			args: { id: string },
 			context,
-		) => {
-			const userEmail =
-				context.applicationServices.verifiedUser?.verifiedJwt?.email;
-			if (!userEmail) {
-				throw new Error('Authentication required');
-			}
-
-			return await context.applicationServices.Listing.ItemListing.cancel({
+		) => ({
+			status: { success: true },
+			listing: await context.applicationServices.Listing.ItemListing.cancel({
 				id: args.id,
+			}),
+		}),
+
+		deleteItemListing: async (
+			_parent: unknown,
+			args: { id: string },
+			context: GraphContext,
+		) => {
+			await context.applicationServices.Listing.ItemListing.deleteListings({
+				id: args.id,
+				userEmail:
+					context.applicationServices.verifiedUser?.verifiedJwt?.email ?? '',
 			});
+			return { status: { success: true } };
 		},
 	},
 };
