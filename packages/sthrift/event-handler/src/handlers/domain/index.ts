@@ -1,7 +1,7 @@
-import type { DomainDataSource } from '@sthrift/domain';
+import type { DataSourcesFactory } from '@sthrift/persistence';
 
 export const RegisterDomainEventHandlers = (
-    _domainDataSource: DomainDataSource
+    _dataSourcesFactory: DataSourcesFactory
 ): void => {
     /* Register domain event handlers */
 };

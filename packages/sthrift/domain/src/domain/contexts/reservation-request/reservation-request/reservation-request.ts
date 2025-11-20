@@ -9,6 +9,7 @@ import type {
 	ReservationRequestEntityReference,
 	ReservationRequestProps,
 } from './reservation-request.entity.ts';
+import { ReservationRequestCreatedEvent } from '../../../events/types/reservation-request-created.ts';
 
 export class ReservationRequest<props extends ReservationRequestProps>
 	extends DomainSeedwork.AggregateRoot<props, Passport>
@@ -52,6 +53,17 @@ export class ReservationRequest<props extends ReservationRequestProps>
 		instance.reservationPeriodStart = reservationPeriodStart;
 		instance.reservationPeriodEnd = reservationPeriodEnd;
 		instance.isNew = false;
+
+		// Fire integration event for reservation request creation
+		instance.addIntegrationEvent(ReservationRequestCreatedEvent, {
+			reservationRequestId: newProps.id,
+			listingId: listing.id,
+			reserverId: reserver.id,
+			sharerId: listing.sharer.id,
+			reservationPeriodStart,
+			reservationPeriodEnd,
+		});
+
 		return instance;
 	}
 

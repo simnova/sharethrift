@@ -1,7 +1,10 @@
-import type { DomainDataSource } from '@sthrift/domain';
+import { Domain } from '@sthrift/domain';
+import type { DataSourcesFactory } from '@sthrift/persistence';
+import { registerReservationRequestCreatedHandler } from './reservation-request-created--notify-sharer.ts';
 
 export const RegisterIntegrationEventHandlers = (
-	domainDataSource: DomainDataSource,
+	dataSourcesFactory: DataSourcesFactory,
+	emailService: Domain.Services['TransactionalEmailService'],
 ): void => {
-	console.log(domainDataSource);
+	registerReservationRequestCreatedHandler(dataSourcesFactory, emailService);
 };
