@@ -2,9 +2,11 @@ import {
 	GuestPassport,
 	SystemPassport,
 	PersonalUserPassport,
+	AdminUserPassport,
 } from '../iam/index.ts';
 import type { PermissionsSpec } from '../iam/system/system.passport-base.ts';
 import type { Contexts } from '../index.ts';
+import type { AppealRequestPassport } from './appeal-request/appeal-request.passport.ts';
 import type { ConversationPassport } from './conversation/conversation.passport.ts';
 import type { ListingPassport } from './listing/listing.passport.ts';
 import type { ReservationRequestPassport } from './reservation-request/reservation-request.passport.ts';
@@ -15,6 +17,7 @@ export interface Passport {
 	get listing(): ListingPassport;
 	get conversation(): ConversationPassport;
 	get reservationRequest(): ReservationRequestPassport;
+	get appealRequest(): AppealRequestPassport;
 }
 
 export const PassportFactory = {
@@ -30,5 +33,11 @@ export const PassportFactory = {
 		user: Contexts.User.PersonalUser.PersonalUserEntityReference,
 	): Passport {
 		return new PersonalUserPassport(user);
+	},
+
+	forAdminUser(
+		user: Contexts.User.AdminUser.AdminUserEntityReference,
+	): Passport {
+		return new AdminUserPassport(user);
 	},
 };

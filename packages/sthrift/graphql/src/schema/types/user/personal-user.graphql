@@ -3,11 +3,11 @@ type PersonalUser implements MongoBase {
 	isBlocked: Boolean
 	account: PersonalUserAccount
 	hasCompletedOnboarding: Boolean
-	role: PersonalUserRole
 	id: ObjectID!
 	schemaVersion: String
 	createdAt: DateTime
 	updatedAt: DateTime
+	userIsAdmin: Boolean
 }
 
 type PersonalUserPage {
@@ -27,6 +27,7 @@ type PersonalUserAccount {
 type PersonalUserAccountProfile {
 	firstName: String
 	lastName: String
+	aboutMe: String
 	location: PersonalUserAccountProfileLocation
 	billing: PersonalUserAccountProfileBilling
 }
@@ -65,6 +66,7 @@ input PersonalUserAccountProfileUpdateInput {
 	lastName: String
 	location: PersonalUserAccountProfileLocationUpdateInput
 	billing: PersonalUserAccountProfileBillingUpdateInput
+	aboutMe: String
 }
 
 input PersonalUserAccountProfileLocationUpdateInput {
@@ -89,7 +91,7 @@ extend type Query {
 	personalUserById(id: ObjectID!): PersonalUser
 	currentPersonalUserAndCreateIfNotExists: PersonalUser!
 
-    allUsers(
+	allUsers(
 		page: Int!
 		pageSize: Int!
 		searchText: String

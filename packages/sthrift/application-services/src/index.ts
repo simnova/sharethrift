@@ -22,11 +22,17 @@ import {
 	type ListingContextApplicationService,
 } from './contexts/listing/index.ts';
 
+import {
+	AppealRequest,
+	type AppealRequestContextApplicationService,
+} from './contexts/appeal-request/index.ts';
+
 export interface ApplicationServices {
 	User: UserContextApplicationService;
 	Conversation: ConversationContextApplicationService;
 	Listing: ListingContextApplicationService;
 	ReservationRequest: ReservationRequestContextApplicationService;
+	AppealRequest: AppealRequestContextApplicationService;
 	get verifiedUser(): VerifiedUser | null;
 	Payment: PaymentApplicationService;
 }
@@ -84,14 +90,25 @@ export const buildApplicationServicesFactory = (
 					);
 
 				if (personalUser) {
-					console.log(passport);
 					passport = Domain.PassportFactory.forPersonalUser(personalUser);
+				}
+			} else if (openIdConfigKey === 'AdminPortal') {
+				const adminUser =
+					await readonlyDataSource.User.AdminUser.AdminUserReadRepo.getByEmail(
+						verifiedJwt.email,
+					);
+
+				if (adminUser) {
+					passport = Domain.PassportFactory.forAdminUser(adminUser);
 				}
 			}
 		}
 
 		const dataSources =
-			infrastructureServicesRegistry.dataSourcesFactory.withPassport(passport);
+			infrastructureServicesRegistry.dataSourcesFactory.withPassport(
+				passport,
+				infrastructureServicesRegistry.messagingService,
+			);
 
 		return {
 			User: User(dataSources),
@@ -102,6 +119,7 @@ export const buildApplicationServicesFactory = (
 			ReservationRequest: ReservationRequest(dataSources),
 			Listing: Listing(dataSources),
 			Conversation: Conversation(dataSources),
+			AppealRequest: AppealRequest(dataSources),
 		};
 	};
 
@@ -111,3 +129,5 @@ export const buildApplicationServicesFactory = (
 };
 
 export type { PersonalUserUpdateCommand } from './contexts/user/personal-user/update.ts';
+export type { AdminUserUpdateCommand } from './contexts/user/admin-user/update.ts';
+export type { AdminUserCreateCommand } from './contexts/user/admin-user/create-if-not-exists.ts';

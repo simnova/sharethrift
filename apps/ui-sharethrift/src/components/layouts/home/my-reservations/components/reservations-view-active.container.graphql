@@ -1,34 +1,46 @@
-fragment ReservationsViewActiveContainerReservationFields on ReservationRequest {
-	id
-	state
-	reservationPeriodStart
-	reservationPeriodEnd
-	createdAt
-	updatedAt
-	listing {
+query HomeMyReservationsReservationsViewActiveContainerActiveReservations(
+	$userId: ObjectID!
+) {
+	myActiveReservations(userId: $userId) {
 		id
-		title
-	}
-	reserver {
-		account {
-			username
-			profile {
-				firstName
-				lastName
+		state
+		reservationPeriodStart
+		reservationPeriodEnd
+		createdAt
+		updatedAt
+		listing {
+			id
+			title
+			images
+		}
+		reserver {
+			... on PersonalUser {
+				id
+				account {
+					username
+					profile {
+						firstName
+						lastName
+					}
+				}
+			}
+			... on AdminUser {
+				id
+				account {
+					username
+					profile {
+						firstName
+						lastName
+					}
+				}
 			}
 		}
-	}
-	closeRequestedBySharer
-	closeRequestedByReserver
-}
-
-query ReservationsViewActiveContainerActiveReservations($userId: ObjectID!) {
-	myActiveReservations(userId: $userId) {
-		...ReservationsViewActiveContainerReservationFields
+		closeRequestedBySharer
+		closeRequestedByReserver
 	}
 }
 
-mutation ReservationsViewActiveContainerCancelReservation(
+mutation HomeMyReservationsReservationsViewActiveContainerCancelReservation(
 	$input: CancelReservationInput!
 ) {
 	cancelReservation(input: $input) {
@@ -40,7 +52,7 @@ mutation ReservationsViewActiveContainerCancelReservation(
 	}
 }
 
-mutation ReservationsViewActiveContainerCloseReservation(
+mutation HomeMyReservationsReservationsViewActiveContainerCloseReservation(
 	$input: CloseReservationInput!
 ) {
 	closeReservation(input: $input) {

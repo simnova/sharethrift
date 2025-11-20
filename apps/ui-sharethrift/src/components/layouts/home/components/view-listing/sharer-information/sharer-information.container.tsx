@@ -1,9 +1,6 @@
-import { useQuery } from "@apollo/client/react";
+import { useQuery } from '@apollo/client/react';
 import { SharerInformation } from './sharer-information.tsx';
-import {
-	ViewListingSharerInformationGetSharerDocument,
-	type ViewListingSharerInformationGetSharerQuery,
-} from '../../../../../../generated.tsx';
+import { SharerInformationContainerDocument } from '../../../../../../generated.tsx';
 
 interface SharerInformationContainerProps {
 	sharerId: string;
@@ -12,15 +9,19 @@ interface SharerInformationContainerProps {
 	sharedTimeAgo?: string;
 	className?: string;
 	showIconOnly?: boolean;
+	currentUserId?: string | null;
 }
 
-export const SharerInformationContainer: React.FC<SharerInformationContainerProps> = ({
-	sharerId,
-	listingId,
-	isOwner,
-	sharedTimeAgo,
-	className,
-}) => {
+export const SharerInformationContainer: React.FC<
+	SharerInformationContainerProps
+> = ({ sharerId, listingId, isOwner, sharedTimeAgo, className, currentUserId }) => {
+	const { data, loading, error } = useQuery(
+		SharerInformationContainerDocument,
+		{
+			variables: { sharerId },
+		},
+	);
+
 	// If sharerId looks like a name (contains spaces or letters), use it directly
 	// Otherwise, try to query for user data
 	const isNameOnly =
@@ -39,24 +40,22 @@ export const SharerInformationContainer: React.FC<SharerInformationContainerProp
 				isOwner={isOwner}
 				sharedTimeAgo={sharedTimeAgo}
 				className={className}
+				currentUserId={currentUserId}
 			/>
 		);
 	}
 
-	const { data, loading, error } = useQuery<ViewListingSharerInformationGetSharerQuery>(
-		ViewListingSharerInformationGetSharerDocument,
-		{
-			variables: { sharerId },
-		},
-	);
-
 	if (loading) return <div>Loading...</div>;
 	if (error) return <div>Error loading sharer information</div>;
-	if (!data?.personalUserById) return null;
+	if (!data?.userById) return null;
+
+	// Both PersonalUser and AdminUser now have the same profile structure
+	const firstName = data.userById.account?.profile?.firstName ?? '';
+	const lastName = data.userById.account?.profile?.lastName ?? '';
 
 	const sharer = {
-		id: data.personalUserById.id,
-		name: `${data.personalUserById.account?.profile?.firstName ?? ''} ${data.personalUserById.account?.profile?.lastName ?? ''}`.trim(),
+		id: data.userById.id,
+		name: `${firstName} ${lastName}`.trim(),
 	};
 
 	return (
@@ -66,6 +65,7 @@ export const SharerInformationContainer: React.FC<SharerInformationContainerProp
 			isOwner={isOwner}
 			sharedTimeAgo={sharedTimeAgo}
 			className={className}
+			currentUserId={currentUserId}
 		/>
 	);
 };

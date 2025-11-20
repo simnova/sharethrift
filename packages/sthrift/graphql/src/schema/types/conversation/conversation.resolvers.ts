@@ -1,28 +1,22 @@
 import type { GraphContext } from '../../../init/context.ts';
-import type { Domain } from '@sthrift/domain';
 import type {
 	ConversationCreateInput,
 	Resolvers,
 } from '../../builder/generated.ts';
-
-const ConversationMutationResolver = async (
-	getConversation: Promise<Domain.Contexts.Conversation.Conversation.ConversationEntityReference>,
-) => {
-	try {
-		return {
-			status: { success: true },
-			conversation: await getConversation,
-		};
-	} catch (error) {
-		console.error('Conversation > Mutation  : ', error);
-		const { message } = error as Error;
-		return {
-			status: { success: false, errorMessage: message },
-		};
-	}
-};
+import {
+	PopulateItemListingFromField,
+	PopulateUserFromField,
+} from '../../resolver-helper.ts';
 
 const conversation: Resolvers = {
+	Message: {
+		authorId: (parent) => parent.authorId.valueOf(),
+	},
+	Conversation: {
+		sharer: PopulateUserFromField('sharer'),
+		reserver: PopulateUserFromField('reserver'),
+		listing: PopulateItemListingFromField('listing'),
+	},
 	Query: {
 		conversationsByUser: async (_parent, _args, context: GraphContext) => {
 			return await context.applicationServices.Conversation.Conversation.queryByUser(
@@ -30,8 +24,7 @@ const conversation: Resolvers = {
 			);
 		},
 		conversation: async (_parent, _args, context: GraphContext) => {
-
-            // todo : message will come from twilio service
+			// todo : message will come from twilio service
 			return await context.applicationServices.Conversation.Conversation.queryById(
 				{ conversationId: _args.conversationId },
 			);
@@ -43,13 +36,23 @@ const conversation: Resolvers = {
 			_args: { input: ConversationCreateInput },
 			context: GraphContext,
 		) => {
-			return await ConversationMutationResolver(
-				context.applicationServices.Conversation.Conversation.create({
+			try {
+				const conversation = await context.applicationServices.Conversation.Conversation.create({
 					sharerId: _args.input.sharerId,
 					reserverId: _args.input.reserverId,
 					listingId: _args.input.listingId,
-				}),
-			);
+				});
+				return {
+					status: { success: true },
+					conversation,
+				};
+			} catch (error) {
+				console.error('Conversation > Mutation  : ', error);
+				const { message } = error as Error;
+				return {
+					status: { success: false, errorMessage: message },
+				};
+			}
 		},
 	},
 };

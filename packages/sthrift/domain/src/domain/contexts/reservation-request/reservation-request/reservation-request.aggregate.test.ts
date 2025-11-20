@@ -9,8 +9,6 @@ import {
 	ReservationRequestStateValue,
 } from './reservation-request.value-objects.ts';
 import type { Passport } from '../../passport.ts';
-import type { PersonalUserRoleEntityReference } from '../../role/personal-user-role/personal-user-role.entity.ts';
-import { PersonalUserRolePermissions } from '../../role/personal-user-role/personal-user-role-permissions.ts';
 // Minimal test-only mocks for missing domain value objects
 
 describe('ReservationRequest', () => {
@@ -29,6 +27,16 @@ describe('ReservationRequest', () => {
 				}),
 			};
 		},
+		get appealRequest() {
+			return {
+				forListingAppealRequest: () => ({
+					determineIf: () => true,
+				}),
+				forUserAppealRequest: () => ({
+					determineIf: () => true,
+				}),
+			};
+		},
 		get conversation() {
 			return {
 				forConversation: () => ({
@@ -42,6 +50,9 @@ describe('ReservationRequest', () => {
 					determineIf: () => true,
 				}),
 				forPersonalUser: () => ({
+					determineIf: () => true,
+				}),
+				forAdminUser: () => ({
 					determineIf: () => true,
 				}),
 			};
@@ -63,37 +74,8 @@ describe('ReservationRequest', () => {
 		createdAt: new Date(),
 		updatedAt: new Date(),
 		schemaVersion: '1',
+		listingType: 'item-listing',
 	});
-
-	const mockRole: Readonly<PersonalUserRoleEntityReference> = {
-		id: 'role-1',
-		roleName: 'mock-role',
-		isDefault: false,
-		permissions: new PersonalUserRolePermissions({
-			listingPermissions: {
-				canCreateItemListing: true,
-				canUpdateItemListing: true,
-				canDeleteItemListing: true,
-				canViewItemListing: true,
-				canPublishItemListing: true,
-				canUnpublishItemListing: true,
-			},
-			conversationPermissions: {
-				canCreateConversation: true,
-				canManageConversation: true,
-				canViewConversation: true,
-			},
-			reservationRequestPermissions: {
-				canCreateReservationRequest: true,
-				canManageReservationRequest: true,
-				canViewReservationRequest: true,
-			},
-		}),
-		roleType: 'mock-type',
-		createdAt: new Date(),
-		updatedAt: new Date(),
-		schemaVersion: '1',
-	};
 
 	const createMockReserver = (id = 'user-1'): PersonalUserEntityReference => {
 		return {
@@ -108,6 +90,7 @@ describe('ReservationRequest', () => {
 				profile: {
 					firstName: 'Mock',
 					lastName: 'User',
+                    aboutMe: 'Hello',
 					location: {
 						address1: '123 Main St',
 						address2: null,
@@ -128,8 +111,6 @@ describe('ReservationRequest', () => {
 			createdAt: new Date(),
 			updatedAt: new Date(),
 			hasCompletedOnboarding: true,
-			role: mockRole,
-			loadRole: async () => mockRole,
 		};
 	};
 

@@ -88,3 +88,21 @@ Feature: <AggregateRoot>ItemListing
     When I call publish()	
     Then the listing's state should be "Published"	
     And the updatedAt timestamp should change
+
+  Scenario: Requesting delete with permission
+    Given an ItemListing aggregate with permission to delete item listing
+    When I call requestDelete()
+    Then the listing's isDeleted flag should be true
+
+  Scenario: Requesting delete without permission
+    Given an ItemListing aggregate without permission to delete item listing
+    When I try to call requestDelete()
+    Then a PermissionError should be thrown
+    And the listing's isDeleted flag should remain false
+
+  Scenario: Requesting delete when already deleted
+    Given an ItemListing aggregate with permission to delete item listing
+    And the listing is already marked as deleted
+    When I call requestDelete() again
+    Then the listing's isDeleted flag should remain true
+    And no error should be thrown

@@ -67,7 +67,7 @@ importers:
         version: 3.0.2
       rimraf:
         specifier: ^6.0.1
-        version: 6.0.1
+        version: 6.1.0
       rollup:
         specifier: 3.29.4
         version: 3.29.4
@@ -98,6 +98,9 @@ importers:
       '@cellix/api-services-spec':
         specifier: workspace:*
         version: link:../../packages/cellix/api-services-spec
+      '@cellix/messaging-service':
+        specifier: workspace:*
+        version: link:../../packages/cellix/messaging-service
       '@cellix/mongoose-seedwork':
         specifier: workspace:*
         version: link:../../packages/cellix/mongoose-seedwork
@@ -116,6 +119,12 @@ importers:
       '@sthrift/graphql':
         specifier: workspace:*
         version: link:../../packages/sthrift/graphql
+      '@sthrift/messaging-service-mock':
+        specifier: workspace:*
+        version: link:../../packages/sthrift/messaging-service-mock
+      '@sthrift/messaging-service-twilio':
+        specifier: workspace:*
+        version: link:../../packages/sthrift/messaging-service-twilio
       '@sthrift/persistence':
         specifier: workspace:*
         version: link:../../packages/sthrift/persistence
@@ -137,9 +146,6 @@ importers:
       '@sthrift/service-token-validation':
         specifier: workspace:*
         version: link:../../packages/sthrift/service-token-validation
-      '@sthrift/service-twilio':
-        specifier: workspace:*
-        version: link:../../packages/sthrift/service-twilio
       twilio:
         specifier: ^5.8.0
         version: 5.10.3
@@ -229,6 +235,9 @@ importers:
       '@ant-design/icons':
         specifier: ^6.1.0
         version: 6.1.0(react-dom@19.2.0(react@19.2.0))(react@19.2.0)
+      '@ant-design/v5-patch-for-react-19':
+        specifier: ^1.0.3
+        version: 1.0.3(antd@5.27.6(luxon@3.6.1)(moment@2.30.1)(react-dom@19.2.0(react@19.2.0))(react@19.2.0))(react-dom@19.2.0(react@19.2.0))(react@19.2.0)
       '@apollo/client':
         specifier: ^4.0.7
         version: 4.0.7(graphql-ws@6.0.6(graphql@16.11.0)(ws@8.18.3))(graphql@16.11.0)(react-dom@19.2.0(react@19.2.0))(react@19.2.0)(rxjs@7.8.2)
@@ -411,6 +420,22 @@ importers:
       '@cellix/vitest-config':
         specifier: workspace:*
         version: link:../vitest-config
+      rimraf:
+        specifier: ^6.0.1
+        version: 6.0.1
+      typescript:
+        specifier: ^5.8.3
+        version: 5.8.3
+
+  packages/cellix/messaging-service:
+    dependencies:
+      '@cellix/api-services-spec':
+        specifier: workspace:*
+        version: link:../api-services-spec
+    devDependencies:
+      '@cellix/typescript-config':
+        specifier: workspace:*
+        version: link:../typescript-config
       rimraf:
         specifier: ^6.0.1
         version: 6.0.1
@@ -610,6 +635,9 @@ importers:
 
   packages/sthrift/application-services:
     dependencies:
+      '@cellix/messaging-service':
+        specifier: workspace:*
+        version: link:../../cellix/messaging-service
       '@sthrift/context-spec':
         specifier: workspace:*
         version: link:../context-spec
@@ -626,6 +654,9 @@ importers:
       '@cellix/typescript-config':
         specifier: workspace:*
         version: link:../../cellix/typescript-config
+      '@cellix/vitest-config':
+        specifier: workspace:*
+        version: link:../../cellix/vitest-config
       rimraf:
         specifier: ^6.0.1
         version: 6.0.1
@@ -635,6 +666,9 @@ importers:
 
   packages/sthrift/context-spec:
     dependencies:
+      '@cellix/messaging-service':
+        specifier: workspace:*
+        version: link:../../cellix/messaging-service
       '@sthrift/persistence':
         specifier: workspace:*
         version: link:../persistence
@@ -685,9 +719,6 @@ importers:
       '@lucaspaganini/value-objects':
         specifier: ^1.3.1
         version: 1.3.1
-      bson:
-        specifier: ^6.10.4
-        version: 6.10.4
     devDependencies:
       '@cellix/typescript-config':
         specifier: workspace:*
@@ -789,6 +820,9 @@ importers:
       graphql-scalars:
         specifier: ^1.24.2
         version: 1.25.0(graphql@16.11.0)
+      mongoose:
+        specifier: 'catalog:'
+        version: 8.17.0
     devDependencies:
       '@cellix/typescript-config':
         specifier: workspace:*
@@ -799,6 +833,87 @@ importers:
       rimraf:
         specifier: ^6.0.1
         version: 6.0.1
+      typescript:
+        specifier: ^5.8.3
+        version: 5.8.3
+
+  packages/sthrift/messaging-service-mock:
+    dependencies:
+      '@cellix/api-services-spec':
+        specifier: workspace:*
+        version: link:../../cellix/api-services-spec
+      '@cellix/messaging-service':
+        specifier: workspace:*
+        version: link:../../cellix/messaging-service
+      axios:
+        specifier: ^1.7.9
+        version: 1.12.2
+    devDependencies:
+      '@cellix/typescript-config':
+        specifier: workspace:*
+        version: link:../../cellix/typescript-config
+      '@cellix/vitest-config':
+        specifier: workspace:*
+        version: link:../../cellix/vitest-config
+      '@sthrift/mock-messaging-server':
+        specifier: workspace:*
+        version: link:../mock-messaging-server
+      '@types/node':
+        specifier: ^22.0.0
+        version: 22.18.12
+      typescript:
+        specifier: ^5.8.3
+        version: 5.8.3
+
+  packages/sthrift/messaging-service-twilio:
+    dependencies:
+      '@cellix/api-services-spec':
+        specifier: workspace:*
+        version: link:../../cellix/api-services-spec
+      '@cellix/messaging-service':
+        specifier: workspace:*
+        version: link:../../cellix/messaging-service
+      twilio:
+        specifier: ^4.0.0
+        version: 4.23.0
+    devDependencies:
+      '@cellix/typescript-config':
+        specifier: workspace:*
+        version: link:../../cellix/typescript-config
+      '@types/node':
+        specifier: ^22.0.0
+        version: 22.18.12
+      typescript:
+        specifier: ^5.8.3
+        version: 5.8.3
+
+  packages/sthrift/mock-messaging-server:
+    dependencies:
+      dotenv:
+        specifier: ^16.6.1
+        version: 16.6.1
+      express:
+        specifier: ^4.18.2
+        version: 4.21.2
+      mongodb:
+        specifier: 'catalog:'
+        version: 6.18.0
+    devDependencies:
+      '@cellix/typescript-config':
+        specifier: workspace:*
+        version: link:../../cellix/typescript-config
+      '@types/express':
+        specifier: ^4.17.21
+        version: 4.17.23
+      '@types/node':
+        specifier: ^22.0.0
+        version: 22.18.12
+      rimraf:
+        specifier: ^6.0.1
+        version: 6.0.1
+      tsc-watch:
+        specifier: ^7.1.1
+        version: 7.2.0(typescript@5.8.3)
       typescript:
         specifier: ^5.8.3
         version: 5.8.3
@@ -845,6 +960,9 @@ importers:
       '@cellix/event-bus-seedwork-node':
         specifier: workspace:*
         version: link:../../cellix/event-bus-seedwork-node
+      '@cellix/messaging-service':
+        specifier: workspace:*
+        version: link:../../cellix/messaging-service
       '@cellix/mongoose-seedwork':
         specifier: workspace:*
         version: link:../../cellix/mongoose-seedwork
@@ -854,9 +972,15 @@ importers:
       '@sthrift/domain':
         specifier: workspace:*
         version: link:../domain
+      '@sthrift/messaging-service-twilio':
+        specifier: workspace:*
+        version: link:../messaging-service-twilio
       bson:
         specifier: ^6.10.4
         version: 6.10.4
+      mongodb:
+        specifier: 'catalog:'
+        version: 6.18.0
       mongoose:
         specifier: 'catalog:'
         version: 8.17.0
@@ -884,7 +1008,7 @@ importers:
         version: link:../application-services
       rimraf:
         specifier: ^6.0.1
-        version: 6.0.1
+        version: 6.1.0
       typescript:
         specifier: ^5.8.3
         version: 5.8.3
@@ -1063,25 +1187,6 @@ importers:
       typescript:
         specifier: ^5.8.3
         version: 5.8.3
-
-  packages/sthrift/service-twilio:
-    dependencies:
-      '@cellix/api-services-spec':
-        specifier: workspace:*
-        version: link:../../cellix/api-services-spec
-      twilio:
-        specifier: ^4.0.0
-        version: 4.23.0
-    devDependencies:
-      '@cellix/typescript-config':
-        specifier: workspace:*
-        version: link:../../cellix/typescript-config
-      typescript:
-        specifier: ^5.8.3
-        version: 5.8.3
-      url-parse:
-        specifier: ^1.5.9
-        version: 1.5.10
 
   packages/sthrift/ui-components:
     dependencies:
@@ -1324,6 +1429,14 @@ packages:
     resolution: {integrity: sha512-EzlvzE6xQUBrZuuhSAFTdsr4P2bBBHGZwKFemEfq8gIGyIQCxalYfZW/T2ORbtQx5rU69o+WycP3exY/7T1hGA==}
     peerDependencies:
       react: '>=16.9.0'
+
+  '@ant-design/v5-patch-for-react-19@1.0.3':
+    resolution: {integrity: sha512-iWfZuSUl5kuhqLUw7jJXUQFMMkM7XpW7apmKzQBQHU0cpifYW4A79xIBt9YVO5IBajKpPG5UKP87Ft7Yrw1p/w==}
+    engines: {node: '>=12.x'}
+    peerDependencies:
+      antd: '>=5.22.6'
+      react: '>=19.0.0'
+      react-dom: '>=19.0.0'
 
   '@apollo/cache-control-types@1.0.3':
     resolution: {integrity: sha512-F17/vCp7QVwom9eG7ToauIKdAxpSoadsJnqIfyryLFSkLSOEqu+eC5Z3N8OXcUVStuOMcNHlyraRsA6rRICu4g==}
@@ -4564,6 +4677,9 @@ packages:
   '@types/node@17.0.45':
     resolution: {integrity: sha512-w+tIMs3rq2afQdsPJlODhoUEKzFP1ayaoyl1CcnwtIlsVe7K7bA1NGm4s3PraqTLlXnbIN84zuBlxBWo1u9BLw==}
 
+  '@types/node@22.18.12':
+    resolution: {integrity: sha512-BICHQ67iqxQGFSzfCFTT7MRQ5XcBjG5aeKh5Ok38UBbPe5fxTyE+aHFxwVrGyr8GNlqFMLKD1D3P2K/1ks8tog==}
+
   '@types/node@24.9.1':
     resolution: {integrity: sha512-QoiaXANRkSXK6p0Duvt56W208du4P9Uye9hWLWgGMDTEoKPhuenzNcC4vGUmrNkiOKTlIrBoyNQYNpSwfEZXSg==}
 
@@ -6671,8 +6787,8 @@ packages:
     resolution: {integrity: sha512-7Bv8RF0k6xjo7d4A/PxYLbUCfb6c+Vpd2/mB2yRDlew7Jb5hEXiCD9ibfO7wpk8i4sevK6DFny9h7EYbM3/sHg==}
     hasBin: true
 
-  glob@11.0.3:
-    resolution: {integrity: sha512-2Nim7dha1KVkaiF4q6Dj+ngPPMdfvLJEOpZk/jKiUAkqKebpGAWQXAq9z1xu9HKu5lWfqw/FASuccEjyznjPaA==}
+  glob@11.1.0:
+    resolution: {integrity: sha512-vuNwKSaKiqm7g0THUBu2x7ckSs3XJLXE+2ssL7/MfTGPLLcrJQ/4Uq1CjPTtO5cCIiRxqvN6Twy1qOwhL0Xjcw==}
     engines: {node: 20 || >=22}
     hasBin: true
 
@@ -8091,6 +8207,10 @@ packages:
 
   minimatch@10.0.3:
     resolution: {integrity: sha512-IPZ167aShDZZUMdRk66cyQAW3qr0WzbHkPdMYa8bzZhlHhO3jALbKdxcaak7W9FfT2rZNpQuUu4Od7ILEpXSaw==}
+    engines: {node: 20 || >=22}
+
+  minimatch@10.1.1:
+    resolution: {integrity: sha512-enIvLvRAFZYXJzkCYG5RKmPfrFArdLv+R+lbQ53BmIMLIry74bjKzX6iHAm8WYamJkhSSEabrWN5D97XnKObjQ==}
     engines: {node: 20 || >=22}
 
   minimatch@3.1.2:
@@ -9700,6 +9820,11 @@ packages:
     engines: {node: 20 || >=22}
     hasBin: true
 
+  rimraf@6.1.0:
+    resolution: {integrity: sha512-DxdlA1bdNzkZK7JiNWH+BAx1x4tEJWoTofIopFo6qWUU94jYrFZ0ubY05TqH3nWPJ1nKa1JWVFDINZ3fnrle/A==}
+    engines: {node: 20 || >=22}
+    hasBin: true
+
   rollup@3.29.4:
     resolution: {integrity: sha512-oWzmBZwvYrU0iJHtDmhsm662rC15FRXmcjCk1xD771dFDx5jJ02ufAQQTn0etB2emNk4J9EZg/yWKpsn9BWGRw==}
     engines: {node: '>=14.18.0', npm: '>=8.0.0'}
@@ -10662,6 +10787,9 @@ packages:
     resolution: {integrity: sha512-eXL4nmJT7oCpkZsHZUOJo8hcX3GbsiDOa0Qu9F646fi8dT3XuSVopVqAcEiVzSKKH7UoDti23wNX3qGFxcW5Qg==}
     engines: {node: '>=0.10.0'}
 
+  undici-types@6.21.0:
+    resolution: {integrity: sha512-iwDZqg0QAGrg9Rav5H4n0M64c3mkR59cJ6wQp+7C4nI0gsmExaedaYLNO44eT4AtBBwjbTiGPMlt2Md0T9H9JQ==}
+
   undici-types@7.16.0:
     resolution: {integrity: sha512-Zz+aZWSj8LE6zoxD+xrjh4VfkIG8Ya6LvYkZqtUQGJPZjYl53ypCaUwWqo7eI0x66KBGeRo+mlBEkMSeSZ38Nw==}
 
@@ -11438,6 +11566,12 @@ snapshots:
       react: 19.2.0
       resize-observer-polyfill: 1.5.1
       throttle-debounce: 5.0.2
+
+  '@ant-design/v5-patch-for-react-19@1.0.3(antd@5.27.6(luxon@3.6.1)(moment@2.30.1)(react-dom@19.2.0(react@19.2.0))(react@19.2.0))(react-dom@19.2.0(react@19.2.0))(react@19.2.0)':
+    dependencies:
+      antd: 5.27.6(luxon@3.6.1)(moment@2.30.1)(react-dom@19.2.0(react@19.2.0))(react@19.2.0)
+      react: 19.2.0
+      react-dom: 19.2.0(react@19.2.0)
 
   '@apollo/cache-control-types@1.0.3(graphql@16.11.0)':
     dependencies:
@@ -16045,6 +16179,10 @@ snapshots:
 
   '@types/node@17.0.45': {}
 
+  '@types/node@22.18.12':
+    dependencies:
+      undici-types: 6.21.0
+
   '@types/node@24.9.1':
     dependencies:
       undici-types: 7.16.0
@@ -18563,11 +18701,11 @@ snapshots:
       package-json-from-dist: 1.0.1
       path-scurry: 1.11.1
 
-  glob@11.0.3:
+  glob@11.1.0:
     dependencies:
       foreground-child: 3.3.1
       jackspeak: 4.1.1
-      minimatch: 10.0.3
+      minimatch: 10.1.1
       minipass: 7.1.2
       package-json-from-dist: 1.0.1
       path-scurry: 2.0.0
@@ -20308,6 +20446,10 @@ snapshots:
   minimalistic-assert@1.0.1: {}
 
   minimatch@10.0.3:
+    dependencies:
+      '@isaacs/brace-expansion': 5.0.0
+
+  minimatch@10.1.1:
     dependencies:
       '@isaacs/brace-expansion': 5.0.0
 
@@ -22149,7 +22291,12 @@ snapshots:
 
   rimraf@6.0.1:
     dependencies:
-      glob: 11.0.3
+      glob: 11.1.0
+      package-json-from-dist: 1.0.1
+
+  rimraf@6.1.0:
+    dependencies:
+      glob: 11.1.0
       package-json-from-dist: 1.0.1
 
   rollup@3.29.4:
@@ -23240,6 +23387,8 @@ snapshots:
       which-boxed-primitive: 1.1.1
 
   unc-path-regex@0.1.2: {}
+
+  undici-types@6.21.0: {}
 
   undici-types@7.16.0: {}
 

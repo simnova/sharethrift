@@ -1,47 +1,50 @@
 {
-    "name": "@sthrift/graphql",
-    "version": "1.0.0",
-    "private": true,
-    "type": "module",
-    "files": [
-        "dist",
-        "src/schema/**/*.graphql"
-    ],
-    "exports": {
-        ".": {
-            "types": "./dist/src/index.d.ts",
-            "default": "./dist/src/index.js"
-        }
-    },
-    "scripts": {
-        "prebuild": "biome lint",
-        "build": "tsc --build",
-        "watch": "tsc- --watch",
-        "test:watch": "vitest",
-        "lint": "biome lint",
-        "clean": "rimraf dist"
-    },
-    "dependencies": {
-        "@apollo/server": "^4.11.3",
-        "@apollo/utils.withrequired": "^3.0.0",
-        "@as-integrations/azure-functions": "^0.2.0",
-        "@azure/functions": "^4.0.0",
-        "@graphql-tools/json-file-loader": "^8.0.20",
-        "@graphql-tools/load": "^8.1.2",
-        "@graphql-tools/load-files": "^7.0.1",
-        "@graphql-tools/merge": "^9.1.1",
-        "@graphql-tools/schema": "^10.0.25",
-        "@opentelemetry/api": "^1.9.0",
-        "@sthrift/application-services": "workspace:*",
-        "@sthrift/domain": "workspace:*",
-        "graphql": "^16.10.0",
-        "graphql-middleware": "^6.1.35",
-        "graphql-scalars": "^1.24.2"
-    },
-    "devDependencies": {
-        "@cellix/typescript-config": "workspace:*",
-        "@cellix/vitest-config": "workspace:*",
-        "rimraf": "^6.0.1",
-        "typescript": "^5.8.3"
-    }
+	"name": "@sthrift/graphql",
+	"version": "1.0.0",
+	"private": true,
+	"type": "module",
+	"files": [
+		"dist",
+		"src/schema/**/*.graphql"
+	],
+	"exports": {
+		".": {
+			"types": "./dist/src/index.d.ts",
+			"default": "./dist/src/index.js"
+		}
+	},
+	"scripts": {
+		"prebuild": "biome lint",
+		"build": "tsc --build",
+		"watch": "tsc --build --watch",
+		"test": "vitest run",
+		"test:coverage": "vitest run --coverage",
+		"test:watch": "vitest",
+		"lint": "biome lint",
+		"clean": "rimraf dist"
+	},
+	"dependencies": {
+		"@apollo/server": "^4.11.3",
+		"@apollo/utils.withrequired": "^3.0.0",
+		"@as-integrations/azure-functions": "^0.2.0",
+		"@azure/functions": "^4.0.0",
+		"@graphql-tools/json-file-loader": "^8.0.20",
+		"@graphql-tools/load": "^8.1.2",
+		"@graphql-tools/load-files": "^7.0.1",
+		"@graphql-tools/merge": "^9.1.1",
+		"@graphql-tools/schema": "^10.0.25",
+		"@opentelemetry/api": "^1.9.0",
+		"@sthrift/application-services": "workspace:*",
+		"@sthrift/domain": "workspace:*",
+		"graphql": "^16.10.0",
+		"graphql-middleware": "^6.1.35",
+		"graphql-scalars": "^1.24.2",
+		"mongoose": "catalog:"
+	},
+	"devDependencies": {
+		"@cellix/typescript-config": "workspace:*",
+		"@cellix/vitest-config": "workspace:*",
+		"rimraf": "^6.0.1",
+		"typescript": "^5.8.3"
+	}
 }

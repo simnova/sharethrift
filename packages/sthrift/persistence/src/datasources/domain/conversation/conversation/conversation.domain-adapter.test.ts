@@ -30,7 +30,7 @@ function makeConversationDoc(
 		sharer: undefined,
 		reserver: undefined,
 		listing: undefined,
-		twilioConversationId: 'twilio-123',
+		messagingConversationId: 'twilio-123',
 		set(key: keyof Models.Conversation.Conversation, value: unknown) {
 			(this as Models.Conversation.Conversation)[key] = value as never;
 		},
@@ -133,28 +133,114 @@ test.for(feature, ({ Scenario, Background, BeforeEachScenario }) => {
 				adapter.sharer = userAdapter;
 			},
 		);
-		Then("the document's sharer should be set to the user doc", () => {
-			expect(doc.sharer).toBe(userAdapter.doc);
+		Then("the document's sharer should be set to an ObjectId", () => {
+			expect(doc.sharer).toBeDefined();
+			if (doc.sharer instanceof MongooseSeedwork.ObjectId) {
+				expect(doc.sharer.toString()).toBe(sharerDoc.id.toString());
+			} else {
+				expect(doc.sharer).toBe(userAdapter.doc);
+			}
 		});
 	});
 
-	// Repeat similar scenarios for reserver and listing...
-
-	Scenario('Getting the twilioConversationId property', ({ When, Then }) => {
-		When('I get the twilioConversationId property', () => {
-			result = adapter.twilioConversationId;
+	Scenario('Getting the messagingConversationId property', ({ When, Then }) => {
+		When('I get the messagingConversationId property', () => {
+			result = adapter.messagingConversationId;
 		});
 		Then('it should return the correct value', () => {
 			expect(result).toBe('twilio-123');
 		});
 	});
 
-	Scenario('Setting the twilioConversationId property', ({ When, Then }) => {
-		When('I set the twilioConversationId property to "twilio-456"', () => {
-			adapter.twilioConversationId = 'twilio-456';
+	Scenario('Setting the messagingConversationId property', ({ When, Then }) => {
+		When('I set the messagingConversationId property to "twilio-456"', () => {
+			adapter.messagingConversationId = 'twilio-456';
 		});
-		Then('the document\'s twilioConversationId should be "twilio-456"', () => {
-			expect(doc.twilioConversationId).toBe('twilio-456');
+		Then('the document\'s messagingConversationId should be "twilio-456"', () => {
+			expect(doc.messagingConversationId).toBe('twilio-456');
+		});
+	});
+
+	Scenario('Loading sharer when already populated', ({ When, Then }) => {
+		When('I call loadSharer on an adapter with populated sharer', async () => {
+			result = await adapter.loadSharer();
+		});
+		Then('it should return a PersonalUserDomainAdapter', () => {
+			expect(result).toBeInstanceOf(PersonalUserDomainAdapter);
+		});
+	});
+
+	Scenario('Loading sharer when it is an ObjectId', ({ When, Then }) => {
+		When('I call loadSharer on an adapter with sharer as ObjectId', async () => {
+			const oid = new MongooseSeedwork.ObjectId();
+			doc = makeConversationDoc({ 
+				sharer: oid,
+				populate: vi.fn().mockResolvedValue({
+					...doc,
+					sharer: sharerDoc,
+				}),
+			});
+			adapter = new ConversationDomainAdapter(doc);
+			result = await adapter.loadSharer();
+		});
+		Then('it should populate and return a PersonalUserDomainAdapter', () => {
+			expect(doc.populate).toHaveBeenCalledWith('sharer');
+			expect(result).toBeInstanceOf(PersonalUserDomainAdapter);
+		});
+	});
+
+	Scenario('Getting the reserver property when populated', ({ When, Then }) => {
+		When('I get the reserver property', () => {
+			result = adapter.reserver;
+		});
+		Then('it should return a PersonalUserDomainAdapter with the correct doc', () => {
+			expect(result).toBeInstanceOf(PersonalUserDomainAdapter);
+			expect((result as PersonalUserDomainAdapter).doc).toBe(reserverDoc);
+		});
+	});
+
+	Scenario('Loading reserver when already populated', ({ When, Then }) => {
+		When('I call loadReserver on an adapter with populated reserver', async () => {
+			result = await adapter.loadReserver();
+		});
+		Then('it should return a PersonalUserDomainAdapter', () => {
+			expect(result).toBeInstanceOf(PersonalUserDomainAdapter);
+		});
+	});
+
+	Scenario('Getting the listing property when populated', ({ When, Then }) => {
+		When('I get the listing property', () => {
+			result = adapter.listing;
+		});
+		Then('it should return an ItemListingDomainAdapter', () => {
+			expect(result).toBeDefined();
+		});
+	});
+
+	Scenario('Loading listing when already populated', ({ When, Then }) => {
+		When('I call loadListing on an adapter with populated listing', async () => {
+			result = await adapter.loadListing();
+		});
+		Then('it should return an ItemListingDomainAdapter', () => {
+			expect(result).toBeDefined();
+		});
+	});
+
+	Scenario('Getting messages property', ({ When, Then }) => {
+		When('I get the messages property', () => {
+			result = adapter.messages;
+		});
+		Then('it should return an empty array', () => {
+			expect(result).toEqual([]);
+		});
+	});
+
+	Scenario('Loading messages', ({ When, Then }) => {
+		When('I call loadMessages', async () => {
+			result = await adapter.loadMessages();
+		});
+		Then('it should return an empty array', () => {
+			expect(result).toEqual([]);
 		});
 	});
 });
