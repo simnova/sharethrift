@@ -72,13 +72,13 @@ export const HomeTabsLayout: React.FC = () => {
 		return () => window.removeEventListener('resize', handleResize);
 	}, [auth.isAuthenticated]);
 
-	const isProd = import.meta.env.MODE === 'production';
+	const isProduction = import.meta.env.MODE === 'production';
 
 	function redirectLogin(
 		portal: 'UserPortal' | 'AdminPortal',
 		href: '/auth-redirect-user' | '/auth-redirect-admin'
 	) {
-		if (isProd) {
+		if (isProduction) {
 			globalThis.sessionStorage.setItem('loginPortalType', portal);
 			globalThis.location.href = href;
 		} else {
@@ -88,11 +88,6 @@ export const HomeTabsLayout: React.FC = () => {
 
 	const handleOnLogin = () => redirectLogin('UserPortal', '/auth-redirect-user');
 	const handleOnAdminLogin = () => redirectLogin('AdminPortal', '/auth-redirect-admin');
-	
-    //Removed in AdminUser PR
-    //auth.signinRedirect();
-	//const handleOnSignUp = () => {
-	//	auth.signinRedirect({ extraQueryParams: { option: "signup" } })};
 
 	const handleOnSignUp = () => {
 		navigate('/auth-redirect-user');

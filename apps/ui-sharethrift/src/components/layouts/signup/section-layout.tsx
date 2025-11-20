@@ -1,4 +1,4 @@
-import { Outlet} from 'react-router-dom';
+import { Outlet } from 'react-router-dom';
 import { Footer, Header } from '@sthrift/ui-components';
 import { useAuth } from 'react-oidc-context';
 import { HandleLogout } from '../../shared/handle-logout.ts';
@@ -11,6 +11,7 @@ interface SectionLayoutProps {}
 export const SectionLayout: React.FC<SectionLayoutProps> = (_props) => {
 	const auth = useAuth();
 	const apolloClient = useApolloClient();
+
 	const isProduction = import.meta.env.MODE === 'production';
 
 	const handleOnLogin = () => {
