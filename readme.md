@@ -16,8 +16,10 @@ ShareThrift is a web‑based peer‑to‑peer sharing platform that enables peop
 
 ## 🗂 Table of Contents
 - Features
+- Architecture
 - Monorepo Structure
 - Tech Stack
+- Getting Started
 
 ## ✨ Features
 
@@ -50,6 +52,23 @@ ShareThrift is a web‑based peer‑to‑peer sharing platform that enables peop
 - Feature flag management
 - Embedded analytics and reporting
 
+## 🏗 Architecture
+
+ShareThrift applies layered Domain-Driven Design:
+
+- Domain Layer: aggregates, entities, value objects, domain events
+- Application Layer: orchestration / services (future explicit service modules)
+- Infrastructure Layer: persistence (Mongoose), telemetry, messaging adapters
+- Interface Layer: Azure Functions entrypoints (GraphQL + planned REST)
+
+Key patterns:
+
+- Aggregates coordinate consistency boundaries
+- Value Objects enforce immutability and constraints
+- Unit of Work plans for atomic change sets
+- Event-driven strategy (domain + integration events) evolving via ADRs
+- Service Registry (Cellix.initializeServices) for dependency injection
+
 ## 🧬 Monorepo Structure
 ```
 apps/
@@ -65,6 +84,7 @@ documents/        # BRD, SRD, ADRs, architecture diagrams
 
 ## 🛠 Tech Stack
 - Runtime: Node.js 22.12.0 / Azure Functions v4
+- Package Manager: pnpm
 - Language: TypeScript (strict config)
 - API: Apollo GraphQL
 - Persistence: MongoDB (Mongoose); Cosmos MongoDB target in cloud
@@ -73,3 +93,30 @@ documents/        # BRD, SRD, ADRs, architecture diagrams
 - Local Azure Emulation: Azurite (blob/queue)
 - Observability: OpenTelemetry + Azure Monitor integration
 - Quality Gates: Sonar + coverage thresholds per package
+
+
+## 🚀 Getting Started
+Prerequisites
+
+- Node.js v22.12.0 (use nvm)
+- Azurite
+
+Install & Build
+```
+nvm use v22
+pnpm install
+pnpm run build
+```
+
+Run (Dev)
+```
+pnpm run dev
+```
+
+## 🔗 Local Endpoints
+
+| Portal | Endpoint |
+| --- | --- |
+| Frontend | http://localhost:3000 |
+| Doc | http://localhost:3002 |
+| Graphql | http://localhost:7071/api/graphql |
