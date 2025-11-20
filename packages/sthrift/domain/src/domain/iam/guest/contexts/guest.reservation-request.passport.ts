@@ -7,7 +7,9 @@ export class GuestReservationRequestPassport
 	extends GuestPassportBase
 	implements ReservationRequestPassport
 {
-	forReservationRequest(_root: ReservationRequestEntityReference): ReservationRequestVisa {
+	forReservationRequest(
+		_root: ReservationRequestEntityReference,
+	): ReservationRequestVisa {
 		return { determineIf: () => false };
 	}
 }

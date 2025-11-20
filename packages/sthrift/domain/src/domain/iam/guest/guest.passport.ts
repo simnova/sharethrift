@@ -15,7 +15,7 @@ export class GuestPassport extends GuestPassportBase implements Passport {
 	private _userPassport: UserPassport | undefined;
 	private _listingPassport: ListingPassport | undefined;
 	private _conversationPassport: ConversationPassport | undefined;
-    private _reservationRequestPassport: ReservationRequestPassport | undefined;
+	private _reservationRequestPassport: ReservationRequestPassport | undefined;
 	private _appealRequestPassport: AppealRequestPassport | undefined;
 
 	public get user(): UserPassport {
@@ -39,7 +39,7 @@ export class GuestPassport extends GuestPassportBase implements Passport {
 		return this._conversationPassport;
 	}
 
-    public get reservationRequest(): ReservationRequestPassport {
+	public get reservationRequest(): ReservationRequestPassport {
 		if (!this._reservationRequestPassport) {
 			this._reservationRequestPassport = new GuestReservationRequestPassport();
 		}
