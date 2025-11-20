@@ -2,7 +2,8 @@
 	"extends": "@cellix/typescript-config/base.json",
 	"compilerOptions": {
 		"outDir": "./dist",
-		"rootDir": "."
+		"rootDir": ".",
+		"skipLibCheck": true
 	},
 	"include": ["src/**/*"]
 }
