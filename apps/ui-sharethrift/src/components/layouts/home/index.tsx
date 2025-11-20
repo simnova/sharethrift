@@ -13,7 +13,7 @@ export const HomeRoutes: React.FC = () => {
 	return (
 		<Routes>
 			<Route path="" element={<HomeTabsLayout />}>
-                <Route path="home" element={<Listings />} />
+                <Route path="" element={<Listings />} />
                 <Route path="listing/:listingId" element={<ViewListing />} />
                 <Route path="create-listing" element={<CreateListing />} />
                 <Route path="my-listings/*" element={<MyListingsRoutes />} />

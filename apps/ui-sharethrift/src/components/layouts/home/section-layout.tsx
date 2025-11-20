@@ -25,7 +25,7 @@ export const HomeTabsLayout: React.FC = () => {
 
 	// Map nav keys to routes as defined in index.tsx
 	const routeMap: Record<string, string> = {
-		home: 'home',
+		home: '',
 		listings: 'my-listings',
 		reservations: 'my-reservations',
 		messages: 'messages',
@@ -37,6 +37,10 @@ export const HomeTabsLayout: React.FC = () => {
 	// Determine selectedKey from current location
 	const getSelectedKey = () => {
 		const path = location.pathname.replace(/^\//, '');
+		// Home is now at root
+		if (path === '' || path === '/') {
+			return 'home';
+		}
 		// Account subroutes
 		if (path.startsWith('account/')) {
 			const subPath = path.replace('account/', '');
@@ -50,9 +54,9 @@ export const HomeTabsLayout: React.FC = () => {
 			return undefined; // nothing highlighted if not a known subroute
 		}
 		const found = Object.entries(routeMap).find(([, route]) =>
-			path.startsWith(route)
+			route !== '' && path.startsWith(route)
 		);
-		return found ? found[0] : 'home';
+		return found ? found[0] : undefined;
 	};
 
 	const handleNavigate = (key: string) => {
@@ -69,6 +73,11 @@ export const HomeTabsLayout: React.FC = () => {
 		}
 		if (key === 'messages') {
 			navigate('/messages');
+			return;
+		}
+		// Special case for home - navigate to root
+		if (key === 'home') {
+			navigate('/');
 			return;
 		}
 		const route = routeMap[key];
