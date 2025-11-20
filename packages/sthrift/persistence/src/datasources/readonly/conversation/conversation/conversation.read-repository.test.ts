@@ -115,6 +115,26 @@ function makeMockConversation(
 	} as unknown as Models.Conversation.Conversation;
 }
 
+// Create mock query that supports chaining and is thenable
+const createMockQuery = (result: unknown) => {
+	const mockQuery = {
+		lean: vi.fn(),
+		populate: vi.fn(),
+		exec: vi.fn().mockResolvedValue(result),
+		catch: vi.fn((onReject) => Promise.resolve(result).catch(onReject)),
+	};
+	// Configure methods to return the query object for chaining
+	mockQuery.lean.mockReturnValue(mockQuery);
+	mockQuery.populate.mockReturnValue(mockQuery);
+	
+	// Make the query thenable (like Mongoose queries are) by adding then as property
+	Object.defineProperty(mockQuery, 'then', {
+		value: vi.fn((onResolve) => Promise.resolve(result).then(onResolve)),
+		enumerable: false,
+	});
+	return mockQuery;
+};
+
 test.for(feature, ({ Scenario, Background, BeforeEachScenario }) => {
 	let repository: ConversationReadRepositoryImpl;
 	let mockModel: Models.Conversation.ConversationModelType;
@@ -125,26 +145,6 @@ test.for(feature, ({ Scenario, Background, BeforeEachScenario }) => {
 	BeforeEachScenario(() => {
 		passport = makePassport();
 		mockConversations = [makeMockConversation()];
-
-		// Create mock query that supports chaining and is thenable
-		const createMockQuery = (result: unknown) => {
-			const mockQuery = {
-				lean: vi.fn(),
-				populate: vi.fn(),
-				exec: vi.fn().mockResolvedValue(result),
-				catch: vi.fn((onReject) => Promise.resolve(result).catch(onReject)),
-			};
-			// Configure methods to return the query object for chaining
-			mockQuery.lean.mockReturnValue(mockQuery);
-			mockQuery.populate.mockReturnValue(mockQuery);
-			
-			// Make the query thenable (like Mongoose queries are) by adding then as property
-			Object.defineProperty(mockQuery, 'then', {
-				value: vi.fn((onResolve) => Promise.resolve(result).then(onResolve)),
-				enumerable: false,
-			});
-			return mockQuery;
-		};
 
 		mockModel = {
 			find: vi.fn(() => createMockQuery(mockConversations)),
@@ -217,15 +217,7 @@ test.for(feature, ({ Scenario, Background, BeforeEachScenario }) => {
 
 	Scenario('Getting a conversation by nonexistent ID', ({ When, Then }) => {
 		When('I call getById with "nonexistent-id"', async () => {
-			mockModel.findById = vi.fn(() => ({
-				populate: vi.fn(() => ({
-					populate: vi.fn(() => ({
-						populate: vi.fn(() => ({
-							lean: vi.fn(async () => null),
-						})),
-					})),
-				})),
-			})) as unknown as typeof mockModel.findById;
+			mockModel.findById = vi.fn(() => createMockQuery(null)) as unknown as typeof mockModel.findById;
 
 			result = await repository.getById('nonexistent-id');
 		});
@@ -286,15 +278,7 @@ test.for(feature, ({ Scenario, Background, BeforeEachScenario }) => {
 		'Getting conversations by user ID with no conversations',
 		({ When, Then }) => {
 			When('I call getByUser with "user-without-conversations"', async () => {
-				mockModel.find = vi.fn(() => ({
-					populate: vi.fn(() => ({
-						populate: vi.fn(() => ({
-							populate: vi.fn(() => ({
-								lean: vi.fn(async () => []),
-							})),
-						})),
-					})),
-				})) as unknown as typeof mockModel.find;
+				mockModel.find = vi.fn(() => createMockQuery([])) as unknown as typeof mockModel.find;
 
 				result = await repository.getByUser(createValidObjectId('user-without-conversations'));
 			});
