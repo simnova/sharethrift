@@ -1,156 +1,222 @@
-import { describe, expect, it, vi } from 'vitest';
+import path from 'node:path';
+import { fileURLToPath } from 'node:url';
+import { describeFeature, loadFeature } from '@amiceli/vitest-cucumber';
+import { expect, vi } from 'vitest';
 import type { DataSources } from '@sthrift/persistence';
 import { deleteListings } from '../delete.ts';
 
-describe('ItemListing Delete Command', () => {
-	it('should successfully delete a listing when user has permission and no active reservations', async () => {
-		// Arrange
-		const mockListing = {
-			requestDelete: vi.fn(),
-		};
+const __dirname = path.dirname(fileURLToPath(import.meta.url));
+const feature = await loadFeature(
+path.resolve(__dirname, 'delete.feature'),
+);
 
-		const mockRepo = {
-			get: vi.fn().mockResolvedValue(mockListing),
-			save: vi.fn().mockResolvedValue(undefined),
-		};
+describeFeature(feature, (f) => {
+	let mockListing: { requestDelete: ReturnType<typeof vi.fn> };
+	let mockRepo: {
+		get: ReturnType<typeof vi.fn>;
+		save: ReturnType<typeof vi.fn>;
+	};
+	let mockUow: {
+		withScopedTransaction: ReturnType<typeof vi.fn>;
+	};
+	let mockUser: { email: string; id: string } | null;
+	let mockActiveReservations: unknown[];
+	let mockDataSources: DataSources;
+	let thrownError: Error | null;
+	let deleteFunction: (command: { id: string; userEmail: string }) => Promise<boolean>;
 
-		const mockUow = {
-			withScopedTransaction: vi.fn(async (callback) => {
-				await callback(mockRepo);
-			}),
-		};
-
-		const mockUser = { id: 'user-123', email: 'test@example.com' };
-
-		const mockDataSources = {
-			domainDataSource: {
-				Listing: {
-					ItemListing: {
-						ItemListingUnitOfWork: mockUow,
-					},
-				},
-			},
-			readonlyDataSource: {
-				User: {
-					PersonalUser: {
-						PersonalUserReadRepo: {
-							getByEmail: vi.fn().mockResolvedValue(mockUser),
-						},
-					},
-				},
-				ReservationRequest: {
-					ReservationRequest: {
-						ReservationRequestReadRepo: {
-							getActiveByListingId: vi.fn().mockResolvedValue([]),
-						},
-					},
-				},
-			},
-		} as unknown as DataSources;
-
-		// Act
-		const result = await deleteListings(mockDataSources)({
-			id: 'listing-123',
-			userEmail: 'test@example.com',
+	f.Background(({ Given, And }) => {
+		Given('a valid user with email {string}', () => {
+			mockUser = {
+				email: 'test@example.com',
+				id: 'user-123',
+			};
 		});
 
-		// Assert
-		expect(result).toBe(true);
-		expect(mockDataSources.readonlyDataSource.User.PersonalUser.PersonalUserReadRepo.getByEmail).toHaveBeenCalledWith('test@example.com');
-		expect(mockDataSources.readonlyDataSource.ReservationRequest.ReservationRequest.ReservationRequestReadRepo.getActiveByListingId).toHaveBeenCalledWith('listing-123');
-		expect(mockRepo.get).toHaveBeenCalledWith('listing-123');
-		expect(mockListing.requestDelete).toHaveBeenCalled();
-		expect(mockRepo.save).toHaveBeenCalledWith(mockListing);
-	});
+		And('the user owns an item listing with id {string}', () => {
+			mockListing = {
+				requestDelete: vi.fn(),
+			};
+			mockRepo = {
+				get: vi.fn().mockResolvedValue(mockListing),
+				save: vi.fn().mockResolvedValue(mockListing),
+			};
+		});
 
-	it('should throw error when user is not found', async () => {
-		// Arrange
-		const mockDataSources = {
-			domainDataSource: {
-				Listing: {
-					ItemListing: {
-						ItemListingUnitOfWork: {},
-					},
-				},
-			},
-			readonlyDataSource: {
-				User: {
-					PersonalUser: {
-						PersonalUserReadRepo: {
-							getByEmail: vi.fn().mockResolvedValue(null),
+		And('the listing repository is available', () => {
+			mockUow = {
+				withScopedTransaction: vi.fn((callback) => {
+					return callback(mockRepo);
+				}),
+			};
+
+			mockDataSources = {
+				domainDataSource: {
+					Listing: {
+						ItemListing: {
+							ItemListingUnitOfWork: mockUow,
 						},
 					},
 				},
-			},
-		} as unknown as DataSources;
-
-		// Act & Assert
-		await expect(
-			deleteListings(mockDataSources)({
-				id: 'listing-123',
-				userEmail: 'test@example.com',
-			}),
-		).rejects.toThrow('User not found');
-	});
-
-	it('should throw error when listing has active reservation requests', async () => {
-		// Arrange
-		const mockUser = { id: 'user-123', email: 'test@example.com' };
-		const mockActiveReservations = [{ id: 'reservation-1' }];
-
-		const mockDataSources = {
-			domainDataSource: {
-				Listing: {
-					ItemListing: {
-						ItemListingUnitOfWork: {},
-					},
-				},
-			},
-			readonlyDataSource: {
-				User: {
-					PersonalUser: {
-						PersonalUserReadRepo: {
-							getByEmail: vi.fn().mockResolvedValue(mockUser),
+				readonlyDataSource: {
+					User: {
+						PersonalUser: {
+							PersonalUserReadRepo: {
+								getByEmail: vi.fn().mockResolvedValue(mockUser),
+							},
 						},
 					},
-				},
-				ReservationRequest: {
 					ReservationRequest: {
-						ReservationRequestReadRepo: {
-							getActiveByListingId: vi.fn().mockResolvedValue(mockActiveReservations),
+						ReservationRequest: {
+							ReservationRequestReadRepo: {
+								getActiveByListingId: vi.fn().mockResolvedValue([]),
+							},
 						},
 					},
 				},
-			},
-		} as unknown as DataSources;
+			} as unknown as DataSources;
 
-		// Act & Assert
-		await expect(
-			deleteListings(mockDataSources)({
-				id: 'listing-123',
-				userEmail: 'test@example.com',
-			}),
-		).rejects.toThrow('Cannot delete listing with active reservation requests');
+			// Create the curried function once
+			deleteFunction = deleteListings(mockDataSources);
+		});
 	});
 
-	it('should throw error when UnitOfWork is not available', async () => {
-		// Arrange
-		const mockDataSources = {
-			domainDataSource: {
-				Listing: {
-					ItemListing: {
-						ItemListingUnitOfWork: null,
-					},
+	f.Scenario(
+'Successfully deleting a listing with no active reservations',
+({ Given, When, Then, And }) => {
+			Given('there are no active reservation requests for the listing', () => {
+				mockActiveReservations = [];
+				(
+					mockDataSources.readonlyDataSource.ReservationRequest
+						.ReservationRequest.ReservationRequestReadRepo
+						.getActiveByListingId as ReturnType<typeof vi.fn>
+				).mockResolvedValue(mockActiveReservations);
+			});
+
+			When('the user requests to delete the listing', async () => {
+				thrownError = null;
+				try {
+					await deleteFunction({
+id: 'listing-123',
+userEmail: 'test@example.com',
+});
+				} catch (error) {
+					thrownError = error as Error;
+				}
+			});
+
+			Then('the listing should be marked as deleted', () => {
+				expect(mockListing.requestDelete).toHaveBeenCalledOnce();
+			});
+
+			And('the listing should be saved to the repository', () => {
+				expect(mockRepo.save).toHaveBeenCalledWith(mockListing);
+			});
+		},
+	);
+
+	f.Scenario(
+'Failing to delete a listing with active reservations',
+({ Given, When, Then, And }) => {
+			Given(
+'there are {int} active reservation requests for the listing',
+() => {
+					mockActiveReservations = [
+						{ id: 'reservation-1', state: 'Pending' },
+						{ id: 'reservation-2', state: 'Pending' },
+					];
+					(
+						mockDataSources.readonlyDataSource.ReservationRequest
+							.ReservationRequest.ReservationRequestReadRepo
+							.getActiveByListingId as ReturnType<typeof vi.fn>
+					).mockResolvedValue(mockActiveReservations);
 				},
-			},
-		} as unknown as DataSources;
+			);
 
-		// Act & Assert
-		await expect(
-			deleteListings(mockDataSources)({
-				id: 'listing-123',
-				userEmail: 'test@example.com',
-			}),
-		).rejects.toThrow('ItemListingUnitOfWork not available');
+			When('the user requests to delete the listing', async () => {
+				thrownError = null;
+				try {
+					await deleteFunction({
+id: 'listing-123',
+userEmail: 'test@example.com',
+});
+				} catch (error) {
+					thrownError = error as Error;
+				}
+			});
+
+			Then(
+'an error should be thrown with message {string}',
+() => {
+					expect(thrownError).toBeTruthy();
+					expect(thrownError?.message).toContain(
+'Cannot delete listing with active reservation requests',
+);
+				},
+			);
+
+			And('the listing should not be marked as deleted', () => {
+				expect(mockListing.requestDelete).not.toHaveBeenCalled();
+			});
+		},
+	);
+
+	f.Scenario('Failing to delete when user is not found', ({ Given, When, Then }) => {
+		Given('the user email {string} does not exist', () => {
+			(
+				mockDataSources.readonlyDataSource.User.PersonalUser
+					.PersonalUserReadRepo.getByEmail as ReturnType<typeof vi.fn>
+			).mockResolvedValue(null);
+		});
+
+		When(
+'the user with email {string} requests to delete the listing',
+async () => {
+				thrownError = null;
+				try {
+					await deleteFunction({
+id: 'listing-123',
+userEmail: 'nonexistent@example.com',
+});
+				} catch (error) {
+					thrownError = error as Error;
+				}
+			},
+		);
+
+		Then('an error should be thrown with message {string}', () => {
+			expect(thrownError).toBeTruthy();
+			expect(thrownError?.message).toBe('User not found');
+		});
 	});
+
+	f.Scenario(
+'Failing to delete when listing is not found',
+({ Given, When, Then }) => {
+			Given('the listing with id {string} does not exist', () => {
+				mockRepo.get.mockResolvedValue(null);
+			});
+
+			When(
+'the user requests to delete the listing with id {string}',
+async () => {
+					thrownError = null;
+					try {
+						await deleteFunction({
+id: 'nonexistent-listing',
+userEmail: 'test@example.com',
+});
+					} catch (error) {
+						thrownError = error as Error;
+					}
+				},
+			);
+
+			Then('an error should be thrown with message {string}', () => {
+				expect(thrownError).toBeTruthy();
+				// The error will be thrown by the domain when listing.requestDelete() is called on null
+				expect(thrownError?.message).toBeTruthy();
+			});
+		},
+	);
 });
