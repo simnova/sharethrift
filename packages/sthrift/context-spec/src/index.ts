@@ -2,6 +2,7 @@ import type { DataSourcesFactory } from '@sthrift/persistence';
 import type { TokenValidation } from '@sthrift/service-token-validation';
 import type { ServiceCybersource } from '@sthrift/service-cybersource';
 import type { MessagingService } from '@cellix/messaging-service';
+import type { TransactionalEmailService } from '@sthrift/transactional-email-service';
 
 export interface ApiContextSpec {
 	//mongooseService:Exclude<ServiceMongoose, ServiceBase>;
@@ -9,4 +10,5 @@ export interface ApiContextSpec {
 	tokenValidationService: TokenValidation;
 	paymentService: ServiceCybersource;
 	messagingService: MessagingService;
+	emailService: TransactionalEmailService;
 }

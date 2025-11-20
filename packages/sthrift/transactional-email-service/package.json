@@ -1,0 +1,32 @@
+{
+	"name": "@sthrift/transactional-email-service",
+	"version": "0.1.0",
+	"description": "Generic interface for transactional email services in ShareThrift",
+	"type": "module",
+	"files": [
+		"dist"
+	],
+	"main": "dist/src/index.js",
+	"types": "dist/src/index.d.ts",
+	"license": "MIT",
+	"exports": {
+		".": {
+			"types": "./dist/src/index.d.ts",
+			"default": "./dist/src/index.js"
+		}
+	},
+	"scripts": {
+		"build": "tsc --build",
+		"lint": "biome lint .",
+		"clean": "rimraf dist"
+	},
+	"devDependencies": {
+		"@biomejs/biome": "2.0.0",
+		"@cellix/typescript-config": "workspace:*",
+		"rimraf": "^6.0.1",
+		"typescript": "^5.8.3"
+	},
+	"dependencies": {
+		"@cellix/api-services-spec": "workspace:*"
+	}
+}

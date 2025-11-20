@@ -1,14 +1,15 @@
 import { DomainSeedwork } from '@cellix/domain-seedwork';
-import type { Passport } from '../../passport.ts';
-import type { ReservationRequestVisa } from '../reservation-request.visa.ts';
-import { ReservationRequestStates } from './reservation-request.value-objects.ts';
-import * as ValueObjects from './reservation-request.value-objects.ts';
-import type { ItemListingEntityReference } from '../../listing/item/item-listing.entity.ts';
-import type { UserEntityReference } from '../../user/index.ts';
+import type { Passport } from '../../passport.js';
+import type { ReservationRequestVisa } from '../reservation-request.visa.js';
+import { ReservationRequestStates } from './reservation-request.value-objects.js';
+import * as ValueObjects from './reservation-request.value-objects.js';
+import type { ItemListingEntityReference } from '../../listing/item/item-listing.entity.js';
+import type { UserEntityReference } from '../../user/index.js';
 import type {
 	ReservationRequestEntityReference,
 	ReservationRequestProps,
-} from './reservation-request.entity.ts';
+} from './reservation-request.entity.js';
+import { ReservationRequestCreated } from '../../events/types/reservation-request-created.js';
 
 export class ReservationRequest<props extends ReservationRequestProps>
 	extends DomainSeedwork.AggregateRoot<props, Passport>
@@ -52,6 +53,17 @@ export class ReservationRequest<props extends ReservationRequestProps>
 		instance.reservationPeriodStart = reservationPeriodStart;
 		instance.reservationPeriodEnd = reservationPeriodEnd;
 		instance.isNew = false;
+		
+		// Emit integration event for reservation request creation
+		instance.addIntegrationEvent(ReservationRequestCreated, {
+			reservationRequestId: instance.id,
+			listingId: listing.id,
+			reserverId: reserver.id,
+			sharerId: listing.sharer.id,
+			reservationPeriodStart,
+			reservationPeriodEnd,
+		});
+		
 		return instance;
 	}
 
