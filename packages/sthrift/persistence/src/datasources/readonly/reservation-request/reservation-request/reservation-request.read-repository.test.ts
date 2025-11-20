@@ -7,81 +7,20 @@ import type { ModelsContext } from '../../../../models-context.ts';
 import type { Domain } from '@sthrift/domain';
 import { ReservationRequestReadRepositoryImpl } from './reservation-request.read-repository.ts';
 import { MongooseSeedwork } from '@cellix/mongoose-seedwork';
-
-// Helper to create a valid 24-character hex string from a simple ID
-function createValidObjectId(id: string): string {
-	const hexChars = '0123456789abcdef';
-	let hex = '';
-	for (let i = 0; i < id.length && hex.length < 24; i++) {
-		const charCode = id.charCodeAt(i);
-		hex += hexChars[charCode % 16];
-	}
-	return hex.padEnd(24, '0').substring(0, 24);
-}
+import {
+	createValidObjectId,
+	makeMockUser,
+} from '../../../../test-utilities/mock-data-helpers.ts';
+import {
+	makeReservationRequestPassport,
+	makeMockReservationRequest,
+} from '../../../../test-utilities/reservation-request/reservation-request-test-helpers.ts';
 
 const test = { for: describeFeature };
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const feature = await loadFeature(
 	path.resolve(__dirname, 'features/reservation-request.read-repository.feature'),
 );
-
-function makePassport(): Domain.Passport {
-	return vi.mocked({
-		reservationRequest: {
-			forReservationRequest: vi.fn(() => ({
-				determineIf: () => true,
-			})),
-		},
-		user: {
-			forPersonalUser: vi.fn(() => ({
-				determineIf: () => true,
-			})),
-		},
-		listing: {
-			forItemListing: vi.fn(() => ({
-				determineIf: () => true,
-			})),
-		},
-	} as unknown as Domain.Passport);
-}
-
-function makeMockUser(id: string): Models.User.PersonalUser {
-	return {
-		_id: new MongooseSeedwork.ObjectId(createValidObjectId(id)),
-		id: id,
-		userType: 'end-user',
-		isBlocked: false,
-		hasCompletedOnboarding: false,
-		account: {
-			accountType: 'standard',
-			email: `${id}@example.com`,
-			username: id,
-			profile: {
-				firstName: 'Test',
-				lastName: 'User',
-				aboutMe: 'Hello',
-				location: {
-					address1: '123 Main St',
-					address2: null,
-					city: 'Test City',
-					state: 'TS',
-					country: 'Testland',
-					zipCode: '12345',
-				},
-				billing: {
-					subscriptionId: null,
-					cybersourceCustomerId: null,
-					paymentState: '',
-					lastTransactionId: null,
-					lastPaymentAmount: null,
-				},
-			},
-		},
-		role: { id: 'role-1' },
-		createdAt: new Date('2020-01-01'),
-		updatedAt: new Date('2020-01-02'),
-	} as unknown as Models.User.PersonalUser;
-}
 
 function makeMockListing(id: string, sharerId = 'sharer-1'): Models.Listing.ItemListing {
 	return {
@@ -93,30 +32,6 @@ function makeMockListing(id: string, sharerId = 'sharer-1'): Models.Listing.Item
 	} as unknown as Models.Listing.ItemListing;
 }
 
-function makeMockReservationRequest(
-	overrides: Partial<Models.ReservationRequest.ReservationRequest> = {},
-): Models.ReservationRequest.ReservationRequest {
-	const reservationId = overrides.id || 'reservation-1';
-	const defaultReservation = {
-		_id: new MongooseSeedwork.ObjectId(createValidObjectId(reservationId as string)),
-		id: reservationId,
-		state: 'Pending',
-		reserver: makeMockUser('user-1'),
-		listing: makeMockListing('listing-1'),
-		reservationPeriodStart: new Date('2025-10-20'),
-		reservationPeriodEnd: new Date('2025-10-25'),
-		closeRequestedBySharer: false,
-		closeRequestedByReserver: false,
-		createdAt: new Date('2020-01-01'),
-		updatedAt: new Date('2020-01-02'),
-		schemaVersion: '1.0.0',
-	};
-	return {
-		...defaultReservation,
-		...overrides,
-	} as unknown as Models.ReservationRequest.ReservationRequest;
-}
-
 test.for(feature, ({ Scenario, Background, BeforeEachScenario }) => {
 	let repository: ReservationRequestReadRepositoryImpl;
 	let mockModel: Models.ReservationRequest.ReservationRequestModelType;
@@ -126,7 +41,7 @@ test.for(feature, ({ Scenario, Background, BeforeEachScenario }) => {
 	let result: unknown;
 
 	BeforeEachScenario(() => {
-		passport = makePassport();
+		passport = makeReservationRequestPassport();
 		mockReservationRequests = [makeMockReservationRequest()];
 
 		// Create mock query that supports chaining and is thenable
