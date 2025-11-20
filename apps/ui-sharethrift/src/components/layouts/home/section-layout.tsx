@@ -24,66 +24,38 @@ export const HomeTabsLayout: React.FC = () => {
 	const { isAdmin } = useUserIsAdmin();
 
 	// Map nav keys to routes as defined in index.tsx
-	const routeMap: Record<string, string> = {
+	const routeMap = {
 		home: '',
 		listings: 'my-listings',
 		reservations: 'my-reservations',
 		messages: 'messages',
 		account: 'account',
 		adminDashboard: 'admin-dashboard',
-		// subnavs can be handled in account/*
-	};
+	} as const;
 
 	// Determine selectedKey from current location
 	const getSelectedKey = () => {
 		const path = location.pathname.replace(/^\//, '');
-		// Home is now at root
-		if (path === '' || path === '/') {
-			return 'home';
-		}
 		// Account subroutes
 		if (path.startsWith('account/')) {
-			const subPath = path.replace('account/', '');
-			if (subPath.startsWith('profile')) {
-				return 'profile';
-			}
-			if (subPath.startsWith('settings')) {
-				return 'settings';
-			}
-			// Add more subroutes as needed
-			return undefined; // nothing highlighted if not a known subroute
+			const sub = path.slice('account/'.length);
+			if (sub.startsWith('profile')) return 'profile';
+			if (sub.startsWith('settings')) return 'settings';
+			return undefined;
 		}
-		const found = Object.entries(routeMap).find(([, route]) =>
-			route !== '' && path.startsWith(route)
+		const found = (Object.entries(routeMap) as [string, string][]).find(
+			([, r]) => path === r || path.startsWith(`${r}/`)
 		);
-		return found ? found[0] : undefined;
+		return found?.[0] ?? 'home';
 	};
 
 	const handleNavigate = (key: string) => {
-		// Handle account subroutes
-		const accountSubTabs = ['profile', 'bookmarks', 'settings'];
-		if (accountSubTabs.includes(key)) {
-			navigate(`/account/${key}`);
-			return;
-		}
 		// If key is already in the form 'account/profile', 'account/settings', etc.
 		if (key.startsWith('account/')) {
-			navigate(`/${key}`);
-			return;
+			return navigate(`/${key}`);
 		}
-		if (key === 'messages') {
-			navigate('/messages');
-			return;
-		}
-		// Special case for home - navigate to root
-		if (key === 'home') {
-			navigate('/');
-			return;
-		}
-		const route = routeMap[key];
-		if (route) {
-			navigate(`/${route}`);
-		}
+		const r = routeMap[key as keyof typeof routeMap];
+		navigate(`/${r}`);
 	};
 	// Responsive margin for main content: no margin if sidebar is hidden (logged out), else responsive
 	const [mainMargin, setMainMargin] = useState(auth.isAuthenticated ? 240 : 0);
@@ -100,29 +72,22 @@ export const HomeTabsLayout: React.FC = () => {
 		return () => window.removeEventListener('resize', handleResize);
 	}, [auth.isAuthenticated]);
 
-	const isProduction = import.meta.env.MODE === 'production';
+	const isProd = import.meta.env.MODE === 'production';
 
-	const handleOnLogin = () => {
-		if (isProduction) {
-			// Production: trigger B2C auth flow directly
-			globalThis.sessionStorage.setItem('loginPortalType', 'UserPortal');
-			globalThis.location.href = '/auth-redirect-user';
+	function redirectLogin(
+		portal: 'UserPortal' | 'AdminPortal',
+		href: '/auth-redirect-user' | '/auth-redirect-admin'
+	) {
+		if (isProd) {
+			globalThis.sessionStorage.setItem('loginPortalType', portal);
+			globalThis.location.href = href;
 		} else {
-			// Local dev: go to fake login screen
 			navigate('/login');
 		}
-	};
+	}
 
-	const handleOnAdminLogin = () => {
-		if (isProduction) {
-			// Production: trigger AAD auth flow directly
-			globalThis.sessionStorage.setItem('loginPortalType', 'AdminPortal');
-			globalThis.location.href = '/auth-redirect-admin';
-		} else {
-			// Local dev: go to fake login screen
-			navigate('/login');
-		}
-	};
+	const handleOnLogin = () => redirectLogin('UserPortal', '/auth-redirect-user');
+	const handleOnAdminLogin = () => redirectLogin('AdminPortal', '/auth-redirect-admin');
 	
     //Removed in AdminUser PR
     //auth.signinRedirect();
