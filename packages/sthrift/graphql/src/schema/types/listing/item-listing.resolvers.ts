@@ -1,8 +1,6 @@
+import type { GraphContext } from '../../../init/context.ts';
 import type { Resolvers } from '../../builder/generated.js';
-import {
-	PopulateUserFromField,
-	getUserByEmail,
-} from '../../resolver-helper.ts';
+import { PopulateUserFromField } from '../../resolver-helper.ts';
 
 const mapStateToStatus = (state?: string): string => {
 	if (!state || state.trim() === '') {
@@ -42,38 +40,44 @@ const itemListingResolvers: Resolvers = {
 			let sharerId: string | undefined =
 				context.applicationServices.verifiedUser?.verifiedJwt?.sub;
 			if (email) {
-				const user = await context.applicationServices.User.PersonalUser.queryByEmail({
-					email,
-				});
+				const user =
+					await context.applicationServices.User.PersonalUser.queryByEmail({
+						email,
+					});
 				sharerId = user ? user.id : sharerId;
 			}
 
-		const { page, pageSize, searchText, statusFilters, sorter } = args;
+			const { page, pageSize, searchText, statusFilters, sorter } = args;
 
-		// Use the service method that handles search-vs-database flow
-		const result = await context.applicationServices.Listing.ItemListing.queryPagedWithSearchFallback(
-			{
-				page,
-				pageSize,
-				...(searchText ? { searchText } : {}),
-				...(statusFilters ? { statusFilters: [...statusFilters] } : {}),
-				...(sorter ? { sorter: { field: sorter.field, order: sorter.order as 'ascend' | 'descend' } } : {}),
-				...(sharerId ? { sharerId } : {}),
-			},
-		);
+			// Use the service method that handles search-vs-database flow
+			const result =
+				await context.applicationServices.Listing.ItemListing.queryPagedWithSearchFallback(
+					{
+						page,
+						pageSize,
+						...(searchText ? { searchText } : {}),
+						...(statusFilters ? { statusFilters: [...statusFilters] } : {}),
+						...(sorter
+							? {
+									sorter: {
+										field: sorter.field,
+										order: sorter.order as 'ascend' | 'descend',
+									},
+								}
+							: {}),
+						...(sharerId ? { sharerId } : {}),
+					},
+				);
 
 			// Convert domain entities to GraphQL format
 			const items = result.items.map((item) => {
-				const sharingStart = new Date(
-					item.sharingPeriodStart,
-				).toISOString();
+				const sharingStart = new Date(item.sharingPeriodStart).toISOString();
 				const sharingEnd = new Date(item.sharingPeriodEnd).toISOString();
 
 				return {
 					id: item.id,
 					title: item.title,
-					image:
-						item.images && item.images.length > 0 ? item.images[0] : null,
+					image: item.images && item.images.length > 0 ? item.images[0] : null,
 					publishedAt: item.createdAt,
 					reservationPeriod: `${sharingStart.slice(0, 10)} - ${sharingEnd.slice(0, 10)}`,
 					status: mapStateToStatus(item.state),
@@ -101,11 +105,11 @@ const itemListingResolvers: Resolvers = {
 			const pagedArgs: PagedArgs = {
 				page: args.page,
 				pageSize: args.pageSize,
-				...(args.searchText ? { searchText: args.searchText } : {}),
-				...(args.statusFilters
+				...(args.searchText != null ? { searchText: args.searchText } : {}),
+				...(args.statusFilters != null
 					? { statusFilters: [...args.statusFilters] }
 					: {}),
-				...(args.sorter
+				...(args.sorter != null
 					? {
 							sorter: {
 								field: args.sorter.field,
@@ -128,11 +132,15 @@ const itemListingResolvers: Resolvers = {
 				throw new Error('Authentication required');
 			}
 
-			// Find the user by email (supports both PersonalUser and AdminUser)
-			const user = await getUserByEmail(userEmail, context);
+			// Find the user by email to get their database ID
+			const user =
+				await context.applicationServices.User.PersonalUser.queryByEmail({
+					email: userEmail,
+				});
 			if (!user) {
 				throw new Error(`User not found for email ${userEmail}`);
 			}
+
 			const command = {
 				sharer: user,
 				title: args.input.title,
@@ -151,22 +159,10 @@ const itemListingResolvers: Resolvers = {
 			);
 		},
 
-		removeListing: async (_parent, args, context) => {
-			// Admin-note: role-based authorization should be implemented here (security)
-			// Once implemented, use system-level permissions for admin operations
-			await context.applicationServices.Listing.ItemListing.update({
-				id: args.id,
-				isDeleted: true,
-			});
-			return true;
-		},
-
 		unblockListing: async (_parent, args, context) => {
 			// Admin-note: role-based authorization should be implemented here (security)
-			// Once implemented, use system-level permissions for admin operations
-			await context.applicationServices.Listing.ItemListing.update({
+			await context.applicationServices.Listing.ItemListing.unblock({
 				id: args.id,
-				isBlocked: false,
 			});
 			return true;
 		},
@@ -175,15 +171,22 @@ const itemListingResolvers: Resolvers = {
 			args: { id: string },
 			context,
 		) => {
-			const userEmail =
-				context.applicationServices.verifiedUser?.verifiedJwt?.email;
-			if (!userEmail) {
-				throw new Error('Authentication required');
-			}
-
 			return await context.applicationServices.Listing.ItemListing.cancel({
 				id: args.id,
 			});
+		},
+
+		deleteItemListing: async (
+			_parent: unknown,
+			args: { id: string },
+			context: GraphContext,
+		) => {
+			await context.applicationServices.Listing.ItemListing.deleteListings({
+				id: args.id,
+				userEmail:
+					context.applicationServices.verifiedUser?.verifiedJwt?.email ?? '',
+			});
+			return { status: { success: true } };
 		},
 	},
 };
