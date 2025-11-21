@@ -152,6 +152,7 @@ pnpm run dev
 ```
 pnpm run test
 ```
+<img src="./readme-assets/pnpm_test.gif" width="500" alt="pnpm_test">
 
 Guidelines:
 
