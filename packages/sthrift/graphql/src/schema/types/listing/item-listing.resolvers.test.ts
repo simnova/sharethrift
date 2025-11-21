@@ -166,7 +166,7 @@ test.for(feature, ({ Scenario }) => {
 			Then('it should call Listing.ItemListing.queryAll', () => {
 				expect(
 					context.applicationServices.Listing.ItemListing.queryAll,
-				).toHaveBeenCalledWith({});
+				).toHaveBeenCalledWith({ excludeStates: ['Paused'] });
 			});
 			And('it should return a list of item listings', () => {
 				expect(result).toBeDefined();
@@ -198,7 +198,7 @@ test.for(feature, ({ Scenario }) => {
 			Then('it should call Listing.ItemListing.queryAll', () => {
 				expect(
 					context.applicationServices.Listing.ItemListing.queryAll,
-				).toHaveBeenCalledWith({});
+				).toHaveBeenCalledWith({ excludeStates: ['Paused'] });
 			});
 			And('it should return all available listings', () => {
 				expect(result).toBeDefined();
@@ -835,9 +835,9 @@ test.for(feature, ({ Scenario }) => {
 			Then(
 				'it should call Listing.ItemListing.pause with the listing ID',
 				() => {
-					expect(
-						context.applicationServices.Listing.ItemListing.pause,
-					).toHaveBeenCalledWith({ id: 'listing-1' });
+				expect(
+					context.applicationServices.Listing.ItemListing.pause,
+				).toHaveBeenCalledWith({ id: 'listing-1', userEmail: 'test@example.com' });
 				},
 			);
 			And('it should return the paused listing with state "Paused"', () => {
