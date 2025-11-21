@@ -70,8 +70,8 @@ input CreateItemListingInput {
 }
 
 type ItemListingMutationResult implements MutationResult {
-  status: MutationStatus!
-  listing: ItemListing
+	status: MutationStatus!
+	listing: ItemListing
 }
 
 extend type Mutation {

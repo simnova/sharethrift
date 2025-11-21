@@ -901,28 +901,25 @@ test.for(feature, ({ Scenario }) => {
 		},
 	);
 
-	Scenario(
-		'Error while pausing an item listing',
-		({ Given, When, Then }) => {
-			Given('Listing.ItemListing.pause throws an error', () => {
-				context = makeMockGraphContext();
-				vi.mocked(
-					context.applicationServices.Listing.ItemListing.pause,
-				).mockRejectedValue(new Error('Pause failed'));
-			});
-			When('the pauseItemListing mutation is executed', async () => {
-				try {
-					const resolver = itemListingResolvers.Mutation
-						?.pauseItemListing as TestResolver<{ id: string }>;
-					await resolver({}, { id: 'listing-1' }, context, {} as never);
-				} catch (e) {
-					error = e as Error;
-				}
-			});
-			Then('it should propagate the error message', () => {
-				expect(error).toBeDefined();
-				expect(error?.message).toBe('Pause failed');
-			});
-		},
-	);
+	Scenario('Error while pausing an item listing', ({ Given, When, Then }) => {
+		Given('Listing.ItemListing.pause throws an error', () => {
+			context = makeMockGraphContext();
+			vi.mocked(
+				context.applicationServices.Listing.ItemListing.pause,
+			).mockRejectedValue(new Error('Pause failed'));
+		});
+		When('the pauseItemListing mutation is executed', async () => {
+			try {
+				const resolver = itemListingResolvers.Mutation
+					?.pauseItemListing as TestResolver<{ id: string }>;
+				await resolver({}, { id: 'listing-1' }, context, {} as never);
+			} catch (e) {
+				error = e as Error;
+			}
+		});
+		Then('it should propagate the error message', () => {
+			expect(error).toBeDefined();
+			expect(error?.message).toBe('Pause failed');
+		});
+	});
 });
