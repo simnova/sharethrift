@@ -39,10 +39,9 @@ test.for(feature, ({ Scenario, Background, BeforeEachScenario }) => {
 
 	BeforeEachScenario(() => {
 		doc = makeAppealRequestDoc();
+		vi.spyOn(doc, 'set');
 		adapter = new ListingAppealRequestDomainAdapter(doc);
-	});
-
-	Background(({ Given }) => {
+	});	Background(({ Given }) => {
 		Given('a valid ListingAppealRequest document', () => {
 			// Setup happens in BeforeEachScenario
 		});
@@ -88,6 +87,155 @@ test.for(feature, ({ Scenario, Background, BeforeEachScenario }) => {
 		Then('it should return the correct value', () => {
 			expect(adapter.blocker).toBeDefined();
 			expect(adapter.blocker.id).toBeDefined();
+		});
+	});
+
+	Scenario('Setting the user property with valid reference', ({ When, Then }) => {
+		When('I set the user property with a valid reference', () => {
+			adapter.user = { id: '507f1f77bcf86cd799439011' } as never;
+		});
+
+		Then('the document user field should be updated', () => {
+			expect(doc.set).toHaveBeenCalledWith('user', expect.any(MongooseSeedwork.ObjectId));
+		});
+	});
+
+	Scenario('Setting the user property with missing id throws error', ({ When, Then }) => {
+		When('I set the user property with a reference missing id', () => {
+			expect(() => {
+				adapter.user = {} as never;
+			}).toThrow('user reference is missing id');
+		});
+
+		Then('it should throw an error about missing id', () => {
+			// Error thrown in When block
+		});
+	});
+
+	Scenario('Setting the listing property with valid reference', ({ When, Then }) => {
+		When('I set the listing property with a valid reference', () => {
+			adapter.listing = { id: '507f1f77bcf86cd799439022' } as never;
+		});
+
+		Then('the document listing field should be updated', () => {
+			expect(doc.set).toHaveBeenCalledWith('listing', expect.any(MongooseSeedwork.ObjectId));
+		});
+	});
+
+	Scenario('Setting the listing property with missing id throws error', ({ When, Then }) => {
+		When('I set the listing property with a reference missing id', () => {
+			expect(() => {
+				adapter.listing = {} as never;
+			}).toThrow('listing reference is missing id');
+		});
+
+		Then('it should throw an error about missing id', () => {
+			// Error thrown in When block
+		});
+	});
+
+	Scenario('Setting the blocker property with valid reference', ({ When, Then }) => {
+		When('I set the blocker property with a valid reference', () => {
+			adapter.blocker = { id: '507f1f77bcf86cd799439033' } as never;
+		});
+
+		Then('the document blocker field should be updated', () => {
+			expect(doc.set).toHaveBeenCalledWith('blocker', expect.any(MongooseSeedwork.ObjectId));
+		});
+	});
+
+	Scenario('Setting the blocker property with missing id throws error', ({ When, Then }) => {
+		When('I set the blocker property with a reference missing id', () => {
+			expect(() => {
+				adapter.blocker = {} as never;
+			}).toThrow('blocker reference is missing id');
+		});
+
+		Then('it should throw an error about missing id', () => {
+			// Error thrown in When block
+		});
+	});
+
+	Scenario('Loading user when populated as ObjectId', ({ When, Then, And }) => {
+		When('the user is an ObjectId and I call loadUser', async () => {
+			doc.user = new MongooseSeedwork.ObjectId() as never;
+			await adapter.loadUser();
+		});
+
+		Then('it should populate the user field', () => {
+			expect(doc.populate).toHaveBeenCalledWith('user');
+		});
+
+		And('return a PersonalUserDomainAdapter', async () => {
+			doc.user = { id: '123', userType: 'personal-user' } as never;
+			const result = await adapter.loadUser();
+			expect(result).toBeDefined();
+		});
+	});
+
+	Scenario('Loading listing when populated as ObjectId', ({ When, Then, And }) => {
+		When('the listing is an ObjectId and I call loadListing', async () => {
+			doc.listing = new MongooseSeedwork.ObjectId() as never;
+			await adapter.loadListing();
+		});
+
+		Then('it should populate the listing field', () => {
+			expect(doc.populate).toHaveBeenCalledWith('listing');
+		});
+
+		And('return an ItemListingDomainAdapter', async () => {
+			doc.listing = { id: '123', title: 'Test' } as never;
+			const result = await adapter.loadListing();
+			expect(result).toBeDefined();
+		});
+	});
+
+	Scenario('Loading blocker when populated as ObjectId', ({ When, Then, And }) => {
+		When('the blocker is an ObjectId and I call loadBlocker', async () => {
+			doc.blocker = new MongooseSeedwork.ObjectId() as never;
+			await adapter.loadBlocker();
+		});
+
+		Then('it should populate the blocker field', () => {
+			expect(doc.populate).toHaveBeenCalledWith('blocker');
+		});
+
+		And('return a PersonalUserDomainAdapter', async () => {
+			doc.blocker = { id: '123', userType: 'personal-user' } as never;
+			const result = await adapter.loadBlocker();
+			expect(result).toBeDefined();
+		});
+	});
+
+	Scenario('Setting and getting reason property', ({ When, Then }) => {
+		When('I set the reason to "New reason"', () => {
+			adapter.reason = 'New reason';
+		});
+
+		Then('the reason should be "New reason"', () => {
+			expect(adapter.reason).toBe('New reason');
+			expect(doc.reason).toBe('New reason');
+		});
+	});
+
+	Scenario('Setting and getting state property', ({ When, Then }) => {
+		When('I set the state to "accepted"', () => {
+			adapter.state = 'accepted';
+		});
+
+		Then('the state should be "accepted"', () => {
+			expect(adapter.state).toBe('accepted');
+			expect(doc.state).toBe('accepted');
+		});
+	});
+
+	Scenario('Getting type property', ({ When, Then }) => {
+		When('I get the type property', () => {
+			// Property access tested in Then
+		});
+
+		Then('it should return the document type value', () => {
+			expect(adapter.type).toBe('inappropriate');
 		});
 	});
 });

@@ -36,6 +36,7 @@ test.for(feature, ({ Scenario, Background, BeforeEachScenario }) => {
 
 	BeforeEachScenario(() => {
 		doc = makeItemListingDoc();
+		vi.spyOn(doc, 'set');
 		adapter = new ItemListingDomainAdapter(doc);
 	});
 
@@ -103,6 +104,195 @@ test.for(feature, ({ Scenario, Background, BeforeEachScenario }) => {
 		});
 
 		Then('the state should be "Published"', () => {
+			expect(adapter.state).toBe('Published');
+		});
+	});
+
+	Scenario('Setting and getting description', ({ When, Then }) => {
+		When('I set the description to "New description"', () => {
+			adapter.description = 'New description';
+		});
+
+		Then('the description should be "New description"', () => {
+			expect(adapter.description).toBe('New description');
+		});
+	});
+
+	Scenario('Setting and getting category', ({ When, Then }) => {
+		When('I set the category to "Furniture"', () => {
+			adapter.category = 'Furniture';
+		});
+
+		Then('the category should be "Furniture"', () => {
+			expect(adapter.category).toBe('Furniture');
+		});
+	});
+
+	Scenario('Setting and getting location', ({ When, Then }) => {
+		When('I set the location to "Los Angeles"', () => {
+			adapter.location = 'Los Angeles';
+		});
+
+		Then('the location should be "Los Angeles"', () => {
+			expect(adapter.location).toBe('Los Angeles');
+		});
+	});
+
+	Scenario('Setting and getting sharingPeriodStart', ({ When, Then }) => {
+		let testDate: Date;
+
+		When('I set the sharingPeriodStart to a specific date', () => {
+			testDate = new Date('2024-01-01');
+			adapter.sharingPeriodStart = testDate;
+		});
+
+		Then('the sharingPeriodStart should match that date', () => {
+			expect(adapter.sharingPeriodStart).toBe(testDate);
+		});
+	});
+
+	Scenario('Setting and getting sharingPeriodEnd', ({ When, Then }) => {
+		let testDate: Date;
+
+		When('I set the sharingPeriodEnd to a specific date', () => {
+			testDate = new Date('2024-12-31');
+			adapter.sharingPeriodEnd = testDate;
+		});
+
+		Then('the sharingPeriodEnd should match that date', () => {
+			expect(adapter.sharingPeriodEnd).toBe(testDate);
+		});
+	});
+
+	Scenario('Getting sharer when populated as PersonalUser', ({ When, Then }) => {
+		When('the sharer is a populated PersonalUser document', () => {
+			doc.sharer = { 
+				id: '123', 
+				userType: 'personal-user',
+				account: { email: 'test@test.com' }
+			} as never;
+		});
+
+		Then('I should receive a PersonalUserDomainAdapter', () => {
+			const result = adapter.sharer;
+			expect(result).toBeDefined();
+			expect(result.id).toBeDefined();
+		});
+	});
+
+	Scenario('Getting sharer when populated as AdminUser', ({ When, Then }) => {
+		When('the sharer is a populated AdminUser document', () => {
+			doc.sharer = { 
+				id: '456', 
+				userType: 'admin-user',
+				account: { email: 'admin@test.com' }
+			} as never;
+		});
+
+		Then('I should receive an AdminUserDomainAdapter', () => {
+			const result = adapter.sharer;
+			expect(result).toBeDefined();
+			expect(result.id).toBeDefined();
+		});
+	});
+
+	Scenario('Loading sharer when it\'s an ObjectId', ({ When, Then, And }) => {
+		When('the sharer is an ObjectId and I call loadSharer', async () => {
+			doc.sharer = new MongooseSeedwork.ObjectId() as never;
+			// biome-ignore lint/suspicious/useAwait: populate function needs to return promise to match Mongoose signature
+			doc.populate = vi.fn(async function(this: Models.Listing.ItemListing) {
+				this.sharer = { 
+					id: '789', 
+					userType: 'personal-user',
+					account: { email: 'loaded@test.com' }
+				} as never;
+				return this;
+			});
+			await adapter.loadSharer();
+		});
+
+		Then('it should populate the sharer field', () => {
+			expect(doc.populate).toHaveBeenCalledWith('sharer');
+		});
+
+		And('return a domain adapter', async () => {
+			doc.sharer = { 
+				id: '789', 
+				userType: 'personal-user' 
+			} as never;
+			const result = await adapter.loadSharer();
+			expect(result).toBeDefined();
+		});
+	});
+
+	Scenario('Setting sharer with valid reference', ({ When, Then }) => {
+		When('I set the sharer property with a valid user reference', () => {
+			adapter.sharer = { id: '507f1f77bcf86cd799439011' } as never;
+		});
+
+		Then('the document sharer field should be updated with ObjectId', () => {
+			expect(doc.set).toHaveBeenCalledWith('sharer', expect.any(MongooseSeedwork.ObjectId));
+		});
+	});
+
+	Scenario('Setting sharer with missing id throws error', ({ When, Then }) => {
+		When('I set the sharer property with a reference missing id', () => {
+			expect(() => {
+				adapter.sharer = {} as never;
+			}).toThrow('user reference is missing id');
+		});
+
+		Then('it should throw an error about user reference missing id', () => {
+			// Error thrown in When block
+		});
+	});
+
+	Scenario('Setting and getting sharingHistory', ({ When, Then }) => {
+		When('I set sharingHistory to an array of ids', () => {
+			adapter.sharingHistory = ['id1', 'id2', 'id3'];
+		});
+
+		Then('sharingHistory should return the same array', () => {
+			expect(adapter.sharingHistory).toEqual(['id1', 'id2', 'id3']);
+		});
+	});
+
+	Scenario('Setting and getting reports', ({ When, Then }) => {
+		When('I set reports to 5', () => {
+			adapter.reports = 5;
+		});
+
+		Then('reports should be 5', () => {
+			expect(adapter.reports).toBe(5);
+		});
+	});
+
+	Scenario('Setting and getting images', ({ When, Then }) => {
+		When('I set images to an array of URLs', () => {
+			adapter.images = ['url1.jpg', 'url2.jpg'];
+		});
+
+		Then('images should return the same array', () => {
+			expect(adapter.images).toEqual(['url1.jpg', 'url2.jpg']);
+		});
+	});
+
+	Scenario('Setting and getting listingType', ({ When, Then }) => {
+		When('I set listingType to "rental"', () => {
+			adapter.listingType = 'rental';
+		});
+
+		Then('listingType should be "rental"', () => {
+			expect(adapter.listingType).toBe('rental');
+		});
+	});
+
+	Scenario('Getting default state when not set', ({ When, Then }) => {
+		When('the document state is null', () => {
+			doc.state = null as never;
+		});
+
+		Then('the state getter should return "Published"', () => {
 			expect(adapter.state).toBe('Published');
 		});
 	});
