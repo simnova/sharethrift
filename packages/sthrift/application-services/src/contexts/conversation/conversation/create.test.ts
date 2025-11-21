@@ -390,4 +390,63 @@ test.for(feature, ({ Scenario, BeforeEachScenario }) => {
 			);
 		},
 	);
+
+	Scenario(
+		'Handling messaging service creation failure',
+		({ Given, When, Then, And }) => {
+			Given('valid entities', () => {
+				command = {
+					sharerId: 'sharer-123',
+					reserverId: 'reserver-456',
+					listingId: 'listing-789',
+				};
+
+				mockReadRepo.getBySharerReserverListing.mockResolvedValue(null);
+				mockUserReadRepo.getById.mockImplementation((id: string) => {
+					if (id === 'sharer-123')
+						return Promise.resolve({
+							id: 'sharer-123',
+							account: { username: 'sharer' },
+						});
+					if (id === 'reserver-456')
+						return Promise.resolve({
+							id: 'reserver-456',
+							account: { username: 'reserver' },
+						});
+					return Promise.resolve(null);
+				});
+				mockListingReadRepo.getById.mockResolvedValue({ id: 'listing-789' });
+			});
+
+			And('the messaging data source is available', () => {
+				// Messaging data source is already available in the default setup
+			});
+
+			And('the messaging service fails to create a conversation', () => {
+				mockMessagingRepo.createConversation.mockRejectedValue(
+					new Error('Service connection timeout'),
+				);
+			});
+
+			When('the create command is executed', async () => {
+				try {
+					const createFn = create(mockDataSources);
+					result = await createFn(command);
+				} catch (err) {
+					error = err as Error;
+				}
+			});
+
+			Then(
+				'an error should be thrown with the messaging service error details',
+				() => {
+					expect(error).toBeDefined();
+					expect(error?.message).toContain(
+						'Failed to create messaging conversation',
+					);
+					expect(error?.message).toContain('Service connection timeout');
+				},
+			);
+		},
+	);
 });

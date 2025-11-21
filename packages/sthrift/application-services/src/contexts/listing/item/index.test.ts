@@ -21,7 +21,6 @@ import { cancel } from './cancel.ts';
 import { queryPaged } from './query-paged.ts';
 import { update } from './update.ts';
 
-const _test = { for: describeFeature };
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const feature = await loadFeature(
 	path.resolve(__dirname, './features/index.feature'),

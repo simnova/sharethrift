@@ -36,3 +36,10 @@ Feature: Create Conversation
     And the messaging data source is unavailable
     When the create command is executed
     Then an error should be thrown indicating messaging service unavailable
+
+  Scenario: Handling messaging service creation failure
+    Given valid entities
+    And the messaging data source is available
+    And the messaging service fails to create a conversation
+    When the create command is executed
+    Then an error should be thrown with the messaging service error details

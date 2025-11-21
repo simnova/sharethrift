@@ -23,7 +23,6 @@ import { queryOverlapByListingIdAndReservationPeriod } from './query-overlap-by-
 import { queryActiveByListingId } from './query-active-by-listing-id.ts';
 import { queryListingRequestsBySharerId } from './query-listing-requests-by-sharer-id.ts';
 
-const _test = { for: describeFeature };
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const feature = await loadFeature(
 	path.resolve(__dirname, './features/index.feature'),

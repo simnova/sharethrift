@@ -35,3 +35,14 @@ Feature: Create Reservation Request
     And there are overlapping active reservation requests
     When the create command is executed
     Then an error should be thrown with message "Reservation period overlaps with existing active reservation requests"
+
+  Scenario: Creating reservation request when save fails to return result
+    Given a valid listing ID "listing-123"
+    And a valid reserver email "reserver@example.com"
+    And a valid reservation period from "2024-01-01" to "2024-01-07"
+    And the listing exists
+    And the reserver exists
+    And there are no overlapping reservation requests
+    And the repository save operation returns undefined
+    When the create command is executed
+    Then an error should be thrown with message "ReservationRequest not created"

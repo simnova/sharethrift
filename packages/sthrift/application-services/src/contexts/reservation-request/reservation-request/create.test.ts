@@ -351,4 +351,94 @@ test.for(feature, ({ Scenario, BeforeEachScenario }) => {
 			);
 		},
 	);
+
+	Scenario(
+		'Creating reservation request when save fails to return result',
+		({ Given, And, When, Then }) => {
+			Given('a valid listing ID "listing-123"', () => {
+				// Already set in command
+			});
+
+			And('a valid reserver email "reserver@example.com"', () => {
+				// Already set in command
+			});
+
+			And(
+				'a valid reservation period from "2024-01-01" to "2024-01-07"',
+				() => {
+					// Already set in command
+				},
+			);
+
+			And('the listing exists', () => {
+				const mockListing = {
+					id: 'listing-123',
+					sharer: { id: 'sharer-123' },
+				};
+				(
+					// biome-ignore lint/suspicious/noExplicitAny: Test mock access
+					mockDataSources.readonlyDataSource as any
+				).Listing.ItemListing.ItemListingReadRepo.getById.mockResolvedValue(
+					mockListing,
+				);
+			});
+
+			And('the reserver exists', () => {
+				const mockReserver = {
+					id: 'user-123',
+					account: { email: 'reserver@example.com' },
+				};
+				(
+					// biome-ignore lint/suspicious/noExplicitAny: Test mock access
+					mockDataSources.readonlyDataSource as any
+				).User.PersonalUser.PersonalUserReadRepo.getByEmail.mockResolvedValue(
+					mockReserver,
+				);
+			});
+
+			And('there are no overlapping reservation requests', () => {
+				(
+					// biome-ignore lint/suspicious/noExplicitAny: Test mock access
+					mockDataSources.readonlyDataSource as any
+				).ReservationRequest.ReservationRequest.ReservationRequestReadRepo.getOverlapActiveReservationRequestsForListing.mockResolvedValue(
+					[],
+				);
+			});
+
+			And('the repository save operation returns undefined', () => {
+				(
+					// biome-ignore lint/suspicious/noExplicitAny: Test mock access
+					mockDataSources.domainDataSource as any
+				).ReservationRequest.ReservationRequest.ReservationRequestUnitOfWork.withScopedTransaction.mockImplementation(
+					// biome-ignore lint/suspicious/noExplicitAny: Test mock callback
+					async (callback: any) => {
+						const repo = {
+							getNewInstance: vi
+								.fn()
+								.mockResolvedValue({ id: 'req-new', state: 'Requested' }),
+							save: vi.fn().mockResolvedValue(undefined),
+						};
+						await callback(repo);
+					},
+				);
+			});
+
+			When('the create command is executed', async () => {
+				const createFn = create(mockDataSources);
+				try {
+					await createFn(command);
+				} catch (e) {
+					error = e;
+				}
+			});
+
+			Then(
+				'an error should be thrown with message "ReservationRequest not created"',
+				() => {
+					expect(error).toBeDefined();
+					expect(error.message).toBe('ReservationRequest not created');
+				},
+			);
+		},
+	);
 });
