@@ -95,29 +95,52 @@ export function makeMockListing(id: string): Models.Listing.ItemListing {
 }
 
 /**
- * Create mock query that supports chaining and is thenable
+ * Create a mock conversation for testing
  */
-export const createMockQuery = (result: unknown) => {
-	// Create a promise-based mock that mimics Mongoose query behavior
-	const promise = Promise.resolve(result);
-	
-	// Create chainable mock methods
-	const lean = vi.fn();
-	const populate = vi.fn();
+export function makeMockConversation(
+	idOrOverrides?: string | Partial<Models.Conversation.Conversation>,
+): Models.Conversation.Conversation {
+	const id = typeof idOrOverrides === 'string' ? idOrOverrides : 'conv-id';
+	const overrides = typeof idOrOverrides === 'object' ? idOrOverrides : {};
+
+	return {
+		_id: new MongooseSeedwork.ObjectId(createValidObjectId(id)),
+		id: id,
+		title: 'Test Conversation',
+		isPublic: true,
+		createdAt: new Date('2020-01-01'),
+		updatedAt: new Date('2020-01-02'),
+		...overrides,
+	} as unknown as Models.Conversation.Conversation;
+}
+
+/**
+ * Creates a mock query object that mimics Mongoose query behavior
+ * @param result The result to return when the query is executed
+ * @returns A thenable mock query object
+ */
+export function createMockQuery<T>(result: T) {
+	const lean = vi.fn().mockReturnThis();
+	const populate = vi.fn().mockReturnThis();
 	const exec = vi.fn().mockResolvedValue(result);
-	const catchFn = vi.fn((onReject) => promise.catch(onReject));
-	
-	// Create thenable mock that implements the Promise interface
-	const thenableMock = Object.assign(promise, {
+	const catchFn = vi.fn().mockReturnThis();
+
+	const mockQuery = {
 		lean,
 		populate,
 		exec,
 		catch: catchFn,
+	};
+
+	// Make it thenable by adding a then method
+	Object.defineProperty(mockQuery, 'then', {
+		value: (onFulfilled?: (value: T) => unknown, onRejected?: (reason: unknown) => unknown) => {
+			return Promise.resolve(result).then(onFulfilled, onRejected);
+		},
+		writable: false,
+		enumerable: false,
+		configurable: true,
 	});
-	
-	// Configure methods to return the mock object for chaining
-	lean.mockReturnValue(thenableMock);
-	populate.mockReturnValue(thenableMock);
-	
-	return thenableMock;
-};
+
+	return mockQuery;
+}

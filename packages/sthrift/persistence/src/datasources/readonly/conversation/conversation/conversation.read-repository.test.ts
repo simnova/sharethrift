@@ -11,9 +11,9 @@ import {
 	makePassport,
 	makeMockUser,
 	makeMockListing,
+	makeMockConversation,
 	createMockQuery,
 } from '../../../../test-utilities/mock-data-helpers.ts';
-import { makeMockConversation } from '../../../../test-utilities/conversation/conversation-test-helpers.ts';
 
 const test = { for: describeFeature };
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
