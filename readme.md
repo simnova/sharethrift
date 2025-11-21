@@ -127,6 +127,7 @@ Run (Dev)
 ```
 pnpm run dev
 ```
+<img src="./readme-assets/pnpm_dev.gif" width="500" alt="pnpm_dev">
 
 ## 🔗 Local Endpoints
 
