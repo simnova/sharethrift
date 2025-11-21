@@ -1,4 +1,3 @@
-import type { ListingAppealRequestProps } from './listing-appeal-request.entity.ts';
 import type { ListingAppealRequest } from './listing-appeal-request.ts';
 import type { DomainSeedwork } from '@cellix/domain-seedwork';
 
@@ -6,9 +5,8 @@ import type { DomainSeedwork } from '@cellix/domain-seedwork';
  * Repository interface for ListingAppealRequest aggregate root.
  * Defines the contract for persistence and retrieval operations.
  */
-export interface ListingAppealRequestRepository<
-	props extends ListingAppealRequestProps,
-> extends DomainSeedwork.Repository<ListingAppealRequest<props>> {
+export interface ListingAppealRequestRepository
+	extends DomainSeedwork.Repository<ListingAppealRequest> {
 	/**
 	 * Creates a new instance of ListingAppealRequest.
 	 * @param userId - The ID of the user filing the appeal
@@ -22,7 +20,7 @@ export interface ListingAppealRequestRepository<
 		listingId: string,
 		reason: string,
 		blockerId: string,
-	): Promise<ListingAppealRequest<props>>;
+	): Promise<ListingAppealRequest>;
 
 	/**
 	 * Retrieves a ListingAppealRequest by its ID.
@@ -30,5 +28,5 @@ export interface ListingAppealRequestRepository<
 	 * @returns The ListingAppealRequest instance
 	 * @throws Error if the appeal request is not found
 	 */
-	getById(id: string): Promise<ListingAppealRequest<props>>;
+	getById(id: string): Promise<ListingAppealRequest>;
 }

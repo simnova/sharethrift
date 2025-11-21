@@ -9,12 +9,12 @@ export interface ListingAppealRequestUnitOfWork
 	extends DomainSeedwork.UnitOfWork<
 			Passport,
 			ListingAppealRequestProps,
-			ListingAppealRequest<ListingAppealRequestProps>,
-			ListingAppealRequestRepository<ListingAppealRequestProps>
+			ListingAppealRequest,
+			ListingAppealRequestRepository
 		>,
 		DomainSeedwork.InitializedUnitOfWork<
 			Passport,
 			ListingAppealRequestProps,
-			ListingAppealRequest<ListingAppealRequestProps>,
-			ListingAppealRequestRepository<ListingAppealRequestProps>
+			ListingAppealRequest,
+			ListingAppealRequestRepository
 		> {}

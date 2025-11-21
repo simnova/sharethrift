@@ -1,42 +1,60 @@
-import type { PersonalUserRolePermissionsProps } from './personal-user-role/personal-user-role-permissions.ts';
-import { PersonalUserRolePermissions } from './personal-user-role/personal-user-role-permissions.ts';
+import type { AdminRolePermissionsProps } from './admin-role/admin-role-permissions.ts';
+import { AdminRolePermissions } from './admin-role/admin-role-permissions.ts';
 
 /**
  * Default permission values with all permissions enabled
  */
-export const DEFAULT_PERMISSIONS_PROPS: Readonly<PersonalUserRolePermissionsProps> = {
+export const DEFAULT_PERMISSIONS_PROPS: Readonly<AdminRolePermissionsProps> = {
 	listingPermissions: {
-		canCreateItemListing: true,
-		canUpdateItemListing: true,
-		canDeleteItemListing: true,
-		canViewItemListing: true,
-		canPublishItemListing: true,
-		canUnpublishItemListing: true,
-		canReserveItemListing: true,
+		canViewAllListings: true,
+		canManageAllListings: true,
+		canEditListings: true,
+		canDeleteListings: true,
+		canApproveListings: true,
+		canRejectListings: true,
+		canBlockListings: true,
+		canUnblockListings: true,
+		canModerateListings: true,
 	},
 	conversationPermissions: {
-		canCreateConversation: true,
-		canManageConversation: true,
-		canViewConversation: true,
+		canViewAllConversations: true,
+		canEditConversations: true,
+		canDeleteConversations: true,
+		canCloseConversations: true,
+		canModerateConversations: true,
 	},
 	reservationRequestPermissions: {
-		canCreateReservationRequest: true,
-		canManageReservationRequest: true,
-		canViewReservationRequest: true,
+		canViewAllReservations: true,
+		canApproveReservations: true,
+		canRejectReservations: true,
+		canCancelReservations: true,
+		canEditReservations: true,
+		canModerateReservations: true,
+	},
+	userPermissions: {
+		canBlockUsers: true,
+		canViewAllUsers: true,
+		canEditUsers: true,
+		canDeleteUsers: true,
+		canManageUserRoles: true,
+		canAccessAnalytics: true,
+		canManageRoles: true,
+		canViewReports: true,
+		canDeleteContent: true,
 	},
 };
 
 /**
- * Creates a default PersonalUserRolePermissions object with all permissions enabled.
+ * Creates a default AdminRolePermissions object with all permissions enabled.
  * Use this factory in tests to reduce duplication.
  * 
  * @param overrides - Optional overrides for specific permissions
- * @returns PersonalUserRolePermissions instance with all permissions set to true by default
+ * @returns AdminRolePermissions instance with all permissions set to true by default
  */
 export function createDefaultRolePermissions(
-	overrides: Partial<PersonalUserRolePermissionsProps> = {},
-): PersonalUserRolePermissions {
-	return new PersonalUserRolePermissions({
+	overrides: Partial<AdminRolePermissionsProps> = {},
+): AdminRolePermissions {
+	return new AdminRolePermissions({
 		...DEFAULT_PERMISSIONS_PROPS,
 		...overrides,
 	});

@@ -9,12 +9,12 @@ export interface UserAppealRequestUnitOfWork
 	extends DomainSeedwork.UnitOfWork<
 			Passport,
 			UserAppealRequestProps,
-			UserAppealRequest<UserAppealRequestProps>,
-			UserAppealRequestRepository<UserAppealRequestProps>
+			UserAppealRequest,
+			UserAppealRequestRepository
 		>,
 		DomainSeedwork.InitializedUnitOfWork<
 			Passport,
 			UserAppealRequestProps,
-			UserAppealRequest<UserAppealRequestProps>,
-			UserAppealRequestRepository<UserAppealRequestProps>
+			UserAppealRequest,
+			UserAppealRequestRepository
 		> {}
