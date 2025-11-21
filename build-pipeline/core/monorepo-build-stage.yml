@@ -227,6 +227,10 @@ stages:
           echo "Running pnpm audit for vulnerabilities..."
           pnpm audit --audit-level=high --prod
 
+          # Run e18e code quality analysis (non-blocking)
+          echo "Running e18e code quality analysis..."
+          pnpm run analyze || echo "e18e analysis completed with warnings/issues (non-blocking)"
+
           # Use Turbo's built-in --affected flag for accurate change detection
           if [ "$(Build.Reason)" = "PullRequest" ] || [ "$(Build.SourceBranch)" != "refs/heads/main" ]; then
             echo "Testing affected packages only (PR/branch build)..."
