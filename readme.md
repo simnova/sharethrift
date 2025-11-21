@@ -119,6 +119,8 @@ pnpm install
 pnpm run build
 ```
 
+  <img src="./readme-assets/pnpm_install.gif" width="500" alt="pnpm_install">
+
 Run (Dev)
 
 ```
