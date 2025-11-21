@@ -72,6 +72,7 @@ export class ServiceTokenValidation implements ServiceBase<TokenValidation> {
 				}
 			} catch {
 				// Required error handling, logging omitted to prevent flooding logs
+                continue;
 			}
 		}
 		return null;
