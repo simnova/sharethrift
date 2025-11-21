@@ -15,29 +15,6 @@ export interface AllListingsTableContainerProps {
 	onPageChange: (page: number) => void;
 }
 
-/**
- * Maps domain listing state to UI status
- * Domain states: Published, Paused, Cancelled, Drafted, Expired, Blocked, Appeal Requested
- * UI statuses: Active, Paused, Cancelled, Draft, Expired, Blocked, Cancelled
- */
-const mapDomainStateToUIStatus = (
-	state: string | null | undefined,
-): string => {
-	if (!state) return 'Unknown';
-
-	const stateMap: Record<string, string> = {
-		Published: 'Active',
-		Paused: 'Paused',
-		Cancelled: 'Cancelled',
-		Drafted: 'Draft',
-		Expired: 'Expired',
-		Blocked: 'Blocked',
-		'Appeal Requested': 'Blocked', // Map appeal requested to blocked for UI
-	};
-
-	return stateMap[state] || state;
-};
-
 export const AllListingsTableContainer: React.FC<
 	AllListingsTableContainerProps
 > = ({ currentPage, onPageChange }) => {
