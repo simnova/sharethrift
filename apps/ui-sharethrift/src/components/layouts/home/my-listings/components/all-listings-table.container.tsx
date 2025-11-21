@@ -2,6 +2,7 @@ import { useMutation, useQuery } from '@apollo/client/react';
 import { ComponentQueryLoader } from '@sthrift/ui-components';
 import { message } from 'antd';
 import { useState } from 'react';
+import { useNavigate, useParams } from 'react-router-dom';
 import {
 	HomeAllListingsTableContainerCancelItemListingDocument,
 	HomeAllListingsTableContainerDeleteListingDocument,
@@ -17,6 +18,8 @@ export interface AllListingsTableContainerProps {
 export const AllListingsTableContainer: React.FC<
 	AllListingsTableContainerProps
 > = ({ currentPage, onPageChange }) => {
+	const navigate = useNavigate();
+	const { userId: urlUserId } = useParams<{ userId?: string }>();
 	const [searchText, setSearchText] = useState('');
 	const [statusFilters, setStatusFilters] = useState<string[]>([]);
 	const [sorter, setSorter] = useState<{
@@ -24,6 +27,17 @@ export const AllListingsTableContainer: React.FC<
 		order: 'ascend' | 'descend' | null;
 	}>({ field: null, order: null });
 	const pageSize = 6;
+
+	// Query current user to get userId if not in URL
+	const { data: currentUserData } = useQuery(
+		HomeAllListingsTableContainerCurrentUserDocument,
+		{
+			fetchPolicy: 'network-only',
+		},
+	);
+
+	const userId =
+		urlUserId || currentUserData?.currentPersonalUserAndCreateIfNotExists?.id;
 
 	const { data, loading, error, refetch } = useQuery(
 		HomeAllListingsTableContainerMyListingsAllDocument,
@@ -114,6 +128,10 @@ export const AllListingsTableContainer: React.FC<
 			await cancelListing({ variables: { id: listingId } });
 		} else if (action === 'delete') {
 			await deleteListing({ variables: { id: listingId } });
+		} else if (action === 'edit') {
+			if (userId) {
+				navigate(`/my-listings/user/${userId}/${listingId}/edit`);
+			}
 		} else {
 			message.info(`Action "${action}" for listing ${listingId} coming soon.`);
 		}

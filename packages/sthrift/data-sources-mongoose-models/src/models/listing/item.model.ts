@@ -31,6 +31,7 @@ export interface ItemListing extends Listing {
 }
 
 export const LISTING_STATE_ENUM = [
+	'Active',
 	'Published',
 	'Paused',
 	'Cancelled',
