@@ -1,6 +1,7 @@
 export * from './domain/contexts/index.ts';
 import type { Contexts } from './domain/index.ts';
 export * as Domain from './domain/index.ts';
+export * from './domain/contexts/role/role-permissions.factory.ts';
 
 export interface DomainDataSource {
 	User: {

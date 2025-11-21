@@ -91,8 +91,8 @@ export class ItemListing<props extends ItemListingProps>
 			sharingPeriodEnd: sharingPeriodEnd,
 			images: fields.images ?? [],
 			state: isDraft
-				? ValueObjects.ListingState.Drafted
-				: ValueObjects.ListingState.Published,
+				? ValueObjects.ListingState.Drafted.valueOf()
+				: ValueObjects.ListingState.Published.valueOf(),
 			createdAt: now,
 			updatedAt: now,
 			schemaVersion: 1,
@@ -108,6 +108,10 @@ export class ItemListing<props extends ItemListingProps>
 
 	private markAsNew(): void {
 		this.isNew = true;
+	}
+
+	private touch(): void {
+		this.props.updatedAt = new Date();
 	}
 
 	//#endregion Methods
@@ -134,6 +138,9 @@ export class ItemListing<props extends ItemListingProps>
 			);
 		}
 		this.props.title = new ValueObjects.Title(value).valueOf();
+		if (!this.isNew) {
+			this.touch();
+		}
 		// Note: updatedAt is automatically handled by Mongoose timestamps
 	}
 
@@ -150,6 +157,9 @@ export class ItemListing<props extends ItemListingProps>
 			);
 		}
 		this.props.description = new ValueObjects.Description(value).valueOf();
+		if (!this.isNew) {
+			this.touch();
+		}
 		// Note: updatedAt is automatically handled by Mongoose timestamps
 	}
 
@@ -166,6 +176,9 @@ export class ItemListing<props extends ItemListingProps>
 			);
 		}
 		this.props.category = new ValueObjects.Category(value).valueOf();
+		if (!this.isNew) {
+			this.touch();
+		}
 		// Note: updatedAt is automatically handled by Mongoose timestamps
 	}
 
@@ -182,6 +195,9 @@ export class ItemListing<props extends ItemListingProps>
 			);
 		}
 		this.props.location = new ValueObjects.Location(value).valueOf();
+		if (!this.isNew) {
+			this.touch();
+		}
 		// Note: updatedAt is automatically handled by Mongoose timestamps
 	}
 
@@ -198,6 +214,9 @@ export class ItemListing<props extends ItemListingProps>
 			);
 		}
 		this.props.sharingPeriodStart = value;
+		if (!this.isNew) {
+			this.touch();
+		}
 		// Note: updatedAt is automatically handled by Mongoose timestamps
 	}
 
@@ -214,11 +233,33 @@ export class ItemListing<props extends ItemListingProps>
 			);
 		}
 		this.props.sharingPeriodEnd = value;
+		if (!this.isNew) {
+			this.touch();
+		}
 		// Note: updatedAt is automatically handled by Mongoose timestamps
 	}
 
 	get state(): string {
 		return this.props.state;
+	}
+
+	set state(value: string) {
+		// State transition logic - determines what transitions are valid
+		switch (value) {
+			case ValueObjects.ListingStateEnum.Published:
+				this.publish();
+				break;
+			case ValueObjects.ListingStateEnum.Paused:
+				this.pause();
+				break;
+			case ValueObjects.ListingStateEnum.Cancelled:
+				this.cancel();
+				break;
+			default:
+				throw new DomainSeedwork.PermissionError(
+					`Cannot transition to state: ${value}`,
+				);
+		}
 	}
 
 	get updatedAt(): Date {
@@ -254,6 +295,9 @@ export class ItemListing<props extends ItemListingProps>
 			);
 		}
 		this.props.images = value;
+		if (!this.isNew) {
+			this.touch();
+		}
 		// Note: updatedAt is automatically handled by Mongoose timestamps
 	}
 
@@ -284,6 +328,9 @@ export class ItemListing<props extends ItemListingProps>
 		}
 
 		this.props.state = new ValueObjects.ListingState('Published').valueOf();
+		if (!this.isNew) {
+			this.touch();
+		}
 		// Note: updatedAt is automatically handled by Mongoose timestamps
 	}
 
@@ -299,6 +346,9 @@ export class ItemListing<props extends ItemListingProps>
 		}
 
 		this.props.state = new ValueObjects.ListingState('Paused').valueOf();
+		if (!this.isNew) {
+			this.touch();
+		}
 		// Note: updatedAt is automatically handled by Mongoose timestamps
 	}
 
@@ -312,6 +362,9 @@ export class ItemListing<props extends ItemListingProps>
 		}
 
 		this.props.state = new ValueObjects.ListingState('Cancelled').valueOf();
+		if (!this.isNew) {
+			this.touch();
+		}
 	}
 
 	/**

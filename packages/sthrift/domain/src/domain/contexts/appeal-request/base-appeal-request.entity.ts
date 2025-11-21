@@ -1,7 +1,12 @@
 import type { DomainSeedwork } from '@cellix/domain-seedwork';
-import type { PersonalUserEntityReference } from '../../user/personal-user/personal-user.entity.ts';
+import type { PersonalUserEntityReference } from '../user/personal-user/personal-user.entity.ts';
 
-export interface UserAppealRequestProps extends DomainSeedwork.DomainEntityProps {
+/**
+ * Base properties shared by all appeal request types.
+ * Contains common fields for user appeals and listing appeals.
+ */
+export interface BaseAppealRequestProps
+	extends DomainSeedwork.DomainEntityProps {
 	user: Readonly<PersonalUserEntityReference>;
 	loadUser: () => Promise<Readonly<PersonalUserEntityReference>>;
 	reason: string;
@@ -13,6 +18,3 @@ export interface UserAppealRequestProps extends DomainSeedwork.DomainEntityProps
 	readonly updatedAt: Date;
 	readonly schemaVersion: string;
 }
-
-export interface UserAppealRequestEntityReference
-	extends Readonly<UserAppealRequestProps> {}
