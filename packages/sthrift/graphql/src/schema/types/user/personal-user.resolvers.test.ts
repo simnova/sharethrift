@@ -581,7 +581,7 @@ test.for(feature, ({ Scenario, Background, BeforeEachScenario }) => {
 					});
 					vi.mocked(
 						context.applicationServices.User.PersonalUser.processPayment,
-					).mockResolvedValue(mockPaymentResponse as PaymentResponse);
+					).mockResolvedValue(mockPaymentResponse);
 
 					// Mock subscription creation
 					const mockSubscription = createMockSubscription();
