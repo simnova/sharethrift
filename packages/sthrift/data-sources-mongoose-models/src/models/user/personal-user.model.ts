@@ -1,14 +1,7 @@
-import {
-	type Model,
-	Schema,
-	type ObjectId,
-	type SchemaDefinition,
-	type PopulatedDoc,
-} from 'mongoose';
+import { type Model, Schema, type SchemaDefinition } from 'mongoose';
 import { MongooseSeedwork } from '@cellix/mongoose-seedwork';
 import { type User, type UserModelType, userOptions } from './user.model.ts';
 import { Patterns } from '../../patterns.ts';
-import * as PersonalUserRole from '../role/personal-user-role.model.ts';
 
 // Location
 export interface PersonalUserAccountProfileLocation
@@ -133,7 +126,6 @@ export const PersonalUserAccountType: SchemaDefinition<PersonalUserAccount> = {
 export interface PersonalUser extends User {
 	userType: string;
 	isBlocked: boolean;
-	role?: PopulatedDoc<PersonalUserRole.PersonalUserRole> | ObjectId;
 	account: PersonalUserAccount;
 	hasCompletedOnboarding: boolean;
 
@@ -149,11 +141,6 @@ const PersonalUserSchema = new Schema<
 >(
 	{
 		isBlocked: { type: Boolean, required: false, default: false },
-		role: {
-			type: Schema.Types.ObjectId,
-			ref: PersonalUserRole.PersonalUserRoleModelName,
-			required: false,
-		},
 		account: {
 			type: PersonalUserAccountType,
 			required: false,
@@ -165,7 +152,10 @@ const PersonalUserSchema = new Schema<
 	userOptions,
 ).index(
 	{ 'account.username': 1 },
-	{ unique: true, partialFilterExpression: { 'account.username': { $exists: true } } }, // enforce unique only when username exists
+	{
+		unique: true,
+		partialFilterExpression: { 'account.username': { $exists: true } },
+	}, // enforce unique only when username exists
 );
 
 export const PersonalUserModelName: string = 'personal-users'; //TODO: This should be in singular form

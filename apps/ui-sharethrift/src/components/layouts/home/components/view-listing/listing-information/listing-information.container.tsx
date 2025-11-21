@@ -69,8 +69,8 @@ export const ListingInformationContainer: React.FC<
 	const { data: currentUserData } = useQuery<ViewListingCurrentUserQuery>(
 		ViewListingCurrentUserDocument,
 	);
-	if (!currentUserData?.currentPersonalUserAndCreateIfNotExists) {
-		console.log('Current user could not be created or not found:');
+	if (!currentUserData?.currentUser) {
+		console.log('Current user not found');
 	}
 
 	const client = useApolloClient();

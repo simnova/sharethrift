@@ -22,7 +22,7 @@ declare module '@serenity-js/core' {
             sharingPeriodEnd: Date;
         };
         currentListing?: ItemListing<ItemListingProps>;
-        error?: Error;
+        error?: unknown;
         originalUpdatedAt?: Date;
     }
 }
@@ -96,10 +96,10 @@ When('I create a new ItemListing aggregate using getNewInstance with sharer {str
     actor.currentListing = ItemListing.getNewInstance<ItemListingProps>(
         actor.personalUser,
         {
-            title: new ValueObjects.Title(title.replace(/^"|"$/g, '')).valueOf(),
-            description: new ValueObjects.Description(actor.listingFields.description).valueOf(),
-            category: new ValueObjects.Category(actor.listingFields.category).valueOf(),
-            location: new ValueObjects.Location(actor.listingFields.location).valueOf(),
+            title: String(new ValueObjects.Title(title.replace(/^"|"$/g, '')).valueOf()),
+            description: String(new ValueObjects.Description(actor.listingFields.description).valueOf()),
+            category: String(new ValueObjects.Category(actor.listingFields.category).valueOf()),
+            location: String(new ValueObjects.Location(actor.listingFields.location).valueOf()),
             sharingPeriodStart: actor.listingFields.sharingPeriodStart,
             sharingPeriodEnd: actor.listingFields.sharingPeriodEnd,
         },
@@ -116,10 +116,10 @@ When('I create a new ItemListing aggregate using getNewInstance with isDraft tru
     actor.currentListing = ItemListing.getNewInstance<ItemListingProps>(
         actor.personalUser,
         {
-            title: new ValueObjects.Title('Draft Title').valueOf(),
-            description: new ValueObjects.Description('Draft Description').valueOf(),
-            category: new ValueObjects.Category('Miscellaneous').valueOf(),
-            location: new ValueObjects.Location('Draft Location').valueOf(),
+            title: String(new ValueObjects.Title('Draft Title').valueOf()),
+            description: String(new ValueObjects.Description('Draft Description').valueOf()),
+            category: String(new ValueObjects.Category('Miscellaneous').valueOf()),
+            location: String(new ValueObjects.Location('Draft Location').valueOf()),
             sharingPeriodStart: tomorrow,
             sharingPeriodEnd: tomorrow,
             isDraft: true
@@ -132,7 +132,7 @@ When('I set the title to {string}', (title: string) => {
     const actor = actorCalled('User');
     try {
         if (actor.currentListing) {
-            actor.currentListing.title = new ValueObjects.Title(title.replace(/^"|"$/g, '')).valueOf();
+            actor.currentListing.title = String(new ValueObjects.Title(title.replace(/^"|"$/g, '')).valueOf());
         }
     } catch (e) {
         actor.error = e as Error;
@@ -143,7 +143,7 @@ When('I try to set the title to {string}', (title: string) => {
     const actor = actorCalled('User');
     try {
         if (actor.currentListing) {
-            actor.currentListing.title = new ValueObjects.Title(title.replace(/^"|"$/g, '')).valueOf();
+            actor.currentListing.title = String(new ValueObjects.Title(title.replace(/^"|"$/g, '')).valueOf());
         }
     } catch (e) {
         actor.error = e as Error;
@@ -154,7 +154,7 @@ When('I set the description to {string}', (description: string) => {
     const actor = actorCalled('User');
     try {
         if (actor.currentListing) {
-            actor.currentListing.description = new ValueObjects.Description(description.replace(/^"|"$/g, '')).valueOf();
+            actor.currentListing.description = String(new ValueObjects.Description(description.replace(/^"|"$/g, '')).valueOf());
         }
     } catch (e) {
         actor.error = e as Error;
@@ -165,7 +165,7 @@ When('I try to set the description to {string}', (description: string) => {
     const actor = actorCalled('User');
     try {
         if (actor.currentListing) {
-            actor.currentListing.description = new ValueObjects.Description(description.replace(/^"|"$/g, '')).valueOf();
+            actor.currentListing.description = String(new ValueObjects.Description(description.replace(/^"|"$/g, '')).valueOf());
         }
     } catch (e) {
         actor.error = e as Error;
@@ -176,7 +176,7 @@ When('I set the category to {string}', (category: string) => {
     const actor = actorCalled('User');
     try {
         if (actor.currentListing) {
-            actor.currentListing.category = new ValueObjects.Category(category.replace(/^"|"$/g, '')).valueOf();
+            actor.currentListing.category = String(new ValueObjects.Category(category.replace(/^"|"$/g, '')).valueOf());
         }
     } catch (e) {
         actor.error = e as Error;
@@ -187,7 +187,7 @@ When('I try to set the category to {string}', (category: string) => {
     const actor = actorCalled('User');
     try {
         if (actor.currentListing) {
-            actor.currentListing.category = new ValueObjects.Category(category.replace(/^"|"$/g, '')).valueOf();
+            actor.currentListing.category = String(new ValueObjects.Category(category.replace(/^"|"$/g, '')).valueOf());
         }
     } catch (e) {
         actor.error = e as Error;
@@ -198,7 +198,7 @@ When('I set the location to {string}', (location: string) => {
     const actor = actorCalled('User');
     try {
         if (actor.currentListing) {
-            actor.currentListing.location = new ValueObjects.Location(location.replace(/^"|"$/g, '')).valueOf();
+            actor.currentListing.location = String(new ValueObjects.Location(location.replace(/^"|"$/g, '')).valueOf());
         }
     } catch (e) {
         actor.error = e as Error;
@@ -209,7 +209,7 @@ When('I try to set the location to {string}', (location: string) => {
     const actor = actorCalled('User');
     try {
         if (actor.currentListing) {
-            actor.currentListing.location = new ValueObjects.Location(location.replace(/^"|"$/g, '')).valueOf();
+            actor.currentListing.location = String(new ValueObjects.Location(location.replace(/^"|"$/g, '')).valueOf());
         }
     } catch (e) {
         actor.error = e as Error;
@@ -291,7 +291,7 @@ Then(/^the listing(?:'s)? state should be "(.*)"$/, (expectedState: string) => {
     }
 
     actor.attemptsTo(
-        Ensure.that(listing.state.valueOf(), equals(expectedState.replace(/^""|""$/g, '')))
+        Ensure.that(String(listing.state.valueOf()), equals(expectedState.replace(/^""|""$/g, '')))
     );
 });
 
@@ -302,7 +302,7 @@ Then('the listing\'s title should be {string}', (title: string) => {
         throw new Error('No listing was created');
     }
     actor.attemptsTo(
-        Ensure.that(listing.title.valueOf(), equals(title.replace(/^"|"$/g, '')))
+        Ensure.that(String(listing.title.valueOf()), equals(title.replace(/^"|"$/g, '')))
     );
 });
 
@@ -324,7 +324,7 @@ Then('the listing\'s title should default to {string}', (title: string) => {
         throw new Error('No listing was created');
     }
     actor.attemptsTo(
-        Ensure.that(listing.title.valueOf(), equals(title.replace(/^"|"$/g, '')))
+        Ensure.that(String(listing.title.valueOf()), equals(title.replace(/^"|"$/g, '')))
     );
 });
 
@@ -335,7 +335,7 @@ Then('the listing\'s description should default to {string}', (description: stri
         throw new Error('No listing was created');
     }
     actor.attemptsTo(
-        Ensure.that(listing.description.valueOf(), equals(description.replace(/^"|"$/g, '')))
+        Ensure.that(String(listing.description.valueOf()), equals(description.replace(/^"|"$/g, '')))
     );
 });
 
@@ -346,7 +346,7 @@ Then('the listing\'s category should default to {string}', (category: string) =>
         throw new Error('No listing was created');
     }
     actor.attemptsTo(
-        Ensure.that(listing.category.valueOf(), equals(category.replace(/^"|"$/g, '')))
+        Ensure.that(String(listing.category.valueOf()), equals(category.replace(/^"|"$/g, '')))
     );
 });
 
@@ -357,7 +357,7 @@ Then('the listing\'s location should default to {string}', (location: string) =>
         throw new Error('No listing was created');
     }
     actor.attemptsTo(
-        Ensure.that(listing.location.valueOf(), equals(location.replace(/^"|"$/g, '')))
+        Ensure.that(String(listing.location.valueOf()), equals(location.replace(/^"|"$/g, '')))
     );
 });
 
@@ -368,7 +368,7 @@ Then('the title should remain unchanged', () => {
         throw new Error('No listing was created');
     }
     actor.attemptsTo(
-        Ensure.that(new ValueObjects.Title('Old Title').valueOf(), equals('Old Title'))
+        Ensure.that(String(new ValueObjects.Title('Old Title').valueOf()), equals('Old Title'))
     );
 });
 
@@ -379,7 +379,7 @@ Then('the listing\'s description should be {string}', (description: string) => {
         throw new Error('No listing was created');
     }
     actor.attemptsTo(
-        Ensure.that(listing.description.valueOf(), equals(description.replace(/^"|"$/g, '')))
+        Ensure.that(String(listing.description.valueOf()), equals(description.replace(/^"|"$/g, '')))
     );
 });
 
@@ -390,7 +390,7 @@ Then('the listing\'s category should be {string}', (category: string) => {
         throw new Error('No listing was created');
     }
     actor.attemptsTo(
-        Ensure.that(listing.category.valueOf(), equals(category.replace(/^"|"$/g, '')))
+        Ensure.that(String(listing.category.valueOf()), equals(category.replace(/^"|"$/g, '')))
     );
 });
 
@@ -401,7 +401,7 @@ Then('the listing\'s location should be {string}', (location: string) => {
         throw new Error('No listing was created');
     }
     actor.attemptsTo(
-        Ensure.that(listing.location.valueOf(), equals(location.replace(/^"|"$/g, '')))
+        Ensure.that(String(listing.location.valueOf()), equals(location.replace(/^"|"$/g, '')))
     );
 });
 
