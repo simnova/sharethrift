@@ -10,7 +10,6 @@ import type { PersonalUserProps } from '../../user/personal-user/personal-user.e
 import { PersonalUser } from '../../user/personal-user/personal-user.ts';
 import type { ConversationProps } from './conversation.entity.ts';
 import { Conversation } from './conversation.ts';
-import { createDefaultRolePermissions } from '../../role/role-permissions.factory.ts';
 
 const test = { for: describeFeature };
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
