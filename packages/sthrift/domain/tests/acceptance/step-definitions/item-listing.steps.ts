@@ -238,7 +238,7 @@ When('I set the sharingPeriodEnd to {string}', (end: string) => {
     }
 });
 
-When('I try to set the sharingPeriodStart or sharingPeriodEnd', (_start: string, _end: string) => {
+When('I try to set the sharingPeriodStart or sharingPeriodEnd', () => {
     const actor = actorCalled('User');
     try {
         if (actor.currentListing) {
