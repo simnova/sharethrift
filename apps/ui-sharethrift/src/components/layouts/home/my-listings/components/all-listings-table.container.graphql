@@ -1,63 +1,71 @@
 fragment HomeAllListingsTableContainerListingFields on ListingAll {
-  id
-  title
-  state
-  images
-  createdAt
-  sharingPeriodStart
-  sharingPeriodEnd
+	id
+	title
+	state
+	images
+	createdAt
+	sharingPeriodStart
+	sharingPeriodEnd
 }
 
 fragment HomeAllListingsTableContainerItemListingFields on ItemListing {
-  id
-  title
-  state
-  images
-  createdAt
-  sharingPeriodStart
-  sharingPeriodEnd
+	id
+	title
+	state
+	images
+	createdAt
+	sharingPeriodStart
+	sharingPeriodEnd
 }
 
 query HomeAllListingsTableContainerMyListingsAll(
-  $page: Int!
-  $pageSize: Int!
-  $searchText: String
-  $statusFilters: [String!]
-  $sorter: SorterInput
+	$page: Int!
+	$pageSize: Int!
+	$searchText: String
+	$statusFilters: [String!]
+	$sorter: SorterInput
 ) {
-  myListingsAll(
-    page: $page
-    pageSize: $pageSize
-    searchText: $searchText
-    statusFilters: $statusFilters
-    sorter: $sorter
-  ) {
-    items {
-      ...HomeAllListingsTableContainerListingFields
-    }
-    total
-    page
-    pageSize
-  }
+	myListingsAll(
+		page: $page
+		pageSize: $pageSize
+		searchText: $searchText
+		statusFilters: $statusFilters
+		sorter: $sorter
+	) {
+		items {
+			...HomeAllListingsTableContainerListingFields
+		}
+		total
+		page
+		pageSize
+	}
+}
+
+mutation HomeAllListingsTableContainerPauseItemListing($id: ObjectID!) {
+	pauseItemListing(id: $id) {
+		id
+		state
+		updatedAt
+	}
 }
 
 mutation HomeAllListingsTableContainerCancelItemListing($id: ObjectID!) {
-  cancelItemListing(id: $id) {
-    status {
-      success
-      errorMessage
-    }
-    listing {
-      ...HomeAllListingsTableContainerItemListingFields
-    }
-  }
+	cancelItemListing(id: $id) {
+		status {
+			success
+			errorMessage
+		}
+		listing {
+			...HomeAllListingsTableContainerItemListingFields
+		}
+	}
 }
 
 mutation HomeAllListingsTableContainerDeleteListing($id: ObjectID!) {
-  deleteItemListing(id: $id) {
-    status {
-      success
-      errorMessage
-    }
-  }
+	deleteItemListing(id: $id) {
+		status {
+			success
+			errorMessage
+		}
+	}
 }

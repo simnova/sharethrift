@@ -6,6 +6,7 @@ import {
 	HomeAllListingsTableContainerCancelItemListingDocument,
 	HomeAllListingsTableContainerDeleteListingDocument,
 	HomeAllListingsTableContainerMyListingsAllDocument,
+	HomeAllListingsTableContainerPauseItemListingDocument,
 } from '../../../../../generated.tsx';
 import { AllListingsTable } from './all-listings-table.tsx';
 
@@ -61,6 +62,19 @@ export const AllListingsTableContainer: React.FC<
 		},
 	);
 
+	const [pauseListing] = useMutation(
+		HomeAllListingsTableContainerPauseItemListingDocument,
+		{
+			onCompleted: () => {
+				message.success('Listing paused successfully');
+				refetch();
+			},
+			onError: (error) => {
+				message.error(`Failed to pause listing: ${error.message}`);
+			},
+		},
+	);
+
 	const [deleteListing] = useMutation(
 		HomeAllListingsTableContainerDeleteListingDocument,
 		{
@@ -81,6 +95,7 @@ export const AllListingsTableContainer: React.FC<
 	);
 
 	const listings = data?.myListingsAll?.items ?? [];
+	console.log('Listings data:', data);
 	const total = data?.myListingsAll?.total ?? 0;
 
 	const handleSearch = (value: string) => {
@@ -112,6 +127,8 @@ export const AllListingsTableContainer: React.FC<
 	const handleAction = async (action: string, listingId: string) => {
 		if (action === 'cancel') {
 			await cancelListing({ variables: { id: listingId } });
+		} else if (action === 'pause') {
+			await pauseListing({ variables: { id: listingId } });
 		} else if (action === 'delete') {
 			await deleteListing({ variables: { id: listingId } });
 		} else {

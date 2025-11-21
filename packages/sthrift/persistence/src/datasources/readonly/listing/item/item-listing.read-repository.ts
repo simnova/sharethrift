@@ -12,7 +12,7 @@ const populateFields = ['sharer'];
 
 export interface ItemListingReadRepository {
 	getAll: (
-		options?: FindOptions,
+		options?: FindOptions & { excludeStates?: string[] },
 	) => Promise<
 		Domain.Contexts.Listing.ItemListing.ItemListingEntityReference[]
 	>;
@@ -60,9 +60,18 @@ export class ItemListingReadRepositoryImpl
 	}
 
 	async getAll(
-		options?: FindOptions,
+		options?: FindOptions & { excludeStates?: string[] },
 	): Promise<Domain.Contexts.Listing.ItemListing.ItemListingEntityReference[]> {
-		const result = await this.mongoDataSource.find({}, {
+		// Build filter query
+		const filter: Record<string, unknown> = {};
+
+		// Add state exclusion filter if provided
+		if (options?.excludeStates && options.excludeStates.length > 0) {
+			// biome-ignore lint/complexity/useLiteralKeys: MongoDB query uses index signature
+			filter['state'] = { $nin: options.excludeStates };
+		}
+
+		const result = await this.mongoDataSource.find(filter, {
 			...options,
 			populateFields: populateFields,
 		});

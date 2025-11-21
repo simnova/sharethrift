@@ -49,7 +49,11 @@ const itemListingResolvers: Resolvers = {
 			);
 		},
 		itemListings: async (_parent, _args, context) => {
-			return await context.applicationServices.Listing.ItemListing.queryAll({});
+			// Filter out paused listings from search results for reservers at the database level
+			// Paused listings should not be visible to reservers
+			return await context.applicationServices.Listing.ItemListing.queryAll({
+				excludeStates: ['Paused'],
+			});
 		},
 
 		itemListing: async (_parent, args, context) => {
@@ -134,7 +138,7 @@ const itemListingResolvers: Resolvers = {
 		cancelItemListing: async (
 			_parent: unknown,
 			args: { id: string },
-			context,
+			context: GraphContext,
 		) => ({
 			status: { success: true },
 			listing: await context.applicationServices.Listing.ItemListing.cancel({
@@ -147,12 +151,35 @@ const itemListingResolvers: Resolvers = {
 			args: { id: string },
 			context: GraphContext,
 		) => {
+			const listing =
+				await context.applicationServices.Listing.ItemListing.queryById({
+					id: args.id,
+				});
 			await context.applicationServices.Listing.ItemListing.deleteListings({
 				id: args.id,
 				userEmail:
 					context.applicationServices.verifiedUser?.verifiedJwt?.email ?? '',
 			});
-			return { status: { success: true } };
+			return {
+				status: { success: true },
+				listing,
+			};
+		},
+		pauseItemListing: async (
+			_parent: unknown,
+			args: { id: string },
+			context: GraphContext,
+		) => {
+			const userEmail =
+				context.applicationServices.verifiedUser?.verifiedJwt?.email;
+			if (!userEmail) {
+				throw new Error('Authentication required');
+			}
+
+			return await context.applicationServices.Listing.ItemListing.pause({
+				id: args.id,
+				userEmail,
+			});
 		},
 	},
 };

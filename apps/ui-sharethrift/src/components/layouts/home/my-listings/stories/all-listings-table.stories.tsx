@@ -20,6 +20,15 @@ const MOCK_LISTINGS = [
 		status: 'Active',
 		pendingRequestsCount: 3,
 	},
+	{
+		id: '3',
+		title: 'City Bike',
+		image: '/assets/item-images/bike.png',
+		publishedAt: '2025-01-15',
+		reservationPeriod: '2025-02-01 - 2025-02-28',
+		status: 'Reserved',
+		pendingRequestsCount: 1,
+	},
 ];
 
 const meta: Meta<typeof AllListingsTable> = {
@@ -49,3 +58,40 @@ export default meta;
 type Story = StoryObj<typeof meta>;
 
 export const Default: Story = {};
+
+export const WithPauseAction: Story = {
+	args: {
+		...meta.args,
+		onAction: (action: string, listingId: string) => {
+			if (action === 'pause') {
+				console.log('Pause action triggered for listing:', listingId);
+				alert(`Pausing listing ${listingId}. In real app, this would show a confirmation modal.`);
+			} else {
+				console.log('Action:', action, 'Listing:', listingId);
+			}
+		},
+	},
+};
+
+export const ActiveListingsWithPause: Story = {
+	args: {
+		...meta.args,
+		data: MOCK_LISTINGS.filter((listing) => listing.status === 'Active' || listing.status === 'Reserved'),
+		onAction: (action: string, listingId: string) => {
+			console.log('Action:', action, 'Listing:', listingId);
+			if (action === 'pause') {
+				alert(`Pause confirmation would appear for listing ${listingId}`);
+			}
+		},
+	},
+};
+
+export const PausedListings: Story = {
+	args: {
+		...meta.args,
+		data: MOCK_LISTINGS.filter((listing) => listing.status === 'Paused'),
+		onAction: (action: string, listingId: string) => {
+			console.log('Action:', action, 'Listing:', listingId);
+		},
+	},
+};

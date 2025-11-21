@@ -86,6 +86,29 @@ So that I can view, filter, and create listings through the GraphQL API
 		Given Listing.ItemListing.create throws an error
 		When the createItemListing mutation is executed
 		Then it should propagate the error message
+
+	Scenario: Pausing an item listing successfully
+		Given a user with a verifiedJwt in their context
+		And a valid listing ID for an active listing
+		When the pauseItemListing mutation is executed
+		Then it should call Listing.ItemListing.pause with the listing ID
+		And it should return the paused listing with state "Paused"
+
+	Scenario: Pausing an item listing without authentication
+		Given a user without a verifiedJwt in their context
+		When the pauseItemListing mutation is executed
+		Then it should throw an "Authentication required" error
+
+	Scenario: Pausing a non-existent item listing
+		Given a user with a verifiedJwt in their context
+		And a listing ID that does not match any record
+		When the pauseItemListing mutation is executed
+		Then it should propagate the error from the application service
+
+	Scenario: Error while pausing an item listing
+		Given Listing.ItemListing.pause throws an error
+		When the pauseItemListing mutation is executed
+		Then it should propagate the error message
     
 	Scenario: Mapping item listing fields for myListingsAll
 		Given a valid result from queryPaged
