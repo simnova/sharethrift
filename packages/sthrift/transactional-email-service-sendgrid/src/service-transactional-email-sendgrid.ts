@@ -31,12 +31,14 @@ export class ServiceTransactionalEmailSendGrid
 		);
 	}
 
-	async startUp(): Promise<void> {
+	startUp(): Promise<void> {
 		console.log('ServiceTransactionalEmailSendGrid started');
+		return Promise.resolve();
 	}
 
-	async shutDown(): Promise<void> {
+	shutDown(): Promise<void> {
 		console.log('ServiceTransactionalEmailSendGrid stopped');
+		return Promise.resolve();
 	}
 
 	async sendTemplatedEmail(

@@ -27,7 +27,7 @@ export class ServiceTransactionalEmailMock
 		);
 	}
 
-	async startUp(): Promise<void> {
+	startUp(): Promise<void> {
 		// Ensure output directory exists
 		if (!fs.existsSync(this.outputDir)) {
 			fs.mkdirSync(this.outputDir, { recursive: true });
@@ -35,13 +35,15 @@ export class ServiceTransactionalEmailMock
 		console.log(
 			`ServiceTransactionalEmailMock started - emails will be saved to ${this.outputDir}`,
 		);
+		return Promise.resolve();
 	}
 
-	async shutDown(): Promise<void> {
+	shutDown(): Promise<void> {
 		console.log('ServiceTransactionalEmailMock stopped');
+		return Promise.resolve();
 	}
 
-	async sendTemplatedEmail(
+	sendTemplatedEmail(
 		templateName: string,
 		recipient: EmailRecipient,
 		templateData: EmailTemplateData,
@@ -68,6 +70,7 @@ export class ServiceTransactionalEmailMock
 		console.log(
 			`Mock email saved to ${filePath} (template: ${templateName}, recipient: ${recipient.email})`,
 		);
+		return Promise.resolve();
 	}
 
 	private loadTemplate(templateName: string): {

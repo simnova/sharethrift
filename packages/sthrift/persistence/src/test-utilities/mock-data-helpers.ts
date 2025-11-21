@@ -125,22 +125,14 @@ export function createMockQuery<T>(result: T) {
 	const exec = vi.fn().mockResolvedValue(result);
 	const catchFn = vi.fn().mockReturnThis();
 
-	const mockQuery = {
+	// Create a thenable mock query object using Promise.resolve
+	const promise = Promise.resolve(result);
+	
+	// Return an object that has both query methods and thenable behavior
+	return Object.assign(promise, {
 		lean,
 		populate,
 		exec,
 		catch: catchFn,
-	};
-
-	// Make it thenable by adding a then method
-	Object.defineProperty(mockQuery, 'then', {
-		value: (onFulfilled?: (value: T) => unknown, onRejected?: (reason: unknown) => unknown) => {
-			return Promise.resolve(result).then(onFulfilled, onRejected);
-		},
-		writable: false,
-		enumerable: false,
-		configurable: true,
 	});
-
-	return mockQuery;
 }
