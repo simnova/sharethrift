@@ -31,11 +31,11 @@ export const Header: React.FC<HeaderProps> = ({
 			label: 'Personal Login',
 			onClick: onLogin,
 		},
-		{
+		...(onAdminLogin ? [{
 			key: 'admin',
 			label: 'Admin Login',
 			onClick: onAdminLogin,
-		},
+		}] : []),
 	];
 
 	return (

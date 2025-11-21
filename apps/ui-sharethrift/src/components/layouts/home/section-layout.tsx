@@ -60,7 +60,12 @@ export const HomeTabsLayout: React.FC = () => {
 			return navigate(`/${key}`);
 		}
 		const r = routeMap[key as keyof typeof routeMap];
-		navigate(`/${r}`);
+		if (r === undefined) {
+			// If key is unknown, default to home
+			navigate('/');
+		} else {
+			navigate(`/${r}`);
+		}
 	};
 	// Responsive margin for main content: no margin if sidebar is hidden (logged out), else responsive
 	const [mainMargin, setMainMargin] = useState(auth.isAuthenticated ? 240 : 0);
