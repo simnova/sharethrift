@@ -11,25 +11,25 @@ import type { ItemListingEntityReference } from '../../listing/item/item-listing
 import { PersonalUser } from '../../user/personal-user/personal-user.ts';
 import { ItemListing } from '../../listing/item/item-listing.ts';
 
-export class ListingAppealRequest
-	extends DomainSeedwork.AggregateRoot<ListingAppealRequestProps, Passport>
+export class ListingAppealRequest<props extends ListingAppealRequestProps>
+	extends DomainSeedwork.AggregateRoot<props, Passport>
 	implements ListingAppealRequestEntityReference
 {
 	private readonly visa: AppealRequestVisa;
 
-	constructor(props: ListingAppealRequestProps, passport: Passport) {
+	constructor(props: props, passport: Passport) {
 		super(props, passport);
 		this.visa = passport.appealRequest.forListingAppealRequest(this);
 	}
 
-	public static getNewInstance(
-		newProps: ListingAppealRequestProps,
+	public static getNewInstance<props extends ListingAppealRequestProps>(
+		newProps: props,
 		passport: Passport,
 		userId: string,
 		listingId: string,
 		reason: string,
 		blockerId: string,
-	): ListingAppealRequest {
+	): ListingAppealRequest<props> {
 		const newInstance = new ListingAppealRequest(newProps, passport);
 
 		newInstance.props.user = { id: userId } as PersonalUserEntityReference;

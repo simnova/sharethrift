@@ -5,16 +5,16 @@ import type { UserAppealRequestRepository } from './user-appeal-request.reposito
 import type { UserAppealRequestProps } from './user-appeal-request.entity.ts';
 
 // UnitOfWork interface for UserAppealRequest
-export interface UserAppealRequestUnitOfWork
+export interface UserAppealRequestUnitOfWork<PropType extends UserAppealRequestProps>
 	extends DomainSeedwork.UnitOfWork<
 			Passport,
-			UserAppealRequestProps,
-			UserAppealRequest,
-			UserAppealRequestRepository
+			PropType,
+			UserAppealRequest<PropType>,
+			UserAppealRequestRepository<PropType>
 		>,
 		DomainSeedwork.InitializedUnitOfWork<
 			Passport,
-			UserAppealRequestProps,
-			UserAppealRequest,
-			UserAppealRequestRepository
+			PropType,
+			UserAppealRequest<PropType>,
+			UserAppealRequestRepository<PropType>
 		> {}

@@ -1,12 +1,13 @@
 import type { UserAppealRequest } from './user-appeal-request.ts';
+import type { UserAppealRequestProps } from './user-appeal-request.entity.ts';
 import type { DomainSeedwork } from '@cellix/domain-seedwork';
 
 /**
  * Repository interface for UserAppealRequest aggregate root.
  * Defines the contract for persistence and retrieval operations.
  */
-export interface UserAppealRequestRepository
-	extends DomainSeedwork.Repository<UserAppealRequest> {
+export interface UserAppealRequestRepository<PropType extends UserAppealRequestProps>
+	extends DomainSeedwork.Repository<UserAppealRequest<PropType>> {
 	/**
 	 * Creates a new instance of UserAppealRequest.
 	 * @param userId - The ID of the user filing the appeal
@@ -18,7 +19,7 @@ export interface UserAppealRequestRepository
 		userId: string,
 		reason: string,
 		blockerId: string,
-	): Promise<UserAppealRequest>;
+	): Promise<UserAppealRequest<PropType>>;
 
 	/**
 	 * Retrieves a UserAppealRequest by its ID.
@@ -26,5 +27,5 @@ export interface UserAppealRequestRepository
 	 * @returns The UserAppealRequest instance
 	 * @throws Error if the appeal request is not found
 	 */
-	getById(id: string): Promise<UserAppealRequest>;
+	getById(id: string): Promise<UserAppealRequest<PropType>>;
 }

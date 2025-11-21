@@ -5,16 +5,16 @@ import type { ListingAppealRequestRepository } from './listing-appeal-request.re
 import type { ListingAppealRequestProps } from './listing-appeal-request.entity.ts';
 
 // UnitOfWork interface for ListingAppealRequest
-export interface ListingAppealRequestUnitOfWork
+export interface ListingAppealRequestUnitOfWork<PropType extends ListingAppealRequestProps>
 	extends DomainSeedwork.UnitOfWork<
 			Passport,
-			ListingAppealRequestProps,
-			ListingAppealRequest,
-			ListingAppealRequestRepository
+			PropType,
+			ListingAppealRequest<PropType>,
+			ListingAppealRequestRepository<PropType>
 		>,
 		DomainSeedwork.InitializedUnitOfWork<
 			Passport,
-			ListingAppealRequestProps,
-			ListingAppealRequest,
-			ListingAppealRequestRepository
+			PropType,
+			ListingAppealRequest<PropType>,
+			ListingAppealRequestRepository<PropType>
 		> {}

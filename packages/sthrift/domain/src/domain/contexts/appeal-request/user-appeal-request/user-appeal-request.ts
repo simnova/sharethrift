@@ -9,24 +9,24 @@ import type {
 import type { PersonalUserEntityReference } from '../../user/personal-user/personal-user.entity.ts';
 import { PersonalUser } from '../../user/personal-user/personal-user.ts';
 
-export class UserAppealRequest
-	extends DomainSeedwork.AggregateRoot<UserAppealRequestProps, Passport>
+export class UserAppealRequest<props extends UserAppealRequestProps>
+	extends DomainSeedwork.AggregateRoot<props, Passport>
 	implements UserAppealRequestEntityReference
 {
 	private readonly visa: AppealRequestVisa;
 
-	constructor(props: UserAppealRequestProps, passport: Passport) {
+	constructor(props: props, passport: Passport) {
 		super(props, passport);
 		this.visa = passport.appealRequest.forUserAppealRequest(this);
 	}
 
-	public static getNewInstance(
-		newProps: UserAppealRequestProps,
+	public static getNewInstance<props extends UserAppealRequestProps>(
+		newProps: props,
 		passport: Passport,
 		userId: string,
 		reason: string,
 		blockerId: string,
-	): UserAppealRequest {
+	): UserAppealRequest<props> {
 		const newInstance = new UserAppealRequest(newProps, passport);
 
 		newInstance.props.user = { id: userId } as PersonalUserEntityReference;
