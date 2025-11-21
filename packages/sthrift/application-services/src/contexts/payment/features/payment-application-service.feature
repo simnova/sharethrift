@@ -84,3 +84,26 @@ Feature: Payment Application Service
     And the refund service processes successfully without transaction ID
     When the refundPayment command is executed
     Then the refund status should be "REFUNDED"
+
+  Scenario: Handling payment failure with default error details
+    Given a valid payment request for user "user-123"
+    And the payment service fails without error code or message
+    When the processPayment command is executed
+    Then the payment status should be "FAILED"
+    And the error reason should be "PROCESSING_ERROR"
+    And the error message should be "Payment failed"
+
+  Scenario: Handling refund failure with default error details
+    Given a valid refund request for transaction "txn-123"
+    And the refund service fails without error code or message
+    When the refundPayment command is executed
+    Then the refund status should be "FAILED"
+    And the refund error reason should be "PROCESSING_ERROR"
+    And the refund error message should be "Refund failed"
+
+  Scenario: Handling non-Error exceptions during refund
+    Given a valid refund request for transaction "txn-123"
+    And the refund service throws a non-Error exception
+    When the refundPayment command is executed
+    Then the refund status should be "FAILED"
+    And the refund error message should be "Unknown error occurred"

@@ -626,4 +626,137 @@ test.for(feature, ({ Scenario, BeforeEachScenario }) => {
 			});
 		},
 	);
+
+	Scenario(
+		'Handling payment failure with default error details',
+		({
+			Given,
+			And,
+			When,
+			Then,
+		}: {
+			// biome-ignore lint/suspicious/noExplicitAny: Test mock callback
+			Given: any;
+			// biome-ignore lint/suspicious/noExplicitAny: Test mock callback
+			And: any;
+			// biome-ignore lint/suspicious/noExplicitAny: Test mock callback
+			When: any;
+			// biome-ignore lint/suspicious/noExplicitAny: Test mock callback
+			Then: any;
+		}) => {
+			Given('a valid payment request for user "user-123"', () => {
+				expect(paymentRequest.userId).toBe('user-123');
+			});
+
+			And('the payment service fails without error code or message', () => {
+				vi.mocked(mockPaymentService.processPayment).mockResolvedValue({
+					isSuccess: false,
+					transactionId: 'txn-default-error',
+				});
+			});
+
+			When('the processPayment command is executed', async () => {
+				result = await paymentService.processPayment(paymentRequest);
+			});
+
+			Then('the payment status should be "FAILED"', () => {
+				expect(result.status).toBe('FAILED');
+			});
+
+			And('the error reason should be "PROCESSING_ERROR"', () => {
+				expect(result.errorInformation?.reason).toBe('PROCESSING_ERROR');
+			});
+
+			And('the error message should be "Payment failed"', () => {
+				expect(result.errorInformation?.message).toBe('Payment failed');
+			});
+		},
+	);
+
+	Scenario(
+		'Handling refund failure with default error details',
+		({
+			Given,
+			And,
+			When,
+			Then,
+		}: {
+			// biome-ignore lint/suspicious/noExplicitAny: Test mock callback
+			Given: any;
+			// biome-ignore lint/suspicious/noExplicitAny: Test mock callback
+			And: any;
+			// biome-ignore lint/suspicious/noExplicitAny: Test mock callback
+			When: any;
+			// biome-ignore lint/suspicious/noExplicitAny: Test mock callback
+			Then: any;
+		}) => {
+			Given('a valid refund request for transaction "txn-123"', () => {
+				expect(refundRequest.transactionId).toBe('txn-123');
+			});
+
+			And('the refund service fails without error code or message', () => {
+				vi.mocked(mockPaymentService.processRefund).mockResolvedValue({
+					isSuccess: false,
+					transactionId: 'refund-default-error',
+				});
+			});
+
+			When('the refundPayment command is executed', async () => {
+				result = await paymentService.refundPayment(refundRequest);
+			});
+
+			Then('the refund status should be "FAILED"', () => {
+				expect(result.status).toBe('FAILED');
+			});
+
+			And('the refund error reason should be "PROCESSING_ERROR"', () => {
+				expect(result.errorInformation?.reason).toBe('PROCESSING_ERROR');
+			});
+
+			And('the refund error message should be "Refund failed"', () => {
+				expect(result.errorInformation?.message).toBe('Refund failed');
+			});
+		},
+	);
+
+	Scenario(
+		'Handling non-Error exceptions during refund',
+		({
+			Given,
+			And,
+			When,
+			Then,
+		}: {
+			// biome-ignore lint/suspicious/noExplicitAny: Test mock callback
+			Given: any;
+			// biome-ignore lint/suspicious/noExplicitAny: Test mock callback
+			And: any;
+			// biome-ignore lint/suspicious/noExplicitAny: Test mock callback
+			When: any;
+			// biome-ignore lint/suspicious/noExplicitAny: Test mock callback
+			Then: any;
+		}) => {
+			Given('a valid refund request for transaction "txn-123"', () => {
+				expect(refundRequest.transactionId).toBe('txn-123');
+			});
+
+			And('the refund service throws a non-Error exception', () => {
+				vi.mocked(mockPaymentService.processRefund).mockRejectedValue(
+					'Unknown refund error',
+				);
+			});
+
+			When('the refundPayment command is executed', async () => {
+				result = await paymentService.refundPayment(refundRequest);
+			});
+
+			Then('the refund status should be "FAILED"', () => {
+				expect(result.status).toBe('FAILED');
+			});
+
+			And('the refund error message should be "Unknown error occurred"', () => {
+				expect(result.errorInformation?.message).toBe('Unknown error occurred');
+			});
+		},
+	);
 });

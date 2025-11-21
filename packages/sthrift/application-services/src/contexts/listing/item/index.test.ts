@@ -21,7 +21,6 @@ import { cancel } from './cancel.ts';
 import { queryPaged } from './query-paged.ts';
 import { update } from './update.ts';
 
-// @ts-expect-error - Required for Vitest Cucumber syntax support
 const _test = { for: describeFeature };
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const feature = await loadFeature(
