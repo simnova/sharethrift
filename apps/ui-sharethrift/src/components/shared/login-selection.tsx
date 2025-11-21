@@ -44,6 +44,18 @@ export const LoginSelection: React.FC = () => {
 		navigate('/auth-redirect-user');
 	};
 
+	const handleOnLogin = () => {
+		// Redirect to user portal auth
+		globalThis.sessionStorage.setItem('loginPortalType', 'UserPortal');
+		globalThis.location.href = '/auth-redirect-user';
+	};
+
+	const handleOnAdminLogin = () => {
+		// Redirect to admin portal auth
+		globalThis.sessionStorage.setItem('loginPortalType', 'AdminPortal');
+		globalThis.location.href = '/auth-redirect-admin';
+	};
+
 	return (
 		<div
 			style={{
@@ -56,10 +68,11 @@ export const LoginSelection: React.FC = () => {
 		>
 			<Header
 				isAuthenticated={auth.isAuthenticated}
-				onLogin={() => navigate('/login')}
-				onLogout={() => {'/'}}
+				onLogin={handleOnLogin}
+				onAdminLogin={handleOnAdminLogin}
+				onLogout={() => navigate('/')}
 				onSignUp={handleOnSignUp}
-				onCreateListing={() => {'/login'}}
+				onCreateListing={() => navigate('/login')}
 			/>
 			<div
 				style={{

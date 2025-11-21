@@ -13,14 +13,9 @@ export const HandleLogout = (
 	clearStorage();
 	globalThis.sessionStorage.removeItem('loginPortalType');
 	globalThis.sessionStorage.removeItem('redirectTo');
-	if (post_logout_redirect_uri) {
-		auth.signoutRedirect({
-			post_logout_redirect_uri: post_logout_redirect_uri,
-		});
 
-		return;
-	}
-
-	auth.signoutRedirect();
-	//globalThis.location.href = '/'; //would return to home page after logout
+	const redirectUri = post_logout_redirect_uri || globalThis.location.origin;
+	auth.signoutRedirect({
+		post_logout_redirect_uri: redirectUri,
+	});
 };
