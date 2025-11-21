@@ -46,3 +46,23 @@ Feature: Admin Role Aggregate
     When I set userPermissions with canBlockUsers true
     Then the permissions should be updated
     And canBlockUsers should be true
+
+  Scenario: Getting roleType from admin role
+    Given an existing admin role
+    When I access the roleType property
+    Then it should return "admin"
+
+  Scenario: Getting createdAt from admin role
+    Given an existing admin role
+    When I access the createdAt property
+    Then it should return a valid date
+
+  Scenario: Getting updatedAt from admin role
+    Given an existing admin role
+    When I access the updatedAt property
+    Then it should return a valid date
+
+  Scenario: Getting schemaVersion from admin role
+    Given an existing admin role
+    When I access the schemaVersion property
+    Then it should return the schema version

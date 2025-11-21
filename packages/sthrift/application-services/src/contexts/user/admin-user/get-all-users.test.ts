@@ -114,4 +114,134 @@ test.for(feature, ({ Scenario, BeforeEachScenario }) => {
 			);
 		},
 	);
+
+	Scenario(
+		'Retrieving admin users with status filters',
+		({ Given, When, Then }) => {
+			Given('a request with status filters', () => {
+				command = { page: 1, pageSize: 10, statusFilters: ['Active'] };
+			});
+
+			When('the getAllUsers command is executed', async () => {
+				const mockUsers = [{ id: 'user-1', isBlocked: false }];
+				mockReadRepo.getAllUsers.mockResolvedValue({
+					items: mockUsers,
+					total: 1,
+					page: 1,
+					pageSize: 10,
+				});
+				const getAllFn = getAllUsers(mockDataSources);
+				result = await getAllFn(command);
+			});
+
+			Then('users matching status filters should be returned', () => {
+				expect(result).toBeDefined();
+				expect(mockReadRepo.getAllUsers).toHaveBeenCalledWith(
+					expect.objectContaining({ statusFilters: ['Active'] }),
+				);
+			});
+		},
+	);
+
+	Scenario(
+		'Retrieving admin users with sorter ascending',
+		({ Given, When, Then }) => {
+			Given('a request with sorter order ascend', () => {
+				command = {
+					page: 1,
+					pageSize: 10,
+					sorter: { field: 'email', order: 'ascend' },
+				};
+			});
+
+			When('the getAllUsers command is executed', async () => {
+				const mockUsers = [{ id: 'user-1' }, { id: 'user-2' }];
+				mockReadRepo.getAllUsers.mockResolvedValue({
+					items: mockUsers,
+					total: 2,
+					page: 1,
+					pageSize: 10,
+				});
+				const getAllFn = getAllUsers(mockDataSources);
+				result = await getAllFn(command);
+			});
+
+			Then('sorted users should be returned', () => {
+				expect(result).toBeDefined();
+				expect(mockReadRepo.getAllUsers).toHaveBeenCalledWith(
+					expect.objectContaining({
+						sorter: { field: 'email', order: 'ascend' },
+					}),
+				);
+			});
+		},
+	);
+
+	Scenario(
+		'Retrieving admin users with sorter descending',
+		({ Given, When, Then }) => {
+			Given('a request with sorter order descend', () => {
+				command = {
+					page: 1,
+					pageSize: 10,
+					sorter: { field: 'email', order: 'descend' },
+				};
+			});
+
+			When('the getAllUsers command is executed', async () => {
+				const mockUsers = [{ id: 'user-1' }, { id: 'user-2' }];
+				mockReadRepo.getAllUsers.mockResolvedValue({
+					items: mockUsers,
+					total: 2,
+					page: 1,
+					pageSize: 10,
+				});
+				const getAllFn = getAllUsers(mockDataSources);
+				result = await getAllFn(command);
+			});
+
+			Then('sorted users in descending order should be returned', () => {
+				expect(result).toBeDefined();
+				expect(mockReadRepo.getAllUsers).toHaveBeenCalledWith(
+					expect.objectContaining({
+						sorter: { field: 'email', order: 'descend' },
+					}),
+				);
+			});
+		},
+	);
+
+	Scenario(
+		'Retrieving admin users with invalid sorter order',
+		({ Given, When, Then }) => {
+			Given('a request with invalid sorter order', () => {
+				command = {
+					page: 1,
+					pageSize: 10,
+					sorter: { field: 'email', order: 'invalid' },
+				};
+			});
+
+			When('the getAllUsers command is executed', async () => {
+				const mockUsers = [{ id: 'user-1' }, { id: 'user-2' }];
+				mockReadRepo.getAllUsers.mockResolvedValue({
+					items: mockUsers,
+					total: 2,
+					page: 1,
+					pageSize: 10,
+				});
+				const getAllFn = getAllUsers(mockDataSources);
+				result = await getAllFn(command);
+			});
+
+			Then('users should be returned with default ascend order', () => {
+				expect(result).toBeDefined();
+				expect(mockReadRepo.getAllUsers).toHaveBeenCalledWith(
+					expect.objectContaining({
+						sorter: { field: 'email', order: 'ascend' },
+					}),
+				);
+			});
+		},
+	);
 });

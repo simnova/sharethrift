@@ -87,4 +87,200 @@ test.for(feature, ({ Scenario, BeforeEachScenario }) => {
 			expect(result.items.length).toBe(0);
 		});
 	});
+
+	Scenario('Retrieving users with search text', ({ Given, When, Then }) => {
+		Given('there are users matching the search criteria', () => {
+			const mockUsers = [{ id: 'user-1', email: 'john@example.com' }];
+			(
+				// biome-ignore lint/suspicious/noExplicitAny: Test mock access
+				mockDataSources.readonlyDataSource as any
+			).User.PersonalUser.PersonalUserReadRepo.getAllUsers.mockResolvedValue({
+				items: mockUsers,
+				total: 1,
+				page: 1,
+				pageSize: 10,
+			});
+		});
+
+		When('the getAllUsers command is executed with searchText', async () => {
+			command.searchText = 'john';
+			const getAllUsersFn = getAllUsers(mockDataSources);
+			result = await getAllUsersFn(command);
+		});
+
+		Then('filtered users should be returned', () => {
+			expect(result).toBeDefined();
+			expect(result.items.length).toBe(1);
+			expect(
+				(
+					// biome-ignore lint/suspicious/noExplicitAny: Test mock access
+					mockDataSources.readonlyDataSource as any
+				).User.PersonalUser.PersonalUserReadRepo.getAllUsers,
+			).toHaveBeenCalledWith(
+				expect.objectContaining({ searchText: 'john' }),
+			);
+		});
+	});
+
+	Scenario('Retrieving users with status filters', ({ Given, When, Then }) => {
+		Given('there are users with various statuses', () => {
+			const mockUsers = [{ id: 'user-1', isBlocked: false }];
+			(
+				// biome-ignore lint/suspicious/noExplicitAny: Test mock access
+				mockDataSources.readonlyDataSource as any
+			).User.PersonalUser.PersonalUserReadRepo.getAllUsers.mockResolvedValue({
+				items: mockUsers,
+				total: 1,
+				page: 1,
+				pageSize: 10,
+			});
+		});
+
+		When('the getAllUsers command is executed with statusFilters', async () => {
+			command.statusFilters = ['Active'];
+			const getAllUsersFn = getAllUsers(mockDataSources);
+			result = await getAllUsersFn(command);
+		});
+
+		Then('users matching status filters should be returned', () => {
+			expect(result).toBeDefined();
+			expect(
+				(
+					// biome-ignore lint/suspicious/noExplicitAny: Test mock access
+					mockDataSources.readonlyDataSource as any
+				).User.PersonalUser.PersonalUserReadRepo.getAllUsers,
+			).toHaveBeenCalledWith(
+				expect.objectContaining({ statusFilters: ['Active'] }),
+			);
+		});
+	});
+
+	Scenario('Retrieving users with sorter ascending', ({ Given, When, Then }) => {
+		Given('there are users in the system', () => {
+			const mockUsers = [
+				{ id: 'user-1' },
+				{ id: 'user-2' },
+			];
+			(
+				// biome-ignore lint/suspicious/noExplicitAny: Test mock access
+				mockDataSources.readonlyDataSource as any
+			).User.PersonalUser.PersonalUserReadRepo.getAllUsers.mockResolvedValue({
+				items: mockUsers,
+				total: 2,
+				page: 1,
+				pageSize: 10,
+			});
+		});
+
+		When(
+			'the getAllUsers command is executed with sorter order ascend',
+			async () => {
+				command.sorter = { field: 'email', order: 'ascend' };
+				const getAllUsersFn = getAllUsers(mockDataSources);
+				result = await getAllUsersFn(command);
+			},
+		);
+
+		Then('sorted users should be returned', () => {
+			expect(result).toBeDefined();
+			expect(
+				(
+					// biome-ignore lint/suspicious/noExplicitAny: Test mock access
+					mockDataSources.readonlyDataSource as any
+				).User.PersonalUser.PersonalUserReadRepo.getAllUsers,
+			).toHaveBeenCalledWith(
+				expect.objectContaining({
+					sorter: { field: 'email', order: 'ascend' },
+				}),
+			);
+		});
+	});
+
+	Scenario(
+		'Retrieving users with sorter descending',
+		({ Given, When, Then }) => {
+			Given('there are users in the system', () => {
+				const mockUsers = [
+					{ id: 'user-1' },
+					{ id: 'user-2' },
+				];
+				(
+					// biome-ignore lint/suspicious/noExplicitAny: Test mock access
+					mockDataSources.readonlyDataSource as any
+				).User.PersonalUser.PersonalUserReadRepo.getAllUsers.mockResolvedValue({
+					items: mockUsers,
+					total: 2,
+					page: 1,
+					pageSize: 10,
+				});
+			});
+
+			When(
+				'the getAllUsers command is executed with sorter order descend',
+				async () => {
+					command.sorter = { field: 'email', order: 'descend' };
+					const getAllUsersFn = getAllUsers(mockDataSources);
+					result = await getAllUsersFn(command);
+				},
+			);
+
+			Then('sorted users in descending order should be returned', () => {
+				expect(result).toBeDefined();
+				expect(
+					(
+						// biome-ignore lint/suspicious/noExplicitAny: Test mock access
+						mockDataSources.readonlyDataSource as any
+					).User.PersonalUser.PersonalUserReadRepo.getAllUsers,
+				).toHaveBeenCalledWith(
+					expect.objectContaining({
+						sorter: { field: 'email', order: 'descend' },
+					}),
+				);
+			});
+		},
+	);
+
+	Scenario(
+		'Retrieving users with invalid sorter order',
+		({ Given, When, Then }) => {
+			Given('there are users in the system', () => {
+				const mockUsers = [
+					{ id: 'user-1' },
+					{ id: 'user-2' },
+				];
+				(
+					// biome-ignore lint/suspicious/noExplicitAny: Test mock access
+					mockDataSources.readonlyDataSource as any
+				).User.PersonalUser.PersonalUserReadRepo.getAllUsers.mockResolvedValue({
+					items: mockUsers,
+					total: 2,
+					page: 1,
+					pageSize: 10,
+				});
+			});
+
+			When(
+				'the getAllUsers command is executed with invalid sorter order',
+				async () => {
+					command.sorter = { field: 'email', order: 'invalid' };
+					const getAllUsersFn = getAllUsers(mockDataSources);
+					result = await getAllUsersFn(command);
+				},
+			);
+
+			Then('users should be returned with default ascend order', () => {
+				expect(result).toBeDefined();
+				expect(
+					(
+						// biome-ignore lint/suspicious/noExplicitAny: Test mock access
+						mockDataSources.readonlyDataSource as any
+					).User.PersonalUser.PersonalUserReadRepo.getAllUsers,
+				).toHaveBeenCalledWith(
+					expect.objectContaining({
+						sorter: { field: 'email', order: 'ascend' },
+					}),
+				);
+			});
+		},
+	);
 });

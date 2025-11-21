@@ -223,4 +223,43 @@ test.for(feature, ({ Scenario, BeforeEachScenario }) => {
 			});
 		},
 	);
+
+	Scenario(
+		'Retrieving user appeal requests with invalid sorter order',
+		({ Given, When, Then, And }) => {
+			Given('a page number of 1 and page size of 10', () => {
+				command = {
+					page: 1,
+					pageSize: 10,
+					sorter: { field: 'createdAt', order: 'invalid' },
+				};
+			});
+
+			And('a sorter with invalid order', () => {
+				mockReadRepo.getAll.mockResolvedValue({
+					items: [{ id: 'appeal-1' }],
+					total: 1,
+					page: 1,
+					pageSize: 10,
+				});
+			});
+
+			When('the getAll command is executed', async () => {
+				try {
+					const getAllFn = getAll(mockDataSources);
+					result = await getAllFn(command);
+				} catch (_err) {
+					// No error expected in this scenario
+				}
+			});
+
+			Then('the results should use default ascend order', () => {
+				expect(mockReadRepo.getAll).toHaveBeenCalledWith(
+					expect.objectContaining({
+						sorter: { field: 'createdAt', order: 'ascend' },
+					}),
+				);
+			});
+		},
+	);
 });

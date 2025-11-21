@@ -23,3 +23,9 @@ Feature: Get All User Appeal Requests
     When the getAll command is executed for an empty dataset
     Then it should return an empty items array
     And the total count should be 0
+
+  Scenario: Retrieving user appeal requests with invalid sorter order
+    Given a page number of 1 and page size of 10
+    And a sorter with invalid order
+    When the getAll command is executed
+    Then the results should use default ascend order

@@ -372,4 +372,86 @@ test.for(feature, ({ Background, Scenario, BeforeEachScenario }) => {
 			});
 		},
 	);
+
+	Scenario('Getting roleType from admin role', ({ Given, When, Then }) => {
+		Given('an existing admin role', () => {
+			adminRole = {
+				props: roleProps,
+				get roleType() {
+					return this.props.roleType;
+				},
+			};
+		});
+
+		When('I access the roleType property', () => {
+			result = adminRole.roleType;
+		});
+
+		Then('it should return "admin"', () => {
+			expect(result).toBe('admin');
+		});
+	});
+
+	Scenario('Getting createdAt from admin role', ({ Given, When, Then }) => {
+		Given('an existing admin role', () => {
+			adminRole = {
+				props: roleProps,
+				get createdAt() {
+					return this.props.createdAt;
+				},
+			};
+		});
+
+		When('I access the createdAt property', () => {
+			result = adminRole.createdAt;
+		});
+
+		Then('it should return a valid date', () => {
+			expect(result).toBeInstanceOf(Date);
+			expect(result.getTime()).toBeGreaterThan(0);
+		});
+	});
+
+	Scenario('Getting updatedAt from admin role', ({ Given, When, Then }) => {
+		Given('an existing admin role', () => {
+			adminRole = {
+				props: roleProps,
+				get updatedAt() {
+					return this.props.updatedAt;
+				},
+			};
+		});
+
+		When('I access the updatedAt property', () => {
+			result = adminRole.updatedAt;
+		});
+
+		Then('it should return a valid date', () => {
+			expect(result).toBeInstanceOf(Date);
+			expect(result.getTime()).toBeGreaterThan(0);
+		});
+	});
+
+	Scenario(
+		'Getting schemaVersion from admin role',
+		({ Given, When, Then }) => {
+			Given('an existing admin role', () => {
+				adminRole = {
+					props: roleProps,
+					get schemaVersion() {
+						return this.props.schemaVersion;
+					},
+				};
+			});
+
+			When('I access the schemaVersion property', () => {
+				result = adminRole.schemaVersion;
+			});
+
+			Then('it should return the schema version', () => {
+				expect(result).toBeDefined();
+				expect(typeof result).toBe('string');
+			});
+		},
+	);
 });
