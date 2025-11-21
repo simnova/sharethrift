@@ -49,11 +49,11 @@ const itemListingResolvers: Resolvers = {
 			);
 		},
 		itemListings: async (_parent, _args, context) => {
-			const allListings =
-				await context.applicationServices.Listing.ItemListing.queryAll({});
-			// Filter out paused listings from search results for reservers
+			// Filter out paused listings from search results for reservers at the database level
 			// Paused listings should not be visible to reservers
-			return allListings.filter((listing) => listing.state !== 'Paused');
+			return await context.applicationServices.Listing.ItemListing.queryAll({
+				excludeStates: ['Paused'],
+			});
 		},
 
 		itemListing: async (_parent, args, context) => {
@@ -178,6 +178,7 @@ const itemListingResolvers: Resolvers = {
 
 			return await context.applicationServices.Listing.ItemListing.pause({
 				id: args.id,
+				userEmail,
 			});
 		},
 	},
