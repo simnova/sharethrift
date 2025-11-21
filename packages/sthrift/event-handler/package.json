@@ -20,7 +20,8 @@
         "clean": "rimraf dist"
     },
     "dependencies": {
-        "@sthrift/domain": "workspace:*"
+        "@sthrift/domain": "workspace:*",
+        "@sthrift/transactional-email-service": "workspace:*"
     },
     "devDependencies": {
         "@cellix/typescript-config": "workspace:*",

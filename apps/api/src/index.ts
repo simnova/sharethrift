@@ -21,6 +21,10 @@ import type { MessagingService } from '@cellix/messaging-service';
 import { ServiceMessagingTwilio } from '@sthrift/messaging-service-twilio';
 import { ServiceMessagingMock } from '@sthrift/messaging-service-mock';
 
+import type { TransactionalEmailService } from '@sthrift/transactional-email-service';
+import { ServiceTransactionalEmailSendGrid } from '@sthrift/transactional-email-service-sendgrid';
+import { ServiceTransactionalEmailMock } from '@sthrift/transactional-email-service-mock';
+
 import { graphHandlerCreator } from '@sthrift/graphql';
 import { restHandlerCreator } from '@sthrift/rest';
 import { ServiceCybersource } from '@sthrift/service-cybersource';
@@ -45,6 +49,9 @@ Cellix.initializeInfrastructureServices<ApiContextSpec, ApplicationServices>(
 			.registerInfrastructureService(
 				isDevelopment ? new ServiceMessagingMock() : new ServiceMessagingTwilio(),
 			)
+			.registerInfrastructureService(
+				isDevelopment ? new ServiceTransactionalEmailMock() : new ServiceTransactionalEmailSendGrid(),
+			)
 			.registerInfrastructureService(new ServiceCybersource());
 	},
 )
@@ -59,8 +66,12 @@ Cellix.initializeInfrastructureServices<ApiContextSpec, ApplicationServices>(
 			? serviceRegistry.getInfrastructureService<MessagingService>(ServiceMessagingMock)
 			: serviceRegistry.getInfrastructureService<MessagingService>(ServiceMessagingTwilio);
 
+		const emailService = isDevelopment
+			? serviceRegistry.getInfrastructureService<TransactionalEmailService>(ServiceTransactionalEmailMock)
+			: serviceRegistry.getInfrastructureService<TransactionalEmailService>(ServiceTransactionalEmailSendGrid);
+
 		const { domainDataSource } = dataSourcesFactory.withSystemPassport();
-		RegisterEventHandlers(domainDataSource);
+		RegisterEventHandlers(domainDataSource, emailService);
 
 		return {
 			dataSourcesFactory,
@@ -73,6 +84,7 @@ Cellix.initializeInfrastructureServices<ApiContextSpec, ApplicationServices>(
 					ServiceCybersource,
 				),
 			messagingService,
+			emailService,
 		};
 	})
 	.initializeApplicationServices((context) =>

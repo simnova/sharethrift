@@ -1,8 +1,10 @@
 export * from './domain/contexts/index.ts';
+export * from './domain/events/index.ts';
 import type { Contexts } from './domain/index.ts';
 export * as Domain from './domain/index.ts';
 
 export interface DomainDataSource {
+	// Legacy structure for UOW access
 	User: {
 		PersonalUser: {
 			PersonalUserUnitOfWork: Contexts.User.PersonalUser.PersonalUserUnitOfWork;
@@ -36,5 +38,33 @@ export interface DomainDataSource {
 		UserAppealRequest: {
 			UserAppealRequestUnitOfWork: Contexts.AppealRequest.UserAppealRequest.UserAppealRequestUnitOfWork;
 		};
+	};
+
+	// Event bus for domain events
+	eventBus?: {
+		register<T>(eventType: new (aggregateId: string) => T, handler: (event: T) => Promise<void>): void;
+	};
+
+	// Repository access for event handlers
+	userRepository?: {
+		getById(id: string): Promise<{
+			email?: string;
+			firstName?: string;
+			lastName?: string;
+			displayName?: string;
+			account?: {
+				email?: string;
+				profile?: {
+					firstName?: string;
+					lastName?: string;
+				};
+			};
+		} | null>;
+	};
+
+	itemListingRepository?: {
+		getById(id: string): Promise<{
+			title?: string;
+		} | null>;
 	};
 }

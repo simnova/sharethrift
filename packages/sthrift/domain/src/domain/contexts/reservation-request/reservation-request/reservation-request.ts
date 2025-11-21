@@ -52,6 +52,11 @@ export class ReservationRequest<props extends ReservationRequestProps>
 		instance.reservationPeriodStart = reservationPeriodStart;
 		instance.reservationPeriodEnd = reservationPeriodEnd;
 		instance.isNew = false;
+		
+		// TODO: Emit integration event for reservation request creation
+		// The event will need to be emitted from the unit of work or application service layer
+		// to avoid circular dependency issues during build
+		
 		return instance;
 	}
 
