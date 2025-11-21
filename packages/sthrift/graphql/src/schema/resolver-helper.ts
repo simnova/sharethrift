@@ -68,9 +68,30 @@ export const currentViewerIsAdmin = async (
 export const PopulateUserFromField = (fieldName: string) => {
 	// biome-ignore lint/suspicious/noExplicitAny: parent type comes from GraphQL resolver parent which varies by context
 	return async (parent: any, _: unknown, context: GraphContext) => {
-		if (parent[fieldName] && isValidObjectId(parent[fieldName].toString())) {
-			const userId = parent[fieldName].toString();
+		const existingValue = parent[fieldName];
+		const existingUserType = existingValue?.userType;
 
+		if (existingUserType) {
+			return existingValue;
+		}
+
+		let userId: string | undefined;
+		if (typeof existingValue === 'string') {
+			userId = existingValue;
+		} else if (existingValue && typeof existingValue === 'object') {
+			if (typeof existingValue.id === 'string') {
+				userId = existingValue.id;
+			}
+		}
+
+		if (!userId && parent[fieldName]) {
+			const maybeId = parent[fieldName].toString?.();
+			if (typeof maybeId === 'string') {
+				userId = maybeId;
+			}
+		}
+
+		if (userId && isValidObjectId(userId)) {
 			// Try AdminUser first
 			try {
 				const adminUser =
@@ -78,7 +99,10 @@ export const PopulateUserFromField = (fieldName: string) => {
 						id: userId,
 					});
 				if (adminUser) {
-					return adminUser;
+					return {
+						id: adminUser.id,
+						userType: adminUser.userType || 'admin-user',
+					};
 				}
 			} catch {
 				// AdminUser not found, try PersonalUser
@@ -91,13 +115,24 @@ export const PopulateUserFromField = (fieldName: string) => {
 						id: userId,
 					});
 				if (personalUser) {
-					return personalUser;
+					return {
+						id: personalUser.id,
+						userType: personalUser.userType || 'personal-users',
+					};
 				}
 			} catch {
 				// PersonalUser not found
 			}
 		}
-		return parent[fieldName];
+
+		if (existingValue && typeof existingValue === 'object') {
+			return {
+				...existingValue,
+				userType: existingValue.userType ?? null,
+			};
+		}
+
+		return existingValue;
 	};
 };
 
