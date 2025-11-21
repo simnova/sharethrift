@@ -63,10 +63,10 @@ export const RequireAuth: React.FC<RequireAuthProps> = (props) => {
 	if (auth.isAuthenticated) {
 		result = props.children;
 	} else if (auth.error) {
-		result = <Navigate to="/login" replace />;
+		result = <Navigate to={props.redirectPath} replace />;
 	} else if (!auth.isLoading && !auth.activeNavigator && props.forceLogin !== true) {
 		// If not loading, not in the middle of auth flow, and not forcing login redirect
-		result = <Navigate to="/login" replace />;
+		result = <Navigate to={props.redirectPath} replace />;
 	} else {
 		return <div>Checking auth2...</div>;
 	}
