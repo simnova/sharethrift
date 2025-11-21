@@ -1,0 +1,56 @@
+query HomeViewUserProfileContainerUserById($userId: ObjectID!) {
+	userById(id: $userId) {
+		... on PersonalUser {
+			id
+			userType
+			createdAt
+			account {
+				...PersonalUserPublicProfileFields
+			}
+		}
+		... on AdminUser {
+			id
+			userType
+			createdAt
+			account {
+				...AdminUserPublicProfileFields
+			}
+		}
+	}
+}
+
+fragment PersonalUserPublicProfileFields on PersonalUserAccount {
+	accountType
+	username
+	profile {
+		...PersonalUserPublicProfileFieldsProfile
+	}
+}
+
+fragment PersonalUserPublicProfileFieldsProfile on PersonalUserAccountProfile {
+	firstName
+	lastName
+	aboutMe
+	location {
+		city
+		state
+	}
+}
+
+fragment AdminUserPublicProfileFields on AdminUserAccount {
+	accountType
+	username
+	profile {
+		...AdminUserPublicProfileFieldsProfile
+	}
+}
+
+fragment AdminUserPublicProfileFieldsProfile on AdminUserAccountProfile {
+	firstName
+	lastName
+	aboutMe
+	location {
+		city
+		state
+	}
+}

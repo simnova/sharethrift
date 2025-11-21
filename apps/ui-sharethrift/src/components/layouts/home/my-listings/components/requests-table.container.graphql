@@ -28,6 +28,7 @@ fragment HomeRequestsTableContainerRequestFields on ListingRequest {
   title
   image
   requestedBy
+  requestedById
   requestedOn
   reservationPeriod
   status
