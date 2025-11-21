@@ -6,6 +6,7 @@ import {
 	ConversationBoxContainerConversationDocument,
 } from "../../../../../generated.tsx";
 import { withMockApolloClient, withMockRouter } from "../../../../../test-utils/storybook-decorators.tsx";
+import { expect, within } from 'storybook/test';
 
 const meta: Meta<typeof HomeRoutes> = {
 	title: "Pages/Messages",
@@ -21,6 +22,11 @@ export default meta;
 const Template: StoryFn<typeof HomeRoutes> = () => <HomeRoutes />;
 
 export const DefaultView: StoryFn<typeof HomeRoutes> = Template.bind({});
+
+DefaultView.play = async ({ canvasElement }) => {
+	const canvas = within(canvasElement);
+	await expect(canvas.getByRole('main')).toBeInTheDocument();
+};
 
 DefaultView.parameters = {
   apolloClient: {

@@ -9,6 +9,7 @@ import {
 	withMockApolloClient,
 	withMockRouter,
 } from '../../../../../test-utils/storybook-decorators.tsx';
+import { expect, within } from 'storybook/test';
 
 // Local mock listing data (removed dependency on DUMMY_LISTINGS)
 const baseListingId = 'mock-listing-id-1';
@@ -115,6 +116,10 @@ export const Default: Story = {
 		isAuthenticated: false,
 		userReservationRequest: null,
 		sharedTimeAgo: '2 days ago',
+	},
+	play: async ({ canvasElement }) => {
+		const canvas = within(canvasElement);
+		await expect(canvas.getByText(/Cordless Drill/i)).toBeInTheDocument();
 	},
 };
 

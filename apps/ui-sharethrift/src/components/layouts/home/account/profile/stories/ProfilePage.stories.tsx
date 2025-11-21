@@ -10,6 +10,7 @@ import {
 	type ItemListing,
 	type PersonalUser,
 } from '../../../../../../generated.tsx';
+import { expect, within } from 'storybook/test';
 
 // SHARED MOCK DATA
 const mockUserSarah: PersonalUser = {
@@ -102,6 +103,10 @@ export default meta;
 type Story = StoryObj<typeof meta>;
 
 export const DefaultView: Story = {
+	play: async ({ canvasElement }) => {
+		const canvas = within(canvasElement);
+		await expect(canvas.getByRole('main')).toBeInTheDocument();
+	},
 	parameters: {
 		apolloClient: {
 			mocks: [

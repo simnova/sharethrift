@@ -8,6 +8,7 @@ import {
 	defaultReservationActions,
 	withReservationMocks,
 } from '../../../../../test/utils/storybook-providers.tsx';
+import { expect, within } from 'storybook/test';
 
 const meta: Meta<typeof ReservationCard> = {
 	title: 'Molecules/ReservationCard',
@@ -18,6 +19,11 @@ const meta: Meta<typeof ReservationCard> = {
 	decorators: [withReservationMocks],
 	// Default event handlers
 	args: defaultReservationActions,
+	argTypes: {
+		onCancel: { action: 'cancel clicked' },
+		onClose: { action: 'close clicked' },
+		onMessage: { action: 'message clicked' },
+	},
 };
 export default meta;
 type Story = StoryObj<typeof meta>;
@@ -25,6 +31,10 @@ type Story = StoryObj<typeof meta>;
 // Stories using modern Storybook syntax
 export const Requested: Story = {
 	args: { reservation: storyReservationsActive[0] },
+	play: async ({ canvasElement }) => {
+		const canvas = within(canvasElement);
+		await expect(canvas.getByText(/requested/i)).toBeInTheDocument();
+	},
 };
 
 export const Accepted: Story = {
