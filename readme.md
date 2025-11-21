@@ -2,6 +2,8 @@
 
 A modern, community‑driven platform designed to reduce waste and enable the sharing of items, services, and classes — empowering individuals and organizations to participate in the circular economy.
 
+<img src="./readme-assets/main-screen-banner.png" width="500" alt="main-screen-banner"/>
+
 ## 📌 Introduction
 
 ShareThrift is a web‑based peer‑to‑peer sharing platform that enables people and organizations to lend, borrow, or offer items, services, and classes. Inspired by platforms like Turo, Airbnb, and Facebook Marketplace — but built specifically for the sharing economy — ShareThrift provides a structured, trusted, and community-first way to exchange goods.
@@ -31,7 +33,7 @@ ShareThrift is a web‑based peer‑to‑peer sharing platform that enables peop
 
 ### 🔍 Browse, Search & Filter Listings
 
-- Filter by location, date availability, and category
+- Filter by location, and category
 - View active, inactive, and upcoming listings
 
 ### 🧰 Create & Manage Listings
