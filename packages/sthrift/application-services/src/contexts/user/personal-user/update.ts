@@ -44,14 +44,14 @@ export interface PersonalUserUpdateCommand {
 	};
 }
 
-export const update = (datasources: DataSources) => {
+export const update = (dataSources: DataSources) => {
 	return async (
 		command: PersonalUserUpdateCommand,
 	): Promise<Domain.Contexts.User.PersonalUser.PersonalUserEntityReference> => {
 		let personalUserToReturn:
 			| Domain.Contexts.User.PersonalUser.PersonalUserEntityReference
 			| undefined;
-		await datasources.domainDataSource.User.PersonalUser.PersonalUserUnitOfWork.withScopedTransaction(
+		await dataSources.domainDataSource.User.PersonalUser.PersonalUserUnitOfWork.withScopedTransaction(
 			async (repo) => {
 				if (!command.id) {
 					throw new Error('personal user id is required');
@@ -71,30 +71,6 @@ export const update = (datasources: DataSources) => {
 						existingPersonalUser.account.accountType; // could be replaced by plan code
 					existingPersonalUser.account.username =
 						command.account.username ?? existingPersonalUser.account.username;
-				}
-
-				if (command.account?.profile?.billing) {
-					existingPersonalUser.account.profile.billing.cybersourceCustomerId =
-						command.account.profile.billing.cybersourceCustomerId ??
-						existingPersonalUser.account.profile.billing.cybersourceCustomerId;
-
-					if (command.account.profile.billing.subscription) {
-						existingPersonalUser.account.profile.billing.subscription.subscriptionId =
-							command.account.profile.billing.subscription.subscriptionId ??
-							existingPersonalUser.account.profile.billing.subscription
-								.subscriptionId;
-						existingPersonalUser.account.profile.billing.subscription.planCode =
-							command.account.profile.billing.subscription.planCode ??
-							existingPersonalUser.account.profile.billing.subscription
-								.planCode;
-						existingPersonalUser.account.profile.billing.subscription.status =
-							command.account.profile.billing.subscription.status ??
-							existingPersonalUser.account.profile.billing.subscription.status;
-						existingPersonalUser.account.profile.billing.subscription.startDate =
-							command.account.profile.billing.subscription.startDate ??
-							existingPersonalUser.account.profile.billing.subscription
-								.startDate;
-					}
 				}
 
 				if (command.account?.profile) {
@@ -131,7 +107,6 @@ export const update = (datasources: DataSources) => {
 				}
 
 				// update transactions if provided
-				
 
 				personalUserToReturn = await repo.save(existingPersonalUser);
 			},

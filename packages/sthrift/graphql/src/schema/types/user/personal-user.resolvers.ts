@@ -1,7 +1,6 @@
 import type { GraphContext } from '../../../init/context.ts';
 import type { GraphQLResolveInfo } from 'graphql';
 import type {
-PaymentResponse,
 	PersonalUserUpdateInput,
 	ProcessPaymentInput,
 	RefundResponse,
@@ -162,7 +161,7 @@ const personalUserResolvers: Resolvers = {
 						currency: args.input.currency,
 					},
 				},
-			) as PaymentResponse;
+			) ;
 		},
 		refundPayment: async (_parent, { request }, context) => {
 			console.log('Refunding payment', request);

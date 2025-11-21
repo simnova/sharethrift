@@ -1,6 +1,5 @@
 import type { DataSources } from '@sthrift/persistence';
 import type { ProcessPaymentRequest } from '@cellix/payment-service';
-import { update } from './update.ts';
 
 export interface ProcessPaymentCommand {
 	request: ProcessPaymentRequest;
@@ -76,10 +75,10 @@ export const processPayment = (dataSources: DataSources) => {
 
 			if (
 				response.status === 'FAILED' ||
-				response.cybersourceCustomerId === undefined ||
-				response.transactionId === undefined ||
-				response.referenceId === undefined ||
-				response.completedAt === undefined
+				!response.cybersourceCustomerId ||
+				!response.transactionId ||
+				!response.referenceId ||
+				!response.completedAt
 			) {
 				return {
 					status: 'FAILED',
@@ -89,44 +88,48 @@ export const processPayment = (dataSources: DataSources) => {
 			}
 
 			// create subscription
-			const startDate = new Date();
+			const subscriptionStartDay = new Date();
 			const subscription =
 				await dataSources.paymentDataSource.PersonalUser.PersonalUser.PaymentPersonalUserRepo.createSubscription(
 					{
 						planId: accountPlan?.cybersourcePlanId ?? '',
 						cybersourceCustomerId: response.cybersourceCustomerId,
-						startDate: startDate,
+						startDate: subscriptionStartDay,
 					},
 				);
 
-			// update user with subscription id
-			await update(dataSources)({
-				id: personalUser.id,
-				hasCompletedOnboarding: true,
-				account: {
-					profile: {
-						billing: {
-							cybersourceCustomerId: response.cybersourceCustomerId,
-							subscription: {
-								subscriptionId: subscription.id,
-								planCode: accountPlan?.cybersourcePlanId ?? '',
-								status: subscription.status,
-								startDate: startDate,
-							},
-							// add transaction
-							transactions: [
-								{
-									transactionId: response.transactionId,
-									amount: sanitizedRequest.paymentAmount,
-									referenceId: response.referenceId,
-									status: response.status,
-									completedAt: response.completedAt,
-								},
-							],
-						},
-					},
+			// update user with subscription, customer id, and transaction
+			await dataSources.domainDataSource.User.PersonalUser.PersonalUserUnitOfWork.withScopedTransaction(
+				async (repo) => {
+					const existingPersonalUser = await repo.getById(
+						command.request.userId,
+					);
+
+          existingPersonalUser.hasCompletedOnboarding = true
+
+					existingPersonalUser.account.profile.billing.cybersourceCustomerId =
+						response.cybersourceCustomerId as string;
+
+					existingPersonalUser.account.profile.billing.subscription.subscriptionId =
+						subscription.id;
+					existingPersonalUser.account.profile.billing.subscription.planCode =
+						accountPlan?.cybersourcePlanId;
+					existingPersonalUser.account.profile.billing.subscription.status =
+						subscription.status;
+					existingPersonalUser.account.profile.billing.subscription.startDate =
+						subscriptionStartDay;
+
+					// existingPersonalUser.account.profile.billing.transactions.concat({
+					//   transactionId: response.transactionId ?? "",
+					//   amount: sanitizedRequest.paymentAmount,
+					//   referenceId: response.referenceId ?? "",
+					//   status: response.status,
+					//   completedAt: response.completedAt ?? new Date(),
+					// });
+
+					await repo.save(existingPersonalUser);
 				},
-			});
+			);
 
 			return {
 				...response,
