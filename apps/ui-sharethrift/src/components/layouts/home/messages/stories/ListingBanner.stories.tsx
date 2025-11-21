@@ -4,6 +4,7 @@ import {
   type ListingBannerProps,
 } from "../components/listing-banner.tsx";
 import type { PersonalUser } from "../../../../../generated.tsx";
+import { expect, within } from 'storybook/test';
 
 // Mock PersonalUser object for Storybook
 const mockUser: PersonalUser = {
@@ -35,4 +36,8 @@ export const Default: Story = {
   args: {
     owner: mockUser,
   } satisfies ListingBannerProps,
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+    await expect(canvas.getByText(/Alice/i)).toBeInTheDocument();
+  },
 };

@@ -13,7 +13,7 @@ const feature = await loadFeature(
 	path.resolve(__dirname, 'features/personal-user.feature'),
 );
 
-function makePassport(canCreateUser = false): Passport {
+function makePassport(canCreateUser = false, canBlockUsers = false): Passport {
 	return vi.mocked({
 		user: {
 			forPersonalUser: vi.fn(() => ({
@@ -21,8 +21,9 @@ function makePassport(canCreateUser = false): Passport {
 					fn: (p: {
 						isEditingOwnAccount: boolean;
 						canCreateUser: boolean;
+						canBlockUsers: boolean;
 					}) => boolean,
-				) => fn({ isEditingOwnAccount: true, canCreateUser }),
+				) => fn({ isEditingOwnAccount: true, canCreateUser, canBlockUsers }),
 			})),
 		},
 	} as unknown as Passport);
@@ -214,4 +215,103 @@ test.for(feature, ({ Scenario, Background, BeforeEachScenario }) => {
 			});
 		},
 	);
+
+	Scenario(
+		'Blocking a user with permission',
+		({ Given, And, When, Then }) => {
+			Given('an existing PersonalUser aggregate', () => {
+				passport = makePassport(true, true);
+				user = new PersonalUser(makeBaseProps(), passport);
+			});
+			And('the user has permission to block users', () => {
+				// Already handled in makePassport with canBlockUsers: true
+			});
+			When('I set isBlocked to true', () => {
+				user.isBlocked = true;
+			});
+			Then('isBlocked should be true', () => {
+				expect(user.isBlocked).toBe(true);
+			});
+		},
+	);
+
+	Scenario(
+		'Unblocking a user with permission',
+		({ Given, And, When, Then }) => {
+			Given('an existing PersonalUser aggregate that is blocked', () => {
+				passport = makePassport(true, true);
+				user = new PersonalUser(makeBaseProps({ isBlocked: true }), passport);
+			});
+			And('the user has permission to block users', () => {
+				// Already handled in makePassport with canBlockUsers: true
+			});
+			When('I set isBlocked to false', () => {
+				user.isBlocked = false;
+			});
+			Then('isBlocked should be false', () => {
+				expect(user.isBlocked).toBe(false);
+			});
+		},
+	);
+
+	Scenario('Getting isNew from personal user', ({ Given, When, Then }) => {
+		Given('an existing PersonalUser aggregate', () => {
+			passport = makePassport(true, false);
+			user = new PersonalUser(makeBaseProps(), passport);
+		});
+		When('I access the isNew property', () => {
+			// Access happens in Then
+		});
+		Then('it should return false', () => {
+			expect(user.isNew).toBe(false);
+		});
+	});
+
+	Scenario(
+		'Getting schemaVersion from personal user',
+		({ Given, When, Then }) => {
+			Given('an existing PersonalUser aggregate', () => {
+				passport = makePassport(true, false);
+				user = new PersonalUser(makeBaseProps(), passport);
+			});
+			When('I access the schemaVersion property', () => {
+				// Access happens in Then
+			});
+			Then('it should return the schema version', () => {
+				expect(user.schemaVersion).toBeDefined();
+				expect(typeof user.schemaVersion).toBe('string');
+			});
+		},
+	);
+
+	Scenario(
+		'Getting createdAt from personal user',
+		({ Given, When, Then }) => {
+			Given('an existing PersonalUser aggregate', () => {
+				passport = makePassport(true, false);
+				user = new PersonalUser(makeBaseProps(), passport);
+			});
+			When('I access the createdAt property', () => {
+				// Access happens in Then
+			});
+			Then('it should return a valid date', () => {
+				expect(user.createdAt).toBeInstanceOf(Date);
+				expect(user.createdAt.getTime()).toBeGreaterThan(0);
+			});
+		},
+	);
+
+	Scenario('Getting updatedAt from personal user', ({ Given, When, Then }) => {
+		Given('an existing PersonalUser aggregate', () => {
+			passport = makePassport(true, false);
+			user = new PersonalUser(makeBaseProps(), passport);
+		});
+		When('I access the updatedAt property', () => {
+			// Access happens in Then
+		});
+		Then('it should return a valid date', () => {
+			expect(user.updatedAt).toBeInstanceOf(Date);
+			expect(user.updatedAt.getTime()).toBeGreaterThan(0);
+		});
+	});
 });

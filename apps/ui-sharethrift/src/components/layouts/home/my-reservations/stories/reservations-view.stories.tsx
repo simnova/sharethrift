@@ -9,6 +9,7 @@ import {
 	defaultReservationActions,
 	withReservationMocks,
 } from '../../../../../test/utils/storybook-providers.tsx';
+import { expect, within } from 'storybook/test';
 
 const meta: Meta<typeof ReservationsView> = {
 	title: 'Organisms/ReservationsView',
@@ -27,6 +28,11 @@ const meta: Meta<typeof ReservationsView> = {
 	decorators: [withReservationMocks],
 	// Default event handlers
 	args: defaultReservationActions,
+	argTypes: {
+		onCancel: { action: 'cancel clicked' },
+		onClose: { action: 'close clicked' },
+		onMessage: { action: 'message clicked' },
+	},
 };
 
 export default meta;
@@ -34,6 +40,11 @@ type Story = StoryObj<typeof ReservationsView>;
 
 export const AllReservations: Story = {
 	args: { reservations: storyReservationsAll },
+	play: async ({ canvasElement }) => {
+		const canvas = within(canvasElement);
+		const view = canvas.getByRole('region') || canvas.getByRole('table');
+		await expect(view).toBeInTheDocument();
+	},
 };
 
 export const ActiveReservations: Story = {

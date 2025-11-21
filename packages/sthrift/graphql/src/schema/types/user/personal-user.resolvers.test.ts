@@ -1,10 +1,11 @@
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { describeFeature, loadFeature } from '@amiceli/vitest-cucumber';
+import type { Domain } from '@sthrift/domain';
 import { expect, vi } from 'vitest';
 import type { GraphContext } from '../../../init/context.ts';
 import personalUserResolvers from './personal-user.resolvers.ts';
-import type { Domain } from '@sthrift/domain';
+
 // Define a type for the payment response based on the interface structure
 interface ProcessPaymentResponse {
 	id?: string;

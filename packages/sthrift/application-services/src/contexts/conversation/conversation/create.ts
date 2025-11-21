@@ -32,10 +32,10 @@ export const create = (dataSources: DataSources) => {
 				command.listingId,
 			);
 		if (!sharer) {
-			throw new Error(`User (sharer) not found for id ${command.sharerId}`);
+			throw new Error(`Personal user (sharer) not found for id ${command.sharerId}`);
 		}
 		if (!reserver) {
-			throw new Error(`User (reserver) not found for id ${command.reserverId}`);
+			throw new Error(`Personal user (reserver) not found for id ${command.reserverId}`);
 		}
 		if (!listing) {
 			throw new Error(`Listing not found for id ${command.listingId}`);

@@ -1,0 +1,109 @@
+import path from 'node:path';
+import { fileURLToPath } from 'node:url';
+import { describeFeature, loadFeature } from '@amiceli/vitest-cucumber';
+import { expect } from 'vitest';
+import { AdminRoleConversationPermissions } from './admin-role-conversation-permissions.ts';
+
+const test = { for: describeFeature };
+const __dirname = path.dirname(fileURLToPath(import.meta.url));
+const feature = await loadFeature(
+	path.resolve(
+		__dirname,
+		'features/admin-role-conversation-permissions.feature',
+	),
+);
+
+test.for(feature, ({ Scenario }) => {
+	const makeConversationPermissions = () =>
+		new AdminRoleConversationPermissions({
+			canViewAllConversations: true,
+			canEditConversations: false,
+			canDeleteConversations: false,
+			canCloseConversations: true,
+			canModerateConversations: true,
+		});
+
+	Scenario(
+		'Admin role conversation permissions should have canViewAllConversations',
+		({ Given, When, Then }) => {
+			let permissions: AdminRoleConversationPermissions;
+			// biome-ignore lint/suspicious/noExplicitAny: Test variable
+			let value: any;
+
+			Given('I have admin role conversation permissions', () => {
+				permissions = makeConversationPermissions();
+			});
+
+			When('I access the canViewAllConversations property', () => {
+				value = permissions.canViewAllConversations;
+			});
+
+			Then('it should be a boolean', () => {
+				expect(typeof value).toBe('boolean');
+			});
+		},
+	);
+
+	Scenario(
+		'Admin role conversation permissions should have canEditConversations',
+		({ Given, When, Then }) => {
+			let permissions: AdminRoleConversationPermissions;
+			// biome-ignore lint/suspicious/noExplicitAny: Test variable
+			let value: any;
+
+			Given('I have admin role conversation permissions', () => {
+				permissions = makeConversationPermissions();
+			});
+
+			When('I access the canEditConversations property', () => {
+				value = permissions.canEditConversations;
+			});
+
+			Then('it should be a boolean', () => {
+				expect(typeof value).toBe('boolean');
+			});
+		},
+	);
+
+	Scenario(
+		'Admin role conversation permissions should have canDeleteConversations',
+		({ Given, When, Then }) => {
+			let permissions: AdminRoleConversationPermissions;
+			// biome-ignore lint/suspicious/noExplicitAny: Test variable
+			let value: any;
+
+			Given('I have admin role conversation permissions', () => {
+				permissions = makeConversationPermissions();
+			});
+
+			When('I access the canDeleteConversations property', () => {
+				value = permissions.canDeleteConversations;
+			});
+
+			Then('it should be a boolean', () => {
+				expect(typeof value).toBe('boolean');
+			});
+		},
+	);
+
+	Scenario(
+		'Admin role conversation permissions should have canCloseConversations',
+		({ Given, When, Then }) => {
+			let permissions: AdminRoleConversationPermissions;
+			// biome-ignore lint/suspicious/noExplicitAny: Test variable
+			let value: any;
+
+			Given('I have admin role conversation permissions', () => {
+				permissions = makeConversationPermissions();
+			});
+
+			When('I access the canCloseConversations property', () => {
+				value = permissions.canCloseConversations;
+			});
+
+			Then('it should be a boolean', () => {
+				expect(typeof value).toBe('boolean');
+			});
+		},
+	);
+});

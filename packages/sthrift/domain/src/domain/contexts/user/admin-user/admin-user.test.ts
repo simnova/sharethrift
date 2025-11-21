@@ -279,4 +279,139 @@ test.for(feature, ({ Scenario, Background, BeforeEachScenario }) => {
 			});
 		},
 	);
+
+	Scenario(
+		'Blocking an admin user with permission',
+		({ Given, And, When, Then }) => {
+			Given('an existing AdminUser aggregate', () => {
+				passport = makePassport(true, true);
+				user = new AdminUser(makeBaseProps(), passport);
+			});
+			And('the user has permission to block users', () => {
+				// Already handled in makePassport with canBlockUsers: true
+			});
+			When('I set isBlocked to true', () => {
+				user.isBlocked = true;
+			});
+			Then('isBlocked should be true', () => {
+				expect(user.isBlocked).toBe(true);
+			});
+		},
+	);
+
+	Scenario(
+		'Unblocking an admin user with permission',
+		({ Given, And, When, Then }) => {
+			Given('an existing AdminUser aggregate that is blocked', () => {
+				passport = makePassport(true, true);
+				user = new AdminUser(makeBaseProps({ isBlocked: true }), passport);
+			});
+			And('the user has permission to block users', () => {
+				// Already handled in makePassport with canBlockUsers: true
+			});
+			When('I set isBlocked to false', () => {
+				user.isBlocked = false;
+			});
+			Then('isBlocked should be false', () => {
+				expect(user.isBlocked).toBe(false);
+			});
+		},
+	);
+
+	Scenario('Loading role asynchronously', ({ Given, When, Then }) => {
+		let loadedRole: unknown;
+		Given('an existing AdminUser aggregate', () => {
+			passport = makePassport(true, true);
+			user = new AdminUser(makeBaseProps(), passport);
+		});
+		When('I call loadRole', async () => {
+			loadedRole = await user.loadRole();
+		});
+		Then('it should return the role asynchronously', () => {
+			expect(loadedRole).toBeDefined();
+			expect((loadedRole as { id: string }).id).toBe('role-1');
+		});
+	});
+
+	Scenario('Attempting to set role to null', ({ Given, When, Then }) => {
+		let setRoleToNull: () => void;
+		Given('a new AdminUser aggregate', () => {
+			passport = makePassport(true, true);
+			user = AdminUser.getNewInstance(
+				makeBaseProps(),
+				passport,
+				'admin@example.com',
+				'adminuser',
+				'Admin',
+				'User',
+			);
+		});
+		When('I attempt to set role to null', () => {
+			setRoleToNull = () => {
+				(user as { role: unknown }).role = null;
+			};
+		});
+		Then(
+			'it should throw a PermissionError with message "role cannot be null or undefined"',
+			() => {
+				expect(setRoleToNull).toThrow(DomainSeedwork.PermissionError);
+				expect(setRoleToNull).throws('role cannot be null or undefined');
+			},
+		);
+	});
+
+	Scenario('Attempting to set role to undefined', ({ Given, When, Then }) => {
+		let setRoleToUndefined: () => void;
+		Given('a new AdminUser aggregate', () => {
+			passport = makePassport(true, true);
+			user = AdminUser.getNewInstance(
+				makeBaseProps(),
+				passport,
+				'admin@example.com',
+				'adminuser',
+				'Admin',
+				'User',
+			);
+		});
+		When('I attempt to set role to undefined', () => {
+			setRoleToUndefined = () => {
+				(user as { role: unknown }).role = undefined;
+			};
+		});
+		Then(
+			'it should throw a PermissionError with message "role cannot be null or undefined"',
+			() => {
+				expect(setRoleToUndefined).toThrow(DomainSeedwork.PermissionError);
+				expect(setRoleToUndefined).throws('role cannot be null or undefined');
+			},
+		);
+	});
+
+	Scenario('Getting createdAt from admin user', ({ Given, When, Then }) => {
+		Given('an existing AdminUser aggregate', () => {
+			passport = makePassport(true, true);
+			user = new AdminUser(makeBaseProps(), passport);
+		});
+		When('I access the createdAt property', () => {
+			// Access happens in Then
+		});
+		Then('it should return a valid date', () => {
+			expect(user.createdAt).toBeInstanceOf(Date);
+			expect(user.createdAt.getTime()).toBeGreaterThan(0);
+		});
+	});
+
+	Scenario('Getting updatedAt from admin user', ({ Given, When, Then }) => {
+		Given('an existing AdminUser aggregate', () => {
+			passport = makePassport(true, true);
+			user = new AdminUser(makeBaseProps(), passport);
+		});
+		When('I access the updatedAt property', () => {
+			// Access happens in Then
+		});
+		Then('it should return a valid date', () => {
+			expect(user.updatedAt).toBeInstanceOf(Date);
+			expect(user.updatedAt.getTime()).toBeGreaterThan(0);
+		});
+	});
 });

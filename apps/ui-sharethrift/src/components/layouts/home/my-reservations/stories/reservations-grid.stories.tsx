@@ -9,6 +9,7 @@ import {
 	defaultReservationActions,
 	withReservationMocks,
 } from '../../../../../test/utils/storybook-providers.tsx';
+import { expect, within } from 'storybook/test';
 
 const meta: Meta<typeof ReservationsGrid> = {
 	title: 'Organisms/ReservationsGrid',
@@ -18,6 +19,11 @@ const meta: Meta<typeof ReservationsGrid> = {
 	// Global decorator for MockedProvider
 	decorators: [withReservationMocks],
 	args: defaultReservationActions, // apply to all stories by default
+	argTypes: {
+		onCancel: { action: 'cancel clicked' },
+		onClose: { action: 'close clicked' },
+		onMessage: { action: 'message clicked' },
+	},
 };
 export default meta;
 
@@ -25,6 +31,10 @@ type Story = StoryObj<typeof ReservationsGrid>;
 
 export const AllReservations: Story = {
 	args: { reservations: storyReservationsAll },
+	play: async ({ canvasElement }) => {
+		const canvas = within(canvasElement);
+		await expect(canvas.getAllByRole('article').length).toBeGreaterThan(0);
+	},
 };
 
 export const ActiveReservations: Story = {

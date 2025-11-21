@@ -1,6 +1,7 @@
 import type { Meta, StoryObj } from '@storybook/react';
 import { CreateListing } from './create-listing.tsx';
 import { MemoryRouter } from 'react-router-dom';
+import { expect, within } from 'storybook/test';
 
 const meta: Meta<typeof CreateListing> = {
 	title: 'Components/CreateListing',
@@ -36,12 +37,47 @@ const meta: Meta<typeof CreateListing> = {
 		onViewDraft: () => undefined,
 		onModalClose: () => undefined,
 	},
+	argTypes: {
+		onSubmit: { action: 'submit' },
+		onCancel: { action: 'cancel' },
+		onImageAdd: { action: 'image added' },
+		onImageRemove: { action: 'image removed' },
+		onViewListing: { action: 'view listing' },
+		onViewDraft: { action: 'view draft' },
+		onModalClose: { action: 'modal closed' },
+	},
 };
+
+import { fn, userEvent } from 'storybook/test';
 
 export default meta;
 type Story = StoryObj<typeof meta>;
 
-export const Default: Story = {};
+export const Default: Story = {
+	args: {
+		onSubmit: fn(),
+		onCancel: fn(),
+		onImageAdd: fn(),
+		onImageRemove: fn(),
+	},
+	play: async ({ canvasElement }) => {
+		const canvas = within(canvasElement);
+		
+		// Verify the form is present
+		const form = canvas.getByRole('form');
+		expect(form).toBeInTheDocument();
+		
+		// Verify form inputs are present
+		const inputs = canvas.queryAllByRole('textbox');
+		if (inputs.length > 0) {
+			expect(inputs[0]).toBeInTheDocument();
+		}
+		
+		// Verify submit button is present
+		const buttons = canvas.getAllByRole('button');
+		expect(buttons.length).toBeGreaterThan(0);
+	},
+};
 
 export const WithImages: Story = {
 	args: {
@@ -50,5 +86,43 @@ export const WithImages: Story = {
 			'/assets/item-images/tent.png',
 			'/assets/item-images/projector.png',
 		],
+		onSubmit: fn(),
+		onCancel: fn(),
+		onImageRemove: fn(),
+	},
+	play: async ({ canvasElement }) => {
+		const canvas = within(canvasElement);
+		
+		// Verify the form is present
+		const form = canvas.getByRole('form');
+		expect(form).toBeInTheDocument();
+		
+		// Verify images are displayed
+		const images = canvas.queryAllByRole('img');
+		expect(images.length).toBeGreaterThan(0);
+	},
+};
+
+export const FormInteraction: Story = {
+	args: {
+		onSubmit: fn(),
+		onCancel: fn(),
+	},
+	play: async ({ canvasElement }) => {
+		const canvas = within(canvasElement);
+		
+		// Verify the form is present
+		const form = canvas.getByRole('form');
+		expect(form).toBeInTheDocument();
+		
+		// Try to interact with form inputs if present
+		const inputs = canvas.queryAllByRole('textbox');
+		if (inputs.length > 0) {
+			const titleInput = inputs[0];
+			if (titleInput) {
+				await userEvent.type(titleInput, 'Test Listing Title');
+				expect(titleInput).toHaveValue('Test Listing Title');
+			}
+		}
 	},
 };
