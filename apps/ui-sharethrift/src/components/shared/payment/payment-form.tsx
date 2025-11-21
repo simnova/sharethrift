@@ -19,6 +19,8 @@ interface PaymentFormProps {
 	countries: Country[];
 	onSubmitPayment: (paymentDetails: ProcessPaymentInput) => void;
 	additionalContent?: React.JSX.Element;
+	paymentAmount: number;
+  currency: string;
 }
 export const PaymentForm: FC<PaymentFormProps> = (props) => {
 	const userId = useUserId();
@@ -75,8 +77,8 @@ export const PaymentForm: FC<PaymentFormProps> = (props) => {
 				console.log('Form values on submit:', values);
 				const processPaymentDetails: ProcessPaymentInput = {
 					userId: userId,
-					paymentAmount: 2.99, // This is a placeholder. Replace with actual amount as needed.
-					currency: 'USD',
+					paymentAmount: props.paymentAmount,
+					currency: props.currency,
 					paymentInstrument: {
 						billingAddressLine1: values.billingAddress,
 						billingAddressLine2: values.billingAddressLine2,

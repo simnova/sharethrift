@@ -105,7 +105,7 @@ export const processPayment = (dataSources: DataSources) => {
 						command.request.userId,
 					);
 
-          existingPersonalUser.hasCompletedOnboarding = true
+					existingPersonalUser.hasCompletedOnboarding = true;
 
 					existingPersonalUser.account.profile.billing.cybersourceCustomerId =
 						response.cybersourceCustomerId as string;
@@ -119,13 +119,13 @@ export const processPayment = (dataSources: DataSources) => {
 					existingPersonalUser.account.profile.billing.subscription.startDate =
 						subscriptionStartDay;
 
-					// existingPersonalUser.account.profile.billing.transactions.concat({
-					//   transactionId: response.transactionId ?? "",
-					//   amount: sanitizedRequest.paymentAmount,
-					//   referenceId: response.referenceId ?? "",
-					//   status: response.status,
-					//   completedAt: response.completedAt ?? new Date(),
-					// });
+					existingPersonalUser.requestAddAccountProfileBillingTransaction(
+						response.transactionId as string,
+						sanitizedRequest.paymentAmount,
+						response.referenceId ?? '',
+						response.status,
+						response.completedAt ?? new Date(),
+					);
 
 					await repo.save(existingPersonalUser);
 				},

@@ -59,16 +59,6 @@ const billingCharlie = {
 	},
 } as Models.User.PersonalUserAccountProfileBilling;
 
-const billingDuy = {
-	cybersourceCustomerId: 'cust_123456790',
-	subscription: {
-		subscriptionId: 'sub_987654321',
-		planCode: 'non-verified-personal',
-		status: 'ACTIVE',
-		startDate: new Date('2023-02-01T10:00:00Z'),
-	},
-} as Models.User.PersonalUserAccountProfileBilling;
-
 export const personalUsers: Models.User.PersonalUser[] = [
 	{
 		_id: '507f1f77bcf86cd799439011',
@@ -155,7 +145,6 @@ export const personalUsers: Models.User.PersonalUser[] = [
 				firstName: 'Duy',
 				lastName: 'Nguyen',
 				location: addressPineRdPA,
-				billing: billingDuy,
 			} as Models.User.PersonalUserAccountProfile,
 		} as Models.User.PersonalUserAccount,
 		schemaVersion: '1.0.0',

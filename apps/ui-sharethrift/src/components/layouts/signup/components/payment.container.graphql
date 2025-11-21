@@ -23,6 +23,7 @@ fragment PaymentContainerAccountPlansFields on AccountPlan {
   description
   billingPeriodUnit
   billingAmount
+  currency
   id
 }
 

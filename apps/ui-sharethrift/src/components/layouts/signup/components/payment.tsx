@@ -63,6 +63,8 @@ export const Payment: FC<PaymentProps> = (props) => {
       countries={props.countries}
       onSubmitPayment={props.onSubmitPayment}
       additionalContent={additionalPaymentContent}
+      paymentAmount={props.selectedAccountPlan.billingAmount}
+      currency={props.selectedAccountPlan.currency}
     />
   );
 };
