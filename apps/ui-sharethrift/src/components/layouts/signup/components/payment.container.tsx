@@ -1,4 +1,4 @@
-import { type FC, useMemo } from 'react';
+import { type FC, useMemo, useEffect } from 'react';
 import {
 	type PaymentContainerAccountPlansFieldsFragment,
 	PaymentContainerPersonalUserCybersourcePublicKeyIdDocument,
@@ -38,23 +38,18 @@ export const PaymentContainer: FC = () => {
 
 	const [refetchCurrentUserData] = useLazyQuery(
 		AppContainerCurrentPersonalUserAndCreateIfNotExistsDocument,
-    { fetchPolicy: 'network-only' },
+		{ fetchPolicy: 'network-only' },
 	);
 
 	const [processPayment] = useMutation(
 		SignUpPaymentContainerPersonalUserProcessPaymentDocument,
-		// {
-		// 	refetchQueries: [
-		// 		AppContainerCurrentPersonalUserAndCreateIfNotExistsDocument,
-		// 	],
-		// },
 	);
 
 	const handleSubmitPayment = async (paymentData: ProcessPaymentInput) => {
 		console.log('Payment data submitted:', paymentData);
 		const result = await processPayment({ variables: { input: paymentData } });
 		if (result.data?.processPayment.success) {
-      await refetchCurrentUserData();
+			await refetchCurrentUserData();
 			message.success('Payment processed successfully');
 			// navigate to home
 			navigate('/home');
@@ -76,6 +71,13 @@ export const PaymentContainer: FC = () => {
 			) || null
 		);
 	}, [currentPersonalUserData, accountPlansData]);
+
+	useEffect(() => {
+		if (selectedAccountPlan?.billingAmount === 0) {
+			message.info('Free account selected, redirecting to home page...');
+			navigate('/home');
+		}
+	}, [selectedAccountPlan, navigate]);
 
 	return (
 		<ComponentQueryLoader

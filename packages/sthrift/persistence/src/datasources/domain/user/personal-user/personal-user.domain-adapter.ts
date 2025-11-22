@@ -149,20 +149,11 @@ export class PersonalUserAccountProfileBillingDomainAdapter
 		Domain.Contexts.User.PersonalUser.PersonalUserAccountProfileBillingProps
 {
 	readonly props: Models.User.PersonalUserAccountProfileBilling;
-	subscriptionId!: string | null;
 	cybersourceCustomerId!: string | null;
-	paymentState!: string;
-	lastTransactionId!: string | null;
-	lastPaymentAmount!: number | null;
 
 	constructor(props: Models.User.PersonalUserAccountProfileBilling) {
 		this.props = props;
-		createStringAccessors(this, [
-			'subscriptionId',
-			'cybersourceCustomerId',
-			'paymentState',
-			'lastTransactionId',
-		]);
+		createStringAccessors(this, ['cybersourceCustomerId']);
 	}
 
 	get subscription() {
@@ -215,27 +206,50 @@ export class PersonalUserAccountProfileBillingTransactionsDomainAdapter
 {
 	public readonly doc: Models.User.PersonalUserAccountProfileBillingTransactions;
 
-	transactionId!: string;
-	amount!: number;
-	referenceId!: string;
-	status!: string;
-	completedAt!: Date;
-	errorMessage!: string | null;
-
 	constructor(doc: Models.User.PersonalUserAccountProfileBillingTransactions) {
 		this.doc = doc;
-		createStringAccessors(this, [
-			'id',
-			'transactionId',
-			'amount',
-			'referenceId',
-			'status',
-			'errorMessage',
-		]);
 	}
 
 	public get id(): string {
 		return this.doc.id?.valueOf() as string;
+	}
+
+	//Primitive Field Getters and Setters
+	get transactionId(): string {
+		return this.doc.transactionId;
+	}
+	set transactionId(value: string) {
+		this.doc.transactionId = value;
+	}
+	get amount(): number {
+		return this.doc.amount;
+	}
+	set amount(value: number) {
+		this.doc.amount = value;
+	}
+	get referenceId(): string {
+		return this.doc.referenceId;
+	}
+	set referenceId(value: string) {
+		this.doc.referenceId = value;
+	}
+	get status(): string {
+		return this.doc.status;
+	}
+	set status(value: string) {
+		this.doc.status = value;
+	}
+	get completedAt(): Date {
+		return this.doc.completedAt;
+	}
+	set completedAt(value: Date) {
+		this.doc.completedAt = value;
+	}
+	get errorMessage(): string | null {
+		return this.doc.errorMessage;
+	}
+	set errorMessage(value: string) {
+		this.doc.errorMessage = value;
 	}
 }
 
