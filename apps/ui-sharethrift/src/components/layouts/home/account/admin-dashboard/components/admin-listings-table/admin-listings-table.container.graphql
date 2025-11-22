@@ -32,8 +32,13 @@ query AdminListingsTableContainerAdminListings(
   }
 }
 
-mutation AdminListingsTableContainerRemoveListing($id: ObjectID!) {
-  removeListing(id: $id)
+mutation AdminListingsTableContainerDeleteListing($id: ObjectID!) {
+  deleteItemListing(id: $id) {
+    status {
+      success
+      errorMessage
+    }
+  }
 }
 
 mutation AdminListingsTableContainerUnblockListing($id: ObjectID!) {

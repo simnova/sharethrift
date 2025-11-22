@@ -2,15 +2,12 @@ import { describe, it, expect, vi } from 'vitest';
 import { ReservationRequest } from './reservation-request.ts';
 import type { ReservationRequestProps } from './reservation-request.entity.ts';
 import type { ItemListingEntityReference } from '../../listing/item/item-listing.entity.ts';
-import { PersonalUser } from '../../user/personal-user/personal-user.ts';
-import type { PersonalUserProps } from '../../user/personal-user/personal-user.entity.ts';
+import type { PersonalUserEntityReference } from '../../user/personal-user/personal-user.entity.ts';
 import {
 	ReservationRequestStates,
 	ReservationRequestStateValue,
 } from './reservation-request.value-objects.ts';
 import type { Passport } from '../../passport.ts';
-import type { PersonalUserRoleEntityReference } from '../../role/personal-user-role/personal-user-role.entity.ts';
-import { PersonalUserRolePermissions } from '../../role/personal-user-role/personal-user-role-permissions.ts';
 // Minimal test-only mocks for missing domain value objects
 
 describe('ReservationRequest', () => {
@@ -54,6 +51,9 @@ describe('ReservationRequest', () => {
 				forPersonalUser: () => ({
 					determineIf: () => true,
 				}),
+				forAdminUser: () => ({
+					determineIf: () => true,
+				}),
 			};
 		},
 
@@ -84,113 +84,55 @@ describe('ReservationRequest', () => {
 		listingType: 'item-listing',
 	});
 
-	const mockRole: Readonly<PersonalUserRoleEntityReference> = {
-		id: 'role-1',
-		roleName: 'mock-role',
-		isDefault: false,
-		permissions: new PersonalUserRolePermissions({
-			listingPermissions: {
-				canCreateItemListing: true,
-				canUpdateItemListing: true,
-				canDeleteItemListing: true,
-				canViewItemListing: true,
-				canPublishItemListing: true,
-				canUnpublishItemListing: true,
-			},
-			conversationPermissions: {
-				canCreateConversation: true,
-				canManageConversation: true,
-				canViewConversation: true,
-			},
-			reservationRequestPermissions: {
-				canCreateReservationRequest: true,
-				canManageReservationRequest: true,
-				canViewReservationRequest: true,
-			},
-			userPermissions: {
-				canCreateUser: false,
-				canBlockUsers: false,
-				canUnblockUsers: false,
-			},
-			accountPlanPermissions: {
-				canCreateAccountPlan: false,
-				canUpdateAccountPlan: false,
-				canDeleteAccountPlan: false,
-			},
-		}),
-		roleType: 'mock-type',
-		createdAt: new Date(),
-		updatedAt: new Date(),
-		schemaVersion: '1',
-	};
+	const createMockReserver = (id = 'user-1'): PersonalUserEntityReference => {
+		return {
+			id,
+			userType: 'personal',
+			isBlocked: false,
+			schemaVersion: '1',
+			hasCompletedOnboarding: true,
 
-	const createMockReserver = (id = 'user-1') => {
-		return new PersonalUser<PersonalUserProps>(
-			{
-				id,
-				userType: 'personal',
-				isBlocked: false,
-				schemaVersion: '1',
-				account: {
-					accountType: 'standard',
-					email: 'mock@example.com',
-					username: 'mockuser',
-					profile: {
-						aboutMe: 'Hello',
-						firstName: 'Mock',
-						lastName: 'User',
-						location: {
-							address1: '123 Main St',
-							address2: null,
-							city: 'Springfield',
-							state: 'IL',
-							country: 'USA',
-							zipCode: '62704',
+			account: {
+				accountType: 'standard',
+				email: 'mock@example.com',
+				username: 'mockuser',
+				profile: {
+					firstName: 'Mock',
+					lastName: 'User',
+					aboutMe: 'Hello',
+					location: {
+						address1: '123 Main St',
+						address2: null,
+						city: 'Springfield',
+						state: 'IL',
+						country: 'USA',
+						zipCode: '62704',
+					},
+					billing: {
+						cybersourceCustomerId: null,
+						subscription: {
+							planCode: 'basic',
+							status: '',
+							startDate: new Date('2020-01-01T00:00:00Z'),
+							subscriptionId: 'sub_123',
 						},
-						billing: {
-							cybersourceCustomerId: null,
-							subscription: {
-								planCode: 'basic',
-								status: '',
-								startDate: new Date('2020-01-01T00:00:00Z'),
-								subscriptionId: 'sub_123',
+						transactions: [
+							{
+								id: '1',
+								transactionId: 'txn_123',
+								amount: 1000,
+								referenceId: 'ref_123',
+								status: 'completed',
+								completedAt: new Date('2020-01-01T00:00:00Z'),
+								errorMessage: null,
 							},
-							transactions: {
-								items: [
-									{
-										id: '1',
-										transactionId: 'txn_123',
-										amount: 1000,
-										referenceId: 'ref_123',
-										status: 'completed',
-										completedAt: new Date('2020-01-01T00:00:00Z'),
-										errorMessage: null,
-									},
-								],
-								getNewItem: () => ({
-									id: '1',
-									transactionId: 'txn_123',
-									amount: 1000,
-									referenceId: 'ref_123',
-									status: 'completed',
-									completedAt: new Date('2020-01-01T00:00:00Z'),
-									errorMessage: null,
-								}),
-								addItem: vi.fn(),
-								removeItem: vi.fn(),
-								removeAll: vi.fn(),
-							},
-						},
+						],
 					},
 				},
-				createdAt: new Date(),
-				updatedAt: new Date(),
-				hasCompletedOnboarding: true,
-				role: mockRole,
-				loadRole: async () => mockRole,
 			},
-			mockPassport,
-		);
+			createdAt: new Date(),
+			updatedAt: new Date(),
+		};
 	};
 
 	// Helper function to create full props for testing

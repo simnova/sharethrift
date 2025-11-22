@@ -1,17 +1,11 @@
 import { Route, Routes, Navigate } from 'react-router-dom';
 import { HomeRoutes } from './components/layouts/home/index.tsx';
 import { SignupRoutes } from './components/layouts/signup/Index.tsx';
+import { LoginSelection } from './components/shared/login-selection.tsx';
+import { AuthRedirectAdmin } from './components/shared/auth-redirect-admin.tsx';
+import { AuthRedirectUser } from './components/shared/auth-redirect-user.tsx';
 import { RequireAuth } from './components/shared/require-auth.tsx';
-import { AuthLanding } from './components/shared/auth-landing.tsx';
-import type { FC } from 'react';
 import { useOnboardingRedirect } from './components/shared/use-has-completed-onboarding-check.ts';
-import './App.css';
-
-const authSection = (
-	<RequireAuth redirectPath="/" forceLogin={true}>
-		<AuthLanding />
-	</RequireAuth>
-);
 
 const signupSection = (
 	<RequireAuth redirectPath="/" forceLogin={true}>
@@ -23,15 +17,14 @@ interface AppProps {
 	hasCompletedOnboarding: boolean;
 	isAuthenticated: boolean;
 }
-export const App: FC<AppProps> = (props) => {
-	useOnboardingRedirect(
-		props.hasCompletedOnboarding,
-		props.isAuthenticated,
-	);
+export const App: React.FC<AppProps> = (props) => {
+	useOnboardingRedirect(props.hasCompletedOnboarding, props.isAuthenticated);
 	return (
 		<Routes>
 			<Route path="/*" element={<HomeRoutes />} />
-			<Route path="/auth-redirect" element={authSection} />
+			<Route path="/login" element={<LoginSelection />} />
+			<Route path="/auth-redirect-admin" element={<AuthRedirectAdmin />} />
+			<Route path="/auth-redirect-user" element={<AuthRedirectUser />} />
 			<Route path="/signup/*" element={signupSection} />
 			<Route path="/" element={<Navigate to="/home" replace />} />
 		</Routes>

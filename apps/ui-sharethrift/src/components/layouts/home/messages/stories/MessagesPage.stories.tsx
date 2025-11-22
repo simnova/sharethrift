@@ -1,7 +1,7 @@
 import type { Meta, StoryFn } from "@storybook/react";
 import { HomeRoutes } from "../../index.tsx";
 import {
-    HomeConversationListContainerCurrentPersonalUserAndCreateIfNotExistsDocument,
+    HomeConversationListContainerCurrentUserDocument,
 	HomeConversationListContainerConversationsByUserDocument,
 	ConversationBoxContainerConversationDocument,
 } from "../../../../../generated.tsx";
@@ -27,22 +27,13 @@ DefaultView.parameters = {
     mocks: [
         {
         request: {
-          query: HomeConversationListContainerCurrentPersonalUserAndCreateIfNotExistsDocument,
+          query: HomeConversationListContainerCurrentUserDocument,
         },
         result: {
           data: {
-            currentPersonalUserAndCreateIfNotExists: {
+            currentUser: {
               __typename: "PersonalUser",
               id: "507f1f77bcf86cd799439011", // Alice
-              account: {
-                __typename: "PersonalUserAccount",
-                username: "alice_johnson",
-                profile: {
-                  __typename: "PersonalUserAccountProfile",
-                  firstName: "Alice",
-                  lastName: "Johnson",
-                },
-              },
             },
           },
         },

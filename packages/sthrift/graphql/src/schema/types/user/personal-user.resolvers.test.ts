@@ -74,88 +74,25 @@ function createMockAccount(
 	};
 }
 
-function createMockRole(): Domain.Contexts.Role.PersonalUserRole.PersonalUserRoleEntityReference {
-	return {
-		id: 'role-123',
-		roleName: 'user',
-		isDefault: true,
-		roleType: 'personal',
-		createdAt: new Date(),
-		updatedAt: new Date(),
-		schemaVersion: '1.0',
-		permissions: {
-			listingPermissions: {
-				canCreateItemListing: true,
-				canUpdateItemListing: true,
-				canDeleteItemListing: true,
-				canViewItemListing: true,
-				canPublishItemListing: true,
-				canUnpublishItemListing: true,
-			},
-			conversationPermissions: {
-				canCreateConversation: true,
-				canManageConversation: true,
-				canViewConversation: true,
-			},
-			reservationRequestPermissions: {
-				canCreateReservationRequest: true,
-				canManageReservationRequest: true,
-				canViewReservationRequest: true,
-			},
-			userPermissions: {
-				canCreateUser: false,
-				canBlockUsers: false,
-				canUnblockUsers: false,
-			},
-			accountPlanPermissions: {
-				canCreateAccountPlan: false,
-				canUpdateAccountPlan: false,
-				canDeleteAccountPlan: false,
-			},
-		},
-	};
-}
-
 function createMockPersonalUser(
 	overrides: Partial<Domain.Contexts.User.PersonalUser.PersonalUserEntityReference> = {},
 ): Domain.Contexts.User.PersonalUser.PersonalUserEntityReference {
 	const mockAccount = createMockAccount();
 	const mockProfile = createMockProfile();
 	const mockLocation = createMockLocation();
-	// const mockBilling = createMockBilling();
+	const mockBilling = createMockBilling();
 
 	return {
 		id: 'user-123',
 		userType: 'personal',
 		isBlocked: false,
 		hasCompletedOnboarding: true,
-		role: createMockRole(),
-		loadRole: vi.fn().mockResolvedValue(createMockRole()),
 		account: {
 			...mockAccount,
 			profile: {
 				...mockProfile,
 				location: mockLocation,
-				billing: {
-					cybersourceCustomerId: 'cust-12345',
-					subscription: {
-						subscriptionId: 'sub-67890',
-						planCode: 'verified-personal',
-						status: 'ACTIVE',
-						startDate: new Date('2024-01-01T00:00:00Z'),
-					},
-					transactions: [
-						{
-							id: '1',
-							transactionId: 'txn_123',
-							amount: 1000,
-							referenceId: 'ref_123',
-							status: 'completed',
-							completedAt: new Date('2020-01-01T00:00:00Z'),
-							errorMessage: null,
-						},
-					],
-				},
+				billing: mockBilling,
 			},
 		},
 		schemaVersion: '1.0',
@@ -735,7 +672,7 @@ test.for(feature, ({ Scenario, Background, BeforeEachScenario }) => {
 						request: {
 							userId: 'user-123',
 							transactionId: 'txn-789',
-							amount: 100.0,
+							amount: 100,
 							orderInformation: {
 								amountDetails: {
 									totalAmount: 100.0,

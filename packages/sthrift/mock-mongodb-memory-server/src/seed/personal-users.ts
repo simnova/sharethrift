@@ -65,7 +65,6 @@ export const personalUsers: Models.User.PersonalUser[] = [
 		userType: 'personal-users',
 		isBlocked: false,
 		hasCompletedOnboarding: true,
-		role: new ObjectId('607f1f77bcf86cd799439021'),
 		account: {
 			accountType: 'verified-personal',
 			email: 'alice@example.com',
@@ -80,7 +79,7 @@ export const personalUsers: Models.User.PersonalUser[] = [
 		} as Models.User.PersonalUserAccount,
 		schemaVersion: '1.0.0',
 		version: 1,
-		discriminatorKey: 'personal-users',
+
 		createdAt: new Date('2023-01-01T10:00:00Z'),
 		updatedAt: new Date('2023-01-01T10:00:00Z'),
 	},
@@ -89,7 +88,6 @@ export const personalUsers: Models.User.PersonalUser[] = [
 		userType: 'personal-users',
 		isBlocked: false,
 		hasCompletedOnboarding: true,
-		role: new ObjectId('607f1f77bcf86cd799439021'),
 		account: {
 			accountType: 'verified-personal',
 			email: 'bob@example.com',
@@ -104,7 +102,7 @@ export const personalUsers: Models.User.PersonalUser[] = [
 		} as Models.User.PersonalUserAccount,
 		schemaVersion: '1.0.0',
 		version: 1,
-		discriminatorKey: 'personal-users',
+
 		createdAt: new Date('2023-01-02T11:00:00Z'),
 		updatedAt: new Date('2023-01-02T11:00:00Z'),
 	},
@@ -113,7 +111,6 @@ export const personalUsers: Models.User.PersonalUser[] = [
 		userType: 'personal-users',
 		isBlocked: false,
 		hasCompletedOnboarding: true,
-		role: new ObjectId('607f1f77bcf86cd799439021'),
 		account: {
 			accountType: 'verified-personal',
 			email: 'charlie@example.com',
@@ -127,7 +124,6 @@ export const personalUsers: Models.User.PersonalUser[] = [
 		} as Models.User.PersonalUserAccount,
 		schemaVersion: '1.0.0',
 		version: 1,
-		discriminatorKey: 'personal-users',
 		createdAt: new Date('2023-01-03T12:00:00Z'),
 		updatedAt: new Date('2023-01-03T12:00:00Z'),
 	},
@@ -149,7 +145,6 @@ export const personalUsers: Models.User.PersonalUser[] = [
 		} as Models.User.PersonalUserAccount,
 		schemaVersion: '1.0.0',
 		version: 1,
-		discriminatorKey: 'personal-users',
 		createdAt: new Date('2023-01-03T12:00:00Z'),
 		updatedAt: new Date('2023-01-03T12:00:00Z'),
 	},

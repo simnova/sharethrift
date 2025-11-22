@@ -1,21 +1,24 @@
-import { useState, useCallback } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { message } from 'antd';
 import { useMutation, useQuery } from '@apollo/client/react';
+import { ComponentQueryLoader } from '@sthrift/ui-components';
+import { message } from 'antd';
+import { useCallback, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import {
 	AdminListingsTableContainerAdminListingsDocument,
-	AdminListingsTableContainerRemoveListingDocument,
-    AdminListingsTableContainerUnblockListingDocument,
+	AdminListingsTableContainerDeleteListingDocument,
+	AdminListingsTableContainerUnblockListingDocument,
 } from '../../../../../../../generated.tsx';
 import { AdminListingsTable } from './admin-listings-table.tsx';
-import { ComponentQueryLoader } from '@sthrift/ui-components';
 
 export function AdminListings(): React.JSX.Element {
 	const navigate = useNavigate();
 	const [page, setPage] = useState(1);
 	const pageSize = 6;
 	const [searchText, setSearchText] = useState('');
-	const [statusFilters, setStatusFilters] = useState<string[]>(['Appeal Requested', 'Blocked']);
+	const [statusFilters, setStatusFilters] = useState<string[]>([
+		'Appeal Requested',
+		'Blocked',
+	]);
 	const [sorter, setSorter] = useState<{
 		field: string | null;
 		order: 'ascend' | 'descend' | null;
@@ -25,20 +28,38 @@ export function AdminListings(): React.JSX.Element {
 		AdminListingsTableContainerAdminListingsDocument,
 		{
 			variables: {
-			page,
-			pageSize,
-			searchText: searchText || undefined,
-			statusFilters,
-				sorter: sorter.field && sorter.order ? { field: sorter.field, order: sorter.order } : undefined,
+				page,
+				pageSize,
+				searchText: searchText || undefined,
+				statusFilters,
+				sorter:
+					sorter.field && sorter.order
+						? { field: sorter.field, order: sorter.order }
+						: undefined,
 			},
 			// Force this operation over the non-batched HTTP link to avoid servers that don't support batching
 			context: { headers: { 'Cache-Enabled': 'true' } },
-		fetchPolicy: 'network-only',
-	},
-);
+			fetchPolicy: 'network-only',
+		},
+	);
 
-	const [removeListingMutation] = useMutation(
-		AdminListingsTableContainerRemoveListingDocument,
+	const [deleteListingMutation] = useMutation(
+		AdminListingsTableContainerDeleteListingDocument,
+		{
+			onCompleted: (data) => {
+				if (data.deleteItemListing?.status?.success) {
+					message.success('Listing deleted successfully');
+					refetch();
+				} else {
+					message.error(
+						`Failed to delete listing: ${data.deleteItemListing?.status?.errorMessage ?? 'Unknown error'}`,
+					);
+				}
+			},
+			onError: (error) => {
+				message.error(`Failed to delete listing: ${error.message}`);
+			},
+		},
 	);
 
 	const [unblockListingMutation] = useMutation(
@@ -49,12 +70,13 @@ export function AdminListings(): React.JSX.Element {
 	const total = data?.adminListings?.total ?? 0;
 
 	// Transform domain fields to UI format
-	const transformedListings = listings.map(listing => {
+	const transformedListings = listings.map((listing) => {
 		const startDate = listing.sharingPeriodStart ?? '';
 		const endDate = listing.sharingPeriodEnd ?? '';
-		const reservationPeriod = startDate && endDate 
-			? `${startDate.slice(0, 10)} - ${endDate.slice(0, 10)}` 
-			: '';
+		const reservationPeriod =
+			startDate && endDate
+				? `${startDate.slice(0, 10)} - ${endDate.slice(0, 10)}`
+				: '';
 
 		return {
 			id: listing.id,
@@ -77,15 +99,14 @@ export function AdminListings(): React.JSX.Element {
 		setPage(1);
 	}, []);
 
-		const onTableChange = useCallback((
-			_pagination: unknown,
-			_filters: unknown,
-			s: unknown,
-		) => {
+	const onTableChange = useCallback(
+		(_pagination: unknown, _filters: unknown, s: unknown) => {
 			const typed = s as { field?: string; order?: 'ascend' | 'descend' };
-		setSorter({ field: typed.field ?? null, order: typed.order ?? null });
-		setPage(1);
-	}, []);
+			setSorter({ field: typed.field ?? null, order: typed.order ?? null });
+			setPage(1);
+		},
+		[],
+	);
 
 	const onAction = useCallback(
 		(action: string, listingId: string) => {
@@ -94,7 +115,7 @@ export function AdminListings(): React.JSX.Element {
 				globalThis.sessionStorage.setItem('adminContext', 'true');
 				navigate(`/listing/${listingId}`);
 			}
-			
+
 			if (action === 'unblock') {
 				(async () => {
 					try {
@@ -107,24 +128,15 @@ export function AdminListings(): React.JSX.Element {
 					}
 				})();
 			}
-			
+
 			if (action === 'delete' || action === 'remove') {
 				// Confirmation already handled by Popconfirm in the table
-				(async () => {
-					try {
-						await removeListingMutation({ variables: { id: listingId } });
-						message.success('Listing removed');
-						refetch();
-					} catch (e: unknown) {
-						const msg = e instanceof Error ? e.message : String(e);
-						message.error(msg);
-					}
-				})();
+				// onCompleted and onError handlers will show messages
+				deleteListingMutation({ variables: { id: listingId } });
 			}
 		},
-		[refetch, removeListingMutation, unblockListingMutation, navigate],
+		[refetch, deleteListingMutation, unblockListingMutation, navigate],
 	);
-
 	return (
 		<ComponentQueryLoader
 			loading={loading}
@@ -134,10 +146,10 @@ export function AdminListings(): React.JSX.Element {
 				<AdminListingsTable
 					data={transformedListings}
 					searchText={searchText}
-                    statusFilters={statusFilters}
-                    onSearch={onSearch}
-                    sorter={sorter ?? { field: null, order: null }}
-                    currentPage={page}
+					statusFilters={statusFilters}
+					onSearch={onSearch}
+					sorter={sorter ?? { field: null, order: null }}
+					currentPage={page}
 					pageSize={pageSize}
 					total={total}
 					onStatusFilter={onStatusFilter}

@@ -1,6 +1,7 @@
 import type { GraphContext } from '../../../init/context.ts';
 import type { GraphQLResolveInfo } from 'graphql';
 import type {
+	PersonalUser,
 	PersonalUserUpdateInput,
 	ProcessPaymentInput,
 	RefundResponse,
@@ -9,6 +10,7 @@ import type {
 } from '../../builder/generated.ts';
 import type { PersonalUserUpdateCommand } from '@sthrift/application-services';
 import type { Domain } from '@sthrift/domain';
+import { getUserByEmail, currentViewerIsAdmin } from '../../resolver-helper.ts';
 
 const PersonalUserMutationResolver = async (
 	getPersonalUser: Promise<Domain.Contexts.User.PersonalUser.PersonalUserEntityReference>,
@@ -28,6 +30,20 @@ const PersonalUserMutationResolver = async (
 };
 
 const personalUserResolvers: Resolvers = {
+	PersonalUser: {
+		account: (rootObj: PersonalUser, _args, _context: GraphContext) => {
+			// Basic account info (email, username) is visible to authenticated users
+			return rootObj.account ?? null;
+		},
+
+		userIsAdmin: async (
+			_rootObj: PersonalUser,
+			_args: unknown,
+			context: GraphContext,
+		) => {
+			return await currentViewerIsAdmin(context);
+		},
+	},
 	Query: {
 		personalUserCybersourcePublicKeyId: async (
 			_parent,
@@ -57,6 +73,16 @@ const personalUserResolvers: Resolvers = {
 			if (!context.applicationServices.verifiedUser?.verifiedJwt) {
 				throw new Error('Unauthorized');
 			}
+
+			// Block admin users - they should use currentUser query instead
+			const { email } = context.applicationServices.verifiedUser.verifiedJwt;
+			const existingUser = await getUserByEmail(email, context);
+			if (existingUser?.userType === 'admin-user') {
+				throw new Error(
+					'Admin users cannot use this query. Use currentUser instead.',
+				);
+			}
+
 			console.log('currentPersonalUserAndCreateIfNotExists resolver called');
 			// Implement the logic to get the current personal user or create a new one
 			return await context.applicationServices.User.PersonalUser.createIfNotExists(
@@ -75,12 +101,25 @@ const personalUserResolvers: Resolvers = {
 			context: GraphContext,
 			_info: GraphQLResolveInfo,
 		) => {
-			// Check if user is admin
-			//if (!context.applicationServices.verifiedUser?.verifiedJwt) {
-			//	throw new Error('Unauthorized');
-			//}
+			if (!context.applicationServices.verifiedUser?.verifiedJwt) {
+				throw new Error('Unauthorized: Authentication required');
+			}
 
-			// TODO: SECURITY - Add admin permission check
+			// Query-level permission check: Only admins with canViewAllUsers can view all personal users
+			// (Read permissions are checked at GraphQL/service layer, write permissions at domain layer)
+			const { email } = context.applicationServices.verifiedUser.verifiedJwt;
+			const currentUser = await getUserByEmail(email, context);
+			const isAdmin = currentUser && 'role' in currentUser;
+
+			if (
+				!isAdmin ||
+				!currentUser?.role?.permissions?.userPermissions?.canViewAllUsers
+			) {
+				throw new Error(
+					'Forbidden: Only admins with canViewAllUsers permission can access this query',
+				);
+			}
+
 			return await context.applicationServices.User.PersonalUser.getAllUsers({
 				page: args.page,
 				pageSize: args.pageSize,
@@ -101,6 +140,8 @@ const personalUserResolvers: Resolvers = {
 			if (!context.applicationServices.verifiedUser?.verifiedJwt) {
 				throw new Error('Unauthorized');
 			}
+
+			// Permission checks are handled in the domain layer (entity setters)
 			console.log('personalUserUpdate resolver called with id:', args.input.id);
 			/// TODO: SECURITY - Add admin permission check
 			return await PersonalUserMutationResolver(
@@ -118,7 +159,8 @@ const personalUserResolvers: Resolvers = {
 			if (!context.applicationServices.verifiedUser?.verifiedJwt) {
 				throw new Error('Unauthorized');
 			}
-			// TODO: SECURITY - Add admin permission check
+
+			// Permission check is handled in the domain layer (isBlocked setter)
 			return await context.applicationServices.User.PersonalUser.update({
 				id: args.userId,
 				isBlocked: true,
@@ -133,7 +175,8 @@ const personalUserResolvers: Resolvers = {
 			if (!context.applicationServices.verifiedUser?.verifiedJwt) {
 				throw new Error('Unauthorized');
 			}
-			// TODO: SECURITY - Add admin permission check
+
+			// Permission check is handled in the domain layer (isBlocked setter)
 			return await context.applicationServices.User.PersonalUser.update({
 				id: args.userId,
 				isBlocked: false,

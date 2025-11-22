@@ -2,6 +2,7 @@ import { Domain } from '@sthrift/domain';
 import type { Models } from '@sthrift/data-sources-mongoose-models';
 import { MongooseSeedwork } from '@cellix/mongoose-seedwork';
 import { PersonalUserDomainAdapter } from '../../user/personal-user/personal-user.domain-adapter.ts';
+import { AdminUserDomainAdapter } from '../../user/admin-user/admin-user.domain-adapter.ts';
 
 export class ItemListingConverter extends MongooseSeedwork.MongoTypeConverter<
 	Models.Listing.ItemListing,
@@ -71,31 +72,56 @@ export class ItemListingDomainAdapter
 		this.doc.sharingPeriodEnd = value;
 	}
 
-	get sharer(): Domain.Contexts.User.PersonalUser.PersonalUserEntityReference {
+	get sharer():
+		| Domain.Contexts.User.PersonalUser.PersonalUserEntityReference
+		| Domain.Contexts.User.AdminUser.AdminUserEntityReference {
 		if (!this.doc.sharer) {
 			throw new Error('listing is not populated');
 		}
 		if (this.doc.sharer instanceof MongooseSeedwork.ObjectId) {
 			throw new Error('sharer is not populated');
 		}
+		// Check userType discriminator to determine which adapter to use
+		const sharerDoc = this.doc.sharer as
+			| Models.User.PersonalUser
+			| Models.User.AdminUser;
+		if (sharerDoc.userType === 'admin-user') {
+			return new AdminUserDomainAdapter(
+				this.doc.sharer as Models.User.AdminUser,
+			);
+		}
 		const adapter = new PersonalUserDomainAdapter(
 			this.doc.sharer as Models.User.PersonalUser,
 		);
 		return adapter.entityReference;
 	}
-	async loadSharer(): Promise<Domain.Contexts.User.PersonalUser.PersonalUserEntityReference> {
+	async loadSharer(): Promise<
+		| Domain.Contexts.User.PersonalUser.PersonalUserEntityReference
+		| Domain.Contexts.User.AdminUser.AdminUserEntityReference
+	> {
 		if (!this.doc.sharer) {
 			throw new Error('sharer is not populated');
 		}
 		if (this.doc.sharer instanceof MongooseSeedwork.ObjectId) {
 			await this.doc.populate('sharer');
 		}
+		// Check userType discriminator to determine which adapter to use
+		const sharerDoc = this.doc.sharer as
+			| Models.User.PersonalUser
+			| Models.User.AdminUser;
+		if (sharerDoc.userType === 'admin-user') {
+			return new AdminUserDomainAdapter(
+				this.doc.sharer as Models.User.AdminUser,
+			);
+		}
 		const adapter = new PersonalUserDomainAdapter(
 			this.doc.sharer as Models.User.PersonalUser,
 		);
 		return adapter.entityReference;
 	}
-	set sharer(user: Domain.Contexts.User.PersonalUser.PersonalUserEntityReference) {
+	set sharer(user:
+		| Domain.Contexts.User.PersonalUser.PersonalUserEntityReference
+		| Domain.Contexts.User.AdminUser.AdminUserEntityReference,) {
 		if (!user?.id) {
 			throw new Error('user reference is missing id');
 		}
@@ -126,9 +152,9 @@ export class ItemListingDomainAdapter
 	}
 
 	get listingType(): string {
-    return this.doc.listingType;
-  }
-  set listingType(value: string) {
-    this.doc.listingType = value;
-  }
+		return this.doc.listingType;
+	}
+	set listingType(value: string) {
+		this.doc.listingType = value;
+	}
 }

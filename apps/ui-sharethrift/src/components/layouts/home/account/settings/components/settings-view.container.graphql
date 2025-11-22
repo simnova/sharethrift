@@ -1,12 +1,27 @@
 query HomeAccountSettingsViewContainerCurrentUser {
-	currentPersonalUserAndCreateIfNotExists {
-		id
-		userType
-		account {
-			...PersonalUserAccountFields
+	currentUser {
+		... on PersonalUser {
+			id
+			userType
+			createdAt
+			updatedAt
+			account {
+				...PersonalUserAccountFields
+			}
 		}
-		createdAt
-		updatedAt
+		... on AdminUser {
+			id
+			userType
+			createdAt
+			updatedAt
+			account {
+				...AdminUserAccountFields
+			}
+			role {
+				id
+				roleName
+			}
+		}
 	}
 }
 
@@ -23,6 +38,17 @@ mutation HomeAccountSettingsViewContainerUpdatePersonalUser(
 			account {
 				...PersonalUserAccountFields
 			}
+		}
+	}
+}
+
+mutation HomeAccountSettingsViewContainerUpdateAdminUser(
+	$input: AdminUserUpdateInput!
+) {
+	adminUserUpdate(input: $input) {
+		id
+		account {
+			...AdminUserAccountFields
 		}
 	}
 }
@@ -62,4 +88,31 @@ fragment PersonalUserAccountFields on PersonalUserAccount {
 	profile {
 		...PersonalUserProfileFields
 	}
+}
+
+fragment AdminUserAccountFields on AdminUserAccount {
+	accountType
+	email
+	username
+	profile {
+		...AdminUserProfileFields
+	}
+}
+
+fragment AdminUserProfileFields on AdminUserAccountProfile {
+	firstName
+	lastName
+	aboutMe
+	location {
+		...AdminUserLocationFields
+	}
+}
+
+fragment AdminUserLocationFields on AdminUserAccountProfileLocation {
+	address1
+	address2
+	city
+	state
+	country
+	zipCode
 }

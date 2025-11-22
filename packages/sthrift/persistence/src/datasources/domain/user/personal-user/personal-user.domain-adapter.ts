@@ -2,8 +2,8 @@ import { Domain } from '@sthrift/domain';
 import type { Models } from '@sthrift/data-sources-mongoose-models';
 import { MongooseSeedwork } from '@cellix/mongoose-seedwork';
 import type { DomainSeedwork } from '@cellix/domain-seedwork';
+import { createStringAccessors } from '../user-adapter.helpers.js';
 
-import { PersonalUserRoleDomainAdapter } from '../../role/personal-user-role/personal-user-role.domain-adapter.ts';
 export class PersonalUserConverter extends MongooseSeedwork.MongoTypeConverter<
 	Models.User.PersonalUser,
 	PersonalUserDomainAdapter,
@@ -28,7 +28,6 @@ export class PersonalUserDomainAdapter
 			userType: this.userType,
 			isBlocked: this.isBlocked,
 			hasCompletedOnboarding: this.hasCompletedOnboarding,
-			role: this.role,
 			account: {
 				accountType: this.account.accountType,
 				email: this.account.email,
@@ -56,7 +55,6 @@ export class PersonalUserDomainAdapter
 					},
 				},
 			},
-			loadRole: this.loadRole.bind(this),
 			schemaVersion: this.doc.schemaVersion,
 			createdAt: this.doc.createdAt,
 			updatedAt: this.doc.updatedAt,
@@ -73,48 +71,6 @@ export class PersonalUserDomainAdapter
 	}
 	set isBlocked(value: boolean) {
 		this.doc.isBlocked = value;
-	}
-
-	get role(): Domain.Contexts.Role.PersonalUserRole.PersonalUserRoleProps {
-		if (!this.doc.role) {
-			throw new Error('role is not populated');
-		}
-		if (this.doc.role instanceof MongooseSeedwork.ObjectId) {
-			throw new Error('role is not populated or is not of the correct type');
-		}
-		return new PersonalUserRoleDomainAdapter(
-			this.doc.role as Models.Role.PersonalUserRole,
-		);
-	}
-	async loadRole(): Promise<Domain.Contexts.Role.PersonalUserRole.PersonalUserRoleProps> {
-		if (!this.doc.role) {
-			throw new Error('role is not populated');
-		}
-		if (this.doc.role instanceof MongooseSeedwork.ObjectId) {
-			await this.doc.populate('role');
-		}
-		return new PersonalUserRoleDomainAdapter(
-			this.doc.role as Models.Role.PersonalUserRole,
-		);
-	}
-	set role(role:
-		| Domain.Contexts.Role.PersonalUserRole.PersonalUserRoleEntityReference
-		| Domain.Contexts.Role.PersonalUserRole.PersonalUserRole<PersonalUserRoleDomainAdapter>) {
-		if (
-			role instanceof Domain.Contexts.Role.PersonalUserRole.PersonalUserRole
-		) {
-			this.doc.set('role', role.props.doc);
-			return;
-		}
-		// Handle PersonalUserRoleDomainAdapter (has a doc property)
-		if (role && 'doc' in role && role.doc) {
-			this.doc.set('role', role.doc);
-			return;
-		}
-		if (!role?.id) {
-			throw new Error('role reference is missing id');
-		}
-		this.doc.set('role', new MongooseSeedwork.ObjectId(role.id));
 	}
 
 	get account() {
@@ -137,74 +93,37 @@ export class PersonalUserAccountDomainAdapter
 	implements Domain.Contexts.User.PersonalUser.PersonalUserAccountProps
 {
 	private readonly props: Models.User.PersonalUserAccount;
+	accountType!: string;
+	email!: string;
+	username!: string;
 
 	constructor(props: Models.User.PersonalUserAccount) {
 		this.props = props;
+		createStringAccessors(this, ['accountType', 'email', 'username']);
 	}
 
-	//Primitive Field Getters and Setters
-	get accountType() {
-		return this.props.accountType;
-	}
-	set accountType(value: string) {
-		this.props.accountType = value;
-	}
-	get email() {
-		return this.props.email;
-	}
-	set email(value: string) {
-		this.props.email = value;
-	}
-	get username() {
-		return this.props.username;
-	}
-	set username(value: string) {
-		this.props.username = value;
-	}
-
-	// Nested Path Getters
 	get profile() {
 		if (!this.props.profile) {
 			this.props.profile = {} as Models.User.PersonalUserAccountProfile;
 		}
 		return new PersonalUserAccountProfileDomainAdapter(this.props.profile);
 	}
-
-	// Populated Doc Getters and Setters
-
-	// Document Array Getters
 }
 export class PersonalUserAccountProfileDomainAdapter
 	implements Domain.Contexts.User.PersonalUser.PersonalUserProfileProps
 {
-	private readonly props: Models.User.PersonalUserAccountProfile;
+	readonly props: Models.User.PersonalUserAccountProfile;
+	firstName!: string;
+	lastName!: string;
+	aboutMe!: string;
 
 	constructor(props: Models.User.PersonalUserAccountProfile) {
 		this.props = props;
-	} //Primitive Field Getters and Setters
-	get firstName() {
-		return this.props.firstName;
-	}
-	set firstName(value: string) {
-		this.props.firstName = value;
-	}
-	get lastName() {
-		return this.props.lastName;
-	}
-	set lastName(value: string) {
-		this.props.lastName = value;
-	}
-	get aboutMe() {
-		return this.props.aboutMe;
-	}
-	set aboutMe(value: string) {
-		this.props.aboutMe = value;
+		createStringAccessors(this, ['firstName', 'lastName', 'aboutMe']);
 	}
 
-	// Nested Path Getters
 	get location() {
 		if (!this.props.location) {
-			// this.props.set('location', {}); // this is causing runtime error "this.props.set is not a function"
 			this.props.location =
 				{} as Models.User.PersonalUserAccountProfileLocation;
 		}
@@ -214,7 +133,6 @@ export class PersonalUserAccountProfileDomainAdapter
 	}
 	get billing() {
 		if (!this.props.billing) {
-			// this.props.set('billing', {});
 			this.props.billing = {} as Models.User.PersonalUserAccountProfileBilling;
 		}
 		return new PersonalUserAccountProfileBillingDomainAdapter(
@@ -230,19 +148,22 @@ export class PersonalUserAccountProfileBillingDomainAdapter
 	implements
 		Domain.Contexts.User.PersonalUser.PersonalUserAccountProfileBillingProps
 {
-	private readonly props: Models.User.PersonalUserAccountProfileBilling;
+	readonly props: Models.User.PersonalUserAccountProfileBilling;
+	subscriptionId!: string | null;
+	cybersourceCustomerId!: string | null;
+	paymentState!: string;
+	lastTransactionId!: string | null;
+	lastPaymentAmount!: number | null;
+
 	constructor(props: Models.User.PersonalUserAccountProfileBilling) {
 		this.props = props;
+		createStringAccessors(this, [
+			'subscriptionId',
+			'cybersourceCustomerId',
+			'paymentState',
+			'lastTransactionId',
+		]);
 	}
-	//Primitive Field Getters and Setters
-	get cybersourceCustomerId(): string | null {
-		return this.props?.cybersourceCustomerId;
-	}
-	set cybersourceCustomerId(value: string) {
-		this.props.cybersourceCustomerId = value;
-	}
-
-	// Nested Path Getters
 
 	get subscription() {
 		if (!this.props.subscription) {
@@ -269,43 +190,23 @@ export class PersonalUserAccountProfileBillingSubscriptionDomainAdapter
 	implements
 		Domain.Contexts.User.PersonalUser.PersonalUserAccountProfileBillingSubscriptionProps
 {
-	private readonly props: Models.User.PersonalUserAccountProfileBillingSubscription;
+	readonly props: Models.User.PersonalUserAccountProfileBillingSubscription;
+	subscriptionId!: string;
+	planCode!: string;
+	status!: string;
+	startDate!: Date;
+
 	constructor(
 		props: Models.User.PersonalUserAccountProfileBillingSubscription,
 	) {
 		this.props = props;
+		createStringAccessors(this, [
+			'subscriptionId',
+			'planCode',
+			'status',
+			'startDate',
+		]);
 	}
-	//Primitive Field Getters and Setters
-	get subscriptionId(): string {
-		return this.props.subscriptionId;
-	}
-	set subscriptionId(value: string) {
-		this.props.subscriptionId = value;
-	}
-	get planCode(): string {
-		return this.props.planCode;
-	}
-	set planCode(value: string) {
-		this.props.planCode = value;
-	}
-	get status(): string {
-		return this.props.status;
-	}
-	set status(value: string) {
-		this.props.status = value;
-	}
-	get startDate(): Date {
-		return this.props.startDate;
-	}
-	set startDate(value: Date) {
-		this.props.startDate = value;
-	}
-
-	// Nested Path Getters
-
-	// Populated Doc Getters and Setters
-
-	// Document Array Getters
 }
 
 export class PersonalUserAccountProfileBillingTransactionsDomainAdapter
@@ -313,107 +214,60 @@ export class PersonalUserAccountProfileBillingTransactionsDomainAdapter
 		Domain.Contexts.User.PersonalUser.PersonalUserAccountProfileBillingTransactionsProps
 {
 	public readonly doc: Models.User.PersonalUserAccountProfileBillingTransactions;
+
+	transactionId!: string;
+	amount!: number;
+	referenceId!: string;
+	status!: string;
+	completedAt!: Date;
+	errorMessage!: string | null;
+
 	constructor(doc: Models.User.PersonalUserAccountProfileBillingTransactions) {
 		this.doc = doc;
+		createStringAccessors(this, [
+			'id',
+			'transactionId',
+			'amount',
+			'referenceId',
+			'status',
+			'errorMessage',
+		]);
 	}
+
 	public get id(): string {
 		return this.doc.id?.valueOf() as string;
 	}
-
-	//Primitive Field Getters and Setters
-	get transactionId(): string {
-		return this.doc.transactionId;
-	}
-	set transactionId(value: string) {
-		this.doc.transactionId = value;
-	}
-	get amount(): number {
-		return this.doc.amount;
-	}
-	set amount(value: number) {
-		this.doc.amount = value;
-	}
-	get referenceId(): string {
-		return this.doc.referenceId;
-	}
-	set referenceId(value: string) {
-		this.doc.referenceId = value;
-	}
-	get status(): string {
-		return this.doc.status;
-	}
-	set status(value: string) {
-		this.doc.status = value;
-	}
-	get completedAt(): Date {
-		return this.doc.completedAt;
-	}
-	set completedAt(value: Date) {
-		this.doc.completedAt = value;
-	}
-	get errorMessage(): string | null {
-		return this.doc.errorMessage;
-	}
-	set errorMessage(value: string) {
-		this.doc.errorMessage = value;
-	}
-
-	// Nested Path Getters
-
-	// Populated Doc Getters and Setters
-	// Document Array Getters
 }
 
 export class PersonalUserAccountProfileLocationDomainAdapter
 	implements
 		Domain.Contexts.User.PersonalUser.PersonalUserAccountProfileLocationProps
 {
-	private readonly props: Models.User.PersonalUserAccountProfileLocation;
+	readonly props: Models.User.PersonalUserAccountProfileLocation;
+	address1!: string;
+	address2!: string | null;
+	city!: string;
+	state!: string;
+	country!: string;
+	zipCode!: string;
+
 	constructor(props: Models.User.PersonalUserAccountProfileLocation) {
 		this.props = props;
-	} //Primitive Field Getters and Setters
-	get address1() {
-		return this.props?.address1;
-	}
-	set address1(value: string) {
-		this.props.address1 = value;
-	}
-	get address2(): string | null {
-		return this.props?.address2;
-	}
-	set address2(value: string) {
-		this.props.address2 = value;
-	}
-	get city() {
-		return this.props?.city;
-	}
-	set city(value: string) {
-		this.props.city = value;
-	}
-	get state() {
-		return this.props?.state;
-	}
-	set state(value: string) {
-		this.props.state = value;
-	}
-	get country() {
-		return this.props?.country;
-	}
-	set country(value: string) {
-		this.props.country = value;
-	}
-	get zipCode() {
-		return this.props?.zipCode;
-	}
-	set zipCode(value: string) {
-		this.props.zipCode = value;
-	}
 
-	// Nested Path Getters
+		// Nested Path Getters
 
-	// Populated Doc Getters and Setters
+		// Populated Doc Getters and Setters
 
-	// Document Array Getters
+		// Document Array Getters
+		createStringAccessors(this, [
+			'address1',
+			'address2',
+			'city',
+			'state',
+			'country',
+			'zipCode',
+		]);
+	}
 }
 
 // Document Array Domain Adapters

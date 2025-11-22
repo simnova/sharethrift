@@ -78,61 +78,50 @@ export const AdminUsersTable: React.FC<Readonly<AdminUsersTableProps>> = ({
 		setUnblockModalVisible(false);
 	};
 
-	const getActionButtons = (record: AdminUserData) => {
-		const buttons = [];
+  const getActionButtons = (record: AdminUserData) => {
+    const commonActions = [
+      <Button
+        key="view-profile"
+        type="link"
+        size="small"
+        onClick={() => onAction("view-profile", record.id)}
+      >
+        View Profile
+      </Button>,
+      <Button
+        key="view-report"
+        type="link"
+        size="small"
+        onClick={() => onAction("view-report", record.id)}
+      >
+        View Report
+      </Button>,
+    ];
 
-		// View Profile action (always available)
-		buttons.push(
-			<Button
-				key="view-profile"
-				type="link"
-				size="small"
-				onClick={() => onAction('view-profile', record.id)}
-			>
-				View Profile
-			</Button>,
-		);
+    const statusAction =
+      record.status === "Blocked" ? (
+        <Button
+          key="unblock"
+          type="link"
+          size="small"
+          onClick={() => handleUnblockUser(record)}
+        >
+          Unblock
+        </Button>
+      ) : (
+        <Button
+          key="block"
+          type="link"
+          size="small"
+          danger
+          onClick={() => handleBlockUser(record)}
+        >
+          Block
+        </Button>
+      );
 
-		// View Report action
-		buttons.push(
-			<Button
-				key="view-report"
-				type="link"
-				size="small"
-				onClick={() => onAction('view-report', record.id)}
-			>
-				View Report
-			</Button>,
-		);
-
-		// Block or Unblock action based on status
-		if (record.status === 'Blocked') {
-			buttons.push(
-				<Button
-					key="unblock"
-					type="link"
-					size="small"
-					onClick={() => handleUnblockUser(record)}
-				>
-					Unblock
-				</Button>,
-			);
-		} else {
-			buttons.push(
-				<Button
-					key="block"
-					type="link"
-					size="small"
-					danger
-					onClick={() => handleBlockUser(record)}
-				>
-					Block
-				</Button>,
-			);
-		}
-
-		return buttons;
-	};
+    return [...commonActions, statusAction];
+  };
 
 	const columns: TableProps<AdminUserData>['columns'] = [
 		{

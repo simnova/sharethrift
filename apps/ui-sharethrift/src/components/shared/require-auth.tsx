@@ -1,6 +1,9 @@
-import { useEffect, type JSX } from "react";
-import { hasAuthParams, useAuth } from "react-oidc-context";
-import { Navigate } from "react-router-dom";
+import { useEffect, type JSX } from 'react';
+
+import { hasAuthParams, useAuth } from 'react-oidc-context';
+import { Navigate } from 'react-router-dom';
+
+const { VITE_B2C_REDIRECT_URI } = import.meta.env;
 
 interface RequireAuthProps {
   children: JSX.Element;
@@ -11,22 +14,32 @@ interface RequireAuthProps {
 export const RequireAuth: React.FC<RequireAuthProps> = (props) => {
   const auth = useAuth();
 
-  // automatically sign-in
-  useEffect(() => {
-    if (!hasAuthParams() && props.forceLogin === true && !auth.isAuthenticated && !auth.activeNavigator && !auth.isLoading && !auth.error) {
-      window.sessionStorage.setItem("redirectTo", `${location.pathname}${location.search}`);
+	// automatically sign-in
+	useEffect(() => {
+		if (
+			!hasAuthParams() &&
+			props.forceLogin === true &&
+			!auth.isAuthenticated &&
+			!auth.activeNavigator &&
+			!auth.isLoading &&
+			!auth.error
+		) {
+			globalThis.sessionStorage.setItem(
+				'redirectTo',
+				`${location.pathname}${location.search}`,
+			);
 
       auth.signinRedirect();
     }
   }, [auth.isAuthenticated, auth.activeNavigator, auth.isLoading, auth.signinRedirect, auth.error, props.forceLogin, auth]);
 
-  // automatically refresh token
-  useEffect(() => {
-    return auth.events.addAccessTokenExpiring(() => {
-      auth.signinSilent({
-        redirect_uri: import.meta.env["VITE_B2C_REDIRECT_URI"] ?? "",
-      });
-    });
+	// automatically refresh token
+	useEffect(() => {
+		return auth.events.addAccessTokenExpiring(() => {
+			auth.signinSilent({
+				redirect_uri: VITE_B2C_REDIRECT_URI ?? '',
+			});
+		});
 
     // *** Suggestion from sourcery that needs investigation
     // const handleAccessTokenExpiring = () => {

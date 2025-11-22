@@ -1,6 +1,7 @@
 import type { Domain } from '@sthrift/domain';
 import type { ModelsContext } from '../../models-context.ts';
 import type * as PersonalUser from './user/personal-user/index.ts';
+import type * as AdminUser from './user/admin-user/index.ts';
 
 import type * as ReservationRequest from './reservation-request/reservation-request/index.ts';
 import { UserContext } from './user/index.ts';
@@ -22,6 +23,15 @@ export interface ReadonlyDataSource {
 		PersonalUser: {
 			PersonalUserReadRepo: PersonalUser.PersonalUserReadRepository;
 		};
+		AdminUser: {
+			AdminUserReadRepo: AdminUser.AdminUserReadRepository;
+		};
+		getUserById: (
+			id: string,
+		) => Promise<Domain.Contexts.User.UserEntityReference | null>;
+		getUserByEmail: (
+			email: string,
+		) => Promise<Domain.Contexts.User.UserEntityReference | null>;
 	};
 	ReservationRequest: {
 		ReservationRequest: {
