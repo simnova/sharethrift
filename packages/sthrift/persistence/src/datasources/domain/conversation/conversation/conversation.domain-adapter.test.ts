@@ -13,21 +13,9 @@ const feature = await loadFeature(
 	path.resolve(__dirname, 'features/conversation.domain-adapter.feature'),
 );
 
-function makeEndUserRoleDoc(
-	overrides: Partial<Models.Role.PersonalUserRole> = {},
-) {
-	const base = {
-		id: '6898b0c34b4a2fbc01e9c698',
-		roleName: 'Test Role',
-		...overrides,
-	} as Models.Role.PersonalUserRole;
-	return vi.mocked(base);
-}
-
 function makeUserDoc(overrides: Partial<Models.User.PersonalUser> = {}) {
 	const base = {
 		id: new MongooseSeedwork.ObjectId(),
-		role: makeEndUserRoleDoc(),
 		account: {
 			accountType: 'non-verified-personal',
 			email: 'test@example.com',
@@ -157,7 +145,7 @@ test.for(feature, ({ Scenario, Background, BeforeEachScenario }) => {
 			'I set the sharer property to a valid PersonalUserDomainAdapter',
 			() => {
 				userAdapter = new PersonalUserDomainAdapter(sharerDoc);
-				adapter.sharer = userAdapter;
+				adapter.sharer = userAdapter.entityReference;
 			},
 		);
 		Then("the document's sharer should be set to an ObjectId", () => {
@@ -183,9 +171,12 @@ test.for(feature, ({ Scenario, Background, BeforeEachScenario }) => {
 		When('I set the messagingConversationId property to "twilio-456"', () => {
 			adapter.messagingConversationId = 'twilio-456';
 		});
-		Then('the document\'s messagingConversationId should be "twilio-456"', () => {
-			expect(doc.messagingConversationId).toBe('twilio-456');
-		});
+		Then(
+			'the document\'s messagingConversationId should be "twilio-456"',
+			() => {
+				expect(doc.messagingConversationId).toBe('twilio-456');
+			},
+		);
 	});
 
 	Scenario('Loading sharer when already populated', ({ When, Then }) => {
@@ -198,18 +189,21 @@ test.for(feature, ({ Scenario, Background, BeforeEachScenario }) => {
 	});
 
 	Scenario('Loading sharer when it is an ObjectId', ({ When, Then }) => {
-		When('I call loadSharer on an adapter with sharer as ObjectId', async () => {
-			const oid = new MongooseSeedwork.ObjectId();
-			doc = makeConversationDoc({ 
-				sharer: oid,
-				populate: vi.fn().mockResolvedValue({
-					...doc,
-					sharer: sharerDoc,
-				}),
-			});
-			adapter = new ConversationDomainAdapter(doc);
-			result = await adapter.loadSharer();
-		});
+		When(
+			'I call loadSharer on an adapter with sharer as ObjectId',
+			async () => {
+				const oid = new MongooseSeedwork.ObjectId();
+				doc = makeConversationDoc({
+					sharer: oid,
+					populate: vi.fn().mockResolvedValue({
+						...doc,
+						sharer: sharerDoc,
+					}),
+				});
+				adapter = new ConversationDomainAdapter(doc);
+				result = await adapter.loadSharer();
+			},
+		);
 		Then('it should populate and return a PersonalUserDomainAdapter', () => {
 			expect(doc.populate).toHaveBeenCalledWith('sharer');
 			expect(result).toBeInstanceOf(PersonalUserDomainAdapter);
@@ -220,16 +214,22 @@ test.for(feature, ({ Scenario, Background, BeforeEachScenario }) => {
 		When('I get the reserver property', () => {
 			result = adapter.reserver;
 		});
-		Then('it should return a PersonalUserDomainAdapter with the correct doc', () => {
-			expect(result).toBeInstanceOf(PersonalUserDomainAdapter);
-			expect((result as PersonalUserDomainAdapter).doc).toBe(reserverDoc);
-		});
+		Then(
+			'it should return a PersonalUserDomainAdapter with the correct doc',
+			() => {
+				expect(result).toBeInstanceOf(PersonalUserDomainAdapter);
+				expect((result as PersonalUserDomainAdapter).doc).toBe(reserverDoc);
+			},
+		);
 	});
 
 	Scenario('Loading reserver when already populated', ({ When, Then }) => {
-		When('I call loadReserver on an adapter with populated reserver', async () => {
-			result = await adapter.loadReserver();
-		});
+		When(
+			'I call loadReserver on an adapter with populated reserver',
+			async () => {
+				result = await adapter.loadReserver();
+			},
+		);
 		Then('it should return a PersonalUserDomainAdapter', () => {
 			expect(result).toBeInstanceOf(PersonalUserDomainAdapter);
 		});
@@ -245,9 +245,12 @@ test.for(feature, ({ Scenario, Background, BeforeEachScenario }) => {
 	});
 
 	Scenario('Loading listing when already populated', ({ When, Then }) => {
-		When('I call loadListing on an adapter with populated listing', async () => {
-			result = await adapter.loadListing();
-		});
+		When(
+			'I call loadListing on an adapter with populated listing',
+			async () => {
+				result = await adapter.loadListing();
+			},
+		);
 		Then('it should return an ItemListingDomainAdapter', () => {
 			expect(result).toBeDefined();
 		});

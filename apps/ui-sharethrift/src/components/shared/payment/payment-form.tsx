@@ -147,7 +147,7 @@ export const PaymentForm: FC<PaymentFormProps> = (props) => {
 				</Title>
 			</div>
 
-			<Form layout="vertical" form={form}>
+			<Form layout="vertical" form={form} >
 				{/* card number, security code, expiration date fields*/}
 				<PaymentTokenFormItems
 					cyberSourcePublicKey={props.cyberSourcePublicKey}

@@ -8,7 +8,7 @@ import {
 	PaymentContainerCurrentPersonalUserAndCreateIfNotExistsDocument,
 	SignUpPaymentContainerPersonalUserProcessPaymentDocument,
 } from '../../../../generated.tsx';
-import { useQuery, useMutation } from '@apollo/client/react';
+import { useQuery, useMutation, useLazyQuery } from '@apollo/client/react';
 import { ComponentQueryLoader } from '@sthrift/ui-components';
 import { countriesMockData } from './countries-mock-data.ts';
 import { message } from 'antd';
@@ -36,21 +36,26 @@ export const PaymentContainer: FC = () => {
 		error: accountPlansError,
 	} = useQuery(PaymentContainerAccountPlansDocument);
 
+	const [refetchCurrentUserData] = useLazyQuery(
+		AppContainerCurrentPersonalUserAndCreateIfNotExistsDocument,
+    { fetchPolicy: 'network-only' },
+	);
+
 	const [processPayment] = useMutation(
 		SignUpPaymentContainerPersonalUserProcessPaymentDocument,
-		{
-			refetchQueries: [
-				AppContainerCurrentPersonalUserAndCreateIfNotExistsDocument,
-			],
-		},
+		// {
+		// 	refetchQueries: [
+		// 		AppContainerCurrentPersonalUserAndCreateIfNotExistsDocument,
+		// 	],
+		// },
 	);
 
 	const handleSubmitPayment = async (paymentData: ProcessPaymentInput) => {
 		console.log('Payment data submitted:', paymentData);
 		const result = await processPayment({ variables: { input: paymentData } });
 		if (result.data?.processPayment.success) {
+      await refetchCurrentUserData();
 			message.success('Payment processed successfully');
-
 			// navigate to home
 			navigate('/home');
 			message.success('Welcome to ShareThrift! Your account has been created.');

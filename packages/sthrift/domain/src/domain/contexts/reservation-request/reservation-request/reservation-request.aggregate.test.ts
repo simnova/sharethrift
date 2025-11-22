@@ -1,4 +1,4 @@
-import { describe, it, expect, vi } from 'vitest';
+import { describe, it, expect } from 'vitest';
 import { ReservationRequest } from './reservation-request.ts';
 import type { ReservationRequestProps } from './reservation-request.entity.ts';
 import type { ItemListingEntityReference } from '../../listing/item/item-listing.entity.ts';

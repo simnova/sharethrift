@@ -6,6 +6,7 @@ export interface UserDomainPermissions {
 	// Admin Permissions
 	canBlockUsers: boolean;
 	canUnblockUsers: boolean;
+  canBlockListings: boolean;
 	canUnblockListings: boolean;
 	canRemoveListings: boolean;
 	canViewListingReports: boolean;
