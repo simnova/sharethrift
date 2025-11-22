@@ -16,7 +16,7 @@ import { useCreateListingNavigation } from './components/create-listing/hooks/us
 import { useApolloClient } from '@apollo/client/react';
 import { useUserIsAdmin } from './account/hooks/useUserIsAdmin.ts';
 
-export const HomeTabsLayout: React.FC = () => {
+export const SectionLayout: React.FC = () => {
 	const navigate = useNavigate();
 	const location = useLocation();
 	const auth = useAuth();

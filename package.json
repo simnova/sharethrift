@@ -18,7 +18,7 @@
         "gen:watch": "graphql-codegen --config codegen.yml --watch",
         "tsbuild": "tsc --build",
         "tswatch": "tsc --build --watch",
-        "clean": "pnpm install && turbo run clean && rimraf dist node_modules **/coverage",
+        "clean": "pnpm install && turbo run clean && rimraf dist node_modules **/coverage .turbo",
         "start:api": "pnpm run start --workspace=@sthrift/api",
         "start:ui-sharethrift": "pnpm run dev --workspace=@sthrift/ui-sharethrift",
         "start-emulator:mongo-memory-server": "pnpm run start --workspace=@cellix/mock-mongodb-memory-server",

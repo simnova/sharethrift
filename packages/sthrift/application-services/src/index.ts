@@ -23,6 +23,11 @@ import {
 } from './contexts/listing/index.ts';
 
 import {
+	AccountPlan,
+	type AccountPlanContextApplicationService,
+} from './contexts/account-plan/index.ts';
+
+import {
 	AppealRequest,
 	type AppealRequestContextApplicationService,
 } from './contexts/appeal-request/index.ts';
@@ -35,6 +40,7 @@ export interface ApplicationServices {
 	AppealRequest: AppealRequestContextApplicationService;
 	get verifiedUser(): VerifiedUser | null;
 	Payment: PaymentApplicationService;
+	AccountPlan: AccountPlanContextApplicationService;
 }
 
 export interface VerifiedJwt {
@@ -108,6 +114,7 @@ export const buildApplicationServicesFactory = (
 			infrastructureServicesRegistry.dataSourcesFactory.withPassport(
 				passport,
 				infrastructureServicesRegistry.messagingService,
+        infrastructureServicesRegistry.paymentService,
 			);
 
 		return {
@@ -119,6 +126,7 @@ export const buildApplicationServicesFactory = (
 			ReservationRequest: ReservationRequest(dataSources),
 			Listing: Listing(dataSources),
 			Conversation: Conversation(dataSources),
+			AccountPlan: AccountPlan(dataSources),
 			AppealRequest: AppealRequest(dataSources),
 		};
 	};
@@ -129,5 +137,6 @@ export const buildApplicationServicesFactory = (
 };
 
 export type { PersonalUserUpdateCommand } from './contexts/user/personal-user/update.ts';
+export type { PaymentResponse } from './contexts/user/personal-user/process-payment.ts';
 export type { AdminUserUpdateCommand } from './contexts/user/admin-user/update.ts';
 export type { AdminUserCreateCommand } from './contexts/user/admin-user/create-if-not-exists.ts';

@@ -5,21 +5,8 @@ import { expect, vi } from 'vitest';
 import type { GraphContext } from '../../../init/context.ts';
 import personalUserResolvers from './personal-user.resolvers.ts';
 import type { Domain } from '@sthrift/domain';
+import type { PaymentResponse } from '@sthrift/application-services';
 // Define a type for the payment response based on the interface structure
-interface ProcessPaymentResponse {
-	id?: string;
-	status?: string;
-	errorInformation?: {
-		reason?: string;
-		message?: string;
-	};
-	orderInformation?: {
-		amountDetails?: {
-			totalAmount?: string;
-			currency?: string;
-		};
-	};
-}
 
 const test = { for: describeFeature };
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
@@ -39,19 +26,32 @@ function createMockLocation(): Domain.Contexts.User.PersonalUser.PersonalUserAcc
 	};
 }
 
-function createMockBilling(): Domain.Contexts.User.PersonalUser.PersonalUserAccountProfileBillingProps {
+function createMockBilling(): Domain.Contexts.User.PersonalUser.PersonalUserAccountProfileBillingEntityReference {
 	return {
-		subscriptionId: null,
-		cybersourceCustomerId: null,
-		paymentState: 'inactive',
-		lastTransactionId: null,
-		lastPaymentAmount: null,
+		cybersourceCustomerId: 'cust-12345',
+		subscription: {
+			subscriptionId: 'sub-67890',
+			planCode: 'verified-personal',
+			status: 'ACTIVE',
+			startDate: new Date('2024-01-01T00:00:00Z'),
+		},
+		transactions: [
+			{
+				id: '1',
+				transactionId: 'txn_123',
+				amount: 1000,
+				referenceId: 'ref_123',
+				status: 'completed',
+				completedAt: new Date('2020-01-01T00:00:00Z'),
+				errorMessage: null,
+			},
+		],
 	};
 }
 
 function createMockProfile(
-	overrides: Partial<Domain.Contexts.User.PersonalUser.PersonalUserProfileProps> = {},
-): Domain.Contexts.User.PersonalUser.PersonalUserProfileProps {
+	overrides: Partial<Domain.Contexts.User.PersonalUser.PersonalUserProfileEntityReference> = {},
+): Domain.Contexts.User.PersonalUser.PersonalUserProfileEntityReference {
 	return {
 		firstName: 'John',
 		lastName: 'Doe',
@@ -63,8 +63,8 @@ function createMockProfile(
 }
 
 function createMockAccount(
-	overrides: Partial<Domain.Contexts.User.PersonalUser.PersonalUserAccountProps> = {},
-): Domain.Contexts.User.PersonalUser.PersonalUserAccountProps {
+	overrides: Partial<Domain.Contexts.User.PersonalUser.PersonalUserAccountEntityReference> = {},
+): Domain.Contexts.User.PersonalUser.PersonalUserAccountEntityReference {
 	return {
 		accountType: 'personal',
 		email: 'test@example.com',
@@ -103,11 +103,14 @@ function createMockPersonalUser(
 }
 
 function createMockProcessPaymentResponse(
-	overrides: Partial<ProcessPaymentResponse> = {},
-): ProcessPaymentResponse {
+	overrides: Partial<PaymentResponse> = {},
+) {
 	return {
 		id: 'payment-123',
 		status: 'SUCCEEDED',
+    success: true,
+    message: 'Payment processed successfully',
+		cybersourceCustomerId: 'cust-12345',
 		orderInformation: {
 			amountDetails: {
 				totalAmount: '100.00',
@@ -115,6 +118,53 @@ function createMockProcessPaymentResponse(
 			},
 		},
 		...overrides,
+	};
+}
+
+function createMockAccountPlan() {
+	return {
+		id: 'plan-123',
+		planName: 'verified-personal',
+		cybersourcePlanId: 'cs-plan-456',
+		monthlyRate: 29.99,
+		isDefault: true,
+		feature: {
+			activeReservations: 5,
+			bookmarks: 20,
+			itemsToShare: 10,
+			friends: 50,
+		},
+		name: 'Verified Personal Plan',
+		description: 'A verified personal account plan',
+		billingPeriodLength: 1,
+		billingPeriodUnit: 'MONTH',
+		currency: 'USD',
+		billingCycles: 0,
+		billingAmount: 29.99,
+		setupFee: 0,
+		status: 'ACTIVE',
+		createdAt: new Date(),
+		updatedAt: new Date(),
+		schemaVersion: '1.0',
+	};
+}
+
+function createMockSubscription() {
+	return {
+		id: 'sub-789',
+		status: 'ACTIVE',
+		startDate: new Date(),
+		_links: {
+			self: { href: '/v2/subscriptions/sub-789' },
+			update: { href: '/v2/subscriptions/sub-789' },
+			cancel: { href: '/v2/subscriptions/sub-789/cancel' },
+		},
+		submitTimeUtc: new Date().toISOString(),
+		subscriptionInformation: {
+			code: 'SUCCESS',
+			status: 'ACTIVE',
+			subscriptionId: 'sub-789',
+		},
 	};
 }
 
@@ -134,6 +184,13 @@ function makeMockGraphContext(
 			Payment: {
 				processPayment: vi.fn(),
 				refundPayment: vi.fn(),
+				createSubscription: vi.fn(),
+				generatePublicKey: vi.fn(),
+			},
+			AccountPlan: {
+				AccountPlan: {
+					queryByName: vi.fn(),
+				},
 			},
 			verifiedUser: {
 				verifiedJwt: {
@@ -254,6 +311,56 @@ test.for(feature, ({ Scenario, Background, BeforeEachScenario }) => {
 	);
 
 	Scenario(
+		'Fetching all users with filters and pagination',
+		({ Given, When, Then, And }) => {
+			Given(
+				'the admin requests all users with page "1" and pageSize "20"',
+				() => {
+					// Args will be passed in the resolver call
+				},
+			);
+			When('I execute the query "allUsers"', async () => {
+				vi.mocked(
+					context.applicationServices.User.PersonalUser.getAllUsers,
+				).mockResolvedValue({
+					items: [],
+					total: 0,
+					page: 1,
+					pageSize: 20,
+				});
+
+				const resolver = personalUserResolvers.Query?.allUsers;
+				if (typeof resolver === 'function') {
+					result = await resolver(
+						{},
+						{ page: 1, pageSize: 20 },
+						context,
+						{} as never,
+					);
+				}
+			});
+			Then('the resolver should call "User.PersonalUser.getAllUsers"', () => {
+				expect(
+					context.applicationServices.User.PersonalUser.getAllUsers,
+				).toHaveBeenCalledWith({
+					page: 1,
+					pageSize: 20,
+					searchText: undefined,
+					statusFilters: undefined,
+					sorter: undefined,
+				});
+			});
+			And('return a paginated list of users matching the filters', () => {
+				expect(result).toBeDefined();
+				expect(result).toHaveProperty('items');
+				expect(result).toHaveProperty('total');
+				expect((result as { page: number }).page).toBe(1);
+				expect((result as { pageSize: number }).pageSize).toBe(20);
+			});
+		},
+	);
+
+	Scenario(
 		'Updating personal user information',
 		({ Given, When, Then, And }) => {
 			Given(
@@ -295,7 +402,9 @@ test.for(feature, ({ Scenario, Background, BeforeEachScenario }) => {
 			});
 			And('it should update the record and return the updated user', () => {
 				expect(result).toBeDefined();
-				expect((result as { id: string }).id).toBe('user-123');
+				expect(
+					(result as { personalUser: { id: string } }).personalUser.id,
+				).toBe('user-123');
 			});
 		},
 	);
@@ -386,13 +495,41 @@ test.for(feature, ({ Scenario, Background, BeforeEachScenario }) => {
 			Given(
 				'a valid payment request with order and billing information',
 				() => {
-					const mockResponse = createMockProcessPaymentResponse({
-						status: 'SUCCEEDED',
-						id: 'txn-123',
+					// Mock user lookup
+					const mockUser = createMockPersonalUser({
+						id: 'user-123',
+						account: createMockAccount({ accountType: 'verified-personal' }),
 					});
 					vi.mocked(
-						context.applicationServices.Payment.processPayment,
-					).mockResolvedValue(mockResponse);
+						context.applicationServices.User.PersonalUser.queryById,
+					).mockResolvedValue(mockUser);
+
+					// Mock account plan lookup
+					const mockAccountPlan = createMockAccountPlan();
+					vi.mocked(
+						context.applicationServices.AccountPlan.AccountPlan.queryByName,
+					).mockResolvedValue(mockAccountPlan);
+
+					// Mock payment processing
+					const mockPaymentResponse = createMockProcessPaymentResponse({
+						status: 'SUCCEEDED',
+						id: 'txn-123',
+						cybersourceCustomerId: 'cust-12345',
+					});
+					vi.mocked(
+						context.applicationServices.User.PersonalUser.processPayment,
+					).mockResolvedValue(mockPaymentResponse);
+
+					// Mock subscription creation
+					const mockSubscription = createMockSubscription();
+					vi.mocked(
+						context.applicationServices.Payment.createSubscription,
+					).mockResolvedValue(mockSubscription);
+
+					// Mock user update
+					vi.mocked(
+						context.applicationServices.User.PersonalUser.update,
+					).mockResolvedValue(mockUser);
 				},
 			);
 			When('I execute the mutation "processPayment"', async () => {
@@ -401,30 +538,22 @@ test.for(feature, ({ Scenario, Background, BeforeEachScenario }) => {
 					result = await resolver(
 						{},
 						{
-							request: {
+							input: {
 								userId: 'user-123',
-								orderInformation: {
-									billTo: {
-										firstName: 'John',
-										lastName: 'Doe',
-										address1: '123 Main St',
-										city: 'City',
-										postalCode: '12345',
-										country: 'US',
-										state: 'State',
-									},
-									amountDetails: {
-										totalAmount: 100,
-										currency: 'USD',
-									},
-								},
-								paymentInformation: {
-									card: {
-										number: '4111111111111111',
-										expirationMonth: '12',
-										expirationYear: '2025',
-										securityCode: '123',
-									},
+								currency: 'USD',
+								paymentAmount: 100.0,
+								paymentInstrument: {
+									billingAddressLine1: '123 Main St',
+									billingCity: 'City',
+									billingState: 'State',
+									billingCountry: 'US',
+									billingPostalCode: '12345',
+									billingEmail: 'john.doe@example.com',
+									billingFirstName: 'John',
+									billingLastName: 'Doe',
+									paymentToken: 'token-abc-123',
+									billingAddressLine2: null,
+									billingPhone: null,
 								},
 							},
 						},
@@ -437,7 +566,7 @@ test.for(feature, ({ Scenario, Background, BeforeEachScenario }) => {
 				'it should call "Payment.processPayment" with sanitized fields',
 				() => {
 					expect(
-						context.applicationServices.Payment.processPayment,
+						context.applicationServices.User.PersonalUser.processPayment,
 					).toHaveBeenCalled();
 				},
 			);
@@ -456,6 +585,22 @@ test.for(feature, ({ Scenario, Background, BeforeEachScenario }) => {
 		'Handling payment processing failure',
 		({ Given, When, Then, And }) => {
 			Given('a payment request that causes an error', () => {
+				// Mock user lookup
+				const mockUser = createMockPersonalUser({
+					id: 'user-123',
+					account: createMockAccount({ accountType: 'verified-personal' }),
+				});
+				vi.mocked(
+					context.applicationServices.User.PersonalUser.queryById,
+				).mockResolvedValue(mockUser);
+
+				// Mock account plan lookup
+				const mockAccountPlan = createMockAccountPlan();
+				vi.mocked(
+					context.applicationServices.AccountPlan.AccountPlan.queryByName,
+				).mockResolvedValue(mockAccountPlan);
+
+				// Mock payment processing error
 				vi.mocked(
 					context.applicationServices.Payment.processPayment,
 				).mockRejectedValue(new Error('Payment failed'));
@@ -466,30 +611,22 @@ test.for(feature, ({ Scenario, Background, BeforeEachScenario }) => {
 					result = await resolver(
 						{},
 						{
-							request: {
+							input: {
 								userId: 'user-123',
-								orderInformation: {
-									billTo: {
-										firstName: 'John',
-										lastName: 'Doe',
-										address1: '123 Main St',
-										postalCode: '12345',
-										country: 'US',
-										state: 'State',
-										city: 'City',
-									},
-									amountDetails: {
-										totalAmount: 100,
-										currency: 'USD',
-									},
-								},
-								paymentInformation: {
-									card: {
-										number: '4111111111111111',
-										expirationMonth: '12',
-										expirationYear: '2025',
-										securityCode: '123',
-									},
+								currency: 'USD',
+								paymentAmount: 100.0,
+								paymentInstrument: {
+									billingAddressLine1: '123 Main St',
+									billingCity: 'City',
+									billingState: 'State',
+									billingCountry: 'US',
+									billingPostalCode: '12345',
+									billingEmail: 'john.doe@example.com',
+									billingFirstName: 'John',
+									billingLastName: 'Doe',
+									paymentToken: 'token-abc-123',
+									billingAddressLine2: null,
+									billingPhone: null,
 								},
 							},
 						},
@@ -579,10 +716,10 @@ test.for(feature, ({ Scenario, Background, BeforeEachScenario }) => {
 						request: {
 							userId: 'user-123',
 							transactionId: 'txn-789',
-							amount: 100,
+							amount: 100.0,
 							orderInformation: {
 								amountDetails: {
-									totalAmount: 100,
+									totalAmount: 100.0,
 									currency: 'USD',
 								},
 							},

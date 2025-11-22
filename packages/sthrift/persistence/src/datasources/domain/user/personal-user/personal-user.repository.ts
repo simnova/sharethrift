@@ -16,7 +16,7 @@ export class PersonalUserRepository<
 	async getById(
 		id: string,
 	): Promise<Domain.Contexts.User.PersonalUser.PersonalUser<PropType>> {
-		const user = await this.model.findOne({ _id: id }).exec();
+    const user = await this.model.findOne({ _id: id }).exec();
 		if (!user) {
 			throw new Error(`User with id ${id} not found`);
 		}

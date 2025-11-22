@@ -7,7 +7,8 @@ export {
 	type PersonalUserAccountProfile,
 	type PersonalUserAccountProfileLocation,
 	type PersonalUserAccountProfileBilling,
-	type PaymentStateEnum,
+	type PersonalUserAccountProfileBillingTransactions,
+	type PersonalUserAccountProfileBillingSubscription,
 } from './personal-user.model.ts';
 
 export {

@@ -29,9 +29,15 @@ mutation HomeAccountSettingsViewContainerUpdatePersonalUser(
 	$input: PersonalUserUpdateInput!
 ) {
 	personalUserUpdate(input: $input) {
-		id
-		account {
-			...PersonalUserAccountFields
+		status {
+			success
+			errorMessage
+		}
+		personalUser {
+			id
+			account {
+				...PersonalUserAccountFields
+			}
 		}
 	}
 }
@@ -57,7 +63,9 @@ fragment PersonalUserLocationFields on PersonalUserAccountProfileLocation {
 }
 
 fragment PersonalUserBillingFields on PersonalUserAccountProfileBilling {
-	subscriptionId
+	subscription {
+		subscriptionId
+	}
 	cybersourceCustomerId
 }
 

@@ -54,6 +54,7 @@ export async function startMockMongoDB(config: MongoMemoryServerConfig) {
 						) {
 							break;
 						}
+
 						await new Promise((res) => setTimeout(res, 200));
 					}
 					console.log('All required collections exist, begin seeding.');
