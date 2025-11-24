@@ -50,7 +50,9 @@ Cellix.initializeInfrastructureServices<ApiContextSpec, ApplicationServices>(
 				isDevelopment ? new ServiceMessagingMock() : new ServiceMessagingTwilio(),
 			)
 			.registerInfrastructureService(
-				isDevelopment ? new ServiceTransactionalEmailMock() : new ServiceTransactionalEmailSendGrid(),
+				// Use SendGrid if API key is available, otherwise use mock
+				// biome-ignore lint/complexity/useLiteralKeys: TypeScript requires bracket notation for process.env
+				process.env['SENDGRID_API_KEY'] ? new ServiceTransactionalEmailSendGrid() : new ServiceTransactionalEmailMock(),
 			)
 			.registerInfrastructureService(new ServiceCybersource());
 	},
@@ -66,9 +68,10 @@ Cellix.initializeInfrastructureServices<ApiContextSpec, ApplicationServices>(
 			? serviceRegistry.getInfrastructureService<MessagingService>(ServiceMessagingMock)
 			: serviceRegistry.getInfrastructureService<MessagingService>(ServiceMessagingTwilio);
 
-		const emailService = isDevelopment
-			? serviceRegistry.getInfrastructureService<TransactionalEmailService>(ServiceTransactionalEmailMock)
-			: serviceRegistry.getInfrastructureService<TransactionalEmailService>(ServiceTransactionalEmailSendGrid);
+		// biome-ignore lint/complexity/useLiteralKeys: TypeScript requires bracket notation for process.env
+		const emailService = process.env['SENDGRID_API_KEY']
+			? serviceRegistry.getInfrastructureService<TransactionalEmailService>(ServiceTransactionalEmailSendGrid)
+			: serviceRegistry.getInfrastructureService<TransactionalEmailService>(ServiceTransactionalEmailMock);
 
 		const { domainDataSource } = dataSourcesFactory.withSystemPassport();
 		RegisterEventHandlers(domainDataSource, emailService);
