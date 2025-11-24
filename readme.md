@@ -1,8 +1,18 @@
 # ShareThrift
 
-[![Build Status](https://dev.azure.com/simnova/ShareThrift/_apis/build/status%2Fsharethrift?branchName=main)](https://dev.azure.com/simnova/ShareThrift/_build/latest?definitionId=12&branchName=main)
+[![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=simnova_sharethrift-data-access&metric=alert_status)](https://sonarcloud.io/summary/new_code?id=simnova_sharethrift-data-access)
+
+[![Known Vulnerabilities](https://snyk.io/test/github/sharethrift/sharethrift/badge.svg)](https://snyk.io/test/github/sharethrift/sharethrift)
+
+[![Bugs](https://sonarcloud.io/api/project_badges/measure?project=simnova_sharethrift-data-access&metric=bugs)](https://sonarcloud.io/summary/new_code?id=simnova_sharethrift-data-access)
+
+[![Code Smells](https://sonarcloud.io/api/project_badges/measure?project=simnova_sharethrift-data-access&metric=code_smells)](https://sonarcloud.io/summary/new_code?id=simnova_sharethrift-data-access)
+
+[![Coverage](https://sonarcloud.io/api/project_badges/measure?project=simnova_sharethrift-data-access&metric=coverage)](https://sonarcloud.io/summary/new_code?id=simnova_sharethrift-data-access)
 
 [![Duplicated Lines (%)](https://sonarcloud.io/api/project_badges/measure?project=simnova_sharethrift-data-access&metric=duplicated_lines_density)](https://sonarcloud.io/summary/new_code?id=simnova_sharethrift-data-access)
+
+[![Build Status](https://dev.azure.com/simnova/ShareThrift/_apis/build/status%2Fsharethrift?branchName=main)](https://dev.azure.com/simnova/ShareThrift/_build/latest?definitionId=12&branchName=main)
 
 A modern, community‑driven platform designed to reduce waste and enable the sharing of items, services, and classes — empowering individuals and organizations to participate in the circular economy.
 
