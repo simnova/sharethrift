@@ -1,2 +1,5 @@
 dist/
+*.tsbuildinfo
 
+# Note: Do not add *.d.ts here as src/types/ contains legitimate type declarations
+# for packages without their own types (e.g., liqe.d.ts)
