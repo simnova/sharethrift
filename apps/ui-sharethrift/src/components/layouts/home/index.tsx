@@ -9,7 +9,7 @@ import { CreateListing } from './pages/create-listing-page.tsx';
 import { HomeTabsLayout } from './section-layout.tsx';
 import { AdminDashboardMain } from './account/admin-dashboard/pages/admin-dashboard-main.tsx';
 import { RequireAuth } from '../../shared/require-auth.tsx';
-import { RequireAdmin } from '../../shared/require-admin.tsx';
+import { RequireAuthAdmin } from '../../shared/require-auth-admin.tsx';
 
 export const HomeRoutes: React.FC = () => {
 	return (
@@ -22,7 +22,7 @@ export const HomeRoutes: React.FC = () => {
                 <Route path="my-reservations/*" element={<RequireAuth redirectPath="/"><MyReservationsRoutes /></RequireAuth>} />
                 <Route path="messages/*" element={<RequireAuth redirectPath="/"><MessagesRoutes /></RequireAuth>} />
                 <Route path="account/*" element={<RequireAuth redirectPath="/"><AccountRoutes /></RequireAuth>} />
-                <Route path="admin-dashboard" element={<RequireAuth redirectPath="/"><RequireAdmin><AdminDashboardMain /></RequireAdmin></RequireAuth>} />
+                <Route path="admin-dashboard" element={<RequireAuthAdmin redirectPath="/"><AdminDashboardMain /></RequireAuthAdmin>} />
 			</Route>
 		</Routes>
 	);
