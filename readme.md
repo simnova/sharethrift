@@ -1,6 +1,8 @@
 # ShareThrift
 
-[![Build Status](https://dev.azure.com/simnova/ShareThrift/_apis/build/status%2FCellixJs?branchName=main)](https://dev.azure.com/simnova/ShareThrift/_build/latest?definitionId=12&branchName=main)
+[![Build Status](https://dev.azure.com/simnova/ShareThrift/_apis/build/status%2Fsharethrift?branchName=main)](https://dev.azure.com/simnova/ShareThrift/_build/latest?definitionId=12&branchName=main)
+
+[![Duplicated Lines (%)](https://sonarcloud.io/api/project_badges/measure?project=simnova_sharethrift-data-access&metric=duplicated_lines_density)](https://sonarcloud.io/summary/new_code?id=simnova_sharethrift-data-access)
 
 A modern, community‑driven platform designed to reduce waste and enable the sharing of items, services, and classes — empowering individuals and organizations to participate in the circular economy.
 
