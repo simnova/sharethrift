@@ -6,6 +6,8 @@ A modern, community‑driven platform designed to reduce waste and enable the sh
 
 ## 📌 Introduction
 
+<a href="https://developers.sharethrift.com/docs/intro">Getting Started</a>: Our Docusaurus website will help you get started in running and contributing to ShareThrift.
+
 ShareThrift is a web‑based peer‑to‑peer sharing platform that enables people and organizations to lend, borrow, or offer items, services, and classes. Inspired by platforms like Turo, Airbnb, and Facebook Marketplace — but built specifically for the sharing economy — ShareThrift provides a structured, trusted, and community-first way to exchange goods.
 
 ### ShareThrift exists to:
