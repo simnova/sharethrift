@@ -4,7 +4,7 @@ const { VITE_B2C_REDIRECT_URI } = import.meta.env;
 import { hasAuthParams, useAuth } from 'react-oidc-context';
 import { Navigate } from 'react-router-dom';
 
-interface RequireAuthProps {
+export interface RequireAuthProps {
 	children: JSX.Element;
 	redirectPath?: string;
 	forceLogin?: boolean;

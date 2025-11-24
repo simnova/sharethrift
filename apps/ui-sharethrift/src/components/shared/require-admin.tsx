@@ -2,7 +2,7 @@ import type { JSX } from 'react';
 import { Navigate } from 'react-router-dom';
 import { useUserIsAdmin } from '../layouts/home/account/hooks/useUserIsAdmin.ts';
 
-interface RequireAdminProps {
+export interface RequireAdminProps {
 	children: JSX.Element;
 }
 
