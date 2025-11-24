@@ -1,11 +1,10 @@
 import sendgrid from '@sendgrid/mail';
-import fs from 'node:fs';
-import path from 'node:path';
 import type {
 	TransactionalEmailService,
 	EmailRecipient,
 	EmailTemplateData,
 } from '@sthrift/transactional-email-service';
+import { TemplateUtils } from '@sthrift/transactional-email-service';
 
 /**
  * SendGrid implementation of TransactionalEmailService
@@ -13,9 +12,15 @@ import type {
 export class ServiceTransactionalEmailSendGrid
 	implements TransactionalEmailService
 {
-	private readonly baseTemplateDir: string;
+	private readonly templateUtils: TemplateUtils;
 
 	constructor() {
+		// Initialize template utilities
+		this.templateUtils = new TemplateUtils();
+	}
+
+	startUp(): Promise<void> {
+		// biome-ignore lint/complexity/useLiteralKeys: TypeScript requires bracket notation for process.env
 		const apiKey = process.env['SENDGRID_API_KEY'];
 		if (!apiKey) {
 			throw new Error(
@@ -23,15 +28,6 @@ export class ServiceTransactionalEmailSendGrid
 			);
 		}
 		sendgrid.setApiKey(apiKey);
-
-		// Template directory relative to project root
-		this.baseTemplateDir = path.join(
-			process.cwd(),
-			'./assets/email-templates',
-		);
-	}
-
-	startUp(): Promise<void> {
 		console.log('ServiceTransactionalEmailSendGrid started');
 		return Promise.resolve();
 	}
@@ -46,9 +42,9 @@ export class ServiceTransactionalEmailSendGrid
 		recipient: EmailRecipient,
 		templateData: EmailTemplateData,
 	): Promise<void> {
-		const template = this.loadTemplate(templateName);
-		const htmlContent = this.substituteVariables(template.body, templateData);
-		const subject = this.substituteVariables(template.subject, templateData);
+		const template = this.templateUtils.loadTemplate(templateName);
+		const htmlContent = this.templateUtils.substituteVariables(template.body, templateData);
+		const subject = this.templateUtils.substituteVariables(template.subject, templateData);
 
 		try {
 			await sendgrid.send({
@@ -66,47 +62,5 @@ export class ServiceTransactionalEmailSendGrid
 		}
 	}
 
-	private loadTemplate(templateName: string): {
-		fromEmail: string;
-		subject: string;
-		body: string;
-	} {
-		let fileName = templateName;
-		const ext = path.extname(fileName);
-		if (!ext) {
-			fileName += '.json';
-		} else if (ext !== '.json') {
-			throw new Error('Template must be in JSON format');
-		}
 
-		const files = fs.readdirSync(this.baseTemplateDir);
-		const matchedFile = files.find(
-			(f) => f.toLowerCase() === fileName.toLowerCase(),
-		);
-		if (!matchedFile) {
-			throw new Error(`Template file not found: ${fileName}`);
-		}
-
-		const filePath = path.join(this.baseTemplateDir, matchedFile);
-		const fileContent = fs.readFileSync(filePath, 'utf-8');
-
-		try {
-			return JSON.parse(fileContent);
-		} catch (err) {
-			console.error(`Failed to parse email template JSON for "${templateName}":`, err);
-			throw new Error(`Invalid email template JSON: ${templateName}`);
-		}
-	}
-
-	private substituteVariables(
-		template: string,
-		data: EmailTemplateData,
-	): string {
-		let result = template;
-		for (const [key, value] of Object.entries(data)) {
-			const placeholder = new RegExp(String.raw`\{\{${key}\}\}`, 'g');
-			result = result.replaceAll(placeholder, String(value));
-		}
-		return result;
-	}
 }
