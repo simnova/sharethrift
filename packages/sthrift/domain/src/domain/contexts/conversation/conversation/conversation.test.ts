@@ -85,7 +85,7 @@ function makeBaseProps(
 								},
 							],
 							getNewItem: () => ({
-								id: '1',
+								id: '2',
 								transactionId: 'txn_123',
 								amount: 1000,
 								referenceId: 'ref_123',
@@ -149,7 +149,7 @@ function makeBaseProps(
 								},
 							],
 							getNewItem: () => ({
-								id: '1',
+								id: '2',
 								transactionId: 'txn_123',
 								amount: 1000,
 								referenceId: 'ref_123',
@@ -288,16 +288,25 @@ test.for(feature, ({ Scenario, Background, BeforeEachScenario }) => {
 							lastName: originalSharer.account.profile.lastName,
 							aboutMe: originalSharer.account.profile.aboutMe,
 							location: originalSharer.account.profile.location,
-							billing: {
-								cybersourceCustomerId:
-									originalSharer.account.profile.billing.cybersourceCustomerId,
-								subscription:
-									originalSharer.account.profile.billing.subscription,
-								transactions: {
-									...originalSharer.account.profile.billing.transactions,
-									items: [],
+						billing: {
+							cybersourceCustomerId:
+								originalSharer.account.profile.billing.cybersourceCustomerId,
+							subscription:
+								originalSharer.account.profile.billing.subscription,
+							transactions: {
+								items: [
+										{
+											id: '1',
+											transactionId: 'txn_123',
+											amount: 1000,
+											referenceId: 'ref_123',
+											status: 'completed',
+											completedAt: new Date('2020-01-01T00:00:00Z'),
+											errorMessage: null,
+										},
+									],
 									getNewItem: () => ({
-										id: '1',
+										id: '2',
 										transactionId: 'txn_123',
 										amount: 1000,
 										referenceId: 'ref_123',
@@ -364,10 +373,19 @@ test.for(feature, ({ Scenario, Background, BeforeEachScenario }) => {
 										subscription:
 											originalSharer.account.profile.billing.subscription,
 										transactions: {
-											...originalSharer.account.profile.billing.transactions,
-											items: [],
+											items: [
+												{
+													id: '1',
+													transactionId: 'txn_123',
+													amount: 1000,
+													referenceId: 'ref_123',
+													status: 'completed',
+													completedAt: new Date('2020-01-01T00:00:00Z'),
+													errorMessage: null,
+												},
+											],
 											getNewItem: () => ({
-												id: '1',
+												id: '2',
 												transactionId: 'txn_123',
 												amount: 1000,
 												referenceId: 'ref_123',
@@ -428,17 +446,26 @@ test.for(feature, ({ Scenario, Background, BeforeEachScenario }) => {
 							lastName: originalReserver.account.profile.lastName,
 							aboutMe: originalReserver.account.profile.aboutMe,
 							location: originalReserver.account.profile.location,
-							billing: {
-								cybersourceCustomerId:
-									originalReserver.account.profile.billing
-										.cybersourceCustomerId,
-								subscription:
-									originalReserver.account.profile.billing.subscription,
-								transactions: {
-									...originalReserver.account.profile.billing.transactions,
-									items: [],
+						billing: {
+							cybersourceCustomerId:
+								originalReserver.account.profile.billing
+									.cybersourceCustomerId,
+							subscription:
+								originalReserver.account.profile.billing.subscription,
+							transactions: {
+								items: [
+										{
+											id: '1',
+											transactionId: 'txn_123',
+											amount: 1000,
+											referenceId: 'ref_123',
+											status: 'completed',
+											completedAt: new Date('2020-01-01T00:00:00Z'),
+											errorMessage: null,
+										},
+									],
 									getNewItem: () => ({
-										id: '1',
+										id: '2',
 										transactionId: 'txn_123',
 										amount: 1000,
 										referenceId: 'ref_123',
@@ -500,17 +527,26 @@ test.for(feature, ({ Scenario, Background, BeforeEachScenario }) => {
 									lastName: originalReserver.account.profile.lastName,
 									aboutMe: originalReserver.account.profile.aboutMe,
 									location: originalReserver.account.profile.location,
-									billing: {
-										cybersourceCustomerId:
-											originalReserver.account.profile.billing
-												.cybersourceCustomerId,
-										subscription:
-											originalReserver.account.profile.billing.subscription,
-										transactions: {
-											...originalReserver.account.profile.billing.transactions,
-											items: [],
+								billing: {
+									cybersourceCustomerId:
+										originalReserver.account.profile.billing
+											.cybersourceCustomerId,
+									subscription:
+										originalReserver.account.profile.billing.subscription,
+									transactions: {
+										items: [
+												{
+													id: '1',
+													transactionId: 'txn_123',
+													amount: 1000,
+													referenceId: 'ref_123',
+													status: 'completed',
+													completedAt: new Date('2020-01-01T00:00:00Z'),
+													errorMessage: null,
+												},
+											],
 											getNewItem: () => ({
-												id: '1',
+												id: '2',
 												transactionId: 'txn_123',
 												amount: 1000,
 												referenceId: 'ref_123',
