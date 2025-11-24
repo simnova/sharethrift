@@ -1,5 +1,43 @@
 # ShareThrift
 
+<p align="center">
+
+  <!-- Azure DevOps Build Pipeline -->
+  <a href="https://dev.azure.com/sinmova/sharethrift/_build">
+    <img src="https://dev.azure.com/sinmova/sharethrift/_apis/build/status/sharethrift?branchName=main" alt="Build Status"/>
+  </a>
+
+  <!-- Sonar Quality Gate -->
+  <a href="https://sonarcloud.io/summary/new_code?id=sharethrift">
+    <img src="https://sonarcloud.io/api/project_badges/measure?project=sharethrift&metric=alert_status" alt="Sonar Quality Gate"/>
+  </a>
+
+  <!-- Sonar Coverage -->
+  <a href="https://sonarcloud.io/summary/new_code?id=sharethrift">
+    <img src="https://sonarcloud.io/api/project_badges/measure?project=sharethrift&metric=coverage" alt="Coverage"/>
+  </a>
+
+  <!-- Sonar Bugs -->
+  <a href="https://sonarcloud.io/summary/new_code?id=sharethrift">
+    <img src="https://sonarcloud.io/api/project_badges/measure?project=sharethrift&metric=bugs" alt="Bugs"/>
+  </a>
+
+  <!-- Sonar Vulnerabilities -->
+  <a href="https://sonarcloud.io/summary/new_code?id=sharethrift">
+    <img src="https://sonarcloud.io/api/project_badges/measure?project=sharethrift&metric=vulnerabilities" alt="Vulnerabilities"/>
+  </a>
+
+  <!-- Release Version -->
+  <a href="https://github.com/sinmova/sharethrift/releases">
+    <img src="https://img.shields.io/github/v/release/sinmova/sharethrift" alt="Latest Release"/>
+  </a>
+
+  <!-- License (MIT assumed; change if needed) -->
+  <a href="./LICENSE">
+    <img src="https://img.shields.io/badge/License-MIT-green.svg" alt="License"/>
+  </a>
+</p>
+
 A modern, community‑driven platform designed to reduce waste and enable the sharing of items, services, and classes — empowering individuals and organizations to participate in the circular economy.
 
 <img src="./readme-assets/main-screen-banner.png" width="500" alt="main-screen-banner"/>
@@ -129,6 +167,7 @@ Run (Dev)
 ```
 pnpm run dev
 ```
+
 <img src="./readme-assets/pnpm_dev.gif" width="500" alt="pnpm_dev">
 
 ## 🔗 Local Endpoints
@@ -154,6 +193,7 @@ pnpm run dev
 ```
 pnpm run test
 ```
+
 <img src="./readme-assets/pnpm_test.gif" width="500" alt="pnpm_test">
 
 Guidelines:
