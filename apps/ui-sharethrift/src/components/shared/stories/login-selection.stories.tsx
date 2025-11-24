@@ -1,15 +1,8 @@
 import type { Meta, StoryObj } from '@storybook/react';
 import { expect } from 'storybook/test';
 import { MemoryRouter } from 'react-router-dom';
-import { AuthProvider } from 'react-oidc-context';
+import { MockAuthWrapper } from '../../../test-utils/storybook-decorators.tsx';
 import { LoginSelection } from '../login-selection.tsx';
-
-// Mock OIDC configuration for stories
-const mockOidcConfig = {
-	authority: 'https://mock-authority.com',
-	client_id: 'mock-client-id',
-	redirect_uri: 'https://mock-redirect.com',
-};
 
 const meta: Meta<typeof LoginSelection> = {
 	title: 'Shared/LoginSelection',
@@ -19,11 +12,11 @@ const meta: Meta<typeof LoginSelection> = {
 	},
 	decorators: [
 		(Story) => (
-			<AuthProvider {...mockOidcConfig}>
+			<MockAuthWrapper>
 				<MemoryRouter>
 					<Story />
 				</MemoryRouter>
-			</AuthProvider>
+			</MockAuthWrapper>
 		),
 	],
 };

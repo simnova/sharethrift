@@ -1,7 +1,17 @@
 import type { Meta, StoryObj } from '@storybook/react';
 import { expect } from 'storybook/test';
 import { MemoryRouter } from 'react-router-dom';
+import { ApolloClient, InMemoryCache } from '@apollo/client';
+import { ApolloProvider } from '@apollo/client/react';
+import { MockLink } from '@apollo/client/testing';
+import { MockAuthWrapper } from '../../../../test-utils/storybook-decorators.tsx';
 import { SectionLayout } from '../section-layout.tsx';
+
+// Mock Apollo Client with MockLink
+const mockApolloClient = new ApolloClient({
+	link: new MockLink([]),
+	cache: new InMemoryCache(),
+});
 
 const meta: Meta<typeof SectionLayout> = {
 	title: 'Layouts/SignupLayout',
@@ -11,9 +21,13 @@ const meta: Meta<typeof SectionLayout> = {
 	},
 	decorators: [
 		(Story) => (
-			<MemoryRouter initialEntries={['/signup']}>
-				<Story />
-			</MemoryRouter>
+			<ApolloProvider client={mockApolloClient}>
+				<MockAuthWrapper>
+					<MemoryRouter initialEntries={['/signup']}>
+						<Story />
+					</MemoryRouter>
+				</MockAuthWrapper>
+			</ApolloProvider>
 		),
 	],
 };

@@ -1,15 +1,8 @@
 import type { Meta, StoryObj } from '@storybook/react';
 import { expect } from 'storybook/test';
 import { MemoryRouter } from 'react-router-dom';
-import { AuthProvider } from 'react-oidc-context';
+import { MockAuthWrapper } from '../../../test-utils/storybook-decorators.tsx';
 import { RequireAuth } from '../require-auth.tsx';
-
-// Mock OIDC configuration for stories
-const mockOidcConfig = {
-	authority: 'https://mock-authority.com',
-	client_id: 'mock-client-id',
-	redirect_uri: 'https://mock-redirect.com',
-};
 
 const meta: Meta<typeof RequireAuth> = {
 	title: 'Shared/RequireAuth',
@@ -19,11 +12,11 @@ const meta: Meta<typeof RequireAuth> = {
 	},
 	decorators: [
 		(Story) => (
-			<AuthProvider {...mockOidcConfig}>
+			<MockAuthWrapper>
 				<MemoryRouter>
 					<Story />
 				</MemoryRouter>
-			</AuthProvider>
+			</MockAuthWrapper>
 		),
 	],
 };
@@ -44,9 +37,9 @@ export const WithAuthentication: Story = {
 	},
 	play: async ({ canvasElement }) => {
 		// The component will either show protected content or redirect/loading state
-		// This story documents the component behavior
-		const element = canvasElement.querySelector('div');
-		await expect(element).toBeInTheDocument();
+		// MockAuthWrapper provides isAuthenticated: true, so content should render
+		const heading = canvasElement.querySelector('h2');
+		await expect(heading).toBeTruthy();
 	},
 };
 
@@ -57,8 +50,9 @@ export const WithForceLogin: Story = {
 	},
 	play: async ({ canvasElement }) => {
 		// When forceLogin is true, component will trigger signin redirect
-		const element = canvasElement.querySelector('div');
-		await expect(element).toBeInTheDocument();
+		// MockAuthWrapper provides isAuthenticated: true, so content should render
+		const heading = canvasElement.querySelector('h2');
+		await expect(heading).toBeTruthy();
 	},
 };
 
@@ -69,7 +63,8 @@ export const WithCustomRedirect: Story = {
 	},
 	play: async ({ canvasElement }) => {
 		// Component uses custom redirect path when provided
-		const element = canvasElement.querySelector('div');
-		await expect(element).toBeInTheDocument();
+		// MockAuthWrapper provides isAuthenticated: true, so content should render
+		const heading = canvasElement.querySelector('h2');
+		await expect(heading).toBeTruthy();
 	},
 };
