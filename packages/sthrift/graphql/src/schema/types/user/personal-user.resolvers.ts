@@ -4,7 +4,6 @@ import type {
 	PersonalUser,
 	PersonalUserUpdateInput,
 	ProcessPaymentInput,
-	RefundResponse,
 	Resolvers,
 	QueryAllUsersArgs,
 } from '../../builder/generated.ts';
@@ -51,7 +50,7 @@ const personalUserResolvers: Resolvers = {
 			context,
 			_info,
 		) => {
-			return await context.applicationServices.Payment.generatePublicKey();
+			return await context.applicationServices.User.PersonalUser.generatePublicKey();
 		},
 		personalUserById: async (
 			_parent,
@@ -189,41 +188,25 @@ const personalUserResolvers: Resolvers = {
 		) => {
 			console.log('Processing payment', args.input);
 
-			return await context.applicationServices.User.PersonalUser.processPayment(
-				{
-					request: {
-						userId: args.input.userId,
-						paymentInstrument: {
-							...args.input.paymentInstrument,
-							billingAddressLine2:
-								args.input.paymentInstrument.billingAddressLine2 ?? '',
-							billingPhone: args.input.paymentInstrument.billingPhone ?? '',
-							billingEmail: args.input.paymentInstrument.billingEmail ?? '',
-						},
-						paymentAmount: args.input.paymentAmount,
-						currency: args.input.currency,
-					},
-				},
-			) ;
-		},
-		refundPayment: async (_parent, { request }, context) => {
-			console.log('Refunding payment', request);
 			try {
-				const response =
-					await context.applicationServices.Payment.refundPayment({
-						...request,
-						amount: request.amount ?? 0, // Ensure amount is a number, not null
-					});
-				return {
-					...response,
-					success: response.status === 'REFUNDED',
-					message:
-						response.status === 'REFUNDED'
-							? 'Refund processed successfully'
-							: null,
-				} as RefundResponse;
+				return await context.applicationServices.User.PersonalUser.processPayment(
+					{
+						request: {
+							userId: args.input.userId,
+							paymentInstrument: {
+								...args.input.paymentInstrument,
+								billingAddressLine2:
+									args.input.paymentInstrument.billingAddressLine2 ?? '',
+								billingPhone: args.input.paymentInstrument.billingPhone ?? '',
+								billingEmail: args.input.paymentInstrument.billingEmail ?? '',
+							},
+							paymentAmount: args.input.paymentAmount,
+							currency: args.input.currency,
+						},
+					},
+				)
 			} catch (error) {
-				console.error('Refund processing error:', error);
+				console.error('Payment processing error:', error);
 				return {
 					status: 'FAILED',
 					success: false,
@@ -234,9 +217,40 @@ const personalUserResolvers: Resolvers = {
 						message:
 							error instanceof Error ? error.message : 'Unknown error occurred',
 					},
-				} as RefundResponse;
+				} 
 			}
 		},
+		// refundPayment: async (_parent, { request }, context) => {
+		// 	console.log('Refunding payment', request);
+		// 	try {
+		// 		const response =
+		// 			await context.applicationServices.Payment.refundPayment({
+		// 				...request,
+		// 				amount: request.amount ?? 0, // Ensure amount is a number, not null
+		// 			});
+		// 		return {
+		// 			...response,
+		// 			success: response.status === 'REFUNDED',
+		// 			message:
+		// 				response.status === 'REFUNDED'
+		// 					? 'Refund processed successfully'
+		// 					: null,
+		// 		} as RefundResponse;
+		// 	} catch (error) {
+		// 		console.error('Refund processing error:', error);
+		// 		return {
+		// 			status: 'FAILED',
+		// 			success: false,
+		// 			message:
+		// 				error instanceof Error ? error.message : 'Unknown error occurred',
+		// 			errorInformation: {
+		// 				reason: 'PROCESSING_ERROR',
+		// 				message:
+		// 					error instanceof Error ? error.message : 'Unknown error occurred',
+		// 			},
+		// 		} as RefundResponse;
+		// 	}
+		// },
 	},
 };
 
