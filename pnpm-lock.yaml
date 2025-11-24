@@ -1087,9 +1087,6 @@ importers:
       '@sthrift/application-services':
         specifier: workspace:*
         version: link:../application-services
-      rimraf:
-        specifier: ^6.0.1
-        version: 6.0.1
       typescript:
         specifier: ^5.8.3
         version: 5.8.3
@@ -1097,6 +1094,9 @@ importers:
       '@cellix/typescript-config':
         specifier: workspace:*
         version: link:../../cellix/typescript-config
+      rimraf:
+        specifier: ^6.0.1
+        version: 6.0.1
 
   packages/sthrift/service-blob-storage:
     dependencies:
