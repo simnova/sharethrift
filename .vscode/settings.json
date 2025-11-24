@@ -33,8 +33,7 @@
 	"sonarlint.connectedMode.project": {
 		"connectionId": "simnova",
 		"projectKey": "simnova_sharethrift-data-access"
-    },
-    "vitest.disableWorkspaceWarning": true
+    }
 	// "[typescript]": {
 	//     "editor.tabSize": 2,
 	//     // "prettier.singleQuote": true,
