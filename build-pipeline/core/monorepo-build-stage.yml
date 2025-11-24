@@ -254,6 +254,17 @@ stages:
         PLAYWRIGHT_BROWSERS_PATH: $(PLAYWRIGHT_BROWSERS_PATH)
         ${{ each pair in parameters.buildEnvSettings }}:
           ${{ pair.key }}: ${{ pair.value }}
+
+    # Analyze dependencies with pnpm analyze
+    - task: Bash@3
+      displayName: 'Analyze dependencies with pnpm analyze'
+      inputs:
+        targetType: 'inline'
+        script: |
+          set -euo pipefail
+          echo "Running pnpm analyze to analyze dependencies..."
+          pnpm analyze
+        workingDirectory: ''
           
     # Cache Java JRE
     - task: Cache@2

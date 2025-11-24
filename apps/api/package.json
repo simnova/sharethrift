@@ -5,8 +5,12 @@
 	"license": "MIT",
 	"description": "",
 	"type": "module",
-	"main": "dist/src/index.js",
-	"types": "dist/src/index.d.ts",
+	"exports": {
+		".": {
+			"types": "./dist/src/index.d.ts",
+			"default": "./dist/src/index.js"
+		}
+	},
 	"scripts": {
 		"prebuild": "biome lint",
 		"build": "tsc --build",
@@ -32,9 +36,9 @@
 		"@sthrift/messaging-service-mock": "workspace:*",
 		"@sthrift/persistence": "workspace:*",
 		"@sthrift/rest": "workspace:*",
+		"@sthrift/search-service-index": "workspace:*",
 		"@sthrift/service-blob-storage": "workspace:*",
 		"@sthrift/service-cybersource": "workspace:*",
-		"@sthrift/search-service-index": "workspace:*",
 		"@sthrift/service-mongoose": "workspace:*",
 		"@sthrift/service-otel": "workspace:*",
 		"@sthrift/service-token-validation": "workspace:*",

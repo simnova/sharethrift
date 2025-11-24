@@ -8,6 +8,7 @@
     "packageManager": "pnpm@10.18.2",
     "main": "apps/api/dist/src/index.js",
     "scripts": {
+        "analyze": "pnpm -r exec -- pnpm dlx @e18e/cli analyze",
         "build": "turbo run build",
         "test": "turbo run test",
         "lint": "turbo run lint",
