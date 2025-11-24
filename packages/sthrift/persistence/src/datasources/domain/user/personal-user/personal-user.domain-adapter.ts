@@ -37,22 +37,28 @@ export class PersonalUserDomainAdapter
 					firstName: this.account.profile.firstName,
 					lastName: this.account.profile.lastName,
 					location: this.account.profile.location,
-					billing: {
-						cybersourceCustomerId:
-							this.account.profile.billing.cybersourceCustomerId,
-						subscription: this.account.profile.billing.subscription,
-						transactions: this.account.profile.billing.transactions.items.map(
-							(tx) => ({
-								id: tx.id,
-								transactionId: tx.transactionId,
-								amount: tx.amount,
-								referenceId: tx.referenceId,
-								status: tx.status,
-								completedAt: tx.completedAt,
-								errorMessage: tx.errorMessage,
-							}),
-						),
-					},
+				billing: {
+					cybersourceCustomerId:
+						this.account.profile.billing.cybersourceCustomerId,
+					subscription: this.account.profile.billing.subscription,
+					transactions: (() => {
+						try {
+							return this.account.profile.billing.transactions?.items?.map(
+								(tx) => ({
+									id: tx.id,
+									transactionId: tx.transactionId,
+									amount: tx.amount,
+									referenceId: tx.referenceId,
+									status: tx.status,
+									completedAt: tx.completedAt,
+									errorMessage: tx.errorMessage,
+								}),
+							) || [];
+						} catch {
+							return [];
+						}
+					})(),
+				},
 				},
 			},
 			schemaVersion: this.doc.schemaVersion,
@@ -75,7 +81,8 @@ export class PersonalUserDomainAdapter
 
 	get account() {
 		if (!this.doc.account) {
-			this.doc.set('account', {});
+			// this.doc.set('account', {}); 
+      this.doc.account = {} as Models.User.PersonalUserAccount;
 		}
 		return new PersonalUserAccountDomainAdapter(this.doc.account);
 	}
