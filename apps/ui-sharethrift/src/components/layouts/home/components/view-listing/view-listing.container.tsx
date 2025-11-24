@@ -64,6 +64,7 @@ export const ViewListingContainer: React.FC<ViewListingContainerProps> = (
 		: undefined;
 
 	const userIsSharer = false;
+	const userIsAdmin = currentUserData?.currentUser?.userIsAdmin ?? false;
 	return (
 		<ComponentQueryLoader
 			loading={userReservationLoading || listingLoading || currentUserLoading}
@@ -80,6 +81,7 @@ export const ViewListingContainer: React.FC<ViewListingContainerProps> = (
 					userReservationRequest={
 						userReservationData?.myActiveReservationForListing
 					}
+					userIsAdmin={userIsAdmin}
 				/>
 			}
 		/>
