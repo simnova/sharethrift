@@ -16,6 +16,7 @@ export interface PaymentPersonalUserRepository {
 		cybersourceCustomerId: string;
 		startDate: Date;
 	}) => Promise<SubscriptionResponse>;
+  generatePublicKey: () => Promise<string>;
 }
 
 export class PaymentPersonalUserRepositoryImpl
@@ -140,6 +141,10 @@ export class PaymentPersonalUserRepositoryImpl
 		};
 		return await this.paymentService.createSubscription(subscriptionInput);
 	}
+
+  async generatePublicKey(): Promise<string> {
+    return await this.paymentService.generatePublicKey();
+  }
 }
 
 export const getPaymentPersonalUserRepository = (

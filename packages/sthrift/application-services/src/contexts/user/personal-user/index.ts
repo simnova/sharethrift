@@ -15,6 +15,7 @@ import {
 	type PersonalUserPageResult,
 } from './get-all-users.ts';
 import { update, type PersonalUserUpdateCommand } from './update.ts';
+import { generatePublicKey } from './generate-public-key.ts';
 import {
 type PaymentResponse,
 	type ProcessPaymentCommand,
@@ -36,6 +37,7 @@ export interface PersonalUserApplicationService {
 	) => Promise<Domain.Contexts.User.PersonalUser.PersonalUserEntityReference | null>;
 	getAllUsers: (command: GetAllUsersCommand) => Promise<PersonalUserPageResult>;
 	processPayment: (command: ProcessPaymentCommand) => Promise<PaymentResponse>;
+	generatePublicKey: () => Promise<string>;
 }
 
 export const PersonalUser = (
@@ -48,6 +50,7 @@ export const PersonalUser = (
 		queryByEmail: queryByEmail(dataSources),
 		getAllUsers: getAllUsers(dataSources),
 		processPayment: processPayment(dataSources),
+    generatePublicKey: generatePublicKey(dataSources),
 	};
 };
 
