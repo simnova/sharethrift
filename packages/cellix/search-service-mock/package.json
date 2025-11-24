@@ -1,8 +1,8 @@
 {
-	"name": "@cellix/mock-cognitive-search",
+	"name": "@cellix/search-service-mock",
 	"version": "1.0.0",
 	"type": "module",
-	"description": "Mock implementation of Azure Cognitive Search for local development",
+	"description": "Mock implementation of search service for local development",
 	"main": "dist/index.js",
 	"types": "dist/index.d.ts",
 	"scripts": {
@@ -14,14 +14,14 @@
 		"examples": "node examples/run-examples.js"
 	},
 	"keywords": [
-		"cognitive-search",
+		"search",
 		"mock",
-		"development",
-		"azure"
+		"development"
 	],
 	"author": "ShareThrift Team",
 	"license": "MIT",
 	"dependencies": {
+		"@cellix/search-service": "workspace:*",
 		"liqe": "^3.8.3",
 		"lunr": "^2.3.9"
 	},

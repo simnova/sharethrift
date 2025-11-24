@@ -5,22 +5,13 @@
  * in the ShareThrift application.
  */
 
-import type {
-	CognitiveSearchBase,
-	CognitiveSearchLifecycle,
-} from '@cellix/mock-cognitive-search';
+import type { SearchService } from '@cellix/search-service';
 
 /**
  * Domain interface for cognitive search
- * Extends the base interface with domain-specific methods
+ * Uses the generic SearchService interface
  */
-export interface CognitiveSearchDomain extends CognitiveSearchBase {}
-
-/**
- * Lifecycle interface for cognitive search services
- */
-export interface CognitiveSearchDomainInitializeable
-	extends CognitiveSearchLifecycle {}
+export interface CognitiveSearchDomain extends SearchService {}
 
 /**
  * Search index document interface for Item Listings

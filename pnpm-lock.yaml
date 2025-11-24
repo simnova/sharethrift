@@ -131,12 +131,12 @@ importers:
       '@sthrift/rest':
         specifier: workspace:*
         version: link:../../packages/sthrift/rest
+      '@sthrift/search-service-index':
+        specifier: workspace:*
+        version: link:../../packages/sthrift/search-service-index
       '@sthrift/service-blob-storage':
         specifier: workspace:*
         version: link:../../packages/sthrift/service-blob-storage
-      '@sthrift/service-cognitive-search':
-        specifier: workspace:*
-        version: link:../../packages/sthrift/service-cognitive-search
       '@sthrift/service-cybersource':
         specifier: workspace:*
         version: link:../../packages/sthrift/service-cybersource
@@ -446,31 +446,6 @@ importers:
         specifier: ^5.8.3
         version: 5.8.3
 
-  packages/cellix/mock-cognitive-search:
-    dependencies:
-      liqe:
-        specifier: ^3.8.3
-        version: 3.8.3
-      lunr:
-        specifier: ^2.3.9
-        version: 2.3.9
-    devDependencies:
-      '@cellix/typescript-config':
-        specifier: workspace:*
-        version: link:../typescript-config
-      '@cellix/vitest-config':
-        specifier: workspace:*
-        version: link:../vitest-config
-      '@types/lunr':
-        specifier: ^2.3.7
-        version: 2.3.7
-      typescript:
-        specifier: ^5.3.0
-        version: 5.8.3
-      vitest:
-        specifier: ^1.6.0
-        version: 1.6.1(@types/node@24.9.2)(@vitest/browser@3.2.4(playwright@1.56.1)(vite@7.1.12(@types/node@24.9.2)(jiti@2.6.1)(lightningcss@1.30.2)(terser@5.44.0)(tsx@4.20.6)(yaml@2.8.1))(vitest@3.2.4))(jsdom@26.1.0)(lightningcss@1.30.2)(terser@5.44.0)
-
   packages/cellix/mock-mongodb-memory-server-seedwork:
     devDependencies:
       '@cellix/typescript-config':
@@ -573,6 +548,50 @@ importers:
         specifier: ^6.0.1
         version: 6.0.1
 
+  packages/cellix/search-service:
+    dependencies:
+      '@cellix/api-services-spec':
+        specifier: workspace:*
+        version: link:../api-services-spec
+    devDependencies:
+      '@cellix/typescript-config':
+        specifier: workspace:*
+        version: link:../typescript-config
+      rimraf:
+        specifier: ^6.0.1
+        version: 6.1.0
+      typescript:
+        specifier: ^5.8.3
+        version: 5.8.3
+
+  packages/cellix/search-service-mock:
+    dependencies:
+      '@cellix/search-service':
+        specifier: workspace:*
+        version: link:../search-service
+      liqe:
+        specifier: ^3.8.3
+        version: 3.8.3
+      lunr:
+        specifier: ^2.3.9
+        version: 2.3.9
+    devDependencies:
+      '@cellix/typescript-config':
+        specifier: workspace:*
+        version: link:../typescript-config
+      '@cellix/vitest-config':
+        specifier: workspace:*
+        version: link:../vitest-config
+      '@types/lunr':
+        specifier: ^2.3.7
+        version: 2.3.7
+      typescript:
+        specifier: ^5.3.0
+        version: 5.8.3
+      vitest:
+        specifier: ^1.6.0
+        version: 1.6.1(@types/node@24.9.2)(@vitest/browser@3.2.4(playwright@1.56.1)(vite@7.1.12(@types/node@24.9.2)(jiti@2.6.1)(lightningcss@1.30.2)(terser@5.44.0)(tsx@4.20.6)(yaml@2.8.1))(vitest@3.2.4))(jsdom@26.1.0)(lightningcss@1.30.2)(terser@5.44.0)
+
   packages/cellix/typescript-config: {}
 
   packages/cellix/ui-core:
@@ -666,9 +685,9 @@ importers:
       '@cellix/messaging-service':
         specifier: workspace:*
         version: link:../../cellix/messaging-service
-      '@cellix/mock-cognitive-search':
+      '@cellix/search-service':
         specifier: workspace:*
-        version: link:../../cellix/mock-cognitive-search
+        version: link:../../cellix/search-service
       '@sthrift/context-spec':
         specifier: workspace:*
         version: link:../context-spec
@@ -703,9 +722,9 @@ importers:
       '@sthrift/persistence':
         specifier: workspace:*
         version: link:../persistence
-      '@sthrift/service-cognitive-search':
+      '@sthrift/search-service-index':
         specifier: workspace:*
-        version: link:../service-cognitive-search
+        version: link:../search-service-index
       '@sthrift/service-cybersource':
         specifier: workspace:*
         version: link:../service-cybersource
@@ -750,9 +769,9 @@ importers:
       '@cellix/event-bus-seedwork-node':
         specifier: workspace:*
         version: link:../../cellix/event-bus-seedwork-node
-      '@cellix/mock-cognitive-search':
+      '@cellix/search-service':
         specifier: workspace:*
-        version: link:../../cellix/mock-cognitive-search
+        version: link:../../cellix/search-service
       '@lucaspaganini/value-objects':
         specifier: ^1.3.1
         version: 1.3.1
@@ -805,9 +824,9 @@ importers:
       '@sthrift/persistence':
         specifier: workspace:*
         version: link:../persistence
-      '@sthrift/service-cognitive-search':
+      '@sthrift/search-service-index':
         specifier: workspace:*
-        version: link:../service-cognitive-search
+        version: link:../search-service-index
     devDependencies:
       '@cellix/typescript-config':
         specifier: workspace:*
@@ -1063,6 +1082,31 @@ importers:
         specifier: workspace:*
         version: link:../../cellix/typescript-config
 
+  packages/sthrift/search-service-index:
+    dependencies:
+      '@cellix/api-services-spec':
+        specifier: workspace:*
+        version: link:../../cellix/api-services-spec
+      '@cellix/search-service':
+        specifier: workspace:*
+        version: link:../../cellix/search-service
+      '@cellix/search-service-mock':
+        specifier: workspace:*
+        version: link:../../cellix/search-service-mock
+    devDependencies:
+      '@cellix/typescript-config':
+        specifier: workspace:*
+        version: link:../../cellix/typescript-config
+      '@cellix/vitest-config':
+        specifier: workspace:*
+        version: link:../../cellix/vitest-config
+      typescript:
+        specifier: ^5.3.0
+        version: 5.8.3
+      vitest:
+        specifier: ^1.6.0
+        version: 1.6.1(@types/node@24.9.2)(@vitest/browser@3.2.4(playwright@1.56.1)(vite@7.1.12(@types/node@24.9.2)(jiti@2.6.1)(lightningcss@1.30.2)(terser@5.44.0)(tsx@4.20.6)(yaml@2.8.1))(vitest@3.2.4))(jsdom@26.1.0)(lightningcss@1.30.2)(terser@5.44.0)
+
   packages/sthrift/service-blob-storage:
     dependencies:
       '@azure/storage-blob':
@@ -1084,34 +1128,6 @@ importers:
       typescript:
         specifier: ^5.8.3
         version: 5.8.3
-
-  packages/sthrift/service-cognitive-search:
-    dependencies:
-      '@azure/identity':
-        specifier: ^4.13.0
-        version: 4.13.0
-      '@azure/search-documents':
-        specifier: ^12.2.0
-        version: 12.2.0
-      '@cellix/api-services-spec':
-        specifier: workspace:*
-        version: link:../../cellix/api-services-spec
-      '@cellix/mock-cognitive-search':
-        specifier: workspace:*
-        version: link:../../cellix/mock-cognitive-search
-    devDependencies:
-      '@cellix/typescript-config':
-        specifier: workspace:*
-        version: link:../../cellix/typescript-config
-      '@cellix/vitest-config':
-        specifier: workspace:*
-        version: link:../../cellix/vitest-config
-      typescript:
-        specifier: ^5.3.0
-        version: 5.8.3
-      vitest:
-        specifier: ^1.6.0
-        version: 1.6.1(@types/node@24.9.2)(@vitest/browser@3.2.4(playwright@1.56.1)(vite@7.1.12(@types/node@24.9.2)(jiti@2.6.1)(lightningcss@1.30.2)(terser@5.44.0)(tsx@4.20.6)(yaml@2.8.1))(vitest@3.2.4))(jsdom@26.1.0)(lightningcss@1.30.2)(terser@5.44.0)
 
   packages/sthrift/service-cybersource:
     dependencies:
@@ -1758,10 +1774,6 @@ packages:
   '@azure/opentelemetry-instrumentation-azure-sdk@1.0.0-beta.9':
     resolution: {integrity: sha512-gNCFokEoQQEkhu2T8i1i+1iW2o9wODn2slu5tpqJmjV1W7qf9dxVv6GNXW1P1WC8wMga8BCc2t/oMhOK3iwRQg==}
     engines: {node: '>=18.0.0'}
-
-  '@azure/search-documents@12.2.0':
-    resolution: {integrity: sha512-4+Qw+qaGqnkdUCq/vEFzk/bkROogTvdbPb1fmI8poxNfDDN1q2WHxBmhI7CYwesrBj1yXC4i5E0aISBxZqZi0g==}
-    engines: {node: '>=20.0.0'}
 
   '@azure/storage-blob@12.29.1':
     resolution: {integrity: sha512-7ktyY0rfTM0vo7HvtK6E3UvYnI9qfd6Oz6z/+92VhGRveWng3kJwMKeUpqmW/NmwcDNbxHpSlldG+vsUnRFnBg==}
@@ -12438,21 +12450,6 @@ snapshots:
       '@opentelemetry/core': 2.2.0(@opentelemetry/api@1.9.0)
       '@opentelemetry/instrumentation': 0.200.0(@opentelemetry/api@1.9.0)
       '@opentelemetry/sdk-trace-web': 2.2.0(@opentelemetry/api@1.9.0)
-      tslib: 2.8.1
-    transitivePeerDependencies:
-      - supports-color
-
-  '@azure/search-documents@12.2.0':
-    dependencies:
-      '@azure/core-auth': 1.10.1
-      '@azure/core-client': 1.10.1
-      '@azure/core-http-compat': 2.3.1
-      '@azure/core-paging': 1.6.2
-      '@azure/core-rest-pipeline': 1.22.1
-      '@azure/core-tracing': 1.3.1
-      '@azure/core-util': 1.13.1
-      '@azure/logger': 1.3.0
-      events: 3.3.0
       tslib: 2.8.1
     transitivePeerDependencies:
       - supports-color

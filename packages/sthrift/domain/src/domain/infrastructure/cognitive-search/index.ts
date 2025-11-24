@@ -6,4 +6,4 @@
 
 export * from './interfaces.js';
 export * from './item-listing-search-index.js';
-export type { SearchIndex, SearchField } from '@cellix/mock-cognitive-search';
+export type { SearchIndex, SearchField } from '@cellix/search-service';

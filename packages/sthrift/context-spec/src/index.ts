@@ -1,7 +1,7 @@
 import type { DataSourcesFactory } from '@sthrift/persistence';
 import type { TokenValidation } from '@sthrift/service-token-validation';
 import type { ServiceCybersource } from '@sthrift/service-cybersource';
-import type { ServiceCognitiveSearch } from '@sthrift/service-cognitive-search';
+import type { ServiceSearchIndex } from '@sthrift/search-service-index';
 import type { MessagingService } from '@cellix/messaging-service';
 
 export interface ApiContextSpec {
@@ -9,6 +9,6 @@ export interface ApiContextSpec {
 	dataSourcesFactory: DataSourcesFactory; // NOT an infrastructure service
 	tokenValidationService: TokenValidation;
 	paymentService: ServiceCybersource;
-	searchService: ServiceCognitiveSearch;
+	searchService: ServiceSearchIndex;
 	messagingService: MessagingService;
 }

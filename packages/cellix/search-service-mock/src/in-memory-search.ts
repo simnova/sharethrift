@@ -1,16 +1,15 @@
 import type {
-	CognitiveSearchBase,
-	CognitiveSearchLifecycle,
+	SearchService,
 	SearchDocumentsResult,
 	SearchIndex,
 	SearchOptions,
-} from './interfaces.js';
+} from '@cellix/search-service';
 import { IndexManager } from './index-manager.js';
 import { DocumentStore } from './document-store.js';
 import { SearchEngineAdapter } from './search-engine-adapter.js';
 
 /**
- * In-memory implementation of Azure Cognitive Search
+ * In-memory implementation of SearchService
  *
  * Enhanced with Lunr.js and LiQE for superior search capabilities:
  * - Full-text search with relevance scoring (TF-IDF)
@@ -21,9 +20,6 @@ import { SearchEngineAdapter } from './search-engine-adapter.js';
  * - Complex filter expressions with logical operators
  * - String functions (contains, startswith, endswith)
  *
- * Maintains Azure Cognitive Search API compatibility while providing
- * enhanced mock search functionality for development environments.
- *
  * This implementation serves as a drop-in replacement for Azure Cognitive Search
  * in development and testing environments, offering realistic search behavior
  * without requiring cloud services or external dependencies.
@@ -33,29 +29,23 @@ import { SearchEngineAdapter } from './search-engine-adapter.js';
  * - DocumentStore: Manages document storage
  * - SearchEngineAdapter: Wraps Lunr/LiQE search engine
  */
-class InMemoryCognitiveSearch
-	implements CognitiveSearchBase, CognitiveSearchLifecycle
-{
-	private indexManager: IndexManager;
-	private documentStore: DocumentStore;
-	private searchEngine: SearchEngineAdapter;
+class InMemoryCognitiveSearch implements SearchService {
+	private readonly indexManager: IndexManager;
+	private readonly documentStore: DocumentStore;
+	private readonly searchEngine: SearchEngineAdapter;
 	private isInitialized = false;
 
 	/**
 	 * Creates a new instance of the in-memory cognitive search service
 	 *
-	 * @param options - Configuration options for the search service
-	 * @param options.enablePersistence - Whether to enable persistence (future feature)
-	 * @param options.persistencePath - Path for persistence storage (future feature)
+	 * @param _options - Configuration options for the search service (currently unused)
 	 */
 	constructor(
-		options: {
+		_options: {
 			enablePersistence?: boolean;
 			persistencePath?: string;
 		} = {},
 	) {
-		// Store options for future use
-		void options;
 		// Initialize focused modules
 		this.indexManager = new IndexManager();
 		this.documentStore = new DocumentStore();
@@ -65,11 +55,11 @@ class InMemoryCognitiveSearch
 	/**
 	 * Initializes the search service
 	 *
-	 * @returns Promise that resolves when startup is complete
+	 * @returns Promise that resolves with this instance when startup is complete
 	 */
-	startup(): Promise<void> {
+	startUp(): Promise<SearchService> {
 		if (this.isInitialized) {
-			return Promise.resolve();
+			return Promise.resolve(this);
 		}
 
 		console.log('InMemoryCognitiveSearch: Starting up...');
@@ -85,7 +75,7 @@ class InMemoryCognitiveSearch
 
 		this.isInitialized = true;
 		console.log('InMemoryCognitiveSearch: Started successfully');
-		return Promise.resolve();
+		return Promise.resolve(this);
 	}
 
 	/**
@@ -93,7 +83,7 @@ class InMemoryCognitiveSearch
 	 *
 	 * @returns Promise that resolves when shutdown is complete
 	 */
-	shutdown(): Promise<void> {
+	shutDown(): Promise<void> {
 		console.log('InMemoryCognitiveSearch: Shutting down...');
 		this.isInitialized = false;
 		console.log('InMemoryCognitiveSearch: Shutdown complete');
@@ -116,11 +106,7 @@ class InMemoryCognitiveSearch
 		this.documentStore.create(indexDefinition.name);
 
 		// Initialize search engine index with empty documents
-		this.searchEngine.build(
-			indexDefinition.name,
-			indexDefinition.fields,
-			[],
-		);
+		this.searchEngine.build(indexDefinition.name, indexDefinition.fields, []);
 		return Promise.resolve();
 	}
 
@@ -143,7 +129,9 @@ class InMemoryCognitiveSearch
 		}
 
 		// Rebuild search engine index with current documents
-		const documents = Array.from(this.documentStore.getDocs(indexName).values());
+		const documents = Array.from(
+			this.documentStore.getDocs(indexName).values(),
+		);
 		this.searchEngine.build(indexName, indexDefinition.fields, documents);
 		return Promise.resolve();
 	}

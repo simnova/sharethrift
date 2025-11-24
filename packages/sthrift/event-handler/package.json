@@ -21,7 +21,7 @@
 	},
 	"dependencies": {
 		"@sthrift/domain": "workspace:*",
-		"@sthrift/service-cognitive-search": "workspace:*",
+		"@sthrift/search-service-index": "workspace:*",
 		"@sthrift/persistence": "workspace:*"
 	},
 	"devDependencies": {

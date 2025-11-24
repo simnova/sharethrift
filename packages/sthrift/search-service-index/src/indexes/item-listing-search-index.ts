@@ -1,32 +1,29 @@
-/**
- * Item Listing Search Index Definition
- *
- * Defines the Azure Cognitive Search index schema for Item Listings.
- * This index enables full-text search and filtering of item listings
- * in the ShareThrift application.
- */
-
 import type { SearchIndex } from '@cellix/search-service';
 
 /**
- * Search index definition for Item Listings
+ * Item Listing Search Index Definition
+ *
+ * Defines the search index structure for item listings in ShareThrift.
+ * This index supports full-text search, filtering, sorting, and faceting
+ * for listing discovery functionality.
  */
+
+const indexName =
+	process.env['SEARCH_ITEM_LISTING_INDEX_NAME'] || 'item-listings';
+
 export const ItemListingSearchIndexSpec: SearchIndex = {
-	name: 'item-listings',
+	name: indexName,
 	fields: [
-		// Primary key
 		{
 			name: 'id',
 			type: 'Edm.String',
 			key: true,
-			searchable: false,
-			filterable: true,
+			searchable: true,
+			filterable: false,
 			sortable: false,
 			facetable: false,
 			retrievable: true,
 		},
-
-		// Searchable text fields
 		{
 			name: 'title',
 			type: 'Edm.String',
@@ -46,22 +43,20 @@ export const ItemListingSearchIndexSpec: SearchIndex = {
 			retrievable: true,
 		},
 		{
+			name: 'category',
+			type: 'Edm.String',
+			searchable: true,
+			filterable: true,
+			sortable: true,
+			facetable: true,
+			retrievable: true,
+		},
+		{
 			name: 'location',
 			type: 'Edm.String',
 			searchable: true,
 			filterable: true,
 			sortable: false,
-			facetable: false,
-			retrievable: true,
-		},
-
-		// Filterable and facetable fields
-		{
-			name: 'category',
-			type: 'Edm.String',
-			searchable: false,
-			filterable: true,
-			sortable: true,
 			facetable: true,
 			retrievable: true,
 		},
@@ -74,17 +69,6 @@ export const ItemListingSearchIndexSpec: SearchIndex = {
 			facetable: true,
 			retrievable: true,
 		},
-
-		// Sharer information
-		{
-			name: 'sharerName',
-			type: 'Edm.String',
-			searchable: true,
-			filterable: false,
-			sortable: true,
-			facetable: false,
-			retrievable: true,
-		},
 		{
 			name: 'sharerId',
 			type: 'Edm.String',
@@ -94,8 +78,15 @@ export const ItemListingSearchIndexSpec: SearchIndex = {
 			facetable: true,
 			retrievable: true,
 		},
-
-		// Date fields
+		{
+			name: 'sharerName',
+			type: 'Edm.String',
+			searchable: true,
+			filterable: false,
+			sortable: false,
+			facetable: false,
+			retrievable: true,
+		},
 		{
 			name: 'sharingPeriodStart',
 			type: 'Edm.DateTimeOffset',
@@ -132,8 +123,6 @@ export const ItemListingSearchIndexSpec: SearchIndex = {
 			facetable: true,
 			retrievable: true,
 		},
-
-		// Array fields
 		{
 			name: 'images',
 			type: 'Collection(Edm.String)',
@@ -147,33 +136,20 @@ export const ItemListingSearchIndexSpec: SearchIndex = {
 };
 
 /**
- * Helper function to convert ItemListing domain entity to search document
+ * TypeScript interface matching the search index document structure
  */
-export function convertItemListingToSearchDocument(
-	itemListing: Record<string, unknown>,
-): Record<string, unknown> {
-	const sharer = itemListing.sharer as Record<string, unknown> | undefined;
-	const account = sharer?.account as Record<string, unknown> | undefined;
-	const profile = account?.profile as Record<string, unknown> | undefined;
-
-	return {
-		id: itemListing.id,
-		title: itemListing.title,
-		description: itemListing.description?.toString() || '',
-		category: itemListing.category?.toString() || '',
-		location: itemListing.location?.toString() || '',
-		sharerName:
-			(profile?.firstName?.toString() || '') +
-				' ' +
-				(profile?.lastName?.toString() || '') || '',
-		sharerId: sharer?.id || '',
-		state: itemListing.state?.toString() || '',
-		sharingPeriodStart:
-			(itemListing.sharingPeriodStart as Date)?.toISOString() || '',
-		sharingPeriodEnd:
-			(itemListing.sharingPeriodEnd as Date)?.toISOString() || '',
-		createdAt: (itemListing.createdAt as Date)?.toISOString() || '',
-		updatedAt: (itemListing.updatedAt as Date)?.toISOString() || '',
-		images: itemListing.images || [],
-	};
+export interface ItemListingSearchDocument {
+	id: string;
+	title: string;
+	description: string;
+	category: string;
+	location: string;
+	state: string;
+	sharerId: string;
+	sharerName: string;
+	sharingPeriodStart: Date;
+	sharingPeriodEnd: Date;
+	createdAt: Date;
+	updatedAt: Date;
+	images: string[];
 }

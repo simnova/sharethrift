@@ -15,7 +15,7 @@ import type { CognitiveSearchDomain } from '@sthrift/domain';
 import type {
 	SearchOptions,
 	SearchDocumentsResult,
-} from '@cellix/mock-cognitive-search';
+} from '@cellix/search-service';
 import { ItemListingSearchIndexSpec } from '@sthrift/domain';
 import type { DataSources } from '@sthrift/persistence';
 

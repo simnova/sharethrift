@@ -5,7 +5,7 @@
  */
 
 import type { DomainDataSource } from '@sthrift/domain';
-import type { ServiceCognitiveSearch } from '@sthrift/service-cognitive-search';
+import type { ServiceSearchIndex } from '@sthrift/search-service-index';
 import { registerItemListingUpdatedUpdateSearchIndexHandler } from './item-listing-updated-update-search-index.js';
 import { registerItemListingDeletedUpdateSearchIndexHandler as registerDeletedHandler } from './item-listing-deleted-update-search-index.js';
 
@@ -19,7 +19,7 @@ export * from './bulk-index-existing-listings.js';
  */
 export const RegisterEventHandlers = (
 	domainDataSource: DomainDataSource,
-	searchService?: ServiceCognitiveSearch,
+	searchService?: ServiceSearchIndex,
 ): void => {
 	console.log('Registering ShareThrift event handlers...');
 

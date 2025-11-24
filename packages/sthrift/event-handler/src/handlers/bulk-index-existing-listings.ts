@@ -6,7 +6,7 @@
  */
 
 import type { Domain } from '@sthrift/domain';
-import type { ServiceCognitiveSearch } from '@sthrift/service-cognitive-search';
+import type { ServiceSearchIndex } from '@sthrift/search-service-index';
 import { ItemListingSearchIndexSpec } from '@sthrift/domain';
 
 /**
@@ -17,7 +17,7 @@ import { ItemListingSearchIndexSpec } from '@sthrift/domain';
  */
 export async function bulkIndexExistingListings(
 	listings: Domain.Contexts.Listing.ItemListing.ItemListingEntityReference[],
-	searchService: ServiceCognitiveSearch,
+	searchService: ServiceSearchIndex,
 ): Promise<void> {
 	console.log('Starting bulk indexing of existing listings...');
 

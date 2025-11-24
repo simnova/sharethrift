@@ -1,8 +1,8 @@
 {
-	"name": "@sthrift/service-cognitive-search",
+	"name": "@sthrift/search-service-index",
 	"version": "1.0.0",
 	"type": "module",
-	"description": "Cognitive Search service for ShareThrift with auto-detection of Azure vs Mock implementation",
+	"description": "Application-specific search service for ShareThrift with index definitions",
 	"main": "dist/index.js",
 	"types": "dist/index.d.ts",
 	"scripts": {
@@ -13,18 +13,16 @@
 		"format": "biome format --write src/"
 	},
 	"keywords": [
-		"cognitive-search",
-		"azure",
 		"search",
-		"service"
+		"search-index",
+		"sharethrift"
 	],
 	"author": "ShareThrift Team",
 	"license": "MIT",
 	"dependencies": {
 		"@cellix/api-services-spec": "workspace:*",
-		"@cellix/mock-cognitive-search": "workspace:*",
-		"@azure/search-documents": "^12.2.0",
-		"@azure/identity": "^4.13.0"
+		"@cellix/search-service": "workspace:*",
+		"@cellix/search-service-mock": "workspace:*"
 	},
 	"devDependencies": {
 		"@cellix/typescript-config": "workspace:*",
