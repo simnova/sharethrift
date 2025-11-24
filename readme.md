@@ -141,7 +141,7 @@ pnpm run dev
 
 ## 🧩 Domain & DDD Conventions
 
-- Bounded contexts under packages/sthrift/domain/src/domain/contexts/\*
+- Bounded contexts under [packages/sthrift/domain/src/domain/contexts/](./packages/sthrift/domain/src/domain/contexts/)\*
 - Each context exposes a clear ubiquitous language via exports
 - Passports/Visas enforce permission checks at aggregate boundaries
 - Value Objects: pure data + validation (no side effects)
@@ -164,7 +164,7 @@ Guidelines:
 
 ## 🧾 Architecture Decisions (ADRs)
 
-Located in `apps/docs/decisions`:
+Located in [apps/docs/docs](/apps/docs/docs)
 
 - 0001-madr-architecture-decisions.md
 - adr-short-template.md
