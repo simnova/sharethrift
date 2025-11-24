@@ -2,11 +2,11 @@ import React from 'react';
 import { Card, Tag, Space, Button, Popconfirm, Badge, Dropdown } from 'antd';
 import { EllipsisOutlined } from '@ant-design/icons';
 import styles from './all-listings-card.module.css';
-import type { MyListingData } from './my-listings-dashboard.types.ts';
+import type { HomeAllListingsTableContainerListingFieldsFragment } from '../../../../../generated.tsx';
 import { getStatusTagClass } from './status-tag-class.ts';
 
 export interface AllListingsCardProps {
-	listing: MyListingData;
+	listing: HomeAllListingsTableContainerListingFieldsFragment;
 	onViewPendingRequests: (id: string) => void;
 	onAction: (action: string, listingId: string) => void;
 }
@@ -16,10 +16,12 @@ const AllListingsCard: React.FC<AllListingsCardProps> = ({
 	onViewPendingRequests,
 	onAction,
 }) => {
-	const getActionButtons = (record: MyListingData) => {
+	const getActionButtons = (record: HomeAllListingsTableContainerListingFieldsFragment) => {
 		const buttons = [];
 
-		if (record.status === 'Active' || record.status === 'Reserved') {
+		const status = record.state ?? 'Unknown';
+
+		if (status === 'Active' || status === 'Reserved') {
 			buttons.push(
 				<Button
 					key="pause"
@@ -32,7 +34,7 @@ const AllListingsCard: React.FC<AllListingsCardProps> = ({
 			);
 		}
 
-		if (record.status === 'Paused' || record.status === 'Expired') {
+		if (status === 'Paused' || status === 'Expired') {
 			buttons.push(
 				<Button
 					key="reinstate"
@@ -45,7 +47,7 @@ const AllListingsCard: React.FC<AllListingsCardProps> = ({
 			);
 		}
 
-		if (record.status === 'Blocked') {
+		if (status === 'Blocked') {
 			buttons.push(
 				<Popconfirm
 					key="appeal"
@@ -62,7 +64,7 @@ const AllListingsCard: React.FC<AllListingsCardProps> = ({
 			);
 		}
 
-		if (record.status === 'Draft') {
+		if (status === 'Draft') {
 			buttons.push(
 				<Button
 					key="publish"
@@ -76,7 +78,7 @@ const AllListingsCard: React.FC<AllListingsCardProps> = ({
 		}
 
 		// Cancel button for active listings
-		if (record.status === 'Active' || record.status === 'Paused') {
+		if (status === 'Active' || status === 'Paused') {
 			buttons.push(
 				<Popconfirm
 					key="cancel"
@@ -99,16 +101,16 @@ const AllListingsCard: React.FC<AllListingsCardProps> = ({
 	return (
 		<Card className={styles['listingCard']} styles={{ body: { padding: 0 } }}>
 			<div className={styles['cardRow']}>
-				{listing.image ? (
+				{listing.images?.[0] ? (
 					<div className={styles['listingImageWrapper']}>
 						<img
 							alt={listing.title}
-							src={listing.image}
+							src={listing.images[0]}
 							className={styles['listingImage']}
 						/>
 						<div className={styles['statusTagOverlay']}>
-							<Tag className={getStatusTagClass(listing.status)}>
-								{listing.status}
+							<Tag className={getStatusTagClass(listing.state ?? 'Unknown')}>
+								{listing.state ?? 'Unknown'}
 							</Tag>
 						</div>
 					</div>
@@ -152,8 +154,13 @@ const AllListingsCard: React.FC<AllListingsCardProps> = ({
 						</Dropdown>
 					</div>
 					<div className={styles['cardMeta']}>
-						<div>Published On: {listing.publishedAt}</div>
-						<div>{listing.reservationPeriod}</div>
+						<div>Published On: {listing.createdAt ? new Date(listing.createdAt).toISOString().slice(0, 10) : 'N/A'}</div>
+						<div>
+							{listing.sharingPeriodStart && listing.sharingPeriodEnd 
+								? `${typeof listing.sharingPeriodStart === 'string' ? listing.sharingPeriodStart.slice(0, 10) : new Date(listing.sharingPeriodStart).toISOString().slice(0, 10)} - ${typeof listing.sharingPeriodEnd === 'string' ? listing.sharingPeriodEnd.slice(0, 10) : new Date(listing.sharingPeriodEnd).toISOString().slice(0, 10)}`
+								: 'N/A'
+							}
+						</div>
 					</div>
 					<div className={styles['cardActions']}>
 						<Space>
@@ -166,15 +173,11 @@ const AllListingsCard: React.FC<AllListingsCardProps> = ({
 								<span style={{ display: 'flex', alignItems: 'center' }}>
 									View Pending Requests
 									<Badge
-										count={listing.pendingRequestsCount}
+										count={0}
 										showZero
 										style={{
-											backgroundColor:
-												listing.pendingRequestsCount > 0
-													? '#ff4d4f'
-													: '#f5f5f5',
-											color:
-												listing.pendingRequestsCount > 0 ? 'white' : '#808080',
+											backgroundColor: '#f5f5f5',
+											color: '#808080',
 											fontSize: 12,
 											marginLeft: '6px',
 										}}
