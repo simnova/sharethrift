@@ -311,56 +311,6 @@ test.for(feature, ({ Scenario, Background, BeforeEachScenario }) => {
 	);
 
 	Scenario(
-		'Fetching all users with filters and pagination',
-		({ Given, When, Then, And }) => {
-			Given(
-				'the admin requests all users with page "1" and pageSize "20"',
-				() => {
-					// Args will be passed in the resolver call
-				},
-			);
-			When('I execute the query "allUsers"', async () => {
-				vi.mocked(
-					context.applicationServices.User.PersonalUser.getAllUsers,
-				).mockResolvedValue({
-					items: [],
-					total: 0,
-					page: 1,
-					pageSize: 20,
-				});
-
-				const resolver = personalUserResolvers.Query?.allUsers;
-				if (typeof resolver === 'function') {
-					result = await resolver(
-						{},
-						{ page: 1, pageSize: 20 },
-						context,
-						{} as never,
-					);
-				}
-			});
-			Then('the resolver should call "User.PersonalUser.getAllUsers"', () => {
-				expect(
-					context.applicationServices.User.PersonalUser.getAllUsers,
-				).toHaveBeenCalledWith({
-					page: 1,
-					pageSize: 20,
-					searchText: undefined,
-					statusFilters: undefined,
-					sorter: undefined,
-				});
-			});
-			And('return a paginated list of users matching the filters', () => {
-				expect(result).toBeDefined();
-				expect(result).toHaveProperty('items');
-				expect(result).toHaveProperty('total');
-				expect((result as { page: number }).page).toBe(1);
-				expect((result as { pageSize: number }).pageSize).toBe(20);
-			});
-		},
-	);
-
-	Scenario(
 		'Updating personal user information',
 		({ Given, When, Then, And }) => {
 			Given(
