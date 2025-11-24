@@ -72,6 +72,9 @@ export const ViewListing: React.FC<ViewListingProps> = ({
 	const handleBlockConfirm = async () => {
 		try {
 			await blockForm.validateFields();
+			// Note: Block reason and description are validated but not currently persisted.
+			// This ensures admins document their reasoning, and fields are ready for future
+			// backend enhancement to store audit trail information.
 			await blockListing({
 				variables: { id: listing.id },
 			});
@@ -201,19 +204,6 @@ export const ViewListing: React.FC<ViewListingProps> = ({
 				{userIsAdmin && (
 					<Col span={24}>
 						<div style={{ display: 'flex', gap: 8, justifyContent: 'flex-end', pointerEvents: 'auto' }}>
-							<Button
-								type="default"
-								onClick={() => {
-									/* Message Sharer action - placeholder */
-								}}
-								style={{
-									backgroundColor: '#5a8f7b',
-									color: 'white',
-									borderColor: '#5a8f7b',
-								}}
-							>
-								Message Sharer
-							</Button>
 							{isBlocked ? (
 								<Button
 									type="primary"
