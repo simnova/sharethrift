@@ -18,4 +18,27 @@ test.for(feature, ({ Scenario }) => {
 			expect(typeof AdminRoleIndex.AdminRolePersistence).toBe('function');
 		});
 	});
+
+	Scenario('Calling AdminRolePersistence returns UnitOfWork', ({ Given, When, Then }) => {
+		let result: ReturnType<typeof AdminRoleIndex.AdminRolePersistence>;
+		const mockModels = {
+			Role: {
+				AdminRole: {} as never,
+			},
+		} as never;
+		const mockPassport = {} as never;
+
+		Given('a models context and passport', () => {
+			// Setup done above
+		});
+
+		When('I call AdminRolePersistence', () => {
+			result = AdminRoleIndex.AdminRolePersistence(mockModels, mockPassport);
+		});
+
+		Then('it should return an object with AdminRoleUnitOfWork', () => {
+			expect(result).toBeDefined();
+			expect(result.AdminRoleUnitOfWork).toBeDefined();
+		});
+	});
 });

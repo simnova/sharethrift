@@ -2,7 +2,7 @@ import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { describeFeature, loadFeature } from '@amiceli/vitest-cucumber';
 import { MongooseSeedwork } from '@cellix/mongoose-seedwork';
-import { expect } from 'vitest';
+import { expect, vi } from 'vitest';
 import { UserAppealRequestDomainAdapter } from './index.ts';
 
 const test = { for: describeFeature };
@@ -21,6 +21,9 @@ function makeAppealRequestDoc() {
 		type: 'harassment',
 		set: function (key: string, value: unknown) {
 			(this as Record<string, unknown>)[key] = value;
+		},
+		populate: function (_field: string) {
+			return Promise.resolve(this);
 		},
 	};
 }
@@ -108,6 +111,96 @@ test.for(feature, ({ Scenario, Background, BeforeEachScenario }) => {
 
 		Then('the state should be "accepted"', () => {
 			expect(adapter.state).toBe('accepted');
+		});
+	});
+
+	Scenario('Setting user property with valid reference', ({ When, Then }) => {
+		When('I set the user property with a valid reference', () => {
+			const setSpy = vi.spyOn(doc, 'set');
+			adapter.user = { id: '507f1f77bcf86cd799439011' } as never;
+			expect(setSpy).toHaveBeenCalledWith('user', expect.any(MongooseSeedwork.ObjectId));
+		});
+
+		Then('the document user field should be updated', () => {
+			// Verified in When block
+		});
+	});
+
+	Scenario('Setting user property with missing id throws error', ({ When, Then }) => {
+		When('I set the user property with a reference missing id', () => {
+			expect(() => {
+				adapter.user = {} as never;
+			}).toThrow('user reference is missing id');
+		});
+
+		Then('it should throw an error about missing user id', () => {
+			// Error thrown in When block
+		});
+	});
+
+	Scenario('Setting blocker property with valid reference', ({ When, Then }) => {
+		When('I set the blocker property with a valid reference', () => {
+			const setSpy = vi.spyOn(doc, 'set');
+			adapter.blocker = { id: '507f1f77bcf86cd799439022' } as never;
+			expect(setSpy).toHaveBeenCalledWith('blocker', expect.any(MongooseSeedwork.ObjectId));
+		});
+
+		Then('the document blocker field should be updated', () => {
+			// Verified in When block
+		});
+	});
+
+	Scenario('Setting blocker property with missing id throws error', ({ When, Then }) => {
+		When('I set the blocker property with a reference missing id', () => {
+			expect(() => {
+				adapter.blocker = {} as never;
+			}).toThrow('blocker reference is missing id');
+		});
+
+		Then('it should throw an error about missing blocker id', () => {
+			// Error thrown in When block
+		});
+	});
+
+	Scenario('Loading user when populated as ObjectId', ({ When, Then, And }) => {
+		When('the user is an ObjectId and I call loadUser', async () => {
+			const oid = new MongooseSeedwork.ObjectId();
+			doc.user = oid as never;
+			doc.populate = vi.fn().mockResolvedValue({
+				...doc,
+				user: { id: '123', userType: 'personal-user' },
+			});
+			adapter = new UserAppealRequestDomainAdapter(doc as never);
+			await adapter.loadUser();
+		});
+
+		Then('it should populate the user field', () => {
+			expect(doc.populate).toHaveBeenCalledWith('user');
+		});
+
+		And('return a PersonalUserDomainAdapter', () => {
+			expect(doc.user).toBeDefined();
+		});
+	});
+
+	Scenario('Loading blocker when populated as ObjectId', ({ When, Then, And }) => {
+		When('the blocker is an ObjectId and I call loadBlocker', async () => {
+			const oid = new MongooseSeedwork.ObjectId();
+			doc.blocker = oid as never;
+			doc.populate = vi.fn().mockResolvedValue({
+				...doc,
+				blocker: { id: '123', userType: 'personal-user' },
+			});
+			adapter = new UserAppealRequestDomainAdapter(doc as never);
+			await adapter.loadBlocker();
+		});
+
+		Then('it should populate the blocker field', () => {
+			expect(doc.populate).toHaveBeenCalledWith('blocker');
+		});
+
+		And('return a PersonalUserDomainAdapter', () => {
+			expect(doc.blocker).toBeDefined();
 		});
 	});
 });

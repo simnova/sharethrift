@@ -56,4 +56,21 @@ test.for(feature, ({ Scenario, Background, BeforeEachScenario }) => {
 			expect(repository.getById).toBeDefined();
 		});
 	});
+
+	Scenario('Getting all appeal requests', ({ When, Then }) => {
+		let result: unknown;
+
+		When('I call getAll with pagination parameters', async () => {
+			result = await repository.getAll({ page: 1, pageSize: 10 });
+		});
+
+		Then('it should return an empty paginated result', () => {
+			expect(result).toEqual({
+				items: [],
+				total: 0,
+				page: 1,
+				pageSize: 10,
+			});
+		});
+	});
 });

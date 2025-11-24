@@ -18,4 +18,27 @@ test.for(feature, ({ Scenario }) => {
 			expect(typeof ConversationIndex.ConversationReadRepositoryImpl).toBe('function');
 		});
 	});
+
+	Scenario('Calling ConversationReadRepositoryImpl returns repository', ({ Given, When, Then }) => {
+		let result: ReturnType<typeof ConversationIndex.ConversationReadRepositoryImpl>;
+		const mockModels = {
+			Conversation: {
+				Conversation: {} as never,
+			},
+		} as never;
+		const mockPassport = {} as never;
+
+		Given('a models context and passport', () => {
+			// Setup done above
+		});
+
+		When('I call ConversationReadRepositoryImpl', () => {
+			result = ConversationIndex.ConversationReadRepositoryImpl(mockModels, mockPassport);
+		});
+
+		Then('it should return an object with ConversationReadRepo', () => {
+			expect(result).toBeDefined();
+			expect(result.ConversationReadRepo).toBeDefined();
+		});
+	});
 });

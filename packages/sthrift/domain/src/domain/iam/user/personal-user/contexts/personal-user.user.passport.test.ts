@@ -51,4 +51,75 @@ test.for(feature, ({ Scenario }) => {
 			expect(passport).toBeInstanceOf(PersonalUserUserPassport);
 		});
 	});
+
+	Scenario('Personal user cannot access admin user for blocking', ({ Given, When, Then }) => {
+		const mockUser = { id: 'user-123', isBlocked: false } as PersonalUserEntityReference;
+		const mockAdmin = { id: 'admin-456', isBlocked: false } as AdminUserEntityReference;
+		let passport: PersonalUserUserPassport;
+		// biome-ignore lint/suspicious/noExplicitAny: Test mock
+		let visa: any;
+		let canBlock: boolean;
+
+		Given('I have a personal user user passport', () => {
+			passport = new PersonalUserUserPassport(mockUser);
+		});
+
+		When('I request access to an admin user', () => {
+			visa = passport.forAdminUser(mockAdmin);
+			canBlock = visa.determineIf((p: { canBlockUsers: boolean }) => p.canBlockUsers);
+		});
+
+		Then('visa should deny all blocking permissions', () => {
+			expect(canBlock).toBe(false);
+		});
+	});
+
+	Scenario('Personal user cannot access admin user for any operations', ({ Given, When, Then }) => {
+		const mockUser = { id: 'user-123', isBlocked: false } as PersonalUserEntityReference;
+		const mockAdmin = { id: 'admin-456', isBlocked: false } as AdminUserEntityReference;
+		let passport: PersonalUserUserPassport;
+		// biome-ignore lint/suspicious/noExplicitAny: Test mock
+		let visa: any;
+		let results: boolean[];
+
+		Given('I have a personal user user passport', () => {
+			passport = new PersonalUserUserPassport(mockUser);
+		});
+
+		When('I request access to an admin user', () => {
+			visa = passport.forAdminUser(mockAdmin);
+			results = [
+				visa.determineIf((p: { canBlockUsers: boolean }) => p.canBlockUsers),
+				visa.determineIf((p: { canUnblockUsers: boolean }) => p.canUnblockUsers),
+				visa.determineIf((p: { canManageUserRoles: boolean }) => p.canManageUserRoles),
+				visa.determineIf(() => true), // Even when function returns true
+			];
+		});
+
+		Then('visa should always return false for any permission check', () => {
+			expect(results).toEqual([false, false, false, false]);
+		});
+	});
+
+	Scenario('PersonalToAdminUserVisa always returns false', ({ Given, When, Then }) => {
+		const mockUser = { id: 'user-123', isBlocked: false } as PersonalUserEntityReference;
+		const mockAdmin = { id: 'admin-456', isBlocked: false } as AdminUserEntityReference;
+		let passport: PersonalUserUserPassport;
+		// biome-ignore lint/suspicious/noExplicitAny: Test mock
+		let visa: any;
+		let result: boolean;
+
+		Given('I have a personal user accessing an admin user', () => {
+			passport = new PersonalUserUserPassport(mockUser);
+			visa = passport.forAdminUser(mockAdmin);
+		});
+
+		When('I check for any permission', () => {
+			result = visa.determineIf(() => true);
+		});
+
+		Then('result should be false', () => {
+			expect(result).toBe(false);
+		});
+	});
 });
