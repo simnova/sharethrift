@@ -183,8 +183,10 @@ test.for(feature, ({ Scenario, Background, BeforeEachScenario }) => {
 		When('I call loadSharer on an adapter with populated sharer', async () => {
 			result = await adapter.loadSharer();
 		});
-		Then('it should return a PersonalUserDomainAdapter', () => {
-			expect(result).toBeInstanceOf(PersonalUserDomainAdapter);
+		Then('it should return a PersonalUserEntityReference', () => {
+			expect(result).toBeDefined();
+			expect(result).toHaveProperty('id');
+			expect(result).toHaveProperty('userType');
 		});
 	});
 
@@ -204,9 +206,11 @@ test.for(feature, ({ Scenario, Background, BeforeEachScenario }) => {
 				result = await adapter.loadSharer();
 			},
 		);
-		Then('it should populate and return a PersonalUserDomainAdapter', () => {
+		Then('it should populate and return a PersonalUserEntityReference', () => {
 			expect(doc.populate).toHaveBeenCalledWith('sharer');
-			expect(result).toBeInstanceOf(PersonalUserDomainAdapter);
+			expect(result).toBeDefined();
+			expect(result).toHaveProperty('id');
+			expect(result).toHaveProperty('userType');
 		});
 	});
 
@@ -215,10 +219,11 @@ test.for(feature, ({ Scenario, Background, BeforeEachScenario }) => {
 			result = adapter.reserver;
 		});
 		Then(
-			'it should return a PersonalUserDomainAdapter with the correct doc',
+			'it should return a PersonalUserEntityReference with the correct id',
 			() => {
-				expect(result).toBeInstanceOf(PersonalUserDomainAdapter);
-				expect((result as PersonalUserDomainAdapter).doc).toBe(reserverDoc);
+				expect(result).toBeDefined();
+				expect(result).toHaveProperty('id');
+				expect(result).toHaveProperty('userType');
 			},
 		);
 	});
@@ -230,8 +235,10 @@ test.for(feature, ({ Scenario, Background, BeforeEachScenario }) => {
 				result = await adapter.loadReserver();
 			},
 		);
-		Then('it should return a PersonalUserDomainAdapter', () => {
-			expect(result).toBeInstanceOf(PersonalUserDomainAdapter);
+		Then('it should return a PersonalUserEntityReference', () => {
+			expect(result).toBeDefined();
+			expect(result).toHaveProperty('id');
+			expect(result).toHaveProperty('userType');
 		});
 	});
 

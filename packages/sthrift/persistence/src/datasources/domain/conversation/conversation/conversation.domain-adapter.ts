@@ -46,7 +46,7 @@ export class ConversationDomainAdapter
 		const adapter = new PersonalUserDomainAdapter(
 			this.doc.sharer as Models.User.PersonalUser,
 		);
-		return adapter.entityReference;
+		return adapter.entityReference; // need this to resolve issue with PropArray of account.billing.transactions
 	}
 
 	async loadSharer(): Promise<

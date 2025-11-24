@@ -32,19 +32,19 @@ Feature: ConversationDomainAdapter
 
   Scenario: Loading sharer when already populated
     When I call loadSharer on an adapter with populated sharer
-    Then it should return a PersonalUserDomainAdapter
+    Then it should return a PersonalUserEntityReference
 
   Scenario: Loading sharer when it is an ObjectId
     When I call loadSharer on an adapter with sharer as ObjectId
-    Then it should populate and return a PersonalUserDomainAdapter
+    Then it should populate and return a PersonalUserEntityReference
 
   Scenario: Getting the reserver property when populated
     When I get the reserver property
-    Then it should return a PersonalUserDomainAdapter with the correct doc
+    Then it should return a PersonalUserEntityReference with the correct id
 
   Scenario: Loading reserver when already populated
     When I call loadReserver on an adapter with populated reserver
-    Then it should return a PersonalUserDomainAdapter
+    Then it should return a PersonalUserEntityReference
 
   Scenario: Getting the listing property when populated
     When I get the listing property
