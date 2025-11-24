@@ -1,42 +1,6 @@
 # ShareThrift
 
-<p align="center">
-
-  <!-- Azure DevOps Build Pipeline -->
-  <a href="https://dev.azure.com/sinmova/sharethrift/_build">
-    <img src="https://dev.azure.com/sinmova/sharethrift/_apis/build/status/sharethrift?branchName=main" alt="Build Status"/>
-  </a>
-
-  <!-- Sonar Quality Gate -->
-  <a href="https://sonarcloud.io/summary/new_code?id=sharethrift">
-    <img src="https://sonarcloud.io/api/project_badges/measure?project=sharethrift&metric=alert_status" alt="Sonar Quality Gate"/>
-  </a>
-
-  <!-- Sonar Coverage -->
-  <a href="https://sonarcloud.io/summary/new_code?id=sharethrift">
-    <img src="https://sonarcloud.io/api/project_badges/measure?project=sharethrift&metric=coverage" alt="Coverage"/>
-  </a>
-
-  <!-- Sonar Bugs -->
-  <a href="https://sonarcloud.io/summary/new_code?id=sharethrift">
-    <img src="https://sonarcloud.io/api/project_badges/measure?project=sharethrift&metric=bugs" alt="Bugs"/>
-  </a>
-
-  <!-- Sonar Vulnerabilities -->
-  <a href="https://sonarcloud.io/summary/new_code?id=sharethrift">
-    <img src="https://sonarcloud.io/api/project_badges/measure?project=sharethrift&metric=vulnerabilities" alt="Vulnerabilities"/>
-  </a>
-
-  <!-- Release Version -->
-  <a href="https://github.com/sinmova/sharethrift/releases">
-    <img src="https://img.shields.io/github/v/release/sinmova/sharethrift" alt="Latest Release"/>
-  </a>
-
-  <!-- License (MIT assumed; change if needed) -->
-  <a href="./LICENSE">
-    <img src="https://img.shields.io/badge/License-MIT-green.svg" alt="License"/>
-  </a>
-</p>
+[![Build Status](https://dev.azure.com/simnova/ShareThrift/_apis/build/status%2FCellixJs?branchName=main)](https://dev.azure.com/simnova/ShareThrift/_build/latest?definitionId=12&branchName=main)
 
 A modern, community‑driven platform designed to reduce waste and enable the sharing of items, services, and classes — empowering individuals and organizations to participate in the circular economy.
 
