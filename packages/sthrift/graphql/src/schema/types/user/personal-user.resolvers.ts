@@ -7,7 +7,10 @@ import type {
 	Resolvers,
 	QueryAllUsersArgs,
 } from '../../builder/generated.ts';
-import type { PersonalUserUpdateCommand } from '@sthrift/application-services';
+import type {
+	PersonalUserUpdateCommand,
+	RefundPaymentCommand,
+} from '@sthrift/application-services';
 import type { Domain } from '@sthrift/domain';
 import { getUserByEmail, currentViewerIsAdmin } from '../../resolver-helper.ts';
 
@@ -204,7 +207,7 @@ const personalUserResolvers: Resolvers = {
 							currency: args.input.currency,
 						},
 					},
-				)
+				);
 			} catch (error) {
 				console.error('Payment processing error:', error);
 				return {
@@ -217,40 +220,33 @@ const personalUserResolvers: Resolvers = {
 						message:
 							error instanceof Error ? error.message : 'Unknown error occurred',
 					},
-				} 
+				};
 			}
 		},
-		// refundPayment: async (_parent, { request }, context) => {
-		// 	console.log('Refunding payment', request);
-		// 	try {
-		// 		const response =
-		// 			await context.applicationServices.Payment.refundPayment({
-		// 				...request,
-		// 				amount: request.amount ?? 0, // Ensure amount is a number, not null
-		// 			});
-		// 		return {
-		// 			...response,
-		// 			success: response.status === 'REFUNDED',
-		// 			message:
-		// 				response.status === 'REFUNDED'
-		// 					? 'Refund processed successfully'
-		// 					: null,
-		// 		} as RefundResponse;
-		// 	} catch (error) {
-		// 		console.error('Refund processing error:', error);
-		// 		return {
-		// 			status: 'FAILED',
-		// 			success: false,
-		// 			message:
-		// 				error instanceof Error ? error.message : 'Unknown error occurred',
-		// 			errorInformation: {
-		// 				reason: 'PROCESSING_ERROR',
-		// 				message:
-		// 					error instanceof Error ? error.message : 'Unknown error occurred',
-		// 			},
-		// 		} as RefundResponse;
-		// 	}
-		// },
+		refundPayment: async (_parent, { request }, context) => {
+			console.log('Refunding payment', request);
+			try {
+				const response =
+					await context.applicationServices.User.PersonalUser.refundPayment({
+						request,
+					} as RefundPaymentCommand);
+
+				return response;
+			} catch (error) {
+				console.error('Refund processing error:', error);
+				return {
+					status: 'FAILED',
+					success: false,
+					message:
+						error instanceof Error ? error.message : 'Unknown error occurred',
+					errorInformation: {
+						reason: 'PROCESSING_ERROR',
+						message:
+							error instanceof Error ? error.message : 'Unknown error occurred',
+					},
+				};
+			}
+		},
 	},
 };
 

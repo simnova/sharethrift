@@ -1,10 +1,13 @@
 import type { Domain } from '@sthrift/domain';
 import type {
 	PaymentService,
-	ProcessPaymentRequest,
-	ProcessPaymentResponse,
-Subscription,
-SubscriptionResponse,
+	Subscription,
+	SubscriptionResponse,
+	TransactionReceipt,
+  ProcessPaymentRequest,
+  ProcessPaymentResponse,
+  RefundPaymentRequest,
+
 } from '@cellix/payment-service';
 
 export interface PaymentPersonalUserRepository {
@@ -16,7 +19,8 @@ export interface PaymentPersonalUserRepository {
 		cybersourceCustomerId: string;
 		startDate: Date;
 	}) => Promise<SubscriptionResponse>;
-  generatePublicKey: () => Promise<string>;
+	generatePublicKey: () => Promise<string>;
+	processRefund: (request: RefundPaymentRequest) => Promise<TransactionReceipt>;
 }
 
 export class PaymentPersonalUserRepositoryImpl
@@ -142,9 +146,19 @@ export class PaymentPersonalUserRepositoryImpl
 		return await this.paymentService.createSubscription(subscriptionInput);
 	}
 
-  async generatePublicKey(): Promise<string> {
-    return await this.paymentService.generatePublicKey();
-  }
+	async generatePublicKey(): Promise<string> {
+		return await this.paymentService.generatePublicKey();
+	}
+
+	async processRefund(
+		request: RefundPaymentRequest,
+	): Promise<TransactionReceipt> {
+		return await this.paymentService.processRefund(
+			request.transactionId,
+			request.amount,
+			request.transactionId,
+		);
+	}
 }
 
 export const getPaymentPersonalUserRepository = (

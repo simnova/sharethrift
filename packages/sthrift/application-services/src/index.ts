@@ -133,3 +133,4 @@ export type { PersonalUserUpdateCommand } from './contexts/user/personal-user/up
 export type { PaymentResponse } from './contexts/user/personal-user/process-payment.ts';
 export type { AdminUserUpdateCommand } from './contexts/user/admin-user/update.ts';
 export type { AdminUserCreateCommand } from './contexts/user/admin-user/create-if-not-exists.ts';
+export type { RefundPaymentCommand } from './contexts/user/personal-user/refund-payment.ts';

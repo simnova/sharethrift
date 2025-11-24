@@ -679,10 +679,27 @@ export interface ProcessPaymentResponse {
 export interface RefundPaymentRequest {
 	userId: string;
 	transactionId: string;
-	amount?: number;
+	amount: number;
 	orderInformation: {
 		amountDetails: {
 			totalAmount: number;
+			currency: string;
+		};
+	};
+}
+
+export interface RefundResponse {
+	id?: string;
+	status: string;
+	success: boolean;
+	message?: string;
+	errorInformation?: {
+		reason: string;
+		message: string;
+	};
+	orderInformation?: {
+		amountDetails: {
+			totalAmount: string;
 			currency: string;
 		};
 	};

@@ -16,11 +16,16 @@ import {
 } from './get-all-users.ts';
 import { update, type PersonalUserUpdateCommand } from './update.ts';
 import { generatePublicKey } from './generate-public-key.ts';
+import type {RefundResponse} from '@cellix/payment-service';
 import {
-type PaymentResponse,
+	type PaymentResponse,
 	type ProcessPaymentCommand,
 	processPayment,
 } from './process-payment.ts';
+import {
+	type RefundPaymentCommand,
+	refundPayment,
+} from './refund-payment.ts';
 
 export interface PersonalUserApplicationService {
 	createIfNotExists: (
@@ -38,6 +43,7 @@ export interface PersonalUserApplicationService {
 	getAllUsers: (command: GetAllUsersCommand) => Promise<PersonalUserPageResult>;
 	processPayment: (command: ProcessPaymentCommand) => Promise<PaymentResponse>;
 	generatePublicKey: () => Promise<string>;
+	refundPayment: (command: RefundPaymentCommand) => Promise<RefundResponse>;
 }
 
 export const PersonalUser = (
@@ -50,7 +56,8 @@ export const PersonalUser = (
 		queryByEmail: queryByEmail(dataSources),
 		getAllUsers: getAllUsers(dataSources),
 		processPayment: processPayment(dataSources),
-    generatePublicKey: generatePublicKey(dataSources),
+		generatePublicKey: generatePublicKey(dataSources),
+		refundPayment: refundPayment(dataSources),
 	};
 };
 

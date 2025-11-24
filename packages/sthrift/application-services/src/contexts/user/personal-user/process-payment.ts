@@ -37,11 +37,7 @@ export const processPayment = (dataSources: DataSources) => {
 					command.request.userId,
 				);
 			if (!personalUser) {
-				return {
-					status: 'FAILED',
-					success: false,
-					message: 'User not found',
-				};
+				throw new Error('User not found');
 			}
 
 			const accountPlan =
@@ -50,11 +46,7 @@ export const processPayment = (dataSources: DataSources) => {
 				);
 
 			if (!accountPlan) {
-				return {
-					status: 'FAILED',
-					success: false,
-					message: 'Account plan not found',
-				} as PaymentResponse;
+				throw new Error('Account plan not found');
 			}
 
 			const sanitizedRequest: ProcessPaymentRequest = {
@@ -80,11 +72,7 @@ export const processPayment = (dataSources: DataSources) => {
 				!response.referenceId ||
 				!response.completedAt
 			) {
-				return {
-					status: 'FAILED',
-					success: false,
-					message: 'Payment failed',
-				} as PaymentResponse;
+				throw new Error('Payment processing failed');
 			}
 
 			// create subscription
