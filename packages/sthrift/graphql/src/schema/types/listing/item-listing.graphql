@@ -88,7 +88,6 @@ extend type Mutation {
   createItemListing(input: CreateItemListingInput!): ItemListing!
   updateItemListing(id: ObjectID!, input: UpdateItemListingInput!): ItemListing!
   pauseItemListing(id: ObjectID!): ItemListing!
-  deleteItemListing(id: ObjectID!): ItemListing!
   cancelItemListing(id: ObjectID!): ItemListingMutationResult!
   deleteItemListing(id: ObjectID!): ItemListingMutationResult!
   unblockListing(id: ObjectID!): Boolean!

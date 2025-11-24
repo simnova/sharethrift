@@ -57,9 +57,6 @@ export interface ItemListingApplicationService {
 		page: number;
 		pageSize: number;
 	}>;
-	update: (
-		command: ItemListingUpdateCommand,
-	) => Promise<Domain.Contexts.Listing.ItemListing.ItemListingEntityReference>;
 }
 
 export const ItemListing = (

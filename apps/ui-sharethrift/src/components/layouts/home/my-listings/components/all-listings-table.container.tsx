@@ -7,6 +7,8 @@ import {
 	HomeAllListingsTableContainerCancelItemListingDocument,
 	HomeAllListingsTableContainerDeleteListingDocument,
 	HomeAllListingsTableContainerMyListingsAllDocument,
+	HomeAllListingsTableContainerCurrentUserDocument,
+	type HomeAllListingsTableContainerCurrentUserQuery,
 } from '../../../../../generated.tsx';
 import { AllListingsTable } from './all-listings-table.tsx';
 
@@ -29,12 +31,13 @@ export const AllListingsTableContainer: React.FC<
 	const pageSize = 6;
 
 	// Query current user to get userId if not in URL
-	const { data: currentUserData } = useQuery(
-		HomeAllListingsTableContainerCurrentUserDocument,
-		{
-			fetchPolicy: 'network-only',
-		},
-	);
+	const { data: currentUserData } =
+		useQuery<HomeAllListingsTableContainerCurrentUserQuery>(
+			HomeAllListingsTableContainerCurrentUserDocument,
+			{
+				fetchPolicy: 'network-only',
+			},
+		);
 
 	const userId =
 		urlUserId || currentUserData?.currentPersonalUserAndCreateIfNotExists?.id;

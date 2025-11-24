@@ -43,12 +43,24 @@ mutation HomeEditListingContainerPauseItemListing($id: ObjectID!) {
 
 mutation HomeEditListingContainerDeleteItemListing($id: ObjectID!) {
 	deleteItemListing(id: $id) {
-		...EditListingItemListingFields
+		status {
+			success
+			errorMessage
+		}
+		listing {
+			...EditListingItemListingFields
+		}
 	}
 }
 
 mutation HomeEditListingContainerCancelItemListing($id: ObjectID!) {
 	cancelItemListing(id: $id) {
-		...EditListingItemListingFields
+		status {
+			success
+			errorMessage
+		}
+		listing {
+			...EditListingItemListingFields
+		}
 	}
 }

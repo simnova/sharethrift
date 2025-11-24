@@ -192,19 +192,6 @@ const itemListingResolvers: Resolvers = {
 			});
 		},
 
-		deleteItemListing: async (_parent, args, context) => {
-			const userEmail =
-				context.applicationServices.verifiedUser?.verifiedJwt?.email;
-			if (!userEmail) {
-				throw new Error('Authentication required');
-			}
-
-			return await context.applicationServices.Listing.ItemListing.update({
-				id: args.id,
-				isDeleted: true,
-			});
-		},
-
 		unblockListing: async (_parent, args, context) => {
 			// Admin-note: role-based authorization should be implemented here (security)
 			await context.applicationServices.Listing.ItemListing.unblock({
@@ -228,10 +215,15 @@ const itemListingResolvers: Resolvers = {
 			args: { id: string },
 			context: GraphContext,
 		) => {
+			const userEmail =
+				context.applicationServices.verifiedUser?.verifiedJwt?.email;
+			if (!userEmail) {
+				throw new Error('Authentication required');
+			}
+
 			await context.applicationServices.Listing.ItemListing.deleteListings({
 				id: args.id,
-				userEmail:
-					context.applicationServices.verifiedUser?.verifiedJwt?.email ?? '',
+				userEmail,
 			});
 			return { status: { success: true } };
 		},
