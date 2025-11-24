@@ -3,7 +3,7 @@ import { expect } from 'storybook/test';
 import { MemoryRouter } from 'react-router-dom';
 import { SectionLayout } from '../section-layout.tsx';
 
-const meta = {
+const meta: Meta<typeof SectionLayout> = {
 	title: 'Layouts/SignupLayout',
 	component: SectionLayout,
 	parameters: {
@@ -16,7 +16,7 @@ const meta = {
 			</MemoryRouter>
 		),
 	],
-} satisfies Meta<typeof SectionLayout>;
+};
 
 export default meta;
 type Story = StoryObj<typeof SectionLayout>;

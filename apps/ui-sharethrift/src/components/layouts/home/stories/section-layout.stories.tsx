@@ -3,7 +3,7 @@ import { expect, userEvent, within } from 'storybook/test';
 import { MemoryRouter } from 'react-router-dom';
 import { HomeTabsLayout } from '../section-layout.tsx';
 
-const meta = {
+const meta: Meta<typeof HomeTabsLayout> = {
 	title: 'Layouts/HomeTabsLayout',
 	component: HomeTabsLayout,
 	parameters: {
@@ -16,7 +16,7 @@ const meta = {
 			</MemoryRouter>
 		),
 	],
-} satisfies Meta<typeof HomeTabsLayout>;
+};
 
 export default meta;
 type Story = StoryObj<typeof HomeTabsLayout>;
