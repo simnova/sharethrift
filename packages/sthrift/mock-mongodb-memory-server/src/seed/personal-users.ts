@@ -1,5 +1,4 @@
 import type { Models } from '@sthrift/data-sources-mongoose-models';
-import { ObjectId } from 'mongodb';
 
 // Extracted repeated address and billing objects to avoid duplicated blocks
 const addressSpringfieldIL = {
