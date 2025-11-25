@@ -156,5 +156,3 @@ export const ListingForm: React.FC<ListingFormProps> = ({
 		</div>
 	);
 };
-
-export default ListingForm;

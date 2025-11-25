@@ -29,7 +29,7 @@ const AppealRequestSchema = new Schema<
 	AppealRequest
 >({}, appealRequestOptions);
 
-export const AppealRequestModelName = 'AppealRequest';
+const AppealRequestModelName = 'AppealRequest';
 
 /**
  * Factory function to create the base AppealRequest model.

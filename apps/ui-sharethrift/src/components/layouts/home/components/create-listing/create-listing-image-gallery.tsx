@@ -84,5 +84,3 @@ export const ImageGallery: FC<ImageGalleryProps> = ({
 		</div>
 	);
 };
-
-export default ImageGallery;

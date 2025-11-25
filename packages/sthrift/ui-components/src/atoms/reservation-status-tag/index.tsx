@@ -24,5 +24,3 @@ export const ReservationStatusTag: React.FC<ReservationStatusTagProps> = ({
 
 	return <Tag color={color}>{statusTextFormatted}</Tag>;
 };
-
-export default ReservationStatusTag;

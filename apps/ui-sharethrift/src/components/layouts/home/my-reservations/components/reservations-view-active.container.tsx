@@ -120,5 +120,3 @@ export const ReservationsViewActiveContainer: React.FC<
 		/>
 	);
 };
-
-export default ReservationsViewActiveContainer;

@@ -8,5 +8,3 @@ export const StatusTag: React.FC<StatusTagProps> = ({ status }) => {
   const color = normalized === 'Appealed' ? 'gold' : 'purple';
   return <Tag color={color}>{normalized}</Tag>;
 };
-
-export default StatusTag;

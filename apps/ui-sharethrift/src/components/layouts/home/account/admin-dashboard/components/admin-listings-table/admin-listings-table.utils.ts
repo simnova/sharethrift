@@ -5,5 +5,3 @@ export function formatDate(dateStr?: string): string {
   const dd = String(d.getDate()).padStart(2, '0');
   return `${d.getFullYear()}-${mm}-${dd}`;
 }
-
-export default formatDate;
