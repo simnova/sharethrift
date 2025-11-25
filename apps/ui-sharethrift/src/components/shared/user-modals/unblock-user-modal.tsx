@@ -1,67 +1,80 @@
 import { Modal, Typography } from 'antd';
-import { CheckCircleOutlined } from '@ant-design/icons';
 
 const { Text, Paragraph } = Typography;
 
 export interface UnblockUserModalProps {
-	visible: boolean;
-	userName: string;
-	blockReason?: string;
-	onConfirm: () => void;
-	onCancel: () => void;
-	loading?: boolean;
+    visible: boolean;
+    userName: string;
+    blockReason?: string;
+    onConfirm: () => void;
+    onCancel: () => void;
+    loading?: boolean;
 }
 
 export const UnblockUserModal: React.FC<Readonly<UnblockUserModalProps>> = ({
-	visible,
-	userName,
-	blockReason,
-	onConfirm,
-	onCancel,
-	loading = false,
+    visible,
+    userName,
+    blockReason,
+    onConfirm,
+    onCancel,
+    loading = false,
 }) => {
-	return (
-		<Modal
-			title={
-				<span>
-					<CheckCircleOutlined style={{ color: '#52c41a', marginRight: 8 }} />
-					Unblock User
-				</span>
-			}
-			open={visible}
-			onOk={onConfirm}
-			onCancel={onCancel}
-			okText="Unblock"
-			okButtonProps={{ type: 'primary', loading }}
-			cancelButtonProps={{ disabled: loading }}
-			width={500}
-			maskClosable={!loading}
-			closable={!loading}
-		>
-			<div style={{ marginTop: 16 }}>
-				<Paragraph>
-					Are you sure you want to unblock <Text strong>{userName}</Text>?
-				</Paragraph>
-				<Paragraph type="secondary" style={{ fontSize: '14px' }}>
-					Unblocking this user will restore their access to the platform and allow
-					them to interact with other users again.
-				</Paragraph>
-				{blockReason && (
-					<div
-						style={{
-							marginTop: 16,
-							padding: 12,
-							background: '#f5f5f5',
-							borderRadius: 4,
-						}}
-					>
-						<Text strong>Original block reason:</Text>
-						<Paragraph style={{ marginTop: 8, marginBottom: 0 }}>
-							{blockReason}
-						</Paragraph>
-					</div>
-				)}
-			</div>
-		</Modal>
-	);
+    return (
+        <Modal
+            title={
+                <span>
+                    Unblock User
+                </span>
+            }
+            open={visible}
+            onOk={onConfirm}
+            onCancel={onCancel}
+            okText="Unblock"
+            okButtonProps={{ type: 'primary', loading }}
+            cancelButtonProps={{ disabled: loading }}
+            width={500}
+            maskClosable={!loading}
+            closable={!loading}
+        >
+            <div style={{ marginTop: 16 }}>
+                <Paragraph>
+                    Are you sure you want to unblock <Text strong>{userName}</Text>?
+                </Paragraph>
+                <Paragraph type="secondary" style={{ fontSize: '14px' }}>
+                    Unblocking this user will restore their access to the platform and allow
+                    them to interact with other users again.
+                </Paragraph>
+                {blockReason && (
+                    <>
+                        <div
+                            style={{
+                                marginTop: 16,
+                                padding: 12,
+                                background: '#f5f5f5',
+                                borderRadius: 4,
+                            }}
+                        >
+                            <Text strong>Original block reason:</Text>
+                            <Paragraph style={{ marginTop: 8, marginBottom: 0 }}>
+                                {blockReason}
+                            </Paragraph>
+                        </div>
+                        <div
+                            style={{
+                                marginTop: 16,
+                                padding: 12,
+                                background: '#f5f5f5',
+                                borderRadius: 4,
+                            }}
+                        >
+                            <Text strong>Original block Description:</Text>
+                            <Paragraph style={{ marginTop: 8, marginBottom: 0 }}>
+                                {block}
+                            </Paragraph>
+                        </div>
+                    </>
+                )}
+            </div>
+        </Modal>
+    );
 };
