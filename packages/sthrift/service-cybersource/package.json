@@ -15,12 +15,11 @@
 		"build": "tsc --project tsconfig.json"
 	},
 	"dependencies": {
-		"axios": "^1.6.0",
-		"@cellix/api-services-spec": "workspace:*"
+		"@cellix/api-services-spec": "workspace:*",
+		"axios": "^1.6.0"
 	},
 	"devDependencies": {
 		"@cellix/typescript-config": "workspace:*",
-		"@cellix/vitest-config": "workspace:*",
 		"typescript": "^5.8.3"
 	},
 	"license": "MIT"

@@ -23,7 +23,6 @@
 		"clean": "rimraf dist"
 	},
 	"dependencies": {
-		"@cellix/messaging-service": "workspace:*",
 		"@sthrift/context-spec": "workspace:*",
 		"@sthrift/domain": "workspace:*",
 		"@sthrift/persistence": "workspace:*",
@@ -32,8 +31,8 @@
 	"devDependencies": {
 		"@cellix/typescript-config": "workspace:*",
 		"@cellix/vitest-config": "workspace:*",
-		"typescript": "^5.8.3",
-		"rimraf": "^6.0.1"
+		"rimraf": "^6.0.1",
+		"typescript": "^5.8.3"
 	},
 	"license": "MIT"
 }
