@@ -44,9 +44,9 @@ export const Requested: Story = {
     expect(buttons.length).toBeGreaterThan(0);
     
     // Verify buttons are visible
-    buttons.forEach(button => {
+    for (const button of buttons) {
       expect(button).toBeVisible();
-    });
+    }
   },
 };
 
