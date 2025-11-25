@@ -91,7 +91,11 @@ export const EditListingContainer: React.FC<EditListingContainerProps> = (
 			console.error('Error updating listing:', error);
 			message.error('Failed to update listing. Please try again.');
 		},
-		refetchQueries: ['GetListings', 'HomeMyListingsDashboardContainerMyListingsRequestsCount'],
+		refetchQueries: [
+			'GetListings',
+			'HomeMyListingsDashboardContainerMyListingsRequestsCount',
+			'HomeAllListingsTableContainerMyListingsAll',
+		],
 	});
 
 	// Pause listing mutation
@@ -107,7 +111,11 @@ export const EditListingContainer: React.FC<EditListingContainerProps> = (
 			console.error('Error pausing listing:', error);
 			message.error('Failed to pause listing. Please try again.');
 		},
-		refetchQueries: ['GetListings', 'HomeMyListingsDashboardContainerMyListingsRequestsCount'],
+		refetchQueries: [
+			'GetListings',
+			'HomeMyListingsDashboardContainerMyListingsRequestsCount',
+			'HomeAllListingsTableContainerMyListingsAll',
+		],
 	});
 
 	// Delete listing mutation
@@ -123,7 +131,11 @@ export const EditListingContainer: React.FC<EditListingContainerProps> = (
 			console.error('Error deleting listing:', error);
 			message.error('Failed to delete listing. Please try again.');
 		},
-		refetchQueries: ['GetListings', 'HomeMyListingsDashboardContainerMyListingsRequestsCount'],
+		refetchQueries: [
+			'GetListings',
+			'HomeMyListingsDashboardContainerMyListingsRequestsCount',
+			'HomeAllListingsTableContainerMyListingsAll',
+		],
 	});
 
 	// Cancel listing mutation
@@ -139,7 +151,11 @@ export const EditListingContainer: React.FC<EditListingContainerProps> = (
 			console.error('Error cancelling listing:', error);
 			message.error('Failed to cancel listing. Please try again.');
 		},
-		refetchQueries: ['GetListings', 'HomeMyListingsDashboardContainerMyListingsRequestsCount'],
+		refetchQueries: [
+			'GetListings',
+			'HomeMyListingsDashboardContainerMyListingsRequestsCount',
+			'HomeAllListingsTableContainerMyListingsAll',
+		],
 	});
 
 	const handleSubmit = async (formData: EditListingFormData) => {
