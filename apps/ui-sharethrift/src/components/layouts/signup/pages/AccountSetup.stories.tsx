@@ -1,7 +1,7 @@
 import type { Meta, StoryObj } from '@storybook/react';
 import { MemoryRouter } from 'react-router-dom';
 import { AccountSetup } from './AccountSetup.tsx';
-import { expect, within } from '@storybook/test';
+import { expect, within } from 'storybook/test';
 
 const meta: Meta<typeof AccountSetup> = {
 	title: 'Pages/Signup/AccountSetup',
