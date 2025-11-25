@@ -22,14 +22,4 @@ type Story = StoryObj<typeof meta>;
 
 export const Default: Story = {};
 
-export const WithoutNotifications: Story = {
-	decorators: [
-		(Story: React.FC) => (
-			<MemoryRouter>
-				<div>
-					<Story />
-				</div>
-			</MemoryRouter>
-		),
-	],
-};
+export const WithoutNotifications: Story = {};

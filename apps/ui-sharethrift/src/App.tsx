@@ -1,4 +1,4 @@
-import { Route, Routes, Navigate } from 'react-router-dom';
+import { Route, Routes } from 'react-router-dom';
 import { HomeRoutes } from './components/layouts/home/index.tsx';
 import { ApolloConnection } from './components/shared/apollo-connection.tsx';
 import { SignupRoutes } from './components/layouts/signup/Index.tsx';
@@ -22,7 +22,6 @@ const App: React.FC = () => {
 				<Route path="/auth-redirect-admin" element={<AuthRedirectAdmin />}/>
 				<Route path="/auth-redirect-user" element={<AuthRedirectUser />} />
 				<Route path="/signup/*" element={signupSection} />
-				<Route path="/" element={<Navigate to="/home" replace />} />
 			</Routes>
 		</ApolloConnection>
 	);

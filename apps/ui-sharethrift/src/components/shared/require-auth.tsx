@@ -4,14 +4,15 @@ const { VITE_B2C_REDIRECT_URI } = import.meta.env;
 import { hasAuthParams, useAuth } from 'react-oidc-context';
 import { Navigate } from 'react-router-dom';
 
-interface RequireAuthProps {
+export interface RequireAuthProps {
 	children: JSX.Element;
-	redirectPath: string;
+	redirectPath?: string;
 	forceLogin?: boolean;
 }
 
 export const RequireAuth: React.FC<RequireAuthProps> = (props) => {
 	const auth = useAuth();
+	const redirectPath = props.redirectPath ?? '/';
 
 	// automatically sign-in
 	useEffect(() => {
@@ -36,6 +37,8 @@ export const RequireAuth: React.FC<RequireAuthProps> = (props) => {
 		auth.isLoading,
 		auth.signinRedirect,
 		auth.error,
+		props.forceLogin,
+		redirectPath,
 	]);
 
 	// automatically refresh token
@@ -62,7 +65,10 @@ export const RequireAuth: React.FC<RequireAuthProps> = (props) => {
 	if (auth.isAuthenticated) {
 		result = props.children;
 	} else if (auth.error) {
-		result = <Navigate to="/" />;
+		result = <Navigate to={redirectPath} replace />;
+	} else if (!auth.isLoading && !auth.activeNavigator && props.forceLogin !== true) {
+		// If not loading, not in the middle of auth flow, and not forcing login redirect
+		result = <Navigate to={redirectPath} replace />;
 	} else {
 		return <div>Checking auth2...</div>;
 	}
