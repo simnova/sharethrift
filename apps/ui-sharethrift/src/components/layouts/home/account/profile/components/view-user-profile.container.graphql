@@ -1,4 +1,4 @@
-query HomeAccountProfileViewUserByIdCurrentUser {
+query HomeAccountViewUserProfileCurrentUser {
 	currentUser {
 		... on PersonalUser {
 			id
@@ -19,7 +19,7 @@ query HomeAccountProfileViewUserByIdCurrentUser {
 	}
 }
 
-query HomeAccountProfileViewUserById($userId: ObjectID!) {
+query HomeAccountViewUserProfileUserById($userId: ObjectID!) {
 	userById(id: $userId) {
 		... on PersonalUser {
 			id
@@ -81,14 +81,14 @@ fragment UserProfileViewAdminUserProfileFields on AdminUserAccountProfile {
 	}
 }
 
-mutation BlockUser($userId: ObjectID!) {
+mutation HomeAccountViewUserProfileBlockUser($userId: ObjectID!) {
 	blockUser(userId: $userId) {
 		id
 		isBlocked
 	}
 }
 
-mutation UnblockUser($userId: ObjectID!) {
+mutation HomeAccountViewUserProfileUnblockUser($userId: ObjectID!) {
 	unblockUser(userId: $userId) {
 		id
 		isBlocked
