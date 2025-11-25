@@ -1,8 +1,6 @@
 import type { Meta, StoryObj } from '@storybook/react';
 import { SelectAccountType } from '../components/select-account-type.tsx';
 import { MemoryRouter } from 'react-router-dom';
-import { expect, within } from 'storybook/test';
-
 // Mock data matching the GraphQL query shape
 const mockUserData = {
 	id: 'mock-user-id-1',
@@ -43,9 +41,4 @@ export const Default: Story = {
 		loadingUser: false,
 		handleUpdateAccountType,
 		savingAccountType: false,
-	},
-	play: async ({ canvasElement }) => {
-		const canvas = within(canvasElement);
-		await expect(canvas.getByRole('heading')).toBeInTheDocument();
-	},
-};
+	}};

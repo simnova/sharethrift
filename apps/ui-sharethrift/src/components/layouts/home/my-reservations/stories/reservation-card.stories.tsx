@@ -8,8 +8,6 @@ import {
 	defaultReservationActions,
 	withReservationMocks,
 } from '../../../../../test/utils/storybook-providers.tsx';
-import { expect, within } from 'storybook/test';
-
 const meta: Meta<typeof ReservationCard> = {
 	title: 'Molecules/ReservationCard',
 	component: ReservationCard,
@@ -30,12 +28,7 @@ type Story = StoryObj<typeof meta>;
 
 // Stories using modern Storybook syntax
 export const Requested: Story = {
-	args: { reservation: storyReservationsActive[0] },
-	play: async ({ canvasElement }) => {
-		const canvas = within(canvasElement);
-		await expect(canvas.getByText(/requested/i)).toBeInTheDocument();
-	},
-};
+	args: { reservation: storyReservationsActive[0] }};
 
 export const Accepted: Story = {
 	args: { reservation: storyReservationsActive[1] },

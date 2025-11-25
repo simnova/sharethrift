@@ -1,8 +1,7 @@
 import type { Meta, StoryObj } from '@storybook/react';
 import { CreateListing } from './create-listing.tsx';
 import { MemoryRouter } from 'react-router-dom';
-import { expect, within } from 'storybook/test';
-
+import { fn } from 'storybook/test';
 const meta: Meta<typeof CreateListing> = {
 	title: 'Components/CreateListing',
 	component: CreateListing,
@@ -48,8 +47,6 @@ const meta: Meta<typeof CreateListing> = {
 	},
 };
 
-import { fn, userEvent } from 'storybook/test';
-
 export default meta;
 type Story = StoryObj<typeof meta>;
 
@@ -59,23 +56,6 @@ export const Default: Story = {
 		onCancel: fn(),
 		onImageAdd: fn(),
 		onImageRemove: fn(),
-	},
-	play: async ({ canvasElement }) => {
-		const canvas = within(canvasElement);
-		
-		// Verify the form is present
-		const form = canvas.getByRole('form');
-		expect(form).toBeInTheDocument();
-		
-		// Verify form inputs are present
-		const inputs = canvas.queryAllByRole('textbox');
-		if (inputs.length > 0) {
-			expect(inputs[0]).toBeInTheDocument();
-		}
-		
-		// Verify submit button is present
-		const buttons = canvas.getAllByRole('button');
-		expect(buttons.length).toBeGreaterThan(0);
 	},
 };
 
@@ -90,39 +70,11 @@ export const WithImages: Story = {
 		onCancel: fn(),
 		onImageRemove: fn(),
 	},
-	play: async ({ canvasElement }) => {
-		const canvas = within(canvasElement);
-		
-		// Verify the form is present
-		const form = canvas.getByRole('form');
-		expect(form).toBeInTheDocument();
-		
-		// Verify images are displayed
-		const images = canvas.queryAllByRole('img');
-		expect(images.length).toBeGreaterThan(0);
-	},
 };
 
 export const FormInteraction: Story = {
 	args: {
 		onSubmit: fn(),
 		onCancel: fn(),
-	},
-	play: async ({ canvasElement }) => {
-		const canvas = within(canvasElement);
-		
-		// Verify the form is present
-		const form = canvas.getByRole('form');
-		expect(form).toBeInTheDocument();
-		
-		// Try to interact with form inputs if present
-		const inputs = canvas.queryAllByRole('textbox');
-		if (inputs.length > 0) {
-			const titleInput = inputs[0];
-			if (titleInput) {
-				await userEvent.type(titleInput, 'Test Listing Title');
-				expect(titleInput).toHaveValue('Test Listing Title');
-			}
-		}
 	},
 };

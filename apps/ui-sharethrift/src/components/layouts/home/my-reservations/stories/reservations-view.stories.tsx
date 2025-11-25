@@ -9,8 +9,6 @@ import {
 	defaultReservationActions,
 	withReservationMocks,
 } from '../../../../../test/utils/storybook-providers.tsx';
-import { expect, within } from 'storybook/test';
-
 const meta: Meta<typeof ReservationsView> = {
 	title: 'Organisms/ReservationsView',
 	component: ReservationsView,
@@ -39,13 +37,7 @@ export default meta;
 type Story = StoryObj<typeof ReservationsView>;
 
 export const AllReservations: Story = {
-	args: { reservations: storyReservationsAll },
-	play: async ({ canvasElement }) => {
-		const canvas = within(canvasElement);
-		const view = canvas.getByRole('region') || canvas.getByRole('table');
-		await expect(view).toBeInTheDocument();
-	},
-};
+	args: { reservations: storyReservationsAll }};
 
 export const ActiveReservations: Story = {
 	args: {

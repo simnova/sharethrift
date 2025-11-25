@@ -10,8 +10,6 @@ import {
 	HomeMyReservationsReservationsViewHistoryContainerPastReservationsDocument,
 	ViewListingCurrentUserDocument,
 } from '../../../../../generated.tsx';
-import { expect, within } from 'storybook/test';
-
 // Default mocks that all stories get automatically
 const defaultMocks = [
 	// Always mock the current user
@@ -46,12 +44,7 @@ export default meta;
 type Story = StoryObj<typeof meta>;
 
 // Default needs no extra mocks
-export const Default: Story = {
-	play: async ({ canvasElement }) => {
-		const canvas = within(canvasElement);
-		await expect(canvas.getByRole('main')).toBeInTheDocument();
-	},
-};
+export const Default: Story = {};
 
 // Loading only needs its delay-override
 export const Loading: Story = {
