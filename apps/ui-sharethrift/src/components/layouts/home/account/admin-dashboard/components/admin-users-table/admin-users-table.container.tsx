@@ -43,7 +43,7 @@ export const AdminUsersTableContainer: React.FC<Readonly<AdminUsersTableContaine
     }
   );
 
-  const [blockUser] = useMutation(BlockUserDocument, {
+  const [blockUser,{ loading: blockLoading }] = useMutation(BlockUserDocument, {
     onCompleted: () => {
       message.success("User blocked successfully");
       refetch();
@@ -53,7 +53,7 @@ export const AdminUsersTableContainer: React.FC<Readonly<AdminUsersTableContaine
     },
   });
 
-  const [unblockUser] = useMutation(UnblockUserDocument, {
+  const [unblockUser,{ loading: unblockLoading }] = useMutation(UnblockUserDocument, {
     onCompleted: () => {
       message.success("User unblocked successfully");
       refetch();
@@ -161,6 +161,8 @@ export const AdminUsersTableContainer: React.FC<Readonly<AdminUsersTableContaine
           onTableChange={handleTableChange}
           onPageChange={onPageChange}
           onAction={handleAction}
+          blockLoading={blockLoading}
+          unblockLoading={unblockLoading}
         />
       }
     />
