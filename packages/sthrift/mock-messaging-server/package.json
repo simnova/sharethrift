@@ -3,16 +3,15 @@
 	"version": "1.0.0",
 	"private": true,
 	"type": "module",
-	"main": "./dist/src/index.js",
+	"files": [
+		"dist"
+	],
 	"exports": {
 		".": {
 			"types": "./dist/src/index.d.ts",
 			"default": "./dist/src/index.js"
 		}
 	},
-	"files": [
-		"dist"
-	],
 	"license": "MIT",
 	"scripts": {
 		"prebuild": "biome lint",

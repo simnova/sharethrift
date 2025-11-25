@@ -6,15 +6,15 @@
     "description": "",
     "type": "module",
     "main": "./dist/src/index.js",
+    "files": [
+        "dist"
+    ],
     "exports": {
         ".": {
             "types": "./dist/src/index.d.ts",
             "default": "./dist/src/index.js"
         }
     },
-    "files": [
-        "dist"
-    ],
     "scripts": {
         "prebuild": "biome lint",
         "build": "tsc --build",
