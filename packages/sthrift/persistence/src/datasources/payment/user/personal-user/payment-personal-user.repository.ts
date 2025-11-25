@@ -1,19 +1,22 @@
 import type { Domain } from '@sthrift/domain';
 import type {
+	CustomerPaymentInstrumentsResponse,
+	CustomerProfile,
 	PaymentService,
+	PaymentTokenInfo,
+	PaymentTransactionResponse,
 	Subscription,
 	SubscriptionResponse,
 	TransactionReceipt,
-  ProcessPaymentRequest,
-  ProcessPaymentResponse,
-  RefundPaymentRequest,
-
+	RefundPaymentRequest,
 } from '@cellix/payment-service';
 
 export interface PaymentPersonalUserRepository {
 	processPayment: (
-		request: ProcessPaymentRequest,
-	) => Promise<ProcessPaymentResponse>;
+		clientReferenceCode: string,
+		paymentInstrumentId: string,
+		amount: number,
+	) => Promise<TransactionReceipt>;
 	createSubscription: (params: {
 		planId: string;
 		cybersourceCustomerId: string;
@@ -21,6 +24,13 @@ export interface PaymentPersonalUserRepository {
 	}) => Promise<SubscriptionResponse>;
 	generatePublicKey: () => Promise<string>;
 	processRefund: (request: RefundPaymentRequest) => Promise<TransactionReceipt>;
+	createCustomerProfile: (
+		paymentInstrument: CustomerProfile,
+		paymentTokenInfo: PaymentTokenInfo,
+	) => Promise<PaymentTransactionResponse>;
+	getCustomerPaymentInstruments: (
+		cybersourceCustomerId: string,
+	) => Promise<CustomerPaymentInstrumentsResponse>;
 }
 
 export class PaymentPersonalUserRepositoryImpl
@@ -31,99 +41,34 @@ export class PaymentPersonalUserRepositoryImpl
 		this.paymentService = paymentService;
 	}
 
+	async createCustomerProfile(
+		paymentInstrument: CustomerProfile,
+		paymentTokenInfo: PaymentTokenInfo,
+	): Promise<PaymentTransactionResponse> {
+		return await this.paymentService.createCustomerProfile(
+			paymentInstrument,
+			paymentTokenInfo,
+		);
+	}
+
+	async getCustomerPaymentInstruments(
+		cybersourceCustomerId: string,
+	): Promise<CustomerPaymentInstrumentsResponse> {
+		return await this.paymentService.getCustomerPaymentInstruments(
+			cybersourceCustomerId,
+		);
+	}
+
 	async processPayment(
-		request: ProcessPaymentRequest,
-	): Promise<ProcessPaymentResponse> {
-		try {
-			const amount = request.paymentAmount;
-			// create cybersource customer using paymentInstrument info
-			const cybersourceCustomerProfile =
-				await this.paymentService.createCustomerProfile(
-					request.paymentInstrument,
-					{
-						paymentToken: request.paymentInstrument.paymentToken,
-						isDefault: true,
-					},
-				);
-			const cybersourceCustomerId =
-				cybersourceCustomerProfile?.tokenInformation.customer.id;
-
-			// get payment instrument info using cybersourceCustomerId
-			const paymentInstruments =
-				await this.paymentService.getCustomerPaymentInstruments(
-					cybersourceCustomerId,
-				);
-			const paymentInstrumentId =
-				paymentInstruments._embedded.paymentInstruments?.[0]?.id;
-
-			if (!paymentInstrumentId) {
-				const failure: ProcessPaymentResponse = {
-					status: 'FAILED',
-					errorInformation: {
-						reason: 'NO_PAYMENT_INSTRUMENT',
-						message: 'No valid payment instrument found',
-					},
-				};
-
-				return failure;
-			}
-
-			const referenceId = `sharethrift-${request.userId}`;
-
-			const receipt = await this.paymentService.processPayment(
-				referenceId,
-				paymentInstrumentId,
-				amount,
-			);
-
-			if (!receipt?.isSuccess) {
-				const failure: ProcessPaymentResponse = {
-					status: 'FAILED',
-					errorInformation: {
-						reason: receipt?.errorCode ?? 'PROCESSING_ERROR',
-						message: receipt?.errorMessage ?? 'Payment failed',
-					},
-					orderInformation: {
-						amountDetails: {
-							totalAmount: amount.toString(),
-							currency: request.currency,
-						},
-					},
-				};
-				if (receipt?.transactionId) {
-					failure.id = receipt.transactionId;
-				}
-				return failure;
-			}
-
-			const success: ProcessPaymentResponse = {
-				status: 'SUCCEEDED',
-				cybersourceCustomerId: cybersourceCustomerId,
-				orderInformation: {
-					amountDetails: {
-						totalAmount: amount.toString(),
-						currency: request.currency,
-					},
-				},
-				referenceId: referenceId,
-				completedAt: receipt.completedAt,
-				transactionId: receipt.transactionId ?? '',
-			};
-			if (receipt.transactionId) {
-				success.id = receipt.transactionId;
-			}
-			return success;
-		} catch (error) {
-			console.error('Payment processing error:', error);
-			return {
-				status: 'FAILED',
-				errorInformation: {
-					reason: 'PROCESSING_ERROR',
-					message:
-						error instanceof Error ? error.message : 'Unknown error occurred',
-				},
-			};
-		}
+		clientReferenceCode: string,
+		paymentInstrumentId: string,
+		amount: number,
+	): Promise<TransactionReceipt> {
+		return await this.paymentService.processPayment(
+			clientReferenceCode,
+			paymentInstrumentId,
+			amount,
+		);
 	}
 
 	async createSubscription(params: {

@@ -60,18 +60,40 @@ export const processPayment = (dataSources: DataSources) => {
 				},
 			};
 
-			const response =
-				await dataSources.paymentDataSource?.PersonalUser.PersonalUser.PaymentPersonalUserRepo.processPayment(
-					sanitizedRequest,
+			const amount = command.request.paymentAmount;
+			// create cybersource customer using paymentInstrument info
+			const cybersourceCustomerProfile =
+				await dataSources.paymentDataSource?.PersonalUser.PersonalUser.PaymentPersonalUserRepo.createCustomerProfile(
+					sanitizedRequest.paymentInstrument,
+					{
+						paymentToken: command.request.paymentInstrument.paymentToken,
+						isDefault: true,
+					},
 				);
 
-			if (
-				response.status === 'FAILED' ||
-				!response.cybersourceCustomerId ||
-				!response.transactionId ||
-				!response.referenceId ||
-				!response.completedAt
-			) {
+			const cybersourceCustomerId =
+				cybersourceCustomerProfile?.tokenInformation.customer.id;
+
+			// get payment instrument info using cybersourceCustomerId
+			const paymentInstruments =
+				await dataSources.paymentDataSource?.PersonalUser.PersonalUser.PaymentPersonalUserRepo.getCustomerPaymentInstruments(
+					cybersourceCustomerId,
+				);
+			const paymentInstrumentId =
+				paymentInstruments._embedded.paymentInstruments?.[0]?.id;
+
+			if (!paymentInstrumentId) {
+				throw new Error('No valid payment instrument found');
+			}
+			const referenceId = `sharethrift-${command.request.userId}`;
+			const receipt =
+				await dataSources.paymentDataSource?.PersonalUser.PersonalUser.PaymentPersonalUserRepo.processPayment(
+					referenceId,
+					paymentInstrumentId,
+					amount,
+				);
+
+			if (!receipt.isSuccess) {
 				throw new Error('Payment processing failed');
 			}
 
@@ -81,7 +103,7 @@ export const processPayment = (dataSources: DataSources) => {
 				await dataSources.paymentDataSource.PersonalUser.PersonalUser.PaymentPersonalUserRepo.createSubscription(
 					{
 						planId: accountPlan?.cybersourcePlanId ?? '',
-						cybersourceCustomerId: response.cybersourceCustomerId,
+						cybersourceCustomerId: cybersourceCustomerId,
 						startDate: subscriptionStartDay,
 					},
 				);
@@ -96,7 +118,7 @@ export const processPayment = (dataSources: DataSources) => {
 					existingPersonalUser.hasCompletedOnboarding = true;
 
 					existingPersonalUser.account.profile.billing.cybersourceCustomerId =
-						response.cybersourceCustomerId as string;
+						cybersourceCustomerId as string;
 
 					existingPersonalUser.account.profile.billing.subscription.subscriptionId =
 						subscription.id;
@@ -108,11 +130,11 @@ export const processPayment = (dataSources: DataSources) => {
 						subscriptionStartDay;
 
 					existingPersonalUser.requestAddAccountProfileBillingTransaction(
-						response.transactionId as string,
-						sanitizedRequest.paymentAmount,
-						response.referenceId ?? '',
-						response.status,
-						response.completedAt ?? new Date(),
+						receipt.transactionId as string,
+						amount,
+						referenceId,
+						receipt.isSuccess ? 'SUCCEEDED' : 'FAILED',
+						receipt.completedAt ?? new Date(),
 					);
 
 					await repo.save(existingPersonalUser);
@@ -120,15 +142,21 @@ export const processPayment = (dataSources: DataSources) => {
 			);
 
 			return {
-				...response,
-				success: response.status === 'SUCCEEDED',
-				cybersourceCustomerId: response.cybersourceCustomerId,
+				id: receipt.transactionId,
+				success: receipt.isSuccess,
+				cybersourceCustomerId: cybersourceCustomerId,
 				cybersourceSubscriptionId: subscription.id,
 				cybersourcePlanId: accountPlan?.cybersourcePlanId ?? '',
-				message:
-					response.status === 'SUCCEEDED'
-						? 'Payment processed successfully'
-						: undefined,
+				message: receipt.isSuccess
+					? 'Payment processed successfully'
+					: undefined,
+				status: receipt.isSuccess ? 'SUCCEEDED' : 'FAILED',
+        orderInformation:{
+          amountDetails: {
+            totalAmount: command.request.paymentAmount.toString(),
+            currency: command.request.currency,
+          }
+        }
 			} as PaymentResponse;
 		} catch (error) {
 			console.error('Payment processing error:', error);

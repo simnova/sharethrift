@@ -132,7 +132,6 @@ export const personalUsers: Models.User.PersonalUser[] = [
 		userType: 'personal-users',
 		isBlocked: false,
 		hasCompletedOnboarding: false,
-		role: new ObjectId('607f1f77bcf86cd799439021'),
 		account: {
 			accountType: 'verified-personal',
 			email: 'nkduy2010@gmail.com',
