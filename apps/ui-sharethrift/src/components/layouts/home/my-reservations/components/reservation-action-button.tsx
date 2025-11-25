@@ -23,5 +23,3 @@ export const ReservationActionButton: React.FC<
 		</Button>
 	);
 };
-
-export default ReservationActionButton;
