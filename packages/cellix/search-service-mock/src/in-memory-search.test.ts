@@ -12,7 +12,7 @@ describe('InMemoryCognitiveSearch', () => {
 
 	beforeEach(async () => {
 		searchService = new InMemoryCognitiveSearch();
-		await searchService.startup();
+		await searchService.startUp();
 
 		testIndex = {
 			name: 'test-index',

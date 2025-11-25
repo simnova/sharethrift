@@ -184,18 +184,22 @@ export class LiQEFilterEngine {
 		// field le value -> field:<=value
 		liqeQuery = liqeQuery.replace(/(\w+)\s+le\s+(\d+)/g, '$1:<=$2');
 
-		// field eq 'value' -> field:value
-		liqeQuery = liqeQuery.replace(/(\w+)\s+eq\s+['"]?([^'"]+)['"]?/g, '$1:$2');
-
-		// field ne 'value' -> NOT field:value
+		// field eq 'value' -> field:/^value$/ (use regex for exact match)
+		// LiQE's default : operator does substring matching, so we use regex anchors
 		liqeQuery = liqeQuery.replace(
-			/(\w+)\s+ne\s+['"]?([^'"]+)['"]?/g,
-			'NOT $1:$2',
+			/(\w+)\s+eq\s+['"]([^'"]+)['"]/g,
+			'$1:/^$2$$/',
 		);
 
-		// Handle boolean values
-		liqeQuery = liqeQuery.replace(/(\w+)\s+eq\s+true/g, '$1:true');
-		liqeQuery = liqeQuery.replace(/(\w+)\s+eq\s+false/g, '$1:false');
+		// field ne 'value' -> NOT field:/^value$/ (use regex for exact match)
+		liqeQuery = liqeQuery.replace(
+			/(\w+)\s+ne\s+['"]([^'"]+)['"]/g,
+			'NOT $1:/^$2$$/',
+		);
+
+		// Handle boolean values (exact match)
+		liqeQuery = liqeQuery.replace(/(\w+)\s+eq\s+true/g, '$1:/^true$$/');
+		liqeQuery = liqeQuery.replace(/(\w+)\s+eq\s+false/g, '$1:/^false$$/');
 
 		// Handle logical operators (case insensitive)
 		liqeQuery = liqeQuery.replace(/\sand\s/gi, ' AND ');
@@ -288,4 +292,3 @@ export class LiQEFilterEngine {
 		};
 	}
 }
-
