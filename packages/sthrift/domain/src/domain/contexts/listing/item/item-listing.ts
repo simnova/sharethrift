@@ -110,10 +110,6 @@ export class ItemListing<props extends ItemListingProps>
 		this.isNew = true;
 	}
 
-	private touch(): void {
-		this.props.updatedAt = new Date();
-	}
-
 	//#endregion Methods
 
 	//#region Properties
@@ -138,10 +134,6 @@ export class ItemListing<props extends ItemListingProps>
 			);
 		}
 		this.props.title = new ValueObjects.Title(value).valueOf();
-		if (!this.isNew) {
-			this.touch();
-		}
-		// Note: updatedAt is automatically handled by Mongoose timestamps
 	}
 
 	get description(): string {
@@ -157,10 +149,6 @@ export class ItemListing<props extends ItemListingProps>
 			);
 		}
 		this.props.description = new ValueObjects.Description(value).valueOf();
-		if (!this.isNew) {
-			this.touch();
-		}
-		// Note: updatedAt is automatically handled by Mongoose timestamps
 	}
 
 	get category(): string {
@@ -176,10 +164,6 @@ export class ItemListing<props extends ItemListingProps>
 			);
 		}
 		this.props.category = new ValueObjects.Category(value).valueOf();
-		if (!this.isNew) {
-			this.touch();
-		}
-		// Note: updatedAt is automatically handled by Mongoose timestamps
 	}
 
 	get location(): string {
@@ -195,10 +179,6 @@ export class ItemListing<props extends ItemListingProps>
 			);
 		}
 		this.props.location = new ValueObjects.Location(value).valueOf();
-		if (!this.isNew) {
-			this.touch();
-		}
-		// Note: updatedAt is automatically handled by Mongoose timestamps
 	}
 
 	get sharingPeriodStart(): Date {
@@ -214,10 +194,6 @@ export class ItemListing<props extends ItemListingProps>
 			);
 		}
 		this.props.sharingPeriodStart = value;
-		if (!this.isNew) {
-			this.touch();
-		}
-		// Note: updatedAt is automatically handled by Mongoose timestamps
 	}
 
 	get sharingPeriodEnd(): Date {
@@ -233,10 +209,6 @@ export class ItemListing<props extends ItemListingProps>
 			);
 		}
 		this.props.sharingPeriodEnd = value;
-		if (!this.isNew) {
-			this.touch();
-		}
-		// Note: updatedAt is automatically handled by Mongoose timestamps
 	}
 
 	get state(): string {
@@ -295,10 +267,6 @@ export class ItemListing<props extends ItemListingProps>
 			);
 		}
 		this.props.images = value;
-		if (!this.isNew) {
-			this.touch();
-		}
-		// Note: updatedAt is automatically handled by Mongoose timestamps
 	}
 
 	get isActive(): boolean {
@@ -328,10 +296,6 @@ export class ItemListing<props extends ItemListingProps>
 		}
 
 		this.props.state = new ValueObjects.ListingState('Published').valueOf();
-		if (!this.isNew) {
-			this.touch();
-		}
-		// Note: updatedAt is automatically handled by Mongoose timestamps
 	}
 
 	public pause(): void {
@@ -346,10 +310,6 @@ export class ItemListing<props extends ItemListingProps>
 		}
 
 		this.props.state = new ValueObjects.ListingState('Paused').valueOf();
-		if (!this.isNew) {
-			this.touch();
-		}
-		// Note: updatedAt is automatically handled by Mongoose timestamps
 	}
 
 	public cancel(): void {
@@ -362,9 +322,6 @@ export class ItemListing<props extends ItemListingProps>
 		}
 
 		this.props.state = new ValueObjects.ListingState('Cancelled').valueOf();
-		if (!this.isNew) {
-			this.touch();
-		}
 	}
 
 	/**
