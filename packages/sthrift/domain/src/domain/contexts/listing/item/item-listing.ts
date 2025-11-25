@@ -91,8 +91,8 @@ export class ItemListing<props extends ItemListingProps>
 			sharingPeriodEnd: sharingPeriodEnd,
 			images: fields.images ?? [],
 			state: isDraft
-				? ValueObjects.ListingState.Drafted
-				: ValueObjects.ListingState.Published,
+				? ValueObjects.ListingState.Drafted.valueOf()
+				: ValueObjects.ListingState.Published.valueOf(),
 			createdAt: now,
 			updatedAt: now,
 			schemaVersion: 1,
@@ -134,7 +134,6 @@ export class ItemListing<props extends ItemListingProps>
 			);
 		}
 		this.props.title = new ValueObjects.Title(value).valueOf();
-		// Note: updatedAt is automatically handled by Mongoose timestamps
 	}
 
 	get description(): string {
@@ -150,7 +149,6 @@ export class ItemListing<props extends ItemListingProps>
 			);
 		}
 		this.props.description = new ValueObjects.Description(value).valueOf();
-		// Note: updatedAt is automatically handled by Mongoose timestamps
 	}
 
 	get category(): string {
@@ -166,7 +164,6 @@ export class ItemListing<props extends ItemListingProps>
 			);
 		}
 		this.props.category = new ValueObjects.Category(value).valueOf();
-		// Note: updatedAt is automatically handled by Mongoose timestamps
 	}
 
 	get location(): string {
@@ -182,7 +179,6 @@ export class ItemListing<props extends ItemListingProps>
 			);
 		}
 		this.props.location = new ValueObjects.Location(value).valueOf();
-		// Note: updatedAt is automatically handled by Mongoose timestamps
 	}
 
 	get sharingPeriodStart(): Date {
@@ -198,7 +194,6 @@ export class ItemListing<props extends ItemListingProps>
 			);
 		}
 		this.props.sharingPeriodStart = value;
-		// Note: updatedAt is automatically handled by Mongoose timestamps
 	}
 
 	get sharingPeriodEnd(): Date {
@@ -214,11 +209,29 @@ export class ItemListing<props extends ItemListingProps>
 			);
 		}
 		this.props.sharingPeriodEnd = value;
-		// Note: updatedAt is automatically handled by Mongoose timestamps
 	}
 
 	get state(): string {
 		return this.props.state;
+	}
+
+	set state(value: string) {
+		// State transition logic - determines what transitions are valid
+		switch (value) {
+			case ValueObjects.ListingStateEnum.Published:
+				this.publish();
+				break;
+			case ValueObjects.ListingStateEnum.Paused:
+				this.pause();
+				break;
+			case ValueObjects.ListingStateEnum.Cancelled:
+				this.cancel();
+				break;
+			default:
+				throw new DomainSeedwork.PermissionError(
+					`Cannot transition to state: ${value}`,
+				);
+		}
 	}
 
 	get updatedAt(): Date {
@@ -254,7 +267,6 @@ export class ItemListing<props extends ItemListingProps>
 			);
 		}
 		this.props.images = value;
-		// Note: updatedAt is automatically handled by Mongoose timestamps
 	}
 
 	get isActive(): boolean {
@@ -284,7 +296,6 @@ export class ItemListing<props extends ItemListingProps>
 		}
 
 		this.props.state = new ValueObjects.ListingState('Published').valueOf();
-		// Note: updatedAt is automatically handled by Mongoose timestamps
 	}
 
 	public pause(): void {
@@ -299,7 +310,6 @@ export class ItemListing<props extends ItemListingProps>
 		}
 
 		this.props.state = new ValueObjects.ListingState('Paused').valueOf();
-		// Note: updatedAt is automatically handled by Mongoose timestamps
 	}
 
 	public cancel(): void {

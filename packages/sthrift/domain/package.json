@@ -19,7 +19,7 @@
 		"test": "vitest run",
 		"test:coverage": "vitest run --coverage",
 		"test:integration": "vitest run integration.test.ts",
-		"test:serenity": "cucumber-js",
+		"test:serenity": "cucumber-js --config cucumber.yaml",
 		"test:unit": "vitest run --exclude tests/integration/**/*.test.ts",
 		"test:watch": "vitest",
 		"lint": "biome lint",
