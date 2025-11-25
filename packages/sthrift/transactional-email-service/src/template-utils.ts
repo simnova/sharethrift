@@ -19,10 +19,40 @@ export class TemplateUtils {
 
 	constructor() {
 		// Template directory relative to project root
-		this.baseTemplateDir = path.join(
-			process.cwd(),
-			'./assets/email-templates',
-		);
+		// Search upward from current directory to find the monorepo root containing assets
+		this.baseTemplateDir = this.findTemplateDirectory();
+	}
+
+	/**
+	 * Find the email templates directory by searching upward from the current working directory
+	 * @returns Path to the email templates directory
+	 */
+	private findTemplateDirectory(): string {
+		let currentDir = process.cwd();
+		
+		// First try the default location relative to current working directory
+		const defaultPath = path.join(currentDir, './assets/email-templates');
+		if (fs.existsSync(defaultPath)) {
+			return defaultPath;
+		}
+
+		// Search upward for the monorepo root (look for assets/email-templates)
+		while (currentDir !== path.dirname(currentDir)) { // Stop at filesystem root
+			const templatesPath = path.join(currentDir, 'assets', 'email-templates');
+			if (fs.existsSync(templatesPath)) {
+				return templatesPath;
+			}
+			currentDir = path.dirname(currentDir);
+		}
+
+		// Fallback: try environment variable if set
+		const envPath = process.env['EMAIL_TEMPLATES_PATH'];
+		if (envPath && fs.existsSync(envPath)) {
+			return envPath;
+		}
+
+		// If nothing found, use the default path (will fail at runtime but with a clearer error)
+		return path.join(process.cwd(), './assets/email-templates');
 	}
 
 	/**

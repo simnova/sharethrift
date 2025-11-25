@@ -253,15 +253,18 @@ test.for(feature, ({ Scenario, Background, BeforeEachScenario }) => {
             let reserver: Domain.Contexts.User.PersonalUser.PersonalUserEntityReference;
             let listing: Domain.Contexts.Listing.ItemListing.ItemListingEntityReference;
             Given("a valid Listing domain entity reference", () => {
-                listing = vi.mocked({
+                listing = {
                     id: createValidObjectId('listing-1'),
                     state: 'Published',
-                } as unknown as Domain.Contexts.Listing.ItemListing.ItemListingEntityReference);
+                    sharer: {
+                        id: createValidObjectId('sharer-1'),
+                    } as unknown as Domain.Contexts.User.UserEntityReference,
+                } as unknown as Domain.Contexts.Listing.ItemListing.ItemListingEntityReference;
             });
             And('a valid PersonalUser domain entity reference as reserver', () => {
-                reserver = vi.mocked({
+                reserver = {
                     id: createValidObjectId('user-1'),
-                } as unknown as Domain.Contexts.User.PersonalUser.PersonalUserEntityReference);
+                } as unknown as Domain.Contexts.User.PersonalUser.PersonalUserEntityReference;
             });
             And('reservation period from "2025-10-20" to "2025-10-25"', () => {
                 // Dates are provided in the When step
