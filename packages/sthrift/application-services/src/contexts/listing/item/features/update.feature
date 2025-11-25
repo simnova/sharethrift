@@ -45,6 +45,12 @@ Feature: Update Item Listing
     Then the listing images should contain both images
     And the listing should be saved to the repository
 
+  Scenario: Requesting listing deletion via update
+    Given a listing with id "listing-123" that supports deletion
+    When I update the listing with isDeleted true
+    Then the listing should request deletion
+    And the listing should be saved to the repository
+
   Scenario: Successfully updating isBlocked status
     Given a listing with id "listing-123"
     When I update the listing with isBlocked status true
