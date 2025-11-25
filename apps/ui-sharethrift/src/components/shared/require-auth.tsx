@@ -5,14 +5,15 @@ import { Navigate } from 'react-router-dom';
 
 const { VITE_B2C_REDIRECT_URI } = import.meta.env;
 
-interface RequireAuthProps {
-  children: JSX.Element;
-  redirectPath: string;
-  forceLogin?: boolean;
+export interface RequireAuthProps {
+	children: JSX.Element;
+	redirectPath?: string;
+	forceLogin?: boolean;
 }
 
 export const RequireAuth: React.FC<RequireAuthProps> = (props) => {
-  const auth = useAuth();
+	const auth = useAuth();
+	const redirectPath = props.redirectPath ?? '/';
 
 	// automatically sign-in
 	useEffect(() => {
@@ -29,9 +30,9 @@ export const RequireAuth: React.FC<RequireAuthProps> = (props) => {
 				`${location.pathname}${location.search}`,
 			);
 
-      auth.signinRedirect();
-    }
-  }, [auth.isAuthenticated, auth.activeNavigator, auth.isLoading, auth.signinRedirect, auth.error, props.forceLogin, auth]);
+			auth.signinRedirect();
+		}
+	}, [auth.isAuthenticated, auth.activeNavigator, auth.isLoading, auth.signinRedirect, auth.error, props.forceLogin, auth]);
 
 	// automatically refresh token
 	useEffect(() => {
@@ -41,26 +42,29 @@ export const RequireAuth: React.FC<RequireAuthProps> = (props) => {
 			});
 		});
 
-    // *** Suggestion from sourcery that needs investigation
-    // const handleAccessTokenExpiring = () => {
-    //   auth.signinSilent({
-    //     redirect_uri: import.meta.env.VITE_B2C_REDIRECT_URI ?? "",
-    //   });
-    // };
-    // auth.events.addAccessTokenExpiring(handleAccessTokenExpiring);
-    // return () => {
-    //   auth.events.removeAccessTokenExpiring(handleAccessTokenExpiring);
-    // };
-  }, [auth, auth.events, auth.signinSilent]);
+		// *** Suggestion from sourcery that needs investigation
+		// const handleAccessTokenExpiring = () => {
+		//   auth.signinSilent({
+		//     redirect_uri: import.meta.env.VITE_B2C_REDIRECT_URI ?? "",
+		//   });
+		// };
+		// auth.events.addAccessTokenExpiring(handleAccessTokenExpiring);
+		// return () => {
+		//   auth.events.removeAccessTokenExpiring(handleAccessTokenExpiring);
+		// };
+	}, [auth, auth.events, auth.signinSilent]);
 
-  let result: JSX.Element;
-  if (auth.isAuthenticated) {
-    result = props.children;
-  } else if (auth.error) {
-    result = <Navigate to="/" />;
-  } else {
-    return <div>Checking auth2...</div>;
-  }
+	let result: JSX.Element;
+	if (auth.isAuthenticated) {
+		result = props.children;
+	} else if (auth.error) {
+		result = <Navigate to={redirectPath} replace />;
+	} else if (!auth.isLoading && !auth.activeNavigator && props.forceLogin !== true) {
+		// If not loading, not in the middle of auth flow, and not forcing login redirect
+		result = <Navigate to={redirectPath} replace />;
+	} else {
+		return <div>Checking auth2...</div>;
+	}
 
-  return result;
+	return result;
 };
