@@ -4,6 +4,15 @@ settings:
   autoInstallPeers: true
   excludeLinksFromLockfile: false
 
+catalogs:
+  default:
+    mongodb:
+      specifier: 6.18.0
+      version: 6.18.0
+    mongoose:
+      specifier: 8.17.0
+      version: 8.17.0
+
 importers:
 
   .:
@@ -145,6 +154,9 @@ importers:
   apps/docs:
     dependencies:
       '@docusaurus/core':
+        specifier: 3.8.1
+        version: 3.8.1(@mdx-js/react@3.1.1(@types/react@19.2.2)(react@19.2.0))(lightningcss@1.30.2)(react-dom@19.2.0(react@19.2.0))(react@19.2.0)(typescript@5.6.3)
+      '@docusaurus/plugin-content-docs':
         specifier: 3.8.1
         version: 3.8.1(@mdx-js/react@3.1.1(@types/react@19.2.2)(react@19.2.0))(lightningcss@1.30.2)(react-dom@19.2.0(react@19.2.0))(react@19.2.0)(typescript@5.6.3)
       '@docusaurus/preset-classic':
@@ -960,6 +972,9 @@ importers:
       '@cellix/typescript-config':
         specifier: workspace:*
         version: link:../../cellix/typescript-config
+      '@cellix/vitest-config':
+        specifier: workspace:*
+        version: link:../../cellix/vitest-config
       rimraf:
         specifier: ^6.0.1
         version: 6.0.1
@@ -11735,7 +11750,7 @@ snapshots:
       '@babel/types': 7.28.5
       '@jridgewell/remapping': 2.3.5
       convert-source-map: 2.0.0
-      debug: 4.4.3
+      debug: 4.4.3(supports-color@8.1.1)
       gensync: 1.0.0-beta.2
       json5: 2.2.3
       semver: 6.3.1
@@ -12468,7 +12483,7 @@ snapshots:
       '@babel/parser': 7.28.5
       '@babel/template': 7.27.2
       '@babel/types': 7.28.5
-      debug: 4.4.3
+      debug: 4.4.3(supports-color@8.1.1)
     transitivePeerDependencies:
       - supports-color
 
@@ -13234,7 +13249,7 @@ snapshots:
       '@types/react-router-config': 5.0.11
       combine-promises: 1.2.0
       fs-extra: 11.3.2
-      js-yaml: 4.1.0
+      js-yaml: 4.1.1
       lodash: 4.17.21
       react: 19.2.0
       react-dom: 19.2.0(react@19.2.0)
@@ -14327,7 +14342,7 @@ snapshots:
       '@types/js-yaml': 4.0.9
       '@whatwg-node/fetch': 0.10.11
       chalk: 4.1.2
-      debug: 4.4.3
+      debug: 4.4.3(supports-color@8.1.1)
       dotenv: 16.6.1
       graphql: 16.11.0
       graphql-request: 6.1.0(graphql@16.11.0)
@@ -15629,7 +15644,7 @@ snapshots:
   '@theguild/federation-composition@0.20.2(graphql@16.11.0)':
     dependencies:
       constant-case: 3.0.4
-      debug: 4.4.3
+      debug: 4.4.3(supports-color@8.1.1)
       graphql: 16.11.0
       json5: 2.2.3
       lodash.sortby: 4.7.0
@@ -16054,7 +16069,7 @@ snapshots:
       '@ampproject/remapping': 2.3.0
       '@bcoe/v8-coverage': 1.0.2
       ast-v8-to-istanbul: 0.3.7
-      debug: 4.4.3
+      debug: 4.4.3(supports-color@8.1.1)
       istanbul-lib-coverage: 3.2.2
       istanbul-lib-report: 3.0.1
       istanbul-lib-source-maps: 5.0.6
@@ -16543,13 +16558,13 @@ snapshots:
 
   axios@0.21.4:
     dependencies:
-      follow-redirects: 1.15.11
+      follow-redirects: 1.15.11(debug@4.4.3)
     transitivePeerDependencies:
       - debug
 
   axios@0.27.2:
     dependencies:
-      follow-redirects: 1.15.11
+      follow-redirects: 1.15.11(debug@4.4.3)
       form-data: 4.0.4
     transitivePeerDependencies:
       - debug
@@ -16564,7 +16579,7 @@ snapshots:
 
   axios@1.12.2:
     dependencies:
-      follow-redirects: 1.15.11
+      follow-redirects: 1.15.11(debug@4.4.3)
       form-data: 4.0.4
       proxy-from-env: 1.1.0
     transitivePeerDependencies:
@@ -17185,7 +17200,7 @@ snapshots:
     dependencies:
       co: 4.6.0
       debounce: 1.2.1
-      debug: 4.4.3
+      debug: 4.4.3(supports-color@8.1.1)
       duplexer: 0.1.2
       fs-extra: 10.1.0
       glob: 7.2.3
@@ -17404,10 +17419,6 @@ snapshots:
   debug@2.6.9:
     dependencies:
       ms: 2.0.0
-
-  debug@4.4.3:
-    dependencies:
-      ms: 2.1.3
 
   debug@4.4.3(supports-color@8.1.1):
     dependencies:
@@ -18158,8 +18169,6 @@ snapshots:
 
   fn.name@1.1.0: {}
 
-  follow-redirects@1.15.11: {}
-
   follow-redirects@1.15.11(debug@4.4.3):
     optionalDependencies:
       debug: 4.4.3(supports-color@8.1.1)
@@ -18699,7 +18708,7 @@ snapshots:
   http-proxy-agent@7.0.2:
     dependencies:
       agent-base: 7.1.4
-      debug: 4.4.3
+      debug: 4.4.3(supports-color@8.1.1)
     transitivePeerDependencies:
       - supports-color
 
@@ -18738,7 +18747,7 @@ snapshots:
   https-proxy-agent@7.0.6:
     dependencies:
       agent-base: 7.1.4
-      debug: 4.4.3
+      debug: 4.4.3(supports-color@8.1.1)
     transitivePeerDependencies:
       - supports-color
 
@@ -19073,7 +19082,7 @@ snapshots:
   istanbul-lib-source-maps@5.0.6:
     dependencies:
       '@jridgewell/trace-mapping': 0.3.31
-      debug: 4.4.3
+      debug: 4.4.3(supports-color@8.1.1)
       istanbul-lib-coverage: 3.2.2
     transitivePeerDependencies:
       - supports-color
@@ -21854,7 +21863,7 @@ snapshots:
 
   require-in-the-middle@7.5.2:
     dependencies:
-      debug: 4.4.3
+      debug: 4.4.3(supports-color@8.1.1)
       module-details-from-path: 1.0.4
       resolve: 1.22.11
     transitivePeerDependencies:
@@ -22084,7 +22093,7 @@ snapshots:
     dependencies:
       '@types/debug': 4.1.12
       '@types/validator': 13.15.3
-      debug: 4.4.3
+      debug: 4.4.3(supports-color@8.1.1)
       dottie: 2.0.6
       inflection: 1.13.4
       lodash: 4.17.21
@@ -23125,7 +23134,7 @@ snapshots:
   vite-node@3.2.4(@types/node@24.9.1)(jiti@2.6.1)(lightningcss@1.30.2)(terser@5.44.0)(tsx@4.20.6)(yaml@2.8.1):
     dependencies:
       cac: 6.7.14
-      debug: 4.4.3
+      debug: 4.4.3(supports-color@8.1.1)
       es-module-lexer: 1.7.0
       pathe: 2.0.3
       vite: 7.1.12(@types/node@24.9.1)(jiti@2.6.1)(lightningcss@1.30.2)(terser@5.44.0)(tsx@4.20.6)(yaml@2.8.1)
@@ -23171,7 +23180,7 @@ snapshots:
       '@vitest/spy': 3.2.4
       '@vitest/utils': 3.2.4
       chai: 5.3.3
-      debug: 4.4.3
+      debug: 4.4.3(supports-color@8.1.1)
       expect-type: 1.2.2
       magic-string: 0.30.19
       pathe: 2.0.3

@@ -34,7 +34,7 @@
 		"prebuild": "biome lint",
 		"build": "tsc --build && pnpm run copy-css",
 		"copy-css": "cpx \"src/**/*.{css,svg,png,jpg,jpeg,gif}\" dist/src",
-		"watch": "tsc- --watch",
+		"watch": "tsc --watch",
 		"test": "vitest run",
 		"test:coverage": "vitest run --coverage",
 		"test:watch": "vitest",
