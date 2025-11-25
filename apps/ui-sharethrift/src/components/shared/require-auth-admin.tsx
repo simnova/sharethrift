@@ -1,17 +1,19 @@
 import { useEffect, type JSX } from 'react';
-
-const { VITE_B2C_REDIRECT_URI } = import.meta.env;
 import { hasAuthParams, useAuth } from 'react-oidc-context';
 import { Navigate } from 'react-router-dom';
+import { useUserIsAdmin } from '../layouts/home/account/hooks/useUserIsAdmin.ts';
 
-export interface RequireAuthProps {
+const { VITE_B2C_REDIRECT_URI } = import.meta.env;
+
+export interface RequireAuthAdminProps {
 	children: JSX.Element;
 	redirectPath?: string;
 	forceLogin?: boolean;
 }
 
-export const RequireAuth: React.FC<RequireAuthProps> = (props) => {
+export const RequireAuthAdmin: React.FC<RequireAuthAdminProps> = (props) => {
 	const auth = useAuth();
+	const { isAdmin, loading: adminLoading } = useUserIsAdmin();
 	const redirectPath = props.redirectPath ?? '/';
 
 	// automatically sign-in
@@ -48,30 +50,38 @@ export const RequireAuth: React.FC<RequireAuthProps> = (props) => {
 				redirect_uri: VITE_B2C_REDIRECT_URI ?? '',
 			});
 		});
-
-		// *** Suggestion from sourcery that needs investigation
-		// const handleAccessTokenExpiring = () => {
-		//   auth.signinSilent({
-		//     redirect_uri: import.meta.env.VITE_B2C_REDIRECT_URI ?? "",
-		//   });
-		// };
-		// auth.events.addAccessTokenExpiring(handleAccessTokenExpiring);
-		// return () => {
-		//   auth.events.removeAccessTokenExpiring(handleAccessTokenExpiring);
-		// };
 	}, [auth.events, auth.signinSilent]);
 
-	let result: JSX.Element;
-	if (auth.isAuthenticated) {
-		result = props.children;
-	} else if (auth.error) {
-		result = <Navigate to={redirectPath} replace />;
-	} else if (!auth.isLoading && !auth.activeNavigator && props.forceLogin !== true) {
-		// If not loading, not in the middle of auth flow, and not forcing login redirect
-		result = <Navigate to={redirectPath} replace />;
-	} else {
-		return <div>Checking auth2...</div>;
+	// Check authentication first
+	if (!auth.isAuthenticated) {
+		if (auth.error) {
+			return <Navigate to={redirectPath} replace />;
+		}
+		if (!auth.isLoading && !auth.activeNavigator && props.forceLogin !== true) {
+			return <Navigate to={redirectPath} replace />;
+		}
+		return <div>Checking authentication...</div>;
 	}
 
-	return result;
+	// Then check admin permissions
+	if (adminLoading) {
+		return (
+			<div
+				style={{
+					minHeight: '100vh',
+					display: 'flex',
+					alignItems: 'center',
+					justifyContent: 'center',
+				}}
+			>
+				<div>Checking admin permissions...</div>
+			</div>
+		);
+	}
+
+	if (!isAdmin) {
+		return <Navigate to={redirectPath} replace />;
+	}
+
+	return props.children;
 };
