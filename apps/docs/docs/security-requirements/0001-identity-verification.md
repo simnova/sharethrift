@@ -1,5 +1,5 @@
 ---
-sidebar_position: 2
+sidebar_position: 1
 sidebar_label: 0001 Identity Verification
 description: "Identity verification is required for access to advanced account tiers (e.g., Verified Plus, Business)"
 status: pending
@@ -50,25 +50,6 @@ ShareThrift's tiered account system provides different feature limits and capabi
 - **Verified Personal Plus**: 30 reservations, 30 bookmarks, 50 items, 30 friends
 
 Without proper identity verification, users could claim verified status and access premium features without proper validation, leading to fraud risk and unfair resource usage.
-
-## Technical Requirements
-**Domain Layer Integration:**
-- Extend PersonalUserAccount entity with verification status tracking
-- Add verification permissions to UserDomainPermissions interface
-- Implement verification checks in account type upgrade validation
-- Integration with existing Passport/Visa authorization pattern
-
-**Current Authorization Infrastructure:**
-- UserVisa interface with `determineIf()` permission checking
-- UserDomainPermissions with admin capabilities (canBlockUsers, canCreateUser, etc.)
-- Role-based permissions through PersonalUserRole entity
-- Account editing restricted via `isEditingOwnAccount` permission
-
-**Required Enhancements:**
-- Add verification service to infrastructure layer (similar to ServiceCybersource)
-- Extend account type validation in PersonalUserAccount.accountType setter
-- Implement verification webhook handling for real-time status updates
-- Add verification status to GraphQL schema and resolvers
 
 ## Success Criteria
 - Account type upgrades blocked without proper verification status

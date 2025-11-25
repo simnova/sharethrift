@@ -1,6 +1,6 @@
 ---
-sidebar_position: 19
-sidebar_label: 0018 Input Validation
+sidebar_position: 11
+sidebar_label: 0011 Input Validation
 description: "All user inputs must be validated and sanitized before processing"
 status: implemented
 contact: 
@@ -23,13 +23,6 @@ All user inputs must be validated and sanitized before processing.
 - **Date First Implemented**: 2025-10-29
 - **Date Last Reviewed**: 2025-10-29
 - **Date Retired**: N/A
-
-## Replacement Control
-N/A
-
-## Implementation Approach
-
-The platform implements comprehensive input validation through Domain-Driven Design value objects with strict validation rules:
 
 **Value Object Pattern Implementation**
 - `Email` class validates email format using HTML5 specification regex pattern
@@ -66,25 +59,6 @@ The platform implements comprehensive input validation through Domain-Driven Des
 - TypeScript strict typing enforces compile-time validation
 - Value objects extend `@lucaspaganini/value-objects` library for robust validation
 - Domain entities use value objects exclusively for all user input processing
-
-## Technical Requirements
-
-**Value Object Implementation**
-- All user inputs must use corresponding value objects for validation
-- Email validation must use HTML5 specification compliant regex patterns
-- String inputs must enforce maximum length limits and character restrictions
-- Numeric inputs must validate format and range constraints
-
-**Domain Entity Integration**
-- Entity setters must validate through value objects before assignment
-- Validation errors must be thrown with descriptive messages
-- All validation must occur in domain layer before persistence
-
-**Pattern Validation**
-- Email patterns must prevent injection and format attacks
-- Username patterns must restrict special characters to safe subset
-- GUID patterns must validate proper UUID format structure
-- Postal codes must validate regional format requirements
 
 ## Success Criteria
 

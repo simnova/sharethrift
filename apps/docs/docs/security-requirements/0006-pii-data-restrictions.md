@@ -1,5 +1,5 @@
 ---
-sidebar_position: 7
+sidebar_position: 6
 sidebar_label: 0006 PII Data Restrictions
 description: "No financial or sensitive PII data (e.g., SSNs, payment info) may be stored on the platform"
 status: pending
@@ -23,13 +23,6 @@ No financial or sensitive PII data (e.g., SSNs, payment info) may be stored on t
 - **Date First Implemented**: TBD
 - **Date Last Reviewed**: 2025-10-29
 - **Date Retired**: N/A
-
-## Replacement Control
-TBD
-
-## Implementation Approach
-
-The platform implements PII data restrictions through third-party payment tokenization and strict domain-layer access controls:
 
 **Payment Data Tokenization (CyberSource Integration)**
 - `ServiceCybersource` handles all payment processing through external provider
@@ -68,10 +61,6 @@ The platform implements PII data restrictions through third-party payment tokeni
 - Sensitive payment details handled entirely by CyberSource tokenization
 - Profile data access restricted to account owners through visa validation
 
-## Context and Problem Statement
-TBD
-
-## Technical Requirements
 
 **Domain Entity Validation**
 - All PersonalUser profile modifications must pass visa validation

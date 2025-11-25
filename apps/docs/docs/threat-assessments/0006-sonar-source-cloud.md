@@ -24,33 +24,6 @@ SonarCloud provides comprehensive static application security testing (SAST) and
 - **Date Last Reviewed**: 2025-10-30
 - **Date Retired**: N/A
 
-## Implementation Approach
-- **Pipeline Integration**: Fully integrated into Azure DevOps pipeline with automated analysis
-- **Quality Gates**: Build-breaking quality gates enforce security and quality standards
-- **Coverage**: TypeScript/JavaScript codebase analysis with test coverage integration
-- **Reporting**: Automated PR comments and main branch analysis with trend tracking
-
-## Technical Implementation
-**Azure DevOps Integration**:
-- Automated analysis on every pull request and main branch commit
-- Java 17 JRE provisioning for SonarCloud scanner
-- Custom quality gate check script with polling mechanism
-- Build breaker integration preventing deployment of failing code
-
-**Configuration**:
-- Project key: `simnova_sharethrift-data-access`
-- Organization: `simnova`
-- Coverage path: `coverage/lcov.info` (merged from all packages)
-- Exclusions: Test files, generated code, configuration files
-
-**Pipeline Workflow**:
-1. Code changes trigger Azure DevOps pipeline
-2. PNPM audit runs for dependency vulnerabilities
-3. Test coverage generation across all affected packages
-4. SonarCloud analysis with custom parameters for PR/main builds
-5. Quality gate evaluation with build breaking on failure
-6. Custom polling script verifies analysis completion
-
 ## Coverage Scope
 **Source Analysis**:
 - All TypeScript/JavaScript source code in `apps/` and `packages/`
@@ -83,18 +56,6 @@ SonarCloud provides comprehensive static application security testing (SAST) and
 - Security vulnerabilities identified and blocked
 - Test coverage maintained above defined thresholds
 - Technical debt tracked and managed
-
-## Pipeline Evidence
-**Configuration Files**:
-- `sonar-project.properties` - Project configuration
-- `build-pipeline/core/monorepo-build-stage.yml` - Pipeline integration
-- `build-pipeline/scripts/check-sonar-quality-gate.cjs` - Custom quality gate verification
-
-**Pipeline Tasks**:
-- SonarCloud analysis with environment-specific parameters
-- Quality gate polling and verification
-- Build breaker task for failing quality gates
-- Coverage report integration from merged LCOV files
 
 ## Compensating Controls
 - Manual code review process through pull requests

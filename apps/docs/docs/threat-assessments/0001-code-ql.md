@@ -24,8 +24,6 @@ GitHub CodeQL provides advanced static application security testing (SAST) capab
 - **Date Last Reviewed**: 2025-10-30
 - **Date Retired**: N/A
 
-## Implementation Approach
-TBD
 
 ## Coverage Scope
 **Target Languages**: TypeScript, JavaScript, Node.js
@@ -45,12 +43,6 @@ TBD
 - SonarCloud static analysis provides comprehensive SAST coverage
 - Manual security code review through pull request process
 - TypeScript strict mode compilation catches type-related vulnerabilities
-
-## Technical Requirements
-- GitHub Advanced Security license
-- CodeQL workflow configuration in `.github/workflows/`
-- Integration with existing CI/CD pipeline
-- Security policy definition for vulnerability handling
 
 ## Related Documentation
 - SonarSource Cloud threat assessment (overlapping coverage)

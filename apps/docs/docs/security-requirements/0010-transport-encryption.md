@@ -1,6 +1,6 @@
 ---
-sidebar_position: 18
-sidebar_label: 0017 Transport Encryption
+sidebar_position: 10
+sidebar_label: 0010 Transport Encryption
 description: "All data in transit must be encrypted using TLS 1.2 or higher"
 status: implemented
 contact: 
@@ -24,12 +24,6 @@ All data in transit must be encrypted using TLS 1.2 or higher.
 - **Date Last Reviewed**: 2025-10-29
 - **Date Retired**: N/A
 
-## Replacement Control
-N/A
-
-## Implementation Approach
-
-The platform enforces transport encryption through infrastructure configuration and security headers:
 
 **Azure Storage Account TLS Configuration**
 - `minimumTlsVersion: 'TLS1_2'` enforced in storage account configuration
@@ -62,23 +56,6 @@ The platform enforces transport encryption through infrastructure configuration 
 - Azure infrastructure provides managed TLS certificates
 - CDN endpoints configured with proper certificate chains
 - OpenID Connect endpoints use proper TLS validation
-
-## Technical Requirements
-
-**Storage Account Configuration**
-- All Azure Storage accounts must enforce `minimumTlsVersion: 'TLS1_2'`
-- Blob services configured with proper CORS and security policies
-- Public network access controlled with TLS enforcement
-
-**CDN Security Rules**
-- Delivery rules enforce HTTPS scheme requirements
-- Security headers appended to all responses
-- Request scheme validation prevents insecure connections
-
-**Client Communication**
-- Apollo Client HTTP links use HTTPS endpoints exclusively
-- Authentication tokens transmitted over secure channels only
-- Service-to-service communication enforces TLS validation
 
 ## Success Criteria
 

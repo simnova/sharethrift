@@ -1,5 +1,5 @@
 ---
-sidebar_position: 5
+sidebar_position: 4
 sidebar_label: 0004 Listing Appeal Review
 description: "Blocked listings must be appealed and reviewed before being reinstated"
 status: pending
@@ -23,13 +23,6 @@ Blocked listings must be appealed and reviewed before being reinstated.
 - **Date First Implemented**: TBD
 - **Date Last Reviewed**: 2025-10-29
 - **Date Retired**: N/A
-
-## Replacement Control
-TBD
-
-## Implementation Approach
-
-The ShareThrift platform implements a comprehensive listing appeal and review workflow that ensures blocked listings undergo proper administrative review before reinstatement, maintaining platform content quality and community safety standards.
 
 **Listing State Management System**
 - ItemListing domain entity supports seven distinct states: 'Published', 'Paused', 'Cancelled', 'Drafted', 'Expired', 'Blocked', 'Appeal Requested'
@@ -112,50 +105,6 @@ A fair and transparent appeal process builds user trust by providing clear paths
 
 **Legal and Regulatory Compliance**
 Appeal and review processes support regulatory requirements for content moderation transparency, due process in platform enforcement, and user rights to contest automated or human moderation decisions affecting their economic participation.
-
-## Technical Requirements
-
-**REQ-4.1: Appeal Submission Process**
-- Blocked listings MUST display "Appeal" button in user's My Listings dashboard
-- Appeal action MUST transition listing state from 'Blocked' to 'Appeal Requested'
-- Appeal submission MUST require user confirmation through modal dialog
-- Only listings in 'Blocked' state MUST be eligible for appeal submission
-
-**REQ-4.2: Admin Review Dashboard**
-- Admin dashboard MUST display separate sections for 'Blocked' and 'Appeal Requested' listings
-- Each listing MUST show: title, image, published date, reservation period, current status
-- Admin actions MUST include: View Listing, Unblock Listing, Remove Listing
-- Review interface MUST support filtering by appeal status and submission date
-
-**REQ-4.3: State Transition Management**
-- ItemListing domain entity MUST enforce valid state transitions through business rules
-- State changes MUST be persisted immediately with updatedAt timestamp updates
-- Invalid state transitions MUST be prevented through domain validation
-- All state changes MUST be logged for audit trail maintenance
-
-**REQ-4.4: Permission-Based Review Access**
-- Only users with admin permissions MUST access listing review functionality
-- Listing unblock operations MUST validate admin authorization through Passport/Visa system
-- Domain layer MUST enforce permission checks before allowing state transitions
-- GraphQL resolvers MUST verify admin context before executing review actions
-
-**REQ-4.5: Review Decision Implementation**
-- Admin approval MUST transition listing from 'Appeal Requested' to 'Published' state
-- Admin denial MUST return listing to 'Blocked' state with optional reasoning
-- Approved listings MUST immediately become visible in public search and reservation system
-- Denied appeals MUST prevent further automatic appeal submissions
-
-**REQ-4.6: User Interface State Synchronization**
-- My Listings dashboard MUST reflect current listing states in real-time
-- Appeal button MUST be hidden for non-blocked listings
-- Status indicators MUST clearly distinguish between 'Blocked' and 'Appeal Requested' states
-- UI components MUST prevent duplicate appeal submissions through state-based rendering
-
-**REQ-4.7: Data Integrity and Audit**
-- All appeal submissions MUST record submission timestamp and user context
-- Administrative review decisions MUST be logged with admin ID and decision rationale
-- Listing state history MUST be maintained for regulatory compliance and dispute resolution
-- State transitions MUST be atomic to prevent inconsistent intermediate states
 
 ## Success Criteria
 

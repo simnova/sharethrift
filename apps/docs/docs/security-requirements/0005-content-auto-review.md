@@ -1,5 +1,5 @@
 ---
-sidebar_position: 6
+sidebar_position: 5
 sidebar_label: 0005 Content Auto Review
 description: "All user-generated listings and profile content must be auto reviewed and not allowed to list if doesn't pass review"
 status: pending
@@ -23,13 +23,6 @@ All user-generated listings and profile content must be auto reviewed and not al
 - **Date First Implemented**: TBD
 - **Date Last Reviewed**: 2025-10-29
 - **Date Retired**: N/A
-
-## Replacement Control
-TBD
-
-## Implementation Approach
-
-The ShareThrift platform requires implementation of comprehensive automated content review capabilities to ensure all user-generated listings and profile content meet platform safety and policy standards before publication, while supporting manual review workflows for complex cases.
 
 **Draft-to-Published Workflow Foundation**
 - ItemListing domain entity supports 'Drafted' state for content pending automated review
@@ -113,49 +106,6 @@ Automated content review supports compliance with platform liability regulations
 **User Experience Balance**
 Content review must balance safety requirements with user experience, ensuring legitimate content publishes quickly while preventing harmful material from reaching the platform. Transparent policies and appeal processes maintain user trust while enabling effective content moderation.
 
-## Technical Requirements
-
-**REQ-5.1: Automated Content Analysis Integration**
-- All listing content (title, description, category, location) MUST undergo automated text analysis before publication
-- Text analysis MUST detect profanity, spam patterns, policy violations, and potential legal issues
-- Content analysis service MUST integrate with Azure Content Moderator or equivalent platform service
-- Analysis results MUST include confidence scores and specific violation categories for audit trails
-
-**REQ-5.2: Image Content Review Pipeline**
-- All uploaded images MUST undergo automated content analysis in addition to existing malware scanning
-- Image analysis MUST detect inappropriate visual content, trademark violations, and policy-prohibited items
-- Image review MUST integrate with existing Azure Blob Storage infrastructure and Microsoft Defender scanning
-- Images failing content review MUST be automatically quarantined and marked for manual review
-
-**REQ-5.3: Profile Content Validation**
-- User profile descriptions, location information, and personal details MUST undergo automated review
-- Profile content validation MUST occur during account creation and profile updates
-- Automated profile review MUST prevent publication of contact information, external links, or policy violations
-- Profile content scoring MUST influence user reputation and content review thresholds
-
-**REQ-5.4: Publication Workflow Integration**
-- Listings MUST remain in 'Drafted' state until passing automated content review
-- Publishing workflow MUST automatically transition approved content from 'Drafted' to 'Published' state
-- Content failing automated review MUST be blocked with specific policy violation explanations
-- Manual review queue MUST be populated with content flagged by automated systems
-
-**REQ-5.5: Real-Time Review Processing**
-- Content review MUST complete within 30 seconds for 95% of submissions
-- Review results MUST be communicated to users immediately upon completion
-- Failed reviews MUST provide specific violation explanations and appeal instructions
-- System performance monitoring MUST track review latency and accuracy metrics
-
-**REQ-5.6: Administrative Review Integration**
-- Content flagged for manual review MUST appear in admin dashboard with automated analysis context
-- Administrators MUST have override capabilities for automated review decisions
-- Manual review decisions MUST be logged with reasoning and admin identification
-- Appeal submissions MUST trigger manual review workflow with priority queuing
-
-**REQ-5.7: Audit and Compliance Logging**
-- All automated content review decisions MUST be logged with analysis details and confidence scores
-- Content review metrics MUST be tracked for regulatory reporting and system improvement
-- User appeal submissions and administrative decisions MUST be audited for compliance review
-- Content policy violation patterns MUST be monitored for emerging threats and policy updates
 
 ## Success Criteria
 

@@ -24,8 +24,6 @@ EdgeScan provides dynamic application security testing (DAST) and penetration te
 - **Date Last Reviewed**: 2025-10-30
 - **Date Retired**: N/A
 
-## Implementation Approach
-TBD
 
 ## Coverage Scope
 **Application Targets**: 
@@ -41,11 +39,6 @@ TBD
 - Session management evaluation
 - Business logic flaw identification
 
-## Implementation Status
-**Current State**: Not implemented
-**Service Integration**: No EdgeScan service configuration or scheduling
-**Testing Environment**: No dedicated security testing environment
-**Automation**: No integration with CI/CD pipeline
 
 ## Success Criteria
 - Regular automated security scans of deployed environments
@@ -58,38 +51,6 @@ TBD
 - SonarCloud provides comprehensive SAST coverage
 - TypeScript strict mode catches type-related vulnerabilities
 - Manual security code review process
-
-**Infrastructure Security**:
-- Azure security features and monitoring
-- HTTPS enforcement and CORS configuration
-- Managed identities and RBAC access control
-
-**Manual Testing**:
-- Security-focused code review process
-- Manual penetration testing during major releases
-- Security incident response procedures
-
-## Technical Requirements
-- EdgeScan service account and configuration
-- Dedicated security testing environment
-- Integration with existing monitoring and alerting
-- Vulnerability management workflow
-
-## Testing Considerations
-**Environment Strategy**:
-- Separate security testing environment
-- Production-like configuration for realistic testing
-- Safe testing parameters to avoid service disruption
-
-**Authentication Testing**:
-- OAuth 2.0 / OIDC flow testing
-- Azure B2C integration security validation
-- Session management and token security
-
-**API Security Testing**:
-- GraphQL query complexity and depth limiting
-- Input validation across all API endpoints
-- Rate limiting and DDoS protection validation
 
 ## Related Documentation
 - Application security architecture

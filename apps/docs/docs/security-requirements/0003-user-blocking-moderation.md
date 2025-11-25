@@ -1,5 +1,5 @@
 ---
-sidebar_position: 4
+sidebar_position: 3
 sidebar_label: 0003 User Blocking Moderation
 description: "Admins must be able to block/unblock users and listings to moderate abuse or violations"
 status: pending
@@ -23,13 +23,6 @@ Admins must be able to block/unblock users and listings to moderate abuse or vio
 - **Date First Implemented**: TBD
 - **Date Last Reviewed**: 2025-10-29
 - **Date Retired**: N/A
-
-## Replacement Control
-TBD
-
-## Implementation Approach
-
-The ShareThrift platform implements comprehensive user blocking and moderation capabilities through a multi-layered security architecture that enables administrators to prevent malicious or inappropriate user behavior while maintaining platform integrity.
 
 **Admin Dashboard with Real-time Management**
 - Centralized admin dashboard at `/home/account/admin-dashboard` provides tabular view of all users with filtering by status (Active/Blocked)
@@ -100,50 +93,6 @@ User blocking serves as a critical security control preventing abuse of listing 
 
 **Regulatory Compliance**
 Implementation follows principle of proportional response with documented reasoning, time limitations, and clear communication to users. The system supports regulatory requirements for user protection, data retention, and administrative transparency in content moderation decisions.
-
-## Technical Requirements
-
-**REQ-3.1: Admin User Interface**
-- Admin dashboard MUST display sortable, filterable table of all users with status indicators
-- Block/unblock actions MUST require modal confirmation with reason selection from predefined list
-- Interface MUST support pagination with 50 users per page maximum (per BRD specification)
-- Real-time status updates MUST reflect blocking changes immediately without page refresh
-
-**REQ-3.2: Permission-Based Access Control**
-- Only users with `canBlockUsers` and `canUnblockUsers` permissions MUST access blocking functions
-- GraphQL resolvers MUST validate admin authorization before executing block/unblock mutations
-- Domain layer MUST enforce permission checks through PersonalUser.validateVisa() method
-- All administrative actions MUST require valid JWT authentication context
-
-**REQ-3.3: Blocking Operation Requirements**
-- Blocking MUST set PersonalUser.isBlocked boolean to true with immediate persistence
-- Block reasons MUST be selected from: "Late Return", "Item Damage", "Policy Violation", "Inappropriate Behavior", "Other"
-- Block duration options MUST include: 7 days, 30 days, indefinite
-- Description field MUST be provided and displayed to blocked users
-
-**REQ-3.4: Platform Capability Restrictions**
-- Blocked users MUST be prevented from: creating listings, making reservations, sending messages, processing payments
-- Existing reservations and listings MUST remain accessible for completion but no new activities allowed
-- User data and account information MUST be preserved for potential appeals and administrative review
-- Login capability MUST be maintained to allow users to view block status and description
-
-**REQ-3.5: Audit and Event Tracking**
-- All blocking/unblocking actions MUST generate domain events: UserBlocked, UserUnblocked
-- Events MUST include: admin user ID, target user ID, reason, duration, timestamp, description
-- EventBus MUST dispatch events for audit logging and notification systems
-- GraphQL operations MUST log action details with success/failure status
-
-**REQ-3.6: Data Persistence and Integrity**
-- PersonalUser.isBlocked field MUST be persisted in MongoDB with schema validation
-- Blocking status changes MUST update PersonalUser.updatedAt timestamp
-- Domain adapter pattern MUST maintain consistency between domain and persistence layers
-- Unit of Work pattern MUST ensure atomic operations for blocking with event dispatching
-
-**REQ-3.7: Error Handling and Recovery**
-- Failed blocking operations MUST display clear error messages to administrators
-- Network failures MUST not leave users in inconsistent blocking states
-- Apollo Client error handling MUST provide retry mechanisms for failed operations
-- Permission errors MUST display appropriate "Unauthorized" messages
 
 ## Success Criteria
 
