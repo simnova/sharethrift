@@ -28,14 +28,4 @@ export const Default: Story = {
 	},
 };
 
-export const WithAvatar: Story = {
-	decorators: [
-		(Story: React.FC) => (
-			<MemoryRouter>
-				<div>
-					<Story />
-				</div>
-			</MemoryRouter>
-		),
-	],
-};
+export const WithAvatar: Story = {};

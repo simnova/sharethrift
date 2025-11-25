@@ -9,7 +9,7 @@ const meta: Meta<typeof HomeRoutes> = {
 	component: HomeRoutes,
 	decorators: [
 		withMockApolloClient,
-		withMockRouter("/home"),
+		withMockRouter("/"),
 	],
 };
 
