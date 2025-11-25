@@ -39,32 +39,4 @@ export interface DomainDataSource {
 			UserAppealRequestUnitOfWork: Contexts.AppealRequest.UserAppealRequest.UserAppealRequestUnitOfWork;
 		};
 	};
-
-	// Event bus for domain events
-	eventBus?: {
-		register<T>(eventType: new (aggregateId: string) => T, handler: (event: T) => Promise<void>): void;
-	};
-
-	// Repository access for event handlers
-	userRepository?: {
-		getById(id: string): Promise<{
-			email?: string;
-			firstName?: string;
-			lastName?: string;
-			displayName?: string;
-			account?: {
-				email?: string;
-				profile?: {
-					firstName?: string;
-					lastName?: string;
-				};
-			};
-		} | null>;
-	};
-
-	itemListingRepository?: {
-		getById(id: string): Promise<{
-			title?: string;
-		} | null>;
-	};
 }
