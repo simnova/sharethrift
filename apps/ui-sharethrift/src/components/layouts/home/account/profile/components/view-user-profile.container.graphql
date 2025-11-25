@@ -1,0 +1,96 @@
+query HomeAccountProfileViewUserByIdCurrentUser {
+	currentUser {
+		... on PersonalUser {
+			id
+			userIsAdmin
+		}
+		... on AdminUser {
+			id
+			userIsAdmin
+			role {
+				permissions {
+					userPermissions {
+						canViewAllUsers
+						canBlockUsers
+					}
+				}
+			}
+		}
+	}
+}
+
+query HomeAccountProfileViewUserById($userId: ObjectID!) {
+	userById(id: $userId) {
+		... on PersonalUser {
+			id
+			userType
+			isBlocked
+			createdAt
+			account {
+				...UserProfileViewPersonalUserAccountFields
+			}
+		}
+		... on AdminUser {
+			id
+			userType
+			isBlocked
+			createdAt
+			account {
+				...UserProfileViewAdminUserAccountFields
+			}
+		}
+	}
+}
+
+# Note: For admin viewing other users' profiles, we'll hide listings for now
+# since there's no listingsByUserId query available in the schema
+
+fragment UserProfileViewPersonalUserAccountFields on PersonalUserAccount {
+	accountType
+	email
+	username
+	profile {
+		...UserProfileViewPersonalUserProfileFields
+	}
+}
+
+fragment UserProfileViewPersonalUserProfileFields on PersonalUserAccountProfile {
+	firstName
+	lastName
+	location {
+		city
+		state
+	}
+}
+
+fragment UserProfileViewAdminUserAccountFields on AdminUserAccount {
+	accountType
+	email
+	username
+	profile {
+		...UserProfileViewAdminUserProfileFields
+	}
+}
+
+fragment UserProfileViewAdminUserProfileFields on AdminUserAccountProfile {
+	firstName
+	lastName
+	location {
+		city
+		state
+	}
+}
+
+mutation BlockUser($userId: ObjectID!) {
+	blockUser(userId: $userId) {
+		id
+		isBlocked
+	}
+}
+
+mutation UnblockUser($userId: ObjectID!) {
+	unblockUser(userId: $userId) {
+		id
+		isBlocked
+	}
+}

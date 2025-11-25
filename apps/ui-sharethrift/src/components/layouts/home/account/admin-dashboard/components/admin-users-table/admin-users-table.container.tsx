@@ -131,8 +131,8 @@ export const AdminUsersTableContainer: React.FC<Readonly<AdminUsersTableContaine
         }
         break;
       case "view-profile":
-        message.info(`TODO: Navigate to user profile for user ${userId}`);
-        // TODO: Navigate to user profile page
+        // Navigate to user profile page
+        window.location.href = `/account/profile/${userId}`;
         break;
       case "view-report":
         message.info(`TODO: Navigate to user reports for user ${userId}`);

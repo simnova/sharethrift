@@ -8,12 +8,22 @@ import {
 	Col,
 	Space,
 	Divider,
+	Alert,
 } from 'antd';
 import { ListingsGrid } from '@sthrift/ui-components';
-import { SettingOutlined, UserOutlined } from '@ant-design/icons';
+import {
+	SettingOutlined,
+	UserOutlined,
+	StopOutlined,
+	CheckCircleOutlined,
+} from '@ant-design/icons';
 import '../components/profile-view.overrides.css';
 import type { ItemListing } from '../../../../../../generated';
 import type { ProfileUser } from './profile-view.types';
+import {
+	BlockUserModal,
+	UnblockUserModal,
+} from '../../../../../shared/user-modals';
 
 const { Text } = Typography;
 
@@ -23,16 +33,42 @@ interface ProfileViewProps {
 	user: ProfileUser;
 	listings: ItemListing[];
 	isOwnProfile: boolean;
+	isBlocked?: boolean;
+	isAdmin?: boolean;
+	canBlockUser?: boolean;
 	onEditSettings: () => void;
 	onListingClick: (listingId: string) => void;
+	onBlockUser?: () => void;
+	onUnblockUser?: () => void;
+	blockModalVisible?: boolean;
+	unblockModalVisible?: boolean;
+	onBlockModalCancel?: () => void;
+	onUnblockModalCancel?: () => void;
+	onBlockModalConfirm?: (reason: string) => void;
+	onUnblockModalConfirm?: () => void;
+	blockLoading?: boolean;
+	unblockLoading?: boolean;
 }
 
 export const ProfileView: React.FC<Readonly<ProfileViewProps>> = ({
 	user,
 	listings,
 	isOwnProfile,
+	isBlocked = false,
+	isAdmin = false,
+	canBlockUser = false,
 	onEditSettings,
 	onListingClick,
+	onBlockUser,
+	onUnblockUser,
+	blockModalVisible = false,
+	unblockModalVisible = false,
+	onBlockModalCancel = () => {},
+	onUnblockModalCancel = () => {},
+	onBlockModalConfirm = () => {},
+	onUnblockModalConfirm = () => {},
+	blockLoading = false,
+	unblockLoading = false,
 }) => {
 	const formatDate = (dateString: string) => {
 		return new Date(dateString).toLocaleDateString('en-US', {
@@ -43,10 +79,27 @@ export const ProfileView: React.FC<Readonly<ProfileViewProps>> = ({
 
 	return (
 		<div className="max-w-4xl mx-auto p-6">
+			{/* Blocked User Warning - Only visible to admins */}
+			{isBlocked && isAdmin && (
+				<Alert
+					message="This user is currently blocked"
+					description="This user cannot access the platform or interact with other users. Only administrators can view blocked user profiles."
+					type="warning"
+					showIcon
+					style={{ marginBottom: 16 }}
+				/>
+			)}
+
 			{/* Profile Header */}
-			<Card className="mb-6 profile-header">
+			<Card
+				className="mb-6 profile-header"
+				style={{
+					opacity: isBlocked && isAdmin ? 0.7 : 1,
+					filter: isBlocked && isAdmin ? 'grayscale(50%)' : 'none',
+				}}
+			>
 				{/* Mobile Account Settings Button */}
-				{isOwnProfile && (
+				{isOwnProfile ? (
 					<div className="profile-settings-mobile">
 						<Button
 							type="primary"
@@ -56,6 +109,28 @@ export const ProfileView: React.FC<Readonly<ProfileViewProps>> = ({
 							Account Settings
 						</Button>
 					</div>
+				) : (
+					canBlockUser && (
+						<div className="profile-settings-mobile">
+							{isBlocked ? (
+								<Button
+									type="primary"
+									icon={<CheckCircleOutlined />}
+									onClick={onUnblockUser}
+									style={{
+										background: '#52c41a',
+										borderColor: '#52c41a',
+									}}
+								>
+									Unblock User
+								</Button>
+							) : (
+								<Button danger icon={<StopOutlined />} onClick={onBlockUser}>
+									Block User
+								</Button>
+							)}
+						</div>
+					)
 				)}
 				<Row gutter={24} align="middle">
 					<Col xs={24} sm={6} lg={4} className="text-center mb-4 sm:mb-0">
@@ -75,9 +150,9 @@ export const ProfileView: React.FC<Readonly<ProfileViewProps>> = ({
 								{user.firstName}{' '}
 								{user.lastName?.charAt(0)}.
 							</div>
-								{/* Desktop Account Settings Button */}
-								{isOwnProfile && (
-									<div className="profile-settings-desktop">
+								{/* Desktop Block/Unblock or Account Settings Buttons */}
+								<div className="profile-settings-desktop">
+									{isOwnProfile ? (
 										<Button
 											type="primary"
 											icon={<SettingOutlined />}
@@ -85,8 +160,34 @@ export const ProfileView: React.FC<Readonly<ProfileViewProps>> = ({
 										>
 											Account Settings
 										</Button>
-									</div>
-								)}
+									) : (
+										canBlockUser && (
+											<>
+												{isBlocked ? (
+													<Button
+														type="primary"
+														icon={<CheckCircleOutlined />}
+														onClick={onUnblockUser}
+														style={{
+															background: '#52c41a',
+															borderColor: '#52c41a',
+														}}
+													>
+														Unblock User
+													</Button>
+												) : (
+													<Button
+														danger
+														icon={<StopOutlined />}
+														onClick={onBlockUser}
+													>
+														Block User
+													</Button>
+												)}
+											</>
+										)
+									)}
+								</div>
 							</div>
 							<h3 className="block mb-2">@{user.username}</h3>
 						</div>
@@ -182,6 +283,26 @@ export const ProfileView: React.FC<Readonly<ProfileViewProps>> = ({
 					</Card>
 				)}
 			</div>
+
+			{/* Block/Unblock Modals */}
+			{canBlockUser && (
+				<>
+					<BlockUserModal
+						visible={blockModalVisible}
+						userName={`${user.firstName} ${user.lastName}`}
+						onConfirm={onBlockModalConfirm}
+						onCancel={onBlockModalCancel}
+						loading={blockLoading}
+					/>
+					<UnblockUserModal
+						visible={unblockModalVisible}
+						userName={`${user.firstName} ${user.lastName}`}
+						onConfirm={onUnblockModalConfirm}
+						onCancel={onUnblockModalCancel}
+						loading={unblockLoading}
+					/>
+				</>
+			)}
 		</div>
 	);
 };
