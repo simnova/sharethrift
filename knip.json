@@ -13,35 +13,7 @@
       "entry": ["src/**/*.{ts,tsx,js,jsx}"],
       "project": ["src/**/*.{ts,tsx,js,jsx}"]
     },
-    "packages/cellix/api-services-spec": {
-      "entry": ["src/index.ts"],
-      "project": ["src/**/*.ts"]
-    },
-    "packages/cellix/domain-seedwork": {
-      "entry": ["src/index.ts"],
-      "project": ["src/**/*.ts"]
-    },
-    "packages/cellix/event-bus-seedwork-node": {
-      "entry": ["src/index.ts"],
-      "project": ["src/**/*.ts"]
-    },
-    "packages/cellix/messaging-service": {
-      "entry": ["src/index.ts"],
-      "project": ["src/**/*.ts"]
-    },
-    "packages/cellix/mock-cognitive-search": {
-      "entry": ["src/index.ts"],
-      "project": ["src/**/*.ts"]
-    },
-    "packages/cellix/mock-mongodb-memory-server-seedwork": {
-      "entry": ["src/index.ts"],
-      "project": ["src/**/*.ts"]
-    },
-    "packages/cellix/mock-oauth2-server": {
-      "entry": ["src/index.ts"],
-      "project": ["src/**/*.ts"]
-    },
-    "packages/cellix/mock-payment-server": {
+    "packages/cellix/*": {
       "entry": ["src/index.ts"],
       "project": ["src/**/*.ts"]
     },
@@ -56,92 +28,12 @@
       "entry": ["src/index.ts"],
       "project": ["src/**/*.{ts,tsx}"]
     },
-    "packages/cellix/vitest-config": {
-      "entry": ["src/index.ts"],
-      "project": ["src/**/*.ts"]
-    },
-    "packages/sthrift/application-services": {
-      "entry": ["src/index.ts"],
-      "project": ["src/**/*.ts"]
-    },
-    "packages/sthrift/context-spec": {
-      "entry": ["src/index.ts"],
-      "project": ["src/**/*.ts"]
-    },
-    "packages/sthrift/data-sources-mongoose-models": {
-      "entry": ["src/index.ts"],
-      "project": ["src/**/*.ts"]
-    },
-    "packages/sthrift/domain": {
-      "entry": ["src/index.ts"],
-      "project": ["src/**/*.ts"]
-    },
-    "packages/sthrift/event-handler": {
-      "entry": ["src/index.ts"],
-      "project": ["src/**/*.ts"]
-    },
-    "packages/sthrift/graphql": {
+    "packages/sthrift/*": {
       "entry": ["src/index.ts"],
       "project": ["src/**/*.ts"],
       "ignore": [
         "**/graphql-tools-scalars.ts"
       ]
-    },
-    "packages/sthrift/messaging-service-mock": {
-      "entry": ["src/index.ts"],
-      "project": ["src/**/*.ts"]
-    },
-    "packages/sthrift/messaging-service-twilio": {
-      "entry": ["src/index.ts"],
-      "project": ["src/**/*.ts"]
-    },
-    "packages/sthrift/mock-messaging-server": {
-      "entry": ["src/index.ts"],
-      "project": ["src/**/*.ts"]
-    },
-    "packages/sthrift/mock-mongodb-memory-server": {
-      "entry": ["src/index.ts"],
-      "project": ["src/**/*.ts"]
-    },
-    "packages/sthrift/persistence": {
-      "entry": ["src/index.ts"],
-      "project": ["src/**/*.ts"]
-    },
-    "packages/sthrift/rest": {
-      "entry": ["src/index.ts"],
-      "project": ["src/**/*.ts"]
-    },
-    "packages/sthrift/service-blob-storage": {
-      "entry": ["src/index.ts"],
-      "project": ["src/**/*.ts"]
-    },
-    "packages/sthrift/service-cognitive-search": {
-      "entry": ["src/index.ts"],
-      "project": ["src/**/*.ts"]
-    },
-    "packages/sthrift/service-cybersource": {
-      "entry": ["src/index.ts"],
-      "project": ["src/**/*.ts"]
-    },
-    "packages/sthrift/service-mongoose": {
-      "entry": ["src/index.ts"],
-      "project": ["src/**/*.ts"]
-    },
-    "packages/sthrift/service-otel": {
-      "entry": ["src/index.ts"],
-      "project": ["src/**/*.ts"]
-    },
-    "packages/sthrift/service-sendgrid": {
-      "entry": ["src/index.ts"],
-      "project": ["src/**/*.ts"]
-    },
-    "packages/sthrift/service-token-validation": {
-      "entry": ["src/index.ts"],
-      "project": ["src/**/*.ts"]
-    },
-    "packages/sthrift/service-twilio": {
-      "entry": ["src/index.ts"],
-      "project": ["src/**/*.ts"]
     },
     "packages/sthrift/ui-components": {
       "entry": ["src/index.ts"],
@@ -151,7 +43,6 @@
   "ignoreWorkspaces": ["packages/cellix/typescript-config"],
   "ignore": [
     "build-pipeline/scripts/**",
-    "packages/*.md",
     "**/*.test.ts",
     "**/*.spec.ts",
     "**/*.stories.tsx",
