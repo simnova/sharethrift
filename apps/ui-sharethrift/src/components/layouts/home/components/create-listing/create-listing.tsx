@@ -309,6 +309,3 @@ export const CreateListing: React.FC<CreateListingProps> = ({
 		</>
 	);
 }
-
-// Render modals outside of main JSX so imports are used (component exports are within same file scope)
-export default CreateListing;

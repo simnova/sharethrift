@@ -15,10 +15,7 @@ const __dirname = path.dirname(__filename);
 // Load compiled resolver JS from dist:
 // dist/src/schema/builder -> up to dist/src -> dist -> package root -> dist/src/schema/types
 const resolversGlob = path.resolve(__dirname, '../types/**/*.resolvers.{js,cjs,mjs}');
-const permissionsGlob = path.resolve(__dirname, '../types/**/*.permissions.{js,cjs,mjs}');
 
 const resolversArray = loadFilesSync(resolversGlob);
-const permissionsArray = loadFilesSync(permissionsGlob);
 
 export const resolvers: Resolvers = mergeResolvers(resolversArray);
-export const permissions: Resolvers = mergeResolvers(permissionsArray);

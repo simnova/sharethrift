@@ -162,5 +162,3 @@ export function AdminListings(): React.JSX.Element {
 		/>
 	);
 }
-
-export default AdminListings;
