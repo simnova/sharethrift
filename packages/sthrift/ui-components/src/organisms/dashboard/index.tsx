@@ -107,3 +107,5 @@ export const Dashboard = <T extends object>({
 		</>
 	);
 };
+
+export default Dashboard;

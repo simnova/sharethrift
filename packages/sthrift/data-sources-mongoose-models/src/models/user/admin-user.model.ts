@@ -23,7 +23,7 @@ export interface AdminUserAccountProfileLocation
 	zipCode: string;
 }
 
-const AdminUserAccountProfileLocationType: SchemaDefinition<AdminUserAccountProfileLocation> =
+export const AdminUserAccountProfileLocationType: SchemaDefinition<AdminUserAccountProfileLocation> =
 	{
 		address1: { type: String, required: true },
 		address2: { type: String, required: false },
@@ -43,7 +43,7 @@ export interface AdminUserAccountProfile extends MongooseSeedwork.NestedPath {
 	location: AdminUserAccountProfileLocation;
 }
 
-const AdminUserAccountProfileType: SchemaDefinition<AdminUserAccountProfile> =
+export const AdminUserAccountProfileType: SchemaDefinition<AdminUserAccountProfile> =
 	{
 		firstName: { type: String, required: true },
 		lastName: { type: String, required: true },

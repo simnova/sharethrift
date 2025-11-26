@@ -44,7 +44,7 @@ export interface ItemListingReadRepository {
 	>;
 }
 
-class ItemListingReadRepositoryImpl
+export class ItemListingReadRepositoryImpl
 	implements ItemListingReadRepository
 {
 	private readonly mongoDataSource: ItemListingDataSource;

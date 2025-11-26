@@ -17,33 +17,10 @@
 			"entry": ["src/index.ts"],
 			"project": ["src/**/*.ts"]
 		},
-		"packages/cellix/domain-seedwork": {
-			"entry": ["src/index.ts"],
-			"project": ["src/**/*.ts"],
-			"ignore": [
-				"**/handle-event.ts",
-				"**/publish-event.ts",
-				"**/child-entity.ts"
-			]
-		},
-		"packages/cellix/event-bus-seedwork-node": {
-			"entry": ["src/index.ts"],
-			"project": ["src/**/*.ts"],
-			"ignore": ["**/sync-domain-event-bus.ts"]
-		},
 		"packages/cellix/mongoose-seedwork": {
 			"entry": ["src/index.ts"],
 			"project": ["src/**/*.ts"],
-			"ignore": [
-				"**/mongo-connection.ts",
-				"**/base.ts",
-				"**/mongoose-prop-array.ts"
-			]
-		},
-		"packages/cellix/mock-payment-server": {
-			"entry": ["src/index.ts"],
-			"project": ["src/**/*.ts"],
-			"ignore": ["**/payment-interface.ts"]
+			"ignore": ["**/mongo-connection.ts"]
 		},
 		"packages/cellix/ui-core": {
 			"entry": ["src/index.ts"],
@@ -52,16 +29,7 @@
 		"packages/sthrift/*": {
 			"entry": ["src/index.ts"],
 			"project": ["src/**/*.ts"],
-			"ignore": [
-				"**/graphql-tools-scalars.ts",
-				"**/readonly/appeal-request/listing-appeal-request/index.ts",
-				"**/readonly/appeal-request/user-appeal-request/index.ts"
-			]
-		},
-		"packages/sthrift/service-cybersource": {
-			"entry": ["src/index.ts"],
-			"project": ["src/**/*.ts"],
-			"ignore": ["**/cybersource-interface.ts"]
+			"ignore": ["**/graphql-tools-scalars.ts"]
 		},
 		"packages/sthrift/ui-components": {
 			"entry": ["src/index.ts"],
@@ -89,17 +57,7 @@
 		"@serenity-js/cucumber",
 		"@serenity-js/serenity-bdd",
 		"@graphql-typed-document-node/core",
-		"ts-scope-trimmer-plugin",
-		"@opentelemetry/semantic-conventions",
-		"eslint",
-		"@eslint/js",
-		"typescript-eslint",
-		"ts-node",
-		"ts-node-dev",
-		"tsc-watch"
+		"ts-scope-trimmer-plugin"
 	],
-	"ignoreBinaries": ["func"],
-	"rules": {
-		"types": "off"
-	}
+	"ignoreBinaries": ["func"]
 }

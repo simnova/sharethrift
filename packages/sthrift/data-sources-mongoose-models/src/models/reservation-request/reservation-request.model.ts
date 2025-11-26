@@ -15,7 +15,7 @@ export interface ReservationRequest extends MongooseSeedwork.Base {
 	closeRequestedByReserver: boolean;
 }
 
-const ReservationRequestSchema = new Schema<
+export const ReservationRequestSchema = new Schema<
 	ReservationRequest,
 	Model<ReservationRequest>,
 	ReservationRequest
@@ -46,7 +46,7 @@ const ReservationRequestSchema = new Schema<
 	{ collection: 'reservationRequests' },
 );
 
-const ReservationRequestModelName: string = 'ReservationRequest';
+export const ReservationRequestModelName: string = 'ReservationRequest';
 export const ReservationRequestModelFactory =
 	MongooseSeedwork.modelFactory<ReservationRequest>(
 		ReservationRequestModelName,

@@ -83,7 +83,7 @@ export class AdminUserDomainAdapter
 /**
  * Admin User Account Domain Adapter
  */
-class AdminUserAccountDomainAdapter
+export class AdminUserAccountDomainAdapter
 	implements Domain.Contexts.User.AdminUser.AdminUserAccountProps
 {
 	private readonly props: Models.User.AdminUserAccount;
@@ -107,7 +107,7 @@ class AdminUserAccountDomainAdapter
 /**
  * Admin User Account Profile Domain Adapter
  */
-class AdminUserAccountProfileDomainAdapter
+export class AdminUserAccountProfileDomainAdapter
 	implements Domain.Contexts.User.AdminUser.AdminUserProfileProps
 {
 	private readonly props: Models.User.AdminUserAccountProfile;
@@ -133,7 +133,7 @@ class AdminUserAccountProfileDomainAdapter
 /**
  * Admin User Account Profile Location Domain Adapter
  */
-class AdminUserAccountProfileLocationDomainAdapter
+export class AdminUserAccountProfileLocationDomainAdapter
 	implements Domain.Contexts.User.AdminUser.AdminUserAccountProfileLocationProps
 {
 	readonly props: Models.User.AdminUserAccountProfileLocation;

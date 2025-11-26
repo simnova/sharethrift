@@ -30,7 +30,7 @@ export interface UserAppealRequest extends AppealRequest {
  * Schema for UserAppealRequest discriminator.
  * Does not include listing field (only for user account appeals).
  */
-const UserAppealRequestSchema = new Schema<
+export const UserAppealRequestSchema = new Schema<
 	UserAppealRequest,
 	Model<UserAppealRequest>,
 	UserAppealRequest
@@ -69,7 +69,7 @@ const UserAppealRequestSchema = new Schema<
 	appealRequestOptions,
 );
 
-const UserAppealRequestModelName: string = 'user-appeal-request';
+export const UserAppealRequestModelName: string = 'user-appeal-request';
 
 /**
  * Factory function to create UserAppealRequest discriminator model.

@@ -30,7 +30,7 @@ const ConversationSchema = new Schema<
 	{ timestamps: true },
 );
 
-const ConversationModelName = 'Conversation';
+export const ConversationModelName = 'Conversation';
 export const ConversationModelFactory =
 	MongooseSeedwork.modelFactory<Conversation>(
 		ConversationModelName,
