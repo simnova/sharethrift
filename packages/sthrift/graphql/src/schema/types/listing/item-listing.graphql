@@ -77,6 +77,7 @@ type ItemListingMutationResult implements MutationResult {
 extend type Mutation {
 	createItemListing(input: CreateItemListingInput!): ItemListing!
 	cancelItemListing(id: ObjectID!): ItemListingMutationResult!
+	reinstateItemListing(id: ObjectID!): ItemListingMutationResult!
 	deleteItemListing(id: ObjectID!): ItemListingMutationResult!
 	unblockListing(id: ObjectID!): Boolean!
 }

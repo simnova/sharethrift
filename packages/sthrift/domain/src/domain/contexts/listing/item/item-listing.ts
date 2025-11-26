@@ -325,6 +325,34 @@ export class ItemListing<props extends ItemListingProps>
 	}
 
 	/**
+	 * Reinstate a cancelled or expired listing back to Published state.
+	 * This makes the listing active again and visible in search results.
+	 */
+	public reinstate(): void {
+		if (
+			!this.visa.determineIf((permissions) => permissions.canPublishItemListing)
+		) {
+			throw new DomainSeedwork.PermissionError(
+				'You do not have permission to reinstate this listing',
+			);
+		}
+
+		const current = this.props.state.valueOf();
+		
+		// Only allow reinstating from Cancelled or Expired states
+		if (
+			current !== ValueObjects.ListingStateEnum.Cancelled &&
+			current !== ValueObjects.ListingStateEnum.Expired
+		) {
+			throw new Error(
+				'Listing can only be reinstated from Cancelled or Expired state',
+			);
+		}
+
+		this.props.state = new ValueObjects.ListingState('Published').valueOf();
+	}
+
+	/**
 	 * Set whether this listing is blocked.
 	 * - When setting blocked=false and the listing is currently Blocked, this will move the
 	 *   listing to AppealRequested (the previous `unblock()` behaviour).

@@ -142,6 +142,17 @@ const itemListingResolvers: Resolvers = {
 			}),
 		}),
 
+		reinstateItemListing: async (
+			_parent: unknown,
+			args: { id: string },
+			context: GraphContext,
+		) => ({
+			status: { success: true },
+			listing: await context.applicationServices.Listing.ItemListing.reinstate({
+				id: args.id,
+			}),
+		}),
+
 		deleteItemListing: async (
 			_parent: unknown,
 			args: { id: string },

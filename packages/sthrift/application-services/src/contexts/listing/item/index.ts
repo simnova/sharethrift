@@ -8,6 +8,7 @@ import {
 } from './query-by-sharer.ts';
 import { type ItemListingQueryAllCommand, queryAll } from './query-all.ts';
 import { type ItemListingCancelCommand, cancel } from './cancel.ts';
+import { type ItemListingReinstateCommand, reinstate } from './reinstate.ts';
 import { type ItemListingDeleteCommand, deleteListings } from './delete.ts';
 import { type ItemListingUpdateCommand, update } from './update.ts';
 import { type ItemListingUnblockCommand, unblock } from './unblock.ts';
@@ -30,6 +31,9 @@ export interface ItemListingApplicationService {
 	>;
 	cancel: (
 		command: ItemListingCancelCommand,
+	) => Promise<Domain.Contexts.Listing.ItemListing.ItemListingEntityReference>;
+	reinstate: (
+		command: ItemListingReinstateCommand,
 	) => Promise<Domain.Contexts.Listing.ItemListing.ItemListingEntityReference>;
 	update: (
 		command: ItemListingUpdateCommand,
@@ -62,6 +66,7 @@ export const ItemListing = (
 		queryBySharer: queryBySharer(dataSources),
 		queryAll: queryAll(dataSources),
 		cancel: cancel(dataSources),
+		reinstate: reinstate(dataSources),
 		update: update(dataSources),
 	deleteListings: deleteListings(dataSources),
 		unblock: unblock(dataSources),
