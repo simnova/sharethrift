@@ -1,4 +1,4 @@
-import { Input, Checkbox, Button, Tag, Modal, Form, Select } from "antd";
+import { Input, Checkbox, Button, Tag, Form } from "antd";
 import type { TableProps } from "antd";
 import { SearchOutlined, FilterOutlined } from "@ant-design/icons";
 import { Dashboard } from "@sthrift/ui-components";
@@ -9,26 +9,13 @@ import type {
 import { AdminUsersCard } from "./admin-users-card.tsx";
 import { useState } from "react";
 import { BlockUserModal } from "../../../../../../shared/user-modals/block-user-modal.tsx";
+import { UnblockUserModal } from "../../../../../../shared/user-modals/unblock-user-modal.tsx";
 
-const { Search, TextArea } = Input;
+const { Search } = Input;
 
 const STATUS_OPTIONS = [
     { label: "Active", value: "Active" },
     { label: "Blocked", value: "Blocked" },
-];
-
-const BLOCK_REASONS = [
-    "Late Return",
-    "Item Damage",
-    "Policy Violation",
-    "Inappropriate Behavior",
-    "Other",
-];
-
-const BLOCK_DURATIONS = [
-    { label: "7 Days", value: "7" },
-    { label: "30 Days", value: "30" },
-    { label: "Indefinite", value: "indefinite" },
 ];
 
 export const AdminUsersTable: React.FC<Readonly<AdminUsersTableProps>> = ({
@@ -288,22 +275,13 @@ export const AdminUsersTable: React.FC<Readonly<AdminUsersTableProps>> = ({
             />
 
             {/* Unblock User Modal */}
-            <Modal
-                title="Unblock User"
-                open={unblockModalVisible}
-                onOk={handleUnblockConfirm}
+            <UnblockUserModal
+                visible={unblockModalVisible}
+                userName={`${selectedUser?.firstName} ${selectedUser?.lastName}`}
+                onConfirm={handleUnblockConfirm}
                 onCancel={() => setUnblockModalVisible(false)}
-                okText="Unblock User"
-            >
-                <p>
-                    Are you sure you want to unblock{" "}
-                    <strong>{selectedUser?.username}</strong>?
-                </p>
-                <p style={{ color: "#666", fontSize: "14px" }}>
-                    This will restore their ability to create listings and make
-                    reservations.
-                </p>
-            </Modal>
+                loading={unblockLoading}
+            />
         </>
     );
 }
