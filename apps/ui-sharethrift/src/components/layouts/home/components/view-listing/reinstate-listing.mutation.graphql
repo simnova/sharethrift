@@ -1,0 +1,12 @@
+mutation ReinstateItemListing($id: ObjectID!) {
+  reinstateItemListing(id: $id) {
+    status {
+      success
+    }
+    listing {
+      id
+      state
+      updatedAt
+    }
+  }
+}
