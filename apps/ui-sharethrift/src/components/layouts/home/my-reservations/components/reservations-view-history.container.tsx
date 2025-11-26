@@ -64,3 +64,5 @@ export const ReservationsViewHistoryContainer: React.FC<
 		/>
 	);
 };
+
+export default ReservationsViewHistoryContainer;

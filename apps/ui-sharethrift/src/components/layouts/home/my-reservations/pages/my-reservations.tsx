@@ -30,3 +30,5 @@ export const MyReservationsMain: React.FC = () => {
 		</div>
 	);
 };
+
+export default MyReservationsMain;

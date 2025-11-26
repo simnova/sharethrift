@@ -86,3 +86,5 @@ export const ReservationActions: React.FC<ReservationActionsProps> = ({
 
 	return <Space>{actions}</Space>;
 };
+
+export default ReservationActions;
