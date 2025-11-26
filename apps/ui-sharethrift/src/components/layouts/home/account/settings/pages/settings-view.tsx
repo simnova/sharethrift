@@ -142,7 +142,9 @@ export const SettingsView: React.FC<SettingsViewProps> = ({
 			const values = await profileForm.validateFields();
 			await onSaveSection?.('profile', values);
 			setEditingSection(null);
-		} catch {}
+		} catch {
+			// Validation errors are handled by the form
+		}
 	};
 
 	const saveLocation = async () => {
@@ -150,7 +152,9 @@ export const SettingsView: React.FC<SettingsViewProps> = ({
 			const values = await locationForm.validateFields();
 			await onSaveSection?.('location', values.location || values);
 			setEditingSection(null);
-		} catch {}
+		} catch {
+			// Validation errors are handled by the form
+		}
 	};
 
 	const savePlan = async () => {
@@ -166,7 +170,9 @@ export const SettingsView: React.FC<SettingsViewProps> = ({
 			const values = await billingForm.validateFields();
 			await onSaveSection?.('billing', values);
 			setEditingSection(null);
-		} catch {}
+		} catch {
+			// Validation errors are handled by the form
+		}
 	};
 
 	const savePassword = async () => {
@@ -180,7 +186,9 @@ export const SettingsView: React.FC<SettingsViewProps> = ({
 			}
 			await onSaveSection?.('password', values);
 			setEditingSection(null);
-		} catch {}
+		} catch {
+			// Validation errors are handled by the form
+		}
 	};
 
 	const renderProfileSection = () => (
