@@ -601,4 +601,568 @@ test.for(feature, ({ Background, Scenario, BeforeEachScenario }) => {
 			expect(aggregate.schemaVersion).toBe('1');
 		});
 	});
+
+	Scenario(
+		'Setting reservation period start to null',
+		({ Given, When, Then }) => {
+			// biome-ignore lint/suspicious/noEmptyBlockStatements: Background already sets up the context
+			Given('a new ReservationRequest aggregate being created', () => {});
+			When('I try to set the reservationPeriodStart to null', () => {
+				try {
+					ReservationRequest.getNewInstance(
+						baseProps,
+						toStateEnum('REQUESTED'),
+						listing,
+						reserver,
+						null as unknown as Date,
+						baseProps.reservationPeriodEnd,
+						passport,
+					);
+				} catch (e) {
+					error = e;
+				}
+			});
+			Then(
+				'an error should be thrown indicating "value cannot be null or undefined"',
+				() => {
+					expect(String((error as Error).message)).toMatch(
+						/value cannot be null or undefined/,
+					);
+				},
+			);
+		},
+	);
+
+	Scenario(
+		'Setting reservation period end to null',
+		({ Given, When, Then }) => {
+			// biome-ignore lint/suspicious/noEmptyBlockStatements: Background already sets up the context
+			Given('a new ReservationRequest aggregate being created', () => {});
+			When('I try to set the reservationPeriodEnd to null', () => {
+				try {
+					ReservationRequest.getNewInstance(
+						baseProps,
+						toStateEnum('REQUESTED'),
+						listing,
+						reserver,
+						baseProps.reservationPeriodStart,
+						null as unknown as Date,
+						passport,
+					);
+				} catch (e) {
+					error = e;
+				}
+			});
+			Then(
+				'an error should be thrown indicating "value cannot be null or undefined"',
+				() => {
+					expect(String((error as Error).message)).toMatch(
+						/value cannot be null or undefined/,
+					);
+				},
+			);
+		},
+	);
+
+	Scenario(
+		'Setting reservation period start to past date',
+		({ Given, When, Then }) => {
+			// biome-ignore lint/suspicious/noEmptyBlockStatements: Background already sets up the context
+			Given('a new ReservationRequest aggregate being created', () => {});
+			When('I try to set the reservationPeriodStart to a past date', () => {
+				const pastStart = new Date(Date.now() - 172_800_000); // 2 days ago
+				const pastEnd = new Date(Date.now() - 86_400_000); // 1 day ago
+				try {
+					ReservationRequest.getNewInstance(
+						baseProps,
+						toStateEnum('REQUESTED'),
+						listing,
+						reserver,
+						pastStart,
+						pastEnd,
+						passport,
+					);
+				} catch (e) {
+					error = e;
+				}
+			});
+			Then(
+				'an error should be thrown indicating "Reservation period start date must be today or in the future"',
+				() => {
+					// The setter validates that start date must be in the future
+					expect(String((error as Error).message)).toMatch(
+						/Reservation period start date must be today or in the future/,
+					);
+				},
+			);
+		},
+	);
+
+	Scenario('Setting listing to null', ({ Given, When, Then }) => {
+		// biome-ignore lint/suspicious/noEmptyBlockStatements: Background already sets up the context
+		Given('a new ReservationRequest aggregate being created', () => {});
+		When('I try to set the listing to null', () => {
+			try {
+				ReservationRequest.getNewInstance(
+					baseProps,
+					toStateEnum('REQUESTED'),
+					null as unknown as ItemListingEntityReference,
+					reserver,
+					baseProps.reservationPeriodStart,
+					baseProps.reservationPeriodEnd,
+					passport,
+				);
+			} catch (e) {
+				error = e;
+			}
+		});
+		Then(
+			'an error should be thrown indicating "value cannot be null or undefined"',
+			() => {
+				expect(String((error as Error).message)).toMatch(
+					/value cannot be null or undefined/,
+				);
+			},
+		);
+	});
+
+	Scenario(
+		'Setting listing with non-published state',
+		({ Given, When, Then }) => {
+			// biome-ignore lint/suspicious/noEmptyBlockStatements: Background already sets up the context
+			Given('a new ReservationRequest aggregate being created', () => {});
+			When('I try to set listing to a non-published listing', () => {
+				const draftListing = makeListing('Draft');
+				try {
+					ReservationRequest.getNewInstance(
+						baseProps,
+						toStateEnum('REQUESTED'),
+						draftListing,
+						reserver,
+						baseProps.reservationPeriodStart,
+						baseProps.reservationPeriodEnd,
+						passport,
+					);
+				} catch (e) {
+					error = e;
+				}
+			});
+			Then(
+				'an error should be thrown indicating "Cannot create reservation request for listing that is not published"',
+				() => {
+					expect(String((error as Error).message)).toMatch(
+						/Cannot create reservation request for listing that is not published/,
+					);
+				},
+			);
+		},
+	);
+
+	Scenario('Setting reserver to null', ({ Given, When, Then }) => {
+		// biome-ignore lint/suspicious/noEmptyBlockStatements: Background already sets up the context
+		Given('a new ReservationRequest aggregate being created', () => {});
+		When('I try to set the reserver to null', () => {
+			try {
+				ReservationRequest.getNewInstance(
+					baseProps,
+					toStateEnum('REQUESTED'),
+					listing,
+					null as unknown as UserEntityReference,
+					baseProps.reservationPeriodStart,
+					baseProps.reservationPeriodEnd,
+					passport,
+				);
+			} catch (e) {
+				error = e;
+			}
+		});
+		Then(
+			'an error should be thrown indicating "value cannot be null or undefined"',
+			() => {
+				expect(String((error as Error).message)).toMatch(
+					/value cannot be null or undefined/,
+				);
+			},
+		);
+	});
+
+	Scenario(
+		'Cancelling a rejected reservation with permission',
+		({ Given, When, Then }) => {
+			Given('a ReservationRequest aggregate with state "REJECTED"', () => {
+				aggregate = ReservationRequest.getNewInstance(
+					baseProps,
+					toStateEnum('REQUESTED'),
+					listing,
+					reserver,
+					baseProps.reservationPeriodStart,
+					baseProps.reservationPeriodEnd,
+					makePassport({ canRejectRequest: true, canCancelRequest: true }),
+				);
+				aggregate.state = toStateEnum('REJECTED');
+			});
+			When('I set state to "CANCELLED"', () => {
+				aggregate.state = toStateEnum('CANCELLED');
+			});
+			Then('the reservation request\'s state should be "CANCELLED"', () => {
+				expect(aggregate.state).toBe(ReservationRequestStates.CANCELLED);
+			});
+		},
+	);
+
+	Scenario(
+		'Cancelling an accepted reservation should fail',
+		({ Given, When, Then }) => {
+			let act: () => void;
+			Given('a ReservationRequest aggregate with state "ACCEPTED"', () => {
+				aggregate = ReservationRequest.getNewInstance(
+					baseProps,
+					toStateEnum('REQUESTED'),
+					listing,
+					reserver,
+					baseProps.reservationPeriodStart,
+					baseProps.reservationPeriodEnd,
+					makePassport({ canAcceptRequest: true, canCancelRequest: true }),
+				);
+				aggregate.state = toStateEnum('ACCEPTED');
+			});
+			When('I try to set state to "CANCELLED"', () => {
+				act = () => {
+					aggregate.state = toStateEnum('CANCELLED');
+				};
+			});
+			Then(
+				'an error should be thrown indicating "Cannot cancel reservation in current state"',
+				() => {
+					expect(act).toThrow(/Cannot cancel reservation in current state/);
+				},
+			);
+		},
+	);
+
+	Scenario(
+		'Rejecting a non-requested reservation should fail',
+		({ Given, When, Then }) => {
+			let act: () => void;
+			Given('a ReservationRequest aggregate with state "ACCEPTED"', () => {
+				aggregate = ReservationRequest.getNewInstance(
+					baseProps,
+					toStateEnum('REQUESTED'),
+					listing,
+					reserver,
+					baseProps.reservationPeriodStart,
+					baseProps.reservationPeriodEnd,
+					makePassport({ canAcceptRequest: true, canRejectRequest: true }),
+				);
+				aggregate.state = toStateEnum('ACCEPTED');
+			});
+			When('I try to set state to "REJECTED"', () => {
+				act = () => {
+					aggregate.state = toStateEnum('REJECTED');
+				};
+			});
+			Then(
+				'an error should be thrown indicating "Can only reject requested reservations"',
+				() => {
+					expect(act).toThrow(/Can only reject requested reservations/);
+				},
+			);
+		},
+	);
+
+	Scenario(
+		'Accepting a non-requested reservation should fail',
+		({ Given, When, Then }) => {
+			let act: () => void;
+			Given('a ReservationRequest aggregate with state "REJECTED"', () => {
+				aggregate = ReservationRequest.getNewInstance(
+					baseProps,
+					toStateEnum('REQUESTED'),
+					listing,
+					reserver,
+					baseProps.reservationPeriodStart,
+					baseProps.reservationPeriodEnd,
+					makePassport({ canRejectRequest: true, canAcceptRequest: true }),
+				);
+				aggregate.state = toStateEnum('REJECTED');
+			});
+			When('I try to set state to "ACCEPTED"', () => {
+				act = () => {
+					aggregate.state = toStateEnum('ACCEPTED');
+				};
+			});
+			Then(
+				'an error should be thrown indicating "Can only accept requested reservations"',
+				() => {
+					expect(act).toThrow(/Can only accept requested reservations/);
+				},
+			);
+		},
+	);
+
+	Scenario(
+		'Closing a non-accepted reservation should fail',
+		({ Given, When, Then }) => {
+			let act: () => void;
+			Given('a ReservationRequest aggregate with state "REQUESTED"', () => {
+				aggregate = ReservationRequest.getNewInstance(
+					baseProps,
+					toStateEnum('REQUESTED'),
+					listing,
+					reserver,
+					baseProps.reservationPeriodStart,
+					baseProps.reservationPeriodEnd,
+					makePassport({ canCloseRequest: true }),
+				);
+			});
+			When('I try to close the reservation', () => {
+				act = () => {
+					aggregate.state = toStateEnum('CLOSED');
+				};
+			});
+			Then(
+				'an error should be thrown indicating "Can only close accepted reservations"',
+				() => {
+					expect(act).toThrow(/Can only close accepted reservations/);
+				},
+			);
+		},
+	);
+
+	Scenario(
+		'Closing without permission should fail',
+		({ Given, When, Then }) => {
+			let act: () => void;
+			Given(
+				'a ReservationRequest aggregate with state "ACCEPTED" without close permission',
+				() => {
+					aggregate = ReservationRequest.getNewInstance(
+						baseProps,
+						toStateEnum('REQUESTED'),
+						listing,
+						reserver,
+						baseProps.reservationPeriodStart,
+						baseProps.reservationPeriodEnd,
+						makePassport({ canAcceptRequest: true, canCloseRequest: false }),
+					);
+					aggregate.state = toStateEnum('ACCEPTED');
+				},
+			);
+			When('I try to set state to "CLOSED"', () => {
+				act = () => {
+					aggregate.state = toStateEnum('CLOSED');
+				};
+			});
+			Then('a PermissionError should be thrown', () => {
+				expect(act).toThrow(DomainSeedwork.PermissionError);
+			});
+		},
+	);
+
+	Scenario(
+		'Closing with only sharer request',
+		({ Given, And, When, Then }) => {
+			Given('a ReservationRequest aggregate with state "ACCEPTED"', () => {
+				aggregate = ReservationRequest.getNewInstance(
+					baseProps,
+					toStateEnum('REQUESTED'),
+					listing,
+					reserver,
+					baseProps.reservationPeriodStart,
+					baseProps.reservationPeriodEnd,
+					makePassport({ canCloseRequest: true, canAcceptRequest: true }),
+				);
+				aggregate.state = toStateEnum('ACCEPTED');
+			});
+			And('closeRequestedBySharer is true', () => {
+				aggregate.closeRequestedBySharer = true;
+			});
+			When('I set state to "CLOSED"', () => {
+				aggregate.state = toStateEnum('CLOSED');
+			});
+			Then('the reservation request\'s state should be "CLOSED"', () => {
+				expect(aggregate.state).toBe(ReservationRequestStates.CLOSED);
+			});
+		},
+	);
+
+	Scenario(
+		'Setting reservation period start after end should fail',
+		({ Given, When, Then }) => {
+			let localError: unknown;
+			Given('a new ReservationRequest aggregate being created with end date set', () => {
+				// Set up props with a valid end date in future
+			});
+			When(
+				'I try to set reservationPeriodStart to a date after the end date',
+				() => {
+					const endDate = new Date(Date.now() + 86_400_000 * 2);
+					const startAfterEnd = new Date(Date.now() + 86_400_000 * 5);
+					const propsWithEnd = {
+						...baseProps,
+						reservationPeriodEnd: endDate,
+					};
+					try {
+						ReservationRequest.getNewInstance(
+							propsWithEnd,
+							toStateEnum('REQUESTED'),
+							listing,
+							reserver,
+							startAfterEnd,
+							endDate,
+							passport,
+						);
+					} catch (e) {
+						localError = e;
+					}
+				},
+			);
+			Then(
+				'an error should be thrown indicating "Reservation period start date must be before the end date"',
+				() => {
+					expect(String((localError as Error).message)).toMatch(
+						/Reservation period start date must be before the end date|Reservation start date must be before end date/,
+					);
+				},
+			);
+		},
+	);
+
+	Scenario(
+		'Setting reservation period end at or before start should fail',
+		({ Given, When, Then }) => {
+			let localError: unknown;
+			Given('a new ReservationRequest aggregate being created with start date set', () => {
+				// Set up props with a valid start date
+			});
+			When(
+				'I try to set reservationPeriodEnd to a date before or equal to the start date',
+				() => {
+					const startDate = new Date(Date.now() + 86_400_000 * 5);
+					const endBeforeStart = new Date(Date.now() + 86_400_000 * 3);
+					const propsWithStart = {
+						...baseProps,
+						reservationPeriodStart: startDate,
+					};
+					try {
+						ReservationRequest.getNewInstance(
+							propsWithStart,
+							toStateEnum('REQUESTED'),
+							listing,
+							reserver,
+							startDate,
+							endBeforeStart,
+							passport,
+						);
+					} catch (e) {
+						localError = e;
+					}
+				},
+			);
+			Then(
+				'an error should be thrown indicating "Reservation period end date must be after the start date"',
+				() => {
+					expect(String((localError as Error).message)).toMatch(
+						/Reservation period end date must be after the start date|Reservation start date must be before end date/,
+					);
+				},
+			);
+		},
+	);
+
+	Scenario(
+		'Setting reservation period start after creation should fail',
+		({ Given, When, Then }) => {
+			let act: () => void;
+			Given('an existing ReservationRequest aggregate', () => {
+				aggregate = ReservationRequest.getNewInstance(
+					baseProps,
+					toStateEnum('REQUESTED'),
+					listing,
+					reserver,
+					baseProps.reservationPeriodStart,
+					baseProps.reservationPeriodEnd,
+					passport,
+				);
+			});
+			When('I try to update the reservation period start date', () => {
+				act = () => {
+					aggregate.reservationPeriodStart = new Date(Date.now() + 86_400_000 * 10);
+				};
+			});
+			Then(
+				'a PermissionError should be thrown with message "Reservation period start date cannot be updated after creation"',
+				() => {
+					expect(act).toThrow(DomainSeedwork.PermissionError);
+					expect(act).toThrow(
+						/Reservation period start date cannot be updated after creation/,
+					);
+				},
+			);
+		},
+	);
+
+	Scenario(
+		'Setting reservation period end after creation should fail',
+		({ Given, When, Then }) => {
+			let act: () => void;
+			Given('an existing ReservationRequest aggregate', () => {
+				aggregate = ReservationRequest.getNewInstance(
+					baseProps,
+					toStateEnum('REQUESTED'),
+					listing,
+					reserver,
+					baseProps.reservationPeriodStart,
+					baseProps.reservationPeriodEnd,
+					passport,
+				);
+			});
+			When('I try to update the reservation period end date', () => {
+				act = () => {
+					aggregate.reservationPeriodEnd = new Date(Date.now() + 86_400_000 * 60);
+				};
+			});
+			Then(
+				'a PermissionError should be thrown with message "You do not have permission to update this reservation period"',
+				() => {
+					expect(act).toThrow(DomainSeedwork.PermissionError);
+					expect(act).toThrow(
+						/You do not have permission to update this reservation period/,
+					);
+				},
+			);
+		},
+	);
+
+	Scenario(
+		'Setting reserver after creation should fail',
+		({ Given, When, Then }) => {
+			let act: () => void;
+			Given('an existing ReservationRequest aggregate', () => {
+				aggregate = ReservationRequest.getNewInstance(
+					baseProps,
+					toStateEnum('REQUESTED'),
+					listing,
+					reserver,
+					baseProps.reservationPeriodStart,
+					baseProps.reservationPeriodEnd,
+					passport,
+				);
+			});
+			When('I try to set a new reserver', () => {
+				act = () => {
+					aggregate.reserver = makeUser();
+				};
+			});
+			Then(
+				'a PermissionError should be thrown with message "Reserver can only be set when creating a new reservation request"',
+				() => {
+					expect(act).toThrow(DomainSeedwork.PermissionError);
+					expect(act).toThrow(
+						/Reserver can only be set when creating a new reservation request/,
+					);
+				},
+			);
+		},
+	);
 });
