@@ -247,7 +247,9 @@ export class LiQEFilterEngine {
 			// Check if it's a valid LiQE query structure
 			if ('type' in (parsed as Record<string, unknown>)) {
 				const t = (parsed as Record<string, unknown>)['type'];
-				return t === 'Tag' || t === 'LogicalExpression';
+				return (
+					t === 'Tag' || t === 'LogicalExpression' || t === 'UnaryOperator'
+				);
 			}
 			return false;
 		} catch {
