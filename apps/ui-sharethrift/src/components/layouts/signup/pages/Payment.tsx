@@ -63,7 +63,7 @@ export const Payment: React.FC = () => {
                 message.success("Billing details saved.", 2);
             }, 1000);
             console.log("Billing information saved (Save Changes):", values);
-        } catch (err) {
+        } catch {
             // Validation errors handled by form
         }
     };
@@ -78,7 +78,7 @@ export const Payment: React.FC = () => {
                 navigate("/signup/terms");
                 setLoading(false);
             }, 1000);
-        } catch (err) {
+        } catch {
             setLoading(false);
         }
     };
@@ -296,7 +296,7 @@ export const Payment: React.FC = () => {
                         rules={[
                             { required: true, message: "Phone number is required" },
                             {
-                                pattern: /^[\d\s\-\(\)\+]+$/,
+                                pattern: /^[\d\s\-()+ ]+$/,
                                 message: "Please enter a valid phone number",
                             },
                         ]}

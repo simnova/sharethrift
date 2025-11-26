@@ -28,6 +28,7 @@ export interface SettingsViewProps {
 
 	onSaveSection?: (
 		section: 'profile' | 'location' | 'plan' | 'billing' | 'password',
+		// biome-ignore lint/suspicious/noExplicitAny: Form values from Ant Design can have varying shapes
 		values: any,
 	) => Promise<void>;
 	isSavingSection?: boolean;
