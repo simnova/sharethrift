@@ -34,14 +34,6 @@ export interface SettingsViewProps {
 	mutationErrorMessage?: string;
 }
 
-export interface SettingsEditProps {
-	user: SettingsUser;
-	onSave: (values: SettingsUser) => Promise<void>;
-	onCancel: () => void;
-	isSaving?: boolean;
-	isLoading?: boolean;
-}
-
 // Union type for current user
 type PersonalUserSettings = {
 	__typename: 'PersonalUser';

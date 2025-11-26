@@ -1,5 +1,5 @@
 import type { Meta, StoryObj } from '@storybook/react';
-import ReservationStatusTag from './index.tsx';
+import { ReservationStatusTag } from './index.tsx';
 
 const meta: Meta<typeof ReservationStatusTag> = {
   title: 'Atoms/ReservationStatusTag',

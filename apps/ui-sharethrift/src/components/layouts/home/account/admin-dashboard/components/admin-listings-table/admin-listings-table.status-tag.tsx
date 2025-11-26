@@ -9,4 +9,3 @@ export const StatusTag: React.FC<StatusTagProps> = ({ status }) => {
   return <Tag color={color}>{normalized}</Tag>;
 };
 
-export default StatusTag;

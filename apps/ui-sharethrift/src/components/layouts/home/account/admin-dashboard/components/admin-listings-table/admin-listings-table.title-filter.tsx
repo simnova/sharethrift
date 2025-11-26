@@ -34,4 +34,3 @@ export const TitleFilter: React.FC<TitleFilterProps> = ({
   );
 };
 
-export default TitleFilter;
