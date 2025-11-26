@@ -1,7 +1,7 @@
 import type React from 'react';
 import { useState, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { useMutation } from "@apollo/client/react";
+import { useMutation } from '@apollo/client/react';
 import { message } from 'antd';
 import {
 	CreateListing,
@@ -11,6 +11,7 @@ import {
 	HomeCreateListingContainerCreateItemListingDocument,
 	type HomeCreateListingContainerCreateItemListingMutation,
 	type HomeCreateListingContainerCreateItemListingMutationVariables,
+	ListingsPageContainerGetListingsDocument,
 } from '../../../../../generated.tsx';
 
 interface CreateListingContainerProps {
@@ -44,27 +45,44 @@ export const CreateListingContainer: React.FC<CreateListingContainerProps> = (
 	const [createItemListing, { loading: isCreating }] = useMutation<
 		HomeCreateListingContainerCreateItemListingMutation,
 		HomeCreateListingContainerCreateItemListingMutationVariables
-	>(
-		HomeCreateListingContainerCreateItemListingDocument,
-		{
-			onCompleted: (data) => {
-				const isDraft = data.createItemListing.state === 'Drafted';
-				message.success(
-					isDraft
-						? 'Listing saved as draft!'
-						: 'Listing published successfully!',
-				);
+	>(HomeCreateListingContainerCreateItemListingDocument, {
+		onCompleted: (data) => {
+			const isDraft = data.createItemListing.state === 'Drafted';
+			message.success(
+				isDraft ? 'Listing saved as draft!' : 'Listing published successfully!',
+			);
 
-				// Don't navigate automatically - let user choose from modal
-			},
-			onError: (error) => {
-				console.error('Error creating listing:', error);
-				message.error('Failed to create listing. Please try again.');
-			},
-			// Refetch listings to update the cache
-			refetchQueries: ['GetListings'],
+			// Don't navigate automatically - let user choose from modal
 		},
-	);
+		onError: (error) => {
+			console.error('Error creating listing:', error);
+			message.error('Failed to create listing. Please try again.');
+		},
+		// Refetch listings to update the cache
+		refetchQueries: [{ query: ListingsPageContainerGetListingsDocument }],
+	});
+
+	const toUtcMidnight = (value: string): Date => {
+		const datePart = value?.split('T')[0];
+		if (datePart) {
+			const [yearPart, monthPart, dayPart] = datePart.split('-');
+			const year = Number.parseInt(yearPart ?? '', 10);
+			const month = Number.parseInt(monthPart ?? '', 10);
+			const day = Number.parseInt(dayPart ?? '', 10);
+			if (
+				Number.isFinite(year) &&
+				Number.isFinite(month) &&
+				Number.isFinite(day)
+			) {
+				return new Date(Date.UTC(year, month - 1, day));
+			}
+		}
+		const fallback = new Date(value);
+		if (Number.isNaN(fallback.getTime())) {
+			throw new Error('Invalid date string provided for reservation period');
+		}
+		return fallback;
+	};
 
 	const handleSubmit = async (
 		formData: CreateListingFormData,
@@ -82,8 +100,8 @@ export const CreateListingContainer: React.FC<CreateListingContainerProps> = (
 			description: formData.description,
 			category: formData.category,
 			location: formData.location,
-			sharingPeriodStart: new Date(formData.sharingPeriod[0]),
-			sharingPeriodEnd: new Date(formData.sharingPeriod[1]),
+			sharingPeriodStart: toUtcMidnight(formData.sharingPeriod[0]),
+			sharingPeriodEnd: toUtcMidnight(formData.sharingPeriod[1]),
 			images: formData.images,
 			isDraft,
 		};

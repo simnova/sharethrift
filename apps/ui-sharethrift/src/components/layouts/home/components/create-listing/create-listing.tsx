@@ -49,6 +49,13 @@ export const CreateListing: React.FC<CreateListingProps> = ({
 	const mainFileInputRef = useRef<HTMLInputElement>(null);
 	const additionalFileInputRef = useRef<HTMLInputElement>(null);
 
+	const formatDateOnly = (
+		value?: { format?: (pattern: string) => string } & {
+			toISOString?: () => string;
+		},
+	) =>
+		value?.format?.('YYYY-MM-DD') ?? value?.toISOString?.().slice(0, 10) ?? '';
+
 	const handleFormSubmit = (isDraft: boolean) => {
 		// If saving as draft, skip required-field validation and submit whatever the user has entered
 		if (isDraft) {
@@ -67,12 +74,15 @@ export const CreateListing: React.FC<CreateListingProps> = ({
 				location: values.location || '',
 				sharingPeriod: values.sharingPeriod
 					? [
-							values.sharingPeriod[0]?.toISOString?.() ||
-								defaultStartDate.toISOString(),
-							values.sharingPeriod[1]?.toISOString?.() ||
-								defaultEndDate.toISOString(),
+							formatDateOnly(values.sharingPeriod[0]) ||
+								defaultStartDate.toISOString().slice(0, 10),
+							formatDateOnly(values.sharingPeriod[1]) ||
+								defaultEndDate.toISOString().slice(0, 10),
 						]
-					: [defaultStartDate.toISOString(), defaultEndDate.toISOString()],
+					: [
+							defaultStartDate.toISOString().slice(0, 10),
+							defaultEndDate.toISOString().slice(0, 10),
+						],
 				images: uploadedImages,
 			};
 
@@ -93,8 +103,8 @@ export const CreateListing: React.FC<CreateListingProps> = ({
 					location: values.location,
 					sharingPeriod: values.sharingPeriod
 						? [
-								values.sharingPeriod[0].toISOString(),
-								values.sharingPeriod[1].toISOString(),
+								formatDateOnly(values.sharingPeriod[0]),
+								formatDateOnly(values.sharingPeriod[1]),
 							]
 						: ['', ''],
 					images: uploadedImages,
@@ -308,7 +318,7 @@ export const CreateListing: React.FC<CreateListingProps> = ({
 			/>
 		</>
 	);
-}
+};
 
 // Render modals outside of main JSX so imports are used (component exports are within same file scope)
 export default CreateListing;

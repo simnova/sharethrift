@@ -68,6 +68,12 @@ export const EditListing: React.FC<EditListingProps> = ({
 		}
 	}, [listing, form]);
 
+	const formatDateOnly = (value?: {
+		format?: (pattern: string) => string;
+		toISOString?: () => string;
+	}) =>
+		value?.format?.('YYYY-MM-DD') ?? value?.toISOString?.().slice(0, 10) ?? '';
+
 	const handleFormSubmit = () => {
 		form
 			.validateFields()
@@ -79,8 +85,8 @@ export const EditListing: React.FC<EditListingProps> = ({
 					location: values.location,
 					sharingPeriod: values.sharingPeriod
 						? [
-								values.sharingPeriod[0].toISOString(),
-								values.sharingPeriod[1].toISOString(),
+								formatDateOnly(values.sharingPeriod[0]),
+								formatDateOnly(values.sharingPeriod[1]),
 							]
 						: ['', ''],
 					images: uploadedImages,
