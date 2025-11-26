@@ -6,10 +6,7 @@ import { useApolloClient } from '@apollo/client/react';
 import { useCreateListingNavigation } from '../home/components/create-listing/hooks/use-create-listing-navigation.ts';
 import { Card } from 'antd';
 
-// biome-ignore lint/suspicious/noEmptyInterface: <explanation>
-export interface SectionLayoutProps {}
-
-export const SectionLayout: React.FC<SectionLayoutProps> = (_props) => {
+export const SectionLayout: React.FC = () => {
 	const auth = useAuth();
 	const apolloClient = useApolloClient();
 
