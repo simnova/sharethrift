@@ -15,7 +15,7 @@ const ListingSchema = new Schema<Listing, Model<Listing>, Listing>(
 	{},
 	listingOptions,
 );
-const ListingModelName = 'Listing';
+export const ListingModelName = 'Listing';
 
 export const ListingModelFactory = MongooseSeedwork.modelFactory<Listing>(
 	ListingModelName,

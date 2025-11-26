@@ -2,7 +2,7 @@ import { MongooseSeedwork } from '@cellix/mongoose-seedwork';
 import type { Models } from '@sthrift/data-sources-mongoose-models';
 import { Domain } from '@sthrift/domain';
 
-class AdminRoleConverter extends MongooseSeedwork.MongoTypeConverter<
+export class AdminRoleConverter extends MongooseSeedwork.MongoTypeConverter<
 	Models.Role.AdminRole,
 	AdminRoleDomainAdapter,
 	Domain.Passport,
@@ -43,7 +43,7 @@ export class AdminRoleDomainAdapter
 	}
 }
 
-class AdminRolePermissionsDomainAdapter
+export class AdminRolePermissionsDomainAdapter
 	implements Domain.Contexts.Role.AdminRole.AdminRolePermissionsProps
 {
 	public readonly props: Models.Role.AdminRolePermissions;
@@ -88,7 +88,7 @@ class AdminRolePermissionsDomainAdapter
 	}
 }
 
-class AdminRoleUserPermissionsDomainAdapter
+export class AdminRoleUserPermissionsDomainAdapter
 	implements Domain.Contexts.Role.AdminRole.AdminRoleUserPermissionsProps
 {
 	public readonly props: Models.Role.AdminRoleUserPermissions;
@@ -160,7 +160,7 @@ class AdminRoleUserPermissionsDomainAdapter
 	}
 }
 
-class AdminRoleConversationPermissionsDomainAdapter
+export class AdminRoleConversationPermissionsDomainAdapter
 	implements
 		Domain.Contexts.Role.AdminRole.AdminRoleConversationPermissionsProps
 {
@@ -205,7 +205,7 @@ class AdminRoleConversationPermissionsDomainAdapter
 	}
 }
 
-class AdminRoleListingPermissionsDomainAdapter
+export class AdminRoleListingPermissionsDomainAdapter
 	implements Domain.Contexts.Role.AdminRole.AdminRoleListingPermissionsProps
 {
 	public readonly props: Models.Role.AdminRoleListingPermissions;
@@ -277,7 +277,7 @@ class AdminRoleListingPermissionsDomainAdapter
 	}
 }
 
-class AdminRoleReservationRequestPermissionsDomainAdapter
+export class AdminRoleReservationRequestPermissionsDomainAdapter
 	implements
 		Domain.Contexts.Role.AdminRole.AdminRoleReservationRequestPermissionsProps
 {

@@ -183,3 +183,5 @@ export const ReservationsTable: React.FC<ReservationsTableProps> = ({
 		/>
 	);
 };
+
+export default ReservationsTable;

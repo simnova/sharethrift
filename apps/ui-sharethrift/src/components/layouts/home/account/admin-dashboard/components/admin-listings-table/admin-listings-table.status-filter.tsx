@@ -28,3 +28,5 @@ export const StatusFilter: React.FC<StatusFilterProps> = ({ statusFilters, onSta
     </div>
   );
 };
+
+export default StatusFilter;

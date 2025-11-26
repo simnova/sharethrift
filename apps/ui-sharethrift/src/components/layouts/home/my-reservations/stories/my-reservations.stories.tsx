@@ -4,7 +4,7 @@ import {
 	STORYBOOK_RESERVATION_USER_ID,
 	reservationStoryMocks,
 } from './reservation-story-mocks.ts';
-import { MyReservationsMain } from '../pages/my-reservations.tsx';
+import MyReservationsMain from '../pages/my-reservations.tsx';
 import {
 	HomeMyReservationsReservationsViewActiveContainerActiveReservationsDocument,
 	HomeMyReservationsReservationsViewHistoryContainerPastReservationsDocument,

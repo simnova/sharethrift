@@ -13,7 +13,7 @@ export interface PersonalUserAccountProfileLocation
 	country: string;
 	zipCode: string;
 }
-const PersonalUserAccountProfileLocationType: SchemaDefinition<PersonalUserAccountProfileLocation> =
+export const PersonalUserAccountProfileLocationType: SchemaDefinition<PersonalUserAccountProfileLocation> =
 	{
 		address1: { type: String, required: true },
 		address2: { type: String, required: false },
@@ -41,7 +41,7 @@ export interface PersonalUserAccountProfileBilling
 	lastPaymentAmount: number;
 }
 
-const PersonalUserAccountProfileBillingType: SchemaDefinition<PersonalUserAccountProfileBilling> =
+export const PersonalUserAccountProfileBillingType: SchemaDefinition<PersonalUserAccountProfileBilling> =
 	{
 		subscriptionId: { type: String, required: false },
 		cybersourceCustomerId: { type: String, required: false },
@@ -68,7 +68,7 @@ export interface PersonalUserAccountProfile
 	location: PersonalUserAccountProfileLocation;
 	billing: PersonalUserAccountProfileBilling;
 }
-const PersonalUserAccountProfileType: SchemaDefinition<PersonalUserAccountProfile> =
+export const PersonalUserAccountProfileType: SchemaDefinition<PersonalUserAccountProfile> =
 	{
 		firstName: { type: String, required: true },
 		lastName: { type: String, required: true },
@@ -92,7 +92,7 @@ export interface PersonalUserAccount extends MongooseSeedwork.NestedPath {
 	username: string;
 	profile: PersonalUserAccountProfile;
 }
-const PersonalUserAccountType: SchemaDefinition<PersonalUserAccount> = {
+export const PersonalUserAccountType: SchemaDefinition<PersonalUserAccount> = {
 	accountType: {
 		type: String,
 		required: false,

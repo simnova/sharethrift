@@ -4,7 +4,7 @@ import type {
 	MessageInstance,
 } from '@cellix/messaging-service';
 
-function toDomainConversationProps(
+export function toDomainConversationProps(
 		messagingConversation: ConversationInstance,
 		sharer: Domain.Contexts.User.PersonalUser.PersonalUserEntityReference,
 		reserver: Domain.Contexts.User.PersonalUser.PersonalUserEntityReference,
@@ -32,7 +32,7 @@ function toDomainConversationProps(
 		};
 	}
 
-function toDomainMessage(
+export function toDomainMessage(
 		messagingMessage: MessageInstance,
 		authorId: Domain.Contexts.Conversation.Conversation.AuthorId,
 	): Domain.Contexts.Conversation.Conversation.MessageEntityReference {
@@ -55,7 +55,7 @@ function toDomainMessage(
 		});
 	}
 
-function toDomainMessages(
+export function toDomainMessages(
 	messagingMessages: MessageInstance[],
 	authorIdMap: Map<string, Domain.Contexts.Conversation.Conversation.AuthorId>,
 ): Domain.Contexts.Conversation.Conversation.MessageEntityReference[] {

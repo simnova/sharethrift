@@ -40,7 +40,7 @@ export const APPEAL_REQUEST_STATE_ENUM = [
  * Schema for ListingAppealRequest discriminator.
  * Adds listing field to base appeal request schema.
  */
-const ListingAppealRequestSchema = new Schema<
+export const ListingAppealRequestSchema = new Schema<
 	ListingAppealRequest,
 	Model<ListingAppealRequest>,
 	ListingAppealRequest
@@ -85,7 +85,7 @@ const ListingAppealRequestSchema = new Schema<
 	appealRequestOptions,
 );
 
-const ListingAppealRequestModelName: string = 'listing-appeal-request';
+export const ListingAppealRequestModelName: string = 'listing-appeal-request';
 
 /**
  * Factory function to create ListingAppealRequest discriminator model.
