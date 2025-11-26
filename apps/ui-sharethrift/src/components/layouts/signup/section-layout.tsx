@@ -4,6 +4,7 @@ import { useAuth } from 'react-oidc-context';
 import { HandleLogout } from '../../shared/handle-logout.ts';
 import { useApolloClient } from '@apollo/client/react';
 import { useCreateListingNavigation } from '../home/components/create-listing/hooks/use-create-listing-navigation.ts';
+import { Card } from 'antd';
 
 // biome-ignore lint/suspicious/noEmptyInterface: <explanation>
 export interface SectionLayoutProps {}
@@ -70,7 +71,26 @@ export const SectionLayout: React.FC<SectionLayoutProps> = (_props) => {
 				}}
 			>
 				<main style={{ width: '100%' }}>
-					<Outlet />
+					<div
+						style={{
+							display: 'flex',
+							justifyContent: 'center',
+							alignItems: 'center',
+							minHeight: 'calc(100vh - 128px)',
+							padding: '20px',
+						}}
+					>
+						<Card
+							style={{
+								maxWidth: '100%',
+								width: '100%',
+								backgroundColor: 'transparent',
+								border: 'none',
+							}}
+						>
+							<Outlet />
+						</Card>
+					</div>
 				</main>
 			</div>
 			<Footer />

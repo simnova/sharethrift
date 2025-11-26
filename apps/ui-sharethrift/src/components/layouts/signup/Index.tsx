@@ -1,24 +1,21 @@
-import { Route, Routes } from 'react-router-dom';
-import { SignupSelectAccountType } from './pages/signup-select-account-type.tsx';
-import { AccountSetup } from './pages/AccountSetup.tsx';
-import { ProfileSetup } from './pages/ProfileSetup.tsx';
-import { Payment } from './pages/Payment.tsx';
-import { SectionLayoutContainer } from './section-layout.container.tsx';
-import { Terms } from './pages/Terms.tsx';
+import { Route, Routes } from "react-router-dom";
+import { SelectAccountTypePage } from "./pages/select-account-type-page.tsx";
+import { AccountSetupPage } from "./pages/account-setup-page.tsx";
+import { ProfileSetupPage } from "./pages/profile-setup-page.tsx";
+import { PaymentPage } from "./pages/payment-page.tsx";
+import { SectionLayout } from "./section-layout.tsx";
+import { TermsPage } from "./pages/terms-page.tsx";
 
 export const SignupRoutes: React.FC = () => {
-	return (
-		<Routes>
-			<Route element={<SectionLayoutContainer />}>
-				<Route
-					path="select-account-type"
-					element={<SignupSelectAccountType />}
-				/>
-				<Route path="account-setup" element={<AccountSetup />} />
-				<Route path="profile-setup" element={<ProfileSetup />} />
-				<Route path="payment" element={<Payment />} />
-				<Route path="terms" element={<Terms />} />
-			</Route>
-		</Routes>
-	);
-}
+  return (
+    <Routes>
+      <Route element={<SectionLayout />}>
+        <Route path="select-account-type" element={<SelectAccountTypePage />} />
+        <Route path="account-setup" element={<AccountSetupPage />} />
+        <Route path="profile-setup" element={<ProfileSetupPage />} />
+        <Route path="payment" element={<PaymentPage />} />
+        <Route path="terms" element={<TermsPage />} />
+      </Route>
+    </Routes>
+  );
+};

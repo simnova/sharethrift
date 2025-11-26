@@ -65,11 +65,38 @@ function makeBaseProps(
 						zipCode: '12345',
 					},
 					billing: {
-						subscriptionId: null,
 						cybersourceCustomerId: null,
-						paymentState: '',
-						lastTransactionId: null,
-						lastPaymentAmount: null,
+						subscription: {
+							planCode: 'verified-personal',
+							status: 'ACTIVE',
+							startDate: new Date('2020-01-01T00:00:00Z'),
+							subscriptionId: 'sub_123',
+						},
+						transactions: {
+							items: [
+								{
+									id: '1',
+									transactionId: 'txn_123',
+									amount: 1000,
+									referenceId: 'ref_123',
+									status: 'completed',
+									completedAt: new Date('2020-01-01T00:00:00Z'),
+									errorMessage: null,
+								},
+							],
+							getNewItem: () => ({
+								id: '2',
+								transactionId: 'txn_123',
+								amount: 1000,
+								referenceId: 'ref_123',
+								status: 'completed',
+								completedAt: new Date('2020-01-01T00:00:00Z'),
+								errorMessage: null,
+							}),
+							addItem: vi.fn(),
+							removeItem: vi.fn(),
+							removeAll: vi.fn(),
+						},
 					},
 				},
 			},
@@ -102,11 +129,38 @@ function makeBaseProps(
 						zipCode: '12345',
 					},
 					billing: {
-						subscriptionId: null,
 						cybersourceCustomerId: null,
-						paymentState: '',
-						lastTransactionId: null,
-						lastPaymentAmount: null,
+						subscription: {
+							planCode: 'basic',
+							status: 'ACTIVE',
+							startDate: new Date('2020-01-01T00:00:00Z'),
+							subscriptionId: 'sub_456',
+						},
+						transactions: {
+							items: [
+								{
+									id: '1',
+									transactionId: 'txn_123',
+									amount: 1000,
+									referenceId: 'ref_123',
+									status: 'completed',
+									completedAt: new Date('2020-01-01T00:00:00Z'),
+									errorMessage: null,
+								},
+							],
+							getNewItem: () => ({
+								id: '2',
+								transactionId: 'txn_123',
+								amount: 1000,
+								referenceId: 'ref_123',
+								status: 'completed',
+								completedAt: new Date('2020-01-01T00:00:00Z'),
+								errorMessage: null,
+							}),
+							addItem: vi.fn(),
+							removeItem: vi.fn(),
+							removeAll: vi.fn(),
+						},
 					},
 				},
 			},
@@ -200,7 +254,9 @@ test.for(feature, ({ Scenario, Background, BeforeEachScenario }) => {
 			},
 		);
 		Then('the conversation should have a messagingConversationId', () => {
-			expect(newConversation.messagingConversationId).toBe('mock-messaging-conversation-id');
+			expect(newConversation.messagingConversationId).toBe(
+				'mock-messaging-conversation-id',
+			);
 		});
 	});
 
@@ -227,7 +283,43 @@ test.for(feature, ({ Scenario, Background, BeforeEachScenario }) => {
 						accountType: originalSharer.account.accountType,
 						email: 'newsharer@cellix.com',
 						username: 'newsharer',
-						profile: originalSharer.account.profile,
+						profile: {
+							firstName: originalSharer.account.profile.firstName,
+							lastName: originalSharer.account.profile.lastName,
+							aboutMe: originalSharer.account.profile.aboutMe,
+							location: originalSharer.account.profile.location,
+						billing: {
+							cybersourceCustomerId:
+								originalSharer.account.profile.billing.cybersourceCustomerId,
+							subscription:
+								originalSharer.account.profile.billing.subscription,
+							transactions: {
+								items: [
+										{
+											id: '1',
+											transactionId: 'txn_123',
+											amount: 1000,
+											referenceId: 'ref_123',
+											status: 'completed',
+											completedAt: new Date('2020-01-01T00:00:00Z'),
+											errorMessage: null,
+										},
+									],
+									getNewItem: () => ({
+										id: '2',
+										transactionId: 'txn_123',
+										amount: 1000,
+										referenceId: 'ref_123',
+										status: 'completed',
+										completedAt: new Date('2020-01-01T00:00:00Z'),
+										errorMessage: null,
+									}),
+									addItem: vi.fn(),
+									removeItem: vi.fn(),
+									removeAll: vi.fn(),
+								},
+							},
+						},
 					},
 					createdAt: originalSharer.createdAt,
 					updatedAt: originalSharer.updatedAt,
@@ -269,7 +361,44 @@ test.for(feature, ({ Scenario, Background, BeforeEachScenario }) => {
 								accountType: originalSharer.account.accountType,
 								email: 'newsharer@cellix.com',
 								username: 'newsharer',
-								profile: originalSharer.account.profile,
+								profile: {
+									firstName: originalSharer.account.profile.firstName,
+									lastName: originalSharer.account.profile.lastName,
+									aboutMe: originalSharer.account.profile.aboutMe,
+									location: originalSharer.account.profile.location,
+									billing: {
+										cybersourceCustomerId:
+											originalSharer.account.profile.billing
+												.cybersourceCustomerId,
+										subscription:
+											originalSharer.account.profile.billing.subscription,
+										transactions: {
+											items: [
+												{
+													id: '1',
+													transactionId: 'txn_123',
+													amount: 1000,
+													referenceId: 'ref_123',
+													status: 'completed',
+													completedAt: new Date('2020-01-01T00:00:00Z'),
+													errorMessage: null,
+												},
+											],
+											getNewItem: () => ({
+												id: '2',
+												transactionId: 'txn_123',
+												amount: 1000,
+												referenceId: 'ref_123',
+												status: 'completed',
+												completedAt: new Date('2020-01-01T00:00:00Z'),
+												errorMessage: null,
+											}),
+											addItem: vi.fn(),
+											removeItem: vi.fn(),
+											removeAll: vi.fn(),
+										},
+									},
+								},
 							},
 							createdAt: originalSharer.createdAt,
 							updatedAt: originalSharer.updatedAt,
@@ -312,7 +441,44 @@ test.for(feature, ({ Scenario, Background, BeforeEachScenario }) => {
 						accountType: originalReserver.account.accountType,
 						email: 'newreserver@cellix.com',
 						username: 'newreserver',
-						profile: originalReserver.account.profile,
+						profile: {
+							firstName: originalReserver.account.profile.firstName,
+							lastName: originalReserver.account.profile.lastName,
+							aboutMe: originalReserver.account.profile.aboutMe,
+							location: originalReserver.account.profile.location,
+						billing: {
+							cybersourceCustomerId:
+								originalReserver.account.profile.billing
+									.cybersourceCustomerId,
+							subscription:
+								originalReserver.account.profile.billing.subscription,
+							transactions: {
+								items: [
+										{
+											id: '1',
+											transactionId: 'txn_123',
+											amount: 1000,
+											referenceId: 'ref_123',
+											status: 'completed',
+											completedAt: new Date('2020-01-01T00:00:00Z'),
+											errorMessage: null,
+										},
+									],
+									getNewItem: () => ({
+										id: '2',
+										transactionId: 'txn_123',
+										amount: 1000,
+										referenceId: 'ref_123',
+										status: 'completed',
+										completedAt: new Date('2020-01-01T00:00:00Z'),
+										errorMessage: null,
+									}),
+									addItem: vi.fn(),
+									removeItem: vi.fn(),
+									removeAll: vi.fn(),
+								},
+							},
+						},
 					},
 					createdAt: originalReserver.createdAt,
 					updatedAt: originalReserver.updatedAt,
@@ -356,7 +522,44 @@ test.for(feature, ({ Scenario, Background, BeforeEachScenario }) => {
 								accountType: originalReserver.account.accountType,
 								email: 'newreserver@cellix.com',
 								username: 'newreserver',
-								profile: originalReserver.account.profile,
+								profile: {
+									firstName: originalReserver.account.profile.firstName,
+									lastName: originalReserver.account.profile.lastName,
+									aboutMe: originalReserver.account.profile.aboutMe,
+									location: originalReserver.account.profile.location,
+								billing: {
+									cybersourceCustomerId:
+										originalReserver.account.profile.billing
+											.cybersourceCustomerId,
+									subscription:
+										originalReserver.account.profile.billing.subscription,
+									transactions: {
+										items: [
+												{
+													id: '1',
+													transactionId: 'txn_123',
+													amount: 1000,
+													referenceId: 'ref_123',
+													status: 'completed',
+													completedAt: new Date('2020-01-01T00:00:00Z'),
+													errorMessage: null,
+												},
+											],
+											getNewItem: () => ({
+												id: '2',
+												transactionId: 'txn_123',
+												amount: 1000,
+												referenceId: 'ref_123',
+												status: 'completed',
+												completedAt: new Date('2020-01-01T00:00:00Z'),
+												errorMessage: null,
+											}),
+											addItem: vi.fn(),
+											removeItem: vi.fn(),
+											removeAll: vi.fn(),
+										},
+									},
+								},
 							},
 							createdAt: originalReserver.createdAt,
 							updatedAt: originalReserver.updatedAt,

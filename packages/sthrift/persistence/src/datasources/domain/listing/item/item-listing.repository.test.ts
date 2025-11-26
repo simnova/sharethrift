@@ -56,6 +56,37 @@ function makeUserDoc(
 		displayName: 'Test User',
 		email: 'test@example.com',
 		id: 'user-1',
+		account: {
+			accountType: 'verified-personal',
+			email: 'test@example.com',
+			username: 'testuser',
+			profile: {
+				firstName: 'Test',
+				lastName: 'User',
+				aboutMe: 'Test user description',
+				location: {
+					address1: '123 Test St',
+					address2: null,
+					city: 'Test City',
+					state: 'Test State',
+					country: 'Test Country',
+					zipCode: '12345',
+				},
+				billing: {
+					cybersourceCustomerId: 'cust-test-123',
+					subscription: {
+						subscriptionId: 'sub-test-123',
+						planCode: 'test-plan',
+						status: 'ACTIVE',
+						startDate: new Date(),
+					},
+					transactions: [],
+				},
+			},
+		},
+		set: vi.fn((key: string, value: unknown) => {
+			(base as unknown as Record<string, unknown>)[key] = value;
+		}),
 		...overrides,
 	} as Models.User.PersonalUser;
 	return vi.mocked(base);
@@ -123,7 +154,7 @@ test.for(feature, ({ Scenario, Background, BeforeEachScenario }) => {
 					sort: vi.fn(() => query),
 					skip: vi.fn(() => query),
 					limit: vi.fn(() => query),
-					exec: vi.fn( () => {
+					exec: vi.fn(() => {
 						if (!filter || filter.state === 'Published') {
 							return [listingDoc];
 						}
@@ -219,11 +250,10 @@ test.for(feature, ({ Scenario, Background, BeforeEachScenario }) => {
 			Given('a valid sharer domain object', () => {
 				userDoc = makeUserDoc();
 				userAdapter = new PersonalUserDomainAdapter(userDoc);
-				sharerDomainObject =
-					new Domain.Contexts.User.PersonalUser.PersonalUser(
-						userAdapter,
-						passport,
-					);
+				sharerDomainObject = new Domain.Contexts.User.PersonalUser.PersonalUser(
+					userAdapter,
+					passport,
+				);
 			});
 			And('a set of valid listing fields without isDraft set to true', () => {
 				// Fields will be provided in the When step
@@ -250,13 +280,10 @@ test.for(feature, ({ Scenario, Background, BeforeEachScenario }) => {
 			And('the object\'s state should be "Published"', () => {
 				expect(result.state).toBe('Published');
 			});
-			And(
-				'createdAt and updatedAt should be set to the current date',
-				() => {
-					expect(result.createdAt).toBeInstanceOf(Date);
-					expect(result.updatedAt).toBeInstanceOf(Date);
-				},
-			);
+			And('createdAt and updatedAt should be set to the current date', () => {
+				expect(result.createdAt).toBeInstanceOf(Date);
+				expect(result.updatedAt).toBeInstanceOf(Date);
+			});
 		},
 	);
 
@@ -265,11 +292,10 @@ test.for(feature, ({ Scenario, Background, BeforeEachScenario }) => {
 		Given('a valid sharer domain object', () => {
 			userDoc = makeUserDoc();
 			userAdapter = new PersonalUserDomainAdapter(userDoc);
-			sharerDomainObject =
-				new Domain.Contexts.User.PersonalUser.PersonalUser(
-					userAdapter,
-					passport,
-				);
+			sharerDomainObject = new Domain.Contexts.User.PersonalUser.PersonalUser(
+				userAdapter,
+				passport,
+			);
 		});
 		And('a set of valid listing fields with isDraft set to true', () => {
 			// Fields will be provided in the When step with isDraft: true
@@ -323,32 +349,32 @@ test.for(feature, ({ Scenario, Background, BeforeEachScenario }) => {
 		},
 	);
 
-	Scenario('Retrieve item listings by sharer ID', ({ Given, When, Then, And }) => {
-		let results: Domain.Contexts.Listing.ItemListing.ItemListing<ItemListingDomainAdapter>[];
-		Given('a valid sharer ID', () => {
-			// Using 'user-1' as the valid sharer ID
-		});
-		When('I call getBySharerID with the sharer ID', async () => {
-			results = await repo.getBySharerID('user-1');
-		});
-		Then('I should receive a list of ItemListing domain objects', () => {
-			expect(Array.isArray(results)).toBe(true);
-			expect(results.length).toBeGreaterThan(0);
-			for (const item of results) {
-				expect(item).toBeInstanceOf(
-					Domain.Contexts.Listing.ItemListing.ItemListing,
-				);
-			}
-		});
-		And(
-			"each object's sharer field should match the given sharer ID",
-			() => {
+	Scenario(
+		'Retrieve item listings by sharer ID',
+		({ Given, When, Then, And }) => {
+			let results: Domain.Contexts.Listing.ItemListing.ItemListing<ItemListingDomainAdapter>[];
+			Given('a valid sharer ID', () => {
+				// Using 'user-1' as the valid sharer ID
+			});
+			When('I call getBySharerID with the sharer ID', async () => {
+				results = await repo.getBySharerID('user-1');
+			});
+			Then('I should receive a list of ItemListing domain objects', () => {
+				expect(Array.isArray(results)).toBe(true);
+				expect(results.length).toBeGreaterThan(0);
+				for (const item of results) {
+					expect(item).toBeInstanceOf(
+						Domain.Contexts.Listing.ItemListing.ItemListing,
+					);
+				}
+			});
+			And("each object's sharer field should match the given sharer ID", () => {
 				for (const item of results) {
 					expect(item.sharer.id).toBe('user-1');
 				}
-			},
-		);
-	});
+			});
+		},
+	);
 
 	Scenario(
 		'Retrieve item listings by sharer ID with filters and pagination',

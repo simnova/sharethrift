@@ -1,9 +1,11 @@
+import type { AccountPlanPassport } from '../../../contexts/account-plan/account-plan.passport.ts';
 import type { ConversationPassport } from '../../../contexts/conversation/conversation.passport.ts';
 import type { ListingPassport } from '../../../contexts/listing/listing.passport.ts';
 import type { Passport } from '../../../contexts/passport.ts';
 import type { ReservationRequestPassport } from '../../../contexts/reservation-request/reservation-request.passport.ts';
 import type { AppealRequestPassport } from '../../../contexts/appeal-request/appeal-request.passport.ts';
 import type { UserPassport } from '../../../contexts/user/user.passport.ts';
+import { PersonalUserAccountPlanPassport } from './contexts/personal-user.account-plan.passport.ts';
 import { PersonalUserUserPassport } from './contexts/personal-user.user.passport.ts';
 import { PersonalUserListingPassport } from './contexts/personal-user.listing.passport.ts';
 import { PersonalUserConversationPassport } from './contexts/personal-user.conversation.passport.ts';
@@ -15,6 +17,7 @@ export class PersonalUserPassport
 	implements Passport
 {
 	private _userPassport: UserPassport | undefined;
+	private _accountPlanPassport: AccountPlanPassport | undefined;
 	private _listingPassport: ListingPassport | undefined;
 	private _conversationPassport: ConversationPassport | undefined;
 	private _reservationRequestPassport: ReservationRequestPassport | undefined;
@@ -39,6 +42,13 @@ export class PersonalUserPassport
 		this._reservationRequestPassport ??=
 			new PersonalUserReservationRequestPassport(this._user);
 		return this._reservationRequestPassport;
+	}
+
+	get accountPlan(): AccountPlanPassport {
+		this._accountPlanPassport ??= new PersonalUserAccountPlanPassport(
+			this._user,
+		);
+		return this._accountPlanPassport;
 	}
 	get appealRequest(): AppealRequestPassport {
 		this._appealRequestPassport ??= new PersonalUserAppealRequestPassport(

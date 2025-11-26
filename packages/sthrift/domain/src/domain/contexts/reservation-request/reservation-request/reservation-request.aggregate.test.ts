@@ -3,7 +3,6 @@ import { ReservationRequest } from './reservation-request.ts';
 import type { ReservationRequestProps } from './reservation-request.entity.ts';
 import type { ItemListingEntityReference } from '../../listing/item/item-listing.entity.ts';
 import type { PersonalUserEntityReference } from '../../user/personal-user/personal-user.entity.ts';
-// ...existing code...
 import {
 	ReservationRequestStates,
 	ReservationRequestStateValue,
@@ -57,6 +56,14 @@ describe('ReservationRequest', () => {
 				}),
 			};
 		},
+
+		get accountPlan() {
+			return {
+				forAccountPlan: () => ({
+					determineIf: () => true,
+				}),
+			};
+		},
 	} as Passport;
 
 	// Helper functions for creating mock entity references
@@ -83,6 +90,8 @@ describe('ReservationRequest', () => {
 			userType: 'personal',
 			isBlocked: false,
 			schemaVersion: '1',
+			hasCompletedOnboarding: true,
+
 			account: {
 				accountType: 'standard',
 				email: 'mock@example.com',
@@ -90,7 +99,7 @@ describe('ReservationRequest', () => {
 				profile: {
 					firstName: 'Mock',
 					lastName: 'User',
-                    aboutMe: 'Hello',
+					aboutMe: 'Hello',
 					location: {
 						address1: '123 Main St',
 						address2: null,
@@ -100,17 +109,29 @@ describe('ReservationRequest', () => {
 						zipCode: '62704',
 					},
 					billing: {
-						subscriptionId: 'sub-123',
-						cybersourceCustomerId: 'cyber-456',
-						paymentState: 'active',
-						lastPaymentAmount: 49.99,
-						lastTransactionId: 'txn-789',
+						cybersourceCustomerId: null,
+						subscription: {
+							planCode: 'basic',
+							status: '',
+							startDate: new Date('2020-01-01T00:00:00Z'),
+							subscriptionId: 'sub_123',
+						},
+						transactions: [
+							{
+								id: '1',
+								transactionId: 'txn_123',
+								amount: 1000,
+								referenceId: 'ref_123',
+								status: 'completed',
+								completedAt: new Date('2020-01-01T00:00:00Z'),
+								errorMessage: null,
+							},
+						],
 					},
 				},
 			},
 			createdAt: new Date(),
 			updatedAt: new Date(),
-			hasCompletedOnboarding: true,
 		};
 	};
 

@@ -1,5 +1,10 @@
 import express from 'express';
+import crypto from 'node:crypto';
+import { generateKeyPair } from 'jose';
+import { exportPKCS8 } from 'jose';
+
 import type { Request, Response } from 'express';
+import jwt from 'jsonwebtoken';
 import type {
 	CustomerProfile,
 	PaymentTokenInfo,
@@ -17,23 +22,227 @@ import type {
 	SuspendSubscriptionResponse,
 	SubscriptionsListResponse,
 	PaymentInstrumentInfo,
-} from './payment-interface.ts';
+} from '@cellix/payment-service';
+import path from 'path';
+import { fileURLToPath } from 'url';
 
+const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const app = express();
 app.disable('x-powered-by');
 const port = 3001;
 
+// Enable CORS for all origins (or restrict to 'http://localhost:3000' if needed)
+app.use((req, res, next) => {
+	res.header('Access-Control-Allow-Origin', 'http://localhost:3000');
+	res.header(
+		'Access-Control-Allow-Methods',
+		'GET,POST,PUT,PATCH,DELETE,OPTIONS',
+	);
+	res.header(
+		'Access-Control-Allow-Headers',
+		'Origin, X-Requested-With, Content-Type, Accept, Authorization',
+	);
+	if (req.method === 'OPTIONS') {
+		res.sendStatus(200);
+		return;
+	}
+	next();
+});
+
 app.use(express.json());
+app.use('/microform/bundle/:version', express.static(__dirname)); // Serve static files for iframe.min.js
+// Cybersource mock config
+const CYBERSOURCE_MERCHANT_ID = 'simnova_sharethrift';
+
+// Simulate /flex/v2/capture-contexts endpoint
+app.get('/pts/v2/public-key', async (_req, res) => {
+	const now = Math.floor(Date.now() / 1000);
+	const mockJwk = {
+		kty: 'RSA',
+		e: 'AQAB',
+		use: 'enc',
+		n: 'qtMfPO70WAFJx5ccolGOi_UOhoa4ZVnEsBeJ67mDU2tSPpTDPCG9KojqNjk7-I0YZHrkHWK4V3fRVFBoOiGOM21MMDM5laoZIhvTTQD-bjuw6KTM75qLvkrYJfYKTFpP8U_xXWea_AySSSdtYlZi7ROnY-Lb97zgiurNJZ-XjHnnSoBNjS888YE_U0da7gVBSU-CDjajMOwAQi1ZNmjwyA_rd_UjTO8j5RyZjI60qpRstXok7T8mj3JozStZhbbcb7-c8WPZAv4y3xQ--kXSymtr2o0iyZBMRqf0xqHTNSYtWxDPKBF2fxu92-IxVr5s_uOno3CZDMSpb2-kADr8ow',
+		kid: '8ffbb5cebd99379fbc1aef7c3040e79d', // Replace with your Cybersource key ID
+	};
+	const payload = {
+		jti: 'QdJ3Tj3Kp0U6vC2t',
+		iss: 'Flex API',
+		iat: now,
+		exp: now + 900,
+		flx: {
+			path: '/flex/v2/tokens',
+			data: 'qTdsCnVFJpOHwltOD91CxRAAEOl5LzG2IXlGH/ZaA3jh+jbKzwCJxbb/0u6Gh9OlBXXtEfeCFoU5Y5emKN3d6eeq3WUfvXqswVm0Q9l6A1sMRk+xMCVFuUWN3SyFiyvDSNWF+jUsYfISkq2+dH+ttnH/hO/zn/FMNQQ64DRrCC+jR7sPOKITWwWAnpC84InJS4Nk',
+			origin: 'http://localhost:3001',
+			jwk: mockJwk,
+		},
+		ctx: [
+			{
+				type: 'mf-1.0.0',
+				data: {
+					clientLibrary:
+						'https://testflex.cybersource.com/microform/bundle/v2/flex-microform.min.js',
+					targetOrigins: ['http://localhost:3000'],
+					mfOrigin: 'http://localhost:3001',
+				},
+			},
+		],
+	};
+	const header = {
+		alg: 'RS256',
+		kid: 'zu',
+	};
+
+	// dummy private key for testing only to work in development environment
+	const { privateKey } = await generateKeyPair('RS256');
+	const pkcs8 = await exportPKCS8(privateKey);
+	const keyObject = crypto.createPrivateKey({
+		key: pkcs8,
+		format: 'pem',
+		type: 'pkcs8',
+	});
+	const token = jwt.sign(payload, keyObject, {
+		algorithm: 'RS256',
+		header,
+	});
+	res.json({ publicKey: token });
+});
+
+app.post('/flex/v2/tokens', async (_req: Request, res: Response) => {
+	const now = Math.floor(Date.now() / 1000);
+	// Static payload and header as requested
+	const payload = {
+		data: {
+			expirationYear: '2025',
+			number: '411111XXXXXX1111',
+			expirationMonth: '11',
+		},
+		iss: 'Flex/08',
+		exp: now + 900,
+		type: 'mf-1.0.0',
+		iat: 1760113304,
+		jti: '1E1N6OZHLY9BP0WGZEIW9ED7G6096L1VXPYJVVOH4XGK0RUXV1KC68E9361BB449',
+		content: {
+			paymentInformation: {
+				card: {
+					expirationYear: { value: '2025' },
+					number: {
+						maskedValue: 'XXXXXXXXXXXX1111',
+						bin: '411111',
+					},
+					securityCode: {},
+					expirationMonth: { value: '11' },
+				},
+			},
+		},
+	};
+	const header = {
+		kid: '8ffbb5cebd99379fbc1aef7c3040e79d',
+		alg: 'RS256',
+	};
+	const { privateKey } = await generateKeyPair('RS256');
+	const pkcs8 = await exportPKCS8(privateKey);
+	const keyObject = crypto.createPrivateKey({
+		key: pkcs8,
+		format: 'pem',
+		type: 'pkcs8',
+	});
+	try {
+		const token = jwt.sign(payload, keyObject, { algorithm: 'RS256', header });
+		return res.status(200).send(token);
+	} catch (err) {
+		return res
+			.status(500)
+			.json({ error: 'failed to sign token', details: String(err) });
+	}
+});
+
+// Simulate /payments/v1/authorizations endpoint
+app.post('/payments/v1/authorizations', (req, res) => {
+	res.json({
+		status: 'AUTHORIZED',
+		id: 'mock-transaction-id',
+		amount: req.body.amount || '100.00',
+		currency: req.body.currency || 'USD',
+		merchantId: CYBERSOURCE_MERCHANT_ID,
+		decision: 'ACCEPT',
+		message: 'Mock authorization successful',
+	});
+});
+
+// Health check
+app.get('/health', (_req, res) => {
+	res.json({ status: 'ok', time: new Date().toISOString() });
+});
 
 app.get('/', (_req: Request, res: Response) => {
 	res.send('Payment Mock Server is running!');
 });
 
-// generatePublicKey endpoint
-app.get('/pts/v2/public-key', (_req: Request, res: Response) => {
-	return res.status(200).json({
-		publicKey: 'MOCK_PUBLIC_KEY_1234567890',
-	});
+// Serve static HTML for iframe.html
+app.get('/microform/bundle/:version/iframe.html', (_req, res) => {
+	res.setHeader('Content-Type', 'text/html');
+	res.send(`<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8" />
+		<meta name="viewport" content="width=device-width,initial-scale=1" />
+		<style>
+			* {
+				background-color: transparent;
+				border: none;
+				-webkit-box-sizing: border-box;
+				box-sizing: border-box;
+				margin: 0;
+				padding: 0;
+			}
+
+			body,
+			form,
+			input {
+				height: 100%;
+				left: 0;
+				position: absolute;
+				top: 0;
+				width: 100%;
+			}
+
+			label {
+				left: -9999px;
+				position: absolute;
+			}
+
+			:focus {
+				outline: 0;
+			}
+
+			::-ms-clear,
+			input::-ms-clear {
+				display: none;
+			}
+
+			.field-description,
+			.focus-helper {
+				height: 1px;
+				left: -1px;
+				opacity: 0;
+				pointer-events: none;
+				width: 1px;
+				z-index: -1;
+			}
+
+			.autocomplete {
+				height: 2px;
+				left: -2px;
+				pointer-events: none;
+				width: 2px;
+				z-index: -1;
+			}
+		</style>
+	</head>
+	<body>
+		<script defer="defer" src="iframe.min.js"></script>
+	</body>
+</html>`);
 });
 
 // createCustomerProfile endpoint

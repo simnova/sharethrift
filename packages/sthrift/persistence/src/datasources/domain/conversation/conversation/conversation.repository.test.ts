@@ -44,7 +44,7 @@ function makeUserDoc(id: string): Models.User.PersonalUser {
 	return {
 		_id: new MongooseSeedwork.ObjectId(validId),
 		id: id,
-		userType: 'end-user',
+		userType: 'personal-user',
 		// ... (simplified for brevity)
 	} as unknown as Models.User.PersonalUser;
 }
