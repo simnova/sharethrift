@@ -389,7 +389,7 @@ describe('EditListingContainer', () => {
 			// Given user is not authenticated
 			// When redirecting to auth
 			// Then should store current URL in session
-			const redirectTo = '/my-listings/user/123/456/edit';
+			const redirectTo = '/my-listings/456/edit';
 
 			expect(redirectTo).toBeDefined();
 		});

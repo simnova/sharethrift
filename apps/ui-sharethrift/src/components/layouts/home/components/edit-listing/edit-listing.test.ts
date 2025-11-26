@@ -231,15 +231,14 @@ describe('Edit Listing Feature - Task 221', () => {
 
 		it('should navigate to correct URL pattern for edit page', () => {
 			// Given user wants to edit a listing
-			const userId = '507f1f77bcf86cd799439014';
 			const listingId = '707f1f77bcf86cd799439034';
 
 			// When constructing edit URL
-			const editUrl = `/my-listings/user/${userId}/${listingId}/edit`;
+			const editUrl = `/my-listings/${listingId}/edit`;
 
 			// Then URL should follow correct pattern
-			expect(editUrl).toMatch(/\/my-listings\/user\/[^/]+\/[^/]+\/edit$/);
-			expect(editUrl).toEqual(`/my-listings/user/${userId}/${listingId}/edit`);
+			expect(editUrl).toMatch(/\/my-listings\/[^/]+\/edit$/);
+			expect(editUrl).toEqual(`/my-listings/${listingId}/edit`);
 		});
 	});
 

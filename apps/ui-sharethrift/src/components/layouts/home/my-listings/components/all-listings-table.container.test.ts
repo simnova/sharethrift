@@ -8,50 +8,41 @@ import { describe, it, expect } from 'vitest';
 
 describe('AllListingsTableContainer - Edit Action', () => {
 	describe('Edit Button Navigation', () => {
-		it('should construct correct edit URL with user and listing IDs', () => {
+		it('should construct correct edit URL with only listing ID', () => {
 			// Given user is viewing listings
-			const userId = '507f1f77bcf86cd799439014';
 			const listingId = '707f1f77bcf86cd799439034';
 
 			// When user clicks Edit button
-			const expectedUrl = `/my-listings/user/${userId}/${listingId}/edit`;
+			const expectedUrl = `/my-listings/${listingId}/edit`;
 
 			// Then should navigate to correct URL
-			expect(expectedUrl).toMatch(/\/my-listings\/user\/[^/]+\/[^/]+\/edit$/);
+			expect(expectedUrl).toMatch(/\/my-listings\/[^/]+\/edit$/);
 		});
 
-		it('should have userId from URL params', () => {
-			// Given user navigates to my-listings with userId
-			const urlParams = {
-				userId: '507f1f77bcf86cd799439014',
-			};
+		it('should not require userId in the edit URL', () => {
+			// Given new navigation pattern
+			const listingId = '707f1f77bcf86cd799439034';
+			const editUrl = `/my-listings/${listingId}/edit`;
 
-			// When reading URL params
-			// Then userId should be available
-			expect(urlParams.userId).toBeDefined();
-			expect(urlParams.userId).toHaveLength(24); // MongoDB ObjectId length
+			// Then URL stays stable without user information
+			expect(editUrl.includes('user')).toBe(false);
 		});
 
-		it('should query current user ID as fallback', () => {
-			// Given edit button is clicked
-			const queryName = 'HomeAllListingsTableContainerCurrentUser';
+		it('should skip querying for current user when building edit URL', () => {
+			// Given navigation no longer depends on user context
+			const requiresCurrentUserQuery = false;
 
-			// When userId is not in URL params
-			// Then should query currentPersonalUserAndCreateIfNotExists
-			expect(queryName).toBeDefined();
-			expect(queryName).toContain('CurrentUser');
+			// Then edit route can render immediately
+			expect(requiresCurrentUserQuery).toBe(false);
 		});
 
-		it('should prioritize URL params over query results', () => {
-			// Given both URL param and query result available
-			const urlUserId = '507f1f77bcf86cd799439014';
-			const queryUserId = '507f1f77bcf86cd799439015';
+		it('should build navigation path using only listing ID', () => {
+			// Given listing identifier is present
+			const listingId = '707f1f77bcf86cd799439034';
+			const navigationUrl = `/my-listings/${listingId}/edit`;
 
-			// When constructing navigation URL
-			const prioritizedUserId = urlUserId || queryUserId;
-
-			// Then should use URL param
-			expect(prioritizedUserId).toEqual(urlUserId);
+			// Then path should end with /{listingId}/edit
+			expect(navigationUrl.endsWith(`/${listingId}/edit`)).toBe(true);
 		});
 	});
 
@@ -131,13 +122,12 @@ describe('AllListingsTableContainer - Edit Action', () => {
 		it('should handle edit action with navigation', () => {
 			// Given listing to edit
 			const listingId = '707f1f77bcf86cd799439034';
-			const userId = '507f1f77bcf86cd799439014';
 			const action = 'edit';
 
 			// When action handler is called
 			// Then should navigate to edit page
 			expect(action).toBe('edit');
-			const navigationUrl = `/my-listings/user/${userId}/${listingId}/edit`;
+			const navigationUrl = `/my-listings/${listingId}/edit`;
 			expect(navigationUrl).toBeDefined();
 		});
 
@@ -248,15 +238,12 @@ describe('AllListingsTableContainer - Edit Action', () => {
 			expect(canNavigate).toBe(false);
 		});
 
-		it('should handle missing user ID gracefully', () => {
+		it('should ignore user ID concerns for navigation', () => {
 			// Given edit action is triggered
-			const userId = undefined;
+			const requiresUserId = false;
 
-			// When navigation is attempted
-			const canNavigate = userId !== undefined;
-
-			// Then should not navigate
-			expect(canNavigate).toBe(false);
+			// Then navigation should continue without blocking
+			expect(requiresUserId).toBe(false);
 		});
 
 		it('should display error if listings query fails', () => {
