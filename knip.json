@@ -1,0 +1,71 @@
+{
+	"$schema": "https://unpkg.com/knip@5/schema.json",
+	"workspaces": {
+		"apps/api": {
+			"entry": ["src/index.ts"],
+			"project": ["src/**/*.ts"]
+		},
+		"apps/ui-sharethrift": {
+			"entry": ["src/main.tsx"],
+			"project": ["src/**/*.{ts,tsx}"]
+		},
+		"apps/docs": {
+			"entry": ["src/**/*.{ts,tsx,js,jsx}"],
+			"project": ["src/**/*.{ts,tsx,js,jsx}"]
+		},
+		"packages/sthrift/*": {
+			"entry": ["src/index.ts"],
+			"project": ["src/**/*.ts"],
+			"ignore": ["**/graphql-tools-scalars.ts"]
+		},
+		"packages/sthrift/ui-components": {
+			"entry": ["src/index.ts"],
+			"project": ["src/**/*.{ts,tsx}"]
+		}
+	},
+	"ignoreWorkspaces": [
+		"packages/cellix/typescript-config",
+		"packages/cellix/domain-seedwork",
+		"packages/cellix/event-bus-seedwork-node",
+		"packages/cellix/mongoose-seedwork",
+		"packages/cellix/mock-payment-server",
+		"packages/cellix/api-services-spec",
+		"packages/cellix/messaging-service",
+		"packages/cellix/mock-cognitive-search",
+		"packages/cellix/mock-mongodb-memory-server-seedwork",
+		"packages/cellix/mock-oauth2-server",
+		"packages/cellix/ui-core",
+		"packages/cellix/vitest-config"
+	],
+	"ignore": [
+		"build-pipeline/scripts/**",
+		"**/*.test.ts",
+		"**/*.spec.ts",
+		"**/*.stories.tsx",
+		"**/dist/**",
+		"**/coverage/**",
+		"**/__tests__/**",
+		"**/tests/**",
+		"**/storybook-providers.tsx",
+		"**/storybook-decorators.tsx",
+		"**/*.value-objects.ts",
+		"**/*.domain-adapter.ts",
+		"**/resolver-builder.ts",
+		"**/resolver-helper.ts",
+		"**/cybersource-interface.ts"
+	],
+	"ignoreDependencies": [
+		"@types/*",
+		"@cucumber/node",
+		"@cucumber/pretty-formatter",
+		"@serenity-js/assertions",
+		"@serenity-js/console-reporter",
+		"@serenity-js/core",
+		"@serenity-js/cucumber",
+		"@serenity-js/serenity-bdd",
+		"@graphql-typed-document-node/core",
+		"ts-scope-trimmer-plugin"
+	],
+	"ignoreBinaries": ["func"],
+	"ignoreExportsUsedInFile": true
+}

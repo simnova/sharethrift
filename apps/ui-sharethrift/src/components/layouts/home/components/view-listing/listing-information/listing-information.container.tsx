@@ -3,8 +3,6 @@ import { useState } from 'react';
 import { message } from 'antd';
 import { ListingInformation } from './listing-information.tsx';
 
-// eslint-disable-next-line import/no-absolute-path, @typescript-eslint/ban-ts-comment
-// @ts-ignore - allow raw import string
 import {
 	HomeListingInformationCreateReservationRequestDocument,
 	type CreateReservationRequestInput,

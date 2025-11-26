@@ -28,18 +28,11 @@ export interface SettingsViewProps {
 
 	onSaveSection?: (
 		section: 'profile' | 'location' | 'plan' | 'billing' | 'password',
+		// biome-ignore lint/suspicious/noExplicitAny: Form values from Ant Design can have varying shapes
 		values: any,
 	) => Promise<void>;
 	isSavingSection?: boolean;
 	mutationErrorMessage?: string;
-}
-
-export interface SettingsEditProps {
-	user: SettingsUser;
-	onSave: (values: SettingsUser) => Promise<void>;
-	onCancel: () => void;
-	isSaving?: boolean;
-	isLoading?: boolean;
 }
 
 // Union type for current user

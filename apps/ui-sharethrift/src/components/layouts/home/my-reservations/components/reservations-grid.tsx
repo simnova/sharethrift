@@ -55,4 +55,3 @@ export const ReservationsGrid: React.FC<ReservationsGridProps> = ({
 	);
 };
 
-export default ReservationsGrid;

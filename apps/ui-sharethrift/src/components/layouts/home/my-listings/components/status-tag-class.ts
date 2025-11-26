@@ -1,15 +1,6 @@
 // Shared helper for mapping listing statuses to CSS tag class names.
 // Extracted to eliminate duplication and potential circular imports between table and card components.
 
-export type ListingStatus =
-  | 'Active'
-  | 'Paused'
-  | 'Reserved'
-  | 'Expired'
-  | 'Draft'
-  | 'Blocked'
-  | 'Cancelled';
-
 export function getStatusTagClass(status: string): string {
   switch (status) {
     case 'Active':
