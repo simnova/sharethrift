@@ -1,45 +1,127 @@
-import { describe, it, expect, beforeEach } from 'vitest';
+import path from 'node:path';
+import { fileURLToPath } from 'node:url';
+import { describeFeature, loadFeature } from '@amiceli/vitest-cucumber';
+import { expect } from 'vitest';
 import { PaymentServiceMock } from './index.ts';
 
-describe('PaymentServiceMock', () => {
+const __dirname = path.dirname(fileURLToPath(import.meta.url));
+const feature = await loadFeature(path.resolve(__dirname, 'payment-service-mock.feature'));
+
+describeFeature(feature, ({ Scenario, BeforeEachScenario }) => {
   let service: PaymentServiceMock;
+  let error: unknown;
+  let result: unknown;
 
-  beforeEach(() => {
-    service = new PaymentServiceMock('http://localhost:3001');
+  BeforeEachScenario(() => {
+    service = undefined as unknown as PaymentServiceMock;
+    error = undefined;
+    result = undefined;
   });
 
-  it('should instantiate with default or provided baseUrl', () => {
-    expect(service).toBeInstanceOf(PaymentServiceMock);
-    expect(service['mockBaseUrl']).toBe('http://localhost:3001');
+  Scenario('Instantiating with baseUrl', ({ Given, When, Then, And }) => {
+    Given('a PaymentServiceMock with baseUrl "http://localhost:3001"', () => {
+      // ...existing code...
+    });
+    When('I instantiate the service', () => {
+      service = new PaymentServiceMock('http://localhost:3001');
+    });
+    Then('the service should be an instance of PaymentServiceMock', () => {
+      expect(service).toBeInstanceOf(PaymentServiceMock);
+    });
+    And('the mockBaseUrl should be "http://localhost:3001"', () => {
+      expect(service['mockBaseUrl']).toBe('http://localhost:3001');
+    });
   });
 
-  it('should start up and return itself', async () => {
-    const started = await service.startUp();
-    expect(started).toBe(service);
-    expect(service['http']).toBeDefined();
+  Scenario('Starting up the service', ({ Given, When, Then, And }) => {
+    Given('a PaymentServiceMock', () => {
+      service = new PaymentServiceMock('http://localhost:3001');
+    });
+    When('I start up the service', async () => {
+      result = await service.startUp();
+    });
+    Then('it should return itself', () => {
+      expect(result).toBe(service);
+    });
+    And('the http property should be defined', () => {
+      expect(service['http']).toBeDefined();
+    });
   });
 
-  it('should throw if started twice', async () => {
-    await service.startUp();
-    await expect(() => service.startUp()).rejects.toThrow('already started');
+  Scenario('Starting up twice throws', ({ Given, When, Then }) => {
+    Given('a PaymentServiceMock', () => {
+      service = new PaymentServiceMock('http://localhost:3001');
+    });
+    When('I start up the service twice', async () => {
+      await service.startUp();
+      try {
+        await service.startUp();
+      } catch (e) {
+        error = e;
+      }
+    });
+    Then('an error should be thrown indicating already started', () => {
+      expect(error).toBeDefined();
+      expect(error).toMatch(/already started/);
+    });
   });
 
-  it('should shut down after start', async () => {
-    await service.startUp();
-    await service.shutDown();
-    expect(service['http']).toBeUndefined();
+  Scenario('Shutting down after start', ({ Given, When, Then }) => {
+    Given('a PaymentServiceMock', () => {
+      service = new PaymentServiceMock('http://localhost:3001');
+    });
+    When('I start up and then shut down the service', async () => {
+      await service.startUp();
+      await service.shutDown();
+    });
+    Then('the http property should be undefined', () => {
+      expect(service['http']).toBeUndefined();
+    });
   });
 
-  it('should throw if shut down before start', async () => {
-    await expect(service.shutDown()).rejects.toThrow('not started');
+  Scenario('Shutting down before start throws', ({ Given, When, Then }) => {
+    Given('a PaymentServiceMock', () => {
+      service = new PaymentServiceMock('http://localhost:3001');
+    });
+    When('I shut down before starting up', async () => {
+      try {
+        await service.shutDown();
+      } catch (e) {
+        error = e;
+      }
+    });
+    Then('an error should be thrown indicating not started', () => {
+      expect(error).toBeDefined();
+      expect(error).toMatch(/not started/);
+    });
   });
 
-  it('should throw if service getter is called before start', () => {
-    expect(() => service.service).toThrow('not started');
+  Scenario('Accessing service before start throws', ({ Given, When, Then }) => {
+    Given('a PaymentServiceMock', () => {
+      service = new PaymentServiceMock('http://localhost:3001');
+    });
+    When('I access the service getter before starting up', () => {
+      try {
+        result = service.service;
+      } catch (e) {
+        error = e;
+      }
+    });
+    Then('an error should be thrown indicating not started', () => {
+      expect(error).toBeDefined();
+      expect(error).toMatch(/not started/);
+    });
   });
 
-  it('should return http instance after start', async () => {
-    await service.startUp();
-    expect(service.service).toBeDefined();
+  Scenario('Accessing service after start', ({ Given, When, Then }) => {
+    Given('a PaymentServiceMock', () => {
+      service = new PaymentServiceMock('http://localhost:3001');
+    });
+    When('I start up the service', async () => {
+      await service.startUp();
+    });
+    Then('the service getter should return the http instance', () => {
+      expect(service.service).toBeDefined();
+    });
   });
 });
