@@ -24,13 +24,13 @@ import { ServiceMessagingMock } from '@sthrift/messaging-service-mock';
 import { graphHandlerCreator } from '@sthrift/graphql';
 import { restHandlerCreator } from '@sthrift/rest';
 import { ServiceCybersource } from '@sthrift/service-cybersource';
+import { ServiceSearchIndex } from '@sthrift/search-service-index';
 
 const { NODE_ENV } = process.env;
 const isDevelopment = NODE_ENV === 'development';
 
 Cellix.initializeInfrastructureServices<ApiContextSpec, ApplicationServices>(
 	(serviceRegistry) => {
-		
 		serviceRegistry
 			.registerInfrastructureService(
 				new ServiceMongoose(
@@ -43,9 +43,12 @@ Cellix.initializeInfrastructureServices<ApiContextSpec, ApplicationServices>(
 				new ServiceTokenValidation(TokenValidationConfig.portalTokens),
 			)
 			.registerInfrastructureService(
-				isDevelopment ? new ServiceMessagingMock() : new ServiceMessagingTwilio(),
+				isDevelopment
+					? new ServiceMessagingMock()
+					: new ServiceMessagingTwilio(),
 			)
-			.registerInfrastructureService(new ServiceCybersource());
+			.registerInfrastructureService(new ServiceCybersource())
+			.registerInfrastructureService(new ServiceSearchIndex());
 	},
 )
 	.setContext((serviceRegistry) => {
@@ -56,11 +59,19 @@ Cellix.initializeInfrastructureServices<ApiContextSpec, ApplicationServices>(
 		);
 
 		const messagingService = isDevelopment
-			? serviceRegistry.getInfrastructureService<MessagingService>(ServiceMessagingMock)
-			: serviceRegistry.getInfrastructureService<MessagingService>(ServiceMessagingTwilio);
+			? serviceRegistry.getInfrastructureService<MessagingService>(
+					ServiceMessagingMock,
+				)
+			: serviceRegistry.getInfrastructureService<MessagingService>(
+					ServiceMessagingTwilio,
+				);
 
 		const { domainDataSource } = dataSourcesFactory.withSystemPassport();
-		RegisterEventHandlers(domainDataSource);
+		const searchService =
+			serviceRegistry.getInfrastructureService<ServiceSearchIndex>(
+				ServiceSearchIndex,
+			);
+		RegisterEventHandlers(domainDataSource, searchService);
 
 		return {
 			dataSourcesFactory,
@@ -71,6 +82,10 @@ Cellix.initializeInfrastructureServices<ApiContextSpec, ApplicationServices>(
 			paymentService:
 				serviceRegistry.getInfrastructureService<ServiceCybersource>(
 					ServiceCybersource,
+				),
+			searchService:
+				serviceRegistry.getInfrastructureService<ServiceSearchIndex>(
+					ServiceSearchIndex,
 				),
 			messagingService,
 		};

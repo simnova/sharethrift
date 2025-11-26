@@ -20,7 +20,9 @@
 		"clean": "rimraf dist"
 	},
 	"dependencies": {
-		"@sthrift/domain": "workspace:*"
+		"@sthrift/domain": "workspace:*",
+		"@sthrift/search-service-index": "workspace:*",
+		"@sthrift/persistence": "workspace:*"
 	},
 	"devDependencies": {
 		"@cellix/typescript-config": "workspace:*",

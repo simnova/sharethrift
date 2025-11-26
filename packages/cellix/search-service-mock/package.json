@@ -1,0 +1,52 @@
+{
+	"name": "@cellix/search-service-mock",
+	"version": "1.0.0",
+	"type": "module",
+	"description": "Mock implementation of search service for local development",
+	"main": "dist/index.js",
+	"types": "dist/index.d.ts",
+	"scripts": {
+		"build": "tsc",
+		"clean": "rm -rf dist",
+		"test": "vitest",
+		"lint": "biome check src/",
+		"format": "biome format --write src/",
+		"examples": "node examples/run-examples.js"
+	},
+	"keywords": [
+		"search",
+		"mock",
+		"development"
+	],
+	"author": "ShareThrift Team",
+	"license": "MIT",
+	"dependencies": {
+		"@cellix/search-service": "workspace:*",
+		"liqe": "^3.8.3",
+		"lunr": "^2.3.9"
+	},
+	"devDependencies": {
+		"@cellix/typescript-config": "workspace:*",
+		"@cellix/vitest-config": "workspace:*",
+		"@types/lunr": "^2.3.7",
+		"typescript": "^5.3.0",
+		"vitest": "^1.6.0"
+	},
+	"peerDependencies": {
+		"typescript": "^5.0.0"
+	},
+	"files": [
+		"dist/**/*",
+		"README.md"
+	],
+	"exports": {
+		".": {
+			"types": "./dist/index.d.ts",
+			"import": "./dist/index.js",
+			"require": "./dist/index.js"
+		}
+	},
+	"publishConfig": {
+		"access": "restricted"
+	}
+}
