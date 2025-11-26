@@ -12,7 +12,6 @@ import {
 } from '../../../../../../generated.tsx';
 import { expect, within } from 'storybook/test';
 
-// SHARED MOCK DATA
 const mockUserSarah: PersonalUser = {
 	id: '507f1f77bcf86cd799439099',
 	userType: 'personal',
@@ -93,8 +92,6 @@ const meta: Meta<typeof HomeRoutes> = {
 	decorators: [withMockApolloClient, withMockRouter('/account/profile')],
 	parameters: {
 		layout: 'fullscreen',
-		// Note: Using /account/profile route highlights 'Account' menu item in navigation
-		// However, the submenu is not initially expanded due to how the navigation state is currently managed
 	},
 };
 
@@ -136,7 +133,6 @@ export const DefaultView: Story = {
 	},
 };
 
-// Story: Component with no listings (new user empty state)
 export const NoListings: Story = {
 	parameters: {
 		apolloClient: {

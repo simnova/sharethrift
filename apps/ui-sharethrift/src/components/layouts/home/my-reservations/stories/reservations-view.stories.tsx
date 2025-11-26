@@ -22,9 +22,7 @@ const meta: Meta<typeof ReservationsView> = {
 		},
 	},
 	tags: ['autodocs'],
-	// Global decorator for MockedProvider
 	decorators: [withReservationMocks],
-	// Default event handlers
 	args: defaultReservationActions,
 	argTypes: {
 		onCancel: { action: 'cancel clicked' },
@@ -60,4 +58,18 @@ export const Empty: Story = {
 
 export const LoadingStates: Story = {
 	args: { reservations: storyReservationsActive, cancelLoading: true },
+};
+
+export const LoadingSpinner: Story = {
+	args: {
+		reservations: [],
+		loading: true,
+	},
+};
+
+export const ErrorState: Story = {
+	args: {
+		reservations: [],
+		error: new Error('Failed to load reservations'),
+	},
 };

@@ -4,7 +4,6 @@ import type React from 'react';
 import { getStatusTagClass, getActionButtons } from '../components/requests-status-helpers.tsx';
 import type { ListingRequestData } from '../components/my-listings-dashboard.types.ts';
 
-// Test component to display the helper functions results
 const RequestsHelpersTest = (): React.ReactElement => {
 	const statuses = ['Accepted', 'Rejected', 'Closed', 'Pending', 'Closing', 'Unknown'];
 	
@@ -45,7 +44,6 @@ type Story = StoryObj<typeof RequestsHelpersTest>;
 
 export const StatusTagClasses: Story = {
 	play: async ({ canvasElement }) => {
-		// Test all status tag class mappings
 		expect(getStatusTagClass('Accepted')).toBe('requestAcceptedTag');
 		expect(getStatusTagClass('Rejected')).toBe('requestRejectedTag');
 		expect(getStatusTagClass('Closed')).toBe('expiredTag');
@@ -54,13 +52,11 @@ export const StatusTagClasses: Story = {
 		expect(getStatusTagClass('Unknown')).toBe('');
 		expect(getStatusTagClass('')).toBe('');
 
-		// Verify component rendered
 		const table = canvasElement.querySelector('[data-testid="status-table"]');
 		expect(table).toBeTruthy();
 	},
 };
 
-// Component to test action buttons
 const ActionButtonsTest = () => {
 	const mockOnAction = (action: string, requestId: string) => {
 		console.log(`Action: ${action}, Request: ${requestId}`);
@@ -136,27 +132,22 @@ const ActionButtonsTest = () => {
 export const ActionButtons: Story = {
 	render: () => <ActionButtonsTest />,
 	play: async ({ canvasElement }) => {
-		// Verify pending section has Accept and Reject buttons
 		const pendingSection = canvasElement.querySelector('[data-testid="pending-buttons"]');
 		expect(pendingSection?.textContent).toContain('Accept');
 		expect(pendingSection?.textContent).toContain('Reject');
 
-		// Verify accepted section has Message and Close buttons
 		const acceptedSection = canvasElement.querySelector('[data-testid="accepted-buttons"]');
 		expect(acceptedSection?.textContent).toContain('Message');
 		expect(acceptedSection?.textContent).toContain('Close');
 
-		// Verify closed section has Message button
 		const closedSection = canvasElement.querySelector('[data-testid="closed-buttons"]');
 		expect(closedSection?.textContent).toContain('Message');
 
-		// Verify rejected section has Delete button
 		const rejectedSection = canvasElement.querySelector('[data-testid="rejected-buttons"]');
 		expect(rejectedSection?.textContent).toContain('Delete');
 	},
 };
 
-// Interactive test for clicking action buttons
 const ActionButtonsInteractive = () => {
 	const onAction = fn();
 	
@@ -184,11 +175,9 @@ export const ClickAcceptButton: Story = {
 	play: async ({ canvasElement }) => {
 		const canvas = within(canvasElement);
 		
-		// Find and click the Accept button
 		const acceptBtn = canvas.getByText('Accept');
 		await userEvent.click(acceptBtn);
 		
-		// The button was clicked (we can't verify fn() was called as it's internal to the component)
 		expect(acceptBtn).toBeTruthy();
 	},
 };

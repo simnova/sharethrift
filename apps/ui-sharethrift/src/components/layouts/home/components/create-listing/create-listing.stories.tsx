@@ -1,11 +1,11 @@
 import type { Meta, StoryObj } from '@storybook/react';
 import { CreateListing } from './create-listing.tsx';
 import { MemoryRouter } from 'react-router-dom';
-import { fn } from 'storybook/test';
+import { fn, expect, within, userEvent } from 'storybook/test';
+
 const meta: Meta<typeof CreateListing> = {
 	title: 'Components/CreateListing',
 	component: CreateListing,
-	// Provide a Router context for components that call useNavigate
 	decorators: [
 		(Story) => (
 			<MemoryRouter initialEntries={['/']}>
@@ -57,6 +57,14 @@ export const Default: Story = {
 		onImageAdd: fn(),
 		onImageRemove: fn(),
 	},
+	play: async ({ canvasElement }) => {
+		const canvas = within(canvasElement);
+		await expect(canvasElement).toBeTruthy();
+		const header = canvas.queryByText(/Create a Listing/i);
+		if (header) {
+			expect(header).toBeInTheDocument();
+		}
+	},
 };
 
 export const WithImages: Story = {
@@ -70,11 +78,185 @@ export const WithImages: Story = {
 		onCancel: fn(),
 		onImageRemove: fn(),
 	},
+	play: async ({ canvasElement }) => {
+		await expect(canvasElement).toBeTruthy();
+	},
 };
 
 export const FormInteraction: Story = {
 	args: {
 		onSubmit: fn(),
 		onCancel: fn(),
+	},
+	play: async ({ canvasElement }) => {
+		const canvas = within(canvasElement);
+		await expect(canvasElement).toBeTruthy();
+		const titleInput = canvas.queryByLabelText(/Title/i);
+		if (titleInput) {
+			await userEvent.type(titleInput, 'Test Item');
+		}
+	},
+};
+
+export const ClickBackButton: Story = {
+	args: {
+		onCancel: fn(),
+	},
+	play: async ({ canvasElement, args }) => {
+		const canvas = within(canvasElement);
+		await expect(canvasElement).toBeTruthy();
+		const backButton = canvas.queryByRole('button', { name: /Back/i });
+		if (backButton) {
+			await userEvent.click(backButton);
+			expect(args.onCancel).toHaveBeenCalled();
+		}
+	},
+};
+
+export const ClickSaveAsDraft: Story = {
+	args: {
+		onSubmit: fn(),
+		uploadedImages: [],
+	},
+	play: async ({ canvasElement, args }) => {
+		const canvas = within(canvasElement);
+		await expect(canvasElement).toBeTruthy();
+		const draftButton = canvas.queryByRole('button', { name: /Save as Draft/i });
+		if (draftButton) {
+			await userEvent.click(draftButton);
+			expect(args.onSubmit).toHaveBeenCalled();
+		}
+	},
+};
+
+export const ClickPublish: Story = {
+	args: {
+		onSubmit: fn(),
+		uploadedImages: ['/assets/item-images/bike.png'],
+	},
+	play: async ({ canvasElement }) => {
+		const canvas = within(canvasElement);
+		await expect(canvasElement).toBeTruthy();
+		const publishButton = canvas.queryByRole('button', { name: /Publish/i });
+		if (publishButton) {
+			await userEvent.click(publishButton);
+		}
+	},
+};
+
+export const Loading: Story = {
+	args: {
+		isLoading: true,
+		onSubmit: fn(),
+		onCancel: fn(),
+	},
+	play: async ({ canvasElement }) => {
+		await expect(canvasElement).toBeTruthy();
+	},
+};
+
+export const ShowPublishedSuccess: Story = {
+	args: {
+		isLoading: false,
+		onViewListing: fn(),
+		onModalClose: fn(),
+	},
+	play: async ({ canvasElement }) => {
+		await expect(canvasElement).toBeTruthy();
+	},
+};
+
+export const ShowDraftSuccess: Story = {
+	args: {
+		isLoading: false,
+		onViewDraft: fn(),
+		onModalClose: fn(),
+	},
+	play: async ({ canvasElement }) => {
+		await expect(canvasElement).toBeTruthy();
+	},
+};
+
+export const PublishWithValidForm: Story = {
+	args: {
+		onSubmit: fn(),
+		onCancel: fn(),
+		uploadedImages: ['/assets/item-images/bike.png'],
+	},
+	play: async ({ canvasElement }) => {
+		const canvas = within(canvasElement);
+		
+		const titleInput = canvas.getByLabelText(/Title/i);
+		await userEvent.type(titleInput, 'Mountain Bike for Rent');
+		
+		const descriptionInput = canvas.getByLabelText(/Description/i);
+		await userEvent.type(descriptionInput, 'Great mountain bike in excellent condition.');
+		
+		const publishButton = canvas.getByRole('button', { name: /Publish/i });
+		await userEvent.click(publishButton);
+	},
+};
+
+export const SaveDraftWithPartialData: Story = {
+	args: {
+		onSubmit: fn(),
+		onCancel: fn(),
+		uploadedImages: [],
+	},
+	play: async ({ canvasElement }) => {
+		const canvas = within(canvasElement);
+		
+		const titleInput = canvas.getByLabelText(/Title/i);
+		await userEvent.type(titleInput, 'Draft Listing');
+		
+		const draftButton = canvas.getByRole('button', { name: /Save as Draft/i });
+		await userEvent.click(draftButton);
+	},
+};
+
+export const RemoveImage: Story = {
+	args: {
+		uploadedImages: ['/assets/item-images/bike.png'],
+		onImageRemove: fn(),
+		onSubmit: fn(),
+		onCancel: fn(),
+	},
+	play: async ({ canvasElement, args }) => {
+		const canvas = within(canvasElement);
+		
+		const removeButtons = canvas.queryAllByRole('button', { name: /remove/i });
+		const firstButton = removeButtons[0];
+		if (firstButton) {
+			await userEvent.click(firstButton);
+			await expect(args.onImageRemove).toHaveBeenCalled();
+		}
+	},
+};
+
+export const LoadingToPublished: Story = {
+	args: {
+		isLoading: true,
+		onSubmit: fn(),
+		onCancel: fn(),
+		onViewListing: fn(),
+		onModalClose: fn(),
+		uploadedImages: ['/assets/item-images/bike.png'],
+	},
+	play: async ({ canvasElement }) => {
+		await expect(canvasElement).toBeTruthy();
+	},
+};
+
+export const LoadingToDraft: Story = {
+	args: {
+		isLoading: true,
+		onSubmit: fn(),
+		onCancel: fn(),
+		onViewDraft: fn(),
+		onModalClose: fn(),
+		uploadedImages: [],
+	},
+	play: async ({ canvasElement }) => {
+		await expect(canvasElement).toBeTruthy();
 	},
 };

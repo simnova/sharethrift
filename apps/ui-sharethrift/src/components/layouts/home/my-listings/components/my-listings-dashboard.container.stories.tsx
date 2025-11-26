@@ -1,6 +1,6 @@
 import type { Meta, StoryObj } from '@storybook/react';
 import { expect } from 'storybook/test';
-import { MyListingsMain } from './my-listings.tsx';
+import { MyListingsDashboardContainer } from './my-listings-dashboard.container.tsx';
 import {
 	withMockApolloClient,
 	withMockRouter,
@@ -14,27 +14,17 @@ const mockListings = {
 	__typename: 'MyListingsAllResult',
 	items: [
 		{
-			__typename: 'ListingAll',
+			__typename: 'MyListingSummary',
 			id: '1',
 			title: 'Cordless Drill',
-			images: ['/assets/item-images/projector.png'],
-			createdAt: '2025-01-01T00:00:00Z',
-			sharingPeriodStart: '2025-01-01',
-			sharingPeriodEnd: '2025-12-31',
-			state: 'Active',
-		},
-		{
-			__typename: 'ListingAll',
-			id: '2',
-			title: 'Electric Guitar',
-			images: ['/assets/item-images/projector.png'],
-			createdAt: '2025-02-01T00:00:00Z',
-			sharingPeriodStart: '2025-02-01',
-			sharingPeriodEnd: '2025-06-30',
-			state: 'Paused',
+			image: '/assets/item-images/projector.png',
+			publishedAt: '2025-01-01',
+			reservationPeriod: '2025-01-01 - 2025-12-31',
+			status: 'Active',
+			pendingRequestsCount: 2,
 		},
 	],
-	total: 2,
+	total: 1,
 	page: 1,
 	pageSize: 6,
 };
@@ -47,9 +37,9 @@ const mockRequests = {
 	pageSize: 6,
 };
 
-const meta: Meta<typeof MyListingsMain> = {
-	title: 'Pages/MyListings/Main',
-	component: MyListingsMain,
+const meta: Meta<typeof MyListingsDashboardContainer> = {
+	title: 'Containers/MyListingsDashboardContainer',
+	component: MyListingsDashboardContainer,
 	parameters: {
 		layout: 'fullscreen',
 		apolloClient: {
@@ -85,7 +75,7 @@ const meta: Meta<typeof MyListingsMain> = {
 };
 
 export default meta;
-type Story = StoryObj<typeof MyListingsMain>;
+type Story = StoryObj<typeof MyListingsDashboardContainer>;
 
 export const Default: Story = {
 	play: async ({ canvasElement }) => {
@@ -93,7 +83,7 @@ export const Default: Story = {
 	},
 };
 
-export const EmptyListings: Story = {
+export const Empty: Story = {
 	parameters: {
 		apolloClient: {
 			mocks: [
@@ -105,13 +95,7 @@ export const EmptyListings: Story = {
 					maxUsageCount: Number.POSITIVE_INFINITY,
 					result: {
 						data: {
-							myListingsAll: {
-								__typename: 'MyListingsAllResult',
-								items: [],
-								total: 0,
-								page: 1,
-								pageSize: 6,
-							},
+							myListingsAll: { __typename: 'MyListingsAllResult', items: [], total: 0, page: 1, pageSize: 6 },
 						},
 					},
 				},
@@ -123,13 +107,7 @@ export const EmptyListings: Story = {
 					maxUsageCount: Number.POSITIVE_INFINITY,
 					result: {
 						data: {
-							myListingsRequests: {
-								__typename: 'MyListingsRequestsResult',
-								items: [],
-								total: 0,
-								page: 1,
-								pageSize: 6,
-							},
+							myListingsRequests: { __typename: 'MyListingsRequestsResult', items: [], total: 0, page: 1, pageSize: 6 },
 						},
 					},
 				},
@@ -137,20 +115,34 @@ export const EmptyListings: Story = {
 		},
 	},
 	play: async ({ canvasElement }) => {
-		expect(canvasElement).toBeTruthy();
+		await expect(canvasElement).toBeTruthy();
 	},
 };
 
-export const FileExports: Story = {
-	name: 'File Exports',
-	render: () => (
-		<div data-testid="file-export-test">
-			<p>MyListingsMain component file exists and exports correctly</p>
-		</div>
-	),
-	play: async () => {
-		const { MyListingsMain } = await import('./my-listings.tsx');
-		expect(MyListingsMain).toBeDefined();
-		expect(typeof MyListingsMain).toBe('function');
+export const Loading: Story = {
+	parameters: {
+		apolloClient: {
+			mocks: [
+				{
+					request: {
+						query: HomeAllListingsTableContainerMyListingsAllDocument,
+						variables: () => true,
+					},
+					maxUsageCount: Number.POSITIVE_INFINITY,
+					delay: Infinity,
+				},
+				{
+					request: {
+						query: HomeRequestsTableContainerMyListingsRequestsDocument,
+						variables: () => true,
+					},
+					maxUsageCount: Number.POSITIVE_INFINITY,
+					delay: Infinity,
+				},
+			],
+		},
+	},
+	play: async ({ canvasElement }) => {
+		await expect(canvasElement).toBeTruthy();
 	},
 };

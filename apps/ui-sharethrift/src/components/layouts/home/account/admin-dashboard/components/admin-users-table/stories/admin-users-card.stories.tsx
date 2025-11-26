@@ -109,7 +109,6 @@ export const UserWithNoDate: Story = {
 	play: async ({ canvasElement }) => {
 		const canvas = within(canvasElement);
 		expect(canvas.getByText('newuser')).toBeTruthy();
-		// Should show N/A for missing date
 		expect(canvasElement.textContent).toContain('N/A');
 	},
 };

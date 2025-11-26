@@ -8,7 +8,6 @@ import {
 	isInactiveReservationState,
 } from '../constants/reservation-state-utils.ts';
 
-// Test component that verifies the reservation state utilities
 const ReservationStateUtilsTest = (): React.ReactElement => {
 	return (
 		<div style={{ padding: '20px' }}>
@@ -46,7 +45,6 @@ type Story = StoryObj<typeof ReservationStateUtilsTest>;
 
 export const Constants: Story = {
 	play: async ({ canvasElement }) => {
-		// Verify the constants are defined correctly
 		expect(ACTIVE_RESERVATION_STATES).toContain('Accepted');
 		expect(ACTIVE_RESERVATION_STATES).toContain('Requested');
 		expect(ACTIVE_RESERVATION_STATES.length).toBe(2);
@@ -56,7 +54,6 @@ export const Constants: Story = {
 		expect(INACTIVE_RESERVATION_STATES).toContain('Rejected');
 		expect(INACTIVE_RESERVATION_STATES.length).toBe(3);
 
-		// Verify the component rendered
 		const activeStates = canvasElement.querySelector(
 			'[data-testid="active-states"]',
 		);
@@ -66,11 +63,9 @@ export const Constants: Story = {
 
 export const ActiveStateChecker: Story = {
 	play: async ({ canvasElement }) => {
-		// Test isActiveReservationState function
 		expect(isActiveReservationState('Accepted')).toBe(true);
 		expect(isActiveReservationState('Requested')).toBe(true);
 
-		// These should return false
 		expect(isActiveReservationState('Cancelled')).toBe(false);
 		expect(isActiveReservationState('Closed')).toBe(false);
 		expect(isActiveReservationState('Rejected')).toBe(false);
@@ -83,12 +78,10 @@ export const ActiveStateChecker: Story = {
 
 export const InactiveStateChecker: Story = {
 	play: async ({ canvasElement }) => {
-		// Test isInactiveReservationState function
 		expect(isInactiveReservationState('Cancelled')).toBe(true);
 		expect(isInactiveReservationState('Closed')).toBe(true);
 		expect(isInactiveReservationState('Rejected')).toBe(true);
 
-		// These should return false
 		expect(isInactiveReservationState('Accepted')).toBe(false);
 		expect(isInactiveReservationState('Requested')).toBe(false);
 		expect(isInactiveReservationState('Unknown')).toBe(false);

@@ -16,7 +16,6 @@ const meta: Meta<typeof ReservationsTable> = {
 	component: ReservationsTable,
 	parameters: { layout: 'padded' },
 	tags: ['autodocs'],
-	// Global decorator for MockedProvider
 	decorators: [withReservationMocks],
 	args: defaultReservationActions,
 	argTypes: {

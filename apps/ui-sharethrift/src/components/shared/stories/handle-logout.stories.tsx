@@ -3,8 +3,7 @@ import { expect } from 'storybook/test';
 import { HandleLogout } from '../handle-logout.ts';
 import { clearStorage } from '../local-storage.ts';
 
-// Simple component to import the utility
-const HandleLogoutTest = () => {
+const HandleLogoutTest: React.FC = () => {
 	return (
 		<div style={{ padding: '20px' }}>
 			<h2>Handle Logout Utility</h2>
@@ -26,14 +25,33 @@ type Story = StoryObj<typeof HandleLogoutTest>;
 
 export const Default: Story = {
 	play: ({ canvasElement }) => {
-		// Verify HandleLogout is a function
 		expect(typeof HandleLogout).toBe('function');
 
-		// Test clearStorage (which HandleLogout depends on)
 		localStorage.setItem('test-key', 'test-value');
 		clearStorage();
 		expect(localStorage.getItem('test-key')).toBe(null);
 
+		expect(canvasElement).toBeTruthy();
+	},
+};
+
+export const CallHandleLogout: Story = {
+	play: ({ canvasElement }) => {
+		localStorage.setItem('test-data', 'value');
+		sessionStorage.setItem('test-session', 'session-value');
+		
+		const mockAuth = {
+			removeUser: () => Promise.resolve(),
+			signoutRedirect: () => Promise.resolve(),
+		};
+		
+		const mockApolloClient = {
+			clearStore: () => Promise.resolve(),
+		};
+		
+		HandleLogout(mockAuth as any, mockApolloClient as any, globalThis.location.origin);
+		
+		expect(localStorage.getItem('test-data')).toBe(null);
 		expect(canvasElement).toBeTruthy();
 	},
 };

@@ -21,7 +21,6 @@ type Story = StoryObj<typeof EditListing>;
 export const Default: Story = {
 	name: 'Default',
 	play: async ({ canvasElement }: { canvasElement: HTMLElement }) => {
-		// Verify the component renders
 		expect(canvasElement).toBeTruthy();
 		const content = canvasElement.textContent;
 		expect(content).toContain('Edit Listing Page');

@@ -3,7 +3,6 @@ import { expect } from 'storybook/test';
 import type React from 'react';
 import { getStatusTagClass, type ListingStatus } from './status-tag-class.ts';
 
-// Test component that displays all status tag classes
 const StatusTagClassTest = (): React.ReactElement => {
 	const statuses: ListingStatus[] = [
 		'Active',
@@ -51,7 +50,6 @@ type Story = StoryObj<typeof StatusTagClassTest>;
 
 export const AllStatusClasses: Story = {
 	play: async ({ canvasElement }) => {
-		// Test all valid status mappings
 		expect(getStatusTagClass('Active')).toBe('activeTag');
 		expect(getStatusTagClass('Paused')).toBe('pausedTag');
 		expect(getStatusTagClass('Reserved')).toBe('reservedTag');
@@ -60,7 +58,6 @@ export const AllStatusClasses: Story = {
 		expect(getStatusTagClass('Blocked')).toBe('blockedTag');
 		expect(getStatusTagClass('Cancelled')).toBe('cancelledTag');
 
-		// Verify the component rendered
 		const statusTable = canvasElement.querySelector(
 			'[data-testid="status-table"]',
 		);
@@ -70,12 +67,11 @@ export const AllStatusClasses: Story = {
 
 export const UnknownStatus: Story = {
 	play: async ({ canvasElement }) => {
-		// Test unknown/invalid statuses return empty string
 		expect(getStatusTagClass('Unknown')).toBe('');
 		expect(getStatusTagClass('')).toBe('');
 		expect(getStatusTagClass('InvalidStatus')).toBe('');
-		expect(getStatusTagClass('active')).toBe(''); // case sensitive
-		expect(getStatusTagClass('ACTIVE')).toBe(''); // case sensitive
+		expect(getStatusTagClass('active')).toBe('');
+		expect(getStatusTagClass('ACTIVE')).toBe('');
 
 		expect(canvasElement).toBeTruthy();
 	},

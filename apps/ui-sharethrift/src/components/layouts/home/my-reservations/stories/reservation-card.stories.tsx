@@ -13,9 +13,7 @@ const meta: Meta<typeof ReservationCard> = {
 	component: ReservationCard,
 	parameters: { layout: 'padded' },
 	tags: ['autodocs'],
-	// Global decorator for MockedProvider
 	decorators: [withReservationMocks],
-	// Default event handlers
 	args: defaultReservationActions,
 	argTypes: {
 		onCancel: { action: 'cancel clicked' },
@@ -26,7 +24,6 @@ const meta: Meta<typeof ReservationCard> = {
 export default meta;
 type Story = StoryObj<typeof meta>;
 
-// Stories using modern Storybook syntax
 export const Requested: Story = {
 	args: { reservation: storyReservationsActive[0] }};
 
