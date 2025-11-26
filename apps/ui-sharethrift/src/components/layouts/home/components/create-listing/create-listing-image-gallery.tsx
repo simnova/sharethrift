@@ -85,4 +85,3 @@ export const ImageGallery: FC<ImageGalleryProps> = ({
 	);
 };
 
-export default ImageGallery;

@@ -29,4 +29,3 @@ export const AdminDashboardMain: React.FC<AdminDashboardMainProps> = () => {
 	);
 }
 
-export default AdminDashboardMain;

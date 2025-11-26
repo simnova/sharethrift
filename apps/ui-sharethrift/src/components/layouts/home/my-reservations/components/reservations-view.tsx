@@ -91,4 +91,3 @@ export const ReservationsView: React.FC<ReservationsViewProps> = ({
 	);
 };
 
-export default ReservationsView;

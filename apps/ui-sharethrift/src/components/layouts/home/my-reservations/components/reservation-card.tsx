@@ -136,4 +136,3 @@ export const ReservationCard: React.FC<ReservationCardProps> = ({
 	);
 };
 
-export default ReservationCard;

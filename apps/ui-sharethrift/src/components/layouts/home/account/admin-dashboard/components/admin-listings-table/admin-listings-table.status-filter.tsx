@@ -29,4 +29,3 @@ export const StatusFilter: React.FC<StatusFilterProps> = ({ statusFilters, onSta
   );
 };
 
-export default StatusFilter;
