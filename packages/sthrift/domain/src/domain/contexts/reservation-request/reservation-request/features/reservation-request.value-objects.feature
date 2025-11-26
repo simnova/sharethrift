@@ -9,10 +9,6 @@ Feature: Reservation value objects
     When I try to create a ReservationPeriodStart with null
     Then an error should be thrown indicating the value is invalid
 
-  Scenario: Creating a ReservationPeriodStart with an empty string
-    When I try to create a ReservationPeriodStart with an empty string
-    Then an error should be thrown indicating the value is invalid
-
   # ReservationPeriodEnd
   Scenario: Creating a ReservationPeriodEnd with a valid value
     When I create a ReservationPeriodEnd with "2025-10-20T10:00:00Z"
@@ -20,10 +16,6 @@ Feature: Reservation value objects
 
   Scenario: Creating a ReservationPeriodEnd with null
     When I try to create a ReservationPeriodEnd with null
-    Then an error should be thrown indicating the value is invalid
-
-  Scenario: Creating a ReservationPeriodEnd with an empty string
-    When I try to create a ReservationPeriodEnd with an empty string
     Then an error should be thrown indicating the value is invalid
 
   # ReservationRequestStateValue

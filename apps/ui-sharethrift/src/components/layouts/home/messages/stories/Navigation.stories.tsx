@@ -1,7 +1,6 @@
 import type { Meta, StoryObj } from '@storybook/react';
 import { MemoryRouter } from 'react-router-dom';
 import { Navigation } from '@sthrift/ui-components';
-
 const meta: Meta<typeof Navigation> = {
 	title: "Components/Navigation",
 	component: Navigation,
@@ -63,5 +62,4 @@ export const Default: Story = {
 		selectedKey: 'home',
 		onNavigate: (route: string) => console.log('Navigate to:', route),
 		onLogout: () => console.log('Logout clicked'),
-	},
-};
+	}};

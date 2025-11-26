@@ -1,8 +1,9 @@
 import type { Meta, StoryObj } from '@storybook/react';
 import { expect } from 'storybook/test';
 import { MemoryRouter } from 'react-router-dom';
-import { MockAuthWrapper } from '../../../test-utils/storybook-decorators.tsx';
+import { AuthContext } from 'react-oidc-context';
 import { RequireAuth } from '../require-auth.tsx';
+import { createMockAuth, createMockUser } from '../../../test/utils/mockAuth.ts';
 
 const meta: Meta<typeof RequireAuth> = {
 	title: 'Shared/RequireAuth',
@@ -10,15 +11,6 @@ const meta: Meta<typeof RequireAuth> = {
 	parameters: {
 		layout: 'centered',
 	},
-	decorators: [
-		(Story) => (
-			<MockAuthWrapper>
-				<MemoryRouter>
-					<Story />
-				</MemoryRouter>
-			</MockAuthWrapper>
-		),
-	],
 };
 
 export default meta;
@@ -35,9 +27,23 @@ export const WithAuthentication: Story = {
 	args: {
 		children: <ProtectedContent />,
 	},
+	decorators: [
+		(Story) => {
+			const mockAuth = createMockAuth({
+				isAuthenticated: true,
+				isLoading: false,
+				user: createMockUser(),
+			});
+			return (
+				<AuthContext.Provider value={mockAuth}>
+					<MemoryRouter>
+						<Story />
+					</MemoryRouter>
+				</AuthContext.Provider>
+			);
+		},
+	],
 	play: async ({ canvasElement }) => {
-		// The component will either show protected content or redirect/loading state
-		// MockAuthWrapper provides isAuthenticated: true, so content should render
 		const heading = canvasElement.querySelector('h2');
 		await expect(heading).toBeTruthy();
 	},
@@ -48,9 +54,23 @@ export const WithForceLogin: Story = {
 		children: <ProtectedContent />,
 		forceLogin: true,
 	},
+	decorators: [
+		(Story) => {
+			const mockAuth = createMockAuth({
+				isAuthenticated: true,
+				isLoading: false,
+				user: createMockUser(),
+			});
+			return (
+				<AuthContext.Provider value={mockAuth}>
+					<MemoryRouter>
+						<Story />
+					</MemoryRouter>
+				</AuthContext.Provider>
+			);
+		},
+	],
 	play: async ({ canvasElement }) => {
-		// When forceLogin is true, component will trigger signin redirect
-		// MockAuthWrapper provides isAuthenticated: true, so content should render
 		const heading = canvasElement.querySelector('h2');
 		await expect(heading).toBeTruthy();
 	},
@@ -61,10 +81,100 @@ export const WithCustomRedirect: Story = {
 		children: <ProtectedContent />,
 		redirectPath: '/custom-login',
 	},
+	decorators: [
+		(Story) => {
+			const mockAuth = createMockAuth({
+				isAuthenticated: true,
+				isLoading: false,
+				user: createMockUser(),
+			});
+			return (
+				<AuthContext.Provider value={mockAuth}>
+					<MemoryRouter>
+						<Story />
+					</MemoryRouter>
+				</AuthContext.Provider>
+			);
+		},
+	],
 	play: async ({ canvasElement }) => {
-		// Component uses custom redirect path when provided
-		// MockAuthWrapper provides isAuthenticated: true, so content should render
 		const heading = canvasElement.querySelector('h2');
 		await expect(heading).toBeTruthy();
+	},
+};
+
+export const LoadingState: Story = {
+	args: {
+		children: <ProtectedContent />,
+	},
+	decorators: [
+		(Story) => {
+			const mockAuth = createMockAuth({
+				isAuthenticated: false,
+				isLoading: true,
+				user: undefined,
+			});
+			return (
+				<AuthContext.Provider value={mockAuth}>
+					<MemoryRouter>
+						<Story />
+					</MemoryRouter>
+				</AuthContext.Provider>
+			);
+		},
+	],
+	play: async ({ canvasElement }) => {
+		await expect(canvasElement).toBeTruthy();
+	},
+};
+
+export const ErrorState: Story = {
+	args: {
+		children: <ProtectedContent />,
+	},
+	decorators: [
+		(Story) => {
+			const mockAuth = createMockAuth({
+				isAuthenticated: false,
+				isLoading: false,
+				user: undefined,
+			});
+			return (
+				<AuthContext.Provider value={mockAuth}>
+					<MemoryRouter>
+						<Story />
+					</MemoryRouter>
+				</AuthContext.Provider>
+			);
+		},
+	],
+	play: async ({ canvasElement }) => {
+		await expect(canvasElement).toBeTruthy();
+	},
+};
+
+export const UnauthenticatedNoForceLogin: Story = {
+	args: {
+		children: <ProtectedContent />,
+		forceLogin: false,
+	},
+	decorators: [
+		(Story) => {
+			const mockAuth = createMockAuth({
+				isAuthenticated: false,
+				isLoading: false,
+				user: undefined,
+			});
+			return (
+				<AuthContext.Provider value={mockAuth}>
+					<MemoryRouter>
+						<Story />
+					</MemoryRouter>
+				</AuthContext.Provider>
+			);
+		},
+	],
+	play: async ({ canvasElement }) => {
+		await expect(canvasElement).toBeTruthy();
 	},
 };

@@ -93,3 +93,34 @@ So that I can view, filter, and create listings through the GraphQL API
 		Then each listing should include id, title, image, publishedAt, reservationPeriod, status, and pendingRequestsCount
 		And missing images should map image to null
 		And missing or blank states should map status to "Unknown"
+
+	Scenario: Querying adminListings with all filters
+		Given an admin user with valid credentials
+		And pagination arguments with searchText, statusFilters, and sorter
+		When the adminListings query is executed
+		Then it should call Listing.ItemListing.queryPaged with all provided parameters
+		And it should return paginated results
+
+	Scenario: Querying adminListings without any filters
+		Given an admin user with valid credentials
+		When the adminListings query is executed with only page and pageSize
+		Then it should call Listing.ItemListing.queryPaged with minimal parameters
+		And it should return all listings
+
+	Scenario: Unblocking a listing successfully
+		Given a valid listing ID to unblock
+		When the unblockListing mutation is executed
+		Then it should call Listing.ItemListing.unblock with the ID
+		And it should return true
+
+	Scenario: Canceling an item listing successfully
+		Given a valid listing ID to cancel
+		When the cancelItemListing mutation is executed
+		Then it should call Listing.ItemListing.cancel with the ID
+		And it should return success status and the canceled listing
+
+	Scenario: Deleting an item listing successfully
+		Given a valid listing ID and authenticated user email
+		When the deleteItemListing mutation is executed
+		Then it should call Listing.ItemListing.deleteListings with ID and email
+		And it should return success status

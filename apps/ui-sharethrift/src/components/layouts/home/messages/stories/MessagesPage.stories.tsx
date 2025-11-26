@@ -6,6 +6,7 @@ import {
 	ConversationBoxContainerConversationDocument,
 } from "../../../../../generated.tsx";
 import { withMockApolloClient, withMockRouter } from "../../../../../test-utils/storybook-decorators.tsx";
+import { expect, within } from 'storybook/test';
 
 const meta: Meta<typeof HomeRoutes> = {
 	title: "Pages/Messages",
@@ -22,13 +23,20 @@ const Template: StoryFn<typeof HomeRoutes> = () => <HomeRoutes />;
 
 export const DefaultView: StoryFn<typeof HomeRoutes> = Template.bind({});
 
+DefaultView.play = async ({ canvasElement }) => {
+	const canvas = within(canvasElement);
+	await expect(canvas.getByRole('main')).toBeInTheDocument();
+};
+
 DefaultView.parameters = {
   apolloClient: {
     mocks: [
         {
         request: {
           query: HomeConversationListContainerCurrentUserDocument,
+          variables: () => true,
         },
+        maxUsageCount: Number.POSITIVE_INFINITY,
         result: {
           data: {
             currentUser: {
@@ -41,10 +49,9 @@ DefaultView.parameters = {
       {
         request: {
           query: HomeConversationListContainerConversationsByUserDocument,
-          variables: {
-            userId: "507f1f77bcf86cd799439011", // Alice
-          },
+          variables: () => true,
         },
+        maxUsageCount: Number.POSITIVE_INFINITY,
         result: {
           data: {
             conversationsByUser: [
@@ -105,7 +112,7 @@ DefaultView.parameters = {
                 },
                 reserver: {
                   __typename: "PersonalUser",
-                  id: "507f1f77bcf86cd799439011", // Alice as reserver
+                  id: "507f1f77bcf86cd799439011", 
                   account: {
                     __typename: "PersonalUserAccount",
                     profile: {
@@ -129,10 +136,9 @@ DefaultView.parameters = {
       {
         request: {
           query: ConversationBoxContainerConversationDocument,
-          variables: {
-            conversationId: "64f7a9c2d1e5b97f3c9d0c01",
-          },
+          variables: () => true,
         },
+        maxUsageCount: Number.POSITIVE_INFINITY,
         result: {
           data: {
             conversation: {
@@ -182,7 +188,7 @@ DefaultView.parameters = {
                   __typename: "Message",
                   id: "64f7a9c2d1e5b97f3c9d0c09",
                   messagingMessageId: "SM001",
-                  authorId: "507f1f77bcf86cd799439011", // Alice as author
+                  authorId: "507f1f77bcf86cd799439011", 
                   content: "Hi! I'm interested in borrowing your bike.",
                   createdAt: "2025-08-08T10:05:00Z",
                 },

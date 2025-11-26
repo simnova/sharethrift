@@ -335,4 +335,169 @@ test.for(feature, ({ Scenario, Background, BeforeEachScenario }) => {
 			});
 		},
 	);
+
+	Scenario(
+		'Getting all users with sorter by email ascending',
+		({ Given, When, Then }) => {
+			Given('PersonalUser documents with various emails', () => {
+				mockUsers = [
+					makeMockUser({
+						id: new MongooseSeedwork.ObjectId('507f1f77bcf86cd799439011'),
+						account: {
+							...makeMockUser().account,
+							email: 'charlie@example.com',
+						} as unknown as Models.User.PersonalUserAccount,
+					}),
+					makeMockUser({
+						id: new MongooseSeedwork.ObjectId('507f1f77bcf86cd799439012'),
+						account: {
+							...makeMockUser().account,
+							email: 'alice@example.com',
+						} as unknown as Models.User.PersonalUserAccount,
+					}),
+					makeMockUser({
+						id: new MongooseSeedwork.ObjectId('507f1f77bcf86cd799439013'),
+						account: {
+							...makeMockUser().account,
+							email: 'bob@example.com',
+						} as unknown as Models.User.PersonalUserAccount,
+					}),
+				];
+			});
+			When(
+				'I call getAllUsers with sorter field "email" and order "ascend"',
+				async () => {
+					result = await repository.getAllUsers({
+						page: 1,
+						pageSize: 10,
+						sorter: { field: 'email', order: 'ascend' },
+					});
+				},
+			);
+			Then(
+				'I should receive users sorted by email in ascending order',
+				() => {
+					expect(result).toHaveProperty('items');
+					const items = (result as { items: { account?: { email?: string } }[] })
+						.items;
+					expect(items.length).toBe(3);
+					expect(items[0]?.account?.email).toBe('alice@example.com');
+					expect(items[1]?.account?.email).toBe('bob@example.com');
+					expect(items[2]?.account?.email).toBe('charlie@example.com');
+				},
+			);
+		},
+	);
+
+	Scenario(
+		'Getting all users with sorter by email descending',
+		({ Given, When, Then }) => {
+			Given('PersonalUser documents with various emails', () => {
+				mockUsers = [
+					makeMockUser({
+						id: new MongooseSeedwork.ObjectId('507f1f77bcf86cd799439011'),
+						account: {
+							...makeMockUser().account,
+							email: 'alice@example.com',
+						} as unknown as Models.User.PersonalUserAccount,
+					}),
+					makeMockUser({
+						id: new MongooseSeedwork.ObjectId('507f1f77bcf86cd799439012'),
+						account: {
+							...makeMockUser().account,
+							email: 'bob@example.com',
+						} as unknown as Models.User.PersonalUserAccount,
+					}),
+				];
+			});
+			When(
+				'I call getAllUsers with sorter field "email" and order "descend"',
+				async () => {
+					result = await repository.getAllUsers({
+						page: 1,
+						pageSize: 10,
+						sorter: { field: 'email', order: 'descend' },
+					});
+				},
+			);
+			Then(
+				'I should receive users sorted by email in descending order',
+				() => {
+					expect(result).toHaveProperty('items');
+					const items = (result as { items: { account?: { email?: string } }[] })
+						.items;
+					expect(items.length).toBe(2);
+					expect(items[0]?.account?.email).toBe('bob@example.com');
+					expect(items[1]?.account?.email).toBe('alice@example.com');
+				},
+			);
+		},
+	);
+
+	Scenario(
+		'Getting all users with Blocked status filter',
+		({ Given, When, Then }) => {
+			Given('PersonalUser documents with different statuses', () => {
+				mockUsers = [
+					makeMockUser({
+						id: new MongooseSeedwork.ObjectId('507f1f77bcf86cd799439011'),
+						isBlocked: false,
+					}),
+					makeMockUser({
+						id: new MongooseSeedwork.ObjectId('507f1f77bcf86cd799439012'),
+						isBlocked: true,
+					}),
+				];
+			});
+			When(
+				'I call getAllUsers with statusFilters including "Blocked"',
+				async () => {
+					result = await repository.getAllUsers({
+						page: 1,
+						pageSize: 10,
+						statusFilters: ['Blocked'],
+					});
+				},
+			);
+			Then('I should receive only blocked users', () => {
+				expect(result).toHaveProperty('items');
+				const items = (result as { items: { isBlocked?: boolean }[] }).items;
+				expect(items.length).toBe(1);
+				expect(items[0]?.isBlocked).toBe(true);
+			});
+		},
+	);
+
+	Scenario(
+		'Getting all users with both Active and Blocked status filters',
+		({ Given, When, Then }) => {
+			Given('PersonalUser documents with different statuses', () => {
+				mockUsers = [
+					makeMockUser({
+						id: new MongooseSeedwork.ObjectId('507f1f77bcf86cd799439011'),
+						isBlocked: false,
+					}),
+					makeMockUser({
+						id: new MongooseSeedwork.ObjectId('507f1f77bcf86cd799439012'),
+						isBlocked: true,
+					}),
+				];
+			});
+			When(
+				'I call getAllUsers with statusFilters including both "Active" and "Blocked"',
+				async () => {
+					result = await repository.getAllUsers({
+						page: 1,
+						pageSize: 10,
+						statusFilters: ['Active', 'Blocked'],
+					});
+				},
+			);
+			Then('I should receive all users regardless of status', () => {
+				expect(result).toHaveProperty('items');
+				const items = (result as { items: unknown[] }).items;
+				expect(items.length).toBe(2);
+			});
+		},
+	);
 });

@@ -355,4 +355,230 @@ test.for(feature, ({ Scenario, Background, BeforeEachScenario }) => {
 			});
 		},
 	);
+
+	Scenario(
+		'Getting all users with sorter by email ascending',
+		({ Given, When, Then }) => {
+			Given('AdminUser documents with various emails', () => {
+				mockUsers = [
+					makeMockUser({
+						id: new MongooseSeedwork.ObjectId('507f1f77bcf86cd799439011'),
+						account: {
+							...makeMockUser().account,
+							email: 'charlie@example.com',
+						} as unknown as Models.User.AdminUserAccount,
+					}),
+					makeMockUser({
+						id: new MongooseSeedwork.ObjectId('507f1f77bcf86cd799439012'),
+						account: {
+							...makeMockUser().account,
+							email: 'alice@example.com',
+						} as unknown as Models.User.AdminUserAccount,
+					}),
+					makeMockUser({
+						id: new MongooseSeedwork.ObjectId('507f1f77bcf86cd799439013'),
+						account: {
+							...makeMockUser().account,
+							email: 'bob@example.com',
+						} as unknown as Models.User.AdminUserAccount,
+					}),
+				];
+			});
+			When(
+				'I call getAllUsers with sorter field "email" and order "ascend"',
+				async () => {
+					result = await repository.getAllUsers({
+						page: 1,
+						pageSize: 10,
+						sorter: { field: 'email', order: 'ascend' },
+					});
+				},
+			);
+			Then(
+				'I should receive users sorted by email in ascending order',
+				() => {
+					expect(result).toHaveProperty('items');
+					const items = (result as { items: { account?: { email?: string } }[] })
+						.items;
+					expect(items.length).toBe(3);
+					expect(items[0]?.account?.email).toBe('alice@example.com');
+					expect(items[1]?.account?.email).toBe('bob@example.com');
+					expect(items[2]?.account?.email).toBe('charlie@example.com');
+				},
+			);
+		},
+	);
+
+	Scenario(
+		'Getting all users with sorter by email descending',
+		({ Given, When, Then }) => {
+			Given('AdminUser documents with various emails', () => {
+				mockUsers = [
+					makeMockUser({
+						id: new MongooseSeedwork.ObjectId('507f1f77bcf86cd799439011'),
+						account: {
+							...makeMockUser().account,
+							email: 'alice@example.com',
+						} as unknown as Models.User.AdminUserAccount,
+					}),
+					makeMockUser({
+						id: new MongooseSeedwork.ObjectId('507f1f77bcf86cd799439012'),
+						account: {
+							...makeMockUser().account,
+							email: 'bob@example.com',
+						} as unknown as Models.User.AdminUserAccount,
+					}),
+				];
+			});
+			When(
+				'I call getAllUsers with sorter field "email" and order "descend"',
+				async () => {
+					result = await repository.getAllUsers({
+						page: 1,
+						pageSize: 10,
+						sorter: { field: 'email', order: 'descend' },
+					});
+				},
+			);
+			Then(
+				'I should receive users sorted by email in descending order',
+				() => {
+					expect(result).toHaveProperty('items');
+					const items = (result as { items: { account?: { email?: string } }[] })
+						.items;
+					expect(items.length).toBe(2);
+					expect(items[0]?.account?.email).toBe('bob@example.com');
+					expect(items[1]?.account?.email).toBe('alice@example.com');
+				},
+			);
+		},
+	);
+
+	Scenario(
+		'Getting all users with Blocked status filter',
+		({ Given, When, Then }) => {
+			Given('AdminUser documents with different statuses', () => {
+				mockUsers = [
+					makeMockUser({
+						id: new MongooseSeedwork.ObjectId('507f1f77bcf86cd799439011'),
+						isBlocked: false,
+					}),
+					makeMockUser({
+						id: new MongooseSeedwork.ObjectId('507f1f77bcf86cd799439012'),
+						isBlocked: true,
+					}),
+				];
+			});
+			When(
+				'I call getAllUsers with statusFilters including "Blocked"',
+				async () => {
+					result = await repository.getAllUsers({
+						page: 1,
+						pageSize: 10,
+						statusFilters: ['Blocked'],
+					});
+				},
+			);
+			Then('I should receive only blocked users', () => {
+				expect(result).toHaveProperty('items');
+				const items = (result as { items: { isBlocked?: boolean }[] }).items;
+				expect(items.length).toBe(1);
+				expect(items[0]?.isBlocked).toBe(true);
+			});
+		},
+	);
+
+	Scenario(
+		'Getting all users with both Active and Blocked status filters',
+		({ Given, When, Then }) => {
+			Given('AdminUser documents with different statuses', () => {
+				mockUsers = [
+					makeMockUser({
+						id: new MongooseSeedwork.ObjectId('507f1f77bcf86cd799439011'),
+						isBlocked: false,
+					}),
+					makeMockUser({
+						id: new MongooseSeedwork.ObjectId('507f1f77bcf86cd799439012'),
+						isBlocked: true,
+					}),
+				];
+			});
+			When(
+				'I call getAllUsers with statusFilters including both "Active" and "Blocked"',
+				async () => {
+					result = await repository.getAllUsers({
+						page: 1,
+						pageSize: 10,
+						statusFilters: ['Active', 'Blocked'],
+					});
+				},
+			);
+			Then('I should receive all users regardless of status', () => {
+				expect(result).toHaveProperty('items');
+				const items = (result as { items: unknown[] }).items;
+				expect(items.length).toBe(2);
+			});
+		},
+	);
+
+	Scenario('Getting an admin user by username', ({ Given, When, Then }) => {
+		Given('an AdminUser document with username "adminuser"', () => {
+			mockUsers = [
+				makeMockUser({
+					account: {
+						...makeMockUser().account,
+						username: 'adminuser',
+					} as unknown as Models.User.AdminUserAccount,
+				}),
+			];
+		});
+		When('I call getByUsername with "adminuser"', async () => {
+			result = await repository.getByUsername('adminuser');
+		});
+		Then(
+			'I should receive an AdminUser domain object with that username',
+			() => {
+				expect(result).toBeInstanceOf(
+					Domain.Contexts.User.AdminUser.AdminUser,
+				);
+			},
+		);
+	});
+
+	Scenario(
+		"Getting an admin user by username that doesn't exist",
+		({ When, Then }) => {
+			When(
+				'I call getByUsername with "nonexistent-username"',
+				async () => {
+					const nullQueryChain = {
+						populate: vi.fn(() => nullQueryChain),
+						lean: vi.fn(() => nullQueryChain),
+						exec: vi.fn(async () => null),
+						// biome-ignore lint/suspicious/noThenProperty: Mongoose queries are thenable
+						then: vi.fn((resolve) => Promise.resolve(null).then(resolve)),
+					};
+
+					mockModel = {
+						...mockModel,
+						findOne: vi.fn(() => nullQueryChain),
+					} as unknown as Models.User.AdminUserModelType;
+					const modelsContext = {
+						User: {
+							AdminUser: mockModel,
+						},
+					} as unknown as ModelsContext;
+
+					repository = new AdminUserReadRepositoryImpl(
+						modelsContext,
+						passport,
+					);
+					result = await repository.getByUsername('nonexistent-username');
+				},
+			);
+			Then('I should receive null', () => {
+				expect(result).toBeNull();
+			});
+		},
+	);
 });

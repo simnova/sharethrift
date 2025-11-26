@@ -9,7 +9,6 @@ import {
 	defaultReservationActions,
 	withReservationMocks,
 } from '../../../../../test/utils/storybook-providers.tsx';
-
 const meta: Meta<typeof ReservationsGrid> = {
 	title: 'Organisms/ReservationsGrid',
 	component: ReservationsGrid,
@@ -18,14 +17,18 @@ const meta: Meta<typeof ReservationsGrid> = {
 	// Global decorator for MockedProvider
 	decorators: [withReservationMocks],
 	args: defaultReservationActions, // apply to all stories by default
+	argTypes: {
+		onCancel: { action: 'cancel clicked' },
+		onClose: { action: 'close clicked' },
+		onMessage: { action: 'message clicked' },
+	},
 };
 export default meta;
 
 type Story = StoryObj<typeof ReservationsGrid>;
 
 export const AllReservations: Story = {
-	args: { reservations: storyReservationsAll },
-};
+	args: { reservations: storyReservationsAll }};
 
 export const ActiveReservations: Story = {
 	args: {

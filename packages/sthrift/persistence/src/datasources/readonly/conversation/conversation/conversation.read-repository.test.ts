@@ -317,4 +317,90 @@ test.for(feature, ({ Scenario, Background, BeforeEachScenario }) => {
 			});
 		},
 	);
+
+	Scenario('Getting conversation by sharer, reserver, and listing', ({ Given, When, Then }) => {
+		let sharerId: string;
+		let reserverId: string;
+		let listingId: string;
+
+		Given('valid sharer, reserver, and listing IDs', () => {
+			sharerId = createValidObjectId('sharer-1');
+			reserverId = createValidObjectId('reserver-1');
+			listingId = createValidObjectId('listing-1');
+
+			mockModel.findOne = vi.fn().mockReturnValue({
+				lean: vi.fn().mockResolvedValue(makeMockConversation()),
+			}) as never;
+		});
+
+		When('I call getBySharerReserverListing', async () => {
+			result = await repository.getBySharerReserverListing(sharerId, reserverId, listingId);
+		});
+
+		Then('I should receive a Conversation entity or null', () => {
+			expect(result).toBeDefined();
+		});
+	});
+
+	Scenario('Getting conversation with missing sharer ID', ({ Given, When, Then }) => {
+		Given('empty sharer ID', () => {
+			// Empty string setup
+		});
+
+		When('I call getBySharerReserverListing with empty sharer', async () => {
+			result = await repository.getBySharerReserverListing('', createValidObjectId('reserver'), createValidObjectId('listing'));
+		});
+
+		Then('it should return null', () => {
+			expect(result).toBeNull();
+		});
+	});
+
+	Scenario('Getting conversation with missing reserver ID', ({ Given, When, Then }) => {
+		Given('empty reserver ID', () => {
+			// Empty string setup
+		});
+
+		When('I call getBySharerReserverListing with empty reserver', async () => {
+			result = await repository.getBySharerReserverListing(createValidObjectId('sharer'), '', createValidObjectId('listing'));
+		});
+
+		Then('it should return null', () => {
+			expect(result).toBeNull();
+		});
+	});
+
+	Scenario('Getting conversation with missing listing ID', ({ Given, When, Then }) => {
+		Given('empty listing ID', () => {
+			// Empty string setup
+		});
+
+		When('I call getBySharerReserverListing with empty listing', async () => {
+			result = await repository.getBySharerReserverListing(createValidObjectId('sharer'), createValidObjectId('reserver'), '');
+		});
+
+		Then('it should return null', () => {
+			expect(result).toBeNull();
+		});
+	});
+
+	Scenario('Getting conversation with error in database query', ({ Given, When, Then }) => {
+		Given('an error will occur during the query', () => {
+			mockModel.findOne = vi.fn().mockImplementation(() => {
+				throw new Error('Database error');
+			});
+		});
+
+		When('I call getBySharerReserverListing', async () => {
+			result = await repository.getBySharerReserverListing(
+				createValidObjectId('sharer'),
+				createValidObjectId('reserver'),
+				createValidObjectId('listing')
+			);
+		});
+
+		Then('it should return null due to error', () => {
+			expect(result).toBeNull();
+		});
+	});
 });
