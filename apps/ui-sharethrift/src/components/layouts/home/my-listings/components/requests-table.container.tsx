@@ -64,6 +64,8 @@ export const RequestsTableContainer: React.FC<RequestsTableContainerProps> = ({
 
   console.log("Requests data:", data);
   console.log("SharerID being used:", sharerId);
+  console.log("Total requests:", total);
+  console.log("Request items:", requests);
 
   // Transform domain fields to UI format
   const transformedRequests = requests.map((request) => ({
@@ -112,13 +114,16 @@ export const RequestsTableContainer: React.FC<RequestsTableContainerProps> = ({
     }
   };
 
-  if (error) return <p>Error: {error.message}</p>;
+  if (error) {
+    console.error("Query error:", error);
+    return null;
+  }
 
   return (
     <ComponentQueryLoader
       loading={loading}
       error={error}
-      hasData={data?.myListingsRequests}
+      hasData={data?.myListingsRequests ?? null}
       hasDataComponent={
         <RequestsTable
           data={transformedRequests}

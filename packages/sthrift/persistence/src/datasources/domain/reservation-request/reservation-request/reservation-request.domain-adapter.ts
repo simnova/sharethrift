@@ -26,13 +26,11 @@ export class ReservationRequestDomainAdapter
 {
 	// Primitive Fields Getters and Setters
 	get state() {
-		// Map database state to domain state
-		return dbToDomainState(this.doc.state);
+		return this.doc.state;
 	}
 
 	set state(value: string) {
-		// Map domain state to database state
-		this.doc.state = domainToDbState(value);
+		this.doc.state = value;
 	}
 
 	get closeRequestedBySharer() {
@@ -67,7 +65,6 @@ export class ReservationRequestDomainAdapter
 		if (!this.doc.listing) {
 			throw new Error('listing is not populated');
 		}
-		console.log('Type of listing:', this.doc.listing);
 		if (this.doc.listing instanceof MongooseSeedwork.ObjectId) {
 			return {
 				id: this.doc.listing.toString(),

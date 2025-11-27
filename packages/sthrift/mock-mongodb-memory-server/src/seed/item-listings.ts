@@ -106,7 +106,7 @@ export const itemListings = [
 	}),
 	createListing({
 		_id: '707f1f77bcf86cd799439034',
-		sharer: new ObjectId('507f1f77bcf86cd799439014'), // Duy
+		sharer: new ObjectId('507f1f77bcf86cd799439013'), // Duy
 		title: 'Cordless Drill',
 		description:
 			'Professional grade cordless drill with multiple attachments. Perfect for home improvement projects.',
@@ -121,7 +121,7 @@ export const itemListings = [
 	}),
 	createListing({
 		_id: '707f1f77bcf86cd799439035',
-		sharer: new ObjectId('507f1f77bcf86cd799439014'), //Duy
+		sharer: new ObjectId('507f1f77bcf86cd799439013'), //Duy
 		title: 'Hand Mixer',
 		description:
 			'Electric hand mixer with multiple speed settings. Great for baking and cooking.',
