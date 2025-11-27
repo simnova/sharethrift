@@ -8,7 +8,6 @@ import {
 	buildApplicationServicesFactory,
 } from '@sthrift/application-services';
 import { RegisterEventHandlers } from '@sthrift/event-handler';
-import { Domain } from '@sthrift/domain';
 
 import { ServiceMongoose } from '@sthrift/service-mongoose';
 import * as MongooseConfig from './service-config/mongoose/index.ts';
@@ -65,12 +64,8 @@ Cellix.initializeInfrastructureServices<ApiContextSpec, ApplicationServices>(
 					ServiceMessagingTwilio,
 				);
 
-		const systemPassport = Domain.PassportFactory.forSystem();
-		const dataSources = dataSourcesFactory.withPassport(
-			systemPassport,
-			messagingService,
-		);
-		RegisterEventHandlers(dataSources);
+		const { domainDataSource } = dataSourcesFactory.withSystemPassport();
+		RegisterEventHandlers(domainDataSource);
 
 		return {
 			dataSourcesFactory,

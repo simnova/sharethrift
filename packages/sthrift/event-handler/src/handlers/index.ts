@@ -1,8 +1,8 @@
-import type { DataSources } from '@sthrift/persistence';
+import type { DomainDataSource } from '@sthrift/domain';
 import { RegisterDomainEventHandlers } from './domain/index.ts';
 import { RegisterIntegrationEventHandlers } from './integration/index.ts';
 
-export const RegisterEventHandlers = (dataSources: DataSources) => {
-	RegisterDomainEventHandlers(dataSources);
-	RegisterIntegrationEventHandlers(dataSources.domainDataSource);
+export const RegisterEventHandlers = (domainDataSource: DomainDataSource) => {
+	RegisterDomainEventHandlers(domainDataSource);
+	RegisterIntegrationEventHandlers(domainDataSource);
 };

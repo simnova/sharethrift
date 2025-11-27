@@ -121,5 +121,3 @@ export const buildApplicationServicesFactory = (
 };
 
 export type { PersonalUserUpdateCommand } from './contexts/user/personal-user/update.ts';
-export { createOnAcceptance } from './contexts/conversation/conversation/create-on-acceptance.ts';
-export type { ConversationCreateOnAcceptanceCommand } from './contexts/conversation/conversation/create-on-acceptance.ts';
