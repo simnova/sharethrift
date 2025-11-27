@@ -21,6 +21,10 @@ import type { MessagingService } from '@cellix/messaging-service';
 import { ServiceMessagingTwilio } from '@sthrift/messaging-service-twilio';
 import { ServiceMessagingMock } from '@sthrift/messaging-service-mock';
 
+import type { TransactionalEmailService } from '@sthrift/transactional-email-service';
+import { ServiceTransactionalEmailSendGrid } from '@sthrift/transactional-email-service-sendgrid';
+import { ServiceTransactionalEmailMock } from '@sthrift/transactional-email-service-mock';
+
 import { graphHandlerCreator } from '@sthrift/graphql';
 import { restHandlerCreator } from '@sthrift/rest';
 import { ServiceCybersource } from '@sthrift/service-cybersource';
@@ -45,6 +49,11 @@ Cellix.initializeInfrastructureServices<ApiContextSpec, ApplicationServices>(
 			.registerInfrastructureService(
 				isDevelopment ? new ServiceMessagingMock() : new ServiceMessagingTwilio(),
 			)
+			.registerInfrastructureService(
+				// Use SendGrid if API key is available, otherwise use mock
+				// biome-ignore lint/complexity/useLiteralKeys: TypeScript requires bracket notation for process.env
+				process.env['SENDGRID_API_KEY'] ? new ServiceTransactionalEmailSendGrid() : new ServiceTransactionalEmailMock(),
+			)
 			.registerInfrastructureService(new ServiceCybersource());
 	},
 )
@@ -59,8 +68,13 @@ Cellix.initializeInfrastructureServices<ApiContextSpec, ApplicationServices>(
 			? serviceRegistry.getInfrastructureService<MessagingService>(ServiceMessagingMock)
 			: serviceRegistry.getInfrastructureService<MessagingService>(ServiceMessagingTwilio);
 
+		// biome-ignore lint/complexity/useLiteralKeys: TypeScript requires bracket notation for process.env
+		const emailService = process.env['SENDGRID_API_KEY']
+			? serviceRegistry.getInfrastructureService<TransactionalEmailService>(ServiceTransactionalEmailSendGrid)
+			: serviceRegistry.getInfrastructureService<TransactionalEmailService>(ServiceTransactionalEmailMock);
+
 		const { domainDataSource } = dataSourcesFactory.withSystemPassport();
-		RegisterEventHandlers(domainDataSource);
+		RegisterEventHandlers(domainDataSource, emailService);
 
 		return {
 			dataSourcesFactory,
@@ -73,6 +87,7 @@ Cellix.initializeInfrastructureServices<ApiContextSpec, ApplicationServices>(
 					ServiceCybersource,
 				),
 			messagingService,
+			emailService,
 		};
 	})
 	.initializeApplicationServices((context) =>

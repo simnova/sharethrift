@@ -1,8 +1,10 @@
 export * from './domain/contexts/index.ts';
+export * from './domain/events/index.ts';
 import type { Contexts } from './domain/index.ts';
 export * as Domain from './domain/index.ts';
 
 export interface DomainDataSource {
+	// Legacy structure for UOW access
 	User: {
 		PersonalUser: {
 			PersonalUserUnitOfWork: Contexts.User.PersonalUser.PersonalUserUnitOfWork;
