@@ -12,7 +12,7 @@
 		"storybook": "storybook dev -p 6006",
 		"build-storybook": "storybook build",
 		"test": "vitest run",
-		"test:coverage": "vitest run --coverage",
+		"test:coverage": "VITEST_DISABLE_STORYBOOK=1 vitest run --coverage",
 		"test:watch": "vitest"
 	},
 	"dependencies": {
@@ -36,6 +36,7 @@
 		"tailwindcss": "^4.1.11"
 	},
 	"devDependencies": {
+		"@vitest/runner": "^3.2.4",
 		"@cellix/typescript-config": "workspace:*",
 		"@cellix/vitest-config": "workspace:*",
 		"@chromatic-com/storybook": "^4.1.0",
