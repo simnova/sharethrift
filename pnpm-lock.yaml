@@ -113,9 +113,6 @@ importers:
       '@sthrift/context-spec':
         specifier: workspace:*
         version: link:../../packages/sthrift/context-spec
-      '@sthrift/domain':
-        specifier: workspace:*
-        version: link:../../packages/sthrift/domain
       '@sthrift/event-handler':
         specifier: workspace:*
         version: link:../../packages/sthrift/event-handler
@@ -641,9 +638,6 @@ importers:
       '@cellix/messaging-service':
         specifier: workspace:*
         version: link:../../cellix/messaging-service
-      '@opentelemetry/api':
-        specifier: ^1.9.0
-        version: 1.9.0
       '@sthrift/context-spec':
         specifier: workspace:*
         version: link:../context-spec
@@ -765,18 +759,9 @@ importers:
 
   packages/sthrift/event-handler:
     dependencies:
-      '@cellix/event-bus-seedwork-node':
-        specifier: workspace:*
-        version: link:../../cellix/event-bus-seedwork-node
-      '@sthrift/application-services':
-        specifier: workspace:*
-        version: link:../application-services
       '@sthrift/domain':
         specifier: workspace:*
         version: link:../domain
-      '@sthrift/persistence':
-        specifier: workspace:*
-        version: link:../persistence
     devDependencies:
       '@cellix/typescript-config':
         specifier: workspace:*
