@@ -23,7 +23,7 @@ ShareThrift promotes sustainable reuse via a peer‑to‑peer sharing platform. 
 2. Use a clear title: `listing: implement pause/resume state`.
 3. Provide context: brief description (business rationale, acceptance criteria).
 4. Add labels: `domain`, `ui`, `tech-debt`, `documentation`, etc.
-5. Assign yourself, copilot, or another contributor.
+5. Assign yourself, Copilot, or another contributor.
 
 ### Copilot-Assisted Issue
 If you want the GitHub Copilot coding agent to implement the task:
@@ -39,7 +39,7 @@ If you want the GitHub Copilot coding agent to implement the task:
     - Links (BRD/SRD/ADRs if applicable)
 6. Edit the generated issue if needed (DO NOT skip reviewing).
 7. Add labels: `domain`, `ui`, `tech-debt`, `documentation`, etc.
-8. Assign yourself, copilot, or another contributor.
+8. Assign yourself, Copilot, or another contributor.
 
 <img src="./readme-assets/github_create_task.png" width="500" alt="github_create_task">
 
@@ -49,7 +49,7 @@ If you want the GitHub Copilot coding agent to implement the task:
 
 Copilot will attempt to open a Pull Request automatically. Monitor its progress, review the PR thoroughly, and request adjustments as needed.
 
-If task assigned to the Copilot user. The agent will create a branch and PR (example: `copilot/issue-XYZ`).
+If the task is assigned to the Copilot user, the agent will create a branch and PR (for example, `copilot/issue-XYZ`).
 
 ## Pull Request Process & Review Guidelines
 1. Branch from `main` using a descriptive name: `feature/listing-lifecycle`, `fix/messaging-timeout`.
