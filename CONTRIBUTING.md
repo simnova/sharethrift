@@ -111,7 +111,7 @@ pnpm run lint
 - ADRs: architectural decision history
 
 ## Asking for Help
-If you need any help while contributing, feel free to email maintainer (`pgidich@ecfmg.org`). We are more than happy to assist!
+If you need any help while contributing, feel free to email the maintainer (`pgidich@ecfmg.org`). We are more than happy to assist!
 
 By contributing to ShareThrift, you agree to follow our Code of Conduct. → See [CODE_OF_CONDUCT.md](./CODE_OF_CONDUCT.md)
 
