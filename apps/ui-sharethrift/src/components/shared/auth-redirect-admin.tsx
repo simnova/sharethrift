@@ -19,7 +19,7 @@ export const AuthRedirectAdmin: React.FC = () => {
 	// If authenticated, redirect
 	if (auth.isAuthenticated) {
 		const redirectTo =
-			globalThis.sessionStorage.getItem('redirectTo') || '/home';
+			globalThis.sessionStorage.getItem('redirectTo') || '/';
 		globalThis.sessionStorage.removeItem('redirectTo');
 		return <Navigate to={redirectTo} />;
 	}

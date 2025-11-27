@@ -119,7 +119,56 @@ const baseMock: AuthContextProps = {
 	stopSilentRenew: () => {
 		/* mock implementation */
 	},
-	events: {} as AuthContextProps['events'],
+	events: {
+		addAccessTokenExpiring: () => () => {
+			/* mock event handler */
+		},
+		addAccessTokenExpired: () => () => {
+			/* mock event handler */
+		},
+		addSilentRenewError: () => () => {
+			/* mock event handler */
+		},
+		addUserLoaded: () => () => {
+			/* mock event handler */
+		},
+		addUserUnloaded: () => () => {
+			/* mock event handler */
+		},
+		addUserSignedIn: () => () => {
+			/* mock event handler */
+		},
+		addUserSignedOut: () => () => {
+			/* mock event handler */
+		},
+		addUserSessionChanged: () => () => {
+			/* mock event handler */
+		},
+		removeAccessTokenExpiring: () => {
+			/* mock event handler */
+		},
+		removeAccessTokenExpired: () => {
+			/* mock event handler */
+		},
+		removeSilentRenewError: () => {
+			/* mock event handler */
+		},
+		removeUserLoaded: () => {
+			/* mock event handler */
+		},
+		removeUserUnloaded: () => {
+			/* mock event handler */
+		},
+		removeUserSignedIn: () => {
+			/* mock event handler */
+		},
+		removeUserSignedOut: () => {
+			/* mock event handler */
+		},
+		removeUserSessionChanged: () => {
+			/* mock event handler */
+		},
+	} as unknown as AuthContextProps['events'],
 	settings: {
 		authority: 'https://mock-authority.com',
 		client_id: 'storybook-client',
