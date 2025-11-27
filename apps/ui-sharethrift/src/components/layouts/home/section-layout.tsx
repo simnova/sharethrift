@@ -20,7 +20,7 @@ export const HomeTabsLayout: React.FC = () => {
 	const navigate = useNavigate();
 	const location = useLocation();
 	const auth = useAuth();
-    const apolloClient = useApolloClient();
+	const apolloClient = useApolloClient();
 	const { isAdmin } = useUserIsAdmin();
 
 	// Map nav keys to routes as defined in index.tsx
@@ -44,7 +44,7 @@ export const HomeTabsLayout: React.FC = () => {
 			return undefined;
 		}
 		const found = (Object.entries(routeMap) as [string, string][]).find(
-			([, r]) => path === r || path.startsWith(`${r}/`)
+			([, r]) => path === r || path.startsWith(`${r}/`),
 		);
 		return found?.[0] ?? 'home';
 	};
@@ -69,6 +69,7 @@ export const HomeTabsLayout: React.FC = () => {
 	};
 	// Responsive margin for main content: no margin if sidebar is hidden (logged out), else responsive
 	const [mainMargin, setMainMargin] = useState(auth.isAuthenticated ? 240 : 0);
+	const contentWidth = mainMargin > 0 ? `calc(100% - ${mainMargin}px)` : '100%';
 	useEffect(() => {
 		const handleResize = () => {
 			if (!auth.isAuthenticated) {
@@ -86,7 +87,7 @@ export const HomeTabsLayout: React.FC = () => {
 
 	function redirectLogin(
 		portal: 'UserPortal' | 'AdminPortal',
-		href: '/auth-redirect-user' | '/auth-redirect-admin'
+		href: '/auth-redirect-user' | '/auth-redirect-admin',
 	) {
 		if (isProduction) {
 			globalThis.sessionStorage.setItem('loginPortalType', portal);
@@ -96,8 +97,10 @@ export const HomeTabsLayout: React.FC = () => {
 		}
 	}
 
-	const handleOnLogin = () => redirectLogin('UserPortal', '/auth-redirect-user');
-	const handleOnAdminLogin = () => redirectLogin('AdminPortal', '/auth-redirect-admin');
+	const handleOnLogin = () =>
+		redirectLogin('UserPortal', '/auth-redirect-user');
+	const handleOnAdminLogin = () =>
+		redirectLogin('AdminPortal', '/auth-redirect-admin');
 
 	const handleOnSignUp = () => {
 		navigate('/auth-redirect-user');
@@ -137,7 +140,7 @@ export const HomeTabsLayout: React.FC = () => {
 			children: accountChildren,
 		});
 
-        // Add admin dashboard as a top-level item for admin users conditionally
+		// Add admin dashboard as a top-level item for admin users conditionally
 		if (isAdmin) {
 			baseItems.push({
 				key: 'adminDashboard',
@@ -183,7 +186,14 @@ export const HomeTabsLayout: React.FC = () => {
 					selectedKey={getSelectedKey()}
 					customNavItems={navItems}
 				/>
-				<main style={{ marginLeft: mainMargin, width: '100%' }}>
+				<main
+					style={{
+						marginLeft: mainMargin,
+						width: contentWidth,
+						minWidth: 0,
+						boxSizing: 'border-box',
+					}}
+				>
 					<Outlet />
 				</main>
 			</div>
