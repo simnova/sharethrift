@@ -1,90 +1,205 @@
+# ShareThrift
+
+A modern, community‑driven platform designed to reduce waste and enable the sharing of items, services, and classes — empowering individuals and organizations to participate in the circular economy.
 
 
-VSCode Extensions Required:
+[![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=simnova_sharethrift-data-access&metric=alert_status)](https://sonarcloud.io/summary/new_code?id=simnova_sharethrift-data-access)
 
-Azurite - used for storage emulation
+[![Known Vulnerabilities](https://snyk.io/test/github/sharethrift/sharethrift/badge.svg)](https://snyk.io/test/github/sharethrift/sharethrift)
 
+[![Bugs](https://sonarcloud.io/api/project_badges/measure?project=simnova_sharethrift-data-access&metric=bugs)](https://sonarcloud.io/summary/new_code?id=simnova_sharethrift-data-access)
 
-Ideas:
+[![Code Smells](https://sonarcloud.io/api/project_badges/measure?project=simnova_sharethrift-data-access&metric=code_smells)](https://sonarcloud.io/summary/new_code?id=simnova_sharethrift-data-access)
 
-VSCode Sorter Plugin
-https://marketplace.visualstudio.com/items?itemName=aljazsim.tsco
+[![Coverage](https://sonarcloud.io/api/project_badges/measure?project=simnova_sharethrift-data-access&metric=coverage)](https://sonarcloud.io/summary/new_code?id=simnova_sharethrift-data-access)
 
-Decisions:
+[![Duplicated Lines (%)](https://sonarcloud.io/api/project_badges/measure?project=simnova_sharethrift-data-access&metric=duplicated_lines_density)](https://sonarcloud.io/summary/new_code?id=simnova_sharethrift-data-access)
 
-Use [TSConfig Bases](https://github.com/tsconfig/bases) for TS Configuration
+[![Build Status](https://dev.azure.com/simnova/ShareThrift/_apis/build/status%2Fsharethrift?branchName=main)](https://dev.azure.com/simnova/ShareThrift/_build/latest?definitionId=12&branchName=main)
 
+<img src="./readme-assets/main-screen-banner.png" width="500" alt="main-screen-banner"/>
 
-Begin
+## 📌 Introduction
 
-nvm install v20
-nvm install-latest-npm
+<a href="https://developers.sharethrift.com/docs/intro">Getting Started</a>: Our Docusaurus website will help you get started in running and contributing to ShareThrift.
 
-nvm use v20
-npm run clean
-npm install
-npm run build
+ShareThrift is a web‑based peer‑to‑peer sharing platform that enables people and organizations to lend, borrow, or offer items, services, and classes. Inspired by platforms like Turo, Airbnb, and Facebook Marketplace — but built specifically for the sharing economy — ShareThrift provides a structured, trusted, and community-first way to exchange goods.
 
-Startup:
+### ShareThrift exists to:
 
-nvm use v20
-npm run start
+- Reduce consumer waste by extending item lifecycles
+- Enable cost‑efficient access to tools, equipment, and skills
+- Support individuals, small businesses, and partners with flexible sharing models
+- Explore modern technology and product design patterns through an MVP implementation
+- This project is built using Domain-Driven Design (DDD), event-driven communication, and modular application boundaries as specified in the official BRD/SRD.
 
+## 🗂 Table of Contents
 
+- [Features](#-features)
+- [Architecture](#-architecture)
+- [Monorepo Structure](#-monorepo-structure)
+- [Tech Stack](#-tech-stack)
+- [Getting Started](#-getting-started)
+- [Local Endpoints](#-local-endpoints)
+- [Domain & DDD Conventions](#-domain--ddd-conventions)
+- [Testing](#-testing)
+- [Architecture Decisions (ADRs)](#-architecture-decisions-adrs)
+- [Contributing](#-contributing)
 
-Recipe:
+## ✨ Features
 
-npm i -D concurrently
+### 🔍 Browse, Search & Filter Listings
 
-# Note: These are historical examples - current structure uses apps/ and packages/
-# Current apps structure:
-# - apps/api/ (Azure Functions API)
-# - apps/ui-sharethrift/ (React frontend)  
-# - apps/docs/ (Documentation site)
+- Filter by location and category
+- View active, inactive, and upcoming listings
 
-# Historical package examples (now moved to apps/ or reorganized under packages/sthrift/ and packages/cellix/):
-# npm init -w ./packages/sthrift/graphql
-# npm install @as-integrations/azure-functions @apollo/server graphql @azure/functions -w api-graphql
+### 🧰 Create & Manage Listings
 
-# npm init -w ./packages/sthrift/event-handler
+- Support for Item, Service, and Class listings
+- Draft, publish, pause, cancel, appeal, and reinstate listings
+- AI‑assisted draft creation using the integrated chatbot
 
-# npm init -w ./packages/sthrift/api-services
-# npm init -w ./packages/sthrift/rest
-# npm install @azure/functions -w api-rest
+### 📅 Reservation Lifecycle
 
-# npm init -w ./packages/sthrift/api-data-sources-domain
+- Calendar‑based booking
+- Accept, reject, cancel, and close reservation flows
+- Email notifications for all major events
 
-# npm init -w ./packages/sthrift/service-otel
-# npm install @azure/monitor-opentelemetry -w service-otel
+### 💬 Messaging
 
-# npm init -w ./packages/sthrift/persistence
+- In‑platform messaging between sharers and reservers
+- Auto‑expiring conversation threads tied to listings
 
-# npm init -w ./packages/cellix/event-bus-seedwork-node
+### 🛡 Admin Tools
 
+- Listing moderation
+- User blocking/unblocking
+- Feature flag management
+- Embedded analytics and reporting
 
+## 🏗 Architecture
 
-npm install --save-dev @tsconfig/node20
-npm install --save-dev @tsconfig/node-ts
-npm install --save-dev vitest @vitest/coverage-v8
+ShareThrift applies layered Domain-Driven Design:
 
-## Your feedback matters!
+- Domain Layer: aggregates, entities, value objects, domain events
+- Application Layer: orchestration / services (future explicit service modules)
+- Infrastructure Layer: persistence (Mongoose), telemetry, messaging adapters
+- Interface Layer: Azure Functions entrypoints (GraphQL + planned REST)
 
-Do you find Sharethrift useful? [Give it a ⭐ star on GitHub](https://github.com/simnova/sharethrift)!
+Key patterns:
 
-[![GitHub stars](https://img.shields.io/github/stars/simnova/sharethrift)](https://github.com/simnova/sharethrift)
+- Aggregates coordinate consistency boundaries
+- Value Objects enforce immutability and constraints
+- Unit of Work plans for atomic change sets
+- Event-driven strategy (domain + integration events) evolving via ADRs
+- Service Registry (Cellix.initializeServices) for dependency injection
 
-Found a bug? Need a feature? Raise [an issue](https://github.com/simnova/sharethrift/issues?state=open)
-or submit a pull request.
+## 🧬 Monorepo Structure
 
-Have feedback? Leave a comment in [ShareThrift discussions on GitHub](https://github.com/simnova/sharethrift/discussions)
+```
+apps/
+  api/            # Azure Functions host (GraphQL + future REST)
+  docs/           # Docusaurus docs site
+  ui-sharethrift/ # Front-end (Vite + TypeScript)
+packages/
+  sthrift/        # Domain + adapters (graphql, mongoose, etc.)
+  cellix/         # Seedwork abstractions
+iac/              # Bicep infrastructure modules
+documents/        # BRD, SRD, ADRs, architecture diagrams
+```
 
-## Project Status
+## 🛠 Tech Stack
 
-[![Build Status](https://dev.azure.com/simnova/ShareThrift/_apis/build/status%2FShareThrift?branchName=refs%2Fpull%2F120%2Fmerge)](https://dev.azure.com/simnova/ShareThrift/_build/latest?definitionId=13&branchName=refs%2Fpull%2F120%2Fmerge)
+- Runtime: Node.js 22.12.0 / Azure Functions v4
+- Package Manager: pnpm
+- Language: TypeScript (strict config)
+- API: Apollo GraphQL
+- Persistence: MongoDB (Mongoose); Cosmos MongoDB target in cloud
+- Infra as Code: Bicep modules (iac)
+- Tooling: Turborepo, Vitest, Biome, SonarQube, Sourcery
+- Local Azure Emulation: Azurite (blob/queue)
+- Observability: OpenTelemetry + Azure Monitor integration
+- Quality Gates: Sonar + coverage thresholds per package
 
+## 🚀 Getting Started
 
-## Thanks to all our contributors
+Prerequisites
 
-[![sharethrift contributors](https://contrib.rocks/image?repo=simnova/sharethrift)](https://github.com/simnova/sharethrift/graphs/contributors)
+- Node.js v22.12.0 (use nvm)
+- Azurite
 
-[⬆ Back to Top](#table-of-contents)
+Install & Build
+
+```
+nvm use v22
+pnpm install
+pnpm run build
+```
+
+  <img src="./readme-assets/pnpm_install.gif" width="500" alt="pnpm_install">
+  <img src="./readme-assets/pnpm_build.gif" width="500" alt="pnpm_build">
+
+Run (Dev)
+
+```
+pnpm run dev
+```
+
+<img src="./readme-assets/pnpm_dev.gif" width="500" alt="pnpm_dev">
+
+## 🔗 Local Endpoints
+
+| Portal   | Endpoint                          |
+| -------- | --------------------------------- |
+| Frontend | http://localhost:3000             |
+| Doc      | http://localhost:3002             |
+| Graphql  | http://localhost:7071/api/graphql |
+
+## 🧩 Domain & DDD Conventions
+
+- Bounded contexts under [packages/sthrift/domain/src/domain/contexts/](./packages/sthrift/domain/src/domain/contexts/)\*
+- Each context exposes a clear ubiquitous language via exports
+- Passports/Visas enforce permission checks at aggregate boundaries
+- Value Objects: pure data + validation (no side effects)
+- Aggregates: guard invariants, emit domain events (future integration bus)
+- Repositories: interfaces only in domain; adapters reside outside
+- Unit of Work: orchestrates aggregate persistence + event publication plans
+
+## 🧪 Testing
+
+```
+pnpm run test
+```
+
+<img src="./readme-assets/pnpm_test.gif" width="500" alt="pnpm_test">
+
+Guidelines:
+
+- Every aggregate, entity, and value object requires coverage
+- Use descriptive test names expressing business rules
+- Feature files (\*.feature) for higher-level domain scenario documentation
+
+## 🧾 Architecture Decisions (ADRs)
+
+Located in [apps/docs/docs](/apps/docs/docs)
+
+- 0001-madr-architecture-decisions.md
+- adr-short-template.md
+- adr-template.md
+- 0022-existing-azure-upload.md
+
+Add a new ADR for any significant platform, pattern, or model/idea change (e.g., Azure Upload - Enhancement).
+
+## 🤝 Contributing
+
+1. Fork / branch from main (e.g., feature/listing-lifecycle)
+2. Implement domain changes first (aggregate, permissions)
+3. Add tests & update docs
+4. Run: `pnpm run build` and `pnpm run test`
+5. Submit PR referencing ADRs if relevant
+
+Coding Guidelines:
+
+- Explicit domain terminology > generic names
+- Keep functions small & intention-revealing
+- Avoid leaking infrastructure concerns into domain layer
