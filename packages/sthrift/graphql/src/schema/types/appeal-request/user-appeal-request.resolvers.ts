@@ -7,12 +7,12 @@ import type {
 	MutationCreateUserAppealRequestArgs,
 	MutationUpdateUserAppealRequestStateArgs,
 } from '../../builder/generated.ts';
-import { PopulatePersonalUserFromField } from '../../resolver-helper.ts';
+import { PopulateUserFromField } from '../../resolver-helper.ts';
 
 const userAppealRequestResolvers: Resolvers = {
 	UserAppealRequest: {
-		user: PopulatePersonalUserFromField('user'),
-		blocker: PopulatePersonalUserFromField('blocker'),
+		user: PopulateUserFromField('user'),
+		blocker: PopulateUserFromField('blocker'),
 	},
 	Query: {
 		getUserAppealRequest: async (

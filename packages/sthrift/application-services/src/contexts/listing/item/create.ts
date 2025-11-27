@@ -2,7 +2,7 @@ import type { Domain } from '@sthrift/domain';
 import type { DataSources } from '@sthrift/persistence';
 
 export interface ItemListingCreateCommand {
-	sharer: Domain.Contexts.User.PersonalUser.PersonalUserEntityReference;
+	sharer: Domain.Contexts.User.UserEntityReference;
 	title: string;
 	description: string;
 	category: string;

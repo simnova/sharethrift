@@ -6,10 +6,11 @@ import {
 	type Model,
 	type QueryOptions,
 	type Require_id,
+	type Types,
 } from 'mongoose';
 
 type LeanBase<T> = Readonly<Require_id<FlattenMaps<T>>>;
-type Lean<T> = LeanBase<T> & { id: string };
+type Lean<T> = LeanBase<T> & { id: Types.ObjectId };
 
 export type FindOptions = {
 	fields?: string[] | undefined;
@@ -63,19 +64,24 @@ export class MongoDataSourceImpl<TDoc extends MongooseSeedwork.Base>
 			...doc,
 			id: String(doc._id),
 		};
-		
+
 		// Also append id to any populated subdocuments
 		const resultAsRecord = result as Record<string, unknown>;
 		for (const key in resultAsRecord) {
 			const value = resultAsRecord[key];
-			if (value && typeof value === 'object' && '_id' in value && !('id' in value)) {
+			if (
+				value &&
+				typeof value === 'object' &&
+				'_id' in value &&
+				!('id' in value)
+			) {
 				resultAsRecord[key] = {
 					...(value as Record<string, unknown>),
 					id: String((value as { _id: unknown })._id),
 				};
 			}
 		}
-		
+
 		return result;
 	}
 
@@ -154,18 +160,17 @@ export class MongoDataSourceImpl<TDoc extends MongooseSeedwork.Base>
 		if (!isValidObjectId(id)) {
 			return null;
 		}
-		let query = this.model
-			.findById(
-				id,
-				this.buildProjection(options?.fields, options?.projectionMode),
-			);
-		
+		let query = this.model.findById(
+			id,
+			this.buildProjection(options?.fields, options?.projectionMode),
+		);
+
 		if (options?.populateFields?.length) {
 			for (const field of options.populateFields) {
 				query = query.populate(field);
 			}
 		}
-		
+
 		const doc = await query.lean<LeanBase<TDoc>>();
 		return doc ? this.appendId(doc) : null;
 	}

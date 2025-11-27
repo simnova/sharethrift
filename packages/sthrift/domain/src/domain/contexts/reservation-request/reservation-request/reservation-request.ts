@@ -5,7 +5,7 @@ import { ReservationRequestAcceptedEvent } from './events/reservation-request-ac
 import { ReservationRequestStates } from './reservation-request.value-objects.ts';
 import * as ValueObjects from './reservation-request.value-objects.ts';
 import type { ItemListingEntityReference } from '../../listing/item/item-listing.entity.ts';
-import type { PersonalUserEntityReference } from '../../user/personal-user/personal-user.entity.ts';
+import type { UserEntityReference } from '../../user/index.ts';
 import type {
 	ReservationRequestEntityReference,
 	ReservationRequestProps,
@@ -32,7 +32,7 @@ export class ReservationRequest<props extends ReservationRequestProps>
 		newProps: props,
 		state: string,
 		listing: ItemListingEntityReference,
-		reserver: PersonalUserEntityReference,
+		reserver: UserEntityReference,
 		reservationPeriodStart: Date,
 		reservationPeriodEnd: Date,
 		passport: Passport,
@@ -183,10 +183,10 @@ export class ReservationRequest<props extends ReservationRequestProps>
 		this.props.listing = value;
 	}
 
-	get reserver(): PersonalUserEntityReference {
+	get reserver(): UserEntityReference {
 		return this.props.reserver;
 	}
-	set reserver(value: PersonalUserEntityReference) {
+	set reserver(value: UserEntityReference) {
 		if (!this.isNew) {
 			throw new DomainSeedwork.PermissionError(
 				'Reserver can only be set when creating a new reservation request',
@@ -244,7 +244,7 @@ export class ReservationRequest<props extends ReservationRequestProps>
 
 	//#endregion Properties
 
-	async loadReserver(): Promise<PersonalUserEntityReference> {
+	async loadReserver(): Promise<UserEntityReference> {
 		return await this.props.loadReserver();
 	}
 

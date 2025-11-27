@@ -16,12 +16,14 @@
 		"prebuild": "biome lint",
 		"build": "tsc --build",
 		"watch": "tsc --watch",
+		"test": "vitest run",
+		"test:coverage": "vitest run --coverage",
+		"test:watch": "vitest",
 		"lint": "biome lint",
 		"clean": "rimraf dist"
 	},
 	"dependencies": {
 		"@cellix/messaging-service": "workspace:*",
-		"@opentelemetry/api": "^1.9.0",
 		"@sthrift/context-spec": "workspace:*",
 		"@sthrift/domain": "workspace:*",
 		"@sthrift/persistence": "workspace:*",
@@ -29,7 +31,9 @@
 	},
 	"devDependencies": {
 		"@cellix/typescript-config": "workspace:*",
+		"@cellix/vitest-config": "workspace:*",
 		"typescript": "^5.8.3",
 		"rimraf": "^6.0.1"
-	}
+	},
+	"license": "MIT"
 }

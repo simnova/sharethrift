@@ -3,7 +3,7 @@ import type { GraphContext } from '../../../init/context.ts';
 import type { Resolvers } from '../../builder/generated.ts';
 import {
 	PopulateItemListingFromField,
-	PopulatePersonalUserFromField,
+	PopulateUserFromField,
 } from '../../resolver-helper.ts';
 
 interface ListingRequestDomainShape {
@@ -131,7 +131,7 @@ function paginateAndFilterListingRequests(
 
 const reservationRequest: Resolvers = {
 	ReservationRequest: {
-		reserver: PopulatePersonalUserFromField('reserver'),
+		reserver: PopulateUserFromField('reserver'),
 		listing: PopulateItemListingFromField('listing'),
 	},
 
