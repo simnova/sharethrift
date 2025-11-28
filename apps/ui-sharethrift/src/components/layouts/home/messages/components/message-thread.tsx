@@ -1,15 +1,7 @@
-import {
-  List,
-  Avatar,
-  Input,
-  Button,
-  Spin,
-  Empty,
-  message as antdMessage,
-} from "antd";
+import { List, Input, Button, Spin, Empty, message as antdMessage } from "antd";
 import { SendOutlined } from "@ant-design/icons";
 import { useRef } from "react";
-import { UserAvatar } from "../../../shared/user-avatar.tsx";
+import { UserAvatar } from "../../../../shared/user-avatar.tsx";
 
 interface Message {
   id: string;
@@ -194,11 +186,7 @@ function MessageBubble({ message, isOwn, showAvatar }: MessageBubbleProps) {
         }}
       >
         {showAvatar && !isOwn && (
-          <UserAvatar
-            userId={message.authorId}
-            userName="User"
-            size={32}
-          />
+          <UserAvatar userId={message.authorId} userName="User" size={32} />
         )}
         {showAvatar && isOwn && <div style={{ width: 32 }} />}
         {!showAvatar && <div style={{ width: 32 }} />}
