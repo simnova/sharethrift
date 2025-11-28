@@ -69,7 +69,7 @@ export const UnblockUserModal: React.FC<Readonly<UnblockUserModalProps>> = ({
                         >
                             <Text strong>Original block Description:</Text>
                             <Paragraph style={{ marginTop: 8, marginBottom: 0 }}>
-                                {blockReason}
+                               Original block Description
                             </Paragraph>
                         </div>
                     </>
