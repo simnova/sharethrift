@@ -124,6 +124,126 @@ const itemListingResolvers: Resolvers = {
 			);
 		},
 
+		updateItemListing: async (_parent, args, context) => {
+			const userEmail =
+				context.applicationServices.verifiedUser?.verifiedJwt?.email;
+			if (!userEmail) {
+				throw new Error('Authentication required');
+			}
+
+			// Verify the user is the listing owner
+			const listing =
+				await context.applicationServices.Listing.ItemListing.queryById({
+					id: args.id,
+				});
+			if (!listing) {
+				throw new Error('Listing not found');
+			}
+
+			const currentUser =
+				await context.applicationServices.User.PersonalUser.queryByEmail({
+					email: userEmail,
+				});
+			if (!currentUser) {
+				throw new Error('User not found');
+			}
+
+			// Check if the current user is the sharer (owner) of the listing
+			const sharerId =
+				typeof listing.sharer === 'string'
+					? listing.sharer
+					: listing.sharer?.id;
+			if (sharerId !== currentUser.id) {
+				throw new Error('Only the listing owner can update this listing');
+			}
+
+			const command: {
+				id: string;
+				title?: string;
+				description?: string;
+				category?: string;
+				location?: string;
+				sharingPeriodStart?: Date;
+				sharingPeriodEnd?: Date;
+				images?: string[];
+			} = {
+				id: args.id,
+			};
+
+			if (args.input.title !== undefined && args.input.title !== null) {
+				command.title = args.input.title;
+			}
+			if (
+				args.input.description !== undefined &&
+				args.input.description !== null
+			) {
+				command.description = args.input.description;
+			}
+			if (args.input.category !== undefined && args.input.category !== null) {
+				command.category = args.input.category;
+			}
+			if (args.input.location !== undefined && args.input.location !== null) {
+				command.location = args.input.location;
+			}
+			if (
+				args.input.sharingPeriodStart !== undefined &&
+				args.input.sharingPeriodStart !== null
+			) {
+				command.sharingPeriodStart = new Date(args.input.sharingPeriodStart);
+			}
+			if (
+				args.input.sharingPeriodEnd !== undefined &&
+				args.input.sharingPeriodEnd !== null
+			) {
+				command.sharingPeriodEnd = new Date(args.input.sharingPeriodEnd);
+			}
+			if (args.input.images !== undefined && args.input.images !== null) {
+				command.images = [...args.input.images];
+			}
+
+			return await context.applicationServices.Listing.ItemListing.update(
+				command,
+			);
+		},
+
+		pauseItemListing: async (_parent, args, context) => {
+			const userEmail =
+				context.applicationServices.verifiedUser?.verifiedJwt?.email;
+			if (!userEmail) {
+				throw new Error('Authentication required');
+			}
+
+			// Verify the user is the listing owner
+			const listing =
+				await context.applicationServices.Listing.ItemListing.queryById({
+					id: args.id,
+				});
+			if (!listing) {
+				throw new Error('Listing not found');
+			}
+
+			const currentUser =
+				await context.applicationServices.User.PersonalUser.queryByEmail({
+					email: userEmail,
+				});
+			if (!currentUser) {
+				throw new Error('User not found');
+			}
+
+			// Check if the current user is the sharer (owner) of the listing
+			const sharerId =
+				typeof listing.sharer === 'string'
+					? listing.sharer
+					: listing.sharer?.id;
+			if (sharerId !== currentUser.id) {
+				throw new Error('Only the listing owner can pause this listing');
+			}
+
+			return await context.applicationServices.Listing.ItemListing.pause({
+				id: args.id,
+			});
+		},
+
 		unblockListing: async (_parent, args, context) => {
 			// Admin-note: role-based authorization should be implemented here (security)
 			await context.applicationServices.Listing.ItemListing.unblock({
@@ -134,23 +254,88 @@ const itemListingResolvers: Resolvers = {
 		cancelItemListing: async (
 			_parent: unknown,
 			args: { id: string },
-			context,
-		) => ({
-			status: { success: true },
-			listing: await context.applicationServices.Listing.ItemListing.cancel({
-				id: args.id,
-			}),
-		}),
+			context: GraphContext,
+		) => {
+			const userEmail =
+				context.applicationServices.verifiedUser?.verifiedJwt?.email;
+			if (!userEmail) {
+				throw new Error('Authentication required');
+			}
+
+			// Verify the user is the listing owner
+			const listing =
+				await context.applicationServices.Listing.ItemListing.queryById({
+					id: args.id,
+				});
+			if (!listing) {
+				throw new Error('Listing not found');
+			}
+
+			const currentUser =
+				await context.applicationServices.User.PersonalUser.queryByEmail({
+					email: userEmail,
+				});
+			if (!currentUser) {
+				throw new Error('User not found');
+			}
+
+			// Check if the current user is the sharer (owner) of the listing
+			const sharerId =
+				typeof listing.sharer === 'string'
+					? listing.sharer
+					: listing.sharer?.id;
+			if (sharerId !== currentUser.id) {
+				throw new Error('Only the listing owner can cancel this listing');
+			}
+
+			return {
+				status: { success: true },
+				listing: await context.applicationServices.Listing.ItemListing.cancel({
+					id: args.id,
+				}),
+			};
+		},
 
 		deleteItemListing: async (
 			_parent: unknown,
 			args: { id: string },
 			context: GraphContext,
 		) => {
+			const userEmail =
+				context.applicationServices.verifiedUser?.verifiedJwt?.email;
+			if (!userEmail) {
+				throw new Error('Authentication required');
+			}
+
+			// Verify the user is the listing owner
+			const listing =
+				await context.applicationServices.Listing.ItemListing.queryById({
+					id: args.id,
+				});
+			if (!listing) {
+				throw new Error('Listing not found');
+			}
+
+			const currentUser =
+				await context.applicationServices.User.PersonalUser.queryByEmail({
+					email: userEmail,
+				});
+			if (!currentUser) {
+				throw new Error('User not found');
+			}
+
+			// Check if the current user is the sharer (owner) of the listing
+			const sharerId =
+				typeof listing.sharer === 'string'
+					? listing.sharer
+					: listing.sharer?.id;
+			if (sharerId !== currentUser.id) {
+				throw new Error('Only the listing owner can delete this listing');
+			}
+
 			await context.applicationServices.Listing.ItemListing.deleteListings({
 				id: args.id,
-				userEmail:
-					context.applicationServices.verifiedUser?.verifiedJwt?.email ?? '',
+				userEmail,
 			});
 			return { status: { success: true } };
 		},
