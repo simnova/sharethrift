@@ -1,6 +1,5 @@
 import { Modal, Typography, Input, Form, Select } from 'antd';
 import { ExclamationCircleOutlined } from '@ant-design/icons';
-import { useState } from 'react';
 
 const { Text, Paragraph } = Typography;
 const { TextArea } = Input;
@@ -8,7 +7,7 @@ const { TextArea } = Input;
 export interface BlockUserModalProps {
     visible: boolean;
     userName: string;
-    onConfirm: (reason: string) => void;
+    onConfirm: (data: { reason: string; description: string }) => void;
     onCancel: () => void;
     loading?: boolean;
 }
@@ -34,17 +33,16 @@ export const BlockUserModal: React.FC<Readonly<BlockUserModalProps>> = ({
     onCancel,
     loading = false,
 }) => {
-    const [reason, setReason] = useState('');
     const [blockForm] = Form.useForm();
 
-
-    const handleOk = () => {
-        onConfirm(reason);
-        setReason(''); // Reset after confirm
+    const handleOk = async () => {
+        const values = await blockForm.validateFields();
+        onConfirm(values);
+        blockForm.resetFields();
     };
 
     const handleCancel = () => {
-        setReason(''); // Reset on cancel
+        blockForm.resetFields();
         onCancel();
     };
 
@@ -70,10 +68,12 @@ export const BlockUserModal: React.FC<Readonly<BlockUserModalProps>> = ({
                 <Paragraph>
                     Are you sure you want to block <Text strong>{userName}</Text>?
                 </Paragraph>
+
                 <Paragraph type="secondary" style={{ fontSize: '14px' }}>
                     Blocking this user will prevent them from accessing the platform and
                     interacting with other users.
                 </Paragraph>
+
                 <Form form={blockForm} layout="vertical">
                     <Form.Item
                         name="reason"
@@ -104,9 +104,7 @@ export const BlockUserModal: React.FC<Readonly<BlockUserModalProps>> = ({
                     <Form.Item
                         name="description"
                         label="Description"
-                        rules={[
-                            { required: true, message: "Please provide a description" },
-                        ]}
+                        rules={[{ required: true, message: "Please provide a description" }]}
                     >
                         <TextArea
                             rows={4}
