@@ -2,6 +2,7 @@ import { Card, Typography, Avatar, Tag, Row, Col } from "antd";
 import { SwapOutlined, AppstoreAddOutlined } from "@ant-design/icons";
 import bikeListingImg from "@sthrift/ui-components/src/assets/item-images/bike-listing.png";
 import type { User } from "../../../../../generated.tsx";
+import { UserProfileLink } from "../../../../shared/user-profile-link.tsx";
 
 const imgRectangle26 = bikeListingImg;
 
@@ -70,7 +71,9 @@ export const ListingBanner: React.FC<ListingBannerProps> = (props) => {
                   marginTop: 4,
                 }}
               >
-                <span
+                <UserProfileLink 
+                  userId={props.owner?.id || ''} 
+                  displayName={firstName}
                   style={{
                     fontFamily: "Urbanist, sans-serif",
                     fontWeight: 600,
@@ -78,9 +81,7 @@ export const ListingBanner: React.FC<ListingBannerProps> = (props) => {
                     color: "var(--color-primary)",
                     lineHeight: "20px",
                   }}
-                >
-                  {firstName}
-                </span>
+                />
                 <Tag className="sharerIcon">
                   <SwapOutlined />
                 </Tag>
