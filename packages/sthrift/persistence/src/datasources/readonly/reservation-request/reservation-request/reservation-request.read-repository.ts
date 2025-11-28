@@ -69,6 +69,13 @@ export interface ReservationRequestReadRepository {
 	) => Promise<
 		Domain.Contexts.ReservationRequest.ReservationRequest.ReservationRequestEntityReference[]
 	>;
+	queryOverlapByListingIdAndReservationPeriod: (params: {
+		listingId: string;
+		reservationPeriodStart: Date;
+		reservationPeriodEnd: Date;
+	}) => Promise<
+		Domain.Contexts.ReservationRequest.ReservationRequest.ReservationRequestEntityReference[]
+	>;
 }
 
 /**
@@ -213,6 +220,15 @@ export class ReservationRequestReadRepositoryImpl
 					'listingDoc.sharer': new MongooseSeedwork.ObjectId(sharerId),
 				},
 			},
+			{
+				$lookup: {
+					from: 'users',
+					localField: 'reserver',
+					foreignField: '_id',
+					as: 'reserverDoc',
+				},
+			},
+			{ $unwind: '$reserverDoc' },
 		];
 
 		// Apply additional options if provided (e.g., limit, sort)
@@ -223,18 +239,49 @@ export class ReservationRequestReadRepositoryImpl
 			pipeline.push({ $sort: options.sort } as PipelineStage);
 		}
 
-		const docs =
-			await this.models.ReservationRequest.ReservationRequest.aggregate(
-				pipeline,
-			).exec();
+		try {
+			const docs =
+				await this.models.ReservationRequest.ReservationRequest.aggregate(
+					pipeline,
+				).exec();
 
-		// Convert to domain entities
-		return docs.map((doc) =>
-			this.converter.toDomain(
-				doc as Models.ReservationRequest.ReservationRequest,
-				this.passport,
-			),
-		);
+			console.log('Aggregation returned', docs.length, 'documents');
+
+			// Hydrate aggregation results into proper Mongoose documents
+			// This ensures the documents have virtual getters like `id` that map `_id` to string
+			const hydratedDocs = docs.map((doc) => {
+				const { listingDoc, reserverDoc, ...rest } = doc;
+
+				// Create a new document instance from the aggregation result
+				const hydratedDoc =
+					this.models.ReservationRequest.ReservationRequest.hydrate({
+						...rest,
+						listing: listingDoc,
+						reserver: reserverDoc,
+					});
+
+				return hydratedDoc;
+			});
+
+			console.log(
+				'Converted docs sample:',
+				hydratedDocs.length > 0
+					? {
+							id: hydratedDocs[0]?.id,
+							hasListing: !!hydratedDocs[0]?.listing,
+							hasReserver: !!hydratedDocs[0]?.reserver,
+						}
+					: 'none',
+			);
+
+			// Convert to domain entities
+			return hydratedDocs.map((doc) =>
+				this.converter.toDomain(doc, this.passport),
+			);
+		} catch (error) {
+			console.error('Error in getListingRequestsBySharerId:', error);
+			throw error;
+		}
 	}
 
 	async getActiveByReserverIdAndListingId(
@@ -278,6 +325,22 @@ export class ReservationRequestReadRepositoryImpl
 			state: { $in: ACTIVE_STATES },
 		};
 		return await this.queryMany(filter, options);
+	}
+
+	async queryOverlapByListingIdAndReservationPeriod(params: {
+		listingId: string;
+		reservationPeriodStart: Date;
+		reservationPeriodEnd: Date;
+	}): Promise<
+		Domain.Contexts.ReservationRequest.ReservationRequest.ReservationRequestEntityReference[]
+	> {
+		const filter: FilterQuery<Models.ReservationRequest.ReservationRequest> = {
+			listing: new MongooseSeedwork.ObjectId(params.listingId),
+			state: { $in: ACTIVE_STATES },
+			reservationPeriodStart: { $lt: params.reservationPeriodEnd },
+			reservationPeriodEnd: { $gt: params.reservationPeriodStart },
+		};
+		return await this.queryMany(filter);
 	}
 }
 

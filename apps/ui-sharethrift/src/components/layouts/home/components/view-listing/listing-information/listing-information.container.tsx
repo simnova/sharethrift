@@ -1,22 +1,21 @@
 import { useApolloClient, useMutation, useQuery } from '@apollo/client/react';
-import { useState } from 'react';
 import { message } from 'antd';
-import { ListingInformation } from './listing-information.tsx';
-
+import { useState } from 'react';
 // eslint-disable-next-line import/no-absolute-path, @typescript-eslint/ban-ts-comment
 // @ts-ignore - allow raw import string
 import {
-	HomeListingInformationCreateReservationRequestDocument,
 	type CreateReservationRequestInput,
+	HomeListingInformationCreateReservationRequestDocument,
+	type ItemListing,
+	ViewListingActiveReservationRequestForListingDocument,
+	type ViewListingActiveReservationRequestForListingQuery,
 	ViewListingCurrentUserDocument,
 	type ViewListingCurrentUserQuery,
 	ViewListingQueryActiveByListingIdDocument,
 	type ViewListingQueryActiveByListingIdQuery,
 	type ViewListingQueryActiveByListingIdQueryVariables,
-	ViewListingActiveReservationRequestForListingDocument,
-	type ItemListing,
-	type ViewListingActiveReservationRequestForListingQuery,
 } from '../../../../../../generated.tsx';
+import { ListingInformation } from './listing-information.tsx';
 
 interface ListingInformationContainerProps {
 	listing: ItemListing;
