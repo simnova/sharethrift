@@ -59,12 +59,19 @@ export class ServiceTokenValidation implements ServiceBase<TokenValidation> {
 	): Promise<TokenValidationResult<ClaimsType> | null> {
 		// Try each config key for verification
 		for (const configKey of this.tokenSettings.keys()) {
-			const result = await this.tokenVerifier.getVerifiedJwt(token, configKey);
-			if (result?.payload) {
-				return {
-					verifiedJwt: result.payload as ClaimsType,
-					openIdConfigKey: configKey,
-				};
+			try {
+				const result = await this.tokenVerifier.getVerifiedJwt(
+					token,
+					configKey,
+				);
+				if (result?.payload) {
+					return {
+						verifiedJwt: result.payload as ClaimsType,
+						openIdConfigKey: configKey,
+					};
+				}
+			} catch {
+				// Required error handling, logging omitted to prevent flooding logs
 			}
 		}
 		return null;
