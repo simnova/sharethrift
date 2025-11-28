@@ -10,6 +10,7 @@ import { type ItemListingQueryAllCommand, queryAll } from './query-all.ts';
 import { type ItemListingCancelCommand, cancel } from './cancel.ts';
 import { type ItemListingDeleteCommand, deleteListings } from './delete.ts';
 import { type ItemListingUpdateCommand, update } from './update.ts';
+import { type ItemListingBlockCommand, block } from './block.ts';
 import { type ItemListingUnblockCommand, unblock } from './unblock.ts';
 import { queryPaged } from './query-paged.ts';
 
@@ -35,6 +36,9 @@ export interface ItemListingApplicationService {
 		command: ItemListingUpdateCommand,
 	) => Promise<Domain.Contexts.Listing.ItemListing.ItemListingEntityReference>;
 	deleteListings: (command: ItemListingDeleteCommand) => Promise<boolean>;
+	block: (
+		command: ItemListingBlockCommand,
+	) => Promise<Domain.Contexts.Listing.ItemListing.ItemListingEntityReference>;
 	unblock: (
 		command: ItemListingUnblockCommand,
 	) => Promise<Domain.Contexts.Listing.ItemListing.ItemListingEntityReference>;
@@ -64,6 +68,7 @@ export const ItemListing = (
 		cancel: cancel(dataSources),
 		update: update(dataSources),
 	deleteListings: deleteListings(dataSources),
+		block: block(dataSources),
 		unblock: unblock(dataSources),
 		queryPaged: queryPaged(dataSources),
 	};
