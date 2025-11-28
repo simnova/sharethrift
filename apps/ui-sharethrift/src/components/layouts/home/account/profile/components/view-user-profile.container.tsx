@@ -76,8 +76,10 @@ export const ViewUserProfileContainer: React.FC = () => {
     navigate(`/listing/${listingId}`);
   };
 
-  const handleBlockUser = (reason: string) => {
-    console.log("Block reason:", reason);
+  const handleBlockUser = (data: { reason: string; description: string }) => {
+    console.log("Block user:", data);
+    // If the mutation supports reason/description, include them in variables.
+    // Currently we send only userId to match existing schema.
     blockUser({ variables: { userId } });
   };
 
@@ -128,7 +130,6 @@ export const ViewUserProfileContainer: React.FC = () => {
 
   // TODO need to show other user's listing
   const listings: ItemListing[] = [];
-  console.log("Listings for viewed user:", isAdmin);
 
   return (
     <ComponentQueryLoader

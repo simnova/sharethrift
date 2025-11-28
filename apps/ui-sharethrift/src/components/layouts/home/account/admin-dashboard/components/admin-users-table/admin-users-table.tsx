@@ -1,4 +1,4 @@
-import { Input, Checkbox, Button, Tag, Form } from "antd";
+import { Input, Checkbox, Button, Tag } from "antd";
 import type { TableProps } from "antd";
 import { SearchOutlined, FilterOutlined } from "@ant-design/icons";
 import { Dashboard } from "@sthrift/ui-components";
@@ -38,7 +38,6 @@ export const AdminUsersTable: React.FC<Readonly<AdminUsersTableProps>> = ({
     const [blockModalVisible, setBlockModalVisible] = useState(false);
     const [unblockModalVisible, setUnblockModalVisible] = useState(false);
     const [selectedUser, setSelectedUser] = useState<AdminUserData | null>(null);
-    const [blockForm] = Form.useForm();
 
     const handleBlockUser = (user: AdminUserData) => {
         setSelectedUser(user);
@@ -50,14 +49,11 @@ export const AdminUsersTable: React.FC<Readonly<AdminUsersTableProps>> = ({
         setUnblockModalVisible(true);
     };
 
-    const handleBlockConfirm = async () => {
+    const handleBlockConfirm = async ({ reason, description }: { reason: string; description: string }) => {
+        console.log("Block user with:", reason, description);
         try {
-            const values = await blockForm.validateFields();
-            console.log("Block user with:", values);
-            // Mutation is handled by the container via onAction
             onAction("block", selectedUser?.id ?? "");
             setBlockModalVisible(false);
-            blockForm.resetFields();
         } catch (error) {
             console.error("Block validation failed:", error);
         }

@@ -43,7 +43,7 @@ interface ProfileViewProps {
     unblockModalVisible?: boolean;
     onBlockModalCancel?: () => void;
     onUnblockModalCancel?: () => void;
-    onBlockModalConfirm?: (reason: string) => void;
+    onBlockModalConfirm?: ({ reason, description }: { reason: string; description: string }) => void;
     onUnblockModalConfirm?: () => void;
     blockLoading?: boolean;
     unblockLoading?: boolean;

@@ -7,7 +7,7 @@ const { TextArea } = Input;
 export interface BlockUserModalProps {
     visible: boolean;
     userName: string;
-    onConfirm: (data: { reason: string; description: string }) => void;
+    onConfirm: ({ reason, description }: { reason: string; description: string }) => void;
     onCancel: () => void;
     loading?: boolean;
 }
