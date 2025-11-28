@@ -8,7 +8,8 @@ import type {
 } from "./admin-users-table.types.ts";
 import { AdminUsersCard } from "./admin-users-card.tsx";
 import { useState } from "react";
-import { BlockUserModal } from "../../../../../../shared/user-modals/block-user-modal.tsx";
+import { type BlockUserFormValues,
+    BlockUserModal } from "../../../../../../shared/user-modals/block-user-modal.tsx";
 import { UnblockUserModal } from "../../../../../../shared/user-modals/unblock-user-modal.tsx";
 
 const { Search } = Input;
@@ -49,8 +50,8 @@ export const AdminUsersTable: React.FC<Readonly<AdminUsersTableProps>> = ({
         setUnblockModalVisible(true);
     };
 
-    const handleBlockConfirm = async ({ reason, description }: { reason: string; description: string }) => {
-        console.log("Block user with:", reason, description);
+    const handleBlockConfirm = async (blockUserFormValues: BlockUserFormValues) => {
+        console.log("Block user with:", blockUserFormValues);
         try {
             onAction("block", selectedUser?.id ?? "");
             setBlockModalVisible(false);

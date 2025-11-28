@@ -23,6 +23,7 @@ import {
     BlockUserModal,
     UnblockUserModal,
 } from '../../../../../shared/user-modals';
+import type { BlockUserFormValues } from '../../../../../shared/user-modals/block-user-modal';
 
 const { Text } = Typography;
 
@@ -43,7 +44,7 @@ interface ProfileViewProps {
     unblockModalVisible?: boolean;
     onBlockModalCancel?: () => void;
     onUnblockModalCancel?: () => void;
-    onBlockModalConfirm?: ({ reason, description }: { reason: string; description: string }) => void;
+    onBlockModalConfirm?: (blockUserFormValues: BlockUserFormValues) => void;
     onUnblockModalConfirm?: () => void;
     blockLoading?: boolean;
     unblockLoading?: boolean;

@@ -4,10 +4,15 @@ import { ExclamationCircleOutlined } from '@ant-design/icons';
 const { Text, Paragraph } = Typography;
 const { TextArea } = Input;
 
+export interface BlockUserFormValues {
+    reason: string;
+    description: string;
+}
+
 export interface BlockUserModalProps {
     visible: boolean;
     userName: string;
-    onConfirm: ({ reason, description }: { reason: string; description: string }) => void;
+    onConfirm: (values: BlockUserFormValues) => void;
     onCancel: () => void;
     loading?: boolean;
 }
@@ -19,6 +24,8 @@ const BLOCK_REASONS = [
     "Inappropriate Behavior",
     "Other",
 ];
+
+// TODO: add optional block duration when backend supports it.
 
 // const BLOCK_DURATIONS = [
 //     { label: "7 Days", value: "7" },
