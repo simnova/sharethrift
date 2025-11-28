@@ -131,6 +131,32 @@ const itemListingResolvers: Resolvers = {
 				throw new Error('Authentication required');
 			}
 
+			// Verify the user is the listing owner
+			const listing =
+				await context.applicationServices.Listing.ItemListing.queryById({
+					id: args.id,
+				});
+			if (!listing) {
+				throw new Error('Listing not found');
+			}
+
+			const currentUser =
+				await context.applicationServices.User.PersonalUser.queryByEmail({
+					email: userEmail,
+				});
+			if (!currentUser) {
+				throw new Error('User not found');
+			}
+
+			// Check if the current user is the sharer (owner) of the listing
+			const sharerId =
+				typeof listing.sharer === 'string'
+					? listing.sharer
+					: listing.sharer?.id;
+			if (sharerId !== currentUser.id) {
+				throw new Error('Only the listing owner can update this listing');
+			}
+
 			const command: {
 				id: string;
 				title?: string;
@@ -187,6 +213,32 @@ const itemListingResolvers: Resolvers = {
 				throw new Error('Authentication required');
 			}
 
+			// Verify the user is the listing owner
+			const listing =
+				await context.applicationServices.Listing.ItemListing.queryById({
+					id: args.id,
+				});
+			if (!listing) {
+				throw new Error('Listing not found');
+			}
+
+			const currentUser =
+				await context.applicationServices.User.PersonalUser.queryByEmail({
+					email: userEmail,
+				});
+			if (!currentUser) {
+				throw new Error('User not found');
+			}
+
+			// Check if the current user is the sharer (owner) of the listing
+			const sharerId =
+				typeof listing.sharer === 'string'
+					? listing.sharer
+					: listing.sharer?.id;
+			if (sharerId !== currentUser.id) {
+				throw new Error('Only the listing owner can pause this listing');
+			}
+
 			return await context.applicationServices.Listing.ItemListing.pause({
 				id: args.id,
 			});
@@ -202,13 +254,47 @@ const itemListingResolvers: Resolvers = {
 		cancelItemListing: async (
 			_parent: unknown,
 			args: { id: string },
-			context,
-		) => ({
-			status: { success: true },
-			listing: await context.applicationServices.Listing.ItemListing.cancel({
-				id: args.id,
-			}),
-		}),
+			context: GraphContext,
+		) => {
+			const userEmail =
+				context.applicationServices.verifiedUser?.verifiedJwt?.email;
+			if (!userEmail) {
+				throw new Error('Authentication required');
+			}
+
+			// Verify the user is the listing owner
+			const listing =
+				await context.applicationServices.Listing.ItemListing.queryById({
+					id: args.id,
+				});
+			if (!listing) {
+				throw new Error('Listing not found');
+			}
+
+			const currentUser =
+				await context.applicationServices.User.PersonalUser.queryByEmail({
+					email: userEmail,
+				});
+			if (!currentUser) {
+				throw new Error('User not found');
+			}
+
+			// Check if the current user is the sharer (owner) of the listing
+			const sharerId =
+				typeof listing.sharer === 'string'
+					? listing.sharer
+					: listing.sharer?.id;
+			if (sharerId !== currentUser.id) {
+				throw new Error('Only the listing owner can cancel this listing');
+			}
+
+			return {
+				status: { success: true },
+				listing: await context.applicationServices.Listing.ItemListing.cancel({
+					id: args.id,
+				}),
+			};
+		},
 
 		deleteItemListing: async (
 			_parent: unknown,
@@ -219,6 +305,32 @@ const itemListingResolvers: Resolvers = {
 				context.applicationServices.verifiedUser?.verifiedJwt?.email;
 			if (!userEmail) {
 				throw new Error('Authentication required');
+			}
+
+			// Verify the user is the listing owner
+			const listing =
+				await context.applicationServices.Listing.ItemListing.queryById({
+					id: args.id,
+				});
+			if (!listing) {
+				throw new Error('Listing not found');
+			}
+
+			const currentUser =
+				await context.applicationServices.User.PersonalUser.queryByEmail({
+					email: userEmail,
+				});
+			if (!currentUser) {
+				throw new Error('User not found');
+			}
+
+			// Check if the current user is the sharer (owner) of the listing
+			const sharerId =
+				typeof listing.sharer === 'string'
+					? listing.sharer
+					: listing.sharer?.id;
+			if (sharerId !== currentUser.id) {
+				throw new Error('Only the listing owner can delete this listing');
 			}
 
 			await context.applicationServices.Listing.ItemListing.deleteListings({

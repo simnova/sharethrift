@@ -99,8 +99,9 @@ export const PopulateUserFromField = (fieldName: string) => {
 						id: userId,
 					});
 				if (adminUser) {
+					// Return the full user object with userType augmented
 					return {
-						id: adminUser.id,
+						...adminUser,
 						userType: adminUser.userType || 'admin-user',
 					};
 				}
@@ -115,8 +116,9 @@ export const PopulateUserFromField = (fieldName: string) => {
 						id: userId,
 					});
 				if (personalUser) {
+					// Return the full user object with userType augmented
 					return {
-						id: personalUser.id,
+						...personalUser,
 						userType: personalUser.userType || 'personal-users',
 					};
 				}
