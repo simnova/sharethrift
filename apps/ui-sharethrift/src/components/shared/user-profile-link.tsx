@@ -1,7 +1,4 @@
-import { Typography } from 'antd';
 import { Link } from 'react-router-dom';
-
-const { Link: AntLink } = Typography;
 
 export interface UserProfileLinkProps {
 	userId: string;
@@ -16,11 +13,28 @@ export const UserProfileLink: React.FC<UserProfileLinkProps> = ({
 	className = '',
 	style = {},
 }) => {
-	return (
-		<Link to={`/user/${userId}`} style={{ textDecoration: 'none' }}>
-			<AntLink className={className} style={{ ...style }}>
+	// If no valid userId (empty or whitespace-only), render as plain text instead of a broken link
+	const isValidUserId = !!userId && userId.trim() !== '';
+	
+	if (!isValidUserId) {
+		return (
+			<span className={className} style={style}>
 				{displayName}
-			</AntLink>
+			</span>
+		);
+	}
+
+	return (
+		<Link 
+			to={`/user/${userId}`} 
+			className={className}
+			style={{ 
+				textDecoration: 'none',
+				color: 'inherit',
+				...style,
+			}}
+		>
+			{displayName}
 		</Link>
 	);
 };

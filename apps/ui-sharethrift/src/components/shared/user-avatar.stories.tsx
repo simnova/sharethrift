@@ -74,6 +74,21 @@ export const Square: Story = {
 	},
 };
 
+export const WithoutUserId: Story = {
+	args: {
+		userId: '',
+		userName: 'Unknown User',
+		size: 48,
+	},
+	parameters: {
+		docs: {
+			description: {
+				story: 'When no userId is provided, the avatar is rendered without a link (non-clickable).',
+			},
+		},
+	},
+};
+
 export const InContext: Story = {
 	render: () => (
 		<div style={{ padding: '20px', display: 'flex', gap: '16px', alignItems: 'center' }}>

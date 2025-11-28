@@ -20,13 +20,16 @@ export const UserAvatar: React.FC<UserAvatarProps> = ({
 	style = {},
 	shape = 'circle',
 }) => {
+	// Determine if we have a valid userId for linking (non-empty and non-whitespace)
+	const isClickable = !!userId && userId.trim() !== '';
+
 	const avatarContent = avatarUrl ? (
 		<AntAvatar
 			size={size}
 			src={avatarUrl}
 			shape={shape}
 			className={className}
-			style={{ ...style, cursor: 'pointer' }}
+			style={{ ...style, cursor: isClickable ? 'pointer' : 'default' }}
 			alt={`${userName}'s avatar`}
 		/>
 	) : (
@@ -41,7 +44,7 @@ export const UserAvatar: React.FC<UserAvatarProps> = ({
 				justifyContent: 'center',
 				flexShrink: 0,
 				fontFamily: 'var(--Urbanist, Arial, sans-serif)',
-				cursor: 'pointer',
+				cursor: isClickable ? 'pointer' : 'default',
 				...style,
 			}}
 			icon={
@@ -64,6 +67,11 @@ export const UserAvatar: React.FC<UserAvatarProps> = ({
 			{userName.charAt(0).toUpperCase()}
 		</AntAvatar>
 	);
+
+	// If no valid userId, render avatar without link
+	if (!isClickable) {
+		return avatarContent;
+	}
 
 	return (
 		<Link to={`/user/${userId}`} aria-label={`View ${userName}'s profile`}>

@@ -55,6 +55,20 @@ export const WithCustomStyle: Story = {
 	},
 };
 
+export const WithoutUserId: Story = {
+	args: {
+		userId: '',
+		displayName: 'Unknown User',
+	},
+	parameters: {
+		docs: {
+			description: {
+				story: 'When no userId is provided, the component renders as plain text instead of a link.',
+			},
+		},
+	},
+};
+
 export const InContext: Story = {
 	render: () => (
 		<div style={{ padding: '20px' }}>
