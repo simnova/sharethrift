@@ -81,7 +81,10 @@ export class ReservationRequestDomainAdapter
 			throw new Error('listing is not populated');
 		}
 		if (this.doc.listing instanceof MongooseSeedwork.ObjectId) {
-			await this.doc.populate('listing');
+			await this.doc.populate([
+				{ path: 'listing' },
+				{ path: 'listing.sharer' },
+			]);
 		}
 		return new ItemListingDomainAdapter(
 			this.doc.listing as Models.Listing.ItemListing,
