@@ -19,7 +19,7 @@ export interface CreateListingFormData {
 	images: string[];
 }
 
-export interface CreateListingProps {
+interface CreateListingProps {
 	categories: string[];
 	isLoading: boolean;
 	onSubmit: (data: CreateListingFormData, isDraft: boolean) => void;

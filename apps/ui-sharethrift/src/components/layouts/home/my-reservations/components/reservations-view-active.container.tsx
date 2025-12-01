@@ -13,7 +13,7 @@ import { ReservationsView } from './reservations-view.tsx';
 
 const RESERVATION_REQUEST_TYPENAME = 'ReservationRequest';
 
-export type ReservationsViewActiveContainerProps = Record<string, never>;
+type ReservationsViewActiveContainerProps = Record<string, never>;
 
 export const ReservationsViewActiveContainer: React.FC<
 	ReservationsViewActiveContainerProps

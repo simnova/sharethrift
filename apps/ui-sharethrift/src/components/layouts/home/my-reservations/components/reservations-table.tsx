@@ -14,7 +14,7 @@ type ReservationsTableStyles = {
 	tableText: string;
 } & Record<string, string>;
 
-export interface ReservationsTableProps {
+interface ReservationsTableProps {
 	reservations: ReservationRequestFieldsFragment[];
 	onCancel?: (id: string) => void;
 	onClose?: (id: string) => void;

@@ -13,7 +13,7 @@ type ReservationsViewStyles = {
 	desktopOnly: string;
 } & Record<string, string>;
 
-export interface ReservationsViewProps {
+interface ReservationsViewProps {
 	reservations: ReservationRequestFieldsFragment[];
 	onCancel?: (id: string) => void;
 	onClose?: (id: string) => void;

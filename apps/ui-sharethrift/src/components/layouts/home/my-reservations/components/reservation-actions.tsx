@@ -2,7 +2,7 @@ import type React from 'react';
 import { Space } from 'antd';
 import { ReservationActionButton } from './reservation-action-button.tsx';
 
-export interface ReservationActionsProps {
+interface ReservationActionsProps {
 	status: 'REQUESTED' | 'ACCEPTED' | 'REJECTED' | 'CLOSED' | 'CANCELLED';
 	onCancel?: () => void;
 	onClose?: () => void;

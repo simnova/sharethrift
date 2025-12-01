@@ -13,6 +13,14 @@
 			"entry": ["src/**/*.{ts,tsx,js,jsx}"],
 			"project": ["src/**/*.{ts,tsx,js,jsx}"]
 		},
+		"packages/sthrift/data-sources-mongoose-models": {
+			"entry": ["src/index.ts", "src/models/**/*.model.ts"],
+			"project": ["src/**/*.ts"]
+		},
+		"packages/sthrift/persistence": {
+			"entry": ["src/index.ts", "src/datasources/**/index.ts"],
+			"project": ["src/**/*.ts"]
+		},
 		"packages/sthrift/*": {
 			"entry": ["src/index.ts"],
 			"project": ["src/**/*.ts"],
@@ -46,13 +54,7 @@
 		"**/coverage/**",
 		"**/__tests__/**",
 		"**/tests/**",
-		"**/storybook-providers.tsx",
-		"**/storybook-decorators.tsx",
-		"**/*.value-objects.ts",
-		"**/*.domain-adapter.ts",
-		"**/resolver-builder.ts",
-		"**/resolver-helper.ts",
-		"**/cybersource-interface.ts"
+		"**/test/**"
 	],
 	"ignoreDependencies": [
 		"@types/*",
@@ -66,6 +68,5 @@
 		"@graphql-typed-document-node/core",
 		"ts-scope-trimmer-plugin"
 	],
-	"ignoreBinaries": ["func"],
-	"ignoreExportsUsedInFile": true
+	"ignoreBinaries": ["func"]
 }
