@@ -11,12 +11,14 @@ import type { ConversationPassport } from './conversation/conversation.passport.
 import type { ListingPassport } from './listing/listing.passport.ts';
 import type { ReservationRequestPassport } from './reservation-request/reservation-request.passport.ts';
 import type { UserPassport } from './user/user.passport.ts';
+import type { AccountPlanPassport } from './account-plan/account-plan.passport.ts';
 
 export interface Passport {
 	get user(): UserPassport;
 	get listing(): ListingPassport;
 	get conversation(): ConversationPassport;
 	get reservationRequest(): ReservationRequestPassport;
+	get accountPlan(): AccountPlanPassport;
 	get appealRequest(): AppealRequestPassport;
 }
 

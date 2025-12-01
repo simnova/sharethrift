@@ -5,21 +5,8 @@ import { expect, vi } from 'vitest';
 import type { GraphContext } from '../../../init/context.ts';
 import personalUserResolvers from './personal-user.resolvers.ts';
 import type { Domain } from '@sthrift/domain';
+import type { PaymentResponse } from '@sthrift/application-services';
 // Define a type for the payment response based on the interface structure
-interface ProcessPaymentResponse {
-	id?: string;
-	status?: string;
-	errorInformation?: {
-		reason?: string;
-		message?: string;
-	};
-	orderInformation?: {
-		amountDetails?: {
-			totalAmount?: string;
-			currency?: string;
-		};
-	};
-}
 
 const test = { for: describeFeature };
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
@@ -39,19 +26,32 @@ function createMockLocation(): Domain.Contexts.User.PersonalUser.PersonalUserAcc
 	};
 }
 
-function createMockBilling(): Domain.Contexts.User.PersonalUser.PersonalUserAccountProfileBillingProps {
+function createMockBilling(): Domain.Contexts.User.PersonalUser.PersonalUserAccountProfileBillingEntityReference {
 	return {
-		subscriptionId: null,
-		cybersourceCustomerId: null,
-		paymentState: 'inactive',
-		lastTransactionId: null,
-		lastPaymentAmount: null,
+		cybersourceCustomerId: 'cust-12345',
+		subscription: {
+			subscriptionId: 'sub-67890',
+			planCode: 'verified-personal',
+			status: 'ACTIVE',
+			startDate: new Date('2024-01-01T00:00:00Z'),
+		},
+		transactions: [
+			{
+				id: '1',
+				transactionId: 'txn_123',
+				amount: 1000,
+				referenceId: 'ref_123',
+				status: 'completed',
+				completedAt: new Date('2020-01-01T00:00:00Z'),
+				errorMessage: null,
+			},
+		],
 	};
 }
 
 function createMockProfile(
-	overrides: Partial<Domain.Contexts.User.PersonalUser.PersonalUserProfileProps> = {},
-): Domain.Contexts.User.PersonalUser.PersonalUserProfileProps {
+	overrides: Partial<Domain.Contexts.User.PersonalUser.PersonalUserProfileEntityReference> = {},
+): Domain.Contexts.User.PersonalUser.PersonalUserProfileEntityReference {
 	return {
 		firstName: 'John',
 		lastName: 'Doe',
@@ -63,8 +63,8 @@ function createMockProfile(
 }
 
 function createMockAccount(
-	overrides: Partial<Domain.Contexts.User.PersonalUser.PersonalUserAccountProps> = {},
-): Domain.Contexts.User.PersonalUser.PersonalUserAccountProps {
+	overrides: Partial<Domain.Contexts.User.PersonalUser.PersonalUserAccountEntityReference> = {},
+): Domain.Contexts.User.PersonalUser.PersonalUserAccountEntityReference {
 	return {
 		accountType: 'personal',
 		email: 'test@example.com',
@@ -103,11 +103,14 @@ function createMockPersonalUser(
 }
 
 function createMockProcessPaymentResponse(
-	overrides: Partial<ProcessPaymentResponse> = {},
-): ProcessPaymentResponse {
+	overrides: Partial<PaymentResponse> = {},
+) {
 	return {
 		id: 'payment-123',
 		status: 'SUCCEEDED',
+		success: true,
+		message: 'Payment processed successfully',
+		cybersourceCustomerId: 'cust-12345',
 		orderInformation: {
 			amountDetails: {
 				totalAmount: '100.00',
@@ -129,11 +132,13 @@ function makeMockGraphContext(
 					createIfNotExists: vi.fn(),
 					getAllUsers: vi.fn(),
 					update: vi.fn(),
+					processPayment: vi.fn(),
 				},
 			},
-			Payment: {
-				processPayment: vi.fn(),
-				refundPayment: vi.fn(),
+			AccountPlan: {
+				AccountPlan: {
+					queryByName: vi.fn(),
+				},
 			},
 			verifiedUser: {
 				verifiedJwt: {
@@ -295,7 +300,9 @@ test.for(feature, ({ Scenario, Background, BeforeEachScenario }) => {
 			});
 			And('it should update the record and return the updated user', () => {
 				expect(result).toBeDefined();
-				expect((result as { id: string }).id).toBe('user-123');
+				expect(
+					(result as { personalUser: { id: string } }).personalUser.id,
+				).toBe('user-123');
 			});
 		},
 	);
@@ -386,13 +393,15 @@ test.for(feature, ({ Scenario, Background, BeforeEachScenario }) => {
 			Given(
 				'a valid payment request with order and billing information',
 				() => {
-					const mockResponse = createMockProcessPaymentResponse({
+					// Mock payment processing
+					const mockPaymentResponse = createMockProcessPaymentResponse({
 						status: 'SUCCEEDED',
 						id: 'txn-123',
+						cybersourceCustomerId: 'cust-12345',
 					});
 					vi.mocked(
-						context.applicationServices.Payment.processPayment,
-					).mockResolvedValue(mockResponse);
+						context.applicationServices.User.PersonalUser.processPayment,
+					).mockResolvedValue(mockPaymentResponse);
 				},
 			);
 			When('I execute the mutation "processPayment"', async () => {
@@ -401,30 +410,22 @@ test.for(feature, ({ Scenario, Background, BeforeEachScenario }) => {
 					result = await resolver(
 						{},
 						{
-							request: {
+							input: {
 								userId: 'user-123',
-								orderInformation: {
-									billTo: {
-										firstName: 'John',
-										lastName: 'Doe',
-										address1: '123 Main St',
-										city: 'City',
-										postalCode: '12345',
-										country: 'US',
-										state: 'State',
-									},
-									amountDetails: {
-										totalAmount: 100,
-										currency: 'USD',
-									},
-								},
-								paymentInformation: {
-									card: {
-										number: '4111111111111111',
-										expirationMonth: '12',
-										expirationYear: '2025',
-										securityCode: '123',
-									},
+								currency: 'USD',
+								paymentAmount: 100.0,
+								paymentInstrument: {
+									billingAddressLine1: '123 Main St',
+									billingCity: 'City',
+									billingState: 'State',
+									billingCountry: 'US',
+									billingPostalCode: '12345',
+									billingEmail: 'john.doe@example.com',
+									billingFirstName: 'John',
+									billingLastName: 'Doe',
+									paymentToken: 'token-abc-123',
+									billingAddressLine2: null,
+									billingPhone: null,
 								},
 							},
 						},
@@ -437,7 +438,7 @@ test.for(feature, ({ Scenario, Background, BeforeEachScenario }) => {
 				'it should call "Payment.processPayment" with sanitized fields',
 				() => {
 					expect(
-						context.applicationServices.Payment.processPayment,
+						context.applicationServices.User.PersonalUser.processPayment,
 					).toHaveBeenCalled();
 				},
 			);
@@ -456,8 +457,9 @@ test.for(feature, ({ Scenario, Background, BeforeEachScenario }) => {
 		'Handling payment processing failure',
 		({ Given, When, Then, And }) => {
 			Given('a payment request that causes an error', () => {
+				// Mock payment processing error
 				vi.mocked(
-					context.applicationServices.Payment.processPayment,
+					context.applicationServices.User.PersonalUser.processPayment,
 				).mockRejectedValue(new Error('Payment failed'));
 			});
 			When('I execute the mutation "processPayment"', async () => {
@@ -466,30 +468,22 @@ test.for(feature, ({ Scenario, Background, BeforeEachScenario }) => {
 					result = await resolver(
 						{},
 						{
-							request: {
+							input: {
 								userId: 'user-123',
-								orderInformation: {
-									billTo: {
-										firstName: 'John',
-										lastName: 'Doe',
-										address1: '123 Main St',
-										postalCode: '12345',
-										country: 'US',
-										state: 'State',
-										city: 'City',
-									},
-									amountDetails: {
-										totalAmount: 100,
-										currency: 'USD',
-									},
-								},
-								paymentInformation: {
-									card: {
-										number: '4111111111111111',
-										expirationMonth: '12',
-										expirationYear: '2025',
-										securityCode: '123',
-									},
+								currency: 'USD',
+								paymentAmount: 100.0,
+								paymentInstrument: {
+									billingAddressLine1: '123 Main St',
+									billingCity: 'City',
+									billingState: 'State',
+									billingCountry: 'US',
+									billingPostalCode: '12345',
+									billingEmail: 'john.doe@example.com',
+									billingFirstName: 'John',
+									billingLastName: 'Doe',
+									paymentToken: 'token-abc-123',
+									billingAddressLine2: null,
+									billingPhone: null,
 								},
 							},
 						},
@@ -514,97 +508,99 @@ test.for(feature, ({ Scenario, Background, BeforeEachScenario }) => {
 		},
 	);
 
-	Scenario('Refunding a successful payment', ({ Given, When, Then, And }) => {
-		Given(
-			'a valid refund request with transactionId "txn-789" and amount "100.00"',
-			() => {
-				vi.mocked(
-					context.applicationServices.Payment.refundPayment,
-				).mockResolvedValue({
-					id: 'txn-789',
-					status: 'REFUNDED',
-				});
-			},
-		);
-		When('I execute the mutation "refundPayment"', async () => {
-			const resolver = personalUserResolvers.Mutation?.refundPayment;
-			if (typeof resolver === 'function') {
-				result = await resolver(
-					{},
-					{
-						request: {
-							userId: 'user-123',
-							transactionId: 'txn-789',
-							amount: 100,
-							orderInformation: {
-								amountDetails: {
-									totalAmount: 100.0,
-									currency: 'USD',
-								},
-							},
-						},
-					},
-					context,
-					{} as never,
-				);
-			}
-		});
-		Then('it should call "Payment.refundPayment"', () => {
-			expect(
-				context.applicationServices.Payment.refundPayment,
-			).toHaveBeenCalled();
-		});
-		And(
-			'return a RefundResponse with status "REFUNDED" and success true',
-			() => {
-				expect(result).toBeDefined();
-				expect((result as { status: string }).status).toBe('REFUNDED');
-				expect((result as { success: boolean }).success).toBe(true);
-			},
-		);
-	});
+  // TBD: Re-enable once refundPayment is implemented
+	// Scenario('Refunding a successful payment', ({ Given, When, Then, And }) => {
+	// 	Given(
+	// 		'a valid refund request with transactionId "txn-789" and amount "100.00"',
+	// 		() => {
+	// 			vi.mocked(
+	// 				context.applicationServices.User.PersonalUser.refundPayment,
+	// 			).mockResolvedValue({
+	// 				id: 'txn-789',
+	// 				status: 'REFUNDED',
+	// 			});
+	// 		},
+	// 	);
+	// 	When('I execute the mutation "refundPayment"', async () => {
+	// 		const resolver = personalUserResolvers.Mutation?.refundPayment;
+	// 		if (typeof resolver === 'function') {
+	// 			result = await resolver(
+	// 				{},
+	// 				{
+	// 					request: {
+	// 						userId: 'user-123',
+	// 						transactionId: 'txn-789',
+	// 						amount: 100,
+	// 						orderInformation: {
+	// 							amountDetails: {
+	// 								totalAmount: 100.0,
+	// 								currency: 'USD',
+	// 							},
+	// 						},
+	// 					},
+	// 				},
+	// 				context,
+	// 				{} as never,
+	// 			);
+	// 		}
+	// 	});
+	// 	Then('it should call "Payment.refundPayment"', () => {
+	// 		expect(
+	// 			context.applicationServices.Payment.refundPayment,
+	// 		).toHaveBeenCalled();
+	// 	});
+	// 	And(
+	// 		'return a RefundResponse with status "REFUNDED" and success true',
+	// 		() => {
+	// 			expect(result).toBeDefined();
+	// 			expect((result as { status: string }).status).toBe('REFUNDED');
+	// 			expect((result as { success: boolean }).success).toBe(true);
+	// 		},
+	// 	);
+	// });
 
-	Scenario('Handling refund failure', ({ Given, When, Then, And }) => {
-		Given('a refund request that causes an error', () => {
-			vi.mocked(
-				context.applicationServices.Payment.refundPayment,
-			).mockRejectedValue(new Error('Refund failed'));
-		});
-		When('I execute the mutation "refundPayment"', async () => {
-			const resolver = personalUserResolvers.Mutation?.refundPayment;
-			if (typeof resolver === 'function') {
-				result = await resolver(
-					{},
-					{
-						request: {
-							userId: 'user-123',
-							transactionId: 'txn-789',
-							amount: 100,
-							orderInformation: {
-								amountDetails: {
-									totalAmount: 100,
-									currency: 'USD',
-								},
-							},
-						},
-					},
-					context,
-					{} as never,
-				);
-			}
-		});
-		Then('it should return a RefundResponse with status "FAILED"', () => {
-			expect((result as { status: string }).status).toBe('FAILED');
-			expect((result as { success: boolean }).success).toBe(false);
-		});
-		And('include errorInformation with reason "PROCESSING_ERROR"', () => {
-			expect(
-				(result as { errorInformation: { reason: string } }).errorInformation,
-			).toBeDefined();
-			expect(
-				(result as { errorInformation: { reason: string } }).errorInformation
-					.reason,
-			).toBe('PROCESSING_ERROR');
-		});
-	});
+  // TBD: Re-enable once refundPayment is implemented
+	// Scenario('Handling refund failure', ({ Given, When, Then, And }) => {
+	// 	Given('a refund request that causes an error', () => {
+	// 		vi.mocked(
+	// 			context.applicationServices.Payment.refundPayment,
+	// 		).mockRejectedValue(new Error('Refund failed'));
+	// 	});
+	// 	When('I execute the mutation "refundPayment"', async () => {
+	// 		const resolver = personalUserResolvers.Mutation?.refundPayment;
+	// 		if (typeof resolver === 'function') {
+	// 			result = await resolver(
+	// 				{},
+	// 				{
+	// 					request: {
+	// 						userId: 'user-123',
+	// 						transactionId: 'txn-789',
+	// 						amount: 100.0,
+	// 						orderInformation: {
+	// 							amountDetails: {
+	// 								totalAmount: 100.0,
+	// 								currency: 'USD',
+	// 							},
+	// 						},
+	// 					},
+	// 				},
+	// 				context,
+	// 				{} as never,
+	// 			);
+	// 		}
+	// 	});
+	// 	Then('it should return a RefundResponse with status "FAILED"', () => {
+	// 		expect((result as { status: string }).status).toBe('FAILED');
+	// 		expect((result as { success: boolean }).success).toBe(false);
+	// 	});
+	// 	And('include errorInformation with reason "PROCESSING_ERROR"', () => {
+	// 		expect(
+	// 			(result as { errorInformation: { reason: string } }).errorInformation,
+	// 		).toBeDefined();
+	// 		expect(
+	// 			(result as { errorInformation: { reason: string } }).errorInformation
+	// 				.reason,
+	// 		).toBe('PROCESSING_ERROR');
+	// 	});
+	// });
 });

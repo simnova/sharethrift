@@ -1,105 +1,76 @@
 import { useState, useEffect } from "react";
 import { Button, Card } from "antd";
 import { CheckOutlined, SafetyOutlined } from "@ant-design/icons";
+import type { AccountPlan, PersonalUser, PersonalUserUpdateInput } from "../../../../generated.tsx";
 
-type PersonalAccountSubType =
-  | "non-verified-personal"
-  | "verified-personal"
-  | "verified-personal-plus";
+const getPlanIcon = (planName: string) => {
+  switch (planName) {
+    case "non-verified-personal":
+      return "/assets/item-images/stool.png";
+    case "verified-personal":
+      return "/assets/item-images/armchair.png";
+    case "verified-personal-plus":
+      return "/assets/item-images/bubble-chair.png";
+    default:
+      return "/assets/images/plan-icons/default.png";
+  }
+};
 
-interface AccountOption {
-  id: string;
-  title: string;
-  price: string;
-  features: string[];
-  icon?: string;
-}
+const getBillingFeeDisplay = (plan: AccountPlan) => {
+  return `$${plan.billingAmount}/${plan.billingPeriodUnit}`;
+};
 
-const personalOptions: AccountOption[] = [
-  {
-    id: "non-verified-personal",
-    title: "Non-Verified Personal",
-    price: "$0/month",
-    features: [
-      "5 active reservations",
-      "3 bookmarks",
-      "15 items to share",
-      "5 friends",
-    ],
-    icon: "/assets/item-images/stool.png",
-  },
-  {
-    id: "verified-personal",
-    title: "Verified Personal",
-    price: "$0/month",
-    features: [
-      "10 active reservations",
-      "10 bookmarks",
-      "30 items to share",
-      "10 friends",
-    ],
-    icon: "/assets/item-images/armchair.png",
-  },
-  {
-    id: "verified-personal-plus",
-    title: "Verified Personal Plus",
-    price: "$4.99/month",
-    features: [
-      "30 active reservations",
-      "30 bookmarks",
-      "50 items to share",
-      "30 friends",
-    ],
-    icon: "/assets/item-images/bubble-chair.png",
-  },
-];
-
+const getPlanFeaturesDisplay = (plan: AccountPlan) => {
+  const features = [];
+  if (plan.feature.activeReservations !== undefined) {
+    features.push(`${plan.feature.activeReservations} active reservations`);
+  }
+  if (plan.feature.bookmarks !== undefined) {
+    features.push(`${plan.feature.bookmarks} bookmarks`);
+  }
+  if (plan.feature.itemsToShare !== undefined) {
+    features.push(`${plan.feature.itemsToShare} items to share`);
+  }
+  if (plan.feature.friends !== undefined) {
+    features.push(`${plan.feature.friends} friends`);
+  }
+  return features;
+};
 interface SelectAccountTypeProps {
-  currentUserData: any;
-  loadingUser: boolean;
-  handleUpdateAccountType: (accountType: string) => void;
-  savingAccountType: boolean;
+  currentUserData?: PersonalUser;
+  loading: boolean;
+  onSaveAndContinue: (values: PersonalUserUpdateInput) => void;
+  accountPlans: AccountPlan[];
 }
 
 export const SelectAccountType: React.FC<SelectAccountTypeProps> = (props) => {
-
-  const [selectedPersonalType, setSelectedPersonalType] = useState<string>(
-    "non-verified-personal"
-  );
+  const [selectedPersonalType, setSelectedPersonalType] = useState<string>("non-verified-personal");
 
   useEffect(() => {
-    if (
-      props?.currentUserData?.account?.accountType &&
-      [
-        "non-verified-personal",
-        "verified-personal",
-        "verified-personal-plus",
-      ].includes(props?.currentUserData.account?.accountType)
-    ) {
-      setSelectedPersonalType(props?.currentUserData.account?.accountType);
-    }
+    setSelectedPersonalType(props?.currentUserData?.account?.accountType ?? "non-verified-personal");
   }, [props?.currentUserData]);
 
-  const handleSelectAccountType = (type: PersonalAccountSubType) => {
-    setSelectedPersonalType(type);
+  const handleSelectAccountType = (accountPlanName: string) => {
+    setSelectedPersonalType(accountPlanName);
   };
 
-  const renderAccountCard = (
-    option: AccountOption,
-    isSelected: boolean,
-    onSelect: () => void
-  ) => (
+  const handleSaveAndContinue = () => {
+    props.onSaveAndContinue({
+      id: props?.currentUserData?.id,
+      account: {
+        accountType: selectedPersonalType,
+      },
+    });
+  };
+
+  const renderAccountCard = (plan: AccountPlan, isSelected: boolean, onSelect: () => void) => (
     <Card
-      key={option.id}
-      className={`cursor-pointer transition-all duration-200 ${
-        isSelected ? "shadow-lg" : "hover:shadow-md"
-      }`}
+      key={plan.id}
+      className={`cursor-pointer transition-all duration-200 ${isSelected ? "shadow-lg" : "hover:shadow-md"}`}
       style={{
         width: 280,
         position: "relative",
-        border: isSelected
-          ? "2px solid var(--color-secondary)"
-          : "1px solid var(--color-foreground-2)",
+        border: isSelected ? "2px solid var(--color-secondary)" : "1px solid var(--color-foreground-2)",
         borderRadius: "12px",
         overflow: "hidden",
       }}
@@ -138,17 +109,13 @@ export const SelectAccountType: React.FC<SelectAccountTypeProps> = (props) => {
             alignItems: "center",
           }}
         >
-          {option.title}
+          {plan.description}
         </h3>
         <div
           style={{
             marginLeft: 8,
-            border: `1px solid ${
-              isSelected ? "var(--color-secondary)" : "grey"
-            }`,
-            backgroundColor: isSelected
-              ? "var(--color-secondary)"
-              : "transparent",
+            border: `1px solid ${isSelected ? "var(--color-secondary)" : "grey"}`,
+            backgroundColor: isSelected ? "var(--color-secondary)" : "transparent",
             borderRadius: "50%",
             width: 18,
             height: 18,
@@ -175,11 +142,7 @@ export const SelectAccountType: React.FC<SelectAccountTypeProps> = (props) => {
           justifyContent: "center",
         }}
       >
-        <img
-          src={option.icon}
-          alt={option.title}
-          style={{ height: 150, width: "auto", objectFit: "contain" }}
-        />
+        <img src={getPlanIcon(plan.name)} alt={plan.description ?? ""} style={{ height: 150, width: "auto", objectFit: "contain" }} />
       </div>
 
       <div
@@ -190,7 +153,7 @@ export const SelectAccountType: React.FC<SelectAccountTypeProps> = (props) => {
           marginBottom: "20px",
         }}
       >
-        {option.price}
+        {getBillingFeeDisplay(plan)}
       </div>
 
       <div
@@ -202,8 +165,8 @@ export const SelectAccountType: React.FC<SelectAccountTypeProps> = (props) => {
           color: "var(--color-message-text)",
         }}
       >
-        {option.features.map((feature, index) => (
-          <div key={index} style={{ marginBottom: "6px" }}>
+        {getPlanFeaturesDisplay(plan).map((feature) => (
+          <div key={feature} style={{ marginBottom: "6px" }}>
             • {feature}
           </div>
         ))}
@@ -221,11 +184,7 @@ export const SelectAccountType: React.FC<SelectAccountTypeProps> = (props) => {
           flexWrap: "wrap",
         }}
       >
-        {personalOptions.map((option) =>
-          renderAccountCard(option, selectedPersonalType === option.id, () =>
-            handleSelectAccountType(option.id as PersonalAccountSubType)
-          )
-        )}
+        {props.accountPlans.map((plan) => renderAccountCard(plan, selectedPersonalType === plan.name, () => handleSelectAccountType(plan.name)))}
       </div>
 
       <div
@@ -270,13 +229,7 @@ export const SelectAccountType: React.FC<SelectAccountTypeProps> = (props) => {
           marginTop: "32px",
         }}
       >
-        <Button
-          type="default"
-          size="large"
-          onClick={() => props?.handleUpdateAccountType(selectedPersonalType)}
-          loading={props?.savingAccountType}
-          disabled={props?.loadingUser || props?.savingAccountType}
-        >
+        <Button type="default" size="large" onClick={handleSaveAndContinue} loading={props.loading}>
           Save and Continue
         </Button>
       </div>
