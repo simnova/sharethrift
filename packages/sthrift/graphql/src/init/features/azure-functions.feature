@@ -42,3 +42,9 @@ Feature: Azure Functions GraphQL Handler
   Scenario: Normalizing request without method
     When normalizing a request without method
     Then it should throw "No method" error
+
+  Scenario: Handler processes a GET request
+    Given a handler is created
+    When a GET request is received
+    Then it should execute the GraphQL request with null body
+    And it should return a successful response

@@ -237,4 +237,30 @@ test.for(feature, ({ Background, Scenario, BeforeEachScenario }) => {
 			expect(mockContext.error).toBeDefined();
 		});
 	});
+
+	Scenario('Handler processes a GET request', ({ Given, When, Then, And }) => {
+		let response: unknown;
+
+		Given('a handler is created', () => {
+			handler = startServerAndCreateHandler(mockServer, mockOptions);
+		});
+
+		When('a GET request is received', async () => {
+			mockRequest = {
+				method: 'GET',
+				url: 'http://localhost/graphql?query={test}',
+				headers: new Map([['content-type', 'text/html']]),
+				json: vi.fn().mockResolvedValue(null),
+			} as unknown as HttpRequest;
+			response = await handler(mockRequest, mockContext);
+		});
+
+		Then('it should execute the GraphQL request with null body', () => {
+			expect(mockServer.executeHTTPGraphQLRequest).toHaveBeenCalled();
+		});
+
+		And('it should return a successful response', () => {
+			expect(response.status).toBe(200);
+		});
+	});
 });
