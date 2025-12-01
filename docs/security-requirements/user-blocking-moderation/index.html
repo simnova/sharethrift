@@ -1,0 +1,145 @@
+<!doctype html>
+<html lang="en" dir="ltr" class="docs-wrapper plugin-docs plugin-id-default docs-version-current docs-doc-page docs-doc-id-security-requirements/user-blocking-moderation" data-has-hydrated="false">
+<head>
+<meta charset="UTF-8">
+<meta name="generator" content="Docusaurus v3.8.1">
+<title data-rh="true">User Blocking Moderation | Sharethrift Docs</title><meta data-rh="true" name="viewport" content="width=device-width,initial-scale=1"><meta data-rh="true" name="twitter:card" content="summary_large_image"><meta data-rh="true" property="og:image" content="https://developers.sharethrift.com/img/docusaurus-social-card.jpg"><meta data-rh="true" name="twitter:image" content="https://developers.sharethrift.com/img/docusaurus-social-card.jpg"><meta data-rh="true" property="og:url" content="https://developers.sharethrift.com/docs/security-requirements/user-blocking-moderation"><meta data-rh="true" property="og:locale" content="en"><meta data-rh="true" name="docusaurus_locale" content="en"><meta data-rh="true" name="docsearch:language" content="en"><meta data-rh="true" name="docusaurus_version" content="current"><meta data-rh="true" name="docusaurus_tag" content="docs-default-current"><meta data-rh="true" name="docsearch:version" content="current"><meta data-rh="true" name="docsearch:docusaurus_tag" content="docs-default-current"><meta data-rh="true" property="og:title" content="User Blocking Moderation | Sharethrift Docs"><meta data-rh="true" name="description" content="Admins must be able to block/unblock users and listings to moderate abuse or violations"><meta data-rh="true" property="og:description" content="Admins must be able to block/unblock users and listings to moderate abuse or violations"><link data-rh="true" rel="icon" href="/img/favicon.ico"><link data-rh="true" rel="canonical" href="https://developers.sharethrift.com/docs/security-requirements/user-blocking-moderation"><link data-rh="true" rel="alternate" href="https://developers.sharethrift.com/docs/security-requirements/user-blocking-moderation" hreflang="en"><link data-rh="true" rel="alternate" href="https://developers.sharethrift.com/docs/security-requirements/user-blocking-moderation" hreflang="x-default"><script data-rh="true" type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Security Requirements","item":"https://developers.sharethrift.com/docs/category/security-requirements"},{"@type":"ListItem","position":2,"name":"0003 User Blocking Moderation","item":"https://developers.sharethrift.com/docs/security-requirements/user-blocking-moderation"}]}</script><link rel="alternate" type="application/rss+xml" href="/blog/rss.xml" title="Sharethrift Docs RSS Feed">
+<link rel="alternate" type="application/atom+xml" href="/blog/atom.xml" title="Sharethrift Docs Atom Feed"><link rel="stylesheet" href="/assets/css/styles.21dbc065.css">
+<script src="/assets/js/runtime~main.8fba2812.js" defer="defer"></script>
+<script src="/assets/js/main.431f84b4.js" defer="defer"></script>
+</head>
+<body class="navigation-with-keyboard">
+<svg xmlns="http://www.w3.org/2000/svg" style="display: none;"><defs>
+<symbol id="theme-svg-external-link" viewBox="0 0 24 24"><path fill="currentColor" d="M21 13v10h-21v-19h12v2h-10v15h17v-8h2zm3-12h-10.988l4.035 4-6.977 7.07 2.828 2.828 6.977-7.07 4.125 4.172v-11z"/></symbol>
+</defs></svg>
+<script>!function(){var t="light";var e=function(){try{return new URLSearchParams(window.location.search).get("docusaurus-theme")}catch(t){}}()||function(){try{return window.localStorage.getItem("theme")}catch(t){}}();document.documentElement.setAttribute("data-theme",e||t),document.documentElement.setAttribute("data-theme-choice",e||t)}(),function(){try{const c=new URLSearchParams(window.location.search).entries();for(var[t,e]of c)if(t.startsWith("docusaurus-data-")){var a=t.replace("docusaurus-data-","data-");document.documentElement.setAttribute(a,e)}}catch(t){}}()</script><div id="__docusaurus"><link rel="preload" as="image" href="/img/logo.svg"><div role="region" aria-label="Skip to main content"><a class="skipToContent_vu8z" href="#__docusaurus_skipToContent_fallback">Skip to main content</a></div><nav aria-label="Main" class="theme-layout-navbar navbar navbar--fixed-top"><div class="navbar__inner"><div class="theme-layout-navbar-left navbar__items"><button aria-label="Toggle navigation bar" aria-expanded="false" class="navbar__toggle clean-btn" type="button"><svg width="30" height="30" viewBox="0 0 30 30" aria-hidden="true"><path stroke="currentColor" stroke-linecap="round" stroke-miterlimit="10" stroke-width="2" d="M4 7h22M4 15h22M4 23h22"></path></svg></button><a class="navbar__brand" href="/"><div class="navbar__logo"><img src="/img/logo.svg" alt="Sharethrift Logo" class="themedComponent_R2tX themedComponent--light_xoI7"><img src="/img/logo.svg" alt="Sharethrift Logo" class="themedComponent_R2tX themedComponent--dark_jGvT"></div><b class="navbar__title text--truncate">Home</b></a><a aria-current="page" class="navbar__item navbar__link navbar__link--active" href="/docs/intro">Doc</a><a class="navbar__item navbar__link" href="/blog">Blog</a></div><div class="theme-layout-navbar-right navbar__items navbar__items--right"><a href="https://github.com/simnova/sharethrift" target="_blank" rel="noopener noreferrer" class="navbar__item navbar__link">GitHub<svg width="13.5" height="13.5" aria-hidden="true" class="iconExternalLink_ulYE"><use href="#theme-svg-external-link"></use></svg></a><div class="toggle_q0FV colorModeToggle_PC19"><button class="clean-btn toggleButton_s1Jq toggleButtonDisabled_gsE2" type="button" disabled="" title="system mode" aria-label="Switch between dark and light mode (currently system mode)"><svg viewBox="0 0 24 24" width="24" height="24" aria-hidden="true" class="toggleIcon_eGj5 lightToggleIcon_S_tb"><path fill="currentColor" d="M12,9c1.65,0,3,1.35,3,3s-1.35,3-3,3s-3-1.35-3-3S10.35,9,12,9 M12,7c-2.76,0-5,2.24-5,5s2.24,5,5,5s5-2.24,5-5 S14.76,7,12,7L12,7z M2,13l2,0c0.55,0,1-0.45,1-1s-0.45-1-1-1l-2,0c-0.55,0-1,0.45-1,1S1.45,13,2,13z M20,13l2,0c0.55,0,1-0.45,1-1 s-0.45-1-1-1l-2,0c-0.55,0-1,0.45-1,1S19.45,13,20,13z M11,2v2c0,0.55,0.45,1,1,1s1-0.45,1-1V2c0-0.55-0.45-1-1-1S11,1.45,11,2z M11,20v2c0,0.55,0.45,1,1,1s1-0.45,1-1v-2c0-0.55-0.45-1-1-1C11.45,19,11,19.45,11,20z M5.99,4.58c-0.39-0.39-1.03-0.39-1.41,0 c-0.39,0.39-0.39,1.03,0,1.41l1.06,1.06c0.39,0.39,1.03,0.39,1.41,0s0.39-1.03,0-1.41L5.99,4.58z M18.36,16.95 c-0.39-0.39-1.03-0.39-1.41,0c-0.39,0.39-0.39,1.03,0,1.41l1.06,1.06c0.39,0.39,1.03,0.39,1.41,0c0.39-0.39,0.39-1.03,0-1.41 L18.36,16.95z M19.42,5.99c0.39-0.39,0.39-1.03,0-1.41c-0.39-0.39-1.03-0.39-1.41,0l-1.06,1.06c-0.39,0.39-0.39,1.03,0,1.41 s1.03,0.39,1.41,0L19.42,5.99z M7.05,18.36c0.39-0.39,0.39-1.03,0-1.41c-0.39-0.39-1.03-0.39-1.41,0l-1.06,1.06 c-0.39,0.39-0.39,1.03,0,1.41s1.03,0.39,1.41,0L7.05,18.36z"></path></svg><svg viewBox="0 0 24 24" width="24" height="24" aria-hidden="true" class="toggleIcon_eGj5 darkToggleIcon_zD_d"><path fill="currentColor" d="M9.37,5.51C9.19,6.15,9.1,6.82,9.1,7.5c0,4.08,3.32,7.4,7.4,7.4c0.68,0,1.35-0.09,1.99-0.27C17.45,17.19,14.93,19,12,19 c-3.86,0-7-3.14-7-7C5,9.07,6.81,6.55,9.37,5.51z M12,3c-4.97,0-9,4.03-9,9s4.03,9,9,9s9-4.03,9-9c0-0.46-0.04-0.92-0.1-1.36 c-0.98,1.37-2.58,2.26-4.4,2.26c-2.98,0-5.4-2.42-5.4-5.4c0-1.81,0.89-3.42,2.26-4.4C12.92,3.04,12.46,3,12,3L12,3z"></path></svg><svg viewBox="0 0 24 24" width="24" height="24" aria-hidden="true" class="toggleIcon_eGj5 systemToggleIcon_ocRe"><path fill="currentColor" d="m12 21c4.971 0 9-4.029 9-9s-4.029-9-9-9-9 4.029-9 9 4.029 9 9 9zm4.95-13.95c1.313 1.313 2.05 3.093 2.05 4.95s-0.738 3.637-2.05 4.95c-1.313 1.313-3.093 2.05-4.95 2.05v-14c1.857 0 3.637 0.737 4.95 2.05z"></path></svg></button></div><div class="navbarSearchContainer_SxDJ"></div></div></div><div role="presentation" class="navbar-sidebar__backdrop"></div></nav><div id="__docusaurus_skipToContent_fallback" class="theme-layout-main main-wrapper mainWrapper_dRFB"><div class="docsWrapper_MPeP"><button aria-label="Scroll back to top" class="clean-btn theme-back-to-top-button backToTopButton_pQhb" type="button"></button><div class="docRoot_o4P5"><aside class="theme-doc-sidebar-container docSidebarContainer_UWXt"><div class="sidebarViewport_wYLH"><div class="sidebar_abIB"><nav aria-label="Docs sidebar" class="menu thin-scrollbar menu_EUmw"><ul class="theme-doc-sidebar-menu menu__list"><li class="theme-doc-sidebar-item-link theme-doc-sidebar-item-link-level-1 menu__list-item"><a class="menu__link" href="/docs/intro">Introduction 👋</a></li><li class="theme-doc-sidebar-item-category theme-doc-sidebar-item-category-level-1 menu__list-item menu__list-item--collapsed"><div class="menu__list-item-collapsible"><a class="menu__link menu__link--sublist" href="/docs/category/technical-overview">Technical Overview</a><button aria-label="Expand sidebar category &#x27;Technical Overview&#x27;" aria-expanded="false" type="button" class="clean-btn menu__caret"></button></div></li><li class="theme-doc-sidebar-item-category theme-doc-sidebar-item-category-level-1 menu__list-item menu__list-item--collapsed"><div class="menu__list-item-collapsible"><a class="menu__link menu__link--sublist" href="/docs/category/decisions">Decisions</a><button aria-label="Expand sidebar category &#x27;Decisions&#x27;" aria-expanded="false" type="button" class="clean-btn menu__caret"></button></div></li><li class="theme-doc-sidebar-item-category theme-doc-sidebar-item-category-level-1 menu__list-item menu__list-item--collapsed"><div class="menu__list-item-collapsible"><a class="menu__link menu__link--sublist" href="/docs/category/security-overview">Security Overview</a><button aria-label="Expand sidebar category &#x27;Security Overview&#x27;" aria-expanded="false" type="button" class="clean-btn menu__caret"></button></div></li><li class="theme-doc-sidebar-item-category theme-doc-sidebar-item-category-level-1 menu__list-item"><div class="menu__list-item-collapsible"><a class="menu__link menu__link--sublist menu__link--active" href="/docs/category/security-requirements">Security Requirements</a><button aria-label="Collapse sidebar category &#x27;Security Requirements&#x27;" aria-expanded="true" type="button" class="clean-btn menu__caret"></button></div><ul class="menu__list"><li class="theme-doc-sidebar-item-link theme-doc-sidebar-item-link-level-2 menu__list-item"><a class="menu__link" tabindex="0" href="/docs/security-requirements/identity-verification">0001 Identity Verification</a></li><li class="theme-doc-sidebar-item-link theme-doc-sidebar-item-link-level-2 menu__list-item"><a class="menu__link" tabindex="0" href="/docs/security-requirements/malware-scanning">0002 Malware Scanning</a></li><li class="theme-doc-sidebar-item-link theme-doc-sidebar-item-link-level-2 menu__list-item"><a class="menu__link menu__link--active" aria-current="page" tabindex="0" href="/docs/security-requirements/user-blocking-moderation">0003 User Blocking Moderation</a></li><li class="theme-doc-sidebar-item-link theme-doc-sidebar-item-link-level-2 menu__list-item"><a class="menu__link" tabindex="0" href="/docs/security-requirements/listing-appeal-review">0004 Listing Appeal Review</a></li><li class="theme-doc-sidebar-item-link theme-doc-sidebar-item-link-level-2 menu__list-item"><a class="menu__link" tabindex="0" href="/docs/security-requirements/content-auto-review">0005 Content Auto Review</a></li><li class="theme-doc-sidebar-item-link theme-doc-sidebar-item-link-level-2 menu__list-item"><a class="menu__link" tabindex="0" href="/docs/security-requirements/pii-data-restrictions">0006 PII Data Restrictions</a></li><li class="theme-doc-sidebar-item-link theme-doc-sidebar-item-link-level-2 menu__list-item"><a class="menu__link" tabindex="0" href="/docs/security-requirements/admin-access-control">0007 Admin Access Control</a></li><li class="theme-doc-sidebar-item-link theme-doc-sidebar-item-link-level-2 menu__list-item"><a class="menu__link" tabindex="0" href="/docs/security-requirements/blocked-user-restrictions">0008 Blocked User Restrictions</a></li><li class="theme-doc-sidebar-item-link theme-doc-sidebar-item-link-level-2 menu__list-item"><a class="menu__link" tabindex="0" href="/docs/security-requirements/reservation-mutual-consent">0009 Reservation Mutual Consent</a></li><li class="theme-doc-sidebar-item-link theme-doc-sidebar-item-link-level-2 menu__list-item"><a class="menu__link" tabindex="0" href="/docs/security-requirements/transport-encryption">0010 Transport Encryption</a></li><li class="theme-doc-sidebar-item-link theme-doc-sidebar-item-link-level-2 menu__list-item"><a class="menu__link" tabindex="0" href="/docs/security-requirements/input-validation">0011 Input Validation</a></li></ul></li><li class="theme-doc-sidebar-item-category theme-doc-sidebar-item-category-level-1 menu__list-item menu__list-item--collapsed"><div class="menu__list-item-collapsible"><a class="menu__link menu__link--sublist" href="/docs/category/threat-assessments">Threat Assessments</a><button aria-label="Expand sidebar category &#x27;Threat Assessments&#x27;" aria-expanded="false" type="button" class="clean-btn menu__caret"></button></div></li></ul></nav></div></div></aside><main class="docMainContainer_hkQp"><div class="container padding-top--md padding-bottom--lg"><div class="row"><div class="col docItemCol_VAa4"><div class="docItemContainer_reaH"><article><nav class="theme-doc-breadcrumbs breadcrumbsContainer_RxC2" aria-label="Breadcrumbs"><ul class="breadcrumbs"><li class="breadcrumbs__item"><a aria-label="Home page" class="breadcrumbs__link" href="/"><svg viewBox="0 0 24 24" class="breadcrumbHomeIcon_AYro"><path d="M10 19v-5h4v5c0 .55.45 1 1 1h3c.55 0 1-.45 1-1v-7h1.7c.46 0 .68-.57.33-.87L12.67 3.6c-.38-.34-.96-.34-1.34 0l-8.36 7.53c-.34.3-.13.87.33.87H5v7c0 .55.45 1 1 1h3c.55 0 1-.45 1-1z" fill="currentColor"></path></svg></a></li><li class="breadcrumbs__item"><a class="breadcrumbs__link" href="/docs/category/security-requirements"><span>Security Requirements</span></a></li><li class="breadcrumbs__item breadcrumbs__item--active"><span class="breadcrumbs__link">0003 User Blocking Moderation</span></li></ul></nav><div class="tocCollapsible_wNcw theme-doc-toc-mobile tocMobile_j3v9"><button type="button" class="clean-btn tocCollapsibleButton_a5ok">On this page</button></div><div class="theme-doc-markdown markdown"><header><h1>User Blocking Moderation</h1></header>
+<h2 class="anchor anchorWithStickyNavbar_bEpj" id="security-requirement-statement">Security Requirement Statement<a href="#security-requirement-statement" class="hash-link" aria-label="Direct link to Security Requirement Statement" title="Direct link to Security Requirement Statement">​</a></h2>
+<p>Admins must be able to block/unblock users and listings to moderate abuse or violations.</p>
+<h2 class="anchor anchorWithStickyNavbar_bEpj" id="control-classification">Control Classification<a href="#control-classification" class="hash-link" aria-label="Direct link to Control Classification" title="Direct link to Control Classification">​</a></h2>
+<ul>
+<li><strong>Timing Control Category</strong>: Corrective</li>
+<li><strong>Nature Control Category</strong>: Administrative</li>
+<li><strong>Status</strong>: Identified</li>
+<li><strong>Date Identified</strong>: 2025-10-29</li>
+<li><strong>Date First Implemented</strong>: TBD</li>
+<li><strong>Date Last Reviewed</strong>: 2025-10-29</li>
+<li><strong>Date Retired</strong>: N/A</li>
+</ul>
+<p><strong>Admin Dashboard with Real-time Management</strong></p>
+<ul>
+<li>Centralized admin dashboard at <code>/home/account/admin-dashboard</code> provides tabular view of all users with filtering by status (Active/Blocked)</li>
+<li>Real-time user search and pagination with 50 users per page (BRD specification)</li>
+<li>Instant block/unblock actions with modal confirmations requiring reason selection and description</li>
+<li>Visual status indicators using color-coded tags (red for blocked, green for active)</li>
+</ul>
+<p><strong>GraphQL-Based Blocking System</strong></p>
+<ul>
+<li><code>blockUser</code> and <code>unblockUser</code> mutations in GraphQL schema accept userId parameter</li>
+<li>Mutations integrated with PersonalUserApplicationService.update() for persistence</li>
+<li>Real-time UI updates with Apollo Client mutation callbacks and success messaging</li>
+<li>Network-only fetch policy ensures fresh data after blocking operations</li>
+</ul>
+<p><strong>Domain-Driven Permission Architecture</strong></p>
+<ul>
+<li><code>UserDomainPermissions</code> interface defines <code>canBlockUsers</code> and <code>canUnblockUsers</code> capabilities</li>
+<li>PersonalUser aggregate root validates permission changes through Passport/Visa system</li>
+<li>Domain-layer validation prevents unauthorized blocking operations: <code>validateVisa()</code> method checks permissions</li>
+<li><code>isBlocked</code> boolean field on PersonalUser entity controls user capabilities platform-wide</li>
+</ul>
+<p><strong>Administrative Control Interface</strong></p>
+<ul>
+<li>Block reasons dropdown: &quot;Late Return&quot;, &quot;Item Damage&quot;, &quot;Policy Violation&quot;, &quot;Inappropriate Behavior&quot;, &quot;Other&quot;</li>
+<li>Block duration options: 7 days, 30 days, indefinite with administrative discretion</li>
+<li>Required description field shown to blocked users explaining the action</li>
+<li>Confirmation modals prevent accidental blocking with clear consequence messaging</li>
+</ul>
+<p><strong>Event-Driven Audit System</strong></p>
+<ul>
+<li>Domain events <code>UserBlocked</code> and <code>UserUnblocked</code> documented in User bounded context README</li>
+<li>EventBus integration through <code>NodeEventBusInstance</code> for audit trail and notifications</li>
+<li>AggregateRoot base class provides <code>addDomainEvent()</code> capability for tracking state changes</li>
+<li>Unit of Work pattern ensures atomic operations with event dispatching</li>
+</ul>
+<h2 class="anchor anchorWithStickyNavbar_bEpj" id="compensating-controls">Compensating Controls<a href="#compensating-controls" class="hash-link" aria-label="Direct link to Compensating Controls" title="Direct link to Compensating Controls">​</a></h2>
+<p><strong>Multiple Authorization Layers</strong></p>
+<ul>
+<li>JWT authentication required for all admin operations</li>
+<li>Admin permission checks in GraphQL resolvers (marked as TODO for implementation)</li>
+<li>Domain-layer permission validation through UserDomainPermissions interface</li>
+<li>Passport/Visa authorization system validates admin capabilities at entity level</li>
+</ul>
+<p><strong>Comprehensive Audit Trail</strong></p>
+<ul>
+<li>All blocking actions logged through domain events system</li>
+<li>GraphQL operation logging with user context and action details</li>
+<li>Success/failure message tracking in UI with Apollo Client error handling</li>
+<li>MongoDB persistence layer maintains blocked status history through updatedAt timestamps</li>
+</ul>
+<p><strong>User Impact Mitigation</strong></p>
+<ul>
+<li>Blocked users receive clear description of reason and duration</li>
+<li>Modal confirmations prevent accidental administrative actions</li>
+<li>Unblock capability allows appeal resolution and administrative review</li>
+<li>Status-based UI rendering prevents blocked users from performing platform actions</li>
+</ul>
+<p><strong>Data Integrity Protection</strong></p>
+<ul>
+<li>PersonalUser aggregate validates <code>isBlocked</code> changes through domain rules</li>
+<li>Mongoose schema enforcement ensures boolean data type consistency</li>
+<li>Domain adapter pattern maintains data consistency between persistence and domain layers</li>
+<li>Unit of Work pattern ensures transactional consistency for blocking operations</li>
+</ul>
+<h2 class="anchor anchorWithStickyNavbar_bEpj" id="context-and-problem-statement">Context and Problem Statement<a href="#context-and-problem-statement" class="hash-link" aria-label="Direct link to Context and Problem Statement" title="Direct link to Context and Problem Statement">​</a></h2>
+<p><strong>User Safety Requirements</strong>
+The ShareThrift platform requires robust user moderation capabilities to protect community members from harmful, inappropriate, or policy-violating behavior. Without effective blocking mechanisms, malicious users can continue to abuse the platform, damage property, violate community standards, and harm other users&#x27; experiences.</p>
+<p><strong>Administrative Control Needs</strong>
+Platform administrators need immediate capability to remove problematic users from active participation while maintaining due process through documented reasons and time-limited restrictions. The system must support rapid response to safety incidents while providing transparency to affected users about administrative actions taken against their accounts.</p>
+<p><strong>Platform Integrity Protection</strong>
+User blocking serves as a critical security control preventing abuse of listing creation, reservation systems, messaging, and financial transactions. Blocked users must be completely prevented from platform interactions while maintaining their account data for potential appeals and administrative review.</p>
+<p><strong>Regulatory Compliance</strong>
+Implementation follows principle of proportional response with documented reasoning, time limitations, and clear communication to users. The system supports regulatory requirements for user protection, data retention, and administrative transparency in content moderation decisions.</p>
+<h2 class="anchor anchorWithStickyNavbar_bEpj" id="success-criteria">Success Criteria<a href="#success-criteria" class="hash-link" aria-label="Direct link to Success Criteria" title="Direct link to Success Criteria">​</a></h2>
+<p><strong>SC-3.1: Administrative Effectiveness</strong></p>
+<ul>
+<li>Administrators can block/unblock users within 10 seconds of accessing admin dashboard</li>
+<li>Blocking confirmation modals prevent &gt;95% of accidental administrative actions</li>
+<li>All blocking operations complete successfully with &lt;2 second response time</li>
+<li>Admin interface provides clear visual indication of user status changes</li>
+</ul>
+<p><strong>SC-3.2: Platform Protection Coverage</strong></p>
+<ul>
+<li>Blocked users are prevented from 100% of restricted platform activities (listings, reservations, messaging)</li>
+<li>No blocked user can circumvent restrictions through any platform interface or API endpoint</li>
+<li>Platform maintains &lt;1% false positive rate for legitimate administrative actions</li>
+<li>User blocking effectively prevents repeat policy violations in &gt;90% of cases</li>
+</ul>
+<p><strong>SC-3.3: User Communication Clarity</strong></p>
+<ul>
+<li>100% of blocked users receive clear explanation of blocking reason and duration</li>
+<li>Block descriptions help users understand policy violations and requirements for appeal</li>
+<li>Administrative messaging maintains professional tone while clearly communicating consequences</li>
+<li>Users can access block status information through account interface</li>
+</ul>
+<p><strong>SC-3.4: Audit Trail Completeness</strong></p>
+<ul>
+<li>100% of blocking/unblocking actions generate complete audit events with all required metadata</li>
+<li>Event system successfully dispatches all domain events within 1 second of action completion</li>
+<li>Audit logs maintain complete history of administrative actions for compliance review</li>
+<li>Event data includes sufficient detail for regulatory reporting and user appeal processes</li>
+</ul>
+<p><strong>SC-3.5: System Reliability and Performance</strong></p>
+<ul>
+<li>Blocking system maintains 99.9% uptime during normal platform operations</li>
+<li>Database consistency maintained across all blocking operations with zero data corruption</li>
+<li>Admin dashboard loads user data within 3 seconds for tables up to 1000 users</li>
+<li>GraphQL mutations execute successfully &gt;99.5% of time under normal load conditions</li>
+</ul>
+<p><strong>SC-3.6: Security Control Effectiveness</strong></p>
+<ul>
+<li>Permission system successfully prevents unauthorized access to blocking functions in 100% of attempts</li>
+<li>Domain-layer validation catches and prevents all invalid blocking operations</li>
+<li>JWT authentication prevents unauthenticated access to admin functions</li>
+<li>No privilege escalation vulnerabilities exist in blocking system implementation</li>
+</ul></div><footer class="theme-doc-footer docusaurus-mt-lg"><div class="row margin-top--sm theme-doc-footer-edit-meta-row"><div class="col"><a href="https://github.com/simnova/sharethrift/tree/main/packages/docs/docs/security-requirements/0003-user-blocking-moderation.md" target="_blank" rel="noopener noreferrer" class="theme-edit-this-page"><svg fill="currentColor" height="20" width="20" viewBox="0 0 40 40" class="iconEdit_jQ24" aria-hidden="true"><g><path d="m34.5 11.7l-3 3.1-6.3-6.3 3.1-3q0.5-0.5 1.2-0.5t1.1 0.5l3.9 3.9q0.5 0.4 0.5 1.1t-0.5 1.2z m-29.5 17.1l18.4-18.5 6.3 6.3-18.4 18.4h-6.3v-6.2z"></path></g></svg>Edit this page</a></div><div class="col lastUpdated_o8uM"></div></div></footer></article><nav class="docusaurus-mt-lg pagination-nav" aria-label="Docs pages"><a class="pagination-nav__link pagination-nav__link--prev" href="/docs/security-requirements/malware-scanning"><div class="pagination-nav__sublabel">Previous</div><div class="pagination-nav__label">0002 Malware Scanning</div></a><a class="pagination-nav__link pagination-nav__link--next" href="/docs/security-requirements/listing-appeal-review"><div class="pagination-nav__sublabel">Next</div><div class="pagination-nav__label">0004 Listing Appeal Review</div></a></nav></div></div><div class="col col--3"><div class="tableOfContents_Nh2D thin-scrollbar theme-doc-toc-desktop"><ul class="table-of-contents table-of-contents__left-border"><li><a href="#security-requirement-statement" class="table-of-contents__link toc-highlight">Security Requirement Statement</a></li><li><a href="#control-classification" class="table-of-contents__link toc-highlight">Control Classification</a></li><li><a href="#compensating-controls" class="table-of-contents__link toc-highlight">Compensating Controls</a></li><li><a href="#context-and-problem-statement" class="table-of-contents__link toc-highlight">Context and Problem Statement</a></li><li><a href="#success-criteria" class="table-of-contents__link toc-highlight">Success Criteria</a></li></ul></div></div></div></div></main></div></div></div><footer class="theme-layout-footer footer footer--dark"><div class="container container-fluid"><div class="row footer__links"><div class="theme-layout-footer-column col footer__col"><div class="footer__title">Docs</div><ul class="footer__items clean-list"><li class="footer__item"><a class="footer__link-item" href="/docs/intro">Doc</a></li></ul></div><div class="theme-layout-footer-column col footer__col"><div class="footer__title">Community</div><ul class="footer__items clean-list"><li class="footer__item"><a href="https://stackoverflow.com/questions/tagged/sharethrift" target="_blank" rel="noopener noreferrer" class="footer__link-item">Stack Overflow<svg width="13.5" height="13.5" aria-hidden="true" class="iconExternalLink_ulYE"><use href="#theme-svg-external-link"></use></svg></a></li><li class="footer__item"><a href="https://discordapp.com/invite/sharethrift" target="_blank" rel="noopener noreferrer" class="footer__link-item">Discord<svg width="13.5" height="13.5" aria-hidden="true" class="iconExternalLink_ulYE"><use href="#theme-svg-external-link"></use></svg></a></li><li class="footer__item"><a href="https://x.com/sharethrift" target="_blank" rel="noopener noreferrer" class="footer__link-item">X<svg width="13.5" height="13.5" aria-hidden="true" class="iconExternalLink_ulYE"><use href="#theme-svg-external-link"></use></svg></a></li></ul></div><div class="theme-layout-footer-column col footer__col"><div class="footer__title">More</div><ul class="footer__items clean-list"><li class="footer__item"><a class="footer__link-item" href="/blog">Blog</a></li><li class="footer__item"><a href="https://github.com/simnova/sharethrift" target="_blank" rel="noopener noreferrer" class="footer__link-item">GitHub<svg width="13.5" height="13.5" aria-hidden="true" class="iconExternalLink_ulYE"><use href="#theme-svg-external-link"></use></svg></a></li></ul></div></div><div class="footer__bottom text--center"><div class="footer__copyright">Copyright © 2025 Simnova, Inc.</div></div></div></footer></div>
+</body>
+</html>
