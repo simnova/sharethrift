@@ -20,7 +20,6 @@ describeFeature(feature, ({ Scenario, BeforeEachScenario }) => {
 
   Scenario('Instantiating with baseUrl', ({ Given, When, Then, And }) => {
     Given('a PaymentServiceMock with baseUrl "http://localhost:3001"', () => {
-      // ...existing code...
     });
     When('I instantiate the service', () => {
       service = new PaymentServiceMock('http://localhost:3001');

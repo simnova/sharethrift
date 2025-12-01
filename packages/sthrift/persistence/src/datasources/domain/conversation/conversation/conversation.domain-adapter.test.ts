@@ -31,7 +31,7 @@ function makeUserDoc(overrides: Partial<Models.User.PersonalUser> = {}) {
 				billing: {
 					cybersourceCustomerId: 'cust-123',
 					subscription: {},
-					transactions: { items: [] },
+					transactions: [],
 				},
 				media: { items: [] },
 				avatar: null,

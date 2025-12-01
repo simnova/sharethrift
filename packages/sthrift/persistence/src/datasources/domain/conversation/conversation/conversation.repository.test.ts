@@ -59,7 +59,7 @@ function makeUserDoc(id: string): Models.User.PersonalUser {
 				billing: {
 					cybersourceCustomerId: '',
 					subscription: null,
-					transactions: { items: [] },
+					transactions: [],
 				},
 				media: { items: [] },
 				avatar: null,

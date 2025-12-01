@@ -153,7 +153,7 @@ test.for(feature, ({ Scenario, Background, BeforeEachScenario }) => {
 		Then('getting account should initialize it with empty object', () => {
 			const account = adapter.account;
 			expect(account).toBeDefined();
-			expect(doc.set).toHaveBeenCalledWith('account', {});
+			expect(doc.account).toEqual({});
 		});
 	});
 

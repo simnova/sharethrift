@@ -52,7 +52,7 @@ export const PaymentContainer: FC = () => {
 			await refetchCurrentUserData();
 			message.success('Payment processed successfully');
 			// navigate to home
-			navigate('/home');
+			navigate('/');
 			message.success('Welcome to ShareThrift! Your account has been created.');
 		} else {
 			message.error(
@@ -75,7 +75,7 @@ export const PaymentContainer: FC = () => {
 	useEffect(() => {
 		if (selectedAccountPlan?.billingAmount === 0) {
 			message.info('Free account selected, redirecting to home page...');
-			navigate('/home');
+			navigate('/');
 		}
 	}, [selectedAccountPlan, navigate]);
 

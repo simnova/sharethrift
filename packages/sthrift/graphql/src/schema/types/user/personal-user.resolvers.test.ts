@@ -633,14 +633,15 @@ test.for(feature, ({ Scenario, Background, BeforeEachScenario }) => {
 				// Parameters will be passed in the resolver call
 			});
 			When('I execute the query "allUsers"', async () => {
-			vi.mocked(
-				context.applicationServices.User.PersonalUser.getAllUsers,
-			).mockResolvedValue({
-				items: [createMockPersonalUser()],
-				total: 1,
-				page: 1,
-				pageSize: 10,
-			});				const resolver = personalUserResolvers.Query?.allUsers;
+				vi.mocked(
+					context.applicationServices.User.PersonalUser.getAllUsers,
+				).mockResolvedValue({
+					items: [createMockPersonalUser()],
+					total: 1,
+					page: 1,
+					pageSize: 10,
+				});
+				const resolver = personalUserResolvers.Query?.allUsers;
 				if (typeof resolver === 'function') {
 					result = await resolver(
 						{},
@@ -662,14 +663,16 @@ test.for(feature, ({ Scenario, Background, BeforeEachScenario }) => {
 						statusFilters: undefined,
 						sorter: undefined,
 					});
-			},
-		);
-		And('return a list of all personal users', () => {
-			expect(result).toBeDefined();
-			expect((result as { items: unknown[] }).items).toHaveLength(1);
-		});
-	},
-);	Scenario(
+				},
+			);
+			And('return a list of all personal users', () => {
+				expect(result).toBeDefined();
+				expect((result as { items: unknown[] }).items).toHaveLength(1);
+			});
+		},
+	);
+
+	Scenario(
 		'Fetching all users without authentication',
 		({ Given, When, Then }) => {
 			Given('no authenticated user context', () => {
