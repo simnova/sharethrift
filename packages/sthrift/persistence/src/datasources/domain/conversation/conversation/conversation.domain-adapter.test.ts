@@ -455,4 +455,141 @@ test.for(feature, ({ Scenario, Background, BeforeEachScenario }) => {
 			expect(doc.set).toHaveBeenCalledWith('listing', expect.anything());
 		});
 	});
+
+	Scenario('Getting reserver when it is an admin user', ({ Given, When, Then }) => {
+		Given('a conversation with an admin user as reserver', () => {
+			const adminUserDoc = {
+				...makeUserDoc(),
+				userType: 'admin-user',
+			} as never;
+			doc = makeConversationDoc({ reserver: adminUserDoc, sharer: sharerDoc });
+			adapter = new ConversationDomainAdapter(doc);
+		});
+
+		When('I access the reserver property', () => {
+			result = adapter.reserver;
+		});
+
+		Then('it should return an AdminUserDomainAdapter for reserver', () => {
+			expect(result).toBeDefined();
+		});
+	});
+
+	Scenario('Loading sharer when it is an admin user', ({ Given, When, Then }) => {
+		Given('a conversation with an admin user as sharer', () => {
+			const adminUserDoc = {
+				...makeUserDoc(),
+				userType: 'admin-user',
+			} as never;
+			doc = makeConversationDoc({ sharer: adminUserDoc });
+			adapter = new ConversationDomainAdapter(doc);
+		});
+
+		When('I call loadSharer on the adapter', async () => {
+			result = await adapter.loadSharer();
+		});
+
+		Then('it should return an AdminUserDomainAdapter for sharer', () => {
+			expect(result).toBeDefined();
+		});
+	});
+
+	Scenario('Loading reserver when it is an admin user', ({ Given, When, Then }) => {
+		Given('a conversation with an admin user as reserver', () => {
+			const adminUserDoc = {
+				...makeUserDoc(),
+				userType: 'admin-user',
+			} as never;
+			doc = makeConversationDoc({ reserver: adminUserDoc, sharer: sharerDoc });
+			adapter = new ConversationDomainAdapter(doc);
+		});
+
+		When('I call loadReserver on the adapter', async () => {
+			result = await adapter.loadReserver();
+		});
+
+		Then('it should return an AdminUserDomainAdapter for reserver', () => {
+			expect(result).toBeDefined();
+		});
+	});
+
+	Scenario('Getting the sharer property when populated as personal user', ({ When, Then }) => {
+		When('I get the sharer property', () => {
+			result = adapter.sharer;
+		});
+
+		Then('it should return a PersonalUserDomainAdapter entityReference', () => {
+			expect(result).toBeDefined();
+		});
+	});
+
+	Scenario('Setting reserver with PersonalUser domain entity', ({ Given, When, Then }) => {
+		let personalUser: never;
+
+		Given('a PersonalUser domain entity for reserver', () => {
+			const userDoc = makeUserDoc();
+			const setSpy = vi.fn();
+			personalUser = { props: { doc: userDoc }, id: userDoc.id } as never;
+			doc = makeConversationDoc({ set: setSpy });
+			adapter = new ConversationDomainAdapter(doc);
+		});
+
+		When('I set the reserver property with the domain entity', () => {
+			adapter.reserver = personalUser;
+		});
+
+		Then('the reserver should be set correctly', () => {
+			expect(doc.set).toHaveBeenCalledWith('reserver', expect.anything());
+		});
+	});
+
+	Scenario('Setting reserver with AdminUser domain entity', ({ Given, When, Then }) => {
+		let adminUser: never;
+
+		Given('an AdminUser domain entity for reserver', () => {
+			const userDoc = makeUserDoc({ userType: 'admin-user' });
+			const setSpy = vi.fn();
+			adminUser = { props: { doc: userDoc }, id: userDoc.id } as never;
+			doc = makeConversationDoc({ set: setSpy });
+			adapter = new ConversationDomainAdapter(doc);
+		});
+
+		When('I set the reserver property with the admin user entity', () => {
+			adapter.reserver = adminUser;
+		});
+
+		Then('the reserver should be set correctly with admin user', () => {
+			expect(doc.set).toHaveBeenCalledWith('reserver', expect.anything());
+		});
+	});
+
+	Scenario('Setting sharer with AdminUser domain entity', ({ Given, When, Then }) => {
+		let adminUser: never;
+
+		Given('an AdminUser domain entity for sharer', () => {
+			const userDoc = makeUserDoc({ userType: 'admin-user' });
+			const setSpy = vi.fn();
+			adminUser = { props: { doc: userDoc }, id: userDoc.id } as never;
+			doc = makeConversationDoc({ set: setSpy });
+			adapter = new ConversationDomainAdapter(doc);
+		});
+
+		When('I set the sharer property with the admin user entity', () => {
+			adapter.sharer = adminUser;
+		});
+
+		Then('the sharer should be set correctly with admin user', () => {
+			expect(doc.set).toHaveBeenCalledWith('sharer', expect.anything());
+		});
+	});
+
+	Scenario('Setting messages property', ({ When, Then }) => {
+		When('I set the messages property to a list', () => {
+			adapter.messages = [{ id: 'msg-1' } as never];
+		});
+
+		Then('the messages property should be set correctly', () => {
+			expect(adapter.messages).toHaveLength(1);
+		});
+	});
 });

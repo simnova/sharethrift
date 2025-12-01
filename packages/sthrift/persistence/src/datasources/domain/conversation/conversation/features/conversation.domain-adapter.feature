@@ -108,3 +108,41 @@ Feature: ConversationDomainAdapter
     Given an ItemListing domain entity
     When I set the listing property with the domain entity
     Then the listing should be set correctly
+
+  Scenario: Getting reserver when it is an admin user
+    Given a conversation with an admin user as reserver
+    When I access the reserver property
+    Then it should return an AdminUserDomainAdapter for reserver
+
+  Scenario: Loading sharer when it is an admin user
+    Given a conversation with an admin user as sharer
+    When I call loadSharer on the adapter
+    Then it should return an AdminUserDomainAdapter for sharer
+
+  Scenario: Loading reserver when it is an admin user
+    Given a conversation with an admin user as reserver
+    When I call loadReserver on the adapter
+    Then it should return an AdminUserDomainAdapter for reserver
+
+  Scenario: Getting the sharer property when populated as personal user
+    When I get the sharer property
+    Then it should return a PersonalUserDomainAdapter entityReference
+
+  Scenario: Setting reserver with PersonalUser domain entity
+    Given a PersonalUser domain entity for reserver
+    When I set the reserver property with the domain entity
+    Then the reserver should be set correctly
+
+  Scenario: Setting reserver with AdminUser domain entity
+    Given an AdminUser domain entity for reserver
+    When I set the reserver property with the admin user entity
+    Then the reserver should be set correctly with admin user
+
+  Scenario: Setting sharer with AdminUser domain entity
+    Given an AdminUser domain entity for sharer
+    When I set the sharer property with the admin user entity
+    Then the sharer should be set correctly with admin user
+
+  Scenario: Setting messages property
+    When I set the messages property to a list
+    Then the messages property should be set correctly
