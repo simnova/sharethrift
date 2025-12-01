@@ -884,7 +884,7 @@ importers:
         specifier: workspace:*
         version: link:../../cellix/messaging-service
       axios:
-        specifier: ^1.7.9
+        specifier: '>=1.12.0'
         version: 1.13.1
     devDependencies:
       '@cellix/typescript-config':
@@ -999,7 +999,7 @@ importers:
         specifier: workspace:*
         version: link:../../cellix/payment-service
       axios:
-        specifier: ^1.6.0
+        specifier: '>=1.12.0'
         version: 1.13.1
       cybersource-rest-client:
         specifier: ^0.0.73
@@ -1027,7 +1027,7 @@ importers:
         specifier: workspace:*
         version: link:../../cellix/payment-service
       axios:
-        specifier: ^1.6.0
+        specifier: '>=1.12.0'
         version: 1.13.1
     devDependencies:
       '@cellix/typescript-config':
@@ -1721,25 +1721,13 @@ packages:
   '@azure/ms-rest-js@1.11.2':
     resolution: {integrity: sha512-2AyQ1IKmLGKW7DU3/x3TsTBzZLcbC9YRI+yuDPuXAQrv3zar340K9wsxU413kHFIDjkWNCo9T0w5VtwcyWxhbQ==}
 
-  '@azure/msal-browser@3.30.0':
-    resolution: {integrity: sha512-I0XlIGVdM4E9kYP5eTjgW8fgATdzwxJvQ6bm2PNiHaZhEuUz47NYw1xHthC9R+lXz4i9zbShS0VdLyxd7n0GGA==}
-    engines: {node: '>=0.8.0'}
-
   '@azure/msal-browser@4.26.0':
     resolution: {integrity: sha512-Ie3SZ4IMrf9lSwWVzzJrhTPE+g9+QDUfeor1LKMBQzcblp+3J/U1G8hMpNSfLL7eA5F/DjjPXkATJ5JRUdDJLA==}
-    engines: {node: '>=0.8.0'}
-
-  '@azure/msal-common@14.16.1':
-    resolution: {integrity: sha512-nyxsA6NA4SVKh5YyRpbSXiMr7oQbwark7JU9LMeg6tJYTSPyAGkdx61wPT4gyxZfxlSxMMEyAsWaubBlNyIa1w==}
     engines: {node: '>=0.8.0'}
 
   '@azure/msal-common@15.13.1':
     resolution: {integrity: sha512-vQYQcG4J43UWgo1lj7LcmdsGUKWYo28RfEvDQAEMmQIMjSFufvb+pS0FJ3KXmrPmnWlt1vHDl3oip6mIDUQ4uA==}
     engines: {node: '>=0.8.0'}
-
-  '@azure/msal-node@2.16.3':
-    resolution: {integrity: sha512-CO+SE4weOsfJf+C5LM8argzvotrXw252/ZU6SM2Tz63fEblhH1uuVaaO4ISYFuN4Q6BhTo7I3qIdi8ydUQCqhw==}
-    engines: {node: '>=16'}
 
   '@azure/msal-node@3.8.1':
     resolution: {integrity: sha512-HszfqoC+i2C9+BRDQfuNUGp15Re7menIhCEbFCQ49D3KaqEDrgZIgQ8zSct4T59jWeUIL9N/Dwiv4o2VueTdqQ==}
@@ -5374,20 +5362,8 @@ packages:
     resolution: {integrity: sha512-9vpE3y/a2l2Vs2XEJE4L2z0GWnlpJ4Xj+kDaoCtrpPfS1J3oikXBrxRJX6H62/ZcelOGe+519yW7mqXCIoPXuw==}
     engines: {node: '>=14.18.0 <15.0.0 || >=16.0.0'}
     peerDependencies:
-      axios: '>=0.20.0'
-      tough-cookie: '>=4.0.0'
-
-  axios@0.21.4:
-    resolution: {integrity: sha512-ut5vewkiu8jjGBdqpM44XxjuCjq9LAKeHVmoVfHVzy8eHgxxq8SbAVQNovDA8mVi05kP0Ea/n/UzcSHcTJQfNg==}
-
-  axios@0.27.2:
-    resolution: {integrity: sha512-t+yRIyySRTp/wua5xEr+z1q60QmLq8ABsS5O9Me1AsE5dfKqgnCFzwiCZZ/cGNd1lq4/7akDWMxdhVlucjmnOQ==}
-
-  axios@1.11.0:
-    resolution: {integrity: sha512-1Lx3WLFQWm3ooKDYZD1eXmoGO9fxYQjrycfHFC8P0sCfQVXyROp0p9PFWBehewBOdCwHc+f/b8I0fMto5eSfwA==}
-
-  axios@1.12.0:
-    resolution: {integrity: sha512-oXTDccv8PcfjZmPGlWsPSwtOJCZ/b6W5jAMCNcfwJbCzDckwG0jrYJFaWH1yvivfCXjVzV/SPDEhMB3Q+DSurg==}
+      axios: '>=1.12.0'
+      tough-cookie: '>=4.1.3'
 
   axios@1.12.2:
     resolution: {integrity: sha512-vMJzPewAlRyOgxV2dU0Cuz2O8zzzx9VYtbJOaBgXFeLc4IV/Eg50n4LowmehOOR61S8ZMpc2K5Sa7g6A4jfkUw==}
@@ -6941,10 +6917,6 @@ packages:
     resolution: {integrity: sha512-ZyqlgowMbfj2NPjxaZZ/EtsXlOch28FRXgMd64vqZWk1bT9+wvSRLYD1om9M7QfQru51zJPAT17qXm4/zd+9QA==}
     engines: {node: '>= 0.10'}
 
-  glob@10.4.5:
-    resolution: {integrity: sha512-7Bv8RF0k6xjo7d4A/PxYLbUCfb6c+Vpd2/mB2yRDlew7Jb5hEXiCD9ibfO7wpk8i4sevK6DFny9h7EYbM3/sHg==}
-    hasBin: true
-
   glob@11.0.3:
     resolution: {integrity: sha512-2Nim7dha1KVkaiF4q6Dj+ngPPMdfvLJEOpZk/jKiUAkqKebpGAWQXAq9z1xu9HKu5lWfqw/FASuccEjyznjPaA==}
     engines: {node: 20 || >=22}
@@ -7198,7 +7170,7 @@ packages:
     engines: {node: '>=14.18.0 <15.0.0 || >=16.0.0'}
     peerDependencies:
       deasync: ^0.1.26
-      tough-cookie: ^4.0.0
+      tough-cookie: '>=4.1.3'
       undici: ^5.11.0
     peerDependenciesMeta:
       deasync:
@@ -7255,6 +7227,10 @@ packages:
 
   humanize-ms@1.2.1:
     resolution: {integrity: sha512-Fl70vYtsAFb/C06PTS9dZBo7ihau+Tu/DNCk/OyHhea07S+aeMWpFFkUaXRa8fI+ScZbEI8dfSxwY7gxZ9SAVQ==}
+
+  hyperdyperid@1.2.0:
+    resolution: {integrity: sha512-Y93lCzHYgGWdrJ66yIktxiaGULYc6oGiABxhcO5AufBeOyoIdZF7bIfLaOrbM0iGIOXQQgxxRrFEnb+Y6w1n4A==}
+    engines: {node: '>=10.18'}
 
   iconv-lite@0.4.24:
     resolution: {integrity: sha512-v3MXnZAcvnywkTUEZomIActle7RXXeedOR31wwl7VlyoXO4Qi9arvSenNQWne1TcRwhCL1HwLI21bEqdpj8/rA==}
@@ -8154,9 +8130,8 @@ packages:
     resolution: {integrity: sha512-dq+qelQ9akHpcOl/gUVRTxVIOkAJ1wR3QAvb4RsVjS8oVoFjDGTc679wJYmUmknUF5HwMLOgb5O+a3KxfWapPQ==}
     engines: {node: '>= 0.6'}
 
-  memfs@3.5.3:
-    resolution: {integrity: sha512-UERzLsxzllchadvbPs5aolHh65ISpKpM+ccLbOJ8/vvpBKmAWf+la7dXFy7Mr0ySHbdHrFv5kGFCUHHe6GFEmw==}
-    engines: {node: '>= 4.0.0'}
+  memfs@4.51.0:
+    resolution: {integrity: sha512-4zngfkVM/GpIhC8YazOsM6E8hoB33NP0BCESPOA6z7qaL6umPJNqkO8CNYaLV2FB2MV6H1O3x2luHHOSqppv+A==}
 
   memory-cache@0.2.0:
     resolution: {integrity: sha512-OcjA+jzjOYzKmKS6IQVALHLVz+rNTMPoJvCztFaZxwG14wtAW7VRZjwTQu06vKCYOxh4jVnik7ya0SXTB0W+xA==}
@@ -9402,6 +9377,9 @@ packages:
     resolution: {integrity: sha512-0VnamPPYHl4uaU/nSFeZZpR21QAWRz+sRv4iW9+v/GS/J5U5iZB5BNN6J0RMoOvdx2gWM2+ZFMIm58q24e4UYA==}
     engines: {node: '>= 0.10'}
     hasBin: true
+
+  psl@1.15.0:
+    resolution: {integrity: sha512-JZd3gMVBAVQkSs6HdNZo9Sdo0LNcQeMNP3CozBJb3JYC/QUYZTnKxP+f8oWRX4rHP5EurWxqAHTSwUCjlNKa1w==}
 
   punycode@2.3.1:
     resolution: {integrity: sha512-vYt7UD1U9Wg6138shLtLOvdAu+8DsC/ilFtEVHcH+wydcSpNE20AfSOduf6MkRFahL5FY7X1oU7nKVZFtfq8Fg==}
@@ -10715,10 +10693,6 @@ packages:
   totalist@3.0.1:
     resolution: {integrity: sha512-sf4i37nQ2LBx4m3wB74y+ubopq6W/dIzXg0FDGjsYnZHVa1Da8FH853wlL2gtUhg+xJXjfk3kUZS3BRoQeoQBQ==}
     engines: {node: '>=6'}
-
-  tough-cookie@2.5.0:
-    resolution: {integrity: sha512-nlLsUzgm1kfLXSXfRZMc1KLAugd4hqJHDTvc2hDIwS3mZAfMEuMbc03SujMF+GEcpaX/qboeycw6iO8JwVv2+g==}
-    engines: {node: '>=0.8'}
 
   tough-cookie@4.1.3:
     resolution: {integrity: sha512-aX/y5pVRkfRnfmuX+OdbSdXvPe6ieKX/G2s7e98f4poJHnqH3281gDPm/metm6E/WRamfx7WC4HUqkWHfQHprw==}
@@ -12118,7 +12092,7 @@ snapshots:
   '@azure/ms-rest-js@1.11.2':
     dependencies:
       '@azure/core-auth': 1.10.1
-      axios: 1.12.2
+      axios: 1.13.1
       form-data: 2.5.5
       tough-cookie: 5.1.2
       tslib: 1.14.1
@@ -12129,23 +12103,11 @@ snapshots:
       - debug
       - supports-color
 
-  '@azure/msal-browser@3.30.0':
-    dependencies:
-      '@azure/msal-common': 14.16.1
-
   '@azure/msal-browser@4.26.0':
     dependencies:
       '@azure/msal-common': 15.13.1
 
-  '@azure/msal-common@14.16.1': {}
-
   '@azure/msal-common@15.13.1': {}
-
-  '@azure/msal-node@2.16.3':
-    dependencies:
-      '@azure/msal-common': 14.16.1
-      jsonwebtoken: 9.0.2
-      uuid: 8.3.2
 
   '@azure/msal-node@3.8.1':
     dependencies:
@@ -13333,7 +13295,7 @@ snapshots:
       debug: 4.4.3(supports-color@8.1.1)
       error-stack-parser: 2.1.4
       figures: 3.2.0
-      glob: 11.1.0
+      glob: 11.0.3
       has-ansi: 4.0.1
       indent-string: 4.0.0
       is-installed-globally: 0.4.0
@@ -14979,7 +14941,7 @@ snapshots:
 
   '@joshwooding/vite-plugin-react-docgen-typescript@0.6.1(typescript@5.8.3)(vite@7.1.12(@types/node@24.9.2)(jiti@2.6.1)(lightningcss@1.30.2)(terser@5.44.0)(tsx@4.20.6)(yaml@2.8.1))':
     dependencies:
-      glob: 10.4.5
+      glob: 11.0.3
       magic-string: 0.30.21
       react-docgen-typescript: 2.4.0(typescript@5.8.3)
       vite: 7.1.12(@types/node@24.9.2)(jiti@2.6.1)(lightningcss@1.30.2)(terser@5.44.0)(tsx@4.20.6)(yaml@2.8.1)
@@ -15760,7 +15722,7 @@ snapshots:
     dependencies:
       '@serenity-js/core': 3.35.2
       agent-base: 7.1.4
-      axios: 1.12.2
+      axios: 1.13.1
       http-proxy-agent: 7.0.2
       https-proxy-agent: 7.0.6
       lru-cache: 11.2.2
@@ -17134,43 +17096,14 @@ snapshots:
 
   axe-core@4.11.0: {}
 
-  axios-cookiejar-support@4.0.7(axios@1.12.0)(tough-cookie@4.1.3)(undici@5.29.0):
+  axios-cookiejar-support@4.0.7(axios@1.13.1)(tough-cookie@4.1.3)(undici@5.29.0):
     dependencies:
-      axios: 1.12.0
+      axios: 1.13.1
       http-cookie-agent: 5.0.4(tough-cookie@4.1.3)(undici@5.29.0)
       tough-cookie: 4.1.3
     transitivePeerDependencies:
       - deasync
       - undici
-
-  axios@0.21.4:
-    dependencies:
-      follow-redirects: 1.15.11(debug@4.4.3)
-    transitivePeerDependencies:
-      - debug
-
-  axios@0.27.2:
-    dependencies:
-      follow-redirects: 1.15.11(debug@4.4.3)
-      form-data: 4.0.4
-    transitivePeerDependencies:
-      - debug
-
-  axios@1.11.0:
-    dependencies:
-      follow-redirects: 1.15.11(debug@4.4.3)
-      form-data: 4.0.4
-      proxy-from-env: 1.1.0
-    transitivePeerDependencies:
-      - debug
-
-  axios@1.12.0:
-    dependencies:
-      follow-redirects: 1.15.11(debug@4.4.3)
-      form-data: 4.0.4
-      proxy-from-env: 1.1.0
-    transitivePeerDependencies:
-      - debug
 
   axios@1.12.2:
     dependencies:
@@ -17838,7 +17771,7 @@ snapshots:
       debug: 4.4.3(supports-color@8.1.1)
       duplexer: 0.1.2
       fs-extra: 10.1.0
-      glob: 11.1.0
+      glob: 11.0.3
       glob2base: 0.0.12
       minimatch: 3.1.2
       resolve: 1.22.11
@@ -18022,14 +17955,14 @@ snapshots:
     dependencies:
       agentkeepalive: 4.6.0
       app-root-path: 3.1.0
-      axios: 1.12.0
-      axios-cookiejar-support: 4.0.7(axios@1.12.0)(tough-cookie@4.1.3)(undici@5.29.0)
+      axios: 1.13.1
+      axios-cookiejar-support: 4.0.7(axios@1.13.1)(tough-cookie@4.1.3)(undici@5.29.0)
       chai: 4.5.0
       chai-as-promised: 7.1.2(chai@4.5.0)
       https-proxy-agent: 7.0.6
       jwt-simple: 0.5.6
       memory-cache: 0.2.0
-      node-forge: 1.3.1
+      node-forge: 1.3.2
       node-jose: 2.2.0
       promise: 8.3.0
       tough-cookie: 4.1.3
@@ -18984,15 +18917,6 @@ snapshots:
     dependencies:
       find-index: 0.1.1
 
-  glob@10.4.5:
-    dependencies:
-      foreground-child: 3.3.1
-      jackspeak: 3.4.3
-      minimatch: 9.0.5
-      minipass: 7.1.2
-      package-json-from-dist: 1.0.1
-      path-scurry: 1.11.1
-
   glob@11.0.3:
     dependencies:
       foreground-child: 3.3.1
@@ -19422,6 +19346,8 @@ snapshots:
   humanize-ms@1.2.1:
     dependencies:
       ms: 2.1.3
+
+  hyperdyperid@1.2.0: {}
 
   iconv-lite@0.4.24:
     dependencies:
@@ -20368,7 +20294,12 @@ snapshots:
 
   memfs@4.51.0:
     dependencies:
-      fs-monkey: 1.1.0
+      '@jsonjoy.com/json-pack': 1.21.0(tslib@2.8.1)
+      '@jsonjoy.com/util': 1.9.0(tslib@2.8.1)
+      glob-to-regex.js: 1.2.0(tslib@2.8.1)
+      thingies: 2.5.0(tslib@2.8.1)
+      tree-dump: 1.1.0(tslib@2.8.1)
+      tslib: 2.8.1
 
   memory-cache@0.2.0: {}
 
@@ -20951,7 +20882,7 @@ snapshots:
       es6-promise: 4.2.8
       lodash: 4.17.21
       long: 5.3.2
-      node-forge: 1.3.1
+      node-forge: 1.3.2
       pako: 2.1.0
       process: 0.11.10
       uuid: 9.0.1
@@ -21807,6 +21738,10 @@ snapshots:
     dependencies:
       event-stream: 3.3.4
 
+  psl@1.15.0:
+    dependencies:
+      punycode: 2.3.1
+
   punycode@2.3.1: {}
 
   pupa@3.3.0:
@@ -22566,11 +22501,11 @@ snapshots:
 
   rimraf@2.7.1:
     dependencies:
-      glob: 11.1.0
+      glob: 11.0.3
 
   rimraf@3.0.2:
     dependencies:
-      glob: 11.1.0
+      glob: 11.0.3
 
   rimraf@6.0.1:
     dependencies:
@@ -23287,7 +23222,7 @@ snapshots:
   test-exclude@7.0.1:
     dependencies:
       '@istanbuljs/schema': 0.1.3
-      glob: 11.1.0
+      glob: 11.0.3
       minimatch: 9.0.5
 
   text-decoder@1.2.3:
@@ -23372,11 +23307,6 @@ snapshots:
   toposort@2.0.2: {}
 
   totalist@3.0.1: {}
-
-  tough-cookie@2.5.0:
-    dependencies:
-      psl: 1.15.0
-      punycode: 2.3.1
 
   tough-cookie@4.1.3:
     dependencies:
@@ -24012,6 +23942,7 @@ snapshots:
       '@types/bonjour': 3.5.13
       '@types/connect-history-api-fallback': 1.5.4
       '@types/express': 4.17.25
+      '@types/express-serve-static-core': 4.19.7
       '@types/serve-index': 1.9.4
       '@types/serve-static': 1.15.10
       '@types/sockjs': 0.3.36
@@ -24024,13 +23955,11 @@ snapshots:
       connect-history-api-fallback: 2.0.0
       express: 4.21.2
       graceful-fs: 4.2.11
-      html-entities: 2.6.0
       http-proxy-middleware: 2.0.9(@types/express@4.17.25)
       ipaddr.js: 2.2.0
       launch-editor: 2.12.0
-      open: 8.4.2
-      p-retry: 4.6.2
-      rimraf: 3.0.2
+      open: 10.2.0
+      p-retry: 6.2.1
       schema-utils: 4.3.3
       selfsigned: 2.4.1
       serve-index: 1.9.1
