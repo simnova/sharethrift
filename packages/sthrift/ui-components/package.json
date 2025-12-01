@@ -33,7 +33,7 @@
 	"scripts": {
 		"prebuild": "biome lint",
 		"build": "tsc --build && pnpm run copy-css",
-		"copy-css": "cpx \"src/**/*.{css,svg,png,jpg,jpeg,gif}\" dist/src",
+		"copy-css": "rsync -avm --include='*/' --include='*.css' --include='*.svg' --include='*.png' --include='*.jpg' --include='*.jpeg' --include='*.gif' --exclude='*' src/ dist/src/",
 		"watch": "tsc- --watch",
 		"test": "vitest run",
 		"test:coverage": "vitest run --coverage",
