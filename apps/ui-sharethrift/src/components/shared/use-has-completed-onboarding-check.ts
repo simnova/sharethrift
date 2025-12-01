@@ -23,7 +23,7 @@ export function useOnboardingRedirect(
 					'Redirecting to home because user has completed onboarding',
 				);
 				// User onboarded, trying to access any onboarding page: redirect to home
-				navigate('/home', { replace: true });
+				navigate('/', { replace: true });
 			}
 		}
 
