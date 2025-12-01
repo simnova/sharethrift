@@ -38,14 +38,12 @@ export class ItemListingRepository<
 		},
 	): Promise<Domain.Contexts.Listing.ItemListing.ItemListing<PropType>> {
 		const adapter = this.typeConverter.toAdapter(new this.model());
-		return Promise.resolve(
-			Domain.Contexts.Listing.ItemListing.ItemListing.getNewInstance(
+		return Domain.Contexts.Listing.ItemListing.ItemListing.getNewInstance(
 				adapter,
 				this.passport,
 				sharer,
 				fields,
-			),
-		);
+			);
 	}
 
 	async getActiveItemListings() {

@@ -112,12 +112,12 @@ export class ReservationRequestDomainAdapter
 		if (reserverDoc.userType === 'admin-user') {
 			return new AdminUserDomainAdapter(
 				this.doc.reserver as Models.User.AdminUser,
-			); 
+			);
 		}
 		const adapter = new PersonalUserDomainAdapter(
 			this.doc.reserver as Models.User.PersonalUser,
 		);
-		return adapter.entityReference as Domain.Contexts.User.PersonalUser.PersonalUserEntityReference;
+		return adapter.entityReference;
 	}
 
 	async loadReserver(): Promise<

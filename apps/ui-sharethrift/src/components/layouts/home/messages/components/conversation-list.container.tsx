@@ -14,6 +14,12 @@ interface ConversationListContainerProps {
 	selectedConversationId: string | null;
 }
 
+const getFirstErrorMessage = (
+	...errors: (Error | undefined | null)[]
+): string => {
+	return errors.find(Boolean)?.message || 'Unknown error';
+};
+
 export const ConversationListContainer: React.FC<
 	ConversationListContainerProps
 > = (props) => {
@@ -21,9 +27,7 @@ export const ConversationListContainer: React.FC<
 		data: currentUserData,
 		loading: currentUserLoading,
 		error: currentUserError,
-	} = useQuery(
-		HomeConversationListContainerCurrentUserDocument,
-	);
+	} = useQuery(HomeConversationListContainerCurrentUserDocument);
 
 	const {
 		data: currentUserConversationsData,
@@ -31,10 +35,9 @@ export const ConversationListContainer: React.FC<
 		error: conversationsError,
 	} = useQuery(HomeConversationListContainerConversationsByUserDocument, {
 		variables: {
-			userId:
-				currentUserData?.currentUser.id,
+			userId: currentUserData?.currentUser.id,
 		},
-        skip: !currentUserData?.currentUser.id,
+		skip: !currentUserData?.currentUser.id,
 	});
 
 	useEffect(() => {
@@ -53,6 +56,11 @@ export const ConversationListContainer: React.FC<
 		props,
 	]);
 
+	const errorMessage = getFirstErrorMessage(
+		conversationsError,
+		currentUserError,
+	);
+
 	return (
 		<ComponentQueryLoader
 			loading={loadingConversations || currentUserLoading}
@@ -64,13 +72,7 @@ export const ConversationListContainer: React.FC<
 			errorComponent={
 				<Result
 					status="error"
-					title={
-						conversationsError
-							? conversationsError.message
-							: currentUserError
-								? currentUserError.message
-								: 'Unknown error'
-					}
+					title={errorMessage}
 				/>
 			}
 			noDataComponent={
