@@ -33,11 +33,11 @@ export const withMockApolloClient: Decorator = (Story, context: StoryContext) =>
 		cache: new InMemoryCache(),
 	});
 
-	return (
-		<ApolloProvider client={client}>
-			<Story />
-		</ApolloProvider>
-	);
+  return (
+    <ApolloProvider client={client}>
+      <Story />
+    </ApolloProvider>
+  );
 };
 
 /**
@@ -73,9 +73,7 @@ export const MockAuthWrapper = ({
 		[],
 	);
 
-	return (
-		<AuthContext.Provider value={mockAuth}>{children}</AuthContext.Provider>
-	);
+  return <AuthContext.Provider value={mockAuth}>{children}</AuthContext.Provider>;
 };
 
 /**

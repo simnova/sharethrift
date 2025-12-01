@@ -12,6 +12,7 @@ const collectionsToSeed = [
 	'listings',
 	'conversations',
 	'reservationRequests',
+	'accountplans',
 	'appealRequests',
 ];
 
