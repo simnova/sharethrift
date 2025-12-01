@@ -53,16 +53,16 @@ export class ReservationRequest<props extends ReservationRequestProps>
 		// Mark as new first to allow property setting
 		instance.markAsNew();
 		
+		// Store IDs for integration event first, before setting state
+		instance._listingId = listing.id;
+		instance._reserverId = reserver.id;
+		instance._sharerId = listing.sharer.id;
+		
 		// Set properties while isNew is true
 		instance.listing = listing;
 		instance.reserver = reserver;
 		instance.reservationPeriodStart = reservationPeriodStart;
 		instance.reservationPeriodEnd = reservationPeriodEnd;
-		
-		// Store IDs for integration event
-		instance._listingId = listing.id;
-		instance._reserverId = reserver.id;
-		instance._sharerId = listing.sharer.id;
 		
 		// Set state (this will trigger the request() method and emit the integration event)
 		instance.state = state;

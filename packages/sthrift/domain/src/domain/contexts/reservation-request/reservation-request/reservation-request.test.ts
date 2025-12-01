@@ -51,7 +51,21 @@ function makePassport(
 function makeListing(state = 'Published'): ItemListingEntityReference {
 	return {
 		id: 'listing-1',
-		sharer: {} as UserEntityReference,
+		sharer: {
+			id: 'sharer-1',
+			userType: 'personal',
+			isBlocked: false,
+			hasCompletedOnboarding: true,
+			// biome-ignore lint/suspicious/noExplicitAny: test mock data
+			role: {} as any,
+			// biome-ignore lint/suspicious/noExplicitAny: test mock data
+			loadRole: async () => ({}) as any,
+			// biome-ignore lint/suspicious/noExplicitAny: test mock data
+			account: {} as any,
+			schemaVersion: '1',
+			createdAt: new Date('2024-01-01T00:00:00Z'),
+			updatedAt: new Date('2024-01-02T00:00:00Z'),
+		} as UserEntityReference,
 		title: 'Listing',
 		description: 'Desc',
 		category: 'General',
@@ -72,11 +86,11 @@ function makeUser(): UserEntityReference {
 		userType: 'personal',
 		isBlocked: false,
 		hasCompletedOnboarding: true,
-		// biome-ignore lint/suspicious/noExplicitAny: Test mock requires any for complex types
+		// biome-ignore lint/suspicious/noExplicitAny: test mock data
 		role: {} as any,
-		// biome-ignore lint/suspicious/noExplicitAny: Test mock requires any for complex types
+		// biome-ignore lint/suspicious/noExplicitAny: test mock data
 		loadRole: async () => ({}) as any,
-		// biome-ignore lint/suspicious/noExplicitAny: Test mock requires any for complex types
+		// biome-ignore lint/suspicious/noExplicitAny: test mock data
 		account: {} as any,
 		schemaVersion: '1',
 		createdAt: new Date('2024-01-01T00:00:00Z'),
