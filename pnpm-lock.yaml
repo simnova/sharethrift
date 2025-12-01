@@ -155,15 +155,6 @@ importers:
       '@sthrift/service-token-validation':
         specifier: workspace:*
         version: link:../../packages/sthrift/service-token-validation
-      '@sthrift/transactional-email-service':
-        specifier: workspace:*
-        version: link:../../packages/sthrift/transactional-email-service
-      '@sthrift/transactional-email-service-mock':
-        specifier: workspace:*
-        version: link:../../packages/sthrift/transactional-email-service-mock
-      '@sthrift/transactional-email-service-sendgrid':
-        specifier: workspace:*
-        version: link:../../packages/sthrift/transactional-email-service-sendgrid
       twilio:
         specifier: ^5.8.0
         version: 5.10.4
@@ -709,9 +700,6 @@ importers:
       '@cellix/messaging-service':
         specifier: workspace:*
         version: link:../../cellix/messaging-service
-      '@cellix/payment-service':
-        specifier: workspace:*
-        version: link:../../cellix/payment-service
       '@sthrift/persistence':
         specifier: workspace:*
         version: link:../persistence
@@ -1282,7 +1270,7 @@ importers:
         version: link:../../cellix/typescript-config
       rimraf:
         specifier: ^6.0.1
-        version: 6.1.0
+        version: 6.0.1
       typescript:
         specifier: ^5.8.3
         version: 5.8.3
@@ -1301,7 +1289,7 @@ importers:
         version: link:../../cellix/typescript-config
       rimraf:
         specifier: ^6.0.1
-        version: 6.1.0
+        version: 6.0.1
       typescript:
         specifier: ^5.8.3
         version: 5.8.3
@@ -1323,7 +1311,7 @@ importers:
         version: link:../../cellix/typescript-config
       rimraf:
         specifier: ^6.0.1
-        version: 6.1.0
+        version: 6.0.1
       typescript:
         specifier: ^5.8.3
         version: 5.8.3
