@@ -26,7 +26,7 @@ export const TermsContainer: FC = () => {
       });
       if (result.data?.personalUserUpdate.status.success) {
         message.success("Welcome to ShareThrift! Your account has been created.");
-        navigate("/home");
+        navigate("/");
       } else {
         // Handle error case if needed
         message.error("Failed to update user. Please try again.");
