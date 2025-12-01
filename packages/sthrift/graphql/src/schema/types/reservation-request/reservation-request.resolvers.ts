@@ -267,10 +267,11 @@ const reservationRequest: Resolvers = {
 				);
 			}
 
-			return await context.applicationServices.ReservationRequest.ReservationRequest.accept(
+			return await context.applicationServices.ReservationRequest.ReservationRequest.update(
 				{
 					id: args.input.id,
 					sharerEmail: verifiedJwt.email,
+					state: 'Accepted',
 				},
 			);
 		},

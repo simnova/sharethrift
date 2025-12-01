@@ -1,6 +1,5 @@
 import type { Domain } from '@sthrift/domain';
 import type { DataSources } from '@sthrift/persistence';
-import { accept, type ReservationRequestAcceptCommand } from './accept.ts';
 import { create, type ReservationRequestCreateCommand } from './create.ts';
 import {
 	queryActiveByListingId,
@@ -30,6 +29,7 @@ import {
 	queryPastByReserverId,
 	type ReservationRequestQueryPastByReserverIdCommand,
 } from './query-past-by-reserver-id.ts';
+import { update, type ReservationRequestUpdateCommand } from './update.ts';
 
 export interface ReservationRequestApplicationService {
 	queryById: (
@@ -66,8 +66,8 @@ export interface ReservationRequestApplicationService {
 	create: (
 		command: ReservationRequestCreateCommand,
 	) => Promise<Domain.Contexts.ReservationRequest.ReservationRequest.ReservationRequestEntityReference>;
-	accept: (
-		command: ReservationRequestAcceptCommand,
+	update: (
+		command: ReservationRequestUpdateCommand,
 	) => Promise<Domain.Contexts.ReservationRequest.ReservationRequest.ReservationRequestEntityReference>;
 }
 
@@ -85,6 +85,6 @@ export const ReservationRequest = (
 		queryActiveByListingId: queryActiveByListingId(dataSources),
 		queryListingRequestsBySharerId: queryListingRequestsBySharerId(dataSources),
 		create: create(dataSources),
-		accept: accept(dataSources),
+		update: update(dataSources),
 	};
 };
