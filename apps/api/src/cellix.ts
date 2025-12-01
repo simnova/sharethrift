@@ -2,7 +2,7 @@ import { app, type HttpFunctionOptions, type HttpHandler } from '@azure/function
 import type { ServiceBase } from '@cellix/api-services-spec';
 import api, { SpanStatusCode, type Tracer, trace } from '@opentelemetry/api';
 
-interface InfrastructureServiceRegistry<ContextType = unknown, AppServices = unknown> {
+export interface InfrastructureServiceRegistry<ContextType = unknown, AppServices = unknown> {
     /**
      * Registers an infrastructure service with the application.
      *
@@ -19,7 +19,7 @@ interface InfrastructureServiceRegistry<ContextType = unknown, AppServices = unk
 	registerInfrastructureService<T extends ServiceBase>(service: T): InfrastructureServiceRegistry<ContextType, AppServices>;
 }
 
-interface ContextBuilder<ContextType = unknown, AppServices = unknown> {
+export interface ContextBuilder<ContextType = unknown, AppServices = unknown> {
     /**
      * Defines the infrastructure context available for the application.
      *
@@ -40,7 +40,7 @@ interface ContextBuilder<ContextType = unknown, AppServices = unknown> {
 	): ApplicationServicesInitializer<ContextType, AppServices>;
 }
 
-interface ApplicationServicesInitializer<ContextType, AppServices = unknown> {
+export interface ApplicationServicesInitializer<ContextType, AppServices = unknown> {
     /**
      * Registers the factory that creates the request-scoped application services host.
      *
@@ -70,7 +70,7 @@ interface ApplicationServicesInitializer<ContextType, AppServices = unknown> {
 	): AzureFunctionHandlerRegistry<ContextType, AppServices>;
 }
 
-interface AzureFunctionHandlerRegistry<ContextType = unknown, AppServices = unknown> {
+export interface AzureFunctionHandlerRegistry<ContextType = unknown, AppServices = unknown> {
     /**
      * Registers an Azure Function HTTP endpoint.
      *
@@ -118,12 +118,12 @@ interface AzureFunctionHandlerRegistry<ContextType = unknown, AppServices = unkn
 	startUp(): Promise<StartedApplication<ContextType>>;
 }
 
-interface StartedApplication<ContextType = unknown>
+export interface StartedApplication<ContextType = unknown>
 	extends InitializedServiceRegistry {
 	get context(): ContextType;
 }
 
-interface InitializedServiceRegistry {
+export interface InitializedServiceRegistry {
     /**
      * Retrieves a registered infrastructure service by its constructor key.
      *
@@ -152,14 +152,14 @@ interface InitializedServiceRegistry {
 	get servicesInitialized(): boolean;
 }
 
-type UninitializedServiceRegistry<ContextType = unknown, AppServices = unknown> = InfrastructureServiceRegistry<ContextType, AppServices>;
+export type UninitializedServiceRegistry<ContextType = unknown, AppServices = unknown> = InfrastructureServiceRegistry<ContextType, AppServices>;
 
 
 type RequestScopedHost<S, H = unknown> = {
   forRequest(rawAuthHeader?: string, hints?: H): Promise<S>;
 };
 
-type AppHost<AppServices> = RequestScopedHost<AppServices, unknown>;
+export type AppHost<AppServices> = RequestScopedHost<AppServices, unknown>;
 
 interface PendingHandler<AppServices> {
 	name: string;

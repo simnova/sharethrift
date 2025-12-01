@@ -10,7 +10,9 @@
 			"project": ["src/**/*.{ts,tsx}"],
 			"ignore": [
 				"**/terms-communication-preferences.tsx",
-				"**/applicant-id-context.tsx"
+				"**/applicant-id-context.tsx",
+				"**/signup/pages/Payment.tsx",
+				"**/signup/section-layout.container.tsx"
 			]
 		},
 		"apps/docs": {

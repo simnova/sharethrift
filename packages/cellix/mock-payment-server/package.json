@@ -1,29 +1,24 @@
 {
-	"name": "@cellix/mock-payment-server",
-	"version": "1.0.0",
-	"main": "dist/index.js",
-	"types": "dist/index.d.ts",
-	"type": "module",
-	"license": "MIT",
-	"dependencies": {
-		"express": "^4.18.2",
-		"jose": "^5.10.0",
-		"jsonwebtoken": "^9.0.2",
-    "@cellix/payment-service": "workspace:*"
-	},
-	"devDependencies": {
-		"@cellix/typescript-config": "workspace:*",
-		
-		"@types/express": "^4.17.21",
-		"@types/jsonwebtoken": "^9.0.10",
-		"ts-node": "^10.9.2",
-		"ts-node-dev": "^2.0.0",
-		"tsc-watch": "^7.1.1",
-		"typescript": "^5.0.0"
-	},
-	"scripts": {
-		"start": "node dist/src/index.js",
-		"build": "tsc --build && tsx src/copy-assets.ts",
-		"clean": "rimraf node_modules package-lock.json dist"
-	}
+    "name": "@cellix/mock-payment-server",
+    "version": "1.0.0",
+    "main": "dist/index.js",
+    "types": "dist/index.d.ts",
+    "type": "module",
+    "license": "MIT",
+    "dependencies": {
+        "express": "^4.18.2"
+    },
+    "devDependencies": {
+        "@cellix/typescript-config": "workspace:*",
+        "@types/express": "^4.17.21",
+        "ts-node": "^10.9.2",
+        "ts-node-dev": "^2.0.0",
+        "tsc-watch": "^7.1.1",
+        "typescript": "^5.0.0"
+    },
+    "scripts": {
+        "start": "node dist/src/index.js",
+        "build": "tsc --build",
+        "clean": "rimraf node_modules package-lock.json dist"
+    }
 }
