@@ -3,8 +3,8 @@ import type {
 	TransactionalEmailService,
 	EmailRecipient,
 	EmailTemplateData,
-} from '@sthrift/transactional-email-service';
-import { TemplateUtils } from '@sthrift/transactional-email-service';
+} from '@cellix/transactional-email-service';
+import { TemplateUtils } from '@cellix/transactional-email-service';
 
 /**
  * SendGrid implementation of TransactionalEmailService
@@ -61,6 +61,5 @@ export class ServiceTransactionalEmailSendGrid
 			throw error;
 		}
 	}
-
 
 }

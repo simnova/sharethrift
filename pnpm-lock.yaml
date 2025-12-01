@@ -110,6 +110,15 @@ importers:
       '@cellix/payment-service':
         specifier: workspace:*
         version: link:../../packages/cellix/payment-service
+      '@cellix/transactional-email-service':
+        specifier: workspace:*
+        version: link:../../packages/cellix/transactional-email-service
+      '@cellix/transactional-email-service-mock':
+        specifier: workspace:*
+        version: link:../../packages/cellix/transactional-email-service-mock
+      '@cellix/transactional-email-service-sendgrid':
+        specifier: workspace:*
+        version: link:../../packages/cellix/transactional-email-service-sendgrid
       '@opentelemetry/api':
         specifier: ^1.9.0
         version: 1.9.0
@@ -155,15 +164,6 @@ importers:
       '@sthrift/service-token-validation':
         specifier: workspace:*
         version: link:../../packages/sthrift/service-token-validation
-      '@sthrift/transactional-email-service':
-        specifier: workspace:*
-        version: link:../../packages/sthrift/transactional-email-service
-      '@sthrift/transactional-email-service-mock':
-        specifier: workspace:*
-        version: link:../../packages/sthrift/transactional-email-service-mock
-      '@sthrift/transactional-email-service-sendgrid':
-        specifier: workspace:*
-        version: link:../../packages/sthrift/transactional-email-service-sendgrid
       twilio:
         specifier: ^5.8.0
         version: 5.10.4
@@ -585,6 +585,66 @@ importers:
         specifier: workspace:*
         version: link:../typescript-config
 
+  packages/cellix/transactional-email-service:
+    dependencies:
+      '@cellix/api-services-spec':
+        specifier: workspace:*
+        version: link:../api-services-spec
+    devDependencies:
+      '@biomejs/biome':
+        specifier: 2.0.0
+        version: 2.0.0
+      '@cellix/typescript-config':
+        specifier: workspace:*
+        version: link:../typescript-config
+      rimraf:
+        specifier: ^6.0.1
+        version: 6.0.1
+      typescript:
+        specifier: ^5.8.3
+        version: 5.8.3
+
+  packages/cellix/transactional-email-service-mock:
+    dependencies:
+      '@cellix/transactional-email-service':
+        specifier: workspace:*
+        version: link:../transactional-email-service
+    devDependencies:
+      '@biomejs/biome':
+        specifier: 2.0.0
+        version: 2.0.0
+      '@cellix/typescript-config':
+        specifier: workspace:*
+        version: link:../typescript-config
+      rimraf:
+        specifier: ^6.0.1
+        version: 6.0.1
+      typescript:
+        specifier: ^5.8.3
+        version: 5.8.3
+
+  packages/cellix/transactional-email-service-sendgrid:
+    dependencies:
+      '@cellix/transactional-email-service':
+        specifier: workspace:*
+        version: link:../transactional-email-service
+      '@sendgrid/mail':
+        specifier: ^8.0.0
+        version: 8.1.6
+    devDependencies:
+      '@biomejs/biome':
+        specifier: 2.0.0
+        version: 2.0.0
+      '@cellix/typescript-config':
+        specifier: workspace:*
+        version: link:../typescript-config
+      rimraf:
+        specifier: ^6.0.1
+        version: 6.0.1
+      typescript:
+        specifier: ^5.8.3
+        version: 5.8.3
+
   packages/cellix/typescript-config: {}
 
   packages/cellix/ui-core:
@@ -712,15 +772,15 @@ importers:
       '@cellix/payment-service':
         specifier: workspace:*
         version: link:../../cellix/payment-service
+      '@cellix/transactional-email-service':
+        specifier: workspace:*
+        version: link:../../cellix/transactional-email-service
       '@sthrift/persistence':
         specifier: workspace:*
         version: link:../persistence
       '@sthrift/service-token-validation':
         specifier: workspace:*
         version: link:../service-token-validation
-      '@sthrift/transactional-email-service':
-        specifier: workspace:*
-        version: link:../transactional-email-service
     devDependencies:
       '@cellix/typescript-config':
         specifier: workspace:*
@@ -802,12 +862,12 @@ importers:
 
   packages/sthrift/event-handler:
     dependencies:
+      '@cellix/transactional-email-service':
+        specifier: workspace:*
+        version: link:../../cellix/transactional-email-service
       '@sthrift/domain':
         specifier: workspace:*
         version: link:../domain
-      '@sthrift/transactional-email-service':
-        specifier: workspace:*
-        version: link:../transactional-email-service
     devDependencies:
       '@cellix/typescript-config':
         specifier: workspace:*
@@ -1224,28 +1284,6 @@ importers:
         specifier: ^5.8.3
         version: 5.8.3
 
-  packages/sthrift/service-sendgrid:
-    dependencies:
-      '@sendgrid/mail':
-        specifier: ^8.0.0
-        version: 8.1.6
-      react:
-        specifier: '>=17.0.0'
-        version: 19.2.0
-      react-dom:
-        specifier: '>=17.0.0'
-        version: 19.2.0(react@19.2.0)
-    devDependencies:
-      '@biomejs/biome':
-        specifier: 2.0.0
-        version: 2.0.0
-      '@cellix/typescript-config':
-        specifier: workspace:*
-        version: link:../../cellix/typescript-config
-      typescript:
-        specifier: ^5.0.0
-        version: 5.8.3
-
   packages/sthrift/service-token-validation:
     dependencies:
       '@cellix/api-services-spec':
@@ -1261,66 +1299,6 @@ importers:
       '@cellix/vitest-config':
         specifier: workspace:*
         version: link:../../cellix/vitest-config
-      rimraf:
-        specifier: ^6.0.1
-        version: 6.0.1
-      typescript:
-        specifier: ^5.8.3
-        version: 5.8.3
-
-  packages/sthrift/transactional-email-service:
-    dependencies:
-      '@cellix/api-services-spec':
-        specifier: workspace:*
-        version: link:../../cellix/api-services-spec
-    devDependencies:
-      '@biomejs/biome':
-        specifier: 2.0.0
-        version: 2.0.0
-      '@cellix/typescript-config':
-        specifier: workspace:*
-        version: link:../../cellix/typescript-config
-      rimraf:
-        specifier: ^6.0.1
-        version: 6.0.1
-      typescript:
-        specifier: ^5.8.3
-        version: 5.8.3
-
-  packages/sthrift/transactional-email-service-mock:
-    dependencies:
-      '@sthrift/transactional-email-service':
-        specifier: workspace:*
-        version: link:../transactional-email-service
-    devDependencies:
-      '@biomejs/biome':
-        specifier: 2.0.0
-        version: 2.0.0
-      '@cellix/typescript-config':
-        specifier: workspace:*
-        version: link:../../cellix/typescript-config
-      rimraf:
-        specifier: ^6.0.1
-        version: 6.0.1
-      typescript:
-        specifier: ^5.8.3
-        version: 5.8.3
-
-  packages/sthrift/transactional-email-service-sendgrid:
-    dependencies:
-      '@sendgrid/mail':
-        specifier: ^8.0.0
-        version: 8.1.6
-      '@sthrift/transactional-email-service':
-        specifier: workspace:*
-        version: link:../transactional-email-service
-    devDependencies:
-      '@biomejs/biome':
-        specifier: 2.0.0
-        version: 2.0.0
-      '@cellix/typescript-config':
-        specifier: workspace:*
-        version: link:../../cellix/typescript-config
       rimraf:
         specifier: ^6.0.1
         version: 6.0.1

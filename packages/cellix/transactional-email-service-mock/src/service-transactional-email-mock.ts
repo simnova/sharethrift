@@ -4,8 +4,8 @@ import type {
 	TransactionalEmailService,
 	EmailRecipient,
 	EmailTemplateData,
-} from '@sthrift/transactional-email-service';
-import { TemplateUtils } from '@sthrift/transactional-email-service';
+} from '@cellix/transactional-email-service';
+import { TemplateUtils } from '@cellix/transactional-email-service';
 
 /**
  * Mock implementation of TransactionalEmailService for local development

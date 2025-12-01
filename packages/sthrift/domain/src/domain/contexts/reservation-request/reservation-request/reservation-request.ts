@@ -66,6 +66,7 @@ export class ReservationRequest<props extends ReservationRequestProps>
 
 	private markAsNew(): void {
 		this.isNew = true;
+		this.request(); // Automatically set state to requested and emit event
 	}
 
 	//#region Properties
@@ -360,41 +361,24 @@ export class ReservationRequest<props extends ReservationRequestProps>
 			);
 		}
 
-		if (!this.isNew) {
-			throw new Error(
-				'Can only set state to requested when creating new reservation requests',
-			);
-		}
-
 		this.props.state = new ValueObjects.ReservationRequestStateValue(
 			ReservationRequestStates.REQUESTED,
 		).valueOf();
+
+		// Emit integration event for new reservation requests
+		if (!this._listingId || !this._reserverId || !this._sharerId) {
+			throw new Error('Missing required IDs for ReservationRequestCreated event');
+		}
+		
+		this.addIntegrationEvent(ReservationRequestCreated, {
+			reservationRequestId: this.props.id,
+			listingId: this._listingId,
+			reserverId: this._reserverId,
+			sharerId: this._sharerId,
+			reservationPeriodStart: this.props.reservationPeriodStart,
+			reservationPeriodEnd: this.props.reservationPeriodEnd,
+		});
 	}
 
-	public override onSave(isModified: boolean): void {
-		console.log(`[ReservationRequest.onSave] Called with isModified: ${isModified}, state: ${this.props.state.valueOf()}, expected: ${ReservationRequestStates.REQUESTED}`);
-		
-		// Only emit the integration event when the reservation request is being created
-		if (isModified && this.props.state.valueOf() === ReservationRequestStates.REQUESTED) {
-			console.log(`[ReservationRequest.onSave] Conditions met, checking IDs - listingId: ${this._listingId}, reserverId: ${this._reserverId}, sharerId: ${this._sharerId}`);
-			
-			if (!this._listingId || !this._reserverId || !this._sharerId) {
-				console.error(`[ReservationRequest.onSave] Missing required IDs for integration event - listingId: ${this._listingId}, reserverId: ${this._reserverId}, sharerId: ${this._sharerId}`);
-				throw new Error('Missing required IDs for integration event');
-			}
-			
-			console.log(`[ReservationRequest.onSave] Adding ReservationRequestCreated integration event for reservation ${this.props.id}`);
-			this.addIntegrationEvent(ReservationRequestCreated, {
-				reservationRequestId: this.props.id,
-				listingId: this._listingId,
-				reserverId: this._reserverId,
-				sharerId: this._sharerId,
-				reservationPeriodStart: this.props.reservationPeriodStart,
-				reservationPeriodEnd: this.props.reservationPeriodEnd,
-			});
-			console.log(`[ReservationRequest.onSave] Integration event added successfully`);
-		} else {
-			console.log(`[ReservationRequest.onSave] Conditions not met - isModified: ${isModified}, state: ${this.props.state.valueOf()}, expected: ${ReservationRequestStates.REQUESTED}`);
-		}
-	}
+
 }

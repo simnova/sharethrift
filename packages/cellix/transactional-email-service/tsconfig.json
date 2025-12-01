@@ -8,6 +8,6 @@
 	"include": ["src/**/*.ts"],
 	"exclude": ["node_modules", "dist"],
 	"references": [
-		{ "path": "../transactional-email-service" }
+		{ "path": "../api-services-spec" }
 	]
 }

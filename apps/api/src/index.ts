@@ -21,9 +21,9 @@ import type { MessagingService } from '@cellix/messaging-service';
 import { ServiceMessagingTwilio } from '@sthrift/messaging-service-twilio';
 import { ServiceMessagingMock } from '@sthrift/messaging-service-mock';
 
-import type { TransactionalEmailService } from '@sthrift/transactional-email-service';
-import { ServiceTransactionalEmailSendGrid } from '@sthrift/transactional-email-service-sendgrid';
-import { ServiceTransactionalEmailMock } from '@sthrift/transactional-email-service-mock';
+import type { TransactionalEmailService } from '@cellix/transactional-email-service';
+import { ServiceTransactionalEmailSendGrid } from '@cellix/transactional-email-service-sendgrid';
+import { ServiceTransactionalEmailMock } from '@cellix/transactional-email-service-mock';
 
 import { graphHandlerCreator } from '@sthrift/graphql';
 import { restHandlerCreator } from '@sthrift/rest';
