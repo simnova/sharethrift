@@ -22,7 +22,7 @@ export interface AccountPlanReadRepository {
 	) => Promise<Domain.Contexts.AccountPlan.AccountPlan.AccountPlanEntityReference | null>;
 }
 
-export class AccountPlanReadRepositoryImpl
+class AccountPlanReadRepositoryImpl
 	implements AccountPlanReadRepository
 {
 	private readonly mongoDataSource: AccountPlanDataSource;
@@ -70,6 +70,6 @@ export class AccountPlanReadRepositoryImpl
 export const getAccountPlanReadRepository = (
 	models: ModelsContext,
 	passport: Domain.Passport,
-) => {
+): AccountPlanReadRepository => {
 	return new AccountPlanReadRepositoryImpl(models, passport);
 };

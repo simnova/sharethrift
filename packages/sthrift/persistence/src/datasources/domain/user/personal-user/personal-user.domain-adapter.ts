@@ -184,7 +184,7 @@ export class PersonalUserAccountProfileBillingDomainAdapter
 	}
 }
 
-export class PersonalUserAccountProfileBillingSubscriptionDomainAdapter
+class PersonalUserAccountProfileBillingSubscriptionDomainAdapter
 	implements
 		Domain.Contexts.User.PersonalUser.PersonalUserAccountProfileBillingSubscriptionProps
 {
@@ -207,7 +207,7 @@ export class PersonalUserAccountProfileBillingSubscriptionDomainAdapter
 	}
 }
 
-export class PersonalUserAccountProfileBillingTransactionsDomainAdapter
+class PersonalUserAccountProfileBillingTransactionsDomainAdapter
 	implements
 		Domain.Contexts.User.PersonalUser.PersonalUserAccountProfileBillingTransactionsProps
 {
@@ -260,7 +260,7 @@ export class PersonalUserAccountProfileBillingTransactionsDomainAdapter
 	}
 }
 
-export class PersonalUserAccountProfileLocationDomainAdapter
+class PersonalUserAccountProfileLocationDomainAdapter
 	implements
 		Domain.Contexts.User.PersonalUser.PersonalUserAccountProfileLocationProps
 {

@@ -33,7 +33,7 @@ export interface PaymentPersonalUserRepository {
 	) => Promise<CustomerPaymentInstrumentsResponse>;
 }
 
-export class PaymentPersonalUserRepositoryImpl
+class PaymentPersonalUserRepositoryImpl
 	implements PaymentPersonalUserRepository
 {
 	private readonly paymentService: PaymentService;
