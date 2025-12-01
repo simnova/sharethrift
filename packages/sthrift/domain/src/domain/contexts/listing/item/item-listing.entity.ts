@@ -1,10 +1,9 @@
 import type { DomainSeedwork } from '@cellix/domain-seedwork';
-import type { PersonalUserEntityReference } from '../../user/personal-user/personal-user.entity.ts';
+import type { UserEntityReference } from '../../user/index.ts';
 
 export interface ItemListingProps extends DomainSeedwork.DomainEntityProps {
-	sharer: Readonly<PersonalUserEntityReference>;
-	loadSharer: () => Promise<Readonly<PersonalUserEntityReference>>;
-
+	sharer: Readonly<UserEntityReference>;
+  loadSharer(): Promise<UserEntityReference>;
 	title: string;
 	description: string;
 	category: string;
@@ -23,5 +22,5 @@ export interface ItemListingProps extends DomainSeedwork.DomainEntityProps {
 
 export interface ItemListingEntityReference
 	extends Readonly<Omit<ItemListingProps, 'sharer'>> {
-	readonly sharer: PersonalUserEntityReference;
+	readonly sharer: UserEntityReference;
 }

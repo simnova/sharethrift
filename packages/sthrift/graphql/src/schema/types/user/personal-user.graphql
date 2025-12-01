@@ -3,11 +3,11 @@ type PersonalUser implements MongoBase {
 	isBlocked: Boolean
 	account: PersonalUserAccount
 	hasCompletedOnboarding: Boolean
-	role: PersonalUserRole
 	id: ObjectID!
 	schemaVersion: String
 	createdAt: DateTime
 	updatedAt: DateTime
+	userIsAdmin: Boolean
 }
 
 type PersonalUserPage {
@@ -42,16 +42,31 @@ type PersonalUserAccountProfileLocation {
 }
 
 type PersonalUserAccountProfileBilling {
-	subscriptionId: String
 	cybersourceCustomerId: String
-	lastTransactionId: String
-	paymentState: String
-	lastPaymentAmount: Float
+	subscription: PersonalUserAccountProfileBillingSubscription
+	transactions: [PersonalUserAccountProfileBillingTransaction]
+}
+
+type PersonalUserAccountProfileBillingSubscription {
+	subscriptionId: String
+	planCode: String # code from cybersource
+	status: String
+	startDate: DateTime
+}
+
+type PersonalUserAccountProfileBillingTransaction {
+	transactionId: String
+	amount: Float
+	referenceId: String
+	status: String
+	completedAt: DateTime
+	errorMessage: String
 }
 
 input PersonalUserUpdateInput {
 	id: ObjectID!
 	isBlocked: Boolean
+	hasCompletedOnboarding: Boolean
 	account: PersonalUserAccountUpdateInput
 }
 
@@ -65,8 +80,7 @@ input PersonalUserAccountProfileUpdateInput {
 	firstName: String
 	lastName: String
 	location: PersonalUserAccountProfileLocationUpdateInput
-	billing: PersonalUserAccountProfileBillingUpdateInput
-    aboutMe: String
+	aboutMe: String
 }
 
 input PersonalUserAccountProfileLocationUpdateInput {
@@ -78,67 +92,28 @@ input PersonalUserAccountProfileLocationUpdateInput {
 	zipCode: String
 }
 
-input PersonalUserAccountProfileBillingUpdateInput {
-	subscriptionId: String
-	cybersourceCustomerId: String
-	lastTransactionId: String
-	paymentState: String
-	lastPaymentAmount: Float
-}
-
-extend type Query {
-	# Personal User queries
-	personalUserById(id: ObjectID!): PersonalUser
-	currentPersonalUserAndCreateIfNotExists: PersonalUser!
-
-    allUsers(
-		page: Int!
-		pageSize: Int!
-		searchText: String
-		statusFilters: [String!]
-		sorter: SorterInput
-	): PersonalUserPage!
-}
-
 # Payment related input/output types
-input PaymentAmountDetails {
-	totalAmount: Float!
-	currency: String!
+input ProcessPaymentPaymentInstrumentInput {
+	billingFirstName: String!
+	billingLastName: String!
+	billingEmail: String!
+	billingPhone: String
+	billingAddressLine1: String!
+	billingAddressLine2: String
+	billingCity: String!
+	billingState: String!
+	billingPostalCode: String!
+	billingCountry: String!
+	paymentToken: String!
 }
 
-input PaymentBillTo {
-	firstName: String!
-	lastName: String!
-	address1: String!
-	address2: String
-	city: String!
-	state: String!
-	postalCode: String!
-	country: String!
-	phoneNumber: String
-	email: String
-}
-
-input PaymentCard {
-	number: String!
-	expirationMonth: String!
-	expirationYear: String!
-	securityCode: String!
-}
-
-input PaymentOrderInformation {
-	amountDetails: PaymentAmountDetails!
-	billTo: PaymentBillTo!
-}
-
-input PaymentCardInformation {
-	card: PaymentCard!
-}
-
-input PaymentRequest {
+input ProcessPaymentInput {
 	userId: ObjectID!
-	orderInformation: PaymentOrderInformation!
-	paymentInformation: PaymentCardInformation!
+
+	paymentAmount: Float!
+	currency: String!
+
+	paymentInstrument: ProcessPaymentPaymentInstrumentInput!
 }
 
 type PaymentErrorInformation {
@@ -160,19 +135,27 @@ type PaymentResponse {
 	status: String!
 	success: Boolean
 	message: String
+	cybersourceCustomerId: String
+	cybersourceSubscriptionId: String
+	cybersourcePlanId: String
 	errorInformation: PaymentErrorInformation
 	orderInformation: PaymentResponseOrderInformation
 }
 
-input RefundOrderInformation {
-	amountDetails: PaymentAmountDetails!
+input RefundRequestOrderInformationAmountDetailsInput {
+	totalAmount: Float!
+	currency: String!
 }
 
-input RefundRequest {
+input RefundOrderInformationInput {
+	amountDetails: RefundRequestOrderInformationAmountDetailsInput!
+}
+
+input RefundRequestInput {
 	userId: ObjectID!
 	transactionId: String!
 	amount: Float
-	orderInformation: RefundOrderInformation!
+	orderInformation: RefundOrderInformationInput!
 }
 
 type RefundResponse {
@@ -184,13 +167,34 @@ type RefundResponse {
 	orderInformation: PaymentResponseOrderInformation
 }
 
+type PersonalUserMutationResult implements MutationResult {
+	status: MutationStatus!
+	personalUser: PersonalUser
+}
+
+extend type Query {
+	# Personal User queries
+	personalUserById(id: ObjectID!): PersonalUser
+	currentPersonalUserAndCreateIfNotExists: PersonalUser!
+	personalUserCybersourcePublicKeyId: String!
+	allUsers(
+		page: Int!
+		pageSize: Int!
+		searchText: String
+		statusFilters: [String!]
+		sorter: SorterInput
+	): PersonalUserPage!
+}
+
 extend type Mutation {
 	# Personal User mutations
-	personalUserUpdate(input: PersonalUserUpdateInput!): PersonalUser!
+	personalUserUpdate(
+		input: PersonalUserUpdateInput!
+	): PersonalUserMutationResult!
 	blockUser(userId: ObjectID!): PersonalUser!
 	unblockUser(userId: ObjectID!): PersonalUser!
 
 	# Payment mutations
-	processPayment(request: PaymentRequest!): PaymentResponse!
-	refundPayment(request: RefundRequest!): RefundResponse!
+	processPayment(input: ProcessPaymentInput!): PaymentResponse!
+	refundPayment(request: RefundRequestInput!): RefundResponse!
 }

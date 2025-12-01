@@ -11,13 +11,11 @@ export const HandleLogout = (
 	auth.removeUser();
 	apolloClient.clearStore();
 	clearStorage();
-	if (post_logout_redirect_uri) {
-		auth.signoutRedirect({
-			post_logout_redirect_uri: post_logout_redirect_uri,
-		});
+	globalThis.sessionStorage.removeItem('loginPortalType');
+	globalThis.sessionStorage.removeItem('redirectTo');
 
-		return;
-	}
-
-	auth.signoutRedirect();
+	const redirectUri = post_logout_redirect_uri || globalThis.location.origin;
+	auth.signoutRedirect({
+		post_logout_redirect_uri: redirectUri,
+	});
 };

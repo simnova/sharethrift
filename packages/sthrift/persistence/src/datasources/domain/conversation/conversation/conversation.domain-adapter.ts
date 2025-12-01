@@ -2,15 +2,8 @@ import { MongooseSeedwork } from '@cellix/mongoose-seedwork';
 import type { Models } from '@sthrift/data-sources-mongoose-models';
 import { Domain } from '@sthrift/domain';
 import { ItemListingDomainAdapter } from '../../listing/item/item-listing.domain-adapter.ts';
-import type { PersonalUserDomainAdapter } from '../../user/personal-user/personal-user.domain-adapter.ts';
-import {
-	getReserver,
-	loadReserver,
-	setReserver,
-	getSharer,
-	loadSharer,
-	setSharer,
-} from '../../domain-adapter-helpers.ts';
+import { PersonalUserDomainAdapter } from '../../user/personal-user/personal-user.domain-adapter.ts';
+import { AdminUserDomainAdapter } from '../../user/admin-user/admin-user.domain-adapter.ts';
 export class ConversationConverter extends MongooseSeedwork.MongoTypeConverter<
 	Models.Conversation.Conversation,
 	ConversationDomainAdapter,
@@ -29,28 +22,141 @@ export class ConversationDomainAdapter
 	extends MongooseSeedwork.MongooseDomainAdapter<Models.Conversation.Conversation>
 	implements Domain.Contexts.Conversation.Conversation.ConversationProps
 {
-	get sharer(): Domain.Contexts.User.PersonalUser.PersonalUserEntityReference {
-		return getSharer(this.doc.sharer);
+	get sharer():
+		| Domain.Contexts.User.PersonalUser.PersonalUserEntityReference
+		| Domain.Contexts.User.AdminUser.AdminUserEntityReference {
+		if (!this.doc.sharer) {
+			throw new Error('sharer is not populated');
+		}
+		if (this.doc.sharer instanceof MongooseSeedwork.ObjectId) {
+			throw new TypeError(
+				'sharer is not populated or is not of the correct type',
+			);
+		}
+		// Check userType discriminator to determine which adapter to use
+		const sharerDoc = this.doc.sharer as
+			| Models.User.PersonalUser
+			| Models.User.AdminUser;
+		if (sharerDoc.userType === 'admin-user') {
+			return new AdminUserDomainAdapter(
+				this.doc.sharer as Models.User.AdminUser,
+			);
+		}
+		// Assuming the domain adapter exposes an entityReference property or method
+		const adapter = new PersonalUserDomainAdapter(
+			this.doc.sharer as Models.User.PersonalUser,
+		);
+		return adapter.entityReference; // need this to resolve issue with PropArray of account.billing.transactions
 	}
 
-	async loadSharer(): Promise<Domain.Contexts.User.PersonalUser.PersonalUserEntityReference> {
-		return await loadSharer(this.doc);
+	async loadSharer(): Promise<
+		| Domain.Contexts.User.PersonalUser.PersonalUserEntityReference
+		| Domain.Contexts.User.AdminUser.AdminUserEntityReference
+	> {
+		if (!this.doc.sharer) {
+			throw new Error('sharer is not populated');
+		}
+		if (this.doc.sharer instanceof MongooseSeedwork.ObjectId) {
+			await this.doc.populate('sharer');
+		}
+		// Check userType discriminator to determine which adapter to use
+		const sharerDoc = this.doc.sharer as
+			| Models.User.PersonalUser
+			| Models.User.AdminUser;
+		if (sharerDoc.userType === 'admin-user') {
+			return new AdminUserDomainAdapter(
+				this.doc.sharer as Models.User.AdminUser,
+			);
+		}
+		const adapter = new PersonalUserDomainAdapter(
+			this.doc.sharer as Models.User.PersonalUser,
+		);
+		return adapter.entityReference;
 	}
 
-	set sharer(user: PersonalUserDomainAdapter) {
-		setSharer(this.doc, user);
+	set sharer(user:
+		| Domain.Contexts.User.PersonalUser.PersonalUserEntityReference
+		| Domain.Contexts.User.AdminUser.AdminUserEntityReference) {
+		if (
+			user instanceof Domain.Contexts.User.PersonalUser.PersonalUser ||
+			user instanceof Domain.Contexts.User.AdminUser.AdminUser
+		) {
+			this.doc.set('sharer', user.props.doc);
+			return;
+		}
+
+		if (!user?.id) {
+			throw new Error('sharer reference is missing id');
+		}
+		this.doc.set('sharer', new MongooseSeedwork.ObjectId(user.id));
 	}
 
-	get reserver(): Domain.Contexts.User.PersonalUser.PersonalUserEntityReference {
-		return getReserver(this.doc.reserver);
+	get reserver():
+		| Domain.Contexts.User.PersonalUser.PersonalUserEntityReference
+		| Domain.Contexts.User.AdminUser.AdminUserEntityReference {
+		if (!this.doc.reserver) {
+			throw new Error('reserver is not populated');
+		}
+		if (this.doc.reserver instanceof MongooseSeedwork.ObjectId) {
+			throw new TypeError(
+				'reserver is not populated or is not of the correct type',
+			);
+		}
+		// Check userType discriminator to determine which adapter to use
+		const reserverDoc = this.doc.reserver as
+			| Models.User.PersonalUser
+			| Models.User.AdminUser;
+		if (reserverDoc.userType === 'admin-user') {
+			return new AdminUserDomainAdapter(
+				this.doc.reserver as Models.User.AdminUser,
+			);
+		}
+		const adapter = new PersonalUserDomainAdapter(
+			this.doc.reserver as Models.User.PersonalUser,
+		);
+		return adapter.entityReference;
 	}
 
-	async loadReserver(): Promise<Domain.Contexts.User.PersonalUser.PersonalUserEntityReference> {
-		return await loadReserver(this.doc);
+	async loadReserver(): Promise<
+		| Domain.Contexts.User.PersonalUser.PersonalUserEntityReference
+		| Domain.Contexts.User.AdminUser.AdminUserEntityReference
+	> {
+		if (!this.doc.reserver) {
+			throw new Error('reserver is not populated');
+		}
+		if (this.doc.reserver instanceof MongooseSeedwork.ObjectId) {
+			await this.doc.populate('reserver');
+		}
+		// Check userType discriminator to determine which adapter to use
+		const reserverDoc = this.doc.reserver as
+			| Models.User.PersonalUser
+			| Models.User.AdminUser;
+		if (reserverDoc.userType === 'admin-user') {
+			return new AdminUserDomainAdapter(
+				this.doc.reserver as Models.User.AdminUser,
+			);
+		}
+		const adapter = new PersonalUserDomainAdapter(
+			this.doc.reserver as Models.User.PersonalUser,
+		);
+		return adapter.entityReference;
 	}
 
-	set reserver(user: PersonalUserDomainAdapter) {
-		setReserver(this.doc, user);
+	set reserver(user:
+		| Domain.Contexts.User.PersonalUser.PersonalUserEntityReference
+		| Domain.Contexts.User.AdminUser.AdminUserEntityReference) {
+		if (
+			user instanceof Domain.Contexts.User.PersonalUser.PersonalUser ||
+			user instanceof Domain.Contexts.User.AdminUser.AdminUser
+		) {
+			this.doc.set('reserver', user.props.doc);
+			return;
+		}
+
+		if (!user?.id) {
+			throw new Error('reserver reference is missing id');
+		}
+		this.doc.set('reserver', new MongooseSeedwork.ObjectId(user.id));
 	}
 
 	get listing(): Domain.Contexts.Listing.ItemListing.ItemListingEntityReference {
@@ -58,9 +164,9 @@ export class ConversationDomainAdapter
 			throw new Error('listing is not populated');
 		}
 		if (this.doc.listing instanceof MongooseSeedwork.ObjectId) {
-			return {
-				id: this.doc.listing.toString(),
-			} as Domain.Contexts.Listing.ItemListing.ItemListingEntityReference;
+			throw new TypeError(
+				'listing is not populated or is not of the correct type',
+			);
 		}
 		return new ItemListingDomainAdapter(
 			this.doc.listing as Models.Listing.ItemListing,

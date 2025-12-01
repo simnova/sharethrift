@@ -52,10 +52,41 @@ function makeUserDoc(
 	overrides: Partial<Models.User.PersonalUser> = {},
 ): Models.User.PersonalUser {
 	const base = {
-		_id: '507f1f77bcf86cd799439011',
+		_id: 'user-1',
 		displayName: 'Test User',
 		email: 'test@example.com',
-		id: '507f1f77bcf86cd799439011',
+		id: 'user-1',
+		account: {
+			accountType: 'verified-personal',
+			email: 'test@example.com',
+			username: 'testuser',
+			profile: {
+				firstName: 'Test',
+				lastName: 'User',
+				aboutMe: 'Test user description',
+				location: {
+					address1: '123 Test St',
+					address2: null,
+					city: 'Test City',
+					state: 'Test State',
+					country: 'Test Country',
+					zipCode: '12345',
+				},
+				billing: {
+					cybersourceCustomerId: 'cust-test-123',
+					subscription: {
+						subscriptionId: 'sub-test-123',
+						planCode: 'test-plan',
+						status: 'ACTIVE',
+						startDate: new Date(),
+					},
+					transactions: [],
+				},
+			},
+		},
+		set: vi.fn((key: string, value: unknown) => {
+			(base as unknown as Record<string, unknown>)[key] = value;
+		}),
 		...overrides,
 	} as Models.User.PersonalUser;
 	return vi.mocked(base);
@@ -128,9 +159,7 @@ test.for(feature, ({ Scenario, Background, BeforeEachScenario }) => {
 							return [listingDoc];
 						}
 						if (filter.sharer) {
-							return filter.sharer === '507f1f77bcf86cd799439011'
-								? [listingDoc]
-								: [];
+							return filter.sharer === 'user-1' ? [listingDoc] : [];
 						}
 						return [];
 					}),
@@ -187,7 +216,7 @@ test.for(feature, ({ Scenario, Background, BeforeEachScenario }) => {
 				expect(result.title).toBe('Test Listing');
 				expect(result.category).toBe('Electronics');
 				expect(result.location).toBe('Delhi');
-				expect(result.sharer.id).toBe('507f1f77bcf86cd799439011');
+				expect(result.sharer.id).toBe('user-1');
 			},
 		);
 	});
@@ -325,10 +354,10 @@ test.for(feature, ({ Scenario, Background, BeforeEachScenario }) => {
 		({ Given, When, Then, And }) => {
 			let results: Domain.Contexts.Listing.ItemListing.ItemListing<ItemListingDomainAdapter>[];
 			Given('a valid sharer ID', () => {
-				// Using '507f1f77bcf86cd799439011' as the valid sharer ID
+				// Using 'user-1' as the valid sharer ID
 			});
 			When('I call getBySharerID with the sharer ID', async () => {
-				results = await repo.getBySharerID('507f1f77bcf86cd799439011');
+				results = await repo.getBySharerID('user-1');
 			});
 			Then('I should receive a list of ItemListing domain objects', () => {
 				expect(Array.isArray(results)).toBe(true);
@@ -341,7 +370,7 @@ test.for(feature, ({ Scenario, Background, BeforeEachScenario }) => {
 			});
 			And("each object's sharer field should match the given sharer ID", () => {
 				for (const item of results) {
-					expect(item.sharer.id).toBe('507f1f77bcf86cd799439011');
+					expect(item.sharer.id).toBe('user-1');
 				}
 			});
 		},
@@ -357,7 +386,7 @@ test.for(feature, ({ Scenario, Background, BeforeEachScenario }) => {
 				pageSize: number;
 			};
 			Given('a valid sharer ID', () => {
-				// Using '507f1f77bcf86cd799439011' as the valid sharer ID
+				// Using 'user-1' as the valid sharer ID
 			});
 			And('pagination options with page and pageSize defined', () => {
 				// Options will be provided in the When step
@@ -371,16 +400,13 @@ test.for(feature, ({ Scenario, Background, BeforeEachScenario }) => {
 			When(
 				'I call getBySharerIDWithPagination with the sharer ID and options',
 				async () => {
-					paginatedResults = await repo.getBySharerIDWithPagination(
-						'507f1f77bcf86cd799439011',
-						{
-							page: 1,
-							pageSize: 10,
-							searchText: 'Test',
-							statusFilters: ['Published'],
-							sorter: { field: 'createdAt', order: 'descend' },
-						},
-					);
+					paginatedResults = await repo.getBySharerIDWithPagination('user-1', {
+						page: 1,
+						pageSize: 10,
+						searchText: 'Test',
+						statusFilters: ['Published'],
+						sorter: { field: 'createdAt', order: 'descend' },
+					});
 				},
 			);
 			Then(

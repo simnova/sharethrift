@@ -3,8 +3,20 @@ import type {
 	ConversationCreateInput,
 	Resolvers,
 } from '../../builder/generated.ts';
+import {
+	PopulateItemListingFromField,
+	PopulateUserFromField,
+} from '../../resolver-helper.ts';
 
 const conversation: Resolvers = {
+	Message: {
+		authorId: (parent) => parent.authorId.valueOf(),
+	},
+	Conversation: {
+		sharer: PopulateUserFromField('sharer'),
+		reserver: PopulateUserFromField('reserver'),
+		listing: PopulateItemListingFromField('listing'),
+	},
 	Query: {
 		conversationsByUser: async (_parent, _args, context: GraphContext) => {
 			return await context.applicationServices.Conversation.Conversation.queryByUser(

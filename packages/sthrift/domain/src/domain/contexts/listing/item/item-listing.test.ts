@@ -1,15 +1,13 @@
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { describeFeature, loadFeature } from '@amiceli/vitest-cucumber';
-import { expect, vi } from 'vitest';
-import type { ItemListingProps } from './item-listing.entity.ts';
-import { ItemListing } from './item-listing.ts';
 import { DomainSeedwork } from '@cellix/domain-seedwork';
+import { expect, vi } from 'vitest';
 import type { Passport } from '../../passport.ts';
 import { PersonalUser } from '../../user/personal-user/personal-user.ts';
 import type { PersonalUserProps } from '../../user/personal-user/personal-user.entity.ts';
-import { PersonalUserRolePermissions } from '../../role/personal-user-role/personal-user-role-permissions.ts';
-import { PersonalUserRole } from '../../role/personal-user-role/personal-user-role.ts';
+import type { ItemListingProps } from './item-listing.entity.ts';
+import { ItemListing } from './item-listing.ts';
 
 const test = { for: describeFeature };
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
@@ -21,6 +19,7 @@ function makePassport(
 	canUpdateItemListing = true,
 	canPublishItemListing = true,
 	canUnpublishItemListing = true,
+	canDeleteItemListing = true,
 ): Passport {
 	return vi.mocked({
 		listing: {
@@ -30,12 +29,14 @@ function makePassport(
 						canUpdateItemListing: boolean;
 						canPublishItemListing: boolean;
 						canUnpublishItemListing: boolean;
+						canDeleteItemListing: boolean;
 					}) => boolean,
 				) =>
 					fn({
 						canUpdateItemListing,
 						canPublishItemListing,
 						canUnpublishItemListing,
+						canDeleteItemListing,
 					}),
 			})),
 		},
@@ -55,43 +56,9 @@ function makePassport(
 function makeBaseProps(
 	overrides: Partial<ItemListingProps> = {},
 ): ItemListingProps {
-	const permissions = new PersonalUserRolePermissions({
-		listingPermissions: {
-			canCreateItemListing: true,
-			canUpdateItemListing: true,
-			canDeleteItemListing: true,
-			canViewItemListing: true,
-			canPublishItemListing: true,
-			canUnpublishItemListing: true,
-		},
-		conversationPermissions: {
-			canCreateConversation: true,
-			canManageConversation: true,
-			canViewConversation: true,
-		},
-		reservationRequestPermissions: {
-			canCreateReservationRequest: true,
-			canManageReservationRequest: true,
-			canViewReservationRequest: true,
-		},
-	});
-
-	const roleProps = {
-		id: 'role-1',
-		name: 'default',
-		roleName: 'default',
-		isDefault: true,
-		roleType: 'personal',
-		permissions,
-		createdAt: new Date('2020-01-01T00:00:00Z'),
-		updatedAt: new Date('2020-01-02T00:00:00Z'),
-		schemaVersion: '1.0.0',
-	};
-
-	const role = new PersonalUserRole(roleProps, makePassport());
 	const user = new PersonalUser<PersonalUserProps>(
 		{
-			userType: 'end-user',
+			userType: 'personal-users',
 			id: 'user-1',
 			isBlocked: false,
 			schemaVersion: '1.0.0',
@@ -113,18 +80,43 @@ function makeBaseProps(
 						zipCode: '110001',
 					},
 					billing: {
-						subscriptionId: null,
-						cybersourceCustomerId: null,
-						paymentState: '',
-						lastTransactionId: null,
-						lastPaymentAmount: null,
+						cybersourceCustomerId: 'cust_123',
+						subscription: {
+							status: 'inactive',
+							planCode: 'verified-personal-user',
+							startDate: new Date('2020-01-01T00:00:00Z'),
+							subscriptionId: 'sub-1',
+						},
+						transactions: {
+							items: [
+								{
+									id: '1',
+									transactionId: 'txn_123',
+									amount: 1000,
+									referenceId: 'ref_123',
+									status: 'completed',
+									completedAt: new Date('2020-01-01T00:00:00Z'),
+									errorMessage: null,
+								},
+							],
+							getNewItem: () => ({
+								id: '1',
+								transactionId: 'txn_123',
+								amount: 1000,
+								referenceId: 'ref_123',
+								status: 'completed',
+								completedAt: new Date('2020-01-01T00:00:00Z'),
+								errorMessage: null,
+							}),
+							addItem: vi.fn(),
+							removeItem: vi.fn(),
+							removeAll: vi.fn(),
+						},
 					},
 				},
 			},
 			createdAt: new Date('2020-01-01T00:00:00Z'),
 			updatedAt: new Date('2020-01-02T00:00:00Z'),
-			role,
-			loadRole: async () => role,
 		},
 		makePassport(),
 	);
@@ -146,7 +138,7 @@ function makeBaseProps(
 		updatedAt: new Date('2020-01-02T00:00:00Z'),
 		schemaVersion: '1.0.0',
 		listingType: 'item',
-		loadSharer: async () => user,
+    loadSharer: async () => user,
 		...overrides,
 	};
 }
@@ -560,6 +552,75 @@ test.for(feature, ({ Scenario, Background, BeforeEachScenario }) => {
 					initialUpdatedAt.getTime(),
 				);
 			});
+	},
+);
+
+Scenario('Requesting delete with permission', ({ Given, When, Then }) => {
+	Given(
+		'an ItemListing aggregate with permission to delete item listing',
+		() => {
+			passport = makePassport(true, true, true, true);
+			listing = new ItemListing(makeBaseProps(), passport);
 		},
 	);
+	When('I call requestDelete()', () => {
+		listing.requestDelete();
+	});
+	Then("the listing's isDeleted flag should be true", () => {
+		expect(listing.isDeleted).toBe(true);
+	});
+});
+
+Scenario(
+	'Requesting delete without permission',
+	({ Given, When, Then, And }) => {
+		let requestDeleteWithoutPermission: () => void;
+		Given(
+			'an ItemListing aggregate without permission to delete item listing',
+			() => {
+				passport = makePassport(true, true, true, false);
+				listing = new ItemListing(makeBaseProps(), passport);
+			},
+		);
+		When('I try to call requestDelete()', () => {
+			requestDeleteWithoutPermission = () => {
+				listing.requestDelete();
+			};
+		});
+		Then('a PermissionError should be thrown', () => {
+			expect(requestDeleteWithoutPermission).toThrow(
+				DomainSeedwork.PermissionError,
+			);
+		});
+		And("the listing's isDeleted flag should remain false", () => {
+			expect(listing.isDeleted).toBe(false);
+		});
+	},
+);
+
+Scenario(
+	'Requesting delete when already deleted',
+	({ Given, When, Then, And }) => {
+		Given(
+			'an ItemListing aggregate with permission to delete item listing',
+			() => {
+				passport = makePassport(true, true, true, true);
+				listing = new ItemListing(makeBaseProps(), passport);
+			},
+		);
+		And('the listing is already marked as deleted', () => {
+			listing.requestDelete();
+		});
+		When('I call requestDelete() again', () => {
+			listing.requestDelete();
+		});
+		Then("the listing's isDeleted flag should remain true", () => {
+			expect(listing.isDeleted).toBe(true);
+		});
+		And('no error should be thrown', () => {
+			// Test passes if no error was thrown
+			expect(listing.isDeleted).toBe(true);
+		});
+	},
+);
 });

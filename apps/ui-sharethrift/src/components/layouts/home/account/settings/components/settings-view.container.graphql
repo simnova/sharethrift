@@ -1,55 +1,118 @@
 query HomeAccountSettingsViewContainerCurrentUser {
-  currentPersonalUserAndCreateIfNotExists {
-    id
-    userType
-    account {
-        ...PersonalUserAccountFields
-    }
-    createdAt
-    updatedAt
-  }
+	currentUser {
+		... on PersonalUser {
+			id
+			userType
+			createdAt
+			updatedAt
+			account {
+				...PersonalUserAccountFields
+			}
+		}
+		... on AdminUser {
+			id
+			userType
+			createdAt
+			updatedAt
+			account {
+				...AdminUserAccountFields
+			}
+			role {
+				id
+				roleName
+			}
+		}
+	}
 }
 
-mutation HomeAccountSettingsViewContainerUpdatePersonalUser($input: PersonalUserUpdateInput!) {
-  personalUserUpdate(input: $input) {
-    id
-    account {
-        ...PersonalUserAccountFields
-    }
-  }
+mutation HomeAccountSettingsViewContainerUpdatePersonalUser(
+	$input: PersonalUserUpdateInput!
+) {
+	personalUserUpdate(input: $input) {
+		status {
+			success
+			errorMessage
+		}
+		personalUser {
+			id
+			account {
+				...PersonalUserAccountFields
+			}
+		}
+	}
+}
+
+mutation HomeAccountSettingsViewContainerUpdateAdminUser(
+	$input: AdminUserUpdateInput!
+) {
+	adminUserUpdate(input: $input) {
+		id
+		account {
+			...AdminUserAccountFields
+		}
+	}
 }
 
 fragment PersonalUserLocationFields on PersonalUserAccountProfileLocation {
-  address1
-  address2
-  city
-  state
-  country
-  zipCode
+	address1
+	address2
+	city
+	state
+	country
+	zipCode
 }
 
 fragment PersonalUserBillingFields on PersonalUserAccountProfileBilling {
-  subscriptionId
-  cybersourceCustomerId
+	subscription {
+		subscriptionId
+	}
+	cybersourceCustomerId
 }
 
 fragment PersonalUserProfileFields on PersonalUserAccountProfile {
-  firstName
-  lastName
-  aboutMe
-  location {
-    ...PersonalUserLocationFields
-  }
-  billing {
-    ...PersonalUserBillingFields
-  }
+	firstName
+	lastName
+	aboutMe
+	location {
+		...PersonalUserLocationFields
+	}
+	billing {
+		...PersonalUserBillingFields
+	}
 }
 
 fragment PersonalUserAccountFields on PersonalUserAccount {
-  accountType
-  email
-  username
-  profile {
-    ...PersonalUserProfileFields
-  }
+	accountType
+	email
+	username
+	profile {
+		...PersonalUserProfileFields
+	}
+}
+
+fragment AdminUserAccountFields on AdminUserAccount {
+	accountType
+	email
+	username
+	profile {
+		...AdminUserProfileFields
+	}
+}
+
+fragment AdminUserProfileFields on AdminUserAccountProfile {
+	firstName
+	lastName
+	aboutMe
+	location {
+		...AdminUserLocationFields
+	}
+}
+
+fragment AdminUserLocationFields on AdminUserAccountProfileLocation {
+	address1
+	address2
+	city
+	state
+	country
+	zipCode
 }

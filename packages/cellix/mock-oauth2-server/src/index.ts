@@ -8,10 +8,20 @@ setupEnvironment();
 const app = express();
 app.disable('x-powered-by');
 const port = 4000;
+const allowedRedirectUris = new Set([
+	'http://localhost:3000/auth-redirect-user',
+	'http://localhost:3000/auth-redirect-admin',
+]);
+// Map redirect URIs to their corresponding audience identifiers
+const redirectUriToAudience = new Map([
+	['http://localhost:3000/auth-redirect-user', 'user-portal'],
+	['http://localhost:3000/auth-redirect-admin', 'admin-portal'],
+]);
+// Deprecated: kept for backwards compatibility
 const allowedRedirectUri =
 	// biome-ignore lint:useLiteralKeys
-	process.env['ALLOWED_REDIRECT_URI'] || 'http://localhost:3000/auth-redirect';
-const aud = allowedRedirectUri;
+	process.env['ALLOWED_REDIRECT_URI'] ||
+	'http://localhost:3000/auth-redirect-user';
 // Type for user profile used in token claims
 interface TokenProfile {
 	aud: string;
@@ -104,8 +114,6 @@ async function main() {
 	// Generate signing keypair with jose
 	const { publicKey, privateKey } = await generateKeyPair('RS256');
 	const publicJwk = await exportJWK(publicKey);
-
-	//Duy to Review
 	const pkcs8 = await exportPKCS8(privateKey);
 	const keyObject = crypto.createPrivateKey({
 		key: pkcs8,
@@ -139,15 +147,41 @@ async function main() {
 
 	// Simulate sign up endpoint
 	app.post('/token', async (req, res) => {
-		// biome-ignore lint:useLiteralKeys
-		const email = process.env['Email'] ?? '';
-		// biome-ignore lint:useLiteralKeys
-		const given_name = process.env['Given_Name'] ?? '';
-		// biome-ignore lint:useLiteralKeys
-		const family_name = process.env['Family_Name'] ?? '';
-		const { tid } = req.body;
+		const { tid, code } = req.body;
+
+		// Extract redirect_uri from code (encoded in base64)
+		let aud = 'user-portal'; // default audience
+		let isAdminPortal = false;
+
+		if (code?.startsWith('mock-auth-code-')) {
+			try {
+				const base64Part = code.replace('mock-auth-code-', '');
+				const decodedRedirectUri = Buffer.from(base64Part, 'base64').toString(
+					'utf-8',
+				);
+				if (allowedRedirectUris.has(decodedRedirectUri)) {
+					// Map redirect URI to proper audience identifier
+					aud = redirectUriToAudience.get(decodedRedirectUri) || 'user-portal';
+					isAdminPortal = aud === 'admin-portal';
+				}
+			} catch (e) {
+				console.error('Failed to decode redirect_uri from code:', e);
+			}
+		}
+
+		// Use different credentials based on portal type
+		const email = isAdminPortal
+			? process.env['Admin_Email'] || process.env['Email'] || ''
+			: process.env['Email'] || '';
+		const given_name = isAdminPortal
+			? process.env['Admin_Given_Name'] || process.env['Given_Name'] || ''
+			: process.env['Given_Name'] || '';
+		const family_name = isAdminPortal
+			? process.env['Admin_Family_Name'] || process.env['Family_Name'] || ''
+			: process.env['Family_Name'] || '';
+
 		const profile: TokenProfile = {
-			aud: aud,
+			aud: aud, // Now using proper audience identifier
 			sub: crypto.randomUUID(),
 			iss: `http://localhost:${port}`,
 			email,
@@ -173,20 +207,34 @@ async function main() {
 			response_types_supported: ['code', 'token'],
 			subject_types_supported: ['public'],
 			id_token_signing_alg_values_supported: ['RS256'],
-			scopes_supported: ['openid', 'profile', 'email'],
+			scopes_supported: [
+				'openid',
+				'profile',
+				'email',
+				'user-portal',
+				'admin-portal',
+			],
 			token_endpoint_auth_methods_supported: ['client_secret_post'],
-			claims_supported: ['sub', 'email', 'name'],
+			claims_supported: ['sub', 'email', 'name', 'aud'],
 		});
 	});
 
 	app.get('/authorize', (req, res) => {
 		const { redirect_uri, state } = req.query;
-		if (redirect_uri !== allowedRedirectUri) {
+		const requestedRedirectUri = redirect_uri as string;
+
+		// Check if the requested redirect_uri is in our allowed list
+		if (
+			!allowedRedirectUris.has(requestedRedirectUri) &&
+			requestedRedirectUri !== allowedRedirectUri
+		) {
 			res.status(400).send('Invalid redirect_uri');
 			return;
 		}
-		const code = 'mock-auth-code';
-		const redirectUrl = `${allowedRedirectUri}?code=${code}${state ? `&state=${state}` : ''}`;
+
+		// Store the redirect_uri in the session/state for the token endpoint
+		const code = `mock-auth-code-${Buffer.from(requestedRedirectUri).toString('base64')}`;
+		const redirectUrl = `${requestedRedirectUri}?code=${code}${state ? `&state=${state}` : ''}`;
 		res.redirect(redirectUrl);
 		return;
 	});

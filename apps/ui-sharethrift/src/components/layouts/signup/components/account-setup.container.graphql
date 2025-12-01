@@ -1,0 +1,27 @@
+query AccountSetUpContainerCurrentPersonalUserAndCreateIfNotExists {
+  currentPersonalUserAndCreateIfNotExists {
+    id
+
+    account {
+      username
+      email
+    }
+  }
+}
+
+mutation AccountSetUpContainerPersonalUserUpdate($input: PersonalUserUpdateInput!) {
+  personalUserUpdate(input: $input) {
+    status {
+      success
+      errorMessage
+    }
+    personalUser {
+      id
+
+      account {
+        username
+        email
+      }
+    }
+  }
+}

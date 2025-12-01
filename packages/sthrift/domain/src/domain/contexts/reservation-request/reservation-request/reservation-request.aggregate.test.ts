@@ -3,14 +3,11 @@ import { ReservationRequest } from './reservation-request.ts';
 import type { ReservationRequestProps } from './reservation-request.entity.ts';
 import type { ItemListingEntityReference } from '../../listing/item/item-listing.entity.ts';
 import type { PersonalUserEntityReference } from '../../user/personal-user/personal-user.entity.ts';
-// ...existing code...
 import {
 	ReservationRequestStates,
 	ReservationRequestStateValue,
 } from './reservation-request.value-objects.ts';
 import type { Passport } from '../../passport.ts';
-import type { PersonalUserRoleEntityReference } from '../../role/personal-user-role/personal-user-role.entity.ts';
-import { PersonalUserRolePermissions } from '../../role/personal-user-role/personal-user-role-permissions.ts';
 // Minimal test-only mocks for missing domain value objects
 
 describe('ReservationRequest', () => {
@@ -54,58 +51,20 @@ describe('ReservationRequest', () => {
 				forPersonalUser: () => ({
 					determineIf: () => true,
 				}),
+				forAdminUser: () => ({
+					determineIf: () => true,
+				}),
+			};
+		},
+
+		get accountPlan() {
+			return {
+				forAccountPlan: () => ({
+					determineIf: () => true,
+				}),
 			};
 		},
 	} as Passport;
-
-	// Helper functions for creating mock entity references
-	// ...existing code...
-	const createMockListing = (id = 'listing-1'): ItemListingEntityReference => ({
-		id,
-		sharer: createMockPersonalUser('sharer-1'),
-		title: 'Mock Listing',
-		description: 'Mock listing description',
-		category: 'Tools & Equipment',
-		location: '123 Main St, Springfield',
-		sharingPeriodStart: new Date(),
-		sharingPeriodEnd: new Date(),
-		state: 'Published',
-		createdAt: new Date(),
-		updatedAt: new Date(),
-		schemaVersion: '1',
-		listingType: 'item-listing',
-		loadSharer: async () => createMockPersonalUser('sharer-1'),
-	});
-
-	const mockRole: Readonly<PersonalUserRoleEntityReference> = {
-		id: 'role-1',
-		roleName: 'mock-role',
-		isDefault: false,
-		permissions: new PersonalUserRolePermissions({
-			listingPermissions: {
-				canCreateItemListing: true,
-				canUpdateItemListing: true,
-				canDeleteItemListing: true,
-				canViewItemListing: true,
-				canPublishItemListing: true,
-				canUnpublishItemListing: true,
-			},
-			conversationPermissions: {
-				canCreateConversation: true,
-				canManageConversation: true,
-				canViewConversation: true,
-			},
-			reservationRequestPermissions: {
-				canCreateReservationRequest: true,
-				canManageReservationRequest: true,
-				canViewReservationRequest: true,
-			},
-		}),
-		roleType: 'mock-type',
-		createdAt: new Date(),
-		updatedAt: new Date(),
-		schemaVersion: '1',
-	};
 
 	const createMockPersonalUser = (
 		id = 'user-1',
@@ -115,6 +74,8 @@ describe('ReservationRequest', () => {
 			userType: 'personal',
 			isBlocked: false,
 			schemaVersion: '1',
+			hasCompletedOnboarding: true,
+
 			account: {
 				accountType: 'standard',
 				email: 'mock@example.com',
@@ -132,21 +93,51 @@ describe('ReservationRequest', () => {
 						zipCode: '62704',
 					},
 					billing: {
-						subscriptionId: 'sub-123',
-						cybersourceCustomerId: 'cyber-456',
-						paymentState: 'active',
-						lastPaymentAmount: 49.99,
-						lastTransactionId: 'txn-789',
+						cybersourceCustomerId: null,
+						subscription: {
+							planCode: 'basic',
+							status: '',
+							startDate: new Date('2020-01-01T00:00:00Z'),
+							subscriptionId: 'sub_123',
+						},
+						transactions: [
+							{
+								id: '1',
+								transactionId: 'txn_123',
+								amount: 1000,
+								referenceId: 'ref_123',
+								status: 'completed',
+								completedAt: new Date('2020-01-01T00:00:00Z'),
+								errorMessage: null,
+							},
+						],
 					},
 				},
 			},
 			createdAt: new Date(),
 			updatedAt: new Date(),
-			hasCompletedOnboarding: true,
-			role: mockRole,
-			loadRole: async () => mockRole,
 		};
 	};
+
+	// Helper functions for creating mock entity references
+	// ...existing code...
+	const sharer = createMockPersonalUser('sharer-1');
+	const createMockListing = (id = 'listing-1'): ItemListingEntityReference => ({
+		id,
+		sharer: sharer,
+		title: 'Mock Listing',
+		description: 'Mock listing description',
+		category: 'Tools & Equipment',
+		location: '123 Main St, Springfield',
+		sharingPeriodStart: new Date(),
+		sharingPeriodEnd: new Date(),
+		state: 'Published',
+		createdAt: new Date(),
+		updatedAt: new Date(),
+		schemaVersion: '1',
+		listingType: 'item-listing',
+		loadSharer: async () => sharer,
+	});
 
 	// Helper function to create full props for testing
 	const createMockProps = (

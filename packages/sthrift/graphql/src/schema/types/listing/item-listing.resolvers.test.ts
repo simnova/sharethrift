@@ -76,7 +76,7 @@ function createMockUser(
 ): PersonalUserEntity {
 	return {
 		id: 'user-1',
-		userType: 'end-user',
+		userType: 'personal-users',
 		isBlocked: false,
 		hasCompletedOnboarding: true,
 		schemaVersion: '1.0.0',
@@ -106,8 +106,6 @@ function createMockUser(
 		},
 		createdAt: new Date(),
 		updatedAt: new Date(),
-		role: {} as Domain.Contexts.Role.PersonalUserRole.PersonalUserRoleEntityReference,
-		loadRole: vi.fn(),
 		...overrides,
 	} as PersonalUserEntity;
 }

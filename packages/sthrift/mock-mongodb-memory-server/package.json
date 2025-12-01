@@ -5,6 +5,7 @@
 	"type": "module",
 	"main": "dist/src/index.js",
 	"types": "dist/src/index.d.ts",
+
 	"scripts": {
 		"build": "tsc --build",
 		"clean": "rimraf dist",
@@ -23,5 +24,6 @@
 		"rimraf": "^6.0.1",
 		"typescript": "^5.8.3",
 		"@types/semver": "^7.7.0"
-	}
+	},
+	"license": "MIT"
 }

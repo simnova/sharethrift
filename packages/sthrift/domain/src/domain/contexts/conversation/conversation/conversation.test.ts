@@ -6,8 +6,6 @@ import { expect, vi } from 'vitest';
 import type { ItemListingProps } from '../../listing/item/item-listing.entity.ts';
 import { ItemListing } from '../../listing/item/item-listing.ts';
 import type { Passport } from '../../passport.ts';
-import { PersonalUserRole } from '../../role/personal-user-role/personal-user-role.ts';
-import { PersonalUserRolePermissions } from '../../role/personal-user-role/personal-user-role-permissions.ts';
 import type { PersonalUserProps } from '../../user/personal-user/personal-user.entity.ts';
 import { PersonalUser } from '../../user/personal-user/personal-user.ts';
 import type { ConversationProps } from './conversation.entity.ts';
@@ -43,42 +41,9 @@ function makePassport(canManageConversation = false): Passport {
 function makeBaseProps(
 	overrides: Partial<ConversationProps> = {},
 ): ConversationProps {
-	// Provide a valid PersonalUserPermissions value object for permissions
-	const permissions = new PersonalUserRolePermissions({
-		listingPermissions: {
-			canCreateItemListing: true,
-			canUpdateItemListing: true,
-			canDeleteItemListing: true,
-			canViewItemListing: true,
-			canPublishItemListing: true,
-			canUnpublishItemListing: true,
-		},
-		conversationPermissions: {
-			canCreateConversation: true,
-			canManageConversation: true,
-			canViewConversation: true,
-		},
-		reservationRequestPermissions: {
-			canCreateReservationRequest: true,
-			canManageReservationRequest: true,
-			canViewReservationRequest: true,
-		},
-	});
-	const roleProps = {
-		id: 'role-1',
-		name: 'default',
-		roleName: 'default',
-		isDefault: true,
-		roleType: 'personal',
-		permissions,
-		createdAt: new Date('2020-01-01T00:00:00Z'),
-		updatedAt: new Date('2020-01-02T00:00:00Z'),
-		schemaVersion: '1.0.0',
-	};
-	const role = new PersonalUserRole(roleProps, makePassport());
 	const user = new PersonalUser<PersonalUserProps>(
 		{
-			userType: 'end-user',
+			userType: 'personal-users',
 			id: 'user-1',
 			isBlocked: false,
 			schemaVersion: '1.0.0',
@@ -100,24 +65,49 @@ function makeBaseProps(
 						zipCode: '12345',
 					},
 					billing: {
-						subscriptionId: null,
 						cybersourceCustomerId: null,
-						paymentState: '',
-						lastTransactionId: null,
-						lastPaymentAmount: null,
+						subscription: {
+							planCode: 'verified-personal',
+							status: 'ACTIVE',
+							startDate: new Date('2020-01-01T00:00:00Z'),
+							subscriptionId: 'sub_123',
+						},
+						transactions: {
+							items: [
+								{
+									id: '1',
+									transactionId: 'txn_123',
+									amount: 1000,
+									referenceId: 'ref_123',
+									status: 'completed',
+									completedAt: new Date('2020-01-01T00:00:00Z'),
+									errorMessage: null,
+								},
+							],
+							getNewItem: () => ({
+								id: '2',
+								transactionId: 'txn_123',
+								amount: 1000,
+								referenceId: 'ref_123',
+								status: 'completed',
+								completedAt: new Date('2020-01-01T00:00:00Z'),
+								errorMessage: null,
+							}),
+							addItem: vi.fn(),
+							removeItem: vi.fn(),
+							removeAll: vi.fn(),
+						},
 					},
 				},
 			},
 			createdAt: new Date('2020-01-01T00:00:00Z'),
 			updatedAt: new Date('2020-01-02T00:00:00Z'),
-			role,
-			loadRole: async () => role,
 		},
 		makePassport(),
 	);
 	const reserver = new PersonalUser<PersonalUserProps>(
 		{
-			userType: 'end-user',
+			userType: 'personal-users',
 			id: 'user-2',
 			isBlocked: false,
 			schemaVersion: '1.0.0',
@@ -139,18 +129,43 @@ function makeBaseProps(
 						zipCode: '12345',
 					},
 					billing: {
-						subscriptionId: null,
 						cybersourceCustomerId: null,
-						paymentState: '',
-						lastTransactionId: null,
-						lastPaymentAmount: null,
+						subscription: {
+							planCode: 'basic',
+							status: 'ACTIVE',
+							startDate: new Date('2020-01-01T00:00:00Z'),
+							subscriptionId: 'sub_456',
+						},
+						transactions: {
+							items: [
+								{
+									id: '1',
+									transactionId: 'txn_123',
+									amount: 1000,
+									referenceId: 'ref_123',
+									status: 'completed',
+									completedAt: new Date('2020-01-01T00:00:00Z'),
+									errorMessage: null,
+								},
+							],
+							getNewItem: () => ({
+								id: '2',
+								transactionId: 'txn_123',
+								amount: 1000,
+								referenceId: 'ref_123',
+								status: 'completed',
+								completedAt: new Date('2020-01-01T00:00:00Z'),
+								errorMessage: null,
+							}),
+							addItem: vi.fn(),
+							removeItem: vi.fn(),
+							removeAll: vi.fn(),
+						},
 					},
 				},
 			},
 			createdAt: new Date('2020-01-01T00:00:00Z'),
 			updatedAt: new Date('2020-01-02T00:00:00Z'),
-			role,
-			loadRole: async () => role,
 		},
 		makePassport(),
 	);
@@ -240,7 +255,9 @@ test.for(feature, ({ Scenario, Background, BeforeEachScenario }) => {
 			},
 		);
 		Then('the conversation should have a messagingConversationId', () => {
-			expect(newConversation.messagingConversationId).toBe('mock-messaging-conversation-id');
+			expect(newConversation.messagingConversationId).toBe(
+				'mock-messaging-conversation-id',
+			);
 		});
 	});
 
@@ -254,16 +271,59 @@ test.for(feature, ({ Scenario, Background, BeforeEachScenario }) => {
 			},
 		);
 		When('I set the sharer to a new user', () => {
+			const originalSharer =
+				conversation.sharer as PersonalUser<PersonalUserProps>;
 			newSharer = new PersonalUser(
 				{
-					...conversation.sharer,
+					userType: 'personal-users',
 					id: 'user-3',
-					externalId: 'user-external-3',
+					isBlocked: false,
+					schemaVersion: '1.0.0',
+					hasCompletedOnboarding: false,
 					account: {
-						...conversation.sharer.account,
+						accountType: originalSharer.account.accountType,
 						email: 'newsharer@cellix.com',
 						username: 'newsharer',
+						profile: {
+							firstName: originalSharer.account.profile.firstName,
+							lastName: originalSharer.account.profile.lastName,
+							aboutMe: originalSharer.account.profile.aboutMe,
+							location: originalSharer.account.profile.location,
+						billing: {
+							cybersourceCustomerId:
+								originalSharer.account.profile.billing.cybersourceCustomerId,
+							subscription:
+								originalSharer.account.profile.billing.subscription,
+							transactions: {
+								items: [
+										{
+											id: '1',
+											transactionId: 'txn_123',
+											amount: 1000,
+											referenceId: 'ref_123',
+											status: 'completed',
+											completedAt: new Date('2020-01-01T00:00:00Z'),
+											errorMessage: null,
+										},
+									],
+									getNewItem: () => ({
+										id: '2',
+										transactionId: 'txn_123',
+										amount: 1000,
+										referenceId: 'ref_123',
+										status: 'completed',
+										completedAt: new Date('2020-01-01T00:00:00Z'),
+										errorMessage: null,
+									}),
+									addItem: vi.fn(),
+									removeItem: vi.fn(),
+									removeAll: vi.fn(),
+								},
+							},
+						},
 					},
+					createdAt: originalSharer.createdAt,
+					updatedAt: originalSharer.updatedAt,
 				},
 				passport,
 			);
@@ -288,14 +348,61 @@ test.for(feature, ({ Scenario, Background, BeforeEachScenario }) => {
 			);
 			When('I try to set the sharer to a new user', () => {
 				setSharerWithoutPermission = () => {
+					const originalSharer =
+						conversation.sharer as PersonalUser<PersonalUserProps>;
 					// @ts-expect-error: testing private setter
 					conversation.sharer = new PersonalUser(
 						{
-							...conversation.sharer,
+							userType: 'personal-users',
 							id: 'user-3',
-							externalId: 'user-external-3',
-							displayName: 'New Sharer',
-							email: 'newsharer@cellix.com',
+							isBlocked: false,
+							schemaVersion: '1.0.0',
+							hasCompletedOnboarding: false,
+							account: {
+								accountType: originalSharer.account.accountType,
+								email: 'newsharer@cellix.com',
+								username: 'newsharer',
+								profile: {
+									firstName: originalSharer.account.profile.firstName,
+									lastName: originalSharer.account.profile.lastName,
+									aboutMe: originalSharer.account.profile.aboutMe,
+									location: originalSharer.account.profile.location,
+									billing: {
+										cybersourceCustomerId:
+											originalSharer.account.profile.billing
+												.cybersourceCustomerId,
+										subscription:
+											originalSharer.account.profile.billing.subscription,
+										transactions: {
+											items: [
+												{
+													id: '1',
+													transactionId: 'txn_123',
+													amount: 1000,
+													referenceId: 'ref_123',
+													status: 'completed',
+													completedAt: new Date('2020-01-01T00:00:00Z'),
+													errorMessage: null,
+												},
+											],
+											getNewItem: () => ({
+												id: '2',
+												transactionId: 'txn_123',
+												amount: 1000,
+												referenceId: 'ref_123',
+												status: 'completed',
+												completedAt: new Date('2020-01-01T00:00:00Z'),
+												errorMessage: null,
+											}),
+											addItem: vi.fn(),
+											removeItem: vi.fn(),
+											removeAll: vi.fn(),
+										},
+									},
+								},
+							},
+							createdAt: originalSharer.createdAt,
+							updatedAt: originalSharer.updatedAt,
 						},
 						passport,
 					);
@@ -322,16 +429,60 @@ test.for(feature, ({ Scenario, Background, BeforeEachScenario }) => {
 			},
 		);
 		When('I set the reserver to a new user', () => {
+			const originalReserver =
+				conversation.reserver as PersonalUser<PersonalUserProps>;
 			newReserver = new PersonalUser(
 				{
-					...conversation.reserver,
+					userType: 'personal-users',
 					id: 'user-4',
-					externalId: 'user-external-4',
+					isBlocked: false,
+					schemaVersion: '1.0.0',
+					hasCompletedOnboarding: false,
 					account: {
-						...conversation.reserver.account,
+						accountType: originalReserver.account.accountType,
 						email: 'newreserver@cellix.com',
 						username: 'newreserver',
+						profile: {
+							firstName: originalReserver.account.profile.firstName,
+							lastName: originalReserver.account.profile.lastName,
+							aboutMe: originalReserver.account.profile.aboutMe,
+							location: originalReserver.account.profile.location,
+						billing: {
+							cybersourceCustomerId:
+								originalReserver.account.profile.billing
+									.cybersourceCustomerId,
+							subscription:
+								originalReserver.account.profile.billing.subscription,
+							transactions: {
+								items: [
+										{
+											id: '1',
+											transactionId: 'txn_123',
+											amount: 1000,
+											referenceId: 'ref_123',
+											status: 'completed',
+											completedAt: new Date('2020-01-01T00:00:00Z'),
+											errorMessage: null,
+										},
+									],
+									getNewItem: () => ({
+										id: '2',
+										transactionId: 'txn_123',
+										amount: 1000,
+										referenceId: 'ref_123',
+										status: 'completed',
+										completedAt: new Date('2020-01-01T00:00:00Z'),
+										errorMessage: null,
+									}),
+									addItem: vi.fn(),
+									removeItem: vi.fn(),
+									removeAll: vi.fn(),
+								},
+							},
+						},
 					},
+					createdAt: originalReserver.createdAt,
+					updatedAt: originalReserver.updatedAt,
 				},
 				passport,
 			);
@@ -358,14 +509,61 @@ test.for(feature, ({ Scenario, Background, BeforeEachScenario }) => {
 			);
 			When('I try to set the reserver to a new user', () => {
 				setReserverWithoutPermission = () => {
+					const originalReserver =
+						conversation.reserver as PersonalUser<PersonalUserProps>;
 					// @ts-expect-error: testing private setter
 					conversation.reserver = new PersonalUser(
 						{
-							...conversation.reserver,
+							userType: 'personal-users',
 							id: 'user-4',
-							externalId: 'user-external-4',
-							displayName: 'New Reserver',
-							email: 'newreserver@cellix.com',
+							isBlocked: false,
+							schemaVersion: '1.0.0',
+							hasCompletedOnboarding: false,
+							account: {
+								accountType: originalReserver.account.accountType,
+								email: 'newreserver@cellix.com',
+								username: 'newreserver',
+								profile: {
+									firstName: originalReserver.account.profile.firstName,
+									lastName: originalReserver.account.profile.lastName,
+									aboutMe: originalReserver.account.profile.aboutMe,
+									location: originalReserver.account.profile.location,
+								billing: {
+									cybersourceCustomerId:
+										originalReserver.account.profile.billing
+											.cybersourceCustomerId,
+									subscription:
+										originalReserver.account.profile.billing.subscription,
+									transactions: {
+										items: [
+												{
+													id: '1',
+													transactionId: 'txn_123',
+													amount: 1000,
+													referenceId: 'ref_123',
+													status: 'completed',
+													completedAt: new Date('2020-01-01T00:00:00Z'),
+													errorMessage: null,
+												},
+											],
+											getNewItem: () => ({
+												id: '2',
+												transactionId: 'txn_123',
+												amount: 1000,
+												referenceId: 'ref_123',
+												status: 'completed',
+												completedAt: new Date('2020-01-01T00:00:00Z'),
+												errorMessage: null,
+											}),
+											addItem: vi.fn(),
+											removeItem: vi.fn(),
+											removeAll: vi.fn(),
+										},
+									},
+								},
+							},
+							createdAt: originalReserver.createdAt,
+							updatedAt: originalReserver.updatedAt,
 						},
 						passport,
 					);
