@@ -23,7 +23,7 @@
 	},
 	"scripts": {
 		"start": "node dist/src/index.js",
-		"build": "tsc --build && node dist/src/copy-assets.js",
+		"build": "tsc --build && tsx src/copy-assets.ts",
 		"clean": "rimraf node_modules package-lock.json dist"
 	}
 }
