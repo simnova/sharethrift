@@ -26,7 +26,7 @@ function isBetweenManual(
 		: date.isBefore(end, unit);
 	return isAfterStart && isBeforeEnd;
 }
-export interface ListingInformationProps {
+interface ListingInformationProps {
 	listing: ItemListing;
 	userIsSharer: boolean;
 	isAuthenticated: boolean;

@@ -44,7 +44,7 @@ export interface ItemListingReadRepository {
 	>;
 }
 
-export class ItemListingReadRepositoryImpl
+class ItemListingReadRepositoryImpl
 	implements ItemListingReadRepository
 {
 	private readonly mongoDataSource: ItemListingDataSource;
@@ -191,6 +191,6 @@ export class ItemListingReadRepositoryImpl
 export const getItemListingReadRepository = (
 	models: ModelsContext,
 	passport: Domain.Passport,
-) => {
+): ItemListingReadRepository => {
 	return new ItemListingReadRepositoryImpl(models, passport);
 };

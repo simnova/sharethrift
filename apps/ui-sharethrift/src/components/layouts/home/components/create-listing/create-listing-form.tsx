@@ -5,7 +5,7 @@ import dayjs from 'dayjs';
 const { TextArea } = Input;
 const { RangePicker } = DatePicker;
 
-export interface ListingFormProps {
+interface ListingFormProps {
 	categories: string[];
 	isLoading: boolean;
 	maxCharacters: number;

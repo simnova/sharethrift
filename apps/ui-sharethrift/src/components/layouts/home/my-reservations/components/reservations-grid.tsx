@@ -8,7 +8,7 @@ type ReservationRequestFieldsFragment =
 
 const { Text } = Typography;
 
-export interface ReservationsGridProps {
+interface ReservationsGridProps {
 	reservations: ReservationRequestFieldsFragment[]; // Type will eventually come from generated graphql files
 	onCancel?: (id: string) => void;
 	onClose?: (id: string) => void;

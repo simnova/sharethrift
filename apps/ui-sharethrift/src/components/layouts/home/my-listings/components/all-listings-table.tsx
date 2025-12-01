@@ -8,7 +8,7 @@ import { getStatusTagClass } from './status-tag-class.ts';
 
 const { Search } = Input;
 
-export interface AllListingsTableProps {
+interface AllListingsTableProps {
 	data: HomeAllListingsTableContainerListingFieldsFragment[];
 	searchText: string;
 	statusFilters: string[];

@@ -5,7 +5,7 @@ import { MainImage } from './components/main-image.tsx';
 import { Thumbnail } from './components/thumbnail.tsx';
 import styles from './image-gallery.module.css';
 
-export interface ImageGalleryProps {
+interface ImageGalleryProps {
 	uploadedImages: string[];
 	onImageRemove: (imageUrl: string) => void;
 	mainFileInputRef: RefObject<HTMLInputElement | null>;

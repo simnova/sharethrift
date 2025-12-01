@@ -6,7 +6,7 @@ import {
 	getActionButtons,
 } from './requests-status-helpers.tsx';
 
-export interface RequestsCardProps {
+interface RequestsCardProps {
 	listing: ListingRequestData;
 	onAction: (action: string, listingId: string) => void;
 }

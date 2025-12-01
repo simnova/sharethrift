@@ -11,7 +11,7 @@ type ReservationRequestFieldsFragment =
 
 const { Text } = Typography;
 
-export interface ReservationCardProps {
+interface ReservationCardProps {
 	reservation: ReservationRequestFieldsFragment;
 	onCancel?: (id: string) => void;
 	onClose?: (id: string) => void;
