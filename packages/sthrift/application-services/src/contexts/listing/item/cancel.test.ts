@@ -130,4 +130,53 @@ test.for(feature, ({ Scenario, BeforeEachScenario }) => {
 			});
 		},
 	);
+
+	Scenario(
+		'Cancel fails when save returns undefined',
+		({ Given, And, When, Then }) => {
+			Given('a valid listing ID "listing-456"', () => {
+				command = { id: 'listing-456' };
+			});
+
+			And('the listing exists', () => {
+				// Listing exists check
+			});
+
+			And('save returns undefined', () => {
+				const mockListing = {
+					id: 'listing-456',
+					state: 'Active',
+					cancel: vi.fn(),
+				};
+
+				(
+					// biome-ignore lint/suspicious/noExplicitAny: Test mock access
+					mockDataSources.domainDataSource as any
+				).Listing.ItemListing.ItemListingUnitOfWork.withScopedTransaction.mockImplementation(
+					// biome-ignore lint/suspicious/noExplicitAny: Test mock callback
+					async (callback: any) => {
+						const mockRepo = {
+							getById: vi.fn().mockResolvedValue(mockListing),
+							save: vi.fn().mockResolvedValue(undefined),
+						};
+						await callback(mockRepo);
+					},
+				);
+			});
+
+			When('the cancel command is executed', async () => {
+				const cancelFn = cancel(mockDataSources);
+				try {
+					result = await cancelFn(command);
+				} catch (err) {
+					error = err;
+				}
+			});
+
+			Then('an error "ItemListing not cancelled" should be thrown', () => {
+				expect(error).toBeDefined();
+				expect(error.message).toBe('ItemListing not cancelled');
+			});
+		},
+	);
 });

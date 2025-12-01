@@ -156,4 +156,107 @@ test.for(feature, ({ Scenario, BeforeEachScenario }) => {
 			});
 		},
 	);
+
+	Scenario(
+		'Creation fails when save returns undefined',
+		({ Given, And, When, Then }) => {
+			let error: Error | undefined;
+
+			Given(
+				'an admin user with email "fail@example.com" does not exist',
+				() => {
+					mockReadRepo.getByEmail.mockResolvedValue(null);
+					command = {
+						email: 'fail@example.com',
+						username: 'failuser',
+						firstName: 'Fail',
+						lastName: 'User',
+						roleId: 'role-123',
+					};
+				},
+			);
+
+			And('valid user details are provided', () => {
+				// command already set above
+			});
+
+			And('the repository save returns undefined', () => {
+				const mockNewUser = {
+					id: 'user-fail',
+					props: { role: {} },
+				};
+				mockRepo.getNewInstance.mockResolvedValue(mockNewUser);
+				mockRepo.save.mockResolvedValue({ id: undefined });
+			});
+
+			When('the createIfNotExists command is executed', async () => {
+				const createFn = createIfNotExists(mockDataSources);
+				try {
+					await createFn(command);
+				} catch (e) {
+					error = e as Error;
+				}
+			});
+
+			Then(
+				'an error should be thrown with message "admin user not created"',
+				() => {
+					expect(error).toBeDefined();
+					expect(error?.message).toBe('admin user not created');
+				},
+			);
+		},
+	);
+
+	Scenario(
+		'Creation fails when re-query returns undefined',
+		({ Given, And, When, Then }) => {
+			let error: Error | undefined;
+
+			Given(
+				'an admin user with email "fail2@example.com" does not exist',
+				() => {
+					mockReadRepo.getByEmail.mockResolvedValue(null);
+					command = {
+						email: 'fail2@example.com',
+						username: 'failuser2',
+						firstName: 'Fail',
+						lastName: 'User',
+						roleId: 'role-123',
+					};
+				},
+			);
+
+			And('valid user details are provided', () => {
+				// command already set above
+			});
+
+			And('the re-query after save returns undefined', () => {
+				const mockNewUser = {
+					id: 'user-fail2',
+					props: { role: {} },
+				};
+				mockRepo.getNewInstance.mockResolvedValue(mockNewUser);
+				mockRepo.save.mockResolvedValue({ id: 'user-fail2' });
+				mockReadRepo.getById.mockResolvedValue(null);
+			});
+
+			When('the createIfNotExists command is executed', async () => {
+				const createFn = createIfNotExists(mockDataSources);
+				try {
+					await createFn(command);
+				} catch (e) {
+					error = e as Error;
+				}
+			});
+
+			Then(
+				'an error should be thrown with message "admin user not found after creation"',
+				() => {
+					expect(error).toBeDefined();
+					expect(error?.message).toBe('admin user not found after creation');
+				},
+			);
+		},
+	);
 });

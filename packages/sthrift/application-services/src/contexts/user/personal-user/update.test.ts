@@ -351,6 +351,29 @@ test.for(feature, ({ Scenario, BeforeEachScenario }) => {
 		},
 	);
 
+	Scenario('Update fails when user ID is empty', ({ Given, When, Then }) => {
+		Given('an empty user ID', () => {
+			command.id = '';
+		});
+
+		When('the update command is executed', async () => {
+			const updateFn = update(mockDataSources);
+			try {
+				result = await updateFn(command);
+			} catch (error) {
+				result = error;
+			}
+		});
+
+		Then(
+			'an error should be thrown with message "personal user id is required"',
+			() => {
+				expect(result).toBeInstanceOf(Error);
+				expect((result as Error).message).toBe('personal user id is required');
+			},
+		);
+	});
+
 	Scenario(
 		'Update fails when save returns undefined',
 		({ Given, And, When, Then }) => {
@@ -419,6 +442,71 @@ test.for(feature, ({ Scenario, BeforeEachScenario }) => {
 					);
 				},
 			);
+		},
+	);
+
+	Scenario(
+		'Updating user hasCompletedOnboarding status',
+		({ Given, And, When, Then }) => {
+			Given('a valid user ID "user-123"', () => {
+				command.id = 'user-123';
+			});
+
+			And('the user exists', () => {
+				mockDataSources = {
+					domainDataSource: {
+						User: {
+							PersonalUser: {
+								PersonalUserUnitOfWork: {
+									withScopedTransaction: vi.fn(async (callback) => {
+										const mockUser = {
+											id: 'user-123',
+											isBlocked: false,
+											hasCompletedOnboarding: false,
+											account: {
+												accountType: 'Individual',
+												username: 'johndoe',
+												profile: {
+													firstName: 'John',
+													lastName: 'Doe',
+													location: {},
+													billing: {},
+												},
+											},
+										};
+										const mockRepo = {
+											getById: vi.fn().mockResolvedValue(mockUser),
+											save: vi.fn().mockResolvedValue({
+												...mockUser,
+												hasCompletedOnboarding: true,
+											}),
+										};
+										await callback(mockRepo);
+									}),
+								},
+							},
+						},
+					},
+				// biome-ignore lint/suspicious/noExplicitAny: Test mock type assertion
+				} as any;
+			});
+
+			When(
+				'the update command is executed with hasCompletedOnboarding true',
+				async () => {
+					command = {
+						id: 'user-123',
+						hasCompletedOnboarding: true,
+					};
+					const updateFn = update(mockDataSources);
+					result = await updateFn(command);
+				},
+			);
+
+			Then('the hasCompletedOnboarding should be updated', () => {
+				expect(result).toBeDefined();
+				expect(result.hasCompletedOnboarding).toBe(true);
+			});
 		},
 	);
 });

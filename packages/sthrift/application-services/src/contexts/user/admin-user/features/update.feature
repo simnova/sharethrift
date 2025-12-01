@@ -16,6 +16,14 @@ Feature: Update Admin User
     Then the admin user account should be updated
     And the updated user should be returned
 
+  Scenario: Successfully updating admin user location with address2
+    Given a valid admin user ID "user-123"
+    And the admin user exists
+    And update data includes all location fields
+    When the update command is executed
+    Then the admin user location should be updated
+    And the updated user should be returned
+
   Scenario: Updating non-existent admin user
     Given an admin user ID "user-999" that does not exist
     When the update command is executed
@@ -25,3 +33,17 @@ Feature: Update Admin User
     Given no admin user ID is provided
     When the update command is executed
     Then an error should be thrown with message "admin user id is required"
+
+  Scenario: Update fails when save returns undefined
+    Given a valid admin user ID "user-123"
+    And the admin user exists but save returns undefined
+    When the update command is executed
+    Then an error should be thrown with message "admin user update failed"
+
+  Scenario: Successfully updating admin user profile with aboutMe
+    Given a valid admin user ID "user-123"
+    And the admin user exists
+    And update data includes profile aboutMe
+    When the update command is executed
+    Then the admin user profile should be updated with aboutMe
+    And the updated user should be returned

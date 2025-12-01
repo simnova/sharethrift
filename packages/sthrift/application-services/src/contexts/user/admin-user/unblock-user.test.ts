@@ -112,4 +112,39 @@ test.for(feature, ({ Scenario, BeforeEachScenario }) => {
 			);
 		},
 	);
+
+	Scenario(
+		'Unblocking admin user fails when save returns undefined',
+		({ Given, And, When, Then }) => {
+			Given('a valid admin user ID "user-123"', () => {
+				command = { userId: 'user-123' };
+			});
+
+			And('the admin user exists but save returns undefined', () => {
+				const mockUser = {
+					id: 'user-123',
+					isBlocked: true,
+				};
+				mockRepo.getById.mockResolvedValue(mockUser);
+				mockRepo.save.mockResolvedValue(undefined);
+			});
+
+			When('the unblockUser command is executed', async () => {
+				const unblockFn = unblockUser(mockDataSources);
+				try {
+					await unblockFn(command);
+				} catch (e) {
+					error = e;
+				}
+			});
+
+			Then(
+				'an error should be thrown with message "admin user unblock failed"',
+				() => {
+					expect(error).toBeDefined();
+					expect(error.message).toBe('admin user unblock failed');
+				},
+			);
+		},
+	);
 });

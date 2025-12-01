@@ -54,9 +54,20 @@ Feature: Update Personal User
     When the update command is executed
     Then an error should be thrown with message "personal user not found"
 
+  Scenario: Update fails when user ID is empty
+    Given an empty user ID
+    When the update command is executed
+    Then an error should be thrown with message "personal user id is required"
+
   Scenario: Update fails when save returns undefined
     Given a valid user ID "user-123"
     And the user exists
     And save returns undefined
     When the update command is executed
     Then an error should be thrown with message "personal user update failed"
+
+  Scenario: Updating user hasCompletedOnboarding status
+    Given a valid user ID "user-123"
+    And the user exists
+    When the update command is executed with hasCompletedOnboarding true
+    Then the hasCompletedOnboarding should be updated

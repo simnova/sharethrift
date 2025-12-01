@@ -109,4 +109,39 @@ test.for(feature, ({ Scenario, BeforeEachScenario }) => {
 			);
 		},
 	);
+
+	Scenario(
+		'Blocking admin user fails when save returns undefined',
+		({ Given, And, When, Then }) => {
+			Given('a valid admin user ID "user-123"', () => {
+				command = { userId: 'user-123' };
+			});
+
+			And('the admin user exists but save returns undefined', () => {
+				const mockUser = {
+					id: 'user-123',
+					isBlocked: false,
+				};
+				mockRepo.getById.mockResolvedValue(mockUser);
+				mockRepo.save.mockResolvedValue(undefined);
+			});
+
+			When('the blockUser command is executed', async () => {
+				const blockFn = blockUser(mockDataSources);
+				try {
+					await blockFn(command);
+				} catch (e) {
+					error = e;
+				}
+			});
+
+			Then(
+				'an error should be thrown with message "admin user block failed"',
+				() => {
+					expect(error).toBeDefined();
+					expect(error.message).toBe('admin user block failed');
+				},
+			);
+		},
+	);
 });

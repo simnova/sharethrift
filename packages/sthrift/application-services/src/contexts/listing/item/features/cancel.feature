@@ -11,3 +11,10 @@ Feature: Cancel Item Listing
     And the listing does not exist
     When the cancel command is executed
     Then an error "Listing not found" should be thrown
+
+  Scenario: Cancel fails when save returns undefined
+    Given a valid listing ID "listing-456"
+    And the listing exists
+    And save returns undefined
+    When the cancel command is executed
+    Then an error "ItemListing not cancelled" should be thrown

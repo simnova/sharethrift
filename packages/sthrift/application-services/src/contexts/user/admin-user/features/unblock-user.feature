@@ -11,3 +11,9 @@ Feature: Unblock Admin User
     Given an admin user ID "user-999" that does not exist
     When the unblockUser command is executed
     Then an error should be thrown with message "admin user not found"
+
+  Scenario: Unblocking admin user fails when save returns undefined
+    Given a valid admin user ID "user-123"
+    And the admin user exists but save returns undefined
+    When the unblockUser command is executed
+    Then an error should be thrown with message "admin user unblock failed"

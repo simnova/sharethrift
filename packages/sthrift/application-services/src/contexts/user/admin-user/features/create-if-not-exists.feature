@@ -12,3 +12,17 @@ Feature: Create Admin User If Not Exists
     When the createIfNotExists command is executed
     Then the existing admin user should be returned
     And no new user should be created
+
+  Scenario: Creation fails when save returns undefined
+    Given an admin user with email "fail@example.com" does not exist
+    And valid user details are provided
+    And the repository save returns undefined
+    When the createIfNotExists command is executed
+    Then an error should be thrown with message "admin user not created"
+
+  Scenario: Creation fails when re-query returns undefined
+    Given an admin user with email "fail2@example.com" does not exist
+    And valid user details are provided
+    And the re-query after save returns undefined
+    When the createIfNotExists command is executed
+    Then an error should be thrown with message "admin user not found after creation"

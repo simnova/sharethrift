@@ -11,3 +11,10 @@ Feature: Create User If Not Exists
     And the user already exists
     When the createIfNotExists command is executed
     Then the existing user should be returned
+
+  Scenario: Creation fails when save returns undefined
+    Given a valid email "fail@example.com"
+    And the user does not exist
+    And the repository save returns undefined
+    When the createIfNotExists command is executed
+    Then an error should be thrown with message "personal user not found"
