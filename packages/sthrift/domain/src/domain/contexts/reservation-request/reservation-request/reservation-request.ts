@@ -49,16 +49,25 @@ export class ReservationRequest<props extends ReservationRequestProps>
 			throw new Error('Reservation start date must be before end date');
 		}
 		const instance = new ReservationRequest(newProps, passport);
+		
+		// Mark as new first to allow property setting
 		instance.markAsNew();
-		instance.state = state;
+		
+		// Set properties while isNew is true
 		instance.listing = listing;
 		instance.reserver = reserver;
 		instance.reservationPeriodStart = reservationPeriodStart;
 		instance.reservationPeriodEnd = reservationPeriodEnd;
+		
 		// Store IDs for integration event
 		instance._listingId = listing.id;
 		instance._reserverId = reserver.id;
 		instance._sharerId = listing.sharer.id;
+		
+		// Set state (this will trigger the request() method and emit the integration event)
+		instance.state = state;
+		
+		// Mark as no longer new
 		instance.isNew = false;
 		
 		return instance;
@@ -66,7 +75,7 @@ export class ReservationRequest<props extends ReservationRequestProps>
 
 	private markAsNew(): void {
 		this.isNew = true;
-		this.request(); // Automatically set state to requested and emit event
+		// Don't automatically call request() here - let the caller control when to set state
 	}
 
 	//#region Properties
