@@ -32,7 +32,11 @@ export interface DomainDataSource {
 			ReservationRequestUnitOfWork: Contexts.ReservationRequest.ReservationRequest.ReservationRequestUnitOfWork;
 		};
 	};
-
+AccountPlan: {
+		AccountPlan: {
+			AccountPlanUnitOfWork: Contexts.AccountPlan.AccountPlan.AccountPlanUnitOfWork;
+		};
+	};
 	AppealRequest: {
 		ListingAppealRequest: {
 			ListingAppealRequestUnitOfWork: Contexts.AppealRequest.ListingAppealRequest.ListingAppealRequestUnitOfWork;

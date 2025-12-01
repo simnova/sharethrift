@@ -23,7 +23,10 @@ import { ServiceMessagingMock } from '@sthrift/messaging-service-mock';
 
 import { graphHandlerCreator } from '@sthrift/graphql';
 import { restHandlerCreator } from '@sthrift/rest';
-import { ServiceCybersource } from '@sthrift/service-cybersource';
+
+import type { PaymentService } from '@cellix/payment-service';
+import { PaymentServiceMock } from '@sthrift/payment-service-mock';
+import { PaymentServiceCybersource } from '@sthrift/payment-service-cybersource';
 import { ServiceSearchIndex } from '@sthrift/search-service-index';
 
 const { NODE_ENV } = process.env;
@@ -33,38 +36,40 @@ Cellix.initializeInfrastructureServices<ApiContextSpec, ApplicationServices>(
 	(serviceRegistry) => {
 		serviceRegistry
 			.registerInfrastructureService(
-				new ServiceMongoose(
-					MongooseConfig.mongooseConnectionString,
-					MongooseConfig.mongooseConnectOptions,
-				),
-			)
+new ServiceMongoose(
+MongooseConfig.mongooseConnectionString,
+MongooseConfig.mongooseConnectOptions,
+),
+)
 			.registerInfrastructureService(new ServiceBlobStorage())
 			.registerInfrastructureService(
-				new ServiceTokenValidation(TokenValidationConfig.portalTokens),
-			)
+new ServiceTokenValidation(TokenValidationConfig.portalTokens),
+)
 			.registerInfrastructureService(
-				isDevelopment
-					? new ServiceMessagingMock()
+isDevelopment
+? new ServiceMessagingMock()
 					: new ServiceMessagingTwilio(),
 			)
-			.registerInfrastructureService(new ServiceCybersource())
+			.registerInfrastructureService(
+isDevelopment ? new PaymentServiceMock() : new PaymentServiceCybersource(),
+			)
 			.registerInfrastructureService(new ServiceSearchIndex());
 	},
 )
 	.setContext((serviceRegistry) => {
 		const dataSourcesFactory = MongooseConfig.mongooseContextBuilder(
-			serviceRegistry.getInfrastructureService<ServiceMongoose>(
+serviceRegistry.getInfrastructureService<ServiceMongoose>(
 				ServiceMongoose,
 			),
 		);
 
 		const messagingService = isDevelopment
-			? serviceRegistry.getInfrastructureService<MessagingService>(
-					ServiceMessagingMock,
-				)
-			: serviceRegistry.getInfrastructureService<MessagingService>(
-					ServiceMessagingTwilio,
-				);
+			? serviceRegistry.getInfrastructureService<MessagingService>(ServiceMessagingMock)
+			: serviceRegistry.getInfrastructureService<MessagingService>(ServiceMessagingTwilio);
+
+		const paymentService = isDevelopment
+			? serviceRegistry.getInfrastructureService<PaymentService>(PaymentServiceMock)
+			: serviceRegistry.getInfrastructureService<PaymentService>(PaymentServiceCybersource);
 
 		const { domainDataSource } = dataSourcesFactory.withSystemPassport();
 		const searchService =
@@ -79,14 +84,8 @@ Cellix.initializeInfrastructureServices<ApiContextSpec, ApplicationServices>(
 				serviceRegistry.getInfrastructureService<ServiceTokenValidation>(
 					ServiceTokenValidation,
 				),
-			paymentService:
-				serviceRegistry.getInfrastructureService<ServiceCybersource>(
-					ServiceCybersource,
-				),
-			searchService:
-				serviceRegistry.getInfrastructureService<ServiceSearchIndex>(
-					ServiceSearchIndex,
-				),
+			paymentService,
+			searchService,
 			messagingService,
 		};
 	})
@@ -94,16 +93,16 @@ Cellix.initializeInfrastructureServices<ApiContextSpec, ApplicationServices>(
 		buildApplicationServicesFactory(context),
 	)
 	.registerAzureFunctionHttpHandler(
-		'graphql',
-		{
-			route: 'graphql/{*segments}',
-			methods: ['GET', 'POST', 'PATCH', 'PUT', 'DELETE', 'OPTIONS', 'HEAD'],
-		},
-		graphHandlerCreator,
-	)
+'graphql',
+{
+route: 'graphql/{*segments}',
+methods: ['GET', 'POST', 'PATCH', 'PUT', 'DELETE', 'OPTIONS', 'HEAD'],
+},
+graphHandlerCreator,
+)
 	.registerAzureFunctionHttpHandler(
-		'rest',
-		{ route: '{communityId}/{role}/{memberId}/{*rest}' },
-		restHandlerCreator,
-	)
+'rest',
+{ route: '{communityId}/{role}/{memberId}/{*rest}' },
+restHandlerCreator,
+)
 	.startUp();
