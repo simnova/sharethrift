@@ -7,6 +7,8 @@ import { GuestUserPassport } from './contexts/guest.user.passport.ts';
 import { GuestListingPassport } from './contexts/guest.listing.passport.ts';
 import { GuestConversationPassport } from './contexts/guest.conversation.passport.ts';
 import { GuestReservationRequestPassport } from './contexts/guest.reservation-request.passport.ts';
+import { GuestAccountPlanPassport } from './contexts/guest.account-plan.passport.ts';
+import { GuestAppealRequestPassport } from './contexts/guest.appeal-request.passport.ts';
 
 const test = { for: describeFeature };
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
@@ -110,6 +112,54 @@ test.for(feature, ({ Scenario }) => {
 		And('accessing reservationRequest property again should return the same instance', () => {
 			reservationPassport2 = guestPassport.reservationRequest;
 			expect(reservationPassport1).toBe(reservationPassport2);
+		});
+	});
+
+	Scenario('Creating GuestPassport and accessing account plan passport', ({ When, Then, And }) => {
+		// biome-ignore lint/suspicious/noExplicitAny: Test variable
+		let accountPlanPassport1: any;
+		// biome-ignore lint/suspicious/noExplicitAny: Test variable
+		let accountPlanPassport2: any;
+
+		When('I create a GuestPassport', () => {
+			guestPassport = new GuestPassport();
+		});
+
+		And('I access the accountPlan property', () => {
+			accountPlanPassport1 = guestPassport.accountPlan;
+		});
+
+		Then('it should return a GuestAccountPlanPassport instance', () => {
+			expect(accountPlanPassport1).toBeInstanceOf(GuestAccountPlanPassport);
+		});
+
+		And('accessing accountPlan property again should return the same instance', () => {
+			accountPlanPassport2 = guestPassport.accountPlan;
+			expect(accountPlanPassport1).toBe(accountPlanPassport2);
+		});
+	});
+
+	Scenario('Creating GuestPassport and accessing appeal request passport', ({ When, Then, And }) => {
+		// biome-ignore lint/suspicious/noExplicitAny: Test variable
+		let appealRequestPassport1: any;
+		// biome-ignore lint/suspicious/noExplicitAny: Test variable
+		let appealRequestPassport2: any;
+
+		When('I create a GuestPassport', () => {
+			guestPassport = new GuestPassport();
+		});
+
+		And('I access the appealRequest property', () => {
+			appealRequestPassport1 = guestPassport.appealRequest;
+		});
+
+		Then('it should return a GuestAppealRequestPassport instance', () => {
+			expect(appealRequestPassport1).toBeInstanceOf(GuestAppealRequestPassport);
+		});
+
+		And('accessing appealRequest property again should return the same instance', () => {
+			appealRequestPassport2 = guestPassport.appealRequest;
+			expect(appealRequestPassport1).toBe(appealRequestPassport2);
 		});
 	});
 });

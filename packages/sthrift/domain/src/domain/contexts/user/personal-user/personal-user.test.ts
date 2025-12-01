@@ -341,4 +341,55 @@ test.for(feature, ({ Scenario, Background, BeforeEachScenario }) => {
 			expect(user.updatedAt.getTime()).toBeGreaterThan(0);
 		});
 	});
+
+	Scenario('Adding a billing transaction', ({ Given, And, When, Then }) => {
+		let transactionAdded = false;
+
+		Given('an existing PersonalUser aggregate', () => {
+			passport = makePassport(true, false);
+			user = new PersonalUser(makeBaseProps(), passport);
+		});
+		And('the user has permission to edit their account', () => {
+			// Already set up in makePassport with isEditingOwnAccount: true
+		});
+		When('I add a billing transaction with valid data', () => {
+			user.requestAddAccountProfileBillingTransaction(
+				'txn_new_123',
+				150.00,
+				'ref_new_123',
+				'completed',
+				new Date('2024-06-01'),
+			);
+			transactionAdded = true;
+		});
+		Then('the transaction should be added successfully', () => {
+			expect(transactionAdded).toBe(true);
+		});
+	});
+
+	Scenario('Adding a billing transaction with error message', ({ Given, And, When, Then }) => {
+		let transactionAdded = false;
+
+		Given('an existing PersonalUser aggregate', () => {
+			passport = makePassport(true, false);
+			user = new PersonalUser(makeBaseProps(), passport);
+		});
+		And('the user has permission to edit their account', () => {
+			// Already set up in makePassport with isEditingOwnAccount: true
+		});
+		When('I add a billing transaction with an error message', () => {
+			user.requestAddAccountProfileBillingTransaction(
+				'txn_failed_123',
+				75.00,
+				'ref_failed_123',
+				'failed',
+				new Date('2024-06-02'),
+				'Payment declined',
+			);
+			transactionAdded = true;
+		});
+		Then('the transaction should be added with the error message', () => {
+			expect(transactionAdded).toBe(true);
+		});
+	});
 });

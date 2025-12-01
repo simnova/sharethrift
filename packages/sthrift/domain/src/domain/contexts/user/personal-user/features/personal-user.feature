@@ -66,3 +66,15 @@ Feature: <AggregateRoot> PersonalUser
     Given an existing PersonalUser aggregate
     When I access the updatedAt property
     Then it should return a valid date
+
+  Scenario: Adding a billing transaction
+    Given an existing PersonalUser aggregate
+    And the user has permission to edit their account
+    When I add a billing transaction with valid data
+    Then the transaction should be added successfully
+
+  Scenario: Adding a billing transaction with error message
+    Given an existing PersonalUser aggregate
+    And the user has permission to edit their account
+    When I add a billing transaction with an error message
+    Then the transaction should be added with the error message

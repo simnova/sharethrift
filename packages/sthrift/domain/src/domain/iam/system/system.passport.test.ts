@@ -7,6 +7,8 @@ import { SystemUserPassport } from './contexts/system.user.passport.ts';
 import { SystemListingPassport } from './contexts/system.listing.passport.ts';
 import { SystemConversationPassport } from './contexts/system.conversation.passport.ts';
 import { SystemReservationRequestPassport } from './contexts/system.reservation-request.ts';
+import { SystemAccountPlanPassport } from './contexts/system.account-plan.passport.ts';
+import { SystemAppealRequestPassport } from './contexts/system.appeal-request.passport.ts';
 
 const test = { for: describeFeature };
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
@@ -126,6 +128,62 @@ test.for(feature, ({ Scenario }) => {
 		And('accessing reservationRequest property again should return the same instance', () => {
 			reservationPassport2 = systemPassport.reservationRequest;
 			expect(reservationPassport1).toBe(reservationPassport2);
+		});
+	});
+
+	Scenario('Creating SystemPassport and accessing account plan passport', ({ Given, When, And, Then }) => {
+		// biome-ignore lint/suspicious/noExplicitAny: Test variable
+		let accountPlanPassport1: any;
+		// biome-ignore lint/suspicious/noExplicitAny: Test variable
+		let accountPlanPassport2: any;
+
+		Given('I have a set of system permissions', () => {
+			// System permissions are built into SystemPassport
+		});
+
+		When('I create a SystemPassport with those permissions', () => {
+			systemPassport = new SystemPassport();
+		});
+
+		And('I access the accountPlan property', () => {
+			accountPlanPassport1 = systemPassport.accountPlan;
+		});
+
+		Then('it should return a SystemAccountPlanPassport instance initialized with those permissions', () => {
+			expect(accountPlanPassport1).toBeInstanceOf(SystemAccountPlanPassport);
+		});
+
+		And('accessing accountPlan property again should return the same instance', () => {
+			accountPlanPassport2 = systemPassport.accountPlan;
+			expect(accountPlanPassport1).toBe(accountPlanPassport2);
+		});
+	});
+
+	Scenario('Creating SystemPassport and accessing appeal request passport', ({ Given, When, And, Then }) => {
+		// biome-ignore lint/suspicious/noExplicitAny: Test variable
+		let appealRequestPassport1: any;
+		// biome-ignore lint/suspicious/noExplicitAny: Test variable
+		let appealRequestPassport2: any;
+
+		Given('I have a set of system permissions', () => {
+			// System permissions are built into SystemPassport
+		});
+
+		When('I create a SystemPassport with those permissions', () => {
+			systemPassport = new SystemPassport();
+		});
+
+		And('I access the appealRequest property', () => {
+			appealRequestPassport1 = systemPassport.appealRequest;
+		});
+
+		Then('it should return a SystemAppealRequestPassport instance initialized with those permissions', () => {
+			expect(appealRequestPassport1).toBeInstanceOf(SystemAppealRequestPassport);
+		});
+
+		And('accessing appealRequest property again should return the same instance', () => {
+			appealRequestPassport2 = systemPassport.appealRequest;
+			expect(appealRequestPassport1).toBe(appealRequestPassport2);
 		});
 	});
 });

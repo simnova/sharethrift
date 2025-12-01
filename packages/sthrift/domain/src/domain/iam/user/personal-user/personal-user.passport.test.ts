@@ -5,6 +5,11 @@ import { expect } from 'vitest';
 import { PersonalUserPassport } from './personal-user.passport.ts';
 import type { PersonalUserEntityReference } from '../../../contexts/user/personal-user/personal-user.entity.ts';
 import { PersonalUserUserPassport } from './contexts/personal-user.user.passport.ts';
+import { PersonalUserListingPassport } from './contexts/personal-user.listing.passport.ts';
+import { PersonalUserConversationPassport } from './contexts/personal-user.conversation.passport.ts';
+import { PersonalUserReservationRequestPassport } from './contexts/personal-user.reservation-request.passport.ts';
+import { PersonalUserAccountPlanPassport } from './contexts/personal-user.account-plan.passport.ts';
+import { PersonalUserAppealRequestPassport } from './contexts/personal-user.appeal-request.passport.ts';
 
 const test = { for: describeFeature };
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
@@ -60,13 +65,8 @@ test.for(feature, ({ Background, Scenario }) => {
 			// Property access happens in the Then step
 		});
 
-		Then('an error should be thrown indicating the method is not implemented', () => {
-			// Note: Based on the actual implementation, listing property is implemented
-			// The feature file appears to be outdated. Commenting expectation to match reality:
-			// expect(accessListing).toThrow('not implemented');
-			
-			// Current implementation actually returns PersonalUserListingPassport
-			expect(passport.listing).toBeDefined();
+		Then('I should receive a PersonalUserListingPassport instance', () => {
+			expect(passport.listing).toBeInstanceOf(PersonalUserListingPassport);
 		});
 	});
 
@@ -79,13 +79,8 @@ test.for(feature, ({ Background, Scenario }) => {
 			// Property access happens in the Then step
 		});
 
-		Then('an error should be thrown indicating the method is not implemented', () => {
-			// Note: Based on the actual implementation, conversation property is implemented
-			// The feature file appears to be outdated. Commenting expectation to match reality:
-			// expect(accessConversation).toThrow('not implemented');
-			
-			// Current implementation actually returns PersonalUserConversationPassport
-			expect(passport.conversation).toBeDefined();
+		Then('I should receive a PersonalUserConversationPassport instance', () => {
+			expect(passport.conversation).toBeInstanceOf(PersonalUserConversationPassport);
 		});
 	});
 
@@ -98,13 +93,36 @@ test.for(feature, ({ Background, Scenario }) => {
 			// Property access happens in the Then step
 		});
 
-		Then('an error should be thrown indicating the method is not implemented', () => {
-			// Note: Based on the actual implementation, reservationRequest property is implemented
-			// The feature file appears to be outdated. Commenting expectation to match reality:
-			// expect(accessReservation).toThrow('not implemented');
-			
-			// Current implementation actually returns PersonalUserReservationRequestPassport
-			expect(passport.reservationRequest).toBeDefined();
+		Then('I should receive a PersonalUserReservationRequestPassport instance', () => {
+			expect(passport.reservationRequest).toBeInstanceOf(PersonalUserReservationRequestPassport);
+		});
+	});
+
+	Scenario('Accessing the account plan passport', ({ When, And, Then }) => {
+		When('I create a PersonalUserPassport with a valid personal user', () => {
+			passport = new PersonalUserPassport(personalUser);
+		});
+
+		And('I access the accountPlan property', () => {
+			// Property access happens in the Then step
+		});
+
+		Then('I should receive a PersonalUserAccountPlanPassport instance', () => {
+			expect(passport.accountPlan).toBeInstanceOf(PersonalUserAccountPlanPassport);
+		});
+	});
+
+	Scenario('Accessing the appeal request passport', ({ When, And, Then }) => {
+		When('I create a PersonalUserPassport with a valid personal user', () => {
+			passport = new PersonalUserPassport(personalUser);
+		});
+
+		And('I access the appealRequest property', () => {
+			// Property access happens in the Then step
+		});
+
+		Then('I should receive a PersonalUserAppealRequestPassport instance', () => {
+			expect(passport.appealRequest).toBeInstanceOf(PersonalUserAppealRequestPassport);
 		});
 	});
 });
