@@ -92,14 +92,9 @@ Cellix.initializeInfrastructureServices<ApiContextSpec, ApplicationServices>(
 				serviceRegistry.getInfrastructureService<ServiceTokenValidation>(
 					ServiceTokenValidation,
 				),
-			paymentService:
-				serviceRegistry.getInfrastructureService<ServiceCybersource>(
-					ServiceCybersource,
-				),
+			paymentService,
 			messagingService,
 			emailService,
-			paymentService,
-      messagingService,
 		};
 	})
 	.initializeApplicationServices((context) =>

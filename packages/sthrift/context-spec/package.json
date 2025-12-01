@@ -15,7 +15,7 @@
   "scripts": {
     "prebuild": "biome lint",
     "build": "tsc --build",
-    "watch": "tsc- --watch",
+    "watch": "tsc --watch",
     "lint": "biome lint",
     "clean": "rimraf dist"
   },
@@ -23,6 +23,7 @@
     "@sthrift/persistence": "workspace:*",
     "@sthrift/service-token-validation": "workspace:*",
     "@cellix/messaging-service": "workspace:*",
+    "@cellix/payment-service": "workspace:*",
     "@sthrift/transactional-email-service": "workspace:*"
   },
   "devDependencies": {

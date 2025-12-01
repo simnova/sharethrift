@@ -155,6 +155,15 @@ importers:
       '@sthrift/service-token-validation':
         specifier: workspace:*
         version: link:../../packages/sthrift/service-token-validation
+      '@sthrift/transactional-email-service':
+        specifier: workspace:*
+        version: link:../../packages/sthrift/transactional-email-service
+      '@sthrift/transactional-email-service-mock':
+        specifier: workspace:*
+        version: link:../../packages/sthrift/transactional-email-service-mock
+      '@sthrift/transactional-email-service-sendgrid':
+        specifier: workspace:*
+        version: link:../../packages/sthrift/transactional-email-service-sendgrid
       twilio:
         specifier: ^5.8.0
         version: 5.10.4
@@ -700,6 +709,9 @@ importers:
       '@cellix/messaging-service':
         specifier: workspace:*
         version: link:../../cellix/messaging-service
+      '@cellix/payment-service':
+        specifier: workspace:*
+        version: link:../../cellix/payment-service
       '@sthrift/persistence':
         specifier: workspace:*
         version: link:../persistence
