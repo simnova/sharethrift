@@ -1,15 +1,15 @@
+import { MongooseSeedwork } from '@cellix/mongoose-seedwork';
+import type { Models } from '@sthrift/data-sources-mongoose-models';
 import type { Domain } from '@sthrift/domain';
+import type { FilterQuery, PipelineStage } from 'mongoose';
 import type { ModelsContext } from '../../../../models-context.ts';
-import { ReservationRequestDataSourceImpl } from './reservation-request.data.ts';
+import { ReservationRequestConverter } from '../../../domain/reservation-request/reservation-request/reservation-request.domain-adapter.ts';
 import type {
 	FindOneOptions,
 	FindOptions,
 	MongoDataSource,
 } from '../../mongo-data-source.ts';
-import { ReservationRequestConverter } from '../../../domain/reservation-request/reservation-request/reservation-request.domain-adapter.ts';
-import { MongooseSeedwork } from '@cellix/mongoose-seedwork';
-import type { FilterQuery, PipelineStage } from 'mongoose';
-import type { Models } from '@sthrift/data-sources-mongoose-models';
+import { ReservationRequestDataSourceImpl } from './reservation-request.data.ts';
 
 // Reservation state constants for filtering (inline per codebase patterns)
 const ACTIVE_STATES = ['Accepted', 'Requested'];
@@ -238,50 +238,31 @@ export class ReservationRequestReadRepositoryImpl
 		if (options?.sort) {
 			pipeline.push({ $sort: options.sort } as PipelineStage);
 		}
+		const docs =
+			await this.models.ReservationRequest.ReservationRequest.aggregate(
+				pipeline,
+			).exec();
 
-		try {
-			const docs =
-				await this.models.ReservationRequest.ReservationRequest.aggregate(
-					pipeline,
-				).exec();
+		// Hydrate aggregation results into proper Mongoose documents
+		// This ensures the documents have virtual getters like `id` that map `_id` to string
+		const hydratedDocs = docs.map((doc) => {
+			const { listingDoc, reserverDoc, ...rest } = doc;
 
-			console.log('Aggregation returned', docs.length, 'documents');
+			// Create a new document instance from the aggregation result
+			const hydratedDoc =
+				this.models.ReservationRequest.ReservationRequest.hydrate({
+					...rest,
+					listing: listingDoc,
+					reserver: reserverDoc,
+				});
 
-			// Hydrate aggregation results into proper Mongoose documents
-			// This ensures the documents have virtual getters like `id` that map `_id` to string
-			const hydratedDocs = docs.map((doc) => {
-				const { listingDoc, reserverDoc, ...rest } = doc;
+			return hydratedDoc;
+		});
 
-				// Create a new document instance from the aggregation result
-				const hydratedDoc =
-					this.models.ReservationRequest.ReservationRequest.hydrate({
-						...rest,
-						listing: listingDoc,
-						reserver: reserverDoc,
-					});
-
-				return hydratedDoc;
-			});
-
-			console.log(
-				'Converted docs sample:',
-				hydratedDocs.length > 0
-					? {
-							id: hydratedDocs[0]?.id,
-							hasListing: !!hydratedDocs[0]?.listing,
-							hasReserver: !!hydratedDocs[0]?.reserver,
-						}
-					: 'none',
-			);
-
-			// Convert to domain entities
-			return hydratedDocs.map((doc) =>
-				this.converter.toDomain(doc, this.passport),
-			);
-		} catch (error) {
-			console.error('Error in getListingRequestsBySharerId:', error);
-			throw error;
-		}
+		// Convert to domain entities
+		return hydratedDocs.map((doc) =>
+			this.converter.toDomain(doc, this.passport),
+		);
 	}
 
 	async getActiveByReserverIdAndListingId(

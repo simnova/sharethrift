@@ -119,17 +119,12 @@ export class MongoDataSourceImpl<TDoc extends MongooseSeedwork.Base>
 
 		// Apply populate before calling lean
 		if (options?.populateFields?.length) {
-			console.log('Populating fields:', options.populateFields);
 			for (const field of options.populateFields) {
 				query = query.populate(field);
 			}
 		}
 
 		const docs = await query.lean<LeanBase<TDoc>[]>();
-		console.log(
-			'After populate and lean, first doc:',
-			JSON.stringify(docs[0], null, 2),
-		);
 		return docs.map((doc) => this.appendId(doc));
 	}
 

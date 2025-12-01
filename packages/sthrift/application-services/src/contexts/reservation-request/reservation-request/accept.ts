@@ -46,7 +46,9 @@ export const accept = (dataSources: DataSources) => {
 					);
 				}
 
-				// Accept the reservation (this will call the accept() method in the domain)
+				// Accept the reservation request
+				// Setting state = 'Accepted' invokes the domain's private accept() method via the state setter,
+				// which validates permissions, enforces invariants, and emits ReservationRequestAcceptedEvent
 				reservationRequestToAccept.state = 'Accepted';
 
 				acceptedReservationRequest = await repo.save(
@@ -111,35 +113,18 @@ async function autoRejectOverlappingRequests(
 				const requestToReject = await repo.getById(request.id);
 
 				if (requestToReject && requestToReject.state === 'Requested') {
-					// Set state to "Rejected" - the domain will validate permissions
+					// Set state to "Rejected" - the domain's state setter routes to the reject() method
+					// which validates permissions and updates the state via value objects
 					requestToReject.state = 'Rejected';
 					await repo.save(requestToReject);
-
-					// TODO: Trigger notification to reserver about automatic rejection
-					// This should be handled by domain events or a separate notification service
-					console.log(
-						`Auto-rejected overlapping request ${request.id} due to acceptance of request ${acceptedRequest.id}`,
-					);
 				}
-			} catch (error) {
-				// Log error but don't fail the entire operation if one rejection fails
-				console.error(
-					`Failed to auto-reject overlapping request ${request.id}:`,
-					error,
-				);
+			} catch {
+				// Continue processing other requests if one rejection fails
+				// This ensures we don't fail the entire acceptance operation
 			}
 		}
-
-		if (requestsToReject.length > 0) {
-			console.log(
-				`Auto-rejected ${requestsToReject.length} overlapping request(s) for listing ${listingId}`,
-			);
-		}
-	} catch (error) {
-		// Log error but don't fail the acceptance operation
-		console.error(
-			`Error while auto-rejecting overlapping requests for listing ${listingId}:`,
-			error,
-		);
+	} catch {
+		// Don't fail the acceptance operation if auto-reject fails
+		// The acceptance itself was successful
 	}
 }

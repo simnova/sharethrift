@@ -165,55 +165,34 @@ const reservationRequest: Resolvers = {
 			args,
 			context: GraphContext,
 		) => {
-			try {
-				console.log('[myListingsRequests] Query args:', args);
-
-				// Fetch reservation requests for listings owned by sharer from application services
-				const requests =
-					await context.applicationServices.ReservationRequest.ReservationRequest.queryListingRequestsBySharerId(
-						{
-							sharerId: args.sharerId,
-						},
-					);
-
-				console.log(
-					'[myListingsRequests] Received',
-					requests?.length ?? 0,
-					'requests from application service',
-				);
-
-				if (!requests) {
-					console.error('[myListingsRequests] Requests is undefined!');
-					return {
-						items: [],
-						total: 0,
-						page: args.page,
-						pageSize: args.pageSize,
-					};
-				}
-
-				const result = paginateAndFilterListingRequests(
-					requests as unknown as ListingRequestDomainShape[],
+			// Fetch reservation requests for listings owned by sharer from application services
+			const requests =
+				await context.applicationServices.ReservationRequest.ReservationRequest.queryListingRequestsBySharerId(
 					{
-						page: args.page,
-						pageSize: args.pageSize,
-						searchText: args.searchText,
-						statusFilters: [...(args.statusFilters ?? [])],
+						sharerId: args.sharerId,
 					},
 				);
 
-				console.log(
-					'[myListingsRequests] Returning',
-					result.items.length,
-					'items, total:',
-					result.total,
-				);
-
-				return result;
-			} catch (error) {
-				console.error('[myListingsRequests] Error:', error);
-				throw error;
+			if (!requests) {
+				return {
+					items: [],
+					total: 0,
+					page: args.page,
+					pageSize: args.pageSize,
+				};
 			}
+
+			const result = paginateAndFilterListingRequests(
+				requests as unknown as ListingRequestDomainShape[],
+				{
+					page: args.page,
+					pageSize: args.pageSize,
+					searchText: args.searchText,
+					statusFilters: [...(args.statusFilters ?? [])],
+				},
+			);
+
+			return result;
 		},
 		myActiveReservationForListing: async (
 			_parent,
