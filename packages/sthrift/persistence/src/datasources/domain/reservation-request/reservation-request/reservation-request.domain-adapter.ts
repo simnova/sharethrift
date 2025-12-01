@@ -113,11 +113,12 @@ export class ReservationRequestDomainAdapter
 		if (reserverDoc.userType === 'admin-user') {
 			return new AdminUserDomainAdapter(
 				this.doc.reserver as Models.User.AdminUser,
-			);
+			); 
 		}
-		return new PersonalUserDomainAdapter(
+		const adapter = new PersonalUserDomainAdapter(
 			this.doc.reserver as Models.User.PersonalUser,
 		);
+		return adapter.entityReference as Domain.Contexts.User.PersonalUser.PersonalUserEntityReference;
 	}
 
 	async loadReserver(): Promise<
@@ -139,9 +140,10 @@ export class ReservationRequestDomainAdapter
 				this.doc.reserver as Models.User.AdminUser,
 			);
 		}
-		return new PersonalUserDomainAdapter(
+		const adapter = new PersonalUserDomainAdapter(
 			this.doc.reserver as Models.User.PersonalUser,
 		);
+		return adapter.entityReference as Domain.Contexts.User.PersonalUser.PersonalUserEntityReference;
 	}
 
 	set reserver(user:

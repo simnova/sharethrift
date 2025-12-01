@@ -16,6 +16,8 @@ __*
 **/generated.tsx
 **/graphql.schema.json
 apps/ui-sharethrift/tsconfig.tsbuildinfo
+**/node_modules
+**/dist
 
 # Log files
 *.log

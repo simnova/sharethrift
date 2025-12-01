@@ -15,6 +15,9 @@ import { AppealRequestContext } from './appeal-request/index.ts';
 import type * as ListingAppealRequest from './appeal-request/listing-appeal-request/index.ts';
 import type * as UserAppealRequest from './appeal-request/user-appeal-request/index.ts';
 
+import { AccountPlanContext } from './account-plan/index.ts';
+import type * as AccountPlan from './account-plan/account-plan/index.ts';
+
 export interface ReadonlyDataSource {
 	User: {
 		PersonalUser: {
@@ -45,6 +48,11 @@ export interface ReadonlyDataSource {
 			ConversationReadRepo: Conversation.ConversationReadRepository;
 		};
 	};
+	AccountPlan: {
+		AccountPlan: {
+			AccountPlanReadRepo: AccountPlan.AccountPlanReadRepository;
+		};
+	};
 	AppealRequest: {
 		ListingAppealRequest: {
 			ListingAppealRequestReadRepo: ListingAppealRequest.ListingAppealRequestReadRepository;
@@ -63,5 +71,6 @@ export const ReadonlyDataSourceImplementation = (
 	ReservationRequest: ReservationRequestContext(models, passport),
 	Listing: ListingContext(models, passport),
 	Conversation: ConversationContext(models, passport),
+	AccountPlan: AccountPlanContext(models, passport),
 	AppealRequest: AppealRequestContext(models, passport),
 });

@@ -1,0 +1,41 @@
+query PaymentContainerPersonalUserCybersourcePublicKeyId {
+  personalUserCybersourcePublicKeyId
+}
+
+query PaymentContainerCurrentPersonalUserAndCreateIfNotExists {
+  currentPersonalUserAndCreateIfNotExists {
+    id
+
+    account {
+      accountType
+    }
+  }
+}
+
+query PaymentContainerAccountPlans {
+  accountPlans {
+    ...PaymentContainerAccountPlansFields
+  }
+}
+
+fragment PaymentContainerAccountPlansFields on AccountPlan {
+  name
+  description
+  billingPeriodUnit
+  billingAmount
+  currency
+  id
+}
+
+mutation SignUpPaymentContainerPersonalUserProcessPayment($input: ProcessPaymentInput!) {
+  processPayment(input: $input) {
+    success
+    cybersourceCustomerId
+    cybersourceSubscriptionId
+    cybersourcePlanId
+    errorInformation {
+      reason
+      message
+    }
+  }
+}
