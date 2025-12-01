@@ -509,9 +509,18 @@ importers:
 
   packages/cellix/mock-payment-server:
     dependencies:
+      '@cellix/payment-service':
+        specifier: workspace:*
+        version: link:../payment-service
       express:
         specifier: ^4.18.2
         version: 4.21.2
+      jose:
+        specifier: ^6.0.10
+        version: 6.1.2
+      jsonwebtoken:
+        specifier: ^9.0.2
+        version: 9.0.2
     devDependencies:
       '@cellix/typescript-config':
         specifier: workspace:*
@@ -519,6 +528,9 @@ importers:
       '@types/express':
         specifier: ^4.17.21
         version: 4.17.25
+      '@types/jsonwebtoken':
+        specifier: ^9.0.9
+        version: 9.0.10
       ts-node:
         specifier: ^10.9.2
         version: 10.9.2(@types/node@24.9.2)(typescript@5.8.3)
@@ -4826,6 +4838,9 @@ packages:
   '@types/json-schema@7.0.15':
     resolution: {integrity: sha512-5+fP8P8MFNC+AyZCDxrB2pkZFPGzqQWUzpSeuuVLvm8VMcorNYavBqoFcxK8bQz4Qsbn4oUEEem4wDLfcysGHA==}
 
+  '@types/jsonwebtoken@9.0.10':
+    resolution: {integrity: sha512-asx5hIG9Qmf/1oStypjanR7iKTv0gXQ1Ov/jfrX6kS/EO0OFni8orbmGCn0672NHR3kXHwpAwR+B368ZGN/2rA==}
+
   '@types/lodash@4.17.20':
     resolution: {integrity: sha512-H3MHACvFUEiujabxhaI/ImO6gUrd8oOurg7LQtS7mbwIXA/cUqWrvBsaeJ23aZEPk1TAYkurjfMbSELfoCXlGA==}
 
@@ -7820,6 +7835,9 @@ packages:
 
   jose@5.10.0:
     resolution: {integrity: sha512-s+3Al/p9g32Iq+oqXxkW//7jk2Vig6FF1CFqzVXoTUXt2qz89YWbL+OwS17NFYEvxC35n0FKeGO2LGYSxeM2Gg==}
+
+  jose@6.1.2:
+    resolution: {integrity: sha512-MpcPtHLE5EmztuFIqB0vzHAWJPpmN1E6L4oo+kze56LIs3MyXIj9ZHMDxqOvkP38gBR7K1v3jqd4WU2+nrfONQ==}
 
   js-md4@0.3.2:
     resolution: {integrity: sha512-/GDnfQYsltsjRswQhN9fhv3EMw2sCpUdrdxyWDOUK7eyD++r3gRhzgiQgc/x4MAv2i1iuQ4lxO5mvqM3vj4bwA==}
@@ -16615,6 +16633,11 @@ snapshots:
 
   '@types/json-schema@7.0.15': {}
 
+  '@types/jsonwebtoken@9.0.10':
+    dependencies:
+      '@types/ms': 2.1.0
+      '@types/node': 24.9.2
+
   '@types/lodash@4.17.20': {}
 
   '@types/long@4.0.2': {}
@@ -20229,6 +20252,8 @@ snapshots:
       '@sideway/pinpoint': 2.0.0
 
   jose@5.10.0: {}
+
+  jose@6.1.2: {}
 
   js-md4@0.3.2: {}
 
