@@ -1,8 +1,9 @@
 import { useEffect, type JSX } from 'react';
 
-const { VITE_B2C_REDIRECT_URI } = import.meta.env;
 import { hasAuthParams, useAuth } from 'react-oidc-context';
 import { Navigate } from 'react-router-dom';
+
+const { VITE_B2C_REDIRECT_URI } = import.meta.env;
 
 export interface RequireAuthProps {
 	children: JSX.Element;
@@ -31,15 +32,7 @@ export const RequireAuth: React.FC<RequireAuthProps> = (props) => {
 
 			auth.signinRedirect();
 		}
-	}, [
-		auth.isAuthenticated,
-		auth.activeNavigator,
-		auth.isLoading,
-		auth.signinRedirect,
-		auth.error,
-		props.forceLogin,
-		redirectPath,
-	]);
+	}, [auth.isAuthenticated, auth.activeNavigator, auth.isLoading, auth.signinRedirect, auth.error, props.forceLogin, auth]);
 
 	// automatically refresh token
 	useEffect(() => {
@@ -59,7 +52,7 @@ export const RequireAuth: React.FC<RequireAuthProps> = (props) => {
 		// return () => {
 		//   auth.events.removeAccessTokenExpiring(handleAccessTokenExpiring);
 		// };
-	}, [auth.events, auth.signinSilent]);
+	}, [auth, auth.events, auth.signinSilent]);
 
 	let result: JSX.Element;
 	if (auth.isAuthenticated) {

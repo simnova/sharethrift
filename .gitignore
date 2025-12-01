@@ -20,3 +20,5 @@ apps/ui-sharethrift/tsconfig.tsbuildinfo
 # Mock email outputs
 tmp-emails
 **/tmp/emails
+**/node_modules
+**/dist

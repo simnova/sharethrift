@@ -5,7 +5,7 @@ import { ApolloClient, InMemoryCache } from '@apollo/client';
 import { ApolloProvider } from '@apollo/client/react';
 import { MockLink } from '@apollo/client/testing';
 import { MockAuthWrapper } from '../../../../test-utils/storybook-decorators.tsx';
-import { HomeTabsLayout } from '../section-layout.tsx';
+import { SectionLayout } from '../section-layout.tsx';
 
 // Mock Apollo Client with MockLink
 const mockApolloClient = new ApolloClient({
@@ -13,9 +13,9 @@ const mockApolloClient = new ApolloClient({
 	cache: new InMemoryCache(),
 });
 
-const meta: Meta<typeof HomeTabsLayout> = {
-	title: 'Layouts/HomeTabsLayout',
-	component: HomeTabsLayout,
+const meta: Meta<typeof SectionLayout> = {
+	title: 'Layouts/SectionLayout',
+	component: SectionLayout,
 	parameters: {
 		layout: 'fullscreen',
 	},
@@ -33,7 +33,7 @@ const meta: Meta<typeof HomeTabsLayout> = {
 };
 
 export default meta;
-type Story = StoryObj<typeof HomeTabsLayout>;
+type Story = StoryObj<typeof SectionLayout>;
 
 export const AuthenticatedUser: Story = {
 	play: async ({ canvasElement }) => {
