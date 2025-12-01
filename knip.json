@@ -81,10 +81,7 @@
 		"@serenity-js/core",
 		"@serenity-js/cucumber",
 		"@serenity-js/serenity-bdd",
-		"@graphql-typed-document-node/core",
-		"rollup",
-		"tsx",
-		"vite"
+		"@graphql-typed-document-node/core"
 	],
 	"ignoreBinaries": ["func"],
 	"ignoreExportsUsedInFile": true
