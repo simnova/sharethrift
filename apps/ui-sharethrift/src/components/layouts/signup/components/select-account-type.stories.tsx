@@ -1,6 +1,64 @@
 import type { Meta, StoryObj } from '@storybook/react';
 import { expect, within, fn, userEvent } from 'storybook/test';
 import { SelectAccountType } from './select-account-type.tsx';
+import type { AccountPlan } from '../../../../generated.tsx';
+
+const mockAccountPlans: AccountPlan[] = [
+	{
+		id: '1',
+		name: 'non-verified-personal',
+		description: 'Non-Verified Personal',
+		billingAmount: 0,
+		billingPeriodLength: 1,
+		billingPeriodUnit: 'month',
+		currency: 'USD',
+		schemaVersion: '1.0',
+		createdAt: new Date().toISOString(),
+		updatedAt: new Date().toISOString(),
+		feature: {
+			activeReservations: 3,
+			bookmarks: 10,
+			itemsToShare: 5,
+			friends: 50,
+		},
+	},
+	{
+		id: '2',
+		name: 'verified-personal',
+		description: 'Verified Personal',
+		billingAmount: 5,
+		billingPeriodLength: 1,
+		billingPeriodUnit: 'month',
+		currency: 'USD',
+		schemaVersion: '1.0',
+		createdAt: new Date().toISOString(),
+		updatedAt: new Date().toISOString(),
+		feature: {
+			activeReservations: 10,
+			bookmarks: 50,
+			itemsToShare: 20,
+			friends: 100,
+		},
+	},
+	{
+		id: '3',
+		name: 'verified-personal-plus',
+		description: 'Verified Personal Plus',
+		billingAmount: 10,
+		billingPeriodLength: 1,
+		billingPeriodUnit: 'month',
+		currency: 'USD',
+		schemaVersion: '1.0',
+		createdAt: new Date().toISOString(),
+		updatedAt: new Date().toISOString(),
+		feature: {
+			activeReservations: 25,
+			bookmarks: 100,
+			itemsToShare: 50,
+			friends: 250,
+		},
+	},
+];
 
 const meta: Meta<typeof SelectAccountType> = {
 	title: 'Signup/SelectAccountType',
@@ -9,10 +67,10 @@ const meta: Meta<typeof SelectAccountType> = {
 		layout: 'fullscreen',
 	},
 	args: {
-		currentUserData: null,
-		loadingUser: false,
-		handleUpdateAccountType: fn(),
-		savingAccountType: false,
+		currentUserData: undefined,
+		loading: false,
+		onSaveAndContinue: fn(),
+		accountPlans: mockAccountPlans,
 	},
 };
 
@@ -32,10 +90,11 @@ export const Default: Story = {
 export const WithExistingAccountType: Story = {
 	args: {
 		currentUserData: {
+			id: 'user-123',
 			account: {
 				accountType: 'verified-personal',
 			},
-		},
+		} as Parameters<typeof SelectAccountType>[0]['currentUserData'],
 	},
 	play: async ({ canvasElement }) => {
 		const canvas = within(canvasElement);
@@ -45,31 +104,22 @@ export const WithExistingAccountType: Story = {
 
 export const Loading: Story = {
 	args: {
-		loadingUser: true,
+		loading: true,
 	},
 	play: async ({ canvasElement }) => {
 		const canvas = within(canvasElement);
 		const saveButton = canvas.getByText('Save and Continue');
-		// Button should be disabled when loading
-		expect(saveButton.closest('button')?.disabled).toBe(true);
-	},
-};
-
-export const Saving: Story = {
-	args: {
-		savingAccountType: true,
-	},
-	play: async ({ canvasElement }) => {
-		const canvas = within(canvasElement);
-		const saveButton = canvas.getByText('Save and Continue');
-		// Button should be disabled when saving
-		expect(saveButton.closest('button')?.disabled).toBe(true);
+		// Button should have loading state (ant-btn-loading class)
+		const button = saveButton.closest('button');
+		expect(button).toBeTruthy();
+		// When Ant Design Button has loading=true, it adds ant-btn-loading class
+		expect(button?.classList.contains('ant-btn-loading')).toBe(true);
 	},
 };
 
 export const SelectDifferentType: Story = {
 	args: {
-		handleUpdateAccountType: fn(),
+		onSaveAndContinue: fn(),
 	},
 	play: async ({ canvasElement, args }) => {
 		const canvas = within(canvasElement);
@@ -82,18 +132,18 @@ export const SelectDifferentType: Story = {
 		const saveButton = canvas.getByText('Save and Continue');
 		await userEvent.click(saveButton);
 		
-		expect(args.handleUpdateAccountType).toHaveBeenCalled();
+		expect(args.onSaveAndContinue).toHaveBeenCalled();
 	},
 };
 
 export const ClickSaveAndContinue: Story = {
 	args: {
-		handleUpdateAccountType: fn(),
+		onSaveAndContinue: fn(),
 	},
 	play: async ({ canvasElement, args }) => {
 		const canvas = within(canvasElement);
 		const saveButton = canvas.getByText('Save and Continue');
 		await userEvent.click(saveButton);
-		expect(args.handleUpdateAccountType).toHaveBeenCalledWith('non-verified-personal');
+		expect(args.onSaveAndContinue).toHaveBeenCalled();
 	},
 };

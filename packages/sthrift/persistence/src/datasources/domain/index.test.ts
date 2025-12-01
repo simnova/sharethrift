@@ -4,7 +4,7 @@ import { loadFeature, describeFeature } from '@amiceli/vitest-cucumber';
 import { expect } from 'vitest';
 import { DomainDataSourceImplementation } from './index.ts';
 import type { ModelsContext } from '../../models-context.ts';
-import { Domain } from '@sthrift/domain';
+import type { Domain } from '@sthrift/domain';
 import { vi } from 'vitest';
 
 const test = { for: describeFeature };
@@ -47,6 +47,13 @@ vi.mock('./appeal-request/index.ts', () => ({
 	})),
 }));
 
+vi.mock('./account-plan/index.ts', () => ({
+	AccountPlanContextPersistence: vi.fn(() => ({
+		unitOfWork: vi.fn(),
+		repository: vi.fn(),
+	})),
+}));
+
 const makeMockModelsContext = (): ModelsContext => {
 	return {
 		UserAppealRequestModel: {},
@@ -57,6 +64,9 @@ const makeMockModelsContext = (): ModelsContext => {
 		ListingItemModel: {},
 		ReservationRequestModel: {},
 		RoleModel: {},
+		AccountPlan: {
+			AccountPlanModel: {},
+		},
 	} as unknown as ModelsContext;
 };
 

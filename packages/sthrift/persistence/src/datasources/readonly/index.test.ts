@@ -4,7 +4,7 @@ import { loadFeature, describeFeature } from '@amiceli/vitest-cucumber';
 import { expect } from 'vitest';
 import { ReadonlyDataSourceImplementation } from './index.ts';
 import type { ModelsContext } from '../../models-context.ts';
-import { Domain } from '@sthrift/domain';
+import type { Domain } from '@sthrift/domain';
 import { vi } from 'vitest';
 
 const test = { for: describeFeature };
@@ -60,6 +60,14 @@ vi.mock('./appeal-request/index.ts', () => ({
 	})),
 }));
 
+vi.mock('./account-plan/index.ts', () => ({
+	AccountPlanContext: vi.fn(() => ({
+		AccountPlan: {
+			AccountPlanReadRepo: {},
+		},
+	})),
+}));
+
 const makeMockModelsContext = (): ModelsContext => {
 	return {
 		UserAppealRequestModel: {},
@@ -70,6 +78,9 @@ const makeMockModelsContext = (): ModelsContext => {
 		ListingItemModel: {},
 		ReservationRequestModel: {},
 		RoleModel: {},
+		AccountPlan: {
+			AccountPlanModel: {},
+		},
 	} as unknown as ModelsContext;
 };
 

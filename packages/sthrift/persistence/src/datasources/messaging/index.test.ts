@@ -3,7 +3,7 @@ import { fileURLToPath } from 'node:url';
 import { loadFeature, describeFeature } from '@amiceli/vitest-cucumber';
 import { expect } from 'vitest';
 import { MessagingDataSourceImplementation } from './index.ts';
-import { Domain } from '@sthrift/domain';
+import type { Domain } from '@sthrift/domain';
 import type { MessagingService } from '@cellix/messaging-service';
 import { vi } from 'vitest';
 

@@ -2,7 +2,7 @@ import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { describeFeature, loadFeature } from '@amiceli/vitest-cucumber';
 import type { Models } from '@sthrift/data-sources-mongoose-models';
-import { Domain } from '@sthrift/domain';
+import type { Domain } from '@sthrift/domain';
 import { expect, vi } from 'vitest';
 import { AdminRoleDomainAdapter } from './admin-role.domain-adapter.ts';
 

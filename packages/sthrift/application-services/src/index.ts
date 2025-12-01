@@ -6,11 +6,6 @@ import {
 } from './contexts/user/index.ts';
 
 import {
-	DefaultPaymentApplicationService,
-	type PaymentApplicationService,
-} from './contexts/payment/index.ts';
-
-import {
 	ReservationRequest,
 	type ReservationRequestContextApplicationService,
 } from './contexts/reservation-request/index.ts';
@@ -26,6 +21,11 @@ import {
 } from './contexts/listing/index.ts';
 
 import {
+	AccountPlan,
+	type AccountPlanContextApplicationService,
+} from './contexts/account-plan/index.ts';
+
+import {
 	AppealRequest,
 	type AppealRequestContextApplicationService,
 } from './contexts/appeal-request/index.ts';
@@ -37,7 +37,7 @@ export interface ApplicationServices {
 	ReservationRequest: ReservationRequestContextApplicationService;
 	AppealRequest: AppealRequestContextApplicationService;
 	get verifiedUser(): VerifiedUser | null;
-	Payment: PaymentApplicationService;
+	AccountPlan: AccountPlanContextApplicationService;
 }
 
 export interface VerifiedJwt {
@@ -67,9 +67,6 @@ export type ApplicationServicesFactory = AppServicesHost<ApplicationServices>;
 export const buildApplicationServicesFactory = (
 	infrastructureServicesRegistry: ApiContextSpec,
 ): ApplicationServicesFactory => {
-	const paymentApplicationService = new DefaultPaymentApplicationService(
-		infrastructureServicesRegistry.paymentService,
-	);
 
 	const forRequest = async (
 		rawAuthHeader?: string,
@@ -111,6 +108,7 @@ export const buildApplicationServicesFactory = (
 			infrastructureServicesRegistry.dataSourcesFactory.withPassport(
 				passport,
 				infrastructureServicesRegistry.messagingService,
+        infrastructureServicesRegistry.paymentService,
 			);
 
 		return {
@@ -118,10 +116,10 @@ export const buildApplicationServicesFactory = (
 			get verifiedUser(): VerifiedUser | null {
 				return { ...tokenValidationResult, hints: hints };
 			},
-			Payment: paymentApplicationService,
 			ReservationRequest: ReservationRequest(dataSources),
 			Listing: Listing(dataSources),
 			Conversation: Conversation(dataSources),
+			AccountPlan: AccountPlan(dataSources),
 			AppealRequest: AppealRequest(dataSources),
 		};
 	};
@@ -132,5 +130,7 @@ export const buildApplicationServicesFactory = (
 };
 
 export type { PersonalUserUpdateCommand } from './contexts/user/personal-user/update.ts';
+export type { PaymentResponse } from './contexts/user/personal-user/process-payment.ts';
 export type { AdminUserUpdateCommand } from './contexts/user/admin-user/update.ts';
 export type { AdminUserCreateCommand } from './contexts/user/admin-user/create-if-not-exists.ts';
+export type { RefundPaymentCommand } from './contexts/user/personal-user/refund-payment.ts';

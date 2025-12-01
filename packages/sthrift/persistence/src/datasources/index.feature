@@ -12,11 +12,13 @@ Feature: DataSources Factory
   Scenario: Creating DataSources with Passport and MessagingService
     Given a valid Passport is provided
     And a valid MessagingService is provided
+    And a valid PaymentService is provided
     When withPassport is called
     Then a DataSources object should be returned
     And the DataSources should have a domainDataSource
     And the DataSources should have a readonlyDataSource
     And the DataSources should have a messagingDataSource
+    And the DataSources should have a paymentDataSource
 
   Scenario: Creating DataSources with SystemPassport
     When withSystemPassport is called

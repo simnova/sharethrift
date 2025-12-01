@@ -4,8 +4,9 @@ import { loadFeature, describeFeature } from '@amiceli/vitest-cucumber';
 import { expect } from 'vitest';
 import { DataSourcesFactoryImpl } from './index.ts';
 import type { ModelsContext } from '../models-context.ts';
-import { Domain } from '@sthrift/domain';
+import type { Domain } from '@sthrift/domain';
 import type { MessagingService } from '@cellix/messaging-service';
+import type { PaymentService } from '@cellix/payment-service';
 import { vi } from 'vitest';
 
 const test = { for: describeFeature };
@@ -23,6 +24,10 @@ vi.mock('./readonly/index.ts', () => ({
 
 vi.mock('./messaging/index.ts', () => ({
 	MessagingDataSourceImplementation: vi.fn(() => ({ messaging: 'mocked' })),
+}));
+
+vi.mock('./payment/index.ts', () => ({
+	PaymentDataSourceImplementation: vi.fn(() => ({ payment: 'mocked' })),
 }));
 
 const makeMockModelsContext = (): ModelsContext => {
@@ -59,6 +64,14 @@ const makeMockMessagingService = (): MessagingService => {
 		connect: vi.fn(),
 		disconnect: vi.fn(),
 	} as unknown as MessagingService;
+};
+
+const makeMockPaymentService = (): PaymentService => {
+	return {
+		generatePublicKey: vi.fn(),
+		processPayment: vi.fn(),
+		refundPayment: vi.fn(),
+	} as unknown as PaymentService;
 };
 
 test.for(feature, ({ Scenario, Background, BeforeEachScenario }) => {
@@ -102,6 +115,7 @@ test.for(feature, ({ Scenario, Background, BeforeEachScenario }) => {
 		({ Given, When, Then, And }) => {
 			let mockPassport: Domain.Passport;
 			let mockMessagingService: MessagingService;
+			let mockPaymentService: PaymentService;
 			let dataSources: ReturnType<typeof factory.withPassport>;
 
 			Given('a valid Passport is provided', () => {
@@ -114,9 +128,14 @@ test.for(feature, ({ Scenario, Background, BeforeEachScenario }) => {
 				expect(mockMessagingService).toBeDefined();
 			});
 
+			And('a valid PaymentService is provided', () => {
+				mockPaymentService = makeMockPaymentService();
+				expect(mockPaymentService).toBeDefined();
+			});
+
 			When('withPassport is called', () => {
 				factory = DataSourcesFactoryImpl(mockModelsContext);
-				dataSources = factory.withPassport(mockPassport, mockMessagingService);
+				dataSources = factory.withPassport(mockPassport, mockMessagingService, mockPaymentService);
 			});
 
 			Then('a DataSources object should be returned', () => {
@@ -133,6 +152,10 @@ test.for(feature, ({ Scenario, Background, BeforeEachScenario }) => {
 
 			And('the DataSources should have a messagingDataSource', () => {
 				expect(dataSources.messagingDataSource).toBeDefined();
+			});
+
+			And('the DataSources should have a paymentDataSource', () => {
+				expect(dataSources.paymentDataSource).toBeDefined();
 			});
 		},
 	);

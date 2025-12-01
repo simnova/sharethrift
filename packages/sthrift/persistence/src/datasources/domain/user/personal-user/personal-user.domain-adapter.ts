@@ -1,7 +1,9 @@
 import { Domain } from '@sthrift/domain';
 import type { Models } from '@sthrift/data-sources-mongoose-models';
 import { MongooseSeedwork } from '@cellix/mongoose-seedwork';
+import type { DomainSeedwork } from '@cellix/domain-seedwork';
 import { createStringAccessors } from '../user-adapter.helpers.js';
+
 export class PersonalUserConverter extends MongooseSeedwork.MongoTypeConverter<
 	Models.User.PersonalUser,
 	PersonalUserDomainAdapter,
@@ -20,6 +22,50 @@ export class PersonalUserDomainAdapter
 	extends MongooseSeedwork.MongooseDomainAdapter<Models.User.PersonalUser>
 	implements Domain.Contexts.User.PersonalUser.PersonalUserProps
 {
+	public get entityReference(): Domain.Contexts.User.PersonalUser.PersonalUserEntityReference {
+		return {
+			id: this.id,
+			userType: this.userType,
+			isBlocked: this.isBlocked,
+			hasCompletedOnboarding: this.hasCompletedOnboarding,
+			account: {
+				accountType: this.account.accountType,
+				email: this.account.email,
+				username: this.account.username,
+				profile: {
+					aboutMe: this.account.profile.aboutMe,
+					firstName: this.account.profile.firstName,
+					lastName: this.account.profile.lastName,
+					location: this.account.profile.location,
+				billing: {
+					cybersourceCustomerId:
+						this.account.profile.billing.cybersourceCustomerId,
+					subscription: this.account.profile.billing.subscription,
+					transactions: (() => {
+						try {
+							return this.account.profile.billing.transactions?.items?.map(
+								(tx) => ({
+									id: tx.id,
+									transactionId: tx.transactionId,
+									amount: tx.amount,
+									referenceId: tx.referenceId,
+									status: tx.status,
+									completedAt: tx.completedAt,
+									errorMessage: tx.errorMessage,
+								}),
+							) || [];
+						} catch {
+							return [];
+						}
+					})(),
+				},
+				},
+			},
+			schemaVersion: this.doc.schemaVersion,
+			createdAt: this.doc.createdAt,
+			updatedAt: this.doc.updatedAt,
+		};
+	}
 	get userType() {
 		return this.doc.userType;
 	}
@@ -72,7 +118,7 @@ export class PersonalUserAccountDomainAdapter
 export class PersonalUserAccountProfileDomainAdapter
 	implements Domain.Contexts.User.PersonalUser.PersonalUserProfileProps
 {
-	private readonly props: Models.User.PersonalUserAccountProfile;
+	readonly props: Models.User.PersonalUserAccountProfile;
 	firstName!: string;
 	lastName!: string;
 	aboutMe!: string;
@@ -109,22 +155,110 @@ export class PersonalUserAccountProfileBillingDomainAdapter
 		Domain.Contexts.User.PersonalUser.PersonalUserAccountProfileBillingProps
 {
 	readonly props: Models.User.PersonalUserAccountProfileBilling;
-	subscriptionId!: string | null;
 	cybersourceCustomerId!: string | null;
-	paymentState!: string;
-	lastTransactionId!: string | null;
-	lastPaymentAmount!: number | null;
 
 	constructor(props: Models.User.PersonalUserAccountProfileBilling) {
 		this.props = props;
+		createStringAccessors(this, ['cybersourceCustomerId']);
+	}
+
+	get subscription() {
+		if (!this.props.subscription) {
+			this.props.subscription =
+				{} as Models.User.PersonalUserAccountProfileBillingSubscription;
+		}
+		return new PersonalUserAccountProfileBillingSubscriptionDomainAdapter(
+			this.props.subscription,
+		);
+	}
+
+	// Populated Doc Getters and Setters
+
+	// Document Array Getters
+	get transactions(): DomainSeedwork.PropArray<Domain.Contexts.User.PersonalUser.PersonalUserAccountProfileBillingTransactionsEntityReference> {
+		return new MongooseSeedwork.MongoosePropArray(
+			this.props.transactions,
+			PersonalUserAccountProfileBillingTransactionsDomainAdapter,
+		);
+	}
+}
+
+export class PersonalUserAccountProfileBillingSubscriptionDomainAdapter
+	implements
+		Domain.Contexts.User.PersonalUser.PersonalUserAccountProfileBillingSubscriptionProps
+{
+	readonly props: Models.User.PersonalUserAccountProfileBillingSubscription;
+	subscriptionId!: string;
+	planCode!: string;
+	status!: string;
+	startDate!: Date;
+
+	constructor(
+		props: Models.User.PersonalUserAccountProfileBillingSubscription,
+	) {
+		this.props = props;
 		createStringAccessors(this, [
 			'subscriptionId',
-			'cybersourceCustomerId',
-			'paymentState',
-			'lastTransactionId',
+			'planCode',
+			'status',
+			'startDate',
 		]);
 	}
 }
+
+export class PersonalUserAccountProfileBillingTransactionsDomainAdapter
+	implements
+		Domain.Contexts.User.PersonalUser.PersonalUserAccountProfileBillingTransactionsProps
+{
+	public readonly doc: Models.User.PersonalUserAccountProfileBillingTransactions;
+
+	constructor(doc: Models.User.PersonalUserAccountProfileBillingTransactions) {
+		this.doc = doc;
+	}
+
+	public get id(): string {
+		return this.doc.id?.valueOf() as string;
+	}
+
+	//Primitive Field Getters and Setters
+	get transactionId(): string {
+		return this.doc.transactionId;
+	}
+	set transactionId(value: string) {
+		this.doc.transactionId = value;
+	}
+	get amount(): number {
+		return this.doc.amount;
+	}
+	set amount(value: number) {
+		this.doc.amount = value;
+	}
+	get referenceId(): string {
+		return this.doc.referenceId;
+	}
+	set referenceId(value: string) {
+		this.doc.referenceId = value;
+	}
+	get status(): string {
+		return this.doc.status;
+	}
+	set status(value: string) {
+		this.doc.status = value;
+	}
+	get completedAt(): Date {
+		return this.doc.completedAt;
+	}
+	set completedAt(value: Date) {
+		this.doc.completedAt = value;
+	}
+	get errorMessage(): string | null {
+		return this.doc.errorMessage;
+	}
+	set errorMessage(value: string) {
+		this.doc.errorMessage = value;
+	}
+}
+
 export class PersonalUserAccountProfileLocationDomainAdapter
 	implements
 		Domain.Contexts.User.PersonalUser.PersonalUserAccountProfileLocationProps
@@ -139,6 +273,12 @@ export class PersonalUserAccountProfileLocationDomainAdapter
 
 	constructor(props: Models.User.PersonalUserAccountProfileLocation) {
 		this.props = props;
+
+		// Nested Path Getters
+
+		// Populated Doc Getters and Setters
+
+		// Document Array Getters
 		createStringAccessors(this, [
 			'address1',
 			'address2',

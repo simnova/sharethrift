@@ -32,9 +32,30 @@ function makeReservationRequestDoc() {
 		get id() {
 			return reserverId.toString();
 		},
+		userType: 'personal-user',
+		isBlocked: false,
+		hasCompletedOnboarding: true,
 		firstName: 'Test',
 		lastName: 'User',
 		state: 'ACTIVE',
+		account: {
+			accountType: 'non-verified-personal',
+			email: 'test@example.com',
+			username: 'testuser',
+			profile: {
+				aboutMe: '',
+				firstName: 'Test',
+				lastName: 'User',
+				location: {},
+				billing: {
+					cybersourceCustomerId: 'cust-123',
+					subscription: null,
+					transactions: { items: [] },
+				},
+				media: { items: [] },
+				avatar: null,
+			},
+		},
 		set: vi.fn(),
 	} as unknown as Models.User.PersonalUser;
 
@@ -279,9 +300,35 @@ test.for(feature, ({ Scenario, Background, BeforeEachScenario }) => {
 			const oid = new MongooseSeedwork.ObjectId();
 			doc = makeReservationRequestDoc();
 			doc.reserver = oid as unknown as Models.User.PersonalUser;
-			doc.populate = vi.fn().mockResolvedValue({
-				...doc,
-				reserver: { id: oid.toString(), firstName: 'Test', userType: 'personal-user' },
+			const populatedReserver = {
+				id: oid.toString(),
+				firstName: 'Test',
+				userType: 'personal-user',
+				isBlocked: false,
+				hasCompletedOnboarding: true,
+				account: {
+					accountType: 'non-verified-personal',
+					email: 'test@example.com',
+					username: 'testuser',
+					profile: {
+						aboutMe: '',
+						firstName: 'Test',
+						lastName: 'User',
+						location: {},
+						billing: {
+							cybersourceCustomerId: 'cust-123',
+							subscription: null,
+							transactions: { items: [] },
+						},
+						media: { items: [] },
+						avatar: null,
+					},
+				},
+				set: vi.fn(),
+			};
+			doc.populate = vi.fn().mockImplementation(() => {
+				doc.reserver = populatedReserver as unknown as Models.User.PersonalUser;
+				return Promise.resolve(doc);
 			});
 			adapter = new ReservationRequestDomainAdapter(doc);
 			await adapter.loadReserver();

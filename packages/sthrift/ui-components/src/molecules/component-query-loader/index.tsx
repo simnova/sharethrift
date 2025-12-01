@@ -1,4 +1,4 @@
-import { Empty, message, Skeleton } from 'antd';
+import { message, Skeleton, Result } from 'antd';
 import type { FC } from 'react';
 
 export interface ComponentQueryLoaderProps {
@@ -18,7 +18,15 @@ export const ComponentQueryLoader: FC<ComponentQueryLoaderProps> = (props) => {
 			return props.errorComponent;
 		}
 		message.error(props.error.message);
-		return <Skeleton />;
+		return (
+			<div style={{ width: '100vw' }}>
+				<Result
+					status="error"
+					title="An error occurred"
+					subTitle={props.error.message}
+				/>
+			</div>
+		);
 	}
 	if (props.loading) {
 		if (props.loadingComponent) {
@@ -35,5 +43,5 @@ export const ComponentQueryLoader: FC<ComponentQueryLoaderProps> = (props) => {
 	if (props.hasData) {
 		return props.hasDataComponent;
 	}
-	return props.noDataComponent ?? <Empty />;
+	return props.noDataComponent ?? <Skeleton loading />;
 };

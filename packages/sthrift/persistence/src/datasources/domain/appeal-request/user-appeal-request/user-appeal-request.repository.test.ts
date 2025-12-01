@@ -6,7 +6,7 @@ import { MongooseSeedwork } from '@cellix/mongoose-seedwork';
 import { expect, vi } from 'vitest';
 import {
 	UserAppealRequestConverter,
-	UserAppealRequestDomainAdapter,
+	type UserAppealRequestDomainAdapter,
 	UserAppealRequestRepository,
 } from './index.ts';
 

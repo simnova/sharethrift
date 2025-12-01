@@ -30,11 +30,16 @@ function makeProfileProps(overrides?: Partial<PersonalUserProfileProps>): any {
 			zipCode: '12345',
 		},
 		billing: {
-			subscriptionId: null,
 			cybersourceCustomerId: null,
-			paymentState: 'none',
-			lastTransactionId: null,
-			lastPaymentAmount: null,
+			subscription: {
+				subscriptionId: 'none',
+				planCode: 'free',
+				status: 'inactive',
+				startDate: new Date('2024-01-01'),
+			},
+			transactions: {
+				items: [],
+			},
 		},
 		...overrides,
 	};
@@ -174,7 +179,7 @@ test.for(feature, ({ Scenario }) => {
 		Then('it should return a PersonalUserAccountProfileBilling instance', () => {
 			expect(billing).toBeDefined();
 			expect(billing).toBeInstanceOf(PersonalUserAccountProfileBilling);
-			expect(billing.paymentState).toBe('none');
+			expect(billing.subscription.subscriptionId).toBe('none');
 		});
 	});
 

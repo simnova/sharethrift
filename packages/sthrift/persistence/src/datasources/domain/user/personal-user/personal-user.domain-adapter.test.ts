@@ -37,11 +37,14 @@ function makeUserDoc(
 					zipCode: '12345',
 				},
 				billing: {
-					subscriptionId: null,
 					cybersourceCustomerId: null,
-					paymentState: '',
-					lastTransactionId: null,
-					lastPaymentAmount: null,
+					subscription: {
+						subscriptionId: 'sub-123',
+						planCode: 'free',
+						status: 'active',
+						startDate: new Date('2024-01-01'),
+					},
+					transactions: [],
 				},
 			},
 		},
@@ -192,8 +195,9 @@ test.for(feature, ({ Scenario, Background, BeforeEachScenario }) => {
 			expect(result).toBeDefined();
 		});
 
-		And('the billing should have payment state', () => {
-			expect((result as { paymentState: string }).paymentState).toBeDefined();
+		And('the billing should have subscription data', () => {
+			expect((result as { subscription: { subscriptionId: string } }).subscription).toBeDefined();
+			expect((result as { subscription: { subscriptionId: string } }).subscription.subscriptionId).toBe('sub-123');
 		});
 	});
 
@@ -247,13 +251,13 @@ test.for(feature, ({ Scenario, Background, BeforeEachScenario }) => {
 		});
 	});
 
-	Scenario('Setting profile billing payment state', ({ When, Then }) => {
-		When('I set the profile billing paymentState to "active"', () => {
-			adapter.account.profile.billing.paymentState = 'active';
+	Scenario('Setting profile billing subscription data', ({ When, Then }) => {
+		When('I set the profile billing subscription subscriptionId to "sub-active-123"', () => {
+			adapter.account.profile.billing.subscription.subscriptionId = 'sub-active-123';
 		});
 
-		Then('the profile billing paymentState should be "active"', () => {
-			expect(adapter.account.profile.billing.paymentState).toBe('active');
+		Then('the profile billing subscription subscriptionId should be "sub-active-123"', () => {
+			expect(adapter.account.profile.billing.subscription.subscriptionId).toBe('sub-active-123');
 		});
 	});
 

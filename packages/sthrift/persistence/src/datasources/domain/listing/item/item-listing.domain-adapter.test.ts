@@ -13,6 +13,7 @@ const feature = await loadFeature(
 );
 
 function makeItemListingDoc() {
+	const sharerId = new MongooseSeedwork.ObjectId();
 	const base = {
 		_id: new MongooseSeedwork.ObjectId(),
 		title: 'Test Listing',
@@ -22,7 +23,42 @@ function makeItemListingDoc() {
 		state: 'Published',
 		sharingPeriodStart: new Date(),
 		sharingPeriodEnd: new Date(),
-		sharer: new MongooseSeedwork.ObjectId(),
+		// Populated sharer object (not ObjectId) for tests that access .sharer property
+		sharer: {
+			id: sharerId.toString(),
+			userType: 'personal-users',
+			isBlocked: false,
+			hasCompletedOnboarding: true,
+			account: {
+				accountType: 'standard',
+				email: 'sharer@example.com',
+				username: 'shareruser',
+				profile: {
+					firstName: 'Sharer',
+					lastName: 'User',
+					aboutMe: 'I share things',
+					location: {
+						address1: '789 Sharer St',
+						address2: null,
+						city: 'Sharer City',
+						state: 'SH',
+						country: 'Sharerland',
+						zipCode: '11111',
+					},
+					billing: {
+						cybersourceCustomerId: null,
+						subscription: {
+							subscriptionId: 'sub-789',
+							planCode: 'free',
+							status: 'active',
+							startDate: new Date('2024-01-01'),
+						},
+						transactions: [],
+					},
+				},
+			},
+			set: vi.fn(),
+		},
 		set(key: keyof Models.Listing.ItemListing, value: unknown) {
 			(this as Models.Listing.ItemListing)[key] = value as never;
 		},
@@ -204,7 +240,27 @@ test.for(feature, ({ Scenario, Background, BeforeEachScenario }) => {
 				this.sharer = { 
 					id: '789', 
 					userType: 'personal-user',
-					account: { email: 'loaded@test.com' }
+					isBlocked: false,
+					hasCompletedOnboarding: true,
+					account: {
+						accountType: 'standard',
+						email: 'loaded@test.com',
+						username: 'loadeduser',
+						profile: {
+							aboutMe: '',
+							firstName: 'Loaded',
+							lastName: 'User',
+							location: {},
+							billing: {
+								cybersourceCustomerId: null,
+								subscription: null,
+								transactions: { items: [] },
+							},
+							media: { items: [] },
+							avatar: null,
+						},
+					},
+					set: vi.fn(),
 				} as never;
 				return this;
 			});
@@ -218,7 +274,28 @@ test.for(feature, ({ Scenario, Background, BeforeEachScenario }) => {
 		And('return a domain adapter', async () => {
 			doc.sharer = { 
 				id: '789', 
-				userType: 'personal-user' 
+				userType: 'personal-user',
+				isBlocked: false,
+				hasCompletedOnboarding: true,
+				account: {
+					accountType: 'standard',
+					email: 'test@test.com',
+					username: 'testuser',
+					profile: {
+						aboutMe: '',
+						firstName: 'Test',
+						lastName: 'User',
+						location: {},
+						billing: {
+							cybersourceCustomerId: null,
+							subscription: null,
+							transactions: { items: [] },
+						},
+						media: { items: [] },
+						avatar: null,
+					},
+				},
+				set: vi.fn(),
 			} as never;
 			const result = await adapter.loadSharer();
 			expect(result).toBeDefined();

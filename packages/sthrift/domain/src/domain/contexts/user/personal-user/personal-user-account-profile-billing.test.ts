@@ -3,6 +3,8 @@ import { fileURLToPath } from 'node:url';
 import { describeFeature, loadFeature } from '@amiceli/vitest-cucumber';
 import { expect } from 'vitest';
 import { PersonalUserAccountProfileBilling } from './personal-user-account-profile-billing.ts';
+import { PersonalUserAccountProfileBillingSubscription } from './personal-user-account-profile-billing-subscription.ts';
+import { PersonalUserAccountProfileBillingTransactions } from './personal-user-account-profile-billing-transactions.ts';
 import type { PersonalUserAccountProfileBillingProps } from './personal-user-account-profile-billing.entity.ts';
 import type { UserVisa } from '../user.visa.ts';
 import type { PersonalUserAggregateRoot } from './personal-user.ts';
@@ -16,11 +18,25 @@ const feature = await loadFeature(
 // biome-ignore lint/suspicious/noExplicitAny: Test helper function
 function makeBillingProps(overrides?: Partial<PersonalUserAccountProfileBillingProps>): any {
 	return {
-		subscriptionId: 'sub-123',
 		cybersourceCustomerId: 'customer-456',
-		paymentState: 'active',
-		lastTransactionId: 'txn-789',
-		lastPaymentAmount: 29.99,
+		subscription: {
+			subscriptionId: 'sub-123',
+			planCode: 'basic',
+			status: 'active',
+			startDate: new Date('2024-01-01'),
+		},
+		transactions: {
+			items: [
+				{
+					transactionId: 'txn-789',
+					amount: 29.99,
+					referenceId: 'ref-001',
+					status: 'SUCCEEDED',
+					completedAt: new Date('2024-01-15'),
+					errorMessage: null,
+				},
+			],
+		},
 		...overrides,
 	};
 }
@@ -59,23 +75,33 @@ test.for(feature, ({ Scenario }) => {
 		});
 	});
 
-	Scenario('Billing subscriptionId getter returns correct value', ({ Given, When, Then }) => {
+	Scenario('Billing subscription getter returns correct subscription object', ({ Given, When, Then }) => {
 		let billing: PersonalUserAccountProfileBilling;
-		let value: string | null;
+		let subscription: PersonalUserAccountProfileBillingSubscription;
 
-		Given('I have a billing instance with subscriptionId', () => {
-			const props = makeBillingProps({ subscriptionId: 'sub-test-123' });
+		Given('I have a billing instance with subscription data', () => {
+			const props = makeBillingProps({
+				subscription: {
+					subscriptionId: 'sub-test-123',
+					planCode: 'premium',
+					status: 'active',
+					startDate: new Date('2024-02-01'),
+				},
+			});
 			const visa = createMockVisa(true) as UserVisa;
 			const root = createMockRoot(false) as PersonalUserAggregateRoot;
 			billing = new PersonalUserAccountProfileBilling(props, visa, root);
 		});
 
-		When('I access the subscriptionId property', () => {
-			value = billing.subscriptionId;
+		When('I access the subscription property', () => {
+			subscription = billing.subscription;
 		});
 
-		Then('it should return the correct subscriptionId value', () => {
-			expect(value).toBe('sub-test-123');
+		Then('it should return a PersonalUserAccountProfileBillingSubscription instance', () => {
+			expect(subscription).toBeDefined();
+			expect(subscription).toBeInstanceOf(PersonalUserAccountProfileBillingSubscription);
+			expect(subscription.subscriptionId).toBe('sub-test-123');
+			expect(subscription.planCode).toBe('premium');
 		});
 	});
 
@@ -99,107 +125,49 @@ test.for(feature, ({ Scenario }) => {
 		});
 	});
 
-	Scenario('Billing paymentState getter returns correct value', ({ Given, When, Then }) => {
+	Scenario('Billing transactions getter returns correct transactions array', ({ Given, When, Then }) => {
 		let billing: PersonalUserAccountProfileBilling;
-		let value: string;
+		let transactions: ReadonlyArray<PersonalUserAccountProfileBillingTransactions>;
 
-		Given('I have a billing instance with paymentState', () => {
-			const props = makeBillingProps({ paymentState: 'SUCCEEDED' });
+		Given('I have a billing instance with transactions data', () => {
+			const props = makeBillingProps({
+				transactions: {
+					items: [
+						{
+							transactionId: 'txn-abc-123',
+							amount: 99.99,
+							referenceId: 'ref-abc',
+							status: 'SUCCEEDED',
+							completedAt: new Date('2024-03-01'),
+							errorMessage: null,
+						},
+						{
+							transactionId: 'txn-def-456',
+							amount: 49.99,
+							referenceId: 'ref-def',
+							status: 'PENDING',
+							completedAt: new Date('2024-03-02'),
+							errorMessage: null,
+						},
+					],
+				},
+			});
 			const visa = createMockVisa(true) as UserVisa;
 			const root = createMockRoot(false) as PersonalUserAggregateRoot;
 			billing = new PersonalUserAccountProfileBilling(props, visa, root);
 		});
 
-		When('I access the paymentState property', () => {
-			value = billing.paymentState;
+		When('I access the transactions property', () => {
+			transactions = billing.transactions;
 		});
 
-		Then('it should return the correct paymentState value', () => {
-			expect(value).toBe('SUCCEEDED');
-		});
-	});
-
-	Scenario('Billing lastTransactionId getter returns correct value', ({ Given, When, Then }) => {
-		let billing: PersonalUserAccountProfileBilling;
-		let value: string | null;
-
-		Given('I have a billing instance with lastTransactionId', () => {
-			const props = makeBillingProps({ lastTransactionId: 'txn-abc-123' });
-			const visa = createMockVisa(true) as UserVisa;
-			const root = createMockRoot(false) as PersonalUserAggregateRoot;
-			billing = new PersonalUserAccountProfileBilling(props, visa, root);
-		});
-
-		When('I access the lastTransactionId property', () => {
-			value = billing.lastTransactionId;
-		});
-
-		Then('it should return the correct lastTransactionId value', () => {
-			expect(value).toBe('txn-abc-123');
-		});
-	});
-
-	Scenario('Billing lastPaymentAmount getter returns correct value', ({ Given, When, Then }) => {
-		let billing: PersonalUserAccountProfileBilling;
-		let value: number | null;
-
-		Given('I have a billing instance with lastPaymentAmount', () => {
-			const props = makeBillingProps({ lastPaymentAmount: 99.99 });
-			const visa = createMockVisa(true) as UserVisa;
-			const root = createMockRoot(false) as PersonalUserAggregateRoot;
-			billing = new PersonalUserAccountProfileBilling(props, visa, root);
-		});
-
-		When('I access the lastPaymentAmount property', () => {
-			value = billing.lastPaymentAmount;
-		});
-
-		Then('it should return the correct lastPaymentAmount value', () => {
-			expect(value).toBe(99.99);
-		});
-	});
-
-	Scenario('Billing subscriptionId setter requires valid visa', ({ Given, When, Then }) => {
-		let billing: PersonalUserAccountProfileBilling;
-		let error: Error | undefined;
-
-		Given('I have a billing instance with a restrictive visa', () => {
-			const props = makeBillingProps();
-			const visa = createMockVisa(false) as UserVisa;
-			const root = createMockRoot(false) as PersonalUserAggregateRoot;
-			billing = new PersonalUserAccountProfileBilling(props, visa, root);
-		});
-
-		When('I attempt to set subscriptionId without permission', () => {
-			try {
-				billing.subscriptionId = 'new-sub-id';
-			} catch (e) {
-				error = e as Error;
-			}
-		});
-
-		Then('it should throw a PermissionError', () => {
-			expect(error).toBeDefined();
-			expect(error?.message).toContain('Unauthorized to set billing info');
-		});
-	});
-
-	Scenario('Billing subscriptionId setter works with valid visa', ({ Given, When, Then }) => {
-		let billing: PersonalUserAccountProfileBilling;
-
-		Given('I have a billing instance with a permissive visa', () => {
-			const props = makeBillingProps({ subscriptionId: 'old-sub-id' });
-			const visa = createMockVisa(true) as UserVisa;
-			const root = createMockRoot(false) as PersonalUserAggregateRoot;
-			billing = new PersonalUserAccountProfileBilling(props, visa, root);
-		});
-
-		When('I set the subscriptionId property', () => {
-			billing.subscriptionId = 'new-sub-id';
-		});
-
-		Then('the subscriptionId should be updated', () => {
-			expect(billing.subscriptionId).toBe('new-sub-id');
+		Then('it should return an array of PersonalUserAccountProfileBillingTransactions instances', () => {
+			expect(transactions).toBeDefined();
+			expect(transactions).toHaveLength(2);
+			expect(transactions[0]).toBeInstanceOf(PersonalUserAccountProfileBillingTransactions);
+			expect(transactions[0].transactionId).toBe('txn-abc-123');
+			expect(transactions[0].amount).toBe(99.99);
+			expect(transactions[1].transactionId).toBe('txn-def-456');
 		});
 	});
 
@@ -228,22 +196,41 @@ test.for(feature, ({ Scenario }) => {
 		});
 	});
 
+	Scenario('Billing cybersourceCustomerId setter works with valid visa', ({ Given, When, Then }) => {
+		let billing: PersonalUserAccountProfileBilling;
+
+		Given('I have a billing instance with a permissive visa', () => {
+			const props = makeBillingProps({ cybersourceCustomerId: 'old-customer-id' });
+			const visa = createMockVisa(true) as UserVisa;
+			const root = createMockRoot(false) as PersonalUserAggregateRoot;
+			billing = new PersonalUserAccountProfileBilling(props, visa, root);
+		});
+
+		When('I set the cybersourceCustomerId property', () => {
+			billing.cybersourceCustomerId = 'new-customer-id';
+		});
+
+		Then('the cybersourceCustomerId should be updated', () => {
+			expect(billing.cybersourceCustomerId).toBe('new-customer-id');
+		});
+	});
+
 	Scenario('Billing allows setters when entity is new', ({ Given, When, Then }) => {
 		let billing: PersonalUserAccountProfileBilling;
 
 		Given('I have a billing instance for a new entity', () => {
-			const props = makeBillingProps({ subscriptionId: 'initial-sub' });
+			const props = makeBillingProps({ cybersourceCustomerId: 'initial-customer' });
 			const visa = createMockVisa(false) as UserVisa;
 			const root = createMockRoot(true) as PersonalUserAggregateRoot;
 			billing = new PersonalUserAccountProfileBilling(props, visa, root);
 		});
 
-		When('I set the subscriptionId property', () => {
-			billing.subscriptionId = 'updated-sub';
+		When('I set the cybersourceCustomerId property', () => {
+			billing.cybersourceCustomerId = 'updated-customer';
 		});
 
-		Then('the subscriptionId should be updated without visa check', () => {
-			expect(billing.subscriptionId).toBe('updated-sub');
+		Then('the cybersourceCustomerId should be updated without visa check', () => {
+			expect(billing.cybersourceCustomerId).toBe('updated-customer');
 		});
 	});
 });

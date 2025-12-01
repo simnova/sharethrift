@@ -44,8 +44,28 @@ function makeUserDoc(id: string): Models.User.PersonalUser {
 	return {
 		_id: new MongooseSeedwork.ObjectId(validId),
 		id: id,
-		userType: 'end-user',
-		// ... (simplified for brevity)
+		userType: 'personal-user',
+		isBlocked: false,
+		hasCompletedOnboarding: true,
+		account: {
+			accountType: 'standard',
+			email: `${id}@example.com`,
+			username: id,
+			profile: {
+				aboutMe: '',
+				firstName: 'Test',
+				lastName: 'User',
+				location: 'Test Location',
+				billing: {
+					cybersourceCustomerId: '',
+					subscription: null,
+					transactions: { items: [] },
+				},
+				media: { items: [] },
+				avatar: null,
+			},
+		},
+		set: vi.fn(),
 	} as unknown as Models.User.PersonalUser;
 }
 

@@ -48,7 +48,7 @@ Feature: PersonalUserDomainAdapter
   Scenario: Accessing profile billing property
     When I access the profile billing property
     Then it should return a PersonalUserAccountProfileBillingDomainAdapter
-    And the billing should have payment state
+    And the billing should have subscription data
 
   Scenario: Setting account email through adapter
     When I set the account email to "newemail@test.com"
@@ -70,9 +70,9 @@ Feature: PersonalUserDomainAdapter
     When I set the profile location address1 to "456 New St"
     Then the profile location address1 should be "456 New St"
 
-  Scenario: Setting profile billing payment state
-    When I set the profile billing paymentState to "active"
-    Then the profile billing paymentState should be "active"
+  Scenario: Setting profile billing subscription data
+    When I set the profile billing subscription subscriptionId to "sub-active-123"
+    Then the profile billing subscription subscriptionId should be "sub-active-123"
 
   Scenario: Getting profile when not initialized
     When the account profile is undefined

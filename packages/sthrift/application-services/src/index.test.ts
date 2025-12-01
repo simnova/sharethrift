@@ -73,7 +73,6 @@ describe('Application Services Factory', () => {
 
 		expect(services).toBeDefined();
 		expect(services.User).toBeDefined();
-		expect(services.Payment).toBeDefined();
 		expect(services.Conversation).toBeDefined();
 		expect(services.Listing).toBeDefined();
 		expect(services.ReservationRequest).toBeDefined();

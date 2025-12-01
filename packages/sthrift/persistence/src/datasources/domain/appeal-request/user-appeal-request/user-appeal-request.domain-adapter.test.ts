@@ -12,10 +12,82 @@ const feature = await loadFeature(
 );
 
 function makeAppealRequestDoc() {
+	const userId = new MongooseSeedwork.ObjectId();
+	const blockerId = new MongooseSeedwork.ObjectId();
 	return {
 		_id: 'appeal-1',
-		user: new MongooseSeedwork.ObjectId(),
-		blocker: new MongooseSeedwork.ObjectId(),
+		// Populated user object (not ObjectId) for tests that access .user property
+		user: {
+			id: userId.toString(),
+			userType: 'personal-users',
+			isBlocked: false,
+			hasCompletedOnboarding: true,
+			account: {
+				accountType: 'standard',
+				email: 'test@example.com',
+				username: 'testuser',
+				profile: {
+					firstName: 'Test',
+					lastName: 'User',
+					aboutMe: 'Hello',
+					location: {
+						address1: '123 Main St',
+						address2: null,
+						city: 'Test City',
+						state: 'TS',
+						country: 'Testland',
+						zipCode: '12345',
+					},
+					billing: {
+						cybersourceCustomerId: null,
+						subscription: {
+							subscriptionId: 'sub-123',
+							planCode: 'free',
+							status: 'active',
+							startDate: new Date('2024-01-01'),
+						},
+						transactions: [],
+					},
+				},
+			},
+			set: vi.fn(),
+		},
+		// Populated blocker object for tests that access .blocker property
+		blocker: {
+			id: blockerId.toString(),
+			userType: 'personal-users',
+			isBlocked: false,
+			hasCompletedOnboarding: true,
+			account: {
+				accountType: 'admin',
+				email: 'admin@example.com',
+				username: 'adminuser',
+				profile: {
+					firstName: 'Admin',
+					lastName: 'User',
+					aboutMe: 'Admin user',
+					location: {
+						address1: '456 Admin St',
+						address2: null,
+						city: 'Admin City',
+						state: 'AD',
+						country: 'Adminland',
+						zipCode: '67890',
+					},
+					billing: {
+						cybersourceCustomerId: null,
+						subscription: {
+							subscriptionId: 'sub-456',
+							planCode: 'free',
+							status: 'active',
+							startDate: new Date('2024-01-01'),
+						},
+						transactions: [],
+					},
+				},
+			},
+			set: vi.fn(),
+		},
 		reason: 'Test reason',
 		state: 'pending',
 		type: 'harassment',
@@ -166,9 +238,34 @@ test.for(feature, ({ Scenario, Background, BeforeEachScenario }) => {
 		When('the user is an ObjectId and I call loadUser', async () => {
 			const oid = new MongooseSeedwork.ObjectId();
 			doc.user = oid as never;
-			doc.populate = vi.fn().mockResolvedValue({
-				...doc,
-				user: { id: '123', userType: 'personal-user' },
+			const populatedUser = {
+				id: '123',
+				userType: 'personal-user',
+				isBlocked: false,
+				hasCompletedOnboarding: true,
+				account: {
+					accountType: 'standard',
+					email: 'test@example.com',
+					username: 'testuser',
+					profile: {
+						aboutMe: '',
+						firstName: 'Test',
+						lastName: 'User',
+						location: {},
+						billing: {
+							cybersourceCustomerId: null,
+							subscription: null,
+							transactions: { items: [] },
+						},
+						media: { items: [] },
+						avatar: null,
+					},
+				},
+				set: vi.fn(),
+			};
+			doc.populate = vi.fn().mockImplementation(() => {
+				doc.user = populatedUser as never;
+				return Promise.resolve(doc);
 			});
 			adapter = new UserAppealRequestDomainAdapter(doc as never);
 			await adapter.loadUser();
@@ -187,9 +284,34 @@ test.for(feature, ({ Scenario, Background, BeforeEachScenario }) => {
 		When('the blocker is an ObjectId and I call loadBlocker', async () => {
 			const oid = new MongooseSeedwork.ObjectId();
 			doc.blocker = oid as never;
-			doc.populate = vi.fn().mockResolvedValue({
-				...doc,
-				blocker: { id: '123', userType: 'personal-user' },
+			const populatedBlocker = {
+				id: '123',
+				userType: 'personal-user',
+				isBlocked: false,
+				hasCompletedOnboarding: true,
+				account: {
+					accountType: 'standard',
+					email: 'blocker@example.com',
+					username: 'blockeruser',
+					profile: {
+						aboutMe: '',
+						firstName: 'Blocker',
+						lastName: 'User',
+						location: {},
+						billing: {
+							cybersourceCustomerId: null,
+							subscription: null,
+							transactions: { items: [] },
+						},
+						media: { items: [] },
+						avatar: null,
+					},
+				},
+				set: vi.fn(),
+			};
+			doc.populate = vi.fn().mockImplementation(() => {
+				doc.blocker = populatedBlocker as never;
+				return Promise.resolve(doc);
 			});
 			adapter = new UserAppealRequestDomainAdapter(doc as never);
 			await adapter.loadBlocker();

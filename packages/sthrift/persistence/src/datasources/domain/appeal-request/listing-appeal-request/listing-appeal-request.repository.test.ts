@@ -3,7 +3,7 @@ import { fileURLToPath } from 'node:url';
 import { describeFeature, loadFeature } from '@amiceli/vitest-cucumber';
 import type { DomainSeedwork } from '@cellix/domain-seedwork';
 import type { Models } from '@sthrift/data-sources-mongoose-models';
-import { Domain } from '@sthrift/domain';
+import type { Domain } from '@sthrift/domain';
 import { MongooseSeedwork } from '@cellix/mongoose-seedwork';
 import type mongoose from 'mongoose';
 import { expect, vi } from 'vitest';

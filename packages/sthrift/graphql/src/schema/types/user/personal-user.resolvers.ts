@@ -3,13 +3,33 @@ import type { GraphQLResolveInfo } from 'graphql';
 import type {
 	PersonalUser,
 	PersonalUserUpdateInput,
-	PaymentResponse,
-	RefundResponse,
+	ProcessPaymentInput,
 	Resolvers,
 	QueryAllUsersArgs,
 } from '../../builder/generated.ts';
-import type { PersonalUserUpdateCommand } from '@sthrift/application-services';
+import type {
+	PersonalUserUpdateCommand,
+	RefundPaymentCommand,
+} from '@sthrift/application-services';
+import type { Domain } from '@sthrift/domain';
 import { getUserByEmail, currentViewerIsAdmin } from '../../resolver-helper.ts';
+
+const PersonalUserMutationResolver = async (
+	getPersonalUser: Promise<Domain.Contexts.User.PersonalUser.PersonalUserEntityReference>,
+) => {
+	try {
+		return {
+			status: { success: true },
+			personalUser: await getPersonalUser,
+		};
+	} catch (error) {
+		console.error('PersonalUser > Mutation  : ', error);
+		const { message } = error as Error;
+		return {
+			status: { success: false, errorMessage: message },
+		};
+	}
+};
 
 const personalUserResolvers: Resolvers = {
 	PersonalUser: {
@@ -27,8 +47,16 @@ const personalUserResolvers: Resolvers = {
 		},
 	},
 	Query: {
+		personalUserCybersourcePublicKeyId: async (
+			_parent,
+			_args,
+			context,
+			_info,
+		) => {
+			return await context.applicationServices.User.PersonalUser.generatePublicKey();
+		},
 		personalUserById: async (
-			_parent: unknown,
+			_parent,
 			args: { id: string },
 			context: GraphContext,
 			_info: GraphQLResolveInfo,
@@ -117,8 +145,11 @@ const personalUserResolvers: Resolvers = {
 
 			// Permission checks are handled in the domain layer (entity setters)
 			console.log('personalUserUpdate resolver called with id:', args.input.id);
-			return await context.applicationServices.User.PersonalUser.update(
-				args.input as PersonalUserUpdateCommand,
+			/// TODO: SECURITY - Add admin permission check
+			return await PersonalUserMutationResolver(
+				context.applicationServices.User.PersonalUser.update(
+					args.input as PersonalUserUpdateCommand,
+				),
 			);
 		},
 		blockUser: async (
@@ -153,33 +184,30 @@ const personalUserResolvers: Resolvers = {
 				isBlocked: false,
 			});
 		},
-		processPayment: async (_parent, { request }, context) => {
-			console.log('Processing payment', request);
+		processPayment: async (
+			_parent,
+			args: { input: ProcessPaymentInput },
+			context,
+		) => {
+			console.log('Processing payment', args.input);
+
 			try {
-				const sanitizedRequest = {
-					...request,
-					orderInformation: {
-						...request.orderInformation,
-						billTo: {
-							...request.orderInformation.billTo,
-							address2: request.orderInformation.billTo.address2 ?? '',
-							phoneNumber: request.orderInformation.billTo.phoneNumber ?? '',
-							email: request.orderInformation.billTo.email ?? '',
+				return await context.applicationServices.User.PersonalUser.processPayment(
+					{
+						request: {
+							userId: args.input.userId,
+							paymentInstrument: {
+								...args.input.paymentInstrument,
+								billingAddressLine2:
+									args.input.paymentInstrument.billingAddressLine2 ?? '',
+								billingPhone: args.input.paymentInstrument.billingPhone ?? '',
+								billingEmail: args.input.paymentInstrument.billingEmail ?? '',
+							},
+							paymentAmount: args.input.paymentAmount,
+							currency: args.input.currency,
 						},
 					},
-				};
-				const response =
-					await context.applicationServices.Payment.processPayment(
-						sanitizedRequest,
-					);
-				return {
-					...response,
-					success: response.status === 'SUCCEEDED',
-					message:
-						response.status === 'SUCCEEDED'
-							? 'Payment processed successfully'
-							: undefined,
-				} as PaymentResponse;
+				);
 			} catch (error) {
 				console.error('Payment processing error:', error);
 				return {
@@ -199,18 +227,11 @@ const personalUserResolvers: Resolvers = {
 			console.log('Refunding payment', request);
 			try {
 				const response =
-					await context.applicationServices.Payment.refundPayment({
-						...request,
-						amount: request.amount ?? 0, // Ensure amount is a number, not null
-					});
-				return {
-					...response,
-					success: response.status === 'REFUNDED',
-					message:
-						response.status === 'REFUNDED'
-							? 'Refund processed successfully'
-							: null,
-				} as RefundResponse;
+					await context.applicationServices.User.PersonalUser.refundPayment({
+						request,
+					} as RefundPaymentCommand);
+
+				return response;
 			} catch (error) {
 				console.error('Refund processing error:', error);
 				return {
@@ -223,7 +244,7 @@ const personalUserResolvers: Resolvers = {
 						message:
 							error instanceof Error ? error.message : 'Unknown error occurred',
 					},
-				} as RefundResponse;
+				};
 			}
 		},
 	},

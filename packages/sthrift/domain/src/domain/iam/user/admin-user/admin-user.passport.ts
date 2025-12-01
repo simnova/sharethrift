@@ -5,6 +5,8 @@ import type { ListingPassport } from '../../../contexts/listing/listing.passport
 import type { ConversationPassport } from '../../../contexts/conversation/conversation.passport.ts';
 import type { ReservationRequestPassport } from '../../../contexts/reservation-request/reservation-request.passport.ts';
 import type { AppealRequestPassport } from '../../../contexts/appeal-request/appeal-request.passport.ts';
+import type { AccountPlanPassport } from '../../../contexts/account-plan/index.ts';
+
 import { AdminUserUserPassport } from './admin-user.user.passport.ts';
 import { AdminUserListingPassport } from './contexts/admin-user.listing.passport.ts';
 import { AdminUserConversationPassport } from './contexts/admin-user.conversation.passport.ts';
@@ -20,6 +22,7 @@ export class AdminUserPassport
 	private _conversationPassport: ConversationPassport | undefined;
 	private _reservationRequestPassport: ReservationRequestPassport | undefined;
 	private _appealRequestPassport: AppealRequestPassport | undefined;
+  private _accountPlanPassport: AccountPlanPassport | undefined;
 
 	get user(): UserPassport {
 		this._userPassport ??= new AdminUserUserPassport(this._user);
@@ -50,4 +53,9 @@ export class AdminUserPassport
 		);
 		return this._appealRequestPassport;
 	}
+
+  get accountPlan(): AccountPlanPassport {
+    console.log(this._accountPlanPassport); // temporary line to avoid unused var error
+    throw new Error('Method not implemented.'); //TBD
+  }
 }

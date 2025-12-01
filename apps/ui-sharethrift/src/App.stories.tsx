@@ -2,9 +2,9 @@ import type { Meta, StoryObj } from '@storybook/react';
 import { expect } from 'storybook/test';
 import { MemoryRouter } from 'react-router-dom';
 import { AuthProvider } from 'react-oidc-context';
-import App from './App.tsx';
+import { MockedProvider } from '@apollo/client/testing/react';
+import { App } from './App.tsx';
 
-// Mock environment variables
 const mockEnv = {
 	VITE_FUNCTION_ENDPOINT: 'https://mock-functions.example.com',
 	VITE_BLOB_STORAGE_CONFIG_URL: 'https://mock-storage.example.com',
@@ -13,7 +13,6 @@ const mockEnv = {
 	NODE_ENV: 'development',
 };
 
-// Mock window.sessionStorage and window.localStorage
 const mockStorage = {
 	getItem: (key: string) => {
 		if (key.includes('oidc.user')) {
@@ -38,7 +37,6 @@ const mockStorage = {
 Object.defineProperty(globalThis, 'sessionStorage', { value: mockStorage, writable: true });
 Object.defineProperty(globalThis, 'localStorage', { value: mockStorage, writable: true });
 
-// Mock import.meta.env
 Object.defineProperty(import.meta, 'env', {
 	value: mockEnv,
 	writable: true,
@@ -47,6 +45,10 @@ Object.defineProperty(import.meta, 'env', {
 const meta: Meta<typeof App> = {
 	title: 'App/Main Application',
 	component: App,
+	args: {
+		hasCompletedOnboarding: false,
+		isAuthenticated: false,
+	},
 	parameters: {
 		layout: 'fullscreen',
 		docs: {
@@ -58,15 +60,17 @@ const meta: Meta<typeof App> = {
 	},
 	decorators: [
 		(Story) => (
-			<AuthProvider
-				authority={mockEnv.VITE_B2C_AUTHORITY}
-				client_id={mockEnv.VITE_B2C_CLIENTID}
-				redirect_uri={globalThis.location.origin}
-				post_logout_redirect_uri={globalThis.location.origin}
-				userStore={mockStorage}
-			>
-				<Story />
-			</AuthProvider>
+			<MockedProvider mocks={[]}>
+				<AuthProvider
+					authority={mockEnv.VITE_B2C_AUTHORITY}
+					client_id={mockEnv.VITE_B2C_CLIENTID}
+					redirect_uri={globalThis.location.origin}
+					post_logout_redirect_uri={globalThis.location.origin}
+					userStore={mockStorage}
+				>
+					<Story />
+				</AuthProvider>
+			</MockedProvider>
 		),
 	],
 } satisfies Meta<typeof App>;
@@ -84,9 +88,7 @@ export const RootRoute: Story = {
 		),
 	],
 	play: ({ canvasElement }: { canvasElement: HTMLElement }) => {
-		// Verify that the app renders without errors
 		expect(canvasElement).toBeTruthy();
-		// Verify that the apollo connection wrapper is present
 		const apolloWrapper =
 			canvasElement.querySelector('[data-testid="apollo-connection"]') ||
 			canvasElement.closest('[data-testid="apollo-connection"]') ||
@@ -105,9 +107,7 @@ export const LoginRoute: Story = {
 		),
 	],
 	play: ({ canvasElement }: { canvasElement: HTMLElement }) => {
-		// Verify login route renders
 		expect(canvasElement).toBeTruthy();
-		// The app should render without crashing
 		expect(canvasElement.children.length).toBeGreaterThan(0);
 	},
 };
@@ -122,9 +122,7 @@ export const AuthRedirectAdminRoute: Story = {
 		),
 	],
 	play: ({ canvasElement }: { canvasElement: HTMLElement }) => {
-		// Verify auth redirect admin route renders
 		expect(canvasElement).toBeTruthy();
-		// The app should render without crashing
 		expect(canvasElement.children.length).toBeGreaterThan(0);
 	},
 };
@@ -139,9 +137,7 @@ export const AuthRedirectUserRoute: Story = {
 		),
 	],
 	play: ({ canvasElement }: { canvasElement: HTMLElement }) => {
-		// Verify auth redirect user route renders
 		expect(canvasElement).toBeTruthy();
-		// The app should render without crashing
 		expect(canvasElement.children.length).toBeGreaterThan(0);
 	},
 };
@@ -156,10 +152,7 @@ export const SignupRoute: Story = {
 		),
 	],
 	play: ({ canvasElement }: { canvasElement: HTMLElement }) => {
-		// Verify signup route renders (protected by RequireAuth)
 		expect(canvasElement).toBeTruthy();
-		// With forceLogin=true, this should trigger authentication flow
-		// We verify the app renders without crashing
 		expect(canvasElement.children.length).toBeGreaterThan(0);
 	},
 };

@@ -13,14 +13,97 @@ const feature = await loadFeature(
 );
 
 function makeAppealRequestDoc() {
+	const userId = new MongooseSeedwork.ObjectId();
+	const listingId = new MongooseSeedwork.ObjectId();
+	const blockerId = new MongooseSeedwork.ObjectId();
 	const base = {
 		id: new MongooseSeedwork.ObjectId(),
 		reason: 'Test reason',
 		state: 'pending',
 		type: 'inappropriate',
-		user: new MongooseSeedwork.ObjectId(),
-		listing: new MongooseSeedwork.ObjectId(),
-		blocker: new MongooseSeedwork.ObjectId(),
+		// Populated user object (not ObjectId) for tests that access .user property
+		user: {
+			id: userId.toString(),
+			userType: 'personal-users',
+			isBlocked: false,
+			hasCompletedOnboarding: true,
+			account: {
+				accountType: 'standard',
+				email: 'test@example.com',
+				username: 'testuser',
+				profile: {
+					firstName: 'Test',
+					lastName: 'User',
+					aboutMe: 'Hello',
+					location: {
+						address1: '123 Main St',
+						address2: null,
+						city: 'Test City',
+						state: 'TS',
+						country: 'Testland',
+						zipCode: '12345',
+					},
+					billing: {
+						cybersourceCustomerId: null,
+						subscription: {
+							subscriptionId: 'sub-123',
+							planCode: 'free',
+							status: 'active',
+							startDate: new Date('2024-01-01'),
+						},
+						transactions: [],
+					},
+				},
+			},
+			set: vi.fn(),
+		},
+		// Populated listing object for tests that access .listing property
+		listing: {
+			id: listingId.toString(),
+			title: 'Test Listing',
+			description: 'Test Description',
+			state: 'active',
+			sharer: {
+				id: userId.toString(),
+				userType: 'personal-users',
+			},
+		},
+		// Populated blocker object for tests that access .blocker property
+		blocker: {
+			id: blockerId.toString(),
+			userType: 'personal-users',
+			isBlocked: false,
+			hasCompletedOnboarding: true,
+			account: {
+				accountType: 'admin',
+				email: 'admin@example.com',
+				username: 'adminuser',
+				profile: {
+					firstName: 'Admin',
+					lastName: 'User',
+					aboutMe: 'Admin user',
+					location: {
+						address1: '456 Admin St',
+						address2: null,
+						city: 'Admin City',
+						state: 'AD',
+						country: 'Adminland',
+						zipCode: '67890',
+					},
+					billing: {
+						cybersourceCustomerId: null,
+						subscription: {
+							subscriptionId: 'sub-456',
+							planCode: 'free',
+							status: 'active',
+							startDate: new Date('2024-01-01'),
+						},
+						transactions: [],
+					},
+				},
+			},
+			set: vi.fn(),
+		},
 		createdAt: new Date(),
 		updatedAt: new Date(),
 		set(key: keyof Models.AppealRequest.ListingAppealRequest, value: unknown) {
@@ -159,6 +242,35 @@ test.for(feature, ({ Scenario, Background, BeforeEachScenario }) => {
 	Scenario('Loading user when populated as ObjectId', ({ When, Then, And }) => {
 		When('the user is an ObjectId and I call loadUser', async () => {
 			doc.user = new MongooseSeedwork.ObjectId() as never;
+			const populatedUser = {
+				id: '123',
+				userType: 'personal-user',
+				isBlocked: false,
+				hasCompletedOnboarding: true,
+				account: {
+					accountType: 'standard',
+					email: 'test@example.com',
+					username: 'testuser',
+					profile: {
+						aboutMe: '',
+						firstName: 'Test',
+						lastName: 'User',
+						location: {},
+						billing: {
+							cybersourceCustomerId: null,
+							subscription: null,
+							transactions: { items: [] },
+						},
+						media: { items: [] },
+						avatar: null,
+					},
+				},
+				set: vi.fn(),
+			};
+			doc.populate = vi.fn().mockImplementation(() => {
+				doc.user = populatedUser as never;
+				return Promise.resolve(doc);
+			});
 			await adapter.loadUser();
 		});
 
@@ -167,7 +279,6 @@ test.for(feature, ({ Scenario, Background, BeforeEachScenario }) => {
 		});
 
 		And('return a PersonalUserDomainAdapter', async () => {
-			doc.user = { id: '123', userType: 'personal-user' } as never;
 			const result = await adapter.loadUser();
 			expect(result).toBeDefined();
 		});
@@ -193,6 +304,35 @@ test.for(feature, ({ Scenario, Background, BeforeEachScenario }) => {
 	Scenario('Loading blocker when populated as ObjectId', ({ When, Then, And }) => {
 		When('the blocker is an ObjectId and I call loadBlocker', async () => {
 			doc.blocker = new MongooseSeedwork.ObjectId() as never;
+			const populatedBlocker = {
+				id: '123',
+				userType: 'personal-user',
+				isBlocked: false,
+				hasCompletedOnboarding: true,
+				account: {
+					accountType: 'standard',
+					email: 'blocker@example.com',
+					username: 'blockeruser',
+					profile: {
+						aboutMe: '',
+						firstName: 'Blocker',
+						lastName: 'User',
+						location: {},
+						billing: {
+							cybersourceCustomerId: null,
+							subscription: null,
+							transactions: { items: [] },
+						},
+						media: { items: [] },
+						avatar: null,
+					},
+				},
+				set: vi.fn(),
+			};
+			doc.populate = vi.fn().mockImplementation(() => {
+				doc.blocker = populatedBlocker as never;
+				return Promise.resolve(doc);
+			});
 			await adapter.loadBlocker();
 		});
 
@@ -201,7 +341,6 @@ test.for(feature, ({ Scenario, Background, BeforeEachScenario }) => {
 		});
 
 		And('return a PersonalUserDomainAdapter', async () => {
-			doc.blocker = { id: '123', userType: 'personal-user' } as never;
 			const result = await adapter.loadBlocker();
 			expect(result).toBeDefined();
 		});

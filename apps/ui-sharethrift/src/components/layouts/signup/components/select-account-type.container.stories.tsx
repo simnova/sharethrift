@@ -6,8 +6,9 @@ import {
 	withMockRouter,
 } from '../../../../test-utils/storybook-decorators.tsx';
 import {
-	SignupSelectAccountTypeCurrentPersonalUserAndCreateIfNotExistsDocument,
-	SignupSelectAccountTypePersonalUserUpdateDocument,
+	SelectAccountTypeCurrentPersonalUserAndCreateIfNotExistsDocument,
+	SelectAccountTypePersonalUserUpdateDocument,
+	SelectAccountTypeContainerAccountPlansDocument,
 } from '../../../../generated.tsx';
 
 const mockCurrentUser = {
@@ -24,6 +25,78 @@ const mockCurrentUser = {
 	},
 };
 
+const mockAccountPlans = [
+	{
+		__typename: 'AccountPlan',
+		id: 'plan-1',
+		name: 'non-verified-personal',
+		description: 'Basic free plan',
+		billingPeriodLength: 1,
+		billingPeriodUnit: 'month',
+		billingAmount: 0,
+		currency: 'USD',
+		setupFee: 0,
+		status: 'active',
+		cybersourcePlanId: null,
+		schemaVersion: '1.0',
+		createdAt: new Date().toISOString(),
+		updatedAt: new Date().toISOString(),
+		feature: {
+			__typename: 'AccountPlanFeature',
+			activeReservations: 5,
+			bookmarks: 10,
+			itemsToShare: 0,
+			friends: 20,
+		},
+	},
+	{
+		__typename: 'AccountPlan',
+		id: 'plan-2',
+		name: 'verified-personal',
+		description: 'Verified personal plan',
+		billingPeriodLength: 1,
+		billingPeriodUnit: 'month',
+		billingAmount: 9.99,
+		currency: 'USD',
+		setupFee: 0,
+		status: 'active',
+		cybersourcePlanId: 'cyber-1',
+		schemaVersion: '1.0',
+		createdAt: new Date().toISOString(),
+		updatedAt: new Date().toISOString(),
+		feature: {
+			__typename: 'AccountPlanFeature',
+			activeReservations: 20,
+			bookmarks: 50,
+			itemsToShare: 10,
+			friends: 100,
+		},
+	},
+	{
+		__typename: 'AccountPlan',
+		id: 'plan-3',
+		name: 'verified-personal-plus',
+		description: 'Premium plan',
+		billingPeriodLength: 1,
+		billingPeriodUnit: 'month',
+		billingAmount: 19.99,
+		currency: 'USD',
+		setupFee: 0,
+		status: 'active',
+		cybersourcePlanId: 'cyber-2',
+		schemaVersion: '1.0',
+		createdAt: new Date().toISOString(),
+		updatedAt: new Date().toISOString(),
+		feature: {
+			__typename: 'AccountPlanFeature',
+			activeReservations: 100,
+			bookmarks: 200,
+			itemsToShare: 50,
+			friends: 500,
+		},
+	},
+];
+
 const meta: Meta<typeof SelectAccountTypeContainer> = {
 	title: 'Containers/SelectAccountTypeContainer',
 	component: SelectAccountTypeContainer,
@@ -33,7 +106,7 @@ const meta: Meta<typeof SelectAccountTypeContainer> = {
 			mocks: [
 				{
 					request: {
-						query: SignupSelectAccountTypeCurrentPersonalUserAndCreateIfNotExistsDocument,
+						query: SelectAccountTypeCurrentPersonalUserAndCreateIfNotExistsDocument,
 					},
 					result: {
 						data: {
@@ -43,16 +116,34 @@ const meta: Meta<typeof SelectAccountTypeContainer> = {
 				},
 				{
 					request: {
-						query: SignupSelectAccountTypePersonalUserUpdateDocument,
+						query: SelectAccountTypeContainerAccountPlansDocument,
+					},
+					result: {
+						data: {
+							accountPlans: mockAccountPlans,
+						},
+					},
+				},
+				{
+					request: {
+						query: SelectAccountTypePersonalUserUpdateDocument,
 						variables: () => true,
 					},
 					maxUsageCount: Number.POSITIVE_INFINITY,
 					result: {
 						data: {
 							personalUserUpdate: {
-								__typename: 'PersonalUser',
-								id: 'user-1',
-								account: { accountType: 'Reserver' },
+								__typename: 'PersonalUserMutationResult',
+								status: {
+									__typename: 'MutationStatus',
+									success: true,
+									errorMessage: null,
+								},
+								personalUser: {
+									__typename: 'PersonalUser',
+									id: 'user-1',
+									account: { __typename: 'PersonalUserAccount', accountType: 'Reserver' },
+								},
 							},
 						},
 					},
@@ -82,7 +173,7 @@ export const Loading: Story = {
 			mocks: [
 				{
 					request: {
-						query: SignupSelectAccountTypeCurrentPersonalUserAndCreateIfNotExistsDocument,
+						query: SelectAccountTypeCurrentPersonalUserAndCreateIfNotExistsDocument,
 					},
 					delay: Infinity,
 				},
@@ -100,7 +191,7 @@ export const SelectReserver: Story = {
 			mocks: [
 				{
 					request: {
-						query: SignupSelectAccountTypeCurrentPersonalUserAndCreateIfNotExistsDocument,
+						query: SelectAccountTypeCurrentPersonalUserAndCreateIfNotExistsDocument,
 					},
 					result: {
 						data: {
@@ -110,7 +201,7 @@ export const SelectReserver: Story = {
 				},
 				{
 					request: {
-						query: SignupSelectAccountTypePersonalUserUpdateDocument,
+						query: SelectAccountTypePersonalUserUpdateDocument,
 						variables: () => true,
 					},
 					maxUsageCount: Number.POSITIVE_INFINITY,
@@ -147,7 +238,7 @@ export const SelectSharer: Story = {
 			mocks: [
 				{
 					request: {
-						query: SignupSelectAccountTypeCurrentPersonalUserAndCreateIfNotExistsDocument,
+						query: SelectAccountTypeCurrentPersonalUserAndCreateIfNotExistsDocument,
 					},
 					result: {
 						data: {
@@ -157,7 +248,7 @@ export const SelectSharer: Story = {
 				},
 				{
 					request: {
-						query: SignupSelectAccountTypePersonalUserUpdateDocument,
+						query: SelectAccountTypePersonalUserUpdateDocument,
 						variables: () => true,
 					},
 					maxUsageCount: Number.POSITIVE_INFINITY,
@@ -194,7 +285,7 @@ export const SelectPlusAndSave: Story = {
 			mocks: [
 				{
 					request: {
-						query: SignupSelectAccountTypeCurrentPersonalUserAndCreateIfNotExistsDocument,
+						query: SelectAccountTypeCurrentPersonalUserAndCreateIfNotExistsDocument,
 					},
 					result: {
 						data: {
@@ -204,7 +295,7 @@ export const SelectPlusAndSave: Story = {
 				},
 				{
 					request: {
-						query: SignupSelectAccountTypePersonalUserUpdateDocument,
+						query: SelectAccountTypePersonalUserUpdateDocument,
 						variables: () => true,
 					},
 					maxUsageCount: Number.POSITIVE_INFINITY,
@@ -241,7 +332,7 @@ export const WithError: Story = {
 			mocks: [
 				{
 					request: {
-						query: SignupSelectAccountTypeCurrentPersonalUserAndCreateIfNotExistsDocument,
+						query: SelectAccountTypeCurrentPersonalUserAndCreateIfNotExistsDocument,
 					},
 					error: new Error('Failed to fetch user'),
 				},
@@ -259,7 +350,7 @@ export const UpdateError: Story = {
 			mocks: [
 				{
 					request: {
-						query: SignupSelectAccountTypeCurrentPersonalUserAndCreateIfNotExistsDocument,
+						query: SelectAccountTypeCurrentPersonalUserAndCreateIfNotExistsDocument,
 					},
 					result: {
 						data: {
@@ -269,7 +360,7 @@ export const UpdateError: Story = {
 				},
 				{
 					request: {
-						query: SignupSelectAccountTypePersonalUserUpdateDocument,
+						query: SelectAccountTypePersonalUserUpdateDocument,
 						variables: () => true,
 					},
 					maxUsageCount: Number.POSITIVE_INFINITY,
