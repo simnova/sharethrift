@@ -6,6 +6,9 @@ import type {
 	PersonalUserAccountProfileBillingProps,
 } from './personal-user-account-profile-billing.entity.ts';
 
+import { PersonalUserAccountProfileBillingSubscription } from './personal-user-account-profile-billing-subscription.ts';
+
+import { PersonalUserAccountProfileBillingTransactions } from './personal-user-account-profile-billing-transactions.ts';
 export class PersonalUserAccountProfileBilling
 	extends DomainSeedwork.ValueObject<PersonalUserAccountProfileBillingProps>
 	implements PersonalUserAccountProfileBillingEntityReference
@@ -21,20 +24,25 @@ export class PersonalUserAccountProfileBilling
 		this.visa = visa;
 		this.root = root;
 	}
-	get subscriptionId(): string | null {
-		return this.props.subscriptionId;
-	}
 	get cybersourceCustomerId(): string | null {
 		return this.props.cybersourceCustomerId;
 	}
-	get lastTransactionId(): string | null {
-		return this.props.lastTransactionId;
+	get subscription() {
+		return new PersonalUserAccountProfileBillingSubscription(
+			this.props.subscription,
+			this.visa,
+			this.root,
+		);
 	}
-	get paymentState(): string {
-		return this.props.paymentState;
-	}
-	get lastPaymentAmount(): number | null {
-		return this.props.lastPaymentAmount;
+	get transactions(): ReadonlyArray<PersonalUserAccountProfileBillingTransactions> {
+		return this.props.transactions.items.map(
+			(transaction) =>
+				new PersonalUserAccountProfileBillingTransactions(
+					transaction,
+					this.visa,
+					this.root,
+				),
+		);
 	}
 
 	private validateVisa(): void {
@@ -48,24 +56,8 @@ export class PersonalUserAccountProfileBilling
 		}
 	}
 
-	set subscriptionId(value: string) {
-		this.validateVisa();
-		this.props.subscriptionId = value;
-	}
-	set cybersourceCustomerId(value: string) {
+	set cybersourceCustomerId(value: string | null) {
 		this.validateVisa();
 		this.props.cybersourceCustomerId = value;
-	}
-	set lastTransactionId(value: string | null) {
-		this.validateVisa();
-		this.props.lastTransactionId = value;
-	}
-	set paymentState(value: string) {
-		this.validateVisa();
-		this.props.paymentState = value;
-	}
-	set lastPaymentAmount(value: number | null) {
-		this.validateVisa();
-		this.props.lastPaymentAmount = value;
 	}
 }
