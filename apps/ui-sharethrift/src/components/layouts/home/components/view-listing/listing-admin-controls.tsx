@@ -77,10 +77,11 @@ export const ListingAdminControls: React.FC<ListingAdminControlsProps> = ({
 			await blockListing({
 				variables: { id: listing.id },
 			});
-		} catch (error: any) {
+		} catch (error: unknown) {
 			// Only log validation errors since mutation errors are handled in onError
-			if (error.errorFields) {
+			if (error && typeof error === 'object' && 'errorFields' in error) {
 				console.error('Block validation failed:', error);
+				// Form validation errors are already displayed by antd Form
 			}
 		}
 	};

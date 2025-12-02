@@ -66,11 +66,13 @@ export const ViewListing: React.FC<ViewListingProps> = ({
 	return (
 		<>
 			<style>{`
-		.blocked-listing .user-content {
+		/* Blocked listing visual styling */
+		.blocked-listing-content {
 		  opacity: 0.6;
 		  pointer-events: none;
 		}
 
+		/* Responsive styles */
 		@media (max-width: 600px) {
 		  .view-listing-responsive {
 			padding-left: 16px !important;
@@ -121,7 +123,7 @@ export const ViewListing: React.FC<ViewListingProps> = ({
 					width: '100%',
 				}}
 				gutter={[0, 24]}
-				className={`view-listing-responsive ${isBlocked ? 'blocked-listing' : ''}`}
+				className="view-listing-responsive"
 			>
 				<Col span={24} style={{ marginBottom: 0, paddingBottom: 0 }}>
 					<Button
@@ -135,61 +137,66 @@ export const ViewListing: React.FC<ViewListingProps> = ({
 					</Button>
 				</Col>
 
-				{/* Admin controls */}
+				{/* Admin controls - always interactive */}
 				{userIsAdmin && (
 					<ListingAdminControls listing={listing} isBlocked={isBlocked} />
 				)}
 
-				<div className="user-content">
-					<Col span={24} style={{ marginBottom: 0, paddingBottom: 0 }}>
-						{/* Sharer Info at top, clickable to profile */}
-						<SharerInformationContainer
-							sharerId={sharer?.id}
-							listingId={listing.id}
-							isOwner={sharer?.id === currentUserId}
-							className="sharer-info-responsive"
-							sharedTimeAgo={sharedTimeAgo}
-							currentUserId={currentUserId}
-						/>
-					</Col>
-					<Col span={24} style={{ marginTop: 0, paddingTop: 0 }}>
-						{/* Main content: 2 columns on desktop, stacked on mobile */}
-						<Row
-							gutter={36}
-							align="top"
-							style={{ marginTop: 0, paddingTop: 0 }}
-							className="listing-main-responsive"
-						>
-							{/* Left: Images */}
-							<Col
-								xs={24}
-								md={12}
-								style={{
-									display: 'flex',
-									alignItems: 'flex-start',
-									justifyContent: 'center',
-									marginTop: 0,
-									paddingTop: 0,
-								}}
-							>
-								<ListingImageGalleryContainer
-									listingId={listing.id}
-									className="listing-gallery-responsive"
-								/>
-							</Col>
-						{/* Right: Info/Form */}
-						<Col xs={24} md={12} style={{ marginTop: 0, paddingTop: 0 }}>
-							<ListingInformationContainer
-								listing={listing}
-								userIsSharer={userIsSharer}
-								isAuthenticated={isAuthenticated}
-								userReservationRequest={userReservationRequest}
-								className="listing-info-responsive"
+				{/* User content - disable interactions when blocked */}
+				<Col span={24}>
+					<div 
+						className={isBlocked ? 'blocked-listing-content' : ''}
+					>
+						<Col span={24} style={{ marginBottom: 0, paddingBottom: 0 }}>
+							{/* Sharer Info at top, clickable to profile */}
+							<SharerInformationContainer
+								sharerId={sharer?.id}
+								listingId={listing.id}
+								isOwner={sharer?.id === currentUserId}
+								className="sharer-info-responsive"
+								sharedTimeAgo={sharedTimeAgo}
+								currentUserId={currentUserId}
 							/>
 						</Col>
-						</Row>
-					</Col>
-				</div>
+						<Col span={24} style={{ marginTop: 0, paddingTop: 0 }}>
+							{/* Main content: 2 columns on desktop, stacked on mobile */}
+							<Row
+								gutter={36}
+								align="top"
+								style={{ marginTop: 0, paddingTop: 0 }}
+								className="listing-main-responsive"
+							>
+								{/* Left: Images */}
+								<Col
+									xs={24}
+									md={12}
+									style={{
+										display: 'flex',
+										alignItems: 'flex-start',
+										justifyContent: 'center',
+										marginTop: 0,
+										paddingTop: 0,
+									}}
+								>
+									<ListingImageGalleryContainer
+										listingId={listing.id}
+										className="listing-gallery-responsive"
+									/>
+								</Col>
+							{/* Right: Info/Form */}
+							<Col xs={24} md={12} style={{ marginTop: 0, paddingTop: 0 }}>
+								<ListingInformationContainer
+									listing={listing}
+									userIsSharer={userIsSharer}
+									isAuthenticated={isAuthenticated}
+									userReservationRequest={userReservationRequest}
+									className="listing-info-responsive"
+								/>
+							</Col>
+							</Row>
+						</Col>
+					</div>
+				</Col>
 			</Row>
 
 

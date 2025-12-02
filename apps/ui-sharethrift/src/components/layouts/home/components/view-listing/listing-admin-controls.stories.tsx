@@ -156,7 +156,7 @@ Only visible to administrators with appropriate permissions.
 	decorators: [
 		(Story, { parameters }) => (
 			<MockedProvider
-				mocks={parameters.mocks || []}
+				mocks={parameters['mocks'] || []}
 				cache={new InMemoryCache()}
 			>
 				<div style={{ maxWidth: '800px', margin: '0 auto' }}>
