@@ -849,6 +849,9 @@ importers:
 
   packages/sthrift/event-handler:
     dependencies:
+      '@cellix/event-bus-seedwork-node':
+        specifier: workspace:*
+        version: link:../../cellix/event-bus-seedwork-node
       '@sthrift/domain':
         specifier: workspace:*
         version: link:../domain
@@ -862,6 +865,9 @@ importers:
       '@cellix/typescript-config':
         specifier: workspace:*
         version: link:../../cellix/typescript-config
+      '@cellix/vitest-config':
+        specifier: workspace:*
+        version: link:../../cellix/vitest-config
       rimraf:
         specifier: ^6.0.1
         version: 6.0.1
