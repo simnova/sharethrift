@@ -15,7 +15,7 @@ import { RequireAuthAdmin } from "../../shared/require-auth-admin.tsx";
 export const HomeRoutes: React.FC = () => {
   return (
     <Routes>
-      <Route path="" element={<HomeTabsLayout />}>
+      <Route path="" element={<SectionLayout />}>
         <Route path="" element={<Listings />} />
         <Route path="listing/:listingId" element={<ViewListing />} />
         <Route path="user/:userId" element={<ViewUserProfile />} />

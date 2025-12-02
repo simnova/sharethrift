@@ -11,6 +11,11 @@ interface Message {
   createdAt: string;
 }
 
+interface UserInfo {
+  id: string;
+  displayName: string;
+}
+
 interface MessageThreadProps {
   conversationId: string;
   messages: Message[];
@@ -22,10 +27,23 @@ interface MessageThreadProps {
   handleSendMessage: (e: React.FormEvent) => void;
   currentUserId: string;
   contentContainerStyle?: React.CSSProperties;
+  sharer?: UserInfo;
+  reserver?: UserInfo;
 }
 
 export const MessageThread: React.FC<MessageThreadProps> = (props) => {
   const messagesEndRef = useRef<HTMLDivElement | null>(null);
+
+  // Helper to get display name for a given authorId
+  const getAuthorDisplayName = (authorId: string): string => {
+    if (props.sharer?.id === authorId) {
+      return props.sharer.displayName || "Sharer";
+    }
+    if (props.reserver?.id === authorId) {
+      return props.reserver.displayName || "Reserver";
+    }
+    return "User";
+  };
 
   if (props.loading) {
     return (
@@ -98,6 +116,7 @@ export const MessageThread: React.FC<MessageThreadProps> = (props) => {
                     (index > 0 &&
                       props.messages[index - 1]?.authorId !== message.authorId)
                   }
+                  authorDisplayName={getAuthorDisplayName(message.authorId)}
                 />
               )}
             />
@@ -156,9 +175,10 @@ interface MessageBubbleProps {
   message: Message;
   isOwn: boolean;
   showAvatar: boolean;
+  authorDisplayName: string;
 }
 
-function MessageBubble({ message, isOwn, showAvatar }: MessageBubbleProps) {
+function MessageBubble({ message, isOwn, showAvatar, authorDisplayName }: MessageBubbleProps) {
   const formatTime = (dateString: string) => {
     const date = new Date(dateString);
     return date.toLocaleTimeString("en-US", {
@@ -186,7 +206,7 @@ function MessageBubble({ message, isOwn, showAvatar }: MessageBubbleProps) {
         }}
       >
         {showAvatar && !isOwn && (
-          <UserAvatar userId={message.authorId} userName="User" size={32} />
+          <UserAvatar userId={message.authorId} userName={authorDisplayName} size={32} />
         )}
         {showAvatar && isOwn && <div style={{ width: 32 }} />}
         {!showAvatar && <div style={{ width: 32 }} />}
