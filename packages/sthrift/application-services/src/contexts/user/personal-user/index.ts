@@ -60,10 +60,3 @@ export const PersonalUser = (
 		refundPayment: refundPayment(dataSources),
 	};
 };
-
-export type {
-	GetAllUsersCommand,
-	PersonalUserPageResult,
-} from './get-all-users.ts';
-
-export type { PaymentResponse } from './process-payment.ts';
