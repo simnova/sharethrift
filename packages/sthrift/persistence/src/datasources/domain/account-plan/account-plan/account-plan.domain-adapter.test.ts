@@ -92,6 +92,7 @@ test.for(feature, ({ Scenario, Background, BeforeEachScenario }) => {
     Given('the feature property is missing', () => {
       doc = makeAccountPlanDoc({});
       // Remove the feature property to simulate missing
+      // biome-ignore lint/complexity/useLiteralKeys: test code requires dynamic property removal
   delete (doc as unknown as Record<string, unknown>)["feature"];
       adapter = new AccountPlanDomainAdapter(doc);
     });

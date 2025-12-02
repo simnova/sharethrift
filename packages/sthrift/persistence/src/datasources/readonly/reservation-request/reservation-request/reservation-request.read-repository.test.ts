@@ -26,6 +26,111 @@ const feature = await loadFeature(
   path.resolve(__dirname, 'features/reservation-request.read-repository.feature')
 );
 
+// Test ObjectId constants for consistent use across tests
+const TEST_IDS = {
+  RESERVATION_1: '64f5b3c1e4b0a1c2d3e4f567',
+  USER_1: '64f5b3c1e4b0a1c2d3e4f568', 
+  LISTING_1: '64f5b3c1e4b0a1c2d3e4f569',
+  SHARER_1: '64f5b3c1e4b0a1c2d3e4f570',
+  NONEXISTENT: '64f5b3c1e4b0a1c2d3e4f571'
+} as const;
+
+const TEST_OBJECT_IDS = {
+  USER_1: new MongooseSeedwork.ObjectId(TEST_IDS.USER_1),
+  LISTING_1: new MongooseSeedwork.ObjectId(TEST_IDS.LISTING_1),
+  SHARER_1: new MongooseSeedwork.ObjectId(TEST_IDS.SHARER_1),
+  RESERVATION_1: new MongooseSeedwork.ObjectId(TEST_IDS.RESERVATION_1),
+} as const;
+
+function makeActiveReserverFilter(userId: string) {
+  return {
+    reserver: new MongooseSeedwork.ObjectId(userId),
+    state: { $in: ['Accepted', 'Requested'] },
+  };
+}
+
+function makePastReserverFilter(userId: string) {
+  return {
+    reserver: new MongooseSeedwork.ObjectId(userId),
+    state: { $in: ['Cancelled', 'Closed', 'Rejected'] },
+  };
+}
+
+function makeSharerListingPipeline(sharerId: string) {
+  return [
+    {
+      $lookup: {
+        from: 'listings',
+        localField: 'listing',
+        foreignField: '_id',
+        as: 'listingDoc',
+      },
+    },
+    { $unwind: '$listingDoc' },
+    {
+      $match: {
+        'listingDoc.sharer': new MongooseSeedwork.ObjectId(sharerId),
+      },
+    },
+  ];
+}
+
+function makeActiveReservationFilter(reserverId: string, listingId: string) {
+  return {
+    reserver: new MongooseSeedwork.ObjectId(reserverId),
+    listing: new MongooseSeedwork.ObjectId(listingId),
+    state: { $in: ['Accepted', 'Requested'] },
+  };
+}
+
+function makeOverlapActiveFilter(listingId: string, startDate: Date, endDate: Date) {
+  return {
+    listing: new MongooseSeedwork.ObjectId(listingId),
+    state: { $in: ['Accepted', 'Requested'] },
+    reservationPeriodStart: { $lt: endDate },
+    reservationPeriodEnd: { $gt: startDate },
+  };
+}
+
+function makeActiveByListingFilter(listingId: string) {
+  return {
+    listing: new MongooseSeedwork.ObjectId(listingId),
+    state: { $in: ['Accepted', 'Requested'] },
+  };
+}
+
+// Assertion helpers to reduce repetition
+function expectFindCalledWith(
+  mockDataSource: { find: ReturnType<typeof vi.fn> }, 
+  filter: unknown, 
+  options?: unknown
+) {
+  expect(mockDataSource.find).toHaveBeenCalledWith(filter, options);
+}
+
+function expectFindOneCalledWith(
+  mockDataSource: { findOne: ReturnType<typeof vi.fn> }, 
+  filter: unknown, 
+  options?: unknown
+) {
+  expect(mockDataSource.findOne).toHaveBeenCalledWith(filter, options);
+}
+
+function expectConverterCalledWithDoc(
+  mockConverter: { toDomain: ReturnType<typeof vi.fn> }, 
+  doc: Models.ReservationRequest.ReservationRequest, 
+  passport: Domain.Passport
+) {
+  expect(mockConverter.toDomain).toHaveBeenCalledWith(doc, passport);
+}
+
+function expectAggregateCalledWith(
+  models: ModelsContext, 
+  pipeline: unknown[]
+) {
+  expect(models.ReservationRequest.ReservationRequest.aggregate).toHaveBeenCalledWith(pipeline);
+}
+
 function makeMockModelsContext() {
   return {
     ReservationRequest: {
@@ -83,14 +188,7 @@ function makeMockListingDocument() {
   };
 }
 
-// Test ObjectId constants for consistent use across tests
-const TEST_IDS = {
-  RESERVATION_1: '64f5b3c1e4b0a1c2d3e4f567',
-  USER_1: '64f5b3c1e4b0a1c2d3e4f568', 
-  LISTING_1: '64f5b3c1e4b0a1c2d3e4f569',
-  SHARER_1: '64f5b3c1e4b0a1c2d3e4f570',
-  NONEXISTENT: '64f5b3c1e4b0a1c2d3e4f571'
-} as const;
+
 
 function makeMockDomainEntity(doc?: Models.ReservationRequest.ReservationRequest) {
   return {
@@ -173,11 +271,11 @@ test.for(feature, ({ Scenario, BeforeEachScenario, Background }) => {
     });
 
     Then('I should receive an array of ReservationRequest entities', () => {
-      expect(mockDataSource.find).toHaveBeenCalledWith({}, undefined);
+      expectFindCalledWith(mockDataSource, {}, undefined);
     });
 
     And('the array should contain all reservation requests', () => {
-      expect(mockConverter.toDomain).toHaveBeenCalledWith(mockReservationRequestDoc, passport);
+      expectConverterCalledWithDoc(mockConverter, mockReservationRequestDoc, passport);
     });
   });
 
@@ -197,7 +295,7 @@ test.for(feature, ({ Scenario, BeforeEachScenario, Background }) => {
     });
 
     And('the entity\'s id should be "reservation-1"', () => {
-      expect(mockConverter.toDomain).toHaveBeenCalledWith(mockReservationRequestDoc, passport);
+      expectConverterCalledWithDoc(mockConverter, mockReservationRequestDoc, passport);
     });
   });
 
@@ -213,29 +311,30 @@ test.for(feature, ({ Scenario, BeforeEachScenario, Background }) => {
   });
 
   Scenario('Getting reservation requests by reserver ID', ({ Given, When, Then, And }) => {
-    Given('a ReservationRequest document with reserver "user-1"', () => {
-      mockReservationRequestDoc.reserver = new MongooseSeedwork.ObjectId(TEST_IDS.USER_1);
+    Given('a ReservationRequest document with reserver \"user-1\"', () => {
+      mockReservationRequestDoc.reserver = TEST_OBJECT_IDS.USER_1;
     });
 
-    When('I call getByReserverId with "user-1"', async () => {
+    When('I call getByReserverId with \"user-1\"', async () => {
       await repository.getByReserverId(TEST_IDS.USER_1);
     });
 
     Then('I should receive an array of ReservationRequest entities', () => {
-      expect(mockDataSource.find).toHaveBeenCalledWith(
-        { reserver: new MongooseSeedwork.ObjectId(TEST_IDS.USER_1) },
+      expectFindCalledWith(
+        mockDataSource,
+        { reserver: TEST_OBJECT_IDS.USER_1 },
         undefined
       );
     });
 
-    And('the array should contain reservation requests where reserver is "user-1"', () => {
-      expect(mockConverter.toDomain).toHaveBeenCalledWith(mockReservationRequestDoc, passport);
+    And('the array should contain reservation requests where reserver is \"user-1\"', () => {
+      expectConverterCalledWithDoc(mockConverter, mockReservationRequestDoc, passport);
     });
   });
 
   Scenario('Getting active reservation requests by reserver ID with listing and sharer', ({ Given, When, Then, And }) => {
     Given('a ReservationRequest document with reserver "user-1" and state "Accepted"', () => {
-      mockReservationRequestDoc.reserver = new MongooseSeedwork.ObjectId(TEST_IDS.USER_1);
+      mockReservationRequestDoc.reserver = TEST_OBJECT_IDS.USER_1;
       mockReservationRequestDoc.state = 'Accepted';
     });
 
@@ -244,25 +343,21 @@ test.for(feature, ({ Scenario, BeforeEachScenario, Background }) => {
     });
 
     Then('I should receive an array of ReservationRequest entities', () => {
-      expect(mockDataSource.find).toHaveBeenCalledWith(
-        {
-          reserver: new MongooseSeedwork.ObjectId(TEST_IDS.USER_1),
-          state: { $in: ['Accepted', 'Requested'] },
-        },
-        {
-          populateFields: ['listing', 'reserver'],
-        }
+      expectFindCalledWith(
+        mockDataSource,
+        makeActiveReserverFilter(TEST_IDS.USER_1),
+        { populateFields: ['listing', 'reserver'] }
       );
     });
 
     And('the array should contain active reservation requests with populated listing and reserver', () => {
-      expect(mockConverter.toDomain).toHaveBeenCalledWith(mockReservationRequestDoc, passport);
+      expectConverterCalledWithDoc(mockConverter, mockReservationRequestDoc, passport);
     });
   });
 
   Scenario('Getting past reservation requests by reserver ID', ({ Given, When, Then, And }) => {
     Given('a ReservationRequest document with reserver "user-1" and state "Closed"', () => {
-      mockReservationRequestDoc.reserver = new MongooseSeedwork.ObjectId(TEST_IDS.USER_1);
+      mockReservationRequestDoc.reserver = TEST_OBJECT_IDS.USER_1;
       mockReservationRequestDoc.state = 'Closed';
     });
 
@@ -271,19 +366,15 @@ test.for(feature, ({ Scenario, BeforeEachScenario, Background }) => {
     });
 
     Then('I should receive an array of ReservationRequest entities', () => {
-      expect(mockDataSource.find).toHaveBeenCalledWith(
-        {
-          reserver: new MongooseSeedwork.ObjectId(TEST_IDS.USER_1),
-          state: { $in: ['Cancelled', 'Closed', 'Rejected'] },
-        },
-        {
-          populateFields: ['listing', 'reserver'],
-        }
+      expectFindCalledWith(
+        mockDataSource,
+        makePastReserverFilter(TEST_IDS.USER_1),
+        { populateFields: ['listing', 'reserver'] }
       );
     });
 
     And('the array should contain past reservation requests', () => {
-      expect(mockConverter.toDomain).toHaveBeenCalledWith(mockReservationRequestDoc, passport);
+      expectConverterCalledWithDoc(mockConverter, mockReservationRequestDoc, passport);
     });
   });
 
@@ -306,26 +397,10 @@ test.for(feature, ({ Scenario, BeforeEachScenario, Background }) => {
     });
 
     Then('I should receive an array of ReservationRequest entities', () => {
-      expect(models.ReservationRequest.ReservationRequest.aggregate).toHaveBeenCalledWith([
-        {
-          $lookup: {
-            from: 'listings',
-            localField: 'listing',
-            foreignField: '_id',
-            as: 'listingDoc',
-          },
-        },
-        { $unwind: '$listingDoc' },
-        {
-          $match: {
-            'listingDoc.sharer': new MongooseSeedwork.ObjectId(TEST_IDS.SHARER_1),
-          },
-        },
-      ]);
+      expectAggregateCalledWith(models, makeSharerListingPipeline(TEST_IDS.SHARER_1));
     });
 
     And('the array should contain reservation requests for listings owned by "sharer-1"', () => {
-      // Verify the converter was called
       expect(mockConverter.toDomain).toHaveBeenCalled();
       expect(mockConverter.toDomain).toHaveBeenCalledWith(expect.any(Object), passport);
       expect(result).toBeDefined();
@@ -345,18 +420,11 @@ test.for(feature, ({ Scenario, BeforeEachScenario, Background }) => {
     });
 
     Then('I should receive a ReservationRequest entity', () => {
-      expect(mockDataSource.findOne).toHaveBeenCalledWith(
-        {
-          reserver: new MongooseSeedwork.ObjectId(TEST_IDS.USER_1),
-          listing: new MongooseSeedwork.ObjectId(TEST_IDS.LISTING_1),
-          state: { $in: ['Accepted', 'Requested'] },
-        },
-        undefined
-      );
+      expectFindOneCalledWith(mockDataSource, makeActiveReservationFilter(TEST_IDS.USER_1, TEST_IDS.LISTING_1), undefined);
     });
 
     And('the entity\'s reserver id should be "user-1"', () => {
-      expect(mockConverter.toDomain).toHaveBeenCalledWith(mockReservationRequestDoc, passport);
+      expectConverterCalledWithDoc(mockConverter, mockReservationRequestDoc, passport);
     });
 
     And('the entity\'s listing id should be "listing-1"', () => {
@@ -381,19 +449,11 @@ test.for(feature, ({ Scenario, BeforeEachScenario, Background }) => {
     });
 
     Then('I should receive an array of ReservationRequest entities', () => {
-      expect(mockDataSource.find).toHaveBeenCalledWith(
-        {
-          listing: new MongooseSeedwork.ObjectId(TEST_IDS.LISTING_1),
-          state: { $in: ['Accepted', 'Requested'] },
-          reservationPeriodStart: { $lt: endDate },
-          reservationPeriodEnd: { $gt: startDate },
-        },
-        undefined
-      );
+      expectFindCalledWith(mockDataSource, makeOverlapActiveFilter(TEST_IDS.LISTING_1, startDate, endDate), undefined);
     });
 
     And('the array should contain overlapping active reservation requests', () => {
-      expect(mockConverter.toDomain).toHaveBeenCalledWith(mockReservationRequestDoc, passport);
+      expectConverterCalledWithDoc(mockConverter, mockReservationRequestDoc, passport);
     });
   });
 
@@ -408,17 +468,11 @@ test.for(feature, ({ Scenario, BeforeEachScenario, Background }) => {
     });
 
     Then('I should receive an array of ReservationRequest entities', () => {
-      expect(mockDataSource.find).toHaveBeenCalledWith(
-        {
-          listing: new MongooseSeedwork.ObjectId(TEST_IDS.LISTING_1),
-          state: { $in: ['Accepted', 'Requested'] },
-        },
-        undefined
-      );
+      expectFindCalledWith(mockDataSource, makeActiveByListingFilter(TEST_IDS.LISTING_1), undefined);
     });
 
     And('the array should contain active reservation requests for the listing', () => {
-      expect(mockConverter.toDomain).toHaveBeenCalledWith(mockReservationRequestDoc, passport);
+      expectConverterCalledWithDoc(mockConverter, mockReservationRequestDoc, passport);
     });
   });
 });
