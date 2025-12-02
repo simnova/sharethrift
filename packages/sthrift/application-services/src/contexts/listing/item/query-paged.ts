@@ -1,7 +1,7 @@
 import type { Domain } from '@sthrift/domain';
 import type { DataSources } from '@sthrift/persistence';
 
-export interface ItemListingQueryPagedCommand {
+interface ItemListingQueryPagedCommand {
 	page: number;
 	pageSize: number;
 	searchText?: string;

@@ -14,7 +14,7 @@ import type {
 
 export type { WithRequired } from '@apollo/utils.withrequired';
 
-export interface AzureFunctionsContextFunctionArgument {
+interface AzureFunctionsContextFunctionArgument {
 	context: InvocationContext;
 	req: HttpRequest;
 }

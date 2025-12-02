@@ -1,6 +1,6 @@
 import React, { createContext, useContext } from "react";
 
-export const UserIdContext = createContext<string | undefined>(undefined);
+const UserIdContext = createContext<string | undefined>(undefined);
 
 export const useUserId = () => useContext(UserIdContext);
 

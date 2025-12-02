@@ -4,7 +4,7 @@ import { useCallback, useEffect, useState, type FC } from 'react';
 import utc from 'dayjs/plugin/utc';
 import './flex-microform.css';
 dayjs.extend(utc);
-export type PaymentTokenFormFieldType = {
+type PaymentTokenFormFieldType = {
 	cardNumber?: string;
 	securityCode?: string;
 	expiration?: string;

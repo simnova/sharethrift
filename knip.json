@@ -25,7 +25,8 @@
 		},
 		"packages/sthrift/persistence": {
 			"entry": ["src/index.ts", "src/datasources/**/index.ts"],
-			"project": ["src/**/*.ts"]
+			"project": ["src/**/*.ts"],
+			"ignore": ["**/graphql-tools-scalars.ts"]
 		},
 		"packages/sthrift/graphql": {
 			"entry": ["src/index.ts", "src/schema/types/**/*.resolvers.ts"],
@@ -68,9 +69,7 @@
 		"**/coverage/**",
 		"**/__tests__/**",
 		"**/tests/**",
-		"**/test/**",
-		"**/*.value-objects.ts",
-		"**/role/**/*-permissions.ts"
+		"**/test/**"
 	],
 	"ignoreDependencies": [
 		"@types/*",
@@ -83,6 +82,5 @@
 		"@serenity-js/serenity-bdd",
 		"@graphql-typed-document-node/core"
 	],
-	"ignoreBinaries": ["func"],
-	"ignoreExportsUsedInFile": true
+	"ignoreBinaries": ["func"]
 }
