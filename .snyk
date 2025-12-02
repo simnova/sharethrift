@@ -1,0 +1,15 @@
+version: v1.5.0
+ignore:
+  'SNYK-JS-EXPRESS-14157151':
+    - '@docusaurus/core@3.8.1 > * > express':
+        reason: 'Transitive dependency in Docusaurus; not exploitable in current usage.'
+        expires: '2026-03-02T00:00:00.000Z'
+        created: '2025-12-02T00:00:00.000Z'
+    - '@docusaurus/plugin-content-docs@3.8.1 > * > express':
+        reason: 'Transitive dependency in Docusaurus; not exploitable in current usage.'
+        expires: '2026-03-02T00:00:00.000Z'
+        created: '2025-12-02T00:00:00.000Z'
+    - '@docusaurus/preset-classic@3.8.1 > * > express':
+        reason: 'Transitive dependency in Docusaurus; not exploitable in current usage.'
+        expires: '2026-03-02T00:00:00.000Z'
+        created: '2025-12-02T00:00:00.000Z'
