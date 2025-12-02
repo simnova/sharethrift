@@ -1,5 +1,6 @@
-Feature: <Index> Listing Appeal Request Readonly Index Exports
+Feature: ListingAppealRequestReadRepository Listing Appeal Request Read Repository Exports
 
-	Scenario: Exports from listing appeal request readonly index
-		Then the getListingAppealRequestReadRepository function should be exported
+	Scenario: ListingAppealRequestReadRepository exports
+		Then getListingAppealRequestReadRepository should be exported from index
 		And getListingAppealRequestReadRepository should be a function
+		And ListingAppealRequestReadRepository type should be exported from index

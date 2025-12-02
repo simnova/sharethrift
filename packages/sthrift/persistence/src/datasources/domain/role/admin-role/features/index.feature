@@ -1,10 +1,14 @@
-Feature: <Index> Admin Role Index Exports
+Feature: AdminRolePersistence Admin Role Domain Persistence
 
-	Scenario: Exports from admin role index
-		Then the AdminRolePersistence function should be exported
+	Background:
+		Given a valid models context with AdminRole model
+		And a valid passport for domain operations
+
+	Scenario: Creating Admin Role Persistence
+		When I call AdminRolePersistence with models and passport
+		Then I should receive an object with AdminRoleUnitOfWork property
+		And the AdminRoleUnitOfWork should be properly initialized
+
+	Scenario: AdminRolePersistence exports
+		Then AdminRolePersistence should be exported from index
 		And AdminRolePersistence should be a function
-
-	Scenario: Calling AdminRolePersistence returns UnitOfWork
-		Given a models context and passport
-		When I call AdminRolePersistence
-		Then it should return an object with AdminRoleUnitOfWork

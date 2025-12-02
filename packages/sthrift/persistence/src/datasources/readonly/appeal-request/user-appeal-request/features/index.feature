@@ -1,5 +1,6 @@
-Feature: <Index> User Appeal Request Readonly Index Exports
+Feature: UserAppealRequestReadRepository User Appeal Request Read Repository Exports
 
-	Scenario: Exports from user appeal request readonly index
-		Then the getUserAppealRequestReadRepository function should be exported
+	Scenario: UserAppealRequestReadRepository exports
+		Then getUserAppealRequestReadRepository should be exported from index
 		And getUserAppealRequestReadRepository should be a function
+		And UserAppealRequestReadRepository type should be exported from index

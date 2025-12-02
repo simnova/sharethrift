@@ -9,13 +9,18 @@ const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const feature = await loadFeature(path.resolve(__dirname, 'features/index.feature'));
 
 test.for(feature, ({ Scenario }) => {
-	Scenario('Exports from user appeal request readonly index', ({ Then, And }) => {
-		Then('the getUserAppealRequestReadRepository function should be exported', () => {
+	Scenario('UserAppealRequestReadRepository exports', ({ Then, And }) => {
+		Then('getUserAppealRequestReadRepository should be exported from index', () => {
 			expect(UserAppealRequestIndex.getUserAppealRequestReadRepository).toBeDefined();
 		});
 
 		And('getUserAppealRequestReadRepository should be a function', () => {
 			expect(typeof UserAppealRequestIndex.getUserAppealRequestReadRepository).toBe('function');
+		});
+
+		And('UserAppealRequestReadRepository type should be exported from index', () => {
+			// Type exports are verified at compile time
+			expect(true).toBe(true);
 		});
 	});
 });

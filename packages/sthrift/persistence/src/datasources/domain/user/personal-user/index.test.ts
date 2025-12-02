@@ -8,9 +8,43 @@ const test = { for: describeFeature };
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const feature = await loadFeature(path.resolve(__dirname, 'features/index.feature'));
 
-test.for(feature, ({ Scenario }) => {
-	Scenario('Exports from personal user entity index', ({ Then, And }) => {
-		Then('the PersonalUserPersistence function should be exported', () => {
+test.for(feature, ({ Background, Scenario }) => {
+	let mockModels: never;
+	let mockPassport: never;
+
+	Background(({ Given, And }) => {
+		Given('a valid models context with PersonalUser model', () => {
+			mockModels = {
+				User: {
+					PersonalUser: {} as never,
+				},
+			} as never;
+		});
+
+		And('a valid passport for domain operations', () => {
+			mockPassport = {} as never;
+		});
+	});
+
+	Scenario('Creating Personal User Persistence', ({ When, Then, And }) => {
+		let result: ReturnType<typeof PersonalUserIndex.PersonalUserPersistence>;
+
+		When('I call PersonalUserPersistence with models and passport', () => {
+			result = PersonalUserIndex.PersonalUserPersistence(mockModels, mockPassport);
+		});
+
+		Then('I should receive an object with PersonalUserUnitOfWork property', () => {
+			expect(result).toBeDefined();
+			expect(result.PersonalUserUnitOfWork).toBeDefined();
+		});
+
+		And('the PersonalUserUnitOfWork should be properly initialized', () => {
+			expect(result.PersonalUserUnitOfWork).toBeDefined();
+		});
+	});
+
+	Scenario('PersonalUserPersistence exports', ({ Then, And }) => {
+		Then('PersonalUserPersistence should be exported from index', () => {
 			expect(PersonalUserIndex.PersonalUserPersistence).toBeDefined();
 		});
 

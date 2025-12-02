@@ -1,5 +1,14 @@
-Feature: <Index> Reservation Request Index Exports
+Feature: ReservationRequestPersistence Reservation Request Domain Persistence
 
-	Scenario: Exports from reservation request index
-		Then the ReservationRequestPersistence function should be exported
+	Background:
+		Given a valid models context with ReservationRequest model
+		And a valid passport for domain operations
+
+	Scenario: Creating Reservation Request Persistence
+		When I call ReservationRequestPersistence with models and passport
+		Then I should receive an object with ReservationRequestUnitOfWork property
+		And the ReservationRequestUnitOfWork should be properly initialized
+
+	Scenario: ReservationRequestPersistence exports
+		Then ReservationRequestPersistence should be exported from index
 		And ReservationRequestPersistence should be a function

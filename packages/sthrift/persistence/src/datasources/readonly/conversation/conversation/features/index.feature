@@ -1,10 +1,15 @@
-Feature: <Index> Conversation Readonly Index Exports
+Feature: ConversationReadRepositoryImpl Conversation Read Repository Implementation
 
-	Scenario: Exports from conversation readonly index
-		Then the getConversationReadRepository function should be exported
-		And getConversationReadRepository should be a function
+	Background:
+		Given a valid models context with Conversation model
+		And a valid passport for domain operations
 
-	Scenario: Calling ConversationReadRepositoryImpl returns repository
-		Given a models context and passport
-		When I call ConversationReadRepositoryImpl
-		Then it should return an object with ConversationReadRepo
+	Scenario: Creating Conversation Read Repository Implementation
+		When I call ConversationReadRepositoryImpl with models and passport
+		Then I should receive an object with ConversationReadRepo property
+		And the ConversationReadRepo should be a ConversationReadRepository instance
+
+	Scenario: ConversationReadRepositoryImpl exports
+		Then ConversationReadRepositoryImpl should be exported from index
+		And ConversationReadRepositoryImpl should be a function
+		And ConversationReadRepository type should be exported from index
