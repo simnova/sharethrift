@@ -1,4 +1,4 @@
-import { describe, it, expect, vi, beforeEach } from 'vitest';
+import { describe, it, expect, beforeEach } from 'vitest';
 import type { DataSources } from '@sthrift/persistence';
 import { Listing } from './index.ts';
 
