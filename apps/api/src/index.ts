@@ -54,7 +54,11 @@ Cellix.initializeInfrastructureServices<ApiContextSpec, ApplicationServices>(
 				isDevelopment ? new ServiceMessagingMock() : new ServiceMessagingTwilio(),
 			)
 			.registerInfrastructureService(
-				isDevelopment ? new ServiceTransactionalEmailMock() : new ServiceTransactionalEmailSendGrid(),
+				// Use mock if in development OR if SendGrid API key is not available
+				// biome-ignore lint/complexity/useLiteralKeys: TypeScript requires bracket notation for process.env
+				isDevelopment || !process.env['SENDGRID_API_KEY']
+					? new ServiceTransactionalEmailMock()
+					: new ServiceTransactionalEmailSendGrid(),
 			)
 			.registerInfrastructureService(
                 isDevelopment ? new PaymentServiceMock() : new PaymentServiceCybersource()
@@ -76,7 +80,8 @@ Cellix.initializeInfrastructureServices<ApiContextSpec, ApplicationServices>(
       ? serviceRegistry.getInfrastructureService<PaymentService>(PaymentServiceMock)
       : serviceRegistry.getInfrastructureService<PaymentService>(PaymentServiceCybersource);
 
-		const emailService = isDevelopment
+		// biome-ignore lint/complexity/useLiteralKeys: TypeScript requires bracket notation for process.env
+		const emailService = isDevelopment || !process.env['SENDGRID_API_KEY']
 			? serviceRegistry.getInfrastructureService<TransactionalEmailService>(ServiceTransactionalEmailMock)
 			: serviceRegistry.getInfrastructureService<TransactionalEmailService>(ServiceTransactionalEmailSendGrid);
 

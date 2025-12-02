@@ -13,6 +13,7 @@ export class ServiceTransactionalEmailSendGrid
 	implements TransactionalEmailService
 {
 	private readonly templateUtils: TemplateUtils;
+	private isInitialized = false;
 
 	constructor() {
 		// Initialize template utilities
@@ -28,6 +29,7 @@ export class ServiceTransactionalEmailSendGrid
 			);
 		}
 		sendgrid.setApiKey(apiKey);
+		this.isInitialized = true;
 		console.log('ServiceTransactionalEmailSendGrid started');
 		return Promise.resolve();
 	}
@@ -42,6 +44,10 @@ export class ServiceTransactionalEmailSendGrid
 		recipient: EmailRecipient,
 		templateData: EmailTemplateData,
 	): Promise<void> {
+		if (!this.isInitialized) {
+			throw new Error('ServiceTransactionalEmailSendGrid is not initialized. Call startUp() first.');
+		}
+
 		const template = this.templateUtils.loadTemplate(templateName);
 		const htmlContent = this.templateUtils.substituteVariables(template.body, templateData);
 		const subject = this.templateUtils.substituteVariables(template.subject, templateData);
