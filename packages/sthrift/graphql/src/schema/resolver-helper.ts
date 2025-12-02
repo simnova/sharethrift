@@ -69,8 +69,8 @@ export const currentViewerIsAdmin = async (
  */
 export const PopulateUserFromField = (fieldName: string) => {
 	return async (parent: any, _: unknown, context: GraphContext) => {
-		if (parent[fieldName] && isValidObjectId(parent[fieldName].toString())) {
-			const userId = parent[fieldName].toString();
+		if (parent[fieldName] && isValidObjectId(parent[fieldName].id)) {
+			const userId = parent[fieldName].id;
 
 			// Try AdminUser first
 			try {

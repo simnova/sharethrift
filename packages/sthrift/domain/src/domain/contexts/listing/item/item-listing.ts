@@ -7,6 +7,11 @@ import type {
 	ItemListingEntityReference,
 	ItemListingProps,
 } from './item-listing.entity.ts';
+import { AdminUser } from '../../user/admin-user/admin-user.ts';
+import type { AdminUserProps } from '../../user/admin-user/admin-user.entity.ts';
+import { PersonalUser } from '../../user/personal-user/personal-user.ts';
+import type { PersonalUserProps } from '../../user/personal-user/personal-user.entity.ts';
+
 export class ItemListing<props extends ItemListingProps>
 	extends DomainSeedwork.AggregateRoot<props, Passport>
 	implements ItemListingEntityReference
@@ -69,7 +74,17 @@ export class ItemListing<props extends ItemListingProps>
 
 	//#region Properties
 	get sharer(): UserEntityReference {
-		return this.props.sharer
+		// Polymorphic instantiation based on userType
+		if (this.props.sharer.userType === 'admin-user') {
+			return new AdminUser(
+				this.props.sharer as unknown as AdminUserProps,
+				this.passport,
+			);
+		}
+		return new PersonalUser(
+			this.props.sharer as unknown as PersonalUserProps,
+			this.passport,
+		);
 	}
 
 	async loadSharer(): Promise<UserEntityReference> {

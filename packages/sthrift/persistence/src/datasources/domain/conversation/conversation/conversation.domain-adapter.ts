@@ -29,9 +29,9 @@ export class ConversationDomainAdapter
 			throw new Error('sharer is not populated');
 		}
 		if (this.doc.sharer instanceof MongooseSeedwork.ObjectId) {
-			throw new TypeError(
-				'sharer is not populated or is not of the correct type',
-			);
+			return {
+        id: this.doc.sharer.toString(),
+      } as Domain.Contexts.User.UserEntityReference;
 		}
 		// Check userType discriminator to determine which adapter to use
 		const sharerDoc = this.doc.sharer as
@@ -164,9 +164,9 @@ export class ConversationDomainAdapter
 			throw new Error('listing is not populated');
 		}
 		if (this.doc.listing instanceof MongooseSeedwork.ObjectId) {
-			throw new TypeError(
-				'listing is not populated or is not of the correct type',
-			);
+			return {
+        id: this.doc.listing.toString(),
+      } as Domain.Contexts.Listing.ItemListing.ItemListingEntityReference;
 		}
 		return new ItemListingDomainAdapter(
 			this.doc.listing as Models.Listing.ItemListing,

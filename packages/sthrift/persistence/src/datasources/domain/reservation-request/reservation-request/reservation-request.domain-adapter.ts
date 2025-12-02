@@ -103,7 +103,7 @@ export class ReservationRequestDomainAdapter
 		if (this.doc.reserver instanceof MongooseSeedwork.ObjectId) {
 			return {
 				id: this.doc.reserver.toString(),
-			} as Domain.Contexts.User.PersonalUser.PersonalUserEntityReference;
+			} as Domain.Contexts.User.UserEntityReference;
 		}
 		// Check userType discriminator to determine which adapter to use
 		const reserverDoc = this.doc.reserver as
@@ -142,7 +142,7 @@ export class ReservationRequestDomainAdapter
 		const adapter = new PersonalUserDomainAdapter(
 			this.doc.reserver as Models.User.PersonalUser,
 		);
-		return adapter.entityReference as Domain.Contexts.User.PersonalUser.PersonalUserEntityReference;
+		return adapter.entityReference;
 	}
 
 	set reserver(user:

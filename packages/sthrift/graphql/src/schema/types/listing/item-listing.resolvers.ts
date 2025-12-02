@@ -26,7 +26,7 @@ function buildPagedArgs(
   return {
     page: args.page,
     pageSize: args.pageSize,
-    ...(args.searchText != null ? { searchText: args.searchText } : {}),
+    ...(args.searchText == null ? {} : { searchText: args.searchText }),
     ...(args.statusFilters ? { statusFilters: [...args.statusFilters] } : {}),
     ...(args.sorter
       ? {
