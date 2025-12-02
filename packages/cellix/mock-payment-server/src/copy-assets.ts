@@ -5,8 +5,8 @@ import path from 'path';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
-const src = join(__dirname, 'iframe.min.js');
-const dest = join(__dirname, '../dist/src/iframe.min.js');
+const src = join(__dirname, '../../src/iframe.min.js');
+const dest = join(__dirname, '../src/iframe.min.js');
 
 copyFileSync(src, dest);
 console.log('Copied iframe.min.js to dist');

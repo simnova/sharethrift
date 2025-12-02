@@ -165,4 +165,73 @@ test.for(feature, ({ Scenario, Background, BeforeEachScenario }) => {
 			);
 		});
 	});
+
+	Scenario('Setting role property with missing id throws error', ({ When, Then }) => {
+		When('I set the role property to a reference missing id', () => {
+			// Test happens in Then block
+		});
+		Then('an error should be thrown indicating role reference is missing id', () => {
+			expect(() => {
+				adapter.role = {} as never;
+			}).toThrow('role reference is missing id');
+		});
+	});
+
+	Scenario('Loading role when it is an ObjectId', ({ When, Then }) => {
+		When('I call loadRole on an adapter with role as ObjectId', async () => {
+			const oid = new MongooseSeedwork.ObjectId();
+			doc = makeUserDoc();
+			doc.role = oid as unknown as Models.Role.AdminRole;
+			doc.populate = vi.fn().mockResolvedValue({
+				...doc,
+				role: makeRoleDoc(),
+			});
+			adapter = new AdminUserDomainAdapter(doc);
+			result = await adapter.loadRole();
+		});
+		Then('it should populate and return an AdminRoleDomainAdapter', () => {
+			expect(doc.populate).toHaveBeenCalledWith('role');
+			expect(result).toBeDefined();
+		});
+	});
+
+	Scenario('Accessing nested account properties', ({ When, Then }) => {
+		When('I access account email, username, and profile properties', () => {
+			const account = adapter.account;
+			result = {
+				email: account.email,
+				username: account.username,
+				profile: account.profile,
+			};
+		});
+		Then('all nested properties should be accessible', () => {
+			expect(result).toBeDefined();
+			expect((result as { email: string }).email).toBe('admin@example.com');
+			expect((result as { username: string }).username).toBe('adminuser');
+			expect((result as { profile: unknown }).profile).toBeDefined();
+		});
+	});
+
+	Scenario('Accessing nested profile location properties', ({ When, Then }) => {
+		When('I access profile location properties', () => {
+			const account = adapter.account;
+			const profile = account.profile;
+			const location = profile.location;
+			result = {
+				address1: location.address1,
+				city: location.city,
+				state: location.state,
+				country: location.country,
+				zipCode: location.zipCode,
+			};
+		});
+		Then('all location properties should be accessible', () => {
+			expect(result).toBeDefined();
+			expect((result as { address1: string }).address1).toBe('123 Admin St');
+			expect((result as { city: string }).city).toBe('Admin City');
+			expect((result as { state: string }).state).toBe('CA');
+			expect((result as { country: string }).country).toBe('USA');
+			expect((result as { zipCode: string }).zipCode).toBe('90210');
+		});
+	});
 });

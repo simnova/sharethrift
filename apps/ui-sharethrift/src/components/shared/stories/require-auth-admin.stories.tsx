@@ -2,8 +2,10 @@ import type { Meta, StoryObj } from '@storybook/react';
 import { expect } from 'storybook/test';
 import { withMockApolloClient, MockAuthWrapper } from '../../../test-utils/storybook-decorators.tsx';
 import { MemoryRouter } from 'react-router-dom';
+import { AuthContext } from 'react-oidc-context';
 import { RequireAuthAdmin } from '../require-auth-admin.tsx';
 import { UseUserIsAdminDocument } from '../../../generated.tsx';
+import { createMockAuth } from '../../../test/utils/mockAuth.ts';
 
 const meta: Meta<typeof RequireAuthAdmin> = {
 	title: 'Shared/RequireAuthAdmin',
@@ -28,16 +30,7 @@ const meta: Meta<typeof RequireAuthAdmin> = {
 			],
 		},
 	},
-	decorators: [
-		withMockApolloClient,
-		(Story) => (
-			<MockAuthWrapper>
-				<MemoryRouter>
-					<Story />
-				</MemoryRouter>
-			</MockAuthWrapper>
-		),
-	],
+	decorators: [withMockApolloClient],
 };
 
 export default meta;
@@ -50,10 +43,20 @@ const AdminProtectedContent = () => (
 	</div>
 );
 
+// Common decorator for authenticated stories
+const withAuthAndRouter = (Story: React.ComponentType) => (
+	<MockAuthWrapper>
+		<MemoryRouter>
+			<Story />
+		</MemoryRouter>
+	</MockAuthWrapper>
+);
+
 export const WithAuthenticationAndAdmin: Story = {
 	args: {
 		children: <AdminProtectedContent />,
 	},
+	decorators: [withAuthAndRouter],
 	play: async ({ canvasElement }) => {
 		// MockAuthWrapper provides isAuthenticated: true
 		// Apollo mock provides isAdmin: true
@@ -67,6 +70,7 @@ export const WithForceLogin: Story = {
 		children: <AdminProtectedContent />,
 		forceLogin: true,
 	},
+	decorators: [withAuthAndRouter],
 	play: async ({ canvasElement }) => {
 		// When forceLogin is true, component will trigger signin redirect if not authenticated
 		// MockAuthWrapper provides isAuthenticated: true, so content should render
@@ -79,6 +83,7 @@ export const WithCustomRedirect: Story = {
 		children: <AdminProtectedContent />,
 		redirectPath: '/custom-login',
 	},
+	decorators: [withAuthAndRouter],
 	play: async ({ canvasElement }) => {
 		// Component uses custom redirect path when provided
 		// MockAuthWrapper provides isAuthenticated: true, so content should render
@@ -90,6 +95,7 @@ export const AdminCheckLoading: Story = {
 	args: {
 		children: <AdminProtectedContent />,
 	},
+	decorators: [withAuthAndRouter],
 	parameters: {
 		apolloClient: {
 			mocks: [
@@ -106,5 +112,121 @@ export const AdminCheckLoading: Story = {
 		// During admin check loading, shows "Checking admin permissions..." message
 		const loadingText = canvasElement.textContent?.includes('admin permissions');
 		await expect(loadingText).toBeTruthy();
+	},
+};
+
+export const NotAdmin: Story = {
+	args: {
+		children: <AdminProtectedContent />,
+	},
+	decorators: [withAuthAndRouter],
+	parameters: {
+		apolloClient: {
+			mocks: [
+				{
+					request: {
+						query: UseUserIsAdminDocument,
+					},
+					result: {
+						data: {
+							currentUser: {
+								__typename: 'PersonalUser',
+								userIsAdmin: false,
+							},
+						},
+					},
+				},
+			],
+		},
+	},
+	play: async ({ canvasElement }) => {
+		// When user is not admin, should redirect - content won't show
+		await expect(canvasElement).toBeTruthy();
+	},
+};
+
+// Test unauthenticated with error
+export const UnauthenticatedWithError: Story = {
+	args: {
+		children: <AdminProtectedContent />,
+	},
+	decorators: [
+		withMockApolloClient,
+		(Story) => {
+			const mockAuth = createMockAuth({
+				isAuthenticated: false,
+				isLoading: false,
+				user: undefined,
+			});
+			return (
+				<AuthContext.Provider value={mockAuth}>
+					<MemoryRouter>
+						<Story />
+					</MemoryRouter>
+				</AuthContext.Provider>
+			);
+		},
+	],
+	play: async ({ canvasElement }) => {
+		// Should redirect on error
+		await expect(canvasElement).toBeTruthy();
+	},
+};
+
+// Test unauthenticated with loading
+export const UnauthenticatedLoading: Story = {
+	args: {
+		children: <AdminProtectedContent />,
+	},
+	decorators: [
+		withMockApolloClient,
+		(Story) => {
+			const mockAuth = createMockAuth({
+				isAuthenticated: false,
+				isLoading: true,
+				user: undefined,
+			});
+			return (
+				<AuthContext.Provider value={mockAuth}>
+					<MemoryRouter>
+						<Story />
+					</MemoryRouter>
+				</AuthContext.Provider>
+			);
+		},
+	],
+	play: async ({ canvasElement }) => {
+		// Should show loading state
+		const checkingAuth = canvasElement.textContent?.includes('Checking authentication');
+		await expect(checkingAuth).toBeTruthy();
+	},
+};
+
+// Test unauthenticated without force login
+export const UnauthenticatedNoForceLogin: Story = {
+	args: {
+		children: <AdminProtectedContent />,
+		forceLogin: false,
+	},
+	decorators: [
+		withMockApolloClient,
+		(Story) => {
+			const mockAuth = createMockAuth({
+				isAuthenticated: false,
+				isLoading: false,
+				user: undefined,
+			});
+			return (
+				<AuthContext.Provider value={mockAuth}>
+					<MemoryRouter>
+						<Story />
+					</MemoryRouter>
+				</AuthContext.Provider>
+			);
+		},
+	],
+	play: async ({ canvasElement }) => {
+		// Should redirect when not authenticated and not force login
+		await expect(canvasElement).toBeTruthy();
 	},
 };

@@ -7,7 +7,10 @@ import type { GraphContext } from '../../../init/context.ts';
 import reservationRequestResolvers from './reservation-request.resolvers.ts';
 
 // Generic GraphQL resolver type for tests
-type TestResolver<Args extends object = Record<string, unknown>, Return = unknown> = (
+type TestResolver<
+	Args extends object = Record<string, unknown>,
+	Return = unknown,
+> = (
 	parent: unknown,
 	args: Args,
 	context: GraphContext,
@@ -96,17 +99,17 @@ test.for(feature, ({ Scenario }) => {
 			const userId = 'user-123';
 			Given('a valid userId', () => {
 				context = makeMockGraphContext();
-				const mockReservations = [createMockReservationRequest({ id: '1', state: 'Accepted' })];
+				const mockReservations = [
+					createMockReservationRequest({ id: '1', state: 'Accepted' }),
+				];
 				vi.mocked(
 					context.applicationServices.ReservationRequest.ReservationRequest
 						.queryActiveByReserverId,
 				).mockResolvedValue(mockReservations);
 			});
 			When('the myActiveReservations query is executed', async () => {
-				const resolver =
-					reservationRequestResolvers.Query?.myActiveReservations as TestResolver<
-						{ userId: string }
-					>;
+				const resolver = reservationRequestResolvers.Query
+					?.myActiveReservations as TestResolver<{ userId: string }>;
 				result = await resolver({}, { userId }, context, {} as never);
 			});
 			Then(
@@ -142,10 +145,8 @@ test.for(feature, ({ Scenario }) => {
 				},
 			);
 			When('the myActiveReservations query is executed', async () => {
-				const resolver =
-					reservationRequestResolvers.Query?.myActiveReservations as TestResolver<
-						{ userId: string }
-					>;
+				const resolver = reservationRequestResolvers.Query
+					?.myActiveReservations as TestResolver<{ userId: string }>;
 				result = await resolver({}, { userId }, context, {} as never);
 			});
 			Then('it should return an empty array', () => {
@@ -171,10 +172,8 @@ test.for(feature, ({ Scenario }) => {
 			);
 			When('the myActiveReservations query is executed', async () => {
 				try {
-					const resolver =
-						reservationRequestResolvers.Query?.myActiveReservations as TestResolver<
-							{ userId: string }
-						>;
+					const resolver = reservationRequestResolvers.Query
+						?.myActiveReservations as TestResolver<{ userId: string }>;
 					await resolver({}, { userId }, context, {} as never);
 				} catch (e) {
 					error = e as Error;
@@ -193,17 +192,17 @@ test.for(feature, ({ Scenario }) => {
 			const userId = 'user-123';
 			Given('a valid userId', () => {
 				context = makeMockGraphContext();
-				const mockReservations = [createMockReservationRequest({ id: '1', state: 'Closed' })];
+				const mockReservations = [
+					createMockReservationRequest({ id: '1', state: 'Closed' }),
+				];
 				vi.mocked(
 					context.applicationServices.ReservationRequest.ReservationRequest
 						.queryPastByReserverId,
 				).mockResolvedValue(mockReservations);
 			});
 			When('the myPastReservations query is executed', async () => {
-				const resolver =
-					reservationRequestResolvers.Query?.myPastReservations as TestResolver<
-						{ userId: string }
-					>;
+				const resolver = reservationRequestResolvers.Query
+					?.myPastReservations as TestResolver<{ userId: string }>;
 				result = await resolver({}, { userId }, context, {} as never);
 			});
 			Then(
@@ -227,17 +226,18 @@ test.for(feature, ({ Scenario }) => {
 		Given('a valid userId', () => {
 			context = makeMockGraphContext();
 		});
-		And('ReservationRequest.queryPastByReserverId returns an empty list', () => {
-			vi.mocked(
-				context.applicationServices.ReservationRequest.ReservationRequest
-					.queryPastByReserverId,
-			).mockResolvedValue([]);
-		});
+		And(
+			'ReservationRequest.queryPastByReserverId returns an empty list',
+			() => {
+				vi.mocked(
+					context.applicationServices.ReservationRequest.ReservationRequest
+						.queryPastByReserverId,
+				).mockResolvedValue([]);
+			},
+		);
 		When('the myPastReservations query is executed', async () => {
-			const resolver =
-				reservationRequestResolvers.Query?.myPastReservations as TestResolver<
-					{ userId: string }
-				>;
+			const resolver = reservationRequestResolvers.Query
+				?.myPastReservations as TestResolver<{ userId: string }>;
 			result = await resolver({}, { userId }, context, {} as never);
 		});
 		Then('it should return an empty array', () => {
@@ -246,31 +246,32 @@ test.for(feature, ({ Scenario }) => {
 		});
 	});
 
-	Scenario('Error while querying past reservations', ({ Given, When, Then }) => {
-		const userId = 'user-123';
-		Given('ReservationRequest.queryPastByReserverId throws an error', () => {
-			context = makeMockGraphContext();
-			vi.mocked(
-				context.applicationServices.ReservationRequest.ReservationRequest
-					.queryPastByReserverId,
-			).mockRejectedValue(new Error('Database error'));
-		});
-		When('the myPastReservations query is executed', async () => {
-			try {
-				const resolver =
-					reservationRequestResolvers.Query?.myPastReservations as TestResolver<
-						{ userId: string }
-					>;
-				await resolver({}, { userId }, context, {} as never);
-			} catch (e) {
-				error = e as Error;
-			}
-		});
-		Then('it should propagate the error message', () => {
-			expect(error).toBeDefined();
-			expect(error?.message).toContain('Database error');
-		});
-	});
+	Scenario(
+		'Error while querying past reservations',
+		({ Given, When, Then }) => {
+			const userId = 'user-123';
+			Given('ReservationRequest.queryPastByReserverId throws an error', () => {
+				context = makeMockGraphContext();
+				vi.mocked(
+					context.applicationServices.ReservationRequest.ReservationRequest
+						.queryPastByReserverId,
+				).mockRejectedValue(new Error('Database error'));
+			});
+			When('the myPastReservations query is executed', async () => {
+				try {
+					const resolver = reservationRequestResolvers.Query
+						?.myPastReservations as TestResolver<{ userId: string }>;
+					await resolver({}, { userId }, context, {} as never);
+				} catch (e) {
+					error = e as Error;
+				}
+			});
+			Then('it should propagate the error message', () => {
+				expect(error).toBeDefined();
+				expect(error?.message).toContain('Database error');
+			});
+		},
+	);
 
 	Scenario(
 		'Querying reservation requests for listings owned by sharer',
@@ -288,7 +289,9 @@ test.for(feature, ({ Scenario }) => {
 						reservationPeriodStart: new Date('2024-02-01'),
 						reservationPeriodEnd: new Date('2024-02-10'),
 						listing: { title: 'Test Item' } as ItemListingEntity,
-						reserver: { account: { username: 'testuser' } } as PersonalUserEntity,
+						reserver: {
+							account: { username: 'testuser' },
+						} as PersonalUserEntity,
 					}),
 				];
 				vi.mocked(
@@ -297,12 +300,12 @@ test.for(feature, ({ Scenario }) => {
 				).mockResolvedValue(mockRequests);
 			});
 			When('the myListingsRequests query is executed', async () => {
-				const resolver =
-					reservationRequestResolvers.Query?.myListingsRequests as TestResolver<{
-						sharerId: string;
-						page: number;
-						pageSize: number;
-					}>;
+				const resolver = reservationRequestResolvers.Query
+					?.myListingsRequests as TestResolver<{
+					sharerId: string;
+					page: number;
+					pageSize: number;
+				}>;
 				result = await resolver(
 					{},
 					{ sharerId, page: 1, pageSize: 10 },
@@ -364,13 +367,13 @@ test.for(feature, ({ Scenario }) => {
 				// Searchtext will be used in the When step
 			});
 			When('the myListingsRequests query is executed', async () => {
-				const resolver =
-					reservationRequestResolvers.Query?.myListingsRequests as TestResolver<{
-						sharerId: string;
-						page: number;
-						pageSize: number;
-						searchText: string;
-					}>;
+				const resolver = reservationRequestResolvers.Query
+					?.myListingsRequests as TestResolver<{
+					sharerId: string;
+					page: number;
+					pageSize: number;
+					searchText: string;
+				}>;
 				result = await resolver(
 					{},
 					{
@@ -383,51 +386,61 @@ test.for(feature, ({ Scenario }) => {
 					{} as never,
 				);
 			});
-			Then('only listings whose titles include "camera" should be returned', () => {
-				const items = (result as { items: { title: string }[] }).items;
-				expect(items).toHaveLength(1);
-				expect(items[0]?.title).toBe('Camera');
-			});
+			Then(
+				'only listings whose titles include "camera" should be returned',
+				() => {
+					const items = (result as { items: { title: string }[] }).items;
+					expect(items).toHaveLength(1);
+					expect(items[0]?.title).toBe('Camera');
+				},
+			);
 		},
 	);
 
 	Scenario(
 		'Filtering myListingsRequests by status',
 		({ Given, And, When, Then }) => {
-			Given('reservation requests with mixed statuses ["Pending", "Approved"]', () => {
-				context = makeMockGraphContext();
-				const mockRequests = [
-					createMockReservationRequest({
-						id: '1',
-						state: 'Accepted',
-						createdAt: new Date(),
-						listing: { title: 'Item 1' } as ItemListingEntity,
-						reserver: { account: { username: 'user1' } } as PersonalUserEntity,
-					}),
-					createMockReservationRequest({
-						id: '2',
-						state: 'Requested',
-						createdAt: new Date(),
-						listing: { title: 'Item 2' } as ItemListingEntity,
-						reserver: { account: { username: 'user2' } } as PersonalUserEntity,
-					}),
-				];
-				vi.mocked(
-					context.applicationServices.ReservationRequest.ReservationRequest
-						.queryListingRequestsBySharerId,
-				).mockResolvedValue(mockRequests);
-			});
+			Given(
+				'reservation requests with mixed statuses ["Pending", "Approved"]',
+				() => {
+					context = makeMockGraphContext();
+					const mockRequests = [
+						createMockReservationRequest({
+							id: '1',
+							state: 'Accepted',
+							createdAt: new Date(),
+							listing: { title: 'Item 1' } as ItemListingEntity,
+							reserver: {
+								account: { username: 'user1' },
+							} as PersonalUserEntity,
+						}),
+						createMockReservationRequest({
+							id: '2',
+							state: 'Requested',
+							createdAt: new Date(),
+							listing: { title: 'Item 2' } as ItemListingEntity,
+							reserver: {
+								account: { username: 'user2' },
+							} as PersonalUserEntity,
+						}),
+					];
+					vi.mocked(
+						context.applicationServices.ReservationRequest.ReservationRequest
+							.queryListingRequestsBySharerId,
+					).mockResolvedValue(mockRequests);
+				},
+			);
 			And('a statusFilters ["Approved"]', () => {
 				// Status filters will be used in the When step
 			});
 			When('the myListingsRequests query is executed', async () => {
-				const resolver =
-					reservationRequestResolvers.Query?.myListingsRequests as unknown as TestResolver<{
-						sharerId: string;
-						page: number;
-						pageSize: number;
-						statusFilters: string[];
-					}>;
+				const resolver = reservationRequestResolvers.Query
+					?.myListingsRequests as unknown as TestResolver<{
+					sharerId: string;
+					page: number;
+					pageSize: number;
+					statusFilters: string[];
+				}>;
 				result = await resolver(
 					{},
 					{
@@ -455,20 +468,27 @@ test.for(feature, ({ Scenario }) => {
 			const userId = 'user-456';
 			Given('a valid listingId and userId', () => {
 				context = makeMockGraphContext();
-				const mockReservation = createMockReservationRequest({ id: '1', state: 'Accepted' });
+				const mockReservation = createMockReservationRequest({
+					id: '1',
+					state: 'Accepted',
+				});
 				vi.mocked(
 					context.applicationServices.ReservationRequest.ReservationRequest
 						.queryActiveByReserverIdAndListingId,
 				).mockResolvedValue(mockReservation);
 			});
 			When('the myActiveReservationForListing query is executed', async () => {
-				const resolver =
-					reservationRequestResolvers.Query
-						?.myActiveReservationForListing as TestResolver<{
-						listingId: string;
-						userId: string;
-					}>;
-				result = await resolver({}, { listingId, userId }, context, {} as never);
+				const resolver = reservationRequestResolvers.Query
+					?.myActiveReservationForListing as TestResolver<{
+					listingId: string;
+					userId: string;
+				}>;
+				result = await resolver(
+					{},
+					{ listingId, userId },
+					context,
+					{} as never,
+				);
 			});
 			Then(
 				'it should call ReservationRequest.queryActiveByReserverIdAndListingId with those IDs',
@@ -503,13 +523,17 @@ test.for(feature, ({ Scenario }) => {
 				},
 			);
 			When('the myActiveReservationForListing query is executed', async () => {
-				const resolver =
-					reservationRequestResolvers.Query
-						?.myActiveReservationForListing as TestResolver<{
-						listingId: string;
-						userId: string;
-					}>;
-				result = await resolver({}, { listingId, userId }, context, {} as never);
+				const resolver = reservationRequestResolvers.Query
+					?.myActiveReservationForListing as TestResolver<{
+					listingId: string;
+					userId: string;
+				}>;
+				result = await resolver(
+					{},
+					{ listingId, userId },
+					context,
+					{} as never,
+				);
 			});
 			Then('it should return null', () => {
 				expect(result).toBeNull();
@@ -534,12 +558,11 @@ test.for(feature, ({ Scenario }) => {
 			);
 			When('the myActiveReservationForListing query is executed', async () => {
 				try {
-					const resolver =
-						reservationRequestResolvers.Query
-							?.myActiveReservationForListing as TestResolver<{
-							listingId: string;
-							userId: string;
-						}>;
+					const resolver = reservationRequestResolvers.Query
+						?.myActiveReservationForListing as TestResolver<{
+						listingId: string;
+						userId: string;
+					}>;
 					await resolver({}, { listingId, userId }, context, {} as never);
 				} catch (e) {
 					error = e as Error;
@@ -568,10 +591,10 @@ test.for(feature, ({ Scenario }) => {
 				).mockResolvedValue(mockReservations);
 			});
 			When('the queryActiveByListingId query is executed', async () => {
-				const resolver =
-					reservationRequestResolvers.Query?.queryActiveByListingId as TestResolver<{
-						listingId: string;
-					}>;
+				const resolver = reservationRequestResolvers.Query
+					?.queryActiveByListingId as TestResolver<{
+					listingId: string;
+				}>;
 				result = await resolver({}, { listingId }, context, {} as never);
 			});
 			Then(
@@ -607,10 +630,10 @@ test.for(feature, ({ Scenario }) => {
 				},
 			);
 			When('the queryActiveByListingId query is executed', async () => {
-				const resolver =
-					reservationRequestResolvers.Query?.queryActiveByListingId as TestResolver<{
-						listingId: string;
-					}>;
+				const resolver = reservationRequestResolvers.Query
+					?.queryActiveByListingId as TestResolver<{
+					listingId: string;
+				}>;
 				result = await resolver({}, { listingId }, context, {} as never);
 			});
 			Then('it should return an empty array', () => {
@@ -624,22 +647,19 @@ test.for(feature, ({ Scenario }) => {
 		'Error while querying active reservations by listing ID',
 		({ Given, When, Then }) => {
 			const listingId = 'listing-789';
-			Given(
-				'ReservationRequest.queryActiveByListingId throws an error',
-				() => {
-					context = makeMockGraphContext();
-					vi.mocked(
-						context.applicationServices.ReservationRequest.ReservationRequest
-							.queryActiveByListingId,
-					).mockRejectedValue(new Error('Database error'));
-				},
-			);
+			Given('ReservationRequest.queryActiveByListingId throws an error', () => {
+				context = makeMockGraphContext();
+				vi.mocked(
+					context.applicationServices.ReservationRequest.ReservationRequest
+						.queryActiveByListingId,
+				).mockRejectedValue(new Error('Database error'));
+			});
 			When('the queryActiveByListingId query is executed', async () => {
 				try {
-					const resolver =
-						reservationRequestResolvers.Query?.queryActiveByListingId as TestResolver<{
-							listingId: string;
-						}>;
+					const resolver = reservationRequestResolvers.Query
+						?.queryActiveByListingId as TestResolver<{
+						listingId: string;
+					}>;
 					await resolver({}, { listingId }, context, {} as never);
 				} catch (e) {
 					error = e as Error;
@@ -669,26 +689,27 @@ test.for(feature, ({ Scenario }) => {
 					state: 'Requested',
 				});
 				vi.mocked(
-					context.applicationServices.ReservationRequest.ReservationRequest.create,
+					context.applicationServices.ReservationRequest.ReservationRequest
+						.create,
 				).mockResolvedValue(mockCreatedReservation);
 			});
 			When('the createReservationRequest mutation is executed', async () => {
-				const resolver =
-					reservationRequestResolvers.Mutation
-						?.createReservationRequest as TestResolver<{
-						input: {
-							listingId: string;
-							reservationPeriodStart: string;
-							reservationPeriodEnd: string;
-						};
-					}>;
+				const resolver = reservationRequestResolvers.Mutation
+					?.createReservationRequest as TestResolver<{
+					input: {
+						listingId: string;
+						reservationPeriodStart: string;
+						reservationPeriodEnd: string;
+					};
+				}>;
 				result = await resolver({}, { input }, context, {} as never);
 			});
 			Then(
 				'it should call ReservationRequest.create with listingId, reservationPeriodStart, reservationPeriodEnd, and reserverEmail',
 				() => {
 					expect(
-						context.applicationServices.ReservationRequest.ReservationRequest.create,
+						context.applicationServices.ReservationRequest.ReservationRequest
+							.create,
 					).toHaveBeenCalledWith({
 						listingId: input.listingId,
 						reservationPeriodStart: new Date(input.reservationPeriodStart),
@@ -721,15 +742,14 @@ test.for(feature, ({ Scenario }) => {
 			});
 			When('the createReservationRequest mutation is executed', async () => {
 				try {
-					const resolver =
-						reservationRequestResolvers.Mutation
-							?.createReservationRequest as TestResolver<{
-							input: {
-								listingId: string;
-								reservationPeriodStart: string;
-								reservationPeriodEnd: string;
-							};
-						}>;
+					const resolver = reservationRequestResolvers.Mutation
+						?.createReservationRequest as TestResolver<{
+						input: {
+							listingId: string;
+							reservationPeriodStart: string;
+							reservationPeriodEnd: string;
+						};
+					}>;
 					await resolver({}, { input }, context, {} as never);
 				} catch (e) {
 					error = e as Error;
@@ -760,20 +780,20 @@ test.for(feature, ({ Scenario }) => {
 			});
 			And('ReservationRequest.create throws an error', () => {
 				vi.mocked(
-					context.applicationServices.ReservationRequest.ReservationRequest.create,
+					context.applicationServices.ReservationRequest.ReservationRequest
+						.create,
 				).mockRejectedValue(new Error('Creation failed'));
 			});
 			When('the createReservationRequest mutation is executed', async () => {
 				try {
-					const resolver =
-						reservationRequestResolvers.Mutation
-							?.createReservationRequest as TestResolver<{
-							input: {
-								listingId: string;
-								reservationPeriodStart: string;
-								reservationPeriodEnd: string;
-							};
-						}>;
+					const resolver = reservationRequestResolvers.Mutation
+						?.createReservationRequest as TestResolver<{
+						input: {
+							listingId: string;
+							reservationPeriodStart: string;
+							reservationPeriodEnd: string;
+						};
+					}>;
 					await resolver({}, { input }, context, {} as never);
 				} catch (e) {
 					error = e as Error;
@@ -823,13 +843,13 @@ test.for(feature, ({ Scenario }) => {
 				// Sorter will be used in the When step
 			});
 			When('the myListingsRequests query is executed', async () => {
-				const resolver =
-					reservationRequestResolvers.Query?.myListingsRequests as TestResolver<{
-						sharerId: string;
-						page: number;
-						pageSize: number;
-						sorter?: { field: string; order: 'ascend' | 'descend' };
-					}>;
+				const resolver = reservationRequestResolvers.Query
+					?.myListingsRequests as TestResolver<{
+					sharerId: string;
+					page: number;
+					pageSize: number;
+					sorter?: { field: string; order: 'ascend' | 'descend' };
+				}>;
 				result = await resolver(
 					{},
 					{
@@ -842,13 +862,16 @@ test.for(feature, ({ Scenario }) => {
 					{} as never,
 				);
 			});
-			Then('results should be sorted by requestedOn in descending order', () => {
-				const items = (result as { items: { requestedOn: string }[] }).items;
-				expect(items.length).toBeGreaterThan(0);
-				// Just verify that sorting was applied (items are in expected order based on input)
-				// The actual sorting logic is tested by the implementation
-				expect(items.length).toBe(3);
-			});
+			Then(
+				'results should be sorted by requestedOn in descending order',
+				() => {
+					const items = (result as { items: { requestedOn: string }[] }).items;
+					expect(items.length).toBeGreaterThan(0);
+					// Just verify that sorting was applied (items are in expected order based on input)
+					// The actual sorting logic is tested by the implementation
+					expect(items.length).toBe(3);
+				},
+			);
 		},
 	);
 
@@ -867,12 +890,12 @@ test.for(feature, ({ Scenario }) => {
 			);
 			When('the myListingsRequests query is executed', async () => {
 				try {
-					const resolver =
-						reservationRequestResolvers.Query?.myListingsRequests as TestResolver<{
-							sharerId: string;
-							page: number;
-							pageSize: number;
-						}>;
+					const resolver = reservationRequestResolvers.Query
+						?.myListingsRequests as TestResolver<{
+						sharerId: string;
+						page: number;
+						pageSize: number;
+					}>;
 					await resolver(
 						{},
 						{ sharerId: 'sharer-123', page: 1, pageSize: 10 },
@@ -912,15 +935,14 @@ test.for(feature, ({ Scenario }) => {
 			);
 			When('the createReservationRequest mutation is executed', async () => {
 				try {
-					const resolver =
-						reservationRequestResolvers.Mutation
-							?.createReservationRequest as TestResolver<{
-							input: {
-								listingId: string;
-								reservationPeriodStart: string;
-								reservationPeriodEnd: string;
-							};
-						}>;
+					const resolver = reservationRequestResolvers.Mutation
+						?.createReservationRequest as TestResolver<{
+						input: {
+							listingId: string;
+							reservationPeriodStart: string;
+							reservationPeriodEnd: string;
+						};
+					}>;
 					await resolver({}, { input }, context, {} as never);
 				} catch (e) {
 					error = e as Error;
@@ -948,7 +970,9 @@ test.for(feature, ({ Scenario }) => {
 						reservationPeriodStart: new Date('2024-02-01'),
 						reservationPeriodEnd: new Date('2024-02-10'),
 						listing: { title: 'Test Item' } as ItemListingEntity,
-						reserver: { account: { username: 'testuser' } } as PersonalUserEntity,
+						reserver: {
+							account: { username: 'testuser' },
+						} as PersonalUserEntity,
 					}),
 				];
 				vi.mocked(
@@ -958,12 +982,12 @@ test.for(feature, ({ Scenario }) => {
 			},
 		);
 		When('paginateAndFilterListingRequests is called', async () => {
-			const resolver =
-				reservationRequestResolvers.Query?.myListingsRequests as TestResolver<{
-					sharerId: string;
-					page: number;
-					pageSize: number;
-				}>;
+			const resolver = reservationRequestResolvers.Query
+				?.myListingsRequests as TestResolver<{
+				sharerId: string;
+				page: number;
+				pageSize: number;
+			}>;
 			result = await resolver(
 				{},
 				{ sharerId: 'sharer-123', page: 1, pageSize: 10 },
@@ -974,15 +998,17 @@ test.for(feature, ({ Scenario }) => {
 		Then(
 			'it should map title, requestedBy, requestedOn, reservationPeriod, and status into ListingRequestUiShape',
 			() => {
-				const items = (result as {
-					items: {
-						title: string;
-						requestedBy: string;
-						requestedOn: string;
-						reservationPeriod: string;
-						status: string;
-					}[];
-				}).items;
+				const items = (
+					result as {
+						items: {
+							title: string;
+							requestedBy: string;
+							requestedOn: string;
+							reservationPeriod: string;
+							status: string;
+						}[];
+					}
+				).items;
 				expect(items[0]).toHaveProperty('title');
 				expect(items[0]).toHaveProperty('requestedBy');
 				expect(items[0]).toHaveProperty('requestedOn');
@@ -991,16 +1017,18 @@ test.for(feature, ({ Scenario }) => {
 			},
 		);
 		And(
-			'missing fields should default to \'Unknown\', \'@unknown\', or \'Pending\' as appropriate',
+			"missing fields should default to 'Unknown', '@unknown', or 'Pending' as appropriate",
 			() => {
 				// Test with missing fields
-				const items = (result as {
-					items: {
-						title: string;
-						requestedBy: string;
-						status: string;
-					}[];
-				}).items;
+				const items = (
+					result as {
+						items: {
+							title: string;
+							requestedBy: string;
+							status: string;
+						}[];
+					}
+				).items;
 				expect(items[0]?.title).toBe('Test Item');
 				expect(items[0]?.requestedBy).toBe('@testuser');
 				expect(items[0]?.status).toBe('Requested');
@@ -1011,14 +1039,16 @@ test.for(feature, ({ Scenario }) => {
 	Scenario('Paginating listing requests', ({ Given, When, Then }) => {
 		Given('25 listing requests and a pageSize of 10', () => {
 			context = makeMockGraphContext();
-			const mockRequests = Array.from({ length: 25 }, (_, i) => 
+			const mockRequests = Array.from({ length: 25 }, (_, i) =>
 				createMockReservationRequest({
 					id: `${i + 1}`,
 					state: 'Requested',
 					createdAt: new Date(),
 					listing: { title: `Item ${i + 1}` } as ItemListingEntity,
-					reserver: { account: { username: `user${i + 1}` } } as PersonalUserEntity,
-				})
+					reserver: {
+						account: { username: `user${i + 1}` },
+					} as PersonalUserEntity,
+				}),
 			);
 			vi.mocked(
 				context.applicationServices.ReservationRequest.ReservationRequest
@@ -1026,12 +1056,12 @@ test.for(feature, ({ Scenario }) => {
 			).mockResolvedValue(mockRequests);
 		});
 		When('paginateAndFilterListingRequests is called for page 2', async () => {
-			const resolver =
-				reservationRequestResolvers.Query?.myListingsRequests as TestResolver<{
-					sharerId: string;
-					page: number;
-					pageSize: number;
-				}>;
+			const resolver = reservationRequestResolvers.Query
+				?.myListingsRequests as TestResolver<{
+				sharerId: string;
+				page: number;
+				pageSize: number;
+			}>;
 			result = await resolver(
 				{},
 				{ sharerId: 'sharer-123', page: 2, pageSize: 10 },
@@ -1093,13 +1123,13 @@ test.for(feature, ({ Scenario }) => {
 				// Sorter will be used in the When step
 			});
 			When('paginateAndFilterListingRequests is called', async () => {
-				const resolver =
-					reservationRequestResolvers.Query?.myListingsRequests as TestResolver<{
-						sharerId: string;
-						page: number;
-						pageSize: number;
-						sorter?: { field: string; order: 'ascend' | 'descend' };
-					}>;
+				const resolver = reservationRequestResolvers.Query
+					?.myListingsRequests as TestResolver<{
+					sharerId: string;
+					page: number;
+					pageSize: number;
+					sorter?: { field: string; order: 'ascend' | 'descend' };
+				}>;
 				result = await resolver(
 					{},
 					{
@@ -1116,7 +1146,7 @@ test.for(feature, ({ Scenario }) => {
 				const items = (result as { items: { title: string }[] }).items;
 				expect(items.length).toBe(3);
 				// Just verify that the sorting was applied and items are present
-				const titles = items.map(item => item.title);
+				const titles = items.map((item) => item.title);
 				expect(titles).toContain('Apple Drone');
 				expect(titles).toContain('Zebra Camera');
 				expect(titles).toContain('Microphone Beta');
