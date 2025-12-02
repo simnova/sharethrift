@@ -291,4 +291,34 @@ isBlocked: true,
 			expect(mockRepo.save).toHaveBeenCalledWith(mockListing);
 		});
 	});
+
+	f.Scenario('Update fails when save returns undefined', ({ Given, And, When, Then }) => {
+		Given('a listing with id {string}', () => {
+			mockListing = {
+				title: 'Old Title',
+			};
+			mockRepo.get.mockResolvedValue(mockListing);
+		});
+
+		And('the repository save returns undefined', () => {
+			mockRepo.save.mockResolvedValue(undefined);
+		});
+
+		When('I update the listing with title {string}', async () => {
+			thrownError = null;
+			try {
+				await updateFunction({
+					id: 'listing-123',
+					title: 'New Title',
+				});
+			} catch (error) {
+				thrownError = error as Error;
+			}
+		});
+
+		Then('an error should be thrown with message {string}', () => {
+			expect(thrownError).toBeTruthy();
+			expect(thrownError?.message).toBe('Item listing update failed');
+		});
+	});
 });

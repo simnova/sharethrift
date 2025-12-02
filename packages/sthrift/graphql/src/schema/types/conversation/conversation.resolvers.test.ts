@@ -96,23 +96,17 @@ test.for(feature, ({ Scenario }) => {
 	let result: unknown;
 	let error: Error | undefined;
 
-	Scenario(
-		'Querying conversations by user ID',
-		({ When, Then }) => {
-			When('the conversationsByUser query is executed with that ID', async () => {
-				result = await executeConversationsByUser('user-1', (svc) => {
-					svc.queryByUser.mockResolvedValue([createMockConversation()]);
-				});
+	Scenario('Querying conversations by user ID', ({ When, Then }) => {
+		When('the conversationsByUser query is executed with that ID', async () => {
+			result = await executeConversationsByUser('user-1', (svc) => {
+				svc.queryByUser.mockResolvedValue([createMockConversation()]);
 			});
-			Then(
-				'it should return a list of Conversation entities',
-				() => {
-					expect(Array.isArray(result)).toBe(true);
-					expect((result as ConversationEntity[]).length).toBeGreaterThan(0);
-				},
-			);
-		},
-	);
+		});
+		Then('it should return a list of Conversation entities', () => {
+			expect(Array.isArray(result)).toBe(true);
+			expect((result as ConversationEntity[]).length).toBeGreaterThan(0);
+		});
+	});
 
 	Scenario(
 		'Querying conversations by user ID with no conversations',
@@ -294,7 +288,9 @@ test.for(feature, ({ Scenario }) => {
 				expect(
 					(result as { status: { success: boolean } }).status.success,
 				).toBe(true);
-				expect((result as { conversation: ConversationEntity }).conversation).toBeDefined();
+				expect(
+					(result as { conversation: ConversationEntity }).conversation,
+				).toBeDefined();
 			},
 		);
 	});

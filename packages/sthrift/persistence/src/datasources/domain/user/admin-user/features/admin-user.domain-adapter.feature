@@ -30,3 +30,19 @@ Feature: AdminUser Domain Adapter Property Access
   Scenario: Setting the role property
     When I set the role property to a new role
     Then the document's role should be updated
+
+  Scenario: Setting role property with missing id throws error
+    When I set the role property to a reference missing id
+    Then an error should be thrown indicating role reference is missing id
+
+  Scenario: Loading role when it is an ObjectId
+    When I call loadRole on an adapter with role as ObjectId
+    Then it should populate and return an AdminRoleDomainAdapter
+
+  Scenario: Accessing nested account properties
+    When I access account email, username, and profile properties
+    Then all nested properties should be accessible
+
+  Scenario: Accessing nested profile location properties
+    When I access profile location properties
+    Then all location properties should be accessible
