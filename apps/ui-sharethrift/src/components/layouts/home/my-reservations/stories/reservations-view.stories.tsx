@@ -9,7 +9,6 @@ import {
 	defaultReservationActions,
 	withReservationMocks,
 } from '../../../../../test/utils/storybook-providers.tsx';
-
 const meta: Meta<typeof ReservationsView> = {
 	title: 'Organisms/ReservationsView',
 	component: ReservationsView,
@@ -23,18 +22,20 @@ const meta: Meta<typeof ReservationsView> = {
 		},
 	},
 	tags: ['autodocs'],
-	// Global decorator for MockedProvider
 	decorators: [withReservationMocks],
-	// Default event handlers
 	args: defaultReservationActions,
+	argTypes: {
+		onCancel: { action: 'cancel clicked' },
+		onClose: { action: 'close clicked' },
+		onMessage: { action: 'message clicked' },
+	},
 };
 
 export default meta;
 type Story = StoryObj<typeof ReservationsView>;
 
 export const AllReservations: Story = {
-	args: { reservations: storyReservationsAll },
-};
+	args: { reservations: storyReservationsAll }};
 
 export const ActiveReservations: Story = {
 	args: {
@@ -57,4 +58,18 @@ export const Empty: Story = {
 
 export const LoadingStates: Story = {
 	args: { reservations: storyReservationsActive, cancelLoading: true },
+};
+
+export const LoadingSpinner: Story = {
+	args: {
+		reservations: [],
+		loading: true,
+	},
+};
+
+export const ErrorState: Story = {
+	args: {
+		reservations: [],
+		error: new Error('Failed to load reservations'),
+	},
 };

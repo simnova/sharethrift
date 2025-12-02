@@ -15,14 +15,14 @@ Feature: AdminUserPassport
   Scenario: Accessing the listing passport
     When I create an AdminUserPassport with a valid admin user
     And I access the listing property
-    Then an error should be thrown indicating the method is not implemented
+    Then I should receive an AdminUserListingPassport instance
 
   Scenario: Accessing the conversation passport
     When I create an AdminUserPassport with a valid admin user
     And I access the conversation property
-    Then an error should be thrown indicating the method is not implemented
+    Then I should receive an AdminUserConversationPassport instance
 
   Scenario: Accessing the reservation request passport
     When I create an AdminUserPassport with a valid admin user
     And I access the reservationRequest property
-    Then an error should be thrown indicating the method is not implemented
+    Then I should receive an AdminUserReservationRequestPassport instance
