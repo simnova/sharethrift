@@ -278,7 +278,7 @@ export class LunrSearchEngine {
 		options?: SearchOptions,
 	): SearchDocumentsResult {
 		// Apply sorting if provided (default to relevance score descending)
-		let sortedResults = results;
+		let sortedResults;
 		if (options?.orderBy && options.orderBy.length > 0) {
 			sortedResults = this.applySorting(results, options.orderBy);
 		} else {
