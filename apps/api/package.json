@@ -41,8 +41,8 @@
     "@sthrift/service-token-validation": "workspace:*",
     "@sthrift/messaging-service-twilio": "workspace:*",
     "@cellix/transactional-email-service": "workspace:*",
-    "@cellix/transactional-email-service-sendgrid": "workspace:*",
-    "@cellix/transactional-email-service-mock": "workspace:*",
+    "@sthrift/transactional-email-service-sendgrid": "workspace:*",
+    "@sthrift/transactional-email-service-mock": "workspace:*",
     "twilio": "^5.8.0"
   },
   "devDependencies": {

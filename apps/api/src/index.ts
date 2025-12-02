@@ -22,8 +22,8 @@ import { ServiceMessagingTwilio } from '@sthrift/messaging-service-twilio';
 import { ServiceMessagingMock } from '@sthrift/messaging-service-mock';
 
 import type { TransactionalEmailService } from '@cellix/transactional-email-service';
-import { ServiceTransactionalEmailSendGrid } from '@cellix/transactional-email-service-sendgrid';
-import { ServiceTransactionalEmailMock } from '@cellix/transactional-email-service-mock';
+import { ServiceTransactionalEmailSendGrid } from '@sthrift/transactional-email-service-sendgrid';
+import { ServiceTransactionalEmailMock } from '@sthrift/transactional-email-service-mock';
 
 import { graphHandlerCreator } from '@sthrift/graphql';
 import { restHandlerCreator } from '@sthrift/rest';
@@ -56,9 +56,7 @@ Cellix.initializeInfrastructureServices<ApiContextSpec, ApplicationServices>(
 			.registerInfrastructureService(
 				// Use mock if in development OR if SendGrid API key is not available
 				// biome-ignore lint/complexity/useLiteralKeys: TypeScript requires bracket notation for process.env
-				isDevelopment || !process.env['SENDGRID_API_KEY']
-					? new ServiceTransactionalEmailMock()
-					: new ServiceTransactionalEmailSendGrid(),
+				isDevelopment ? new ServiceTransactionalEmailMock() : new ServiceTransactionalEmailSendGrid(),
 			)
 			.registerInfrastructureService(
                 isDevelopment ? new PaymentServiceMock() : new PaymentServiceCybersource()

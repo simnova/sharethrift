@@ -1,5 +1,5 @@
 {
-  "name": "@cellix/transactional-email-service-mock",
+  "name": "@sthrift/transactional-email-service-mock",
   "version": "0.1.0",
   "description": "Mock implementation of transactional email service for local development",
   "type": "module",

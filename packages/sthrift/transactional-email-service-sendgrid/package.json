@@ -1,5 +1,5 @@
 {
-  "name": "@cellix/transactional-email-service-sendgrid",
+  "name": "@sthrift/transactional-email-service-sendgrid",
   "version": "0.1.0",
   "description": "SendGrid implementation of transactional email service for ShareThrift",
   "type": "module",
