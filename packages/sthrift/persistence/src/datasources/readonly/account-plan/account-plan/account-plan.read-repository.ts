@@ -70,6 +70,6 @@ class AccountPlanReadRepositoryImpl
 export const getAccountPlanReadRepository = (
 	models: ModelsContext,
 	passport: Domain.Passport,
-): AccountPlanReadRepository => {
+) => {
 	return new AccountPlanReadRepositoryImpl(models, passport);
 };
