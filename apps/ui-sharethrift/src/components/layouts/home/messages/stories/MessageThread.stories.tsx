@@ -1,6 +1,7 @@
 import type { Meta, StoryObj } from "@storybook/react";
 import { MessageThread } from "../components/message-thread.tsx";
 import { BrowserRouter } from "react-router-dom";
+import { expect, within } from 'storybook/test';
 
 const mockMessages = [
   {
@@ -34,6 +35,10 @@ const mockReserver = {
 const meta: Meta<typeof MessageThread> = {
   title: "Components/Messages/MessageThread",
   component: MessageThread,
+  argTypes: {
+    setMessageText: { action: 'message text set' },
+    handleSendMessage: { action: 'message sent' },
+  },
   decorators: [
     (Story) => (
       <BrowserRouter>
@@ -63,5 +68,9 @@ export const Default: Story = {
     contentContainerStyle: { paddingLeft: 24 },
     sharer: mockSharer,
     reserver: mockReserver,
+  },
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+    await expect(canvas.getByText(/Hey Alice/i)).toBeInTheDocument();
   },
 };

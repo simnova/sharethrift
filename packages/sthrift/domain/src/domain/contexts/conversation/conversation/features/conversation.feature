@@ -55,3 +55,35 @@ Feature: Conversation aggregate
     Then the messagingConversationId property should return the correct value
     And the createdAt property should return the correct date
     And the updatedAt property should return the correct date
+    And the schemaVersion property should return the correct value
+
+  Scenario: Setting listing to null
+    Given a Conversation aggregate with permission to manage conversation
+    When I try to set the listing to null
+    Then a PermissionError should be thrown with message "listing cannot be null or undefined"
+
+  Scenario: Setting listing to undefined
+    Given a Conversation aggregate with permission to manage conversation
+    When I try to set the listing to undefined
+    Then a PermissionError should be thrown with message "listing cannot be null or undefined"
+
+  Scenario: Getting messages from conversation
+    Given a Conversation aggregate with messages
+    When I access the messages property
+    Then it should return an array of messages
+
+  Scenario: Loading listing asynchronously
+    Given a Conversation aggregate
+    When I call loadListing()
+    Then it should return the listing asynchronously
+
+  Scenario: Setting reserver to null
+    Given a Conversation aggregate with permission to manage conversation
+    When I try to set the reserver to null
+    Then a PermissionError should be thrown with message "reserver cannot be null or undefined"
+
+  Scenario: Setting reserver to undefined
+    Given a Conversation aggregate with permission to manage conversation
+    When I try to set the reserver to undefined
+    Then a PermissionError should be thrown with message "reserver cannot be null or undefined"
+
