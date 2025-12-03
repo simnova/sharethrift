@@ -22,7 +22,9 @@ export class ConversationDomainAdapter
 	extends MongooseSeedwork.MongooseDomainAdapter<Models.Conversation.Conversation>
 	implements Domain.Contexts.Conversation.Conversation.ConversationProps
 {
-	get sharer(): PersonalUserDomainAdapter | AdminUserDomainAdapter {
+	get sharer():
+		| Domain.Contexts.User.PersonalUser.PersonalUserEntityReference
+		| Domain.Contexts.User.AdminUser.AdminUserEntityReference {
 		if (!this.doc.sharer) {
 			throw new Error('sharer is not populated');
 		}
@@ -40,13 +42,16 @@ export class ConversationDomainAdapter
 				this.doc.sharer as Models.User.AdminUser,
 			);
 		}
-		return new PersonalUserDomainAdapter(
+		// Assuming the domain adapter exposes an entityReference property or method
+		const adapter = new PersonalUserDomainAdapter(
 			this.doc.sharer as Models.User.PersonalUser,
 		);
+		return adapter.entityReference; // need this to resolve issue with PropArray of account.billing.transactions
 	}
 
 	async loadSharer(): Promise<
-		PersonalUserDomainAdapter | AdminUserDomainAdapter
+		| Domain.Contexts.User.PersonalUser.PersonalUserEntityReference
+		| Domain.Contexts.User.AdminUser.AdminUserEntityReference
 	> {
 		if (!this.doc.sharer) {
 			throw new Error('sharer is not populated');
@@ -63,14 +68,13 @@ export class ConversationDomainAdapter
 				this.doc.sharer as Models.User.AdminUser,
 			);
 		}
-		return new PersonalUserDomainAdapter(
+		const adapter = new PersonalUserDomainAdapter(
 			this.doc.sharer as Models.User.PersonalUser,
 		);
+		return adapter.entityReference;
 	}
 
 	set sharer(user:
-		| PersonalUserDomainAdapter
-		| AdminUserDomainAdapter
 		| Domain.Contexts.User.PersonalUser.PersonalUserEntityReference
 		| Domain.Contexts.User.AdminUser.AdminUserEntityReference) {
 		if (
@@ -87,7 +91,9 @@ export class ConversationDomainAdapter
 		this.doc.set('sharer', new MongooseSeedwork.ObjectId(user.id));
 	}
 
-	get reserver(): PersonalUserDomainAdapter | AdminUserDomainAdapter {
+	get reserver():
+		| Domain.Contexts.User.PersonalUser.PersonalUserEntityReference
+		| Domain.Contexts.User.AdminUser.AdminUserEntityReference {
 		if (!this.doc.reserver) {
 			throw new Error('reserver is not populated');
 		}
@@ -105,13 +111,15 @@ export class ConversationDomainAdapter
 				this.doc.reserver as Models.User.AdminUser,
 			);
 		}
-		return new PersonalUserDomainAdapter(
+		const adapter = new PersonalUserDomainAdapter(
 			this.doc.reserver as Models.User.PersonalUser,
 		);
+		return adapter.entityReference;
 	}
 
 	async loadReserver(): Promise<
-		PersonalUserDomainAdapter | AdminUserDomainAdapter
+		| Domain.Contexts.User.PersonalUser.PersonalUserEntityReference
+		| Domain.Contexts.User.AdminUser.AdminUserEntityReference
 	> {
 		if (!this.doc.reserver) {
 			throw new Error('reserver is not populated');
@@ -128,14 +136,13 @@ export class ConversationDomainAdapter
 				this.doc.reserver as Models.User.AdminUser,
 			);
 		}
-		return new PersonalUserDomainAdapter(
+		const adapter = new PersonalUserDomainAdapter(
 			this.doc.reserver as Models.User.PersonalUser,
 		);
+		return adapter.entityReference;
 	}
 
 	set reserver(user:
-		| PersonalUserDomainAdapter
-		| AdminUserDomainAdapter
 		| Domain.Contexts.User.PersonalUser.PersonalUserEntityReference
 		| Domain.Contexts.User.AdminUser.AdminUserEntityReference) {
 		if (

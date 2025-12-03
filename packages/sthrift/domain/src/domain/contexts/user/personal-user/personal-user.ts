@@ -6,6 +6,7 @@ import type {
 	PersonalUserEntityReference,
 	PersonalUserProps,
 } from './personal-user.entity.ts';
+import { PersonalUserAccountProfileBillingTransactions } from './personal-user-account-profile-billing-transactions.ts';
 
 export interface PersonalUserAggregateRoot
 	extends DomainSeedwork.RootEventRegistry {
@@ -100,5 +101,34 @@ export class PersonalUser<props extends PersonalUserProps>
 		}
 
 		this.props.hasCompletedOnboarding = value;
+	}
+
+	private requestNewAccountProfileBillingTransaction(): PersonalUserAccountProfileBillingTransactions {
+		const transaction =
+			this.props.account.profile.billing.transactions.getNewItem();
+		return new PersonalUserAccountProfileBillingTransactions(
+			transaction,
+			this.visa,
+			this,
+		);
+	}
+
+	public requestAddAccountProfileBillingTransaction(
+		transactionId: string,
+		amount: number,
+		referenceId: string,
+		status: string,
+		completedAt: Date,
+		errorMessage?: string,
+	): void {
+		const transaction = this.requestNewAccountProfileBillingTransaction();
+		transaction.transactionId = transactionId;
+		transaction.amount = amount;
+		transaction.referenceId = referenceId;
+		transaction.status = status;
+		transaction.completedAt = completedAt;
+		if (errorMessage !== undefined) {
+			transaction.errorMessage = errorMessage;
+		}
 	}
 }

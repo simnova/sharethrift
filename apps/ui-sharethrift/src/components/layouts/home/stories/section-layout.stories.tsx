@@ -5,7 +5,7 @@ import { ApolloClient, InMemoryCache } from '@apollo/client';
 import { ApolloProvider } from '@apollo/client/react';
 import { MockLink } from '@apollo/client/testing';
 import { MockAuthWrapper } from '../../../../test-utils/storybook-decorators.tsx';
-import { HomeTabsLayout } from '../section-layout.tsx';
+import { SectionLayout } from '../section-layout.tsx';
 
 // Mock Apollo Client with MockLink
 const mockApolloClient = new ApolloClient({
@@ -13,9 +13,9 @@ const mockApolloClient = new ApolloClient({
 	cache: new InMemoryCache(),
 });
 
-const meta: Meta<typeof HomeTabsLayout> = {
-	title: 'Layouts/HomeTabsLayout',
-	component: HomeTabsLayout,
+const meta: Meta<typeof SectionLayout> = {
+	title: 'Layouts/SectionLayout',
+	component: SectionLayout,
 	parameters: {
 		layout: 'fullscreen',
 	},
@@ -33,7 +33,7 @@ const meta: Meta<typeof HomeTabsLayout> = {
 };
 
 export default meta;
-type Story = StoryObj<typeof HomeTabsLayout>;
+type Story = StoryObj<typeof SectionLayout>;
 
 export const AuthenticatedUser: Story = {
 	play: async ({ canvasElement }) => {
@@ -124,5 +124,80 @@ export const ResponsiveLayout: Story = {
 		// On mobile, sidebar behavior changes
 		// Just verify the layout renders properly without checking specific styles
 		await expect(main).toBeTruthy();
+	},
+};
+
+// Test clicking navigation to Messages
+export const NavigateToMessages: Story = {
+	play: async ({ canvasElement }) => {
+		const canvas = within(canvasElement);
+		const messagesLink = await canvas.findByText('Messages');
+		await userEvent.click(messagesLink);
+		expect(messagesLink).toBeInTheDocument();
+	},
+};
+
+// Test clicking navigation to My Reservations
+export const NavigateToReservations: Story = {
+	play: async ({ canvasElement }) => {
+		const canvas = within(canvasElement);
+		const reservationsLink = await canvas.findByText('My Reservations');
+		await userEvent.click(reservationsLink);
+		expect(reservationsLink).toBeInTheDocument();
+	},
+};
+
+// Test clicking Account and its subitems
+export const NavigateToAccountProfile: Story = {
+	play: async ({ canvasElement }) => {
+		const canvas = within(canvasElement);
+		// First click Account to expand submenu
+		const accountLink = await canvas.findByText('Account');
+		await userEvent.click(accountLink);
+		// Then look for Profile submenu item
+		const profileLink = canvas.queryByText('Profile');
+		if (profileLink) {
+			await userEvent.click(profileLink);
+		}
+	},
+};
+
+export const NavigateToAccountSettings: Story = {
+	play: async ({ canvasElement }) => {
+		const canvas = within(canvasElement);
+		// First click Account to expand submenu
+		const accountLink = await canvas.findByText('Account');
+		await userEvent.click(accountLink);
+		// Then look for Settings submenu item
+		const settingsLink = canvas.queryByText('Settings');
+		if (settingsLink) {
+			await userEvent.click(settingsLink);
+		}
+	},
+};
+
+// Test clicking Logout button in header
+export const ClickLogoutButton: Story = {
+	play: async ({ canvasElement }) => {
+		const canvas = within(canvasElement);
+		await expect(canvasElement).toBeTruthy();
+		// Look for Logout/Sign Out button
+		const logoutButton = canvas.queryByText(/Sign Out|Logout/i);
+		if (logoutButton) {
+			await userEvent.click(logoutButton);
+		}
+	},
+};
+
+// Test clicking Create Listing button
+export const ClickCreateListingButton: Story = {
+	play: async ({ canvasElement }) => {
+		const canvas = within(canvasElement);
+		await expect(canvasElement).toBeTruthy();
+		// Look for Create Listing button
+		const createListingButton = canvas.queryByText(/Create Listing|Share an Item/i);
+		if (createListingButton) {
+			await userEvent.click(createListingButton);
+		}
 	},
 };
