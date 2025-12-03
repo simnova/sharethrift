@@ -216,7 +216,7 @@ describe('bulkIndexExistingListings', () => {
 			},
 		] as unknown as Domain.Contexts.Listing.ItemListing.ItemListingEntityReference[];
 
-		const beforeTest = new Date().toISOString().split('T')[0];
+		const beforeTest = new Date().toISOString().slice(0, 10);
 		await bulkIndexExistingListings(
 			listingsWithMissingDates,
 			mockSearchService,
