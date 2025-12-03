@@ -1,6 +1,6 @@
 // @ts-nocheck - Test file with simplified mocks
 import type { GraphQLResolveInfo } from 'graphql';
-
+import { ObjectId } from 'mongoose';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { describeFeature, loadFeature } from '@amiceli/vitest-cucumber';
@@ -18,9 +18,9 @@ test.for(feature, ({ Background, Scenario, BeforeEachScenario }) => {
 	let mockContext: GraphContext;
 	let mockListingAppealRequest: {
 		id: string;
-		userId: string;
-		listingId: string;
-		blockerId: string;
+		user: { id: string };
+		listing: { id: string };
+		blocker: { id: string };
 		state: string;
 		reason: string;
 	};
@@ -47,12 +47,9 @@ test.for(feature, ({ Background, Scenario, BeforeEachScenario }) => {
 
 		mockListingAppealRequest = {
 			id: '507f1f77bcf86cd799439014',
-			userId: '507f1f77bcf86cd799439011',
-			user: '507f1f77bcf86cd799439011',
-			listingId: '507f1f77bcf86cd799439012',
-			listing: '507f1f77bcf86cd799439012',
-			blockerId: '507f1f77bcf86cd799439013',
-			blocker: '507f1f77bcf86cd799439013',
+			user: { id: '507f1f77bcf86cd799439011' },
+			listing: { id: '507f1f77bcf86cd799439012' },
+			blocker: { id: '507f1f77bcf86cd799439013' },
 			state: 'Draft',
 			reason: 'Test reason',
 		};
@@ -108,7 +105,7 @@ test.for(feature, ({ Background, Scenario, BeforeEachScenario }) => {
 		'ListingAppealRequest user field resolver returns populated user',
 		({ Given, When, Then }) => {
 			Given('a listing appeal request with user ID', () => {
-				expect(mockListingAppealRequest.userId).toBeDefined();
+				expect(mockListingAppealRequest.user).toBeDefined();
 			});
 
 			When('the user field resolver is called', async () => {
@@ -134,7 +131,7 @@ test.for(feature, ({ Background, Scenario, BeforeEachScenario }) => {
 		'ListingAppealRequest listing field resolver returns populated listing',
 		({ Given, When, Then }) => {
 			Given('a listing appeal request with listing ID', () => {
-				expect(mockListingAppealRequest.listingId).toBeDefined();
+				expect(mockListingAppealRequest.listing).toBeDefined();
 			});
 
 			When('the listing field resolver is called', async () => {
@@ -143,7 +140,7 @@ test.for(feature, ({ Background, Scenario, BeforeEachScenario }) => {
 						mockListingAppealRequest,
 						{},
 						mockContext,
-						{ fieldName: 'listing' } as { fieldName: string },
+						{ fieldName: 'listing' }
 					);
 			});
 
@@ -160,7 +157,7 @@ test.for(feature, ({ Background, Scenario, BeforeEachScenario }) => {
 		'ListingAppealRequest blocker field resolver returns populated blocker',
 		({ Given, When, Then }) => {
 			Given('a listing appeal request with blocker ID', () => {
-				expect(mockListingAppealRequest.blockerId).toBeDefined();
+				expect(mockListingAppealRequest.blocker).toBeDefined();
 			});
 
 			When('the blocker field resolver is called', async () => {
@@ -274,8 +271,8 @@ test.for(feature, ({ Background, Scenario, BeforeEachScenario }) => {
 
 			Given('valid listing appeal request input data', () => {
 				input = {
-					userId: 'user-id-123',
-					listingId: 'listing-id-456',
+					user: 'user-id-123',
+					listing: 'listing-id-456',
 					reason: 'Test reason',
 				};
 			});
