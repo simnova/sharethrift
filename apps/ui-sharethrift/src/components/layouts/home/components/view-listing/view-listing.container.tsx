@@ -63,7 +63,9 @@ export const ViewListingContainer: React.FC<ViewListingContainerProps> = (
 		? computeTimeAgo(listingData.itemListing.createdAt)
 		: undefined;
 
-	const userIsSharer = false;
+	const userIsSharer =
+		props.isAuthenticated &&
+		reserverId === listingData?.itemListing?.sharer?.id;
 	return (
 		<ComponentQueryLoader
 			loading={userReservationLoading || listingLoading || currentUserLoading}

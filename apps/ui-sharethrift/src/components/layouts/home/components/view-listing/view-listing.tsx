@@ -1,5 +1,6 @@
-import { Row, Col, Button } from 'antd';
+import { Row, Col, Button, Alert, Popconfirm, message } from 'antd';
 import { LeftOutlined } from '@ant-design/icons';
+import { useMutation } from '@apollo/client/react';
 import { ListingImageGalleryContainer } from './listing-image-gallery/listing-image-gallery.container.tsx';
 import { SharerInformationContainer } from './sharer-information/sharer-information.container.tsx';
 import { ListingInformationContainer } from './listing-information/listing-information.container.tsx';
@@ -7,6 +8,7 @@ import type {
 	ItemListing,
 	ViewListingActiveReservationRequestForListingQuery,
 } from '../../../../../generated.tsx';
+import { ReinstateItemListingDocument } from '../../../../../generated.tsx';
 
 export interface ViewListingProps {
 	listing: ItemListing;
@@ -30,9 +32,38 @@ export const ViewListing: React.FC<ViewListingProps> = ({
 	// Mock sharer info (since ItemListing.sharer is just an ID)
 	const sharer = listing.sharer;
 
+	const [reinstateListing, { loading: reinstateLoading }] = useMutation(
+		ReinstateItemListingDocument,
+		{
+			onCompleted: (data) => {
+				if (data.reinstateItemListing?.status?.success) {
+					message.success('Listing reinstated successfully');
+					// Reload the page to show updated listing state
+					window.location.reload();
+				} else {
+					message.error('Failed to reinstate listing');
+				}
+			},
+			onError: (error) => {
+				message.error(`Failed to reinstate listing: ${error.message}`);
+			},
+		},
+	);
+
+	const handleReinstate = async () => {
+		await reinstateListing({
+			variables: { id: listing.id },
+		});
+	};
+
 	const handleBack = () => {
 		window.location.href = '/';
 	};
+
+	// Check if listing is expired or cancelled and user is the sharer
+	const showReinstateBanner =
+		userIsSharer &&
+		(listing.state === 'Expired' || listing.state === 'Cancelled');
 
 	return (
 		<>
@@ -101,6 +132,30 @@ export const ViewListing: React.FC<ViewListingProps> = ({
 						Back
 					</Button>
 				</Col>
+				{showReinstateBanner && (
+					<Col span={24} style={{ marginTop: 16 }}>
+						<Alert
+							message={`This listing has been ${listing.state?.toLowerCase()}`}
+							description="You can reinstate this listing to make it active and visible to others again."
+							type="warning"
+							showIcon
+							action={
+								<Popconfirm
+									title="Reinstate this listing?"
+									description="This will make the listing active and visible to others again."
+									onConfirm={handleReinstate}
+									okText="Yes, Reinstate"
+									cancelText="Cancel"
+									okButtonProps={{ loading: reinstateLoading }}
+								>
+									<Button type="primary" loading={reinstateLoading}>
+										Reinstate
+									</Button>
+								</Popconfirm>
+							}
+						/>
+					</Col>
+				)}
 				<Col span={24} style={{ marginBottom: 0, paddingBottom: 0 }}>
 					{/* Sharer Info at top, clickable to profile */}
 					<SharerInformationContainer
