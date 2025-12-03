@@ -12,7 +12,9 @@
 		}
 	},
 	"scripts": {
-		"build": "tsc --project tsconfig.json"
+		"build": "tsc --project tsconfig.json",
+		"test": "vitest run",
+		"test:watch": "vitest"
 	},
 	"dependencies": {
 		"twilio": "^4.0.0",
@@ -22,7 +24,9 @@
 	"devDependencies": {
 		"typescript": "^5.8.3",
 		"@cellix/typescript-config": "workspace:*",
-		"@types/node": "^22.0.0"
+		"@cellix/vitest-config": "workspace:*",
+		"@types/node": "^22.0.0",
+		"vitest": "^3.2.4"
 	},
 	"license": "MIT"
 }

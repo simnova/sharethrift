@@ -219,4 +219,42 @@ userEmail: 'test@example.com',
 			});
 		},
 	);
+
+	f.Scenario(
+		'Failing to delete when unit of work is not available',
+		({ Given, When, Then }) => {
+			Given('the unit of work is not available', () => {
+				mockDataSources = {
+					domainDataSource: {
+						Listing: {
+							ItemListing: {
+								ItemListingUnitOfWork: undefined,
+							},
+						},
+					},
+					readonlyDataSource: mockDataSources.readonlyDataSource,
+				} as unknown as DataSources;
+				deleteFunction = deleteListings(mockDataSources);
+			});
+
+			When('the user requests to delete the listing', async () => {
+				thrownError = null;
+				try {
+					await deleteFunction({
+						id: 'listing-123',
+						userEmail: 'test@example.com',
+					});
+				} catch (error) {
+					thrownError = error as Error;
+				}
+			});
+
+			Then('an error should be thrown with message {string}', () => {
+				expect(thrownError).toBeTruthy();
+				expect(thrownError?.message).toBe(
+					'ItemListingUnitOfWork not available on dataSources.domainDataSource.Listing.ItemListing',
+				);
+			});
+		},
+	);
 });
