@@ -8,6 +8,9 @@ const meta: Meta<typeof CategoryFilter> = {
 	parameters: {
 		layout: 'centered',
 	},
+	argTypes: {
+		onCategoryChange: { action: 'category changed' },
+	},
 };
 export default meta;
 
@@ -38,5 +41,9 @@ const DefaultCategoryFilter = () => {
 };
 
 export const Default: Story = {
+	render: () => <DefaultCategoryFilter />,
+};
+
+export const CategorySelection: Story = {
 	render: () => <DefaultCategoryFilter />,
 };
