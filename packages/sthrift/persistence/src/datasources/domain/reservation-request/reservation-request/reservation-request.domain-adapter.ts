@@ -1,9 +1,9 @@
 import { MongooseSeedwork } from '@cellix/mongoose-seedwork';
-import { Domain } from '@sthrift/domain';
 import type { Models } from '@sthrift/data-sources-mongoose-models';
+import { Domain } from '@sthrift/domain';
 import { ItemListingDomainAdapter } from '../../listing/item/item-listing.domain-adapter.ts';
-import { PersonalUserDomainAdapter } from '../../user/personal-user/personal-user.domain-adapter.ts';
 import { AdminUserDomainAdapter } from '../../user/admin-user/admin-user.domain-adapter.ts';
+import { PersonalUserDomainAdapter } from '../../user/personal-user/personal-user.domain-adapter.ts';
 
 export class ReservationRequestConverter extends MongooseSeedwork.MongoTypeConverter<
 	Models.ReservationRequest.ReservationRequest,
@@ -66,9 +66,7 @@ export class ReservationRequestDomainAdapter
 			throw new Error('listing is not populated');
 		}
 		if (this.doc.listing instanceof MongooseSeedwork.ObjectId) {
-			return {
-				id: this.doc.listing.toString(),
-			} as Domain.Contexts.Listing.ItemListing.ItemListingEntityReference;
+			throw new Error('listing is not populated');
 		}
 
 		return new ItemListingDomainAdapter(
@@ -83,7 +81,8 @@ export class ReservationRequestDomainAdapter
 		const listingDoc = this.doc.listing as
 			| Models.Listing.ItemListing
 			| MongooseSeedwork.ObjectId;
-		const needsListingPopulate = listingDoc instanceof MongooseSeedwork.ObjectId;
+		const needsListingPopulate =
+			listingDoc instanceof MongooseSeedwork.ObjectId;
 		const needsSharerPopulate =
 			!needsListingPopulate &&
 			listingDoc?.sharer instanceof MongooseSeedwork.ObjectId;
@@ -123,7 +122,7 @@ export class ReservationRequestDomainAdapter
 		if (reserverDoc.userType === 'admin-user') {
 			return new AdminUserDomainAdapter(
 				this.doc.reserver as Models.User.AdminUser,
-			); 
+			);
 		}
 		const adapter = new PersonalUserDomainAdapter(
 			this.doc.reserver as Models.User.PersonalUser,
