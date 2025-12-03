@@ -12,6 +12,7 @@ import {
 import { message } from "antd";
 import type { ItemListing } from "../../../../../../generated.tsx";
 import type { BlockUserFormValues } from "../../../../../shared/user-modals/block-user-modal.tsx";
+import { BlockUserModal, UnblockUserModal } from "../../../../../shared/user-modals";
 
 export const ViewUserProfileContainer: React.FC = () => {
     const navigate = useNavigate();
@@ -127,7 +128,6 @@ export const ViewUserProfileContainer: React.FC = () => {
         createdAt: createdAt || "",
     };
 
-    // TODO need to show other user's listing
     const listings: ItemListing[] = [];
 
     return (
@@ -147,14 +147,26 @@ export const ViewUserProfileContainer: React.FC = () => {
                     onListingClick={handleListingClick}
                     onBlockUser={() => setBlockModalVisible(true)}
                     onUnblockUser={() => setUnblockModalVisible(true)}
-                    blockModalVisible={blockModalVisible}
-                    unblockModalVisible={unblockModalVisible}
-                    onBlockModalCancel={() => setBlockModalVisible(false)}
-                    onUnblockModalCancel={() => setUnblockModalVisible(false)}
-                    onBlockModalConfirm={handleBlockUser}
-                    onUnblockModalConfirm={handleUnblockUser}
-                    blockLoading={blockLoading}
-                    unblockLoading={unblockLoading}
+                    adminControls={
+                        (isAdmin ?? false) && (
+                            <>
+                                <BlockUserModal
+                                    visible={blockModalVisible}
+                                    userName={`${profileUser.firstName} ${profileUser.lastName}`}
+                                    onConfirm={handleBlockUser}
+                                    onCancel={() => setBlockModalVisible(false)}
+                                    loading={blockLoading}
+                                />
+                                <UnblockUserModal
+                                    visible={unblockModalVisible}
+                                    userName={`${profileUser.firstName} ${profileUser.lastName}`}
+                                    onConfirm={handleUnblockUser}
+                                    onCancel={() => setUnblockModalVisible(false)}
+                                    loading={unblockLoading}
+                                />
+                            </>
+                        )
+                    }
                 />
             }
         />

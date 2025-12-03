@@ -10,20 +10,11 @@ import {
 	Divider,
 } from 'antd';
 import { ListingsGrid } from '@sthrift/ui-components';
-import {
-    SettingOutlined,
-    UserOutlined,
-    StopOutlined,
-    CheckCircleOutlined,
-} from '@ant-design/icons';
+import { UserOutlined } from '@ant-design/icons';
 import '../components/profile-view.overrides.css';
 import type { ItemListing } from '../../../../../../generated';
 import type { ProfileUser } from './profile-view.types';
-import {
-    BlockUserModal,
-    UnblockUserModal,
-} from '../../../../../shared/user-modals';
-import type { BlockUserFormValues } from '../../../../../shared/user-modals/block-user-modal';
+import { ProfileActions } from './profile-actions.tsx';
 
 const { Text } = Typography;
 
@@ -40,14 +31,7 @@ interface ProfileViewProps {
     onListingClick: (listingId: string) => void;
     onBlockUser?: () => void;
     onUnblockUser?: () => void;
-    blockModalVisible?: boolean;
-    unblockModalVisible?: boolean;
-    onBlockModalCancel?: () => void;
-    onUnblockModalCancel?: () => void;
-    onBlockModalConfirm?: (blockUserFormValues: BlockUserFormValues) => void;
-    onUnblockModalConfirm?: () => void;
-    blockLoading?: boolean;
-    unblockLoading?: boolean;
+    adminControls?: React.ReactNode;
 }
 
 export const ProfileView: React.FC<Readonly<ProfileViewProps>> = ({
@@ -61,14 +45,7 @@ export const ProfileView: React.FC<Readonly<ProfileViewProps>> = ({
     onListingClick,
     onBlockUser,
     onUnblockUser,
-    blockModalVisible = false,
-    unblockModalVisible = false,
-    onBlockModalCancel = () => { },
-    onUnblockModalCancel = () => { },
-    onBlockModalConfirm = () => { },
-    onUnblockModalConfirm = () => { },
-    blockLoading = false,
-    unblockLoading = false,
+    adminControls,
 }) => {
     const formatDate = (dateString: string) => {
         return new Date(dateString).toLocaleDateString('en-US', {
@@ -89,40 +66,16 @@ export const ProfileView: React.FC<Readonly<ProfileViewProps>> = ({
                     filter: isBlocked && isAdmin ? 'grayscale(50%)' : 'none',
                 }}
             >
-                {/* Mobile Account Settings Button */}
-                {isOwnProfile ? (
-                    <div className="profile-settings-mobile">
-                        <Button
-                            type="primary"
-                            icon={<SettingOutlined />}
-                            onClick={onEditSettings}
-                        >
-                            Account Settings
-                        </Button>
-                    </div>
-                ) : (
-                    canBlockUser && (
-                        <div className="profile-settings-mobile">
-                            {isBlocked ? (
-                                <Button
-                                    type="primary"
-                                    icon={<CheckCircleOutlined />}
-                                    onClick={onUnblockUser}
-                                    style={{
-                                        background: '#52c41a',
-                                        borderColor: '#52c41a',
-                                    }}
-                                >
-                                    Unblock User
-                                </Button>
-                            ) : (
-                                <Button danger icon={<StopOutlined />} onClick={onBlockUser}>
-                                    Block User
-                                </Button>
-                            )}
-                        </div>
-                    )
-                )}
+                {/* Mobile actions */}
+                <ProfileActions
+                    variant="mobile"
+                    isOwnProfile={isOwnProfile}
+                    isBlocked={isBlocked}
+                    canBlockUser={canBlockUser}
+                    onEditSettings={onEditSettings}
+                    onBlockUser={onBlockUser}
+                    onUnblockUser={onUnblockUser}
+                />
                 <Row gutter={24} align="middle">
                     <Col xs={24} sm={6} lg={4} className="text-center mb-4 sm:mb-0">
                         <Avatar className="mb-4 profile-avatar-scale" />
@@ -141,48 +94,16 @@ export const ProfileView: React.FC<Readonly<ProfileViewProps>> = ({
                                     {user.firstName}{' '}
                                     {user.lastName?.charAt(0)}.
                                 </div>
-                                {/* Desktop Block/Unblock or Account Settings Buttons */}
-                                <div className="profile-settings-desktop">
-                                    {isOwnProfile ? (
-                                        <Button
-                                            type="primary"
-                                            icon={<SettingOutlined />}
-                                            onClick={onEditSettings}
-                                        >
-                                            Account Settings
-                                        </Button>
-                                    ) : (
-                                        canBlockUser && (
-                                            <>
-                                                {isBlocked ? (
-                                                    <Button
-                                                        type="primary"
-                                                        icon={<CheckCircleOutlined />}
-                                                        onClick={onUnblockUser}
-                                                        style={{
-                                                            background: '#52c41a',
-                                                            borderColor: '#52c41a',
-                                                        }}
-                                                    >
-                                                        Unblock User
-                                                    </Button>
-                                                ) : (
-                                                    <Button
-                                                        danger
-                                                        icon={<StopOutlined />}
-                                                        onClick={onBlockUser}
-                                                        style={{
-                                                            background: 'red',
-                                                            borderColor: '#52c41a',
-                                                        }}
-                                                    >
-                                                        Block User
-                                                    </Button>
-                                                )}
-                                            </>
-                                        )
-                                    )}
-                                </div>
+                                {/* Desktop actions */}
+                                <ProfileActions
+                                    variant="desktop"
+                                    isOwnProfile={isOwnProfile}
+                                    isBlocked={isBlocked}
+                                    canBlockUser={canBlockUser}
+                                    onEditSettings={onEditSettings}
+                                    onBlockUser={onBlockUser}
+                                    onUnblockUser={onUnblockUser}
+                                />
                             </div>
                             <h3 className="block mb-2">@{user.username}</h3>
                         </div>
@@ -279,25 +200,8 @@ export const ProfileView: React.FC<Readonly<ProfileViewProps>> = ({
                 )}
             </div>
 
-            {/* Block/Unblock Modals */}
-            {canBlockUser && (
-                <>
-                    <BlockUserModal
-                        visible={blockModalVisible}
-                        userName={`${user.firstName} ${user.lastName}`}
-                        onConfirm={onBlockModalConfirm}
-                        onCancel={onBlockModalCancel}
-                        loading={blockLoading}
-                    />
-                    <UnblockUserModal
-                        visible={unblockModalVisible}
-                        userName={`${user.firstName} ${user.lastName}`}
-                        onConfirm={onUnblockModalConfirm}
-                        onCancel={onUnblockModalCancel}
-                        loading={unblockLoading}
-                    />
-                </>
-            )}
+            {/* Admin controls slot (modals etc.) */}
+            {adminControls}
         </div>
     );
 };
