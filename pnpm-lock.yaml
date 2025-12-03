@@ -791,6 +791,9 @@ importers:
       '@graphql-tools/schema':
         specifier: ^10.0.25
         version: 10.0.25(graphql@16.11.0)
+      '@opentelemetry/api':
+        specifier: ^1.9.0
+        version: 1.9.0
       '@sthrift/application-services':
         specifier: workspace:*
         version: link:../application-services
