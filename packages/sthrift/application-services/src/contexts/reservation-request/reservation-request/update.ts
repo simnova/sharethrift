@@ -11,14 +11,8 @@ export interface ReservationRequestUpdateCommand {
 
 const ACCEPTED_STATE = 'Accepted';
 const REQUESTED_STATE = 'Requested';
-type ReservationRequestAggregate =
-	Domain.Contexts.ReservationRequest.ReservationRequest.ReservationRequest<
-		Domain.Contexts.ReservationRequest.ReservationRequest.ReservationRequestProps
-	>;
 type ReservationRequestRepository =
-	Domain.Contexts.ReservationRequest.ReservationRequest.ReservationRequestRepository<
-		Domain.Contexts.ReservationRequest.ReservationRequest.ReservationRequestProps
-	>;
+	Domain.Contexts.ReservationRequest.ReservationRequest.ReservationRequestRepository<Domain.Contexts.ReservationRequest.ReservationRequest.ReservationRequestProps>;
 
 export const update = (dataSources: DataSources) => {
 	return async (
@@ -35,11 +29,16 @@ export const update = (dataSources: DataSources) => {
 					throw new Error('Reservation request not found');
 				}
 
-				const listingIdForAutoReject = await applyStateUpdateIfNeeded(
-					reservationRequest,
-					command,
-					dataSources,
-				);
+				// Track if we're accepting to handle auto-reject
+				const isAccepting = command.state === ACCEPTED_STATE;
+				const listingId = isAccepting
+					? (await reservationRequest.loadListing()).id
+					: null;
+
+				// Update state if provided - domain layer validates state transitions and permissions via visa pattern
+				if (command.state !== undefined) {
+					reservationRequest.state = command.state;
+				}
 
 				if (command.closeRequestedBySharer !== undefined) {
 					reservationRequest.closeRequestedBySharer =
@@ -53,14 +52,11 @@ export const update = (dataSources: DataSources) => {
 
 				updatedReservationRequest = await repo.save(reservationRequest);
 
-				if (
-					updatedReservationRequest &&
-					listingIdForAutoReject &&
-					command.state === ACCEPTED_STATE
-				) {
+				// Auto-reject overlapping pending requests when accepting
+				if (updatedReservationRequest && isAccepting && listingId) {
 					await autoRejectOverlappingRequests(
 						updatedReservationRequest,
-						listingIdForAutoReject,
+						listingId,
 						repo,
 						dataSources,
 					);
@@ -75,70 +71,6 @@ export const update = (dataSources: DataSources) => {
 		return updatedReservationRequest;
 	};
 };
-
-async function applyStateUpdateIfNeeded(
-	reservationRequest: ReservationRequestAggregate,
-	command: ReservationRequestUpdateCommand,
-	dataSources: DataSources,
-): Promise<string | null> {
-	if (command.state === undefined) {
-		return null;
-	}
-
-	if (command.state === reservationRequest.state) {
-		return null;
-	}
-
-	if (command.state === ACCEPTED_STATE) {
-		const listing = await ensureSharerOwnsListing(
-			reservationRequest,
-			command.sharerEmail,
-			dataSources,
-		);
-
-		reservationRequest.state = ACCEPTED_STATE;
-		return listing.id;
-	}
-
-	reservationRequest.state = command.state;
-	return null;
-}
-
-async function ensureSharerOwnsListing(
-	reservationRequest: Domain.Contexts.ReservationRequest.ReservationRequest.ReservationRequestEntityReference,
-	sharerEmail: string | undefined,
-	dataSources: DataSources,
-) {
-	if (!sharerEmail) {
-		throw new Error(
-			'Sharer email is required when accepting a reservation request',
-		);
-	}
-
-	const listing = await reservationRequest.loadListing();
-	if (!listing) {
-		throw new Error('Listing not found');
-	}
-
-	const sharer =
-		await dataSources.readonlyDataSource.User.PersonalUser.PersonalUserReadRepo.getByEmail(
-			sharerEmail,
-		);
-
-	if (!sharer) {
-		throw new Error(
-			'Sharer not found. Ensure that you are logged in as the listing owner.',
-		);
-	}
-
-	if (listing.sharer?.id !== sharer.id) {
-		throw new Error(
-			'You do not have permission to accept this reservation request',
-		);
-	}
-
-	return listing;
-}
 
 async function autoRejectOverlappingRequests(
 	acceptedRequest: Domain.Contexts.ReservationRequest.ReservationRequest.ReservationRequestEntityReference,
@@ -159,7 +91,8 @@ async function autoRejectOverlappingRequests(
 		const requestsToReject = overlappingRequests.filter(
 			(
 				request: Domain.Contexts.ReservationRequest.ReservationRequest.ReservationRequestEntityReference,
-			) => request.id !== acceptedRequest.id && request.state === REQUESTED_STATE,
+			) =>
+				request.id !== acceptedRequest.id && request.state === REQUESTED_STATE,
 		);
 
 		for (const request of requestsToReject) {
