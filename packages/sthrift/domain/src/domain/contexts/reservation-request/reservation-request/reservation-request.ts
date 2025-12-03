@@ -334,8 +334,9 @@ export class ReservationRequest<props extends ReservationRequestProps>
 					if (currentListing?.[property] != null) {
 						return currentListing[property] as NonNullable<ItemListingEntityReference[K]>;
 					}
-				} catch (_error) {
+				} catch (directAccessError) {
 					// If direct access fails, fall back to loading
+					console.debug(`Direct access to listing.${String(property)} failed, will load listing entity`, directAccessError);
 				}
 			}
 

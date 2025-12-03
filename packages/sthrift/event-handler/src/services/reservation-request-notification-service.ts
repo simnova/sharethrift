@@ -91,22 +91,23 @@ export class ReservationRequestNotificationService {
 			// biome-ignore lint/suspicious/noExplicitAny: Complex cross-domain types, using any for simplicity
 			let listing: any;
 
-			// Get sharer using PersonalUser UnitOfWork
+			// Get sharer using PersonalUser UnitOfWork, fallback to AdminUser
 			try {
 				// biome-ignore lint/suspicious/noExplicitAny: Repository type is generic
 				await this.domainDataSource.User.PersonalUser.PersonalUserUnitOfWork.withTransaction(systemPassport, async (repo: any) => {
 					sharer = await repo.getById(sharerId);
 				});
-			} catch (_error) {
+			} catch (personalUserError) {
 				// Try admin user if personal user fails
-				console.log(`User ${sharerId} not found as personal user, trying admin user`);
+				console.log(`User ${sharerId} not found as personal user, trying admin user`, personalUserError);
 				try {
 					// biome-ignore lint/suspicious/noExplicitAny: Repository type is generic
 					await this.domainDataSource.User.AdminUser.AdminUserUnitOfWork.withTransaction(systemPassport, async (repo: any) => {
 						sharer = await repo.getById(sharerId);
 					});
-				} catch (_error) {
-					console.error(`User ${sharerId} not found as admin user either`);
+				} catch (adminUserError) {
+					console.error(`User ${sharerId} not found as admin user either`, adminUserError);
+					throw new Error(`Failed to load sharer with ID ${sharerId}: tried both PersonalUser and AdminUser`);
 				}
 			}
 
@@ -117,22 +118,23 @@ export class ReservationRequestNotificationService {
 				return;
 			}
 
-			// Get reserver using PersonalUser UnitOfWork
+			// Get reserver using PersonalUser UnitOfWork, fallback to AdminUser
 			try {
 				// biome-ignore lint/suspicious/noExplicitAny: Repository type is generic
 				await this.domainDataSource.User.PersonalUser.PersonalUserUnitOfWork.withTransaction(systemPassport, async (repo: any) => {
 					reserver = await repo.getById(reserverId);
 				});
-			} catch (_error) {
+			} catch (personalUserError) {
 				// Try admin user if personal user fails
-				console.log(`User ${reserverId} not found as personal user, trying admin user`);
+				console.log(`User ${reserverId} not found as personal user, trying admin user`, personalUserError);
 				try {
 					// biome-ignore lint/suspicious/noExplicitAny: Repository type is generic
 					await this.domainDataSource.User.AdminUser.AdminUserUnitOfWork.withTransaction(systemPassport, async (repo: any) => {
 						reserver = await repo.getById(reserverId);
 					});
-				} catch (_error) {
-					console.error(`User ${reserverId} not found as admin user either`);
+				} catch (adminUserError) {
+					console.error(`User ${reserverId} not found as admin user either`, adminUserError);
+					throw new Error(`Failed to load reserver with ID ${reserverId}: tried both PersonalUser and AdminUser`);
 				}
 			}
 
@@ -149,9 +151,9 @@ export class ReservationRequestNotificationService {
 				await this.domainDataSource.Listing.ItemListing.ItemListingUnitOfWork.withTransaction(systemPassport, async (repo: any) => {
 					listing = await repo.getById(listingId);
 				});
-			} catch (error) {
-				console.error(`Listing ${listingId} not found: ${error}`);
-				return;
+			} catch (listingError) {
+				console.error(`Listing ${listingId} not found:`, listingError);
+				throw new Error(`Failed to load listing with ID ${listingId}`);
 			}
 
 			if (!listing) {

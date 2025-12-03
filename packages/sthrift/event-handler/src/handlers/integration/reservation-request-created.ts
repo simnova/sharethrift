@@ -4,10 +4,10 @@ import { ReservationRequestNotificationService } from '../../services/reservatio
 
 const { EventBusInstance, ReservationRequestCreated } = Domain.Events;
 
-export default (
+const registerReservationRequestCreatedHandler = (
 	domainDataSource: DomainDataSource,
 	emailService: TransactionalEmailService,
-) => {
+): void => {
 	const notificationService = new ReservationRequestNotificationService(
 		domainDataSource,
 		emailService,
@@ -26,3 +26,5 @@ export default (
 		);
 	});
 };
+
+export default registerReservationRequestCreatedHandler;
