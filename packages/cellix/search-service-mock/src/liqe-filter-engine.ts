@@ -234,43 +234,45 @@ export class LiQEFilterEngine {
 
 		// Handle comparison operators using safe patterns
 		// Pattern: word + space + operator + space + value
-		// Uses \w+ for field names (bounded) and specific patterns for values
+		// Uses bounded character classes with length limits to prevent backtracking DoS
+		// Field names limited to 100 chars, numeric values to 20 digits (safe for all practical uses)
 
 		// field gt value -> field:>value (numeric)
-		liqeQuery = liqeQuery.replace(/(\w+) gt (\d+)/g, '$1:>$2');
+		liqeQuery = liqeQuery.replace(/(\w{1,100}) gt (\d{1,20})/g, '$1:>$2');
 
 		// field lt value -> field:<value (numeric)
-		liqeQuery = liqeQuery.replace(/(\w+) lt (\d+)/g, '$1:<$2');
+		liqeQuery = liqeQuery.replace(/(\w{1,100}) lt (\d{1,20})/g, '$1:<$2');
 
 		// field ge value -> field:>=value (numeric)
-		liqeQuery = liqeQuery.replace(/(\w+) ge (\d+)/g, '$1:>=$2');
+		liqeQuery = liqeQuery.replace(/(\w{1,100}) ge (\d{1,20})/g, '$1:>=$2');
 
 		// field le value -> field:<=value (numeric)
-		liqeQuery = liqeQuery.replace(/(\w+) le (\d+)/g, '$1:<=$2');
+		liqeQuery = liqeQuery.replace(/(\w{1,100}) le (\d{1,20})/g, '$1:<=$2');
 
 		// field eq 'value' -> field:/^value$/ (exact string match)
+		// String values limited to 500 chars for safety
 		liqeQuery = liqeQuery.replace(
-			/(\w+) eq '([^']+)'/g,
+			/(\w{1,100}) eq '([^']{1,500})'/g,
 			'$1:/^$2$$/',
 		);
 		liqeQuery = liqeQuery.replace(
-			/(\w+) eq "([^"]+)"/g,
+			/(\w{1,100}) eq "([^"]{1,500})"/g,
 			'$1:/^$2$$/',
 		);
 
 		// field ne 'value' -> NOT field:/^value$/ (not equal string)
 		liqeQuery = liqeQuery.replace(
-			/(\w+) ne '([^']+)'/g,
+			/(\w{1,100}) ne '([^']{1,500})'/g,
 			'NOT $1:/^$2$$/',
 		);
 		liqeQuery = liqeQuery.replace(
-			/(\w+) ne "([^"]+)"/g,
+			/(\w{1,100}) ne "([^"]{1,500})"/g,
 			'NOT $1:/^$2$$/',
 		);
 
 		// Handle boolean values (exact match)
-		liqeQuery = liqeQuery.replace(/(\w+) eq true\b/g, '$1:/^true$$/');
-		liqeQuery = liqeQuery.replace(/(\w+) eq false\b/g, '$1:/^false$$/');
+		liqeQuery = liqeQuery.replace(/(\w{1,100}) eq true\b/g, '$1:/^true$$/');
+		liqeQuery = liqeQuery.replace(/(\w{1,100}) eq false\b/g, '$1:/^false$$/');
 
 		// Handle logical operators using string replacement (safer than regex)
 		liqeQuery = this.replaceLogicalOperators(liqeQuery);
