@@ -5,7 +5,7 @@ import { expect } from 'vitest';
 import { PaymentServiceMock } from './index.ts';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
-const feature = await loadFeature(path.resolve(__dirname, 'payment-service-mock.feature'));
+const feature = await loadFeature(path.resolve(__dirname, 'features/index.feature'));
 
 describeFeature(feature, ({ Scenario, BeforeEachScenario }) => {
   let service: PaymentServiceMock;
@@ -20,7 +20,6 @@ describeFeature(feature, ({ Scenario, BeforeEachScenario }) => {
 
   Scenario('Instantiating with baseUrl', ({ Given, When, Then, And }) => {
     Given('a PaymentServiceMock with baseUrl "http://localhost:3001"', () => {
-      // ...existing code...
     });
     When('I instantiate the service', () => {
       service = new PaymentServiceMock('http://localhost:3001');

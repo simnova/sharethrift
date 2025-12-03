@@ -61,3 +61,88 @@ Feature: ConversationDomainAdapter
   Scenario: Loading messages
     When I call loadMessages
     Then it should return an empty array
+
+  Scenario: Setting sharer property with valid reference
+    When I set the sharer property to a reference with id
+    Then the document's sharer should be set correctly
+
+  Scenario: Setting sharer property with missing id throws error
+    When I set the sharer property to a reference missing id
+    Then an error should be thrown indicating sharer reference is missing id
+
+  Scenario: Setting reserver property with valid reference
+    When I set the reserver property to a reference with id
+    Then the document's reserver should be set correctly
+
+  Scenario: Setting reserver property with missing id throws error
+    When I set the reserver property to a reference missing id
+    Then an error should be thrown indicating reserver reference is missing id
+
+  Scenario: Setting listing property with valid reference
+    When I set the listing property to a reference with id
+    Then the document's listing should be set correctly
+
+  Scenario: Setting listing property with missing id throws error
+    When I set the listing property to a reference missing id
+    Then an error should be thrown indicating listing reference is missing id
+
+  Scenario: Loading reserver when it is an ObjectId
+    When I call loadReserver on an adapter with reserver as ObjectId
+    Then it should populate and return a PersonalUserDomainAdapter
+
+  Scenario: Loading listing when it is an ObjectId
+    When I call loadListing on an adapter with listing as ObjectId
+    Then it should populate and return an ItemListingDomainAdapter
+
+  Scenario: Getting sharer when it is an admin user
+    Given a conversation with an admin user as sharer
+    When I access the sharer property
+    Then it should return an AdminUserDomainAdapter
+
+  Scenario: Setting sharer with PersonalUser domain entity
+    Given a PersonalUser domain entity
+    When I set the sharer property with the domain entity
+    Then the sharer should be set correctly
+
+  Scenario: Setting listing with ItemListing domain entity
+    Given an ItemListing domain entity
+    When I set the listing property with the domain entity
+    Then the listing should be set correctly
+
+  Scenario: Getting reserver when it is an admin user
+    Given a conversation with an admin user as reserver
+    When I access the reserver property
+    Then it should return an AdminUserDomainAdapter for reserver
+
+  Scenario: Loading sharer when it is an admin user
+    Given a conversation with an admin user as sharer
+    When I call loadSharer on the adapter
+    Then it should return an AdminUserDomainAdapter for sharer
+
+  Scenario: Loading reserver when it is an admin user
+    Given a conversation with an admin user as reserver
+    When I call loadReserver on the adapter
+    Then it should return an AdminUserDomainAdapter for reserver
+
+  Scenario: Getting the sharer property when populated as personal user
+    When I get the sharer property
+    Then it should return a PersonalUserDomainAdapter entityReference
+
+  Scenario: Setting reserver with PersonalUser domain entity
+    Given a PersonalUser domain entity for reserver
+    When I set the reserver property with the domain entity
+    Then the reserver should be set correctly
+
+  Scenario: Setting reserver with AdminUser domain entity
+    Given an AdminUser domain entity for reserver
+    When I set the reserver property with the admin user entity
+    Then the reserver should be set correctly with admin user
+
+  Scenario: Setting sharer with AdminUser domain entity
+    Given an AdminUser domain entity for sharer
+    When I set the sharer property with the admin user entity
+    Then the sharer should be set correctly with admin user
+
+  Scenario: Setting messages property
+    When I set the messages property to a list
+    Then the messages property should be set correctly
