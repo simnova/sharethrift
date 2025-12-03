@@ -41,7 +41,7 @@ function makeListingDoc(
 		schemaVersion: '1.0.0',
 		id: 'listing-1',
 		set(key: keyof Models.Listing.ItemListing, value: unknown) {
-			(this as Models.Listing.ItemListing)[key] = value as never;
+			(this)[key] = value as never;
 		},
 		...overrides,
 	} as Models.Listing.ItemListing;

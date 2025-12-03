@@ -1,6 +1,5 @@
 // @ts-nocheck - Test file with simplified mocks
 import type { GraphQLResolveInfo } from 'graphql';
-import { ObjectId } from 'mongoose';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { describeFeature, loadFeature } from '@amiceli/vitest-cucumber';
