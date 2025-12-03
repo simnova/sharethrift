@@ -19,10 +19,10 @@ export const AppContainer: FC = () => {
 
   const user = data?.currentUser;
   const userId = user?.id;
-  const hasCompletedOnboarding = 
-    user?.userType === 'personal-users' && 'hasCompletedOnboarding' in user
-      ? user.hasCompletedOnboarding === true 
-      : true; // Admins don't need onboarding
+  const hasCompletedOnboarding =
+    user?.userType === 'personal-users'
+      ? user?.hasCompletedOnboarding === true
+      : true; // Admins and other types don't need onboarding
 
   return (
     <ComponentQueryLoader
