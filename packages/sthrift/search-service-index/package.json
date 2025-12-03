@@ -9,6 +9,7 @@
 		"build": "tsc",
 		"clean": "rm -rf dist",
 		"test": "vitest",
+		"test:coverage": "vitest run --coverage",
 		"lint": "biome check src/",
 		"format": "biome format --write src/"
 	},
