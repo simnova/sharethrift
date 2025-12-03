@@ -19,6 +19,14 @@ const feature = await loadFeature(
 	path.resolve(__dirname, 'features/item-listing.repository.feature'),
 );
 
+// Add QueryMock interface for chainable query mocks
+interface QueryMock {
+	sort: (this: QueryMock) => QueryMock;
+	skip: (this: QueryMock) => QueryMock;
+	limit: (this: QueryMock) => QueryMock;
+	exec: () => unknown[];
+}
+
 function makeListingDoc(
 	overrides: Partial<Models.Listing.ItemListing> = {},
 ): Models.Listing.ItemListing {
@@ -41,7 +49,7 @@ function makeListingDoc(
 		schemaVersion: '1.0.0',
 		id: 'listing-1',
 		set(key: keyof Models.Listing.ItemListing, value: unknown) {
-			(this)[key] = value as never;
+			this[key] = value as never;
 		},
 		...overrides,
 	} as Models.Listing.ItemListing;
@@ -150,21 +158,28 @@ test.for(feature, ({ Scenario, Background, BeforeEachScenario }) => {
 			})),
 			find: vi.fn((filter?: { state?: string; sharer?: string }) => {
 				// Create chainable query object
-				const query = {
-					sort: vi.fn(() => query),
-					skip: vi.fn(() => query),
-					limit: vi.fn(() => query),
+				return {
+					sort: vi.fn(function (this: QueryMock) {
+						return this;
+					}),
+					skip: vi.fn(function (this: QueryMock) {
+						return this;
+					}),
+					limit: vi.fn(function (this: QueryMock) {
+						return this;
+					}),
 					exec: vi.fn(() => {
 						if (!filter || filter.state === 'Published') {
 							return [listingDoc];
 						}
 						if (filter.sharer) {
-							return filter.sharer === '507f1f77bcf86cd799439011' ? [listingDoc] : [];
+							return filter.sharer === '507f1f77bcf86cd799439011'
+								? [listingDoc]
+								: [];
 						}
 						return [];
 					}),
-				};
-				return query;
+				} as QueryMock;
 			}),
 			countDocuments: vi.fn(() => ({
 				exec: vi.fn(async () => 1),
@@ -400,13 +415,16 @@ test.for(feature, ({ Scenario, Background, BeforeEachScenario }) => {
 			When(
 				'I call getBySharerIDWithPagination with the sharer ID and options',
 				async () => {
-					paginatedResults = await repo.getBySharerIDWithPagination('507f1f77bcf86cd799439011', {
-						page: 1,
-						pageSize: 10,
-						searchText: 'Test',
-						statusFilters: ['Published'],
-						sorter: { field: 'createdAt', order: 'descend' },
-					});
+					paginatedResults = await repo.getBySharerIDWithPagination(
+						'507f1f77bcf86cd799439011',
+						{
+							page: 1,
+							pageSize: 10,
+							searchText: 'Test',
+							statusFilters: ['Published'],
+							sorter: { field: 'createdAt', order: 'descend' },
+						},
+					);
 				},
 			);
 			Then(
