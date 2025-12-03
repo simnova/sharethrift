@@ -1,5 +1,4 @@
 import { Domain } from '@sthrift/domain';
-import type { PopulateOptions } from 'mongoose';
 import type { Models } from '@sthrift/data-sources-mongoose-models';
 import { MongooseSeedwork } from '@cellix/mongoose-seedwork';
 import type { ReservationRequestDomainAdapter } from './reservation-request.domain-adapter.ts';
@@ -9,10 +8,7 @@ import type { ReservationRequestDomainAdapter } from './reservation-request.doma
 type PropType = ReservationRequestDomainAdapter;
 type ReservationRequestModelType = Models.ReservationRequest.ReservationRequest;
 
-const populateReservationRequest: PopulateOptions[] = [
-	{ path: 'listing', populate: { path: 'sharer' } },
-	{ path: 'reserver' },
-];
+
 export class ReservationRequestRepository
 	extends MongooseSeedwork.MongoRepositoryBase<
 		ReservationRequestModelType,
@@ -30,7 +26,6 @@ export class ReservationRequestRepository
 	> {
 		const mongoReservation = await this.model
 			.findById(id)
-			.populate(populateReservationRequest)
 			.exec();
 		if (!mongoReservation) {
 			throw new Error(`ReservationRequest with id ${id} not found`);
@@ -43,7 +38,6 @@ export class ReservationRequestRepository
 	> {
 		const mongoReservations = await this.model
 			.find()
-			.populate(populateReservationRequest)
 			.exec();
 		return mongoReservations.map((doc) =>
 			this.typeConverter.toDomain(doc, this.passport),
@@ -80,7 +74,6 @@ export class ReservationRequestRepository
 	> {
 		const mongoReservations = await this.model
 			.find({ reserver: reserverId })
-			.populate(populateReservationRequest)
 			.exec();
 		return mongoReservations.map((doc) =>
 			this.typeConverter.toDomain(doc, this.passport),
@@ -94,7 +87,6 @@ export class ReservationRequestRepository
 	> {
 		const mongoReservations = await this.model
 			.find({ listing: listingId })
-			.populate(populateReservationRequest)
 			.exec();
 		return mongoReservations.map((doc) =>
 			this.typeConverter.toDomain(doc, this.passport),
@@ -120,7 +112,6 @@ export class ReservationRequestRepository
 					},
 				],
 			})
-			.populate(populateReservationRequest)
 			.exec();
 		return mongoReservations.map((doc) =>
 			this.typeConverter.toDomain(doc, this.passport),

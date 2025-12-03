@@ -68,8 +68,8 @@ export const currentViewerIsAdmin = async (
 export const PopulateUserFromField = (fieldName: string) => {
 	// biome-ignore lint/suspicious/noExplicitAny: parent type comes from GraphQL resolver parent which varies by context
 	return async (parent: any, _: unknown, context: GraphContext) => {
-		if (parent[fieldName] && isValidObjectId(parent[fieldName].toString())) {
-			const userId = parent[fieldName].toString();
+		if (parent[fieldName] && isValidObjectId(parent[fieldName].id)) {
+			const userId = parent[fieldName].id;
 
 			// Try AdminUser first
 			try {
@@ -102,15 +102,15 @@ export const PopulateUserFromField = (fieldName: string) => {
 };
 
 export const PopulateItemListingFromField = (fieldName: string) => {
-	// biome-ignore lint/suspicious/noExplicitAny: parent type comes from GraphQL resolver parent which varies by context
-	return async (parent: any, _: unknown, context: GraphContext) => {
-		if (parent[fieldName] && isValidObjectId(parent[fieldName].toString())) {
-			return await context.applicationServices.Listing.ItemListing.queryById({
-				id: parent[fieldName].toString(),
-			});
-		}
-		return parent[fieldName];
-	};
+  // biome-ignore lint/suspicious/noExplicitAny: parent type comes from GraphQL resolver parent which varies by context
+  return async (parent: any, _: unknown, context: GraphContext) => {
+    if (parent[fieldName] && isValidObjectId(parent[fieldName].id)) {
+      return await context.applicationServices.Listing.ItemListing.queryById({
+        id: parent[fieldName].id,
+      });
+    }
+    return parent[fieldName];
+  };
 };
 
 export function getRequestedFieldPaths(info: GraphQLResolveInfo): string[] {
