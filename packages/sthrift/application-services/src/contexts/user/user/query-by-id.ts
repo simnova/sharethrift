@@ -10,6 +10,6 @@ export const queryById = (dataSources: DataSources) => {
 	return async (
 		command: UserQueryByIdCommand,
 	): Promise<Domain.Contexts.User.UserEntityReference | null> => {
-		return await dataSources.readonlyDataSource.User.getUserById(command.id);
+		return await dataSources.readonlyDataSource.User.User.UserReadRepo.getById(command.id);
 	};
 };
