@@ -33,7 +33,7 @@ const billingAlice = {
 	subscription: {
 		subscriptionId: 'sub_987654322',
 		planCode: 'basic-plan',
-		status: 'active',
+		status: 'ACTIVE',
 		startDate: new Date('2023-02-01T10:00:00Z'),
 	},
 } as Models.User.PersonalUserAccountProfileBilling;
