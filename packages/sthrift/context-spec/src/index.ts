@@ -1,6 +1,7 @@
 import type { DataSourcesFactory } from '@sthrift/persistence';
 import type { TokenValidation } from '@sthrift/service-token-validation';
 import type { PaymentService } from '@cellix/payment-service';
+import type { ServiceSearchIndex } from '@sthrift/search-service-index';
 import type { MessagingService } from '@cellix/messaging-service';
 
 export interface ApiContextSpec {
@@ -8,5 +9,6 @@ export interface ApiContextSpec {
 	dataSourcesFactory: DataSourcesFactory; // NOT an infrastructure service
 	tokenValidationService: TokenValidation;
 	paymentService: PaymentService;
+	searchService: ServiceSearchIndex;
 	messagingService: MessagingService;
 }

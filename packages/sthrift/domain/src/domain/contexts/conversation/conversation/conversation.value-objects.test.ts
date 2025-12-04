@@ -5,7 +5,6 @@ import { expect } from 'vitest';
 
 import * as ValueObjects from './conversation.value-objects.ts';
 
-
 const test = { for: describeFeature };
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const feature = await loadFeature(

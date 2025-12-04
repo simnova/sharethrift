@@ -33,6 +33,7 @@
 		"@sthrift/messaging-service-mock": "workspace:*",
 		"@sthrift/persistence": "workspace:*",
 		"@sthrift/rest": "workspace:*",
+		"@sthrift/search-service-index": "workspace:*",
 		"@sthrift/service-blob-storage": "workspace:*",
 		"@cellix/payment-service": "workspace:*",
 		"@sthrift/payment-service-mock": "workspace:*",
