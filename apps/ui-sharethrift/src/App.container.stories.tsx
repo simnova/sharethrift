@@ -5,7 +5,7 @@ import {
 	withMockRouter,
 	MockUnauthWrapper,
 } from './test-utils/storybook-decorators.tsx';
-import { AppContainerCurrentPersonalUserAndCreateIfNotExistsDocument } from './generated.tsx';
+import { AppContainerCurrentUserDocument } from './generated.tsx';
 import { MemoryRouter, Route, Routes } from 'react-router-dom';
 
 const meta: Meta<typeof AppContainer> = {
@@ -22,14 +22,15 @@ type Story = StoryObj<typeof meta>;
 // Mock for authenticated user who has completed onboarding
 const mockAuthenticatedCompletedOnboarding = {
 	request: {
-		query: AppContainerCurrentPersonalUserAndCreateIfNotExistsDocument,
+		query: AppContainerCurrentUserDocument,
 		variables: {},
 	},
 	result: {
 		data: {
-			currentPersonalUserAndCreateIfNotExists: {
+			currentUser: {
 				__typename: 'PersonalUser' as const,
 				id: 'user-123',
+				userType: 'personal-users',
 				hasCompletedOnboarding: true,
 			},
 		},
@@ -39,14 +40,15 @@ const mockAuthenticatedCompletedOnboarding = {
 // Mock for authenticated user who hasn't completed onboarding
 const mockAuthenticatedNotCompletedOnboarding = {
 	request: {
-		query: AppContainerCurrentPersonalUserAndCreateIfNotExistsDocument,
+		query: AppContainerCurrentUserDocument,
 		variables: {},
 	},
 	result: {
 		data: {
-			currentPersonalUserAndCreateIfNotExists: {
+			currentUser: {
 				__typename: 'PersonalUser' as const,
 				id: 'user-456',
+				userType: 'personal-users',
 				hasCompletedOnboarding: false,
 			},
 		},
