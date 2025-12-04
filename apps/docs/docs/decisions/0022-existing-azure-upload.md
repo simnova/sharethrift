@@ -17,11 +17,11 @@ Our application requires a secure and scalable mechanism for handling file uploa
 
 Users need to upload various file types (PDFs, images) along with metadata and tags for tracking. The system implements a direct upload flow where the client requests authorization from the backend, which issues a SAS (Shared Access Signature) token allowing the file to be uploaded directly to Azure Blob Storage.
 
-we considered two authorization strategies:
-- Short-lived SAS : A short-lived SAS (Shared Access Signature) in Azure Blob Storage is a token with a limited time validity that grants specific permissions to access a blob or container. And this can be breach by someone and can misuse this short lived token.
+We considered two authorization strategies:
+- Short-lived SAS: A short-lived SAS (Shared Access Signature) in Azure Blob Storage is a token with limited validity that grants specific permissions to access a blob or container. It can be breached by someone, who could then misuse this short-lived token.
 - Shared Key SAS : A Shared Key–signed SAS (Shared Access Signature) is a time‑limited and permission‑scoped token generated using the storage account’s shared key. It allows clients temporary access to upload or modify blobs without exposing the actual account key.
 
-We Chosen **Shared Key SAS** 
+We chose **Shared Key SAS**
 Because:
 - The backend generates SAS tokens along with all relevant metadata for each specific upload request, ensuring contextual and controlled access.
 - Tokens are cryptographically signed using the storage account key, making them tamper‑proof and preventing third‑party manipulation.
