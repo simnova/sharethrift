@@ -1,6 +1,6 @@
 import { useMutation, useQuery } from '@apollo/client/react';
 import { ComponentQueryLoader } from '@sthrift/ui-components';
-import { message } from 'antd';
+import { App } from 'antd';
 import { useState } from 'react';
 import {
 	HomeRequestsTableContainerAcceptReservationRequestDocument,
@@ -19,6 +19,7 @@ export const RequestsTableContainer: React.FC<RequestsTableContainerProps> = ({
 	onPageChange,
 	sharerId,
 }) => {
+	const { message } = App.useApp();
 	const [searchText, setSearchText] = useState('');
 	const [statusFilters, setStatusFilters] = useState<string[]>([]);
 	const [sorter, setSorter] = useState<{
@@ -48,9 +49,9 @@ export const RequestsTableContainer: React.FC<RequestsTableContainerProps> = ({
 	const [acceptRequest] = useMutation(
 		HomeRequestsTableContainerAcceptReservationRequestDocument,
 		{
-			onCompleted: () => {
+			onCompleted: async () => {
+				await refetch();
 				message.success('Request accepted successfully');
-				refetch();
 			},
 			onError: (error) => {
 				message.error(`Failed to accept request: ${error.message}`);
@@ -100,11 +101,16 @@ export const RequestsTableContainer: React.FC<RequestsTableContainerProps> = ({
 	};
 
 	const handleAction = async (action: string, requestId: string) => {
+		if (action !== 'approve' && action !== 'accept') {
+			return;
+		}
+
 		try {
-			if (action === 'approve' || action === 'accept') {
-				await acceptRequest({ variables: { input: { id: requestId } } });
-			}
+			await acceptRequest({ variables: { input: { id: requestId } } });
 		} catch (error) {
+			const errorMessage =
+				error instanceof Error ? error.message : 'Unknown error occurred';
+			message.error(`Failed to accept request: ${errorMessage}`);
 			console.error(`${action} request error:`, error);
 		}
 	};
