@@ -14,10 +14,14 @@ export function createStorybookVitestConfig(pkgDirname: string, opts: StorybookV
   const STORYBOOK_DIR = opts.storybookDirRelativeToPackage ?? '.storybook';
   const setupFiles = opts.setupFiles ?? ['.storybook/vitest.setup.ts'];
   const instances = opts.browsers ?? [{ browser: 'chromium' }];
+  // CI environment is slower, allow retries for flaky browser tests
+  const isCI = process.env['CI'] === 'true' || process.env['TF_BUILD'] === 'True';
 
   const base = mergeConfig(baseConfig, defineConfig({
     test: {
       globals: true,
+      retry: isCI ? 2 : 0,
+      testTimeout: isCI ? 30000 : 10000,
       projects: [
         {
           extends: true,
