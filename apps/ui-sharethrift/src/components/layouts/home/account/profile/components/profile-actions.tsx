@@ -39,10 +39,11 @@ export const ProfileActions: React.FC<Readonly<ProfileActionsProps>> = ({
         <div className={wrapperClass}>
             {isBlocked ? (
                 <Button
-                    type="primary"
+                    type="default"
                     icon={<CheckCircleOutlined />}
                     onClick={onUnblockUser}
-                    style={{ background: '#52c41a', borderColor: '#52c41a' }}
+                    className="secondaryButton"
+                    // style={{ opacity: 1, filter: 'none' }}
                 >
                     Unblock User
                 </Button>
