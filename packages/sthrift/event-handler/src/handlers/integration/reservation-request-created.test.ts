@@ -45,7 +45,7 @@ describe('registerReservationRequestCreatedHandler', () => {
 			shutDown: vi.fn().mockResolvedValue(undefined),
 		} as TransactionalEmailService;
 
-		// eslint-disable-next-line @typescript-eslint/no-explicit-any
+		// biome-ignore lint/suspicious/noExplicitAny: Test mocks require flexible typing
 		mockDomainDataSource = {
 			User: {
 				PersonalUser: {
@@ -84,6 +84,7 @@ describe('registerReservationRequestCreatedHandler', () => {
 	it('creates a handler function that calls notificationService', async () => {
 		let handlerCallback: ReturnType<typeof vi.fn> | undefined;
 		vi.mocked(Domain.Events.EventBusInstance.register).mockImplementation(
+			// biome-ignore lint/correctness/noUnusedFunctionParameters: Callback parameter structure required
 			(_event, callback) => {
 				handlerCallback = callback;
 			},
@@ -105,6 +106,7 @@ describe('registerReservationRequestCreatedHandler', () => {
 		// Setup mocks for successful email sending
 		(mockDomainDataSource.User.PersonalUser.PersonalUserUnitOfWork.withTransaction as ReturnType<typeof vi.fn>)
 			.mockImplementation((
+				// biome-ignore lint/correctness/noUnusedFunctionParameters: Callback parameter structure required
 				_passport,
 				callback,
 			) =>
@@ -118,6 +120,7 @@ describe('registerReservationRequestCreatedHandler', () => {
 
 		(mockDomainDataSource.User.AdminUser.AdminUserUnitOfWork.withTransaction as ReturnType<typeof vi.fn>)
 			.mockImplementation((
+				// biome-ignore lint/correctness/noUnusedFunctionParameters: Callback parameter structure required
 				_passport,
 				callback,
 			) =>
@@ -131,6 +134,7 @@ describe('registerReservationRequestCreatedHandler', () => {
 
 		(mockDomainDataSource.Listing.ItemListing.ItemListingUnitOfWork.withTransaction as ReturnType<typeof vi.fn>)
 			.mockImplementation((
+				// biome-ignore lint/correctness/noUnusedFunctionParameters: Callback parameter structure required
 				_passport,
 				callback,
 			) =>
@@ -152,9 +156,28 @@ describe('registerReservationRequestCreatedHandler', () => {
 		expect(result).toBeUndefined();
 	});
 
+	it('passes correct event payload to handler', () => {
+		// @ts-ignore - Intentionally unused for test setup
+		// biome-ignore lint/suspicious/noExplicitAny: Test mocks require flexible typing
+		// biome-ignore lint/correctness/noUnusedVariables: Intentionally unused for test setup
+		let _capturedPayload: any;
+		vi.mocked(Domain.Events.EventBusInstance.register).mockImplementation(
+			// biome-ignore lint/correctness/noUnusedFunctionParameters: Callback parameter structure required
+			(_event, callback) => {
+				// biome-ignore lint/suspicious/noExplicitAny: Mock callback typing
+				(callback as any).mockImplementation = (fn: Function) => {
+					_capturedPayload = fn;
+				};
+			},
+		);
+
+		registerReservationRequestCreatedHandler(mockDomainDataSource, mockEmailService);
+	});
+
 	it('uses the same domainDataSource passed during registration', () => {
 		let handlerCallback: ReturnType<typeof vi.fn> | undefined;
 		vi.mocked(Domain.Events.EventBusInstance.register).mockImplementation(
+			// biome-ignore lint/correctness/noUnusedFunctionParameters: Callback parameter structure required
 			(_event, callback) => {
 				handlerCallback = callback;
 			},
@@ -194,6 +217,7 @@ describe('registerReservationRequestCreatedHandler', () => {
 	it('uses the same emailService passed during registration', () => {
 		let handlerCallback: ReturnType<typeof vi.fn> | undefined;
 		vi.mocked(Domain.Events.EventBusInstance.register).mockImplementation(
+			// biome-ignore lint/correctness/noUnusedFunctionParameters: Callback parameter structure required
 			(_event, callback) => {
 				handlerCallback = callback;
 			},
@@ -213,6 +237,7 @@ describe('registerReservationRequestCreatedHandler', () => {
 	it('handles errors from notification service without throwing', async () => {
 		let handlerCallback: ReturnType<typeof vi.fn> | undefined;
 		vi.mocked(Domain.Events.EventBusInstance.register).mockImplementation(
+			// biome-ignore lint/correctness/noUnusedFunctionParameters: Callback parameter structure required
 			(_event, callback) => {
 				handlerCallback = callback;
 			},
@@ -240,6 +265,7 @@ describe('registerReservationRequestCreatedHandler', () => {
 	it('handles all required fields in payload', () => {
 		let handlerCallback: ReturnType<typeof vi.fn> | undefined;
 		vi.mocked(Domain.Events.EventBusInstance.register).mockImplementation(
+			// biome-ignore lint/correctness/noUnusedFunctionParameters: Callback parameter structure required
 			(_event, callback) => {
 				handlerCallback = callback;
 			},

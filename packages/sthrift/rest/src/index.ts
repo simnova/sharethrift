@@ -14,9 +14,7 @@ export const restHandlerCreator = (applicationServicesFactory: ApplicationServic
 	return async (request: HttpRequest, _context: InvocationContext) => {
 		const rawAuthHeader = request.headers.get('Authorization') ?? undefined;
 		const hints: PrincipalHints = {
-			// biome-ignore lint/complexity/useLiteralKeys: Index signature requires bracket notation
-			memberId: request.params['memberId'] ?? undefined,
-			// biome-ignore lint/complexity/useLiteralKeys: Index signature requires bracket notation
+			memberId: request.params[`memberId`] ?? undefined,
 			communityId: request.params['communityId'] ?? undefined,
 		};
 		const applicationServices = await applicationServicesFactory.forRequest(rawAuthHeader, hints);
