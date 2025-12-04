@@ -15,14 +15,14 @@ informed:
 
 Our application requires a secure and scalable mechanism for handling file uploads. From the start, the design approach was to leverage Azure Blob Storage as the primary file storage service due to its reliability, scalability, and seamless integration with the Azure ecosystem.
 
-Users need to upload various file types (PDFs, images) along with metadata and tags for tracking. The system implements a direct upload flow where the client requests authorization from the backend, which issues a short-lived SAS (Shared Access Signature) token allowing the file to be uploaded directly to Azure Blob Storage.
+Users need to upload various file types (PDFs, images) along with metadata and tags for tracking. The system implements a direct upload flow where the client requests authorization from the backend, which issues a Shared Key SAS (Shared Access Signature) token allowing the file to be uploaded directly to Azure Blob Storage.
 
 ## Decision Drivers
 
 - **Scalability**: The system must efficiently handle large file uploads and multiple concurrent requests without overloading backend services.
 - **Performance**: Direct client-to-Azure Blob uploads reduce backend latency and improve user upload speed.
 - **Cost Optimization**: Offloading upload bandwidth from backend servers to Azure Blob Storage minimizes infrastructure and data transfer costs.
-- **Security**: Uploads must be secure and authenticated. Short-lived SAS tokens (valet keys) provide controlled, time-bound access to the storage account.
+- **Security**: Uploads must be secure and authenticated. Shared Key SAS tokens (valet keys) provide controlled, time-bound access to the storage account.
 - **Malware Scanning**: Uploaded files must undergo malware scanning. Any malicious files must be identified, quarantined, and deleted immediately to maintain data integrity and user safety.
 
 ## Considered Options
@@ -31,11 +31,11 @@ Users need to upload various file types (PDFs, images) along with metadata and t
     - The client uploads files to the backend, which then transfers them to Azure Blob Storage.
 
 - **Option 2: Direct client uploads using Azure Blob SAS tokens (current approach)**
-    - The backend generates a short-lived SAS token authorizing the client to upload directly to Blob Storage.
+    - The backend generates a Shared Key SAS token authorizing the client to upload directly to Blob Storage.
 
 ## Decision Outcome
 
-Chosen option: **Option 2: Direct client uploads using Azure Blob SAS tokens (current approach)**, because it offloads upload traffic from the backend, reduces latency, lower cost, maintains security via short-lived tokens.
+Chosen option: **Option 2: Direct client uploads using Azure Blob SAS tokens (current approach)**, because it offloads upload traffic from the backend, reduces latency, lower cost, maintains security via Shared Key tokens.
 
 ## Consequences
 
@@ -53,7 +53,7 @@ Chosen option: **Option 2: Direct client uploads using Azure Blob SAS tokens (cu
 
 **Backend Services:**
 - SAS Token Generation:
-    - The backend handles SAS token generation and validation for Azure Blob Storage uploads, ensuring secure and controlled access for file uploads. There are different mutations for PDF and image files. The backend service encapsulates all business logic enforcing file upload restrictions and security requirements before enabling clients to upload files directly to Azure Blob Storage with short-lived and carefully permissioned SAS tokens. 
+    - The backend handles SAS token generation and validation for Azure Blob Storage uploads, ensuring secure and controlled access for file uploads. There are different mutations for PDF and image files. The backend service encapsulates all business logic enforcing file upload restrictions and security requirements before enabling clients to upload files directly to Azure Blob Storage with Shared Key and carefully permissioned SAS tokens. 
 - Post-Upload Malware Handling:
     - The backend polls the blob for the Microsoft Defender for Cloud scan result tag: `No threats found` or `Malicious`.
         - `No threats found` → retain the blob.
