@@ -189,9 +189,9 @@ class ItemListingReadRepositoryImpl
 	}
 }
 
-export const getItemListingReadRepository = (
+export function getItemListingReadRepository(
 	models: ModelsContext,
 	passport: Domain.Passport,
-) => {
+): ItemListingReadRepository {
 	return new ItemListingReadRepositoryImpl(models, passport);
-};
+}
