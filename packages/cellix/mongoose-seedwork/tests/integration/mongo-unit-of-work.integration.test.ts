@@ -177,7 +177,7 @@ let uow: MongoUnitOfWork<
 	TestAggregate<TestAdapter>,
 	TestRepo
 >;
-describe.skip('MongoUnitOfWork:Integration', () => {
+describe('MongoUnitOfWork:Integration', () => {
 	beforeAll(async () => {
 		mongoServer = await MongoMemoryReplSet.create({
 			replSet: { name: 'test' },
@@ -191,9 +191,7 @@ describe.skip('MongoUnitOfWork:Integration', () => {
 
 	afterAll(async () => {
 		await mongoose.disconnect();
-		if (mongoServer) {
-			await mongoServer.stop();
-		}
+		await mongoServer.stop();
 	});
 
 	beforeEach(async () => {

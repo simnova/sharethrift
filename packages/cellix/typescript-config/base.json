@@ -20,16 +20,16 @@
     "sourceMap": true,
     "erasableSyntaxOnly": true,
     "esModuleInterop": true,
-    "verbatimModuleSyntax": false,
+    "verbatimModuleSyntax": true,
     "lib": ["ES2023"],
     "target": "ES2022",
     "composite": true,
     "incremental": true,
     "skipLibCheck": false,
     "plugins": [
-      {
-        "name": "ts-scope-trimmer-plugin"
-      }
-    ]
+        {
+            "name": "ts-scope-trimmer-plugin"
+        }
+    ] 
   }
 }
