@@ -20,8 +20,13 @@ export function createStorybookVitestConfig(pkgDirname: string, opts: StorybookV
   const base = mergeConfig(baseConfig, defineConfig({
     test: {
       globals: true,
-      retry: isCI ? 2 : 0,
+      // Retry tests on failure to handle flaky browser tests due to race conditions
+      // in @storybook/addon-vitest + Playwright browser provider
+      retry: isCI ? 3 : 1,
       testTimeout: isCI ? 30000 : 10000,
+      // Serialize file execution to avoid "Vitest failed to find the runner" race condition
+      // when using Storybook + Vitest browser mode with Playwright
+      fileParallelism: false,
       projects: [
         {
           extends: true,
