@@ -13,9 +13,10 @@ export type HttpHandler = (
 export const restHandlerCreator = (applicationServicesFactory: ApplicationServicesFactory): HttpHandler => {
 	return async (request: HttpRequest, _context: InvocationContext) => {
 		const rawAuthHeader = request.headers.get('Authorization') ?? undefined;
-		// biome-ignore lint/complexity/useLiteralKeys: Required for index signature access in TypeScript with noPropertyAccessFromIndexSignature
 		const hints: PrincipalHints = {
+			// biome-ignore lint/complexity/useLiteralKeys: Required for index signature access in TypeScript with noPropertyAccessFromIndexSignature
 			memberId: request.params['memberId'] ?? undefined,
+			// biome-ignore lint/complexity/useLiteralKeys: Required for index signature access in TypeScript with noPropertyAccessFromIndexSignature
 			communityId: request.params['communityId'] ?? undefined,
 		};
 		const applicationServices = await applicationServicesFactory.forRequest(rawAuthHeader, hints);

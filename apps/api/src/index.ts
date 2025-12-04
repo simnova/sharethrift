@@ -55,7 +55,6 @@ Cellix.initializeInfrastructureServices<ApiContextSpec, ApplicationServices>(
 			)
 			.registerInfrastructureService(
 				// Use mock if in development OR if SendGrid API key is not available
-				// biome-ignore lint/complexity/useLiteralKeys: TypeScript requires bracket notation for process.env
 				isDevelopment ? new ServiceTransactionalEmailMock() : new ServiceTransactionalEmailSendGrid(),
 			)
 			.registerInfrastructureService(
