@@ -56,10 +56,7 @@ Before(() => {
 Given('a valid Passport with reservation request permissions', () => {
     const actor = actorCalled('User');
     const permissions: Partial<ReservationRequestDomainPermissions> = {
-        canCloseRequest: true,
-        canCancelRequest: true,
-        canAcceptRequest: true,
-        canRejectRequest: true
+        canEditReservationRequest: true
     };
     actor.passport = new SystemPassport(permissions);
 });
@@ -83,10 +80,7 @@ Given('a ReservationRequest aggregate with state {string}', (state: string) => {
     try {
         // Create a new ReservationRequest with all permissions enabled by default
         const allPermissions: ReservationRequestDomainPermissions = {
-            canAcceptRequest: true,
-            canCancelRequest: true,
-            canCloseRequest: true,
-            canRejectRequest: true
+            canEditReservationRequest: true
         };
         actor.passport = new SystemPassport(allPermissions);
         
@@ -373,40 +367,16 @@ When('I try to set a new reserver', () => {
     }
 });
 
-Given('the user has permission to {word} requests', (action: string) =>  {
+Given('the user {word} edit reservation requests', (permission: string) => {
     const actor = actorCalled('User');
     if (!actor.currentReservationRequest) {
         throw new Error('No reservation request was created');
     }
 
-    // Create permissions with only the specified action enabled
+    // Create permissions based on whether user can or cannot edit
+    const canEditReservationRequest = permission === 'can';
     const permissions: ReservationRequestDomainPermissions = {
-        canAcceptRequest: action === 'accept',
-        canCancelRequest: action === 'cancel',
-        canCloseRequest: action === 'close',
-        canRejectRequest: action === 'reject'
-    };
-    
-    // Create a new passport with the updated permissions
-    actor.passport = new SystemPassport(permissions);
-    
-    // Create a new request instance using existing props and the new passport
-    const { props } = actor.currentReservationRequest;
-    actor.currentReservationRequest = new ReservationRequest(props, actor.passport);
-});
-
-Given('the user does not have permission to {word} requests', (action: string) => {
-    const actor = actorCalled('User');
-    if (!actor.currentReservationRequest) {
-        throw new Error('No reservation request was created');
-    }
-
-    // Create permissions with all permissions enabled except the specified action
-    const permissions: ReservationRequestDomainPermissions = {
-        canAcceptRequest: action !== 'accept',
-        canCancelRequest: action !== 'cancel',
-        canCloseRequest: action !== 'close',
-        canRejectRequest: action !== 'reject'
+        canEditReservationRequest
     };
     
     // Create a new passport with the updated permissions
@@ -488,22 +458,6 @@ When('I try to set state to {string}', (state: string) => {
         actor.currentReservationRequest.state = stateValue;
     } catch (e) {
         actor.error = e as Error;
-    }
-});
-
-// Test: Setting state to REQUESTED after creation should raise PermissionError
-Then('setting state to REQUESTED on an existing reservation should raise a PermissionError', () => {
-    const actor = actorCalled('User');
-    let errorCaught: Error | null = null;
-    try {
-        if (actor.currentReservationRequest) {
-            actor.currentReservationRequest.state = ReservationRequestStates.REQUESTED;
-        }
-    } catch (e) {
-        errorCaught = e as Error;
-    }
-    if (!errorCaught || errorCaught.name !== 'PermissionError') {
-        throw new Error('PermissionError was not raised when setting state to REQUESTED on an existing reservation');
     }
 });
 

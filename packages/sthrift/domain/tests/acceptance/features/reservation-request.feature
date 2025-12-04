@@ -34,51 +34,51 @@ Scenario: Setting reserver after creation
 
 Scenario: Accepting a requested reservation with permission
   Given a ReservationRequest aggregate with state "REQUESTED"
-  And the user has permission to accept requests
+  And the user can edit reservation requests
   When I set state to "ACCEPTED"
   Then the reservation request's state should be "ACCEPTED"
 
 Scenario: Accepting a reservation without permission
   Given a ReservationRequest aggregate with state "REQUESTED"
-  And the user does not have permission to accept requests
+  And the user cannot edit reservation requests
   When I try to set state to "ACCEPTED"
   Then a PermissionError should be thrown
 
 Scenario: Rejecting a requested reservation with permission
   Given a ReservationRequest aggregate with state "REQUESTED"
-  And the user has permission to reject requests
+  And the user can edit reservation requests
   When I set state to "REJECTED"
   Then the reservation request's state should be "REJECTED"
 
 Scenario: Rejecting a reservation without permission
   Given a ReservationRequest aggregate with state "REQUESTED"
-  And the user does not have permission to reject requests
+  And the user cannot edit reservation requests
   When I try to set state to "REJECTED"
   Then a PermissionError should be thrown
 
 Scenario: Cancelling a requested reservation with permission
   Given a ReservationRequest aggregate with state "REQUESTED"
-  And the user has permission to cancel requests
+  And the user can edit reservation requests
   When I set state to "CANCELLED"
   Then the reservation request's state should be "CANCELLED"
 
 Scenario: Cancelling a reservation without permission
   Given a ReservationRequest aggregate with state "REQUESTED"
-  And the user does not have permission to cancel requests
+  And the user cannot edit reservation requests
   When I try to set state to "CANCELLED"
   Then a PermissionError should be thrown
 
 Scenario: Closing an accepted reservation when sharer requested close
   Given a ReservationRequest aggregate with state "ACCEPTED"
   And closeRequestedBySharer is true
-  And the user has permission to close requests
+  And the user can edit reservation requests
   When I set state to "CLOSED"
   Then the reservation request's state should be "CLOSED"
 
 Scenario: Closing an accepted reservation when reserver requested close
   Given a ReservationRequest aggregate with state "ACCEPTED"
   And closeRequestedByReserver is true
-  And the user has permission to close requests
+  And the user can edit reservation requests
   When I set state to "CLOSED"
   Then the reservation request's state should be "CLOSED"
 
@@ -90,13 +90,13 @@ Scenario: Closing an accepted reservation without any close request
 
 Scenario: Requesting close without permission
   Given a ReservationRequest aggregate with state "ACCEPTED"
-  And the user does not have permission to close requests
+  And the user cannot edit reservation requests
   When I try to set closeRequestedBySharer to true
   Then a PermissionError should be thrown
 
 Scenario: Requesting close in invalid state
   Given a ReservationRequest aggregate with state "REQUESTED"
-  And the user has permission to close requests
+  And the user can edit reservation requests
   When I try to set closeRequestedByReserver to true
   Then an error should be thrown indicating "Cannot close reservation in current state"
 
