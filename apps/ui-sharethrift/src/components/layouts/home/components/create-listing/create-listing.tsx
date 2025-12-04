@@ -103,8 +103,8 @@ export const CreateListing: React.FC<CreateListingProps> = ({
 				setLastAction('publish');
 				onSubmit(formData, isDraft);
 			})
-			.catch((errorInfo) => {
-				console.log('Validation failed:', errorInfo);
+			.catch((error_) => {
+				console.log('Validation failed:', error_);
 				if (!isDraft) {
 					message.error('Please fill in all required fields to publish');
 				}

@@ -436,14 +436,16 @@ export const SettingsView: React.FC<SettingsViewProps> = ({
 				overflow: 'hidden',
 				margin: '0 auto',
 			}}
-			bodyStyle={{
-				padding: '10px 20px',
-				display: 'flex',
-				flexDirection: 'column',
-				alignItems: 'center',
-				textAlign: 'center',
-				height: '100%',
-				position: 'relative',
+			styles={{
+				body: {
+					padding: '10px 20px',
+					display: 'flex',
+					flexDirection: 'column',
+					alignItems: 'center',
+					textAlign: 'center',
+					height: '100%',
+					position: 'relative',
+				},
 			}}
 			// Optional: allow clicking anywhere on the card in edit mode
 			onClick={() => {
@@ -624,7 +626,7 @@ export const SettingsView: React.FC<SettingsViewProps> = ({
 	);
 
 	const renderBillingSection = () => {
-		const billing = user.billing;
+		const { billing } = user;
 		return (
 			<Card className={styles['sectionCard']}>
 				<div className={styles['sectionHeader']}>
