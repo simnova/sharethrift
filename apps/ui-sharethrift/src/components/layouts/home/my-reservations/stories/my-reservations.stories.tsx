@@ -10,7 +10,6 @@ import {
 	HomeMyReservationsReservationsViewHistoryContainerPastReservationsDocument,
 	ViewListingCurrentUserDocument,
 } from '../../../../../generated.tsx';
-
 // Default mocks that all stories get automatically
 const defaultMocks = [
 	// Always mock the current user

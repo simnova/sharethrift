@@ -1,17 +1,19 @@
 import { useEffect, type JSX } from 'react';
 
-const { VITE_B2C_REDIRECT_URI } = import.meta.env;
 import { hasAuthParams, useAuth } from 'react-oidc-context';
 import { Navigate } from 'react-router-dom';
 
-interface RequireAuthProps {
+const { VITE_B2C_REDIRECT_URI } = import.meta.env;
+
+export interface RequireAuthProps {
 	children: JSX.Element;
-	redirectPath: string;
+	redirectPath?: string;
 	forceLogin?: boolean;
 }
 
 export const RequireAuth: React.FC<RequireAuthProps> = (props) => {
 	const auth = useAuth();
+	const redirectPath = props.redirectPath ?? '/';
 
 	// automatically sign-in
 	useEffect(() => {
@@ -30,13 +32,7 @@ export const RequireAuth: React.FC<RequireAuthProps> = (props) => {
 
 			auth.signinRedirect();
 		}
-	}, [
-		auth.isAuthenticated,
-		auth.activeNavigator,
-		auth.isLoading,
-		auth.signinRedirect,
-		auth.error,
-	]);
+	}, [auth.isAuthenticated, auth.activeNavigator, auth.isLoading, auth.signinRedirect, auth.error, props.forceLogin, auth]);
 
 	// automatically refresh token
 	useEffect(() => {
@@ -56,13 +52,16 @@ export const RequireAuth: React.FC<RequireAuthProps> = (props) => {
 		// return () => {
 		//   auth.events.removeAccessTokenExpiring(handleAccessTokenExpiring);
 		// };
-	}, [auth.events, auth.signinSilent]);
+	}, [auth, auth.events, auth.signinSilent]);
 
 	let result: JSX.Element;
 	if (auth.isAuthenticated) {
 		result = props.children;
 	} else if (auth.error) {
-		result = <Navigate to="/" />;
+		result = <Navigate to={redirectPath} replace />;
+	} else if (!auth.isLoading && !auth.activeNavigator && props.forceLogin !== true) {
+		// If not loading, not in the middle of auth flow, and not forcing login redirect
+		result = <Navigate to={redirectPath} replace />;
 	} else {
 		return <div>Checking auth2...</div>;
 	}

@@ -1,6 +1,6 @@
 import type { Meta, StoryObj } from '@storybook/react';
+import { MemoryRouter } from 'react-router-dom';
 import { Navigation } from '@sthrift/ui-components';
-
 const meta: Meta<typeof Navigation> = {
 	title: "Components/Navigation",
 	component: Navigation,
@@ -28,25 +28,27 @@ const meta: Meta<typeof Navigation> = {
 	},
 	decorators: [
 		(Story) => (
-			<div style={{ 
-				height: '100vh', 
-				width: '100vw',
-				display: 'flex',
-				overflow: 'hidden'
-			}}>
-				<Story />
+			<MemoryRouter>
 				<div style={{ 
-					marginLeft: '240px',
-					flex: 1,
-					backgroundColor: '#f5f5f5',
+					height: '100vh', 
+					width: '100vw',
 					display: 'flex',
-					alignItems: 'center',
-					justifyContent: 'center',
-					color: '#666',
-					fontSize: '18px'
+					overflow: 'hidden'
 				}}>
+					<Story />
+					<div style={{ 
+						marginLeft: '240px',
+						flex: 1,
+						backgroundColor: '#f5f5f5',
+						display: 'flex',
+						alignItems: 'center',
+						justifyContent: 'center',
+						color: '#666',
+						fontSize: '18px'
+					}}>
+					</div>
 				</div>
-			</div>
+			</MemoryRouter>
 		),
 	],
 };
@@ -60,5 +62,4 @@ export const Default: Story = {
 		selectedKey: 'home',
 		onNavigate: (route: string) => console.log('Navigate to:', route),
 		onLogout: () => console.log('Logout clicked'),
-	},
-};
+	}};

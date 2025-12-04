@@ -33,11 +33,11 @@ export const withMockApolloClient: Decorator = (Story, context: StoryContext) =>
 		cache: new InMemoryCache(),
 	});
 
-	return (
-		<ApolloProvider client={client}>
-			<Story />
-		</ApolloProvider>
-	);
+  return (
+    <ApolloProvider client={client}>
+      <Story />
+    </ApolloProvider>
+  );
 };
 
 /**
@@ -69,6 +69,30 @@ export const MockAuthWrapper = ({
 			createMockAuth({
 				isAuthenticated: true,
 				user: createMockUser(),
+			}),
+		[],
+	);
+
+  return <AuthContext.Provider value={mockAuth}>{children}</AuthContext.Provider>;
+};
+
+/**
+ * Mock unauthenticated wrapper component for Storybook stories.
+ * Provides a mocked AuthContext that simulates an unauthenticated user.
+ *
+ * Use this when testing components that show different UI for logged-out users
+ * (e.g., Login/Sign Up buttons in headers).
+ */
+export const MockUnauthWrapper = ({
+	children,
+}: {
+	children: ReactNode;
+}): ReactElement => {
+	const mockAuth = useMemo(
+		() =>
+			createMockAuth({
+				isAuthenticated: false,
+				user: null,
 			}),
 		[],
 	);

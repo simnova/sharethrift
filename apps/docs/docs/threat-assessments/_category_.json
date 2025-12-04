@@ -1,0 +1,8 @@
+{
+  "label": "Threat Assessments",
+  "position": 4,
+  "link": {
+    "type": "generated-index",
+    "description": "Comprehensive threat assessment documentation to help identify and mitigate potential security risks."
+  }
+}

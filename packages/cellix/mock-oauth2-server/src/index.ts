@@ -114,8 +114,6 @@ async function main() {
 	// Generate signing keypair with jose
 	const { publicKey, privateKey } = await generateKeyPair('RS256');
 	const publicJwk = await exportJWK(publicKey);
-
-	//Duy to Review
 	const pkcs8 = await exportPKCS8(privateKey);
 	const keyObject = crypto.createPrivateKey({
 		key: pkcs8,

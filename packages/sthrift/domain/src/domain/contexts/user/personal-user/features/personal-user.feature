@@ -34,3 +34,47 @@ Feature: <AggregateRoot> PersonalUser
     Given a PersonalUser that has already completed onboarding
     When I set hasCompletedOnboarding to true again
     Then it should throw a PermissionError
+
+  Scenario: Blocking a user with permission
+    Given an existing PersonalUser aggregate
+    And the user has permission to block users
+    When I set isBlocked to true
+    Then isBlocked should be true
+
+  Scenario: Unblocking a user with permission
+    Given an existing PersonalUser aggregate that is blocked
+    And the user has permission to block users
+    When I set isBlocked to false
+    Then isBlocked should be false
+
+  Scenario: Getting isNew from personal user
+    Given an existing PersonalUser aggregate
+    When I access the isNew property
+    Then it should return false
+
+  Scenario: Getting schemaVersion from personal user
+    Given an existing PersonalUser aggregate
+    When I access the schemaVersion property
+    Then it should return the schema version
+
+  Scenario: Getting createdAt from personal user
+    Given an existing PersonalUser aggregate
+    When I access the createdAt property
+    Then it should return a valid date
+
+  Scenario: Getting updatedAt from personal user
+    Given an existing PersonalUser aggregate
+    When I access the updatedAt property
+    Then it should return a valid date
+
+  Scenario: Adding a billing transaction
+    Given an existing PersonalUser aggregate
+    And the user has permission to edit their account
+    When I add a billing transaction with valid data
+    Then the transaction should be added successfully
+
+  Scenario: Adding a billing transaction with error message
+    Given an existing PersonalUser aggregate
+    And the user has permission to edit their account
+    When I add a billing transaction with an error message
+    Then the transaction should be added with the error message
