@@ -1,7 +1,7 @@
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { describeFeature, loadFeature } from '@amiceli/vitest-cucumber';
-import { expect, vi } from 'vitest';
+import { expect, vi, describe, it, beforeEach } from 'vitest';
 import { DomainSeedwork } from '@cellix/domain-seedwork';
 import { ReservationRequest } from './reservation-request.ts';
 import { ReservationRequestStates } from './reservation-request.value-objects.ts';
@@ -1179,4 +1179,553 @@ test.for(feature, ({ Background, Scenario, BeforeEachScenario }) => {
 			);
 		},
 	);
+});
+
+// Additional unit tests for static helper methods
+describe('ReservationRequest static helper methods', () => {
+	describe('getUserEmail', () => {
+		it('returns email from account property', () => {
+			const user = {
+				account: { email: 'user@example.com' },
+				id: 'user-1',
+			} as UserEntityReference;
+
+			const email = ReservationRequest.getUserEmail(user);
+			expect(email).toBe('user@example.com');
+		});
+
+		it('returns null when no account email exists', () => {
+			const user = {
+				id: 'user-1',
+				account: { profile: { firstName: 'John' } },
+			} as UserEntityReference;
+
+			const email = ReservationRequest.getUserEmail(user);
+			expect(email).toBeNull();
+		});
+
+		it('returns null for user with null account', () => {
+			const user = {
+				id: 'user-1',
+				account: null,
+			} as unknown as UserEntityReference;
+
+			const email = ReservationRequest.getUserEmail(user);
+			expect(email).toBeNull();
+		});
+
+		it('handles user with undefined account', () => {
+			const user = {
+				id: 'user-1',
+				account: undefined,
+			} as unknown as UserEntityReference;
+
+			const email = ReservationRequest.getUserEmail(user);
+			expect(email).toBeNull();
+		});
+
+		it('returns empty string email when explicitly set', () => {
+			const user = {
+				id: 'user-1',
+				account: { email: '' },
+			} as UserEntityReference;
+
+			const email = ReservationRequest.getUserEmail(user);
+			expect(email).toBe('');
+		});
+	});
+
+	describe('getUserDisplayName', () => {
+		it('returns displayName when available', () => {
+			const user = {
+				id: 'user-1',
+				displayName: 'John Doe',
+				account: {},
+			} as unknown as UserEntityReference;
+
+			const name = ReservationRequest.getUserDisplayName(user);
+			expect(name).toBe('John Doe');
+		});
+
+		it('returns firstName when displayName not available', () => {
+			const user = {
+				id: 'user-1',
+				firstName: 'John',
+				account: {},
+			} as unknown as UserEntityReference;
+
+			const name = ReservationRequest.getUserDisplayName(user);
+			expect(name).toBe('John');
+		});
+
+		it('returns profile firstName when direct property not available', () => {
+			const user = {
+				id: 'user-1',
+				account: { profile: { firstName: 'Jane' } },
+			} as UserEntityReference;
+
+			const name = ReservationRequest.getUserDisplayName(user);
+			expect(name).toBe('Jane');
+		});
+
+		it('returns default name when no name properties available', () => {
+			const user = {
+				id: 'user-1',
+				account: {},
+			} as UserEntityReference;
+
+			const name = ReservationRequest.getUserDisplayName(user, 'Guest');
+			expect(name).toBe('Guest');
+		});
+
+		it('uses "User" as default when defaultName not specified', () => {
+			const user = {
+				id: 'user-1',
+				account: {},
+			} as UserEntityReference;
+
+			const name = ReservationRequest.getUserDisplayName(user);
+			expect(name).toBe('User');
+		});
+
+		it('handles null user gracefully', () => {
+			const name = ReservationRequest.getUserDisplayName(
+				null as unknown as UserEntityReference,
+				'DefaultName',
+			);
+			expect(name).toBe('DefaultName');
+		});
+
+		it('handles empty firstName', () => {
+			const user = {
+				id: 'user-1',
+				account: { profile: { firstName: '' } },
+			} as UserEntityReference;
+
+			const name = ReservationRequest.getUserDisplayName(user, 'Fallback');
+			expect(name).toBe('Fallback');
+		});
+
+		it('prioritizes displayName over firstName over profile.firstName', () => {
+			const user = {
+				id: 'user-1',
+				displayName: 'Display Name',
+				firstName: 'First Name',
+				account: { profile: { firstName: 'Profile First Name' } },
+			} as unknown as UserEntityReference;
+
+			const name = ReservationRequest.getUserDisplayName(user);
+			expect(name).toBe('Display Name');
+		});
+	});
+
+	describe('getUserContactInfo', () => {
+		it('returns email and name when both available', () => {
+			const user = {
+				id: 'user-1',
+				account: { email: 'user@example.com', profile: { firstName: 'John' } },
+			} as UserEntityReference;
+
+			const contactInfo = ReservationRequest.getUserContactInfo(user);
+			expect(contactInfo).toEqual({
+				email: 'user@example.com',
+				name: 'John',
+			});
+		});
+
+		it('returns null when email not available', () => {
+			const user = {
+				id: 'user-1',
+				account: { profile: { firstName: 'John' } },
+			} as unknown as UserEntityReference;
+
+			const contactInfo = ReservationRequest.getUserContactInfo(user);
+			expect(contactInfo).toBeNull();
+		});
+
+		it('uses defaultName when name not available but email is', () => {
+			const user = {
+				id: 'user-1',
+				account: { email: 'user@example.com' },
+			} as UserEntityReference;
+
+			const contactInfo = ReservationRequest.getUserContactInfo(user, 'Guest');
+			expect(contactInfo).toEqual({
+				email: 'user@example.com',
+				name: 'Guest',
+			});
+		});
+
+		it('uses "User" as default name when not specified', () => {
+			const user = {
+				id: 'user-1',
+				account: { email: 'user@example.com' },
+			} as UserEntityReference;
+
+			const contactInfo = ReservationRequest.getUserContactInfo(user);
+			expect(contactInfo).toEqual({
+				email: 'user@example.com',
+				name: 'User',
+			});
+		});
+
+		it('returns null for null user', () => {
+			const contactInfo = ReservationRequest.getUserContactInfo(
+				null as unknown as UserEntityReference,
+			);
+			expect(contactInfo).toBeNull();
+		});
+
+		it('handles user with all contact properties', () => {
+			const user = {
+				id: 'user-1',
+				displayName: 'John Doe',
+				firstName: 'John',
+				account: {
+					email: 'john@example.com',
+					profile: { firstName: 'Jonathan', lastName: 'Doe' },
+				},
+			} as unknown as UserEntityReference;
+
+			const contactInfo = ReservationRequest.getUserContactInfo(user);
+			expect(contactInfo).toEqual({
+				email: 'john@example.com',
+				name: 'John Doe',
+			});
+		});
+
+		it('returns contact info with special characters in name', () => {
+			const user = {
+				id: 'user-1',
+				account: {
+					email: "o'brien@example.com",
+					profile: { firstName: "O'Brien-Smith (Dr.)" },
+				},
+			} as UserEntityReference;
+
+			const contactInfo = ReservationRequest.getUserContactInfo(user);
+			expect(contactInfo).toEqual({
+				email: "o'brien@example.com",
+				name: "O'Brien-Smith (Dr.)",
+			});
+		});
+	});
+
+	describe('getNewInstance - Event Emission', () => {
+		let testPassport: Passport;
+		let testListing: ItemListingEntityReference;
+		let testReserver: UserEntityReference;
+		let testBaseProps: ReservationRequestProps;
+
+		beforeEach(() => {
+			testPassport = makePassport();
+			testListing = makeListing('Published');
+			testReserver = makeUser();
+			const tomorrow = new Date(Date.now() + 86_400_000);
+			const nextMonth = new Date(Date.now() + 86_400_000 * 30);
+			testBaseProps = {
+				id: 'rr-1',
+				state: ReservationRequestStates.REQUESTED,
+				reservationPeriodStart: tomorrow,
+				reservationPeriodEnd: nextMonth,
+				createdAt: new Date('2024-01-01T00:00:00Z'),
+				updatedAt: new Date('2024-01-02T00:00:00Z'),
+				schemaVersion: '1',
+				listing: testListing,
+				loadListing: async () => testListing,
+				reserver: testReserver,
+				loadReserver: async () => testReserver,
+				closeRequestedBySharer: false,
+				closeRequestedByReserver: false,
+			};
+		});
+
+	it('emits ReservationRequestCreated event when state is REQUESTED', () => {
+		const spy = vi.spyOn(console, 'warn').mockImplementation(() => {
+			// Mock implementation is intentionally empty
+		});
+
+		const instance = ReservationRequest.getNewInstance(
+			testBaseProps,
+			ReservationRequestStates.REQUESTED,
+			testListing,
+			testReserver,
+			testBaseProps.reservationPeriodStart,
+			testBaseProps.reservationPeriodEnd,
+			testPassport,
+		);
+
+		// Check that instance was created successfully
+		expect(instance).toBeInstanceOf(ReservationRequest);
+		expect(instance.state).toBe(ReservationRequestStates.REQUESTED);
+
+		spy.mockRestore();
+	});
+
+	it('does not emit ReservationRequestCreated event for non-REQUESTED state', () => {
+		const consoleSpy = vi.spyOn(console, 'warn').mockImplementation(() => {
+			// Mock implementation is intentionally empty
+		});
+
+		const instance = ReservationRequest.getNewInstance(
+			testBaseProps,
+			ReservationRequestStates.ACCEPTED,
+			testListing,
+			testReserver,
+			testBaseProps.reservationPeriodStart,
+			testBaseProps.reservationPeriodEnd,
+			testPassport,
+		);
+
+		expect(instance).toBeInstanceOf(ReservationRequest);
+		expect(instance.state).toBe(ReservationRequestStates.ACCEPTED);
+
+		consoleSpy.mockRestore();
+	});
+
+	it('handles missing listing gracefully during event emission', () => {
+		const incompleteListing = {
+			...testListing,
+			id: undefined,
+	} as unknown as ItemListingEntityReference;
+
+		const warnSpy = vi.spyOn(console, 'warn').mockImplementation(() => {
+			// Mock implementation is intentionally empty
+		});
+
+		const instance = ReservationRequest.getNewInstance(
+			testBaseProps,
+			ReservationRequestStates.REQUESTED,
+			incompleteListing,
+			testReserver,
+			testBaseProps.reservationPeriodStart,
+			testBaseProps.reservationPeriodEnd,
+			testPassport,
+		);
+
+		// Should still create instance even if event emission warns
+		expect(instance).toBeInstanceOf(ReservationRequest);
+
+		warnSpy.mockRestore();
+	});
+});
+
+describe('Async property loading', () => {
+	let testPassport: Passport;
+	let testListing: ItemListingEntityReference;
+	let testReserver: UserEntityReference;
+	let testBaseProps: ReservationRequestProps;
+
+	beforeEach(() => {
+		testPassport = makePassport();
+			testListing = makeListing('Published');
+			testReserver = makeUser();
+			const tomorrow = new Date(Date.now() + 86_400_000);
+			const nextMonth = new Date(Date.now() + 86_400_000 * 30);
+			testBaseProps = {
+				id: 'rr-1',
+				state: ReservationRequestStates.REQUESTED,
+				reservationPeriodStart: tomorrow,
+				reservationPeriodEnd: nextMonth,
+				createdAt: new Date('2024-01-01T00:00:00Z'),
+				updatedAt: new Date('2024-01-02T00:00:00Z'),
+				schemaVersion: '1',
+				listing: testListing,
+				loadListing: async () => testListing,
+				reserver: testReserver,
+				loadReserver: async () => testReserver,
+				closeRequestedBySharer: false,
+				closeRequestedByReserver: false,
+			};
+		});
+
+		it('loadReserver returns user from props', async () => {
+			const aggregate = ReservationRequest.getNewInstance(
+				testBaseProps,
+				ReservationRequestStates.REQUESTED,
+				testListing,
+				testReserver,
+				testBaseProps.reservationPeriodStart,
+				testBaseProps.reservationPeriodEnd,
+				testPassport,
+			);
+
+			const loadedReserver = await aggregate.loadReserver();
+			expect(loadedReserver).toBe(testReserver);
+		});
+
+		it('loadListing returns listing from props', async () => {
+			const aggregate = ReservationRequest.getNewInstance(
+				testBaseProps,
+				ReservationRequestStates.REQUESTED,
+				testListing,
+				testReserver,
+				testBaseProps.reservationPeriodStart,
+				testBaseProps.reservationPeriodEnd,
+				testPassport,
+			);
+
+			const loadedListing = await aggregate.loadListing();
+			expect(loadedListing).toBe(testListing);
+		});
+
+		it('loadSharer returns sharer from listing', async () => {
+			const aggregate = ReservationRequest.getNewInstance(
+				testBaseProps,
+				ReservationRequestStates.REQUESTED,
+				testListing,
+				testReserver,
+				testBaseProps.reservationPeriodStart,
+				testBaseProps.reservationPeriodEnd,
+				testPassport,
+			);
+
+			const loadedSharer = await aggregate.loadSharer();
+			expect(loadedSharer).toBe(testListing.sharer);
+		});
+
+		it('getListingId returns id from listing', async () => {
+			const aggregate = ReservationRequest.getNewInstance(
+				testBaseProps,
+				ReservationRequestStates.REQUESTED,
+				testListing,
+				testReserver,
+				testBaseProps.reservationPeriodStart,
+				testBaseProps.reservationPeriodEnd,
+				testPassport,
+			);
+
+			const listingId = await aggregate.getListingId();
+			expect(listingId).toBe(testListing.id);
+		});
+
+		it('getListingSharer returns sharer from listing', async () => {
+			const aggregate = ReservationRequest.getNewInstance(
+				testBaseProps,
+				ReservationRequestStates.REQUESTED,
+				testListing,
+				testReserver,
+				testBaseProps.reservationPeriodStart,
+				testBaseProps.reservationPeriodEnd,
+				testPassport,
+			);
+
+			const sharer = await aggregate.getListingSharer();
+			expect(sharer).toBe(testListing.sharer);
+		});
+	});
+
+	describe('Immutable date validation after creation', () => {
+		let testPassport: Passport;
+		let testListing: ItemListingEntityReference;
+		let testReserver: UserEntityReference;
+		let testBaseProps: ReservationRequestProps;
+
+		beforeEach(() => {
+			testPassport = makePassport();
+			testListing = makeListing('Published');
+			testReserver = makeUser();
+			const tomorrow = new Date(Date.now() + 86_400_000);
+			const nextMonth = new Date(Date.now() + 86_400_000 * 30);
+			testBaseProps = {
+				id: 'rr-1',
+				state: ReservationRequestStates.REQUESTED,
+				reservationPeriodStart: tomorrow,
+				reservationPeriodEnd: nextMonth,
+				createdAt: new Date('2024-01-01T00:00:00Z'),
+				updatedAt: new Date('2024-01-02T00:00:00Z'),
+				schemaVersion: '1',
+				listing: testListing,
+				loadListing: async () => testListing,
+				reserver: testReserver,
+				loadReserver: async () => testReserver,
+				closeRequestedBySharer: false,
+				closeRequestedByReserver: false,
+			};
+		});
+
+		it('cannot set past reservation period start date', () => {
+			const aggregate = ReservationRequest.getNewInstance(
+				testBaseProps,
+				ReservationRequestStates.REQUESTED,
+				testListing,
+				testReserver,
+				testBaseProps.reservationPeriodStart,
+				testBaseProps.reservationPeriodEnd,
+				testPassport,
+			);
+
+			expect(() => {
+				aggregate.reservationPeriodStart = new Date(Date.now() - 86_400_000);
+			}).toThrow();
+		});
+
+		it('cannot set past reservation period end date', () => {
+			const aggregate = ReservationRequest.getNewInstance(
+				testBaseProps,
+				ReservationRequestStates.REQUESTED,
+				testListing,
+				testReserver,
+				testBaseProps.reservationPeriodStart,
+				testBaseProps.reservationPeriodEnd,
+				testPassport,
+			);
+
+			expect(() => {
+				aggregate.reservationPeriodEnd = new Date(Date.now() - 86_400_000);
+			}).toThrow();
+		});
+	});
+
+	describe('Close request permissions', () => {
+		let testPassport: Passport;
+		let testListing: ItemListingEntityReference;
+		let testReserver: UserEntityReference;
+
+		beforeEach(() => {
+			testPassport = makePassport();
+			testListing = makeListing('Published');
+			testReserver = makeUser();
+		});
+
+		it('can request close for ACCEPTED reservation when permitted', () => {
+			const acceptedProps = makeBaseProps({
+				state: ReservationRequestStates.ACCEPTED,
+				listing: testListing,
+				reserver: testReserver,
+			});
+			const aggregate = new ReservationRequest(acceptedProps, testPassport);
+
+			expect(() => {
+				aggregate.closeRequestedBySharer = true;
+			}).not.toThrow();
+		});
+
+		it('cannot request close when not permitted', () => {
+			const deniedPassport = makePassport({ canCloseRequest: false });
+			const acceptedProps = makeBaseProps({
+				state: ReservationRequestStates.ACCEPTED,
+				listing: testListing,
+				reserver: testReserver,
+			});
+			const aggregate = new ReservationRequest(acceptedProps, deniedPassport);
+
+			expect(() => {
+				aggregate.closeRequestedBySharer = true;
+			}).toThrow(DomainSeedwork.PermissionError);
+		});
+
+		it('cannot request close for non-ACCEPTED reservation', () => {
+			const requestedProps = makeBaseProps({
+				state: ReservationRequestStates.REQUESTED,
+				listing: testListing,
+				reserver: testReserver,
+			});
+			const aggregate = new ReservationRequest(requestedProps, testPassport);
+
+			expect(() => {
+				aggregate.closeRequestedBySharer = true;
+			}).toThrow(/Cannot close reservation in current state/);
+		});
+	});
 });

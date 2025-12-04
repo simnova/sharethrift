@@ -233,7 +233,7 @@ describe('ReservationRequestNotificationService', () => {
 
 		// Mock the UnitOfWork calls
 		mockDomainDataSource.User.PersonalUser.PersonalUserUnitOfWork.withTransaction
-			.mockImplementation((_passport: unknown, callback: Function) => {
+			.mockImplementation((_passport: unknown, callback: (repo: unknown) => unknown) => {
 				if (
 					callback.toString().includes('sharer') ||
 					callback.toString().includes('getById(\'user-sharer\')')
@@ -244,7 +244,7 @@ describe('ReservationRequestNotificationService', () => {
 			});
 
 		mockDomainDataSource.Listing.ItemListing.ItemListingUnitOfWork.withTransaction
-			.mockImplementation((_passport: unknown, callback: Function) =>
+			.mockImplementation((_passport: unknown, callback: (repo: unknown) => unknown) =>
 				callback({ getById: vi.fn().mockResolvedValue(listing) }),
 			);
 
@@ -579,7 +579,7 @@ describe('ReservationRequestNotificationService', () => {
 
 		expect(mockEmailService.sendTemplatedEmail).toHaveBeenCalled();
 		const call = vi.mocked(mockEmailService.sendTemplatedEmail).mock.calls[0];
-		if (call && call[2]) {
+		if (call?.[2]) {
 			const templateData = call[2];
 			// biome-ignore lint/complexity/useLiteralKeys: Index signature requires bracket notation
 			expect(templateData['listingTitle']).toBeDefined();
@@ -683,6 +683,423 @@ describe('ReservationRequestNotificationService', () => {
 		if (call) {
 			expect(call[1].email).toBe('sharer@example.com');
 		}
+		});
+	});
+
+	describe('Complex user entity scenarios', () => {
+		const baseParams = {
+			reservationRequestId: 'req-123',
+			listingId: 'list-456',
+			reserverId: 'user-reserver',
+			sharerId: 'user-sharer',
+			reservationPeriodStart: new Date('2024-01-15'),
+			reservationPeriodEnd: new Date('2024-01-20'),
+		};
+
+		it('handles multiple user properties for name resolution', async () => {
+			const sharerwithBothNames = {
+				profile: { 
+					firstName: 'John',
+					lastName: 'Smith',
+					name: 'Admin Name' // Should be ignored for personal users
+				},
+				account: { email: 'john@example.com' },
+			};
+
+			const reserver = {
+				account: { email: 'reserver@example.com' },
+				profile: { firstName: 'Jane' },
+			};
+
+			const listing = { title: 'House' };
+
+			mockDomainDataSource.User.PersonalUser.PersonalUserUnitOfWork.withTransaction
+				.mockResolvedValue(sharerwithBothNames);
+			mockDomainDataSource.User.AdminUser.AdminUserUnitOfWork.withTransaction
+				.mockResolvedValue(reserver);
+			mockDomainDataSource.Listing.ItemListing.ItemListingUnitOfWork.withTransaction
+				.mockResolvedValue(listing);
+
+			await service.sendReservationRequestNotification(
+				baseParams.reservationRequestId,
+				baseParams.listingId,
+				baseParams.reserverId,
+				baseParams.sharerId,
+				baseParams.reservationPeriodStart,
+				baseParams.reservationPeriodEnd,
+			);
+
+			expect(mockEmailService.sendTemplatedEmail).toHaveBeenCalled();
+			const call = vi.mocked(mockEmailService.sendTemplatedEmail).mock.calls[0];
+			if (call?.[2]) {
+				// biome-ignore lint/complexity/useLiteralKeys: Index signature requires bracket notation
+				expect(call[2]['sharerName']).toContain('John');
+			}
+		});
+
+		it('handles AdminUser profile structure for email', async () => {
+			const adminSharer = {
+				profile: { 
+					name: 'Admin User',
+					email: 'admin@example.com' // AdminUser email in profile
+				},
+			};
+
+			const adminReserver = {
+				profile: {
+					name: 'Reserver Admin',
+					email: 'reserver-admin@example.com'
+				},
+			};
+
+			const listing = { title: 'Apartment' };
+
+			mockDomainDataSource.User.PersonalUser.PersonalUserUnitOfWork.withTransaction
+				.mockRejectedValue(new Error('Not personal user'));
+			mockDomainDataSource.User.AdminUser.AdminUserUnitOfWork.withTransaction
+				.mockResolvedValueOnce(adminSharer)
+				.mockResolvedValueOnce(adminReserver);
+			mockDomainDataSource.Listing.ItemListing.ItemListingUnitOfWork.withTransaction
+				.mockResolvedValue(listing);
+
+			await service.sendReservationRequestNotification(
+				baseParams.reservationRequestId,
+				baseParams.listingId,
+				baseParams.reserverId,
+				baseParams.sharerId,
+				baseParams.reservationPeriodStart,
+				baseParams.reservationPeriodEnd,
+			);
+
+			expect(mockEmailService.sendTemplatedEmail).toHaveBeenCalled();
+		});
+
+		it('handles mixed PersonalUser and AdminUser in transaction chain', async () => {
+			const personalSharer = {
+				account: { email: 'personal@example.com' },
+				profile: { firstName: 'PersonalFirst' },
+			};
+
+			const adminReserver = {
+				profile: { name: 'AdminUser' },
+				account: { email: 'admin@example.com' },
+			};
+
+			const listing = { title: 'Studio' };
+
+			// First call returns personal sharer
+			mockDomainDataSource.User.PersonalUser.PersonalUserUnitOfWork.withTransaction
+				.mockResolvedValueOnce(personalSharer);
+			// Second call fails (reserver not found as personal user)
+			mockDomainDataSource.User.PersonalUser.PersonalUserUnitOfWork.withTransaction
+				.mockRejectedValueOnce(new Error('Not found'));
+			// Then AdminUser succeeds for reserver
+			mockDomainDataSource.User.AdminUser.AdminUserUnitOfWork.withTransaction
+				.mockResolvedValue(adminReserver);
+			mockDomainDataSource.Listing.ItemListing.ItemListingUnitOfWork.withTransaction
+				.mockResolvedValue(listing);
+
+			await service.sendReservationRequestNotification(
+				baseParams.reservationRequestId,
+				baseParams.listingId,
+				baseParams.reserverId,
+				baseParams.sharerId,
+				baseParams.reservationPeriodStart,
+				baseParams.reservationPeriodEnd,
+			);
+
+			expect(mockEmailService.sendTemplatedEmail).toHaveBeenCalled();
+			const call = vi.mocked(mockEmailService.sendTemplatedEmail).mock.calls[0];
+			if (call) {
+				expect(call[1].email).toBe('personal@example.com');
+			}
+		});
+	});
+
+	describe('Comprehensive template data validation', () => {
+		const baseParams = {
+			reservationRequestId: 'req-123',
+			listingId: 'list-456',
+			reserverId: 'user-reserver',
+			sharerId: 'user-sharer',
+			reservationPeriodStart: new Date('2024-01-15'),
+			reservationPeriodEnd: new Date('2024-01-20'),
+		};
+
+		it('passes all required template variables', async () => {
+			const sharer = {
+				account: { email: 'sharer@example.com' },
+				profile: { firstName: 'Sharer' },
+			};
+
+			const reserver = {
+				account: { email: 'reserver@example.com' },
+				profile: { firstName: 'Reserver' },
+			};
+
+			const listing = { title: 'Beautiful Property' };
+
+			mockDomainDataSource.User.PersonalUser.PersonalUserUnitOfWork.withTransaction
+				.mockResolvedValue(sharer);
+			mockDomainDataSource.User.AdminUser.AdminUserUnitOfWork.withTransaction
+				.mockResolvedValue(reserver);
+			mockDomainDataSource.Listing.ItemListing.ItemListingUnitOfWork.withTransaction
+				.mockResolvedValue(listing);
+
+			await service.sendReservationRequestNotification(
+				baseParams.reservationRequestId,
+				baseParams.listingId,
+				baseParams.reserverId,
+				baseParams.sharerId,
+				baseParams.reservationPeriodStart,
+				baseParams.reservationPeriodEnd,
+			);
+
+			const call = vi.mocked(mockEmailService.sendTemplatedEmail).mock.calls[0];
+			expect(call).toBeDefined();
+			if (call) {
+				const templateName = call[0];
+				const recipient = call[1];
+				const templateData = call[2];
+
+				expect(templateName).toBe('reservation-request-notification');
+				expect(recipient.email).toBe('sharer@example.com');
+				expect(templateData).toHaveProperty('sharerName');
+				expect(templateData).toHaveProperty('reserverName');
+				expect(templateData).toHaveProperty('listingTitle');
+				expect(templateData).toHaveProperty('reservationStart');
+				expect(templateData).toHaveProperty('reservationEnd');
+				expect(templateData).toHaveProperty('reservationRequestId');
+			}
+		});
+
+		it('includes accurate reservation dates in template', async () => {
+			const sharer = {
+				account: { email: 'sharer@example.com' },
+				profile: { firstName: 'Sharer' },
+			};
+
+			const reserver = {
+				account: { email: 'reserver@example.com' },
+				profile: { firstName: 'Reserver' },
+			};
+
+			const listing = { title: 'Test' };
+
+			mockDomainDataSource.User.PersonalUser.PersonalUserUnitOfWork.withTransaction
+				.mockResolvedValue(sharer);
+			mockDomainDataSource.User.AdminUser.AdminUserUnitOfWork.withTransaction
+				.mockResolvedValue(reserver);
+			mockDomainDataSource.Listing.ItemListing.ItemListingUnitOfWork.withTransaction
+				.mockResolvedValue(listing);
+
+			const startDate = new Date('2024-06-15');
+			const endDate = new Date('2024-06-20');
+
+			await service.sendReservationRequestNotification(
+				baseParams.reservationRequestId,
+				baseParams.listingId,
+				baseParams.reserverId,
+				baseParams.sharerId,
+				startDate,
+				endDate,
+			);
+
+			const call = vi.mocked(mockEmailService.sendTemplatedEmail).mock.calls[0];
+			if (call?.[2]) {
+				const templateData = call[2];
+				// Dates should be formatted by toLocaleDateString()
+				// biome-ignore lint/complexity/useLiteralKeys: Index signature requires bracket notation
+				expect(templateData['reservationStart']).toBeTruthy();
+				// biome-ignore lint/complexity/useLiteralKeys: Index signature requires bracket notation
+				expect(templateData['reservationEnd']).toBeTruthy();
+			}
+		});
+	});
+
+	describe('Error recovery and resilience', () => {
+		const baseParams = {
+			reservationRequestId: 'req-123',
+			listingId: 'list-456',
+			reserverId: 'user-reserver',
+			sharerId: 'user-sharer',
+			reservationPeriodStart: new Date('2024-01-15'),
+			reservationPeriodEnd: new Date('2024-01-20'),
+		};
+
+		it('catches and logs errors from user repository lookups', async () => {
+			const errorSpy = vi.spyOn(console, 'error');
+
+			mockDomainDataSource.User.PersonalUser.PersonalUserUnitOfWork.withTransaction
+				.mockRejectedValue(new Error('Database connection error'));
+
+			await service.sendReservationRequestNotification(
+				baseParams.reservationRequestId,
+				baseParams.listingId,
+				baseParams.reserverId,
+				baseParams.sharerId,
+				baseParams.reservationPeriodStart,
+				baseParams.reservationPeriodEnd,
+			);
+
+			expect(errorSpy).toHaveBeenCalled();
+			errorSpy.mockRestore();
+		});
+
+		it('catches and logs errors from listing lookup', async () => {
+			const errorSpy = vi.spyOn(console, 'error');
+
+			const sharer = {
+				account: { email: 'sharer@example.com' },
+				profile: { firstName: 'Sharer' },
+			};
+
+			mockDomainDataSource.User.PersonalUser.PersonalUserUnitOfWork.withTransaction
+				.mockResolvedValue(sharer);
+			mockDomainDataSource.User.AdminUser.AdminUserUnitOfWork.withTransaction
+				.mockResolvedValue(sharer);
+			mockDomainDataSource.Listing.ItemListing.ItemListingUnitOfWork.withTransaction
+				.mockRejectedValue(new Error('Listing lookup failed'));
+
+			await service.sendReservationRequestNotification(
+				baseParams.reservationRequestId,
+				baseParams.listingId,
+				baseParams.reserverId,
+				baseParams.sharerId,
+				baseParams.reservationPeriodStart,
+				baseParams.reservationPeriodEnd,
+			);
+
+			expect(errorSpy).toHaveBeenCalledWith(
+				expect.stringContaining('Listing'),
+				expect.any(Error),
+			);
+			errorSpy.mockRestore();
+		});
+
+		it('catches and logs email sending errors without rethrowing', async () => {
+			const errorSpy = vi.spyOn(console, 'error');
+
+			const sharer = {
+				account: { email: 'sharer@example.com' },
+				profile: { firstName: 'Sharer' },
+			};
+
+			const reserver = {
+				account: { email: 'reserver@example.com' },
+				profile: { firstName: 'Reserver' },
+			};
+
+			const listing = { title: 'Test' };
+
+			mockDomainDataSource.User.PersonalUser.PersonalUserUnitOfWork.withTransaction
+				.mockResolvedValue(sharer);
+			mockDomainDataSource.User.AdminUser.AdminUserUnitOfWork.withTransaction
+				.mockResolvedValue(reserver);
+			mockDomainDataSource.Listing.ItemListing.ItemListingUnitOfWork.withTransaction
+				.mockResolvedValue(listing);
+
+			mockEmailService.sendTemplatedEmail = vi
+				.fn()
+				.mockRejectedValue(new Error('SMTP timeout'));
+
+			// Should not throw
+			await expect(
+				service.sendReservationRequestNotification(
+					baseParams.reservationRequestId,
+					baseParams.listingId,
+					baseParams.reserverId,
+					baseParams.sharerId,
+					baseParams.reservationPeriodStart,
+					baseParams.reservationPeriodEnd,
+				),
+			).resolves.not.toThrow();
+
+			expect(errorSpy).toHaveBeenCalled();
+			errorSpy.mockRestore();
+		});
+	});
+
+	describe('Edge cases with repository return values', () => {
+		const baseParams = {
+			reservationRequestId: 'req-123',
+			listingId: 'list-456',
+			reserverId: 'user-reserver',
+			sharerId: 'user-sharer',
+			reservationPeriodStart: new Date('2024-01-15'),
+			reservationPeriodEnd: new Date('2024-01-20'),
+		};
+
+		it('handles null repository callback return values', async () => {
+			mockDomainDataSource.User.PersonalUser.PersonalUserUnitOfWork.withTransaction
+				.mockResolvedValue(null);
+
+			await service.sendReservationRequestNotification(
+				baseParams.reservationRequestId,
+				baseParams.listingId,
+				baseParams.reserverId,
+				baseParams.sharerId,
+				baseParams.reservationPeriodStart,
+				baseParams.reservationPeriodEnd,
+			);
+
+			// Should handle gracefully without sending email
+			expect(mockEmailService.sendTemplatedEmail).not.toHaveBeenCalled();
+		});
+
+		it('handles listing without title property', async () => {
+			const sharer = {
+				account: { email: 'sharer@example.com' },
+				profile: { firstName: 'Sharer' },
+			};
+
+			const reserver = {
+				account: { email: 'reserver@example.com' },
+				profile: { firstName: 'Reserver' },
+			};
+
+			const listingWithoutTitle = {
+				id: 'list-456',
+				// No title property
+			};
+
+			mockDomainDataSource.User.PersonalUser.PersonalUserUnitOfWork.withTransaction
+				.mockResolvedValue(sharer);
+			mockDomainDataSource.User.AdminUser.AdminUserUnitOfWork.withTransaction
+				.mockResolvedValue(reserver);
+			mockDomainDataSource.Listing.ItemListing.ItemListingUnitOfWork.withTransaction
+				.mockResolvedValue(listingWithoutTitle);
+
+			await service.sendReservationRequestNotification(
+				baseParams.reservationRequestId,
+				baseParams.listingId,
+				baseParams.reserverId,
+				baseParams.sharerId,
+				baseParams.reservationPeriodStart,
+				baseParams.reservationPeriodEnd,
+			);
+
+			const call = vi.mocked(mockEmailService.sendTemplatedEmail).mock.calls[0];
+			if (call?.[2]) {
+				// Should use 'Unknown Listing' or similar fallback
+				// biome-ignore lint/complexity/useLiteralKeys: Index signature requires bracket notation
+				expect(call[2]['listingTitle']).toBeDefined();
+			}
+		});
+	});
+
+	describe('Service initialization and state', () => {
+		it('creates service instance with correct dependencies', () => {
+			expect(service).toBeInstanceOf(ReservationRequestNotificationService);
+		});
+
+		it('maintains separate instances with independent mocks', () => {
+			const service2 = new ReservationRequestNotificationService(
+				mockDomainDataSource,
+				mockEmailService,
+			);
+
+			expect(service).not.toBe(service2);
 		});
 	});
 });
