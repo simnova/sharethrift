@@ -21,17 +21,18 @@ export class ServiceTransactionalEmailSendGrid
 	}
 
 	startUp(): Promise<void> {
-		// biome-ignore lint/complexity/useLiteralKeys: TypeScript requires bracket notation for process.env
-		const apiKey = process.env['SENDGRID_API_KEY'];
-		if (!apiKey) {
-			throw new Error(
-				'SENDGRID_API_KEY environment variable is missing. Please set it to use SendGrid.',
-			);
-		}
-		sendgrid.setApiKey(apiKey);
-		this.isInitialized = true;
-		console.log('ServiceTransactionalEmailSendGrid started');
-		return Promise.resolve();
+		return Promise.resolve().then(() => {
+			// biome-ignore lint/complexity/useLiteralKeys: TypeScript requires bracket notation for process.env
+			const apiKey = process.env['SENDGRID_API_KEY'];
+			if (!apiKey) {
+				throw new Error(
+					'SENDGRID_API_KEY environment variable is missing. Please set it to use SendGrid.',
+				);
+			}
+			sendgrid.setApiKey(apiKey);
+			this.isInitialized = true;
+			console.log('ServiceTransactionalEmailSendGrid started');
+		});
 	}
 
 	shutDown(): Promise<void> {
@@ -48,11 +49,11 @@ export class ServiceTransactionalEmailSendGrid
 			throw new Error('ServiceTransactionalEmailSendGrid is not initialized. Call startUp() first.');
 		}
 
-		const template = this.templateUtils.loadTemplate(templateName);
-		const htmlContent = this.templateUtils.substituteVariables(template.body, templateData);
-		const subject = this.templateUtils.substituteVariables(template.subject, templateData);
-
 		try {
+			const template = this.templateUtils.loadTemplate(templateName);
+			const htmlContent = this.templateUtils.substituteVariables(template.body, templateData);
+			const subject = this.templateUtils.substituteVariables(template.subject, templateData);
+
 			await sendgrid.send({
 				to: recipient.email,
 				from: template.fromEmail,

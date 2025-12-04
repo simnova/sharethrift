@@ -46,32 +46,31 @@ export class ServiceTransactionalEmailMock
 		recipient: EmailRecipient,
 		templateData: EmailTemplateData,
 	): Promise<void> {
-		const template = this.templateUtils.loadTemplate(templateName);
-		const htmlContent = this.templateUtils.substituteVariables(template.body, templateData);
-		const subject = this.templateUtils.substituteVariables(template.subject, templateData);
+		return Promise.resolve().then(() => {
+			const template = this.templateUtils.loadTemplate(templateName);
+			const htmlContent = this.templateUtils.substituteVariables(template.body, templateData);
+			const subject = this.templateUtils.substituteVariables(template.subject, templateData);
 
-		// Create a complete HTML document with metadata
-		const fullHtml = this.createEmailHtml(
-			recipient,
-			subject,
-			template.fromEmail,
-			htmlContent,
-		);
+			// Create a complete HTML document with metadata
+			const fullHtml = this.createEmailHtml(
+				recipient,
+				subject,
+				template.fromEmail,
+				htmlContent,
+			);
 
-		// Save to file
-		const sanitizedEmail = recipient.email.replaceAll(/[@/\\:*?"<>|]/g, '_');
-		const timestamp = Date.now();
-		const fileName = `${sanitizedEmail}_${templateName.replaceAll('.json', '')}_${timestamp}.html`;
-		const filePath = path.join(this.outputDir, fileName);
+			// Save to file
+			const sanitizedEmail = recipient.email.replaceAll(/[@/\\:*?"<>|]/g, '_');
+			const timestamp = Date.now();
+			const fileName = `${sanitizedEmail}_${templateName.replaceAll('.json', '')}_${timestamp}.html`;
+			const filePath = path.join(this.outputDir, fileName);
 
-		fs.writeFileSync(filePath, fullHtml, 'utf-8');
-		console.log(
-			`Mock email saved to ${filePath} (template: ${templateName}, recipient: ${recipient.email})`,
-		);
-		return Promise.resolve();
+			fs.writeFileSync(filePath, fullHtml, 'utf-8');
+			console.log(
+				`Mock email saved to ${filePath} (template: ${templateName}, recipient: ${recipient.email})`,
+			);
+		});
 	}
-
-
 
 	private createEmailHtml(
 		recipient: EmailRecipient,
