@@ -483,11 +483,7 @@ export class ReservationRequest<props extends ReservationRequestProps>
 	 */
 	public static getUserEmail(user: UserEntityReference): string | null {
 		// Both PersonalUser and AdminUser have email at account.email
-		// Return null only if user or account doesn't exist, preserve empty string
-		if (!user || !user.account) {
-			return null;
-		}
-		return user.account.email ?? null;
+		return user.account?.email || null;
 	}
 
 	/**
@@ -497,11 +493,6 @@ export class ReservationRequest<props extends ReservationRequestProps>
 	 * @returns Display name with appropriate fallbacks
 	 */
 	public static getUserDisplayName(user: UserEntityReference, defaultName: string = 'User'): string {
-		// Handle null/undefined user early
-		if (!user) {
-			return defaultName;
-		}
-		
 		// Both PersonalUser and AdminUser have firstName at account.profile.firstName
 		// Try direct properties first (for compatibility), then nested profile access
 		type UserWithOptionalProps = UserEntityReference & {
@@ -530,11 +521,6 @@ export class ReservationRequest<props extends ReservationRequestProps>
 		user: UserEntityReference,
 		defaultName: string = 'User',
 	): { email: string; name: string } | null {
-		// Handle null user
-		if (!user) {
-			return null;
-		}
-		
 		const email = ReservationRequest.getUserEmail(user);
 		if (!email) {
 			return null;
