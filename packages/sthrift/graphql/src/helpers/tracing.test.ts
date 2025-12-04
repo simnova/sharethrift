@@ -47,6 +47,7 @@ vi.mock('@opentelemetry/api', async (importOriginal) => {
 					): Promise<unknown> => {
 						const mockSpan = createMockSpan();
 						// Store references for assertions
+						// biome-ignore lint/complexity/useLiteralKeys: Required for index signature access in TypeScript with noPropertyAccessFromIndexSignature
 						(global as Record<string, unknown>)['__mockSpan'] = mockSpan;
 						(global as Record<string, unknown>)['__mockTracerName'] = tracerName;
 						(global as Record<string, unknown>)['__mockSpanName'] = spanName;
