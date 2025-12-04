@@ -596,4 +596,134 @@ Scenario(
 		});
 	},
 );
+
+Scenario(
+	'Reinstating a cancelled listing with permission',
+	({ Given, When, Then, And }) => {
+		let previousUpdatedAt: Date;
+		Given(
+			'an ItemListing aggregate with permission to publish item listing',
+			() => {
+				passport = makePassport(true, true, true, true);
+				listing = new ItemListing(
+					makeBaseProps({ state: 'Cancelled' }),
+					passport,
+				);
+			},
+		);
+		And('the listing state is "Cancelled"', () => {
+			expect(listing.state.valueOf()).toBe('Cancelled');
+		});
+		When('I call reinstate()', () => {
+			previousUpdatedAt = listing.updatedAt;
+			listing.reinstate();
+		});
+		Then('the listing\'s state should be "Published"', () => {
+			expect(listing.state.valueOf()).toBe('Published');
+		});
+		And('the updatedAt timestamp should change', () => {
+			expect(listing.updatedAt.getTime()).toBeGreaterThanOrEqual(
+				previousUpdatedAt.getTime(),
+			);
+		});
+	},
+);
+
+Scenario(
+	'Reinstating an expired listing with permission',
+	({ Given, When, Then, And }) => {
+		let previousUpdatedAt: Date;
+		Given(
+			'an ItemListing aggregate with permission to publish item listing',
+			() => {
+				passport = makePassport(true, true, true, true);
+				listing = new ItemListing(
+					makeBaseProps({ state: 'Expired' }),
+					passport,
+				);
+			},
+		);
+		And('the listing state is "Expired"', () => {
+			expect(listing.state.valueOf()).toBe('Expired');
+		});
+		When('I call reinstate()', () => {
+			previousUpdatedAt = listing.updatedAt;
+			listing.reinstate();
+		});
+		Then('the listing\'s state should be "Published"', () => {
+			expect(listing.state.valueOf()).toBe('Published');
+		});
+		And('the updatedAt timestamp should change', () => {
+			expect(listing.updatedAt.getTime()).toBeGreaterThanOrEqual(
+				previousUpdatedAt.getTime(),
+			);
+		});
+	},
+);
+
+Scenario(
+	'Reinstating a listing without permission',
+	({ Given, When, Then, And }) => {
+		let reinstateWithoutPermission: () => void;
+		Given(
+			'an ItemListing aggregate without permission to publish item listing',
+			() => {
+				passport = makePassport(true, false, true, true);
+				listing = new ItemListing(
+					makeBaseProps({ state: 'Cancelled' }),
+					passport,
+				);
+			},
+		);
+		And('the listing state is "Cancelled"', () => {
+			expect(listing.state.valueOf()).toBe('Cancelled');
+		});
+		When('I try to call reinstate()', () => {
+			reinstateWithoutPermission = () => {
+				listing.reinstate();
+			};
+		});
+		Then('a PermissionError should be thrown', () => {
+			expect(reinstateWithoutPermission).toThrow(
+				DomainSeedwork.PermissionError,
+			);
+		});
+		And('the listing state should remain "Cancelled"', () => {
+			expect(listing.state.valueOf()).toBe('Cancelled');
+		});
+	},
+);
+
+Scenario(
+	'Reinstating a listing with invalid state',
+	({ Given, When, Then, And }) => {
+		let reinstateWithInvalidState: () => void;
+		Given(
+			'an ItemListing aggregate with permission to publish item listing',
+			() => {
+				passport = makePassport(true, true, true, true);
+				listing = new ItemListing(makeBaseProps(), passport);
+			},
+		);
+		And('the listing state is "Published"', () => {
+			expect(listing.state.valueOf()).toBe('Published');
+		});
+		When('I try to call reinstate()', () => {
+			reinstateWithInvalidState = () => {
+				listing.reinstate();
+			};
+		});
+		Then(
+			'an Error should be thrown with message "Only cancelled or expired listings can be reinstated"',
+			() => {
+				expect(reinstateWithInvalidState).toThrow(
+					'Listing can only be reinstated from Cancelled or Expired state',
+				);
+			},
+		);
+		And('the listing state should remain "Published"', () => {
+			expect(listing.state.valueOf()).toBe('Published');
+		});
+	},
+);
 });

@@ -350,6 +350,7 @@ export class ItemListing<props extends ItemListingProps>
 		}
 
 		this.props.state = new ValueObjects.ListingState('Published').valueOf();
+		this.props.updatedAt = new Date();
 	}
 
 	/**

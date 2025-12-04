@@ -106,3 +106,31 @@ Feature: <AggregateRoot>ItemListing
     When I call requestDelete() again
     Then the listing's isDeleted flag should remain true
     And no error should be thrown
+
+  Scenario: Reinstating a cancelled listing with permission
+    Given an ItemListing aggregate with permission to publish item listing
+    And the listing state is "Cancelled"
+    When I call reinstate()
+    Then the listing's state should be "Published"
+    And the updatedAt timestamp should change
+
+  Scenario: Reinstating an expired listing with permission
+    Given an ItemListing aggregate with permission to publish item listing
+    And the listing state is "Expired"
+    When I call reinstate()
+    Then the listing's state should be "Published"
+    And the updatedAt timestamp should change
+
+  Scenario: Reinstating a listing without permission
+    Given an ItemListing aggregate without permission to publish item listing
+    And the listing state is "Cancelled"
+    When I try to call reinstate()
+    Then a PermissionError should be thrown
+    And the listing state should remain "Cancelled"
+
+  Scenario: Reinstating a listing with invalid state
+    Given an ItemListing aggregate with permission to publish item listing
+    And the listing state is "Published"
+    When I try to call reinstate()
+    Then an Error should be thrown with message "Only cancelled or expired listings can be reinstated"
+    And the listing state should remain "Published"
