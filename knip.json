@@ -7,13 +7,7 @@
 		},
 		"apps/ui-sharethrift": {
 			"entry": ["src/main.tsx"],
-			"project": ["src/**/*.{ts,tsx}"],
-			"ignore": [
-				"**/terms-communication-preferences.tsx",
-				"**/applicant-id-context.tsx",
-				"**/signup/pages/Payment.tsx",
-				"**/signup/section-layout.container.tsx"
-			]
+			"project": ["src/**/*.{ts,tsx}"]
 		},
 		"apps/docs": {
 			"entry": ["src/**/*.{ts,tsx,js,jsx}"],
