@@ -19,7 +19,7 @@ Users need to upload various file types (PDFs, images) along with metadata and t
 
 we considered two authorization strategies:
 - Short-lived SAS : A short-lived SAS (Shared Access Signature) in Azure Blob Storage is a token with a limited time validity that grants specific permissions to access a blob or container. And this can be breach by someone and can misuse this short lived token.
-- Shared Key SAS : A Shared Key–signed Shared Access Signature (SAS) is a time‑limited and permission‑scoped token generated using the storage account’s shared key. It allows clients temporary access to upload or modify blobs without exposing the actual account key.
+- Shared Key SAS : A Shared Key–signed SAS (Shared Access Signature) is a time‑limited and permission‑scoped token generated using the storage account’s shared key. It allows clients temporary access to upload or modify blobs without exposing the actual account key.
 
 We Chosen **Shared Key SAS** 
 Because:
