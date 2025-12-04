@@ -12,6 +12,7 @@ import { SettingsView } from '../pages/settings-view.tsx';
 import type {
 	CurrentUserSettingsQueryData,
 	SettingsUser,
+	SectionFormValues,
 } from './settings-view.types.ts';
 
 function SettingsViewLoader() {
@@ -82,7 +83,7 @@ function SettingsViewLoader() {
 	// Helper to construct the next profile given the section being edited
 	const buildNextProfile = (
 		section: EditableSection,
-		values: Record<string, any>,
+		values: SectionFormValues,
 		base: UserProfile,
 	): UserProfile => {
 		const isProfile = section === 'profile';
@@ -139,7 +140,7 @@ function SettingsViewLoader() {
 
 	const handleAdminUserSave = async (
 		section: EditableSection,
-		values: Record<string, any>,
+		values: SectionFormValues,
 		user: CurrentUserSettingsQueryData['currentUser'],
 	) => {
 		if (updateAdminLoading) {
@@ -197,7 +198,7 @@ function SettingsViewLoader() {
 
 	const handlePersonalUserSave = async (
 		section: EditableSection,
-		values: Record<string, any>,
+		values: SectionFormValues,
 		user: CurrentUserSettingsQueryData['currentUser'],
 	) => {
 		if (updateLoading) {
@@ -248,7 +249,7 @@ function SettingsViewLoader() {
 
 	const handleSaveSection = async (
 		section: EditableSection,
-		values: Record<string, any>,
+		values: SectionFormValues,
 	) => {
 		if (!userData?.currentUser) return;
 		const user = userData.currentUser;

@@ -58,7 +58,7 @@ export default meta;
 type Story = StoryObj<typeof StatusTagClassTest>;
 
 export const AllStatusClasses: Story = {
-	play: async ({ canvasElement }) => {
+	play: ({ canvasElement }) => {
 		expect(getStatusTagClass('Active')).toBe('activeTag');
 		expect(getStatusTagClass('Paused')).toBe('pausedTag');
 		expect(getStatusTagClass('Reserved')).toBe('reservedTag');
@@ -75,7 +75,7 @@ export const AllStatusClasses: Story = {
 };
 
 export const UnknownStatus: Story = {
-	play: async ({ canvasElement }) => {
+	play: ({ canvasElement }) => {
 		expect(getStatusTagClass('Unknown')).toBe('');
 		expect(getStatusTagClass('')).toBe('');
 		expect(getStatusTagClass('InvalidStatus')).toBe('');
