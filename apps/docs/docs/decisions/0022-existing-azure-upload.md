@@ -15,7 +15,16 @@ informed:
 
 Our application requires a secure and scalable mechanism for handling file uploads. From the start, the design approach was to leverage Azure Blob Storage as the primary file storage service due to its reliability, scalability, and seamless integration with the Azure ecosystem.
 
-Users need to upload various file types (PDFs, images) along with metadata and tags for tracking. The system implements a direct upload flow where the client requests authorization from the backend, which issues a Shared Key SAS (Shared Access Signature) token allowing the file to be uploaded directly to Azure Blob Storage.
+Users need to upload various file types (PDFs, images) along with metadata and tags for tracking. The system implements a direct upload flow where the client requests authorization from the backend, which issues a SAS (Shared Access Signature) token allowing the file to be uploaded directly to Azure Blob Storage.
+
+we considered two authorization strategies:
+- Short-lived SAS : A short-lived SAS (Shared Access Signature) in Azure Blob Storage is a token with a limited time validity that grants specific permissions to access a blob or container. And this can be breach by someone and can misuse this short lived token.
+- Shared Key SAS : A Shared Key–signed Shared Access Signature (SAS) is a time‑limited and permission‑scoped token generated using the storage account’s shared key. It allows clients temporary access to upload or modify blobs without exposing the actual account key.
+
+We Chosen **Shared Key SAS** 
+Because:
+- The backend generates SAS tokens along with all relevant metadata for each specific upload request, ensuring contextual and controlled access.
+- Tokens are cryptographically signed using the storage account key, making them tamper‑proof and preventing third‑party manipulation.
 
 ## Decision Drivers
 
@@ -98,3 +107,4 @@ Frontend-->>User: Show success / preview / error if malicious
 - Malware scanning occurs after upload using Azure Blob Storage’s capabilities. Files flagged as malicious are deleted or reverted to ensure data integrity. The system uses Microsoft Defender for Storage to automatically scan uploaded blobs for malware. Defender checks for known malware signatures, embedded scripts, and other suspicious file patterns. This introduces a small window where a malicious file may exist in storage before removal.
 - At present, backend permission enforcement for blob upload is minimal. The frontend restricts upload actions according to application state, but users could potentially bypass this if they possess valid credentials.
 - Future improvements will focus on implementing domain-driven permission checks before SAS tokens are issued and exploring pre-upload scanning alternatives to further reduce risk.
+- Shared Key
