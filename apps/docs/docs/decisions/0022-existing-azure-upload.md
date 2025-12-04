@@ -65,7 +65,7 @@ Chosen option: **Option 2: Direct client uploads using Azure Blob SAS tokens (cu
 
 **Backend Services:**
 - SAS Token Generation:
-    - The backend handles SAS token generation and validation for Azure Blob Storage uploads, ensuring secure and controlled access for file uploads. There are different mutations for PDF and image files. The backend service encapsulates all business logic enforcing file upload restrictions and security requirements before enabling clients to upload files directly to Azure Blob Storage with Shared Key and carefully permissioned SAS tokens. 
+    - The backend handles SAS token generation and validation for Azure Blob Storage uploads, ensuring secure and controlled access for file uploads. There are different mutations for PDF and image files. The backend service encapsulates all business logic enforcing file upload restrictions and security requirements before enabling clients to upload files directly to Azure Blob Storage using carefully permissioned, Shared Key–signed SAS tokens. 
 - Post-Upload Malware Handling:
     - The backend polls the blob for the Microsoft Defender for Cloud scan result tag: `No threats found` or `Malicious`.
         - `No threats found` → retain the blob.
