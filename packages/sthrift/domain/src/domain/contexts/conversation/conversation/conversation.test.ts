@@ -663,51 +663,194 @@ test.for(feature, ({ Scenario, Background, BeforeEachScenario }) => {
 				'2020-01-02T00:00:00.000Z',
 			);
 		});
+		And('the schemaVersion property should return the correct value', () => {
+			expect(conversation.schemaVersion).toBeDefined();
+			expect(typeof conversation.schemaVersion).toBe('string');
+		});
+	});
+
+	Scenario('Setting listing to null', ({ Given, When, Then }) => {
+		let setListingToNull: () => void;
+		Given(
+			'a Conversation aggregate with permission to manage conversation',
+			() => {
+				passport = makePassport(true);
+				conversation = new Conversation(makeBaseProps(), passport);
+			},
+		);
+		When('I try to set the listing to null', () => {
+			setListingToNull = () => {
+				// @ts-expect-error: testing private setter
+				// biome-ignore lint/suspicious/noExplicitAny: Testing null assignment validation
+				conversation.listing = null as any;
+			};
+		});
+		Then(
+			'a PermissionError should be thrown with message "listing cannot be null or undefined"',
+			() => {
+				expect(setListingToNull).toThrow(DomainSeedwork.PermissionError);
+				expect(setListingToNull).toThrow('listing cannot be null or undefined');
+			},
+		);
+	});
+
+	Scenario('Setting listing to undefined', ({ Given, When, Then }) => {
+		let setListingToUndefined: () => void;
+		Given(
+			'a Conversation aggregate with permission to manage conversation',
+			() => {
+				passport = makePassport(true);
+				conversation = new Conversation(makeBaseProps(), passport);
+			},
+		);
+		When('I try to set the listing to undefined', () => {
+			setListingToUndefined = () => {
+				// @ts-expect-error: testing private setter
+				// biome-ignore lint/suspicious/noExplicitAny: Testing undefined assignment validation
+				conversation.listing = undefined as any;
+			};
+		});
+		Then(
+			'a PermissionError should be thrown with message "listing cannot be null or undefined"',
+			() => {
+				expect(setListingToUndefined).toThrow(DomainSeedwork.PermissionError);
+				expect(setListingToUndefined).toThrow(
+					'listing cannot be null or undefined',
+				);
+			},
+		);
+	});
+
+	Scenario(
+		'Getting messages from conversation',
+		({ Given, When, Then }) => {
+			// biome-ignore lint/suspicious/noExplicitAny: Test variable
+			let messages: readonly any[];
+			Given('a Conversation aggregate with messages', () => {
+				passport = makePassport(true);
+				conversation = new Conversation(makeBaseProps(), passport);
+			});
+			When('I access the messages property', () => {
+				messages = conversation.messages;
+			});
+			Then('it should return an array of messages', () => {
+				expect(Array.isArray(messages)).toBe(true);
+			});
+		},
+	);
+
+	Scenario('Loading listing asynchronously', ({ Given, When, Then }) => {
+		// biome-ignore lint/suspicious/noExplicitAny: Test variable
+		let loadedListing: any;
+		Given('a Conversation aggregate', () => {
+			passport = makePassport(true);
+			conversation = new Conversation(makeBaseProps(), passport);
+		});
+		When('I call loadListing()', async () => {
+			loadedListing = await conversation.loadListing();
+		});
+		Then('it should return the listing asynchronously', () => {
+			expect(loadedListing).toBeDefined();
+		});
+	});
+
+	Scenario('Setting reserver to null', ({ Given, When, Then }) => {
+		let setReserverToNull: () => void;
+		Given(
+			'a Conversation aggregate with permission to manage conversation',
+			() => {
+				passport = makePassport(true);
+				conversation = new Conversation(makeBaseProps(), passport);
+			},
+		);
+		When('I try to set the reserver to null', () => {
+			setReserverToNull = () => {
+				// @ts-expect-error: testing private setter
+				// biome-ignore lint/suspicious/noExplicitAny: Testing null assignment
+				conversation.reserver = null as any;
+			};
+		});
+		Then(
+			'a PermissionError should be thrown with message "reserver cannot be null or undefined"',
+			() => {
+				expect(setReserverToNull).toThrow(DomainSeedwork.PermissionError);
+				expect(setReserverToNull).toThrow(
+					'reserver cannot be null or undefined',
+				);
+			},
+		);
+	});
+
+	Scenario('Setting reserver to undefined', ({ Given, When, Then }) => {
+		let setReserverToUndefined: () => void;
+		Given(
+			'a Conversation aggregate with permission to manage conversation',
+			() => {
+				passport = makePassport(true);
+				conversation = new Conversation(makeBaseProps(), passport);
+			},
+		);
+		When('I try to set the reserver to undefined', () => {
+			setReserverToUndefined = () => {
+				// @ts-expect-error: testing private setter
+				// biome-ignore lint/suspicious/noExplicitAny: Testing undefined assignment
+				conversation.reserver = undefined as any;
+			};
+		});
+		Then(
+			'a PermissionError should be thrown with message "reserver cannot be null or undefined"',
+			() => {
+				expect(setReserverToUndefined).toThrow(DomainSeedwork.PermissionError);
+				expect(setReserverToUndefined).toThrow(
+					'reserver cannot be null or undefined',
+				);
+			},
+		);
 	});
 
 	Scenario(
 		'Setting the messagingConversationId with permission',
 		({ Given, When, Then }) => {
-			Given(
-				'a Conversation aggregate with permission to manage conversation',
-				() => {
-					passport = makePassport(true);
-					conversation = new Conversation(makeBaseProps(), passport);
-				},
-			);
-			When('I set the messagingConversationId to a new value', () => {
-				conversation.messagingConversationId = 'twilio-456';
-			});
-			Then('the messagingConversationId should be updated', () => {
-				expect(conversation.messagingConversationId).toBe('twilio-456');
-			});
-		},
-	);
+		Given(
+			'a Conversation aggregate with permission to manage conversation',
+			() => {
+				passport = makePassport(true);
+				conversation = new Conversation(makeBaseProps(), passport);
+			},
+		);
+		When('I set the messagingConversationId to a new value', () => {
+			conversation.messagingConversationId = 'twilio-456';
+		});
+		Then('the messagingConversationId should be updated', () => {
+			expect(conversation.messagingConversationId).toBe('twilio-456');
+		});
+	},
+);
 
 	Scenario(
 		'Setting the messagingConversationId without permission',
 		({ Given, When, Then }) => {
-			let setTwilioIdWithoutPermission: () => void;
-			Given(
-				'a Conversation aggregate without permission to manage conversation',
-				() => {
-					passport = makePassport(false);
-					conversation = new Conversation(makeBaseProps(), passport);
-				},
+		let setTwilioIdWithoutPermission: () => void;
+		Given(
+			'a Conversation aggregate without permission to manage conversation',
+			() => {
+				passport = makePassport(false);
+				conversation = new Conversation(makeBaseProps(), passport);
+			},
+		);
+		When('I try to set the messagingConversationId to a new value', () => {
+			setTwilioIdWithoutPermission = () => {
+				conversation.messagingConversationId = 'twilio-789';
+			};
+		});
+		Then('a PermissionError should be thrown', () => {
+			expect(setTwilioIdWithoutPermission).toThrow(
+				DomainSeedwork.PermissionError,
 			);
-			When('I try to set the messagingConversationId to a new value', () => {
-				setTwilioIdWithoutPermission = () => {
-					conversation.messagingConversationId = 'twilio-789';
-				};
-			});
-			Then('a PermissionError should be thrown', () => {
-				expect(setTwilioIdWithoutPermission).toThrow(
-					DomainSeedwork.PermissionError,
-				);
-				expect(setTwilioIdWithoutPermission).throws(
-					'You do not have permission to change the messagingConversationId of this conversation',
-				);
-			});
-		},
-	);
+			expect(setTwilioIdWithoutPermission).throws(
+				'You do not have permission to change the messagingConversationId of this conversation',
+			);
+		});
+	},
+);
 });

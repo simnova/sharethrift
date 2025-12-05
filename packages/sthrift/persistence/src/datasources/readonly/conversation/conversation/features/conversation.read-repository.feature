@@ -39,3 +39,28 @@ And valid Conversation documents exist in the database
 	Scenario: Getting conversations with empty or invalid user ID
 		When I call getByUser with an empty string
 		Then I should receive an empty array
+
+	Scenario: Getting conversation by sharer, reserver, and listing
+		Given valid sharer, reserver, and listing IDs
+		When I call getBySharerReserverListing
+		Then I should receive a Conversation entity or null
+
+	Scenario: Getting conversation with missing sharer ID
+		Given empty sharer ID
+		When I call getBySharerReserverListing with empty sharer
+		Then it should return null
+
+	Scenario: Getting conversation with missing reserver ID
+		Given empty reserver ID
+		When I call getBySharerReserverListing with empty reserver
+		Then it should return null
+
+	Scenario: Getting conversation with missing listing ID
+		Given empty listing ID
+		When I call getBySharerReserverListing with empty listing
+		Then it should return null
+
+	Scenario: Getting conversation with error in database query
+		Given an error will occur during the query
+		When I call getBySharerReserverListing
+		Then it should return null due to error
