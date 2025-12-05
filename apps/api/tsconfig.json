@@ -2,7 +2,8 @@
   "extends": "@cellix/typescript-config/node.json",
 	"compilerOptions": {
 		"rootDir": ".",
-		"outDir": "dist"
+		"outDir": "dist",
+		"verbatimModuleSyntax": false
 	},
 	"include": ["src/**/*.ts"]
 }
