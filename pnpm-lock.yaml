@@ -35,7 +35,7 @@ overrides:
 
 patchedDependencies:
   gray-matter@4.0.3:
-    hash: ad4f157890c247910bfb55846e34a3ca33630f06b2319d9427d15d9c94cac6fe
+    hash: 82198c3ee34e2823c4e9793c5209cf97bd566d5610c3f6582dc3f044ca423d6f
     path: patches/gray-matter@4.0.3.patch
 
 importers:
@@ -14418,7 +14418,7 @@ snapshots:
       fs-extra: 11.3.2
       github-slugger: 1.5.0
       globby: 11.1.0
-      gray-matter: 4.0.3(patch_hash=ad4f157890c247910bfb55846e34a3ca33630f06b2319d9427d15d9c94cac6fe)
+      gray-matter: 4.0.3(patch_hash=82198c3ee34e2823c4e9793c5209cf97bd566d5610c3f6582dc3f044ca423d6f)
       jiti: 1.21.7
       js-yaml: 4.1.1
       lodash: 4.17.21
@@ -19456,7 +19456,7 @@ snapshots:
 
   graphql@16.12.0: {}
 
-  gray-matter@4.0.3(patch_hash=ad4f157890c247910bfb55846e34a3ca33630f06b2319d9427d15d9c94cac6fe):
+  gray-matter@4.0.3(patch_hash=82198c3ee34e2823c4e9793c5209cf97bd566d5610c3f6582dc3f044ca423d6f):
     dependencies:
       js-yaml: 4.1.1
       kind-of: 6.0.3
