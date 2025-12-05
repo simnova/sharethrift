@@ -181,3 +181,28 @@ Feature: <AggregateRoot> ReservationRequest
     Given an existing ReservationRequest aggregate
     When I try to set a new reserver
     Then a PermissionError should be thrown with message "Reserver can only be set when creating a new reservation request"
+
+  Scenario: Setting state to Accepted through state setter
+    Given a ReservationRequest in Requested state with edit permission
+    When I set the state property to "Accepted"
+    Then the state should be "Accepted"
+
+  Scenario: Setting state to Rejected through state setter
+    Given a ReservationRequest in Requested state with edit permission
+    When I set the state property to "Rejected"
+    Then the state should be "Rejected"
+
+  Scenario: Setting state to Cancelled through state setter
+    Given a ReservationRequest in Requested state with edit permission
+    When I set the state property to "Cancelled"
+    Then the state should be "Cancelled"
+
+  Scenario: Setting state to Closed through state setter
+    Given a ReservationRequest in Accepted state with edit permission
+    When I set the state property to "Closed"
+    Then the state should be "Closed"
+
+  Scenario: Setting state to invalid value throws error
+    Given a ReservationRequest with edit permission
+    When I attempt to set the state to an invalid value
+    Then it should throw a PermissionError with valid states listed

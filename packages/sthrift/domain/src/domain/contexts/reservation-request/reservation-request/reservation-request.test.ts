@@ -1159,4 +1159,102 @@ test.for(feature, ({ Background, Scenario, BeforeEachScenario }) => {
 			);
 		},
 	);
+
+	Scenario(
+		'Setting state to Accepted through state setter',
+		({ Given, When, Then }) => {
+			Given('a ReservationRequest in Requested state with edit permission', () => {
+				passport = makePassport({ canEditReservationRequest: true });
+				baseProps = makeBaseProps({ state: 'Requested' });
+				aggregate = new ReservationRequest(baseProps, passport);
+			});
+			When('I set the state property to "Accepted"', () => {
+				aggregate.state = 'Accepted';
+			});
+			Then('the state should be "Accepted"', () => {
+				expect(aggregate.state).toBe('Accepted');
+			});
+		},
+	);
+
+	Scenario(
+		'Setting state to Rejected through state setter',
+		({ Given, When, Then }) => {
+			Given('a ReservationRequest in Requested state with edit permission', () => {
+				passport = makePassport({ canEditReservationRequest: true });
+				baseProps = makeBaseProps({ state: 'Requested' });
+				aggregate = new ReservationRequest(baseProps, passport);
+			});
+			When('I set the state property to "Rejected"', () => {
+				aggregate.state = 'Rejected';
+			});
+			Then('the state should be "Rejected"', () => {
+				expect(aggregate.state).toBe('Rejected');
+			});
+		},
+	);
+
+	Scenario(
+		'Setting state to Cancelled through state setter',
+		({ Given, When, Then }) => {
+			Given('a ReservationRequest in Requested state with edit permission', () => {
+				passport = makePassport({ canEditReservationRequest: true });
+				baseProps = makeBaseProps({ state: 'Requested' });
+				aggregate = new ReservationRequest(baseProps, passport);
+			});
+			When('I set the state property to "Cancelled"', () => {
+				aggregate.state = 'Cancelled';
+			});
+			Then('the state should be "Cancelled"', () => {
+				expect(aggregate.state).toBe('Cancelled');
+			});
+		},
+	);
+
+	Scenario(
+		'Setting state to Closed through state setter',
+		({ Given, When, Then }) => {
+			Given('a ReservationRequest in Accepted state with edit permission', () => {
+				passport = makePassport({ canEditReservationRequest: true });
+				baseProps = makeBaseProps({ state: 'Accepted', closeRequestedBySharer: true });
+				aggregate = new ReservationRequest(baseProps, passport);
+			});
+			When('I set the state property to "Closed"', () => {
+				aggregate.state = 'Closed';
+			});
+			Then('the state should be "Closed"', () => {
+				expect(aggregate.state).toBe('Closed');
+			});
+		},
+	);
+
+	Scenario(
+		'Setting state to invalid value throws error',
+		({ Given, When, Then }) => {
+			Given('a ReservationRequest with edit permission', () => {
+				passport = makePassport({ canEditReservationRequest: true });
+				baseProps = makeBaseProps({ state: 'Requested' });
+				aggregate = new ReservationRequest(baseProps, passport);
+			});
+			When('I attempt to set the state to an invalid value', () => {
+				// Handled in Then
+			});
+			Then('it should throw a PermissionError with valid states listed', () => {
+				expect(() => {
+					aggregate.state = 'InvalidState';
+				}).toThrow(DomainSeedwork.PermissionError);
+				
+				try {
+					aggregate.state = 'InvalidState';
+				} catch (error) {
+					expect((error as Error).message).toContain('Invalid reservation request state');
+					expect((error as Error).message).toContain('Requested');
+					expect((error as Error).message).toContain('Accepted');
+					expect((error as Error).message).toContain('Rejected');
+					expect((error as Error).message).toContain('Cancelled');
+					expect((error as Error).message).toContain('Closed');
+				}
+			});
+		},
+	);
 });
