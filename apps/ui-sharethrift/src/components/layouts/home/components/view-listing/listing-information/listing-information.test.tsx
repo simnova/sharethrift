@@ -568,7 +568,6 @@ describe('ListingInformation', () => {
 		it('correctly identifies dates between two dates with inclusive brackets', () => {
 			const start = dayjs('2024-02-10');
 			const end = dayjs('2024-02-15');
-			const dateInRange = dayjs('2024-02-12');
 
 			// This function is used internally in the component
 			// We verify the component works with dates in range
