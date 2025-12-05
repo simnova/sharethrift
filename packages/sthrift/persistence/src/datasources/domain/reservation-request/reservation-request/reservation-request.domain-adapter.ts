@@ -92,6 +92,26 @@ export class ReservationRequestDomainAdapter
 		this.doc.set('listing', new MongooseSeedwork.ObjectId(value.id));
 	}
 
+	/**
+	 * Check if listing is populated (not just an ObjectId)
+	 */
+	get isListingPopulated(): boolean {
+		return !!this.doc.listing && !(this.doc.listing instanceof MongooseSeedwork.ObjectId);
+	}
+
+	/**
+	 * Get listing ID safely without requiring full population
+	 */
+	get listingId(): string {
+		if (!this.doc.listing) {
+			throw new Error('listing is not set');
+		}
+		if (this.doc.listing instanceof MongooseSeedwork.ObjectId) {
+			return this.doc.listing.toString();
+		}
+		return (this.doc.listing as Models.Listing.ItemListing).id.toString();
+	}
+
 	get reserver():
 		| Domain.Contexts.User.PersonalUser.PersonalUserEntityReference
 		| Domain.Contexts.User.AdminUser.AdminUserEntityReference {

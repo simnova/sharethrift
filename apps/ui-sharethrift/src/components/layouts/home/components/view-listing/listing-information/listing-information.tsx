@@ -123,8 +123,8 @@ export const ListingInformation: React.FC<ListingInformationProps> = ({
 				currentDate.isSame(endDate, 'day')
 			) {
 				const isDisabled = otherReservations.some((otherRes) => {
-					const otherResStart = dayjs(Number(otherRes?.reservationPeriodStart));
-					const otherResEnd = dayjs(Number(otherRes?.reservationPeriodEnd));
+					const otherResStart = dayjs(otherRes?.reservationPeriodStart);
+					const otherResEnd = dayjs(otherRes?.reservationPeriodEnd);
 					return isBetweenManual(
 						currentDate,
 						otherResStart,
@@ -248,16 +248,8 @@ export const ListingInformation: React.FC<ListingInformationProps> = ({
 											userReservationRequest?.reservationPeriodStart != null &&
 											userReservationRequest?.reservationPeriodEnd
 												? [
-														dayjs(
-															Number(
-																userReservationRequest.reservationPeriodStart,
-															),
-														),
-														dayjs(
-															Number(
-																userReservationRequest.reservationPeriodEnd,
-															),
-														),
+														dayjs(userReservationRequest.reservationPeriodStart),
+														dayjs(userReservationRequest.reservationPeriodEnd),
 													]
 												: [
 														reservationDates?.startDate
@@ -278,12 +270,8 @@ export const ListingInformation: React.FC<ListingInformationProps> = ({
 												return false;
 											}
 											return otherReservations.some((reservation) => {
-												const resStart = dayjs(
-													Number(reservation?.reservationPeriodStart),
-												);
-												const resEnd = dayjs(
-													Number(reservation?.reservationPeriodEnd),
-												);
+												const resStart = dayjs(reservation?.reservationPeriodStart);
+												const resEnd = dayjs(reservation?.reservationPeriodEnd);
 												return isBetweenManual(
 													current,
 													resStart,
