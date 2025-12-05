@@ -5,6 +5,6 @@
 		"rootDir": "."
 	},
 	"include": ["src/**/*.ts"],
-	"exclude": ["node_modules", "dist", "src/**/*.test.ts"],
+	"exclude": ["node_modules", "dist"],
 	"references": [{ "path": "../application-services" }, { "path": "../domain" }]
 }
