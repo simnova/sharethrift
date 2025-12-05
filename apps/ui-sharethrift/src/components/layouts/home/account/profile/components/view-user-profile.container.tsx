@@ -85,9 +85,6 @@ export const ViewUserProfileContainer: React.FC = () => {
         }
     }, [viewedUser, canViewProfile, navigate]);
 
-    if (!viewedUser || !currentUser) {
-        return null;
-    }
 
     const handleEditSettings = () => {
         navigate("/account/settings");
@@ -110,12 +107,12 @@ export const ViewUserProfileContainer: React.FC = () => {
         currentUser?.__typename === "AdminUser" &&
         currentUser?.role?.permissions?.userPermissions?.canBlockUsers;
 
-    const isOwnProfile = currentUser.id === viewedUser.id;
+    const isOwnProfile = currentUser?.id === viewedUser?.id;
 
-    const { account, createdAt, isBlocked } = viewedUser;
+    const { account, createdAt, isBlocked } = viewedUser ?? {};
 
     const profileUser = {
-        id: viewedUser.id,
+        id: viewedUser?.id,
         firstName: account?.profile?.firstName || "",
         lastName: account?.profile?.lastName || "",
         username: account?.username || "",
