@@ -52,7 +52,7 @@ Even in flows where uploads fail, the frontend retains all validated form inputs
 ## Consequences
 - Good: Orphaned and unreferenced files are eliminated.
 - Good: Ensures consistent and secure linkage between uploaded blobs and saved data.
-- Good: Regulatory and operational risks are minimized (by ensuring that only properly scanned: malware-free files are stored and linked to committed database records).
+- Good: Regulatory and operational risks are minimized (by ensuring that only properly scanned, malware-free files are stored and linked to committed database records).
 - Good: No background sweeps or delayed cleanups required.
 - Good: Improves user clarity by creating a direct, predictable link between user actions (“Save”) and data persistence — users know their file and form are saved together, or not at all.
 - Bad: Upload initiation is delayed until user confirmation, possibly increasing total save time.
