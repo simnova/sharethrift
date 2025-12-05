@@ -1,18 +1,25 @@
-import { useState } from 'react';
-import { useQuery } from "@apollo/client/react";
-import { RequestsTable } from './requests-table.tsx';
+import { useMutation, useQuery } from '@apollo/client/react';
 import { ComponentQueryLoader } from '@sthrift/ui-components';
-import { HomeRequestsTableContainerMyListingsRequestsDocument } from '../../../../../generated.tsx';
+import { App } from 'antd';
+import { useState } from 'react';
+import {
+	HomeRequestsTableContainerAcceptReservationRequestDocument,
+	HomeRequestsTableContainerMyListingsRequestsDocument,
+} from '../../../../../generated.tsx';
+import { RequestsTable } from './requests-table.tsx';
 
 export interface RequestsTableContainerProps {
 	currentPage: number;
 	onPageChange: (page: number) => void;
+	sharerId: string;
 }
 
 export const RequestsTableContainer: React.FC<RequestsTableContainerProps> = ({
 	currentPage,
 	onPageChange,
+	sharerId,
 }) => {
+	const { message } = App.useApp();
 	const [searchText, setSearchText] = useState('');
 	const [statusFilters, setStatusFilters] = useState<string[]>([]);
 	const [sorter, setSorter] = useState<{
@@ -21,7 +28,7 @@ export const RequestsTableContainer: React.FC<RequestsTableContainerProps> = ({
 	}>({ field: null, order: null });
 	const pageSize = 6;
 
-	const { data, loading, error } = useQuery(
+	const { data, loading, error, refetch } = useQuery(
 		HomeRequestsTableContainerMyListingsRequestsDocument,
 		{
 			variables: {
@@ -29,15 +36,43 @@ export const RequestsTableContainer: React.FC<RequestsTableContainerProps> = ({
 				pageSize: pageSize,
 				searchText: searchText,
 				statusFilters: statusFilters,
-				sorter: { field: sorter.field ?? '', order: sorter.order ?? '' },
-                sharerId: '6324a3f1e3e4e1e6a8e1d8b1'
+				sorter: {
+					field: sorter.field || '',
+					order: sorter.order || '',
+				},
+				sharerId: sharerId,
 			},
 			fetchPolicy: 'network-only',
 		},
 	);
 
+	const [acceptRequest] = useMutation(
+		HomeRequestsTableContainerAcceptReservationRequestDocument,
+		{
+			onCompleted: async () => {
+				await refetch();
+				message.success('Request accepted successfully');
+			},
+			onError: (error) => {
+				message.error(`Failed to accept request: ${error.message}`);
+			},
+		},
+	);
+
 	const requests = data?.myListingsRequests?.items ?? [];
+
 	const total = data?.myListingsRequests?.total ?? 0;
+
+	// Transform domain fields to UI format
+	const transformedRequests = requests.map((request) => ({
+		id: request.id,
+		title: request.title,
+		image: request.image ?? null,
+		requestedBy: request.requestedBy ?? 'Unknown',
+		requestedOn: request.requestedOn ?? null,
+		reservationPeriod: request.reservationPeriod ?? '',
+		status: request.status ?? 'Unknown',
+	}));
 
 	const handleSearch = (value: string) => {
 		setSearchText(value);
@@ -65,21 +100,34 @@ export const RequestsTableContainer: React.FC<RequestsTableContainerProps> = ({
 		onPageChange(1);
 	};
 
-	const handleAction = (action: string, requestId: string) => {
-		// TODO: Implement actual actions in future PRs
-		console.log(`Action: ${action}, Request ID: ${requestId}`);
+	const handleAction = async (action: string, requestId: string) => {
+		if (action !== 'approve' && action !== 'accept') {
+			return;
+		}
+
+		try {
+			await acceptRequest({ variables: { input: { id: requestId } } });
+		} catch (error) {
+			const errorMessage =
+				error instanceof Error ? error.message : 'Unknown error occurred';
+			message.error(`Failed to accept request: ${errorMessage}`);
+			console.error(`${action} request error:`, error);
+		}
 	};
 
-	if (error) return <p>Error: {error.message}</p>;
+	if (error) {
+		console.error('Query error:', error);
+		return null;
+	}
 
 	return (
 		<ComponentQueryLoader
 			loading={loading}
 			error={error}
-			hasData={data?.myListingsRequests}
+			hasData={data?.myListingsRequests ?? null}
 			hasDataComponent={
 				<RequestsTable
-					data={requests}
+					data={transformedRequests}
 					searchText={searchText}
 					statusFilters={statusFilters}
 					sorter={sorter}
@@ -96,4 +144,4 @@ export const RequestsTableContainer: React.FC<RequestsTableContainerProps> = ({
 			}
 		/>
 	);
-}
+};

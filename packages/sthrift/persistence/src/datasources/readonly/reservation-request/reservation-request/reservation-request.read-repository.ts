@@ -1,15 +1,15 @@
+import { MongooseSeedwork } from '@cellix/mongoose-seedwork';
+import type { Models } from '@sthrift/data-sources-mongoose-models';
 import type { Domain } from '@sthrift/domain';
+import type { FilterQuery, PipelineStage } from 'mongoose';
 import type { ModelsContext } from '../../../../models-context.ts';
-import { ReservationRequestDataSourceImpl } from './reservation-request.data.ts';
+import { ReservationRequestConverter } from '../../../domain/reservation-request/reservation-request/reservation-request.domain-adapter.ts';
 import type {
 	FindOneOptions,
 	FindOptions,
 	MongoDataSource,
 } from '../../mongo-data-source.ts';
-import { ReservationRequestConverter } from '../../../domain/reservation-request/reservation-request/reservation-request.domain-adapter.ts';
-import { MongooseSeedwork } from '@cellix/mongoose-seedwork';
-import type { FilterQuery, PipelineStage } from 'mongoose';
-import type { Models } from '@sthrift/data-sources-mongoose-models';
+import { ReservationRequestDataSourceImpl } from './reservation-request.data.ts';
 
 // Reservation state constants for filtering (inline per codebase patterns)
 const ACTIVE_STATES = ['Accepted', 'Requested'];
@@ -67,6 +67,13 @@ export interface ReservationRequestReadRepository {
 		listingId: string,
 		options?: FindOptions,
 	) => Promise<
+		Domain.Contexts.ReservationRequest.ReservationRequest.ReservationRequestEntityReference[]
+	>;
+	queryOverlapByListingIdAndReservationPeriod: (params: {
+		listingId: string;
+		reservationPeriodStart: Date;
+		reservationPeriodEnd: Date;
+	}) => Promise<
 		Domain.Contexts.ReservationRequest.ReservationRequest.ReservationRequestEntityReference[]
 	>;
 }
@@ -213,6 +220,15 @@ export class ReservationRequestReadRepositoryImpl
 					'listingDoc.sharer': new MongooseSeedwork.ObjectId(sharerId),
 				},
 			},
+			{
+				$lookup: {
+					from: 'users',
+					localField: 'reserver',
+					foreignField: '_id',
+					as: 'reserverDoc',
+				},
+			},
+			{ $unwind: '$reserverDoc' },
 		];
 
 		// Apply additional options if provided (e.g., limit, sort)
@@ -222,18 +238,30 @@ export class ReservationRequestReadRepositoryImpl
 		if (options?.sort) {
 			pipeline.push({ $sort: options.sort } as PipelineStage);
 		}
-
 		const docs =
 			await this.models.ReservationRequest.ReservationRequest.aggregate(
 				pipeline,
 			).exec();
 
+		// Hydrate aggregation results into proper Mongoose documents
+		// This ensures the documents have virtual getters like `id` that map `_id` to string
+		const hydratedDocs = docs.map((doc) => {
+			const { listingDoc, reserverDoc, ...rest } = doc;
+
+			// Create a new document instance from the aggregation result
+			const hydratedDoc =
+				this.models.ReservationRequest.ReservationRequest.hydrate({
+					...rest,
+					listing: listingDoc,
+					reserver: reserverDoc,
+				});
+
+			return hydratedDoc;
+		});
+
 		// Convert to domain entities
-		return docs.map((doc) =>
-			this.converter.toDomain(
-				doc as Models.ReservationRequest.ReservationRequest,
-				this.passport,
-			),
+		return hydratedDocs.map((doc) =>
+			this.converter.toDomain(doc, this.passport),
 		);
 	}
 
@@ -278,6 +306,22 @@ export class ReservationRequestReadRepositoryImpl
 			state: { $in: ACTIVE_STATES },
 		};
 		return await this.queryMany(filter, options);
+	}
+
+	async queryOverlapByListingIdAndReservationPeriod(params: {
+		listingId: string;
+		reservationPeriodStart: Date;
+		reservationPeriodEnd: Date;
+	}): Promise<
+		Domain.Contexts.ReservationRequest.ReservationRequest.ReservationRequestEntityReference[]
+	> {
+		const filter: FilterQuery<Models.ReservationRequest.ReservationRequest> = {
+			listing: new MongooseSeedwork.ObjectId(params.listingId),
+			state: { $in: ACTIVE_STATES },
+			reservationPeriodStart: { $lt: params.reservationPeriodEnd },
+			reservationPeriodEnd: { $gt: params.reservationPeriodStart },
+		};
+		return await this.queryMany(filter);
 	}
 }
 

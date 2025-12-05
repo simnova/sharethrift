@@ -1,5 +1,5 @@
-import type { GraphContext } from '../../../init/context.ts';
 import type { GraphQLResolveInfo } from 'graphql';
+import type { GraphContext } from '../../../init/context.ts';
 import type { Resolvers } from '../../builder/generated.ts';
 import {
 	PopulateItemListingFromField,
@@ -10,11 +10,17 @@ interface ListingRequestDomainShape {
 	id: string;
 	state?: string;
 	createdAt?: Date;
+	updatedAt?: Date;
 	reservationPeriodStart?: Date;
 	reservationPeriodEnd?: Date;
-	listing?: { title?: string; [k: string]: unknown };
+	listing?: {
+		title?: string;
+		thumbnailUrl?: string;
+		images?: string[];
+		[k: string]: unknown;
+	};
 	reserver?: { account?: { username?: string } };
-	[k: string]: unknown; // allow passthrough
+	[k: string]: unknown;
 }
 
 interface ListingRequestUiShape {
@@ -26,7 +32,7 @@ interface ListingRequestUiShape {
 	reservationPeriod: string;
 	status: string;
 	_raw: ListingRequestDomainShape;
-	[k: string]: unknown; // enable dynamic field sorting access
+	[k: string]: unknown;
 }
 
 function paginateAndFilterListingRequests(
@@ -41,7 +47,7 @@ function paginateAndFilterListingRequests(
 ) {
 	const filtered = [...requests];
 
-	// Map domain objects into shape expected by client (flatten minimal fields)
+	// Map domain objects into shape expected by client
 	const mapped: ListingRequestUiShape[] = filtered.map((r) => {
 		const start =
 			r.reservationPeriodStart instanceof Date
@@ -51,10 +57,22 @@ function paginateAndFilterListingRequests(
 			r.reservationPeriodEnd instanceof Date
 				? r.reservationPeriodEnd
 				: undefined;
+
+		// Get the first image from the listing's images array, fall back to thumbnail, then placeholder
+		const images = r.listing?.images;
+		const thumbnail =
+			typeof r.listing?.thumbnailUrl === 'string'
+				? (r.listing?.thumbnailUrl as string)
+				: undefined;
+		const firstImage =
+			Array.isArray(images) && images.length > 0 ? images[0] : undefined;
+		const listingImage =
+			firstImage ?? thumbnail ?? '/assets/item-images/placeholder.png';
+
 		return {
 			id: r.id,
 			title: r.listing?.title ?? 'Unknown',
-			image: '/assets/item-images/placeholder.png', // TODO: map real image when available
+			image: listingImage,
 			requestedBy: r.reserver?.account?.username
 				? `@${r.reserver.account.username}`
 				: '@unknown',
@@ -63,7 +81,7 @@ function paginateAndFilterListingRequests(
 					? r.createdAt.toISOString()
 					: new Date().toISOString(),
 			reservationPeriod: `${start ? start.toISOString().slice(0, 10) : 'N/A'} - ${end ? end.toISOString().slice(0, 10) : 'N/A'}`,
-			status: r.state ?? 'Pending',
+			status: r.state ?? 'Requested',
 			_raw: r,
 		};
 	});
@@ -154,7 +172,17 @@ const reservationRequest: Resolvers = {
 						sharerId: args.sharerId,
 					},
 				);
-			return paginateAndFilterListingRequests(
+
+			if (!requests) {
+				return {
+					items: [],
+					total: 0,
+					page: args.page,
+					pageSize: args.pageSize,
+				};
+			}
+
+			const result = paginateAndFilterListingRequests(
 				requests as unknown as ListingRequestDomainShape[],
 				{
 					page: args.page,
@@ -163,6 +191,8 @@ const reservationRequest: Resolvers = {
 					statusFilters: [...(args.statusFilters ?? [])],
 				},
 			);
+
+			return result;
 		},
 		myActiveReservationForListing: async (
 			_parent,
@@ -217,6 +247,31 @@ const reservationRequest: Resolvers = {
 					reservationPeriodStart: new Date(args.input.reservationPeriodStart),
 					reservationPeriodEnd: new Date(args.input.reservationPeriodEnd),
 					reserverEmail: verifiedJwt.email,
+				},
+			);
+		},
+		acceptReservationRequest: async (
+			_parent: unknown,
+			args: {
+				input: {
+					id: string;
+				};
+			},
+			context: GraphContext,
+			_info: GraphQLResolveInfo,
+		) => {
+			const verifiedJwt = context.applicationServices.verifiedUser?.verifiedJwt;
+			if (!verifiedJwt) {
+				throw new Error(
+					'User must be authenticated to accept a reservation request',
+				);
+			}
+
+			return await context.applicationServices.ReservationRequest.ReservationRequest.update(
+				{
+					id: args.input.id,
+					sharerEmail: verifiedJwt.email,
+					state: 'Accepted',
 				},
 			);
 		},

@@ -104,17 +104,27 @@ export class MongoDataSourceImpl<TDoc extends MongooseSeedwork.Base>
 		options?: FindOptions,
 	): Promise<Lean<TDoc>[]> {
 		const queryOptions = this.buildQueryOptions(options);
-		let query = this.model
-			.find(
-				this.buildFilterQuery(filter),
-				this.buildProjection(options?.fields, options?.projectionMode),
-				queryOptions,
-			)
-			.lean<LeanBase<TDoc>[]>();
+
+		// Build projection, but exclude populated fields from projection if they're in populateFields
+		const projection = this.buildProjection(
+			options?.fields,
+			options?.projectionMode,
+		);
+
+		let query = this.model.find(
+			this.buildFilterQuery(filter),
+			projection,
+			queryOptions,
+		);
+
+		// Apply populate before calling lean
 		if (options?.populateFields?.length) {
-			query = query.populate(options.populateFields);
+			for (const field of options.populateFields) {
+				query = query.populate(field);
+			}
 		}
-		const docs = await query;
+
+		const docs = await query.lean<LeanBase<TDoc>[]>();
 		return docs.map((doc) => this.appendId(doc));
 	}
 
@@ -122,16 +132,19 @@ export class MongoDataSourceImpl<TDoc extends MongooseSeedwork.Base>
 		filter: FilterQuery<TDoc>,
 		options?: FindOneOptions,
 	): Promise<Lean<TDoc> | null> {
-		let query = this.model
-			.findOne(
-				this.buildFilterQuery(filter),
-				this.buildProjection(options?.fields, options?.projectionMode),
-			)
-			.lean<LeanBase<TDoc>>();
+		let query = this.model.findOne(
+			this.buildFilterQuery(filter),
+			this.buildProjection(options?.fields, options?.projectionMode),
+		);
+
+		// Apply populate before calling lean
 		if (options?.populateFields?.length) {
-			query = query.populate(options.populateFields);
+			for (const field of options.populateFields) {
+				query = query.populate(field);
+			}
 		}
-		const doc = await query;
+
+		const doc = await query.lean<LeanBase<TDoc>>();
 		return doc ? this.appendId(doc) : null;
 	}
 
