@@ -1,33 +1,39 @@
 import { Row, Col, Button, Form, Input, Select, DatePicker, Space } from 'antd';
+import {
+	DeleteOutlined,
+	PauseCircleOutlined,
+	StopOutlined,
+} from '@ant-design/icons';
 import type { ConfigType } from 'dayjs';
-import dayjs from 'dayjs';
+import type dayjs from 'dayjs';
 
 const { TextArea } = Input;
 const { RangePicker } = DatePicker;
 
-export interface CreateListingFormData {
-	title: string;
-	description: string;
-	category: string;
-	location: string;
-	sharingPeriod: [string, string];
-	images: string[];
-}
-
-export interface ListingFormProps {
+export interface EditListingFormProps {
 	categories: string[];
 	isLoading: boolean;
 	maxCharacters: number;
-	handleFormSubmit: (isDraft: boolean) => void;
+	handleFormSubmit: () => void;
+	onNavigateBack: () => void;
+	onPause: () => void;
+	onDelete: () => void;
 	onCancel: () => void;
+	canPause: boolean;
+	canCancel: boolean;
 }
 
-export const ListingForm: React.FC<ListingFormProps> = ({
+export const EditListingForm: React.FC<EditListingFormProps> = ({
 	categories,
 	isLoading,
 	maxCharacters,
 	handleFormSubmit,
+	onNavigateBack,
+	onPause,
+	onDelete,
 	onCancel,
+	canPause,
+	canCancel,
 }) => {
 	const disabledDate = (current: ConfigType) => {
 		try {
@@ -36,7 +42,8 @@ export const ListingForm: React.FC<ListingFormProps> = ({
 				return false;
 			}
 
-			return maybeDay.isBefore(dayjs(), 'day');
+			// Don't disable any dates - allow full range for editing
+			return false;
 		} catch {
 			return false;
 		}
@@ -92,6 +99,10 @@ export const ListingForm: React.FC<ListingFormProps> = ({
 						style={{ width: '100%' }}
 						placeholder={['Start date', 'End date']}
 						disabledDate={disabledDate}
+						format="YYYY-MM-DD"
+						picker="date"
+						needConfirm={false}
+						changeOnBlur
 					/>
 				</Form.Item>
 
@@ -125,7 +136,7 @@ export const ListingForm: React.FC<ListingFormProps> = ({
 					<Col>
 						<Button
 							className="secondaryButton"
-							onClick={onCancel}
+							onClick={onNavigateBack}
 							disabled={isLoading}
 						>
 							Cancel
@@ -134,21 +145,45 @@ export const ListingForm: React.FC<ListingFormProps> = ({
 					<Col>
 						<Button
 							className="secondaryButton"
-							type="default"
-							onClick={() => handleFormSubmit(true)}
-							loading={isLoading}
+							icon={<DeleteOutlined />}
+							onClick={onDelete}
+							disabled={isLoading}
 						>
-							Save as Draft
+							Delete
 						</Button>
 					</Col>
+					{canCancel && (
+						<Col>
+							<Button
+								className="secondaryButton"
+								icon={<StopOutlined />}
+								onClick={onCancel}
+								disabled={isLoading}
+							>
+								Cancel Listing
+							</Button>
+						</Col>
+					)}
+					{canPause && (
+						<Col>
+							<Button
+								className="secondaryButton"
+								icon={<PauseCircleOutlined />}
+								onClick={onPause}
+								disabled={isLoading}
+							>
+								Pause
+							</Button>
+						</Col>
+					)}
 					<Col>
 						<Button
 							className="primaryButton"
 							type="primary"
-							onClick={() => handleFormSubmit(false)}
+							onClick={handleFormSubmit}
 							loading={isLoading}
 						>
-							Publish
+							Save Changes
 						</Button>
 					</Col>
 				</Row>
@@ -157,4 +192,4 @@ export const ListingForm: React.FC<ListingFormProps> = ({
 	);
 };
 
-export default ListingForm;
+export default EditListingForm;
