@@ -1,6 +1,7 @@
 # Payment Mock Server
 A simple Express-based mock server for payment API testing.
 
+
 ## Endpoints
 - GET /pts/v2/public-key — generatePublicKey endpoint
 - POST /pts/v2/customers — createCustomerProfile endpoint

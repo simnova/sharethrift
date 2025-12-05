@@ -24,7 +24,7 @@
 		"clean": "rimraf dist"
 	},
 	"dependencies": {
-		"@apollo/server": "^4.11.3",
+		"@apollo/server": "^5.2.0",
 		"@apollo/utils.withrequired": "^3.0.0",
 		"@as-integrations/azure-functions": "^0.2.0",
 		"@azure/functions": "^4.0.0",
