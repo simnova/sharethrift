@@ -18,6 +18,7 @@ export const HomeRoutes: React.FC = () => {
       <Route path="" element={<SectionLayout />}>
         <Route path="" element={<Listings />} />
         <Route path="listing/:listingId" element={<ViewListing />} />
+        {/* Public route - user profiles are viewable without authentication */}
         <Route path="user/:userId" element={<ViewUserProfile />} />
         <Route
           path="create-listing"

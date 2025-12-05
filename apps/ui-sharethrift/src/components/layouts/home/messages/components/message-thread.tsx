@@ -1,6 +1,6 @@
 import { List, Input, Button, Spin, Empty, message as antdMessage } from "antd";
 import { SendOutlined } from "@ant-design/icons";
-import { useRef } from "react";
+import { useRef, useCallback } from "react";
 import { UserAvatar } from "../../../../shared/user-avatar.tsx";
 
 interface Message {
@@ -34,8 +34,8 @@ interface MessageThreadProps {
 export const MessageThread: React.FC<MessageThreadProps> = (props) => {
   const messagesEndRef = useRef<HTMLDivElement | null>(null);
 
-  // Helper to get display name for a given authorId
-  const getAuthorDisplayName = (authorId: string): string => {
+  // Helper to get display name for a given authorId - memoized for performance
+  const getAuthorDisplayName = useCallback((authorId: string): string => {
     if (props.sharer?.id === authorId) {
       return props.sharer.displayName || "Sharer";
     }
@@ -43,7 +43,7 @@ export const MessageThread: React.FC<MessageThreadProps> = (props) => {
       return props.reserver.displayName || "Reserver";
     }
     return "User";
-  };
+  }, [props.sharer, props.reserver]);
 
   if (props.loading) {
     return (

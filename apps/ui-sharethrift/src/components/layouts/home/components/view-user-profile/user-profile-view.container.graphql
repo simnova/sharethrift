@@ -1,3 +1,5 @@
+# Public query - no authentication required
+# Returns limited profile information for any user
 query HomeViewUserProfileContainerUserById($userId: ObjectID!) {
 	userById(id: $userId) {
 		... on PersonalUser {

@@ -1,4 +1,5 @@
 import { useParams, useNavigate } from "react-router-dom";
+import { useMemo, useCallback } from "react";
 import { ProfileView } from "../../account/profile/components/profile-view.tsx";
 import { useQuery } from "@apollo/client/react";
 import { ComponentQueryLoader } from "@sthrift/ui-components";
@@ -7,6 +8,12 @@ import {
   HomeViewUserProfileContainerUserByIdDocument,
 } from "../../../../../generated.tsx";
 
+/**
+ * Container component for viewing another user's public profile.
+ * Fetches user data and renders the ProfileView in read-only mode.
+ * This route is publicly accessible without authentication.
+ * @returns JSX element containing the user profile view with loading/error states
+ */
 export const UserProfileViewContainer: React.FC = () => {
   const { userId } = useParams<{ userId: string }>();
   const navigate = useNavigate();
@@ -20,18 +27,18 @@ export const UserProfileViewContainer: React.FC = () => {
     skip: !userId,
   });
 
-  const handleListingClick = (listingId: string) => {
-    navigate(`/listing/${listingId}`);
-  };
-
-  if (!userId) {
-    return <div>User ID is required</div>;
-  }
-
   const viewedUser = userQueryData?.userById;
 
-  const buildProfileUser = () => {
+  const handleListingClick = useCallback((listingId: string) => {
+    navigate(`/listing/${listingId}`);
+  }, [navigate]);
+
+  // Build profile user data from the query response - memoized for performance
+  const profileUser = useMemo(() => {
     if (!viewedUser) return null;
+
+    // viewedUser is a union type (PersonalUser | AdminUser) - both have the same account structure
+    if (!('account' in viewedUser)) return null;
 
     const { account, createdAt } = viewedUser;
     return {
@@ -47,13 +54,16 @@ export const UserProfileViewContainer: React.FC = () => {
       },
       createdAt: createdAt || "",
     };
-  };
+  }, [viewedUser]);
 
-  // For viewing other users' profiles, we don't show their listings
-  // This would require a backend query to fetch public listings by user ID
+  // TODO: Implement public listings query for user profiles
+  // Currently, viewing other users' profiles doesn't show their listings.
+  // This would require a backend query to fetch public listings by user ID.
   const listings: ItemListing[] = [];
 
-  const profileUser = buildProfileUser();
+  if (!userId) {
+    return <div>User ID is required</div>;
+  }
 
   return (
     <ComponentQueryLoader
