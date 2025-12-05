@@ -28,8 +28,8 @@ export interface ReadonlyDataSource {
 			AdminUserReadRepo: AdminUser.AdminUserReadRepository;
 		};
 		User: {
-      UserReadRepo: User.UserReadRepository;
-    }
+			UserReadRepo: User.UserReadRepository;
+		};
 	};
 	ReservationRequest: {
 		ReservationRequest: {
@@ -61,14 +61,16 @@ export interface ReadonlyDataSource {
 	};
 }
 
-export const ReadonlyDataSourceImplementation = (
+export function ReadonlyDataSourceImplementation(
 	models: ModelsContext,
 	passport: Domain.Passport,
-): ReadonlyDataSource => ({
-	User: UserContext(models, passport),
-	ReservationRequest: ReservationRequestContext(models, passport),
-	Listing: ListingContext(models, passport),
-	Conversation: ConversationContext(models, passport),
-	AccountPlan: AccountPlanContext(models, passport),
-	AppealRequest: AppealRequestContext(models, passport),
-});
+): ReadonlyDataSource {
+	return {
+		User: UserContext(models, passport),
+		ReservationRequest: ReservationRequestContext(models, passport),
+		Listing: ListingContext(models, passport),
+		Conversation: ConversationContext(models, passport),
+		AccountPlan: AccountPlanContext(models, passport),
+		AppealRequest: AppealRequestContext(models, passport),
+	};
+}

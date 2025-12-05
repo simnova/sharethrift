@@ -31,6 +31,7 @@ test.for(feature, ({ Scenario }) => {
 				User: {
 					PersonalUser: {} as unknown,
 					AdminUser: {} as unknown,
+					User: {} as unknown,
 				},
 			} as ModelsContext;
 		});
@@ -65,7 +66,7 @@ test.for(feature, ({ Scenario }) => {
 	Scenario('Getting user by ID finds PersonalUser', ({ Given, And, When, Then }) => {
 		let userContext: ReturnType<typeof UserIndex.UserContext>;
 		let result: unknown;
-		const mockPersonalUser = { id: 'user-123', userType: 'personal-user' };
+		const mockPersonalUser = { id: 'user-123', userType: 'personal-users' };
 
 		Given('a UserContext with mocked repositories', () => {
 			const createQueryChain = (value: unknown) => ({
@@ -177,7 +178,7 @@ test.for(feature, ({ Scenario }) => {
 	Scenario('Getting user by email finds PersonalUser', ({ Given, And, When, Then }) => {
 		let userContext: ReturnType<typeof UserIndex.UserContext>;
 		let result: unknown;
-		const mockPersonalUser = { email: 'user@example.com', userType: 'personal-user' };
+		const mockPersonalUser = { email: 'user@example.com', userType: 'personal-users' };
 
 		Given('a UserContext with mocked repositories', () => {
 			const createQueryChain = (value: unknown) => ({
@@ -197,6 +198,10 @@ test.for(feature, ({ Scenario }) => {
 					AdminUser: {
 						find: () => createQueryChain([]),
 						findOne: () => createQueryChain(null),
+					},
+					User: {
+						find: () => createQueryChain([]),
+						findOne: () => createQueryChain(mockPersonalUser),
 					},
 				},
 			} as unknown as ModelsContext;
@@ -244,6 +249,10 @@ test.for(feature, ({ Scenario }) => {
 						findOne: () => createQueryChain(null),
 					},
 					AdminUser: {
+						find: () => createQueryChain([]),
+						findOne: () => createQueryChain(mockAdminUser),
+					},
+					User: {
 						find: () => createQueryChain([]),
 						findOne: () => createQueryChain(mockAdminUser),
 					},
