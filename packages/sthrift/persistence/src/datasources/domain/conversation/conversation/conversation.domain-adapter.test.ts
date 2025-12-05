@@ -16,7 +16,7 @@ const feature = await loadFeature(
 function makeUserDoc(overrides: Partial<Models.User.PersonalUser> = {}) {
 	const base = {
 		id: new MongooseSeedwork.ObjectId(),
-		userType: 'personal-user',
+		userType: 'personal-users',
 		isBlocked: false,
 		hasCompletedOnboarding: true,
 		account: {

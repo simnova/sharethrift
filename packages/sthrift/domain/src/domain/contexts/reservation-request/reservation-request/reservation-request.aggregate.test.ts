@@ -62,7 +62,7 @@ test.for(feature, ({ Scenario, BeforeEachScenario }) => {
 
 	const createMockPersonalUser = (id = 'user-1'): PersonalUserEntityReference => ({
 		id,
-		userType: 'personal',
+		userType: 'personal-users',
 		isBlocked: false,
 		schemaVersion: '1',
 		hasCompletedOnboarding: true,

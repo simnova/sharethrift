@@ -240,7 +240,7 @@ test.for(feature, ({ Scenario, Background, BeforeEachScenario }) => {
 			doc.user = oid as never;
 			const populatedUser = {
 				id: '123',
-				userType: 'personal-user',
+				userType: 'personal-users',
 				isBlocked: false,
 				hasCompletedOnboarding: true,
 				account: {
@@ -286,7 +286,7 @@ test.for(feature, ({ Scenario, Background, BeforeEachScenario }) => {
 			doc.blocker = oid as never;
 			const populatedBlocker = {
 				id: '123',
-				userType: 'personal-user',
+				userType: 'personal-users',
 				isBlocked: false,
 				hasCompletedOnboarding: true,
 				account: {

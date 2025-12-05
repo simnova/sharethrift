@@ -204,7 +204,7 @@ test.for(feature, ({ Scenario, Background, BeforeEachScenario }) => {
 		When('the sharer is a populated PersonalUser document', () => {
 			doc.sharer = { 
 				id: '123', 
-				userType: 'personal-user',
+				userType: 'personal-users',
 				account: { email: 'test@test.com' }
 			} as never;
 		});
@@ -239,7 +239,7 @@ test.for(feature, ({ Scenario, Background, BeforeEachScenario }) => {
 			doc.populate = vi.fn(async function(this: Models.Listing.ItemListing) {
 				this.sharer = { 
 					id: '789', 
-					userType: 'personal-user',
+					userType: 'personal-users',
 					isBlocked: false,
 					hasCompletedOnboarding: true,
 					account: {
@@ -274,7 +274,7 @@ test.for(feature, ({ Scenario, Background, BeforeEachScenario }) => {
 		And('return a domain adapter', async () => {
 			doc.sharer = { 
 				id: '789', 
-				userType: 'personal-user',
+				userType: 'personal-users',
 				isBlocked: false,
 				hasCompletedOnboarding: true,
 				account: {

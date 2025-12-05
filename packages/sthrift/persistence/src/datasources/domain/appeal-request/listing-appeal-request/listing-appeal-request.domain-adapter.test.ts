@@ -244,7 +244,7 @@ test.for(feature, ({ Scenario, Background, BeforeEachScenario }) => {
 			doc.user = new MongooseSeedwork.ObjectId() as never;
 			const populatedUser = {
 				id: '123',
-				userType: 'personal-user',
+				userType: 'personal-users',
 				isBlocked: false,
 				hasCompletedOnboarding: true,
 				account: {
@@ -306,7 +306,7 @@ test.for(feature, ({ Scenario, Background, BeforeEachScenario }) => {
 			doc.blocker = new MongooseSeedwork.ObjectId() as never;
 			const populatedBlocker = {
 				id: '123',
-				userType: 'personal-user',
+				userType: 'personal-users',
 				isBlocked: false,
 				hasCompletedOnboarding: true,
 				account: {
