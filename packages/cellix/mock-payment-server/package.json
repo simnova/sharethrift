@@ -15,7 +15,7 @@
 		"@cellix/typescript-config": "workspace:*",
 		
 		"@types/express": "^4.17.21",
-		"@types/jsonwebtoken": "^9.0.10",
+		"@types/jsonwebtoken": "^9.0.3",
 		"ts-node": "^10.9.2",
 		"ts-node-dev": "^2.0.0",
 		"tsc-watch": "^7.1.1",
