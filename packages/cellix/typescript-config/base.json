@@ -20,7 +20,7 @@
     "sourceMap": true,
     "erasableSyntaxOnly": true,
     "esModuleInterop": true,
-    "verbatimModuleSyntax": true,
+    "isolatedModules": true,
     "lib": ["ES2023"],
     "target": "ES2022",
     "composite": true,

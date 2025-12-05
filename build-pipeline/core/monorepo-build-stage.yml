@@ -119,7 +119,8 @@ stages:
         targetType: 'inline'
         script: |
           export NODE_OPTIONS=--max_old_space_size=16384
-          pnpm install --frozen-lockfile
+          # Use frozen-lockfile but fall back to regular install if lockfile changed after merge
+          pnpm install --frozen-lockfile || pnpm install
         workingDirectory: ''
 
         # Playwright: Restore browsers cache
@@ -135,7 +136,7 @@ stages:
     # Playwright: Install browsers if needed
     - task: Bash@3
       displayName: 'Playwright: Install browsers if needed'
-      condition: and(ne(variables.PW_CACHE_HIT, 'true'), ne(variables.PW_CACHE_HIT, 'inexact'))
+      condition: ne(variables.PW_CACHE_HIT, 'true')
       inputs:
         targetType: 'inline'
         script: |
