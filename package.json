@@ -71,5 +71,8 @@
     "jws@<3.2.3": ">=3.2.3",
     "@vitest/coverage-v8>test-exclude>glob@>=11.0.0 <11.1.0": ">=11.1.0",
     "jsonwebtoken>jws@<3.2.3": ">=3.2.3"
+  },
+  "patchedDependencies": {
+    "gray-matter@4.0.3": "patches/gray-matter@4.0.3.patch"
   }
 }

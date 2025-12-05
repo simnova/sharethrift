@@ -33,6 +33,11 @@ overrides:
   webpack-dev-server@<=5.2.0: '>=5.2.1'
   xml2js@<0.5.0: '>=0.5.0'
 
+patchedDependencies:
+  gray-matter@4.0.3:
+    hash: ad4f157890c247910bfb55846e34a3ca33630f06b2319d9427d15d9c94cac6fe
+    path: patches/gray-matter@4.0.3.patch
+
 importers:
 
   .:
@@ -14413,7 +14418,7 @@ snapshots:
       fs-extra: 11.3.2
       github-slugger: 1.5.0
       globby: 11.1.0
-      gray-matter: 4.0.3
+      gray-matter: 4.0.3(patch_hash=ad4f157890c247910bfb55846e34a3ca33630f06b2319d9427d15d9c94cac6fe)
       jiti: 1.21.7
       js-yaml: 4.1.1
       lodash: 4.17.21
@@ -19451,7 +19456,7 @@ snapshots:
 
   graphql@16.12.0: {}
 
-  gray-matter@4.0.3:
+  gray-matter@4.0.3(patch_hash=ad4f157890c247910bfb55846e34a3ca33630f06b2319d9427d15d9c94cac6fe):
     dependencies:
       js-yaml: 4.1.1
       kind-of: 6.0.3
