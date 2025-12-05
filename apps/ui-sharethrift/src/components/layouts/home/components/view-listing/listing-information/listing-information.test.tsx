@@ -2,7 +2,7 @@ import { render, screen, fireEvent } from '@testing-library/react';
 import { describe, it, expect, beforeEach, vi } from 'vitest';
 import dayjs from 'dayjs';
 import { ListingInformation } from './listing-information';
-import type { ItemListing, ViewListingActiveReservationRequestForListingQuery } from '../../../../../../generated.tsx';
+import type { ItemListing } from '../../../../../../generated.tsx';
 
 // Mock react-router-dom
 vi.mock('react-router-dom', () => ({
@@ -641,7 +641,7 @@ describe('ListingInformation', () => {
 		});
 
 		it('changes button type based on reservation request status', () => {
-			const { container } = render(
+			render(
 				<ListingInformation
 					{...defaultProps}
 					isAuthenticated={true}
