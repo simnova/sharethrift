@@ -52,6 +52,16 @@ export const ViewListing: React.FC<ViewListingProps> = ({
 				}}
 			>
 				<Col span={24}>
+					<Button
+						type="link"
+						icon={<LeftOutlined />}
+						onClick={handleBack}
+						style={{ marginBottom: 16 }}
+					>
+						Back
+					</Button>
+				</Col>
+				<Col span={24}>
 					<Alert
 						message="Access Denied"
 						description="This listing is currently blocked and cannot be viewed."

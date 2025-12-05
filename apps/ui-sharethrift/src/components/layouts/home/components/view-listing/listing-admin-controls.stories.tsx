@@ -50,18 +50,7 @@ const successfulBlockMock = {
 	},
 	result: {
 		data: {
-			blockListing: {
-				__typename: 'ItemListingMutationResult',
-				listing: {
-					...mockListing,
-					state: 'Blocked',
-				},
-				status: {
-					__typename: 'MutationStatus',
-					success: true,
-					errorMessage: null,
-				},
-			},
+			blockListing: true,
 		},
 	},
 };
@@ -73,18 +62,7 @@ const successfulUnblockMock = {
 	},
 	result: {
 		data: {
-			unblockListing: {
-				__typename: 'ItemListingMutationResult',
-				listing: {
-					...mockListing,
-					state: 'Active',
-				},
-				status: {
-					__typename: 'MutationStatus',
-					success: true,
-					errorMessage: null,
-				},
-			},
+			unblockListing: true,
 		},
 	},
 };
