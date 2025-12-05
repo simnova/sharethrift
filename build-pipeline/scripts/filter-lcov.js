@@ -11,17 +11,30 @@ function filterLcovFile() {
   const rootDir = process.cwd();
   const inputFile = path.join(rootDir, 'coverage', 'lcov.info');
   
+  console.log('=== LCOV Filter Script ===');
+  console.log(`Working directory: ${rootDir}`);
+  console.log(`Looking for: ${inputFile}`);
+  
   if (!fs.existsSync(inputFile)) {
-    console.log('No lcov.info file found to filter');
+    console.log('❌ No lcov.info file found to filter');
     return;
   }
+  
+  console.log('✅ Found lcov.info file');
   
   const content = fs.readFileSync(inputFile, 'utf8');
   const lines = content.split('\n');
   
+  console.log(`Total lines in lcov.info: ${lines.length}`);
+  
+  // Count SF: lines to see total files
+  const totalFiles = lines.filter(l => l.startsWith('SF:')).length;
+  console.log(`Total files in coverage: ${totalFiles}`);
+  
   let filteredLines = [];
   let currentBlock = [];
   let skip = false;
+  let filteredCount = 0;
   
   for (const line of lines) {
     if (line.startsWith('SF:')) {
@@ -30,11 +43,14 @@ function filterLcovFile() {
       
       // Check if this file should be excluded
       const filePath = line.substring(3);
-      skip = filePath.includes('/apps/ui-sharethrift/src/components/') ||
-             filePath.includes('\\apps\\ui-sharethrift\\src\\components\\');
+      // Match various path formats: apps/ui-sharethrift/src/components/ or /apps/ui-sharethrift/src/components/
+      skip = filePath.includes('apps/ui-sharethrift/src/components/') ||
+             filePath.includes('apps\\ui-sharethrift\\src\\components\\') ||
+             filePath.match(/ui-sharethrift[/\\]src[/\\]components[/\\]/);
       
       if (skip) {
-        console.log(`Filtering out: ${filePath}`);
+        console.log(`🚫 Filtering out: ${filePath}`);
+        filteredCount++;
       }
     } else if (line.startsWith('end_of_record')) {
       // End of file block
@@ -57,9 +73,13 @@ function filterLcovFile() {
   const filteredContent = filteredLines.join('\n');
   fs.writeFileSync(inputFile, filteredContent);
   
-  console.log('LCOV filtering complete');
+  console.log('');
+  console.log('=== Filtering Complete ===');
+  console.log(`Files filtered out: ${filteredCount}`);
+  console.log(`Files remaining: ${totalFiles - filteredCount}`);
   console.log(`Original size: ${content.length} bytes`);
   console.log(`Filtered size: ${filteredContent.length} bytes`);
+  console.log(`Reduction: ${((1 - filteredContent.length / content.length) * 100).toFixed(2)}%`);
 }
 
 filterLcovFile();
