@@ -1356,6 +1356,9 @@ importers:
       '@vitest/coverage-v8':
         specifier: ^3.2.4
         version: 3.2.4(@vitest/browser@3.2.4)(vitest@3.2.4)
+      glob:
+        specifier: ^13.0.0
+        version: 13.0.0
       jsdom:
         specifier: ^26.1.0
         version: 26.1.0
