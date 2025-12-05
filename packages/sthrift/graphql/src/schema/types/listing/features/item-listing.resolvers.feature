@@ -7,18 +7,17 @@ So that I can view, filter, and create listings through the GraphQL API
 	Scenario: Querying item listings for a verified user
 		Given a user with a verifiedJwt in their context
 		When the itemListings query is executed
-		Then it should call Listing.ItemListing.queryBySharer with the user's sub
-		And it should map the results using toGraphItem
+		Then it should call Listing.ItemListing.queryAll
 		And it should return a list of item listings
 
 	Scenario: Querying item listings without authentication
 		Given a user without a verifiedJwt in their context
 		When the itemListings query is executed
 		Then it should call Listing.ItemListing.queryAll
-		And it should return all available listings mapped with toGraphItem
+		And it should return all available listings
 
 	Scenario: Error while querying item listings
-		Given Listing.ItemListing.queryBySharer throws an error
+		Given Listing.ItemListing.queryAll throws an error
 		When the itemListings query is executed
 		Then it should propagate the error message
 
@@ -26,7 +25,6 @@ So that I can view, filter, and create listings through the GraphQL API
 		Given a valid listing ID
 		When the itemListing query is executed with that ID
 		Then it should call Listing.ItemListing.queryById with the provided ID
-		And it should map the result using toGraphItem
 		And it should return the corresponding listing
 
 	Scenario: Querying an item listing that does not exist
@@ -34,7 +32,7 @@ So that I can view, filter, and create listings through the GraphQL API
 		When the itemListing query is executed
 		Then it should return null
 
-	Scenario: Error while querying a single item listing
+    Scenario: Error while querying a single item listing
 		Given Listing.ItemListing.queryById throws an error
 		When the itemListing query is executed
 		Then it should propagate the error message
@@ -44,11 +42,11 @@ So that I can view, filter, and create listings through the GraphQL API
 		And valid pagination arguments (page, pageSize)
 		When the myListingsAll query is executed
 		Then it should call Listing.ItemListing.queryPaged with sharerId, page, and pageSize
-		And it should transform each listing into ListingAll shape
+        And it should transform each listing into ListingAll shape
 		And it should map state values like "Published" to "Active" and "Drafted" to "Draft"
 		And it should return items, total, page, and pageSize in the response
-
-	Scenario: Querying myListingsAll with search and filters
+    
+    Scenario: Querying myListingsAll with search and filters
 		Given a verified user and valid pagination arguments
 		And a searchText "camera" and statusFilters ["Published"]
 		When the myListingsAll query is executed
@@ -59,7 +57,7 @@ So that I can view, filter, and create listings through the GraphQL API
 		Given a user without a verifiedJwt in their context
 		When the myListingsAll query is executed
 		Then it should call Listing.ItemListing.queryPaged without sharerId
-		And it should still return paged results
+        And it should still return paged results
 
 	Scenario: Error while querying myListingsAll
 		Given Listing.ItemListing.queryPaged throws an error
@@ -72,7 +70,6 @@ So that I can view, filter, and create listings through the GraphQL API
 		When the createItemListing mutation is executed
 		Then it should call User.PersonalUser.queryByEmail with the user's email
 		And call Listing.ItemListing.create with the constructed command
-		And map the result using toGraphItem
 		And it should return the created listing
 
 	Scenario: Creating an item listing without authentication
@@ -85,14 +82,45 @@ So that I can view, filter, and create listings through the GraphQL API
 		When the createItemListing mutation is executed
 		Then it should throw a "User not found" error
 
-	Scenario: Error while creating an item listing
+    Scenario: Error while creating an item listing
 		Given Listing.ItemListing.create throws an error
 		When the createItemListing mutation is executed
 		Then it should propagate the error message
-
+    
 	Scenario: Mapping item listing fields for myListingsAll
 		Given a valid result from queryPaged
 		When items are mapped
 		Then each listing should include id, title, image, publishedAt, reservationPeriod, status, and pendingRequestsCount
 		And missing images should map image to null
 		And missing or blank states should map status to "Unknown"
+
+	Scenario: Querying adminListings with all filters
+		Given an admin user with valid credentials
+		And pagination arguments with searchText, statusFilters, and sorter
+		When the adminListings query is executed
+		Then it should call Listing.ItemListing.queryPaged with all provided parameters
+		And it should return paginated results
+
+	Scenario: Querying adminListings without any filters
+		Given an admin user with valid credentials
+		When the adminListings query is executed with only page and pageSize
+		Then it should call Listing.ItemListing.queryPaged with minimal parameters
+		And it should return all listings
+
+	Scenario: Unblocking a listing successfully
+		Given a valid listing ID to unblock
+		When the unblockListing mutation is executed
+		Then it should call Listing.ItemListing.unblock with the ID
+		And it should return true
+
+	Scenario: Canceling an item listing successfully
+		Given a valid listing ID to cancel
+		When the cancelItemListing mutation is executed
+		Then it should call Listing.ItemListing.cancel with the ID
+		And it should return success status and the canceled listing
+
+	Scenario: Deleting an item listing successfully
+		Given a valid listing ID and authenticated user email
+		When the deleteItemListing mutation is executed
+		Then it should call Listing.ItemListing.deleteListings with ID and email
+		And it should return success status

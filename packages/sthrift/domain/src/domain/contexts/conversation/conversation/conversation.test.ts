@@ -1,18 +1,15 @@
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { describeFeature, loadFeature } from '@amiceli/vitest-cucumber';
+import { DomainSeedwork } from '@cellix/domain-seedwork';
 import { expect, vi } from 'vitest';
+import type { ItemListingProps } from '../../listing/item/item-listing.entity.ts';
+import { ItemListing } from '../../listing/item/item-listing.ts';
+import type { Passport } from '../../passport.ts';
+import type { PersonalUserProps } from '../../user/personal-user/personal-user.entity.ts';
+import { PersonalUser } from '../../user/personal-user/personal-user.ts';
 import type { ConversationProps } from './conversation.entity.ts';
 import { Conversation } from './conversation.ts';
-import { DomainSeedwork } from '@cellix/domain-seedwork';
-import type { Passport } from '../../passport.ts';
-import { PersonalUser } from '../../user/personal-user/personal-user.ts';
-import type { PersonalUserProps } from '../../user/personal-user/personal-user.entity.ts';
-import { ItemListing } from '../../listing/item/item-listing.ts';
-import type { ItemListingProps } from '../../listing/item/item-listing.entity.ts';
-import { PersonalUserRolePermissions } from '../../role/personal-user-role/personal-user-role-permissions.ts';
-import { PersonalUserRole } from '../../role/personal-user-role/personal-user-role.ts';
-
 
 const test = { for: describeFeature };
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
@@ -44,42 +41,9 @@ function makePassport(canManageConversation = false): Passport {
 function makeBaseProps(
 	overrides: Partial<ConversationProps> = {},
 ): ConversationProps {
-	// Provide a valid PersonalUserPermissions value object for permissions
-	const permissions = new PersonalUserRolePermissions({
-		listingPermissions: {
-			canCreateItemListing: true,
-			canUpdateItemListing: true,
-			canDeleteItemListing: true,
-			canViewItemListing: true,
-			canPublishItemListing: true,
-			canUnpublishItemListing: true,
-		},
-		conversationPermissions: {
-			canCreateConversation: true,
-			canManageConversation: true,
-			canViewConversation: true,
-		},
-		reservationRequestPermissions: {
-			canCreateReservationRequest: true,
-			canManageReservationRequest: true,
-			canViewReservationRequest: true,
-		},
-	});
-	const roleProps = {
-		id: 'role-1',
-		name: 'default',
-		roleName: 'default',
-		isDefault: true,
-		roleType: 'personal',
-		permissions,
-		createdAt: new Date('2020-01-01T00:00:00Z'),
-		updatedAt: new Date('2020-01-02T00:00:00Z'),
-		schemaVersion: '1.0.0',
-	};
-	const role = new PersonalUserRole(roleProps, makePassport());
 	const user = new PersonalUser<PersonalUserProps>(
 		{
-			userType: 'end-user',
+			userType: 'personal-users',
 			id: 'user-1',
 			isBlocked: false,
 			schemaVersion: '1.0.0',
@@ -91,6 +55,7 @@ function makeBaseProps(
 				profile: {
 					firstName: 'Sharer',
 					lastName: 'Sharer',
+					aboutMe: 'Hello',
 					location: {
 						address1: '123 Main St',
 						address2: null,
@@ -100,24 +65,49 @@ function makeBaseProps(
 						zipCode: '12345',
 					},
 					billing: {
-						subscriptionId: null,
 						cybersourceCustomerId: null,
-						paymentState: '',
-						lastTransactionId: null,
-						lastPaymentAmount: null,
+						subscription: {
+							planCode: 'verified-personal',
+							status: 'ACTIVE',
+							startDate: new Date('2020-01-01T00:00:00Z'),
+							subscriptionId: 'sub_123',
+						},
+						transactions: {
+							items: [
+								{
+									id: '1',
+									transactionId: 'txn_123',
+									amount: 1000,
+									referenceId: 'ref_123',
+									status: 'completed',
+									completedAt: new Date('2020-01-01T00:00:00Z'),
+									errorMessage: null,
+								},
+							],
+							getNewItem: () => ({
+								id: '2',
+								transactionId: 'txn_123',
+								amount: 1000,
+								referenceId: 'ref_123',
+								status: 'completed',
+								completedAt: new Date('2020-01-01T00:00:00Z'),
+								errorMessage: null,
+							}),
+							addItem: vi.fn(),
+							removeItem: vi.fn(),
+							removeAll: vi.fn(),
+						},
 					},
 				},
 			},
 			createdAt: new Date('2020-01-01T00:00:00Z'),
 			updatedAt: new Date('2020-01-02T00:00:00Z'),
-			role,
-			loadRole: async () => role,
 		},
 		makePassport(),
 	);
 	const reserver = new PersonalUser<PersonalUserProps>(
 		{
-			userType: 'end-user',
+			userType: 'personal-users',
 			id: 'user-2',
 			isBlocked: false,
 			schemaVersion: '1.0.0',
@@ -129,6 +119,7 @@ function makeBaseProps(
 				profile: {
 					firstName: 'Reserver',
 					lastName: 'Reserver',
+					aboutMe: 'Hello',
 					location: {
 						address1: '456 Main St',
 						address2: null,
@@ -138,18 +129,43 @@ function makeBaseProps(
 						zipCode: '12345',
 					},
 					billing: {
-						subscriptionId: null,
 						cybersourceCustomerId: null,
-						paymentState: '',
-						lastTransactionId: null,
-						lastPaymentAmount: null,
+						subscription: {
+							planCode: 'basic',
+							status: 'ACTIVE',
+							startDate: new Date('2020-01-01T00:00:00Z'),
+							subscriptionId: 'sub_456',
+						},
+						transactions: {
+							items: [
+								{
+									id: '1',
+									transactionId: 'txn_123',
+									amount: 1000,
+									referenceId: 'ref_123',
+									status: 'completed',
+									completedAt: new Date('2020-01-01T00:00:00Z'),
+									errorMessage: null,
+								},
+							],
+							getNewItem: () => ({
+								id: '2',
+								transactionId: 'txn_123',
+								amount: 1000,
+								referenceId: 'ref_123',
+								status: 'completed',
+								completedAt: new Date('2020-01-01T00:00:00Z'),
+								errorMessage: null,
+							}),
+							addItem: vi.fn(),
+							removeItem: vi.fn(),
+							removeAll: vi.fn(),
+						},
 					},
 				},
 			},
 			createdAt: new Date('2020-01-01T00:00:00Z'),
 			updatedAt: new Date('2020-01-02T00:00:00Z'),
-			role,
-			loadRole: async () => role,
 		},
 		makePassport(),
 	);
@@ -170,6 +186,7 @@ function makeBaseProps(
 			createdAt: new Date('2020-01-01T00:00:00Z'),
 			updatedAt: new Date('2020-01-02T00:00:00Z'),
 			schemaVersion: '1.0.0',
+			listingType: 'item-listing',
 		},
 		makePassport(),
 	);
@@ -182,8 +199,8 @@ function makeBaseProps(
 		listing,
 		loadListing: async () => listing,
 		messages: [],
-        loadMessages: async () => [],
-		twilioConversationId: 'twilio-123',
+		loadMessages: async () => [],
+		messagingConversationId: 'twilio-123',
 		createdAt: new Date('2020-01-01T00:00:00Z'),
 		updatedAt: new Date('2020-01-02T00:00:00Z'),
 		schemaVersion: '1.0.0',
@@ -222,6 +239,7 @@ test.for(feature, ({ Scenario, Background, BeforeEachScenario }) => {
 				baseProps.reserver,
 				baseProps.listing,
 				[],
+				'mock-messaging-conversation-id',
 				passport,
 			);
 		});
@@ -235,8 +253,10 @@ test.for(feature, ({ Scenario, Background, BeforeEachScenario }) => {
 				expect(newConversation.listing.id).toBe('listing-1');
 			},
 		);
-		Then('the conversation should have a twilioConversationId', () => {
-			expect(newConversation.twilioConversationId).toBe('twilio-123');
+		Then('the conversation should have a messagingConversationId', () => {
+			expect(newConversation.messagingConversationId).toBe(
+				'mock-messaging-conversation-id',
+			);
 		});
 	});
 
@@ -250,16 +270,59 @@ test.for(feature, ({ Scenario, Background, BeforeEachScenario }) => {
 			},
 		);
 		When('I set the sharer to a new user', () => {
+			const originalSharer =
+				conversation.sharer as PersonalUser<PersonalUserProps>;
 			newSharer = new PersonalUser(
 				{
-					...conversation.sharer,
+					userType: 'personal-users',
 					id: 'user-3',
-					externalId: 'user-external-3',
+					isBlocked: false,
+					schemaVersion: '1.0.0',
+					hasCompletedOnboarding: false,
 					account: {
-						...conversation.sharer.account,
+						accountType: originalSharer.account.accountType,
 						email: 'newsharer@cellix.com',
 						username: 'newsharer',
+						profile: {
+							firstName: originalSharer.account.profile.firstName,
+							lastName: originalSharer.account.profile.lastName,
+							aboutMe: originalSharer.account.profile.aboutMe,
+							location: originalSharer.account.profile.location,
+						billing: {
+							cybersourceCustomerId:
+								originalSharer.account.profile.billing.cybersourceCustomerId,
+							subscription:
+								originalSharer.account.profile.billing.subscription,
+							transactions: {
+								items: [
+										{
+											id: '1',
+											transactionId: 'txn_123',
+											amount: 1000,
+											referenceId: 'ref_123',
+											status: 'completed',
+											completedAt: new Date('2020-01-01T00:00:00Z'),
+											errorMessage: null,
+										},
+									],
+									getNewItem: () => ({
+										id: '2',
+										transactionId: 'txn_123',
+										amount: 1000,
+										referenceId: 'ref_123',
+										status: 'completed',
+										completedAt: new Date('2020-01-01T00:00:00Z'),
+										errorMessage: null,
+									}),
+									addItem: vi.fn(),
+									removeItem: vi.fn(),
+									removeAll: vi.fn(),
+								},
+							},
+						},
 					},
+					createdAt: originalSharer.createdAt,
+					updatedAt: originalSharer.updatedAt,
 				},
 				passport,
 			);
@@ -284,14 +347,61 @@ test.for(feature, ({ Scenario, Background, BeforeEachScenario }) => {
 			);
 			When('I try to set the sharer to a new user', () => {
 				setSharerWithoutPermission = () => {
+					const originalSharer =
+						conversation.sharer as PersonalUser<PersonalUserProps>;
 					// @ts-expect-error: testing private setter
 					conversation.sharer = new PersonalUser(
 						{
-							...conversation.sharer,
+							userType: 'personal-users',
 							id: 'user-3',
-							externalId: 'user-external-3',
-							displayName: 'New Sharer',
-							email: 'newsharer@cellix.com',
+							isBlocked: false,
+							schemaVersion: '1.0.0',
+							hasCompletedOnboarding: false,
+							account: {
+								accountType: originalSharer.account.accountType,
+								email: 'newsharer@cellix.com',
+								username: 'newsharer',
+								profile: {
+									firstName: originalSharer.account.profile.firstName,
+									lastName: originalSharer.account.profile.lastName,
+									aboutMe: originalSharer.account.profile.aboutMe,
+									location: originalSharer.account.profile.location,
+									billing: {
+										cybersourceCustomerId:
+											originalSharer.account.profile.billing
+												.cybersourceCustomerId,
+										subscription:
+											originalSharer.account.profile.billing.subscription,
+										transactions: {
+											items: [
+												{
+													id: '1',
+													transactionId: 'txn_123',
+													amount: 1000,
+													referenceId: 'ref_123',
+													status: 'completed',
+													completedAt: new Date('2020-01-01T00:00:00Z'),
+													errorMessage: null,
+												},
+											],
+											getNewItem: () => ({
+												id: '2',
+												transactionId: 'txn_123',
+												amount: 1000,
+												referenceId: 'ref_123',
+												status: 'completed',
+												completedAt: new Date('2020-01-01T00:00:00Z'),
+												errorMessage: null,
+											}),
+											addItem: vi.fn(),
+											removeItem: vi.fn(),
+											removeAll: vi.fn(),
+										},
+									},
+								},
+							},
+							createdAt: originalSharer.createdAt,
+							updatedAt: originalSharer.updatedAt,
 						},
 						passport,
 					);
@@ -318,16 +428,60 @@ test.for(feature, ({ Scenario, Background, BeforeEachScenario }) => {
 			},
 		);
 		When('I set the reserver to a new user', () => {
+			const originalReserver =
+				conversation.reserver as PersonalUser<PersonalUserProps>;
 			newReserver = new PersonalUser(
 				{
-					...conversation.reserver,
+					userType: 'personal-users',
 					id: 'user-4',
-					externalId: 'user-external-4',
+					isBlocked: false,
+					schemaVersion: '1.0.0',
+					hasCompletedOnboarding: false,
 					account: {
-						...conversation.reserver.account,
+						accountType: originalReserver.account.accountType,
 						email: 'newreserver@cellix.com',
 						username: 'newreserver',
+						profile: {
+							firstName: originalReserver.account.profile.firstName,
+							lastName: originalReserver.account.profile.lastName,
+							aboutMe: originalReserver.account.profile.aboutMe,
+							location: originalReserver.account.profile.location,
+						billing: {
+							cybersourceCustomerId:
+								originalReserver.account.profile.billing
+									.cybersourceCustomerId,
+							subscription:
+								originalReserver.account.profile.billing.subscription,
+							transactions: {
+								items: [
+										{
+											id: '1',
+											transactionId: 'txn_123',
+											amount: 1000,
+											referenceId: 'ref_123',
+											status: 'completed',
+											completedAt: new Date('2020-01-01T00:00:00Z'),
+											errorMessage: null,
+										},
+									],
+									getNewItem: () => ({
+										id: '2',
+										transactionId: 'txn_123',
+										amount: 1000,
+										referenceId: 'ref_123',
+										status: 'completed',
+										completedAt: new Date('2020-01-01T00:00:00Z'),
+										errorMessage: null,
+									}),
+									addItem: vi.fn(),
+									removeItem: vi.fn(),
+									removeAll: vi.fn(),
+								},
+							},
+						},
 					},
+					createdAt: originalReserver.createdAt,
+					updatedAt: originalReserver.updatedAt,
 				},
 				passport,
 			);
@@ -354,14 +508,61 @@ test.for(feature, ({ Scenario, Background, BeforeEachScenario }) => {
 			);
 			When('I try to set the reserver to a new user', () => {
 				setReserverWithoutPermission = () => {
+					const originalReserver =
+						conversation.reserver as PersonalUser<PersonalUserProps>;
 					// @ts-expect-error: testing private setter
 					conversation.reserver = new PersonalUser(
 						{
-							...conversation.reserver,
+							userType: 'personal-users',
 							id: 'user-4',
-							externalId: 'user-external-4',
-							displayName: 'New Reserver',
-							email: 'newreserver@cellix.com',
+							isBlocked: false,
+							schemaVersion: '1.0.0',
+							hasCompletedOnboarding: false,
+							account: {
+								accountType: originalReserver.account.accountType,
+								email: 'newreserver@cellix.com',
+								username: 'newreserver',
+								profile: {
+									firstName: originalReserver.account.profile.firstName,
+									lastName: originalReserver.account.profile.lastName,
+									aboutMe: originalReserver.account.profile.aboutMe,
+									location: originalReserver.account.profile.location,
+								billing: {
+									cybersourceCustomerId:
+										originalReserver.account.profile.billing
+											.cybersourceCustomerId,
+									subscription:
+										originalReserver.account.profile.billing.subscription,
+									transactions: {
+										items: [
+												{
+													id: '1',
+													transactionId: 'txn_123',
+													amount: 1000,
+													referenceId: 'ref_123',
+													status: 'completed',
+													completedAt: new Date('2020-01-01T00:00:00Z'),
+													errorMessage: null,
+												},
+											],
+											getNewItem: () => ({
+												id: '2',
+												transactionId: 'txn_123',
+												amount: 1000,
+												referenceId: 'ref_123',
+												status: 'completed',
+												completedAt: new Date('2020-01-01T00:00:00Z'),
+												errorMessage: null,
+											}),
+											addItem: vi.fn(),
+											removeItem: vi.fn(),
+											removeAll: vi.fn(),
+										},
+									},
+								},
+							},
+							createdAt: originalReserver.createdAt,
+							updatedAt: originalReserver.updatedAt,
 						},
 						passport,
 					);
@@ -445,9 +646,9 @@ test.for(feature, ({ Scenario, Background, BeforeEachScenario }) => {
 			conversation = new Conversation(makeBaseProps(), passport);
 		});
 		Then(
-			'the twilioConversationId property should return the correct value',
+			'the messagingConversationId property should return the correct value',
 			() => {
-				expect(conversation.twilioConversationId).toBe('twilio-123');
+				expect(conversation.messagingConversationId).toBe('twilio-123');
 			},
 		);
 		And('the createdAt property should return the correct date', () => {
@@ -462,51 +663,194 @@ test.for(feature, ({ Scenario, Background, BeforeEachScenario }) => {
 				'2020-01-02T00:00:00.000Z',
 			);
 		});
+		And('the schemaVersion property should return the correct value', () => {
+			expect(conversation.schemaVersion).toBeDefined();
+			expect(typeof conversation.schemaVersion).toBe('string');
+		});
+	});
+
+	Scenario('Setting listing to null', ({ Given, When, Then }) => {
+		let setListingToNull: () => void;
+		Given(
+			'a Conversation aggregate with permission to manage conversation',
+			() => {
+				passport = makePassport(true);
+				conversation = new Conversation(makeBaseProps(), passport);
+			},
+		);
+		When('I try to set the listing to null', () => {
+			setListingToNull = () => {
+				// @ts-expect-error: testing private setter
+				// biome-ignore lint/suspicious/noExplicitAny: Testing null assignment validation
+				conversation.listing = null as any;
+			};
+		});
+		Then(
+			'a PermissionError should be thrown with message "listing cannot be null or undefined"',
+			() => {
+				expect(setListingToNull).toThrow(DomainSeedwork.PermissionError);
+				expect(setListingToNull).toThrow('listing cannot be null or undefined');
+			},
+		);
+	});
+
+	Scenario('Setting listing to undefined', ({ Given, When, Then }) => {
+		let setListingToUndefined: () => void;
+		Given(
+			'a Conversation aggregate with permission to manage conversation',
+			() => {
+				passport = makePassport(true);
+				conversation = new Conversation(makeBaseProps(), passport);
+			},
+		);
+		When('I try to set the listing to undefined', () => {
+			setListingToUndefined = () => {
+				// @ts-expect-error: testing private setter
+				// biome-ignore lint/suspicious/noExplicitAny: Testing undefined assignment validation
+				conversation.listing = undefined as any;
+			};
+		});
+		Then(
+			'a PermissionError should be thrown with message "listing cannot be null or undefined"',
+			() => {
+				expect(setListingToUndefined).toThrow(DomainSeedwork.PermissionError);
+				expect(setListingToUndefined).toThrow(
+					'listing cannot be null or undefined',
+				);
+			},
+		);
 	});
 
 	Scenario(
-		'Setting the twilioConversationId with permission',
+		'Getting messages from conversation',
 		({ Given, When, Then }) => {
-			Given(
-				'a Conversation aggregate with permission to manage conversation',
-				() => {
-					passport = makePassport(true);
-					conversation = new Conversation(makeBaseProps(), passport);
-				},
-			);
-			When('I set the twilioConversationId to a new value', () => {
-				conversation.twilioConversationId = 'twilio-456';
+			// biome-ignore lint/suspicious/noExplicitAny: Test variable
+			let messages: readonly any[];
+			Given('a Conversation aggregate with messages', () => {
+				passport = makePassport(true);
+				conversation = new Conversation(makeBaseProps(), passport);
 			});
-			Then('the twilioConversationId should be updated', () => {
-				expect(conversation.twilioConversationId).toBe('twilio-456');
+			When('I access the messages property', () => {
+				messages = conversation.messages;
+			});
+			Then('it should return an array of messages', () => {
+				expect(Array.isArray(messages)).toBe(true);
 			});
 		},
 	);
 
+	Scenario('Loading listing asynchronously', ({ Given, When, Then }) => {
+		// biome-ignore lint/suspicious/noExplicitAny: Test variable
+		let loadedListing: any;
+		Given('a Conversation aggregate', () => {
+			passport = makePassport(true);
+			conversation = new Conversation(makeBaseProps(), passport);
+		});
+		When('I call loadListing()', async () => {
+			loadedListing = await conversation.loadListing();
+		});
+		Then('it should return the listing asynchronously', () => {
+			expect(loadedListing).toBeDefined();
+		});
+	});
+
+	Scenario('Setting reserver to null', ({ Given, When, Then }) => {
+		let setReserverToNull: () => void;
+		Given(
+			'a Conversation aggregate with permission to manage conversation',
+			() => {
+				passport = makePassport(true);
+				conversation = new Conversation(makeBaseProps(), passport);
+			},
+		);
+		When('I try to set the reserver to null', () => {
+			setReserverToNull = () => {
+				// @ts-expect-error: testing private setter
+				// biome-ignore lint/suspicious/noExplicitAny: Testing null assignment
+				conversation.reserver = null as any;
+			};
+		});
+		Then(
+			'a PermissionError should be thrown with message "reserver cannot be null or undefined"',
+			() => {
+				expect(setReserverToNull).toThrow(DomainSeedwork.PermissionError);
+				expect(setReserverToNull).toThrow(
+					'reserver cannot be null or undefined',
+				);
+			},
+		);
+	});
+
+	Scenario('Setting reserver to undefined', ({ Given, When, Then }) => {
+		let setReserverToUndefined: () => void;
+		Given(
+			'a Conversation aggregate with permission to manage conversation',
+			() => {
+				passport = makePassport(true);
+				conversation = new Conversation(makeBaseProps(), passport);
+			},
+		);
+		When('I try to set the reserver to undefined', () => {
+			setReserverToUndefined = () => {
+				// @ts-expect-error: testing private setter
+				// biome-ignore lint/suspicious/noExplicitAny: Testing undefined assignment
+				conversation.reserver = undefined as any;
+			};
+		});
+		Then(
+			'a PermissionError should be thrown with message "reserver cannot be null or undefined"',
+			() => {
+				expect(setReserverToUndefined).toThrow(DomainSeedwork.PermissionError);
+				expect(setReserverToUndefined).toThrow(
+					'reserver cannot be null or undefined',
+				);
+			},
+		);
+	});
+
 	Scenario(
-		'Setting the twilioConversationId without permission',
+		'Setting the messagingConversationId with permission',
 		({ Given, When, Then }) => {
-			let setTwilioIdWithoutPermission: () => void;
-			Given(
-				'a Conversation aggregate without permission to manage conversation',
-				() => {
-					passport = makePassport(false);
-					conversation = new Conversation(makeBaseProps(), passport);
-				},
+		Given(
+			'a Conversation aggregate with permission to manage conversation',
+			() => {
+				passport = makePassport(true);
+				conversation = new Conversation(makeBaseProps(), passport);
+			},
+		);
+		When('I set the messagingConversationId to a new value', () => {
+			conversation.messagingConversationId = 'twilio-456';
+		});
+		Then('the messagingConversationId should be updated', () => {
+			expect(conversation.messagingConversationId).toBe('twilio-456');
+		});
+	},
+);
+
+	Scenario(
+		'Setting the messagingConversationId without permission',
+		({ Given, When, Then }) => {
+		let setTwilioIdWithoutPermission: () => void;
+		Given(
+			'a Conversation aggregate without permission to manage conversation',
+			() => {
+				passport = makePassport(false);
+				conversation = new Conversation(makeBaseProps(), passport);
+			},
+		);
+		When('I try to set the messagingConversationId to a new value', () => {
+			setTwilioIdWithoutPermission = () => {
+				conversation.messagingConversationId = 'twilio-789';
+			};
+		});
+		Then('a PermissionError should be thrown', () => {
+			expect(setTwilioIdWithoutPermission).toThrow(
+				DomainSeedwork.PermissionError,
 			);
-			When('I try to set the twilioConversationId to a new value', () => {
-				setTwilioIdWithoutPermission = () => {
-					conversation.twilioConversationId = 'twilio-789';
-				};
-			});
-			Then('a PermissionError should be thrown', () => {
-				expect(setTwilioIdWithoutPermission).toThrow(
-					DomainSeedwork.PermissionError,
-				);
-				expect(setTwilioIdWithoutPermission).throws(
-					'You do not have permission to change the twilioConversationId of this conversation',
-				);
-			});
-		},
-	);
+			expect(setTwilioIdWithoutPermission).throws(
+				'You do not have permission to change the messagingConversationId of this conversation',
+			);
+		});
+	},
+);
 });

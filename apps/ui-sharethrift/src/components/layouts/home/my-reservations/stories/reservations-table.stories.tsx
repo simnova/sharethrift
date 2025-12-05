@@ -1,112 +1,60 @@
 import type { Meta, StoryObj } from '@storybook/react';
 import { ReservationsTable } from '../components/reservations-table.tsx';
-import type { ReservationRequest } from '../pages/index.ts';
-// Mock data moved here for storybook usage
-const mockReservationRequests: ReservationRequest[] = [
-	{
-		id: '1',
-		state: 'REQUESTED', // correct literal type
-		reservationPeriodStart: '2024-02-15T00:00:00Z',
-		reservationPeriodEnd: '2024-02-22T00:00:00Z',
-		createdAt: '2024-02-10T10:00:00Z',
-		updatedAt: '2024-02-12T12:00:00Z',
-		listingId: 'listing-1',
-		reserverId: 'user-1',
-		closeRequested: false,
-		listing: {
-			id: 'listing-1',
-			title: 'Power Drill Set',
-			imageUrl:
-				'https://images.unsplash.com/photo-1572981779307-38b8cabb2407?w=300&h=200&fit=crop',
-		},
-		reserver: {
-			id: 'user-1',
-			firstName: 'John',
-			lastName: 'Doe',
-			name: 'John Doe',
-		},
-	},
-	// ...add more mock reservations as needed
-];
-
-const getActiveReservations = (): ReservationRequest[] =>
-	mockReservationRequests.filter((r) =>
-		['REQUESTED', 'ACCEPTED'].includes(r.state),
-	);
-const getHistoryReservations = (): ReservationRequest[] =>
-	mockReservationRequests.filter((r) =>
-		['CANCELLED', 'CLOSED', 'REJECTED'].includes(r.state),
-	);
+import {
+	storyReservationsActive,
+	storyReservationsAll,
+	storyReservationsPast,
+} from './reservation-story-mocks.ts';
+import {
+	defaultReservationActions,
+	withReservationMocks,
+} from '../../../../../test/utils/storybook-providers.tsx';
+import { expect, within } from 'storybook/test';
 
 const meta: Meta<typeof ReservationsTable> = {
 	title: 'Organisms/ReservationsTable',
 	component: ReservationsTable,
-	parameters: {
-		layout: 'padded',
-	},
+	parameters: { layout: 'padded' },
 	tags: ['autodocs'],
+	decorators: [withReservationMocks],
+	args: defaultReservationActions,
 	argTypes: {
-		cancelLoading: {
-			control: 'boolean',
-		},
-		closeLoading: {
-			control: 'boolean',
-		},
-		showActions: {
-			control: 'boolean',
-		},
+		onCancel: { action: 'cancel clicked' },
+		onClose: { action: 'close clicked' },
+		onMessage: { action: 'message clicked' },
 	},
 };
 
 export default meta;
-type Story = StoryObj<typeof meta>;
+type Story = StoryObj<typeof ReservationsTable>;
 
 export const AllReservations: Story = {
-	args: {
-		reservations: mockReservationRequests,
-		onCancel: (id: string) => console.log('Cancel clicked for:', id),
-		onClose: (id: string) => console.log('Close clicked for:', id),
-		onMessage: (id: string) => console.log('Message clicked for:', id),
+	args: { reservations: storyReservationsAll },
+	play: async ({ canvasElement }) => {
+		const canvas = within(canvasElement);
+		await expect(canvas.getByRole('table')).toBeInTheDocument();
 	},
 };
 
 export const ActiveReservations: Story = {
 	args: {
-		reservations: getActiveReservations(),
-		onCancel: (id: string) => console.log('Cancel clicked for:', id),
-		onClose: (id: string) => console.log('Close clicked for:', id),
-		onMessage: (id: string) => console.log('Message clicked for:', id),
+		reservations: storyReservationsActive,
 		emptyText: 'No active reservations found',
 	},
 };
 
 export const HistoryReservations: Story = {
 	args: {
-		reservations: getHistoryReservations(),
-		onCancel: (id: string) => console.log('Cancel clicked for:', id),
-		onClose: (id: string) => console.log('Close clicked for:', id),
-		onMessage: (id: string) => console.log('Message clicked for:', id),
+		reservations: storyReservationsPast,
 		showActions: false,
 		emptyText: 'No reservation history found',
 	},
 };
 
 export const Empty: Story = {
-	args: {
-		reservations: [],
-		onCancel: (id: string) => console.log('Cancel clicked for:', id),
-		onClose: (id: string) => console.log('Close clicked for:', id),
-		onMessage: (id: string) => console.log('Message clicked for:', id),
-		emptyText: 'No reservations found',
-	},
+	args: { reservations: [], emptyText: 'No reservations found' },
 };
 
 export const LoadingStates: Story = {
-	args: {
-		reservations: getActiveReservations(),
-		onCancel: (id: string) => console.log('Cancel clicked for:', id),
-		onClose: (id: string) => console.log('Close clicked for:', id),
-		onMessage: (id: string) => console.log('Message clicked for:', id),
-		cancelLoading: true,
-	},
+	args: { reservations: storyReservationsActive, cancelLoading: true },
 };

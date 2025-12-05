@@ -1,0 +1,12 @@
+query useUserIsAdmin {
+	currentUser {
+		... on PersonalUser {
+			id
+			userIsAdmin
+		}
+		... on AdminUser {
+			id
+			userIsAdmin
+		}
+	}
+}

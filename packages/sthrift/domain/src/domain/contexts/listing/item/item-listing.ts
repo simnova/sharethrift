@@ -1,8 +1,9 @@
+import { randomUUID } from 'node:crypto';
 import { DomainSeedwork } from '@cellix/domain-seedwork';
 import type { Passport } from '../../passport.ts';
 import type { ListingVisa } from '../listing.visa.ts';
 import * as ValueObjects from './item-listing.value-objects.ts';
-import type { PersonalUserEntityReference } from '../../user/personal-user/personal-user.entity.ts';
+import type { UserEntityReference } from '../../user/index.ts';
 import type {
 	ItemListingEntityReference,
 	ItemListingProps,
@@ -25,7 +26,7 @@ export class ItemListing<props extends ItemListingProps>
 
 	//#region Methods
 	public static getNewInstance<props extends ItemListingProps>(
-		sharer: PersonalUserEntityReference,
+		sharer: UserEntityReference,
 		fields: {
 			title: string;
 			description: string;
@@ -38,7 +39,7 @@ export class ItemListing<props extends ItemListingProps>
 		},
 		passport: Passport,
 	): ItemListing<props> {
-		const id = crypto.randomUUID();
+		const id = randomUUID();
 		const now = new Date();
 		const isDraft = fields.isDraft ?? false;
 
@@ -97,6 +98,7 @@ export class ItemListing<props extends ItemListingProps>
 			schemaVersion: 1,
 			reports: 0,
 			sharingHistory: [],
+			listingType: 'item-listing',
 		} as unknown as props;
 
 		const aggregate = new ItemListing(itemListingProps, passport);
@@ -111,11 +113,11 @@ export class ItemListing<props extends ItemListingProps>
 	//#endregion Methods
 
 	//#region Properties
-	get sharer(): PersonalUserEntityReference {
+	get sharer(): UserEntityReference {
 		return this.props.sharer;
 	}
 
-	set sharer(value: PersonalUserEntityReference) {
+	set sharer(value: UserEntityReference) {
 		this.props.sharer = value;
 	}
 
@@ -132,7 +134,7 @@ export class ItemListing<props extends ItemListingProps>
 			);
 		}
 		this.props.title = new ValueObjects.Title(value).valueOf();
-		this.props.updatedAt = new Date();
+		// Note: updatedAt is automatically handled by Mongoose timestamps
 	}
 
 	get description(): string {
@@ -148,7 +150,7 @@ export class ItemListing<props extends ItemListingProps>
 			);
 		}
 		this.props.description = new ValueObjects.Description(value).valueOf();
-		this.props.updatedAt = new Date();
+		// Note: updatedAt is automatically handled by Mongoose timestamps
 	}
 
 	get category(): string {
@@ -164,7 +166,7 @@ export class ItemListing<props extends ItemListingProps>
 			);
 		}
 		this.props.category = new ValueObjects.Category(value).valueOf();
-		this.props.updatedAt = new Date();
+		// Note: updatedAt is automatically handled by Mongoose timestamps
 	}
 
 	get location(): string {
@@ -180,7 +182,7 @@ export class ItemListing<props extends ItemListingProps>
 			);
 		}
 		this.props.location = new ValueObjects.Location(value).valueOf();
-		this.props.updatedAt = new Date();
+		// Note: updatedAt is automatically handled by Mongoose timestamps
 	}
 
 	get sharingPeriodStart(): Date {
@@ -196,7 +198,7 @@ export class ItemListing<props extends ItemListingProps>
 			);
 		}
 		this.props.sharingPeriodStart = value;
-		this.props.updatedAt = new Date();
+		// Note: updatedAt is automatically handled by Mongoose timestamps
 	}
 
 	get sharingPeriodEnd(): Date {
@@ -212,7 +214,7 @@ export class ItemListing<props extends ItemListingProps>
 			);
 		}
 		this.props.sharingPeriodEnd = value;
-		this.props.updatedAt = new Date();
+		// Note: updatedAt is automatically handled by Mongoose timestamps
 	}
 
 	get state(): string {
@@ -252,7 +254,7 @@ export class ItemListing<props extends ItemListingProps>
 			);
 		}
 		this.props.images = value;
-		this.props.updatedAt = new Date();
+		// Note: updatedAt is automatically handled by Mongoose timestamps
 	}
 
 	get isActive(): boolean {
@@ -282,7 +284,7 @@ export class ItemListing<props extends ItemListingProps>
 		}
 
 		this.props.state = new ValueObjects.ListingState('Published').valueOf();
-		this.props.updatedAt = new Date();
+		// Note: updatedAt is automatically handled by Mongoose timestamps
 	}
 
 	public pause(): void {
@@ -297,7 +299,7 @@ export class ItemListing<props extends ItemListingProps>
 		}
 
 		this.props.state = new ValueObjects.ListingState('Paused').valueOf();
-		this.props.updatedAt = new Date();
+		// Note: updatedAt is automatically handled by Mongoose timestamps
 	}
 
 	public cancel(): void {
@@ -310,7 +312,68 @@ export class ItemListing<props extends ItemListingProps>
 		}
 
 		this.props.state = new ValueObjects.ListingState('Cancelled').valueOf();
-		this.props.updatedAt = new Date();
+	}
+
+	/**
+	 * Set whether this listing is blocked.
+	 * - When setting blocked=false and the listing is currently Blocked, this will move the
+	 *   listing to AppealRequested (the previous `unblock()` behaviour).
+	 * - When setting blocked=true it will mark the listing as Blocked.
+	 * This is intentionally a setter-style API so callers can use a single update mutation
+	 * to toggle the blocked state.
+	 */
+	public setBlocked(blocked: boolean): void {
+		const current = this.props.state.valueOf();
+
+		if (!blocked) {
+			// unblocking: require publish permission (keeps previous behaviour)
+			if (
+				!this.visa.determineIf(
+					(permissions) => permissions.canPublishItemListing,
+				)
+			) {
+				throw new DomainSeedwork.PermissionError(
+					'You do not have permission to unblock this listing',
+				);
+			}
+
+			const isBlocked = current === ValueObjects.ListingStateEnum.Blocked;
+			if (!isBlocked) return; // no-op if not blocked
+
+			this.props.state = ValueObjects.ListingStateEnum.AppealRequested;
+			return;
+		}
+
+		// setting blocked=true
+		if (
+			!this.visa.determineIf((permissions) => permissions.canPublishItemListing)
+		) {
+			throw new DomainSeedwork.PermissionError(
+				'You do not have permission to block this listing',
+			);
+		}
+
+		if (current === ValueObjects.ListingStateEnum.Blocked) return; // already blocked
+		this.props.state = ValueObjects.ListingStateEnum.Blocked;
+	}
+
+/**
+ * Request deletion of this item listing (marks as deleted).
+ */
+public requestDelete(): void {
+	if (
+		!this.visa.determineIf(
+			(permissions) => permissions.canDeleteItemListing,
+		)
+	) {
+		throw new DomainSeedwork.PermissionError(
+			'You do not have permission to delete this listing',
+		);
+	}
+
+		if (!this.isDeleted) {
+			super.isDeleted = true;
+		}
 	}
 
 	/**
@@ -318,5 +381,12 @@ export class ItemListing<props extends ItemListingProps>
 	 */
 	getEntityReference(): ItemListingEntityReference {
 		return this.props as ItemListingEntityReference;
+	}
+
+	get listingType(): string {
+		return this.props.listingType;
+	}
+	set listingType(value: string) {
+		this.props.listingType = value;
 	}
 }

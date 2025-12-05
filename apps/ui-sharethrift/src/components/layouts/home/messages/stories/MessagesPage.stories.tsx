@@ -1,10 +1,12 @@
 import type { Meta, StoryFn } from "@storybook/react";
 import { HomeRoutes } from "../../index.tsx";
 import {
+    HomeConversationListContainerCurrentUserDocument,
 	HomeConversationListContainerConversationsByUserDocument,
 	ConversationBoxContainerConversationDocument,
 } from "../../../../../generated.tsx";
 import { withMockApolloClient, withMockRouter } from "../../../../../test-utils/storybook-decorators.tsx";
+import { expect, within } from 'storybook/test';
 
 const meta: Meta<typeof HomeRoutes> = {
 	title: "Pages/Messages",
@@ -21,23 +23,42 @@ const Template: StoryFn<typeof HomeRoutes> = () => <HomeRoutes />;
 
 export const DefaultView: StoryFn<typeof HomeRoutes> = Template.bind({});
 
+DefaultView.play = async ({ canvasElement }) => {
+	const canvas = within(canvasElement);
+	await expect(canvas.getByRole('main')).toBeInTheDocument();
+};
+
 DefaultView.parameters = {
   apolloClient: {
     mocks: [
+        {
+        request: {
+          query: HomeConversationListContainerCurrentUserDocument,
+          variables: () => true,
+        },
+        maxUsageCount: Number.POSITIVE_INFINITY,
+        result: {
+          data: {
+            currentUser: {
+              __typename: "PersonalUser",
+              id: "507f1f77bcf86cd799439011", // Alice
+            },
+          },
+        },
+      },
       {
         request: {
           query: HomeConversationListContainerConversationsByUserDocument,
-          variables: {
-            userId: "507f1f77bcf86cd799439099",
-          },
+          variables: () => true,
         },
+        maxUsageCount: Number.POSITIVE_INFINITY,
         result: {
           data: {
             conversationsByUser: [
               {
                 __typename: "Conversation",
                 id: "64f7a9c2d1e5b97f3c9d0c01",
-                twilioConversationId: "CH123",
+                messagingConversationId: "CH123",
                 createdAt: "2025-08-08T10:00:00Z",
                 updatedAt: "2025-08-08T12:00:00Z",
                 sharer: {
@@ -74,7 +95,7 @@ DefaultView.parameters = {
               {
                 __typename: "Conversation",
                 id: "64f7a9c2d1e5b97f3c9d0c02",
-                twilioConversationId: "CH124",
+                messagingConversationId: "CH124",
                 createdAt: "2025-08-07T09:00:00Z",
                 updatedAt: "2025-08-08T11:30:00Z",
                 sharer: {
@@ -91,13 +112,13 @@ DefaultView.parameters = {
                 },
                 reserver: {
                   __typename: "PersonalUser",
-                  id: "507f1f77bcf86cd799439099",
+                  id: "507f1f77bcf86cd799439011", 
                   account: {
                     __typename: "PersonalUserAccount",
                     profile: {
                       __typename: "PersonalUserAccountProfile",
-                      firstName: "Current",
-                      lastName: "User",
+                      firstName: "Alice",
+                      lastName: "Johnson",
                     },
                   },
                 },
@@ -115,16 +136,15 @@ DefaultView.parameters = {
       {
         request: {
           query: ConversationBoxContainerConversationDocument,
-          variables: {
-            conversationId: "64f7a9c2d1e5b97f3c9d0c01",
-          },
+          variables: () => true,
         },
+        maxUsageCount: Number.POSITIVE_INFINITY,
         result: {
           data: {
             conversation: {
               __typename: "Conversation",
               id: "64f7a9c2d1e5b97f3c9d0c01",
-              twilioConversationId: "CH123",
+              messagingConversationId: "CH123",
               createdAt: "2025-08-08T10:00:00Z",
               updatedAt: "2025-08-08T12:00:00Z",
               schemaVersion: "1",
@@ -167,16 +187,16 @@ DefaultView.parameters = {
                 {
                   __typename: "Message",
                   id: "64f7a9c2d1e5b97f3c9d0c09",
-                  twilioMessageSid: "SM001",
-                  authorId: "507f1f77bcf86cd799439099",
-                  content: "Hi Alice! I'm interested in borrowing your bike.",
+                  messagingMessageId: "SM001",
+                  authorId: "507f1f77bcf86cd799439011", 
+                  content: "Hi! I'm interested in borrowing your bike.",
                   createdAt: "2025-08-08T10:05:00Z",
                 },
                 {
                   __typename: "Message",
                   id: "64f7a9c2d1e5b97f3c9d0c10",
-                  twilioMessageSid: "SM002",
-                  authorId: "507f1f77bcf86cd799439011",
+                  messagingMessageId: "SM002",
+                  authorId: "507f1f77bcf86cd799439099",
                   content: "Hi! Yes, it's available.",
                   createdAt: "2025-08-08T10:15:00Z",
                 },

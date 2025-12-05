@@ -30,6 +30,9 @@ export class PersonalUserProfile
 	get lastName() {
 		return this.props.lastName;
 	}
+	get aboutMe() {
+		return this.props.aboutMe;
+	}
 
 	// NestedPath Field Getters
 	get location() {
@@ -71,4 +74,8 @@ export class PersonalUserProfile
 		this.validateVisa();
 		this.props.lastName = value;
 	}
+    set aboutMe(value: string) {
+        this.validateVisa();
+        this.props.aboutMe = value;
+    }
 }

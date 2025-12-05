@@ -1,141 +1,87 @@
 import type { GraphContext } from '../../../init/context.ts';
-import type { Domain } from '@sthrift/domain';
-import { toGraphItem } from '../../../helpers/mapping.js';
-import type { CreateItemListingInput } from '../../builder/generated.js';
+import type { Resolvers } from '../../builder/generated.js';
+import { PopulateUserFromField } from '../../resolver-helper.ts';
 
-interface MyListingsArgs {
+// Helper type for paged arguments
+export type PagedArgs = {
 	page: number;
 	pageSize: number;
 	searchText?: string;
 	statusFilters?: string[];
 	sorter?: { field: string; order: 'ascend' | 'descend' };
+	sharerId?: string;
+};
+
+// Helper function to construct pagedArgs
+function buildPagedArgs(
+	args: {
+		page: number;
+		pageSize: number;
+		searchText?: string | null;
+		statusFilters?: readonly string[] | null;
+		sorter?: { field: string; order: string } | null;
+	},
+	extra?: Partial<PagedArgs>,
+): PagedArgs {
+  return {
+    page: args.page,
+    pageSize: args.pageSize,
+    ...(args.searchText != null ? { searchText: args.searchText } : {}),
+    ...(args.statusFilters ? { statusFilters: [...args.statusFilters] } : {}),
+    ...(args.sorter
+      ? {
+          sorter: {
+            field: args.sorter.field,
+            order: args.sorter.order as 'ascend' | 'descend',
+          },
+        }
+      : {}),
+    ...extra,
+  };
 }
 
-const itemListingResolvers = {
+const itemListingResolvers: Resolvers = {
+	ItemListing: {
+		sharer: PopulateUserFromField('sharer'),
+	},
 	Query: {
-		itemListings: async (
-			_parent: unknown,
-			_args: unknown,
-			context: GraphContext,
-		) => {
+		myListingsAll: async (_parent: unknown, args, context) => {
 			const currentUser = context.applicationServices.verifiedUser;
-			const user = currentUser?.verifiedJwt?.sub;
-
-			let listings: Domain.Contexts.Listing.ItemListing.ItemListingEntityReference[];
-
-			if (user) {
-				listings =
-					await context.applicationServices.Listing.ItemListing.queryBySharer({
-						personalUser: user,
-					});
-			} else {
-				listings =
-					await context.applicationServices.Listing.ItemListing.queryAll({});
+			const email = currentUser?.verifiedJwt?.email;
+			let sharerId: string | undefined;
+			if (email) {
+				sharerId =
+					await context.applicationServices.User.PersonalUser.queryByEmail({
+						email: email,
+					}).then((user) => (user ? user.id : undefined));
 			}
 
-			return listings.map(toGraphItem);
+			const pagedArgs = buildPagedArgs(args, sharerId ? { sharerId } : {});
+
+			return await context.applicationServices.Listing.ItemListing.queryPaged(
+				pagedArgs,
+			);
+		},
+		itemListings: async (_parent, _args, context) => {
+			return await context.applicationServices.Listing.ItemListing.queryAll({});
 		},
 
-		itemListing: async (
-			_parent: unknown,
-			args: { id: string },
-			context: GraphContext,
-		) => {
-			const listing =
-				await context.applicationServices.Listing.ItemListing.queryById({
-					id: args.id,
-				});
-
-			if (!listing) {
-				return null;
-			}
-
-			return toGraphItem(listing);
+		itemListing: async (_parent, args, context) => {
+			return await context.applicationServices.Listing.ItemListing.queryById({
+				id: args.id,
+			});
 		},
+		adminListings: async (_parent, args, context) => {
+			// Admin-note: role-based authorization should be implemented here (security)
+			const pagedArgs = buildPagedArgs(args);
 
-		myListingsAll: async (
-			_parent: unknown,
-			args: MyListingsArgs,
-			context: GraphContext,
-		) => {
-			const currentUser = context.applicationServices.verifiedUser;
-			const sharerId = currentUser?.verifiedJwt?.sub;
-			const { page, pageSize, searchText, statusFilters, sorter } = args;
-			const pagedArgs: {
-				page: number;
-				pageSize: number;
-				searchText?: string;
-				statusFilters?: string[];
-				sharerId?: string;
-				sorter?: { field: string; order: 'ascend' | 'descend' };
-			} = { page, pageSize };
-			if (searchText !== undefined) {
-				pagedArgs.searchText = searchText;
-			}
-			if (statusFilters !== undefined) {
-				pagedArgs.statusFilters = statusFilters;
-			}
-			if (sorter !== undefined) {
-				pagedArgs.sorter = sorter;
-			}
-			if (sharerId !== undefined) {
-				pagedArgs.sharerId = sharerId;
-			}
-			const result =
-				await context.applicationServices.Listing.ItemListing.queryPaged(
-					pagedArgs,
-				);
-
-			// Map domain ItemListingEntityReference -> GraphQL ListingAll shape
-			// ListingAll requires: id, title, image, publishedAt, reservationPeriod, status, pendingRequestsCount
-			// Domain entity provides: images, createdAt, sharingPeriodStart/End, state
-			// We derive/transform where necessary and guarantee non-null status
-			const mapStateToStatus = (state?: string): string => {
-				if (!state || state.trim() === '') {
-					return 'Unknown';
-				}
-				// Normalize internal domain states to UI statuses
-				switch (state) {
-					case 'Published':
-						return 'Active';
-					case 'Drafted':
-						return 'Draft';
-					case 'Appeal Requested':
-						return 'Appeal_Requested';
-					default:
-						return state; // Paused, Cancelled, Expired, Blocked, Reserved (future), etc.
-				}
-			};
-
-			return {
-				items: result.items.map((listing) => {
-					const sharingStart = listing.sharingPeriodStart.toISOString();
-					const sharingEnd = listing.sharingPeriodEnd.toISOString();
-					return {
-						id: listing.id,
-						title: listing.title,
-						image:
-							listing.images && listing.images.length > 0
-								? listing.images[0]
-								: null,
-						publishedAt: listing.createdAt.toISOString(),
-						reservationPeriod: `${sharingStart.slice(0, 10)} - ${sharingEnd.slice(0, 10)}`,
-						status: mapStateToStatus(listing?.state),
-						pendingRequestsCount: 0, // TODO: integrate reservation request counts
-					};
-				}),
-				total: result.total,
-				page: result.page,
-				pageSize: result.pageSize,
-			};
+			return await context.applicationServices.Listing.ItemListing.queryPaged(
+				pagedArgs,
+			);
 		},
 	},
 	Mutation: {
-		createItemListing: async (
-			_parent: unknown,
-			args: { input: CreateItemListingInput },
-			context: GraphContext,
-		) => {
+		createItemListing: async (_parent, args, context) => {
 			const userEmail =
 				context.applicationServices.verifiedUser?.verifiedJwt?.email;
 			if (!userEmail) {
@@ -161,11 +107,43 @@ const itemListingResolvers = {
 				sharingPeriodEnd: new Date(args.input.sharingPeriodEnd),
 				images: [...(args.input.images ?? [])],
 				isDraft: args.input.isDraft ?? false,
+				listingType: 'item-listing',
 			};
 
-			const result =
-				await context.applicationServices.Listing.ItemListing.create(command);
-			return toGraphItem(result);
+			return await context.applicationServices.Listing.ItemListing.create(
+				command,
+			);
+		},
+
+		unblockListing: async (_parent, args, context) => {
+			// Admin-note: role-based authorization should be implemented here (security)
+			await context.applicationServices.Listing.ItemListing.unblock({
+				id: args.id,
+			});
+			return true;
+		},
+		cancelItemListing: async (
+			_parent: unknown,
+			args: { id: string },
+			context,
+		) => ({
+			status: { success: true },
+			listing: await context.applicationServices.Listing.ItemListing.cancel({
+				id: args.id,
+			}),
+		}),
+
+		deleteItemListing: async (
+			_parent: unknown,
+			args: { id: string },
+			context: GraphContext,
+		) => {
+			await context.applicationServices.Listing.ItemListing.deleteListings({
+				id: args.id,
+				userEmail:
+					context.applicationServices.verifiedUser?.verifiedJwt?.email ?? '',
+			});
+			return { status: { success: true } };
 		},
 	},
 };

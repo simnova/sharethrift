@@ -1,11 +1,10 @@
 import { Tabs } from 'antd';
-import { AdminListings } from '../components/admin-listings.tsx';
-import { AdminUsers } from '../components/admin-users.tsx';
+import { AdminListings } from '../components/admin-listings-table/index.ts';
+import { AdminUsers } from '../components/admin-users-table/index.ts';
 import styles from './admin-dashboard-main.module.css';
 import '@sthrift/ui-components/src/styles/theme.css';
 
-export interface AdminDashboardMainProps {}
-
+interface AdminDashboardMainProps {}
 export const AdminDashboardMain: React.FC<AdminDashboardMainProps> = () => {
 	const tabItems = [
 		{

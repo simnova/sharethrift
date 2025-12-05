@@ -1,68 +1,70 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useMemo } from 'react';
 import { useAuth } from 'react-oidc-context';
 import { Outlet, useLocation, useNavigate } from 'react-router-dom';
-import { HandleLogoutMockForMockAuth } from '../../shared/handle-logout.ts';
+import type { MenuProps } from 'antd';
+import {
+	HomeOutlined,
+	ContainerOutlined,
+	CalendarOutlined,
+	MessageOutlined,
+	UserOutlined,
+	BarChartOutlined,
+} from '@ant-design/icons';
+import { HandleLogout } from '../../shared/handle-logout.ts';
 import { Footer, Header, Navigation } from '@sthrift/ui-components';
 import { useCreateListingNavigation } from './components/create-listing/hooks/use-create-listing-navigation.ts';
+import { useApolloClient } from '@apollo/client/react';
+import { useUserIsAdmin } from './account/hooks/useUserIsAdmin.ts';
 
-export const HomeTabsLayout: React.FC = () => {
+export const SectionLayout: React.FC = () => {
 	const navigate = useNavigate();
 	const location = useLocation();
 	const auth = useAuth();
+    const apolloClient = useApolloClient();
+	const { isAdmin } = useUserIsAdmin();
 
 	// Map nav keys to routes as defined in index.tsx
-	const routeMap: Record<string, string> = {
-		home: 'home',
+	const routeMap = {
+		home: '',
 		listings: 'my-listings',
 		reservations: 'my-reservations',
 		messages: 'messages',
 		account: 'account',
-		// subnavs can be handled in account/*
-	};
+		adminDashboard: 'admin-dashboard',
+	} as const;
 
 	// Determine selectedKey from current location
 	const getSelectedKey = () => {
 		const path = location.pathname.replace(/^\//, '');
 		// Account subroutes
 		if (path.startsWith('account/')) {
-			const subPath = path.replace('account/', '');
-			if (subPath.startsWith('profile')) {
-				return 'profile';
-			}
-			if (subPath.startsWith('settings')) {
-				return 'settings';
-			}
-			if (subPath.startsWith('admin-dashboard')) {
-				return 'admin-dashboard';
-			}
-			// Add more subroutes as needed
-			return undefined; // nothing highlighted if not a known subroute
+			const sub = path.slice('account/'.length);
+			if (sub.startsWith('profile')) return 'profile';
+			if (sub.startsWith('settings')) return 'settings';
+			return undefined;
 		}
-		const found = Object.entries(routeMap).find(([, route]) =>
-			path.startsWith(route),
+		const found = (Object.entries(routeMap) as [string, string][]).find(
+			([, r]) => path === r || path.startsWith(`${r}/`)
 		);
-		return found ? found[0] : 'home';
+		return found?.[0] ?? 'home';
 	};
 
 	const handleNavigate = (key: string) => {
 		// Handle account subroutes
-		const accountSubTabs = ['profile', 'bookmarks', 'settings', 'admin-dashboard'];
+		const accountSubTabs = ['profile', 'bookmarks', 'settings'];
 		if (accountSubTabs.includes(key)) {
-			navigate(`/account/${key}`);
-			return;
+			return navigate(`/account/${key}`);
 		}
 		// If key is already in the form 'account/profile', 'account/settings', etc.
 		if (key.startsWith('account/')) {
-			navigate(`/${key}`);
-			return;
+			return navigate(`/${key}`);
 		}
-		if (key === 'messages') {
-			navigate('/messages');
-			return;
-		}
-		const route = routeMap[key];
-		if (route) {
-			navigate(`/${route}`);
+		const r = routeMap[key as keyof typeof routeMap];
+		if (r === undefined) {
+			// If key is unknown, default to home
+			navigate('/');
+		} else {
+			navigate(`/${r}`);
 		}
 	};
 	// Responsive margin for main content: no margin if sidebar is hidden (logged out), else responsive
@@ -80,19 +82,72 @@ export const HomeTabsLayout: React.FC = () => {
 		return () => window.removeEventListener('resize', handleResize);
 	}, [auth.isAuthenticated]);
 
-	const handleOnLogin = () => {
-		navigate('/auth-redirect');
-	};
+	const isProduction = import.meta.env.MODE === 'production';
+
+	function redirectLogin(
+		portal: 'UserPortal' | 'AdminPortal',
+		href: '/auth-redirect-user' | '/auth-redirect-admin'
+	) {
+		if (isProduction) {
+			globalThis.sessionStorage.setItem('loginPortalType', portal);
+			globalThis.location.href = href;
+		} else {
+			navigate('/login');
+		}
+	}
+
+	const handleOnLogin = () => redirectLogin('UserPortal', '/auth-redirect-user');
+	const handleOnAdminLogin = () => redirectLogin('AdminPortal', '/auth-redirect-admin');
 
 	const handleOnSignUp = () => {
-		navigate('/auth-redirect');
+		navigate('/auth-redirect-user');
 	};
-
 	const handleCreateListing = useCreateListingNavigation();
 
 	const handleLogOut = () => {
-		HandleLogoutMockForMockAuth(auth);
+		HandleLogout(auth, apolloClient, window.location.origin);
 	};
+
+	// Build navigation items dynamically based on user role
+	const navItems: MenuProps['items'] = useMemo(() => {
+		const accountChildren: MenuProps['items'] = [
+			{ key: 'profile', label: 'Profile' },
+			{ key: 'settings', label: 'Settings' },
+		];
+
+		const baseItems: MenuProps['items'] = [
+			{ key: 'home', icon: <HomeOutlined />, label: 'Home' },
+			{
+				key: 'listings',
+				icon: <ContainerOutlined />,
+				label: 'My Listings',
+			},
+			{
+				key: 'reservations',
+				icon: <CalendarOutlined />,
+				label: 'My Reservations',
+			},
+			{ key: 'messages', icon: <MessageOutlined />, label: 'Messages' },
+		];
+
+		baseItems.push({
+			key: 'account',
+			icon: <UserOutlined />,
+			label: 'Account',
+			children: accountChildren,
+		});
+
+        // Add admin dashboard as a top-level item for admin users conditionally
+		if (isAdmin) {
+			baseItems.push({
+				key: 'adminDashboard',
+				icon: <BarChartOutlined />,
+				label: 'Admin Dashboard',
+			});
+		}
+
+		return baseItems;
+	}, [isAdmin]);
 
 	return (
 		<div
@@ -107,6 +162,7 @@ export const HomeTabsLayout: React.FC = () => {
 			<Header
 				isAuthenticated={auth.isAuthenticated}
 				onLogin={handleOnLogin}
+				onAdminLogin={handleOnAdminLogin}
 				onLogout={handleLogOut}
 				onSignUp={handleOnSignUp}
 				onCreateListing={handleCreateListing}
@@ -125,6 +181,7 @@ export const HomeTabsLayout: React.FC = () => {
 					onNavigate={handleNavigate}
 					onLogout={handleLogOut}
 					selectedKey={getSelectedKey()}
+					customNavItems={navItems}
 				/>
 				<main style={{ marginLeft: mainMargin, width: '100%' }}>
 					<Outlet />

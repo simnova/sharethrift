@@ -1,3 +1,4 @@
+export type { UIItemListing } from './organisms/listings-grid/index.tsx';
 // Barrel file for all reusable UI components
 export type { FooterProps } from './molecules/footer/index.js';
 export type { HeaderProps } from './molecules/header/index.js';

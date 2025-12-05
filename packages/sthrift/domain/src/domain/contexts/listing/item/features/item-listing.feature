@@ -88,3 +88,87 @@ Feature: <AggregateRoot>ItemListing
     When I call publish()	
     Then the listing's state should be "Published"	
     And the updatedAt timestamp should change
+
+  Scenario: Publishing a listing without permission
+    Given an ItemListing aggregate without permission to publish item listing
+    When I try to call publish()
+    Then a PermissionError should be thrown
+
+  Scenario: Requesting delete with permission
+    Given an ItemListing aggregate with permission to delete item listing
+    When I call requestDelete()
+    Then the listing's isDeleted flag should be true
+
+  Scenario: Requesting delete without permission
+    Given an ItemListing aggregate without permission to delete item listing
+    When I try to call requestDelete()
+    Then a PermissionError should be thrown
+    And the listing's isDeleted flag should remain false
+
+  Scenario: Requesting delete when already deleted
+    Given an ItemListing aggregate with permission to delete item listing
+    And the listing is already marked as deleted
+    When I call requestDelete() again
+    Then the listing's isDeleted flag should remain true
+    And no error should be thrown
+
+  Scenario: Pausing a listing with permission
+    Given an ItemListing aggregate with permission to unpublish item listing
+    When I call pause()
+    Then the listing's state should be "Paused"
+    And the updatedAt timestamp should change
+
+  Scenario: Pausing a listing without permission
+    Given an ItemListing aggregate without permission to unpublish item listing
+    When I try to call pause()
+    Then a PermissionError should be thrown
+
+  Scenario: Cancelling a listing with permission
+    Given an ItemListing aggregate with permission to delete item listing
+    When I call cancel()
+    Then the listing's state should be "Cancelled"
+
+  Scenario: Cancelling a listing without permission
+    Given an ItemListing aggregate without permission to delete item listing
+    When I try to call cancel()
+    Then a PermissionError should be thrown
+
+  Scenario: Blocking a listing with permission
+    Given an ItemListing aggregate with permission to publish item listing
+    When I call setBlocked(true)
+    Then the listing's state should be "Blocked"
+
+  Scenario: Unblocking a listing with permission
+    Given an ItemListing aggregate with permission to publish item listing that is currently blocked
+    When I call setBlocked(false)
+    Then the listing's state should be "AppealRequested"
+
+  Scenario: Blocking already blocked listing
+    Given an ItemListing aggregate with permission to publish item listing that is already blocked
+    When I call setBlocked(true) again
+    Then the listing's state should remain "Blocked"
+
+  Scenario: Unblocking non-blocked listing
+    Given an ItemListing aggregate with permission to publish item listing in Published state
+    When I call setBlocked(false)
+    Then the listing's state should remain "Published"
+
+  Scenario: Blocking a listing without permission
+    Given an ItemListing aggregate without permission to publish item listing
+    When I try to call setBlocked(true)
+    Then a PermissionError should be thrown
+
+  Scenario: Unblocking a listing without permission
+    Given an ItemListing aggregate without permission to publish item listing that is blocked
+    When I try to call setBlocked(false)
+    Then a PermissionError should be thrown
+
+  Scenario: Getting listingType from item listing
+    Given an ItemListing aggregate
+    When I access the listingType property
+    Then it should return "item"
+
+  Scenario: Setting listingType for item listing
+    Given an ItemListing aggregate
+    When I set the listingType to "premium-listing"
+    Then the listingType should be updated to "premium-listing"

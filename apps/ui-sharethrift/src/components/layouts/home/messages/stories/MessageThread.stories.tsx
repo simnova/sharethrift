@@ -1,10 +1,11 @@
 import type { Meta, StoryObj } from "@storybook/react";
 import { MessageThread } from "../components/message-thread.tsx";
+import { expect, within } from 'storybook/test';
 
 const mockMessages = [
   {
     id: "m1",
-    twilioMessageSid: "SM1",
+    messagingMessageId: "SM1",
     conversationId: "1",
     authorId: "user123",
     content: "Hey Alice, is the bike still available?",
@@ -12,7 +13,7 @@ const mockMessages = [
   },
   {
     id: "m2",
-    twilioMessageSid: "SM2",
+    messagingMessageId: "SM2",
     conversationId: "1",
     authorId: "Alice",
     content: "Yes, it is! Do you want to see it?",
@@ -23,6 +24,10 @@ const mockMessages = [
 const meta: Meta<typeof MessageThread> = {
   title: "Components/Messages/MessageThread",
   component: MessageThread,
+  argTypes: {
+    setMessageText: { action: 'message text set' },
+    handleSendMessage: { action: 'message sent' },
+  },
 };
 export default meta;
 type Story = StoryObj<typeof MessageThread>;
@@ -43,5 +48,9 @@ export const Default: Story = {
     },
     currentUserId: "user123",
     contentContainerStyle: { paddingLeft: 24 },
+  },
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+    await expect(canvas.getByText(/Hey Alice/i)).toBeInTheDocument();
   },
 };
