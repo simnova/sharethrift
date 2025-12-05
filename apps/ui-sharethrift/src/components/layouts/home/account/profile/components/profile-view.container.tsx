@@ -72,6 +72,9 @@ export const ProfileViewContainer: React.FC = () => {
 					user={profileUser}
 					listings={listings}
 					isOwnProfile={true}
+					isBlocked={false}
+					isAdmin={false}
+					canBlockUser={false}
 					onEditSettings={handleEditSettings}
 					onListingClick={handleListingClick}
 				/>
