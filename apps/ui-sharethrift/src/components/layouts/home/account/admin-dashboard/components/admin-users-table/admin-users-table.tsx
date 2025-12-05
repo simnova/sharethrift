@@ -50,14 +50,10 @@ export const AdminUsersTable: React.FC<Readonly<AdminUsersTableProps>> = ({
         setUnblockModalVisible(true);
     };
 
-    const handleBlockConfirm = async (blockUserFormValues: BlockUserFormValues) => {
+    const handleBlockConfirm = (blockUserFormValues: BlockUserFormValues) => {
         console.log("Block user with:", blockUserFormValues);
-        try {
-            onAction("block", selectedUser?.id ?? "");
-            setBlockModalVisible(false);
-        } catch (error) {
-            console.error("Block validation failed:", error);
-        }
+        onAction("block", selectedUser?.id ?? "");
+        setBlockModalVisible(false);
     };
 
     const handleUnblockConfirm = () => {
