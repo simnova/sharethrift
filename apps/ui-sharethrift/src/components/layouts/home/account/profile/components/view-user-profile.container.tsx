@@ -96,11 +96,11 @@ export const ViewUserProfileContainer: React.FC = () => {
 
     const handleBlockUser = (data: BlockUserFormValues) => {
         console.log("Block user:", data);
-        blockUser({ variables: { userId } });
+        blockUser({ variables: { userId: userId! } });
     };
 
     const handleUnblockUser = () => {
-        unblockUser({ variables: { userId } });
+        unblockUser({ variables: { userId: userId! } });
     };
 
     const isAdmin =
