@@ -64,7 +64,12 @@
 		"**/coverage/**",
 		"**/__tests__/**",
 		"**/tests/**",
-		"**/test/**"
+		"**/test/**",
+		"**/domain/events/**",
+		"**/domain-execution-context.ts",
+		"**/*.value-objects.ts",
+		"**/default.permissions.ts",
+		"**/*-permissions.ts"
 	],
 	"ignoreDependencies": [
 		"@types/*",
@@ -76,7 +81,19 @@
 		"@serenity-js/cucumber",
 		"@serenity-js/serenity-bdd",
 		"@graphql-typed-document-node/core",
-		"@ant-design/v5-patch-for-react-19"
+		"@ant-design/v5-patch-for-react-19",
+		"@cellix/event-bus-seedwork-node",
+		"@as-integrations/azure-functions",
+		"@graphql-tools/json-file-loader",
+		"@graphql-tools/load",
+		"rollup",
+		"tsx",
+		"vite"
 	],
-	"ignoreBinaries": ["func"]
+	"ignoreBinaries": ["func"],
+	"ignoreExportsUsedInFile": true,
+	"rules": {
+		"exports": "off",
+		"types": "off"
+	}
 }
