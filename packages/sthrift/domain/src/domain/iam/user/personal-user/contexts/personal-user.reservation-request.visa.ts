@@ -19,12 +19,10 @@ export class PersonalUserReservationRequestVisa<
 		) => boolean,
 	): boolean {
 		const updatedPermissions: ReservationRequestDomainPermissions = {
-			canCloseRequest:
+			// User can edit if they are either the sharer or the reserver
+			canEditReservationRequest:
 				this.user.id === this.root.listing.sharer.id ||
-				this.user.id === this.root.reserver.id, // either the sharer or reserver can close
-			canCancelRequest: this.user.id === this.root.reserver.id, // ???
-			canAcceptRequest: this.user.id === this.root.listing.sharer.id, // only sharer can accept
-			canRejectRequest: this.user.id === this.root.listing.sharer.id, // only sharer can reject
+				this.user.id === this.root.reserver.id,
 		};
 
 		return func(updatedPermissions);

@@ -21,18 +21,18 @@ test.for(feature, ({ Scenario }) => {
 			reserver: { id: 'user-456' },
 		} as ReservationRequestEntityReference;
 		let visa: PersonalUserReservationRequestVisa<ReservationRequestEntityReference>;
-		let canAccept: boolean;
+		let canEdit: boolean;
 
 		Given('I have a reservation visa as sharer', () => {
 			visa = new PersonalUserReservationRequestVisa(mockReservation, mockUser);
 		});
 
-		When('I check accept permission', () => {
-			canAccept = visa.determineIf((p) => p.canAcceptRequest);
+		When('I check edit permission', () => {
+			canEdit = visa.determineIf((p) => p.canEditReservationRequest);
 		});
 
-		Then('sharer can accept request', () => {
-			expect(canAccept).toBe(true);
+		Then('sharer can edit request', () => {
+			expect(canEdit).toBe(true);
 		});
 	});
 
