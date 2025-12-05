@@ -230,6 +230,15 @@ export const AdminUsersTable: React.FC<Readonly<AdminUsersTableProps>> = ({
         },
     ];
 
+    const getDisplayName = (user?: AdminUserData | null) => {
+    if (!user) return "";
+
+    const nameParts = [user.firstName, user.lastName].filter(Boolean);
+
+    // If no valid name parts exist, fallback to username
+    return nameParts.length > 0 ? nameParts.join(" ") : user.username || "N/A";
+};
+
     return (
         <>
             <Dashboard
@@ -261,7 +270,7 @@ export const AdminUsersTable: React.FC<Readonly<AdminUsersTableProps>> = ({
             {/* Block User Modal */}
             <BlockUserModal
                 visible={blockModalVisible}
-                userName={`${selectedUser?.firstName} ${selectedUser?.lastName}`}
+                userName={getDisplayName(selectedUser)}
                 onConfirm={handleBlockConfirm}
                 onCancel={() => setBlockModalVisible(false)}
                 loading={blockLoading}
@@ -270,7 +279,7 @@ export const AdminUsersTable: React.FC<Readonly<AdminUsersTableProps>> = ({
             {/* Unblock User Modal */}
             <UnblockUserModal
                 visible={unblockModalVisible}
-                userName={`${selectedUser?.firstName} ${selectedUser?.lastName}`}
+                userName={getDisplayName(selectedUser)}
                 onConfirm={handleUnblockConfirm}
                 onCancel={() => setUnblockModalVisible(false)}
                 loading={unblockLoading}
