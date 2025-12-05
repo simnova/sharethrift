@@ -32,8 +32,8 @@
 	},
 	"scripts": {
 		"prebuild": "biome lint",
-		"build": "tsc --build && pnpm run copy-static-assets",
-		"copy-static-assets": "node scripts/copy-static-assets.js",
+		"build": "tsc --build && pnpm run copy-css",
+		"copy-css": "cpx \"src/**/*.{css,svg,png,jpg,jpeg,gif}\" dist/src",
 		"watch": "tsc- --watch",
 		"test": "vitest run",
 		"test:coverage": "vitest run --coverage",
@@ -70,7 +70,6 @@
 		"@types/react-dom": "^19.1.6",
 		"@vitest/browser": "^3.2.4",
 		"@vitest/coverage-v8": "^3.2.4",
-		"glob": "^13.0.0",
 		"jsdom": "^26.1.0",
 		"markdown-to-jsx": "^7.4.6",
 		"playwright": "^1.55.0",
