@@ -1,8 +1,9 @@
-import { Row, Col, Button } from 'antd';
+import { Row, Col, Button, Alert } from 'antd';
 import { LeftOutlined } from '@ant-design/icons';
 import { ListingImageGalleryContainer } from './listing-image-gallery/listing-image-gallery.container.tsx';
 import { SharerInformationContainer } from './sharer-information/sharer-information.container.tsx';
 import { ListingInformationContainer } from './listing-information/listing-information.container.tsx';
+import { ListingAdminControls } from './listing-admin-controls.tsx';
 import type {
 	ItemListing,
 	ViewListingActiveReservationRequestForListingQuery,
@@ -17,6 +18,7 @@ export interface ViewListingProps {
 		| ViewListingActiveReservationRequestForListingQuery['myActiveReservationForListing']
 		| null;
 	sharedTimeAgo?: string;
+	userIsAdmin?: boolean;
 }
 
 export const ViewListing: React.FC<ViewListingProps> = ({
@@ -26,18 +28,61 @@ export const ViewListing: React.FC<ViewListingProps> = ({
 	currentUserId,
 	userReservationRequest,
 	sharedTimeAgo,
+	userIsAdmin = false,
 }) => {
 	// Mock sharer info (since ItemListing.sharer is just an ID)
-	const sharer = listing.sharer;
+	const { sharer } = listing;
+	const isBlocked = listing.state === 'Blocked';
 
 	const handleBack = () => {
 		window.location.href = '/';
 	};
 
+	// If listing is blocked and user is not admin, show access denied
+	if (isBlocked && !userIsAdmin) {
+		return (
+			<Row
+				style={{
+					paddingLeft: 100,
+					paddingRight: 100,
+					paddingTop: 50,
+					paddingBottom: 75,
+					boxSizing: 'border-box',
+					width: '100%',
+				}}
+			>
+				<Col span={24}>
+					<Button
+						type="link"
+						icon={<LeftOutlined />}
+						onClick={handleBack}
+						style={{ marginBottom: 16 }}
+					>
+						Back
+					</Button>
+				</Col>
+				<Col span={24}>
+					<Alert
+						message="Access Denied"
+						description="This listing is currently blocked and cannot be viewed."
+						type="error"
+						showIcon
+					/>
+				</Col>
+			</Row>
+		);
+	}
+
 	return (
 		<>
 			<style>{`
+		/* Blocked listing visual styling */
+		.blocked-listing-content {
+		  opacity: 0.6;
+		  pointer-events: none;
+		}
 
+		/* Responsive styles */
 		@media (max-width: 600px) {
 		  .view-listing-responsive {
 			padding-left: 16px !important;
@@ -101,56 +146,70 @@ export const ViewListing: React.FC<ViewListingProps> = ({
 						Back
 					</Button>
 				</Col>
-				<Col span={24} style={{ marginBottom: 0, paddingBottom: 0 }}>
-					{/* Sharer Info at top, clickable to profile */}
-					<SharerInformationContainer
-						sharerId={sharer?.id}
-						listingId={listing.id}
-						isOwner={sharer?.id === currentUserId}
-						className="sharer-info-responsive"
-						sharedTimeAgo={sharedTimeAgo}
-						currentUserId={currentUserId}
-					/>
-				</Col>
-				<Col span={24} style={{ marginTop: 0, paddingTop: 0 }}>
-					{/* Main content: 2 columns on desktop, stacked on mobile */}
-					<Row
-						gutter={36}
-						align="top"
-						style={{ marginTop: 0, paddingTop: 0 }}
-						className="listing-main-responsive"
+
+				{/* Admin controls - always interactive */}
+				{userIsAdmin && (
+					<ListingAdminControls listing={listing} isBlocked={isBlocked} />
+				)}
+
+				{/* User content - disable interactions when blocked */}
+				<Col span={24}>
+					<div 
+						className={isBlocked ? 'blocked-listing-content' : ''}
 					>
-						{/* Left: Images */}
-						<Col
-							xs={24}
-							md={12}
-							style={{
-								display: 'flex',
-								alignItems: 'flex-start',
-								justifyContent: 'center',
-								marginTop: 0,
-								paddingTop: 0,
-							}}
-						>
-							<ListingImageGalleryContainer
+						<Col span={24} style={{ marginBottom: 0, paddingBottom: 0 }}>
+							{/* Sharer Info at top, clickable to profile */}
+							<SharerInformationContainer
+								sharerId={sharer?.id}
 								listingId={listing.id}
-								className="listing-gallery-responsive"
+								isOwner={sharer?.id === currentUserId}
+								className="sharer-info-responsive"
+								sharedTimeAgo={sharedTimeAgo}
+								currentUserId={currentUserId}
 							/>
 						</Col>
-					{/* Right: Info/Form */}
-					<Col xs={24} md={12} style={{ marginTop: 0, paddingTop: 0 }}>
-						<ListingInformationContainer
-							listing={listing}
-							userIsSharer={userIsSharer}
-							isAuthenticated={isAuthenticated}
-							userReservationRequest={userReservationRequest}
-							className="listing-info-responsive"
-						/>
-					</Col>
-					</Row>
+						<Col span={24} style={{ marginTop: 0, paddingTop: 0 }}>
+							{/* Main content: 2 columns on desktop, stacked on mobile */}
+							<Row
+								gutter={36}
+								align="top"
+								style={{ marginTop: 0, paddingTop: 0 }}
+								className="listing-main-responsive"
+							>
+								{/* Left: Images */}
+								<Col
+									xs={24}
+									md={12}
+									style={{
+										display: 'flex',
+										alignItems: 'flex-start',
+										justifyContent: 'center',
+										marginTop: 0,
+										paddingTop: 0,
+									}}
+								>
+									<ListingImageGalleryContainer
+										listingId={listing.id}
+										className="listing-gallery-responsive"
+									/>
+								</Col>
+							{/* Right: Info/Form */}
+							<Col xs={24} md={12} style={{ marginTop: 0, paddingTop: 0 }}>
+								<ListingInformationContainer
+									listing={listing}
+									userIsSharer={userIsSharer}
+									isAuthenticated={isAuthenticated}
+									userReservationRequest={userReservationRequest}
+									className="listing-info-responsive"
+								/>
+							</Col>
+							</Row>
+						</Col>
+					</div>
 				</Col>
 			</Row>
-			{/* TODO: Add login modal here for unauthenticated users attempting to reserve a listing. */}
+
+
 		</>
 	);
 };

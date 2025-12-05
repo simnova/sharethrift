@@ -37,10 +37,12 @@ query ViewListingCurrentUser {
 		... on PersonalUser {
 			id
 			userType
+			userIsAdmin
 		}
 		... on AdminUser {
 			id
 			userType
+			userIsAdmin
 		}
 	}
 }
