@@ -6,4 +6,3 @@ export function formatDate(dateStr?: string): string {
   return `${d.getFullYear()}-${mm}-${dd}`;
 }
 
-export default formatDate;

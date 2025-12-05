@@ -2,14 +2,14 @@ import type React from 'react';
 import type { ReactNode } from 'react';
 import { MockedProvider } from '@apollo/client/testing/react';
 import { InMemoryCache } from '@apollo/client';
-import type { MockedResponse } from '@apollo/client/testing';
+import type { MockLink } from '@apollo/client/testing';
 import { reservationStoryMocks } from '../../components/layouts/home/my-reservations/stories/reservation-story-mocks.ts';
 
 /**
  * Shared Storybook provider wrapper for Apollo Client with isolated cache
  */
 export function createMockedProviderWrapper(
-	mocks: MockedResponse[] = [],
+	mocks: MockLink.MockedResponse[] = [],
 	options: {
 		cache?: InMemoryCache;
 	} = {},
@@ -31,7 +31,7 @@ export function createMockedProviderWrapper(
  */
 export const withApolloMocks =
 	(
-		mocks: MockedResponse[],
+		mocks: MockLink.MockedResponse[],
 		options: {
 			cache?: InMemoryCache;
 		} = {},
@@ -79,7 +79,7 @@ export const withReservationMocks = (
  */
 export const withReservationMocksAndCustom =
 	(
-		customMocks: MockedResponse[] = [],
+		customMocks: MockLink.MockedResponse[] = [],
 	): ((Story: React.ComponentType) => React.JSX.Element) =>
 	(Story: React.ComponentType) => (
 		<MockedProvider mocks={[...reservationStoryMocks, ...customMocks]}>

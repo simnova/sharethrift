@@ -142,7 +142,9 @@ export const SettingsView: React.FC<SettingsViewProps> = ({
 			const values = await profileForm.validateFields();
 			await onSaveSection?.('profile', values);
 			setEditingSection(null);
-		} catch {}
+		} catch {
+			// Validation errors are handled by the form
+		}
 	};
 
 	const saveLocation = async () => {
@@ -150,7 +152,9 @@ export const SettingsView: React.FC<SettingsViewProps> = ({
 			const values = await locationForm.validateFields();
 			await onSaveSection?.('location', values.location || values);
 			setEditingSection(null);
-		} catch {}
+		} catch {
+			// Validation errors are handled by the form
+		}
 	};
 
 	const savePlan = async () => {
@@ -166,7 +170,9 @@ export const SettingsView: React.FC<SettingsViewProps> = ({
 			const values = await billingForm.validateFields();
 			await onSaveSection?.('billing', values);
 			setEditingSection(null);
-		} catch {}
+		} catch {
+			// Validation errors are handled by the form
+		}
 	};
 
 	const savePassword = async () => {
@@ -180,7 +186,9 @@ export const SettingsView: React.FC<SettingsViewProps> = ({
 			}
 			await onSaveSection?.('password', values);
 			setEditingSection(null);
-		} catch {}
+		} catch {
+			// Validation errors are handled by the form
+		}
 	};
 
 	const renderProfileSection = () => (
@@ -428,14 +436,16 @@ export const SettingsView: React.FC<SettingsViewProps> = ({
 				overflow: 'hidden',
 				margin: '0 auto',
 			}}
-			bodyStyle={{
-				padding: '10px 20px',
-				display: 'flex',
-				flexDirection: 'column',
-				alignItems: 'center',
-				textAlign: 'center',
-				height: '100%',
-				position: 'relative',
+			styles={{
+				body: {
+					padding: '10px 20px',
+					display: 'flex',
+					flexDirection: 'column',
+					alignItems: 'center',
+					textAlign: 'center',
+					height: '100%',
+					position: 'relative',
+				},
 			}}
 			// Optional: allow clicking anywhere on the card in edit mode
 			onClick={() => {
@@ -616,7 +626,7 @@ export const SettingsView: React.FC<SettingsViewProps> = ({
 	);
 
 	const renderBillingSection = () => {
-		const billing = user.billing;
+		const { billing } = user;
 		return (
 			<Card className={styles['sectionCard']}>
 				<div className={styles['sectionHeader']}>

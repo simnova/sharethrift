@@ -14,10 +14,19 @@ export function createStorybookVitestConfig(pkgDirname: string, opts: StorybookV
   const STORYBOOK_DIR = opts.storybookDirRelativeToPackage ?? '.storybook';
   const setupFiles = opts.setupFiles ?? ['.storybook/vitest.setup.ts'];
   const instances = opts.browsers ?? [{ browser: 'chromium' }];
+  // CI environment is slower, allow retries for flaky browser tests
+  const isCI = process.env['CI'] === 'true' || process.env['TF_BUILD'] === 'True';
 
   const base = mergeConfig(baseConfig, defineConfig({
     test: {
       globals: true,
+      // Retry tests on failure to handle flaky browser tests due to race conditions
+      // in @storybook/addon-vitest + Playwright browser provider
+      retry: isCI ? 3 : 1,
+      testTimeout: isCI ? 30000 : 10000,
+      // Serialize file execution to avoid "Vitest failed to find the runner" race condition
+      // when using Storybook + Vitest browser mode with Playwright
+      fileParallelism: false,
       projects: [
         {
           extends: true,

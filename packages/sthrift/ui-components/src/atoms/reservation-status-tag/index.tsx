@@ -1,7 +1,7 @@
 import type React from 'react';
 import { Tag } from 'antd';
 
-export interface ReservationStatusTagProps {
+interface ReservationStatusTagProps {
 	status: 'REQUESTED' | 'ACCEPTED' | 'REJECTED' | 'CLOSED' | 'CANCELLED';
 }
 
@@ -19,10 +19,9 @@ export const ReservationStatusTag: React.FC<ReservationStatusTagProps> = ({
 	const color = ReservationStatusTagColorMap[status];
 	const statusTextFormatted = status // Removes Underscores and Capitalizes First Letter of Each Word
 		.toLowerCase()
-		.replace(/_/g, ' ')
-		.replace(/\b\w/g, (c) => c.toUpperCase());
+		.replaceAll('_', ' ')
+		.replaceAll(/\b\w/g, (c) => c.toUpperCase());
 
 	return <Tag color={color}>{statusTextFormatted}</Tag>;
 };
 
-export default ReservationStatusTag;

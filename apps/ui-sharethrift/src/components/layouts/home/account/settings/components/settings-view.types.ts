@@ -21,6 +21,35 @@ export interface SettingsUser {
 	createdAt: string;
 }
 
+// Type for section form values - union of all possible form value shapes
+export type SectionFormValues = {
+	firstName?: string;
+	lastName?: string;
+	username?: string;
+	email?: string;
+	aboutMe?: string;
+	accountType?: string;
+	address1?: string;
+	address2?: string;
+	city?: string;
+	state?: string;
+	country?: string;
+	zipCode?: string;
+	subscriptionId?: string;
+	cybersourceCustomerId?: string;
+	currentPassword?: string;
+	newPassword?: string;
+	confirmPassword?: string;
+	location?: {
+		address1?: string;
+		address2?: string;
+		city?: string;
+		state?: string;
+		country?: string;
+		zipCode?: string;
+	};
+};
+
 export interface SettingsViewProps {
 	user: SettingsUser;
 	onEditSection: (section: string) => void;
@@ -28,18 +57,10 @@ export interface SettingsViewProps {
 
 	onSaveSection?: (
 		section: 'profile' | 'location' | 'plan' | 'billing' | 'password',
-		values: any,
+		values: SectionFormValues,
 	) => Promise<void>;
 	isSavingSection?: boolean;
 	mutationErrorMessage?: string;
-}
-
-export interface SettingsEditProps {
-	user: SettingsUser;
-	onSave: (values: SettingsUser) => Promise<void>;
-	onCancel: () => void;
-	isSaving?: boolean;
-	isLoading?: boolean;
 }
 
 // Union type for current user

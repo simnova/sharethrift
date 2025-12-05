@@ -5,7 +5,7 @@ import type { User } from "../../../../../generated.tsx";
 
 const imgRectangle26 = bikeListingImg;
 
-export interface ListingBannerProps {
+interface ListingBannerProps {
   owner: User;
 }
 
