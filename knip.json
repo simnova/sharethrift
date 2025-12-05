@@ -14,24 +14,34 @@
 			"entry": ["src/**/*.{ts,tsx,js,jsx}"],
 			"project": ["src/**/*.{ts,tsx,js,jsx}"]
 		},
+		"packages/cellix/*": {
+			"project": ["src/**/*.ts"],
+			"ignore": ["**/graphql-tools-scalars.ts"]
+		},
+		"packages/cellix/mongoose-seedwork": {
+			"entry": ["src/index.ts"],
+			"project": ["src/**/*.ts"],
+			"ignore": ["**/mongo-connection.ts"]
+		},
+		"packages/cellix/ui-core/*": {
+			"entry": ["src/index.ts"],
+			"project": ["src/**/*.{ts,tsx}"]
+		},
 		"packages/sthrift/data-sources-mongoose-models": {
 			"entry": ["src/index.ts", "src/models/**/*.model.ts"],
 			"project": ["src/**/*.ts"]
 		},
 		"packages/sthrift/persistence": {
 			"entry": ["src/index.ts", "src/datasources/**/index.ts"],
-			"project": ["src/**/*.ts"],
-			"ignore": ["**/graphql-tools-scalars.ts"]
+			"project": ["src/**/*.ts"]
 		},
 		"packages/sthrift/graphql": {
-			"entry": ["src/index.ts", "src/schema/types/**/*.resolvers.ts"],
-			"project": ["src/**/*.ts"],
-			"ignore": ["**/graphql-tools-scalars.ts"]
+			"entry": ["src/index.ts", "src/schema/types/**/*.resolvers.ts", "src/schema/builder/*.ts"],
+			"project": ["src/**/*.ts"]
 		},
 		"packages/sthrift/*": {
 			"entry": ["src/index.ts"],
-			"project": ["src/**/*.ts"],
-			"ignore": ["**/graphql-tools-scalars.ts"]
+			"project": ["src/**/*.ts"]
 		},
 		"packages/sthrift/ui-components": {
 			"entry": ["src/index.ts"],
@@ -45,13 +55,9 @@
 		"packages/cellix/mongoose-seedwork",
 		"packages/cellix/mock-payment-server",
 		"packages/cellix/api-services-spec",
-		"packages/cellix/messaging-service",
-		"packages/cellix/mock-cognitive-search",
 		"packages/cellix/mock-mongodb-memory-server-seedwork",
 		"packages/cellix/mock-oauth2-server",
-		"packages/cellix/ui-core",
 		"packages/cellix/vitest-config",
-		"packages/cellix/payment-service",
 		"packages/sthrift/payment-service-cybersource",
 		"packages/sthrift/mock-messaging-server"
 	],
@@ -64,12 +70,14 @@
 		"**/coverage/**",
 		"**/__tests__/**",
 		"**/tests/**",
-		"**/test/**",
 		"**/domain/events/**",
 		"**/domain-execution-context.ts",
 		"**/*.value-objects.ts",
+		"**/graphql-tools-scalars.ts",
 		"**/default.permissions.ts",
-		"**/*-permissions.ts"
+		"**/*.domain-adapter.ts",
+		"**/storybook-providers.tsx",
+		"**/init/azure-functions.ts"
 	],
 	"ignoreDependencies": [
 		"@types/*",
@@ -90,10 +98,5 @@
 		"tsx",
 		"vite"
 	],
-	"ignoreBinaries": ["func"],
-	"ignoreExportsUsedInFile": true,
-	"rules": {
-		"exports": "off",
-		"types": "off"
-	}
+	"ignoreBinaries": ["func"]
 }
