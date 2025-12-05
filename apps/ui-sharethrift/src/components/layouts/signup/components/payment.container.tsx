@@ -3,7 +3,7 @@ import {
 	type PaymentContainerAccountPlansFieldsFragment,
 	PaymentContainerPersonalUserCybersourcePublicKeyIdDocument,
 	type ProcessPaymentInput,
-	AppContainerCurrentPersonalUserAndCreateIfNotExistsDocument,
+	AppContainerCurrentUserDocument,
 	PaymentContainerAccountPlansDocument,
 	PaymentContainerCurrentPersonalUserAndCreateIfNotExistsDocument,
 	SignUpPaymentContainerPersonalUserProcessPaymentDocument,
@@ -37,7 +37,7 @@ export const PaymentContainer: FC = () => {
 	} = useQuery(PaymentContainerAccountPlansDocument);
 
 	const [refetchCurrentUserData] = useLazyQuery(
-		AppContainerCurrentPersonalUserAndCreateIfNotExistsDocument,
+		AppContainerCurrentUserDocument,
 		{ fetchPolicy: 'network-only' },
 	);
 
