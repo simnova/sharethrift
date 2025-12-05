@@ -11,6 +11,8 @@ import type { ItemListingEntityReference } from '../../../src/domain/contexts/li
 import { ReservationRequestStates } from '../../../src/domain/contexts/reservation-request/reservation-request/reservation-request.value-objects';
 import type { ReservationRequestDomainPermissions } from '../../../src/domain/contexts/reservation-request/reservation-request.domain-permissions';
 import { createTestUserRef } from '../fixtures/test-user-fixtures';
+import { toReservationStateEnum } from '../screenplay/feature-steps-helper';
+
 
 declare module '@serenity-js/core' {
     interface Actor {
@@ -415,13 +417,7 @@ When('I set state to {string}', (state: string) => {
     const actor = actorCalled('User');
     try {
         if (actor.currentReservationRequest) {
-            const stateValue = state === 'REQUESTED' ? ReservationRequestStates.REQUESTED :
-                            state === 'ACCEPTED' ? ReservationRequestStates.ACCEPTED :
-                            state === 'REJECTED' ? ReservationRequestStates.REJECTED :
-                            state === 'CANCELLED' ? ReservationRequestStates.CANCELLED :
-                            state === 'CLOSED' ? ReservationRequestStates.CLOSED :
-                            state;
-            actor.currentReservationRequest.state = stateValue;
+            actor.currentReservationRequest.state = toReservationStateEnum(state);
         }
     } catch (e) {
         actor.error = e as Error;
@@ -443,19 +439,23 @@ Then('setting state to REQUESTED on an existing reservation should raise a Permi
     }
 });
 
+Given('an existing reservation request in state {string}', (state: string) => {
+    const actor = actorCalled('User');
+
+    if (!actor.currentReservationRequest) {
+        throw new Error('No reservation request was created');
+    }
+
+    actor.currentReservationRequest.state = toReservationStateEnum(state);
+});
+
 When('I try to set state to {string}', (state: string) => {
     const actor = actorCalled('User');
     try {
         if (!actor.currentReservationRequest) {
             throw new Error('No reservation request was created');
         }
-        const stateValue = state === 'REQUESTED' ? ReservationRequestStates.REQUESTED :
-                        state === 'ACCEPTED' ? ReservationRequestStates.ACCEPTED :
-                        state === 'REJECTED' ? ReservationRequestStates.REJECTED :
-                        state === 'CANCELLED' ? ReservationRequestStates.CANCELLED :
-                        state === 'CLOSED' ? ReservationRequestStates.CLOSED :
-                        state;
-        actor.currentReservationRequest.state = stateValue;
+        actor.currentReservationRequest.state = toReservationStateEnum(state);
     } catch (e) {
         actor.error = e as Error;
     }

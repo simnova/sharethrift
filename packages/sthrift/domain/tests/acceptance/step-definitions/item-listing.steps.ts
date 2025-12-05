@@ -139,6 +139,29 @@ When('I set the title to {string}', (title: string) => {
     }
 });
 
+When('I set the state to {string}', (state: string) => {
+    const actor = actorCalled('User');
+
+    if (!actor.currentListing) {
+        throw new Error('No current listing found for actor "User"');
+    }
+
+    // Exercise the high-level `state` setter, which routes through publish/pause/cancel
+    actor.currentListing.state = state;
+});
+
+When('I try to set the state to {string}', (state: string) => {
+    const actor = actorCalled('User');
+
+    try {
+        if (actor.currentListing) {
+            actor.currentListing.state = state;
+        }
+    } catch (e) {
+        actor.error = e as Error;
+    }
+});
+
 When('I try to set the title to {string}', (title: string) => {
     const actor = actorCalled('User');
     try {

@@ -229,7 +229,7 @@ export class ItemListing<props extends ItemListingProps>
 				break;
 			default:
 				throw new DomainSeedwork.PermissionError(
-					`Cannot transition to state: ${value}`,
+					`Invalid listing state: "${value}". Valid states are: ${Object.values(ValueObjects.ListingStateEnum).join(', ')}`,
 				);
 		}
 	}

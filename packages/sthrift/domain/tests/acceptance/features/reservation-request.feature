@@ -112,3 +112,15 @@ Scenario: Reading audit fields
   Then createdAt should return the correct date
   And updatedAt should return the correct date
   And schemaVersion should return the correct version
+
+Scenario: Re-setting REQUESTED on an accepted reservation fails with PermissionError
+  Given a ReservationRequest aggregate with state "REQUESTED"
+  And the user can edit reservation requests
+  And an existing reservation request in state "ACCEPTED"
+  Then setting state to REQUESTED on an existing reservation should raise a PermissionError
+
+Scenario: Setting an invalid state throws PermissionError
+  Given a ReservationRequest aggregate with state "REQUESTED"
+  And the user can edit reservation requests
+  When I try to set state to "INVALID_STATE"
+  Then a PermissionError should be thrown with message "Invalid reservation request state"

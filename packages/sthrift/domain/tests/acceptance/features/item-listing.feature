@@ -87,3 +87,26 @@ Scenario: Publishing a listing with permission
   When I call publish()
   Then the listing's state should be "Published"
   And the updatedAt timestamp should change
+
+Scenario: Setting state to Published transitions correctly
+  Given an ItemListing aggregate with permission to publish item listing
+  When I set the state to "Published"
+  Then the listing's state should be "Published"
+  And the updatedAt timestamp should change
+
+Scenario: Setting state to Paused transitions correctly
+  Given an ItemListing aggregate with permission to publish item listing
+  And the listing state is "Published"
+  When I set the state to "Paused"
+  Then the listing's state should be "Paused"
+
+Scenario: Setting state to Cancelled transitions correctly
+  Given an ItemListing aggregate with permission to cancel item listing
+  And the listing state is "Published"
+  When I set the state to "Cancelled"
+  Then the listing's state should be "Cancelled"
+
+Scenario: Setting an invalid state throws PermissionError
+  Given an ItemListing aggregate with permission to update item listing
+  When I try to set the state to "InvalidState"
+  Then a PermissionError should be thrown with message "Invalid listing state"

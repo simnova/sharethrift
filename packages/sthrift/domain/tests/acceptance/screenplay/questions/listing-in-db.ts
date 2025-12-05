@@ -1,20 +1,10 @@
 // apps/api/screenplay/questions/listing-in-db.ts
 import { Question } from '@serenity-js/core';
-import { GraphQLClient, gql } from 'graphql-request';
-
-interface ListingData {
-  id: string;
-  title: string;
-  description: string;
-  category: string;
-  location: string;
-  sharingPeriodStart: string;
-  sharingPeriodEnd: string;
-}
+import { gql } from 'graphql-request';
+import { createGraphQLClient, type ListingData } from './graphql-helper.ts';
 
 export const Listings = Question.about('the list of current listings', async _actor => {
-  const endpoint = 'http://localhost:7071/api/graphql'; // Update if your GraphQL endpoint differs
-  const client = new GraphQLClient(endpoint);
+  const client = createGraphQLClient();
   const query = gql`
     query {
       listings {
@@ -31,3 +21,4 @@ export const Listings = Question.about('the list of current listings', async _ac
   const data = await client.request<{ listings: ListingData[] }>(query);
   return data.listings;
 });
+
