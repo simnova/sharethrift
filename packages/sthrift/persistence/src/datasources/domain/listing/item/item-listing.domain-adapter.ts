@@ -76,10 +76,12 @@ export class ItemListingDomainAdapter
 		| Domain.Contexts.User.PersonalUser.PersonalUserEntityReference
 		| Domain.Contexts.User.AdminUser.AdminUserEntityReference {
 		if (!this.doc.sharer) {
-			throw new Error('listing is not populated');
+			throw new Error('sharer is not populated');
 		}
 		if (this.doc.sharer instanceof MongooseSeedwork.ObjectId) {
-			throw new Error('sharer is not populated');
+			return {
+				id: this.doc.sharer.toString(),
+			} as Domain.Contexts.User.UserEntityReference;
 		}
 		// Check userType discriminator to determine which adapter to use
 		const sharerDoc = this.doc.sharer as

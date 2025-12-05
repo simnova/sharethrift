@@ -18,8 +18,8 @@ test.for(feature, ({ Background, Scenario, BeforeEachScenario }) => {
 	let mockContext: GraphContext;
 	let mockUserAppealRequest: {
 		id: string;
-		userId: string;
-		blockerId: string;
+		user: { id: string };
+		blocker: { id: string };
 		state: string;
 		reason: string;
 	};
@@ -40,10 +40,8 @@ test.for(feature, ({ Background, Scenario, BeforeEachScenario }) => {
 
 		mockUserAppealRequest = {
 			id: '507f1f77bcf86cd799439017',
-			userId: '507f1f77bcf86cd799439015',
-			user: '507f1f77bcf86cd799439015',
-			blockerId: '507f1f77bcf86cd799439016',
-			blocker: '507f1f77bcf86cd799439016',
+			user: { id: '507f1f77bcf86cd799439015' },
+			blocker: { id: '507f1f77bcf86cd799439016' },
 			state: 'Draft',
 			reason: 'Test appeal reason',
 		};
@@ -94,7 +92,7 @@ test.for(feature, ({ Background, Scenario, BeforeEachScenario }) => {
 		'UserAppealRequest user field resolver returns populated user',
 		({ Given, When, Then }) => {
 			Given('a user appeal request with user ID', () => {
-				expect(mockUserAppealRequest.userId).toBeDefined();
+				expect(mockUserAppealRequest.user).toBeDefined();
 			});
 
 			When('the user field resolver is called', async () => {
@@ -119,7 +117,7 @@ test.for(feature, ({ Background, Scenario, BeforeEachScenario }) => {
 		'UserAppealRequest blocker field resolver returns populated blocker',
 		({ Given, When, Then }) => {
 			Given('a user appeal request with blocker ID', () => {
-				expect(mockUserAppealRequest.blockerId).toBeDefined();
+				expect(mockUserAppealRequest.blocker).toBeDefined();
 			});
 
 			When('the blocker field resolver is called', async () => {
@@ -226,7 +224,7 @@ test.for(feature, ({ Background, Scenario, BeforeEachScenario }) => {
 
 			Given('valid user appeal request input data', () => {
 				input = {
-					userId: 'user-id-123',
+					user: 'user-id-123',
 					reason: 'Test appeal reason',
 				};
 			});

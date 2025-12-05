@@ -40,6 +40,7 @@ export const mongooseContextBuilder = (
 		User: {
 			PersonalUser: PersonalUserModelFactory(UserModel),
 			AdminUser: AdminUserModelFactory(UserModel),
+      User: UserModel,
 		},
 
 		Listing: {

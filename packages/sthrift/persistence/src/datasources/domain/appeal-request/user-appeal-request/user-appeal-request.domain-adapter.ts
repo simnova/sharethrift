@@ -3,7 +3,6 @@ import type { Models } from '@sthrift/data-sources-mongoose-models';
 import { MongooseSeedwork } from '@cellix/mongoose-seedwork';
 
 import { PersonalUserDomainAdapter } from '../../user/personal-user/personal-user.domain-adapter.ts';
-import { getUser, loadUser, setUser } from '../user-appeal-request-helpers.ts';
 
 export class UserAppealRequestConverter extends MongooseSeedwork.MongoTypeConverter<
 	Models.AppealRequest.UserAppealRequest,
@@ -14,7 +13,8 @@ export class UserAppealRequestConverter extends MongooseSeedwork.MongoTypeConver
 	constructor() {
 		super(
 			UserAppealRequestDomainAdapter,
-			Domain.Contexts.AppealRequest.UserAppealRequest.UserAppealRequest<UserAppealRequestDomainAdapter>,
+			Domain.Contexts.AppealRequest.UserAppealRequest
+				.UserAppealRequest<UserAppealRequestDomainAdapter>,
 		);
 	}
 }
@@ -25,34 +25,51 @@ export class UserAppealRequestDomainAdapter
 		Domain.Contexts.AppealRequest.UserAppealRequest.UserAppealRequestProps
 {
 	get user(): Domain.Contexts.User.PersonalUser.PersonalUserEntityReference {
-		return getUser(this.doc);
-	}
-
-		async loadUser(): Promise<Domain.Contexts.User.PersonalUser.PersonalUserEntityReference> {
-			return await loadUser(this.doc);
+		if (!this.doc.user) {
+			throw new Error('user is not populated');
 		}
-
-	set user(
-		user:
-			| Domain.Contexts.User.PersonalUser.PersonalUserEntityReference
-			| Domain.Contexts.User.PersonalUser.PersonalUser<PersonalUserDomainAdapter>,
-	) {
-		setUser(this.doc, user);
-	}
-
-		get blocker(): Domain.Contexts.User.PersonalUser.PersonalUserEntityReference {
-		if (!this.doc.blocker) {
-			throw new Error('blocker is not populated');
-		}
-		if (this.doc.blocker instanceof MongooseSeedwork.ObjectId) {
-			return {
-				id: this.doc.blocker.toString(),
-			} as Domain.Contexts.User.PersonalUser.PersonalUserEntityReference;
+		if (this.doc.user instanceof MongooseSeedwork.ObjectId) {
+			throw new TypeError('user is not populated');
 		}
 		const adapter = new PersonalUserDomainAdapter(
 			this.doc.user as Models.User.PersonalUser,
 		);
-		return adapter.entityReference as Domain.Contexts.User.PersonalUser.PersonalUserEntityReference;
+		return adapter.entityReference;
+	}
+
+	async loadUser(): Promise<Domain.Contexts.User.PersonalUser.PersonalUserEntityReference> {
+		if (!this.doc.user) {
+			throw new Error('user is not populated');
+		}
+		if (this.doc.user instanceof MongooseSeedwork.ObjectId) {
+			await this.doc.populate('user');
+		}
+		const adapter = new PersonalUserDomainAdapter(
+			this.doc.user as Models.User.PersonalUser,
+		);
+		return adapter.entityReference;
+	}
+
+	set user(user:
+		| Domain.Contexts.User.PersonalUser.PersonalUserEntityReference
+		| Domain.Contexts.User.PersonalUser.PersonalUser<PersonalUserDomainAdapter>,) {
+		if (!user?.id) {
+			throw new Error('user reference is missing id');
+		}
+		this.doc.set('user', new MongooseSeedwork.ObjectId(user.id));
+	}
+
+	get blocker(): Domain.Contexts.User.PersonalUser.PersonalUserEntityReference {
+		if (!this.doc.blocker) {
+			throw new Error('blocker is not populated');
+		}
+		if (this.doc.blocker instanceof MongooseSeedwork.ObjectId) {
+			throw new TypeError('blocker is not populated');
+		}
+		const adapter = new PersonalUserDomainAdapter(
+			this.doc.blocker as Models.User.PersonalUser,
+		);
+		return adapter.entityReference;
 	}
 
 	async loadBlocker(): Promise<Domain.Contexts.User.PersonalUser.PersonalUserEntityReference> {
@@ -65,14 +82,12 @@ export class UserAppealRequestDomainAdapter
 		const adapter = new PersonalUserDomainAdapter(
 			this.doc.blocker as Models.User.PersonalUser,
 		);
-		return adapter.entityReference as Domain.Contexts.User.PersonalUser.PersonalUserEntityReference;
+		return adapter.entityReference;
 	}
 
-	set blocker(
-		blocker:
-			| Domain.Contexts.User.PersonalUser.PersonalUserEntityReference
-			| Domain.Contexts.User.PersonalUser.PersonalUser<PersonalUserDomainAdapter>,
-	) {
+	set blocker(blocker:
+		| Domain.Contexts.User.PersonalUser.PersonalUserEntityReference
+		| Domain.Contexts.User.PersonalUser.PersonalUser<PersonalUserDomainAdapter>,) {
 		if (!blocker?.id) {
 			throw new Error('blocker reference is missing id');
 		}

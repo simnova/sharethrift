@@ -83,8 +83,12 @@ test.for(feature, ({ Scenario, BeforeEachScenario }) => {
 				PersonalUser: {
 					PersonalUserReadRepo: mockUserReadRepo,
 				},
-				getUserById: getUserByIdSpy,
-				getUserByEmail: getUserByEmailSpy,
+				User: {
+          UserReadRepo: {
+            getById: getUserByIdSpy,
+            getByEmail: getUserByEmailSpy,
+          }
+        }
 			},
 				Listing: {
 					ItemListing: {

@@ -187,6 +187,7 @@ function makeBaseProps(
 			updatedAt: new Date('2020-01-02T00:00:00Z'),
 			schemaVersion: '1.0.0',
 			listingType: 'item-listing',
+			loadSharer: async () => user,
 		},
 		makePassport(),
 	);

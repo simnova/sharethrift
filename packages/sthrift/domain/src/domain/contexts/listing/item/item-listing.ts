@@ -1,4 +1,3 @@
-import { randomUUID } from 'node:crypto';
 import { DomainSeedwork } from '@cellix/domain-seedwork';
 import type { Passport } from '../../passport.ts';
 import type { ListingVisa } from '../listing.visa.ts';
@@ -8,6 +7,11 @@ import type {
 	ItemListingEntityReference,
 	ItemListingProps,
 } from './item-listing.entity.ts';
+import { AdminUser } from '../../user/admin-user/admin-user.ts';
+import type { AdminUserProps } from '../../user/admin-user/admin-user.entity.ts';
+import { PersonalUser } from '../../user/personal-user/personal-user.ts';
+import type { PersonalUserProps } from '../../user/personal-user/personal-user.entity.ts';
+
 export class ItemListing<props extends ItemListingProps>
 	extends DomainSeedwork.AggregateRoot<props, Passport>
 	implements ItemListingEntityReference
@@ -26,6 +30,8 @@ export class ItemListing<props extends ItemListingProps>
 
 	//#region Methods
 	public static getNewInstance<props extends ItemListingProps>(
+		newProps: props,
+		passport: Passport,
 		sharer: UserEntityReference,
 		fields: {
 			title: string;
@@ -37,73 +43,27 @@ export class ItemListing<props extends ItemListingProps>
 			images?: string[];
 			isDraft?: boolean;
 		},
-		passport: Passport,
 	): ItemListing<props> {
-		const id = randomUUID();
-		const now = new Date();
-		const isDraft = fields.isDraft ?? false;
+		const newInstance = new ItemListing(newProps, passport);
+		newInstance.markAsNew();
+		newInstance.sharer = sharer;
+		newInstance.title = new ValueObjects.Title(fields.title).valueOf();
+		newInstance.description = new ValueObjects.Description(
+			fields.description,
+		).valueOf();
+		newInstance.category = new ValueObjects.Category(fields.category).valueOf();
+		newInstance.location = new ValueObjects.Location(fields.location).valueOf();
+		newInstance.sharingPeriodStart = fields.sharingPeriodStart;
+		newInstance.sharingPeriodEnd = fields.sharingPeriodEnd;
+		if (fields.images) {
+			newInstance.images = fields.images;
+		}
+		newInstance.state = fields.isDraft
+			? ValueObjects.ListingState.Drafted.valueOf()
+			: ValueObjects.ListingState.Published.valueOf();
 
-		// For drafts, use placeholder values if fields are empty
-		const title =
-			isDraft && (!fields.title || fields.title.trim() === '')
-				? 'Draft Title'
-				: fields.title;
-		const description =
-			isDraft && (!fields.description || fields.description.trim() === '')
-				? 'Draft Description'
-				: fields.description;
-		const category =
-			isDraft && (!fields.category || fields.category.trim() === '')
-				? 'Miscellaneous'
-				: fields.category;
-		const location =
-			isDraft && (!fields.location || fields.location.trim() === '')
-				? 'Draft Location'
-				: fields.location;
-
-		// For drafts, use default dates if not provided or invalid
-		const defaultStartDate = new Date();
-		defaultStartDate.setDate(defaultStartDate.getDate() + 1); // Tomorrow
-		const defaultEndDate = new Date();
-		defaultEndDate.setDate(defaultEndDate.getDate() + 30); // 30 days from now
-
-		const sharingPeriodStart =
-			isDraft &&
-			(!fields.sharingPeriodStart ||
-				Number.isNaN(fields.sharingPeriodStart.getTime()))
-				? defaultStartDate
-				: fields.sharingPeriodStart;
-		const sharingPeriodEnd =
-			isDraft &&
-			(!fields.sharingPeriodEnd ||
-				Number.isNaN(fields.sharingPeriodEnd.getTime()))
-				? defaultEndDate
-				: fields.sharingPeriodEnd;
-
-		const itemListingProps = {
-			id,
-			sharer: sharer,
-			title: title,
-			description: new ValueObjects.Description(description),
-			category: new ValueObjects.Category(category),
-			location: new ValueObjects.Location(location),
-			sharingPeriodStart: sharingPeriodStart,
-			sharingPeriodEnd: sharingPeriodEnd,
-			images: fields.images ?? [],
-			state: isDraft
-				? ValueObjects.ListingState.Drafted
-				: ValueObjects.ListingState.Published,
-			createdAt: now,
-			updatedAt: now,
-			schemaVersion: 1,
-			reports: 0,
-			sharingHistory: [],
-			listingType: 'item-listing',
-		} as unknown as props;
-
-		const aggregate = new ItemListing(itemListingProps, passport);
-		aggregate.markAsNew();
-		return aggregate;
+		newInstance.isNew = false;
+		return newInstance;
 	}
 
 	private markAsNew(): void {
@@ -114,7 +74,21 @@ export class ItemListing<props extends ItemListingProps>
 
 	//#region Properties
 	get sharer(): UserEntityReference {
-		return this.props.sharer;
+		// Polymorphic instantiation based on userType
+		if (this.props.sharer.userType === 'admin-user') {
+			return new AdminUser(
+				this.props.sharer as unknown as AdminUserProps,
+				this.passport,
+			);
+		}
+		return new PersonalUser(
+			this.props.sharer as unknown as PersonalUserProps,
+			this.passport,
+		);
+	}
+
+	async loadSharer(): Promise<UserEntityReference> {
+		return await this.props.loadSharer();
 	}
 
 	set sharer(value: UserEntityReference) {
@@ -219,6 +193,10 @@ export class ItemListing<props extends ItemListingProps>
 
 	get state(): string {
 		return this.props.state;
+	}
+
+	set state(value: string) {
+		this.props.state = value;
 	}
 
 	get updatedAt(): Date {

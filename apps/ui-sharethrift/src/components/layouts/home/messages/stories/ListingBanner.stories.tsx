@@ -18,7 +18,7 @@ const mockUser: PersonalUser = {
       lastName: "Doe",
     },
   },
-  userType: "personal",
+  userType: "personal-users",
   hasCompletedOnboarding: true,
   isBlocked: false,
 };

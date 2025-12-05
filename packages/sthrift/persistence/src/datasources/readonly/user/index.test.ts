@@ -31,6 +31,7 @@ test.for(feature, ({ Scenario }) => {
 				User: {
 					PersonalUser: {} as unknown,
 					AdminUser: {} as unknown,
+					User: {} as unknown,
 				},
 			} as ModelsContext;
 		});
@@ -52,20 +53,20 @@ test.for(feature, ({ Scenario }) => {
 		});
 
 		And('it should return an object with getUserById helper', () => {
-			expect(result.getUserById).toBeDefined();
-			expect(typeof result.getUserById).toBe('function');
+			expect(result.User.UserReadRepo.getById).toBeDefined();
+			expect(typeof result.User.UserReadRepo.getById).toBe('function');
 		});
 
 		And('it should return an object with getUserByEmail helper', () => {
-			expect(result.getUserByEmail).toBeDefined();
-			expect(typeof result.getUserByEmail).toBe('function');
+			expect(result.User.UserReadRepo.getByEmail).toBeDefined();
+			expect(typeof result.User.UserReadRepo.getByEmail).toBe('function');
 		});
 	});
 
 	Scenario('Getting user by ID finds PersonalUser', ({ Given, And, When, Then }) => {
 		let userContext: ReturnType<typeof UserIndex.UserContext>;
 		let result: unknown;
-		const mockPersonalUser = { id: 'user-123', userType: 'personal-user' };
+		const mockPersonalUser = { id: 'user-123', userType: 'personal-users' };
 
 		Given('a UserContext with mocked repositories', () => {
 			const createQueryChain = (value: unknown) => ({
@@ -103,7 +104,7 @@ test.for(feature, ({ Scenario }) => {
 
 		When('I call getUserById with "user-123"', async () => {
 			try {
-				result = await userContext.getUserById('user-123');
+				result = await userContext.User.UserReadRepo.getById('user-123');
 			} catch {
 				// Mock conversion may fail, which is okay - we're testing the lookup logic
 				result = 'called';
@@ -161,7 +162,7 @@ test.for(feature, ({ Scenario }) => {
 
 		When('I call getUserById with "admin-456"', async () => {
 			try {
-				result = await userContext.getUserById('admin-456');
+				result = await userContext.User.UserReadRepo.getById('admin-456');
 			} catch {
 				// Mock conversion may fail, which is okay - we're testing the lookup logic
 				result = 'called';
@@ -177,7 +178,7 @@ test.for(feature, ({ Scenario }) => {
 	Scenario('Getting user by email finds PersonalUser', ({ Given, And, When, Then }) => {
 		let userContext: ReturnType<typeof UserIndex.UserContext>;
 		let result: unknown;
-		const mockPersonalUser = { email: 'user@example.com', userType: 'personal-user' };
+		const mockPersonalUser = { email: 'user@example.com', userType: 'personal-users' };
 
 		Given('a UserContext with mocked repositories', () => {
 			const createQueryChain = (value: unknown) => ({
@@ -198,6 +199,10 @@ test.for(feature, ({ Scenario }) => {
 						find: () => createQueryChain([]),
 						findOne: () => createQueryChain(null),
 					},
+					User: {
+						find: () => createQueryChain([]),
+						findOne: () => createQueryChain(mockPersonalUser),
+					},
 				},
 			} as unknown as ModelsContext;
 			const mockPassport = {
@@ -214,7 +219,7 @@ test.for(feature, ({ Scenario }) => {
 		});
 
 		When('I call getUserByEmail with "user@example.com"', async () => {
-			result = await userContext.getUserByEmail('user@example.com');
+			result = await userContext.User.UserReadRepo.getByEmail('user@example.com');
 		});
 
 		Then('I should receive the PersonalUser', () => {
@@ -247,6 +252,10 @@ test.for(feature, ({ Scenario }) => {
 						find: () => createQueryChain([]),
 						findOne: () => createQueryChain(mockAdminUser),
 					},
+					User: {
+						find: () => createQueryChain([]),
+						findOne: () => createQueryChain(mockAdminUser),
+					},
 				},
 			} as unknown as ModelsContext;
 			const mockPassport = {
@@ -267,7 +276,7 @@ test.for(feature, ({ Scenario }) => {
 		});
 
 		When('I call getUserByEmail with "admin@example.com"', async () => {
-			result = await userContext.getUserByEmail('admin@example.com');
+			result = await userContext.User.UserReadRepo.getByEmail('admin@example.com');
 		});
 
 		Then('I should receive the AdminUser', () => {

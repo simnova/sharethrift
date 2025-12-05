@@ -15,6 +15,7 @@ import type { Models } from '@sthrift/data-sources-mongoose-models';
 const ACTIVE_STATES = ['Accepted', 'Requested'];
 const INACTIVE_STATES = ['Cancelled', 'Closed', 'Rejected'];
 
+const PopulatedFields = ['listing', 'reserver'];
 export interface ReservationRequestReadRepository {
 	getAll: (
 		options?: FindOptions,
@@ -110,41 +111,30 @@ export class ReservationRequestReadRepositoryImpl
 		return docs.map((doc) => this.converter.toDomain(doc, this.passport));
 	}
 
-	/**
-	 * Helper method for querying a single document
-	 */
-	private async queryOne(
-		filter: FilterQuery<Models.ReservationRequest.ReservationRequest>,
-		options?: FindOneOptions,
-	): Promise<Domain.Contexts.ReservationRequest.ReservationRequest.ReservationRequestEntityReference | null> {
-		const doc = await this.mongoDataSource.findOne(filter, options);
-		return doc ? this.converter.toDomain(doc, this.passport) : null;
-	}
-
-	/**
-	 * Helper method for querying by ID
-	 */
-	private async queryById(
-		id: string,
-		options?: FindOneOptions,
-	): Promise<Domain.Contexts.ReservationRequest.ReservationRequest.ReservationRequestEntityReference | null> {
-		const doc = await this.mongoDataSource.findById(id, options);
-		return doc ? this.converter.toDomain(doc, this.passport) : null;
-	}
-
 	async getAll(
 		options?: FindOptions,
 	): Promise<
 		Domain.Contexts.ReservationRequest.ReservationRequest.ReservationRequestEntityReference[]
 	> {
-		return await this.queryMany({}, options);
+		const result = await this.mongoDataSource.find(
+			{},
+			{ ...options, populateFields: PopulatedFields },
+		);
+		return result.map((doc) => this.converter.toDomain(doc, this.passport));
 	}
 
 	async getById(
 		id: string,
 		options?: FindOneOptions,
 	): Promise<Domain.Contexts.ReservationRequest.ReservationRequest.ReservationRequestEntityReference | null> {
-		return await this.queryById(id, options);
+		const result = await this.mongoDataSource.findById(id, {
+			...options,
+			populateFields: PopulatedFields,
+		});
+		if (!result) {
+			return null;
+		}
+		return this.converter.toDomain(result, this.passport);
 	}
 
 	async getByReserverId(
@@ -156,7 +146,11 @@ export class ReservationRequestReadRepositoryImpl
 		const filter: FilterQuery<Models.ReservationRequest.ReservationRequest> = {
 			reserver: new MongooseSeedwork.ObjectId(reserverId),
 		};
-		return await this.queryMany(filter, options);
+		const result = await this.mongoDataSource.find(filter, {
+			...options,
+			populateFields: PopulatedFields,
+		});
+		return result.map((doc) => this.converter.toDomain(doc, this.passport));
 	}
 
 	async getActiveByReserverIdWithListingWithSharer(
@@ -171,7 +165,7 @@ export class ReservationRequestReadRepositoryImpl
 		};
 		return await this.queryMany(filter, {
 			...options,
-			populateFields: ['listing', 'reserver'],
+			populateFields: PopulatedFields,
 		});
 	}
 
@@ -247,7 +241,14 @@ export class ReservationRequestReadRepositoryImpl
 			listing: new MongooseSeedwork.ObjectId(listingId),
 			state: { $in: ACTIVE_STATES },
 		};
-		return await this.queryOne(filter, options);
+		const result = await this.mongoDataSource.findOne(filter, {
+			...options,
+			populateFields: PopulatedFields,
+		});
+		if (!result) {
+			return null;
+		}
+		return this.converter.toDomain(result, this.passport);
 	}
 
 	async getOverlapActiveReservationRequestsForListing(
@@ -264,7 +265,11 @@ export class ReservationRequestReadRepositoryImpl
 			reservationPeriodStart: { $lt: reservationPeriodEnd },
 			reservationPeriodEnd: { $gt: reservationPeriodStart },
 		};
-		return await this.queryMany(filter, options);
+		const result = await this.mongoDataSource.find(filter, {
+			...options,
+			populateFields: PopulatedFields,
+		});
+		return result.map((doc) => this.converter.toDomain(doc, this.passport));
 	}
 
 	async getActiveByListingId(
