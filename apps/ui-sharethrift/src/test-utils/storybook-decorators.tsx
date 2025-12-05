@@ -77,6 +77,32 @@ export const MockAuthWrapper = ({
 };
 
 /**
+ * Mock unauthenticated wrapper component for Storybook stories.
+ * Provides a mocked AuthContext that simulates an unauthenticated user.
+ *
+ * Use this when testing components that show different UI for logged-out users
+ * (e.g., Login/Sign Up buttons in headers).
+ */
+export const MockUnauthWrapper = ({
+	children,
+}: {
+	children: ReactNode;
+}): ReactElement => {
+	const mockAuth = useMemo(
+		() =>
+			createMockAuth({
+				isAuthenticated: false,
+				user: null,
+			}),
+		[],
+	);
+
+	return (
+		<AuthContext.Provider value={mockAuth}>{children}</AuthContext.Provider>
+	);
+};
+
+/**
  * Reusable Router decorator factory for Storybook stories.
  * Wraps stories with MemoryRouter, Routes, and MockAuthWrapper.
  *

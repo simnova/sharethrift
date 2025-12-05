@@ -1,5 +1,6 @@
 import type { Meta, StoryObj } from "@storybook/react";
 import { MessageThread } from "../components/message-thread.tsx";
+import { expect, within } from 'storybook/test';
 
 const mockMessages = [
   {
@@ -23,6 +24,10 @@ const mockMessages = [
 const meta: Meta<typeof MessageThread> = {
   title: "Components/Messages/MessageThread",
   component: MessageThread,
+  argTypes: {
+    setMessageText: { action: 'message text set' },
+    handleSendMessage: { action: 'message sent' },
+  },
 };
 export default meta;
 type Story = StoryObj<typeof MessageThread>;
@@ -43,5 +48,9 @@ export const Default: Story = {
     },
     currentUserId: "user123",
     contentContainerStyle: { paddingLeft: 24 },
+  },
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+    await expect(canvas.getByText(/Hey Alice/i)).toBeInTheDocument();
   },
 };

@@ -40,3 +40,32 @@ Feature: AdminUser Read Repository Operations
   Scenario: Getting an admin user by email that doesn't exist
     When I call getByEmail with "nonexistent@example.com"
     Then I should receive null
+
+  Scenario: Getting all users with sorter by email ascending
+    Given AdminUser documents with various emails
+    When I call getAllUsers with sorter field "email" and order "ascend"
+    Then I should receive users sorted by email in ascending order
+
+  Scenario: Getting all users with sorter by email descending
+    Given AdminUser documents with various emails
+    When I call getAllUsers with sorter field "email" and order "descend"
+    Then I should receive users sorted by email in descending order
+
+  Scenario: Getting all users with Blocked status filter
+    Given AdminUser documents with different statuses
+    When I call getAllUsers with statusFilters including "Blocked"
+    Then I should receive only blocked users
+
+  Scenario: Getting all users with both Active and Blocked status filters
+    Given AdminUser documents with different statuses
+    When I call getAllUsers with statusFilters including both "Active" and "Blocked"
+    Then I should receive all users regardless of status
+
+  Scenario: Getting an admin user by username
+    Given an AdminUser document with username "adminuser"
+    When I call getByUsername with "adminuser"
+    Then I should receive an AdminUser domain object with that username
+
+  Scenario: Getting an admin user by username that doesn't exist
+    When I call getByUsername with "nonexistent-username"
+    Then I should receive null
