@@ -17,6 +17,13 @@ Feature: GraphQL Handler Creator
     Then it should call applicationServicesFactory.forRequest with the Authorization header and hints
     And it should inject the resulting applicationServices into the GraphQL context
 
+  Scenario: Handler context creation without headers
+    Given a handler created by graphHandlerCreator
+    And an incoming request without authentication headers
+    When the handler is invoked
+    Then it should call applicationServicesFactory.forRequest with undefined auth and hints
+    And it should inject the resulting applicationServices into the GraphQL context
+
   Scenario: Handler delegates to startServerAndCreateHandler
     Given a handler created by graphHandlerCreator
     When the handler is invoked

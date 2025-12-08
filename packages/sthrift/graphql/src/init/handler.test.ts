@@ -160,6 +160,53 @@ test.for(feature, ({ Scenario, BeforeEachScenario }) => {
 	);
 
 	Scenario(
+		'Handler context creation without headers',
+		({ Given, And, When, Then }) => {
+			Given('a handler created by graphHandlerCreator', () => {
+				handler = graphHandlerCreator(factory);
+			});
+
+			And('an incoming request without authentication headers', () => {
+				req = makeMockHttpRequest();
+			});
+
+			When('the handler is invoked', async () => {
+				vi.mocked(startServerAndCreateHandler).mockImplementation(
+					(_server, options) => {
+						return async (req, context) => {
+							await options.context({ req, context });
+							return { status: 200, body: 'OK' };
+						};
+					},
+				);
+				handler = graphHandlerCreator(factory);
+				const result = await handler(req, context);
+				expect(result.status).toBe(200);
+			});
+
+			Then(
+				'it should call applicationServicesFactory.forRequest with undefined auth and hints',
+				() => {
+					expect(vi.mocked(factory.forRequest)).toHaveBeenCalledWith(
+						undefined,
+						{
+							memberId: undefined,
+							communityId: undefined,
+						},
+					);
+				},
+			);
+
+			And(
+				'it should inject the resulting applicationServices into the GraphQL context',
+				() => {
+					expect(vi.mocked(factory.forRequest)).toHaveBeenCalled();
+				},
+			);
+		},
+	);
+
+	Scenario(
 		'Handler delegates to startServerAndCreateHandler',
 		({ Given, When, Then, And }) => {
 			const mockResponse = { status: 200, body: 'OK' };
