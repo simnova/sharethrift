@@ -1,8 +1,11 @@
-import { Row, Col, Button } from 'antd';
+import { Row, Col, Button, Alert } from 'antd';
 import { LeftOutlined } from '@ant-design/icons';
+import { useState } from 'react';
 import { ListingImageGalleryContainer } from './listing-image-gallery/listing-image-gallery.container.tsx';
 import { SharerInformationContainer } from './sharer-information/sharer-information.container.tsx';
 import { ListingInformationContainer } from './listing-information/listing-information.container.tsx';
+import { BlockListingModal } from './block-listing-modal.tsx';
+import { UnblockListingModal } from './unblock-listing-modal.tsx';
 import type {
 	ItemListing,
 	ViewListingActiveReservationRequestForListingQuery,
@@ -17,6 +20,11 @@ export interface ViewListingProps {
 		| ViewListingActiveReservationRequestForListingQuery['myActiveReservationForListing']
 		| null;
 	sharedTimeAgo?: string;
+	isAdmin: boolean;
+	onBlockListing: (reason: string, description: string) => Promise<void>;
+	onUnblockListing: () => Promise<void>;
+	blockLoading: boolean;
+	unblockLoading: boolean;
 }
 
 export const ViewListing: React.FC<ViewListingProps> = ({
@@ -26,12 +34,32 @@ export const ViewListing: React.FC<ViewListingProps> = ({
 	currentUserId,
 	userReservationRequest,
 	sharedTimeAgo,
+	isAdmin,
+	onBlockListing,
+	onUnblockListing,
+	blockLoading,
+	unblockLoading,
 }) => {
+	const [blockModalVisible, setBlockModalVisible] = useState(false);
+	const [unblockModalVisible, setUnblockModalVisible] = useState(false);
+
 	// Mock sharer info (since ItemListing.sharer is just an ID)
 	const sharer = listing.sharer;
 
+	const isBlocked = listing.state === 'Blocked';
+
 	const handleBack = () => {
 		window.location.href = '/';
+	};
+
+	const handleBlockConfirm = async (reason: string, description: string) => {
+		await onBlockListing(reason, description);
+		setBlockModalVisible(false);
+	};
+
+	const handleUnblockConfirm = async () => {
+		await onUnblockListing();
+		setUnblockModalVisible(false);
 	};
 
 	return (
@@ -86,6 +114,8 @@ export const ViewListing: React.FC<ViewListingProps> = ({
 					paddingBottom: 75,
 					boxSizing: 'border-box',
 					width: '100%',
+					opacity: isBlocked && !isAdmin ? 0.5 : 1,
+					pointerEvents: isBlocked && !isAdmin ? 'none' : 'auto',
 				}}
 				gutter={[0, 24]}
 				className="view-listing-responsive"
@@ -101,6 +131,39 @@ export const ViewListing: React.FC<ViewListingProps> = ({
 						Back
 					</Button>
 				</Col>
+				{isBlocked && (
+					<Col span={24}>
+						<Alert
+							message="This listing is currently blocked"
+							description="This listing has been blocked by an administrator and is not visible to regular users."
+							type="error"
+							showIcon
+						/>
+					</Col>
+				)}
+				{isAdmin && (
+					<Col span={24}>
+						<div style={{ display: 'flex', gap: 8, justifyContent: 'flex-end' }}>
+							{isBlocked ? (
+								<Button
+									type="primary"
+									onClick={() => setUnblockModalVisible(true)}
+									loading={unblockLoading}
+								>
+									Unblock Listing
+								</Button>
+							) : (
+								<Button
+									danger
+									onClick={() => setBlockModalVisible(true)}
+									loading={blockLoading}
+								>
+									Block Listing
+								</Button>
+							)}
+						</div>
+					</Col>
+				)}
 				<Col span={24} style={{ marginBottom: 0, paddingBottom: 0 }}>
 					{/* Sharer Info at top, clickable to profile */}
 					<SharerInformationContainer
@@ -150,6 +213,21 @@ export const ViewListing: React.FC<ViewListingProps> = ({
 					</Row>
 				</Col>
 			</Row>
+			<BlockListingModal
+				visible={blockModalVisible}
+				listingTitle={listing.title}
+				onConfirm={handleBlockConfirm}
+				onCancel={() => setBlockModalVisible(false)}
+				loading={blockLoading}
+			/>
+			<UnblockListingModal
+				visible={unblockModalVisible}
+				listingTitle={listing.title}
+				listingSharer={sharer?.id || 'Unknown'}
+				onConfirm={handleUnblockConfirm}
+				onCancel={() => setUnblockModalVisible(false)}
+				loading={unblockLoading}
+			/>
 			{/* TODO: Add login modal here for unauthenticated users attempting to reserve a listing. */}
 		</>
 	);

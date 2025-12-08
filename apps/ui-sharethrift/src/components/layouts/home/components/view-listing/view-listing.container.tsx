@@ -1,11 +1,14 @@
-import { useQuery } from '@apollo/client/react';
+import { useQuery, useMutation } from '@apollo/client/react';
 import { ComponentQueryLoader } from '@sthrift/ui-components';
 import { useParams } from 'react-router-dom';
+import { message } from 'antd';
 import {
 	type ItemListing,
 	ViewListingActiveReservationRequestForListingDocument,
 	ViewListingCurrentUserDocument,
 	ViewListingDocument,
+	BlockListingDocument,
+	UnblockListingDocument,
 } from '../../../../../generated.tsx';
 import { ViewListing } from './view-listing';
 
@@ -64,6 +67,57 @@ export const ViewListingContainer: React.FC<ViewListingContainerProps> = (
 		: undefined;
 
 	const userIsSharer = false;
+	const isAdmin = currentUserData?.currentUser?.userIsAdmin ?? false;
+
+	const [blockListing, { loading: blockLoading }] = useMutation(
+		BlockListingDocument,
+		{
+			onCompleted: () => {
+				message.success('Listing blocked successfully');
+			},
+			onError: (error) => {
+				message.error(`Failed to block listing: ${error.message}`);
+			},
+			refetchQueries: [
+				{
+					query: ViewListingDocument,
+					variables: { id: listingId },
+				},
+			],
+		},
+	);
+
+	const [unblockListing, { loading: unblockLoading }] = useMutation(
+		UnblockListingDocument,
+		{
+			onCompleted: () => {
+				message.success('Listing unblocked successfully');
+			},
+			onError: (error) => {
+				message.error(`Failed to unblock listing: ${error.message}`);
+			},
+			refetchQueries: [
+				{
+					query: ViewListingDocument,
+					variables: { id: listingId },
+				},
+			],
+		},
+	);
+
+	const handleBlockListing = async (
+		_reason: string,
+		_description: string,
+	) => {
+		if (!listingId) return;
+		await blockListing({ variables: { id: listingId } });
+	};
+
+	const handleUnblockListing = async () => {
+		if (!listingId) return;
+		await unblockListing({ variables: { id: listingId } });
+	};
+
 	return (
 		<ComponentQueryLoader
 			loading={userReservationLoading || listingLoading || currentUserLoading}
@@ -80,6 +134,11 @@ export const ViewListingContainer: React.FC<ViewListingContainerProps> = (
 					userReservationRequest={
 						userReservationData?.myActiveReservationForListing
 					}
+					isAdmin={isAdmin}
+					onBlockListing={handleBlockListing}
+					onUnblockListing={handleUnblockListing}
+					blockLoading={blockLoading}
+					unblockLoading={unblockLoading}
 				/>
 			}
 		/>
