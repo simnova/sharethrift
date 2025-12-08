@@ -178,23 +178,38 @@ let uow: MongoUnitOfWork<
 	TestRepo
 >;
 describe('MongoUnitOfWork:Integration', () => {
+	let setupError: Error | null = null;
+
 	beforeAll(async () => {
-		mongoServer = await MongoMemoryReplSet.create({
-			replSet: { name: 'test' },
-		});
-		const uri = mongoServer.getUri();
-		await mongoose.connect(uri, {
-			retryWrites: false,
-		});
-		TestModel = model<TestMongoType>('Test', TestSchema);
+		try {
+			mongoServer = await MongoMemoryReplSet.create({
+				replSet: { name: 'test' },
+			});
+			const uri = mongoServer.getUri();
+			await mongoose.connect(uri, {
+				retryWrites: false,
+			});
+			TestModel = model<TestMongoType>('Test', TestSchema);
+		} catch (error) {
+			setupError = error instanceof Error ? error : new Error(String(error));
+		}
 	}, 60000); // Increase timeout to 60 seconds
 
 	afterAll(async () => {
-		await mongoose.disconnect();
-		await mongoServer.stop();
+		try {
+			if (mongoServer) {
+				await mongoose.disconnect();
+				await mongoServer.stop();
+			}
+		} catch (error) {
+			console.error('Error during cleanup:', error);
+		}
 	});
 
 	beforeEach(async () => {
+		if (setupError) {
+			throw setupError;
+		}
 		await TestModel.deleteMany({});
 		// biome-ignore lint:useLiteralKeys
 		eventBus['eventSubscribers'] = {};
