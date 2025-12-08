@@ -122,7 +122,7 @@ export const ViewListingContainer: React.FC<ViewListingContainerProps> = (
 			loading={userReservationLoading || listingLoading || currentUserLoading}
 			error={listingError}
 			errorComponent={<div>Error loading listing.</div>}
-			hasData={listingData?.itemListing && !cannotViewBlockedListing}
+			hasData={cannotViewBlockedListing ? null : listingData?.itemListing}
 			noDataComponent={
 				cannotViewBlockedListing ? (
 					<div

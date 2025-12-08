@@ -44,7 +44,7 @@ export const ViewListing: React.FC<ViewListingProps> = ({
 	const [unblockModalVisible, setUnblockModalVisible] = useState(false);
 
 	// Mock sharer info (since ItemListing.sharer is just an ID)
-	const sharer = listing.sharer;
+	const { sharer } = listing;
 
 	const isBlocked = listing.state === 'Blocked';
 
