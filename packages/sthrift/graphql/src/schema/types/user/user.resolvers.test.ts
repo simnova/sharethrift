@@ -394,7 +394,7 @@ test.for(feature, ({ Background, Scenario, BeforeEachScenario }) => {
 		'User union resolveType returns AdminUser',
 		({ Given, When, Then }) => {
 			Given('a user object with userType admin-user', () => {
-				result = { id: 'admin-id-123' };
+				result = { id: 'admin-id-123' , userType: 'admin-user'};
 				vi.mocked(
 					mockContext.applicationServices.User.User.queryById,
 				).mockResolvedValue(mockAdminUser);
@@ -403,7 +403,6 @@ test.for(feature, ({ Background, Scenario, BeforeEachScenario }) => {
 			When('__resolveType is called', async () => {
 				result = await userUnionResolvers.User?.__resolveType?.(
 					result,
-					mockContext,
 				);
 			});
 
@@ -417,7 +416,7 @@ test.for(feature, ({ Background, Scenario, BeforeEachScenario }) => {
 		'User union resolveType returns PersonalUser',
 		({ Given, When, Then }) => {
 			Given('a user object with userType personal-user', () => {
-				result = { id: 'personal-id-456' };
+				result = { id: 'personal-id-456', userType: 'personal-user' };
 				vi.mocked(
 					mockContext.applicationServices.User.User.queryById,
 				).mockResolvedValue(mockPersonalUser);
@@ -426,7 +425,6 @@ test.for(feature, ({ Background, Scenario, BeforeEachScenario }) => {
 			When('__resolveType is called', async () => {
 				result = await userUnionResolvers.User?.__resolveType?.(
 					result,
-					mockContext,
 				);
 			});
 
