@@ -338,12 +338,13 @@ test.for(feature, ({ Scenario }) => {
                 expect(listing).toHaveProperty('title');
             }
         });
-        And('it should map state values like "Published" to "Active" and "Drafted" to "Draft"', () => {
+        And('it should use domain state values directly without mapping', () => {
             expect(result).toBeDefined();
             const resultData = result as { items: { status: string }[] };
             for (const listing of resultData.items) {
                 const { status } = listing;
-                expect(['Active', 'Draft', 'Unknown']).toContain(status);
+                // Domain state values: 'Published', 'Drafted', 'Appeal Requested', 'Paused', 'Cancelled', 'Expired', 'Blocked', or 'Unknown'
+                expect(['Published', 'Drafted', 'Appeal Requested', 'Paused', 'Cancelled', 'Expired', 'Blocked', 'Unknown']).toContain(status);
             }
         });
         And('it should return items, total, page, and pageSize in the response', () => {
