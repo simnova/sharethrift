@@ -207,7 +207,7 @@ class PersonalUserAccountProfileBillingSubscriptionDomainAdapter
 	}
 }
 
-class PersonalUserAccountProfileBillingTransactionsDomainAdapter
+export class PersonalUserAccountProfileBillingTransactionsDomainAdapter
 	implements
 		Domain.Contexts.User.PersonalUser.PersonalUserAccountProfileBillingTransactionsProps
 {
