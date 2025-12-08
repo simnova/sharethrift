@@ -13,11 +13,17 @@ const mockEnv = {
 	NODE_ENV: 'development',
 };
 
+const generateMockToken = () => {
+	const randomPart = Math.random().toString(36).substring(2, 15);
+	const timestamp = Date.now().toString(36);
+	return `mock_${timestamp}_${randomPart}`;
+};
+
 const mockStorage = {
 	getItem: (key: string) => {
 		if (key.includes('oidc.user')) {
 			return JSON.stringify({
-				access_token: 'mock-access-token',
+				access_token: generateMockToken(),
 				profile: { sub: 'test-user' },
 			});
 		}

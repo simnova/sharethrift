@@ -149,6 +149,11 @@ async function main() {
 	app.post('/token', async (req, res) => {
 		const { tid, code } = req.body;
 
+		if (typeof code !== 'string') {
+			res.status(400).json({ error: 'invalid_request', error_description: 'code must be a string' });
+			return;
+		}
+
 		// Extract redirect_uri from code (encoded in base64)
 		let aud = 'user-portal'; // default audience
 		let isAdminPortal = false;
@@ -224,18 +229,30 @@ async function main() {
 		const requestedRedirectUri = redirect_uri as string;
 
 		// Check if the requested redirect_uri is in our allowed list
-		if (
-			!allowedRedirectUris.has(requestedRedirectUri) &&
-			requestedRedirectUri !== allowedRedirectUri
-		) {
+		const isAllowed = allowedRedirectUris.has(requestedRedirectUri) || requestedRedirectUri === allowedRedirectUri;
+		if (!isAllowed) {
 			res.status(400).send('Invalid redirect_uri');
 			return;
 		}
 
-		// Store the redirect_uri in the session/state for the token endpoint
+		// Generate authorization code
 		const code = `mock-auth-code-${Buffer.from(requestedRedirectUri).toString('base64')}`;
-		const redirectUrl = `${requestedRedirectUri}?code=${code}${state ? `&state=${state}` : ''}`;
-		res.redirect(redirectUrl);
+		
+		// Use URL constructor to safely build redirect (validated URL from allowlist)
+		try {
+			const redirectUrl = new URL(requestedRedirectUri);
+			redirectUrl.searchParams.set('code', code);
+			if (state) {
+				redirectUrl.searchParams.set('state', state as string);
+			}
+			
+			// Send 302 redirect with Location header explicitly set to allowlisted URL
+			const finalUrl = redirectUrl.toString();
+			res.setHeader('Location', finalUrl);
+			res.status(302).end();
+		} catch (_error) {
+			res.status(400).send('Invalid redirect_uri format');
+		}
 		return;
 	});
 

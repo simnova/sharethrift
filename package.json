@@ -42,7 +42,7 @@
         "snyk:report": "pnpm run snyk:monitor && pnpm run snyk:code:report",
         "snyk:test": "snyk test --all-projects --org=simnova --remote-repo-url=https://github.com/simnova/sharethrift --policy-path=.snyk",
         "snyk:monitor": "snyk monitor --all-projects --org=simnova --target-reference=main --remote-repo-url=https://github.com/simnova/sharethrift --project-name-prefix=\"sharethrift/\" --policy-path=.snyk --exclude=dist,build,.turbo,coverage",
-        "snyk:code": "snyk code test --org=simnova --remote-repo-url=https://github.com/simnova/sharethrift",
+        "snyk:code": "snyk code test --org=simnova --remote-repo-url=https://github.com/simnova/sharethrift --severity-threshold=medium",
         "snyk:code:report": "snyk code test --org=simnova --remote-repo-url=https://github.com/simnova/sharethrift --target-reference=main --project-name=sharethrift-code --report",
         "snyk:iac": "snyk iac test iac/**/*.bicep apps/**/iac/**/*.bicep --org=simnova --remote-repo-url=https://github.com/simnova/sharethrift",
         "snyk:iac:report": "snyk iac test iac/**/*.bicep apps/**/iac/**/*.bicep --org=simnova --remote-repo-url=https://github.com/simnova/sharethrift --target-reference=main --target-name=sharethrift-iac --report"

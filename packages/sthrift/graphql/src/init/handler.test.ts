@@ -85,10 +85,10 @@ test.for(feature, ({ Scenario, BeforeEachScenario }) => {
 					expect(applyMiddleware).toHaveBeenCalledWith(combinedSchema);
 					expect(ApolloServer).toHaveBeenCalledWith({
 						schema: {},
-						cors: {
-							origin: true,
-							credentials: true,
-						},
+						introspection: true,
+						validationRules: expect.arrayContaining([
+							expect.any(Function), // depthLimit function
+						]),
 						allowBatchedHttpRequests: true,
 					});
 				},
