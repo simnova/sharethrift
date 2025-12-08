@@ -150,6 +150,35 @@ async function checkAppChanges(appConfig, affectedPackages) {
 		return true;
 	}
 }
+// Check for any source code changes (excluding infrastructure-only changes)
+async function checkSourceChanges() {
+	const sourceExcludePaths = [
+		'build-pipeline/**',
+		'iac/**',
+		'azure-pipelines.yml',
+		'host.json',
+		'.github/**',
+		'.gitignore',
+		'*.md',
+		'LICENSE'
+	];
+	
+	// Build git diff command to exclude non-source paths
+	const excludeArgs = sourceExcludePaths.map(p => `--exclude=${p}`).join(' ');
+	const gitCommand = `git diff --name-only ${process.env.TURBO_SCM_BASE} -- . ${excludeArgs}`;
+	const diffOutput = await runCommand(gitCommand);
+	
+	const hasSourceChanges = diffOutput && diffOutput.trim().length > 0;
+	
+	if (hasSourceChanges) {
+		console.log('Source code changes detected:', diffOutput.split('\n').slice(0, 5).join(', ') + '...');
+	} else {
+		console.log('No source code changes detected (infrastructure/docs-only changes)');
+	}
+	
+	return hasSourceChanges;
+}
+
 // Main function to detect affected packages and map to deployment groups
 async function detectChanges() {
 	const forceDeployVars = parseForceDeployFile();
@@ -167,6 +196,10 @@ async function detectChanges() {
 		console.log(`Push build - comparing to previous commit (HEAD~1)`);
 		process.env.TURBO_SCM_BASE = 'HEAD~1';
 	}
+
+	// Check for source code changes (used for knip and other analysis)
+	console.log('Checking for source code changes...');
+	const hasSourceChanges = await checkSourceChanges();
 
 	// Check for infrastructure changes
 	console.log('Checking for infrastructure and configuration changes...');
@@ -227,11 +260,13 @@ async function detectChanges() {
 
 	// Log final results
 	console.log('Final results:');
+	console.log(`Source code changes: ${hasSourceChanges}`);
 	console.log(`Backend changes: ${hasBackendChanges}`);
 	console.log(`Frontend changes: ${hasFrontendChanges}`);
 	console.log(`Docs changes: ${hasDocsChanges}`);
 
 	// Set pipeline variables
+	setPipelineVariable('HAS_SOURCE_CHANGES', hasSourceChanges);
 	setPipelineVariable('HAS_BACKEND_CHANGES', hasBackendChanges);
 	setPipelineVariable('HAS_FRONTEND_CHANGES', hasFrontendChanges);
 	setPipelineVariable('HAS_DOCS_CHANGES', hasDocsChanges);
