@@ -82,7 +82,7 @@ test.for(feature, ({ Scenario, Background, BeforeEachScenario }) => {
 		const personalDocument = {
 			_id: personalObjectId,
 			id: personalUserId,
-			userType: 'personal-users',
+			userType: 'personal-user',
 			isBlocked: false,
 			account: {
 				accountType: 'standard',
@@ -183,7 +183,7 @@ test.for(feature, ({ Scenario, Background, BeforeEachScenario }) => {
 		});
 		Then('I should receive a PersonalUser domain object', () => {
 			expect(result).toBeDefined();
-			expect(result?.userType).toBe('personal-users');
+			expect(result?.userType).toBe('personal-user');
 		});
 	});
 
@@ -214,7 +214,7 @@ test.for(feature, ({ Scenario, Background, BeforeEachScenario }) => {
 		});
 		Then('I should receive a PersonalUser domain object', () => {
 			expect(result).toBeDefined();
-			expect(result?.userType).toBe('personal-users');
+			expect(result?.userType).toBe('personal-user');
 		});
 	});
 

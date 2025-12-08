@@ -19,7 +19,7 @@ function makeAppealRequestDoc() {
 		// Populated user object (not ObjectId) for tests that access .user property
 		user: {
 			id: userId.toString(),
-			userType: 'personal-users',
+			userType: 'personal-user',
 			isBlocked: false,
 			hasCompletedOnboarding: true,
 			account: {
@@ -55,7 +55,7 @@ function makeAppealRequestDoc() {
 		// Populated blocker object for tests that access .blocker property
 		blocker: {
 			id: blockerId.toString(),
-			userType: 'personal-users',
+			userType: 'personal-user',
 			isBlocked: false,
 			hasCompletedOnboarding: true,
 			account: {
@@ -240,7 +240,7 @@ test.for(feature, ({ Scenario, Background, BeforeEachScenario }) => {
 			doc.user = oid as never;
 			const populatedUser = {
 				id: '123',
-				userType: 'personal-users',
+				userType: 'personal-user',
 				isBlocked: false,
 				hasCompletedOnboarding: true,
 				account: {
@@ -286,7 +286,7 @@ test.for(feature, ({ Scenario, Background, BeforeEachScenario }) => {
 			doc.blocker = oid as never;
 			const populatedBlocker = {
 				id: '123',
-				userType: 'personal-users',
+				userType: 'personal-user',
 				isBlocked: false,
 				hasCompletedOnboarding: true,
 				account: {

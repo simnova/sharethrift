@@ -706,7 +706,7 @@ test.for(feature, ({ Scenario, Background, BeforeEachScenario }) => {
 			Given('a verified personal user without admin role', () => {
 				const mockPersonalUser = {
 					id: 'user-123',
-					userType: 'personal-users',
+					userType: 'personal-user',
 				};
 				// Mock AdminUser.queryByEmail to return null (not an admin)
 				vi.mocked(
@@ -1007,7 +1007,7 @@ test.for(feature, ({ Scenario, Background, BeforeEachScenario }) => {
 			And('the current viewer is not an admin user', () => {
 				const mockPersonalUser = {
 					id: 'user-123',
-					userType: 'personal-users',
+					userType: 'personal-user',
 				};
 				// Mock AdminUser.queryByEmail to return null
 				vi.mocked(

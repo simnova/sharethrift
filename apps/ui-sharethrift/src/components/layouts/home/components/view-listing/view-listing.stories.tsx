@@ -44,7 +44,7 @@ const MOCK_LISTING_BASE: ItemListing = {
 		updatedAt: new Date().toISOString(),
 		isBlocked: false,
 		schemaVersion: '1.0',
-		userType: 'personal-users',
+		userType: 'personal-user',
 	},
     listingType: 'item-listing',
 };

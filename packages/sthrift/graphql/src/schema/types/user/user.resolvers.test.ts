@@ -48,7 +48,7 @@ test.for(feature, ({ Background, Scenario, BeforeEachScenario }) => {
 		mockPersonalUser = {
 			id: 'personal-id-456',
 			email: 'user@test.com',
-			userType: 'personal-users',
+			userType: 'personal-user',
 		};
 
 		mockInvalidUserType = {
@@ -416,7 +416,7 @@ test.for(feature, ({ Background, Scenario, BeforeEachScenario }) => {
 	Scenario(
 		'User union resolveType returns PersonalUser',
 		({ Given, When, Then }) => {
-			Given('a user object with userType personal-users', () => {
+			Given('a user object with userType personal-user', () => {
 				result = { id: 'personal-id-456' };
 				vi.mocked(
 					mockContext.applicationServices.User.User.queryById,

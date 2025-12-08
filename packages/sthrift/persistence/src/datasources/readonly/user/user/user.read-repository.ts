@@ -12,7 +12,7 @@ class UserConverter {
 		passport: Domain.Passport,
 	): Domain.Contexts.User.UserEntityReference | null {
 		const { userType } = user as unknown as { userType: string };
-		if (userType === 'personal-users') {
+		if (userType === 'personal-user') {
 			const converter = new PersonalUserConverter();
 			return converter.toDomain(user as Models.User.PersonalUser, passport);
 		}

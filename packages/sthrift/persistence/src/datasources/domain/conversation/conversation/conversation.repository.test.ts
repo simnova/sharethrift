@@ -44,7 +44,7 @@ function makeUserDoc(id: string): Models.User.PersonalUser {
 	return {
 		_id: new MongooseSeedwork.ObjectId(validId),
 		id: id,
-		userType: 'personal-users',
+		userType: 'personal-user',
 		isBlocked: false,
 		hasCompletedOnboarding: true,
 		account: {

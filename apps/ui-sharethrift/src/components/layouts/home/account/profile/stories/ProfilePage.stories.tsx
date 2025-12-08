@@ -14,7 +14,7 @@ import { expect, within } from 'storybook/test';
 
 const mockUserSarah: PersonalUser = {
 	id: '507f1f77bcf86cd799439099',
-	userType: 'personal-users',
+	userType: 'personal-user',
 	account: {
 		accountType: 'verified-personal',
 
@@ -36,7 +36,7 @@ const mockUserSarah: PersonalUser = {
 
 const mockUserAlex: PersonalUser = {
 	id: '507f1f77bcf86cd799439102',
-	userType: 'personal-users',
+	userType: 'personal-user',
 	account: {
 		profile: {
 			firstName: 'Alex',

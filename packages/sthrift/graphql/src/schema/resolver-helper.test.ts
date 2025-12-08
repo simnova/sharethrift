@@ -47,7 +47,7 @@ test.for(feature, ({ Background, Scenario, BeforeEachScenario }) => {
 		mockPersonalUser = {
 			id: '507f1f77bcf86cd799439012',
 			email: 'user@test.com',
-			userType: 'personal-users',
+			userType: 'personal-user',
 		};
 
 		mockListing = {
@@ -115,7 +115,7 @@ test.for(feature, ({ Background, Scenario, BeforeEachScenario }) => {
 
 		Then('it should return the PersonalUser entity', () => {
 			expect(result).toEqual(mockPersonalUser);
-			expect(result.userType).toBe('personal-users');
+			expect(result.userType).toBe('personal-user');
 		});
 	});
 

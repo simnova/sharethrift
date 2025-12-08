@@ -66,7 +66,7 @@ test.for(feature, ({ Scenario }) => {
 	Scenario('Getting user by ID finds PersonalUser', ({ Given, And, When, Then }) => {
 		let userContext: ReturnType<typeof UserIndex.UserContext>;
 		let result: unknown;
-		const mockPersonalUser = { id: 'user-123', userType: 'personal-users' };
+		const mockPersonalUser = { id: 'user-123', userType: 'personal-user' };
 
 		Given('a UserContext with mocked repositories', () => {
 			const createQueryChain = (value: unknown) => ({
@@ -178,7 +178,7 @@ test.for(feature, ({ Scenario }) => {
 	Scenario('Getting user by email finds PersonalUser', ({ Given, And, When, Then }) => {
 		let userContext: ReturnType<typeof UserIndex.UserContext>;
 		let result: unknown;
-		const mockPersonalUser = { email: 'user@example.com', userType: 'personal-users' };
+		const mockPersonalUser = { email: 'user@example.com', userType: 'personal-user' };
 
 		Given('a UserContext with mocked repositories', () => {
 			const createQueryChain = (value: unknown) => ({

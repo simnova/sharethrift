@@ -32,7 +32,7 @@ function makeReservationRequestDoc() {
 		get id() {
 			return reserverId.toString();
 		},
-		userType: 'personal-users',
+		userType: 'personal-user',
 		isBlocked: false,
 		hasCompletedOnboarding: true,
 		firstName: 'Test',
@@ -303,7 +303,7 @@ test.for(feature, ({ Scenario, Background, BeforeEachScenario }) => {
 			const populatedReserver = {
 				id: oid.toString(),
 				firstName: 'Test',
-				userType: 'personal-users',
+				userType: 'personal-user',
 				isBlocked: false,
 				hasCompletedOnboarding: true,
 				account: {

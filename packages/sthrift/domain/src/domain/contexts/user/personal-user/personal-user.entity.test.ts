@@ -14,7 +14,7 @@ const feature = await loadFeature(
 function makePersonalUserProps(overrides?: Partial<PersonalUserProps>): any {
 	return {
 		id: 'test-user-id',
-		userType: 'personal-users',
+		userType: 'personal-user',
 		isBlocked: false,
 		hasCompletedOnboarding: true,
 		role: { id: 'test-role-id' },
@@ -56,7 +56,7 @@ test.for(feature, ({ Background, Scenario }) => {
 		Then('it should be a string', () => {
 			const userProps: PersonalUserProps = props;
 			expect(typeof userProps.userType).toBe('string');
-			expect(userProps.userType).toBe('personal-users');
+			expect(userProps.userType).toBe('personal-user');
 		});
 	});
 

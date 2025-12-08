@@ -149,7 +149,7 @@ const userUnionResolvers: Resolvers = {
 				if (userType === 'admin-user') {
 					return 'AdminUser' as const;
 				}
-				if (userType === 'personal-users') {
+				if (userType === 'personal-user') {
 					return 'PersonalUser' as const;
 				}
 			} 

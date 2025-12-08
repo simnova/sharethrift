@@ -17,7 +17,7 @@ function makeUserDoc(
 ): Models.User.PersonalUser {
 	const base = {
 		id: new MongooseSeedwork.ObjectId(),
-		userType: 'personal-users',
+		userType: 'personal-user',
 		isBlocked: false,
 		hasCompletedOnboarding: false,
 		account: {
@@ -83,7 +83,7 @@ test.for(feature, ({ Scenario, Background, BeforeEachScenario }) => {
 			result = adapter.userType;
 		});
 		Then('it should return the correct value', () => {
-			expect(result).toBe('personal-users');
+			expect(result).toBe('personal-user');
 		});
 	});
 

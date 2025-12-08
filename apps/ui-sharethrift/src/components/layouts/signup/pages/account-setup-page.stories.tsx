@@ -20,7 +20,7 @@ type Story = StoryObj<typeof meta>;
 
 const mockUserSarah: PersonalUser = {
 	id: '507f1f77bcf86cd799439099',
-	userType: 'personal-users',
+	userType: 'personal-user',
 	account: {
 		accountType: 'verified-personal',
 
