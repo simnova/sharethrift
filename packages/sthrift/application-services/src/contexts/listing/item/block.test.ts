@@ -1,6 +1,6 @@
-import { describe, it, expect, vi, beforeEach } from 'vitest';
-import type { DataSources } from '@sthrift/persistence';
 import type { Domain } from '@sthrift/domain';
+import type { DataSources } from '@sthrift/persistence';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { block } from './block.ts';
 
 describe('listing/item', () => {
@@ -72,9 +72,7 @@ describe('listing/item', () => {
 			const command = { id: 'test-listing-id' };
 			const blockFn = block(mockDataSources);
 
-			await expect(blockFn(command)).rejects.toThrow(
-				'ItemListing not updated',
-			);
+			await expect(blockFn(command)).rejects.toThrow('ItemListing not updated');
 		});
 	});
 });

@@ -23,21 +23,21 @@ function buildPagedArgs(
 	},
 	extra?: Partial<PagedArgs>,
 ): PagedArgs {
-  return {
-    page: args.page,
-    pageSize: args.pageSize,
-    ...(args.searchText != null ? { searchText: args.searchText } : {}),
-    ...(args.statusFilters ? { statusFilters: [...args.statusFilters] } : {}),
-    ...(args.sorter
-      ? {
-          sorter: {
-            field: args.sorter.field,
-            order: args.sorter.order as 'ascend' | 'descend',
-          },
-        }
-      : {}),
-    ...extra,
-  };
+	return {
+		page: args.page,
+		pageSize: args.pageSize,
+		...(args.searchText != null ? { searchText: args.searchText } : {}),
+		...(args.statusFilters ? { statusFilters: [...args.statusFilters] } : {}),
+		...(args.sorter
+			? {
+					sorter: {
+						field: args.sorter.field,
+						order: args.sorter.order as 'ascend' | 'descend',
+					},
+				}
+			: {}),
+		...extra,
+	};
 }
 
 const itemListingResolvers: Resolvers = {

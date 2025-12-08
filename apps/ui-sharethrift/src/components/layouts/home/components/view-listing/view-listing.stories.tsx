@@ -1,5 +1,4 @@
 import type { Meta, StoryObj } from '@storybook/react';
-import { ViewListing } from './view-listing.tsx';
 import {
 	type ItemListing,
 	ViewListingImageGalleryGetImagesDocument,
@@ -9,6 +8,8 @@ import {
 	withMockApolloClient,
 	withMockRouter,
 } from '../../../../../test-utils/storybook-decorators.tsx';
+import { ViewListing } from './view-listing.tsx';
+
 // Local mock listing data (removed dependency on DUMMY_LISTINGS)
 const baseListingId = 'mock-listing-id-1';
 const MOCK_LISTING_BASE: ItemListing = {
@@ -46,7 +47,7 @@ const MOCK_LISTING_BASE: ItemListing = {
 		schemaVersion: '1.0',
 		userType: 'personal',
 	},
-    listingType: 'item-listing',
+	listingType: 'item-listing',
 };
 
 const mocks = [
@@ -114,7 +115,8 @@ export const Default: Story = {
 		isAuthenticated: false,
 		userReservationRequest: null,
 		sharedTimeAgo: '2 days ago',
-	}};
+	},
+};
 
 export const AsReserver: Story = {
 	args: {

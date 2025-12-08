@@ -1,14 +1,14 @@
-import { useQuery, useMutation } from '@apollo/client/react';
+import { useMutation, useQuery } from '@apollo/client/react';
 import { ComponentQueryLoader } from '@sthrift/ui-components';
-import { useParams } from 'react-router-dom';
 import { message } from 'antd';
+import { useParams } from 'react-router-dom';
 import {
+	BlockListingDocument,
 	type ItemListing,
+	UnblockListingDocument,
 	ViewListingActiveReservationRequestForListingDocument,
 	ViewListingCurrentUserDocument,
 	ViewListingDocument,
-	BlockListingDocument,
-	UnblockListingDocument,
 } from '../../../../../generated.tsx';
 import { ViewListing } from './view-listing';
 
@@ -44,23 +44,21 @@ export const ViewListingContainer: React.FC<ViewListingContainerProps> = (
 		fetchPolicy: 'cache-first',
 	});
 
-	const {
-		data: currentUserData,
-		loading: currentUserLoading,
-	} = useQuery(ViewListingCurrentUserDocument, {
-		skip: !props.isAuthenticated, // Skip if not authenticated
-	});
+	const { data: currentUserData, loading: currentUserLoading } = useQuery(
+		ViewListingCurrentUserDocument,
+		{
+			skip: !props.isAuthenticated, // Skip if not authenticated
+		},
+	);
 
 	const reserverId = currentUserData?.currentUser?.id ?? '';
 
 	const skip = !reserverId || !listingId;
-	const {
-		data: userReservationData,
-		loading: userReservationLoading,
-	} = useQuery(ViewListingActiveReservationRequestForListingDocument, {
-		variables: { listingId: listingId ?? '', reserverId },
-		skip,
-	});
+	const { data: userReservationData, loading: userReservationLoading } =
+		useQuery(ViewListingActiveReservationRequestForListingDocument, {
+			variables: { listingId: listingId ?? '', reserverId },
+			skip,
+		});
 
 	const sharedTimeAgo = listingData?.itemListing?.createdAt
 		? computeTimeAgo(listingData.itemListing.createdAt)
@@ -105,10 +103,7 @@ export const ViewListingContainer: React.FC<ViewListingContainerProps> = (
 		},
 	);
 
-	const handleBlockListing = async (
-		_reason: string,
-		_description: string,
-	) => {
+	const handleBlockListing = async (_reason: string, _description: string) => {
 		if (!listingId) return;
 		await blockListing({ variables: { id: listingId } });
 	};

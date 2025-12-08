@@ -1,4 +1,4 @@
-import { Modal, Form, Input, Button } from 'antd';
+import { Button, Form, Input, Modal } from 'antd';
 import { useState } from 'react';
 
 const { TextArea } = Input;
@@ -28,7 +28,7 @@ export const BlockListingModal: React.FC<BlockListingModalProps> = ({
 			onConfirm(values.reason, values.description);
 			form.resetFields();
 			setCharCount(0);
-		} catch (error) {
+		} catch {
 			// Validation failed
 		}
 	};
@@ -65,6 +65,9 @@ export const BlockListingModal: React.FC<BlockListingModalProps> = ({
 				</Button>,
 			]}
 		>
+			<p style={{ marginBottom: 16 }}>
+				You are about to block the listing: <strong>{listingTitle}</strong>
+			</p>
 			<Form form={form} layout="vertical">
 				<Form.Item
 					label="* Reason"

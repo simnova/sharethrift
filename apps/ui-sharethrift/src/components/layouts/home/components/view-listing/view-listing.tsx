@@ -1,15 +1,15 @@
-import { Row, Col, Button, Alert } from 'antd';
 import { LeftOutlined } from '@ant-design/icons';
+import { Alert, Button, Col, Row } from 'antd';
 import { useState } from 'react';
-import { ListingImageGalleryContainer } from './listing-image-gallery/listing-image-gallery.container.tsx';
-import { SharerInformationContainer } from './sharer-information/sharer-information.container.tsx';
-import { ListingInformationContainer } from './listing-information/listing-information.container.tsx';
-import { BlockListingModal } from './block-listing-modal.tsx';
-import { UnblockListingModal } from './unblock-listing-modal.tsx';
 import type {
 	ItemListing,
 	ViewListingActiveReservationRequestForListingQuery,
 } from '../../../../../generated.tsx';
+import { BlockListingModal } from './block-listing-modal.tsx';
+import { ListingImageGalleryContainer } from './listing-image-gallery/listing-image-gallery.container.tsx';
+import { ListingInformationContainer } from './listing-information/listing-information.container.tsx';
+import { SharerInformationContainer } from './sharer-information/sharer-information.container.tsx';
+import { UnblockListingModal } from './unblock-listing-modal.tsx';
 
 export interface ViewListingProps {
 	listing: ItemListing;
@@ -143,7 +143,9 @@ export const ViewListing: React.FC<ViewListingProps> = ({
 				)}
 				{isAdmin && (
 					<Col span={24}>
-						<div style={{ display: 'flex', gap: 8, justifyContent: 'flex-end' }}>
+						<div
+							style={{ display: 'flex', gap: 8, justifyContent: 'flex-end' }}
+						>
 							{isBlocked ? (
 								<Button
 									type="primary"
@@ -200,16 +202,16 @@ export const ViewListing: React.FC<ViewListingProps> = ({
 								className="listing-gallery-responsive"
 							/>
 						</Col>
-					{/* Right: Info/Form */}
-					<Col xs={24} md={12} style={{ marginTop: 0, paddingTop: 0 }}>
-						<ListingInformationContainer
-							listing={listing}
-							userIsSharer={userIsSharer}
-							isAuthenticated={isAuthenticated}
-							userReservationRequest={userReservationRequest}
-							className="listing-info-responsive"
-						/>
-					</Col>
+						{/* Right: Info/Form */}
+						<Col xs={24} md={12} style={{ marginTop: 0, paddingTop: 0 }}>
+							<ListingInformationContainer
+								listing={listing}
+								userIsSharer={userIsSharer}
+								isAuthenticated={isAuthenticated}
+								userReservationRequest={userReservationRequest}
+								className="listing-info-responsive"
+							/>
+						</Col>
 					</Row>
 				</Col>
 			</Row>

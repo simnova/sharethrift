@@ -816,18 +816,22 @@ test.for(feature, ({ Scenario }) => {
 			Given('an admin user with valid credentials', () => {
 				context = makeMockGraphContext();
 			});
-			And('pagination arguments with searchText, statusFilters, and sorter', () => {
-				vi.mocked(
-					context.applicationServices.Listing.ItemListing.queryPaged,
-				).mockResolvedValue({
-					items: [createMockListing()],
-					total: 1,
-					page: 1,
-					pageSize: 10,
-				});
-			});
+			And(
+				'pagination arguments with searchText, statusFilters, and sorter',
+				() => {
+					vi.mocked(
+						context.applicationServices.Listing.ItemListing.queryPaged,
+					).mockResolvedValue({
+						items: [createMockListing()],
+						total: 1,
+						page: 1,
+						pageSize: 10,
+					});
+				},
+			);
 			When('the adminListings query is executed', async () => {
-				const resolver = itemListingResolvers.Query?.adminListings as TestResolver<{
+				const resolver = itemListingResolvers.Query
+					?.adminListings as TestResolver<{
 					page: number;
 					pageSize: number;
 					searchText: string;
@@ -847,19 +851,22 @@ test.for(feature, ({ Scenario }) => {
 					{} as never,
 				);
 			});
-			Then('it should call Listing.ItemListing.queryPaged with all provided parameters', () => {
-				expect(
-					context.applicationServices.Listing.ItemListing.queryPaged,
-				).toHaveBeenCalledWith(
-					expect.objectContaining({
-						page: 1,
-						pageSize: 10,
-						searchText: 'test',
-						statusFilters: ['Published'],
-						sorter: { field: 'title', order: 'ascend' },
-					}),
-				);
-			});
+			Then(
+				'it should call Listing.ItemListing.queryPaged with all provided parameters',
+				() => {
+					expect(
+						context.applicationServices.Listing.ItemListing.queryPaged,
+					).toHaveBeenCalledWith(
+						expect.objectContaining({
+							page: 1,
+							pageSize: 10,
+							searchText: 'test',
+							statusFilters: ['Published'],
+							sorter: { field: 'title', order: 'ascend' },
+						}),
+					);
+				},
+			);
 			And('it should return paginated results', () => {
 				expect(result).toBeDefined();
 				expect(result).toHaveProperty('items');
@@ -882,28 +889,35 @@ test.for(feature, ({ Scenario }) => {
 					pageSize: 20,
 				});
 			});
-			When('the adminListings query is executed with only page and pageSize', async () => {
-				const resolver = itemListingResolvers.Query?.adminListings as TestResolver<{
-					page: number;
-					pageSize: number;
-				}>;
-				result = await resolver(
-					{},
-					{ page: 1, pageSize: 20 },
-					context,
-					{} as never,
-				);
-			});
-			Then('it should call Listing.ItemListing.queryPaged with minimal parameters', () => {
-				expect(
-					context.applicationServices.Listing.ItemListing.queryPaged,
-				).toHaveBeenCalledWith(
-					expect.objectContaining({
-						page: 1,
-						pageSize: 20,
-					}),
-				);
-			});
+			When(
+				'the adminListings query is executed with only page and pageSize',
+				async () => {
+					const resolver = itemListingResolvers.Query
+						?.adminListings as TestResolver<{
+						page: number;
+						pageSize: number;
+					}>;
+					result = await resolver(
+						{},
+						{ page: 1, pageSize: 20 },
+						context,
+						{} as never,
+					);
+				},
+			);
+			Then(
+				'it should call Listing.ItemListing.queryPaged with minimal parameters',
+				() => {
+					expect(
+						context.applicationServices.Listing.ItemListing.queryPaged,
+					).toHaveBeenCalledWith(
+						expect.objectContaining({
+							page: 1,
+							pageSize: 20,
+						}),
+					);
+				},
+			);
 			And('it should return all listings', () => {
 				expect(result).toBeDefined();
 				expect(result).toHaveProperty('items');
@@ -911,35 +925,42 @@ test.for(feature, ({ Scenario }) => {
 		},
 	);
 
-	Scenario('Unblocking a listing successfully', ({ Given, When, Then, And }) => {
-		Given('a valid listing ID to unblock', () => {
-			context = makeMockGraphContext({
-				applicationServices: {
-					...makeMockGraphContext().applicationServices,
-					Listing: {
-						ItemListing: {
-							...makeMockGraphContext().applicationServices.Listing.ItemListing,
-							unblock: vi.fn().mockResolvedValue(undefined),
+	Scenario(
+		'Unblocking a listing successfully',
+		({ Given, When, Then, And }) => {
+			Given('a valid listing ID to unblock', () => {
+				context = makeMockGraphContext({
+					applicationServices: {
+						...makeMockGraphContext().applicationServices,
+						Listing: {
+							ItemListing: {
+								...makeMockGraphContext().applicationServices.Listing
+									.ItemListing,
+								unblock: vi.fn().mockResolvedValue(undefined),
+							},
 						},
 					},
-				},
+				});
 			});
-		});
-		When('the unblockListing mutation is executed', async () => {
-			const resolver = itemListingResolvers.Mutation?.unblockListing as TestResolver<{
-				id: string;
-			}>;
-			result = await resolver({}, { id: 'listing-1' }, context, {} as never);
-		});
-		Then('it should call Listing.ItemListing.unblock with the ID', () => {
-			expect(context.applicationServices.Listing.ItemListing.unblock).toHaveBeenCalledWith({
-				id: 'listing-1',
+			When('the unblockListing mutation is executed', async () => {
+				const resolver = itemListingResolvers.Mutation
+					?.unblockListing as TestResolver<{
+					id: string;
+				}>;
+				result = await resolver({}, { id: 'listing-1' }, context, {} as never);
 			});
-		});
-		And('it should return true', () => {
-			expect(result).toBe(true);
-		});
-	});
+			Then('it should call Listing.ItemListing.unblock with the ID', () => {
+				expect(
+					context.applicationServices.Listing.ItemListing.unblock,
+				).toHaveBeenCalledWith({
+					id: 'listing-1',
+				});
+			});
+			And('it should return true', () => {
+				expect(result).toBe(true);
+			});
+		},
+	);
 
 	Scenario('Blocking a listing successfully', ({ Given, When, Then, And }) => {
 		Given('a valid listing ID to block', () => {
@@ -956,13 +977,16 @@ test.for(feature, ({ Scenario }) => {
 			});
 		});
 		When('the blockListing mutation is executed', async () => {
-			const resolver = itemListingResolvers.Mutation?.blockListing as TestResolver<{
+			const resolver = itemListingResolvers.Mutation
+				?.blockListing as TestResolver<{
 				id: string;
 			}>;
 			result = await resolver({}, { id: 'listing-1' }, context, {} as never);
 		});
 		Then('it should call Listing.ItemListing.block with the ID', () => {
-			expect(context.applicationServices.Listing.ItemListing.block).toHaveBeenCalledWith({
+			expect(
+				context.applicationServices.Listing.ItemListing.block,
+			).toHaveBeenCalledWith({
 				id: 'listing-1',
 			});
 		});
@@ -971,69 +995,90 @@ test.for(feature, ({ Scenario }) => {
 		});
 	});
 
-	Scenario('Canceling an item listing successfully', ({ Given, When, Then, And }) => {
-		Given('a valid listing ID to cancel', () => {
-			context = makeMockGraphContext({
-				applicationServices: {
-					...makeMockGraphContext().applicationServices,
-					Listing: {
-						ItemListing: {
-							...makeMockGraphContext().applicationServices.Listing.ItemListing,
-							cancel: vi.fn().mockResolvedValue(createMockListing()),
+	Scenario(
+		'Canceling an item listing successfully',
+		({ Given, When, Then, And }) => {
+			Given('a valid listing ID to cancel', () => {
+				context = makeMockGraphContext({
+					applicationServices: {
+						...makeMockGraphContext().applicationServices,
+						Listing: {
+							ItemListing: {
+								...makeMockGraphContext().applicationServices.Listing
+									.ItemListing,
+								cancel: vi.fn().mockResolvedValue(createMockListing()),
+							},
 						},
 					},
-				},
+				});
 			});
-		});
-		When('the cancelItemListing mutation is executed', async () => {
-			const resolver = itemListingResolvers.Mutation?.cancelItemListing as TestResolver<{
-				id: string;
-			}>;
-			result = await resolver({}, { id: 'listing-1' }, context, {} as never);
-		});
-		Then('it should call Listing.ItemListing.cancel with the ID', () => {
-			expect(context.applicationServices.Listing.ItemListing.cancel).toHaveBeenCalledWith({
-				id: 'listing-1',
+			When('the cancelItemListing mutation is executed', async () => {
+				const resolver = itemListingResolvers.Mutation
+					?.cancelItemListing as TestResolver<{
+					id: string;
+				}>;
+				result = await resolver({}, { id: 'listing-1' }, context, {} as never);
 			});
-		});
-		And('it should return success status and the canceled listing', () => {
-			expect(result).toBeDefined();
-			expect(result).toHaveProperty('status');
-			expect((result as { status: { success: boolean } }).status.success).toBe(true);
-			expect(result).toHaveProperty('listing');
-		});
-	});
+			Then('it should call Listing.ItemListing.cancel with the ID', () => {
+				expect(
+					context.applicationServices.Listing.ItemListing.cancel,
+				).toHaveBeenCalledWith({
+					id: 'listing-1',
+				});
+			});
+			And('it should return success status and the canceled listing', () => {
+				expect(result).toBeDefined();
+				expect(result).toHaveProperty('status');
+				expect(
+					(result as { status: { success: boolean } }).status.success,
+				).toBe(true);
+				expect(result).toHaveProperty('listing');
+			});
+		},
+	);
 
-	Scenario('Deleting an item listing successfully', ({ Given, When, Then, And }) => {
-		Given('a valid listing ID and authenticated user email', () => {
-			context = makeMockGraphContext({
-				applicationServices: {
-					...makeMockGraphContext().applicationServices,
-					Listing: {
-						ItemListing: {
-							...makeMockGraphContext().applicationServices.Listing.ItemListing,
-							deleteListings: vi.fn().mockResolvedValue(undefined),
+	Scenario(
+		'Deleting an item listing successfully',
+		({ Given, When, Then, And }) => {
+			Given('a valid listing ID and authenticated user email', () => {
+				context = makeMockGraphContext({
+					applicationServices: {
+						...makeMockGraphContext().applicationServices,
+						Listing: {
+							ItemListing: {
+								...makeMockGraphContext().applicationServices.Listing
+									.ItemListing,
+								deleteListings: vi.fn().mockResolvedValue(undefined),
+							},
 						},
 					},
+				});
+			});
+			When('the deleteItemListing mutation is executed', async () => {
+				const resolver = itemListingResolvers.Mutation
+					?.deleteItemListing as TestResolver<{
+					id: string;
+				}>;
+				result = await resolver({}, { id: 'listing-1' }, context, {} as never);
+			});
+			Then(
+				'it should call Listing.ItemListing.deleteListings with ID and email',
+				() => {
+					expect(
+						context.applicationServices.Listing.ItemListing.deleteListings,
+					).toHaveBeenCalledWith({
+						id: 'listing-1',
+						userEmail: 'test@example.com',
+					});
 				},
+			);
+			And('it should return success status', () => {
+				expect(result).toBeDefined();
+				expect(result).toHaveProperty('status');
+				expect(
+					(result as { status: { success: boolean } }).status.success,
+				).toBe(true);
 			});
-		});
-		When('the deleteItemListing mutation is executed', async () => {
-			const resolver = itemListingResolvers.Mutation?.deleteItemListing as TestResolver<{
-				id: string;
-			}>;
-			result = await resolver({}, { id: 'listing-1' }, context, {} as never);
-		});
-		Then('it should call Listing.ItemListing.deleteListings with ID and email', () => {
-			expect(context.applicationServices.Listing.ItemListing.deleteListings).toHaveBeenCalledWith({
-				id: 'listing-1',
-				userEmail: 'test@example.com',
-			});
-		});
-		And('it should return success status', () => {
-			expect(result).toBeDefined();
-			expect(result).toHaveProperty('status');
-			expect((result as { status: { success: boolean } }).status.success).toBe(true);
-		});
-	});
+		},
+	);
 });
