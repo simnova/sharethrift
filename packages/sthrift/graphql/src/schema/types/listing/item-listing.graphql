@@ -79,6 +79,7 @@ extend type Mutation {
 	cancelItemListing(id: ObjectID!): ItemListingMutationResult!
 	deleteItemListing(id: ObjectID!): ItemListingMutationResult!
 	unblockListing(id: ObjectID!): Boolean!
+	blockListing(id: ObjectID!): Boolean!
 }
 
 extend type Query {

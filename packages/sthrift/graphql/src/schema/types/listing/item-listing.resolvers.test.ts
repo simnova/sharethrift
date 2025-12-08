@@ -941,6 +941,36 @@ test.for(feature, ({ Scenario }) => {
 		});
 	});
 
+	Scenario('Blocking a listing successfully', ({ Given, When, Then, And }) => {
+		Given('a valid listing ID to block', () => {
+			context = makeMockGraphContext({
+				applicationServices: {
+					...makeMockGraphContext().applicationServices,
+					Listing: {
+						ItemListing: {
+							...makeMockGraphContext().applicationServices.Listing.ItemListing,
+							block: vi.fn().mockResolvedValue(undefined),
+						},
+					},
+				},
+			});
+		});
+		When('the blockListing mutation is executed', async () => {
+			const resolver = itemListingResolvers.Mutation?.blockListing as TestResolver<{
+				id: string;
+			}>;
+			result = await resolver({}, { id: 'listing-1' }, context, {} as never);
+		});
+		Then('it should call Listing.ItemListing.block with the ID', () => {
+			expect(context.applicationServices.Listing.ItemListing.block).toHaveBeenCalledWith({
+				id: 'listing-1',
+			});
+		});
+		And('it should return true', () => {
+			expect(result).toBe(true);
+		});
+	});
+
 	Scenario('Canceling an item listing successfully', ({ Given, When, Then, And }) => {
 		Given('a valid listing ID to cancel', () => {
 			context = makeMockGraphContext({
