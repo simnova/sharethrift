@@ -191,4 +191,51 @@ test.for(feature, ({ Scenario, BeforeEachScenario }) => {
 			);
 		},
 	);
+
+	Scenario(
+		'Handler configures security validations',
+		({ Given, When, Then, And }) => {
+			Given('a valid ApplicationServicesFactory', () => {
+				// Already set up in BeforeEachScenario
+			});
+
+			When('graphHandlerCreator is called', () => {
+				handler = graphHandlerCreator(factory);
+			});
+
+			Then('it should configure depth limit validation rule', () => {
+				const apolloConfig = vi.mocked(ApolloServer).mock.calls[0][0];
+				expect(apolloConfig.validationRules).toBeDefined();
+				expect(apolloConfig.validationRules.length).toBeGreaterThan(0);
+			});
+
+			And('it should enable batch requests', () => {
+				const apolloConfig = vi.mocked(ApolloServer).mock.calls[0][0];
+				expect(apolloConfig.allowBatchedHttpRequests).toBe(true);
+			});
+
+			And('it should configure introspection based on environment', () => {
+				const apolloConfig = vi.mocked(ApolloServer).mock.calls[0][0];
+				expect(apolloConfig.introspection).toBeDefined();
+			});
+		},
+	);
+
+	Scenario(
+		'Handler uses Azure Functions for CORS handling',
+		({ Given, When, Then }) => {
+			Given('a valid ApplicationServicesFactory', () => {
+				// Already set up in BeforeEachScenario
+			});
+
+			When('graphHandlerCreator is called', () => {
+				handler = graphHandlerCreator(factory);
+			});
+
+			Then('it should not configure CORS on Apollo Server', () => {
+				const apolloConfig = vi.mocked(ApolloServer).mock.calls[0][0];
+				expect(apolloConfig.cors).toBeUndefined();
+			});
+		},
+	);
 });

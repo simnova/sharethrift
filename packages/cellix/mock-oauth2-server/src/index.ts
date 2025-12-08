@@ -228,6 +228,7 @@ async function main() {
 		const { redirect_uri, state } = req.query;
 		const requestedRedirectUri = redirect_uri as string;
 
+		// Note: Only absolute URIs are currently supported in the allowlist
 		// Check if the requested redirect_uri is in our allowed list
 		const isAllowed = allowedRedirectUris.has(requestedRedirectUri) || requestedRedirectUri === allowedRedirectUri;
 		if (!isAllowed) {
@@ -238,13 +239,8 @@ async function main() {
 		// Generate authorization code
 		const code = `mock-auth-code-${Buffer.from(requestedRedirectUri).toString('base64')}`;
 		
-		// Use URL constructor to safely build redirect (validated URL from allowlist)
 		try {
-			const protocol = req.protocol || 'http';
-			const host = req.get('host') || `localhost:${port}`;
-			const baseUrl = `${protocol}://${host}`;
-			
-			const redirectUrl = new URL(requestedRedirectUri, baseUrl);
+			const redirectUrl = new URL(requestedRedirectUri);
 			redirectUrl.searchParams.set('code', code);
 			if (state) {
 				redirectUrl.searchParams.set('state', state as string);

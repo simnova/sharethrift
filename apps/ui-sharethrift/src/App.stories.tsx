@@ -4,7 +4,12 @@ import { MemoryRouter } from 'react-router-dom';
 import { AuthProvider } from 'react-oidc-context';
 import { MockedProvider } from '@apollo/client/testing/react';
 import { App } from './App.tsx';
-import { generateMockToken } from './test-utils/generateMockToken.ts';
+
+const generateMockToken = () => {
+	const randomPart = Math.random().toString(36).substring(2, 15);
+	const timestamp = Date.now().toString(36);
+	return `mock_${timestamp}_${randomPart}`;
+};
 
 const mockEnv = {
 	VITE_FUNCTION_ENDPOINT: 'https://mock-functions.example.com',

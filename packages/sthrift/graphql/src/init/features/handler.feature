@@ -22,3 +22,15 @@ Feature: GraphQL Handler Creator
     When the handler is invoked
     Then it should delegate the request to startServerAndCreateHandler with the ApolloServer and context options
     And it should return the result from startServerAndCreateHandler
+
+  Scenario: Handler configures security validations
+    Given a valid ApplicationServicesFactory
+    When graphHandlerCreator is called
+    Then it should configure depth limit validation rule
+    And it should enable batch requests
+    And it should configure introspection based on environment
+
+  Scenario: Handler uses Azure Functions for CORS handling
+    Given a valid ApplicationServicesFactory
+    When graphHandlerCreator is called
+    Then it should not configure CORS on Apollo Server
