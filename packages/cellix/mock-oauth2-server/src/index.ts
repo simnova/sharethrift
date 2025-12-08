@@ -240,7 +240,11 @@ async function main() {
 		
 		// Use URL constructor to safely build redirect (validated URL from allowlist)
 		try {
-			const redirectUrl = new URL(requestedRedirectUri);
+			const protocol = req.protocol || 'http';
+			const host = req.get('host') || `localhost:${port}`;
+			const baseUrl = `${protocol}://${host}`;
+			
+			const redirectUrl = new URL(requestedRedirectUri, baseUrl);
 			redirectUrl.searchParams.set('code', code);
 			if (state) {
 				redirectUrl.searchParams.set('state', state as string);

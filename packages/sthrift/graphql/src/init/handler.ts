@@ -19,6 +19,10 @@ export const graphHandlerCreator = (
 	applicationServicesFactory: ApplicationServicesFactory,
 ): HttpHandler => {
 	// Set up Apollo Server with security configurations
+	// Note: Apollo Server v4 removed direct CORS support - CORS must be handled at the web framework level
+	// https://www.apollographql.com/docs/apollo-server/migration/#cors-and-helmet
+	// Azure Functions handles CORS through local.settings.json ("CORS": "*") for local dev
+	// and through Azure Portal configuration for production deployments
 	const securedSchema = applyMiddleware(combinedSchema);
 	const server = new ApolloServer<GraphContext>({
 		schema: securedSchema,

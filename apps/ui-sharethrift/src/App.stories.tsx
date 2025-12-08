@@ -4,6 +4,7 @@ import { MemoryRouter } from 'react-router-dom';
 import { AuthProvider } from 'react-oidc-context';
 import { MockedProvider } from '@apollo/client/testing/react';
 import { App } from './App.tsx';
+import { generateMockToken } from './test-utils/generateMockToken.ts';
 
 const mockEnv = {
 	VITE_FUNCTION_ENDPOINT: 'https://mock-functions.example.com',
@@ -11,12 +12,6 @@ const mockEnv = {
 	VITE_B2C_AUTHORITY: 'https://mock-authority.example.com',
 	VITE_B2C_CLIENTID: 'mock-client-id',
 	NODE_ENV: 'development',
-};
-
-const generateMockToken = () => {
-	const randomPart = Math.random().toString(36).substring(2, 15);
-	const timestamp = Date.now().toString(36);
-	return `mock_${timestamp}_${randomPart}`;
 };
 
 const mockStorage = {
