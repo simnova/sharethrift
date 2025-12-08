@@ -200,9 +200,9 @@ export class AdminUserReadRepositoryImpl implements AdminUserReadRepository {
 	}
 }
 
-export const getAdminUserReadRepository = (
+export function getAdminUserReadRepository(
 	models: ModelsContext,
 	passport: Domain.Passport,
-) => {
+): AdminUserReadRepository {
 	return new AdminUserReadRepositoryImpl(models, passport);
 };
