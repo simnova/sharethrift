@@ -4,7 +4,11 @@ import type {
 	Resolvers,
 	QueryAllSystemUsersArgs,
 } from '../../builder/generated.ts';
-import { getUserByEmail } from '../../resolver-helper.ts';
+import {
+	getUserByEmail,
+	requireAuthentication,
+	extractUserProfileFromJwt,
+} from '../../resolver-helper.ts';
 
 const userUnionResolvers: Resolvers = {
 	Query: {
@@ -14,12 +18,16 @@ const userUnionResolvers: Resolvers = {
 			context: GraphContext,
 			_info: GraphQLResolveInfo,
 		) => {
-			if (!context.applicationServices.verifiedUser?.verifiedJwt) {
-				throw new Error('Unauthorized: Authentication required');
+			requireAuthentication(context);
+
+			// Safe to access after requireAuthentication check
+			const {verifiedUser} = context.applicationServices;
+			const jwt = verifiedUser?.verifiedJwt;
+			if (!jwt?.email) {
+				throw new Error('Email not found in verified JWT');
 			}
 
-			const { email } = context.applicationServices.verifiedUser.verifiedJwt;
-			const user = await getUserByEmail(email, context);
+			const user = await getUserByEmail(jwt.email, context);
 
 			if (!user) {
 				throw new Error('User not found');
@@ -34,12 +42,12 @@ const userUnionResolvers: Resolvers = {
 			context: GraphContext,
 			_info: GraphQLResolveInfo,
 		) => {
-			if (!context.applicationServices.verifiedUser?.verifiedJwt) {
-				throw new Error('Unauthorized: Authentication required');
-			}
+			// Use consistent auth check across resolvers
+			requireAuthentication(context);
 
-			const { email, given_name, family_name } =
-				context.applicationServices.verifiedUser.verifiedJwt;
+			// Extract and validate JWT claims with safe fallbacks for missing name fields
+			const { email, firstName, lastName } =
+				extractUserProfileFromJwt(context);
 
 			// Check if user already exists (admin or personal)
 			const existingUser = await getUserByEmail(email, context);
@@ -50,11 +58,12 @@ const userUnionResolvers: Resolvers = {
 
 			// Create new PersonalUser if not found
 			// Note: Admins are created manually, so new B2C logins default to PersonalUser
+			// This only triggers on first login - subsequent requests return existing user
 			return await context.applicationServices.User.PersonalUser.createIfNotExists(
 				{
 					email,
-					firstName: given_name,
-					lastName: family_name,
+					firstName,
+					lastName,
 				},
 			);
 		},
@@ -100,14 +109,18 @@ const userUnionResolvers: Resolvers = {
 			context: GraphContext,
 			_info: GraphQLResolveInfo,
 		) => {
-			if (!context.applicationServices.verifiedUser?.verifiedJwt) {
-				throw new Error('Unauthorized: Authentication required');
-			}
+			requireAuthentication(context);
 
 			// Permission check: Only admins with canViewAllUsers can view all users
+			const {verifiedUser} = context.applicationServices;
+			const jwt = verifiedUser?.verifiedJwt;
+			if (!jwt?.email) {
+				throw new Error('Email not found in verified JWT');
+			}
+
 			const currentAdmin =
 				await context.applicationServices.User.AdminUser.queryByEmail({
-					email: context.applicationServices.verifiedUser.verifiedJwt.email,
+					email: jwt.email,
 				});
 
 			if (!currentAdmin?.role?.permissions?.userPermissions?.canViewAllUsers) {

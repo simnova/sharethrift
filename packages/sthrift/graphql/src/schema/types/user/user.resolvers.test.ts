@@ -65,6 +65,7 @@ test.for(feature, ({ Background, Scenario, BeforeEachScenario }) => {
 					PersonalUser: {
 						queryByEmail: vi.fn(),
 						queryById: vi.fn(),
+						createIfNotExists: vi.fn(),
 						getAllUsers: vi.fn().mockResolvedValue({
 							items: [mockPersonalUser],
 							total: 1,
