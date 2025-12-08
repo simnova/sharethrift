@@ -343,6 +343,58 @@ test.for(feature, ({ Background, Scenario, BeforeEachScenario }) => {
 		},
 	);
 
+	Scenario(
+		'Query currentUserAndCreateIfNotExists handles creation failure',
+		({ Given, And, When, Then }) => {
+			let error: Error | undefined;
+
+			Given('a verified user is authenticated but not in database', () => {
+				mockContext.applicationServices.verifiedUser = {
+					verifiedJwt: {
+						email: 'newuser@test.com',
+						given_name: 'Test',
+						family_name: 'User',
+					},
+				} as {
+					verifiedJwt: {
+						email: string;
+						given_name: string;
+						family_name: string;
+					};
+				};
+				vi.mocked(
+					mockContext.applicationServices.User.AdminUser.queryByEmail,
+				).mockRejectedValue(new Error('Not found'));
+				vi.mocked(
+					mockContext.applicationServices.User.PersonalUser.queryByEmail,
+				).mockRejectedValue(new Error('Not found'));
+			});
+
+			And('the createIfNotExists operation fails', () => {
+				mockContext.applicationServices.User.PersonalUser.createIfNotExists =
+					vi.fn().mockRejectedValue(new Error('Database connection failed'));
+			});
+
+			When('currentUserAndCreateIfNotExists query is called', async () => {
+				try {
+					await userUnionResolvers.Query?.currentUserAndCreateIfNotExists?.(
+						{},
+						{},
+						mockContext,
+						{} as GraphQLResolveInfo,
+					);
+				} catch (e) {
+					error = e as Error;
+				}
+			});
+
+			Then('it should propagate the error from application service', () => {
+				expect(error).toBeDefined();
+				expect(error?.message).toBe('Database connection failed');
+			});
+		},
+	);
+
 	Scenario('Query userById returns AdminUser', ({ When, Then }) => {
 		When('userById query is called with an admin user ID', async () => {
 			vi.mocked(

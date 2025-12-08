@@ -38,6 +38,12 @@ Feature: User Union Resolvers
     When currentUserAndCreateIfNotExists query is called
     Then it should throw "Unauthorized: Authentication required"
 
+  Scenario: Query currentUserAndCreateIfNotExists handles creation failure
+    Given a verified user is authenticated but not in database
+    And the createIfNotExists operation fails
+    When currentUserAndCreateIfNotExists query is called
+    Then it should propagate the error from application service
+
   Scenario: Query userById returns AdminUser
     When userById query is called with an admin user ID
     Then it should return the AdminUser entity
