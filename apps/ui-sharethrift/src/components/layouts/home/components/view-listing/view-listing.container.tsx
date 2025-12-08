@@ -118,12 +118,31 @@ export const ViewListingContainer: React.FC<ViewListingContainerProps> = (
 		await unblockListing({ variables: { id: listingId } });
 	};
 
+	// Check if listing is blocked and user is not admin
+	const isBlocked = listingData?.itemListing?.state === 'Blocked';
+	const cannotViewBlockedListing = isBlocked && !isAdmin;
+
 	return (
 		<ComponentQueryLoader
 			loading={userReservationLoading || listingLoading || currentUserLoading}
 			error={listingError}
 			errorComponent={<div>Error loading listing.</div>}
-			hasData={listingData?.itemListing}
+			hasData={listingData?.itemListing && !cannotViewBlockedListing}
+			noDataComponent={
+				cannotViewBlockedListing ? (
+					<div
+						style={{
+							textAlign: 'center',
+							padding: '50px 20px',
+							maxWidth: '600px',
+							margin: '0 auto',
+						}}
+					>
+						<h2>Listing Not Available</h2>
+						<p>This listing is currently not available.</p>
+					</div>
+				) : undefined
+			}
 			hasDataComponent={
 				<ViewListing
 					listing={listingData?.itemListing as ItemListing}
