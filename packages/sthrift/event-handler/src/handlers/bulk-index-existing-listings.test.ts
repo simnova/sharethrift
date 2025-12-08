@@ -6,11 +6,11 @@
 
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import type { Domain } from '@sthrift/domain';
-import type { ServiceSearchIndex } from '@sthrift/search-service-index';
+import type { SearchService } from '@cellix/search-service';
 import { bulkIndexExistingListings } from './bulk-index-existing-listings.js';
 
 describe('bulkIndexExistingListings', () => {
-	let mockSearchService: ServiceSearchIndex;
+	let mockSearchService: SearchService;
 	let mockListings: Domain.Contexts.Listing.ItemListing.ItemListingEntityReference[];
 
 	beforeEach(() => {
@@ -20,7 +20,7 @@ describe('bulkIndexExistingListings', () => {
 		mockSearchService = {
 			createIndexIfNotExists: vi.fn().mockResolvedValue(undefined),
 			indexDocument: vi.fn().mockResolvedValue(undefined),
-		} as unknown as ServiceSearchIndex;
+		} as unknown as SearchService;
 
 		mockListings = [
 			{

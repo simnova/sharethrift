@@ -6,7 +6,7 @@
  */
 
 import type { Domain } from '@sthrift/domain';
-import type { ServiceSearchIndex } from '@sthrift/search-service-index';
+import type { SearchService } from '@cellix/search-service';
 import { ItemListingSearchIndexSpec } from '@sthrift/domain';
 
 /**
@@ -17,7 +17,7 @@ import { ItemListingSearchIndexSpec } from '@sthrift/domain';
  */
 export async function bulkIndexExistingListings(
 	listings: Domain.Contexts.Listing.ItemListing.ItemListingEntityReference[],
-	searchService: ServiceSearchIndex,
+	searchService: SearchService,
 ): Promise<void> {
 	console.log('Starting bulk indexing of existing listings...');
 

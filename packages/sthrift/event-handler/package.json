@@ -22,10 +22,11 @@
 		"clean": "rimraf dist"
 	},
 	"dependencies": {
+		"@cellix/event-bus-seedwork-node": "workspace:*",
+		"@cellix/search-service": "workspace:*",
 		"@sthrift/domain": "workspace:*",
-		"@sthrift/search-service-index": "workspace:*",
 		"@sthrift/persistence": "workspace:*",
-		"@cellix/event-bus-seedwork-node": "workspace:*"
+		"@sthrift/search-service-index": "workspace:*"
 	},
 	"devDependencies": {
 		"@cellix/typescript-config": "workspace:*",

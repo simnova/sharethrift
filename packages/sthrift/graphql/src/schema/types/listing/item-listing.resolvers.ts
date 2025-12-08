@@ -40,23 +40,6 @@ function buildPagedArgs(
 	};
 }
 
-const mapStateToStatus = (state?: string): string => {
-	if (!state || state.trim() === '') {
-		return 'Unknown';
-	}
-	// Normalize internal domain states to UI statuses
-	switch (state) {
-		case 'Published':
-			return 'Active';
-		case 'Drafted':
-			return 'Draft';
-		case 'Appeal Requested':
-			return 'Appeal_Requested';
-		default:
-			return state; // Paused, Cancelled, Expired, Blocked, Reserved (future), etc.
-	}
-};
-
 const itemListingResolvers: Resolvers = {
 	ItemListing: {
 		sharer: PopulateUserFromField('sharer'),
@@ -112,15 +95,15 @@ const itemListingResolvers: Resolvers = {
 				const sharingStart = new Date(item.sharingPeriodStart).toISOString();
 				const sharingEnd = new Date(item.sharingPeriodEnd).toISOString();
 
-				return {
-					id: item.id,
-					title: item.title,
-					image: item.images && item.images.length > 0 ? item.images[0] : null,
-					publishedAt: item.createdAt,
-					reservationPeriod: `${sharingStart.slice(0, 10)} - ${sharingEnd.slice(0, 10)}`,
-					status: mapStateToStatus(item.state),
-					pendingRequestsCount: 0, // TODO: integrate reservation request counts
-				};
+			return {
+				id: item.id,
+				title: item.title,
+				image: item.images && item.images.length > 0 ? item.images[0] : null,
+				publishedAt: item.createdAt,
+				reservationPeriod: `${sharingStart.slice(0, 10)} - ${sharingEnd.slice(0, 10)}`,
+				status: item.state || 'Unknown',
+				pendingRequestsCount: 0, // TODO: integrate reservation request counts
+			};
 			});
 
 			return {

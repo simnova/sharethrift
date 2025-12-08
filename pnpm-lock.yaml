@@ -110,6 +110,9 @@ importers:
       '@cellix/payment-service':
         specifier: workspace:*
         version: link:../../packages/cellix/payment-service
+      '@cellix/search-service':
+        specifier: workspace:*
+        version: link:../../packages/cellix/search-service
       '@opentelemetry/api':
         specifier: ^1.9.0
         version: 1.9.0
@@ -759,6 +762,9 @@ importers:
       '@cellix/payment-service':
         specifier: workspace:*
         version: link:../../cellix/payment-service
+      '@cellix/search-service':
+        specifier: workspace:*
+        version: link:../../cellix/search-service
       '@sthrift/persistence':
         specifier: workspace:*
         version: link:../persistence
@@ -858,6 +864,9 @@ importers:
       '@cellix/event-bus-seedwork-node':
         specifier: workspace:*
         version: link:../../cellix/event-bus-seedwork-node
+      '@cellix/search-service':
+        specifier: workspace:*
+        version: link:../../cellix/search-service
       '@sthrift/domain':
         specifier: workspace:*
         version: link:../domain

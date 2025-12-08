@@ -28,6 +28,7 @@ import type { PaymentService } from '@cellix/payment-service';
 import { PaymentServiceMock } from '@sthrift/payment-service-mock';
 import { PaymentServiceCybersource } from '@sthrift/payment-service-cybersource';
 import { ServiceSearchIndex } from '@sthrift/search-service-index';
+import type { SearchService } from '@cellix/search-service';
 
 const { NODE_ENV } = process.env;
 const isDevelopment = NODE_ENV === 'development';
@@ -73,7 +74,7 @@ serviceRegistry.getInfrastructureService<ServiceMongoose>(
 
 		const { domainDataSource } = dataSourcesFactory.withSystemPassport();
 		const searchService =
-			serviceRegistry.getInfrastructureService<ServiceSearchIndex>(
+			serviceRegistry.getInfrastructureService<SearchService>(
 				ServiceSearchIndex,
 			);
 		RegisterEventHandlers(domainDataSource, searchService);
