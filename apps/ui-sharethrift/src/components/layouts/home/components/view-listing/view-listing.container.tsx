@@ -103,7 +103,7 @@ export const ViewListingContainer: React.FC<ViewListingContainerProps> = (
 		},
 	);
 
-	const handleBlockListing = async (_reason: string, _description: string) => {
+	const handleBlockListing = async () => {
 		if (!listingId) return;
 		await blockListing({ variables: { id: listingId } });
 	};

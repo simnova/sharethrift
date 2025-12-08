@@ -21,7 +21,7 @@ export interface ViewListingProps {
 		| null;
 	sharedTimeAgo?: string;
 	isAdmin: boolean;
-	onBlockListing: (reason: string, description: string) => Promise<void>;
+	onBlockListing: () => Promise<void>;
 	onUnblockListing: () => Promise<void>;
 	blockLoading: boolean;
 	unblockLoading: boolean;
@@ -52,8 +52,8 @@ export const ViewListing: React.FC<ViewListingProps> = ({
 		window.location.href = '/';
 	};
 
-	const handleBlockConfirm = async (reason: string, description: string) => {
-		await onBlockListing(reason, description);
+	const handleBlockConfirm = async () => {
+		await onBlockListing();
 		setBlockModalVisible(false);
 	};
 

@@ -56,11 +56,6 @@ export const UnblockListingModal: React.FC<UnblockListingModalProps> = ({
 					)}
 				</div>
 			)}
-			<p style={{ marginTop: 16 }}>
-				Your listing has been blocked due to profanity in the description. In
-				order to have your listing unblocked, please update your listing to
-				comply with our guidelines and submit an appeal.
-			</p>
 		</Modal>
 	);
 };
