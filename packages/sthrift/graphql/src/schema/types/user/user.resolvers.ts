@@ -28,6 +28,37 @@ const userUnionResolvers: Resolvers = {
 			return user;
 		},
 
+		currentUserAndCreateIfNotExists: async (
+			_parent: unknown,
+			_args: unknown,
+			context: GraphContext,
+			_info: GraphQLResolveInfo,
+		) => {
+			if (!context.applicationServices.verifiedUser?.verifiedJwt) {
+				throw new Error('Unauthorized: Authentication required');
+			}
+
+			const { email, given_name, family_name } =
+				context.applicationServices.verifiedUser.verifiedJwt;
+
+			// Check if user already exists (admin or personal)
+			const existingUser = await getUserByEmail(email, context);
+
+			if (existingUser) {
+				return existingUser;
+			}
+
+			// Create new PersonalUser if not found
+			// Note: Admins are created manually, so new B2C logins default to PersonalUser
+			return await context.applicationServices.User.PersonalUser.createIfNotExists(
+				{
+					email,
+					firstName: given_name,
+					lastName: family_name,
+				},
+			);
+		},
+
 		userById: async (
 			_parent: unknown,
 			args: { id: string },

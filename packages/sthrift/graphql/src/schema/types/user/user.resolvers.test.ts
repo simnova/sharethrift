@@ -176,6 +176,172 @@ test.for(feature, ({ Background, Scenario, BeforeEachScenario }) => {
 		},
 	);
 
+	Scenario(
+		'Query currentUserAndCreateIfNotExists returns existing user',
+		({ Given, When, Then }) => {
+			Given(
+				'a verified personal user is authenticated and exists in database',
+				() => {
+					mockContext.applicationServices.verifiedUser = {
+						verifiedJwt: {
+							email: 'user@test.com',
+							given_name: 'John',
+							family_name: 'Doe',
+						},
+					} as {
+						verifiedJwt: {
+							email: string;
+							given_name: string;
+							family_name: string;
+						};
+					};
+					vi.mocked(
+						mockContext.applicationServices.User.AdminUser.queryByEmail,
+					).mockRejectedValue(new Error('Not found'));
+					vi.mocked(
+						mockContext.applicationServices.User.PersonalUser.queryByEmail,
+					).mockResolvedValue(mockPersonalUser);
+				},
+			);
+
+			When('currentUserAndCreateIfNotExists query is called', async () => {
+				result = await userUnionResolvers.Query?.currentUserAndCreateIfNotExists?.(
+					{},
+					{},
+					mockContext,
+					{} as GraphQLResolveInfo,
+				);
+			});
+
+			Then('it should return the existing user', () => {
+				expect(result).toEqual(mockPersonalUser);
+				expect(
+					mockContext.applicationServices.User.PersonalUser.createIfNotExists,
+				).not.toHaveBeenCalled();
+			});
+		},
+	);
+
+	Scenario(
+		'Query currentUserAndCreateIfNotExists creates new PersonalUser',
+		({ Given, When, Then }) => {
+			const newUser = {
+				id: 'new-user-123',
+				email: 'newuser@test.com',
+				userType: 'personal-users',
+			};
+
+			Given('a verified user is authenticated but not in database', () => {
+				mockContext.applicationServices.verifiedUser = {
+					verifiedJwt: {
+						email: 'newuser@test.com',
+						given_name: 'Jane',
+						family_name: 'Smith',
+					},
+				} as {
+					verifiedJwt: {
+						email: string;
+						given_name: string;
+						family_name: string;
+					};
+				};
+				vi.mocked(
+					mockContext.applicationServices.User.AdminUser.queryByEmail,
+				).mockRejectedValue(new Error('Not found'));
+				vi.mocked(
+					mockContext.applicationServices.User.PersonalUser.queryByEmail,
+				).mockRejectedValue(new Error('Not found'));
+				mockContext.applicationServices.User.PersonalUser.createIfNotExists =
+					vi.fn().mockResolvedValue(newUser);
+			});
+
+			When('currentUserAndCreateIfNotExists query is called', async () => {
+				result = await userUnionResolvers.Query?.currentUserAndCreateIfNotExists?.(
+					{},
+					{},
+					mockContext,
+					{} as GraphQLResolveInfo,
+				);
+			});
+
+			Then('it should create and return a new PersonalUser', () => {
+				expect(result).toEqual(newUser);
+				expect(
+					mockContext.applicationServices.User.PersonalUser.createIfNotExists,
+				).toHaveBeenCalledWith({
+					email: 'newuser@test.com',
+					firstName: 'Jane',
+					lastName: 'Smith',
+				});
+			});
+		},
+	);
+
+	Scenario(
+		'Query currentUserAndCreateIfNotExists returns existing AdminUser',
+		({ Given, When, Then }) => {
+			Given('a verified admin user is authenticated', () => {
+				mockContext.applicationServices.verifiedUser = {
+					verifiedJwt: {
+						email: 'admin@test.com',
+						given_name: 'Admin',
+						family_name: 'User',
+					},
+				} as {
+					verifiedJwt: {
+						email: string;
+						given_name: string;
+						family_name: string;
+					};
+				};
+				vi.mocked(
+					mockContext.applicationServices.User.AdminUser.queryByEmail,
+				).mockResolvedValue(mockAdminUser);
+			});
+
+			When('currentUserAndCreateIfNotExists query is called', async () => {
+				result = await userUnionResolvers.Query?.currentUserAndCreateIfNotExists?.(
+					{},
+					{},
+					mockContext,
+					{} as GraphQLResolveInfo,
+				);
+			});
+
+			Then('it should return the existing admin user', () => {
+				expect(result).toEqual(mockAdminUser);
+			});
+		},
+	);
+
+	Scenario(
+		'Query currentUserAndCreateIfNotExists throws error when not authenticated',
+		({ Given, When, Then }) => {
+			let error: Error | undefined;
+
+			Given('no user is authenticated', () => {
+				mockContext.applicationServices.verifiedUser = undefined;
+			});
+
+			When('currentUserAndCreateIfNotExists query is called', async () => {
+				try {
+					await userUnionResolvers.Query?.currentUserAndCreateIfNotExists?.(
+						{},
+						{},
+						mockContext,
+						{} as GraphQLResolveInfo,
+					);
+				} catch (e) {
+					error = e as Error;
+				}
+			});
+
+			Then('it should throw "Unauthorized: Authentication required"', () => {
+				expect(error?.message).toContain('Unauthorized');
+			});
+		},
+	);
+
 	Scenario('Query userById returns AdminUser', ({ When, Then }) => {
 		When('userById query is called with an admin user ID', async () => {
 			vi.mocked(

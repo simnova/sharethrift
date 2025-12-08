@@ -11,6 +11,9 @@ extend type Query {
 	# Unified query - returns current user regardless of type
 	currentUser: User!
 
+	# Hybrid query - returns current user and creates if not exists (PersonalUser only)
+	currentUserAndCreateIfNotExists: User!
+
 	# Get any user by ID (PersonalUser or AdminUser)
 	userById(id: ObjectID!): User
 
