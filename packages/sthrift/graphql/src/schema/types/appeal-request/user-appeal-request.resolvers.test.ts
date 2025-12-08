@@ -41,9 +41,9 @@ test.for(feature, ({ Background, Scenario, BeforeEachScenario }) => {
 		mockUserAppealRequest = {
 			id: '507f1f77bcf86cd799439017',
 			userId: '507f1f77bcf86cd799439015',
-			user: '507f1f77bcf86cd799439015',
+			user: { id: '507f1f77bcf86cd799439015' },
 			blockerId: '507f1f77bcf86cd799439016',
-			blocker: '507f1f77bcf86cd799439016',
+			blocker: { id: '507f1f77bcf86cd799439016' },
 			state: 'Draft',
 			reason: 'Test appeal reason',
 		};

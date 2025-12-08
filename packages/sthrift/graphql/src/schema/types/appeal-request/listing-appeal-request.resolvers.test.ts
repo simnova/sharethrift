@@ -48,11 +48,11 @@ test.for(feature, ({ Background, Scenario, BeforeEachScenario }) => {
 		mockListingAppealRequest = {
 			id: '507f1f77bcf86cd799439014',
 			userId: '507f1f77bcf86cd799439011',
-			user: '507f1f77bcf86cd799439011',
+			user: { id: '507f1f77bcf86cd799439011' },
 			listingId: '507f1f77bcf86cd799439012',
-			listing: '507f1f77bcf86cd799439012',
+			listing: { id: '507f1f77bcf86cd799439012' },
 			blockerId: '507f1f77bcf86cd799439013',
-			blocker: '507f1f77bcf86cd799439013',
+			blocker: { id: '507f1f77bcf86cd799439013' },
 			state: 'Draft',
 			reason: 'Test reason',
 		};
