@@ -33,43 +33,55 @@ export interface ItemListingSearchDocument {
 }
 
 /**
+ * Search facet value
+ */
+export interface SearchFacet {
+	value: string;
+	count: number;
+}
+
+/**
+ * Search facets grouped by field
+ */
+export interface SearchFacets {
+	category?: SearchFacet[];
+	state?: SearchFacet[];
+	sharerId?: SearchFacet[];
+	createdAt?: SearchFacet[];
+}
+
+/**
  * Search result interface for Item Listings
  */
 export interface ItemListingSearchResult {
 	items: ItemListingSearchDocument[];
 	count: number;
-	facets: Record<
-		string,
-		Array<{
-			value: string | number | boolean;
-			count: number;
-		}>
-	>;
+	facets?: SearchFacets;
 }
 
 /**
  * Search input interface for Item Listings
  */
 export interface ItemListingSearchInput {
-	searchString?: string;
+	searchString?: string | null;
 	options?: {
-		filter?: ItemListingSearchFilter;
-		top?: number;
-		skip?: number;
-		orderBy?: string[];
-	};
+		filter?: ItemListingSearchFilter | null;
+		top?: number | null;
+		skip?: number | null;
+		orderBy?: readonly string[] | null;
+	} | null;
 }
 
 /**
  * Search filter interface for Item Listings
  */
 export interface ItemListingSearchFilter {
-	category?: string[];
-	state?: string[];
-	sharerId?: string[];
-	location?: string;
+	category?: readonly string[] | null;
+	state?: readonly string[] | null;
+	sharerId?: readonly string[] | null;
+	location?: string | null;
 	dateRange?: {
-		start?: string;
-		end?: string;
-	};
+		start?: string | null;
+		end?: string | null;
+	} | null;
 }

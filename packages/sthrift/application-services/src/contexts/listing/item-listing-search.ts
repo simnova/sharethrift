@@ -147,11 +147,11 @@ export class ItemListingSearchApplicationService {
 	 * Build search options from input
 	 */
 	private buildSearchOptions(inputOptions?: {
-		filter?: ItemListingSearchFilter;
-		top?: number;
-		skip?: number;
-		orderBy?: string[];
-	}): SearchOptions {
+		filter?: ItemListingSearchFilter | null;
+		top?: number | null;
+		skip?: number | null;
+		orderBy?: readonly string[] | null;
+	} | null): SearchOptions {
 		const options: SearchOptions = {
 			queryType: 'full',
 			searchMode: 'all',
@@ -159,7 +159,7 @@ export class ItemListingSearchApplicationService {
 			facets: ['category,count:0', 'state,count:0', 'sharerId,count:0'],
 			top: inputOptions?.top || 50,
 			skip: inputOptions?.skip || 0,
-			orderBy: inputOptions?.orderBy || ['updatedAt desc'],
+			orderBy: inputOptions?.orderBy ? [...inputOptions.orderBy] : ['updatedAt desc'],
 		};
 
 		// Build filter string
@@ -227,10 +227,49 @@ export class ItemListingSearchApplicationService {
 				result.document as unknown as ItemListingSearchDocument,
 		);
 
+		// Convert facets from Record format to typed SearchFacets structure
+		const facets = this.convertFacets(searchResults.facets);
+
+		// Return with explicit facets (can be undefined if no facets)
+		if (facets) {
+			return {
+				items,
+				count: searchResults.count || 0,
+				facets,
+			};
+		}
+
 		return {
 			items,
 			count: searchResults.count || 0,
-			facets: searchResults.facets || {},
 		};
+	}
+
+	/**
+	 * Convert facets from generic Record format to domain SearchFacets format
+	 */
+	private convertFacets(
+		facetsRecord: Record<string, Array<{ value: string | number | boolean; count: number }>> | undefined,
+	): ItemListingSearchResult['facets'] {
+		if (!facetsRecord) {
+			return undefined;
+		}
+
+		const facets: ItemListingSearchResult['facets'] = {};
+
+		if (facetsRecord['category']) {
+			facets.category = facetsRecord['category'].map(f => ({ value: String(f.value), count: f.count }));
+		}
+		if (facetsRecord['state']) {
+			facets.state = facetsRecord['state'].map(f => ({ value: String(f.value), count: f.count }));
+		}
+		if (facetsRecord['sharerId']) {
+			facets.sharerId = facetsRecord['sharerId'].map(f => ({ value: String(f.value), count: f.count }));
+		}
+		if (facetsRecord['createdAt']) {
+			facets.createdAt = facetsRecord['createdAt'].map(f => ({ value: String(f.value), count: f.count }));
+		}
+
+		return facets;
 	}
 }
