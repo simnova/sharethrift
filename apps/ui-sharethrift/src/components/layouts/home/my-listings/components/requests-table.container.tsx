@@ -49,8 +49,8 @@ export const RequestsTableContainer: React.FC<RequestsTableContainerProps> = ({
 	const [acceptRequest] = useMutation(
 		HomeRequestsTableContainerAcceptReservationRequestDocument,
 		{
-			onCompleted: async () => {
-				await refetch();
+			onCompleted: () => {
+				void refetch();
 				message.success('Request accepted successfully');
 			},
 			onError: (error) => {
