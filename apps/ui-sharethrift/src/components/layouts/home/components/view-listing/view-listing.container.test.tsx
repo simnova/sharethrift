@@ -353,7 +353,7 @@ describe('ViewListingContainer', () => {
 			// onCompleted callback should call message.success with correct text
 			// Message text: "Listing blocked successfully"
 			const onCompletedCallback = vi.fn();
-			mockUseMutation.mockImplementationOnce((doc: any, options: any) => {
+			mockUseMutation.mockImplementationOnce((_doc: any, options: any) => {
 				// Simulate mutation completion
 				options.onCompleted?.();
 				return [mockBlockMutation, { loading: false }];
@@ -372,7 +372,7 @@ describe('ViewListingContainer', () => {
 			// Message text: "Failed to block listing: {error.message}"
 			const blockError = new Error('Mutation failed');
 			const onErrorCallback = vi.fn();
-			mockUseMutation.mockImplementationOnce((doc: any, options: any) => {
+			mockUseMutation.mockImplementationOnce((_doc: any, options: any) => {
 				// Simulate mutation error
 				options.onError?.(blockError);
 				return [mockBlockMutation, { loading: false }];
@@ -390,7 +390,7 @@ describe('ViewListingContainer', () => {
 			// onCompleted callback should call message.success with correct text
 			// Message text: "Listing unblocked successfully"
 			const onCompletedCallback = vi.fn();
-			mockUseMutation.mockImplementationOnce((doc: any, options: any) => {
+			mockUseMutation.mockImplementationOnce((_doc: any, options: any) => {
 				// Simulate mutation completion
 				options.onCompleted?.();
 				return [mockUnblockMutation, { loading: false }];
@@ -409,7 +409,7 @@ describe('ViewListingContainer', () => {
 			// Message text: "Failed to unblock listing: {error.message}"
 			const unblockError = new Error('Unblock failed');
 			const onErrorCallback = vi.fn();
-			mockUseMutation.mockImplementationOnce((doc: any, options: any) => {
+			mockUseMutation.mockImplementationOnce((_doc: any, options: any) => {
 				// Simulate mutation error
 				options.onError?.(unblockError);
 				return [mockUnblockMutation, { loading: false }];
