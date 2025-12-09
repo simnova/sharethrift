@@ -40,7 +40,7 @@
         "verify": "pnpm run test:coverage:merge && pnpm run sonar:pr && pnpm run check-sonar",
         "snyk": "pnpm run snyk:test && pnpm run snyk:code",
         "snyk:report": "pnpm run snyk:monitor && pnpm run snyk:code:report",
-        "snyk:test": "snyk test --all-projects --org=simnova --remote-repo-url=https://github.com/simnova/sharethrift --policy-path=.snyk",
+        "snyk:test": "snyk test --all-projects --org=simnova --remote-repo-url=https://github.com/simnova/sharethrift --policy-path=.snyk --exclude=dist,build,.turbo,coverage",
         "snyk:monitor": "snyk monitor --all-projects --org=simnova --target-reference=main --remote-repo-url=https://github.com/simnova/sharethrift --project-name-prefix=\"sharethrift/\" --policy-path=.snyk --exclude=dist,build,.turbo,coverage",
         "snyk:code": "snyk code test --org=simnova --remote-repo-url=https://github.com/simnova/sharethrift --severity-threshold=medium",
         "snyk:code:report": "snyk code test --org=simnova --remote-repo-url=https://github.com/simnova/sharethrift --target-reference=main --project-name=sharethrift-code --report",
