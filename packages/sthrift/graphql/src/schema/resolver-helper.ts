@@ -64,6 +64,44 @@ export const currentViewerIsAdmin = async (
 };
 
 /**
+ * Helper to ensure user is authenticated and throw consistent error if not.
+ * Use this in all resolvers requiring authentication for consistent error handling.
+ */
+export const requireAuthentication = (context: GraphContext): void => {
+	if (!context.applicationServices.verifiedUser?.verifiedJwt) {
+		throw new Error('Unauthorized: Authentication required');
+	}
+};
+
+/**
+ * Validates and extracts user profile data from JWT with safe fallbacks.
+ * Returns sanitized firstName/lastName with defaults for missing values.
+ */
+export const extractUserProfileFromJwt = (context: GraphContext): {
+	email: string;
+	firstName: string;
+	lastName: string;
+} => {
+	const jwt = context.applicationServices.verifiedUser?.verifiedJwt;
+	if (!jwt?.email) {
+		throw new Error(
+			'Invalid JWT: email is required but missing from verified token',
+		);
+	}
+
+	// Provide sensible defaults for missing name fields to avoid database constraint violations
+	// B2C tokens may not always include given_name/family_name depending on configuration
+	const firstName = jwt.given_name?.trim() || 'User';
+	const lastName = jwt.family_name?.trim() || '';
+
+	return {
+		email: jwt.email,
+		firstName,
+		lastName,
+	};
+};
+
+/**
  * Helper function to populate a User field (PersonalUser or AdminUser) by ID.
  * Used for GraphQL field resolvers that need to resolve User union types.
  */
