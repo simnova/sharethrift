@@ -7,20 +7,25 @@ import {
 import {
 	HomeAccountProfileViewContainerCurrentUserDocument,
 	HomeAccountProfileViewContainerUserListingsDocument,
+	UseUserIsAdminDocument,
 	type ItemListing,
 	type PersonalUser,
 } from '../../../../../../generated.tsx';
 import { expect, within } from 'storybook/test';
 
 const mockUserSarah: PersonalUser = {
+	__typename: 'PersonalUser',
 	id: '507f1f77bcf86cd799439099',
+	userIsAdmin: false,
 	userType: 'personal-user',
 	account: {
+		__typename: 'PersonalUserAccount',
 		accountType: 'verified-personal',
 
 		username: 'sarah_williams',
 		email: 'sarah.williams@example.com',
 		profile: {
+			__typename: 'PersonalUserAccountProfile',
 			firstName: 'Sarah',
 			lastName: 'Williams',
 			location: {
@@ -35,10 +40,14 @@ const mockUserSarah: PersonalUser = {
 };
 
 const mockUserAlex: PersonalUser = {
+	__typename: 'PersonalUser',
 	id: '507f1f77bcf86cd799439102',
+	userIsAdmin: false,
 	userType: 'personal-user',
 	account: {
+		__typename: 'PersonalUserAccount',
 		profile: {
+			__typename: 'PersonalUserAccountProfile',
 			firstName: 'Alex',
 			lastName: '',
 			location: {
@@ -56,6 +65,7 @@ const mockUserAlex: PersonalUser = {
 
 const mockTwoListings: ItemListing[] = [
 	{
+		__typename: 'ItemListing',
 		id: '64f7a9c2d1e5b97f3c9d0a41',
 		title: 'City Bike',
 		description:
@@ -71,6 +81,7 @@ const mockTwoListings: ItemListing[] = [
 		listingType: 'item-listing',
 	},
 	{
+		__typename: 'ItemListing',
 		id: '64f7a9c2d1e5b97f3c9d0a13',
 		title: 'Projector',
 		description: 'HD projector for movie nights and presentations.',
@@ -109,11 +120,25 @@ export const DefaultView: Story = {
 			mocks: [
 				{
 					request: {
+						query: UseUserIsAdminDocument,
+					},
+					result: {
+						data: {
+							currentUser: {
+								id: mockUserSarah.id,
+								userIsAdmin: false,
+								__typename: 'PersonalUser',
+							},
+						},
+					},
+				},
+				{
+					request: {
 						query: HomeAccountProfileViewContainerCurrentUserDocument,
 					},
 					result: {
 						data: {
-							currentPersonalUserAndCreateIfNotExists: mockUserSarah,
+							currentUser: mockUserSarah,
 						},
 					},
 				},
@@ -121,10 +146,17 @@ export const DefaultView: Story = {
 				{
 					request: {
 						query: HomeAccountProfileViewContainerUserListingsDocument,
+						variables: { page: 1, pageSize: 100 },
 					},
 					result: {
 						data: {
-							itemListings: mockTwoListings,
+							myListingsAll: {
+								__typename: 'PaginatedMyListings',
+								items: mockTwoListings,
+								total: mockTwoListings.length,
+								page: 1,
+								pageSize: 100,
+							},
 						},
 					},
 				},
@@ -139,21 +171,42 @@ export const NoListings: Story = {
 			mocks: [
 				{
 					request: {
+						query: UseUserIsAdminDocument,
+					},
+					result: {
+						data: {
+							currentUser: {
+								id: mockUserAlex.id,
+								userIsAdmin: false,
+								__typename: 'PersonalUser',
+							},
+						},
+					},
+				},
+				{
+					request: {
 						query: HomeAccountProfileViewContainerCurrentUserDocument,
 					},
 					result: {
 						data: {
-							currentPersonalUserAndCreateIfNotExists: mockUserAlex,
+							currentUser: mockUserAlex,
 						},
 					},
 				},
 				{
 					request: {
 						query: HomeAccountProfileViewContainerUserListingsDocument,
+						variables: { page: 1, pageSize: 100 },
 					},
 					result: {
 						data: {
-							itemListings: [],
+							myListingsAll: {
+								__typename: 'PaginatedMyListings',
+								items: [],
+								total: 0,
+								page: 1,
+								pageSize: 100,
+							},
 						},
 					},
 				},

@@ -237,23 +237,31 @@ export class ReservationRequestReadRepositoryImpl
 				pipeline,
 			).exec();
 
-		// Hydrate aggregation results into proper Mongoose documents
-		// This ensures the documents have virtual getters like `id` that map `_id` to string
-		const hydratedDocs = docs.map((doc) => {
-			const { listingDoc, reserverDoc, ...rest } = doc;
+		const hydrate =
+			typeof this.models.ReservationRequest.ReservationRequest.hydrate ===
+			'function'
+				? this.models.ReservationRequest.ReservationRequest.hydrate.bind(
+						this.models.ReservationRequest.ReservationRequest,
+					)
+				: undefined;
 
-			// Create a new document instance from the aggregation result
-			const hydratedDoc =
-				this.models.ReservationRequest.ReservationRequest.hydrate({
-					...rest,
-					listing: listingDoc,
-					reserver: reserverDoc,
-				});
-
-			return hydratedDoc;
+		const docsWithRelations = docs.map((doc) => {
+			const { listingDoc, reserverDoc, ...rest } = doc as {
+				listingDoc?: unknown;
+				reserverDoc?: unknown;
+				[key: string]: unknown;
+			};
+			return {
+				...rest,
+				listing: listingDoc ?? (doc as { listing?: unknown }).listing,
+				reserver: reserverDoc ?? (doc as { reserver?: unknown }).reserver,
+			};
 		});
 
-		// Convert to domain entities
+		const hydratedDocs = hydrate
+			? docsWithRelations.map((doc) => hydrate(doc))
+			: (docsWithRelations as Models.ReservationRequest.ReservationRequest[]);
+
 		return hydratedDocs.map((doc) =>
 			this.converter.toDomain(doc, this.passport),
 		);

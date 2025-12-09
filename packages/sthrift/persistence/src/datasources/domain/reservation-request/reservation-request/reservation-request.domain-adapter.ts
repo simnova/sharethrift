@@ -87,7 +87,9 @@ export class ReservationRequestDomainAdapter
 		const needsSharerPopulate =
 			!needsListingPopulate &&
 			listingDoc?.sharer instanceof MongooseSeedwork.ObjectId;
-		if (needsListingPopulate || needsSharerPopulate) {
+		if (needsListingPopulate) {
+			await this.doc.populate('listing');
+		} else if (needsSharerPopulate) {
 			await this.doc.populate({
 				path: 'listing',
 				populate: { path: 'sharer' },
