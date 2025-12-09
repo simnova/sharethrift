@@ -1,8 +1,8 @@
 import { type Model, Schema } from 'mongoose';
 import { MongooseSeedwork } from '@cellix/mongoose-seedwork';
 
-
 export interface User extends MongooseSeedwork.Base {
+	discriminatorKey: string;
 	userType: string;
 }
 
@@ -11,10 +11,12 @@ export const userOptions = {
 	timestamps: true,
 };
 
-
-const UserSchema = new Schema<User, Model<User>, User>({
-	userType: { type: String, required: true },
-}, userOptions);
+const UserSchema = new Schema<User, Model<User>, User>(
+	{
+		userType: { type: String, required: true },
+	},
+	userOptions,
+);
 export const UserModelName = 'User';
 
 export const UserModelFactory = MongooseSeedwork.modelFactory<User>(
