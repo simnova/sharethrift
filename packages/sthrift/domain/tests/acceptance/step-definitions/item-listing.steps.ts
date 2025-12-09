@@ -3,6 +3,7 @@ import { actorCalled } from '@serenity-js/core';
 import { Ensure, equals } from '@serenity-js/assertions';
 import './shared.steps';
 import { SystemPassport } from '../../../src/domain/iam/system/system.passport';
+import type { Passport } from '../../../src/domain/contexts/passport';
 import { ItemListing } from '../../../src/domain/contexts/listing/item/item-listing';
 import type { ItemListingProps } from '../../../src/domain/contexts/listing/item/item-listing.entity';
 import type { PersonalUserEntityReference } from '../../../src/domain/contexts/user/personal-user/personal-user.entity';
@@ -64,31 +65,88 @@ Given('base item listing fields with title {string}, description {string}, categ
 
 Given('an ItemListing aggregate with permission to update item listing',  () => {
     const actor = actorCalled('User');
-    const passport = new SystemPassport({ canUpdateItemListing: true });
-    if (actor.currentListing) {
-        // Create a new instance with the updated passport
-        actor.currentListing = new ItemListing(actor.currentListing.getEntityReference(), passport);
-        actor.originalUpdatedAt = actor.currentListing.updatedAt;
-    }
+    const passport = new SystemPassport({ 
+        canUpdateItemListing: true, 
+        canPublishItemListing: true, 
+        canUnpublishItemListing: true, 
+        canDeleteItemListing: true,
+        canViewItemListing: true,
+        canCreateItemListing: true,
+        canReserveItemListing: true
+    });
+    // Create a fresh listing with the correct permissions
+    actor.currentListing = ItemListing.getNewInstance<ItemListingProps>(
+        actor.personalUser,
+        {
+            title: actor.listingFields?.title || 'Old Title',
+            description: actor.listingFields?.description || 'Old Description',
+            category: actor.listingFields?.category || 'Electronics',
+            location: actor.listingFields?.location || 'Delhi',
+            sharingPeriodStart: actor.listingFields?.sharingPeriodStart || new Date('2025-10-06'),
+            sharingPeriodEnd: actor.listingFields?.sharingPeriodEnd || new Date('2025-11-06')
+        },
+        passport as unknown as Passport
+    );
+    actor.originalUpdatedAt = actor.currentListing.updatedAt;
 });
 
 Given('an ItemListing aggregate without permission to update item listing',  () => {
     const actor = actorCalled('User');
-    const passport = new SystemPassport({ canUpdateItemListing: false });
-    if (actor.currentListing) {
-        // Create a new instance with the updated passport
-        actor.currentListing = new ItemListing(actor.currentListing.getEntityReference(), passport);
-    }
+    const passport = new SystemPassport({ 
+        canUpdateItemListing: false, 
+        canPublishItemListing: false, 
+        canUnpublishItemListing: false, 
+        canDeleteItemListing: false,
+        canViewItemListing: true,
+        canCreateItemListing: false,
+        canReserveItemListing: false
+    });
+    // Create listing from props (not getNewInstance) so isNew=false and permissions are enforced
+    const props: ItemListingProps = {
+        id: `test-listing-${Date.now()}`,
+        sharer: actor.personalUser,
+        title: actor.listingFields?.title || 'Old Title',
+        description: actor.listingFields?.description || 'Old Description',
+        images: [],
+        category: actor.listingFields?.category || 'Electronics',
+        location: actor.listingFields?.location || 'Delhi',
+        sharingPeriodStart: actor.listingFields?.sharingPeriodStart || new Date('2025-10-06'),
+        sharingPeriodEnd: actor.listingFields?.sharingPeriodEnd || new Date('2025-11-06'),
+        state: 'Published',
+        listingType: 'ItemListing',
+        schemaVersion: '1.0.0',
+        createdAt: new Date(),
+        updatedAt: new Date()
+    };
+    actor.currentListing = new ItemListing(props, passport as unknown as Passport);
+    actor.originalUpdatedAt = actor.currentListing.updatedAt;
 });
 
 Given('an ItemListing aggregate with permission to publish item listing',  () => {
     const actor = actorCalled('User');
-    const passport = new SystemPassport({ canPublishItemListing: true });
-    if (actor.currentListing) {
-        // Create a new instance with the updated passport
-        actor.currentListing = new ItemListing(actor.currentListing.getEntityReference(), passport);
-        actor.originalUpdatedAt = actor.currentListing.updatedAt;
-    }
+    const passport = new SystemPassport({ 
+        canPublishItemListing: true, 
+        canUnpublishItemListing: true, 
+        canDeleteItemListing: true, 
+        canUpdateItemListing: true,
+        canViewItemListing: true,
+        canCreateItemListing: true,
+        canReserveItemListing: true
+    });
+    // Create a fresh listing with the correct permissions
+    actor.currentListing = ItemListing.getNewInstance<ItemListingProps>(
+        actor.personalUser,
+        {
+            title: actor.listingFields?.title || 'Old Title',
+            description: actor.listingFields?.description || 'Old Description',
+            category: actor.listingFields?.category || 'Electronics',
+            location: actor.listingFields?.location || 'Delhi',
+            sharingPeriodStart: actor.listingFields?.sharingPeriodStart || new Date('2025-10-06'),
+            sharingPeriodEnd: actor.listingFields?.sharingPeriodEnd || new Date('2025-11-06')
+        },
+        passport as unknown as Passport
+    );
+    actor.originalUpdatedAt = actor.currentListing.updatedAt;
 });
 
 When('I create a new ItemListing aggregate using getNewInstance with sharer {string} and title {string}', (_sharerId: string, title: string) => {
