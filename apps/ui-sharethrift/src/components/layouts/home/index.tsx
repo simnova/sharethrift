@@ -1,8 +1,8 @@
 import { Route, Routes } from 'react-router-dom';
-import { AccountRoutes } from './account';
-import { MessagesRoutes } from './messages';
-import { MyListingsRoutes } from './my-listings';
-import { MyReservationsRoutes } from './my-reservations';
+import { AccountRoutes } from './account/Index.tsx';
+import { MessagesRoutes } from './messages/Index.tsx';
+import { MyListingsRoutes } from './my-listings/Index.tsx';
+import { MyReservationsRoutes } from './my-reservations/Index.tsx';
 import { Listings } from './pages/all-listings-page.tsx';
 import { ViewListing } from './pages/view-listing-page.tsx';
 import { CreateListing } from './pages/create-listing-page.tsx';
