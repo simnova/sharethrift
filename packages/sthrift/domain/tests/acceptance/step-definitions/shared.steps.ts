@@ -14,13 +14,6 @@ Then('a PermissionError should be thrown', () => {
     if (!actor.error) {
         throw new Error('Expected an error to be thrown but no error was captured');
     }
-    console.log('Error in assertion:', {
-        error: actor.error,
-        name: actor.error.name,
-        constructor: actor.error.constructor.name,
-        message: actor.error.message,
-        isPermissionError: actor.error instanceof DomainSeedwork.PermissionError
-    });
     actor.attemptsTo(
         Ensure.that(actor.error instanceof DomainSeedwork.PermissionError, equals(true))
     );

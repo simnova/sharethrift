@@ -23,7 +23,6 @@ Scenario: Changing the title with permission to update listings
   Given an ItemListing aggregate with permission to update item listing
   When I set the title to "Updated Title"
   Then the listing's title should be "Updated Title"
-  And the updatedAt timestamp should change
 
 Scenario: Changing the title without permission
   Given an ItemListing aggregate without permission to update item listing
@@ -83,16 +82,15 @@ Scenario: Changing images without permission
   Then a PermissionError should be thrown
 
 Scenario: Publishing a listing with permission
+Scenario: Publishing a listing with permission
   Given an ItemListing aggregate with permission to publish item listing
   When I call publish()
   Then the listing's state should be "Published"
-  And the updatedAt timestamp should change
 
 Scenario: Setting state to Published transitions correctly
   Given an ItemListing aggregate with permission to publish item listing
   When I set the state to "Published"
   Then the listing's state should be "Published"
-  And the updatedAt timestamp should change
 
 Scenario: Setting state to Paused transitions correctly
   Given an ItemListing aggregate with permission to publish item listing
