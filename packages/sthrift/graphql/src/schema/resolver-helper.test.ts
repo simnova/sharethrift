@@ -58,6 +58,11 @@ test.for(feature, ({ Background, Scenario, BeforeEachScenario }) => {
 		mockContext = {
 			applicationServices: {
 				verifiedUser: undefined,
+				Listing: {
+					ItemListing: {
+						queryById: vi.fn(),
+					},
+				},
 				User: {
 					AdminUser: {
 						queryByEmail: vi.fn(),
@@ -67,14 +72,12 @@ test.for(feature, ({ Background, Scenario, BeforeEachScenario }) => {
 						queryByEmail: vi.fn(),
 						queryById: vi.fn(),
 					},
-				},
-				Listing: {
-					ItemListing: {
+					User: {
 						queryById: vi.fn(),
 					},
 				},
 			},
-		} as unknown as GraphContext;
+		} as GraphContext;
 
 		result = undefined;
 	});

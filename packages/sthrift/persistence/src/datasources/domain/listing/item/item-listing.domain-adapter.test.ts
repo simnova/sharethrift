@@ -26,7 +26,7 @@ function makeItemListingDoc() {
 		// Populated sharer object (not ObjectId) for tests that access .sharer property
 		sharer: {
 			id: sharerId.toString(),
-			userType: 'personal-users',
+			userType: 'personal-user',
 			isBlocked: false,
 			hasCompletedOnboarding: true,
 			account: {
