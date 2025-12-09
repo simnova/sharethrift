@@ -1,6 +1,6 @@
 import { MongooseSeedwork } from '@cellix/mongoose-seedwork';
 import type { Models } from '@sthrift/data-sources-mongoose-models';
-import type { Domain } from '@sthrift/domain';
+import { Domain } from '@sthrift/domain';
 
 export class ItemListingRepository<
 		PropType extends Domain.Contexts.Listing.ItemListing.ItemListingProps,
@@ -37,26 +37,13 @@ export class ItemListingRepository<
 			isDraft?: boolean;
 		},
 	): Promise<Domain.Contexts.Listing.ItemListing.ItemListing<PropType>> {
-		// Create a new Mongoose document
-		const newDoc = new this.model({
-			sharer: sharer.id,
-			title: fields.title,
-			description: fields.description,
-			category: fields.category,
-			location: fields.location,
-			sharingPeriodStart: fields.sharingPeriodStart,
-			sharingPeriodEnd: fields.sharingPeriodEnd,
-			images: fields.images ?? [],
-			state: fields.isDraft ? 'Drafted' : 'Published',
-			createdAt: new Date(),
-			updatedAt: new Date(),
-			schemaVersion: 1,
-			reports: 0,
-			sharingHistory: [],
-		});
-
-		// Use the type converter to create the domain entity from the document
-		return this.typeConverter.toDomain(newDoc, this.passport);
+		const adapter = this.typeConverter.toAdapter(new this.model());
+		return Domain.Contexts.Listing.ItemListing.ItemListing.getNewInstance(
+				adapter,
+				this.passport,
+				sharer,
+				fields,
+			);
 	}
 
 	async getActiveItemListings() {

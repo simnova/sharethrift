@@ -17,7 +17,7 @@
 		"test:watch": "vitest"
 	},
 	"dependencies": {
-		"twilio": "^4.0.0",
+		"twilio": "^5.10.7",
 		"@cellix/api-services-spec": "workspace:*",
 		"@cellix/messaging-service": "workspace:*"
 	},

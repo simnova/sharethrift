@@ -82,7 +82,7 @@ Feature: User Union Resolvers
     Then it should return "AdminUser"
 
   Scenario: User union resolveType returns PersonalUser
-    Given a user object with userType personal-users
+    Given a user object with userType personal-user
     When __resolveType is called
     Then it should return "PersonalUser"
 

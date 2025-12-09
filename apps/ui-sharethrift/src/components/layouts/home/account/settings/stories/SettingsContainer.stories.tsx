@@ -11,7 +11,7 @@ import { withMockApolloClient, withMockRouter } from "../../../../../../test-uti
 const mockPersonalUser = {
 	__typename: "PersonalUser",
 	id: "507f1f77bcf86cd799439099",
-	userType: "personal-users",
+	userType: "personal-user",
 	createdAt: "2024-08-01T00:00:00Z",
 	updatedAt: "2025-08-08T12:00:00Z",
 	account: {

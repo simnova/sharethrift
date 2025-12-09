@@ -30,14 +30,12 @@ export class PersonalUserRepository<
 		lastName: string,
 	): Promise<Domain.Contexts.User.PersonalUser.PersonalUser<PropType>> {
 		const adapter = this.typeConverter.toAdapter(new this.model());
-		return Promise.resolve(
-			Domain.Contexts.User.PersonalUser.PersonalUser.getNewInstance(
+		return Domain.Contexts.User.PersonalUser.PersonalUser.getNewInstance(
 				adapter,
 				this.passport,
 				email,
 				firstName,
 				lastName,
-			),
-		);
+			);
 	}
 }
