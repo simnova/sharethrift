@@ -97,12 +97,12 @@ async function autoRejectOverlappingRequests(
 
 		for (const request of requestsToReject) {
 			try {
-				const requestToReject = await repo.getById(request.id);
+			const requestToReject = await repo.getById(request.id);
 
-				if (requestToReject && requestToReject.state === REQUESTED_STATE) {
-					requestToReject.state = 'Rejected';
-					await repo.save(requestToReject);
-				}
+			if (requestToReject?.state === REQUESTED_STATE) {
+				requestToReject.state = 'Rejected';
+				await repo.save(requestToReject);
+			}
 			} catch {
 				// Continue processing other requests if one rejection fails
 			}

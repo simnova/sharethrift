@@ -62,7 +62,7 @@ function paginateAndFilterListingRequests(
 		const images = r.listing?.images;
 		const thumbnail =
 			typeof r.listing?.thumbnailUrl === 'string'
-				? (r.listing?.thumbnailUrl as string)
+				? r.listing?.thumbnailUrl
 				: undefined;
 		const firstImage =
 			Array.isArray(images) && images.length > 0 ? images[0] : undefined;

@@ -42,8 +42,6 @@ export const getActionButtons = (
 			>
 				Accept
 			</Button>,
-		);
-		buttons.push(
 			<Button
 				key="reject"
 				type="link"
@@ -70,8 +68,6 @@ export const getActionButtons = (
 					Close
 				</Button>
 			</Popconfirm>,
-		);
-		buttons.push(
 			<Button
 				key="message"
 				type="link"
@@ -98,8 +94,6 @@ export const getActionButtons = (
 					Delete
 				</Button>
 			</Popconfirm>,
-		);
-		buttons.push(
 			<Button
 				key="archive"
 				type="link"
