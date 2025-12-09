@@ -11,6 +11,24 @@ type ReservationRequestFieldsFragment =
 
 const { Text } = Typography;
 
+// Helper function to map reservation state to status tag
+const mapReservationStateToStatus = (state: string | undefined | null) => {
+	switch (state) {
+		case 'Accepted':
+			return 'ACCEPTED';
+		case 'Requested':
+			return 'REQUESTED';
+		case 'Rejected':
+			return 'REJECTED';
+		case 'Closed':
+			return 'CLOSED';
+		case 'Cancelled':
+			return 'CANCELLED';
+		default:
+			return 'REQUESTED';
+	}
+};
+
 export interface ReservationCardProps {
 	reservation: ReservationRequestFieldsFragment;
 	onCancel?: (id: string) => void;
@@ -56,19 +74,7 @@ export const ReservationCard: React.FC<ReservationCardProps> = ({
 					)}
 				<div className={styles['statusTagOverlay']}>
 					<ReservationStatusTag
-						status={
-							reservation.state === 'Accepted'
-								? 'ACCEPTED'
-								: reservation.state === 'Requested'
-									? 'REQUESTED'
-									: reservation.state === 'Rejected'
-										? 'REJECTED'
-										: reservation.state === 'Closed'
-											? 'CLOSED'
-											: reservation.state === 'Cancelled'
-												? 'CANCELLED'
-												: 'REQUESTED'
-						}
+						status={mapReservationStateToStatus(reservation.state)}
 					/>
 				</div>
 				</div>
@@ -109,19 +115,7 @@ export const ReservationCard: React.FC<ReservationCardProps> = ({
 				{showActions && (
 					<div className={styles['cardActions']}>
 						<ReservationActions
-							status={
-								reservation.state === 'Accepted'
-									? 'ACCEPTED'
-									: reservation.state === 'Requested'
-										? 'REQUESTED'
-										: reservation.state === 'Rejected'
-											? 'REJECTED'
-											: reservation.state === 'Closed'
-												? 'CLOSED'
-												: reservation.state === 'Cancelled'
-													? 'CANCELLED'
-													: 'REQUESTED'
-							}
+							status={mapReservationStateToStatus(reservation.state)}
 							onCancel={() => onCancel?.(reservation.id)}
 							onClose={() => onClose?.(reservation.id)}
 							onMessage={() => onMessage?.(reservation.id)}
