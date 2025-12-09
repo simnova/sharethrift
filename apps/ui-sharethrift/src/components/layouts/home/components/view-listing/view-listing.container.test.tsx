@@ -249,7 +249,7 @@ describe('ViewListingContainer', () => {
 			const diffDays = Math.floor(diffHours / 24);
 			const result = diffHours < 24 ? `${diffHours}h ago` : `${diffDays}d ago`;
 
-			expect(parseInt(result.split('d')[0], 10)).toBeGreaterThanOrEqual(365);
+			expect(parseInt(result.split('d')[0] ?? '0', 10)).toBeGreaterThanOrEqual(365);
 		});
 
 		it('should handle future dates (handles negative time differences)', () => {
