@@ -178,21 +178,22 @@ test.for(feature, ({ Scenario, Background, BeforeEachScenario }) => {
 			'I call getNewInstance with email "new@example.com", firstName "New", and lastName "User"',
 			async () => {
 				const newDoc = { ...mockDoc };
-				// Create a proper constructor function mock
-				const ModelConstructor = vi.fn().mockImplementation(() => newDoc);
-				// Add the other mongoose model methods that might be needed
-				Object.assign(ModelConstructor, {
-					findOne: mockModel.findOne,
-					findById: mockModel.findById,
-				});
+					// Create a proper constructor function mock
+					// Use a proper constructor function for Vitest 4.x compatibility
+					// biome-ignore lint/complexity/useArrowFunction: Constructor function must be a regular function
+					const ModelConstructor = vi.fn(function() { return newDoc; });
+				   Object.assign(ModelConstructor, {
+					   findOne: mockModel.findOne,
+					   findById: mockModel.findById,
+				   });
 
-				repository = new PersonalUserRepository(
-					passport,
-					ModelConstructor as unknown as Models.User.PersonalUserModelType,
-					new PersonalUserConverter(),
-					eventBus,
-					session,
-				);
+				   repository = new PersonalUserRepository(
+					   passport,
+					   ModelConstructor as unknown as Models.User.PersonalUserModelType,
+					   new PersonalUserConverter(),
+					   eventBus,
+					   session,
+				   );
 				result = await repository.getNewInstance(
 					'new@example.com',
 					'New',

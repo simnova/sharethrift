@@ -102,7 +102,7 @@ test.for(feature, ({ Scenario, Background, BeforeEachScenario }) => {
       // handler and TestEvent are already defined
     });
     When('the handler is registered', () => {
-      NodeEventBusInstance.register(TestEvent, handler);
+      NodeEventBusInstance.register(TestEvent, handler as (payload: { test: string }) => Promise<void>);
     });
     And('the event is dispatched', async () => {
       await NodeEventBusInstance.dispatch(TestEvent, { test: 'data' });
@@ -117,8 +117,8 @@ test.for(feature, ({ Scenario, Background, BeforeEachScenario }) => {
       // handler and TestEvent are already defined
     });
     When('the same handler is registered multiple times for the same event', () => {
-      NodeEventBusInstance.register(TestEvent, handler);
-      NodeEventBusInstance.register(TestEvent, handler);
+      NodeEventBusInstance.register(TestEvent, handler as (payload: { test: string }) => Promise<void>);
+      NodeEventBusInstance.register(TestEvent, handler as (payload: { test: string }) => Promise<void>);
     });
     And('the event is dispatched', async () => {
       await NodeEventBusInstance.dispatch(TestEvent, { test: 'data' });
@@ -135,8 +135,8 @@ test.for(feature, ({ Scenario, Background, BeforeEachScenario }) => {
       // handlerA, handlerB, EventA, EventB are already defined
     });
     When('each handler is registered for a different event', () => {
-      NodeEventBusInstance.register(EventA, handlerA);
-      NodeEventBusInstance.register(EventB, handlerB);
+      NodeEventBusInstance.register(EventA, handlerA as (payload: { a: string }) => Promise<void>);
+      NodeEventBusInstance.register(EventB, handlerB as (payload: { b: string }) => Promise<void>);
     });
     And('each event is dispatched', async () => {
       await NodeEventBusInstance.dispatch(EventA, { a: 'A' });
@@ -164,7 +164,7 @@ test.for(feature, ({ Scenario, Background, BeforeEachScenario }) => {
     Given('a registered handler for an event that throws', async () => {
       handler = vi.fn().mockRejectedValue(new Error('handler error'));
       errorEvent = TestEvent;
-      NodeEventBusInstance.register(errorEvent, handler);
+      NodeEventBusInstance.register(errorEvent, handler as (payload: { test: string }) => Promise<void>);
 
       // Patch OpenTelemetry span
       otel = await import('@opentelemetry/api');
@@ -272,8 +272,8 @@ test.for(feature, ({ Scenario, Background, BeforeEachScenario }) => {
       handler2 = vi.fn(() => callOrder.push('handler2'));
     });
     When('all handlers are registered', () => {
-      NodeEventBusInstance.register(TestEvent, handler1);
-      NodeEventBusInstance.register(TestEvent, handler2);
+      NodeEventBusInstance.register(TestEvent, handler1 as (payload: { test: string }) => Promise<void>);
+      NodeEventBusInstance.register(TestEvent, handler2 as (payload: { test: string }) => Promise<void>);
     });
     And('the event is dispatched', async () => {
       await NodeEventBusInstance.dispatch(TestEvent, { test: 'data' });
@@ -289,8 +289,8 @@ test.for(feature, ({ Scenario, Background, BeforeEachScenario }) => {
       handler2 = vi.fn().mockResolvedValue(undefined);
     });
     When('all handlers are registered and one throws', () => {
-      NodeEventBusInstance.register(TestEvent, handler1);
-      NodeEventBusInstance.register(TestEvent, handler2);
+      NodeEventBusInstance.register(TestEvent, handler1 as (payload: { test: string }) => Promise<void>);
+      NodeEventBusInstance.register(TestEvent, handler2 as (payload: { test: string }) => Promise<void>);
     });
     And('the event is dispatched', async () => {
       await expect(NodeEventBusInstance.dispatch(TestEvent, { test: 'data' })).resolves.not.toThrow();
@@ -307,8 +307,8 @@ test.for(feature, ({ Scenario, Background, BeforeEachScenario }) => {
       handler2 = vi.fn().mockRejectedValue(new Error('handler2 error'));
     });
     When('all handlers are registered and all throw', () => {
-      NodeEventBusInstance.register(TestEvent, handler1);
-      NodeEventBusInstance.register(TestEvent, handler2);
+      NodeEventBusInstance.register(TestEvent, handler1 as (payload: { test: string }) => Promise<void>);
+      NodeEventBusInstance.register(TestEvent, handler2 as (payload: { test: string }) => Promise<void>);
     });
     And('the event is dispatched', async () => {
       await expect(NodeEventBusInstance.dispatch(TestEvent, { test: 'data' })).resolves.not.toThrow();
@@ -331,7 +331,7 @@ test.for(feature, ({ Scenario, Background, BeforeEachScenario }) => {
       });
     });
     When('the handler is registered', () => {
-      NodeEventBusInstance.register(TestEvent, asyncHandler);
+      NodeEventBusInstance.register(TestEvent, asyncHandler as (payload: { test: string }) => Promise<void>);
     });
     And('the event is dispatched', async () => {
       const dispatchPromise = NodeEventBusInstance.dispatch(TestEvent, { test: 'data' });
@@ -358,7 +358,7 @@ test.for(feature, ({ Scenario, Background, BeforeEachScenario }) => {
 
   Scenario('Removing all listeners', ({ Given, When, And, Then }) => {
     Given('a registered handler for an event', () => {
-      NodeEventBusInstance.register(TestEvent, handler);
+      NodeEventBusInstance.register(TestEvent, handler as (payload: { test: string }) => Promise<void>);
     });
     When('removeAllListeners is called', () => {
       NodeEventBusInstance.removeAllListeners();

@@ -43,14 +43,20 @@ vi.mock('twilio', () => {
 		conversations: {
 			v1: {
 				conversations: Object.assign(
-					vi.fn(() => mockConversationInstance),
+					// biome-ignore lint/complexity/useArrowFunction: Vitest 4.x requires constructor function pattern
+					vi.fn(function () {
+						return mockConversationInstance;
+					}),
 					mockConversationsApi,
 				),
 			},
 		},
 	};
 
-	const TwilioConstructor = vi.fn(() => mockClient);
+	// biome-ignore lint/complexity/useArrowFunction: Vitest 4.x requires constructor function pattern
+	const TwilioConstructor = vi.fn(function () {
+		return mockClient;
+	});
 
 	return {
 		default: {
@@ -85,7 +91,10 @@ describe('ServiceMessagingTwilio', () => {
 		});
 
 		it('should create instance with empty credentials and warn', () => {
-			const consoleWarnSpy = vi.spyOn(console, 'warn').mockImplementation();
+			// biome-ignore lint/complexity/useArrowFunction: Vitest 4.x requires constructor function pattern
+			const consoleWarnSpy = vi.spyOn(console, 'warn').mockImplementation(function () {
+				// Mock implementation
+			});
 			service = new ServiceMessagingTwilio('', '');
 			expect(service).toBeDefined();
 			expect(consoleWarnSpy).toHaveBeenCalledWith(

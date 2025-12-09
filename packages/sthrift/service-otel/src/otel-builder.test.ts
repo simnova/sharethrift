@@ -19,27 +19,50 @@ import { OtelBuilder } from './otel-builder.ts';
 const test = { for: describeFeature };
 // Move mocks INSIDE the vi.mock factory to avoid hoisting issues
 vi.mock('@azure/monitor-opentelemetry-exporter', () => {
-  // Unique classes for instanceof checks
-  class TraceExporter {}
-  class MetricExporter {}
-  class LogExporter {}
-  // Mocks that attach args for assertion
-  const traceExporterMock = vi.fn((args) => Object.assign(new TraceExporter(), { __args: args }));
-  const metricExporterMock = vi.fn((args) => Object.assign(new MetricExporter(), { __args: args }));
-  const logExporterMock = vi.fn((args) => Object.assign(new LogExporter(), { __args: args }));
-  // Expose mocks and classes for test access
+  // Class-based mocks that record constructor args
+  type ExporterArgs = Record<string, unknown>;
+  class TraceExporter {
+    public __args: ExporterArgs;
+    constructor(args: ExporterArgs) {
+      TraceExporter.mock.calls.push(args);
+      this.__args = args;
+    }
+    public static readonly mock: { calls: ExporterArgs[] } = { calls: [] };
+  }
+  class MetricExporter {
+    public __args: ExporterArgs;
+    constructor(args: ExporterArgs) {
+      MetricExporter.mock.calls.push(args);
+      this.__args = args;
+    }
+    public static readonly mock: { calls: ExporterArgs[] } = { calls: [] };
+  }
+  class LogExporter {
+    public __args: ExporterArgs;
+    constructor(args: ExporterArgs) {
+      LogExporter.mock.calls.push(args);
+      this.__args = args;
+    }
+    public static readonly mock: { calls: ExporterArgs[] } = { calls: [] };
+  }
+  // Helper reset for test access
+  function clearMocks() {
+    TraceExporter.mock.calls = [];
+    MetricExporter.mock.calls = [];
+    LogExporter.mock.calls = [];
+  }
   return {
-    AzureMonitorTraceExporter: traceExporterMock,
-    AzureMonitorMetricExporter: metricExporterMock,
-    AzureMonitorLogExporter: logExporterMock,
-    // For test access
+    AzureMonitorTraceExporter: TraceExporter,
+    AzureMonitorMetricExporter: MetricExporter,
+    AzureMonitorLogExporter: LogExporter,
     __test: {
-      traceExporterMock,
-      metricExporterMock,
-      logExporterMock,
+      traceExporterMock: TraceExporter.mock,
+      metricExporterMock: MetricExporter.mock,
+      logExporterMock: LogExporter.mock,
       TraceExporter,
       MetricExporter,
       LogExporter,
+      clearMocks,
     },
   };
 });
@@ -54,9 +77,9 @@ const feature = await loadFeature(
 test.for(feature, ({ Scenario, BeforeEachScenario, AfterEachScenario }) => {
   let builder: OtelBuilder;
   let originalEnv: NodeJS.ProcessEnv;
-  let traceExporterMock: ReturnType<typeof vi.fn>;
-  let metricExporterMock: ReturnType<typeof vi.fn>;
-  let logExporterMock: ReturnType<typeof vi.fn>;
+  let traceExporterMock: { calls: unknown[] };
+  let metricExporterMock: { calls: unknown[] };
+  let logExporterMock: { calls: unknown[] };
   let TraceExporter: new (...args: unknown[]) => unknown;
   let MetricExporter: new (...args: unknown[]) => unknown;
   let LogExporter: new (...args: unknown[]) => unknown;
@@ -73,9 +96,9 @@ test.for(feature, ({ Scenario, BeforeEachScenario, AfterEachScenario }) => {
     TraceExporter = azureModule.__test.TraceExporter;
     MetricExporter = azureModule.__test.MetricExporter;
     LogExporter = azureModule.__test.LogExporter;
-    traceExporterMock.mockClear();
-    metricExporterMock.mockClear();
-    logExporterMock.mockClear();
+    traceExporterMock.calls = [];
+    metricExporterMock.calls = [];
+    logExporterMock.calls = [];
   });
 
   AfterEachScenario(() => {
@@ -112,9 +135,9 @@ test.for(feature, ({ Scenario, BeforeEachScenario, AfterEachScenario }) => {
       expect(exporters.traceExporter).toBeInstanceOf(TraceExporter);
       expect(exporters.metricExporter).toBeInstanceOf(MetricExporter);
       expect(exporters.logExporter).toBeInstanceOf(LogExporter);
-      expect(traceExporterMock).toHaveBeenCalledWith({ connectionString: connStr });
-      expect(metricExporterMock).toHaveBeenCalledWith({ connectionString: connStr });
-      expect(logExporterMock).toHaveBeenCalledWith({ connectionString: connStr });
+      expect(traceExporterMock.calls.at(-1)).toEqual({ connectionString: connStr });
+      expect(metricExporterMock.calls.at(-1)).toEqual({ connectionString: connStr });
+      expect(logExporterMock.calls.at(-1)).toEqual({ connectionString: connStr });
       // Also check the instance has the correct property for extra safety
       expect((exporters.traceExporter as unknown as { __args: { connectionString: string } }).__args.connectionString).toBe(connStr);
       expect((exporters.metricExporter as unknown as { __args: { connectionString: string } }).__args.connectionString).toBe(connStr);

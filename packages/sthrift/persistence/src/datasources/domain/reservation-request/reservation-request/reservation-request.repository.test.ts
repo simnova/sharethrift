@@ -295,9 +295,11 @@ test.for(feature, ({ Scenario, Background, BeforeEachScenario }) => {
                 };
                 
                 // Setup repository with constructor mock
-                repository = setupReservationRequestRepo(mockDoc, {
-                    modelCtor: vi.fn(() => mockNewDoc) as unknown as Models.ReservationRequest.ReservationRequestModelType
-                });
+					repository = setupReservationRequestRepo(mockDoc, {
+						// Use a proper constructor function for Vitest 4.x compatibility
+						// biome-ignore lint/complexity/useArrowFunction: Constructor function must be a regular function
+						modelCtor: vi.fn(function() { return mockNewDoc; }) as unknown as Models.ReservationRequest.ReservationRequestModelType
+				});
                 
                 result = await repository.getNewInstance(
                     'PENDING',

@@ -6,25 +6,54 @@ import { AccountPlanReadRepositoryImpl, getAccountPlanReadRepository } from './a
 
 // Mock the converter
 vi.mock('../../../domain/account-plan/account-plan/account-plan.domain-adapter.ts', () => ({
-	AccountPlanConverter: vi.fn().mockImplementation(() => ({
-		toDomain: vi.fn((doc) => ({ id: doc._id, name: doc.name })),
-	})),
+	// biome-ignore lint/complexity/useArrowFunction: Constructor function must be a regular function
+	AccountPlanConverter: vi.fn(function() {
+		return {
+			toDomain: vi.fn((doc) => ({ id: doc._id, name: doc.name })),
+		};
+	}),
 }));
 
 vi.mock('../account-plan/account-plan.data.ts', () => ({
-	AccountPlanDataSourceImpl: vi.fn().mockImplementation(() => ({
-		find: vi.fn(),
-		findById: vi.fn(),
-		findOne: vi.fn(),
-	})),
+	// biome-ignore lint/complexity/useArrowFunction: Constructor function must be a regular function
+	AccountPlanDataSourceImpl: vi.fn(function() {
+		return {
+			find: vi.fn(),
+			findById: vi.fn(),
+			findOne: vi.fn(),
+		};
+	}),
 }));
 
 function makeModelsContext(): ModelsContext {
 	return {
-		AccountPlan: {
-			AccountPlanModel: {},
+		User: {
+			PersonalUser: vi.fn(() => ({})),
+			AdminUser: vi.fn(() => ({})),
+			User: vi.fn(() => ({})),
 		},
-	} as ModelsContext;
+		Listing: {
+			ItemListingModel: vi.fn(() => ({})),
+		},
+		Conversation: {
+			ConversationModel: vi.fn(() => ({})),
+		},
+		ReservationRequest: {
+			ReservationRequest: vi.fn(() => ({})),
+		},
+		Role: {
+			Role: vi.fn(() => ({})),
+			AdminRole: vi.fn(() => ({})),
+		},
+		AccountPlan: {
+			// Mock is not used since AccountPlanDataSourceImpl is mocked
+			AccountPlanModel: vi.fn(() => ({})),
+		},
+		AppealRequest: {
+			ListingAppealRequest: vi.fn(() => ({})),
+			UserAppealRequest: vi.fn(() => ({})),
+		},
+	} as unknown as ModelsContext;
 }
 
 function makePassport(): Domain.Passport {

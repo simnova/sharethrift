@@ -2,6 +2,7 @@ import path from 'node:path';
 import { storybookTest } from '@storybook/addon-vitest/vitest-plugin';
 import { defineConfig, mergeConfig, type ViteUserConfig } from 'vitest/config';
 import { baseConfig } from './base.config.ts';
+import { playwright } from '@vitest/browser-playwright'
 
 export type StorybookVitestConfigOptions = {
   storybookDirRelativeToPackage?: string; // default: '.storybook'
@@ -15,7 +16,7 @@ export function createStorybookVitestConfig(pkgDirname: string, opts: StorybookV
   const setupFiles = opts.setupFiles ?? ['.storybook/vitest.setup.ts'];
   const instances = opts.browsers ?? [{ browser: 'chromium' }];
 
-  const base = mergeConfig(baseConfig, defineConfig({
+  const storybookConfig = defineConfig({
     test: {
       globals: true,
       projects: [
@@ -31,7 +32,7 @@ export function createStorybookVitestConfig(pkgDirname: string, opts: StorybookV
             browser: {
               enabled: true,
               headless: true,
-              provider: 'playwright',
+              provider: playwright(),
               instances,
             },
             setupFiles,
@@ -56,7 +57,7 @@ export function createStorybookVitestConfig(pkgDirname: string, opts: StorybookV
         ],
       },
     },
-  }));
+  });
 
-  return mergeConfig(base, defineConfig({}));
+  return mergeConfig(mergeConfig(baseConfig, storybookConfig), defineConfig({}));
 }
