@@ -269,7 +269,7 @@ stages:
           set -euo pipefail
 
           # Verify environment variables
-          if [ -z "${SNYK_TOKEN:-}" ]; then
+          if [ -z "$SNYK_TOKEN" ]; then
             echo "Error: SNYK_TOKEN is empty or not loaded."
             exit 1
           fi
