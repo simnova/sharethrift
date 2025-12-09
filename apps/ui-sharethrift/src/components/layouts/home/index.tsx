@@ -1,5 +1,5 @@
 import { Route, Routes } from 'react-router-dom';
-import { AccountRoutes } from './account/Index.tsx';
+import { AccountRoutes } from './account/index.tsx';
 import { MessagesRoutes } from './messages/Index.tsx';
 import { MyListingsRoutes } from './my-listings/Index.tsx';
 import { MyReservationsRoutes } from './my-reservations/Index.tsx';
