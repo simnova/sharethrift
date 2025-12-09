@@ -8,7 +8,7 @@
 		"apps/ui-sharethrift": {
 			"entry": ["src/main.tsx"],
 			"project": ["src/**/*.{ts,tsx}"],
-			"ignore": ["**/terms-communication-preferences.tsx"]
+			"ignore": ["**/terms-communication-preferences.tsx", "**/reservation-state-utils.ts", "**/applicant-id-context.tsx"]
 		},
 		"apps/docs": {
 			"entry": ["src/**/*.{ts,tsx,js,jsx}"],
@@ -37,7 +37,17 @@
 		},
 		"packages/sthrift/graphql": {
 			"entry": ["src/index.ts", "src/schema/types/**/*.resolvers.ts", "src/schema/builder/*.ts"],
-			"project": ["src/**/*.ts"]
+			"project": ["src/**/*.ts"],
+			"ignore": ["**/graphql-tools-scalars.ts", "**/azure-functions.ts"]
+		},
+		"packages/sthrift/domain": {
+			"entry": [
+				"src/index.ts",
+				"src/domain/contexts/**/*.passport.ts",
+				"src/domain/contexts/**/*-permissions.ts"
+			],
+			"project": ["src/**/*.ts"],
+			"ignore": ["**/events/event-bus.ts", "**/events/index.ts", "**/*.value-objects.ts"]
 		},
 		"packages/sthrift/*": {
 			"entry": ["src/index.ts"],
@@ -70,24 +80,7 @@
 		"**/coverage/**",
 		"**/__tests__/**",
 		"**/tests/**",
-		"**/domain/events/**",
-		"**/domain-execution-context.ts",
-		"**/*.value-objects.ts",
-		"**/graphql-tools-scalars.ts",
-		"**/default.permissions.ts",
-		"**/*.domain-adapter.ts",
-		"**/storybook-providers.tsx",
-		"**/init/azure-functions.ts",
-		"**/*.visa.ts",
-		"**/*.passport.ts",
-		"vitest.shims.d.ts",
-		"**/*-permissions.ts",
-		"**/admin-dashboard/index.tsx",
-		"**/my-reservations/pages/index.ts",
-		"**/my-reservations/constants/reservation-state-utils.ts",
-		"**/config/index.ts",
-		"**/contexts/applicant-id-context.tsx",
-		"**/admin-listings-table.view-listing.tsx"
+		"vitest.shims.d.ts"
 	],
 	"ignoreDependencies": [
 		"@types/*",
