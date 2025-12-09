@@ -113,8 +113,14 @@ export const Default: Story = {
 		listing: baseListing,
 		userIsSharer: false,
 		isAuthenticated: false,
+		currentUserId: '',
 		userReservationRequest: null,
 		sharedTimeAgo: '2 days ago',
+		isAdmin: false,
+		onBlockListing: async () => {},
+		onUnblockListing: async () => {},
+		blockLoading: false,
+		unblockLoading: false,
 	},
 };
 
@@ -123,6 +129,7 @@ export const AsReserver: Story = {
 		...Default.args,
 		userIsSharer: false,
 		isAuthenticated: true,
+		currentUserId: 'mock-reserver-id',
 		userReservationRequest: null,
 	},
 };
@@ -132,6 +139,53 @@ export const AsOwner: Story = {
 		...Default.args,
 		userIsSharer: true,
 		isAuthenticated: true,
+		currentUserId: 'mock-sharer-id',
 		userReservationRequest: null,
+	},
+};
+
+export const AsAdmin: Story = {
+	args: {
+		...Default.args,
+		isAdmin: true,
+		isAuthenticated: true,
+		currentUserId: 'mock-admin-id',
+	},
+};
+
+export const BlockedListingAsAdmin: Story = {
+	args: {
+		...Default.args,
+		listing: {
+			...baseListing,
+			state: 'Blocked' as string,
+		},
+		isAdmin: true,
+		isAuthenticated: true,
+		currentUserId: 'mock-admin-id',
+	},
+};
+
+export const BlockListing: Story = {
+	args: {
+		...Default.args,
+		isAdmin: true,
+		isAuthenticated: true,
+		currentUserId: 'mock-admin-id',
+		blockLoading: true,
+	},
+};
+
+export const UnblockListing: Story = {
+	args: {
+		...Default.args,
+		listing: {
+			...baseListing,
+			state: 'Blocked' as string,
+		},
+		isAdmin: true,
+		isAuthenticated: true,
+		currentUserId: 'mock-admin-id',
+		unblockLoading: true,
 	},
 };

@@ -1,6 +1,8 @@
 import type { Meta, StoryObj } from '@storybook/react';
 import { expect } from 'storybook/test';
 import {
+	BlockListingDocument,
+	UnblockListingDocument,
 	ViewListingActiveReservationRequestForListingDocument,
 	ViewListingCurrentUserDocument,
 	ViewListingDocument,
@@ -37,6 +39,7 @@ const mockListing = {
 const mockCurrentUser = {
 	__typename: 'PersonalUser',
 	id: 'user-2',
+	userIsAdmin: false,
 };
 
 const meta: Meta<typeof ViewListingContainer> = {
@@ -75,6 +78,34 @@ const meta: Meta<typeof ViewListingContainer> = {
 					result: {
 						data: {
 							myActiveReservationForListing: null,
+						},
+					},
+				},
+				{
+					request: {
+						query: BlockListingDocument,
+						variables: { id: '1' },
+					},
+					result: {
+						data: {
+							blockListing: {
+								id: '1',
+								state: 'Blocked',
+							},
+						},
+					},
+				},
+				{
+					request: {
+						query: UnblockListingDocument,
+						variables: { id: '1' },
+					},
+					result: {
+						data: {
+							unblockListing: {
+								id: '1',
+								state: 'Published',
+							},
 						},
 					},
 				},
@@ -135,6 +166,176 @@ export const Loading: Story = {
 						variables: { id: '1' },
 					},
 					delay: Infinity,
+				},
+			],
+		},
+	},
+	play: async ({ canvasElement }) => {
+		await expect(canvasElement).toBeTruthy();
+	},
+};
+
+export const AdminUser: Story = {
+	args: {
+		isAuthenticated: true,
+	},
+	parameters: {
+		apolloClient: {
+			mocks: [
+				{
+					request: {
+						query: ViewListingDocument,
+						variables: { id: '1' },
+					},
+					result: {
+						data: {
+							itemListing: mockListing,
+						},
+					},
+				},
+				{
+					request: {
+						query: ViewListingCurrentUserDocument,
+					},
+					result: {
+						data: {
+							currentUser: {
+								...mockCurrentUser,
+								userIsAdmin: true,
+							},
+						},
+					},
+				},
+				{
+					request: {
+						query: ViewListingActiveReservationRequestForListingDocument,
+						variables: { listingId: '1', reserverId: 'user-2' },
+					},
+					result: {
+						data: {
+							myActiveReservationForListing: null,
+						},
+					},
+				},
+				{
+					request: {
+						query: BlockListingDocument,
+						variables: { id: '1' },
+					},
+					result: {
+						data: {
+							blockListing: {
+								id: '1',
+								state: 'Blocked',
+							},
+						},
+					},
+				},
+			],
+		},
+	},
+	play: async ({ canvasElement }) => {
+		await expect(canvasElement).toBeTruthy();
+	},
+};
+
+export const BlockedListing: Story = {
+	args: {
+		isAuthenticated: true,
+	},
+	parameters: {
+		apolloClient: {
+			mocks: [
+				{
+					request: {
+						query: ViewListingDocument,
+						variables: { id: '1' },
+					},
+					result: {
+						data: {
+							itemListing: {
+								...mockListing,
+								state: 'Blocked',
+							},
+						},
+					},
+				},
+				{
+					request: {
+						query: ViewListingCurrentUserDocument,
+					},
+					result: {
+						data: {
+							currentUser: mockCurrentUser,
+						},
+					},
+				},
+			],
+		},
+	},
+	play: async ({ canvasElement }) => {
+		await expect(canvasElement).toBeTruthy();
+	},
+};
+
+export const BlockedListingAsAdmin: Story = {
+	args: {
+		isAuthenticated: true,
+	},
+	parameters: {
+		apolloClient: {
+			mocks: [
+				{
+					request: {
+						query: ViewListingDocument,
+						variables: { id: '1' },
+					},
+					result: {
+						data: {
+							itemListing: {
+								...mockListing,
+								state: 'Blocked',
+							},
+						},
+					},
+				},
+				{
+					request: {
+						query: ViewListingCurrentUserDocument,
+					},
+					result: {
+						data: {
+							currentUser: {
+								...mockCurrentUser,
+								userIsAdmin: true,
+							},
+						},
+					},
+				},
+				{
+					request: {
+						query: ViewListingActiveReservationRequestForListingDocument,
+						variables: { listingId: '1', reserverId: 'user-2' },
+					},
+					result: {
+						data: {
+							myActiveReservationForListing: null,
+						},
+					},
+				},
+				{
+					request: {
+						query: UnblockListingDocument,
+						variables: { id: '1' },
+					},
+					result: {
+						data: {
+							unblockListing: {
+								id: '1',
+								state: 'Published',
+							},
+						},
+					},
 				},
 			],
 		},
