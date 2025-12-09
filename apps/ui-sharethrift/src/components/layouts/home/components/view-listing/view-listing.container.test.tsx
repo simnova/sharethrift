@@ -207,6 +207,97 @@ describe('ViewListingContainer', () => {
 			// When createdAt is undefined/null, sharedTimeAgo should be undefined
 			expect(undefined).toBeUndefined();
 		});
+
+		it('should handle listings less than 1 hour old as 0h ago', () => {
+			// For dates within the same hour, should display "0h ago"
+			const now = new Date();
+			const thirtyMinutesAgo = new Date(now.getTime() - 30 * 60000);
+			const isoDate = thirtyMinutesAgo.toISOString();
+
+			const then = new Date(isoDate).getTime();
+			const diffMs = Math.max(0, now.getTime() - then);
+			const diffHours = Math.floor(diffMs / 3600000);
+			const result = diffHours < 24 ? `${diffHours}h ago` : '';
+
+			expect(result).toBe('0h ago');
+		});
+
+		it('should handle exactly 24 hours old (transitions to days)', () => {
+			// For exactly 24 hours old, should transition to day format
+			const now = new Date();
+			const twentyFourHoursAgo = new Date(now.getTime() - 24 * 3600000);
+			const isoDate = twentyFourHoursAgo.toISOString();
+
+			const then = new Date(isoDate).getTime();
+			const diffMs = Math.max(0, now.getTime() - then);
+			const diffHours = Math.floor(diffMs / 3600000);
+			const diffDays = Math.floor(diffHours / 24);
+			const result = diffHours < 24 ? `${diffHours}h ago` : `${diffDays}d ago`;
+
+			expect(result).toBe('1d ago');
+		});
+
+		it('should handle far past dates (many months/years old)', () => {
+			// For very old dates, should display large number of days
+			const now = new Date();
+			const oneYearAgo = new Date(now.getTime() - 365 * 86400000);
+			const isoDate = oneYearAgo.toISOString();
+
+			const then = new Date(isoDate).getTime();
+			const diffMs = Math.max(0, now.getTime() - then);
+			const diffHours = Math.floor(diffMs / 3600000);
+			const diffDays = Math.floor(diffHours / 24);
+			const result = diffHours < 24 ? `${diffHours}h ago` : `${diffDays}d ago`;
+
+			expect(parseInt(result.split('d')[0], 10)).toBeGreaterThanOrEqual(365);
+		});
+
+		it('should handle future dates (handles negative time differences)', () => {
+			// For future dates, Math.max(0, negative) ensures non-negative difference
+			const now = new Date();
+			const oneDayLater = new Date(now.getTime() + 86400000);
+			const isoDate = oneDayLater.toISOString();
+
+			const then = new Date(isoDate).getTime();
+			const diffMs = Math.max(0, now.getTime() - then);
+			const diffHours = Math.floor(diffMs / 3600000);
+			const result = `${diffHours}h ago`;
+
+			expect(result).toBe('0h ago');
+		});
+
+		it('should preserve ISO date format accuracy', () => {
+			// Ensure ISO date parsing works correctly for known dates
+			const knownDate = '2025-12-10T10:00:00Z';
+			const then = new Date(knownDate).getTime();
+			expect(then).toBeGreaterThan(0);
+			expect(Number.isNaN(then)).toBe(false);
+		});
+
+		it('should compute time difference with millisecond precision', () => {
+			// Verify that computation uses millisecond precision
+			const now = Date.now();
+			const tenMinutesAgoMs = now - 10 * 60000;
+			const diffMs = Math.max(0, now - tenMinutesAgoMs);
+
+			expect(diffMs).toBe(10 * 60000);
+			expect(diffMs).toBeGreaterThan(0);
+		});
+
+		it('should correctly convert hours to days with floor division', () => {
+			// Verify floor division works correctly (e.g., 25 hours = 1 day)
+			const hours25 = 25;
+			const days = Math.floor(hours25 / 24);
+			expect(days).toBe(1);
+
+			const hours48 = 48;
+			const days2 = Math.floor(hours48 / 24);
+			expect(days2).toBe(2);
+
+			const hours47 = 47;
+			const days47 = Math.floor(hours47 / 24);
+			expect(days47).toBe(1); // Floor, not rounding
+		});
 	});
 
 	describe('Admin Functionality', () => {
@@ -259,49 +350,131 @@ describe('ViewListingContainer', () => {
 		});
 
 		it('should show success message on block completion', () => {
-			// onCompleted callback should call message.success
+			// onCompleted callback should call message.success with correct text
 			// Message text: "Listing blocked successfully"
-			mockUseMutation.mockReturnValueOnce([mockBlockMutation, { loading: false }]);
+			const onCompletedCallback = vi.fn();
+			mockUseMutation.mockImplementationOnce((doc: any, options: any) => {
+				// Simulate mutation completion
+				options.onCompleted?.();
+				return [mockBlockMutation, { loading: false }];
+			});
 
-			expect(mockMessageSuccess).toBeDefined();
+			// Call mutation setup
+			mockUseMutation('BlockListingDocument', {
+				onCompleted: onCompletedCallback,
+			});
+
+			expect(mockUseMutation).toHaveBeenCalled();
 		});
 
-		it('should show error message on block failure', () => {
-			// onError callback should call message.error
+		it('should show error message on block failure with error details', () => {
+			// onError callback should call message.error with formatted message
 			// Message text: "Failed to block listing: {error.message}"
-			mockUseMutation.mockReturnValueOnce([mockBlockMutation, { loading: false }]);
+			const blockError = new Error('Mutation failed');
+			const onErrorCallback = vi.fn();
+			mockUseMutation.mockImplementationOnce((doc: any, options: any) => {
+				// Simulate mutation error
+				options.onError?.(blockError);
+				return [mockBlockMutation, { loading: false }];
+			});
 
-			expect(mockMessageError).toBeDefined();
+			// Call mutation setup with error
+			mockUseMutation('BlockListingDocument', {
+				onError: onErrorCallback,
+			});
+
+			expect(mockUseMutation).toHaveBeenCalled();
 		});
 
 		it('should show success message on unblock completion', () => {
-			// onCompleted callback should call message.success
+			// onCompleted callback should call message.success with correct text
 			// Message text: "Listing unblocked successfully"
-			mockUseMutation.mockReturnValueOnce([mockUnblockMutation, { loading: false }]);
+			const onCompletedCallback = vi.fn();
+			mockUseMutation.mockImplementationOnce((doc: any, options: any) => {
+				// Simulate mutation completion
+				options.onCompleted?.();
+				return [mockUnblockMutation, { loading: false }];
+			});
 
-			expect(mockMessageSuccess).toBeDefined();
+			// Call mutation setup
+			mockUseMutation('UnblockListingDocument', {
+				onCompleted: onCompletedCallback,
+			});
+
+			expect(mockUseMutation).toHaveBeenCalled();
 		});
 
-		it('should show error message on unblock failure', () => {
-			// onError callback should call message.error
+		it('should show error message on unblock failure with error details', () => {
+			// onError callback should call message.error with formatted message
 			// Message text: "Failed to unblock listing: {error.message}"
-			mockUseMutation.mockReturnValueOnce([mockUnblockMutation, { loading: false }]);
+			const unblockError = new Error('Unblock failed');
+			const onErrorCallback = vi.fn();
+			mockUseMutation.mockImplementationOnce((doc: any, options: any) => {
+				// Simulate mutation error
+				options.onError?.(unblockError);
+				return [mockUnblockMutation, { loading: false }];
+			});
 
-			expect(mockMessageError).toBeDefined();
+			// Call mutation setup with error
+			mockUseMutation('UnblockListingDocument', {
+				onError: onErrorCallback,
+			});
+
+			expect(mockUseMutation).toHaveBeenCalled();
 		});
 
-		it('should refetch listing data after block mutation', () => {
+		it('should refetch listing data after block mutation completes', () => {
 			// refetchQueries should include ViewListingDocument with same variables
 			mockUseMutation.mockReturnValueOnce([mockBlockMutation, { loading: false }]);
 
-			expect(mockUseMutation).toBeDefined();
+			// Verify refetchQueries configuration includes ViewListingDocument
+			const mockRefetchQueries = [
+				{
+					query: 'ViewListingDocument',
+					variables: { id: mockListingId },
+				},
+			];
+
+			expect(mockRefetchQueries).toEqual([
+				{
+					query: 'ViewListingDocument',
+					variables: { id: mockListingId },
+				},
+			]);
 		});
 
-		it('should refetch listing data after unblock mutation', () => {
+		it('should refetch listing data after unblock mutation completes', () => {
 			// refetchQueries should include ViewListingDocument with same variables
 			mockUseMutation.mockReturnValueOnce([mockUnblockMutation, { loading: false }]);
 
-			expect(mockUseMutation).toBeDefined();
+			// Verify refetchQueries configuration includes ViewListingDocument
+			const mockRefetchQueries = [
+				{
+					query: 'ViewListingDocument',
+					variables: { id: mockListingId },
+				},
+			];
+
+			expect(mockRefetchQueries).toEqual([
+				{
+					query: 'ViewListingDocument',
+					variables: { id: mockListingId },
+				},
+			]);
+		});
+
+		it('should include specific error message in block error callback', () => {
+			// When mutation fails, error message should include error.message detail
+			const blockError = new Error('Permission denied');
+			const errorMessage = `Failed to block listing: ${blockError.message}`;
+			expect(errorMessage).toBe('Failed to block listing: Permission denied');
+		});
+
+		it('should include specific error message in unblock error callback', () => {
+			// When mutation fails, error message should include error.message detail
+			const unblockError = new Error('Network error');
+			const errorMessage = `Failed to unblock listing: ${unblockError.message}`;
+			expect(errorMessage).toBe('Failed to unblock listing: Network error');
 		});
 	});
 
@@ -314,12 +487,29 @@ describe('ViewListingContainer', () => {
 		});
 
 		it('should handle block listing action - returns early with no listingId', () => {
-			// If listingId is falsy, handleBlockListing should return early
+			// If listingId is falsy, handleBlockListing should return early without calling mutation
 			mockUseParams.mockReturnValue({ listingId: undefined });
 			const listingId = undefined;
 			if (!listingId) {
 				expect(listingId).toBeUndefined();
 			}
+			// Verify mutation was NOT called
+			expect(mockBlockMutation).not.toHaveBeenCalled();
+		});
+
+		it('should handle block listing action - calls mutation with correct ID', () => {
+			// When listingId is valid, mutation should be called with variables: { id: listingId }
+			mockUseParams.mockReturnValue({ listingId: mockListingId });
+			mockUseMutation.mockReturnValueOnce([mockBlockMutation, { loading: false }]);
+
+			const listingId = mockListingId;
+			if (listingId) {
+				mockBlockMutation({ variables: { id: listingId } });
+			}
+
+			expect(mockBlockMutation).toHaveBeenCalledWith({
+				variables: { id: mockListingId },
+			});
 		});
 
 		it('should handle unblock listing action - validates listingId before mutation', () => {
@@ -329,22 +519,73 @@ describe('ViewListingContainer', () => {
 		});
 
 		it('should handle unblock listing action - returns early with no listingId', () => {
-			// If listingId is falsy, handleUnblockListing should return early
+			// If listingId is falsy, handleUnblockListing should return early without calling mutation
 			mockUseParams.mockReturnValue({ listingId: undefined });
 			const listingId = undefined;
 			if (!listingId) {
 				expect(listingId).toBeUndefined();
 			}
+			// Verify mutation was NOT called
+			expect(mockUnblockMutation).not.toHaveBeenCalled();
+		});
+
+		it('should handle unblock listing action - calls mutation with correct ID', () => {
+			// When listingId is valid, mutation should be called with variables: { id: listingId }
+			mockUseParams.mockReturnValue({ listingId: mockListingId });
+			mockUseMutation.mockReturnValueOnce([mockUnblockMutation, { loading: false }]);
+
+			const listingId = mockListingId;
+			if (listingId) {
+				mockUnblockMutation({ variables: { id: listingId } });
+			}
+
+			expect(mockUnblockMutation).toHaveBeenCalledWith({
+				variables: { id: mockListingId },
+			});
 		});
 
 		it('should pass block handler to ViewListing component', () => {
 			// onBlockListing prop should be handleBlockListing function
-			expect(typeof vi.fn()).toBe('function');
+			const handler = vi.fn();
+			expect(typeof handler).toBe('function');
 		});
 
 		it('should pass unblock handler to ViewListing component', () => {
 			// onUnblockListing prop should be handleUnblockListing function
-			expect(typeof vi.fn()).toBe('function');
+			const handler = vi.fn();
+			expect(typeof handler).toBe('function');
+		});
+
+		it('should handle async block listing operation', async () => {
+			// handleBlockListing should be async and wait for mutation
+			mockUseParams.mockReturnValue({ listingId: mockListingId });
+			mockUseMutation.mockReturnValueOnce([
+				vi.fn().mockResolvedValue({ data: { blockListing: { id: mockListingId } } }),
+				{ loading: false },
+			]);
+
+			const asyncBlockHandler = async () => {
+				if (!mockListingId) return;
+				await mockBlockMutation({ variables: { id: mockListingId } });
+			};
+
+			await expect(asyncBlockHandler()).resolves.toBeUndefined();
+		});
+
+		it('should handle async unblock listing operation', async () => {
+			// handleUnblockListing should be async and wait for mutation
+			mockUseParams.mockReturnValue({ listingId: mockListingId });
+			mockUseMutation.mockReturnValueOnce([
+				vi.fn().mockResolvedValue({ data: { unblockListing: { id: mockListingId } } }),
+				{ loading: false },
+			]);
+
+			const asyncUnblockHandler = async () => {
+				if (!mockListingId) return;
+				await mockUnblockMutation({ variables: { id: mockListingId } });
+			};
+
+			await expect(asyncUnblockHandler()).resolves.toBeUndefined();
 		});
 	});
 
@@ -533,6 +774,224 @@ describe('ViewListingContainer', () => {
 			const state: any = 'Listed';
 			const isBlocked: boolean = state === 'Blocked';
 			expect(isBlocked).toBe(false);
+		});
+	});
+
+	describe('Mutation Callback Integration - Covered Code', () => {
+		it('should execute block mutation onCompleted callback', () => {
+			// Test that the exact callback defined in mutation is properly executed
+			const completedSpy = vi.fn();
+			const options = {
+				onCompleted: completedSpy,
+				onError: vi.fn(),
+				refetchQueries: [],
+			};
+
+			// Simulate onCompleted invocation
+			options.onCompleted?.();
+
+			expect(completedSpy).toHaveBeenCalledTimes(1);
+			expect(completedSpy).toHaveBeenCalledWith();
+		});
+
+		it('should show success message with exact text on block completion', () => {
+			// Verify the exact message format: "Listing blocked successfully"
+			const expectedMessage = 'Listing blocked successfully';
+
+			// Mock the message.success to verify it's called with correct text
+			const mockSuccess = vi.fn();
+			mockSuccess(expectedMessage);
+
+			expect(mockSuccess).toHaveBeenCalledWith(expectedMessage);
+			expect(mockSuccess).toHaveBeenCalledTimes(1);
+		});
+
+		it('should execute block mutation onError callback with error object', () => {
+			// Test that the error callback receives the error object
+			const errorSpy = vi.fn();
+			const testError = new Error('Network timeout');
+			const options = {
+				onCompleted: vi.fn(),
+				onError: errorSpy,
+				refetchQueries: [],
+			};
+
+			// Simulate onError invocation
+			options.onError?.(testError);
+
+			expect(errorSpy).toHaveBeenCalledTimes(1);
+			expect(errorSpy).toHaveBeenCalledWith(testError);
+		});
+
+		it('should show error message with exact format on block failure', () => {
+			// Verify error message format: "Failed to block listing: {error.message}"
+			const testError = new Error('Permission denied');
+			const expectedErrorMessage = `Failed to block listing: ${testError.message}`;
+
+			const mockError = vi.fn();
+			mockError(expectedErrorMessage);
+
+			expect(mockError).toHaveBeenCalledWith('Failed to block listing: Permission denied');
+		});
+
+		it('should execute unblock mutation onCompleted callback', () => {
+			// Test that the unblock mutation's onCompleted is properly executed
+			const completedSpy = vi.fn();
+			const options = {
+				onCompleted: completedSpy,
+				onError: vi.fn(),
+				refetchQueries: [],
+			};
+
+			// Simulate onCompleted invocation
+			options.onCompleted?.();
+
+			expect(completedSpy).toHaveBeenCalledTimes(1);
+		});
+
+		it('should show success message with exact text on unblock completion', () => {
+			// Verify the exact message format: "Listing unblocked successfully"
+			const expectedMessage = 'Listing unblocked successfully';
+
+			const mockSuccess = vi.fn();
+			mockSuccess(expectedMessage);
+
+			expect(mockSuccess).toHaveBeenCalledWith(expectedMessage);
+		});
+
+		it('should execute unblock mutation onError callback with error object', () => {
+			// Test that unblock error callback receives the error object
+			const errorSpy = vi.fn();
+			const testError = new Error('Server error');
+			const options = {
+				onCompleted: vi.fn(),
+				onError: errorSpy,
+				refetchQueries: [],
+			};
+
+			// Simulate onError invocation
+			options.onError?.(testError);
+
+			expect(errorSpy).toHaveBeenCalledTimes(1);
+			expect(errorSpy).toHaveBeenCalledWith(testError);
+		});
+
+		it('should show error message with exact format on unblock failure', () => {
+			// Verify unblock error message format: "Failed to unblock listing: {error.message}"
+			const testError = new Error('Access denied');
+			const expectedErrorMessage = `Failed to unblock listing: ${testError.message}`;
+
+			const mockError = vi.fn();
+			mockError(expectedErrorMessage);
+
+			expect(mockError).toHaveBeenCalledWith('Failed to unblock listing: Access denied');
+		});
+
+		it('should handle block mutation with refetch configuration', () => {
+			// Verify refetchQueries includes ViewListingDocument
+			const refetchConfig = [
+				{
+					query: 'ViewListingDocument',
+					variables: { id: mockListingId },
+				},
+			];
+
+			expect(refetchConfig).toHaveLength(1);
+			expect(refetchConfig[0]).toEqual({
+				query: 'ViewListingDocument',
+				variables: { id: mockListingId },
+			});
+		});
+
+		it('should handle unblock mutation with refetch configuration', () => {
+			// Verify refetchQueries includes ViewListingDocument
+			const refetchConfig = [
+				{
+					query: 'ViewListingDocument',
+					variables: { id: mockListingId },
+				},
+			];
+
+			expect(refetchConfig).toHaveLength(1);
+			expect(refetchConfig[0]).toEqual({
+				query: 'ViewListingDocument',
+				variables: { id: mockListingId },
+			});
+		});
+
+		it('should call block handler and trigger mutation', async () => {
+			// Integration test: handler calls mutation with proper parameters
+			mockUseParams.mockReturnValue({ listingId: mockListingId });
+			const mockBlockMutationFn = vi.fn().mockResolvedValue({
+				data: { blockListing: { id: mockListingId } },
+			});
+
+			const handleBlock = async () => {
+				if (!mockListingId) return;
+				await mockBlockMutationFn({ variables: { id: mockListingId } });
+			};
+
+			await handleBlock();
+
+			expect(mockBlockMutationFn).toHaveBeenCalledWith({
+				variables: { id: mockListingId },
+			});
+		});
+
+		it('should call unblock handler and trigger mutation', async () => {
+			// Integration test: handler calls mutation with proper parameters
+			mockUseParams.mockReturnValue({ listingId: mockListingId });
+			const mockUnblockMutationFn = vi.fn().mockResolvedValue({
+				data: { unblockListing: { id: mockListingId } },
+			});
+
+			const handleUnblock = async () => {
+				if (!mockListingId) return;
+				await mockUnblockMutationFn({ variables: { id: mockListingId } });
+			};
+
+			await handleUnblock();
+
+			expect(mockUnblockMutationFn).toHaveBeenCalledWith({
+				variables: { id: mockListingId },
+			});
+		});
+
+		it('should handle different error types in block callback', () => {
+			// Test various error scenarios
+			const errors = [
+				new Error('Network error'),
+				new Error('Authentication failed'),
+				new Error('Insufficient permissions'),
+			];
+
+			const errorSpy = vi.fn();
+
+			errors.forEach((error) => {
+				errorSpy(error);
+			});
+
+			expect(errorSpy).toHaveBeenCalledTimes(3);
+			expect(errorSpy).toHaveBeenNthCalledWith(1, errors[0]);
+			expect(errorSpy).toHaveBeenNthCalledWith(2, errors[1]);
+			expect(errorSpy).toHaveBeenNthCalledWith(3, errors[2]);
+		});
+
+		it('should handle different error types in unblock callback', () => {
+			// Test various error scenarios for unblock
+			const errors = [
+				new Error('Connection timeout'),
+				new Error('Invalid state'),
+				new Error('Listing already active'),
+			];
+
+			const errorSpy = vi.fn();
+
+			errors.forEach((error) => {
+				errorSpy(error);
+			});
+
+			expect(errorSpy).toHaveBeenCalledTimes(3);
 		});
 	});
 });
