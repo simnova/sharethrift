@@ -18,7 +18,7 @@ export const createIfNotExists = (dataSources: DataSources) => {
 		if (existingPersonalUser) {
 			return existingPersonalUser;
 		}
-		let PersonalUserToReturn:
+		let personalUserToReturn:
 			| Domain.Contexts.User.PersonalUser.PersonalUserEntityReference
 			| undefined;
 		await dataSources.domainDataSource.User.PersonalUser.PersonalUserUnitOfWork.withScopedTransaction(
@@ -28,12 +28,12 @@ export const createIfNotExists = (dataSources: DataSources) => {
 					command.firstName,
 					command.lastName,
 				);
-				PersonalUserToReturn = await repo.save(newPersonalUser);
+				personalUserToReturn = await repo.save(newPersonalUser);
 			},
 		);
-		if (!PersonalUserToReturn) {
+		if (!personalUserToReturn) {
 			throw new Error('personal user not found');
 		}
-		return PersonalUserToReturn;
+		return personalUserToReturn;
 	};
 };

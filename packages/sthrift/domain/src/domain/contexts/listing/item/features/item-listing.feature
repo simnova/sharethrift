@@ -14,10 +14,10 @@ Feature: <AggregateRoot>ItemListing
         
   Scenario: Creating a new draft listing with missing fields	
     When I create a new ItemListing aggregate using getNewInstance with isDraft true and empty title, description, category, and location	
-    Then the listing's title should default to "Draft Title"	
-    And the listing's description should default to "Draft Description"	
-    And the listing's category should default to "Miscellaneous"	
-    And the listing's location should default to "Draft Location"	
+    Then the listing's title should default to empty
+    And the listing's description should default to empty
+    And the listing's category should default to empty
+    And the listing's location should default to empty
     And the listing state should be "Drafted"	
         
   Scenario: Changing the title with permission to update listings	

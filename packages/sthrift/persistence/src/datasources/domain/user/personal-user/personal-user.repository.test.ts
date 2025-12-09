@@ -52,7 +52,7 @@ test.for(feature, ({ Scenario, Background, BeforeEachScenario }) => {
 		mockDoc = {
 			_id: 'user-1',
 			id: 'user-1',
-			userType: 'personal-users',
+			userType: 'personal-user',
 			isBlocked: false,
 			hasCompletedOnboarding: false,
 			account: {
