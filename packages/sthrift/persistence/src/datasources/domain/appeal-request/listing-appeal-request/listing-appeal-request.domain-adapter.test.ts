@@ -24,7 +24,7 @@ function makeAppealRequestDoc() {
 		// Populated user object (not ObjectId) for tests that access .user property
 		user: {
 			id: userId.toString(),
-			userType: 'personal-users',
+			userType: 'personal-user',
 			isBlocked: false,
 			hasCompletedOnboarding: true,
 			account: {
@@ -65,13 +65,13 @@ function makeAppealRequestDoc() {
 			state: 'active',
 			sharer: {
 				id: userId.toString(),
-				userType: 'personal-users',
+				userType: 'personal-user',
 			},
 		},
 		// Populated blocker object for tests that access .blocker property
 		blocker: {
 			id: blockerId.toString(),
-			userType: 'personal-users',
+			userType: 'personal-user',
 			isBlocked: false,
 			hasCompletedOnboarding: true,
 			account: {

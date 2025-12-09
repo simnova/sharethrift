@@ -69,7 +69,6 @@ export interface AdminUserAccount extends MongooseSeedwork.NestedPath {
  * Admin User interface
  */
 export interface AdminUser extends User {
-	userType: string;
 	isBlocked: boolean;
 	role?: PopulatedDoc<AdminRole.AdminRole> | ObjectId;
 	account: AdminUserAccount;

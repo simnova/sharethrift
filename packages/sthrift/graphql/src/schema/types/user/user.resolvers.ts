@@ -138,15 +138,18 @@ const userUnionResolvers: Resolvers = {
 	// Union type resolver - tells GraphQL which concrete type to use
 	// frontend can check __typename === 'AdminUser' without custom hooks
 	User: {
-		__resolveType(obj: unknown): 'AdminUser' | 'PersonalUser' {
+		__resolveType(obj: {
+			id: string;
+			userType: string;
+		}): 'AdminUser' | 'PersonalUser' {
 			if (typeof obj === 'object' && obj !== null && 'userType' in obj) {
-				const userType = (obj.userType as string)?.toLowerCase();
+				const userType = obj.userType?.toLowerCase();
 
 				// Matching Mongoose discriminator values for AdminUser and PersonalUser
 				if (userType === 'admin-user') {
 					return 'AdminUser' as const;
 				}
-				if (userType === 'personal-users') {
+				if (userType === 'personal-user') {
 					return 'PersonalUser' as const;
 				}
 			}

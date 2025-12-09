@@ -61,7 +61,7 @@ const billingCharlie = {
 export const personalUsers: Models.User.PersonalUser[] = [
 	{
 		_id: '507f1f77bcf86cd799439011',
-		userType: 'personal-users',
+		userType: 'personal-user',
 		isBlocked: false,
 		hasCompletedOnboarding: true,
 		account: {
@@ -84,7 +84,7 @@ export const personalUsers: Models.User.PersonalUser[] = [
 	},
 	{
 		_id: '507f1f77bcf86cd799439012',
-		userType: 'personal-users',
+		userType: 'personal-user',
 		isBlocked: false,
 		hasCompletedOnboarding: true,
 		account: {
@@ -107,7 +107,7 @@ export const personalUsers: Models.User.PersonalUser[] = [
 	},
 	{
 		_id: '507f1f77bcf86cd799439013',
-		userType: 'personal-users',
+		userType: 'personal-user',
 		isBlocked: false,
 		hasCompletedOnboarding: true,
 		account: {
@@ -128,7 +128,7 @@ export const personalUsers: Models.User.PersonalUser[] = [
 	},
 	{
 		_id: '507f1f77bcf86cd799439014',
-		userType: 'personal-users',
+		userType: 'personal-user',
 		isBlocked: false,
 		hasCompletedOnboarding: false,
 		account: {

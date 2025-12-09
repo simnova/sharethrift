@@ -58,6 +58,11 @@ test.for(feature, ({ Background, Scenario, BeforeEachScenario }) => {
 		mockContext = {
 			applicationServices: {
 				verifiedUser: undefined,
+				Listing: {
+					ItemListing: {
+						queryById: vi.fn(),
+					},
+				},
 				User: {
 					AdminUser: {
 						queryByEmail: vi.fn(),
@@ -67,14 +72,12 @@ test.for(feature, ({ Background, Scenario, BeforeEachScenario }) => {
 						queryByEmail: vi.fn(),
 						queryById: vi.fn(),
 					},
-				},
-				Listing: {
-					ItemListing: {
+					User: {
 						queryById: vi.fn(),
 					},
 				},
 			},
-		} as unknown as GraphContext;
+		} as GraphContext;
 
 		result = undefined;
 	});
@@ -202,7 +205,7 @@ test.for(feature, ({ Background, Scenario, BeforeEachScenario }) => {
 	Scenario(
 		'PopulateUserFromField resolves AdminUser by ID',
 		({ Given, When, Then }) => {
-			const parent = { userId: '507f1f77bcf86cd799439011' };
+			const parent = { userId: { id: '507f1f77bcf86cd799439011' } };
 
 			Given('a parent object with a valid admin user ID field', () => {
 				vi.mocked(
@@ -224,7 +227,7 @@ test.for(feature, ({ Background, Scenario, BeforeEachScenario }) => {
 	Scenario(
 		'PopulateUserFromField resolves PersonalUser by ID',
 		({ Given, When, Then }) => {
-			const parent = { userId: '507f1f77bcf86cd799439012' };
+			const parent = { userId: { id: '507f1f77bcf86cd799439012' } };
 
 			Given('a parent object with a valid personal user ID field', () => {
 				vi.mocked(
@@ -270,7 +273,7 @@ test.for(feature, ({ Background, Scenario, BeforeEachScenario }) => {
 	Scenario(
 		'PopulateItemListingFromField resolves listing by ID',
 		({ Given, When, Then }) => {
-			const parent = { listingId: '507f1f77bcf86cd799439013' };
+			const parent = { listingId: { id: '507f1f77bcf86cd799439013' } };
 
 			Given('a parent object with a valid listing ID field', () => {
 				vi.mocked(

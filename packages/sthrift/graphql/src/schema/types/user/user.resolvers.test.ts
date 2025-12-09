@@ -28,6 +28,10 @@ test.for(feature, ({ Background, Scenario, BeforeEachScenario }) => {
 		userType: string;
 	};
 	let result: unknown;
+	let mockInvalidUserType: {
+		id: string;
+		userType: string;
+	};
 
 	BeforeEachScenario(() => {
 		mockAdminUser = {
@@ -44,7 +48,12 @@ test.for(feature, ({ Background, Scenario, BeforeEachScenario }) => {
 		mockPersonalUser = {
 			id: 'personal-id-456',
 			email: 'user@test.com',
-			userType: 'personal-users',
+			userType: 'personal-user',
+		};
+
+		mockInvalidUserType = {
+			id: 'invalid-user-type',
+			userType: 'invalid-type',
 		};
 
 		// Initialize mockContext with mock data configured
@@ -71,6 +80,9 @@ test.for(feature, ({ Background, Scenario, BeforeEachScenario }) => {
 							page: 1,
 							pageSize: 10,
 						}),
+					},
+					User: {
+						queryById: vi.fn(),
 					},
 				},
 			},
@@ -327,7 +339,7 @@ test.for(feature, ({ Background, Scenario, BeforeEachScenario }) => {
 
 			When('allSystemUsers query is called', async () => {
 				try {
-					await (userUnionResolvers.Query?.allSystemUsers)?.(
+					await userUnionResolvers.Query?.allSystemUsers?.(
 						{},
 						{
 							page: 1,
@@ -358,7 +370,7 @@ test.for(feature, ({ Background, Scenario, BeforeEachScenario }) => {
 
 			When('allSystemUsers query is called', async () => {
 				try {
-					await (userUnionResolvers.Query?.allSystemUsers)?.(
+					await userUnionResolvers.Query?.allSystemUsers?.(
 						{},
 						{
 							page: 1,
@@ -382,11 +394,16 @@ test.for(feature, ({ Background, Scenario, BeforeEachScenario }) => {
 		'User union resolveType returns AdminUser',
 		({ Given, When, Then }) => {
 			Given('a user object with userType admin-user', () => {
-				result = { userType: 'admin-user' };
+				result = { id: 'admin-id-123' , userType: 'admin-user'};
+				vi.mocked(
+					mockContext.applicationServices.User.User.queryById,
+				).mockResolvedValue(mockAdminUser);
 			});
 
-			When('__resolveType is called', () => {
-				result = (userUnionResolvers.User?.__resolveType)?.(result);
+			When('__resolveType is called', async () => {
+				result = await userUnionResolvers.User?.__resolveType?.(
+					result,
+				);
 			});
 
 			Then('it should return "AdminUser"', () => {
@@ -395,16 +412,23 @@ test.for(feature, ({ Background, Scenario, BeforeEachScenario }) => {
 		},
 	);
 
-		Scenario(
+	Scenario(
 		'User union resolveType returns PersonalUser',
 		({ Given, When, Then }) => {
-			Given('a user object with userType personal-users', () => {
-				result = { userType: 'personal-users' };
+			Given('a user object with userType personal-user', () => {
+				result = { id: 'personal-id-456', userType: 'personal-user' };
+				vi.mocked(
+					mockContext.applicationServices.User.User.queryById,
+				).mockResolvedValue(mockPersonalUser);
 			});
 
-			When('__resolveType is called', () => {
-				result = userUnionResolvers.User?.__resolveType?.(result);
-			});			Then('it should return "PersonalUser"', () => {
+			When('__resolveType is called', async () => {
+				result = await userUnionResolvers.User?.__resolveType?.(
+					result,
+				);
+			});
+
+			Then('it should return "PersonalUser"', () => {
 				expect(result).toBe('PersonalUser');
 			});
 		},
@@ -416,12 +440,15 @@ test.for(feature, ({ Background, Scenario, BeforeEachScenario }) => {
 			let error: Error | undefined;
 
 			Given('a user object with invalid userType', () => {
-				result = { userType: 'invalid-type' };
+				result = { id: 'invalid-user-type' };
 			});
 
-			When('__resolveType is called', () => {
+			When('__resolveType is called', async () => {
 				try {
-					userUnionResolvers.User?.__resolveType?.(result);
+					vi.mocked(
+						mockContext.applicationServices.User.User.queryById,
+					).mockResolvedValue(mockInvalidUserType);
+					await userUnionResolvers.User?.__resolveType?.(result, mockContext);
 				} catch (e) {
 					error = e as Error;
 				}
