@@ -56,8 +56,7 @@ const userUnionResolvers: Resolvers = {
 				return existingUser;
 			}
 
-			// Create new PersonalUser if not found
-			// Note: Admins are created manually, so new B2C logins default to PersonalUser
+			// Create new User if not found
 			// This only triggers on first login - subsequent requests return existing user
 			return await context.applicationServices.User.PersonalUser.createIfNotExists(
 				{
