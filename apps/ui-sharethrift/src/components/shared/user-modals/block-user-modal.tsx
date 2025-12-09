@@ -43,9 +43,14 @@ export const BlockUserModal: React.FC<Readonly<BlockUserModalProps>> = ({
     const [blockForm] = Form.useForm();
 
     const handleOk = async () => {
-        const values = await blockForm.validateFields();
-        onConfirm(values);
-        blockForm.resetFields();
+        try {
+            const values = await blockForm.validateFields();
+            onConfirm(values);
+            blockForm.resetFields();
+        } catch (error) {
+            console.error("Validation Failed:", error);
+            return;
+        }
     };
 
     const handleCancel = () => {
