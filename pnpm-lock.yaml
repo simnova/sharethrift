@@ -161,9 +161,6 @@ importers:
       '@sthrift/service-token-validation':
         specifier: workspace:*
         version: link:../../packages/sthrift/service-token-validation
-      twilio:
-        specifier: ^5.8.0
-        version: 5.10.4
     devDependencies:
       '@cellix/typescript-config':
         specifier: workspace:*
@@ -991,8 +988,8 @@ importers:
         specifier: workspace:*
         version: link:../../cellix/messaging-service
       twilio:
-        specifier: ^4.0.0
-        version: 4.23.0
+        specifier: ^5.10.7
+        version: 5.10.7
     devDependencies:
       '@cellix/typescript-config':
         specifier: workspace:*
@@ -11362,12 +11359,8 @@ packages:
     resolution: {integrity: sha512-KNkbbnoBITpsmxV2UnmNDEot/Q5t7p5I1zP05oqj0OYT1kMcZq4nhiSNkcxkunfxINFSUzz8d/mUA82yWS7iLQ==}
     engines: {node: '>=14'}
 
-  twilio@4.23.0:
-    resolution: {integrity: sha512-LdNBQfOe0dY2oJH2sAsrxazpgfFQo5yXGxe96QA8UWB5uu+433PrUbkv8gQ5RmrRCqUTPQ0aOrIyAdBr1aB03Q==}
-    engines: {node: '>=14.0'}
-
-  twilio@5.10.4:
-    resolution: {integrity: sha512-5dUsT3/O1+WxyJop2a6a4r92NAgtEQL7+oSU4t466NPhDaPOOBH/uomxnYHD5GWouYo7CZ/B7XSOwlhEUAHpWg==}
+  twilio@5.10.7:
+    resolution: {integrity: sha512-pELNeyQqkJMW/UkbcdNGDfOjMyt1FXoYOKXBDqOViHmcdJ04cq8Ty3VsrEAabi97YesK3T2v5KP5XKPY8uUx9w==}
     engines: {node: '>=14.0'}
 
   twilsock@0.12.2:
@@ -24691,21 +24684,7 @@ snapshots:
       - bufferutil
       - utf-8-validate
 
-  twilio@4.23.0:
-    dependencies:
-      axios: 1.13.1
-      dayjs: 1.11.18
-      https-proxy-agent: 5.0.1
-      jsonwebtoken: 9.0.3
-      qs: 6.14.0
-      scmp: 2.1.0
-      url-parse: 1.5.10
-      xmlbuilder: 13.0.2
-    transitivePeerDependencies:
-      - debug
-      - supports-color
-
-  twilio@5.10.4:
+  twilio@5.10.7:
     dependencies:
       axios: 1.13.1
       dayjs: 1.11.18

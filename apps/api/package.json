@@ -42,8 +42,7 @@
 		"@sthrift/service-blob-storage": "workspace:*",
 		"@sthrift/service-mongoose": "workspace:*",
 		"@sthrift/service-otel": "workspace:*",
-		"@sthrift/service-token-validation": "workspace:*",
-		"twilio": "^5.8.0"
+		"@sthrift/service-token-validation": "workspace:*"
 	},
 	"devDependencies": {
 		"@cellix/typescript-config": "workspace:*",

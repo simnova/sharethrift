@@ -14,7 +14,7 @@ import {
 const mockPersonalUser = {
 	__typename: 'PersonalUser',
 	id: 'user-1',
-	userType: 'personal-users',
+	userType: 'personal-user',
 	account: {
 		__typename: 'PersonalUserAccount',
 		accountType: 'verified-personal',

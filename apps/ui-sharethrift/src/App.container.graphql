@@ -1,5 +1,5 @@
 query AppContainerCurrentUser {
-  currentUser {
+  currentUserAndCreateIfNotExists {
     ... on PersonalUser {
       id
       userType

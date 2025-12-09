@@ -42,68 +42,69 @@ type PersonalUserEntity =
 function createMockListing(
     overrides: Partial<ItemListingEntity> = {},
 ): ItemListingEntity {
-    const baseListing: ItemListingEntity = {
-        id: 'listing-1',
-        title: 'Test Listing',
-        description: 'Test description',
-        category: 'Electronics',
-        location: 'Delhi',
-        sharingPeriodStart: new Date('2025-10-06'),
-        sharingPeriodEnd: new Date('2025-11-06'),
-        state: 'Published',
-        sharer: {
-            id: 'user-1',
-        } as PersonalUserEntity,
-        images: ['image1.jpg'],
-        reports: 0,
-        sharingHistory: [],
-        createdAt: new Date('2020-01-01T00:00:00Z'),
-        updatedAt: new Date('2020-01-02T00:00:00Z'),
-        schemaVersion: '1.0.0',
-        listingType: 'item',
-        ...overrides,
-    };
-    return baseListing;
+	const baseListing: ItemListingEntity = {
+		id: 'listing-1',
+		title: 'Test Listing',
+		description: 'Test description',
+		category: 'Electronics',
+		location: 'Delhi',
+		sharingPeriodStart: new Date('2025-10-06'),
+		sharingPeriodEnd: new Date('2025-11-06'),
+		state: 'Published',
+		sharer: {
+			id: 'user-1',
+		} as PersonalUserEntity,
+		images: ['image1.jpg'],
+		reports: 0,
+		sharingHistory: [],
+		createdAt: new Date('2020-01-01T00:00:00Z'),
+		updatedAt: new Date('2020-01-02T00:00:00Z'),
+		schemaVersion: '1.0.0',
+		listingType: 'item',
+		loadSharer: async () => createMockUser({ id: 'user-1' }),
+		...overrides,
+	};
+	return baseListing;
 }
 
 // Helper function to create mock user
 function createMockUser(
     overrides: Partial<PersonalUserEntity> = {},
 ): PersonalUserEntity {
-    return {
-        id: 'user-1',
-        userType: 'end-user',
-        isBlocked: false,
-        hasCompletedOnboarding: true,
-        schemaVersion: '1.0.0',
-        account: {
-            accountType: 'standard',
-            email: 'test@example.com',
-            username: 'testuser',
-            profile: {
-                firstName: 'Test',
-                lastName: 'User',
-                location: {
-                    address1: '123 Main St',
-                    address2: null,
-                    city: 'Test City',
-                    state: 'TS',
-                    country: 'Testland',
-                    zipCode: '12345',
-                },
-                billing: {
-                    subscriptionId: null,
-                    cybersourceCustomerId: null,
-                    paymentState: '',
-                    lastTransactionId: null,
-                    lastPaymentAmount: null,
-                },
-            },
-        },
-        createdAt: new Date(),
-        updatedAt: new Date(),
-        ...overrides,
-    } as PersonalUserEntity;
+	return {
+		id: 'user-1',
+		userType: 'personal-user',
+		isBlocked: false,
+		hasCompletedOnboarding: true,
+		schemaVersion: '1.0.0',
+		account: {
+			accountType: 'standard',
+			email: 'test@example.com',
+			username: 'testuser',
+			profile: {
+				firstName: 'Test',
+				lastName: 'User',
+				location: {
+					address1: '123 Main St',
+					address2: null,
+					city: 'Test City',
+					state: 'TS',
+					country: 'Testland',
+					zipCode: '12345',
+				},
+				billing: {
+					subscriptionId: null,
+					cybersourceCustomerId: null,
+					paymentState: '',
+					lastTransactionId: null,
+					lastPaymentAmount: null,
+				},
+			},
+		},
+		createdAt: new Date(),
+		updatedAt: new Date(),
+		...overrides,
+	} as PersonalUserEntity;
 }
 
 function makeMockGraphContext(

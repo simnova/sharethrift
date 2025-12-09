@@ -58,7 +58,7 @@ function makeBaseProps(
 ): ItemListingProps {
 	const user = new PersonalUser<PersonalUserProps>(
 		{
-			userType: 'personal-users',
+			userType: 'personal-user',
 			id: 'user-1',
 			isBlocked: false,
 			schemaVersion: '1.0.0',
@@ -138,6 +138,7 @@ function makeBaseProps(
 		updatedAt: new Date('2020-01-02T00:00:00Z'),
 		schemaVersion: '1.0.0',
 		listingType: 'item',
+    loadSharer: async () => user,
 		...overrides,
 	};
 }
@@ -176,6 +177,8 @@ test.for(feature, ({ Scenario, Background, BeforeEachScenario }) => {
 			'I create a new ItemListing aggregate using getNewInstance with sharer "user1" and title "New Listing"',
 			() => {
 				newListing = ItemListing.getNewInstance(
+					makeBaseProps(),
+					passport,
 					baseProps.sharer,
 					{
 						title: 'New Listing',
@@ -186,7 +189,6 @@ test.for(feature, ({ Scenario, Background, BeforeEachScenario }) => {
 						sharingPeriodEnd: new Date('2025-11-06T00:00:00Z'),
 						images: [],
 					},
-					passport,
 				);
 			},
 		);
@@ -213,6 +215,8 @@ test.for(feature, ({ Scenario, Background, BeforeEachScenario }) => {
 				'I create a new ItemListing aggregate using getNewInstance with isDraft true and empty title, description, category, and location',
 				() => {
 					newListing = ItemListing.getNewInstance(
+						makeBaseProps(),
+						passport,
 						baseProps.sharer,
 						{
 							title: '',
@@ -224,34 +228,30 @@ test.for(feature, ({ Scenario, Background, BeforeEachScenario }) => {
 							images: [],
 							isDraft: true,
 						},
-						passport,
 					);
 				},
 			);
-			Then('the listing\'s title should default to "Draft Title"', () => {
-				expect(newListing.title).toBe('Draft Title');
+			Then("the listing's title should default to empty", () => {
+				expect(newListing.title).toBe('');
 			});
-			And(
-				'the listing\'s description should default to "Draft Description"',
-				() => {
-					expect(newListing.description).toBe('Draft Description');
-				},
-			);
-			And('the listing\'s category should default to "Miscellaneous"', () => {
+			And("the listing's description should default to empty", () => {
+				expect(newListing.description).toBe('');
+			});
+			And("the listing's category should default to empty", () => {
 				// Note: getNewInstance stores category as a ValueObject, not a string
 				const categoryValue =
 					typeof newListing.category === 'string'
 						? newListing.category
 						: (newListing.category as { valueOf: () => string }).valueOf();
-				expect(categoryValue).toBe('Miscellaneous');
+				expect(categoryValue).toBe('');
 			});
-			And('the listing\'s location should default to "Draft Location"', () => {
+			And("the listing's location should default to empty", () => {
 				// Note: getNewInstance stores location as a ValueObject, not a string
 				const locationValue =
 					typeof newListing.location === 'string'
 						? newListing.location
 						: (newListing.location as { valueOf: () => string }).valueOf();
-				expect(locationValue).toBe('Draft Location');
+				expect(locationValue).toBe('');
 			});
 			And('the listing state should be "Drafted"', () => {
 				// Note: getNewInstance stores state as a ValueObject, not a string
