@@ -11,6 +11,9 @@ extend type Query {
 	# Unified query - returns current user regardless of type
 	currentUser: User!
 
+	# Entry-point query - returns current authenticated user, auto-creating PersonalUser if first login (AdminUsers must be pre-created)
+	currentUserAndCreateIfNotExists: User!
+
 	# Get any user by ID (PersonalUser or AdminUser)
 	userById(id: ObjectID!): User
 

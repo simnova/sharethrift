@@ -17,7 +17,7 @@ export const AppContainer: FC = () => {
     return <App hasCompletedOnboarding={false} isAuthenticated={false} />;
   }
 
-  const user = data?.currentUser;
+  const user = data?.currentUserAndCreateIfNotExists;
   const userId = user?.id;
   const hasCompletedOnboarding =
     user?.userType === 'personal-user'
