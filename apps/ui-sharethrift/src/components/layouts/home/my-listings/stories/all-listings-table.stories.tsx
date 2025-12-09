@@ -23,12 +23,12 @@ const createMockListing = (
 
 const MOCK_LISTINGS = [
 	createMockListing('1', 'Cordless Drill', 'Paused'),
-	createMockListing('2', 'Electric Guitar', 'Active'),
+	createMockListing('2', 'Electric Guitar', 'Published'),
 ];
 
 // Mock listings with all status types for coverage
 const ALL_STATUS_LISTINGS = [
-	createMockListing('1', 'Active Listing', 'Active'),
+	createMockListing('1', 'Published Listing', 'Published'),
 	createMockListing('2', 'Paused Listing', 'Paused'),
 	createMockListing('3', 'Reserved Listing', 'Reserved'),
 	createMockListing('4', 'Expired Listing', 'Expired'),
@@ -79,7 +79,7 @@ export const AllStatusTypes: Story = {
 	play: async ({ canvasElement }) => {
 		const canvas = within(canvasElement);
 		// Use getAllByText as Dashboard renders both table and card views
-		await expect(canvas.getAllByText('Active Listing').length).toBeGreaterThan(0);
+		await expect(canvas.getAllByText('Published Listing').length).toBeGreaterThan(0);
 		await expect(canvas.getAllByText('Paused Listing').length).toBeGreaterThan(0);
 		await expect(canvas.getAllByText('Reserved Listing').length).toBeGreaterThan(0);
 		await expect(canvas.getAllByText('Expired Listing').length).toBeGreaterThan(0);
@@ -92,7 +92,7 @@ export const AllStatusTypes: Story = {
 // Test clicking Pause button on Active listing
 export const ClickPauseButton: Story = {
 	args: {
-		data: [createMockListing('1', 'Active Item', 'Active')],
+		data: [createMockListing('1', 'Published Item', 'Published')],
 		total: 1,
 		onAction: fn(),
 	},
@@ -107,7 +107,7 @@ export const ClickPauseButton: Story = {
 // Test clicking Edit button (always available)
 export const ClickEditButton: Story = {
 	args: {
-		data: [createMockListing('1', 'Any Item', 'Active')],
+		data: [createMockListing('1', 'Any Item', 'Published')],
 		total: 1,
 		onAction: fn(),
 	},
@@ -152,7 +152,7 @@ export const ClickPublishButton: Story = {
 // Test Cancel confirmation on Active listing
 export const ClickCancelWithConfirmation: Story = {
 	args: {
-		data: [createMockListing('1', 'Active Item', 'Active')],
+		data: [createMockListing('1', 'Published Item', 'Published')],
 		total: 1,
 		onAction: fn(),
 	},

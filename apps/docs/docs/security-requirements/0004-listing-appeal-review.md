@@ -1,7 +1,7 @@
 ---
 sidebar_position: 4
 sidebar_label: 0004 Listing Appeal Review
-description: "Blocked listings must be appealed and reviewed before being reinstated"
+description: "Blocked listings must be reviewed before being reinstated"
 status: pending
 contact: 
 date: 2025-10-29
@@ -13,7 +13,7 @@ informed:
 # Listing Appeal Review
 
 ## Security Requirement Statement
-Blocked listings must be appealed and reviewed before being reinstated.
+Blocked listings must be reviewed before being reinstated.
 
 ## Control Classification
 - **Timing Control Category**: Corrective

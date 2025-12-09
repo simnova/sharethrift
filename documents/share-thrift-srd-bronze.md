@@ -712,7 +712,7 @@ Permanently remove a listing from being reserved and visible.
 | --- | --- | --- |
 | Admin | Dashboard | Listings | | |
 | **Mobile** | **Desktop** | **Details** |
-| ![](data:image/jpeg;base64...) | ![](data:image/png;base64...) | Listings is the default page for the Admin Dashboard.  It contains a table of currently blocked listings, which includes:   * Listing Name and Image * Published At * Reservation Period * Status (Appealed and Blocked only) * Actions   1. View Listing   2. Unblock Listing   3. Remove Listing.   Admins can use the above actions to manage listings. |
+| ![](data:image/jpeg;base64...) | ![](data:image/png;base64...) | Listings is the default page for the Admin Dashboard.  It contains a table of currently blocked listings, which includes:   * Listing Name and Image * Published At * Reservation Period * Status (Blocked only) * Actions   1. View Listing   2. Unblock Listing   3. Remove Listing.   Admins can use the above actions to manage listings. |
 
 #### Listings - Unblock Listing
 
