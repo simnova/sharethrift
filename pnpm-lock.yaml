@@ -10952,10 +10952,6 @@ packages:
     resolution: {integrity: sha512-pELNeyQqkJMW/UkbcdNGDfOjMyt1FXoYOKXBDqOViHmcdJ04cq8Ty3VsrEAabi97YesK3T2v5KP5XKPY8uUx9w==}
     engines: {node: '>=14.0'}
 
-  twilio@5.10.7:
-    resolution: {integrity: sha512-pELNeyQqkJMW/UkbcdNGDfOjMyt1FXoYOKXBDqOViHmcdJ04cq8Ty3VsrEAabi97YesK3T2v5KP5XKPY8uUx9w==}
-    engines: {node: '>=14.0'}
-
   twilsock@0.12.2:
     resolution: {integrity: sha512-7G59f2TCEnxcY2ZBCzaZOPmMDoxDrK9lMTiA7UvuiKca37Dljbdlu2EHI3+d7gU1JHkH5GNCmyxqJzSbZodwXA==}
     engines: {node: '>=14'}
