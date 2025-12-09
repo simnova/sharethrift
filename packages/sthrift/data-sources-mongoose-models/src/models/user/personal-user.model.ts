@@ -181,7 +181,6 @@ export const PersonalUserAccountType: SchemaDefinition<PersonalUserAccount> = {
 };
 
 export interface PersonalUser extends User {
-	userType: string;
 	isBlocked: boolean;
 	account: PersonalUserAccount;
 	hasCompletedOnboarding: boolean;
@@ -215,7 +214,7 @@ const PersonalUserSchema = new Schema<
 	}, // enforce unique only when username exists
 );
 
-export const PersonalUserModelName: string = 'personal-users'; //TODO: This should be in singular form
+export const PersonalUserModelName: string = 'personal-user';
 
 export const PersonalUserModelFactory = (UserModel: UserModelType) => {
 	return UserModel.discriminator(PersonalUserModelName, PersonalUserSchema);
