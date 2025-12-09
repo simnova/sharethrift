@@ -64,6 +64,7 @@ function createMockListing(
 		updatedAt: new Date('2020-01-02T00:00:00Z'),
 		schemaVersion: '1.0.0',
 		listingType: 'item',
+		loadSharer: async () => createMockUser({ id: 'user-1' }),
 		...overrides,
 	};
 	return baseListing;
@@ -75,7 +76,7 @@ function createMockUser(
 ): PersonalUserEntity {
 	return {
 		id: 'user-1',
-		userType: 'personal-users',
+		userType: 'personal-user',
 		isBlocked: false,
 		hasCompletedOnboarding: true,
 		schemaVersion: '1.0.0',

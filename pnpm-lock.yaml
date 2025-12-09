@@ -155,9 +155,6 @@ importers:
       '@sthrift/service-token-validation':
         specifier: workspace:*
         version: link:../../packages/sthrift/service-token-validation
-      twilio:
-        specifier: ^5.8.0
-        version: 5.10.4
     devDependencies:
       '@cellix/typescript-config':
         specifier: workspace:*
@@ -10951,8 +10948,8 @@ packages:
     resolution: {integrity: sha512-KNkbbnoBITpsmxV2UnmNDEot/Q5t7p5I1zP05oqj0OYT1kMcZq4nhiSNkcxkunfxINFSUzz8d/mUA82yWS7iLQ==}
     engines: {node: '>=14'}
 
-  twilio@5.10.4:
-    resolution: {integrity: sha512-5dUsT3/O1+WxyJop2a6a4r92NAgtEQL7+oSU4t466NPhDaPOOBH/uomxnYHD5GWouYo7CZ/B7XSOwlhEUAHpWg==}
+  twilio@5.10.7:
+    resolution: {integrity: sha512-pELNeyQqkJMW/UkbcdNGDfOjMyt1FXoYOKXBDqOViHmcdJ04cq8Ty3VsrEAabi97YesK3T2v5KP5XKPY8uUx9w==}
     engines: {node: '>=14.0'}
 
   twilio@5.10.7:
