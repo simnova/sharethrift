@@ -16,15 +16,11 @@ type ReservationsTableStyles = {
 
 type ReservationActionStatus = 'ACCEPTED' | 'REQUESTED' | 'REJECTED' | 'CLOSED' | 'CANCELLED';
 
+const VALID_STATUSES: Set<ReservationActionStatus> = new Set(['ACCEPTED', 'REQUESTED', 'REJECTED', 'CLOSED', 'CANCELLED']);
+
 function mapReservationStateToStatus(state: string | null | undefined): ReservationActionStatus {
-	switch (state) {
-		case 'Accepted': return 'ACCEPTED';
-		case 'Requested': return 'REQUESTED';
-		case 'Rejected': return 'REJECTED';
-		case 'Closed': return 'CLOSED';
-		case 'Cancelled': return 'CANCELLED';
-		default: return 'REQUESTED';
-	}
+	const normalized = state?.toUpperCase() as ReservationActionStatus;
+	return VALID_STATUSES.has(normalized) ? normalized : 'REQUESTED';
 }
 
 interface ReservationsTableProps {
