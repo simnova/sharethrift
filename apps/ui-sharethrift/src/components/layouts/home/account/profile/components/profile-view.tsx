@@ -140,19 +140,17 @@ export const ProfileView: React.FC<Readonly<ProfileViewProps>> = ({
 							'Published',
 							'Paused',
 							'Cancelled',
-							'Drafted',
+							'Draft',
 							'Expired',
 							'Blocked',
-							'Appeal Requested',
 						].includes(l.state ?? '')
 							? (l.state as
 									| 'Published'
 									| 'Paused'
 									| 'Cancelled'
-									| 'Drafted'
+									| 'Draft'
 									| 'Expired'
 									| 'Blocked'
-									| 'Appeal Requested'
 									| undefined)
 							: undefined,
 						createdAt: l.createdAt ? new Date(l.createdAt) : undefined,

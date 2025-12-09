@@ -29,7 +29,7 @@ const mockListings: MyListingData[] = [
 		image: 'https://via.placeholder.com/150',
 		publishedAt: '2024-03-10',
 		reservationPeriod: '2024-07-01 - 2024-09-30',
-		status: 'Appeal Requested',
+		status: 'Blocked',
 		pendingRequestsCount: 1,
 	},
 ];
@@ -96,9 +96,9 @@ export const LoadingState: Story = {
 
 export const WithBlockedListings: Story = {
 	args: {
-		data: mockListings.filter((l) => l.status === 'Blocked' || l.status === 'Appeal Requested'),
+		data: mockListings.filter((l) => l.status === 'Blocked'),
 		searchText: '',
-		statusFilters: ['Blocked', 'Appeal Requested'],
+		statusFilters: ['Blocked'],
 		sorter: { field: null, order: null },
 		currentPage: 1,
 		pageSize: 10,

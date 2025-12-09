@@ -16,7 +16,6 @@ export function AdminListings(): React.JSX.Element {
 	const pageSize = 6;
 	const [searchText, setSearchText] = useState('');
 	const [statusFilters, setStatusFilters] = useState<string[]>([
-		'Appeal Requested',
 		'Blocked',
 	]);
 	const [sorter, setSorter] = useState<{

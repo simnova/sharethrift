@@ -18,26 +18,25 @@ export interface ItemListing extends Listing {
 		| 'Published'
 		| 'Paused'
 		| 'Cancelled'
-		| 'Drafted'
+		| 'Draft'
 		| 'Expired'
 		| 'Blocked'
-		| 'Appeal Requested';
 	createdAt: Date;
 	updatedAt: Date;
 	sharingHistory?: ObjectId[];
 	reports?: number;
 	images?: string[];
 	listingType: string;
+    expiresAt?: Date; // TTL field for automatic expiration
 }
 
 export const LISTING_STATE_ENUM = [
 	'Published',
 	'Paused',
 	'Cancelled',
-	'Drafted',
+	'Draft',
 	'Expired',
 	'Blocked',
-	'Appeal Requested',
 ] as const;
 
 export const ItemListingSchema = new Schema<
@@ -65,6 +64,7 @@ export const ItemListingSchema = new Schema<
 		sharingHistory: [{ type: String }],
 		reports: { type: Number, default: 0 },
 		images: [{ type: String }], // Array of image URLs
+    expiresAt: { type: Date, required: false, expires: 0 }, // TTL index: document expires 7 days after expiresAt
 	},
 	listingOptions,
 );

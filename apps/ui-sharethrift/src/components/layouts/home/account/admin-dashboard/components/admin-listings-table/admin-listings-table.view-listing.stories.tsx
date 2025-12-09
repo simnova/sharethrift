@@ -21,7 +21,7 @@ const meta = {
 						variables: {
 							page: 1,
 							pageSize: 100,
-							statusFilters: ['Appeal Requested', 'Blocked', 'Published'],
+							statusFilters: ['Blocked', 'Published'],
 						},
 					},
 					result: {

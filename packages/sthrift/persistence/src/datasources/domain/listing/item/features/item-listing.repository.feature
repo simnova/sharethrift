@@ -26,7 +26,7 @@ And a valid ItemListing document exists in the database
 		And a set of valid listing fields with isDraft set to true
 		When I call getNewInstance with the sharer and listing fields
 		Then I should receive a new ItemListing domain object
-		And the object's state should be "Drafted"
+		And the object's state should be "Draft"
 
 	Scenario: Retrieve all active (published) item listings
 		When I call getActiveItemListings

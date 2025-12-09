@@ -30,19 +30,9 @@ export const NoFilters: Story = {
 	},
 };
 
-export const WithAppealedFilter: Story = {
-	args: {
-		statusFilters: ['Appeal Requested'],
-	},
-	play: async ({ canvasElement }) => {
-		const checkboxes = canvasElement.querySelectorAll('input[type="checkbox"]');
-		expect(checkboxes.length).toBe(2);
-	},
-};
-
 export const WithBothFilters: Story = {
 	args: {
-		statusFilters: ['Appeal Requested', 'Blocked'],
+		statusFilters: ['Blocked'],
 	},
 	play: async ({ canvasElement }) => {
 		const canvas = within(canvasElement);

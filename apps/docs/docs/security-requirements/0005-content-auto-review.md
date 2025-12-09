@@ -25,8 +25,8 @@ All user-generated listings and profile content must be auto reviewed and not al
 - **Date Retired**: N/A
 
 **Draft-to-Published Workflow Foundation**
-- ItemListing domain entity supports 'Drafted' state for content pending automated review
-- Publishing workflow transitions listings from 'Drafted' to 'Published' only after automated validation
+- ItemListing domain entity supports 'Draft' state for content pending automated review
+- Publishing workflow transitions listings from 'Draft' to 'Published' only after automated validation
 - Domain validation through ItemListing.publish() method enforces permission checks and state transitions
 - CreateListing interface allows saving as draft or publishing with automatic review gates
 

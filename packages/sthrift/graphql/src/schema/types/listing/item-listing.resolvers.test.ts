@@ -355,7 +355,7 @@ test.for(feature, ({ Scenario }) => {
 				});
 			});
 			And(
-				'it should map state values like "Published" to "Active" and "Drafted" to "Draft"',
+				'it should map state values like "Published" to "Active" and "Draft" to "Draft"',
 				() => {
 					expect(result).toBeDefined();
 					const resultData = result as { items: ItemListingEntity[] };

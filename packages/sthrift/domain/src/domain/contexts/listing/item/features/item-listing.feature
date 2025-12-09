@@ -18,7 +18,7 @@ Feature: <AggregateRoot>ItemListing
     And the listing's description should default to empty
     And the listing's category should default to empty
     And the listing's location should default to empty
-    And the listing state should be "Drafted"	
+    And the listing state should be "Draft"	
         
   Scenario: Changing the title with permission to update listings	
     Given an ItemListing aggregate with permission to update item listing	

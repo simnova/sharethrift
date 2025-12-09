@@ -25,14 +25,13 @@ Blocked listings must be appealed and reviewed before being reinstated.
 - **Date Retired**: N/A
 
 **Listing State Management System**
-- ItemListing domain entity supports seven distinct states: 'Published', 'Paused', 'Cancelled', 'Drafted', 'Expired', 'Blocked', 'Appeal Requested'
+- ItemListing domain entity supports seven distinct states: 'Published', 'Paused', 'Cancelled', 'Draft', 'Expired', 'Blocked'
 - ListingState value object with static instances provides type-safe state transitions
 - MongoDB schema enforcement with LISTING_STATE_ENUM validates allowable states
 - State transitions tracked through updatedAt timestamps for audit compliance
 
 **User-Initiated Appeal Process**
 - Blocked listings display "Appeal" button in My Listings dashboard with confirmation modal
-- Appeal action transitions listing from 'Blocked' to 'Appeal Requested' state using domain entity methods
 - UI components prevent multiple appeals through status-based button rendering
 - Appeal confirmation requires explicit user acceptance: "Are you sure you want to appeal the block on this listing?"
 
@@ -77,7 +76,6 @@ Blocked listings must be appealed and reviewed before being reinstated.
 **Audit Trail Maintenance**
 - All listing state changes recorded with timestamps through updatedAt field tracking
 - Administrative review decisions logged through GraphQL resolver actions
-- Appeal submissions tracked through state transitions from Blocked to Appeal Requested
 - Review outcomes documented through subsequent state changes to Published or continued Blocked status
 
 **Content Quality Enforcement**

@@ -92,7 +92,7 @@ export const WithDraftSuccess: Story = {
 								__typename: 'ItemListing',
 								id: '1',
 								title: 'Test Listing',
-								state: 'Drafted',
+								state: 'Draft',
 							},
 						},
 					},

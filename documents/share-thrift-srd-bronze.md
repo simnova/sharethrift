@@ -70,8 +70,6 @@ Version 1.0
 
 [Listing - Blocked 4](#_Toc1762346429)
 
-[Listing – Appeal Requested 5](#_Toc2055443092)
-
 [Listing - Active 5](#_Toc40541785)
 
 [Listing - Paused 5](#_Toc1471342789)
@@ -334,7 +332,7 @@ Not Visible to users via browsing or searching, doesn't accept reservation reque
 
 #### Review
 
-The process in which an appeal requested listing is evaluated by an admin to determine whether it meets the necessary criteria to be unblocked. This is done by an admin.
+The process in which an blocked listing with an assosiated appeal request is evaluated by an admin to determine whether it meets the necessary criteria to be unblocked. This is done by an admin.
 
 #### Appeal
 
@@ -387,10 +385,6 @@ A draft listing is a listing that has been created but may not contain all requi
 #### Listing - Blocked
 
 A listing that has been made inactive and deemed not suitable to be active; user needs to request a manual admin review. This is one of listing states.
-
-#### Listing – Appeal Requested
-
-A listing that was initially blocked by an admin, that is now pending review by an Admin, so that it can become an active listing again. This is one of listing states.
 
 #### Listing - Active
 

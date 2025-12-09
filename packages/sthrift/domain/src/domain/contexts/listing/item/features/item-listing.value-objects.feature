@@ -15,7 +15,7 @@ Feature: Listing value objects
     Then the result should be true
 
   Scenario: Checking if a ListingState is inactive
-    Given a ListingState with value "Drafted"
+    Given a ListingState with value "Draft"
     When I check isActive
     Then the result should be false
 

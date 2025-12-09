@@ -110,7 +110,7 @@ export function AdminListingsTable({
           <Button type="link" size="small" onClick={() => onAction('view', record.id)}>
             View
           </Button>
-          {(record.status === 'Blocked' || record.status === 'Appeal Requested') && (
+          {(record.status === 'Blocked') && (
             <Button type="link" size="small" onClick={() => onAction('unblock', record.id)}>
               Unblock
             </Button>

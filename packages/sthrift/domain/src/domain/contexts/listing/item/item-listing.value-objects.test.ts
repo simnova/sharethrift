@@ -68,8 +68,8 @@ test.for(feature, ({ Scenario }) => {
 		({ Given, When, Then }) => {
 			let listingState: ListingState;
 			let result: boolean;
-			Given('a ListingState with value "Drafted"', () => {
-				listingState = new ListingState('Drafted');
+			Given('a ListingState with value "Draft"', () => {
+				listingState = new ListingState('Draft');
 			});
 			When('I check isActive', () => {
 				result = listingState.isActive;

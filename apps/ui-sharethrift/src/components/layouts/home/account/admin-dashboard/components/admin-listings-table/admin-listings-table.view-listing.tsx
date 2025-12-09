@@ -30,7 +30,7 @@ export function AdminViewListing(): ReactElement {
 			variables: {
 				page: 1,
 				pageSize: 100, // Large enough to find the listing
-				statusFilters: ['Appeal Requested', 'Blocked', 'Published'],
+				statusFilters: ['Blocked', 'Published'],
 			},
 			fetchPolicy: 'network-only',
 		},
@@ -108,15 +108,14 @@ export function AdminViewListing(): ReactElement {
 	}
 
 	const getStatusColor = (state?: string) => {
-		if (state === 'Appeal Requested') return 'gold';
 		if (state === 'Blocked') return 'purple';
 		return 'green';
 	};
 
 	const statusColor = getStatusColor(listing.state ?? undefined);
 	const statusLabel =
-		listing.state === 'Appeal Requested'
-			? 'Appealed'
+		listing.state === 'Blocked'
+			? 'Blocked'
 			: (listing.state ?? 'Unknown');
 
 	return (
@@ -188,8 +187,7 @@ export function AdminViewListing(): ReactElement {
 				>
 					<h3>Admin Actions</h3>
 					<Space>
-						{(listing.state === 'Blocked' ||
-							listing.state === 'Appeal Requested') && (
+						{(listing.state === 'Blocked') && (
 							<Button type="primary" onClick={handleUnblock}>
 								Unblock Listing
 							</Button>

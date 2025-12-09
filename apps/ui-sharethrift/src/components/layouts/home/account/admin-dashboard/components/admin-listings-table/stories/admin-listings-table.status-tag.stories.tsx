@@ -11,24 +11,13 @@ const meta: Meta<typeof StatusTag> = {
 	argTypes: {
 		status: {
 			control: 'select',
-			options: ['Appeal Requested', 'Blocked', 'Published', undefined],
+			options: ['Blocked', 'Published', undefined],
 		},
 	},
 };
 
 export default meta;
 type Story = StoryObj<typeof StatusTag>;
-
-export const AppealRequested: Story = {
-	args: {
-		status: 'Appeal Requested',
-	},
-	play: async ({ canvasElement }) => {
-		const canvas = within(canvasElement);
-		const tag = canvas.getByText('Appealed');
-		expect(tag).toBeTruthy();
-	},
-};
 
 export const Blocked: Story = {
 	args: {

@@ -115,7 +115,7 @@ export const ListingNotPublished: Story = {
 	args: {
 		listing: {
 			...mockListing,
-			state: 'Drafted' as const,
+			state: 'Draft' as const,
 		},
 	},
 	play: async ({ canvasElement }) => {

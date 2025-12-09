@@ -335,8 +335,8 @@ test.for(feature, ({ Scenario, Background, BeforeEachScenario }) => {
 				Domain.Contexts.Listing.ItemListing.ItemListing,
 			);
 		});
-		And('the object\'s state should be "Drafted"', () => {
-			expect(result.state).toBe('Drafted');
+		And('the object\'s state should be "Draft"', () => {
+			expect(result.state).toBe('Draft');
 		});
 	});
 

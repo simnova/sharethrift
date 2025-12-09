@@ -18,6 +18,7 @@ export interface ItemListingProps extends DomainSeedwork.DomainEntityProps {
 	reports?: number;
 	images?: string[]; // Array of image URLs
 	listingType: string;
+    expiresAt?: Date; // TTL field for automatic expiration
 }
 
 export interface ItemListingEntityReference

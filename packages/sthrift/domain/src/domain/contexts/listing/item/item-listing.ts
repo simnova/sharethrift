@@ -42,6 +42,7 @@ export class ItemListing<props extends ItemListingProps>
 			sharingPeriodEnd: Date;
 			images?: string[];
 			isDraft?: boolean;
+            expiresAt?: Date;
 		},
 	): ItemListing<props> {
 		const newInstance = new ItemListing(newProps, passport);
@@ -59,7 +60,7 @@ export class ItemListing<props extends ItemListingProps>
 			newInstance.images = fields.images;
 		}
 		newInstance.state = fields.isDraft
-			? ValueObjects.ListingState.Drafted.valueOf()
+			? ValueObjects.ListingState.Draft.valueOf()
 			: ValueObjects.ListingState.Published.valueOf();
 
 		newInstance.isNew = false;
@@ -318,7 +319,7 @@ export class ItemListing<props extends ItemListingProps>
 			const isBlocked = current === ValueObjects.ListingStateEnum.Blocked;
 			if (!isBlocked) return; // no-op if not blocked
 
-			this.props.state = ValueObjects.ListingStateEnum.AppealRequested;
+			this.props.state = ValueObjects.ListingStateEnum.Published;
 			return;
 		}
 
@@ -353,6 +354,24 @@ public requestDelete(): void {
 			super.isDeleted = true;
 		}
 	}
+
+	get expiresAt(): Date {
+		if (!this.props.expiresAt) {
+			throw new Error('expiresAt is not set');
+		}
+		return this.props.expiresAt;
+	}
+    set expiresAt(value: Date) {
+        if (
+            !this.isNew &&
+            !this.visa.determineIf((permissions) => permissions.canUpdateItemListing)
+        ) {
+            throw new DomainSeedwork.PermissionError(
+                'You do not have permission to update this expiration',
+            );
+        }
+        this.props.expiresAt = value;
+    }
 
 	/**
 	 * Create a reference to this entity for use in other contexts

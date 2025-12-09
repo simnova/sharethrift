@@ -15,10 +15,9 @@ export interface UIItemListing {
 		| 'Published'
 		| 'Paused'
 		| 'Cancelled'
-		| 'Drafted'
+		| 'Draft'
 		| 'Expired'
 		| 'Blocked'
-		| 'Appeal Requested';
 	updatedAt?: Date;
 	createdAt?: Date;
 	sharingHistory?: string[]; // objectid[]

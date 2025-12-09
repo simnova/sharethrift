@@ -253,13 +253,13 @@ test.for(feature, ({ Scenario, Background, BeforeEachScenario }) => {
 						: (newListing.location as { valueOf: () => string }).valueOf();
 				expect(locationValue).toBe('');
 			});
-			And('the listing state should be "Drafted"', () => {
+			And('the listing state should be "Draft"', () => {
 				// Note: getNewInstance stores state as a ValueObject, not a string
 				const stateValue =
 					typeof newListing.state === 'string'
 						? newListing.state
 						: (newListing.state as { valueOf: () => string }).valueOf();
-				expect(stateValue).toBe('Drafted');
+				expect(stateValue).toBe('Draft');
 			});
 		},
 	);
@@ -536,7 +536,7 @@ test.for(feature, ({ Scenario, Background, BeforeEachScenario }) => {
 				'an ItemListing aggregate with permission to publish item listing',
 				() => {
 					passport = makePassport(true, true, true);
-					const draftProps = makeBaseProps({ state: 'Drafted' });
+					const draftProps = makeBaseProps({ state: 'Draft' });
 					listing = new ItemListing(draftProps, passport);
 					initialUpdatedAt = listing.updatedAt;
 				},
@@ -563,7 +563,7 @@ test.for(feature, ({ Scenario, Background, BeforeEachScenario }) => {
 				'an ItemListing aggregate without permission to publish item listing',
 				() => {
 					passport = makePassport(true, false, true, true);
-					listing = new ItemListing(makeBaseProps({ state: 'Drafted' }), passport);
+					listing = new ItemListing(makeBaseProps({ state: 'Draft' }), passport);
 				},
 			);
 			When('I try to call publish()', () => {
@@ -764,8 +764,8 @@ Scenario(
 			When('I call setBlocked(false)', () => {
 				listing.setBlocked(false);
 			});
-			Then('the listing\'s state should be "AppealRequested"', () => {
-				expect(listing.state).toBe('Appeal Requested');
+			Then('the listing\'s state should be "Published"', () => {
+				expect(listing.state).toBe('Published');
 			});
 		},
 	);
