@@ -13,7 +13,6 @@ import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
  */
 
 // Mock window.location
-const mockHistoryBack = vi.fn();
 Object.defineProperty(window, 'location', {
 	value: { href: '' },
 	writable: true,
