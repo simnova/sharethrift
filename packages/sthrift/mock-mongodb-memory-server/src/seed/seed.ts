@@ -6,6 +6,7 @@ import { adminRoles } from './admin-roles.js';
 import { itemListings } from './item-listings.js';
 import { conversations } from './conversations.js';
 import { reservationRequests } from './reservation-requests.js';
+import { accountPlans } from './account-plan.js';
 import { listingAppealRequests } from './listing-appeal-requests.js';
 import { userAppealRequests } from './user-appeal-requests.js';
 import type { Models } from '@sthrift/data-sources-mongoose-models';
@@ -64,6 +65,12 @@ export async function seedDatabase(connection: Connection) {
 		}),
 	);
 	await connection.collection('reservationRequests').insertMany(reservations);
+
+	const accPlan = accountPlans.map((p: Models.AccountPlan.AccountPlan) => ({
+		...p,
+		_id: toObjectId(p._id as string),
+	}));
+	await connection.collection('accountplans').insertMany(accPlan);
 
 	const listingAppeals = listingAppealRequests.map(
 		(a: Models.AppealRequest.ListingAppealRequest) => ({

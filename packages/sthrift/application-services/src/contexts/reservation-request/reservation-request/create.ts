@@ -21,11 +21,11 @@ export const create = (dataSources: DataSources) => {
 			throw new Error('Listing not found');
 		}
 
-		const reserver = await dataSources.readonlyDataSource.User.getUserByEmail(
+		const reserver = await dataSources.readonlyDataSource.User.User.UserReadRepo.getByEmail(
 			command.reserverEmail,
 		);
 		if (!reserver) {
-			throw new Error('User not found. Ensure that you are logged in.');
+			throw new Error('Reserver not found. Ensure that you are logged in.');
 		}
 		const overlappingRequests =
 			await dataSources.readonlyDataSource.ReservationRequest.ReservationRequest.ReservationRequestReadRepo.getOverlapActiveReservationRequestsForListing(

@@ -22,14 +22,16 @@ export class ConversationDomainAdapter
 	extends MongooseSeedwork.MongooseDomainAdapter<Models.Conversation.Conversation>
 	implements Domain.Contexts.Conversation.Conversation.ConversationProps
 {
-	get sharer(): PersonalUserDomainAdapter | AdminUserDomainAdapter {
+	get sharer():
+		| Domain.Contexts.User.PersonalUser.PersonalUserEntityReference
+		| Domain.Contexts.User.AdminUser.AdminUserEntityReference {
 		if (!this.doc.sharer) {
 			throw new Error('sharer is not populated');
 		}
 		if (this.doc.sharer instanceof MongooseSeedwork.ObjectId) {
-			throw new TypeError(
-				'sharer is not populated or is not of the correct type',
-			);
+			return {
+        id: this.doc.sharer.toString(),
+      } as Domain.Contexts.User.UserEntityReference;
 		}
 		// Check userType discriminator to determine which adapter to use
 		const sharerDoc = this.doc.sharer as
@@ -40,13 +42,16 @@ export class ConversationDomainAdapter
 				this.doc.sharer as Models.User.AdminUser,
 			);
 		}
-		return new PersonalUserDomainAdapter(
+		// Assuming the domain adapter exposes an entityReference property or method
+		const adapter = new PersonalUserDomainAdapter(
 			this.doc.sharer as Models.User.PersonalUser,
 		);
+		return adapter.entityReference; // need this to resolve issue with PropArray of account.billing.transactions
 	}
 
 	async loadSharer(): Promise<
-		PersonalUserDomainAdapter | AdminUserDomainAdapter
+		| Domain.Contexts.User.PersonalUser.PersonalUserEntityReference
+		| Domain.Contexts.User.AdminUser.AdminUserEntityReference
 	> {
 		if (!this.doc.sharer) {
 			throw new Error('sharer is not populated');
@@ -63,14 +68,13 @@ export class ConversationDomainAdapter
 				this.doc.sharer as Models.User.AdminUser,
 			);
 		}
-		return new PersonalUserDomainAdapter(
+		const adapter = new PersonalUserDomainAdapter(
 			this.doc.sharer as Models.User.PersonalUser,
 		);
+		return adapter.entityReference;
 	}
 
 	set sharer(user:
-		| PersonalUserDomainAdapter
-		| AdminUserDomainAdapter
 		| Domain.Contexts.User.PersonalUser.PersonalUserEntityReference
 		| Domain.Contexts.User.AdminUser.AdminUserEntityReference) {
 		if (
@@ -87,7 +91,9 @@ export class ConversationDomainAdapter
 		this.doc.set('sharer', new MongooseSeedwork.ObjectId(user.id));
 	}
 
-	get reserver(): PersonalUserDomainAdapter | AdminUserDomainAdapter {
+	get reserver():
+		| Domain.Contexts.User.PersonalUser.PersonalUserEntityReference
+		| Domain.Contexts.User.AdminUser.AdminUserEntityReference {
 		if (!this.doc.reserver) {
 			throw new Error('reserver is not populated');
 		}
@@ -105,13 +111,15 @@ export class ConversationDomainAdapter
 				this.doc.reserver as Models.User.AdminUser,
 			);
 		}
-		return new PersonalUserDomainAdapter(
+		const adapter = new PersonalUserDomainAdapter(
 			this.doc.reserver as Models.User.PersonalUser,
 		);
+		return adapter.entityReference;
 	}
 
 	async loadReserver(): Promise<
-		PersonalUserDomainAdapter | AdminUserDomainAdapter
+		| Domain.Contexts.User.PersonalUser.PersonalUserEntityReference
+		| Domain.Contexts.User.AdminUser.AdminUserEntityReference
 	> {
 		if (!this.doc.reserver) {
 			throw new Error('reserver is not populated');
@@ -128,14 +136,13 @@ export class ConversationDomainAdapter
 				this.doc.reserver as Models.User.AdminUser,
 			);
 		}
-		return new PersonalUserDomainAdapter(
+		const adapter = new PersonalUserDomainAdapter(
 			this.doc.reserver as Models.User.PersonalUser,
 		);
+		return adapter.entityReference;
 	}
 
 	set reserver(user:
-		| PersonalUserDomainAdapter
-		| AdminUserDomainAdapter
 		| Domain.Contexts.User.PersonalUser.PersonalUserEntityReference
 		| Domain.Contexts.User.AdminUser.AdminUserEntityReference) {
 		if (
@@ -152,21 +159,21 @@ export class ConversationDomainAdapter
 		this.doc.set('reserver', new MongooseSeedwork.ObjectId(user.id));
 	}
 
-	get listing(): ItemListingDomainAdapter {
+	get listing(): Domain.Contexts.Listing.ItemListing.ItemListingEntityReference {
 		if (!this.doc.listing) {
 			throw new Error('listing is not populated');
 		}
 		if (this.doc.listing instanceof MongooseSeedwork.ObjectId) {
-			throw new TypeError(
-				'listing is not populated or is not of the correct type',
-			);
+			return {
+        id: this.doc.listing.toString(),
+      } as Domain.Contexts.Listing.ItemListing.ItemListingEntityReference;
 		}
 		return new ItemListingDomainAdapter(
 			this.doc.listing as Models.Listing.ItemListing,
 		);
 	}
 
-	async loadListing(): Promise<ItemListingDomainAdapter> {
+	async loadListing(): Promise<Domain.Contexts.Listing.ItemListing.ItemListingEntityReference> {
 		if (!this.doc.listing) {
 			throw new Error('listing is not populated');
 		}

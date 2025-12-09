@@ -19,9 +19,7 @@ Feature: Listing value objects
     When I check isActive
     Then the result should be false
 
-  Scenario: Creating a ListingState with an empty string
-    When I try to create a ListingState with an empty string
-    Then an error should be thrown indicating the value is too short
+ 
 
   Scenario: Creating a ListingState with too long a string
     When I try to create a ListingState with a string longer than 50 characters
@@ -32,9 +30,6 @@ Feature: Listing value objects
     When I create a Category with "Electronics"
     Then the value should be "Electronics"
 
-  Scenario: Creating a Category with an empty string
-    When I try to create a Category with an empty string
-    Then an error should be thrown indicating the value is too short
 
   Scenario: Creating a Category with too long a value
     When I try to create a Category with a string longer than 100 characters
@@ -46,10 +41,6 @@ Feature: Listing value objects
     Then the value should be "Philadelphia, PA"
     And cityState should return "Philadelphia, PA"
 
-  Scenario: Creating a Location with an empty string
-    When I try to create a Location with an empty string
-    Then an error should be thrown indicating the value is too short
-
   Scenario: Creating a Location with too long a value
     When I try to create a Location with a string longer than 255 characters
     Then an error should be thrown indicating the value is too long
@@ -59,10 +50,6 @@ Feature: Listing value objects
     When I create a Title with "Cordless Drill"
     Then the value should be "Cordless Drill"
 
-  Scenario: Creating a Title with an empty string
-    When I try to create a Title with an empty string
-    Then an error should be thrown indicating the value is too short
-
   Scenario: Creating a Title with too long a value
     When I try to create a Title with a string longer than 200 characters
     Then an error should be thrown indicating the value is too long
@@ -71,10 +58,6 @@ Feature: Listing value objects
   Scenario: Creating a Description with valid text
     When I create a Description with "Professional-grade cordless drill with multiple attachments."
     Then the value should be "Professional-grade cordless drill with multiple attachments."
-
-  Scenario: Creating a Description with an empty string
-    When I try to create a Description with an empty string
-    Then an error should be thrown indicating the value is too short
 
   Scenario: Creating a Description with too long a value
     When I try to create a Description with a string longer than 2000 characters

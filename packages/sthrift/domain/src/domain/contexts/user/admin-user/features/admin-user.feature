@@ -37,3 +37,40 @@ Feature: AdminUser Aggregate Operations
     And the user lacks permission to manage user roles
     When I attempt to change the role property
     Then it should throw a PermissionError
+
+  Scenario: Blocking an admin user with permission
+    Given an existing AdminUser aggregate
+    And the user has permission to block users
+    When I set isBlocked to true
+    Then isBlocked should be true
+
+  Scenario: Unblocking an admin user with permission
+    Given an existing AdminUser aggregate that is blocked
+    And the user has permission to block users
+    When I set isBlocked to false
+    Then isBlocked should be false
+
+  Scenario: Loading role asynchronously
+    Given an existing AdminUser aggregate
+    When I call loadRole
+    Then it should return the role asynchronously
+
+  Scenario: Attempting to set role to null
+    Given a new AdminUser aggregate
+    When I attempt to set role to null
+    Then it should throw a PermissionError with message "role cannot be null or undefined"
+
+  Scenario: Attempting to set role to undefined
+    Given a new AdminUser aggregate
+    When I attempt to set role to undefined
+    Then it should throw a PermissionError with message "role cannot be null or undefined"
+
+  Scenario: Getting createdAt from admin user
+    Given an existing AdminUser aggregate
+    When I access the createdAt property
+    Then it should return a valid date
+
+  Scenario: Getting updatedAt from admin user
+    Given an existing AdminUser aggregate
+    When I access the updatedAt property
+    Then it should return a valid date

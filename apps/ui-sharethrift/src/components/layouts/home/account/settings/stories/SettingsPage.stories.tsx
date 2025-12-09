@@ -2,6 +2,7 @@ import type { Meta, StoryFn } from "@storybook/react";
 import { HomeRoutes } from "../../../index.tsx";
 import { HomeAccountSettingsViewContainerCurrentUserDocument } from "../../../../../../generated.tsx";
 import { withMockApolloClient, withMockRouter } from "../../../../../../test-utils/storybook-decorators.tsx";
+import { expect, within } from 'storybook/test';
 
 const meta: Meta<typeof HomeRoutes> = {
 	title: "Pages/Account/Settings",
@@ -18,6 +19,11 @@ const Template: StoryFn<typeof HomeRoutes> = () => <HomeRoutes />;
 
 export const DefaultView: StoryFn<typeof HomeRoutes> = Template.bind({});
 
+DefaultView.play = async ({ canvasElement }) => {
+	const canvas = within(canvasElement);
+	await expect(canvas.getByRole('main')).toBeInTheDocument();
+};
+
 DefaultView.parameters = {
   apolloClient: {
     mocks: [
@@ -30,7 +36,7 @@ DefaultView.parameters = {
             currentPersonalUserAndCreateIfNotExists: {
               __typename: "PersonalUser",
               id: "507f1f77bcf86cd799439099",
-              userType: "personal",
+              userType: "personal-user",
               createdAt: "2024-08-01T00:00:00Z",
               updatedAt: "2025-08-08T12:00:00Z",
               account: {

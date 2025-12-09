@@ -14,10 +14,10 @@ Feature: <AggregateRoot>ItemListing
         
   Scenario: Creating a new draft listing with missing fields	
     When I create a new ItemListing aggregate using getNewInstance with isDraft true and empty title, description, category, and location	
-    Then the listing's title should default to "Draft Title"	
-    And the listing's description should default to "Draft Description"	
-    And the listing's category should default to "Miscellaneous"	
-    And the listing's location should default to "Draft Location"	
+    Then the listing's title should default to empty
+    And the listing's description should default to empty
+    And the listing's category should default to empty
+    And the listing's location should default to empty
     And the listing state should be "Drafted"	
         
   Scenario: Changing the title with permission to update listings	
@@ -89,6 +89,11 @@ Feature: <AggregateRoot>ItemListing
     Then the listing's state should be "Published"	
     And the updatedAt timestamp should change
 
+  Scenario: Publishing a listing without permission
+    Given an ItemListing aggregate without permission to publish item listing
+    When I try to call publish()
+    Then a PermissionError should be thrown
+
   Scenario: Requesting delete with permission
     Given an ItemListing aggregate with permission to delete item listing
     When I call requestDelete()
@@ -106,3 +111,64 @@ Feature: <AggregateRoot>ItemListing
     When I call requestDelete() again
     Then the listing's isDeleted flag should remain true
     And no error should be thrown
+
+  Scenario: Pausing a listing with permission
+    Given an ItemListing aggregate with permission to unpublish item listing
+    When I call pause()
+    Then the listing's state should be "Paused"
+    And the updatedAt timestamp should change
+
+  Scenario: Pausing a listing without permission
+    Given an ItemListing aggregate without permission to unpublish item listing
+    When I try to call pause()
+    Then a PermissionError should be thrown
+
+  Scenario: Cancelling a listing with permission
+    Given an ItemListing aggregate with permission to delete item listing
+    When I call cancel()
+    Then the listing's state should be "Cancelled"
+
+  Scenario: Cancelling a listing without permission
+    Given an ItemListing aggregate without permission to delete item listing
+    When I try to call cancel()
+    Then a PermissionError should be thrown
+
+  Scenario: Blocking a listing with permission
+    Given an ItemListing aggregate with permission to publish item listing
+    When I call setBlocked(true)
+    Then the listing's state should be "Blocked"
+
+  Scenario: Unblocking a listing with permission
+    Given an ItemListing aggregate with permission to publish item listing that is currently blocked
+    When I call setBlocked(false)
+    Then the listing's state should be "AppealRequested"
+
+  Scenario: Blocking already blocked listing
+    Given an ItemListing aggregate with permission to publish item listing that is already blocked
+    When I call setBlocked(true) again
+    Then the listing's state should remain "Blocked"
+
+  Scenario: Unblocking non-blocked listing
+    Given an ItemListing aggregate with permission to publish item listing in Published state
+    When I call setBlocked(false)
+    Then the listing's state should remain "Published"
+
+  Scenario: Blocking a listing without permission
+    Given an ItemListing aggregate without permission to publish item listing
+    When I try to call setBlocked(true)
+    Then a PermissionError should be thrown
+
+  Scenario: Unblocking a listing without permission
+    Given an ItemListing aggregate without permission to publish item listing that is blocked
+    When I try to call setBlocked(false)
+    Then a PermissionError should be thrown
+
+  Scenario: Getting listingType from item listing
+    Given an ItemListing aggregate
+    When I access the listingType property
+    Then it should return "item"
+
+  Scenario: Setting listingType for item listing
+    Given an ItemListing aggregate
+    When I set the listingType to "premium-listing"
+    Then the listingType should be updated to "premium-listing"

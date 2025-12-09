@@ -4,7 +4,6 @@ import {
   type ListingBannerProps,
 } from "../components/listing-banner.tsx";
 import type { PersonalUser } from "../../../../../generated.tsx";
-
 // Mock PersonalUser object for Storybook
 const mockUser: PersonalUser = {
   id: "507f1f77bcf86cd799439011",
@@ -19,7 +18,7 @@ const mockUser: PersonalUser = {
       lastName: "Doe",
     },
   },
-  userType: "personal",
+  userType: "personal-user",
   hasCompletedOnboarding: true,
   isBlocked: false,
 };
@@ -34,5 +33,4 @@ type Story = StoryObj<typeof ListingBanner>;
 export const Default: Story = {
   args: {
     owner: mockUser,
-  } satisfies ListingBannerProps,
-};
+  } satisfies ListingBannerProps};

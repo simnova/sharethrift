@@ -1,0 +1,13 @@
+query AppContainerCurrentUser {
+  currentUserAndCreateIfNotExists {
+    ... on PersonalUser {
+      id
+      userType
+      hasCompletedOnboarding
+    }
+    ... on AdminUser {
+      id
+      userType
+    }
+  }
+}

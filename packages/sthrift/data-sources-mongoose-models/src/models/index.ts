@@ -10,6 +10,7 @@ import {
 	ListingModelFactory,
 } from './listing/index.ts';
 import { ConversationModelFactory } from './conversations/conversation.model.ts';
+import { AccountPlanModelFactory } from './account-plan/account-plan.model.ts';
 import { AdminRoleModelFactory, RoleModelFactory } from './role/index.ts';
 import {
 	AppealRequestModelFactory,
@@ -22,6 +23,7 @@ export * as Conversation from './conversations/index.ts';
 export * as Listing from './listing/index.ts';
 export * as ReservationRequest from './reservation-request/index.ts';
 export * as Role from './role/index.ts';
+export * as AccountPlan from './account-plan/index.ts';
 export * as AppealRequest from './appeal-request/index.ts';
 
 // Explicit export for consumers
@@ -38,6 +40,7 @@ export const mongooseContextBuilder = (
 		User: {
 			PersonalUser: PersonalUserModelFactory(UserModel),
 			AdminUser: AdminUserModelFactory(UserModel),
+      User: UserModel,
 		},
 
 		Listing: {
@@ -54,6 +57,9 @@ export const mongooseContextBuilder = (
 		Role: {
 			Role: RoleModel,
 			AdminRole: AdminRoleModelFactory(RoleModel),
+		},
+    AccountPlan: {
+			AccountPlanModel: AccountPlanModelFactory(initializedService),
 		},
 		AppealRequest: {
 			ListingAppealRequest: ListingAppealRequestModelFactory(

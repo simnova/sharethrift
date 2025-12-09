@@ -76,13 +76,12 @@ export class ItemListingDomainAdapter
 		| Domain.Contexts.User.PersonalUser.PersonalUserEntityReference
 		| Domain.Contexts.User.AdminUser.AdminUserEntityReference {
 		if (!this.doc.sharer) {
-			throw new Error('listing is not populated');
+			throw new Error('sharer is not populated');
 		}
 		if (this.doc.sharer instanceof MongooseSeedwork.ObjectId) {
-			// Return a minimal entity reference when sharer is not populated
 			return {
 				id: this.doc.sharer.toString(),
-			} as Domain.Contexts.User.PersonalUser.PersonalUserEntityReference;
+			} as Domain.Contexts.User.UserEntityReference;
 		}
 		// Check userType discriminator to determine which adapter to use
 		const sharerDoc = this.doc.sharer as
@@ -93,9 +92,10 @@ export class ItemListingDomainAdapter
 				this.doc.sharer as Models.User.AdminUser,
 			);
 		}
-		return new PersonalUserDomainAdapter(
+		const adapter = new PersonalUserDomainAdapter(
 			this.doc.sharer as Models.User.PersonalUser,
 		);
+		return adapter.entityReference;
 	}
 	async loadSharer(): Promise<
 		| Domain.Contexts.User.PersonalUser.PersonalUserEntityReference
@@ -116,9 +116,10 @@ export class ItemListingDomainAdapter
 				this.doc.sharer as Models.User.AdminUser,
 			);
 		}
-		return new PersonalUserDomainAdapter(
+		const adapter = new PersonalUserDomainAdapter(
 			this.doc.sharer as Models.User.PersonalUser,
 		);
+		return adapter.entityReference;
 	}
 	set sharer(user:
 		| Domain.Contexts.User.PersonalUser.PersonalUserEntityReference

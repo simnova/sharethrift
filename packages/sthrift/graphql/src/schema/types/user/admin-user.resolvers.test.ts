@@ -1,10 +1,10 @@
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { describeFeature, loadFeature } from '@amiceli/vitest-cucumber';
+import type { Domain } from '@sthrift/domain';
 import { expect, vi } from 'vitest';
 import type { GraphContext } from '../../../init/context.ts';
 import adminUserResolvers from './admin-user.resolvers.ts';
-import type { Domain } from '@sthrift/domain';
 
 const test = { for: describeFeature };
 const __dirname = path.dirname(fileURLToPath(import.meta.url));

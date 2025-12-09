@@ -116,7 +116,6 @@ const reservationRequest: Resolvers = {
 		reserver: PopulateUserFromField('reserver'),
 		listing: PopulateItemListingFromField('listing'),
 	},
-
 	Query: {
 		myActiveReservations: async (
 			_parent: unknown,

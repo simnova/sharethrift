@@ -43,7 +43,7 @@ function makeBaseProps(
 ): ConversationProps {
 	const user = new PersonalUser<PersonalUserProps>(
 		{
-			userType: 'personal-users',
+			userType: 'personal-user',
 			id: 'user-1',
 			isBlocked: false,
 			schemaVersion: '1.0.0',
@@ -65,11 +65,38 @@ function makeBaseProps(
 						zipCode: '12345',
 					},
 					billing: {
-						subscriptionId: null,
 						cybersourceCustomerId: null,
-						paymentState: '',
-						lastTransactionId: null,
-						lastPaymentAmount: null,
+						subscription: {
+							planCode: 'verified-personal',
+							status: 'ACTIVE',
+							startDate: new Date('2020-01-01T00:00:00Z'),
+							subscriptionId: 'sub_123',
+						},
+						transactions: {
+							items: [
+								{
+									id: '1',
+									transactionId: 'txn_123',
+									amount: 1000,
+									referenceId: 'ref_123',
+									status: 'completed',
+									completedAt: new Date('2020-01-01T00:00:00Z'),
+									errorMessage: null,
+								},
+							],
+							getNewItem: () => ({
+								id: '2',
+								transactionId: 'txn_123',
+								amount: 1000,
+								referenceId: 'ref_123',
+								status: 'completed',
+								completedAt: new Date('2020-01-01T00:00:00Z'),
+								errorMessage: null,
+							}),
+							addItem: vi.fn(),
+							removeItem: vi.fn(),
+							removeAll: vi.fn(),
+						},
 					},
 				},
 			},
@@ -80,7 +107,7 @@ function makeBaseProps(
 	);
 	const reserver = new PersonalUser<PersonalUserProps>(
 		{
-			userType: 'personal-users',
+			userType: 'personal-user',
 			id: 'user-2',
 			isBlocked: false,
 			schemaVersion: '1.0.0',
@@ -102,11 +129,38 @@ function makeBaseProps(
 						zipCode: '12345',
 					},
 					billing: {
-						subscriptionId: null,
 						cybersourceCustomerId: null,
-						paymentState: '',
-						lastTransactionId: null,
-						lastPaymentAmount: null,
+						subscription: {
+							planCode: 'basic',
+							status: 'ACTIVE',
+							startDate: new Date('2020-01-01T00:00:00Z'),
+							subscriptionId: 'sub_456',
+						},
+						transactions: {
+							items: [
+								{
+									id: '1',
+									transactionId: 'txn_123',
+									amount: 1000,
+									referenceId: 'ref_123',
+									status: 'completed',
+									completedAt: new Date('2020-01-01T00:00:00Z'),
+									errorMessage: null,
+								},
+							],
+							getNewItem: () => ({
+								id: '2',
+								transactionId: 'txn_123',
+								amount: 1000,
+								referenceId: 'ref_123',
+								status: 'completed',
+								completedAt: new Date('2020-01-01T00:00:00Z'),
+								errorMessage: null,
+							}),
+							addItem: vi.fn(),
+							removeItem: vi.fn(),
+							removeAll: vi.fn(),
+						},
 					},
 				},
 			},
@@ -133,6 +187,7 @@ function makeBaseProps(
 			updatedAt: new Date('2020-01-02T00:00:00Z'),
 			schemaVersion: '1.0.0',
 			listingType: 'item-listing',
+			loadSharer: async () => user,
 		},
 		makePassport(),
 	);
@@ -200,7 +255,9 @@ test.for(feature, ({ Scenario, Background, BeforeEachScenario }) => {
 			},
 		);
 		Then('the conversation should have a messagingConversationId', () => {
-			expect(newConversation.messagingConversationId).toBe('mock-messaging-conversation-id');
+			expect(newConversation.messagingConversationId).toBe(
+				'mock-messaging-conversation-id',
+			);
 		});
 	});
 
@@ -218,7 +275,7 @@ test.for(feature, ({ Scenario, Background, BeforeEachScenario }) => {
 				conversation.sharer as PersonalUser<PersonalUserProps>;
 			newSharer = new PersonalUser(
 				{
-					userType: 'personal-users',
+					userType: 'personal-user',
 					id: 'user-3',
 					isBlocked: false,
 					schemaVersion: '1.0.0',
@@ -227,7 +284,43 @@ test.for(feature, ({ Scenario, Background, BeforeEachScenario }) => {
 						accountType: originalSharer.account.accountType,
 						email: 'newsharer@cellix.com',
 						username: 'newsharer',
-						profile: originalSharer.account.profile,
+						profile: {
+							firstName: originalSharer.account.profile.firstName,
+							lastName: originalSharer.account.profile.lastName,
+							aboutMe: originalSharer.account.profile.aboutMe,
+							location: originalSharer.account.profile.location,
+						billing: {
+							cybersourceCustomerId:
+								originalSharer.account.profile.billing.cybersourceCustomerId,
+							subscription:
+								originalSharer.account.profile.billing.subscription,
+							transactions: {
+								items: [
+										{
+											id: '1',
+											transactionId: 'txn_123',
+											amount: 1000,
+											referenceId: 'ref_123',
+											status: 'completed',
+											completedAt: new Date('2020-01-01T00:00:00Z'),
+											errorMessage: null,
+										},
+									],
+									getNewItem: () => ({
+										id: '2',
+										transactionId: 'txn_123',
+										amount: 1000,
+										referenceId: 'ref_123',
+										status: 'completed',
+										completedAt: new Date('2020-01-01T00:00:00Z'),
+										errorMessage: null,
+									}),
+									addItem: vi.fn(),
+									removeItem: vi.fn(),
+									removeAll: vi.fn(),
+								},
+							},
+						},
 					},
 					createdAt: originalSharer.createdAt,
 					updatedAt: originalSharer.updatedAt,
@@ -260,7 +353,7 @@ test.for(feature, ({ Scenario, Background, BeforeEachScenario }) => {
 					// @ts-expect-error: testing private setter
 					conversation.sharer = new PersonalUser(
 						{
-							userType: 'personal-users',
+							userType: 'personal-user',
 							id: 'user-3',
 							isBlocked: false,
 							schemaVersion: '1.0.0',
@@ -269,7 +362,44 @@ test.for(feature, ({ Scenario, Background, BeforeEachScenario }) => {
 								accountType: originalSharer.account.accountType,
 								email: 'newsharer@cellix.com',
 								username: 'newsharer',
-								profile: originalSharer.account.profile,
+								profile: {
+									firstName: originalSharer.account.profile.firstName,
+									lastName: originalSharer.account.profile.lastName,
+									aboutMe: originalSharer.account.profile.aboutMe,
+									location: originalSharer.account.profile.location,
+									billing: {
+										cybersourceCustomerId:
+											originalSharer.account.profile.billing
+												.cybersourceCustomerId,
+										subscription:
+											originalSharer.account.profile.billing.subscription,
+										transactions: {
+											items: [
+												{
+													id: '1',
+													transactionId: 'txn_123',
+													amount: 1000,
+													referenceId: 'ref_123',
+													status: 'completed',
+													completedAt: new Date('2020-01-01T00:00:00Z'),
+													errorMessage: null,
+												},
+											],
+											getNewItem: () => ({
+												id: '2',
+												transactionId: 'txn_123',
+												amount: 1000,
+												referenceId: 'ref_123',
+												status: 'completed',
+												completedAt: new Date('2020-01-01T00:00:00Z'),
+												errorMessage: null,
+											}),
+											addItem: vi.fn(),
+											removeItem: vi.fn(),
+											removeAll: vi.fn(),
+										},
+									},
+								},
 							},
 							createdAt: originalSharer.createdAt,
 							updatedAt: originalSharer.updatedAt,
@@ -303,7 +433,7 @@ test.for(feature, ({ Scenario, Background, BeforeEachScenario }) => {
 				conversation.reserver as PersonalUser<PersonalUserProps>;
 			newReserver = new PersonalUser(
 				{
-					userType: 'personal-users',
+					userType: 'personal-user',
 					id: 'user-4',
 					isBlocked: false,
 					schemaVersion: '1.0.0',
@@ -312,7 +442,44 @@ test.for(feature, ({ Scenario, Background, BeforeEachScenario }) => {
 						accountType: originalReserver.account.accountType,
 						email: 'newreserver@cellix.com',
 						username: 'newreserver',
-						profile: originalReserver.account.profile,
+						profile: {
+							firstName: originalReserver.account.profile.firstName,
+							lastName: originalReserver.account.profile.lastName,
+							aboutMe: originalReserver.account.profile.aboutMe,
+							location: originalReserver.account.profile.location,
+						billing: {
+							cybersourceCustomerId:
+								originalReserver.account.profile.billing
+									.cybersourceCustomerId,
+							subscription:
+								originalReserver.account.profile.billing.subscription,
+							transactions: {
+								items: [
+										{
+											id: '1',
+											transactionId: 'txn_123',
+											amount: 1000,
+											referenceId: 'ref_123',
+											status: 'completed',
+											completedAt: new Date('2020-01-01T00:00:00Z'),
+											errorMessage: null,
+										},
+									],
+									getNewItem: () => ({
+										id: '2',
+										transactionId: 'txn_123',
+										amount: 1000,
+										referenceId: 'ref_123',
+										status: 'completed',
+										completedAt: new Date('2020-01-01T00:00:00Z'),
+										errorMessage: null,
+									}),
+									addItem: vi.fn(),
+									removeItem: vi.fn(),
+									removeAll: vi.fn(),
+								},
+							},
+						},
 					},
 					createdAt: originalReserver.createdAt,
 					updatedAt: originalReserver.updatedAt,
@@ -347,7 +514,7 @@ test.for(feature, ({ Scenario, Background, BeforeEachScenario }) => {
 					// @ts-expect-error: testing private setter
 					conversation.reserver = new PersonalUser(
 						{
-							userType: 'personal-users',
+							userType: 'personal-user',
 							id: 'user-4',
 							isBlocked: false,
 							schemaVersion: '1.0.0',
@@ -356,7 +523,44 @@ test.for(feature, ({ Scenario, Background, BeforeEachScenario }) => {
 								accountType: originalReserver.account.accountType,
 								email: 'newreserver@cellix.com',
 								username: 'newreserver',
-								profile: originalReserver.account.profile,
+								profile: {
+									firstName: originalReserver.account.profile.firstName,
+									lastName: originalReserver.account.profile.lastName,
+									aboutMe: originalReserver.account.profile.aboutMe,
+									location: originalReserver.account.profile.location,
+								billing: {
+									cybersourceCustomerId:
+										originalReserver.account.profile.billing
+											.cybersourceCustomerId,
+									subscription:
+										originalReserver.account.profile.billing.subscription,
+									transactions: {
+										items: [
+												{
+													id: '1',
+													transactionId: 'txn_123',
+													amount: 1000,
+													referenceId: 'ref_123',
+													status: 'completed',
+													completedAt: new Date('2020-01-01T00:00:00Z'),
+													errorMessage: null,
+												},
+											],
+											getNewItem: () => ({
+												id: '2',
+												transactionId: 'txn_123',
+												amount: 1000,
+												referenceId: 'ref_123',
+												status: 'completed',
+												completedAt: new Date('2020-01-01T00:00:00Z'),
+												errorMessage: null,
+											}),
+											addItem: vi.fn(),
+											removeItem: vi.fn(),
+											removeAll: vi.fn(),
+										},
+									},
+								},
 							},
 							createdAt: originalReserver.createdAt,
 							updatedAt: originalReserver.updatedAt,
@@ -460,51 +664,194 @@ test.for(feature, ({ Scenario, Background, BeforeEachScenario }) => {
 				'2020-01-02T00:00:00.000Z',
 			);
 		});
+		And('the schemaVersion property should return the correct value', () => {
+			expect(conversation.schemaVersion).toBeDefined();
+			expect(typeof conversation.schemaVersion).toBe('string');
+		});
+	});
+
+	Scenario('Setting listing to null', ({ Given, When, Then }) => {
+		let setListingToNull: () => void;
+		Given(
+			'a Conversation aggregate with permission to manage conversation',
+			() => {
+				passport = makePassport(true);
+				conversation = new Conversation(makeBaseProps(), passport);
+			},
+		);
+		When('I try to set the listing to null', () => {
+			setListingToNull = () => {
+				// @ts-expect-error: testing private setter
+				// biome-ignore lint/suspicious/noExplicitAny: Testing null assignment validation
+				conversation.listing = null as any;
+			};
+		});
+		Then(
+			'a PermissionError should be thrown with message "listing cannot be null or undefined"',
+			() => {
+				expect(setListingToNull).toThrow(DomainSeedwork.PermissionError);
+				expect(setListingToNull).toThrow('listing cannot be null or undefined');
+			},
+		);
+	});
+
+	Scenario('Setting listing to undefined', ({ Given, When, Then }) => {
+		let setListingToUndefined: () => void;
+		Given(
+			'a Conversation aggregate with permission to manage conversation',
+			() => {
+				passport = makePassport(true);
+				conversation = new Conversation(makeBaseProps(), passport);
+			},
+		);
+		When('I try to set the listing to undefined', () => {
+			setListingToUndefined = () => {
+				// @ts-expect-error: testing private setter
+				// biome-ignore lint/suspicious/noExplicitAny: Testing undefined assignment validation
+				conversation.listing = undefined as any;
+			};
+		});
+		Then(
+			'a PermissionError should be thrown with message "listing cannot be null or undefined"',
+			() => {
+				expect(setListingToUndefined).toThrow(DomainSeedwork.PermissionError);
+				expect(setListingToUndefined).toThrow(
+					'listing cannot be null or undefined',
+				);
+			},
+		);
+	});
+
+	Scenario(
+		'Getting messages from conversation',
+		({ Given, When, Then }) => {
+			// biome-ignore lint/suspicious/noExplicitAny: Test variable
+			let messages: readonly any[];
+			Given('a Conversation aggregate with messages', () => {
+				passport = makePassport(true);
+				conversation = new Conversation(makeBaseProps(), passport);
+			});
+			When('I access the messages property', () => {
+				messages = conversation.messages;
+			});
+			Then('it should return an array of messages', () => {
+				expect(Array.isArray(messages)).toBe(true);
+			});
+		},
+	);
+
+	Scenario('Loading listing asynchronously', ({ Given, When, Then }) => {
+		// biome-ignore lint/suspicious/noExplicitAny: Test variable
+		let loadedListing: any;
+		Given('a Conversation aggregate', () => {
+			passport = makePassport(true);
+			conversation = new Conversation(makeBaseProps(), passport);
+		});
+		When('I call loadListing()', async () => {
+			loadedListing = await conversation.loadListing();
+		});
+		Then('it should return the listing asynchronously', () => {
+			expect(loadedListing).toBeDefined();
+		});
+	});
+
+	Scenario('Setting reserver to null', ({ Given, When, Then }) => {
+		let setReserverToNull: () => void;
+		Given(
+			'a Conversation aggregate with permission to manage conversation',
+			() => {
+				passport = makePassport(true);
+				conversation = new Conversation(makeBaseProps(), passport);
+			},
+		);
+		When('I try to set the reserver to null', () => {
+			setReserverToNull = () => {
+				// @ts-expect-error: testing private setter
+				// biome-ignore lint/suspicious/noExplicitAny: Testing null assignment
+				conversation.reserver = null as any;
+			};
+		});
+		Then(
+			'a PermissionError should be thrown with message "reserver cannot be null or undefined"',
+			() => {
+				expect(setReserverToNull).toThrow(DomainSeedwork.PermissionError);
+				expect(setReserverToNull).toThrow(
+					'reserver cannot be null or undefined',
+				);
+			},
+		);
+	});
+
+	Scenario('Setting reserver to undefined', ({ Given, When, Then }) => {
+		let setReserverToUndefined: () => void;
+		Given(
+			'a Conversation aggregate with permission to manage conversation',
+			() => {
+				passport = makePassport(true);
+				conversation = new Conversation(makeBaseProps(), passport);
+			},
+		);
+		When('I try to set the reserver to undefined', () => {
+			setReserverToUndefined = () => {
+				// @ts-expect-error: testing private setter
+				// biome-ignore lint/suspicious/noExplicitAny: Testing undefined assignment
+				conversation.reserver = undefined as any;
+			};
+		});
+		Then(
+			'a PermissionError should be thrown with message "reserver cannot be null or undefined"',
+			() => {
+				expect(setReserverToUndefined).toThrow(DomainSeedwork.PermissionError);
+				expect(setReserverToUndefined).toThrow(
+					'reserver cannot be null or undefined',
+				);
+			},
+		);
 	});
 
 	Scenario(
 		'Setting the messagingConversationId with permission',
 		({ Given, When, Then }) => {
-			Given(
-				'a Conversation aggregate with permission to manage conversation',
-				() => {
-					passport = makePassport(true);
-					conversation = new Conversation(makeBaseProps(), passport);
-				},
-			);
-			When('I set the messagingConversationId to a new value', () => {
-				conversation.messagingConversationId = 'twilio-456';
-			});
-			Then('the messagingConversationId should be updated', () => {
-				expect(conversation.messagingConversationId).toBe('twilio-456');
-			});
-		},
-	);
+		Given(
+			'a Conversation aggregate with permission to manage conversation',
+			() => {
+				passport = makePassport(true);
+				conversation = new Conversation(makeBaseProps(), passport);
+			},
+		);
+		When('I set the messagingConversationId to a new value', () => {
+			conversation.messagingConversationId = 'twilio-456';
+		});
+		Then('the messagingConversationId should be updated', () => {
+			expect(conversation.messagingConversationId).toBe('twilio-456');
+		});
+	},
+);
 
 	Scenario(
 		'Setting the messagingConversationId without permission',
 		({ Given, When, Then }) => {
-			let setTwilioIdWithoutPermission: () => void;
-			Given(
-				'a Conversation aggregate without permission to manage conversation',
-				() => {
-					passport = makePassport(false);
-					conversation = new Conversation(makeBaseProps(), passport);
-				},
+		let setTwilioIdWithoutPermission: () => void;
+		Given(
+			'a Conversation aggregate without permission to manage conversation',
+			() => {
+				passport = makePassport(false);
+				conversation = new Conversation(makeBaseProps(), passport);
+			},
+		);
+		When('I try to set the messagingConversationId to a new value', () => {
+			setTwilioIdWithoutPermission = () => {
+				conversation.messagingConversationId = 'twilio-789';
+			};
+		});
+		Then('a PermissionError should be thrown', () => {
+			expect(setTwilioIdWithoutPermission).toThrow(
+				DomainSeedwork.PermissionError,
 			);
-			When('I try to set the messagingConversationId to a new value', () => {
-				setTwilioIdWithoutPermission = () => {
-					conversation.messagingConversationId = 'twilio-789';
-				};
-			});
-			Then('a PermissionError should be thrown', () => {
-				expect(setTwilioIdWithoutPermission).toThrow(
-					DomainSeedwork.PermissionError,
-				);
-				expect(setTwilioIdWithoutPermission).throws(
-					'You do not have permission to change the messagingConversationId of this conversation',
-				);
-			});
-		},
-	);
+			expect(setTwilioIdWithoutPermission).throws(
+				'You do not have permission to change the messagingConversationId of this conversation',
+			);
+		});
+	},
+);
 });

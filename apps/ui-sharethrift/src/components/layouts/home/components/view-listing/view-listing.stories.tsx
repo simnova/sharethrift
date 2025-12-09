@@ -9,7 +9,6 @@ import {
 	withMockApolloClient,
 	withMockRouter,
 } from '../../../../../test-utils/storybook-decorators.tsx';
-
 // Local mock listing data (removed dependency on DUMMY_LISTINGS)
 const baseListingId = 'mock-listing-id-1';
 const MOCK_LISTING_BASE: ItemListing = {
@@ -45,7 +44,7 @@ const MOCK_LISTING_BASE: ItemListing = {
 		updatedAt: new Date().toISOString(),
 		isBlocked: false,
 		schemaVersion: '1.0',
-		userType: 'personal',
+		userType: 'personal-user',
 	},
     listingType: 'item-listing',
 };
@@ -115,8 +114,7 @@ export const Default: Story = {
 		isAuthenticated: false,
 		userReservationRequest: null,
 		sharedTimeAgo: '2 days ago',
-	},
-};
+	}};
 
 export const AsReserver: Story = {
 	args: {

@@ -50,3 +50,9 @@ Feature: Update Item Listing
     When I update the listing with isBlocked status true
     Then the listing setBlocked method should be called with true
     And the listing should be saved to the repository
+
+  Scenario: Update fails when save returns undefined
+    Given a listing with id "listing-123"
+    And the repository save returns undefined
+    When I update the listing with title "New Title"
+    Then an error should be thrown with message "Item listing update failed"

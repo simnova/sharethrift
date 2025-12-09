@@ -26,3 +26,8 @@ Feature: Delete Item Listing
     Given the listing with id "nonexistent-listing" does not exist
     When the user requests to delete the listing with id "nonexistent-listing"
     Then an error should be thrown with message "Listing not found"
+
+  Scenario: Failing to delete when unit of work is not available
+    Given the unit of work is not available
+    When the user requests to delete the listing
+    Then an error should be thrown with message "ItemListingUnitOfWork not available on dataSources.domainDataSource.Listing.ItemListing"

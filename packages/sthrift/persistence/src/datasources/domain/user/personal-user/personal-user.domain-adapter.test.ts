@@ -17,7 +17,7 @@ function makeUserDoc(
 ): Models.User.PersonalUser {
 	const base = {
 		id: new MongooseSeedwork.ObjectId(),
-		userType: 'personal-users',
+		userType: 'personal-user',
 		isBlocked: false,
 		hasCompletedOnboarding: false,
 		account: {
@@ -37,11 +37,14 @@ function makeUserDoc(
 					zipCode: '12345',
 				},
 				billing: {
-					subscriptionId: null,
 					cybersourceCustomerId: null,
-					paymentState: '',
-					lastTransactionId: null,
-					lastPaymentAmount: null,
+					subscription: {
+						subscriptionId: 'sub-123',
+						planCode: 'free',
+						status: 'active',
+						startDate: new Date('2024-01-01'),
+					},
+					transactions: [],
 				},
 			},
 		},
@@ -63,6 +66,7 @@ test.for(feature, ({ Scenario, Background, BeforeEachScenario }) => {
 
 	BeforeEachScenario(() => {
 		doc = makeUserDoc();
+		vi.spyOn(doc, 'set');
 		adapter = new PersonalUserDomainAdapter(doc);
 		result = undefined;
 	});
@@ -79,7 +83,7 @@ test.for(feature, ({ Scenario, Background, BeforeEachScenario }) => {
 			result = adapter.userType;
 		});
 		Then('it should return the correct value', () => {
-			expect(result).toBe('personal-users');
+			expect(result).toBe('personal-user');
 		});
 	});
 
@@ -138,6 +142,155 @@ test.for(feature, ({ Scenario, Background, BeforeEachScenario }) => {
 		});
 		Then("the document's hasCompletedOnboarding should be true", () => {
 			expect(doc.hasCompletedOnboarding).toBe(true);
+		});
+	});
+
+	Scenario('Getting account when not initialized', ({ When, Then }) => {
+		When('the document account is undefined', () => {
+			doc.account = undefined as never;
+		});
+
+		Then('getting account should initialize it with empty object', () => {
+			const account = adapter.account;
+			expect(account).toBeDefined();
+			expect(doc.account).toEqual({});
+		});
+	});
+
+	Scenario('Accessing account profile property', ({ When, Then, And }) => {
+		When('I access the account profile property', () => {
+			result = adapter.account.profile;
+		});
+
+		Then('it should return a PersonalUserAccountProfileDomainAdapter', () => {
+			expect(result).toBeDefined();
+		});
+
+		And('the profile should have firstName and lastName', () => {
+			expect((result as { firstName: string }).firstName).toBe('Test');
+		});
+	});
+
+	Scenario('Accessing profile location property', ({ When, Then, And }) => {
+		When('I access the profile location property', () => {
+			result = adapter.account.profile.location;
+		});
+
+		Then('it should return a PersonalUserAccountProfileLocationDomainAdapter', () => {
+			expect(result).toBeDefined();
+		});
+
+		And('the location should have address and city', () => {
+			expect((result as { address1: string }).address1).toBe('123 Main St');
+			expect((result as { city: string }).city).toBe('Test City');
+		});
+	});
+
+	Scenario('Accessing profile billing property', ({ When, Then, And }) => {
+		When('I access the profile billing property', () => {
+			result = adapter.account.profile.billing;
+		});
+
+		Then('it should return a PersonalUserAccountProfileBillingDomainAdapter', () => {
+			expect(result).toBeDefined();
+		});
+
+		And('the billing should have subscription data', () => {
+			expect((result as { subscription: { subscriptionId: string } }).subscription).toBeDefined();
+			expect((result as { subscription: { subscriptionId: string } }).subscription.subscriptionId).toBe('sub-123');
+		});
+	});
+
+	Scenario('Setting account email through adapter', ({ When, Then }) => {
+		When('I set the account email to "newemail@test.com"', () => {
+			adapter.account.email = 'newemail@test.com';
+		});
+
+		Then('the account email should be "newemail@test.com"', () => {
+			expect(adapter.account.email).toBe('newemail@test.com');
+		});
+	});
+
+	Scenario('Setting account username through adapter', ({ When, Then }) => {
+		When('I set the account username to "newusername"', () => {
+			adapter.account.username = 'newusername';
+		});
+
+		Then('the account username should be "newusername"', () => {
+			expect(adapter.account.username).toBe('newusername');
+		});
+	});
+
+	Scenario('Setting profile firstName through adapter', ({ When, Then }) => {
+		When('I set the profile firstName to "John"', () => {
+			adapter.account.profile.firstName = 'John';
+		});
+
+		Then('the profile firstName should be "John"', () => {
+			expect(adapter.account.profile.firstName).toBe('John');
+		});
+	});
+
+	Scenario('Setting profile lastName through adapter', ({ When, Then }) => {
+		When('I set the profile lastName to "Doe"', () => {
+			adapter.account.profile.lastName = 'Doe';
+		});
+
+		Then('the profile lastName should be "Doe"', () => {
+			expect(adapter.account.profile.lastName).toBe('Doe');
+		});
+	});
+
+	Scenario('Setting profile location address through adapter', ({ When, Then }) => {
+		When('I set the profile location address1 to "456 New St"', () => {
+			adapter.account.profile.location.address1 = '456 New St';
+		});
+
+		Then('the profile location address1 should be "456 New St"', () => {
+			expect(adapter.account.profile.location.address1).toBe('456 New St');
+		});
+	});
+
+	Scenario('Setting profile billing subscription data', ({ When, Then }) => {
+		When('I set the profile billing subscription subscriptionId to "sub-active-123"', () => {
+			adapter.account.profile.billing.subscription.subscriptionId = 'sub-active-123';
+		});
+
+		Then('the profile billing subscription subscriptionId should be "sub-active-123"', () => {
+			expect(adapter.account.profile.billing.subscription.subscriptionId).toBe('sub-active-123');
+		});
+	});
+
+	Scenario('Getting profile when not initialized', ({ When, Then }) => {
+		When('the account profile is undefined', () => {
+			doc.account.profile = undefined as never;
+		});
+
+		Then('getting profile should initialize it with empty object', () => {
+			const profile = adapter.account.profile;
+			expect(profile).toBeDefined();
+		});
+	});
+
+	Scenario('Getting location when not initialized', ({ When, Then }) => {
+		When('the profile location is undefined', () => {
+			doc.account.profile.location = undefined as never;
+		});
+
+		Then('getting location should initialize it with empty object', () => {
+			const location = adapter.account.profile.location;
+			expect(location).toBeDefined();
+		});
+	});
+
+	Scenario('Getting billing when not initialized', ({ When, Then }) => {
+		When('the profile billing is undefined', () => {
+			doc.account.profile.billing = undefined as never;
+		});
+
+		Then('getting billing should initialize it with empty object', () => {
+			const billing = adapter.account.profile.billing;
+			expect(billing).toBeDefined();
 		});
 	});
 });
