@@ -5,12 +5,6 @@ import { AuthProvider } from 'react-oidc-context';
 import { MockedProvider } from '@apollo/client/testing/react';
 import { App } from './App.tsx';
 
-const generateMockToken = () => {
-	const randomPart = Math.random().toString(36).substring(2, 15);
-	const timestamp = Date.now().toString(36);
-	return `mock_${timestamp}_${randomPart}`;
-};
-
 const mockEnv = {
 	VITE_FUNCTION_ENDPOINT: 'https://mock-functions.example.com',
 	VITE_BLOB_STORAGE_CONFIG_URL: 'https://mock-storage.example.com',
@@ -23,7 +17,7 @@ const mockStorage = {
 	getItem: (key: string) => {
 		if (key.includes('oidc.user')) {
 			return JSON.stringify({
-				access_token: generateMockToken(),
+				access_token: '',
 				profile: { sub: 'test-user' },
 			});
 		}
