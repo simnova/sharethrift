@@ -1,3 +1,4 @@
+import { MemoryRouter } from "react-router-dom";
 import type { Meta, StoryObj } from "@storybook/react";
 import {
   ListingBanner,
@@ -26,6 +27,13 @@ const mockUser: PersonalUser = {
 const meta: Meta<typeof ListingBanner> = {
   title: "Components/Listings/ListingBanner",
   component: ListingBanner,
+  decorators: [
+    (Story) => (
+      <MemoryRouter>
+        <Story />
+      </MemoryRouter>
+    ),
+  ],
 };
 export default meta;
 type Story = StoryObj<typeof ListingBanner>;
