@@ -79,6 +79,8 @@ ShareThrift is a web‑based peer‑to‑peer sharing platform that enables peop
 
 ## 🏗 Architecture
 
+ShareThrift is implemented using Domain-Driven Design (DDD), event-driven behaviors, and clear modular boundaries defined in the BRD/SRD. These principles ensure predictable evolution, maintainability, and clear separation of concerns across the platform.
+
 ShareThrift applies layered Domain-Driven Design:
 
 - Domain Layer: aggregates, entities, value objects, domain events
