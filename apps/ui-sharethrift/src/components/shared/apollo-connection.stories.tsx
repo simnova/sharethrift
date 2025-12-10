@@ -3,12 +3,7 @@ import { expect, within } from 'storybook/test';
 import { AuthProvider } from 'react-oidc-context';
 import { MemoryRouter } from 'react-router-dom';
 import { ApolloConnection } from './apollo-connection.tsx';
-
-const generateMockToken = () => {
-	const randomPart = Math.random().toString(36).substring(2, 15);
-	const timestamp = Date.now().toString(36);
-	return `mock_${timestamp}_${randomPart}`;
-};
+import { generateMockToken } from '../../test-utils/mock-token-generator';
 
 // Mock environment variables
 const mockEnv = {
