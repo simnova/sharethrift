@@ -30,6 +30,6 @@
     "@cellix/vitest-config": "workspace:*",
     "typescript": "^5.8.3",
     "rimraf": "^6.0.1",
-    "vitest": "^2.2.9"
+    "vitest": "^3.2.4"
   }
 }
