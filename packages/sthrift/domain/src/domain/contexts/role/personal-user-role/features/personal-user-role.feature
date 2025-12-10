@@ -2,7 +2,7 @@ Feature: <AggregateRoot> PersonalUserRole
  
   Background:
     Given a valid Passport with user management permissions
-    And base personal user role properties with roleName ""Member"", isDefault true, valid timestamps and permissions"
+    And base personal user role properties with roleName "Member", isDefault true, valid timestamps and permissions
 
 	Scenario: Creating a new personal user role instance
 		When I create a new PersonalUserRole aggregate using getNewInstance

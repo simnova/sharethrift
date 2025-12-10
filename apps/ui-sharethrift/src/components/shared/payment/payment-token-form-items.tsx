@@ -17,7 +17,7 @@ export interface TokenOptions {
 
 interface PaymentTokenFormItemsProps {
 	cyberSourcePublicKey: string;
-	// biome-ignore lint/suspicious/noExplicitAny: <explanation>
+	// biome-ignore lint/suspicious/noExplicitAny: CyberSource Flex SDK doesn't provide TypeScript types
 	onMicroformCreated: (microform: any) => void;
 	onCardNumberChange: (isEmpty: boolean) => void;
 	onSecurityCodeChange: (isEmpty: boolean) => void;
@@ -35,14 +35,14 @@ export const PaymentTokenFormItems: FC<PaymentTokenFormItemsProps> = (
 	}, []);
 
 	const createFlexObj = useCallback(
-		// biome-ignore lint/suspicious/noExplicitAny: <explanation>
 		(
 			keyId: string,
+			// biome-ignore lint/suspicious/noExplicitAny: CyberSource Flex SDK event data lacks TypeScript definitions
 			clearValidationText: (data: any, field: string) => void,
 		): void => {
 			try {
-				// biome-ignore lint/suspicious/noExplicitAny: <explanation>
-				const flex = new (window as { [key: string]: any })['Flex'](keyId);
+				// biome-ignore lint/suspicious/noExplicitAny: CyberSource Flex SDK loaded globally via script tag
+				const flex = new (globalThis as { [key: string]: any })['Flex'](keyId);
 
 				// Setup styles for flex iframe
 				const myStyles = {
@@ -73,11 +73,11 @@ export const PaymentTokenFormItems: FC<PaymentTokenFormItemsProps> = (
 				});
 
 				// Add event listeners
-				// biome-ignore lint/suspicious/noExplicitAny: <explanation>
+				// biome-ignore lint/suspicious/noExplicitAny: CyberSource Flex field event callback type is not exported
 				number.on('change', (data: any) => {
 					clearValidationText(data, 'number');
 				});
-				// biome-ignore lint/suspicious/noExplicitAny: <explanation>
+				// biome-ignore lint/suspicious/noExplicitAny: CyberSource Flex field event callback type is not exported
 				securityCode.on('change', (data: any) => {
 					clearValidationText(data, 'securityCode');
 				});
@@ -92,7 +92,6 @@ export const PaymentTokenFormItems: FC<PaymentTokenFormItemsProps> = (
 		[props.onMicroformCreated],
 	);
 
-	// biome-ignore lint/correctness/useExhaustiveDependencies: <explanation>
 	useEffect(() => {
 		let microformScript: HTMLScriptElement;
 
@@ -101,10 +100,9 @@ export const PaymentTokenFormItems: FC<PaymentTokenFormItemsProps> = (
 			microformScript.src = cyberSourceUrl;
 			microformScript.async = true;
 			microformScript.onload = () => {
-				// biome-ignore lint/suspicious/noExplicitAny: <explanation>
 				createFlexObj(
 					props.cyberSourcePublicKey || '',
-					(data: any, field: string) => {
+					(data: { empty: boolean }, field: string) => {
 						switch (field) {
 							case 'number':
 								props.onCardNumberChange(data.empty);
@@ -139,7 +137,6 @@ export const PaymentTokenFormItems: FC<PaymentTokenFormItemsProps> = (
 				required={true}
 				rules={[{ required: true, message: 'Please provide the card number.' }]}
 			>
-				{/** biome-ignore lint/nursery/useUniqueElementIds: <explanation> */}
 				<div id="card-number-container" />
 			</Form.Item>
 
@@ -161,13 +158,13 @@ export const PaymentTokenFormItems: FC<PaymentTokenFormItemsProps> = (
 							},
 						]}
 					>
-						{/** biome-ignore lint/nursery/useUniqueElementIds: <explanation> */}
 						<DatePicker.MonthPicker
 							style={{ borderRadius: '3px' }}
 							id="expirationMonthPicker"
 							name="expirationMonthPicker"
 							placeholder="Month-Year"
 							format="MM-YYYY"
+							// biome-ignore lint/suspicious/noExplicitAny: dayjs Dayjs type not exported from DatePicker
 							disabledDate={(current: any) => {
 								return (
 									current &&
@@ -193,7 +190,6 @@ export const PaymentTokenFormItems: FC<PaymentTokenFormItemsProps> = (
 						]}
 						// help={securityCodeValidationHelpText}
 					>
-						{/** biome-ignore lint/nursery/useUniqueElementIds: <explanation> */}
 						<div id="securityCode-container" />
 					</Form.Item>
 				</Col>

@@ -81,7 +81,6 @@ export class PersonalUserDomainAdapter
 
 	get account() {
 		if (!this.doc.account) {
-			// this.doc.set('account', {}); 
       this.doc.account = {} as Models.User.PersonalUserAccount;
 		}
 		return new PersonalUserAccountDomainAdapter(this.doc.account);
