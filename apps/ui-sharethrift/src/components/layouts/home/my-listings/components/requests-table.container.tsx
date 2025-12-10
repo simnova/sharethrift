@@ -101,17 +101,46 @@ export const RequestsTableContainer: React.FC<RequestsTableContainerProps> = ({
 	};
 
 	const handleAction = async (action: string, requestId: string) => {
-		if (action !== 'approve' && action !== 'accept') {
-			return;
-		}
+		switch (action) {
+			case 'accept':
+			case 'approve':
+				try {
+					await acceptRequest({ variables: { input: { id: requestId } } });
+				} catch (error) {
+					const errorMessage =
+						error instanceof Error ? error.message : 'Unknown error occurred';
+					message.error(`Failed to accept request: ${errorMessage}`);
+					console.error('Accept request error:', error);
+				}
+				break;
 
-		try {
-			await acceptRequest({ variables: { input: { id: requestId } } });
-		} catch (error) {
-			const errorMessage =
-				error instanceof Error ? error.message : 'Unknown error occurred';
-			message.error(`Failed to accept request: ${errorMessage}`);
-			console.error(`${action} request error:`, error);
+			case 'reject':
+				// TODO: Implement reject functionality in future PR
+				message.info('Reject functionality coming soon');
+				break;
+
+			case 'close':
+				// TODO: Implement close functionality in future PR
+				message.info('Close functionality coming soon');
+				break;
+
+			case 'archive':
+				// TODO: Implement archive functionality in future PR
+				message.info('Archive functionality coming soon');
+				break;
+
+			case 'delete':
+				// TODO: Implement delete functionality in future PR
+				message.info('Delete functionality coming soon');
+				break;
+
+			case 'message':
+				// TODO: Implement message functionality in future PR
+				message.info('Message functionality coming soon');
+				break;
+
+			default:
+				console.warn(`Unknown action: ${action}`);
 		}
 	};
 

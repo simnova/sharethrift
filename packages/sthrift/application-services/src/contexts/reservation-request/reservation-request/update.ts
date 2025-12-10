@@ -3,7 +3,6 @@ import type { DataSources } from '@sthrift/persistence';
 
 export interface ReservationRequestUpdateCommand {
 	id: string;
-	sharerEmail?: string;
 	state?: string;
 	closeRequestedBySharer?: boolean;
 	closeRequestedByReserver?: boolean;
