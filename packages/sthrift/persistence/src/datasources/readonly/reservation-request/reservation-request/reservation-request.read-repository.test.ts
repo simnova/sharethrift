@@ -271,7 +271,7 @@ test.for(feature, ({ Scenario, BeforeEachScenario, Background }) => {
     });
 
     Then('I should receive an array of ReservationRequest entities', () => {
-      expectFindCalledWith(mockDataSource, {}, undefined);
+      expectFindCalledWith(mockDataSource, {}, { populateFields: ['listing', 'reserver'] });
     });
 
     And('the array should contain all reservation requests', () => {
@@ -291,7 +291,7 @@ test.for(feature, ({ Scenario, BeforeEachScenario, Background }) => {
     });
 
     Then('I should receive a ReservationRequest entity', () => {
-      expect(mockDataSource.findById).toHaveBeenCalledWith(TEST_IDS.RESERVATION_1, undefined);
+      expect(mockDataSource.findById).toHaveBeenCalledWith(TEST_IDS.RESERVATION_1, { populateFields: ['listing', 'reserver'] });
     });
 
     And('the entity\'s id should be "reservation-1"', () => {
@@ -306,7 +306,7 @@ test.for(feature, ({ Scenario, BeforeEachScenario, Background }) => {
     });
 
     Then('it should return null', () => {
-      expect(mockDataSource.findById).toHaveBeenCalledWith(TEST_IDS.NONEXISTENT, undefined);
+      expect(mockDataSource.findById).toHaveBeenCalledWith(TEST_IDS.NONEXISTENT, { populateFields: ['listing', 'reserver'] });
     });
   });
 
@@ -323,7 +323,7 @@ test.for(feature, ({ Scenario, BeforeEachScenario, Background }) => {
       expectFindCalledWith(
         mockDataSource,
         { reserver: TEST_OBJECT_IDS.USER_1 },
-        undefined
+        { populateFields: ['listing', 'reserver'] }
       );
     });
 
@@ -420,7 +420,7 @@ test.for(feature, ({ Scenario, BeforeEachScenario, Background }) => {
     });
 
     Then('I should receive a ReservationRequest entity', () => {
-      expectFindOneCalledWith(mockDataSource, makeActiveReservationFilter(TEST_IDS.USER_1, TEST_IDS.LISTING_1), undefined);
+      expectFindOneCalledWith(mockDataSource, makeActiveReservationFilter(TEST_IDS.USER_1, TEST_IDS.LISTING_1), { populateFields: ['listing', 'reserver'] });
     });
 
     And('the entity\'s reserver id should be "user-1"', () => {
@@ -449,7 +449,7 @@ test.for(feature, ({ Scenario, BeforeEachScenario, Background }) => {
     });
 
     Then('I should receive an array of ReservationRequest entities', () => {
-      expectFindCalledWith(mockDataSource, makeOverlapActiveFilter(TEST_IDS.LISTING_1, startDate, endDate), undefined);
+      expectFindCalledWith(mockDataSource, makeOverlapActiveFilter(TEST_IDS.LISTING_1, startDate, endDate), { populateFields: ['listing', 'reserver'] });
     });
 
     And('the array should contain overlapping active reservation requests', () => {
