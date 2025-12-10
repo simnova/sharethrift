@@ -1153,4 +1153,106 @@ test.for(feature, ({ Scenario }) => {
 			});
 		},
 	);
+
+	Scenario(
+		'Accepting a reservation request successfully',
+		({ Given, And, When, Then }) => {
+			const requestId = 'request-123';
+			const updatedRequest = createMockReservationRequest({
+				id: requestId,
+				state: 'Accepted',
+			});
+
+			Given(
+				'a verified user with a valid verifiedJwt containing email',
+				() => {
+					context = makeMockGraphContext({
+						applicationServices: {
+							ReservationRequest: {
+								ReservationRequest: {
+									update: vi.fn().mockResolvedValue(updatedRequest),
+								},
+							},
+							verifiedUser: {
+								verifiedJwt: {
+									sub: 'user-1',
+									email: 'sharer@example.com',
+								},
+							},
+						} as unknown as GraphContext['applicationServices'],
+					});
+				},
+			);
+
+			And('a valid reservation request id', () => {
+				// requestId is already set
+			});
+
+			When('the acceptReservationRequest mutation is executed', async () => {
+				const resolver = reservationRequestResolvers.Mutation
+					?.acceptReservationRequest as TestResolver<{
+					input: { id: string };
+				}>;
+				result = await resolver(
+					{},
+					{ input: { id: requestId } },
+					context,
+					{} as never,
+				);
+			});
+
+			Then(
+				'it should call ReservationRequest.update with id and state "Accepted"',
+				() => {
+					expect(
+						context.applicationServices.ReservationRequest.ReservationRequest
+							.update,
+					).toHaveBeenCalledWith({
+						id: requestId,
+						state: 'Accepted',
+					});
+				},
+			);
+
+			And('it should return the accepted reservation request', () => {
+				expect(result).toEqual(updatedRequest);
+				expect((result as ReservationRequestEntity).state).toBe('Accepted');
+			});
+		},
+	);
+
+	Scenario(
+		'Accepting a reservation request without authentication',
+		({ Given, When, Then }) => {
+			Given('a user without a verifiedJwt in their context', () => {
+				context = makeMockGraphContext({
+					applicationServices: {
+						verifiedUser: undefined,
+					} as unknown as GraphContext['applicationServices'],
+				});
+			});
+
+			When('the acceptReservationRequest mutation is executed', async () => {
+				const resolver = reservationRequestResolvers.Mutation
+					?.acceptReservationRequest as TestResolver<{
+					input: { id: string };
+				}>;
+				try {
+					await resolver({}, { input: { id: 'request-123' } }, context, {} as never);
+				} catch (e) {
+					error = e as Error;
+				}
+			});
+
+			Then(
+				'it should throw a "User must be authenticated to accept a reservation request" error',
+				() => {
+					expect(error).toBeDefined();
+					expect(error?.message).toBe(
+						'User must be authenticated to accept a reservation request',
+					);
+				},
+			);
+		},
+	);
 });
