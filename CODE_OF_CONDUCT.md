@@ -29,7 +29,7 @@ Examples of unacceptable behavior:
 This Code of Conduct applies:
 - In all project spaces (GitHub Issues, Pull Requests, Discussions)
 - In private communications regarding project work
-- When representing the project publicly (online or events)
+- When representing the project publicly (online or at events)
 
 ## Responsibilities
 Project maintainers are responsible for:
