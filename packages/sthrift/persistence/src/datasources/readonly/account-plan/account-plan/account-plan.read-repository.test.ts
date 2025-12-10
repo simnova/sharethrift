@@ -5,55 +5,53 @@ import type { FindOptions, FindOneOptions } from '../../mongo-data-source.ts';
 import { AccountPlanReadRepositoryImpl, getAccountPlanReadRepository } from './account-plan.read-repository.ts';
 
 // Mock the converter
-vi.mock('../../../domain/account-plan/account-plan/account-plan.domain-adapter.ts', () => ({
-	// biome-ignore lint/complexity/useArrowFunction: Constructor function must be a regular function
-	AccountPlanConverter: vi.fn(function() {
+vi.mock('../../../domain/account-plan/account-plan/account-plan.domain-adapter.ts', () => {
+	const MockAccountPlanConverter = vi.fn();
+	// biome-ignore lint/complexity/useArrowFunction: Must be function for constructor compatibility
+	MockAccountPlanConverter.mockImplementation(function() {
 		return {
 			toDomain: vi.fn((doc) => ({ id: doc._id, name: doc.name })),
 		};
-	}),
-}));
+	});
+	
+	return {
+		AccountPlanConverter: MockAccountPlanConverter,
+	};
+});
 
-vi.mock('../account-plan/account-plan.data.ts', () => ({
-	// biome-ignore lint/complexity/useArrowFunction: Constructor function must be a regular function
-	AccountPlanDataSourceImpl: vi.fn(function() {
+vi.mock('../account-plan/account-plan.data.ts', () => {
+	const MockAccountPlanDataSourceImpl = vi.fn();
+	// biome-ignore lint/complexity/useArrowFunction: Must be function for constructor compatibility
+	MockAccountPlanDataSourceImpl.mockImplementation(function() {
 		return {
 			find: vi.fn(),
 			findById: vi.fn(),
 			findOne: vi.fn(),
 		};
-	}),
-}));
+	});
+	
+	return {
+		AccountPlanDataSourceImpl: MockAccountPlanDataSourceImpl,
+	};
+});
 
 function makeModelsContext(): ModelsContext {
 	return {
-		User: {
-			PersonalUser: vi.fn(() => ({})),
-			AdminUser: vi.fn(() => ({})),
-			User: vi.fn(() => ({})),
-		},
-		Listing: {
-			ItemListingModel: vi.fn(() => ({})),
-		},
-		Conversation: {
-			ConversationModel: vi.fn(() => ({})),
-		},
-		ReservationRequest: {
-			ReservationRequest: vi.fn(() => ({})),
-		},
-		Role: {
-			Role: vi.fn(() => ({})),
-			AdminRole: vi.fn(() => ({})),
-		},
-		AccountPlan: {
-			// Mock is not used since AccountPlanDataSourceImpl is mocked
-			AccountPlanModel: vi.fn(() => ({})),
-		},
-		AppealRequest: {
-			ListingAppealRequest: vi.fn(() => ({})),
-			UserAppealRequest: vi.fn(() => ({})),
-		},
-	} as unknown as ModelsContext;
+		// biome-ignore lint/suspicious/noExplicitAny: Unused models stubbed for interface compliance
+		User: {} as any,
+		// biome-ignore lint/suspicious/noExplicitAny: Unused models stubbed for interface compliance
+		Listing: {} as any,
+		// biome-ignore lint/suspicious/noExplicitAny: Unused models stubbed for interface compliance
+		Conversation: {} as any,
+		// biome-ignore lint/suspicious/noExplicitAny: Unused models stubbed for interface compliance
+		ReservationRequest: {} as any,
+		// biome-ignore lint/suspicious/noExplicitAny: Unused models stubbed for interface compliance
+		Role: {} as any,
+		// biome-ignore lint/suspicious/noExplicitAny: Unused models stubbed for interface compliance
+		AccountPlan: {} as any,
+		// biome-ignore lint/suspicious/noExplicitAny: Unused models stubbed for interface compliance
+		AppealRequest: {} as any,
+	};
 }
 
 function makePassport(): Domain.Passport {
