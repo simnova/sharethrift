@@ -18,6 +18,32 @@ Feature: User Union Resolvers
     When currentUser query is called
     Then it should throw "User not found"
 
+  Scenario: Query currentUserAndCreateIfNotExists returns existing user
+    Given a verified personal user is authenticated and exists in database
+    When currentUserAndCreateIfNotExists query is called
+    Then it should return the existing user
+
+  Scenario: Query currentUserAndCreateIfNotExists creates new PersonalUser
+    Given a verified user is authenticated but not in database
+    When currentUserAndCreateIfNotExists query is called
+    Then it should create and return a new PersonalUser
+
+  Scenario: Query currentUserAndCreateIfNotExists returns existing AdminUser
+    Given a verified admin user is authenticated
+    When currentUserAndCreateIfNotExists query is called
+    Then it should return the existing admin user
+
+  Scenario: Query currentUserAndCreateIfNotExists throws error when not authenticated
+    Given no user is authenticated
+    When currentUserAndCreateIfNotExists query is called
+    Then it should throw "Unauthorized: Authentication required"
+
+  Scenario: Query currentUserAndCreateIfNotExists handles creation failure
+    Given a verified user is authenticated but not in database
+    And the createIfNotExists operation fails
+    When currentUserAndCreateIfNotExists query is called
+    Then it should propagate the error from application service
+
   Scenario: Query userById returns AdminUser
     When userById query is called with an admin user ID
     Then it should return the AdminUser entity
@@ -56,7 +82,7 @@ Feature: User Union Resolvers
     Then it should return "AdminUser"
 
   Scenario: User union resolveType returns PersonalUser
-    Given a user object with userType personal-users
+    Given a user object with userType personal-user
     When __resolveType is called
     Then it should return "PersonalUser"
 

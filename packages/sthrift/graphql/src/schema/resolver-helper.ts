@@ -1,3 +1,6 @@
+/** biome-ignore-all lint/suspicious/noExplicitAny: <explanation> */
+
+import type { Domain } from '@sthrift/domain';
 import type {
 	FragmentDefinitionNode,
 	GraphQLResolveInfo,
@@ -5,7 +8,6 @@ import type {
 } from 'graphql';
 import { isValidObjectId } from 'mongoose';
 import type { GraphContext } from '../init/context.ts';
-import type { Domain } from '@sthrift/domain';
 
 export const getUserByEmail = async (
 	email: string,
@@ -62,14 +64,51 @@ export const currentViewerIsAdmin = async (
 };
 
 /**
+ * Helper to ensure user is authenticated and throw consistent error if not.
+ * Use this in all resolvers requiring authentication for consistent error handling.
+ */
+export const requireAuthentication = (context: GraphContext): void => {
+	if (!context.applicationServices.verifiedUser?.verifiedJwt) {
+		throw new Error('Unauthorized: Authentication required');
+	}
+};
+
+/**
+ * Validates and extracts user profile data from JWT with safe fallbacks.
+ * Returns sanitized firstName/lastName with defaults for missing values.
+ */
+export const extractUserProfileFromJwt = (context: GraphContext): {
+	email: string;
+	firstName: string;
+	lastName: string;
+} => {
+	const jwt = context.applicationServices.verifiedUser?.verifiedJwt;
+	if (!jwt?.email) {
+		throw new Error(
+			'Invalid JWT: email is required but missing from verified token',
+		);
+	}
+
+	// Provide sensible defaults for missing name fields to avoid database constraint violations
+	// B2C tokens may not always include given_name/family_name depending on configuration
+	const firstName = jwt.given_name?.trim() || 'User';
+	const lastName = jwt.family_name?.trim() || '';
+
+	return {
+		email: jwt.email,
+		firstName,
+		lastName,
+	};
+};
+
+/**
  * Helper function to populate a User field (PersonalUser or AdminUser) by ID.
  * Used for GraphQL field resolvers that need to resolve User union types.
  */
 export const PopulateUserFromField = (fieldName: string) => {
-	// biome-ignore lint/suspicious/noExplicitAny: parent type comes from GraphQL resolver parent which varies by context
 	return async (parent: any, _: unknown, context: GraphContext) => {
-		if (parent[fieldName] && isValidObjectId(parent[fieldName].toString())) {
-			const userId = parent[fieldName].toString();
+		if (parent[fieldName] && isValidObjectId(parent[fieldName].id)) {
+			const userId = parent[fieldName].id;
 
 			// Try AdminUser first
 			try {
@@ -102,11 +141,10 @@ export const PopulateUserFromField = (fieldName: string) => {
 };
 
 export const PopulateItemListingFromField = (fieldName: string) => {
-	// biome-ignore lint/suspicious/noExplicitAny: parent type comes from GraphQL resolver parent which varies by context
 	return async (parent: any, _: unknown, context: GraphContext) => {
-		if (parent[fieldName] && isValidObjectId(parent[fieldName].toString())) {
+		if (parent[fieldName] && isValidObjectId(parent[fieldName].id)) {
 			return await context.applicationServices.Listing.ItemListing.queryById({
-				id: parent[fieldName].toString(),
+				id: parent[fieldName].id,
 			});
 		}
 		return parent[fieldName];

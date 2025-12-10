@@ -177,9 +177,9 @@ export class PersonalUserReadRepositoryImpl
 	}
 }
 
-export const getPersonalUserReadRepository = (
+export function getPersonalUserReadRepository(
 	models: ModelsContext,
 	passport: Domain.Passport,
-) => {
+): PersonalUserReadRepository {
 	return new PersonalUserReadRepositoryImpl(models, passport);
 };

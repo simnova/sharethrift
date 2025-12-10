@@ -9,7 +9,8 @@
 		"@cellix/payment-service": "workspace:*",
 		"express": "^4.18.2",
 		"jose": "^5.10.0",
-		"jsonwebtoken": "^9.0.3"
+		"jsonwebtoken": "^9.0.3",
+    "@cellix/payment-service": "workspace:*"
 	},
 	"devDependencies": {
 		"@cellix/typescript-config": "workspace:*",
