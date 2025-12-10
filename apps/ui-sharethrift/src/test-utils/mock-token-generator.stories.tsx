@@ -122,8 +122,8 @@ export const HasNonEmptyParts: Story = {
 			const token = generateMockToken();
 			const parts = token.split('_');
 
-			expect(parts[1].length).toBeGreaterThan(0);
-			expect(parts[2].length).toBeGreaterThan(0);
+			expect(parts[1]?.length).toBeGreaterThan(0);
+			expect(parts[2]?.length).toBeGreaterThan(0);
 		},
 	},
 };
