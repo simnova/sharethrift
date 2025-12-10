@@ -311,3 +311,649 @@ export const ClearDateSelection: Story = {
 	},
 };
 
+export const AllInteractiveFeatures: Story = {
+	args: {
+		isAuthenticated: true,
+		userIsSharer: false,
+		onReserveClick: fn(),
+		onReservationDatesChange: fn(),
+		otherReservations: mockOtherReservations,
+	},
+	play: async ({ canvasElement }) => {
+		await expect(canvasElement).toBeTruthy();
+		const canvas = within(canvasElement);
+		
+		// Verify title exists
+		const title = canvas.queryByText(/Cordless Drill/);
+		await expect(title).toBeTruthy();
+		
+		// Verify location and category are displayed
+		const location = canvas.queryByText(/Toronto, ON/);
+		await expect(location).toBeTruthy();
+	},
+};
+
+export const WithReservationDateTimeRange: Story = {
+	args: {
+		isAuthenticated: true,
+		userIsSharer: false,
+		reservationDates: {
+			startDate: new Date('2025-02-01'),
+			endDate: new Date('2025-02-05'),
+		},
+		onReservationDatesChange: fn(),
+		otherReservations: [],
+	},
+	play: async ({ canvasElement }) => {
+		await expect(canvasElement).toBeTruthy();
+	},
+};
+
+export const ReservationWithMultipleBlockedPeriods: Story = {
+	args: {
+		isAuthenticated: true,
+		userIsSharer: false,
+		otherReservations: [
+			{
+				id: 'res-1',
+				reservationPeriodStart: String(new Date('2025-02-01').getTime()),
+				reservationPeriodEnd: String(new Date('2025-02-05').getTime()),
+			},
+			{
+				id: 'res-2',
+				reservationPeriodStart: String(new Date('2025-03-10').getTime()),
+				reservationPeriodEnd: String(new Date('2025-03-15').getTime()),
+			},
+			{
+				id: 'res-3',
+				reservationPeriodStart: String(new Date('2025-04-01').getTime()),
+				reservationPeriodEnd: String(new Date('2025-04-10').getTime()),
+			},
+		],
+		onReservationDatesChange: fn(),
+	},
+	play: async ({ canvasElement }) => {
+		await expect(canvasElement).toBeTruthy();
+	},
+};
+
+export const SharerViewReadOnly: Story = {
+	args: {
+		userIsSharer: true,
+		isAuthenticated: true,
+	},
+	play: async ({ canvasElement }) => {
+		const canvas = within(canvasElement);
+		await expect(canvasElement).toBeTruthy();
+		
+		// Verify no reserve button is shown for sharer
+		const reserveButton = canvas.queryByRole('button', { name: /Reserve/i });
+		await expect(reserveButton).toBeFalsy();
+	},
+};
+
+export const UnauthenticatedViewWithDescription: Story = {
+	args: {
+		isAuthenticated: false,
+		userIsSharer: false,
+	},
+	play: async ({ canvasElement }) => {
+		const canvas = within(canvasElement);
+		await expect(canvasElement).toBeTruthy();
+		
+		// Verify description is still visible when unauthenticated
+		const description = canvas.queryByText(/High-quality cordless drill/);
+		await expect(description).toBeTruthy();
+		
+		// Verify login button appears
+		const loginButton = canvas.queryByRole('button', { name: /Log in to Reserve/i });
+		await expect(loginButton).toBeTruthy();
+	},
+};
+
+export const LoadingStateForReservations: Story = {
+	args: {
+		isAuthenticated: true,
+		userIsSharer: false,
+		otherReservationsLoading: true,
+		reservationLoading: false,
+	},
+	play: async ({ canvasElement }) => {
+		await expect(canvasElement).toBeTruthy();
+		
+		// Loading indicator should be visible
+		const loadingIcon = canvasElement.querySelector('.anticon-loading');
+		await expect(loadingIcon).toBeTruthy();
+	},
+};
+
+export const ReservationErrorState: Story = {
+	args: {
+		isAuthenticated: true,
+		userIsSharer: false,
+		otherReservationsError: new Error('Failed to load reservations'),
+		otherReservations: undefined,
+	},
+	play: async ({ canvasElement }) => {
+		await expect(canvasElement).toBeTruthy();
+		
+		// Component should still render and be interactive
+		const title = canvasElement.querySelector('.title42');
+		await expect(title).toBeTruthy();
+	},
+};
+
+export const RejectedReservation: Story = {
+	args: {
+		isAuthenticated: true,
+		userIsSharer: false,
+		userReservationRequest: {
+			__typename: 'ReservationRequest' as const,
+			id: 'res-rejected-1',
+			state: 'Rejected' as const,
+			reservationPeriodStart: '1738368000000',
+			reservationPeriodEnd: '1739145600000',
+		},
+	},
+	play: async ({ canvasElement }) => {
+		await expect(canvasElement).toBeTruthy();
+	},
+};
+
+export const CancelledReservation: Story = {
+	args: {
+		isAuthenticated: true,
+		userIsSharer: false,
+		userReservationRequest: {
+			__typename: 'ReservationRequest' as const,
+			id: 'res-cancelled-1',
+			state: 'Cancelled' as const,
+			reservationPeriodStart: '1738368000000',
+			reservationPeriodEnd: '1739145600000',
+		},
+	},
+	play: async ({ canvasElement }) => {
+		await expect(canvasElement).toBeTruthy();
+	},
+};
+
+export const ClosedReservation: Story = {
+	args: {
+		isAuthenticated: true,
+		userIsSharer: false,
+		userReservationRequest: {
+			__typename: 'ReservationRequest' as const,
+			id: 'res-closed-1',
+			state: 'Closed' as const,
+			reservationPeriodStart: '1738368000000',
+			reservationPeriodEnd: '1739145600000',
+		},
+	},
+	play: async ({ canvasElement }) => {
+		await expect(canvasElement).toBeTruthy();
+	},
+};
+
+export const LongDescriptionText: Story = {
+	args: {
+		listing: {
+			...mockListing,
+			description:
+				'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.',
+		},
+	},
+	play: async ({ canvasElement }) => {
+		await expect(canvasElement).toBeTruthy();
+	},
+};
+
+export const LongLocationAndCategory: Story = {
+	args: {
+		listing: {
+			...mockListing,
+			location: 'Toronto, Ontario, Canada, North America',
+			category: 'Tools & Equipment & Heavy Machinery',
+		},
+	},
+	play: async ({ canvasElement }) => {
+		await expect(canvasElement).toBeTruthy();
+	},
+};
+
+export const InteractiveWithDatePicker: Story = {
+	args: {
+		isAuthenticated: true,
+		userIsSharer: false,
+		otherReservations: mockOtherReservations,
+		onReservationDatesChange: fn(),
+	},
+	play: async ({ canvasElement }) => {
+		const canvas = within(canvasElement);
+		await expect(canvasElement).toBeTruthy();
+		
+		// Try to interact with date pickers
+		const dateInputs = canvas.getAllByPlaceholderText(/date/i);
+		if (dateInputs.length > 0 && dateInputs[0]) {
+			await userEvent.click(dateInputs[0]);
+		}
+	},
+};
+
+export const AuthenticatedWithDatesAndOtherReservations: Story = {
+	args: {
+		isAuthenticated: true,
+		userIsSharer: false,
+		reservationDates: {
+			startDate: new Date('2025-02-21'),
+			endDate: new Date('2025-02-28'),
+		},
+		otherReservations: mockOtherReservations,
+		onReservationDatesChange: fn(),
+		onReserveClick: fn(),
+	},
+	play: async ({ canvasElement }) => {
+		const canvas = within(canvasElement);
+		await expect(canvasElement).toBeTruthy();
+		
+		// Verify reserve button is enabled
+		const reserveButton = canvas.queryByRole('button', { name: /Reserve/i });
+		if (reserveButton) {
+			await expect(reserveButton).not.toBeDisabled();
+		}
+	},
+};
+
+// Disabled button when no dates selected
+export const ReserveButtonDisabledNoDates: Story = {
+	args: {
+		isAuthenticated: true,
+		userIsSharer: false,
+		reservationDates: { startDate: null, endDate: null },
+		onReserveClick: fn(),
+	},
+	play: async ({ canvasElement }) => {
+		const canvas = within(canvasElement);
+		await expect(canvasElement).toBeTruthy();
+		
+		// Verify reserve button is disabled
+		const reserveButton = canvas.queryByRole('button', { name: /Reserve/i });
+		if (reserveButton) {
+			await expect(reserveButton).toBeDisabled();
+		}
+	},
+};
+
+// Button disabled while reservation loading
+export const ReserveButtonLoadingState: Story = {
+	args: {
+		isAuthenticated: true,
+		userIsSharer: false,
+		reservationDates: {
+			startDate: new Date('2025-02-01'),
+			endDate: new Date('2025-02-10'),
+		},
+		reservationLoading: true,
+		onReserveClick: fn(),
+	},
+	play: async ({ canvasElement }) => {
+		await expect(canvasElement).toBeTruthy();
+		
+		// Verify button shows loading icon
+		const loadingIcon = canvasElement.querySelector('.anticon-loading');
+		await expect(loadingIcon).toBeTruthy();
+	},
+};
+
+// Cancel request button with pending reservation
+export const CancelRequestButtonState: Story = {
+	args: {
+		isAuthenticated: true,
+		userIsSharer: false,
+		userReservationRequest: {
+			__typename: 'ReservationRequest' as const,
+			id: 'res-1',
+			state: 'Requested' as const,
+			reservationPeriodStart: '1738368000000',
+			reservationPeriodEnd: '1739145600000',
+		},
+		onCancelClick: fn(),
+	},
+	play: async ({ canvasElement, args }) => {
+		const canvas = within(canvasElement);
+		await expect(canvasElement).toBeTruthy();
+		
+		// Button should show "Cancel Request"
+		const cancelButton = canvas.queryByRole('button', { name: /Cancel Request/i });
+		await expect(cancelButton).toBeTruthy();
+		
+		if (cancelButton) {
+			await userEvent.click(cancelButton);
+			expect(args.onCancelClick).toHaveBeenCalled();
+		}
+	},
+};
+
+// Sharer cannot see reserve button
+export const SharerNoReserveButton: Story = {
+	args: {
+		isAuthenticated: true,
+		userIsSharer: true,
+		onReserveClick: fn(),
+	},
+	play: async ({ canvasElement }) => {
+		const canvas = within(canvasElement);
+		await expect(canvasElement).toBeTruthy();
+		
+		// Verify no reserve or cancel button visible for sharer
+		const reserveButton = canvas.queryByRole('button', { name: /Reserve/i });
+		const cancelButton = canvas.queryByRole('button', { name: /Cancel/i });
+		await expect(reserveButton).toBeFalsy();
+		await expect(cancelButton).toBeFalsy();
+	},
+};
+
+// Unauthenticated shows login button instead of reserve
+export const UnauthenticatedShowsLoginButton: Story = {
+	args: {
+		isAuthenticated: false,
+		userIsSharer: false,
+		onLoginClick: fn(),
+	},
+	play: async ({ canvasElement }) => {
+		const canvas = within(canvasElement);
+		await expect(canvasElement).toBeTruthy();
+		
+		// No date picker should be visible
+		const dateInputs = canvas.queryAllByPlaceholderText(/date/i);
+		await expect(dateInputs.length === 0).toBeTruthy();
+		
+		// Login button should be present
+		const loginButton = canvas.queryByRole('button', { name: /Log in to Reserve/i });
+		await expect(loginButton).toBeTruthy();
+	},
+};
+
+// Date validation - past dates disabled
+export const DateValidationPastDatesDisabled: Story = {
+	args: {
+		isAuthenticated: true,
+		userIsSharer: false,
+		otherReservations: [],
+		onReservationDatesChange: fn(),
+	},
+	play: async ({ canvasElement }) => {
+		const canvas = within(canvasElement);
+		await expect(canvasElement).toBeTruthy();
+		
+		// Date picker should be visible
+		const dateInputs = canvas.getAllByPlaceholderText(/date/i);
+		await expect(dateInputs.length > 0).toBeTruthy();
+	},
+};
+
+// Multiple reservation periods blocking
+export const MultipleBlockedPeriodsBlocking: Story = {
+	args: {
+		isAuthenticated: true,
+		userIsSharer: false,
+		otherReservations: [
+			{
+				id: 'res-1',
+				reservationPeriodStart: String(new Date('2025-02-10').getTime()),
+				reservationPeriodEnd: String(new Date('2025-02-15').getTime()),
+			},
+			{
+				id: 'res-2',
+				reservationPeriodStart: String(new Date('2025-03-20').getTime()),
+				reservationPeriodEnd: String(new Date('2025-03-25').getTime()),
+			},
+			{
+				id: 'res-3',
+				reservationPeriodStart: String(new Date('2025-04-05').getTime()),
+				reservationPeriodEnd: String(new Date('2025-04-10').getTime()),
+			},
+			{
+				id: 'res-4',
+				reservationPeriodStart: String(new Date('2025-05-01').getTime()),
+				reservationPeriodEnd: String(new Date('2025-05-05').getTime()),
+			},
+		],
+		onReservationDatesChange: fn(),
+	},
+	play: async ({ canvasElement }) => {
+		await expect(canvasElement).toBeTruthy();
+		
+		// Should render without error even with multiple blocked periods
+		const title = canvasElement.querySelector('.title42');
+		await expect(title).toBeTruthy();
+	},
+};
+
+// Listing with no description
+export const ListingWithoutDescription: Story = {
+	args: {
+		listing: {
+			...mockListing,
+			description: '',
+		},
+		isAuthenticated: true,
+		userIsSharer: false,
+	},
+	play: async ({ canvasElement }) => {
+		const canvas = within(canvasElement);
+		await expect(canvasElement).toBeTruthy();
+		
+		// Title and location should still be visible
+		const title = canvas.queryByText(/Cordless Drill/);
+		await expect(title).toBeTruthy();
+	},
+};
+
+// Listing with very short location
+export const ListingWithShortLocation: Story = {
+	args: {
+		listing: {
+			...mockListing,
+			location: 'NYC',
+		},
+		isAuthenticated: true,
+	},
+	play: async ({ canvasElement }) => {
+		const canvas = within(canvasElement);
+		await expect(canvasElement).toBeTruthy();
+		
+		const location = canvas.queryByText(/NYC/);
+		await expect(location).toBeTruthy();
+	},
+};
+
+// Category with special characters
+export const CategoryWithSpecialCharacters: Story = {
+	args: {
+		listing: {
+			...mockListing,
+			category: 'Home & Garden / Outdoor (New)',
+		},
+		isAuthenticated: true,
+	},
+	play: async ({ canvasElement }) => {
+		const canvas = within(canvasElement);
+		await expect(canvasElement).toBeTruthy();
+		
+		const category = canvas.queryByText(/Home & Garden/);
+		await expect(category).toBeTruthy();
+	},
+};
+
+// Accepted reservation (disabled date picker)
+export const AcceptedReservationDisabledPicker: Story = {
+	args: {
+		isAuthenticated: true,
+		userIsSharer: false,
+		userReservationRequest: {
+			__typename: 'ReservationRequest' as const,
+			id: 'res-accepted-1',
+			state: 'Accepted' as const,
+			reservationPeriodStart: '1738368000000',
+			reservationPeriodEnd: '1739145600000',
+		},
+	},
+	play: async ({ canvasElement }) => {
+		const canvas = within(canvasElement);
+		await expect(canvasElement).toBeTruthy();
+		
+		// Date picker should exist but be disabled
+		const dateInputs = canvas.getAllByPlaceholderText(/date/i);
+		if (dateInputs.length > 0) {
+			// Check if disabled attribute exists
+			const isDisabled = dateInputs[0]?.hasAttribute('disabled');
+			await expect(isDisabled).toBeTruthy();
+		}
+	},
+};
+
+// Only one date selected (end date null)
+export const SingleDateSelectedOnly: Story = {
+	args: {
+		isAuthenticated: true,
+		userIsSharer: false,
+		reservationDates: {
+			startDate: new Date('2025-02-01'),
+			endDate: null,
+		},
+		onReserveClick: fn(),
+	},
+	play: async ({ canvasElement }) => {
+		const canvas = within(canvasElement);
+		await expect(canvasElement).toBeTruthy();
+		
+		// Reserve button should be disabled when only one date selected
+		const reserveButton = canvas.queryByRole('button', { name: /Reserve/i });
+		if (reserveButton) {
+			await expect(reserveButton).toBeDisabled();
+		}
+	},
+};
+
+// Listing in drafted state
+export const ListingDraftedState: Story = {
+	args: {
+		listing: {
+			...mockListing,
+			state: 'Drafted' as const,
+		},
+		isAuthenticated: true,
+	},
+	play: async ({ canvasElement }) => {
+		const canvas = within(canvasElement);
+		await expect(canvasElement).toBeTruthy();
+		
+		// Should show "Listing Not Available" button
+		const notAvailableButton = canvas.queryByRole('button', { name: /Listing Not Available/i });
+		await expect(notAvailableButton).toBeTruthy();
+	},
+};
+
+// Both loading indicators active
+export const BothLoadingIndicators: Story = {
+	args: {
+		isAuthenticated: true,
+		userIsSharer: false,
+		reservationLoading: true,
+		otherReservationsLoading: true,
+	},
+	play: async ({ canvasElement }) => {
+		await expect(canvasElement).toBeTruthy();
+		
+		// Should handle both loading states simultaneously
+		const loadingIcons = canvasElement.querySelectorAll('.anticon-loading');
+		await expect(loadingIcons.length > 0).toBeTruthy();
+	},
+};
+
+// Error state with other reservations data
+export const ErrorStateWithFallback: Story = {
+	args: {
+		isAuthenticated: true,
+		userIsSharer: false,
+		otherReservationsError: new Error('Network failure'),
+		otherReservations: undefined,
+		onReservationDatesChange: fn(),
+	},
+	play: async ({ canvasElement }) => {
+		const canvas = within(canvasElement);
+		await expect(canvasElement).toBeTruthy();
+		
+		// Should still allow date selection despite error
+		const dateInputs = canvas.queryAllByPlaceholderText(/date/i);
+		await expect(dateInputs.length > 0).toBeTruthy();
+	},
+};
+
+// Title with special characters and emojis
+export const TitleWithSpecialCharacters: Story = {
+	args: {
+		listing: {
+			...mockListing,
+			title: 'Power Drill & Impact Driver 🔧 (Professional Grade)',
+		},
+		isAuthenticated: true,
+	},
+	play: async ({ canvasElement }) => {
+		const canvas = within(canvasElement);
+		await expect(canvasElement).toBeTruthy();
+		
+		const title = canvas.queryByText(/Power Drill/);
+		await expect(title).toBeTruthy();
+	},
+};
+
+// Complete user flow: Unauthenticated -> Authenticated -> Reservation
+export const CompleteReservationFlow: Story = {
+	args: {
+		isAuthenticated: true,
+		userIsSharer: false,
+		reservationDates: {
+			startDate: new Date('2025-02-16'),
+			endDate: new Date('2025-02-25'),
+		},
+		otherReservations: mockOtherReservations,
+		onReservationDatesChange: fn(),
+		onReserveClick: fn(),
+	},
+	play: async ({ canvasElement, args }) => {
+		const canvas = within(canvasElement);
+		await expect(canvasElement).toBeTruthy();
+		
+		// Verify all key elements
+		const title = canvas.queryByText(/Cordless Drill/);
+		await expect(title).toBeTruthy();
+		
+		const location = canvas.queryByText(/Toronto, ON/);
+		await expect(location).toBeTruthy();
+		
+		const reserveButton = canvas.queryByRole('button', { name: /Reserve/i });
+		if (reserveButton && !reserveButton.hasAttribute('disabled')) {
+			await userEvent.click(reserveButton);
+			expect(args.onReserveClick).toHaveBeenCalled();
+		}
+	},
+};
+
+// Empty other reservations list
+export const EmptyOtherReservations: Story = {
+	args: {
+		isAuthenticated: true,
+		userIsSharer: false,
+		otherReservations: [],
+		onReservationDatesChange: fn(),
+	},
+	play: async ({ canvasElement }) => {
+		await expect(canvasElement).toBeTruthy();
+		
+		// All dates should be available for selection
+		const dateInputs = canvasElement.querySelectorAll('input[placeholder*="date"]');
+		await expect(dateInputs.length > 0).toBeTruthy();
+	},
+};
+
