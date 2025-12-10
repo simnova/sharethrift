@@ -1,5 +1,6 @@
 import type { Meta, StoryObj } from '@storybook/react';
 import { BrowserRouter } from 'react-router-dom';
+import { expect, within } from 'storybook/test';
 import { UserProfileLink } from './user-profile-link.tsx';
 
 const meta: Meta<typeof UserProfileLink> = {
@@ -41,6 +42,14 @@ export const Default: Story = {
 		userId: '507f1f77bcf86cd799439011',
 		displayName: 'John Doe',
 	},
+	play: async ({ canvasElement }) => {
+		const canvas = within(canvasElement);
+		
+		// Test that link is rendered
+		const link = canvas.getByRole('link', { name: 'John Doe' });
+		await expect(link).toBeInTheDocument();
+		await expect(link).toHaveAttribute('href', '/user/507f1f77bcf86cd799439011');
+	},
 };
 
 export const WithCustomStyle: Story = {
@@ -52,6 +61,17 @@ export const WithCustomStyle: Story = {
 			fontWeight: 'bold',
 			color: '#ff0000',
 		},
+	},
+	play: async ({ canvasElement }) => {
+		const canvas = within(canvasElement);
+		
+		// Test link is rendered and accessible
+		const link = canvas.getByRole('link', { name: 'Jane Smith' });
+		await expect(link).toBeInTheDocument();
+		await expect(link).toHaveAttribute('href', '/user/507f1f77bcf86cd799439011');
+		
+		// Verify custom color is applied
+		await expect(link).toHaveStyle({ color: 'rgb(255, 0, 0)' });
 	},
 };
 
@@ -67,6 +87,13 @@ export const WithoutUserId: Story = {
 			},
 		},
 	},
+	play: async ({ canvasElement }) => {
+		const canvas = within(canvasElement);
+		
+		// Test that plain text is rendered (not a link)
+		await expect(canvas.getByText('Unknown User')).toBeInTheDocument();
+		await expect(canvas.queryByRole('link')).not.toBeInTheDocument();
+	},
 };
 
 export const InContext: Story = {
@@ -80,4 +107,17 @@ export const InContext: Story = {
 			</p>
 		</div>
 	),
+	play: async ({ canvasElement }) => {
+		const canvas = within(canvasElement);
+		
+		// Test both links are rendered
+		const aliceLink = canvas.getByRole('link', { name: 'Alice Johnson' });
+		const bobLink = canvas.getByRole('link', { name: 'Bob Williams' });
+		
+		await expect(aliceLink).toBeInTheDocument();
+		await expect(aliceLink).toHaveAttribute('href', '/user/507f1f77bcf86cd799439011');
+		
+		await expect(bobLink).toBeInTheDocument();
+		await expect(bobLink).toHaveAttribute('href', '/user/507f1f77bcf86cd799439012');
+	},
 };
