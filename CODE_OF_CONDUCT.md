@@ -56,6 +56,7 @@ ShareThrift is built on principles of sustainability and circular economy. Contr
 Adapted from the [Contributor Covenant v2.1](https://www.contributor-covenant.org/version/2/1/code_of_conduct/) and related enforcement guidelines.
 
 ---
+<br/>
 If you’re unsure whether something violates the Code of Conduct, ask — we’re here to help, not punish.
 
 By participating, you agree to uphold this Code of Conduct. Thank you for helping build a healthy, sustainable community.
