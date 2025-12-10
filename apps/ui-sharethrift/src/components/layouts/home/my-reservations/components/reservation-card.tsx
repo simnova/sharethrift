@@ -5,6 +5,7 @@ import { ReservationStatusTag } from '@sthrift/ui-components';
 import { ReservationActions } from './reservation-actions.tsx';
 import type { HomeMyReservationsReservationsViewActiveContainerActiveReservationsQuery } from '../../../../../generated.tsx';
 import { BASE64_FALLBACK_IMAGE } from '../constants/ui-constants.ts';
+import type { ReservationState } from '../constants/reservation-state-utils.ts';
 
 type ReservationRequestFieldsFragment =
 	HomeMyReservationsReservationsViewActiveContainerActiveReservationsQuery['myActiveReservations'][number];
@@ -12,7 +13,12 @@ type ReservationRequestFieldsFragment =
 const { Text } = Typography;
 
 // Helper function to map reservation state to status tag
-const mapReservationStateToStatus = (state: string | undefined | null) => {
+const mapReservationStateToStatus = (state: ReservationState | null | undefined) => {
+	// Treat missing state as "Requested" for display purposes
+	if (!state) {
+		return 'REQUESTED';
+	}
+
 	switch (state) {
 		case 'Accepted':
 			return 'ACCEPTED';
@@ -24,8 +30,12 @@ const mapReservationStateToStatus = (state: string | undefined | null) => {
 			return 'CLOSED';
 		case 'Cancelled':
 			return 'CANCELLED';
-		default:
-			return 'REQUESTED';
+		default: {
+			// Exhaustiveness check: if a new ReservationState is added,
+			// TypeScript will error here until the switch is updated.
+			const _exhaustiveCheck: never = state;
+			return _exhaustiveCheck;
+		}
 	}
 };
 

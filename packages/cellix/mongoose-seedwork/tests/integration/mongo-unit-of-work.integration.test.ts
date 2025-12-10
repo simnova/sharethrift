@@ -289,7 +289,9 @@ describe('MongoUnitOfWork:Integration', () => {
 			await repo.save(aggregate);
 		};
 
-		const delay = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
+		// Keep async handler tests fast and deterministic by using a minimal timeout,
+		// regardless of the requested delay value.
+		const delay = (__ms: number = 1) => new Promise((resolve) => setTimeout(resolve, 1));
 
 		beforeEach(async () => {
 			await TestModel.create({
@@ -301,6 +303,31 @@ describe('MongoUnitOfWork:Integration', () => {
 				updatedAt: new Date(),
 				schemaVersion: '1.0.0',
 			});
+		});
+
+		it('should dispatch domain event with no handlers registered and transaction still commits', async () => {
+			// Given: existing aggregate, spy on buses, NO handlers registered
+			const eventBusDispatchSpy = vi.spyOn(eventBus, 'dispatch');
+			const integrationEventBusDispatchSpy = vi.spyOn(
+				integrationEventBus,
+				'dispatch',
+			);
+			// Intentionally NOT registering any handlers
+
+			// When: withTransaction updates bar field
+			await uow.withTransaction({}, (repo) => updateBarTransaction(repo, 'new-bar'));
+
+			// Then: domain event dispatched, transaction commits, no errors
+			expect(eventBusDispatchSpy).toHaveBeenCalledWith(TestBarDomainEvent, {
+				oldBar: 'old-bar',
+				bar: 'new-bar',
+			});
+			expect(integrationEventBusDispatchSpy).not.toHaveBeenCalled();
+			
+			// Verify transaction committed successfully
+			const updatedDoc = await TestModel.findById(id).exec();
+			expect(updatedDoc).not.toBeNull();
+			expect(updatedDoc?.bar).toBe('new-bar');
 		});
 
 		it('should dispatch domain event with one handler and no integration events', async () => {
