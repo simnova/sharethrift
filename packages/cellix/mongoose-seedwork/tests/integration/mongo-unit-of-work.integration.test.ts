@@ -818,79 +818,50 @@ describe('MongoUnitOfWork:Integration', () => {
 		});
 	});
 
-	describe('Scenario: Executing a transaction with integration events', () => {
-		describe('Given a valid MongoUnitOfWork and an existing TestAggregate', () => {
-			const id = new mongoose.Types.ObjectId('60c72b2f9b1e8d3f4c8b4567');
+	// TODO: Scenario: Executing a transaction with integration events
+	// The following tests need to be implemented:
 
-			beforeEach(async () => {
-				await TestModel.create({
-					_id: id.toString(),
-					foo: 'old-foo',
-					bar: 'old-bar',
-					createdAt: new Date(),
-					updatedAt: new Date(),
-					schemaVersion: '1.0.0',
-				});
-			});
+	// TODO: Test definition: When withTransaction is called and integration event is added during aggregate save
+	// Expected result: Then the integration event should be dispatched by integrationEventBus after the transaction commits
+	// Arrange: spy on integrationEventBus.dispatch and add an integration event during aggregate.save
+	// Act: call uow.withTransaction()
+	// Assert: integration event dispatched after db commit
 
-			describe('When withTransaction is called and integration event is added during aggregate save', () => {
-				it('Then the integration event should be dispatched by integrationEventBus after the transaction commits', async () => {
-					// Arrange: spy on integrationEventBus.dispatch
-					// Add an integration event during aggregate.save
-					// Act: call uow.withTransaction()
-					// Assert: integration event dispatched after db commit
-				});
-			});
+	// TODO: Test definition: When withTransaction is called but no integration event is registered
+	// Expected result: Then no integration events should be dispatched
+	// Arrange: Spy on integrationEventBus.dispatch
+	// Act: update aggregate, don't register integration events
+	// Assert: no dispatch calls
 
-			describe('When withTransaction is called but no integration event is registered', () => {
-				it('Then no integration events should be dispatched', async () => {
-					// Arrange: Spy on integrationEventBus.dispatch
-					// Act: update aggregate, don't register integration events
-					// Assert: no dispatch calls
-				});
-			});
+	// TODO: Test definition: When withTransaction is called and multiple integration events are added
+	// Expected result: Then all integration events should be dispatched by integrationEventBus after the transaction commits
+	// Arrange: add multiple integration events to aggregate
+	// Act: save aggregate within transaction
+	// Assert: all dispatched after commit
 
-			describe('When withTransaction is called and multiple integration events are added', () => {
-				it('Then all integration events should be dispatched by integrationEventBus after the transaction commits', async () => {
-					// Arrange: add multiple integration events to aggregate
-					// Act: save aggregate within transaction
-					// Assert: all dispatched after commit
-				});
-			});
+	// TODO: Test definition: When withTransaction is called and integration event handler throws
+	// Expected result: Then the transaction should still commit and persist data, and the error should not abort the operation
+	// Arrange: handler throws
+	// Act: run transaction
+	// Assert: db data is updated, error logged/thrown after commit
 
-			describe('When withTransaction is called and integration event handler throws', () => {
-				it('Then the transaction should still commit and persist data, and the error should not abort the operation', async () => {
-					// Arrange: handler throws
-					// Act: run transaction
-					// Assert: db data is updated, error logged/thrown after commit
-				});
-			});
+	// TODO: Test definition: When withTransaction is called and dispatching integration events is delayed
+	// Expected result: Then the dispatching should not block transaction completion but should still be awaited
+	// Arrange: delayed handler (e.g. sleep 100ms)
+	// Act: run transaction
+	// Assert: no early commit exit
 
-			describe('When withTransaction is called and dispatching integration events is delayed', () => {
-				it('Then the dispatching should not block transaction completion but should still be awaited', async () => {
-					// Arrange: delayed handler (e.g. sleep 100ms)
-					// Act: run transaction
-					// Assert: no early commit exit
-				});
-			});
+	// TODO: Test definition: When withTransaction is called and both domain and integration events are registered
+	// Expected result: Then domain events should be dispatched before the transaction commits and integration events after
+	// Arrange: register domain event + integration event
+	// Act: update aggregate and save
+	// Assert: domain -> before, integration -> after
 
-			describe('When withTransaction is called and both domain and integration events are registered', () => {
-				it('Then domain events should be dispatched before the transaction commits and integration events after', async () => {
-					// Arrange: register domain event + integration event
-					// Act: update aggregate and save
-					// Assert: domain -> before, integration -> after
-				});
-			});
-
-			describe('When withTransaction is called and integration event dispatch fails fatally', () => {
-				it('Then the transaction should commit, but the failure should be surfaced/logged appropriately', async () => {
-					// Arrange: integration bus dispatch throws
-					// Act: run transaction
-					// Assert: transaction commits, error captured
-				});
-			});
-		});
-	});
+	// TODO: Test definition: When withTransaction is called and integration event dispatch fails fatally
+	// Expected result: Then the transaction should commit, but the failure should be surfaced/logged appropriately
+	// Arrange: integration bus dispatch throws
+	// Act: run transaction
+	// Assert: transaction commits, error captured
 
 	// You can now add more integration tests for real transaction scenarios!
 });
