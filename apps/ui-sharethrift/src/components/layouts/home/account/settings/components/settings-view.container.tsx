@@ -295,7 +295,7 @@ function SettingsViewLoader() {
 			country: user.account.profile.location.country ?? '',
 			zipCode: user.account.profile.location.zipCode ?? '',
 		},
-		billing: user.userType === 'personal-users' && 'billing' in user.account.profile
+		billing: user.userType === 'personal-user' && 'billing' in user.account.profile
 			? user.account.profile.billing
 			: undefined,
 		createdAt: user.createdAt,
