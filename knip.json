@@ -8,7 +8,7 @@
 		"apps/ui-sharethrift": {
 			"entry": ["src/main.tsx"],
 			"project": ["src/**/*.{ts,tsx}"],
-			"ignore": ["**/terms-communication-preferences.tsx", "**/reservation-state-utils.ts", "**/applicant-id-context.tsx"]
+			"ignore": ["**/terms-communication-preferences.tsx", "**/applicant-id-context.tsx"]
 		},
 		"apps/docs": {
 			"entry": ["src/**/*.{ts,tsx,js,jsx}"],
@@ -17,11 +17,6 @@
 		"packages/cellix/*": {
 			"project": ["src/**/*.ts"],
 			"ignore": ["**/graphql-tools-scalars.ts"]
-		},
-		"packages/cellix/mongoose-seedwork": {
-			"entry": ["src/index.ts"],
-			"project": ["src/**/*.ts"],
-			"ignore": ["**/mongo-connection.ts"]
 		},
 		"packages/cellix/ui-core/*": {
 			"entry": ["src/index.ts"],
@@ -92,7 +87,6 @@
 		"@serenity-js/cucumber",
 		"@serenity-js/serenity-bdd",
 		"@graphql-typed-document-node/core",
-		"@ant-design/v5-patch-for-react-19",
 		"@cellix/event-bus-seedwork-node",
 		"@as-integrations/azure-functions",
 		"@graphql-tools/json-file-loader",

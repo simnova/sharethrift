@@ -5,6 +5,7 @@ import { ReservationStatusTag } from '@sthrift/ui-components';
 import { ReservationActions } from './reservation-actions.tsx';
 import type { HomeMyReservationsReservationsViewActiveContainerActiveReservationsQuery } from '../../../../../generated.tsx';
 import { BASE64_FALLBACK_IMAGE } from '../constants/ui-constants.ts';
+import { mapReservationStateToStatus } from '../utils/reservation-status.utils.ts';
 
 type ReservationRequestFieldsFragment =
 	HomeMyReservationsReservationsViewActiveContainerActiveReservationsQuery['myActiveReservations'][number];
@@ -13,15 +14,6 @@ type ReservationsTableStyles = {
 	listingCell: string;
 	tableText: string;
 } & Record<string, string>;
-
-type ReservationActionStatus = 'ACCEPTED' | 'REQUESTED' | 'REJECTED' | 'CLOSED' | 'CANCELLED';
-
-const VALID_STATUSES: Set<ReservationActionStatus> = new Set(['ACCEPTED', 'REQUESTED', 'REJECTED', 'CLOSED', 'CANCELLED']);
-
-function mapReservationStateToStatus(state: string | null | undefined): ReservationActionStatus {
-	const normalized = state?.toUpperCase() as ReservationActionStatus;
-	return VALID_STATUSES.has(normalized) ? normalized : 'REQUESTED';
-}
 
 interface ReservationsTableProps {
 	reservations: ReservationRequestFieldsFragment[];

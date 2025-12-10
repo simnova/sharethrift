@@ -19,8 +19,8 @@ export const ReservationStatusTag: React.FC<ReservationStatusTagProps> = ({
 	const color = ReservationStatusTagColorMap[status];
 	const statusTextFormatted = status // Removes Underscores and Capitalizes First Letter of Each Word
 		.toLowerCase()
-		.replaceAll('_', ' ')
-		.replaceAll(/\b\w/g, (c) => c.toUpperCase());
+		.replace(/_/g, ' ')
+		.replace(/\b\w/g, (c) => c.toUpperCase());
 
 	return <Tag color={color}>{statusTextFormatted}</Tag>;
 };

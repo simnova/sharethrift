@@ -163,9 +163,9 @@ async function checkSourceChanges() {
 		'LICENSE'
 	];
 	
-	// Build git diff command to exclude non-source paths
-	const excludeArgs = sourceExcludePaths.map(p => `--exclude=${p}`).join(' ');
-	const gitCommand = `git diff --name-only ${process.env.TURBO_SCM_BASE} -- . ${excludeArgs}`;
+	// Build pathspec patterns to exclude non-source paths
+	const pathSpecPatterns = sourceExcludePaths.map(p => `:!${p}`).join(' ');
+	const gitCommand = `git diff --name-only ${process.env.TURBO_SCM_BASE} -- . ${pathSpecPatterns}`;
 	const diffOutput = await runCommand(gitCommand);
 	
 	const hasSourceChanges = diffOutput && diffOutput.trim().length > 0;
@@ -277,7 +277,7 @@ async function detectChanges() {
 	try {
 		await detectChanges();
 	} catch (error) {
-		console.error('Error in detect-changes.js:', error.message);
+		console.error('Error in detect-changes.cjs:', error.message);
 		process.exit(1);
 	}
 })();
