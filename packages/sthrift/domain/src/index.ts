@@ -5,6 +5,8 @@ export * from './domain/infrastructure/cognitive-search/index.ts';
 export * from './domain/events/types/index.ts';
 export { EventBusInstance } from './domain/events/index.ts';
 export type { ItemListingUnitOfWork } from './domain/contexts/listing/item/item-listing.uow.ts';
+export type { Services } from './domain/services/index.ts';
+export { ItemListingSearchIndexingService } from './domain/services/index.ts';
 
 export interface DomainDataSource {
 	User: {

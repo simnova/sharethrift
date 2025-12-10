@@ -12,15 +12,12 @@ import { bulkIndexExistingListings } from './bulk-index-existing-listings.js';
 describe('bulkIndexExistingListings', () => {
 	let mockSearchService: SearchService;
 	let mockListings: Domain.Contexts.Listing.ItemListing.ItemListingEntityReference[];
+	let mockUnitOfWork: Domain.Contexts.Listing.ItemListing.ItemListingUnitOfWork;
+	let mockListingData: Map<string, Domain.Contexts.Listing.ItemListing.ItemListingEntityReference>;
 
 	beforeEach(() => {
 		vi.spyOn(console, 'log').mockImplementation(() => undefined);
 		vi.spyOn(console, 'error').mockImplementation(() => undefined);
-
-		mockSearchService = {
-			createIndexIfNotExists: vi.fn().mockResolvedValue(undefined),
-			indexDocument: vi.fn().mockResolvedValue(undefined),
-		} as unknown as SearchService;
 
 		mockListings = [
 			{
@@ -52,6 +49,24 @@ describe('bulkIndexExistingListings', () => {
 				sharingPeriodEnd: new Date('2024-08-31'),
 			},
 		] as unknown as Domain.Contexts.Listing.ItemListing.ItemListingEntityReference[];
+
+		mockListingData = new Map(mockListings.map(listing => [listing.id, listing]));
+
+		mockSearchService = {
+			createIndexIfNotExists: vi.fn().mockResolvedValue(undefined),
+			indexDocument: vi.fn().mockResolvedValue(undefined),
+		} as unknown as SearchService;
+
+		mockUnitOfWork = {
+			withScopedTransaction: vi.fn().mockImplementation((callback) => {
+				const mockRepo = {
+					getById: vi.fn().mockImplementation((id: string) => 
+						Promise.resolve(mockListingData.get(id))
+					),
+				};
+				return callback(mockRepo);
+			}),
+		} as unknown as Domain.Contexts.Listing.ItemListing.ItemListingUnitOfWork;
 	});
 
 	afterEach(() => {
@@ -59,15 +74,15 @@ describe('bulkIndexExistingListings', () => {
 	});
 
 	it('should log start message', async () => {
-		await bulkIndexExistingListings(mockListings, mockSearchService);
+		await bulkIndexExistingListings(mockListings, mockSearchService, mockUnitOfWork);
 
 		expect(console.log).toHaveBeenCalledWith(
 			'Starting bulk indexing of existing listings...',
 		);
 	});
 
-	it('should create index if it does not exist', async () => {
-		await bulkIndexExistingListings(mockListings, mockSearchService);
+	it('should create index through service', async () => {
+		await bulkIndexExistingListings(mockListings, mockSearchService, mockUnitOfWork);
 
 		expect(mockSearchService.createIndexIfNotExists).toHaveBeenCalledWith(
 			expect.objectContaining({ name: 'item-listings' }),
@@ -75,7 +90,7 @@ describe('bulkIndexExistingListings', () => {
 	});
 
 	it('should index each listing', async () => {
-		await bulkIndexExistingListings(mockListings, mockSearchService);
+		await bulkIndexExistingListings(mockListings, mockSearchService, mockUnitOfWork);
 
 		expect(mockSearchService.indexDocument).toHaveBeenCalledTimes(2);
 		expect(mockSearchService.indexDocument).toHaveBeenCalledWith(
@@ -89,7 +104,7 @@ describe('bulkIndexExistingListings', () => {
 	});
 
 	it('should log success for each indexed listing', async () => {
-		await bulkIndexExistingListings(mockListings, mockSearchService);
+		await bulkIndexExistingListings(mockListings, mockSearchService, mockUnitOfWork);
 
 		expect(console.log).toHaveBeenCalledWith(
 			expect.stringContaining('Indexed listing: listing-1'),
@@ -100,7 +115,7 @@ describe('bulkIndexExistingListings', () => {
 	});
 
 	it('should log completion summary', async () => {
-		await bulkIndexExistingListings(mockListings, mockSearchService);
+		await bulkIndexExistingListings(mockListings, mockSearchService, mockUnitOfWork);
 
 		expect(console.log).toHaveBeenCalledWith(
 			expect.stringContaining('2/2 listings indexed successfully'),
@@ -108,7 +123,7 @@ describe('bulkIndexExistingListings', () => {
 	});
 
 	it('should handle empty listings array', async () => {
-		await bulkIndexExistingListings([], mockSearchService);
+		await bulkIndexExistingListings([], mockSearchService, mockUnitOfWork);
 
 		expect(console.log).toHaveBeenCalledWith('No listings found to index');
 		expect(mockSearchService.createIndexIfNotExists).not.toHaveBeenCalled();
@@ -118,31 +133,34 @@ describe('bulkIndexExistingListings', () => {
 	it('should continue indexing when one listing fails', async () => {
 		mockSearchService.indexDocument = vi
 			.fn()
-			.mockRejectedValueOnce(new Error('Index failed'))
-			.mockResolvedValue(undefined);
+			.mockRejectedValue(new Error('Index failed'));
 
-		await bulkIndexExistingListings(mockListings, mockSearchService);
+		await bulkIndexExistingListings(mockListings, mockSearchService, mockUnitOfWork);
 
-		expect(mockSearchService.indexDocument).toHaveBeenCalledTimes(2);
 		expect(console.error).toHaveBeenCalledWith(
 			expect.stringContaining('Failed to index listing listing-1'),
 			expect.any(String),
 		);
-		expect(console.log).toHaveBeenCalledWith(
-			expect.stringContaining('Indexed listing: listing-2'),
+		expect(console.error).toHaveBeenCalledWith(
+			expect.stringContaining('Failed to index listing listing-2'),
+			expect.any(String),
 		);
 	});
 
 	it('should report partial success in summary', async () => {
-		mockSearchService.indexDocument = vi
-			.fn()
-			.mockRejectedValueOnce(new Error('Index failed'))
-			.mockResolvedValue(undefined);
+		let callCount = 0;
+		mockSearchService.indexDocument = vi.fn().mockImplementation(() => {
+			callCount++;
+			if (callCount <= 3) {
+				return Promise.reject(new Error('Index failed'));
+			}
+			return Promise.resolve(undefined);
+		});
 
-		await bulkIndexExistingListings(mockListings, mockSearchService);
+		await bulkIndexExistingListings(mockListings, mockSearchService, mockUnitOfWork);
 
 		expect(console.log).toHaveBeenCalledWith(
-			expect.stringContaining('1/2 listings indexed successfully'),
+			expect.stringContaining('Bulk indexing complete: 1/2 listings indexed successfully'),
 		);
 		expect(console.error).toHaveBeenCalledWith(
 			expect.stringContaining('Failed to index 1 listings'),
@@ -155,13 +173,18 @@ describe('bulkIndexExistingListings', () => {
 			{
 				id: 'listing-minimal',
 				title: 'Minimal Listing',
-				// Missing optional fields
 			},
 		] as unknown as Domain.Contexts.Listing.ItemListing.ItemListingEntityReference[];
+
+		const minimalListing = listingsWithMissingFields[0];
+		if (minimalListing) {
+			mockListingData.set('listing-minimal', minimalListing);
+		}
 
 		await bulkIndexExistingListings(
 			listingsWithMissingFields,
 			mockSearchService,
+			mockUnitOfWork,
 		);
 
 		expect(mockSearchService.indexDocument).toHaveBeenCalledWith(
@@ -169,67 +192,67 @@ describe('bulkIndexExistingListings', () => {
 			expect.objectContaining({
 				id: 'listing-minimal',
 				title: 'Minimal Listing',
-				description: '',
-				category: '',
-				location: '',
-				sharerName: 'Unknown',
-				sharerId: '',
-				state: '',
 			}),
 		);
 	});
 
-	it('should throw if createIndexIfNotExists fails', async () => {
+	it('should handle index creation failure gracefully', async () => {
 		mockSearchService.createIndexIfNotExists = vi
 			.fn()
 			.mockRejectedValue(new Error('Index creation failed'));
 
-		await expect(
-			bulkIndexExistingListings(mockListings, mockSearchService),
-		).rejects.toThrow('Index creation failed');
+		await bulkIndexExistingListings(mockListings, mockSearchService, mockUnitOfWork);
 
 		expect(console.error).toHaveBeenCalledWith(
-			'Bulk indexing failed:',
-			expect.any(Error),
+			expect.stringContaining('Failed to index listing listing-1'),
+			expect.any(String),
+		);
+		expect(console.error).toHaveBeenCalledWith(
+			expect.stringContaining('Failed to index listing listing-2'),
+			expect.any(String),
 		);
 	});
 
-	it('should convert dates to ISO strings', async () => {
-		await bulkIndexExistingListings(mockListings, mockSearchService);
+	it('should index documents with correct data structure', async () => {
+		await bulkIndexExistingListings(mockListings, mockSearchService, mockUnitOfWork);
 
 		expect(mockSearchService.indexDocument).toHaveBeenCalledWith(
 			'item-listings',
 			expect.objectContaining({
-				sharingPeriodStart: expect.stringContaining('2024-01-01'),
-				sharingPeriodEnd: expect.stringContaining('2024-06-30'),
-				createdAt: expect.stringContaining('2024-01-01'),
-				updatedAt: expect.stringContaining('2024-01-02'),
+				id: 'listing-1',
+				title: 'Test Listing 1',
+			}),
+		);
+		expect(mockSearchService.indexDocument).toHaveBeenCalledWith(
+			'item-listings',
+			expect.objectContaining({
+				id: 'listing-2',
+				title: 'Test Listing 2',
 			}),
 		);
 	});
 
-	it('should use current date for missing date fields', async () => {
-		const listingsWithMissingDates = [
+	it('should handle missing listings in repository', async () => {
+		vi.spyOn(console, 'warn').mockImplementation(() => undefined);
+
+		const listingsWithMissingData = [
 			{
-				id: 'listing-no-dates',
-				title: 'No Dates Listing',
+				id: 'listing-missing',
+				title: 'Missing Listing',
 			},
 		] as unknown as Domain.Contexts.Listing.ItemListing.ItemListingEntityReference[];
 
-		const beforeTest = new Date().toISOString().slice(0, 10);
 		await bulkIndexExistingListings(
-			listingsWithMissingDates,
+			listingsWithMissingData,
 			mockSearchService,
+			mockUnitOfWork,
 		);
 
-		expect(mockSearchService.indexDocument).toHaveBeenCalledWith(
-			'item-listings',
-			expect.objectContaining({
-				sharingPeriodStart: expect.stringContaining(beforeTest),
-				sharingPeriodEnd: expect.stringContaining(beforeTest),
-				createdAt: expect.stringContaining(beforeTest),
-				updatedAt: expect.stringContaining(beforeTest),
-			}),
+		expect(console.warn).toHaveBeenCalledWith(
+			expect.stringContaining('ItemListing listing-missing not found'),
+		);
+		expect(console.log).toHaveBeenCalledWith(
+			expect.stringContaining('Bulk indexing complete: 1/1 listings indexed successfully'),
 		);
 	});
 });

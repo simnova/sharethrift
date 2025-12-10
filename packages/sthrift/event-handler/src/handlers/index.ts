@@ -6,12 +6,9 @@
 
 import type { DomainDataSource } from '@sthrift/domain';
 import type { SearchService } from '@cellix/search-service';
-import { registerItemListingUpdatedUpdateSearchIndexHandler } from './item-listing-updated-update-search-index.js';
-import { registerItemListingDeletedUpdateSearchIndexHandler as registerDeletedHandler } from './item-listing-deleted-update-search-index.js';
+import { RegisterIntegrationEventHandlers } from './integration/index.js';
 
 export * from './search-index-helpers.js';
-export * from './item-listing-updated-update-search-index.js';
-export * from './item-listing-deleted-update-search-index.js';
 export * from './bulk-index-existing-listings.js';
 
 /**
@@ -27,16 +24,7 @@ export const RegisterEventHandlers = (
 	if (searchService) {
 		console.log('Registering search index event handlers...');
 
-		// Get the item listing unit of work from domain data source
-		const itemListingUnitOfWork =
-			domainDataSource.Listing.ItemListing.ItemListingUnitOfWork;
-
-		// Register search index update handlers
-		registerItemListingUpdatedUpdateSearchIndexHandler(
-			searchService,
-			itemListingUnitOfWork,
-		);
-		registerDeletedHandler(searchService);
+		RegisterIntegrationEventHandlers(domainDataSource, searchService);
 
 		console.log('Search index event handlers registered successfully');
 	} else {
@@ -44,10 +32,6 @@ export const RegisterEventHandlers = (
 			'Search service not available, skipping search index event handlers',
 		);
 	}
-
-	// TODO: Register other event handlers here as needed
-	// RegisterDomainEventHandlers(domainDataSource);
-	// RegisterIntegrationEventHandlers(domainDataSource);
 
 	console.log('ShareThrift event handlers registration complete');
 };
