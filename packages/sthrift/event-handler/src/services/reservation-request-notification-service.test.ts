@@ -16,24 +16,103 @@ describe('ReservationRequestNotificationService', () => {
 			shutDown: vi.fn().mockResolvedValue(undefined),
 		} as TransactionalEmailService;
 
+		// Helper to create mocks that bridge between callback-based calls and mockResolvedValue/mockRejectedValue
+		const createWithTransactionMock = () => {
+			// biome-ignore lint/suspicious/noExplicitAny: Test mock infrastructure
+			let returnValue: any;
+			// biome-ignore lint/suspicious/noExplicitAny: Test mock infrastructure
+			let errorValue: any;
+			let hasError = false;
+			// Queue for Once methods - stores {type: 'value'|'error', value: any}
+			// biome-ignore lint/suspicious/noExplicitAny: Test mock infrastructure
+			const callQueue: any[] = [];
+			let callCount = 0;
+
+			// biome-ignore lint/suspicious/noExplicitAny: Test mock infrastructure
+			const mock = vi.fn((_passport: any, callback: any) => {
+				// Check if there's a queued item for this call
+				if (callCount < callQueue.length) {
+					const queued = callQueue[callCount++];
+					if (queued.type === 'error') {
+						throw queued.value;
+					} else {
+						const mockRepo = {
+							getById: vi.fn().mockResolvedValue(queued.value),
+						};
+						return callback(mockRepo);
+					}
+				}
+				
+				callCount++;
+				if (hasError) {
+					throw errorValue;
+				}
+				if (returnValue !== undefined) {
+					const mockRepo = {
+						getById: vi.fn().mockResolvedValue(returnValue),
+					};
+					return callback(mockRepo);
+				}
+				// No value set yet, return undefined
+				return callback({ getById: vi.fn().mockResolvedValue(undefined) });
+			});
+
+			// Override mockResolvedValue to store the value
+			// biome-ignore lint/suspicious/noExplicitAny: Test mock infrastructure
+			mock.mockResolvedValue = function(value: any) {
+				returnValue = value;
+				hasError = false;
+				return this;
+			};
+
+			// Override mockRejectedValue to store the error
+			// biome-ignore lint/suspicious/noExplicitAny: Test mock infrastructure
+			mock.mockRejectedValue = function(error: any) {
+				errorValue = error;
+				hasError = true;
+				return this;
+			};
+
+			// Add mockResolvedValueOnce
+			// biome-ignore lint/suspicious/noExplicitAny: Test mock infrastructure
+			mock.mockResolvedValueOnce = function(value: any) {
+				callQueue.push({ type: 'value', value });
+				return this;
+			};
+
+			// Add mockRejectedValueOnce  
+			// biome-ignore lint/suspicious/noExplicitAny: Test mock infrastructure
+			mock.mockRejectedValueOnce = function(error: any) {
+				callQueue.push({ type: 'error', value: error });
+				return this;
+			};
+
+			// Override mockImplementation to support custom implementations
+			const originalMockImplementation = mock.mockImplementation.bind(mock);
+			// biome-ignore lint/suspicious/noExplicitAny: Test mock infrastructure
+			mock.mockImplementation = (impl: any) => originalMockImplementation(impl);
+
+			return mock;
+		};
+
 		// Create mock domain data source
 		mockDomainDataSource = {
 			User: {
 				PersonalUser: {
 					PersonalUserUnitOfWork: {
-						withTransaction: vi.fn(),
+						withTransaction: createWithTransactionMock(),
 					},
 				},
 				AdminUser: {
 					AdminUserUnitOfWork: {
-						withTransaction: vi.fn(),
+						withTransaction: createWithTransactionMock(),
 					},
 				},
 			},
 			Listing: {
 				ItemListing: {
 					ItemListingUnitOfWork: {
-						withTransaction: vi.fn(),
+						withTransaction: createWithTransactionMock(),
 					},
 				},
 			},
@@ -594,19 +673,32 @@ describe('ReservationRequestNotificationService', () => {
 				profile: { firstName: 'Sharer' },
 			};
 
+			const reserver = {
+				account: { email: 'reserver@example.com' },
+				profile: { firstName: 'Reserver' },
+			};
+
+			const listing = { title: 'Test Listing' };
+
 			mockDomainDataSource.User.PersonalUser.PersonalUserUnitOfWork.withTransaction
 				.mockResolvedValue(sharer);
+			mockDomainDataSource.User.AdminUser.AdminUserUnitOfWork.withTransaction
+				.mockResolvedValue(reserver);
+			mockDomainDataSource.Listing.ItemListing.ItemListingUnitOfWork.withTransaction
+				.mockResolvedValue(listing);
 
-		await service.sendReservationRequestNotification(
-			'req-123',
-			'list-456',
-			'user-reserver',
-			'user-sharer',
-			// biome-ignore lint/suspicious/noExplicitAny: Test requires flexibility for null parameters
-			null as any,
-			// biome-ignore lint/suspicious/noExplicitAny: Test requires flexibility for null parameters
-			null as any,
-		);			expect(mockEmailService.sendTemplatedEmail).toHaveBeenCalled();
+			await service.sendReservationRequestNotification(
+				'req-123',
+				'list-456',
+				'user-reserver',
+				'user-sharer',
+				// biome-ignore lint/suspicious/noExplicitAny: Test requires flexibility for null parameters
+				null as any,
+				// biome-ignore lint/suspicious/noExplicitAny: Test requires flexibility for null parameters
+				null as any,
+			);
+
+			expect(mockEmailService.sendTemplatedEmail).toHaveBeenCalled();
 		});
 
 		it('handles very long user names', async () => {

@@ -1,4 +1,4 @@
-/** biome-ignore-all lint/suspicious/noExplicitAny: <explanation> */
+/** biome-ignore-all lint/suspicious/noExplicitAny: Test resolver helpers require flexible typing */
 
 import type { Domain } from '@sthrift/domain';
 import type {
