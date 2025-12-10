@@ -81,7 +81,7 @@ If the task is assigned to the Copilot user, the agent will create a branch and 
 - Avoid one-letter variable names; prefer intention-revealing naming
 
 ## Testing & Quality Requirements
-- Every aggregate, entity, value object: unit tests + scenario (`.feature`) files
+- Every aggregate, entity, value object: unit tests + scenario ([`.feature`](./packages/sthrift/service-sendgrid/src/features/)) files
 - Use Vitest for tests; avoid broad integration unless required
 - Assert domain invariants explicitly (not just property presence)
 - Maintain or improve coverage; do not submit PRs that reduce quality gates
