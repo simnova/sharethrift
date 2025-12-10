@@ -123,12 +123,12 @@ documents/        # BRD, SRD, ADRs, architecture diagrams
 
 ## 🚀 Getting Started
 
-Prerequisites
+### 🧩 Prerequisites
 
 - Node.js v22.12.0 (use nvm)
 - Azurite
 
-Install & Build
+### 🏗️ Install & Build
 
 ```
 nvm use v22
@@ -136,24 +136,24 @@ pnpm install
 pnpm run build
 ```
 
-  <img src="./readme-assets/pnpm_install.gif" width="500" alt="pnpm_install">
-  <img src="./readme-assets/pnpm_build.gif" width="500" alt="pnpm_build">
+  <img src="./readme-assets/pnpm_install.gif" width="500" alt="Terminal running 'pnpm install' to install workspace dependencies">
+  <img src="./readme-assets/pnpm_build.gif" width="500" alt="Terminal running 'pnpm run build' to build all packages">
 
-Run (Dev)
+### 🛠️ Run (Dev)
 
 ```
 pnpm run dev
 ```
 
-<img src="./readme-assets/pnpm_dev.gif" width="500" alt="pnpm_dev">
+<img src="./readme-assets/pnpm_dev.gif" width="500" alt="Terminal running 'pnpm run dev' starting Azure Functions host and frontend">
 
 ## 🔗 Local Endpoints
 
-| Portal   | Endpoint                          |
-| -------- | --------------------------------- |
-| Frontend | http://localhost:3000             |
-| Doc      | http://localhost:3002             |
-| Graphql  | http://localhost:7071/api/graphql |
+| Portal   | Endpoint                           |
+| -------- | ---------------------------------- |
+| Frontend | http://localhost:3000              |
+| Docs     | http://localhost:3002              |
+| GraphQL  | http://localhost:7071/api/graphql  |
 
 ## 🧩 Domain & DDD Conventions
 
@@ -171,7 +171,7 @@ pnpm run dev
 pnpm run test
 ```
 
-<img src="./readme-assets/pnpm_test.gif" width="500" alt="pnpm_test">
+<img src="./readme-assets/pnpm_test.gif" width="500" alt="Terminal running 'pnpm run test' showing passing unit tests and coverage">
 
 Guidelines:
 
