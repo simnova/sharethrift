@@ -207,9 +207,6 @@ describe('MongoUnitOfWork:Integration', () => {
 	});
 
 	beforeEach(async () => {
-		if (setupError) {
-			throw setupError;
-		}
 		await TestModel.deleteMany({});
 		// biome-ignore lint:useLiteralKeys
 		eventBus['eventSubscribers'] = {};
@@ -222,10 +219,34 @@ describe('MongoUnitOfWork:Integration', () => {
 			repoClass,
 		);
 	});
+
+	/**
+	 * Wraps an `it` block so that if `setupError` was set during `beforeAll`,
+	 * the test is marked as skipped instead of failing.
+	 */
+	const itWhenMongoAvailable = (
+		name: string,
+		fn: () => void | Promise<void>,
+		timeout?: number,
+	) => {
+		return it(
+			name,
+			async function () {
+				if (setupError) {
+					// Mark this test as skipped; Vitest will report this as skipped.
+					this.skip();
+					return;
+				}
+
+				return fn();
+			},
+			timeout,
+		);
+	};
 	describe('Scenario: Initializing the MongoUnitOfWork', () => {
 		describe('Given a valid domain event bus, integration event bus, mongoose model, TypeConverter, and repository class', () => {
 			describe('When all dependencies are provided to the MongoUnitOfWork constructor', () => {
-				it('Then should initialize the MongoUnitOfWork with all dependencies', () => {
+				itWhenMongoAvailable('Then should initialize the MongoUnitOfWork with all dependencies', () => {
 					// Assert
 					expect(uow.model).toBe(TestModel);
 					expect(uow.typeConverter).toBe(typeConverter);
@@ -241,7 +262,7 @@ describe('MongoUnitOfWork:Integration', () => {
 	describe('Scenario: Executing a transaction on an aggregate with no side effects', () => {
 		describe('Given a valid MongoUnitOfWork and valid props to create a TestAggregate', () => {
 			describe('When withTransaction is called to get a new instance of TestAggregate', () => {
-				it('Then it should commit the transaction and return the new instance', async () => {
+				itWhenMongoAvailable('Then it should commit the transaction and return the new instance', async () => {
 					await uow.withTransaction({}, async (repo) => {
 						const aggregate = repo.getNewInstance('bar');
 						await repo.save(aggregate);
@@ -267,7 +288,7 @@ describe('MongoUnitOfWork:Integration', () => {
 				});
 			});
 			describe('When withTransaction is called to update the foo field', () => {
-				it('Then the foo field should be updated in the database after the transaction commits', async () => {
+				itWhenMongoAvailable('Then the foo field should be updated in the database after the transaction commits', async () => {
 					// Arrange
 					expect(await TestModel.findOne({ foo: 'old-foo' })).not.toBeNull();
 					// Act
@@ -306,7 +327,7 @@ describe('MongoUnitOfWork:Integration', () => {
 			});
 
 			describe('When withTransaction is called to update the bar field with one domain event registered with one handler', () => {
-				it('Then the domain event should be dispatched by eventBus with the correct payload, the handler should succeed, and no integration events should be dispatched', async () => {
+				itWhenMongoAvailable('Then the domain event should be dispatched by eventBus with the correct payload, the handler should succeed, and no integration events should be dispatched', async () => {
 					//
 					// Arrange
 
@@ -354,7 +375,7 @@ describe('MongoUnitOfWork:Integration', () => {
 			});
 
 			describe('When withTransaction is called to update the bar field with one domain registered with one async handler', () => {
-				it('Then the domain event should be dispatched by eventBus with the correct payload, the unit of work should wait for the handler to complete, and no integration events should be dispatched', async () => {
+				itWhenMongoAvailable('Then the domain event should be dispatched by eventBus with the correct payload, the unit of work should wait for the handler to complete, and no integration events should be dispatched', async () => {
 					// Arrange
 					const eventBusDispatchSpy = vi.spyOn(eventBus, 'dispatch');
 					const integrationEventBusDispatchSpy = vi.spyOn(
@@ -394,7 +415,7 @@ describe('MongoUnitOfWork:Integration', () => {
 			});
 
 			describe('When withTransaction is called to update the bar field with one domain event registered with multiple handlers', () => {
-				it('Then the domain event should be dispatched by eventBus with the correct payload, and all handlers should be executed, and no integration events should be dispatched', async () => {
+				itWhenMongoAvailable('Then the domain event should be dispatched by eventBus with the correct payload, and all handlers should be executed, and no integration events should be dispatched', async () => {
 					// Arrange
 					// Spy on eventBus and integrationEventBus
 					const eventBusDispatchSpy = vi.spyOn(eventBus, 'dispatch');
@@ -454,7 +475,7 @@ describe('MongoUnitOfWork:Integration', () => {
 			});
 
 			describe('When withTransaction is called to update multiple fields, each triggering a different domain event with a handler', () => {
-				it('Then both domain events should be dispatched by eventBus with the correct payloads, and both handlers should be executed, and no integration events should be dispatched', async () => {
+				itWhenMongoAvailable('Then both domain events should be dispatched by eventBus with the correct payloads, and both handlers should be executed, and no integration events should be dispatched', async () => {
 					//
 					// Arrange
 					// Spy on eventBus and integrationEventBus
@@ -521,7 +542,7 @@ describe('MongoUnitOfWork:Integration', () => {
 			});
 
 			describe('When withTransaction is called to update multiple fields, each triggering a different domain event with multiple handlers', () => {
-				it('Then both domain events should be dispatched by eventBus with the correct payloads, and all handlers for each event should be executed, and no integration events should be dispatched', async () => {
+				itWhenMongoAvailable('Then both domain events should be dispatched by eventBus with the correct payloads, and all handlers for each event should be executed, and no integration events should be dispatched', async () => {
 					//
 					// Arrange
 					const eventBusDispatchSpy = vi.spyOn(eventBus, 'dispatch');
@@ -615,7 +636,7 @@ describe('MongoUnitOfWork:Integration', () => {
 			});
 
 			describe('When withTransaction is called to update the bar field and the domain event handler fails', () => {
-				it('Then the domain event should be dispatched by eventBus with the correct payload, the handler should throw, and the transaction should abort', async () => {
+				itWhenMongoAvailable('Then the domain event should be dispatched by eventBus with the correct payload, the handler should throw, and the transaction should abort', async () => {
 					//
 					// Arrange
 
@@ -667,7 +688,7 @@ describe('MongoUnitOfWork:Integration', () => {
 			});
 
 			describe('When withTransaction is called to update the bar field and one of multiple domain event handlers fails', () => {
-				it('Then the domain event should be dispatched by eventBus with the correct payload, only the first handler should be called, the first error should abort the transaction, and the document should not be updated', async () => {
+				itWhenMongoAvailable('Then the domain event should be dispatched by eventBus with the correct payload, only the first handler should be called, the first error should abort the transaction, and the document should not be updated', async () => {
 					//
 					// Arrange
 
@@ -729,7 +750,7 @@ describe('MongoUnitOfWork:Integration', () => {
 			});
 
 			describe('When withTransaction is called to update the bar field and the first async domain event handler throws after a delay', () => {
-				it('Then the domain event should be dispatched by eventBus with the correct payload, only the first handler should be called, the error should abort the transaction, and the document should not be updated', async () => {
+				itWhenMongoAvailable('Then the domain event should be dispatched by eventBus with the correct payload, only the first handler should be called, the error should abort the transaction, and the document should not be updated', async () => {
 					//
 					// Arrange
 
@@ -792,7 +813,7 @@ describe('MongoUnitOfWork:Integration', () => {
 			});
 
 			describe('When withTransaction is called to update the bar field with invalid input that causes a value error', () => {
-				it('Then the domain event should not be dispatched and the handler should never be called', async () => {
+				itWhenMongoAvailable('Then the domain event should not be dispatched and the handler should never be called', async () => {
 					//
 					// Arrange
 
@@ -849,7 +870,7 @@ describe('MongoUnitOfWork:Integration', () => {
 			});
 
 			describe('When withTransaction is called and integration event is added during aggregate save', () => {
-				it('Then the integration event should be dispatched by integrationEventBus after the transaction commits', async () => {
+				itWhenMongoAvailable('Then the integration event should be dispatched by integrationEventBus after the transaction commits', async () => {
 					// Arrange: spy on integrationEventBus.dispatch
 					// Add an integration event during aggregate.save
 					// Act: call uow.withTransaction()
@@ -858,7 +879,7 @@ describe('MongoUnitOfWork:Integration', () => {
 			});
 
 			describe('When withTransaction is called but no integration event is registered', () => {
-				it('Then no integration events should be dispatched', async () => {
+				itWhenMongoAvailable('Then no integration events should be dispatched', async () => {
 					// Arrange: Spy on integrationEventBus.dispatch
 					// Act: update aggregate, don't register integration events
 					// Assert: no dispatch calls
@@ -866,7 +887,7 @@ describe('MongoUnitOfWork:Integration', () => {
 			});
 
 			describe('When withTransaction is called and multiple integration events are added', () => {
-				it('Then all integration events should be dispatched by integrationEventBus after the transaction commits', async () => {
+				itWhenMongoAvailable('Then all integration events should be dispatched by integrationEventBus after the transaction commits', async () => {
 					// Arrange: add multiple integration events to aggregate
 					// Act: save aggregate within transaction
 					// Assert: all dispatched after commit
@@ -874,7 +895,7 @@ describe('MongoUnitOfWork:Integration', () => {
 			});
 
 			describe('When withTransaction is called and integration event handler throws', () => {
-				it('Then the transaction should still commit and persist data, and the error should not abort the operation', async () => {
+				itWhenMongoAvailable('Then the transaction should still commit and persist data, and the error should not abort the operation', async () => {
 					// Arrange: handler throws
 					// Act: run transaction
 					// Assert: db data is updated, error logged/thrown after commit
@@ -882,7 +903,7 @@ describe('MongoUnitOfWork:Integration', () => {
 			});
 
 			describe('When withTransaction is called and dispatching integration events is delayed', () => {
-				it('Then the dispatching should not block transaction completion but should still be awaited', async () => {
+				itWhenMongoAvailable('Then the dispatching should not block transaction completion but should still be awaited', async () => {
 					// Arrange: delayed handler (e.g. sleep 100ms)
 					// Act: run transaction
 					// Assert: no early commit exit
@@ -890,7 +911,7 @@ describe('MongoUnitOfWork:Integration', () => {
 			});
 
 			describe('When withTransaction is called and both domain and integration events are registered', () => {
-				it('Then domain events should be dispatched before the transaction commits and integration events after', async () => {
+				itWhenMongoAvailable('Then domain events should be dispatched before the transaction commits and integration events after', async () => {
 					// Arrange: register domain event + integration event
 					// Act: update aggregate and save
 					// Assert: domain -> before, integration -> after
@@ -898,7 +919,7 @@ describe('MongoUnitOfWork:Integration', () => {
 			});
 
 			describe('When withTransaction is called and integration event dispatch fails fatally', () => {
-				it('Then the transaction should commit, but the failure should be surfaced/logged appropriately', async () => {
+				itWhenMongoAvailable('Then the transaction should commit, but the failure should be surfaced/logged appropriately', async () => {
 					// Arrange: integration bus dispatch throws
 					// Act: run transaction
 					// Assert: transaction commits, error captured
