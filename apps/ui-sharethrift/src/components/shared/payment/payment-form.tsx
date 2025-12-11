@@ -25,7 +25,7 @@ interface PaymentFormProps {
 export const PaymentForm: FC<PaymentFormProps> = (props) => {
 	const userId = useUserId();
 	const [form] = Form.useForm();
-	// biome-ignore lint/suspicious/noExplicitAny: <explanation>
+	// biome-ignore lint/suspicious/noExplicitAny: CyberSource Flex SDK doesn't provide TypeScript types
 	const [flexMicroform, setFlexMicroform] = useState<any>(null);
 
 	const createToken = (tokenOption: TokenOptions) => {
@@ -109,7 +109,7 @@ export const PaymentForm: FC<PaymentFormProps> = (props) => {
 			});
 	};
 
-	// biome-ignore lint/suspicious/noExplicitAny: <explanation>
+	// biome-ignore lint/suspicious/noExplicitAny: CyberSource Flex SDK doesn't provide TypeScript types
 	const handleMicroformCreated = (microform: any) => {
 		setFlexMicroform(microform);
 	};

@@ -9,7 +9,7 @@ import {
 } from '../../../../../generated.tsx';
 import { AllListingsTable } from './all-listings-table.tsx';
 
-export interface AllListingsTableContainerProps {
+interface AllListingsTableContainerProps {
 	currentPage: number;
 	onPageChange: (page: number) => void;
 }
