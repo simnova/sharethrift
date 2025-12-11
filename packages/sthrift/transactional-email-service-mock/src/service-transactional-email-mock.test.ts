@@ -5,8 +5,8 @@ import { ServiceTransactionalEmailMock } from './service-transactional-email-moc
 import type { EmailRecipient, EmailTemplateData } from '@cellix/transactional-email-service';
 
 function findTmpDir(): string {
-  // Use a test-specific directory relative to current working directory
-  return path.join(process.cwd(), 'tmp', 'test-emails');
+  // Must match the directory used by ServiceTransactionalEmailMock
+  return path.join(process.cwd(), 'tmp', 'emails');
 }
 
 describe('ServiceTransactionalEmailMock', () => {
