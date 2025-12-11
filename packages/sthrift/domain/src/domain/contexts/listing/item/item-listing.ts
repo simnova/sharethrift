@@ -235,6 +235,13 @@ export class ItemListing<props extends ItemListingProps>
 	}
 
 	set state(value: string) {
+		// Validate that the state is a valid ListingStateEnum value
+		const validStates = Object.values(ValueObjects.ListingStateEnum);
+		if (!validStates.includes(value as (typeof validStates)[number])) {
+			throw new DomainSeedwork.PermissionError(
+				`Invalid listing state: ${value}. Valid states are: ${validStates.join(', ')}`,
+			);
+		}
 		this.props.state = value;
 	}
 

@@ -932,14 +932,13 @@ test.for(feature, ({ Background, Scenario, BeforeEachScenario }) => {
 				() => {
 					aggregate = ReservationRequest.getNewInstance(
 						baseProps,
-						toStateEnum('REQUESTED'),
+						toStateEnum('ACCEPTED'),
 						listing,
 						reserver,
 						baseProps.reservationPeriodStart,
 						baseProps.reservationPeriodEnd,
 						makePassport({ canEditReservationRequest: false }),
 					);
-					aggregate.state = toStateEnum('ACCEPTED');
 				},
 			);
 			When('I try to set state to "CLOSED"', () => {
