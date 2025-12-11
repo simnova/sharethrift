@@ -36,7 +36,7 @@ If you want the GitHub Copilot coding agent to implement the task:
     - Title
     - Description
     - Acceptance Criteria
-    - Links ([ADRs](apps/docs/docs/decisions/) if applicable)
+    - Links ([ADRs](./apps/docs/docs/decisions/) if applicable)
 6. Edit the generated issue if needed (DO NOT skip reviewing).
 7. Add labels: `domain`, `ui`, `tech-debt`, `documentation`, etc.
 8. Assign yourself, Copilot, or another contributor.
@@ -94,7 +94,7 @@ pnpm run lint
 ```
 
 ## Documentation & ADRs
-- Significant architectural shifts require an ADR ([apps/docs/docs](./apps/docs/docs/) folder)
+- Significant architectural shifts require an ADR ([apps/docs/docs/decisions](./apps/docs/docs/decisions/) folder)
 - Reference existing ADRs (DDD, telemetry, infra) when building upon patterns
 
 ## Dependencies & Technology Decisions

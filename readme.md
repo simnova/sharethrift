@@ -112,7 +112,7 @@ documents/        # BRD, SRD, ADRs, architecture diagrams
 
 ## 🛠 Tech Stack
 
-- Runtime: Node.js 22.12.0 / Azure Functions (v4.x)
+- Runtime: Node.js (per `.nvmrc`) / Azure Functions (v4.x)
 - Package Manager: pnpm (v10.x) 
 - Language: TypeScript (strict config) (v5.x)
 - API: Apollo GraphQL (v16.x)
@@ -127,13 +127,13 @@ documents/        # BRD, SRD, ADRs, architecture diagrams
 
 ### 🧩 Prerequisites
 
-- Node.js v22.12.0 (use nvm)
+- Node.js (use `nvm` with project `.nvmrc`)
 - Azurite
 
 ### 🏗️ Install & Build
 
 ```
-nvm use v22
+nvm use
 pnpm install
 pnpm run build
 ```
@@ -183,7 +183,7 @@ Guidelines:
 
 ## 🧾 Architecture Decisions (ADRs)
 
-Located in [apps/docs/docs](/apps/docs/docs)
+Located in [apps/docs/docs/decisions](/apps/docs/docs/decisions)
 
 - 0001-madr-architecture-decisions.md
 - adr-short-template.md
