@@ -32,7 +32,6 @@ const REQUEST_STATUS_OPTIONS = [
 	{ label: 'Accepted', value: 'Accepted' },
 	{ label: 'Rejected', value: 'Rejected' },
 	{ label: 'Closed', value: 'Closed' },
-	{ label: 'Closing', value: 'Closing' },
 	{ label: 'Expired', value: 'Expired' },
 ];
 

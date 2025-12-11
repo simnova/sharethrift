@@ -34,7 +34,9 @@ export const update = (dataSources: DataSources) => {
 					? (await reservationRequest.loadListing()).id
 					: null;
 
-				// Update state if provided - domain layer validates state transitions and permissions via visa pattern
+				// Update state if provided
+				// Domain layer validates state transitions and permissions via visa pattern
+				// The state setter routes to appropriate domain methods (accept(), reject(), etc.)
 				if (command.state !== undefined) {
 					reservationRequest.state = command.state;
 				}

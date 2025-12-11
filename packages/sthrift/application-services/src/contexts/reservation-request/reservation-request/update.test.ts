@@ -21,12 +21,14 @@ test.for(feature, ({ Scenario, BeforeEachScenario }) => {
 	let result:
 		| Domain.Contexts.ReservationRequest.ReservationRequest.ReservationRequestEntityReference
 		| undefined;
-	// biome-ignore lint/suspicious/noExplicitAny: Test mock variable
-	let error: any;
-	// biome-ignore lint/suspicious/noExplicitAny: Test mock variable
-	let mockReservationRequest: any;
-	// biome-ignore lint/suspicious/noExplicitAny: Test mock variable
-	let mockRepo: any;
+	let error: Error | unknown;
+	let mockReservationRequest: Partial<Domain.Contexts.ReservationRequest.ReservationRequest.ReservationRequestEntityReference>;
+	let mockRepo: {
+		getById: (
+			id: string,
+		) => Promise<Domain.Contexts.ReservationRequest.ReservationRequest.ReservationRequestEntityReference | null>;
+		getAll: () => Promise<Domain.Contexts.ReservationRequest.ReservationRequest.ReservationRequestEntityReference[]>;
+	};
 
 	BeforeEachScenario(() => {
 		mockReservationRequest = {

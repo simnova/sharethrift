@@ -100,45 +100,55 @@ export const RequestsTableContainer: React.FC<RequestsTableContainerProps> = ({
 		onPageChange(1);
 	};
 
+	const handleAccept = async (requestId: string) => {
+		try {
+			await acceptRequest({ variables: { input: { id: requestId } } });
+		} catch (error) {
+			const errorMessage =
+				error instanceof Error ? error.message : 'Unknown error occurred';
+			message.error(`Failed to accept request: ${errorMessage}`);
+			console.error('Accept request error:', error);
+		}
+	};
+
+	const handleReject = async (requestId: string) => {
+		// TODO: Implement reject functionality in future PR
+		message.info('Reject functionality coming soon');
+	};
+
+	const handleClose = async (requestId: string) => {
+		// TODO: Implement close functionality in future PR
+		message.info('Close functionality coming soon');
+	};
+
+	const handleDelete = async (requestId: string) => {
+		// TODO: Implement delete functionality in future PR
+		message.info('Delete functionality coming soon');
+	};
+
+	const handleMessage = async (requestId: string) => {
+		// TODO: Implement message functionality in future PR
+		message.info('Message functionality coming soon');
+	};
+
 	const handleAction = async (action: string, requestId: string) => {
 		switch (action) {
 			case 'accept':
 			case 'approve':
-				try {
-					await acceptRequest({ variables: { input: { id: requestId } } });
-				} catch (error) {
-					const errorMessage =
-						error instanceof Error ? error.message : 'Unknown error occurred';
-					message.error(`Failed to accept request: ${errorMessage}`);
-					console.error('Accept request error:', error);
-				}
+				await handleAccept(requestId);
 				break;
-
 			case 'reject':
-				// TODO: Implement reject functionality in future PR
-				message.info('Reject functionality coming soon');
+				await handleReject(requestId);
 				break;
-
 			case 'close':
-				// TODO: Implement close functionality in future PR
-				message.info('Close functionality coming soon');
+				await handleClose(requestId);
 				break;
-
-			case 'archive':
-				// TODO: Implement archive functionality in future PR
-				message.info('Archive functionality coming soon');
-				break;
-
 			case 'delete':
-				// TODO: Implement delete functionality in future PR
-				message.info('Delete functionality coming soon');
+				await handleDelete(requestId);
 				break;
-
 			case 'message':
-				// TODO: Implement message functionality in future PR
-				message.info('Message functionality coming soon');
+				await handleMessage(requestId);
 				break;
-
 			default:
 				console.warn(`Unknown action: ${action}`);
 		}

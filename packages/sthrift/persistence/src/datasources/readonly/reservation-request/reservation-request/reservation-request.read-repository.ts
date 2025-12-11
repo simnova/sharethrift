@@ -245,19 +245,17 @@ export class ReservationRequestReadRepositoryImpl
 					)
 				: undefined;
 
+		// Map aggregation results back to proper document structure
 		const docsWithRelations = docs.map((doc) => {
-			const { listingDoc, reserverDoc, ...rest } = doc as {
-				listingDoc?: unknown;
-				reserverDoc?: unknown;
-				[key: string]: unknown;
-			};
+			const { listingDoc, reserverDoc, ...rest } = doc;
 			return {
 				...rest,
-				listing: listingDoc ?? (doc as { listing?: unknown }).listing,
-				reserver: reserverDoc ?? (doc as { reserver?: unknown }).reserver,
+				listing: listingDoc ?? rest.listing,
+				reserver: reserverDoc ?? rest.reserver,
 			};
 		});
 
+		// Hydrate documents and convert to domain
 		const hydratedDocs = hydrate
 			? docsWithRelations.map((doc) => hydrate(doc))
 			: (docsWithRelations as Models.ReservationRequest.ReservationRequest[]);

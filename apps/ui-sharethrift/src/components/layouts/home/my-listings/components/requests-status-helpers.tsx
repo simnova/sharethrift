@@ -79,8 +79,8 @@ export const getActionButtons = (
 		);
 	}
 
-	// Rejected → Delete / Archive
-	if (record.status === 'Rejected') {
+	// Rejected / Expired → Delete
+	if (record.status === 'Rejected' || record.status === 'Expired') {
 		buttons.push(
 			<Popconfirm
 				key="delete"
@@ -94,42 +94,6 @@ export const getActionButtons = (
 					Delete
 				</Button>
 			</Popconfirm>,
-			<Button
-				key="archive"
-				type="link"
-				size="small"
-				onClick={() => onAction('archive', record.id)}
-			>
-				Archive
-			</Button>,
-		);
-	}
-
-	// Expired → Archive
-	if (record.status === 'Expired') {
-		buttons.push(
-			<Button
-				key="archive"
-				type="link"
-				size="small"
-				onClick={() => onAction('archive', record.id)}
-			>
-				Archive
-			</Button>,
-		);
-	}
-
-	// Closed → Message (already handled with Accepted above, but adding separately for clarity)
-	if (record.status === 'Closed') {
-		buttons.push(
-			<Button
-				key="message"
-				type="link"
-				size="small"
-				onClick={() => onAction('message', record.id)}
-			>
-				Message
-			</Button>,
 		);
 	}
 
