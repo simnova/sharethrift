@@ -8,6 +8,20 @@ setupEnvironment();
 const app = express();
 app.disable('x-powered-by');
 const port = 4000;
+
+function normalizeUrl(urlString: string): string {
+	try {
+		const url = new URL(urlString);
+		const pathname = url.pathname.replace(/\/$/, '') || '/';
+		const params = new URLSearchParams(url.search);
+		params.sort();
+		const search = params.toString() ? `?${params.toString()}` : '';
+		return `${url.origin}${pathname}${search}`;
+	} catch {
+		return urlString;
+	}
+}
+
 const allowedRedirectUris = new Set([
 	'http://localhost:3000/auth-redirect-user',
 	'http://localhost:3000/auth-redirect-admin',
@@ -228,9 +242,12 @@ async function main() {
 		const { redirect_uri, state } = req.query;
 		const requestedRedirectUri = redirect_uri as string;
 
-		// Note: Only absolute URIs are currently supported in the allowlist
-		// Check if the requested redirect_uri is in our allowed list
-		const isAllowed = allowedRedirectUris.has(requestedRedirectUri) || requestedRedirectUri === allowedRedirectUri;
+		const normalizedRequested = normalizeUrl(requestedRedirectUri);
+		
+		const isAllowed = Array.from(allowedRedirectUris).some(
+			allowedUri => normalizeUrl(allowedUri) === normalizedRequested
+		) || normalizeUrl(allowedRedirectUri) === normalizedRequested;
+
 		if (!isAllowed) {
 			res.status(400).send('Invalid redirect_uri');
 			return;
