@@ -22,7 +22,6 @@ export function createStorybookVitestConfig(
 	const storybookConfig = defineConfig({
 		test: {
 			globals: true,
-			exclude: ['**/node_modules/**', '**/dist/**'],
 			projects: [
 				{
 					extends: true,
@@ -60,7 +59,9 @@ export function createStorybookVitestConfig(
 					...(opts.additionalCoverageExclude ?? []),
 				],
 			},
-		}
+			watch: false,
+			isolate: true,
+		},
 	});
 
 	return mergeConfig(
