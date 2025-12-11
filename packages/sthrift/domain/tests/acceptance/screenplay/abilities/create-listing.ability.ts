@@ -37,9 +37,103 @@ export class CreateListingAbility extends Ability {
       images: params.images,
       listingType: 'item-listing',
       sharingHistory: [],
+      loadSharer: async () => ({
+        id: 'test-user',
+        userType: 'personal-user' as const,
+        isBlocked: false,
+        schemaVersion: SCHEMA_VERSION,
+        hasCompletedOnboarding: true,
+        role: {
+          id: 'test-role',
+          roleName: 'standard',
+          isDefault: true,
+          roleType: 'personal-user-role',
+          createdAt: new Date(),
+          updatedAt: new Date(),
+          schemaVersion: SCHEMA_VERSION,
+          permissions: {
+            listingPermissions: {
+              canCreateItemListing: true,
+              canUpdateItemListing: true,
+              canDeleteItemListing: true,
+              canViewItemListing: true,
+              canPublishItemListing: true,
+              canUnpublishItemListing: true,
+              canReserveItemListing: true
+            },
+            conversationPermissions: {
+              canCreateConversation: true,
+              canManageConversation: true,
+              canViewConversation: true
+            },
+            reservationRequestPermissions: {
+              canCreateReservationRequest: true,
+              canManageReservationRequest: true,
+              canViewReservationRequest: true
+            }
+          }
+        },
+        loadRole: async () => ({
+          id: 'test-role',
+          roleName: 'standard',
+          isDefault: true,
+          roleType: 'personal-user-role',
+          createdAt: new Date(),
+          updatedAt: new Date(),
+          schemaVersion: SCHEMA_VERSION,
+          permissions: {
+            listingPermissions: {
+              canCreateItemListing: true,
+              canUpdateItemListing: true,
+              canDeleteItemListing: true,
+              canViewItemListing: true,
+              canPublishItemListing: true,
+              canUnpublishItemListing: true,
+              canReserveItemListing: true
+            },
+            conversationPermissions: {
+              canCreateConversation: true,
+              canManageConversation: true,
+              canViewConversation: true
+            },
+            reservationRequestPermissions: {
+              canCreateReservationRequest: true,
+              canManageReservationRequest: true,
+              canViewReservationRequest: true
+            }
+          }
+        }),
+        createdAt: new Date(),
+        updatedAt: new Date(),
+        account: {
+          accountType: 'standard' as const,
+          email: 'test@example.com',
+          username: 'testuser',
+          profile: {
+            firstName: 'Test',
+            lastName: 'User',
+            aboutMe: '',
+            location: {
+              address1: '123 Main St',
+              address2: null,
+              city: 'Test City', 
+              state: 'TS',
+              country: 'Testland',
+              zipCode: '12345'
+            },
+            billing: {
+              subscriptionId: null,
+              cybersourceCustomerId: null,
+              paymentState: '',
+              lastTransactionId: null,
+              lastPaymentAmount: null
+            }
+          }
+        }
+      }),
       sharer: {
         id: 'test-user',
-        userType: 'personal-user',
+        userType: 'personal-user' as const,
         isBlocked: false,
   schemaVersion: SCHEMA_VERSION,
         hasCompletedOnboarding: true,
@@ -131,7 +225,7 @@ export class CreateListingAbility extends Ability {
           }
         }
       },
-    };
+    } as unknown as Domain.Contexts.Listing.ItemListing.ItemListingEntityReference;
 
     this.listings.push(listing);
     return Promise.resolve(listing);

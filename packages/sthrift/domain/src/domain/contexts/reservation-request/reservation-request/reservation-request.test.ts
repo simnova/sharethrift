@@ -791,7 +791,7 @@ test.for(feature, ({ Background, Scenario, BeforeEachScenario }) => {
 					reserver,
 					baseProps.reservationPeriodStart,
 					baseProps.reservationPeriodEnd,
-					makePassport({ canRejectRequest: true, canCancelRequest: true }),
+					makePassport({ canEditReservationRequest: true }),
 				);
 				aggregate.state = toStateEnum('REJECTED');
 			});
@@ -816,7 +816,7 @@ test.for(feature, ({ Background, Scenario, BeforeEachScenario }) => {
 					reserver,
 					baseProps.reservationPeriodStart,
 					baseProps.reservationPeriodEnd,
-					makePassport({ canAcceptRequest: true, canCancelRequest: true }),
+					makePassport({ canEditReservationRequest: true }),
 				);
 				aggregate.state = toStateEnum('ACCEPTED');
 			});
@@ -846,7 +846,7 @@ test.for(feature, ({ Background, Scenario, BeforeEachScenario }) => {
 					reserver,
 					baseProps.reservationPeriodStart,
 					baseProps.reservationPeriodEnd,
-					makePassport({ canAcceptRequest: true, canRejectRequest: true }),
+					makePassport({ canEditReservationRequest: true }),
 				);
 				aggregate.state = toStateEnum('ACCEPTED');
 			});
@@ -876,7 +876,7 @@ test.for(feature, ({ Background, Scenario, BeforeEachScenario }) => {
 					reserver,
 					baseProps.reservationPeriodStart,
 					baseProps.reservationPeriodEnd,
-					makePassport({ canRejectRequest: true, canAcceptRequest: true }),
+					makePassport({ canEditReservationRequest: true }),
 				);
 				aggregate.state = toStateEnum('REJECTED');
 			});
@@ -906,7 +906,7 @@ test.for(feature, ({ Background, Scenario, BeforeEachScenario }) => {
 					reserver,
 					baseProps.reservationPeriodStart,
 					baseProps.reservationPeriodEnd,
-					makePassport({ canCloseRequest: true }),
+					makePassport({ canEditReservationRequest: true }),
 				);
 			});
 			When('I try to close the reservation', () => {
@@ -937,7 +937,7 @@ test.for(feature, ({ Background, Scenario, BeforeEachScenario }) => {
 						reserver,
 						baseProps.reservationPeriodStart,
 						baseProps.reservationPeriodEnd,
-						makePassport({ canAcceptRequest: true, canCloseRequest: false }),
+						makePassport({ canEditReservationRequest: false }),
 					);
 					aggregate.state = toStateEnum('ACCEPTED');
 				},
@@ -964,7 +964,7 @@ test.for(feature, ({ Background, Scenario, BeforeEachScenario }) => {
 					reserver,
 					baseProps.reservationPeriodStart,
 					baseProps.reservationPeriodEnd,
-					makePassport({ canCloseRequest: true, canAcceptRequest: true }),
+					makePassport({ canEditReservationRequest: true }),
 				);
 				aggregate.state = toStateEnum('ACCEPTED');
 			});

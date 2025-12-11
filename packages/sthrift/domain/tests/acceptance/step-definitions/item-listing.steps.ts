@@ -105,6 +105,7 @@ Given('an ItemListing aggregate without permission to update item listing',  () 
     const props: ItemListingProps = {
         id: `test-listing-${Date.now()}`,
         sharer: actor.personalUser,
+        loadSharer: async () => actor.personalUser,
         title: actor.listingFields?.title || 'Old Title',
         description: actor.listingFields?.description || 'Old Description',
         images: [],
