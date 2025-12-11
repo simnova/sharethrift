@@ -46,6 +46,7 @@ export class TemplateUtils {
 		}
 
 		// Fallback: try environment variable if set
+		// biome-ignore lint/complexity/useLiteralKeys: Environment variable name may contain special characters
 		const envPath = process.env['EMAIL_TEMPLATES_PATH'];
 		if (envPath && fs.existsSync(envPath)) {
 			return envPath;
