@@ -24,9 +24,10 @@ export function createStorybookVitestConfig(pkgDirname: string, opts: StorybookV
       // in @storybook/addon-vitest + Playwright browser provider
       retry: isCI ? 3 : 1,
       testTimeout: isCI ? 30000 : 10000,
-      // Serialize file execution to avoid "Vitest failed to find the runner" race condition
+      // Serialize file execution in CI to avoid "Vitest failed to find the runner" race condition
       // when using Storybook + Vitest browser mode with Playwright
-      fileParallelism: false,
+      // Local development benefits from parallel execution for faster feedback
+      fileParallelism: !isCI,
       projects: [
         {
           extends: true,

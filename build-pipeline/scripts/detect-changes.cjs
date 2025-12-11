@@ -152,6 +152,9 @@ async function checkAppChanges(appConfig, affectedPackages) {
 }
 // Check for any source code changes (excluding infrastructure-only changes)
 async function checkSourceChanges() {
+	// Exclusion patterns for non-source files
+	// Note: Keep these patterns aligned with knip.json ignore and sonar-project.properties exclusions
+	// to ensure consistent behavior across tooling
 	const sourceExcludePaths = [
 		'build-pipeline/**',
 		'iac/**',
