@@ -117,7 +117,10 @@ export const buildApplicationServicesFactory = (
 				return { ...tokenValidationResult, hints: hints };
 			},
 			ReservationRequest: ReservationRequest(dataSources),
-			Listing: Listing(dataSources),
+			Listing: Listing(
+				dataSources,
+				infrastructureServicesRegistry.searchService,
+			),
 			Conversation: Conversation(dataSources),
 			AccountPlan: AccountPlan(dataSources),
 			AppealRequest: AppealRequest(dataSources),

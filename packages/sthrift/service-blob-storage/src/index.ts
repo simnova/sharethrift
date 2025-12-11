@@ -1,9 +1,11 @@
 import type { ServiceBase } from '@cellix/api-services-spec';
 import type { Domain } from '@sthrift/domain';
 
-export class ServiceBlobStorage implements ServiceBase<Domain.Services["BlobStorage"]> {
+type BlobStorageService = Domain.Services.Services["BlobStorage"];
 
-    async startUp(): Promise<Domain.Services["BlobStorage"]> {
+export class ServiceBlobStorage implements ServiceBase<BlobStorageService> {
+
+    async startUp(): Promise<BlobStorageService> {
 
         // Use connection string from environment variable or config
         // biome-ignore lint:useLiteralKeys

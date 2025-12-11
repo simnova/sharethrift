@@ -24,39 +24,42 @@ import { ServiceMessagingMock } from '@sthrift/messaging-service-mock';
 import { graphHandlerCreator } from '@sthrift/graphql';
 import { restHandlerCreator } from '@sthrift/rest';
 
-import type {PaymentService} from '@cellix/payment-service';
+import type { PaymentService } from '@cellix/payment-service';
 import { PaymentServiceMock } from '@sthrift/payment-service-mock';
 import { PaymentServiceCybersource } from '@sthrift/payment-service-cybersource';
-
+import { ServiceSearchIndex } from '@sthrift/search-service-index';
+import type { SearchService } from '@cellix/search-service';
 
 const { NODE_ENV } = process.env;
 const isDevelopment = NODE_ENV === 'development';
 
 Cellix.initializeInfrastructureServices<ApiContextSpec, ApplicationServices>(
 	(serviceRegistry) => {
-		
 		serviceRegistry
 			.registerInfrastructureService(
-				new ServiceMongoose(
-					MongooseConfig.mongooseConnectionString,
-					MongooseConfig.mongooseConnectOptions,
-				),
-			)
+new ServiceMongoose(
+MongooseConfig.mongooseConnectionString,
+MongooseConfig.mongooseConnectOptions,
+),
+)
 			.registerInfrastructureService(new ServiceBlobStorage())
 			.registerInfrastructureService(
-				new ServiceTokenValidation(TokenValidationConfig.portalTokens),
+new ServiceTokenValidation(TokenValidationConfig.portalTokens),
+)
+			.registerInfrastructureService(
+isDevelopment
+? new ServiceMessagingMock()
+					: new ServiceMessagingTwilio(),
 			)
 			.registerInfrastructureService(
-				isDevelopment ? new ServiceMessagingMock() : new ServiceMessagingTwilio(),
+isDevelopment ? new PaymentServiceMock() : new PaymentServiceCybersource(),
 			)
-			.registerInfrastructureService(
-        isDevelopment ? new PaymentServiceMock() : new PaymentServiceCybersource()
-      );
+			.registerInfrastructureService(new ServiceSearchIndex());
 	},
 )
 	.setContext((serviceRegistry) => {
 		const dataSourcesFactory = MongooseConfig.mongooseContextBuilder(
-			serviceRegistry.getInfrastructureService<ServiceMongoose>(
+serviceRegistry.getInfrastructureService<ServiceMongoose>(
 				ServiceMongoose,
 			),
 		);
@@ -64,13 +67,17 @@ Cellix.initializeInfrastructureServices<ApiContextSpec, ApplicationServices>(
 		const messagingService = isDevelopment
 			? serviceRegistry.getInfrastructureService<MessagingService>(ServiceMessagingMock)
 			: serviceRegistry.getInfrastructureService<MessagingService>(ServiceMessagingTwilio);
-    
-    const paymentService = isDevelopment
-      ? serviceRegistry.getInfrastructureService<PaymentService>(PaymentServiceMock)
-      : serviceRegistry.getInfrastructureService<PaymentService>(PaymentServiceCybersource);
+
+		const paymentService = isDevelopment
+			? serviceRegistry.getInfrastructureService<PaymentService>(PaymentServiceMock)
+			: serviceRegistry.getInfrastructureService<PaymentService>(PaymentServiceCybersource);
 
 		const { domainDataSource } = dataSourcesFactory.withSystemPassport();
-		RegisterEventHandlers(domainDataSource);
+		const searchService =
+			serviceRegistry.getInfrastructureService<SearchService>(
+				ServiceSearchIndex,
+			);
+		RegisterEventHandlers(domainDataSource, searchService);
 
 		return {
 			dataSourcesFactory,
@@ -79,23 +86,24 @@ Cellix.initializeInfrastructureServices<ApiContextSpec, ApplicationServices>(
 					ServiceTokenValidation,
 				),
 			paymentService,
-      messagingService,
+			searchService,
+			messagingService,
 		};
 	})
 	.initializeApplicationServices((context) =>
 		buildApplicationServicesFactory(context),
 	)
 	.registerAzureFunctionHttpHandler(
-		'graphql',
-		{
-			route: 'graphql/{*segments}',
-			methods: ['GET', 'POST', 'PATCH', 'PUT', 'DELETE', 'OPTIONS', 'HEAD'],
-		},
-		graphHandlerCreator,
-	)
+'graphql',
+{
+route: 'graphql/{*segments}',
+methods: ['GET', 'POST', 'PATCH', 'PUT', 'DELETE', 'OPTIONS', 'HEAD'],
+},
+graphHandlerCreator,
+)
 	.registerAzureFunctionHttpHandler(
-		'rest',
-		{ route: '{communityId}/{role}/{memberId}/{*rest}' },
-		restHandlerCreator,
-	)
+'rest',
+{ route: '{communityId}/{role}/{memberId}/{*rest}' },
+restHandlerCreator,
+)
 	.startUp();
