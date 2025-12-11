@@ -116,7 +116,7 @@ documents/        # BRD, SRD, ADRs, architecture diagrams
 - Package Manager: pnpm (v10.x) 
 - Language: TypeScript (strict config) (v5.x)
 - API: Apollo GraphQL (v16.x)
-- Persistence: MongoDB (Mongoose)(v8.x); Cosmos MongoDB target in cloud
+- Persistence: MongoDB (Mongoose) (v8.x); Cosmos MongoDB target in cloud
 - Infra as Code: Bicep modules (iac)
 - Tooling: Turborepo (v2.x), Vitest (v3.x), Biome (v2.x), SonarQube (v4.x), Sourcery
 - Local Azure Emulation: Azurite (blob/queue) (v3.x)
