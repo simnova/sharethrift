@@ -80,6 +80,16 @@ If the task is assigned to the Copilot user, the agent will create a branch and 
 - Entity file ends with `.entity.ts`
 - Avoid one-letter variable names; prefer intention-revealing naming
 
+## Domain & DDD Conventions
+
+- Bounded contexts under [packages/sthrift/domain/src/domain/contexts/](./packages/sthrift/domain/src/domain/contexts/)
+- Each context exposes a clear ubiquitous language via exports
+- Passports/Visas enforce permission checks at aggregate boundaries
+- Value Objects are immutable, with validation (no side effects)
+- Aggregates guard invariants and emit domain events
+- Repositories are defined as interfaces in the domain; adapters live outside
+- Unit of Work plans atomic persistence and event publication
+
 ## Testing & Quality Requirements
 - Every aggregate, entity, value object: unit tests + scenario ([`.feature`](./packages/sthrift/service-sendgrid/src/features/)) files
 - Use Vitest for tests; avoid broad integration unless required

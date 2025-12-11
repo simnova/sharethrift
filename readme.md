@@ -161,27 +161,18 @@ pnpm run dev
 
 ## 🧩 Domain & DDD Conventions
 
-- Bounded contexts under [packages/sthrift/domain/src/domain/contexts/](./packages/sthrift/domain/src/domain/contexts/)\*
-- Each context exposes a clear ubiquitous language via exports
-- Passports/Visas enforce permission checks at aggregate boundaries
-- Value Objects: pure data + validation (no side effects)
-- Aggregates: guard invariants, emit domain events (future integration bus)
-- Repositories: interfaces only in domain; adapters reside outside
-- Unit of Work: orchestrates aggregate persistence + event publication plans
+This repo follows strict DDD boundaries (contexts, aggregates, value objects, repositories, UoW, and permissions via passports/visas). See full conventions, file naming, and reviewer checks in CONTRIBUTING.
+
+- Full guidance: see [CONTRIBUTING → Domain & DDD Conventions](./CONTRIBUTING.md#domain--ddd-conventions)
+- Naming and layout: see [CONTRIBUTING → Naming & File Conventions](./CONTRIBUTING.md#naming--file-conventions)
 
 ## 🧪 Testing
 
-```
-pnpm run test
-```
+Run tests with `pnpm run test`. Detailed expectations for coverage, styles, and scenario files are centralized in CONTRIBUTING.
 
 <img src="./readme-assets/pnpm_test.gif" width="500" alt="Terminal running 'pnpm run test' showing passing unit tests and coverage">
 
-Guidelines:
-
-- Every aggregate, entity, and value object requires coverage
-- Use descriptive test names expressing business rules
-- Feature files (\*.feature) for higher-level domain scenario documentation
+- Full guidance: see [CONTRIBUTING → Testing & Quality Requirements](./CONTRIBUTING.md#testing--quality-requirements)
 
 ## 🧾 Architecture Decisions (ADRs)
 
