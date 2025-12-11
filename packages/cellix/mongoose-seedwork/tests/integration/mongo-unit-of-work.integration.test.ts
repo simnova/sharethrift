@@ -231,7 +231,7 @@ describe('MongoUnitOfWork:Integration', () => {
 	) => {
 		return it(
 			name,
-			async function () {
+			function () {
 				if (setupError) {
 					// Mark this test as skipped; Vitest will report this as skipped.
 					this.skip();
