@@ -1,3 +1,4 @@
+import { randomUUID } from 'node:crypto';
 import { DomainSeedwork } from '@cellix/domain-seedwork';
 import type { Passport } from '../../passport.ts';
 import type { ListingVisa } from '../listing.visa.ts';
@@ -30,8 +31,6 @@ export class ItemListing<props extends ItemListingProps>
 
 	//#region Methods
 	public static getNewInstance<props extends ItemListingProps>(
-		newProps: props,
-		passport: Passport,
 		sharer: UserEntityReference,
 		fields: {
 			title: string;
@@ -43,6 +42,7 @@ export class ItemListing<props extends ItemListingProps>
 			images?: string[];
 			isDraft?: boolean;
 		},
+		passport: Passport,
 	): ItemListing<props> {
 		const id = randomUUID();
 		const now = new Date();
@@ -326,6 +326,18 @@ export class ItemListing<props extends ItemListingProps>
 		}
 
 		this.props.state = new ValueObjects.ListingState('Cancelled').valueOf();
+	}
+
+	public reinstate(): void {
+		if (
+			!this.visa.determineIf((permissions) => permissions.canPublishItemListing)
+		) {
+			throw new DomainSeedwork.PermissionError(
+				'You do not have permission to reinstate this listing',
+			);
+		}
+
+		this.props.state = new ValueObjects.ListingState('Published').valueOf();
 	}
 
 	/**

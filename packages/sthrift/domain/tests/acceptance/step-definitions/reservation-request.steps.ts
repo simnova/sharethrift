@@ -7,6 +7,7 @@ import { SystemPassport } from '../../../src/domain/iam/system/system.passport';
 import { ReservationRequest } from '../../../src/domain/contexts/reservation-request/reservation-request/reservation-request';
 import type { ReservationRequestProps } from '../../../src/domain/contexts/reservation-request/reservation-request/reservation-request.entity';
 import type { PersonalUserEntityReference } from '../../../src/domain/contexts/user/personal-user/personal-user.entity';
+import type { UserEntityReference } from '../../../src/domain/contexts/user/index';
 import type { ItemListingEntityReference } from '../../../src/domain/contexts/listing/item/item-listing.entity';
 import { ReservationRequestStates } from '../../../src/domain/contexts/reservation-request/reservation-request/reservation-request.value-objects';
 import type { ReservationRequestDomainPermissions } from '../../../src/domain/contexts/reservation-request/reservation-request.domain-permissions';
@@ -25,9 +26,9 @@ declare module '@serenity-js/core' {
             reservationPeriodEnd: Date;
         };
         currentReservationRequest?: ReservationRequest<ReservationRequestProps>;
-        error?: Error;
+        error?: unknown;
         loadedListing?: ItemListingEntityReference;
-        loadedReserver?: PersonalUserEntityReference;
+        loadedReserver?: UserEntityReference;
     }
 }
 
@@ -47,7 +48,8 @@ const testListingRef: ItemListingEntityReference = {
     listingType: 'item-listing',
     schemaVersion: '1.0.0',
     createdAt: new Date(),
-    updatedAt: new Date()
+    updatedAt: new Date(),
+    loadSharer: async () => ({ ...testUserRef, id: 'sharerUser' })
 };
 
 Before(() => {
@@ -545,8 +547,9 @@ Then('the reservation request\'s reserver should reference {string}', (reserverI
 
 Then('an error should be thrown indicating {string}', (errorMessage: string) => {
     const actor = actorCalled('User');
+    const error = actor.error as Error | undefined;
     actor.attemptsTo(
-        Ensure.that(actor.error?.message || '', startsWith(errorMessage.replace(/^"|"$/g, '')))
+        Ensure.that(error?.message || '', startsWith(errorMessage.replace(/^"|"$/g, '')))
     );
 });
 
@@ -554,9 +557,10 @@ Then('an error should be thrown indicating {string}', (errorMessage: string) => 
 
 Then('a PermissionError should be thrown with message {string}', (message: string) => {
     const actor = actorCalled('User');
+    const error = actor.error as Error | undefined;
     actor.attemptsTo(
         Ensure.that(actor.error instanceof DomainSeedwork.PermissionError, equals(true)),
-        Ensure.that(actor.error?.message || '', startsWith(message.replace(/^"|"$/g, '')))
+        Ensure.that(error?.message || '', startsWith(message.replace(/^"|"$/g, '')))
     );
 });
 
