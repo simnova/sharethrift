@@ -61,6 +61,8 @@ test.for(feature, ({ Scenario, BeforeEachScenario }) => {
 	let req: HttpRequest;
 	let context: InvocationContext;
 
+	const getApolloConfig = () => vi.mocked(ApolloServer).mock.calls[0][0];
+
 	BeforeEachScenario(() => {
 		factory = makeMockApplicationServicesFactory();
 		context = makeMockInvocationContext();
@@ -163,14 +165,6 @@ test.for(feature, ({ Scenario, BeforeEachScenario }) => {
 		'Handler context creation without headers',
 		({ Given, And, When, Then }) => {
 			Given('a handler created by graphHandlerCreator', () => {
-				handler = graphHandlerCreator(factory);
-			});
-
-			And('an incoming request without authentication headers', () => {
-				req = makeMockHttpRequest();
-			});
-
-			When('the handler is invoked', async () => {
 				vi.mocked(startServerAndCreateHandler).mockImplementation(
 					(_server, options) => {
 						return async (req, context) => {
@@ -179,7 +173,15 @@ test.for(feature, ({ Scenario, BeforeEachScenario }) => {
 						};
 					},
 				);
+
 				handler = graphHandlerCreator(factory);
+			});
+
+			And('an incoming request without authentication headers', () => {
+				req = makeMockHttpRequest();
+			});
+
+			When('the handler is invoked', async () => {
 				const result = await handler(req, context);
 				expect(result.status).toBe(200);
 			});
@@ -251,18 +253,18 @@ test.for(feature, ({ Scenario, BeforeEachScenario }) => {
 			});
 
 			Then('it should configure depth limit validation rule', () => {
-				const apolloConfig = vi.mocked(ApolloServer).mock.calls[0][0];
+				const apolloConfig = getApolloConfig();
 				expect(apolloConfig.validationRules).toBeDefined();
 				expect(apolloConfig.validationRules.length).toBeGreaterThan(0);
 			});
 
 			And('it should enable batch requests', () => {
-				const apolloConfig = vi.mocked(ApolloServer).mock.calls[0][0];
+				const apolloConfig = getApolloConfig();
 				expect(apolloConfig.allowBatchedHttpRequests).toBe(true);
 			});
 
 			And('it should configure introspection based on environment', () => {
-				const apolloConfig = vi.mocked(ApolloServer).mock.calls[0][0];
+				const apolloConfig = getApolloConfig();
 				expect(apolloConfig.introspection).toBeDefined();
 			});
 		},
@@ -280,7 +282,7 @@ test.for(feature, ({ Scenario, BeforeEachScenario }) => {
 			});
 
 			Then('it should not configure CORS on Apollo Server', () => {
-				const apolloConfig = vi.mocked(ApolloServer).mock.calls[0][0];
+				const apolloConfig = getApolloConfig();
 				expect(apolloConfig.cors).toBeUndefined();
 			});
 		},

@@ -253,7 +253,7 @@ AI agents automatically run Snyk SAST scans on generated code, ensuring **securi
 ## Validation
 
 ### Local Development Validation
-- Developers must run `pnpm run verify` at least once before committing changes to a PR
+- Developers should run `pnpm run snyk` before committing changes to a PR (in addition to `pnpm run verify` for quality checks)
 - AI agents automatically run `snyk_code_scan` tool after generating code
 - Results are displayed in terminal with actionable remediation steps
 - **Remediation expectations**:

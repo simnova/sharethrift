@@ -28,7 +28,7 @@ pnpm run snyk:iac    # IaC - scan Bicep templates
 2. Run `snyk_code_scan` MCP tool on new code
 3. Fix security issues using Snyk guidance
 4. Rescan to verify fixes
-5. Before commit: run `pnpm run verify` (includes Snyk scans)
+5. Before commit: run `pnpm run snyk` for security checks and `pnpm run verify` for quality checks
 6. Iterate until no issues remain
 7. Commit
 
