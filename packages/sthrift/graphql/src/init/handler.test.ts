@@ -61,6 +61,8 @@ test.for(feature, ({ Scenario, BeforeEachScenario }) => {
 	let req: HttpRequest;
 	let context: InvocationContext;
 
+	const getApolloConfig = () => vi.mocked(ApolloServer).mock.calls[0][0];
+
 	BeforeEachScenario(() => {
 		factory = makeMockApplicationServicesFactory();
 		context = makeMockInvocationContext();
@@ -85,10 +87,10 @@ test.for(feature, ({ Scenario, BeforeEachScenario }) => {
 					expect(applyMiddleware).toHaveBeenCalledWith(combinedSchema);
 					expect(ApolloServer).toHaveBeenCalledWith({
 						schema: {},
-						cors: {
-							origin: true,
-							credentials: true,
-						},
+						introspection: true,
+						validationRules: expect.arrayContaining([
+							expect.any(Function), // depthLimit function
+						]),
 						allowBatchedHttpRequests: true,
 					});
 				},
@@ -160,6 +162,53 @@ test.for(feature, ({ Scenario, BeforeEachScenario }) => {
 	);
 
 	Scenario(
+		'Handler context creation without headers',
+		({ Given, And, When, Then }) => {
+			Given('a handler created by graphHandlerCreator', () => {
+				vi.mocked(startServerAndCreateHandler).mockImplementation(
+					(_server, options) => {
+						return async (req, context) => {
+							await options.context({ req, context });
+							return { status: 200, body: 'OK' };
+						};
+					},
+				);
+
+				handler = graphHandlerCreator(factory);
+			});
+
+			And('an incoming request without authentication headers', () => {
+				req = makeMockHttpRequest();
+			});
+
+			When('the handler is invoked', async () => {
+				const result = await handler(req, context);
+				expect(result.status).toBe(200);
+			});
+
+			Then(
+				'it should call applicationServicesFactory.forRequest with undefined auth and hints',
+				() => {
+					expect(vi.mocked(factory.forRequest)).toHaveBeenCalledWith(
+						undefined,
+						{
+							memberId: undefined,
+							communityId: undefined,
+						},
+					);
+				},
+			);
+
+			And(
+				'it should inject the resulting applicationServices into the GraphQL context',
+				() => {
+					expect(vi.mocked(factory.forRequest)).toHaveBeenCalled();
+				},
+			);
+		},
+	);
+
+	Scenario(
 		'Handler delegates to startServerAndCreateHandler',
 		({ Given, When, Then, And }) => {
 			const mockResponse = { status: 200, body: 'OK' };
@@ -189,6 +238,53 @@ test.for(feature, ({ Scenario, BeforeEachScenario }) => {
 					// Already checked in When
 				},
 			);
+		},
+	);
+
+	Scenario(
+		'Handler configures security validations',
+		({ Given, When, Then, And }) => {
+			Given('a valid ApplicationServicesFactory', () => {
+				// Already set up in BeforeEachScenario
+			});
+
+			When('graphHandlerCreator is called', () => {
+				handler = graphHandlerCreator(factory);
+			});
+
+			Then('it should configure depth limit validation rule', () => {
+				const apolloConfig = getApolloConfig();
+				expect(apolloConfig.validationRules).toBeDefined();
+				expect(apolloConfig.validationRules.length).toBeGreaterThan(0);
+			});
+
+			And('it should enable batch requests', () => {
+				const apolloConfig = getApolloConfig();
+				expect(apolloConfig.allowBatchedHttpRequests).toBe(true);
+			});
+
+			And('it should configure introspection based on environment', () => {
+				const apolloConfig = getApolloConfig();
+				expect(apolloConfig.introspection).toBeDefined();
+			});
+		},
+	);
+
+	Scenario(
+		'Handler uses Azure Functions for CORS handling',
+		({ Given, When, Then }) => {
+			Given('a valid ApplicationServicesFactory', () => {
+				// Already set up in BeforeEachScenario
+			});
+
+			When('graphHandlerCreator is called', () => {
+				handler = graphHandlerCreator(factory);
+			});
+
+			Then('it should not configure CORS on Apollo Server', () => {
+				const apolloConfig = getApolloConfig();
+				expect(apolloConfig.cors).toBeUndefined();
+			});
 		},
 	);
 });
