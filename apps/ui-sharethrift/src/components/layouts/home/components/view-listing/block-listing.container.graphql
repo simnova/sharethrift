@@ -1,0 +1,7 @@
+mutation BlockListingContainerBlockListing($id: ObjectID!) {
+  blockListing(id: $id)
+}
+
+mutation BlockListingContainerUnblockListing($id: ObjectID!) {
+  unblockListing(id: $id)
+}

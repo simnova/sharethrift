@@ -19,7 +19,7 @@ export const block = (dataSources: DataSources) => {
 					throw new Error('Listing not found');
 				}
 
-				listing.setBlocked(true);
+				listing.blocked = true;
 				itemListingToReturn = await repo.save(listing);
 			},
 		);

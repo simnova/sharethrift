@@ -11,15 +11,13 @@ describe('listing/item', () => {
 		};
 
 		let mockListing: {
-			setBlocked: ReturnType<typeof vi.fn>;
+			blocked?: boolean;
 		};
 
 		let mockDataSources: DataSources;
 
 		beforeEach(() => {
-			mockListing = {
-				setBlocked: vi.fn(),
-			};
+			mockListing = {};
 
 			mockRepo = {
 				getById: vi.fn().mockResolvedValue(mockListing),
@@ -54,7 +52,7 @@ describe('listing/item', () => {
 			const result = await blockFn(command);
 
 			expect(mockRepo.getById).toHaveBeenCalledWith('test-listing-id');
-			expect(mockListing.setBlocked).toHaveBeenCalledWith(true);
+			expect(mockListing.blocked).toBe(true);
 			expect(mockRepo.save).toHaveBeenCalledWith(mockListing);
 			expect(result).toBe(mockListing);
 		});

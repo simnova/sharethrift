@@ -117,10 +117,6 @@ export const Default: Story = {
 		userReservationRequest: null,
 		sharedTimeAgo: '2 days ago',
 		isAdmin: false,
-		onBlockListing: async () => {},
-		onUnblockListing: async () => {},
-		blockLoading: false,
-		unblockLoading: false,
 	},
 };
 
@@ -172,7 +168,6 @@ export const BlockListing: Story = {
 		isAdmin: true,
 		isAuthenticated: true,
 		currentUserId: 'mock-admin-id',
-		blockLoading: true,
 	},
 };
 
@@ -186,6 +181,5 @@ export const UnblockListing: Story = {
 		isAdmin: true,
 		isAuthenticated: true,
 		currentUserId: 'mock-admin-id',
-		unblockLoading: true,
 	},
 };

@@ -1,15 +1,13 @@
 import { LeftOutlined } from '@ant-design/icons';
 import { Alert, Button, Col, Row } from 'antd';
-import { useState } from 'react';
 import type {
 	ItemListing,
 	ViewListingActiveReservationRequestForListingQuery,
 } from '../../../../../generated.tsx';
-import { BlockListingModal } from './block-listing-modal.tsx';
+import { BlockListingContainer } from './block-listing.container.tsx';
 import { ListingImageGalleryContainer } from './listing-image-gallery/listing-image-gallery.container.tsx';
 import { ListingInformationContainer } from './listing-information/listing-information.container.tsx';
 import { SharerInformationContainer } from './sharer-information/sharer-information.container.tsx';
-import { UnblockListingModal } from './unblock-listing-modal.tsx';
 
 export interface ViewListingProps {
 	listing: ItemListing;
@@ -21,10 +19,6 @@ export interface ViewListingProps {
 		| null;
 	sharedTimeAgo?: string;
 	isAdmin: boolean;
-	onBlockListing: () => Promise<void>;
-	onUnblockListing: () => Promise<void>;
-	blockLoading: boolean;
-	unblockLoading: boolean;
 }
 
 export const ViewListing: React.FC<ViewListingProps> = ({
@@ -35,14 +29,7 @@ export const ViewListing: React.FC<ViewListingProps> = ({
 	userReservationRequest,
 	sharedTimeAgo,
 	isAdmin,
-	onBlockListing,
-	onUnblockListing,
-	blockLoading,
-	unblockLoading,
 }) => {
-	const [blockModalVisible, setBlockModalVisible] = useState(false);
-	const [unblockModalVisible, setUnblockModalVisible] = useState(false);
-
 	// Mock sharer info (since ItemListing.sharer is just an ID)
 	const { sharer } = listing;
 
@@ -50,16 +37,6 @@ export const ViewListing: React.FC<ViewListingProps> = ({
 
 	const handleBack = () => {
 		window.location.href = '/';
-	};
-
-	const handleBlockConfirm = async () => {
-		await onBlockListing();
-		setBlockModalVisible(false);
-	};
-
-	const handleUnblockConfirm = async () => {
-		await onUnblockListing();
-		setUnblockModalVisible(false);
 	};
 
 	return (
@@ -143,27 +120,12 @@ export const ViewListing: React.FC<ViewListingProps> = ({
 				)}
 				{isAdmin && (
 					<Col span={24}>
-						<div
-							style={{ display: 'flex', gap: 8, justifyContent: 'flex-end' }}
-						>
-							{isBlocked ? (
-								<Button
-									type="primary"
-									onClick={() => setUnblockModalVisible(true)}
-									loading={unblockLoading}
-								>
-									Unblock Listing
-								</Button>
-							) : (
-								<Button
-									danger
-									onClick={() => setBlockModalVisible(true)}
-									loading={blockLoading}
-								>
-									Block Listing
-								</Button>
-							)}
-						</div>
+						<BlockListingContainer
+							listingId={listing.id}
+							listingTitle={listing.title}
+							isBlocked={isBlocked}
+							sharerId={sharer?.id}
+						/>
 					</Col>
 				)}
 				<Col span={24} style={{ marginBottom: 0, paddingBottom: 0 }}>
@@ -215,21 +177,6 @@ export const ViewListing: React.FC<ViewListingProps> = ({
 					</Row>
 				</Col>
 			</Row>
-			<BlockListingModal
-				visible={blockModalVisible}
-				listingTitle={listing.title}
-				onConfirm={handleBlockConfirm}
-				onCancel={() => setBlockModalVisible(false)}
-				loading={blockLoading}
-			/>
-			<UnblockListingModal
-				visible={unblockModalVisible}
-				listingTitle={listing.title}
-				listingSharer={sharer?.id || 'Unknown'}
-				onConfirm={handleUnblockConfirm}
-				onCancel={() => setUnblockModalVisible(false)}
-				loading={unblockLoading}
-			/>
 			{/* TODO: Add login modal here for unauthenticated users attempting to reserve a listing. */}
 		</>
 	);

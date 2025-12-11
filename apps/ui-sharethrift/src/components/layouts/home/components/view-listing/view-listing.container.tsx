@@ -1,11 +1,8 @@
-import { useMutation, useQuery } from '@apollo/client/react';
+import { useQuery } from '@apollo/client/react';
 import { ComponentQueryLoader } from '@sthrift/ui-components';
-import { message } from 'antd';
 import { useParams } from 'react-router-dom';
 import {
-	BlockListingDocument,
 	type ItemListing,
-	UnblockListingDocument,
 	ViewListingActiveReservationRequestForListingDocument,
 	ViewListingCurrentUserDocument,
 	ViewListingDocument,
@@ -67,52 +64,6 @@ export const ViewListingContainer: React.FC<ViewListingContainerProps> = (
 	const userIsSharer = false;
 	const isAdmin = currentUserData?.currentUser?.userIsAdmin ?? false;
 
-	const [blockListing, { loading: blockLoading }] = useMutation(
-		BlockListingDocument,
-		{
-			onCompleted: () => {
-				message.success('Listing blocked successfully');
-			},
-			onError: (error) => {
-				message.error(`Failed to block listing: ${error.message}`);
-			},
-			refetchQueries: [
-				{
-					query: ViewListingDocument,
-					variables: { id: listingId },
-				},
-			],
-		},
-	);
-
-	const [unblockListing, { loading: unblockLoading }] = useMutation(
-		UnblockListingDocument,
-		{
-			onCompleted: () => {
-				message.success('Listing unblocked successfully');
-			},
-			onError: (error) => {
-				message.error(`Failed to unblock listing: ${error.message}`);
-			},
-			refetchQueries: [
-				{
-					query: ViewListingDocument,
-					variables: { id: listingId },
-				},
-			],
-		},
-	);
-
-	const handleBlockListing = async () => {
-		if (!listingId) return;
-		await blockListing({ variables: { id: listingId } });
-	};
-
-	const handleUnblockListing = async () => {
-		if (!listingId) return;
-		await unblockListing({ variables: { id: listingId } });
-	};
-
 	// Check if listing is blocked and user is not admin
 	const isBlocked = listingData?.itemListing?.state === 'Blocked';
 	const cannotViewBlockedListing = isBlocked && !isAdmin;
@@ -149,10 +100,6 @@ export const ViewListingContainer: React.FC<ViewListingContainerProps> = (
 						userReservationData?.myActiveReservationForListing
 					}
 					isAdmin={isAdmin}
-					onBlockListing={handleBlockListing}
-					onUnblockListing={handleUnblockListing}
-					blockLoading={blockLoading}
-					unblockLoading={unblockLoading}
 				/>
 			}
 		/>
