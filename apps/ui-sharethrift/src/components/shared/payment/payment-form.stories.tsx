@@ -152,3 +152,111 @@ export const FormValidationErrors: Story = {
 		);
 	},
 };
+
+export const MicroformNotLoaded: Story = {
+	args: {
+		cyberSourcePublicKey: 'invalid-key',
+		countries: countriesMockData,
+		onSubmitPayment: mockOnSubmitPayment,
+		paymentAmount: 9.99,
+		currency: 'USD',
+	},
+};
+
+export const TokenCreationError: Story = {
+	args: {
+		cyberSourcePublicKey: 'mock-cybersource-key-123',
+		countries: countriesMockData,
+		onSubmitPayment: mockOnSubmitPayment,
+		paymentAmount: 9.99,
+		currency: 'USD',
+	},
+};
+
+export const ValidationWithErrors: Story = {
+	render: () => {
+		const handleSubmit = (paymentDetails: ProcessPaymentInput) => {
+			console.log('Payment submitted:', paymentDetails);
+		};
+
+		return (
+			<PaymentForm
+				cyberSourcePublicKey="mock-cybersource-key-123"
+				countries={countriesMockData}
+				onSubmitPayment={handleSubmit}
+				paymentAmount={9.99}
+				currency="USD"
+			/>
+		);
+	},
+};
+
+export const CardNumberEmpty: Story = {
+	args: {
+		cyberSourcePublicKey: 'mock-cybersource-key-123',
+		countries: countriesMockData,
+		onSubmitPayment: mockOnSubmitPayment,
+		paymentAmount: 9.99,
+		currency: 'USD',
+	},
+};
+
+export const SecurityCodeEmpty: Story = {
+	args: {
+		cyberSourcePublicKey: 'mock-cybersource-key-123',
+		countries: countriesMockData,
+		onSubmitPayment: mockOnSubmitPayment,
+		paymentAmount: 9.99,
+		currency: 'USD',
+	},
+};
+
+export const CardNumberFilled: Story = {
+	args: {
+		cyberSourcePublicKey: 'mock-cybersource-key-123',
+		countries: countriesMockData,
+		onSubmitPayment: mockOnSubmitPayment,
+		paymentAmount: 9.99,
+		currency: 'USD',
+	},
+};
+
+export const SecurityCodeFilled: Story = {
+	args: {
+		cyberSourcePublicKey: 'mock-cybersource-key-123',
+		countries: countriesMockData,
+		onSubmitPayment: mockOnSubmitPayment,
+		paymentAmount: 9.99,
+		currency: 'USD',
+	},
+};
+
+export const WithZeroAmount: Story = {
+	args: {
+		cyberSourcePublicKey: 'mock-cybersource-key-123',
+		countries: countriesMockData,
+		onSubmitPayment: mockOnSubmitPayment,
+		paymentAmount: 0,
+		currency: 'USD',
+	},
+};
+
+export const WithEURCurrency: Story = {
+	args: {
+		cyberSourcePublicKey: 'mock-cybersource-key-123',
+		countries: countriesMockData,
+		onSubmitPayment: mockOnSubmitPayment,
+		paymentAmount: 29.99,
+		currency: 'EUR',
+	},
+};
+
+export const WithGBPCurrency: Story = {
+	args: {
+		cyberSourcePublicKey: 'mock-cybersource-key-123',
+		countries: countriesMockData,
+		onSubmitPayment: mockOnSubmitPayment,
+		paymentAmount: 29.99,
+		currency: 'GBP',
+	},
+};

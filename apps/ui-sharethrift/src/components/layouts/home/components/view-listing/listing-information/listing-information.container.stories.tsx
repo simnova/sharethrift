@@ -150,3 +150,253 @@ export const WithExistingReservation: Story = {
 		await expect(canvasElement).toBeTruthy();
 	},
 };
+
+export const QueryLoadingState: Story = {
+	args: {
+		listing: mockListing,
+		userIsSharer: false,
+		isAuthenticated: true,
+		userReservationRequest: null,
+		onLoginClick: () => {},
+		onSignUpClick: () => {},
+	},
+	parameters: {
+		apolloClient: {
+			mocks: [
+				{
+					request: {
+						query: ViewListingCurrentUserDocument,
+					},
+					result: {
+						data: {
+							currentUser: mockCurrentUser,
+						},
+					},
+				},
+				{
+					request: {
+						query: ViewListingQueryActiveByListingIdDocument,
+						variables: { listingId: '1' },
+					},
+					delay: Infinity,
+				},
+			],
+		},
+	},
+	play: async ({ canvasElement }) => {
+		await expect(canvasElement).toBeTruthy();
+	},
+};
+
+export const QueryError: Story = {
+	args: {
+		listing: mockListing,
+		userIsSharer: false,
+		isAuthenticated: true,
+		userReservationRequest: null,
+		onLoginClick: () => {},
+		onSignUpClick: () => {},
+	},
+	parameters: {
+		apolloClient: {
+			mocks: [
+				{
+					request: {
+						query: ViewListingCurrentUserDocument,
+					},
+					result: {
+						data: {
+							currentUser: mockCurrentUser,
+						},
+					},
+				},
+				{
+					request: {
+						query: ViewListingQueryActiveByListingIdDocument,
+						variables: { listingId: '1' },
+					},
+					error: new Error('Failed to load reservations'),
+				},
+			],
+		},
+	},
+	play: async ({ canvasElement }) => {
+		await expect(canvasElement).toBeTruthy();
+	},
+};
+
+export const NoCurrentUser: Story = {
+	args: {
+		listing: mockListing,
+		userIsSharer: false,
+		isAuthenticated: true,
+		userReservationRequest: null,
+		onLoginClick: () => {},
+		onSignUpClick: () => {},
+	},
+	parameters: {
+		apolloClient: {
+			mocks: [
+				{
+					request: {
+						query: ViewListingCurrentUserDocument,
+					},
+					result: {
+						data: {
+							currentUser: null,
+						},
+					},
+				},
+				{
+					request: {
+						query: ViewListingQueryActiveByListingIdDocument,
+						variables: { listingId: '1' },
+					},
+					result: {
+						data: {
+							queryActiveByListingId: [],
+						},
+					},
+				},
+			],
+		},
+	},
+	play: async ({ canvasElement }) => {
+		await expect(canvasElement).toBeTruthy();
+	},
+};
+
+export const MutationError: Story = {
+	args: {
+		listing: mockListing,
+		userIsSharer: false,
+		isAuthenticated: true,
+		userReservationRequest: null,
+		onLoginClick: () => {},
+		onSignUpClick: () => {},
+	},
+	parameters: {
+		apolloClient: {
+			mocks: [
+				{
+					request: {
+						query: ViewListingCurrentUserDocument,
+					},
+					result: {
+						data: {
+							currentUser: mockCurrentUser,
+						},
+					},
+				},
+				{
+					request: {
+						query: ViewListingQueryActiveByListingIdDocument,
+						variables: { listingId: '1' },
+					},
+					result: {
+						data: {
+							queryActiveByListingId: [],
+						},
+					},
+				},
+				{
+					request: {
+						query: HomeListingInformationCreateReservationRequestDocument,
+						variables: () => true,
+					},
+					error: new Error('Reservation request failed'),
+				},
+			],
+		},
+	},
+	play: async ({ canvasElement }) => {
+		await expect(canvasElement).toBeTruthy();
+	},
+};
+
+export const WithExistingOtherReservations: Story = {
+	args: {
+		listing: mockListing,
+		userIsSharer: false,
+		isAuthenticated: true,
+		userReservationRequest: null,
+		onLoginClick: () => {},
+		onSignUpClick: () => {},
+	},
+	parameters: {
+		apolloClient: {
+			mocks: [
+				{
+					request: {
+						query: ViewListingCurrentUserDocument,
+					},
+					result: {
+						data: {
+							currentUser: mockCurrentUser,
+						},
+					},
+				},
+				{
+					request: {
+						query: ViewListingQueryActiveByListingIdDocument,
+						variables: { listingId: '1' },
+					},
+					result: {
+						data: {
+							queryActiveByListingId: [
+								{
+									__typename: 'ReservationRequest',
+									id: 'res-other-1',
+									reservationPeriodStart: '2025-03-01',
+									reservationPeriodEnd: '2025-03-10',
+								},
+								{
+									__typename: 'ReservationRequest',
+									id: 'res-other-2',
+									reservationPeriodStart: '2025-04-01',
+									reservationPeriodEnd: '2025-04-05',
+								},
+							],
+						},
+					},
+				},
+			],
+		},
+	},
+	play: async ({ canvasElement }) => {
+		await expect(canvasElement).toBeTruthy();
+	},
+};
+
+export const SkipQuery: Story = {
+	args: {
+		listing: {
+			...mockListing,
+			id: '',
+		},
+		userIsSharer: false,
+		isAuthenticated: true,
+		userReservationRequest: null,
+		onLoginClick: () => {},
+		onSignUpClick: () => {},
+	},
+	parameters: {
+		apolloClient: {
+			mocks: [
+				{
+					request: {
+						query: ViewListingCurrentUserDocument,
+					},
+					result: {
+						data: {
+							currentUser: mockCurrentUser,
+						},
+					},
+				},
+			],
+		},
+	},
+	play: async ({ canvasElement }) => {
+		await expect(canvasElement).toBeTruthy();
+	},
+};

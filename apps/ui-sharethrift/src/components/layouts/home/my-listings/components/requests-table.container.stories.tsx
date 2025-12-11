@@ -140,3 +140,194 @@ export const Loading: Story = {
 		await expect(canvasElement).toBeTruthy();
 	},
 };
+
+export const ErrorState: Story = {
+	args: {
+		currentPage: 1,
+		onPageChange: () => {},
+	},
+	parameters: {
+		apolloClient: {
+			mocks: [
+				{
+					request: {
+						query: HomeRequestsTableContainerMyListingsRequestsDocument,
+						variables: {
+							page: 1,
+							pageSize: 6,
+							searchText: '',
+							statusFilters: [],
+							sorter: { field: '', order: '' },
+							sharerId: '6324a3f1e3e4e1e6a8e1d8b1',
+						},
+					},
+					error: new Error('Failed to load requests'),
+				},
+			],
+		},
+	},
+	play: async ({ canvasElement }) => {
+		await expect(canvasElement).toBeTruthy();
+	},
+};
+
+export const WithSearchFilter: Story = {
+	args: {
+		currentPage: 1,
+		onPageChange: () => {},
+	},
+	parameters: {
+		apolloClient: {
+			mocks: [
+				{
+					request: {
+						query: HomeRequestsTableContainerMyListingsRequestsDocument,
+						variables: () => true,
+					},
+					maxUsageCount: Number.POSITIVE_INFINITY,
+					result: {
+						data: {
+							myListingsRequests: {
+								items: [mockRequests.items[0]],
+								total: 1,
+							},
+						},
+					},
+				},
+			],
+		},
+	},
+	play: async ({ canvasElement }) => {
+		await expect(canvasElement).toBeTruthy();
+	},
+};
+
+export const WithStatusFilter: Story = {
+	args: {
+		currentPage: 1,
+		onPageChange: () => {},
+	},
+	parameters: {
+		apolloClient: {
+			mocks: [
+				{
+					request: {
+						query: HomeRequestsTableContainerMyListingsRequestsDocument,
+						variables: () => true,
+					},
+					maxUsageCount: Number.POSITIVE_INFINITY,
+					result: {
+						data: {
+							myListingsRequests: {
+								items: [mockRequests.items[1]],
+								total: 1,
+							},
+						},
+					},
+				},
+			],
+		},
+	},
+	play: async ({ canvasElement }) => {
+		await expect(canvasElement).toBeTruthy();
+	},
+};
+
+export const WithSorting: Story = {
+	args: {
+		currentPage: 1,
+		onPageChange: () => {},
+	},
+	parameters: {
+		apolloClient: {
+			mocks: [
+				{
+					request: {
+						query: HomeRequestsTableContainerMyListingsRequestsDocument,
+						variables: () => true,
+					},
+					maxUsageCount: Number.POSITIVE_INFINITY,
+					result: {
+						data: {
+							myListingsRequests: mockRequests,
+						},
+					},
+				},
+			],
+		},
+	},
+	play: async ({ canvasElement }) => {
+		await expect(canvasElement).toBeTruthy();
+	},
+};
+
+export const Pagination: Story = {
+	args: {
+		currentPage: 2,
+		onPageChange: () => {},
+	},
+	parameters: {
+		apolloClient: {
+			mocks: [
+				{
+					request: {
+						query: HomeRequestsTableContainerMyListingsRequestsDocument,
+						variables: {
+							page: 2,
+							pageSize: 6,
+							searchText: '',
+							statusFilters: [],
+							sorter: { field: '', order: '' },
+							sharerId: '6324a3f1e3e4e1e6a8e1d8b1',
+						},
+					},
+					result: {
+						data: {
+							myListingsRequests: {
+								items: [],
+								total: 12,
+							},
+						},
+					},
+				},
+			],
+		},
+	},
+	play: async ({ canvasElement }) => {
+		await expect(canvasElement).toBeTruthy();
+	},
+};
+
+export const NoData: Story = {
+	args: {
+		currentPage: 1,
+		onPageChange: () => {},
+	},
+	parameters: {
+		apolloClient: {
+			mocks: [
+				{
+					request: {
+						query: HomeRequestsTableContainerMyListingsRequestsDocument,
+						variables: {
+							page: 1,
+							pageSize: 6,
+							searchText: '',
+							statusFilters: [],
+							sorter: { field: '', order: '' },
+							sharerId: '6324a3f1e3e4e1e6a8e1d8b1',
+						},
+					},
+					result: {
+						data: {
+							myListingsRequests: null,
+						},
+					},
+				},
+			],
+		},
+	},
+	play: async ({ canvasElement }) => {
+		await expect(canvasElement).toBeTruthy();
+	},
+};

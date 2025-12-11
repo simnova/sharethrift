@@ -282,10 +282,10 @@ export const AccessTokenExpiringTriggersSilent: Story = {
 				isLoading: false,
 				user: { 
 					profile: { sub: 'admin-1', iss: '', aud: '', exp: 0, iat: 0 },
-					access_token: 'mock-token',
+					access_token: `mock-token-${Date.now()}`,
 					token_type: 'Bearer',
-					session_state: 'mock-session',
-					state: 'mock-state',
+					session_state: `mock-session-${Date.now()}`,
+					state: `mock-state-${Date.now()}`,
 					expired: false,
 				expires_in: 3600,
 					scopes: [],

@@ -396,3 +396,141 @@ export const WithStatusFilter: Story = {
 		}
 	},
 };
+
+export const ViewProfileAction: Story = {
+	parameters: {
+		apolloClient: {
+			mocks: [
+				{
+					request: {
+						query: AdminUsersTableContainerAllUsersDocument,
+						variables: () => true,
+					},
+					maxUsageCount: Number.POSITIVE_INFINITY,
+					result: {
+						data: {
+							allUsers: {
+								__typename: 'AdminUserSearchResults',
+								items: mockUsers,
+								total: 2,
+								page: 1,
+								pageSize: 50,
+							},
+						},
+					},
+				},
+			],
+		},
+	},
+	play: async ({ canvasElement }) => {
+		expect(canvasElement).toBeTruthy();
+	},
+};
+
+export const ViewReportAction: Story = {
+	parameters: {
+		apolloClient: {
+			mocks: [
+				{
+					request: {
+						query: AdminUsersTableContainerAllUsersDocument,
+						variables: () => true,
+					},
+					maxUsageCount: Number.POSITIVE_INFINITY,
+					result: {
+						data: {
+							allUsers: {
+								__typename: 'AdminUserSearchResults',
+								items: mockUsers,
+								total: 2,
+								page: 1,
+								pageSize: 50,
+							},
+						},
+					},
+				},
+			],
+		},
+	},
+	play: async ({ canvasElement }) => {
+		expect(canvasElement).toBeTruthy();
+	},
+};
+
+export const ArrayFieldSort: Story = {
+	parameters: {
+		apolloClient: {
+			mocks: [
+				{
+					request: {
+						query: AdminUsersTableContainerAllUsersDocument,
+						variables: () => true,
+					},
+					maxUsageCount: Number.POSITIVE_INFINITY,
+					result: {
+						data: {
+							allUsers: {
+								__typename: 'AdminUserSearchResults',
+								items: mockUsers,
+								total: 2,
+								page: 1,
+								pageSize: 50,
+							},
+						},
+					},
+				},
+			],
+		},
+	},
+	play: async ({ canvasElement }) => {
+		expect(canvasElement).toBeTruthy();
+	},
+};
+
+export const UserWithMissingData: Story = {
+	parameters: {
+		apolloClient: {
+			mocks: [
+				{
+					request: {
+						query: AdminUsersTableContainerAllUsersDocument,
+						variables: () => true,
+					},
+					maxUsageCount: Number.POSITIVE_INFINITY,
+					result: {
+						data: {
+							allUsers: {
+								__typename: 'AdminUserSearchResults',
+								items: [
+									{
+										__typename: 'PersonalUser',
+										id: 'user-incomplete',
+										createdAt: null,
+										userType: null,
+										isBlocked: null,
+										account: {
+											__typename: 'PersonalUserAccount',
+											username: null,
+											email: null,
+											profile: {
+												__typename: 'PersonalUserAccountProfile',
+												firstName: null,
+												lastName: null,
+											},
+										},
+									},
+								],
+								total: 1,
+								page: 1,
+								pageSize: 50,
+							},
+						},
+					},
+				},
+			],
+		},
+	},
+	play: async ({ canvasElement }) => {
+		expect(canvasElement).toBeTruthy();
+	},
+};

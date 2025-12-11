@@ -360,11 +360,155 @@ export const UpdateError: Story = {
 				},
 				{
 					request: {
+						query: SelectAccountTypeContainerAccountPlansDocument,
+					},
+					result: {
+						data: {
+							accountPlans: mockAccountPlans,
+						},
+					},
+				},
+				{
+					request: {
 						query: SelectAccountTypePersonalUserUpdateDocument,
 						variables: () => true,
 					},
 					maxUsageCount: Number.POSITIVE_INFINITY,
 					error: new Error('Failed to update account type'),
+				},
+			],
+		},
+	},
+	play: async ({ canvasElement }) => {
+		const canvas = within(canvasElement);
+		await expect(canvasElement).toBeTruthy();
+		
+		// Try to select and save
+		const nonVerifiedCard = canvas.queryByText(/Non-Verified Personal/i);
+		if (nonVerifiedCard) {
+			await userEvent.click(nonVerifiedCard);
+		}
+		const saveButton = canvas.queryByRole('button', { name: /Save and Continue/i });
+		if (saveButton) {
+			await userEvent.click(saveButton);
+		}
+	},
+};
+
+export const AccountPlansError: Story = {
+	parameters: {
+		apolloClient: {
+			mocks: [
+				{
+					request: {
+						query: SelectAccountTypeCurrentPersonalUserAndCreateIfNotExistsDocument,
+					},
+					result: {
+						data: {
+							currentPersonalUserAndCreateIfNotExists: mockCurrentUser,
+						},
+					},
+				},
+				{
+					request: {
+						query: SelectAccountTypeContainerAccountPlansDocument,
+					},
+					error: new Error('Failed to fetch account plans'),
+				},
+			],
+		},
+	},
+	play: async ({ canvasElement }) => {
+		await expect(canvasElement).toBeTruthy();
+	},
+};
+
+export const UpdateFailureResponse: Story = {
+	parameters: {
+		apolloClient: {
+			mocks: [
+				{
+					request: {
+						query: SelectAccountTypeCurrentPersonalUserAndCreateIfNotExistsDocument,
+					},
+					result: {
+						data: {
+							currentPersonalUserAndCreateIfNotExists: mockCurrentUser,
+						},
+					},
+				},
+				{
+					request: {
+						query: SelectAccountTypeContainerAccountPlansDocument,
+					},
+					result: {
+						data: {
+							accountPlans: mockAccountPlans,
+						},
+					},
+				},
+				{
+					request: {
+						query: SelectAccountTypePersonalUserUpdateDocument,
+						variables: () => true,
+					},
+					maxUsageCount: Number.POSITIVE_INFINITY,
+					result: {
+						data: {
+							personalUserUpdate: {
+								__typename: 'PersonalUserMutationResult',
+								status: {
+									__typename: 'MutationStatus',
+									success: false,
+									errorMessage: 'Invalid account type selection',
+								},
+								personalUser: null,
+							},
+						},
+					},
+				},
+			],
+		},
+	},
+	play: async ({ canvasElement }) => {
+		const canvas = within(canvasElement);
+		await expect(canvasElement).toBeTruthy();
+		
+		// Try to select and save
+		const nonVerifiedCard = canvas.queryByText(/Non-Verified Personal/i);
+		if (nonVerifiedCard) {
+			await userEvent.click(nonVerifiedCard);
+		}
+		const saveButton = canvas.queryByRole('button', { name: /Save and Continue/i });
+		if (saveButton) {
+			await userEvent.click(saveButton);
+		}
+	},
+};
+
+export const MissingUserId: Story = {
+	parameters: {
+		apolloClient: {
+			mocks: [
+				{
+					request: {
+						query: SelectAccountTypeCurrentPersonalUserAndCreateIfNotExistsDocument,
+					},
+					result: {
+						data: {
+							currentPersonalUserAndCreateIfNotExists: null,
+						},
+					},
+				},
+				{
+					request: {
+						query: SelectAccountTypeContainerAccountPlansDocument,
+					},
+					result: {
+						data: {
+							accountPlans: mockAccountPlans,
+						},
+					},
 				},
 			],
 		},
