@@ -3,7 +3,7 @@ Feature: <AggregateRoot> ReservationRequest
   Background:
     Given a valid Passport with reservation request permissions
     And a valid PersonalUserEntityReference for "reserverUser"
-    And a valid ItemListingEntityReference for "listing1" with state "Published"
+    And a valid ItemListingEntityReference for "listing1" with state "Active"
     And base reservation request properties with state "REQUESTED", listing "listing1", reserver "reserverUser", valid reservation period, and timestamps	
         
   Scenario: Creating a new reservation request instance

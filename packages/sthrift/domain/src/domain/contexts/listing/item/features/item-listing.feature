@@ -10,7 +10,7 @@ Feature: <AggregateRoot>ItemListing
     When I create a new ItemListing aggregate using getNewInstance with sharer "user1" and title "New Listing"	
     Then the listing's title should be "New Listing"	
     And the listing's sharer should reference "user1"	
-    And the listing state should be "Published"	
+    And the listing state should be "Active"	
         
   Scenario: Creating a new draft listing with missing fields	
     When I create a new ItemListing aggregate using getNewInstance with isDraft true and empty title, description, category, and location	
@@ -86,7 +86,7 @@ Feature: <AggregateRoot>ItemListing
   Scenario: Publishing a listing with permission	
     Given an ItemListing aggregate with permission to publish item listing	
     When I call publish()	
-    Then the listing's state should be "Published"	
+    Then the listing's state should be "Active"	
     And the updatedAt timestamp should change
 
   Scenario: Publishing a listing without permission
@@ -141,7 +141,7 @@ Feature: <AggregateRoot>ItemListing
   Scenario: Unblocking a listing with permission
     Given an ItemListing aggregate with permission to publish item listing that is currently blocked
     When I call setBlocked(false)
-    Then the listing's state should be "Published"
+    Then the listing's state should be "Active"
 
   Scenario: Blocking already blocked listing
     Given an ItemListing aggregate with permission to publish item listing that is already blocked
@@ -149,9 +149,9 @@ Feature: <AggregateRoot>ItemListing
     Then the listing's state should remain "Blocked"
 
   Scenario: Unblocking non-blocked listing
-    Given an ItemListing aggregate with permission to publish item listing in Published state
+    Given an ItemListing aggregate with permission to publish item listing in Active state
     When I call setBlocked(false)
-    Then the listing's state should remain "Published"
+    Then the listing's state should remain "Active"
 
   Scenario: Blocking a listing without permission
     Given an ItemListing aggregate without permission to publish item listing

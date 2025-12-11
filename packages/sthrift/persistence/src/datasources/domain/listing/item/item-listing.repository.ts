@@ -47,7 +47,7 @@ export class ItemListingRepository<
 	}
 
 	async getActiveItemListings() {
-		const mongoItems = await this.model.find({ state: 'Published' }).exec();
+		const mongoItems = await this.model.find({ state: 'Active' }).exec();
 		return mongoItems.map((item) =>
 			this.typeConverter.toDomain(item, this.passport),
 		);

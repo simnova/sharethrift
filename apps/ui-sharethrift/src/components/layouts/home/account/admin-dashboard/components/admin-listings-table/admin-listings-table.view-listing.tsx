@@ -30,7 +30,7 @@ export function AdminViewListing(): ReactElement {
 			variables: {
 				page: 1,
 				pageSize: 100, // Large enough to find the listing
-				statusFilters: ['Blocked', 'Published'],
+				statusFilters: ['Blocked', 'Active'],
 			},
 			fetchPolicy: 'network-only',
 		},

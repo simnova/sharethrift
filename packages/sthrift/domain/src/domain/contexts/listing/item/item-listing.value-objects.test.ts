@@ -22,11 +22,11 @@ test.for(feature, ({ Scenario }) => {
 		'Creating a ListingState with a valid predefined value',
 		({ When, Then }) => {
 			let listingState: ListingState;
-			When('I create a ListingState with "Published"', () => {
-				listingState = new ListingState('Published');
+			When('I create a ListingState with "Active"', () => {
+				listingState = new ListingState('Active');
 			});
-			Then('the value should be "Published"', () => {
-				expect(listingState.valueOf()).toBe('Published');
+			Then('the value should be "Active"', () => {
+				expect(listingState.valueOf()).toBe('Active');
 			});
 		},
 	);
@@ -52,8 +52,8 @@ test.for(feature, ({ Scenario }) => {
 	Scenario('Checking if a ListingState is active', ({ Given, When, Then }) => {
 		let listingState: ListingState;
 		let result: boolean;
-		Given('a ListingState with value "Published"', () => {
-			listingState = new ListingState('Published');
+		Given('a ListingState with value "Active"', () => {
+			listingState = new ListingState('Active');
 		});
 		When('I check isActive', () => {
 			result = listingState.isActive;

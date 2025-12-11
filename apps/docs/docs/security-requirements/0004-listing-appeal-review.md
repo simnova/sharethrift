@@ -25,7 +25,7 @@ Blocked listings must be reviewed before being reinstated.
 - **Date Retired**: N/A
 
 **Listing State Management System**
-- ItemListing domain entity supports seven distinct states: 'Published', 'Paused', 'Cancelled', 'Draft', 'Expired', 'Blocked'
+- ItemListing domain entity supports Six distinct states: 'Active', 'Paused', 'Cancelled', 'Draft', 'Expired', 'Blocked'
 - ListingState value object with static instances provides type-safe state transitions
 - MongoDB schema enforcement with LISTING_STATE_ENUM validates allowable states
 - State transitions tracked through updatedAt timestamps for audit compliance
@@ -76,7 +76,7 @@ Blocked listings must be reviewed before being reinstated.
 **Audit Trail Maintenance**
 - All listing state changes recorded with timestamps through updatedAt field tracking
 - Administrative review decisions logged through GraphQL resolver actions
-- Review outcomes documented through subsequent state changes to Published or continued Blocked status
+- Review outcomes documented through subsequent state changes to Active or continued Blocked status
 
 **Content Quality Enforcement**
 - Appeals require users to acknowledge and potentially edit problematic content before submission

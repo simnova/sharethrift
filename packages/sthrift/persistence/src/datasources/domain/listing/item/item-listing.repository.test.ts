@@ -39,7 +39,7 @@ function makeListingDoc(
 		location: 'Delhi',
 		sharingPeriodStart: new Date('2025-10-06'),
 		sharingPeriodEnd: new Date('2025-11-06'),
-		state: 'Published',
+		state: 'Active',
 		sharer: userDoc._id,
 		images: [],
 		reports: 0,
@@ -169,7 +169,7 @@ test.for(feature, ({ Scenario, Background, BeforeEachScenario }) => {
 						return this;
 					}),
 					exec: vi.fn(() => {
-						if (!filter || filter.state === 'Published') {
+						if (!filter || filter.state === 'Active') {
 							return [listingDoc];
 						}
 						if (filter.sharer) {
@@ -292,8 +292,8 @@ test.for(feature, ({ Scenario, Background, BeforeEachScenario }) => {
 					Domain.Contexts.Listing.ItemListing.ItemListing,
 				);
 			});
-			And('the object\'s state should be "Published"', () => {
-				expect(result.state).toBe('Published');
+			And('the object\'s state should be "Active"', () => {
+				expect(result.state).toBe('Active');
 			});
 			And('createdAt and updatedAt should be set to the current date', () => {
 				expect(result.createdAt).toBeInstanceOf(Date);
@@ -356,9 +356,9 @@ test.for(feature, ({ Scenario, Background, BeforeEachScenario }) => {
 					);
 				}
 			});
-			And('each object should have a state of "Published"', () => {
+			And('each object should have a state of "Active"', () => {
 				for (const item of results) {
-					expect(item.state).toBe('Published');
+					expect(item.state).toBe('Active');
 				}
 			});
 		},
@@ -421,7 +421,7 @@ test.for(feature, ({ Scenario, Background, BeforeEachScenario }) => {
 							page: 1,
 							pageSize: 10,
 							searchText: 'Test',
-							statusFilters: ['Published'],
+							statusFilters: ['Active'],
 							sorter: { field: 'createdAt', order: 'descend' },
 						},
 					);

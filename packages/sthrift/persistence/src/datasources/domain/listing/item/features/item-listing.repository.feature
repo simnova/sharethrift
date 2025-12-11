@@ -18,7 +18,7 @@ And a valid ItemListing document exists in the database
 		And a set of valid listing fields without isDraft set to true
 		When I call getNewInstance with the sharer and listing fields
 		Then I should receive a new ItemListing domain object
-		And the object's state should be "Published"
+		And the object's state should be "Active"
 		And createdAt and updatedAt should be set to the current date
 
 	Scenario: Create a new draft item listing
@@ -31,7 +31,7 @@ And a valid ItemListing document exists in the database
 	Scenario: Retrieve all active (published) item listings
 		When I call getActiveItemListings
 		Then I should receive a list of ItemListing domain objects
-		And each object should have a state of "Published"
+		And each object should have a state of "Active"
 
 	Scenario: Retrieve item listings by sharer ID
 		Given a valid sharer ID

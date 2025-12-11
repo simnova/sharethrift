@@ -11,7 +11,7 @@ const mockListings: MyListingData[] = [
 		image: 'https://via.placeholder.com/150',
 		publishedAt: '2024-01-15',
 		reservationPeriod: '2024-06-01 - 2024-08-31',
-		status: 'Published',
+		status: 'Active',
 		pendingRequestsCount: 2,
 	},
 	{

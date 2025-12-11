@@ -48,7 +48,7 @@ function makePassport(
 	} as unknown as Passport);
 }
 
-function makeListing(state = 'Published'): ItemListingEntityReference {
+function makeListing(state = 'Active'): ItemListingEntityReference {
 	return {
 		id: 'listing-1',
 		sharer: {} as UserEntityReference,
@@ -128,7 +128,7 @@ test.for(feature, ({ Background, Scenario, BeforeEachScenario }) => {
 
 	BeforeEachScenario(() => {
 		passport = makePassport();
-		listing = makeListing('Published');
+		listing = makeListing('Active');
 		reserver = makeUser();
 		baseProps = makeBaseProps({ listing, reserver });
 		aggregate =
@@ -144,9 +144,9 @@ test.for(feature, ({ Background, Scenario, BeforeEachScenario }) => {
 			reserver = makeUser();
 		});
 		And(
-			'a valid ItemListingEntityReference for "listing1" with state "Published"',
+			'a valid ItemListingEntityReference for "listing1" with state "Active"',
 			() => {
-				listing = makeListing('Published');
+				listing = makeListing('Active');
 			},
 		);
 		And(
@@ -274,7 +274,7 @@ test.for(feature, ({ Background, Scenario, BeforeEachScenario }) => {
 		});
 		When('I try to set a new listing', () => {
 			act = () => {
-				aggregate.listing = makeListing('Published');
+				aggregate.listing = makeListing('Active');
 			};
 		});
 		Then(

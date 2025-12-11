@@ -12,7 +12,7 @@ export interface UIItemListing {
 	sharingPeriodStart: Date;
 	sharingPeriodEnd: Date;
 	state?:
-		| 'Published'
+		| 'Active'
 		| 'Paused'
 		| 'Cancelled'
 		| 'Draft'

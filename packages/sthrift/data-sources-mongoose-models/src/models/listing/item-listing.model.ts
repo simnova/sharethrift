@@ -15,7 +15,7 @@ export interface ItemListing extends Listing {
 	sharingPeriodStart: Date;
 	sharingPeriodEnd: Date;
 	state?:
-		| 'Published'
+		| 'Active'
 		| 'Paused'
 		| 'Cancelled'
 		| 'Draft'
@@ -31,7 +31,7 @@ export interface ItemListing extends Listing {
 }
 
 export const LISTING_STATE_ENUM = [
-	'Published',
+	'Active',
 	'Paused',
 	'Cancelled',
 	'Draft',

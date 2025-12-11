@@ -53,7 +53,7 @@ function createMockListing(
 		location: 'Delhi',
 		sharingPeriodStart: new Date('2025-10-06'),
 		sharingPeriodEnd: new Date('2025-11-06'),
-		state: 'Published',
+		state: 'Active',
 		sharer: {
 			id: 'user-1',
 		} as PersonalUserEntity,
@@ -355,13 +355,13 @@ test.for(feature, ({ Scenario }) => {
 				});
 			});
 			And(
-				'it should map state values like "Published" to "Active" and "Draft" to "Draft"',
+				'it should map state values like "Active" to "Active" and "Draft" to "Draft"',
 				() => {
 					expect(result).toBeDefined();
 					const resultData = result as { items: ItemListingEntity[] };
 					resultData.items.forEach((listing) => {
 						const status = listing.state;
-						expect(['Published', 'Draft', 'Unknown']).toContain(status);
+						expect(['Active', 'Draft', 'Unknown']).toContain(status);
 					});
 				},
 			);
@@ -383,7 +383,7 @@ test.for(feature, ({ Scenario }) => {
 			Given('a verified user and valid pagination arguments', () => {
 				context = makeMockGraphContext();
 			});
-			And('a searchText "camera" and statusFilters ["Published"]', () => {
+			And('a searchText "camera" and statusFilters ["Active"]', () => {
 				vi.mocked(
 					context.applicationServices.Listing.ItemListing.queryPaged,
 				).mockResolvedValue({
@@ -407,7 +407,7 @@ test.for(feature, ({ Scenario }) => {
 						page: 1,
 						pageSize: 10,
 						searchText: 'camera',
-						statusFilters: ['Published'],
+						statusFilters: ['Active'],
 					},
 					context,
 					{} as never,
@@ -423,7 +423,7 @@ test.for(feature, ({ Scenario }) => {
 							page: 1,
 							pageSize: 10,
 							searchText: 'camera',
-							statusFilters: ['Published'],
+							statusFilters: ['Active'],
 							sharerId: 'user-1',
 						}),
 					);
@@ -732,7 +732,7 @@ test.for(feature, ({ Scenario }) => {
 				const listingWithImage = createMockListing({
 					id: 'listing-with-image',
 					images: ['pic1.jpg'],
-					state: 'Published',
+					state: 'Active',
 					createdAt: new Date('2025-02-01T10:00:00Z'),
 					sharingPeriodStart: new Date('2025-02-10T00:00:00Z'),
 					sharingPeriodEnd: new Date('2025-02-20T00:00:00Z'),
@@ -841,7 +841,7 @@ test.for(feature, ({ Scenario }) => {
 						page: 1,
 						pageSize: 10,
 						searchText: 'test',
-						statusFilters: ['Published'],
+						statusFilters: ['Active'],
 						sorter: { field: 'title', order: 'ascend' },
 					},
 					context,
@@ -856,7 +856,7 @@ test.for(feature, ({ Scenario }) => {
 						page: 1,
 						pageSize: 10,
 						searchText: 'test',
-						statusFilters: ['Published'],
+						statusFilters: ['Active'],
 						sorter: { field: 'title', order: 'ascend' },
 					}),
 				);

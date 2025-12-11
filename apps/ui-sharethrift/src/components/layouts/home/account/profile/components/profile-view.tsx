@@ -137,7 +137,7 @@ export const ProfileView: React.FC<Readonly<ProfileViewProps>> = ({
 						sharingPeriodStart: new Date(l.sharingPeriodStart),
 						sharingPeriodEnd: new Date(l.sharingPeriodEnd),
 						state: [
-							'Published',
+							'Active',
 							'Paused',
 							'Cancelled',
 							'Draft',
@@ -145,7 +145,7 @@ export const ProfileView: React.FC<Readonly<ProfileViewProps>> = ({
 							'Blocked',
 						].includes(l.state ?? '')
 							? (l.state as
-									| 'Published'
+									| 'Active'
 									| 'Paused'
 									| 'Cancelled'
 									| 'Draft'

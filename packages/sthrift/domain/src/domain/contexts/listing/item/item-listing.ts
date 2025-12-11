@@ -61,7 +61,7 @@ export class ItemListing<props extends ItemListingProps>
 		}
 		newInstance.state = fields.isDraft
 			? ValueObjects.ListingState.Draft.valueOf()
-			: ValueObjects.ListingState.Published.valueOf();
+			: ValueObjects.ListingState.Active.valueOf();
 
 		newInstance.isNew = false;
 		return newInstance;
@@ -238,7 +238,7 @@ export class ItemListing<props extends ItemListingProps>
 
 	get isActive(): boolean {
 		return (
-			this.props.state.valueOf() === ValueObjects.ListingStateEnum.Published
+			this.props.state.valueOf() === ValueObjects.ListingStateEnum.Active
 		);
 	}
 
@@ -262,7 +262,7 @@ export class ItemListing<props extends ItemListingProps>
 			);
 		}
 
-		this.props.state = new ValueObjects.ListingState('Published').valueOf();
+		this.props.state = new ValueObjects.ListingState('Active').valueOf();
 		// Note: updatedAt is automatically handled by Mongoose timestamps
 	}
 
@@ -319,7 +319,7 @@ export class ItemListing<props extends ItemListingProps>
 			const isBlocked = current === ValueObjects.ListingStateEnum.Blocked;
 			if (!isBlocked) return; // no-op if not blocked
 
-			this.props.state = ValueObjects.ListingStateEnum.Published;
+			this.props.state = ValueObjects.ListingStateEnum.Active;
 			return;
 		}
 

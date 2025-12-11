@@ -11,7 +11,7 @@ const meta: Meta<typeof StatusTag> = {
 	argTypes: {
 		status: {
 			control: 'select',
-			options: ['Blocked', 'Published', undefined],
+			options: ['Blocked', 'Active', undefined],
 		},
 	},
 };
@@ -43,11 +43,11 @@ export const UndefinedStatus: Story = {
 
 export const CustomStatus: Story = {
 	args: {
-		status: 'Published',
+		status: 'Active',
 	},
 	play: async ({ canvasElement }) => {
 		const canvas = within(canvasElement);
-		const tag = canvas.getByText('Published');
+		const tag = canvas.getByText('Active');
 		expect(tag).toBeTruthy();
 	},
 };

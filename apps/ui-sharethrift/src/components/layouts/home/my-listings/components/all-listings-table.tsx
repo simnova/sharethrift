@@ -26,7 +26,7 @@ export interface AllListingsTableProps {
 }
 
 const STATUS_OPTIONS = [
-	{ label: 'Published', value: 'Published' },
+	{ label: 'Active', value: 'Active' },
 	{ label: 'Paused', value: 'Paused' },
 	{ label: 'Reserved', value: 'Reserved' },
 	{ label: 'Expired', value: 'Expired' },
@@ -61,7 +61,7 @@ export const AllListingsTable: React.FC<AllListingsTableProps> = ({
 		const status = record.state ?? 'Unknown';
 
 		// Conditional actions based on status
-		if (status === 'Published' || status === 'Reserved') {
+		if (status === 'Active' || status === 'Reserved') {
 			buttons.push(
 				<Button
 					key="pause"
@@ -117,8 +117,8 @@ export const AllListingsTable: React.FC<AllListingsTableProps> = ({
 			);
 		}
 
-		// Cancel button for Published listings
-		if (status === 'Published' || status === 'Paused') {
+		// Cancel button for Active listings
+		if (status === 'Active' || status === 'Paused') {
 			buttons.push(
 				<Popconfirm
 					key="cancel"
