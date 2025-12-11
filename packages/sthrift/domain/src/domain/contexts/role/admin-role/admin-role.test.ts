@@ -94,6 +94,18 @@ test.for(feature, ({ Background, Scenario, BeforeEachScenario }) => {
 					set permissions(value: typeof props.permissions) {
 						props.permissions = value;
 					},
+					get roleType() {
+						return props.roleType;
+					},
+					get createdAt() {
+						return props.createdAt;
+					},
+					get updatedAt() {
+						return props.updatedAt;
+					},
+					get schemaVersion() {
+						return props.schemaVersion;
+					},
 				};
 				return mockRole as unknown as AdminRole<AdminRoleProps>;
 			},
@@ -375,12 +387,7 @@ test.for(feature, ({ Background, Scenario, BeforeEachScenario }) => {
 
 	Scenario('Getting roleType from admin role', ({ Given, When, Then }) => {
 		Given('an existing admin role', () => {
-			adminRole = {
-				props: roleProps,
-				get roleType() {
-					return this.props.roleType;
-				},
-			};
+			adminRole = mockRepo.getNewInstance('Moderator', false);
 		});
 
 		When('I access the roleType property', () => {
@@ -394,12 +401,7 @@ test.for(feature, ({ Background, Scenario, BeforeEachScenario }) => {
 
 	Scenario('Getting createdAt from admin role', ({ Given, When, Then }) => {
 		Given('an existing admin role', () => {
-			adminRole = {
-				props: roleProps,
-				get createdAt() {
-					return this.props.createdAt;
-				},
-			};
+			adminRole = mockRepo.getNewInstance('Moderator', false);
 		});
 
 		When('I access the createdAt property', () => {
@@ -414,12 +416,7 @@ test.for(feature, ({ Background, Scenario, BeforeEachScenario }) => {
 
 	Scenario('Getting updatedAt from admin role', ({ Given, When, Then }) => {
 		Given('an existing admin role', () => {
-			adminRole = {
-				props: roleProps,
-				get updatedAt() {
-					return this.props.updatedAt;
-				},
-			};
+			adminRole = mockRepo.getNewInstance('Moderator', false);
 		});
 
 		When('I access the updatedAt property', () => {
@@ -436,12 +433,7 @@ test.for(feature, ({ Background, Scenario, BeforeEachScenario }) => {
 		'Getting schemaVersion from admin role',
 		({ Given, When, Then }) => {
 			Given('an existing admin role', () => {
-				adminRole = {
-					props: roleProps,
-					get schemaVersion() {
-						return this.props.schemaVersion;
-					},
-				};
+				adminRole = mockRepo.getNewInstance('Moderator', false);
 			});
 
 			When('I access the schemaVersion property', () => {
