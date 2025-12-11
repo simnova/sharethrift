@@ -1,7 +1,7 @@
 import { Before, Given, Then, When } from '@cucumber/cucumber';
 import { actorCalled } from '@serenity-js/core';
 import { Ensure, equals } from '@serenity-js/assertions';
-import { CreateListingAbility } from '../features/abilities/create-listing.ability';
+import { CreateListingAbility } from '../screenplay/abilities/create-listing.ability';
 import type { Domain } from '@sthrift/domain';
 
 declare module '@serenity-js/core' {
