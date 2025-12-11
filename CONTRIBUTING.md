@@ -41,11 +41,11 @@ If you want the GitHub Copilot coding agent to implement the task:
 7. Add labels: `domain`, `ui`, `tech-debt`, `documentation`, etc.
 8. Assign yourself, Copilot, or another contributor.
 
-<img src="./readme-assets/github_create_task.png" width="500" alt="github_create_task">
+<img src="./readme-assets/github_create_task.png" alt="github_create_task" style="max-width:100%; height:auto;">
 
-<img src="./readme-assets/github_create_task_2.png" width="500" alt="github_create_task_2">
+<img src="./readme-assets/github_create_task_2.png" alt="github_create_task_2" style="max-width:100%; height:auto;">
 
-<img src="./readme-assets/github_create_task_3.png" width="500" alt="github_create_task_3">
+<img src="./readme-assets/github_create_task_3.png" alt="github_create_task_3" style="max-width:100%; height:auto;">
 
 Copilot will attempt to open a Pull Request automatically. Monitor its progress, review the PR thoroughly, and request adjustments as needed.
 
