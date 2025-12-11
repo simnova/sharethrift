@@ -14,7 +14,7 @@ description: Snyk CLI Usage and Security Scanning Workflow
 ## Snyk Commands
 
 ```bash
-pnpm run snyk        # Run all scans (SCA + SAST + IaC)
+pnpm run snyk        # Scans source code and dependencies (SCA + SAST)
 pnpm run snyk:code   # SAST - scan source code
 pnpm run snyk:test   # SCA - scan dependencies
 pnpm run snyk:iac    # IaC - scan Bicep templates
