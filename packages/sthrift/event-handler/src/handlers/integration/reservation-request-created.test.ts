@@ -3,13 +3,16 @@ import registerReservationRequestCreatedHandler from './reservation-request-crea
 import type { TransactionalEmailService } from '@cellix/transactional-email-service';
 import type { DomainDataSource } from '@sthrift/domain';
 
-// Mock the domain module
-vi.mock('@sthrift/domain', () => {
+const { Domain } = vi.hoisted(() => {
 	const mockEventBus = {
 		register: vi.fn(),
 	};
 
 	const mockReservationRequestCreated = {};
+
+	const mockPassportFactory = {
+		forSystem: vi.fn(() => ({})),
+	};
 
 	return {
 		Domain: {
@@ -17,18 +20,15 @@ vi.mock('@sthrift/domain', () => {
 				EventBusInstance: mockEventBus,
 				ReservationRequestCreated: mockReservationRequestCreated,
 			},
+			PassportFactory: mockPassportFactory,
 		},
 	};
 });
 
-const { Domain } = vi.hoisted(() => {
+// Mock the domain module with the hoisted mock
+vi.mock('@sthrift/domain', () => {
 	return {
-		Domain: {
-			Events: {
-				EventBusInstance: { register: vi.fn() },
-				ReservationRequestCreated: {},
-			},
-		},
+		Domain: Domain,
 	};
 });
 
@@ -311,10 +311,10 @@ describe('registerReservationRequestCreatedHandler', () => {
 				(_event, callback) => {
 					handlerCallback = callback;
 				},
-		);
+			);
 
-		// Setup mocks
-		(mockDomainDataSource.User.PersonalUser.PersonalUserUnitOfWork.withTransaction as ReturnType<typeof vi.fn>)
+			// Setup mocks
+			(mockDomainDataSource.User.PersonalUser.PersonalUserUnitOfWork.withTransaction as ReturnType<typeof vi.fn>)
 				.mockImplementation((_, callback) =>
 					callback({
 						getById: vi.fn().mockResolvedValue({
