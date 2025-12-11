@@ -63,7 +63,7 @@ function makeListing(state = 'Published'): ItemListingEntityReference {
 function makeUser(): UserEntityReference {
 	return {
 		id: 'reserver-1',
-		userType: 'personal',
+		userType: 'personal-user',
 		isBlocked: false,
 		hasCompletedOnboarding: true,
 		// biome-ignore lint/suspicious/noExplicitAny: Test mock requires any for complex types

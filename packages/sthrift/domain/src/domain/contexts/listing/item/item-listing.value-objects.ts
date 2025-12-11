@@ -16,7 +16,7 @@ export const ListingStateEnum = {
 
 export class ListingState extends VOString({
 	trim: true,
-	minLength: 1,
+	minLength: 0,
 	maxLength: 50,
 }) {
 	static Published = new ListingState(ListingStateEnum.Published);
@@ -37,7 +37,7 @@ export class ListingState extends VOString({
  */
 export class Category extends VOString({
 	trim: true,
-	minLength: 1,
+	minLength: 0,
 	maxLength: 100,
 }) {
 	static ToolsEquipment = new Category('Tools & Equipment');
@@ -57,7 +57,7 @@ export class Category extends VOString({
  */
 export class Location extends VOString({
 	trim: true,
-	minLength: 1,
+	minLength: 0,
 	maxLength: 255,
 }) {
 	get cityState(): string {
@@ -72,7 +72,7 @@ export class Location extends VOString({
  */
 export class Title extends VOString({
 	trim: true,
-	minLength: 1,
+	minLength: 0,
 	maxLength: 200,
 }) {}
 
@@ -81,8 +81,6 @@ export class Title extends VOString({
  */
 export class Description extends VOString({
 	trim: true,
-	minLength: 1,
+	minLength: 0,
 	maxLength: 2000,
 }) {}
-
-

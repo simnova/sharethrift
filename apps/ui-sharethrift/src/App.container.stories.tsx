@@ -30,7 +30,7 @@ const mockAuthenticatedCompletedOnboarding = {
 			currentUser: {
 				__typename: 'PersonalUser' as const,
 				id: 'user-123',
-				userType: 'personal-users',
+				userType: 'personal-user',
 				hasCompletedOnboarding: true,
 			},
 		},
@@ -48,7 +48,7 @@ const mockAuthenticatedNotCompletedOnboarding = {
 			currentUser: {
 				__typename: 'PersonalUser' as const,
 				id: 'user-456',
-				userType: 'personal-users',
+				userType: 'personal-user',
 				hasCompletedOnboarding: false,
 			},
 		},

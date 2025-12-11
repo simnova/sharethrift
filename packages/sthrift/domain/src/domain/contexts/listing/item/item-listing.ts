@@ -1,4 +1,3 @@
-import { randomUUID } from 'node:crypto';
 import { DomainSeedwork } from '@cellix/domain-seedwork';
 import type { Passport } from '../../passport.ts';
 import type { ListingVisa } from '../listing.visa.ts';
@@ -8,6 +7,11 @@ import type {
 	ItemListingEntityReference,
 	ItemListingProps,
 } from './item-listing.entity.ts';
+import { AdminUser } from '../../user/admin-user/admin-user.ts';
+import type { AdminUserProps } from '../../user/admin-user/admin-user.entity.ts';
+import { PersonalUser } from '../../user/personal-user/personal-user.ts';
+import type { PersonalUserProps } from '../../user/personal-user/personal-user.entity.ts';
+
 export class ItemListing<props extends ItemListingProps>
 	extends DomainSeedwork.AggregateRoot<props, Passport>
 	implements ItemListingEntityReference
@@ -26,6 +30,8 @@ export class ItemListing<props extends ItemListingProps>
 
 	//#region Methods
 	public static getNewInstance<props extends ItemListingProps>(
+		newProps: props,
+		passport: Passport,
 		sharer: UserEntityReference,
 		fields: {
 			title: string;
@@ -37,7 +43,6 @@ export class ItemListing<props extends ItemListingProps>
 			images?: string[];
 			isDraft?: boolean;
 		},
-		passport: Passport,
 	): ItemListing<props> {
 		const id = randomUUID();
 		const now = new Date();
@@ -114,7 +119,21 @@ export class ItemListing<props extends ItemListingProps>
 
 	//#region Properties
 	get sharer(): UserEntityReference {
-		return this.props.sharer;
+		// Polymorphic instantiation based on userType
+		if (this.props.sharer.userType === 'admin-user') {
+			return new AdminUser(
+				this.props.sharer as unknown as AdminUserProps,
+				this.passport,
+			);
+		}
+		return new PersonalUser(
+			this.props.sharer as unknown as PersonalUserProps,
+			this.passport,
+		);
+	}
+
+	async loadSharer(): Promise<UserEntityReference> {
+		return await this.props.loadSharer();
 	}
 
 	set sharer(value: UserEntityReference) {
@@ -216,22 +235,7 @@ export class ItemListing<props extends ItemListingProps>
 	}
 
 	set state(value: string) {
-		// State transition logic - determines what transitions are valid
-		switch (value) {
-			case ValueObjects.ListingStateEnum.Published:
-				this.publish();
-				break;
-			case ValueObjects.ListingStateEnum.Paused:
-				this.pause();
-				break;
-			case ValueObjects.ListingStateEnum.Cancelled:
-				this.cancel();
-				break;
-			default:
-				throw new DomainSeedwork.PermissionError(
-					`Invalid listing state: "${value}". Valid states are: ${Object.values(ValueObjects.ListingStateEnum).join(', ')}`,
-				);
-		}
+		this.props.state = value;
 	}
 
 	get updatedAt(): Date {
