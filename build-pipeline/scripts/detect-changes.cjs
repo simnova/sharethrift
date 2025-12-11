@@ -19,9 +19,6 @@ async function runCommand(command) {
 }
 
 // Helper function to set Azure DevOps pipeline variable
-// Note: Output variables (isOutput=true) are accessed in YAML with the task name prefix
-// e.g., HAS_SOURCE_CHANGES is accessed as BuildJob.HAS_SOURCE_CHANGES
-// See: build-pipeline/core/monorepo-build-stage.yml (task name: BuildJob)
 function setPipelineVariable(name, value) {
 	console.log(`##vso[task.setvariable variable=${name};isOutput=true]${value}`);
 }
@@ -153,37 +150,6 @@ async function checkAppChanges(appConfig, affectedPackages) {
 		return true;
 	}
 }
-// Check for any source code changes (excluding infrastructure-only changes)
-async function checkSourceChanges() {
-	// Exclusion patterns for non-source files
-	// Note: Keep these patterns aligned with knip.json ignore and sonar-project.properties exclusions
-	// to ensure consistent behavior across tooling
-	const sourceExcludePaths = [
-		'build-pipeline/**',
-		'iac/**',
-		'azure-pipelines.yml',
-		'host.json',
-		'.github/**',
-		'.gitignore',
-		'**/*.md',
-		'LICENSE'
-	];
-	
-	// Build pathspec patterns to exclude non-source paths
-	const pathSpecPatterns = sourceExcludePaths.map(p => `:!${p}`).join(' ');
-	const gitCommand = `git diff --name-only ${process.env.TURBO_SCM_BASE} -- . ${pathSpecPatterns}`;
-	const diffOutput = await runCommand(gitCommand);
-	
-	const hasSourceChanges = diffOutput && diffOutput.trim().length > 0;
-	
-	if (hasSourceChanges) {
-		console.log('Source code changes detected:', diffOutput.split('\n').slice(0, 5).join(', ') + '...');
-	} else {
-		console.log('No source code changes detected (infrastructure/docs-only changes)');
-	}
-	
-	return hasSourceChanges;
-}
 
 // Main function to detect affected packages and map to deployment groups
 async function detectChanges() {
@@ -203,10 +169,6 @@ async function detectChanges() {
 		process.env.TURBO_SCM_BASE = 'HEAD~1';
 	}
 
-	// Check for source code changes (used for knip and other analysis)
-	console.log('Checking for source code changes...');
-	const hasSourceChanges = await checkSourceChanges();
-
 	// Check for infrastructure changes
 	console.log('Checking for infrastructure and configuration changes...');
 	const hasInfraChanges = await checkInfrastructureChanges();
@@ -214,6 +176,20 @@ async function detectChanges() {
 	// Get affected packages
 	console.log('Running turbo to detect affected packages...');
 	const { packages: affectedPackages, error: globalError } = await getAffectedPackages();
+
+	// Determine whether any source packages are affected (distinct from infra/pipeline changes)
+	// If Turbo failed (globalError) be conservative and treat this as source-changes = true
+	let hasSourceChanges = false;
+	if (globalError) {
+		hasSourceChanges = true;
+	} else {
+		// Turbo returns an array of affected package ids; non-empty => source changes
+		hasSourceChanges = Array.isArray(affectedPackages) && affectedPackages.length > 0;
+	}
+
+	// Export a pipeline variable for other tasks to consume
+	setPipelineVariable('HAS_SOURCE_CHANGES', hasSourceChanges);
+	console.log(`Source/package changes detected: ${hasSourceChanges}`);
 
 	// Initialize deployment flags
 	let hasBackendChanges = false;
@@ -266,13 +242,11 @@ async function detectChanges() {
 
 	// Log final results
 	console.log('Final results:');
-	console.log(`Source code changes: ${hasSourceChanges}`);
 	console.log(`Backend changes: ${hasBackendChanges}`);
 	console.log(`Frontend changes: ${hasFrontendChanges}`);
 	console.log(`Docs changes: ${hasDocsChanges}`);
 
 	// Set pipeline variables
-	setPipelineVariable('HAS_SOURCE_CHANGES', hasSourceChanges);
 	setPipelineVariable('HAS_BACKEND_CHANGES', hasBackendChanges);
 	setPipelineVariable('HAS_FRONTEND_CHANGES', hasFrontendChanges);
 	setPipelineVariable('HAS_DOCS_CHANGES', hasDocsChanges);
