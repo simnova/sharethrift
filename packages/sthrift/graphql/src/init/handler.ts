@@ -9,26 +9,27 @@ import {
 import type { GraphContext } from './context.ts';
 import { combinedSchema } from '../schema/builder/schema-builder.ts';
 import { applyMiddleware } from 'graphql-middleware';
-import type { GraphQLSchemaWithFragmentReplacements } from 'graphql-middleware/types';
+import depthLimit from 'graphql-depth-limit';
 
-const serverConfig = (securedSchema: GraphQLSchemaWithFragmentReplacements) => {
-	return {
-		schema: securedSchema,
-        cors: {
-            origin: true,
-            credentials: true,
-        },
-        allowBatchedHttpRequests: true,
-	};
-};
+// biome-ignore lint/complexity/useLiteralKeys: NODE_ENV is a standard environment variable
+const isProduction = process.env['NODE_ENV'] === 'production';
+const MAX_QUERY_DEPTH = 10;
 
 export const graphHandlerCreator = (
 	applicationServicesFactory: ApplicationServicesFactory,
 ): HttpHandler => {
-	// Set up Apollo Server
-    const securedSchema = applyMiddleware(combinedSchema);
+	// Set up Apollo Server with security configurations
+	// Note: Apollo Server v4 removed direct CORS support - CORS must be handled at the web framework level
+	// https://www.apollographql.com/docs/apollo-server/migration/#cors-and-helmet
+	// Azure Functions handles CORS through local.settings.json ("CORS": "*") for local dev
+	// and through Azure Portal configuration for production deployments
+	const securedSchema = applyMiddleware(combinedSchema);
 	const server = new ApolloServer<GraphContext>({
-        ...serverConfig(securedSchema)
+		schema: securedSchema,
+        allowBatchedHttpRequests: true,
+		// Protection against nested query DoS attacks
+		validationRules: [depthLimit(MAX_QUERY_DEPTH)],
+		introspection: !isProduction,
 	});
 	const functionOptions: WithRequired<AzureFunctionsMiddlewareOptions<GraphContext>, 'context'> = {
 		context: async ({ req }) => {
