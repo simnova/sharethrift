@@ -1,6 +1,6 @@
 import { Given, When, Then, Before } from '@cucumber/cucumber';
 import { actorCalled } from '@serenity-js/core';
-import { Ensure, equals, contain, startsWith } from '@serenity-js/assertions';
+import { Ensure, equals, startsWith } from '@serenity-js/assertions';
 import { DomainSeedwork } from '@cellix/domain-seedwork';
 import './shared.steps';
 import { SystemPassport } from '../../../src/domain/iam/system/system.passport';
