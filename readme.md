@@ -114,14 +114,14 @@ documents/        # BRD, SRD, ADRs, architecture diagrams
 
 ## 🛠 Tech Stack
 
-- Runtime: Node.js (per `.nvmrc`) / Azure Functions
-- Package Manager: pnpm (see `package.json`)
-- Language: TypeScript (strict config)
-- API: Apollo GraphQL
-- Persistence: MongoDB (Mongoose); Cosmos MongoDB target in cloud
-- Infra as Code: Bicep modules (`iac/`)
-- Tooling: Turborepo, Vitest, Biome, SonarQube, Sourcery
-- Local Azure Emulation: Azurite (blob/queue)
+- Runtime: Node.js (per `.nvmrc`) / Azure Functions ([see package.json](./apps/api/package.json))
+- Package Manager: pnpm ([see package.json](./package.json))
+- Language: TypeScript (strict config) ([see package.json](./package.json))
+- API: Apollo GraphQL ([see package.json](./packages/sthrift/graphql/package.json))
+- Persistence: MongoDB (Mongoose)([see package.json](./packages/sthrift/service-mongoose/package.json)); Cosmos MongoDB target in cloud
+- Infra as Code: Bicep modules (iac)
+- Tooling: Turborepo ([see package.json](./package.json)), Vitest ([see package.json](./package.json)), Biome ([see package.json](./package.json)), SonarQube ([see package.json](./package.json)), Sourcery
+- Local Azure Emulation: Azurite (blob/queue) ([see package.json](./package.json))
 - Observability: OpenTelemetry + Azure Monitor integration
 - Quality Gates: Sonar + coverage thresholds per package
 
