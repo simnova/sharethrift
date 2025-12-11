@@ -19,6 +19,9 @@ async function runCommand(command) {
 }
 
 // Helper function to set Azure DevOps pipeline variable
+// Note: Output variables (isOutput=true) are accessed in YAML with the task name prefix
+// e.g., HAS_SOURCE_CHANGES is accessed as BuildJob.HAS_SOURCE_CHANGES
+// See: build-pipeline/core/monorepo-build-stage.yml (task name: BuildJob)
 function setPipelineVariable(name, value) {
 	console.log(`##vso[task.setvariable variable=${name};isOutput=true]${value}`);
 }
@@ -162,7 +165,7 @@ async function checkSourceChanges() {
 		'host.json',
 		'.github/**',
 		'.gitignore',
-		'*.md',
+		'**/*.md',
 		'LICENSE'
 	];
 	
