@@ -130,6 +130,23 @@ test.for(feature, ({ Scenario, Background, BeforeEachScenario }) => {
 		});
 	});
 
+	Scenario('Getting all personal users with no results', ({ Given, When, Then }) => {
+		Given('no PersonalUser documents exist in the database', () => {
+			const mockDataSource = repository['mongoDataSource'] as unknown as {
+				find: ReturnType<typeof vi.fn>;
+			};
+			mockDataSource.find = vi.fn(() => Promise.resolve([]));
+		});
+
+		When('I call getAll', async () => {
+			result = await repository.getAll();
+		});
+
+		Then('I should receive an empty array', () => {
+			expect(result).toEqual([]);
+		});
+	});
+
 	Scenario('Getting all users with pagination', ({ Given, When, Then }) => {
 		Given('multiple PersonalUser documents exist in the database', () => {
 			mockUsers = [

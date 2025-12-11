@@ -489,4 +489,55 @@ test.for(feature, ({ Scenario, Background, BeforeEachScenario }) => {
 			expect(reservationRequestPermissions.canModerateReservations).toBe(true);
 		});
 	});
+
+	Scenario('Accessing conversation permissions when undefined', ({ Given, When, Then }) => {
+		Given('an AdminRole document with undefined conversationPermissions', () => {
+			doc = makeAdminRoleDoc();
+			doc.permissions.conversationPermissions = undefined as never;
+			adapter = new AdminRoleDomainAdapter(doc);
+		});
+
+		When('I access the conversationPermissions', () => {
+			// Accessing the getter
+		});
+
+		Then('the conversationPermissions should be created and accessible', () => {
+			const perms = adapter.permissions.conversationPermissions;
+			expect(perms).toBeDefined();
+		});
+	});
+
+	Scenario('Accessing listing permissions when undefined', ({ Given, When, Then }) => {
+		Given('an AdminRole document with undefined listingPermissions', () => {
+			doc = makeAdminRoleDoc();
+			doc.permissions.listingPermissions = undefined as never;
+			adapter = new AdminRoleDomainAdapter(doc);
+		});
+
+		When('I access the listingPermissions', () => {
+			// Accessing the getter
+		});
+
+		Then('the listingPermissions should be created and accessible', () => {
+			const perms = adapter.permissions.listingPermissions;
+			expect(perms).toBeDefined();
+		});
+	});
+
+	Scenario('Accessing reservation request permissions when undefined', ({ Given, When, Then }) => {
+		Given('an AdminRole document with undefined reservationRequestPermissions', () => {
+			doc = makeAdminRoleDoc();
+			doc.permissions.reservationRequestPermissions = undefined as never;
+			adapter = new AdminRoleDomainAdapter(doc);
+		});
+
+		When('I access the reservationRequestPermissions', () => {
+			// Accessing the getter
+		});
+
+		Then('the reservationRequestPermissions should be created and accessible', () => {
+			const perms = adapter.permissions.reservationRequestPermissions;
+			expect(perms).toBeDefined();
+		});
+	});
 });

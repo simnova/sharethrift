@@ -110,6 +110,14 @@ test.for(feature, ({ Scenario, Background, BeforeEachScenario }) => {
 		'Getting an admin role by a nonexistent ID',
 		({ When, Then }) => {
 			When('I call getById with "nonexistent-id"', async () => {
+				// Mock findById to return null
+			const mockModel = repository['model'] as unknown as {
+					findById: ReturnType<typeof vi.fn>;
+				};
+				mockModel.findById = vi.fn(() => ({
+					exec: vi.fn(() => Promise.resolve(null)),
+				}));
+
 				try {
 					result = await repository.getById('nonexistent-id');
 				} catch (error) {
@@ -120,7 +128,8 @@ test.for(feature, ({ Scenario, Background, BeforeEachScenario }) => {
 			Then(
 				'an error should be thrown indicating the admin role was not found',
 				() => {
-					expect(result).toBeDefined();
+					expect(result).toBeInstanceOf(Error);
+					expect((result as Error).message).toContain('not found');
 				},
 			);
 		},
