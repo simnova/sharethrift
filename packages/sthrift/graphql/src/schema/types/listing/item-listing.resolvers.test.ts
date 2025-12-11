@@ -715,17 +715,15 @@ test.for(feature, ({ Scenario }) => {
 	Scenario(
 		'Mapping item listing fields for myListingsAll',
 		({ Given, When, Then, And }) => {
-			interface MappedListing {
+			type MappedListing = {
 				id: string;
 				title: string;
 				image: string | null;
-				publishedAt: string | null;
+				createdAt: string | null;
 				reservationPeriod: string;
 				status: string;
 				pendingRequestsCount: number;
-			}
-
-			let mappedItems: MappedListing[] = [];
+			}			let mappedItems: MappedListing[] = [];
 
 			Given('a valid result from queryPaged', () => {
 				context = makeMockGraphContext();
@@ -774,7 +772,7 @@ test.for(feature, ({ Scenario }) => {
 						id: l.id,
 						title: l.title,
 						image: l.images?.[0] ?? null,
-						publishedAt: l.createdAt?.toISOString() ?? null,
+						createdAt: l.createdAt?.toISOString() ?? null,
 						reservationPeriod,
 						status,
 						pendingRequestsCount: 0, // default placeholder until domain provides counts
@@ -782,14 +780,14 @@ test.for(feature, ({ Scenario }) => {
 				});
 			});
 			Then(
-				'each listing should include id, title, image, publishedAt, reservationPeriod, status, and pendingRequestsCount',
+				'each listing should include id, title, image, createdAt, reservationPeriod, status, and pendingRequestsCount',
 				() => {
 					expect(mappedItems.length).toBe(2);
 					for (const item of mappedItems) {
 						expect(item).toHaveProperty('id');
 						expect(item).toHaveProperty('title');
 						expect(item).toHaveProperty('image');
-						expect(item).toHaveProperty('publishedAt');
+						expect(item).toHaveProperty('createdAt');
 						expect(item).toHaveProperty('reservationPeriod');
 						expect(item).toHaveProperty('status');
 						expect(item).toHaveProperty('pendingRequestsCount');

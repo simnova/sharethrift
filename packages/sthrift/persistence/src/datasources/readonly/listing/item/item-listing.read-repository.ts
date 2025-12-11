@@ -125,7 +125,7 @@ export class ItemListingReadRepositoryImpl
 			const direction = args.sorter.order === 'ascend' ? 1 : -1;
 			// Map GraphQL field names to MongoDB field names
 			const fieldMapping: Record<string, string> = {
-				publishedAt: 'createdAt',
+				createdAt: 'createdAt',
 				reservationPeriod: 'sharingPeriodStart', // Sort by start date
 				status: 'state',
 			};

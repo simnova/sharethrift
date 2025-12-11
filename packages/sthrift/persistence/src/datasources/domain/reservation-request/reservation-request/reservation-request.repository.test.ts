@@ -406,7 +406,6 @@ test.for(feature, ({ Scenario, Background, BeforeEachScenario }) => {
 			When('I call getNewInstance with state "PENDING", a valid listing, and the invalid reserver', async () => {
 				listing = vi.mocked({
 					id: createValidObjectId('listing-1'),
-					isPublished: true,
 				} as unknown as Domain.Contexts.Listing.ItemListing.ItemListingEntityReference);
 
 				try {
