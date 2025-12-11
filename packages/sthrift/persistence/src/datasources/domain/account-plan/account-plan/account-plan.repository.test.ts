@@ -75,10 +75,9 @@ function makeAccountPlanDoc(
 }
 
 function createChainableQuery<T>(result: T) {
-	const query = {
-		exec: vi.fn().mockResolvedValue(result),
-	};
-	return query;
+	return {
+ 		exec: vi.fn().mockResolvedValue(result),
+ 	};
 }
 
 function setupAccountPlanRepo(
