@@ -68,7 +68,7 @@ const meta: Meta<typeof AdminUsersTableContainer> = {
 					result: {
 						data: {
 							allUsers: {
-								__typename: 'AdminUserSearchResults',
+								__typename: 'PersonalUserPage',
 								items: mockUsers,
 								total: 2,
 								page: 1,
@@ -145,7 +145,7 @@ export const Empty: Story = {
 					result: {
 						data: {
 							allUsers: {
-								__typename: 'AdminUserSearchResults',
+								__typename: 'PersonalUserPage',
 								items: [],
 								total: 0,
 								page: 1,
@@ -206,7 +206,7 @@ export const WithBlockedUser: Story = {
 					result: {
 						data: {
 							allUsers: {
-								__typename: 'AdminUserSearchResults',
+								__typename: 'PersonalUserPage',
 								items: [mockUsers[1]],
 								total: 1,
 								page: 1,
@@ -257,7 +257,7 @@ export const BlockUserError: Story = {
 					result: {
 						data: {
 							allUsers: {
-								__typename: 'AdminUserSearchResults',
+								__typename: 'PersonalUserPage',
 								items: mockUsers,
 								total: 2,
 								page: 1,
@@ -295,7 +295,7 @@ export const ManyUsers: Story = {
 					result: {
 						data: {
 							allUsers: {
-								__typename: 'AdminUserSearchResults',
+								__typename: 'PersonalUserPage',
 								items: Array.from({ length: 10 }, (_, i) => ({
 									__typename: 'PersonalUser',
 									id: `user-${i + 1}`,
@@ -341,7 +341,7 @@ export const UnblockUserError: Story = {
 					result: {
 						data: {
 							allUsers: {
-								__typename: 'AdminUserSearchResults',
+								__typename: 'PersonalUserPage',
 								items: [mockUsers[1]],
 								total: 1,
 								page: 1,

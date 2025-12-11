@@ -29,7 +29,7 @@ const meta: Meta<typeof AdminUsers> = {
 					result: {
 						data: {
 							allUsers: {
-								__typename: 'AdminUserSearchResults',
+								__typename: 'PersonalUserPage',
 								items: [
 									{
 										__typename: 'AdminUser',

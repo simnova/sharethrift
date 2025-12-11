@@ -21,8 +21,8 @@ function createValidObjectId(id: string): string {
 	const hexChars = '0123456789abcdef';
 	let hex = '';
 	for (let i = 0; i < id.length && hex.length < 24; i++) {
-		const charCode = id.charCodeAt(i);
-		hex += hexChars[charCode % 16];
+		const codePoint = id.codePointAt(i) ?? 0;
+		hex += hexChars[codePoint % 16];
 	}
 	return hex.padEnd(24, '0').substring(0, 24);
 }
