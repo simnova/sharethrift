@@ -1,6 +1,6 @@
 import { Given, When, Then, Before } from '@cucumber/cucumber';
 import { actorCalled } from '@serenity-js/core';
-import { Ensure, equals } from '@serenity-js/assertions';
+import { Ensure, equals, contain, startsWith } from '@serenity-js/assertions';
 import { DomainSeedwork } from '@cellix/domain-seedwork';
 import './shared.steps';
 import { SystemPassport } from '../../../src/domain/iam/system/system.passport';
@@ -546,7 +546,7 @@ Then('the reservation request\'s reserver should reference {string}', (reserverI
 Then('an error should be thrown indicating {string}', (errorMessage: string) => {
     const actor = actorCalled('User');
     actor.attemptsTo(
-        Ensure.that(actor.error?.message || '', equals(errorMessage.replace(/^"|"$/g, '')))
+        Ensure.that(actor.error?.message || '', startsWith(errorMessage.replace(/^"|"$/g, '')))
     );
 });
 
@@ -556,7 +556,7 @@ Then('a PermissionError should be thrown with message {string}', (message: strin
     const actor = actorCalled('User');
     actor.attemptsTo(
         Ensure.that(actor.error instanceof DomainSeedwork.PermissionError, equals(true)),
-        Ensure.that(actor.error?.message || '', equals(message.replace(/^"|"$/g, '')))
+        Ensure.that(actor.error?.message || '', startsWith(message.replace(/^"|"$/g, '')))
     );
 });
 

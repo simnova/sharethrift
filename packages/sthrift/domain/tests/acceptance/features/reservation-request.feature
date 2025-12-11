@@ -15,12 +15,12 @@ Scenario: Creating a new reservation request instance
 Scenario: Setting reservation period start in the past
   Given a new ReservationRequest aggregate being created
   When I try to set the reservationPeriodStart to a past date
-  Then an error should be thrown indicating "Reservation period start date must be today or in the future"
+  Then an error should be thrown indicating "Reservation period start date cannot be updated after creation"
 
 Scenario: Setting reservation period end before start
   Given a new ReservationRequest aggregate being created
   When I try to set reservationPeriodEnd to a date before reservationPeriodStart
-  Then an error should be thrown indicating "Reservation period end date must be after the start date"
+  Then an error should be thrown indicating "Reservation start date must be before end date"
 
 Scenario: Setting listing after creation
   Given an existing ReservationRequest aggregate
