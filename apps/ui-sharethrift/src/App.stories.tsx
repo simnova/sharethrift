@@ -17,7 +17,7 @@ const mockStorage = {
 	getItem: (key: string) => {
 		if (key.includes('oidc.user')) {
 			return JSON.stringify({
-				access_token: 'mock-access-token',
+				access_token: '',
 				profile: { sub: 'test-user' },
 			});
 		}
