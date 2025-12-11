@@ -523,7 +523,7 @@ Enables admins to manage users, listings, and platform operations. Supports list
 |  |  |  |  |
 | --- | --- | --- | --- |
 | **Capability** | **Description** | **Priority** | **Constraints/Notes** |
-| Review Listings | Admins can view all pending listing submissions and decide on the next steps. | High | Show only 50 listings at a time, with page navigation options for more.  Can filter by blocked, listings.  Individual listings can show extra information not seen to regular users (i.e. activity log). |
+| Review Listings | Admins can view all pending listing submissions and decide on the next steps. | High | Show only 50 listings at a time, with page navigation options for more.  Can filter by blocked listings.  Individual listings can show extra information not seen to regular users (i.e. activity log). |
 | Approve Listing | Admins can approve currently blocked listings, unblocking and making them visible on the platform. | High | A listing can only be approved manually if it is currently blocked.  For a listing to be approved, it must have valid content as deemed by the admin. |
 | Request Updates to Listing | Admins can request additional info or edits from Sharers before approval. This action puts a temporary block on the listing until it is approved. | Medium | Admin must provide a note to Sharer regarding what is needed for approval.  Admins **cannot** edit a listing directly. |
 | Block Listing | Admins can remove listings from appearing visible and able to be reserved temporarily. | Medium | Admin must provide reason based on predefined criteria (e.g. policy violations).  Must specify how the listing can be unblocked. |
