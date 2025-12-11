@@ -355,23 +355,20 @@ public requestDelete(): void {
 		}
 	}
 
-	get expiresAt(): Date {
-		if (!this.props.expiresAt) {
-			throw new Error('expiresAt is not set');
-		}
+	get expiresAt(): Date | undefined {
 		return this.props.expiresAt;
 	}
-    set expiresAt(value: Date) {
-        if (
-            !this.isNew &&
-            !this.visa.determineIf((permissions) => permissions.canUpdateItemListing)
-        ) {
-            throw new DomainSeedwork.PermissionError(
-                'You do not have permission to update this expiration',
-            );
-        }
-        this.props.expiresAt = value;
-    }
+
+	set expiresAt(value: Date | undefined) {
+		if (
+			!this.visa.determineIf((permissions) => permissions.canUpdateItemListing)
+		) {
+			throw new DomainSeedwork.PermissionError(
+				'You do not have permission to update this expiration',
+			);
+		}
+		this.props.expiresAt = value;
+	}
 
 	/**
 	 * Create a reference to this entity for use in other contexts

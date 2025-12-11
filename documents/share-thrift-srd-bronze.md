@@ -332,7 +332,8 @@ Not Visible to users via browsing or searching, doesn't accept reservation reque
 
 #### Review
 
-The process in which a blocked listing with an associated appeal request is evaluated by an admin to determine whether it meets the necessary criteria to be unblocked. This is done by an admin.
+The process in which a blocked listing with an associated appeal request is evaluated by an admin to determine whether it meets the necessary criteria to be unblocked.
+
 
 #### Appeal
 

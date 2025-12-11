@@ -162,8 +162,6 @@ export const AllListingsTable: React.FC<AllListingsTableProps> = ({
 			</Popconfirm>,
 		);
 
-        console.log("here it is: ", status)
-
 		return buttons;
 	};
 
