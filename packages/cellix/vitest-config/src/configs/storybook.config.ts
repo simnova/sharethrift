@@ -18,10 +18,21 @@ export function createStorybookVitestConfig(
 	const STORYBOOK_DIR = opts.storybookDirRelativeToPackage ?? '.storybook';
 	const setupFiles = opts.setupFiles ?? ['.storybook/vitest.setup.ts'];
 	const instances = opts.browsers ?? [{ browser: 'chromium' }];
+	// CI environment is slower, allow retries for flaky browser tests
+	const isCI =
+		process.env['CI'] === 'true' || process.env['TF_BUILD'] === 'True';
 
 	const storybookConfig = defineConfig({
 		test: {
 			globals: true,
+			// Retry tests on failure to handle flaky browser tests due to race conditions
+			// in @storybook/addon-vitest + Playwright browser provider
+			retry: isCI ? 3 : 1,
+			testTimeout: isCI ? 30000 : 10000,
+			// Serialize file execution in CI to avoid "Vitest failed to find the runner" race condition
+			// when using Storybook + Vitest browser mode with Playwright
+			// Local development benefits from parallel execution for faster feedback
+			fileParallelism: !isCI,
 			projects: [
 				{
 					extends: true,
@@ -59,7 +70,7 @@ export function createStorybookVitestConfig(
 					...(opts.additionalCoverageExclude ?? []),
 				],
 			},
-      // Disable watch mode and isolate tests when running Storybook tests to reduce file watchers and improve stability
+			// Disable watch mode and isolate tests when running Storybook tests to reduce file watchers and improve stability
 			watch: false, //disables file watching, which reduces the number of file watchers and resource usage
 			isolate: true, // ensures each test file runs in its own process, improving test stability and preventing state leakage
 		},

@@ -5,7 +5,7 @@ import { RequestsTableContainer } from './requests-table.container.tsx';
 import { useState } from 'react';
 import styles from './my-listings-dashboard.module.css';
 
-export interface MyListingsDashboardProps {
+interface MyListingsDashboardProps {
 	onCreateListing: () => void;
 	requestsCount: number;
 }
