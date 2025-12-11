@@ -6,5 +6,14 @@ export default defineConfig({
 		environment: 'node',
 		include: ['src/**/*.test.ts'],
 		exclude: ['../../**/*.md', '../../**/*.stories.*', '../../**/*.config.*'],
+		coverage: {
+			provider: 'v8',
+			reporter: ['text', 'json', 'html', 'lcov'],
+			exclude: [
+				'node_modules/',
+				'dist/',
+				'**/*.d.ts',
+			],
+		},
 	},
 });
