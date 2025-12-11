@@ -233,7 +233,6 @@ stages:
             export TURBO_SCM_BASE="origin/$(System.PullRequest.TargetBranch)"
             pnpm run test:coverage --affected --force
             pnpm run merge-lcov-reports
-            pnpm run filter-lcov-reports
           else
             echo "Testing all packages (main branch build)..."
             export TURBO_SCM_BASE="HEAD~1"
