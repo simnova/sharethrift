@@ -23,6 +23,8 @@ A modern, community‑driven platform designed to reduce waste and enable the sh
 
 <a href="https://developers.sharethrift.com/docs/intro">Getting Started</a>: Our Docusaurus website will help you get started in running and contributing to ShareThrift.
 
+Note: SonarCloud badges reference the `simnova_sharethrift-data-access` project configured in `sonar-project.properties` for monorepo analysis.
+
 ShareThrift is a web‑based peer‑to‑peer sharing platform that enables people and organizations to lend, borrow, or offer items, services, and classes. Inspired by platforms like Turo, Airbnb, and Facebook Marketplace — but built specifically for the sharing economy — ShareThrift provides a structured, trusted, and community-first way to exchange goods.
 
 ### ShareThrift exists to:
@@ -112,14 +114,14 @@ documents/        # BRD, SRD, ADRs, architecture diagrams
 
 ## 🛠 Tech Stack
 
-- Runtime: Node.js (per `.nvmrc`) / Azure Functions (v4.x)
-- Package Manager: pnpm (v10.x) 
-- Language: TypeScript (strict config) (v5.x)
-- API: Apollo GraphQL (v16.x)
-- Persistence: MongoDB (Mongoose) (v8.x); Cosmos MongoDB target in cloud
-- Infra as Code: Bicep modules (iac)
-- Tooling: Turborepo (v2.x), Vitest (v3.x), Biome (v2.x), SonarQube (v4.x), Sourcery
-- Local Azure Emulation: Azurite (blob/queue) (v3.x)
+- Runtime: Node.js (per `.nvmrc`) / Azure Functions
+- Package Manager: pnpm (see `package.json`)
+- Language: TypeScript (strict config)
+- API: Apollo GraphQL
+- Persistence: MongoDB (Mongoose); Cosmos MongoDB target in cloud
+- Infra as Code: Bicep modules (`iac/`)
+- Tooling: Turborepo, Vitest, Biome, SonarQube, Sourcery
+- Local Azure Emulation: Azurite (blob/queue)
 - Observability: OpenTelemetry + Azure Monitor integration
 - Quality Gates: Sonar + coverage thresholds per package
 
