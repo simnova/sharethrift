@@ -1,6 +1,10 @@
 import type { ReservationRequestState } from '../../../../../generated.tsx';
 
-type ReservationActionStatus =
+/**
+ * Canonical status type for reservation UI components.
+ * Reuse this type across all reservation-related components to avoid status drift.
+ */
+export type ReservationActionStatus =
 	| 'ACCEPTED'
 	| 'REQUESTED'
 	| 'REJECTED'

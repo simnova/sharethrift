@@ -21,7 +21,21 @@ export interface SettingsUser {
 	createdAt: string;
 }
 
-// Type for section form values - union of all possible form value shapes
+/**
+ * Type for section form values - union of all possible form value shapes.
+ * 
+ * Note: This is a wide bag of optionals for flexibility. For improved type safety,
+ * consider migrating to a discriminated union pattern where each section has its own
+ * strongly-typed values interface:
+ * 
+ * type SectionFormData =
+ *   | { section: 'profile'; values: { firstName?: string; lastName?: string; ... } }
+ *   | { section: 'location'; values: { address1?: string; city?: string; ... } }
+ *   | ...
+ * 
+ * This would make buildNextProfile/save handlers safer by preventing accidental
+ * reliance on undefined fields.
+ */
 export type SectionFormValues = {
 	firstName?: string;
 	lastName?: string;

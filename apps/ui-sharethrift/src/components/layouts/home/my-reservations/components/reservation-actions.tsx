@@ -1,9 +1,10 @@
 import type React from 'react';
 import { Space } from 'antd';
 import { ReservationActionButton } from './reservation-action-button.tsx';
+import type { ReservationActionStatus } from '../utils/reservation-status.utils.ts';
 
 interface ReservationActionsProps {
-	status: 'REQUESTED' | 'ACCEPTED' | 'REJECTED' | 'CLOSED' | 'CANCELLED';
+	status: ReservationActionStatus;
 	onCancel?: () => void;
 	onClose?: () => void;
 	onMessage?: () => void;
