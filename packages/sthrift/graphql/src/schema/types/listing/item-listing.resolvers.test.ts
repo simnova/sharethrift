@@ -723,7 +723,8 @@ test.for(feature, ({ Scenario }) => {
 				reservationPeriod: string;
 				status: string;
 				pendingRequestsCount: number;
-			}			let mappedItems: MappedListing[] = [];
+			};
+			let mappedItems: MappedListing[] = [];
 
 			Given('a valid result from queryPaged', () => {
 				context = makeMockGraphContext();
