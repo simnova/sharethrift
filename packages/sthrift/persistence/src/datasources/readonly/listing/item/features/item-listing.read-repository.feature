@@ -72,3 +72,7 @@ Given an ItemListingReadRepository instance with models and passport
 	Scenario: Getting listings by invalid sharer ID
 		When I call getBySharer with invalid ObjectId
 		Then I should receive empty array due to error
+
+	Scenario: Getting paged listings when count query returns null
+		When I call getPaged and count query returns null
+		Then I should receive result with total 0

@@ -314,3 +314,346 @@ export const WithFullLocation: Story = {
 		}
 	},
 };
+
+// Test cases to improve coverage of handleSaveSection and related functions
+export const WithProfileUpdate: Story = {
+	parameters: {
+		apolloClient: {
+			mocks: [
+				{
+					request: {
+						query: HomeAccountSettingsViewContainerCurrentUserDocument,
+					},
+					result: {
+						data: {
+							currentUser: mockPersonalUser,
+						},
+					},
+				},
+				{
+					request: {
+						query: HomeAccountSettingsViewContainerUpdatePersonalUserDocument,
+						variables: () => true,
+					},
+					maxUsageCount: Number.POSITIVE_INFINITY,
+					result: {
+						data: {
+							personalUserUpdate: {
+								__typename: 'PersonalUserMutationResult',
+								status: {
+									__typename: 'MutationStatus',
+									success: true,
+									errorMessage: null,
+								},
+							},
+						},
+					},
+				},
+			],
+		},
+	},
+};
+
+export const WithLocationUpdate: Story = {
+	parameters: {
+		apolloClient: {
+			mocks: [
+				{
+					request: {
+						query: HomeAccountSettingsViewContainerCurrentUserDocument,
+					},
+					result: {
+						data: {
+							currentUser: mockPersonalUser,
+						},
+					},
+				},
+				{
+					request: {
+						query: HomeAccountSettingsViewContainerUpdatePersonalUserDocument,
+						variables: () => true,
+					},
+					maxUsageCount: Number.POSITIVE_INFINITY,
+					result: {
+						data: {
+							personalUserUpdate: {
+								__typename: 'PersonalUserMutationResult',
+								status: {
+									__typename: 'MutationStatus',
+									success: true,
+									errorMessage: null,
+								},
+							},
+						},
+					},
+				},
+			],
+		},
+	},
+};
+
+export const WithBillingUpdate: Story = {
+	parameters: {
+		apolloClient: {
+			mocks: [
+				{
+					request: {
+						query: HomeAccountSettingsViewContainerCurrentUserDocument,
+					},
+					result: {
+						data: {
+							currentUser: mockPersonalUser,
+						},
+					},
+				},
+				{
+					request: {
+						query: HomeAccountSettingsViewContainerUpdatePersonalUserDocument,
+						variables: () => true,
+					},
+					maxUsageCount: Number.POSITIVE_INFINITY,
+					result: {
+						data: {
+							personalUserUpdate: {
+								__typename: 'PersonalUserMutationResult',
+								status: {
+									__typename: 'MutationStatus',
+									success: true,
+									errorMessage: null,
+								},
+							},
+						},
+					},
+				},
+			],
+		},
+	},
+};
+
+export const WithPlanUpdate: Story = {
+	parameters: {
+		apolloClient: {
+			mocks: [
+				{
+					request: {
+						query: HomeAccountSettingsViewContainerCurrentUserDocument,
+					},
+					result: {
+						data: {
+							currentUser: mockPersonalUser,
+						},
+					},
+				},
+				{
+					request: {
+						query: HomeAccountSettingsViewContainerUpdatePersonalUserDocument,
+						variables: () => true,
+					},
+					maxUsageCount: Number.POSITIVE_INFINITY,
+					result: {
+						data: {
+							personalUserUpdate: {
+								__typename: 'PersonalUserMutationResult',
+								status: {
+									__typename: 'MutationStatus',
+									success: true,
+									errorMessage: null,
+								},
+							},
+						},
+					},
+				},
+			],
+		},
+	},
+};
+
+export const AdminUserUpdateProfile: Story = {
+	parameters: {
+		apolloClient: {
+			mocks: [
+				{
+					request: {
+						query: HomeAccountSettingsViewContainerCurrentUserDocument,
+					},
+					result: {
+						data: {
+							currentUser: mockAdminUser,
+						},
+					},
+				},
+				{
+					request: {
+						query: HomeAccountSettingsViewContainerUpdateAdminUserDocument,
+						variables: () => true,
+					},
+					maxUsageCount: Number.POSITIVE_INFINITY,
+					result: {
+						data: {
+							adminUserUpdate: {
+								__typename: 'AdminUserMutationResult',
+								status: {
+									__typename: 'MutationStatus',
+									success: true,
+									errorMessage: null,
+								},
+							},
+						},
+					},
+				},
+			],
+		},
+	},
+};
+
+export const AdminUserUpdateLocation: Story = {
+	parameters: {
+		apolloClient: {
+			mocks: [
+				{
+					request: {
+						query: HomeAccountSettingsViewContainerCurrentUserDocument,
+					},
+					result: {
+						data: {
+							currentUser: mockAdminUser,
+						},
+					},
+				},
+				{
+					request: {
+						query: HomeAccountSettingsViewContainerUpdateAdminUserDocument,
+						variables: () => true,
+					},
+					maxUsageCount: Number.POSITIVE_INFINITY,
+					result: {
+						data: {
+							adminUserUpdate: {
+								__typename: 'AdminUserMutationResult',
+								status: {
+									__typename: 'MutationStatus',
+									success: true,
+									errorMessage: null,
+								},
+							},
+						},
+					},
+				},
+			],
+		},
+	},
+};
+
+export const AdminUserCannotEditPlan: Story = {
+	parameters: {
+		apolloClient: {
+			mocks: [
+				{
+					request: {
+						query: HomeAccountSettingsViewContainerCurrentUserDocument,
+					},
+					result: {
+						data: {
+							currentUser: mockAdminUser,
+						},
+					},
+				},
+			],
+		},
+	},
+};
+
+export const AdminUserCannotEditBilling: Story = {
+	parameters: {
+		apolloClient: {
+			mocks: [
+				{
+					request: {
+						query: HomeAccountSettingsViewContainerCurrentUserDocument,
+					},
+					result: {
+						data: {
+							currentUser: mockAdminUser,
+						},
+					},
+				},
+			],
+		},
+	},
+};
+
+export const PersonalUserUpdateFailed: Story = {
+	parameters: {
+		apolloClient: {
+			mocks: [
+				{
+					request: {
+						query: HomeAccountSettingsViewContainerCurrentUserDocument,
+					},
+					result: {
+						data: {
+							currentUser: mockPersonalUser,
+						},
+					},
+				},
+				{
+					request: {
+						query: HomeAccountSettingsViewContainerUpdatePersonalUserDocument,
+						variables: () => true,
+					},
+					maxUsageCount: Number.POSITIVE_INFINITY,
+					result: {
+						data: {
+							personalUserUpdate: {
+								__typename: 'PersonalUserMutationResult',
+								status: {
+									__typename: 'MutationStatus',
+									success: false,
+									errorMessage: 'Update failed',
+								},
+							},
+						},
+					},
+				},
+			],
+		},
+	},
+};
+
+export const AdminUserUpdateFailed: Story = {
+	parameters: {
+		apolloClient: {
+			mocks: [
+				{
+					request: {
+						query: HomeAccountSettingsViewContainerCurrentUserDocument,
+					},
+					result: {
+						data: {
+							currentUser: mockAdminUser,
+						},
+					},
+				},
+				{
+					request: {
+						query: HomeAccountSettingsViewContainerUpdateAdminUserDocument,
+						variables: () => true,
+					},
+					maxUsageCount: Number.POSITIVE_INFINITY,
+					result: {
+						data: {
+							adminUserUpdate: {
+								__typename: 'AdminUserMutationResult',
+								status: {
+									__typename: 'MutationStatus',
+									success: false,
+									errorMessage: 'Admin update failed',
+								},
+							},
+						},
+					},
+				},
+			],
+		},
+	},
+};

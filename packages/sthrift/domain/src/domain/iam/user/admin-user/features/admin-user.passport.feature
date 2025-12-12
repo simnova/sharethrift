@@ -26,3 +26,13 @@ Feature: AdminUserPassport
     When I create an AdminUserPassport with a valid admin user
     And I access the reservationRequest property
     Then I should receive an AdminUserReservationRequestPassport instance
+
+  Scenario: Accessing the appeal request passport
+    When I create an AdminUserPassport with a valid admin user
+    And I access the appealRequest property
+    Then I should receive an AdminUserAppealRequestPassport instance
+
+  Scenario: Accessing the account plan passport throws not implemented error
+    When I create an AdminUserPassport with a valid admin user
+    And I access the accountPlan property
+    Then an error should be thrown with message "Method not implemented."

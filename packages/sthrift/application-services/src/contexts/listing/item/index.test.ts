@@ -21,12 +21,13 @@ import { cancel } from './cancel.ts';
 import { queryPaged } from './query-paged.ts';
 import { update } from './update.ts';
 
+const test = { for: describeFeature };
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const feature = await loadFeature(
 	path.resolve(__dirname, './features/index.feature'),
 );
 
-describeFeature(feature, ({ Scenario, BeforeEachScenario }) => {
+test.for(feature, ({ Scenario, BeforeEachScenario }) => {
 	// biome-ignore lint/suspicious/noExplicitAny: Test mock variable
 	let service: any;
 	let mockDataSources: DataSources;

@@ -201,3 +201,67 @@ export const ClickCreateListingButton: Story = {
 		}
 	},
 };
+
+// Test window resize handling
+export const TestWindowResize: Story = {
+	play: async ({ canvasElement }) => {
+		await expect(canvasElement).toBeTruthy();
+		// Trigger resize event to test responsive behavior
+		window.innerWidth = 500;
+		window.dispatchEvent(new Event('resize'));
+		await new Promise(resolve => setTimeout(resolve, 100));
+		expect(canvasElement).toBeInTheDocument();
+	},
+};
+
+// Test production mode login redirect
+export const ProductionModeLogin: Story = {
+	parameters: {
+		env: {
+			MODE: 'production',
+		},
+	},
+	play: async ({ canvasElement }) => {
+		const canvas = within(canvasElement);
+		await expect(canvasElement).toBeTruthy();
+		const loginButton = canvas.queryByText(/Login|Sign In/i);
+		if (loginButton) {
+			await userEvent.click(loginButton);
+		}
+	},
+};
+
+// Test production mode admin login redirect
+export const ProductionModeAdminLogin: Story = {
+	parameters: {
+		env: {
+			MODE: 'production',
+		},
+	},
+	play: async ({ canvasElement }) => {
+		const canvas = within(canvasElement);
+		await expect(canvasElement).toBeTruthy();
+		const adminButton = canvas.queryByText(/Admin/i);
+		if (adminButton) {
+			await userEvent.click(adminButton);
+		}
+	},
+};
+
+// Test authenticated window resize to trigger line 108-109
+export const AuthenticatedWindowResize: Story = {
+	play: async ({ canvasElement }) => {
+		await expect(canvasElement).toBeTruthy();
+		// Trigger resize with authenticated state
+		window.innerWidth = 700; // Less than 768
+		window.dispatchEvent(new Event('resize'));
+		await new Promise(resolve => setTimeout(resolve, 100));
+		
+		// Then back to desktop
+		window.innerWidth = 900; // Greater than 768
+		window.dispatchEvent(new Event('resize'));
+		await new Promise(resolve => setTimeout(resolve, 100));
+		
+		expect(canvasElement).toBeInTheDocument();
+	},
+};

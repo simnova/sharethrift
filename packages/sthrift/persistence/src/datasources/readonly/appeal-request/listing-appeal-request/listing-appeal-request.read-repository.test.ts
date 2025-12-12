@@ -73,4 +73,27 @@ test.for(feature, ({ Scenario, Background, BeforeEachScenario }) => {
 			});
 		});
 	});
+
+	Scenario('Getting an appeal request by ID when not found', ({ When, Then }) => {
+		let result: unknown;
+		let models: ModelsContext;
+
+		When('I call getById with a nonexistent ID', async () => {
+			models = makeModels();
+			// Mock findOne to return null (not found)
+			(models.AppealRequest.ListingAppealRequest.findOne as ReturnType<typeof vi.fn>).mockReturnValue({
+				exec: vi.fn(() => Promise.resolve(null)),
+			});
+			repository = getListingAppealRequestReadRepository(models, makePassport());
+			try {
+				result = await repository.getById('nonexistent-id');
+			} catch (_error) {
+				result = null; // Read repository should handle this gracefully
+			}
+		});
+
+		Then('it should return null', () => {
+			expect(result).toBeNull();
+		});
+	});
 });

@@ -79,16 +79,14 @@ export class ConversationRepository
 		
 		const adapter = this.typeConverter.toAdapter(newDoc);
 		
-		return Promise.resolve(
-			Domain.Contexts.Conversation.Conversation.Conversation.getNewInstance(
-				adapter,
-				sharer,
-				reserver,
-				listing,
-				[], // Empty messages array for new conversations
-				messagingConversationId,
-				this.passport,
-			),
+		return Domain.Contexts.Conversation.Conversation.Conversation.getNewInstance(
+			adapter,
+			sharer,
+			reserver,
+			listing,
+			[], // Empty messages array for new conversations
+			messagingConversationId,
+			this.passport,
 		);
 	}
 }

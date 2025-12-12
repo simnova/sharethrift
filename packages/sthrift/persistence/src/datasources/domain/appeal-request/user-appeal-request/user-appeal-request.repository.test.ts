@@ -100,6 +100,14 @@ test.for(feature, ({ Scenario, Background, BeforeEachScenario }) => {
 		'Getting a user appeal request by a nonexistent ID',
 		({ When, Then }) => {
 			When('I call getById with "nonexistent-id"', async () => {
+				// Mock to return null for nonexistent ID
+			const mockModel = repository['model'] as unknown as {
+					findOne: ReturnType<typeof vi.fn>;
+				};
+				mockModel.findOne = vi.fn(() => ({
+					exec: vi.fn(() => Promise.resolve(null)),
+				}));
+
 				try {
 					result = await repository.getById('nonexistent-id');
 				} catch (error) {
@@ -110,7 +118,8 @@ test.for(feature, ({ Scenario, Background, BeforeEachScenario }) => {
 			Then(
 				'an error should be thrown indicating the user appeal request was not found',
 				() => {
-					expect(result).toBeDefined();
+					expect(result).toBeInstanceOf(Error);
+					expect((result as Error).message).toContain('not found');
 				},
 			);
 		},

@@ -8,6 +8,11 @@ And valid PersonalUser documents exist in the database
 		When I call getAll
 		Then I should receive an array of PersonalUser domain objects
 
+	Scenario: Getting all personal users with no results
+		Given no PersonalUser documents exist in the database
+		When I call getAll
+		Then I should receive an empty array
+
 	Scenario: Getting all users with pagination
 		Given multiple PersonalUser documents exist in the database
 		When I call getAllUsers with page 1 and pageSize 10

@@ -157,3 +157,269 @@ export const Loading: Story = {
 		await expect(canvasElement).toBeTruthy();
 	},
 };
+
+export const UserError: Story = {
+	parameters: {
+		apolloClient: {
+			mocks: [
+				{
+					request: {
+						query: ViewListingCurrentUserDocument,
+					},
+					error: new Error('Failed to load user'),
+				},
+			],
+		},
+	},
+	play: async ({ canvasElement }) => {
+		await expect(canvasElement).toBeTruthy();
+	},
+};
+
+export const ReservationsError: Story = {
+	parameters: {
+		apolloClient: {
+			mocks: [
+				{
+					request: {
+						query: ViewListingCurrentUserDocument,
+					},
+					result: {
+						data: {
+							currentUser: mockUser,
+						},
+					},
+				},
+				{
+					request: {
+						query: HomeMyReservationsReservationsViewActiveContainerActiveReservationsDocument,
+						variables: { userId: 'user-1' },
+					},
+					error: new Error('Failed to load reservations'),
+				},
+			],
+		},
+	},
+	play: async ({ canvasElement }) => {
+		await expect(canvasElement).toBeTruthy();
+	},
+};
+
+export const NoUserId: Story = {
+	parameters: {
+		apolloClient: {
+			mocks: [
+				{
+					request: {
+						query: ViewListingCurrentUserDocument,
+					},
+					result: {
+						data: {
+							currentUser: null,
+						},
+					},
+				},
+			],
+		},
+	},
+	play: async ({ canvasElement }) => {
+		await expect(canvasElement).toBeTruthy();
+	},
+};
+
+export const CancelSuccess: Story = {
+	parameters: {
+		apolloClient: {
+			mocks: [
+				{
+					request: {
+						query: ViewListingCurrentUserDocument,
+					},
+					result: {
+						data: {
+							currentUser: mockUser,
+						},
+					},
+				},
+				{
+					request: {
+						query: HomeMyReservationsReservationsViewActiveContainerActiveReservationsDocument,
+						variables: { userId: 'user-1' },
+					},
+					result: {
+						data: {
+							myActiveReservations: mockActiveReservations,
+						},
+					},
+				},
+				{
+					request: {
+						query: HomeMyReservationsReservationsViewActiveContainerCancelReservationDocument,
+						variables: () => true,
+					},
+					result: {
+						data: {
+							cancelReservation: { __typename: 'ReservationRequest', id: '1' },
+						},
+					},
+				},
+			],
+		},
+	},
+	play: async ({ canvasElement }) => {
+		await expect(canvasElement).toBeTruthy();
+	},
+};
+
+export const CancelError: Story = {
+	parameters: {
+		apolloClient: {
+			mocks: [
+				{
+					request: {
+						query: ViewListingCurrentUserDocument,
+					},
+					result: {
+						data: {
+							currentUser: mockUser,
+						},
+					},
+				},
+				{
+					request: {
+						query: HomeMyReservationsReservationsViewActiveContainerActiveReservationsDocument,
+						variables: { userId: 'user-1' },
+					},
+					result: {
+						data: {
+							myActiveReservations: mockActiveReservations,
+						},
+					},
+				},
+				{
+					request: {
+						query: HomeMyReservationsReservationsViewActiveContainerCancelReservationDocument,
+						variables: () => true,
+					},
+					error: new Error('Failed to cancel reservation'),
+				},
+			],
+		},
+	},
+	play: async ({ canvasElement }) => {
+		await expect(canvasElement).toBeTruthy();
+	},
+};
+
+export const CloseSuccess: Story = {
+	parameters: {
+		apolloClient: {
+			mocks: [
+				{
+					request: {
+						query: ViewListingCurrentUserDocument,
+					},
+					result: {
+						data: {
+							currentUser: mockUser,
+						},
+					},
+				},
+				{
+					request: {
+						query: HomeMyReservationsReservationsViewActiveContainerActiveReservationsDocument,
+						variables: { userId: 'user-1' },
+					},
+					result: {
+						data: {
+							myActiveReservations: mockActiveReservations,
+						},
+					},
+				},
+				{
+					request: {
+						query: HomeMyReservationsReservationsViewActiveContainerCloseReservationDocument,
+						variables: () => true,
+					},
+					result: {
+						data: {
+							closeReservation: { __typename: 'ReservationRequest', id: '1' },
+						},
+					},
+				},
+			],
+		},
+	},
+	play: async ({ canvasElement }) => {
+		await expect(canvasElement).toBeTruthy();
+	},
+};
+
+export const CloseError: Story = {
+	parameters: {
+		apolloClient: {
+			mocks: [
+				{
+					request: {
+						query: ViewListingCurrentUserDocument,
+					},
+					result: {
+						data: {
+							currentUser: mockUser,
+						},
+					},
+				},
+				{
+					request: {
+						query: HomeMyReservationsReservationsViewActiveContainerActiveReservationsDocument,
+						variables: { userId: 'user-1' },
+					},
+					result: {
+						data: {
+							myActiveReservations: mockActiveReservations,
+						},
+					},
+				},
+				{
+					request: {
+						query: HomeMyReservationsReservationsViewActiveContainerCloseReservationDocument,
+						variables: () => true,
+					},
+					error: new Error('Failed to close reservation'),
+				},
+			],
+		},
+	},
+	play: async ({ canvasElement }) => {
+		await expect(canvasElement).toBeTruthy();
+	},
+};
+
+export const ReservationsLoading: Story = {
+	parameters: {
+		apolloClient: {
+			mocks: [
+				{
+					request: {
+						query: ViewListingCurrentUserDocument,
+					},
+					result: {
+						data: {
+							currentUser: mockUser,
+						},
+					},
+				},
+				{
+					request: {
+						query: HomeMyReservationsReservationsViewActiveContainerActiveReservationsDocument,
+						variables: { userId: 'user-1' },
+					},
+					delay: Infinity,
+				},
+			],
+		},
+	},
+	play: async ({ canvasElement }) => {
+		await expect(canvasElement).toBeTruthy();
+	},
+};

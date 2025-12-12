@@ -69,3 +69,35 @@ export const TypingSearch: Story = {
 		expect(args.setSelectedKeys).toHaveBeenCalled();
 	},
 };
+
+export const SearchWithEnter: Story = {
+	args: {
+		searchText: '',
+		selectedKeys: [],
+		setSelectedKeys: fn(),
+		onSearch: fn(),
+		confirm: fn(),
+	},
+	play: async ({ canvasElement, args }) => {
+		const canvas = within(canvasElement);
+		const input = canvas.getByPlaceholderText('Search listings');
+		await userEvent.type(input, 'tent');
+		await userEvent.keyboard('{Enter}');
+		expect(args.confirm).toHaveBeenCalled();
+		expect(args.onSearch).toHaveBeenCalled();
+	},
+};
+
+export const ClearSearch: Story = {
+	args: {
+		searchText: 'existing search',
+		selectedKeys: ['existing search'],
+		setSelectedKeys: fn(),
+	},
+	play: async ({ canvasElement, args }) => {
+		const canvas = within(canvasElement);
+		const input = canvas.getByPlaceholderText('Search listings');
+		await userEvent.clear(input);
+		expect(args.setSelectedKeys).toHaveBeenCalledWith([]);
+	},
+};

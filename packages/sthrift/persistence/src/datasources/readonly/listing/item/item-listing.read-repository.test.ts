@@ -757,4 +757,69 @@ test.for(feature, ({ Scenario, Background, BeforeEachScenario }) => {
 			expect((result as unknown[]).length).toBe(0);
 		});
 	});
+
+	Scenario('Getting paged listings when count query returns null', ({ When, Then }) => {
+		let result: unknown;
+
+		When('I call getPaged and count query returns null', async () => {
+			const createItemsQuery = () => ({
+				populate: () => createItemsQuery(),
+				lean: () => createItemsQuery(),
+				skip: () => createItemsQuery(),
+				limit: () => createItemsQuery(),
+				sort: () => createItemsQuery(),
+				exec: async () => [],
+				// biome-ignore lint/suspicious/noThenProperty: Mongoose queries are thenable
+				then: (resolve: (v: unknown) => unknown) => Promise.resolve([]).then(resolve),
+			});
+
+			const createCountQuery = () => ({
+				populate: () => createCountQuery(),
+				lean: () => createCountQuery(),
+				skip: () => createCountQuery(),
+				limit: () => createCountQuery(),
+				sort: () => createCountQuery(),
+				exec: async () => null,
+				// biome-ignore lint/suspicious/noThenProperty: Mongoose queries are thenable
+				then: (resolve: (v: unknown) => unknown) => Promise.resolve(null).then(resolve),
+			});
+
+			let callCount = 0;
+			// First call returns items query (with skip/limit/sort), second call returns count query (without options)
+			const mockModel = {
+				find: vi.fn((_query: unknown, options?: unknown) => {
+					callCount++;
+					// If options are provided (skip, limit, sort), it's the items query
+					if (options || callCount === 1) {
+						return createItemsQuery();
+					}
+					// Otherwise it's the count query
+					return createCountQuery();
+				}),
+			};
+
+			const mockModels = {
+				Listing: {
+					ItemListingModel: mockModel,
+				},
+			} as unknown as ModelsContext;
+
+			const mockPassport = {
+				user: {
+					forPersonalUser: () => ({ determineIf: () => true }),
+				},
+				listing: {
+					forItemListing: () => ({ determineIf: () => true }),
+				},
+			} as unknown as Domain.Passport;
+
+			repository = getItemListingReadRepository(mockModels, mockPassport);
+			result = await repository.getPaged({ page: 1, pageSize: 10 });
+		});
+
+		Then('I should receive result with total 0', () => {
+			expect(result).toHaveProperty('total', 0);
+			expect(result).toHaveProperty('items');
+		});
+	});
 });

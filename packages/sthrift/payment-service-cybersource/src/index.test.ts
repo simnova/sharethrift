@@ -4,10 +4,11 @@ import { describeFeature, loadFeature } from '@amiceli/vitest-cucumber';
 import { expect } from 'vitest';
 import { PaymentServiceCybersource } from './index.ts';
 
+const test = { for: describeFeature };
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const feature = await loadFeature(path.resolve(__dirname, 'payment-service-cybersource.feature'));
 
-describeFeature(feature, ({ Scenario, BeforeEachScenario }) => {
+test.for(feature, ({ Scenario, BeforeEachScenario }) => {
   let service: PaymentServiceCybersource;
   let error: unknown;
 

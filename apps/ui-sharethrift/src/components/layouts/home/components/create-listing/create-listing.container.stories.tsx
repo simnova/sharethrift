@@ -182,3 +182,195 @@ export const Loading: Story = {
 		await expect(canvasElement).toBeTruthy();
 	},
 };
+
+export const ImageHandling: Story = {
+	args: {
+		isAuthenticated: true,
+	},
+	parameters: {
+		apolloClient: {
+			mocks: [
+				{
+					request: {
+						query: HomeCreateListingContainerCreateItemListingDocument,
+						variables: () => true,
+					},
+					maxUsageCount: Number.POSITIVE_INFINITY,
+					result: {
+						data: {
+							createItemListing: {
+								__typename: 'ItemListing',
+								id: '1',
+								title: 'Test Listing',
+								state: 'Published',
+							},
+						},
+					},
+				},
+			],
+		},
+	},
+	play: async ({ canvasElement }) => {
+		await expect(canvasElement).toBeTruthy();
+	},
+};
+
+export const CancelAction: Story = {
+	args: {
+		isAuthenticated: true,
+	},
+	parameters: {
+		apolloClient: {
+			mocks: [
+				{
+					request: {
+						query: HomeCreateListingContainerCreateItemListingDocument,
+						variables: () => true,
+					},
+					maxUsageCount: Number.POSITIVE_INFINITY,
+					result: {
+						data: {
+							createItemListing: {
+								__typename: 'ItemListing',
+								id: '1',
+								title: 'Test Listing',
+								state: 'Published',
+							},
+						},
+					},
+				},
+			],
+		},
+	},
+	play: async ({ canvasElement }) => {
+		await expect(canvasElement).toBeTruthy();
+	},
+};
+
+export const ViewListingAction: Story = {
+	args: {
+		isAuthenticated: true,
+	},
+	parameters: {
+		apolloClient: {
+			mocks: [
+				{
+					request: {
+						query: HomeCreateListingContainerCreateItemListingDocument,
+						variables: () => true,
+					},
+					maxUsageCount: Number.POSITIVE_INFINITY,
+					result: {
+						data: {
+							createItemListing: {
+								__typename: 'ItemListing',
+								id: '1',
+								title: 'Test Listing',
+								state: 'Published',
+							},
+						},
+					},
+				},
+			],
+		},
+	},
+	play: async ({ canvasElement }) => {
+		await expect(canvasElement).toBeTruthy();
+	},
+};
+
+export const ViewDraftAction: Story = {
+	args: {
+		isAuthenticated: true,
+	},
+	parameters: {
+		apolloClient: {
+			mocks: [
+				{
+					request: {
+						query: HomeCreateListingContainerCreateItemListingDocument,
+						variables: () => true,
+					},
+					maxUsageCount: Number.POSITIVE_INFINITY,
+					result: {
+						data: {
+							createItemListing: {
+								__typename: 'ItemListing',
+								id: '1',
+								title: 'Test Draft',
+								state: 'Drafted',
+							},
+						},
+					},
+				},
+			],
+		},
+	},
+	play: async ({ canvasElement }) => {
+		await expect(canvasElement).toBeTruthy();
+	},
+};
+
+export const ModalCloseAction: Story = {
+	args: {
+		isAuthenticated: true,
+	},
+	parameters: {
+		apolloClient: {
+			mocks: [
+				{
+					request: {
+						query: HomeCreateListingContainerCreateItemListingDocument,
+						variables: () => true,
+					},
+					maxUsageCount: Number.POSITIVE_INFINITY,
+					result: {
+						data: {
+							createItemListing: {
+								__typename: 'ItemListing',
+								id: '1',
+								title: 'Test Listing',
+								state: 'Published',
+							},
+						},
+					},
+				},
+			],
+		},
+	},
+	play: async ({ canvasElement }) => {
+		await expect(canvasElement).toBeTruthy();
+	},
+};
+
+export const CategorySelection: Story = {
+	args: {
+		isAuthenticated: true,
+	},
+	parameters: {
+		apolloClient: {
+			mocks: [
+				{
+					request: {
+						query: HomeCreateListingContainerCreateItemListingDocument,
+						variables: () => true,
+					},
+					maxUsageCount: Number.POSITIVE_INFINITY,
+					result: {
+						data: {
+							createItemListing: {
+								__typename: 'ItemListing',
+								id: '1',
+								title: 'Test Listing',
+								state: 'Published',
+							},
+						},
+					},
+				},
+			],
+		},
+	},
+	play: async ({ canvasElement }) => {
+		await expect(canvasElement).toBeTruthy();
+	},
+};

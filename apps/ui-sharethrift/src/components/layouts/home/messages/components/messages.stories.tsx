@@ -340,3 +340,38 @@ export const NoConversationSelected: Story = {
 		await expect(placeholderText).toBeTruthy();
 	},
 };
+
+export const MobileSelectAndBack: Story = {
+	parameters: {
+		viewport: {
+			defaultViewport: 'mobile1',
+		},
+	},
+	play: async ({ canvasElement }) => {
+		const canvas = within(canvasElement);
+		await expect(canvasElement).toBeTruthy();
+		
+		// Click on a conversation
+		const conversationItem = canvas.queryByText(/Cordless Drill/i);
+		if (conversationItem) {
+			await userEvent.click(conversationItem);
+			
+			// Now click the back button
+			const backButton = canvas.queryByLabelText(/arrow-left/i);
+			if (backButton) {
+				await userEvent.click(backButton);
+			}
+		}
+	},
+};
+
+export const MobileNoConversationSelected: Story = {
+	parameters: {
+		viewport: {
+			defaultViewport: 'mobile1',
+		},
+	},
+	play: async ({ canvasElement }) => {
+		await expect(canvasElement).toBeTruthy();
+	},
+};

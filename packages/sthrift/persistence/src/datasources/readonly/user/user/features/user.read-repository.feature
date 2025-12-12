@@ -30,3 +30,6 @@ Feature: UserReadRepository
   Scenario: Getting a user by email that does not exist
     When I call getByEmail with a non-existent user email
     Then I should receive null
+  Scenario: Converting a user with unknown userType
+    When toDomain is called with an unknown userType
+    Then it should return null

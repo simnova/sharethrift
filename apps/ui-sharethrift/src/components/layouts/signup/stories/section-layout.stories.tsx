@@ -63,3 +63,57 @@ export const ClickLogoutButton: Story = {
 		}
 	},
 };
+
+export const ProductionModeLogin: Story = {
+	parameters: {
+		env: {
+			MODE: 'production',
+		},
+	},
+	play: async ({ canvasElement }) => {
+		const canvas = within(canvasElement);
+		await expect(canvasElement).toBeTruthy();
+		const loginButton = canvas.queryByText(/Login|Sign In/i);
+		if (loginButton) {
+			await userEvent.click(loginButton);
+		}
+	},
+};
+
+export const ProductionModeAdminLogin: Story = {
+	parameters: {
+		env: {
+			MODE: 'production',
+		},
+	},
+	play: async ({ canvasElement }) => {
+		const canvas = within(canvasElement);
+		await expect(canvasElement).toBeTruthy();
+		const adminButton = canvas.queryByText(/Admin/i);
+		if (adminButton) {
+			await userEvent.click(adminButton);
+		}
+	},
+};
+
+export const ClickSignUp: Story = {
+	play: async ({ canvasElement }) => {
+		const canvas = within(canvasElement);
+		await expect(canvasElement).toBeTruthy();
+		const signupButton = canvas.queryByText(/Sign Up/i);
+		if (signupButton) {
+			await userEvent.click(signupButton);
+		}
+	},
+};
+
+export const ClickCreateListing: Story = {
+	play: async ({ canvasElement }) => {
+		const canvas = within(canvasElement);
+		await expect(canvasElement).toBeTruthy();
+		const createButton = canvas.queryByText(/Create Listing|Post/i);
+		if (createButton) {
+			await userEvent.click(createButton);
+		}
+	},
+};

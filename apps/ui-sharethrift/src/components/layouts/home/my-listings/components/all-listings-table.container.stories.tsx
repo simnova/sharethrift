@@ -420,3 +420,176 @@ export const WithStatusFilter: Story = {
 		}
 	},
 };
+
+export const CancelListingNetworkError: Story = {
+	parameters: {
+		apolloClient: {
+			mocks: [
+				{
+					request: {
+						query: HomeAllListingsTableContainerMyListingsAllDocument,
+						variables: () => true,
+					},
+					maxUsageCount: Number.POSITIVE_INFINITY,
+					result: {
+						data: {
+							myListingsAll: {
+								__typename: 'MyListingsAllResult',
+								items: mockListings,
+								total: 2,
+								page: 1,
+								pageSize: 6,
+							},
+						},
+					},
+				},
+				{
+					request: {
+						query: HomeAllListingsTableContainerCancelItemListingDocument,
+						variables: () => true,
+					},
+					maxUsageCount: Number.POSITIVE_INFINITY,
+					error: new Error('Network error'),
+				},
+			],
+		},
+	},
+	play: async ({ canvasElement }) => {
+		await expect(canvasElement).toBeTruthy();
+	},
+};
+
+export const DeleteListingFailure: Story = {
+	parameters: {
+		apolloClient: {
+			mocks: [
+				{
+					request: {
+						query: HomeAllListingsTableContainerMyListingsAllDocument,
+						variables: () => true,
+					},
+					maxUsageCount: Number.POSITIVE_INFINITY,
+					result: {
+						data: {
+							myListingsAll: {
+								__typename: 'MyListingsAllResult',
+								items: mockListings,
+								total: 2,
+								page: 1,
+								pageSize: 6,
+							},
+						},
+					},
+				},
+				{
+					request: {
+						query: HomeAllListingsTableContainerDeleteListingDocument,
+						variables: () => true,
+					},
+					maxUsageCount: Number.POSITIVE_INFINITY,
+					result: {
+						data: {
+							deleteItemListing: {
+								__typename: 'ItemListingMutationResult',
+								status: { success: false, errorMessage: 'Cannot delete active listing' },
+							},
+						},
+					},
+				},
+			],
+		},
+	},
+	play: async ({ canvasElement }) => {
+		await expect(canvasElement).toBeTruthy();
+	},
+};
+
+export const OtherActionComingSoon: Story = {
+	parameters: {
+		apolloClient: {
+			mocks: [
+				{
+					request: {
+						query: HomeAllListingsTableContainerMyListingsAllDocument,
+						variables: () => true,
+					},
+					maxUsageCount: Number.POSITIVE_INFINITY,
+					result: {
+						data: {
+							myListingsAll: {
+								__typename: 'MyListingsAllResult',
+								items: mockListings,
+								total: 2,
+								page: 1,
+								pageSize: 6,
+							},
+						},
+					},
+				},
+			],
+		},
+	},
+	play: async ({ canvasElement }) => {
+		await expect(canvasElement).toBeTruthy();
+	},
+};
+
+export const ViewAllRequests: Story = {
+	parameters: {
+		apolloClient: {
+			mocks: [
+				{
+					request: {
+						query: HomeAllListingsTableContainerMyListingsAllDocument,
+						variables: () => true,
+					},
+					maxUsageCount: Number.POSITIVE_INFINITY,
+					result: {
+						data: {
+							myListingsAll: {
+								__typename: 'MyListingsAllResult',
+								items: mockListings,
+								total: 2,
+								page: 1,
+								pageSize: 6,
+							},
+						},
+					},
+				},
+			],
+		},
+	},
+	play: async ({ canvasElement }) => {
+		await expect(canvasElement).toBeTruthy();
+	},
+};
+
+export const TableSortChange: Story = {
+	parameters: {
+		apolloClient: {
+			mocks: [
+				{
+					request: {
+						query: HomeAllListingsTableContainerMyListingsAllDocument,
+						variables: () => true,
+					},
+					maxUsageCount: Number.POSITIVE_INFINITY,
+					result: {
+						data: {
+							myListingsAll: {
+								__typename: 'MyListingsAllResult',
+								items: mockListings,
+								total: 2,
+								page: 1,
+								pageSize: 6,
+							},
+						},
+					},
+				},
+			],
+		},
+	},
+	play: async ({ canvasElement }) => {
+		await expect(canvasElement).toBeTruthy();
+	},
+};

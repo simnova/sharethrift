@@ -16,23 +16,24 @@ class BroadCaster {
 		this.eventEmitter = new EventEmitter();
 	}
 
-	public broadcast(event: string, data: unknown): void {
+	public broadcast(event: string, data: unknown): Promise<void> {
 		// Collect all listeners for the event
 		const listeners = this.eventEmitter.listeners(event) as Array<
 			(data: unknown) => Promise<void> | void
 		>;
-		// Fire and forget for each listener
-		for (const listener of listeners) {
-			void listener(data);
-		}
+		// Execute all listeners without blocking, handling both sync and async
+		const promises = listeners.map((listener) => Promise.resolve(listener(data)));
+		return Promise.allSettled(promises).then(() => undefined);
 	}
 	public on(
 		event: string,
 		listener: (rawPayload: unknown) => Promise<void> | void,
 	) {
 		this.eventEmitter.on(event, (data) => {
-			// Call the listener and ignore any returned Promise
-			void listener(data);
+			// Execute listener with proper error handling
+			Promise.resolve(listener(data)).catch((err) => {
+				console.error('Error in event listener:', err);
+			});
 		});
 	}
 

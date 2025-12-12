@@ -42,12 +42,10 @@ export class AccountPlanRepository<
 		};
 	}): Promise<Domain.Contexts.AccountPlan.AccountPlan.AccountPlan<PropType>> {
 		const adapter = this.typeConverter.toAdapter(new this.model());
-		return Promise.resolve(
-			Domain.Contexts.AccountPlan.AccountPlan.AccountPlan.getNewInstance(
-				adapter,
-				this.passport,
-				planInfo,
-			),
+		return Domain.Contexts.AccountPlan.AccountPlan.AccountPlan.getNewInstance(
+			adapter,
+			this.passport,
+			planInfo,
 		);
 	}
 

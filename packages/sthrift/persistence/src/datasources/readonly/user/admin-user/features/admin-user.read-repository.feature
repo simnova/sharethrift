@@ -8,6 +8,11 @@ Feature: AdminUser Read Repository Operations
     When I call getAll
     Then I should receive an array of AdminUser domain objects
 
+  Scenario: Getting all admin users with no results
+    Given no AdminUser documents exist in the database
+    When I call getAll
+    Then I should receive an empty array
+
   Scenario: Getting all users with pagination
     Given multiple AdminUser documents exist in the database
     When I call getAllUsers with page 1 and pageSize 10

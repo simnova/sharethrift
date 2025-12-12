@@ -12,10 +12,9 @@ Feature: ConversationDomainAdapter
     When I get the sharer property on a doc with no sharer
     Then an error should be thrown indicating sharer is not populated
 
-  # disabled for now for the current implementation causing runtime error related to population
-  # Scenario: Getting the sharer property when it is an ObjectId
-  #   When I get the sharer property on a doc with sharer as ObjectId
-  #   Then an error should be thrown indicating sharer is not populated or is not of the correct type
+  Scenario: Getting the sharer property when it is an ObjectId
+    When I get the sharer property on a doc with sharer as ObjectId
+    Then it should return a UserEntityReference with id
 
   Scenario: Setting the sharer property
     When I set the sharer property to a valid PersonalUserDomainAdapter
@@ -43,6 +42,14 @@ Feature: ConversationDomainAdapter
     When I get the reserver property
     Then it should return a PersonalUserEntityReference with the correct id
 
+  Scenario: Getting the reserver property when it is an ObjectId
+    When I get the reserver property on a doc with reserver as ObjectId
+    Then an error should be thrown indicating reserver is not populated or is not of the correct type
+
+  Scenario: Getting the listing property when not populated
+    When I get the listing property on a doc with no listing
+    Then an error should be thrown indicating listing is not populated
+
   Scenario: Loading reserver when already populated
     When I call loadReserver on an adapter with populated reserver
     Then it should return a PersonalUserEntityReference
@@ -50,6 +57,10 @@ Feature: ConversationDomainAdapter
   Scenario: Getting the listing property when populated
     When I get the listing property
     Then it should return an ItemListingDomainAdapter
+
+  Scenario: Getting the listing property when it is an ObjectId
+    When I get the listing property on a doc with listing as ObjectId
+    Then it should return an ItemListingEntityReference with id
 
   Scenario: Loading listing when already populated
     When I call loadListing on an adapter with populated listing
@@ -147,3 +158,7 @@ Feature: ConversationDomainAdapter
   Scenario: Setting messages property
     When I set the messages property to a list
     Then the messages property should be set correctly
+
+  Scenario: Loading listing when not populated
+    When I call loadListing on an adapter with no listing
+    Then an error should be thrown indicating listing is not populated in load
