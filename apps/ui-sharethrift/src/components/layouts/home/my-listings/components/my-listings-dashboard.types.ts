@@ -13,6 +13,7 @@ export interface ListingRequestData {
   title: string;
   image?: string | null;
   requestedBy: string;
+  requestedById?: string | null;
   requestedOn: string;
   reservationPeriod: string;
   status: string;
