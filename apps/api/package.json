@@ -39,7 +39,9 @@
 		"@sthrift/payment-service-cybersource": "workspace:*",
 		"@sthrift/service-mongoose": "workspace:*",
 		"@sthrift/service-otel": "workspace:*",
-		"@sthrift/service-token-validation": "workspace:*"
+		"@sthrift/service-token-validation": "workspace:*",
+		"@sthrift/messaging-service-twilio": "workspace:*",
+		"twilio": "^5.10.7"
 	},
 	"devDependencies": {
 		"@cellix/typescript-config": "workspace:*",

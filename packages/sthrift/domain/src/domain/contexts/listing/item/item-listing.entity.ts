@@ -17,10 +17,12 @@ export interface ItemListingProps extends DomainSeedwork.DomainEntityProps {
 	sharingHistory?: string[]; // Array of reservation/sharing IDs
 	reports?: number;
 	images?: string[]; // Array of image URLs
-	listingType: string;
+	// Note: Reserved status is calculated dynamically from ReservationRequest aggregates, not stored as state
+    listingType: string;
 }
 
 export interface ItemListingEntityReference
-	extends Readonly<Omit<ItemListingProps, 'sharer'>> {
+	extends Readonly<Omit<ItemListingProps, 'sharer' | 'loadSharer'>> {
 	readonly sharer: UserEntityReference;
+	loadSharer(): Promise<UserEntityReference>;
 }
