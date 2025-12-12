@@ -8,7 +8,7 @@ import {
 } from '../../../../../generated.tsx';
 import { RequestsTable } from './requests-table.tsx';
 
-export interface RequestsTableContainerProps {
+interface RequestsTableContainerProps {
 	currentPage: number;
 	onPageChange: (page: number) => void;
 	sharerId: string;

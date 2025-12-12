@@ -30,10 +30,8 @@
 		"@cellix/mongoose-seedwork": "workspace:*",
 		"@sthrift/data-sources-mongoose-models": "workspace:*",
 		"@sthrift/domain": "workspace:*",
-		"@sthrift/messaging-service-twilio": "workspace:*",
-		"bson": "^6.10.4",
-		"mongoose": "catalog:",
-		"mongodb": "catalog:"
+		"mongodb": "catalog:",
+		"mongoose": "catalog:"
 	},
 	"devDependencies": {
 		"@cellix/typescript-config": "workspace:*",

@@ -1,8 +1,6 @@
 import { useApolloClient, useMutation, useQuery } from '@apollo/client/react';
 import { message } from 'antd';
 import { useState } from 'react';
-// eslint-disable-next-line import/no-absolute-path, @typescript-eslint/ban-ts-comment
-// @ts-ignore - allow raw import string
 import {
 	type CreateReservationRequestInput,
 	HomeListingInformationCreateReservationRequestDocument,
