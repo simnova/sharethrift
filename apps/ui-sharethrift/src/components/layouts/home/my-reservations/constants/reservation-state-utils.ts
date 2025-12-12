@@ -7,12 +7,8 @@ export const INACTIVE_RESERVATION_STATES = [
 	'Rejected',
 ] as const;
 
-export type ActiveReservationState = (typeof ACTIVE_RESERVATION_STATES)[number];
-export type InactiveReservationState =
-	(typeof INACTIVE_RESERVATION_STATES)[number];
-export type ReservationState =
-	| ActiveReservationState
-	| InactiveReservationState;
+type ActiveReservationState = (typeof ACTIVE_RESERVATION_STATES)[number];
+type InactiveReservationState = (typeof INACTIVE_RESERVATION_STATES)[number];
 
 export function isActiveReservationState(state: string): boolean {
 	return ACTIVE_RESERVATION_STATES.includes(state as ActiveReservationState);

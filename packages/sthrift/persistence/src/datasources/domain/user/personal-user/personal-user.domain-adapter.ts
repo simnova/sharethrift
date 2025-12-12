@@ -81,7 +81,6 @@ export class PersonalUserDomainAdapter
 
 	get account() {
 		if (!this.doc.account) {
-			// this.doc.set('account', {}); 
       this.doc.account = {} as Models.User.PersonalUserAccount;
 		}
 		return new PersonalUserAccountDomainAdapter(this.doc.account);
@@ -96,7 +95,7 @@ export class PersonalUserDomainAdapter
 }
 
 // Nested Path Domain Adapters
-export class PersonalUserAccountDomainAdapter
+class PersonalUserAccountDomainAdapter
 	implements Domain.Contexts.User.PersonalUser.PersonalUserAccountProps
 {
 	private readonly props: Models.User.PersonalUserAccount;
@@ -116,7 +115,7 @@ export class PersonalUserAccountDomainAdapter
 		return new PersonalUserAccountProfileDomainAdapter(this.props.profile);
 	}
 }
-export class PersonalUserAccountProfileDomainAdapter
+class PersonalUserAccountProfileDomainAdapter
 	implements Domain.Contexts.User.PersonalUser.PersonalUserProfileProps
 {
 	readonly props: Models.User.PersonalUserAccountProfile;
@@ -151,7 +150,7 @@ export class PersonalUserAccountProfileDomainAdapter
 
 	// Document Array Getters
 }
-export class PersonalUserAccountProfileBillingDomainAdapter
+class PersonalUserAccountProfileBillingDomainAdapter
 	implements
 		Domain.Contexts.User.PersonalUser.PersonalUserAccountProfileBillingProps
 {
@@ -184,7 +183,7 @@ export class PersonalUserAccountProfileBillingDomainAdapter
 	}
 }
 
-export class PersonalUserAccountProfileBillingSubscriptionDomainAdapter
+class PersonalUserAccountProfileBillingSubscriptionDomainAdapter
 	implements
 		Domain.Contexts.User.PersonalUser.PersonalUserAccountProfileBillingSubscriptionProps
 {
@@ -260,7 +259,7 @@ export class PersonalUserAccountProfileBillingTransactionsDomainAdapter
 	}
 }
 
-export class PersonalUserAccountProfileLocationDomainAdapter
+class PersonalUserAccountProfileLocationDomainAdapter
 	implements
 		Domain.Contexts.User.PersonalUser.PersonalUserAccountProfileLocationProps
 {

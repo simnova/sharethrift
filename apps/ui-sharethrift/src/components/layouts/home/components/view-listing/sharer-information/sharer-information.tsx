@@ -9,13 +9,13 @@ import type {
 	CreateConversationMutationVariables,
 } from '../../../../../../generated.tsx';
 
-export type Sharer = {
+type Sharer = {
 	id: string;
 	name: string;
 	avatar?: string;
 };
 
-export interface SharerInformationProps {
+interface SharerInformationProps {
 	sharer: Sharer;
 	listingId: string;
 	isOwner?: boolean;

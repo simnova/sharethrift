@@ -4,10 +4,6 @@ import { ReservationsViewActiveContainer } from '../components/reservations-view
 import { ReservationsViewHistoryContainer } from '../components/reservations-view-history.container.tsx';
 const { Title } = Typography;
 
-export interface MyReservationsMainProps {
-	userId?: string;
-}
-
 export const MyReservationsMain: React.FC = () => {
 	const tabItems = [
 		{
@@ -31,4 +27,3 @@ export const MyReservationsMain: React.FC = () => {
 	);
 };
 
-export default MyReservationsMain;

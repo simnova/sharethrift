@@ -39,7 +39,7 @@ const apolloHttpLinkForGraphqlDataSource =
 		uri: `${VITE_FUNCTION_ENDPOINT}`,
 	});
 
-export interface ApolloConnectionProps {
+interface ApolloConnectionProps {
 	children: React.ReactNode;
 }
 export const ApolloConnection: FC<ApolloConnectionProps> = (

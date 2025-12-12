@@ -43,7 +43,7 @@ export class AdminRoleDomainAdapter
 	}
 }
 
-export class AdminRolePermissionsDomainAdapter
+class AdminRolePermissionsDomainAdapter
 	implements Domain.Contexts.Role.AdminRole.AdminRolePermissionsProps
 {
 	public readonly props: Models.Role.AdminRolePermissions;
@@ -88,7 +88,7 @@ export class AdminRolePermissionsDomainAdapter
 	}
 }
 
-export class AdminRoleUserPermissionsDomainAdapter
+class AdminRoleUserPermissionsDomainAdapter
 	implements Domain.Contexts.Role.AdminRole.AdminRoleUserPermissionsProps
 {
 	public readonly props: Models.Role.AdminRoleUserPermissions;
@@ -160,7 +160,7 @@ export class AdminRoleUserPermissionsDomainAdapter
 	}
 }
 
-export class AdminRoleConversationPermissionsDomainAdapter
+class AdminRoleConversationPermissionsDomainAdapter
 	implements
 		Domain.Contexts.Role.AdminRole.AdminRoleConversationPermissionsProps
 {
@@ -205,7 +205,7 @@ export class AdminRoleConversationPermissionsDomainAdapter
 	}
 }
 
-export class AdminRoleListingPermissionsDomainAdapter
+class AdminRoleListingPermissionsDomainAdapter
 	implements Domain.Contexts.Role.AdminRole.AdminRoleListingPermissionsProps
 {
 	public readonly props: Models.Role.AdminRoleListingPermissions;
@@ -277,7 +277,7 @@ export class AdminRoleListingPermissionsDomainAdapter
 	}
 }
 
-export class AdminRoleReservationRequestPermissionsDomainAdapter
+class AdminRoleReservationRequestPermissionsDomainAdapter
 	implements
 		Domain.Contexts.Role.AdminRole.AdminRoleReservationRequestPermissionsProps
 {

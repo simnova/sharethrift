@@ -5,13 +5,14 @@ import { ReservationStatusTag } from '@sthrift/ui-components';
 import { ReservationActions } from './reservation-actions.tsx';
 import type { HomeMyReservationsReservationsViewActiveContainerActiveReservationsQuery } from '../../../../../generated.tsx';
 import { BASE64_FALLBACK_IMAGE } from '../constants/ui-constants.ts';
+import { mapReservationStateToStatus } from '../utils/reservation-status.utils.ts';
 
 type ReservationRequestFieldsFragment =
 	HomeMyReservationsReservationsViewActiveContainerActiveReservationsQuery['myActiveReservations'][number];
 
 const { Text } = Typography;
 
-export interface ReservationCardProps {
+interface ReservationCardProps {
 	reservation: ReservationRequestFieldsFragment;
 	onCancel?: (id: string) => void;
 	onClose?: (id: string) => void;
@@ -31,13 +32,13 @@ export const ReservationCard: React.FC<ReservationCardProps> = ({
 	showActions = true,
 }) => {
 	// Compute sharer display name with @ prefix if present
-	let sharerDisplay = 'Unknown';
-	if (reservation.reserver?.account?.username) {
-		sharerDisplay = `@${reservation.reserver.account.username}`;
-	}
+	const sharerDisplay = reservation.reserver?.account?.username 
+		? `@${reservation.reserver.account.username}` 
+		: 'Unknown';
+	const status = mapReservationStateToStatus(reservation.state);
 
 	return (
-		<Card className="mb-4" bodyStyle={{ padding: 0 }}>
+		<Card className="mb-4" styles={{ body: { padding: 0 } }}>
 			{/* biome-ignore lint/complexity/useLiteralKeys: generated CSS module typing uses index signature */}
 			<div className={styles['cardRow']}>
 				<div className={styles['reservationImageWrapper']}>
@@ -55,21 +56,7 @@ export const ReservationCard: React.FC<ReservationCardProps> = ({
 						</div>
 					)}
 				<div className={styles['statusTagOverlay']}>
-					<ReservationStatusTag
-						status={
-							reservation.state === 'Accepted'
-								? 'ACCEPTED'
-								: reservation.state === 'Requested'
-									? 'REQUESTED'
-									: reservation.state === 'Rejected'
-										? 'REJECTED'
-										: reservation.state === 'Closed'
-											? 'CLOSED'
-											: reservation.state === 'Cancelled'
-												? 'CANCELLED'
-												: 'REQUESTED'
-						}
-					/>
+					<ReservationStatusTag status={status} />
 				</div>
 				</div>
 				<div className={styles['cardContent']}>
@@ -109,19 +96,7 @@ export const ReservationCard: React.FC<ReservationCardProps> = ({
 				{showActions && (
 					<div className={styles['cardActions']}>
 						<ReservationActions
-							status={
-								reservation.state === 'Accepted'
-									? 'ACCEPTED'
-									: reservation.state === 'Requested'
-										? 'REQUESTED'
-										: reservation.state === 'Rejected'
-											? 'REJECTED'
-											: reservation.state === 'Closed'
-												? 'CLOSED'
-												: reservation.state === 'Cancelled'
-													? 'CANCELLED'
-													: 'REQUESTED'
-							}
+							status={status}
 							onCancel={() => onCancel?.(reservation.id)}
 							onClose={() => onClose?.(reservation.id)}
 							onMessage={() => onMessage?.(reservation.id)}
@@ -136,4 +111,3 @@ export const ReservationCard: React.FC<ReservationCardProps> = ({
 	);
 };
 
-export default ReservationCard;

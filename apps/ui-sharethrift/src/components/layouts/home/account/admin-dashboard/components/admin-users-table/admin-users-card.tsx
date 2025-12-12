@@ -1,7 +1,7 @@
 import { Card, Button, Tag } from "antd";
 import type { AdminUserData } from "./admin-users-table.types.ts";
 
-export interface AdminUsersCardProps {
+interface AdminUsersCardProps {
   user: AdminUserData;
   onAction: (
     action: "block" | "unblock" | "view-profile" | "view-report"

@@ -1,7 +1,7 @@
 import { message, Skeleton, Result } from 'antd';
 import type { FC } from 'react';
 
-export interface ComponentQueryLoaderProps {
+interface ComponentQueryLoaderProps {
 	error?: Error | undefined;
 	errorComponent?: React.JSX.Element;
 	loading: boolean;

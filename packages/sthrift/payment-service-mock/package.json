@@ -23,7 +23,6 @@
 	},
 	"devDependencies": {
 		"@cellix/typescript-config": "workspace:*",
-		"@cellix/vitest-config": "workspace:*",
 		"typescript": "^5.8.3"
 	}
 }

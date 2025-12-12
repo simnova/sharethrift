@@ -9,7 +9,7 @@ import {
 } from '../../../../../generated.tsx';
 import { ReservationsView } from './reservations-view.tsx';
 
-export type ReservationsViewHistoryContainerProps = Record<string, never>;
+type ReservationsViewHistoryContainerProps = Record<string, never>;
 
 export const ReservationsViewHistoryContainer: React.FC<
 	ReservationsViewHistoryContainerProps
@@ -65,4 +65,3 @@ export const ReservationsViewHistoryContainer: React.FC<
 	);
 };
 
-export default ReservationsViewHistoryContainer;

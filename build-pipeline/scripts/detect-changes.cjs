@@ -150,6 +150,7 @@ async function checkAppChanges(appConfig, affectedPackages) {
 		return true;
 	}
 }
+
 // Main function to detect affected packages and map to deployment groups
 async function detectChanges() {
 	const forceDeployVars = parseForceDeployFile();
@@ -175,6 +176,20 @@ async function detectChanges() {
 	// Get affected packages
 	console.log('Running turbo to detect affected packages...');
 	const { packages: affectedPackages, error: globalError } = await getAffectedPackages();
+
+	// Determine whether any source packages are affected (distinct from infra/pipeline changes)
+	// If Turbo failed (globalError) be conservative and treat this as source-changes = true
+	let hasSourceChanges = false;
+	if (globalError) {
+		hasSourceChanges = true;
+	} else {
+		// Turbo returns an array of affected package ids; non-empty => source changes
+		hasSourceChanges = Array.isArray(affectedPackages) && affectedPackages.length > 0;
+	}
+
+	// Export a pipeline variable for other tasks to consume
+	setPipelineVariable('HAS_SOURCE_CHANGES', hasSourceChanges);
+	console.log(`Source/package changes detected: ${hasSourceChanges}`);
 
 	// Initialize deployment flags
 	let hasBackendChanges = false;
@@ -242,7 +257,7 @@ async function detectChanges() {
 	try {
 		await detectChanges();
 	} catch (error) {
-		console.error('Error in detect-changes.js:', error.message);
+		console.error('Error in detect-changes.cjs:', error.message);
 		process.exit(1);
 	}
 })();

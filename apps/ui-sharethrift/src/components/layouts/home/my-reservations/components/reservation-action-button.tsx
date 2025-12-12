@@ -6,7 +6,7 @@ const NO_OP_HANDLER = () => {
 	// No-op: default handler when no onClick is provided
 };
 
-export interface ReservationActionButtonProps {
+interface ReservationActionButtonProps {
 	action: 'Cancel' | 'Close' | 'Message';
 	onClick?: () => void;
 	loading?: boolean;
@@ -24,4 +24,3 @@ export const ReservationActionButton: React.FC<
 	);
 };
 
-export default ReservationActionButton;

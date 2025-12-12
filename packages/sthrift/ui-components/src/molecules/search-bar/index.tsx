@@ -3,7 +3,7 @@ import { Input, Button } from 'antd';
 import { SearchOutlined } from '@ant-design/icons';
 import styles from './index.module.css';
 
-export interface SearchBarProps {
+interface SearchBarProps {
 	searchValue?: string;
 	onSearchChange?: (value: string) => void;
 	onSearch?: (query: string) => void;

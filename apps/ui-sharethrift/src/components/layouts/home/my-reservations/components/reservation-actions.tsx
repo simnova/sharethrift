@@ -1,9 +1,10 @@
 import type React from 'react';
 import { Space } from 'antd';
 import { ReservationActionButton } from './reservation-action-button.tsx';
+import type { ReservationActionStatus } from '../utils/reservation-status.utils.ts';
 
-export interface ReservationActionsProps {
-	status: 'REQUESTED' | 'ACCEPTED' | 'REJECTED' | 'CLOSED' | 'CANCELLED';
+interface ReservationActionsProps {
+	status: ReservationActionStatus;
 	onCancel?: () => void;
 	onClose?: () => void;
 	onMessage?: () => void;
@@ -20,62 +21,51 @@ export const ReservationActions: React.FC<ReservationActionsProps> = ({
 	closeLoading = false,
 }) => {
 	const getActionsForStatus = () => {
-		const actions = [];
-
 		switch (status) {
 			case 'REQUESTED':
-				actions.push(
+				return [
 					<ReservationActionButton
 						key="cancel"
 						action="Cancel"
 						onClick={onCancel}
 						loading={cancelLoading}
 					/>,
-				);
-				actions.push(
 					<ReservationActionButton
 						key="message"
 						action="Message"
 						onClick={onMessage}
 					/>,
-				);
-				break;
+				];
 
 			case 'ACCEPTED':
-				actions.push(
+				return [
 					<ReservationActionButton
 						key="close"
 						action="Close"
 						onClick={onClose}
 						loading={closeLoading}
 					/>,
-				);
-				actions.push(
 					<ReservationActionButton
 						key="message"
 						action="Message"
 						onClick={onMessage}
 					/>,
-				);
-				break;
+				];
 
 			case 'REJECTED':
-				actions.push(
+				return [
 					<ReservationActionButton
 						key="cancel"
 						action="Cancel"
 						onClick={onCancel}
 						loading={cancelLoading}
 					/>,
-				);
-				break;
+				];
 
 			default:
 				// No actions for cancelled or closed reservations
-				break;
+				return [];
 		}
-
-		return actions;
 	};
 
 	const actions = getActionsForStatus();
@@ -87,4 +77,3 @@ export const ReservationActions: React.FC<ReservationActionsProps> = ({
 	return <Space>{actions}</Space>;
 };
 
-export default ReservationActions;

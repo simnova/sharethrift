@@ -16,7 +16,7 @@ import styles from './index.module.css';
 import '../../styles/theme.css';
 import { useMatch } from 'react-router-dom';
 
-export interface NavigationProps {
+interface NavigationProps {
 	isAuthenticated: boolean;
 	onLogout?: () => void;
 	onNavigate?: (route: string) => void;
