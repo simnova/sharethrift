@@ -74,16 +74,16 @@ export const ViewUserProfileContainer: React.FC = () => {
     const viewedUser = userQueryData?.userById;
     const currentUser = currentUserData?.currentUser;
 
-    const canViewProfile =
+    const isAdminViewer =
         currentUser?.__typename === "AdminUser" &&
         currentUser?.role?.permissions?.userPermissions?.canViewAllUsers;
 
     useEffect(() => {
-        if (viewedUser?.isBlocked && !canViewProfile) {
+        if (viewedUser?.isBlocked && !isAdminViewer) {
             message.error("This user profile is not available");
             navigate("/home");
         }
-    }, [viewedUser, canViewProfile, navigate]);
+    }, [viewedUser, isAdminViewer, navigate]);
 
 
     const handleEditSettings = () => {
@@ -94,8 +94,7 @@ export const ViewUserProfileContainer: React.FC = () => {
         navigate(`/listing/${listingId}`);
     };
 
-    const handleBlockUser = (data: BlockUserFormValues) => {
-        console.log("Block user:", data);
+    const handleBlockUser = (_data: BlockUserFormValues) => {
         blockUser({ variables: { userId: userId! } });
     };
 
@@ -103,7 +102,7 @@ export const ViewUserProfileContainer: React.FC = () => {
         unblockUser({ variables: { userId: userId! } });
     };
 
-    const isAdmin =
+    const canBlockUsers =
         currentUser?.__typename === "AdminUser" &&
         currentUser?.role?.permissions?.userPermissions?.canBlockUsers;
 
@@ -138,14 +137,14 @@ export const ViewUserProfileContainer: React.FC = () => {
                     listings={listings}
                     isOwnProfile={isOwnProfile}
                     isBlocked={isBlocked ?? false}
-                    isAdmin={isAdmin ?? false}
-                    canBlockUser={isAdmin ?? false}
+                    isAdminViewer={isAdminViewer ?? false}
+                    canBlockUser={canBlockUsers ?? false}
                     onEditSettings={handleEditSettings}
                     onListingClick={handleListingClick}
                     onBlockUser={() => setBlockModalVisible(true)}
                     onUnblockUser={() => setUnblockModalVisible(true)}
                     adminControls={
-                        (isAdmin ?? false) && (
+                        (canBlockUsers ?? false) && (
                             <>
                                 <BlockUserModal
                                     visible={blockModalVisible}

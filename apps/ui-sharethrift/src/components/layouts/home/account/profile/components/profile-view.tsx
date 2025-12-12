@@ -25,7 +25,7 @@ interface ProfileViewProps {
     listings: ItemListing[];
     isOwnProfile: boolean;
     isBlocked?: boolean;
-    isAdmin?: boolean;
+    isAdminViewer?: boolean;
     canBlockUser?: boolean;
     onEditSettings: () => void;
     onListingClick: (listingId: string) => void;
@@ -39,7 +39,7 @@ export const ProfileView: React.FC<Readonly<ProfileViewProps>> = ({
     listings,
     isOwnProfile,
     isBlocked = false,
-    isAdmin = false,
+    isAdminViewer = false,
     canBlockUser = false,
     onEditSettings,
     onListingClick,
@@ -62,8 +62,8 @@ export const ProfileView: React.FC<Readonly<ProfileViewProps>> = ({
             <Card
                 className="mb-6 profile-header"
                 style={{
-                    opacity: isBlocked && isAdmin ? 0.7 : 1,
-                    filter: isBlocked && isAdmin ? 'grayscale(50%)' : 'none',
+                    opacity: isBlocked && isAdminViewer ? 0.7 : 1,
+                    filter: isBlocked && isAdminViewer ? 'grayscale(50%)' : 'none',
                 }}
             >
                 {/* Mobile actions */}
@@ -133,7 +133,7 @@ export const ProfileView: React.FC<Readonly<ProfileViewProps>> = ({
 
             <Divider orientation="left">
                 <h2 className="title30" style={{ color: 'var(--color-tertiary)' }}>
-                    My Listings
+                    {isOwnProfile ? 'My Listings' : `${user.firstName || 'User'}'s Listings`}
                 </h2>
             </Divider>
 

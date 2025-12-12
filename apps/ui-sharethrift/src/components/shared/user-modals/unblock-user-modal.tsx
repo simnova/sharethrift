@@ -45,34 +45,19 @@ export const UnblockUserModal: React.FC<Readonly<UnblockUserModalProps>> = ({
                     them to interact with other users again.
                 </Paragraph>
                 {blockReason && (
-                    <>
-                        <div
-                            style={{
-                                marginTop: 16,
-                                padding: 12,
-                                background: '#f5f5f5',
-                                borderRadius: 4,
-                            }}
-                        >
-                            <Text strong>Original block reason:</Text>
-                            <Paragraph style={{ marginTop: 8, marginBottom: 0 }}>
-                                {blockReason}
-                            </Paragraph>
-                        </div>
-                        <div
-                            style={{
-                                marginTop: 16,
-                                padding: 12,
-                                background: '#f5f5f5',
-                                borderRadius: 4,
-                            }}
-                        >
-                            <Text strong>Original block Description:</Text>
-                            <Paragraph style={{ marginTop: 8, marginBottom: 0 }}>
-                               Original block Description
-                            </Paragraph>
-                        </div>
-                    </>
+                    <div
+                        style={{
+                            marginTop: 16,
+                            padding: 12,
+                            background: '#f5f5f5',
+                            borderRadius: 4,
+                        }}
+                    >
+                        <Text strong>Original block reason:</Text>
+                        <Paragraph style={{ marginTop: 8, marginBottom: 0 }}>
+                            {blockReason}
+                        </Paragraph>
+                    </div>
                 )}
             </div>
         </Modal>
