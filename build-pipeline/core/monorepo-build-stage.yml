@@ -224,7 +224,7 @@ stages:
         targetType: 'inline'
         script: |
           set -euo pipefail
-          ulimit -n 20000
+          ulimit -n 25000
           export NODE_OPTIONS=--max_old_space_size=16384
           export PLAYWRIGHT_BROWSERS_PATH="$(PLAYWRIGHT_BROWSERS_PATH)"
 
