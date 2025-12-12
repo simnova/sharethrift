@@ -1,7 +1,7 @@
 import { Carousel } from 'antd';
 import './listing-image-gallery.overrides.css';
 
-export interface ListingImageGalleryProps {
+interface ListingImageGalleryProps {
   images: string[];
   title: string;
   className?: string;

@@ -9,7 +9,7 @@ import { ListingImageGalleryContainer } from './listing-image-gallery/listing-im
 import { ListingInformationContainer } from './listing-information/listing-information.container.tsx';
 import { SharerInformationContainer } from './sharer-information/sharer-information.container.tsx';
 
-export interface ViewListingProps {
+interface ViewListingProps {
 	listing: ItemListing;
 	userIsSharer: boolean;
 	isAuthenticated: boolean;

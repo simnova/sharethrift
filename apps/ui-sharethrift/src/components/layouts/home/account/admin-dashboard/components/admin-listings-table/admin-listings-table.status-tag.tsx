@@ -1,4 +1,4 @@
-import React from 'react';
+import type React from 'react';
 import { Tag } from 'antd';
 
 type StatusTagProps = { status?: string };
@@ -9,4 +9,3 @@ export const StatusTag: React.FC<StatusTagProps> = ({ status }) => {
   return <Tag color={color}>{normalized}</Tag>;
 };
 
-export default StatusTag;

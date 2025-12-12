@@ -12,6 +12,7 @@ import { SettingsView } from '../pages/settings-view.tsx';
 import type {
 	CurrentUserSettingsQueryData,
 	SettingsUser,
+	SectionFormValues,
 } from './settings-view.types.ts';
 
 function SettingsViewLoader() {
@@ -26,7 +27,6 @@ function SettingsViewLoader() {
 	const [updateUserMutation, { loading: updateLoading, error: updateError }] =
 		useMutation(HomeAccountSettingsViewContainerUpdatePersonalUserDocument, {
 			onError: (err) => {
-				// eslint-disable-next-line no-console
 				console.error('[SettingsView] update mutation error', err);
 				const msg = err?.message || 'Update failed';
 				message.error(msg);
@@ -38,7 +38,6 @@ function SettingsViewLoader() {
 		{ loading: updateAdminLoading, error: updateAdminError },
 	] = useMutation(HomeAccountSettingsViewContainerUpdateAdminUserDocument, {
 		onError: (err) => {
-			// eslint-disable-next-line no-console
 			console.error('[SettingsView] admin update mutation error', err);
 			const msg = err?.message || 'Update failed';
 			message.error(msg);
@@ -84,7 +83,7 @@ function SettingsViewLoader() {
 	// Helper to construct the next profile given the section being edited
 	const buildNextProfile = (
 		section: EditableSection,
-		values: Record<string, any>,
+		values: SectionFormValues,
 		base: UserProfile,
 	): UserProfile => {
 		const isProfile = section === 'profile';
@@ -141,7 +140,7 @@ function SettingsViewLoader() {
 
 	const handleAdminUserSave = async (
 		section: EditableSection,
-		values: Record<string, any>,
+		values: SectionFormValues,
 		user: CurrentUserSettingsQueryData['currentUser'],
 	) => {
 		if (updateAdminLoading) {
@@ -163,6 +162,7 @@ function SettingsViewLoader() {
 					? (values['username'] ?? user.account.username)
 					: user.account.username;
 
+			// eslint-disable-next-line @typescript-eslint/no-unused-vars
 			const { billing: _billing, ...adminProfile } = nextProfile;
 
 			const result = await updateAdminUserMutation({
@@ -198,7 +198,7 @@ function SettingsViewLoader() {
 
 	const handlePersonalUserSave = async (
 		section: EditableSection,
-		values: Record<string, any>,
+		values: SectionFormValues,
 		user: CurrentUserSettingsQueryData['currentUser'],
 	) => {
 		if (updateLoading) {
@@ -249,7 +249,7 @@ function SettingsViewLoader() {
 
 	const handleSaveSection = async (
 		section: EditableSection,
-		values: Record<string, any>,
+		values: SectionFormValues,
 	) => {
 		if (!userData?.currentUser) return;
 		const user = userData.currentUser;
