@@ -34,8 +34,8 @@ BeforeAll(async function () {
 		interactionTimeout: Duration.ofSeconds(10),
 	});
 
-	console.log('🎭 Serenity/JS configured for Community Management BDD tests');
-	console.log('📊 Reports will be generated in: target/serenity-reports');
+	console.log('🎭 Serenity/JS configured for Sharethrift BDD tests');
+	console.log('📊 Run `npm run test:serenity:report` after tests to generate HTML reports');
 });
 
 Before(function (scenario) {
@@ -51,5 +51,6 @@ Before(function (scenario) {
 
 AfterAll(async function () {
 	console.log('🎭 Serenity/JS test execution completed');
-	console.log('📈 Check target/serenity-reports for detailed test reports');
+	console.log('� Cucumber reports generated in test-results/');
+	console.log('💡 Run `npm run test:serenity:report` to generate Serenity HTML reports');
 });

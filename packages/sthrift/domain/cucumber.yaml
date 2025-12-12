@@ -5,16 +5,23 @@ default:
 
   # Step definitions location
   require:
+    - tests/acceptance/support/**/*.ts
     - tests/acceptance/step-definitions/**/*.steps.ts
 
   # TypeScript support
   requireModule:
     - tsx/cjs
 
-  # Format options
+  # Format options with JSON and HTML reports
   format:
     - pretty
     - summary
+    - json:test-results/cucumber-report.json
+    - html:test-results/cucumber-report.html
+
+  # Serenity BDD report output
+  formatOptions:
+    snippetInterface: async-await
 
   # Parallel execution
   parallel: 1
@@ -31,3 +38,4 @@ default:
   # World parameters
   worldParameters:
     environment: ${NODE_ENV:-test}
+    serenityReportDir: test-results/serenity
