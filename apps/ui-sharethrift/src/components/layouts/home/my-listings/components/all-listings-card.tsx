@@ -5,7 +5,7 @@ import styles from './all-listings-card.module.css';
 import type { HomeAllListingsTableContainerListingFieldsFragment } from '../../../../../generated.tsx';
 import { getStatusTagClass } from './status-tag-class.ts';
 
-export interface AllListingsCardProps {
+interface AllListingsCardProps {
 	listing: HomeAllListingsTableContainerListingFieldsFragment;
 	onViewPendingRequests: (id: string) => void;
 	onAction: (action: string, listingId: string) => void;

@@ -5,6 +5,7 @@ import { ReservationStatusTag } from '@sthrift/ui-components';
 import { ReservationActions } from './reservation-actions.tsx';
 import type { HomeMyReservationsReservationsViewActiveContainerActiveReservationsQuery } from '../../../../../generated.tsx';
 import { BASE64_FALLBACK_IMAGE } from '../constants/ui-constants.ts';
+import { mapReservationStateToStatus } from '../utils/reservation-status.utils.ts';
 
 type ReservationRequestFieldsFragment =
 	HomeMyReservationsReservationsViewActiveContainerActiveReservationsQuery['myActiveReservations'][number];
@@ -14,7 +15,7 @@ type ReservationsTableStyles = {
 	tableText: string;
 } & Record<string, string>;
 
-export interface ReservationsTableProps {
+interface ReservationsTableProps {
 	reservations: ReservationRequestFieldsFragment[];
 	onCancel?: (id: string) => void;
 	onClose?: (id: string) => void;
@@ -122,21 +123,7 @@ export const ReservationsTable: React.FC<ReservationsTableProps> = ({
 			dataIndex: 'state',
 			key: 'status',
 			render: (state: ReservationRequestFieldsFragment['state']) => (
-				<ReservationStatusTag
-					status={
-						state === 'Accepted'
-							? 'ACCEPTED'
-							: state === 'Requested'
-								? 'REQUESTED'
-								: state === 'Rejected'
-									? 'REJECTED'
-									: state === 'Closed'
-										? 'CLOSED'
-										: state === 'Cancelled'
-											? 'CANCELLED'
-											: 'REQUESTED'
-					}
-				/>
+				<ReservationStatusTag status={mapReservationStateToStatus(state)} />
 			),
 		},
 		...(showActions
@@ -146,19 +133,7 @@ export const ReservationsTable: React.FC<ReservationsTableProps> = ({
 						key: 'actions',
 						render: (record: ReservationRequestFieldsFragment) => (
 							<ReservationActions
-								status={
-									record.state === 'Accepted'
-										? 'ACCEPTED'
-										: record.state === 'Requested'
-											? 'REQUESTED'
-											: record.state === 'Rejected'
-												? 'REJECTED'
-												: record.state === 'Closed'
-													? 'CLOSED'
-													: record.state === 'Cancelled'
-														? 'CANCELLED'
-														: 'REQUESTED'
-								}
+								status={mapReservationStateToStatus(record.state)}
 								onCancel={() => onCancel?.(record.id)}
 								onClose={() => onClose?.(record.id)}
 								onMessage={() => onMessage?.(record.id)}
@@ -184,4 +159,3 @@ export const ReservationsTable: React.FC<ReservationsTableProps> = ({
 	);
 };
 
-export default ReservationsTable;

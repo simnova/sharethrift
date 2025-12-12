@@ -1,3 +1,5 @@
+/** biome-ignore-all lint/suspicious/noExplicitAny: GraphQL resolver helper utilities require flexible typing for generic field resolution */
+
 import type { Domain } from '@sthrift/domain';
 import type {
 	FragmentDefinitionNode,

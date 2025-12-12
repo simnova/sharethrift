@@ -1,4 +1,4 @@
-import React from 'react';
+import type React from 'react';
 import { Input } from 'antd';
 const { Search } = Input;
 
@@ -34,4 +34,3 @@ export const TitleFilter: React.FC<TitleFilterProps> = ({
   );
 };
 
-export default TitleFilter;

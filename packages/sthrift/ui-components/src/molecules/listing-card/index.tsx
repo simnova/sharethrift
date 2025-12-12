@@ -5,7 +5,7 @@ import { Link } from 'react-router-dom';
 import styles from './index.module.css';
 import type { UIItemListing } from '../../organisms/listings-grid/index.tsx';
 
-export interface ListingCardProps {
+interface ListingCardProps {
 	listing: UIItemListing;
 	onClick?: () => void;
 }
