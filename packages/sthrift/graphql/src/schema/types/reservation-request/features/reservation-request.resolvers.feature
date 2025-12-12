@@ -142,3 +142,15 @@ So that I can view my reservations and make new ones through the GraphQL API
     And sorter field "title" with order "ascend"
     When paginateAndFilterListingRequests is called
     Then the results should be sorted alphabetically by title
+
+  Scenario: Accepting a reservation request successfully
+    Given a verified user with a valid verifiedJwt containing email
+    And a valid reservation request id
+    When the acceptReservationRequest mutation is executed
+    Then it should call ReservationRequest.update with id and state "Accepted"
+    And it should return the accepted reservation request
+
+  Scenario: Accepting a reservation request without authentication
+    Given a user without a verifiedJwt in their context
+    When the acceptReservationRequest mutation is executed
+    Then it should throw a "User must be authenticated to accept a reservation request" error

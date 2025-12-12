@@ -34,7 +34,6 @@ const isDevelopment = NODE_ENV === 'development';
 
 Cellix.initializeInfrastructureServices<ApiContextSpec, ApplicationServices>(
 	(serviceRegistry) => {
-		
 		serviceRegistry
 			.registerInfrastructureService(
 				new ServiceMongoose(
@@ -47,7 +46,9 @@ Cellix.initializeInfrastructureServices<ApiContextSpec, ApplicationServices>(
 				new ServiceTokenValidation(TokenValidationConfig.portalTokens),
 			)
 			.registerInfrastructureService(
-				isDevelopment ? new ServiceMessagingMock() : new ServiceMessagingTwilio(),
+				isDevelopment
+					? new ServiceMessagingMock()
+					: new ServiceMessagingTwilio(),
 			)
 			.registerInfrastructureService(
         isDevelopment ? new PaymentServiceMock() : new PaymentServiceCybersource()

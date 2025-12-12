@@ -7,7 +7,7 @@ const MOCK_REQUEST = {
 	image: '/assets/item-images/projector.png',
 	requestedOn: '2025-12-23',
 	reservationPeriod: '2020-11-08 - 2020-12-23',
-	status: 'Pending',
+	status: 'Requested',
 	requestedBy: 'John Doe',
 };
 
@@ -24,4 +24,32 @@ const meta: Meta<typeof RequestsCard> = {
 export default meta;
 type Story = StoryObj<typeof meta>;
 
-export const Default: Story = {};
+export const Requested: Story = {
+	args: {
+		listing: { ...MOCK_REQUEST, status: 'Requested' },
+	},
+};
+
+export const Accepted: Story = {
+	args: {
+		listing: { ...MOCK_REQUEST, status: 'Accepted' },
+	},
+};
+
+export const Rejected: Story = {
+	args: {
+		listing: { ...MOCK_REQUEST, status: 'Rejected' },
+	},
+};
+
+export const Closed: Story = {
+	args: {
+		listing: { ...MOCK_REQUEST, status: 'Closed' },
+	},
+};
+
+export const Expired: Story = {
+	args: {
+		listing: { ...MOCK_REQUEST, status: 'Expired' },
+	},
+};

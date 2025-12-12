@@ -7,6 +7,8 @@ import type { ReservationRequestDomainAdapter } from './reservation-request.doma
 
 type PropType = ReservationRequestDomainAdapter;
 type ReservationRequestModelType = Models.ReservationRequest.ReservationRequest;
+
+
 export class ReservationRequestRepository
 	extends MongooseSeedwork.MongoRepositoryBase<
 		ReservationRequestModelType,
@@ -24,7 +26,6 @@ export class ReservationRequestRepository
 	> {
 		const mongoReservation = await this.model
 			.findById(id)
-			.populate(['listing', 'reserver'])
 			.exec();
 		if (!mongoReservation) {
 			throw new Error(`ReservationRequest with id ${id} not found`);
@@ -37,7 +38,6 @@ export class ReservationRequestRepository
 	> {
 		const mongoReservations = await this.model
 			.find()
-			.populate(['listing', 'reserver'])
 			.exec();
 		return mongoReservations.map((doc) =>
 			this.typeConverter.toDomain(doc, this.passport),
@@ -74,7 +74,6 @@ export class ReservationRequestRepository
 	> {
 		const mongoReservations = await this.model
 			.find({ reserver: reserverId })
-			.populate(['listing', 'reserver'])
 			.exec();
 		return mongoReservations.map((doc) =>
 			this.typeConverter.toDomain(doc, this.passport),
@@ -88,7 +87,31 @@ export class ReservationRequestRepository
 	> {
 		const mongoReservations = await this.model
 			.find({ listing: listingId })
-			.populate(['listing', 'reserver'])
+			.exec();
+		return mongoReservations.map((doc) =>
+			this.typeConverter.toDomain(doc, this.passport),
+		);
+	}
+
+	async queryOverlapByListingIdAndReservationPeriod(
+		listingId: string,
+		reservationPeriodStart: Date,
+		reservationPeriodEnd: Date,
+		excludeState: string,
+	): Promise<
+		Domain.Contexts.ReservationRequest.ReservationRequest.ReservationRequest<PropType>[]
+	> {
+		const mongoReservations = await this.model
+			.find({
+				listing: listingId,
+				state: { $ne: excludeState },
+				$or: [
+					{
+						reservationPeriodStart: { $lt: reservationPeriodEnd },
+						reservationPeriodEnd: { $gt: reservationPeriodStart },
+					},
+				],
+			})
 			.exec();
 		return mongoReservations.map((doc) =>
 			this.typeConverter.toDomain(doc, this.passport),

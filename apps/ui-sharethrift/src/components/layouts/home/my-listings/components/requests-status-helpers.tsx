@@ -1,7 +1,8 @@
 // Shared helper functions for Requests components.
 // Extracted from requests-table to satisfy react-refresh rule and avoid non-component exports in component files.
-import React from 'react';
+
 import { Button, Popconfirm } from 'antd';
+import type React from 'react';
 import type { ListingRequestData } from './my-listings-dashboard.types.ts';
 
 export const getStatusTagClass = (status: string): string => {
@@ -13,13 +14,16 @@ export const getStatusTagClass = (status: string): string => {
 		case 'Closed':
 			return 'expiredTag';
 		case 'Pending':
+		case 'Requested':
 			return 'pendingTag';
 		case 'Closing':
 			return 'closingTag';
+		case 'Expired':
+			return 'expiredTag';
 		default:
 			return '';
 	}
-}
+};
 
 export const getActionButtons = (
 	record: ListingRequestData,
@@ -27,7 +31,56 @@ export const getActionButtons = (
 ) => {
 	const buttons: React.ReactNode[] = [];
 
-	if (record.status === 'Cancelled' || record.status === 'Rejected') {
+	// Pending/Requested → Accept / Reject
+	if (record.status === 'Pending' || record.status === 'Requested') {
+		buttons.push(
+			<Button
+				key="accept"
+				type="link"
+				size="small"
+				onClick={() => onAction('accept', record.id)}
+			>
+				Accept
+			</Button>,
+			<Button
+				key="reject"
+				type="link"
+				size="small"
+				onClick={() => onAction('reject', record.id)}
+			>
+				Reject
+			</Button>,
+		);
+	}
+
+	// Accepted → Close / Message
+	if (record.status === 'Accepted') {
+		buttons.push(
+			<Popconfirm
+				key="close"
+				title="Close this request?"
+				description="Are you sure you want to close this request?"
+				onConfirm={() => onAction('close', record.id)}
+				okText="Yes"
+				cancelText="No"
+			>
+				<Button type="link" size="small">
+					Close
+				</Button>
+			</Popconfirm>,
+			<Button
+				key="message"
+				type="link"
+				size="small"
+				onClick={() => onAction('message', record.id)}
+			>
+				Message
+			</Button>,
+		);
+	}
+
+	// Rejected / Expired → Delete
+	if (record.status === 'Rejected' || record.status === 'Expired') {
 		buttons.push(
 			<Popconfirm
 				key="delete"
@@ -44,58 +97,23 @@ export const getActionButtons = (
 		);
 	}
 
-	if (record.status === 'Closed' || record.status === 'Accepted') {
-		buttons.push(
-			<Button
-				key="message"
-				type="link"
-				size="small"
-				onClick={() => onAction('message', record.id)}
-			>
-				Message
-			</Button>,
-		);
-	}
-
-	if (record.status === 'Accepted') {
+	// Cancelled → Delete
+	if (record.status === 'Cancelled') {
 		buttons.push(
 			<Popconfirm
-				key="close"
-				title="Close this request?"
-				description="Are you sure you want to close this request?"
-				onConfirm={() => onAction('close', record.id)}
+				key="delete"
+				title="Delete this request?"
+				description="Are you sure you want to delete this request? This action cannot be undone."
+				onConfirm={() => onAction('delete', record.id)}
 				okText="Yes"
 				cancelText="No"
 			>
-				<Button type="link" size="small">
-					Close
+				<Button type="link" size="small" danger>
+					Delete
 				</Button>
 			</Popconfirm>,
 		);
 	}
 
-	if (record.status === 'Pending') {
-		buttons.push(
-			<Button
-				key="accept"
-				type="link"
-				size="small"
-				onClick={() => onAction('accept', record.id)}
-			>
-				Accept
-			</Button>,
-		);
-		buttons.push(
-			<Button
-				key="reject"
-				type="link"
-				size="small"
-				onClick={() => onAction('reject', record.id)}
-			>
-				Reject
-			</Button>,
-		);
-	}
-
 	return buttons;
-}
+};

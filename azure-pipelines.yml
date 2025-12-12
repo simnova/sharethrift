@@ -21,7 +21,7 @@ variables:
   - name: ServiceConnectionName
     value: 'ShareThrift-MSDN'
   - name: vmImageName
-    value: 'ubuntu-latest'
+    value: 'ubuntu-latest' 
   - name: system.debug
     value: true
   - name: pnpm_config_cache

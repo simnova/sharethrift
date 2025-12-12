@@ -1,9 +1,9 @@
 import { MongooseSeedwork } from '@cellix/mongoose-seedwork';
-import { Domain } from '@sthrift/domain';
 import type { Models } from '@sthrift/data-sources-mongoose-models';
+import { Domain } from '@sthrift/domain';
 import { ItemListingDomainAdapter } from '../../listing/item/item-listing.domain-adapter.ts';
-import { PersonalUserDomainAdapter } from '../../user/personal-user/personal-user.domain-adapter.ts';
 import { AdminUserDomainAdapter } from '../../user/admin-user/admin-user.domain-adapter.ts';
+import { PersonalUserDomainAdapter } from '../../user/personal-user/personal-user.domain-adapter.ts';
 
 export class ReservationRequestConverter extends MongooseSeedwork.MongoTypeConverter<
 	Models.ReservationRequest.ReservationRequest,
@@ -79,8 +79,21 @@ export class ReservationRequestDomainAdapter
 		if (!this.doc.listing) {
 			throw new Error('listing is not populated');
 		}
-		if (this.doc.listing instanceof MongooseSeedwork.ObjectId) {
+		const listingDoc = this.doc.listing as
+			| Models.Listing.ItemListing
+			| MongooseSeedwork.ObjectId;
+		const needsListingPopulate =
+			listingDoc instanceof MongooseSeedwork.ObjectId;
+		const needsSharerPopulate =
+			!needsListingPopulate &&
+			listingDoc?.sharer instanceof MongooseSeedwork.ObjectId;
+		if (needsListingPopulate) {
 			await this.doc.populate('listing');
+		} else if (needsSharerPopulate) {
+			await this.doc.populate({
+				path: 'listing',
+				populate: { path: 'sharer' },
+			});
 		}
 		return new ItemListingDomainAdapter(
 			this.doc.listing as Models.Listing.ItemListing,
