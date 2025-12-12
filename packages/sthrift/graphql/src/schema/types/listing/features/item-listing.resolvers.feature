@@ -113,6 +113,12 @@ So that I can view, filter, and create listings through the GraphQL API
 		Then it should call Listing.ItemListing.unblock with the ID
 		And it should return true
 
+	Scenario: Blocking a listing successfully
+		Given a valid listing ID to block
+		When the blockListing mutation is executed
+		Then it should call Listing.ItemListing.block with the ID
+		And it should return true
+
 	Scenario: Canceling an item listing successfully
 		Given a valid listing ID to cancel
 		When the cancelItemListing mutation is executed

@@ -11,7 +11,7 @@ const feature = await loadFeature(
 );
 
 describeFeature(feature, (f) => {
-	let mockListing: { setBlocked: ReturnType<typeof vi.fn> };
+	let mockListing: { blocked?: boolean };
 	let mockRepo: {
 		getById: ReturnType<typeof vi.fn>;
 		save: ReturnType<typeof vi.fn>;
@@ -26,9 +26,7 @@ describeFeature(feature, (f) => {
 
 	f.Background(({ Given }) => {
 		Given('the listing repository is available', () => {
-			mockListing = {
-				setBlocked: vi.fn(),
-			};
+			mockListing = {};
 
 			mockRepo = {
 				getById: vi.fn().mockResolvedValue(mockListing),
@@ -70,7 +68,7 @@ describeFeature(feature, (f) => {
 		});
 
 		Then('the listing should be marked as unblocked', () => {
-			expect(mockListing.setBlocked).toHaveBeenCalledWith(false);
+			expect(mockListing.blocked).toBe(false);
 		});
 
 		And('the listing should be saved to the repository', () => {

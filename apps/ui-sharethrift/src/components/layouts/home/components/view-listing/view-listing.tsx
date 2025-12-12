@@ -1,12 +1,13 @@
-import { Row, Col, Button } from 'antd';
 import { LeftOutlined } from '@ant-design/icons';
-import { ListingImageGalleryContainer } from './listing-image-gallery/listing-image-gallery.container.tsx';
-import { SharerInformationContainer } from './sharer-information/sharer-information.container.tsx';
-import { ListingInformationContainer } from './listing-information/listing-information.container.tsx';
+import { Alert, Button, Col, Row } from 'antd';
 import type {
 	ItemListing,
 	ViewListingActiveReservationRequestForListingQuery,
 } from '../../../../../generated.tsx';
+import { BlockListingContainer } from './block-listing.container.tsx';
+import { ListingImageGalleryContainer } from './listing-image-gallery/listing-image-gallery.container.tsx';
+import { ListingInformationContainer } from './listing-information/listing-information.container.tsx';
+import { SharerInformationContainer } from './sharer-information/sharer-information.container.tsx';
 
 interface ViewListingProps {
 	listing: ItemListing;
@@ -17,6 +18,7 @@ interface ViewListingProps {
 		| ViewListingActiveReservationRequestForListingQuery['myActiveReservationForListing']
 		| null;
 	sharedTimeAgo?: string;
+	isAdmin: boolean;
 }
 
 export const ViewListing: React.FC<ViewListingProps> = ({
@@ -26,9 +28,12 @@ export const ViewListing: React.FC<ViewListingProps> = ({
 	currentUserId,
 	userReservationRequest,
 	sharedTimeAgo,
+	isAdmin,
 }) => {
 	// Mock sharer info (since ItemListing.sharer is just an ID)
-	const sharer = listing.sharer;
+	const { sharer } = listing;
+
+	const isBlocked = listing.state === 'Blocked';
 
 	const handleBack = () => {
 		window.location.href = '/';
@@ -86,6 +91,8 @@ export const ViewListing: React.FC<ViewListingProps> = ({
 					paddingBottom: 75,
 					boxSizing: 'border-box',
 					width: '100%',
+					opacity: isBlocked && !isAdmin ? 0.5 : 1,
+					pointerEvents: isBlocked && !isAdmin ? 'none' : 'auto',
 				}}
 				gutter={[0, 24]}
 				className="view-listing-responsive"
@@ -101,6 +108,26 @@ export const ViewListing: React.FC<ViewListingProps> = ({
 						Back
 					</Button>
 				</Col>
+				{isBlocked && (
+					<Col span={24}>
+						<Alert
+							message="This listing is currently blocked"
+							description="This listing has been blocked by an administrator and is not visible to regular users."
+							type="error"
+							showIcon
+						/>
+					</Col>
+				)}
+				{isAdmin && (
+					<Col span={24}>
+						<BlockListingContainer
+							listingId={listing.id}
+							listingTitle={listing.title}
+							isBlocked={isBlocked}
+							sharerId={sharer?.id}
+						/>
+					</Col>
+				)}
 				<Col span={24} style={{ marginBottom: 0, paddingBottom: 0 }}>
 					{/* Sharer Info at top, clickable to profile */}
 					<SharerInformationContainer
@@ -137,16 +164,16 @@ export const ViewListing: React.FC<ViewListingProps> = ({
 								className="listing-gallery-responsive"
 							/>
 						</Col>
-					{/* Right: Info/Form */}
-					<Col xs={24} md={12} style={{ marginTop: 0, paddingTop: 0 }}>
-						<ListingInformationContainer
-							listing={listing}
-							userIsSharer={userIsSharer}
-							isAuthenticated={isAuthenticated}
-							userReservationRequest={userReservationRequest}
-							className="listing-info-responsive"
-						/>
-					</Col>
+						{/* Right: Info/Form */}
+						<Col xs={24} md={12} style={{ marginTop: 0, paddingTop: 0 }}>
+							<ListingInformationContainer
+								listing={listing}
+								userIsSharer={userIsSharer}
+								isAuthenticated={isAuthenticated}
+								userReservationRequest={userReservationRequest}
+								className="listing-info-responsive"
+							/>
+						</Col>
 					</Row>
 				</Col>
 			</Row>

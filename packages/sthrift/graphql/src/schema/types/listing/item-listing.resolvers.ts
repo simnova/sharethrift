@@ -23,21 +23,21 @@ function buildPagedArgs(
 	},
 	extra?: Partial<PagedArgs>,
 ): PagedArgs {
-  return {
-    page: args.page,
-    pageSize: args.pageSize,
-    ...(args.searchText == null ? {} : { searchText: args.searchText }),
-    ...(args.statusFilters ? { statusFilters: [...args.statusFilters] } : {}),
-    ...(args.sorter
-      ? {
-          sorter: {
-            field: args.sorter.field,
-            order: args.sorter.order as 'ascend' | 'descend',
-          },
-        }
-      : {}),
-    ...extra,
-  };
+	return {
+		page: args.page,
+		pageSize: args.pageSize,
+		...(args.searchText != null ? { searchText: args.searchText } : {}),
+		...(args.statusFilters ? { statusFilters: [...args.statusFilters] } : {}),
+		...(args.sorter
+			? {
+					sorter: {
+						field: args.sorter.field,
+						order: args.sorter.order as 'ascend' | 'descend',
+					},
+				}
+			: {}),
+		...extra,
+	};
 }
 
 const itemListingResolvers: Resolvers = {
@@ -117,6 +117,13 @@ const itemListingResolvers: Resolvers = {
 		unblockListing: async (_parent, args, context) => {
 			// Admin-note: role-based authorization should be implemented here (security)
 			await context.applicationServices.Listing.ItemListing.unblock({
+				id: args.id,
+			});
+			return true;
+		},
+		blockListing: async (_parent, args, context) => {
+			// Admin-note: role-based authorization should be implemented here (security)
+			await context.applicationServices.Listing.ItemListing.block({
 				id: args.id,
 			});
 			return true;

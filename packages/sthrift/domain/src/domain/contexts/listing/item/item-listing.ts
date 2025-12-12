@@ -335,6 +335,14 @@ export class ItemListing<props extends ItemListingProps>
 		this.props.state = ValueObjects.ListingStateEnum.Blocked;
 	}
 
+	/**
+	 * Set whether this listing is blocked.
+	 * Convenience setter that delegates to setBlocked().
+	 */
+	set blocked(value: boolean) {
+		this.setBlocked(value);
+	}
+
 /**
  * Request deletion of this item listing (marks as deleted).
  */

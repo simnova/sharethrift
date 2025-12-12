@@ -1,5 +1,4 @@
 import type { Meta, StoryObj } from '@storybook/react';
-import { ViewListing } from './view-listing.tsx';
 import {
 	type ItemListing,
 	ViewListingImageGalleryGetImagesDocument,
@@ -9,6 +8,8 @@ import {
 	withMockApolloClient,
 	withMockRouter,
 } from '../../../../../test-utils/storybook-decorators.tsx';
+import { ViewListing } from './view-listing.tsx';
+
 // Local mock listing data (removed dependency on DUMMY_LISTINGS)
 const baseListingId = 'mock-listing-id-1';
 const MOCK_LISTING_BASE: ItemListing = {
@@ -46,7 +47,7 @@ const MOCK_LISTING_BASE: ItemListing = {
 		schemaVersion: '1.0',
 		userType: 'personal-user',
 	},
-    listingType: 'item-listing',
+	listingType: 'item-listing',
 };
 
 const mocks = [
@@ -112,15 +113,19 @@ export const Default: Story = {
 		listing: baseListing,
 		userIsSharer: false,
 		isAuthenticated: false,
+		currentUserId: '',
 		userReservationRequest: null,
 		sharedTimeAgo: '2 days ago',
-	}};
+		isAdmin: false,
+	},
+};
 
 export const AsReserver: Story = {
 	args: {
 		...Default.args,
 		userIsSharer: false,
 		isAuthenticated: true,
+		currentUserId: 'mock-reserver-id',
 		userReservationRequest: null,
 	},
 };
@@ -130,6 +135,51 @@ export const AsOwner: Story = {
 		...Default.args,
 		userIsSharer: true,
 		isAuthenticated: true,
+		currentUserId: 'mock-sharer-id',
 		userReservationRequest: null,
+	},
+};
+
+export const AsAdmin: Story = {
+	args: {
+		...Default.args,
+		isAdmin: true,
+		isAuthenticated: true,
+		currentUserId: 'mock-admin-id',
+	},
+};
+
+export const BlockedListingAsAdmin: Story = {
+	args: {
+		...Default.args,
+		listing: {
+			...baseListing,
+			state: 'Blocked' as string,
+		},
+		isAdmin: true,
+		isAuthenticated: true,
+		currentUserId: 'mock-admin-id',
+	},
+};
+
+export const BlockListing: Story = {
+	args: {
+		...Default.args,
+		isAdmin: true,
+		isAuthenticated: true,
+		currentUserId: 'mock-admin-id',
+	},
+};
+
+export const UnblockListing: Story = {
+	args: {
+		...Default.args,
+		listing: {
+			...baseListing,
+			state: 'Blocked' as string,
+		},
+		isAdmin: true,
+		isAuthenticated: true,
+		currentUserId: 'mock-admin-id',
 	},
 };
