@@ -6,7 +6,7 @@ import styles from './index.module.css';
 import '../../styles/theme.css';
 import logoIcon from '../../assets/logo/logo-icon.svg';
 
-export interface HeaderProps {
+interface HeaderProps {
 	isAuthenticated: boolean;
 	onLogin?: () => void;
 	onAdminLogin?: () => void;

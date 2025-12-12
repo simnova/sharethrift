@@ -10,9 +10,9 @@ import {
 } from "../../../../../../../generated.tsx";
 import { useNavigate } from 'react-router-dom';
 
-export interface AdminUsersTableContainerProps {
-    currentPage: number;
-    onPageChange: (page: number) => void;
+interface AdminUsersTableContainerProps {
+  currentPage: number;
+  onPageChange: (page: number) => void;
 }
 
 export const AdminUsersTableContainer: React.FC<Readonly<AdminUsersTableContainerProps>> = ({
