@@ -1,18 +1,27 @@
+---
+sidebar_position: 27
+sidebar_label: 0027 Client-Side Caching
+description: "Decision record for client-side caching strategies using Apollo Client"
+status: 
+contact: jason-t-hankins
+date: 2025-12-12
+deciders: 
+consulted: 
+informed:
+---
+
 # Client-Side Caching with Apollo Client
 
 ## Context and Problem Statement
 
-Client-side caching is critical for responsive UX and reducing server load. Apollo Client provides a normalized cache, but developers need guidance on:
+ShareThrift requires responsive UI and reduced server load through effective client-side caching. Apollo Client provides a normalized cache, but we need clear guidance on:
 
 - Cache policy selection (cache-first, network-only, cache-and-network)
-- Security: preventing sensitive data exposure in cache
-- Varying field selections: how Apollo merges queries with different fields
-- Cache invalidation strategies
-- Effective use of Apollo DevTools
+- Security considerations for preventing sensitive data exposure in client cache
+- Cache invalidation strategies for mutations
+- Effective use of Apollo DevTools for debugging
 
-This ADR provides patterns for client-side caching with emphasis on security and field-level access control.
-
-**Live Demo**: `client/src/demos/05-client-cache/ClientCacheDemo.tsx`
+This decision focuses on cache policy patterns with emphasis on security and data freshness requirements.
 
 ## Decision Drivers
 
@@ -152,55 +161,46 @@ Use cases: Likes, favorites, toggles
 
 ## Decision Outcome
 
-Adopt tiered caching strategy based on data sensitivity:
+Chosen option: **Tiered caching strategy** based on data sensitivity and freshness requirements.
 
-### Tier 1: Public/Static - cache-first
-Product catalogs, blog posts, reference data
+**Tier 1 - Public/Static (cache-first)**: Event listings, community pages, account plans
 
-### Tier 2: User-Specific - cache-and-network
-Social feeds, shopping carts, dashboards
+**Tier 2 - User-Specific (cache-and-network)**: User feeds, event attendance, notifications
 
-### Tier 3: Sensitive - network-only
-Account balances, private messages, financial data
+**Tier 3 - Sensitive (network-only)**: Payment information, admin data, private messages
 
-### Tier 4: Highly Sensitive - no-cache
-Passwords, credit cards, OTP codes, SSNs
+**Tier 4 - Highly Sensitive (no-cache)**: Passwords, credit cards, OTP codes
 
-### Field-Level Policies
-Always mask: User.ssn, User.creditCard (even if server sends real data)
+**Field-Level Policies**: Mask sensitive fields even if server sends real data (defense-in-depth)
 
-### Optimistic Updates
-Use for: Likes, follows, toggles
-Avoid for: Complex validation, transactions, unpredictable side effects
+**Optimistic Updates**: Use for likes, follows, attendance toggles. Avoid for complex validations and transactions.
 
-## Implementation
+### Implementation for ShareThrift
 
-### Configure Cache
-
+**Configure Cache:**
 ```typescript
 const cache = new InMemoryCache({
   typePolicies: {
     User: {
       keyFields: ['id'],
       fields: {
-        ssn: { read() { return '***-**-****'; } },
+        email: { read() { return '***@***.com'; } },
       },
     },
   },
 });
 ```
 
-### Use Appropriate Policies
-
+**Apply Policies:**
 ```typescript
-// Public data
-useQuery(GET_PRODUCTS, { fetchPolicy: 'cache-first' });
+// Public event listings
+useQuery(GET_PUBLIC_EVENTS, { fetchPolicy: 'cache-first' });
 
-// Sensitive data
-useQuery(GET_BALANCE, { fetchPolicy: 'network-only' });
+// User-specific feed
+useQuery(GET_MY_FEED, { fetchPolicy: 'cache-and-network' });
 
-// User feeds
-useQuery(GET_FEED, { fetchPolicy: 'cache-and-network' });
+// Payment information
+useQuery(GET_PAYMENT_METHODS, { fetchPolicy: 'network-only' });
 ```
 
 ## Cache Invalidation
@@ -242,64 +242,21 @@ Filter by `graphql` to verify cache behavior:
 console.log(client.cache.extract()); // View entire cache
 ```
 
-## Considerations
-
-### Memory Usage
-Large caches consume client memory. Target: 10-50 MB for most apps.
-Mitigation: Run cache.gc() periodically, evict old entries.
-
-### Stale Data
-Cached data becomes outdated. Use cache-and-network for frequently changing data, mutation-based invalidation.
-
-### Privacy
-Clear cache on logout: `client.clearStore()`
-Use network-only for sensitive data on shared devices.
-
-### Multi-Tab Consistency
-Separate caches per tab. Use BroadcastChannel API or polling for sync.
-
-## Example Scenarios
-
-### E-Commerce
-- Product info: cache-first
-- Reviews: cache-and-network
-- Inventory: network-only with polling
-
-### Social Feed
-- Feed: cache-and-network
-- Likes: Optimistic updates
-
-### Banking
-- Balance: network-only
-- Transactions: cache-and-network
-- Profile: cache-first
-
 ## Consequences
 
-### Positive
-- Instant UI for cached data, reduced server load
-- Field policies prevent sensitive data exposure
-- Optimistic updates provide instant feedback
-- Apollo DevTools enable effective debugging
+- Good, because instant UI response for cached data reduces perceived latency
+- Good, because reduced server load lowers infrastructure costs
+- Good, because field policies prevent sensitive data exposure as defense-in-depth
+- Good, because optimistic updates provide immediate user feedback
+- Good, because Apollo DevTools enable effective cache debugging
+- Bad, because requires understanding cache normalization and key generation
+- Bad, because aggressive caching risks stale data without proper invalidation
+- Bad, because large caches consume client memory (target: 10-50 MB)
+- Bad, because cache issues can be subtle to debug
 
-### Negative
-- Requires understanding normalization and cache keys
-- Aggressive caching risks stale data
-- Large caches consume client memory
-- Cache issues can be subtle to debug
+## More Information
 
-### Neutral
-- Team training required for cache policies
-- Periodic review needed as app evolves
-
-## Related
-
-- ADR 0001: useFragment for cache reads without queries
-- ADR 0003: Server-side permission-aware caching
-- DataLoader optimizes database, client cache optimizes network
-
-## References
-
-- [Apollo Client Caching](https://www.apollographql.com/docs/react/caching/overview/)
-- [Fetch Policies](https://www.apollographql.com/docs/react/data/queries/#setting-a-fetch-policy)
+- [Social-Feed Demo Application](https://github.com/jason-t-hankins/Social-Feed/)
+- [Apollo Client: Caching Overview](https://www.apollographql.com/docs/react/caching/overview/)
+- [Apollo Client: Fetch Policies](https://www.apollographql.com/docs/react/data/queries/#setting-a-fetch-policy)
 - [Apollo DevTools](https://www.apollographql.com/docs/react/development-testing/developer-tooling/#apollo-client-devtools)

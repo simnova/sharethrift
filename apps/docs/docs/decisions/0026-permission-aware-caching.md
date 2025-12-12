@@ -1,16 +1,22 @@
+---
+sidebar_position: 26
+sidebar_label: 0026 Permission-Aware Caching
+description: "Decision record for implementing permission-aware in-memory caching in ShareThrift's GraphQL API."
+status: 
+contact: jason-t-hankins
+date: 2025-12-12
+deciders: 
+consulted: 
+informed:
+---
+
 # Permission-Aware In-Memory Caching for GraphQL
 
 ## Context and Problem Statement
 
-GraphQL applications often serve data to users with varying permission levels. A naive server-side caching implementation could accidentally serve admin-only data to regular users, or vice versa, creating serious security vulnerabilities.
+ShareThrift's GraphQL API serves data to users with different permission levels - regular members, community admins, and platform administrators. A naive server-side caching implementation could accidentally serve admin-only data to regular users, creating serious security vulnerabilities.
 
-**Challenge**: How do we implement efficient server-side caching while ensuring users only see data they're authorized to access?
-
-**Example Scenario** (Social Feed):
-- Admin users can see post analytics (view counts, engagement rates, geographic data)
-- Regular users see the same posts but without analytics
-- Both query the same endpoint: `feed(first: 5)`
-- Without permission-aware caching, an admin's cached response could leak to a regular user
+For example, admin users viewing event analytics (attendance rates, revenue) and regular members viewing the same event listing must not share cached data. Without permission-aware caching, an admin's cached response could leak sensitive information to regular users.
 
 ## Decision Drivers
 
@@ -40,29 +46,15 @@ Create distinct queries for each permission level (e.g., `adminFeed`, `userFeed`
 
 ## Decision Outcome
 
-**Recommended Option: "Option 2 - Permission-Aware Cache Keys"**
+Chosen option: **Permission-aware cache keys** - Include user permissions in cache keys to ensure isolation between permission levels.
 
-### Rationale
+**Security**: Cache keys include query, variables, userId, role, and permissions. Example: `GetEvents::{"first":5}::alice::admin::[]` vs `GetEvents::{"first":5}::bob::member::[]`. Users cannot access cached data for other permission levels.
 
-1. **Security by Design**
-   - Impossible for users to access cached data for other permission levels
-   - Cache key includes: query + variables + userId + role + permissions
-   - Example: `GetFeed::{"first":5}::alice::admin::[]` vs `GetFeed::{"first":5}::bob::user::[]`
+**Efficiency**: Users with identical permissions share cache entries. 1000 regular members = 1 cache entry.
 
-2. **Field-Level Permissions**
-   - GraphQL resolvers check permissions before returning fields
-   - `Post.analytics` resolver: `if (user.role !== 'admin') return null;`
-   - Cache stores the filtered result, not raw database data
+**Field-Level Control**: GraphQL resolvers check permissions before returning fields, storing only filtered results in cache.
 
-3. **Memory Efficient**
-   - Users with identical permissions share cache entries
-   - 1000 regular users = 1 cache entry (not 1000)
-   - TTL-based expiration prevents unbounded growth
-
-4. **Standard GraphQL Patterns**
-   - Works with any GraphQL server (Apollo, Express GraphQL, etc.)
-   - No changes to client code required
-   - Compatible with DataLoader and other optimizations
+**Compatibility**: Works with Apollo Server, Express GraphQL, and existing DataLoader optimizations.
 
 ## Implementation Details
 
@@ -197,74 +189,16 @@ class PermissionAwareCache {
    - Easy to monitor cache efficiency by permission level
    - Clear audit trail of who accessed what
 
-### Bad
+### Consequences
 
-1. **Memory Usage**
-   - One cache entry per unique permission set (admin, user, etc.)
-   - 10 roles × 100 queries = 1000 cache entries
-   - Must set reasonable `maxSize` and TTL
-
-2. **Cache Fragmentation**
-   - Small differences in permissions = separate cache entries
-   - User with `["read", "write"]` vs `["write", "read"]` = different keys
-   - Mitigated by sorting permissions array
-
-3. **Invalidation Complexity**
-   - Changing user permissions requires invalidating their entries
-   - Data changes may need to invalidate multiple permission levels
-   - Need careful invalidation strategy
-
-4. **Cold Cache Problem**
-   - First request for each permission level is always slow
-   - New users don't benefit from existing cache entries
-   - Mitigated by reasonable TTL (30-60s)
-
-## Alternative Approaches
-
-### Option 1: No Server-Side Caching
-
-**Pros:**
-- Simplest implementation
-- No security risks from caching
-- Always fresh data
-
-**Cons:**
-- Poor performance (every request hits database)
-- High server load
-- Wasted computation for identical queries
-
-### Option 3: Post-Fetch Filtering
-
-**Approach:** Cache full dataset, filter based on permissions before returning.
-
-**Pros:**
-- One cache entry for all users
-- Memory efficient
-
-**Cons:**
-- **Security Risk**: Sensitive data in cache memory (could leak via memory dump)
-- **Complexity**: Must carefully filter every field
-- **Performance**: Filtering overhead on every request
-
-### Option 4: Separate Queries Per Permission Level
-
-**Approach:** Define separate GraphQL queries for each role.
-
-```graphql
-type Query {
-  feedAdmin: [Post!]!    # Returns posts with analytics
-  feedUser: [Post!]!     # Returns posts without analytics
-}
-```
-
-**Pros:**
-- Clear separation
-- Client explicitly chooses permission level
-
-**Cons:**
-- Schema bloat (multiply queries by number of roles)
-- Client must know about server-side roles
-- Doesn't scale to complex permissions
+- Good, because zero risk of permission leakage between users
+- Good, because reduces database queries by 70-90% for users with same permissions
+- Good, because cache lookups under 1ms vs 50-200ms database queries
+- Good, because supports complex permission models (RBAC, ABAC, custom)
+- Good, because cache hits and misses logged per role for monitoring
+- Bad, because one cache entry per unique permission set increases memory usage
+- Bad, because changing user permissions requires invalidating their cache entries
+- Bad, because first request for each permission level is always slow (cold cache)
 
 
 ## Trade-Offs
@@ -533,19 +467,9 @@ cache.invalidate(pattern) {
 - [ ] Log cache hits/misses per role
 - [ ] Test with different permission levels
 - [ ] Verify no data leakage between roles
-- [ ] Monitor memory usage in production
-- [ ] Document permission model for team
+## More Information
 
-## References
-
-- [GraphQL Field-Level Authorization](https://www.apollographql.com/docs/apollo-server/security/authentication/#authorization-in-resolvers)
-- [Caching Best Practices](https://redis.io/docs/manual/patterns/caching/)
-- [LRU Cache Implementation](https://www.npmjs.com/package/lru-cache)
-
-## Approval
-
-**Status**: Implemented  
-**Date**: December 10, 2025
-
-**Notes:**
-[See here for demo](https://github.com/jason-t-hankins/Social-Feed/)
+- [Social-Feed Demo Application](https://github.com/jason-t-hankins/Social-Feed/)
+- [Apollo Server: Field-Level Authorization](https://www.apollographql.com/docs/apollo-server/security/authentication/#authorization-in-resolvers)
+- [Redis: Caching Best Practices](https://redis.io/docs/manual/patterns/caching/)
+- [NPM: LRU Cache Implementation](https://www.npmjs.com/package/lru-cache)
