@@ -1,10 +1,8 @@
 import type { Meta, StoryObj } from "@storybook/react";
 import { MemoryRouter } from "react-router-dom";
 import { expect, within } from "storybook/test";
-import {
-  ListingBanner,
-  type ListingBannerProps,
-} from "../components/listing-banner.tsx";
+import type { ComponentProps } from "react";
+import { ListingBanner } from "../components/listing-banner.tsx";
 import type { PersonalUser } from "../../../../../generated.tsx";
 
 // Mock PersonalUser object for Storybook

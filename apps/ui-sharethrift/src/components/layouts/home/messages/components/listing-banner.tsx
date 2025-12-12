@@ -6,7 +6,7 @@ import { UserProfileLink } from "../../../../shared/user-profile-link.tsx";
 
 const imgRectangle26 = bikeListingImg;
 
-export interface ListingBannerProps {
+interface ListingBannerProps {
   owner: User;
 }
 

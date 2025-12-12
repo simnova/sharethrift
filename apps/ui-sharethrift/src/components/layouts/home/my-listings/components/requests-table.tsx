@@ -12,7 +12,7 @@ import { UserProfileLink } from '../../../../shared/user-profile-link.tsx';
 
 const { Search } = Input;
 
-export interface RequestsTableProps {
+interface RequestsTableProps {
 	data: ListingRequestData[];
 	searchText: string;
 	statusFilters: string[];
