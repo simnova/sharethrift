@@ -111,24 +111,24 @@ export const RequestsTableContainer: React.FC<RequestsTableContainerProps> = ({
 		}
 	};
 
-	const handleReject = async (requestId: string) => {
-		// TODO: Implement reject functionality in future PR
+	const handleReject = (_requestId: string) => {
+		// TODO: Implement reject mutation when GraphQL schema is ready
 		message.info('Reject functionality coming soon');
 	};
 
-	const handleClose = async (requestId: string) => {
-		// TODO: Implement close functionality in future PR
+	const handleClose = (_requestId: string) => {
+		// TODO: Implement close mutation when GraphQL schema is ready
 		message.info('Close functionality coming soon');
 	};
 
-	const handleDelete = async (requestId: string) => {
-		// TODO: Implement delete functionality in future PR
+	const handleDelete = (_requestId: string) => {
+		// TODO: Implement delete mutation when GraphQL schema is ready
 		message.info('Delete functionality coming soon');
 	};
 
-	const handleMessage = async (requestId: string) => {
-		// TODO: Implement message functionality in future PR
-		message.info('Message functionality coming soon');
+	const handleMessage = (_requestId: string) => {
+		// TODO: Implement navigation to messages view
+		message.info('Messaging functionality coming soon');
 	};
 
 	const handleAction = async (action: string, requestId: string) => {
@@ -138,16 +138,16 @@ export const RequestsTableContainer: React.FC<RequestsTableContainerProps> = ({
 				await handleAccept(requestId);
 				break;
 			case 'reject':
-				await handleReject(requestId);
+				handleReject(requestId);
 				break;
 			case 'close':
-				await handleClose(requestId);
+				handleClose(requestId);
 				break;
 			case 'delete':
-				await handleDelete(requestId);
+				handleDelete(requestId);
 				break;
 			case 'message':
-				await handleMessage(requestId);
+				handleMessage(requestId);
 				break;
 			default:
 				console.warn(`Unknown action: ${action}`);
