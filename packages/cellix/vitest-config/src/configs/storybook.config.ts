@@ -63,7 +63,6 @@ export function createStorybookVitestConfig(
 			// Disable watch mode and isolate tests when running Storybook tests to reduce file watchers and improve stability
 			watch: false, //disables file watching, which reduces the number of file watchers and resource usage
 			isolate: true, // ensures each test file runs in its own process, improving test stability and preventing state leakage
-      pool: "threads"
 		},
 	});
 
