@@ -98,11 +98,10 @@ test.for(feature, ({ Scenario }) => {
 			// biome-ignore lint/complexity/useLiteralKeys: Required for env var access
 			process.env['SENDGRID_MAGICLINK_SUBJECT_SUFFIX'] = '- Dev';
 
-			mockFs.existsSync = vi.fn().mockReturnValue(false);
-			mockFs.mkdirSync = vi.fn();
-			mockFs.writeFileSync = vi.fn();
-
-			vi.mocked(emailTemplate.readHtmlFile).mockReturnValue(
+		mockFs.existsSync = vi.fn().mockReturnValue(false);
+		mockFs.mkdirSync = vi.fn() as typeof mockFs.mkdirSync;
+		mockFs.writeFileSync = vi.fn() as typeof mockFs.writeFileSync;			
+    vi.mocked(emailTemplate.readHtmlFile).mockReturnValue(
 				JSON.stringify(mockTemplate),
 			);
 

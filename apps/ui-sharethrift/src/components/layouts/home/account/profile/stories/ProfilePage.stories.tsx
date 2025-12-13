@@ -7,6 +7,7 @@ import {
 import {
 	HomeAccountProfileViewContainerCurrentUserDocument,
 	HomeAccountProfileViewContainerUserListingsDocument,
+	UseUserIsAdminDocument,
 	type ItemListing,
 	type PersonalUser,
 } from '../../../../../../generated.tsx';
@@ -86,6 +87,19 @@ const mockTwoListings: ItemListing[] = [
 	},
 ];
 
+const userIsAdminMockRequest = (userId: string) => {
+	return {
+		request: {
+			query: UseUserIsAdminDocument,
+		},
+		result: {
+			data: {
+				currentUser: {id: userId, userIsAdmin: false },
+			},
+		},
+	};
+};
+
 const meta: Meta<typeof HomeRoutes> = {
 	title: 'Pages/Account/Profile',
 	component: HomeRoutes,
@@ -113,7 +127,7 @@ export const DefaultView: Story = {
 					},
 					result: {
 						data: {
-							currentPersonalUserAndCreateIfNotExists: mockUserSarah,
+							currentUser: mockUserSarah,
 						},
 					},
 				},
@@ -121,13 +135,20 @@ export const DefaultView: Story = {
 				{
 					request: {
 						query: HomeAccountProfileViewContainerUserListingsDocument,
+						variables: { page: 1, pageSize: 100 },
 					},
 					result: {
 						data: {
-							itemListings: mockTwoListings,
+							myListingsAll: {
+								items: mockTwoListings,
+								total: 2,
+								page: 1,
+								pageSize: 100,
+							},
 						},
 					},
 				},
+				userIsAdminMockRequest(mockUserSarah.id),
 			],
 		},
 	},
@@ -143,20 +164,22 @@ export const NoListings: Story = {
 					},
 					result: {
 						data: {
-							currentPersonalUserAndCreateIfNotExists: mockUserAlex,
+							currentUser: mockUserAlex,
 						},
 					},
 				},
 				{
 					request: {
 						query: HomeAccountProfileViewContainerUserListingsDocument,
+						variables: { page: 1, pageSize: 100 },
 					},
 					result: {
 						data: {
-							itemListings: [],
+							myListingsAll: [],
 						},
 					},
 				},
+				userIsAdminMockRequest(mockUserAlex.id),
 			],
 		},
 	},

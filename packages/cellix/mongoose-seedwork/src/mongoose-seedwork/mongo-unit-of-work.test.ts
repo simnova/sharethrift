@@ -1,5 +1,5 @@
 import { describeFeature, loadFeature } from '@amiceli/vitest-cucumber';
-import { expect, vi, type Mock} from 'vitest';
+import { expect, vi, type MockInstance } from 'vitest';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import type { ClientSession, Model } from 'mongoose';
@@ -17,7 +17,6 @@ const feature = await loadFeature(
 );
 
 class AggregateRootMock extends DomainSeedwork.AggregateRoot<PropType, unknown> {
-  override getIntegrationEvents = vi.fn(() => []);
   get foo(): string { return this.props.foo; }
   set foo(foo: string) { this.props.foo = foo; }
   get createdAt(): Date { return this.props.createdAt; }
@@ -29,11 +28,35 @@ type PropType = DomainSeedwork.DomainEntityProps & {
   readonly updatedAt: Date;
   readonly schemaVersion: string;
 };
-class RepoMock extends MongoRepositoryBase<MongoType, PropType, unknown, AggregateRootMock> {
-  override getIntegrationEvents = vi.fn(() => []);
-}
+class RepoMock extends MongoRepositoryBase<MongoType, PropType, unknown, AggregateRootMock> {}
 
 class TestEvent extends DomainSeedwork.CustomDomainEventImpl<{ foo: string }> {}
+
+// Helper types and factories for domain operations
+type RepoOp = (repo: RepoMock) => Promise<void>;
+type RepoOpMock = RepoOp & MockInstance;
+type DispatchMock = ReturnType<typeof vi.fn>;
+
+function makeDomainOpWithoutEvents(): RepoOpMock {
+  const op: RepoOp = async (repo) => {
+    const aggregate = await repo.get('agg-1');
+    aggregate.foo = 'new-foo';
+    await repo.save(aggregate);
+  };
+  return vi.fn(op) as RepoOpMock;
+}
+
+function makeDomainOpWithEvents(events: TestEvent[]): RepoOpMock {
+  const op: RepoOp = async (repo) => {
+    const aggregate = await repo.get('agg-1');
+    aggregate.foo = 'new-foo';
+    for (const e of events) {
+      aggregate.addIntegrationEvent(TestEvent, e.payload);
+    }
+    await repo.save(aggregate);
+  };
+  return vi.fn(op) as RepoOpMock;
+}
 
 vi.mock('mongoose', async () => {
   const original = await vi.importActual<typeof import('mongoose')>('mongoose');
@@ -50,12 +73,40 @@ test.for(feature, ({ Scenario, BeforeEachScenario }) => {
   let repoInstance: RepoMock;
   let eventBus: DomainSeedwork.EventBus;
   let integrationEventBus: DomainSeedwork.EventBus;
+  let dispatchMock: DispatchMock;
   let session: ClientSession;
   let mockModel: Model<MongoType>;
   let typeConverter: DomainSeedwork.TypeConverter<MongoType, PropType, unknown, AggregateRootMock>;
+
   const Passport = {};
-  const mockRepoClass = vi.fn((_passport, _model, _typeConverter, _bus, _session): RepoMock => repoInstance);
-  let domainOperation: ReturnType<typeof vi.fn>;
+  class TestRepoClass extends RepoMock {}
+  let domainOperation: RepoOpMock;
+
+  function setupMockModelReturningAggregate() {
+    (mockModel.findById as ReturnType<typeof vi.fn>).mockReturnValue({
+      exec: vi.fn().mockResolvedValue({
+        _id: 'agg-1',
+        foo: 'old-foo',
+      }),
+    });
+  }
+
+  function setupRepoNoEvents() {
+    repoInstance.getIntegrationEvents = vi.fn(() => []) as typeof repoInstance.getIntegrationEvents;
+    repoInstance.get = vi.fn().mockResolvedValue(
+      new AggregateRootMock(
+        {
+          id: 'agg-1',
+          foo: 'old-foo',
+          createdAt: new Date(),
+          updatedAt: new Date(),
+          schemaVersion: '1',
+        } as PropType,
+        {},
+      ),
+    );
+    repoInstance.save = vi.fn().mockResolvedValue(undefined);
+  }
 
   BeforeEachScenario(() => {
     session = {} as ClientSession;
@@ -87,10 +138,11 @@ test.for(feature, ({ Scenario, BeforeEachScenario }) => {
       dispatch: vi.fn(),
       register: vi.fn(),
     }) as DomainSeedwork.EventBus;
-    integrationEventBus = vi.mocked({
-      dispatch: vi.fn(),
+    dispatchMock = vi.fn() as DispatchMock;
+    integrationEventBus = {
+      dispatch: dispatchMock,
       register: vi.fn(),
-    }) as DomainSeedwork.EventBus;
+    } as unknown as DomainSeedwork.EventBus;
     repoInstance = new RepoMock(
       vi.mocked({}),
       mockModel,
@@ -103,18 +155,16 @@ test.for(feature, ({ Scenario, BeforeEachScenario }) => {
       integrationEventBus,
       mockModel,
       typeConverter,
-      mockRepoClass,
+      TestRepoClass,
     );
-    domainOperation = vi.fn(async (repo: RepoMock) => {
-      const aggregate = await repo.get('agg-1');
-      aggregate.foo = 'new-foo';
-      await repo.save(aggregate);
-    });
+    domainOperation = makeDomainOpWithoutEvents();
+    vi.clearAllMocks();
     vi.spyOn(mongoose.connection, 'transaction').mockImplementation(
       async (cb: (session: ClientSession) => Promise<unknown>) => {
-        await cb({} as ClientSession);
+        return await cb({} as ClientSession);
       },
     );
+    setupMockModelReturningAggregate();
   });
 
   Scenario('Initializing the MongoUnitOfWork', ({ Given, When, Then }) => {
@@ -129,27 +179,35 @@ test.for(feature, ({ Scenario, BeforeEachScenario }) => {
       expect(unitOfWork.typeConverter).toBe(typeConverter);
       expect(unitOfWork.bus).toBe(eventBus);
       expect(unitOfWork.integrationEventBus).toBe(integrationEventBus);
-      expect(unitOfWork.repoClass).toBe(mockRepoClass);
+      expect(unitOfWork.repoClass).toBe(TestRepoClass);
     });
   });
 
   Scenario('Domain operation with no events, completes successfully', ({ Given, When, Then }) => {
     Given('a domain operation that emits no domain or integration events', () => {
-      repoInstance.getIntegrationEvents = vi.fn(() => []);
+      setupRepoNoEvents();
     });
     When('the operation completes successfully', async () => {
+      domainOperation.mockClear();
+      dispatchMock.mockClear();
       await unitOfWork.withTransaction(Passport, domainOperation);
     });
     Then('the transaction is committed and no events are dispatched', () => {
-      expect(domainOperation).toHaveBeenCalledWith(repoInstance);
-      expect(integrationEventBus.dispatch).not.toHaveBeenCalled();
+      expect(domainOperation).toHaveBeenCalled();
+      const callArg = domainOperation.mock.calls[0]?.[0];
+      expect(callArg).toBeInstanceOf(TestRepoClass);
+      expect(callArg.model).toBe(mockModel);
+      expect(callArg.typeConverter).toBe(typeConverter);
+      expect(callArg.bus).toBe(eventBus);
+      expect(callArg.session).toStrictEqual(session);
+      expect(dispatchMock).not.toHaveBeenCalled();
     });
   });
 
   Scenario('Domain operation with no events, throws error', ({ Given, When, Then }) => {
     let domainError: Error;
     Given('a domain operation that emits no domain or integration events', () => {
-      repoInstance.getIntegrationEvents = vi.fn(() => []);
+      setupRepoNoEvents();
       domainError = new Error('Domain failure');
     });
     When('the operation throws an error', async () => {
@@ -161,82 +219,74 @@ test.for(feature, ({ Scenario, BeforeEachScenario }) => {
       ).rejects.toThrow(domainError);
     });
     Then('the transaction is rolled back and no events are dispatched', () => {
-      expect(integrationEventBus.dispatch).not.toHaveBeenCalled();
+      expect(dispatchMock).not.toHaveBeenCalled();
     });
   });
 
   Scenario('Domain operation emits integration events, all dispatch succeed', ({ Given, When, Then }) => {
     let event1: TestEvent;
     let event2: TestEvent;
+    let customDomainOp: RepoOpMock;
     Given('integration events are emitted during the domain operation', () => {
       event1 = new TestEvent('id');
       event1.payload = { foo: 'bar1' };
       event2 = new TestEvent('id');
       event2.payload = { foo: 'bar2' };
-      repoInstance.getIntegrationEvents = vi.fn(() => [event1, event2]);
+      customDomainOp = makeDomainOpWithEvents([event1, event2]);
     });
     When('the transaction completes successfully', async () => {
-      (integrationEventBus.dispatch as Mock)
-        .mockResolvedValueOnce(undefined)
-        .mockResolvedValueOnce(undefined);
-      await unitOfWork.withTransaction(Passport, domainOperation);
+      dispatchMock.mockClear();
+      dispatchMock.mockResolvedValueOnce(undefined);
+      dispatchMock.mockResolvedValueOnce(undefined);
+      await unitOfWork.withTransaction(Passport, customDomainOp);
     });
     Then('all integration events are dispatched after the transaction commits', () => {
-      expect(integrationEventBus.dispatch).toHaveBeenCalledTimes(2);
-      expect(integrationEventBus.dispatch).toHaveBeenNthCalledWith(
-        1,
-        event1.constructor,
-        event1.payload,
-      );
-      expect(integrationEventBus.dispatch).toHaveBeenNthCalledWith(
-        2,
-        event2.constructor,
-        event2.payload,
-      );
+      expect(dispatchMock).toHaveBeenCalledTimes(2);
+      expect(dispatchMock).toHaveBeenNthCalledWith(1, event1.constructor, event1.payload);
+      expect(dispatchMock).toHaveBeenNthCalledWith(2, event2.constructor, event2.payload);
     });
   });
 
   Scenario('Integration event dispatch fails', ({ Given, When, Then }) => {
     let event1: TestEvent;
     let event2: TestEvent;
+    let customDomainOp: RepoOpMock;
     Given('integration events are emitted during the domain operation', () => {
       event1 = new TestEvent('id');
       event1.payload = { foo: 'bar1' };
       event2 = new TestEvent('id');
       event2.payload = { foo: 'bar2' };
-      repoInstance.getIntegrationEvents = vi.fn(() => [event1, event2]);
+      customDomainOp = makeDomainOpWithEvents([event1, event2]);
     });
     When('integration event dispatch fails', async () => {
-      (integrationEventBus.dispatch as Mock)
-        .mockRejectedValueOnce(new Error('fail1'))
-        .mockResolvedValueOnce(undefined);
-      await expect(
-        unitOfWork.withTransaction(Passport, domainOperation),
-      ).rejects.toThrow('fail1');
+      dispatchMock.mockClear();
+      dispatchMock.mockRejectedValueOnce(new Error('rejected promise'));
+      await expect(unitOfWork.withTransaction(Passport, customDomainOp)).rejects.toThrow('rejected promise');
     });
     Then('the error from dispatch is propagated and the transaction is not rolled back by the unit of work', () => {
-      expect(integrationEventBus.dispatch).toHaveBeenCalledTimes(1);
+      expect(dispatchMock).toHaveBeenCalledTimes(1);
     });
   });
 
   Scenario('Multiple integration events are emitted and all succeed', ({ Given, When, Then }) => {
     let event1: TestEvent;
     let event2: TestEvent;
+    let customDomainOp: RepoOpMock;
     Given('integration events are emitted during the domain operation', () => {
       event1 = new TestEvent('id');
       event1.payload = { foo: 'bar1' };
       event2 = new TestEvent('id');
       event2.payload = { foo: 'bar2' };
-      repoInstance.getIntegrationEvents = vi.fn(() => [event1, event2]);
+      customDomainOp = makeDomainOpWithEvents([event1, event2]);
     });
     When('multiple integration events are emitted and all succeed', async () => {
-      (integrationEventBus.dispatch as Mock)
-        .mockResolvedValueOnce(undefined)
-        .mockResolvedValueOnce(undefined);
-      await unitOfWork.withTransaction(Passport, domainOperation);
+      dispatchMock.mockClear();
+      dispatchMock.mockResolvedValueOnce(undefined);
+      dispatchMock.mockResolvedValueOnce(undefined);
+      await unitOfWork.withTransaction(Passport, customDomainOp);
     });
     Then('all are dispatched after the transaction', () => {
-      expect(integrationEventBus.dispatch).toHaveBeenCalledTimes(2);
+      expect(dispatchMock).toHaveBeenCalledTimes(2);
     });
   });
 });
