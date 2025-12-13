@@ -18,7 +18,7 @@ const mockListings = {
 			id: '1',
 			title: 'Cordless Drill',
 			image: '/assets/item-images/projector.png',
-			publishedAt: '2025-01-01',
+			createdAt: '2025-01-01',
 			reservationPeriod: '2025-01-01 - 2025-12-31',
 			status: 'Active',
 			pendingRequestsCount: 2,

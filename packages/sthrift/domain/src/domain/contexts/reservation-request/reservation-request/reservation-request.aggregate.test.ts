@@ -118,7 +118,7 @@ test.for(feature, ({ Scenario, BeforeEachScenario }) => {
 		location: '123 Main St, Springfield',
 		sharingPeriodStart: new Date(),
 		sharingPeriodEnd: new Date(),
-		state: 'Published',
+		state: 'Active',
 		createdAt: new Date(),
 		updatedAt: new Date(),
 		schemaVersion: '1',

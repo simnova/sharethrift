@@ -10,7 +10,7 @@ import {
 	appealRequestOptions,
 } from './appeal-request.model.ts';
 import * as PersonalUser from '../user/personal-user.model.ts';
-import * as ItemListing from '../listing/item.model.ts';
+import * as ItemListing from '../listing/item-listing.model.ts';
 
 /**
  * Interface for ListingAppealRequest discriminator.

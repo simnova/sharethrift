@@ -255,7 +255,7 @@ test.for(feature, ({ Scenario, Background, BeforeEachScenario }) => {
             Given("a valid Listing domain entity reference", () => {
                 listing = vi.mocked({
                     id: createValidObjectId('listing-1'),
-                    state: 'Published',
+                    state: 'Active',
                 } as unknown as Domain.Contexts.Listing.ItemListing.ItemListingEntityReference);
             });
             And('a valid PersonalUser domain entity reference as reserver', () => {
@@ -406,7 +406,6 @@ test.for(feature, ({ Scenario, Background, BeforeEachScenario }) => {
 			When('I call getNewInstance with state "PENDING", a valid listing, and the invalid reserver', async () => {
 				listing = vi.mocked({
 					id: createValidObjectId('listing-1'),
-					isPublished: true,
 				} as unknown as Domain.Contexts.Listing.ItemListing.ItemListingEntityReference);
 
 				try {

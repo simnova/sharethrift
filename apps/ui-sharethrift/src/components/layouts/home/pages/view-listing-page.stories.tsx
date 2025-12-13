@@ -18,7 +18,7 @@ const mockListing = {
 	description: 'High-quality cordless drill for home projects',
 	category: 'Tools & Equipment',
 	location: 'Toronto, ON',
-	state: 'Published',
+	state: 'Active',
 	images: ['/assets/item-images/projector.png'],
 	sharingPeriodStart: '2025-01-01',
 	sharingPeriodEnd: '2025-12-31',

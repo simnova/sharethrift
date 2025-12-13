@@ -2,7 +2,7 @@ export interface MyListingData {
   id: string;
   title: string;
   image?: string | null;
-  publishedAt?: string | null;
+  createdAt?: string | null;
   reservationPeriod?: string | null;
   status: string;
   pendingRequestsCount: number;

@@ -22,31 +22,19 @@ export const NoFilters: Story = {
 	args: {
 		statusFilters: [],
 	},
-	play: async ({ canvasElement }) => {
+	play: ({ canvasElement }) => {
 		const canvas = within(canvasElement);
 		expect(canvas.getByText('Filter by Status')).toBeTruthy();
-		expect(canvas.getByText('Appealed')).toBeTruthy();
 		expect(canvas.getByText('Blocked')).toBeTruthy();
-	},
-};
-
-export const WithAppealedFilter: Story = {
-	args: {
-		statusFilters: ['Appeal Requested'],
-	},
-	play: async ({ canvasElement }) => {
-		const checkboxes = canvasElement.querySelectorAll('input[type="checkbox"]');
-		expect(checkboxes.length).toBe(2);
 	},
 };
 
 export const WithBothFilters: Story = {
 	args: {
-		statusFilters: ['Appeal Requested', 'Blocked'],
+		statusFilters: ['Blocked'],
 	},
-	play: async ({ canvasElement }) => {
+	play: ({ canvasElement }) => {
 		const canvas = within(canvasElement);
-		expect(canvas.getByText('Appealed')).toBeTruthy();
 		expect(canvas.getByText('Blocked')).toBeTruthy();
 	},
 };
@@ -59,8 +47,8 @@ export const ClickingFilter: Story = {
 	},
 	play: async ({ canvasElement, args }) => {
 		const canvas = within(canvasElement);
-		const appealedCheckbox = canvas.getByText('Appealed');
-		await userEvent.click(appealedCheckbox);
+		const blockedCheckbox = canvas.getByText('Blocked');
+		await userEvent.click(blockedCheckbox);
 		expect(args.onStatusFilter).toHaveBeenCalled();
 		expect(args.confirm).toHaveBeenCalled();
 	},

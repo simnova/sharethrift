@@ -47,7 +47,7 @@ export class ItemListingRepository<
 	}
 
 	async getActiveItemListings() {
-		const mongoItems = await this.model.find({ state: 'Published' }).exec();
+		const mongoItems = await this.model.find({ state: 'Active' }).exec();
 		return mongoItems.map((item) =>
 			this.typeConverter.toDomain(item, this.passport),
 		);
@@ -103,7 +103,7 @@ export class ItemListingRepository<
 			const direction = options.sorter.order === 'ascend' ? 1 : -1;
 			// Map GraphQL field names to MongoDB field names
 			const fieldMapping: Record<string, string> = {
-				publishedAt: 'createdAt',
+				createdAt: 'createdAt',
 				status: 'state',
 			};
 			const mongoField =

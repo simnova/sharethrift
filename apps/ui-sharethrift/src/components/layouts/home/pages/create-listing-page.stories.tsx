@@ -27,7 +27,7 @@ const meta: Meta<typeof CreateListing> = {
 								__typename: 'ItemListing',
 								id: '1',
 								title: 'Test Listing',
-								state: 'Published',
+								state: 'Active',
 							},
 						},
 					},

@@ -2,20 +2,20 @@ Feature: Listing value objects
 
   # ListingState
   Scenario: Creating a ListingState with a valid predefined value
-    When I create a ListingState with "Published"
-    Then the value should be "Published"
+    When I create a ListingState with "Active"
+    Then the value should be "Active"
 
   Scenario: Creating a ListingState with an invalid value
     When I try to create a ListingState with "InvalidState"
     Then an error should be thrown indicating the value is invalid
 
   Scenario: Checking if a ListingState is active
-    Given a ListingState with value "Published"
+    Given a ListingState with value "Active"
     When I check isActive
     Then the result should be true
 
   Scenario: Checking if a ListingState is inactive
-    Given a ListingState with value "Drafted"
+    Given a ListingState with value "Draft"
     When I check isActive
     Then the result should be false
 

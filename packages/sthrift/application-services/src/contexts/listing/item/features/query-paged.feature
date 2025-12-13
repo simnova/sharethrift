@@ -50,7 +50,7 @@ Feature: Query Paged Item Listings
     Given page 1 and pageSize 10
     And no sharerId is provided
     When the queryPaged command is executed
-    Then default admin status filters "Appeal Requested, Blocked" should be applied
+    Then default admin status filter "Blocked" should be applied
 
   Scenario: No default status filters when sharerId provided
     Given page 1 and pageSize 10

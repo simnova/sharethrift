@@ -21,8 +21,8 @@ And an ItemListingDomainAdapter wrapping the document
 		Then the title should be "Updated Title"
 
 	Scenario: Modifying item listing state
-		When I set the state to "Published"
-		Then the state should be "Published"
+		When I set the state to "Active"
+		Then the state should be "Active"
 
 	Scenario: Setting and getting description
 		When I set the description to "New description"
@@ -83,4 +83,4 @@ And an ItemListingDomainAdapter wrapping the document
 
 	Scenario: Getting default state when not set
 		When the document state is null
-		Then the state getter should return "Published"
+		Then the state getter should return "Active"

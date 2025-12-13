@@ -89,7 +89,7 @@
 | < Navigate Home | Unnamed: 1 | Unnamed: 2 | Unnamed: 3 | Unnamed: 4 | Unnamed: 5 | Unnamed: 6 | Unnamed: 7 | Unnamed: 8 | Unnamed: 9 | Unnamed: 10 | Unnamed: 11 | Unnamed: 12 | Unnamed: 13 | Unnamed: 14 | Unnamed: 15 | Unnamed: 16 | Unnamed: 17 | Unnamed: 18 | Unnamed: 19 | Unnamed: 20 | Unnamed: 21 | Unnamed: 22 | Unnamed: 23 | Unnamed: 24 |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
 | collections:Listing | State / Role | NaN | NaN | NaN | NaN | NaN | NaN | NaN | NaN | NaN | NaN | NaN | NaN | NaN | NaN | NaN | NaN | NaN | NaN | NaN | NaN | NaN | NaN | NaN |
-| ItemListing | Drafted | NaN | NaN | Published | NaN | NaN | Paused | NaN | NaN | Blocked | NaN | NaN | Appeal Requested | NaN | NaN | Cancelled | NaN | NaN | Expired | NaN | NaN | NaN | NaN | NaN |
+| ItemListing | Drafted | NaN | NaN | Active | NaN | NaN | Paused | NaN | NaN | Blocked | NaN | NaN | Appeal Requested | NaN | NaN | Cancelled | NaN | NaN | Expired | NaN | NaN | NaN | NaN | NaN |
 | Properties | Sharer | Reserver | Admin | Sharer | Reserver | Admin | Sharer | Reserver | Admin | Sharer | Reserver | Admin | Sharer | Reserver | Admin | Sharer | Reserver | Admin | Sharer | Reserver | Admin | NaN | Data Type | Rules |
 | \_id | NaN | NaN | NaN | NaN | NaN | NaN | NaN | NaN | NaN | NaN | NaN | NaN | NaN | NaN | NaN | NaN | NaN | NaN | NaN | NaN | NaN | NaN | required, objectid | unique |
 | sharer | NaN | NaN | NaN | NaN | NaN | NaN | NaN | NaN | NaN | NaN | NaN | NaN | NaN | NaN | NaN | NaN | NaN | NaN | NaN | NaN | NaN | NaN | required, objectId | User reference |
@@ -99,7 +99,7 @@
 | location | NaN | NaN | NaN | NaN | NaN | NaN | NaN | NaN | NaN | NaN | NaN | NaN | NaN | NaN | NaN | NaN | NaN | NaN | NaN | NaN | NaN | NaN | required, string | NaN |
 | sharingPeriodStart | NaN | NaN | NaN | NaN | NaN | NaN | NaN | NaN | NaN | NaN | NaN | NaN | NaN | NaN | NaN | NaN | NaN | NaN | NaN | NaN | NaN | NaN | required, timestamp | NaN |
 | sharingPeriodEnd | NaN | NaN | NaN | NaN | NaN | NaN | NaN | NaN | NaN | NaN | NaN | NaN | NaN | NaN | NaN | NaN | NaN | NaN | NaN | NaN | NaN | NaN | required, timestamp | NaN |
-| state | NaN | NaN | NaN | NaN | NaN | NaN | NaN | NaN | NaN | NaN | NaN | NaN | NaN | NaN | NaN | NaN | NaN | NaN | NaN | NaN | NaN | NaN | optional, string | "Published", "Paused", "Cancelled", "Drafted", "Expired", "Blocked", "Appeal Requested" |
+| state | NaN | NaN | NaN | NaN | NaN | NaN | NaN | NaN | NaN | NaN | NaN | NaN | NaN | NaN | NaN | NaN | NaN | NaN | NaN | NaN | NaN | NaN | optional, string | "Active", "Paused", "Cancelled", "Drafted", "Expired", "Blocked", "Appeal Requested" |
 | updatedAt | NaN | NaN | NaN | NaN | NaN | NaN | NaN | NaN | NaN | NaN | NaN | NaN | NaN | NaN | NaN | NaN | NaN | NaN | NaN | NaN | NaN | NaN | optional, timestamp | NaN |
 | createdAt | NaN | NaN | NaN | NaN | NaN | NaN | NaN | NaN | NaN | NaN | NaN | NaN | NaN | NaN | NaN | NaN | NaN | NaN | NaN | NaN | NaN | NaN | optional, timestamp | NaN |
 | sharingHistory | NaN | NaN | NaN | NaN | NaN | NaN | NaN | NaN | NaN | NaN | NaN | NaN | NaN | NaN | NaN | NaN | NaN | NaN | NaN | NaN | NaN | NaN | optional, objectid[] | NaN |

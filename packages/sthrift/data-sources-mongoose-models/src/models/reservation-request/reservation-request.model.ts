@@ -1,7 +1,7 @@
 import type { PopulatedDoc, ObjectId, Model } from 'mongoose';
 import { Schema } from 'mongoose';
 import { MongooseSeedwork } from '@cellix/mongoose-seedwork';
-import * as ItemListing from '../listing/item.model.ts';
+import * as ItemListing from '../listing/item-listing.model.ts';
 import type * as User from '../user/user.model.ts';
 
 export interface ReservationRequest extends MongooseSeedwork.Base {

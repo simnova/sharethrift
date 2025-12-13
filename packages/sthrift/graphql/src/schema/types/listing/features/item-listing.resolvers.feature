@@ -43,12 +43,12 @@ So that I can view, filter, and create listings through the GraphQL API
 		When the myListingsAll query is executed
 		Then it should call Listing.ItemListing.queryPaged with sharerId, page, and pageSize
         And it should transform each listing into ListingAll shape
-		And it should map state values like "Published" to "Active" and "Drafted" to "Draft"
+		And it should map state values like "Active" to "Active" and "Draft" to "Draft"
 		And it should return items, total, page, and pageSize in the response
     
     Scenario: Querying myListingsAll with search and filters
 		Given a verified user and valid pagination arguments
-		And a searchText "camera" and statusFilters ["Published"]
+		And a searchText "camera" and statusFilters ["Active"]
 		When the myListingsAll query is executed
 		Then it should call Listing.ItemListing.queryPaged with those filters
 		And it should return matching listings only
@@ -90,7 +90,7 @@ So that I can view, filter, and create listings through the GraphQL API
 	Scenario: Mapping item listing fields for myListingsAll
 		Given a valid result from queryPaged
 		When items are mapped
-		Then each listing should include id, title, image, publishedAt, reservationPeriod, status, and pendingRequestsCount
+		Then each listing should include id, title, image, createdAt, reservationPeriod, status, and pendingRequestsCount
 		And missing images should map image to null
 		And missing or blank states should map status to "Unknown"
 

@@ -70,8 +70,6 @@ Version 1.0
 
 [Listing - Blocked 4](#_Toc1762346429)
 
-[Listing – Appeal Requested 5](#_Toc2055443092)
-
 [Listing - Active 5](#_Toc40541785)
 
 [Listing - Paused 5](#_Toc1471342789)
@@ -334,7 +332,8 @@ Not Visible to users via browsing or searching, doesn't accept reservation reque
 
 #### Review
 
-The process in which an appeal requested listing is evaluated by an admin to determine whether it meets the necessary criteria to be unblocked. This is done by an admin.
+The process in which a blocked listing with an associated appeal request is evaluated by an admin to determine whether it meets the necessary criteria to be unblocked.
+
 
 #### Appeal
 
@@ -387,10 +386,6 @@ A draft listing is a listing that has been created but may not contain all requi
 #### Listing - Blocked
 
 A listing that has been made inactive and deemed not suitable to be active; user needs to request a manual admin review. This is one of listing states.
-
-#### Listing – Appeal Requested
-
-A listing that was initially blocked by an admin, that is now pending review by an Admin, so that it can become an active listing again. This is one of listing states.
 
 #### Listing - Active
 
@@ -718,7 +713,7 @@ Permanently remove a listing from being reserved and visible.
 | --- | --- | --- |
 | Admin | Dashboard | Listings | | |
 | **Mobile** | **Desktop** | **Details** |
-| ![](data:image/jpeg;base64...) | ![](data:image/png;base64...) | Listings is the default page for the Admin Dashboard.  It contains a table of currently blocked listings, which includes:   * Listing Name and Image * Published At * Reservation Period * Status (Appealed and Blocked only) * Actions   1. View Listing   2. Unblock Listing   3. Remove Listing.   Admins can use the above actions to manage listings. |
+| ![](data:image/jpeg;base64...) | ![](data:image/png;base64...) | Listings is the default page for the Admin Dashboard.  It contains a table of currently blocked listings, which includes:   * Listing Name and Image * Published At * Reservation Period * Status (Blocked only) * Actions   1. View Listing   2. Unblock Listing   3. Remove Listing.   Admins can use the above actions to manage listings. |
 
 #### Listings - Unblock Listing
 

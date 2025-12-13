@@ -40,7 +40,7 @@ describe('ItemListing queryPaged', () => {
 		expect(mockGetPaged).toHaveBeenCalledWith({
 			page: 1,
 			pageSize: 20,
-			statusFilters: ['Appeal Requested', 'Blocked'],
+			statusFilters: ['Blocked'],
 		});
 	});
 
@@ -56,7 +56,7 @@ describe('ItemListing queryPaged', () => {
 			page: 1,
 			pageSize: 10,
 			searchText: 'test search',
-			statusFilters: ['Appeal Requested', 'Blocked'],
+			statusFilters: ['Blocked'],
 		});
 	});
 
@@ -102,7 +102,7 @@ describe('ItemListing queryPaged', () => {
 			page: 1,
 			pageSize: 10,
 			sorter: { field: 'createdAt', order: 'descend' },
-			statusFilters: ['Appeal Requested', 'Blocked'],
+			statusFilters: ['Blocked'],
 		});
 	});
 
@@ -158,7 +158,7 @@ describe('ItemListing queryPaged', () => {
 
 		expect(mockGetPaged).toHaveBeenCalledWith(
 			expect.objectContaining({
-				statusFilters: ['Appeal Requested', 'Blocked'],
+				statusFilters: ['Blocked'],
 			}),
 		);
 	});
