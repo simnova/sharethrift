@@ -100,7 +100,7 @@ export class ItemListing<props extends ItemListingProps>
 				: ValueObjects.ListingState.Published.valueOf(),
 			createdAt: now,
 			updatedAt: now,
-			schemaVersion: 1,
+			schemaVersion: '1.0.0',
 			reports: 0,
 			sharingHistory: [],
 			listingType: 'item-listing',
