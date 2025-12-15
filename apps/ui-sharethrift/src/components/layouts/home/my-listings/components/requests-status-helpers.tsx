@@ -79,6 +79,20 @@ export const getActionButtons = (
 		);
 	}
 
+	// Closed → Message
+	if (record.status === 'Closed') {
+		buttons.push(
+			<Button
+				key="message"
+				type="link"
+				size="small"
+				onClick={() => onAction('message', record.id)}
+			>
+				Message
+			</Button>,
+		);
+	}
+
 	// Rejected / Expired → Delete
 	if (record.status === 'Rejected' || record.status === 'Expired') {
 		buttons.push(
