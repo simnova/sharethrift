@@ -16,12 +16,14 @@ export class PersonalUserConversationVisa<
 	determineIf(
 		func: (permissions: Readonly<ConversationDomainPermissions>) => boolean,
 	): boolean {
+		const isParticipant =
+			this.root.reserver.id === this.user.id ||
+			this.root.sharer.id === this.user.id;
 		const updatedPermissions: ConversationDomainPermissions = {
 			canCreateConversation: true, // all users can create conversations
 			canManageConversation: false, // no one can manage conversations for now
-			canViewConversation:
-				this.root.reserver.id === this.user.id ||
-				this.root.sharer.id === this.user.id, // only participants can view
+			canViewConversation: isParticipant, // only participants can view
+			canSendMessage: isParticipant, // only participants can send messages
 		};
 
 		return func(updatedPermissions);

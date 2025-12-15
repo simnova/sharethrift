@@ -5,16 +5,30 @@ import { useState } from "react";
 
 interface ConversationBoxProps {
   data: Conversation;
+  currentUserId?: string;
+  onSendMessage: (content: string) => Promise<void>;
+  sendingMessage: boolean;
 }
 
 export const ConversationBox: React.FC<ConversationBoxProps> = (props) => {
   const [messageText, setMessageText] = useState("");
 
-  const currentUserId = props?.data?.sharer?.id;
+  const currentUserId = props.currentUserId ?? props?.data?.sharer?.id;
 
-  const handleSendMessage = (e: React.FormEvent) => {
+  const handleSendMessage = async (e: React.FormEvent) => {
     e.preventDefault();
-    console.log("Send message logic to be implemented", messageText);
+    if (!messageText.trim()) {
+      return;
+    }
+    
+    try {
+      await props.onSendMessage(messageText);
+      // Clear the input on success
+      setMessageText("");
+    } catch (error) {
+      // Error handling is done in the container
+      console.error("Failed to send message:", error);
+    }
   };
 
   return (
@@ -36,7 +50,7 @@ export const ConversationBox: React.FC<ConversationBoxProps> = (props) => {
           messages={props.data.messages || []}
           loading={false}
           error={null}
-          sendingMessage={false}
+          sendingMessage={props.sendingMessage}
           messageText={messageText}
           setMessageText={setMessageText}
           handleSendMessage={handleSendMessage}

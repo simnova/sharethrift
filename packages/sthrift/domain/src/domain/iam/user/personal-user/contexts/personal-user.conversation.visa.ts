@@ -24,6 +24,7 @@ export class PersonalUserConversationVisa<root extends ConversationEntityReferen
 			canCreateConversation: true, // All personal users can create conversations
 			canManageConversation: isParticipant,
 			canViewConversation: isParticipant,
+			canSendMessage: isParticipant, // Only participants can send messages in a conversation
 		};
 
 		return func(permissions);

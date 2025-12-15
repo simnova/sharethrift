@@ -27,6 +27,7 @@ extend type Mutation {
 	createConversation(
 		input: ConversationCreateInput!
 	): ConversationMutationResult!
+	sendMessage(input: SendMessageInput!): SendMessageMutationResult!
 }
 
 input ConversationCreateInput {
@@ -35,7 +36,18 @@ input ConversationCreateInput {
 	listingId: ObjectID!
 }
 
+input SendMessageInput {
+	conversationId: ObjectID!
+	content: String!
+	authorId: ObjectID!
+}
+
 type ConversationMutationResult implements MutationResult {
 	status: MutationStatus!
 	conversation: Conversation
+}
+
+type SendMessageMutationResult implements MutationResult {
+	status: MutationStatus!
+	message: Message
 }
