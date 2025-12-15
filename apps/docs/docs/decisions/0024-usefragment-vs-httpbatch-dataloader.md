@@ -1,4 +1,3 @@
-
 ---
 sidebar_position: 24
 sidebar_label: 0024 GraphQL Optimization Patterns
@@ -226,12 +225,12 @@ function EventCard({ eventId }) {
 
 Created test pages to validate each pattern:
 
-1. **HTTP Batching Test** ([BatchingDemo.tsx](../../client/src/pages/BatchingDemo.tsx))
+1. **HTTP Batching Test** ([BatchingDemo.tsx](https://github.com/jason-t-hankins/Social-Feed/blob/main/client/src/demos/01-http-batching/BatchingDemo.tsx))
    - Compares batched vs non-batched requests
    - Measures total request time and HTTP request count
    - **Result**: 3-5 simultaneous queries show 40% improvement with batching
 
-2. **useFragment Test** ([FragmentDemo.tsx](../../client/src/pages/FragmentDemo.tsx))
+2. **useFragment Test** ([FragmentDemo.tsx](https://github.com/jason-t-hankins/Social-Feed/blob/main/client/src/demos/02-usefragment/FragmentDemo.tsx))
    - Side-by-side comparison: WITHOUT vs WITH useFragment + @nonreactive
    - 10-item list with like buttons on each post
    - **WITHOUT**: Clicking any button = 11 re-renders (parent + 10 children)
@@ -245,8 +244,6 @@ Created test pages to validate each pattern:
    - **Result**: 10 posts + authors = 2 queries (vs 11 without DataLoader)
 
 
-
-## More Information
 
 ## More Information
 

@@ -165,31 +165,8 @@ class PermissionAwareCache {
 }
 ```
 
+
 ## Consequences
-
-### Good
-
-1. **Security Guarantees**
-   - Zero risk of permission leakage between users
-   - Each permission level has isolated cache entries
-   - Failed permission checks don't touch cache
-
-2. **Performance Benefits**
-   - Reduces database queries by 70-90% for identical permission sets
-   - Less than 1ms cache lookups vs 50-200ms database queries
-   - Users with same role share cached data
-
-3. **Flexibility**
-   - Supports complex permission models (RBAC, ABAC, custom)
-   - Fine-grained control per field
-   - Easy to add new permission checks without cache changes
-
-4. **Observable**
-   - Cache hits/misses logged per role
-   - Easy to monitor cache efficiency by permission level
-   - Clear audit trail of who accessed what
-
-### Consequences
 
 - Good, because zero risk of permission leakage between users
 - Good, because reduces database queries by 70-90% for users with same permissions
@@ -457,16 +434,7 @@ cache.invalidate(pattern) {
 }
 ```
 
-## Implementation Checklist
 
-- [ ] Define cache key structure with permission context
-- [ ] Implement permission checks in resolvers BEFORE caching
-- [ ] Set reasonable `maxSize` (500-1000 entries)
-- [ ] Set appropriate TTL (30-60s for most data)
-- [ ] Add cache invalidation on mutations
-- [ ] Log cache hits/misses per role
-- [ ] Test with different permission levels
-- [ ] Verify no data leakage between roles
 ## More Information
 
 - [Social-Feed Demo Application](https://github.com/jason-t-hankins/Social-Feed/)

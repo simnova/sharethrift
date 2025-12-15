@@ -141,7 +141,7 @@ function PostCard({ id }: { id: string }) {
 
 Benefits: Zero network overhead, live updates, avoids prop drilling
 
-See ADR 0001 for re-render optimization details.
+See ADR 0024 for re-render optimization details.
 
 ### Optimistic Updates
 

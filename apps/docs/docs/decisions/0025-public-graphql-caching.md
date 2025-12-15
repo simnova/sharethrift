@@ -86,7 +86,7 @@ const server = new ApolloServer({
     },
   ],
   persistedQueries: { cache: undefined },
-  csrfPrevention: false, // Allow GET requests
+  csrfPrevention: false, // Allow GET requests, requires further security safeguards, headers, rate limiting, etc.
 });
 
 // Authenticated endpoint
@@ -281,18 +281,12 @@ Apollo Server supports APQ out-of-the-box (enabled by default).
 
 | Query | Public? | Reason |
 |-------|---------|--------|
-| `userById()` | ✅ Yes | Should be able to see users pages, specifics may be blocked |
-| `accountPlans()` | ✅ Yes | Shown to unauthenticated users during signup |
-| `currentUser()` | ❌ No | requires authentication and could cause errors |
-| `adminUserById()` | ❌ No | specific calls like this could leak sensitive info |
+| `userById()` |  Yes | Should be able to see users' pages, specifics may be blocked |
+| `accountPlans()` |  Yes | Shown to unauthenticated users during signup |
+| `currentUser()` |  No | requires authentication and could cause errors |
+| `adminUserById()` |  No | specific calls like this could leak sensitive info |
 
-## More Information
 
-- [Social-Feed Demo Application](https://github.com/jason-t-hankins/Social-Feed/)
-- [Apollo Server: Automatic Persisted Queries](https://www.apollographql.com/docs/apollo-server/performance/apq/)
-- [MDN: HTTP Caching](https://developer.mozilla.org/en-US/docs/Web/HTTP/Caching)
-- [GraphQL over HTTP Specification](https://graphql.github.io/graphql-over-http/)
-- [Cloudflare: CDN Caching Best Practices](https://www.cloudflare.com/learning/cdn/caching-best-practices/)
 
 ### Alternative Approach: Same Endpoint with Conditional Auth
 
@@ -336,18 +330,12 @@ app.use('/graphql', expressMiddleware(server, {
 5. Apollo Server plugin applies correct `Cache-Control` headers
 
 **Note:** This approach is not recommended due to security risks of misconfigured queries exposing tokens to CDN and the maintenance burden of maintaining operation whitelists.
-5. **Security Incidents**: Any token leakage would require immediate review
-
-### Success Criteria
-
-**Must Have** (All Achieved):
-- [x] No JWT tokens in public endpoint requests (validated)
-- [x] Browser caching working (disk cache confirmed)
-- [x] Zero security incidents (no token leakage detected)
-
-**Should Have** (All Achieved):
-- [x] Significant response time improvement (97% faster for cached requests)
-- [x] Clear documentation and examples (ADR, demo UI)
-- [x] Working demonstration of pattern (side-by-side comparison)
 
 
+## More Information
+
+- [Social-Feed Demo Application](https://github.com/jason-t-hankins/Social-Feed/)
+- [Apollo Server: Automatic Persisted Queries](https://www.apollographql.com/docs/apollo-server/performance/apq/)
+- [MDN: HTTP Caching](https://developer.mozilla.org/en-US/docs/Web/HTTP/Caching)
+- [GraphQL over HTTP Specification](https://graphql.github.io/graphql-over-http/)
+- [Cloudflare: CDN Caching Best Practices](https://www.cloudflare.com/learning/cdn/caching-best-practices/)
