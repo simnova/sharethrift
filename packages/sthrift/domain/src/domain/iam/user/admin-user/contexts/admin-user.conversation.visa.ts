@@ -30,6 +30,9 @@ export class AdminUserConversationVisa<root extends ConversationEntityReference>
 			// Admins can view all conversations for moderation purposes
 			canViewConversation:
 				rolePermissions?.userPermissions?.canViewAllUsers ?? false,
+			// Admins can send messages if they have moderation permissions
+			canSendMessage:
+				rolePermissions?.listingPermissions?.canModerateListings ?? false,
 		};
 
 		return func(permissions);
