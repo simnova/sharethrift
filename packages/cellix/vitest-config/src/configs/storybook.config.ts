@@ -23,23 +23,29 @@ export function createStorybookVitestConfig(
 	const isCI =
 		process.env['CI'] === 'true' || process.env['TF_BUILD'] === 'True';
 
-	// Try to resolve the source directory of @sthrift/ui-components from the
-	// context of the package that is running tests. If found, add a Vite alias
-	// that maps the package name to its `src` folder so Vite will not resolve
-	// the package exports into `dist/` during tests (prevents opening dist files).
+	// Build a single alias list for workspace packages that should resolve to
+	// their source (`src/`) during tests. This prevents Vite from following
+	// package exports into `dist/` and opening built files during coverage runs.
 	const aliases: { find: string | RegExp; replacement: string }[] = [];
-	try {
-		const require = createRequire(import.meta.url);
-		const uiPkgJson = require.resolve('@sthrift/ui-components/package.json', {
-			paths: [pkgDirname],
-		});
-		const uiPkgDir = path.dirname(uiPkgJson);
-		aliases.push({
-			find: '@sthrift/ui-components',
-			replacement: path.join(uiPkgDir, 'src'),
-		});
-	} catch (e) {
-		// ignore if not resolvable in this environment
+	const workspacePackagesToAlias = [
+		'@sthrift/ui-components',
+		'@sthrift/service-mongoose',
+		'@sthrift/graphql',
+		'@sthrift/domain',
+		'@cellix/ui-core',
+		'@cellix/messaging-service',
+	];
+	for (const pkgName of workspacePackagesToAlias) {
+		try {
+			const require = createRequire(import.meta.url);
+			const pkgJsonPath = require.resolve(`${pkgName}/package.json`, {
+				paths: [pkgDirname],
+			});
+			const pkgDir = path.dirname(pkgJsonPath);
+			aliases.push({ find: pkgName, replacement: path.join(pkgDir, 'src') });
+		} catch (e) {
+			// ignore missing packages
+		}
 	}
 
 	const storybookConfig = defineConfig({
