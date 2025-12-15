@@ -33,37 +33,20 @@ export const ConversationBoxContainer: React.FC<ConversationBoxContainerProps> =
     {
       onCompleted: (data) => {
         if (data.sendMessage.status.success) {
-          // Refetch conversation to update messages
           refetch();
         } else {
-          antdMessage.error(
-            data.sendMessage.status.errorMessage || "Failed to send message"
-          );
+          antdMessage.error(data.sendMessage.status.errorMessage || "Failed to send message");
         }
       },
       onError: (error) => {
-        console.error("Send message error:", error);
-        antdMessage.error("Failed to send message. Please try again.");
+        antdMessage.error(error.message || "Failed to send message");
       },
     }
   );
 
   const handleSendMessage = useCallback(
     async (content: string) => {
-      if (!currentUserId) {
-        antdMessage.error("You must be logged in to send messages");
-        return;
-      }
-
-      if (!content.trim()) {
-        antdMessage.error("Message cannot be empty");
-        return;
-      }
-
-      if (content.trim().length > 2000) {
-        antdMessage.error("Message exceeds maximum length of 2000 characters");
-        return;
-      }
+      if (!currentUserId || !content.trim()) return;
 
       await sendMessageMutation({
         variables: {
