@@ -34,6 +34,7 @@ export function createStorybookVitestConfig(
 		'@sthrift/domain',
 		'@cellix/ui-core',
 		'@cellix/messaging-service',
+		'@sthrift/ui-sharethrift',
 	];
 	for (const pkgName of workspacePackagesToAlias) {
 		try {
