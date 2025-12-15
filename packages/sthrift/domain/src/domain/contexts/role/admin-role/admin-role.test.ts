@@ -1,8 +1,10 @@
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { describeFeature, loadFeature } from '@amiceli/vitest-cucumber';
-import { expect } from 'vitest';
+import { expect, vi } from 'vitest';
+import type { Passport } from '../../passport.ts';
 import type { AdminRoleProps } from './admin-role.entity.ts';
+import { AdminRole as AdminRoleClass } from './admin-role.ts';
 import type { AdminRole } from './admin-role.ts';
 import type { AdminRolePermissions } from './admin-role-permissions.ts';
 
@@ -11,6 +13,10 @@ const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const feature = await loadFeature(
 	path.resolve(__dirname, 'features/admin-role.feature'),
 );
+
+function makePassport(): Passport {
+	return vi.mocked({} as unknown as Passport);
+}
 
 test.for(feature, ({ Background, Scenario, BeforeEachScenario }) => {
 	// biome-ignore lint/suspicious/noExplicitAny: Test variable
@@ -240,18 +246,11 @@ test.for(feature, ({ Background, Scenario, BeforeEachScenario }) => {
 		'Setting roleName for admin role',
 		({ Given, When, Then }) => {
 			Given('an existing admin role', () => {
-				adminRole = {
-					props: roleProps,
-					get roleName() {
-						return this.props.roleName;
-					},
-					set roleName(value: string) {
-						this.props.roleName = value;
-					},
-				};
+				adminRole = new AdminRoleClass(roleProps, makePassport());
 			});
 
 			When('I set roleName to "Content Manager"', () => {
+				// @ts-expect-error: testing private setter
 				adminRole.roleName = 'Content Manager';
 			});
 
@@ -288,18 +287,11 @@ test.for(feature, ({ Background, Scenario, BeforeEachScenario }) => {
 		'Setting isDefault for admin role',
 		({ Given, When, Then }) => {
 			Given('an existing admin role', () => {
-				adminRole = {
-					props: roleProps,
-					get isDefault() {
-						return this.props.isDefault;
-					},
-					set isDefault(value: boolean) {
-						this.props.isDefault = value;
-					},
-				};
+				adminRole = new AdminRoleClass(roleProps, makePassport());
 			});
 
 			When('I set isDefault to true', () => {
+				// @ts-expect-error: testing private setter
 				adminRole.isDefault = true;
 			});
 
@@ -446,4 +438,93 @@ test.for(feature, ({ Background, Scenario, BeforeEachScenario }) => {
 			});
 		},
 	);
+});
+
+import { describe, it } from 'vitest';
+import { AdminRole } from './admin-role.ts';
+import { SystemPassport } from '../../../iam/system/system.passport.ts';
+
+describe('AdminRole - Direct Unit Tests', () => {
+	const mockPassport = {} as SystemPassport;
+
+	const makeRoleProps = (): AdminRoleProps => ({
+		id: 'test-role-id',
+		roleType: 'admin',
+		roleName: 'TestRole',
+		isDefault: false,
+		permissions: {
+			userPermissions: {
+				canBlockUsers: true,
+				canViewAllUsers: true,
+				canEditUsers: false,
+				canDeleteUsers: false,
+				canManageUserRoles: false,
+				canAccessAnalytics: false,
+				canManageRoles: false,
+				canViewReports: false,
+				canDeleteContent: false,
+			},
+			conversationPermissions: {
+				canViewAllConversations: false,
+				canEditConversations: false,
+				canDeleteConversations: false,
+				canCloseConversations: false,
+				canModerateConversations: false,
+			},
+			listingPermissions: {
+				canViewAllListings: false,
+				canManageAllListings: false,
+				canEditListings: false,
+				canDeleteListings: false,
+				canApproveListings: false,
+				canRejectListings: false,
+				canBlockListings: false,
+				canUnblockListings: false,
+				canModerateListings: false,
+			},
+			reservationRequestPermissions: {
+				canViewAllReservations: false,
+				canApproveReservations: false,
+				canRejectReservations: false,
+				canCancelReservations: false,
+				canEditReservations: false,
+				canModerateReservations: false,
+			},
+		},
+		schemaVersion: '1.0',
+		createdAt: new Date(),
+		updatedAt: new Date(),
+	});
+
+	it('should access permissions getter', () => {
+		const props = makeRoleProps();
+		const role = new AdminRole(props, mockPassport);
+		const permissions = role.permissions;
+		expect(permissions).toBeDefined();
+		expect(permissions.userPermissions).toBeDefined();
+	});
+
+	it('should access roleType getter', () => {
+		const props = makeRoleProps();
+		const role = new AdminRole(props, mockPassport);
+		expect(role.roleType).toBe('admin');
+	});
+
+	it('should access createdAt getter', () => {
+		const props = makeRoleProps();
+		const role = new AdminRole(props, mockPassport);
+		expect(role.createdAt).toBeInstanceOf(Date);
+	});
+
+	it('should access updatedAt getter', () => {
+		const props = makeRoleProps();
+		const role = new AdminRole(props, mockPassport);
+		expect(role.updatedAt).toBeInstanceOf(Date);
+	});
+
+	it('should access schemaVersion getter', () => {
+		const props = makeRoleProps();
+		const role = new AdminRole(props, mockPassport);
+		expect(role.schemaVersion).toBe('1.0');
+	});
 });

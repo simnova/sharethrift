@@ -29,6 +29,9 @@ function makePassport(canManageConversation = false): Passport {
 			forPersonalUser: vi.fn(() => ({
 				determineIf: () => true,
 			})),
+			forAdminUser: vi.fn(() => ({
+				determineIf: () => true,
+			})),
 		},
 		listing: {
 			forItemListing: vi.fn(() => ({
@@ -808,6 +811,137 @@ test.for(feature, ({ Scenario, Background, BeforeEachScenario }) => {
 			},
 		);
 	});
+
+	Scenario('Setting sharer to null', ({ Given, When, Then }) => {
+		let setSharerToNull: () => void;
+		Given(
+			'a Conversation aggregate with permission to manage conversation',
+			() => {
+				passport = makePassport(true);
+				conversation = new Conversation(makeBaseProps(), passport);
+			},
+		);
+		When('I try to set the sharer to null', () => {
+			setSharerToNull = () => {
+				// @ts-expect-error: testing private setter
+				// biome-ignore lint/suspicious/noExplicitAny: Testing null assignment
+				conversation.sharer = null as any;
+			};
+		});
+		Then(
+			'a PermissionError should be thrown with message "sharer cannot be null or undefined"',
+			() => {
+				expect(setSharerToNull).toThrow(DomainSeedwork.PermissionError);
+				expect(setSharerToNull).toThrow(
+					'sharer cannot be null or undefined',
+				);
+			},
+		);
+	});
+
+	Scenario('Setting sharer to undefined', ({ Given, When, Then }) => {
+		let setSharerToUndefined: () => void;
+		Given(
+			'a Conversation aggregate with permission to manage conversation',
+			() => {
+				passport = makePassport(true);
+				conversation = new Conversation(makeBaseProps(), passport);
+			},
+		);
+		When('I try to set the sharer to undefined', () => {
+			setSharerToUndefined = () => {
+				// @ts-expect-error: testing private setter
+				// biome-ignore lint/suspicious/noExplicitAny: Testing undefined assignment
+				conversation.sharer = undefined as any;
+			};
+		});
+		Then(
+			'a PermissionError should be thrown with message "sharer cannot be null or undefined"',
+			() => {
+				expect(setSharerToUndefined).toThrow(DomainSeedwork.PermissionError);
+				expect(setSharerToUndefined).toThrow(
+					'sharer cannot be null or undefined',
+				);
+			},
+		);
+	});
+
+	Scenario('Loading messages asynchronously', ({ Given, When, Then }) => {
+		let result: readonly MessageEntityReference[];
+		Given('a Conversation aggregate', () => {
+			passport = makePassport(true);
+			conversation = new Conversation(makeBaseProps(), passport);
+		});
+		When('I call loadMessages()', async () => {
+			result = await conversation.loadMessages();
+		});
+		Then('it should return the messages asynchronously', () => {
+			expect(result).toBeDefined();
+			expect(Array.isArray(result)).toBe(true);
+		});
+	});
+
+	Scenario(
+		'Getting reserver when userType is admin-user',
+		({ Given, When, Then }) => {
+			let result: UserEntityReference;
+			Given('a Conversation aggregate with an admin-user reserver', () => {
+				passport = makePassport(true);
+				const props = makeBaseProps();
+				// Set reserver to admin-user type
+				props.reserver = {
+					id: 'admin-123',
+					userType: 'admin-user',
+				} as unknown as PersonalUserProps;
+				conversation = new Conversation(props, passport);
+			});
+			When('I access the reserver property', () => {
+				result = conversation.reserver;
+			});
+			Then('it should return an AdminUser instance', () => {
+				expect(result).toBeDefined();
+				expect(result.userType).toBe('admin-user');
+			});
+		},
+	);
+
+	Scenario(
+		'Setting reserver without permission',
+		({ Given, When, Then }) => {
+			let setReserverWithoutPermission: () => void;
+			Given(
+				'a Conversation aggregate without permission to manage conversation',
+				() => {
+					passport = makePassport(false);
+					conversation = new Conversation(makeBaseProps(), passport);
+				},
+			);
+			When('I try to set the reserver', () => {
+				setReserverWithoutPermission = () => {
+					const newReserver = new PersonalUser(
+						{
+							id: 'new-reserver-id',
+							userType: 'personal-user',
+						} as PersonalUserProps,
+						passport,
+					);
+					// @ts-expect-error: testing private setter
+					conversation.reserver = newReserver;
+				};
+			});
+			Then(
+				'a PermissionError should be thrown about managing conversation',
+				() => {
+					expect(setReserverWithoutPermission).toThrow(
+						DomainSeedwork.PermissionError,
+					);
+					expect(setReserverWithoutPermission).toThrow(
+						'You do not have permission to change the reserver of this conversation',
+					);
+				},
+			);
+		},
+	);
 
 	Scenario(
 		'Setting the messagingConversationId with permission',
