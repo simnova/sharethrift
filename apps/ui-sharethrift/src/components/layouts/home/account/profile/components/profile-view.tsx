@@ -54,6 +54,8 @@ export const ProfileView: React.FC<Readonly<ProfileViewProps>> = ({
         });
     };
 
+    const ownerLabel = user.firstName || user.username || 'User';
+
     return (
         <div className="max-w-4xl mx-auto p-6">
 
@@ -133,7 +135,7 @@ export const ProfileView: React.FC<Readonly<ProfileViewProps>> = ({
 
             <Divider orientation="left">
                 <h2 className="title30" style={{ color: 'var(--color-tertiary)' }}>
-                    {isOwnProfile ? 'My Listings' : `${user.firstName || 'User'}'s Listings`}
+                    {isOwnProfile ? 'My Listings' : `${ownerLabel}'s Listings`}
                 </h2>
             </Divider>
 
