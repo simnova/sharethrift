@@ -51,7 +51,6 @@
     "devDependencies": {
         "@amiceli/vitest-cucumber": "^5.1.2",
         "@biomejs/biome": "2.0.0",
-        "@cucumber/cucumber": "^12.2.0",
         "@graphql-codegen/cli": "^5.0.7",
         "@graphql-codegen/introspection": "^4.0.3",
         "@graphql-codegen/typed-document-node": "^5.1.2",
