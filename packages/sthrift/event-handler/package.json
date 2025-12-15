@@ -15,7 +15,7 @@
 	"scripts": {
 		"prebuild": "biome lint",
 		"build": "tsc --build",
-		"watch": "tsc- --watch",
+		"watch": "tsc --watch",
 		"test": "vitest run",
 		"test:coverage": "vitest run --coverage",
 		"lint": "biome lint",

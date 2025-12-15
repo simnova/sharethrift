@@ -3,7 +3,7 @@ import { SearchBar } from '@sthrift/ui-components';
 import heroImg from '@sthrift/ui-components/src/assets/hero/hero.png';
 import heroImgSmall from '@sthrift/ui-components/src/assets/hero/hero-small.png';
 
-export interface HeroSectionProps {
+interface HeroSectionProps {
 	onSearch?: (query: string) => void;
 	searchValue?: string;
 	onSearchChange?: (value: string) => void;

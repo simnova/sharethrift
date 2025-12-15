@@ -4,7 +4,7 @@ import { RequestsTable } from './requests-table.tsx';
 import { ComponentQueryLoader } from '@sthrift/ui-components';
 import { HomeRequestsTableContainerMyListingsRequestsDocument } from '../../../../../generated.tsx';
 
-export interface RequestsTableContainerProps {
+interface RequestsTableContainerProps {
 	currentPage: number;
 	onPageChange: (page: number) => void;
 }

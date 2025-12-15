@@ -5,3 +5,4 @@ export * from './infrastructure/cognitive-search/index.ts';
 export * from './events/types/index.ts';
 export { EventBusInstance } from './events/index.ts';
 export * as Events from './events/index.ts';
+export type { DomainExecutionContext } from './domain-execution-context.ts';

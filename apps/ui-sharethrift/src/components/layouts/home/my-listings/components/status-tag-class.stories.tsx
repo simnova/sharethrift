@@ -1,7 +1,16 @@
 import type { Meta, StoryObj } from '@storybook/react';
 import { expect } from 'storybook/test';
 import type React from 'react';
-import { getStatusTagClass, type ListingStatus } from './status-tag-class.ts';
+import { getStatusTagClass } from './status-tag-class.ts';
+
+type ListingStatus =
+	| 'Active'
+	| 'Paused'
+	| 'Reserved'
+	| 'Expired'
+	| 'Draft'
+	| 'Blocked'
+	| 'Cancelled';
 
 const StatusTagClassTest = (): React.ReactElement => {
 	const statuses: ListingStatus[] = [
@@ -49,7 +58,7 @@ export default meta;
 type Story = StoryObj<typeof StatusTagClassTest>;
 
 export const AllStatusClasses: Story = {
-	play: async ({ canvasElement }) => {
+	play: ({ canvasElement }) => {
 		expect(getStatusTagClass('Active')).toBe('activeTag');
 		expect(getStatusTagClass('Paused')).toBe('pausedTag');
 		expect(getStatusTagClass('Reserved')).toBe('reservedTag');
@@ -66,7 +75,7 @@ export const AllStatusClasses: Story = {
 };
 
 export const UnknownStatus: Story = {
-	play: async ({ canvasElement }) => {
+	play: ({ canvasElement }) => {
 		expect(getStatusTagClass('Unknown')).toBe('');
 		expect(getStatusTagClass('')).toBe('');
 		expect(getStatusTagClass('InvalidStatus')).toBe('');
