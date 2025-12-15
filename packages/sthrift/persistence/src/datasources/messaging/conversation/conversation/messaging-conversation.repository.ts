@@ -8,9 +8,9 @@ export interface MessagingConversationRepository {
 	) => Promise<Domain.Contexts.Conversation.Conversation.MessageEntityReference[]>;
 
 	sendMessage: (
-		conversationId: string,
+		conversation: Domain.Contexts.Conversation.Conversation.ConversationEntityReference,
 		body: string,
-		author: string,
+		authorId: string,
 	) => Promise<Domain.Contexts.Conversation.Conversation.MessageEntityReference>;
 
 	deleteConversation: (conversationId: string) => Promise<void>;
@@ -23,9 +23,11 @@ export interface MessagingConversationRepository {
 
 export class MessagingConversationRepositoryImpl implements MessagingConversationRepository {
 	private readonly messagingService: MessagingService;
+	private readonly passport: Domain.Passport;
 
-	constructor(messagingService: MessagingService, _passport: Domain.Passport) {
+	constructor(messagingService: MessagingService, passport: Domain.Passport) {
 		this.messagingService = messagingService;
+		this.passport = passport;
 	}
 
 	async getMessages(
@@ -47,23 +49,23 @@ export class MessagingConversationRepositoryImpl implements MessagingConversatio
 	}
 
 	async sendMessage(
-		conversationId: string,
+		conversation: Domain.Contexts.Conversation.Conversation.ConversationEntityReference,
 		body: string,
-		author: string,
+		authorId: string,
 	): Promise<Domain.Contexts.Conversation.Conversation.MessageEntityReference> {
-		try {
-			const message = await this.messagingService.sendMessage(
-				conversationId,
-				body,
-				author,
-			);
-
-			const authorId = new Domain.Contexts.Conversation.Conversation.AuthorId(author);
-			return toDomainMessage(message, authorId);
-		} catch (error) {
-			console.error('Error sending message to messaging service:', error);
-			throw error;
+		const visa = this.passport.conversation.forConversation(conversation);
+		if (!visa.determineIf((permissions: Domain.Contexts.Conversation.ConversationDomainPermissions) => permissions.canSendMessage)) {
+			throw new Error('Not authorized to send message in this conversation');
 		}
+
+		const message = await this.messagingService.sendMessage(
+			conversation.messagingConversationId,
+			body,
+			authorId,
+		);
+
+		const author = new Domain.Contexts.Conversation.Conversation.AuthorId(authorId);
+		return toDomainMessage(message, author);
 	}
 
 	async deleteConversation(conversationId: string): Promise<void> {

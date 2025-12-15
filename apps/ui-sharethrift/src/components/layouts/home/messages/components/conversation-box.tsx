@@ -17,18 +17,10 @@ export const ConversationBox: React.FC<ConversationBoxProps> = (props) => {
 
   const handleSendMessage = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!messageText.trim()) {
-      return;
-    }
+    if (!messageText.trim()) return;
     
-    try {
-      await props.onSendMessage(messageText);
-      // Clear the input on success
-      setMessageText("");
-    } catch (error) {
-      // Error handling is done in the container
-      console.error("Failed to send message:", error);
-    }
+    await props.onSendMessage(messageText);
+    setMessageText("");
   };
 
   return (
