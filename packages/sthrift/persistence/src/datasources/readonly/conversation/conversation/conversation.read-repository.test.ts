@@ -403,4 +403,25 @@ test.for(feature, ({ Scenario, Background, BeforeEachScenario }) => {
 			expect(result).toBeNull();
 		});
 	});
+
+	Scenario('Getting conversation with invalid ObjectId format', ({ Given, When, Then }) => {
+		Given('an invalid ObjectId will cause an error', () => {
+			// Mock MongooseSeedwork.ObjectId constructor to throw
+			vi.spyOn(MongooseSeedwork, 'ObjectId').mockImplementationOnce(() => {
+				throw new Error('Invalid ObjectId');
+			});
+		});
+
+		When('I call getBySharerReserverListing with invalid ID', async () => {
+			result = await repository.getBySharerReserverListing(
+				'invalid-id',
+				createValidObjectId('reserver'),
+				createValidObjectId('listing')
+			);
+		});
+
+		Then('it should return null due to ObjectId error', () => {
+			expect(result).toBeNull();
+		});
+	});
 });

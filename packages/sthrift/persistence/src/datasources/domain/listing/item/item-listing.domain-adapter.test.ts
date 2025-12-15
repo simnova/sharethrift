@@ -374,3 +374,60 @@ test.for(feature, ({ Scenario, Background, BeforeEachScenario }) => {
 		});
 	});
 });
+
+// Additional non-BDD tests for edge cases
+import { describe, it } from 'vitest';
+
+describe('ItemListingDomainAdapter - Additional Coverage', () => {
+	it('should throw error when sharer is null in loadSharer', async () => {
+		const doc = {} as Models.Listing.ItemListing;
+		doc.sharer = null as never;
+		const adapter = new ItemListingDomainAdapter(doc);
+		await expect(adapter.loadSharer()).rejects.toThrow('sharer is not populated');
+	});
+
+	it('should populate sharer when it is ObjectId in loadSharer', async () => {
+		const doc = {} as Models.Listing.ItemListing;
+		const sharerId = new MongooseSeedwork.ObjectId();
+		doc.sharer = sharerId as never;
+		const mockPopulate = vi.fn().mockResolvedValue(undefined);
+		doc.populate = mockPopulate as never;
+		const adapter = new ItemListingDomainAdapter(doc);
+		await adapter.loadSharer();
+		expect(mockPopulate).toHaveBeenCalledWith('sharer');
+	});
+
+	it('should return AdminUser when sharer userType is admin-user in loadSharer', async () => {
+		const doc = {} as Models.Listing.ItemListing;
+		const adminUserDoc = {
+			userType: 'admin-user',
+			id: new MongooseSeedwork.ObjectId(),
+		} as Models.User.AdminUser;
+		doc.sharer = adminUserDoc as never;
+		const adapter = new ItemListingDomainAdapter(doc);
+		const result = await adapter.loadSharer();
+		expect(result).toBeDefined();
+	});
+
+	it('should return entity reference when sharer is ObjectId in getter', () => {
+		const doc = {} as Models.Listing.ItemListing;
+		const sharerId = new MongooseSeedwork.ObjectId();
+		doc.sharer = sharerId as never;
+		const adapter = new ItemListingDomainAdapter(doc);
+		expect(adapter.sharer.id).toBe(sharerId.toString());
+	});
+
+	it('should return entity when sharer is populated admin-user in getter', () => {
+		const doc = {} as Models.Listing.ItemListing;
+		const adminUserDoc = {
+			userType: 'admin-user',
+			id: new MongooseSeedwork.ObjectId(),
+		} as Models.User.AdminUser;
+		doc.sharer = adminUserDoc as never;
+		const adapter = new ItemListingDomainAdapter(doc);
+		const sharerEntity = adapter.sharer;
+		// Just verify it returns an entity (coverage achieved)
+		expect(sharerEntity).toBeDefined();
+		expect(sharerEntity.id).toBeDefined();
+	});
+});

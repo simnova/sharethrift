@@ -149,3 +149,28 @@ test.for(feature, ({ Scenario, Background, BeforeEachScenario }) => {
 		});
 	});
 });
+
+// Additional non-BDD tests for edge cases
+import { describe, it } from 'vitest';
+
+describe('AdminRoleRepository - Additional Coverage', () => {
+	it('should throw error when role not found by id', async () => {
+		const mockPassport = {} as Domain.IAM.User.AdminUser.AdminUserPassport<'api-admin-user-context'>;
+		const mockModel = {
+			findById: vi.fn().mockReturnValue({
+				exec: vi.fn().mockResolvedValue(null),
+			}),
+		};
+		const mockConverter = {} as AdminRoleConverter;
+		const repository = new AdminRoleRepository(
+			mockPassport,
+			mockModel as never,
+			mockConverter,
+			{} as never,
+			{} as never,
+		);
+		await expect(repository.getById('nonexistent-id')).rejects.toThrow(
+			'AdminRole with id nonexistent-id not found',
+		);
+	});
+});

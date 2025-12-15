@@ -541,3 +541,45 @@ test.for(feature, ({ Scenario, Background, BeforeEachScenario }) => {
 		});
 	});
 });
+
+// Additional non-BDD tests for edge cases
+import { describe, it } from 'vitest';
+
+describe('AdminRoleDomainAdapter - Additional Coverage', () => {
+	it('should initialize permissions when undefined', () => {
+		const doc = {
+			permissions: undefined,
+			set: vi.fn(),
+		} as unknown as Models.Role.AdminRole;
+		const adapter = new AdminRoleDomainAdapter(doc);
+		const perms = adapter.permissions;
+		expect(perms).toBeDefined();
+		expect(doc.set).toHaveBeenCalledWith('permissions', {});
+	});
+
+	it('should initialize userPermissions when undefined', () => {
+		const doc = {
+			permissions: {
+				userPermissions: undefined,
+				set: vi.fn(),
+			} as unknown as Models.Role.AdminRolePermissions,
+		} as Models.Role.AdminRole;
+		const adapter = new AdminRoleDomainAdapter(doc);
+		const userPerms = adapter.permissions.userPermissions;
+		expect(userPerms).toBeDefined();
+		expect(doc.permissions.set).toHaveBeenCalledWith('userPermissions', {});
+	});
+
+	it('should initialize conversationPermissions when undefined', () => {
+		const doc = {
+			permissions: {
+				conversationPermissions: undefined,
+				set: vi.fn(),
+			} as unknown as Models.Role.AdminRolePermissions,
+		} as Models.Role.AdminRole;
+		const adapter = new AdminRoleDomainAdapter(doc);
+		const convPerms = adapter.permissions.conversationPermissions;
+		expect(convPerms).toBeDefined();
+		expect(doc.permissions.set).toHaveBeenCalledWith('conversationPermissions', {});
+	});
+});

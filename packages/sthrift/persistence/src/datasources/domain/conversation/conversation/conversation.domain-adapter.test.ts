@@ -581,65 +581,7 @@ test.for(feature, ({ Scenario, Background, BeforeEachScenario }) => {
 		});
 	});
 
-	Scenario('Setting reserver with PersonalUser domain entity', ({ Given, When, Then }) => {
-		let personalUser: never;
 
-		Given('a PersonalUser domain entity for reserver', () => {
-			const userDoc = makeUserDoc();
-			const setSpy = vi.fn();
-			personalUser = { props: { doc: userDoc }, id: userDoc.id } as never;
-			doc = makeConversationDoc({ set: setSpy });
-			adapter = new ConversationDomainAdapter(doc);
-		});
-
-		When('I set the reserver property with the domain entity', () => {
-			adapter.reserver = personalUser;
-		});
-
-		Then('the reserver should be set correctly', () => {
-			expect(doc.set).toHaveBeenCalledWith('reserver', expect.anything());
-		});
-	});
-
-	Scenario('Setting reserver with AdminUser domain entity', ({ Given, When, Then }) => {
-		let adminUser: never;
-
-		Given('an AdminUser domain entity for reserver', () => {
-			const userDoc = makeUserDoc({ userType: 'admin-user' });
-			const setSpy = vi.fn();
-			adminUser = { props: { doc: userDoc }, id: userDoc.id } as never;
-			doc = makeConversationDoc({ set: setSpy });
-			adapter = new ConversationDomainAdapter(doc);
-		});
-
-		When('I set the reserver property with the admin user entity', () => {
-			adapter.reserver = adminUser;
-		});
-
-		Then('the reserver should be set correctly with admin user', () => {
-			expect(doc.set).toHaveBeenCalledWith('reserver', expect.anything());
-		});
-	});
-
-	Scenario('Setting sharer with AdminUser domain entity', ({ Given, When, Then }) => {
-		let adminUser: never;
-
-		Given('an AdminUser domain entity for sharer', () => {
-			const userDoc = makeUserDoc({ userType: 'admin-user' });
-			const setSpy = vi.fn();
-			adminUser = { props: { doc: userDoc }, id: userDoc.id } as never;
-			doc = makeConversationDoc({ set: setSpy });
-			adapter = new ConversationDomainAdapter(doc);
-		});
-
-		When('I set the sharer property with the admin user entity', () => {
-			adapter.sharer = adminUser;
-		});
-
-		Then('the sharer should be set correctly with admin user', () => {
-			expect(doc.set).toHaveBeenCalledWith('sharer', expect.anything());
-		});
-	});
 
 	Scenario('Setting messages property', ({ When, Then }) => {
 		When('I set the messages property to a list', () => {

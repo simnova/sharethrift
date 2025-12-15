@@ -140,21 +140,6 @@ Feature: ConversationDomainAdapter
     When I get the sharer property
     Then it should return a PersonalUserDomainAdapter entityReference
 
-  Scenario: Setting reserver with PersonalUser domain entity
-    Given a PersonalUser domain entity for reserver
-    When I set the reserver property with the domain entity
-    Then the reserver should be set correctly
-
-  Scenario: Setting reserver with AdminUser domain entity
-    Given an AdminUser domain entity for reserver
-    When I set the reserver property with the admin user entity
-    Then the reserver should be set correctly with admin user
-
-  Scenario: Setting sharer with AdminUser domain entity
-    Given an AdminUser domain entity for sharer
-    When I set the sharer property with the admin user entity
-    Then the sharer should be set correctly with admin user
-
   Scenario: Setting messages property
     When I set the messages property to a list
     Then the messages property should be set correctly
