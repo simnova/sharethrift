@@ -2,7 +2,7 @@ import path from 'node:path';
 import { createRequire } from 'module';
 import { storybookTest } from '@storybook/addon-vitest/vitest-plugin';
 import { defineConfig, mergeConfig } from 'vitest/config';
-import type { Alias, UserConfig } from 'vite';
+import type { Plugin, UserConfig } from 'vite';
 import { baseConfig } from './base.config.ts';
 import { playwright } from '@vitest/browser-playwright';
 
@@ -24,11 +24,8 @@ export function createStorybookVitestConfig(
 	const isCI =
 		process.env['CI'] === 'true' || process.env['TF_BUILD'] === 'True';
 
-	// Build a single alias list for workspace packages that should resolve to
-	// their source (`src/`) during tests. This prevents Vite from following
-	// package exports into `dist/` and opening built files during coverage runs.
-	// Use regex patterns to match both exact package names and subpath imports.
-	const aliases: Alias[] = [];
+	// Build a map of workspace packages to their src directories
+	// This prevents Vite from following package exports into `dist/` during tests
 	const workspacePackagesToAlias = [
 		'@sthrift/ui-components',
 		'@sthrift/service-mongoose',
@@ -38,6 +35,7 @@ export function createStorybookVitestConfig(
 		'@cellix/messaging-service',
 		'@sthrift/ui-sharethrift',
 	];
+	const packageSrcMap = new Map<string, string>();
 	for (const pkgName of workspacePackagesToAlias) {
 		try {
 			const require = createRequire(import.meta.url);
@@ -46,26 +44,43 @@ export function createStorybookVitestConfig(
 			});
 			const pkgDir = path.dirname(pkgJsonPath);
 			const pkgSrcDir = path.join(pkgDir, 'src');
-			// Create a regex pattern that matches the package name with optional subpaths
-			const escapedPkgName = pkgName.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
-			const pattern = new RegExp(`^${escapedPkgName}(\\/.*)?$`);
-			const alias: Alias = {
-				find: pattern,
-				replacement: pkgSrcDir,
-				customResolver: {
-					resolveId(id) {
-						const subpath = id.substring(pkgName.length);
-						return path.join(pkgSrcDir, subpath);
-					},
-				},
-			};
-			aliases.push(alias);
+			packageSrcMap.set(pkgName, pkgSrcDir);
 		} catch (e) {
 			// ignore missing packages
 		}
 	}
 
+	// Create a custom plugin to intercept and redirect workspace package imports
+	// This runs before Vite's alias resolution and prevents opening dist/ files
+	const workspaceRedirectPlugin: Plugin = {
+		name: 'workspace-redirect-to-src',
+		enforce: 'pre', // Run before other plugins
+		resolveId(id) {
+			// Check if this is a workspace package import
+			for (const [pkgName, srcDir] of packageSrcMap.entries()) {
+				if (id === pkgName) {
+					// Exact package import: @sthrift/ui-components
+					return path.join(srcDir, 'index.ts');
+				}
+				if (id.startsWith(`${pkgName}/`)) {
+					// Subpath import: @sthrift/ui-components/src/styles/theme.css
+					const subpath = id.substring(pkgName.length + 1);
+					return path.join(srcDir, subpath);
+				}
+			}
+			return null; // Let Vite handle other imports
+		},
+	};
+
 	const storybookConfig = defineConfig({
+		plugins: [workspaceRedirectPlugin],
+		// Explicitly tell Vite's file watcher to ignore dist and coverage directories
+		// This prevents Vite from opening files in these directories during scan/watch
+		server: {
+			watch: {
+				ignored: ['**/dist/**', '**/coverage/**', '**/node_modules/**'],
+			},
+		},
 		test: {
 			// Prevent Vite/Vitest from scanning/transpiling build artifacts and coverage temp files.
 			// This greatly reduces the number of open files during coverage runs in CI.
@@ -83,6 +98,7 @@ export function createStorybookVitestConfig(
 				{
 					extends: true,
 					plugins: [
+						workspaceRedirectPlugin,
 						storybookTest({
 							configDir: path.join(pkgDirname, STORYBOOK_DIR),
 						}),
@@ -119,9 +135,6 @@ export function createStorybookVitestConfig(
 			// Disable watch mode and isolate tests to reduce file watchers and improve stability.
 			watch: false,
 			isolate: true,
-		},
-		resolve: {
-			alias: aliases,
 		},
 	});
 
