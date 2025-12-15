@@ -38,6 +38,10 @@ function makePassport(): Domain.Passport {
 	} as unknown as Domain.Passport);
 }
 
+function createNullExecChain<T>(result: T) {
+	return { exec: vi.fn(() => Promise.resolve(result)) };
+}
+
 test.for(feature, ({ Scenario, Background, BeforeEachScenario }) => {
 	let repository: UserAppealRequestRepository<UserAppealRequestDomainAdapter>;
 	let mockDoc: ReturnType<typeof makeAppealRequestDoc>;
@@ -101,12 +105,10 @@ test.for(feature, ({ Scenario, Background, BeforeEachScenario }) => {
 		({ When, Then }) => {
 			When('I call getById with "nonexistent-id"', async () => {
 				// Mock to return null for nonexistent ID
-			const mockModel = repository['model'] as unknown as {
+				const mockModel = repository.model as unknown as {
 					findOne: ReturnType<typeof vi.fn>;
 				};
-				mockModel.findOne = vi.fn(() => ({
-					exec: vi.fn(() => Promise.resolve(null)),
-				}));
+				mockModel.findOne = vi.fn(() => createNullExecChain(null));
 
 				try {
 					result = await repository.getById('nonexistent-id');

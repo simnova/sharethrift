@@ -41,6 +41,32 @@ function makePassport(canManageConversation = false): Passport {
 	} as unknown as Passport);
 }
 
+function createMockTransactionItem(id: string) {
+	return {
+		id,
+		transactionId: 'txn_123',
+		amount: 1000,
+		referenceId: 'ref_123',
+		status: 'completed',
+		completedAt: new Date('2020-01-01T00:00:00Z'),
+		errorMessage: null,
+	};
+}
+
+function getNewTransactionItem() {
+	return createMockTransactionItem('2');
+}
+
+function createMockTransactions() {
+	return {
+		items: [createMockTransactionItem('1')],
+		getNewItem: getNewTransactionItem,
+		addItem: vi.fn(),
+		removeItem: vi.fn(),
+		removeAll: vi.fn(),
+	};
+}
+
 function makeBaseProps(
 	overrides: Partial<ConversationProps> = {},
 ): ConversationProps {
@@ -75,31 +101,7 @@ function makeBaseProps(
 							startDate: new Date('2020-01-01T00:00:00Z'),
 							subscriptionId: 'sub_123',
 						},
-						transactions: {
-							items: [
-								{
-									id: '1',
-									transactionId: 'txn_123',
-									amount: 1000,
-									referenceId: 'ref_123',
-									status: 'completed',
-									completedAt: new Date('2020-01-01T00:00:00Z'),
-									errorMessage: null,
-								},
-							],
-							getNewItem: () => ({
-								id: '2',
-								transactionId: 'txn_123',
-								amount: 1000,
-								referenceId: 'ref_123',
-								status: 'completed',
-								completedAt: new Date('2020-01-01T00:00:00Z'),
-								errorMessage: null,
-							}),
-							addItem: vi.fn(),
-							removeItem: vi.fn(),
-							removeAll: vi.fn(),
-						},
+						transactions: createMockTransactions(),
 					},
 				},
 			},
@@ -139,31 +141,7 @@ function makeBaseProps(
 							startDate: new Date('2020-01-01T00:00:00Z'),
 							subscriptionId: 'sub_456',
 						},
-						transactions: {
-							items: [
-								{
-									id: '1',
-									transactionId: 'txn_123',
-									amount: 1000,
-									referenceId: 'ref_123',
-									status: 'completed',
-									completedAt: new Date('2020-01-01T00:00:00Z'),
-									errorMessage: null,
-								},
-							],
-							getNewItem: () => ({
-								id: '2',
-								transactionId: 'txn_123',
-								amount: 1000,
-								referenceId: 'ref_123',
-								status: 'completed',
-								completedAt: new Date('2020-01-01T00:00:00Z'),
-								errorMessage: null,
-							}),
-							addItem: vi.fn(),
-							removeItem: vi.fn(),
-							removeAll: vi.fn(),
-						},
+						transactions: createMockTransactions(),
 					},
 				},
 			},
@@ -297,31 +275,7 @@ test.for(feature, ({ Scenario, Background, BeforeEachScenario }) => {
 								originalSharer.account.profile.billing.cybersourceCustomerId,
 							subscription:
 								originalSharer.account.profile.billing.subscription,
-							transactions: {
-								items: [
-										{
-											id: '1',
-											transactionId: 'txn_123',
-											amount: 1000,
-											referenceId: 'ref_123',
-											status: 'completed',
-											completedAt: new Date('2020-01-01T00:00:00Z'),
-											errorMessage: null,
-										},
-									],
-									getNewItem: () => ({
-										id: '2',
-										transactionId: 'txn_123',
-										amount: 1000,
-										referenceId: 'ref_123',
-										status: 'completed',
-										completedAt: new Date('2020-01-01T00:00:00Z'),
-										errorMessage: null,
-									}),
-									addItem: vi.fn(),
-									removeItem: vi.fn(),
-									removeAll: vi.fn(),
-								},
+							transactions: createMockTransactions(),
 							},
 						},
 					},
@@ -376,31 +330,7 @@ test.for(feature, ({ Scenario, Background, BeforeEachScenario }) => {
 												.cybersourceCustomerId,
 										subscription:
 											originalSharer.account.profile.billing.subscription,
-										transactions: {
-											items: [
-												{
-													id: '1',
-													transactionId: 'txn_123',
-													amount: 1000,
-													referenceId: 'ref_123',
-													status: 'completed',
-													completedAt: new Date('2020-01-01T00:00:00Z'),
-													errorMessage: null,
-												},
-											],
-											getNewItem: () => ({
-												id: '2',
-												transactionId: 'txn_123',
-												amount: 1000,
-												referenceId: 'ref_123',
-												status: 'completed',
-												completedAt: new Date('2020-01-01T00:00:00Z'),
-												errorMessage: null,
-											}),
-											addItem: vi.fn(),
-											removeItem: vi.fn(),
-											removeAll: vi.fn(),
-										},
+										transactions: createMockTransactions(),
 									},
 								},
 							},
@@ -456,31 +386,7 @@ test.for(feature, ({ Scenario, Background, BeforeEachScenario }) => {
 									.cybersourceCustomerId,
 							subscription:
 								originalReserver.account.profile.billing.subscription,
-							transactions: {
-								items: [
-										{
-											id: '1',
-											transactionId: 'txn_123',
-											amount: 1000,
-											referenceId: 'ref_123',
-											status: 'completed',
-											completedAt: new Date('2020-01-01T00:00:00Z'),
-											errorMessage: null,
-										},
-									],
-									getNewItem: () => ({
-										id: '2',
-										transactionId: 'txn_123',
-										amount: 1000,
-										referenceId: 'ref_123',
-										status: 'completed',
-										completedAt: new Date('2020-01-01T00:00:00Z'),
-										errorMessage: null,
-									}),
-									addItem: vi.fn(),
-									removeItem: vi.fn(),
-									removeAll: vi.fn(),
-								},
+							transactions: createMockTransactions(),
 							},
 						},
 					},
@@ -537,51 +443,27 @@ test.for(feature, ({ Scenario, Background, BeforeEachScenario }) => {
 											.cybersourceCustomerId,
 									subscription:
 										originalReserver.account.profile.billing.subscription,
-									transactions: {
-										items: [
-												{
-													id: '1',
-													transactionId: 'txn_123',
-													amount: 1000,
-													referenceId: 'ref_123',
-													status: 'completed',
-													completedAt: new Date('2020-01-01T00:00:00Z'),
-													errorMessage: null,
-												},
-											],
-											getNewItem: () => ({
-												id: '2',
-												transactionId: 'txn_123',
-												amount: 1000,
-												referenceId: 'ref_123',
-												status: 'completed',
-												completedAt: new Date('2020-01-01T00:00:00Z'),
-												errorMessage: null,
-											}),
-											addItem: vi.fn(),
-											removeItem: vi.fn(),
-											removeAll: vi.fn(),
-										},
-									},
+									transactions: createMockTransactions(),
 								},
 							},
-							createdAt: originalReserver.createdAt,
-							updatedAt: originalReserver.updatedAt,
 						},
-						passport,
-					);
-				};
-			});
-			Then('a PermissionError should be thrown', () => {
-				expect(setReserverWithoutPermission).toThrow(
-					DomainSeedwork.PermissionError,
+						createdAt: originalReserver.createdAt,
+						updatedAt: originalReserver.updatedAt,
+					},
+					passport,
 				);
-				expect(setReserverWithoutPermission).throws(
-					'You do not have permission to change the reserver of this conversation',
-				);
-			});
-		},
-	);
+			};
+		});
+		Then('a PermissionError should be thrown', () => {
+			expect(setReserverWithoutPermission).toThrow(
+				DomainSeedwork.PermissionError,
+			);
+			expect(setReserverWithoutPermission).throws(
+				'You do not have permission to change the reserver of this conversation',
+			);
+		});
+	},
+);
 
 	Scenario('Changing the listing with permission', ({ Given, When, Then }) => {
 		let newListing: ItemListing<ItemListingProps>;

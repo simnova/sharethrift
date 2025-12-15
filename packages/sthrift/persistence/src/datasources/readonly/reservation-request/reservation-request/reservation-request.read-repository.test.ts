@@ -45,6 +45,12 @@ function makePassport(): Domain.Passport {
 	} as unknown as Domain.Passport);
 }
 
+function createNullPopulateChain<T>(result: T) {
+	const innerLean = { lean: vi.fn(async () => result) };
+	const innerPopulate = { populate: vi.fn(() => innerLean) };
+	return { populate: vi.fn(() => innerPopulate) };
+}
+
 function makeMockUser(id: string): Models.User.PersonalUser {
 	return {
 		_id: new MongooseSeedwork.ObjectId(createValidObjectId(id)),
@@ -149,6 +155,7 @@ test.for(feature, ({ Scenario, Background, BeforeEachScenario }) => {
 			Object.defineProperty(mockQuery, 'then', {
 				value: vi.fn((onResolve) => Promise.resolve(result).then(onResolve)),
 				enumerable: false,
+				configurable: true,
 			});
 			return mockQuery;
 		};
@@ -235,13 +242,7 @@ test.for(feature, ({ Scenario, Background, BeforeEachScenario }) => {
 
 	Scenario('Getting a reservation request by nonexistent ID', ({ When, Then }) => {
 		When('I call getById with "nonexistent-id"', async () => {
-			mockModel.findById = vi.fn(() => ({
-				populate: vi.fn(() => ({
-					populate: vi.fn(() => ({
-						lean: vi.fn(async () => null),
-					})),
-				})),
-			})) as unknown as typeof mockModel.findById;
+			mockModel.findById = vi.fn(() => createNullPopulateChain(null)) as unknown as typeof mockModel.findById;
 
 			result = await repository.getById('nonexistent-id');
 		});

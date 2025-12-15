@@ -8,14 +8,22 @@ type TestDoc = MongooseSeedwork.Base & {
 	nested?: { _id: string; value: string };
 };
 
-// Helper to create a thenable mock that can be awaited
-function createThenableMock<T>(value: T) {
-	return {
-		// biome-ignore lint/suspicious/noThenProperty: Intentionally creating thenable for mock
-		then: (resolve: (value: T) => unknown) => Promise.resolve(value).then(resolve),
+interface ThenableMock<T> {
+	catch: (reject: (error: unknown) => unknown) => Promise<T>;
+	finally: (onFinally: () => void) => Promise<T>;
+}
+
+function createThenableMock<T>(value: T): ThenableMock<T> {
+	const mock: ThenableMock<T> = {
 		catch: (reject: (error: unknown) => unknown) => Promise.resolve(value).catch(reject),
 		finally: (onFinally: () => void) => Promise.resolve(value).finally(onFinally),
 	};
+	Object.defineProperty(mock, 'then', {
+		value: (resolve: (value: T) => unknown) => Promise.resolve(value).then(resolve),
+		enumerable: false,
+		configurable: true,
+	});
+	return mock;
 }
 
 describe('MongoDataSourceImpl - Additional Coverage', () => {

@@ -48,6 +48,10 @@ function makePassport(): Domain.Passport {
 	} as unknown as Domain.Passport);
 }
 
+function createNullExecChain<T>(result: T) {
+	return { exec: vi.fn(() => Promise.resolve(result)) };
+}
+
 test.for(feature, ({ Scenario, Background, BeforeEachScenario }) => {
 	let repository: AdminRoleRepository;
 	let mockDoc: AdminRoleDomainAdapter;
@@ -111,12 +115,10 @@ test.for(feature, ({ Scenario, Background, BeforeEachScenario }) => {
 		({ When, Then }) => {
 			When('I call getById with "nonexistent-id"', async () => {
 				// Mock findById to return null
-			const mockModel = repository['model'] as unknown as {
+				const mockModel = repository.model as unknown as {
 					findById: ReturnType<typeof vi.fn>;
 				};
-				mockModel.findById = vi.fn(() => ({
-					exec: vi.fn(() => Promise.resolve(null)),
-				}));
+				mockModel.findById = vi.fn(() => createNullExecChain(null));
 
 				try {
 					result = await repository.getById('nonexistent-id');
