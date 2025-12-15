@@ -24,6 +24,9 @@ export function createStorybookVitestConfig(
 
 	const storybookConfig = defineConfig({
 		test: {
+			// Prevent Vite/Vitest from scanning/transpiling build artifacts and coverage temp files.
+			// This greatly reduces the number of open files during coverage runs in CI.
+			exclude: ['dist/**', 'coverage/**', 'coverage/.tmp/**'],
 			globals: true,
 			// Retry tests on failure to handle flaky browser tests due to race conditions
 			// in @storybook/addon-vitest + Playwright browser provider
