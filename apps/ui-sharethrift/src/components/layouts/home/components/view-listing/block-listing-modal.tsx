@@ -1,6 +1,6 @@
 import { Button, Modal } from 'antd';
 
-export interface BlockListingModalProps {
+interface BlockListingModalProps {
 	visible: boolean;
 	listingTitle: string;
 	onConfirm: () => void;

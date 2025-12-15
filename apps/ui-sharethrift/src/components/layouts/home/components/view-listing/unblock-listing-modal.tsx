@@ -1,6 +1,6 @@
 import { Modal } from 'antd';
 
-export interface UnblockListingModalProps {
+interface UnblockListingModalProps {
 	visible: boolean;
 	listingTitle: string;
 	listingSharer: string;
