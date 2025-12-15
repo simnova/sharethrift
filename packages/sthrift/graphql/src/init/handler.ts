@@ -38,9 +38,9 @@ export const graphHandlerCreator = (
                 memberId: req.headers.get('x-member-id') ?? undefined,
                 communityId: req.headers.get('x-community-id') ?? undefined,
             };
-            return {
+            return Promise.resolve({
                 applicationServices: await applicationServicesFactory.forRequest(authHeader, hints),
-            };
+            });
 		},
 	};
 	return startServerAndCreateHandler<GraphContext>(server, functionOptions);
