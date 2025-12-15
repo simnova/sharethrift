@@ -1,7 +1,8 @@
 import path from 'node:path';
 import { createRequire } from 'module';
 import { storybookTest } from '@storybook/addon-vitest/vitest-plugin';
-import { defineConfig, mergeConfig, type ViteUserConfig } from 'vitest/config';
+import { defineConfig, mergeConfig } from 'vitest/config';
+import type { Alias, UserConfig } from 'vite';
 import { baseConfig } from './base.config.ts';
 import { playwright } from '@vitest/browser-playwright';
 
@@ -15,7 +16,7 @@ export type StorybookVitestConfigOptions = {
 export function createStorybookVitestConfig(
 	pkgDirname: string,
 	opts: StorybookVitestConfigOptions = {},
-): ViteUserConfig {
+): UserConfig {
 	const STORYBOOK_DIR = opts.storybookDirRelativeToPackage ?? '.storybook';
 	const setupFiles = opts.setupFiles ?? ['.storybook/vitest.setup.ts'];
 	const instances = opts.browsers ?? [{ browser: 'chromium' }];
@@ -26,7 +27,8 @@ export function createStorybookVitestConfig(
 	// Build a single alias list for workspace packages that should resolve to
 	// their source (`src/`) during tests. This prevents Vite from following
 	// package exports into `dist/` and opening built files during coverage runs.
-	const aliases: { find: string | RegExp; replacement: string }[] = [];
+	// Use regex patterns to match both exact package names and subpath imports.
+	const aliases: Alias[] = [];
 	const workspacePackagesToAlias = [
 		'@sthrift/ui-components',
 		'@sthrift/service-mongoose',
@@ -43,7 +45,21 @@ export function createStorybookVitestConfig(
 				paths: [pkgDirname],
 			});
 			const pkgDir = path.dirname(pkgJsonPath);
-			aliases.push({ find: pkgName, replacement: path.join(pkgDir, 'src') });
+			const pkgSrcDir = path.join(pkgDir, 'src');
+			// Create a regex pattern that matches the package name with optional subpaths
+			const escapedPkgName = pkgName.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+			const pattern = new RegExp(`^${escapedPkgName}(\\/.*)?$`);
+			const alias: Alias = {
+				find: pattern,
+				replacement: pkgSrcDir,
+				customResolver: {
+					resolveId(id) {
+						const subpath = id.substring(pkgName.length);
+						return path.join(pkgSrcDir, subpath);
+					},
+				},
+			};
+			aliases.push(alias);
 		} catch (e) {
 			// ignore missing packages
 		}
