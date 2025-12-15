@@ -127,6 +127,18 @@ export const ViewUserProfileContainer: React.FC = () => {
 
     const listings: ItemListing[] = [];
 
+    const getDisplayName = (user?: {
+        firstName?: string;
+        lastName?: string;
+        username?: string;
+    } | null) => {
+        if (!user) return "";
+        const nameParts = [user.firstName, user.lastName].filter(
+            (p) => Boolean(p) && p !== "N/A",
+        ) as string[];
+        return nameParts.length > 0 ? nameParts.join(" ") : user.username || "Listing User";
+    };
+
     return (
         <ComponentQueryLoader
             loading={userLoading || currentUserLoading}
@@ -149,14 +161,14 @@ export const ViewUserProfileContainer: React.FC = () => {
                             <>
                                 <BlockUserModal
                                     visible={blockModalVisible}
-                                    userName={`${profileUser.firstName} ${profileUser.lastName}`}
+                                    userName={getDisplayName(profileUser)}
                                     onConfirm={handleBlockUser}
                                     onCancel={() => setBlockModalVisible(false)}
                                     loading={blockLoading}
                                 />
                                 <UnblockUserModal
                                     visible={unblockModalVisible}
-                                    userName={`${profileUser.firstName} ${profileUser.lastName}`}
+                                    userName={getDisplayName(profileUser)}
                                     onConfirm={handleUnblockUser}
                                     onCancel={() => setUnblockModalVisible(false)}
                                     loading={unblockLoading}

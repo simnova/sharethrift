@@ -231,13 +231,16 @@ export const AdminUsersTable: React.FC<Readonly<AdminUsersTableProps>> = ({
     ];
 
     const getDisplayName = (user?: AdminUserData | null) => {
-    if (!user) return "";
+        if (!user) return "";
 
-    const nameParts = [user.firstName, user.lastName].filter(Boolean);
+        const nameParts = [user.firstName, user.lastName].filter(
+            (p) => Boolean(p) && p !== "N/A",
+        ) as string[];
 
-    // If no valid name parts exist, fallback to username
-    return nameParts.length > 0 ? nameParts.join(" ") : user.username || "N/A";
-};
+        return nameParts.length > 0
+            ? nameParts.join(" ")
+            : user.username || "Listing User";
+    };
 
     return (
         <>
