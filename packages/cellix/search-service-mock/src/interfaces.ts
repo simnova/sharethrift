@@ -21,7 +21,7 @@ export interface SearchField {
 	retrievable?: boolean;
 }
 
-export type SearchFieldType =
+type SearchFieldType =
 	| 'Edm.String'
 	| 'Edm.Int32'
 	| 'Edm.Int64'
@@ -70,44 +70,3 @@ export interface SearchResult {
 	document: Record<string, unknown>;
 	score?: number;
 }
-
-/**
- * Base interface for cognitive search implementations
- * Matches the pattern from ownercommunity and AHP codebases
- */
-export interface CognitiveSearchBase {
-	createIndexIfNotExists(indexDefinition: SearchIndex): Promise<void>;
-	createOrUpdateIndexDefinition(
-		indexName: string,
-		indexDefinition: SearchIndex,
-	): Promise<void>;
-	indexDocument(
-		indexName: string,
-		document: Record<string, unknown>,
-	): Promise<void>;
-	deleteDocument(
-		indexName: string,
-		document: Record<string, unknown>,
-	): Promise<void>;
-	deleteIndex(indexName: string): Promise<void>;
-	search(
-		indexName: string,
-		searchText: string,
-		options?: SearchOptions,
-	): Promise<SearchDocumentsResult>;
-}
-
-/**
- * Lifecycle interface for services that need startup/shutdown
- */
-export interface CognitiveSearchLifecycle {
-	startup(): Promise<void>;
-	shutdown(): Promise<void>;
-}
-
-/**
- * Extended interface combining base functionality with lifecycle
- */
-export interface CognitiveSearchService
-	extends CognitiveSearchBase,
-		CognitiveSearchLifecycle {}

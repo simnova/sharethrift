@@ -24,9 +24,7 @@
 	"dependencies": {
 		"@cellix/event-bus-seedwork-node": "workspace:*",
 		"@cellix/search-service": "workspace:*",
-		"@sthrift/domain": "workspace:*",
-		"@sthrift/persistence": "workspace:*",
-		"@sthrift/search-service-index": "workspace:*"
+		"@sthrift/domain": "workspace:*"
 	},
 	"devDependencies": {
 		"@cellix/typescript-config": "workspace:*",

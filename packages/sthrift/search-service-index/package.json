@@ -21,13 +21,11 @@
 	"author": "ShareThrift Team",
 	"license": "MIT",
 	"dependencies": {
-		"@cellix/api-services-spec": "workspace:*",
 		"@cellix/search-service": "workspace:*",
 		"@cellix/search-service-mock": "workspace:*"
 	},
 	"devDependencies": {
 		"@cellix/typescript-config": "workspace:*",
-		"@cellix/vitest-config": "workspace:*",
 		"@vitest/coverage-v8": "^3.2.4",
 		"typescript": "^5.3.0",
 		"vitest": "^3.2.4"

@@ -29,8 +29,7 @@
 		"@cellix/domain-seedwork": "workspace:*",
 		"@cellix/event-bus-seedwork-node": "workspace:*",
 		"@cellix/search-service": "workspace:*",
-		"@lucaspaganini/value-objects": "^1.3.1",
-		"bson": "^6.10.4"
+		"@lucaspaganini/value-objects": "^1.3.1"
 	},
 	"devDependencies": {
 		"@cellix/typescript-config": "workspace:*",

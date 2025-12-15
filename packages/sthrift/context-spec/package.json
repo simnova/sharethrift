@@ -24,7 +24,6 @@
 		"@cellix/payment-service": "workspace:*",
 		"@cellix/search-service": "workspace:*",
 		"@sthrift/persistence": "workspace:*",
-		"@sthrift/search-service-index": "workspace:*",
 		"@sthrift/service-token-validation": "workspace:*"
 	},
 	"devDependencies": {
