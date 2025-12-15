@@ -26,6 +26,9 @@ importers:
       '@biomejs/biome':
         specifier: 2.0.0
         version: 2.0.0
+      '@cucumber/cucumber':
+        specifier: ^12.2.0
+        version: 12.4.0
       '@graphql-codegen/cli':
         specifier: ^5.0.7
         version: 5.0.7(@parcel/watcher@2.5.1)(@types/node@24.9.2)(graphql@16.11.0)(typescript@5.8.3)
@@ -50,6 +53,21 @@ importers:
       '@playwright/test':
         specifier: ^1.55.1
         version: 1.56.1
+      '@serenity-js/assertions':
+        specifier: ^3.36.1
+        version: 3.37.0
+      '@serenity-js/console-reporter':
+        specifier: ^3.36.1
+        version: 3.37.0
+      '@serenity-js/core':
+        specifier: ^3.36.1
+        version: 3.37.0
+      '@serenity-js/cucumber':
+        specifier: ^3.36.1
+        version: 3.37.0(@cucumber/cucumber@12.4.0)
+      '@serenity-js/serenity-bdd':
+        specifier: ^3.36.1
+        version: 3.37.0
       '@sonar/scan':
         specifier: ^4.3.0
         version: 4.3.2
@@ -101,6 +119,9 @@ importers:
       '@azure/functions':
         specifier: ^4.0.0
         version: 4.8.0
+      '@azure/identity':
+        specifier: ^4.8.0
+        version: 4.13.0
       '@cellix/api-services-spec':
         specifier: workspace:*
         version: link:../../packages/cellix/api-services-spec
@@ -158,6 +179,9 @@ importers:
       '@sthrift/service-token-validation':
         specifier: workspace:*
         version: link:../../packages/sthrift/service-token-validation
+      twilio:
+        specifier: ^5.10.7
+        version: 5.10.7
     devDependencies:
       '@cellix/typescript-config':
         specifier: workspace:*
@@ -243,7 +267,7 @@ importers:
         version: 6.1.0(react-dom@19.2.0(react@19.2.0))(react@19.2.0)
       '@ant-design/v5-patch-for-react-19':
         specifier: ^1.0.3
-        version: 1.0.3(antd@5.27.6(luxon@3.6.1)(moment@2.30.1)(react-dom@19.2.0(react@19.2.0))(react@19.2.0))(react-dom@19.2.0(react@19.2.0))(react@19.2.0)
+        version: 1.0.3(antd@5.27.6(luxon@3.7.2)(moment@2.30.1)(react-dom@19.2.0(react@19.2.0))(react@19.2.0))(react-dom@19.2.0(react@19.2.0))(react@19.2.0)
       '@apollo/client':
         specifier: ^4.0.7
         version: 4.0.8(graphql-ws@6.0.6(graphql@16.11.0)(ws@8.18.3))(graphql@16.11.0)(react-dom@19.2.0(react@19.2.0))(react@19.2.0)(rxjs@7.8.2)
@@ -252,7 +276,7 @@ importers:
         version: link:../../packages/sthrift/ui-components
       antd:
         specifier: ^5.27.1
-        version: 5.27.6(luxon@3.6.1)(moment@2.30.1)(react-dom@19.2.0(react@19.2.0))(react@19.2.0)
+        version: 5.27.6(luxon@3.7.2)(moment@2.30.1)(react-dom@19.2.0(react@19.2.0))(react@19.2.0)
       crypto-hash:
         specifier: ^3.1.0
         version: 3.1.0
@@ -567,7 +591,7 @@ importers:
     dependencies:
       antd:
         specifier: '>=5.0.0'
-        version: 5.27.6(luxon@3.6.1)(moment@2.30.1)(react-dom@19.2.0(react@19.2.0))(react@19.2.0)
+        version: 5.27.6(luxon@3.7.2)(moment@2.30.1)(react-dom@19.2.0(react@19.2.0))(react@19.2.0)
       react:
         specifier: '>=18.0.0'
         version: 19.2.0
@@ -747,7 +771,7 @@ importers:
         version: 0.4.0
       '@cucumber/pretty-formatter':
         specifier: ^1.0.1
-        version: 1.0.1(@cucumber/cucumber@11.3.0)(@cucumber/messages@27.2.0)
+        version: 1.0.1(@cucumber/cucumber@11.3.0)(@cucumber/messages@31.0.0)
       '@serenity-js/assertions':
         specifier: ^3.32.3
         version: 3.35.2
@@ -1252,12 +1276,15 @@ importers:
       '@apollo/client':
         specifier: ^4.0.7
         version: 4.0.8(graphql-ws@6.0.6(graphql@16.11.0)(ws@8.18.3))(graphql@16.11.0)(react-dom@19.2.0(react@19.2.0))(react@19.2.0)(rxjs@7.8.2)
+      '@cellix/ui-core':
+        specifier: workspace:*
+        version: link:../../cellix/ui-core
       '@graphql-typed-document-node/core':
         specifier: ^3.2.0
         version: 3.2.0(graphql@16.11.0)
       antd:
         specifier: ^5.27.1
-        version: 5.27.6(luxon@3.6.1)(moment@2.30.1)(react-dom@19.2.0(react@19.2.0))(react@19.2.0)
+        version: 5.27.6(luxon@3.7.2)(moment@2.30.1)(react-dom@19.2.0(react@19.2.0))(react@19.2.0)
       graphql:
         specifier: ^16.11.0
         version: 16.11.0
@@ -1319,6 +1346,12 @@ importers:
       jsdom:
         specifier: ^26.1.0
         version: 26.1.0
+      markdown-to-jsx:
+        specifier: ^7.4.6
+        version: 7.7.17(react@19.2.0)
+      playwright:
+        specifier: ^1.55.0
+        version: 1.56.1
       rimraf:
         specifier: ^6.0.1
         version: 6.0.1
@@ -1671,6 +1704,10 @@ packages:
     resolution: {integrity: sha512-0q5DL4uyR0EZ4RXQKD8MadGH6zTIcloUoS/RVbCpNpej4pwte0xpqYxk8K97Py2RiuUvI7F4GXpoT4046VfufA==}
     engines: {node: '>=14.0.0'}
 
+  '@azure/identity@4.13.0':
+    resolution: {integrity: sha512-uWC0fssc+hs1TGGVkkghiaFkkS7NkTxfnCH+Hdg+yTehTpMcehpok4PgUKKdyCH+9ldu6FhiHRv84Ntqj1vVcw==}
+    engines: {node: '>=20.0.0'}
+
   '@azure/keyvault-common@2.0.0':
     resolution: {integrity: sha512-wRLVaroQtOqfg60cxkzUkGKrKMsCP6uYXAOomOIysSMyt1/YM0eUn9LqieAWM8DLcU4+07Fio2YGpPeqUbpP9w==}
     engines: {node: '>=18.0.0'}
@@ -1694,12 +1731,24 @@ packages:
     resolution: {integrity: sha512-I0XlIGVdM4E9kYP5eTjgW8fgATdzwxJvQ6bm2PNiHaZhEuUz47NYw1xHthC9R+lXz4i9zbShS0VdLyxd7n0GGA==}
     engines: {node: '>=0.8.0'}
 
+  '@azure/msal-browser@4.27.0':
+    resolution: {integrity: sha512-bZ8Pta6YAbdd0o0PEaL1/geBsPrLEnyY/RDWqvF1PP9RUH8EMLvUMGoZFYS6jSlUan6KZ9IMTLCnwpWWpQRK/w==}
+    engines: {node: '>=0.8.0'}
+
   '@azure/msal-common@14.16.1':
     resolution: {integrity: sha512-nyxsA6NA4SVKh5YyRpbSXiMr7oQbwark7JU9LMeg6tJYTSPyAGkdx61wPT4gyxZfxlSxMMEyAsWaubBlNyIa1w==}
     engines: {node: '>=0.8.0'}
 
+  '@azure/msal-common@15.13.3':
+    resolution: {integrity: sha512-shSDU7Ioecya+Aob5xliW9IGq1Ui8y4EVSdWGyI1Gbm4Vg61WpP95LuzcY214/wEjSn6w4PZYD4/iVldErHayQ==}
+    engines: {node: '>=0.8.0'}
+
   '@azure/msal-node@2.16.3':
     resolution: {integrity: sha512-CO+SE4weOsfJf+C5LM8argzvotrXw252/ZU6SM2Tz63fEblhH1uuVaaO4ISYFuN4Q6BhTo7I3qIdi8ydUQCqhw==}
+    engines: {node: '>=16'}
+
+  '@azure/msal-node@3.8.4':
+    resolution: {integrity: sha512-lvuAwsDpPDE/jSuVQOBMpLbXuVuLsPNRwWCyK3/6bPlBk0fGWegqoZ0qjZclMWyQ2JNvIY3vHY7hoFmFmFQcOw==}
     engines: {node: '>=16'}
 
   '@azure/opentelemetry-instrumentation-azure-sdk@1.0.0-beta.9':
@@ -2642,12 +2691,20 @@ packages:
   '@cucumber/ci-environment@10.0.1':
     resolution: {integrity: sha512-/+ooDMPtKSmvcPMDYnMZt4LuoipfFfHaYspStI4shqw8FyKcfQAmekz6G+QKWjQQrvM+7Hkljwx58MEwPCwwzg==}
 
+  '@cucumber/ci-environment@12.0.0':
+    resolution: {integrity: sha512-SqCEnbCNl3zCXCFpqGUuoaSNhLC0jLw4tKeFcAxTw9MD/QRlJjeAC/fyvVLFuXuSq0OunJlFfxLu+Z3HE+oLPg==}
+
   '@cucumber/cucumber-expressions@18.0.1':
     resolution: {integrity: sha512-NSid6bI+7UlgMywl5octojY5NXnxR9uq+JisjOrO52VbFsQM6gTWuQFE8syI10KnIBEdPzuEUSVEeZ0VFzRnZA==}
 
   '@cucumber/cucumber@11.3.0':
     resolution: {integrity: sha512-1YGsoAzRfDyVOnRMTSZP/EcFsOBElOKa2r+5nin0DJAeK+Mp0mzjcmSllMgApGtck7Ji87wwy3kFONfHUHMn4g==}
     engines: {node: 18 || 20 || 22 || >=23}
+    hasBin: true
+
+  '@cucumber/cucumber@12.4.0':
+    resolution: {integrity: sha512-zGtGIx4Q/+AMbZclgCOvlbJzQxFd35/gpnB+bbpRGarsQks8nL4MxoHz9qn/sYzqBiFPgnv29wcL8r4nOb8r3g==}
+    engines: {node: 20 || 22 || >=24}
     hasBin: true
 
   '@cucumber/gherkin-streams@5.0.1':
@@ -2657,6 +2714,18 @@ packages:
       '@cucumber/gherkin': '>=22.0.0'
       '@cucumber/message-streams': '>=4.0.0'
       '@cucumber/messages': '>=17.1.1'
+
+  '@cucumber/gherkin-streams@6.0.0':
+    resolution: {integrity: sha512-HLSHMmdDH0vCr7vsVEURcDA4WwnRLdjkhqr6a4HQ3i4RFK1wiDGPjBGVdGJLyuXuRdJpJbFc6QxHvT8pU4t6jw==}
+    hasBin: true
+    peerDependencies:
+      '@cucumber/gherkin': '>=22.0.0'
+      '@cucumber/message-streams': '>=4.0.0'
+      '@cucumber/messages': '>=17.1.1'
+
+  '@cucumber/gherkin-utils@10.0.0':
+    resolution: {integrity: sha512-BcujlDT343GXXNrMPl3ws6Il3zs8dQw3Yp/d3HnOJF8i2snGGgiapoTbko7MdvAt7ivDL7SDo+e1d5Cnpl3llA==}
+    hasBin: true
 
   '@cucumber/gherkin-utils@9.2.0':
     resolution: {integrity: sha512-3nmRbG1bUAZP3fAaUBNmqWO0z0OSkykZZotfLjyhc8KWwDSOrOmMJlBTd474lpA8EWh4JFLAX3iXgynBqBvKzw==}
@@ -2668,6 +2737,12 @@ packages:
   '@cucumber/gherkin@31.0.0':
     resolution: {integrity: sha512-wlZfdPif7JpBWJdqvHk1Mkr21L5vl4EfxVUOS4JinWGf3FLRV6IKUekBv5bb5VX79fkDcfDvESzcQ8WQc07Wgw==}
 
+  '@cucumber/gherkin@34.0.0':
+    resolution: {integrity: sha512-659CCFsrsyvuBi/Eix1fnhSheMnojSfnBcqJ3IMPNawx7JlrNJDcXYSSdxcUw3n/nG05P+ptCjmiZY3i14p+tA==}
+
+  '@cucumber/gherkin@37.0.0':
+    resolution: {integrity: sha512-vKJVJ6h4HCktG870wgYUUskNpFxbFI0WmAkVLPTz1LlLwJX7/KOBqFcr2/L3u0pPoHjbLRW+IpbiXLT2T13/wg==}
+
   '@cucumber/html-formatter@21.10.1':
     resolution: {integrity: sha512-isaaNMNnBYThsvaHy7i+9kkk9V3+rhgdkt0pd6TCY6zY1CSRZQ7tG6ST9pYyRaECyfbCeF7UGH0KpNEnh6UNvQ==}
     peerDependencies:
@@ -2678,8 +2753,18 @@ packages:
     peerDependencies:
       '@cucumber/messages': '>=18'
 
+  '@cucumber/html-formatter@22.2.0':
+    resolution: {integrity: sha512-fUNC/KngTIz+hAQ2Yr4XjdYq+MO60PwK9SidxBQ54jNI1Vw7erlgsPq0TOWneCIvdjU3qp+YDqYG1hw3zuUuDA==}
+    peerDependencies:
+      '@cucumber/messages': '>=18'
+
   '@cucumber/junit-xml-formatter@0.7.1':
     resolution: {integrity: sha512-AzhX+xFE/3zfoYeqkT7DNq68wAQfBcx4Dk9qS/ocXM2v5tBv6eFQ+w8zaSfsktCjYzu4oYRH/jh4USD1CYHfaQ==}
+    peerDependencies:
+      '@cucumber/messages': '*'
+
+  '@cucumber/junit-xml-formatter@0.9.0':
+    resolution: {integrity: sha512-WF+A7pBaXpKMD1i7K59Nk5519zj4extxY4+4nSgv5XLsGXHDf1gJnb84BkLUzevNtp2o2QzMG0vWLwSm8V5blw==}
     peerDependencies:
       '@cucumber/messages': '*'
 
@@ -2693,6 +2778,12 @@ packages:
 
   '@cucumber/messages@27.2.0':
     resolution: {integrity: sha512-f2o/HqKHgsqzFLdq6fAhfG1FNOQPdBdyMGpKwhb7hZqg0yZtx9BVqkTyuoNk83Fcvk3wjMVfouFXXHNEk4nddA==}
+
+  '@cucumber/messages@29.0.1':
+    resolution: {integrity: sha512-aAvIYfQD6/aBdF8KFQChC3CQ1Q+GX9orlR6GurGiX6oqaCnBkxA4WU3OQUVepDynEFrPayerqKRFcAMhdcXReQ==}
+
+  '@cucumber/messages@31.0.0':
+    resolution: {integrity: sha512-Dqhatp4AjMsH9SREfWz3Q8nlGuwJMTW7YAW5L3OzRId86ZUEu/a8vIL1RO2c0agQefuBS2SVH9fEZ66ovrMYRA==}
 
   '@cucumber/node@0.4.0':
     resolution: {integrity: sha512-QjLZ+IjXRgV2GpD6zSJcxfPL8mvj9xvMWJrFzmwFGY6ZC7GhgvdFPflckjYCtiFh735d7vrsv+qIVOkuxaVcVg==}
@@ -2708,8 +2799,16 @@ packages:
     peerDependencies:
       '@cucumber/messages': '*'
 
+  '@cucumber/query@14.7.0':
+    resolution: {integrity: sha512-fiqZ4gMEgYjmbuWproF/YeCdD5y+gD2BqgBIGbpihOsx6UlNsyzoDSfO+Tny0q65DxfK+pHo2UkPyEl7dO7wmQ==}
+    peerDependencies:
+      '@cucumber/messages': '*'
+
   '@cucumber/tag-expressions@6.1.2':
     resolution: {integrity: sha512-xa3pER+ntZhGCxRXSguDTKEHTZpUUsp+RzTRNnit+vi5cqnk6abLdSLg5i3HZXU3c74nQ8afQC6IT507EN74oQ==}
+
+  '@cucumber/tag-expressions@8.1.0':
+    resolution: {integrity: sha512-UFeOVUyc711/E7VHjThxMwg3jbGod9TlbM1gxNixX/AGDKg82Eha4cE0tKki3GGUs7uB2NyI+hQAuhB8rL2h5A==}
 
   '@dabh/diagnostics@2.0.8':
     resolution: {integrity: sha512-R4MSXTVnuMzGD7bzHdW2ZhhdPC/igELENcq5IjEverBvq5hn1SXCWcsi6eSsdWP0/Ur+SItRRjAktmdoX/8R/Q==}
@@ -3952,6 +4051,9 @@ packages:
   '@paralleldrive/cuid2@2.2.2':
     resolution: {integrity: sha512-ZOBkgDwEdoYVlSeRbYYXs0S9MejQofiVYoTbKzy/6GQa39/q5tQU2IX46+shYnUkpEl3wc+J6wRlar7r2EK2xA==}
 
+  '@paralleldrive/cuid2@2.3.1':
+    resolution: {integrity: sha512-XO7cAxhnTZl0Yggq6jOgjiOHhbgcO4NqFqwSmQpjK3b6TEE6Uj/jfSk6wzYyemh3+I0sHirKSetjQwn5cZktFw==}
+
   '@parcel/watcher-android-arm64@2.5.1':
     resolution: {integrity: sha512-KF8+j9nNbUN8vzOFDpRMsaKBHZ/mcjEjMToVMJOhTozkDonQFFrRcfdLWn6yWKCmJKmdVxSgHiYvTCef4/qcBA==}
     engines: {node: '>= 10.0.0'}
@@ -4314,13 +4416,25 @@ packages:
     resolution: {integrity: sha512-Lm76gzSYDXqM5n6+zTw2WBmy3mqgZbj7pLVa17OafJEEPwnUP3Td0B/Pzn4QYq5I4EZrMSK8t/tYgjvklS3hFw==}
     engines: {node: ^18.12 || ^20 || ^22}
 
+  '@serenity-js/assertions@3.37.0':
+    resolution: {integrity: sha512-fznp3T3qsbMvyatgIQQpyGVgdFMGiA53Y62SITk0T4RXdCY/WpvPZMwOpvFCkBfgC0IYXIcm8WsAFcumD/CeCA==}
+    engines: {node: ^20 || ^22 || ^24}
+
   '@serenity-js/console-reporter@3.35.2':
     resolution: {integrity: sha512-gulRTet0lRXn/oC6Qdh+K+7oNuGNikdOtG1KMN/f3BfAAN338e9aSGPBhEYKqkrBXLqTBWX8/0Pfs70a6gutvA==}
     engines: {node: ^18.12 || ^20 || ^22}
 
+  '@serenity-js/console-reporter@3.37.0':
+    resolution: {integrity: sha512-wPuA9mGUyA8+azoxXGjuEcttCvffZzHv2kQGGQ6eTVK4uJJ6X5KqMd3V6M4bwQ/AhJEA14h7UW41j6qvBYBmrQ==}
+    engines: {node: ^20 || ^22 || ^24}
+
   '@serenity-js/core@3.35.2':
     resolution: {integrity: sha512-Oy/g3PQmyNHR4zo3N1K6f+texVLgW53ZaCzrdm9eYsFDaRZdQ/kKlYb8cAyZtMNUEuERUp2nKgiKWP0Tu1tsiQ==}
     engines: {node: ^18.12 || ^20 || ^22}
+
+  '@serenity-js/core@3.37.0':
+    resolution: {integrity: sha512-BOJZ0IwJGgrGvZ3/ZhG/EhY3nJx0iU/eDmMT3zSP7bPGBuNe2l8fj+fBomDNvHlO6FWxKLnn05yaTy9f5Rr7oA==}
+    engines: {node: ^20 || ^22 || ^24}
 
   '@serenity-js/cucumber@3.35.2':
     resolution: {integrity: sha512-Urw1LPs/syOGKJh7MFGsCRkvpj93zSL/zd2h0PcaOGYY9G8MEjTenH6vnytQOOYvHWoOSGGZDOy7Vo2R3/QIDw==}
@@ -4334,13 +4448,34 @@ packages:
       cucumber:
         optional: true
 
+  '@serenity-js/cucumber@3.37.0':
+    resolution: {integrity: sha512-jHyBfnErqMV7ULPdGDSQ4yQT68CdW6QJGaFVKYnbxRHbE1OpS92pwiTi6Scea1XSoQYYyANnqRS6YNnM9khqEg==}
+    engines: {node: ^20 || ^22 || ^24}
+    peerDependencies:
+      '@cucumber/cucumber': ^7.3.2 || ^8.5.0 || ^9.1.0 || ^10.0.0 || ^11.0.0 || ^12.0.0
+      cucumber: ^1.3.3 || ^2.3.1 || ^3.2.1 || ^4.2.1 || ^5.0.0 || ^6.0.0
+    peerDependenciesMeta:
+      '@cucumber/cucumber':
+        optional: true
+      cucumber:
+        optional: true
+
   '@serenity-js/rest@3.35.2':
     resolution: {integrity: sha512-ZAyKqN12lxQh0DkSlRLG1wl7w9E3s/0xwE0F/EM/FVJCKbi1VxRgYKNWBF1wHXfhT6W2rthIa2GwQ/z1z7irxA==}
     engines: {node: ^18.12 || ^20 || ^22}
 
+  '@serenity-js/rest@3.37.0':
+    resolution: {integrity: sha512-EEhC5SUmyxGj91iebvH4gXu66iAMVd8HMjn6rWgnHMYlu9dQzWvyZTGriRtGayVMh/RUSDFukkzwf0YTPii65Q==}
+    engines: {node: ^20 || ^22 || ^24}
+
   '@serenity-js/serenity-bdd@3.35.2':
     resolution: {integrity: sha512-LaoPzPEGnOh3HTBgPXK8+sJhj4IFmAfRfrFGZqBhQxmaxNwJdSjfe6CZns4sMcCluvNoy4mJgy7V6NgBnxB3ow==}
     engines: {node: ^18.12 || ^20 || ^22}
+    hasBin: true
+
+  '@serenity-js/serenity-bdd@3.37.0':
+    resolution: {integrity: sha512-PCMFT4TYlyeYJ/p4c7jO7zBXSMmHBOQlGDybUOK7xFM6xZJ7x/akfaMXM9O7BGcuby+bPbVmAR3MjyhbUC3SgQ==}
+    engines: {node: ^20 || ^22 || ^24}
     hasBin: true
 
   '@sideway/address@4.1.5':
@@ -5360,6 +5495,9 @@ packages:
   axios@1.13.1:
     resolution: {integrity: sha512-hU4EGxxt+j7TQijx1oYdAjw4xuIp1wRQSsbMFwSthCWeBQur1eF+qJ5iQ5sN3Tw8YRzQNKb8jszgBdMDVqwJcw==}
 
+  axios@1.13.2:
+    resolution: {integrity: sha512-VPk9ebNqPcy5lRGuSlKx752IlDatOjT9paPlm8A7yOuW2Fbvp4X3JznJtT4f0GzGLLiWE9W8onz51SqLYwzGaA==}
+
   azurite@3.35.0:
     resolution: {integrity: sha512-GzKmi+/5U0baNRjEEVtBMLpLuIKEJ0uSh0VWBzOI4qe4f5ziJyoZQmcTO7QhxZTF6+rphj7TZS3PtJY7uiiacA==}
     engines: {node: '>=10.0.0', vscode: ^1.39.0}
@@ -5793,6 +5931,14 @@ packages:
   commander@13.1.0:
     resolution: {integrity: sha512-/rFeCpNJQbhSZjGVwO9RFV3xPqbnERS8MmIQzCtD/zl6gpJuV/bMLuN92oG3F7d8oDEHHRrujSXNUr8fpjntKw==}
     engines: {node: '>=18'}
+
+  commander@14.0.0:
+    resolution: {integrity: sha512-2uM9rYjPvyq39NwLRqaiLtWHyDC1FvryJDa2ATTVims5YAS4PupsEQsDvP14FqhFr0P49CYDugi59xaxJlTXRA==}
+    engines: {node: '>=20'}
+
+  commander@14.0.2:
+    resolution: {integrity: sha512-TywoWNNRbhoD0BXs1P3ZEScW8W5iKrnbithIl0YH+uCmBd0QpPOA8yc82DS3BIE5Ma6FnBVUsJ7wVUDz4dvOWQ==}
+    engines: {node: '>=20'}
 
   commander@2.20.3:
     resolution: {integrity: sha512-GpVkmM8vF2vQUkj2LvZmD35JxeJOLCwJ9cUkugyk2nuhbv3+mJvpLYYt+0+USMxE+oj+ey/lJEnhZw75x/OMcQ==}
@@ -6950,6 +7096,10 @@ packages:
     engines: {node: 20 || >=22}
     hasBin: true
 
+  glob@13.0.0:
+    resolution: {integrity: sha512-tvZgpqk6fz4BaNZ66ZsRaZnbHvP/jG3uKJvAZOwEVUL4RTA5nJeeLYfyN9/VA8NX/V3IBG+hkeuGpKjvELkVhA==}
+    engines: {node: 20 || >=22}
+
   glob@7.2.3:
     resolution: {integrity: sha512-nFR0zLpU2YCaRxwoCJvL6UvCH2JFyFVIvwTLsIf21AuHlMskA1hhTdk+LlYJtOlYt9v6dvszD2BGRqBL+iQK9Q==}
     deprecated: Glob versions prior to v9 are no longer supported
@@ -7159,6 +7309,10 @@ packages:
   hosted-git-info@7.0.2:
     resolution: {integrity: sha512-puUZAUKT5m8Zzvs72XWy3HtvVbTWljRE66cP60bxJzAqf2DgICo7lYTY2IHUmLnNpjYvw5bvmoHvPc0QO2a62w==}
     engines: {node: ^16.14.0 || >=18.0.0}
+
+  hosted-git-info@9.0.2:
+    resolution: {integrity: sha512-M422h7o/BR3rmCQ8UHi7cyyMqKltdP9Uo+J2fXK+RSAY+wTcKOIRyhTuKv4qn+DJf3g+PL890AzId5KZpX+CBg==}
+    engines: {node: ^20.17.0 || >=22.9.0}
 
   hpack.js@2.1.6:
     resolution: {integrity: sha512-zJxVehUdMGIKsRaNt7apO2Gqp0BdqW5yaiGHXXmbpvxgBYVZnAql+BJb4RO5ad2MgpbZKn5G6nMnegrH1FcNYQ==}
@@ -8081,6 +8235,10 @@ packages:
     resolution: {integrity: sha512-F9ODfyqML2coTIsQpSkRHnLSZMtkU8Q+mSfcaIyKwy58u+8k5nvAYeiNhsyMARvzNcXJ9QfWVrcPsC9e9rAxtg==}
     engines: {node: 20 || >=22}
 
+  lru-cache@11.2.4:
+    resolution: {integrity: sha512-B5Y16Jr9LB9dHVkh6ZevG+vAbOsNOYCX+sXvFWFu7B3Iz5mijW3zdbMyhsh8ANd2mSWBYdJgnqi+mL7/LrOPYg==}
+    engines: {node: 20 || >=22}
+
   lru-cache@5.1.1:
     resolution: {integrity: sha512-KpNARQA3Iwv+jTA0utUVVbrh+Jlrr1Fv0e56GGzAFOXN7dk/FviaDW8LHmK52DlcH4WP2n6gI8vN1aesBFgo9w==}
 
@@ -8094,6 +8252,10 @@ packages:
 
   luxon@3.6.1:
     resolution: {integrity: sha512-tJLxrKJhO2ukZ5z0gyjY1zPh3Rh88Ej9P7jNrZiHMUXHae1yvI2imgOZtL1TO8TW6biMMKfTtAOoEJANgtWBMQ==}
+    engines: {node: '>=12'}
+
+  luxon@3.7.2:
+    resolution: {integrity: sha512-vtEhXh/gNjI9Yg1u4jX/0YVPMvxzHuGgCm6tC5kZyb08yjGWGnqAjGJvcXbqQR2P3MyMEFnRbpcdFS6PBcLqew==}
     engines: {node: '>=12'}
 
   lz-string@1.5.0:
@@ -8133,6 +8295,15 @@ packages:
 
   markdown-table@3.0.4:
     resolution: {integrity: sha512-wiYz4+JrLyb/DqW2hkFJxP7Vd7JuTDm77fvbM8VfEQdmSMqcImWeeRbHwZjBjIFki/VaMK2BhFi7oUUZeM5bqw==}
+
+  markdown-to-jsx@7.7.17:
+    resolution: {integrity: sha512-7mG/1feQ0TX5I7YyMZVDgCC/y2I3CiEhIRQIhyov9nGBP5eoVrOXXHuL5ZP8GRfxVZKRiXWJgwXkb9It+nQZfQ==}
+    engines: {node: '>= 10'}
+    peerDependencies:
+      react: '>= 0.14.0'
+    peerDependenciesMeta:
+      react:
+        optional: true
 
   matcher@3.0.0:
     resolution: {integrity: sha512-OkeDaAZ/bQCxeFAozM55PKcKU0yJMPGifLwV4Qgjitu+5MoAfSQN4lsLJeXZ1b8w0x+/Emda6MZgXS1jvsapng==}
@@ -8461,6 +8632,11 @@ packages:
     engines: {node: '>=10'}
     hasBin: true
 
+  mkdirp@3.0.1:
+    resolution: {integrity: sha512-+NsyUUAZDmo6YVHzL/stxSu3t9YS1iljliy3BSDrXJ/dkn1KYdmtZODGGjLcc9XLgVVpH4KshHB8XmZgMhaBXg==}
+    engines: {node: '>=10'}
+    hasBin: true
+
   module-details-from-path@1.0.4:
     resolution: {integrity: sha512-EGWKgxALGMgzvxYF1UyGTy0HXX/2vHLkw6+NvDKW2jypWbHpjQuj4UMcqQWXHERJhVGKikolT06G3bcKe4fi7w==}
 
@@ -8666,6 +8842,10 @@ packages:
   normalize-package-data@6.0.2:
     resolution: {integrity: sha512-V6gygoYb/5EmNI+MEGrWkC+e6+Rr7mTmfHrxDbLzxQogBkgzo76rkok0Am6thgSF7Mv2nLOajAJj5vDJZEFn7g==}
     engines: {node: ^16.14.0 || >=18.0.0}
+
+  normalize-package-data@8.0.0:
+    resolution: {integrity: sha512-RWk+PI433eESQ7ounYxIp67CYuVsS1uYSonX3kA6ps/3LWfjVQa/ptEg6Y3T6uAMq1mWpX9PQ+qx+QaHpsc7gQ==}
+    engines: {node: ^20.17.0 || >=22.9.0}
 
   normalize-path@2.1.1:
     resolution: {integrity: sha512-3pKJwH184Xo/lnH6oyP1q2pMd7HcypqqmRs91/6/i2CGtWwIKGCkOOMTm/zXbgTEWHw1uNpNi/igc3ePOYHb6w==}
@@ -9845,6 +10025,14 @@ packages:
     resolution: {integrity: sha512-MbgfoNPANMdb4oRBNg5eqLbB2t2r+o5Ua1pNt8BqGp4I0FJZhuVSOj3PaBPni4azWuSzEdNn2evevzVmEk1ohQ==}
     engines: {node: '>=18'}
 
+  read-package-up@12.0.0:
+    resolution: {integrity: sha512-Q5hMVBYur/eQNWDdbF4/Wqqr9Bjvtrw2kjGxxBbKLbx8bVCL8gcArjTy8zDUuLGQicftpMuU0riQNcAsbtOVsw==}
+    engines: {node: '>=20'}
+
+  read-pkg@10.0.0:
+    resolution: {integrity: sha512-A70UlgfNdKI5NSvTTfHzLQj7NJRpJ4mT5tGafkllJ4wh71oYuGm/pzphHcmW4s35iox56KSK721AihodoXSc/A==}
+    engines: {node: '>=20'}
+
   read-pkg@9.0.1:
     resolution: {integrity: sha512-9viLL4/n1BJUCT1NXVTdS1jtm80yDEgR5T4yCelII49Mbj0v1rZdKqj7zCiYdbB0CuCgdrvHcNogAKTFPBocFA==}
     engines: {node: '>=18'}
@@ -10681,6 +10869,10 @@ packages:
     resolution: {integrity: sha512-c7AfkZ9udatCuAy9RSfiGPpeOKKUAUK5e1cXadLOGUjasdxqYqAK0jTNkM/FSEyJ3a5Ra27j/tw/PS0qLmaF/A==}
     engines: {node: '>=18'}
 
+  tagged-tag@1.0.0:
+    resolution: {integrity: sha512-yEFYrVhod+hdNyx7g5Bnkkb0G6si8HJurOoOEgC8B/O0uXLHlaey/65KRv6cuWBNhBgHKAROVpc7QyYqE5gFng==}
+    engines: {node: '>=20'}
+
   tapable@2.3.0:
     resolution: {integrity: sha512-g9ljZiwki/LfxmQADO3dEY1CbpmXT5Hm2fJ+QaGKwSXUylMybePR7/67YW7jOrrvjEgL1Fmz5kzyAjWVWLlucg==}
     engines: {node: '>=6'}
@@ -10759,6 +10951,10 @@ packages:
   tiny-types@1.24.1:
     resolution: {integrity: sha512-95cv2seZBqFIFw1r/+0PGVWTaChHU7JR2MvGUCCEJ39Rf+fqwj3l0WuTFaqUCpUXkU2coV+YOuUJ2KrB/QcxLw==}
     engines: {node: ^20 || ^22 || >=24.0.0}
+
+  tiny-types@1.24.3:
+    resolution: {integrity: sha512-LrDkHlUBPHfzzPDTKLX/IP0zruq346GVGK74VncAjyFVQqi1VZZgoqJ6XIrXkcqPH/CF/YWeW0Ps770sY4wfzA==}
+    engines: {node: ^20 || ^22 || ^24}
 
   tiny-warning@1.0.3:
     resolution: {integrity: sha512-lBN9zLN/oAf68o3zNXYrdCt1kP8WsiGW8Oo2ka41b2IM5JL/S1CTyX1rW0mb/zSuJun0ZUrDxx4sqvYS2FWzPA==}
@@ -11008,6 +11204,10 @@ packages:
   type-fest@4.41.0:
     resolution: {integrity: sha512-TeTSQ6H5YHvpqVwBRcnLDCBnDOHWYu7IvGbHT6N8AOymcr9PJGjc1GTtiWZTYg0NCgYwvnYWEkVChQAr9bjfwA==}
     engines: {node: '>=16'}
+
+  type-fest@5.3.1:
+    resolution: {integrity: sha512-VCn+LMHbd4t6sF3wfU/+HKT63C9OoyrSIf4b+vtWHpt2U7/4InZG467YDNMFMR70DdHjAdpPWmw2lzRdg0Xqqg==}
+    engines: {node: '>=20'}
 
   type-is@1.6.18:
     resolution: {integrity: sha512-TkRKr9sUTxEH8MdfuCSP7VizJyzRNMjj2J2do2Jr3Kym598JVdEksuzPQCnlFPW4ky9Q+iA+ma9BGm06XQBy8g==}
@@ -11645,6 +11845,9 @@ packages:
   yup@1.6.1:
     resolution: {integrity: sha512-JED8pB50qbA4FOkDol0bYF/p60qSEDQqBD0/qeIrUCG1KbPBIQ776fCUNb9ldbPcSTxA69g/47XTo4TqWiuXOA==}
 
+  yup@1.7.1:
+    resolution: {integrity: sha512-GKHFX2nXul2/4Dtfxhozv701jLQHdf6J34YDh2cEkpqoo8le5Mg6/LrdseVLrFarmFygZTlfIhHx/QKfb/QWXw==}
+
   zod@4.1.13:
     resolution: {integrity: sha512-AvvthqfqrAhNH9dnfmrfKzX5upOdjUVJYFqNSlkmGf64gRaTzlPwz99IHYnVs28qYAybvAlBV+H7pn0saFY4Ig==}
 
@@ -11846,9 +12049,9 @@ snapshots:
       resize-observer-polyfill: 1.5.1
       throttle-debounce: 5.0.2
 
-  '@ant-design/v5-patch-for-react-19@1.0.3(antd@5.27.6(luxon@3.6.1)(moment@2.30.1)(react-dom@19.2.0(react@19.2.0))(react@19.2.0))(react-dom@19.2.0(react@19.2.0))(react@19.2.0)':
+  '@ant-design/v5-patch-for-react-19@1.0.3(antd@5.27.6(luxon@3.7.2)(moment@2.30.1)(react-dom@19.2.0(react@19.2.0))(react@19.2.0))(react-dom@19.2.0(react@19.2.0))(react@19.2.0)':
     dependencies:
-      antd: 5.27.6(luxon@3.6.1)(moment@2.30.1)(react-dom@19.2.0(react@19.2.0))(react@19.2.0)
+      antd: 5.27.6(luxon@3.7.2)(moment@2.30.1)(react-dom@19.2.0(react@19.2.0))(react@19.2.0)
       react: 19.2.0
       react-dom: 19.2.0(react@19.2.0)
 
@@ -12075,7 +12278,7 @@ snapshots:
   '@azure/core-rest-pipeline@1.16.3':
     dependencies:
       '@azure/abort-controller': 2.1.2
-      '@azure/core-auth': 1.7.2
+      '@azure/core-auth': 1.10.1
       '@azure/core-tracing': 1.3.1
       '@azure/core-util': 1.13.1
       '@azure/logger': 1.3.0
@@ -12143,6 +12346,22 @@ snapshots:
       jws: 4.0.0
       open: 8.4.2
       stoppable: 1.1.0
+      tslib: 2.8.1
+    transitivePeerDependencies:
+      - supports-color
+
+  '@azure/identity@4.13.0':
+    dependencies:
+      '@azure/abort-controller': 2.1.2
+      '@azure/core-auth': 1.10.1
+      '@azure/core-client': 1.10.1
+      '@azure/core-rest-pipeline': 1.22.1
+      '@azure/core-tracing': 1.3.1
+      '@azure/core-util': 1.13.1
+      '@azure/logger': 1.3.0
+      '@azure/msal-browser': 4.27.0
+      '@azure/msal-node': 3.8.4
+      open: 10.2.0
       tslib: 2.8.1
     transitivePeerDependencies:
       - supports-color
@@ -12219,11 +12438,23 @@ snapshots:
     dependencies:
       '@azure/msal-common': 14.16.1
 
+  '@azure/msal-browser@4.27.0':
+    dependencies:
+      '@azure/msal-common': 15.13.3
+
   '@azure/msal-common@14.16.1': {}
+
+  '@azure/msal-common@15.13.3': {}
 
   '@azure/msal-node@2.16.3':
     dependencies:
       '@azure/msal-common': 14.16.1
+      jsonwebtoken: 9.0.3
+      uuid: 8.3.2
+
+  '@azure/msal-node@3.8.4':
+    dependencies:
+      '@azure/msal-common': 15.13.3
       jsonwebtoken: 9.0.3
       uuid: 8.3.2
 
@@ -13350,6 +13581,8 @@ snapshots:
 
   '@cucumber/ci-environment@10.0.1': {}
 
+  '@cucumber/ci-environment@12.0.0': {}
+
   '@cucumber/cucumber-expressions@18.0.1':
     dependencies:
       regexp-match-indices: 1.0.2
@@ -13363,7 +13596,7 @@ snapshots:
       '@cucumber/gherkin-utils': 9.2.0
       '@cucumber/html-formatter': 21.10.1(@cucumber/messages@27.2.0)
       '@cucumber/junit-xml-formatter': 0.7.1(@cucumber/messages@27.2.0)
-      '@cucumber/message-streams': 4.0.1(@cucumber/messages@27.2.0)
+      '@cucumber/message-streams': 4.0.1(@cucumber/messages@31.0.0)
       '@cucumber/messages': 27.2.0
       '@cucumber/tag-expressions': 6.1.2
       assertion-error-formatter: 3.0.0
@@ -13396,12 +13629,71 @@ snapshots:
       yaml: 2.8.1
       yup: 1.6.1
 
+  '@cucumber/cucumber@12.4.0':
+    dependencies:
+      '@cucumber/ci-environment': 12.0.0
+      '@cucumber/cucumber-expressions': 18.0.1
+      '@cucumber/gherkin': 37.0.0
+      '@cucumber/gherkin-streams': 6.0.0(@cucumber/gherkin@37.0.0)(@cucumber/message-streams@4.0.1(@cucumber/messages@31.0.0))(@cucumber/messages@31.0.0)
+      '@cucumber/gherkin-utils': 10.0.0
+      '@cucumber/html-formatter': 22.2.0(@cucumber/messages@31.0.0)
+      '@cucumber/junit-xml-formatter': 0.9.0(@cucumber/messages@31.0.0)
+      '@cucumber/message-streams': 4.0.1(@cucumber/messages@31.0.0)
+      '@cucumber/messages': 31.0.0
+      '@cucumber/pretty-formatter': 1.0.1(@cucumber/cucumber@12.4.0)(@cucumber/messages@31.0.0)
+      '@cucumber/tag-expressions': 8.1.0
+      assertion-error-formatter: 3.0.0
+      capital-case: 1.0.4
+      chalk: 4.1.2
+      cli-table3: 0.6.5
+      commander: 14.0.2
+      debug: 4.4.3(supports-color@8.1.1)
+      error-stack-parser: 2.1.4
+      figures: 3.2.0
+      glob: 13.0.0
+      has-ansi: 4.0.1
+      indent-string: 4.0.0
+      is-installed-globally: 0.4.0
+      is-stream: 2.0.1
+      knuth-shuffle-seeded: 1.0.6
+      lodash.merge: 4.6.2
+      lodash.mergewith: 4.6.2
+      luxon: 3.7.2
+      mime: 3.0.0
+      mkdirp: 3.0.1
+      mz: 2.7.0
+      progress: 2.0.3
+      read-package-up: 12.0.0
+      semver: 7.7.3
+      string-argv: 0.3.1
+      supports-color: 8.1.1
+      type-fest: 4.41.0
+      util-arity: 1.1.0
+      yaml: 2.8.1
+      yup: 1.7.1
+
   '@cucumber/gherkin-streams@5.0.1(@cucumber/gherkin@30.0.4)(@cucumber/message-streams@4.0.1(@cucumber/messages@27.2.0))(@cucumber/messages@27.2.0)':
     dependencies:
       '@cucumber/gherkin': 30.0.4
-      '@cucumber/message-streams': 4.0.1(@cucumber/messages@27.2.0)
+      '@cucumber/message-streams': 4.0.1(@cucumber/messages@31.0.0)
       '@cucumber/messages': 27.2.0
       commander: 9.1.0
+      source-map-support: 0.5.21
+
+  '@cucumber/gherkin-streams@6.0.0(@cucumber/gherkin@37.0.0)(@cucumber/message-streams@4.0.1(@cucumber/messages@31.0.0))(@cucumber/messages@31.0.0)':
+    dependencies:
+      '@cucumber/gherkin': 37.0.0
+      '@cucumber/message-streams': 4.0.1(@cucumber/messages@31.0.0)
+      '@cucumber/messages': 31.0.0
+      commander: 14.0.0
+      source-map-support: 0.5.21
+
+  '@cucumber/gherkin-utils@10.0.0':
+    dependencies:
+      '@cucumber/gherkin': 34.0.0
+      '@cucumber/messages': 29.0.1
+      '@teppeis/multimaps': 3.0.0
+      commander: 14.0.0
       source-map-support: 0.5.21
 
   '@cucumber/gherkin-utils@9.2.0':
@@ -13420,6 +13712,14 @@ snapshots:
     dependencies:
       '@cucumber/messages': 26.0.1
 
+  '@cucumber/gherkin@34.0.0':
+    dependencies:
+      '@cucumber/messages': 27.2.0
+
+  '@cucumber/gherkin@37.0.0':
+    dependencies:
+      '@cucumber/messages': 31.0.0
+
   '@cucumber/html-formatter@21.10.1(@cucumber/messages@27.2.0)':
     dependencies:
       '@cucumber/messages': 27.2.0
@@ -13427,6 +13727,10 @@ snapshots:
   '@cucumber/html-formatter@21.9.0(@cucumber/messages@27.2.0)':
     dependencies:
       '@cucumber/messages': 27.2.0
+
+  '@cucumber/html-formatter@22.2.0(@cucumber/messages@31.0.0)':
+    dependencies:
+      '@cucumber/messages': 31.0.0
 
   '@cucumber/junit-xml-formatter@0.7.1(@cucumber/messages@27.2.0)':
     dependencies:
@@ -13436,9 +13740,17 @@ snapshots:
       luxon: 3.6.1
       xmlbuilder: 15.1.1
 
-  '@cucumber/message-streams@4.0.1(@cucumber/messages@27.2.0)':
+  '@cucumber/junit-xml-formatter@0.9.0(@cucumber/messages@31.0.0)':
     dependencies:
-      '@cucumber/messages': 27.2.0
+      '@cucumber/messages': 31.0.0
+      '@cucumber/query': 14.7.0(@cucumber/messages@31.0.0)
+      '@teppeis/multimaps': 3.0.0
+      luxon: 3.7.2
+      xmlbuilder: 15.1.1
+
+  '@cucumber/message-streams@4.0.1(@cucumber/messages@31.0.0)':
+    dependencies:
+      '@cucumber/messages': 31.0.0
 
   '@cucumber/messages@26.0.1':
     dependencies:
@@ -13454,6 +13766,16 @@ snapshots:
       reflect-metadata: 0.2.2
       uuid: 11.0.5
 
+  '@cucumber/messages@29.0.1':
+    dependencies:
+      class-transformer: 0.5.1
+      reflect-metadata: 0.2.2
+
+  '@cucumber/messages@31.0.0':
+    dependencies:
+      class-transformer: 0.5.1
+      reflect-metadata: 0.2.2
+
   '@cucumber/node@0.4.0':
     dependencies:
       '@cucumber/ci-environment': 10.0.1
@@ -13467,10 +13789,19 @@ snapshots:
       stack-utils: 2.0.6
       type-fest: 4.41.0
 
-  '@cucumber/pretty-formatter@1.0.1(@cucumber/cucumber@11.3.0)(@cucumber/messages@27.2.0)':
+  '@cucumber/pretty-formatter@1.0.1(@cucumber/cucumber@11.3.0)(@cucumber/messages@31.0.0)':
     dependencies:
       '@cucumber/cucumber': 11.3.0
-      '@cucumber/messages': 27.2.0
+      '@cucumber/messages': 31.0.0
+      ansi-styles: 5.2.0
+      cli-table3: 0.6.5
+      figures: 3.2.0
+      ts-dedent: 2.2.0
+
+  '@cucumber/pretty-formatter@1.0.1(@cucumber/cucumber@12.4.0)(@cucumber/messages@31.0.0)':
+    dependencies:
+      '@cucumber/cucumber': 12.4.0
+      '@cucumber/messages': 31.0.0
       ansi-styles: 5.2.0
       cli-table3: 0.6.5
       figures: 3.2.0
@@ -13482,7 +13813,15 @@ snapshots:
       '@teppeis/multimaps': 3.0.0
       lodash.sortby: 4.7.0
 
+  '@cucumber/query@14.7.0(@cucumber/messages@31.0.0)':
+    dependencies:
+      '@cucumber/messages': 31.0.0
+      '@teppeis/multimaps': 3.0.0
+      lodash.sortby: 4.7.0
+
   '@cucumber/tag-expressions@6.1.2': {}
+
+  '@cucumber/tag-expressions@8.1.0': {}
 
   '@dabh/diagnostics@2.0.8':
     dependencies:
@@ -15553,6 +15892,10 @@ snapshots:
     dependencies:
       '@noble/hashes': 1.8.0
 
+  '@paralleldrive/cuid2@2.3.1':
+    dependencies:
+      '@noble/hashes': 1.8.0
+
   '@parcel/watcher-android-arm64@2.5.1':
     optional: true
 
@@ -15865,11 +16208,22 @@ snapshots:
       '@serenity-js/core': 3.35.2
       tiny-types: 1.24.1
 
+  '@serenity-js/assertions@3.37.0':
+    dependencies:
+      '@serenity-js/core': 3.37.0
+      tiny-types: 1.24.3
+
   '@serenity-js/console-reporter@3.35.2':
     dependencies:
       '@serenity-js/core': 3.35.2
       chalk: 4.1.2
       tiny-types: 1.24.1
+
+  '@serenity-js/console-reporter@3.37.0':
+    dependencies:
+      '@serenity-js/core': 3.37.0
+      chalk: 4.1.2
+      tiny-types: 1.24.3
 
   '@serenity-js/core@3.35.2':
     dependencies:
@@ -15885,6 +16239,20 @@ snapshots:
       upath: 2.0.1
       validate-npm-package-name: 6.0.2
 
+  '@serenity-js/core@3.37.0':
+    dependencies:
+      '@paralleldrive/cuid2': 2.3.1
+      chalk: 4.1.2
+      diff: 6.0.0
+      error-stack-parser: 2.1.4
+      fast-glob: 3.3.3
+      filenamify: 4.3.0
+      graceful-fs: 4.2.11
+      semver: 7.7.3
+      tiny-types: 1.24.3
+      upath: 2.0.1
+      validate-npm-package-name: 6.0.2
+
   '@serenity-js/cucumber@3.35.2(@cucumber/cucumber@11.3.0)':
     dependencies:
       '@cucumber/messages': 26.0.1
@@ -15895,6 +16263,16 @@ snapshots:
     optionalDependencies:
       '@cucumber/cucumber': 11.3.0
 
+  '@serenity-js/cucumber@3.37.0(@cucumber/cucumber@12.4.0)':
+    dependencies:
+      '@cucumber/messages': 26.0.1
+      '@serenity-js/core': 3.37.0
+      cli-table3: 0.6.5
+      gherkin: 5.1.0
+      tiny-types: 1.24.3
+    optionalDependencies:
+      '@cucumber/cucumber': 12.4.0
+
   '@serenity-js/rest@3.35.2':
     dependencies:
       '@serenity-js/core': 3.35.2
@@ -15904,6 +16282,19 @@ snapshots:
       https-proxy-agent: 7.0.6
       lru-cache: 11.2.2
       tiny-types: 1.24.1
+    transitivePeerDependencies:
+      - debug
+      - supports-color
+
+  '@serenity-js/rest@3.37.0':
+    dependencies:
+      '@serenity-js/core': 3.37.0
+      agent-base: 7.1.4
+      axios: 1.13.2
+      http-proxy-agent: 7.0.2
+      https-proxy-agent: 7.0.6
+      lru-cache: 11.2.4
+      tiny-types: 1.24.3
     transitivePeerDependencies:
       - debug
       - supports-color
@@ -15919,6 +16310,23 @@ snapshots:
       find-java-home: 2.0.0
       progress: 2.0.3
       tiny-types: 1.24.1
+      which: 5.0.0
+      yargs: 17.7.2
+    transitivePeerDependencies:
+      - debug
+      - supports-color
+
+  '@serenity-js/serenity-bdd@3.37.0':
+    dependencies:
+      '@serenity-js/assertions': 3.37.0
+      '@serenity-js/core': 3.37.0
+      '@serenity-js/rest': 3.37.0
+      ansi-regex: 5.0.1
+      axios: 1.13.2
+      chalk: 4.1.2
+      find-java-home: 2.0.0
+      progress: 2.0.3
+      tiny-types: 1.24.3
       which: 5.0.0
       yargs: 17.7.2
     transitivePeerDependencies:
@@ -16986,7 +17394,7 @@ snapshots:
 
   ansi-styles@6.2.3: {}
 
-  antd@5.27.6(luxon@3.6.1)(moment@2.30.1)(react-dom@19.2.0(react@19.2.0))(react@19.2.0):
+  antd@5.27.6(luxon@3.7.2)(moment@2.30.1)(react-dom@19.2.0(react@19.2.0))(react@19.2.0):
     dependencies:
       '@ant-design/colors': 7.2.1
       '@ant-design/cssinjs': 1.24.0(react-dom@19.2.0(react@19.2.0))(react@19.2.0)
@@ -17018,7 +17426,7 @@ snapshots:
       rc-motion: 2.9.5(react-dom@19.2.0(react@19.2.0))(react@19.2.0)
       rc-notification: 5.6.4(react-dom@19.2.0(react@19.2.0))(react@19.2.0)
       rc-pagination: 5.1.0(react-dom@19.2.0(react@19.2.0))(react@19.2.0)
-      rc-picker: 4.11.3(dayjs@1.11.18)(luxon@3.6.1)(moment@2.30.1)(react-dom@19.2.0(react@19.2.0))(react@19.2.0)
+      rc-picker: 4.11.3(dayjs@1.11.18)(luxon@3.7.2)(moment@2.30.1)(react-dom@19.2.0(react@19.2.0))(react@19.2.0)
       rc-progress: 4.0.0(react-dom@19.2.0(react@19.2.0))(react@19.2.0)
       rc-rate: 2.13.1(react-dom@19.2.0(react@19.2.0))(react@19.2.0)
       rc-resize-observer: 1.4.3(react-dom@19.2.0(react@19.2.0))(react@19.2.0)
@@ -17230,6 +17638,14 @@ snapshots:
       - debug
 
   axios@1.13.1:
+    dependencies:
+      follow-redirects: 1.15.11(debug@4.4.3)
+      form-data: 4.0.4
+      proxy-from-env: 1.1.0
+    transitivePeerDependencies:
+      - debug
+
+  axios@1.13.2:
     dependencies:
       follow-redirects: 1.15.11(debug@4.4.3)
       form-data: 4.0.4
@@ -17748,6 +18164,10 @@ snapshots:
   commander@10.0.1: {}
 
   commander@13.1.0: {}
+
+  commander@14.0.0: {}
+
+  commander@14.0.2: {}
 
   commander@2.20.3: {}
 
@@ -19131,6 +19551,12 @@ snapshots:
       package-json-from-dist: 1.0.1
       path-scurry: 2.0.0
 
+  glob@13.0.0:
+    dependencies:
+      minimatch: 10.1.1
+      minipass: 7.1.2
+      path-scurry: 2.0.0
+
   glob@7.2.3:
     dependencies:
       fs.realpath: 1.0.0
@@ -19435,6 +19861,10 @@ snapshots:
   hosted-git-info@7.0.2:
     dependencies:
       lru-cache: 10.4.3
+
+  hosted-git-info@9.0.2:
+    dependencies:
+      lru-cache: 11.2.2
 
   hpack.js@2.1.6:
     dependencies:
@@ -20355,6 +20785,8 @@ snapshots:
 
   lru-cache@11.2.2: {}
 
+  lru-cache@11.2.4: {}
+
   lru-cache@5.1.1:
     dependencies:
       yallist: 3.1.1
@@ -20364,6 +20796,8 @@ snapshots:
   lru.min@1.1.2: {}
 
   luxon@3.6.1: {}
+
+  luxon@3.7.2: {}
 
   lz-string@1.5.0: {}
 
@@ -20398,6 +20832,10 @@ snapshots:
       repeat-string: 1.6.1
 
   markdown-table@3.0.4: {}
+
+  markdown-to-jsx@7.7.17(react@19.2.0):
+    optionalDependencies:
+      react: 19.2.0
 
   matcher@3.0.0:
     dependencies:
@@ -20986,6 +21424,8 @@ snapshots:
 
   mkdirp@2.1.6: {}
 
+  mkdirp@3.0.1: {}
+
   module-details-from-path@1.0.4: {}
 
   moment-timezone@0.5.48:
@@ -21203,6 +21643,12 @@ snapshots:
   normalize-package-data@6.0.2:
     dependencies:
       hosted-git-info: 7.0.2
+      semver: 7.7.3
+      validate-npm-package-license: 3.0.4
+
+  normalize-package-data@8.0.0:
+    dependencies:
+      hosted-git-info: 9.0.2
       semver: 7.7.3
       validate-npm-package-license: 3.0.4
 
@@ -22277,7 +22723,7 @@ snapshots:
       react: 19.2.0
       react-dom: 19.2.0(react@19.2.0)
 
-  rc-picker@4.11.3(dayjs@1.11.18)(luxon@3.6.1)(moment@2.30.1)(react-dom@19.2.0(react@19.2.0))(react@19.2.0):
+  rc-picker@4.11.3(dayjs@1.11.18)(luxon@3.7.2)(moment@2.30.1)(react-dom@19.2.0(react@19.2.0))(react@19.2.0):
     dependencies:
       '@babel/runtime': 7.28.4
       '@rc-component/trigger': 2.3.0(react-dom@19.2.0(react@19.2.0))(react@19.2.0)
@@ -22289,7 +22735,7 @@ snapshots:
       react-dom: 19.2.0(react@19.2.0)
     optionalDependencies:
       dayjs: 1.11.18
-      luxon: 3.6.1
+      luxon: 3.7.2
       moment: 2.30.1
 
   rc-progress@4.0.0(react-dom@19.2.0(react@19.2.0))(react@19.2.0):
@@ -22555,6 +23001,20 @@ snapshots:
       find-up-simple: 1.0.1
       read-pkg: 9.0.1
       type-fest: 4.41.0
+
+  read-package-up@12.0.0:
+    dependencies:
+      find-up-simple: 1.0.1
+      read-pkg: 10.0.0
+      type-fest: 5.3.1
+
+  read-pkg@10.0.0:
+    dependencies:
+      '@types/normalize-package-data': 2.4.4
+      normalize-package-data: 8.0.0
+      parse-json: 8.3.0
+      type-fest: 5.3.1
+      unicorn-magic: 0.3.0
 
   read-pkg@9.0.1:
     dependencies:
@@ -23565,6 +24025,8 @@ snapshots:
       timeout-signal: 2.0.0
       whatwg-mimetype: 4.0.0
 
+  tagged-tag@1.0.0: {}
+
   tapable@2.3.0: {}
 
   tar-stream@3.1.7:
@@ -23647,6 +24109,8 @@ snapshots:
   tiny-invariant@1.3.3: {}
 
   tiny-types@1.24.1: {}
+
+  tiny-types@1.24.3: {}
 
   tiny-warning@1.0.3: {}
 
@@ -23877,6 +24341,10 @@ snapshots:
   type-fest@2.19.0: {}
 
   type-fest@4.41.0: {}
+
+  type-fest@5.3.1:
+    dependencies:
+      tagged-tag: 1.0.0
 
   type-is@1.6.18:
     dependencies:
@@ -24677,6 +25145,13 @@ snapshots:
   yocto-queue@1.2.1: {}
 
   yup@1.6.1:
+    dependencies:
+      property-expr: 2.0.6
+      tiny-case: 1.0.3
+      toposort: 2.0.2
+      type-fest: 2.19.0
+
+  yup@1.7.1:
     dependencies:
       property-expr: 2.0.6
       tiny-case: 1.0.3
