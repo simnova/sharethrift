@@ -12,7 +12,7 @@ export interface BlockUserFormValues {
 export interface BlockUserModalProps {
     visible: boolean;
     userName: string;
-    onConfirm: (values: BlockUserFormValues) => void;
+    onConfirm: (values: BlockUserFormValues) => void | Promise<void>;
     onCancel: () => void;
     loading?: boolean;
 }
@@ -45,10 +45,10 @@ export const BlockUserModal: React.FC<Readonly<BlockUserModalProps>> = ({
     const handleOk = async () => {
         try {
             const values = await blockForm.validateFields();
-            onConfirm(values);
+            await Promise.resolve(onConfirm(values));
             blockForm.resetFields();
         } catch (error) {
-            console.error("Validation Failed:", error);
+            console.error("Failed to block user:", error);
             return;
         }
     };
