@@ -6,7 +6,7 @@ import { useNavigate } from 'react-router-dom';
 import {
 	AdminListingsTableContainerAdminListingsDocument,
 	AdminListingsTableContainerDeleteListingDocument,
-	AdminListingsTableContainerUnblockListingDocument,
+	BlockListingContainerUnblockListingDocument,
 } from '../../../../../../../generated.tsx';
 import { AdminListingsTable } from './admin-listings-table.tsx';
 
@@ -63,7 +63,7 @@ export function AdminListings(): React.JSX.Element {
 	);
 
 	const [unblockListingMutation] = useMutation(
-		AdminListingsTableContainerUnblockListingDocument,
+		BlockListingContainerUnblockListingDocument,
 	);
 
 	const listings = data?.adminListings?.items ?? [];

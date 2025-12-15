@@ -1,7 +1,0 @@
-mutation BlockListing($id: ObjectID!) {
-	blockListing(id: $id)
-}
-
-mutation UnblockListing($id: ObjectID!) {
-	unblockListing(id: $id)
-}

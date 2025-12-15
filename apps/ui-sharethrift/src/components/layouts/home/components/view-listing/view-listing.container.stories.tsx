@@ -1,8 +1,8 @@
 import type { Meta, StoryObj } from '@storybook/react';
 import { expect } from 'storybook/test';
 import {
-	BlockListingDocument,
-	UnblockListingDocument,
+	BlockListingContainerBlockListingDocument,
+	BlockListingContainerUnblockListingDocument,
 	ViewListingActiveReservationRequestForListingDocument,
 	ViewListingCurrentUserDocument,
 	ViewListingDocument,
@@ -83,7 +83,7 @@ const meta: Meta<typeof ViewListingContainer> = {
 				},
 				{
 					request: {
-						query: BlockListingDocument,
+						query: BlockListingContainerBlockListingDocument,
 						variables: { id: '1' },
 					},
 					result: {
@@ -97,7 +97,7 @@ const meta: Meta<typeof ViewListingContainer> = {
 				},
 				{
 					request: {
-						query: UnblockListingDocument,
+						query: BlockListingContainerUnblockListingDocument,
 						variables: { id: '1' },
 					},
 					result: {
@@ -219,7 +219,7 @@ export const AdminUser: Story = {
 				},
 				{
 					request: {
-						query: BlockListingDocument,
+						query: BlockListingContainerBlockListingDocument,
 						variables: { id: '1' },
 					},
 					result: {
@@ -325,7 +325,7 @@ export const BlockedListingAsAdmin: Story = {
 				},
 				{
 					request: {
-						query: UnblockListingDocument,
+						query: BlockListingContainerUnblockListingDocument,
 						variables: { id: '1' },
 					},
 					result: {
