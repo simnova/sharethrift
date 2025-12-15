@@ -141,7 +141,15 @@
 				}
 			}
 		},
-		{ "includes": ["**/src/**/*.ts"], "javascript": { "globals": [] } }
+		{ "includes": ["**/src/**/*.ts"], "javascript": { "globals": [] } },
+		{
+			"includes": ["**/cellix/mock-oauth2-server/src/index.ts"],
+			"linter": {
+				"rules": {
+					"complexity": { "useLiteralKeys": "off" }
+				}
+			}
+		}
 	],
 	"assist": {
 		"enabled": true,
