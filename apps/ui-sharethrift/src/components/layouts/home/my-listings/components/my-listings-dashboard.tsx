@@ -5,7 +5,7 @@ import { AllListingsTableContainer } from "./all-listings-table.container.tsx";
 import styles from "./my-listings-dashboard.module.css";
 import { RequestsTableContainer } from "./requests-table.container.tsx";
 
-export interface MyListingsDashboardProps {
+interface MyListingsDashboardProps {
   onCreateListing: () => void;
   requestsCount: number;
   sharerId: string;
