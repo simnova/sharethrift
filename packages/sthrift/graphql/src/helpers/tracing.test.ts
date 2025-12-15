@@ -46,10 +46,15 @@ vi.mock('@opentelemetry/api', async (importOriginal) => {
 						fn: (span: Span) => Promise<unknown>,
 					): Promise<unknown> => {
 						const mockSpan = createMockSpan();
+						const globals = global as unknown as {
+							__mockSpan?: Span;
+							__mockTracerName?: string;
+							__mockSpanName?: string;
+						};
 						// Store references for assertions
-						(global as Record<string, unknown>)['__mockSpan'] = mockSpan;
-						(global as Record<string, unknown>)['__mockTracerName'] = tracerName;
-						(global as Record<string, unknown>)['__mockSpanName'] = spanName;
+						globals.__mockSpan = mockSpan;
+						globals.__mockTracerName = tracerName;
+						globals.__mockSpanName = spanName;
 						return fn(mockSpan);
 					},
 				),

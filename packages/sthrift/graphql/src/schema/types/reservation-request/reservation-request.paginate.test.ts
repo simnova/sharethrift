@@ -19,7 +19,10 @@ describe('paginateAndFilterListingRequests', () => {
 		});
 
 		expect(result.items).toHaveLength(1);
-		const [item] = result.items;
+		const item = result.items[0];
+		if (!item) {
+			throw new Error('Expected a single item in results');
+		}
 		expect(item.title).toBe('Cordless Drill');
 		expect(item.image).toBe('/assets/item-images/placeholder.png');
 		expect(item.requestedBy).toBe('@alice');
@@ -56,7 +59,7 @@ describe('paginateAndFilterListingRequests', () => {
 	it('supports sorting with nulls and mixed values', () => {
 		const resultAsc = paginateAndFilterListingRequests(
 			[
-				{ ...baseRequest, id: 'a', reserver: { id: undefined, account: { username: 'alice' } } },
+				{ ...baseRequest, id: 'a', reserver: { account: { username: 'alice' } } },
 				{ ...baseRequest, id: 'b', reserver: { id: 'user-2', account: { username: 'bob' } } },
 				{ ...baseRequest, id: 'c', reserver: { id: 'user-1', account: { username: 'cara' } } },
 			],
@@ -72,7 +75,7 @@ describe('paginateAndFilterListingRequests', () => {
 
 		const resultDesc = paginateAndFilterListingRequests(
 			[
-				{ ...baseRequest, id: 'a', reserver: { id: undefined, account: { username: 'alice' } } },
+				{ ...baseRequest, id: 'a', reserver: { account: { username: 'alice' } } },
 				{ ...baseRequest, id: 'b', reserver: { id: 'user-2', account: { username: 'bob' } } },
 				{ ...baseRequest, id: 'c', reserver: { id: 'user-1', account: { username: 'cara' } } },
 			],
