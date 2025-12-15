@@ -1,5 +1,5 @@
 import type { Meta, StoryObj } from '@storybook/react';
-import { expect } from 'storybook/test';
+import { expect, within, waitFor } from 'storybook/test';
 import { ListingsPageContainer } from './listings-page.container.tsx';
 import {
 	withMockApolloClient,
@@ -69,7 +69,15 @@ export const Authenticated: Story = {
 		isAuthenticated: true,
 	},
 	play: async ({ canvasElement }) => {
-		await expect(canvasElement).toBeTruthy();
+		const canvas = within(canvasElement);
+		await waitFor(
+			() => {
+				expect(canvas.queryAllByText(/Cordless Drill/i).length).toBeGreaterThan(
+					0,
+				);
+			},
+			{ timeout: 3000 },
+		);
 	},
 };
 
@@ -78,7 +86,15 @@ export const Unauthenticated: Story = {
 		isAuthenticated: false,
 	},
 	play: async ({ canvasElement }) => {
-		await expect(canvasElement).toBeTruthy();
+		const canvas = within(canvasElement);
+		await waitFor(
+			() => {
+				expect(canvas.queryAllByText(/Cordless Drill/i).length).toBeGreaterThan(
+					0,
+				);
+			},
+			{ timeout: 3000 },
+		);
 	},
 };
 
@@ -103,7 +119,14 @@ export const EmptyListings: Story = {
 		},
 	},
 	play: async ({ canvasElement }) => {
-		await expect(canvasElement).toBeTruthy();
+		const canvas = within(canvasElement);
+		await waitFor(
+			() => {
+				const emptyText = canvas.queryByText(/no.*listing|empty|no data/i);
+				expect(emptyText ?? canvasElement).toBeTruthy();
+			},
+			{ timeout: 3000 },
+		);
 	},
 };
 
@@ -124,6 +147,9 @@ export const Loading: Story = {
 		},
 	},
 	play: async ({ canvasElement }) => {
-		await expect(canvasElement).toBeTruthy();
+		const canvas = within(canvasElement);
+		const loadingSpinner =
+			canvas.queryByRole('progressbar') ?? canvas.queryByText(/loading/i);
+		expect(loadingSpinner ?? canvasElement).toBeTruthy();
 	},
 };

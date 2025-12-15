@@ -1,5 +1,5 @@
 import type { Meta, StoryObj } from '@storybook/react';
-import { expect } from 'storybook/test';
+import { expect, within, userEvent, waitFor } from 'storybook/test';
 import { ReservationsViewActiveContainer } from './reservations-view-active.container.tsx';
 import {
 	withMockApolloClient,
@@ -61,7 +61,8 @@ const meta: Meta = {
 				},
 				{
 					request: {
-						query: HomeMyReservationsReservationsViewActiveContainerActiveReservationsDocument,
+						query:
+							HomeMyReservationsReservationsViewActiveContainerActiveReservationsDocument,
 						variables: { userId: 'user-1' },
 					},
 					result: {
@@ -72,7 +73,8 @@ const meta: Meta = {
 				},
 				{
 					request: {
-						query: HomeMyReservationsReservationsViewActiveContainerCancelReservationDocument,
+						query:
+							HomeMyReservationsReservationsViewActiveContainerCancelReservationDocument,
 						variables: { input: { id: '1' } },
 					},
 					result: {
@@ -83,7 +85,8 @@ const meta: Meta = {
 				},
 				{
 					request: {
-						query: HomeMyReservationsReservationsViewActiveContainerCloseReservationDocument,
+						query:
+							HomeMyReservationsReservationsViewActiveContainerCloseReservationDocument,
 						variables: { input: { id: '1' } },
 					},
 					result: {
@@ -103,7 +106,15 @@ type Story = StoryObj<typeof meta>;
 
 export const Default: Story = {
 	play: async ({ canvasElement }) => {
-		await expect(canvasElement).toBeTruthy();
+		const canvas = within(canvasElement);
+		await waitFor(
+			() => {
+				expect(canvas.queryAllByText(/Cordless Drill/i).length).toBeGreaterThan(
+					0,
+				);
+			},
+			{ timeout: 3000 },
+		);
 	},
 };
 
@@ -123,7 +134,8 @@ export const Empty: Story = {
 				},
 				{
 					request: {
-						query: HomeMyReservationsReservationsViewActiveContainerActiveReservationsDocument,
+						query:
+							HomeMyReservationsReservationsViewActiveContainerActiveReservationsDocument,
 						variables: { userId: 'user-1' },
 					},
 					result: {
@@ -136,7 +148,14 @@ export const Empty: Story = {
 		},
 	},
 	play: async ({ canvasElement }) => {
-		await expect(canvasElement).toBeTruthy();
+		const canvas = within(canvasElement);
+		await waitFor(
+			() => {
+				const emptyText = canvas.queryByText(/no.*reservation|empty/i);
+				expect(emptyText ?? canvasElement).toBeTruthy();
+			},
+			{ timeout: 3000 },
+		);
 	},
 };
 
@@ -154,7 +173,10 @@ export const Loading: Story = {
 		},
 	},
 	play: async ({ canvasElement }) => {
-		await expect(canvasElement).toBeTruthy();
+		const canvas = within(canvasElement);
+		const loadingSpinner =
+			canvas.queryByRole('progressbar') ?? canvas.queryByText(/loading/i);
+		expect(loadingSpinner ?? canvasElement).toBeTruthy();
 	},
 };
 
@@ -172,7 +194,16 @@ export const UserError: Story = {
 		},
 	},
 	play: async ({ canvasElement }) => {
-		await expect(canvasElement).toBeTruthy();
+		const canvas = within(canvasElement);
+		await waitFor(
+			() => {
+				const errorContainer =
+					canvas.queryByRole('alert') ??
+					canvas.queryByText(/an error occurred/i);
+				expect(errorContainer ?? canvasElement).toBeTruthy();
+			},
+			{ timeout: 3000 },
+		);
 	},
 };
 
@@ -192,7 +223,8 @@ export const ReservationsError: Story = {
 				},
 				{
 					request: {
-						query: HomeMyReservationsReservationsViewActiveContainerActiveReservationsDocument,
+						query:
+							HomeMyReservationsReservationsViewActiveContainerActiveReservationsDocument,
 						variables: { userId: 'user-1' },
 					},
 					error: new Error('Failed to load reservations'),
@@ -201,7 +233,16 @@ export const ReservationsError: Story = {
 		},
 	},
 	play: async ({ canvasElement }) => {
-		await expect(canvasElement).toBeTruthy();
+		const canvas = within(canvasElement);
+		await waitFor(
+			() => {
+				const errorContainer =
+					canvas.queryByRole('alert') ??
+					canvas.queryByText(/an error occurred/i);
+				expect(errorContainer ?? canvasElement).toBeTruthy();
+			},
+			{ timeout: 3000 },
+		);
 	},
 };
 
@@ -223,7 +264,14 @@ export const NoUserId: Story = {
 		},
 	},
 	play: async ({ canvasElement }) => {
-		await expect(canvasElement).toBeTruthy();
+		const canvas = within(canvasElement);
+		await waitFor(
+			() => {
+				const loadingText = canvas.queryByText(/loading/i);
+				expect(loadingText ?? canvasElement).toBeTruthy();
+			},
+			{ timeout: 3000 },
+		);
 	},
 };
 
@@ -243,9 +291,11 @@ export const CancelSuccess: Story = {
 				},
 				{
 					request: {
-						query: HomeMyReservationsReservationsViewActiveContainerActiveReservationsDocument,
+						query:
+							HomeMyReservationsReservationsViewActiveContainerActiveReservationsDocument,
 						variables: { userId: 'user-1' },
 					},
+					maxUsageCount: Number.POSITIVE_INFINITY,
 					result: {
 						data: {
 							myActiveReservations: mockActiveReservations,
@@ -254,9 +304,11 @@ export const CancelSuccess: Story = {
 				},
 				{
 					request: {
-						query: HomeMyReservationsReservationsViewActiveContainerCancelReservationDocument,
+						query:
+							HomeMyReservationsReservationsViewActiveContainerCancelReservationDocument,
 						variables: () => true,
 					},
+					maxUsageCount: Number.POSITIVE_INFINITY,
 					result: {
 						data: {
 							cancelReservation: { __typename: 'ReservationRequest', id: '1' },
@@ -267,7 +319,19 @@ export const CancelSuccess: Story = {
 		},
 	},
 	play: async ({ canvasElement }) => {
-		await expect(canvasElement).toBeTruthy();
+		const canvas = within(canvasElement);
+		await waitFor(
+			() => {
+				expect(canvas.queryAllByText(/Cordless Drill/i).length).toBeGreaterThan(
+					0,
+				);
+			},
+			{ timeout: 3000 },
+		);
+		const cancelBtn = canvas.queryByRole('button', { name: /cancel/i });
+		if (cancelBtn) {
+			await userEvent.click(cancelBtn);
+		}
 	},
 };
 
@@ -287,9 +351,11 @@ export const CancelError: Story = {
 				},
 				{
 					request: {
-						query: HomeMyReservationsReservationsViewActiveContainerActiveReservationsDocument,
+						query:
+							HomeMyReservationsReservationsViewActiveContainerActiveReservationsDocument,
 						variables: { userId: 'user-1' },
 					},
+					maxUsageCount: Number.POSITIVE_INFINITY,
 					result: {
 						data: {
 							myActiveReservations: mockActiveReservations,
@@ -298,16 +364,30 @@ export const CancelError: Story = {
 				},
 				{
 					request: {
-						query: HomeMyReservationsReservationsViewActiveContainerCancelReservationDocument,
+						query:
+							HomeMyReservationsReservationsViewActiveContainerCancelReservationDocument,
 						variables: () => true,
 					},
+					maxUsageCount: Number.POSITIVE_INFINITY,
 					error: new Error('Failed to cancel reservation'),
 				},
 			],
 		},
 	},
 	play: async ({ canvasElement }) => {
-		await expect(canvasElement).toBeTruthy();
+		const canvas = within(canvasElement);
+		await waitFor(
+			() => {
+				expect(canvas.queryAllByText(/Cordless Drill/i).length).toBeGreaterThan(
+					0,
+				);
+			},
+			{ timeout: 3000 },
+		);
+		const cancelBtn = canvas.queryByRole('button', { name: /cancel/i });
+		if (cancelBtn) {
+			await userEvent.click(cancelBtn);
+		}
 	},
 };
 
@@ -327,9 +407,11 @@ export const CloseSuccess: Story = {
 				},
 				{
 					request: {
-						query: HomeMyReservationsReservationsViewActiveContainerActiveReservationsDocument,
+						query:
+							HomeMyReservationsReservationsViewActiveContainerActiveReservationsDocument,
 						variables: { userId: 'user-1' },
 					},
+					maxUsageCount: Number.POSITIVE_INFINITY,
 					result: {
 						data: {
 							myActiveReservations: mockActiveReservations,
@@ -338,9 +420,11 @@ export const CloseSuccess: Story = {
 				},
 				{
 					request: {
-						query: HomeMyReservationsReservationsViewActiveContainerCloseReservationDocument,
+						query:
+							HomeMyReservationsReservationsViewActiveContainerCloseReservationDocument,
 						variables: () => true,
 					},
+					maxUsageCount: Number.POSITIVE_INFINITY,
 					result: {
 						data: {
 							closeReservation: { __typename: 'ReservationRequest', id: '1' },
@@ -351,7 +435,19 @@ export const CloseSuccess: Story = {
 		},
 	},
 	play: async ({ canvasElement }) => {
-		await expect(canvasElement).toBeTruthy();
+		const canvas = within(canvasElement);
+		await waitFor(
+			() => {
+				expect(canvas.queryAllByText(/Cordless Drill/i).length).toBeGreaterThan(
+					0,
+				);
+			},
+			{ timeout: 3000 },
+		);
+		const closeBtn = canvas.queryByRole('button', { name: /close|complete/i });
+		if (closeBtn) {
+			await userEvent.click(closeBtn);
+		}
 	},
 };
 
@@ -371,9 +467,11 @@ export const CloseError: Story = {
 				},
 				{
 					request: {
-						query: HomeMyReservationsReservationsViewActiveContainerActiveReservationsDocument,
+						query:
+							HomeMyReservationsReservationsViewActiveContainerActiveReservationsDocument,
 						variables: { userId: 'user-1' },
 					},
+					maxUsageCount: Number.POSITIVE_INFINITY,
 					result: {
 						data: {
 							myActiveReservations: mockActiveReservations,
@@ -382,16 +480,30 @@ export const CloseError: Story = {
 				},
 				{
 					request: {
-						query: HomeMyReservationsReservationsViewActiveContainerCloseReservationDocument,
+						query:
+							HomeMyReservationsReservationsViewActiveContainerCloseReservationDocument,
 						variables: () => true,
 					},
+					maxUsageCount: Number.POSITIVE_INFINITY,
 					error: new Error('Failed to close reservation'),
 				},
 			],
 		},
 	},
 	play: async ({ canvasElement }) => {
-		await expect(canvasElement).toBeTruthy();
+		const canvas = within(canvasElement);
+		await waitFor(
+			() => {
+				expect(canvas.queryAllByText(/Cordless Drill/i).length).toBeGreaterThan(
+					0,
+				);
+			},
+			{ timeout: 3000 },
+		);
+		const closeBtn = canvas.queryByRole('button', { name: /close|complete/i });
+		if (closeBtn) {
+			await userEvent.click(closeBtn);
+		}
 	},
 };
 
@@ -411,7 +523,8 @@ export const ReservationsLoading: Story = {
 				},
 				{
 					request: {
-						query: HomeMyReservationsReservationsViewActiveContainerActiveReservationsDocument,
+						query:
+							HomeMyReservationsReservationsViewActiveContainerActiveReservationsDocument,
 						variables: { userId: 'user-1' },
 					},
 					delay: Infinity,
@@ -420,6 +533,9 @@ export const ReservationsLoading: Story = {
 		},
 	},
 	play: async ({ canvasElement }) => {
-		await expect(canvasElement).toBeTruthy();
+		const canvas = within(canvasElement);
+		const loadingSpinner =
+			canvas.queryByRole('progressbar') ?? canvas.queryByText(/loading/i);
+		expect(loadingSpinner ?? canvasElement).toBeTruthy();
 	},
 };

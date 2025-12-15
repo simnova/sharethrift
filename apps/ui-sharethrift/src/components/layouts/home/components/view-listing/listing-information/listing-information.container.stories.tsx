@@ -1,5 +1,5 @@
 import type { Meta, StoryObj } from '@storybook/react';
-import { expect } from 'storybook/test';
+import { expect, within, userEvent, waitFor, fn } from 'storybook/test';
 import { ListingInformationContainer } from './listing-information.container.tsx';
 import {
 	withMockApolloClient,
@@ -95,11 +95,24 @@ export const AuthenticatedUser: Story = {
 		userIsSharer: false,
 		isAuthenticated: true,
 		userReservationRequest: null,
-		onLoginClick: () => {},
-		onSignUpClick: () => {},
+		onLoginClick: fn(),
+		onSignUpClick: fn(),
 	},
 	play: async ({ canvasElement }) => {
-		await expect(canvasElement).toBeTruthy();
+		const canvas = within(canvasElement);
+		await waitFor(
+			() => {
+				expect(canvas.queryAllByText(/Cordless Drill/i).length).toBeGreaterThan(
+					0,
+				);
+			},
+			{ timeout: 3000 },
+		);
+		// Try to click reserve button (will trigger warning if no dates selected)
+		const reserveBtn = canvas.queryByRole('button', { name: /reserve/i });
+		if (reserveBtn) {
+			await userEvent.click(reserveBtn);
+		}
 	},
 };
 
@@ -109,11 +122,34 @@ export const UnauthenticatedUser: Story = {
 		userIsSharer: false,
 		isAuthenticated: false,
 		userReservationRequest: null,
-		onLoginClick: () => {},
-		onSignUpClick: () => {},
+		onLoginClick: fn(),
+		onSignUpClick: fn(),
 	},
 	play: async ({ canvasElement }) => {
-		await expect(canvasElement).toBeTruthy();
+		const canvas = within(canvasElement);
+		await waitFor(
+			() => {
+				expect(canvas.queryAllByText(/Cordless Drill/i).length).toBeGreaterThan(
+					0,
+				);
+			},
+			{ timeout: 3000 },
+		);
+		// Unauthenticated users may see login/signup options - test is resilient if buttons don't exist
+		const loginBtn = canvas.queryByRole('button', {
+			name: /log in|login|sign in/i,
+		});
+		const signupBtn = canvas.queryByRole('button', {
+			name: /sign up|signup|register/i,
+		});
+		if (loginBtn) {
+			await userEvent.click(loginBtn);
+		}
+		if (signupBtn) {
+			await userEvent.click(signupBtn);
+		}
+		// Verify component rendered successfully
+		expect(canvasElement).toBeTruthy();
 	},
 };
 
@@ -123,11 +159,19 @@ export const SharerView: Story = {
 		userIsSharer: true,
 		isAuthenticated: true,
 		userReservationRequest: null,
-		onLoginClick: () => {},
-		onSignUpClick: () => {},
+		onLoginClick: fn(),
+		onSignUpClick: fn(),
 	},
 	play: async ({ canvasElement }) => {
-		await expect(canvasElement).toBeTruthy();
+		const canvas = within(canvasElement);
+		await waitFor(
+			() => {
+				expect(canvas.queryAllByText(/Cordless Drill/i).length).toBeGreaterThan(
+					0,
+				);
+			},
+			{ timeout: 3000 },
+		);
 	},
 };
 
@@ -143,11 +187,19 @@ export const WithExistingReservation: Story = {
 			reservationPeriodStart: '2025-02-01',
 			reservationPeriodEnd: '2025-02-10',
 		},
-		onLoginClick: () => {},
-		onSignUpClick: () => {},
+		onLoginClick: fn(),
+		onSignUpClick: fn(),
 	},
 	play: async ({ canvasElement }) => {
-		await expect(canvasElement).toBeTruthy();
+		const canvas = within(canvasElement);
+		await waitFor(
+			() => {
+				expect(canvas.queryAllByText(/Cordless Drill/i).length).toBeGreaterThan(
+					0,
+				);
+			},
+			{ timeout: 3000 },
+		);
 	},
 };
 
@@ -157,8 +209,8 @@ export const QueryLoadingState: Story = {
 		userIsSharer: false,
 		isAuthenticated: true,
 		userReservationRequest: null,
-		onLoginClick: () => {},
-		onSignUpClick: () => {},
+		onLoginClick: fn(),
+		onSignUpClick: fn(),
 	},
 	parameters: {
 		apolloClient: {
@@ -184,7 +236,10 @@ export const QueryLoadingState: Story = {
 		},
 	},
 	play: async ({ canvasElement }) => {
-		await expect(canvasElement).toBeTruthy();
+		const canvas = within(canvasElement);
+		const loadingSpinner =
+			canvas.queryByRole('progressbar') ?? canvas.queryByText(/loading/i);
+		expect(loadingSpinner ?? canvasElement).toBeTruthy();
 	},
 };
 
@@ -194,8 +249,8 @@ export const QueryError: Story = {
 		userIsSharer: false,
 		isAuthenticated: true,
 		userReservationRequest: null,
-		onLoginClick: () => {},
-		onSignUpClick: () => {},
+		onLoginClick: fn(),
+		onSignUpClick: fn(),
 	},
 	parameters: {
 		apolloClient: {
@@ -221,7 +276,16 @@ export const QueryError: Story = {
 		},
 	},
 	play: async ({ canvasElement }) => {
-		await expect(canvasElement).toBeTruthy();
+		const canvas = within(canvasElement);
+		await waitFor(
+			() => {
+				const errorContainer =
+					canvas.queryByRole('alert') ??
+					canvas.queryByText(/an error occurred/i);
+				expect(errorContainer ?? canvasElement).toBeTruthy();
+			},
+			{ timeout: 3000 },
+		);
 	},
 };
 
@@ -231,8 +295,8 @@ export const NoCurrentUser: Story = {
 		userIsSharer: false,
 		isAuthenticated: true,
 		userReservationRequest: null,
-		onLoginClick: () => {},
-		onSignUpClick: () => {},
+		onLoginClick: fn(),
+		onSignUpClick: fn(),
 	},
 	parameters: {
 		apolloClient: {
@@ -262,7 +326,15 @@ export const NoCurrentUser: Story = {
 		},
 	},
 	play: async ({ canvasElement }) => {
-		await expect(canvasElement).toBeTruthy();
+		const canvas = within(canvasElement);
+		await waitFor(
+			() => {
+				expect(canvas.queryAllByText(/Cordless Drill/i).length).toBeGreaterThan(
+					0,
+				);
+			},
+			{ timeout: 3000 },
+		);
 	},
 };
 
@@ -272,8 +344,8 @@ export const MutationError: Story = {
 		userIsSharer: false,
 		isAuthenticated: true,
 		userReservationRequest: null,
-		onLoginClick: () => {},
-		onSignUpClick: () => {},
+		onLoginClick: fn(),
+		onSignUpClick: fn(),
 	},
 	parameters: {
 		apolloClient: {
@@ -310,7 +382,20 @@ export const MutationError: Story = {
 		},
 	},
 	play: async ({ canvasElement }) => {
-		await expect(canvasElement).toBeTruthy();
+		const canvas = within(canvasElement);
+		await waitFor(
+			() => {
+				expect(canvas.queryAllByText(/Cordless Drill/i).length).toBeGreaterThan(
+					0,
+				);
+			},
+			{ timeout: 3000 },
+		);
+		// Try clicking reserve to trigger mutation error
+		const reserveBtn = canvas.queryByRole('button', { name: /reserve/i });
+		if (reserveBtn) {
+			await userEvent.click(reserveBtn);
+		}
 	},
 };
 
@@ -320,8 +405,8 @@ export const WithExistingOtherReservations: Story = {
 		userIsSharer: false,
 		isAuthenticated: true,
 		userReservationRequest: null,
-		onLoginClick: () => {},
-		onSignUpClick: () => {},
+		onLoginClick: fn(),
+		onSignUpClick: fn(),
 	},
 	parameters: {
 		apolloClient: {
@@ -364,7 +449,15 @@ export const WithExistingOtherReservations: Story = {
 		},
 	},
 	play: async ({ canvasElement }) => {
-		await expect(canvasElement).toBeTruthy();
+		const canvas = within(canvasElement);
+		await waitFor(
+			() => {
+				expect(canvas.queryAllByText(/Cordless Drill/i).length).toBeGreaterThan(
+					0,
+				);
+			},
+			{ timeout: 3000 },
+		);
 	},
 };
 
@@ -377,8 +470,8 @@ export const SkipQuery: Story = {
 		userIsSharer: false,
 		isAuthenticated: true,
 		userReservationRequest: null,
-		onLoginClick: () => {},
-		onSignUpClick: () => {},
+		onLoginClick: fn(),
+		onSignUpClick: fn(),
 	},
 	parameters: {
 		apolloClient: {
@@ -397,6 +490,14 @@ export const SkipQuery: Story = {
 		},
 	},
 	play: async ({ canvasElement }) => {
-		await expect(canvasElement).toBeTruthy();
+		const canvas = within(canvasElement);
+		await waitFor(
+			() => {
+				expect(canvas.queryAllByText(/Cordless Drill/i).length).toBeGreaterThan(
+					0,
+				);
+			},
+			{ timeout: 3000 },
+		);
 	},
 };

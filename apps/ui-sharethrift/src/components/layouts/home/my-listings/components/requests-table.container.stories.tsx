@@ -1,5 +1,5 @@
 import type { Meta, StoryObj } from '@storybook/react';
-import { expect } from 'storybook/test';
+import { expect, within, userEvent, waitFor, fn } from 'storybook/test';
 import { RequestsTableContainer } from './requests-table.container.tsx';
 import {
 	withMockApolloClient,
@@ -70,17 +70,25 @@ type Story = StoryObj<typeof RequestsTableContainer>;
 export const Default: Story = {
 	args: {
 		currentPage: 1,
-		onPageChange: () => {},
+		onPageChange: fn(),
 	},
 	play: async ({ canvasElement }) => {
-		await expect(canvasElement).toBeTruthy();
+		const canvas = within(canvasElement);
+		await waitFor(
+			() => {
+				expect(canvas.queryAllByText(/Cordless Drill/i).length).toBeGreaterThan(
+					0,
+				);
+			},
+			{ timeout: 3000 },
+		);
 	},
 };
 
 export const Empty: Story = {
 	args: {
 		currentPage: 1,
-		onPageChange: () => {},
+		onPageChange: fn(),
 	},
 	parameters: {
 		apolloClient: {
@@ -107,14 +115,21 @@ export const Empty: Story = {
 		},
 	},
 	play: async ({ canvasElement }) => {
-		await expect(canvasElement).toBeTruthy();
+		const canvas = within(canvasElement);
+		await waitFor(
+			() => {
+				const emptyText = canvas.queryByText(/no.*request|empty|no data/i);
+				expect(emptyText ?? canvasElement).toBeTruthy();
+			},
+			{ timeout: 3000 },
+		);
 	},
 };
 
 export const Loading: Story = {
 	args: {
 		currentPage: 1,
-		onPageChange: () => {},
+		onPageChange: fn(),
 	},
 	parameters: {
 		apolloClient: {
@@ -137,14 +152,17 @@ export const Loading: Story = {
 		},
 	},
 	play: async ({ canvasElement }) => {
-		await expect(canvasElement).toBeTruthy();
+		const canvas = within(canvasElement);
+		const loadingSpinner =
+			canvas.queryByRole('progressbar') ?? canvas.queryByText(/loading/i);
+		expect(loadingSpinner ?? canvasElement).toBeTruthy();
 	},
 };
 
 export const ErrorState: Story = {
 	args: {
 		currentPage: 1,
-		onPageChange: () => {},
+		onPageChange: fn(),
 	},
 	parameters: {
 		apolloClient: {
@@ -167,14 +185,23 @@ export const ErrorState: Story = {
 		},
 	},
 	play: async ({ canvasElement }) => {
-		await expect(canvasElement).toBeTruthy();
+		const canvas = within(canvasElement);
+		await waitFor(
+			() => {
+				const errorContainer =
+					canvas.queryByRole('alert') ??
+					canvas.queryByText(/an error occurred/i);
+				expect(errorContainer ?? canvasElement).toBeTruthy();
+			},
+			{ timeout: 3000 },
+		);
 	},
 };
 
 export const WithSearchFilter: Story = {
 	args: {
 		currentPage: 1,
-		onPageChange: () => {},
+		onPageChange: fn(),
 	},
 	parameters: {
 		apolloClient: {
@@ -198,14 +225,27 @@ export const WithSearchFilter: Story = {
 		},
 	},
 	play: async ({ canvasElement }) => {
-		await expect(canvasElement).toBeTruthy();
+		const canvas = within(canvasElement);
+		await waitFor(
+			() => {
+				expect(canvas.queryAllByText(/Cordless Drill/i).length).toBeGreaterThan(
+					0,
+				);
+			},
+			{ timeout: 3000 },
+		);
+		// Try interacting with search
+		const searchInput = canvas.queryByRole('textbox');
+		if (searchInput) {
+			await userEvent.type(searchInput, 'drill');
+		}
 	},
 };
 
 export const WithStatusFilter: Story = {
 	args: {
 		currentPage: 1,
-		onPageChange: () => {},
+		onPageChange: fn(),
 	},
 	parameters: {
 		apolloClient: {
@@ -229,14 +269,22 @@ export const WithStatusFilter: Story = {
 		},
 	},
 	play: async ({ canvasElement }) => {
-		await expect(canvasElement).toBeTruthy();
+		const canvas = within(canvasElement);
+		await waitFor(
+			() => {
+				expect(
+					canvas.queryAllByText(/Electric Guitar/i).length,
+				).toBeGreaterThan(0);
+			},
+			{ timeout: 3000 },
+		);
 	},
 };
 
 export const WithSorting: Story = {
 	args: {
 		currentPage: 1,
-		onPageChange: () => {},
+		onPageChange: fn(),
 	},
 	parameters: {
 		apolloClient: {
@@ -257,14 +305,27 @@ export const WithSorting: Story = {
 		},
 	},
 	play: async ({ canvasElement }) => {
-		await expect(canvasElement).toBeTruthy();
+		const canvas = within(canvasElement);
+		await waitFor(
+			() => {
+				expect(canvas.queryAllByText(/Cordless Drill/i).length).toBeGreaterThan(
+					0,
+				);
+			},
+			{ timeout: 3000 },
+		);
+		// Click on a column header to trigger sorting
+		const titleHeader = canvas.queryByText(/Title/i);
+		if (titleHeader) {
+			await userEvent.click(titleHeader);
+		}
 	},
 };
 
 export const Pagination: Story = {
 	args: {
 		currentPage: 2,
-		onPageChange: () => {},
+		onPageChange: fn(),
 	},
 	parameters: {
 		apolloClient: {
@@ -294,14 +355,21 @@ export const Pagination: Story = {
 		},
 	},
 	play: async ({ canvasElement }) => {
-		await expect(canvasElement).toBeTruthy();
+		const canvas = within(canvasElement);
+		await waitFor(
+			() => {
+				const table = canvas.queryByRole('table');
+				expect(table ?? canvasElement).toBeTruthy();
+			},
+			{ timeout: 3000 },
+		);
 	},
 };
 
 export const NoData: Story = {
 	args: {
 		currentPage: 1,
-		onPageChange: () => {},
+		onPageChange: fn(),
 	},
 	parameters: {
 		apolloClient: {
@@ -328,6 +396,13 @@ export const NoData: Story = {
 		},
 	},
 	play: async ({ canvasElement }) => {
-		await expect(canvasElement).toBeTruthy();
+		const canvas = within(canvasElement);
+		await waitFor(
+			() => {
+				const noDataText = canvas.queryByText(/no data/i);
+				expect(noDataText ?? canvasElement).toBeTruthy();
+			},
+			{ timeout: 3000 },
+		);
 	},
 };

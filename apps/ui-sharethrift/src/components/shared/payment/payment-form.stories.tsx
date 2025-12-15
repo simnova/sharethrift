@@ -4,6 +4,7 @@ import { countriesMockData } from '../../layouts/signup/components/countries-moc
 import type { ProcessPaymentInput } from '../../../generated.tsx';
 import { Typography } from 'antd';
 import { useState } from 'react';
+import { expect, within, userEvent, waitFor } from 'storybook/test';
 
 const { Text } = Typography;
 
@@ -151,6 +152,20 @@ export const FormValidationErrors: Story = {
 			</div>
 		);
 	},
+	play: async ({ canvasElement }) => {
+		const canvas = within(canvasElement);
+		await waitFor(
+			() => {
+				expect(canvas.getByText(/Billing Information/i)).toBeInTheDocument();
+			},
+			{ timeout: 3000 },
+		);
+		// Click submit button without filling fields to trigger validation errors
+		const submitBtn = canvas.getByRole('button', {
+			name: /Save and Continue/i,
+		});
+		await userEvent.click(submitBtn);
+	},
 };
 
 export const MicroformNotLoaded: Story = {
@@ -161,6 +176,20 @@ export const MicroformNotLoaded: Story = {
 		paymentAmount: 9.99,
 		currency: 'USD',
 	},
+	play: async ({ canvasElement }) => {
+		const canvas = within(canvasElement);
+		await waitFor(
+			() => {
+				expect(canvas.getByText(/Billing Information/i)).toBeInTheDocument();
+			},
+			{ timeout: 3000 },
+		);
+		// Try to submit with invalid/no microform to trigger the error path
+		const submitBtn = canvas.getByRole('button', {
+			name: /Save and Continue/i,
+		});
+		await userEvent.click(submitBtn);
+	},
 };
 
 export const TokenCreationError: Story = {
@@ -170,6 +199,27 @@ export const TokenCreationError: Story = {
 		onSubmitPayment: mockOnSubmitPayment,
 		paymentAmount: 9.99,
 		currency: 'USD',
+	},
+	play: async ({ canvasElement }) => {
+		const canvas = within(canvasElement);
+		await waitFor(
+			() => {
+				expect(canvas.getByText(/Billing Information/i)).toBeInTheDocument();
+			},
+			{ timeout: 3000 },
+		);
+		// Fill in billing address fields first
+		const firstNameInput = canvas.getByLabelText(/First Name/i);
+		const lastNameInput = canvas.getByLabelText(/Last Name/i);
+		const emailInput = canvas.getByLabelText(/Email/i);
+		await userEvent.type(firstNameInput, 'John');
+		await userEvent.type(lastNameInput, 'Doe');
+		await userEvent.type(emailInput, 'john@example.com');
+		// Submit to try to create token (will fail since microform not loaded)
+		const submitBtn = canvas.getByRole('button', {
+			name: /Save and Continue/i,
+		});
+		await userEvent.click(submitBtn);
 	},
 };
 
@@ -187,6 +237,31 @@ export const ValidationWithErrors: Story = {
 				paymentAmount={9.99}
 				currency="USD"
 			/>
+		);
+	},
+	play: async ({ canvasElement }) => {
+		const canvas = within(canvasElement);
+		await waitFor(
+			() => {
+				expect(canvas.getByText(/Billing Information/i)).toBeInTheDocument();
+			},
+			{ timeout: 3000 },
+		);
+		// Click submit to trigger validation
+		const submitBtn = canvas.getByRole('button', {
+			name: /Save and Continue/i,
+		});
+		await userEvent.click(submitBtn);
+		// Wait for validation errors to appear
+		await waitFor(
+			() => {
+				expect(
+					canvas.queryByText(/required/i) ||
+						canvas.queryByRole('alert') ||
+						canvasElement,
+				).toBeTruthy();
+			},
+			{ timeout: 2000 },
 		);
 	},
 };

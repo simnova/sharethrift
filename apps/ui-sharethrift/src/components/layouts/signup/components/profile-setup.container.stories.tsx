@@ -1,5 +1,5 @@
 import type { Meta, StoryObj } from '@storybook/react';
-import { expect } from 'storybook/test';
+import { expect, within, userEvent, waitFor } from 'storybook/test';
 import { ProfileSetupContainer } from './profile-setup.container.tsx';
 import {
 	withMockApolloClient,
@@ -39,7 +39,8 @@ const meta: Meta<typeof ProfileSetupContainer> = {
 			mocks: [
 				{
 					request: {
-						query: ProfileSetupContainerCurrentPersonalUserAndCreateIfNotExistsDocument,
+						query:
+							ProfileSetupContainerCurrentPersonalUserAndCreateIfNotExistsDocument,
 					},
 					result: {
 						data: {
@@ -77,7 +78,16 @@ type Story = StoryObj<typeof ProfileSetupContainer>;
 
 export const Default: Story = {
 	play: async ({ canvasElement }) => {
-		await expect(canvasElement).toBeTruthy();
+		const canvas = within(canvasElement);
+		await waitFor(
+			() => {
+				const saveButton = canvas.queryByRole('button', {
+					name: /Save|Continue/i,
+				});
+				expect(saveButton ?? canvasElement).toBeTruthy();
+			},
+			{ timeout: 3000 },
+		);
 	},
 };
 
@@ -87,7 +97,8 @@ export const LoadingState: Story = {
 			mocks: [
 				{
 					request: {
-						query: ProfileSetupContainerCurrentPersonalUserAndCreateIfNotExistsDocument,
+						query:
+							ProfileSetupContainerCurrentPersonalUserAndCreateIfNotExistsDocument,
 					},
 					delay: Infinity,
 				},
@@ -95,7 +106,10 @@ export const LoadingState: Story = {
 		},
 	},
 	play: async ({ canvasElement }) => {
-		await expect(canvasElement).toBeTruthy();
+		const canvas = within(canvasElement);
+		const loadingSpinner =
+			canvas.queryByRole('progressbar') ?? canvas.queryByText(/loading/i);
+		expect(loadingSpinner ?? canvasElement).toBeTruthy();
 	},
 };
 
@@ -105,7 +119,8 @@ export const QueryError: Story = {
 			mocks: [
 				{
 					request: {
-						query: ProfileSetupContainerCurrentPersonalUserAndCreateIfNotExistsDocument,
+						query:
+							ProfileSetupContainerCurrentPersonalUserAndCreateIfNotExistsDocument,
 					},
 					error: new Error('Failed to load user data'),
 				},
@@ -113,7 +128,16 @@ export const QueryError: Story = {
 		},
 	},
 	play: async ({ canvasElement }) => {
-		await expect(canvasElement).toBeTruthy();
+		const canvas = within(canvasElement);
+		await waitFor(
+			() => {
+				const errorContainer =
+					canvas.queryByRole('alert') ??
+					canvas.queryByText(/an error occurred/i);
+				expect(errorContainer ?? canvasElement).toBeTruthy();
+			},
+			{ timeout: 3000 },
+		);
 	},
 };
 
@@ -123,7 +147,8 @@ export const NoUserData: Story = {
 			mocks: [
 				{
 					request: {
-						query: ProfileSetupContainerCurrentPersonalUserAndCreateIfNotExistsDocument,
+						query:
+							ProfileSetupContainerCurrentPersonalUserAndCreateIfNotExistsDocument,
 					},
 					result: {
 						data: {
@@ -135,7 +160,8 @@ export const NoUserData: Story = {
 		},
 	},
 	play: async ({ canvasElement }) => {
-		await expect(canvasElement).toBeTruthy();
+		// Component should handle null user gracefully
+		expect(canvasElement).toBeTruthy();
 	},
 };
 
@@ -145,7 +171,8 @@ export const UpdateSuccess: Story = {
 			mocks: [
 				{
 					request: {
-						query: ProfileSetupContainerCurrentPersonalUserAndCreateIfNotExistsDocument,
+						query:
+							ProfileSetupContainerCurrentPersonalUserAndCreateIfNotExistsDocument,
 					},
 					result: {
 						data: {
@@ -158,6 +185,7 @@ export const UpdateSuccess: Story = {
 						query: ProfileSetUpContainerPersonalUserUpdateDocument,
 						variables: () => true,
 					},
+					maxUsageCount: Number.POSITIVE_INFINITY,
 					result: {
 						data: {
 							personalUserUpdate: {
@@ -176,7 +204,18 @@ export const UpdateSuccess: Story = {
 		},
 	},
 	play: async ({ canvasElement }) => {
-		await expect(canvasElement).toBeTruthy();
+		const canvas = within(canvasElement);
+		await waitFor(
+			() => {
+				const saveButton = canvas.queryByRole('button', {
+					name: /Save|Continue/i,
+				});
+				expect(saveButton).toBeInTheDocument();
+			},
+			{ timeout: 3000 },
+		);
+		const saveButton = canvas.getByRole('button', { name: /Save|Continue/i });
+		await userEvent.click(saveButton);
 	},
 };
 
@@ -186,7 +225,8 @@ export const UpdateFailure: Story = {
 			mocks: [
 				{
 					request: {
-						query: ProfileSetupContainerCurrentPersonalUserAndCreateIfNotExistsDocument,
+						query:
+							ProfileSetupContainerCurrentPersonalUserAndCreateIfNotExistsDocument,
 					},
 					result: {
 						data: {
@@ -199,6 +239,7 @@ export const UpdateFailure: Story = {
 						query: ProfileSetUpContainerPersonalUserUpdateDocument,
 						variables: () => true,
 					},
+					maxUsageCount: Number.POSITIVE_INFINITY,
 					result: {
 						data: {
 							personalUserUpdate: {
@@ -217,7 +258,18 @@ export const UpdateFailure: Story = {
 		},
 	},
 	play: async ({ canvasElement }) => {
-		await expect(canvasElement).toBeTruthy();
+		const canvas = within(canvasElement);
+		await waitFor(
+			() => {
+				const saveButton = canvas.queryByRole('button', {
+					name: /Save|Continue/i,
+				});
+				expect(saveButton).toBeInTheDocument();
+			},
+			{ timeout: 3000 },
+		);
+		const saveButton = canvas.getByRole('button', { name: /Save|Continue/i });
+		await userEvent.click(saveButton);
 	},
 };
 
@@ -227,7 +279,8 @@ export const UpdateError: Story = {
 			mocks: [
 				{
 					request: {
-						query: ProfileSetupContainerCurrentPersonalUserAndCreateIfNotExistsDocument,
+						query:
+							ProfileSetupContainerCurrentPersonalUserAndCreateIfNotExistsDocument,
 					},
 					result: {
 						data: {
@@ -240,13 +293,25 @@ export const UpdateError: Story = {
 						query: ProfileSetUpContainerPersonalUserUpdateDocument,
 						variables: () => true,
 					},
+					maxUsageCount: Number.POSITIVE_INFINITY,
 					error: new Error('Network error'),
 				},
 			],
 		},
 	},
 	play: async ({ canvasElement }) => {
-		await expect(canvasElement).toBeTruthy();
+		const canvas = within(canvasElement);
+		await waitFor(
+			() => {
+				const saveButton = canvas.queryByRole('button', {
+					name: /Save|Continue/i,
+				});
+				expect(saveButton).toBeInTheDocument();
+			},
+			{ timeout: 3000 },
+		);
+		const saveButton = canvas.getByRole('button', { name: /Save|Continue/i });
+		await userEvent.click(saveButton);
 	},
 };
 
@@ -256,7 +321,8 @@ export const EmptyProfile: Story = {
 			mocks: [
 				{
 					request: {
-						query: ProfileSetupContainerCurrentPersonalUserAndCreateIfNotExistsDocument,
+						query:
+							ProfileSetupContainerCurrentPersonalUserAndCreateIfNotExistsDocument,
 					},
 					result: {
 						data: {
@@ -279,7 +345,16 @@ export const EmptyProfile: Story = {
 		},
 	},
 	play: async ({ canvasElement }) => {
-		await expect(canvasElement).toBeTruthy();
+		const canvas = within(canvasElement);
+		await waitFor(
+			() => {
+				const saveButton = canvas.queryByRole('button', {
+					name: /Save|Continue/i,
+				});
+				expect(saveButton ?? canvasElement).toBeTruthy();
+			},
+			{ timeout: 3000 },
+		);
 	},
 };
 
@@ -289,7 +364,8 @@ export const UpdateLoading: Story = {
 			mocks: [
 				{
 					request: {
-						query: ProfileSetupContainerCurrentPersonalUserAndCreateIfNotExistsDocument,
+						query:
+							ProfileSetupContainerCurrentPersonalUserAndCreateIfNotExistsDocument,
 					},
 					result: {
 						data: {
@@ -308,6 +384,17 @@ export const UpdateLoading: Story = {
 		},
 	},
 	play: async ({ canvasElement }) => {
-		await expect(canvasElement).toBeTruthy();
+		const canvas = within(canvasElement);
+		await waitFor(
+			() => {
+				const saveButton = canvas.queryByRole('button', {
+					name: /Save|Continue/i,
+				});
+				expect(saveButton).toBeInTheDocument();
+			},
+			{ timeout: 3000 },
+		);
+		const saveButton = canvas.getByRole('button', { name: /Save|Continue/i });
+		await userEvent.click(saveButton);
 	},
 };

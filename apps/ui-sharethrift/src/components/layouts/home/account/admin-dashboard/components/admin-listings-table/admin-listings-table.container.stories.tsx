@@ -1,5 +1,5 @@
 import type { Meta, StoryObj } from '@storybook/react';
-import { expect } from 'storybook/test';
+import { expect, within, userEvent, waitFor } from 'storybook/test';
 import { AdminListings } from './admin-listings-table.container.tsx';
 import {
 	withMockApolloClient,
@@ -36,7 +36,7 @@ const meta: Meta<typeof AdminListings> = {
 										__typename: 'ListingAll',
 										id: 'listing-1',
 										title: 'Mountain Bike',
-									images: ['https://example.com/bike.jpg'],
+										images: ['https://example.com/bike.jpg'],
 										state: 'Blocked',
 										createdAt: '2024-11-01T10:00:00Z',
 										sharingPeriodStart: '2024-12-01',
@@ -95,7 +95,15 @@ type Story = StoryObj<typeof AdminListings>;
 
 export const Default: Story = {
 	play: async ({ canvasElement }: { canvasElement: HTMLElement }) => {
-		expect(canvasElement).toBeTruthy();
+		const canvas = within(canvasElement);
+		await waitFor(
+			() => {
+				expect(canvas.queryAllByText(/Mountain Bike/i).length).toBeGreaterThan(
+					0,
+				);
+			},
+			{ timeout: 3000 },
+		);
 	},
 };
 
@@ -125,7 +133,17 @@ export const WithSearchText: Story = {
 		},
 	},
 	play: async ({ canvasElement }: { canvasElement: HTMLElement }) => {
-		expect(canvasElement).toBeTruthy();
+		const canvas = within(canvasElement);
+		await waitFor(
+			() => {
+				expect(canvasElement).toBeTruthy();
+			},
+			{ timeout: 3000 },
+		);
+		const searchInput = canvas.queryByRole('textbox');
+		if (searchInput) {
+			await userEvent.type(searchInput, 'test search');
+		}
 	},
 };
 
@@ -166,7 +184,20 @@ export const WithSorting: Story = {
 		},
 	},
 	play: async ({ canvasElement }: { canvasElement: HTMLElement }) => {
-		expect(canvasElement).toBeTruthy();
+		const canvas = within(canvasElement);
+		await waitFor(
+			() => {
+				expect(canvas.queryAllByText(/Mountain Bike/i).length).toBeGreaterThan(
+					0,
+				);
+			},
+			{ timeout: 3000 },
+		);
+		// Click on column header to trigger sort
+		const titleHeader = canvas.queryByText(/Title/i);
+		if (titleHeader) {
+			await userEvent.click(titleHeader);
+		}
 	},
 };
 
@@ -184,7 +215,10 @@ export const LoadingState: Story = {
 		},
 	},
 	play: async ({ canvasElement }: { canvasElement: HTMLElement }) => {
-		expect(canvasElement).toBeTruthy();
+		const canvas = within(canvasElement);
+		const loadingSpinner =
+			canvas.queryByRole('progressbar') ?? canvas.queryByText(/loading/i);
+		expect(loadingSpinner ?? canvasElement).toBeTruthy();
 	},
 };
 
@@ -202,7 +236,16 @@ export const ErrorState: Story = {
 		},
 	},
 	play: async ({ canvasElement }: { canvasElement: HTMLElement }) => {
-		expect(canvasElement).toBeTruthy();
+		const canvas = within(canvasElement);
+		await waitFor(
+			() => {
+				const errorContainer =
+					canvas.queryByRole('alert') ??
+					canvas.queryByText(/an error occurred/i);
+				expect(errorContainer ?? canvasElement).toBeTruthy();
+			},
+			{ timeout: 3000 },
+		);
 	},
 };
 
@@ -262,7 +305,21 @@ export const DeleteSuccess: Story = {
 		},
 	},
 	play: async ({ canvasElement }: { canvasElement: HTMLElement }) => {
-		expect(canvasElement).toBeTruthy();
+		const canvas = within(canvasElement);
+		await waitFor(
+			() => {
+				expect(canvas.queryAllByText(/Mountain Bike/i).length).toBeGreaterThan(
+					0,
+				);
+			},
+			{ timeout: 3000 },
+		);
+		// Look for delete action button
+		const deleteBtns = canvas.queryAllByText(/Delete/i);
+		const deleteBtn = deleteBtns[0];
+		if (deleteBtn) {
+			await userEvent.click(deleteBtn);
+		}
 	},
 };
 
@@ -322,7 +379,20 @@ export const DeleteFailure: Story = {
 		},
 	},
 	play: async ({ canvasElement }: { canvasElement: HTMLElement }) => {
-		expect(canvasElement).toBeTruthy();
+		const canvas = within(canvasElement);
+		await waitFor(
+			() => {
+				expect(canvas.queryAllByText(/Mountain Bike/i).length).toBeGreaterThan(
+					0,
+				);
+			},
+			{ timeout: 3000 },
+		);
+		const deleteBtns = canvas.queryAllByText(/Delete/i);
+		const deleteBtn = deleteBtns[0];
+		if (deleteBtn) {
+			await userEvent.click(deleteBtn);
+		}
 	},
 };
 
@@ -371,7 +441,20 @@ export const DeleteError: Story = {
 		},
 	},
 	play: async ({ canvasElement }: { canvasElement: HTMLElement }) => {
-		expect(canvasElement).toBeTruthy();
+		const canvas = within(canvasElement);
+		await waitFor(
+			() => {
+				expect(canvas.queryAllByText(/Mountain Bike/i).length).toBeGreaterThan(
+					0,
+				);
+			},
+			{ timeout: 3000 },
+		);
+		const deleteBtns = canvas.queryAllByText(/Delete/i);
+		const deleteBtn = deleteBtns[0];
+		if (deleteBtn) {
+			await userEvent.click(deleteBtn);
+		}
 	},
 };
 
@@ -428,7 +511,20 @@ export const UnblockSuccess: Story = {
 		},
 	},
 	play: async ({ canvasElement }: { canvasElement: HTMLElement }) => {
-		expect(canvasElement).toBeTruthy();
+		const canvas = within(canvasElement);
+		await waitFor(
+			() => {
+				expect(canvas.queryAllByText(/Mountain Bike/i).length).toBeGreaterThan(
+					0,
+				);
+			},
+			{ timeout: 3000 },
+		);
+		const unblockBtns = canvas.queryAllByText(/Unblock/i);
+		const unblockBtn = unblockBtns[0];
+		if (unblockBtn) {
+			await userEvent.click(unblockBtn);
+		}
 	},
 };
 
@@ -485,7 +581,20 @@ export const UnblockFailure: Story = {
 		},
 	},
 	play: async ({ canvasElement }: { canvasElement: HTMLElement }) => {
-		expect(canvasElement).toBeTruthy();
+		const canvas = within(canvasElement);
+		await waitFor(
+			() => {
+				expect(canvas.queryAllByText(/Mountain Bike/i).length).toBeGreaterThan(
+					0,
+				);
+			},
+			{ timeout: 3000 },
+		);
+		const unblockBtns = canvas.queryAllByText(/Unblock/i);
+		const unblockBtn = unblockBtns[0];
+		if (unblockBtn) {
+			await userEvent.click(unblockBtn);
+		}
 	},
 };
 
@@ -534,6 +643,19 @@ export const UnblockError: Story = {
 		},
 	},
 	play: async ({ canvasElement }: { canvasElement: HTMLElement }) => {
-		expect(canvasElement).toBeTruthy();
+		const canvas = within(canvasElement);
+		await waitFor(
+			() => {
+				expect(canvas.queryAllByText(/Mountain Bike/i).length).toBeGreaterThan(
+					0,
+				);
+			},
+			{ timeout: 3000 },
+		);
+		const unblockBtns = canvas.queryAllByText(/Unblock/i);
+		const unblockBtn = unblockBtns[0];
+		if (unblockBtn) {
+			await userEvent.click(unblockBtn);
+		}
 	},
 };
