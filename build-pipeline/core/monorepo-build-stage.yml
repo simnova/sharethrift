@@ -224,8 +224,11 @@ stages:
         targetType: 'inline'
         script: |
           set -euo pipefail
-          ulimit -n 60000
-          echo "Open file limit (ulimit -n): $(ulimit -n)"
+          # Set soft limit for open files (file descriptors)
+          # -S = soft limit (the actual limit used by processes)
+          # -n = number of open file descriptors
+          ulimit -Sn 80000
+          echo "Open file limits - Soft: $(ulimit -Sn), Hard: $(ulimit -Hn)"
           export NODE_OPTIONS=--max_old_space_size=16384
           export PLAYWRIGHT_BROWSERS_PATH="$(PLAYWRIGHT_BROWSERS_PATH)"
 
