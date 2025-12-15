@@ -1163,6 +1163,27 @@ test.for(feature, ({ Scenario }) => {
 				state: 'Accepted',
 			});
 
+			// Mock the reservation request with listing and sharer
+			const mockRequest = createMockReservationRequest({
+				id: requestId,
+				state: 'Requested',
+			});
+			
+			// Mock the listing with sharer
+			const mockListing = {
+				id: 'listing-1',
+				title: 'Test Listing',
+				sharer: {
+					id: 'user-1',
+				},
+			};
+			
+			// Mock the authenticated user
+			const mockAuthUser = {
+				id: 'user-1',
+				email: 'sharer@example.com',
+			};
+
 			Given(
 				'a verified user with a valid verifiedJwt containing email',
 				() => {
@@ -1170,7 +1191,16 @@ test.for(feature, ({ Scenario }) => {
 						applicationServices: {
 							ReservationRequest: {
 								ReservationRequest: {
+									queryById: vi.fn().mockResolvedValue({
+										...mockRequest,
+										listing: mockListing,
+									}),
 									update: vi.fn().mockResolvedValue(updatedRequest),
+								},
+							},
+							User: {
+								PersonalUser: {
+									queryByEmail: vi.fn().mockResolvedValue(mockAuthUser),
 								},
 							},
 							verifiedUser: {
