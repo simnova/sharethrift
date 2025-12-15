@@ -197,7 +197,8 @@ async function main() {
 		: process.env['Given_Name'] || '';
 	const family_name = isAdminPortal
 		? process.env['Admin_Family_Name'] || process.env['Family_Name'] || ''
-		: process.env['Family_Name'] || '';		const profile: TokenProfile = {
+		: process.env['Family_Name'] || '';
+		const profile: TokenProfile = {
 			aud: aud, // Now using proper audience identifier
 			sub: crypto.randomUUID(),
 			iss: `http://localhost:${port}`,
