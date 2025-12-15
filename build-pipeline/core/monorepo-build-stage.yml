@@ -122,14 +122,23 @@ stages:
           pnpm install --frozen-lockfile
         workingDirectory: ''
 
+    # Set PLAYWRIGHT_VERSION variable for cache key
+    - task: Bash@3
+      displayName: 'Detect Playwright version for cache key'
+      inputs:
+        targetType: 'inline'
+        script: |
+          set -euo pipefail
+          version=$(pnpm exec playwright --version | awk '{print $2}')
+          echo "Detected Playwright version: $version"
+          echo "##vso[task.setvariable variable=PLAYWRIGHT_VERSION]$version"
+        workingDirectory: ''
+
         # Playwright: Restore browsers cache
     - task: Cache@2
       displayName: 'Playwright: Restore browsers cache'
       inputs:
-        key: 'playwright | "$(Agent.OS)" | ubuntu-latest | node-22'
-        restoreKeys: |
-          playwright | "$(Agent.OS)" | ubuntu-latest
-          playwright | "$(Agent.OS)"
+        key: playwright | "$(Agent.OS)" | ubuntu-latest | node-22 | "$(PLAYWRIGHT_VERSION)"
         path: '$(PLAYWRIGHT_BROWSERS_PATH)'
         cacheHitVar: PW_CACHE_HIT
 
@@ -151,6 +160,7 @@ stages:
     # Playwright: Ensure browsers are available for packages that need them
     - task: Bash@3
       displayName: 'Playwright: Verify browser installation'
+      condition: always()
       inputs:
         targetType: 'inline'
         script: |
@@ -249,6 +259,18 @@ stages:
         ${{ each pair in parameters.buildEnvSettings }}:
           ${{ pair.key }}: ${{ pair.value }}
 
+    # Audit unused dependencies with knip (after packages are built)
+    - task: Bash@3
+      displayName: 'Audit unused dependencies with knip'
+      condition: eq(variables['BuildJob.HAS_SOURCE_CHANGES'], 'true')
+      inputs:
+        targetType: 'inline'
+        script: |
+          set -euo pipefail
+          echo "Running knip to detect unused dependencies..."
+          pnpm knip
+        workingDirectory: ''
+
     # Analyze dependencies with pnpm analyze
     - task: Bash@3
       displayName: 'Analyze dependencies with pnpm analyze'
@@ -259,6 +281,38 @@ stages:
           echo "Running pnpm analyze to analyze dependencies..."
           pnpm analyze
         workingDirectory: ''
+
+    # Audit security vulnerabilities with Snyk CLI
+    - task: Bash@3
+      displayName: 'Audit security vulnerabilities with Snyk CLI'
+      inputs:
+        targetType: 'inline'
+        script: |
+          set -euo pipefail
+
+          # Verify environment variables
+          if [ -z "$SNYK_TOKEN" ]; then
+            echo "Error: SNYK_TOKEN is empty or not loaded."
+            exit 1
+          fi
+          echo "SNYK_TOKEN PRESENT: True"
+
+          # Authenticate Snyk CLI
+          echo "Authenticating Snyk CLI..."
+          pnpm exec snyk auth "$SNYK_TOKEN"
+
+          echo "Running Snyk to detect security vulnerabilities..."
+          # If PR build, run the test commands 
+          if [ "$(Build.Reason)" = "PullRequest" ]; then
+            echo "Authenticating Snyk for PR build..."
+            pnpm run snyk
+          else
+            echo "Authenticating Snyk for main branch build..."
+            pnpm run snyk:report
+          fi
+        workingDirectory: ''
+      env:
+        SNYK_TOKEN: $(SNYK_TOKEN)
           
     # Cache Java JRE
     - task: Cache@2

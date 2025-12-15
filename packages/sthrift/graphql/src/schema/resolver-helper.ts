@@ -1,4 +1,4 @@
-/** biome-ignore-all lint/suspicious/noExplicitAny: Resolver helper uses any types for GraphQL context flexibility */
+/** biome-ignore-all lint/suspicious/noExplicitAny: GraphQL resolver helper utilities require flexible typing for generic field resolution */
 
 import type { Domain } from '@sthrift/domain';
 import type {

@@ -233,5 +233,3 @@ export function AdminViewListing(): ReactElement {
 		</div>
 	);
 }
-
-export default AdminViewListing;

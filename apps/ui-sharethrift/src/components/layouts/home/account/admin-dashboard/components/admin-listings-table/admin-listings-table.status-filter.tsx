@@ -1,4 +1,4 @@
-import React from 'react';
+import type React from 'react';
 import { Checkbox } from 'antd';
 
 const STATUS_OPTIONS = [
@@ -29,4 +29,3 @@ export const StatusFilter: React.FC<StatusFilterProps> = ({ statusFilters, onSta
   );
 };
 
-export default StatusFilter;

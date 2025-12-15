@@ -8,7 +8,7 @@ import { StatusFilter } from './admin-listings-table.status-filter';
 import { StatusTag } from './admin-listings-table.status-tag';
 import { formatDate } from './admin-listings-table.utils';
 
-export interface AdminListingsTableProps {
+interface AdminListingsTableProps {
   readonly data: ReadonlyArray<MyListingData>;
   readonly searchText: string;
   readonly statusFilters: ReadonlyArray<string>;

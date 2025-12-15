@@ -1,17 +1,3 @@
-export interface UserListing {
-	id: string;
-	title: string;
-	description: string;
-	category: string;
-	location: string;
-	state?: string | null;
-	images?: string[] | null;
-	createdAt?: string | null;
-	updatedAt?: string | null;
-	sharingPeriodStart: string;
-	sharingPeriodEnd: string;
-}
-
 export interface ProfileUser {
 	id: string;
 	firstName: string;
