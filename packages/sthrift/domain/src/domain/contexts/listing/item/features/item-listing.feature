@@ -172,3 +172,13 @@ Feature: <AggregateRoot>ItemListing
     Given an ItemListing aggregate
     When I set the listingType to "premium-listing"
     Then the listingType should be updated to "premium-listing"
+
+  Scenario: Getting sharer when userType is admin-user
+    Given an ItemListing aggregate with an admin-user sharer
+    When I access the sharer property
+    Then it should return an AdminUser instance for the sharer
+
+  Scenario: Loading sharer asynchronously
+    Given an ItemListing aggregate
+    When I call loadSharer()
+    Then it should return the sharer asynchronously

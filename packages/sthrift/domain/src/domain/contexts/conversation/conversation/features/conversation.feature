@@ -112,3 +112,18 @@ Feature: Conversation aggregate
     When I try to set the reserver
     Then a PermissionError should be thrown about managing conversation
 
+  Scenario: Getting sharer when userType is admin-user
+    Given a Conversation aggregate with an admin-user sharer
+    When I access the sharer property
+    Then it should return an AdminUser instance for the sharer
+
+  Scenario: Loading sharer asynchronously
+    Given a Conversation aggregate
+    When I call loadSharer()
+    Then it should return the sharer asynchronously
+
+  Scenario: Loading reserver asynchronously
+    Given a Conversation aggregate
+    When I call loadReserver()
+    Then it should return the reserver asynchronously
+

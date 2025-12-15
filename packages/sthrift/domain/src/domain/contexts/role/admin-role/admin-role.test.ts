@@ -180,126 +180,114 @@ test.for(feature, ({ Background, Scenario, BeforeEachScenario }) => {
 		});
 	});
 
-	Scenario(
-		'Creating a new admin role instance',
-		({ When, Then, And }) => {
-			When(
-				'I call getNewInstance with roleName "Super Admin" and isDefault false',
-				() => {
-					adminRole = mockRepo.getNewInstance('Super Admin', false);
+	Scenario('Creating a new admin role instance', ({ When, Then, And }) => {
+		When(
+			'I call getNewInstance with roleName "Super Admin" and isDefault false',
+			() => {
+				adminRole = AdminRoleClass.getNewInstance(
+					roleProps,
+					makePassport(),
+					'Super Admin',
+					false,
+				);
+			},
+		);
+
+		Then('a new admin role should be created', () => {
+			expect(adminRole).toBeDefined();
+		});
+
+		And('the role should have id', () => {
+			expect(adminRole.id).toBeDefined();
+			expect(typeof adminRole.id).toBe('string');
+		});
+
+		And('the role should have roleName "Super Admin"', () => {
+			expect(adminRole.roleName).toBe('Super Admin');
+		});
+
+		And('the role should have isDefault false', () => {
+			expect(adminRole.isDefault).toBe(false);
+		});
+
+		And('the role should have default permissions', () => {
+			expect(adminRole.permissions).toBeDefined();
+			expect(adminRole.permissions.userPermissions).toBeDefined();
+			expect(adminRole.permissions.conversationPermissions).toBeDefined();
+			expect(adminRole.permissions.listingPermissions).toBeDefined();
+			expect(adminRole.permissions.reservationRequestPermissions).toBeDefined();
+		});
+	});
+
+	Scenario('Getting roleName from admin role', ({ Given, When, Then }) => {
+		Given('an existing admin role with roleName "Moderator"', () => {
+			roleProps.roleName = 'Moderator';
+			adminRole = {
+				props: roleProps,
+				get roleName() {
+					return this.props.roleName;
 				},
-			);
+			};
+		});
 
-			Then('a new admin role should be created', () => {
-				expect(adminRole).toBeDefined();
-			});
+		When('I access the roleName property', () => {
+			result = adminRole.roleName;
+		});
 
-			And('the role should have id', () => {
-				expect(adminRole.id).toBeDefined();
-				expect(typeof adminRole.id).toBe('string');
-			});
+		Then('it should return "Moderator"', () => {
+			expect(result).toBe('Moderator');
+		});
+	});
 
-			And('the role should have roleName "Super Admin"', () => {
-				expect(adminRole.roleName).toBe('Super Admin');
-			});
+	Scenario('Setting roleName for admin role', ({ Given, When, Then }) => {
+		Given('an existing admin role', () => {
+			adminRole = new AdminRoleClass(roleProps, makePassport());
+		});
 
-			And('the role should have isDefault false', () => {
-				expect(adminRole.isDefault).toBe(false);
-			});
+		When('I set roleName to "Content Manager"', () => {
+			// @ts-expect-error: testing private setter
+			adminRole.roleName = 'Content Manager';
+		});
 
-			And('the role should have default permissions', () => {
-				expect(adminRole.permissions).toBeDefined();
-				expect(adminRole.permissions.userPermissions).toBeDefined();
-				expect(adminRole.permissions.conversationPermissions).toBeDefined();
-				expect(adminRole.permissions.listingPermissions).toBeDefined();
-				expect(
-					adminRole.permissions.reservationRequestPermissions,
-				).toBeDefined();
-			});
-		},
-	);
+		Then('the roleName should be updated to "Content Manager"', () => {
+			expect(adminRole.roleName).toBe('Content Manager');
+		});
+	});
 
-	Scenario(
-		'Getting roleName from admin role',
-		({ Given, When, Then }) => {
-			Given('an existing admin role with roleName "Moderator"', () => {
-				roleProps.roleName = 'Moderator';
-				adminRole = {
-					props: roleProps,
-					get roleName() {
-						return this.props.roleName;
-					},
-				};
-			});
+	Scenario('Getting isDefault from admin role', ({ Given, When, Then }) => {
+		Given('an existing admin role with isDefault true', () => {
+			roleProps.isDefault = true;
+			adminRole = {
+				props: roleProps,
+				get isDefault() {
+					return this.props.isDefault;
+				},
+			};
+		});
 
-			When('I access the roleName property', () => {
-				result = adminRole.roleName;
-			});
+		When('I access the isDefault property', () => {
+			result = adminRole.isDefault;
+		});
 
-			Then('it should return "Moderator"', () => {
-				expect(result).toBe('Moderator');
-			});
-		},
-	);
+		Then('it should return true', () => {
+			expect(result).toBe(true);
+		});
+	});
 
-	Scenario(
-		'Setting roleName for admin role',
-		({ Given, When, Then }) => {
-			Given('an existing admin role', () => {
-				adminRole = new AdminRoleClass(roleProps, makePassport());
-			});
+	Scenario('Setting isDefault for admin role', ({ Given, When, Then }) => {
+		Given('an existing admin role', () => {
+			adminRole = new AdminRoleClass(roleProps, makePassport());
+		});
 
-			When('I set roleName to "Content Manager"', () => {
-				// @ts-expect-error: testing private setter
-				adminRole.roleName = 'Content Manager';
-			});
+		When('I set isDefault to true', () => {
+			// @ts-expect-error: testing private setter
+			adminRole.isDefault = true;
+		});
 
-			Then('the roleName should be updated to "Content Manager"', () => {
-				expect(adminRole.roleName).toBe('Content Manager');
-			});
-		},
-	);
-
-	Scenario(
-		'Getting isDefault from admin role',
-		({ Given, When, Then }) => {
-			Given('an existing admin role with isDefault true', () => {
-				roleProps.isDefault = true;
-				adminRole = {
-					props: roleProps,
-					get isDefault() {
-						return this.props.isDefault;
-					},
-				};
-			});
-
-			When('I access the isDefault property', () => {
-				result = adminRole.isDefault;
-			});
-
-			Then('it should return true', () => {
-				expect(result).toBe(true);
-			});
-		},
-	);
-
-	Scenario(
-		'Setting isDefault for admin role',
-		({ Given, When, Then }) => {
-			Given('an existing admin role', () => {
-				adminRole = new AdminRoleClass(roleProps, makePassport());
-			});
-
-			When('I set isDefault to true', () => {
-				// @ts-expect-error: testing private setter
-				adminRole.isDefault = true;
-			});
-
-			Then('the isDefault should be updated to true', () => {
-				expect(adminRole.isDefault).toBe(true);
-			});
-		},
-	);
+		Then('the isDefault should be updated to true', () => {
+			expect(adminRole.isDefault).toBe(true);
+		});
+	});
 
 	Scenario(
 		'Getting permissions from admin role',
@@ -421,28 +409,25 @@ test.for(feature, ({ Background, Scenario, BeforeEachScenario }) => {
 		});
 	});
 
-	Scenario(
-		'Getting schemaVersion from admin role',
-		({ Given, When, Then }) => {
-			Given('an existing admin role', () => {
-				adminRole = mockRepo.getNewInstance('Moderator', false);
-			});
+	Scenario('Getting schemaVersion from admin role', ({ Given, When, Then }) => {
+		Given('an existing admin role', () => {
+			adminRole = mockRepo.getNewInstance('Moderator', false);
+		});
 
-			When('I access the schemaVersion property', () => {
-				result = adminRole.schemaVersion;
-			});
+		When('I access the schemaVersion property', () => {
+			result = adminRole.schemaVersion;
+		});
 
-			Then('it should return the schema version', () => {
-				expect(result).toBeDefined();
-				expect(typeof result).toBe('string');
-			});
-		},
-	);
+		Then('it should return the schema version', () => {
+			expect(result).toBeDefined();
+			expect(typeof result).toBe('string');
+		});
+	});
 });
 
 import { describe, it } from 'vitest';
 import { AdminRole } from './admin-role.ts';
-import { SystemPassport } from '../../../iam/system/system.passport.ts';
+import type { SystemPassport } from '../../../iam/system/system.passport.ts';
 
 describe('AdminRole - Direct Unit Tests', () => {
 	const mockPassport = {} as SystemPassport;
