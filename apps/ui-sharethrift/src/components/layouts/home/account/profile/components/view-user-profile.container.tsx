@@ -94,7 +94,8 @@ export const ViewUserProfileContainer: React.FC = () => {
         navigate(`/listing/${listingId}`);
     };
 
-    const handleBlockUser = (_data: BlockUserFormValues) => {
+    const handleBlockUser = (_blockUserFormValues: BlockUserFormValues) => {
+        // TODO: wire _blockUserFormValues's values through to the backend when supported
         blockUser({ variables: { userId: userId! } });
     };
 
