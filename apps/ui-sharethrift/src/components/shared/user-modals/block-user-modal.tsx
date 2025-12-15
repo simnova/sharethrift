@@ -9,7 +9,7 @@ export interface BlockUserFormValues {
     description: string;
 }
 
-export interface BlockUserModalProps {
+interface BlockUserModalProps {
     visible: boolean;
     userName: string;
     onConfirm: (values: BlockUserFormValues) => void | Promise<void>;

@@ -2,7 +2,7 @@ import { Modal, Typography } from 'antd';
 
 const { Text, Paragraph } = Typography;
 
-export interface UnblockUserModalProps {
+interface UnblockUserModalProps {
     visible: boolean;
     userName: string;
     blockReason?: string;
