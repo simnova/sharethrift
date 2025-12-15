@@ -207,6 +207,10 @@ describe('MongoUnitOfWork:Integration', () => {
 	});
 
 	beforeEach(async () => {
+		if (setupError) {
+			return;
+		}
+
 		await TestModel.deleteMany({});
 		// biome-ignore lint:useLiteralKeys
 		eventBus['eventSubscribers'] = {};
@@ -279,6 +283,11 @@ describe('MongoUnitOfWork:Integration', () => {
 		describe('Given a valid MongoUnitOfWork and an existing TestAggregate', () => {
 			const id = new mongoose.Types.ObjectId('60c72b2f9b1e8d3f4c8b4567');
 			beforeEach(async () => {
+				// Guard: skip hook execution if Mongo setup failed
+				if (setupError) {
+					return;
+				}
+
 				await TestModel.create({
 					_id: id.toString(),
 					foo: 'old-foo',
@@ -315,6 +324,11 @@ describe('MongoUnitOfWork:Integration', () => {
 		describe('Given a valid MongoUnitOfWork and an existing TestAggregate', () => {
 			const id = new mongoose.Types.ObjectId('60c72b2f9b1e8d3f4c8b4567');
 			beforeEach(async () => {
+				// Guard: skip hook execution if Mongo setup failed
+				if (setupError) {
+					return;
+				}
+
 				await TestModel.create({
 					_id: id.toString(),
 					foo: 'old-foo',
@@ -859,6 +873,11 @@ describe('MongoUnitOfWork:Integration', () => {
 			const id = new mongoose.Types.ObjectId('60c72b2f9b1e8d3f4c8b4567');
 
 			beforeEach(async () => {
+				// Guard: skip hook execution if Mongo setup failed
+				if (setupError) {
+					return;
+				}
+
 				await TestModel.create({
 					_id: id.toString(),
 					foo: 'old-foo',
