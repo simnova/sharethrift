@@ -108,6 +108,19 @@ type Story = StoryObj<typeof ViewListing>;
 
 const baseListing = MOCK_LISTING_BASE;
 
+// Shared admin configuration
+const adminBaseArgs = {
+	isAdmin: true,
+	isAuthenticated: true,
+	currentUserId: 'mock-admin-id',
+};
+
+// Blocked listing variant
+const adminBlockedListing = {
+	...baseListing,
+	state: 'Blocked' as string,
+};
+
 export const Default: Story = {
 	args: {
 		listing: baseListing,
@@ -143,43 +156,31 @@ export const AsOwner: Story = {
 export const AsAdmin: Story = {
 	args: {
 		...Default.args,
-		isAdmin: true,
-		isAuthenticated: true,
-		currentUserId: 'mock-admin-id',
+		...adminBaseArgs,
+		listing: baseListing,
 	},
 };
 
 export const BlockedListingAsAdmin: Story = {
 	args: {
 		...Default.args,
-		listing: {
-			...baseListing,
-			state: 'Blocked' as string,
-		},
-		isAdmin: true,
-		isAuthenticated: true,
-		currentUserId: 'mock-admin-id',
+		...adminBaseArgs,
+		listing: adminBlockedListing,
 	},
 };
 
 export const BlockListing: Story = {
 	args: {
 		...Default.args,
-		isAdmin: true,
-		isAuthenticated: true,
-		currentUserId: 'mock-admin-id',
+		...adminBaseArgs,
+		listing: baseListing,
 	},
 };
 
 export const UnblockListing: Story = {
 	args: {
 		...Default.args,
-		listing: {
-			...baseListing,
-			state: 'Blocked' as string,
-		},
-		isAdmin: true,
-		isAuthenticated: true,
-		currentUserId: 'mock-admin-id',
+		...adminBaseArgs,
+		listing: adminBlockedListing,
 	},
 };
