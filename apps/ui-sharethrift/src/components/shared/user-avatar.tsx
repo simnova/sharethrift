@@ -13,7 +13,7 @@ import { ShareThriftLogo } from './sharethrift-logo.tsx';
  * @property style - Inline styles
  * @property shape - Avatar shape ('circle' | 'square')
  */
-export interface UserAvatarProps {
+interface UserAvatarProps {
 	userId: string;
 	userName: string;
 	size?: number;

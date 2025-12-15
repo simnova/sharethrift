@@ -8,7 +8,7 @@ import { isValidUserId } from './utils/user-validation.ts';
  * @property className - Additional CSS classes
  * @property style - Custom inline styles
  */
-export interface UserProfileLinkProps {
+interface UserProfileLinkProps {
 	userId: string;
 	displayName: string;
 	className?: string;

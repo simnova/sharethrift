@@ -14,13 +14,13 @@ import type {
 import { UserAvatar } from "../../../../../shared/user-avatar.tsx";
 import { UserProfileLink } from "../../../../../shared/user-profile-link.tsx";
 
-export type Sharer = {
+type Sharer = {
   id: string;
   name: string;
   avatar?: string;
 };
 
-export interface SharerInformationProps {
+interface SharerInformationProps {
   sharer: Sharer;
   listingId: string;
   isOwner?: boolean;
