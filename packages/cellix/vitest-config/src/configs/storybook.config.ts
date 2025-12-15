@@ -24,6 +24,10 @@ export function createStorybookVitestConfig(
 		process.env['CI'] === 'true' || process.env['TF_BUILD'] === 'True';
 
 	const storybookConfig = defineConfig({
+		// Use export conditions to resolve workspace packages to src/ during testing
+		resolve: {
+			conditions: ['vitest', 'development', 'import', 'default'],
+		},
 		// Explicitly tell Vite's file watcher to ignore dist and coverage directories
 		// This prevents Vite from opening files in these directories during scan/watch
 		server: {
