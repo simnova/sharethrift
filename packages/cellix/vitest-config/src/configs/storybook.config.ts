@@ -1,4 +1,5 @@
 import path from 'node:path';
+import { createRequire } from 'module';
 import { storybookTest } from '@storybook/addon-vitest/vitest-plugin';
 import { defineConfig, mergeConfig, type ViteUserConfig } from 'vitest/config';
 import { baseConfig } from './base.config.ts';
@@ -21,6 +22,25 @@ export function createStorybookVitestConfig(
 
 	const isCI =
 		process.env['CI'] === 'true' || process.env['TF_BUILD'] === 'True';
+
+	// Try to resolve the source directory of @sthrift/ui-components from the
+	// context of the package that is running tests. If found, add a Vite alias
+	// that maps the package name to its `src` folder so Vite will not resolve
+	// the package exports into `dist/` during tests (prevents opening dist files).
+	const aliases: { find: string | RegExp; replacement: string }[] = [];
+	try {
+		const require = createRequire(import.meta.url);
+		const uiPkgJson = require.resolve('@sthrift/ui-components/package.json', {
+			paths: [pkgDirname],
+		});
+		const uiPkgDir = path.dirname(uiPkgJson);
+		aliases.push({
+			find: '@sthrift/ui-components',
+			replacement: path.join(uiPkgDir, 'src'),
+		});
+	} catch (e) {
+		// ignore if not resolvable in this environment
+	}
 
 	const storybookConfig = defineConfig({
 		test: {
@@ -76,6 +96,9 @@ export function createStorybookVitestConfig(
 			// Disable watch mode and isolate tests to reduce file watchers and improve stability.
 			watch: false,
 			isolate: true,
+		},
+		resolve: {
+			alias: aliases,
 		},
 	});
 
