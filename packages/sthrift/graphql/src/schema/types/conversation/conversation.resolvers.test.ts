@@ -344,4 +344,102 @@ test.for(feature, ({ Scenario }) => {
 			);
 		},
 	);
+
+	Scenario('Sending a message in a conversation', ({ Given, When, Then, And }) => {
+		Given('a valid SendMessageInput with conversationId, content, and authorId', () => {
+			context = makeMockGraphContext();
+			context.applicationServices.Conversation.Conversation.sendMessage = vi.fn().mockResolvedValue({
+				id: 'msg-1',
+				messagingMessageId: { valueOf: () => 'SM001' },
+				authorId: { valueOf: () => 'user-1' },
+				content: { valueOf: () => 'Hello' },
+				createdAt: new Date('2020-01-01T00:00:00Z'),
+			}) as unknown as typeof context.applicationServices.Conversation.Conversation.sendMessage;
+		});
+		When('the sendMessage mutation is executed with that input', async () => {
+			const resolver = conversationResolvers.Mutation
+				?.sendMessage as TestResolver<{
+				input: {
+					conversationId: string;
+					content: string;
+					authorId: string;
+				};
+			}>;
+			result = await resolver(
+				null,
+				{
+					input: {
+						conversationId: 'conv-1',
+						content: 'Hello',
+						authorId: 'user-1',
+					},
+				},
+				context,
+				null,
+			);
+		});
+		Then('it should call Conversation.Conversation.sendMessage with the provided input fields', () => {
+			expect(
+				context.applicationServices.Conversation.Conversation.sendMessage,
+			).toHaveBeenCalledWith({
+				conversationId: 'conv-1',
+				content: 'Hello',
+				authorId: 'user-1',
+			});
+		});
+		And('it should return a SendMessageMutationResult with success true and the sent message', () => {
+			expect(result).toBeDefined();
+			expect(
+				(result as { status: { success: boolean } }).status.success,
+			).toBe(true);
+			expect(
+				(result as { message: unknown }).message,
+			).toBeDefined();
+		});
+	});
+
+	Scenario('Sending a message when Conversation.Conversation.sendMessage throws an error', ({ Given, And, When, Then }) => {
+		Given('a valid SendMessageInput', () => {
+			context = makeMockGraphContext();
+			context.applicationServices.Conversation.Conversation.sendMessage = vi.fn() as unknown as typeof context.applicationServices.Conversation.Conversation.sendMessage;
+		});
+		And('Conversation.Conversation.sendMessage throws an error', () => {
+			(
+				context.applicationServices.Conversation.Conversation
+					.sendMessage as ReturnType<typeof vi.fn>
+			).mockRejectedValue(new Error('Failed to send message'));
+		});
+		When('the sendMessage mutation is executed', async () => {
+			const resolver = conversationResolvers.Mutation
+				?.sendMessage as TestResolver<{
+				input: {
+					conversationId: string;
+					content: string;
+					authorId: string;
+				};
+			}>;
+			result = await resolver(
+				null,
+				{
+					input: {
+						conversationId: 'conv-1',
+						content: 'Hello',
+						authorId: 'user-1',
+					},
+				},
+				context,
+				null,
+			);
+		});
+		Then('it should return a SendMessageMutationResult with success false and the error message', () => {
+			expect(result).toBeDefined();
+			expect(
+				(result as { status: { success: boolean } }).status.success,
+			).toBe(false);
+			expect(
+				(result as { status: { errorMessage?: string } }).status
+					.errorMessage,
+			).toContain('Failed to send message');
+		});
+	});
 });

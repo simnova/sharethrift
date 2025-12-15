@@ -16,7 +16,13 @@ describe('MessagingConversationRepository', () => {
 			createConversation: vi.fn(),
 		} as unknown as MessagingService;
 
-		mockPassport = {} as Domain.Passport;
+		mockPassport = {
+			conversation: {
+				forConversation: vi.fn().mockReturnValue({
+					determineIf: vi.fn().mockReturnValue(true),
+				}),
+			},
+		} as unknown as Domain.Passport;
 
 		repository = new MessagingConversationRepositoryImpl(
 			mockMessagingService,
@@ -93,32 +99,68 @@ describe('MessagingConversationRepository', () => {
 				author: validAuthorId,
 				createdAt: new Date(),
 			};
+			const mockConversation = {
+				id: 'conv-123',
+				messagingConversationId: 'messaging-conv-123',
+			} as Domain.Contexts.Conversation.Conversation.ConversationEntityReference;
+
 			vi.mocked(mockMessagingService.sendMessage).mockResolvedValue(
 				mockMessage,
 			);
 
 			const result = await repository.sendMessage(
-				'conversation-123',
+				mockConversation,
 				'Test message',
 				validAuthorId,
 			);
 
 			expect(result).toBeDefined();
 			expect(mockMessagingService.sendMessage).toHaveBeenCalledWith(
-				'conversation-123',
+				'messaging-conv-123',
 				'Test message',
 				validAuthorId,
 			);
 		});
 
+		it('should throw error when not authorized', async () => {
+			const validAuthorId = '507f1f77bcf86cd799439011';
+			const mockConversation = {
+				id: 'conv-123',
+				messagingConversationId: 'messaging-conv-123',
+			} as Domain.Contexts.Conversation.Conversation.ConversationEntityReference;
+
+			// Mock passport to deny permission
+			mockPassport = {
+				conversation: {
+					forConversation: vi.fn().mockReturnValue({
+						determineIf: vi.fn().mockReturnValue(false),
+					}),
+				},
+			} as unknown as Domain.Passport;
+
+			repository = new MessagingConversationRepositoryImpl(
+				mockMessagingService,
+				mockPassport,
+			);
+
+			await expect(
+				repository.sendMessage(mockConversation, 'Test', validAuthorId),
+			).rejects.toThrow('Not authorized to send message in this conversation');
+		});
+
 		it('should throw error on send failure', async () => {
 			const validAuthorId = '507f1f77bcf86cd799439011';
+			const mockConversation = {
+				id: 'conv-123',
+				messagingConversationId: 'messaging-conv-123',
+			} as Domain.Contexts.Conversation.Conversation.ConversationEntityReference;
+
 			vi.mocked(mockMessagingService.sendMessage).mockRejectedValue(
 				new Error('Failed to send'),
 			);
 
 			await expect(
-				repository.sendMessage('conversation-123', 'Test', validAuthorId),
+				repository.sendMessage(mockConversation, 'Test', validAuthorId),
 			).rejects.toThrow('Failed to send');
 		});
 	});
