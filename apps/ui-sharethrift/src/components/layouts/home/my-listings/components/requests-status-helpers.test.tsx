@@ -48,14 +48,23 @@ describe('getActionButtons', () => {
 		expect(markup).toContain('Message');
 	});
 
-	it('shows delete/archive for rejected requests', () => {
-		const markup = renderButtonsMarkup('Rejected');
-		expect(markup).toContain('Delete');
-		expect(markup).toContain('Archive');
+	it('shows message for closed requests', () => {
+		const markup = renderButtonsMarkup('Closed');
+		expect(markup).toContain('Message');
 	});
 
-	it('shows archive for expired requests', () => {
+	it('shows delete for rejected requests', () => {
+		const markup = renderButtonsMarkup('Rejected');
+		expect(markup).toContain('Delete');
+	});
+
+	it('shows delete for expired requests', () => {
 		const markup = renderButtonsMarkup('Expired');
-		expect(markup).toContain('Archive');
+		expect(markup).toContain('Delete');
+	});
+
+	it('shows delete for cancelled requests', () => {
+		const markup = renderButtonsMarkup('Cancelled');
+		expect(markup).toContain('Delete');
 	});
 });

@@ -101,14 +101,7 @@ export const RequestsTableContainer: React.FC<RequestsTableContainerProps> = ({
 	};
 
 	const handleAccept = async (requestId: string) => {
-		try {
-			await acceptRequest({ variables: { input: { id: requestId } } });
-		} catch (error) {
-			const errorMessage =
-				error instanceof Error ? error.message : 'Unknown error occurred';
-			message.error(`Failed to accept request: ${errorMessage}`);
-			console.error('Accept request error:', error);
-		}
+		await acceptRequest({ variables: { input: { id: requestId } } });
 	};
 
 	const handleReject = (_requestId: string) => {
@@ -131,32 +124,30 @@ export const RequestsTableContainer: React.FC<RequestsTableContainerProps> = ({
 		message.info('Messaging functionality coming soon');
 	};
 
+	// Action handler map for cleaner dispatch
+	const actionHandlers: Record<
+		string,
+		(requestId: string) => void | Promise<void>
+	> = {
+		accept: handleAccept,
+		approve: handleAccept,
+		reject: handleReject,
+		close: handleClose,
+		delete: handleDelete,
+		message: handleMessage,
+	};
+
 	const handleAction = async (action: string, requestId: string) => {
-		switch (action) {
-			case 'accept':
-			case 'approve':
-				await handleAccept(requestId);
-				break;
-			case 'reject':
-				handleReject(requestId);
-				break;
-			case 'close':
-				handleClose(requestId);
-				break;
-			case 'delete':
-				handleDelete(requestId);
-				break;
-			case 'message':
-				handleMessage(requestId);
-				break;
-			default:
-				console.warn(`Unknown action: ${action}`);
+		const handler = actionHandlers[action];
+		if (handler) {
+			await handler(requestId);
+		} else {
+			console.warn(`Unknown action: ${action}`);
 		}
 	};
 
 	if (error) {
 		console.error('Query error:', error);
-		return null;
 	}
 
 	return (

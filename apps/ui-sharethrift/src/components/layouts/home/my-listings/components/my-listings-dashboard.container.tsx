@@ -12,7 +12,8 @@ export const MyListingsDashboardContainer: React.FC = () => {
   const { data: userData, loading: userLoading } =
     useQuery<ViewListingCurrentUserQuery>(ViewListingCurrentUserDocument);
 
-  const sharerId = userData?.currentUser?.id;
+  const currentUser = userData?.currentUser;
+  const sharerId = currentUser?.id;
 
   const { data, loading, error } = useQuery(
     HomeAllListingsTableContainerMyListingsAllDocument,
@@ -28,6 +29,7 @@ export const MyListingsDashboardContainer: React.FC = () => {
         },
       },
       fetchPolicy: "network-only",
+      skip: !sharerId,
     }
   );
 
@@ -47,8 +49,8 @@ export const MyListingsDashboardContainer: React.FC = () => {
     console.log("Navigate to create listing");
   };
 
-  // Wait for user data to load before rendering
-  if (userLoading || !sharerId) {
+  // State 1: Loading user authentication state
+  if (userLoading) {
     return (
       <ComponentQueryLoader
         loading={true}
@@ -59,6 +61,17 @@ export const MyListingsDashboardContainer: React.FC = () => {
     );
   }
 
+  // State 2: User not authenticated or missing sharerId
+  if (!currentUser || !sharerId) {
+    return (
+      <div style={{ padding: '40px', textAlign: 'center' }}>
+        <h2>Please sign in to view your listings</h2>
+        <p>You need to be authenticated to access this page.</p>
+      </div>
+    );
+  }
+
+  // State 3: Valid authenticated user with sharerId
   return (
     <ComponentQueryLoader
       loading={loading}

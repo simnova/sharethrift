@@ -266,6 +266,44 @@ const reservationRequest: Resolvers = {
 				);
 			}
 
+			// Load the reservation request to check authorization
+			const reservationRequest =
+				await context.applicationServices.ReservationRequest.ReservationRequest.queryById(
+					{
+						id: args.input.id,
+					},
+				);
+
+			if (!reservationRequest) {
+				throw new Error('Reservation request not found');
+			}
+
+			// Load the associated listing
+			const listing = reservationRequest.listing;
+			if (!listing) {
+				throw new Error(
+					'Unable to load listing for this reservation request',
+				);
+			}
+
+			// Get the authenticated user's ID
+			const authenticatedUser =
+				await context.applicationServices.User.PersonalUser.queryByEmail({
+					email: verifiedJwt.email,
+				});
+
+			if (!authenticatedUser) {
+				throw new Error('Authenticated user not found');
+			}
+
+			// Check if the authenticated user is the listing sharer
+			const sharer = listing.sharer;
+			if (!sharer || sharer.id !== authenticatedUser.id) {
+				throw new Error(
+					'Unauthorized: Only the listing owner can accept reservation requests',
+				);
+			}
+
 			return await context.applicationServices.ReservationRequest.ReservationRequest.update(
 				{
 					id: args.input.id,

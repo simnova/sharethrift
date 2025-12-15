@@ -9,11 +9,10 @@ import {
 import type { GraphContext } from './context.ts';
 import { combinedSchema } from '../schema/builder/schema-builder.ts';
 import { applyMiddleware } from 'graphql-middleware';
-import depthLimit from 'graphql-depth-limit';
 
 // biome-ignore lint/complexity/useLiteralKeys: NODE_ENV is a standard environment variable
 const isProduction = process.env['NODE_ENV'] === 'production';
-const MAX_QUERY_DEPTH = 10;
+// const MAX_QUERY_DEPTH = 10; // TODO: Re-enable when graphql-depth-limit is fixed
 
 export const graphHandlerCreator = (
 	applicationServicesFactory: ApplicationServicesFactory,
@@ -28,7 +27,8 @@ export const graphHandlerCreator = (
 		schema: securedSchema,
         allowBatchedHttpRequests: true,
 		// Protection against nested query DoS attacks
-		validationRules: [depthLimit(MAX_QUERY_DEPTH)],
+		// TODO: Re-enable depth limit after fixing graphql-depth-limit module resolution
+		// validationRules: [depthLimit(MAX_QUERY_DEPTH)],
 		introspection: !isProduction,
 	});
 	const functionOptions: WithRequired<AzureFunctionsMiddlewareOptions<GraphContext>, 'context'> = {

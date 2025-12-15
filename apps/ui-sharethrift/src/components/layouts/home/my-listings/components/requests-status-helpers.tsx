@@ -25,108 +25,118 @@ export const getStatusTagClass = (status: string): string => {
 	}
 };
 
+// Status sets for declarative button rendering
+const CAN_ACCEPT_REJECT = new Set(['Pending', 'Requested']);
+const CAN_CLOSE = new Set(['Accepted']);
+const CAN_MESSAGE = new Set(['Accepted', 'Closed']);
+const CAN_DELETE = new Set(['Rejected', 'Expired', 'Cancelled']);
+
+// Reusable button helpers
+const createAcceptButton = (
+	recordId: string,
+	onAction: (action: string, requestId: string) => void,
+): React.ReactNode => (
+	<Button
+		key="accept"
+		type="link"
+		size="small"
+		onClick={() => onAction('accept', recordId)}
+	>
+		Accept
+	</Button>
+);
+
+const createRejectButton = (
+	recordId: string,
+	onAction: (action: string, requestId: string) => void,
+): React.ReactNode => (
+	<Button
+		key="reject"
+		type="link"
+		size="small"
+		onClick={() => onAction('reject', recordId)}
+	>
+		Reject
+	</Button>
+);
+
+const createCloseButton = (
+	recordId: string,
+	onAction: (action: string, requestId: string) => void,
+): React.ReactNode => (
+	<Popconfirm
+		key="close"
+		title="Close this request?"
+		description="Are you sure you want to close this request?"
+		onConfirm={() => onAction('close', recordId)}
+		okText="Yes"
+		cancelText="No"
+	>
+		<Button type="link" size="small">
+			Close
+		</Button>
+	</Popconfirm>
+);
+
+const createMessageButton = (
+	recordId: string,
+	onAction: (action: string, requestId: string) => void,
+): React.ReactNode => (
+	<Button
+		key="message"
+		type="link"
+		size="small"
+		onClick={() => onAction('message', recordId)}
+	>
+		Message
+	</Button>
+);
+
+const createDeleteButton = (
+	recordId: string,
+	onAction: (action: string, requestId: string) => void,
+): React.ReactNode => (
+	<Popconfirm
+		key="delete"
+		title="Delete this request?"
+		description="Are you sure you want to delete this request? This action cannot be undone."
+		onConfirm={() => onAction('delete', recordId)}
+		okText="Yes"
+		cancelText="No"
+	>
+		<Button type="link" size="small" danger>
+			Delete
+		</Button>
+	</Popconfirm>
+);
+
 export const getActionButtons = (
 	record: ListingRequestData,
 	onAction: (action: string, requestId: string) => void,
-) => {
+): React.ReactNode[] => {
 	const buttons: React.ReactNode[] = [];
 
-	// Pending/Requested → Accept / Reject
-	if (record.status === 'Pending' || record.status === 'Requested') {
+	// Accept/Reject for pending/requested statuses
+	if (CAN_ACCEPT_REJECT.has(record.status)) {
 		buttons.push(
-			<Button
-				key="accept"
-				type="link"
-				size="small"
-				onClick={() => onAction('accept', record.id)}
-			>
-				Accept
-			</Button>,
-			<Button
-				key="reject"
-				type="link"
-				size="small"
-				onClick={() => onAction('reject', record.id)}
-			>
-				Reject
-			</Button>,
+			createAcceptButton(record.id, onAction),
+			createRejectButton(record.id, onAction),
 		);
 	}
 
-	// Accepted → Close / Message
-	if (record.status === 'Accepted') {
-		buttons.push(
-			<Popconfirm
-				key="close"
-				title="Close this request?"
-				description="Are you sure you want to close this request?"
-				onConfirm={() => onAction('close', record.id)}
-				okText="Yes"
-				cancelText="No"
-			>
-				<Button type="link" size="small">
-					Close
-				</Button>
-			</Popconfirm>,
-			<Button
-				key="message"
-				type="link"
-				size="small"
-				onClick={() => onAction('message', record.id)}
-			>
-				Message
-			</Button>,
-		);
+	// Close button for accepted status
+	if (CAN_CLOSE.has(record.status)) {
+		buttons.push(createCloseButton(record.id, onAction));
 	}
 
-	// Closed → Message
-	if (record.status === 'Closed') {
-		buttons.push(
-			<Button
-				key="message"
-				type="link"
-				size="small"
-				onClick={() => onAction('message', record.id)}
-			>
-				Message
-			</Button>,
-		);
+	// Message button for accepted and closed statuses
+	if (CAN_MESSAGE.has(record.status)) {
+		buttons.push(createMessageButton(record.id, onAction));
 	}
 
-	// Rejected / Expired → Delete
-	if (record.status === 'Rejected' || record.status === 'Expired') {
-		buttons.push(
-			<Popconfirm
-				key="delete"
-				title="Delete this request?"
-				description="Are you sure you want to delete this request? This action cannot be undone."
-				onConfirm={() => onAction('delete', record.id)}
-				okText="Yes"
-				cancelText="No"
-			>
-				<Button type="link" size="small" danger>
-					Delete
-				</Button>
-			</Popconfirm>,
-		);
-	}
-
-	// Cancelled → Delete
-	if (record.status === 'Cancelled') {
-		buttons.push(
-			<Popconfirm
-				key="delete"
-				title="Delete this request?"
-				description="Are you sure you want to delete this request? This action cannot be undone."
-				onConfirm={() => onAction('delete', record.id)}
-				okText="Yes"
-				cancelText="No"
-			>
-				<Button type="link" size="small" danger>
-					Delete
-				</Button>
-			</Popconfirm>,
-		);
+	// Delete button for rejected, expired, and cancelled statuses
+	if (CAN_DELETE.has(record.status)) {
+		buttons.push(createDeleteButton(record.id, onAction));
 	}
 
 	return buttons;
