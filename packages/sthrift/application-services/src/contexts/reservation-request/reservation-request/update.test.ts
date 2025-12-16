@@ -23,12 +23,10 @@ test.for(feature, ({ Scenario, BeforeEachScenario }) => {
 		| undefined;
 	let error: Error | unknown;
 	let mockReservationRequest: Partial<Domain.Contexts.ReservationRequest.ReservationRequest.ReservationRequestEntityReference>;
-	let mockRepo: {
-		getById: (
-			id: string,
-		) => Promise<Domain.Contexts.ReservationRequest.ReservationRequest.ReservationRequestEntityReference | null>;
-		getAll: () => Promise<Domain.Contexts.ReservationRequest.ReservationRequest.ReservationRequestEntityReference[]>;
-	};
+	let mockRepo: Pick<
+		Domain.Contexts.ReservationRequest.ReservationRequest.ReservationRequestRepository<Domain.Contexts.ReservationRequest.ReservationRequest.ReservationRequestProps>,
+		'getById' | 'save'
+	>;
 
 	BeforeEachScenario(() => {
 		mockReservationRequest = {

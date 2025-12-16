@@ -278,11 +278,19 @@ const reservationRequest: Resolvers = {
 				throw new Error('Reservation request not found');
 			}
 
-			// Load the associated listing
-			const listing = reservationRequest.listing;
+			// Explicitly load the associated listing with sharer populated
+			const listing = await reservationRequest.loadListing();
 			if (!listing) {
 				throw new Error(
 					'Unable to load listing for this reservation request',
+				);
+			}
+
+			// Explicitly load the sharer
+			const sharer = await listing.loadSharer();
+			if (!sharer) {
+				throw new Error(
+					'Unable to load listing owner for this reservation request',
 				);
 			}
 
@@ -297,8 +305,7 @@ const reservationRequest: Resolvers = {
 			}
 
 			// Check if the authenticated user is the listing sharer
-			const sharer = listing.sharer;
-			if (!sharer || sharer.id !== authenticatedUser.id) {
+			if (sharer.id !== authenticatedUser.id) {
 				throw new Error(
 					'Unauthorized: Only the listing owner can accept reservation requests',
 				);

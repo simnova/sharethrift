@@ -237,6 +237,16 @@ export class ReservationRequestReadRepositoryImpl
 				pipeline,
 			).exec();
 
+		return this.mapAggregateResultsToDomain(docs);
+	}
+
+	/**
+	 * Private helper to map aggregation results to domain entities
+	 * Handles document reshaping, hydration, and domain conversion
+	 */
+	private mapAggregateResultsToDomain(
+		docs: unknown[],
+	): Domain.Contexts.ReservationRequest.ReservationRequest.ReservationRequestEntityReference[] {
 		const hydrate =
 			typeof this.models.ReservationRequest.ReservationRequest.hydrate ===
 			'function'
@@ -247,7 +257,11 @@ export class ReservationRequestReadRepositoryImpl
 
 		// Map aggregation results back to proper document structure
 		const docsWithRelations = docs.map((doc) => {
-			const { listingDoc, reserverDoc, ...rest } = doc;
+			const { listingDoc, reserverDoc, ...rest } = doc as {
+				listingDoc?: unknown;
+				reserverDoc?: unknown;
+				[key: string]: unknown;
+			};
 			return {
 				...rest,
 				listing: listingDoc ?? rest.listing,

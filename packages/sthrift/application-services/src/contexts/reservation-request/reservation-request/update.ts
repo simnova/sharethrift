@@ -104,11 +104,28 @@ async function autoRejectOverlappingRequests(
 				requestToReject.state = 'Rejected';
 				await repo.save(requestToReject);
 			}
-			} catch {
-				// Continue processing other requests if one rejection fails
+			} catch (error) {
+				// Log individual rejection failure but continue processing
+				console.error(
+					'Failed to auto-reject overlapping request',
+					{
+						listingId,
+						acceptedRequestId: acceptedRequest.id,
+						overlappingRequestId: request.id,
+						error: error instanceof Error ? error.message : String(error),
+					},
+				);
 			}
 		}
-	} catch {
-		// Don't fail the update operation if auto-reject fails
+	} catch (error) {
+		// Log outer failure but don't block the main update operation
+		console.error(
+			'Auto-reject overlapping requests failed',
+			{
+				listingId,
+				acceptedRequestId: acceptedRequest.id,
+				error: error instanceof Error ? error.message : String(error),
+			},
+		);
 	}
 }

@@ -100,49 +100,30 @@ export const RequestsTableContainer: React.FC<RequestsTableContainerProps> = ({
 		onPageChange(1);
 	};
 
-	const handleAccept = async (requestId: string) => {
-		await acceptRequest({ variables: { input: { id: requestId } } });
-	};
-
-	const handleReject = (_requestId: string) => {
-		// TODO: Implement reject mutation when GraphQL schema is ready
-		message.info('Reject functionality coming soon');
-	};
-
-	const handleClose = (_requestId: string) => {
-		// TODO: Implement close mutation when GraphQL schema is ready
-		message.info('Close functionality coming soon');
-	};
-
-	const handleDelete = (_requestId: string) => {
-		// TODO: Implement delete mutation when GraphQL schema is ready
-		message.info('Delete functionality coming soon');
-	};
-
-	const handleMessage = (_requestId: string) => {
-		// TODO: Implement navigation to messages view
-		message.info('Messaging functionality coming soon');
-	};
-
-	// Action handler map for cleaner dispatch
-	const actionHandlers: Record<
-		string,
-		(requestId: string) => void | Promise<void>
-	> = {
-		accept: handleAccept,
-		approve: handleAccept,
-		reject: handleReject,
-		close: handleClose,
-		delete: handleDelete,
-		message: handleMessage,
-	};
-
 	const handleAction = async (action: string, requestId: string) => {
-		const handler = actionHandlers[action];
-		if (handler) {
-			await handler(requestId);
-		} else {
-			console.warn(`Unknown action: ${action}`);
+		switch (action) {
+			case 'accept':
+			case 'approve':
+				await acceptRequest({ variables: { input: { id: requestId } } });
+				break;
+			case 'reject':
+				// TODO: Implement reject mutation when GraphQL schema is ready
+				message.info('Reject functionality coming soon');
+				break;
+			case 'close':
+				// TODO: Implement close mutation when GraphQL schema is ready
+				message.info('Close functionality coming soon');
+				break;
+			case 'delete':
+				// TODO: Implement delete mutation when GraphQL schema is ready
+				message.info('Delete functionality coming soon');
+				break;
+			case 'message':
+				// TODO: Implement navigation to messages view
+				message.info('Messaging functionality coming soon');
+				break;
+			default:
+				console.warn(`Unknown action: ${action}`);
 		}
 	};
 
