@@ -1,7 +1,15 @@
 mutation BlockListingContainerBlockListing($id: ObjectID!) {
-  blockListing(id: $id)
+  blockListing(id: $id) {
+    id
+    state
+    success
+  }
 }
 
 mutation BlockListingContainerUnblockListing($id: ObjectID!) {
-  unblockListing(id: $id)
+  unblockListing(id: $id) {
+    id
+    state
+    success
+  }
 }

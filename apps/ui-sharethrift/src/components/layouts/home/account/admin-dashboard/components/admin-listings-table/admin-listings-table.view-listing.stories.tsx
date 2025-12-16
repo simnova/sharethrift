@@ -53,10 +53,11 @@ const meta = {
 					},
 					result: {
 						data: {
-							unblockItemListing: {
-								__typename: 'MutationStatus',
+							unblockListing: {
+								__typename: 'BlockListingResult',
+								id: 'listing-123',
+								state: 'Published',
 								success: true,
-								errorMessage: null,
 							},
 						},
 					},

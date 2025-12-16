@@ -91,6 +91,7 @@ const meta: Meta<typeof ViewListingContainer> = {
 							blockListing: {
 								id: '1',
 								state: 'Blocked',
+								success: true,
 							},
 						},
 					},
@@ -105,6 +106,7 @@ const meta: Meta<typeof ViewListingContainer> = {
 							unblockListing: {
 								id: '1',
 								state: 'Published',
+								success: true,
 							},
 						},
 					},

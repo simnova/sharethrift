@@ -1,6 +1,6 @@
 import type { GraphContext } from '../../../init/context.ts';
 import type { Resolvers } from '../../builder/generated.js';
-import { PopulateUserFromField } from '../../resolver-helper.ts';
+import { PopulateUserFromField, currentViewerIsAdmin } from '../../resolver-helper.ts';
 
 // Helper type for paged arguments
 export type PagedArgs = {
@@ -67,9 +67,19 @@ const itemListingResolvers: Resolvers = {
 		},
 
 		itemListing: async (_parent, args, context) => {
-			return await context.applicationServices.Listing.ItemListing.queryById({
+			const listing = await context.applicationServices.Listing.ItemListing.queryById({
 				id: args.id,
 			});
+
+			// Authorization check: non-admins cannot view blocked listings
+			if (listing && listing.state === 'Blocked') {
+				const isAdmin = await currentViewerIsAdmin(context);
+				if (!isAdmin) {
+					return null; // Non-admins cannot access blocked listings
+				}
+			}
+
+			return listing;
 		},
 		adminListings: async (_parent, args, context) => {
 			// Admin-note: role-based authorization should be implemented here (security)
@@ -115,18 +125,34 @@ const itemListingResolvers: Resolvers = {
 		},
 
 		unblockListing: async (_parent, args, context) => {
-			// Admin-note: role-based authorization should be implemented here (security)
-			await context.applicationServices.Listing.ItemListing.unblock({
+			// Authorization check: only admins can unblock listings
+			const isAdmin = await currentViewerIsAdmin(context);
+			if (!isAdmin) {
+				throw new Error('Forbidden: Only administrators can unblock listings');
+			}
+			const listing = await context.applicationServices.Listing.ItemListing.unblock({
 				id: args.id,
 			});
-			return true;
+			return {
+				id: listing.id,
+				state: listing.state,
+				success: true,
+			};
 		},
 		blockListing: async (_parent, args, context) => {
-			// Admin-note: role-based authorization should be implemented here (security)
-			await context.applicationServices.Listing.ItemListing.block({
+			// Authorization check: only admins can block listings
+			const isAdmin = await currentViewerIsAdmin(context);
+			if (!isAdmin) {
+				throw new Error('Forbidden: Only administrators can block listings');
+			}
+			const listing = await context.applicationServices.Listing.ItemListing.block({
 				id: args.id,
 			});
-			return true;
+			return {
+				id: listing.id,
+				state: listing.state,
+				success: true,
+			};
 		},
 		cancelItemListing: async (
 			_parent: unknown,

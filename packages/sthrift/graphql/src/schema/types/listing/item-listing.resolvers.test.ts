@@ -113,7 +113,8 @@ function createMockUser(
 function makeMockGraphContext(
 	overrides: Partial<GraphContext> = {},
 ): GraphContext {
-	return {
+	// biome-ignore lint/suspicious/noExplicitAny: Test utility requires flexible typing
+	const baseContext: any = {
 		applicationServices: {
 			Listing: {
 				ItemListing: {
@@ -123,11 +124,16 @@ function makeMockGraphContext(
 					queryPaged: vi.fn(),
 					create: vi.fn(),
 					update: vi.fn(),
+					block: vi.fn(),
+					unblock: vi.fn(),
 				},
 			},
 			User: {
 				PersonalUser: {
 					queryByEmail: vi.fn().mockResolvedValue(createMockUser()),
+				},
+				AdminUser: {
+					queryByEmail: vi.fn().mockRejectedValue(new Error('Not found')),
 				},
 			},
 			verifiedUser: {
@@ -137,8 +143,44 @@ function makeMockGraphContext(
 				},
 			},
 		},
-		...overrides,
-	} as unknown as GraphContext;
+	};
+
+	// Deep merge applicationServices from overrides
+	if (overrides.applicationServices) {
+		// biome-ignore lint/suspicious/noExplicitAny: Test utility requires flexible typing
+		const appServicesOverride = overrides.applicationServices as any;
+
+		if (appServicesOverride.Listing?.ItemListing) {
+			Object.assign(
+				baseContext.applicationServices.Listing.ItemListing,
+				appServicesOverride.Listing.ItemListing,
+			);
+		}
+
+		if (appServicesOverride.User?.PersonalUser) {
+			Object.assign(
+				baseContext.applicationServices.User.PersonalUser,
+				appServicesOverride.User.PersonalUser,
+			);
+		}
+
+		if (appServicesOverride.User?.AdminUser) {
+			Object.assign(
+				baseContext.applicationServices.User.AdminUser,
+				appServicesOverride.User.AdminUser,
+			);
+		}
+
+		// Handle verifiedUser - check if property exists, even if null
+		if ('verifiedUser' in appServicesOverride) {
+			baseContext.applicationServices.verifiedUser =
+				appServicesOverride.verifiedUser;
+		}
+	}
+
+	// Merge other properties (not applicationServices)
+	const { applicationServices: _appServices, ...otherOverrides } = overrides;
+	return { ...baseContext, ...otherOverrides } as unknown as GraphContext;
 }
 
 test.for(feature, ({ Scenario }) => {
@@ -930,18 +972,37 @@ test.for(feature, ({ Scenario }) => {
 		'Unblocking a listing successfully',
 		({ Given, When, Then, And }) => {
 			Given('a valid listing ID to unblock', () => {
+				result = undefined;
 				context = makeMockGraphContext({
 					applicationServices: {
-						...makeMockGraphContext().applicationServices,
 						Listing: {
 							ItemListing: {
-								...makeMockGraphContext().applicationServices.Listing
-									.ItemListing,
-								unblock: vi.fn().mockResolvedValue(undefined),
+								queryAll: vi.fn(),
+								queryById: vi.fn(),
+								queryBySharer: vi.fn(),
+								queryPaged: vi.fn(),
+								create: vi.fn(),
+								update: vi.fn(),
+								block: vi.fn(),
+								unblock: vi.fn().mockResolvedValue(createMockListing({ state: 'Published' })),
 							},
 						},
+						User: {
+							PersonalUser: {
+								queryByEmail: vi.fn().mockResolvedValue(createMockUser()),
+							},
+							AdminUser: {
+								queryByEmail: vi.fn().mockResolvedValue({
+									userType: 'admin-user',
+									role: { roleName: 'Admin' },
+								} as never),
+							},
+						},
+						verifiedUser: {
+							verifiedJwt: { email: 'admin@example.com' },
+						},
 					},
-				});
+				} as unknown as GraphContext);
 			});
 			When('the unblockListing mutation is executed', async () => {
 				const resolver = itemListingResolvers.Mutation
@@ -957,25 +1018,49 @@ test.for(feature, ({ Scenario }) => {
 					id: 'listing-1',
 				});
 			});
-			And('it should return true', () => {
-				expect(result).toBe(true);
+			And('it should return the BlockListingResult with success', () => {
+				expect(result).toEqual({
+					id: 'listing-1',
+					state: 'Published',
+					success: true,
+				});
 			});
 		},
 	);
 
 	Scenario('Blocking a listing successfully', ({ Given, When, Then, And }) => {
 		Given('a valid listing ID to block', () => {
+			result = undefined;
 			context = makeMockGraphContext({
 				applicationServices: {
-					...makeMockGraphContext().applicationServices,
 					Listing: {
 						ItemListing: {
-							...makeMockGraphContext().applicationServices.Listing.ItemListing,
-							block: vi.fn().mockResolvedValue(undefined),
+							queryAll: vi.fn(),
+							queryById: vi.fn(),
+							queryBySharer: vi.fn(),
+							queryPaged: vi.fn(),
+							create: vi.fn(),
+							update: vi.fn(),
+							block: vi.fn().mockResolvedValue(createMockListing({ state: 'Blocked' })),
+							unblock: vi.fn(),
 						},
 					},
+					User: {
+						PersonalUser: {
+							queryByEmail: vi.fn().mockResolvedValue(createMockUser()),
+						},
+						AdminUser: {
+							queryByEmail: vi.fn().mockResolvedValue({
+								userType: 'admin-user',
+								role: { roleName: 'Admin' },
+							} as never),
+						},
+					},
+					verifiedUser: {
+						verifiedJwt: { email: 'admin@example.com' },
+					},
 				},
-			});
+			} as unknown as GraphContext);
 		});
 		When('the blockListing mutation is executed', async () => {
 			const resolver = itemListingResolvers.Mutation
@@ -991,8 +1076,12 @@ test.for(feature, ({ Scenario }) => {
 				id: 'listing-1',
 			});
 		});
-		And('it should return true', () => {
-			expect(result).toBe(true);
+		And('it should return the BlockListingResult with success', () => {
+			expect(result).toEqual({
+				id: 'listing-1',
+				state: 'Blocked',
+				success: true,
+			});
 		});
 	});
 
