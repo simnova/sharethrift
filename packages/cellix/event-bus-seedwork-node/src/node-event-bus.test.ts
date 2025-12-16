@@ -50,11 +50,11 @@ class EventA extends DomainSeedwork.CustomDomainEventImpl<{ a: string }> {}
 class EventB extends DomainSeedwork.CustomDomainEventImpl<{ b: string }> {}
 
 test.for(feature, ({ Scenario, Background, BeforeEachScenario }) => {
-  let handler: ReturnType<typeof vi.fn>;
-  let handler1: ReturnType<typeof vi.fn>;
-  let handler2: ReturnType<typeof vi.fn>;
-  let handlerA: ReturnType<typeof vi.fn>;
-  let handlerB: ReturnType<typeof vi.fn>;
+  let handler: (payload: { test: string }) => Promise<void>;
+  let handler1: (payload: { test: string }) => Promise<void>;
+  let handler2: (payload: { test: string }) => Promise<void>;
+  let handlerA: (payload: { a: string }) => Promise<void>;
+  let handlerB: (payload: { b: string }) => Promise<void>;
 
   BeforeEachScenario(() => {
     handler = vi.fn().mockResolvedValue(undefined);
@@ -102,7 +102,7 @@ test.for(feature, ({ Scenario, Background, BeforeEachScenario }) => {
       // handler and TestEvent are already defined
     });
     When('the handler is registered', () => {
-      NodeEventBusInstance.register(TestEvent, handler as (payload: { test: string }) => Promise<void>);
+      NodeEventBusInstance.register(TestEvent, handler);
     });
     And('the event is dispatched', async () => {
       await NodeEventBusInstance.dispatch(TestEvent, { test: 'data' });
@@ -117,8 +117,8 @@ test.for(feature, ({ Scenario, Background, BeforeEachScenario }) => {
       // handler and TestEvent are already defined
     });
     When('the same handler is registered multiple times for the same event', () => {
-      NodeEventBusInstance.register(TestEvent, handler as (payload: { test: string }) => Promise<void>);
-      NodeEventBusInstance.register(TestEvent, handler as (payload: { test: string }) => Promise<void>);
+      NodeEventBusInstance.register(TestEvent, handler);
+      NodeEventBusInstance.register(TestEvent, handler);
     });
     And('the event is dispatched', async () => {
       await NodeEventBusInstance.dispatch(TestEvent, { test: 'data' });
@@ -164,7 +164,7 @@ test.for(feature, ({ Scenario, Background, BeforeEachScenario }) => {
     Given('a registered handler for an event that throws', async () => {
       handler = vi.fn().mockRejectedValue(new Error('handler error'));
       errorEvent = TestEvent;
-      NodeEventBusInstance.register(errorEvent, handler as (payload: { test: string }) => Promise<void>);
+      NodeEventBusInstance.register(errorEvent, handler);
 
       // Patch OpenTelemetry span
       otel = await import('@opentelemetry/api');
@@ -322,7 +322,7 @@ test.for(feature, ({ Scenario, Background, BeforeEachScenario }) => {
   Scenario('Dispatch does not wait for handler completion', ({ Given, When, And, Then }) => {
     let handlerStarted = false;
     let handlerCompleted = false;
-    let asyncHandler: ReturnType<typeof vi.fn>;
+    let asyncHandler: (payload: { test: string }) => Promise<void>;
     Given('a handler for an event that is asynchronous', () => {
       asyncHandler = vi.fn(async () => {
         handlerStarted = true;
@@ -331,7 +331,7 @@ test.for(feature, ({ Scenario, Background, BeforeEachScenario }) => {
       });
     });
     When('the handler is registered', () => {
-      NodeEventBusInstance.register(TestEvent, asyncHandler as (payload: { test: string }) => Promise<void>);
+      NodeEventBusInstance.register(TestEvent, asyncHandler);
     });
     And('the event is dispatched', async () => {
       const dispatchPromise = NodeEventBusInstance.dispatch(TestEvent, { test: 'data' });
@@ -358,7 +358,7 @@ test.for(feature, ({ Scenario, Background, BeforeEachScenario }) => {
 
   Scenario('Removing all listeners', ({ Given, When, And, Then }) => {
     Given('a registered handler for an event', () => {
-      NodeEventBusInstance.register(TestEvent, handler as (payload: { test: string }) => Promise<void>);
+      NodeEventBusInstance.register(TestEvent, handler);
     });
     When('removeAllListeners is called', () => {
       NodeEventBusInstance.removeAllListeners();

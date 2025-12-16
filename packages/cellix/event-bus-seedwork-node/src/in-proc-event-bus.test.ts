@@ -18,11 +18,11 @@ class TestEventA extends DomainSeedwork.CustomDomainEventImpl<{ testA: string }>
 class TestEventB extends DomainSeedwork.CustomDomainEventImpl<{ testB: string }> {}
 
 test.for(feature, ({ Scenario, BeforeEachScenario }) => {
-  let handler: ReturnType<typeof vi.fn>;
-  let handler1: ReturnType<typeof vi.fn>;
-  let handler2: ReturnType<typeof vi.fn>;
-  let handlerA: ReturnType<typeof vi.fn>;
-  let handlerB: ReturnType<typeof vi.fn>;
+  let handler: (payload: { test: string }) => Promise<void>;
+  let handler1: (payload: { test: string }) => Promise<void>;
+  let handler2: (payload: { test: string }) => Promise<void>;
+  let handlerA: (payload: { testA: string }) => Promise<void>;
+  let handlerB: (payload: { testB: string }) => Promise<void>;
   let error: unknown;
 
   // Reset the singleton's subscribers for isolation before each scenario
@@ -72,7 +72,7 @@ test.for(feature, ({ Scenario, BeforeEachScenario }) => {
       // handler and TestEvent are already defined
     });
     When('the handler is registered', () => {
-      InProcEventBusInstance.register(TestEvent, handler as (payload: { test: string }) => Promise<void>);
+      InProcEventBusInstance.register(TestEvent, handler);
     });
     And('the event is dispatched', async () => {
       await InProcEventBusInstance.dispatch(TestEvent, { test: 'data' });
