@@ -17,7 +17,7 @@ export interface EditListingFormData {
 	images: string[];
 }
 
-export interface EditListingProps {
+interface EditListingProps {
 	listing: EditListingItemListingFieldsFragment;
 	categories: string[];
 	isLoading: boolean;

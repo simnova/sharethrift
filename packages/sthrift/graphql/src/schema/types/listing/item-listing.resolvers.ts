@@ -130,10 +130,7 @@ const itemListingResolvers: Resolvers = {
 				throw new Error('Listing not found');
 			}
 
-			const currentUser =
-				await context.applicationServices.User.PersonalUser.queryByEmail({
-					email: userEmail,
-				});
+			const currentUser = await getUserByEmail(userEmail, context);
 			if (!currentUser) {
 				throw new Error('User not found');
 			}
@@ -212,10 +209,7 @@ const itemListingResolvers: Resolvers = {
 				throw new Error('Listing not found');
 			}
 
-			const currentUser =
-				await context.applicationServices.User.PersonalUser.queryByEmail({
-					email: userEmail,
-				});
+			const currentUser = await getUserByEmail(userEmail, context);
 			if (!currentUser) {
 				throw new Error('User not found');
 			}
@@ -261,10 +255,7 @@ const itemListingResolvers: Resolvers = {
 				throw new Error('Listing not found');
 			}
 
-			const currentUser =
-				await context.applicationServices.User.PersonalUser.queryByEmail({
-					email: userEmail,
-				});
+			const currentUser = await getUserByEmail(userEmail, context);
 			if (!currentUser) {
 				throw new Error('User not found');
 			}
@@ -306,10 +297,7 @@ const itemListingResolvers: Resolvers = {
 				throw new Error('Listing not found');
 			}
 
-			const currentUser =
-				await context.applicationServices.User.PersonalUser.queryByEmail({
-					email: userEmail,
-				});
+			const currentUser = await getUserByEmail(userEmail, context);
 			if (!currentUser) {
 				throw new Error('User not found');
 			}

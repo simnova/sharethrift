@@ -32,8 +32,6 @@ export const ViewListingContainer: React.FC<ViewListingContainerProps> = (
 ) => {
 	const { listingId } = useParams();
 	
-	console.log('ViewListingContainer - listingId from params:', listingId);
-	
 	const {
 		data: listingData,
 		loading: listingLoading,
@@ -43,8 +41,6 @@ export const ViewListingContainer: React.FC<ViewListingContainerProps> = (
 		skip: !listingId,
 		fetchPolicy: 'cache-first',
 	});
-	
-	console.log('ViewListingContainer - query result:', { listingData, listingLoading, listingError });
 
 	const {
 		data: currentUserData,

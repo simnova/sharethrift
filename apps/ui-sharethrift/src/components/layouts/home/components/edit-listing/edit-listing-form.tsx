@@ -10,7 +10,7 @@ import type dayjs from 'dayjs';
 const { TextArea } = Input;
 const { RangePicker } = DatePicker;
 
-export interface EditListingFormProps {
+interface EditListingFormProps {
 	categories: string[];
 	isLoading: boolean;
 	maxCharacters: number;

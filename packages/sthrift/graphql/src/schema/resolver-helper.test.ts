@@ -2,8 +2,14 @@
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { describeFeature, loadFeature } from '@amiceli/vitest-cucumber';
-import type { GraphQLResolveInfo } from 'graphql';
-import { expect, vi } from 'vitest';
+import {
+	parse,
+	type FieldNode,
+	type FragmentDefinitionNode,
+	type GraphQLResolveInfo,
+	type OperationDefinitionNode,
+} from 'graphql';
+import { describe, it, expect, beforeEach, vi } from 'vitest';
 import type { GraphContext } from '../init/context.ts';
 import {
 	currentViewerIsAdmin,
@@ -469,19 +475,6 @@ test.for(feature, ({ Background, Scenario, BeforeEachScenario }) => {
 		},
 	);
 });
-import { describe, it, expect, beforeEach, vi } from 'vitest';
-import {
-	parse,
-	type FieldNode,
-	type FragmentDefinitionNode,
-	type OperationDefinitionNode,
-} from 'graphql';
-import type { GraphContext } from '../init/context.ts';
-import {
-	PopulateItemListingFromField,
-	PopulateUserFromField,
-	getRequestedFieldPaths,
-} from './resolver-helper.ts';
 
 const validObjectId = '507f1f77bcf86cd799439011';
 

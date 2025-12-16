@@ -138,12 +138,6 @@ export const PopulateUserFromField = (fieldName: string) => {
 					await context.applicationServices.User.AdminUser.queryById({
 						id: userId,
 					});
-				console.log('[PopulateUserFromField] AdminUser query result:', { 
-					userId, 
-					adminUser,
-					id: adminUser?.id,
-					userType: adminUser?.userType
-				});
 				if (adminUser) {
 					// Access properties from the domain entity
 					const userData = {
@@ -155,11 +149,9 @@ export const PopulateUserFromField = (fieldName: string) => {
 						createdAt: adminUser.createdAt,
 						updatedAt: adminUser.updatedAt,
 					};
-					console.log('[PopulateUserFromField] Returning userData:', userData);
 					return userData;
 				}
-			} catch (error) {
-				console.log('[PopulateUserFromField] AdminUser query error:', error);
+			} catch (_error) {
 				// AdminUser not found, try PersonalUser
 			}
 
@@ -169,12 +161,6 @@ export const PopulateUserFromField = (fieldName: string) => {
 					await context.applicationServices.User.PersonalUser.queryById({
 						id: userId,
 					});
-				console.log('[PopulateUserFromField] PersonalUser query result:', { 
-					userId, 
-					personalUser,
-					id: personalUser?.id,
-					userType: personalUser?.userType 
-				});
 				if (personalUser) {
 					// Access properties from the domain entity
 					const userData = {
@@ -187,29 +173,38 @@ export const PopulateUserFromField = (fieldName: string) => {
 						createdAt: personalUser.createdAt,
 						updatedAt: personalUser.updatedAt,
 					};
-					console.log('[PopulateUserFromField] Returning userData:', userData);
 					return userData;
 				}
-			} catch (error) {
-				console.log('[PopulateUserFromField] PersonalUser query error:', error);
+			} catch (_error) {
 				// PersonalUser not found
 			}
 		}
 
 		// If we couldn't resolve a user, return null
-		console.log('[PopulateUserFromField] Returning null for userId:', userId, 'existingValue:', existingValue);
 		return null;
 	};
 };
 
 export const PopulateItemListingFromField = (fieldName: string) => {
 	return async (parent: any, _: unknown, context: GraphContext) => {
-		if (parent[fieldName] && isValidObjectId(parent[fieldName].id)) {
+		const existingValue = parent[fieldName];
+		
+		// If the field is a string (ObjectId), query by that ID
+		if (typeof existingValue === 'string' && isValidObjectId(existingValue)) {
 			return await context.applicationServices.Listing.ItemListing.queryById({
-				id: parent[fieldName].id,
+				id: existingValue,
 			});
 		}
-		return parent[fieldName];
+		
+		// If the field is an object with an id property, query by that ID
+		if (existingValue && typeof existingValue === 'object' && isValidObjectId(existingValue.id)) {
+			return await context.applicationServices.Listing.ItemListing.queryById({
+				id: existingValue.id,
+			});
+		}
+		
+		// Otherwise return the existing value (might already be populated)
+		return existingValue;
 	};
 };
 
