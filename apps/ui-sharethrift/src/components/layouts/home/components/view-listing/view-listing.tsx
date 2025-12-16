@@ -8,7 +8,7 @@ import type {
 	ViewListingActiveReservationRequestForListingQuery,
 } from '../../../../../generated.tsx';
 
-export interface ViewListingProps {
+interface ViewListingProps {
 	listing: ItemListing;
 	userIsSharer: boolean;
 	isAuthenticated: boolean;

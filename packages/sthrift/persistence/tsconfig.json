@@ -5,7 +5,7 @@
 		"rootDir": ".",
 	},
 	"include": ["src/**/*.ts"],
-	"exclude": ["node_modules", "dist"],
+	"exclude": ["node_modules", "dist", "src/**/*.test.ts"],
 	"references": [
 		{ "path": "../../cellix/domain-seedwork" },
 		{ "path": "../../cellix/event-bus-seedwork-node" },
