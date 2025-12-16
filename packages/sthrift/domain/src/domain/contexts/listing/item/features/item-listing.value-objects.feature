@@ -24,8 +24,6 @@ Feature: Listing value objects
     When I check isActive
     Then the result should be false
 
- 
-
   Scenario: Creating a ListingState with too long a string
     When I try to create a ListingState with a string longer than 50 characters
     Then an error should be thrown indicating the value is too long

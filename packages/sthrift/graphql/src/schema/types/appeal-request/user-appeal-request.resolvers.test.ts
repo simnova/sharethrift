@@ -23,19 +23,21 @@ test.for(feature, ({ Background, Scenario, BeforeEachScenario }) => {
 		state: string;
 		reason: string;
 	};
-	let mockUser: { id: string; email: string };
-	let mockBlocker: { id: string; email: string };
+	let mockUser: { id: string; email: string; userType?: string };
+	let mockBlocker: { id: string; email: string; userType?: string };
 	let result: unknown;
 
 	BeforeEachScenario(() => {
 		mockUser = {
 			id: '507f1f77bcf86cd799439015',
 			email: 'user@test.com',
+			userType: 'personal-users',
 		};
 
 		mockBlocker = {
 			id: '507f1f77bcf86cd799439016',
 			email: 'admin@test.com',
+			userType: 'admin-user',
 		};
 
 		mockUserAppealRequest = {

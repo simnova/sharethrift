@@ -56,6 +56,7 @@ function createMockListing(
 		state: 'Published',
 		sharer: {
 			id: 'user-1',
+			userType: 'personal-user',
 		} as PersonalUserEntity,
 		images: ['image1.jpg'],
 		reports: 0,
@@ -950,6 +951,7 @@ test.for(feature, ({ Scenario }) => {
 					Listing: {
 						ItemListing: {
 							...makeMockGraphContext().applicationServices.Listing.ItemListing,
+							queryById: vi.fn().mockResolvedValue(createMockListing()),
 							cancel: vi.fn().mockResolvedValue(createMockListing()),
 						},
 					},
@@ -983,6 +985,7 @@ test.for(feature, ({ Scenario }) => {
 					Listing: {
 						ItemListing: {
 							...makeMockGraphContext().applicationServices.Listing.ItemListing,
+							queryById: vi.fn().mockResolvedValue(createMockListing()),
 							deleteListings: vi.fn().mockResolvedValue(undefined),
 						},
 					},

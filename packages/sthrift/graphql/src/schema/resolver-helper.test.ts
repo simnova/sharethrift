@@ -636,7 +636,7 @@ describe('PopulateItemListingFromField', () => {
 			id: validObjectId,
 			title: 'Listing',
 		});
-		const parent = { listing: validObjectId };
+		const parent = { listing: { id: validObjectId } };
 
 		const resolver = PopulateItemListingFromField('listing');
 		const result = await resolver(parent, {}, context);

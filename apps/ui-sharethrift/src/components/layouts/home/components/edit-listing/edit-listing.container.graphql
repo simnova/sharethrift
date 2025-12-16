@@ -12,10 +12,12 @@ fragment EditListingItemListingFields on ItemListing {
 	updatedAt
 	sharer {
 		... on PersonalUser {
-			id
+			id,
+            userType
 		}
 		... on AdminUser {
-			id
+			id,
+            userType
 		}
 	}
 }

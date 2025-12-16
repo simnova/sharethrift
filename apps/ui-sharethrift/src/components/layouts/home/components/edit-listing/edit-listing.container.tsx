@@ -51,7 +51,7 @@ const toUtcMidnight = (value: string): Date => {
 	}
 	const fallback = new Date(value);
 	if (Number.isNaN(fallback.getTime())) {
-		throw new Error('Invalid date string provided for reservation period');
+		throw new TypeError('Invalid date string provided for reservation period');
 	}
 	return fallback;
 };
@@ -189,7 +189,7 @@ export const EditListingContainer: React.FC<EditListingContainerProps> = (
 
 	const handleSubmit = async (formData: EditListingFormData) => {
 		if (!isUserAuthenticated) {
-			sessionStorage.setItem('redirectTo', window.location.pathname);
+			sessionStorage.setItem('redirectTo', globalThis.location.pathname);
 			navigate('/auth-redirect');
 			return;
 		}
