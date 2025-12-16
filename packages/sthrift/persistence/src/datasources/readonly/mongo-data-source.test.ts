@@ -15,11 +15,14 @@ interface ThenableMock<T> {
 
 function createThenableMock<T>(value: T): ThenableMock<T> {
 	const mock: ThenableMock<T> = {
-		catch: (reject: (error: unknown) => unknown) => Promise.resolve(value).catch(reject),
-		finally: (onFinally: () => void) => Promise.resolve(value).finally(onFinally),
+		catch: (reject: (error: unknown) => unknown) =>
+			Promise.resolve(value).catch(reject),
+		finally: (onFinally: () => void) =>
+			Promise.resolve(value).finally(onFinally),
 	};
 	Object.defineProperty(mock, 'then', {
-		value: (resolve: (value: T) => unknown) => Promise.resolve(value).then(resolve),
+		value: (resolve: (value: T) => unknown) =>
+			Promise.resolve(value).then(resolve),
 		enumerable: false,
 		configurable: true,
 	});
@@ -48,7 +51,10 @@ describe('MongoDataSourceImpl - Additional Coverage', () => {
 			} as unknown as Model<TestDoc>;
 			const dataSource = new MongoDataSourceImpl(mockModel);
 
-			await dataSource.find({}, { fields: ['name'], projectionMode: 'exclude' });
+			await dataSource.find(
+				{},
+				{ fields: ['name'], projectionMode: 'exclude' },
+			);
 			expect(mockModel.find).toHaveBeenCalled();
 		});
 	});
@@ -101,8 +107,8 @@ describe('MongoDataSourceImpl - Additional Coverage', () => {
 
 			const result = await dataSource.find({});
 			expect(result[0].id).toBeDefined();
-		expect(result[0].nested).toBeDefined();
-		expect((result[0].nested as unknown as { id: string }).id).toBeDefined();
+			expect(result[0].nested).toBeDefined();
+			expect(result[0].nested?.id).toBeDefined();
 		});
 
 		it('should not append id to nested objects without _id', async () => {
@@ -161,7 +167,11 @@ describe('MongoDataSourceImpl - Additional Coverage', () => {
 			const dataSource = new MongoDataSourceImpl(mockModel);
 
 			await dataSource.find({}, { sort: { name: 1 } });
-			expect(mockModel.find).toHaveBeenCalledWith({}, {}, { sort: { name: 1 } });
+			expect(mockModel.find).toHaveBeenCalledWith(
+				{},
+				{},
+				{ sort: { name: 1 } },
+			);
 		});
 	});
 });

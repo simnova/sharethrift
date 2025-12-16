@@ -903,8 +903,7 @@ test.for(feature, ({ Scenario, Background, BeforeEachScenario }) => {
 	Scenario(
 		'Getting sharer when userType is admin-user',
 		({ Given, When, Then }) => {
-			// biome-ignore lint/suspicious/noExplicitAny: Test variable
-			let sharerProps: any;
+			let sharerProps: Partial<PersonalUserProps>;
 			Given('an ItemListing aggregate with an admin-user sharer', () => {
 				passport = makePassport(true, true, true, true);
 				const props = makeBaseProps();

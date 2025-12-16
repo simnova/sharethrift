@@ -32,8 +32,7 @@ test.for(feature, ({ Scenario, BeforeEachScenario }) => {
 					},
 				},
 			},
-		// biome-ignore lint/suspicious/noExplicitAny: Test mock type assertion
-		} as any;
+		} as Partial<DataSources>;
 
 		command = { id: 'user-123' };
 		result = undefined;

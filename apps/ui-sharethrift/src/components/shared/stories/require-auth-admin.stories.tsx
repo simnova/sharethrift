@@ -1,6 +1,9 @@
 import type { Meta, StoryObj } from '@storybook/react';
 import { expect } from 'storybook/test';
-import { withMockApolloClient, MockAuthWrapper } from '../../../test-utils/storybook-decorators.tsx';
+import {
+	withMockApolloClient,
+	MockAuthWrapper,
+} from '../../../test-utils/storybook-decorators.tsx';
 import { MemoryRouter } from 'react-router-dom';
 import { AuthContext } from 'react-oidc-context';
 import { RequireAuthAdmin } from '../require-auth-admin.tsx';
@@ -111,7 +114,8 @@ export const AdminCheckLoading: Story = {
 	},
 	play: async ({ canvasElement }) => {
 		// During admin check loading, shows "Checking admin permissions..." message
-		const loadingText = canvasElement.textContent?.includes('admin permissions');
+		const loadingText =
+			canvasElement.textContent?.includes('admin permissions');
 		await expect(loadingText).toBeTruthy();
 	},
 };
@@ -198,7 +202,9 @@ export const UnauthenticatedLoading: Story = {
 	],
 	play: async ({ canvasElement }) => {
 		// Should show loading state
-		const checkingAuth = canvasElement.textContent?.includes('Checking authentication');
+		const checkingAuth = canvasElement.textContent?.includes(
+			'Checking authentication',
+		);
 		await expect(checkingAuth).toBeTruthy();
 	},
 };
@@ -280,14 +286,14 @@ export const AccessTokenExpiringTriggersSilent: Story = {
 			const mockAuth = createMockAuth({
 				isAuthenticated: true,
 				isLoading: false,
-				user: { 
+				user: {
 					profile: { sub: 'admin-1', iss: '', aud: '', exp: 0, iat: 0 },
 					access_token: `mock-token-${Date.now()}`,
 					token_type: 'Bearer',
 					session_state: `mock-session-${Date.now()}`,
 					state: `mock-state-${Date.now()}`,
 					expired: false,
-				expires_in: 3600,
+					expires_in: 3600,
 					scopes: [],
 					toStorageString: () => '',
 				},
@@ -307,7 +313,7 @@ export const AccessTokenExpiringTriggersSilent: Story = {
 		// Token expiring event triggers auth.signinSilent() (lines 49-51)
 		await expect(canvasElement).toBeTruthy();
 		// Wait for token expiring callback to execute
-		await new Promise(resolve => setTimeout(resolve, 200));
+		await new Promise((resolve) => setTimeout(resolve, 200));
 	},
 };
 
@@ -324,7 +330,9 @@ export const AuthenticationErrorNoForceLogin: Story = {
 				isAuthenticated: false,
 				isLoading: false,
 				user: undefined,
-				error: Object.assign(new Error('Authentication failed'), { source: 'unknown' as const }),
+				error: Object.assign(new Error('Authentication failed'), {
+					source: 'unknown' as const,
+				}),
 			});
 			return (
 				<AuthContext.Provider value={mockAuth}>
