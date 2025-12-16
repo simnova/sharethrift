@@ -7,14 +7,6 @@ query HomeAccountViewUserProfileCurrentUser {
 		... on AdminUser {
 			id
 			userIsAdmin
-			role {
-				permissions {
-					userPermissions {
-						canViewAllUsers
-						canBlockUsers
-					}
-				}
-			}
 		}
 	}
 }
