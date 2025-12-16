@@ -88,7 +88,7 @@ test.for(feature, ({ Scenario, BeforeEachScenario }) => {
 					expect(ApolloServer).toHaveBeenCalledWith({
 						schema: {},
 						introspection: true,
-						// validationRules temporarily disabled - see handler.ts TODO
+						validationRules: expect.any(Array),
 						allowBatchedHttpRequests: true,
 					});
 				},
@@ -252,10 +252,9 @@ test.for(feature, ({ Scenario, BeforeEachScenario }) => {
 
 			Then('it should configure depth limit validation rule', () => {
 				const apolloConfig = getApolloConfig();
-				// TODO: Re-enable after fixing graphql-depth-limit module resolution
-				// expect(apolloConfig.validationRules).toBeDefined();
-				// expect(apolloConfig.validationRules.length).toBeGreaterThan(0);
-				expect(apolloConfig.validationRules).toBeUndefined();
+				expect(apolloConfig.validationRules).toBeDefined();
+				expect(apolloConfig.validationRules).toBeInstanceOf(Array);
+				expect(apolloConfig.validationRules.length).toBeGreaterThan(0);
 			});
 
 			And('it should enable batch requests', () => {
