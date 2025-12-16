@@ -76,7 +76,7 @@ export const ViewUserProfileContainer: React.FC = () => {
 
     const isAdminViewer =
         currentUser?.__typename === "AdminUser" &&
-        currentUser?.role?.permissions?.userPermissions?.canViewAllUsers;
+        currentUser?.userIsAdmin;
 
     useEffect(() => {
         if (viewedUser?.isBlocked && !isAdminViewer) {
@@ -105,7 +105,7 @@ export const ViewUserProfileContainer: React.FC = () => {
 
     const canBlockUsers =
         currentUser?.__typename === "AdminUser" &&
-        currentUser?.role?.permissions?.userPermissions?.canBlockUsers;
+        currentUser?.userIsAdmin;
 
     const isOwnProfile = currentUser?.id === viewedUser?.id;
 
