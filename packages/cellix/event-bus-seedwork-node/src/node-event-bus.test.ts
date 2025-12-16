@@ -268,12 +268,18 @@ test.for(feature, ({ Scenario, Background, BeforeEachScenario }) => {
     let callOrder: string[];
     Given('multiple handlers for the same event class', () => {
       callOrder = [];
-      handler1 = vi.fn(() => callOrder.push('handler1'));
-      handler2 = vi.fn(() => callOrder.push('handler2'));
+      handler1 = vi.fn(() => {
+        callOrder.push('handler1');
+        return Promise.resolve();
+      });
+      handler2 = vi.fn(() => {
+        callOrder.push('handler2');
+        return Promise.resolve();
+      });
     });
     When('all handlers are registered', () => {
-      NodeEventBusInstance.register(TestEvent, handler1 as (payload: { test: string }) => Promise<void>);
-      NodeEventBusInstance.register(TestEvent, handler2 as (payload: { test: string }) => Promise<void>);
+      NodeEventBusInstance.register(TestEvent, handler1);
+      NodeEventBusInstance.register(TestEvent, handler2);
     });
     And('the event is dispatched', async () => {
       await NodeEventBusInstance.dispatch(TestEvent, { test: 'data' });
@@ -289,8 +295,8 @@ test.for(feature, ({ Scenario, Background, BeforeEachScenario }) => {
       handler2 = vi.fn().mockResolvedValue(undefined);
     });
     When('all handlers are registered and one throws', () => {
-      NodeEventBusInstance.register(TestEvent, handler1 as (payload: { test: string }) => Promise<void>);
-      NodeEventBusInstance.register(TestEvent, handler2 as (payload: { test: string }) => Promise<void>);
+      NodeEventBusInstance.register(TestEvent, handler1);
+      NodeEventBusInstance.register(TestEvent, handler2);
     });
     And('the event is dispatched', async () => {
       await expect(NodeEventBusInstance.dispatch(TestEvent, { test: 'data' })).resolves.not.toThrow();
@@ -307,8 +313,8 @@ test.for(feature, ({ Scenario, Background, BeforeEachScenario }) => {
       handler2 = vi.fn().mockRejectedValue(new Error('handler2 error'));
     });
     When('all handlers are registered and all throw', () => {
-      NodeEventBusInstance.register(TestEvent, handler1 as (payload: { test: string }) => Promise<void>);
-      NodeEventBusInstance.register(TestEvent, handler2 as (payload: { test: string }) => Promise<void>);
+      NodeEventBusInstance.register(TestEvent, handler1);
+      NodeEventBusInstance.register(TestEvent, handler2);
     });
     And('the event is dispatched', async () => {
       await expect(NodeEventBusInstance.dispatch(TestEvent, { test: 'data' })).resolves.not.toThrow();
