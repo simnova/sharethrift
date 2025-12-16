@@ -15,14 +15,14 @@ const feature = await loadFeature(
 class TestEvent extends DomainEventBase {}
 
 test.for(feature, ({ Scenario }) => {
-  let handlerFn: ReturnType<typeof vi.fn>;
+  let handlerFn: (event: TestEvent) => void;
   let handler: HandleEventImpl<TestEvent>;
   let event: TestEvent;
 
   Scenario('Handling a domain event with a registered handler', ({ Given, When, Then }) => {
     Given('a domain event handler is registered with a function', () => {
       handlerFn = vi.fn();
-      handler = new HandleEventImpl<TestEvent>(handlerFn as (event: TestEvent) => void);
+      handler = new HandleEventImpl<TestEvent>(handlerFn);
       event = new TestEvent('agg-1');
     });
     When('the handler is called with a domain event', () => {
