@@ -79,11 +79,11 @@ serviceRegistry.getInfrastructureService<ServiceMongoose>(
 			? serviceRegistry.getInfrastructureService<PaymentService>(PaymentServiceMock)
 			: serviceRegistry.getInfrastructureService<PaymentService>(PaymentServiceCybersource);
 
+		const searchService = isDevelopment
+			? serviceRegistry.getInfrastructureService<SearchService>(InMemoryCognitiveSearch)
+			: serviceRegistry.getInfrastructureService<SearchService>(InMemoryCognitiveSearch); // TODO: Replace with AzureCognitiveSearchService when available
+
 		const { domainDataSource } = dataSourcesFactory.withSystemPassport();
-		const searchService =
-			serviceRegistry.getInfrastructureService<SearchService>(
-				InMemoryCognitiveSearch,
-			);
 		RegisterEventHandlers(domainDataSource, searchService);
 
 		return {
