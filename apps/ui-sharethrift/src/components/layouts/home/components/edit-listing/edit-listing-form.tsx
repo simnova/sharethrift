@@ -191,5 +191,3 @@ export const EditListingForm: React.FC<EditListingFormProps> = ({
 		</div>
 	);
 };
-
-export default EditListingForm;

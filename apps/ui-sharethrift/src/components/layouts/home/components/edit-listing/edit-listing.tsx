@@ -310,5 +310,3 @@ export const EditListing: React.FC<EditListingProps> = ({
 		</>
 	);
 };
-
-export default EditListing;
