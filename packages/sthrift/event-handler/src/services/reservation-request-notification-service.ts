@@ -1,13 +1,12 @@
 import type { TransactionalEmailService } from '@cellix/transactional-email-service';
+import type { DomainDataSource } from '@sthrift/domain';
 
 export class ReservationRequestNotificationService {
-	// biome-ignore lint/suspicious/noExplicitAny: Generic domain data source type
-	private readonly domainDataSource: any;
+	private readonly domainDataSource: DomainDataSource;
 	private readonly emailService: TransactionalEmailService;
 
 	constructor(
-		// biome-ignore lint/suspicious/noExplicitAny: Generic domain data source type
-		domainDataSource: any,
+		domainDataSource: DomainDataSource,
 		emailService: TransactionalEmailService,
 	) {
 		this.domainDataSource = domainDataSource;

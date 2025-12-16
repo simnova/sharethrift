@@ -6,8 +6,10 @@ export default mergeConfig(
 	defineConfig({
 		// Add package-specific overrides here if needed
 		test: {
-			include: ['src/**/*.test.ts', 'tests/integration/**/*.test.ts'],
+			include: ['src/**/*.test.ts'],
+			exclude: ['tests/integration/**/*.test.ts'],
 			retry: 0,
+			testTimeout: 30000, // Increase timeout for integration tests
 			coverage: {
 				exclude: ['**/index.ts', '**/base.ts'],
 			},

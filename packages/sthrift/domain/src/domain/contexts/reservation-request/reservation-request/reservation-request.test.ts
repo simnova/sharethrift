@@ -1583,36 +1583,6 @@ describe('Async property loading', () => {
 			const loadedSharer = await aggregate.loadSharer();
 			expect(loadedSharer).toBe(testListing.sharer);
 		});
-
-		it('getListingId returns id from listing', async () => {
-			const aggregate = ReservationRequest.getNewInstance(
-				testBaseProps,
-				ReservationRequestStates.REQUESTED,
-				testListing,
-				testReserver,
-				testBaseProps.reservationPeriodStart,
-				testBaseProps.reservationPeriodEnd,
-				testPassport,
-			);
-
-			const listingId = await aggregate.getListingId();
-			expect(listingId).toBe(testListing.id);
-		});
-
-		it('getListingSharer returns sharer from listing', async () => {
-			const aggregate = ReservationRequest.getNewInstance(
-				testBaseProps,
-				ReservationRequestStates.REQUESTED,
-				testListing,
-				testReserver,
-				testBaseProps.reservationPeriodStart,
-				testBaseProps.reservationPeriodEnd,
-				testPassport,
-			);
-
-			const sharer = await aggregate.getListingSharer();
-			expect(sharer).toBe(testListing.sharer);
-		});
 	});
 
 	describe('Immutable date validation after creation', () => {

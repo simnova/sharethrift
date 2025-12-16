@@ -77,8 +77,7 @@ Cellix.initializeInfrastructureServices<ApiContextSpec, ApplicationServices>(
       ? serviceRegistry.getInfrastructureService<PaymentService>(PaymentServiceMock)
       : serviceRegistry.getInfrastructureService<PaymentService>(PaymentServiceCybersource);
 
-		// biome-ignore lint/complexity/useLiteralKeys: TypeScript requires bracket notation for process.env
-		const emailService = isDevelopment || !process.env['SENDGRID_API_KEY']
+		const emailService = isDevelopment
 			? serviceRegistry.getInfrastructureService<TransactionalEmailService>(ServiceTransactionalEmailMock)
 			: serviceRegistry.getInfrastructureService<TransactionalEmailService>(ServiceTransactionalEmailSendGrid);
 

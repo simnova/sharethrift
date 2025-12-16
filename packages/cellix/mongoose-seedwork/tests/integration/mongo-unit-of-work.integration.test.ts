@@ -169,7 +169,7 @@ const repoClass = TestRepo;
 const eventBus = InProcEventBusInstance;
 const integrationEventBus = NodeEventBusInstance;
 
-let mongoServer: MongoMemoryReplSet;
+let mongoServer: MongoMemoryReplSet | null = null;
 let uow: MongoUnitOfWork<
 	TestMongoType,
 	TestAdapter,
@@ -179,19 +179,48 @@ let uow: MongoUnitOfWork<
 >;
 describe('MongoUnitOfWork:Integration', () => {
 	beforeAll(async () => {
-		mongoServer = await MongoMemoryReplSet.create({
-			replSet: { name: 'test' },
-		});
-		const uri = mongoServer.getUri();
-		await mongoose.connect(uri, {
-			retryWrites: false,
-		});
-		TestModel = model<TestMongoType>('Test', TestSchema);
-	}, 60000); // Increase timeout to 60 seconds
+		let retries = 3;
+		while (retries > 0) {
+			try {
+				// Try with simpler configuration first
+				mongoServer = await MongoMemoryReplSet.create({
+					replSet: { name: 'test', count: 1 },
+					instanceOpts: [
+						{
+							args: ['--noauth', '--smallfiles'],
+						},
+					],
+				});
+				const uri = mongoServer.getUri();
+				await mongoose.connect(uri, {
+					retryWrites: false,
+				});
+				TestModel = model<TestMongoType>('Test', TestSchema);
+				break; // Success, exit retry loop
+			} catch (error) {
+				retries--;
+				if (mongoServer) {
+					try {
+						await mongoServer.stop();
+					} catch {
+						// Ignore stop errors
+					}
+					mongoServer = null;
+				}
+				if (retries === 0) {
+					throw error; // Re-throw after final retry
+				}
+				// Wait a bit before retrying
+				await new Promise((resolve) => setTimeout(resolve, 2000));
+			}
+		}
+	}, 180000); // Increase timeout to 180 seconds for retries
 
 	afterAll(async () => {
 		await mongoose.disconnect();
-		await mongoServer.stop();
+		if (mongoServer) {
+			await mongoServer.stop();
+		}
 	});
 
 	beforeEach(async () => {

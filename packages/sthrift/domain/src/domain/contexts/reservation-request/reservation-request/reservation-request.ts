@@ -37,6 +37,14 @@ export class ReservationRequest<props extends ReservationRequestProps>
 		reservationPeriodEnd: Date,
 		passport: Passport,
 	): ReservationRequest<props> {
+		// Validate required parameters
+		if (!listing) {
+			throw new Error('value cannot be null or undefined');
+		}
+		if (!reserver) {
+			throw new Error('value cannot be null or undefined');
+		}
+		
 		// Validate reservation period
 		if (
 			reservationPeriodStart &&
@@ -47,7 +55,6 @@ export class ReservationRequest<props extends ReservationRequestProps>
 		}
 		
 		const instance = new ReservationRequest(newProps, passport);
-		instance.isNew = true;
 		
 		// Set all properties using setters to maintain validation - no ordering constraints
 		instance.listing = listing;
@@ -55,48 +62,24 @@ export class ReservationRequest<props extends ReservationRequestProps>
 		instance.reservationPeriodStart = reservationPeriodStart;
 		instance.reservationPeriodEnd = reservationPeriodEnd;
 		instance.props.state = new ValueObjects.ReservationRequestStateValue(state).valueOf();
-		
-		// Emit integration event if this is a new reservation request
-		if (state === ReservationRequestStates.REQUESTED) {
-			instance.emitReservationRequestCreatedEventSync(listing, reserver);
-		}
+        instance.markAsNew(listing, reserver);
 		
 		instance.isNew = false;
 		return instance;
 	}
 
-	private emitReservationRequestCreatedEventSync(
-		listing?: ItemListingEntityReference,
-		reserver?: UserEntityReference
-	): void {
-		try {
-			// For newly created instances, use the provided parameters to avoid domain adapter population issues
-			if (!this.isNew) {
-				// Don't emit for loaded instances that may need async population
-				return;
-			}
-			
-			// Use provided parameters if available (during creation), otherwise try direct access
-			const listingId = listing?.id;
-			const reserverId = reserver?.id;
-			const sharerId = listing?.sharer?.id;
-			
-			if (!listingId || !reserverId || !sharerId) {
-				throw new Error('Missing required IDs for ReservationRequestCreated event - ensure listing and reserver are properly set');
-			}
-			
-			this.addIntegrationEvent(ReservationRequestCreated, {
-				reservationRequestId: this.props.id,
-				listingId,
-				reserverId,
-				sharerId,
-				reservationPeriodStart: this.props.reservationPeriodStart,
-				reservationPeriodEnd: this.props.reservationPeriodEnd,
-			});
-		} catch (error) {
-			// Log error but don't break creation process
-			console.warn('Failed to emit ReservationRequestCreated event:', error);
-		}
+	private markAsNew(listing: ItemListingEntityReference, reserver: UserEntityReference): void {
+		this.isNew = true;
+		
+		// Emit integration event for new reservation request
+		this.addIntegrationEvent(ReservationRequestCreated, {
+			reservationRequestId: this.props.id,
+			listingId: listing.id,
+			reserverId: reserver.id,
+			sharerId: listing.sharer?.id ?? '',
+			reservationPeriodStart: this.props.reservationPeriodStart,
+			reservationPeriodEnd: this.props.reservationPeriodEnd,
+		});
 	}
 
 	//#region Properties
@@ -292,64 +275,7 @@ export class ReservationRequest<props extends ReservationRequestProps>
 	}
 
 	async loadListing(): Promise<ItemListingEntityReference> {
-		return await this.loadListingEntity();
-	}
-
-	/**
-	 * Get listing ID with validation - handles both current state and async loading
-	 */
-	async getListingId(): Promise<string> {
-		return await this.getListingProperty('id');
-	}
-
-	/**
-	 * Get listing sharer with validation - handles both current state and async loading
-	 */
-	async getListingSharer(): Promise<UserEntityReference> {
-		return await this.getListingProperty('sharer');
-	}
-
-	/**
-	 * Generic method to load listing entity with consistent error handling
-	 */
-	private async loadListingEntity(): Promise<ItemListingEntityReference> {
-		try {
-			return await this.props.loadListing();
-		} catch (error) {
-			throw new Error(`Failed to load listing: ${error instanceof Error ? error.message : String(error)}`);
-		}
-	}
-
-	/**
-	 * Generic method to get listing properties with validation and lazy loading
-	 */
-	private async getListingProperty<K extends keyof ItemListingEntityReference>(
-		property: K
-	): Promise<NonNullable<ItemListingEntityReference[K]>> {
-		try {
-			// For newly created instances, we can try to get from current state
-			if (this.isNew) {
-				try {
-					const currentListing = this.props.listing;
-					if (currentListing?.[property] != null) {
-						return currentListing[property] as NonNullable<ItemListingEntityReference[K]>;
-					}
-				} catch (directAccessError) {
-					// If direct access fails, fall back to loading
-					console.debug(`Direct access to listing.${String(property)} failed, will load listing entity`, directAccessError);
-				}
-			}
-
-			// Load the full listing (handles population if needed)
-			const listing = await this.loadListingEntity();
-			if (listing?.[property] == null) {
-				throw new Error(`Listing does not have ${String(property)} property`);
-			}
-			
-			return listing[property] as NonNullable<ItemListingEntityReference[K]>;
-		} catch (error) {
-			throw new Error(`Failed to get listing ${String(property)}: ${error instanceof Error ? error.message : String(error)}`);
-		}
+		return await this.props.loadListing();
 	}
 
 	/**
@@ -361,7 +287,7 @@ export class ReservationRequest<props extends ReservationRequestProps>
 				case 'reserver':
 					return await this.props.loadReserver();
 				case 'sharer':
-					return await this.getListingSharer();
+					return (await this.props.loadListing()).sharer;
 				default:
 					throw new Error(`Unknown user type: ${userType}`);
 			}
