@@ -1163,25 +1163,33 @@ test.for(feature, ({ Scenario }) => {
 				state: 'Accepted',
 			});
 
-			// Mock the reservation request with listing and sharer
-			const mockRequest = createMockReservationRequest({
-				id: requestId,
-				state: 'Requested',
-			});
-			
-			// Mock the listing with sharer
+			// Mock the sharer
+			const mockSharer = {
+				id: 'user-1',
+			};
+
+			// Mock the listing with loadSharer method
 			const mockListing = {
 				id: 'listing-1',
 				title: 'Test Listing',
-				sharer: {
-					id: 'user-1',
-				},
+				sharer: mockSharer,
+				loadSharer: vi.fn().mockResolvedValue(mockSharer),
 			};
 			
 			// Mock the authenticated user
 			const mockAuthUser = {
 				id: 'user-1',
 				email: 'sharer@example.com',
+			};
+
+			// Mock the reservation request with loadListing method
+			const mockRequest = {
+				...createMockReservationRequest({
+					id: requestId,
+					state: 'Requested',
+				}),
+				listing: mockListing,
+				loadListing: vi.fn().mockResolvedValue(mockListing),
 			};
 
 			Given(
@@ -1191,10 +1199,7 @@ test.for(feature, ({ Scenario }) => {
 						applicationServices: {
 							ReservationRequest: {
 								ReservationRequest: {
-									queryById: vi.fn().mockResolvedValue({
-										...mockRequest,
-										listing: mockListing,
-									}),
+									queryById: vi.fn().mockResolvedValue(mockRequest),
 									update: vi.fn().mockResolvedValue(updatedRequest),
 								},
 							},
