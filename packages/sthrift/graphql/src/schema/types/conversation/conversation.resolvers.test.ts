@@ -72,6 +72,20 @@ function makeMockGraphContext(
 					create: vi.fn(),
 				},
 			},
+			User: {
+				PersonalUser: {
+					queryByEmail: vi.fn(),
+				},
+				AdminUser: {
+					queryByEmail: vi.fn(),
+				},
+			},
+			verifiedUser: {
+				verifiedJwt: {
+					email: 'test@example.com',
+					name: 'Test User',
+				},
+			},
 		},
 		...overrides,
 	} as unknown as GraphContext;
@@ -346,8 +360,17 @@ test.for(feature, ({ Scenario }) => {
 	);
 
 	Scenario('Sending a message in a conversation', ({ Given, When, Then, And }) => {
-		Given('a valid SendMessageInput with conversationId, content, and authorId', () => {
+		Given('a valid SendMessageInput with conversationId and content', () => {
 			context = makeMockGraphContext();
+			// Mock user lookup - PersonalUser found
+			(
+				context.applicationServices.User.PersonalUser
+					.queryByEmail as ReturnType<typeof vi.fn>
+			).mockResolvedValue({ id: 'user-1' });
+			(
+				context.applicationServices.User.AdminUser
+					.queryByEmail as ReturnType<typeof vi.fn>
+			).mockResolvedValue(null);
 			context.applicationServices.Conversation.Conversation.sendMessage = vi.fn().mockResolvedValue({
 				id: 'msg-1',
 				messagingMessageId: { valueOf: () => 'SM001' },
@@ -362,7 +385,6 @@ test.for(feature, ({ Scenario }) => {
 				input: {
 					conversationId: string;
 					content: string;
-					authorId: string;
 				};
 			}>;
 			result = await resolver(
@@ -371,14 +393,13 @@ test.for(feature, ({ Scenario }) => {
 					input: {
 						conversationId: 'conv-1',
 						content: 'Hello',
-						authorId: 'user-1',
 					},
 				},
 				context,
 				null,
 			);
 		});
-		Then('it should call Conversation.Conversation.sendMessage with the provided input fields', () => {
+		Then('it should call Conversation.Conversation.sendMessage with authorId derived from authenticated user', () => {
 			expect(
 				context.applicationServices.Conversation.Conversation.sendMessage,
 			).toHaveBeenCalledWith({
@@ -401,6 +422,15 @@ test.for(feature, ({ Scenario }) => {
 	Scenario('Sending a message when Conversation.Conversation.sendMessage throws an error', ({ Given, And, When, Then }) => {
 		Given('a valid SendMessageInput', () => {
 			context = makeMockGraphContext();
+			// Mock user lookup - PersonalUser found
+			(
+				context.applicationServices.User.PersonalUser
+					.queryByEmail as ReturnType<typeof vi.fn>
+			).mockResolvedValue({ id: 'user-1' });
+			(
+				context.applicationServices.User.AdminUser
+					.queryByEmail as ReturnType<typeof vi.fn>
+			).mockResolvedValue(null);
 			context.applicationServices.Conversation.Conversation.sendMessage = vi.fn() as unknown as typeof context.applicationServices.Conversation.Conversation.sendMessage;
 		});
 		And('Conversation.Conversation.sendMessage throws an error', () => {
@@ -415,7 +445,6 @@ test.for(feature, ({ Scenario }) => {
 				input: {
 					conversationId: string;
 					content: string;
-					authorId: string;
 				};
 			}>;
 			result = await resolver(
@@ -424,7 +453,6 @@ test.for(feature, ({ Scenario }) => {
 					input: {
 						conversationId: 'conv-1',
 						content: 'Hello',
-						authorId: 'user-1',
 					},
 				},
 				context,

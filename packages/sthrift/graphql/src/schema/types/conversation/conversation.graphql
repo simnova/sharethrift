@@ -39,7 +39,6 @@ input ConversationCreateInput {
 input SendMessageInput {
 	conversationId: ObjectID!
 	content: String!
-	authorId: ObjectID!
 }
 
 type ConversationMutationResult implements MutationResult {

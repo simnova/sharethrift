@@ -46,19 +46,18 @@ export const ConversationBoxContainer: React.FC<ConversationBoxContainerProps> =
 
   const handleSendMessage = useCallback(
     async (content: string) => {
-      if (!currentUserId || !content.trim()) return;
+      if (!content.trim()) return;
 
       await sendMessageMutation({
         variables: {
           input: {
             conversationId: props.selectedConversationId,
             content: content.trim(),
-            authorId: currentUserId,
           },
         },
       });
     },
-    [currentUserId, props.selectedConversationId, sendMessageMutation]
+    [props.selectedConversationId, sendMessageMutation]
   );
 
   return (

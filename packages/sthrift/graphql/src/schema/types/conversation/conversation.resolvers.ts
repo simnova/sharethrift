@@ -7,6 +7,7 @@ import type {
 import {
 	PopulateItemListingFromField,
 	PopulateUserFromField,
+	getUserByEmail,
 } from '../../resolver-helper.ts';
 
 const conversation: Resolvers = {
@@ -64,10 +65,20 @@ const conversation: Resolvers = {
 			context: GraphContext,
 		) => {
 			try {
+				const verifiedJwt = context.applicationServices.verifiedUser?.verifiedJwt;
+				if (!verifiedJwt) {
+					throw new Error('User must be authenticated to send a message');
+				}
+
+				const currentUser = await getUserByEmail(verifiedJwt.email, context);
+				if (!currentUser) {
+					throw new Error('User not found');
+				}
+
 				const message = await context.applicationServices.Conversation.Conversation.sendMessage({
 					conversationId: _args.input.conversationId,
 					content: _args.input.content,
-					authorId: _args.input.authorId,
+					authorId: currentUser.id,
 				});
 				return {
 					status: { success: true },
