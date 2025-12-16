@@ -21,7 +21,6 @@ export const ConversationBoxContainer: React.FC<ConversationBoxContainerProps> =
     data: currentUserConversationsData,
     loading: loadingConversations,
     error: conversationsError,
-    refetch,
   } = useQuery(ConversationBoxContainerConversationDocument, {
     variables: {
       conversationId: props.selectedConversationId,
@@ -31,10 +30,33 @@ export const ConversationBoxContainer: React.FC<ConversationBoxContainerProps> =
   const [sendMessageMutation, { loading: sendingMessage }] = useMutation(
     ConversationBoxContainerSendMessageDocument,
     {
+      update: (cache, { data }) => {
+        if (data?.sendMessage.status.success && data.sendMessage.message) {
+          // Update Apollo cache instead of refetch to avoid unnecessary network round-trip
+          const existingConversation = cache.readQuery({
+            query: ConversationBoxContainerConversationDocument,
+            variables: { conversationId: props.selectedConversationId },
+          });
+
+          if (existingConversation?.conversation) {
+            cache.writeQuery({
+              query: ConversationBoxContainerConversationDocument,
+              variables: { conversationId: props.selectedConversationId },
+              data: {
+                conversation: {
+                  ...existingConversation.conversation,
+                  messages: [
+                    ...(existingConversation.conversation.messages || []),
+                    data.sendMessage.message,
+                  ],
+                },
+              },
+            });
+          }
+        }
+      },
       onCompleted: (data) => {
-        if (data.sendMessage.status.success) {
-          refetch();
-        } else {
+        if (!data.sendMessage.status.success) {
           antdMessage.error(data.sendMessage.status.errorMessage || "Failed to send message");
         }
       },
