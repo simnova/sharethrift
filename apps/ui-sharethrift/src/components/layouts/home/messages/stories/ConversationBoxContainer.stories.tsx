@@ -7,6 +7,7 @@ import {
 import { withMockApolloClient } from '../../../../../test-utils/storybook-decorators.tsx';
 import { ConversationBoxContainer } from '../components/conversation-box.container.tsx';
 
+// #region Mock Data
 const mockConversationDetail = {
 	__typename: 'Conversation',
 	id: 'conv-1',
@@ -63,8 +64,70 @@ const mockConversationDetail = {
 	createdAt: '2025-01-15T09:00:00Z',
 	updatedAt: '2025-01-15T10:00:00Z',
 };
+// #endregion Mock Data
 
-const baseMocks = [
+// #region Mock Factory
+/**
+ * Factory function to build Apollo mocks with sensible defaults.
+ * Reduces duplication across stories while allowing per-story overrides.
+ */
+const buildMocks = ({
+	conversation = mockConversationDetail,
+	conversationDelay,
+	sendMessageResult,
+}: {
+	conversation?: typeof mockConversationDetail;
+	conversationDelay?: number;
+	sendMessageResult?: {
+		__typename: 'SendMessageMutationResult';
+		status: {
+			__typename: 'MutationStatus';
+			success: boolean;
+			errorMessage: string | null;
+		};
+		message: (typeof mockConversationDetail.messages)[0] | null;
+	};
+	sendMessageError?: Error;
+} = {}) => {
+	const baseMocks = [
+		{
+			request: {
+				query: ConversationBoxContainerConversationDocument,
+				variables: () => true,
+			},
+			maxUsageCount: Number.POSITIVE_INFINITY,
+			...(conversationDelay ? { delay: conversationDelay } : {}),
+			result: {
+				data: {
+					conversation,
+				},
+			},
+		},
+	];
+
+	if (!sendMessageResult) return baseMocks;
+
+	return [
+		...baseMocks,
+		{
+			request: {
+				query: ConversationBoxContainerSendMessageDocument,
+				variables: () => true,
+			},
+			maxUsageCount: Number.POSITIVE_INFINITY,
+			result: {
+				data: {
+					sendMessage: sendMessageResult,
+				},
+			},
+		},
+	];
+};
+
+/**
+ * Factory to build a network error mock for sendMessage.
+ */
+const buildNetworkErrorMocks = (conversation = mockConversationDetail) => [
 	{
 		request: {
 			query: ConversationBoxContainerConversationDocument,
@@ -73,11 +136,34 @@ const baseMocks = [
 		maxUsageCount: Number.POSITIVE_INFINITY,
 		result: {
 			data: {
-				conversation: mockConversationDetail,
+				conversation,
 			},
 		},
 	},
+	{
+		request: {
+			query: ConversationBoxContainerSendMessageDocument,
+			variables: () => true,
+		},
+		maxUsageCount: Number.POSITIVE_INFINITY,
+		error: new Error('Network error'),
+	},
 ];
+// #endregion Mock Factory
+
+// #region Play Helpers
+const getCanvas = (canvasElement: HTMLElement) => within(canvasElement);
+
+const typeAndSendMessage = async (
+	canvas: ReturnType<typeof within>,
+	message: string,
+) => {
+	const textArea = await canvas.findByPlaceholderText(/Type a message/i);
+	await userEvent.type(textArea, message);
+	const sendButton = canvas.getByRole('button', { name: /send/i });
+	await userEvent.click(sendButton);
+};
+// #endregion Play Helpers
 
 const meta: Meta<typeof ConversationBoxContainer> = {
 	title: 'Components/Messages/ConversationBoxContainer',
@@ -85,7 +171,7 @@ const meta: Meta<typeof ConversationBoxContainer> = {
 	decorators: [withMockApolloClient],
 	parameters: {
 		apolloClient: {
-			mocks: baseMocks,
+			mocks: buildMocks(),
 		},
 	},
 };
@@ -97,7 +183,7 @@ export const Default: Story = {
 		selectedConversationId: 'conv-1',
 	},
 	play: async ({ canvasElement }) => {
-		const canvas = within(canvasElement);
+		const canvas = getCanvas(canvasElement);
 		// ListingBanner shows "{firstName}'s Listing"
 		await expect(
 			await canvas.findByText(/John's Listing/i),
@@ -111,46 +197,29 @@ export const SendMessageSuccess: Story = {
 	},
 	parameters: {
 		apolloClient: {
-			mocks: [
-				...baseMocks,
-				{
-					request: {
-						query: ConversationBoxContainerSendMessageDocument,
-						variables: () => true,
+			mocks: buildMocks({
+				sendMessageResult: {
+					__typename: 'SendMessageMutationResult',
+					status: {
+						__typename: 'MutationStatus',
+						success: true,
+						errorMessage: null,
 					},
-					maxUsageCount: Number.POSITIVE_INFINITY,
-					result: {
-						data: {
-							sendMessage: {
-								__typename: 'SendMessageResult',
-								status: {
-									__typename: 'MutationStatus',
-									success: true,
-									errorMessage: null,
-								},
-								message: {
-									__typename: 'Message',
-									id: 'msg-new',
-									messagingMessageId: 'SM999',
-									content: 'Test message',
-									createdAt: new Date().toISOString(),
-									authorId: 'user-1',
-								},
-							},
-						},
+					message: {
+						__typename: 'Message',
+						id: 'msg-new',
+						messagingMessageId: 'SM999',
+						content: 'Test message',
+						createdAt: new Date().toISOString(),
+						authorId: 'user-1',
 					},
 				},
-			],
+			}),
 		},
 	},
 	play: async ({ canvasElement }) => {
-		const canvas = within(canvasElement);
-		// Placeholder text is "Type a message..."
-		const textArea = await canvas.findByPlaceholderText(/Type a message/i);
-		await userEvent.type(textArea, 'Test message');
-
-		const sendButton = canvas.getByRole('button', { name: /send/i });
-		await userEvent.click(sendButton);
+		const canvas = getCanvas(canvasElement);
+		await typeAndSendMessage(canvas, 'Test message');
 	},
 };
 
@@ -160,39 +229,22 @@ export const SendMessageError: Story = {
 	},
 	parameters: {
 		apolloClient: {
-			mocks: [
-				...baseMocks,
-				{
-					request: {
-						query: ConversationBoxContainerSendMessageDocument,
-						variables: () => true,
+			mocks: buildMocks({
+				sendMessageResult: {
+					__typename: 'SendMessageMutationResult',
+					status: {
+						__typename: 'MutationStatus',
+						success: false,
+						errorMessage: 'Failed to send message',
 					},
-					maxUsageCount: Number.POSITIVE_INFINITY,
-					result: {
-						data: {
-							sendMessage: {
-								__typename: 'SendMessageResult',
-								status: {
-									__typename: 'MutationStatus',
-									success: false,
-									errorMessage: 'Failed to send message',
-								},
-								message: null,
-							},
-						},
-					},
+					message: null,
 				},
-			],
+			}),
 		},
 	},
 	play: async ({ canvasElement }) => {
-		const canvas = within(canvasElement);
-		// Placeholder text is "Type a message..."
-		const textArea = await canvas.findByPlaceholderText(/Type a message/i);
-		await userEvent.type(textArea, 'This will fail');
-
-		const sendButton = canvas.getByRole('button', { name: /send/i });
-		await userEvent.click(sendButton);
+		const canvas = getCanvas(canvasElement);
+		await typeAndSendMessage(canvas, 'This will fail');
 	},
 };
 
@@ -202,27 +254,12 @@ export const SendMessageNetworkError: Story = {
 	},
 	parameters: {
 		apolloClient: {
-			mocks: [
-				...baseMocks,
-				{
-					request: {
-						query: ConversationBoxContainerSendMessageDocument,
-						variables: () => true,
-					},
-					maxUsageCount: Number.POSITIVE_INFINITY,
-					error: new Error('Network error'),
-				},
-			],
+			mocks: buildNetworkErrorMocks(),
 		},
 	},
 	play: async ({ canvasElement }) => {
-		const canvas = within(canvasElement);
-		// Placeholder text is "Type a message..."
-		const textArea = await canvas.findByPlaceholderText(/Type a message/i);
-		await userEvent.type(textArea, 'Network will fail');
-
-		const sendButton = canvas.getByRole('button', { name: /send/i });
-		await userEvent.click(sendButton);
+		const canvas = getCanvas(canvasElement);
+		await typeAndSendMessage(canvas, 'Network will fail');
 	},
 };
 
@@ -232,59 +269,29 @@ export const CacheUpdateOnSuccess: Story = {
 	},
 	parameters: {
 		apolloClient: {
-			mocks: [
-				{
-					request: {
-						query: ConversationBoxContainerConversationDocument,
-						variables: () => true,
+			mocks: buildMocks({
+				conversation: { ...mockConversationDetail, messages: [] },
+				sendMessageResult: {
+					__typename: 'SendMessageMutationResult',
+					status: {
+						__typename: 'MutationStatus',
+						success: true,
+						errorMessage: null,
 					},
-					maxUsageCount: Number.POSITIVE_INFINITY,
-					result: {
-						data: {
-							conversation: {
-								...mockConversationDetail,
-								messages: [],
-							},
-						},
-					},
-				},
-				{
-					request: {
-						query: ConversationBoxContainerSendMessageDocument,
-						variables: () => true,
-					},
-					maxUsageCount: Number.POSITIVE_INFINITY,
-					result: {
-						data: {
-							sendMessage: {
-								__typename: 'SendMessageResult',
-								status: {
-									__typename: 'MutationStatus',
-									success: true,
-									errorMessage: null,
-								},
-								message: {
-									__typename: 'Message',
-									id: 'msg-new',
-									messagingMessageId: 'SM999',
-									content: 'First message',
-									createdAt: new Date().toISOString(),
-									authorId: 'user-1',
-								},
-							},
-						},
+					message: {
+						__typename: 'Message',
+						id: 'msg-new',
+						messagingMessageId: 'SM999',
+						content: 'First message',
+						createdAt: new Date().toISOString(),
+						authorId: 'user-1',
 					},
 				},
-			],
+			}),
 		},
 	},
 	play: async ({ canvasElement }) => {
-		const canvas = within(canvasElement);
-		// Placeholder text is "Type a message..."
-		const textArea = await canvas.findByPlaceholderText(/Type a message/i);
-		await userEvent.type(textArea, 'First message');
-
-		const sendButton = canvas.getByRole('button', { name: /send/i });
-		await userEvent.click(sendButton);
+		const canvas = getCanvas(canvasElement);
+		await typeAndSendMessage(canvas, 'First message');
 	},
 };
