@@ -1,5 +1,6 @@
 import { Domain } from '@sthrift/domain';
 import type { MessagingService } from '@cellix/messaging-service';
+import { DomainSeedwork } from '@cellix/domain-seedwork';
 import { toDomainMessage } from './messaging-conversation.domain-adapter.ts';
 
 export interface MessagingConversationRepository {
@@ -55,17 +56,28 @@ export class MessagingConversationRepositoryImpl implements MessagingConversatio
 	): Promise<Domain.Contexts.Conversation.Conversation.MessageEntityReference> {
 		const visa = this.passport.conversation.forConversation(conversation);
 		if (!visa.determineIf((permissions: Domain.Contexts.Conversation.ConversationDomainPermissions) => permissions.canSendMessage)) {
-			throw new Error('Not authorized to send message in this conversation');
+			throw new DomainSeedwork.PermissionError('Not authorized to send message in this conversation');
 		}
 
-		const message = await this.messagingService.sendMessage(
-			conversation.messagingConversationId,
-			body,
-			authorId,
-		);
+		try {
+			const message = await this.messagingService.sendMessage(
+				conversation.messagingConversationId,
+				body,
+				authorId,
+			);
 
-		const author = new Domain.Contexts.Conversation.Conversation.AuthorId(authorId);
-		return toDomainMessage(message, author);
+			const author = new Domain.Contexts.Conversation.Conversation.AuthorId(authorId);
+			return toDomainMessage(message, author);
+		} catch (error) {
+			// Scoped, contextual logging around external messaging service call
+			// Keeping the message concise but with enough context for debugging/observability
+			console.error('MessagingConversationRepository.sendMessage failed', {
+				conversationId: conversation.id ?? conversation.messagingConversationId,
+				authorId,
+				error,
+			});
+			throw error;
+		}
 	}
 
 	async deleteConversation(conversationId: string): Promise<void> {
