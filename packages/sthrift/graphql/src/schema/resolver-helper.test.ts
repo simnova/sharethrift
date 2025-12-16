@@ -45,21 +45,29 @@ test.for(feature, ({ Background, Scenario, BeforeEachScenario }) => {
 	BeforeEachScenario(() => {
 		mockAdminUser = {
 			id: '507f1f77bcf86cd799439011',
-			email: 'admin@test.com',
-			userType: 'admin-user',
-			role: { roleName: 'Admin' },
-		};
+		userType: 'admin-user',
+		account: { email: 'admin@test.com' },
+		role: { roleName: 'Admin' },
+		schemaVersion: '1.0',
+		createdAt: new Date('2024-01-01'),
+		updatedAt: new Date('2024-01-01'),
+	};
 
-		mockPersonalUser = {
-			id: '507f1f77bcf86cd799439012',
-			email: 'user@test.com',
-			userType: 'personal-user',
-		};
+	mockPersonalUser = {
+		id: '507f1f77bcf86cd799439012',
+		userType: 'personal-user',
+		account: { email: 'user@test.com' },
+		isBlocked: false,
+		hasCompletedOnboarding: true,
+		schemaVersion: '1.0',
+		createdAt: new Date('2024-01-01'),
+		updatedAt: new Date('2024-01-01'),
+	};
 
-		mockListing = {
-			id: '507f1f77bcf86cd799439013',
-			title: 'Test Listing',
-		};
+	mockListing = {
+		id: '507f1f77bcf86cd799439013',
+		title: 'Test Listing',
+	};
 
 		mockContext = {
 			applicationServices: {
@@ -256,7 +264,7 @@ test.for(feature, ({ Background, Scenario, BeforeEachScenario }) => {
 	);
 
 	Scenario(
-		'PopulateUserFromField returns field value for invalid ID',
+		'PopulateUserFromField returns null for invalid ID',
 		({ Given, When, Then }) => {
 			const parent = { userId: 'invalid-id' };
 
@@ -270,8 +278,8 @@ test.for(feature, ({ Background, Scenario, BeforeEachScenario }) => {
 				result = await resolver(parent, {}, mockContext);
 			});
 
-			Then('it should return the original field value', () => {
-				expect(result).toBe('invalid-id');
+			Then('it should return null', () => {
+				expect(result).toBe(null);
 			});
 		},
 	);
@@ -610,11 +618,7 @@ describe('PopulateUserFromField', () => {
 		const resolver = PopulateUserFromField('owner');
 		const result = await resolver(parent, {}, context);
 
-		expect(result).toEqual({
-			id: 'not-a-mongo-id',
-			name: 'Fallback User',
-			userType: null,
-		});
+		expect(result).toBe(null);
 	});
 });
 

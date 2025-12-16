@@ -654,27 +654,21 @@ test.for(feature, ({ Background, Scenario, BeforeEachScenario }) => {
 	);
 
 	Scenario(
-		'User union resolveType throws error for invalid type',
+		'User union resolveType returns null for invalid type',
 		({ Given, When, Then }) => {
-			let error: Error | undefined;
-
 			Given('a user object with invalid userType', () => {
 				result = { id: 'invalid-user-type' };
 			});
 
 			When('__resolveType is called', async () => {
-				try {
-					vi.mocked(
-						mockContext.applicationServices.User.User.queryById,
-					).mockResolvedValue(mockInvalidUserType);
-					await userUnionResolvers.User?.__resolveType?.(result, mockContext);
-				} catch (e) {
-					error = e as Error;
-				}
+				vi.mocked(
+					mockContext.applicationServices.User.User.queryById,
+				).mockResolvedValue(mockInvalidUserType);
+				result = await userUnionResolvers.User?.__resolveType?.(result, mockContext);
 			});
 
-			Then('it should throw "Unable to resolve User union type"', () => {
-				expect(error?.message).toContain('Unable to resolve User union type');
+			Then('it should return null', () => {
+				expect(result).toBe(null);
 			});
 		},
 	);

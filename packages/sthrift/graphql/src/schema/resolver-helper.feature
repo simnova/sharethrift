@@ -40,10 +40,10 @@ Feature: GraphQL Resolver Helper Functions
     When PopulateUserFromField resolver is called
     Then it should return the PersonalUser entity
 
-  Scenario: PopulateUserFromField returns field value for invalid ID
+  Scenario: PopulateUserFromField returns null for invalid ID
     Given a parent object with an invalid user ID
     When PopulateUserFromField resolver is called
-    Then it should return the original field value
+    Then it should return null
 
   Scenario: PopulateItemListingFromField resolves listing by ID
     Given a parent object with a valid listing ID field
