@@ -8,7 +8,6 @@ catalog:
   mongodb: 6.18.0
   # Vitest 4.x and related testing dependencies
   vitest: ^4.0.15
-  '@vitest/browser': ^4.0.15
   '@vitest/coverage-v8': ^4.0.15
   '@vitest/browser-playwright': ^4.0.15
 

@@ -6,9 +6,6 @@ settings:
 
 catalogs:
   default:
-    '@vitest/browser':
-      specifier: ^4.0.15
-      version: 4.0.15
     '@vitest/browser-playwright':
       specifier: ^4.0.15
       version: 4.0.15
@@ -341,9 +338,6 @@ importers:
       '@vitejs/plugin-react':
         specifier: ^4.7.0
         version: 4.7.0(vite@7.1.12(@types/node@24.9.2)(jiti@2.6.1)(lightningcss@1.30.2)(terser@5.44.0)(tsx@4.20.6)(yaml@2.8.1))
-      '@vitest/browser':
-        specifier: 4.0.15
-        version: 4.0.15(vite@7.1.12(@types/node@24.9.2)(jiti@2.6.1)(lightningcss@1.30.2)(terser@5.44.0)(tsx@4.20.6)(yaml@2.8.1))(vitest@4.0.15)
       '@vitest/coverage-v8':
         specifier: 'catalog:'
         version: 4.0.15(@vitest/browser@4.0.15(vite@7.1.12(@types/node@24.9.2)(jiti@2.6.1)(lightningcss@1.30.2)(terser@5.44.0)(tsx@4.20.6)(yaml@2.8.1))(vitest@4.0.15))(vitest@4.0.15)
@@ -620,9 +614,6 @@ importers:
       '@types/react':
         specifier: ^19.1.16
         version: 19.2.2
-      '@vitest/browser':
-        specifier: 'catalog:'
-        version: 4.0.15(vite@7.1.12(@types/node@24.9.2)(jiti@2.6.1)(lightningcss@1.30.2)(terser@5.44.0)(tsx@4.20.6)(yaml@2.8.1))(vitest@4.0.15)
       '@vitest/coverage-v8':
         specifier: 'catalog:'
         version: 4.0.15(@vitest/browser@4.0.15(vite@7.1.12(@types/node@24.9.2)(jiti@2.6.1)(lightningcss@1.30.2)(terser@5.44.0)(tsx@4.20.6)(yaml@2.8.1))(vitest@4.0.15))(vitest@4.0.15)
@@ -653,9 +644,6 @@ importers:
       '@storybook/addon-vitest':
         specifier: ^9.1.10
         version: 9.1.16(@vitest/browser-playwright@4.0.15)(@vitest/browser@4.0.15(vite@7.1.12(@types/node@24.9.2)(jiti@2.6.1)(lightningcss@1.30.2)(terser@5.44.0)(tsx@4.20.6)(yaml@2.8.1))(vitest@4.0.15))(@vitest/runner@4.0.15)(react-dom@19.2.0(react@19.2.0))(react@19.2.0)(storybook@9.1.16(@testing-library/dom@10.4.1)(vite@7.1.12(@types/node@24.9.2)(jiti@2.6.1)(lightningcss@1.30.2)(terser@5.44.0)(tsx@4.20.6)(yaml@2.8.1)))(vitest@4.0.15)
-      '@vitest/browser':
-        specifier: 'catalog:'
-        version: 4.0.15(vite@7.1.12(@types/node@24.9.2)(jiti@2.6.1)(lightningcss@1.30.2)(terser@5.44.0)(tsx@4.20.6)(yaml@2.8.1))(vitest@4.0.15)
       '@vitest/browser-playwright':
         specifier: 'catalog:'
         version: 4.0.15(playwright@1.56.1)(vite@7.1.12(@types/node@24.9.2)(jiti@2.6.1)(lightningcss@1.30.2)(terser@5.44.0)(tsx@4.20.6)(yaml@2.8.1))(vitest@4.0.15)
@@ -1331,9 +1319,6 @@ importers:
       '@types/react-dom':
         specifier: ^19.1.6
         version: 19.2.2(@types/react@19.2.2)
-      '@vitest/browser':
-        specifier: 'catalog:'
-        version: 4.0.15(vite@7.1.12(@types/node@24.9.2)(jiti@2.6.1)(lightningcss@1.30.2)(terser@5.44.0)(tsx@4.20.6)(yaml@2.8.1))(vitest@4.0.15)
       '@vitest/coverage-v8':
         specifier: 'catalog:'
         version: 4.0.15(@vitest/browser@4.0.15(vite@7.1.12(@types/node@24.9.2)(jiti@2.6.1)(lightningcss@1.30.2)(terser@5.44.0)(tsx@4.20.6)(yaml@2.8.1))(vitest@4.0.15))(vitest@4.0.15)
