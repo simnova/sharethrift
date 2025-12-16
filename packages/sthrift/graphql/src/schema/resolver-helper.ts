@@ -110,7 +110,8 @@ export const PopulateUserFromField = (fieldName: string) => {
 		const existingValue = parent[fieldName];
 		const existingUserType = existingValue?.userType;
 
-		if (existingUserType) {
+		// Only return early if we have BOTH userType AND a valid id
+		if (existingUserType && existingValue?.id) {
 			return existingValue;
 		}
 
@@ -137,14 +138,28 @@ export const PopulateUserFromField = (fieldName: string) => {
 					await context.applicationServices.User.AdminUser.queryById({
 						id: userId,
 					});
+				console.log('[PopulateUserFromField] AdminUser query result:', { 
+					userId, 
+					adminUser,
+					id: adminUser?.id,
+					userType: adminUser?.userType
+				});
 				if (adminUser) {
-					// Return the full user object with userType augmented
-					return {
-						...adminUser,
+					// Access properties from the domain entity
+					const userData = {
+						id: adminUser.id,
 						userType: adminUser.userType || 'admin-user',
+						account: adminUser.account,
+						role: adminUser.role,
+						schemaVersion: adminUser.schemaVersion,
+						createdAt: adminUser.createdAt,
+						updatedAt: adminUser.updatedAt,
 					};
+					console.log('[PopulateUserFromField] Returning userData:', userData);
+					return userData;
 				}
-			} catch {
+			} catch (error) {
+				console.log('[PopulateUserFromField] AdminUser query error:', error);
 				// AdminUser not found, try PersonalUser
 			}
 
@@ -154,26 +169,36 @@ export const PopulateUserFromField = (fieldName: string) => {
 					await context.applicationServices.User.PersonalUser.queryById({
 						id: userId,
 					});
+				console.log('[PopulateUserFromField] PersonalUser query result:', { 
+					userId, 
+					personalUser,
+					id: personalUser?.id,
+					userType: personalUser?.userType 
+				});
 				if (personalUser) {
-					// Return the full user object with userType augmented
-					return {
-						...personalUser,
-						userType: personalUser.userType || 'personal-users',
+					// Access properties from the domain entity
+					const userData = {
+						id: personalUser.id,
+						userType: personalUser.userType || 'personal-user',
+						isBlocked: personalUser.isBlocked,
+						hasCompletedOnboarding: personalUser.hasCompletedOnboarding,
+						account: personalUser.account,
+						schemaVersion: personalUser.schemaVersion,
+						createdAt: personalUser.createdAt,
+						updatedAt: personalUser.updatedAt,
 					};
+					console.log('[PopulateUserFromField] Returning userData:', userData);
+					return userData;
 				}
-			} catch {
+			} catch (error) {
+				console.log('[PopulateUserFromField] PersonalUser query error:', error);
 				// PersonalUser not found
 			}
 		}
 
-		if (existingValue && typeof existingValue === 'object') {
-			return {
-				...existingValue,
-				userType: existingValue.userType ?? null,
-			};
-		}
-
-		return existingValue;
+		// If we couldn't resolve a user, return null
+		console.log('[PopulateUserFromField] Returning null for userId:', userId, 'existingValue:', existingValue);
+		return null;
 	};
 };
 

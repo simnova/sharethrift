@@ -1,6 +1,9 @@
 import type { GraphContext } from '../../../init/context.ts';
 import type { Resolvers } from '../../builder/generated.js';
-import { PopulateUserFromField } from '../../resolver-helper.ts';
+import {
+	PopulateUserFromField,
+	getUserByEmail,
+} from '../../resolver-helper.ts';
 
 // Helper type for paged arguments
 export type PagedArgs = {
@@ -88,11 +91,8 @@ const itemListingResolvers: Resolvers = {
 				throw new Error('Authentication required');
 			}
 
-			// Find the user by email to get their database ID
-			const user =
-				await context.applicationServices.User.PersonalUser.queryByEmail({
-					email: userEmail,
-				});
+			// Find the user by email - supports both PersonalUser and AdminUser
+			const user = await getUserByEmail(userEmail, context);
 			if (!user) {
 				throw new Error(`User not found for email ${userEmail}`);
 			}

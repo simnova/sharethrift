@@ -184,8 +184,13 @@ const userUnionResolvers: Resolvers = {
 		__resolveType(obj: {
 			id: string;
 			userType: string;
-		}): 'AdminUser' | 'PersonalUser' {
-			if (typeof obj === 'object' && obj !== null && 'userType' in obj) {
+		}): 'AdminUser' | 'PersonalUser' | null {
+			// If obj is null or undefined, return null to indicate no user
+			if (!obj || obj === null) {
+				return null;
+			}
+			
+			if (typeof obj === 'object' && 'userType' in obj) {
 				const userType = obj.userType?.toLowerCase();
 
 				// Matching Mongoose discriminator values for AdminUser and PersonalUser
@@ -196,9 +201,10 @@ const userUnionResolvers: Resolvers = {
 					return 'PersonalUser' as const;
 				}
 			}
-			throw new Error(
-				`Unable to resolve User union type. Invalid userType: ${JSON.stringify(obj)}`,
-			);
+			
+			// If we can't resolve the type, return null instead of throwing
+			console.log('[User.__resolveType] Unable to resolve type for:', JSON.stringify(obj));
+			return null;
 		},
 	},
 };
