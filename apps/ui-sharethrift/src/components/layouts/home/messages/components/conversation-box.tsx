@@ -19,8 +19,13 @@ export const ConversationBox: React.FC<ConversationBoxProps> = (props) => {
     e.preventDefault();
     if (!messageText.trim()) return;
     
-    await props.onSendMessage(messageText);
-    setMessageText("");
+    try {
+      await props.onSendMessage(messageText);
+      // Only clear input on successful send so users don't lose unsent content on error
+      setMessageText("");
+    } catch {
+      // Error handling is done in the container, don't clear messageText on failure
+    }
   };
 
   return (

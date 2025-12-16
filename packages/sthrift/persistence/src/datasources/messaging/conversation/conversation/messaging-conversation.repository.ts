@@ -70,11 +70,12 @@ export class MessagingConversationRepositoryImpl implements MessagingConversatio
 			return toDomainMessage(message, author);
 		} catch (error) {
 			// Scoped, contextual logging around external messaging service call
-			// Keeping the message concise but with enough context for debugging/observability
+			// Normalize error to avoid logging sensitive information from messaging service
+			const errorMessage = error instanceof Error ? error.message : 'Unknown error';
 			console.error('MessagingConversationRepository.sendMessage failed', {
 				conversationId: conversation.id ?? conversation.messagingConversationId,
 				authorId,
-				error,
+				errorMessage,
 			});
 			throw error;
 		}
