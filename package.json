@@ -61,8 +61,8 @@
         "@playwright/test": "^1.55.1",
         "@sonar/scan": "^4.3.0",
         "@types/node": "^24.7.2",
-        "@vitest/browser-playwright": "^4.0.15",
-        "@vitest/coverage-v8": "^4.0.15",
+        "@vitest/browser-playwright": "catalog:",
+        "@vitest/coverage-v8": "catalog:",
         "azurite": "^3.35.0",
         "concurrently": "^9.1.2",
         "cpx2": "^3.0.2",
@@ -74,6 +74,6 @@
         "turbo": "^2.5.8",
         "typescript": "^5.8.3",
         "vite": "^7.0.4",
-        "vitest": "^4.0.15"
+        "vitest": "catalog:"
     }
 }

@@ -31,6 +31,6 @@
 		"supertest": "^7.0.0",
 		"tsc-watch": "^7.1.1",
 		"typescript": "^5.8.3",
-		"vitest": "^4.0.15"
+		"vitest": "catalog:"
 	}
 }
