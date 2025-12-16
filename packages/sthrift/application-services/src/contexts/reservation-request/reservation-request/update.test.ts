@@ -334,4 +334,98 @@ test.for(feature, ({ Scenario, BeforeEachScenario }) => {
 			});
 		},
 	);
+
+	Scenario(
+		'Auto-reject continues when individual rejection fails',
+		({ Given, And, When, Then }) => {
+			// biome-ignore lint/suspicious/noExplicitAny: Test mock variable
+			let overlappingRequest1: any;
+			// biome-ignore lint/suspicious/noExplicitAny: Test mock variable
+			let overlappingRequest2: any;
+
+			Given('a reservation request ID "req-123"', () => {
+				// Already set in command
+			});
+
+			And('there are multiple overlapping requests', () => {
+				overlappingRequest1 = {
+					id: 'req-456',
+					state: 'Requested',
+				};
+				overlappingRequest2 = {
+					id: 'req-789',
+					state: 'Requested',
+				};
+
+				(
+					// biome-ignore lint/suspicious/noExplicitAny: Test mock access
+					mockDataSources.readonlyDataSource as any
+				).ReservationRequest.ReservationRequest.ReservationRequestReadRepo.queryOverlapByListingIdAndReservationPeriod.mockResolvedValue(
+					[
+						{ id: 'req-123', state: 'Requested' },
+						overlappingRequest1,
+						overlappingRequest2,
+					],
+				);
+			});
+
+			And('one rejection will fail', () => {
+				// First call returns the request, second call throws error, third succeeds
+				mockRepo.getById
+					.mockResolvedValueOnce(mockReservationRequest) // Main request
+					.mockRejectedValueOnce(new Error('Database error')) // First overlap fails
+					.mockResolvedValueOnce(overlappingRequest2); // Second overlap succeeds
+			});
+
+			When('the update command is executed with state "Accepted"', async () => {
+				command.state = 'Accepted';
+
+				const updateFn = update(mockDataSources);
+				result = await updateFn(command);
+			});
+
+			Then('the main request should still be accepted', () => {
+				expect(mockReservationRequest.state).toBe('Accepted');
+				expect(result).toBeDefined();
+			});
+
+			And('the second overlapping request should be rejected', () => {
+				expect(overlappingRequest2.state).toBe('Rejected');
+			});
+		},
+	);
+
+	Scenario(
+		'Update succeeds even when auto-reject query fails',
+		({ Given, And, When, Then }) => {
+			Given('a reservation request ID "req-123"', () => {
+				// Already set in command
+			});
+
+			And('the overlap query will fail', () => {
+				(
+					// biome-ignore lint/suspicious/noExplicitAny: Test mock access
+					mockDataSources.readonlyDataSource as any
+				).ReservationRequest.ReservationRequest.ReservationRequestReadRepo.queryOverlapByListingIdAndReservationPeriod.mockRejectedValue(
+					new Error('Query failed'),
+				);
+			});
+
+			When('the update command is executed with state "Accepted"', async () => {
+				command.state = 'Accepted';
+
+				const updateFn = update(mockDataSources);
+				result = await updateFn(command);
+			});
+
+			Then(
+				'the main update should still succeed despite auto-reject failure',
+				() => {
+					expect(mockReservationRequest.state).toBe('Accepted');
+					expect(result).toBeDefined();
+					expect(result?.id).toBe('req-123');
+				},
+			);
+		},
+	);
 });

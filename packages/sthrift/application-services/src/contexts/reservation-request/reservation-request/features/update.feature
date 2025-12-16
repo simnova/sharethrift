@@ -42,3 +42,17 @@ Feature: Updating a reservation request
     Then the reservation request state should be updated to "Accepted"
     And the closeRequestedBySharer flag should be set to true
     And the update operation should succeed
+
+  Scenario: Auto-reject continues when individual rejection fails
+    Given a reservation request ID "req-123"
+    And there are multiple overlapping requests
+    And one rejection will fail
+    When the update command is executed with state "Accepted"
+    Then the main request should still be accepted
+    And the second overlapping request should be rejected
+
+  Scenario: Update succeeds even when auto-reject query fails
+    Given a reservation request ID "req-123"
+    And the overlap query will fail
+    When the update command is executed with state "Accepted"
+    Then the main update should still succeed despite auto-reject failure

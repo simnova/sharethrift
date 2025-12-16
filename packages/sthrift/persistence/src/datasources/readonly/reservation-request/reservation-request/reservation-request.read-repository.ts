@@ -378,6 +378,6 @@ export class ReservationRequestReadRepositoryImpl
 export const getReservationRequestReadRepository = (
 	models: ModelsContext,
 	passport: Domain.Passport,
-) => {
+): ReservationRequestReadRepository => {
 	return new ReservationRequestReadRepositoryImpl(models, passport);
 };
