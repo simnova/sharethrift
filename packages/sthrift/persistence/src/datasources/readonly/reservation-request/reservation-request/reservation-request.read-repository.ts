@@ -198,6 +198,17 @@ export class ReservationRequestReadRepositoryImpl
 	): Promise<
 		Domain.Contexts.ReservationRequest.ReservationRequest.ReservationRequestEntityReference[]
 	> {
+		// Strongly typed aggregation result with joined documents
+		type AggregateResult = Omit<
+			Models.ReservationRequest.ReservationRequest,
+			'listing' | 'reserver'
+		> & {
+			listingDoc: unknown;
+			reserverDoc: unknown;
+			listing: Models.ReservationRequest.ReservationRequest['listing'];
+			reserver: Models.ReservationRequest.ReservationRequest['reserver'];
+		};
+
 		// Use aggregation pipeline to join listings and filter by sharerId
 		const pipeline: PipelineStage[] = [
 			{
@@ -233,7 +244,7 @@ export class ReservationRequestReadRepositoryImpl
 			pipeline.push({ $sort: options.sort } as PipelineStage);
 		}
 		const docs =
-			await this.models.ReservationRequest.ReservationRequest.aggregate(
+			await this.models.ReservationRequest.ReservationRequest.aggregate<AggregateResult>(
 				pipeline,
 			).exec();
 
@@ -244,8 +255,18 @@ export class ReservationRequestReadRepositoryImpl
 	 * Private helper to map aggregation results to domain entities
 	 * Handles document reshaping, hydration, and domain conversion
 	 */
-	private mapAggregateResultsToDomain(
-		docs: unknown[],
+	private mapAggregateResultsToDomain<
+		T extends Omit<
+			Models.ReservationRequest.ReservationRequest,
+			'listing' | 'reserver'
+		> & {
+			listingDoc: unknown;
+			reserverDoc: unknown;
+			listing: Models.ReservationRequest.ReservationRequest['listing'];
+			reserver: Models.ReservationRequest.ReservationRequest['reserver'];
+		},
+	>(
+		docs: T[],
 	): Domain.Contexts.ReservationRequest.ReservationRequest.ReservationRequestEntityReference[] {
 		const hydrate =
 			typeof this.models.ReservationRequest.ReservationRequest.hydrate ===
@@ -256,23 +277,26 @@ export class ReservationRequestReadRepositoryImpl
 				: undefined;
 
 		// Map aggregation results back to proper document structure
-		const docsWithRelations = docs.map((doc) => {
-			const { listingDoc, reserverDoc, ...rest } = doc as {
-				listingDoc?: unknown;
-				reserverDoc?: unknown;
-				[key: string]: unknown;
-			};
-			return {
-				...rest,
-				listing: listingDoc ?? rest.listing,
-				reserver: reserverDoc ?? rest.reserver,
-			};
-		});
+		// Use explicit typing to prevent index signature widening
+		const docsWithRelations: Models.ReservationRequest.ReservationRequest[] =
+			docs.map((doc) => {
+				const { listingDoc, reserverDoc, ...restProps } = doc;
+				// Reconstruct with proper ReservationRequest typing
+				const reconstructed: Models.ReservationRequest.ReservationRequest = {
+					...(restProps as Omit<
+						Models.ReservationRequest.ReservationRequest,
+						'listing' | 'reserver'
+					>),
+					listing: (listingDoc ?? restProps.listing) as Models.ReservationRequest.ReservationRequest['listing'],
+					reserver: (reserverDoc ?? restProps.reserver) as Models.ReservationRequest.ReservationRequest['reserver'],
+				};
+				return reconstructed;
+			});
 
 		// Hydrate documents and convert to domain
 		const hydratedDocs = hydrate
 			? docsWithRelations.map((doc) => hydrate(doc))
-			: (docsWithRelations as Models.ReservationRequest.ReservationRequest[]);
+			: docsWithRelations;
 
 		return hydratedDocs.map((doc) =>
 			this.converter.toDomain(doc, this.passport),
