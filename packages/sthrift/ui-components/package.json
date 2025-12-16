@@ -8,7 +8,7 @@
 	],
 	"exports": {
 		".": {
-      "vitest": "./src/index.ts",     
+			"vitest": "./src/index.ts",
 			"types": "./dist/src/index.d.ts",
 			"default": "./dist/src/index.js"
 		},
