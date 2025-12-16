@@ -175,7 +175,7 @@ export const NoListings: Story = {
 					},
 					result: {
 						data: {
-							myListingsAll: [],
+							myListingsAll:  { items: [], total: 0, page: 1, pageSize: 100 },
 						},
 					},
 				},
