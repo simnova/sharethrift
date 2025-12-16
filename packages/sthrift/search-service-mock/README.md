@@ -14,7 +14,7 @@ In-memory search implementation powered by Lunr.js and LiQE for local developmen
 ## Usage
 
 ```typescript
-import { InMemoryCognitiveSearch } from '@cellix/search-service-mock';
+import { InMemoryCognitiveSearch } from '@sthrift/search-service-mock';
 
 const searchService = new InMemoryCognitiveSearch();
 await searchService.startUp();

@@ -1,5 +1,5 @@
 {
-	"name": "@cellix/search-service-mock",
+	"name": "@sthrift/search-service-mock",
 	"version": "1.0.0",
 	"type": "module",
 	"description": "Mock implementation of search service for local development",

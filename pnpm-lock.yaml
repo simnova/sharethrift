@@ -152,6 +152,9 @@ importers:
       '@sthrift/search-service-index':
         specifier: workspace:*
         version: link:../../packages/sthrift/search-service-index
+      '@sthrift/search-service-mock':
+        specifier: workspace:*
+        version: link:../../packages/sthrift/search-service-mock
       '@sthrift/service-blob-storage':
         specifier: workspace:*
         version: link:../../packages/sthrift/service-blob-storage
@@ -582,37 +585,6 @@ importers:
       typescript:
         specifier: ^5.8.3
         version: 5.8.3
-
-  packages/cellix/search-service-mock:
-    dependencies:
-      '@cellix/search-service':
-        specifier: workspace:*
-        version: link:../search-service
-      liqe:
-        specifier: ^3.8.3
-        version: 3.8.3
-      lunr:
-        specifier: ^2.3.9
-        version: 2.3.9
-    devDependencies:
-      '@cellix/typescript-config':
-        specifier: workspace:*
-        version: link:../typescript-config
-      '@cellix/vitest-config':
-        specifier: workspace:*
-        version: link:../vitest-config
-      '@types/lunr':
-        specifier: ^2.3.7
-        version: 2.3.7
-      '@vitest/coverage-v8':
-        specifier: ^3.2.4
-        version: 3.2.4(@vitest/browser@3.2.4)(vitest@3.2.4)
-      typescript:
-        specifier: ^5.3.0
-        version: 5.8.3
-      vitest:
-        specifier: ^3.2.4
-        version: 3.2.4(@types/debug@4.1.12)(@types/node@24.10.1)(@vitest/browser@3.2.4)(jiti@2.6.1)(jsdom@26.1.0)(lightningcss@1.30.2)(terser@5.44.0)(tsx@4.20.6)(yaml@2.8.1)
 
   packages/cellix/typescript-config: {}
 
@@ -1174,13 +1146,44 @@ importers:
       '@cellix/search-service':
         specifier: workspace:*
         version: link:../../cellix/search-service
-      '@cellix/search-service-mock':
+      '@sthrift/search-service-mock':
         specifier: workspace:*
-        version: link:../../cellix/search-service-mock
+        version: link:../search-service-mock
     devDependencies:
       '@cellix/typescript-config':
         specifier: workspace:*
         version: link:../../cellix/typescript-config
+      '@vitest/coverage-v8':
+        specifier: ^3.2.4
+        version: 3.2.4(@vitest/browser@3.2.4)(vitest@3.2.4)
+      typescript:
+        specifier: ^5.3.0
+        version: 5.8.3
+      vitest:
+        specifier: ^3.2.4
+        version: 3.2.4(@types/debug@4.1.12)(@types/node@24.10.1)(@vitest/browser@3.2.4)(jiti@2.6.1)(jsdom@26.1.0)(lightningcss@1.30.2)(terser@5.44.0)(tsx@4.20.6)(yaml@2.8.1)
+
+  packages/sthrift/search-service-mock:
+    dependencies:
+      '@cellix/search-service':
+        specifier: workspace:*
+        version: link:../../cellix/search-service
+      liqe:
+        specifier: ^3.8.3
+        version: 3.8.3
+      lunr:
+        specifier: ^2.3.9
+        version: 2.3.9
+    devDependencies:
+      '@cellix/typescript-config':
+        specifier: workspace:*
+        version: link:../../cellix/typescript-config
+      '@cellix/vitest-config':
+        specifier: workspace:*
+        version: link:../../cellix/vitest-config
+      '@types/lunr':
+        specifier: ^2.3.7
+        version: 2.3.7
       '@vitest/coverage-v8':
         specifier: ^3.2.4
         version: 3.2.4(@vitest/browser@3.2.4)(vitest@3.2.4)
@@ -25196,7 +25199,7 @@ snapshots:
     optionalDependencies:
       '@types/debug': 4.1.12
       '@types/node': 24.10.1
-      '@vitest/browser': 3.2.4(playwright@1.56.1)(vite@7.1.12(@types/node@24.10.1)(jiti@2.6.1)(lightningcss@1.30.2)(terser@5.44.0)(tsx@4.20.6)(yaml@2.8.1))(vitest@3.2.4)
+      '@vitest/browser': 3.2.4(playwright@1.56.1)(vite@7.2.7(@types/node@24.10.1)(jiti@2.6.1)(lightningcss@1.30.2)(terser@5.44.0)(tsx@4.20.6)(yaml@2.8.1))(vitest@3.2.4)
       jsdom: 26.1.0
     transitivePeerDependencies:
       - jiti

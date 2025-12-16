@@ -22,7 +22,7 @@
 	"license": "MIT",
 	"dependencies": {
 		"@cellix/search-service": "workspace:*",
-		"@cellix/search-service-mock": "workspace:*"
+		"@sthrift/search-service-mock": "workspace:*"
 	},
 	"devDependencies": {
 		"@cellix/typescript-config": "workspace:*",

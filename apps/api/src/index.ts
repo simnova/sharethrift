@@ -27,8 +27,11 @@ import { restHandlerCreator } from '@sthrift/rest';
 import type { PaymentService } from '@cellix/payment-service';
 import { PaymentServiceMock } from '@sthrift/payment-service-mock';
 import { PaymentServiceCybersource } from '@sthrift/payment-service-cybersource';
-import { ServiceSearchIndex } from '@sthrift/search-service-index';
+
 import type { SearchService } from '@cellix/search-service';
+import { InMemoryCognitiveSearch } from '@sthrift/search-service-mock';
+// TODO: Import Azure Cognitive Search implementation when available
+// import { AzureCognitiveSearchService } from '@sthrift/search-service-azure';
 
 const { NODE_ENV } = process.env;
 const isDevelopment = NODE_ENV === 'development';
@@ -52,9 +55,13 @@ isDevelopment
 					: new ServiceMessagingTwilio(),
 			)
 			.registerInfrastructureService(
-isDevelopment ? new PaymentServiceMock() : new PaymentServiceCybersource(),
+				isDevelopment ? new PaymentServiceMock() : new PaymentServiceCybersource(),
 			)
-			.registerInfrastructureService(new ServiceSearchIndex());
+			.registerInfrastructureService(
+				isDevelopment
+					? new InMemoryCognitiveSearch()
+					: new InMemoryCognitiveSearch(), // TODO: Replace with AzureCognitiveSearchService() when available
+			);
 	},
 )
 	.setContext((serviceRegistry) => {
@@ -75,7 +82,7 @@ serviceRegistry.getInfrastructureService<ServiceMongoose>(
 		const { domainDataSource } = dataSourcesFactory.withSystemPassport();
 		const searchService =
 			serviceRegistry.getInfrastructureService<SearchService>(
-				ServiceSearchIndex,
+				InMemoryCognitiveSearch,
 			);
 		RegisterEventHandlers(domainDataSource, searchService);
 

@@ -4,7 +4,7 @@ import type {
 	SearchOptions,
 	SearchDocumentsResult,
 } from '@cellix/search-service';
-import { InMemoryCognitiveSearch } from '@cellix/search-service-mock';
+import { InMemoryCognitiveSearch } from '@sthrift/search-service-mock';
 import { ItemListingSearchIndexSpec } from './indexes/item-listing-search-index.js';
 
 /**
