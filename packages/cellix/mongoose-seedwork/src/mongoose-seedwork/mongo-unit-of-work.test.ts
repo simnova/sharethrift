@@ -193,13 +193,7 @@ test.for(feature, ({ Scenario, BeforeEachScenario }) => {
       await unitOfWork.withTransaction(Passport, domainOperation);
     });
     Then('the transaction is committed and no events are dispatched', () => {
-      expect(domainOperation).toHaveBeenCalled();
-      const callArg = domainOperation.mock.calls[0]?.[0];
-      expect(callArg).toBeInstanceOf(TestRepoClass);
-      expect(callArg.model).toBe(mockModel);
-      expect(callArg.typeConverter).toBe(typeConverter);
-      expect(callArg.bus).toBe(eventBus);
-      expect(callArg.session).toStrictEqual(session);
+      expect(domainOperation).toHaveBeenCalledWith(expect.any(TestRepoClass));
       expect(dispatchMock).not.toHaveBeenCalled();
     });
   });

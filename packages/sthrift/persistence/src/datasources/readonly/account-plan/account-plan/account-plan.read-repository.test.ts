@@ -6,52 +6,39 @@ import { AccountPlanReadRepositoryImpl, getAccountPlanReadRepository } from './a
 
 // Mock the converter
 vi.mock('../../../domain/account-plan/account-plan/account-plan.domain-adapter.ts', () => {
-	const MockAccountPlanConverter = vi.fn();
-	// biome-ignore lint/complexity/useArrowFunction: Must be function for constructor compatibility
-	MockAccountPlanConverter.mockImplementation(function() {
+	// biome-ignore lint/complexity/useArrowFunction: constructor must use function syntax for 'new' compatibility
+	const AccountPlanConverter = vi.fn(function () {
 		return {
 			toDomain: vi.fn((doc) => ({ id: doc._id, name: doc.name })),
 		};
 	});
-	
-	return {
-		AccountPlanConverter: MockAccountPlanConverter,
-	};
+
+	return { AccountPlanConverter };
 });
 
 vi.mock('../account-plan/account-plan.data.ts', () => {
-	const MockAccountPlanDataSourceImpl = vi.fn();
-	// biome-ignore lint/complexity/useArrowFunction: Must be function for constructor compatibility
-	MockAccountPlanDataSourceImpl.mockImplementation(function() {
+	// biome-ignore lint/complexity/useArrowFunction: constructor must use function syntax for 'new' compatibility
+	const AccountPlanDataSourceImpl = vi.fn(function () {
 		return {
 			find: vi.fn(),
 			findById: vi.fn(),
 			findOne: vi.fn(),
 		};
 	});
-	
-	return {
-		AccountPlanDataSourceImpl: MockAccountPlanDataSourceImpl,
-	};
+
+	return { AccountPlanDataSourceImpl };
 });
 
 function makeModelsContext(): ModelsContext {
-	return {
-		// biome-ignore lint/suspicious/noExplicitAny: Unused models stubbed for interface compliance
-		User: {} as any,
-		// biome-ignore lint/suspicious/noExplicitAny: Unused models stubbed for interface compliance
-		Listing: {} as any,
-		// biome-ignore lint/suspicious/noExplicitAny: Unused models stubbed for interface compliance
-		Conversation: {} as any,
-		// biome-ignore lint/suspicious/noExplicitAny: Unused models stubbed for interface compliance
-		ReservationRequest: {} as any,
-		// biome-ignore lint/suspicious/noExplicitAny: Unused models stubbed for interface compliance
-		Role: {} as any,
-		// biome-ignore lint/suspicious/noExplicitAny: Unused models stubbed for interface compliance
-		AccountPlan: {} as any,
-		// biome-ignore lint/suspicious/noExplicitAny: Unused models stubbed for interface compliance
-		AppealRequest: {} as any,
+	// Only AccountPlan.AccountPlanModel is used by AccountPlanReadRepositoryImpl
+	const partialContext = {
+		AccountPlan: {
+			AccountPlanModel: {},
+		},
 	};
+
+	// Other members are irrelevant for these tests and safely stubbed via cast
+	return partialContext as unknown as ModelsContext;
 }
 
 function makePassport(): Domain.Passport {

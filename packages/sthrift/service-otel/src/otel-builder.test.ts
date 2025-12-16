@@ -37,30 +37,26 @@ vi.mock('@azure/monitor-opentelemetry-exporter', () => {
     }
   }
 
-  // Create mockable constructor functions
-  const AzureMonitorTraceExporterImpl = vi.fn();
-  AzureMonitorTraceExporterImpl.mockImplementation(function(this: InstanceType<typeof TraceExporter>, args: Record<string, unknown>) {
+  const AzureMonitorTraceExporter = vi.fn(function (this: TraceExporter, args: Record<string, unknown>) {
     return new TraceExporter(args);
   });
 
-  const AzureMonitorMetricExporterImpl = vi.fn();
-  AzureMonitorMetricExporterImpl.mockImplementation(function(this: InstanceType<typeof MetricExporter>, args: Record<string, unknown>) {
+  const AzureMonitorMetricExporter = vi.fn(function (this: MetricExporter, args: Record<string, unknown>) {
     return new MetricExporter(args);
   });
 
-  const AzureMonitorLogExporterImpl = vi.fn();
-  AzureMonitorLogExporterImpl.mockImplementation(function(this: InstanceType<typeof LogExporter>, args: Record<string, unknown>) {
+  const AzureMonitorLogExporter = vi.fn(function (this: LogExporter, args: Record<string, unknown>) {
     return new LogExporter(args);
   });
 
   return {
-    AzureMonitorTraceExporter: AzureMonitorTraceExporterImpl,
-    AzureMonitorMetricExporter: AzureMonitorMetricExporterImpl,
-    AzureMonitorLogExporter: AzureMonitorLogExporterImpl,
+    AzureMonitorTraceExporter,
+    AzureMonitorMetricExporter,
+    AzureMonitorLogExporter,
     __test: {
-      traceExporterMock: AzureMonitorTraceExporterImpl,
-      metricExporterMock: AzureMonitorMetricExporterImpl,
-      logExporterMock: AzureMonitorLogExporterImpl,
+      traceExporterMock: AzureMonitorTraceExporter,
+      metricExporterMock: AzureMonitorMetricExporter,
+      logExporterMock: AzureMonitorLogExporter,
       TraceExporter,
       MetricExporter,
       LogExporter,
