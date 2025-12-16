@@ -87,8 +87,8 @@ test.for(feature, ({ Scenario, BeforeEachScenario }) => {
       // handler1 and handler2 are already defined
     });
     When('both handlers are registered', () => {
-      InProcEventBusInstance.register(TestEvent, handler1 as (payload: { test: string }) => Promise<void>);
-      InProcEventBusInstance.register(TestEvent, handler2 as (payload: { test: string }) => Promise<void>);
+      InProcEventBusInstance.register(TestEvent, handler1);
+      InProcEventBusInstance.register(TestEvent, handler2);
     });
     And('the event is dispatched', async () => {
       await InProcEventBusInstance.dispatch(TestEvent, { test: 'data' });
@@ -105,8 +105,8 @@ test.for(feature, ({ Scenario, BeforeEachScenario }) => {
       handler2 = vi.fn().mockResolvedValue(undefined);
     });
     When('one handler throws and both are registered', () => {
-      InProcEventBusInstance.register(TestEvent, handler1 as (payload: { test: string }) => Promise<void>);
-      InProcEventBusInstance.register(TestEvent, handler2 as (payload: { test: string }) => Promise<void>);
+      InProcEventBusInstance.register(TestEvent, handler1);
+      InProcEventBusInstance.register(TestEvent, handler2);
     });
     And('the event is dispatched', async () => {
       try {
@@ -130,8 +130,8 @@ test.for(feature, ({ Scenario, BeforeEachScenario }) => {
       // handlerA, handlerB, TestEventA, TestEventB are already defined
     });
     When('both handlers are registered for different events', () => {
-      InProcEventBusInstance.register(TestEventA, handlerA as (payload: { testA: string }) => Promise<void>);
-      InProcEventBusInstance.register(TestEventB, handlerB as (payload: { testB: string }) => Promise<void>);
+      InProcEventBusInstance.register(TestEventA, handlerA);
+      InProcEventBusInstance.register(TestEventB, handlerB);
     });
     And('each event is dispatched', async () => {
       await InProcEventBusInstance.dispatch(TestEventA, { testA: 'dataA' });
