@@ -1,16 +1,16 @@
 import type { Meta, StoryObj } from '@storybook/react';
-import { expect, within, userEvent } from 'storybook/test';
-import { Messages } from './messages.tsx';
+import { expect, userEvent, within } from 'storybook/test';
+import {
+	ConversationBoxContainerConversationDocument,
+	ConversationBoxContainerSendMessageDocument,
+	HomeConversationListContainerConversationsByUserDocument,
+	HomeConversationListContainerCurrentUserDocument,
+} from '../../../../../generated.tsx';
 import {
 	withMockApolloClient,
 	withMockRouter,
 } from '../../../../../test-utils/storybook-decorators.tsx';
-import {
-	HomeConversationListContainerConversationsByUserDocument,
-	HomeConversationListContainerCurrentUserDocument,
-	ConversationBoxContainerConversationDocument,
-	ConversationBoxContainerSendMessageDocument,
-} from '../../../../../generated.tsx';
+import { Messages } from '../components/messages.tsx';
 
 const mockConversations = [
 	{
@@ -29,7 +29,11 @@ const mockConversations = [
 			account: {
 				__typename: 'PersonalUserAccount',
 				username: 'john_doe',
-				profile: { __typename: 'PersonalUserAccountProfile', firstName: 'John', lastName: 'Doe' },
+				profile: {
+					__typename: 'PersonalUserAccountProfile',
+					firstName: 'John',
+					lastName: 'Doe',
+				},
 			},
 		},
 		reserver: {
@@ -38,7 +42,11 @@ const mockConversations = [
 			account: {
 				__typename: 'PersonalUserAccount',
 				username: 'jane_smith',
-				profile: { __typename: 'PersonalUserAccountProfile', firstName: 'Jane', lastName: 'Smith' },
+				profile: {
+					__typename: 'PersonalUserAccountProfile',
+					firstName: 'Jane',
+					lastName: 'Smith',
+				},
 			},
 		},
 		createdAt: '2025-01-15T09:00:00Z',
@@ -71,7 +79,11 @@ const mockConversationDetail = {
 		account: {
 			__typename: 'PersonalUserAccount',
 			username: 'john_doe',
-			profile: { __typename: 'PersonalUserAccountProfile', firstName: 'John', lastName: 'Doe' },
+			profile: {
+				__typename: 'PersonalUserAccountProfile',
+				firstName: 'John',
+				lastName: 'Doe',
+			},
 		},
 	},
 	reserver: {
@@ -80,7 +92,11 @@ const mockConversationDetail = {
 		account: {
 			__typename: 'PersonalUserAccount',
 			username: 'jane_smith',
-			profile: { __typename: 'PersonalUserAccountProfile', firstName: 'Jane', lastName: 'Smith' },
+			profile: {
+				__typename: 'PersonalUserAccountProfile',
+				firstName: 'Jane',
+				lastName: 'Smith',
+			},
 		},
 	},
 	messages: [
@@ -337,7 +353,9 @@ export const ClickAndViewConversation: Story = {
 export const NoConversationSelected: Story = {
 	play: async ({ canvasElement }) => {
 		await expect(canvasElement).toBeTruthy();
-		const placeholderText = canvasElement.textContent?.includes('Select a conversation');
+		const placeholderText = canvasElement.textContent?.includes(
+			'Select a conversation',
+		);
 		await expect(placeholderText).toBeTruthy();
 	},
 };
@@ -450,19 +468,22 @@ export const SendMessageFlow: Story = {
 	play: async ({ canvasElement }) => {
 		const canvas = within(canvasElement);
 		await expect(canvasElement).toBeTruthy();
-		
+
 		// Click on a conversation to select it
 		const conversationItems = canvas.queryAllByText(/Cordless Drill/i);
 		const firstItem = conversationItems[0];
 		if (firstItem) {
 			await userEvent.click(firstItem);
 		}
-		
+
 		// Wait for conversation to load and find the message input
 		// Note: The actual typing and sending would require the input to be visible
 		const messageInput = canvas.queryByPlaceholderText(/Type a message/i);
 		if (messageInput) {
-			await userEvent.type(messageInput, 'Hello, I would like to reserve this!');
+			await userEvent.type(
+				messageInput,
+				'Hello, I would like to reserve this!',
+			);
 			const sendButton = canvas.queryByRole('button', { name: /send/i });
 			if (sendButton) {
 				await userEvent.click(sendButton);
@@ -538,14 +559,14 @@ export const SendMessageError: Story = {
 	play: async ({ canvasElement }) => {
 		const canvas = within(canvasElement);
 		await expect(canvasElement).toBeTruthy();
-		
+
 		// Click on a conversation to select it
 		const conversationItems = canvas.queryAllByText(/Cordless Drill/i);
 		const firstItem = conversationItems[0];
 		if (firstItem) {
 			await userEvent.click(firstItem);
 		}
-		
+
 		// Find message input and send button
 		const messageInput = canvas.queryByPlaceholderText(/Type a message/i);
 		if (messageInput) {
@@ -607,7 +628,7 @@ export const LoadingConversation: Story = {
 	play: async ({ canvasElement }) => {
 		const canvas = within(canvasElement);
 		await expect(canvasElement).toBeTruthy();
-		
+
 		// Click on a conversation to select it - should show loading state
 		const conversationItems = canvas.queryAllByText(/Cordless Drill/i);
 		const firstItem = conversationItems[0];
@@ -667,14 +688,14 @@ export const EmptyMessages: Story = {
 	play: async ({ canvasElement }) => {
 		const canvas = within(canvasElement);
 		await expect(canvasElement).toBeTruthy();
-		
+
 		// Click on a conversation with no messages
 		const conversationItems = canvas.queryAllByText(/Cordless Drill/i);
 		const firstItem = conversationItems[0];
 		if (firstItem) {
 			await userEvent.click(firstItem);
 		}
-		
+
 		// Check for "No messages" empty state
 		const emptyState = canvas.queryByText(/No messages yet/i);
 		await expect(emptyState || true).toBeTruthy();
@@ -764,7 +785,7 @@ export const MultipleMessages: Story = {
 	play: async ({ canvasElement }) => {
 		const canvas = within(canvasElement);
 		await expect(canvasElement).toBeTruthy();
-		
+
 		// Click on a conversation to view multiple messages
 		const conversationItems = canvas.queryAllByText(/Cordless Drill/i);
 		const firstItem = conversationItems[0];
