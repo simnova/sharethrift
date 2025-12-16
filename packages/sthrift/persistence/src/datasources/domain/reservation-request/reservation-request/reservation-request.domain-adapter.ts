@@ -66,7 +66,9 @@ export class ReservationRequestDomainAdapter
 			throw new Error('listing is not populated');
 		}
 		if (this.doc.listing instanceof MongooseSeedwork.ObjectId) {
-			throw new Error('listing is not populated or is not of the correct type');
+			return {
+				id: this.doc.listing.toString(),
+			} as Domain.Contexts.Listing.ItemListing.ItemListingEntityReference;
 		}
 		return new ItemListingDomainAdapter(
 			this.doc.listing as Models.Listing.ItemListing,
@@ -99,9 +101,9 @@ export class ReservationRequestDomainAdapter
 			throw new Error('reserver is not populated');
 		}
 		if (this.doc.reserver instanceof MongooseSeedwork.ObjectId) {
-			throw new Error(
-				'reserver is not populated or is not of the correct type',
-			);
+			return {
+				id: this.doc.reserver.toString(),
+			} as Domain.Contexts.User.UserEntityReference;
 		}
 		// Check userType discriminator to determine which adapter to use
 		const reserverDoc = this.doc.reserver as
@@ -110,12 +112,12 @@ export class ReservationRequestDomainAdapter
 		if (reserverDoc.userType === 'admin-user') {
 			return new AdminUserDomainAdapter(
 				this.doc.reserver as Models.User.AdminUser,
-			); 
+			);
 		}
 		const adapter = new PersonalUserDomainAdapter(
 			this.doc.reserver as Models.User.PersonalUser,
 		);
-		return adapter.entityReference as Domain.Contexts.User.PersonalUser.PersonalUserEntityReference;
+		return adapter.entityReference;
 	}
 
 	async loadReserver(): Promise<
@@ -140,7 +142,7 @@ export class ReservationRequestDomainAdapter
 		const adapter = new PersonalUserDomainAdapter(
 			this.doc.reserver as Models.User.PersonalUser,
 		);
-		return adapter.entityReference as Domain.Contexts.User.PersonalUser.PersonalUserEntityReference;
+		return adapter.entityReference;
 	}
 
 	set reserver(user:

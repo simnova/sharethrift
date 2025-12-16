@@ -26,7 +26,7 @@ function buildPagedArgs(
   return {
     page: args.page,
     pageSize: args.pageSize,
-    ...(args.searchText != null ? { searchText: args.searchText } : {}),
+    ...(args.searchText == null ? {} : { searchText: args.searchText }),
     ...(args.statusFilters ? { statusFilters: [...args.statusFilters] } : {}),
     ...(args.sorter
       ? {
@@ -107,7 +107,6 @@ const itemListingResolvers: Resolvers = {
 				sharingPeriodEnd: new Date(args.input.sharingPeriodEnd),
 				images: [...(args.input.images ?? [])],
 				isDraft: args.input.isDraft ?? false,
-				listingType: 'item-listing',
 			};
 
 			return await context.applicationServices.Listing.ItemListing.create(

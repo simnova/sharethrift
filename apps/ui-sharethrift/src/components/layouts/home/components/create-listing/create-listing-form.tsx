@@ -5,16 +5,7 @@ import dayjs from 'dayjs';
 const { TextArea } = Input;
 const { RangePicker } = DatePicker;
 
-export interface CreateListingFormData {
-	title: string;
-	description: string;
-	category: string;
-	location: string;
-	sharingPeriod: [string, string];
-	images: string[];
-}
-
-export interface ListingFormProps {
+interface ListingFormProps {
 	categories: string[];
 	isLoading: boolean;
 	maxCharacters: number;
@@ -157,4 +148,3 @@ export const ListingForm: React.FC<ListingFormProps> = ({
 	);
 };
 
-export default ListingForm;

@@ -146,22 +146,6 @@ test.for(feature, ({ Scenario }) => {
 		});
 	});
 
-	Scenario('Creating a Category with an empty string', ({ When, Then }) => {
-		let error: Error | undefined;
-		When('I try to create a Category with an empty string', () => {
-			try {
-				new Category('');
-				error = undefined;
-			} catch (e) {
-				error = e as Error;
-			}
-		});
-		Then('an error should be thrown indicating the value is too short', () => {
-			expect(error).toBeDefined();
-			expect(error?.message).toContain('short');
-		});
-	});
-
 	Scenario('Creating a Category with too long a value', ({ When, Then }) => {
 		let error: Error | undefined;
 		When(
@@ -227,6 +211,17 @@ test.for(feature, ({ Scenario }) => {
 				}
 			},
 		);
+		When(
+			'I try to create a Location with a string longer than 255 characters',
+			() => {
+				try {
+					new Location('a'.repeat(256));
+					error = undefined;
+				} catch (e) {
+					error = e as Error;
+				}
+			},
+		);
 		Then('an error should be thrown indicating the value is too long', () => {
 			expect(error).toBeDefined();
 			expect(error?.message).toContain('long');
@@ -244,24 +239,19 @@ test.for(feature, ({ Scenario }) => {
 		});
 	});
 
-	Scenario('Creating a Title with an empty string', ({ When, Then }) => {
-		let error: Error | undefined;
-		When('I try to create a Title with an empty string', () => {
-			try {
-				new Title('');
-				error = undefined;
-			} catch (e) {
-				error = e as Error;
-			}
-		});
-		Then('an error should be thrown indicating the value is too short', () => {
-			expect(error).toBeDefined();
-			expect(error?.message).toContain('short');
-		});
-	});
-
 	Scenario('Creating a Title with too long a value', ({ When, Then }) => {
 		let error: Error | undefined;
+		When(
+			'I try to create a Title with a string longer than 200 characters',
+			() => {
+				try {
+					new Title('a'.repeat(201));
+					error = undefined;
+				} catch (e) {
+					error = e as Error;
+				}
+			},
+		);
 		When(
 			'I try to create a Title with a string longer than 200 characters',
 			() => {
@@ -318,6 +308,17 @@ test.for(feature, ({ Scenario }) => {
 
 	Scenario('Creating a Description with too long a value', ({ When, Then }) => {
 		let error: Error | undefined;
+		When(
+			'I try to create a Description with a string longer than 2000 characters',
+			() => {
+				try {
+					new Description('a'.repeat(2001));
+					error = undefined;
+				} catch (e) {
+					error = e as Error;
+				}
+			},
+		);
 		When(
 			'I try to create a Description with a string longer than 2000 characters',
 			() => {

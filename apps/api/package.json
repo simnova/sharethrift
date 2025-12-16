@@ -21,7 +21,6 @@
 	},
 	"dependencies": {
 		"@azure/functions": "^4.0.0",
-		"@azure/identity": "^4.8.0",
 		"@cellix/api-services-spec": "workspace:*",
 		"@cellix/messaging-service": "workspace:*",
 		"@cellix/mongoose-seedwork": "workspace:*",
@@ -31,6 +30,7 @@
 		"@sthrift/event-handler": "workspace:*",
 		"@sthrift/graphql": "workspace:*",
 		"@sthrift/messaging-service-mock": "workspace:*",
+		"@sthrift/messaging-service-twilio": "workspace:*",
 		"@sthrift/persistence": "workspace:*",
 		"@sthrift/rest": "workspace:*",
 		"@sthrift/service-blob-storage": "workspace:*",
@@ -39,9 +39,7 @@
 		"@sthrift/payment-service-cybersource": "workspace:*",
 		"@sthrift/service-mongoose": "workspace:*",
 		"@sthrift/service-otel": "workspace:*",
-		"@sthrift/service-token-validation": "workspace:*",
-		"@sthrift/messaging-service-twilio": "workspace:*",
-		"twilio": "^5.8.0"
+		"@sthrift/service-token-validation": "workspace:*"
 	},
 	"devDependencies": {
 		"@cellix/typescript-config": "workspace:*",

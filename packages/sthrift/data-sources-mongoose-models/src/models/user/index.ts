@@ -21,4 +21,4 @@ export {
 	type AdminUserAccountProfileLocation,
 } from './admin-user.model.ts';
 
-export { UserModelFactory } from './user.model.ts';
+export { UserModelFactory, type User, type UserModelType } from './user.model.ts';
