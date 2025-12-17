@@ -55,7 +55,7 @@ function makeTestContext(overrides?: {
 				},
 			},
 		},
-	} as DataSources;
+	} as unknown as DataSources;
 
 	mockReadRepo.getById.mockResolvedValue(conversation);
 
@@ -203,10 +203,9 @@ test.for(feature, ({ Scenario }) => {
 					content: 'Hello',
 				},
 			});
-			// Override conversation to have different sharer/reserver after creation
-			ctx.conversation.sharer = { id: 'sharer-789' } as any;
-			ctx.conversation.reserver = { id: 'reserver-456' } as any;
-			ctx.mockReadRepo.getById.mockResolvedValue(ctx.conversation);
+			// Override conversation to have different sharer/reserver that don't match authorId
+			(ctx.conversation.sharer as { id: string }).id = 'sharer-789';
+			(ctx.conversation.reserver as { id: string }).id = 'reserver-456';
 		});
 
 		And('I am not a participant in the conversation', () => {
