@@ -1,7 +1,7 @@
 ---
 sidebar_position: 22
 sidebar_label: 0022 Existing Azure Upload
-description: "Existing Azure Upload using the Valet Key architectural pattern with direct client uploads with Shared Key authorization."
+description: "Existing Azure Upload using the Valet Key architectural pattern with direct client uploads and Shared Key authorization."
 status: proposed
 date: 2025-10-21
 deciders: gidich
@@ -72,7 +72,7 @@ Chosen option: **Option 2: Shared Key (current approach)**, because Shared Keyâ€
 
 ## Consequences
 
-- Good, because uploading directly from the client to Azure Blob Storage using Shared-key significantly reduces backend bandwidth usage and infrastructure costs.
+- Good, because uploading directly from the client to Azure Blob Storage using Shared key significantly reduces backend bandwidth usage and infrastructure costs.
 - Good, because versioning support allows easy rollback in case of corruption or malicious file detection.
 - Bad, because malware scanning occurs after upload, introducing a brief exposure window before a file is fully validated.
 
