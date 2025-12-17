@@ -21,11 +21,7 @@ export default defineConfig(
             'src/test/**',
 			'**/*.d.ts',
 			'src/generated/**',
-            'eslint.config.js',
-			// Exclude components from coverage - they're validated via Storybook visual tests
-			'**/components/**',
-			'src/components/**/*.ts',
-			'src/components/**/*.tsx',
+            'eslint.config.js'
 		],
 	}),
 );
