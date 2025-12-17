@@ -39,7 +39,7 @@ describe('ReservationRequestNotificationService', () => {
 						const mockRepo = {
 							getById: vi.fn().mockResolvedValue(queued.value),
 						};
-						return callback(mockRepo);
+						return Promise.resolve(callback(mockRepo));
 					}
 				}
 				
@@ -51,10 +51,10 @@ describe('ReservationRequestNotificationService', () => {
 					const mockRepo = {
 						getById: vi.fn().mockResolvedValue(returnValue),
 					};
-					return callback(mockRepo);
+					return Promise.resolve(callback(mockRepo));
 				}
 				// No value set yet, return undefined
-				return callback({ getById: vi.fn().mockResolvedValue(undefined) });
+				return Promise.resolve(callback({ getById: vi.fn().mockResolvedValue(undefined) }));
 			});
 
 			// Override mockResolvedValue to store the value

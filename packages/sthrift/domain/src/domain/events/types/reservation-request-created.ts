@@ -1,6 +1,6 @@
 import { DomainSeedwork } from '@cellix/domain-seedwork';
 
-export interface ReservationRequestCreatedProps {
+interface ReservationRequestCreatedProps {
 	reservationRequestId: string;
 	listingId: string;
 	reserverId: string;
