@@ -29,9 +29,7 @@ import { PaymentServiceMock } from '@sthrift/payment-service-mock';
 import { PaymentServiceCybersource } from '@sthrift/payment-service-cybersource';
 
 import type { SearchService } from '@cellix/search-service';
-import { InMemoryCognitiveSearch } from '@sthrift/search-service-mock';
-// TODO: Import Azure Cognitive Search implementation when available
-// import { AzureCognitiveSearchService } from '@sthrift/search-service-azure';
+import { ServiceSearchIndex } from '@sthrift/search-service-index';
 
 const { NODE_ENV } = process.env;
 const isDevelopment = NODE_ENV === 'development';
@@ -57,8 +55,7 @@ isDevelopment
 			.registerInfrastructureService(
 				isDevelopment ? new PaymentServiceMock() : new PaymentServiceCybersource(),
 			)
-			// TODO: Add isDevelopment ternary when AzureCognitiveSearchService is implemented
-			.registerInfrastructureService(new InMemoryCognitiveSearch());
+			.registerInfrastructureService(new ServiceSearchIndex());
 	},
 )
 	.setContext((serviceRegistry) => {
@@ -76,9 +73,8 @@ serviceRegistry.getInfrastructureService<ServiceMongoose>(
 		? serviceRegistry.getInfrastructureService<PaymentService>(PaymentServiceMock)
 		: serviceRegistry.getInfrastructureService<PaymentService>(PaymentServiceCybersource);
 
-	// TODO: Add isDevelopment ternary when AzureCognitiveSearchService is implemented
 	const searchService =
-		serviceRegistry.getInfrastructureService<SearchService>(InMemoryCognitiveSearch);
+		serviceRegistry.getInfrastructureService<SearchService>(ServiceSearchIndex);
 
 	const { domainDataSource } = dataSourcesFactory.withSystemPassport();
 		RegisterEventHandlers(domainDataSource, searchService);
