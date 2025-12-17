@@ -149,9 +149,6 @@ importers:
       '@sthrift/rest':
         specifier: workspace:*
         version: link:../../packages/sthrift/rest
-      '@sthrift/search-service-index':
-        specifier: workspace:*
-        version: link:../../packages/sthrift/search-service-index
       '@sthrift/search-service-mock':
         specifier: workspace:*
         version: link:../../packages/sthrift/search-service-mock
