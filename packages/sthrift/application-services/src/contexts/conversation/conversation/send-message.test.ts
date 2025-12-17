@@ -282,4 +282,114 @@ test.for(feature, ({ Scenario }) => {
 			expect(error?.message).toContain('Service connection timeout');
 		});
 	});
+
+	Scenario('Sharer can send message in conversation', ({ Given, When, Then, And }) => {
+		Given('a valid conversation exists with sharer ID "sharer-123" and reserver ID "reserver-456"', () => {
+			result = undefined;
+			error = undefined;
+			ctx = makeTestContext({
+				conversation: {
+					sharer: { id: 'sharer-123' } as unknown as Domain.Contexts.Conversation.Conversation.ConversationEntityReference['sharer'],
+					reserver: { id: 'reserver-456' } as unknown as Domain.Contexts.Conversation.Conversation.ConversationEntityReference['reserver'],
+				},
+				command: {
+					authorId: 'sharer-123',
+					content: 'Hello from the sharer!',
+				},
+			});
+		});
+
+		And('the current user is the sharer with ID "sharer-123"', () => {
+			// authorId is already set to sharer-123 in the command
+		});
+
+		When('I send a message as the sharer', async () => {
+			ctx.mockMessagingRepo.sendMessage.mockResolvedValue({
+				id: 'msg-sharer-123',
+				messagingMessageId: 'messaging-msg-sharer-123',
+				authorId: { valueOf: () => 'sharer-123' },
+				content: 'Hello from the sharer!',
+				createdAt: new Date(),
+			});
+			try {
+				result = await sendMessage(ctx.dataSources)(ctx.command);
+			} catch (err) {
+				error = err as Error;
+			}
+		});
+
+		Then('the message should be sent successfully with author ID "sharer-123"', () => {
+			expect(error).toBeUndefined();
+			expect(ctx.mockMessagingRepo.sendMessage).toHaveBeenCalledWith(
+				expect.objectContaining({
+					id: 'conv-123',
+					messagingConversationId: 'messaging-conv-123',
+				}),
+				'Hello from the sharer!',
+				'sharer-123',
+			);
+		});
+
+		And('the message should be persisted to the messaging repository', () => {
+			expect(result).toBeDefined();
+			expect(result?.id).toBe('msg-sharer-123');
+			expect(result?.authorId?.valueOf()).toBe('sharer-123');
+			expect(ctx.mockMessagingRepo.sendMessage).toHaveBeenCalledTimes(1);
+		});
+	});
+
+	Scenario('Reserver can send message in conversation', ({ Given, When, Then, And }) => {
+		Given('a valid conversation exists with sharer ID "sharer-123" and reserver ID "reserver-456"', () => {
+			result = undefined;
+			error = undefined;
+			ctx = makeTestContext({
+				conversation: {
+					sharer: { id: 'sharer-123' } as unknown as Domain.Contexts.Conversation.Conversation.ConversationEntityReference['sharer'],
+					reserver: { id: 'reserver-456' } as unknown as Domain.Contexts.Conversation.Conversation.ConversationEntityReference['reserver'],
+				},
+				command: {
+					authorId: 'reserver-456',
+					content: 'Hello from the reserver!',
+				},
+			});
+		});
+
+		And('the current user is the reserver with ID "reserver-456"', () => {
+			// authorId is already set to reserver-456 in the command
+		});
+
+		When('I send a message as the reserver', async () => {
+			ctx.mockMessagingRepo.sendMessage.mockResolvedValue({
+				id: 'msg-reserver-456',
+				messagingMessageId: 'messaging-msg-reserver-456',
+				authorId: { valueOf: () => 'reserver-456' },
+				content: 'Hello from the reserver!',
+				createdAt: new Date(),
+			});
+			try {
+				result = await sendMessage(ctx.dataSources)(ctx.command);
+			} catch (err) {
+				error = err as Error;
+			}
+		});
+
+		Then('the message should be sent successfully with author ID "reserver-456"', () => {
+			expect(error).toBeUndefined();
+			expect(ctx.mockMessagingRepo.sendMessage).toHaveBeenCalledWith(
+				expect.objectContaining({
+					id: 'conv-123',
+					messagingConversationId: 'messaging-conv-123',
+				}),
+				'Hello from the reserver!',
+				'reserver-456',
+			);
+		});
+
+		And('the message should be persisted to the messaging repository', () => {
+			expect(result).toBeDefined();
+			expect(result?.id).toBe('msg-reserver-456');
+			expect(result?.authorId?.valueOf()).toBe('reserver-456');
+			expect(ctx.mockMessagingRepo.sendMessage).toHaveBeenCalledTimes(1);
+		});
+	});
 });
