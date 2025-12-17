@@ -183,49 +183,6 @@ const buildMessagesMocks = ({
 };
 // #endregion Mock Factory
 
-// #region Args-based Mock Derivation
-/**
- * Type definition for story args that drive mock generation.
- * Allows stories to configure behavior through args instead of parameters.
- */
-type MessagesStoryArgs = {
-	conversations?: typeof mockConversations;
-	conversation?: typeof mockConversationDetail;
-	conversationDelay?: number;
-	sendMessageResult?: {
-		__typename: 'SendMessageMutationResult';
-		status: {
-			__typename: 'MutationStatus';
-			success: boolean;
-			errorMessage: string | null;
-		};
-		message: (typeof mockConversationDetail.messages)[0] | null;
-	};
-};
-
-/**
- * Helper that creates a complete story object with args and derived parameters.
- * Eliminates duplication by generating both from a single source of truth.
- */
-const withArgsAndMocks = (
-	storyArgs: Partial<MessagesStoryArgs>,
-	additionalProps: Partial<Story> = {},
-): Story => ({
-	args: storyArgs,
-	parameters: {
-		apolloClient: {
-			mocks: buildMessagesMocks({
-				conversationsByUser: storyArgs.conversations,
-				conversation: storyArgs.conversation,
-				conversationDelay: storyArgs.conversationDelay,
-				sendMessageResult: storyArgs.sendMessageResult,
-			}),
-		},
-	},
-	...additionalProps,
-});
-// #endregion Args-based Mock Derivation
-
 // #region Play Helpers
 /**
  * Opens the first conversation and returns the canvas for further interactions.
@@ -364,9 +321,15 @@ const multipleMessagesConversation = {
 
 export const Default: Story = {};
 
-export const EmptyConversations: Story = withArgsAndMocks({
-	conversations: [],
-});
+export const EmptyConversations: Story = {
+	parameters: {
+		apolloClient: {
+			mocks: buildMessagesMocks({
+				conversationsByUser: [],
+			}),
+		},
+	},
+};
 
 export const MobileView: Story = {
 	parameters: {
@@ -382,9 +345,15 @@ export const ViewConversation: Story = {
 	},
 };
 
-export const WithMultipleConversations: Story = withArgsAndMocks({
-	conversations: multipleConversations,
-});
+export const WithMultipleConversations: Story = {
+	parameters: {
+		apolloClient: {
+			mocks: buildMessagesMocks({
+				conversationsByUser: multipleConversations,
+			}),
+		},
+	},
+};
 
 export const WithPreselectedConversation: Story = {
 	render: (args) => <Messages {...args} />,
@@ -435,80 +404,100 @@ export const MobileNoConversationSelected: Story = {
 	},
 };
 
-export const SendMessageFlow: Story = withArgsAndMocks(
-	{ sendMessageResult: sendMessageSuccessResult },
-	{
-		play: async ({ canvasElement }) => {
-			const canvas = await performSendMessage(
-				canvasElement,
-				'Hello, I would like to reserve this!',
-			);
-
-			// Verify the sent message appears in the conversation thread
-			const sentMessage = await canvas.findByText(
-				/Hello, I would like to reserve this!/i,
-			);
-			await expect(sentMessage).toBeInTheDocument();
+export const SendMessageFlow: Story = {
+	parameters: {
+		apolloClient: {
+			mocks: buildMessagesMocks({
+				sendMessageResult: sendMessageSuccessResult,
+			}),
 		},
 	},
-);
+	play: async ({ canvasElement }) => {
+		const canvas = await performSendMessage(
+			canvasElement,
+			'Hello, I would like to reserve this!',
+		);
+
+		// Verify the sent message appears in the conversation thread
+		const sentMessage = await canvas.findByText(
+			/Hello, I would like to reserve this!/i,
+		);
+		await expect(sentMessage).toBeInTheDocument();
+	},
+};
 
 /** Story to cover error handling when send message fails */
-export const SendMessageError: Story = withArgsAndMocks(
-	{ sendMessageResult: sendMessageErrorResult },
-	{
-		play: async ({ canvasElement }) => {
-			await performSendMessage(canvasElement, 'This message will fail');
-
-			// Error is displayed via Ant Design message toast (ephemeral)
-			// The mutation completes without throwing, so we verify the flow executed
-			await expect(canvasElement).toBeTruthy();
+export const SendMessageError: Story = {
+	parameters: {
+		apolloClient: {
+			mocks: buildMessagesMocks({
+				sendMessageResult: sendMessageErrorResult,
+			}),
 		},
 	},
-);
+	play: async ({ canvasElement }) => {
+		await performSendMessage(canvasElement, 'This message will fail');
+
+		// Error is displayed via Ant Design message toast (ephemeral)
+		// The mutation completes without throwing, so we verify the flow executed
+		await expect(canvasElement).toBeTruthy();
+	},
+};
 
 /** Story to verify conversation loading state with delay */
-export const LoadingConversation: Story = withArgsAndMocks(
-	{ conversationDelay: 3000 },
-	{
-		play: async ({ canvasElement }) => {
-			const canvas = await openFirstConversation(canvasElement);
-			// Verify loading indicator appears during delay
-			const loadingIndicator =
-				canvas.queryByText(/Loading/i) || canvas.queryByRole('progressbar');
-			await expect(loadingIndicator || true).toBeTruthy();
+export const LoadingConversation: Story = {
+	parameters: {
+		apolloClient: {
+			mocks: buildMessagesMocks({
+				conversationDelay: 3000,
+			}),
 		},
 	},
-);
+	play: async ({ canvasElement }) => {
+		const canvas = await openFirstConversation(canvasElement);
+		// Verify loading indicator appears during delay
+		const loadingIndicator =
+			canvas.queryByText(/Loading/i) || canvas.queryByRole('progressbar');
+		await expect(loadingIndicator || true).toBeTruthy();
+	},
+};
 
 /** Story to verify empty message list displays correctly */
-export const EmptyMessages: Story = withArgsAndMocks(
-	{ conversation: { ...mockConversationDetail, messages: [] } },
-	{
-		play: async ({ canvasElement }) => {
-			const canvas = await openFirstConversation(canvasElement);
-			// Wait for empty state to render
-			const emptyState = await canvas.findByText(/No messages yet/i);
-			await expect(emptyState).toBeInTheDocument();
+export const EmptyMessages: Story = {
+	parameters: {
+		apolloClient: {
+			mocks: buildMessagesMocks({
+				conversation: { ...mockConversationDetail, messages: [] },
+			}),
 		},
 	},
-);
+	play: async ({ canvasElement }) => {
+		const canvas = await openFirstConversation(canvasElement);
+		// Wait for empty state to render
+		const emptyState = await canvas.findByText(/No messages yet/i);
+		await expect(emptyState).toBeInTheDocument();
+	},
+};
 
 /** Story to verify multiple messages render in correct order */
-export const MultipleMessages: Story = withArgsAndMocks(
-	{ conversation: multipleMessagesConversation },
-	{
-		play: async ({ canvasElement }) => {
-			const canvas = await openFirstConversation(canvasElement);
-			// Verify all 4 messages are rendered
-			const firstMessage = await canvas.findByText(
-				/Hi, is this still available/i,
-			);
-			await expect(firstMessage).toBeInTheDocument();
-			const lastMessage = await canvas.findByText(
-				/That works for me! See you then/i,
-			);
-			await expect(lastMessage).toBeInTheDocument();
+export const MultipleMessages: Story = {
+	parameters: {
+		apolloClient: {
+			mocks: buildMessagesMocks({
+				conversation: multipleMessagesConversation,
+			}),
 		},
 	},
-);
+	play: async ({ canvasElement }) => {
+		const canvas = await openFirstConversation(canvasElement);
+		// Verify all 4 messages are rendered
+		const firstMessage = await canvas.findByText(
+			/Hi, is this still available/i,
+		);
+		await expect(firstMessage).toBeInTheDocument();
+		const lastMessage = await canvas.findByText(
+			/That works for me! See you then/i,
+		);
+		await expect(lastMessage).toBeInTheDocument();
+	},
+};

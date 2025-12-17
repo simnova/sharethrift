@@ -33,35 +33,43 @@ export const ConversationBoxContainer: React.FC<
 		ConversationBoxContainerSendMessageDocument,
 		{
 			update: (cache, { data }, { variables }) => {
+				// Guard against missing or invalid sendMessage payload
+				if (!data?.sendMessage?.status?.success || !data.sendMessage.message) {
+					return;
+				}
+
 				// Use variables from mutation call instead of props closure to avoid stale reference
 				const conversationId = variables?.input?.conversationId;
 				if (!conversationId) return;
 
-				if (data?.sendMessage.status.success && data.sendMessage.message) {
-					// Update Apollo cache instead of refetch to avoid unnecessary network round-trip
-					const existingConversation = cache.readQuery({
+				// Update Apollo cache instead of refetch to avoid unnecessary network round-trip
+				const existingConversation = cache.readQuery({
+					query: ConversationBoxContainerConversationDocument,
+					variables: { conversationId },
+				});
+
+				if (existingConversation?.conversation) {
+					cache.writeQuery({
 						query: ConversationBoxContainerConversationDocument,
 						variables: { conversationId },
-					});
-
-					if (existingConversation?.conversation) {
-						cache.writeQuery({
-							query: ConversationBoxContainerConversationDocument,
-							variables: { conversationId },
-							data: {
-								conversation: {
-									...existingConversation.conversation,
-									messages: [
-										...(existingConversation.conversation.messages || []),
-										data.sendMessage.message,
-									],
-								},
+						data: {
+							conversation: {
+								...existingConversation.conversation,
+								messages: [
+									...(existingConversation.conversation.messages || []),
+									data.sendMessage.message,
+								],
 							},
-						});
-					}
+						},
+					});
 				}
 			},
 			onCompleted: (data) => {
+				// Guard against missing status before accessing nested properties
+				if (!data?.sendMessage?.status) {
+					return;
+				}
+
 				if (!data.sendMessage.status.success) {
 					antdMessage.error(
 						data.sendMessage.status.errorMessage || 'Failed to send message',
@@ -75,17 +83,26 @@ export const ConversationBoxContainer: React.FC<
 	);
 
 	const handleSendMessage = useCallback(
-		async (content: string) => {
-			if (!content.trim()) return;
+		async (content: string): Promise<boolean> => {
+			if (!content.trim()) return false;
 
-			await sendMessageMutation({
-				variables: {
-					input: {
-						conversationId: props.selectedConversationId,
-						content: content.trim(),
+			try {
+				const result = await sendMessageMutation({
+					variables: {
+						input: {
+							conversationId: props.selectedConversationId,
+							content: content.trim(),
+						},
 					},
-				},
-			});
+				});
+
+				// Return whether the message was successfully sent
+				return result.data?.sendMessage?.status?.success ?? false;
+			} catch {
+				// Network errors are already handled by onError callback
+				// Return false to indicate failure so input is not cleared
+				return false;
+			}
 		},
 		[props.selectedConversationId, sendMessageMutation],
 	);
