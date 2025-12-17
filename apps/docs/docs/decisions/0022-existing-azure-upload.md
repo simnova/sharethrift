@@ -22,7 +22,7 @@ Users need to upload various file types (PDFs, images) along with metadata and t
 - **Scalability**: The system must efficiently handle large file uploads and multiple concurrent requests without overloading backend services.
 - **Performance**: Direct client-to-Azure Blob uploads reduce backend latency and improve user upload speed.
 - **Cost Optimization**: Offloading upload bandwidth from backend servers to Azure Blob Storage minimizes infrastructure and data transfer costs.
-- **Security**: Uploads must be secure and authenticated. Valet Key pattern provides controlled, time-bound access to the storage account.
+- **Security**: Uploads must be secure and authenticated. The Valet Key pattern provides controlled, time-bound access to the storage account.
 - **Malware Scanning**: Uploaded files must undergo malware scanning. Any malicious files must be identified, quarantined, and deleted immediately to maintain data integrity and user safety.
 
 ## Considered Authorization Options
@@ -32,6 +32,8 @@ Users need to upload various file types (PDFs, images) along with metadata and t
 
 - **Option 2: Valet Key pattern (current approach)**
     - A Valet Key pattern (Shared Key Authorization) is a time‑limited, permission‑scoped URL generated using the storage account’s access key. It allows the client to upload or modify blobs temporarily without exposing the actual account key, and the backend can control exactly which permissions, metadata, and expiry apply for each individual upload request.
+    </br> </br>
+    <img src="./img/valet-key-pattern.png" alt="github_create_task" style="max-width:100%; height:auto;">
 
 ## Authorization Decision Outcome
 
