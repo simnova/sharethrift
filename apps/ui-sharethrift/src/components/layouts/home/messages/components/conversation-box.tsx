@@ -17,6 +17,7 @@ export const ConversationBox: React.FC<ConversationBoxProps> = (props) => {
 
 	const handleSendMessage = async (e: React.FormEvent) => {
 		e.preventDefault();
+		if (props.sendingMessage) return; // Prevent duplicate submits while send is in flight
 		if (!messageText.trim()) return;
 
 		// Only clear input on successful send so users don't lose unsent content on error

@@ -362,11 +362,10 @@ export const WithPreselectedConversation: Story = {
 
 export const NoConversationSelected: Story = {
 	play: async ({ canvasElement }) => {
-		await expect(canvasElement).toBeTruthy();
-		const placeholderText = canvasElement.textContent?.includes(
-			'Select a conversation',
-		);
-		await expect(placeholderText).toBeTruthy();
+		const canvas = within(canvasElement);
+		await expect(
+			canvas.getByText(/Select a conversation/i),
+		).toBeInTheDocument();
 	},
 };
 
