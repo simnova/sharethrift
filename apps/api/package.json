@@ -38,7 +38,6 @@
 		"@sthrift/persistence": "workspace:*",
 		"@sthrift/rest": "workspace:*",
 		"@sthrift/search-service-index": "workspace:*",
-		"@sthrift/search-service-mock": "workspace:*",
 		"@sthrift/service-blob-storage": "workspace:*",
 		"@sthrift/service-mongoose": "workspace:*",
 		"@sthrift/service-otel": "workspace:*",

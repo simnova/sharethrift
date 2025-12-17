@@ -152,9 +152,6 @@ importers:
       '@sthrift/search-service-index':
         specifier: workspace:*
         version: link:../../packages/sthrift/search-service-index
-      '@sthrift/search-service-mock':
-        specifier: workspace:*
-        version: link:../../packages/sthrift/search-service-mock
       '@sthrift/service-blob-storage':
         specifier: workspace:*
         version: link:../../packages/sthrift/service-blob-storage
