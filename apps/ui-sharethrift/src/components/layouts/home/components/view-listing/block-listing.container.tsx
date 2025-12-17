@@ -85,7 +85,8 @@ export const BlockListingContainer: React.FC<BlockListingContainerProps> = ({
 					</Button>
 				) : (
 					<Button
-						danger
+                        className="secondaryButton"
+						type="default"
 						onClick={() => setBlockModalVisible(true)}
 						loading={blockLoading}
 					>

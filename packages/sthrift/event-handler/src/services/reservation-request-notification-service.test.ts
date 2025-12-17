@@ -23,8 +23,13 @@ describe('ReservationRequestNotificationService', () => {
       profile: { firstName: 'John', lastName: 'Sharer' },
     };
 
+    const mockReserver = {
+      account: { email: 'reserver@test.com' },
+      profile: { firstName: 'Jane', lastName: 'Reserver' },
+    };
+
     const mockListing = {
-      listingTitle: 'Test Listing',
+      title: 'Unknown Listing',
     };
 
     mockEmailService = {
@@ -37,7 +42,15 @@ describe('ReservationRequestNotificationService', () => {
           PersonalUserUnitOfWork: {
             withTransaction: vi.fn((_passport, callback) => {
               const mockRepo = {
-                getById: vi.fn().mockResolvedValue(mockSharer),
+                getById: vi.fn((userId: string) => {
+                  if (userId === 'user-456') {
+                    return Promise.resolve(mockSharer);
+                  }
+                  if (userId === 'user-789') {
+                    return Promise.resolve(mockReserver);
+                  }
+                  return Promise.resolve(null);
+                }),
               };
               return Promise.resolve(callback(mockRepo));
             }),
@@ -79,8 +92,11 @@ describe('ReservationRequestNotificationService', () => {
       expect.objectContaining({ email: 'sharer@test.com' }),
       expect.objectContaining({
         sharerName: 'John Sharer',
-        reserverName: expect.any(String),
-        listingTitle: 'Test Listing',
+        reserverName: 'Jane Reserver',
+        listingTitle: 'Unknown Listing',
+        reservationStart: expect.any(String),
+        reservationEnd: expect.any(String),
+        reservationRequestId: 'reservation-123',
       })
     );
   });
