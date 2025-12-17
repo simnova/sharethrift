@@ -13,7 +13,7 @@ export const MyListingsDashboardContainer: React.FC = () => {
     useQuery<ViewListingCurrentUserQuery>(ViewListingCurrentUserDocument);
 
   const currentUser = userData?.currentUser;
-  const sharerId = currentUser?.id;
+  const sharerId = currentUser?.id ?? "";
 
   const { data, loading, error } = useQuery(
     HomeAllListingsTableContainerMyListingsAllDocument,
@@ -37,7 +37,7 @@ export const MyListingsDashboardContainer: React.FC = () => {
     HomeMyListingsDashboardContainerMyListingsRequestsCountDocument,
     {
       variables: {
-        sharerId: sharerId ?? "",
+        sharerId: sharerId,
       },
       skip: !sharerId,
       fetchPolicy: "network-only",
@@ -49,32 +49,9 @@ export const MyListingsDashboardContainer: React.FC = () => {
     console.log("Navigate to create listing");
   };
 
-  // State 1: Loading user authentication state
-  if (userLoading) {
-    return (
-      <ComponentQueryLoader
-        loading={true}
-        error={undefined}
-        hasData={null}
-        hasDataComponent={<></>}
-      />
-    );
-  }
-
-  // State 2: User not authenticated or missing sharerId
-  if (!currentUser || !sharerId) {
-    return (
-      <div style={{ padding: '40px', textAlign: 'center' }}>
-        <h2>Please sign in to view your listings</h2>
-        <p>You need to be authenticated to access this page.</p>
-      </div>
-    );
-  }
-
-  // State 3: Valid authenticated user with sharerId
   return (
     <ComponentQueryLoader
-      loading={loading}
+      loading={userLoading || loading}
       error={error}
       hasData={data ?? null}
       hasDataComponent={
