@@ -1,13 +1,9 @@
 import { FilterOutlined, SearchOutlined } from '@ant-design/icons';
 import { Dashboard } from '@sthrift/ui-components';
 import type { TableProps } from 'antd';
-import { Checkbox, Image, Input, Tag } from 'antd';
+import { Button, Checkbox, Image, Input, Popconfirm, Tag } from 'antd';
 import type { ListingRequestData } from './my-listings-dashboard.types.tsx';
 import { RequestsCard } from './requests-card.tsx';
-import {
-	getActionButtons,
-	getStatusTagClass,
-} from './requests-status-helpers.tsx';
 
 const { Search } = Input;
 
@@ -34,8 +30,6 @@ const REQUEST_STATUS_OPTIONS = [
 	{ label: 'Closed', value: 'Closed' },
 	{ label: 'Expired', value: 'Expired' },
 ];
-
-// getStatusTagClass and getActionButtons moved to requests-status-helpers.tsx
 
 export const RequestsTable: React.FC<RequestsTableProps> = ({
 	data,
@@ -188,27 +182,140 @@ export const RequestsTable: React.FC<RequestsTableProps> = ({
 						style={{ display: 'flex', flexDirection: 'column', gap: 8 }}
 					/>
 				</div>
-			),
-			filterIcon: (filtered: boolean) => (
-				<FilterOutlined style={{ color: filtered ? '#1890ff' : undefined }} />
-			),
-			render: (status: string) => (
-				<Tag className={getStatusTagClass(status)}>{status}</Tag>
-			),
+		),
+		filterIcon: (filtered: boolean) => (
+			<FilterOutlined style={{ color: filtered ? '#1890ff' : undefined }} />
+		),
+		render: (status: string) => {
+			let statusClass = '';
+			switch (status) {
+				case 'Accepted':
+					statusClass = 'requestAcceptedTag';
+					break;
+				case 'Rejected':
+					statusClass = 'requestRejectedTag';
+					break;
+				case 'Closed':
+					statusClass = 'expiredTag';
+					break;
+				case 'Pending':
+				case 'Requested':
+					statusClass = 'pendingTag';
+					break;
+				case 'Closing':
+					statusClass = 'closingTag';
+					break;
+				case 'Expired':
+					statusClass = 'expiredTag';
+					break;
+			}
+			return <Tag className={statusClass}>{status}</Tag>;
 		},
-		{
-			title: 'Actions',
-			key: 'actions',
-			width: 200,
-			render: (_: unknown, record: ListingRequestData) => (
-				<div style={{ display: 'flex', flexWrap: 'wrap', gap: 4 }}>
-					{getActionButtons(record, onAction)}
-				</div>
-			),
-		},
-	];
+	},
+	{
+		title: 'Actions',
+		key: 'actions',
+		width: 200,
+		render: (_: unknown, record: ListingRequestData) => {
+			let actions: string[] = [];
+			switch (record.status) {
+				case 'Pending':
+				case 'Requested':
+					actions = ['accept', 'reject'];
+					break;
+				case 'Accepted':
+					actions = ['close', 'message'];
+					break;
+				case 'Closed':
+					actions = ['message'];
+					break;
+				case 'Rejected':
+				case 'Expired':
+				case 'Cancelled':
+					actions = ['delete'];
+					break;
+			}
 
-	return (
+			const actionButtons = actions.map((action) => {
+				if (action === 'accept') {
+					return (
+						<Button
+							key="accept"
+							type="link"
+							size="small"
+							onClick={() => onAction('accept', record.id)}
+						>
+							Accept
+						</Button>
+					);
+				}
+				if (action === 'reject') {
+					return (
+						<Button
+							key="reject"
+							type="link"
+							size="small"
+							onClick={() => onAction('reject', record.id)}
+						>
+							Reject
+						</Button>
+					);
+				}
+				if (action === 'close') {
+					return (
+						<Popconfirm
+							key="close"
+							title="Close this request?"
+							description="Are you sure you want to close this request?"
+							onConfirm={() => onAction('close', record.id)}
+							okText="Yes"
+							cancelText="No"
+						>
+							<Button type="link" size="small">
+								Close
+							</Button>
+						</Popconfirm>
+					);
+				}
+				if (action === 'message') {
+					return (
+						<Button
+							key="message"
+							type="link"
+							size="small"
+							onClick={() => onAction('message', record.id)}
+						>
+							Message
+						</Button>
+					);
+				}
+				if (action === 'delete') {
+					return (
+						<Popconfirm
+							key="delete"
+							title="Delete this request?"
+							description="Are you sure you want to delete this request? This action cannot be undone."
+							onConfirm={() => onAction('delete', record.id)}
+							okText="Yes"
+							cancelText="No"
+						>
+							<Button type="link" size="small" danger>
+								Delete
+							</Button>
+						</Popconfirm>
+					);
+				}
+				return null;
+			});
+
+			return (
+				<div style={{ display: 'flex', flexWrap: 'wrap', gap: 4 }}>
+					{actionButtons}
+				</div>
+			);
+		},
+	},
+];	return (
 		<Dashboard
 			data={data}
 			columns={columns}
