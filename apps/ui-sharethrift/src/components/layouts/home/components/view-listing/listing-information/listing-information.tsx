@@ -1,4 +1,4 @@
-import { Row, Col, DatePicker, Button } from 'antd';
+import { Row, Col, DatePicker, Button, Popconfirm } from 'antd';
 import dayjs from 'dayjs';
 import type { Dayjs } from 'dayjs';
 import type {
@@ -47,6 +47,7 @@ interface ListingInformationProps {
 		endDate: Date | null;
 	}) => void;
 	reservationLoading?: boolean;
+	cancelLoading?: boolean;
 	otherReservationsLoading?: boolean;
 	otherReservationsError?: Error;
 	otherReservations?: ViewListingQueryActiveByListingIdQuery['queryActiveByListingId'];
@@ -63,6 +64,7 @@ export const ListingInformation: React.FC<ListingInformationProps> = ({
 	reservationDates,
 	onReservationDatesChange,
 	reservationLoading = false,
+	cancelLoading = false,
 	otherReservationsLoading = false,
 	otherReservationsError,
 	otherReservations,
@@ -309,28 +311,30 @@ export const ListingInformation: React.FC<ListingInformationProps> = ({
 					<Col span={24}>
 						{(() => {
 							if (!userIsSharer && isAuthenticated) {
+								if (reservationRequestStatus === 'Requested') {
+									return (
+										<Popconfirm
+											title="Cancel Reservation Request"
+											description="Are you sure you want to cancel this request?"
+											onConfirm={onCancelClick}
+											okText="Yes"
+											cancelText="No"
+										>
+											<Button type="default" block loading={cancelLoading}>
+												Cancel Request
+											</Button>
+										</Popconfirm>
+									);
+								}
 								return (
 									<Button
-										type={
-											reservationRequestStatus === 'Requested'
-												? 'default'
-												: 'primary'
-										}
+										type="primary"
 										block
-										onClick={
-											reservationRequestStatus === 'Requested'
-												? onCancelClick
-												: onReserveClick
-										}
-										disabled={
-											!areDatesSelected &&
-											reservationRequestStatus !== 'Requested'
-										}
+										onClick={onReserveClick}
+										disabled={!areDatesSelected}
 										icon={reservationLoading ? <LoadingOutlined /> : undefined}
 									>
-										{reservationRequestStatus === 'Requested'
-											? 'Cancel Request'
-											: 'Reserve'}
+										Reserve
 									</Button>
 								);
 							}

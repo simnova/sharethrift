@@ -1,5 +1,5 @@
 import type React from 'react';
-import { Space } from 'antd';
+import { Space, Popconfirm } from 'antd';
 import { ReservationActionButton } from './reservation-action-button.tsx';
 import type { ReservationActionStatus } from '../utils/reservation-status.utils.ts';
 
@@ -24,12 +24,22 @@ export const ReservationActions: React.FC<ReservationActionsProps> = ({
 		switch (status) {
 			case 'REQUESTED':
 				return [
-					<ReservationActionButton
-						key="cancel"
-						action="Cancel"
-						onClick={onCancel}
-						loading={cancelLoading}
-					/>,
+					<Popconfirm
+						key="cancel-confirm"
+						title="Cancel Reservation Request"
+						description="Are you sure you want to cancel this request?"
+						onConfirm={onCancel}
+						okText="Yes"
+						cancelText="No"
+					>
+						<span>
+							<ReservationActionButton
+								key="cancel"
+								action="Cancel"
+								loading={cancelLoading}
+							/>
+						</span>
+					</Popconfirm>,
 					<ReservationActionButton
 						key="message"
 						action="Message"
@@ -76,4 +86,3 @@ export const ReservationActions: React.FC<ReservationActionsProps> = ({
 
 	return <Space>{actions}</Space>;
 };
-

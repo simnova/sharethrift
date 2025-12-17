@@ -219,6 +219,29 @@ const reservationRequest: Resolvers = {
 				},
 			);
 		},
+		cancelReservation: async (
+			_parent: unknown,
+			args: {
+				input: {
+					id: string;
+				};
+			},
+			context: GraphContext,
+			_info: GraphQLResolveInfo,
+		) => {
+			const verifiedJwt = context.applicationServices.verifiedUser?.verifiedJwt;
+			if (!verifiedJwt) {
+				throw new Error(
+					'User must be authenticated to cancel a reservation request',
+				);
+			}
+
+			return await context.applicationServices.ReservationRequest.ReservationRequest.cancel(
+				{
+					id: args.input.id,
+				},
+			);
+		},
 	},
 };
 

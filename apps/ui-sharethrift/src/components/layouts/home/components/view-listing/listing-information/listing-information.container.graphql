@@ -42,3 +42,15 @@ mutation HomeListingInformationCreateReservationRequest(
 		updatedAt
 	}
 }
+
+mutation HomeListingInformationCancelReservationRequest(
+	$input: CancelReservationInput!
+) {
+	cancelReservation(input: $input) {
+		id
+		state
+		updatedAt
+		closeRequestedBySharer
+		closeRequestedByReserver
+	}
+}

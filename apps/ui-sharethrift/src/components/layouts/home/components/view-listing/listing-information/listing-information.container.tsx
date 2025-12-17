@@ -5,6 +5,7 @@ import { ListingInformation } from './listing-information.tsx';
 
 import {
 	HomeListingInformationCreateReservationRequestDocument,
+	HomeListingInformationCancelReservationRequestDocument,
 	type CreateReservationRequestInput,
 	ViewListingCurrentUserDocument,
 	type ViewListingCurrentUserQuery,
@@ -86,6 +87,19 @@ export const ListingInformationContainer: React.FC<
 			},
 		});
 
+	const [cancelReservationRequestMutation, { loading: cancelLoading }] =
+		useMutation(HomeListingInformationCancelReservationRequestDocument, {
+			onCompleted: () => {
+				message.success('Reservation request cancelled successfully');
+				client.refetchQueries({
+					include: [ViewListingActiveReservationRequestForListingDocument],
+				});
+			},
+			onError: (error) => {
+				message.error(error.message || 'Failed to cancel reservation request');
+			},
+		});
+
 	const handleReserveClick = async () => {
 		if (!reservationDates.startDate || !reservationDates.endDate) {
 			message.warning(
@@ -108,6 +122,24 @@ export const ListingInformationContainer: React.FC<
 		}
 	};
 
+	const handleCancelClick = async () => {
+		if (!userReservationRequest?.id) {
+			message.error('No reservation request to cancel');
+			return;
+		}
+		try {
+			await cancelReservationRequestMutation({
+				variables: {
+					input: {
+						id: userReservationRequest.id,
+					},
+				},
+			});
+		} catch (error) {
+			console.error('Error cancelling reservation request:', error);
+		}
+	};
+
 	return (
 		<ListingInformation
 			listing={listing}
@@ -115,12 +147,14 @@ export const ListingInformationContainer: React.FC<
 			isAuthenticated={isAuthenticated}
 			userReservationRequest={userReservationRequest}
 			onReserveClick={handleReserveClick}
+			onCancelClick={handleCancelClick}
 			onLoginClick={onLoginClick}
 			onSignUpClick={onSignUpClick}
 			className={className}
 			reservationDates={reservationDates}
 			onReservationDatesChange={setReservationDates}
 			reservationLoading={mutationLoading}
+			cancelLoading={cancelLoading}
 			otherReservationsLoading={otherReservationsLoading}
 			otherReservationsError={otherReservationsError}
 			otherReservations={otherReservationsData?.queryActiveByListingId}

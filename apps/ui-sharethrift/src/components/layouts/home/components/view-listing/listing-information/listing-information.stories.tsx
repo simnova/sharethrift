@@ -8,7 +8,8 @@ const mockListing = {
 	listingType: 'item-listing' as const,
 	id: '1',
 	title: 'Cordless Drill',
-	description: 'High-quality cordless drill for home projects. Perfect for DIY enthusiasts and professionals alike. Features variable speed settings and a comfortable grip.',
+	description:
+		'High-quality cordless drill for home projects. Perfect for DIY enthusiasts and professionals alike. Features variable speed settings and a comfortable grip.',
 	category: 'Tools & Equipment',
 	location: 'Toronto, ON',
 	state: 'Published' as const,
@@ -200,7 +201,14 @@ export const ClickCancelButton: Story = {
 		const cancelButton = canvas.queryByRole('button', { name: /Cancel/i });
 		if (cancelButton) {
 			await userEvent.click(cancelButton);
-			expect(args.onCancelClick).toHaveBeenCalled();
+			await new Promise((resolve) => setTimeout(resolve, 100));
+			const confirmButton = document.querySelector(
+				'.ant-popconfirm-buttons .ant-btn-primary',
+			);
+			if (confirmButton) {
+				await userEvent.click(confirmButton as HTMLElement);
+				expect(args.onCancelClick).toHaveBeenCalled();
+			}
 		}
 	},
 };
@@ -275,7 +283,9 @@ export const ClickLoginToReserve: Story = {
 	play: async ({ canvasElement }) => {
 		const canvas = within(canvasElement);
 		await expect(canvasElement).toBeTruthy();
-		const loginButton = canvas.queryByRole('button', { name: /Log in to Reserve/i });
+		const loginButton = canvas.queryByRole('button', {
+			name: /Log in to Reserve/i,
+		});
 		if (loginButton) {
 			await userEvent.click(loginButton);
 		}
@@ -310,4 +320,3 @@ export const ClearDateSelection: Story = {
 		await expect(canvasElement).toBeTruthy();
 	},
 };
-
