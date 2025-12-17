@@ -41,7 +41,7 @@ describe('ReservationRequestNotificationService', () => {
       User: {
         PersonalUser: {
           PersonalUserUnitOfWork: {
-            withTransaction: vi.fn(async (_passport, callback) => {
+            withTransaction: vi.fn((_passport, callback) => {
               const mockRepo = {
                 getById: vi.fn().mockImplementation((id) => {
                   if (id === 'user-456') {
@@ -53,13 +53,13 @@ describe('ReservationRequestNotificationService', () => {
                   return Promise.resolve(null);
                 }),
               };
-              return callback(mockRepo);
+              return Promise.resolve(callback(mockRepo));
             }),
           },
         },
         AdminUser: {
           AdminUserUnitOfWork: {
-            withTransaction: vi.fn(async (_passport, callback) => {
+            withTransaction: vi.fn((_passport, callback) => {
               const mockRepo = {
                 getById: vi.fn().mockImplementation((id) => {
                   if (id === 'user-456') {
@@ -71,7 +71,7 @@ describe('ReservationRequestNotificationService', () => {
                   return Promise.resolve(null);
                 }),
               };
-              return callback(mockRepo);
+              return Promise.resolve(callback(mockRepo));
             }),
           },
         },
@@ -79,11 +79,11 @@ describe('ReservationRequestNotificationService', () => {
       Listing: {
         ItemListing: {
           ItemListingUnitOfWork: {
-            withTransaction: vi.fn(async (_passport, callback) => {
+            withTransaction: vi.fn((_passport, callback) => {
               const mockRepo = {
                 getById: vi.fn().mockResolvedValue(mockListing),
               };
-              return callback(mockRepo);
+              return Promise.resolve(callback(mockRepo));
             }),
           },
         },
