@@ -1,100 +1,108 @@
-import { ComponentQueryLoader } from "@sthrift/ui-components";
-import { ConversationBox } from "./conversation-box.tsx";
+import { useMutation, useQuery } from '@apollo/client/react';
+import { ComponentQueryLoader } from '@sthrift/ui-components';
+import { message as antdMessage } from 'antd';
+import { useCallback } from 'react';
 import {
-  ConversationBoxContainerConversationDocument,
-  ConversationBoxContainerSendMessageDocument,
-  type Conversation,
-} from "../../../../../generated.tsx";
-import { useQuery, useMutation } from "@apollo/client/react";
-import { useUserId } from "../../../../shared/user-context.tsx";
-import { message as antdMessage } from "antd";
-import { useCallback } from "react";
+	type Conversation,
+	ConversationBoxContainerConversationDocument,
+	ConversationBoxContainerSendMessageDocument,
+} from '../../../../../generated.tsx';
+import { useUserId } from '../../../../shared/user-context.tsx';
+import { ConversationBox } from './conversation-box.tsx';
 
 interface ConversationBoxContainerProps {
-  selectedConversationId: string;
+	selectedConversationId: string;
 }
 
-export const ConversationBoxContainer: React.FC<ConversationBoxContainerProps> = (props) => {
-  const currentUserId = useUserId();
-  
-  const {
-    data: currentUserConversationsData,
-    loading: loadingConversations,
-    error: conversationsError,
-  } = useQuery(ConversationBoxContainerConversationDocument, {
-    variables: {
-      conversationId: props.selectedConversationId,
-    },
-  });
+export const ConversationBoxContainer: React.FC<
+	ConversationBoxContainerProps
+> = (props) => {
+	const currentUserId = useUserId();
 
-  const [sendMessageMutation, { loading: sendingMessage }] = useMutation(
-    ConversationBoxContainerSendMessageDocument,
-    {
-      update: (cache, { data }) => {
-        if (data?.sendMessage.status.success && data.sendMessage.message) {
-          // Update Apollo cache instead of refetch to avoid unnecessary network round-trip
-          const existingConversation = cache.readQuery({
-            query: ConversationBoxContainerConversationDocument,
-            variables: { conversationId: props.selectedConversationId },
-          });
+	const {
+		data: currentUserConversationsData,
+		loading: loadingConversations,
+		error: conversationsError,
+	} = useQuery(ConversationBoxContainerConversationDocument, {
+		variables: {
+			conversationId: props.selectedConversationId,
+		},
+	});
 
-          if (existingConversation?.conversation) {
-            cache.writeQuery({
-              query: ConversationBoxContainerConversationDocument,
-              variables: { conversationId: props.selectedConversationId },
-              data: {
-                conversation: {
-                  ...existingConversation.conversation,
-                  messages: [
-                    ...(existingConversation.conversation.messages || []),
-                    data.sendMessage.message,
-                  ],
-                },
-              },
-            });
-          }
-        }
-      },
-      onCompleted: (data) => {
-        if (!data.sendMessage.status.success) {
-          antdMessage.error(data.sendMessage.status.errorMessage || "Failed to send message");
-        }
-      },
-      onError: (error) => {
-        antdMessage.error(error.message || "Failed to send message");
-      },
-    }
-  );
+	const [sendMessageMutation, { loading: sendingMessage }] = useMutation(
+		ConversationBoxContainerSendMessageDocument,
+		{
+			update: (cache, { data }, { variables }) => {
+				// Use variables from mutation call instead of props closure to avoid stale reference
+				const conversationId = variables?.input?.conversationId;
+				if (!conversationId) return;
 
-  const handleSendMessage = useCallback(
-    async (content: string) => {
-      if (!content.trim()) return;
+				if (data?.sendMessage.status.success && data.sendMessage.message) {
+					// Update Apollo cache instead of refetch to avoid unnecessary network round-trip
+					const existingConversation = cache.readQuery({
+						query: ConversationBoxContainerConversationDocument,
+						variables: { conversationId },
+					});
 
-      await sendMessageMutation({
-        variables: {
-          input: {
-            conversationId: props.selectedConversationId,
-            content: content.trim(),
-          },
-        },
-      });
-    },
-    [props.selectedConversationId, sendMessageMutation]
-  );
+					if (existingConversation?.conversation) {
+						cache.writeQuery({
+							query: ConversationBoxContainerConversationDocument,
+							variables: { conversationId },
+							data: {
+								conversation: {
+									...existingConversation.conversation,
+									messages: [
+										...(existingConversation.conversation.messages || []),
+										data.sendMessage.message,
+									],
+								},
+							},
+						});
+					}
+				}
+			},
+			onCompleted: (data) => {
+				if (!data.sendMessage.status.success) {
+					antdMessage.error(
+						data.sendMessage.status.errorMessage || 'Failed to send message',
+					);
+				}
+			},
+			onError: (error) => {
+				antdMessage.error(error.message || 'Failed to send message');
+			},
+		},
+	);
 
-  return (
-    <ComponentQueryLoader
-      loading={loadingConversations}
-      hasData={currentUserConversationsData}
-      error={conversationsError}
-      hasDataComponent={
-        <ConversationBox
-          data={currentUserConversationsData?.conversation as Conversation}
-          currentUserId={currentUserId}
-          onSendMessage={handleSendMessage}
-          sendingMessage={sendingMessage}
-        />
-      }
-    />
-  );
+	const handleSendMessage = useCallback(
+		async (content: string) => {
+			if (!content.trim()) return;
+
+			await sendMessageMutation({
+				variables: {
+					input: {
+						conversationId: props.selectedConversationId,
+						content: content.trim(),
+					},
+				},
+			});
+		},
+		[props.selectedConversationId, sendMessageMutation],
+	);
+
+	return (
+		<ComponentQueryLoader
+			loading={loadingConversations}
+			hasData={currentUserConversationsData}
+			error={conversationsError}
+			hasDataComponent={
+				<ConversationBox
+					data={currentUserConversationsData?.conversation as Conversation}
+					currentUserId={currentUserId}
+					onSendMessage={handleSendMessage}
+					sendingMessage={sendingMessage}
+				/>
+			}
+		/>
+	);
 };
