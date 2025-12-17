@@ -16,8 +16,11 @@ const meta: Meta<typeof RequestsCard> = {
 	component: RequestsCard,
 	args: {
 		listing: MOCK_REQUEST,
-		onAction: (action: string, id: string) =>
-			console.log('Action:', action, 'Request ID:', id),
+		onAccept: async (id: string) => console.log('Accept:', id),
+		onReject: (id: string) => console.log('Reject:', id),
+		onClose: (id: string) => console.log('Close:', id),
+		onDelete: (id: string) => console.log('Delete:', id),
+		onMessage: (id: string) => console.log('Message:', id),
 	},
 };
 

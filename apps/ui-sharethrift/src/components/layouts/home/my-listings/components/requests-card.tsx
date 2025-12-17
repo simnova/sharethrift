@@ -4,10 +4,21 @@ import type { ListingRequestData } from './my-listings-dashboard.types.tsx';
 
 interface RequestsCardProps {
 	listing: ListingRequestData;
-	onAction: (action: string, listingId: string) => void;
+	onAccept: (requestId: string) => Promise<void>;
+	onReject: (requestId: string) => void;
+	onClose: (requestId: string) => void;
+	onDelete: (requestId: string) => void;
+	onMessage: (requestId: string) => void;
 }
 
-const RequestsCard: React.FC<RequestsCardProps> = ({ listing, onAction }) => {
+const RequestsCard: React.FC<RequestsCardProps> = ({
+	listing,
+	onAccept,
+	onReject,
+	onClose,
+	onDelete,
+	onMessage,
+}) => {
 	let statusClass = '';
 	switch (listing.status) {
 		case 'Accepted':
@@ -57,7 +68,7 @@ const RequestsCard: React.FC<RequestsCardProps> = ({ listing, onAction }) => {
 					key="accept"
 					type="link"
 					size="small"
-					onClick={() => onAction('accept', listing.id)}
+					onClick={() => onAccept(listing.id)}
 				>
 					Accept
 				</Button>
@@ -69,7 +80,7 @@ const RequestsCard: React.FC<RequestsCardProps> = ({ listing, onAction }) => {
 					key="reject"
 					type="link"
 					size="small"
-					onClick={() => onAction('reject', listing.id)}
+					onClick={() => onReject(listing.id)}
 				>
 					Reject
 				</Button>
@@ -81,7 +92,7 @@ const RequestsCard: React.FC<RequestsCardProps> = ({ listing, onAction }) => {
 					key="close"
 					title="Close this request?"
 					description="Are you sure you want to close this request?"
-					onConfirm={() => onAction('close', listing.id)}
+					onConfirm={() => onClose(listing.id)}
 					okText="Yes"
 					cancelText="No"
 				>
@@ -97,7 +108,7 @@ const RequestsCard: React.FC<RequestsCardProps> = ({ listing, onAction }) => {
 					key="message"
 					type="link"
 					size="small"
-					onClick={() => onAction('message', listing.id)}
+					onClick={() => onMessage(listing.id)}
 				>
 					Message
 				</Button>
@@ -109,7 +120,7 @@ const RequestsCard: React.FC<RequestsCardProps> = ({ listing, onAction }) => {
 					key="delete"
 					title="Delete this request?"
 					description="Are you sure you want to delete this request? This action cannot be undone."
-					onConfirm={() => onAction('delete', listing.id)}
+					onConfirm={() => onDelete(listing.id)}
 					okText="Yes"
 					cancelText="No"
 				>

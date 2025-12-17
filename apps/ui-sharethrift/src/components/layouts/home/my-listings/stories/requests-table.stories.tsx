@@ -75,8 +75,11 @@ const meta: Meta<typeof RequestsTable> = {
 			});
 		},
 		onPageChange: (page: number) => console.log('Page change:', page),
-		onAction: (action: string, requestId: string) =>
-			console.log('Action:', action, 'Request:', requestId),
+		onAccept: async (requestId: string) => console.log('Accept:', requestId),
+		onReject: (requestId: string) => console.log('Reject:', requestId),
+		onClose: (requestId: string) => console.log('Close:', requestId),
+		onDelete: (requestId: string) => console.log('Delete:', requestId),
+		onMessage: (requestId: string) => console.log('Message:', requestId),
 	},
 };
 

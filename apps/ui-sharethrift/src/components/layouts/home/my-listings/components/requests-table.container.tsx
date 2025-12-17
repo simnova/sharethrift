@@ -100,33 +100,6 @@ export const RequestsTableContainer: React.FC<RequestsTableContainerProps> = ({
 		onPageChange(1);
 	};
 
-	const handleAction = async (action: string, requestId: string) => {
-		switch (action) {
-			case 'accept':
-			case 'approve':
-				await acceptRequest({ variables: { input: { id: requestId } } });
-				break;
-			case 'reject':
-				// TODO: Implement reject mutation when GraphQL schema is ready
-				message.info('Reject functionality coming soon');
-				break;
-			case 'close':
-				// TODO: Implement close mutation when GraphQL schema is ready
-				message.info('Close functionality coming soon');
-				break;
-			case 'delete':
-				// TODO: Implement delete mutation when GraphQL schema is ready
-				message.info('Delete functionality coming soon');
-				break;
-			case 'message':
-				// TODO: Implement navigation to messages view
-				message.info('Messaging functionality coming soon');
-				break;
-			default:
-				console.warn(`Unknown action: ${action}`);
-		}
-	};
-
 	if (error) {
 		console.error('Query error:', error);
 	}
@@ -149,7 +122,25 @@ export const RequestsTableContainer: React.FC<RequestsTableContainerProps> = ({
 					onStatusFilter={handleStatusFilter}
 					onTableChange={handleTableChange}
 					onPageChange={onPageChange}
-					onAction={handleAction}
+					onAccept={async (requestId: string) => {
+						await acceptRequest({ variables: { input: { id: requestId } } });
+					}}
+					onReject={(_requestId: string) => {
+						// TODO: Implement reject mutation when GraphQL schema is ready
+						message.info('Reject functionality coming soon');
+					}}
+					onClose={(_requestId: string) => {
+						// TODO: Implement close mutation when GraphQL schema is ready
+						message.info('Close functionality coming soon');
+					}}
+					onDelete={(_requestId: string) => {
+						// TODO: Implement delete mutation when GraphQL schema is ready
+						message.info('Delete functionality coming soon');
+					}}
+					onMessage={(_requestId: string) => {
+						// TODO: Implement navigation to messages view
+						message.info('Messaging functionality coming soon');
+					}}
 					loading={loading}
 				/>
 			}

@@ -20,7 +20,11 @@ interface RequestsTableProps {
 	onStatusFilter: (checkedValues: string[]) => void;
 	onTableChange: TableProps<ListingRequestData>['onChange'];
 	onPageChange: (page: number) => void;
-	onAction: (action: string, requestId: string) => void;
+	onAccept: (requestId: string) => Promise<void>;
+	onReject: (requestId: string) => void;
+	onClose: (requestId: string) => void;
+	onDelete: (requestId: string) => void;
+	onMessage: (requestId: string) => void;
 }
 
 const REQUEST_STATUS_OPTIONS = [
@@ -44,7 +48,11 @@ export const RequestsTable: React.FC<RequestsTableProps> = ({
 	onStatusFilter,
 	onTableChange,
 	onPageChange,
-	onAction,
+	onAccept,
+	onReject,
+	onClose,
+	onDelete,
+	onMessage,
 }) => {
 	const columns: TableProps<ListingRequestData>['columns'] = [
 		{
@@ -243,7 +251,7 @@ export const RequestsTable: React.FC<RequestsTableProps> = ({
 							key="accept"
 							type="link"
 							size="small"
-							onClick={() => onAction('accept', record.id)}
+							onClick={() => onAccept(record.id)}
 						>
 							Accept
 						</Button>
@@ -255,7 +263,7 @@ export const RequestsTable: React.FC<RequestsTableProps> = ({
 							key="reject"
 							type="link"
 							size="small"
-							onClick={() => onAction('reject', record.id)}
+							onClick={() => onReject(record.id)}
 						>
 							Reject
 						</Button>
@@ -267,7 +275,7 @@ export const RequestsTable: React.FC<RequestsTableProps> = ({
 							key="close"
 							title="Close this request?"
 							description="Are you sure you want to close this request?"
-							onConfirm={() => onAction('close', record.id)}
+							onConfirm={() => onClose(record.id)}
 							okText="Yes"
 							cancelText="No"
 						>
@@ -283,7 +291,7 @@ export const RequestsTable: React.FC<RequestsTableProps> = ({
 							key="message"
 							type="link"
 							size="small"
-							onClick={() => onAction('message', record.id)}
+							onClick={() => onMessage(record.id)}
 						>
 							Message
 						</Button>
@@ -295,7 +303,7 @@ export const RequestsTable: React.FC<RequestsTableProps> = ({
 							key="delete"
 							title="Delete this request?"
 							description="Are you sure you want to delete this request? This action cannot be undone."
-							onConfirm={() => onAction('delete', record.id)}
+							onConfirm={() => onDelete(record.id)}
 							okText="Yes"
 							cancelText="No"
 						>
@@ -327,7 +335,14 @@ export const RequestsTable: React.FC<RequestsTableProps> = ({
 			showPagination={true}
 			onChange={onTableChange}
 			renderGridItem={(listing) => (
-				<RequestsCard listing={listing} onAction={onAction} />
+				<RequestsCard
+					listing={listing}
+					onAccept={onAccept}
+					onReject={onReject}
+					onClose={onClose}
+					onDelete={onDelete}
+					onMessage={onMessage}
+				/>
 			)}
 		/>
 	);
