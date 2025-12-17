@@ -56,6 +56,9 @@ export class ReservationRequest<props extends ReservationRequestProps>
 		
 		const instance = new ReservationRequest(newProps, passport);
 		
+		// Mark instance as new before setting properties to allow setters to validate
+		instance.isNew = true;
+		
 		// Set all properties using setters to maintain validation - no ordering constraints
 		instance.listing = listing;
 		instance.reserver = reserver;
@@ -63,16 +66,16 @@ export class ReservationRequest<props extends ReservationRequestProps>
 		instance.reservationPeriodEnd = reservationPeriodEnd;
 		instance.props.state = new ValueObjects.ReservationRequestStateValue(state).valueOf();
 		
-		// Mark as new and emit event after all properties are set
+		// Emit integration event after all properties are set
 		instance.markAsNew();
 		
+		// Lock the instance by setting isNew to false to prevent further modifications
 		instance.isNew = false;
+		
 		return instance;
 	}
 
 	private markAsNew(): void {
-		this.isNew = true;
-		
 		// Emit integration event for new reservation request
 		this.addIntegrationEvent(ReservationRequestCreated, {
 			reservationRequestId: this.props.id,
