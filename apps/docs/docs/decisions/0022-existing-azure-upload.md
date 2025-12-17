@@ -32,8 +32,8 @@ Users need to upload various file types (PDFs, images) along with metadata and t
 
 - **Option 2: Valet Key pattern (current approach)**
     - A Valet Key pattern (Shared Key Authorization) is a time‑limited, permission‑scoped URL generated using the storage account’s access key. It allows the client to upload or modify blobs temporarily without exposing the actual account key, and the backend can control exactly which permissions, metadata, and expiry apply for each individual upload request.
-    </br> </br>
-    <img src="./img/valet-key-pattern.png" alt="github_create_task" style="max-width:100%; height:auto;">
+    <br/> <br/>
+    <img src="./img/valet-key-pattern.png" alt="github_create_task" style={{ maxWidth: '100%', height: 'auto' }} />
 
 ## Authorization Decision Outcome
 
