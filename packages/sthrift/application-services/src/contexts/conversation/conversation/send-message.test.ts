@@ -13,50 +13,33 @@ const feature = await loadFeature(
 );
 
 // ============================================================================
-// Test Helpers - Reusable builders and utilities
+// Test Context Builder - Single source for test setup
 // ============================================================================
 
-/** Build a mock conversation with default values and optional overrides */
-function buildConversation(
-	overrides?: Partial<Domain.Contexts.Conversation.Conversation.ConversationEntityReference>,
-) {
-	return {
+/** Build test context with default happy path and allow per-scenario overrides */
+function makeTestContext(overrides?: {
+	conversation?: Partial<Domain.Contexts.Conversation.Conversation.ConversationEntityReference>;
+	command?: Partial<ConversationSendMessageCommand>;
+}) {
+	const mockReadRepo = { getById: vi.fn() };
+	const mockMessagingRepo = { sendMessage: vi.fn() };
+
+	const conversation = {
 		id: 'conv-123',
 		messagingConversationId: 'messaging-conv-123',
 		sharer: { id: 'author-123' },
 		reserver: { id: 'reserver-456' },
-		...overrides,
+		...overrides?.conversation,
 	};
-}
 
-/** Build a command with default values and optional overrides */
-function buildCommand(
-	overrides?: Partial<ConversationSendMessageCommand>,
-): ConversationSendMessageCommand {
-	return {
-		conversationId: 'conv-123',
-		content: 'Hello',
+	const command: ConversationSendMessageCommand = {
+		conversationId: conversation.id,
+		content: 'Hello, I would like to reserve this item.',
 		authorId: 'author-123',
-		...overrides,
+		...overrides?.command,
 	};
-}
 
-/** Create mock read repository */
-function createMockReadRepo() {
-	return { getById: vi.fn() };
-}
-
-/** Create mock messaging repository */
-function createMockMessagingRepo() {
-	return { sendMessage: vi.fn() };
-}
-
-/** Create mock data sources with default structure */
-function createMockDataSources(
-	mockReadRepo: ReturnType<typeof createMockReadRepo>,
-	mockMessagingRepo: ReturnType<typeof createMockMessagingRepo>,
-): DataSources {
-	return {
+	const dataSources: DataSources = {
 		domainDataSource: {} as DataSources['domainDataSource'],
 		readonlyDataSource: {
 			Conversation: {
@@ -73,87 +56,52 @@ function createMockDataSources(
 			},
 		},
 	} as DataSources;
+
+	mockReadRepo.getById.mockResolvedValue(conversation);
+
+	return { dataSources, mockReadRepo, mockMessagingRepo, conversation, command };
 }
 
-/** Build a mock message response */
-function buildMockMessage(overrides?: Partial<{ id: string; content: string; authorId: string }>) {
-	return {
-		id: 'msg-123',
-		messagingMessageId: 'messaging-msg-123',
-		authorId: { valueOf: () => overrides?.authorId ?? 'author-123' },
-		content: overrides?.content ?? 'Hello, I would like to reserve this item.',
-		createdAt: new Date(),
-		...overrides,
-	};
-}
-
-test.for(feature, ({ Scenario, BeforeEachScenario }) => {
-	let mockDataSources: DataSources;
-	let mockReadRepo: ReturnType<typeof createMockReadRepo>;
-	let mockMessagingRepo: ReturnType<typeof createMockMessagingRepo>;
-	let command: ConversationSendMessageCommand;
+test.for(feature, ({ Scenario }) => {
+	let ctx: ReturnType<typeof makeTestContext>;
 	let result:
 		| Domain.Contexts.Conversation.Conversation.MessageEntityReference
 		| undefined;
 	let error: Error | undefined;
 
-	/** Helper to execute sendMessage and capture result/error */
-	async function whenSendMessage() {
-		try {
-			const sendMessageFn = sendMessage(mockDataSources);
-			result = await sendMessageFn(command);
-		} catch (err) {
-			error = err as Error;
-		}
-	}
-
-	/** Helper to set up a conversation that exists */
-	function givenConversationExists(
-		id = 'conv-123',
-		overrides?: Partial<Domain.Contexts.Conversation.Conversation.ConversationEntityReference>,
-	) {
-		const convo = buildConversation({ id, ...overrides });
-		mockReadRepo.getById.mockResolvedValue(convo);
-		return convo;
-	}
-
-	BeforeEachScenario(() => {
-		mockReadRepo = createMockReadRepo();
-		mockMessagingRepo = createMockMessagingRepo();
-		mockDataSources = createMockDataSources(mockReadRepo, mockMessagingRepo);
-		result = undefined;
-		error = undefined;
-	});
-
 	Scenario(
 		'Successfully sending a message',
 		({ Given, When, Then, And }) => {
 			Given('a valid conversation exists with ID "conv-123"', () => {
-				givenConversationExists('conv-123');
+				ctx = makeTestContext();
 			});
 
 			And('I am a participant in the conversation with author ID "author-123"', () => {
-				command = buildCommand({
-					conversationId: 'conv-123',
-					content: 'Hello, I would like to reserve this item.',
-					authorId: 'author-123',
-				});
+				// Default context already has author-123 as participant
 			});
 
 			And('the message content is "Hello, I would like to reserve this item."', () => {
-				// Already set in the previous step
+				// Default context already has this content
 			});
 
 			When('I send the message', async () => {
-				mockMessagingRepo.sendMessage.mockResolvedValue(buildMockMessage({
+				ctx.mockMessagingRepo.sendMessage.mockResolvedValue({
+					id: 'msg-123',
+					messagingMessageId: 'messaging-msg-123',
+					authorId: { valueOf: () => 'author-123' },
 					content: 'Hello, I would like to reserve this item.',
-				}));
-				await whenSendMessage();
+					createdAt: new Date(),
+				});
+				try {
+					result = await sendMessage(ctx.dataSources)(ctx.command);
+				} catch (err) {
+					error = err as Error;
+				}
 			});
 
 			Then('the message should be sent successfully', () => {
 				expect(error).toBeUndefined();
-				expect(mockMessagingRepo.sendMessage).toHaveBeenCalledWith(
+				expect(ctx.mockMessagingRepo.sendMessage).toHaveBeenCalledWith(
 					expect.objectContaining({
 						id: 'conv-123',
 						messagingConversationId: 'messaging-conv-123',
@@ -173,23 +121,23 @@ test.for(feature, ({ Scenario, BeforeEachScenario }) => {
 
 	Scenario('Sending a message with empty content', ({ Given, When, Then, And }) => {
 		Given('a valid conversation exists with ID "conv-123"', () => {
-			givenConversationExists('conv-123');
+			ctx = makeTestContext({ command: { content: '' } });
 		});
 
 		And('I am a participant in the conversation with author ID "author-123"', () => {
-			command = buildCommand({
-				conversationId: 'conv-123',
-				content: '',
-				authorId: 'author-123',
-			});
+			// Default context already has author-123 as participant
 		});
 
 		And('the message content is empty', () => {
-			// Already set in the previous step
+			// Already set in makeTestContext override
 		});
 
 		When('I try to send the message', async () => {
-			await whenSendMessage();
+			try {
+				result = await sendMessage(ctx.dataSources)(ctx.command);
+			} catch (err) {
+				error = err as Error;
+			}
 		});
 
 		Then('an error should be thrown indicating message content cannot be empty', () => {
@@ -200,23 +148,23 @@ test.for(feature, ({ Scenario, BeforeEachScenario }) => {
 
 	Scenario('Sending a message that exceeds character limit', ({ Given, When, Then, And }) => {
 		Given('a valid conversation exists with ID "conv-123"', () => {
-			givenConversationExists('conv-123');
+			ctx = makeTestContext({ command: { content: 'a'.repeat(2001) } });
 		});
 
 		And('I am a participant in the conversation with author ID "author-123"', () => {
-			command = buildCommand({
-				conversationId: 'conv-123',
-				content: 'a'.repeat(2001),
-				authorId: 'author-123',
-			});
+			// Default context already has author-123 as participant
 		});
 
 		And('the message content exceeds 2000 characters', () => {
-			// Already set in the previous step
+			// Already set in makeTestContext override
 		});
 
 		When('I try to send the message', async () => {
-			await whenSendMessage();
+			try {
+				result = await sendMessage(ctx.dataSources)(ctx.command);
+			} catch (err) {
+				error = err as Error;
+			}
 		});
 
 		Then('an error should be thrown indicating message exceeds maximum length', () => {
@@ -227,16 +175,18 @@ test.for(feature, ({ Scenario, BeforeEachScenario }) => {
 
 	Scenario('Sending a message to non-existent conversation', ({ Given, When, Then }) => {
 		Given('a conversation does not exist with ID "non-existent-conv"', () => {
-			mockReadRepo.getById.mockResolvedValue(null);
-			command = buildCommand({
-				conversationId: 'non-existent-conv',
-				content: 'Hello',
-				authorId: 'author-123',
+			ctx = makeTestContext({
+				command: { conversationId: 'non-existent-conv', content: 'Hello' },
 			});
+			ctx.mockReadRepo.getById.mockResolvedValue(null);
 		});
 
 		When('I try to send a message to that conversation', async () => {
-			await whenSendMessage();
+			try {
+				result = await sendMessage(ctx.dataSources)(ctx.command);
+			} catch (err) {
+				error = err as Error;
+			}
 		});
 
 		Then('an error should be thrown indicating conversation not found', () => {
@@ -247,27 +197,28 @@ test.for(feature, ({ Scenario, BeforeEachScenario }) => {
 
 	Scenario('Sending a message when not a participant', ({ Given, When, Then, And }) => {
 		Given('a valid conversation exists with ID "conv-123"', () => {
-			// Conversation has different sharer/reserver than the author
-			const mockConversation = buildConversation({
-				id: 'conv-123',
+			ctx = makeTestContext({
+				command: {
+					authorId: 'unauthorized-user-999',
+					content: 'Hello',
+				},
 			});
-			// Override sharer/reserver to be different from the author
-			(mockConversation as { sharer: { id: string } }).sharer = { id: 'sharer-789' };
-			(mockConversation as { reserver: { id: string } }).reserver = { id: 'reserver-456' };
-			mockReadRepo.getById.mockResolvedValue(mockConversation);
+			// Override conversation to have different sharer/reserver after creation
+			ctx.conversation.sharer = { id: 'sharer-789' } as any;
+			ctx.conversation.reserver = { id: 'reserver-456' } as any;
+			ctx.mockReadRepo.getById.mockResolvedValue(ctx.conversation);
 		});
 
 		And('I am not a participant in the conversation', () => {
-			// Author is not the sharer or reserver
-			command = buildCommand({
-				conversationId: 'conv-123',
-				content: 'Hello',
-				authorId: 'unauthorized-user-999',
-			});
+			// Author is not the sharer or reserver (set above)
 		});
 
 		When('I try to send a message', async () => {
-			await whenSendMessage();
+			try {
+				result = await sendMessage(ctx.dataSources)(ctx.command);
+			} catch (err) {
+				error = err as Error;
+			}
 		});
 
 		Then('an error should be thrown indicating not authorized', () => {
@@ -279,23 +230,23 @@ test.for(feature, ({ Scenario, BeforeEachScenario }) => {
 
 	Scenario('Handling messaging service unavailable', ({ Given, When, Then, And }) => {
 		Given('a valid conversation exists with ID "conv-123"', () => {
-			givenConversationExists('conv-123');
+			ctx = makeTestContext({ command: { content: 'Hello' } });
 		});
 
 		And('I am a participant in the conversation with author ID "author-123"', () => {
-			command = buildCommand({
-				conversationId: 'conv-123',
-				content: 'Hello',
-				authorId: 'author-123',
-			});
+			// Default context already has author-123 as participant
 		});
 
 		And('the messaging data source is unavailable', () => {
-			mockDataSources.messagingDataSource = undefined;
+			ctx.dataSources.messagingDataSource = undefined;
 		});
 
 		When('I try to send a message', async () => {
-			await whenSendMessage();
+			try {
+				result = await sendMessage(ctx.dataSources)(ctx.command);
+			} catch (err) {
+				error = err as Error;
+			}
 		});
 
 		Then('an error should be thrown indicating messaging service unavailable', () => {
@@ -306,25 +257,25 @@ test.for(feature, ({ Scenario, BeforeEachScenario }) => {
 
 	Scenario('Handling messaging service send failure', ({ Given, When, Then, And }) => {
 		Given('a valid conversation exists with ID "conv-123"', () => {
-			givenConversationExists('conv-123');
+			ctx = makeTestContext({ command: { content: 'Hello' } });
 		});
 
 		And('I am a participant in the conversation with author ID "author-123"', () => {
-			command = buildCommand({
-				conversationId: 'conv-123',
-				content: 'Hello',
-				authorId: 'author-123',
-			});
+			// Default context already has author-123 as participant
 		});
 
 		And('the messaging service fails to send the message', () => {
-			mockMessagingRepo.sendMessage.mockRejectedValue(
+			ctx.mockMessagingRepo.sendMessage.mockRejectedValue(
 				new Error('Service connection timeout'),
 			);
 		});
 
 		When('I try to send a message', async () => {
-			await whenSendMessage();
+			try {
+				result = await sendMessage(ctx.dataSources)(ctx.command);
+			} catch (err) {
+				error = err as Error;
+			}
 		});
 
 		Then('an error should be thrown with the messaging service error details', () => {
