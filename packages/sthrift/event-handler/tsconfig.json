@@ -6,5 +6,8 @@
 	},
 	"include": ["src/**/*.ts"],
 	"exclude": ["node_modules", "dist"],
-	"references": [{ "path": "../domain" }]
+	"references": [
+		{ "path": "../domain" },
+		{ "path": "../../cellix/transactional-email-service" }
+	]
 }
