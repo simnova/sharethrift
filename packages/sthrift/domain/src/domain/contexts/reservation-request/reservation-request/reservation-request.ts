@@ -62,21 +62,23 @@ export class ReservationRequest<props extends ReservationRequestProps>
 		instance.reservationPeriodStart = reservationPeriodStart;
 		instance.reservationPeriodEnd = reservationPeriodEnd;
 		instance.props.state = new ValueObjects.ReservationRequestStateValue(state).valueOf();
-        instance.markAsNew(listing, reserver);
+		
+		// Mark as new and emit event after all properties are set
+		instance.markAsNew();
 		
 		instance.isNew = false;
 		return instance;
 	}
 
-	private markAsNew(listing: ItemListingEntityReference, reserver: UserEntityReference): void {
+	private markAsNew(): void {
 		this.isNew = true;
 		
 		// Emit integration event for new reservation request
 		this.addIntegrationEvent(ReservationRequestCreated, {
 			reservationRequestId: this.props.id,
-			listingId: listing.id,
-			reserverId: reserver.id,
-			sharerId: listing.sharer?.id ?? '',
+			listingId: this.props.listing.id,
+			reserverId: this.props.reserver.id,
+			sharerId: this.props.listing.sharer?.id ?? '',
 			reservationPeriodStart: this.props.reservationPeriodStart,
 			reservationPeriodEnd: this.props.reservationPeriodEnd,
 		});
