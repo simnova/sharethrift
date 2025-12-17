@@ -4,7 +4,7 @@ import {
 	ConversationBoxContainerConversationDocument,
 	ConversationBoxContainerSendMessageDocument,
 } from '../../../../../generated.tsx';
-import { withMockApolloClient } from '../../../../../test-utils/storybook-decorators.tsx';
+import { withMockApolloClient, withMockUserId } from '../../../../../test-utils/storybook-decorators.tsx';
 import { ConversationBoxContainer } from '../components/conversation-box.container.tsx';
 
 // #region Mock Data
@@ -166,13 +166,11 @@ const typeAndSendMessage = async (
 // #endregion Play Helpers
 
 const meta: Meta<typeof ConversationBoxContainer> = {
-	title: 'Components/Messages/ConversationBoxContainer',
+	title: 'Pages/Home/Messages/ConversationBoxContainer',
 	component: ConversationBoxContainer,
-	decorators: [withMockApolloClient],
+	decorators: [withMockApolloClient, withMockUserId('user-1')],
 	parameters: {
-		apolloClient: {
-			mocks: buildMocks(),
-		},
+		layout: 'fullscreen',
 	},
 };
 export default meta;
@@ -181,6 +179,11 @@ type Story = StoryObj<typeof ConversationBoxContainer>;
 export const Default: Story = {
 	args: {
 		selectedConversationId: 'conv-1',
+	},
+	parameters: {
+		apolloClient: {
+			mocks: buildMocks(),
+		},
 	},
 	play: async ({ canvasElement }) => {
 		const canvas = getCanvas(canvasElement);

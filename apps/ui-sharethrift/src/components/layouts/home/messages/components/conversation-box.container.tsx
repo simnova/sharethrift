@@ -49,10 +49,12 @@ export const ConversationBoxContainer: React.FC<
 				});
 
 				if (existingConversation?.conversation) {
+					// Spread the entire existing result to preserve query shape and avoid field drift
 					cache.writeQuery({
 						query: ConversationBoxContainerConversationDocument,
 						variables: { conversationId },
 						data: {
+							...existingConversation,
 							conversation: {
 								...existingConversation.conversation,
 								messages: [

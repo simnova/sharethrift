@@ -9,6 +9,7 @@ import {
 import {
 	withMockApolloClient,
 	withMockRouter,
+	withMockUserId,
 } from '../../../../../test-utils/storybook-decorators.tsx';
 import { Messages } from '../components/messages.tsx';
 
@@ -227,7 +228,7 @@ const meta: Meta<typeof Messages> = {
 			mocks: buildMessagesMocks(),
 		},
 	},
-	decorators: [withMockApolloClient, withMockRouter('/messages')],
+	decorators: [withMockApolloClient, withMockRouter('/messages'), withMockUserId('user-1')],
 };
 
 export default meta;
