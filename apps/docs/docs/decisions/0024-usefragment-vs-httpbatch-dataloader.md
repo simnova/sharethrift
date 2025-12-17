@@ -32,6 +32,24 @@ DataLoader solves the N+1 query problem by batching and caching database request
 
 Without DataLoader, each relationship traversal triggers a separate database query. With 10 events each having a creator, you'd execute 1 query for events + 10 queries for creators = 11 total. DataLoader automatically batches those 10 creator queries into 1.
 
+**Query Batching Flow:**
+
+```mermaid
+sequenceDiagram
+    participant Resolver
+    participant DataLoader
+    participant Database
+    
+    Note over Resolver: Resolver requests user data for 10 events
+    Resolver->>DataLoader: load(userId1)
+    Resolver->>DataLoader: load(userId2)
+    Resolver->>DataLoader: load(userId3)
+    Note over DataLoader: Collects requests in current tick
+    DataLoader->>Database: SELECT * FROM users WHERE id IN (1,2,3)
+    Database-->>DataLoader: Return 3 users
+    DataLoader-->>Resolver: Distribute cached results to each caller
+```
+
 ## HTTP Batching - Network Request Consolidation
 
 HTTP Batching combines multiple GraphQL operations into a single HTTP request, reducing network overhead.
@@ -42,6 +60,25 @@ HTTP Batching combines multiple GraphQL operations into a single HTTP request, r
 - Particularly valuable for mobile users on high-latency networks
 
 When multiple React components independently fetch data, each triggers a separate HTTP request. HTTP Batching waits 20ms to collect operations and sends them together, eliminating redundant connection setup, headers, and SSL handshakes.
+
+**HTTP Batching Flow:**
+
+```mermaid
+sequenceDiagram
+    participant Component1
+    participant Component2
+    participant Apollo
+    participant Server
+    
+    Note over Component1,Component2: Multiple components render
+    Component1->>Apollo: query GetUser
+    Component2->>Apollo: query GetEvents
+    Note over Apollo: Wait 20ms to collect queries
+    Apollo->>Server: POST [GetUser, GetEvents]
+    Server-->>Apollo: [UserData, EventsData]
+    Apollo-->>Component1: UserData
+    Apollo-->>Component2: EventsData
+```
 
 ## useFragment + @nonreactive - Re-Render Optimization
 
@@ -59,6 +96,29 @@ This pattern enables surgical cache updates and eliminates unnecessary re-render
 - Updates to one item don't cascade to siblings or parents
 
 This isn't a speed optimization - it's a re-render reduction pattern that prevents performance degradation at scale.
+
+**Re-Render Optimization Flow:**
+
+```mermaid
+graph TB
+    subgraph "Without useFragment"
+        Parent1[Parent Component]
+        Parent1 -->|passes full data objects| Child1A[Child 1]
+        Parent1 -->|passes full data objects| Child1B[Child 2]
+        Parent1 -->|passes full data objects| Child1C[Child 3]
+        Cache1[Apollo Cache] -.->|cache update| Parent1
+        Note1[Update Child 2 data<br/>Result: Parent + all 3 children re-render]
+    end
+    
+    subgraph "With useFragment + @nonreactive"
+        Parent2[Parent Component]
+        Parent2 -->|passes IDs only| Child2A[Child 1]
+        Parent2 -->|passes IDs only| Child2B[Child 2]
+        Parent2 -->|passes IDs only| Child2C[Child 3]
+        Cache2[Apollo Cache] -.->|direct subscription| Child2B
+        Note2[Update Child 2 data<br/>Result: Only Child 2 re-renders]
+    end
+
 
 ## Decision Drivers
 
@@ -129,85 +189,25 @@ Chosen option: **Use all three patterns** - DataLoader, HTTP Batching, and useFr
 ### Implementation for ShareThrift
 
 **DataLoader (Server):**
-```typescript
-const loaders = {
-  userLoader: new DataLoader(batchLoadUsers),
-  eventLoader: new DataLoader(batchLoadEvents),
-  communityLoader: new DataLoader(batchLoadCommunities),
-};
-```
+- Configure loaders for User, Event, and Community entities
+- Initialize per-request to maintain security boundaries
+- Batch database queries within single operation execution
 
 **HTTP Batching (Client):**
-```typescript
-const batchLink = new BatchHttpLink({
-  uri: '/graphql',
-  batchMax: 10,
-  batchInterval: 20,
-});
-```
+- Configure BatchHttpLink with 20ms collection window
+- Set maximum batch size of 10 operations
+- Apply to authenticated GraphQL endpoint
 
 **Fragment Colocation (Client):**
-```typescript
-const USER_AVATAR_FRAGMENT = gql`
-  fragment UserAvatarData on User {
-    displayName
-    avatarUrl
-  }
-`;
-
-function UserAvatar({ user }) {
-  return <img src={user.avatarUrl} alt={user.displayName} />;
-}
-
-const GET_EVENT = gql`
-  query GetEvent {
-    event {
-      creator {
-        ...UserAvatarData
-      }
-    }
-  }
-  ${USER_AVATAR_FRAGMENT}
-`;
-```
+- Define fragments alongside components that use them
+- Compose fragments into parent queries
+- Enables component portability and self-documentation
 
 **useFragment + @nonreactive Pattern (Client):**
-```typescript
-// Parent query with @nonreactive
-const GET_EVENTS_QUERY = gql`
-  query GetEvents {
-    events {
-      id
-      ...EventCardData @nonreactive
-    }
-  }
-  ${EVENT_CARD_FRAGMENT}
-`;
-
-// Parent only re-renders when IDs change (events added/removed)
-function EventFeed() {
-  const { data } = useQuery(GET_EVENTS_QUERY);
-  const eventIds = data.events.map(event => event.id);
-  return eventIds.map(id => <EventCard key={id} eventId={id} />);
-}
-
-// Child reads from cache - only re-renders when THIS event changes
-function EventCard({ eventId }) {
-  const { data } = useFragment({
-    fragment: EVENT_CARD_FRAGMENT,
-    from: { __typename: 'Event', id: eventId },
-  });
-  
-  return (
-    <div>
-      <h3>{data.title}</h3>
-      <button onClick={() => toggleAttendance(eventId)}>
-        {data.isAttending ? 'Attending' : 'Join'}
-      </button>
-    </div>
-  );
-}
-```
+- Parent queries fetch IDs and mark fragments as @nonreactive
+- Parent re-renders only when list composition changes (items added/removed)
+- Child components use useFragment to read directly from cache
+- Cache updates trigger re-renders only in affected children
 
 ### Consequences
 

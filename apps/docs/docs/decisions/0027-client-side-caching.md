@@ -57,60 +57,42 @@ Apollo Client offers multiple fetch policies:
 #### cache-first (Default)
 Read from cache, fetch on cache miss. Best for static/public data.
 
-```typescript
-useQuery(GET_PRODUCT_CATALOG, { fetchPolicy: 'cache-first' });
-```
+**Behavior**: Check cache first, only fetch if data not found
 
-Use cases: Product catalogs, blog posts, reference data
+**Use cases**: Product catalogs, blog posts, reference data
 
 #### network-only
 Always fetch fresh, appropriate for sensitive data.
 
-```typescript
-useQuery(GET_BANK_BALANCE, { fetchPolicy: 'network-only' });
-```
+**Behavior**: Always fetch from network, update cache but never read from it
 
-Use cases: Bank balances, private messages, real-time data
+**Use cases**: Bank balances, private messages, real-time data
 
 #### cache-and-network
 Show cached instantly, refresh in background.
 
-```typescript
-useQuery(GET_USER_FEED, { fetchPolicy: 'cache-and-network' });
-```
+**Behavior**: Return cached data immediately, then fetch fresh and update
 
-Use cases: Social feeds, dashboards
+**Use cases**: Social feeds, dashboards
 
 #### no-cache
 Bypasses cache entirely for single-use data.
 
-```typescript
-useQuery(GET_OTP, { fetchPolicy: 'no-cache' });
-```
+**Behavior**: Fetch from network, don't read or write to cache
 
-Use cases: OTP codes, reset tokens
+**Use cases**: OTP codes, reset tokens
 
 ### Field-Level Security
 
-Use field policies to mask sensitive data:
+Use field policies to mask sensitive data even if server returns real values.
 
-```typescript
-const cache = new InMemoryCache({
-  typePolicies: {
-    User: {
-      fields: {
-        ssn: {
-          read() {
-            return '***-**-****'; // Always masked
-          },
-        },
-      },
-    },
-  },
-});
-```
+**Implementation:**
+- Configure type policies in InMemoryCache
+- Define custom read functions for sensitive fields
+- Read function returns masked value (e.g., '***-**-****')
+- Original server data never exposed in cache
 
-Benefits: Defense-in-depth, cache inspector safety, redacted logs
+**Benefits**: Defense-in-depth, cache inspector safety, redacted logs
 
 ### Varying Field Selections
 
@@ -125,39 +107,56 @@ Key insight: Query broader fields first, narrower queries benefit from cache.
 
 ### useFragment for Cache Reads
 
-Read cached data without network request:
+Read cached data without network request.
 
-```typescript
-function PostCard({ id }: { id: string }) {
-  const { complete, data } = useFragment({
-    fragment: POST_CARD_FRAGMENT,
-    from: { __typename: 'Post', id },
-  });
+**Process:**
+- Component receives entity ID as prop
+- useFragment reads directly from cache using fragment definition
+- Returns complete flag (true if all fields available) and data
+- Component subscribes to cache updates for that entity
 
-  if (!complete) return null;
-  return <div>{data.content}</div>;
-}
-```
+**Benefits**: Zero network overhead, live updates, avoids prop drilling
 
-Benefits: Zero network overhead, live updates, avoids prop drilling
-
-See ADR 0024 for re-render optimization details.
+See [ADR 0024](./0024-usefragment-vs-httpbatch-dataloader.md) for re-render optimization details.
 
 ### Optimistic Updates
 
-Update UI instantly before server confirms:
+Update UI instantly before server confirms mutation success.
 
-```typescript
-const [likePost] = useMutation(LIKE_POST, {
-  optimisticResponse: {
-    likePost: { __typename: 'Post', id: postId, likeCount: currentLikeCount + 1 },
-  },
-});
+**Process:**
+1. User triggers mutation (e.g., like post)
+2. Client immediately updates cache with predicted response
+3. UI reflects change instantly
+4. Mutation sent to server
+5. On success: cache already correct
+6. On failure: Apollo automatically rolls back optimistic update
+
+**Use cases**: Likes, favorites, toggles
+
+**Optimistic Update Flow:**
+
+```mermaid
+sequenceDiagram
+    participant User
+    participant UI
+    participant Cache
+    participant Server
+    
+    User->>UI: Click "Like"
+    UI->>Cache: Optimistic update (likeCount + 1)
+    Cache-->>UI: Updated data
+    UI-->>User: Show liked state instantly
+    UI->>Server: Send LIKE_POST mutation
+    alt Success
+        Server-->>UI: Confirm success
+        Note over Cache: Already correct
+    else Failure
+        Server-->>UI: Return error
+        UI->>Cache: Rollback optimistic update
+        Cache-->>UI: Original data
+        UI-->>User: Show error, revert to unliked
+    end
 ```
-
-Flow: UI updates instantly, mutation sent to server, Apollo auto-rolls back on failure.
-
-Use cases: Likes, favorites, toggles
 
 ## Decision Outcome
 
@@ -175,57 +174,62 @@ Chosen option: **Tiered caching strategy** based on data sensitivity and freshne
 
 **Optimistic Updates**: Use for likes, follows, attendance toggles. Avoid for complex validations and transactions.
 
+**Cache Policy Decision Flow:**
+
+```mermaid
+graph TD
+    A[Query Execution] --> B{Data Sensitivity}
+    B -->|Highly Sensitive| C[no-cache]
+    B -->|Sensitive| D[network-only]
+    B -->|User-Specific| E[cache-and-network]
+    B -->|Public/Static| F[cache-first]
+    
+    C --> G[Bypass cache entirely]
+    D --> H[Always fetch, don't cache]
+    E --> I[Return cached, fetch fresh in background]
+    F --> J[Return cached, fetch only on miss]
+    
+    style C fill:#f44
+    style D fill:#fa4
+    style E fill:#4af
+    style F fill:#4f4
+```
+
 ### Implementation for ShareThrift
 
 **Configure Cache:**
-```typescript
-const cache = new InMemoryCache({
-  typePolicies: {
-    User: {
-      keyFields: ['id'],
-      fields: {
-        email: { read() { return '***@***.com'; } },
-      },
-    },
-  },
-});
-```
+- Initialize InMemoryCache with type policies
+- Define key fields for entity identification (typically 'id')
+- Configure field policies for sensitive data masking
+- Example: Mask email field to always return redacted value
 
 **Apply Policies:**
-```typescript
-// Public event listings
-useQuery(GET_PUBLIC_EVENTS, { fetchPolicy: 'cache-first' });
-
-// User-specific feed
-useQuery(GET_MY_FEED, { fetchPolicy: 'cache-and-network' });
-
-// Payment information
-useQuery(GET_PAYMENT_METHODS, { fetchPolicy: 'network-only' });
-```
+- **Public event listings**: `cache-first` for maximum caching
+- **User-specific feed**: `cache-and-network` for instant display with background refresh
+- **Payment information**: `network-only` to always fetch fresh, never cache
 
 ## Cache Invalidation
 
 ### Refetch Queries
-```typescript
-useMutation(UPDATE_POST, {
-  refetchQueries: ['GetFeed'],
-});
-```
+
+Specify queries to automatically refetch after mutation completes.
+- Provide array of query names
+- Apollo automatically re-executes those queries
+- Simple but can cause unnecessary network requests
 
 ### Cache Eviction
-```typescript
-useMutation(DELETE_POST, {
-  update(cache) {
-    cache.evict({ id: cache.identify({ __typename: 'Post', id: postId }) });
-    cache.gc();
-  },
-});
-```
+
+Manually remove entries from cache after mutation.
+- Use `cache.evict()` to remove specific entity by ID
+- Use `cache.gc()` to garbage collect orphaned references
+- More precise than refetchQueries, avoids network requests
 
 ### Polling (use sparingly)
-```typescript
-useQuery(GET_NOTIFICATIONS, { pollInterval: 5000 });
-```
+
+Periodically refetch query at fixed interval (e.g., every 5 seconds).
+- Simple real-time updates for non-critical data
+- Inefficient compared to subscriptions
+- Use only when subscriptions not feasible
 
 ## Tooling and Debugging
 
@@ -238,9 +242,11 @@ Filter by `graphql` to verify cache behavior:
 - network-only: always hits network
 
 ### Cache Debugging
-```typescript
-console.log(client.cache.extract()); // View entire cache
-```
+
+Extract entire cache contents for inspection.
+- Use `client.cache.extract()` to view all cached entities
+- Helpful for debugging unexpected cache behavior
+- Can log to console or use Apollo DevTools for visual inspection
 
 ## Consequences
 

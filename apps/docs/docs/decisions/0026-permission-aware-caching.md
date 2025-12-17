@@ -60,110 +60,105 @@ Chosen option: **Permission-aware cache keys** - Include user permissions in cac
 
 ### Cache Key Structure
 
-```typescript
-interface CacheKey {
-  query: string;              // Operation name: "GetFeedWithAnalytics"
-  variables?: Record<string, any>;  // Query variables: { first: 5 }
-  userId?: string;            // User ID: "507f1f77bcf86cd799439011"
-  role?: string;              // User role: "admin" | "user"
-  permissions?: string[];     // Additional permissions: ["read:analytics"]
-}
+**Components:**
+- **Query**: Operation name (e.g., "GetFeedWithAnalytics")
+- **Variables**: Query parameters (e.g., `{ first: 5 }`)
+- **User ID**: Unique user identifier (e.g., "507f1f77bcf86cd799439011")
+- **Role**: User role (e.g., "admin", "user")
+- **Permissions**: Additional permission flags (e.g., ["read:analytics"])
 
-// Generated key (stringified):
-// "GetFeedWithAnalytics::{"first":5}::alice::admin::[]"
+**Generated Key Example:**
+```
+GetFeedWithAnalytics::{"first":5}::alice::admin::[]
+```
+
+**Cache Isolation:**
+
+```mermaid
+graph LR
+    subgraph "Admin Cache Entry"
+        A[GetEvents::alice::admin]
+    end
+    
+    subgraph "User Cache Entry"
+        B[GetEvents::bob::user]
+    end
+    
+    subgraph "Shared User Cache"
+        C[GetEvents::charlie::user]
+        D[GetEvents::diane::user]
+    end
+    
+    C -.shares.-> D
+    
+    A -.isolated from.-> B
+    B -.isolated from.-> A
 ```
 
 ### Permission-Aware Resolver
 
-```typescript
-Post: {
-  analytics: async (parent, _, { user, cache }) => {
-    // Permission check
-    if (user?.role !== 'admin') {
-      return null;  // Don't reveal analytics to non-admins
-    }
+**Resolution Flow:**
+1. **Permission Check**: Validate user has required role/permissions
+2. **Early Return**: Return null for unauthorized requests (don't cache)
+3. **Cache Key Generation**: Include query, variables, userId, and role
+4. **Cache Lookup**: Check if entry exists for this permission context
+5. **Database Fetch**: On cache miss, fetch from database
+6. **Cache Storage**: Store with TTL (typically 30-60 seconds)
+7. **Return Data**: Provide cached or fresh data to client
 
-    // Cache key includes user role
-    const cacheKey = {
-      query: 'PostAnalytics',
-      variables: { postId: parent.id },
-      userId: user.id,
-      role: user.role,
-    };
+**Resolver Flow:**
 
-    // Check cache first
-    const cached = cache.get(cacheKey);
-    if (cached) return cached;
-
-    // Fetch from database
-    const analytics = await fetchAnalytics(parent.id);
-
-    // Store in cache with 30s TTL
-    cache.set(cacheKey, analytics, 30000);
-
-    return analytics;
-  }
-}
+```mermaid
+sequenceDiagram
+    participant Client
+    participant Resolver
+    participant Cache
+    participant Database
+    
+    Client->>Resolver: Query PostAnalytics
+    Resolver->>Resolver: Check user.role == 'admin'
+    alt Not Admin
+        Resolver-->>Client: null (unauthorized)
+    else Is Admin
+        Resolver->>Cache: get(PostAnalytics::alice::admin)
+        alt Cache Hit
+            Cache-->>Resolver: Return cached data
+            Resolver-->>Client: Cached analytics
+        else Cache Miss
+            Resolver->>Database: fetchAnalytics(postId)
+            Database-->>Resolver: Fresh data
+            Resolver->>Cache: set(key, data, 30s TTL)
+            Resolver-->>Client: Fresh analytics
+        end
+    end
 ```
 
 ### Cache Implementation
 
-```typescript
-class PermissionAwareCache {
-  private cache: Map<string, CacheEntry<any>>;
-  private maxSize: number = 1000;
-  private defaultTTL: number = 60000; // 1 minute
+**Core Features:**
+- In-memory Map-based storage for fast lookups (< 1ms)
+- Configurable max size (default: 1000 entries)
+- Configurable default TTL (default: 60 seconds)
+- LRU (Least Recently Used) eviction when max size reached
 
-  private generateKey(cacheKey: CacheKey): string {
-    return [
-      cacheKey.query,
-      JSON.stringify(cacheKey.variables || {}),
-      cacheKey.userId || 'anonymous',
-      cacheKey.role || 'none',
-      JSON.stringify(cacheKey.permissions?.sort() || []),
-    ].join('::');
-  }
+**Key Methods:**
 
-  get<T>(cacheKey: CacheKey): T | null {
-    const key = this.generateKey(cacheKey);
-    const entry = this.cache.get(key);
+**generateKey**: Concatenates query, variables, userId, role, and permissions into unique string
 
-    if (!entry || Date.now() - entry.timestamp > entry.ttl) {
-      this.cache.delete(key);
-      return null;
-    }
+**get**: 
+- Generates cache key from components
+- Checks if entry exists and is not expired
+- Returns data or null (with automatic cleanup of expired entries)
 
-    return entry.data;
-  }
+**set**:
+- Enforces max size limit with LRU eviction
+- Stores data with timestamp and TTL
+- Allows per-entry TTL override
 
-  set<T>(cacheKey: CacheKey, data: T, ttl?: number): void {
-    if (this.cache.size >= this.maxSize) {
-      // Simple LRU: delete oldest entry
-      const firstKey = this.cache.keys().next().value;
-      this.cache.delete(firstKey);
-    }
-
-    const key = this.generateKey(cacheKey);
-    this.cache.set(key, {
-      data,
-      timestamp: Date.now(),
-      ttl: ttl || this.defaultTTL,
-    });
-  }
-
-  // Invalidate entries matching pattern
-  invalidate(pattern: { query?: string; userId?: string; role?: string }): number {
-    let deletedCount = 0;
-    for (const [key] of this.cache.entries()) {
-      if (this.matchesPattern(key, pattern)) {
-        this.cache.delete(key);
-        deletedCount++;
-      }
-    }
-    return deletedCount;
-  }
-}
-```
+**invalidate**:
+- Pattern-based cache clearing
+- Supports wildcard matching on query, userId, or role
+- Returns count of deleted entries for monitoring
 
 
 ## Consequences
@@ -198,16 +193,16 @@ class PermissionAwareCache {
 ### Granularity
 
 **Coarse (role-level):**
-```typescript
-cacheKey = { query, variables, role }
-// All admins share cache
-```
+- Cache key includes query, variables, and role only
+- All users with same role share cache entry
+- Best for non-personalized data
+- Example: All admins see same analytics dashboard
 
 **Fine (user-level):**
-```typescript
-cacheKey = { query, variables, userId, role }
-// Each user has own cache
-```
+- Cache key includes query, variables, userId, and role
+- Each user has isolated cache entry
+- Required for personalized data
+- Example: Each user's personal feed
 
 **Recommendation**: 
 - Use role-level for data that doesn't vary per user
@@ -218,38 +213,29 @@ cacheKey = { query, variables, userId, role }
 
 ### Time-Based (TTL)
 
-```typescript
-cache.set(key, data, 60000); // Expires after 60s
-```
+Entries automatically expire after configured duration (e.g., 60 seconds).
 
 **Pros:** Simple, predictable
 **Cons:** May serve stale data for TTL duration
 
 ### Event-Based
 
-```typescript
-// When post is updated
-Mutation: {
-  updatePost: async (_, { id, content }) => {
-    await db.posts.update(id, content);
-    cache.invalidate({ query: 'GetFeed' }); // Clear all feed caches
-    cache.invalidate({ query: 'GetPost', variables: { id } });
-  }
-}
-```
+Manually invalidate cache entries when underlying data changes (e.g., on mutations).
+
+**Process:**
+1. Update data in database
+2. Invalidate affected cache queries
+3. Next request fetches fresh data
 
 **Pros:** Always fresh data
 **Cons:** More complex, can invalidate too aggressively
 
 ### Hybrid (Recommended)
 
-```typescript
-// 30s TTL + invalidation on mutations
-cache.set(key, data, 30000);
-
-// On mutation
-cache.invalidate({ query: 'GetFeed' });
-```
+Combine TTL expiration with event-based invalidation:
+- Set reasonable TTL (30-60 seconds)
+- Invalidate on mutations for immediate freshness
+- TTL serves as safety net for missed invalidations
 
 **Balance:** Fresh data for mutations, caching for reads
 
@@ -260,148 +246,65 @@ cache.invalidate({ query: 'GetFeed' });
 **Problem:** Alice is promoted from `user` to `admin`
 
 **Solution:**
-```typescript
-async function updateUserRole(userId: string, newRole: string) {
-  await db.users.update(userId, { role: newRole });
-  
-  // Invalidate all cache entries for this user
-  cache.invalidate({ userId });
-  
-  // User's next request will generate fresh cache with new permissions
-}
-```
+1. Update user role in database
+2. Invalidate all cache entries matching userId
+3. Next request generates fresh cache with new role
+4. User immediately sees admin-only data
 
 ### Scenario 2: Data Update
 
 **Problem:** Admin updates a post, all users should see new content
 
 **Solution:**
-```typescript
-Mutation: {
-  updatePost: async (_, { id, content }) => {
-    await db.posts.update(id, content);
-    
-    // Invalidate feed for ALL roles
-    cache.invalidate({ query: 'GetFeed' });
-    cache.invalidate({ query: 'GetPost' });
-    
-    // Next request for any user will fetch fresh data
-  }
-}
-```
+1. Update post in database
+2. Invalidate all cache entries for affected queries (GetFeed, GetPost)
+3. Clear cache across all user roles
+4. Next request for any user fetches fresh data
 
 ### Scenario 3: Permission Check Change
 
 **Problem:** Analytics permission logic changes (now requires `premium` flag)
 
 **Solution:**
-```typescript
-// Old resolver
-Post: {
-  analytics: async (parent, _, { user }) => {
-    if (user?.role !== 'admin') return null;
-    // ...
-  }
-}
-
-// New resolver
-Post: {
-  analytics: async (parent, _, { user }) => {
-    if (user?.role !== 'admin' && !user?.premium) return null;
-    // Cache key now includes premium flag
-    const cacheKey = {
-      query: 'PostAnalytics',
-      variables: { postId: parent.id },
-      userId: user.id,
-      role: user.role,
-      permissions: user.premium ? ['premium'] : [],
-    };
-    // ...
-  }
-}
-
-// Clear all analytics caches during deployment
-cache.invalidate({ query: 'PostAnalytics' });
-```
+1. Update resolver permission check to require admin OR premium
+2. Modify cache key generation to include premium flag in permissions array
+3. During deployment, invalidate all PostAnalytics cache entries
+4. New cache entries generated with updated permission model
+5. Admin and premium users both see analytics (in separate cache entries)
 
 ## Edge Cases & Mitigations
 
 ### Edge Case: Permission Check in Middle of Resolver Chain
 
 **Problem:**
-```typescript
-Query: {
-  posts: async () => {
-    return await db.posts.find(); // Fetches all posts
-  }
-}
+Root query fetches all posts without permission check, but nested field `analytics` requires admin role. If we cache at root query level, admin and user caches would be identical.
 
-Post: {
-  analytics: async (parent, _, { user }) => {
-    if (user?.role !== 'admin') return null; // Permission check HERE
-    return fetchAnalytics(parent.id);
-  }
-}
-```
-
-If we cache at `Query.posts`, admin and user caches would be identical!
-
-**Solution:** Cache at the field level where permission check occurs:
-```typescript
-Post: {
-  analytics: async (parent, _, { user, cache }) => {
-    if (user?.role !== 'admin') return null;
-    
-    const cacheKey = {
-      query: 'PostAnalytics',
-      variables: { postId: parent.id },
-      role: user.role,
-    };
-    
-    const cached = cache.get(cacheKey);
-    if (cached) return cached;
-    
-    const analytics = await fetchAnalytics(parent.id);
-    cache.set(cacheKey, analytics);
-    return analytics;
-  }
-}
-```
+**Solution:**
+Cache at the field level where permission check occurs:
+1. Root query (posts) caches without permission context
+2. Nested field (analytics) caches with role in key
+3. Admin gets cached analytics, user gets null
+4. Two separate cache entries maintain security boundary
 
 ### Edge Case: Dynamic Permissions
 
 **Problem:** User has permission `["posts:read:own"]` - can only read their own posts
 
-**Solution:** Include ownership in cache key:
-```typescript
-const cacheKey = {
-  query: 'GetPosts',
-  variables,
-  userId: user.id, // Include user ID
-  permissions: user.permissions,
-};
-```
-
-Result: Each user gets own cache entry, no data leakage
+**Solution:**
+1. Include userId in cache key (not just role)
+2. Include full permissions array in cache key
+3. Each user gets isolated cache entry
+4. No risk of cross-user data leakage
 
 ### Edge Case: Memory Leak from User Churn
 
 **Problem:** 10,000 users log in once, cache grows unbounded
 
-**Solution:** Enforce `maxSize` with LRU eviction:
-```typescript
-class PermissionAwareCache {
-  private maxSize = 1000;
-
-  set(key, data) {
-    if (this.cache.size >= this.maxSize) {
-      const oldestKey = this.cache.keys().next().value;
-      this.cache.delete(oldestKey); // Evict oldest
-    }
-    this.cache.set(key, data);
-  }
-}
-```
+**Solution:**
+1. Enforce maximum cache size limit (e.g., 1000 entries)
+2. Implement LRU (Least Recently Used) eviction strategy
+3. When max size reached, remove oldest entry before adding new one
+4. Protects against memory exhaustion from one-time users
 
 ## Monitoring & Observability
 

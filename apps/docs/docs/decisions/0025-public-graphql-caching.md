@@ -63,134 +63,85 @@ Chosen option: **Separate endpoints** - `/graphql` for authenticated requests an
 
 ### Server Architecture
 
-```typescript
-// Single Apollo Server with dual endpoints
+**Dual Endpoint Configuration:**
+- Single Apollo Server instance serves both endpoints
+- `/graphql` - Authenticated endpoint with POST requests and private cache headers
+- `/graphql-public` - Public endpoint with GET requests and CDN-friendly cache headers
 
-const server = new ApolloServer({
-  typeDefs,
-  resolvers,
-  plugins: [
-    {
-      async requestDidStart() {
-        return {
-          async willSendResponse({ response, contextValue }) {
-            // Set cache headers based on endpoint
-            if (contextValue.isPublic) {
-              response.http.headers.set('Cache-Control', 'public, max-age=300, s-maxage=3600');
-            } else {
-              response.http.headers.set('Cache-Control', 'private, no-cache, no-store, must-revalidate');
-            }
-          },
-        };
-      },
-    },
-  ],
-  persistedQueries: { cache: undefined },
-  csrfPrevention: false, // Allow GET requests, requires further security safeguards, headers, rate limiting, etc.
-});
+**Cache Control Strategy:**
+- Public endpoint: `Cache-Control: public, max-age=300, s-maxage=3600` (5min browser, 1hr CDN)
+- Authenticated endpoint: `Cache-Control: private, no-cache, no-store, must-revalidate`
 
-// Authenticated endpoint
-app.use('/graphql', expressMiddleware(server, {
-  context: async () => ({
-    loaders: createDataLoaders(collections),
-    collections,
-    isPublic: false,
-  }),
-}));
+**Security Considerations:**
+- Public endpoint disables CSRF prevention to allow GET requests
+- Must implement additional safeguards: rate limiting, request validation, header checks
+- GET request query parameters transformed to request body for Apollo Server compatibility
 
-// Public endpoint with GET request transformation
-app.use('/graphql-public',
-  (req, _res, next) => {
-    // Transform GET query params to req.body for Apollo Server
-    if (req.method === 'GET' && req.query) {
-      req.body = {
-        operationName: req.query.operationName,
-        variables: req.query.variables ? JSON.parse(req.query.variables) : undefined,
-        extensions: req.query.extensions ? JSON.parse(req.query.extensions) : undefined,
-        query: req.query.query,
-      };
-    }
-    next();
-  },
-  expressMiddleware(server, {
-    context: async () => ({
-      loaders: createDataLoaders(collections),
-      collections,
-      isPublic: true,
-    }),
-  })
-);
+**Request Flow:**
+
+```mermaid
+sequenceDiagram
+    participant Client
+    participant CDN
+    participant Server
+    
+    Note over Client,Server: Public Endpoint (/graphql-public)
+    Client->>CDN: GET /graphql-public?extensions={hash}
+    alt Cache Hit
+        CDN-->>Client: Return cached response (< 5ms)
+    else Cache Miss
+        CDN->>Server: Forward GET request
+        Server-->>CDN: Response + Cache-Control: public
+        CDN-->>Client: Response (cached for future)
+    end
+    
+    Note over Client,Server: Authenticated Endpoint (/graphql)
+    Client->>Server: POST /graphql + Authorization header
+    Server-->>Client: Response + Cache-Control: private
+    Note over CDN: Not cached by CDN
 ```
 
 ### Client Configuration
 
-```typescript
-// Authenticated Apollo Client
-export const authenticatedClient = new ApolloClient({
-  uri: 'http://localhost:4000/graphql',
-  cache: new InMemoryCache(),
-  link: from([
-    setContext((_, { headers }) => {
-      const token = localStorage.getItem('auth_token');
-      return {
-        headers: {
-          ...headers,
-          authorization: token ? `Bearer ${token}` : '',
-        },
-      };
-    }),
-    createHttpLink({ uri: 'http://localhost:4000/graphql' }),
-  ]),
-});
+**Authenticated Client:**
+- Targets `/graphql` endpoint
+- Adds JWT token from localStorage to Authorization header
+- Uses POST requests for all operations
+- Compatible with HTTP batching
 
-// Public Apollo Client with APQ and GET requests
-export const publicClient = new ApolloClient({
-  uri: 'http://localhost:4000/graphql-public',
-  cache: new InMemoryCache(),
-  link: createPersistedQueryLink({
-    sha256: async (query) => {
-      const { createHash } = await import('crypto-hash');
-      return createHash('sha256').update(query).digest('hex');
-    },
-    useGETForHashedQueries: true,
-  }).concat(
-    createHttpLink({
-      uri: 'http://localhost:4000/graphql-public',
-    })
-  ),
-});
-```
+**Public Client:**
+- Targets `/graphql-public` endpoint
+- Configures Automatic Persisted Queries (APQ) with SHA-256 hashing
+- Enables GET requests for hashed queries via `useGETForHashedQueries`
+- No authorization headers sent
+- Leverages CDN and network provider caching
 
 ### Schema Design
 
-Define public queries explicitly:
+**Public Schema Subset:**
+- Explicitly defined queries for unauthenticated access
+- Examples: `publicFeed`, `publicPost`, `publicUser`
+- Returns sanitized types without sensitive fields
+- Clearly prefixed with `public` for auditing
 
-```graphql
-# Public schema subset
-type Query {
-  publicFeed(first: Int, after: String): PostConnection!
-  publicPost(id: ID!): Post
-  publicUser(username: String!): PublicUserProfile
-}
-
-# Authenticated schema (full access)
-type Query {
-  feed(first: Int, after: String): PostConnection!
-  myFeed: PostConnection!
-  myProfile: UserProfile!
-  # ... all other queries
-}
-```
+**Authenticated Schema:**
+- Full query set including user-specific operations
+- Includes personalized queries: `myFeed`, `myProfile`
+- Returns complete types with all fields
+- Requires valid JWT token
 
 ### Cache-Control Headers
 
-```typescript
-// Public endpoint - 5 min browser cache, 1 hour CDN cache
-response.http.headers.set('Cache-Control', 'public, max-age=300, s-maxage=3600');
+**Public Endpoint Strategy:**
+- `max-age=300`: Browser caches for 5 minutes
+- `s-maxage=3600`: CDN/shared caches for 1 hour
+- `public`: Explicitly allows intermediate caching
 
-// Authenticated endpoint - no caching
-response.http.headers.set('Cache-Control', 'private, no-cache, no-store, must-revalidate');
-```
+**Authenticated Endpoint Strategy:**
+- `private`: Only browser may cache (not CDN)
+- `no-cache`: Must revalidate before using cached copy
+- `no-store`: Prevent any caching mechanism from storing data
+- `must-revalidate`: Strict cache validation required
 
 ## Automatic Persisted Queries (APQ)
 
@@ -217,19 +168,15 @@ GET /graphql-public?extensions={"persistedQuery":{"version":1,"sha256Hash":"abc1
 
 ### Implementation
 
-```typescript
-import { createPersistedQueryLink } from '@apollo/client/link/persisted-queries';
-import { sha256 } from 'crypto-hash';
+**Client-Side:**
+- Import persisted query link from Apollo Client
+- Configure SHA-256 hashing function
+- Enable GET requests for hashed queries
+- Chain with HTTP link
 
-const link = createPersistedQueryLink({ 
-  sha256,
-  useGETForHashedQueries: true,
-}).concat(httpLink);
-```
-
-### Server Support
-
-Apollo Server supports APQ out-of-the-box (enabled by default).
+**Server-Side:**
+- Apollo Server supports APQ out-of-the-box (enabled by default)
+- No additional configuration required
 
 ## Consequences
 
@@ -292,44 +239,20 @@ Apollo Server supports APQ out-of-the-box (enabled by default).
 
 This approach uses a single `/graphql` endpoint for both authenticated and public queries, with conditional logic to determine when to include authentication headers.
 
-**Implementation Pattern:**
-```typescript
-// Client conditionally adds auth based on operation name
-const conditionalAuthLink = setContext((operation, { headers }) => {
-  const authenticatedOperations = ['GetFeed', 'GetPost', 'MyProfile'];
-  const shouldAuthenticate = authenticatedOperations.includes(operation.operationName || '');
-  
-  if (shouldAuthenticate) {
-    return { headers: { ...headers, authorization: `Bearer ${token}` } };
-  }
-  
-  // For public queries, remove auth and signal the server
-  return { 
-    headers: { 
-      ...headers, 
-      authorization: undefined,
-      'X-Public-Query': 'true' // Custom header to trigger cache headers
-    } 
-  };
-});
-
-// Server checks custom header to determine cache policy
-app.use('/graphql', expressMiddleware(server, {
-  context: async ({ req }) => ({
-    isPublic: req.headers['x-public-query'] === 'true',
-    // ... other context
-  })
-}));
-```
-
 **How It Works:**
 1. Client maintains whitelist of operations requiring authentication
-2. `setContext` checks operation name before adding auth header
-3. Public queries send custom `X-Public-Query` header instead
-4. Server reads header and sets cache policy accordingly
-5. Apollo Server plugin applies correct `Cache-Control` headers
+2. Context link checks operation name before adding auth header
+3. Public queries send custom header to signal caching eligibility
+4. Server reads header and sets cache policy dynamically
+5. Single Apollo Server instance handles both request types
 
-**Note:** This approach is not recommended due to security risks of misconfigured queries exposing tokens to CDN and the maintenance burden of maintaining operation whitelists.
+**Drawbacks:**
+- Security risk: Misconfigured whitelist could expose tokens to CDN
+- Maintenance burden: Must keep operation whitelist synchronized
+- Audit complexity: Harder to track which queries are public
+- Testing overhead: More edge cases to validate
+
+**Not Recommended** - Separate endpoints provide clearer security boundaries
 
 
 ## More Information
