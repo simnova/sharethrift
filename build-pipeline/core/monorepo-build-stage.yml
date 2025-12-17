@@ -239,10 +239,15 @@ stages:
           pnpm audit --audit-level=high --prod
 
           # Use Turbo's built-in --affected flag for accurate change detection
+          # Split coverage collection: Node tests first, then Storybook tests separately
+          # to reduce race conditions and memory pressure in CI
           if [ "$(Build.Reason)" = "PullRequest" ] || [ "$(Build.SourceBranch)" != "refs/heads/main" ]; then
             echo "Testing affected packages only (PR/branch build)..."
             export TURBO_SCM_BASE="origin/$(System.PullRequest.TargetBranch)"
-            pnpm run test:coverage --affected
+            echo "Running Node unit tests with coverage..."
+            pnpm run test:coverage:node --affected
+            echo "Running Storybook/Playwright tests with coverage..."
+            pnpm run test:coverage:storybook --affected
             pnpm run merge-lcov-reports
           else
             echo "Testing all packages (main branch build)..."
