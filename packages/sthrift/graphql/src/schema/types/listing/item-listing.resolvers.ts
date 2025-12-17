@@ -43,6 +43,30 @@ function buildPagedArgs(
   };
 }
 
+// Helper function to verify user authentication
+function verifyUserAuthenticated(context: GraphContext): string {
+	const userEmail =
+		context.applicationServices.verifiedUser?.verifiedJwt?.email;
+	if (!userEmail) {
+		throw new Error('Authentication required');
+	}
+	return userEmail;
+}
+
+// Helper function to verify listing ownership
+function verifyListingOwnership(listing: unknown, currentUserId: string): void {
+	const sharerId =
+		typeof listing === 'object' && listing !== null && 'sharer' in listing
+			? typeof listing.sharer === 'string'
+				? listing.sharer
+				: (listing.sharer as { id?: string })?.id
+			: undefined;
+
+	if (sharerId !== currentUserId) {
+		throw new Error('Only the listing owner can perform this action');
+	}
+}
+
 const itemListingResolvers: Resolvers = {
 	ItemListing: {
 		sharer: PopulateUserFromField('sharer'),
@@ -115,13 +139,7 @@ const itemListingResolvers: Resolvers = {
 		},
 
 		updateItemListing: async (_parent, args, context) => {
-			const userEmail =
-				context.applicationServices.verifiedUser?.verifiedJwt?.email;
-			if (!userEmail) {
-				throw new Error('Authentication required');
-			}
-
-			// Verify the user is the listing owner
+			const userEmail = verifyUserAuthenticated(context);
 			const listing =
 				await context.applicationServices.Listing.ItemListing.queryById({
 					id: args.id,
@@ -135,14 +153,7 @@ const itemListingResolvers: Resolvers = {
 				throw new Error('User not found');
 			}
 
-			// Check if the current user is the sharer (owner) of the listing
-			const sharerId =
-				typeof listing.sharer === 'string'
-					? listing.sharer
-					: listing.sharer?.id;
-			if (sharerId !== currentUser.id) {
-				throw new Error('Only the listing owner can update this listing');
-			}
+			verifyListingOwnership(listing, currentUser.id);
 
 			const command: {
 				id: string;
@@ -194,13 +205,7 @@ const itemListingResolvers: Resolvers = {
 		},
 
 		pauseItemListing: async (_parent, args, context) => {
-			const userEmail =
-				context.applicationServices.verifiedUser?.verifiedJwt?.email;
-			if (!userEmail) {
-				throw new Error('Authentication required');
-			}
-
-			// Verify the user is the listing owner
+			const userEmail = verifyUserAuthenticated(context);
 			const listing =
 				await context.applicationServices.Listing.ItemListing.queryById({
 					id: args.id,
@@ -214,14 +219,7 @@ const itemListingResolvers: Resolvers = {
 				throw new Error('User not found');
 			}
 
-			// Check if the current user is the sharer (owner) of the listing
-			const sharerId =
-				typeof listing.sharer === 'string'
-					? listing.sharer
-					: listing.sharer?.id;
-			if (sharerId !== currentUser.id) {
-				throw new Error('Only the listing owner can pause this listing');
-			}
+			verifyListingOwnership(listing, currentUser.id);
 
 			return await context.applicationServices.Listing.ItemListing.pause({
 				id: args.id,
@@ -240,13 +238,7 @@ const itemListingResolvers: Resolvers = {
 			args: { id: string },
 			context: GraphContext,
 		) => {
-			const userEmail =
-				context.applicationServices.verifiedUser?.verifiedJwt?.email;
-			if (!userEmail) {
-				throw new Error('Authentication required');
-			}
-
-			// Verify the user is the listing owner
+			const userEmail = verifyUserAuthenticated(context);
 			const listing =
 				await context.applicationServices.Listing.ItemListing.queryById({
 					id: args.id,
@@ -260,14 +252,7 @@ const itemListingResolvers: Resolvers = {
 				throw new Error('User not found');
 			}
 
-			// Check if the current user is the sharer (owner) of the listing
-			const sharerId =
-				typeof listing.sharer === 'string'
-					? listing.sharer
-					: listing.sharer?.id;
-			if (sharerId !== currentUser.id) {
-				throw new Error('Only the listing owner can cancel this listing');
-			}
+			verifyListingOwnership(listing, currentUser.id);
 
 			return {
 				status: { success: true },
@@ -282,13 +267,7 @@ const itemListingResolvers: Resolvers = {
 			args: { id: string },
 			context: GraphContext,
 		) => {
-			const userEmail =
-				context.applicationServices.verifiedUser?.verifiedJwt?.email;
-			if (!userEmail) {
-				throw new Error('Authentication required');
-			}
-
-			// Verify the user is the listing owner
+			const userEmail = verifyUserAuthenticated(context);
 			const listing =
 				await context.applicationServices.Listing.ItemListing.queryById({
 					id: args.id,
@@ -302,14 +281,7 @@ const itemListingResolvers: Resolvers = {
 				throw new Error('User not found');
 			}
 
-			// Check if the current user is the sharer (owner) of the listing
-			const sharerId =
-				typeof listing.sharer === 'string'
-					? listing.sharer
-					: listing.sharer?.id;
-			if (sharerId !== currentUser.id) {
-				throw new Error('Only the listing owner can delete this listing');
-			}
+			verifyListingOwnership(listing, currentUser.id);
 
 			await context.applicationServices.Listing.ItemListing.deleteListings({
 				id: args.id,

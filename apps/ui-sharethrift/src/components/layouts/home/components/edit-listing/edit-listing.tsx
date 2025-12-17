@@ -1,6 +1,6 @@
 import { Row, Col, Button, Form, Modal } from 'antd';
 import { LeftOutlined } from '@ant-design/icons';
-import { useRef, useState, useEffect } from 'react';
+import { useRef, useState, useEffect, useCallback } from 'react';
 import dayjs from 'dayjs';
 import { ImageGallery } from '../create-listing/create-listing-image-gallery.tsx';
 import { EditListingForm } from './edit-listing-form.tsx';
@@ -48,9 +48,7 @@ export const EditListing: React.FC<EditListingProps> = ({
 	const maxCharacters = 2000;
 	const mainFileInputRef = useRef<HTMLInputElement>(null);
 	const additionalFileInputRef = useRef<HTMLInputElement>(null);
-	const [isDeleteModalVisible, setIsDeleteModalVisible] = useState(false);
-	const [isPauseModalVisible, setIsPauseModalVisible] = useState(false);
-	const [isCancelModalVisible, setIsCancelModalVisible] = useState(false);
+	const [activeModal, setActiveModal] = useState<'delete' | 'pause' | 'cancel' | null>(null);
 
 	// Initialize form with listing data
 	useEffect(() => {
@@ -67,6 +65,21 @@ export const EditListing: React.FC<EditListingProps> = ({
 			});
 		}
 	}, [listing, form]);
+
+	const handleFileChange = useCallback(
+		(e: React.ChangeEvent<HTMLInputElement>) => {
+			const files = Array.from(e.target.files || []);
+			files.forEach((file) => {
+				const reader = new FileReader();
+				reader.onload = () => {
+					onImageAdd(reader.result as string);
+				};
+				reader.readAsDataURL(file);
+			});
+			e.target.value = '';
+		},
+		[onImageAdd],
+	);
 
 	const formatDateOnly = (value?: {
 		format?: (pattern: string) => string;
@@ -98,19 +111,11 @@ export const EditListing: React.FC<EditListingProps> = ({
 			});
 	};
 
-	const handleDeleteConfirm = () => {
-		setIsDeleteModalVisible(false);
-		onDelete();
-	};
-
-	const handlePauseConfirm = () => {
-		setIsPauseModalVisible(false);
-		onPause();
-	};
-
-	const handleCancelConfirm = () => {
-		setIsCancelModalVisible(false);
-		onCancel();
+	const handleModalConfirm = () => {
+		if (activeModal === 'delete') onDelete();
+		else if (activeModal === 'pause') onPause();
+		else if (activeModal === 'cancel') onCancel();
+		setActiveModal(null);
 	};
 
 	const canPause = listing.state === 'Published';
@@ -212,9 +217,9 @@ export const EditListing: React.FC<EditListingProps> = ({
 									maxCharacters={maxCharacters}
 									handleFormSubmit={handleFormSubmit}
 									onNavigateBack={onNavigateBack}
-									onPause={() => setIsPauseModalVisible(true)}
-									onDelete={() => setIsDeleteModalVisible(true)}
-									onCancel={() => setIsCancelModalVisible(true)}
+									onPause={() => setActiveModal('pause')}
+									onDelete={() => setActiveModal('delete')}
+									onCancel={() => setActiveModal('cancel')}
 									canPause={canPause}
 									canCancel={canCancel}
 								/>
@@ -230,18 +235,7 @@ export const EditListing: React.FC<EditListingProps> = ({
 				type="file"
 				accept="image/*"
 				multiple
-				onChange={(e) => {
-					const files = Array.from(e.target.files || []);
-					files.forEach((file) => {
-						const reader = new FileReader();
-						reader.onload = () => {
-							const result = reader.result as string;
-							onImageAdd(result);
-						};
-						reader.readAsDataURL(file);
-					});
-					e.target.value = '';
-				}}
+				onChange={handleFileChange}
 				style={{ display: 'none' }}
 			/>
 			<input
@@ -249,62 +243,41 @@ export const EditListing: React.FC<EditListingProps> = ({
 				type="file"
 				accept="image/*"
 				multiple
-				onChange={(e) => {
-					const files = Array.from(e.target.files || []);
-					files.forEach((file) => {
-						const reader = new FileReader();
-						reader.onload = () => {
-							const result = reader.result as string;
-							onImageAdd(result);
-						};
-						reader.readAsDataURL(file);
-					});
-					e.target.value = '';
-				}}
+				onChange={handleFileChange}
 				style={{ display: 'none' }}
 			/>
 
-			{/* Delete Confirmation Modal */}
+			{/* Confirmation Modal */}
 			<Modal
-				title="Delete Listing"
-				open={isDeleteModalVisible}
-				onOk={handleDeleteConfirm}
-				onCancel={() => setIsDeleteModalVisible(false)}
-				okText="Delete"
-				okButtonProps={{ danger: true }}
+				title={
+					activeModal === 'delete'
+						? 'Delete Listing'
+						: activeModal === 'pause'
+							? 'Pause Listing'
+							: 'Cancel Listing'
+				}
+				open={activeModal !== null}
+				onOk={handleModalConfirm}
+				onCancel={() => setActiveModal(null)}
+				okText={
+					activeModal === 'delete'
+						? 'Delete'
+						: activeModal === 'pause'
+							? 'Pause'
+							: 'Cancel Listing'
+				}
+				okButtonProps={
+					activeModal === 'delete' || activeModal === 'cancel'
+						? { danger: true }
+						: undefined
+				}
 			>
 				<p>
-					Are you sure you want to delete this listing? This action cannot be
-					undone.
-				</p>
-			</Modal>
-
-			{/* Pause Confirmation Modal */}
-			<Modal
-				title="Pause Listing"
-				open={isPauseModalVisible}
-				onOk={handlePauseConfirm}
-				onCancel={() => setIsPauseModalVisible(false)}
-				okText="Pause"
-			>
-				<p>
-					Are you sure you want to pause this listing? It will no longer be
-					visible to other users.
-				</p>
-			</Modal>
-
-			{/* Cancel Confirmation Modal */}
-			<Modal
-				title="Cancel Listing"
-				open={isCancelModalVisible}
-				onOk={handleCancelConfirm}
-				onCancel={() => setIsCancelModalVisible(false)}
-				okText="Cancel Listing"
-				okButtonProps={{ danger: true }}
-			>
-				<p>
-					Are you sure you want to cancel this listing? This will move it to a
-					cancelled state.
+					{activeModal === 'delete'
+						? 'Are you sure you want to delete this listing? This action cannot be undone.'
+						: activeModal === 'pause'
+							? 'Are you sure you want to pause this listing? It will no longer be visible to other users.'
+							: 'Are you sure you want to cancel this listing? This will move it to a cancelled state.'}
 				</p>
 			</Modal>
 		</>
