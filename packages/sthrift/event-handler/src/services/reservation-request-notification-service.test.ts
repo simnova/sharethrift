@@ -2,6 +2,15 @@ import { describe, it, expect, beforeEach, vi } from 'vitest';
 import { ReservationRequestNotificationService } from './reservation-request-notification-service.js';
 import type { TransactionalEmailService } from '@cellix/transactional-email-service';
 
+// Mock the @sthrift/domain module to avoid dynamic import delays
+vi.mock('@sthrift/domain', () => ({
+	Domain: {
+		PassportFactory: {
+			forSystem: vi.fn(() => ({ system: true })),
+		},
+	},
+}));
+
 describe('ReservationRequestNotificationService', () => {
 	let service: ReservationRequestNotificationService;
 	let mockEmailService: TransactionalEmailService;
