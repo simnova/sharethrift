@@ -72,7 +72,7 @@ Chosen option: **Option 2: Shared Key (current approach)**, because Shared Key�
 
 ## Consequences
 
-- Good, because uploading directly from the client to Azure Blob Storage using Shared key significantly reduces backend bandwidth usage and infrastructure costs.
+- Good, because uploading directly from the client to Azure Blob Storage using Shared Key significantly reduces backend bandwidth usage and infrastructure costs.
 - Good, because versioning support allows easy rollback in case of corruption or malicious file detection.
 - Bad, because malware scanning occurs after upload, introducing a brief exposure window before a file is fully validated.
 
@@ -85,8 +85,8 @@ Chosen option: **Option 2: Shared Key (current approach)**, because Shared Key�
 - After upload, notifies the backend to trigger malware scanning and persist upload metadata.
 
 **Backend Services:**
-- Shared Key–Signed Header Generation:
-    - The backend handles Shared Key–Signed Header generation and validation for Azure Blob Storage uploads, ensuring secure and controlled access for file uploads. There are different mutations for PDF and image files. The backend service encapsulates all business logic enforcing file upload restrictions and security requirements before enabling clients to upload files directly to Azure Blob Storage using carefully permissioned, Shared Key–signed request headers. 
+- Shared Key–signed headers generation:
+    - The backend handles Shared Key–signed headers generation and validation for Azure Blob Storage uploads, ensuring secure and controlled access for file uploads. There are different mutations for PDF and image files. The backend service encapsulates all business logic enforcing file upload restrictions and security requirements before enabling clients to upload files directly to Azure Blob Storage using carefully permissioned, Shared Key–signed request headers. 
 - Post-Upload Malware Handling:
     - The backend polls the blob for the Microsoft Defender for Cloud scan result tag: `No threats found` or `Malicious`.
         - `No threats found` → retain the blob.
