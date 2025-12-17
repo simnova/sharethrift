@@ -49,3 +49,17 @@ Feature: Send Message in Conversation
     And the messaging service fails to send the message
     When I try to send a message
     Then an error should be thrown with the messaging service error details
+
+  Scenario: Sharer can send message in conversation
+    Given a valid conversation exists with sharer ID "sharer-123" and reserver ID "reserver-456"
+    And the current user is the sharer with ID "sharer-123"
+    When I send a message as the sharer
+    Then the message should be sent successfully with author ID "sharer-123"
+    And the message should be persisted to the messaging repository
+
+  Scenario: Reserver can send message in conversation
+    Given a valid conversation exists with sharer ID "sharer-123" and reserver ID "reserver-456"
+    And the current user is the reserver with ID "reserver-456"
+    When I send a message as the reserver
+    Then the message should be sent successfully with author ID "reserver-456"
+    And the message should be persisted to the messaging repository
