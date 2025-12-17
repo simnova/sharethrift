@@ -7,7 +7,7 @@ import {
 import { withMockApolloClient, withMockUserId } from '../../../../../test-utils/storybook-decorators.tsx';
 import { ConversationBoxContainer } from '../components/conversation-box.container.tsx';
 
-// #region Mock Data
+// #region Shared Mock Data
 const mockConversationDetail = {
 	__typename: 'Conversation',
 	id: 'conv-1',
@@ -64,82 +64,82 @@ const mockConversationDetail = {
 	createdAt: '2025-01-15T09:00:00Z',
 	updatedAt: '2025-01-15T10:00:00Z',
 };
-// #endregion Mock Data
 
-// #region Mock Factory
-/**
- * Factory function to build Apollo mocks with sensible defaults.
- * Reduces duplication across stories while allowing per-story overrides.
- */
-const buildMocks = ({
-	conversation = mockConversationDetail,
-	conversationDelay,
-	sendMessageResult,
-}: {
-	conversation?: typeof mockConversationDetail;
-	conversationDelay?: number;
-	sendMessageResult?: {
-		__typename: 'SendMessageMutationResult';
-		status: {
-			__typename: 'MutationStatus';
-			success: boolean;
-			errorMessage: string | null;
-		};
-		message: (typeof mockConversationDetail.messages)[0] | null;
-	};
-	sendMessageError?: Error;
-} = {}) => {
-	const baseMocks = [
-		{
-			request: {
-				query: ConversationBoxContainerConversationDocument,
-				variables: () => true,
-			},
-			maxUsageCount: Number.POSITIVE_INFINITY,
-			...(conversationDelay ? { delay: conversationDelay } : {}),
-			result: {
-				data: {
-					conversation,
-				},
-			},
-		},
-	];
-
-	if (!sendMessageResult) return baseMocks;
-
-	return [
-		...baseMocks,
-		{
-			request: {
-				query: ConversationBoxContainerSendMessageDocument,
-				variables: () => true,
-			},
-			maxUsageCount: Number.POSITIVE_INFINITY,
-			result: {
-				data: {
-					sendMessage: sendMessageResult,
-				},
-			},
-		},
-	];
+// Shared base conversation mock
+const conversationMock = {
+	request: {
+		query: ConversationBoxContainerConversationDocument,
+		variables: () => true,
+	},
+	maxUsageCount: Number.POSITIVE_INFINITY,
+	result: {
+		data: { conversation: mockConversationDetail },
+	},
 };
 
-/**
- * Factory to build a network error mock for sendMessage.
- */
-const buildNetworkErrorMocks = (conversation = mockConversationDetail) => [
+// Default mocks with just the conversation query
+const defaultMocks = [conversationMock];
+
+// Mocks for successful message send
+const sendMessageSuccessMocks = [
+	conversationMock,
 	{
 		request: {
-			query: ConversationBoxContainerConversationDocument,
+			query: ConversationBoxContainerSendMessageDocument,
 			variables: () => true,
 		},
 		maxUsageCount: Number.POSITIVE_INFINITY,
 		result: {
 			data: {
-				conversation,
+				sendMessage: {
+					__typename: 'SendMessageMutationResult',
+					status: {
+						__typename: 'MutationStatus',
+						success: true,
+						errorMessage: null,
+					},
+					message: {
+						__typename: 'Message',
+						id: 'msg-new',
+						messagingMessageId: 'SM999',
+						content: 'Test message',
+						createdAt: new Date().toISOString(),
+						authorId: 'user-1',
+					},
+				},
 			},
 		},
 	},
+];
+
+// Mocks for message send error (application level)
+const sendMessageErrorMocks = [
+	conversationMock,
+	{
+		request: {
+			query: ConversationBoxContainerSendMessageDocument,
+			variables: () => true,
+		},
+		maxUsageCount: Number.POSITIVE_INFINITY,
+		result: {
+			data: {
+				sendMessage: {
+					__typename: 'SendMessageMutationResult',
+					status: {
+						__typename: 'MutationStatus',
+						success: false,
+						errorMessage: 'Failed to send message',
+					},
+					message: null,
+				},
+			},
+		},
+	},
+];
+
+// Mocks for network error
+const sendMessageNetworkErrorMocks = [
+	conversationMock,
 	{
 		request: {
 			query: ConversationBoxContainerSendMessageDocument,
@@ -149,21 +149,50 @@ const buildNetworkErrorMocks = (conversation = mockConversationDetail) => [
 		error: new Error('Network error'),
 	},
 ];
-// #endregion Mock Factory
 
-// #region Play Helpers
-const getCanvas = (canvasElement: HTMLElement) => within(canvasElement);
-
-const typeAndSendMessage = async (
-	canvas: ReturnType<typeof within>,
-	message: string,
-) => {
-	const textArea = await canvas.findByPlaceholderText(/Type a message/i);
-	await userEvent.type(textArea, message);
-	const sendButton = canvas.getByRole('button', { name: /send/i });
-	await userEvent.click(sendButton);
-};
-// #endregion Play Helpers
+// Mocks for cache update test (empty messages initially)
+const cacheUpdateMocks = [
+	{
+		request: {
+			query: ConversationBoxContainerConversationDocument,
+			variables: () => true,
+		},
+		maxUsageCount: Number.POSITIVE_INFINITY,
+		result: {
+			data: {
+				conversation: { ...mockConversationDetail, messages: [] },
+			},
+		},
+	},
+	{
+		request: {
+			query: ConversationBoxContainerSendMessageDocument,
+			variables: () => true,
+		},
+		maxUsageCount: Number.POSITIVE_INFINITY,
+		result: {
+			data: {
+				sendMessage: {
+					__typename: 'SendMessageMutationResult',
+					status: {
+						__typename: 'MutationStatus',
+						success: true,
+						errorMessage: null,
+					},
+					message: {
+						__typename: 'Message',
+						id: 'msg-new',
+						messagingMessageId: 'SM999',
+						content: 'First message',
+						createdAt: new Date().toISOString(),
+						authorId: 'user-1',
+					},
+				},
+			},
+		},
+	},
+];
+// #endregion Shared Mock Data
 
 const meta: Meta<typeof ConversationBoxContainer> = {
 	title: 'Pages/Home/Messages/ConversationBoxContainer',
@@ -182,11 +211,11 @@ export const Default: Story = {
 	},
 	parameters: {
 		apolloClient: {
-			mocks: buildMocks(),
+			mocks: defaultMocks,
 		},
 	},
 	play: async ({ canvasElement }) => {
-		const canvas = getCanvas(canvasElement);
+		const canvas = within(canvasElement);
 		// ListingBanner shows "{firstName}'s Listing"
 		await expect(
 			await canvas.findByText(/John's Listing/i),
@@ -200,29 +229,15 @@ export const SendMessageSuccess: Story = {
 	},
 	parameters: {
 		apolloClient: {
-			mocks: buildMocks({
-				sendMessageResult: {
-					__typename: 'SendMessageMutationResult',
-					status: {
-						__typename: 'MutationStatus',
-						success: true,
-						errorMessage: null,
-					},
-					message: {
-						__typename: 'Message',
-						id: 'msg-new',
-						messagingMessageId: 'SM999',
-						content: 'Test message',
-						createdAt: new Date().toISOString(),
-						authorId: 'user-1',
-					},
-				},
-			}),
+			mocks: sendMessageSuccessMocks,
 		},
 	},
 	play: async ({ canvasElement }) => {
-		const canvas = getCanvas(canvasElement);
-		await typeAndSendMessage(canvas, 'Test message');
+		const canvas = within(canvasElement);
+		const textArea = await canvas.findByPlaceholderText(/Type a message/i);
+		await userEvent.type(textArea, 'Test message');
+		const sendButton = canvas.getByRole('button', { name: /send/i });
+		await userEvent.click(sendButton);
 	},
 };
 
@@ -232,22 +247,15 @@ export const SendMessageError: Story = {
 	},
 	parameters: {
 		apolloClient: {
-			mocks: buildMocks({
-				sendMessageResult: {
-					__typename: 'SendMessageMutationResult',
-					status: {
-						__typename: 'MutationStatus',
-						success: false,
-						errorMessage: 'Failed to send message',
-					},
-					message: null,
-				},
-			}),
+			mocks: sendMessageErrorMocks,
 		},
 	},
 	play: async ({ canvasElement }) => {
-		const canvas = getCanvas(canvasElement);
-		await typeAndSendMessage(canvas, 'This will fail');
+		const canvas = within(canvasElement);
+		const textArea = await canvas.findByPlaceholderText(/Type a message/i);
+		await userEvent.type(textArea, 'This will fail');
+		const sendButton = canvas.getByRole('button', { name: /send/i });
+		await userEvent.click(sendButton);
 	},
 };
 
@@ -257,12 +265,15 @@ export const SendMessageNetworkError: Story = {
 	},
 	parameters: {
 		apolloClient: {
-			mocks: buildNetworkErrorMocks(),
+			mocks: sendMessageNetworkErrorMocks,
 		},
 	},
 	play: async ({ canvasElement }) => {
-		const canvas = getCanvas(canvasElement);
-		await typeAndSendMessage(canvas, 'Network will fail');
+		const canvas = within(canvasElement);
+		const textArea = await canvas.findByPlaceholderText(/Type a message/i);
+		await userEvent.type(textArea, 'Network will fail');
+		const sendButton = canvas.getByRole('button', { name: /send/i });
+		await userEvent.click(sendButton);
 	},
 };
 
@@ -272,29 +283,14 @@ export const CacheUpdateOnSuccess: Story = {
 	},
 	parameters: {
 		apolloClient: {
-			mocks: buildMocks({
-				conversation: { ...mockConversationDetail, messages: [] },
-				sendMessageResult: {
-					__typename: 'SendMessageMutationResult',
-					status: {
-						__typename: 'MutationStatus',
-						success: true,
-						errorMessage: null,
-					},
-					message: {
-						__typename: 'Message',
-						id: 'msg-new',
-						messagingMessageId: 'SM999',
-						content: 'First message',
-						createdAt: new Date().toISOString(),
-						authorId: 'user-1',
-					},
-				},
-			}),
+			mocks: cacheUpdateMocks,
 		},
 	},
 	play: async ({ canvasElement }) => {
-		const canvas = getCanvas(canvasElement);
-		await typeAndSendMessage(canvas, 'First message');
+		const canvas = within(canvasElement);
+		const textArea = await canvas.findByPlaceholderText(/Type a message/i);
+		await userEvent.type(textArea, 'First message');
+		const sendButton = canvas.getByRole('button', { name: /send/i });
+		await userEvent.click(sendButton);
 	},
 };
