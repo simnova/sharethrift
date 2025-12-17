@@ -314,20 +314,22 @@ describe('ReservationRequestNotificationService', () => {
 
 		// Mock the UnitOfWork calls
 		mockDomainDataSource.User.PersonalUser.PersonalUserUnitOfWork.withTransaction
-			.mockImplementation((_passport: unknown, callback: (repo: unknown) => unknown) => {
-				if (
-					callback.toString().includes('sharer') ||
-					callback.toString().includes('getById(\'user-sharer\')')
-				) {
-					return callback({ getById: vi.fn().mockResolvedValue(sharer) });
-				}
-				return callback({ getById: vi.fn().mockResolvedValue(reserver) });
+			.mockImplementation(async (_passport: unknown, callback: (repo: unknown) => Promise<unknown>) => {
+				const mockRepo = {
+					getById: vi.fn().mockImplementation((userId: string) => {
+						return Promise.resolve(userId === baseParams.sharerId ? sharer : reserver);
+					}),
+				};
+				return await callback(mockRepo);
 			});
 
 		mockDomainDataSource.Listing.ItemListing.ItemListingUnitOfWork.withTransaction
-			.mockImplementation((_passport: unknown, callback: (repo: unknown) => unknown) =>
-				callback({ getById: vi.fn().mockResolvedValue(listing) }),
-			);
+			.mockImplementation(async (_passport: unknown, callback: (repo: unknown) => Promise<unknown>) => {
+				const mockRepo = {
+					getById: vi.fn().mockResolvedValue(listing),
+				};
+				return await callback(mockRepo);
+			});
 
 			await service.sendReservationRequestNotification(
 				baseParams.reservationRequestId,
