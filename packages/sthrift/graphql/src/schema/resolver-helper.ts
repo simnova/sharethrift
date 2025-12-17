@@ -151,8 +151,9 @@ export const PopulateUserFromField = (fieldName: string) => {
 					};
 					return userData;
 				}
-			} catch (_error) {
+			} catch (error) {
 				// AdminUser not found, try PersonalUser
+				console.debug('AdminUser not found, trying PersonalUser:', error);
 			}
 
 			// Try PersonalUser
@@ -175,8 +176,9 @@ export const PopulateUserFromField = (fieldName: string) => {
 					};
 					return userData;
 				}
-			} catch (_error) {
+			} catch (error) {
 				// PersonalUser not found
+				console.debug('PersonalUser not found:', error);
 			}
 		}
 

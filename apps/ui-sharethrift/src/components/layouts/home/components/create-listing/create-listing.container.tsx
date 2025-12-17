@@ -79,7 +79,7 @@ export const CreateListingContainer: React.FC<CreateListingContainerProps> = (
 		}
 		const fallback = new Date(value);
 		if (Number.isNaN(fallback.getTime())) {
-			throw new Error('Invalid date string provided for reservation period');
+			throw new TypeError('Invalid date string provided for reservation period');
 		}
 		return fallback;
 	};

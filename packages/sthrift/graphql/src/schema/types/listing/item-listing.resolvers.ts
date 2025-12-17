@@ -55,12 +55,15 @@ function verifyUserAuthenticated(context: GraphContext): string {
 
 // Helper function to verify listing ownership
 function verifyListingOwnership(listing: unknown, currentUserId: string): void {
-	const sharerId =
-		typeof listing === 'object' && listing !== null && 'sharer' in listing
-			? typeof listing.sharer === 'string'
-				? listing.sharer
-				: (listing.sharer as { id?: string })?.id
-			: undefined;
+	let sharerId: string | undefined;
+
+	if (typeof listing === 'object' && listing !== null && 'sharer' in listing) {
+		if (typeof listing.sharer === 'string') {
+			sharerId = listing.sharer;
+		} else {
+			sharerId = (listing.sharer as { id?: string })?.id;
+		}
+	}
 
 	if (sharerId !== currentUserId) {
 		throw new Error('Only the listing owner can perform this action');
@@ -155,49 +158,22 @@ const itemListingResolvers: Resolvers = {
 
 			verifyListingOwnership(listing, currentUser.id);
 
-			const command: {
-				id: string;
-				title?: string;
-				description?: string;
-				category?: string;
-				location?: string;
-				sharingPeriodStart?: Date;
-				sharingPeriodEnd?: Date;
-				images?: string[];
-			} = {
+			const command = {
 				id: args.id,
+				...(args.input.title != null && { title: args.input.title }),
+				...(args.input.description != null && {
+					description: args.input.description,
+				}),
+				...(args.input.category != null && { category: args.input.category }),
+				...(args.input.location != null && { location: args.input.location }),
+				...(args.input.sharingPeriodStart != null && {
+					sharingPeriodStart: new Date(args.input.sharingPeriodStart),
+				}),
+				...(args.input.sharingPeriodEnd != null && {
+					sharingPeriodEnd: new Date(args.input.sharingPeriodEnd),
+				}),
+				...(args.input.images != null && { images: [...args.input.images] }),
 			};
-
-			if (args.input.title !== undefined && args.input.title !== null) {
-				command.title = args.input.title;
-			}
-			if (
-				args.input.description !== undefined &&
-				args.input.description !== null
-			) {
-				command.description = args.input.description;
-			}
-			if (args.input.category !== undefined && args.input.category !== null) {
-				command.category = args.input.category;
-			}
-			if (args.input.location !== undefined && args.input.location !== null) {
-				command.location = args.input.location;
-			}
-			if (
-				args.input.sharingPeriodStart !== undefined &&
-				args.input.sharingPeriodStart !== null
-			) {
-				command.sharingPeriodStart = new Date(args.input.sharingPeriodStart);
-			}
-			if (
-				args.input.sharingPeriodEnd !== undefined &&
-				args.input.sharingPeriodEnd !== null
-			) {
-				command.sharingPeriodEnd = new Date(args.input.sharingPeriodEnd);
-			}
-			if (args.input.images !== undefined && args.input.images !== null) {
-				command.images = [...args.input.images];
-			}
 
 			return await context.applicationServices.Listing.ItemListing.update(
 				command,

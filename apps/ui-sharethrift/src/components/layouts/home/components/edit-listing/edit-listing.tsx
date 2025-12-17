@@ -106,8 +106,8 @@ export const EditListing: React.FC<EditListingProps> = ({
 				};
 				onSubmit(formData);
 			})
-			.catch((errorInfo) => {
-				console.log('Validation failed:', errorInfo);
+			.catch((error_) => {
+				console.log('Validation failed:', error_);
 			});
 	};
 
@@ -122,6 +122,28 @@ export const EditListing: React.FC<EditListingProps> = ({
 	const canCancel = ['Published', 'Drafted', 'Paused'].includes(
 		listing.state || '',
 	);
+
+	const getModalTitle = () => {
+		if (activeModal === 'delete') return 'Delete Listing';
+		if (activeModal === 'pause') return 'Pause Listing';
+		return 'Cancel Listing';
+	};
+
+	const getModalOkText = () => {
+		if (activeModal === 'delete') return 'Delete';
+		if (activeModal === 'pause') return 'Pause';
+		return 'Cancel Listing';
+	};
+
+	const getModalMessage = () => {
+		if (activeModal === 'delete') {
+			return 'Are you sure you want to delete this listing? This action cannot be undone.';
+		}
+		if (activeModal === 'pause') {
+			return 'Are you sure you want to pause this listing? It will no longer be visible to other users.';
+		}
+		return 'Are you sure you want to cancel this listing? This will move it to a cancelled state.';
+	};
 
 	return (
 		<>
@@ -249,36 +271,18 @@ export const EditListing: React.FC<EditListingProps> = ({
 
 			{/* Confirmation Modal */}
 			<Modal
-				title={
-					activeModal === 'delete'
-						? 'Delete Listing'
-						: activeModal === 'pause'
-							? 'Pause Listing'
-							: 'Cancel Listing'
-				}
+				title={getModalTitle()}
 				open={activeModal !== null}
 				onOk={handleModalConfirm}
 				onCancel={() => setActiveModal(null)}
-				okText={
-					activeModal === 'delete'
-						? 'Delete'
-						: activeModal === 'pause'
-							? 'Pause'
-							: 'Cancel Listing'
-				}
+				okText={getModalOkText()}
 				okButtonProps={
 					activeModal === 'delete' || activeModal === 'cancel'
 						? { danger: true }
 						: undefined
 				}
 			>
-				<p>
-					{activeModal === 'delete'
-						? 'Are you sure you want to delete this listing? This action cannot be undone.'
-						: activeModal === 'pause'
-							? 'Are you sure you want to pause this listing? It will no longer be visible to other users.'
-							: 'Are you sure you want to cancel this listing? This will move it to a cancelled state.'}
-				</p>
+				<p>{getModalMessage()}</p>
 			</Modal>
 		</>
 	);

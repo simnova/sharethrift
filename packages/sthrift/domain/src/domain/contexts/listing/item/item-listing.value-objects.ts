@@ -19,14 +19,14 @@ export class ListingState extends VOString({
 	minLength: 0,
 	maxLength: 50,
 }) {
-	static Active = new ListingState(ListingStateEnum.Active);
-	static Published = new ListingState(ListingStateEnum.Published);
-	static Paused = new ListingState(ListingStateEnum.Paused);
-	static Cancelled = new ListingState(ListingStateEnum.Cancelled);
-	static Drafted = new ListingState(ListingStateEnum.Drafted);
-	static Expired = new ListingState(ListingStateEnum.Expired);
-	static Blocked = new ListingState(ListingStateEnum.Blocked);
-	static AppealRequested = new ListingState(ListingStateEnum.AppealRequested);
+	static readonly Active = new ListingState(ListingStateEnum.Active);
+	static readonly Published = new ListingState(ListingStateEnum.Published);
+	static readonly Paused = new ListingState(ListingStateEnum.Paused);
+	static readonly Cancelled = new ListingState(ListingStateEnum.Cancelled);
+	static readonly Drafted = new ListingState(ListingStateEnum.Drafted);
+	static readonly Expired = new ListingState(ListingStateEnum.Expired);
+	static readonly Blocked = new ListingState(ListingStateEnum.Blocked);
+	static readonly AppealRequested = new ListingState(ListingStateEnum.AppealRequested);
 
 	get isActive(): boolean {
 		return (
