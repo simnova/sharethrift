@@ -172,3 +172,83 @@ Feature: <AggregateRoot>ItemListing
     Given an ItemListing aggregate
     When I set the listingType to "premium-listing"
     Then the listingType should be updated to "premium-listing"
+
+  Scenario: Getting sharer as AdminUser when userType is admin-user
+    Given an ItemListing with an AdminUser as sharer
+    When I access the sharer property
+    Then it should return an AdminUser instance
+    And the sharer id should match
+
+  Scenario: Getting sharer as PersonalUser when userType is personal-user
+    Given an ItemListing with a PersonalUser as sharer
+    When I access the sharer property
+    Then it should return a PersonalUser instance
+    And the sharer id should match
+
+  Scenario: Loading sharer asynchronously
+    Given an ItemListing aggregate
+    When I call loadSharer()
+    Then it should return a UserEntityReference
+
+  Scenario: Getting createdAt timestamp
+    Given an ItemListing aggregate with a known createdAt date
+    When I access the createdAt property
+    Then it should return the correct creation date
+
+  Scenario: Getting schemaVersion
+    Given an ItemListing aggregate with a known schemaVersion
+    When I access the schemaVersion property
+    Then it should return the correct schema version
+
+  Scenario: Getting sharingHistory as empty array when not set
+    Given an ItemListing aggregate with no sharingHistory
+    When I access the sharingHistory property
+    Then it should return an empty array
+
+  Scenario: Getting sharingHistory with entries
+    Given an ItemListing aggregate with sharingHistory entries
+    When I access the sharingHistory property
+    Then it should return the sharing history as an array
+    And it should be a copy of the original array
+
+  Scenario: Getting reports count when not set
+    Given an ItemListing aggregate with no reports
+    When I access the reports property
+    Then it should return 0
+
+  Scenario: Getting reports count when set
+    Given an ItemListing aggregate with reports
+    When I access the reports property
+    Then it should return the correct number of reports
+
+  Scenario: Getting images as empty array when not set
+    Given an ItemListing aggregate with no images
+    When I access the images property
+    Then it should return an empty array
+
+  Scenario: Getting images returns a copy of the array
+    Given an ItemListing aggregate with images
+    When I access the images property
+    Then it should return a copy of the images array
+    And modifications to the returned array do not affect the listing
+
+  Scenario: Getting isActive when state is Published
+    Given an ItemListing aggregate in Published state
+    When I access the isActive property
+    Then it should return true
+
+  Scenario: Getting isActive when state is not Published
+    Given an ItemListing aggregate in Drafted state
+    When I access the isActive property
+    Then it should return false
+
+  Scenario: Getting displayLocation
+    Given an ItemListing aggregate with a known location
+    When I access the displayLocation property
+    Then it should return the location
+
+  Scenario: Getting getEntityReference
+    Given an ItemListing aggregate
+    When I call getEntityReference()
+    Then it should return an ItemListingEntityReference
+

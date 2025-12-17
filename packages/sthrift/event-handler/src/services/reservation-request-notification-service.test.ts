@@ -1198,4 +1198,319 @@ describe('ReservationRequestNotificationService', () => {
 			expect(service).not.toBe(service2);
 		});
 	});
+
+	describe('Uncovered line scenarios', () => {
+		const baseParams = {
+			reservationRequestId: 'req-123',
+			listingId: 'list-456',
+			reserverId: 'user-reserver',
+			sharerId: 'user-sharer',
+			reservationPeriodStart: new Date('2024-01-15'),
+			reservationPeriodEnd: new Date('2024-01-20'),
+		};
+
+		it('handles reserver returning null from repository', async () => {
+			const consoleSpy = vi.spyOn(console, 'error');
+			const sharer = {
+				account: { email: 'sharer@example.com' },
+				profile: { firstName: 'Sharer' },
+			};
+
+			// Mock PersonalUser returning the sharer
+			mockDomainDataSource.User.PersonalUser.PersonalUserUnitOfWork.withTransaction
+				.mockImplementation(async (_passport: unknown, callback: (repo: unknown) => Promise<unknown>) => {
+					const mockRepo = {
+						getById: vi.fn().mockImplementation((userId: string) => {
+							// First call (sharer) returns the sharer, second call (reserver) returns null
+							return Promise.resolve(userId === baseParams.sharerId ? sharer : null);
+						}),
+					};
+					return await callback(mockRepo);
+				});
+
+			await service.sendReservationRequestNotification(
+				baseParams.reservationRequestId,
+				baseParams.listingId,
+				baseParams.reserverId,
+				baseParams.sharerId,
+				baseParams.reservationPeriodStart,
+				baseParams.reservationPeriodEnd,
+			);
+
+			// Should log error for missing reserver and not send email
+			expect(consoleSpy).toHaveBeenCalledWith(
+				expect.stringContaining(`Reserver with ID ${baseParams.reserverId} not found`),
+			);
+			expect(mockEmailService.sendTemplatedEmail).not.toHaveBeenCalled();
+
+			consoleSpy.mockRestore();
+		});
+
+		it('handles sharer with no email address returning null from getUserContactInfo', async () => {
+			const consoleSpy = vi.spyOn(console, 'error');
+
+			const sharerWithoutEmail = {
+				profile: { firstName: 'Sharer', lastName: 'Test' },
+				// Missing email in both account and profile
+			};
+
+			const reserver = {
+				account: { email: 'reserver@example.com' },
+				profile: { firstName: 'Reserver' },
+			};
+
+			const listing = {
+				title: 'Test Listing',
+			};
+
+			mockDomainDataSource.User.PersonalUser.PersonalUserUnitOfWork.withTransaction
+				.mockImplementation(async (_passport: unknown, callback: (repo: unknown) => Promise<unknown>) => {
+					const mockRepo = {
+						getById: vi.fn().mockImplementation((userId: string) => {
+							return Promise.resolve(userId === baseParams.sharerId ? sharerWithoutEmail : reserver);
+						}),
+					};
+					return await callback(mockRepo);
+				});
+
+			mockDomainDataSource.Listing.ItemListing.ItemListingUnitOfWork.withTransaction
+				.mockImplementation(async (_passport: unknown, callback: (repo: unknown) => Promise<unknown>) => {
+					const mockRepo = {
+						getById: vi.fn().mockResolvedValue(listing),
+					};
+					return await callback(mockRepo);
+				});
+
+			await service.sendReservationRequestNotification(
+				baseParams.reservationRequestId,
+				baseParams.listingId,
+				baseParams.reserverId,
+				baseParams.sharerId,
+				baseParams.reservationPeriodStart,
+				baseParams.reservationPeriodEnd,
+			);
+
+			// Should log error for missing email and not send email
+			expect(consoleSpy).toHaveBeenCalledWith(
+				expect.stringContaining(`Sharer ${baseParams.sharerId} has no email address`),
+			);
+			expect(mockEmailService.sendTemplatedEmail).not.toHaveBeenCalled();
+
+			consoleSpy.mockRestore();
+		});
+
+		it('handles both AdminUser lookups failing for sharer', async () => {
+			const errorSpy = vi.spyOn(console, 'error');
+
+			// Both PersonalUser and AdminUser fail
+			mockDomainDataSource.User.PersonalUser.PersonalUserUnitOfWork.withTransaction
+				.mockRejectedValue(new Error('PersonalUser lookup failed'));
+			mockDomainDataSource.User.AdminUser.AdminUserUnitOfWork.withTransaction
+				.mockRejectedValue(new Error('AdminUser lookup failed'));
+
+			await service.sendReservationRequestNotification(
+				baseParams.reservationRequestId,
+				baseParams.listingId,
+				baseParams.reserverId,
+				baseParams.sharerId,
+				baseParams.reservationPeriodStart,
+				baseParams.reservationPeriodEnd,
+			);
+
+			// Should log error indicating both lookups failed
+			expect(errorSpy).toHaveBeenCalledWith(
+				expect.stringContaining(`User ${baseParams.sharerId} not found as admin user either`),
+				expect.any(Error),
+			);
+			expect(mockEmailService.sendTemplatedEmail).not.toHaveBeenCalled();
+
+			errorSpy.mockRestore();
+		});
+
+		it('handles both AdminUser lookups failing for reserver', async () => {
+			const errorSpy = vi.spyOn(console, 'error');
+
+			const sharer = {
+				account: { email: 'sharer@example.com' },
+				profile: { firstName: 'Sharer' },
+			};
+
+			// PersonalUser succeeds for sharer, fails for reserver
+			// AdminUser fails for reserver
+			mockDomainDataSource.User.PersonalUser.PersonalUserUnitOfWork.withTransaction
+				.mockImplementation(async (_passport: unknown, callback: (repo: unknown) => Promise<unknown>) => {
+					const mockRepo = {
+						getById: vi.fn().mockImplementation((userId: string) => {
+							if (userId === baseParams.sharerId) {
+								return Promise.resolve(sharer);
+							}
+							return Promise.reject(new Error('Not found'));
+						}),
+					};
+					return await callback(mockRepo);
+				});
+
+			mockDomainDataSource.User.AdminUser.AdminUserUnitOfWork.withTransaction
+				.mockRejectedValue(new Error('AdminUser lookup failed'));
+
+			await service.sendReservationRequestNotification(
+				baseParams.reservationRequestId,
+				baseParams.listingId,
+				baseParams.reserverId,
+				baseParams.sharerId,
+				baseParams.reservationPeriodStart,
+				baseParams.reservationPeriodEnd,
+			);
+
+			// Should log error indicating both lookups failed for reserver
+			expect(errorSpy).toHaveBeenCalledWith(
+				expect.stringContaining(`User ${baseParams.reserverId} not found as admin user either`),
+				expect.any(Error),
+			);
+			expect(mockEmailService.sendTemplatedEmail).not.toHaveBeenCalled();
+
+			errorSpy.mockRestore();
+		});
+
+		it('handles listing returning null from repository', async () => {
+			const consoleSpy = vi.spyOn(console, 'error');
+
+			const sharer = {
+				account: { email: 'sharer@example.com' },
+				profile: { firstName: 'Sharer' },
+			};
+
+			const reserver = {
+				account: { email: 'reserver@example.com' },
+				profile: { firstName: 'Reserver' },
+			};
+
+			mockDomainDataSource.User.PersonalUser.PersonalUserUnitOfWork.withTransaction
+				.mockImplementation(async (_passport: unknown, callback: (repo: unknown) => Promise<unknown>) => {
+					const mockRepo = {
+						getById: vi.fn().mockImplementation((userId: string) => {
+							return Promise.resolve(userId === baseParams.sharerId ? sharer : reserver);
+						}),
+					};
+					return await callback(mockRepo);
+				});
+
+			// Listing returns null
+			mockDomainDataSource.Listing.ItemListing.ItemListingUnitOfWork.withTransaction
+				.mockImplementation(async (_passport: unknown, callback: (repo: unknown) => Promise<unknown>) => {
+					const mockRepo = {
+						getById: vi.fn().mockResolvedValue(null),
+					};
+					return await callback(mockRepo);
+				});
+
+			await service.sendReservationRequestNotification(
+				baseParams.reservationRequestId,
+				baseParams.listingId,
+				baseParams.reserverId,
+				baseParams.sharerId,
+				baseParams.reservationPeriodStart,
+				baseParams.reservationPeriodEnd,
+			);
+
+			// Should log error for missing listing and not send email
+			expect(consoleSpy).toHaveBeenCalledWith(
+				expect.stringContaining(`Listing with ID ${baseParams.listingId} not found`),
+			);
+			expect(mockEmailService.sendTemplatedEmail).not.toHaveBeenCalled();
+
+			consoleSpy.mockRestore();
+		});
+
+		it('handles listing lookup throwing exception', async () => {
+			const consoleSpy = vi.spyOn(console, 'error');
+
+			const sharer = {
+				account: { email: 'sharer@example.com' },
+				profile: { firstName: 'Sharer' },
+			};
+
+			const reserver = {
+				account: { email: 'reserver@example.com' },
+				profile: { firstName: 'Reserver' },
+			};
+
+			mockDomainDataSource.User.PersonalUser.PersonalUserUnitOfWork.withTransaction
+				.mockImplementation(async (_passport: unknown, callback: (repo: unknown) => Promise<unknown>) => {
+					const mockRepo = {
+						getById: vi.fn().mockImplementation((userId: string) => {
+							return Promise.resolve(userId === baseParams.sharerId ? sharer : reserver);
+						}),
+					};
+					return await callback(mockRepo);
+				});
+
+			// Listing lookup throws
+			mockDomainDataSource.Listing.ItemListing.ItemListingUnitOfWork.withTransaction
+				.mockRejectedValue(new Error('Database connection error for listing'));
+
+			await service.sendReservationRequestNotification(
+				baseParams.reservationRequestId,
+				baseParams.listingId,
+				baseParams.reserverId,
+				baseParams.sharerId,
+				baseParams.reservationPeriodStart,
+				baseParams.reservationPeriodEnd,
+			);
+
+			// Should log error and catch exception without throwing
+			expect(consoleSpy).toHaveBeenCalledWith(
+				expect.stringContaining('Listing'),
+				expect.any(Error),
+			);
+			expect(mockEmailService.sendTemplatedEmail).not.toHaveBeenCalled();
+
+			consoleSpy.mockRestore();
+		});
+
+		it('handles reserver null after successful repo call for PersonalUser', async () => {
+			const consoleSpy = vi.spyOn(console, 'error');
+
+			const sharer = {
+				account: { email: 'sharer@example.com' },
+				profile: { firstName: 'Sharer' },
+			};
+
+			let callCount = 0;
+
+			mockDomainDataSource.User.PersonalUser.PersonalUserUnitOfWork.withTransaction
+				.mockImplementation(async (_passport: unknown, callback: (repo: unknown) => Promise<unknown>) => {
+					const mockRepo = {
+						getById: vi.fn().mockImplementation((userId: string) => {
+							callCount++;
+							if (callCount === 1 && userId === baseParams.sharerId) {
+								return Promise.resolve(sharer);
+							}
+							if (callCount === 2 && userId === baseParams.reserverId) {
+								return Promise.resolve(null);
+							}
+							return Promise.resolve(null);
+						}),
+					};
+					return await callback(mockRepo);
+				});
+
+			await service.sendReservationRequestNotification(
+				baseParams.reservationRequestId,
+				baseParams.listingId,
+				baseParams.reserverId,
+				baseParams.sharerId,
+				baseParams.reservationPeriodStart,
+				baseParams.reservationPeriodEnd,
+			);
+
+			// Should log error for missing reserver and not send email
+			expect(consoleSpy).toHaveBeenCalledWith(
+				expect.stringContaining(`Reserver with ID ${baseParams.reserverId} not found`),
+			);
+			expect(mockEmailService.sendTemplatedEmail).not.toHaveBeenCalled();
+
+			consoleSpy.mockRestore();
+		});
+	});
 });
