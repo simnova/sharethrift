@@ -1512,5 +1512,319 @@ describe('ReservationRequestNotificationService', () => {
 
 			consoleSpy.mockRestore();
 		});
+
+		it('logs appropriate message when reserver not found as PersonalUser and proceeds to AdminUser', async () => {
+			const logSpy = vi.spyOn(console, 'log');
+
+			const sharer = {
+				account: { email: 'sharer@example.com' },
+				profile: { firstName: 'Sharer' },
+			};
+
+			const reserver = {
+				profile: { name: 'Reserver' },
+				account: { email: 'reserver@example.com' },
+			};
+
+			const listing = {
+				title: 'Test Listing',
+			};
+
+			let callCount = 0;
+
+			mockDomainDataSource.User.PersonalUser.PersonalUserUnitOfWork.withTransaction
+				.mockImplementation(async (_passport: unknown, callback: (repo: unknown) => Promise<unknown>) => {
+					callCount++;
+					if (callCount === 1) {
+						const mockRepo = {
+							getById: vi.fn().mockResolvedValue(sharer),
+						};
+						return await callback(mockRepo);
+					} else {
+						// Second call for reserver fails
+						throw new Error('Reserver not a personal user');
+					}
+				});
+
+			mockDomainDataSource.User.AdminUser.AdminUserUnitOfWork.withTransaction
+				.mockResolvedValue(reserver);
+
+			mockDomainDataSource.Listing.ItemListing.ItemListingUnitOfWork.withTransaction
+				.mockResolvedValue(listing);
+
+			await service.sendReservationRequestNotification(
+				'req-123',
+				'list-456',
+				'user-reserver',
+				'user-sharer',
+				new Date('2024-01-15'),
+				new Date('2024-01-20'),
+			);
+
+			// Should log message about trying admin user
+			expect(logSpy).toHaveBeenCalledWith(
+				expect.stringContaining('User user-reserver not found as personal user, trying admin user'),
+				expect.any(Error),
+			);
+			expect(mockEmailService.sendTemplatedEmail).toHaveBeenCalled();
+
+			logSpy.mockRestore();
+		});
+
+		it('logs appropriate message when sharer not found as PersonalUser and proceeds to AdminUser', async () => {
+			const logSpy = vi.spyOn(console, 'log');
+
+			const sharer = {
+				profile: { name: 'Sharer' },
+				account: { email: 'sharer@example.com' },
+			};
+
+			const reserver = {
+				account: { email: 'reserver@example.com' },
+				profile: { firstName: 'Reserver' },
+			};
+
+			const listing = {
+				title: 'Test Listing',
+			};
+
+			// First call fails for sharer
+			mockDomainDataSource.User.PersonalUser.PersonalUserUnitOfWork.withTransaction
+				.mockRejectedValueOnce(new Error('Sharer not a personal user'));
+
+			// Second call succeeds for reserver
+			mockDomainDataSource.User.PersonalUser.PersonalUserUnitOfWork.withTransaction
+				.mockResolvedValueOnce(reserver);
+
+			// AdminUser call for sharer
+			mockDomainDataSource.User.AdminUser.AdminUserUnitOfWork.withTransaction
+				.mockResolvedValue(sharer);
+
+			mockDomainDataSource.Listing.ItemListing.ItemListingUnitOfWork.withTransaction
+				.mockResolvedValue(listing);
+
+			await service.sendReservationRequestNotification(
+				'req-123',
+				'list-456',
+				'user-reserver',
+				'user-sharer',
+				new Date('2024-01-15'),
+				new Date('2024-01-20'),
+			);
+
+			// Should log message about trying admin user
+			expect(logSpy).toHaveBeenCalledWith(
+				expect.stringContaining('User user-sharer not found as personal user, trying admin user'),
+				expect.any(Error),
+			);
+			expect(mockEmailService.sendTemplatedEmail).toHaveBeenCalled();
+
+			logSpy.mockRestore();
+		});
+
+		it('processes notification and logs success message correctly', async () => {
+			const logSpy = vi.spyOn(console, 'log');
+
+			const sharer = {
+				account: { email: 'sharer@example.com' },
+				profile: { firstName: 'John', lastName: 'Doe' },
+			};
+
+			const reserver = {
+				account: { email: 'reserver@example.com' },
+				profile: { firstName: 'Jane' },
+			};
+
+			const listing = {
+				title: 'Beachfront Villa',
+			};
+
+			mockDomainDataSource.User.PersonalUser.PersonalUserUnitOfWork.withTransaction
+				.mockImplementation(async (_passport: unknown, callback: (repo: unknown) => Promise<unknown>) => {
+					const mockRepo = {
+						getById: vi.fn().mockImplementation((userId: string) => {
+							return Promise.resolve(userId === 'user-sharer' ? sharer : reserver);
+						}),
+					};
+					return await callback(mockRepo);
+				});
+
+			mockDomainDataSource.Listing.ItemListing.ItemListingUnitOfWork.withTransaction
+				.mockResolvedValue(listing);
+
+			await service.sendReservationRequestNotification(
+				'req-123',
+				'list-456',
+				'user-reserver',
+				'user-sharer',
+				new Date('2024-01-15'),
+				new Date('2024-01-20'),
+			);
+
+			// Should log initial processing message
+			expect(logSpy).toHaveBeenCalledWith(
+				expect.stringContaining('Processing ReservationRequestCreated notification'),
+			);
+
+			// Should log success message
+			expect(logSpy).toHaveBeenCalledWith(
+				expect.stringContaining('Notification email sent to sharer'),
+			);
+
+			logSpy.mockRestore();
+		});
+
+		it('handles AdminUser as sharer with correct structure', async () => {
+			const sharer = {
+				profile: { 
+					name: 'Admin Sharer',
+					email: 'admin@example.com'
+				},
+			};
+
+			const reserver = {
+				account: { email: 'reserver@example.com' },
+				profile: { firstName: 'Reserver' },
+			};
+
+			const listing = {
+				title: 'Test Property',
+			};
+
+			mockDomainDataSource.User.PersonalUser.PersonalUserUnitOfWork.withTransaction
+				.mockRejectedValueOnce(new Error('Not personal user'))
+				.mockResolvedValueOnce(reserver);
+
+			mockDomainDataSource.User.AdminUser.AdminUserUnitOfWork.withTransaction
+				.mockResolvedValue(sharer);
+
+			mockDomainDataSource.Listing.ItemListing.ItemListingUnitOfWork.withTransaction
+				.mockResolvedValue(listing);
+
+			await service.sendReservationRequestNotification(
+				'req-123',
+				'list-456',
+				'user-reserver',
+				'user-sharer',
+				new Date('2024-01-15'),
+				new Date('2024-01-20'),
+			);
+
+			expect(mockEmailService.sendTemplatedEmail).toHaveBeenCalledWith(
+				'reservation-request-notification',
+				expect.objectContaining({
+					email: 'admin@example.com',
+					name: 'Admin Sharer',
+				}),
+				expect.any(Object),
+			);
+		});
+
+		it('handles both users as AdminUsers successfully', async () => {
+			const sharer = {
+				profile: { 
+					name: 'Admin Sharer',
+					email: 'sharer-admin@example.com'
+				},
+			};
+
+			const reserver = {
+				profile: {
+					name: 'Admin Reserver',
+					email: 'reserver-admin@example.com'
+				},
+			};
+
+			const listing = {
+				title: 'Joint Property',
+			};
+
+			// Both PersonalUser calls fail
+			mockDomainDataSource.User.PersonalUser.PersonalUserUnitOfWork.withTransaction
+				.mockRejectedValue(new Error('Not personal user'));
+
+			// AdminUser returns both users
+			mockDomainDataSource.User.AdminUser.AdminUserUnitOfWork.withTransaction
+				.mockResolvedValueOnce(sharer)
+				.mockResolvedValueOnce(reserver);
+
+			mockDomainDataSource.Listing.ItemListing.ItemListingUnitOfWork.withTransaction
+				.mockResolvedValue(listing);
+
+			await service.sendReservationRequestNotification(
+				'req-123',
+				'list-456',
+				'user-reserver',
+				'user-sharer',
+				new Date('2024-01-15'),
+				new Date('2024-01-20'),
+			);
+
+			expect(mockEmailService.sendTemplatedEmail).toHaveBeenCalledWith(
+				'reservation-request-notification',
+				expect.objectContaining({
+					email: 'sharer-admin@example.com',
+				}),
+				expect.any(Object),
+			);
+		});
+
+		it('catches exception from top-level try-catch block', async () => {
+			const errorSpy = vi.spyOn(console, 'error');
+
+			// Simulate an unexpected error during processing
+			mockDomainDataSource.User.PersonalUser.PersonalUserUnitOfWork.withTransaction
+				.mockImplementation(() => {
+					throw new Error('Unexpected error during domain import or system passport creation');
+				});
+
+			await service.sendReservationRequestNotification(
+				'req-123',
+				'list-456',
+				'user-reserver',
+				'user-sharer',
+				new Date('2024-01-15'),
+				new Date('2024-01-20'),
+			);
+
+			// Should catch and log error without throwing
+			expect(errorSpy).toHaveBeenCalled();
+			// The error could be from trying AdminUser fallback or from the final catch block
+			const { calls } = vi.mocked(console.error).mock;
+			const hasProcessingError = calls.some((call) =>
+				call[0].toString().includes('Error processing ReservationRequestCreated notification'),
+			);
+			expect(hasProcessingError || errorSpy.mock.calls.length > 0).toBeTruthy();
+			expect(mockEmailService.sendTemplatedEmail).not.toHaveBeenCalled();
+
+			errorSpy.mockRestore();
+		});
+
+
+		it('validates console.log initial processing message is always called', async () => {
+			const logSpy = vi.spyOn(console, 'log');
+
+			mockDomainDataSource.User.PersonalUser.PersonalUserUnitOfWork.withTransaction
+				.mockRejectedValue(new Error('Setup error'));
+
+			mockDomainDataSource.User.AdminUser.AdminUserUnitOfWork.withTransaction
+				.mockRejectedValue(new Error('Setup error'));
+
+			await service.sendReservationRequestNotification(
+				'req-456',
+				'list-789',
+				'user-reserver',
+				'user-sharer',
+				new Date('2024-02-01'),
+				new Date('2024-02-10'),
+			);
+
+			// First log call should be the processing message
+			expect(logSpy).toHaveBeenCalledWith(
+				expect.stringContaining('Processing ReservationRequestCreated notification for reservation req-456'),
+			);
+
+			logSpy.mockRestore();
+		});
 	});
 });

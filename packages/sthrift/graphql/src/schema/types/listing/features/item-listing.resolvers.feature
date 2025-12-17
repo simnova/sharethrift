@@ -124,3 +124,68 @@ So that I can view, filter, and create listings through the GraphQL API
 		When the deleteItemListing mutation is executed
 		Then it should call Listing.ItemListing.deleteListings with ID and email
 		And it should return success status
+
+	Scenario: Deleting an item listing without authentication
+		Given an unauthenticated user (no verifiedUser)
+		When the deleteItemListing mutation is executed
+		Then it should call Listing.ItemListing.deleteListings with empty email
+		And it should return success status
+
+	Scenario: Error while deleting an item listing
+		Given Listing.ItemListing.deleteListings throws an error
+		When the deleteItemListing mutation is executed
+		Then it should propagate the error message
+
+	Scenario: Error while unblocking a listing
+		Given Listing.ItemListing.unblock throws an error
+		When the unblockListing mutation is executed
+		Then it should propagate the error message
+
+	Scenario: Error while canceling a listing
+		Given Listing.ItemListing.cancel throws an error
+		When the cancelItemListing mutation is executed
+		Then it should propagate the error message
+
+	Scenario: myListingsAll with user lookup failure and pagination arguments
+		Given a user with a verifiedJwt in their context
+		And User.PersonalUser.queryByEmail throws an error
+		When the myListingsAll query is executed
+		Then it should propagate the email lookup error
+
+	Scenario: Creating an item listing with no images
+		Given a user with a verifiedJwt containing email
+		And a CreateItemListingInput with no images provided
+		When the createItemListing mutation is executed
+		Then it should create listing with empty images array
+		And it should return the created listing
+
+	Scenario: Creating an item listing with isDraft not specified
+		Given a user with a verifiedJwt containing email
+		And a CreateItemListingInput without isDraft property
+		When the createItemListing mutation is executed
+		Then it should default isDraft to false
+
+	Scenario: myListingsAll with null searchText and statusFilters
+		Given a user with a verifiedJwt in their context
+		And pagination arguments with null searchText and statusFilters
+		When the myListingsAll query is executed
+		Then it should call Listing.ItemListing.queryPaged without searchText and statusFilters
+		And it should still return paged results
+
+	Scenario: adminListings with null sorter
+		Given an admin user with valid credentials
+		And pagination arguments with null sorter
+		When the adminListings query is executed
+		Then it should call Listing.ItemListing.queryPaged without sorter
+		And it should return paginated results
+
+	Scenario: Error while querying adminListings
+		Given Listing.ItemListing.queryPaged throws an error
+		When the adminListings query is executed
+		Then it should propagate the error message
+
+	Scenario: Creating an item listing with isDraft set to true
+		Given a user with a verifiedJwt containing email
+		And a CreateItemListingInput with isDraft set to true
+		When the createItemListing mutation is executed
+		Then it should create listing with isDraft as true
