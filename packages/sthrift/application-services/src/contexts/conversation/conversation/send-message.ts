@@ -11,10 +11,7 @@ export const sendMessage = (dataSources: DataSources) => {
 	return async (
 		command: ConversationSendMessageCommand,
 	): Promise<Domain.Contexts.Conversation.Conversation.MessageEntityReference> => {
-		const messageContent = new Domain.Contexts.Conversation.Conversation.MessageContent(
-			command.content,
-		);
-
+		// Check conversation existence first before validating content
 		const conversation =
 			await dataSources.readonlyDataSource.Conversation.Conversation.ConversationReadRepo.getById(
 				command.conversationId,
@@ -30,6 +27,12 @@ export const sendMessage = (dataSources: DataSources) => {
 		if (!isSharer && !isReserver) {
 			throw new Error('Author must be a participant (sharer or reserver) in the conversation');
 		}
+
+		// Only construct MessageContent after confirming conversation exists and author is participant
+		// This avoids invoking domain validation on obviously invalid requests
+		const messageContent = new Domain.Contexts.Conversation.Conversation.MessageContent(
+			command.content,
+		);
 
 		if (!dataSources.messagingDataSource) {
 			throw new Error('Messaging data source is not available');
