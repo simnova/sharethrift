@@ -278,16 +278,26 @@ const reservationRequest: Resolvers = {
 				throw new Error('Reservation request not found');
 			}
 
-			// Explicitly load the associated listing with sharer populated
-			const listing = await reservationRequest.loadListing();
+			// Get the listing from the reservation request
+			// The listing property already contains the reference from the read-only repository
+			const listing = reservationRequest.listing;
 			if (!listing) {
 				throw new Error(
 					'Unable to load listing for this reservation request',
 				);
 			}
 
-			// Explicitly load the sharer
-			const sharer = await listing.loadSharer();
+			// Fetch the full listing with sharer to perform authorization check
+			const fullListing = await context.applicationServices.Listing.ItemListing.queryById({
+				id: listing.id,
+			});
+
+			if (!fullListing) {
+				throw new Error('Listing not found');
+			}
+
+			// Get the sharer from the listing
+			const sharer = fullListing.sharer;
 			if (!sharer) {
 				throw new Error(
 					'Unable to load listing owner for this reservation request',

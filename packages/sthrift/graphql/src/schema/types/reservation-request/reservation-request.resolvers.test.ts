@@ -1168,12 +1168,16 @@ test.for(feature, ({ Scenario }) => {
 				id: 'user-1',
 			};
 
-			// Mock the listing with loadSharer method
-			const mockListing = {
+			// Mock the full listing with sharer populated
+			const mockFullListing = {
 				id: 'listing-1',
 				title: 'Test Listing',
 				sharer: mockSharer,
-				loadSharer: vi.fn().mockResolvedValue(mockSharer),
+			};
+
+			// Mock the listing reference in the reservation request
+			const mockListingRef = {
+				id: 'listing-1',
 			};
 			
 			// Mock the authenticated user
@@ -1182,14 +1186,13 @@ test.for(feature, ({ Scenario }) => {
 				email: 'sharer@example.com',
 			};
 
-			// Mock the reservation request with loadListing method
+			// Mock the reservation request with listing reference
 			const mockRequest = {
 				...createMockReservationRequest({
 					id: requestId,
 					state: 'Requested',
 				}),
-				listing: mockListing,
-				loadListing: vi.fn().mockResolvedValue(mockListing),
+				listing: mockListingRef,
 			};
 
 			Given(
@@ -1201,6 +1204,11 @@ test.for(feature, ({ Scenario }) => {
 								ReservationRequest: {
 									queryById: vi.fn().mockResolvedValue(mockRequest),
 									update: vi.fn().mockResolvedValue(updatedRequest),
+								},
+							},
+							Listing: {
+								ItemListing: {
+									queryById: vi.fn().mockResolvedValue(mockFullListing),
 								},
 							},
 							User: {
