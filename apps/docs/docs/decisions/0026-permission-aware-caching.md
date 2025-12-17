@@ -14,9 +14,7 @@ informed:
 
 ## Context and Problem Statement
 
-ShareThrift's GraphQL API serves data to users with different permission levels - regular members, community admins, and platform administrators. A naive server-side caching implementation could accidentally serve admin-only data to regular users, creating serious security vulnerabilities.
-
-For example, admin users viewing event analytics (attendance rates, revenue) and regular members viewing the same event listing must not share cached data. Without permission-aware caching, an admin's cached response could leak sensitive information to regular users.
+ShareThrift's GraphQL API serves data to users with different permission levels - personal users, and admin users. A naive server-side caching implementation could accidentally serve admin-only data to regular users through the cache response, creating serious security vulnerabilities.
 
 ## Decision Drivers
 
@@ -30,49 +28,108 @@ For example, admin users viewing event analytics (attendance rates, revenue) and
 
 ### Option 1: No Server-Side Caching
 
-Don't cache at the GraphQL layer - compute fresh for every request.
+Compute fresh data for every GraphQL request without any caching layer.
+
+**Benefits:**
+- Zero risk of serving stale or incorrect data
+- No permission leakage concerns
+- Simplest implementation with no cache management overhead
+
+**Trade-offs:**
+- Database executes same queries repeatedly for identical requests
+- 50-200ms database query latency on every request
+- Server load increases linearly with request volume
+- Not viable for production scale with high traffic
 
 ### Option 2: Permission-Aware Cache Keys
 
-Include user permissions in cache keys to ensure isolation between permission levels.
+Include user permissions (userId, role, permissions array) in cache keys to ensure isolation between permission levels.
+
+**Benefits:**
+- Users with identical permissions share cache entries (1000 members = 1 cache entry)
+- 70-90% reduction in database queries for same permission sets
+- Cache lookups under 1ms vs 50-200ms database queries
+- Supports complex permission models (RBAC, ABAC, custom)
+- Zero risk of permission leakage between users
+
+**Trade-offs:**
+- One cache entry per unique permission set increases memory usage
+- Changing user permissions requires invalidating their cache entries
+- First request for each permission level suffers cold cache penalty
+- Team must understand cache key composition and invalidation strategies
 
 ### Option 3: Post-Fetch Filtering
 
-Cache the full dataset, then filter based on permissions before returning.
+Cache full dataset without permission context, then filter based on user permissions before returning.
+
+**Benefits:**
+- Single cache entry serves all users regardless of permissions
+- Minimal memory usage
+- Simple cache key structure
+
+**Trade-offs:**
+- Security risk: Full data including sensitive fields stored in cache
+- Performance penalty: Must filter on every request negating cache benefits
+- Cache inspector or debugging could expose unauthorized data
+- Violates defense-in-depth security principle
 
 ### Option 4: Separate Queries Per Permission Level
 
-Create distinct queries for each permission level (e.g., `adminFeed`, `userFeed`).
+Create distinct GraphQL queries for each permission level (e.g., `adminFeed`, `userFeed`, `premiumFeed`).
+
+**Benefits:**
+- Clear separation between permission levels
+- Simple caching without permission logic in keys
+- Explicit schema defines what each role can access
+
+**Trade-offs:**
+- Schema duplication for similar queries across permission levels
+- Maintenance burden: Update multiple queries when schema changes
+- Client complexity: Must know which query to call for current user
+- Doesn't scale with fine-grained or dynamic permissions
 
 ## Decision Outcome
 
-Chosen option: **Permission-aware cache keys** - Include user permissions in cache keys to ensure isolation between permission levels.
+Recommended option: **Permission-aware cache keys** - Include user permissions in cache keys to ensure isolation between permission levels.
 
-**Security**: Cache keys include query, variables, userId, role, and permissions. Example: `GetEvents::{"first":5}::alice::admin::[]` vs `GetEvents::{"first":5}::bob::member::[]`. Users cannot access cached data for other permission levels.
+Cache keys include query, variables, userId, role, and permissions array (e.g., `GetEvents::{"first":5}::alice::admin::[]` vs `GetEvents::{"first":5}::bob::member::[]`) ensuring users cannot access cached data for other permission levels while allowing users with identical permissions to share cache entries (1000 regular members = 1 cache entry). GraphQL resolvers perform permission checks before returning fields and store only filtered results in cache, delivering 70-90% reduction in database queries for users with same permissions with cache lookups under 1ms vs 50-200ms database queries. In-memory Map-based storage provides fast lookups with configurable max size (default 1000 entries) and TTL (default 60 seconds), using LRU eviction when max size is reached. ShareThrift implements hybrid invalidation strategy combining 30-60 second TTL with event-based invalidation on mutations for balance between fresh data and cache efficiency, with per-role cache hit/miss logging for monitoring and optimization.
 
-**Efficiency**: Users with identical permissions share cache entries. 1000 regular members = 1 cache entry.
+## Technical Considerations
 
-**Field-Level Control**: GraphQL resolvers check permissions before returning fields, storing only filtered results in cache.
+- Cache keys concatenate query name, JSON-stringified variables, userId, role, and sorted permissions array into unique string (e.g., `GetFeedWithAnalytics::{"first":5}::alice::admin::[]`)
+- Permission check occurs before cache lookup - unauthorized requests return null immediately without caching
+- Resolvers check permissions at field level, storing only filtered results in cache to prevent sensitive data leakage
+- In-memory Map-based storage provides sub-millisecond lookups with automatic cleanup of expired entries
+- LRU eviction strategy enforces max size limit (default 1000 entries) by removing oldest entry when capacity reached
+- TTL-based expiration (default 60 seconds) with per-entry TTL override support balances freshness with cache efficiency
+- Pattern-based invalidation supports wildcard matching on query, userId, or role for targeted cache clearing on mutations
+- Cache key granularity configurable: role-level for shared non-personalized data (all admins share analytics dashboard), user-level for personalized data (each user's feed)
+- Hybrid invalidation strategy combines TTL expiration with event-based mutations for immediate freshness with safety net
+- Works with Apollo Server, Express GraphQL, and existing DataLoader optimizations without conflicts
 
-**Compatibility**: Works with Apollo Server, Express GraphQL, and existing DataLoader optimizations.
+### Cache Invalidation Strategies
+
+**Time-Based (TTL):** Entries expire after configured duration (30-60 seconds recommended). Simple and predictable but may serve stale data for TTL duration.
+
+**Event-Based:** Manually invalidate on mutations by updating database then invalidating affected cache queries. Always fresh data but more complex with risk of over-invalidation. Examples include: Role change, data update.
+
+**Hybrid (Recommended):** Combine 30-60 second TTL with mutation-based invalidation. Provides fresh data for mutations with TTL safety net for missed invalidations. Limits to cache memory should be set and an algorithm like LRU or FIFO should be used to evict cache entries.
+
+## Consequences
+
+- Good: zero risk of permission leakage between users with cache key isolation
+- Good: 70-90% reduction in database queries for users with same permissions
+- Good: cache lookups under 1ms vs 50-200ms database queries
+- Good: supports complex permission models (RBAC, ABAC, custom)
+- Good: cache hits and misses logged per role for monitoring and optimization
+- Bad: one cache entry per unique permission set increases memory usage
+- Bad: changing user permissions requires invalidating their cache entries
+- Bad: first request for each permission level suffers cold cache penalty
+- Bad: team must understand cache key composition and invalidation strategies
 
 ## Implementation Details
 
-### Cache Key Structure
-
-**Components:**
-- **Query**: Operation name (e.g., "GetFeedWithAnalytics")
-- **Variables**: Query parameters (e.g., `{ first: 5 }`)
-- **User ID**: Unique user identifier (e.g., "507f1f77bcf86cd799439011")
-- **Role**: User role (e.g., "admin", "user")
-- **Permissions**: Additional permission flags (e.g., ["read:analytics"])
-
-**Generated Key Example:**
-```
-GetFeedWithAnalytics::{"first":5}::alice::admin::[]
-```
-
-**Cache Isolation:**
+### Cache Isolation Diagram
 
 ```mermaid
 graph LR
@@ -95,18 +152,7 @@ graph LR
     B -.isolated from.-> A
 ```
 
-### Permission-Aware Resolver
-
-**Resolution Flow:**
-1. **Permission Check**: Validate user has required role/permissions
-2. **Early Return**: Return null for unauthorized requests (don't cache)
-3. **Cache Key Generation**: Include query, variables, userId, and role
-4. **Cache Lookup**: Check if entry exists for this permission context
-5. **Database Fetch**: On cache miss, fetch from database
-6. **Cache Storage**: Store with TTL (typically 30-60 seconds)
-7. **Return Data**: Provide cached or fresh data to client
-
-**Resolver Flow:**
+### Permission-Aware Resolver Flow
 
 ```mermaid
 sequenceDiagram
@@ -133,210 +179,12 @@ sequenceDiagram
     end
 ```
 
-### Cache Implementation
+## Validation with Performance Testing
 
-**Core Features:**
-- In-memory Map-based storage for fast lookups (< 1ms)
-- Configurable max size (default: 1000 entries)
-- Configurable default TTL (default: 60 seconds)
-- LRU (Least Recently Used) eviction when max size reached
+Created a single test page to validate caching
 
-**Key Methods:**
-
-**generateKey**: Concatenates query, variables, userId, role, and permissions into unique string
-
-**get**: 
-- Generates cache key from components
-- Checks if entry exists and is not expired
-- Returns data or null (with automatic cleanup of expired entries)
-
-**set**:
-- Enforces max size limit with LRU eviction
-- Stores data with timestamp and TTL
-- Allows per-entry TTL override
-
-**invalidate**:
-- Pattern-based cache clearing
-- Supports wildcard matching on query, userId, or role
-- Returns count of deleted entries for monitoring
-
-
-## Consequences
-
-- Good, because zero risk of permission leakage between users
-- Good, because reduces database queries by 70-90% for users with same permissions
-- Good, because cache lookups under 1ms vs 50-200ms database queries
-- Good, because supports complex permission models (RBAC, ABAC, custom)
-- Good, because cache hits and misses logged per role for monitoring
-- Bad, because one cache entry per unique permission set increases memory usage
-- Bad, because changing user permissions requires invalidating their cache entries
-- Bad, because first request for each permission level is always slow (cold cache)
-
-
-## Trade-Offs
-
-### Memory vs. Performance
-
-**Low TTL (Time to Live) (10-30s):**
-- Fresh data
-- Lower memory usage
-- ...More database queries
-
-**High TTL (5-10min):**
-- Fewer database queries
-- Better performance
-- ...Higher memory usage
-- ...Stale/Outdated data risk
-
-**Recommendation**: 30sec-5min TTL for most use cases (Feed, Dashboard, User Profile, etc.)
-
-### Granularity
-
-**Coarse (role-level):**
-- Cache key includes query, variables, and role only
-- All users with same role share cache entry
-- Best for non-personalized data
-- Example: All admins see same analytics dashboard
-
-**Fine (user-level):**
-- Cache key includes query, variables, userId, and role
-- Each user has isolated cache entry
-- Required for personalized data
-- Example: Each user's personal feed
-
-**Recommendation**: 
-- Use role-level for data that doesn't vary per user
-- Use user-level for personalized data
-- Hybrid approach: include `userId` only when needed
-
-## Cache Invalidation Strategies
-
-### Time-Based (TTL)
-
-Entries automatically expire after configured duration (e.g., 60 seconds).
-
-**Pros:** Simple, predictable
-**Cons:** May serve stale data for TTL duration
-
-### Event-Based
-
-Manually invalidate cache entries when underlying data changes (e.g., on mutations).
-
-**Process:**
-1. Update data in database
-2. Invalidate affected cache queries
-3. Next request fetches fresh data
-
-**Pros:** Always fresh data
-**Cons:** More complex, can invalidate too aggressively
-
-### Hybrid (Recommended)
-
-Combine TTL expiration with event-based invalidation:
-- Set reasonable TTL (30-60 seconds)
-- Invalidate on mutations for immediate freshness
-- TTL serves as safety net for missed invalidations
-
-**Balance:** Fresh data for mutations, caching for reads
-
-## Real-World Scenarios
-
-### Scenario 1: Role Change
-
-**Problem:** Alice is promoted from `user` to `admin`
-
-**Solution:**
-1. Update user role in database
-2. Invalidate all cache entries matching userId
-3. Next request generates fresh cache with new role
-4. User immediately sees admin-only data
-
-### Scenario 2: Data Update
-
-**Problem:** Admin updates a post, all users should see new content
-
-**Solution:**
-1. Update post in database
-2. Invalidate all cache entries for affected queries (GetFeed, GetPost)
-3. Clear cache across all user roles
-4. Next request for any user fetches fresh data
-
-### Scenario 3: Permission Check Change
-
-**Problem:** Analytics permission logic changes (now requires `premium` flag)
-
-**Solution:**
-1. Update resolver permission check to require admin OR premium
-2. Modify cache key generation to include premium flag in permissions array
-3. During deployment, invalidate all PostAnalytics cache entries
-4. New cache entries generated with updated permission model
-5. Admin and premium users both see analytics (in separate cache entries)
-
-## Edge Cases & Mitigations
-
-### Edge Case: Permission Check in Middle of Resolver Chain
-
-**Problem:**
-Root query fetches all posts without permission check, but nested field `analytics` requires admin role. If we cache at root query level, admin and user caches would be identical.
-
-**Solution:**
-Cache at the field level where permission check occurs:
-1. Root query (posts) caches without permission context
-2. Nested field (analytics) caches with role in key
-3. Admin gets cached analytics, user gets null
-4. Two separate cache entries maintain security boundary
-
-### Edge Case: Dynamic Permissions
-
-**Problem:** User has permission `["posts:read:own"]` - can only read their own posts
-
-**Solution:**
-1. Include userId in cache key (not just role)
-2. Include full permissions array in cache key
-3. Each user gets isolated cache entry
-4. No risk of cross-user data leakage
-
-### Edge Case: Memory Leak from User Churn
-
-**Problem:** 10,000 users log in once, cache grows unbounded
-
-**Solution:**
-1. Enforce maximum cache size limit (e.g., 1000 entries)
-2. Implement LRU (Least Recently Used) eviction strategy
-3. When max size reached, remove oldest entry before adding new one
-4. Protects against memory exhaustion from one-time users
-
-## Monitoring & Observability
-
-### Key Metrics
-
-```typescript
-interface CacheMetrics {
-  totalSize: number;          // Current cache entry count
-  hitRate: number;           // Percentage of cache hits
-  hitsByRole: Map<string, number>;  // Cache hits per role
-  missedByRole: Map<string, number>; // Cache misses per role
-  avgTTL: number;            // Average entry age
-  evictionCount: number;     // Times max size was hit
-}
-```
-
-### Logging
-
-```typescript
-cache.get(key) {
-  if (cached) {
-    console.log(`[Cache HIT] ${key.query} for role=${key.role}`);
-  } else {
-    console.log(`[Cache MISS] ${key.query} for role=${key.role}`);
-  }
-}
-
-cache.invalidate(pattern) {
-  console.log(`[Cache INVALIDATE] ${deletedCount} entries`, pattern);
-}
-```
-
+1. **Public Caching Test** ([PermissionCacheDemo.tsx](https://github.com/jason-t-hankins/Social-Feed/blob/main/client/src/demos/04-permission-cache/PermissionCacheDemo.tsx))
+   - Demonstrates server-side in-memory caching that respects user permissions.
 
 ## More Information
 

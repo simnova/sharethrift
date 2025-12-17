@@ -19,7 +19,6 @@ ShareThrift requires responsive UI and reduced server load through effective cli
 - Cache policy selection (cache-first, network-only, cache-and-network)
 - Security considerations for preventing sensitive data exposure in client cache
 - Cache invalidation strategies for mutations
-- Effective use of Apollo DevTools for debugging
 
 This decision focuses on cache policy patterns with emphasis on security and data freshness requirements.
 
@@ -31,56 +30,23 @@ This decision focuses on cache policy patterns with emphasis on security and dat
 - Data Freshness: Balance caching with real-time requirements
 - Developer Experience: Clear patterns that scale with team size
 
-## Considered Options
-
-### Apollo Client vs Alternatives
-
-Evaluated: Apollo Client, TanStack Query, SWR, Redux RTK Query
-
-**Apollo Client chosen for**:
-- Automatic normalization (User:123 cached once, shared across queries)
-- GraphQL-first with fragments, type policies, subscriptions
-- Field policies for data transformation/masking
-- Excellent DevTools
-
-**Trade-offs**:
-- Bundle size: 33 KB vs 5-13 KB for alternatives
-- Learning curve: normalization and cache keys
-- GraphQL-only (can't cache REST easily)
-
-**Rationale**: For GraphQL projects with complex data relationships, Apollo's normalized cache and GraphQL-specific features provide best DX and performance.
+## Considered Options / Areas of Research
 
 ### Cache Policies
 
 Apollo Client offers multiple fetch policies:
 
 #### cache-first (Default)
-Read from cache, fetch on cache miss. Best for static/public data.
-
-**Behavior**: Check cache first, only fetch if data not found
-
-**Use cases**: Product catalogs, blog posts, reference data
+Read from cache, fetch on cache miss. Best for static/public data. Useful for product catalogs, blog posts, reference data
 
 #### network-only
-Always fetch fresh, appropriate for sensitive data.
-
-**Behavior**: Always fetch from network, update cache but never read from it
-
-**Use cases**: Bank balances, private messages, real-time data
+Always fetch fresh (though update cache anyway), appropriate for sensitive data. Useful for bank balances, private messages, real-time data
 
 #### cache-and-network
-Show cached instantly, refresh in background.
-
-**Behavior**: Return cached data immediately, then fetch fresh and update
-
-**Use cases**: Social feeds, dashboards
+Show cached instantly, refresh in background. Useful for social feeds, dashboards
 
 #### no-cache
-Bypasses cache entirely for single-use data.
-
-**Behavior**: Fetch from network, don't read or write to cache
-
-**Use cases**: OTP codes, reset tokens
+Bypasses cache entirely for single-use data. Useful for OTP codes, reset tokens
 
 ### Field-Level Security
 
@@ -92,8 +58,6 @@ Use field policies to mask sensitive data even if server returns real values.
 - Read function returns masked value (e.g., '***-**-****')
 - Original server data never exposed in cache
 
-**Benefits**: Defense-in-depth, cache inspector safety, redacted logs
-
 ### Varying Field Selections
 
 Apollo merges queries with different fields into same cache entry.
@@ -101,37 +65,11 @@ Apollo merges queries with different fields into same cache entry.
 Query minimal fields first, then full profile:
 - Minimal query caches 3 fields
 - Full query merges 6 fields total
-- Subsequent minimal queries read all 6 from cache
-
-Key insight: Query broader fields first, narrower queries benefit from cache.
-
-### useFragment for Cache Reads
-
-Read cached data without network request.
-
-**Process:**
-- Component receives entity ID as prop
-- useFragment reads directly from cache using fragment definition
-- Returns complete flag (true if all fields available) and data
-- Component subscribes to cache updates for that entity
-
-**Benefits**: Zero network overhead, live updates, avoids prop drilling
-
-See [ADR 0024](./0024-usefragment-vs-httpbatch-dataloader.md) for re-render optimization details.
+- Subsequent minimal queries read all 6 from cache, eliminating excess entries
 
 ### Optimistic Updates
 
-Update UI instantly before server confirms mutation success.
-
-**Process:**
-1. User triggers mutation (e.g., like post)
-2. Client immediately updates cache with predicted response
-3. UI reflects change instantly
-4. Mutation sent to server
-5. On success: cache already correct
-6. On failure: Apollo automatically rolls back optimistic update
-
-**Use cases**: Likes, favorites, toggles
+Update UI instantly before server confirms mutation success. Useful for likes, favorites, toggles. Improves UX.
 
 **Optimistic Update Flow:**
 
@@ -160,11 +98,11 @@ sequenceDiagram
 
 ## Decision Outcome
 
-Chosen option: **Tiered caching strategy** based on data sensitivity and freshness requirements.
+**Tiered caching strategy** based on data sensitivity and freshness requirements.
 
-**Tier 1 - Public/Static (cache-first)**: Event listings, community pages, account plans
+**Tier 1 - Public/Static (cache-first)**: item listings, user profiles, account plans
 
-**Tier 2 - User-Specific (cache-and-network)**: User feeds, event attendance, notifications
+**Tier 2 - User-Specific (cache-and-network)**: User feeds
 
 **Tier 3 - Sensitive (network-only)**: Payment information, admin data, private messages
 
@@ -195,58 +133,23 @@ graph TD
     style F fill:#4f4
 ```
 
-### Implementation for ShareThrift
+## Technical Considerations
 
-**Configure Cache:**
-- Initialize InMemoryCache with type policies
-- Define key fields for entity identification (typically 'id')
-- Configure field policies for sensitive data masking
-- Example: Mask email field to always return redacted value
+### Cache Invalidation Strategies
 
-**Apply Policies:**
-- **Public event listings**: `cache-first` for maximum caching
-- **User-specific feed**: `cache-and-network` for instant display with background refresh
-- **Payment information**: `network-only` to always fetch fresh, never cache
+Apollo Client provides three approaches for keeping cached data fresh after mutations. **refetchQueries** automatically re-executes specified queries after mutation completion by providing array of query names—simple but causes unnecessary network requests for all queries even if only subset affected. **Cache Eviction** manually removes entries by calling cache eviction methods to delete specific entity by identifier and garbage collect orphaned references—more precise than refetchQueries and avoids unnecessary network traffic. **Polling** periodically refetches query at fixed interval (e.g., every 5 seconds) for simple real-time updates on non-critical data—inefficient compared to GraphQL subscriptions and should only be used when subscriptions not feasible.
 
-## Cache Invalidation
+### Field-Level Security
 
-### Refetch Queries
+Apollo Client's field policies provide defense-in-depth by masking sensitive data even if server mistakenly returns real values. Configure type policies in InMemoryCache with custom read functions for sensitive fields (SSN, credit cards, passwords). The read function intercepts cache reads and returns masked values ensuring original server data never exposed in cache inspector, console logs, or debugging tools. This pattern protects against both server bugs and client-side inspection.
 
-Specify queries to automatically refetch after mutation completes.
-- Provide array of query names
-- Apollo automatically re-executes those queries
-- Simple but can cause unnecessary network requests
+### Cache Normalization and Field Selection
 
-### Cache Eviction
+Apollo automatically merges queries with different field selections into same cache entry. When component A queries minimal user fields and component B later queries full user profile with additional fields, Apollo merges all fields into single cache entry for that user. Subsequent queries for any subset of those fields read from cache without network request. Key insight: query broader field sets first to maximize cache utilization for narrower queries. This normalization eliminates data duplication across queries.
 
-Manually remove entries from cache after mutation.
-- Use `cache.evict()` to remove specific entity by ID
-- Use `cache.gc()` to garbage collect orphaned references
-- More precise than refetchQueries, avoids network requests
+### Debugging and Monitoring
 
-### Polling (use sparingly)
-
-Periodically refetch query at fixed interval (e.g., every 5 seconds).
-- Simple real-time updates for non-critical data
-- Inefficient compared to subscriptions
-- Use only when subscriptions not feasible
-
-## Tooling and Debugging
-
-### Apollo DevTools
-Chrome/Firefox extension for cache inspection, query tracking, mutation debugging
-
-### Browser Network Tab
-Filter by `graphql` to verify cache behavior:
-- cache-first: no network request after first fetch
-- network-only: always hits network
-
-### Cache Debugging
-
-Extract entire cache contents for inspection.
-- Use `client.cache.extract()` to view all cached entities
-- Helpful for debugging unexpected cache behavior
-- Can log to console or use Apollo DevTools for visual inspection
+[Apollo DevTools](https://chromewebstore.google.com/detail/apollo-client-devtools/jdkknkkbebbapilgoeccciglkfbmbnfm) Chrome/Firefox extension provides visual cache inspection, query tracking, and mutation debugging. Use cache extraction methods to dump entire cache contents for debugging unexpected behavior—helpful for logging or console inspection. Monitor cache size in production (target: 10-50 MB) to prevent memory issues. Use browser network tab filtered by graphql to verify cache behavior: cache-first shows no network request after initial fetch, network-only always hits network.
 
 ## Consequences
 
@@ -259,6 +162,17 @@ Extract entire cache contents for inspection.
 - Bad, because aggressive caching risks stale data without proper invalidation
 - Bad, because large caches consume client memory (target: 10-50 MB)
 - Bad, because cache issues can be subtle to debug
+
+## Validation with Performance Testing
+
+Created a single test page to validate caching
+
+1. **Public Caching Test** ([ClientCacheDemo.tsx](https://github.com/jason-t-hankins/Social-Feed/blob/main/client/src/demos/05-client-cache/ClientCacheDemo.tsx))
+<br></br> Simplified demo focused on the key requirements:
+   1. Varying field selections and cache merge behavior
+   2. Public vs private data caching strategies
+   3. Cache inspection with Apollo DevTools
+   4. Field-level security (SSN masking)
 
 ## More Information
 
