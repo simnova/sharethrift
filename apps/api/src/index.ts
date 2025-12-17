@@ -57,11 +57,8 @@ isDevelopment
 			.registerInfrastructureService(
 				isDevelopment ? new PaymentServiceMock() : new PaymentServiceCybersource(),
 			)
-			.registerInfrastructureService(
-				isDevelopment
-					? new InMemoryCognitiveSearch()
-					: new InMemoryCognitiveSearch(), // TODO: Replace with AzureCognitiveSearchService() when available
-			);
+			// TODO: Add isDevelopment ternary when AzureCognitiveSearchService is implemented
+			.registerInfrastructureService(new InMemoryCognitiveSearch());
 	},
 )
 	.setContext((serviceRegistry) => {
@@ -75,15 +72,15 @@ serviceRegistry.getInfrastructureService<ServiceMongoose>(
 			? serviceRegistry.getInfrastructureService<MessagingService>(ServiceMessagingMock)
 			: serviceRegistry.getInfrastructureService<MessagingService>(ServiceMessagingTwilio);
 
-		const paymentService = isDevelopment
-			? serviceRegistry.getInfrastructureService<PaymentService>(PaymentServiceMock)
-			: serviceRegistry.getInfrastructureService<PaymentService>(PaymentServiceCybersource);
+	const paymentService = isDevelopment
+		? serviceRegistry.getInfrastructureService<PaymentService>(PaymentServiceMock)
+		: serviceRegistry.getInfrastructureService<PaymentService>(PaymentServiceCybersource);
 
-		const searchService = isDevelopment
-			? serviceRegistry.getInfrastructureService<SearchService>(InMemoryCognitiveSearch)
-			: serviceRegistry.getInfrastructureService<SearchService>(InMemoryCognitiveSearch); // TODO: Replace with AzureCognitiveSearchService when available
+	// TODO: Add isDevelopment ternary when AzureCognitiveSearchService is implemented
+	const searchService =
+		serviceRegistry.getInfrastructureService<SearchService>(InMemoryCognitiveSearch);
 
-		const { domainDataSource } = dataSourcesFactory.withSystemPassport();
+	const { domainDataSource } = dataSourcesFactory.withSystemPassport();
 		RegisterEventHandlers(domainDataSource, searchService);
 
 		return {
