@@ -29,18 +29,17 @@ describe('ReservationRequestNotificationService', () => {
 			let callCount = 0;
 
 			// biome-ignore lint/suspicious/noExplicitAny: Test mock infrastructure
-			const mock = vi.fn((_passport: any, callback: any) => {
+			const mock = vi.fn(async (_passport: any, callback: any) => {
 				// Check if there's a queued item for this call
 				if (callCount < callQueue.length) {
 					const queued = callQueue[callCount++];
 					if (queued.type === 'error') {
 						throw queued.value;
-					} else {
-						const mockRepo = {
-							getById: vi.fn().mockResolvedValue(queued.value),
-						};
-						return Promise.resolve(callback(mockRepo));
 					}
+					const mockRepo = {
+						getById: vi.fn().mockResolvedValue(queued.value),
+					};
+					return await callback(mockRepo);
 				}
 				
 				callCount++;
@@ -51,10 +50,13 @@ describe('ReservationRequestNotificationService', () => {
 					const mockRepo = {
 						getById: vi.fn().mockResolvedValue(returnValue),
 					};
-					return Promise.resolve(callback(mockRepo));
+					return await callback(mockRepo);
 				}
 				// No value set yet, return undefined
-				return Promise.resolve(callback({ getById: vi.fn().mockResolvedValue(undefined) }));
+				const mockRepo = {
+					getById: vi.fn().mockResolvedValue(undefined),
+				};
+				return await callback(mockRepo);
 			});
 
 			// Override mockResolvedValue to store the value
