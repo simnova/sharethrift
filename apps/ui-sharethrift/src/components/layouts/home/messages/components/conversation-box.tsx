@@ -7,7 +7,8 @@ interface ConversationBoxProps {
   data: Conversation;
 }
 
-// Helper to extract display name from User type - memoized for performance
+// Helper function to extract display name from User type
+// Note: This is a module-level pure function. Memoization happens inside the component via useMemo.
 const getUserDisplayName = (user: Conversation['sharer'] | Conversation['reserver'] | undefined): string => {
   if (!user) return "Unknown";
   // Handle both PersonalUser and AdminUser account structures

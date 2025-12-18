@@ -114,7 +114,7 @@ export const RequestsTable: React.FC<RequestsTableProps> = ({
 						<UserProfileLink
 							userId={record.requestedById}
 							displayName={username}
-							style={{ fontWeight: 500 }}
+							style={{ fontWeight: 500, color: '#1890ff' }}
 						/>
 					);
 				}
