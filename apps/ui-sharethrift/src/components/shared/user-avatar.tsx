@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import { Avatar as AntAvatar } from 'antd';
 import { Link } from 'react-router-dom';
 import { isValidUserId } from './utils/user-validation.ts';
@@ -42,8 +43,12 @@ export const UserAvatar: React.FC<UserAvatarProps> = ({
 }) => {
 	// Determine if we have a valid userId for linking
 	const isClickable = isValidUserId(userId);
+	
+	// Track if the avatar image failed to load
+	const [imageError, setImageError] = useState(false);
+	const showImageAvatar = !!avatarUrl && !imageError;
 
-	const avatarContent = avatarUrl ? (
+	const avatarContent = showImageAvatar ? (
 		<AntAvatar
 			size={size}
 			src={avatarUrl}
@@ -51,6 +56,11 @@ export const UserAvatar: React.FC<UserAvatarProps> = ({
 			className={className}
 			style={{ ...style, cursor: isClickable ? 'pointer' : 'default' }}
 			alt={`${userName}'s avatar`}
+			onError={() => {
+				// If the image fails to load, fall back to the logo/initials variant
+				setImageError(true);
+				return false;
+			}}
 		/>
 	) : (
 		<AntAvatar
