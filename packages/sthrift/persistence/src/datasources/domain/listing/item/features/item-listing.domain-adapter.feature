@@ -84,3 +84,11 @@ And an ItemListingDomainAdapter wrapping the document
 	Scenario: Getting default state when not set
 		When the document state is null
 		Then the state getter should return "Active"
+
+	Scenario: Setting and getting expiresAt
+		When I set expiresAt to a specific date
+		Then expiresAt should return that date
+
+	Scenario: Getting expiresAt when not set throws error
+		When I try to get expiresAt when it's not set
+		Then it should throw an error about expiresAt not being set

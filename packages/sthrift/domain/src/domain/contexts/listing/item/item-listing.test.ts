@@ -883,4 +883,76 @@ Scenario(
 			});
 		},
 	);
+
+	Scenario('Getting expiresAt from item listing', ({ Given, When, Then }) => {
+		Given('an ItemListing aggregate with expiresAt set', () => {
+			const expirationDate = new Date('2025-12-31T23:59:59Z');
+			passport = makePassport(true, true, true, true);
+			listing = new ItemListing(makeBaseProps({ expiresAt: expirationDate }), passport);
+		});
+		When('I access the expiresAt property', () => {
+			// Access happens in Then
+		});
+		Then('it should return the expiration date', () => {
+			expect(listing.expiresAt).toEqual(new Date('2025-12-31T23:59:59Z'));
+		});
+	});
+
+	Scenario('Getting expiresAt when undefined', ({ Given, When, Then }) => {
+		Given('an ItemListing aggregate without expiresAt set', () => {
+			passport = makePassport(true, true, true, true);
+			listing = new ItemListing(makeBaseProps({ expiresAt: undefined }), passport);
+		});
+		When('I access the expiresAt property', () => {
+			// Access happens in Then
+		});
+		Then('it should return undefined', () => {
+			expect(listing.expiresAt).toBeUndefined();
+		});
+	});
+
+	Scenario('Setting expiresAt with permission', ({ Given, When, Then }) => {
+		Given('an ItemListing aggregate with permission to update item listing', () => {
+			passport = makePassport(true, true, true, true);
+			listing = new ItemListing(makeBaseProps(), passport);
+		});
+		When('I set the expiresAt to a specific date', () => {
+			const expirationDate = new Date('2025-12-31T23:59:59Z');
+			listing.expiresAt = expirationDate;
+		});
+		Then('the expiresAt should be updated', () => {
+			expect(listing.expiresAt).toEqual(new Date('2025-12-31T23:59:59Z'));
+		});
+	});
+
+	Scenario('Setting expiresAt without permission', ({ Given, When, Then }) => {
+		let settingExpiresAtWithoutPermission: () => void;
+		Given('an ItemListing aggregate without permission to update item listing', () => {
+			passport = makePassport(false, false, false, false);
+			listing = new ItemListing(makeBaseProps(), passport);
+		});
+		When('I try to set the expiresAt', () => {
+			settingExpiresAtWithoutPermission = () => {
+				listing.expiresAt = new Date('2025-12-31T23:59:59Z');
+			};
+		});
+		Then('a PermissionError should be thrown', () => {
+			expect(settingExpiresAtWithoutPermission).toThrow(DomainSeedwork.PermissionError);
+			expect(settingExpiresAtWithoutPermission).toThrow('You do not have permission to update this expiration');
+		});
+	});
+
+	Scenario('Setting expiresAt to undefined with permission', ({ Given, When, Then }) => {
+		Given('an ItemListing aggregate with permission to update item listing and expiresAt set', () => {
+			const expirationDate = new Date('2025-12-31T23:59:59Z');
+			passport = makePassport(true, true, true, true);
+			listing = new ItemListing(makeBaseProps({ expiresAt: expirationDate }), passport);
+		});
+		When('I set the expiresAt to undefined', () => {
+			listing.expiresAt = undefined;
+		});
+		Then('the expiresAt should be cleared', () => {
+			expect(listing.expiresAt).toBeUndefined();
+		});
+	});
 });

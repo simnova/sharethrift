@@ -373,4 +373,31 @@ test.for(feature, ({ Scenario, Background, BeforeEachScenario }) => {
 			expect(adapter.state).toBe('Active');
 		});
 	});
+
+	Scenario('Setting and getting expiresAt', ({ When, Then }) => {
+		let testDate: Date;
+
+		When('I set expiresAt to a specific date', () => {
+			testDate = new Date('2025-12-31T23:59:59Z');
+			adapter.expiresAt = testDate;
+		});
+
+		Then('expiresAt should return that date', () => {
+			expect(adapter.expiresAt).toEqual(testDate);
+		});
+	});
+
+	Scenario('Getting expiresAt when not set throws error', ({ When, Then }) => {
+		When('I try to get expiresAt when it\'s not set', () => {
+			doc.expiresAt = undefined as never;
+			expect(() => {
+				// biome-ignore lint/suspicious/noExplicitAny: Testing error case
+				const _ = adapter.expiresAt;
+			}).toThrow('expiresAt is not set');
+		});
+
+		Then('it should throw an error about expiresAt not being set', () => {
+			// Error thrown in When block
+		});
+	});
 });

@@ -172,3 +172,28 @@ Feature: <AggregateRoot>ItemListing
     Given an ItemListing aggregate
     When I set the listingType to "premium-listing"
     Then the listingType should be updated to "premium-listing"
+
+  Scenario: Getting expiresAt from item listing
+    Given an ItemListing aggregate with expiresAt set
+    When I access the expiresAt property
+    Then it should return the expiration date
+
+  Scenario: Getting expiresAt when undefined
+    Given an ItemListing aggregate without expiresAt set
+    When I access the expiresAt property
+    Then it should return undefined
+
+  Scenario: Setting expiresAt with permission
+    Given an ItemListing aggregate with permission to update item listing
+    When I set the expiresAt to a specific date
+    Then the expiresAt should be updated
+
+  Scenario: Setting expiresAt without permission
+    Given an ItemListing aggregate without permission to update item listing
+    When I try to set the expiresAt
+    Then a PermissionError should be thrown
+
+  Scenario: Setting expiresAt to undefined with permission
+    Given an ItemListing aggregate with permission to update item listing and expiresAt set
+    When I set the expiresAt to undefined
+    Then the expiresAt should be cleared
