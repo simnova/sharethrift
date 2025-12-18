@@ -86,9 +86,18 @@ const conversation: Resolvers = {
 				};
 			} catch (error) {
 				console.error('Conversation > SendMessage Mutation  : ', error);
-				const { message } = error as Error;
+				// Normalize error messages to avoid leaking internal implementation details
+				const errorMessage = error instanceof Error ? error.message : 'Unknown error';
+				const userSafeMessage = errorMessage.includes('not found')
+					? 'Conversation not found'
+					: errorMessage.includes('Not authorized') || errorMessage.includes('permission')
+					? 'You do not have permission to send messages in this conversation'
+					: errorMessage.includes('cannot be empty') || errorMessage.includes('exceeds')
+					? errorMessage // Domain validation errors are safe to expose
+					: 'Failed to send message. Please try again.'; // Generic fallback for unexpected errors
+				
 				return {
-					status: { success: false, errorMessage: message },
+					status: { success: false, errorMessage: userSafeMessage },
 				};
 			}
 		},
