@@ -20,8 +20,7 @@ export function createStorybookVitestConfig(
 	const setupFiles = opts.setupFiles ?? ['.storybook/vitest.setup.ts'];
 	const instances = opts.browsers ?? [{ browser: 'chromium' }];
 
-	const isCI =
-		process.env['CI'] === 'true' || process.env['TF_BUILD'] === 'True';
+	const isCI = process.env['TF_BUILD'] === 'True';
 
 	const storybookConfig = defineConfig({
 		// Use export conditions to resolve workspace packages to src/ during testing
@@ -85,8 +84,8 @@ export function createStorybookVitestConfig(
 					...(opts.additionalCoverageExclude ?? []),
 				],
 			},
-			// Disable watch mode and isolate tests to reduce file watchers and improve stability.
-			watch: false,
+			// Enable watch mode in local dev for faster iteration; disable in CI for stability
+			watch: !isCI,
 			isolate: true,
 		},
 	});
