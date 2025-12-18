@@ -42,7 +42,7 @@ export interface ItemListingReadRepository {
 	>;
 }
 
-export class ItemListingReadRepositoryImpl
+class ItemListingReadRepositoryImpl
 	implements ItemListingReadRepository
 {
 	private readonly mongoDataSource: ItemListingDataSource;
@@ -184,15 +184,16 @@ export class ItemListingReadRepositoryImpl
 			);
 			if (!result || result.length === 0) return [];
 			return result.map((doc) => this.converter.toDomain(doc, this.passport));
-		} catch (_error) {
+		} catch (error) {
+			console.error('Error fetching listings by sharer:', error);
 			return [];
 		}
 	}
 }
 
-export const getItemListingReadRepository = (
+export function getItemListingReadRepository(
 	models: ModelsContext,
 	passport: Domain.Passport,
-) => {
+): ItemListingReadRepository {
 	return new ItemListingReadRepositoryImpl(models, passport);
-};
+}

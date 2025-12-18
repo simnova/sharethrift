@@ -25,7 +25,7 @@ export interface UIItemListing {
 	images?: string[]; // For UI purposes, we'll add image URLs
 }
 
-export interface ListingsGridProps {
+interface ListingsGridProps {
 	listings: UIItemListing[];
 	loading?: boolean;
 	onListingClick?: (listing: UIItemListing) => void;
