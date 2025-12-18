@@ -20,7 +20,8 @@ interface ListingsPageContainerProps {
 export const ListingsPageContainer: React.FC<ListingsPageContainerProps> = ({
 	isAuthenticated,
 }) => {
-	const [searchQuery, setSearchQuery] = useState('');
+	const [searchInputValue, setSearchInputValue] = useState(''); // What user types
+	const [searchQuery, setSearchQuery] = useState(''); // Actual search query executed
 	const [currentPage, setCurrentPage] = useState(1);
 	const pageSize = 20;
 	const [selectedCategory, setSelectedCategory] = useState('');
@@ -84,6 +85,10 @@ export const ListingsPageContainer: React.FC<ListingsPageContainerProps> = ({
 		};
 	}, [shouldUseSearch, searchData, allListingsData, currentPage, pageSize]);
 
+	const handleSearchChange = (value: string) => {
+		setSearchInputValue(value);
+	};
+
 	const handleSearch = (query: string) => {
 		setSearchQuery(query);
 		setCurrentPage(1); // Reset to first page when searching
@@ -139,8 +144,8 @@ export const ListingsPageContainer: React.FC<ListingsPageContainerProps> = ({
 			hasDataComponent={
 				<ListingsPage
 					isAuthenticated={isAuthenticated}
-					searchQuery={searchQuery}
-					onSearchChange={setSearchQuery}
+					searchQuery={searchInputValue}
+					onSearchChange={handleSearchChange}
 					onSearch={handleSearch}
 					selectedCategory={selectedCategory}
 					onCategoryChange={handleCategoryChange}
