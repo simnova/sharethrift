@@ -11,9 +11,9 @@
 		"tswatch": "tsc --build --watch",
 		"storybook": "storybook dev -p 6006",
 		"build-storybook": "storybook build",
-		"test": "echo 'No unit tests - UI components validated via Storybook'",
-		"test:coverage": "echo 'No unit tests - UI components validated via Storybook'",
-		"test:watch": "echo 'No unit tests - UI components validated via Storybook'"
+		"test": "vitest run",
+		"test:coverage": "vitest run --coverage",
+		"test:watch": "vitest"
 	},
 	"dependencies": {
 		"@ant-design/icons": "^6.1.0",
