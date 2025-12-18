@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 
 /**
  * Custom hook that debounces a value change with optional immediate trigger
@@ -12,14 +12,19 @@ export function useDebouncedValue<T>(
 ): [T, () => void] {
 	const [debouncedValue, setDebouncedValue] = useState<T>(value);
 	const timerRef = useRef<NodeJS.Timeout | null>(null);
+	const valueRef = useRef<T>(value);
+
+	// Keep valueRef up to date
+	valueRef.current = value;
 
 	// Function to immediately update the debounced value
-	const triggerImmediate = () => {
+	const triggerImmediate = useCallback(() => {
 		if (timerRef.current) {
 			clearTimeout(timerRef.current);
+			timerRef.current = null;
 		}
-		setDebouncedValue(value);
-	};
+		setDebouncedValue(valueRef.current);
+	}, []);
 
 	useEffect(() => {
 		// Set up the timeout

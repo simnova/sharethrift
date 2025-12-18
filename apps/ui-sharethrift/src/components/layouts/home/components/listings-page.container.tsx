@@ -3,7 +3,7 @@ import {
 	ComponentQueryLoader,
 	type UIItemListing,
 } from '@sthrift/ui-components';
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import {
 	ListingsPageContainerGetListingsDocument,
@@ -31,6 +31,11 @@ export const ListingsPageContainer: React.FC<ListingsPageContainerProps> = ({
 		searchInputValue,
 		500,
 	);
+
+	// Reset to page 1 when debounced search query changes (not on every keystroke)
+	useEffect(() => {
+		setCurrentPage(1);
+	}, [debouncedSearchQuery, selectedCategory]);
 
 	// Determine if we should use search query or get all listings
 	const shouldUseSearch = Boolean(debouncedSearchQuery || (selectedCategory && selectedCategory !== 'All'));
@@ -93,13 +98,13 @@ export const ListingsPageContainer: React.FC<ListingsPageContainerProps> = ({
 
 	const handleSearchChange = (value: string) => {
 		setSearchInputValue(value);
-		setCurrentPage(1); // Reset to first page when search changes
+		// Don't reset page here - let the useEffect handle it when debounced value changes
 	};
 
 	const handleSearch = () => {
 		// When user presses Enter or clicks search button, trigger immediate search
 		triggerImmediateSearch();
-		setCurrentPage(1);
+		// Page reset will happen via useEffect
 	};
 
 	const navigate = useNavigate();
