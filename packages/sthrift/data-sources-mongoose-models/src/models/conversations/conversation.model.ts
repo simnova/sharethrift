@@ -1,7 +1,7 @@
 import { type Model, type ObjectId, Schema, type PopulatedDoc } from 'mongoose';
 import { MongooseSeedwork } from '@cellix/mongoose-seedwork';
 import type * as User from '../user/user.model.ts';
-import type * as ItemListing from '../listing/item.model.ts';
+import type * as ItemListing from '../listing/item-listing.model.ts';
 
 export interface Conversation extends MongooseSeedwork.Base {
 	sharer: PopulatedDoc<User.User> | ObjectId;

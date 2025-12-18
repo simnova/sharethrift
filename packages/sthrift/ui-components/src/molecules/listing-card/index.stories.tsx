@@ -12,7 +12,7 @@ const sampleListing: UIItemListing = {
 	location: 'Philadelphia, PA',
 	sharingPeriodStart: new Date('2024-08-11'),
 	sharingPeriodEnd: new Date('2024-12-23'),
-	state: 'Published',
+	state: 'Active',
 	images: ['/src/assets/item-images/bike.png'],
 	createdAt: new Date('2024-08-01'),
 	updatedAt: new Date('2024-08-01'),
