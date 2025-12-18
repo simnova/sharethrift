@@ -1,6 +1,7 @@
 import { Avatar as AntAvatar } from 'antd';
 import { Link } from 'react-router-dom';
 import { isValidUserId } from './utils/user-validation.ts';
+import { getUserProfilePath } from './utils/user-routes.ts';
 import { ShareThriftLogo } from './sharethrift-logo.tsx';
 
 /**
@@ -78,7 +79,7 @@ export const UserAvatar: React.FC<UserAvatarProps> = ({
 	}
 
 	return (
-		<Link to={`/user/${userId}`} aria-label={`View ${userName}'s profile`}>
+		<Link to={getUserProfilePath(userId)} aria-label={`View ${userName}'s profile`}>
 			{avatarContent}
 		</Link>
 	);

@@ -1,7 +1,7 @@
 import type { Conversation } from '../../../../../generated.tsx';
 import { ListingBanner } from './listing-banner.tsx';
 import { MessageThread } from './index.ts';
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useMemo } from 'react';
 
 interface ConversationBoxProps {
 	data: Conversation;
@@ -36,20 +36,28 @@ export const ConversationBox: React.FC<ConversationBoxProps> = (props) => {
 		[messageText],
 	);
 
-	// Build user info for sharer and reserver
-	const sharerInfo = props.data?.sharer
-		? {
-				id: props.data.sharer.id,
-				displayName: getUserDisplayName(props.data.sharer),
-			}
-		: undefined;
+	// Build user info for sharer and reserver - memoized to avoid unnecessary rerenders
+	const sharerInfo = useMemo(
+		() =>
+			props.data?.sharer
+				? {
+						id: props.data.sharer.id,
+						displayName: getUserDisplayName(props.data.sharer),
+					}
+				: undefined,
+		[props.data?.sharer],
+	);
 
-	const reserverInfo = props.data?.reserver
-		? {
-				id: props.data.reserver.id,
-				displayName: getUserDisplayName(props.data.reserver),
-			}
-		: undefined;
+	const reserverInfo = useMemo(
+		() =>
+			props.data?.reserver
+				? {
+						id: props.data.reserver.id,
+						displayName: getUserDisplayName(props.data.reserver),
+					}
+				: undefined,
+		[props.data?.reserver],
+	);
 
 	return (
 		<>

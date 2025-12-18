@@ -1,5 +1,6 @@
 import { Link } from 'react-router-dom';
 import { isValidUserId } from './utils/user-validation.ts';
+import { getUserProfilePath } from './utils/user-routes.ts';
 
 /**
  * Props for UserProfileLink component
@@ -39,7 +40,7 @@ export const UserProfileLink: React.FC<UserProfileLinkProps> = ({
 
 	return (
 		<Link 
-			to={`/user/${userId}`} 
+			to={getUserProfilePath(userId)} 
 			className={className}
 			style={{ 
 				textDecoration: 'none',

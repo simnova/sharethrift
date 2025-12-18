@@ -16,6 +16,19 @@ User profiles are accessed via the route:
 
 Where `:userId` is the ObjectID of the user.
 
+### Route Helper Function
+
+To ensure consistency across the application and make it easier to update routes if the URL structure changes, use the centralized route helper:
+
+```tsx
+import { getUserProfilePath } from '../shared/utils/user-routes.ts';
+
+const profileUrl = getUserProfilePath(userId);
+// Returns: "/user/507f1f77bcf86cd799439011"
+```
+
+The `UserProfileLink` and `UserAvatar` components automatically use this helper internally.
+
 ## Shared Components
 
 Two reusable components are provided for consistent user profile navigation:
@@ -146,7 +159,7 @@ type ListingRequest {
 
 Both `UserProfileLink` and `UserAvatar` components are designed with accessibility in mind:
 
-- Use semantic Ant Design Link component for proper keyboard navigation
+- Use the semantic Ant Design Link component for proper keyboard navigation
 - Include ARIA labels on avatars (`aria-label="View {userName}'s profile"`)
 - Maintain focus states for keyboard navigation
 - Provide visual indication of clickability (hover states, pointer cursor)
