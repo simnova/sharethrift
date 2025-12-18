@@ -42,6 +42,7 @@ export class ItemListing<props extends ItemListingProps>
 			sharingPeriodEnd: Date;
 			images?: string[];
 			isDraft?: boolean;
+            expiresAt?: Date;
 		},
 	): ItemListing<props> {
 		const newInstance = new ItemListing(newProps, passport);
@@ -59,8 +60,8 @@ export class ItemListing<props extends ItemListingProps>
 			newInstance.images = fields.images;
 		}
 		newInstance.state = fields.isDraft
-			? ValueObjects.ListingState.Drafted.valueOf()
-			: ValueObjects.ListingState.Published.valueOf();
+			? ValueObjects.ListingState.Draft.valueOf()
+			: ValueObjects.ListingState.Active.valueOf();
 
 		newInstance.isNew = false;
 		return newInstance;
@@ -237,7 +238,7 @@ export class ItemListing<props extends ItemListingProps>
 
 	get isActive(): boolean {
 		return (
-			this.props.state.valueOf() === ValueObjects.ListingStateEnum.Published
+			this.props.state.valueOf() === ValueObjects.ListingStateEnum.Active
 		);
 	}
 
@@ -261,7 +262,7 @@ export class ItemListing<props extends ItemListingProps>
 			);
 		}
 
-		this.props.state = new ValueObjects.ListingState('Published').valueOf();
+		this.props.state = new ValueObjects.ListingState('Active').valueOf();
 		// Note: updatedAt is automatically handled by Mongoose timestamps
 	}
 
@@ -318,7 +319,7 @@ export class ItemListing<props extends ItemListingProps>
 			const isBlocked = current === ValueObjects.ListingStateEnum.Blocked;
 			if (!isBlocked) return; // no-op if not blocked
 
-			this.props.state = ValueObjects.ListingStateEnum.AppealRequested;
+			this.props.state = ValueObjects.ListingStateEnum.Active;
 			return;
 		}
 
@@ -360,6 +361,21 @@ public requestDelete(): void {
 		if (!this.isDeleted) {
 			super.isDeleted = true;
 		}
+	}
+
+	get expiresAt(): Date | undefined {
+		return this.props.expiresAt;
+	}
+
+	set expiresAt(value: Date | undefined) {
+		if (
+			!this.visa.determineIf((permissions) => permissions.canUpdateItemListing)
+		) {
+			throw new DomainSeedwork.PermissionError(
+				'You do not have permission to update this expiration',
+			);
+		}
+		this.props.expiresAt = value;
 	}
 
 	/**

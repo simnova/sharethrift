@@ -1,3 +1,3 @@
-export * from './item.model.ts';
-export type { ItemListing } from './item.model.ts';
+export type { ItemListing } from './item-listing.model.ts';
+export * from './item-listing.model.ts';
 export { ListingModelFactory } from './listing.model.ts';
