@@ -18,7 +18,7 @@ export interface ItemListingProps extends DomainSeedwork.DomainEntityProps {
 	reports?: number;
 	images?: string[]; // Array of image URLs
 	// Note: Reserved status is calculated dynamically from ReservationRequest aggregates, not stored as state
-    listingType: string;
+	listingType: string;
 }
 
 export interface ItemListingEntityReference
