@@ -3,7 +3,7 @@ import {
 	ComponentQueryLoader,
 	type UIItemListing,
 } from '@sthrift/ui-components';
-import { useState, useMemo, useEffect, useRef } from 'react';
+import { useState, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import {
 	ListingsPageContainerGetListingsDocument,
@@ -11,6 +11,7 @@ import {
 	type ItemListing,
 } from '../../../../generated.tsx';
 import { useCreateListingNavigation } from './create-listing/hooks/use-create-listing-navigation.ts';
+import { useDebouncedValue } from './hooks/use-debounced-value.ts';
 import { ListingsPage } from './listings-page.tsx';
 
 interface ListingsPageContainerProps {
@@ -21,39 +22,22 @@ export const ListingsPageContainer: React.FC<ListingsPageContainerProps> = ({
 	isAuthenticated,
 }) => {
 	const [searchInputValue, setSearchInputValue] = useState(''); // What user types
-	const [searchQuery, setSearchQuery] = useState(''); // Actual search query executed (debounced)
 	const [currentPage, setCurrentPage] = useState(1);
 	const pageSize = 20;
 	const [selectedCategory, setSelectedCategory] = useState('');
-	const debounceTimerRef = useRef<NodeJS.Timeout | null>(null);
 
-	// Debounce search input - automatically search after user stops typing
-	useEffect(() => {
-		// Clear existing timer
-		if (debounceTimerRef.current) {
-			clearTimeout(debounceTimerRef.current);
-		}
-
-		// Set new timer to update search query after 500ms of no typing
-		debounceTimerRef.current = setTimeout(() => {
-			setSearchQuery(searchInputValue);
-			setCurrentPage(1); // Reset to first page when search changes
-		}, 500);
-
-		// Cleanup function
-		return () => {
-			if (debounceTimerRef.current) {
-				clearTimeout(debounceTimerRef.current);
-			}
-		};
-	}, [searchInputValue]);
+	// Debounce search input - automatically search 500ms after user stops typing
+	const [debouncedSearchQuery, triggerImmediateSearch] = useDebouncedValue(
+		searchInputValue,
+		500,
+	);
 
 	// Determine if we should use search query or get all listings
-	const shouldUseSearch = Boolean(searchQuery || (selectedCategory && selectedCategory !== 'All'));
+	const shouldUseSearch = Boolean(debouncedSearchQuery || (selectedCategory && selectedCategory !== 'All'));
 
 	// Prepare search input
 	const searchInput = useMemo(() => ({
-		searchString: searchQuery || undefined,
+		searchString: debouncedSearchQuery || undefined,
 		options: {
 			filter: {
 				category: (selectedCategory && selectedCategory !== 'All') ? [selectedCategory] : undefined,
@@ -61,7 +45,7 @@ export const ListingsPageContainer: React.FC<ListingsPageContainerProps> = ({
 			skip: (currentPage - 1) * pageSize,
 			top: pageSize,
 		},
-	}), [searchQuery, selectedCategory, currentPage, pageSize]);
+	}), [debouncedSearchQuery, selectedCategory, currentPage, pageSize]);
 
 	// Query all listings (when no search/filter)
 	const { data: allListingsData, loading: allListingsLoading, error: allListingsError } = useQuery(
@@ -109,16 +93,12 @@ export const ListingsPageContainer: React.FC<ListingsPageContainerProps> = ({
 
 	const handleSearchChange = (value: string) => {
 		setSearchInputValue(value);
-		// Debounce will handle updating searchQuery automatically
+		setCurrentPage(1); // Reset to first page when search changes
 	};
 
 	const handleSearch = () => {
-		// Clear any pending debounce timer
-		if (debounceTimerRef.current) {
-			clearTimeout(debounceTimerRef.current);
-		}
-		// Immediately execute search when user presses Enter or clicks button
-		setSearchQuery(searchInputValue);
+		// When user presses Enter or clicks search button, trigger immediate search
+		triggerImmediateSearch();
 		setCurrentPage(1);
 	};
 
