@@ -114,7 +114,7 @@ Feature: <AggregateRoot> ReservationRequest
   Scenario: Setting listing with non-published state
     Given a new ReservationRequest aggregate being created
     When I try to set listing to a non-published listing
-    Then an error should be thrown indicating "Cannot create reservation request for listing that is not published"
+    Then an error should be thrown indicating "Cannot create reservation request for listing that is not active"
 
   Scenario: Setting reserver to null
     Given a new ReservationRequest aggregate being created

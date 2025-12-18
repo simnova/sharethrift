@@ -27,7 +27,7 @@ export interface ItemListing extends Listing {
 	reports?: number;
 	images?: string[];
 	listingType: string;
-    expiresAt?: Date; // TTL field for automatic expiration
+    expiresAt?: Date| undefined; // TTL field for automatic expiration
 }
 
 export const LISTING_STATE_ENUM = [

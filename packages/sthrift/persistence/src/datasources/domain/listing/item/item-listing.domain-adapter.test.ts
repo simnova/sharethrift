@@ -387,17 +387,16 @@ test.for(feature, ({ Scenario, Background, BeforeEachScenario }) => {
 		});
 	});
 
-	Scenario('Getting expiresAt when not set throws error', ({ When, Then }) => {
-		When('I try to get expiresAt when it\'s not set', () => {
+	Scenario('Getting expiresAt when not set returns undefined', ({ When, Then }) => {
+		let result: Date | undefined;
+
+		When('I get expiresAt when it\'s not set', () => {
 			doc.expiresAt = undefined as never;
-			expect(() => {
-				// biome-ignore lint/suspicious/noExplicitAny: Testing error case
-				const _ = adapter.expiresAt;
-			}).toThrow('expiresAt is not set');
+			result = adapter.expiresAt;
 		});
 
-		Then('it should throw an error about expiresAt not being set', () => {
-			// Error thrown in When block
+		Then('it should return undefined', () => {
+			expect(result).toBeUndefined();
 		});
 	});
 });

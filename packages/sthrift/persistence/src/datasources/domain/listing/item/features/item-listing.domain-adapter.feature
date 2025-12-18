@@ -89,6 +89,6 @@ And an ItemListingDomainAdapter wrapping the document
 		When I set expiresAt to a specific date
 		Then expiresAt should return that date
 
-	Scenario: Getting expiresAt when not set throws error
-		When I try to get expiresAt when it's not set
-		Then it should throw an error about expiresAt not being set
+	Scenario: Getting expiresAt when not set returns undefined
+		When I get expiresAt when it's not set
+		Then it should return undefined

@@ -160,13 +160,10 @@ export class ItemListingDomainAdapter
 		this.doc.listingType = value;
 	}
 
-    get expiresAt(): Date {
-        if (!this.doc.expiresAt) {
-            throw new Error('expiresAt is not set');
-        }
+    get expiresAt(): Date | undefined {
         return this.doc.expiresAt;
     }
-    set expiresAt(value: Date) {
-        this.doc.expiresAt = value;
+    set expiresAt(value: Date | undefined) {
+        this.doc.expiresAt = value
     }
 }

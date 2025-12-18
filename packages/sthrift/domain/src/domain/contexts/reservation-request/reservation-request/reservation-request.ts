@@ -176,7 +176,7 @@ export class ReservationRequest<props extends ReservationRequestProps>
 
 		if (value.state !== 'Active') {
 			throw new DomainSeedwork.PermissionError(
-				'Cannot create reservation request for listing that is not published',
+				'Cannot create reservation request for listing that is not active',
 			);
 		}
 		this.props.listing = value;

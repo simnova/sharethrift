@@ -748,10 +748,10 @@ test.for(feature, ({ Background, Scenario, BeforeEachScenario }) => {
 				}
 			});
 			Then(
-				'an error should be thrown indicating "Cannot create reservation request for listing that is not published"',
+				'an error should be thrown indicating "Cannot create reservation request for listing that is not active"',
 				() => {
 					expect(String((error as Error).message)).toMatch(
-						/Cannot create reservation request for listing that is not published/,
+						/Cannot create reservation request for listing that is not active/,
 					);
 				},
 			);
