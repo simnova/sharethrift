@@ -20,11 +20,12 @@ export const sendMessage = (dataSources: DataSources) => {
 			throw new Error(`Conversation not found for id ${command.conversationId}`);
 		}
 
-		// Validate that authorId matches either the sharer or reserver of the conversation
+		// Validate that authorId is a participant (sharer or reserver)
 		// This enforces the invariant at the application boundary rather than relying solely on downstream permission checks
-		const isSharer = conversation.sharer?.id === command.authorId;
-		const isReserver = conversation.reserver?.id === command.authorId;
-		if (!isSharer && !isReserver) {
+		const isParticipant =
+			conversation.sharer?.id === command.authorId ||
+			conversation.reserver?.id === command.authorId;
+		if (!isParticipant) {
 			throw new Error('Author must be a participant (sharer or reserver) in the conversation');
 		}
 
