@@ -1,6 +1,6 @@
 import path from 'node:path';
 import { storybookTest } from '@storybook/addon-vitest/vitest-plugin';
-import { defineConfig, mergeConfig } from 'vitest/config';
+import { defineConfig, mergeConfig, configDefaults } from 'vitest/config';
 import type { UserConfig } from 'vite';
 import { baseConfig } from './base.config.ts';
 import { playwright } from '@vitest/browser-playwright';
@@ -37,7 +37,7 @@ export function createStorybookVitestConfig(
 		test: {
 			// Prevent Vite/Vitest from scanning/transpiling build artifacts and coverage temp files.
 			// This greatly reduces the number of open files during coverage runs in CI.
-			exclude: ['**/dist/**', '**/coverage/**', '**/coverage/.tmp/**'],
+			exclude: [...configDefaults.exclude, '**/dist/**', '**/coverage/**', '**/coverage/.tmp/**'],
 			globals: true,
 			// Retry tests on failure to handle flaky browser tests due to race conditions
 			// in @storybook/addon-vitest + Playwright browser provider
