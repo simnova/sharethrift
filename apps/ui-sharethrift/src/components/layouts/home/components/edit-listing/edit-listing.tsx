@@ -118,8 +118,8 @@ export const EditListing: React.FC<EditListingProps> = ({
 		setActiveModal(null);
 	};
 
-	const canPause = listing.state === 'Published';
-	const canCancel = ['Published', 'Drafted', 'Paused'].includes(
+	const canPause = listing.state === 'Active';
+	const canCancel = ['Active', 'Draft', 'Paused'].includes(
 		listing.state || '',
 	);
 
