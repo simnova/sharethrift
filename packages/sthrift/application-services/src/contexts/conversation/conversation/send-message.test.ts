@@ -213,6 +213,10 @@ test.for(feature, ({ Scenario }) => {
 		});
 
 		When('I try to send a message', async () => {
+			// Mock repository to throw permission error (authorization happens in domain layer via visa)
+			ctx.mockMessagingRepo.sendMessage.mockRejectedValue(
+				new Error('Not authorized to send message in this conversation'),
+			);
 			try {
 				result = await sendMessage(ctx.dataSources)(ctx.command);
 			} catch (err) {
@@ -222,8 +226,8 @@ test.for(feature, ({ Scenario }) => {
 
 		Then('an error should be thrown indicating not authorized', () => {
 			expect(error).toBeDefined();
-			// Now validated at application layer, not downstream
-			expect(error?.message).toContain('Author must be a participant');
+			// Authorization validated in domain layer (repository checks visa)
+			expect(error?.message).toContain('Not authorized');
 		});
 	});
 
