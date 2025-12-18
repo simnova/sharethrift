@@ -6,129 +6,6 @@ import {
 	PopulateUserFromField,
 } from '../../resolver-helper.ts';
 
-interface ListingRequestDomainShape {
-	id: string;
-	state?: string;
-	createdAt?: Date;
-	updatedAt?: Date;
-	reservationPeriodStart?: Date;
-	reservationPeriodEnd?: Date;
-	listing?: {
-		title?: string;
-		thumbnailUrl?: string;
-		images?: string[];
-		[k: string]: unknown;
-	};
-	reserver?: { account?: { username?: string } };
-	[k: string]: unknown;
-}
-
-interface ListingRequestUiShape {
-	id: string;
-	title: string;
-	image: string;
-	requestedBy: string;
-	requestedOn: string;
-	reservationPeriod: string;
-	status: string;
-	_raw: ListingRequestDomainShape;
-	[k: string]: unknown;
-}
-
-function paginateAndFilterListingRequests(
-	requests: ListingRequestDomainShape[],
-	options: {
-		page: number;
-		pageSize: number;
-		searchText?: string;
-		statusFilters: string[];
-		sorter?: { field: string | null; order: 'ascend' | 'descend' | null };
-	},
-) {
-	const filtered = [...requests];
-
-	// Map domain objects into shape expected by client
-	const mapped: ListingRequestUiShape[] = filtered.map((r) => {
-		const start =
-			r.reservationPeriodStart instanceof Date
-				? r.reservationPeriodStart
-				: undefined;
-		const end =
-			r.reservationPeriodEnd instanceof Date
-				? r.reservationPeriodEnd
-				: undefined;
-
-		// Get the first image from the listing's images array, fall back to thumbnail, then placeholder
-		const images = r.listing?.images;
-		const thumbnail =
-			typeof r.listing?.thumbnailUrl === 'string'
-				? r.listing?.thumbnailUrl
-				: undefined;
-		const firstImage =
-			Array.isArray(images) && images.length > 0 ? images[0] : undefined;
-		const listingImage =
-			firstImage ?? thumbnail ?? '/assets/item-images/placeholder.png';
-
-		return {
-			id: r.id,
-			title: r.listing?.title ?? 'Unknown',
-			image: listingImage,
-			requestedBy: r.reserver?.account?.username
-				? `@${r.reserver.account.username}`
-				: '@unknown',
-			requestedOn:
-				r.createdAt instanceof Date
-					? r.createdAt.toISOString()
-					: new Date().toISOString(),
-			reservationPeriod: `${start ? start.toISOString().slice(0, 10) : 'N/A'} - ${end ? end.toISOString().slice(0, 10) : 'N/A'}`,
-			status: r.state ?? 'Requested',
-			_raw: r,
-		};
-	});
-
-	let working = mapped;
-	if (options.searchText) {
-		const term = options.searchText.toLowerCase();
-		working = working.filter((m) => m.title.toLowerCase().includes(term));
-	}
-
-	if (options.statusFilters?.length) {
-		working = working.filter((m) => options.statusFilters?.includes(m.status));
-	}
-
-	if (options.sorter?.field) {
-		const { field, order } = options.sorter;
-		working.sort((a: ListingRequestUiShape, b: ListingRequestUiShape) => {
-			const sortField = field as keyof ListingRequestUiShape;
-			const A = a[sortField];
-			const B = b[sortField];
-			if (A == null) {
-				return order === 'ascend' ? -1 : 1;
-			}
-			if (B == null) {
-				return order === 'ascend' ? 1 : -1;
-			}
-			if (A < B) {
-				return order === 'ascend' ? -1 : 1;
-			}
-			if (A > B) {
-				return order === 'ascend' ? 1 : -1;
-			}
-			return 0;
-		});
-	}
-
-	const total = working.length;
-	const startIndex = (options.page - 1) * options.pageSize;
-	const endIndex = startIndex + options.pageSize;
-	return {
-		items: working.slice(startIndex, endIndex),
-		total,
-		page: options.page,
-		pageSize: options.pageSize,
-	};
-}
-
 const reservationRequest: Resolvers = {
 	ReservationRequest: {
 		reserver: PopulateUserFromField('reserver'),
@@ -164,7 +41,7 @@ const reservationRequest: Resolvers = {
 			args,
 			context: GraphContext,
 		) => {
-			// Fetch reservation requests for listings owned by sharer from application services
+			// Fetch reservation requests for listings owned by sharer
 			const requests =
 				await context.applicationServices.ReservationRequest.ReservationRequest.queryListingRequestsBySharerId(
 					{
@@ -172,26 +49,8 @@ const reservationRequest: Resolvers = {
 					},
 				);
 
-			if (!requests) {
-				return {
-					items: [],
-					total: 0,
-					page: args.page,
-					pageSize: args.pageSize,
-				};
-			}
-
-			const result = paginateAndFilterListingRequests(
-				requests as unknown as ListingRequestDomainShape[],
-				{
-					page: args.page,
-					pageSize: args.pageSize,
-					searchText: args.searchText,
-					statusFilters: [...(args.statusFilters ?? [])],
-				},
-			);
-
-			return result;
+			// Return raw data - let GraphQL schema and UI handle any transformation
+			return requests ?? [];
 		},
 		myActiveReservationForListing: async (
 			_parent,
@@ -266,61 +125,11 @@ const reservationRequest: Resolvers = {
 				);
 			}
 
-			// Load the reservation request to check authorization
-			const reservationRequest =
-				await context.applicationServices.ReservationRequest.ReservationRequest.queryById(
-					{
-						id: args.input.id,
-					},
-				);
-
-			if (!reservationRequest) {
-				throw new Error('Reservation request not found');
-			}
-
-			// Get the listing from the reservation request
-			// The listing property already contains the reference from the read-only repository
-			const listing = reservationRequest.listing;
-			if (!listing) {
-				throw new Error(
-					'Unable to load listing for this reservation request',
-				);
-			}
-
-			// Fetch the full listing with sharer to perform authorization check
-			const fullListing = await context.applicationServices.Listing.ItemListing.queryById({
-				id: listing.id,
-			});
-
-			if (!fullListing) {
-				throw new Error('Listing not found');
-			}
-
-			// Get the sharer from the listing
-			const sharer = fullListing.sharer;
-			if (!sharer) {
-				throw new Error(
-					'Unable to load listing owner for this reservation request',
-				);
-			}
-
-			// Get the authenticated user's ID
-			const authenticatedUser =
-				await context.applicationServices.User.PersonalUser.queryByEmail({
-					email: verifiedJwt.email,
-				});
-
-			if (!authenticatedUser) {
-				throw new Error('Authenticated user not found');
-			}
-
-			// Check if the authenticated user is the listing sharer
-			if (sharer.id !== authenticatedUser.id) {
-				throw new Error(
-					'Unauthorized: Only the listing owner can accept reservation requests',
-				);
-			}
-
+			// Delegate to application service - domain layer handles authorization via passport/visa
+			// The PersonalUserPassport is already set up with the authenticated user
+			// When update calls reservationRequest.state = 'Accepted', the domain aggregate
+			// checks permissions via the visa pattern (PersonalUserReservationRequestVisa)
+			// which validates that the current user is the listing sharer
 			return await context.applicationServices.ReservationRequest.ReservationRequest.update(
 				{
 					id: args.input.id,
