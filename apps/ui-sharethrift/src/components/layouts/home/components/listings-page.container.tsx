@@ -89,8 +89,8 @@ export const ListingsPageContainer: React.FC<ListingsPageContainerProps> = ({
 		setSearchInputValue(value);
 	};
 
-	const handleSearch = (query: string) => {
-		setSearchQuery(query);
+	const handleSearch = () => {
+		setSearchQuery(searchInputValue);
 		setCurrentPage(1); // Reset to first page when searching
 	};
 
