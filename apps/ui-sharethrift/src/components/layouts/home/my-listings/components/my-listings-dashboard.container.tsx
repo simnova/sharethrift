@@ -3,17 +3,19 @@ import { useQuery } from "@apollo/client/react";
 import { ComponentQueryLoader } from '@sthrift/ui-components';
 import { HomeAllListingsTableContainerMyListingsAllDocument } from '../../../../../generated.tsx';
 
+import { useNavigate } from 'react-router-dom';
+
 export const MyListingsDashboardContainer: React.FC = () => {
+	const navigate = useNavigate();
 	const { data, loading, error } = useQuery(
 		HomeAllListingsTableContainerMyListingsAllDocument, {
-            variables: { page: 1, pageSize: 6 },
-            fetchPolicy: 'network-only',
-        }
+			variables: { page: 1, pageSize: 6 },
+			fetchPolicy: 'network-only',
+		}
 	);
 
 	const handleCreateListing = () => {
-		// TODO: Navigate to listing creation page
-		console.log('Navigate to create listing');
+		navigate('/create-listing');
 	};
 
 	return (

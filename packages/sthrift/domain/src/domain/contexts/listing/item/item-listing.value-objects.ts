@@ -5,13 +5,11 @@ import { VOString } from '@lucaspaganini/value-objects';
  */
 export const ListingStateEnum = {
 	Active: 'Active',
-	Published: 'Published',
 	Paused: 'Paused',
 	Cancelled: 'Cancelled',
-	Drafted: 'Drafted',
+	Draft: 'Draft',
 	Expired: 'Expired',
 	Blocked: 'Blocked',
-	AppealRequested: 'Appeal Requested',
 } as const;
 
 export class ListingState extends VOString({
@@ -19,20 +17,15 @@ export class ListingState extends VOString({
 	minLength: 0,
 	maxLength: 50,
 }) {
-	static readonly Active = new ListingState(ListingStateEnum.Active);
-	static readonly Published = new ListingState(ListingStateEnum.Published);
-	static readonly Paused = new ListingState(ListingStateEnum.Paused);
-	static readonly Cancelled = new ListingState(ListingStateEnum.Cancelled);
-	static readonly Drafted = new ListingState(ListingStateEnum.Drafted);
-	static readonly Expired = new ListingState(ListingStateEnum.Expired);
-	static readonly Blocked = new ListingState(ListingStateEnum.Blocked);
-	static readonly AppealRequested = new ListingState(ListingStateEnum.AppealRequested);
+	static Active = new ListingState(ListingStateEnum.Active);
+	static Paused = new ListingState(ListingStateEnum.Paused);
+	static Cancelled = new ListingState(ListingStateEnum.Cancelled);
+	static Draft = new ListingState(ListingStateEnum.Draft);
+	static Expired = new ListingState(ListingStateEnum.Expired);
+	static Blocked = new ListingState(ListingStateEnum.Blocked);
 
 	get isActive(): boolean {
-		return (
-			this.valueOf() === ListingStateEnum.Published ||
-			this.valueOf() === ListingStateEnum.Active
-		);
+		return this.valueOf() === ListingStateEnum.Active;
 	}
 }
 

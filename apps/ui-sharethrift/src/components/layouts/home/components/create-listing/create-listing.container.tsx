@@ -45,12 +45,16 @@ export const CreateListingContainer: React.FC<CreateListingContainerProps> = (
 	const [createItemListing, { loading: isCreating }] = useMutation<
 		HomeCreateListingContainerCreateItemListingMutation,
 		HomeCreateListingContainerCreateItemListingMutationVariables
-	>(HomeCreateListingContainerCreateItemListingDocument, {
-		onCompleted: (data) => {
-			const isDraft = data.createItemListing.state === 'Drafted';
-			message.success(
-				isDraft ? 'Listing saved as draft!' : 'Listing published successfully!',
-			);
+	>(
+		HomeCreateListingContainerCreateItemListingDocument,
+		{
+			onCompleted: (data) => {
+				const isDraft = data.createItemListing.state === 'Draft';
+				message.success(
+					isDraft
+						? 'Listing saved as draft!'
+						: 'Listing published successfully!',
+				);
 
 			// Don't navigate automatically - let user choose from modal
 		},
