@@ -6,64 +6,10 @@ import {
 } from '../../../../../generated.tsx';
 import { withMockApolloClient, withMockUserId } from '../../../../../test-utils/storybook-decorators.tsx';
 import { ConversationBoxContainer } from '../components/conversation-box.container.tsx';
+import { buildConversationMock, buildSendMessageMock } from '../test-data/conversation';
 
 // #region Shared Mock Data
-const mockConversationDetail = {
-	__typename: 'Conversation',
-	id: 'conv-1',
-	messagingConversationId: 'CH123',
-	schemaVersion: '1',
-	listing: {
-		__typename: 'ItemListing',
-		id: 'listing-1',
-		title: 'Cordless Drill',
-		description: 'High-quality drill',
-		category: 'Tools',
-		location: 'Toronto',
-		images: ['/assets/item-images/projector.png'],
-		listingType: 'Item',
-		sharingPeriodStart: '2025-01-15',
-		sharingPeriodEnd: '2025-12-31',
-	},
-	sharer: {
-		__typename: 'PersonalUser',
-		id: 'user-1',
-		account: {
-			__typename: 'PersonalUserAccount',
-			username: 'john_doe',
-			profile: {
-				__typename: 'PersonalUserAccountProfile',
-				firstName: 'John',
-				lastName: 'Doe',
-			},
-		},
-	},
-	reserver: {
-		__typename: 'PersonalUser',
-		id: 'user-2',
-		account: {
-			__typename: 'PersonalUserAccount',
-			username: 'jane_smith',
-			profile: {
-				__typename: 'PersonalUserAccountProfile',
-				firstName: 'Jane',
-				lastName: 'Smith',
-			},
-		},
-	},
-	messages: [
-		{
-			__typename: 'Message',
-			id: 'msg-1',
-			messagingMessageId: 'SM001',
-			content: 'Hi, is this still available?',
-			createdAt: '2025-01-15T10:00:00Z',
-			authorId: 'user-2',
-		},
-	],
-	createdAt: '2025-01-15T09:00:00Z',
-	updatedAt: '2025-01-15T10:00:00Z',
-};
+const mockConversationDetail = buildConversationMock();
 
 // Shared base conversation mock
 const conversationMock = {
@@ -89,26 +35,7 @@ const sendMessageSuccessMocks = [
 			variables: () => true,
 		},
 		maxUsageCount: Number.POSITIVE_INFINITY,
-		result: {
-			data: {
-				sendMessage: {
-					__typename: 'SendMessageMutationResult',
-					status: {
-						__typename: 'MutationStatus',
-						success: true,
-						errorMessage: null,
-					},
-					message: {
-						__typename: 'Message',
-						id: 'msg-new',
-						messagingMessageId: 'SM999',
-						content: 'Test message',
-						createdAt: new Date().toISOString(),
-						authorId: 'user-1',
-					},
-				},
-			},
-		},
+		result: buildSendMessageMock('success'),
 	},
 ];
 
@@ -121,19 +48,7 @@ const sendMessageErrorMocks = [
 			variables: () => true,
 		},
 		maxUsageCount: Number.POSITIVE_INFINITY,
-		result: {
-			data: {
-				sendMessage: {
-					__typename: 'SendMessageMutationResult',
-					status: {
-						__typename: 'MutationStatus',
-						success: false,
-						errorMessage: 'Failed to send message',
-					},
-					message: null,
-				},
-			},
-		},
+		result: buildSendMessageMock('error'),
 	},
 ];
 
@@ -146,7 +61,7 @@ const sendMessageNetworkErrorMocks = [
 			variables: () => true,
 		},
 		maxUsageCount: Number.POSITIVE_INFINITY,
-		error: new Error('Network error'),
+		...buildSendMessageMock('networkError'),
 	},
 ];
 
@@ -160,7 +75,7 @@ const cacheUpdateMocks = [
 		maxUsageCount: Number.POSITIVE_INFINITY,
 		result: {
 			data: {
-				conversation: { ...mockConversationDetail, messages: [] },
+				conversation: buildConversationMock({ messages: [] }),
 			},
 		},
 	},
@@ -170,26 +85,7 @@ const cacheUpdateMocks = [
 			variables: () => true,
 		},
 		maxUsageCount: Number.POSITIVE_INFINITY,
-		result: {
-			data: {
-				sendMessage: {
-					__typename: 'SendMessageMutationResult',
-					status: {
-						__typename: 'MutationStatus',
-						success: true,
-						errorMessage: null,
-					},
-					message: {
-						__typename: 'Message',
-						id: 'msg-new',
-						messagingMessageId: 'SM999',
-						content: 'First message',
-						createdAt: new Date().toISOString(),
-						authorId: 'user-1',
-					},
-				},
-			},
-		},
+		result: buildSendMessageMock('success', 'First message'),
 	},
 ];
 // #endregion Shared Mock Data
