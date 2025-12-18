@@ -222,3 +222,38 @@ export const PopconfirmSelectorsExist: Story = {
 		);
 	},
 };
+
+export const ConfirmPopconfirmWhenNoButton: Story = {
+	args: {},
+	play: async () => {
+		// Call confirmPopconfirm when no popconfirm is open
+		const result = await confirmPopconfirm();
+		expect(result).toBeNull();
+	},
+};
+
+export const CancelPopconfirmWhenNoButton: Story = {
+	args: {},
+	play: async () => {
+		// Call cancelPopconfirm when no popconfirm is open
+		const result = await cancelPopconfirm();
+		expect(result).toBeNull();
+	},
+};
+
+export const TriggerPopconfirmWithButtonIndex: Story = {
+	args: {
+		onConfirm: fn(),
+		showMultipleButtons: false,
+	},
+	play: async ({ canvasElement, args }) => {
+		const canvas = within(canvasElement);
+
+		// Trigger the first button (index 0) which has the Popconfirm
+		await triggerPopconfirmAnd(canvas, 'confirm', {
+			triggerButtonIndex: 0,
+		});
+
+		expect(args.onConfirm).toHaveBeenCalled();
+	},
+};

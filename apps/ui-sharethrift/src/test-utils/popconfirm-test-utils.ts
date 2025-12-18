@@ -35,20 +35,16 @@ export const waitForPopconfirm = async () =>
 export const getPopconfirmElements = () => ({
 	title: document.querySelector(POPCONFIRM_SELECTORS.title),
 	description: document.querySelector(POPCONFIRM_SELECTORS.description),
-	confirmButton: document.querySelector(
-		POPCONFIRM_SELECTORS.confirmButton,
-	) as HTMLElement | null,
-	cancelButton: document.querySelector(
-		POPCONFIRM_SELECTORS.cancelButton,
-	) as HTMLElement | null,
+	confirmButton: document.querySelector(POPCONFIRM_SELECTORS.confirmButton),
+	cancelButton: document.querySelector(POPCONFIRM_SELECTORS.cancelButton),
 });
 
 export const confirmPopconfirm = async () => {
 	const confirmButton = document.querySelector(
 		POPCONFIRM_SELECTORS.confirmButton,
-	) as HTMLElement | null;
+	);
 	if (confirmButton) {
-		await userEvent.click(confirmButton);
+		await userEvent.click(confirmButton as HTMLElement);
 	}
 	return confirmButton;
 };
@@ -56,9 +52,9 @@ export const confirmPopconfirm = async () => {
 export const cancelPopconfirm = async () => {
 	const cancelButton = document.querySelector(
 		POPCONFIRM_SELECTORS.cancelButton,
-	) as HTMLElement | null;
+	);
 	if (cancelButton) {
-		await userEvent.click(cancelButton);
+		await userEvent.click(cancelButton as HTMLElement);
 	}
 	return cancelButton;
 };
@@ -120,14 +116,12 @@ export const clickCancelThenConfirm = async (canvasElement: HTMLElement) => {
 
 	const confirmButton = await waitFor(
 		() => {
-			const btn = document.querySelector(
-				POPCONFIRM_SELECTORS.confirmButton,
-			) as HTMLElement | null;
+			const btn = document.querySelector(POPCONFIRM_SELECTORS.confirmButton);
 			if (!btn) throw new Error('Confirm button not found yet');
 			return btn;
 		},
 		{ timeout: 1000 },
 	);
 
-	await userEvent.click(confirmButton);
+	await userEvent.click(confirmButton as HTMLElement);
 };
