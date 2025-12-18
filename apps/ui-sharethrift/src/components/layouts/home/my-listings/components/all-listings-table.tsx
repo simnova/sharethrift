@@ -70,7 +70,7 @@ export const AllListingsTable: React.FC<AllListingsTableProps> = ({
 					onClick={() => onAction('pause', record.id)}
 				>
 					Pause
-				</Button>,
+				</Button>
 			);
 		}
 
@@ -117,7 +117,7 @@ export const AllListingsTable: React.FC<AllListingsTableProps> = ({
 			);
 		}
 
-		// Cancel button for active listings
+		// Cancel button for Active listings
 		if (status === 'Active' || status === 'Paused') {
 			buttons.push(
 				<Popconfirm

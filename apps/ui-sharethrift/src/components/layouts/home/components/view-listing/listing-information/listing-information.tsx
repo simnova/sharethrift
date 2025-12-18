@@ -74,7 +74,7 @@ export const ListingInformation: React.FC<ListingInformationProps> = ({
 		null,
 	);
 
-	if (listing.state !== 'Published') {
+	if (listing.state !== 'Active') {
 		return (
 			<div className="p-4">
 				<button

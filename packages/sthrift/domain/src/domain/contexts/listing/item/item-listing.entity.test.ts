@@ -21,7 +21,7 @@ function makeItemListingProps(overrides?: Partial<ItemListingProps>): any {
 		location: 'Test City',
 		sharingPeriodStart: new Date('2024-01-01'),
 		sharingPeriodEnd: new Date('2024-12-31'),
-		state: 'active',
+		state: 'Active',
 		createdAt: new Date(),
 		updatedAt: new Date(),
 		schemaVersion: '1.0',
@@ -130,7 +130,7 @@ test.for(feature, ({ Background, Scenario }) => {
 		Then('it should be a string', () => {
 			const itemListingProps: ItemListingProps = props;
 			expect(typeof itemListingProps.state).toBe('string');
-			expect(itemListingProps.state).toBe('active');
+			expect(itemListingProps.state).toBe('Active');
 		});
 	});
 
