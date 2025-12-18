@@ -130,6 +130,9 @@ function makeMockGraphContext(
 				PersonalUser: {
 					queryByEmail: vi.fn().mockResolvedValue(createMockUser()),
 				},
+				AdminUser: {
+					queryByEmail: vi.fn().mockResolvedValue(null), // Default to null, AdminUser not found
+				},
 			},
 			verifiedUser: {
 				verifiedJwt: {
@@ -1008,6 +1011,451 @@ test.for(feature, ({ Scenario }) => {
 			expect(result).toBeDefined();
 			expect(result).toHaveProperty('status');
 			expect((result as { status: { success: boolean } }).status.success).toBe(true);
+		});
+	});
+
+	Scenario('Updating an item listing successfully', ({ Given, And, When, Then }) => {
+		Given('a valid listing ID and authenticated user owns the listing', () => {
+			context = makeMockGraphContext({
+				applicationServices: {
+					...makeMockGraphContext().applicationServices,
+					Listing: {
+						ItemListing: {
+							...makeMockGraphContext().applicationServices.Listing.ItemListing,
+							queryById: vi.fn().mockResolvedValue(createMockListing()),
+							update: vi.fn().mockResolvedValue(createMockListing({ title: 'Updated Title' })),
+						},
+					},
+				},
+			});
+		});
+		And('an UpdateItemListingInput with updated fields', () => {
+			// Input will be passed in When step
+		});
+		When('the updateItemListing mutation is executed', async () => {
+			const resolver = itemListingResolvers.Mutation?.updateItemListing as TestResolver<{
+				id: string;
+				input: {
+					title?: string;
+					description?: string;
+					category?: string;
+					location?: string;
+					sharingPeriodStart?: string;
+					sharingPeriodEnd?: string;
+					images?: string[];
+				};
+			}>;
+			result = await resolver({}, { id: 'listing-1', input: { title: 'Updated Title' } }, context, {} as never);
+		});
+		Then('it should call Listing.ItemListing.update with the updated command', () => {
+			expect(context.applicationServices.Listing.ItemListing.update).toHaveBeenCalledWith(
+				expect.objectContaining({
+					id: 'listing-1',
+					title: 'Updated Title',
+				}),
+			);
+		});
+		And('it should return the updated listing', () => {
+			expect(result).toBeDefined();
+			expect((result as { title: string }).title).toBe('Updated Title');
+		});
+	});
+
+	Scenario('Updating an item listing without authentication', ({ Given, When, Then }) => {
+		Given('a user without a verifiedJwt in their context', () => {
+			context = makeMockGraphContext({
+				applicationServices: {
+					...makeMockGraphContext().applicationServices,
+					verifiedUser: null,
+				},
+			});
+		});
+		When('the updateItemListing mutation is executed', async () => {
+			try {
+				const resolver = itemListingResolvers.Mutation?.updateItemListing as TestResolver<{
+					id: string;
+					input: { title: string };
+				}>;
+				await resolver({}, { id: 'listing-1', input: { title: 'Test' } }, context, {} as never);
+			} catch (e) {
+				error = e as Error;
+			}
+		});
+		Then('it should throw an "Authentication required" error', () => {
+			expect(error).toBeDefined();
+			expect(error?.message).toBe('Authentication required');
+		});
+	});
+
+	Scenario('Updating a listing that does not exist', ({ Given, And, When, Then }) => {
+		Given('an authenticated user', () => {
+			context = makeMockGraphContext();
+		});
+		And('a listing ID that does not match any record', () => {
+			vi.mocked(
+				context.applicationServices.Listing.ItemListing.queryById,
+			).mockResolvedValue(null);
+		});
+		When('the updateItemListing mutation is executed', async () => {
+			try {
+				const resolver = itemListingResolvers.Mutation?.updateItemListing as TestResolver<{
+					id: string;
+					input: { title: string };
+				}>;
+				await resolver({}, { id: 'nonexistent-id', input: { title: 'Test' } }, context, {} as never);
+			} catch (e) {
+				error = e as Error;
+			}
+		});
+		Then('it should throw a "Listing not found" error', () => {
+			expect(error).toBeDefined();
+			expect(error?.message).toBe('Listing not found');
+		});
+	});
+
+	Scenario('Updating a listing owned by another user', ({ Given, And, When, Then }) => {
+		Given('an authenticated user', () => {
+			context = makeMockGraphContext();
+		});
+		And('a listing owned by a different user', () => {
+			vi.mocked(
+				context.applicationServices.Listing.ItemListing.queryById,
+			).mockResolvedValue(createMockListing({ sharer: { id: 'other-user-id', userType: 'personal-user' } as PersonalUserEntity }));
+		});
+		When('the updateItemListing mutation is executed', async () => {
+			try {
+				const resolver = itemListingResolvers.Mutation?.updateItemListing as TestResolver<{
+					id: string;
+					input: { title: string };
+				}>;
+				await resolver({}, { id: 'listing-1', input: { title: 'Test' } }, context, {} as never);
+			} catch (e) {
+				error = e as Error;
+			}
+		});
+		Then('it should throw an "Only the listing owner can perform this action" error', () => {
+			expect(error).toBeDefined();
+			expect(error?.message).toBe('Only the listing owner can perform this action');
+		});
+	});
+
+	Scenario('Updating a listing when user lookup fails', ({ Given, And, When, Then }) => {
+		Given('an authenticated user with email', () => {
+			context = makeMockGraphContext();
+			vi.mocked(
+				context.applicationServices.Listing.ItemListing.queryById,
+			).mockResolvedValue(createMockListing());
+		});
+		And('the user cannot be found by email', () => {
+			vi.mocked(
+				context.applicationServices.User.PersonalUser.queryByEmail,
+			).mockResolvedValue(null);
+		});
+		When('the updateItemListing mutation is executed', async () => {
+			try {
+				const resolver = itemListingResolvers.Mutation?.updateItemListing as TestResolver<{
+					id: string;
+					input: { title: string };
+				}>;
+				await resolver({}, { id: 'listing-1', input: { title: 'Test' } }, context, {} as never);
+			} catch (e) {
+				error = e as Error;
+			}
+		});
+		Then('it should throw a "User not found" error', () => {
+			expect(error).toBeDefined();
+			expect(error?.message).toBe('User not found');
+		});
+	});
+
+	Scenario('Pausing an item listing successfully', ({ Given, When, Then, And }) => {
+		Given('a valid listing ID and authenticated user owns the listing', () => {
+			context = makeMockGraphContext({
+				applicationServices: {
+					...makeMockGraphContext().applicationServices,
+					Listing: {
+						ItemListing: {
+							...makeMockGraphContext().applicationServices.Listing.ItemListing,
+							queryById: vi.fn().mockResolvedValue(createMockListing()),
+							pause: vi.fn().mockResolvedValue(createMockListing({ state: 'Paused' })),
+						},
+					},
+				},
+			});
+		});
+		When('the pauseItemListing mutation is executed', async () => {
+			const resolver = itemListingResolvers.Mutation?.pauseItemListing as TestResolver<{
+				id: string;
+			}>;
+			result = await resolver({}, { id: 'listing-1' }, context, {} as never);
+		});
+		Then('it should call Listing.ItemListing.pause with the ID', () => {
+			expect(context.applicationServices.Listing.ItemListing.pause).toHaveBeenCalledWith({
+				id: 'listing-1',
+			});
+		});
+		And('it should return the paused listing', () => {
+			expect(result).toBeDefined();
+			expect((result as { state: string }).state).toBe('Paused');
+		});
+	});
+
+	Scenario('Pausing an item listing without authentication', ({ Given, When, Then }) => {
+		Given('a user without a verifiedJwt in their context', () => {
+			context = makeMockGraphContext({
+				applicationServices: {
+					...makeMockGraphContext().applicationServices,
+					verifiedUser: null,
+				},
+			});
+		});
+		When('the pauseItemListing mutation is executed', async () => {
+			try {
+				const resolver = itemListingResolvers.Mutation?.pauseItemListing as TestResolver<{
+					id: string;
+				}>;
+				await resolver({}, { id: 'listing-1' }, context, {} as never);
+			} catch (e) {
+				error = e as Error;
+			}
+		});
+		Then('it should throw an "Authentication required" error', () => {
+			expect(error).toBeDefined();
+			expect(error?.message).toBe('Authentication required');
+		});
+	});
+
+	Scenario('Pausing a listing that does not exist', ({ Given, And, When, Then }) => {
+		Given('an authenticated user', () => {
+			context = makeMockGraphContext();
+		});
+		And('a listing ID that does not match any record', () => {
+			vi.mocked(
+				context.applicationServices.Listing.ItemListing.queryById,
+			).mockResolvedValue(null);
+		});
+		When('the pauseItemListing mutation is executed', async () => {
+			try {
+				const resolver = itemListingResolvers.Mutation?.pauseItemListing as TestResolver<{
+					id: string;
+				}>;
+				await resolver({}, { id: 'nonexistent-id' }, context, {} as never);
+			} catch (e) {
+				error = e as Error;
+			}
+		});
+		Then('it should throw a "Listing not found" error', () => {
+			expect(error).toBeDefined();
+			expect(error?.message).toBe('Listing not found');
+		});
+	});
+
+	Scenario('Pausing a listing owned by another user', ({ Given, And, When, Then }) => {
+		Given('an authenticated user', () => {
+			context = makeMockGraphContext();
+		});
+		And('a listing owned by a different user', () => {
+			vi.mocked(
+				context.applicationServices.Listing.ItemListing.queryById,
+			).mockResolvedValue(createMockListing({ sharer: { id: 'other-user-id', userType: 'personal-user' } as PersonalUserEntity }));
+		});
+		When('the pauseItemListing mutation is executed', async () => {
+			try {
+				const resolver = itemListingResolvers.Mutation?.pauseItemListing as TestResolver<{
+					id: string;
+				}>;
+				await resolver({}, { id: 'listing-1' }, context, {} as never);
+			} catch (e) {
+				error = e as Error;
+			}
+		});
+		Then('it should throw an "Only the listing owner can perform this action" error', () => {
+			expect(error).toBeDefined();
+			expect(error?.message).toBe('Only the listing owner can perform this action');
+		});
+	});
+
+	Scenario('Pausing a listing when user lookup fails', ({ Given, And, When, Then }) => {
+		Given('an authenticated user with email', () => {
+			context = makeMockGraphContext();
+			vi.mocked(
+				context.applicationServices.Listing.ItemListing.queryById,
+			).mockResolvedValue(createMockListing());
+		});
+		And('the user cannot be found by email', () => {
+			vi.mocked(
+				context.applicationServices.User.PersonalUser.queryByEmail,
+			).mockResolvedValue(null);
+		});
+		When('the pauseItemListing mutation is executed', async () => {
+			try {
+				const resolver = itemListingResolvers.Mutation?.pauseItemListing as TestResolver<{
+					id: string;
+				}>;
+				await resolver({}, { id: 'listing-1' }, context, {} as never);
+			} catch (e) {
+				error = e as Error;
+			}
+		});
+		Then('it should throw a "User not found" error', () => {
+			expect(error).toBeDefined();
+			expect(error?.message).toBe('User not found');
+		});
+	});
+
+	Scenario('Canceling a listing that does not exist', ({ Given, And, When, Then }) => {
+		Given('an authenticated user', () => {
+			context = makeMockGraphContext();
+		});
+		And('a listing ID that does not match any record', () => {
+			vi.mocked(
+				context.applicationServices.Listing.ItemListing.queryById,
+			).mockResolvedValue(null);
+		});
+		When('the cancelItemListing mutation is executed', async () => {
+			try {
+				const resolver = itemListingResolvers.Mutation?.cancelItemListing as TestResolver<{
+					id: string;
+				}>;
+				await resolver({}, { id: 'nonexistent-id' }, context, {} as never);
+			} catch (e) {
+				error = e as Error;
+			}
+		});
+		Then('it should throw a "Listing not found" error', () => {
+			expect(error).toBeDefined();
+			expect(error?.message).toBe('Listing not found');
+		});
+	});
+
+	Scenario('Canceling a listing owned by another user', ({ Given, And, When, Then }) => {
+		Given('an authenticated user', () => {
+			context = makeMockGraphContext();
+		});
+		And('a listing owned by a different user', () => {
+			vi.mocked(
+				context.applicationServices.Listing.ItemListing.queryById,
+			).mockResolvedValue(createMockListing({ sharer: { id: 'other-user-id', userType: 'personal-user' } as PersonalUserEntity }));
+		});
+		When('the cancelItemListing mutation is executed', async () => {
+			try {
+				const resolver = itemListingResolvers.Mutation?.cancelItemListing as TestResolver<{
+					id: string;
+				}>;
+				await resolver({}, { id: 'listing-1' }, context, {} as never);
+			} catch (e) {
+				error = e as Error;
+			}
+		});
+		Then('it should throw an "Only the listing owner can perform this action" error', () => {
+			expect(error).toBeDefined();
+			expect(error?.message).toBe('Only the listing owner can perform this action');
+		});
+	});
+
+	Scenario('Canceling a listing when user lookup fails', ({ Given, And, When, Then }) => {
+		Given('an authenticated user with email', () => {
+			context = makeMockGraphContext();
+			vi.mocked(
+				context.applicationServices.Listing.ItemListing.queryById,
+			).mockResolvedValue(createMockListing());
+		});
+		And('the user cannot be found by email', () => {
+			vi.mocked(
+				context.applicationServices.User.PersonalUser.queryByEmail,
+			).mockResolvedValue(null);
+		});
+		When('the cancelItemListing mutation is executed', async () => {
+			try {
+				const resolver = itemListingResolvers.Mutation?.cancelItemListing as TestResolver<{
+					id: string;
+				}>;
+				await resolver({}, { id: 'listing-1' }, context, {} as never);
+			} catch (e) {
+				error = e as Error;
+			}
+		});
+		Then('it should throw a "User not found" error', () => {
+			expect(error).toBeDefined();
+			expect(error?.message).toBe('User not found');
+		});
+	});
+
+	Scenario('Deleting a listing that does not exist', ({ Given, And, When, Then }) => {
+		Given('an authenticated user', () => {
+			context = makeMockGraphContext();
+		});
+		And('a listing ID that does not match any record', () => {
+			vi.mocked(
+				context.applicationServices.Listing.ItemListing.queryById,
+			).mockResolvedValue(null);
+		});
+		When('the deleteItemListing mutation is executed', async () => {
+			try {
+				const resolver = itemListingResolvers.Mutation?.deleteItemListing as TestResolver<{
+					id: string;
+				}>;
+				await resolver({}, { id: 'nonexistent-id' }, context, {} as never);
+			} catch (e) {
+				error = e as Error;
+			}
+		});
+		Then('it should throw a "Listing not found" error', () => {
+			expect(error).toBeDefined();
+			expect(error?.message).toBe('Listing not found');
+		});
+	});
+
+	Scenario('Deleting a listing owned by another user', ({ Given, And, When, Then }) => {
+		Given('an authenticated user', () => {
+			context = makeMockGraphContext();
+		});
+		And('a listing owned by a different user', () => {
+			vi.mocked(
+				context.applicationServices.Listing.ItemListing.queryById,
+			).mockResolvedValue(createMockListing({ sharer: { id: 'other-user-id', userType: 'personal-user' } as PersonalUserEntity }));
+		});
+		When('the deleteItemListing mutation is executed', async () => {
+			try {
+				const resolver = itemListingResolvers.Mutation?.deleteItemListing as TestResolver<{
+					id: string;
+				}>;
+				await resolver({}, { id: 'listing-1' }, context, {} as never);
+			} catch (e) {
+				error = e as Error;
+			}
+		});
+		Then('it should throw an "Only the listing owner can perform this action" error', () => {
+			expect(error).toBeDefined();
+			expect(error?.message).toBe('Only the listing owner can perform this action');
+		});
+	});
+
+	Scenario('Deleting a listing when user lookup fails', ({ Given, And, When, Then }) => {
+		Given('an authenticated user with email', () => {
+			context = makeMockGraphContext();
+			vi.mocked(
+				context.applicationServices.Listing.ItemListing.queryById,
+			).mockResolvedValue(createMockListing());
+		});
+		And('the user cannot be found by email', () => {
+			vi.mocked(
+				context.applicationServices.User.PersonalUser.queryByEmail,
+			).mockResolvedValue(null);
+		});
+		When('the deleteItemListing mutation is executed', async () => {
+			try {
+				const resolver = itemListingResolvers.Mutation?.deleteItemListing as TestResolver<{
+					id: string;
+				}>;
+				await resolver({}, { id: 'listing-1' }, context, {} as never);
+			} catch (e) {
+				error = e as Error;
+			}
+		});
+		Then('it should throw a "User not found" error', () => {
+			expect(error).toBeDefined();
+			expect(error?.message).toBe('User not found');
 		});
 	});
 });

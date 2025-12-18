@@ -124,3 +124,98 @@ So that I can view, filter, and create listings through the GraphQL API
 		When the deleteItemListing mutation is executed
 		Then it should call Listing.ItemListing.deleteListings with ID and email
 		And it should return success status
+
+	Scenario: Updating an item listing successfully
+		Given a valid listing ID and authenticated user owns the listing
+		And an UpdateItemListingInput with updated fields
+		When the updateItemListing mutation is executed
+		Then it should call Listing.ItemListing.update with the updated command
+		And it should return the updated listing
+
+	Scenario: Updating an item listing without authentication
+		Given a user without a verifiedJwt in their context
+		When the updateItemListing mutation is executed
+		Then it should throw an "Authentication required" error
+
+	Scenario: Updating a listing that does not exist
+		Given an authenticated user
+		And a listing ID that does not match any record
+		When the updateItemListing mutation is executed
+		Then it should throw a "Listing not found" error
+
+	Scenario: Updating a listing owned by another user
+		Given an authenticated user
+		And a listing owned by a different user
+		When the updateItemListing mutation is executed
+		Then it should throw an "Only the listing owner can perform this action" error
+
+	Scenario: Updating a listing when user lookup fails
+		Given an authenticated user with email
+		And the user cannot be found by email
+		When the updateItemListing mutation is executed
+		Then it should throw a "User not found" error
+
+	Scenario: Pausing an item listing successfully
+		Given a valid listing ID and authenticated user owns the listing
+		When the pauseItemListing mutation is executed
+		Then it should call Listing.ItemListing.pause with the ID
+		And it should return the paused listing
+
+	Scenario: Pausing an item listing without authentication
+		Given a user without a verifiedJwt in their context
+		When the pauseItemListing mutation is executed
+		Then it should throw an "Authentication required" error
+
+	Scenario: Pausing a listing that does not exist
+		Given an authenticated user
+		And a listing ID that does not match any record
+		When the pauseItemListing mutation is executed
+		Then it should throw a "Listing not found" error
+
+	Scenario: Pausing a listing owned by another user
+		Given an authenticated user
+		And a listing owned by a different user
+		When the pauseItemListing mutation is executed
+		Then it should throw an "Only the listing owner can perform this action" error
+
+	Scenario: Pausing a listing when user lookup fails
+		Given an authenticated user with email
+		And the user cannot be found by email
+		When the pauseItemListing mutation is executed
+		Then it should throw a "User not found" error
+
+	Scenario: Canceling a listing that does not exist
+		Given an authenticated user
+		And a listing ID that does not match any record
+		When the cancelItemListing mutation is executed
+		Then it should throw a "Listing not found" error
+
+	Scenario: Canceling a listing owned by another user
+		Given an authenticated user
+		And a listing owned by a different user
+		When the cancelItemListing mutation is executed
+		Then it should throw an "Only the listing owner can perform this action" error
+
+	Scenario: Canceling a listing when user lookup fails
+		Given an authenticated user with email
+		And the user cannot be found by email
+		When the cancelItemListing mutation is executed
+		Then it should throw a "User not found" error
+
+	Scenario: Deleting a listing that does not exist
+		Given an authenticated user
+		And a listing ID that does not match any record
+		When the deleteItemListing mutation is executed
+		Then it should throw a "Listing not found" error
+
+	Scenario: Deleting a listing owned by another user
+		Given an authenticated user
+		And a listing owned by a different user
+		When the deleteItemListing mutation is executed
+		Then it should throw an "Only the listing owner can perform this action" error
+
+	Scenario: Deleting a listing when user lookup fails
+		Given an authenticated user with email
+		And the user cannot be found by email
+		When the deleteItemListing mutation is executed
+		Then it should throw a "User not found" error
