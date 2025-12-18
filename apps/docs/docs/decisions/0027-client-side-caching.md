@@ -100,6 +100,8 @@ sequenceDiagram
 
 **Tiered caching strategy** based on data sensitivity and freshness requirements.
 
+A one-size-fits-all cache policy creates unacceptable tradeoffs—aggressive caching risks exposing sensitive data while conservative policies sacrifice performance gains. Instead, we adopt a tiered approach that matches cache behavior to data classification. This balances security requirements (never cache sensitive data) with performance optimization (maximize caching for safe data) while providing clear guidelines for developers to apply consistently across the application.
+
 **Tier 1 - Public/Static (cache-first)**: item listings, user profiles, account plans
 
 **Tier 2 - User-Specific (cache-and-network)**: User feeds
