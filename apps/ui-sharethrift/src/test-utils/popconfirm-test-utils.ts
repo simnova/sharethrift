@@ -7,8 +7,8 @@ export const POPCONFIRM_SELECTORS = {
 	cancelButton: '.ant-popconfirm-buttons .ant-btn:not(.ant-btn-primary)',
 } as const;
 
-export type Canvas = ReturnType<typeof within>;
-export type PopconfirmAction = 'confirm' | 'cancel';
+type Canvas = ReturnType<typeof within>;
+type PopconfirmAction = 'confirm' | 'cancel';
 
 export const canvasUtils = {
 	getButtons: (canvas: Canvas) => canvas.getAllByRole('button'),
