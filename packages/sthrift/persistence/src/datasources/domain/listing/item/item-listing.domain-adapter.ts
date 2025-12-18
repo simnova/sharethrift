@@ -52,7 +52,7 @@ export class ItemListingDomainAdapter
 	}
 
 	get state(): string {
-		return this.doc.state || 'Published';
+		return this.doc.state || 'Active';
 	}
 	set state(value: string) {
 		this.doc.state = value as NonNullable<Models.Listing.ItemListing['state']>;
@@ -159,4 +159,11 @@ export class ItemListingDomainAdapter
 	set listingType(value: string) {
 		this.doc.listingType = value;
 	}
+
+    get expiresAt(): Date | undefined {
+        return this.doc.expiresAt;
+    }
+    set expiresAt(value: Date | undefined) {
+        this.doc.expiresAt = value
+    }
 }

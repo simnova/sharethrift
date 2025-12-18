@@ -3,7 +3,7 @@ Feature: <AggregateRoot> ReservationRequest
   Background:
     Given a valid Passport with reservation request permissions
     And a valid PersonalUserEntityReference for "reserverUser"
-    And a valid ItemListingEntityReference for "listing1" with state "Published"
+    And a valid ItemListingEntityReference for "listing1" with state "Active"
     And base reservation request properties with state "REQUESTED", listing "listing1", reserver "reserverUser", valid reservation period, and timestamps	
         
   Scenario: Creating a new reservation request instance
@@ -114,7 +114,7 @@ Feature: <AggregateRoot> ReservationRequest
   Scenario: Setting listing with non-published state
     Given a new ReservationRequest aggregate being created
     When I try to set listing to a non-published listing
-    Then an error should be thrown indicating "Cannot create reservation request for listing that is not published"
+    Then an error should be thrown indicating "Cannot create reservation request for listing that is not active"
 
   Scenario: Setting reserver to null
     Given a new ReservationRequest aggregate being created

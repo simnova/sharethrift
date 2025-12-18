@@ -41,12 +41,28 @@ export class ItemListing<props extends ItemListingProps>
 			sharingPeriodEnd: Date;
 			images?: string[];
 			isDraft?: boolean;
+            expiresAt?: Date;
 		},
 		passport: Passport,
 	): ItemListing<props> {
-		const id = uuidv4();
-		const now = new Date();
-		const isDraft = fields.isDraft ?? false;
+
+		const newInstance = new ItemListing(newProps, passport);
+		newInstance.markAsNew();
+		newInstance.sharer = sharer;
+		newInstance.title = new ValueObjects.Title(fields.title).valueOf();
+		newInstance.description = new ValueObjects.Description(
+			fields.description,
+		).valueOf();
+		newInstance.category = new ValueObjects.Category(fields.category).valueOf();
+		newInstance.location = new ValueObjects.Location(fields.location).valueOf();
+		newInstance.sharingPeriodStart = fields.sharingPeriodStart;
+		newInstance.sharingPeriodEnd = fields.sharingPeriodEnd;
+		if (fields.images) {
+			newInstance.images = fields.images;
+		}
+		newInstance.state = fields.isDraft
+			? ValueObjects.ListingState.Draft.valueOf()
+			: ValueObjects.ListingState.Active.valueOf();
 
 		// For drafts, use placeholder values if fields are empty
 		const title =
@@ -282,7 +298,7 @@ export class ItemListing<props extends ItemListingProps>
 
 	get isActive(): boolean {
 		return (
-			this.props.state.valueOf() === ValueObjects.ListingStateEnum.Published
+			this.props.state.valueOf() === ValueObjects.ListingStateEnum.Active
 		);
 	}
 
@@ -306,7 +322,8 @@ export class ItemListing<props extends ItemListingProps>
 			);
 		}
 
-		this.props.state = new ValueObjects.ListingState('Published').valueOf();
+		this.props.state = new ValueObjects.ListingState('Active').valueOf();
+		// Note: updatedAt is automatically handled by Mongoose timestamps
 	}
 
 	public pause(): void {
@@ -373,7 +390,7 @@ export class ItemListing<props extends ItemListingProps>
 			const isBlocked = current === ValueObjects.ListingStateEnum.Blocked;
 			if (!isBlocked) return; // no-op if not blocked
 
-			this.props.state = ValueObjects.ListingStateEnum.AppealRequested;
+			this.props.state = ValueObjects.ListingStateEnum.Active;
 			return;
 		}
 
@@ -407,6 +424,21 @@ public requestDelete(): void {
 		if (!this.isDeleted) {
 			super.isDeleted = true;
 		}
+	}
+
+	get expiresAt(): Date | undefined {
+		return this.props.expiresAt;
+	}
+
+	set expiresAt(value: Date | undefined) {
+		if (
+			!this.visa.determineIf((permissions) => permissions.canUpdateItemListing)
+		) {
+			throw new DomainSeedwork.PermissionError(
+				'You do not have permission to update this expiration',
+			);
+		}
+		this.props.expiresAt = value;
 	}
 
 	/**
