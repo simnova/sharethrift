@@ -887,7 +887,7 @@ Scenario(
 	Scenario(
 		'Loading sharer asynchronously',
 		({ Given, When, Then }) => {
-			Given('an ItemListing aggregate', async () => {
+			Given('an ItemListing aggregate', () => {
 				passport = makePassport(true, true, true, true);
 				listing = new ItemListing(makeBaseProps(), passport);
 			});
