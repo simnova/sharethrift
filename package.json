@@ -13,7 +13,7 @@
         "test": "turbo run test",
         "lint": "turbo run lint",
         "dev": "pnpm run build && turbo run azurite gen:watch start --parallel",
-        "start": "turbo run build && concurrently pnpm:start:* --kill-others-on-fail",
+        "start": "turbo run build --filter=@sthrift/api && pnpm run start:api",
         "format": "turbo run format",
         "gen": "graphql-codegen --config codegen.yml",
         "gen:watch": "graphql-codegen --config codegen.yml --watch",
