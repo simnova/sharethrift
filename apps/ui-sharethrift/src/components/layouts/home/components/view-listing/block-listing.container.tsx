@@ -10,13 +10,6 @@ import { UnblockListingModal } from './unblock-listing-modal.tsx';
 import { useState } from 'react';
 import { Button } from 'antd';
 
-interface BlockListingContainerProps {
-	listingId: string;
-	listingTitle: string;
-	isBlocked: boolean;
-	sharerName?: string;
-}
-
 interface BlockListingButtonProps {
 	listingId: string;
 	listingTitle: string;
@@ -122,24 +115,5 @@ export const BlockListingButton: React.FC<BlockListingButtonProps> = ({
 				</>
 			)}
 		</>
-	);
-};
-
-export const BlockListingContainer: React.FC<BlockListingContainerProps> = ({
-	listingId,
-	listingTitle,
-	isBlocked,
-	sharerName = 'Unknown',
-}) => {
-	return (
-		<div style={{ display: 'flex', gap: 8, justifyContent: 'flex-end' }}>
-			<BlockListingButton
-				listingId={listingId}
-				listingTitle={listingTitle}
-				isBlocked={isBlocked}
-				sharerName={sharerName}
-				renderModals={true}
-			/>
-		</div>
 	);
 };
