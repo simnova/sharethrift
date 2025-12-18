@@ -111,6 +111,46 @@ This means tasks and PRs may bounce between these states multiple times during d
 - Repositories are defined as interfaces in the domain; adapters live outside
 - Unit of Work plans atomic persistence and event publication
 
+## Facade Pattern & Package Responsibilities
+ShareThrift follows a Facade-based modular architecture to enforce clear boundaries, reduce coupling, and protect domain integrity. This is especially important when working across the sthrift and cellix packages.
+
+### sthrift Package (Business Domain)
+### sthrift contains ShareThrift-specific business logic and domain models.
+- It is responsible for:
+    - Aggregates, entities, value objects
+    - Domain invariants and rules
+    - Domain events
+    - Domain-level interfaces (repositories, units of work, ports)
+    - Application-facing facades for domain capabilities
+
+- What does NOT belong here:
+    - Framework or infrastructure concerns
+    - Generic utilities
+    - Cross-domain abstractions not specific to ShareThrift
+
+- Think of sthrift as:
+“The business truth of ShareThrift, independent of technology choices.”
+
+### Folder & Dependency Philosophy
+
+- sthrift may depend on cellix
+- cellix must never depend on sthrift
+
+### cellix Package (Seedwork & Platform Abstractions)
+### cellix is domain-agnostic seedwork shared across contexts and services.
+- It typically contains:
+    - Base abstractions (AggregateRoot, Entity, ValueObject)
+    - Infrastructure-neutral interfaces
+    - Cross-cutting patterns (telemetry hooks, service registration, lifecycle helpers)
+    - Utilities that multiple domains depend on
+
+- What does NOT belong here:
+    - ShareThrift-specific rules or terminology
+    - Domain behavior or policies
+
+- Think of cellix as:
+“Reusable building blocks that enable domains, but never define them.”
+
 ## Testing & Quality Requirements
 - Every aggregate, entity, value object: unit tests + scenario ([`.feature`](./packages/sthrift/service-sendgrid/src/features/)) files
 - Use Vitest for tests; avoid broad integration unless required
