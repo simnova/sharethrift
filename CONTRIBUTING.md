@@ -74,6 +74,27 @@ If the task is assigned to the Copilot user, the agent will create a branch and 
 - Adequate test coverage & meaningful assertions
 - No unexplained new dependencies
 
+### Pull Request ↔ Task State Alignment
+To keep work status clearly visible and aligned with the task board, we follow a strict mapping between task state and Pull Request (PR) state:
+
+#### Task → PR State Mapping
+- Task: In Progress
+    - PR must be in Draft
+    - Indicates active development or ongoing changes
+- Task: In Review
+    - PR must be marked Ready for Review
+    - Indicates the work is complete and awaiting reviewer feedback
+
+#### Review Feedback Handling
+- If review feedback is received that requires changes:
+    - Move the task back to In Progress
+    - Convert the PR back to Draft
+- Once updates are complete:
+    - Move the task to In Review
+    - Mark the PR Ready for Review again
+
+This means tasks and PRs may bounce between these states multiple times during development. While this requires some manual coordination, it ensures reviewers and maintainers have an accurate, real-time view of active work.
+
 ## Naming & File Conventions
 - Kebab-case for file & folder names: `listing-reservation.aggregate.ts`
 - Aggregate root file ends with `.aggregate.ts`
