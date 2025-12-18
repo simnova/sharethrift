@@ -16,21 +16,21 @@ import { expect, vi } from 'vitest';
 import { OtelBuilder } from './otel-builder.ts';
 
 
+/**
+ * Type for mock exporter class used in tests.
+ * The actual class is defined inside vi.mock() to avoid hoisting issues.
+ */
+type MockExporter = {
+  __args: Record<string, unknown>;
+};
+
 const test = { for: describeFeature };
 vi.mock('@azure/monitor-opentelemetry-exporter', () => {
-  class TraceExporter {
-    __args: Record<string, unknown>;
-    constructor(args: Record<string, unknown>) {
-      this.__args = args;
-    }
-  }
-  class MetricExporter {
-    __args: Record<string, unknown>;
-    constructor(args: Record<string, unknown>) {
-      this.__args = args;
-    }
-  }
-  class LogExporter {
+  /**
+   * Mock exporter class for testing. Stores constructor args for verification.
+   * Defined inside mock factory to avoid hoisting issues.
+   */
+  class MockExporter {
     __args: Record<string, unknown>;
     constructor(args: Record<string, unknown>) {
       this.__args = args;
@@ -38,11 +38,11 @@ vi.mock('@azure/monitor-opentelemetry-exporter', () => {
   }
 
   // biome-ignore lint/complexity/useArrowFunction: Vitest 4.x requires constructor function pattern
-  const AzureMonitorTraceExporter = vi.fn(function (args: Record<string, unknown>) {return  new TraceExporter(args)});
+  const AzureMonitorTraceExporter = vi.fn(function (args: Record<string, unknown>) {return  new MockExporter(args)});
   // biome-ignore lint/complexity/useArrowFunction: Vitest 4.x requires constructor function pattern
-  const AzureMonitorMetricExporter = vi.fn(function (args: Record<string, unknown>) {return  new MetricExporter(args)});
+  const AzureMonitorMetricExporter = vi.fn(function (args: Record<string, unknown>) {return  new MockExporter(args)});
   // biome-ignore lint/complexity/useArrowFunction: Vitest 4.x requires constructor function pattern
-  const AzureMonitorLogExporter = vi.fn(function (args: Record<string, unknown>) {return  new LogExporter(args)});
+  const AzureMonitorLogExporter = vi.fn(function (args: Record<string, unknown>) {return  new MockExporter(args)});
 
   return {
     AzureMonitorTraceExporter,
@@ -52,9 +52,7 @@ vi.mock('@azure/monitor-opentelemetry-exporter', () => {
       traceExporterMock: AzureMonitorTraceExporter,
       metricExporterMock: AzureMonitorMetricExporter,
       logExporterMock: AzureMonitorLogExporter,
-      TraceExporter,
-      MetricExporter,
-      LogExporter,
+      MockExporter,
     },
   };
 });
@@ -72,9 +70,7 @@ test.for(feature, ({ Scenario, BeforeEachScenario, AfterEachScenario }) => {
   let traceExporterMock: ReturnType<typeof vi.fn>;
   let metricExporterMock: ReturnType<typeof vi.fn>;
   let logExporterMock: ReturnType<typeof vi.fn>;
-  let TraceExporter: new (...args: unknown[]) => unknown;
-  let MetricExporter: new (...args: unknown[]) => unknown;
-  let LogExporter: new (...args: unknown[]) => unknown;
+  let MockExporterClass: new (args: Record<string, unknown>) => MockExporter;
 
   BeforeEachScenario(async () => {
     builder = new OtelBuilder();
@@ -84,9 +80,7 @@ test.for(feature, ({ Scenario, BeforeEachScenario, AfterEachScenario }) => {
     traceExporterMock = azureModule.__test.traceExporterMock;
     metricExporterMock = azureModule.__test.metricExporterMock;
     logExporterMock = azureModule.__test.logExporterMock;
-    TraceExporter = azureModule.__test.TraceExporter;
-    MetricExporter = azureModule.__test.MetricExporter;
-    LogExporter = azureModule.__test.LogExporter;
+    MockExporterClass = azureModule.__test.MockExporter;
     traceExporterMock.mockClear();
     metricExporterMock.mockClear();
     logExporterMock.mockClear();
@@ -123,18 +117,15 @@ test.for(feature, ({ Scenario, BeforeEachScenario, AfterEachScenario }) => {
       exporters = builder.buildExporters(false);
     });
     Then('it should return AzureMonitorTraceExporter, AzureMonitorMetricExporter, and AzureMonitorLogExporter with the correct connection string', () => {
-      expect(exporters.traceExporter).toBeInstanceOf(TraceExporter);
-      expect(exporters.metricExporter).toBeInstanceOf(MetricExporter);
-      expect(exporters.logExporter).toBeInstanceOf(LogExporter);
+      expect(exporters.traceExporter).toBeInstanceOf(MockExporterClass);
+      expect(exporters.metricExporter).toBeInstanceOf(MockExporterClass);
+      expect(exporters.logExporter).toBeInstanceOf(MockExporterClass);
       expect(traceExporterMock).toHaveBeenCalledWith({ connectionString: connStr });
       expect(metricExporterMock).toHaveBeenCalledWith({ connectionString: connStr });
       expect(logExporterMock).toHaveBeenCalledWith({ connectionString: connStr });
-      // biome-ignore lint/suspicious/noExplicitAny: Required for accessing mock internal property
-      expect((exporters.traceExporter as any).__args.connectionString).toBe(connStr);
-      // biome-ignore lint/suspicious/noExplicitAny: Required for accessing mock internal property
-      expect((exporters.metricExporter as any).__args.connectionString).toBe(connStr);
-      // biome-ignore lint/suspicious/noExplicitAny: Required for accessing mock internal property
-      expect((exporters.logExporter as any).__args.connectionString).toBe(connStr);
+      expect((exporters.traceExporter as unknown as MockExporter).__args['connectionString']).toBe(connStr);
+      expect((exporters.metricExporter as unknown as MockExporter).__args['connectionString']).toBe(connStr);
+      expect((exporters.logExporter as unknown as MockExporter).__args['connectionString']).toBe(connStr);
     });
   });
 
