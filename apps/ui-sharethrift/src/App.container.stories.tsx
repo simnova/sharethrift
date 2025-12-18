@@ -45,7 +45,7 @@ const mockAuthenticatedNotCompletedOnboarding = {
 	},
 	result: {
 		data: {
-			currentUser: {
+			currentUserAndCreateIfNotExists: {
 				__typename: 'PersonalUser' as const,
 				id: 'user-456',
 				userType: 'personal-user',

@@ -75,10 +75,9 @@ function makeAccountPlanDoc(
 }
 
 function createChainableQuery<T>(result: T) {
-	const query = {
-		exec: vi.fn().mockResolvedValue(result),
-	};
-	return query;
+	return {
+ 		exec: vi.fn().mockResolvedValue(result),
+ 	};
 }
 
 function setupAccountPlanRepo(
@@ -278,9 +277,10 @@ test.for(feature, ({ Scenario, Background, BeforeEachScenario }) => {
 				};
 
 				repository = setupAccountPlanRepo(mockDoc, {
-					modelCtor: vi.fn(
-						() => mockNewDoc,
-					) as unknown as Models.AccountPlan.AccountPlanModelType,
+						// Use a real constructor function for the model mock
+						// Use a proper constructor function for Vitest 4.x compatibility
+						// biome-ignore lint/complexity/useArrowFunction: Constructor function must be a regular function
+						modelCtor: vi.fn(function() { return mockNewDoc; }) as unknown as Models.AccountPlan.AccountPlanModelType,
 				});
 
 				result = await repository.getNewInstance(planInfo);

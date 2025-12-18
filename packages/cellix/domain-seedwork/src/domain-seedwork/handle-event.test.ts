@@ -15,7 +15,7 @@ const feature = await loadFeature(
 class TestEvent extends DomainEventBase {}
 
 test.for(feature, ({ Scenario }) => {
-  let handlerFn: ReturnType<typeof vi.fn>;
+  let handlerFn: (event: TestEvent) => void;
   let handler: HandleEventImpl<TestEvent>;
   let event: TestEvent;
 
@@ -40,7 +40,7 @@ test.for(feature, ({ Scenario }) => {
       event = new TestEvent('agg-2');
     });
     When('I register the function using the static register method', () => {
-      handler = HandleEventImpl.register<TestEvent>(handlerFn) as HandleEventImpl<TestEvent>;
+      handler = HandleEventImpl.register<TestEvent>(handlerFn as (event: TestEvent) => void) as HandleEventImpl<TestEvent>;
     });
     Then('I should get a handler that calls the function when handling an event', () => {
       handler.handle(event);
@@ -59,8 +59,8 @@ test.for(feature, ({ Scenario }) => {
     Given('multiple handlers for a domain event', () => {
       handlerFn1 = vi.fn();
       handlerFn2 = vi.fn();
-      handler1 = new HandleEventImpl<TestEvent>(handlerFn1);
-      handler2 = new HandleEventImpl<TestEvent>(handlerFn2);
+      handler1 = new HandleEventImpl<TestEvent>(handlerFn1 as (event: TestEvent) => void);
+      handler2 = new HandleEventImpl<TestEvent>(handlerFn2 as (event: TestEvent) => void);
       event = new TestEvent('agg-3');
     });
     When('I register them all using registerAll', () => {

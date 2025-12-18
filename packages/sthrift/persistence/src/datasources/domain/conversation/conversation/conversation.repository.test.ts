@@ -352,8 +352,10 @@ test.for(feature, ({ Scenario, Background, BeforeEachScenario }) => {
 					});
 					
 					// Setup repository with constructor mock
-					repository = setupConversationRepo(mockDoc, {
-						modelCtor: vi.fn(() => mockNewDoc) as unknown as Models.Conversation.ConversationModelType
+						repository = setupConversationRepo(mockDoc, {
+							// Use a proper constructor function for Vitest 4.x compatibility
+							// biome-ignore lint/complexity/useArrowFunction: Constructor function must be a regular function
+							modelCtor: vi.fn(function() { return mockNewDoc; }) as unknown as Models.Conversation.ConversationModelType
 					});
 					
 					result = await repository.getNewInstance(sharer, reserver, listing);
