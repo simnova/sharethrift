@@ -10,7 +10,7 @@ Feature: Listing value objects
     Then an error should be thrown indicating the value is invalid
 
   Scenario: Checking if a ListingState is active
-    Given a ListingState with value "Published"
+    Given a ListingState with value "Active"
     When I check isActive
     Then the result should be true
 
