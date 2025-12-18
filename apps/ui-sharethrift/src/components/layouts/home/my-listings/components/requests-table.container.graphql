@@ -1,25 +1,8 @@
 query HomeRequestsTableContainerMyListingsRequests(
-	$page: Int!
-	$pageSize: Int!
-	$searchText: String!
-	$statusFilters: [String!]!
-	$sorter: SorterInput!
 	$sharerId: ObjectID!
 ) {
-	myListingsRequests(
-		page: $page
-		pageSize: $pageSize
-		searchText: $searchText
-		statusFilters: $statusFilters
-		sorter: $sorter
-		sharerId: $sharerId
-	) {
-		items {
-			...HomeRequestsTableContainerRequestFields
-		}
-		total
-		page
-		pageSize
+	myListingsRequests(sharerId: $sharerId) {
+		...HomeRequestsTableContainerRequestFields
 	}
 }
 
@@ -36,12 +19,26 @@ mutation HomeRequestsTableContainerAcceptReservationRequest(
 	}
 }
 
-fragment HomeRequestsTableContainerRequestFields on ListingRequest {
+fragment HomeRequestsTableContainerRequestFields on ReservationRequest {
 	id
-	title
-	image
-	requestedBy
-	requestedOn
-	reservationPeriod
-	status
+	state
+	reservationPeriodStart
+	reservationPeriodEnd
+	createdAt
+	listing {
+		id
+		title
+		images
+	}
+	reserver {
+		... on PersonalUser {
+			id
+			account {
+				profile {
+					firstName
+					lastName
+				}
+			}
+		}
+	}
 }

@@ -32,14 +32,6 @@ export const RequestsTableContainer: React.FC<RequestsTableContainerProps> = ({
 		HomeRequestsTableContainerMyListingsRequestsDocument,
 		{
 			variables: {
-				page: currentPage,
-				pageSize: pageSize,
-				searchText: searchText,
-				statusFilters: statusFilters,
-				sorter: {
-					field: sorter.field || '',
-					order: sorter.order || '',
-				},
 				sharerId: sharerId,
 			},
 			fetchPolicy: 'network-only',
@@ -59,20 +51,74 @@ export const RequestsTableContainer: React.FC<RequestsTableContainerProps> = ({
 		},
 	);
 
-	const requests = data?.myListingsRequests?.items ?? [];
+	const allRequests = data?.myListingsRequests ?? [];
 
-	const total = data?.myListingsRequests?.total ?? 0;
+	// Client-side filtering and sorting
+	let filteredRequests = allRequests;
+
+	// Apply search filter
+	if (searchText) {
+		const lowerSearch = searchText.toLowerCase();
+		filteredRequests = filteredRequests.filter(
+			(req) => {
+				const title = req.listing?.title?.toLowerCase() ?? '';
+				const reserver = req.reserver?.__typename === 'PersonalUser' ? req.reserver : null;
+				const firstName = reserver?.account?.profile?.firstName?.toLowerCase() ?? '';
+				const lastName = reserver?.account?.profile?.lastName?.toLowerCase() ?? '';
+				return title.includes(lowerSearch) || firstName.includes(lowerSearch) || lastName.includes(lowerSearch);
+			}
+		);
+	}
+
+	// Apply status filter
+	if (statusFilters.length > 0) {
+		filteredRequests = filteredRequests.filter((req) =>
+			statusFilters.includes(req.state ?? ''),
+		);
+	}
+
+	// Apply sorting
+	if (sorter.field && sorter.order) {
+		filteredRequests = [...filteredRequests].sort((a, b) => {
+			const aVal = a[sorter.field as keyof typeof a];
+			const bVal = b[sorter.field as keyof typeof b];
+			const comparison =
+				typeof aVal === 'string' && typeof bVal === 'string'
+					? aVal.localeCompare(bVal)
+					: 0;
+			return sorter.order === 'ascend' ? comparison : -comparison;
+		});
+	}
+
+	const total = filteredRequests.length;
+
+	// Apply pagination
+	const startIndex = (currentPage - 1) * pageSize;
+	const requests = filteredRequests.slice(startIndex, startIndex + pageSize);
 
 	// Transform domain fields to UI format
-	const transformedRequests = requests.map((request) => ({
-		id: request.id,
-		title: request.title,
-		image: request.image ?? null,
-		requestedBy: request.requestedBy ?? 'Unknown',
-		requestedOn: request.requestedOn ?? null,
-		reservationPeriod: request.reservationPeriod ?? '',
-		status: request.status ?? 'Unknown',
-	}));
+	const transformedRequests = requests.map((request) => {
+		const reserver = request.reserver?.__typename === 'PersonalUser' ? request.reserver : null;
+		const firstName = reserver?.account?.profile?.firstName ?? '';
+		const lastName = reserver?.account?.profile?.lastName ?? '';
+		const requestedBy = firstName || lastName ? `${firstName} ${lastName}`.trim() : 'Unknown';
+		
+		const start = request.reservationPeriodStart ? new Date(request.reservationPeriodStart) : null;
+		const end = request.reservationPeriodEnd ? new Date(request.reservationPeriodEnd) : null;
+		const reservationPeriod = start && end 
+			? `${start.toLocaleDateString()} - ${end.toLocaleDateString()}`
+			: '';
+		
+		return {
+			id: request.id,
+			title: request.listing?.title ?? 'Unknown',
+			image: request.listing?.images?.[0] ?? null,
+			requestedBy,
+			requestedOn: request.createdAt ?? null,
+			reservationPeriod,
+			status: request.state ?? 'Unknown',
+		};
+	});
 
 	const handleSearch = (value: string) => {
 		setSearchText(value);
@@ -104,7 +150,7 @@ export const RequestsTableContainer: React.FC<RequestsTableContainerProps> = ({
 		<ComponentQueryLoader
 			loading={loading}
 			error={error}
-			hasData={data?.myListingsRequests ?? null}
+			hasData={allRequests.length > 0 ? allRequests : null}
 			hasDataComponent={
 				<RequestsTable
 					data={transformedRequests}

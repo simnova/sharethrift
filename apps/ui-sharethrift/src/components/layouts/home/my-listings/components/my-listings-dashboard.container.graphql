@@ -1,14 +1,7 @@
 query HomeMyListingsDashboardContainerMyListingsRequestsCount(
 	$sharerId: ObjectID!
 ) {
-	myListingsRequests(
-		page: 1
-		pageSize: 1
-		searchText: ""
-		sorter: { field: "", order: "" }
-		sharerId: $sharerId
-		statusFilters: []
-	) {
-		total
+	myListingsRequests(sharerId: $sharerId) {
+		id
 	}
 }

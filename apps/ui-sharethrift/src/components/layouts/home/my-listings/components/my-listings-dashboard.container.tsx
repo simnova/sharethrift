@@ -57,7 +57,7 @@ export const MyListingsDashboardContainer: React.FC = () => {
       hasDataComponent={
         <MyListingsDashboard
           onCreateListing={handleCreateListing}
-          requestsCount={requestsCountData?.myListingsRequests?.total ?? 0}
+          requestsCount={requestsCountData?.myListingsRequests?.length ?? 0}
           sharerId={sharerId}
         />
       }
