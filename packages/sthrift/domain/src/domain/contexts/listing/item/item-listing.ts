@@ -1,4 +1,4 @@
-import { randomUUID } from 'node:crypto';
+import { v4 as uuidv4 } from 'uuid';
 import { DomainSeedwork } from '@cellix/domain-seedwork';
 import type { Passport } from '../../passport.ts';
 import type { ListingVisa } from '../listing.visa.ts';
@@ -44,7 +44,7 @@ export class ItemListing<props extends ItemListingProps>
 		},
 		passport: Passport,
 	): ItemListing<props> {
-		const id = randomUUID();
+		const id = uuidv4();
 		const now = new Date();
 		const isDraft = fields.isDraft ?? false;
 
