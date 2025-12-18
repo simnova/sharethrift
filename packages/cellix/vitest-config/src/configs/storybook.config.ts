@@ -20,6 +20,7 @@ export function createStorybookVitestConfig(
 	const setupFiles = opts.setupFiles ?? ['.storybook/vitest.setup.ts'];
 	const instances = opts.browsers ?? [{ browser: 'chromium' }];
 
+  // https://learn.microsoft.com/en-us/azure/devops/pipelines/build/variables?view=azure-devops&tabs=yaml
 	const isCI = process.env['TF_BUILD'] === 'True';
 
 	const storybookConfig = defineConfig({
