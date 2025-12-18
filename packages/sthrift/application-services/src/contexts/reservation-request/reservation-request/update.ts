@@ -28,12 +28,6 @@ export const update = (dataSources: DataSources) => {
 					throw new Error('Reservation request not found');
 				}
 
-				// Track if we're accepting to handle auto-reject
-				const isAccepting = command.state === ACCEPTED_STATE;
-				const listingId = isAccepting
-					? (await reservationRequest.loadListing()).id
-					: null;
-
 				// Update state if provided
 				// Domain layer validates state transitions and permissions via visa pattern
 				// The state setter routes to appropriate domain methods (accept(), reject(), etc.)
@@ -54,7 +48,12 @@ export const update = (dataSources: DataSources) => {
 				updatedReservationRequest = await repo.save(reservationRequest);
 
 				// Auto-reject overlapping pending requests when accepting
-				if (updatedReservationRequest && isAccepting && listingId) {
+				// Check the actual state of the updated request after transition
+				if (
+					updatedReservationRequest &&
+					updatedReservationRequest.state === ACCEPTED_STATE
+				) {
+					const listingId = (await updatedReservationRequest.loadListing()).id;
 					await autoRejectOverlappingRequests(
 						updatedReservationRequest,
 						listingId,
