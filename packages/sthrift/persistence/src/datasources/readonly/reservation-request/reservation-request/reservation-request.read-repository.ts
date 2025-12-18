@@ -1,7 +1,7 @@
 import { MongooseSeedwork } from '@cellix/mongoose-seedwork';
 import type { Models } from '@sthrift/data-sources-mongoose-models';
 import type { Domain } from '@sthrift/domain';
-import type { FilterQuery, PipelineStage } from 'mongoose';
+import type { FilterQuery } from 'mongoose';
 import type { ModelsContext } from '../../../../models-context.ts';
 import { ReservationRequestConverter } from '../../../domain/reservation-request/reservation-request/reservation-request.domain-adapter.ts';
 import type {
@@ -198,110 +198,28 @@ export class ReservationRequestReadRepositoryImpl
 	): Promise<
 		Domain.Contexts.ReservationRequest.ReservationRequest.ReservationRequestEntityReference[]
 	> {
-		// Strongly typed aggregation result with joined documents
-		// Define explicitly to avoid TS4111 errors from index signatures
-		type AggregateResult = Models.ReservationRequest.ReservationRequest & {
-			listingDoc: unknown;
-			reserverDoc: unknown;
+		// First, find all listings owned by this sharer
+		const listingIds = await this.models.Listing.ItemListingModel.find({
+			sharer: new MongooseSeedwork.ObjectId(sharerId),
+		})
+			.select('_id')
+			.lean()
+			.exec();
+
+		// If no listings found, return empty array
+		if (listingIds.length === 0) {
+			return [];
+		}
+
+		// Query reservation requests for those listings
+		const filter: FilterQuery<Models.ReservationRequest.ReservationRequest> = {
+			listing: { $in: listingIds.map((l) => l._id) },
 		};
 
-		// Use aggregation pipeline to join listings and filter by sharerId
-		const pipeline: PipelineStage[] = [
-			{
-				$lookup: {
-					from: this.models.Listing.ItemListingModel.collection.name,
-					localField: 'listing',
-					foreignField: '_id',
-					as: 'listingDoc',
-				},
-			},
-			{ $unwind: '$listingDoc' },
-			{
-				$match: {
-					'listingDoc.sharer': new MongooseSeedwork.ObjectId(sharerId),
-				},
-			},
-			{
-				$lookup: {
-					from: 'users',
-					localField: 'reserver',
-					foreignField: '_id',
-					as: 'reserverDoc',
-				},
-			},
-			{ $unwind: '$reserverDoc' },
-		];
-
-		// Apply additional options if provided (e.g., limit, sort)
-		if (options?.limit) {
-			pipeline.push({ $limit: options.limit } as PipelineStage);
-		}
-		if (options?.sort) {
-			pipeline.push({ $sort: options.sort } as PipelineStage);
-		}
-		const docs =
-			await this.models.ReservationRequest.ReservationRequest.aggregate<AggregateResult>(
-				pipeline,
-			).exec();
-
-		return this.mapAggregateResultsToDomain(docs);
-	}
-
-	/**
-	 * Private helper to map aggregation results to domain entities
-	 * Handles document reshaping, hydration, and domain conversion
-	 */
-	private mapAggregateResultsToDomain(
-		docs: Array<
-			Models.ReservationRequest.ReservationRequest & {
-				listingDoc: unknown;
-				reserverDoc: unknown;
-			}
-		>,
-	): Domain.Contexts.ReservationRequest.ReservationRequest.ReservationRequestEntityReference[] {
-		const hydrate =
-			typeof this.models.ReservationRequest.ReservationRequest.hydrate ===
-			'function'
-				? this.models.ReservationRequest.ReservationRequest.hydrate.bind(
-						this.models.ReservationRequest.ReservationRequest,
-					)
-				: undefined;
-
-		// Map aggregation results back to proper document structure
-		// Process each strongly-typed doc to reshape joined fields
-		const docsWithRelations = docs.map((doc) => {
-			// Extract the joined documents from strongly-typed source
-			const listingDoc = doc.listingDoc;
-			const reserverDoc = doc.reserverDoc;
-			
-			// Create a plain object with all ReservationRequest fields
-			// Use Object.assign to preserve all properties without destructuring
-			const baseDoc = {
-				_id: doc._id,
-				state: doc.state,
-				reservationPeriodStart: doc.reservationPeriodStart,
-				reservationPeriodEnd: doc.reservationPeriodEnd,
-				schemaVersion: doc.schemaVersion,
-				closeRequestedBySharer: doc.closeRequestedBySharer,
-				closeRequestedByReserver: doc.closeRequestedByReserver,
-				createdAt: doc.createdAt,
-				updatedAt: doc.updatedAt,
-				// Replace listing and reserver with joined documents if available
-				listing: listingDoc ?? doc.listing,
-				reserver: reserverDoc ?? doc.reserver,
-			};
-			
-			return baseDoc;
+		return await this.queryMany(filter, {
+			...options,
+			populateFields: PopulatedFields,
 		});
-
-		// Hydrate documents and convert to domain
-		const hydratedDocs = hydrate
-			? docsWithRelations.map((doc) => hydrate(doc))
-			: (docsWithRelations as Models.ReservationRequest.ReservationRequest[]);
-
-		return hydratedDocs.map((doc) =>
-			this.converter.toDomain(doc, this.passport),
-		);
 	}
 
 	async getActiveByReserverIdAndListingId(

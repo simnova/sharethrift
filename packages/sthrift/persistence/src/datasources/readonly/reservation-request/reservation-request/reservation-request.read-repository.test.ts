@@ -136,6 +136,7 @@ test.for(feature, ({ Scenario, Background, BeforeEachScenario }) => {
 				populate: vi.fn(),
 				sort: vi.fn(),
 				limit: vi.fn(),
+				select: vi.fn(),
 				exec: vi.fn().mockResolvedValue(result),
 				catch: vi.fn((onReject) => Promise.resolve(result).catch(onReject)),
 			};
@@ -144,6 +145,7 @@ test.for(feature, ({ Scenario, Background, BeforeEachScenario }) => {
 			mockQuery.populate.mockReturnValue(mockQuery);
 			mockQuery.sort.mockReturnValue(mockQuery);
 			mockQuery.limit.mockReturnValue(mockQuery);
+			mockQuery.select.mockReturnValue(mockQuery);
 			
 			// Make the query thenable (like Mongoose queries are) by adding then as property
 			Object.defineProperty(mockQuery, 'then', {
@@ -166,6 +168,7 @@ test.for(feature, ({ Scenario, Background, BeforeEachScenario }) => {
 			collection: {
 				name: 'item-listings',
 			},
+			find: vi.fn(() => createMockQuery([{ _id: 'listing-1' }, { _id: 'listing-2' }])),
 		} as unknown as Models.Listing.ItemListingModelType;
 
 		const modelsContext = {
