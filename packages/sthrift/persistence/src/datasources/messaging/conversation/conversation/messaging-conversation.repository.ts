@@ -43,8 +43,9 @@ export class MessagingConversationRepositoryImpl implements MessagingConversatio
 					: new Domain.Contexts.Conversation.Conversation.AuthorId(Domain.Contexts.Conversation.Conversation.ANONYMOUS_AUTHOR_ID);
 				return toDomainMessage(msg, authorId);
 			});
-		} catch (error) {
-			console.error(`Error fetching messages for conversation ${conversationId}:`, error);
+		} catch (error: unknown) {
+			const errorMessage = error instanceof Error ? error.message : 'Unknown error';
+			console.error(`Error fetching messages for conversation ${conversationId}:`, { errorMessage });
 			return [];
 		}
 	}
@@ -55,7 +56,7 @@ export class MessagingConversationRepositoryImpl implements MessagingConversatio
 		authorId: string,
 	): Promise<Domain.Contexts.Conversation.Conversation.MessageEntityReference> {
 		const visa = this.passport.conversation.forConversation(conversation);
-		if (!visa.determineIf((permissions: Domain.Contexts.Conversation.ConversationDomainPermissions) => permissions.canSendMessage)) {
+		if (!visa.determineIf((permissions: Domain.Contexts.Conversation.ConversationDomainPermissions) => permissions.canManageConversation)) {
 			throw new DomainSeedwork.PermissionError('Not authorized to send message in this conversation');
 		}
 
@@ -68,7 +69,7 @@ export class MessagingConversationRepositoryImpl implements MessagingConversatio
 
 			const author = new Domain.Contexts.Conversation.Conversation.AuthorId(authorId);
 			return toDomainMessage(message, author);
-		} catch (error) {
+		} catch (error: unknown) {
 			// Scoped, contextual logging around external messaging service call
 			// Normalize error to avoid logging sensitive information from messaging service
 			const errorMessage = error instanceof Error ? error.message : 'Unknown error';
@@ -84,8 +85,9 @@ export class MessagingConversationRepositoryImpl implements MessagingConversatio
 	async deleteConversation(conversationId: string): Promise<void> {
 		try {
 			await this.messagingService.deleteConversation(conversationId);
-		} catch (error) {
-			console.error('Error deleting conversation from messaging service:', error);
+		} catch (error: unknown) {
+			const errorMessage = error instanceof Error ? error.message : 'Unknown error';
+			console.error('Error deleting conversation from messaging service:', { conversationId, errorMessage });
 			throw error;
 		}
 	}
@@ -106,8 +108,9 @@ export class MessagingConversationRepositoryImpl implements MessagingConversatio
 				result.displayName = conversation.displayName;
 			}
 			return result;
-		} catch (error) {
-			console.error('Error creating conversation in messaging service:', error);
+		} catch (error: unknown) {
+			const errorMessage = error instanceof Error ? error.message : 'Unknown error';
+			console.error('Error creating conversation in messaging service:', { displayName, uniqueIdentifier, errorMessage });
 			throw error;
 		}
 	}
