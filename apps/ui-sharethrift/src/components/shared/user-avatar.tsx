@@ -68,7 +68,7 @@ export const UserAvatar: React.FC<UserAvatarProps> = ({
 			}}
 			icon={<ShareThriftLogo size={24} />}
 		>
-			{userName.charAt(0).toUpperCase()}
+			{userName?.trim() ? userName.charAt(0).toUpperCase() : '?'}
 		</AntAvatar>
 	);
 
