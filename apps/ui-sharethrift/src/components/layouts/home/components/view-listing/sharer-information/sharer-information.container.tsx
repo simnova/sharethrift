@@ -10,11 +10,12 @@ interface SharerInformationContainerProps {
 	className?: string;
 	showIconOnly?: boolean;
 	currentUserId?: string | null;
+	blockListingElement?: React.ReactNode;
 }
 
 export const SharerInformationContainer: React.FC<
 	SharerInformationContainerProps
-> = ({ sharerId, listingId, isOwner, sharedTimeAgo, className, currentUserId }) => {
+> = ({ sharerId, listingId, isOwner, sharedTimeAgo, className, currentUserId, blockListingElement }) => {
 	const { data, loading, error } = useQuery(
 		SharerInformationContainerDocument,
 		{
@@ -41,6 +42,7 @@ export const SharerInformationContainer: React.FC<
 				sharedTimeAgo={sharedTimeAgo}
 				className={className}
 				currentUserId={currentUserId}
+				blockListingElement={blockListingElement}
 			/>
 		);
 	}
@@ -66,6 +68,7 @@ export const SharerInformationContainer: React.FC<
 			sharedTimeAgo={sharedTimeAgo}
 			className={className}
 			currentUserId={currentUserId}
+			blockListingElement={blockListingElement}
 		/>
 	);
 };

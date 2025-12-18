@@ -170,6 +170,21 @@ export const MessageButtonWithError: Story = {
 	},
 };
 
+export const WithBlockListingElement: Story = {
+	args: {
+		blockListingElement: (
+			<div style={{ display: 'flex', gap: 8 }}>
+				<button style={{ padding: '8px 16px', borderRadius: '4px', border: '1px solid #d9d9d9' }}>
+					Block Listing
+				</button>
+			</div>
+		),
+	},
+	play: async ({ canvasElement }) => {
+		await expect(canvasElement).toBeTruthy();
+	},
+};
+
 export const MobileView: Story = {
 	parameters: {
 		viewport: {

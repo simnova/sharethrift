@@ -4,7 +4,7 @@ import type {
 	ItemListing,
 	ViewListingActiveReservationRequestForListingQuery,
 } from '../../../../../generated.tsx';
-import { BlockListingContainer } from './block-listing.container.tsx';
+import { BlockListingButton } from './block-listing.container.tsx';
 import { ListingImageGalleryContainer } from './listing-image-gallery/listing-image-gallery.container.tsx';
 import { ListingInformationContainer } from './listing-information/listing-information.container.tsx';
 import { SharerInformationContainer } from './sharer-information/sharer-information.container.tsx';
@@ -118,16 +118,6 @@ export const ViewListing: React.FC<ViewListingProps> = ({
 						/>
 					</Col>
 				)}
-				{isAdmin && (
-					<Col span={24}>
-						<BlockListingContainer
-							listingId={listing.id}
-							listingTitle={listing.title}
-							isBlocked={isBlocked}
-							sharerId={sharer?.id}
-						/>
-					</Col>
-				)}
 				<Col span={24} style={{ marginBottom: 0, paddingBottom: 0 }}>
 					{/* Sharer Info at top, clickable to profile */}
 					<SharerInformationContainer
@@ -137,6 +127,17 @@ export const ViewListing: React.FC<ViewListingProps> = ({
 						className="sharer-info-responsive"
 						sharedTimeAgo={sharedTimeAgo}
 						currentUserId={currentUserId}
+						blockListingElement={
+							isAdmin ? (
+								<BlockListingButton
+									listingId={listing.id}
+									listingTitle={listing.title}
+									isBlocked={isBlocked}
+									sharerId={sharer?.id}
+									renderModals={true}
+								/>
+							) : undefined
+						}
 					/>
 				</Col>
 				<Col span={24} style={{ marginTop: 0, paddingTop: 0 }}>

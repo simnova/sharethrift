@@ -17,11 +17,20 @@ interface BlockListingContainerProps {
 	sharerId?: string;
 }
 
-export const BlockListingContainer: React.FC<BlockListingContainerProps> = ({
+interface BlockListingButtonProps {
+	listingId: string;
+	listingTitle: string;
+	isBlocked: boolean;
+	sharerId?: string;
+	renderModals?: boolean;
+}
+
+export const BlockListingButton: React.FC<BlockListingButtonProps> = ({
 	listingId,
 	listingTitle,
 	isBlocked,
 	sharerId = 'Unknown',
+	renderModals = true,
 }) => {
 	const [blockModalVisible, setBlockModalVisible] = useState(false);
 	const [unblockModalVisible, setUnblockModalVisible] = useState(false);
@@ -74,41 +83,63 @@ export const BlockListingContainer: React.FC<BlockListingContainerProps> = ({
 
 	return (
 		<>
-			<div style={{ display: 'flex', gap: 8, justifyContent: 'flex-end' }}>
-				{isBlocked ? (
-					<Button
-						type="primary"
-						onClick={() => setUnblockModalVisible(true)}
-						loading={unblockLoading}
-					>
-						Unblock Listing
-					</Button>
-				) : (
-					<Button
-                        className="secondaryButton"
-						type="default"
-						onClick={() => setBlockModalVisible(true)}
+			{isBlocked ? (
+				<Button
+                    className="secondaryButton"
+					type="default"
+					onClick={() => setUnblockModalVisible(true)}
+					loading={unblockLoading}
+				>
+					Unblock Listing
+				</Button>
+			) : (
+				<Button
+					type="primary"
+                    danger
+					onClick={() => setBlockModalVisible(true)}
+					loading={blockLoading}
+				>
+					Block Listing
+				</Button>
+			)}
+			{renderModals && (
+				<>
+					<BlockListingModal
+						visible={blockModalVisible}
+						listingTitle={listingTitle}
+						onConfirm={handleBlockConfirm}
+						onCancel={() => setBlockModalVisible(false)}
 						loading={blockLoading}
-					>
-						Block Listing
-					</Button>
-				)}
-			</div>
-			<BlockListingModal
-				visible={blockModalVisible}
-				listingTitle={listingTitle}
-				onConfirm={handleBlockConfirm}
-				onCancel={() => setBlockModalVisible(false)}
-				loading={blockLoading}
-			/>
-			<UnblockListingModal
-				visible={unblockModalVisible}
-				listingTitle={listingTitle}
-				listingSharer={sharerId}
-				onConfirm={handleUnblockConfirm}
-				onCancel={() => setUnblockModalVisible(false)}
-				loading={unblockLoading}
-			/>
+					/>
+					<UnblockListingModal
+						visible={unblockModalVisible}
+						listingTitle={listingTitle}
+						listingSharer={sharerId}
+						onConfirm={handleUnblockConfirm}
+						onCancel={() => setUnblockModalVisible(false)}
+						loading={unblockLoading}
+					/>
+				</>
+			)}
 		</>
+	);
+};
+
+export const BlockListingContainer: React.FC<BlockListingContainerProps> = ({
+	listingId,
+	listingTitle,
+	isBlocked,
+	sharerId = 'Unknown',
+}) => {
+	return (
+		<div style={{ display: 'flex', gap: 8, justifyContent: 'flex-end' }}>
+			<BlockListingButton
+				listingId={listingId}
+				listingTitle={listingTitle}
+				isBlocked={isBlocked}
+				sharerId={sharerId}
+				renderModals={true}
+			/>
+		</div>
 	);
 };

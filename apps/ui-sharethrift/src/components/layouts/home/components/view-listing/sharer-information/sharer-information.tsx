@@ -22,6 +22,7 @@ interface SharerInformationProps {
 	sharedTimeAgo?: string;
 	className?: string;
 	currentUserId?: string | null;
+	blockListingElement?: React.ReactNode;
 }
 
 export const SharerInformation: React.FC<SharerInformationProps> = ({
@@ -31,6 +32,7 @@ export const SharerInformation: React.FC<SharerInformationProps> = ({
 	sharedTimeAgo = '2 days ago',
 	className = '',
 	currentUserId,
+	blockListingElement,
 }) => {
 	const [isMobile, setIsMobile] = useState(false);
 	const navigate = useNavigate();
@@ -152,6 +154,9 @@ export const SharerInformation: React.FC<SharerInformationProps> = ({
 						{!isMobile && 'Message Sharer'}
 					</Button>
 				)}
+			</Col>
+			<Col>
+				{blockListingElement}
 			</Col>
 		</Row>
 	);
