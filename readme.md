@@ -84,7 +84,7 @@ ShareThrift is implemented using Domain-Driven Design (DDD), event-driven behavi
 
 ShareThrift applies layered Domain-Driven Design:
 
-- Domain Layer: aggregates, entities, value objects, domain events
+- Domain Layer: aggregates, entities, value objects, domain events (see [Domain & DDD Concepts](https://developers.sharethrift.com/docs/technical-overview/translate-your-site))
 - Application Layer: orchestration / services (future explicit service modules)
 - Infrastructure Layer: persistence (Mongoose), telemetry, messaging adapters
 - Interface Layer: Azure Functions entrypoints (GraphQL + planned REST)
