@@ -19,7 +19,35 @@ Feature: Listing value objects
     When I check isActive
     Then the result should be false
 
- 
+  Scenario: Using ListingState.Active static instance
+    When I use ListingState.Active
+    Then the value should be "Active"
+    And isActive should be true
+
+  Scenario: Using ListingState.Draft static instance
+    When I use ListingState.Draft
+    Then the value should be "Draft"
+    And isActive should be false
+
+  Scenario: Using ListingState.Paused static instance
+    When I use ListingState.Paused
+    Then the value should be "Paused"
+    And isActive should be false
+
+  Scenario: Using ListingState.Cancelled static instance
+    When I use ListingState.Cancelled
+    Then the value should be "Cancelled"
+    And isActive should be false
+
+  Scenario: Using ListingState.Expired static instance
+    When I use ListingState.Expired
+    Then the value should be "Expired"
+    And isActive should be false
+
+  Scenario: Using ListingState.Blocked static instance
+    When I use ListingState.Blocked
+    Then the value should be "Blocked"
+    And isActive should be false
 
   Scenario: Creating a ListingState with too long a string
     When I try to create a ListingState with a string longer than 50 characters
@@ -30,6 +58,45 @@ Feature: Listing value objects
     When I create a Category with "Electronics"
     Then the value should be "Electronics"
 
+  Scenario: Using Category.Electronics static instance
+    When I use Category.Electronics
+    Then the value should be "Electronics"
+
+  Scenario: Using Category.ToolsEquipment static instance
+    When I use Category.ToolsEquipment
+    Then the value should be "Tools & Equipment"
+
+  Scenario: Using Category.SportsOutdoors static instance
+    When I use Category.SportsOutdoors
+    Then the value should be "Sports & Outdoors"
+
+  Scenario: Using Category.HomeGarden static instance
+    When I use Category.HomeGarden
+    Then the value should be "Home & Garden"
+
+  Scenario: Using Category.PartyEvents static instance
+    When I use Category.PartyEvents
+    Then the value should be "Party & Events"
+
+  Scenario: Using Category.VehiclesTransportation static instance
+    When I use Category.VehiclesTransportation
+    Then the value should be "Vehicles & Transportation"
+
+  Scenario: Using Category.KidsBaby static instance
+    When I use Category.KidsBaby
+    Then the value should be "Kids & Baby"
+
+  Scenario: Using Category.BooksMedia static instance
+    When I use Category.BooksMedia
+    Then the value should be "Books & Media"
+
+  Scenario: Using Category.ClothingAccessories static instance
+    When I use Category.ClothingAccessories
+    Then the value should be "Clothing & Accessories"
+
+  Scenario: Using Category.Miscellaneous static instance
+    When I use Category.Miscellaneous
+    Then the value should be "Miscellaneous"
 
   Scenario: Creating a Category with too long a value
     When I try to create a Category with a string longer than 100 characters
