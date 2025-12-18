@@ -2,6 +2,7 @@ import type { GraphContext } from '../../../init/context.ts';
 import type { GraphQLResolveInfo } from 'graphql';
 import type { Resolvers } from '../../builder/generated.ts';
 import {
+	getUserByEmail,
 	PopulateItemListingFromField,
 	PopulateUserFromField,
 } from '../../resolver-helper.ts';
@@ -236,10 +237,15 @@ const reservationRequest: Resolvers = {
 				);
 			}
 
+			const currentUser = await getUserByEmail(verifiedJwt.email, context);
+			if (!currentUser) {
+				throw new Error('User not found');
+			}
+
 			return await context.applicationServices.ReservationRequest.ReservationRequest.cancel(
 				{
 					id: args.input.id,
-					callerId: verifiedJwt.sub,
+					callerId: currentUser.id,
 				},
 			);
 		},

@@ -9,6 +9,12 @@ Feature: Cancel Reservation Request
     When the cancel command is executed
     Then the reservation request should be cancelled
 
+  Scenario: Successfully cancelling a rejected reservation
+    Given a reservation request ID "reservation-rejected"
+    And the reservation request exists and is in rejected state
+    When the cancel command is executed
+    Then the reservation request should be cancelled
+
   Scenario: Attempting to cancel a non-existent reservation request
     Given a reservation request ID "reservation-999"
     And the reservation request does not exist

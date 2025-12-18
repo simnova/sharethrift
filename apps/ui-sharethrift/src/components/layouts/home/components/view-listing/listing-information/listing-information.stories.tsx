@@ -1,13 +1,13 @@
 import type { Meta, StoryObj } from '@storybook/react';
-import { expect, within, userEvent, fn, waitFor } from 'storybook/test';
+import { expect, within, userEvent, fn } from 'storybook/test';
 import { ListingInformation } from './listing-information.tsx';
 import { withMockRouter } from '../../../../../../test-utils/storybook-decorators.tsx';
-
-const POPCONFIRM_SELECTORS = {
-	title: '.ant-popconfirm-title',
-	confirmButton: '.ant-popconfirm-buttons .ant-btn-primary',
-	cancelButton: '.ant-popconfirm-buttons .ant-btn:not(.ant-btn-primary)',
-} as const;
+import {
+	POPCONFIRM_SELECTORS,
+	waitForPopconfirm,
+	confirmPopconfirm,
+	cancelPopconfirm,
+} from '../../../../../../test-utils/popconfirm-test-utils.ts';
 
 const baseReservationRequest = {
 	__typename: 'ReservationRequest' as const,
@@ -21,16 +21,6 @@ const createUserReservationRequest = (state: 'Requested' | 'Accepted') => ({
 	state,
 });
 
-const waitForPopconfirm = async () =>
-	waitFor(
-		() => {
-			const title = document.querySelector(POPCONFIRM_SELECTORS.title);
-			if (!title) throw new Error('Popconfirm not found');
-			return title;
-		},
-		{ timeout: 1000 },
-	);
-
 const openCancelRequestPopconfirm = async (
 	canvas: ReturnType<typeof within>,
 ) => {
@@ -41,26 +31,6 @@ const openCancelRequestPopconfirm = async (
 	if (cancelButton) {
 		await userEvent.click(cancelButton);
 		await waitForPopconfirm();
-	}
-	return cancelButton;
-};
-
-const confirmPopconfirm = async () => {
-	const confirmButton = document.querySelector(
-		POPCONFIRM_SELECTORS.confirmButton,
-	) as HTMLElement | null;
-	if (confirmButton) {
-		await userEvent.click(confirmButton);
-	}
-	return confirmButton;
-};
-
-const cancelPopconfirm = async () => {
-	const cancelButton = document.querySelector(
-		POPCONFIRM_SELECTORS.cancelButton,
-	) as HTMLElement | null;
-	if (cancelButton) {
-		await userEvent.click(cancelButton);
 	}
 	return cancelButton;
 };

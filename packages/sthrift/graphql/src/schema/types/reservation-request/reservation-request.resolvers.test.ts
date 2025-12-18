@@ -1161,7 +1161,12 @@ test.for(feature, ({ Scenario }) => {
 				context = {
 					applicationServices: {
 						verifiedUser: {
-							verifiedJwt: { sub: 'user-123' },
+							verifiedJwt: { sub: 'user-123', email: 'test@example.com' },
+						},
+						User: {
+							PersonalUser: {
+								queryByEmail: vi.fn().mockResolvedValue({ id: 'user-123' }),
+							},
 						},
 						ReservationRequest: {
 							ReservationRequest: {

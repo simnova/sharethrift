@@ -63,9 +63,24 @@ export const ReservationActions: React.FC<ReservationActionsProps> = ({
 				];
 
 			case 'REJECTED':
-				// No actions for rejected reservations - they've already been dismissed by the owner
-				return [];
-
+				return [
+					<Popconfirm
+						key="cancel-confirm"
+						title="Cancel Reservation Request"
+						description="Are you sure you want to cancel this request?"
+						onConfirm={onCancel}
+						okText="Yes"
+						cancelText="No"
+					>
+						<span>
+							<ReservationActionButton
+								key="cancel"
+								action="Cancel"
+								loading={cancelLoading}
+							/>
+						</span>
+					</Popconfirm>,
+				];
 			default:
 				// No actions for cancelled or closed reservations
 				return [];

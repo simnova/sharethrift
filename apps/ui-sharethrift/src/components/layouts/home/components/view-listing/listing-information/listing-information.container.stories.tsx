@@ -1,5 +1,5 @@
 import type { Meta, StoryObj } from '@storybook/react';
-import { expect, userEvent, waitFor, within } from 'storybook/test';
+import { expect } from 'storybook/test';
 import { ListingInformationContainer } from './listing-information.container.tsx';
 import {
 	withMockApolloClient,
@@ -12,38 +12,7 @@ import {
 	HomeListingInformationCancelReservationRequestDocument,
 	ViewListingActiveReservationRequestForListingDocument,
 } from '../../../../../../generated.tsx';
-
-const POPCONFIRM_SELECTORS = {
-	confirmButton: '.ant-popconfirm-buttons .ant-btn-primary',
-} as const;
-
-const clickCancelThenConfirm = async (canvasElement: HTMLElement) => {
-	const canvas = within(canvasElement);
-
-	const cancelButton = await waitFor(
-		() => {
-			const btn = canvas.queryByRole('button', { name: /Cancel/i });
-			if (!btn) throw new Error('Cancel button not found yet');
-			return btn;
-		},
-		{ timeout: 1000 },
-	);
-
-	await userEvent.click(cancelButton);
-
-	const confirmButton = await waitFor(
-		() => {
-			const btn = document.querySelector(
-				POPCONFIRM_SELECTORS.confirmButton,
-			) as HTMLElement | null;
-			if (!btn) throw new Error('Confirm button not found yet');
-			return btn;
-		},
-		{ timeout: 1000 },
-	);
-
-	await userEvent.click(confirmButton);
-};
+import { clickCancelThenConfirm } from '../../../../../../test-utils/popconfirm-test-utils.ts';
 
 const buildBaseListingMocks = () => [
 	{
@@ -329,7 +298,7 @@ export const CancelReservationLoading: Story = {
 							},
 						},
 					},
-					delay: 3000, // Simulate slow response
+					delay: 200, // Brief delay to verify loading state without slowing tests
 					result: {
 						data: {
 							cancelReservation: {

@@ -6,6 +6,8 @@ export interface ReservationRequestCancelCommand {
 	callerId: string;
 }
 
+const CANCELLABLE_STATES = ['Requested', 'Rejected'] as const;
+
 export const cancel = (dataSources: DataSources) => {
 	return async (
 		command: ReservationRequestCancelCommand,
@@ -25,6 +27,14 @@ export const cancel = (dataSources: DataSources) => {
 					throw new Error(
 						'Only the reserver can cancel their reservation request',
 					);
+				}
+
+				if (
+					!CANCELLABLE_STATES.includes(
+						reservationRequest.state as (typeof CANCELLABLE_STATES)[number],
+					)
+				) {
+					throw new Error('Cannot cancel reservation in current state');
 				}
 
 				reservationRequest.state = 'Cancelled';

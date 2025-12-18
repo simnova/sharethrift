@@ -94,6 +94,55 @@ test.for(feature, ({ Scenario, BeforeEachScenario }) => {
 	);
 
 	Scenario(
+		'Successfully cancelling a rejected reservation',
+		({ Given, And, When, Then }) => {
+			Given('a reservation request ID "reservation-rejected"', () => {
+				command = { id: 'reservation-rejected', callerId: 'user-123' };
+			});
+
+			And('the reservation request exists and is in rejected state', () => {
+				const mockReservationRequest = {
+					id: 'reservation-rejected',
+					state: 'Rejected',
+					loadReserver: vi.fn().mockResolvedValue({ id: 'user-123' }),
+				};
+
+				(
+                    // biome-ignore lint/suspicious/noExplicitAny: Test mock access
+					mockDataSources.domainDataSource as any
+				).ReservationRequest.ReservationRequest.ReservationRequestUnitOfWork.withScopedTransaction.mockImplementation(
+					// biome-ignore lint/suspicious/noExplicitAny: Test mock callback
+					async (callback: any) => {
+						const mockRepo = {
+							getById: vi.fn().mockResolvedValue(mockReservationRequest),
+							save: vi.fn().mockResolvedValue({
+								...mockReservationRequest,
+								state: 'Cancelled',
+							}),
+						};
+						await callback(mockRepo);
+					},
+				);
+			});
+
+			When('the cancel command is executed', async () => {
+				const cancelFn = cancel(mockDataSources);
+				try {
+					result = await cancelFn(command);
+				} catch (err) {
+					error = err;
+				}
+			});
+
+			Then('the reservation request should be cancelled', () => {
+				expect(error).toBeUndefined();
+				expect(result).toBeDefined();
+				expect(result.state).toBe('Cancelled');
+			});
+		},
+	);
+
+	Scenario(
 		'Attempting to cancel a non-existent reservation request',
 		({ Given, And, When, Then }) => {
 			Given('a reservation request ID "reservation-999"', () => {
@@ -206,9 +255,7 @@ test.for(feature, ({ Scenario, BeforeEachScenario }) => {
 					async (callback: any) => {
 						const mockRepo = {
 							getById: vi.fn().mockResolvedValue(mockReservationRequest),
-							save: vi.fn().mockImplementation(() => {
-								throw new Error('Cannot cancel reservation in current state');
-							}),
+							save: vi.fn(),
 						};
 						await callback(mockRepo);
 					},

@@ -1,48 +1,19 @@
 import type { Meta, StoryObj } from '@storybook/react';
 import { ReservationActions } from '../components/reservation-actions.js';
-import { expect, fn, userEvent, waitFor, within } from 'storybook/test';
-
-const POPCONFIRM_SELECTORS = {
-	title: '.ant-popconfirm-title',
-	description: '.ant-popconfirm-description',
-	confirmButton: '.ant-popconfirm-buttons .ant-btn-primary',
-	cancelButton: '.ant-popconfirm-buttons .ant-btn:not(.ant-btn-primary)',
-} as const;
+import { expect, fn, userEvent, within } from 'storybook/test';
+import {
+	canvasUtils,
+	waitForPopconfirm,
+	getPopconfirmElements,
+} from '../../../../../test-utils/popconfirm-test-utils.ts';
 
 type Canvas = ReturnType<typeof within>;
 
-const getButtons = (canvas: Canvas) => canvas.getAllByRole('button');
-const queryButtons = (canvas: Canvas) => canvas.queryAllByRole('button');
-const getFirstButton = (canvas: Canvas) => getButtons(canvas)[0];
-
-const waitForPopconfirm = async () =>
-	waitFor(
-		() => {
-			const title = document.querySelector(POPCONFIRM_SELECTORS.title);
-			if (!title) throw new Error('Popconfirm not found');
-			return title;
-		},
-		{ timeout: 1000 },
-	);
-
-const getPopconfirmElements = () => ({
-	title: document.querySelector(POPCONFIRM_SELECTORS.title),
-	description: document.querySelector(POPCONFIRM_SELECTORS.description),
-	confirmButton: document.querySelector(
-		POPCONFIRM_SELECTORS.confirmButton,
-	) as HTMLElement | null,
-	cancelButton: document.querySelector(
-		POPCONFIRM_SELECTORS.cancelButton,
-	) as HTMLElement | null,
-});
+const { getButtons, queryButtons, getFirstButton } = canvasUtils;
 
 const expectNoButtons = (canvas: Canvas) => {
 	const buttons = queryButtons(canvas);
 	expect(buttons.length).toBe(0);
-};
-
-const expectEmptyCanvas = (canvasElement: HTMLElement) => {
-	expect(canvasElement.children.length).toBe(0);
 };
 
 const meta: Meta<typeof ReservationActions> = {
@@ -227,18 +198,37 @@ export const PopconfirmCancelAction: Story = {
 	},
 };
 
-export const RejectedNoActions: Story = {
+export const RejectedWithCancel: Story = {
 	args: {
 		status: 'REJECTED',
 		onCancel: fn(),
 		onClose: fn(),
 		onMessage: fn(),
 	},
-	play: ({ canvasElement }) => {
+	play: async ({ canvasElement, args }) => {
 		const canvas = within(canvasElement);
 
-		expectNoButtons(canvas);
-		expectEmptyCanvas(canvasElement);
+		// REJECTED status should have Cancel button (domain allows cancellation from Rejected state)
+		const buttons = getButtons(canvas);
+		expect(buttons.length).toBe(1);
+
+		const cancelButton = getFirstButton(canvas);
+		expect(cancelButton).toBeTruthy();
+
+		if (cancelButton) {
+			await userEvent.click(cancelButton);
+			await waitForPopconfirm();
+
+			const { title, description, confirmButton } = getPopconfirmElements();
+
+			expect(title?.textContent).toContain('Cancel Reservation Request');
+			expect(description?.textContent).toContain('Are you sure');
+
+			if (confirmButton) {
+				await userEvent.click(confirmButton);
+				expect(args.onCancel).toHaveBeenCalled();
+			}
+		}
 	},
 };
 
