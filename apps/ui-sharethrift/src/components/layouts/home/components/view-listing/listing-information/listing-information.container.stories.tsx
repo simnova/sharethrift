@@ -1,5 +1,5 @@
 import type { Meta, StoryObj } from '@storybook/react';
-import { expect } from 'storybook/test';
+import { expect, userEvent, within } from 'storybook/test';
 import { ListingInformationContainer } from './listing-information.container.tsx';
 import {
 	withMockApolloClient,
@@ -9,6 +9,8 @@ import {
 	ViewListingCurrentUserDocument,
 	ViewListingQueryActiveByListingIdDocument,
 	HomeListingInformationCreateReservationRequestDocument,
+	HomeListingInformationCancelReservationRequestDocument,
+	ViewListingActiveReservationRequestForListingDocument,
 } from '../../../../../../generated.tsx';
 
 const mockListing = {
@@ -145,6 +147,244 @@ export const WithExistingReservation: Story = {
 		},
 		onLoginClick: () => {},
 		onSignUpClick: () => {},
+	},
+	play: async ({ canvasElement }) => {
+		await expect(canvasElement).toBeTruthy();
+	},
+};
+
+export const CancelReservationSuccess: Story = {
+	args: {
+		listing: mockListing,
+		userIsSharer: false,
+		isAuthenticated: true,
+		userReservationRequest: {
+			__typename: 'ReservationRequest' as const,
+			id: 'res-cancel-1',
+			state: 'Requested' as const,
+			reservationPeriodStart: '2025-02-01',
+			reservationPeriodEnd: '2025-02-10',
+		},
+	},
+	parameters: {
+		apolloClient: {
+			mocks: [
+				{
+					request: {
+						query: ViewListingCurrentUserDocument,
+					},
+					result: {
+						data: {
+							currentUser: mockCurrentUser,
+						},
+					},
+				},
+				{
+					request: {
+						query: ViewListingQueryActiveByListingIdDocument,
+						variables: { listingId: '1' },
+					},
+					result: {
+						data: {
+							queryActiveByListingId: [],
+						},
+					},
+				},
+				{
+					request: {
+						query: HomeListingInformationCancelReservationRequestDocument,
+						variables: {
+							input: {
+								id: 'res-cancel-1',
+							},
+						},
+					},
+					result: {
+						data: {
+							cancelReservation: {
+								__typename: 'ReservationRequest',
+								id: 'res-cancel-1',
+								state: 'Cancelled',
+							},
+						},
+					},
+				},
+				{
+					request: {
+						query: ViewListingActiveReservationRequestForListingDocument,
+					},
+					result: {
+						data: {
+							myActiveReservationForListing: null,
+						},
+					},
+				},
+			],
+		},
+	},
+	play: async ({ canvasElement }) => {
+		const canvas = within(canvasElement);
+		await expect(canvasElement).toBeTruthy();
+
+		// Wait for cancel button to appear
+		await new Promise((resolve) => setTimeout(resolve, 500));
+
+		const cancelButton = canvas.queryByRole('button', { name: /Cancel/i });
+		if (cancelButton) {
+			await userEvent.click(cancelButton);
+
+			// Wait for Popconfirm to render
+			await new Promise((resolve) => setTimeout(resolve, 200));
+
+			// Find and click the confirm button in the Popconfirm
+			const confirmButton = document.querySelector(
+				'.ant-popconfirm-buttons .ant-btn-primary',
+			);
+			if (confirmButton) {
+				await userEvent.click(confirmButton as HTMLElement);
+				await new Promise((resolve) => setTimeout(resolve, 300));
+			}
+		}
+	},
+};
+
+export const CancelReservationError: Story = {
+	args: {
+		listing: mockListing,
+		userIsSharer: false,
+		isAuthenticated: true,
+		userReservationRequest: {
+			__typename: 'ReservationRequest' as const,
+			id: 'res-cancel-error',
+			state: 'Requested' as const,
+			reservationPeriodStart: '2025-02-01',
+			reservationPeriodEnd: '2025-02-10',
+		},
+	},
+	parameters: {
+		apolloClient: {
+			mocks: [
+				{
+					request: {
+						query: ViewListingCurrentUserDocument,
+					},
+					result: {
+						data: {
+							currentUser: mockCurrentUser,
+						},
+					},
+				},
+				{
+					request: {
+						query: ViewListingQueryActiveByListingIdDocument,
+						variables: { listingId: '1' },
+					},
+					result: {
+						data: {
+							queryActiveByListingId: [],
+						},
+					},
+				},
+				{
+					request: {
+						query: HomeListingInformationCancelReservationRequestDocument,
+						variables: {
+							input: {
+								id: 'res-cancel-error',
+							},
+						},
+					},
+					error: new Error(
+						'Only the reserver can cancel their reservation request',
+					),
+				},
+			],
+		},
+	},
+	play: async ({ canvasElement }) => {
+		const canvas = within(canvasElement);
+		await expect(canvasElement).toBeTruthy();
+
+		// Wait for cancel button to appear
+		await new Promise((resolve) => setTimeout(resolve, 500));
+
+		const cancelButton = canvas.queryByRole('button', { name: /Cancel/i });
+		if (cancelButton) {
+			await userEvent.click(cancelButton);
+
+			// Wait for Popconfirm
+			await new Promise((resolve) => setTimeout(resolve, 200));
+
+			const confirmButton = document.querySelector(
+				'.ant-popconfirm-buttons .ant-btn-primary',
+			);
+			if (confirmButton) {
+				await userEvent.click(confirmButton as HTMLElement);
+				await new Promise((resolve) => setTimeout(resolve, 300));
+			}
+		}
+	},
+};
+
+export const CancelReservationLoading: Story = {
+	args: {
+		listing: mockListing,
+		userIsSharer: false,
+		isAuthenticated: true,
+		userReservationRequest: {
+			__typename: 'ReservationRequest' as const,
+			id: 'res-cancel-loading',
+			state: 'Requested' as const,
+			reservationPeriodStart: '2025-02-01',
+			reservationPeriodEnd: '2025-02-10',
+		},
+	},
+	parameters: {
+		apolloClient: {
+			mocks: [
+				{
+					request: {
+						query: ViewListingCurrentUserDocument,
+					},
+					result: {
+						data: {
+							currentUser: mockCurrentUser,
+						},
+					},
+				},
+				{
+					request: {
+						query: ViewListingQueryActiveByListingIdDocument,
+						variables: { listingId: '1' },
+					},
+					result: {
+						data: {
+							queryActiveByListingId: [],
+						},
+					},
+				},
+				{
+					request: {
+						query: HomeListingInformationCancelReservationRequestDocument,
+						variables: {
+							input: {
+								id: 'res-cancel-loading',
+							},
+						},
+					},
+					delay: 3000, // Simulate slow response
+					result: {
+						data: {
+							cancelReservation: {
+								__typename: 'ReservationRequest',
+								id: 'res-cancel-loading',
+								state: 'Cancelled',
+							},
+						},
+					},
+				},
+			],
+		},
 	},
 	play: async ({ canvasElement }) => {
 		await expect(canvasElement).toBeTruthy();

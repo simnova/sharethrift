@@ -239,6 +239,7 @@ const reservationRequest: Resolvers = {
 			return await context.applicationServices.ReservationRequest.ReservationRequest.cancel(
 				{
 					id: args.input.id,
+					callerId: verifiedJwt.sub,
 				},
 			);
 		},

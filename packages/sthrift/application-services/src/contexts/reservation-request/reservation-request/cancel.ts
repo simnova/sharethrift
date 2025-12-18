@@ -3,6 +3,7 @@ import type { DataSources } from '@sthrift/persistence';
 
 export interface ReservationRequestCancelCommand {
 	id: string;
+	callerId: string;
 }
 
 export const cancel = (dataSources: DataSources) => {
@@ -17,6 +18,13 @@ export const cancel = (dataSources: DataSources) => {
 				const reservationRequest = await repo.getById(command.id);
 				if (!reservationRequest) {
 					throw new Error('Reservation request not found');
+				}
+
+				const reserver = await reservationRequest.loadReserver();
+				if (reserver.id !== command.callerId) {
+					throw new Error(
+						'Only the reserver can cancel their reservation request',
+					);
 				}
 
 				reservationRequest.state = 'Cancelled';

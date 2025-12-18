@@ -1153,4 +1153,87 @@ test.for(feature, ({ Scenario }) => {
 			});
 		},
 	);
+
+	Scenario(
+		'Cancel reservation request successfully',
+		({ Given, When, Then }) => {
+			Given('an authenticated user', () => {
+				context = {
+					applicationServices: {
+						verifiedUser: {
+							verifiedJwt: { sub: 'user-123' },
+						},
+						ReservationRequest: {
+							ReservationRequest: {
+								cancel: vi.fn(),
+							},
+						},
+					},
+				} as never;
+			});
+
+			When('cancelReservation mutation is called', async () => {
+				vi.mocked(
+					context.applicationServices.ReservationRequest.ReservationRequest
+						.cancel,
+				).mockResolvedValue(
+					createMockReservationRequest({ id: 'res-123', state: 'Cancelled' }),
+				);
+
+				const resolver = reservationRequestResolvers.Mutation
+					?.cancelReservation as TestResolver<{
+					input: { id: string };
+				}>;
+				result = await resolver(
+					{},
+					{ input: { id: 'res-123' } },
+					context,
+					{} as never,
+				);
+			});
+
+			Then('the reservation should be cancelled', () => {
+				expect(
+					context.applicationServices.ReservationRequest.ReservationRequest
+						.cancel,
+				).toHaveBeenCalledWith({ id: 'res-123', callerId: 'user-123' });
+				expect((result as { state: string }).state).toBe('Cancelled');
+			});
+		},
+	);
+
+	Scenario(
+		'Cancel reservation without authentication',
+		({ Given, When, Then }) => {
+			Given('an unauthenticated user', () => {
+				context = {
+					applicationServices: {
+						verifiedUser: undefined,
+					},
+				} as never;
+			});
+
+			When('cancelReservation mutation is called', async () => {
+				const resolver = reservationRequestResolvers.Mutation
+					?.cancelReservation as TestResolver<{
+					input: { id: string };
+				}>;
+				try {
+					await resolver(
+						{},
+						{ input: { id: 'res-123' } },
+						context,
+						{} as never,
+					);
+				} catch (err) {
+					error = err as Error;
+				}
+			});
+
+			Then('an authentication error should be thrown', () => {
+				expect(error).toBeDefined();
+				expect((error as Error).message).toContain('authenticated');
+			});
+		},
+	);
 });

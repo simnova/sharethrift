@@ -63,14 +63,8 @@ export const ReservationActions: React.FC<ReservationActionsProps> = ({
 				];
 
 			case 'REJECTED':
-				return [
-					<ReservationActionButton
-						key="cancel"
-						action="Cancel"
-						onClick={onCancel}
-						loading={cancelLoading}
-					/>,
-				];
+				// No actions for rejected reservations - they've already been dismissed by the owner
+				return [];
 
 			default:
 				// No actions for cancelled or closed reservations

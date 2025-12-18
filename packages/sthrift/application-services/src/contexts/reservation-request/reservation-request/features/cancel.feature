@@ -21,3 +21,9 @@ Feature: Cancel Reservation Request
     And save returns undefined
     When the cancel command is executed
     Then an error "Reservation request not cancelled" should be thrown
+
+  Scenario: Authorization failure when caller is not the reserver
+    Given a reservation request ID "reservation-789"
+    And the reservation request belongs to a different user
+    When the cancel command is executed
+    Then an error "Only the reserver can cancel their reservation request" should be thrown

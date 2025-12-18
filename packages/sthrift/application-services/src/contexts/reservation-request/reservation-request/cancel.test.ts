@@ -39,7 +39,7 @@ test.for(feature, ({ Scenario, BeforeEachScenario }) => {
 			// biome-ignore lint/suspicious/noExplicitAny: Test mock type assertion
 		} as any;
 
-		command = { id: 'reservation-123' };
+		command = { id: 'reservation-123', callerId: 'user-123' };
 		result = undefined;
 		error = undefined;
 	});
@@ -48,13 +48,14 @@ test.for(feature, ({ Scenario, BeforeEachScenario }) => {
 		'Successfully cancelling a requested reservation',
 		({ Given, And, When, Then }) => {
 			Given('a valid reservation request ID "reservation-123"', () => {
-				command = { id: 'reservation-123' };
+				command = { id: 'reservation-123', callerId: 'user-123' };
 			});
 
 			And('the reservation request exists and is in requested state', () => {
 				const mockReservationRequest = {
 					id: 'reservation-123',
 					state: 'Requested',
+					loadReserver: vi.fn().mockResolvedValue({ id: 'user-123' }),
 				};
 
 				(
@@ -65,12 +66,10 @@ test.for(feature, ({ Scenario, BeforeEachScenario }) => {
 					async (callback: any) => {
 						const mockRepo = {
 							getById: vi.fn().mockResolvedValue(mockReservationRequest),
-							save: vi
-								.fn()
-								.mockResolvedValue({
-									...mockReservationRequest,
-									state: 'Cancelled',
-								}),
+							save: vi.fn().mockResolvedValue({
+								...mockReservationRequest,
+								state: 'Cancelled',
+							}),
 						};
 						await callback(mockRepo);
 					},
@@ -137,7 +136,7 @@ test.for(feature, ({ Scenario, BeforeEachScenario }) => {
 		'Cancel fails when save returns undefined',
 		({ Given, And, When, Then }) => {
 			Given('a valid reservation request ID "reservation-456"', () => {
-				command = { id: 'reservation-456' };
+				command = { id: 'reservation-456', callerId: 'user-123' };
 			});
 
 			And('the reservation request exists', () => {
@@ -148,6 +147,7 @@ test.for(feature, ({ Scenario, BeforeEachScenario }) => {
 				const mockReservationRequest = {
 					id: 'reservation-456',
 					state: 'Requested',
+					loadReserver: vi.fn().mockResolvedValue({ id: 'user-123' }),
 				};
 
 				(
@@ -179,6 +179,56 @@ test.for(feature, ({ Scenario, BeforeEachScenario }) => {
 				() => {
 					expect(error).toBeDefined();
 					expect(error.message).toBe('Reservation request not cancelled');
+				},
+			);
+		},
+	);
+
+	Scenario(
+		'Authorization failure when caller is not the reserver',
+		({ Given, And, When, Then }) => {
+			Given('a reservation request ID "reservation-789"', () => {
+				command = { id: 'reservation-789', callerId: 'user-999' };
+			});
+
+			And('the reservation request belongs to a different user', () => {
+				const mockReservationRequest = {
+					id: 'reservation-789',
+					state: 'Requested',
+					loadReserver: vi.fn().mockResolvedValue({ id: 'user-123' }),
+				};
+
+				(
+                    // biome-ignore lint/suspicious/noExplicitAny: Test mock access
+					mockDataSources.domainDataSource as any
+				).ReservationRequest.ReservationRequest.ReservationRequestUnitOfWork.withScopedTransaction.mockImplementation(
+					// biome-ignore lint/suspicious/noExplicitAny: Test mock callback
+					async (callback: any) => {
+						const mockRepo = {
+							getById: vi.fn().mockResolvedValue(mockReservationRequest),
+							save: vi.fn(),
+						};
+						await callback(mockRepo);
+					},
+				);
+			});
+
+			When('the cancel command is executed', async () => {
+				const cancelFn = cancel(mockDataSources);
+				try {
+					result = await cancelFn(command);
+				} catch (err) {
+					error = err;
+				}
+			});
+
+			Then(
+				'an error "Only the reserver can cancel their reservation request" should be thrown',
+				() => {
+					expect(error).toBeDefined();
+					expect(error.message).toBe(
+						'Only the reserver can cancel their reservation request',
+					);
 				},
 			);
 		},

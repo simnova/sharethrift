@@ -142,3 +142,13 @@ So that I can view my reservations and make new ones through the GraphQL API
     And sorter field "title" with order "ascend"
     When paginateAndFilterListingRequests is called
     Then the results should be sorted alphabetically by title
+
+  Scenario: Cancel reservation request successfully
+    Given an authenticated user
+    When cancelReservation mutation is called
+    Then the reservation should be cancelled
+
+  Scenario: Cancel reservation without authentication
+    Given an unauthenticated user
+    When cancelReservation mutation is called
+    Then an authentication error should be thrown
