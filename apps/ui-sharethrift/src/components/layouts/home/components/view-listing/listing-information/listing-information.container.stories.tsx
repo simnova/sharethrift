@@ -1,5 +1,5 @@
 import type { Meta, StoryObj } from '@storybook/react';
-import { expect, userEvent, within } from 'storybook/test';
+import { expect, userEvent, waitFor, within } from 'storybook/test';
 import { ListingInformationContainer } from './listing-information.container.tsx';
 import {
 	withMockApolloClient,
@@ -12,6 +12,62 @@ import {
 	HomeListingInformationCancelReservationRequestDocument,
 	ViewListingActiveReservationRequestForListingDocument,
 } from '../../../../../../generated.tsx';
+
+const POPCONFIRM_SELECTORS = {
+	confirmButton: '.ant-popconfirm-buttons .ant-btn-primary',
+} as const;
+
+const clickCancelThenConfirm = async (canvasElement: HTMLElement) => {
+	const canvas = within(canvasElement);
+
+	const cancelButton = await waitFor(
+		() => {
+			const btn = canvas.queryByRole('button', { name: /Cancel/i });
+			if (!btn) throw new Error('Cancel button not found yet');
+			return btn;
+		},
+		{ timeout: 1000 },
+	);
+
+	await userEvent.click(cancelButton);
+
+	const confirmButton = await waitFor(
+		() => {
+			const btn = document.querySelector(
+				POPCONFIRM_SELECTORS.confirmButton,
+			) as HTMLElement | null;
+			if (!btn) throw new Error('Confirm button not found yet');
+			return btn;
+		},
+		{ timeout: 1000 },
+	);
+
+	await userEvent.click(confirmButton);
+};
+
+const buildBaseListingMocks = () => [
+	{
+		request: {
+			query: ViewListingCurrentUserDocument,
+		},
+		result: {
+			data: {
+				currentUser: mockCurrentUser,
+			},
+		},
+	},
+	{
+		request: {
+			query: ViewListingQueryActiveByListingIdDocument,
+			variables: { listingId: '1' },
+		},
+		result: {
+			data: {
+				queryActiveByListingId: [],
+			},
+		},
+	},
+];
 
 const mockListing = {
 	__typename: 'ItemListing' as const,
@@ -169,27 +225,7 @@ export const CancelReservationSuccess: Story = {
 	parameters: {
 		apolloClient: {
 			mocks: [
-				{
-					request: {
-						query: ViewListingCurrentUserDocument,
-					},
-					result: {
-						data: {
-							currentUser: mockCurrentUser,
-						},
-					},
-				},
-				{
-					request: {
-						query: ViewListingQueryActiveByListingIdDocument,
-						variables: { listingId: '1' },
-					},
-					result: {
-						data: {
-							queryActiveByListingId: [],
-						},
-					},
-				},
+				...buildBaseListingMocks(),
 				{
 					request: {
 						query: HomeListingInformationCancelReservationRequestDocument,
@@ -223,28 +259,8 @@ export const CancelReservationSuccess: Story = {
 		},
 	},
 	play: async ({ canvasElement }) => {
-		const canvas = within(canvasElement);
 		await expect(canvasElement).toBeTruthy();
-
-		// Wait for cancel button to appear
-		await new Promise((resolve) => setTimeout(resolve, 500));
-
-		const cancelButton = canvas.queryByRole('button', { name: /Cancel/i });
-		if (cancelButton) {
-			await userEvent.click(cancelButton);
-
-			// Wait for Popconfirm to render
-			await new Promise((resolve) => setTimeout(resolve, 200));
-
-			// Find and click the confirm button in the Popconfirm
-			const confirmButton = document.querySelector(
-				'.ant-popconfirm-buttons .ant-btn-primary',
-			);
-			if (confirmButton) {
-				await userEvent.click(confirmButton as HTMLElement);
-				await new Promise((resolve) => setTimeout(resolve, 300));
-			}
-		}
+		await clickCancelThenConfirm(canvasElement);
 	},
 };
 
@@ -264,27 +280,7 @@ export const CancelReservationError: Story = {
 	parameters: {
 		apolloClient: {
 			mocks: [
-				{
-					request: {
-						query: ViewListingCurrentUserDocument,
-					},
-					result: {
-						data: {
-							currentUser: mockCurrentUser,
-						},
-					},
-				},
-				{
-					request: {
-						query: ViewListingQueryActiveByListingIdDocument,
-						variables: { listingId: '1' },
-					},
-					result: {
-						data: {
-							queryActiveByListingId: [],
-						},
-					},
-				},
+				...buildBaseListingMocks(),
 				{
 					request: {
 						query: HomeListingInformationCancelReservationRequestDocument,
@@ -302,27 +298,8 @@ export const CancelReservationError: Story = {
 		},
 	},
 	play: async ({ canvasElement }) => {
-		const canvas = within(canvasElement);
 		await expect(canvasElement).toBeTruthy();
-
-		// Wait for cancel button to appear
-		await new Promise((resolve) => setTimeout(resolve, 500));
-
-		const cancelButton = canvas.queryByRole('button', { name: /Cancel/i });
-		if (cancelButton) {
-			await userEvent.click(cancelButton);
-
-			// Wait for Popconfirm
-			await new Promise((resolve) => setTimeout(resolve, 200));
-
-			const confirmButton = document.querySelector(
-				'.ant-popconfirm-buttons .ant-btn-primary',
-			);
-			if (confirmButton) {
-				await userEvent.click(confirmButton as HTMLElement);
-				await new Promise((resolve) => setTimeout(resolve, 300));
-			}
-		}
+		await clickCancelThenConfirm(canvasElement);
 	},
 };
 
@@ -342,27 +319,7 @@ export const CancelReservationLoading: Story = {
 	parameters: {
 		apolloClient: {
 			mocks: [
-				{
-					request: {
-						query: ViewListingCurrentUserDocument,
-					},
-					result: {
-						data: {
-							currentUser: mockCurrentUser,
-						},
-					},
-				},
-				{
-					request: {
-						query: ViewListingQueryActiveByListingIdDocument,
-						variables: { listingId: '1' },
-					},
-					result: {
-						data: {
-							queryActiveByListingId: [],
-						},
-					},
-				},
+				...buildBaseListingMocks(),
 				{
 					request: {
 						query: HomeListingInformationCancelReservationRequestDocument,

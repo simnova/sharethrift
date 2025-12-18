@@ -97,7 +97,7 @@ test.for(feature, ({ Scenario, BeforeEachScenario }) => {
 		'Attempting to cancel a non-existent reservation request',
 		({ Given, And, When, Then }) => {
 			Given('a reservation request ID "reservation-999"', () => {
-				command = { id: 'reservation-999' };
+				command = { id: 'reservation-999', callerId: 'user-123' };
 			});
 
 			And('the reservation request does not exist', () => {
@@ -179,6 +179,58 @@ test.for(feature, ({ Scenario, BeforeEachScenario }) => {
 				() => {
 					expect(error).toBeDefined();
 					expect(error.message).toBe('Reservation request not cancelled');
+				},
+			);
+		},
+	);
+
+	Scenario(
+		'Cancellation fails when reservation is in Accepted state',
+		({ Given, And, When, Then }) => {
+			Given('a reservation request ID "reservation-accepted"', () => {
+				command = { id: 'reservation-accepted', callerId: 'user-123' };
+			});
+
+			And('the reservation request is in Accepted state', () => {
+				const mockReservationRequest = {
+					id: 'reservation-accepted',
+					state: 'Accepted',
+					loadReserver: vi.fn().mockResolvedValue({ id: 'user-123' }),
+				};
+
+				(
+                    // biome-ignore lint/suspicious/noExplicitAny: Test mock access
+					mockDataSources.domainDataSource as any
+				).ReservationRequest.ReservationRequest.ReservationRequestUnitOfWork.withScopedTransaction.mockImplementation(
+					// biome-ignore lint/suspicious/noExplicitAny: Test mock callback
+					async (callback: any) => {
+						const mockRepo = {
+							getById: vi.fn().mockResolvedValue(mockReservationRequest),
+							save: vi.fn().mockImplementation(() => {
+								throw new Error('Cannot cancel reservation in current state');
+							}),
+						};
+						await callback(mockRepo);
+					},
+				);
+			});
+
+			When('the cancel command is executed', async () => {
+				const cancelFn = cancel(mockDataSources);
+				try {
+					result = await cancelFn(command);
+				} catch (err) {
+					error = err;
+				}
+			});
+
+			Then(
+				'an error "Cannot cancel reservation in current state" should be thrown',
+				() => {
+					expect(error).toBeDefined();
+					expect(error.message).toBe(
+						'Cannot cancel reservation in current state',
+					);
 				},
 			);
 		},

@@ -1,6 +1,49 @@
 import type { Meta, StoryObj } from '@storybook/react';
 import { ReservationActions } from '../components/reservation-actions.js';
-import { expect, fn, userEvent, within } from 'storybook/test';
+import { expect, fn, userEvent, waitFor, within } from 'storybook/test';
+
+const POPCONFIRM_SELECTORS = {
+	title: '.ant-popconfirm-title',
+	description: '.ant-popconfirm-description',
+	confirmButton: '.ant-popconfirm-buttons .ant-btn-primary',
+	cancelButton: '.ant-popconfirm-buttons .ant-btn:not(.ant-btn-primary)',
+} as const;
+
+type Canvas = ReturnType<typeof within>;
+
+const getButtons = (canvas: Canvas) => canvas.getAllByRole('button');
+const queryButtons = (canvas: Canvas) => canvas.queryAllByRole('button');
+const getFirstButton = (canvas: Canvas) => getButtons(canvas)[0];
+
+const waitForPopconfirm = async () =>
+	waitFor(
+		() => {
+			const title = document.querySelector(POPCONFIRM_SELECTORS.title);
+			if (!title) throw new Error('Popconfirm not found');
+			return title;
+		},
+		{ timeout: 1000 },
+	);
+
+const getPopconfirmElements = () => ({
+	title: document.querySelector(POPCONFIRM_SELECTORS.title),
+	description: document.querySelector(POPCONFIRM_SELECTORS.description),
+	confirmButton: document.querySelector(
+		POPCONFIRM_SELECTORS.confirmButton,
+	) as HTMLElement | null,
+	cancelButton: document.querySelector(
+		POPCONFIRM_SELECTORS.cancelButton,
+	) as HTMLElement | null,
+});
+
+const expectNoButtons = (canvas: Canvas) => {
+	const buttons = queryButtons(canvas);
+	expect(buttons.length).toBe(0);
+};
+
+const expectEmptyCanvas = (canvasElement: HTMLElement) => {
+	expect(canvasElement.children.length).toBe(0);
+};
 
 const meta: Meta<typeof ReservationActions> = {
 	title: 'Molecules/ReservationActions',
@@ -36,7 +79,7 @@ export const Requested: Story = {
 		onClose: fn(),
 		onMessage: fn(),
 	},
-	play: async ({ canvasElement }) => {
+	play: ({ canvasElement }) => {
 		const canvas = within(canvasElement);
 
 		// Verify action buttons are present
@@ -57,7 +100,7 @@ export const Accepted: Story = {
 		onClose: fn(),
 		onMessage: fn(),
 	},
-	play: async ({ canvasElement }) => {
+	play: ({ canvasElement }) => {
 		const canvas = within(canvasElement);
 
 		// Verify buttons are rendered for accepted state
@@ -77,18 +120,15 @@ export const ButtonInteraction: Story = {
 		const canvas = within(canvasElement);
 
 		// Get all buttons
-		const buttons = canvas.getAllByRole('button');
+		const buttons = getButtons(canvas);
 		expect(buttons.length).toBeGreaterThan(0);
 
-		// Click the first button (typically cancel or message)
-		if (buttons[0]) {
-			await userEvent.click(buttons[0]);
-			// Verify the callback was called
-			const callbacks = [args.onCancel, args.onClose, args.onMessage];
-			const called = callbacks.some(
-				(cb) => cb && (cb as any).mock?.calls?.length > 0,
-			);
-			expect(called || true).toBe(true); // Allow pass if callbacks are called
+		// Click the message button (second button in REQUESTED state - first is cancel with Popconfirm)
+		const messageButton = buttons[1];
+		if (messageButton) {
+			await userEvent.click(messageButton);
+			// Verify the message callback was called (message button doesn't have Popconfirm)
+			expect(args.onMessage).toHaveBeenCalled();
 		}
 	},
 };
@@ -119,7 +159,7 @@ export const LoadingStates: Story = {
 		onMessage: fn(),
 		cancelLoading: true,
 	},
-	play: async ({ canvasElement }) => {
+	play: ({ canvasElement }) => {
 		const canvas = within(canvasElement);
 
 		// Verify loading state is rendered
@@ -141,39 +181,20 @@ export const RequestedWithPopconfirm: Story = {
 	play: async ({ canvasElement, args }) => {
 		const canvas = within(canvasElement);
 
-		// Get all buttons
-		const buttons = canvas.getAllByRole('button');
-		expect(buttons.length).toBeGreaterThan(0);
+		const cancelButton = getFirstButton(canvas);
+		expect(cancelButton).toBeTruthy();
 
-		// Find cancel button (first button in REQUESTED state)
-		const cancelButton = buttons[0];
 		if (cancelButton) {
-			// Click to trigger Popconfirm
 			await userEvent.click(cancelButton);
+			await waitForPopconfirm();
 
-			// Wait for Popconfirm
-			await new Promise((resolve) => setTimeout(resolve, 100));
+			const { title, description, confirmButton } = getPopconfirmElements();
 
-			// Verify Popconfirm appears
-			const popconfirmTitle = document.querySelector('.ant-popconfirm-title');
-			expect(popconfirmTitle?.textContent).toContain(
-				'Cancel Reservation Request',
-			);
+			expect(title?.textContent).toContain('Cancel Reservation Request');
+			expect(description?.textContent).toContain('Are you sure');
 
-			// Verify description
-			const popconfirmDesc = document.querySelector(
-				'.ant-popconfirm-description',
-			);
-			expect(popconfirmDesc?.textContent).toContain('Are you sure');
-
-			// Click confirm
-			const confirmButton = document.querySelector(
-				'.ant-popconfirm-buttons .ant-btn-primary',
-			) as HTMLElement;
 			if (confirmButton) {
 				await userEvent.click(confirmButton);
-
-				// Verify callback was called
 				expect(args.onCancel).toHaveBeenCalled();
 			}
 		}
@@ -189,23 +210,17 @@ export const PopconfirmCancelAction: Story = {
 	play: async ({ canvasElement, args }) => {
 		const canvas = within(canvasElement);
 
-		const buttons = canvas.getAllByRole('button');
-		const cancelButton = buttons[0];
+		const cancelButton = getFirstButton(canvas);
+		expect(cancelButton).toBeTruthy();
 
 		if (cancelButton) {
 			await userEvent.click(cancelButton);
+			await waitForPopconfirm();
 
-			// Wait for Popconfirm
-			await new Promise((resolve) => setTimeout(resolve, 100));
+			const { cancelButton: cancelPopconfirmButton } = getPopconfirmElements();
 
-			// Click "No" button to cancel
-			const cancelPopconfirmButton = document.querySelector(
-				'.ant-popconfirm-buttons .ant-btn:not(.ant-btn-primary)',
-			) as HTMLElement;
 			if (cancelPopconfirmButton) {
 				await userEvent.click(cancelPopconfirmButton);
-
-				// Verify onCancel was NOT called
 				expect(args.onCancel).not.toHaveBeenCalled();
 			}
 		}
@@ -219,15 +234,11 @@ export const RejectedNoActions: Story = {
 		onClose: fn(),
 		onMessage: fn(),
 	},
-	play: async ({ canvasElement }) => {
+	play: ({ canvasElement }) => {
 		const canvas = within(canvasElement);
 
-		// Verify no buttons are rendered for REJECTED status
-		const buttons = canvas.queryAllByRole('button');
-		expect(buttons.length).toBe(0);
-
-		// Component should return null and render nothing
-		expect(canvasElement.children.length).toBe(0);
+		expectNoButtons(canvas);
+		expectEmptyCanvas(canvasElement);
 	},
 };
 
@@ -238,12 +249,10 @@ export const CancelledNoActions: Story = {
 		onClose: fn(),
 		onMessage: fn(),
 	},
-	play: async ({ canvasElement }) => {
+	play: ({ canvasElement }) => {
 		const canvas = within(canvasElement);
 
-		// Verify no buttons for cancelled state
-		const buttons = canvas.queryAllByRole('button');
-		expect(buttons.length).toBe(0);
+		expectNoButtons(canvas);
 	},
 };
 
@@ -254,12 +263,10 @@ export const ClosedNoActions: Story = {
 		onClose: fn(),
 		onMessage: fn(),
 	},
-	play: async ({ canvasElement }) => {
+	play: ({ canvasElement }) => {
 		const canvas = within(canvasElement);
 
-		// Verify no buttons for closed state
-		const buttons = canvas.queryAllByRole('button');
-		expect(buttons.length).toBe(0);
+		expectNoButtons(canvas);
 	},
 };
 
@@ -269,11 +276,11 @@ export const AcceptedActions: Story = {
 		onClose: fn(),
 		onMessage: fn(),
 	},
-	play: async ({ canvasElement }) => {
+	play: ({ canvasElement }) => {
 		const canvas = within(canvasElement);
 
 		// Verify actions are present for accepted status
-		const buttons = canvas.getAllByRole('button');
+		const buttons = getButtons(canvas);
 		expect(buttons.length).toBeGreaterThan(0);
 
 		// Should have Close and Message buttons
@@ -288,15 +295,15 @@ export const CancelLoadingState: Story = {
 		onMessage: fn(),
 		cancelLoading: true,
 	},
-	play: async ({ canvasElement }) => {
+	play: ({ canvasElement }) => {
 		const canvas = within(canvasElement);
 
 		// Verify loading state renders buttons
-		const buttons = canvas.getAllByRole('button');
+		const buttons = getButtons(canvas);
 		expect(buttons.length).toBeGreaterThan(0);
 
-		// Verify buttons are present (loading prop on ReservationActionButton)
-		const cancelButton = buttons[0];
+		// Verify cancel button is present with loading state
+		const cancelButton = getFirstButton(canvas);
 		expect(cancelButton).toBeTruthy();
 	},
 };
@@ -308,15 +315,15 @@ export const CloseLoadingState: Story = {
 		onMessage: fn(),
 		closeLoading: true,
 	},
-	play: async ({ canvasElement }) => {
+	play: ({ canvasElement }) => {
 		const canvas = within(canvasElement);
 
 		// Verify loading state renders buttons
-		const buttons = canvas.getAllByRole('button');
+		const buttons = getButtons(canvas);
 		expect(buttons.length).toBeGreaterThan(0);
 
-		// Verify buttons are present (loading prop on ReservationActionButton)
-		const closeButton = buttons[0];
+		// Verify close button is present with loading state
+		const closeButton = getFirstButton(canvas);
 		expect(closeButton).toBeTruthy();
 	},
 };

@@ -1,7 +1,69 @@
 import type { Meta, StoryObj } from '@storybook/react';
-import { expect, within, userEvent, fn } from 'storybook/test';
+import { expect, within, userEvent, fn, waitFor } from 'storybook/test';
 import { ListingInformation } from './listing-information.tsx';
 import { withMockRouter } from '../../../../../../test-utils/storybook-decorators.tsx';
+
+const POPCONFIRM_SELECTORS = {
+	title: '.ant-popconfirm-title',
+	confirmButton: '.ant-popconfirm-buttons .ant-btn-primary',
+	cancelButton: '.ant-popconfirm-buttons .ant-btn:not(.ant-btn-primary)',
+} as const;
+
+const baseReservationRequest = {
+	__typename: 'ReservationRequest' as const,
+	id: 'res-1',
+	reservationPeriodStart: '1738368000000',
+	reservationPeriodEnd: '1739145600000',
+};
+
+const createUserReservationRequest = (state: 'Requested' | 'Accepted') => ({
+	...baseReservationRequest,
+	state,
+});
+
+const waitForPopconfirm = async () =>
+	waitFor(
+		() => {
+			const title = document.querySelector(POPCONFIRM_SELECTORS.title);
+			if (!title) throw new Error('Popconfirm not found');
+			return title;
+		},
+		{ timeout: 1000 },
+	);
+
+const openCancelRequestPopconfirm = async (
+	canvas: ReturnType<typeof within>,
+) => {
+	const cancelButton = canvas.queryByRole('button', {
+		name: /Cancel Request/i,
+	});
+	expect(cancelButton).toBeTruthy();
+	if (cancelButton) {
+		await userEvent.click(cancelButton);
+		await waitForPopconfirm();
+	}
+	return cancelButton;
+};
+
+const confirmPopconfirm = async () => {
+	const confirmButton = document.querySelector(
+		POPCONFIRM_SELECTORS.confirmButton,
+	) as HTMLElement | null;
+	if (confirmButton) {
+		await userEvent.click(confirmButton);
+	}
+	return confirmButton;
+};
+
+const cancelPopconfirm = async () => {
+	const cancelButton = document.querySelector(
+		POPCONFIRM_SELECTORS.cancelButton,
+	) as HTMLElement | null;
+	if (cancelButton) {
+		await userEvent.click(cancelButton);
+	}
+	return cancelButton;
+};
 
 const mockListing = {
 	__typename: 'ItemListing' as const,
@@ -187,29 +249,15 @@ export const ClickReserveButton: Story = {
 export const ClickCancelButton: Story = {
 	args: {
 		onCancelClick: fn(),
-		userReservationRequest: {
-			__typename: 'ReservationRequest' as const,
-			id: 'res-1',
-			state: 'Requested' as const,
-			reservationPeriodStart: '1738368000000',
-			reservationPeriodEnd: '1739145600000',
-		},
+		userReservationRequest: createUserReservationRequest('Requested'),
 	},
 	play: async ({ canvasElement, args }) => {
 		const canvas = within(canvasElement);
 		await expect(canvasElement).toBeTruthy();
-		const cancelButton = canvas.queryByRole('button', { name: /Cancel/i });
-		if (cancelButton) {
-			await userEvent.click(cancelButton);
-			await new Promise((resolve) => setTimeout(resolve, 100));
-			const confirmButton = document.querySelector(
-				'.ant-popconfirm-buttons .ant-btn-primary',
-			);
-			if (confirmButton) {
-				await userEvent.click(confirmButton as HTMLElement);
-				expect(args.onCancelClick).toHaveBeenCalled();
-			}
-		}
+
+		await openCancelRequestPopconfirm(canvas);
+		await confirmPopconfirm();
+		expect(args.onCancelClick).toHaveBeenCalled();
 	},
 };
 
@@ -323,13 +371,7 @@ export const ClearDateSelection: Story = {
 
 export const CancelButtonWithPopconfirm: Story = {
 	args: {
-		userReservationRequest: {
-			__typename: 'ReservationRequest' as const,
-			id: 'res-1',
-			state: 'Requested' as const,
-			reservationPeriodStart: '1738368000000',
-			reservationPeriodEnd: '1739145600000',
-		},
+		userReservationRequest: createUserReservationRequest('Requested'),
 		onCancelClick: fn(),
 		cancelLoading: false,
 	},
@@ -337,48 +379,19 @@ export const CancelButtonWithPopconfirm: Story = {
 		const canvas = within(canvasElement);
 		await expect(canvasElement).toBeTruthy();
 
-		// Verify cancel button is present
-		const cancelButton = canvas.queryByRole('button', {
-			name: /Cancel Request/i,
-		});
-		expect(cancelButton).toBeTruthy();
+		await openCancelRequestPopconfirm(canvas);
 
-		if (cancelButton) {
-			// Click cancel button to trigger Popconfirm
-			await userEvent.click(cancelButton);
+		const title = document.querySelector(POPCONFIRM_SELECTORS.title);
+		expect(title?.textContent).toContain('Cancel Reservation Request');
 
-			// Wait for Popconfirm to appear
-			await new Promise((resolve) => setTimeout(resolve, 100));
-
-			// Verify Popconfirm title appears
-			const popconfirmTitle = document.querySelector('.ant-popconfirm-title');
-			expect(popconfirmTitle?.textContent).toContain(
-				'Cancel Reservation Request',
-			);
-
-			// Click confirm button
-			const confirmButton = document.querySelector(
-				'.ant-popconfirm-buttons .ant-btn-primary',
-			) as HTMLElement;
-			if (confirmButton) {
-				await userEvent.click(confirmButton);
-
-				// Verify onCancelClick was called
-				expect(args.onCancelClick).toHaveBeenCalled();
-			}
-		}
+		await confirmPopconfirm();
+		expect(args.onCancelClick).toHaveBeenCalled();
 	},
 };
 
 export const CancelButtonLoading: Story = {
 	args: {
-		userReservationRequest: {
-			__typename: 'ReservationRequest' as const,
-			id: 'res-1',
-			state: 'Requested' as const,
-			reservationPeriodStart: '1738368000000',
-			reservationPeriodEnd: '1739145600000',
-		},
+		userReservationRequest: createUserReservationRequest('Requested'),
 		cancelLoading: true,
 	},
 	play: async ({ canvasElement }) => {
@@ -395,13 +408,7 @@ export const CancelButtonLoading: Story = {
 
 export const NoCancelButtonForAcceptedReservation: Story = {
 	args: {
-		userReservationRequest: {
-			__typename: 'ReservationRequest' as const,
-			id: 'res-1',
-			state: 'Accepted' as const,
-			reservationPeriodStart: '1738368000000',
-			reservationPeriodEnd: '1739145600000',
-		},
+		userReservationRequest: createUserReservationRequest('Accepted'),
 	},
 	play: async ({ canvasElement }) => {
 		const canvas = within(canvasElement);
@@ -415,38 +422,16 @@ export const NoCancelButtonForAcceptedReservation: Story = {
 
 export const PopconfirmCancelButton: Story = {
 	args: {
-		userReservationRequest: {
-			__typename: 'ReservationRequest' as const,
-			id: 'res-1',
-			state: 'Requested' as const,
-			reservationPeriodStart: '1738368000000',
-			reservationPeriodEnd: '1739145600000',
-		},
+		userReservationRequest: createUserReservationRequest('Requested'),
 		onCancelClick: fn(),
 	},
 	play: async ({ canvasElement, args }) => {
 		const canvas = within(canvasElement);
 		await expect(canvasElement).toBeTruthy();
 
-		const cancelButton = canvas.queryByRole('button', {
-			name: /Cancel Request/i,
-		});
-		if (cancelButton) {
-			await userEvent.click(cancelButton);
+		await openCancelRequestPopconfirm(canvas);
+		await cancelPopconfirm();
 
-			// Wait for Popconfirm
-			await new Promise((resolve) => setTimeout(resolve, 100));
-
-			// Click the "No" button to cancel the Popconfirm
-			const cancelPopconfirmButton = document.querySelector(
-				'.ant-popconfirm-buttons .ant-btn:not(.ant-btn-primary)',
-			) as HTMLElement;
-			if (cancelPopconfirmButton) {
-				await userEvent.click(cancelPopconfirmButton);
-
-				// Verify onCancelClick was NOT called
-				expect(args.onCancelClick).not.toHaveBeenCalled();
-			}
-		}
+		expect(args.onCancelClick).not.toHaveBeenCalled();
 	},
 };

@@ -22,6 +22,12 @@ Feature: Cancel Reservation Request
     When the cancel command is executed
     Then an error "Reservation request not cancelled" should be thrown
 
+  Scenario: Cancellation fails when reservation is in Accepted state
+    Given a reservation request ID "reservation-accepted"
+    And the reservation request is in Accepted state
+    When the cancel command is executed
+    Then an error "Cannot cancel reservation in current state" should be thrown
+
   Scenario: Authorization failure when caller is not the reserver
     Given a reservation request ID "reservation-789"
     And the reservation request belongs to a different user
