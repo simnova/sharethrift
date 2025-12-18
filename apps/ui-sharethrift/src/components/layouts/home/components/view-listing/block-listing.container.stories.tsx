@@ -86,7 +86,7 @@ const meta: Meta<typeof BlockListingButton> = {
 		listingId: { control: 'text' },
 		listingTitle: { control: 'text' },
 		isBlocked: { control: 'boolean' },
-		sharerId: { control: 'text' },
+		sharerName: { control: 'text' },
 		renderModals: { control: 'boolean' },
 	},
 };
@@ -99,7 +99,7 @@ export const BlockButton: Story = {
 		listingId: 'listing-1',
 		listingTitle: 'City Bike',
 		isBlocked: false,
-		sharerId: 'user-1',
+		sharerName: 'user-1',
 		renderModals: true,
 	},
 };
@@ -109,7 +109,7 @@ export const UnblockButton: Story = {
 		listingId: 'listing-1',
 		listingTitle: 'City Bike',
 		isBlocked: true,
-		sharerId: 'user-1',
+		sharerName: 'user-1',
 		renderModals: true,
 	},
 };
@@ -119,7 +119,7 @@ export const BlockButtonWithoutModals: Story = {
 		listingId: 'listing-1',
 		listingTitle: 'City Bike',
 		isBlocked: false,
-		sharerId: 'user-1',
+		sharerName: 'user-1',
 		renderModals: false,
 	},
 };
@@ -129,7 +129,7 @@ export const UnblockButtonWithoutModals: Story = {
 		listingId: 'listing-1',
 		listingTitle: 'City Bike',
 		isBlocked: true,
-		sharerId: 'user-1',
+		sharerName: 'user-1',
 		renderModals: false,
 	},
 };

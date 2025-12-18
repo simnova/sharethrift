@@ -133,7 +133,7 @@ export const ViewListing: React.FC<ViewListingProps> = ({
 									listingId={listing.id}
 									listingTitle={listing.title}
 									isBlocked={isBlocked}
-									sharerId={sharer?.id}
+									sharerName={`${sharer?.account?.profile?.firstName} ${sharer?.account?.profile?.lastName}`}
 									renderModals={true}
 								/>
 							) : undefined

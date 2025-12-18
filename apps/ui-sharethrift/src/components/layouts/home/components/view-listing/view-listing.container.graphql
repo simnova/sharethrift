@@ -19,9 +19,21 @@ fragment ViewListingContainerListingFields on ItemListing {
   sharer {
     ... on PersonalUser {
       id
+      account {
+        profile {
+          firstName
+          lastName
+        }
+      }
     }
     ... on AdminUser {
       id
+      account {
+        profile {
+          firstName
+          lastName
+        }
+      }
     }
   }
 }

@@ -14,14 +14,14 @@ interface BlockListingContainerProps {
 	listingId: string;
 	listingTitle: string;
 	isBlocked: boolean;
-	sharerId?: string;
+	sharerName?: string;
 }
 
 interface BlockListingButtonProps {
 	listingId: string;
 	listingTitle: string;
 	isBlocked: boolean;
-	sharerId?: string;
+	sharerName?: string;
 	renderModals?: boolean;
 }
 
@@ -29,7 +29,7 @@ export const BlockListingButton: React.FC<BlockListingButtonProps> = ({
 	listingId,
 	listingTitle,
 	isBlocked,
-	sharerId = 'Unknown',
+	sharerName = 'Unknown',
 	renderModals = true,
 }) => {
 	const [blockModalVisible, setBlockModalVisible] = useState(false);
@@ -114,7 +114,7 @@ export const BlockListingButton: React.FC<BlockListingButtonProps> = ({
 					<UnblockListingModal
 						visible={unblockModalVisible}
 						listingTitle={listingTitle}
-						listingSharer={sharerId}
+						listingSharer={sharerName}
 						onConfirm={handleUnblockConfirm}
 						onCancel={() => setUnblockModalVisible(false)}
 						loading={unblockLoading}
@@ -129,7 +129,7 @@ export const BlockListingContainer: React.FC<BlockListingContainerProps> = ({
 	listingId,
 	listingTitle,
 	isBlocked,
-	sharerId = 'Unknown',
+	sharerName = 'Unknown',
 }) => {
 	return (
 		<div style={{ display: 'flex', gap: 8, justifyContent: 'flex-end' }}>
@@ -137,7 +137,7 @@ export const BlockListingContainer: React.FC<BlockListingContainerProps> = ({
 				listingId={listingId}
 				listingTitle={listingTitle}
 				isBlocked={isBlocked}
-				sharerId={sharerId}
+				sharerName={sharerName}
 				renderModals={true}
 			/>
 		</div>
