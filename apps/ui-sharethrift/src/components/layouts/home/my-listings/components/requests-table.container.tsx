@@ -100,10 +100,6 @@ export const RequestsTableContainer: React.FC<RequestsTableContainerProps> = ({
 		onPageChange(1);
 	};
 
-	if (error) {
-		console.error('Query error:', error);
-	}
-
 	return (
 		<ComponentQueryLoader
 			loading={loading}
