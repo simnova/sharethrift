@@ -70,7 +70,6 @@ ShareThrift is a web‑based peer‑to‑peer sharing platform that enables peop
 ### 💬 Messaging
 
 - In‑platform messaging between sharers and reservers
-- Auto‑expiring conversation threads tied to listings
 
 ### 🛡 Admin Tools
 
