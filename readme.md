@@ -17,7 +17,7 @@ A modern, community‑driven platform designed to reduce waste and enable the sh
 
 [![Build Status](https://dev.azure.com/simnova/ShareThrift/_apis/build/status%2Fsharethrift?branchName=main)](https://dev.azure.com/simnova/ShareThrift/_build/latest?definitionId=12&branchName=main)
 
-<img src="./readme-assets/main-screen-banner.png" alt="main-screen-banner" style="max-width:100%; height:auto;" />
+![main-screen-banner](./readme-assets/main-screen-banner.png)
 
 ## 📌 Introduction
 
@@ -139,8 +139,8 @@ pnpm install
 pnpm run build
 ```
 
-  <img src="./readme-assets/pnpm_install.gif" alt="Terminal running 'pnpm install' to install workspace dependencies" style="max-width:100%; height:auto;">
-  <img src="./readme-assets/pnpm_build.gif" alt="Terminal running 'pnpm run build' to build all packages" style="max-width:100%; height:auto;">
+![Terminal running 'pnpm install' to install workspace dependencies](./readme-assets/pnpm_install.gif)
+![Terminal running 'pnpm run build' to build all packages](./readme-assets/pnpm_build.gif)
 
 ### 🛠️ Run (Dev)
 
@@ -148,7 +148,7 @@ pnpm run build
 pnpm run dev
 ```
 
-<img src="./readme-assets/pnpm_dev.gif" alt="Terminal running 'pnpm run dev' starting Azure Functions host and frontend" style="max-width:100%; height:auto;">
+![Terminal running 'pnpm run dev' starting Azure Functions host and frontend](./readme-assets/pnpm_dev.gif)
 
 ## 🔗 Local Endpoints
 
@@ -169,7 +169,7 @@ This repo follows strict DDD boundaries (contexts, aggregates, value objects, re
 
 Run tests with `pnpm run test`. Detailed expectations for coverage, styles, and scenario files are centralized in CONTRIBUTING.
 
-<img src="./readme-assets/pnpm_test.gif" alt="Terminal running 'pnpm run test' showing passing unit tests and coverage" style="max-width:100%; height:auto;">
+![Terminal running 'pnpm run test' showing passing unit tests and coverage](./readme-assets/pnpm_test.gif)
 
 - Full guidance: see [CONTRIBUTING → Testing & Quality Requirements](./CONTRIBUTING.md#testing--quality-requirements)
 
