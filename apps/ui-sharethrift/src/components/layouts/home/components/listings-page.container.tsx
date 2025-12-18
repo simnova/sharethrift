@@ -3,7 +3,7 @@ import {
 	ComponentQueryLoader,
 	type UIItemListing,
 } from '@sthrift/ui-components';
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import {
 	ListingsPageContainerGetListingsDocument,
@@ -21,10 +21,32 @@ export const ListingsPageContainer: React.FC<ListingsPageContainerProps> = ({
 	isAuthenticated,
 }) => {
 	const [searchInputValue, setSearchInputValue] = useState(''); // What user types
-	const [searchQuery, setSearchQuery] = useState(''); // Actual search query executed
+	const [searchQuery, setSearchQuery] = useState(''); // Actual search query executed (debounced)
 	const [currentPage, setCurrentPage] = useState(1);
 	const pageSize = 20;
 	const [selectedCategory, setSelectedCategory] = useState('');
+	const debounceTimerRef = useRef<NodeJS.Timeout | null>(null);
+
+	// Debounce search input - automatically search after user stops typing
+	useEffect(() => {
+		// Clear existing timer
+		if (debounceTimerRef.current) {
+			clearTimeout(debounceTimerRef.current);
+		}
+
+		// Set new timer to update search query after 500ms of no typing
+		debounceTimerRef.current = setTimeout(() => {
+			setSearchQuery(searchInputValue);
+			setCurrentPage(1); // Reset to first page when search changes
+		}, 500);
+
+		// Cleanup function
+		return () => {
+			if (debounceTimerRef.current) {
+				clearTimeout(debounceTimerRef.current);
+			}
+		};
+	}, [searchInputValue]);
 
 	// Determine if we should use search query or get all listings
 	const shouldUseSearch = Boolean(searchQuery || (selectedCategory && selectedCategory !== 'All'));
@@ -87,11 +109,17 @@ export const ListingsPageContainer: React.FC<ListingsPageContainerProps> = ({
 
 	const handleSearchChange = (value: string) => {
 		setSearchInputValue(value);
+		// Debounce will handle updating searchQuery automatically
 	};
 
 	const handleSearch = () => {
+		// Clear any pending debounce timer
+		if (debounceTimerRef.current) {
+			clearTimeout(debounceTimerRef.current);
+		}
+		// Immediately execute search when user presses Enter or clicks button
 		setSearchQuery(searchInputValue);
-		setCurrentPage(1); // Reset to first page when searching
+		setCurrentPage(1);
 	};
 
 	const navigate = useNavigate();
