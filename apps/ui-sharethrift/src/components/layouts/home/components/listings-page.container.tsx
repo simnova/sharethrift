@@ -3,10 +3,11 @@ import {
 	ComponentQueryLoader,
 	type UIItemListing,
 } from '@sthrift/ui-components';
-import { useState } from 'react';
+import { useState, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import {
 	ListingsPageContainerGetListingsDocument,
+	ListingsPageSearchItemListingsDocument,
 	type ItemListing,
 } from '../../../../generated.tsx';
 import { useCreateListingNavigation } from './create-listing/hooks/use-create-listing-navigation.ts';
@@ -23,37 +24,65 @@ export const ListingsPageContainer: React.FC<ListingsPageContainerProps> = ({
 	const [currentPage, setCurrentPage] = useState(1);
 	const pageSize = 20;
 	const [selectedCategory, setSelectedCategory] = useState('');
-	const { data, loading, error } = useQuery(
+
+	// Determine if we should use search query or get all listings
+	const shouldUseSearch = Boolean(searchQuery || (selectedCategory && selectedCategory !== 'All'));
+
+	// Prepare search input
+	const searchInput = useMemo(() => ({
+		searchString: searchQuery || undefined,
+		options: {
+			filter: {
+				category: (selectedCategory && selectedCategory !== 'All') ? [selectedCategory] : undefined,
+			},
+			skip: (currentPage - 1) * pageSize,
+			top: pageSize,
+		},
+	}), [searchQuery, selectedCategory, currentPage, pageSize]);
+
+	// Query all listings (when no search/filter)
+	const { data: allListingsData, loading: allListingsLoading, error: allListingsError } = useQuery(
 		ListingsPageContainerGetListingsDocument,
 		{
 			fetchPolicy: 'cache-first',
 			nextFetchPolicy: 'cache-first',
+			skip: shouldUseSearch,
 		},
 	);
 
-	const filteredListings = data?.itemListings
-		? data.itemListings.filter((listing) => {
-				if (
-					selectedCategory &&
-					selectedCategory !== 'All' &&
-					listing.category !== selectedCategory
-				) {
-					return false;
-				}
-				if (
-					searchQuery &&
-					!listing.title.toLowerCase().includes(searchQuery.toLowerCase())
-				) {
-					return false;
-				}
-				return true;
-			})
-		: [];
+	// Query search results (when searching/filtering)
+	const { data: searchData, loading: searchLoading, error: searchError } = useQuery(
+		ListingsPageSearchItemListingsDocument,
+		{
+			variables: { input: searchInput },
+			fetchPolicy: 'network-only',
+			skip: !shouldUseSearch,
+		},
+	);
 
-	const totalListings = filteredListings.length;
-	const startIdx = (currentPage - 1) * pageSize;
-	const endIdx = startIdx + pageSize;
-	const currentListings = filteredListings.slice(startIdx, endIdx);
+	// Combine results based on which query is active
+	const loading = shouldUseSearch ? searchLoading : allListingsLoading;
+	const error = shouldUseSearch ? searchError : allListingsError;
+
+	// Process listings based on which query is active
+	const { listings: processedListings, totalListings } = useMemo(() => {
+		if (shouldUseSearch && searchData?.searchItemListings) {
+			// Use search results
+			return {
+				listings: searchData.searchItemListings.items,
+				totalListings: searchData.searchItemListings.count,
+			};
+		}
+		
+		// Use all listings with client-side pagination
+		const allListings = allListingsData?.itemListings || [];
+		const startIdx = (currentPage - 1) * pageSize;
+		const endIdx = startIdx + pageSize;
+		return {
+			listings: allListings.slice(startIdx, endIdx),
+			totalListings: allListings.length,
+		};
+	}, [shouldUseSearch, searchData, allListingsData, currentPage, pageSize]);
 
 	const handleSearch = (query: string) => {
 		setSearchQuery(query);
@@ -82,11 +111,31 @@ export const ListingsPageContainer: React.FC<ListingsPageContainerProps> = ({
 		setCurrentPage(1); // Reset to first page when changing category
 	};
 
+	// Map the listings to the format expected by the UI component
+	const mappedListings = processedListings.map((listing): ItemListing => ({
+		listingType: 'item-listing',
+		id: String(listing.id),
+		title: listing.title,
+		description: listing.description,
+		category: listing.category,
+		location: listing.location,
+		state: (listing.state as ItemListing['state']) || undefined,
+		images: listing.images ?? [],
+		sharingPeriodStart: new Date(listing.sharingPeriodStart as unknown as string),
+		sharingPeriodEnd: new Date(listing.sharingPeriodEnd as unknown as string),
+		createdAt: listing.createdAt
+			? new Date(listing.createdAt as unknown as string)
+			: undefined,
+		updatedAt: listing.updatedAt
+			? new Date(listing.updatedAt as unknown as string)
+			: undefined,
+	}));
+
 	return (
 		<ComponentQueryLoader
 			loading={loading}
 			error={error}
-			hasData={data?.itemListings}
+			hasData={mappedListings}
 			hasDataComponent={
 				<ListingsPage
 					isAuthenticated={isAuthenticated}
@@ -95,30 +144,7 @@ export const ListingsPageContainer: React.FC<ListingsPageContainerProps> = ({
 					onSearch={handleSearch}
 					selectedCategory={selectedCategory}
 					onCategoryChange={handleCategoryChange}
-					listings={currentListings.map(
-						(listing): ItemListing => ({
-							listingType: 'item-listing',
-							id: String(listing.id),
-							title: listing.title,
-							description: listing.description,
-							category: listing.category,
-							location: listing.location,
-							state: (listing.state as ItemListing['state']) || undefined,
-							images: listing.images ?? [],
-							sharingPeriodStart: new Date(
-								listing.sharingPeriodStart as unknown as string,
-							),
-							sharingPeriodEnd: new Date(
-								listing.sharingPeriodEnd as unknown as string,
-							),
-							createdAt: listing.createdAt
-								? new Date(listing.createdAt as unknown as string)
-								: undefined,
-							updatedAt: listing.updatedAt
-								? new Date(listing.updatedAt as unknown as string)
-								: undefined,
-						}),
-					)}
+					listings={mappedListings}
 					currentPage={currentPage}
 					pageSize={pageSize}
 					totalListings={totalListings}
