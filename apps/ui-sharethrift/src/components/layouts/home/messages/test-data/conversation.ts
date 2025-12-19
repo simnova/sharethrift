@@ -5,17 +5,13 @@
 
 import type { Conversation } from '../../../../../generated.tsx';
 
-export interface MockConversationOptions {
-	messages?: Conversation['messages'];
-}
-
 /**
  * Creates a reusable conversation mock with customizable properties
  * @param overrides - Optional overrides for conversation properties
  * @returns A standardized conversation object for testing
  */
 export const buildConversationMock = (
-	overrides?: Partial<Conversation> & MockConversationOptions,
+	overrides?: Partial<Conversation> & { messages?: Conversation['messages'] },
 ): Conversation => {
 	const defaultConversation: Conversation = {
 		__typename: 'Conversation',
@@ -81,8 +77,6 @@ export const buildConversationMock = (
 	};
 };
 
-export type SendMessageMode = 'success' | 'error' | 'networkError';
-
 /**
  * Creates a reusable send-message mock with different response modes
  * @param mode - The response mode: success, error, or networkError
@@ -90,7 +84,7 @@ export type SendMessageMode = 'success' | 'error' | 'networkError';
  * @returns A standardized send-message mutation result
  */
 export const buildSendMessageMock = (
-	mode: SendMessageMode,
+	mode: 'success' | 'error' | 'networkError',
 	messageContent?: string,
 ) => {
 	const content = messageContent ?? 'Test message';

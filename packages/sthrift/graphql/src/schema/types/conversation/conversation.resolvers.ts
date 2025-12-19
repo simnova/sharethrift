@@ -1,3 +1,4 @@
+import { trace } from '@opentelemetry/api';
 import type { GraphContext } from '../../../init/context.ts';
 import type {
 	ConversationCreateInput,
@@ -9,6 +10,27 @@ import {
 	PopulateUserFromField,
 	getUserByEmail,
 } from '../../resolver-helper.ts';
+
+const tracer = trace.getTracer('conversation-resolvers');
+
+/**
+ * Normalizes error messages to user-safe format.
+ * Prevents leaking internal implementation details to clients.
+ */
+function normalizeErrorMessage(errorMessage: string): string {
+	if (errorMessage.includes('not found')) {
+		return 'Conversation not found';
+	}
+	if (errorMessage.includes('Not authorized') || errorMessage.includes('permission')) {
+		return 'You do not have permission to send messages in this conversation';
+	}
+	if (errorMessage.includes('cannot be empty') || errorMessage.includes('exceeds')) {
+		// Domain validation errors are safe to expose
+		return errorMessage;
+	}
+	// Generic fallback for unexpected errors
+	return 'Failed to send message. Please try again.';
+}
 
 const conversation: Resolvers = {
 	Message: {
@@ -41,65 +63,89 @@ const conversation: Resolvers = {
 			_args: { input: ConversationCreateInput },
 			context: GraphContext,
 		) => {
-			try {
-				const conversation = await context.applicationServices.Conversation.Conversation.create({
-					sharerId: _args.input.sharerId,
-					reserverId: _args.input.reserverId,
-					listingId: _args.input.listingId,
-				});
-				return {
-					status: { success: true },
-					conversation,
-				};
-			} catch (error) {
-				console.error('Conversation > Mutation  : ', error);
-				const { message } = error as Error;
-				return {
-					status: { success: false, errorMessage: message },
-				};
-			}
+			return await tracer.startActiveSpan('createConversation', async (span) => {
+				try {
+					span.setAttribute('input.sharerId', _args.input.sharerId);
+					span.setAttribute('input.reserverId', _args.input.reserverId);
+					span.setAttribute('input.listingId', _args.input.listingId);
+					
+					const conversation = await context.applicationServices.Conversation.Conversation.create({
+						sharerId: _args.input.sharerId,
+						reserverId: _args.input.reserverId,
+						listingId: _args.input.listingId,
+					});
+					
+					span.setAttribute('result.success', true);
+					span.setAttribute('result.conversationId', conversation.id);
+					span.end();
+					
+					return {
+						status: { success: true },
+						conversation,
+					};
+				} catch (error) {
+					const { message } = error as Error;
+					span.setAttribute('result.success', false);
+					span.setAttribute('error.message', message);
+					span.recordException(error as Error);
+					span.end();
+					
+					return {
+						status: { success: false, errorMessage: message },
+					};
+				}
+			});
 		},
 		sendMessage: async (
 			_parent,
 			_args: { input: SendMessageInput },
 			context: GraphContext,
 		) => {
-			try {
-				const verifiedJwt = context.applicationServices.verifiedUser?.verifiedJwt;
-				if (!verifiedJwt) {
-					throw new Error('User must be authenticated to send a message');
-				}
+			return await tracer.startActiveSpan('sendMessage', async (span) => {
+				try {
+					span.setAttribute('input.conversationId', _args.input.conversationId);
+					
+					const verifiedJwt = context.applicationServices.verifiedUser?.verifiedJwt;
+					if (!verifiedJwt) {
+						throw new Error('User must be authenticated to send a message');
+					}
 
-				const currentUser = await getUserByEmail(verifiedJwt.email, context);
-				if (!currentUser) {
-					throw new Error('User not found');
-				}
+					const currentUser = await getUserByEmail(verifiedJwt.email, context);
+					if (!currentUser) {
+						throw new Error('User not found');
+					}
 
-				const message = await context.applicationServices.Conversation.Conversation.sendMessage({
-					conversationId: _args.input.conversationId,
-					content: _args.input.content,
-					authorId: currentUser.id,
-				});
-				return {
-					status: { success: true },
-					message,
-				};
-			} catch (error) {
-				console.error('Conversation > SendMessage Mutation  : ', error);
-				// Normalize error messages to avoid leaking internal implementation details
-				const errorMessage = error instanceof Error ? error.message : 'Unknown error';
-				const userSafeMessage = errorMessage.includes('not found')
-					? 'Conversation not found'
-					: errorMessage.includes('Not authorized') || errorMessage.includes('permission')
-					? 'You do not have permission to send messages in this conversation'
-					: errorMessage.includes('cannot be empty') || errorMessage.includes('exceeds')
-					? errorMessage // Domain validation errors are safe to expose
-					: 'Failed to send message. Please try again.'; // Generic fallback for unexpected errors
-				
-				return {
-					status: { success: false, errorMessage: userSafeMessage },
-				};
-			}
+					span.setAttribute('user.id', currentUser.id);
+
+					const message = await context.applicationServices.Conversation.Conversation.sendMessage({
+						conversationId: _args.input.conversationId,
+						content: _args.input.content,
+						authorId: currentUser.id,
+					});
+					
+					span.setAttribute('result.success', true);
+					span.setAttribute('result.messageId', message.id);
+					span.end();
+					
+					return {
+						status: { success: true },
+						message,
+					};
+				} catch (error) {
+					const errorMessage = error instanceof Error ? error.message : 'Unknown error';
+					const userSafeMessage = normalizeErrorMessage(errorMessage);
+					
+					span.setAttribute('result.success', false);
+					span.setAttribute('error.message', errorMessage);
+					span.setAttribute('error.userMessage', userSafeMessage);
+					span.recordException(error as Error);
+					span.end();
+					
+					return {
+						status: { success: false, errorMessage: userSafeMessage },
+					};
+				}
+			});
 		},
 	},
 };

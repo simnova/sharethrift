@@ -33,7 +33,7 @@ export class AdminUserConversationVisa<root extends ConversationEntityReference>
 			// Admins can create conversations if they have user management permissions
 			canCreateConversation:
 				rolePermissions?.userPermissions?.canEditUsers ?? false,
-			// Admins can manage conversations (including sending messages) if they have moderation permissions OR are a participant
+			// Admins can manage conversations if they have moderation permissions OR are a participant
 			canManageConversation: canModerateConversations || adminIsParticipant,
 			// Admins can view all conversations for moderation purposes
 			canViewConversation:
