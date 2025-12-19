@@ -12,13 +12,12 @@ export interface UIItemListing {
 	sharingPeriodStart: Date;
 	sharingPeriodEnd: Date;
 	state?:
-		| 'Published'
+		| 'Active'
 		| 'Paused'
 		| 'Cancelled'
-		| 'Drafted'
+		| 'Draft'
 		| 'Expired'
 		| 'Blocked'
-		| 'Appeal Requested';
 	updatedAt?: Date;
 	createdAt?: Date;
 	sharingHistory?: string[]; // objectid[]
