@@ -903,7 +903,7 @@ test.for(feature, ({ Scenario }) => {
 							page: 1,
 							pageSize: 10,
 							searchText: 'test',
-							statusFilters: ['Published'],
+							statusFilters: ['Active'],
 							sorter: { field: 'title', order: 'ascend' },
 						}),
 					);

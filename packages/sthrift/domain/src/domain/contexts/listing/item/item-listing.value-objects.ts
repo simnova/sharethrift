@@ -10,6 +10,7 @@ export const ListingStateEnum = {
 	Draft: 'Draft',
 	Expired: 'Expired',
 	Blocked: 'Blocked',
+	AppealRequested: 'Appeal Requested',
 } as const;
 
 export class ListingState extends VOString({
@@ -23,6 +24,7 @@ export class ListingState extends VOString({
 	static Draft = new ListingState(ListingStateEnum.Draft);
 	static Expired = new ListingState(ListingStateEnum.Expired);
 	static Blocked = new ListingState(ListingStateEnum.Blocked);
+	static AppealRequested = new ListingState(ListingStateEnum.AppealRequested);
 
 	get isActive(): boolean {
 		return this.valueOf() === ListingStateEnum.Active;

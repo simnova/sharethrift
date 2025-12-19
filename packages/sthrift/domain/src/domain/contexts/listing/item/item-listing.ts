@@ -319,7 +319,7 @@ export class ItemListing<props extends ItemListingProps>
 			const isBlocked = current === ValueObjects.ListingStateEnum.Blocked;
 			if (!isBlocked) return; // no-op if not blocked
 
-			this.props.state = ValueObjects.ListingStateEnum.Active;
+			this.props.state = ValueObjects.ListingStateEnum.AppealRequested;
 			return;
 		}
 

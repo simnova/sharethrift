@@ -141,7 +141,7 @@ Feature: <AggregateRoot>ItemListing
   Scenario: Unblocking a listing with permission
     Given an ItemListing aggregate with permission to publish item listing that is currently blocked
     When I call setBlocked(false)
-    Then the listing's state should be "Active"
+    Then the listing's state should be "Appeal Requested"
 
   Scenario: Blocking already blocked listing
     Given an ItemListing aggregate with permission to publish item listing that is already blocked
@@ -243,8 +243,8 @@ Feature: <AggregateRoot>ItemListing
     When I access schemaVersion property
     Then it should return "2.0.0"
 
-  Scenario: Checking isActive when state is Published
-    Given an ItemListing aggregate in Published state
+  Scenario: Checking isActive when state is Active
+    Given an ItemListing aggregate in Active state
     When I access isActive property
     Then it should return true
 

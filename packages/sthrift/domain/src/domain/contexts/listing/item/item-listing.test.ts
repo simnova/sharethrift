@@ -764,8 +764,8 @@ Scenario(
 			When('I call setBlocked(false)', () => {
 				listing.setBlocked(false);
 			});
-			Then('the listing\'s state should be "Active"', () => {
-				expect(listing.state).toBe('Active');
+			Then('the listing\'s state should be "Appeal Requested"', () => {
+				expect(listing.state).toBe('Appeal Requested');
 			});
 		},
 	);
@@ -1178,12 +1178,12 @@ Scenario(
 	);
 
 	Scenario(
-		'Checking isActive when state is Published',
+		'Checking isActive when state is Active',
 		({ Given, When, Then }) => {
-			Given('an ItemListing aggregate in Published state', () => {
+			Given('an ItemListing aggregate in Active state', () => {
 				passport = makePassport(true, true, true, true);
 				listing = new ItemListing(
-					makeBaseProps({ state: 'Published' }),
+					makeBaseProps({ state: 'Active' }),
 					passport,
 				);
 			});
