@@ -3,8 +3,7 @@ import { ReservationActions } from '../components/reservation-actions.js';
 import { expect, fn, userEvent, within } from 'storybook/test';
 import {
 	canvasUtils,
-	waitForPopconfirm,
-	getPopconfirmElements,
+	triggerPopconfirmAnd,
 } from '../../../../../test-utils/popconfirm-test-utils.ts';
 
 type Canvas = ReturnType<typeof within>;
@@ -14,36 +13,6 @@ const { getButtons, queryButtons, getFirstButton } = canvasUtils;
 const expectNoButtons = (canvas: Canvas) => {
 	const buttons = queryButtons(canvas);
 	expect(buttons.length).toBe(0);
-};
-
-const openCancelPopconfirm = async (canvas: Canvas) => {
-	const cancelButton = getFirstButton(canvas);
-	expect(cancelButton).toBeTruthy();
-
-	if (!cancelButton) return null;
-
-	await userEvent.click(cancelButton);
-	await waitForPopconfirm();
-
-	return getPopconfirmElements();
-};
-
-const confirmPopconfirmAction = async (
-	elements: ReturnType<typeof getPopconfirmElements>,
-) => {
-	const { confirmButton } = elements;
-	if (confirmButton) {
-		await userEvent.click(confirmButton);
-	}
-};
-
-const cancelPopconfirmAction = async (
-	elements: ReturnType<typeof getPopconfirmElements>,
-) => {
-	const { cancelButton } = elements;
-	if (cancelButton) {
-		await userEvent.click(cancelButton);
-	}
 };
 
 const playExpectNoButtons: Story['play'] = ({ canvasElement }) => {
@@ -56,9 +25,42 @@ const playLoadingState: Story['play'] = ({ canvasElement }) => {
 	const buttons = getButtons(canvas);
 	expect(buttons.length).toBeGreaterThan(0);
 
+	// Verify buttons exist (loading state should still render buttons)
 	const primaryButton = getFirstButton(canvas);
 	expect(primaryButton).toBeTruthy();
+
+	// Ant Design loading buttons have aria-busy attribute or loading class
+	const loadingIndicators = canvasElement.querySelectorAll(
+		'.ant-btn-loading, [aria-busy="true"]',
+	);
+	expect(loadingIndicators.length).toBeGreaterThan(0);
 };
+
+// Factory function for no-actions stories
+const createNoActionsStory = (status: string): Story => ({
+	args: {
+		status,
+		onCancel: fn(),
+		onClose: fn(),
+		onMessage: fn(),
+	},
+	play: playExpectNoButtons,
+});
+
+// Factory function for loading state stories
+const createLoadingStory = (
+	status: string,
+	loadingProp: 'cancelLoading' | 'closeLoading',
+): Story => ({
+	args: {
+		status,
+		onCancel: fn(),
+		onClose: fn(),
+		onMessage: fn(),
+		[loadingProp]: true,
+	},
+	play: playLoadingState,
+});
 
 const meta: Meta<typeof ReservationActions> = {
 	title: 'Molecules/ReservationActions',
@@ -164,27 +166,6 @@ export const Cancelled: Story = {
 	},
 };
 
-export const LoadingStates: Story = {
-	args: {
-		status: 'REQUESTED',
-		onCancel: fn(),
-		onClose: fn(),
-		onMessage: fn(),
-		cancelLoading: true,
-	},
-	play: ({ canvasElement }) => {
-		const canvas = within(canvasElement);
-
-		// Verify loading state is rendered
-		const buttons = canvas.getAllByRole('button');
-		expect(buttons.length).toBeGreaterThan(0);
-
-		// Check if any button shows loading state (might be disabled)
-		const disabledButtons = buttons.filter((b) => b.hasAttribute('disabled'));
-		expect(disabledButtons.length).toBeGreaterThanOrEqual(0);
-	},
-};
-
 export const RequestedWithPopconfirm: Story = {
 	args: {
 		status: 'REQUESTED',
@@ -194,14 +175,11 @@ export const RequestedWithPopconfirm: Story = {
 	play: async ({ canvasElement, args }) => {
 		const canvas = within(canvasElement);
 
-		const elements = await openCancelPopconfirm(canvas);
-		if (!elements) return;
+		await triggerPopconfirmAnd(canvas, 'confirm', {
+			expectedTitle: 'Cancel Reservation Request',
+			expectedDescription: 'Are you sure',
+		});
 
-		const { title, description } = elements;
-		expect(title?.textContent).toContain('Cancel Reservation Request');
-		expect(description?.textContent).toContain('Are you sure');
-
-		await confirmPopconfirmAction(elements);
 		expect(args.onCancel).toHaveBeenCalled();
 	},
 };
@@ -215,10 +193,8 @@ export const PopconfirmCancelAction: Story = {
 	play: async ({ canvasElement, args }) => {
 		const canvas = within(canvasElement);
 
-		const elements = await openCancelPopconfirm(canvas);
-		if (!elements) return;
+		await triggerPopconfirmAnd(canvas, 'cancel');
 
-		await cancelPopconfirmAction(elements);
 		expect(args.onCancel).not.toHaveBeenCalled();
 	},
 };
@@ -237,37 +213,18 @@ export const RejectedWithCancel: Story = {
 		const buttons = getButtons(canvas);
 		expect(buttons.length).toBe(1);
 
-		const elements = await openCancelPopconfirm(canvas);
-		if (!elements) return;
+		await triggerPopconfirmAnd(canvas, 'confirm', {
+			expectedTitle: 'Cancel Reservation Request',
+			expectedDescription: 'Are you sure',
+		});
 
-		const { title, description } = elements;
-		expect(title?.textContent).toContain('Cancel Reservation Request');
-		expect(description?.textContent).toContain('Are you sure');
-
-		await confirmPopconfirmAction(elements);
 		expect(args.onCancel).toHaveBeenCalled();
 	},
 };
 
-export const CancelledNoActions: Story = {
-	args: {
-		status: 'CANCELLED',
-		onCancel: fn(),
-		onClose: fn(),
-		onMessage: fn(),
-	},
-	play: playExpectNoButtons,
-};
+export const CancelledNoActions: Story = createNoActionsStory('CANCELLED');
 
-export const ClosedNoActions: Story = {
-	args: {
-		status: 'CLOSED',
-		onCancel: fn(),
-		onClose: fn(),
-		onMessage: fn(),
-	},
-	play: playExpectNoButtons,
-};
+export const ClosedNoActions: Story = createNoActionsStory('CLOSED');
 
 export const AcceptedActions: Story = {
 	args: {
@@ -287,22 +244,12 @@ export const AcceptedActions: Story = {
 	},
 };
 
-export const CancelLoadingState: Story = {
-	args: {
-		status: 'REQUESTED',
-		onCancel: fn(),
-		onMessage: fn(),
-		cancelLoading: true,
-	},
-	play: playLoadingState,
-};
+export const CancelLoadingState: Story = createLoadingStory(
+	'REQUESTED',
+	'cancelLoading',
+);
 
-export const CloseLoadingState: Story = {
-	args: {
-		status: 'ACCEPTED',
-		onClose: fn(),
-		onMessage: fn(),
-		closeLoading: true,
-	},
-	play: playLoadingState,
-};
+export const CloseLoadingState: Story = createLoadingStory(
+	'ACCEPTED',
+	'closeLoading',
+);
