@@ -1,7 +1,10 @@
 import type { Meta, StoryObj } from '@storybook/react';
 import { ReservationActions } from '../components/reservation-actions.js';
 import { expect, fn, within } from 'storybook/test';
-import { triggerPopconfirmAnd } from '../../../../../test-utils/popconfirm-test-utils.ts';
+import {
+	triggerPopconfirmAnd,
+	getLoadingIndicators,
+} from '../../../../../test-utils/popconfirm-test-utils.ts';
 
 const meta: Meta<typeof ReservationActions> = {
 	title: 'Molecules/ReservationActions',
@@ -215,9 +218,9 @@ export const CancelLoadingState: Story = {
 		const buttons = canvas.getAllByRole('button');
 		expect(buttons.length).toBeGreaterThan(0);
 
-		// Ant Design loading buttons have aria-busy attribute or loading class
-		const loadingIndicators = canvasElement.querySelectorAll(
-			'.ant-btn-loading, [aria-busy="true"]',
+		// Use centralized helper to find loading indicators
+		const loadingIndicators = getLoadingIndicators(
+			canvasElement as HTMLElement,
 		);
 		expect(loadingIndicators.length).toBeGreaterThan(0);
 	},
@@ -236,9 +239,9 @@ export const CloseLoadingState: Story = {
 		const buttons = canvas.getAllByRole('button');
 		expect(buttons.length).toBeGreaterThan(0);
 
-		// Ant Design loading buttons have aria-busy attribute or loading class
-		const loadingIndicators = canvasElement.querySelectorAll(
-			'.ant-btn-loading, [aria-busy="true"]',
+		// Use centralized helper to find loading indicators
+		const loadingIndicators = getLoadingIndicators(
+			canvasElement as HTMLElement,
 		);
 		expect(loadingIndicators.length).toBeGreaterThan(0);
 	},
