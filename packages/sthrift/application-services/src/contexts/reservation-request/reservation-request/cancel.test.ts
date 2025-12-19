@@ -11,6 +11,59 @@ const feature = await loadFeature(
 	path.resolve(__dirname, 'features/cancel.feature'),
 );
 
+function buildReservation({
+	id,
+	state,
+	reserverId,
+}: {
+	id: string;
+	state: 'Requested' | 'Rejected' | 'Accepted';
+	reserverId: string;
+}) {
+	return {
+		id,
+		state,
+		loadReserver: vi.fn().mockResolvedValue({ id: reserverId }),
+	};
+}
+
+function mockTransaction({
+	dataSources,
+	getByIdReturn,
+	saveReturn,
+}: {
+	dataSources: DataSources;
+	getByIdReturn?: unknown;
+	saveReturn?: unknown;
+}) {
+	(
+        // biome-ignore lint/suspicious/noExplicitAny: Test mock access
+		dataSources.domainDataSource as any
+	).ReservationRequest.ReservationRequest.ReservationRequestUnitOfWork.withScopedTransaction.mockImplementation(
+		// biome-ignore lint/suspicious/noExplicitAny: Test mock callback
+		async (callback: any) => {
+			const mockRepo = {
+				getById: vi.fn().mockResolvedValue(getByIdReturn),
+				save: vi.fn().mockResolvedValue(saveReturn),
+			};
+			await callback(mockRepo);
+		},
+	);
+}
+
+async function runCancel(
+	dataSources: DataSources,
+	command: ReservationRequestCancelCommand,
+) {
+	const cancelFn = cancel(dataSources);
+	try {
+		const result = await cancelFn(command);
+		return { result, error: undefined };
+	} catch (err) {
+		return { result: undefined, error: err };
+	}
+}
+
 test.for(feature, ({ Scenario, BeforeEachScenario }) => {
 	let mockDataSources: DataSources;
 	let command: ReservationRequestCancelCommand;
@@ -52,37 +105,23 @@ test.for(feature, ({ Scenario, BeforeEachScenario }) => {
 			});
 
 			And('the reservation request exists and is in requested state', () => {
-				const mockReservationRequest = {
-					id: 'reservation-123',
+				const mockReservationRequest = buildReservation({
+					id: command.id,
 					state: 'Requested',
-					loadReserver: vi.fn().mockResolvedValue({ id: 'user-123' }),
-				};
+					reserverId: command.callerId,
+				});
 
-				(
-                    // biome-ignore lint/suspicious/noExplicitAny: Test mock access
-					mockDataSources.domainDataSource as any
-				).ReservationRequest.ReservationRequest.ReservationRequestUnitOfWork.withScopedTransaction.mockImplementation(
-					// biome-ignore lint/suspicious/noExplicitAny: Test mock callback
-					async (callback: any) => {
-						const mockRepo = {
-							getById: vi.fn().mockResolvedValue(mockReservationRequest),
-							save: vi.fn().mockResolvedValue({
-								...mockReservationRequest,
-								state: 'Cancelled',
-							}),
-						};
-						await callback(mockRepo);
-					},
-				);
+				mockTransaction({
+					dataSources: mockDataSources,
+					getByIdReturn: mockReservationRequest,
+					saveReturn: { ...mockReservationRequest, state: 'Cancelled' },
+				});
 			});
 
 			When('the cancel command is executed', async () => {
-				const cancelFn = cancel(mockDataSources);
-				try {
-					result = await cancelFn(command);
-				} catch (err) {
-					error = err;
-				}
+				const outcome = await runCancel(mockDataSources, command);
+				result = outcome.result;
+				error = outcome.error;
 			});
 
 			Then('the reservation request should be cancelled', () => {
@@ -101,37 +140,23 @@ test.for(feature, ({ Scenario, BeforeEachScenario }) => {
 			});
 
 			And('the reservation request exists and is in rejected state', () => {
-				const mockReservationRequest = {
-					id: 'reservation-rejected',
+				const mockReservationRequest = buildReservation({
+					id: command.id,
 					state: 'Rejected',
-					loadReserver: vi.fn().mockResolvedValue({ id: 'user-123' }),
-				};
+					reserverId: command.callerId,
+				});
 
-				(
-                    // biome-ignore lint/suspicious/noExplicitAny: Test mock access
-					mockDataSources.domainDataSource as any
-				).ReservationRequest.ReservationRequest.ReservationRequestUnitOfWork.withScopedTransaction.mockImplementation(
-					// biome-ignore lint/suspicious/noExplicitAny: Test mock callback
-					async (callback: any) => {
-						const mockRepo = {
-							getById: vi.fn().mockResolvedValue(mockReservationRequest),
-							save: vi.fn().mockResolvedValue({
-								...mockReservationRequest,
-								state: 'Cancelled',
-							}),
-						};
-						await callback(mockRepo);
-					},
-				);
+				mockTransaction({
+					dataSources: mockDataSources,
+					getByIdReturn: mockReservationRequest,
+					saveReturn: { ...mockReservationRequest, state: 'Cancelled' },
+				});
 			});
 
 			When('the cancel command is executed', async () => {
-				const cancelFn = cancel(mockDataSources);
-				try {
-					result = await cancelFn(command);
-				} catch (err) {
-					error = err;
-				}
+				const outcome = await runCancel(mockDataSources, command);
+				result = outcome.result;
+				error = outcome.error;
 			});
 
 			Then('the reservation request should be cancelled', () => {
@@ -150,28 +175,17 @@ test.for(feature, ({ Scenario, BeforeEachScenario }) => {
 			});
 
 			And('the reservation request does not exist', () => {
-				(
-                    // biome-ignore lint/suspicious/noExplicitAny: Test mock access
-					mockDataSources.domainDataSource as any
-				).ReservationRequest.ReservationRequest.ReservationRequestUnitOfWork.withScopedTransaction.mockImplementation(
-					// biome-ignore lint/suspicious/noExplicitAny: Test mock callback
-					async (callback: any) => {
-						const mockRepo = {
-							getById: vi.fn().mockResolvedValue(undefined),
-							save: vi.fn(),
-						};
-						await callback(mockRepo);
-					},
-				);
+				mockTransaction({
+					dataSources: mockDataSources,
+					getByIdReturn: undefined,
+					saveReturn: undefined,
+				});
 			});
 
 			When('the cancel command is executed', async () => {
-				const cancelFn = cancel(mockDataSources);
-				try {
-					result = await cancelFn(command);
-				} catch (err) {
-					error = err;
-				}
+				const outcome = await runCancel(mockDataSources, command);
+				result = outcome.result;
+				error = outcome.error;
 			});
 
 			Then('an error "Reservation request not found" should be thrown', () => {
@@ -193,34 +207,23 @@ test.for(feature, ({ Scenario, BeforeEachScenario }) => {
 			});
 
 			And('save returns undefined', () => {
-				const mockReservationRequest = {
-					id: 'reservation-456',
+				const mockReservationRequest = buildReservation({
+					id: command.id,
 					state: 'Requested',
-					loadReserver: vi.fn().mockResolvedValue({ id: 'user-123' }),
-				};
+					reserverId: command.callerId,
+				});
 
-				(
-                    // biome-ignore lint/suspicious/noExplicitAny: Test mock access
-					mockDataSources.domainDataSource as any
-				).ReservationRequest.ReservationRequest.ReservationRequestUnitOfWork.withScopedTransaction.mockImplementation(
-					// biome-ignore lint/suspicious/noExplicitAny: Test mock callback
-					async (callback: any) => {
-						const mockRepo = {
-							getById: vi.fn().mockResolvedValue(mockReservationRequest),
-							save: vi.fn().mockResolvedValue(undefined),
-						};
-						await callback(mockRepo);
-					},
-				);
+				mockTransaction({
+					dataSources: mockDataSources,
+					getByIdReturn: mockReservationRequest,
+					saveReturn: undefined,
+				});
 			});
 
 			When('the cancel command is executed', async () => {
-				const cancelFn = cancel(mockDataSources);
-				try {
-					result = await cancelFn(command);
-				} catch (err) {
-					error = err;
-				}
+				const outcome = await runCancel(mockDataSources, command);
+				result = outcome.result;
+				error = outcome.error;
 			});
 
 			Then(
@@ -241,34 +244,23 @@ test.for(feature, ({ Scenario, BeforeEachScenario }) => {
 			});
 
 			And('the reservation request is in Accepted state', () => {
-				const mockReservationRequest = {
-					id: 'reservation-accepted',
+				const mockReservationRequest = buildReservation({
+					id: command.id,
 					state: 'Accepted',
-					loadReserver: vi.fn().mockResolvedValue({ id: 'user-123' }),
-				};
+					reserverId: command.callerId,
+				});
 
-				(
-                    // biome-ignore lint/suspicious/noExplicitAny: Test mock access
-					mockDataSources.domainDataSource as any
-				).ReservationRequest.ReservationRequest.ReservationRequestUnitOfWork.withScopedTransaction.mockImplementation(
-					// biome-ignore lint/suspicious/noExplicitAny: Test mock callback
-					async (callback: any) => {
-						const mockRepo = {
-							getById: vi.fn().mockResolvedValue(mockReservationRequest),
-							save: vi.fn(),
-						};
-						await callback(mockRepo);
-					},
-				);
+				mockTransaction({
+					dataSources: mockDataSources,
+					getByIdReturn: mockReservationRequest,
+					saveReturn: undefined,
+				});
 			});
 
 			When('the cancel command is executed', async () => {
-				const cancelFn = cancel(mockDataSources);
-				try {
-					result = await cancelFn(command);
-				} catch (err) {
-					error = err;
-				}
+				const outcome = await runCancel(mockDataSources, command);
+				result = outcome.result;
+				error = outcome.error;
 			});
 
 			Then(
@@ -291,34 +283,23 @@ test.for(feature, ({ Scenario, BeforeEachScenario }) => {
 			});
 
 			And('the reservation request belongs to a different user', () => {
-				const mockReservationRequest = {
-					id: 'reservation-789',
+				const mockReservationRequest = buildReservation({
+					id: command.id,
 					state: 'Requested',
-					loadReserver: vi.fn().mockResolvedValue({ id: 'user-123' }),
-				};
+					reserverId: 'user-123', // Different from command.callerId
+				});
 
-				(
-                    // biome-ignore lint/suspicious/noExplicitAny: Test mock access
-					mockDataSources.domainDataSource as any
-				).ReservationRequest.ReservationRequest.ReservationRequestUnitOfWork.withScopedTransaction.mockImplementation(
-					// biome-ignore lint/suspicious/noExplicitAny: Test mock callback
-					async (callback: any) => {
-						const mockRepo = {
-							getById: vi.fn().mockResolvedValue(mockReservationRequest),
-							save: vi.fn(),
-						};
-						await callback(mockRepo);
-					},
-				);
+				mockTransaction({
+					dataSources: mockDataSources,
+					getByIdReturn: mockReservationRequest,
+					saveReturn: undefined,
+				});
 			});
 
 			When('the cancel command is executed', async () => {
-				const cancelFn = cancel(mockDataSources);
-				try {
-					result = await cancelFn(command);
-				} catch (err) {
-					error = err;
-				}
+				const outcome = await runCancel(mockDataSources, command);
+				result = outcome.result;
+				error = outcome.error;
 			});
 
 			Then(

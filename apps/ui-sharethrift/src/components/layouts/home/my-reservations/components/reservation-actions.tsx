@@ -11,19 +11,29 @@ interface CancelWithPopconfirmProps {
 const CancelWithPopconfirm: React.FC<CancelWithPopconfirmProps> = ({
 	onConfirm,
 	loading,
-}) => (
-	<Popconfirm
-		title="Cancel Reservation Request"
-		description="Are you sure you want to cancel this request?"
-		onConfirm={onConfirm}
-		okText="Yes"
-		cancelText="No"
-	>
-		<span>
-			<ReservationActionButton action="Cancel" loading={loading} />
-		</span>
-	</Popconfirm>
-);
+}) => {
+	const handleConfirm = () => {
+		if (loading) {
+			return;
+		}
+		onConfirm?.();
+	};
+
+	return (
+		<Popconfirm
+			title="Cancel Reservation Request"
+			description="Are you sure you want to cancel this request?"
+			onConfirm={handleConfirm}
+			okText="Yes"
+			cancelText="No"
+			okButtonProps={{ loading }}
+		>
+			<span>
+				<ReservationActionButton action="Cancel" loading={loading} />
+			</span>
+		</Popconfirm>
+	);
+};
 
 interface ReservationActionsProps {
 	status: ReservationActionStatus;

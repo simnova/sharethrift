@@ -63,19 +63,30 @@ export const triggerPopconfirmAnd = async (
 	canvas: Canvas,
 	action: PopconfirmAction,
 	options?: {
+		triggerButtonLabel?: string | RegExp;
 		triggerButtonIndex?: number;
 		expectedTitle?: string;
 		expectedDescription?: string;
 	},
 ) => {
 	const {
+		triggerButtonLabel,
 		triggerButtonIndex = 0,
 		expectedTitle,
 		expectedDescription,
 	} = options ?? {};
 
-	const buttons = canvas.getAllByRole('button');
-	const triggerButton = buttons[triggerButtonIndex];
+	let triggerButton: HTMLElement | undefined;
+
+	if (triggerButtonLabel) {
+		triggerButton = (await canvas.findByRole('button', {
+			name: triggerButtonLabel,
+		})) as HTMLElement;
+	} else {
+		const buttons = canvas.getAllByRole('button');
+		triggerButton = buttons[triggerButtonIndex] as HTMLElement | undefined;
+	}
+
 	expect(triggerButton).toBeTruthy();
 
 	if (!triggerButton) return;
