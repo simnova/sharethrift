@@ -45,86 +45,34 @@ export class ItemListing<props extends ItemListingProps>
 		},
 		passport: Passport,
 	): ItemListing<props> {
+		const id = uuidv4();
+		const now = new Date();
 
-		const newInstance = new ItemListing(newProps, passport);
-		newInstance.markAsNew();
-		newInstance.sharer = sharer;
-		newInstance.title = new ValueObjects.Title(fields.title).valueOf();
-		newInstance.description = new ValueObjects.Description(
-			fields.description,
-		).valueOf();
-		newInstance.category = new ValueObjects.Category(fields.category).valueOf();
-		newInstance.location = new ValueObjects.Location(fields.location).valueOf();
-		newInstance.sharingPeriodStart = fields.sharingPeriodStart;
-		newInstance.sharingPeriodEnd = fields.sharingPeriodEnd;
-		if (fields.images) {
-			newInstance.images = fields.images;
-		}
-		newInstance.state = fields.isDraft
-			? ValueObjects.ListingState.Draft.valueOf()
-			: ValueObjects.ListingState.Active.valueOf();
-
-		// For drafts, use placeholder values if fields are empty
-		const title =
-			isDraft && (!fields.title || fields.title.trim() === '')
-				? 'Draft Title'
-				: fields.title;
-		const description =
-			isDraft && (!fields.description || fields.description.trim() === '')
-				? 'Draft Description'
-				: fields.description;
-		const category =
-			isDraft && (!fields.category || fields.category.trim() === '')
-				? 'Miscellaneous'
-				: fields.category;
-		const location =
-			isDraft && (!fields.location || fields.location.trim() === '')
-				? 'Draft Location'
-				: fields.location;
-
-		// For drafts, use default dates if not provided or invalid
-		const defaultStartDate = new Date();
-		defaultStartDate.setDate(defaultStartDate.getDate() + 1); // Tomorrow
-		const defaultEndDate = new Date();
-		defaultEndDate.setDate(defaultEndDate.getDate() + 30); // 30 days from now
-
-		const sharingPeriodStart =
-			isDraft &&
-			(!fields.sharingPeriodStart ||
-				Number.isNaN(fields.sharingPeriodStart.getTime()))
-				? defaultStartDate
-				: fields.sharingPeriodStart;
-		const sharingPeriodEnd =
-			isDraft &&
-			(!fields.sharingPeriodEnd ||
-				Number.isNaN(fields.sharingPeriodEnd.getTime()))
-				? defaultEndDate
-				: fields.sharingPeriodEnd;
-
-		const itemListingProps = {
+		const newProps = {
 			id,
 			sharer: sharer,
-			title: title,
-			description: new ValueObjects.Description(description),
-			category: new ValueObjects.Category(category),
-			location: new ValueObjects.Location(location),
-			sharingPeriodStart: sharingPeriodStart,
-			sharingPeriodEnd: sharingPeriodEnd,
+			title: fields.title,
+			description: fields.description,
+			category: fields.category,
+			location: fields.location,
+			sharingPeriodStart: fields.sharingPeriodStart,
+			sharingPeriodEnd: fields.sharingPeriodEnd,
 			images: fields.images ?? [],
-			state: isDraft
-				? ValueObjects.ListingState.Drafted.valueOf()
-				: ValueObjects.ListingState.Published.valueOf(),
+			state: fields.isDraft ? 'Draft' : 'Active',
 			createdAt: now,
 			updatedAt: now,
 			schemaVersion: '1.0.0',
 			reports: 0,
 			sharingHistory: [],
-			listingType: 'item-listing',
+			listingType: 'item',
+			expiresAt: fields.expiresAt,
+			loadSharer: async () => sharer,
 		} as unknown as props;
 
-		const aggregate = new ItemListing(itemListingProps, passport);
-		aggregate.markAsNew();
-		return aggregate;
+		const newInstance = new ItemListing(newProps, passport);
+		newInstance.markAsNew();
+		newInstance.isNew = false;
+		return newInstance;
 	}
 
 	private markAsNew(): void {
@@ -361,7 +309,7 @@ export class ItemListing<props extends ItemListingProps>
 			);
 		}
 
-		this.props.state = new ValueObjects.ListingState('Published').valueOf();
+		this.props.state = new ValueObjects.ListingState('Active').valueOf();
 	}
 
 	/**
