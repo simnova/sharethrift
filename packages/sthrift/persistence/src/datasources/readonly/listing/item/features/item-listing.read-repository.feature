@@ -38,12 +38,12 @@ Given an ItemListingReadRepository instance with models and passport
 
 	Scenario: Getting paged listings with sorter ascending
 		Given ItemListing documents with different dates
-		When I call getPaged with sorter field "publishedAt" and order "ascend"
+		When I call getPaged with sorter field "createdAt" and order "ascend"
 		Then I should receive listings sorted ascending
 
 	Scenario: Getting paged listings with sorter descending
 		Given ItemListing documents with different dates
-		When I call getPaged with sorter field "publishedAt" and order "descend"
+		When I call getPaged with sorter field "createdAt" and order "descend"
 		Then I should receive listings sorted descending
 
 	Scenario: Getting paged listings with default sort

@@ -24,7 +24,7 @@ const meta: Meta<typeof AdminListings> = {
 						variables: {
 							page: 1,
 							pageSize: 6,
-							statusFilters: ['Appeal Requested', 'Blocked'],
+							statusFilters: ['Blocked'],
 						},
 					},
 					result: {

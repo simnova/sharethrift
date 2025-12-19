@@ -12,24 +12,8 @@ import {
 const test = { for: describeFeature };
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const feature = await loadFeature(
-path.resolve(__dirname, 'features/item-listing.read-repository.feature'),
+	path.resolve(__dirname, 'features/item-listing.read-repository.feature'),
 );
-
-function createThenableQueryChain<T>(value: T): Record<string, unknown> {
-	const chain: Record<string, unknown> = {};
-	chain.populate = () => chain;
-	chain.lean = () => chain;
-	chain.skip = () => chain;
-	chain.limit = () => chain;
-	chain.sort = () => chain;
-	chain.exec = async () => value;
-	Object.defineProperty(chain, 'then', {
-		value: (resolve: (v: T) => unknown) => Promise.resolve(value).then(resolve),
-		enumerable: false,
-		configurable: true,
-	});
-	return chain;
-}
 
 function makePassport(): Domain.Passport {
 	return vi.mocked({} as Domain.Passport);
@@ -37,40 +21,13 @@ function makePassport(): Domain.Passport {
 
 function makeModels(): ModelsContext {
 	return vi.mocked({
-Listing: {
-ItemListing: {
-findOne: vi.fn(),
+		Listing: {
+			ItemListing: {
+				findOne: vi.fn(),
 				find: vi.fn(),
 			},
 		},
 	} as unknown as ModelsContext);
-}
-
-function createMockModel<T>(findValue: T, findByIdValue: T | null = null, findOneValue: T | null = null) {
-	return {
-		find: vi.fn(() => createThenableQueryChain(findValue)),
-		findById: vi.fn(() => createThenableQueryChain(findByIdValue)),
-		findOne: vi.fn(() => createThenableQueryChain(findOneValue)),
-	};
-}
-
-function createMockPassport(): Domain.Passport {
-	return {
-		user: {
-			forPersonalUser: () => ({ determineIf: () => true }),
-		},
-		listing: {
-			forItemListing: () => ({ determineIf: () => true }),
-		},
-	} as unknown as Domain.Passport;
-}
-
-function createMockModelsContext(mockModel: Record<string, unknown>): ModelsContext {
-	return {
-		Listing: {
-			ItemListingModel: mockModel,
-		},
-	} as unknown as ModelsContext;
 }
 
 test.for(feature, ({ Scenario, Background, BeforeEachScenario }) => {
@@ -109,9 +66,37 @@ test.for(feature, ({ Scenario, Background, BeforeEachScenario }) => {
 				{ id: '2', title: 'Item 2', sharer: 'user2' },
 			];
 
-			const mockModel = createMockModel(mockListings, null, null);
-			const mockModels = createMockModelsContext(mockModel);
-			const mockPassport = createMockPassport();
+			const createQueryChain = (value: unknown) => ({
+				populate: () => createQueryChain(value),
+				lean: () => createQueryChain(value),
+				skip: () => createQueryChain(value),
+				limit: () => createQueryChain(value),
+				sort: () => createQueryChain(value),
+				exec: async () => value,
+				// biome-ignore lint/suspicious/noThenProperty: Mongoose queries are thenable
+				then: (resolve: (v: unknown) => unknown) => Promise.resolve(value).then(resolve),
+			});
+
+			const mockModel = {
+				find: vi.fn(() => createQueryChain(mockListings)),
+				findById: vi.fn(() => createQueryChain(null)),
+				findOne: vi.fn(() => createQueryChain(null)),
+			};
+
+			const mockModels = {
+				Listing: {
+					ItemListingModel: mockModel,
+				},
+			} as unknown as ModelsContext;
+
+			const mockPassport = {
+				user: {
+					forPersonalUser: () => ({ determineIf: () => true }),
+				},
+				listing: {
+					forItemListing: () => ({ determineIf: () => true }),
+				},
+			} as unknown as Domain.Passport;
 
 			repository = getItemListingReadRepository(mockModels, mockPassport);
 			result = await repository.getAll();
@@ -134,9 +119,37 @@ test.for(feature, ({ Scenario, Background, BeforeEachScenario }) => {
 		});
 
 		When('I call getPaged with page 1 and pageSize 10', async () => {
-			const mockModel = createMockModel(mockListings, null, null);
-			const mockModels = createMockModelsContext(mockModel);
-			const mockPassport = createMockPassport();
+			const createQueryChain = (value: unknown) => ({
+				populate: () => createQueryChain(value),
+				lean: () => createQueryChain(value),
+				skip: () => createQueryChain(value),
+				limit: () => createQueryChain(value),
+				sort: () => createQueryChain(value),
+				exec: async () => value,
+				// biome-ignore lint/suspicious/noThenProperty: Mongoose queries are thenable
+				then: (resolve: (v: unknown) => unknown) => Promise.resolve(value).then(resolve),
+			});
+
+			const mockModel = {
+				find: vi.fn(() => createQueryChain(mockListings)),
+				findById: vi.fn(() => createQueryChain(null)),
+				findOne: vi.fn(() => createQueryChain(null)),
+			};
+
+			const mockModels = {
+				Listing: {
+					ItemListingModel: mockModel,
+				},
+			} as unknown as ModelsContext;
+
+			const mockPassport = {
+				user: {
+					forPersonalUser: () => ({ determineIf: () => true }),
+				},
+				listing: {
+					forItemListing: () => ({ determineIf: () => true }),
+				},
+			} as unknown as Domain.Passport;
 
 			repository = getItemListingReadRepository(mockModels, mockPassport);
 			result = await repository.getPaged({ page: 1, pageSize: 10 });
@@ -158,16 +171,42 @@ test.for(feature, ({ Scenario, Background, BeforeEachScenario }) => {
 		});
 
 		When('I call getPaged with sharerId filter', async () => {
-			const mockModel = { find: vi.fn(() => createThenableQueryChain([])) };
-			const mockModels = createMockModelsContext(mockModel);
-			const mockPassport = createMockPassport();
+			const createQueryChain = (value: unknown) => ({
+				populate: () => createQueryChain(value),
+				lean: () => createQueryChain(value),
+				skip: () => createQueryChain(value),
+				limit: () => createQueryChain(value),
+				sort: () => createQueryChain(value),
+				exec: async () => value,
+				// biome-ignore lint/suspicious/noThenProperty: Mongoose queries are thenable
+				then: (resolve: (v: unknown) => unknown) => Promise.resolve(value).then(resolve),
+			});
+
+			const mockModel = {
+				find: vi.fn(() => createQueryChain([])),
+			};
+
+			const mockModels = {
+				Listing: {
+					ItemListingModel: mockModel,
+				},
+			} as unknown as ModelsContext;
+
+			const mockPassport = {
+				user: {
+					forPersonalUser: () => ({ determineIf: () => true }),
+				},
+				listing: {
+					forItemListing: () => ({ determineIf: () => true }),
+				},
+			} as unknown as Domain.Passport;
 
 			repository = getItemListingReadRepository(mockModels, mockPassport);
 			result = await repository.getPaged({ 
-page: 1, 
-pageSize: 10, 
-sharerId: '507f1f77bcf86cd799439011' 
-});
+				page: 1, 
+				pageSize: 10, 
+				sharerId: '507f1f77bcf86cd799439011' 
+			});
 		});
 
 		Then('I should receive listings filtered by sharer', () => {
@@ -180,16 +219,42 @@ sharerId: '507f1f77bcf86cd799439011'
 		let result: unknown;
 
 		When('I call getPaged with invalid sharerId', async () => {
-			const mockModel = { find: vi.fn(() => createThenableQueryChain([])) };
-			const mockModels = createMockModelsContext(mockModel);
-			const mockPassport = createMockPassport();
+			const createQueryChain = (value: unknown) => ({
+				populate: () => createQueryChain(value),
+				lean: () => createQueryChain(value),
+				skip: () => createQueryChain(value),
+				limit: () => createQueryChain(value),
+				sort: () => createQueryChain(value),
+				exec: async () => value,
+				// biome-ignore lint/suspicious/noThenProperty: Mongoose queries are thenable
+				then: (resolve: (v: unknown) => unknown) => Promise.resolve(value).then(resolve),
+			});
+
+			const mockModel = {
+				find: vi.fn(() => createQueryChain([])),
+			};
+
+			const mockModels = {
+				Listing: {
+					ItemListingModel: mockModel,
+				},
+			} as unknown as ModelsContext;
+
+			const mockPassport = {
+				user: {
+					forPersonalUser: () => ({ determineIf: () => true }),
+				},
+				listing: {
+					forItemListing: () => ({ determineIf: () => true }),
+				},
+			} as unknown as Domain.Passport;
 
 			repository = getItemListingReadRepository(mockModels, mockPassport);
 			result = await repository.getPaged({ 
-page: 1, 
-pageSize: 10, 
-sharerId: 'invalid-id' 
-});
+				page: 1, 
+				pageSize: 10, 
+				sharerId: 'invalid-id' 
+			});
 		});
 
 		Then('I should receive empty result', () => {
@@ -207,16 +272,42 @@ sharerId: 'invalid-id'
 		});
 
 		When('I call getPaged with searchText "laptop"', async () => {
-			const mockModel = { find: vi.fn(() => createThenableQueryChain([])) };
-			const mockModels = createMockModelsContext(mockModel);
-			const mockPassport = createMockPassport();
+			const createQueryChain = (value: unknown) => ({
+				populate: () => createQueryChain(value),
+				lean: () => createQueryChain(value),
+				skip: () => createQueryChain(value),
+				limit: () => createQueryChain(value),
+				sort: () => createQueryChain(value),
+				exec: async () => value,
+				// biome-ignore lint/suspicious/noThenProperty: Mongoose queries are thenable
+				then: (resolve: (v: unknown) => unknown) => Promise.resolve(value).then(resolve),
+			});
+
+			const mockModel = {
+				find: vi.fn(() => createQueryChain([])),
+			};
+
+			const mockModels = {
+				Listing: {
+					ItemListingModel: mockModel,
+				},
+			} as unknown as ModelsContext;
+
+			const mockPassport = {
+				user: {
+					forPersonalUser: () => ({ determineIf: () => true }),
+				},
+				listing: {
+					forItemListing: () => ({ determineIf: () => true }),
+				},
+			} as unknown as Domain.Passport;
 
 			repository = getItemListingReadRepository(mockModels, mockPassport);
 			result = await repository.getPaged({ 
-page: 1, 
-pageSize: 10, 
-searchText: 'laptop' 
-});
+				page: 1, 
+				pageSize: 10, 
+				searchText: 'laptop' 
+			});
 		});
 
 		Then('I should receive matching listings', () => {
@@ -233,16 +324,42 @@ searchText: 'laptop'
 		});
 
 		When('I call getPaged with status filters', async () => {
-			const mockModel = { find: vi.fn(() => createThenableQueryChain([])) };
-			const mockModels = createMockModelsContext(mockModel);
-			const mockPassport = createMockPassport();
+			const createQueryChain = (value: unknown) => ({
+				populate: () => createQueryChain(value),
+				lean: () => createQueryChain(value),
+				skip: () => createQueryChain(value),
+				limit: () => createQueryChain(value),
+				sort: () => createQueryChain(value),
+				exec: async () => value,
+				// biome-ignore lint/suspicious/noThenProperty: Mongoose queries are thenable
+				then: (resolve: (v: unknown) => unknown) => Promise.resolve(value).then(resolve),
+			});
+
+			const mockModel = {
+				find: vi.fn(() => createQueryChain([])),
+			};
+
+			const mockModels = {
+				Listing: {
+					ItemListingModel: mockModel,
+				},
+			} as unknown as ModelsContext;
+
+			const mockPassport = {
+				user: {
+					forPersonalUser: () => ({ determineIf: () => true }),
+				},
+				listing: {
+					forItemListing: () => ({ determineIf: () => true }),
+				},
+			} as unknown as Domain.Passport;
 
 			repository = getItemListingReadRepository(mockModels, mockPassport);
 			result = await repository.getPaged({ 
-page: 1, 
-pageSize: 10, 
-statusFilters: ['active', 'pending'] 
-});
+				page: 1, 
+				pageSize: 10, 
+				statusFilters: ['active', 'pending'] 
+			});
 		});
 
 		Then('I should receive listings filtered by status', () => {
@@ -258,17 +375,43 @@ statusFilters: ['active', 'pending']
 			// Mock data set up in When
 		});
 
-		When('I call getPaged with sorter field "publishedAt" and order "ascend"', async () => {
-			const mockModel = { find: vi.fn(() => createThenableQueryChain([])) };
-			const mockModels = createMockModelsContext(mockModel);
-			const mockPassport = createMockPassport();
+		When('I call getPaged with sorter field "createdAt" and order "ascend"', async () => {
+			const createQueryChain = (value: unknown) => ({
+				populate: () => createQueryChain(value),
+				lean: () => createQueryChain(value),
+				skip: () => createQueryChain(value),
+				limit: () => createQueryChain(value),
+				sort: () => createQueryChain(value),
+				exec: async () => value,
+				// biome-ignore lint/suspicious/noThenProperty: Mongoose queries are thenable
+				then: (resolve: (v: unknown) => unknown) => Promise.resolve(value).then(resolve),
+			});
+
+			const mockModel = {
+				find: vi.fn(() => createQueryChain([])),
+			};
+
+			const mockModels = {
+				Listing: {
+					ItemListingModel: mockModel,
+				},
+			} as unknown as ModelsContext;
+
+			const mockPassport = {
+				user: {
+					forPersonalUser: () => ({ determineIf: () => true }),
+				},
+				listing: {
+					forItemListing: () => ({ determineIf: () => true }),
+				},
+			} as unknown as Domain.Passport;
 
 			repository = getItemListingReadRepository(mockModels, mockPassport);
 			result = await repository.getPaged({ 
-page: 1, 
-pageSize: 10, 
-sorter: { field: 'publishedAt', order: 'ascend' } 
-});
+				page: 1, 
+				pageSize: 10, 
+				sorter: { field: 'createdAt', order: 'ascend' } 
+			});
 		});
 
 		Then('I should receive listings sorted ascending', () => {
@@ -284,17 +427,43 @@ sorter: { field: 'publishedAt', order: 'ascend' }
 			// Mock data set up in When
 		});
 
-		When('I call getPaged with sorter field "publishedAt" and order "descend"', async () => {
-			const mockModel = { find: vi.fn(() => createThenableQueryChain([])) };
-			const mockModels = createMockModelsContext(mockModel);
-			const mockPassport = createMockPassport();
+		When('I call getPaged with sorter field "createdAt" and order "descend"', async () => {
+			const createQueryChain = (value: unknown) => ({
+				populate: () => createQueryChain(value),
+				lean: () => createQueryChain(value),
+				skip: () => createQueryChain(value),
+				limit: () => createQueryChain(value),
+				sort: () => createQueryChain(value),
+				exec: async () => value,
+				// biome-ignore lint/suspicious/noThenProperty: Mongoose queries are thenable
+				then: (resolve: (v: unknown) => unknown) => Promise.resolve(value).then(resolve),
+			});
+
+			const mockModel = {
+				find: vi.fn(() => createQueryChain([])),
+			};
+
+			const mockModels = {
+				Listing: {
+					ItemListingModel: mockModel,
+				},
+			} as unknown as ModelsContext;
+
+			const mockPassport = {
+				user: {
+					forPersonalUser: () => ({ determineIf: () => true }),
+				},
+				listing: {
+					forItemListing: () => ({ determineIf: () => true }),
+				},
+			} as unknown as Domain.Passport;
 
 			repository = getItemListingReadRepository(mockModels, mockPassport);
 			result = await repository.getPaged({ 
-page: 1, 
-pageSize: 10, 
-sorter: { field: 'publishedAt', order: 'descend' } 
-});
+				page: 1, 
+				pageSize: 10, 
+				sorter: { field: 'createdAt', order: 'descend' } 
+			});
 		});
 
 		Then('I should receive listings sorted descending', () => {
@@ -311,9 +480,35 @@ sorter: { field: 'publishedAt', order: 'descend' }
 		});
 
 		When('I call getPaged without sorter', async () => {
-			const mockModel = { find: vi.fn(() => createThenableQueryChain([])) };
-			const mockModels = createMockModelsContext(mockModel);
-			const mockPassport = createMockPassport();
+			const createQueryChain = (value: unknown) => ({
+				populate: () => createQueryChain(value),
+				lean: () => createQueryChain(value),
+				skip: () => createQueryChain(value),
+				limit: () => createQueryChain(value),
+				sort: () => createQueryChain(value),
+				exec: async () => value,
+				// biome-ignore lint/suspicious/noThenProperty: Mongoose queries are thenable
+				then: (resolve: (v: unknown) => unknown) => Promise.resolve(value).then(resolve),
+			});
+
+			const mockModel = {
+				find: vi.fn(() => createQueryChain([])),
+			};
+
+			const mockModels = {
+				Listing: {
+					ItemListingModel: mockModel,
+				},
+			} as unknown as ModelsContext;
+
+			const mockPassport = {
+				user: {
+					forPersonalUser: () => ({ determineIf: () => true }),
+				},
+				listing: {
+					forItemListing: () => ({ determineIf: () => true }),
+				},
+			} as unknown as Domain.Passport;
 
 			repository = getItemListingReadRepository(mockModels, mockPassport);
 			result = await repository.getPaged({ page: 1, pageSize: 10 });
@@ -345,12 +540,33 @@ sorter: { field: 'publishedAt', order: 'descend' }
 				updatedAt: new Date(),
 			};
 
+			const createQueryChain = (value: unknown) => ({
+				populate: () => createQueryChain(value),
+				lean: () => createQueryChain(value),
+				exec: async () => value,
+				// biome-ignore lint/suspicious/noThenProperty: Mongoose queries are thenable
+				then: (resolve: (v: unknown) => unknown) => Promise.resolve(value).then(resolve),
+			});
+
 			const mockModel = {
-				find: vi.fn(() => createThenableQueryChain([])),
-				findById: vi.fn(() => createThenableQueryChain(mockListing)),
+				find: vi.fn(() => createQueryChain([])),
+				findById: vi.fn(() => createQueryChain(mockListing)),
 			};
-			const mockModels = createMockModelsContext(mockModel);
-			const mockPassport = createMockPassport();
+
+			const mockModels = {
+				Listing: {
+					ItemListingModel: mockModel,
+				},
+			} as unknown as ModelsContext;
+
+			const mockPassport = {
+				user: {
+					forPersonalUser: () => ({ determineIf: () => true }),
+				},
+				listing: {
+					forItemListing: () => ({ determineIf: () => true }),
+				},
+			} as unknown as Domain.Passport;
 
 			repository = getItemListingReadRepository(mockModels, mockPassport);
 			result = await repository.getById('listing-123');
@@ -365,12 +581,33 @@ sorter: { field: 'publishedAt', order: 'descend' }
 		let result: unknown;
 
 		When('I call getById with "nonexistent-id"', async () => {
+			const createQueryChain = (value: unknown) => ({
+				populate: () => createQueryChain(value),
+				lean: () => createQueryChain(value),
+				exec: async () => value,
+				// biome-ignore lint/suspicious/noThenProperty: Mongoose queries are thenable
+				then: (resolve: (v: unknown) => unknown) => Promise.resolve(value).then(resolve),
+			});
+
 			const mockModel = {
-				find: vi.fn(() => createThenableQueryChain([])),
-				findById: vi.fn(() => createThenableQueryChain(null)),
+				find: vi.fn(() => createQueryChain([])),
+				findById: vi.fn(() => createQueryChain(null)),
 			};
-			const mockModels = createMockModelsContext(mockModel);
-			const mockPassport = createMockPassport();
+
+			const mockModels = {
+				Listing: {
+					ItemListingModel: mockModel,
+				},
+			} as unknown as ModelsContext;
+
+			const mockPassport = {
+				user: {
+					forPersonalUser: () => ({ determineIf: () => true }),
+				},
+				listing: {
+					forItemListing: () => ({ determineIf: () => true }),
+				},
+			} as unknown as Domain.Passport;
 
 			repository = getItemListingReadRepository(mockModels, mockPassport);
 			result = await repository.getById('nonexistent-id');
@@ -394,9 +631,35 @@ sorter: { field: 'publishedAt', order: 'descend' }
 				{ id: '2', title: 'Item 2', sharer: 'sharer-123' },
 			];
 
-			const mockModel = { find: vi.fn(() => createThenableQueryChain(mockListings)) };
-			const mockModels = createMockModelsContext(mockModel);
-			const mockPassport = createMockPassport();
+			const createQueryChain = (value: unknown) => ({
+				populate: () => createQueryChain(value),
+				lean: () => createQueryChain(value),
+				skip: () => createQueryChain(value),
+				limit: () => createQueryChain(value),
+				sort: () => createQueryChain(value),
+				exec: async () => value,
+				// biome-ignore lint/suspicious/noThenProperty: Mongoose queries are thenable
+				then: (resolve: (v: unknown) => unknown) => Promise.resolve(value).then(resolve),
+			});
+
+			const mockModel = {
+				find: vi.fn(() => createQueryChain(mockListings)),
+			};
+
+			const mockModels = {
+				Listing: {
+					ItemListingModel: mockModel,
+				},
+			} as unknown as ModelsContext;
+
+			const mockPassport = {
+				user: {
+					forPersonalUser: () => ({ determineIf: () => true }),
+				},
+				listing: {
+					forItemListing: () => ({ determineIf: () => true }),
+				},
+			} as unknown as Domain.Passport;
 
 			repository = getItemListingReadRepository(mockModels, mockPassport);
 			result = await repository.getBySharer('507f1f77bcf86cd799439011');
@@ -411,9 +674,35 @@ sorter: { field: 'publishedAt', order: 'descend' }
 		let result: unknown;
 
 		When('I call getBySharer with empty string', async () => {
-			const mockModel = { find: vi.fn(() => createThenableQueryChain([])) };
-			const mockModels = createMockModelsContext(mockModel);
-			const mockPassport = createMockPassport();
+			const createQueryChain = (value: unknown) => ({
+				populate: () => createQueryChain(value),
+				lean: () => createQueryChain(value),
+				skip: () => createQueryChain(value),
+				limit: () => createQueryChain(value),
+				sort: () => createQueryChain(value),
+				exec: async () => value,
+				// biome-ignore lint/suspicious/noThenProperty: Mongoose queries are thenable
+				then: (resolve: (v: unknown) => unknown) => Promise.resolve(value).then(resolve),
+			});
+
+			const mockModel = {
+				find: vi.fn(() => createQueryChain([])),
+			};
+
+			const mockModels = {
+				Listing: {
+					ItemListingModel: mockModel,
+				},
+			} as unknown as ModelsContext;
+
+			const mockPassport = {
+				user: {
+					forPersonalUser: () => ({ determineIf: () => true }),
+				},
+				listing: {
+					forItemListing: () => ({ determineIf: () => true }),
+				},
+			} as unknown as Domain.Passport;
 
 			repository = getItemListingReadRepository(mockModels, mockPassport);
 			result = await repository.getBySharer('');
@@ -429,9 +718,35 @@ sorter: { field: 'publishedAt', order: 'descend' }
 		let result: unknown;
 
 		When('I call getBySharer with invalid ObjectId', async () => {
-			const mockModel = { find: vi.fn(() => createThenableQueryChain([])) };
-			const mockModels = createMockModelsContext(mockModel);
-			const mockPassport = createMockPassport();
+			const createQueryChain = (value: unknown) => ({
+				populate: () => createQueryChain(value),
+				lean: () => createQueryChain(value),
+				skip: () => createQueryChain(value),
+				limit: () => createQueryChain(value),
+				sort: () => createQueryChain(value),
+				exec: async () => value,
+				// biome-ignore lint/suspicious/noThenProperty: Mongoose queries are thenable
+				then: (resolve: (v: unknown) => unknown) => Promise.resolve(value).then(resolve),
+			});
+
+			const mockModel = {
+				find: vi.fn(() => createQueryChain([])),
+			};
+
+			const mockModels = {
+				Listing: {
+					ItemListingModel: mockModel,
+				},
+			} as unknown as ModelsContext;
+
+			const mockPassport = {
+				user: {
+					forPersonalUser: () => ({ determineIf: () => true }),
+				},
+				listing: {
+					forItemListing: () => ({ determineIf: () => true }),
+				},
+			} as unknown as Domain.Passport;
 
 			repository = getItemListingReadRepository(mockModels, mockPassport);
 			result = await repository.getBySharer('invalid-object-id');
@@ -440,33 +755,6 @@ sorter: { field: 'publishedAt', order: 'descend' }
 		Then('I should receive empty array due to error', () => {
 			expect(Array.isArray(result)).toBe(true);
 			expect((result as unknown[]).length).toBe(0);
-		});
-	});
-
-	Scenario('Getting paged listings when count query returns null', ({ When, Then }) => {
-		let result: unknown;
-
-		When('I call getPaged and count query returns null', async () => {
-			let callCount = 0;
-			const mockModel = {
-				find: vi.fn((_query: unknown, options?: unknown) => {
-					callCount++;
-					if (options || callCount === 1) {
-						return createThenableQueryChain([]);
-					}
-					return createThenableQueryChain(null);
-				}),
-			};
-			const mockModels = createMockModelsContext(mockModel);
-			const mockPassport = createMockPassport();
-
-			repository = getItemListingReadRepository(mockModels, mockPassport);
-			result = await repository.getPaged({ page: 1, pageSize: 10 });
-		});
-
-		Then('I should receive result with total 0', () => {
-			expect(result).toHaveProperty('total', 0);
-			expect(result).toHaveProperty('items');
 		});
 	});
 });

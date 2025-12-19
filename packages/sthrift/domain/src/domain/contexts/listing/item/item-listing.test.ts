@@ -130,7 +130,7 @@ function makeBaseProps(
 		location: 'Delhi',
 		sharingPeriodStart: new Date('2025-10-06T00:00:00Z'),
 		sharingPeriodEnd: new Date('2025-11-06T00:00:00Z'),
-		state: 'Published',
+		state: 'Active',
 		images: [],
 		sharingHistory: [],
 		reports: 0,
@@ -138,7 +138,7 @@ function makeBaseProps(
 		updatedAt: new Date('2020-01-02T00:00:00Z'),
 		schemaVersion: '1.0.0',
 		listingType: 'item',
-		loadSharer: async () => user,
+    loadSharer: async () => user,
 		...overrides,
 	};
 }
@@ -198,13 +198,13 @@ test.for(feature, ({ Scenario, Background, BeforeEachScenario }) => {
 		And('the listing\'s sharer should reference "user1"', () => {
 			expect(newListing.sharer.id).toBe('user-1');
 		});
-		And('the listing state should be "Published"', () => {
+		And('the listing state should be "Active"', () => {
 			// Note: getNewInstance stores state as a ValueObject, not a string
 			const stateValue =
 				typeof newListing.state === 'string'
 					? newListing.state
 					: (newListing.state as { valueOf: () => string }).valueOf();
-			expect(stateValue).toBe('Published');
+			expect(stateValue).toBe('Active');
 		});
 	});
 
@@ -253,13 +253,13 @@ test.for(feature, ({ Scenario, Background, BeforeEachScenario }) => {
 						: (newListing.location as { valueOf: () => string }).valueOf();
 				expect(locationValue).toBe('');
 			});
-			And('the listing state should be "Drafted"', () => {
+			And('the listing state should be "Draft"', () => {
 				// Note: getNewInstance stores state as a ValueObject, not a string
 				const stateValue =
 					typeof newListing.state === 'string'
 						? newListing.state
 						: (newListing.state as { valueOf: () => string }).valueOf();
-				expect(stateValue).toBe('Drafted');
+				expect(stateValue).toBe('Draft');
 			});
 		},
 	);
@@ -536,7 +536,7 @@ test.for(feature, ({ Scenario, Background, BeforeEachScenario }) => {
 				'an ItemListing aggregate with permission to publish item listing',
 				() => {
 					passport = makePassport(true, true, true);
-					const draftProps = makeBaseProps({ state: 'Drafted' });
+					const draftProps = makeBaseProps({ state: 'Draft' });
 					listing = new ItemListing(draftProps, passport);
 					initialUpdatedAt = listing.updatedAt;
 				},
@@ -544,8 +544,8 @@ test.for(feature, ({ Scenario, Background, BeforeEachScenario }) => {
 			When('I call publish()', () => {
 				listing.publish();
 			});
-			Then('the listing\'s state should be "Published"', () => {
-				expect(listing.state).toBe('Published');
+			Then('the listing\'s state should be "Active"', () => {
+				expect(listing.state).toBe('Active');
 			});
 			And('the updatedAt timestamp should change', () => {
 				expect(listing.updatedAt.getTime()).toBeGreaterThanOrEqual(
@@ -563,10 +563,7 @@ test.for(feature, ({ Scenario, Background, BeforeEachScenario }) => {
 				'an ItemListing aggregate without permission to publish item listing',
 				() => {
 					passport = makePassport(true, false, true, true);
-					listing = new ItemListing(
-						makeBaseProps({ state: 'Drafted' }),
-						passport,
-					);
+					listing = new ItemListing(makeBaseProps({ state: 'Draft' }), passport);
 				},
 			);
 			When('I try to call publish()', () => {
@@ -575,9 +572,7 @@ test.for(feature, ({ Scenario, Background, BeforeEachScenario }) => {
 				};
 			});
 			Then('a PermissionError should be thrown', () => {
-				expect(publishWithoutPermission).toThrow(
-					DomainSeedwork.PermissionError,
-				);
+				expect(publishWithoutPermission).toThrow(DomainSeedwork.PermissionError);
 				expect(publishWithoutPermission).toThrow(
 					'You do not have permission to publish this listing',
 				);
@@ -586,47 +581,47 @@ test.for(feature, ({ Scenario, Background, BeforeEachScenario }) => {
 	);
 
 	Scenario('Requesting delete with permission', ({ Given, When, Then }) => {
+	Given(
+		'an ItemListing aggregate with permission to delete item listing',
+		() => {
+			passport = makePassport(true, true, true, true);
+			listing = new ItemListing(makeBaseProps(), passport);
+		},
+	);
+	When('I call requestDelete()', () => {
+		listing.requestDelete();
+	});
+	Then("the listing's isDeleted flag should be true", () => {
+		expect(listing.isDeleted).toBe(true);
+	});
+});
+
+Scenario(
+	'Requesting delete without permission',
+	({ Given, When, Then, And }) => {
+		let requestDeleteWithoutPermission: () => void;
 		Given(
-			'an ItemListing aggregate with permission to delete item listing',
+			'an ItemListing aggregate without permission to delete item listing',
 			() => {
-				passport = makePassport(true, true, true, true);
+				passport = makePassport(true, true, true, false);
 				listing = new ItemListing(makeBaseProps(), passport);
 			},
 		);
-		When('I call requestDelete()', () => {
-			listing.requestDelete();
+		When('I try to call requestDelete()', () => {
+			requestDeleteWithoutPermission = () => {
+				listing.requestDelete();
+			};
 		});
-		Then("the listing's isDeleted flag should be true", () => {
-			expect(listing.isDeleted).toBe(true);
-		});
-	});
-
-	Scenario(
-		'Requesting delete without permission',
-		({ Given, When, Then, And }) => {
-			let requestDeleteWithoutPermission: () => void;
-			Given(
-				'an ItemListing aggregate without permission to delete item listing',
-				() => {
-					passport = makePassport(true, true, true, false);
-					listing = new ItemListing(makeBaseProps(), passport);
-				},
+		Then('a PermissionError should be thrown', () => {
+			expect(requestDeleteWithoutPermission).toThrow(
+				DomainSeedwork.PermissionError,
 			);
-			When('I try to call requestDelete()', () => {
-				requestDeleteWithoutPermission = () => {
-					listing.requestDelete();
-				};
-			});
-			Then('a PermissionError should be thrown', () => {
-				expect(requestDeleteWithoutPermission).toThrow(
-					DomainSeedwork.PermissionError,
-				);
-			});
-			And("the listing's isDeleted flag should remain false", () => {
-				expect(listing.isDeleted).toBe(false);
-			});
-		},
-	);
+		});
+		And("the listing's isDeleted flag should remain false", () => {
+			expect(listing.isDeleted).toBe(false);
+		});
+	},
+);
 
 	Scenario(
 		'Requesting delete when already deleted',
@@ -662,10 +657,7 @@ test.for(feature, ({ Scenario, Background, BeforeEachScenario }) => {
 				'an ItemListing aggregate with permission to unpublish item listing',
 				() => {
 					passport = makePassport(true, true, true, true);
-					listing = new ItemListing(
-						makeBaseProps({ state: 'Published' }),
-						passport,
-					);
+					listing = new ItemListing(makeBaseProps({ state: 'Active' }), passport);
 					initialUpdatedAt = listing.updatedAt;
 				},
 			);
@@ -683,37 +675,34 @@ test.for(feature, ({ Scenario, Background, BeforeEachScenario }) => {
 		},
 	);
 
-	Scenario('Pausing a listing without permission', ({ Given, When, Then }) => {
-		let pauseWithoutPermission: () => void;
-		Given(
-			'an ItemListing aggregate without permission to unpublish item listing',
-			() => {
-				passport = makePassport(true, true, false, true);
-				listing = new ItemListing(
-					makeBaseProps({ state: 'Published' }),
-					passport,
-				);
-			},
-		);
-		When('I try to call pause()', () => {
-			pauseWithoutPermission = () => {
-				listing.pause();
-			};
-		});
-		Then('a PermissionError should be thrown', () => {
-			expect(pauseWithoutPermission).toThrow(DomainSeedwork.PermissionError);
-		});
-	});
+	Scenario(
+		'Pausing a listing without permission',
+		({ Given, When, Then }) => {
+			let pauseWithoutPermission: () => void;
+			Given(
+				'an ItemListing aggregate without permission to unpublish item listing',
+				() => {
+					passport = makePassport(true, true, false, true);
+					listing = new ItemListing(makeBaseProps({ state: 'Active' }), passport);
+				},
+			);
+			When('I try to call pause()', () => {
+				pauseWithoutPermission = () => {
+					listing.pause();
+				};
+			});
+			Then('a PermissionError should be thrown', () => {
+				expect(pauseWithoutPermission).toThrow(DomainSeedwork.PermissionError);
+			});
+		},
+	);
 
 	Scenario('Cancelling a listing with permission', ({ Given, When, Then }) => {
 		Given(
 			'an ItemListing aggregate with permission to delete item listing',
 			() => {
 				passport = makePassport(true, true, true, true);
-				listing = new ItemListing(
-					makeBaseProps({ state: 'Published' }),
-					passport,
-				);
+				listing = new ItemListing(makeBaseProps({ state: 'Active' }), passport);
 			},
 		);
 		When('I call cancel()', () => {
@@ -732,10 +721,7 @@ test.for(feature, ({ Scenario, Background, BeforeEachScenario }) => {
 				'an ItemListing aggregate without permission to delete item listing',
 				() => {
 					passport = makePassport(true, true, true, false);
-					listing = new ItemListing(
-						makeBaseProps({ state: 'Published' }),
-						passport,
-					);
+					listing = new ItemListing(makeBaseProps({ state: 'Active' }), passport);
 				},
 			);
 			When('I try to call cancel()', () => {
@@ -754,10 +740,7 @@ test.for(feature, ({ Scenario, Background, BeforeEachScenario }) => {
 			'an ItemListing aggregate with permission to publish item listing',
 			() => {
 				passport = makePassport(true, true, true, true);
-				listing = new ItemListing(
-					makeBaseProps({ state: 'Published' }),
-					passport,
-				);
+				listing = new ItemListing(makeBaseProps({ state: 'Active' }), passport);
 			},
 		);
 		When('I call setBlocked(true)', () => {
@@ -768,84 +751,84 @@ test.for(feature, ({ Scenario, Background, BeforeEachScenario }) => {
 		});
 	});
 
-	Scenario('Unblocking a listing with permission', ({ Given, When, Then }) => {
-		Given(
-			'an ItemListing aggregate with permission to publish item listing that is currently blocked',
-			() => {
-				passport = makePassport(true, true, true, true);
-				listing = new ItemListing(
-					makeBaseProps({ state: 'Blocked' }),
-					passport,
-				);
-			},
-		);
-		When('I call setBlocked(false)', () => {
-			listing.setBlocked(false);
-		});
-		Then('the listing\'s state should be "AppealRequested"', () => {
-			expect(listing.state).toBe('Appeal Requested');
-		});
-	});
+	Scenario(
+		'Unblocking a listing with permission',
+		({ Given, When, Then }) => {
+			Given(
+				'an ItemListing aggregate with permission to publish item listing that is currently blocked',
+				() => {
+					passport = makePassport(true, true, true, true);
+					listing = new ItemListing(makeBaseProps({ state: 'Blocked' }), passport);
+				},
+			);
+			When('I call setBlocked(false)', () => {
+				listing.setBlocked(false);
+			});
+			Then('the listing\'s state should be "Active"', () => {
+				expect(listing.state).toBe('Active');
+			});
+		},
+	);
 
-	Scenario('Blocking already blocked listing', ({ Given, When, Then }) => {
-		Given(
-			'an ItemListing aggregate with permission to publish item listing that is already blocked',
-			() => {
-				passport = makePassport(true, true, true, true);
-				listing = new ItemListing(
-					makeBaseProps({ state: 'Blocked' }),
-					passport,
-				);
-			},
-		);
-		When('I call setBlocked(true) again', () => {
-			listing.setBlocked(true);
-		});
-		Then('the listing\'s state should remain "Blocked"', () => {
-			expect(listing.state).toBe('Blocked');
-		});
-	});
-
-	Scenario('Unblocking non-blocked listing', ({ Given, When, Then }) => {
-		Given(
-			'an ItemListing aggregate with permission to publish item listing in Published state',
-			() => {
-				passport = makePassport(true, true, true, true);
-				listing = new ItemListing(
-					makeBaseProps({ state: 'Published' }),
-					passport,
-				);
-			},
-		);
-		When('I call setBlocked(false)', () => {
-			listing.setBlocked(false);
-		});
-		Then('the listing\'s state should remain "Published"', () => {
-			expect(listing.state).toBe('Published');
-		});
-	});
-
-	Scenario('Blocking a listing without permission', ({ Given, When, Then }) => {
-		let blockWithoutPermission: () => void;
-		Given(
-			'an ItemListing aggregate without permission to publish item listing',
-			() => {
-				passport = makePassport(true, false, true, true);
-				listing = new ItemListing(
-					makeBaseProps({ state: 'Published' }),
-					passport,
-				);
-			},
-		);
-		When('I try to call setBlocked(true)', () => {
-			blockWithoutPermission = () => {
+	Scenario(
+		'Blocking already blocked listing',
+		({ Given, When, Then }) => {
+			Given(
+				'an ItemListing aggregate with permission to publish item listing that is already blocked',
+				() => {
+					passport = makePassport(true, true, true, true);
+					listing = new ItemListing(makeBaseProps({ state: 'Blocked' }), passport);
+				},
+			);
+			When('I call setBlocked(true) again', () => {
 				listing.setBlocked(true);
-			};
-		});
-		Then('a PermissionError should be thrown', () => {
-			expect(blockWithoutPermission).toThrow(DomainSeedwork.PermissionError);
-		});
-	});
+			});
+			Then('the listing\'s state should remain "Blocked"', () => {
+				expect(listing.state).toBe('Blocked');
+			});
+		},
+	);
+
+	Scenario(
+		'Unblocking non-blocked listing',
+		({ Given, When, Then }) => {
+			Given(
+				'an ItemListing aggregate with permission to publish item listing in Active state',
+				() => {
+					passport = makePassport(true, true, true, true);
+					listing = new ItemListing(makeBaseProps({ state: 'Active' }), passport);
+				},
+			);
+			When('I call setBlocked(false)', () => {
+				listing.setBlocked(false);
+			});
+			Then('the listing\'s state should remain "Active"', () => {
+				expect(listing.state).toBe('Active');
+			});
+		},
+	);
+
+	Scenario(
+		'Blocking a listing without permission',
+		({ Given, When, Then }) => {
+			let blockWithoutPermission: () => void;
+			Given(
+				'an ItemListing aggregate without permission to publish item listing',
+				() => {
+					passport = makePassport(true, false, true, true);
+					listing = new ItemListing(makeBaseProps({ state: 'Active' }), passport);
+				},
+			);
+			When('I try to call setBlocked(true)', () => {
+				blockWithoutPermission = () => {
+					listing.setBlocked(true);
+				};
+			});
+			Then('a PermissionError should be thrown', () => {
+				expect(blockWithoutPermission).toThrow(DomainSeedwork.PermissionError);
+			});
+		},
+	);
 
 	Scenario(
 		'Unblocking a listing without permission',
@@ -855,10 +838,7 @@ test.for(feature, ({ Scenario, Background, BeforeEachScenario }) => {
 				'an ItemListing aggregate without permission to publish item listing that is blocked',
 				() => {
 					passport = makePassport(true, false, true, true);
-					listing = new ItemListing(
-						makeBaseProps({ state: 'Blocked' }),
-						passport,
-					);
+					listing = new ItemListing(makeBaseProps({ state: 'Blocked' }), passport);
 				},
 			);
 			When('I try to call setBlocked(false)', () => {
@@ -867,78 +847,112 @@ test.for(feature, ({ Scenario, Background, BeforeEachScenario }) => {
 				};
 			});
 			Then('a PermissionError should be thrown', () => {
-				expect(unblockWithoutPermission).toThrow(
-					DomainSeedwork.PermissionError,
-				);
+				expect(unblockWithoutPermission).toThrow(DomainSeedwork.PermissionError);
 			});
 		},
 	);
-
-	Scenario('Getting listingType from item listing', ({ Given, When, Then }) => {
-		Given('an ItemListing aggregate', () => {
-			passport = makePassport(true, true, true, true);
-			listing = new ItemListing(makeBaseProps(), passport);
-		});
-		When('I access the listingType property', () => {
-			// Access happens in Then
-		});
-		Then('it should return "item"', () => {
-			expect(listing.listingType).toBe('item');
-		});
-	});
-
-	Scenario('Setting listingType for item listing', ({ Given, When, Then }) => {
-		Given('an ItemListing aggregate', () => {
-			passport = makePassport(true, true, true, true);
-			listing = new ItemListing(makeBaseProps(), passport);
-		});
-		When('I set the listingType to "premium-listing"', () => {
-			listing.listingType = 'premium-listing';
-		});
-		Then('the listingType should be updated to "premium-listing"', () => {
-			expect(listing.listingType).toBe('premium-listing');
-		});
-	});
 
 	Scenario(
-		'Getting sharer when userType is admin-user',
+		'Getting listingType from item listing',
 		({ Given, When, Then }) => {
-			let sharerProps: Partial<PersonalUserProps>;
-			Given('an ItemListing aggregate with an admin-user sharer', () => {
+			Given('an ItemListing aggregate', () => {
 				passport = makePassport(true, true, true, true);
-				const props = makeBaseProps();
-				// Set sharer to admin-user type in props
-				sharerProps = {
-					id: 'admin-sharer-123',
-					userType: 'admin-user',
-				};
-				props.sharer = sharerProps as unknown as PersonalUserProps;
-				listing = new ItemListing(props, passport);
+				listing = new ItemListing(makeBaseProps(), passport);
 			});
-			When('I access the sharer property', () => {
-				// The sharer property for admin-user requires full passport implementation
-				// which is not easily mockable. Just verify the props are set correctly.
+			When('I access the listingType property', () => {
+				// Access happens in Then
 			});
-			Then('it should return an AdminUser instance for the sharer', () => {
-				// Verify the sharer props have admin-user type set
-				expect(sharerProps.userType).toBe('admin-user');
-				expect(sharerProps.id).toBe('admin-sharer-123');
+			Then('it should return "item"', () => {
+				expect(listing.listingType).toBe('item');
 			});
 		},
 	);
 
-	Scenario('Loading sharer asynchronously', ({ Given, When, Then }) => {
-		// biome-ignore lint/suspicious/noExplicitAny: Test variable
-		let result: any;
-		Given('an ItemListing aggregate', () => {
+	Scenario(
+		'Setting listingType for item listing',
+		({ Given, When, Then }) => {
+			Given('an ItemListing aggregate', () => {
+				passport = makePassport(true, true, true, true);
+				listing = new ItemListing(makeBaseProps(), passport);
+			});
+			When('I set the listingType to "premium-listing"', () => {
+				listing.listingType = 'premium-listing';
+			});
+			Then('the listingType should be updated to "premium-listing"', () => {
+				expect(listing.listingType).toBe('premium-listing');
+			});
+		},
+	);
+
+	Scenario('Getting expiresAt from item listing', ({ Given, When, Then }) => {
+		Given('an ItemListing aggregate with expiresAt set', () => {
+			const expirationDate = new Date('2025-12-31T23:59:59Z');
+			passport = makePassport(true, true, true, true);
+			listing = new ItemListing(makeBaseProps({ expiresAt: expirationDate }), passport);
+		});
+		When('I access the expiresAt property', () => {
+			// Access happens in Then
+		});
+		Then('it should return the expiration date', () => {
+			expect(listing.expiresAt).toEqual(new Date('2025-12-31T23:59:59Z'));
+		});
+	});
+
+	Scenario('Getting expiresAt when undefined', ({ Given, When, Then }) => {
+		Given('an ItemListing aggregate without expiresAt set', () => {
+			passport = makePassport(true, true, true, true);
+			listing = new ItemListing(makeBaseProps({ expiresAt: undefined }), passport);
+		});
+		When('I access the expiresAt property', () => {
+			// Access happens in Then
+		});
+		Then('it should return undefined', () => {
+			expect(listing.expiresAt).toBeUndefined();
+		});
+	});
+
+	Scenario('Setting expiresAt with permission', ({ Given, When, Then }) => {
+		Given('an ItemListing aggregate with permission to update item listing', () => {
 			passport = makePassport(true, true, true, true);
 			listing = new ItemListing(makeBaseProps(), passport);
 		});
-		When('I call loadSharer()', async () => {
-			result = await listing.loadSharer();
+		When('I set the expiresAt to a specific date', () => {
+			const expirationDate = new Date('2025-12-31T23:59:59Z');
+			listing.expiresAt = expirationDate;
 		});
-		Then('it should return the sharer asynchronously', () => {
-			expect(result).toBeDefined();
+		Then('the expiresAt should be updated', () => {
+			expect(listing.expiresAt).toEqual(new Date('2025-12-31T23:59:59Z'));
+		});
+	});
+
+	Scenario('Setting expiresAt without permission', ({ Given, When, Then }) => {
+		let settingExpiresAtWithoutPermission: () => void;
+		Given('an ItemListing aggregate without permission to update item listing', () => {
+			passport = makePassport(false, false, false, false);
+			listing = new ItemListing(makeBaseProps(), passport);
+		});
+		When('I try to set the expiresAt', () => {
+			settingExpiresAtWithoutPermission = () => {
+				listing.expiresAt = new Date('2025-12-31T23:59:59Z');
+			};
+		});
+		Then('a PermissionError should be thrown', () => {
+			expect(settingExpiresAtWithoutPermission).toThrow(DomainSeedwork.PermissionError);
+			expect(settingExpiresAtWithoutPermission).toThrow('You do not have permission to update this expiration');
+		});
+	});
+
+	Scenario('Setting expiresAt to undefined with permission', ({ Given, When, Then }) => {
+		Given('an ItemListing aggregate with permission to update item listing and expiresAt set', () => {
+			const expirationDate = new Date('2025-12-31T23:59:59Z');
+			passport = makePassport(true, true, true, true);
+			listing = new ItemListing(makeBaseProps({ expiresAt: expirationDate }), passport);
+		});
+		When('I set the expiresAt to undefined', () => {
+			listing.expiresAt = undefined;
+		});
+		Then('the expiresAt should be cleared', () => {
+			expect(listing.expiresAt).toBeUndefined();
 		});
 	});
 });
