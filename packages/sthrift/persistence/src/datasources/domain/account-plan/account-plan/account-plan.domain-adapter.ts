@@ -94,7 +94,7 @@ export class AccountPlanDomainAdapter
 	}
 }
 
-export class AccountPlanFeatureDomainAdapter
+class AccountPlanFeatureDomainAdapter
 	implements Domain.Contexts.AccountPlan.AccountPlan.AccountPlanFeatureProps
 {
 	public readonly props: Models.AccountPlan.AccountPlanFeature;

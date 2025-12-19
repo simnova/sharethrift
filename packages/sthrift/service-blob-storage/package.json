@@ -15,19 +15,19 @@
 	"scripts": {
 		"prebuild": "biome lint",
 		"build": "tsc --build",
-		"watch": "tsc- --watch",
+		"watch": "tsc --watch",
 		"lint": "biome lint",
 		"clean": "rimraf dist"
 	},
 	"dependencies": {
-		"@azure/storage-blob": "^12.28.0",
 		"@cellix/api-services-spec": "workspace:*",
 		"@sthrift/domain": "workspace:*"
 	},
 	"devDependencies": {
 		"@cellix/typescript-config": "workspace:*",
-		"typescript": "^5.8.3",
-		"rimraf": "^6.0.1"
+		"@cellix/vitest-config": "workspace:*",
+		"rimraf": "^6.0.1",
+		"typescript": "^5.8.3"
 	},
 	"license": "MIT"
 }

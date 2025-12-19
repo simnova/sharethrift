@@ -176,7 +176,7 @@ function makeBaseProps(
 			description: 'A test listing',
 			category: 'test',
 			location: 'Test City',
-			state: 'Published',
+			state: 'Active',
 			sharingPeriodStart: new Date('2020-01-01T00:00:00Z'),
 			sharingPeriodEnd: new Date('2020-01-10T00:00:00Z'),
 			sharer: user,

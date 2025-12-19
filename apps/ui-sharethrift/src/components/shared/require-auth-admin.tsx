@@ -5,7 +5,7 @@ import { useUserIsAdmin } from '../layouts/home/account/hooks/useUserIsAdmin.ts'
 
 const { VITE_B2C_REDIRECT_URI } = import.meta.env;
 
-export interface RequireAuthAdminProps {
+interface RequireAuthAdminProps {
 	children: JSX.Element;
 	redirectPath?: string;
 	forceLogin?: boolean;

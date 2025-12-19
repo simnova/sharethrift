@@ -9,7 +9,7 @@ import {
   UnblockUserDocument,
 } from "../../../../../../../generated.tsx";
 
-export interface AdminUsersTableContainerProps {
+interface AdminUsersTableContainerProps {
   currentPage: number;
   onPageChange: (page: number) => void;
 }

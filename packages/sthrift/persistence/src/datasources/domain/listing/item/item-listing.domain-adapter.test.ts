@@ -20,7 +20,7 @@ function makeItemListingDoc() {
 		description: 'Test Description',
 		category: 'Electronics',
 		location: 'New York',
-		state: 'Published',
+		state: 'Active',
 		sharingPeriodStart: new Date(),
 		sharingPeriodEnd: new Date(),
 		// Populated sharer object (not ObjectId) for tests that access .sharer property
@@ -135,12 +135,12 @@ test.for(feature, ({ Scenario, Background, BeforeEachScenario }) => {
 	});
 
 	Scenario('Modifying item listing state', ({ When, Then }) => {
-		When('I set the state to "Published"', () => {
-			adapter.state = 'Published';
+		When('I set the state to "Active"', () => {
+			adapter.state = 'Active';
 		});
 
-		Then('the state should be "Published"', () => {
-			expect(adapter.state).toBe('Published');
+		Then('the state should be "Active"', () => {
+			expect(adapter.state).toBe('Active');
 		});
 	});
 
@@ -369,8 +369,34 @@ test.for(feature, ({ Scenario, Background, BeforeEachScenario }) => {
 			doc.state = null as never;
 		});
 
-		Then('the state getter should return "Published"', () => {
-			expect(adapter.state).toBe('Published');
+		Then('the state getter should return "Active"', () => {
+			expect(adapter.state).toBe('Active');
+		});
+	});
+
+	Scenario('Setting and getting expiresAt', ({ When, Then }) => {
+		let testDate: Date;
+
+		When('I set expiresAt to a specific date', () => {
+			testDate = new Date('2025-12-31T23:59:59Z');
+			adapter.expiresAt = testDate;
+		});
+
+		Then('expiresAt should return that date', () => {
+			expect(adapter.expiresAt).toEqual(testDate);
+		});
+	});
+
+	Scenario('Getting expiresAt when not set returns undefined', ({ When, Then }) => {
+		let result: Date | undefined;
+
+		When('I get expiresAt when it\'s not set', () => {
+			doc.expiresAt = undefined as never;
+			result = adapter.expiresAt;
+		});
+
+		Then('it should return undefined', () => {
+			expect(result).toBeUndefined();
 		});
 	});
 });
