@@ -26,8 +26,7 @@ test.for(feature, ({ Scenario }) => {
 	Scenario('Creating an AuthorId with invalid value', ({ When, Then }) => {
 		let createInvalid: () => void;
 		When('I try to create an AuthorId with "invalid-id"', () => {
-			createInvalid = () =>
-				new ValueObjects.AuthorId('invalid-id').valueOf();
+			createInvalid = () => new ValueObjects.AuthorId('invalid-id').valueOf();
 		});
 		Then('an error should be thrown indicating the value is invalid', () => {
 			expect(createInvalid).throws();
@@ -86,9 +85,7 @@ test.for(feature, ({ Scenario }) => {
 		({ When, Then }) => {
 			let value: string;
 			When('I create a MessagingMessageId with "  MSG123456  "', () => {
-				value = new ValueObjects.MessagingMessageId(
-					'  MSG123456  ',
-				).valueOf();
+				value = new ValueObjects.MessagingMessageId('  MSG123456  ').valueOf();
 			});
 			Then('the value should be "MSG123456"', () => {
 				expect(value).toBe('MSG123456');
@@ -96,55 +93,49 @@ test.for(feature, ({ Scenario }) => {
 		},
 	);
 
-	// MessageContent
-	Scenario('Creating a MessageContent with valid value', ({ When, Then }) => {
+	// MessageText
+	Scenario('Creating a MessageText with valid value', ({ When, Then }) => {
 		let value: string;
-		When(
-			'I create a MessageContent with "Hello, this is a test message"',
-			() => {
-				value = new ValueObjects.MessageContent(
-					'Hello, this is a test message',
-				).valueOf();
-			},
-		);
+		When('I create a MessageText with "Hello, this is a test message"', () => {
+			value = new ValueObjects.MessageText(
+				'Hello, this is a test message',
+			).valueOf();
+		});
 		Then('the value should be "Hello, this is a test message"', () => {
 			expect(value).toBe('Hello, this is a test message');
 		});
 	});
 
-	Scenario('Creating a MessageContent with empty string', ({ When, Then }) => {
+	Scenario('Creating a MessageText with empty string', ({ When, Then }) => {
 		let createEmpty: () => void;
-		When('I try to create a MessageContent with empty string', () => {
-			createEmpty = () => new ValueObjects.MessageContent('').valueOf();
+		When('I try to create a MessageText with empty string', () => {
+			createEmpty = () => new ValueObjects.MessageText('').valueOf();
 		});
 		Then('an error should be thrown indicating the value is too short', () => {
 			expect(createEmpty).throws('Too short');
 		});
 	});
 
-	Scenario(
-		'Creating a MessageContent with too long value',
-		({ When, Then }) => {
-			let createLong: () => void;
-			When(
-				'I try to create a MessageContent with a string of 2001 characters',
-				() => {
-					createLong = () =>
-						new ValueObjects.MessageContent('a'.repeat(2001)).valueOf();
-				},
-			);
-			Then('an error should be thrown indicating the value is too long', () => {
-				expect(createLong).throws('Too long');
-			});
-		},
-	);
+	Scenario('Creating a MessageText with too long value', ({ When, Then }) => {
+		let createLong: () => void;
+		When(
+			'I try to create a MessageText with a string of 2001 characters',
+			() => {
+				createLong = () =>
+					new ValueObjects.MessageText('a'.repeat(2001)).valueOf();
+			},
+		);
+		Then('an error should be thrown indicating the value is too long', () => {
+			expect(createLong).throws('Too long');
+		});
+	});
 
 	Scenario(
-		'Creating a MessageContent with whitespace that gets trimmed',
+		'Creating a MessageText with whitespace that gets trimmed',
 		({ When, Then }) => {
 			let value: string;
-			When('I create a MessageContent with "  Hello World  "', () => {
-				value = new ValueObjects.MessageContent('  Hello World  ').valueOf();
+			When('I create a MessageText with "  Hello World  "', () => {
+				value = new ValueObjects.MessageText('  Hello World  ').valueOf();
 			});
 			Then('the value should be "Hello World"', () => {
 				expect(value).toBe('Hello World');

@@ -6,7 +6,6 @@ import { MessagingConversationRepositoryImpl } from './messaging-conversation.re
 describe('MessagingConversationRepository', () => {
 	let repository: MessagingConversationRepositoryImpl;
 	let mockMessagingService: MessagingService;
-	let mockPassport: Domain.Passport;
 
 	beforeEach(() => {
 		mockMessagingService = {
@@ -16,18 +15,7 @@ describe('MessagingConversationRepository', () => {
 			createConversation: vi.fn(),
 		} as unknown as MessagingService;
 
-		mockPassport = {
-			conversation: {
-				forConversation: vi.fn().mockReturnValue({
-					determineIf: vi.fn().mockReturnValue(true),
-				}),
-			},
-		} as unknown as Domain.Passport;
-
-		repository = new MessagingConversationRepositoryImpl(
-			mockMessagingService,
-			mockPassport,
-		);
+		repository = new MessagingConversationRepositoryImpl(mockMessagingService);
 	});
 
 	describe('getMessages', () => {
@@ -110,7 +98,7 @@ describe('MessagingConversationRepository', () => {
 
 			const result = await repository.sendMessage(
 				mockConversation,
-				'Test message',
+				['Test message'],
 				validAuthorId,
 			);
 
@@ -122,30 +110,35 @@ describe('MessagingConversationRepository', () => {
 			);
 		});
 
-		it('should throw error when not authorized', async () => {
+		it('should join multiple content items with double newlines', async () => {
 			const validAuthorId = '507f1f77bcf86cd799439011';
+			const mockMessage = {
+				id: 'msg-123',
+				body: 'First part\n\nSecond part',
+				author: validAuthorId,
+				createdAt: new Date(),
+			};
 			const mockConversation = {
 				id: 'conv-123',
 				messagingConversationId: 'messaging-conv-123',
 			} as Domain.Contexts.Conversation.Conversation.ConversationEntityReference;
 
-			// Mock passport to deny permission
-			mockPassport = {
-				conversation: {
-					forConversation: vi.fn().mockReturnValue({
-						determineIf: vi.fn().mockReturnValue(false),
-					}),
-				},
-			} as unknown as Domain.Passport;
-
-			repository = new MessagingConversationRepositoryImpl(
-				mockMessagingService,
-				mockPassport,
+			vi.mocked(mockMessagingService.sendMessage).mockResolvedValue(
+				mockMessage,
 			);
 
-			await expect(
-				repository.sendMessage(mockConversation, 'Test', validAuthorId),
-			).rejects.toThrow('Not authorized to send message in this conversation');
+			const result = await repository.sendMessage(
+				mockConversation,
+				['First part', 'Second part'],
+				validAuthorId,
+			);
+
+			expect(result).toBeDefined();
+			expect(mockMessagingService.sendMessage).toHaveBeenCalledWith(
+				'messaging-conv-123',
+				'First part\n\nSecond part',
+				validAuthorId,
+			);
 		});
 
 		it('should throw error on send failure', async () => {
@@ -160,7 +153,7 @@ describe('MessagingConversationRepository', () => {
 			);
 
 			await expect(
-				repository.sendMessage(mockConversation, 'Test', validAuthorId),
+				repository.sendMessage(mockConversation, ['Test'], validAuthorId),
 			).rejects.toThrow('Failed to send');
 		});
 	});

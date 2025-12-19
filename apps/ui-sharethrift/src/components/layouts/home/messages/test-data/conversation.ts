@@ -85,9 +85,9 @@ export const buildConversationMock = (
  */
 export const buildSendMessageMock = (
 	mode: 'success' | 'error' | 'networkError',
-	messageContent?: string,
+	messageContent: string = 'Test message',
 ) => {
-	const content = messageContent ?? 'Test message';
+	const content = messageContent;
 
 	if (mode === 'networkError') {
 		return { error: new Error('Network error') };

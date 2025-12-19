@@ -26,21 +26,21 @@ Feature: Message value objects
     When I create a MessagingMessageId with "  MSG123456  "
     Then the value should be "MSG123456"
 
-  # MessageContent
-  Scenario: Creating a MessageContent with valid value
-    When I create a MessageContent with "Hello, this is a test message"
+  # MessageText
+  Scenario: Creating a MessageText with valid value
+    When I create a MessageText with "Hello, this is a test message"
     Then the value should be "Hello, this is a test message"
 
-  Scenario: Creating a MessageContent with empty string
-    When I try to create a MessageContent with empty string
+  Scenario: Creating a MessageText with empty string
+    When I try to create a MessageText with empty string
     Then an error should be thrown indicating the value is too short
 
-  Scenario: Creating a MessageContent with too long value
-    When I try to create a MessageContent with a string of 2001 characters
+  Scenario: Creating a MessageText with too long value
+    When I try to create a MessageText with a string of 2001 characters
     Then an error should be thrown indicating the value is too long
 
-  Scenario: Creating a MessageContent with whitespace that gets trimmed
-    When I create a MessageContent with "  Hello World  "
+  Scenario: Creating a MessageText with whitespace that gets trimmed
+    When I create a MessageText with "  Hello World  "
     Then the value should be "Hello World"
 
   Scenario: Using the ANONYMOUS_AUTHOR_ID constant
