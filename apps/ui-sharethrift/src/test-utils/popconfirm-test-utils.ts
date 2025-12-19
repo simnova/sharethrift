@@ -1,6 +1,6 @@
 import { expect, userEvent, waitFor, within } from 'storybook/test';
 
-export const POPCONFIRM_SELECTORS = {
+const POPCONFIRM_SELECTORS = {
 	title: '.ant-popconfirm-title',
 	description: '.ant-popconfirm-description',
 	confirmButton: '.ant-popconfirm-buttons .ant-btn-primary',
@@ -22,7 +22,7 @@ export const canvasUtils = {
 		expect(canvas.getAllByRole('button').length).toBeGreaterThan(0),
 };
 
-export const waitForPopconfirm = async () =>
+const waitForPopconfirm = async () =>
 	waitFor(
 		() => {
 			const title = document.querySelector(POPCONFIRM_SELECTORS.title);
@@ -32,32 +32,12 @@ export const waitForPopconfirm = async () =>
 		{ timeout: 1000 },
 	);
 
-export const getPopconfirmElements = () => ({
+const getPopconfirmElements = () => ({
 	title: document.querySelector(POPCONFIRM_SELECTORS.title),
 	description: document.querySelector(POPCONFIRM_SELECTORS.description),
 	confirmButton: document.querySelector(POPCONFIRM_SELECTORS.confirmButton),
 	cancelButton: document.querySelector(POPCONFIRM_SELECTORS.cancelButton),
 });
-
-export const confirmPopconfirm = async () => {
-	const confirmButton = document.querySelector(
-		POPCONFIRM_SELECTORS.confirmButton,
-	);
-	if (confirmButton) {
-		await userEvent.click(confirmButton as HTMLElement);
-	}
-	return confirmButton;
-};
-
-export const cancelPopconfirm = async () => {
-	const cancelButton = document.querySelector(
-		POPCONFIRM_SELECTORS.cancelButton,
-	);
-	if (cancelButton) {
-		await userEvent.click(cancelButton as HTMLElement);
-	}
-	return cancelButton;
-};
 
 export const triggerPopconfirmAnd = async (
 	canvas: Canvas,
