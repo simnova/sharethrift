@@ -915,8 +915,8 @@ test.for(feature, ({ Scenario }) => {
 		},
 	);
 
-	Scenario('Unblocking a listing successfully', ({ Given, When, Then, And }) => {
-		Given('a valid listing ID to unblock', () => {
+	Scenario('Unblocking a listing successfully as admin with permission', ({ Given, And, When, Then }) => {
+		Given('an authenticated admin user with canUnblockListings permission', () => {
 			context = makeMockGraphContext({
 				applicationServices: {
 					...makeMockGraphContext().applicationServices,
@@ -926,8 +926,33 @@ test.for(feature, ({ Scenario }) => {
 							unblock: vi.fn().mockResolvedValue(undefined),
 						},
 					},
+					User: {
+						...makeMockGraphContext().applicationServices.User,
+						AdminUser: {
+							queryByEmail: vi.fn().mockResolvedValue({
+								id: 'admin-1',
+								userType: 'admin-user',
+								role: {
+									permissions: {
+										listingPermissions: {
+											canUnblockListings: true,
+										},
+									},
+								},
+							}),
+						},
+					},
+					verifiedUser: {
+						verifiedJwt: {
+							sub: 'admin-1',
+							email: 'admin@example.com',
+						},
+					},
 				},
 			});
+		});
+		And('a valid listing ID to unblock', () => {
+			// ID will be passed in When step
 		});
 		When('the unblockListing mutation is executed', async () => {
 			const resolver = itemListingResolvers.Mutation?.unblockListing as TestResolver<{
@@ -942,6 +967,113 @@ test.for(feature, ({ Scenario }) => {
 		});
 		And('it should return true', () => {
 			expect(result).toBe(true);
+		});
+	});
+
+	Scenario('Unblocking a listing without authentication', ({ Given, When, Then }) => {
+		Given('a user without a verifiedJwt in their context', () => {
+			context = makeMockGraphContext({
+				applicationServices: {
+					...makeMockGraphContext().applicationServices,
+					verifiedUser: null,
+				},
+			});
+		});
+		When('the unblockListing mutation is executed', async () => {
+			try {
+				const resolver = itemListingResolvers.Mutation?.unblockListing as TestResolver<{
+					id: string;
+				}>;
+				await resolver({}, { id: 'listing-1' }, context, {} as never);
+			} catch (e) {
+				error = e as Error;
+			}
+		});
+		Then('it should throw an "Authentication required: Email not found in verified JWT" error', () => {
+			expect(error).toBeDefined();
+			expect(error?.message).toBe('Authentication required: Email not found in verified JWT');
+		});
+	});
+
+	Scenario('Unblocking a listing as non-admin user', ({ Given, When, Then }) => {
+		Given('an authenticated personal user (not admin)', () => {
+			context = makeMockGraphContext({
+				applicationServices: {
+					...makeMockGraphContext().applicationServices,
+					User: {
+						...makeMockGraphContext().applicationServices.User,
+						AdminUser: {
+							queryByEmail: vi.fn().mockResolvedValue(null), // Not an admin
+						},
+					},
+					verifiedUser: {
+						verifiedJwt: {
+							sub: 'user-1',
+							email: 'personal@example.com',
+						},
+					},
+				},
+			});
+		});
+		When('the unblockListing mutation is executed', async () => {
+			try {
+				const resolver = itemListingResolvers.Mutation?.unblockListing as TestResolver<{
+					id: string;
+				}>;
+				await resolver({}, { id: 'listing-1' }, context, {} as never);
+			} catch (e) {
+				error = e as Error;
+			}
+		});
+		Then('it should throw a "Forbidden: Only admins with canUnblockListings permission can unblock listings" error', () => {
+			expect(error).toBeDefined();
+			expect(error?.message).toBe('Forbidden: Only admins with canUnblockListings permission can unblock listings');
+		});
+	});
+
+	Scenario('Unblocking a listing as admin without permission', ({ Given, When, Then }) => {
+		Given('an authenticated admin user without canUnblockListings permission', () => {
+			context = makeMockGraphContext({
+				applicationServices: {
+					...makeMockGraphContext().applicationServices,
+					User: {
+						...makeMockGraphContext().applicationServices.User,
+						AdminUser: {
+							queryByEmail: vi.fn().mockResolvedValue({
+								id: 'admin-2',
+								userType: 'admin-user',
+								role: {
+									permissions: {
+										listingPermissions: {
+											canUnblockListings: false, // No permission
+										},
+									},
+								},
+							}),
+						},
+					},
+					verifiedUser: {
+						verifiedJwt: {
+							sub: 'admin-2',
+							email: 'limitedadmin@example.com',
+						},
+					},
+				},
+			});
+		});
+		When('the unblockListing mutation is executed', async () => {
+			try {
+				const resolver = itemListingResolvers.Mutation?.unblockListing as TestResolver<{
+					id: string;
+				}>;
+				await resolver({}, { id: 'listing-1' }, context, {} as never);
+			} catch (e) {
+				error = e as Error;
+			}
+		});
+		Then('it should throw a "Forbidden: Only admins with canUnblockListings permission can unblock listings" error', () => {
+			expect(error).toBeDefined();
+			expect(error?.message).toBe('Forbidden: Only admins with canUnblockListings permission can unblock listings');
 		});
 	});
 

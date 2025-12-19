@@ -203,14 +203,11 @@ const itemListingResolvers: Resolvers = {
 		},
 
 		unblockListing: async (_parent, args, context) => {
-			// Require authentication
-			requireAuthentication(context);
-
 			// Permission check: Only admins with canUnblockListings can unblock listings
 			const { verifiedUser } = context.applicationServices;
 			const jwt = verifiedUser?.verifiedJwt;
 			if (!jwt?.email) {
-				throw new Error('Email not found in verified JWT');
+				throw new Error('Authentication required: Email not found in verified JWT');
 			}
 
 			const currentAdmin =

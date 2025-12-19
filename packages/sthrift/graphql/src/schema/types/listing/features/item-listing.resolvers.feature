@@ -107,11 +107,27 @@ So that I can view, filter, and create listings through the GraphQL API
 		Then it should call Listing.ItemListing.queryPaged with minimal parameters
 		And it should return all listings
 
-	Scenario: Unblocking a listing successfully
-		Given a valid listing ID to unblock
+	Scenario: Unblocking a listing successfully as admin with permission
+		Given an authenticated admin user with canUnblockListings permission
+		And a valid listing ID to unblock
 		When the unblockListing mutation is executed
 		Then it should call Listing.ItemListing.unblock with the ID
 		And it should return true
+
+	Scenario: Unblocking a listing without authentication
+		Given a user without a verifiedJwt in their context
+		When the unblockListing mutation is executed
+		Then it should throw an "Authentication required: Email not found in verified JWT" error
+
+	Scenario: Unblocking a listing as non-admin user
+		Given an authenticated personal user (not admin)
+		When the unblockListing mutation is executed
+		Then it should throw a "Forbidden: Only admins with canUnblockListings permission can unblock listings" error
+
+	Scenario: Unblocking a listing as admin without permission
+		Given an authenticated admin user without canUnblockListings permission
+		When the unblockListing mutation is executed
+		Then it should throw a "Forbidden: Only admins with canUnblockListings permission can unblock listings" error
 
 	Scenario: Canceling an item listing successfully
 		Given a valid listing ID to cancel
