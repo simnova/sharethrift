@@ -123,6 +123,9 @@ export const ListingInformationContainer: React.FC<
 	};
 
 	const handleCancelClick = async () => {
+		if (cancelLoading) {
+			return;
+		}
 		if (!userReservationRequest?.id) {
 			message.error('No reservation request to cancel');
 			return;

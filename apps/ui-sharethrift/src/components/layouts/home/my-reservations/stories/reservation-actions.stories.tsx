@@ -16,6 +16,50 @@ const expectNoButtons = (canvas: Canvas) => {
 	expect(buttons.length).toBe(0);
 };
 
+const openCancelPopconfirm = async (canvas: Canvas) => {
+	const cancelButton = getFirstButton(canvas);
+	expect(cancelButton).toBeTruthy();
+
+	if (!cancelButton) return null;
+
+	await userEvent.click(cancelButton);
+	await waitForPopconfirm();
+
+	return getPopconfirmElements();
+};
+
+const confirmPopconfirmAction = async (
+	elements: ReturnType<typeof getPopconfirmElements>,
+) => {
+	const { confirmButton } = elements;
+	if (confirmButton) {
+		await userEvent.click(confirmButton);
+	}
+};
+
+const cancelPopconfirmAction = async (
+	elements: ReturnType<typeof getPopconfirmElements>,
+) => {
+	const { cancelButton } = elements;
+	if (cancelButton) {
+		await userEvent.click(cancelButton);
+	}
+};
+
+const playExpectNoButtons: Story['play'] = ({ canvasElement }) => {
+	const canvas = within(canvasElement);
+	expectNoButtons(canvas);
+};
+
+const playLoadingState: Story['play'] = ({ canvasElement }) => {
+	const canvas = within(canvasElement);
+	const buttons = getButtons(canvas);
+	expect(buttons.length).toBeGreaterThan(0);
+
+	const primaryButton = getFirstButton(canvas);
+	expect(primaryButton).toBeTruthy();
+};
+
 const meta: Meta<typeof ReservationActions> = {
 	title: 'Molecules/ReservationActions',
 	component: ReservationActions,
@@ -90,17 +134,15 @@ export const ButtonInteraction: Story = {
 	play: async ({ canvasElement, args }) => {
 		const canvas = within(canvasElement);
 
-		// Get all buttons
+		// Guard against assumptions about button ordering by asserting count
+		// and selecting the message button via its accessible name.
 		const buttons = getButtons(canvas);
-		expect(buttons.length).toBeGreaterThan(0);
+		expect(buttons.length).toBeGreaterThan(1);
 
-		// Click the message button (second button in REQUESTED state - first is cancel with Popconfirm)
-		const messageButton = buttons[1];
-		if (messageButton) {
-			await userEvent.click(messageButton);
-			// Verify the message callback was called (message button doesn't have Popconfirm)
-			expect(args.onMessage).toHaveBeenCalled();
-		}
+		const messageButton = canvas.getByRole('button', { name: /message/i });
+		await userEvent.click(messageButton);
+		// Verify the message callback was called (message button doesn't have Popconfirm)
+		expect(args.onMessage).toHaveBeenCalled();
 	},
 };
 
@@ -152,23 +194,15 @@ export const RequestedWithPopconfirm: Story = {
 	play: async ({ canvasElement, args }) => {
 		const canvas = within(canvasElement);
 
-		const cancelButton = getFirstButton(canvas);
-		expect(cancelButton).toBeTruthy();
+		const elements = await openCancelPopconfirm(canvas);
+		if (!elements) return;
 
-		if (cancelButton) {
-			await userEvent.click(cancelButton);
-			await waitForPopconfirm();
+		const { title, description } = elements;
+		expect(title?.textContent).toContain('Cancel Reservation Request');
+		expect(description?.textContent).toContain('Are you sure');
 
-			const { title, description, confirmButton } = getPopconfirmElements();
-
-			expect(title?.textContent).toContain('Cancel Reservation Request');
-			expect(description?.textContent).toContain('Are you sure');
-
-			if (confirmButton) {
-				await userEvent.click(confirmButton);
-				expect(args.onCancel).toHaveBeenCalled();
-			}
-		}
+		await confirmPopconfirmAction(elements);
+		expect(args.onCancel).toHaveBeenCalled();
 	},
 };
 
@@ -181,20 +215,11 @@ export const PopconfirmCancelAction: Story = {
 	play: async ({ canvasElement, args }) => {
 		const canvas = within(canvasElement);
 
-		const cancelButton = getFirstButton(canvas);
-		expect(cancelButton).toBeTruthy();
+		const elements = await openCancelPopconfirm(canvas);
+		if (!elements) return;
 
-		if (cancelButton) {
-			await userEvent.click(cancelButton);
-			await waitForPopconfirm();
-
-			const { cancelButton: cancelPopconfirmButton } = getPopconfirmElements();
-
-			if (cancelPopconfirmButton) {
-				await userEvent.click(cancelPopconfirmButton);
-				expect(args.onCancel).not.toHaveBeenCalled();
-			}
-		}
+		await cancelPopconfirmAction(elements);
+		expect(args.onCancel).not.toHaveBeenCalled();
 	},
 };
 
@@ -212,23 +237,15 @@ export const RejectedWithCancel: Story = {
 		const buttons = getButtons(canvas);
 		expect(buttons.length).toBe(1);
 
-		const cancelButton = getFirstButton(canvas);
-		expect(cancelButton).toBeTruthy();
+		const elements = await openCancelPopconfirm(canvas);
+		if (!elements) return;
 
-		if (cancelButton) {
-			await userEvent.click(cancelButton);
-			await waitForPopconfirm();
+		const { title, description } = elements;
+		expect(title?.textContent).toContain('Cancel Reservation Request');
+		expect(description?.textContent).toContain('Are you sure');
 
-			const { title, description, confirmButton } = getPopconfirmElements();
-
-			expect(title?.textContent).toContain('Cancel Reservation Request');
-			expect(description?.textContent).toContain('Are you sure');
-
-			if (confirmButton) {
-				await userEvent.click(confirmButton);
-				expect(args.onCancel).toHaveBeenCalled();
-			}
-		}
+		await confirmPopconfirmAction(elements);
+		expect(args.onCancel).toHaveBeenCalled();
 	},
 };
 
@@ -239,11 +256,7 @@ export const CancelledNoActions: Story = {
 		onClose: fn(),
 		onMessage: fn(),
 	},
-	play: ({ canvasElement }) => {
-		const canvas = within(canvasElement);
-
-		expectNoButtons(canvas);
-	},
+	play: playExpectNoButtons,
 };
 
 export const ClosedNoActions: Story = {
@@ -253,11 +266,7 @@ export const ClosedNoActions: Story = {
 		onClose: fn(),
 		onMessage: fn(),
 	},
-	play: ({ canvasElement }) => {
-		const canvas = within(canvasElement);
-
-		expectNoButtons(canvas);
-	},
+	play: playExpectNoButtons,
 };
 
 export const AcceptedActions: Story = {
@@ -285,17 +294,7 @@ export const CancelLoadingState: Story = {
 		onMessage: fn(),
 		cancelLoading: true,
 	},
-	play: ({ canvasElement }) => {
-		const canvas = within(canvasElement);
-
-		// Verify loading state renders buttons
-		const buttons = getButtons(canvas);
-		expect(buttons.length).toBeGreaterThan(0);
-
-		// Verify cancel button is present with loading state
-		const cancelButton = getFirstButton(canvas);
-		expect(cancelButton).toBeTruthy();
-	},
+	play: playLoadingState,
 };
 
 export const CloseLoadingState: Story = {
@@ -305,15 +304,5 @@ export const CloseLoadingState: Story = {
 		onMessage: fn(),
 		closeLoading: true,
 	},
-	play: ({ canvasElement }) => {
-		const canvas = within(canvasElement);
-
-		// Verify loading state renders buttons
-		const buttons = getButtons(canvas);
-		expect(buttons.length).toBeGreaterThan(0);
-
-		// Verify close button is present with loading state
-		const closeButton = getFirstButton(canvas);
-		expect(closeButton).toBeTruthy();
-	},
+	play: playLoadingState,
 };

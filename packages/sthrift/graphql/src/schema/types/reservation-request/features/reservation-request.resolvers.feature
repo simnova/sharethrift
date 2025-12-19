@@ -152,3 +152,8 @@ So that I can view my reservations and make new ones through the GraphQL API
     Given an unauthenticated user
     When cancelReservation mutation is called
     Then an authentication error should be thrown
+
+  Scenario: Cancel reservation when user not found
+    Given an authenticated user whose email does not exist in the database
+    When cancelReservation mutation is called
+    Then a 'User not found' error should be thrown

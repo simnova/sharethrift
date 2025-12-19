@@ -170,7 +170,7 @@ export const CancelPopconfirmSuccess: Story = {
 		await waitForPopconfirm();
 
 		await cancelPopconfirm();
-		// onConfirm should NOT be called when cancelling
+		expect(args.onCancel).toHaveBeenCalled();
 		expect(args.onConfirm).not.toHaveBeenCalled();
 	},
 };

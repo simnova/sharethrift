@@ -3,6 +3,28 @@ import { Space, Popconfirm } from 'antd';
 import { ReservationActionButton } from './reservation-action-button.tsx';
 import type { ReservationActionStatus } from '../utils/reservation-status.utils.ts';
 
+interface CancelWithPopconfirmProps {
+	onConfirm?: () => void;
+	loading?: boolean;
+}
+
+const CancelWithPopconfirm: React.FC<CancelWithPopconfirmProps> = ({
+	onConfirm,
+	loading,
+}) => (
+	<Popconfirm
+		title="Cancel Reservation Request"
+		description="Are you sure you want to cancel this request?"
+		onConfirm={onConfirm}
+		okText="Yes"
+		cancelText="No"
+	>
+		<span>
+			<ReservationActionButton action="Cancel" loading={loading} />
+		</span>
+	</Popconfirm>
+);
+
 interface ReservationActionsProps {
 	status: ReservationActionStatus;
 	onCancel?: () => void;
@@ -24,22 +46,11 @@ export const ReservationActions: React.FC<ReservationActionsProps> = ({
 		switch (status) {
 			case 'REQUESTED':
 				return [
-					<Popconfirm
-						key="cancel-confirm"
-						title="Cancel Reservation Request"
-						description="Are you sure you want to cancel this request?"
+					<CancelWithPopconfirm
+						key="cancel"
 						onConfirm={onCancel}
-						okText="Yes"
-						cancelText="No"
-					>
-						<span>
-							<ReservationActionButton
-								key="cancel"
-								action="Cancel"
-								loading={cancelLoading}
-							/>
-						</span>
-					</Popconfirm>,
+						loading={cancelLoading}
+					/>,
 					<ReservationActionButton
 						key="message"
 						action="Message"
@@ -64,22 +75,11 @@ export const ReservationActions: React.FC<ReservationActionsProps> = ({
 
 			case 'REJECTED':
 				return [
-					<Popconfirm
-						key="cancel-confirm"
-						title="Cancel Reservation Request"
-						description="Are you sure you want to cancel this request?"
+					<CancelWithPopconfirm
+						key="cancel"
 						onConfirm={onCancel}
-						okText="Yes"
-						cancelText="No"
-					>
-						<span>
-							<ReservationActionButton
-								key="cancel"
-								action="Cancel"
-								loading={cancelLoading}
-							/>
-						</span>
-					</Popconfirm>,
+						loading={cancelLoading}
+					/>,
 				];
 			default:
 				// No actions for cancelled or closed reservations

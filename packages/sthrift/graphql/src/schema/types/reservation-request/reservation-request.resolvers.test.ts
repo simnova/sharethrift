@@ -1241,4 +1241,60 @@ test.for(feature, ({ Scenario }) => {
 			});
 		},
 	);
+
+	Scenario(
+		'Cancel reservation when user not found',
+		({ Given, When, Then }) => {
+			Given(
+				'an authenticated user whose email does not exist in the database',
+				() => {
+					context = {
+						applicationServices: {
+							verifiedUser: {
+								verifiedJwt: {
+									sub: 'user-123',
+									email: 'nonexistent@example.com',
+								},
+							},
+							User: {
+								PersonalUser: {
+									queryByEmail: vi.fn().mockResolvedValue(null),
+								},
+								AdminUser: {
+									queryByEmail: vi.fn().mockResolvedValue(null),
+								},
+							},
+							ReservationRequest: {
+								ReservationRequest: {
+									cancel: vi.fn(),
+								},
+							},
+						},
+					} as never;
+				},
+			);
+
+			When('cancelReservation mutation is called', async () => {
+				const resolver = reservationRequestResolvers.Mutation
+					?.cancelReservation as TestResolver<{
+					input: { id: string };
+				}>;
+				try {
+					await resolver(
+						{},
+						{ input: { id: 'res-123' } },
+						context,
+						{} as never,
+					);
+				} catch (err) {
+					error = err as Error;
+				}
+			});
+
+			Then("a 'User not found' error should be thrown", () => {
+				expect(error).toBeDefined();
+				expect((error as Error).message).toBe('User not found');
+			});
+		},
+	);
 });
