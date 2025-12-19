@@ -23,7 +23,9 @@ class BroadCaster {
 		>;
 		// Fire and forget for each listener
 		for (const listener of listeners) {
-			void listener(data);
+			Promise.resolve(listener(data)).catch((err) =>
+				console.error('Listener error:', err),
+			);
 		}
 	}
 	public on(
@@ -31,8 +33,10 @@ class BroadCaster {
 		listener: (rawPayload: unknown) => Promise<void> | void,
 	) {
 		this.eventEmitter.on(event, (data) => {
-			// Call the listener and ignore any returned Promise
-			void listener(data);
+			// Call the listener and handle any errors from returned Promise
+			Promise.resolve(listener(data)).catch((err) =>
+				console.error('Listener error:', err),
+			);
 		});
 	}
 
@@ -60,7 +64,7 @@ class NodeEventBusImpl implements DomainSeedwork.EventBus {
 	}
 
 	// eslint-disable-next-line @typescript-eslint/no-unnecessary-type-parameters
-	async dispatch<T extends DomainSeedwork.DomainEvent>(
+	dispatch<T extends DomainSeedwork.DomainEvent>(
 		event: new (aggregateId: string) => T,
 		data: unknown,
 	): Promise<void> {
@@ -72,31 +76,34 @@ class NodeEventBusImpl implements DomainSeedwork.EventBus {
 		api.propagation.inject(api.context.active(), contextObject);
 
 		const tracer = trace.getTracer('PG:data-access');
-		await tracer.startActiveSpan('node-event-bus.publish', async (span) => {
-			span.setAttribute('message.system', 'node-event-bus');
-			span.setAttribute('messaging.operation', 'publish');
-			span.setAttribute('messaging.destination.name', event.name);
-			span.addEvent(
-				'dispatching node event',
-				{ name: event.name, data: JSON.stringify(data) },
-				new Date(),
-			);
+		return new Promise<void>((resolve) => {
+			tracer.startActiveSpan('node-event-bus.publish', (span) => {
+				span.setAttribute('message.system', 'node-event-bus');
+				span.setAttribute('messaging.operation', 'publish');
+				span.setAttribute('messaging.destination.name', event.name);
+				span.addEvent(
+					'dispatching node event',
+					{ name: event.name, data: JSON.stringify(data) },
+					new Date(),
+				);
 
-			try {
-				await this.broadcaster.broadcast(event.name, {
-					data: JSON.stringify(data),
-					context: contextObject,
-				});
-				span.setStatus({
-					code: SpanStatusCode.OK,
-					message: `NodeEventBus: Executed ${event.name}`,
-				});
-			} catch (err) {
-				span.setStatus({ code: SpanStatusCode.ERROR });
-				span.recordException(err as Error);
-			} finally {
-				span.end();
-			}
+				try {
+					this.broadcaster.broadcast(event.name, {
+						data: JSON.stringify(data),
+						context: contextObject,
+					});
+					span.setStatus({
+						code: SpanStatusCode.OK,
+						message: `NodeEventBus: Executed ${event.name}`,
+					});
+				} catch (err) {
+					span.setStatus({ code: SpanStatusCode.ERROR });
+					span.recordException(err as Error);
+				} finally {
+					span.end();
+					resolve();
+				}
+			});
 		});
 	}
 

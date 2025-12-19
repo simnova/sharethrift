@@ -11,7 +11,7 @@
 		"build": "tsc --build"
 	},
 	"dependencies": {
-		"@storybook/addon-vitest": "^9.1.10",
+		"@storybook/addon-vitest": "^9.1.17",
 		"vitest": "^3.2.4"
 	},
 	"devDependencies": {
