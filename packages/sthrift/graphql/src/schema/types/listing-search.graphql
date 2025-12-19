@@ -1,10 +1,10 @@
-type ItemListingSearchResult {
-	items: [ItemListingSearchDocument!]!
+type ListingSearchResult {
+	items: [ListingSearchDocument!]!
 	count: Int!
 	facets: SearchFacets
 }
 
-type ItemListingSearchDocument {
+type ListingSearchDocument {
 	id: ID!
 	title: String!
 	description: String!
@@ -32,19 +32,19 @@ type SearchFacet {
 	count: Int!
 }
 
-input ItemListingSearchInput {
+input ListingSearchInput {
 	searchString: String
 	options: SearchOptions
 }
 
 input SearchOptions {
-	filter: ItemListingSearchFilter
+	filter: ListingSearchFilter
 	top: Int
 	skip: Int
 	orderBy: [String!]
 }
 
-input ItemListingSearchFilter {
+input ListingSearchFilter {
 	category: [String!]
 	state: [String!]
 	sharerId: [ID!]
@@ -58,11 +58,11 @@ input DateRangeFilter {
 }
 
 extend type Query {
-	searchItemListings(input: ItemListingSearchInput!): ItemListingSearchResult!
+	searchListings(input: ListingSearchInput!): ListingSearchResult!
 }
 
 extend type Mutation {
-	bulkIndexItemListings: BulkIndexResult!
+	bulkIndexListings: BulkIndexResult!
 }
 
 type BulkIndexResult {

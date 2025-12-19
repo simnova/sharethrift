@@ -1,12 +1,12 @@
 import type { CognitiveSearchDomain } from '../../infrastructure/cognitive-search/index.js';
 import type { ItemListingUnitOfWork } from '../../contexts/listing/item/item-listing.uow.js';
 import {
-	ItemListingSearchIndexSpec,
-	convertItemListingToSearchDocument,
-} from '../../infrastructure/cognitive-search/item-listing-search-index.js';
+	ListingSearchIndexSpec,
+	convertListingToSearchDocument,
+} from '../../infrastructure/cognitive-search/listing-search-index.js';
 import crypto from 'node:crypto';
 
-export class ItemListingSearchIndexingService {
+export class ListingSearchIndexingService {
 	constructor(
 		searchService: CognitiveSearchDomain,
 		itemListingUnitOfWork: ItemListingUnitOfWork,
@@ -18,38 +18,38 @@ export class ItemListingSearchIndexingService {
 	private readonly searchService: CognitiveSearchDomain;
 	private readonly itemListingUnitOfWork: ItemListingUnitOfWork;
 
-	async indexItemListing(itemListingId: string): Promise<void> {
+	async indexListing(listingId: string): Promise<void> {
 		await this.itemListingUnitOfWork.withScopedTransaction(
 			async (repo) => {
-				const itemListing = await repo.getById(itemListingId);
-				if (!itemListing) {
-					console.warn(`ItemListing ${itemListingId} not found, skipping search index update`);
+				const listing = await repo.getById(listingId);
+				if (!listing) {
+					console.warn(`Listing ${listingId} not found, skipping search index update`);
 					return;
 				}
 
-				const searchDocument = convertItemListingToSearchDocument(itemListing as unknown as Record<string, unknown>);
-				await this.updateSearchIndexWithRetry(searchDocument, itemListing as unknown as Record<string, unknown>, 3);
+				const searchDocument = convertListingToSearchDocument(listing as unknown as Record<string, unknown>);
+				await this.updateSearchIndexWithRetry(searchDocument, listing as unknown as Record<string, unknown>, 3);
 			},
 		);
 	}
 
-	async deleteFromIndex(itemListingId: string): Promise<void> {
-		await this.searchService.createIndexIfNotExists(ItemListingSearchIndexSpec);
+	async deleteFromIndex(listingId: string): Promise<void> {
+		await this.searchService.createIndexIfNotExists(ListingSearchIndexSpec);
 		await this.searchService.deleteDocument(
-			ItemListingSearchIndexSpec.name,
-			{ id: itemListingId } as Record<string, unknown>,
+			ListingSearchIndexSpec.name,
+			{ id: listingId } as Record<string, unknown>,
 		);
 	}
 
 	private async updateSearchIndexWithRetry(
 		searchDocument: Record<string, unknown>,
-		itemListing: Record<string, unknown>,
+		listing: Record<string, unknown>,
 		maxAttempts: number,
 	): Promise<void> {
-		await this.searchService.createIndexIfNotExists(ItemListingSearchIndexSpec);
+		await this.searchService.createIndexIfNotExists(ListingSearchIndexSpec);
 
 		const currentHash = this.calculateHash(searchDocument);
-		const existingHash = itemListing.searchHash as string | undefined;
+		const existingHash = listing.searchHash as string | undefined;
 
 		if (currentHash === existingHash) {
 			console.log('Search document unchanged, skipping index update');
@@ -60,7 +60,7 @@ export class ItemListingSearchIndexingService {
 		for (let attempt = 1; attempt <= maxAttempts; attempt++) {
 			try {
 				await this.searchService.indexDocument(
-					ItemListingSearchIndexSpec.name,
+					ListingSearchIndexSpec.name,
 					searchDocument,
 				);
 				return;

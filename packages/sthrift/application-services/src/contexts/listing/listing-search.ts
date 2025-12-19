@@ -1,28 +1,28 @@
 /**
- * Item Listing Search Application Service
+ * Listing Search Application Service
  *
- * Provides search functionality for Item Listings with filtering,
+ * Provides search functionality for Listings with filtering,
  * sorting, and pagination capabilities.
  */
 
 import type {
-	ItemListingSearchInput,
-	ItemListingSearchResult,
-	ItemListingSearchFilter,
-	ItemListingSearchDocument,
+	ListingSearchInput,
+	ListingSearchResult,
+	ListingSearchFilter,
+	ListingSearchDocument,
 } from '@sthrift/domain';
 import type { CognitiveSearchDomain } from '@sthrift/domain';
 import type {
 	SearchOptions,
 	SearchDocumentsResult,
 } from '@cellix/search-service';
-import { ItemListingSearchIndexSpec } from '@sthrift/domain';
+import { ListingSearchIndexSpec } from '@sthrift/domain';
 import type { DataSources } from '@sthrift/persistence';
 
 /**
- * Application service for Item Listing search operations
+ * Application service for Listing search operations
  */
-export class ItemListingSearchApplicationService {
+export class ListingSearchApplicationService {
 	private readonly searchService: CognitiveSearchDomain;
 	private readonly dataSources: DataSources;
 
@@ -32,13 +32,13 @@ export class ItemListingSearchApplicationService {
 	}
 
 	/**
-	 * Search for item listings with the provided input
+	 * Search for listings with the provided input
 	 */
-	async searchItemListings(
-		input: ItemListingSearchInput,
-	): Promise<ItemListingSearchResult> {
+	async searchListings(
+		input: ListingSearchInput,
+	): Promise<ListingSearchResult> {
 		// Ensure the search index exists
-		await this.searchService.createIndexIfNotExists(ItemListingSearchIndexSpec);
+		await this.searchService.createIndexIfNotExists(ListingSearchIndexSpec);
 
 		// Build search query
 		const searchString = input.searchString?.trim() || '*';
@@ -46,7 +46,7 @@ export class ItemListingSearchApplicationService {
 
 		// Execute search
 		const searchResults = await this.searchService.search(
-			ItemListingSearchIndexSpec.name,
+			ListingSearchIndexSpec.name,
 			searchString,
 			options,
 		);
@@ -59,7 +59,7 @@ export class ItemListingSearchApplicationService {
 	 * Bulk index all existing listings into the search index
 	 * This is useful for initial setup or re-indexing
 	 */
-	async bulkIndexItemListings(): Promise<{
+	async bulkIndexListings(): Promise<{
 		successCount: number;
 		totalCount: number;
 		message: string;
@@ -67,7 +67,7 @@ export class ItemListingSearchApplicationService {
 		console.log('Starting bulk indexing of existing listings...');
 
 		// Ensure the search index exists
-		await this.searchService.createIndexIfNotExists(ItemListingSearchIndexSpec);
+		await this.searchService.createIndexIfNotExists(ListingSearchIndexSpec);
 
 		// Fetch all listings from the database
 		const allListings =
@@ -91,7 +91,7 @@ export class ItemListingSearchApplicationService {
 		for (const listing of allListings) {
 			try {
 				// Build the search document from listing properties
-				const searchDocument: ItemListingSearchDocument = {
+				const searchDocument: ListingSearchDocument = {
 					id: listing.id,
 					title: listing.title,
 					description: listing.description || '',
@@ -114,7 +114,7 @@ export class ItemListingSearchApplicationService {
 
 				// Index the document
 				await this.searchService.indexDocument(
-					ItemListingSearchIndexSpec.name,
+					ListingSearchIndexSpec.name,
 					searchDocument as unknown as Record<string, unknown>,
 				);
 
@@ -147,7 +147,7 @@ export class ItemListingSearchApplicationService {
 	 * Build search options from input
 	 */
 	private buildSearchOptions(inputOptions?: {
-		filter?: ItemListingSearchFilter | null;
+		filter?: ListingSearchFilter | null;
 		top?: number | null;
 		skip?: number | null;
 		orderBy?: readonly string[] | null;
@@ -173,7 +173,7 @@ export class ItemListingSearchApplicationService {
 	/**
 	 * Build OData filter string from filter input
 	 */
-	private buildFilterString(filter: ItemListingSearchFilter): string {
+	private buildFilterString(filter: ListingSearchFilter): string {
 		const filterParts: string[] = [];
 
 		// Category filter
@@ -221,10 +221,10 @@ export class ItemListingSearchApplicationService {
 	 */
 	private convertSearchResults(
 		searchResults: SearchDocumentsResult,
-	): ItemListingSearchResult {
-		const items: ItemListingSearchDocument[] = searchResults.results.map(
+	): ListingSearchResult {
+		const items: ListingSearchDocument[] = searchResults.results.map(
 			(result: { document: Record<string, unknown> }) =>
-				result.document as unknown as ItemListingSearchDocument,
+				result.document as unknown as ListingSearchDocument,
 		);
 
 		// Convert facets from Record format to typed SearchFacets structure
@@ -250,12 +250,12 @@ export class ItemListingSearchApplicationService {
 	 */
 	private convertFacets(
 		facetsRecord: Record<string, Array<{ value: string | number | boolean; count: number }>> | undefined,
-	): ItemListingSearchResult['facets'] {
+	): ListingSearchResult['facets'] {
 		if (!facetsRecord) {
 			return undefined;
 		}
 
-		const facets: ItemListingSearchResult['facets'] = {};
+		const facets: ListingSearchResult['facets'] = {};
 
 		if (facetsRecord['category']) {
 			facets.category = facetsRecord['category'].map(f => ({ value: String(f.value), count: f.count }));

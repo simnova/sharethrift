@@ -1,5 +1,5 @@
-query ListingsPageSearchItemListings($input: ItemListingSearchInput!) {
-	searchItemListings(input: $input) {
+query ListingsPageSearchListings($input: ListingSearchInput!) {
+	searchListings(input: $input) {
 		items {
 			id
 			title

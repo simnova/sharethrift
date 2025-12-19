@@ -1,18 +1,18 @@
 /**
- * Item Listing Search Index Definition
+ * Listing Search Index Definition
  *
- * Defines the Azure Cognitive Search index schema for Item Listings.
- * This index enables full-text search and filtering of item listings
+ * Defines the Azure Cognitive Search index schema for Listings.
+ * This index enables full-text search and filtering of listings
  * in the ShareThrift application.
  */
 
 import type { SearchIndex } from '@cellix/search-service';
 
 /**
- * Search index definition for Item Listings
+ * Search index definition for Listings
  */
-export const ItemListingSearchIndexSpec: SearchIndex = {
-	name: 'item-listings',
+export const ListingSearchIndexSpec: SearchIndex = {
+	name: 'listings',
 	fields: [
 		// Primary key
 		{
@@ -147,33 +147,33 @@ export const ItemListingSearchIndexSpec: SearchIndex = {
 };
 
 /**
- * Helper function to convert ItemListing domain entity to search document
+ * Helper function to convert Listing domain entity to search document
  */
-export function convertItemListingToSearchDocument(
-	itemListing: Record<string, unknown>,
+export function convertListingToSearchDocument(
+	listing: Record<string, unknown>,
 ): Record<string, unknown> {
-	const sharer = itemListing.sharer as Record<string, unknown> | undefined;
+	const sharer = listing.sharer as Record<string, unknown> | undefined;
 	const account = sharer?.account as Record<string, unknown> | undefined;
 	const profile = account?.profile as Record<string, unknown> | undefined;
 
 	return {
-		id: itemListing.id,
-		title: itemListing.title,
-		description: itemListing.description?.toString() || '',
-		category: itemListing.category?.toString() || '',
-		location: itemListing.location?.toString() || '',
+		id: listing.id,
+		title: listing.title,
+		description: listing.description?.toString() || '',
+		category: listing.category?.toString() || '',
+		location: listing.location?.toString() || '',
 		sharerName:
 			(profile?.firstName?.toString() || '') +
 				' ' +
 				(profile?.lastName?.toString() || '') || '',
 		sharerId: sharer?.id || '',
-		state: itemListing.state?.toString() || '',
+		state: listing.state?.toString() || '',
 		sharingPeriodStart:
-			(itemListing.sharingPeriodStart as Date)?.toISOString() || '',
+			(listing.sharingPeriodStart as Date)?.toISOString() || '',
 		sharingPeriodEnd:
-			(itemListing.sharingPeriodEnd as Date)?.toISOString() || '',
-		createdAt: (itemListing.createdAt as Date)?.toISOString() || '',
-		updatedAt: (itemListing.updatedAt as Date)?.toISOString() || '',
-		images: itemListing.images || [],
+			(listing.sharingPeriodEnd as Date)?.toISOString() || '',
+		createdAt: (listing.createdAt as Date)?.toISOString() || '',
+		updatedAt: (listing.updatedAt as Date)?.toISOString() || '',
+		images: listing.images || [],
 	};
 }

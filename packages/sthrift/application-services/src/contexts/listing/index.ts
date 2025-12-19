@@ -4,11 +4,11 @@ import {
 	ItemListing as ItemListingApi,
 	type ItemListingApplicationService,
 } from './item/index.ts';
-import { ItemListingSearchApplicationService } from './item-listing-search.ts';
+import { ListingSearchApplicationService } from './listing-search.ts';
 
 export interface ListingContextApplicationService {
 	ItemListing: ItemListingApplicationService;
-	ItemListingSearch: ItemListingSearchApplicationService;
+	ListingSearch: ListingSearchApplicationService;
 }
 
 export const Listing = (
@@ -17,12 +17,12 @@ export const Listing = (
 ): ListingContextApplicationService => {
 	if (!searchService) {
 		throw new Error(
-			'searchService is required for Listing context. ItemListingSearch requires a valid CognitiveSearchDomain instance.',
+			'searchService is required for Listing context. ListingSearch requires a valid CognitiveSearchDomain instance.',
 		);
 	}
 	return {
 		ItemListing: ItemListingApi(dataSources, searchService),
-		ItemListingSearch: new ItemListingSearchApplicationService(
+		ListingSearch: new ListingSearchApplicationService(
 			searchService,
 			dataSources,
 		),

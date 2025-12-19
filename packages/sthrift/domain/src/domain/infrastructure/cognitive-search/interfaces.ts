@@ -14,9 +14,9 @@ import type { SearchService } from '@cellix/search-service';
 export interface CognitiveSearchDomain extends SearchService {}
 
 /**
- * Search index document interface for Item Listings
+ * Search index document interface for Listings
  */
-export interface ItemListingSearchDocument {
+export interface ListingSearchDocument {
 	id: string;
 	title: string;
 	description: string;
@@ -51,21 +51,21 @@ export interface SearchFacets {
 }
 
 /**
- * Search result interface for Item Listings
+ * Search result interface for Listings
  */
-export interface ItemListingSearchResult {
-	items: ItemListingSearchDocument[];
+export interface ListingSearchResult {
+	items: ListingSearchDocument[];
 	count: number;
 	facets?: SearchFacets;
 }
 
 /**
- * Search input interface for Item Listings
+ * Search input interface for Listings
  */
-export interface ItemListingSearchInput {
+export interface ListingSearchInput {
 	searchString?: string | null;
 	options?: {
-		filter?: ItemListingSearchFilter | null;
+		filter?: ListingSearchFilter | null;
 		top?: number | null;
 		skip?: number | null;
 		orderBy?: readonly string[] | null;
@@ -73,9 +73,9 @@ export interface ItemListingSearchInput {
 }
 
 /**
- * Search filter interface for Item Listings
+ * Search filter interface for Listings
  */
-export interface ItemListingSearchFilter {
+export interface ListingSearchFilter {
 	category?: readonly string[] | null;
 	state?: readonly string[] | null;
 	sharerId?: readonly string[] | null;

@@ -7,7 +7,7 @@ import { useState, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import {
 	ListingsPageContainerGetListingsDocument,
-	ListingsPageSearchItemListingsDocument,
+	ListingsPageSearchListingsDocument,
 	type ItemListing,
 } from '../../../../generated.tsx';
 import { useCreateListingNavigation } from './create-listing/hooks/use-create-listing-navigation.ts';
@@ -53,7 +53,7 @@ export const ListingsPageContainer: React.FC<ListingsPageContainerProps> = ({
 
 	// Query search results (when searching/filtering)
 	const { data: searchData, loading: searchLoading, error: searchError } = useQuery(
-		ListingsPageSearchItemListingsDocument,
+		ListingsPageSearchListingsDocument,
 		{
 			variables: { input: searchInput },
 			fetchPolicy: 'network-only',
@@ -67,11 +67,11 @@ export const ListingsPageContainer: React.FC<ListingsPageContainerProps> = ({
 
 	// Process listings based on which query is active
 	const { listings: processedListings, totalListings } = useMemo(() => {
-		if (shouldUseSearch && searchData?.searchItemListings) {
+		if (shouldUseSearch && searchData?.searchListings) {
 			// Use search results
 			return {
-				listings: searchData.searchItemListings.items,
-				totalListings: searchData.searchItemListings.count,
+				listings: searchData.searchListings.items,
+				totalListings: searchData.searchListings.count,
 			};
 		}
 		

@@ -1,17 +1,17 @@
 import type { SearchIndex } from '@cellix/search-service';
 
 /**
- * Item Listing Search Index Definition
+ * Listing Search Index Definition
  *
- * Defines the search index structure for item listings in ShareThrift.
+ * Defines the search index structure for listings in ShareThrift.
  * This index supports full-text search, filtering, sorting, and faceting
  * for listing discovery functionality.
  */
 
 const indexName =
-	process.env['SEARCH_ITEM_LISTING_INDEX_NAME'] || 'item-listings';
+	process.env['SEARCH_LISTING_INDEX_NAME'] || 'listings';
 
-export const ItemListingSearchIndexSpec: SearchIndex = {
+export const ListingSearchIndexSpec: SearchIndex = {
 	name: indexName,
 	fields: [
 		{
@@ -138,7 +138,7 @@ export const ItemListingSearchIndexSpec: SearchIndex = {
 /**
  * TypeScript interface matching the search index document structure
  */
-export interface ItemListingSearchDocument {
+export interface ListingSearchDocument {
 	id: string;
 	title: string;
 	description: string;

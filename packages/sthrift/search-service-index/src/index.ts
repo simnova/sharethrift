@@ -6,5 +6,5 @@
  */
 
 export * from './service-search-index.js';
-export * from './indexes/item-listing-search-index.js';
+export * from './indexes/listing-search-index.js';
 export { ServiceSearchIndex as default } from './service-search-index.js';
