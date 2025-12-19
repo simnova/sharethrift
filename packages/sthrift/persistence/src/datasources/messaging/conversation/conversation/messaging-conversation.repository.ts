@@ -60,26 +60,14 @@ export class MessagingConversationRepositoryImpl implements MessagingConversatio
 			throw new DomainSeedwork.PermissionError('Not authorized to send message in this conversation');
 		}
 
-		try {
-			const message = await this.messagingService.sendMessage(
-				conversation.messagingConversationId,
-				body,
-				authorId,
-			);
+		const message = await this.messagingService.sendMessage(
+			conversation.messagingConversationId,
+			body,
+			authorId,
+		);
 
-			const author = new Domain.Contexts.Conversation.Conversation.AuthorId(authorId);
-			return toDomainMessage(message, author);
-		} catch (error: unknown) {
-			// Scoped, contextual logging around external messaging service call
-			// Normalize error to avoid logging sensitive information from messaging service
-			const errorMessage = error instanceof Error ? error.message : 'Unknown error';
-			console.error('MessagingConversationRepository.sendMessage failed', {
-				conversationId: conversation.id ?? conversation.messagingConversationId,
-				authorId,
-				errorMessage,
-			});
-			throw error;
-		}
+		const author = new Domain.Contexts.Conversation.Conversation.AuthorId(authorId);
+		return toDomainMessage(message, author);
 	}
 
 	async deleteConversation(conversationId: string): Promise<void> {
