@@ -188,7 +188,8 @@ Not Visible to users via browsing or searching, doesn't accept reservation reque
 
 #### Review
 
-The process in which an appeal requested listing is evaluated by an admin to determine whether it meets the necessary criteria to be unblocked. This is done by an admin.
+The process in which a blocked listing with an associated appeal request is evaluated by an admin to determine whether it meets the necessary criteria to be unblocked.
+
 
 #### Appeal
 
@@ -241,10 +242,6 @@ A draft listing is a listing that has been created but may not contain all requi
 #### Listing - Blocked
 
 A listing that has been made inactive and deemed not suitable to be active; user needs to request a manual admin review. This is one of listing states.
-
-#### Listing – Appeal Requested
-
-A listing that was initially blocked by an admin, that is now requesting to be reviewed so that it can become an active listing again. This is one of listing states.
 
 #### Listing - Active
 
@@ -526,7 +523,7 @@ Enables admins to manage users, listings, and platform operations. Supports list
 |  |  |  |  |
 | --- | --- | --- | --- |
 | **Capability** | **Description** | **Priority** | **Constraints/Notes** |
-| Review Listings | Admins can view all pending listing submissions and decide on the next steps. | High | Show only 50 listings at a time, with page navigation options for more.  Can filter by reported, blocked appeal requested, listings.  Individual listings can show extra information not seen to regular users (i.e. activity log). |
+| Review Listings | Admins can view all pending listing submissions and decide on the next steps. | High | Show only 50 listings at a time, with page navigation options for more.  Can filter by blocked listings.  Individual listings can show extra information not seen to regular users (i.e. activity log). |
 | Approve Listing | Admins can approve currently blocked listings, unblocking and making them visible on the platform. | High | A listing can only be approved manually if it is currently blocked.  For a listing to be approved, it must have valid content as deemed by the admin. |
 | Request Updates to Listing | Admins can request additional info or edits from Sharers before approval. This action puts a temporary block on the listing until it is approved. | Medium | Admin must provide a note to Sharer regarding what is needed for approval.  Admins **cannot** edit a listing directly. |
 | Block Listing | Admins can remove listings from appearing visible and able to be reserved temporarily. | Medium | Admin must provide reason based on predefined criteria (e.g. policy violations).  Must specify how the listing can be unblocked. |
