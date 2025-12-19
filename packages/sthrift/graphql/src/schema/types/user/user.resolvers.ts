@@ -181,10 +181,10 @@ const userUnionResolvers: Resolvers = {
 	// Union type resolver - tells GraphQL which concrete type to use
 	// frontend can check __typename === 'AdminUser' without custom hooks
 	User: {
-		__resolveType(obj: {
+		__resolveType(obj?: {
 			id: string;
 			userType: string;
-		}): 'AdminUser' | 'PersonalUser' | null {
+		} | null): 'AdminUser' | 'PersonalUser' | null {
 			// If obj is null or undefined, return null to indicate no user
 			if (!obj || obj === null) {
 				return null;

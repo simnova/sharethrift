@@ -203,7 +203,29 @@ const itemListingResolvers: Resolvers = {
 		},
 
 		unblockListing: async (_parent, args, context) => {
-			// Admin-note: role-based authorization should be implemented here (security)
+			// Require authentication
+			requireAuthentication(context);
+
+			// Permission check: Only admins with canUnblockListings can unblock listings
+			const { verifiedUser } = context.applicationServices;
+			const jwt = verifiedUser?.verifiedJwt;
+			if (!jwt?.email) {
+				throw new Error('Email not found in verified JWT');
+			}
+
+			const currentAdmin =
+				await context.applicationServices.User.AdminUser.queryByEmail({
+					email: jwt.email,
+				});
+
+			if (
+				!currentAdmin?.role?.permissions?.listingPermissions?.canUnblockListings
+			) {
+				throw new Error(
+					'Forbidden: Only admins with canUnblockListings permission can unblock listings',
+				);
+			}
+
 			await context.applicationServices.Listing.ItemListing.unblock({
 				id: args.id,
 			});
