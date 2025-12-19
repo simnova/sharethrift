@@ -150,7 +150,7 @@ test.for(feature, ({ Scenario, Background, BeforeEachScenario }) => {
 	let newListing: ItemListing<ItemListingProps>;
 
 	BeforeEachScenario(() => {
-		passport = makePassport(true, true, true);
+		passport = makePassport(true, true, true, true);
 		baseProps = makeBaseProps();
 		listing = new ItemListing(baseProps, passport);
 		newListing = undefined as unknown as ItemListing<ItemListingProps>;
@@ -158,7 +158,7 @@ test.for(feature, ({ Scenario, Background, BeforeEachScenario }) => {
 
 	Background(({ Given, And }) => {
 		Given('a valid Passport with listing permissions', () => {
-			passport = makePassport(true, true, true);
+			passport = makePassport(true, true, true, true);
 		});
 		And('a valid PersonalUserEntityReference for ""user1""', () => {
 			// Already handled in makeBaseProps
@@ -177,8 +177,6 @@ test.for(feature, ({ Scenario, Background, BeforeEachScenario }) => {
 			'I create a new ItemListing aggregate using getNewInstance with sharer "user1" and title "New Listing"',
 			() => {
 				newListing = ItemListing.getNewInstance(
-					makeBaseProps(),
-					passport,
 					baseProps.sharer,
 					{
 						title: 'New Listing',
@@ -189,6 +187,7 @@ test.for(feature, ({ Scenario, Background, BeforeEachScenario }) => {
 						sharingPeriodEnd: new Date('2025-11-06T00:00:00Z'),
 						images: [],
 					},
+					passport,
 				);
 			},
 		);
@@ -215,8 +214,6 @@ test.for(feature, ({ Scenario, Background, BeforeEachScenario }) => {
 				'I create a new ItemListing aggregate using getNewInstance with isDraft true and empty title, description, category, and location',
 				() => {
 					newListing = ItemListing.getNewInstance(
-						makeBaseProps(),
-						passport,
 						baseProps.sharer,
 						{
 							title: '',
@@ -228,6 +225,7 @@ test.for(feature, ({ Scenario, Background, BeforeEachScenario }) => {
 							images: [],
 							isDraft: true,
 						},
+						passport,
 					);
 				},
 			);
@@ -880,6 +878,157 @@ Scenario(
 			});
 			Then('the listingType should be updated to "premium-listing"', () => {
 				expect(listing.listingType).toBe('premium-listing');
+			});
+		},
+	);
+
+	Scenario(
+		'Setting state to Active through state setter',
+		({ Given, When, Then }) => {
+			Given('an ItemListing aggregate in Paused state', () => {
+				passport = makePassport(true, true, true, true);
+				baseProps = makeBaseProps({ state: 'Paused' });
+				listing = new ItemListing(baseProps, passport);
+			});
+			When('I set the state property to "Active"', () => {
+				listing.state = 'Active';
+			});
+			Then('the listing state should be "Active"', () => {
+				expect(listing.state).toBe('Active');
+			});
+		},
+	);
+
+	Scenario(
+		'Setting state to Paused through state setter',
+		({ Given, When, Then }) => {
+			Given('an ItemListing aggregate in Active state', () => {
+				passport = makePassport(true, true, true, true);
+				baseProps = makeBaseProps({ state: 'Active' });
+				listing = new ItemListing(baseProps, passport);
+			});
+			When('I set the state property to "Paused"', () => {
+				listing.state = 'Paused';
+			});
+			Then('the listing state should be "Paused"', () => {
+				expect(listing.state).toBe('Paused');
+			});
+		},
+	);
+
+	Scenario(
+		'Setting state to Cancelled through state setter',
+		({ Given, When, Then }) => {
+			Given('an ItemListing aggregate in Active state', () => {
+				passport = makePassport(true, true, true, true);
+				baseProps = makeBaseProps({ state: 'Active' });
+				listing = new ItemListing(baseProps, passport);
+			});
+			When('I set the state property to "Cancelled"', () => {
+				listing.state = 'Cancelled';
+			});
+			Then('the listing state should be "Cancelled"', () => {
+				expect(listing.state).toBe('Cancelled');
+			});
+		},
+	);
+
+	Scenario(
+		'Setting state to invalid value throws error',
+		({ Given, When, Then }) => {
+			Given('an ItemListing aggregate', () => {
+				passport = makePassport(true, true, true, true);
+				baseProps = makeBaseProps({ state: 'Active' });
+				listing = new ItemListing(baseProps, passport);
+			});
+			When('I attempt to set the state to an invalid value', () => {
+				// Handled in Then
+			});
+			Then('it should throw a PermissionError with valid states listed', () => {
+				expect(() => {
+					listing.state = 'InvalidState';
+				}).toThrow(DomainSeedwork.PermissionError);
+				
+				try {
+					listing.state = 'InvalidState';
+				} catch (error) {
+					expect((error as Error).message).toContain('Invalid listing state');
+					expect((error as Error).message).toContain('Active');
+					expect((error as Error).message).toContain('Paused');
+					expect((error as Error).message).toContain('Cancelled');
+				}
+			});
+		},
+	);
+
+	Scenario(
+		'Setting images property with permission',
+		({ Given, When, Then }) => {
+			Given('an ItemListing aggregate with update permission', () => {
+				passport = makePassport(true, true, true, true);
+				baseProps = makeBaseProps({ state: 'Active', images: [] });
+				listing = new ItemListing(baseProps, passport);
+			});
+			When('I set the images to a new array', () => {
+				listing.images = ['image1.jpg', 'image2.jpg'];
+			});
+			Then('the images should be updated', () => {
+				expect(listing.images).toEqual(['image1.jpg', 'image2.jpg']);
+			});
+		},
+	);
+
+	Scenario(
+		'Setting images property without permission',
+		({ Given, When, Then }) => {
+			Given('an ItemListing aggregate without update permission', () => {
+				passport = makePassport(false, false, false, false);
+				baseProps = makeBaseProps({ state: 'Active', images: [] });
+				listing = new ItemListing(baseProps, passport);
+			});
+			When('I attempt to set the images', () => {
+				// Handled in Then
+			});
+			Then('it should throw a PermissionError', () => {
+				expect(() => {
+					listing.images = ['image1.jpg'];
+				}).toThrow(DomainSeedwork.PermissionError);
+			});
+		},
+	);
+
+	Scenario(
+		'Setting sharingPeriodStart with permission',
+		({ Given, When, Then }) => {
+			const newDate = new Date('2026-01-01T00:00:00Z');
+			Given('an ItemListing aggregate with update permission', () => {
+				passport = makePassport(true, true, true, true);
+				baseProps = makeBaseProps({ state: 'Active' });
+				listing = new ItemListing(baseProps, passport);
+			});
+			When('I set the sharingPeriodStart', () => {
+				listing.sharingPeriodStart = newDate;
+			});
+			Then('the sharingPeriodStart should be updated', () => {
+				expect(listing.sharingPeriodStart).toEqual(newDate);
+			});
+		},
+	);
+
+	Scenario(
+		'Setting sharingPeriodEnd with permission',
+		({ Given, When, Then }) => {
+			const newDate = new Date('2026-12-31T00:00:00Z');
+			Given('an ItemListing aggregate with update permission', () => {
+				passport = makePassport(true, true, true, true);
+				baseProps = makeBaseProps({ state: 'Active' });
+				listing = new ItemListing(baseProps, passport);
+			});
+			When('I set the sharingPeriodEnd', () => {
+				listing.sharingPeriodEnd = newDate;
+			});
+			Then('the sharingPeriodEnd should be updated', () => {
+				expect(listing.sharingPeriodEnd).toEqual(newDate);
 			});
 		},
 	);
