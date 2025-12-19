@@ -8,6 +8,8 @@ import {
 } from "../../../../../generated.tsx";
 import { MyListingsDashboard } from "./my-listings-dashboard.tsx";
 
+import { useNavigate } from 'react-router-dom';
+
 export const MyListingsDashboardContainer: React.FC = () => {
   const { data: userData, loading: userLoading } =
     useQuery<ViewListingCurrentUserQuery>(ViewListingCurrentUserDocument);

@@ -9,16 +9,16 @@ const mockListings: MyListingData[] = [
 		id: '1',
 		title: 'Camping Tent',
 		image: 'https://via.placeholder.com/150',
-		publishedAt: '2024-01-15',
+		createdAt: '2024-01-15',
 		reservationPeriod: '2024-06-01 - 2024-08-31',
-		status: 'Published',
+		status: 'Active',
 		pendingRequestsCount: 2,
 	},
 	{
 		id: '2',
 		title: 'Mountain Bike',
 		image: 'https://via.placeholder.com/150',
-		publishedAt: '2024-02-20',
+		createdAt: '2024-02-20',
 		reservationPeriod: '2024-06-01 - 2024-12-31',
 		status: 'Blocked',
 		pendingRequestsCount: 0,
@@ -27,9 +27,9 @@ const mockListings: MyListingData[] = [
 		id: '3',
 		title: 'Kayak',
 		image: 'https://via.placeholder.com/150',
-		publishedAt: '2024-03-10',
+		createdAt: '2024-03-10',
 		reservationPeriod: '2024-07-01 - 2024-09-30',
-		status: 'Appeal Requested',
+		status: 'Blocked',
 		pendingRequestsCount: 1,
 	},
 ];
@@ -96,9 +96,9 @@ export const LoadingState: Story = {
 
 export const WithBlockedListings: Story = {
 	args: {
-		data: mockListings.filter((l) => l.status === 'Blocked' || l.status === 'Appeal Requested'),
+		data: mockListings.filter((l) => l.status === 'Blocked'),
 		searchText: '',
-		statusFilters: ['Blocked', 'Appeal Requested'],
+		statusFilters: ['Blocked'],
 		sorter: { field: null, order: null },
 		currentPage: 1,
 		pageSize: 10,
