@@ -1,12 +1,13 @@
 default:
-  # Feature files location
+  # Feature files location - using domain unit test features only
+  # Note: Removed tests/acceptance as it violated architectural boundaries
+  # by depending on GraphQL API layer. Domain tests should only test domain logic.
   paths:
-    - tests/acceptance/features/**/*.feature
+    - src/domain/**/features/**/*.feature
 
-  # Step definitions location
+  # Step definitions location - using Vitest cucumber integration
   require:
-    - tests/acceptance/support/**/*.ts
-    - tests/acceptance/step-definitions/**/*.steps.ts
+    - src/**/*.test.ts
 
   # TypeScript support
   requireModule:
