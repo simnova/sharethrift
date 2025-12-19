@@ -71,7 +71,7 @@
 		"@vitest/coverage-v8": "^3.2.4",
 		"jsdom": "^26.1.0",
 		"rimraf": "^6.0.1",
-		"storybook": "^9.1.17",
+		"storybook": "catalog:",
 		"typescript": "^5.8.3",
 		"vite": "^7.0.4",
 		"vitest": "^3.2.4"
