@@ -1,6 +1,6 @@
 import type { DomainSeedwork } from '@cellix/domain-seedwork';
-import type { UserEntityReference } from '../../user/index.ts';
 import type { ItemListingEntityReference } from '../../listing/item/item-listing.entity.ts';
+import type { UserEntityReference } from '../../user/index.ts';
 import type { MessageEntityReference } from './message.entity.ts';
 
 export interface ConversationProps extends DomainSeedwork.DomainEntityProps {

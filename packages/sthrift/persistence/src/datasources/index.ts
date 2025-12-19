@@ -32,7 +32,7 @@ export const DataSourcesFactoryImpl = (
 		return {
 			domainDataSource: DomainDataSourceImplementation(models, passport),
 			readonlyDataSource: ReadonlyDataSourceImplementation(models, passport),
-			messagingDataSource: MessagingDataSourceImplementation(messagingService, passport),
+			messagingDataSource: MessagingDataSourceImplementation(messagingService),
       paymentDataSource: PaymentDataSourceImplementation(paymentService, passport),
 		};
 	};

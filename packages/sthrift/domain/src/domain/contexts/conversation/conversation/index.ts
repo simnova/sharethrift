@@ -1,11 +1,17 @@
-export { Conversation } from './conversation.ts';
-export type {} from './conversation.ts';
 export type {
-	ConversationProps,
 	ConversationEntityReference,
+	ConversationProps,
 } from './conversation.entity.ts';
 export type { ConversationRepository } from './conversation.repository.ts';
+export type {} from './conversation.ts';
+export { Conversation } from './conversation.ts';
 export type { ConversationUnitOfWork } from './conversation.uow.ts';
-export { Message } from './message.entity.ts';
 export type { MessageEntityReference } from './message.entity.ts';
-export { MessagingMessageId, MessageContent, AuthorId, ANONYMOUS_AUTHOR_ID } from './message.value-objects.ts';
+export { Message } from './message.entity.ts';
+export {
+	ANONYMOUS_AUTHOR_ID,
+	AuthorId,
+	MessageContents,
+	MessageText,
+	MessagingMessageId,
+} from './message.value-objects.ts';

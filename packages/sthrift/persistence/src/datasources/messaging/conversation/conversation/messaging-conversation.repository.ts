@@ -1,16 +1,17 @@
-import { Domain } from '@sthrift/domain';
 import type { MessagingService } from '@cellix/messaging-service';
-import { DomainSeedwork } from '@cellix/domain-seedwork';
+import { Domain } from '@sthrift/domain';
 import { toDomainMessage } from './messaging-conversation.domain-adapter.ts';
 
 export interface MessagingConversationRepository {
 	getMessages: (
 		conversationId: string,
-	) => Promise<Domain.Contexts.Conversation.Conversation.MessageEntityReference[]>;
+	) => Promise<
+		Domain.Contexts.Conversation.Conversation.MessageEntityReference[]
+	>;
 
 	sendMessage: (
 		conversation: Domain.Contexts.Conversation.Conversation.ConversationEntityReference,
-		body: string,
+		contents: string[],
 		authorId: string,
 	) => Promise<Domain.Contexts.Conversation.Conversation.MessageEntityReference>;
 
@@ -22,43 +23,50 @@ export interface MessagingConversationRepository {
 	) => Promise<{ id: string; displayName?: string }>;
 }
 
-export class MessagingConversationRepositoryImpl implements MessagingConversationRepository {
+export class MessagingConversationRepositoryImpl
+	implements MessagingConversationRepository
+{
 	private readonly messagingService: MessagingService;
-	private readonly passport: Domain.Passport;
 
-	constructor(messagingService: MessagingService, passport: Domain.Passport) {
+	constructor(messagingService: MessagingService) {
 		this.messagingService = messagingService;
-		this.passport = passport;
 	}
 
 	async getMessages(
 		conversationId: string,
-	): Promise<Domain.Contexts.Conversation.Conversation.MessageEntityReference[]> {
+	): Promise<
+		Domain.Contexts.Conversation.Conversation.MessageEntityReference[]
+	> {
 		try {
 			const messages = await this.messagingService.getMessages(conversationId);
-			
+
 			return messages.map((msg) => {
-				const authorId = msg.author 
-					? new Domain.Contexts.Conversation.Conversation.AuthorId(msg.author) 
-					: new Domain.Contexts.Conversation.Conversation.AuthorId(Domain.Contexts.Conversation.Conversation.ANONYMOUS_AUTHOR_ID);
+				const authorId = msg.author
+					? new Domain.Contexts.Conversation.Conversation.AuthorId(msg.author)
+					: new Domain.Contexts.Conversation.Conversation.AuthorId(
+							Domain.Contexts.Conversation.Conversation.ANONYMOUS_AUTHOR_ID,
+						);
 				return toDomainMessage(msg, authorId);
 			});
 		} catch (error: unknown) {
-			const errorMessage = error instanceof Error ? error.message : 'Unknown error';
-			console.error(`Error fetching messages for conversation ${conversationId}:`, { errorMessage });
+			const errorMessage =
+				error instanceof Error ? error.message : 'Unknown error';
+			console.error(
+				`Error fetching messages for conversation ${conversationId}:`,
+				{ errorMessage },
+			);
 			return [];
 		}
 	}
 
 	async sendMessage(
 		conversation: Domain.Contexts.Conversation.Conversation.ConversationEntityReference,
-		body: string,
+		contents: string[],
 		authorId: string,
 	): Promise<Domain.Contexts.Conversation.Conversation.MessageEntityReference> {
-		const visa = this.passport.conversation.forConversation(conversation);
-		if (!visa.determineIf((permissions: Domain.Contexts.Conversation.ConversationDomainPermissions) => permissions.canManageConversation)) {
-			throw new DomainSeedwork.PermissionError('Not authorized to send message in this conversation');
-		}
+		// Join content items into a single message body for the messaging service
+		// The underlying service (Twilio) expects a single string body
+		const body = contents.join('\n\n');
 
 		const message = await this.messagingService.sendMessage(
 			conversation.messagingConversationId,
@@ -66,7 +74,9 @@ export class MessagingConversationRepositoryImpl implements MessagingConversatio
 			authorId,
 		);
 
-		const author = new Domain.Contexts.Conversation.Conversation.AuthorId(authorId);
+		const author = new Domain.Contexts.Conversation.Conversation.AuthorId(
+			authorId,
+		);
 		return toDomainMessage(message, author);
 	}
 
@@ -74,8 +84,12 @@ export class MessagingConversationRepositoryImpl implements MessagingConversatio
 		try {
 			await this.messagingService.deleteConversation(conversationId);
 		} catch (error: unknown) {
-			const errorMessage = error instanceof Error ? error.message : 'Unknown error';
-			console.error('Error deleting conversation from messaging service:', { conversationId, errorMessage });
+			const errorMessage =
+				error instanceof Error ? error.message : 'Unknown error';
+			console.error('Error deleting conversation from messaging service:', {
+				conversationId,
+				errorMessage,
+			});
 			throw error;
 		}
 	}
@@ -97,8 +111,13 @@ export class MessagingConversationRepositoryImpl implements MessagingConversatio
 			}
 			return result;
 		} catch (error: unknown) {
-			const errorMessage = error instanceof Error ? error.message : 'Unknown error';
-			console.error('Error creating conversation in messaging service:', { displayName, uniqueIdentifier, errorMessage });
+			const errorMessage =
+				error instanceof Error ? error.message : 'Unknown error';
+			console.error('Error creating conversation in messaging service:', {
+				displayName,
+				uniqueIdentifier,
+				errorMessage,
+			});
 			throw error;
 		}
 	}
@@ -106,7 +125,6 @@ export class MessagingConversationRepositoryImpl implements MessagingConversatio
 
 export const getMessagingConversationRepository = (
 	messagingService: MessagingService,
-	passport: Domain.Passport,
 ): MessagingConversationRepository => {
-	return new MessagingConversationRepositoryImpl(messagingService, passport);
+	return new MessagingConversationRepositoryImpl(messagingService);
 };

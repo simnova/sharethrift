@@ -1,4 +1,3 @@
-import type { Domain } from '@sthrift/domain';
 import type { MessagingService } from '@cellix/messaging-service';
 import { MessagingConversationContext } from './conversation/index.ts';
 import type * as Conversation from './conversation/conversation/index.ts';
@@ -13,9 +12,8 @@ export interface MessagingDataSource {
 
 export const MessagingDataSourceImplementation = (
 	messagingService: MessagingService,
-	passport: Domain.Passport,
 ): MessagingDataSource => {
 	return {
-		Conversation: MessagingConversationContext(messagingService, passport),
+		Conversation: MessagingConversationContext(messagingService),
 	};
 };
