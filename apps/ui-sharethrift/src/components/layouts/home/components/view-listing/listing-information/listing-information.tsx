@@ -319,6 +319,7 @@ export const ListingInformation: React.FC<ListingInformationProps> = ({
 											onConfirm={onCancelClick}
 											okText="Yes"
 											cancelText="No"
+											okButtonProps={{ loading: cancelLoading }}
 										>
 											<Button type="default" block loading={cancelLoading}>
 												Cancel Request

@@ -11,41 +11,6 @@ const baseReservationRequest = {
 	reservationPeriodEnd: '1739145600000',
 };
 
-type ReservationState = 'Requested' | 'Accepted';
-
-const createUserReservationRequest = (
-	state: ReservationState,
-	overrides: Partial<typeof baseReservationRequest> = {},
-) => ({
-	...baseReservationRequest,
-	state,
-	...overrides,
-});
-
-type CancelFlowOptions = {
-	confirm: boolean;
-	expectCallback: boolean;
-};
-
-const runCancelFlow = async (
-	canvasElement: HTMLElement,
-	args: Record<string, unknown>,
-	{ confirm, expectCallback }: CancelFlowOptions,
-) => {
-	const canvas = within(canvasElement);
-	await expect(canvasElement).toBeTruthy();
-
-	await triggerPopconfirmAnd(canvas, confirm ? 'confirm' : 'cancel', {
-		triggerButtonLabel: /Cancel Request/i,
-	});
-
-	if (expectCallback) {
-		expect(args['onCancelClick']).toHaveBeenCalled();
-	} else {
-		expect(args['onCancelClick']).not.toHaveBeenCalled();
-	}
-};
-
 const mockListing = {
 	__typename: 'ItemListing' as const,
 	listingType: 'item-listing' as const,
@@ -230,17 +195,20 @@ export const ClickReserveButton: Story = {
 export const ClickCancelButton: Story = {
 	args: {
 		onCancelClick: fn(),
-		userReservationRequest: createUserReservationRequest('Requested'),
+		userReservationRequest: {
+			...baseReservationRequest,
+			state: 'Requested' as const,
+		},
 	},
 	play: async ({ canvasElement, args }) => {
-		await runCancelFlow(
-			canvasElement,
-			args as unknown as Record<string, unknown>,
-			{
-				confirm: true,
-				expectCallback: true,
-			},
-		);
+		const canvas = within(canvasElement);
+		await expect(canvasElement).toBeTruthy();
+
+		await triggerPopconfirmAnd(canvas, 'confirm', {
+			triggerButtonLabel: /Cancel Request/i,
+		});
+
+		expect(args.onCancelClick).toHaveBeenCalled();
 	},
 };
 
@@ -354,7 +322,10 @@ export const ClearDateSelection: Story = {
 
 export const CancelButtonWithPopconfirm: Story = {
 	args: {
-		userReservationRequest: createUserReservationRequest('Requested'),
+		userReservationRequest: {
+			...baseReservationRequest,
+			state: 'Requested' as const,
+		},
 		onCancelClick: fn(),
 		cancelLoading: false,
 	},
@@ -373,7 +344,10 @@ export const CancelButtonWithPopconfirm: Story = {
 
 export const CancelButtonLoading: Story = {
 	args: {
-		userReservationRequest: createUserReservationRequest('Requested'),
+		userReservationRequest: {
+			...baseReservationRequest,
+			state: 'Requested' as const,
+		},
 		cancelLoading: true,
 	},
 	play: async ({ canvasElement }) => {
@@ -390,7 +364,10 @@ export const CancelButtonLoading: Story = {
 
 export const NoCancelButtonForAcceptedReservation: Story = {
 	args: {
-		userReservationRequest: createUserReservationRequest('Accepted'),
+		userReservationRequest: {
+			...baseReservationRequest,
+			state: 'Accepted' as const,
+		},
 	},
 	play: async ({ canvasElement }) => {
 		const canvas = within(canvasElement);
@@ -404,17 +381,20 @@ export const NoCancelButtonForAcceptedReservation: Story = {
 
 export const PopconfirmCancelButton: Story = {
 	args: {
-		userReservationRequest: createUserReservationRequest('Requested'),
+		userReservationRequest: {
+			...baseReservationRequest,
+			state: 'Requested' as const,
+		},
 		onCancelClick: fn(),
 	},
 	play: async ({ canvasElement, args }) => {
-		await runCancelFlow(
-			canvasElement,
-			args as unknown as Record<string, unknown>,
-			{
-				confirm: false,
-				expectCallback: false,
-			},
-		);
+		const canvas = within(canvasElement);
+		await expect(canvasElement).toBeTruthy();
+
+		await triggerPopconfirmAnd(canvas, 'cancel', {
+			triggerButtonLabel: /Cancel Request/i,
+		});
+
+		expect(args.onCancelClick).not.toHaveBeenCalled();
 	},
 };

@@ -10,18 +10,6 @@ const POPCONFIRM_SELECTORS = {
 type Canvas = ReturnType<typeof within>;
 type PopconfirmAction = 'confirm' | 'cancel';
 
-export const canvasUtils = {
-	getButtons: (canvas: Canvas) => canvas.getAllByRole('button'),
-	queryButtons: (canvas: Canvas) => canvas.queryAllByRole('button'),
-	getFirstButton: (canvas: Canvas) => canvas.getAllByRole('button')[0],
-	assertNoButtons: (canvas: Canvas) =>
-		expect(canvas.queryAllByRole('button').length).toBe(0),
-	assertButtonCount: (canvas: Canvas, count: number) =>
-		expect(canvas.getAllByRole('button').length).toBe(count),
-	assertHasButtons: (canvas: Canvas) =>
-		expect(canvas.getAllByRole('button').length).toBeGreaterThan(0),
-};
-
 const waitForPopconfirm = async () =>
 	waitFor(
 		() => {

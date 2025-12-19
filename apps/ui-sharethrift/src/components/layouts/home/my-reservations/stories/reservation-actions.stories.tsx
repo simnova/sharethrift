@@ -1,96 +1,7 @@
 import type { Meta, StoryObj } from '@storybook/react';
 import { ReservationActions } from '../components/reservation-actions.js';
 import { expect, fn, within } from 'storybook/test';
-import {
-	canvasUtils,
-	triggerPopconfirmAnd,
-} from '../../../../../test-utils/popconfirm-test-utils.ts';
-import type { ReservationActionStatus } from '../utils/reservation-status.utils.ts';
-
-type Canvas = ReturnType<typeof within>;
-
-const { getButtons, assertNoButtons, assertHasButtons, assertButtonCount } =
-	canvasUtils;
-
-// Shared helper for button visibility assertions
-const expectButtonsVisible = (canvas: Canvas, expectedCount?: number) => {
-	const buttons = getButtons(canvas);
-	expect(buttons.length).toBeGreaterThan(0);
-	if (expectedCount !== undefined) {
-		expect(buttons.length).toBe(expectedCount);
-	}
-	for (const button of buttons) {
-		expect(button).toBeVisible();
-	}
-};
-
-// Shared helper for popconfirm cancel flow
-type PopconfirmExpectation = {
-	kind: 'confirm' | 'cancel';
-	expectedTitle?: string;
-	expectedDescription?: string;
-	assertCalled: (args: Record<string, unknown>) => void;
-};
-
-const runCancelPopconfirmFlow = async (
-	canvas: Canvas,
-	args: Record<string, unknown>,
-	{
-		kind,
-		expectedTitle,
-		expectedDescription,
-		assertCalled,
-	}: PopconfirmExpectation,
-) => {
-	await triggerPopconfirmAnd(canvas, kind, {
-		triggerButtonLabel: /cancel/i,
-		expectedTitle,
-		expectedDescription,
-	});
-	assertCalled(args);
-};
-
-const playExpectNoButtons: Story['play'] = ({ canvasElement }) => {
-	const canvas = within(canvasElement);
-	assertNoButtons(canvas);
-};
-
-const playLoadingState: Story['play'] = ({ canvasElement }) => {
-	const canvas = within(canvasElement);
-	assertHasButtons(canvas);
-
-	// Ant Design loading buttons have aria-busy attribute or loading class
-	const loadingIndicators = canvasElement.querySelectorAll(
-		'.ant-btn-loading, [aria-busy="true"]',
-	);
-	expect(loadingIndicators.length).toBeGreaterThan(0);
-};
-
-// Factory function for no-actions stories
-const createNoActionsStory = (status: ReservationActionStatus): Story => ({
-	args: {
-		status,
-		onCancel: fn(),
-		onClose: fn(),
-		onMessage: fn(),
-	},
-	play: playExpectNoButtons,
-});
-
-// Factory function for loading state stories
-const createLoadingStory = (
-	status: ReservationActionStatus,
-	loadingProp: 'cancelLoading' | 'closeLoading',
-): Story => ({
-	args: {
-		status,
-		onCancel: fn(),
-		onClose: fn(),
-		onMessage: fn(),
-		[loadingProp]: true,
-	},
-	play: playLoadingState,
-});
+import { triggerPopconfirmAnd } from '../../../../../test-utils/popconfirm-test-utils.ts';
 
 const meta: Meta<typeof ReservationActions> = {
 	title: 'Molecules/ReservationActions',
@@ -128,7 +39,12 @@ export const Requested: Story = {
 	},
 	play: ({ canvasElement }) => {
 		const canvas = within(canvasElement);
-		expectButtonsVisible(canvas);
+		const buttons = canvas.getAllByRole('button');
+
+		expect(buttons.length).toBeGreaterThan(0);
+		for (const button of buttons) {
+			expect(button).toBeVisible();
+		}
 	},
 };
 
@@ -141,7 +57,12 @@ export const Accepted: Story = {
 	},
 	play: ({ canvasElement }) => {
 		const canvas = within(canvasElement);
-		expectButtonsVisible(canvas);
+		const buttons = canvas.getAllByRole('button');
+
+		expect(buttons.length).toBeGreaterThan(0);
+		for (const button of buttons) {
+			expect(button).toBeVisible();
+		}
 	},
 };
 
@@ -154,7 +75,7 @@ export const ButtonInteraction: Story = {
 	},
 	play: async ({ canvasElement, args }) => {
 		const canvas = within(canvasElement);
-		assertButtonCount(canvas, 2);
+		expect(canvas.getAllByRole('button').length).toBe(2);
 
 		const messageButton = canvas.getByRole('button', { name: /message/i });
 		const { userEvent } = await import('storybook/test');
@@ -189,12 +110,14 @@ export const RequestedWithPopconfirm: Story = {
 	},
 	play: async ({ canvasElement, args }) => {
 		const canvas = within(canvasElement);
-		await runCancelPopconfirmFlow(canvas, args, {
-			kind: 'confirm',
+
+		await triggerPopconfirmAnd(canvas, 'confirm', {
+			triggerButtonLabel: /cancel/i,
 			expectedTitle: 'Cancel Reservation Request',
 			expectedDescription: 'Are you sure',
-			assertCalled: (a) => expect(a['onCancel']).toHaveBeenCalled(),
 		});
+
+		expect(args.onCancel).toHaveBeenCalled();
 	},
 };
 
@@ -206,10 +129,12 @@ export const PopconfirmCancelAction: Story = {
 	},
 	play: async ({ canvasElement, args }) => {
 		const canvas = within(canvasElement);
-		await runCancelPopconfirmFlow(canvas, args, {
-			kind: 'cancel',
-			assertCalled: (a) => expect(a['onCancel']).not.toHaveBeenCalled(),
+
+		await triggerPopconfirmAnd(canvas, 'cancel', {
+			triggerButtonLabel: /cancel/i,
 		});
+
+		expect(args.onCancel).not.toHaveBeenCalled();
 	},
 };
 
@@ -222,20 +147,43 @@ export const RejectedWithCancel: Story = {
 	},
 	play: async ({ canvasElement, args }) => {
 		const canvas = within(canvasElement);
-		assertButtonCount(canvas, 1);
+		expect(canvas.getAllByRole('button').length).toBe(1);
 
-		await runCancelPopconfirmFlow(canvas, args, {
-			kind: 'confirm',
+		await triggerPopconfirmAnd(canvas, 'confirm', {
+			triggerButtonLabel: /cancel/i,
 			expectedTitle: 'Cancel Reservation Request',
 			expectedDescription: 'Are you sure',
-			assertCalled: (a) => expect(a['onCancel']).toHaveBeenCalled(),
 		});
+
+		expect(args.onCancel).toHaveBeenCalled();
 	},
 };
 
-export const CancelledNoActions: Story = createNoActionsStory('CANCELLED');
+export const CancelledNoActions: Story = {
+	args: {
+		status: 'CANCELLED',
+		onCancel: fn(),
+		onClose: fn(),
+		onMessage: fn(),
+	},
+	play: ({ canvasElement }) => {
+		const canvas = within(canvasElement);
+		expect(canvas.queryAllByRole('button').length).toBe(0);
+	},
+};
 
-export const ClosedNoActions: Story = createNoActionsStory('CLOSED');
+export const ClosedNoActions: Story = {
+	args: {
+		status: 'CLOSED',
+		onCancel: fn(),
+		onClose: fn(),
+		onMessage: fn(),
+	},
+	play: ({ canvasElement }) => {
+		const canvas = within(canvasElement);
+		expect(canvas.queryAllByRole('button').length).toBe(0);
+	},
+};
 
 export const AcceptedActions: Story = {
 	args: {
@@ -245,16 +193,74 @@ export const AcceptedActions: Story = {
 	},
 	play: ({ canvasElement }) => {
 		const canvas = within(canvasElement);
-		expectButtonsVisible(canvas, 2);
+		const buttons = canvas.getAllByRole('button');
+
+		expect(buttons.length).toBe(2);
+		for (const button of buttons) {
+			expect(button).toBeVisible();
+		}
 	},
 };
 
-export const CancelLoadingState: Story = createLoadingStory(
-	'REQUESTED',
-	'cancelLoading',
-);
+export const CancelLoadingState: Story = {
+	args: {
+		status: 'REQUESTED',
+		onCancel: fn(),
+		onClose: fn(),
+		onMessage: fn(),
+		cancelLoading: true,
+	},
+	play: ({ canvasElement }) => {
+		const canvas = within(canvasElement);
+		const buttons = canvas.getAllByRole('button');
+		expect(buttons.length).toBeGreaterThan(0);
 
-export const CloseLoadingState: Story = createLoadingStory(
-	'ACCEPTED',
-	'closeLoading',
-);
+		// Ant Design loading buttons have aria-busy attribute or loading class
+		const loadingIndicators = canvasElement.querySelectorAll(
+			'.ant-btn-loading, [aria-busy="true"]',
+		);
+		expect(loadingIndicators.length).toBeGreaterThan(0);
+	},
+};
+
+export const CloseLoadingState: Story = {
+	args: {
+		status: 'ACCEPTED',
+		onCancel: fn(),
+		onClose: fn(),
+		onMessage: fn(),
+		closeLoading: true,
+	},
+	play: ({ canvasElement }) => {
+		const canvas = within(canvasElement);
+		const buttons = canvas.getAllByRole('button');
+		expect(buttons.length).toBeGreaterThan(0);
+
+		// Ant Design loading buttons have aria-busy attribute or loading class
+		const loadingIndicators = canvasElement.querySelectorAll(
+			'.ant-btn-loading, [aria-busy="true"]',
+		);
+		expect(loadingIndicators.length).toBeGreaterThan(0);
+	},
+};
+
+// Test that loading state prevents double-submit (covers lines 16-17 in reservation-actions.tsx)
+export const CancelLoadingPreventsDoubleSubmit: Story = {
+	args: {
+		status: 'REQUESTED',
+		onCancel: fn(),
+		onMessage: fn(),
+		cancelLoading: true,
+	},
+	play: async ({ canvasElement, args }) => {
+		const canvas = within(canvasElement);
+
+		// Trigger the popconfirm and click confirm while loading
+		await triggerPopconfirmAnd(canvas, 'confirm', {
+			triggerButtonLabel: /cancel/i,
+		});
+
+		// The callback should NOT be called because loading is true
+		expect(args.onCancel).not.toHaveBeenCalled();
+	},
+};
