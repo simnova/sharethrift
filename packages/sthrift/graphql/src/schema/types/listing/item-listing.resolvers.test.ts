@@ -360,7 +360,7 @@ test.for(feature, ({ Scenario }) => {
         Given('a verified user and valid pagination arguments', () => {
             context = makeMockGraphContext();
         });
-        And('a searchText "camera" and statusFilters ["Published"]', () => {
+        And('a searchText "camera" and statusFilters ["Active"]', () => {
             vi.mocked(
                 context.applicationServices.Listing.ItemListing.queryPagedWithSearchFallback,
             ).mockResolvedValue({
@@ -383,7 +383,7 @@ test.for(feature, ({ Scenario }) => {
                     page: 1,
                     pageSize: 10,
                     searchText: 'camera',
-                    statusFilters: ['Published'],
+                    statusFilters: ['Active'],
                 },
                 context,
                 {} as never
@@ -397,7 +397,7 @@ test.for(feature, ({ Scenario }) => {
                     page: 1,
                     pageSize: 10,
                     searchText: 'camera',
-                    statusFilters: ['Published'],
+                    statusFilters: ['Active'],
                     sharerId: 'user-1',
                 }),
             );
