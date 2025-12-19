@@ -10,3 +10,4 @@ export { ListingsGrid } from './organisms/listings-grid/index.js';
 export { ComponentQueryLoader } from './molecules/component-query-loader/index.js';
 export { Dashboard } from './organisms/dashboard/index.tsx';
 export { ReservationStatusTag } from './atoms/reservation-status-tag/index.js';
+export { CancelReservationPopconfirm } from './components/cancel-reservation-popconfirm/index.js';

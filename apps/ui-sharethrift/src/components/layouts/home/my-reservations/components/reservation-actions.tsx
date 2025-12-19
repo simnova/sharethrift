@@ -1,39 +1,8 @@
 import type React from 'react';
-import { Space, Popconfirm } from 'antd';
+import { Space } from 'antd';
+import { CancelReservationPopconfirm } from '@sthrift/ui-components';
 import { ReservationActionButton } from './reservation-action-button.tsx';
 import type { ReservationActionStatus } from '../utils/reservation-status.utils.ts';
-
-interface CancelWithPopconfirmProps {
-	onConfirm?: () => void;
-	loading?: boolean;
-}
-
-const CancelWithPopconfirm: React.FC<CancelWithPopconfirmProps> = ({
-	onConfirm,
-	loading,
-}) => {
-	const handleConfirm = () => {
-		if (loading) {
-			return;
-		}
-		onConfirm?.();
-	};
-
-	return (
-		<Popconfirm
-			title="Cancel Reservation Request"
-			description="Are you sure you want to cancel this request?"
-			onConfirm={handleConfirm}
-			okText="Yes"
-			cancelText="No"
-			okButtonProps={{ loading }}
-		>
-			<span>
-				<ReservationActionButton action="Cancel" loading={loading} />
-			</span>
-		</Popconfirm>
-	);
-};
 
 interface ReservationActionsProps {
 	status: ReservationActionStatus;
@@ -56,11 +25,18 @@ export const ReservationActions: React.FC<ReservationActionsProps> = ({
 		switch (status) {
 			case 'REQUESTED':
 				return [
-					<CancelWithPopconfirm
+					<CancelReservationPopconfirm
 						key="cancel"
 						onConfirm={onCancel}
 						loading={cancelLoading}
-					/>,
+					>
+						<span>
+							<ReservationActionButton
+								action="Cancel"
+								loading={cancelLoading}
+							/>
+						</span>
+					</CancelReservationPopconfirm>,
 					<ReservationActionButton
 						key="message"
 						action="Message"
@@ -85,11 +61,18 @@ export const ReservationActions: React.FC<ReservationActionsProps> = ({
 
 			case 'REJECTED':
 				return [
-					<CancelWithPopconfirm
+					<CancelReservationPopconfirm
 						key="cancel"
 						onConfirm={onCancel}
 						loading={cancelLoading}
-					/>,
+					>
+						<span>
+							<ReservationActionButton
+								action="Cancel"
+								loading={cancelLoading}
+							/>
+						</span>
+					</CancelReservationPopconfirm>,
 				];
 			default:
 				// No actions for cancelled or closed reservations

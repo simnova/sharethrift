@@ -1,4 +1,5 @@
-import { Row, Col, DatePicker, Button, Popconfirm } from 'antd';
+import { Row, Col, DatePicker, Button } from 'antd';
+import { CancelReservationPopconfirm } from '@sthrift/ui-components';
 import dayjs from 'dayjs';
 import type { Dayjs } from 'dayjs';
 import type {
@@ -313,18 +314,14 @@ export const ListingInformation: React.FC<ListingInformationProps> = ({
 							if (!userIsSharer && isAuthenticated) {
 								if (reservationRequestStatus === 'Requested') {
 									return (
-										<Popconfirm
-											title="Cancel Reservation Request"
-											description="Are you sure you want to cancel this request?"
+										<CancelReservationPopconfirm
 											onConfirm={onCancelClick}
-											okText="Yes"
-											cancelText="No"
-											okButtonProps={{ loading: cancelLoading }}
+											loading={cancelLoading}
 										>
 											<Button type="default" block loading={cancelLoading}>
 												Cancel Request
 											</Button>
-										</Popconfirm>
+										</CancelReservationPopconfirm>
 									);
 								}
 								return (
