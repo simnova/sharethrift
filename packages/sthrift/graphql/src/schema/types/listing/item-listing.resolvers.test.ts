@@ -917,18 +917,21 @@ test.for(feature, ({ Scenario }) => {
 
 	Scenario('Unblocking a listing successfully as admin with permission', ({ Given, And, When, Then }) => {
 		Given('an authenticated admin user with canUnblockListings permission', () => {
-			context = makeMockGraphContext({
+			const baseContext = makeMockGraphContext();
+			context = {
+				...baseContext,
 				applicationServices: {
-					...makeMockGraphContext().applicationServices,
+					...baseContext.applicationServices,
 					Listing: {
 						ItemListing: {
-							...makeMockGraphContext().applicationServices.Listing.ItemListing,
+							...baseContext.applicationServices.Listing.ItemListing,
 							unblock: vi.fn().mockResolvedValue(undefined),
 						},
 					},
 					User: {
-						...makeMockGraphContext().applicationServices.User,
+						...baseContext.applicationServices.User,
 						AdminUser: {
+							...baseContext.applicationServices.User.AdminUser,
 							queryByEmail: vi.fn().mockResolvedValue({
 								id: 'admin-1',
 								userType: 'admin-user',
@@ -946,10 +949,12 @@ test.for(feature, ({ Scenario }) => {
 						verifiedJwt: {
 							sub: 'admin-1',
 							email: 'admin@example.com',
+							given_name: 'Admin',
+							family_name: 'User',
 						},
 					},
 				},
-			});
+			} as unknown as GraphContext;
 		});
 		And('a valid listing ID to unblock', () => {
 			// ID will be passed in When step
@@ -972,12 +977,14 @@ test.for(feature, ({ Scenario }) => {
 
 	Scenario('Unblocking a listing without authentication', ({ Given, When, Then }) => {
 		Given('a user without a verifiedJwt in their context', () => {
-			context = makeMockGraphContext({
+			const baseContext = makeMockGraphContext();
+			context = {
+				...baseContext,
 				applicationServices: {
-					...makeMockGraphContext().applicationServices,
+					...baseContext.applicationServices,
 					verifiedUser: null,
 				},
-			});
+			} as unknown as GraphContext;
 		});
 		When('the unblockListing mutation is executed', async () => {
 			try {
@@ -997,12 +1004,15 @@ test.for(feature, ({ Scenario }) => {
 
 	Scenario('Unblocking a listing as non-admin user', ({ Given, When, Then }) => {
 		Given('an authenticated personal user (not admin)', () => {
-			context = makeMockGraphContext({
+			const baseContext = makeMockGraphContext();
+			context = {
+				...baseContext,
 				applicationServices: {
-					...makeMockGraphContext().applicationServices,
+					...baseContext.applicationServices,
 					User: {
-						...makeMockGraphContext().applicationServices.User,
+						...baseContext.applicationServices.User,
 						AdminUser: {
+							...baseContext.applicationServices.User.AdminUser,
 							queryByEmail: vi.fn().mockResolvedValue(null), // Not an admin
 						},
 					},
@@ -1010,10 +1020,12 @@ test.for(feature, ({ Scenario }) => {
 						verifiedJwt: {
 							sub: 'user-1',
 							email: 'personal@example.com',
+							given_name: 'Personal',
+							family_name: 'User',
 						},
 					},
 				},
-			});
+			} as unknown as GraphContext;
 		});
 		When('the unblockListing mutation is executed', async () => {
 			try {
@@ -1033,12 +1045,15 @@ test.for(feature, ({ Scenario }) => {
 
 	Scenario('Unblocking a listing as admin without permission', ({ Given, When, Then }) => {
 		Given('an authenticated admin user without canUnblockListings permission', () => {
-			context = makeMockGraphContext({
+			const baseContext = makeMockGraphContext();
+			context = {
+				...baseContext,
 				applicationServices: {
-					...makeMockGraphContext().applicationServices,
+					...baseContext.applicationServices,
 					User: {
-						...makeMockGraphContext().applicationServices.User,
+						...baseContext.applicationServices.User,
 						AdminUser: {
+							...baseContext.applicationServices.User.AdminUser,
 							queryByEmail: vi.fn().mockResolvedValue({
 								id: 'admin-2',
 								userType: 'admin-user',
@@ -1056,10 +1071,12 @@ test.for(feature, ({ Scenario }) => {
 						verifiedJwt: {
 							sub: 'admin-2',
 							email: 'limitedadmin@example.com',
+							given_name: 'Limited',
+							family_name: 'Admin',
 						},
 					},
 				},
-			});
+			} as unknown as GraphContext;
 		});
 		When('the unblockListing mutation is executed', async () => {
 			try {
