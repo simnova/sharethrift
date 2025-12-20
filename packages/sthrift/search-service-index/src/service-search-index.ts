@@ -5,7 +5,7 @@ import type {
 	SearchDocumentsResult,
 } from '@cellix/search-service';
 import { InMemoryCognitiveSearch } from '@sthrift/search-service-mock';
-import { ItemListingSearchIndexSpec } from './indexes/item-listing-search-index.js';
+import { ListingSearchIndexSpec } from './indexes/listing-search-index.js';
 
 /**
  * ShareThrift Search Service Index - FACADE
@@ -76,7 +76,7 @@ export class ServiceSearchIndex implements SearchService {
 		console.log('ServiceSearchIndex: Initializing domain indexes');
 
 		// Create item listing index
-		await this.createIndexIfNotExists(ItemListingSearchIndexSpec);
+		await this.createIndexIfNotExists(ListingSearchIndexSpec);
 
 		// Future: Add other indexes (users, reservations, etc.)
 	}
@@ -143,7 +143,7 @@ export class ServiceSearchIndex implements SearchService {
 		options?: SearchOptions,
 	): Promise<SearchDocumentsResult> {
 		return await this.search(
-			ItemListingSearchIndexSpec.name,
+			ListingSearchIndexSpec.name,
 			searchText,
 			options,
 		);
@@ -155,7 +155,7 @@ export class ServiceSearchIndex implements SearchService {
 	 * @param listing - The listing document to index
 	 */
 	async indexListing(listing: Record<string, unknown>): Promise<void> {
-		return await this.indexDocument(ItemListingSearchIndexSpec.name, listing);
+		return await this.indexDocument(ListingSearchIndexSpec.name, listing);
 	}
 
 	/**
@@ -164,6 +164,6 @@ export class ServiceSearchIndex implements SearchService {
 	 * @param listing - The listing document to delete (must include id)
 	 */
 	async deleteListing(listing: Record<string, unknown>): Promise<void> {
-		return await this.deleteDocument(ItemListingSearchIndexSpec.name, listing);
+		return await this.deleteDocument(ListingSearchIndexSpec.name, listing);
 	}
 }

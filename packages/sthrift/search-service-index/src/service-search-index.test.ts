@@ -7,7 +7,7 @@
 
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { ServiceSearchIndex } from './service-search-index';
-import { ItemListingSearchIndexSpec } from './indexes/item-listing-search-index';
+import { ListingSearchIndexSpec } from './indexes/listing-search-index';
 
 describe('ServiceSearchIndex', () => {
 	let searchService: ServiceSearchIndex;
@@ -72,9 +72,9 @@ describe('ServiceSearchIndex', () => {
 
 		it('should update an existing index definition', async () => {
 			const updatedIndex = {
-				...ItemListingSearchIndexSpec,
+				...ListingSearchIndexSpec,
 				fields: [
-					...ItemListingSearchIndexSpec.fields,
+					...ListingSearchIndexSpec.fields,
 					{
 						name: 'newField',
 						type: 'Edm.String' as const,
@@ -85,7 +85,7 @@ describe('ServiceSearchIndex', () => {
 
 			await expect(
 				searchService.createOrUpdateIndexDefinition(
-					ItemListingSearchIndexSpec.name,
+					ListingSearchIndexSpec.name,
 					updatedIndex,
 				),
 			).resolves.toBeUndefined();
@@ -131,7 +131,7 @@ describe('ServiceSearchIndex', () => {
 		it('should index a document to any index', async () => {
 			await expect(
 				searchService.indexDocument(
-					ItemListingSearchIndexSpec.name,
+					ListingSearchIndexSpec.name,
 					testListing,
 				),
 			).resolves.toBeUndefined();
@@ -147,7 +147,7 @@ describe('ServiceSearchIndex', () => {
 		it('should delete a document from any index', async () => {
 			await searchService.indexListing(testListing);
 			await expect(
-				searchService.deleteDocument(ItemListingSearchIndexSpec.name, {
+				searchService.deleteDocument(ListingSearchIndexSpec.name, {
 					id: testListing.id,
 				}),
 			).resolves.toBeUndefined();
@@ -225,7 +225,7 @@ describe('ServiceSearchIndex', () => {
 
 		it('should search using generic search method', async () => {
 			const results = await searchService.search(
-				ItemListingSearchIndexSpec.name,
+				ListingSearchIndexSpec.name,
 				'bike',
 			);
 

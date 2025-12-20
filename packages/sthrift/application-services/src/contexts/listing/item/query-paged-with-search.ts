@@ -1,7 +1,7 @@
 import type { Domain } from '@sthrift/domain';
 import type { DataSources } from '@sthrift/persistence';
 import type { CognitiveSearchDomain } from '@sthrift/domain';
-import { ItemListingSearchIndexSpec } from '@sthrift/domain';
+import { ListingSearchIndexSpec } from '@sthrift/domain';
 import { queryPaged } from './query-paged.js';
 
 export interface ItemListingQueryPagedWithSearchCommand {
@@ -63,10 +63,10 @@ export const queryPagedWithSearchFallback = (
 			}
 
 				// Ensure the search index exists
-				await searchService.createIndexIfNotExists(ItemListingSearchIndexSpec);
+				await searchService.createIndexIfNotExists(ListingSearchIndexSpec);
 
 				const searchResult = await searchService.search(
-					ItemListingSearchIndexSpec.name,
+					ListingSearchIndexSpec.name,
 					searchText,
 					options,
 				);

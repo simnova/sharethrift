@@ -1,5 +1,5 @@
 import type { Domain } from '@sthrift/domain';
-import { ItemListingSearchIndexingService } from '@sthrift/domain';
+import { ListingSearchIndexingService } from '@sthrift/domain';
 import type { SearchService } from '@cellix/search-service';
 
 /**
@@ -20,7 +20,7 @@ export async function bulkIndexExistingListings(
 			return;
 		}
 
-		const itemListingSearchIndexing = new ItemListingSearchIndexingService(
+		const listingSearchIndexing = new ListingSearchIndexingService(
 			searchService,
 			itemListingUnitOfWork,
 		);
@@ -29,7 +29,7 @@ export async function bulkIndexExistingListings(
 
 		for (const listing of listings) {
 			try {
-				await itemListingSearchIndexing.indexItemListing(listing.id);
+				await listingSearchIndexing.indexListing(listing.id);
 				console.log(`Indexed listing: ${listing.id} - ${listing.title}`);
 			} catch (error) {
 				const errorMessage =

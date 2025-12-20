@@ -1,15 +1,15 @@
-import { Domain, type ItemListingSearchIndexingService } from '@sthrift/domain';
+import { Domain, type ListingSearchIndexingService } from '@sthrift/domain';
 
 const { EventBusInstance, ItemListingUpdatedEvent } = Domain.Events;
 
 export default function registerItemListingUpdatedUpdateSearchIndexHandler(
-	itemListingSearchIndexing: ItemListingSearchIndexingService,
+	listingSearchIndexing: ListingSearchIndexingService,
 ) {
 	EventBusInstance.register(
 		ItemListingUpdatedEvent,
 		async (payload: { id: string }) => {
 			try {
-				await itemListingSearchIndexing.indexItemListing(payload.id);
+				await listingSearchIndexing.indexListing(payload.id);
 			} catch (error) {
 				console.error(`Failed to update search index for ItemListing ${payload.id}:`, error);
 			}
