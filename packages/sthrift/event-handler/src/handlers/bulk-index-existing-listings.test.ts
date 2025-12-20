@@ -85,7 +85,7 @@ describe('bulkIndexExistingListings', () => {
 		await bulkIndexExistingListings(mockListings, mockSearchService, mockUnitOfWork);
 
 		expect(mockSearchService.createIndexIfNotExists).toHaveBeenCalledWith(
-			expect.objectContaining({ name: 'item-listings' }),
+			expect.objectContaining({ name: 'listings' }),
 		);
 	});
 
@@ -94,11 +94,11 @@ describe('bulkIndexExistingListings', () => {
 
 		expect(mockSearchService.indexDocument).toHaveBeenCalledTimes(2);
 		expect(mockSearchService.indexDocument).toHaveBeenCalledWith(
-			'item-listings',
+			'listings',
 			expect.objectContaining({ id: 'listing-1', title: 'Test Listing 1' }),
 		);
 		expect(mockSearchService.indexDocument).toHaveBeenCalledWith(
-			'item-listings',
+			'listings',
 			expect.objectContaining({ id: 'listing-2', title: 'Test Listing 2' }),
 		);
 	});
@@ -188,7 +188,7 @@ describe('bulkIndexExistingListings', () => {
 		);
 
 		expect(mockSearchService.indexDocument).toHaveBeenCalledWith(
-			'item-listings',
+			'listings',
 			expect.objectContaining({
 				id: 'listing-minimal',
 				title: 'Minimal Listing',
@@ -217,14 +217,14 @@ describe('bulkIndexExistingListings', () => {
 		await bulkIndexExistingListings(mockListings, mockSearchService, mockUnitOfWork);
 
 		expect(mockSearchService.indexDocument).toHaveBeenCalledWith(
-			'item-listings',
+			'listings',
 			expect.objectContaining({
 				id: 'listing-1',
 				title: 'Test Listing 1',
 			}),
 		);
 		expect(mockSearchService.indexDocument).toHaveBeenCalledWith(
-			'item-listings',
+			'listings',
 			expect.objectContaining({
 				id: 'listing-2',
 				title: 'Test Listing 2',
@@ -249,7 +249,7 @@ describe('bulkIndexExistingListings', () => {
 		);
 
 		expect(console.warn).toHaveBeenCalledWith(
-			expect.stringContaining('ItemListing listing-missing not found'),
+			expect.stringContaining('Listing listing-missing not found'),
 		);
 		expect(console.log).toHaveBeenCalledWith(
 			expect.stringContaining('Bulk indexing complete: 1/1 listings indexed successfully'),
