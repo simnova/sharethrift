@@ -8,11 +8,13 @@ This directory contains Serenity.js Abilities that represent an Actor's capacity
 - Use actual domain aggregate factory methods (e.g., `ItemListing.getNewInstance()`)
 - Interact through the domain's UnitOfWork pattern
 - Leverage real repository implementations
+- Call aggregate's public methods for state transitions (`publish()`, `pause()`, `cancel()`, `reinstate()`)
 
 ### ❌ DON'T: Mock the Domain
 - Don't manually construct domain objects
 - Don't use in-memory arrays to simulate persistence
 - Don't bypass domain logic
+- Don't manually set state properties (use `listing.publish()` not `listing.state = 'Published'`)
 
 ## Example: CreateListingAbility
 
@@ -23,6 +25,13 @@ await this.unitOfWork.withScopedTransaction(async (repo) => {
   createdListing = await repo.save(listing);
 });
 
+// ✅ CORRECT: Use aggregate's public methods for state transitions
+await this.unitOfWork.withScopedTransaction(async (repo) => {
+  const listing = await repo.getById(listingId);
+  listing.publish(); // Domain method enforces business rules
+  await repo.save(listing);
+});
+
 // ❌ WRONG: Manually constructs objects
 const listing = {
   id: `listing-${Date.now()}`,
@@ -31,6 +40,9 @@ const listing = {
   ...
 };
 this.listings.push(listing); // Mocks database
+
+// ❌ WRONG: Manually sets state property
+listing.state = 'Published'; // Bypasses validation
 ```
 
 ## Testing Infrastructure
@@ -51,6 +63,24 @@ const createListing = CreateListingAbility.with(
 );
 
 actor.whoCan(createListing);
+
+// Create a listing
+const listing = await createListing.createListing({
+  title: 'Bike for sharing',
+  description: 'Mountain bike',
+  category: 'Sports',
+  location: 'Delhi',
+  sharingPeriodStart: new Date(),
+  sharingPeriodEnd: new Date(),
+});
+
+// Test state transitions using domain methods
+await createListing.publishListing(listing.id);
+await createListing.pauseListing(listing.id);
+await createListing.reinstateListing(listing.id);
+
+// Query via repository
+const userListings = await createListing.getUserListings('user-123');
 ```
 
 ## References

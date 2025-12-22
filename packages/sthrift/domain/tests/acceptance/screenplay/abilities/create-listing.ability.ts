@@ -73,6 +73,91 @@ export class CreateListingAbility extends Ability {
 	}
 
 	/**
+	 * Publishes a listing using the aggregate's publish() method.
+	 * This tests the actual business logic for publishing, not manual state setting.
+	 *
+	 * @param listingId - ID of the listing to publish
+	 */
+	async publishListing(listingId: string): Promise<void> {
+		await this.unitOfWork.withScopedTransaction(async (repo) => {
+			const listing = await repo.getById(listingId);
+			if (!listing) {
+				throw new Error(`Listing ${listingId} not found`);
+			}
+			// Use the aggregate's public method - enforces business rules
+			listing.publish();
+			await repo.save(listing);
+		});
+	}
+
+	/**
+	 * Pauses a listing using the aggregate's pause() method.
+	 *
+	 * @param listingId - ID of the listing to pause
+	 */
+	async pauseListing(listingId: string): Promise<void> {
+		await this.unitOfWork.withScopedTransaction(async (repo) => {
+			const listing = await repo.getById(listingId);
+			if (!listing) {
+				throw new Error(`Listing ${listingId} not found`);
+			}
+			listing.pause();
+			await repo.save(listing);
+		});
+	}
+
+	/**
+	 * Cancels a listing using the aggregate's cancel() method.
+	 *
+	 * @param listingId - ID of the listing to cancel
+	 */
+	async cancelListing(listingId: string): Promise<void> {
+		await this.unitOfWork.withScopedTransaction(async (repo) => {
+			const listing = await repo.getById(listingId);
+			if (!listing) {
+				throw new Error(`Listing ${listingId} not found`);
+			}
+			listing.cancel();
+			await repo.save(listing);
+		});
+	}
+
+	/**
+	 * Reinstates a listing using the aggregate's reinstate() method.
+	 *
+	 * @param listingId - ID of the listing to reinstate
+	 */
+	async reinstateListing(listingId: string): Promise<void> {
+		await this.unitOfWork.withScopedTransaction(async (repo) => {
+			const listing = await repo.getById(listingId);
+			if (!listing) {
+				throw new Error(`Listing ${listingId} not found`);
+			}
+			listing.reinstate();
+			await repo.save(listing);
+		});
+	}
+
+	/**
+	 * Gets listings for a specific user by querying the repository.
+	 *
+	 * @param userId - ID of the user
+	 * @returns Array of listings belonging to the user
+	 */
+	async getUserListings(
+		userId: string,
+	): Promise<Domain.Contexts.Listing.ItemListing.ItemListingEntityReference[]> {
+		let listings: Domain.Contexts.Listing.ItemListing.ItemListingEntityReference[] =
+			[];
+
+		await this.unitOfWork.withScopedTransaction(async (repo) => {
+			listings = await repo.getBySharerID(userId);
+		});
+
+		return listings;
+	}
+
+	/**
 	 * Factory method to create the ability with required dependencies.
 	 *
 	 * @param unitOfWork - The listing unit of work for transaction management
