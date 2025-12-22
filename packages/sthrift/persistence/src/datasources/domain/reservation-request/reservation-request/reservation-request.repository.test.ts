@@ -266,7 +266,7 @@ test.for(feature, ({ Scenario, Background, BeforeEachScenario }) => {
             And('reservation period from "2025-10-20" to "2025-10-25"', () => {
                 // Dates are provided in the When step
             });
-            When('I call getNewInstance with state "PENDING", the listing, the reserver, and the reservation period', async () => {
+            When('I call getNewInstance with state "Requested", the listing, the reserver, and the reservation period', async () => {
                 // Use future dates that will always be valid
                 const tomorrow = new Date();
                 tomorrow.setDate(tomorrow.getDate() + 1);
@@ -300,7 +300,7 @@ test.for(feature, ({ Scenario, Background, BeforeEachScenario }) => {
                 });
                 
                 result = await repository.getNewInstance(
-                    'PENDING',
+                    'Requested',
                     listing,
                     reserver,
                     tomorrow,
@@ -312,12 +312,12 @@ test.for(feature, ({ Scenario, Background, BeforeEachScenario }) => {
                     Domain.Contexts.ReservationRequest.ReservationRequest.ReservationRequest,
                 );
             });
-            And('the domain object\'s state should be "PENDING"', () => {
+            And('the domain object\'s state should be "Requested"', () => {
                 const reservationRequest =
                     result as Domain.Contexts.ReservationRequest.ReservationRequest.ReservationRequest<
                         Domain.Contexts.ReservationRequest.ReservationRequest.ReservationRequestProps
                     >;
-                expect(reservationRequest.state).toBe('PENDING');
+                expect(reservationRequest.state).toBe('Requested');
             });
             And('the reservation period should be from "2025-10-20" to "2025-10-25"', () => {
                 const reservationRequest =
@@ -403,14 +403,14 @@ test.for(feature, ({ Scenario, Background, BeforeEachScenario }) => {
 				// biome-ignore lint/suspicious/noExplicitAny: test requires any for invalid type simulation
 				invalidReserver = null as any;
 			});
-			When('I call getNewInstance with state "PENDING", a valid listing, and the invalid reserver', async () => {
+			When('I call getNewInstance with state "Requested", a valid listing, and the invalid reserver', async () => {
 				listing = vi.mocked({
 					id: createValidObjectId('listing-1'),
 				} as unknown as Domain.Contexts.Listing.ItemListing.ItemListingEntityReference);
 
 				try {
 					result = await repository.getNewInstance(
-						'PENDING',
+						'Requested',
 						listing,
 						invalidReserver,
 						new Date('2025-10-20'),
