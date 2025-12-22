@@ -48,13 +48,14 @@ export class ItemListing<props extends ItemListingProps>
 		const id = uuidv4();
 		const now = new Date();
 
+		// Use value object constructors to enforce validation rules
 		const newProps = {
 			id,
 			sharer: sharer,
-			title: fields.title,
-			description: fields.description,
-			category: fields.category,
-			location: fields.location,
+			title: new ValueObjects.Title(fields.title).valueOf(),
+			description: new ValueObjects.Description(fields.description).valueOf(),
+			category: new ValueObjects.Category(fields.category).valueOf(),
+			location: new ValueObjects.Location(fields.location).valueOf(),
 			sharingPeriodStart: fields.sharingPeriodStart,
 			sharingPeriodEnd: fields.sharingPeriodEnd,
 			images: fields.images ?? [],
