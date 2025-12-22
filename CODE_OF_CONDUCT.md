@@ -11,7 +11,7 @@ We as contributors and maintainers pledge to make participation in the ShareThri
 - Sexual identity or orientation
 
 ## Our Standards
-Examples of behavior that contributes to a positive environment:
+Examples of behavior that contribute to a positive environment:
 - Using welcoming and inclusive language
 - Being respectful of differing viewpoints and experiences
 - Gracefully accepting constructive feedback
