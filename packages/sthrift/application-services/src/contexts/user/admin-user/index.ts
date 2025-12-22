@@ -69,8 +69,3 @@ export const AdminUser = (
 		unblockUser: unblockUser(dataSources),
 	};
 };
-
-export type {
-	GetAllAdminUsersCommand,
-	AdminUserPageResult,
-} from './get-all-users.ts';

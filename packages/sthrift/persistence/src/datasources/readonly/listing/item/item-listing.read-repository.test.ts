@@ -375,7 +375,7 @@ test.for(feature, ({ Scenario, Background, BeforeEachScenario }) => {
 			// Mock data set up in When
 		});
 
-		When('I call getPaged with sorter field "publishedAt" and order "ascend"', async () => {
+		When('I call getPaged with sorter field "createdAt" and order "ascend"', async () => {
 			const createQueryChain = (value: unknown) => ({
 				populate: () => createQueryChain(value),
 				lean: () => createQueryChain(value),
@@ -410,7 +410,7 @@ test.for(feature, ({ Scenario, Background, BeforeEachScenario }) => {
 			result = await repository.getPaged({ 
 				page: 1, 
 				pageSize: 10, 
-				sorter: { field: 'publishedAt', order: 'ascend' } 
+				sorter: { field: 'createdAt', order: 'ascend' } 
 			});
 		});
 
@@ -427,7 +427,7 @@ test.for(feature, ({ Scenario, Background, BeforeEachScenario }) => {
 			// Mock data set up in When
 		});
 
-		When('I call getPaged with sorter field "publishedAt" and order "descend"', async () => {
+		When('I call getPaged with sorter field "createdAt" and order "descend"', async () => {
 			const createQueryChain = (value: unknown) => ({
 				populate: () => createQueryChain(value),
 				lean: () => createQueryChain(value),
@@ -462,7 +462,7 @@ test.for(feature, ({ Scenario, Background, BeforeEachScenario }) => {
 			result = await repository.getPaged({ 
 				page: 1, 
 				pageSize: 10, 
-				sorter: { field: 'publishedAt', order: 'descend' } 
+				sorter: { field: 'createdAt', order: 'descend' } 
 			});
 		});
 

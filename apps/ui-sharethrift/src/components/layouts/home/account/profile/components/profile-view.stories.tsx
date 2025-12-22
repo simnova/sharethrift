@@ -29,7 +29,7 @@ const mockListings: ItemListing[] = [
 		sharingPeriodStart: '2024-12-01',
 		sharingPeriodEnd: '2024-12-31',
 		images: ['/assets/item-images/bike.png'],
-		state: 'Published',
+		state: 'Active',
 		createdAt: '2024-11-01T00:00:00Z',
 		__typename: 'ItemListing',
 	},

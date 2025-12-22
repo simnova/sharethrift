@@ -8,7 +8,7 @@ import { StatusFilter } from './admin-listings-table.status-filter';
 import { StatusTag } from './admin-listings-table.status-tag';
 import { formatDate } from './admin-listings-table.utils';
 
-export interface AdminListingsTableProps {
+interface AdminListingsTableProps {
   readonly data: ReadonlyArray<MyListingData>;
   readonly searchText: string;
   readonly statusFilters: ReadonlyArray<string>;
@@ -39,8 +39,8 @@ export function AdminListingsTable({
   onPageChange,
   onAction,
 }: AdminListingsTableProps) {
-  let publishedAtSortOrder: 'ascend' | 'descend' | null = null;
-  if (sorter?.field === 'publishedAt') publishedAtSortOrder = sorter.order === 'ascend' ? 'ascend' : 'descend';
+  let createdAtSortOrder: 'ascend' | 'descend' | null = null;
+  if (sorter?.field === 'createdAt') createdAtSortOrder = sorter.order === 'ascend' ? 'ascend' : 'descend';
 
   let reservationPeriodSortOrder: 'ascend' | 'descend' | null = null;
   if (sorter?.field === 'reservationPeriod') reservationPeriodSortOrder = sorter.order === 'ascend' ? 'ascend' : 'descend';
@@ -76,11 +76,11 @@ export function AdminListingsTable({
       ),
     },
     {
-      title: 'Published At',
-      dataIndex: 'publishedAt',
-      key: 'publishedAt',
+      title: 'Created At',
+      dataIndex: 'createdAt',
+      key: 'createdAt',
       sorter: true,
-      sortOrder: publishedAtSortOrder,
+      sortOrder: createdAtSortOrder,
       render: (date: string) => formatDate(date),
     },
     {
@@ -110,7 +110,7 @@ export function AdminListingsTable({
           <Button type="link" size="small" onClick={() => onAction('view', record.id)}>
             View
           </Button>
-          {(record.status === 'Blocked' || record.status === 'Appeal Requested') && (
+          {(record.status === 'Blocked') && (
             <Button type="link" size="small" onClick={() => onAction('unblock', record.id)}>
               Unblock
             </Button>

@@ -4,13 +4,12 @@ import { VOString } from '@lucaspaganini/value-objects';
  * Enumeration of possible listing states
  */
 export const ListingStateEnum = {
-	Published: 'Published',
+	Active: 'Active',
 	Paused: 'Paused',
 	Cancelled: 'Cancelled',
-	Drafted: 'Drafted',
+	Draft: 'Draft',
 	Expired: 'Expired',
 	Blocked: 'Blocked',
-	AppealRequested: 'Appeal Requested',
 } as const;
 
 export class ListingState extends VOString({
@@ -18,16 +17,15 @@ export class ListingState extends VOString({
 	minLength: 0,
 	maxLength: 50,
 }) {
-	static Published = new ListingState(ListingStateEnum.Published);
+	static Active = new ListingState(ListingStateEnum.Active);
 	static Paused = new ListingState(ListingStateEnum.Paused);
 	static Cancelled = new ListingState(ListingStateEnum.Cancelled);
-	static Drafted = new ListingState(ListingStateEnum.Drafted);
+	static Draft = new ListingState(ListingStateEnum.Draft);
 	static Expired = new ListingState(ListingStateEnum.Expired);
 	static Blocked = new ListingState(ListingStateEnum.Blocked);
-	static AppealRequested = new ListingState(ListingStateEnum.AppealRequested);
 
 	get isActive(): boolean {
-		return this.valueOf() === ListingStateEnum.Published;
+		return this.valueOf() === ListingStateEnum.Active;
 	}
 }
 

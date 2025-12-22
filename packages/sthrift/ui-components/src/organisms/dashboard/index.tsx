@@ -5,7 +5,7 @@ import styles from './index.module.css';
 
 const { Text } = Typography;
 
-export interface DashboardProps<T> {
+interface DashboardProps<T> {
 	data: T[];
 	columns?: TableProps<T>['columns'];
 	renderGridItem?: (item: T) => React.ReactNode;
@@ -108,4 +108,3 @@ export const Dashboard = <T extends object>({
 	);
 };
 
-export default Dashboard;

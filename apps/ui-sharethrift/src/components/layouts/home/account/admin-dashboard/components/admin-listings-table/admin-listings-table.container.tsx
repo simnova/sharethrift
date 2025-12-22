@@ -16,7 +16,6 @@ export function AdminListings(): React.JSX.Element {
 	const pageSize = 6;
 	const [searchText, setSearchText] = useState('');
 	const [statusFilters, setStatusFilters] = useState<string[]>([
-		'Appeal Requested',
 		'Blocked',
 	]);
 	const [sorter, setSorter] = useState<{
@@ -82,7 +81,7 @@ export function AdminListings(): React.JSX.Element {
 			id: listing.id,
 			title: listing.title,
 			image: listing.images?.[0] ?? null,
-			publishedAt: listing.createdAt ?? null,
+			createdAt: listing.createdAt ?? null,
 			reservationPeriod,
 			status: listing.state ?? 'Unknown',
 			pendingRequestsCount: 0, // TODO: implement in future
@@ -163,4 +162,3 @@ export function AdminListings(): React.JSX.Element {
 	);
 }
 
-export default AdminListings;
