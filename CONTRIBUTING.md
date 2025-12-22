@@ -112,44 +112,76 @@ This means tasks and PRs may bounce between these states multiple times during d
 - Unit of Work plans atomic persistence and event publication
 
 ## Facade Pattern & Package Responsibilities
-ShareThrift follows a Facade-based modular architecture to enforce clear boundaries, reduce coupling, and protect domain integrity. This is especially important when working across the sthrift and cellix packages.
+ShareThrift uses a **facade pattern** to keep business logic, shared abstractions, and infrastructure implementations clearly separated. This helps us swap implementations, test easily, and avoid tight coupling.
 
-### sthrift Package (Business Domain)
-### sthrift contains ShareThrift-specific business logic and domain models.
-- It is responsible for:
-    - Aggregates, entities, value objects
-    - Domain invariants and rules
-    - Domain events
-    - Domain-level interfaces (repositories, units of work, ports)
-    - Application-facing facades for domain capabilities
+### How the Facade Pattern Is Used
 
-- What does NOT belong here:
-    - Framework or infrastructure concerns
-    - Generic utilities
-    - Cross-domain abstractions not specific to ShareThrift
+At a high level:
+- `cellix` defines **interfaces and shared contracts**
+- `sthrift` provides **ShareThrift-specific implementations**
+- The API or service layer **chooses which implementation to use** (based on environment or configuration)
 
-- Think of sthrift as:
-“The business truth of ShareThrift, independent of technology choices.”
+#### Example
 
-### Folder & Dependency Philosophy
+For an infrastructure-style capability like messaging:
 
-- sthrift may depend on cellix
-- cellix must never depend on sthrift
+- `cellix/messaging-service`
+  - Defines the interface and shared types
+  - Example: `MessagingService`
 
-### cellix Package (Seedwork & Platform Abstractions)
-### cellix is domain-agnostic seedwork shared across contexts and services.
-- It typically contains:
-    - Base abstractions (AggregateRoot, Entity, ValueObject)
-    - Infrastructure-neutral interfaces
-    - Cross-cutting patterns (telemetry hooks, service registration, lifecycle helpers)
-    - Utilities that multiple domains depend on
+- `sthrift/messaging-service-twilio`
+  - Implements the interface using Twilio
 
-- What does NOT belong here:
-    - ShareThrift-specific rules or terminology
-    - Domain behavior or policies
+- `sthrift/messaging-service-mock`
+  - Implements the same interface for local dev or testing
 
-- Think of cellix as:
-“Reusable building blocks that enable domains, but never define them.”
+The API layer depends only on the `messaging-service` interface and can swap implementations without changing business logic.
+
+---
+
+### `sthrift` Package (ShareThrift Domain & Implementations)
+
+`sthrift` contains **ShareThrift-specific behavior**, including domain logic and concrete implementations of facades.
+
+It typically includes:
+- Domain models (aggregates, entities, value objects)
+- Business rules and invariants
+- Domain events
+- Implementations of interfaces defined in `cellix`
+- Application-facing facades used by APIs and services
+
+Does **not** include:
+- Generic abstractions meant to be reused outside ShareThrift
+- Shared base classes or cross-domain utilities
+
+Think of `sthrift` as:
+> “Where ShareThrift behavior actually lives.”
+
+---
+
+### `cellix` Package (Shared Interfaces & Seedwork)
+
+`cellix` contains **shared interfaces, base abstractions, and utilities** that are not specific to ShareThrift.
+
+It typically includes:
+- Interface-only packages (facades)
+- Base domain building blocks
+- Cross-cutting helpers used by multiple services or domains
+
+Does **not** include:
+- ShareThrift-specific rules or logic
+- Concrete infrastructure implementations
+
+Think of `cellix` as:
+> “Shared contracts and building blocks that implementations plug into.”
+
+---
+
+### Folder & Dependency Rules
+
+- `sthrift` **may depend on** `cellix`
+- `cellix` **must never depend on** `sthrift`
+- API and service layers depend on **interfaces**, not concrete implementations
 
 ## Testing & Quality Requirements
 - Every aggregate, entity, value object: unit tests + scenario ([`.feature`](./packages/sthrift/service-sendgrid/src/features/)) files
