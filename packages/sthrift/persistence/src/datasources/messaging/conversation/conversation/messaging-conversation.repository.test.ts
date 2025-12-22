@@ -48,7 +48,7 @@ describe('MessagingConversationRepository', () => {
 			);
 		});
 
-		it('should handle messages without author', async () => {
+		it('should return empty array when message has no author (author required)', async () => {
 			const mockMessages = [
 				{
 					id: 'msg-1',
@@ -63,8 +63,8 @@ describe('MessagingConversationRepository', () => {
 
 			const result = await repository.getMessages('conversation-123');
 
-			expect(result).toBeDefined();
-			expect(result.length).toBe(1);
+			// Messages without authors are not valid - error is caught and empty array returned
+			expect(result).toEqual([]);
 		});
 
 		it('should return empty array on error', async () => {

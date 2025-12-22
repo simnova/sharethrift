@@ -9,7 +9,6 @@ export type { ConversationUnitOfWork } from './conversation.uow.ts';
 export type { MessageEntityReference } from './message.entity.ts';
 export { Message } from './message.entity.ts';
 export {
-	ANONYMOUS_AUTHOR_ID,
 	AuthorId,
 	MessageContents,
 	MessageText,
