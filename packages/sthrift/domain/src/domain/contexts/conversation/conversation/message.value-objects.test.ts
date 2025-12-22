@@ -142,14 +142,4 @@ test.for(feature, ({ Scenario }) => {
 			});
 		},
 	);
-
-	Scenario('Using the ANONYMOUS_AUTHOR_ID constant', ({ When, Then }) => {
-		let value: string;
-		When('I use the ANONYMOUS_AUTHOR_ID constant', () => {
-			value = ValueObjects.ANONYMOUS_AUTHOR_ID;
-		});
-		Then('the value should be "000000000000000000000000"', () => {
-			expect(value).toBe('000000000000000000000000');
-		});
-	});
 });

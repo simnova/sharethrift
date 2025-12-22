@@ -20,9 +20,10 @@ export class AdminUserConversationVisa<root extends ConversationEntityReference>
 		// AdminUser permissions based on their role
 		const rolePermissions = this.admin.role?.permissions;
 
-		// Admin can moderate conversations if they have listing moderation permissions
+		// Admin can moderate conversations using dedicated conversation permissions
 		const canModerateConversations =
-			rolePermissions?.listingPermissions?.canModerateListings ?? false;
+			rolePermissions?.conversationPermissions?.canModerateConversations ??
+			false;
 
 		// Check if admin is a participant in this conversation (sharer or reserver)
 		const adminIsParticipant =
@@ -30,14 +31,15 @@ export class AdminUserConversationVisa<root extends ConversationEntityReference>
 			this.root.reserver?.id === this.admin.id;
 
 		const permissions: ConversationDomainPermissions = {
-			// Admins can create conversations if they have user management permissions
+			// Admins can create conversations if they have conversation edit permissions
 			canCreateConversation:
-				rolePermissions?.userPermissions?.canEditUsers ?? false,
+				rolePermissions?.conversationPermissions?.canEditConversations ?? false,
 			// Admins can manage conversations if they have moderation permissions OR are a participant
 			canManageConversation: canModerateConversations || adminIsParticipant,
-			// Admins can view all conversations for moderation purposes
+			// Admins can view all conversations if they have the view permission
 			canViewConversation:
-				rolePermissions?.userPermissions?.canViewAllUsers ?? false,
+				rolePermissions?.conversationPermissions?.canViewAllConversations ??
+				false,
 		};
 
 		return func(permissions);

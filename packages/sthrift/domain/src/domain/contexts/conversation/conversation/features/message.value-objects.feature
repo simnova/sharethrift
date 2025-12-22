@@ -42,7 +42,3 @@ Feature: Message value objects
   Scenario: Creating a MessageText with whitespace that gets trimmed
     When I create a MessageText with "  Hello World  "
     Then the value should be "Hello World"
-
-  Scenario: Using the ANONYMOUS_AUTHOR_ID constant
-    When I use the ANONYMOUS_AUTHOR_ID constant
-    Then the value should be "000000000000000000000000"

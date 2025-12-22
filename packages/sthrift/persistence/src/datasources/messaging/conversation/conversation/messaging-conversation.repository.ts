@@ -41,11 +41,13 @@ export class MessagingConversationRepositoryImpl
 			const messages = await this.messagingService.getMessages(conversationId);
 
 			return messages.map((msg) => {
-				const authorId = msg.author
-					? new Domain.Contexts.Conversation.Conversation.AuthorId(msg.author)
-					: new Domain.Contexts.Conversation.Conversation.AuthorId(
-							Domain.Contexts.Conversation.Conversation.ANONYMOUS_AUTHOR_ID,
-						);
+				if (!msg.author) {
+					throw new Error(
+						`Message ${msg.id} has no author - all messages must have an author`,
+					);
+				}
+				const authorId =
+					new Domain.Contexts.Conversation.Conversation.AuthorId(msg.author);
 				return toDomainMessage(msg, authorId);
 			});
 		} catch (error: unknown) {
