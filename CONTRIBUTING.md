@@ -111,77 +111,32 @@ This means tasks and PRs may bounce between these states multiple times during d
 - Repositories are defined as interfaces in the domain; adapters live outside
 - Unit of Work plans atomic persistence and event publication
 
+
 ## Facade Pattern & Package Responsibilities
-ShareThrift uses a **facade pattern** to keep business logic, shared abstractions, and infrastructure implementations clearly separated. This helps us swap implementations, test easily, and avoid tight coupling.
+ShareThrift uses a **facade pattern** to separate shared interfaces from ShareThrift-specific implementations. This allows implementations to be swapped (for example, by environment) without changing business logic.
 
-### How the Facade Pattern Is Used
-
-At a high level:
 - `cellix` defines **interfaces and shared contracts**
-- `sthrift` provides **ShareThrift-specific implementations**
-- The API or service layer **chooses which implementation to use** (based on environment or configuration)
+- `sthrift` contains **ShareThrift domain logic** and **implements `cellix` interfaces**
+- API and service layers depend only on interfaces, not concrete implementations
 
-#### Example
+**Example:**  
+`cellix/service-messaging` defines a messaging interface.  
+`sthrift/service-messaging-twilio` and `sthrift/service-messaging-mock` provide concrete implementations selected at runtime.
 
-For an infrastructure-style capability like messaging:
+### Package Responsibilities
+**`sthrift`**
+- Domain models, business rules, and domain events  
+- Implementations of `cellix` interfaces  
+- Facades consumed by APIs and services  
 
-- `cellix/messaging-service`
-  - Defines the interface and shared types
-  - Example: `MessagingService`
+**`cellix`**
+- Interface-only packages (facades)  
+- Shared abstractions and cross-cutting utilities  
+- No ShareThrift-specific logic or implementations  
 
-- `sthrift/messaging-service-twilio`
-  - Implements the interface using Twilio
-
-- `sthrift/messaging-service-mock`
-  - Implements the same interface for local dev or testing
-
-The API layer depends only on the `messaging-service` interface and can swap implementations without changing business logic.
-
----
-
-### `sthrift` Package (ShareThrift Domain & Implementations)
-
-`sthrift` contains **ShareThrift-specific behavior**, including domain logic and concrete implementations of facades.
-
-It typically includes:
-- Domain models (aggregates, entities, value objects)
-- Business rules and invariants
-- Domain events
-- Implementations of interfaces defined in `cellix`
-- Application-facing facades used by APIs and services
-
-Does **not** include:
-- Generic abstractions meant to be reused outside ShareThrift
-- Shared base classes or cross-domain utilities
-
-Think of `sthrift` as:
-> “Where ShareThrift behavior actually lives.”
-
----
-
-### `cellix` Package (Shared Interfaces & Seedwork)
-
-`cellix` contains **shared interfaces, base abstractions, and utilities** that are not specific to ShareThrift.
-
-It typically includes:
-- Interface-only packages (facades)
-- Base domain building blocks
-- Cross-cutting helpers used by multiple services or domains
-
-Does **not** include:
-- ShareThrift-specific rules or logic
-- Concrete infrastructure implementations
-
-Think of `cellix` as:
-> “Shared contracts and building blocks that implementations plug into.”
-
----
-
-### Folder & Dependency Rules
-
-- `sthrift` **may depend on** `cellix`
-- `cellix` **must never depend on** `sthrift`
-- API and service layers depend on **interfaces**, not concrete implementations
+### Dependency Rules
+- `sthrift` may depend on `cellix`
+- `cellix` must never depend on `sthrift`
 
 ## Testing & Quality Requirements
 - Every aggregate, entity, value object: unit tests + scenario ([`.feature`](./packages/sthrift/service-sendgrid/src/features/)) files
