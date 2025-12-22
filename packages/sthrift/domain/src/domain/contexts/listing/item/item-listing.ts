@@ -51,7 +51,7 @@ export class ItemListing<props extends ItemListingProps>
 		// Use value object constructors to enforce validation rules
 		const newProps = {
 			id,
-			sharer: sharer,
+			sharer,
 			title: new ValueObjects.Title(fields.title).valueOf(),
 			description: new ValueObjects.Description(fields.description).valueOf(),
 			category: new ValueObjects.Category(fields.category).valueOf(),
