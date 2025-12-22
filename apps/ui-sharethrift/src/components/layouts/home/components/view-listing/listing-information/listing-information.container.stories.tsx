@@ -12,7 +12,7 @@ import {
 	HomeListingInformationCancelReservationRequestDocument,
 	ViewListingActiveReservationRequestForListingDocument,
 } from '../../../../../../generated.tsx';
-import { clickCancelThenConfirm } from '../../../../../../test-utils/popconfirm-test-utils.ts';
+import { clickCancelThenConfirm } from '@sthrift/ui-components';
 
 const mockListing = {
 	__typename: 'ItemListing' as const,

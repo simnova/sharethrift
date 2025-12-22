@@ -6,8 +6,6 @@ export interface ReservationRequestCancelCommand {
 	callerId: string;
 }
 
-const CANCELLABLE_STATES = ['Requested', 'Rejected'] as const;
-
 export const cancel = (dataSources: DataSources) => {
 	return async (
 		command: ReservationRequestCancelCommand,
@@ -29,14 +27,8 @@ export const cancel = (dataSources: DataSources) => {
 					);
 				}
 
-				if (
-					!CANCELLABLE_STATES.includes(
-						reservationRequest.state as (typeof CANCELLABLE_STATES)[number],
-					)
-				) {
-					throw new Error('Cannot cancel reservation in current state');
-				}
-
+				// State setter delegates to domain entity's private cancel() method
+				// which handles state validation and permission checks
 				reservationRequest.state = 'Cancelled';
 				reservationRequestToReturn = await repo.save(reservationRequest);
 			},

@@ -2,7 +2,7 @@ import type { Meta, StoryObj } from '@storybook/react';
 import { expect, within, userEvent, fn } from 'storybook/test';
 import { ListingInformation } from './listing-information.tsx';
 import { withMockRouter } from '../../../../../../test-utils/storybook-decorators.tsx';
-import { triggerPopconfirmAnd } from '../../../../../../test-utils/popconfirm-test-utils.ts';
+import { triggerPopconfirmAnd } from '@sthrift/ui-components';
 
 const baseReservationRequest = {
 	__typename: 'ReservationRequest' as const,

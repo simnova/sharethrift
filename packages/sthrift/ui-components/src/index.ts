@@ -1,5 +1,10 @@
 export type { UIItemListing } from './organisms/listings-grid/index.tsx';
 // Barrel file for all reusable UI components
+export {
+	getLoadingIndicators,
+	triggerPopconfirmAnd,
+	clickCancelThenConfirm,
+} from './test-utils/popconfirm-test-utils.js';
 export { Footer } from './molecules/footer/index.js';
 export { Header } from './molecules/header/index.js';
 export { Navigation } from './molecules/navigation/index.js';

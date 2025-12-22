@@ -20,9 +20,21 @@ function buildReservation({
 	state: 'Requested' | 'Rejected' | 'Accepted';
 	reserverId: string;
 }) {
+	let currentState = state;
 	return {
 		id,
-		state,
+		get state() {
+			return currentState;
+		},
+		set state(value: string) {
+			// Simulate domain entity state validation
+			if (value === 'Cancelled') {
+				if (currentState !== 'Requested' && currentState !== 'Rejected') {
+					throw new Error('Cannot cancel reservation in current state');
+				}
+			}
+			currentState = value;
+		},
 		loadReserver: vi.fn().mockResolvedValue({ id: reserverId }),
 	};
 }

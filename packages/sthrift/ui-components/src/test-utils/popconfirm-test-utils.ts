@@ -10,6 +10,13 @@ const POPCONFIRM_SELECTORS = {
 type Canvas = ReturnType<typeof within>;
 type PopconfirmAction = 'confirm' | 'cancel';
 
+/**
+ * Centralized helper to find loading indicators on Ant Design buttons.
+ * This abstracts Ant Design implementation details so they can be updated in one place.
+ */
+export const getLoadingIndicators = (root: HTMLElement) =>
+	root.querySelectorAll<HTMLElement>('.ant-btn-loading, [aria-busy="true"]');
+
 const waitForPopconfirm = async (timeoutMs = 3000) =>
 	waitFor(
 		() => {
@@ -77,4 +84,30 @@ export const triggerPopconfirmAnd = async (
 	if (target) {
 		await userEvent.click(target);
 	}
+};
+
+export const clickCancelThenConfirm = async (canvasElement: HTMLElement) => {
+	const canvas = within(canvasElement);
+
+	const cancelButton = await waitFor(
+		() => {
+			const btn = canvas.queryByRole('button', { name: /Cancel/i });
+			if (!btn) throw new Error('Cancel button not found yet');
+			return btn;
+		},
+		{ timeout: 3000 },
+	);
+
+	await userEvent.click(cancelButton);
+
+	const confirmButton = await waitFor(
+		() => {
+			const btn = document.querySelector(POPCONFIRM_SELECTORS.confirmButton);
+			if (!btn) throw new Error('Confirm button not found yet');
+			return btn;
+		},
+		{ timeout: 3000 },
+	);
+
+	await userEvent.click(confirmButton as HTMLElement);
 };

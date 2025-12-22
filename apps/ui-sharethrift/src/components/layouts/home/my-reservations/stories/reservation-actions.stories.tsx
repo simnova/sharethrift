@@ -4,7 +4,7 @@ import { expect, fn, within } from 'storybook/test';
 import {
 	triggerPopconfirmAnd,
 	getLoadingIndicators,
-} from '../../../../../test-utils/popconfirm-test-utils.ts';
+} from '@sthrift/ui-components';
 
 const meta: Meta<typeof ReservationActions> = {
 	title: 'Molecules/ReservationActions',
