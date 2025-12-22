@@ -1,5 +1,6 @@
 import type React from 'react';
 import { Space } from 'antd';
+import { CancelReservationPopconfirm } from '@sthrift/ui-components';
 import { ReservationActionButton } from './reservation-action-button.tsx';
 import type { ReservationActionStatus } from '../utils/reservation-status.utils.ts';
 
@@ -24,12 +25,18 @@ export const ReservationActions: React.FC<ReservationActionsProps> = ({
 		switch (status) {
 			case 'REQUESTED':
 				return [
-					<ReservationActionButton
+					<CancelReservationPopconfirm
 						key="cancel"
-						action="Cancel"
-						onClick={onCancel}
+						onConfirm={onCancel}
 						loading={cancelLoading}
-					/>,
+					>
+						<span>
+							<ReservationActionButton
+								action="Cancel"
+								loading={cancelLoading}
+							/>
+						</span>
+					</CancelReservationPopconfirm>,
 					<ReservationActionButton
 						key="message"
 						action="Message"
@@ -54,14 +61,19 @@ export const ReservationActions: React.FC<ReservationActionsProps> = ({
 
 			case 'REJECTED':
 				return [
-					<ReservationActionButton
+					<CancelReservationPopconfirm
 						key="cancel"
-						action="Cancel"
-						onClick={onCancel}
+						onConfirm={onCancel}
 						loading={cancelLoading}
-					/>,
+					>
+						<span>
+							<ReservationActionButton
+								action="Cancel"
+								loading={cancelLoading}
+							/>
+						</span>
+					</CancelReservationPopconfirm>,
 				];
-
 			default:
 				// No actions for cancelled or closed reservations
 				return [];
@@ -76,4 +88,3 @@ export const ReservationActions: React.FC<ReservationActionsProps> = ({
 
 	return <Space>{actions}</Space>;
 };
-

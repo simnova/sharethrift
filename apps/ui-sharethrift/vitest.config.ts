@@ -14,14 +14,13 @@ export default defineConfig(
 		additionalCoverageExclude: [
 			'**/index.ts',
 			'**/index.tsx',
-            '**/Index.tsx',
+			'**/Index.tsx',
 			'src/main.tsx',
-			'src/test-utils/**',
-            'src/config/**',
-            'src/test/**',
+			'src/config/**',
+			'src/test/**',
 			'**/*.d.ts',
 			'src/generated/**',
-            'eslint.config.js'
+			'eslint.config.js',
 		],
 	}),
 );

@@ -1,131 +1,269 @@
 import type { Meta, StoryObj } from '@storybook/react';
 import { ReservationActions } from '../components/reservation-actions.js';
-import { expect, fn, userEvent, within } from 'storybook/test';
+import { expect, fn, within } from 'storybook/test';
+import {
+	triggerPopconfirmAnd,
+	getLoadingIndicators,
+} from '@sthrift/ui-components';
 
 const meta: Meta<typeof ReservationActions> = {
-  title: 'Molecules/ReservationActions',
-  component: ReservationActions,
-  parameters: {
-    layout: 'centered',
-  },
-  tags: ['autodocs'],
-  argTypes: {
-    status: {
-      control: 'select',
-      options: ['REQUESTED', 'ACCEPTED', 'REJECTED', 'CLOSED', 'CANCELLED'],
-    },
-    cancelLoading: {
-      control: 'boolean',
-    },
-    closeLoading: {
-      control: 'boolean',
-    },
-    onCancel: { action: 'cancel clicked' },
-    onClose: { action: 'close clicked' },
-    onMessage: { action: 'message clicked' },
-  },
+	title: 'Molecules/ReservationActions',
+	component: ReservationActions,
+	parameters: {
+		layout: 'centered',
+	},
+	tags: ['autodocs'],
+	argTypes: {
+		status: {
+			control: 'select',
+			options: ['REQUESTED', 'ACCEPTED', 'REJECTED', 'CLOSED', 'CANCELLED'],
+		},
+		cancelLoading: {
+			control: 'boolean',
+		},
+		closeLoading: {
+			control: 'boolean',
+		},
+		onCancel: { action: 'cancel clicked' },
+		onClose: { action: 'close clicked' },
+		onMessage: { action: 'message clicked' },
+	},
 };
 
 export default meta;
 type Story = StoryObj<typeof meta>;
 
 export const Requested: Story = {
-  args: {
-    status: 'REQUESTED',
-    onCancel: fn(),
-    onClose: fn(),
-    onMessage: fn(),
-  },
-  play: async ({ canvasElement }) => {
-    const canvas = within(canvasElement);
-    
-    // Verify action buttons are present
-    const buttons = canvas.getAllByRole('button');
-    expect(buttons.length).toBeGreaterThan(0);
-    
-    // Verify buttons are visible
-    for (const button of buttons) {
-      expect(button).toBeVisible();
-    }
-  },
+	args: {
+		status: 'REQUESTED',
+		onCancel: fn(),
+		onClose: fn(),
+		onMessage: fn(),
+	},
+	play: ({ canvasElement }) => {
+		const canvas = within(canvasElement);
+		const buttons = canvas.getAllByRole('button');
+
+		expect(buttons.length).toBeGreaterThan(0);
+		for (const button of buttons) {
+			expect(button).toBeVisible();
+		}
+	},
 };
 
 export const Accepted: Story = {
-  args: {
-    status: 'ACCEPTED',
-    onCancel: fn(),
-    onClose: fn(),
-    onMessage: fn(),
-  },
-  play: async ({ canvasElement }) => {
-    const canvas = within(canvasElement);
-    
-    // Verify buttons are rendered for accepted state
-    const buttons = canvas.getAllByRole('button');
-    expect(buttons.length).toBeGreaterThan(0);
-  },
+	args: {
+		status: 'ACCEPTED',
+		onCancel: fn(),
+		onClose: fn(),
+		onMessage: fn(),
+	},
+	play: ({ canvasElement }) => {
+		const canvas = within(canvasElement);
+		const buttons = canvas.getAllByRole('button');
+
+		expect(buttons.length).toBeGreaterThan(0);
+		for (const button of buttons) {
+			expect(button).toBeVisible();
+		}
+	},
 };
 
 export const ButtonInteraction: Story = {
-  args: {
-    status: 'REQUESTED',
-    onCancel: fn(),
-    onClose: fn(),
-    onMessage: fn(),
-  },
-  play: async ({ canvasElement, args }) => {
-    const canvas = within(canvasElement);
-    
-    // Get all buttons
-    const buttons = canvas.getAllByRole('button');
-    expect(buttons.length).toBeGreaterThan(0);
-    
-    // Click the first button (typically cancel or message)
-    if (buttons[0]) {
-      await userEvent.click(buttons[0]);
-      // Verify the callback was called
-      const callbacks = [args.onCancel, args.onClose, args.onMessage];
-      const called = callbacks.some(cb => cb && (cb as any).mock?.calls?.length > 0);
-      expect(called || true).toBe(true); // Allow pass if callbacks are called
-    }
-  },
+	args: {
+		status: 'REQUESTED',
+		onCancel: fn(),
+		onClose: fn(),
+		onMessage: fn(),
+	},
+	play: async ({ canvasElement, args }) => {
+		const canvas = within(canvasElement);
+		expect(canvas.getAllByRole('button').length).toBe(2);
+
+		const messageButton = canvas.getByRole('button', { name: /message/i });
+		const { userEvent } = await import('storybook/test');
+		await userEvent.click(messageButton);
+		expect(args.onMessage).toHaveBeenCalled();
+	},
 };
 
 export const Rejected: Story = {
-  args: {
-    status: 'REJECTED',
-    onCancel: fn(),
-    onClose: fn(),
-    onMessage: fn(),
-  },
+	args: {
+		status: 'REJECTED',
+		onCancel: fn(),
+		onClose: fn(),
+		onMessage: fn(),
+	},
 };
 
 export const Cancelled: Story = {
-  args: {
-    status: 'CANCELLED',
-    onCancel: fn(),
-    onClose: fn(),
-    onMessage: fn(),
-  },
+	args: {
+		status: 'CANCELLED',
+		onCancel: fn(),
+		onClose: fn(),
+		onMessage: fn(),
+	},
 };
 
-export const LoadingStates: Story = {
-  args: {
-    status: 'REQUESTED',
-    onCancel: fn(),
-    onClose: fn(),
-    onMessage: fn(),
-    cancelLoading: true,
-  },
-  play: async ({ canvasElement }) => {
-    const canvas = within(canvasElement);
-    
-    // Verify loading state is rendered
-    const buttons = canvas.getAllByRole('button');
-    expect(buttons.length).toBeGreaterThan(0);
-    
-    // Check if any button shows loading state (might be disabled)
-    const disabledButtons = buttons.filter(b => b.hasAttribute('disabled'));
-    expect(disabledButtons.length).toBeGreaterThanOrEqual(0);
-  },
+export const RequestedWithPopconfirm: Story = {
+	args: {
+		status: 'REQUESTED',
+		onCancel: fn(),
+		onMessage: fn(),
+	},
+	play: async ({ canvasElement, args }) => {
+		const canvas = within(canvasElement);
+
+		await triggerPopconfirmAnd(canvas, 'confirm', {
+			triggerButtonLabel: /cancel/i,
+			expectedTitle: 'Cancel Reservation Request',
+			expectedDescription: 'Are you sure',
+		});
+
+		expect(args.onCancel).toHaveBeenCalled();
+	},
+};
+
+export const PopconfirmCancelAction: Story = {
+	args: {
+		status: 'REQUESTED',
+		onCancel: fn(),
+		onMessage: fn(),
+	},
+	play: async ({ canvasElement, args }) => {
+		const canvas = within(canvasElement);
+
+		await triggerPopconfirmAnd(canvas, 'cancel', {
+			triggerButtonLabel: /cancel/i,
+		});
+
+		expect(args.onCancel).not.toHaveBeenCalled();
+	},
+};
+
+export const RejectedWithCancel: Story = {
+	args: {
+		status: 'REJECTED',
+		onCancel: fn(),
+		onClose: fn(),
+		onMessage: fn(),
+	},
+	play: async ({ canvasElement, args }) => {
+		const canvas = within(canvasElement);
+		expect(canvas.getAllByRole('button').length).toBe(1);
+
+		await triggerPopconfirmAnd(canvas, 'confirm', {
+			triggerButtonLabel: /cancel/i,
+			expectedTitle: 'Cancel Reservation Request',
+			expectedDescription: 'Are you sure',
+		});
+
+		expect(args.onCancel).toHaveBeenCalled();
+	},
+};
+
+export const CancelledNoActions: Story = {
+	args: {
+		status: 'CANCELLED',
+		onCancel: fn(),
+		onClose: fn(),
+		onMessage: fn(),
+	},
+	play: ({ canvasElement }) => {
+		const canvas = within(canvasElement);
+		expect(canvas.queryAllByRole('button').length).toBe(0);
+	},
+};
+
+export const ClosedNoActions: Story = {
+	args: {
+		status: 'CLOSED',
+		onCancel: fn(),
+		onClose: fn(),
+		onMessage: fn(),
+	},
+	play: ({ canvasElement }) => {
+		const canvas = within(canvasElement);
+		expect(canvas.queryAllByRole('button').length).toBe(0);
+	},
+};
+
+export const AcceptedActions: Story = {
+	args: {
+		status: 'ACCEPTED',
+		onClose: fn(),
+		onMessage: fn(),
+	},
+	play: ({ canvasElement }) => {
+		const canvas = within(canvasElement);
+		const buttons = canvas.getAllByRole('button');
+
+		expect(buttons.length).toBe(2);
+		for (const button of buttons) {
+			expect(button).toBeVisible();
+		}
+	},
+};
+
+export const CancelLoadingState: Story = {
+	args: {
+		status: 'REQUESTED',
+		onCancel: fn(),
+		onClose: fn(),
+		onMessage: fn(),
+		cancelLoading: true,
+	},
+	play: ({ canvasElement }) => {
+		const canvas = within(canvasElement);
+		const buttons = canvas.getAllByRole('button');
+		expect(buttons.length).toBeGreaterThan(0);
+
+		// Use centralized helper to find loading indicators
+		const loadingIndicators = getLoadingIndicators(
+			canvasElement as HTMLElement,
+		);
+		expect(loadingIndicators.length).toBeGreaterThan(0);
+	},
+};
+
+export const CloseLoadingState: Story = {
+	args: {
+		status: 'ACCEPTED',
+		onCancel: fn(),
+		onClose: fn(),
+		onMessage: fn(),
+		closeLoading: true,
+	},
+	play: ({ canvasElement }) => {
+		const canvas = within(canvasElement);
+		const buttons = canvas.getAllByRole('button');
+		expect(buttons.length).toBeGreaterThan(0);
+
+		// Use centralized helper to find loading indicators
+		const loadingIndicators = getLoadingIndicators(
+			canvasElement as HTMLElement,
+		);
+		expect(loadingIndicators.length).toBeGreaterThan(0);
+	},
+};
+
+// Test that loading state prevents double-submit (covers lines 16-17 in reservation-actions.tsx)
+export const CancelLoadingPreventsDoubleSubmit: Story = {
+	args: {
+		status: 'REQUESTED',
+		onCancel: fn(),
+		onMessage: fn(),
+		cancelLoading: true,
+	},
+	play: async ({ canvasElement, args }) => {
+		const canvas = within(canvasElement);
+
+		// Trigger the popconfirm and click confirm while loading
+		await triggerPopconfirmAnd(canvas, 'confirm', {
+			triggerButtonLabel: /cancel/i,
+		});
+
+		// The callback should NOT be called because loading is true
+		expect(args.onCancel).not.toHaveBeenCalled();
+	},
 };

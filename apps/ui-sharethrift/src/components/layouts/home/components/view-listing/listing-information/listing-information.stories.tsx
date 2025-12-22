@@ -2,13 +2,22 @@ import type { Meta, StoryObj } from '@storybook/react';
 import { expect, within, userEvent, fn } from 'storybook/test';
 import { ListingInformation } from './listing-information.tsx';
 import { withMockRouter } from '../../../../../../test-utils/storybook-decorators.tsx';
+import { triggerPopconfirmAnd } from '@sthrift/ui-components';
+
+const baseReservationRequest = {
+	__typename: 'ReservationRequest' as const,
+	id: 'res-1',
+	reservationPeriodStart: '1738368000000',
+	reservationPeriodEnd: '1739145600000',
+};
 
 const mockListing = {
 	__typename: 'ItemListing' as const,
 	listingType: 'item-listing' as const,
 	id: '1',
 	title: 'Cordless Drill',
-	description: 'High-quality cordless drill for home projects. Perfect for DIY enthusiasts and professionals alike. Features variable speed settings and a comfortable grip.',
+	description:
+		'High-quality cordless drill for home projects. Perfect for DIY enthusiasts and professionals alike. Features variable speed settings and a comfortable grip.',
 	category: 'Tools & Equipment',
 	location: 'Toronto, ON',
 	state: 'Active' as const,
@@ -187,21 +196,19 @@ export const ClickCancelButton: Story = {
 	args: {
 		onCancelClick: fn(),
 		userReservationRequest: {
-			__typename: 'ReservationRequest' as const,
-			id: 'res-1',
+			...baseReservationRequest,
 			state: 'Requested' as const,
-			reservationPeriodStart: '1738368000000',
-			reservationPeriodEnd: '1739145600000',
 		},
 	},
 	play: async ({ canvasElement, args }) => {
 		const canvas = within(canvasElement);
 		await expect(canvasElement).toBeTruthy();
-		const cancelButton = canvas.queryByRole('button', { name: /Cancel/i });
-		if (cancelButton) {
-			await userEvent.click(cancelButton);
-			expect(args.onCancelClick).toHaveBeenCalled();
-		}
+
+		await triggerPopconfirmAnd(canvas, 'confirm', {
+			triggerButtonLabel: /Cancel Request/i,
+		});
+
+		expect(args.onCancelClick).toHaveBeenCalled();
 	},
 };
 
@@ -275,7 +282,9 @@ export const ClickLoginToReserve: Story = {
 	play: async ({ canvasElement }) => {
 		const canvas = within(canvasElement);
 		await expect(canvasElement).toBeTruthy();
-		const loginButton = canvas.queryByRole('button', { name: /Log in to Reserve/i });
+		const loginButton = canvas.queryByRole('button', {
+			name: /Log in to Reserve/i,
+		});
 		if (loginButton) {
 			await userEvent.click(loginButton);
 		}
@@ -311,3 +320,81 @@ export const ClearDateSelection: Story = {
 	},
 };
 
+export const CancelButtonWithPopconfirm: Story = {
+	args: {
+		userReservationRequest: {
+			...baseReservationRequest,
+			state: 'Requested' as const,
+		},
+		onCancelClick: fn(),
+		cancelLoading: false,
+	},
+	play: async ({ canvasElement, args }) => {
+		const canvas = within(canvasElement);
+		await expect(canvasElement).toBeTruthy();
+
+		await triggerPopconfirmAnd(canvas, 'confirm', {
+			triggerButtonLabel: /Cancel Request/i,
+			expectedTitle: 'Cancel Reservation Request',
+		});
+
+		expect(args.onCancelClick).toHaveBeenCalled();
+	},
+};
+
+export const CancelButtonLoading: Story = {
+	args: {
+		userReservationRequest: {
+			...baseReservationRequest,
+			state: 'Requested' as const,
+		},
+		cancelLoading: true,
+	},
+	play: async ({ canvasElement }) => {
+		const canvas = within(canvasElement);
+		await expect(canvasElement).toBeTruthy();
+
+		// Verify button is present (loading prop doesn't disable Ant Design Button)
+		const cancelButton = canvas.queryByRole('button', {
+			name: /Cancel Request/i,
+		});
+		expect(cancelButton).toBeTruthy();
+	},
+};
+
+export const NoCancelButtonForAcceptedReservation: Story = {
+	args: {
+		userReservationRequest: {
+			...baseReservationRequest,
+			state: 'Accepted' as const,
+		},
+	},
+	play: async ({ canvasElement }) => {
+		const canvas = within(canvasElement);
+		await expect(canvasElement).toBeTruthy();
+
+		// Verify cancel button is NOT present for accepted reservations
+		const cancelButton = canvas.queryByRole('button', { name: /Cancel/i });
+		expect(cancelButton).toBeNull();
+	},
+};
+
+export const PopconfirmCancelButton: Story = {
+	args: {
+		userReservationRequest: {
+			...baseReservationRequest,
+			state: 'Requested' as const,
+		},
+		onCancelClick: fn(),
+	},
+	play: async ({ canvasElement, args }) => {
+		const canvas = within(canvasElement);
+		await expect(canvasElement).toBeTruthy();
+
+		await triggerPopconfirmAnd(canvas, 'cancel', {
+			triggerButtonLabel: /Cancel Request/i,
+		});
+
+		expect(args.onCancelClick).not.toHaveBeenCalled();
+	},
+};
