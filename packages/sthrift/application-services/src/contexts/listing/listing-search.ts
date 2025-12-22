@@ -16,7 +16,7 @@ import type {
 	SearchOptions,
 	SearchDocumentsResult,
 } from '@cellix/search-service';
-import { ListingSearchIndexSpec } from '@sthrift/domain';
+import { ListingSearchIndexSpec, convertListingToSearchDocument } from '@sthrift/domain';
 import type { DataSources } from '@sthrift/persistence';
 
 /**
@@ -90,32 +90,15 @@ export class ListingSearchApplicationService {
 
 		for (const listing of allListings) {
 			try {
-				// Build the search document from listing properties
-				const searchDocument: ListingSearchDocument = {
-					id: listing.id,
-					title: listing.title,
-					description: listing.description || '',
-					category: listing.category || '',
-					location: listing.location || '',
-					sharerName: listing.sharer?.account?.profile?.firstName || 'Unknown',
-					sharerId: listing.sharer?.id || '',
-					state: listing.state || '',
-					sharingPeriodStart:
-						listing.sharingPeriodStart?.toISOString() ||
-						new Date().toISOString(),
-					sharingPeriodEnd:
-						listing.sharingPeriodEnd?.toISOString() || new Date().toISOString(),
-					createdAt:
-						listing.createdAt?.toISOString() || new Date().toISOString(),
-					updatedAt:
-						listing.updatedAt?.toISOString() || new Date().toISOString(),
-					images: listing.images || [],
-				};
+				// Convert listing to search document using the domain converter
+				const searchDocument = convertListingToSearchDocument(
+					listing as unknown as Record<string, unknown>,
+				);
 
 				// Index the document
 				await this.searchService.indexDocument(
 					ListingSearchIndexSpec.name,
-					searchDocument as unknown as Record<string, unknown>,
+					searchDocument,
 				);
 
 				console.log(`Indexed listing: ${listing.id} - ${listing.title}`);
