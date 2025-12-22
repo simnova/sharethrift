@@ -42,7 +42,9 @@ export class CreateListingAbility extends Ability {
 	async createListing(
 		params: ListingCreationParams,
 	): Promise<Domain.Contexts.Listing.ItemListing.ItemListingEntityReference> {
-		let createdListing: Domain.Contexts.Listing.ItemListing.ItemListingEntityReference;
+		let createdListing:
+			| Domain.Contexts.Listing.ItemListing.ItemListingEntityReference
+			| undefined;
 
 		await this.unitOfWork.withScopedTransaction(async (repo) => {
 			// Use the REAL domain factory method - this ensures:
@@ -69,7 +71,11 @@ export class CreateListingAbility extends Ability {
 			createdListing = await repo.save(listing);
 		});
 
-		return createdListing!;
+		if (!createdListing) {
+			throw new Error('Failed to create listing');
+		}
+
+		return createdListing;
 	}
 
 	/**
