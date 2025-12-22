@@ -27,7 +27,7 @@ describe('Listing Context Factory', () => {
 
 		expect(context).toBeDefined();
 		expect(context.ItemListing).toBeDefined();
-		expect(context.ItemListingSearch).toBeDefined();
+		expect(context.ListingSearch).toBeDefined();
 	});
 
 	it('should have ItemListing service with all required methods', () => {

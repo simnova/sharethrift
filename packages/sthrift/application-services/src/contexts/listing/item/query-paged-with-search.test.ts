@@ -169,7 +169,7 @@ describe('queryPagedWithSearchFallback', () => {
 
 			expect(mockSearchService.createIndexIfNotExists).toHaveBeenCalled();
 			expect(mockSearchService.search).toHaveBeenCalledWith(
-				'item-listings',
+				'listings',
 				'vintage camera',
 				expect.objectContaining({
 					top: 10,
@@ -195,7 +195,7 @@ describe('queryPagedWithSearchFallback', () => {
 			await queryFn(command);
 
 			expect(mockSearchService.search).toHaveBeenCalledWith(
-				'item-listings',
+				'listings',
 				'test',
 				expect.objectContaining({
 					top: 20,
@@ -220,7 +220,7 @@ describe('queryPagedWithSearchFallback', () => {
 			await queryFn(command);
 
 			expect(mockSearchService.search).toHaveBeenCalledWith(
-				'item-listings',
+				'listings',
 				'test',
 				expect.objectContaining({
 					orderBy: ['title asc'],
@@ -244,7 +244,7 @@ describe('queryPagedWithSearchFallback', () => {
 			await queryFn(command);
 
 			expect(mockSearchService.search).toHaveBeenCalledWith(
-				'item-listings',
+				'listings',
 				'test',
 				expect.objectContaining({
 					orderBy: ['createdAt desc'],
@@ -267,7 +267,7 @@ describe('queryPagedWithSearchFallback', () => {
 			await queryFn(command);
 
 			expect(mockSearchService.search).toHaveBeenCalledWith(
-				'item-listings',
+				'listings',
 				'test',
 				expect.objectContaining({
 					orderBy: ['updatedAt desc'],
@@ -291,7 +291,7 @@ describe('queryPagedWithSearchFallback', () => {
 			await queryFn(command);
 
 			expect(mockSearchService.search).toHaveBeenCalledWith(
-				'item-listings',
+				'listings',
 				'test',
 				expect.objectContaining({
 					filter: { sharerId: ['user-123'] },
@@ -315,7 +315,7 @@ describe('queryPagedWithSearchFallback', () => {
 			await queryFn(command);
 
 			expect(mockSearchService.search).toHaveBeenCalledWith(
-				'item-listings',
+				'listings',
 				'test',
 				expect.objectContaining({
 					filter: { state: ['active', 'pending'] },
@@ -340,7 +340,7 @@ describe('queryPagedWithSearchFallback', () => {
 			await queryFn(command);
 
 			expect(mockSearchService.search).toHaveBeenCalledWith(
-				'item-listings',
+				'listings',
 				'test',
 				expect.objectContaining({
 					filter: {
