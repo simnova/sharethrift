@@ -50,10 +50,9 @@ export class ReservationRequest<props extends ReservationRequestProps>
 		instance.reserver = reserver;
 		instance.reservationPeriodStart = reservationPeriodStart;
 		instance.reservationPeriodEnd = reservationPeriodEnd;
-		// Set initial state directly, bypassing the state setter and its permission checks.
-		// This is necessary during initialization, as permission checks and transition logic
-		// in the setter are only relevant for state changes after construction.
-		instance.props.state = state;
+		// Set initial state via the setter so validation and transition logic are applied.
+		// During initialization `isNew` is true, so permission checks are bypassed as intended.
+		instance.state = state;
 		instance.isNew = false;
 		return instance;
 	}
