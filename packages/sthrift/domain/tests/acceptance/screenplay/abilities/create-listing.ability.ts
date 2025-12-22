@@ -1,6 +1,5 @@
 import { Ability } from '@serenity-js/core';
 import type { Domain } from '@sthrift/domain';
-import { ItemListing } from '../../../../src/domain/contexts/listing/item/item-listing.ts';
 import type { ItemListingUnitOfWork } from '../../../../src/domain/contexts/listing/item/item-listing.uow.ts';
 import type { Passport } from '../../../../src/domain/iam/passport.ts';
 
@@ -47,11 +46,12 @@ export class CreateListingAbility extends Ability {
 			| undefined;
 
 		await this.unitOfWork.withScopedTransaction(async (repo) => {
-			// Use the REAL domain factory method - this ensures:
+			// Use the repository's getNewInstance method - this aligns with the actual implementation
+			// and ensures:
 			// 1. Business rules are enforced (validation, state transitions)
 			// 2. Domain logic determines the state (Active vs Draft based on isDraft flag)
 			// 3. All required fields are properly initialized
-			const listing = ItemListing.getNewInstance(
+			const listing = await repo.getNewInstance(
 				this.actorUser, // sharer
 				{
 					title: params.title,

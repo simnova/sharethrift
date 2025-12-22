@@ -34,17 +34,16 @@ export class ItemListingRepository<
 			sharingPeriodStart: Date;
 			sharingPeriodEnd: Date;
 			images?: string[];
-			isDraft?: boolean;
-		},
-	): Promise<Domain.Contexts.Listing.ItemListing.ItemListing<PropType>> {
-		return Domain.Contexts.Listing.ItemListing.ItemListing.getNewInstance(
-				sharer,
-				fields,
-				this.passport,
-			);
-	}
-
-	async getActiveItemListings() {
+		isDraft?: boolean;
+	},
+): Promise<Domain.Contexts.Listing.ItemListing.ItemListing<PropType>> {
+	const adapter = this.typeConverter.toAdapter(new this.model());
+	return Domain.Contexts.Listing.ItemListing.ItemListing.getNewInstance(
+			sharer,
+			fields,
+			this.passport,
+		);
+}	async getActiveItemListings() {
 		const mongoItems = await this.model.find({ state: 'Active' }).exec();
 		return mongoItems.map((item) =>
 			this.typeConverter.toDomain(item, this.passport),
