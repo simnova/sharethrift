@@ -1419,7 +1419,7 @@ describe('ReservationRequest static helper methods', () => {
 
 		beforeEach(() => {
 			testPassport = makePassport();
-			testListing = makeListing('Published');
+			testListing = makeListing('Active');
 			testReserver = makeUser();
 			const tomorrow = new Date(Date.now() + 86_400_000);
 			const nextMonth = new Date(Date.now() + 86_400_000 * 30);
@@ -1518,7 +1518,7 @@ describe('Async property loading', () => {
 
 	beforeEach(() => {
 		testPassport = makePassport();
-			testListing = makeListing('Published');
+			testListing = makeListing('Active');
 			testReserver = makeUser();
 			const tomorrow = new Date(Date.now() + 86_400_000);
 			const nextMonth = new Date(Date.now() + 86_400_000 * 30);
@@ -1593,7 +1593,7 @@ describe('Async property loading', () => {
 
 		beforeEach(() => {
 			testPassport = makePassport();
-			testListing = makeListing('Published');
+			testListing = makeListing('Active');
 			testReserver = makeUser();
 			const tomorrow = new Date(Date.now() + 86_400_000);
 			const nextMonth = new Date(Date.now() + 86_400_000 * 30);
@@ -1654,7 +1654,7 @@ describe('Async property loading', () => {
 
 		beforeEach(() => {
 			testPassport = makePassport();
-			testListing = makeListing('Published');
+			testListing = makeListing('Active');
 			testReserver = makeUser();
 		});
 

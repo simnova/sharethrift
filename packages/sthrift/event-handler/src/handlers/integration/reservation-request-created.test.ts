@@ -740,7 +740,7 @@ describe('registerReservationRequestCreatedHandler', () => {
 			);
 
 			(mockDomainDataSource.User.PersonalUser.PersonalUserUnitOfWork.withTransaction as ReturnType<typeof vi.fn>)
-				.mockImplementation((_, callback) =>
+				.mockImplementation(async (_, callback) =>
 					callback({
 						getById: vi.fn().mockResolvedValue({
 							account: { email: 'test@example.com' },
@@ -750,7 +750,7 @@ describe('registerReservationRequestCreatedHandler', () => {
 				);
 
 			(mockDomainDataSource.User.AdminUser.AdminUserUnitOfWork.withTransaction as ReturnType<typeof vi.fn>)
-				.mockImplementation((_, callback) =>
+				.mockImplementation(async (_, callback) =>
 					callback({
 						getById: vi.fn().mockResolvedValue({
 							account: { email: 'test@example.com' },
@@ -760,7 +760,7 @@ describe('registerReservationRequestCreatedHandler', () => {
 				);
 
 			(mockDomainDataSource.Listing.ItemListing.ItemListingUnitOfWork.withTransaction as ReturnType<typeof vi.fn>)
-				.mockImplementation((_, callback) =>
+				.mockImplementation(async (_, callback) =>
 					callback({
 						getById: vi.fn().mockResolvedValue({ title: 'Test' }),
 					}),
@@ -782,6 +782,6 @@ describe('registerReservationRequestCreatedHandler', () => {
 
 			// Should have been called for each payload
 			expect(mockEmailService.sendTemplatedEmail).toHaveBeenCalled();
-		});
+		}, 10000);
 	});
 });

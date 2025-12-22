@@ -232,13 +232,13 @@ Feature: <AggregateRoot>ItemListing
     Then it should return a copy of the images array
     And modifications to the returned array do not affect the listing
 
-  Scenario: Getting isActive when state is Published
-    Given an ItemListing aggregate in Published state
+  Scenario: Getting isActive when state is Active
+    Given an ItemListing aggregate in Active state
     When I access the isActive property
     Then it should return true
 
-  Scenario: Getting isActive when state is not Published
-    Given an ItemListing aggregate in Drafted state
+  Scenario: Getting isActive when state is not Active
+    Given an ItemListing aggregate in Draft state
     When I access the isActive property
     Then it should return false
 

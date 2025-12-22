@@ -1118,12 +1118,12 @@ Scenario(
 	);
 
 	Scenario(
-		'Getting isActive when state is Published',
+		'Getting isActive when state is Active',
 		({ Given, When, Then }) => {
-			Given('an ItemListing aggregate in Published state', () => {
+			Given('an ItemListing aggregate in Active state', () => {
 				passport = makePassport(true, true, true, true);
 				listing = new ItemListing(
-					makeBaseProps({ state: 'Published' }),
+					makeBaseProps({ state: 'Active' }),
 					passport,
 				);
 			});
@@ -1137,12 +1137,12 @@ Scenario(
 	);
 
 	Scenario(
-		'Getting isActive when state is not Published',
+		'Getting isActive when state is not Active',
 		({ Given, When, Then }) => {
-			Given('an ItemListing aggregate in Drafted state', () => {
+			Given('an ItemListing aggregate in Draft state', () => {
 				passport = makePassport(true, true, true, true);
 				listing = new ItemListing(
-					makeBaseProps({ state: 'Drafted' }),
+					makeBaseProps({ state: 'Draft' }),
 					passport,
 				);
 			});
