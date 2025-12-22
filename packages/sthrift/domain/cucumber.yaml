@@ -1,7 +1,9 @@
 default:
-  # Feature files location - using domain unit test features only
-  # Note: Removed tests/acceptance as it violated architectural boundaries
-  # by depending on GraphQL API layer. Domain tests should only test domain logic.
+  # Feature files location - domain-level test features only
+  # Note: Previous tests/acceptance suite (GraphQL/API-level) was removed as it violated
+  #       architectural boundaries; domain tests in this config must exercise only domain logic.
+  #       Serenity/acceptance tests mentioned in the changelog are not configured here and
+  #       should live in a separate configuration targeting the API or higher layers.
   paths:
     - src/domain/**/features/**/*.feature
 
