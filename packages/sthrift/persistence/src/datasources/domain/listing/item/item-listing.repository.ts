@@ -37,7 +37,7 @@ export class ItemListingRepository<
 		isDraft?: boolean;
 	},
 ): Promise<Domain.Contexts.Listing.ItemListing.ItemListing<PropType>> {
-	const adapter = this.typeConverter.toAdapter(new this.model());
+	this.typeConverter.toAdapter(new this.model());
 	return Domain.Contexts.Listing.ItemListing.ItemListing.getNewInstance(
 			sharer,
 			fields,
