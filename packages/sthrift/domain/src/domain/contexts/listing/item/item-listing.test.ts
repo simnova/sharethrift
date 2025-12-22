@@ -883,71 +883,52 @@ Scenario(
 	);
 
 	Scenario(
-		'Publishing a listing using publish() method',
+		'Publishing a listing with permission',
 		({ Given, When, Then }) => {
-			Given('an ItemListing aggregate in Draft state', () => {
+			Given('an ItemListing aggregate with permission to publish item listing', () => {
 				passport = makePassport(true, true, true, true);
 				baseProps = makeBaseProps({ state: 'Draft' });
 				listing = new ItemListing(baseProps, passport);
 			});
-			When('I call the publish() method', () => {
+			When('I call publish()', () => {
 				listing.publish();
 			});
-			Then('the listing state should be "Active"', () => {
+			Then("the listing's state should be \"Active\"", () => {
 				expect(listing.state).toBe('Active');
 			});
 		},
 	);
 
 	Scenario(
-		'Pausing a listing using pause() method',
+		'Pausing a listing with permission',
 		({ Given, When, Then }) => {
-			Given('an ItemListing aggregate in Active state', () => {
+			Given('an ItemListing aggregate with permission to unpublish item listing', () => {
 				passport = makePassport(true, true, true, true);
 				baseProps = makeBaseProps({ state: 'Active' });
 				listing = new ItemListing(baseProps, passport);
 			});
-			When('I call the pause() method', () => {
+			When('I call pause()', () => {
 				listing.pause();
 			});
-			Then('the listing state should be "Paused"', () => {
+			Then("the listing's state should be \"Paused\"", () => {
 				expect(listing.state).toBe('Paused');
 			});
 		},
 	);
 
 	Scenario(
-		'Cancelling a listing using cancel() method',
+		'Cancelling a listing with permission',
 		({ Given, When, Then }) => {
-			Given('an ItemListing aggregate in Active state', () => {
+			Given('an ItemListing aggregate with permission to delete item listing', () => {
 				passport = makePassport(true, true, true, true);
 				baseProps = makeBaseProps({ state: 'Active' });
 				listing = new ItemListing(baseProps, passport);
 			});
-			When('I call the cancel() method', () => {
+			When('I call cancel()', () => {
 				listing.cancel();
 			});
-			Then('the listing state should be "Cancelled"', () => {
+			Then("the listing's state should be \"Cancelled\"", () => {
 				expect(listing.state).toBe('Cancelled');
-			});
-		},
-	);
-
-	Scenario(
-		'State setter removed to enforce permission checks',
-		({ Given, When, Then }) => {
-			Given('an ItemListing aggregate', () => {
-				passport = makePassport(true, true, true, true);
-				baseProps = makeBaseProps({ state: 'Active' });
-				listing = new ItemListing(baseProps, passport);
-			});
-			When('I attempt to set the state directly', () => {
-				// The state setter has been removed
-			});
-			Then('the state property should be read-only', () => {
-				// Verify that direct assignment is not possible (TypeScript compile-time check)
-				// Use domain methods instead: publish(), pause(), cancel(), reinstate()
-				expect(listing.state).toBe('Active');
 			});
 		},
 	);

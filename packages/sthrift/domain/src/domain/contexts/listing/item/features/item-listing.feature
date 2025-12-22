@@ -173,26 +173,6 @@ Feature: <AggregateRoot>ItemListing
     When I set the listingType to "premium-listing"
     Then the listingType should be updated to "premium-listing"
 
-  Scenario: Setting state to Active through state setter
-    Given an ItemListing aggregate in Paused state
-    When I set the state property to "Active"
-    Then the listing state should be "Active"
-
-  Scenario: Setting state to Paused through state setter
-    Given an ItemListing aggregate in Active state
-    When I set the state property to "Paused"
-    Then the listing state should be "Paused"
-
-  Scenario: Setting state to Cancelled through state setter
-    Given an ItemListing aggregate in Active state
-    When I set the state property to "Cancelled"
-    Then the listing state should be "Cancelled"
-
-  Scenario: Setting state to invalid value throws error
-    Given an ItemListing aggregate
-    When I attempt to set the state to an invalid value
-    Then it should throw a PermissionError with valid states listed
-
   Scenario: Setting images property with permission
     Given an ItemListing aggregate with update permission
     When I set the images to a new array

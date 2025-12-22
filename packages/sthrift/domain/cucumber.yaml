@@ -5,13 +5,13 @@ default:
   paths:
     - src/domain/**/features/**/*.feature
 
-  # Step definitions location - using Vitest cucumber integration
-  require:
+  # Step definitions location - using ESM import
+  import:
     - src/**/*.test.ts
 
-  # TypeScript support
-  requireModule:
-    - tsx/cjs
+  # TypeScript support - using tsx with ESM loader
+  loader:
+    - tsx
 
   # Format options with JSON and HTML reports
   format:
