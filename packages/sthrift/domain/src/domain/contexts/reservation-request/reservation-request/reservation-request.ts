@@ -9,6 +9,7 @@ import type {
 	ReservationRequestEntityReference,
 	ReservationRequestProps,
 } from './reservation-request.entity.ts';
+import { ReservationRequestCreated } from '../../../events/index.ts';
 
 export class ReservationRequest<props extends ReservationRequestProps>
 	extends DomainSeedwork.AggregateRoot<props, Passport>
@@ -36,6 +37,14 @@ export class ReservationRequest<props extends ReservationRequestProps>
 		reservationPeriodEnd: Date,
 		passport: Passport,
 	): ReservationRequest<props> {
+		// Validate required parameters
+		if (!listing) {
+			throw new Error('value cannot be null or undefined');
+		}
+		if (!reserver) {
+			throw new Error('value cannot be null or undefined');
+		}
+		
 		// Validate reservation period
 		if (
 			reservationPeriodStart &&
@@ -44,19 +53,38 @@ export class ReservationRequest<props extends ReservationRequestProps>
 		) {
 			throw new Error('Reservation start date must be before end date');
 		}
+		
 		const instance = new ReservationRequest(newProps, passport);
-		instance.markAsNew();
-		instance.state = state;
+		
+		// Mark instance as new before setting properties to allow setters to validate
+		instance.isNew = true;
+		
+		// Set all properties using setters to maintain validation - no ordering constraints
 		instance.listing = listing;
 		instance.reserver = reserver;
 		instance.reservationPeriodStart = reservationPeriodStart;
 		instance.reservationPeriodEnd = reservationPeriodEnd;
+		instance.props.state = new ValueObjects.ReservationRequestStateValue(state).valueOf();
+		
+		// Emit integration event after all properties are set
+		instance.markAsNew();
+		
+		// Lock the instance by setting isNew to false to prevent further modifications
 		instance.isNew = false;
+		
 		return instance;
 	}
 
 	private markAsNew(): void {
-		this.isNew = true;
+		// Emit integration event for new reservation request
+		this.addIntegrationEvent(ReservationRequestCreated, {
+			reservationRequestId: this.props.id,
+			listingId: this.props.listing.id,
+			reserverId: this.props.reserver.id,
+			sharerId: this.props.listing.sharer?.id ?? '',
+			reservationPeriodStart: this.props.reservationPeriodStart,
+			reservationPeriodEnd: this.props.reservationPeriodEnd,
+		});
 	}
 
 	//#region Properties
@@ -244,11 +272,33 @@ export class ReservationRequest<props extends ReservationRequestProps>
 	//#endregion Properties
 
 	async loadReserver(): Promise<UserEntityReference> {
-		return await this.props.loadReserver();
+		return await this.loadUser('reserver');
+	}
+
+	async loadSharer(): Promise<UserEntityReference> {
+		return await this.loadUser('sharer');
 	}
 
 	async loadListing(): Promise<ItemListingEntityReference> {
 		return await this.props.loadListing();
+	}
+
+	/**
+	 * Generic method to load user entities (reserver or sharer) with consistent error handling
+	 */
+	private async loadUser(userType: 'reserver' | 'sharer'): Promise<UserEntityReference> {
+		try {
+			switch (userType) {
+				case 'reserver':
+					return await this.props.loadReserver();
+				case 'sharer':
+					return (await this.props.loadListing()).sharer;
+				default:
+					throw new Error(`Unknown user type: ${userType}`);
+			}
+		} catch (error) {
+			throw new Error(`Failed to load ${userType}: ${error instanceof Error ? error.message : String(error)}`);
+		}
 	}
 
 	private accept(): void {
@@ -351,14 +401,79 @@ export class ReservationRequest<props extends ReservationRequestProps>
 			);
 		}
 
-		if (!this.isNew) {
-			throw new Error(
-				'Can only set state to requested when creating new reservation requests',
-			);
-		}
-
 		this.props.state = new ValueObjects.ReservationRequestStateValue(
 			ReservationRequestStates.REQUESTED,
 		).valueOf();
 	}
+
+	//#region User Contact Information Helpers
+	/**
+	 * Centralizes user email derivation logic with fallback chain
+	 * @param user User entity reference (Personal or Admin user)
+	 * @returns Email address or null if none available
+	 */
+	public static getUserEmail(user: UserEntityReference): string | null {
+		// Both PersonalUser and AdminUser have email at account.email
+		// Return null only if user or account doesn't exist, preserve empty string
+		if (!user || !user.account) {
+			return null;
+		}
+		return user.account.email ?? null;
+	}
+
+	/**
+	 * Centralizes user display name derivation logic with fallback chain
+	 * @param user User entity reference (Personal or Admin user) 
+	 * @param defaultName Default name to use if none available
+	 * @returns Display name with appropriate fallbacks
+	 */
+	public static getUserDisplayName(user: UserEntityReference, defaultName: string = 'User'): string {
+		// Handle null/undefined user early
+		if (!user) {
+			return defaultName;
+		}
+		
+		// Both PersonalUser and AdminUser have firstName at account.profile.firstName
+		// Try direct properties first (for compatibility), then nested profile access
+		type UserWithOptionalProps = UserEntityReference & {
+			displayName?: string;
+			firstName?: string;
+		};
+		const userWithDirectProps = user as UserWithOptionalProps;
+		const { displayName, firstName } = userWithDirectProps;
+		const profileFirstName = user.account?.profile?.firstName;
+		
+		return (
+			displayName ||
+			firstName ||
+			profileFirstName ||
+			defaultName
+		);
+	}
+
+	/**
+	 * Convenience method to get both email and name for notifications
+	 * @param user User entity reference
+	 * @param defaultName Default name if none available  
+	 * @returns Object with email and name, or null if no email available
+	 */
+	public static getUserContactInfo(
+		user: UserEntityReference,
+		defaultName: string = 'User',
+	): { email: string; name: string } | null {
+		// Handle null user
+		if (!user) {
+			return null;
+		}
+		
+		const email = ReservationRequest.getUserEmail(user);
+		if (!email) {
+			return null;
+		}
+		const name = ReservationRequest.getUserDisplayName(user, defaultName);
+		return { email, name };
+	}
+	//#endregion User Contact Information Helpers
+
+
 }

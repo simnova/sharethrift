@@ -1,99 +1,109 @@
 {
-	"$schema": "https://unpkg.com/knip@5/schema.json",
-	"workspaces": {
-		"apps/api": {
-			"entry": ["src/index.ts"],
-			"project": ["src/**/*.ts"]
-		},
-		"apps/ui-sharethrift": {
-			"entry": ["src/main.tsx"],
-			"project": ["src/**/*.{ts,tsx}"],
-			"ignore": ["**/terms-communication-preferences.tsx", "**/applicant-id-context.tsx"]
-		},
-		"apps/docs": {
-			"entry": ["src/**/*.{ts,tsx,js,jsx}"],
-			"project": ["src/**/*.{ts,tsx,js,jsx}"]
-		},
-		"packages/cellix/*": {
-			"project": ["src/**/*.ts"],
-			"ignore": ["**/graphql-tools-scalars.ts"]
-		},
-		"packages/cellix/ui-core/*": {
-			"entry": ["src/index.ts"],
-			"project": ["src/**/*.{ts,tsx}"]
-		},
-		"packages/sthrift/data-sources-mongoose-models": {
-			"entry": ["src/index.ts", "src/models/**/*.model.ts"],
-			"project": ["src/**/*.ts"]
-		},
-		"packages/sthrift/persistence": {
-			"entry": ["src/index.ts", "src/datasources/**/index.ts"],
-			"project": ["src/**/*.ts"]
-		},
-		"packages/sthrift/graphql": {
-			"entry": ["src/index.ts", "src/schema/types/**/*.resolvers.ts", "src/schema/builder/*.ts"],
-			"project": ["src/**/*.ts"],
-			"ignore": ["**/graphql-tools-scalars.ts", "**/azure-functions.ts"]
-		},
-		"packages/sthrift/domain": {
-			"entry": [
-				"src/index.ts",
-				"src/domain/contexts/**/*.passport.ts",
-				"src/domain/contexts/**/*-permissions.ts"
-			],
-			"project": ["src/**/*.ts"],
-			"ignore": ["**/events/event-bus.ts", "**/events/index.ts", "**/*.value-objects.ts"]
-		},
-		"packages/sthrift/*": {
-			"entry": ["src/index.ts"],
-			"project": ["src/**/*.ts"]
-		},
-		"packages/sthrift/ui-components": {
-			"entry": ["src/index.ts"],
-			"project": ["src/**/*.{ts,tsx}"]
-		}
-	},
-	"ignoreWorkspaces": [
-		"packages/cellix/typescript-config",
-		"packages/cellix/domain-seedwork",
-		"packages/cellix/event-bus-seedwork-node",
-		"packages/cellix/mongoose-seedwork",
-		"packages/cellix/mock-payment-server",
-		"packages/cellix/api-services-spec",
-		"packages/cellix/mock-mongodb-memory-server-seedwork",
-		"packages/cellix/mock-oauth2-server",
-		"packages/cellix/vitest-config",
-		"packages/sthrift/payment-service-cybersource",
-		"packages/sthrift/mock-messaging-server"
-	],
-	"ignore": [
-		"build-pipeline/scripts/**",
-		"**/*.test.ts",
-		"**/*.spec.ts",
-		"**/*.stories.tsx",
-		"**/dist/**",
-		"**/coverage/**",
-		"**/__tests__/**",
-		"**/tests/**",
-		"vitest.shims.d.ts"
-	],
-	"ignoreDependencies": [
-		"@types/*",
-		"@cucumber/node",
-		"@cucumber/pretty-formatter",
-		"@serenity-js/assertions",
-		"@serenity-js/console-reporter",
-		"@serenity-js/core",
-		"@serenity-js/cucumber",
-		"@serenity-js/serenity-bdd",
-		"@graphql-typed-document-node/core",
-		"@cellix/event-bus-seedwork-node",
-		"@as-integrations/azure-functions",
-		"@graphql-tools/json-file-loader",
-		"@graphql-tools/load",
-		"rollup",
-		"tsx",
-		"vite"
-	],
-	"ignoreBinaries": ["func"]
+  "$schema": "https://unpkg.com/knip@5/schema.json",
+  "workspaces": {
+    "apps/api": {
+      "entry": ["src/index.ts"],
+      "project": ["src/**/*.ts"]
+    },
+    "apps/ui-sharethrift": {
+      "entry": ["src/main.tsx"],
+      "project": ["src/**/*.{ts,tsx}"],
+      "ignore": [
+        "**/terms-communication-preferences.tsx",
+        "**/applicant-id-context.tsx"
+      ]
+    },
+    "apps/docs": {
+      "entry": ["src/**/*.{ts,tsx,js,jsx}"],
+      "project": ["src/**/*.{ts,tsx,js,jsx}"]
+    },
+    "packages/cellix/*": {
+      "project": ["src/**/*.ts"],
+      "ignore": ["**/graphql-tools-scalars.ts"]
+    },
+    "packages/cellix/ui-core/*": {
+      "entry": ["src/index.ts"],
+      "project": ["src/**/*.{ts,tsx}"]
+    },
+    "packages/sthrift/data-sources-mongoose-models": {
+      "entry": ["src/index.ts", "src/models/**/*.model.ts"],
+      "project": ["src/**/*.ts"]
+    },
+    "packages/sthrift/persistence": {
+      "entry": ["src/index.ts", "src/datasources/**/index.ts"],
+      "project": ["src/**/*.ts"]
+    },
+    "packages/sthrift/graphql": {
+      "entry": [
+        "src/index.ts",
+        "src/schema/types/**/*.resolvers.ts",
+        "src/schema/builder/*.ts"
+      ],
+      "project": ["src/**/*.ts"],
+      "ignore": ["**/graphql-tools-scalars.ts", "**/azure-functions.ts"]
+    },
+    "packages/sthrift/domain": {
+      "entry": [
+        "src/index.ts",
+        "src/domain/contexts/**/*.passport.ts",
+        "src/domain/contexts/**/*-permissions.ts"
+      ],
+      "project": ["src/**/*.ts"],
+      "ignore": [
+        "**/events/event-bus.ts",
+        "**/events/index.ts",
+        "**/*.value-objects.ts"
+      ]
+    },
+    "packages/sthrift/*": {
+      "entry": ["src/index.ts"],
+      "project": ["src/**/*.ts"]
+    },
+    "packages/sthrift/ui-components": {
+      "entry": ["src/index.ts"],
+      "project": ["src/**/*.{ts,tsx}"]
+    }
+  },
+  "ignoreWorkspaces": [
+    "packages/cellix/typescript-config",
+    "packages/cellix/domain-seedwork",
+    "packages/cellix/event-bus-seedwork-node",
+    "packages/cellix/mongoose-seedwork",
+    "packages/cellix/mock-payment-server",
+    "packages/cellix/api-services-spec",
+    "packages/cellix/mock-mongodb-memory-server-seedwork",
+    "packages/cellix/mock-oauth2-server",
+    "packages/cellix/vitest-config",
+    "packages/sthrift/payment-service-cybersource",
+    "packages/sthrift/mock-messaging-server"
+  ],
+  "ignore": [
+    "build-pipeline/scripts/**",
+    "**/*.test.ts",
+    "**/*.spec.ts",
+    "**/*.stories.tsx",
+    "**/dist/**",
+    "**/coverage/**",
+    "**/__tests__/**",
+    "**/tests/**",
+    "vitest.shims.d.ts"
+  ],
+  "ignoreDependencies": [
+    "@types/*",
+    "@cucumber/node",
+    "@cucumber/pretty-formatter",
+    "@serenity-js/assertions",
+    "@serenity-js/console-reporter",
+    "@serenity-js/core",
+    "@serenity-js/cucumber",
+    "@serenity-js/serenity-bdd",
+    "@graphql-typed-document-node/core",
+    "@as-integrations/azure-functions",
+    "@graphql-tools/json-file-loader",
+    "@graphql-tools/load",
+    "rollup",
+    "tsx",
+    "vite"
+  ],
+  "ignoreBinaries": ["func"]
 }

@@ -9,8 +9,8 @@
 		"skipLibCheck": true,
 		"module": "ESNext",
 		"moduleResolution": "bundler",
-		"allowImportingTsExtensions": true
-	},
+		"allowImportingTsExtensions": true	
+    },
 	"include": ["src/**/*"],
 	"exclude": ["node_modules", "dist"]
 }

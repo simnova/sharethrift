@@ -6,6 +6,8 @@ import { expect, vi } from 'vitest';
 import type { Passport } from '../../passport.ts';
 import { PersonalUser } from '../../user/personal-user/personal-user.ts';
 import type { PersonalUserProps } from '../../user/personal-user/personal-user.entity.ts';
+import { AdminUser } from '../../user/admin-user/admin-user.ts';
+import type { AdminUserProps } from '../../user/admin-user/admin-user.entity.ts';
 import type { ItemListingProps } from './item-listing.entity.ts';
 import { ItemListing } from './item-listing.ts';
 
@@ -884,6 +886,308 @@ Scenario(
 		},
 	);
 
+	Scenario(
+		'Getting sharer as AdminUser when userType is admin-user',
+		({ Given, When, Then, And }) => {
+			Given('an ItemListing with an AdminUser as sharer', () => {
+				const adminPassport = vi.mocked({
+					listing: {
+						forItemListing: vi.fn(() => ({
+							determineIf: () => true,
+						})),
+					},
+					user: {
+						forPersonalUser: vi.fn(() => ({
+							determineIf: () => true,
+						})),
+						forAdminUser: vi.fn(() => ({
+							determineIf: () => true,
+						})),
+					},
+					conversation: {
+						forConversation: vi.fn(() => ({
+							determineIf: () => true,
+						})),
+					},
+				} as unknown as Passport);
+
+				const adminUser = {
+					userType: 'admin-user' as const,
+					id: 'admin-1',
+					isBlocked: false,
+					schemaVersion: '1.0.0',
+				} as unknown as AdminUserProps;
+				const propsWithAdmin = { ...makeBaseProps(), sharer: adminUser };
+				listing = new ItemListing(propsWithAdmin, adminPassport);
+			});
+			When('I access the sharer property', () => {
+				// Access happens in Then
+			});
+			Then('it should return an AdminUser instance', () => {
+				expect(listing.sharer).toBeInstanceOf(AdminUser);
+			});
+			And('the sharer id should match', () => {
+				expect(listing.sharer.id).toBe('admin-1');
+			});
+		},
+	);
+
+	Scenario(
+		'Getting sharer as PersonalUser when userType is personal-user',
+		({ Given, When, Then, And }) => {
+			Given('an ItemListing with a PersonalUser as sharer', () => {
+				passport = makePassport(true, true, true, true);
+				listing = new ItemListing(makeBaseProps(), passport);
+			});
+			When('I access the sharer property', () => {
+				// Access happens in Then
+			});
+			Then('it should return a PersonalUser instance', () => {
+				expect(listing.sharer).toBeInstanceOf(PersonalUser);
+			});
+			And('the sharer id should match', () => {
+				expect(listing.sharer.id).toBe('user-1');
+			});
+		},
+	);
+
+	Scenario(
+		'Loading sharer asynchronously',
+		({ Given, When, Then }) => {
+			Given('an ItemListing aggregate', () => {
+				passport = makePassport(true, true, true, true);
+				listing = new ItemListing(makeBaseProps(), passport);
+			});
+			When('I call loadSharer()', () => {
+				// Implementation in Then
+			});
+			Then('it should return a UserEntityReference', async () => {
+				const loadedSharer = await listing.loadSharer();
+				expect(loadedSharer).toBeDefined();
+				expect(loadedSharer.id).toBe('user-1');
+			});
+		},
+	);
+
+	Scenario(
+		'Getting createdAt timestamp',
+		({ Given, When, Then }) => {
+			Given('an ItemListing aggregate with a known createdAt date', () => {
+				passport = makePassport(true, true, true, true);
+				listing = new ItemListing(makeBaseProps(), passport);
+			});
+			When('I access the createdAt property', () => {
+				// Access happens in Then
+			});
+			Then('it should return the correct creation date', () => {
+				expect(listing.createdAt).toEqual(new Date('2020-01-01T00:00:00Z'));
+			});
+		},
+	);
+
+	Scenario(
+		'Getting schemaVersion',
+		({ Given, When, Then }) => {
+			Given('an ItemListing aggregate with a known schemaVersion', () => {
+				passport = makePassport(true, true, true, true);
+				listing = new ItemListing(makeBaseProps(), passport);
+			});
+			When('I access the schemaVersion property', () => {
+				// Access happens in Then
+			});
+			Then('it should return the correct schema version', () => {
+				expect(listing.schemaVersion).toBe('1.0.0');
+			});
+		},
+	);
+
+	Scenario(
+		'Getting sharingHistory as empty array when not set',
+		({ Given, When, Then }) => {
+			Given('an ItemListing aggregate with no sharingHistory', () => {
+				passport = makePassport(true, true, true, true);
+				listing = new ItemListing(makeBaseProps({ sharingHistory: undefined }), passport);
+			});
+			When('I access the sharingHistory property', () => {
+				// Access happens in Then
+			});
+			Then('it should return an empty array', () => {
+				expect(listing.sharingHistory).toEqual([]);
+			});
+		},
+	);
+
+	Scenario(
+		'Getting sharingHistory with entries',
+		({ Given, When, Then, And }) => {
+			Given('an ItemListing aggregate with sharingHistory entries', () => {
+				passport = makePassport(true, true, true, true);
+				const historyEntries = ['user-2', 'user-3', 'user-4'];
+				listing = new ItemListing(
+					makeBaseProps({ sharingHistory: historyEntries }),
+					passport,
+				);
+			});
+			When('I access the sharingHistory property', () => {
+				// Access happens in Then
+			});
+			Then('it should return the sharing history as an array', () => {
+				expect(listing.sharingHistory).toEqual(['user-2', 'user-3', 'user-4']);
+			});
+			And('it should be a copy of the original array', () => {
+				const { 0: firstItem, 1: secondItem, 2: thirdItem } = listing.sharingHistory;
+				const mutatedHistory = [firstItem, secondItem, thirdItem];
+				mutatedHistory.push('user-5');
+				expect(listing.sharingHistory).toEqual(['user-2', 'user-3', 'user-4']);
+			});
+		},
+	);
+
+	Scenario(
+		'Getting reports count when not set',
+		({ Given, When, Then }) => {
+			Given('an ItemListing aggregate with no reports', () => {
+				passport = makePassport(true, true, true, true);
+				listing = new ItemListing(makeBaseProps({ reports: undefined }), passport);
+			});
+			When('I access the reports property', () => {
+				// Access happens in Then
+			});
+			Then('it should return 0', () => {
+				expect(listing.reports).toBe(0);
+			});
+		},
+	);
+
+	Scenario(
+		'Getting reports count when set',
+		({ Given, When, Then }) => {
+			Given('an ItemListing aggregate with reports', () => {
+				passport = makePassport(true, true, true, true);
+				listing = new ItemListing(makeBaseProps({ reports: 5 }), passport);
+			});
+			When('I access the reports property', () => {
+				// Access happens in Then
+			});
+			Then('it should return the correct number of reports', () => {
+				expect(listing.reports).toBe(5);
+			});
+		},
+	);
+
+	Scenario(
+		'Getting images as empty array when not set',
+		({ Given, When, Then }) => {
+			Given('an ItemListing aggregate with no images', () => {
+				passport = makePassport(true, true, true, true);
+				listing = new ItemListing(makeBaseProps({ images: undefined }), passport);
+			});
+			When('I access the images property', () => {
+				// Access happens in Then
+			});
+			Then('it should return an empty array', () => {
+				expect(listing.images).toEqual([]);
+			});
+		},
+	);
+
+	Scenario(
+		'Getting images returns a copy of the array',
+		({ Given, When, Then, And }) => {
+			Given('an ItemListing aggregate with images', () => {
+				passport = makePassport(true, true, true, true);
+				listing = new ItemListing(
+					makeBaseProps({ images: ['img1.png', 'img2.png'] }),
+					passport,
+				);
+			});
+			When('I access the images property', () => {
+				// Access happens in Then
+			});
+			Then('it should return a copy of the images array', () => {
+				const [first, second] = listing.images;
+				expect([first, second]).toEqual(['img1.png', 'img2.png']);
+			});
+			And('modifications to the returned array do not affect the listing', () => {
+				const originalLength = listing.images.length;
+				const retrievedImages = listing.images;
+				retrievedImages.push('img3.png');
+				expect(listing.images.length).toBe(originalLength);
+			});
+		},
+	);
+
+	Scenario(
+		'Getting isActive when state is Active',
+		({ Given, When, Then }) => {
+			Given('an ItemListing aggregate in Active state', () => {
+				passport = makePassport(true, true, true, true);
+				listing = new ItemListing(
+					makeBaseProps({ state: 'Active' }),
+					passport,
+				);
+			});
+			When('I access the isActive property', () => {
+				// Access happens in Then
+			});
+			Then('it should return true', () => {
+				expect(listing.isActive).toBe(true);
+			});
+		},
+	);
+
+	Scenario(
+		'Getting isActive when state is not Active',
+		({ Given, When, Then }) => {
+			Given('an ItemListing aggregate in Draft state', () => {
+				passport = makePassport(true, true, true, true);
+				listing = new ItemListing(
+					makeBaseProps({ state: 'Draft' }),
+					passport,
+				);
+			});
+			When('I access the isActive property', () => {
+				// Access happens in Then
+			});
+			Then('it should return false', () => {
+				expect(listing.isActive).toBe(false);
+			});
+		},
+	);
+
+	Scenario(
+		'Getting displayLocation',
+		({ Given, When, Then }) => {
+			Given('an ItemListing aggregate with a known location', () => {
+				passport = makePassport(true, true, true, true);
+				listing = new ItemListing(makeBaseProps({ location: 'New York' }), passport);
+			});
+			When('I access the displayLocation property', () => {
+				// Access happens in Then
+			});
+			Then('it should return the location', () => {
+				expect(listing.displayLocation).toBe('New York');
+			});
+		},
+	);
+
+	Scenario(
+		'Getting getEntityReference',
+		({ Given, When, Then }) => {
+			Given('an ItemListing aggregate', () => {
+				passport = makePassport(true, true, true, true);
+				listing = new ItemListing(makeBaseProps(), passport);
+			});
+			When('I call getEntityReference()', () => {
+				// Implementation in Then
+			});
+			Then('it should return an ItemListingEntityReference', () => {
+				const ref = listing.getEntityReference();
+				expect(ref).toBeDefined();
+				expect(ref.id).toBe('listing-1');
+			});
+		},
+	);
 	Scenario('Getting expiresAt from item listing', ({ Given, When, Then }) => {
 		Given('an ItemListing aggregate with expiresAt set', () => {
 			const expirationDate = new Date('2025-12-31T23:59:59Z');

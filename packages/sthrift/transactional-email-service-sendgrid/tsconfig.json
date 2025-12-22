@@ -1,0 +1,12 @@
+{
+	"extends": "@cellix/typescript-config/node.json",
+	"compilerOptions": {
+		"outDir": "dist",
+		"rootDir": "."
+	},
+	"include": ["src/**/*.ts"],
+	"exclude": ["node_modules", "dist", "**/*.test.ts", "**/*.spec.ts"],
+	"references": [
+		{ "path": "../../cellix/transactional-email-service" }
+	]
+}

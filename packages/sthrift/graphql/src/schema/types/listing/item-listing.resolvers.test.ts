@@ -1006,4 +1006,446 @@ test.for(feature, ({ Scenario }) => {
 			expect((result as { status: { success: boolean } }).status.success).toBe(true);
 		});
 	});
+
+	Scenario('Deleting an item listing without authentication', ({ Given, When, Then, And }) => {
+		Given('an unauthenticated user (no verifiedUser)', () => {
+			context = makeMockGraphContext({
+				applicationServices: {
+					...makeMockGraphContext().applicationServices,
+					verifiedUser: null,
+					Listing: {
+						ItemListing: {
+							...makeMockGraphContext().applicationServices.Listing.ItemListing,
+							deleteListings: vi.fn().mockResolvedValue(undefined),
+						},
+					},
+				},
+			});
+		});
+		When('the deleteItemListing mutation is executed', async () => {
+			const resolver = itemListingResolvers.Mutation?.deleteItemListing as TestResolver<{
+				id: string;
+			}>;
+			result = await resolver({}, { id: 'listing-1' }, context, {} as never);
+		});
+		Then('it should call Listing.ItemListing.deleteListings with empty email', () => {
+			expect(context.applicationServices.Listing.ItemListing.deleteListings).toHaveBeenCalledWith({
+				id: 'listing-1',
+				userEmail: '',
+			});
+		});
+		And('it should return success status', () => {
+			expect(result).toBeDefined();
+			expect((result as { status: { success: boolean } }).status.success).toBe(true);
+		});
+	});
+
+	Scenario('Error while deleting an item listing', ({ Given, When, Then }) => {
+		Given('Listing.ItemListing.deleteListings throws an error', () => {
+			context = makeMockGraphContext({
+				applicationServices: {
+					...makeMockGraphContext().applicationServices,
+					Listing: {
+						ItemListing: {
+							...makeMockGraphContext().applicationServices.Listing.ItemListing,
+							deleteListings: vi.fn().mockRejectedValue(new Error('Deletion failed')),
+						},
+					},
+				},
+			});
+		});
+		When('the deleteItemListing mutation is executed', async () => {
+			try {
+				const resolver = itemListingResolvers.Mutation?.deleteItemListing as TestResolver<{
+					id: string;
+				}>;
+				await resolver({}, { id: 'listing-1' }, context, {} as never);
+			} catch (e) {
+				error = e as Error;
+			}
+		});
+		Then('it should propagate the error message', () => {
+			expect(error).toBeDefined();
+			expect(error?.message).toBe('Deletion failed');
+		});
+	});
+
+	Scenario('Error while unblocking a listing', ({ Given, When, Then }) => {
+		Given('Listing.ItemListing.unblock throws an error', () => {
+			context = makeMockGraphContext({
+				applicationServices: {
+					...makeMockGraphContext().applicationServices,
+					Listing: {
+						ItemListing: {
+							...makeMockGraphContext().applicationServices.Listing.ItemListing,
+							unblock: vi.fn().mockRejectedValue(new Error('Unblock failed')),
+						},
+					},
+				},
+			});
+		});
+		When('the unblockListing mutation is executed', async () => {
+			try {
+				const resolver = itemListingResolvers.Mutation?.unblockListing as TestResolver<{
+					id: string;
+				}>;
+				await resolver({}, { id: 'listing-1' }, context, {} as never);
+			} catch (e) {
+				error = e as Error;
+			}
+		});
+		Then('it should propagate the error message', () => {
+			expect(error).toBeDefined();
+			expect(error?.message).toBe('Unblock failed');
+		});
+	});
+
+	Scenario('Error while canceling a listing', ({ Given, When, Then }) => {
+		Given('Listing.ItemListing.cancel throws an error', () => {
+			context = makeMockGraphContext({
+				applicationServices: {
+					...makeMockGraphContext().applicationServices,
+					Listing: {
+						ItemListing: {
+							...makeMockGraphContext().applicationServices.Listing.ItemListing,
+							cancel: vi.fn().mockRejectedValue(new Error('Cancel failed')),
+						},
+					},
+				},
+			});
+		});
+		When('the cancelItemListing mutation is executed', async () => {
+			try {
+				const resolver = itemListingResolvers.Mutation?.cancelItemListing as TestResolver<{
+					id: string;
+				}>;
+				await resolver({}, { id: 'listing-1' }, context, {} as never);
+			} catch (e) {
+				error = e as Error;
+			}
+		});
+		Then('it should propagate the error message', () => {
+			expect(error).toBeDefined();
+			expect(error?.message).toBe('Cancel failed');
+		});
+	});
+
+	Scenario(
+		'myListingsAll with user lookup failure and pagination arguments',
+		({ Given, And, When, Then }) => {
+			Given('a user with a verifiedJwt in their context', () => {
+				context = makeMockGraphContext();
+			});
+			And('User.PersonalUser.queryByEmail throws an error', () => {
+				vi.mocked(
+					context.applicationServices.User.PersonalUser.queryByEmail,
+				).mockRejectedValue(new Error('Email lookup failed'));
+			});
+			When('the myListingsAll query is executed', async () => {
+				try {
+					const resolver = itemListingResolvers.Query
+						?.myListingsAll as TestResolver<{ page: number; pageSize: number }>;
+					await resolver(
+						{},
+						{ page: 1, pageSize: 10 },
+						context,
+						{} as never,
+					);
+				} catch (e) {
+					error = e as Error;
+				}
+			});
+			Then('it should propagate the email lookup error', () => {
+				expect(error).toBeDefined();
+				expect(error?.message).toBe('Email lookup failed');
+			});
+		},
+	);
+
+	Scenario(
+		'Creating an item listing with no images',
+		({ Given, And, When, Then }) => {
+			Given('a user with a verifiedJwt containing email', () => {
+				context = makeMockGraphContext();
+			});
+			And('a CreateItemListingInput with no images provided', () => {
+				vi.mocked(
+					context.applicationServices.User.PersonalUser.queryByEmail,
+				).mockResolvedValue(createMockUser());
+				vi.mocked(
+					context.applicationServices.Listing.ItemListing.create,
+				).mockResolvedValue(createMockListing({ images: [] }));
+			});
+			When('the createItemListing mutation is executed', async () => {
+				const resolver = itemListingResolvers.Mutation
+					?.createItemListing as TestResolver<{
+					input: CreateItemListingInput;
+				}>;
+				result = await resolver(
+					{},
+					{
+						input: {
+							title: 'New Listing',
+							description: 'Description',
+							category: 'Electronics',
+							location: 'Delhi',
+							sharingPeriodStart: '2025-10-06',
+							sharingPeriodEnd: '2025-11-06',
+						},
+					},
+					context,
+					{} as never,
+				);
+			});
+			Then('it should create listing with empty images array', () => {
+				expect(
+					context.applicationServices.Listing.ItemListing.create,
+				).toHaveBeenCalledWith(
+					expect.objectContaining({
+						images: [],
+					}),
+				);
+			});
+			And('it should return the created listing', () => {
+				expect(result).toBeDefined();
+				expect(result).toHaveProperty('images');
+			});
+		},
+	);
+
+	Scenario(
+		'Creating an item listing with isDraft not specified',
+		({ Given, And, When, Then }) => {
+			Given('a user with a verifiedJwt containing email', () => {
+				context = makeMockGraphContext();
+			});
+			And('a CreateItemListingInput without isDraft property', () => {
+				vi.mocked(
+					context.applicationServices.User.PersonalUser.queryByEmail,
+				).mockResolvedValue(createMockUser());
+				vi.mocked(
+					context.applicationServices.Listing.ItemListing.create,
+				).mockResolvedValue(createMockListing({ state: 'Published' }));
+			});
+			When('the createItemListing mutation is executed', async () => {
+				const resolver = itemListingResolvers.Mutation
+					?.createItemListing as TestResolver<{
+					input: Omit<CreateItemListingInput, 'isDraft'>;
+				}>;
+				result = await resolver(
+					{},
+					{
+						input: {
+							title: 'New Listing',
+							description: 'Description',
+							category: 'Electronics',
+							location: 'Delhi',
+							sharingPeriodStart: '2025-10-06',
+							sharingPeriodEnd: '2025-11-06',
+						},
+					},
+					context,
+					{} as never,
+				);
+			});
+			Then('it should default isDraft to false', () => {
+				expect(
+					context.applicationServices.Listing.ItemListing.create,
+				).toHaveBeenCalledWith(
+					expect.objectContaining({
+						isDraft: false,
+					}),
+				);
+			});
+		},
+	);
+
+	Scenario(
+		'myListingsAll with null searchText and statusFilters',
+		({ Given, And, When, Then }) => {
+			Given('a user with a verifiedJwt in their context', () => {
+				context = makeMockGraphContext();
+			});
+			And('pagination arguments with null searchText and statusFilters', () => {
+				vi.mocked(
+					context.applicationServices.Listing.ItemListing.queryPaged,
+				).mockResolvedValue({
+					items: [createMockListing()],
+					total: 1,
+					page: 1,
+					pageSize: 10,
+				});
+			});
+			When('the myListingsAll query is executed', async () => {
+				const resolver = itemListingResolvers.Query
+					?.myListingsAll as TestResolver<{
+					page: number;
+					pageSize: number;
+					searchText?: string | null;
+					statusFilters?: (string | null)[] | null;
+				}>;
+				result = await resolver(
+					{},
+					{
+						page: 1,
+						pageSize: 10,
+						searchText: null,
+						statusFilters: null,
+					},
+					context,
+					{} as never,
+				);
+			});
+			Then(
+				'it should call Listing.ItemListing.queryPaged without searchText and statusFilters',
+				() => {
+					expect(
+						context.applicationServices.Listing.ItemListing.queryPaged,
+					).toHaveBeenCalledWith(
+						expect.not.objectContaining({
+							searchText: expect.anything(),
+							statusFilters: expect.anything(),
+						}),
+					);
+				},
+			);
+			And('it should still return paged results', () => {
+				expect(result).toBeDefined();
+				const resultData = result as { items: ItemListingEntity[] };
+				expect(resultData.items.length).toBeGreaterThan(0);
+			});
+		},
+	);
+
+	Scenario(
+		'adminListings with null sorter',
+		({ Given, And, When, Then }) => {
+			Given('an admin user with valid credentials', () => {
+				context = makeMockGraphContext();
+			});
+			And('pagination arguments with null sorter', () => {
+				vi.mocked(
+					context.applicationServices.Listing.ItemListing.queryPaged,
+				).mockResolvedValue({
+					items: [createMockListing()],
+					total: 1,
+					page: 1,
+					pageSize: 10,
+				});
+			});
+			When('the adminListings query is executed', async () => {
+				const resolver = itemListingResolvers.Query?.adminListings as TestResolver<{
+					page: number;
+					pageSize: number;
+					sorter?: { field: string; order: string } | null;
+				}>;
+				result = await resolver(
+					{},
+					{
+						page: 1,
+						pageSize: 10,
+						sorter: null,
+					},
+					context,
+					{} as never,
+				);
+			});
+			Then(
+				'it should call Listing.ItemListing.queryPaged without sorter',
+				() => {
+					expect(
+						context.applicationServices.Listing.ItemListing.queryPaged,
+					).toHaveBeenCalledWith(
+						expect.not.objectContaining({
+							sorter: expect.anything(),
+						}),
+					);
+				},
+			);
+			And('it should return paginated results', () => {
+				expect(result).toBeDefined();
+				expect(result).toHaveProperty('items');
+			});
+		},
+	);
+
+	Scenario(
+		'Error while querying adminListings',
+		({ Given, When, Then }) => {
+			Given('Listing.ItemListing.queryPaged throws an error', () => {
+				context = makeMockGraphContext();
+				vi.mocked(
+					context.applicationServices.Listing.ItemListing.queryPaged,
+				).mockRejectedValue(new Error('Admin query failed'));
+			});
+			When('the adminListings query is executed', async () => {
+				try {
+					const resolver = itemListingResolvers.Query?.adminListings as TestResolver<{
+						page: number;
+						pageSize: number;
+					}>;
+					await resolver(
+						{},
+						{ page: 1, pageSize: 10 },
+						context,
+						{} as never,
+					);
+				} catch (e) {
+					error = e as Error;
+				}
+			});
+			Then('it should propagate the error message', () => {
+				expect(error).toBeDefined();
+				expect(error?.message).toBe('Admin query failed');
+			});
+		},
+	);
+
+	Scenario(
+		'Creating an item listing with isDraft set to true',
+		({ Given, And, When, Then }) => {
+			Given('a user with a verifiedJwt containing email', () => {
+				context = makeMockGraphContext();
+			});
+			And('a CreateItemListingInput with isDraft set to true', () => {
+				vi.mocked(
+					context.applicationServices.User.PersonalUser.queryByEmail,
+				).mockResolvedValue(createMockUser());
+				vi.mocked(
+					context.applicationServices.Listing.ItemListing.create,
+				).mockResolvedValue(createMockListing({ state: 'Draft' }));
+			});
+			When('the createItemListing mutation is executed', async () => {
+				const resolver = itemListingResolvers.Mutation
+					?.createItemListing as TestResolver<{
+					input: CreateItemListingInput;
+				}>;
+				result = await resolver(
+					{},
+					{
+						input: {
+							title: 'Draft Listing',
+							description: 'Description',
+							category: 'Electronics',
+							location: 'Delhi',
+							sharingPeriodStart: '2025-10-06',
+							sharingPeriodEnd: '2025-11-06',
+							isDraft: true,
+						},
+					},
+					context,
+					{} as never,
+				);
+			});
+			Then('it should create listing with isDraft as true', () => {
+				expect(
+					context.applicationServices.Listing.ItemListing.create,
+				).toHaveBeenCalledWith(
+					expect.objectContaining({
+						isDraft: true,
+					}),
+				);
+			});
+		},
+	);
 });

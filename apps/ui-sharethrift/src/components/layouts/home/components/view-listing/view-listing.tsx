@@ -28,7 +28,7 @@ export const ViewListing: React.FC<ViewListingProps> = ({
 	sharedTimeAgo,
 }) => {
 	// Mock sharer info (since ItemListing.sharer is just an ID)
-	const sharer = listing.sharer;
+	const { sharer } = listing;
 
 	const handleBack = () => {
 		window.location.href = '/';

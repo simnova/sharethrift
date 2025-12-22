@@ -49,10 +49,12 @@ export function AdminListings(): React.JSX.Element {
 				if (data.deleteItemListing?.status?.success) {
 					message.success('Listing deleted successfully');
 					refetch();
-				} else {
+				} else if (data.deleteItemListing?.status?.errorMessage) {
 					message.error(
-						`Failed to delete listing: ${data.deleteItemListing?.status?.errorMessage ?? 'Unknown error'}`,
+						`Failed to delete listing: ${data.deleteItemListing.status.errorMessage}`,
 					);
+				} else {
+					message.error('Failed to delete listing: Unknown error');
 				}
 			},
 			onError: (error) => {
