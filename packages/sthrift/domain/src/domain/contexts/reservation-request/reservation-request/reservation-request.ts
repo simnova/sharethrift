@@ -71,8 +71,15 @@ export class ReservationRequest<props extends ReservationRequestProps>
 		const stateValue = value.valueOf ? value.valueOf() : value;
 
 		// Common guard for non-initial transitions
-		if (!this.isNew && stateValue !== ReservationRequestStates.REQUESTED) {
+		if (!this.isNew) {
 			this.ensureCanEditReservationRequest();
+
+			// Once created, a reservation request cannot be transitioned back to REQUESTED state.
+			if (stateValue === ReservationRequestStates.REQUESTED) {
+				throw new DomainSeedwork.PermissionError(
+					'Cannot change reservation request back to REQUESTED state once it has been created.',
+				);
+			}
 		}
 
 		switch (stateValue) {
