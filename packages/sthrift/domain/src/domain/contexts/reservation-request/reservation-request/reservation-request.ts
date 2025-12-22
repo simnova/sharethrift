@@ -179,7 +179,7 @@ export class ReservationRequest<props extends ReservationRequestProps>
 		}
 
 		if (this.props.state !== ReservationRequestStates.ACCEPTED) {
-			throw new Error('Cannot close reservation in current state');
+			throw new DomainSeedwork.PermissionError('Cannot close reservation in current state');
 		}
 	}
 
