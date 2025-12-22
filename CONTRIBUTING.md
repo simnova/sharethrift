@@ -67,7 +67,7 @@ If the task is assigned to the Copilot user, the agent will create a branch and 
 9. Address comments promptly and explain trade‑offs when declining suggestions.
 10. Squash commits if noisy or fixup commits exist; maintain clear history.
 
-### Reviewers Check:
+### Reviewers Checks:
 - Domain invariants upheld
 - No leakage of infrastructure into domain layer
 - Proper file naming & exports
