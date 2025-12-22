@@ -11,7 +11,7 @@ const mockListing = {
 	description: 'High-quality cordless drill for home projects. Perfect for DIY enthusiasts and professionals alike. Features variable speed settings and a comfortable grip.',
 	category: 'Tools & Equipment',
 	location: 'Toronto, ON',
-	state: 'Published' as const,
+	state: 'Active' as const,
 	images: ['/assets/item-images/projector.png'],
 	sharingPeriodStart: new Date('2025-01-01'),
 	sharingPeriodEnd: new Date('2025-12-31'),
@@ -115,7 +115,7 @@ export const ListingNotPublished: Story = {
 	args: {
 		listing: {
 			...mockListing,
-			state: 'Drafted' as const,
+			state: 'Draft' as const,
 		},
 	},
 	play: async ({ canvasElement }: { canvasElement: HTMLElement }) => {

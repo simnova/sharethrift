@@ -7,7 +7,9 @@ const ApolloCacheTest = () => {
 	return (
 		<div style={{ padding: '20px' }}>
 			<h2>Apollo Manual Merge Cache Fix</h2>
-			<p data-testid="cache-exists">Cache exists: {ApolloManualMergeCacheFix ? 'Yes' : 'No'}</p>
+			<p data-testid="cache-exists">
+				Cache exists: {ApolloManualMergeCacheFix ? 'Yes' : 'No'}
+			</p>
 		</div>
 	);
 };
