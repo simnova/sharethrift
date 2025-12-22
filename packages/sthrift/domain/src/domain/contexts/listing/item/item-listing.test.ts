@@ -883,15 +883,15 @@ Scenario(
 	);
 
 	Scenario(
-		'Setting state to Active through state setter',
+		'Publishing a listing using publish() method',
 		({ Given, When, Then }) => {
-			Given('an ItemListing aggregate in Paused state', () => {
+			Given('an ItemListing aggregate in Draft state', () => {
 				passport = makePassport(true, true, true, true);
-				baseProps = makeBaseProps({ state: 'Paused' });
+				baseProps = makeBaseProps({ state: 'Draft' });
 				listing = new ItemListing(baseProps, passport);
 			});
-			When('I set the state property to "Active"', () => {
-				listing.state = 'Active';
+			When('I call the publish() method', () => {
+				listing.publish();
 			});
 			Then('the listing state should be "Active"', () => {
 				expect(listing.state).toBe('Active');
@@ -900,15 +900,15 @@ Scenario(
 	);
 
 	Scenario(
-		'Setting state to Paused through state setter',
+		'Pausing a listing using pause() method',
 		({ Given, When, Then }) => {
 			Given('an ItemListing aggregate in Active state', () => {
 				passport = makePassport(true, true, true, true);
 				baseProps = makeBaseProps({ state: 'Active' });
 				listing = new ItemListing(baseProps, passport);
 			});
-			When('I set the state property to "Paused"', () => {
-				listing.state = 'Paused';
+			When('I call the pause() method', () => {
+				listing.pause();
 			});
 			Then('the listing state should be "Paused"', () => {
 				expect(listing.state).toBe('Paused');
@@ -917,15 +917,15 @@ Scenario(
 	);
 
 	Scenario(
-		'Setting state to Cancelled through state setter',
+		'Cancelling a listing using cancel() method',
 		({ Given, When, Then }) => {
 			Given('an ItemListing aggregate in Active state', () => {
 				passport = makePassport(true, true, true, true);
 				baseProps = makeBaseProps({ state: 'Active' });
 				listing = new ItemListing(baseProps, passport);
 			});
-			When('I set the state property to "Cancelled"', () => {
-				listing.state = 'Cancelled';
+			When('I call the cancel() method', () => {
+				listing.cancel();
 			});
 			Then('the listing state should be "Cancelled"', () => {
 				expect(listing.state).toBe('Cancelled');
@@ -934,29 +934,20 @@ Scenario(
 	);
 
 	Scenario(
-		'Setting state to invalid value throws error',
+		'State setter removed to enforce permission checks',
 		({ Given, When, Then }) => {
 			Given('an ItemListing aggregate', () => {
 				passport = makePassport(true, true, true, true);
 				baseProps = makeBaseProps({ state: 'Active' });
 				listing = new ItemListing(baseProps, passport);
 			});
-			When('I attempt to set the state to an invalid value', () => {
-				// Handled in Then
+			When('I attempt to set the state directly', () => {
+				// The state setter has been removed
 			});
-			Then('it should throw a PermissionError with valid states listed', () => {
-				expect(() => {
-					listing.state = 'InvalidState';
-				}).toThrow(DomainSeedwork.PermissionError);
-				
-				try {
-					listing.state = 'InvalidState';
-				} catch (error) {
-					expect((error as Error).message).toContain('Invalid listing state');
-					expect((error as Error).message).toContain('Active');
-					expect((error as Error).message).toContain('Paused');
-					expect((error as Error).message).toContain('Cancelled');
-				}
+			Then('the state property should be read-only', () => {
+				// Verify that direct assignment is not possible (TypeScript compile-time check)
+				// Use domain methods instead: publish(), pause(), cancel(), reinstate()
+				expect(listing.state).toBe('Active');
 			});
 		},
 	);

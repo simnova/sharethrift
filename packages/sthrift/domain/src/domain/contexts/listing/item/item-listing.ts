@@ -198,16 +198,8 @@ export class ItemListing<props extends ItemListingProps>
 		return this.props.state;
 	}
 
-	set state(value: string) {
-		// Validate that the state is a valid ListingStateEnum value
-		const validStates = Object.values(ValueObjects.ListingStateEnum);
-		if (!validStates.includes(value as (typeof validStates)[number])) {
-			throw new DomainSeedwork.PermissionError(
-				`Invalid listing state: ${value}. Valid states are: ${validStates.join(', ')}`,
-			);
-		}
-		this.props.state = value;
-	}
+	// Note: State setter removed - use domain methods (publish(), pause(), cancel(), reinstate())
+	// to ensure permission checks and state transition validations are enforced
 
 	get updatedAt(): Date {
 		return this.props.updatedAt;
