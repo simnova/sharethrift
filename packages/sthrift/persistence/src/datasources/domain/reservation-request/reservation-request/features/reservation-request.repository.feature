@@ -26,9 +26,9 @@ And each ReservationRequest document includes populated 'listing' and 'reserver'
     Given a valid Listing domain entity reference
     And a valid PersonalUser domain entity reference as reserver
     And reservation period from "2025-10-20" to "2025-10-25"
-    When I call getNewInstance with state "Requested", the listing, the reserver, and the reservation period
+    When I call getNewInstance with state "PENDING", the listing, the reserver, and the reservation period
     Then I should receive a new ReservationRequest domain object
-    And the domain object's state should be "Requested"
+    And the domain object's state should be "PENDING"
     And the reservation period should be from "2025-10-20" to "2025-10-25"
     And the reserver should be the given user
 
@@ -46,5 +46,5 @@ And each ReservationRequest document includes populated 'listing' and 'reserver'
 
   Scenario: Creating a reservation request instance with invalid data
     Given an invalid reserver reference
-    When I call getNewInstance with state "Requested", a valid listing, and the invalid reserver
+    When I call getNewInstance with state "PENDING", a valid listing, and the invalid reserver
     Then an error should be thrown indicating the reserver is not valid

@@ -82,6 +82,9 @@ export class ReservationRequest<props extends ReservationRequestProps>
 		}
 
 		switch (stateValue) {
+			case ReservationRequestStates.PENDING:
+				this.transitionToPending();
+				break;
 			case ReservationRequestStates.ACCEPTED:
 				this.transitionToAccepted();
 				break;
@@ -156,6 +159,15 @@ export class ReservationRequest<props extends ReservationRequestProps>
 			);
 		}
 		this.setStateValue(ReservationRequestStates.CLOSED);
+	}
+
+	private transitionToPending(): void {
+		if (!this.isNew) {
+			throw new DomainSeedwork.PermissionError(
+				'Can only set state to pending when creating new reservation requests',
+			);
+		}
+		this.setStateValue(ReservationRequestStates.PENDING);
 	}
 
 	private transitionToRequested(): void {
