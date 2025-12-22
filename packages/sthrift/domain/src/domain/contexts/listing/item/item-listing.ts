@@ -199,8 +199,9 @@ export class ItemListing<props extends ItemListingProps>
 		return this.props.state;
 	}
 
-	// Note: State setter removed - use domain methods (publish(), pause(), cancel(), reinstate())
-	// to ensure permission checks and state transition validations are enforced
+	// Note: State is read-only; the state setter has been removed. Use domain methods
+	// (publish(), pause(), cancel(), reinstate()) to change state so that permission checks
+	// and state transition validations are always enforced.
 
 	get updatedAt(): Date {
 		return this.props.updatedAt;
