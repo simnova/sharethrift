@@ -81,10 +81,10 @@
             "inputs": [
                 "src/**",
                 "tests/**",
-                "cucumber.js"
+                "cucumber.yaml"
             ],
             "outputs": [
-                "test-results/**"
+                "target/site/serenity/**"
             ]
         },
         "test:serenity:report": {
@@ -92,7 +92,9 @@
                 "test:serenity"
             ],
             "inputs": [
-                "target/site/serenity/cucumber-report.json"
+                "src/**",
+                "tests/**",
+                "cucumber.yaml"
             ],
             "outputs": [
                 "target/site/serenity/**"
