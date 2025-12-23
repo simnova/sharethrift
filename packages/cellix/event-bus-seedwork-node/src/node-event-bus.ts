@@ -16,27 +16,31 @@ class BroadCaster {
 		this.eventEmitter = new EventEmitter();
 	}
 
-	public broadcast(event: string, data: unknown): void {
+	public async broadcast(event: string, data: unknown): Promise<void> {
 		// Collect all listeners for the event
 		const listeners = this.eventEmitter.listeners(event) as Array<
 			(data: unknown) => Promise<void> | void
 		>;
-		// Fire and forget for each listener
+		// Execute each listener sequentially
 		for (const listener of listeners) {
-			Promise.resolve(listener(data)).catch((err) =>
-				console.error('Listener error:', err),
-			);
+			try {
+				await listener(data);
+			} catch (err) {
+				console.error('Listener error:', err);
+			}
 		}
 	}
 	public on(
 		event: string,
 		listener: (rawPayload: unknown) => Promise<void> | void,
 	) {
-		this.eventEmitter.on(event, (data) => {
-			// Call the listener and handle any errors from returned Promise
-			Promise.resolve(listener(data)).catch((err) =>
-				console.error('Listener error:', err),
-			);
+		this.eventEmitter.on(event, async (data) => {
+			// Call the listener and handle any errors
+			try {
+				await listener(data);
+			} catch (err) {
+				console.error('Listener error:', err);
+			}
 		});
 	}
 
@@ -77,7 +81,7 @@ class NodeEventBusImpl implements DomainSeedwork.EventBus {
 
 		const tracer = trace.getTracer('PG:data-access');
 		return new Promise<void>((resolve) => {
-			tracer.startActiveSpan('node-event-bus.publish', (span) => {
+			tracer.startActiveSpan('node-event-bus.publish', async (span) => {
 				span.setAttribute('message.system', 'node-event-bus');
 				span.setAttribute('messaging.operation', 'publish');
 				span.setAttribute('messaging.destination.name', event.name);
@@ -88,7 +92,7 @@ class NodeEventBusImpl implements DomainSeedwork.EventBus {
 				);
 
 				try {
-					this.broadcaster.broadcast(event.name, {
+					await this.broadcaster.broadcast(event.name, {
 						data: JSON.stringify(data),
 						context: contextObject,
 					});
