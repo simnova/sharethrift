@@ -1,24 +1,25 @@
 default:
-  # Feature files location
+  # Feature files location - Serenity acceptance tests for domain logic
+  # These tests use Serenity.js Screenplay Pattern to test domain behavior
+  # without violating architectural boundaries (no GraphQL/API dependencies)
   paths:
     - tests/acceptance/features/**/*.feature
 
-  # Step definitions location
-  require:
+  # Step definitions location - Serenity step definitions (not vitest-cucumber)
+  import:
     - tests/acceptance/step-definitions/**/*.steps.ts
-    - tests/acceptance/support/serenity-config.ts
 
-  # TypeScript support
-  requireModule:
-    - tsx/cjs
-
-  # Format options
+  # Serenity reporters - generates JSON for Serenity BDD reports
   format:
-    - pretty
     - '@serenity-js/cucumber'
+    - '@cucumber/pretty-formatter'
     - json:target/site/serenity/cucumber-report.json
     - html:target/site/serenity/cucumber-report.html
-    - summary
+
+  # Serenity BDD report output configuration
+  formatOptions:
+    snippetInterface: async-await
+    colorsEnabled: true
 
   # Parallel execution
   parallel: 1
@@ -35,3 +36,4 @@ default:
   # World parameters
   worldParameters:
     environment: ${NODE_ENV:-test}
+    serenityReportDir: test-results/serenity

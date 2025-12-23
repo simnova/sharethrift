@@ -41,6 +41,7 @@ export class ListingAppealRequest<props extends ListingAppealRequestProps>
 
 		return newInstance;
 	}
+
 	get user(): PersonalUserEntityReference {
 		return new PersonalUser(
 			// biome-ignore lint/suspicious/noExplicitAny: Required for cross-context entity references
@@ -68,6 +69,7 @@ export class ListingAppealRequest<props extends ListingAppealRequestProps>
 	get reason(): string {
 		return this.props.reason;
 	}
+	
 	set reason(value: string) {
 		if (
 			!this.visa.determineIf(
@@ -84,6 +86,7 @@ export class ListingAppealRequest<props extends ListingAppealRequestProps>
 	get state(): string {
 		return this.props.state;
 	}
+	
 	set state(value: string) {
 		if (
 			!this.visa.determineIf(

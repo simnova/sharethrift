@@ -74,6 +74,32 @@
                 "coverage/**"
             ]
         },
+        "test:serenity": {
+            "dependsOn": [
+                "^build"
+            ],
+            "inputs": [
+                "src/**",
+                "tests/**",
+                "cucumber.yaml"
+            ],
+            "outputs": [
+                "target/site/serenity/**"
+            ]
+        },
+        "test:serenity:report": {
+            "dependsOn": [
+                "test:serenity"
+            ],
+            "inputs": [
+                "src/**",
+                "tests/**",
+                "cucumber.yaml"
+            ],
+            "outputs": [
+                "target/site/serenity/**"
+            ]
+        },
         "storybook": {
             "dependsOn": [
                 "^build",

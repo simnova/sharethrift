@@ -39,6 +39,8 @@ export class AdminUserListingItemListingVisa<
 			// Admins can unpublish listings if they have moderation permission
 			canUnpublishItemListing:
 				rolePermissions?.listingPermissions?.canModerateListings ?? false,
+			// Admins typically don't reserve items themselves
+			canReserveItemListing: false,
 		};
 
 		return func(updatedPermissions);

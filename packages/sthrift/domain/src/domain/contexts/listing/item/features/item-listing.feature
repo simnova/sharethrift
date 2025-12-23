@@ -173,6 +173,26 @@ Feature: <AggregateRoot>ItemListing
     When I set the listingType to "premium-listing"
     Then the listingType should be updated to "premium-listing"
 
+  Scenario: Setting images property with permission
+    Given an ItemListing aggregate with update permission
+    When I set the images to a new array
+    Then the images should be updated
+
+  Scenario: Setting images property without permission
+    Given an ItemListing aggregate without update permission
+    When I attempt to set the images
+    Then it should throw a PermissionError
+
+  Scenario: Setting sharingPeriodStart with permission
+    Given an ItemListing aggregate with update permission
+    When I set the sharingPeriodStart
+    Then the sharingPeriodStart should be updated
+
+  Scenario: Setting sharingPeriodEnd with permission
+    Given an ItemListing aggregate with update permission
+    When I set the sharingPeriodEnd
+    Then the sharingPeriodEnd should be updated
+
   Scenario: Getting expiresAt from item listing
     Given an ItemListing aggregate with expiresAt set
     When I access the expiresAt property
