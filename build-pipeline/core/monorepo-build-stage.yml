@@ -267,7 +267,6 @@ stages:
         script: |
           set -euo pipefail
           echo "Generating Serenity BDD HTML reports..."
-          cd packages/sthrift/domain
           pnpm run test:serenity:report
         workingDirectory: ''
 

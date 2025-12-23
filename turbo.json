@@ -87,6 +87,17 @@
                 "test-results/**"
             ]
         },
+        "test:serenity:report": {
+            "dependsOn": [
+                "test:serenity"
+            ],
+            "inputs": [
+                "target/site/serenity/cucumber-report.json"
+            ],
+            "outputs": [
+                "target/site/serenity/**"
+            ]
+        },
         "storybook": {
             "dependsOn": [
                 "^build",
